@@ -1,0 +1,50 @@
+# Inputs and outputs that never enter git (D5).
+/orig
+/extract/*
+!/extract/README.md
+!/extract/.gitkeep
+/extract.tmp/
+/build/
+/.cache
+
+# Binary types refused by hooks/pre-commit as well.
+*.nds
+*.bin
+*.o
+*.exe
+*.sdat
+*.sseq
+*.ssar
+*.sbnk
+*.swar
+*.strm
+*.wav
+*.mid
+*.mp3
+*.ogg
+*.flac
+*.sf2
+*.ncsf
+*.minincsf
+*.ncsflib
+
+# Python
+/.venv/
+__pycache__/
+*.pyc
+
+# Editor and OS
+*.swp
+*~
+.DS_Store
+/build.ninja
+/.ninja_log
+/.ninja_deps
+/objdiff.json
+
+# Generated or local-only, never in git
+/extracted/*
+!/extracted/README.md
+!/extracted/.gitkeep
+/work/
+/assets/maps/*/
