@@ -1,0 +1,2 @@
+/* 1 function from 0x0220D290 to 0x0220DE5C (ov003), found by ds-decomp. */
+#include "common.h"
