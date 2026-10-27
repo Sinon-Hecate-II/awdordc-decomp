@@ -420,6 +420,7 @@ void func_ov001_02183318(void) {
 
 void func_ov001_02183338(void){extern u8 data_ov001_02193dec;extern M2C_UNK func_ov001_021833a4;M2C_UNK func_ov001_02171694();if(func_ov001_0218a800(1))return;func_ov001_02171694();if((u8)(data_ov001_02193dec+254)<=1)func_ov001_0218a824(3,1,1,8);func_ov001_0218a824(3,0,21,8);func_ov001_02175d54(&func_ov001_021833a4);}
 
+/* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
 void func_ov001_021833a4(void) {
     M2C_UNK func_ov001_02171494(void);
     s32 func_ov001_0217170c(void);
@@ -435,9 +436,15 @@ void func_ov001_021833a4(void) {
     extern void func_ov001_02182d0c(void);
     extern void func_ov001_02182b00(void);
 
-    if (func_ov001_0218a800(0) != 0) return;
-    if ((data_ov001_02193dec == 2) && (func_ov001_0218a800(1) != 0)) return;
-    if (func_ov001_0217170c() == 0) return;
+    if (func_ov001_0218a800(0) != 0) {
+        return;
+    }
+    if ((data_ov001_02193dec == 2) && (func_ov001_0218a800(1) != 0)) {
+        return;
+    }
+    if (func_ov001_0217170c() == 0) {
+        return;
+    }
     func_ov001_02185dac();
     func_ov001_02171494();
     func_ov001_0218af70(0);

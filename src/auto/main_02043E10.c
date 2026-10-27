@@ -66,6 +66,40 @@ s32 func_0204431c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return func_0204433c(1, arg0, arg1, arg2);
 }
 
+s32 func_0204433c(s32 kind,s32 channel,s32 buffer,s32 size) {
+extern s32 data_0213db14;
+void *func_020449f0(s32);
+void func_0204467c(void *,s16,s32);
+void func_02044a40(s32,s32,s32,s32);
+void *p;
+s32 n, total;
+u32 header[2];
+void (*callback)(s32,s32);
+p=func_020449f0(channel);
+if(!func_0204429c(channel,kind)) return 0;
+M2C_FIELD(p,u8 *,0x1c)=1;
+M2C_FIELD(p,s32 *,0)=buffer;
+M2C_FIELD(p,s32 *,0xc)=0;
+M2C_FIELD(p,s32 *,0x14)=size;
+((void (*)(void *,s32,s32))func_0204467c)(header,kind,size);
+func_02044a40(channel,(s32)header,8,1);
+n=M2C_FIELD(data_0213db14,u16 *,0x610);
+if(size<=n)n=size;
+if(n>func_02044de0(channel))return 1;
+func_02044a40(channel,buffer,n,1);
+M2C_FIELD(p,s32 *,0xc)+=n;
+total=M2C_FIELD(p,s32 *,0x14);
+if(M2C_FIELD(p,s32 *,0xc)==total) {
+M2C_FIELD(p,u8 *,0x1c)=0;
+M2C_FIELD(p,s32 *,0)=0;
+M2C_FIELD(p,s32 *,0xc)=0;
+M2C_FIELD(p,s32 *,0x14)=0;
+callback=M2C_FIELD(data_0213db14,void (**)(s32,s32),0x600);
+if(callback && kind==1) callback(total,channel);
+}
+return 1;
+}
+
 s32 func_0204445c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 var_r10;
  s32 var_r6;
@@ -163,22 +197,46 @@ void func_02044a40(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  func_0205af48(func_02039050(arg0), arg1, arg2, arg3);
 }
 
-void func_02044a68(s32 a,s32 b,s32 c) {
-extern s32 data_0213db14;
-s32 func_020390b4(s32); s32 func_02044a24(s32); u16 func_020446ac(void *); void func_02044da4(M2C_UNK,M2C_UNK);
-void func_02044bf8(s32,s32,s32); void func_02044cc0(s32,void *,s32);void func_02037638(s32,s32);
-s32 id=func_020390b4(a); u32 v;
-switch(func_02044a24(id)) {
-case 0: v=func_020446ac((void *)b);if(v<2)return;if(v>4)return;func_02044bf8(id,b,c);break;
-case 1:func_02044bf8(id,b,c);break;
-case 2:func_02044cc0(id,(void *)b,c);break;
-case 3:((void (*)(s32,s32,s32))func_02044da4)(id,b,c);break;
-case 4:
-M2C_FIELD(data_0213db14+id*0x30,u8 *,0x1d)=1;
-M2C_FIELD(data_0213db14+id*0x30,s32 *,0x10)=0;
-M2C_FIELD(data_0213db14+id*0x30,s32 *,0x18)=0;break;
-default:func_02037638(6,0xfffe82b6);break;
-}}
+/* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */
+void func_02044a68(s32 a, s32 b, s32 c) {
+    extern s32 data_0213db14;
+    s32 func_020390b4(s32);
+    s32 func_02044a24(s32);
+    u16 func_020446ac(void *);
+    void func_02044da4(M2C_UNK, M2C_UNK);
+    void func_02044bf8(s32, s32, s32);
+    void func_02044cc0(s32, void *, s32);
+    void func_02037638(s32, s32);
+
+    s32 id = func_020390b4(a);
+    u32 kind;
+
+    switch (func_02044a24(id)) {
+    case 0:
+        kind = func_020446ac((void *)b);
+        if (kind < 2) return;
+        if (kind > 4) return;
+        func_02044bf8(id, b, c);
+        break;
+    case 1:
+        func_02044bf8(id, b, c);
+        break;
+    case 2:
+        func_02044cc0(id, (void *)b, c);
+        break;
+    case 3:
+        ((void (*)(s32, s32, s32))func_02044da4)(id, b, c);
+        break;
+    case 4:
+        M2C_FIELD(data_0213db14 + id * 0x30, u8 *, 0x1d) = 1;
+        M2C_FIELD(data_0213db14 + id * 0x30, s32 *, 0x10) = 0;
+        M2C_FIELD(data_0213db14 + id * 0x30, s32 *, 0x18) = 0;
+        break;
+    default:
+        func_02037638(6, 0xfffe82b6);
+        break;
+    }
+}
 
 void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4(s32);void func_02008048(void *,void *,s32);u64 func_02007004(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(data_0213db14+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;func_02008048((void *)b,q,c);cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=func_02007004();}
 

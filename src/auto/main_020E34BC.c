@@ -33,18 +33,22 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 }
 
 
-void func_020e352c(s32, s32);
+s32 func_020e352c(s32, s32);
 void func_020e34bc(s32 arg0) {
-    s32 saved;
-    s32 *p = &saved;
-    *p = *(volatile u16 *)0x04000208;
+    volatile u32 saved;
+    u16 old;
+    u32 s;
+
+    old = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
+    saved = old;
     func_020e352c(arg0, 8);
+    s = saved;
     (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = *p;
+    *(volatile u16 *)0x04000208 = s;
 }
 
-void func_020e352c(s32 arg0, s32 arg1) {
+s32 func_020e352c(s32 arg0, s32 arg1) {
  M2C_UNK func_0202a468(s32, s32, s32);
  extern s32 data_02168fe4;
  s32 saved;
@@ -293,7 +297,7 @@ void func_020e39d8(void *list) {
 }
 
 void func_020e3ab4(void *arg0) {
-    s32 func_0207c330(s32, s32);
+    s32 RandomIntRange(s32, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
     M2C_UNK func_01ffa8c4(void *, s32);
     extern s32 data_0212d744;
@@ -311,7 +315,7 @@ void func_020e3ab4(void *arg0) {
     if (r1 < r5) {
         r5 = r1;
     }
-    temp = func_0207c330(0, r1 - r5) + 1;
+    temp = RandomIntRange(0, r1 - r5) + 1;
     sp[0] = 0x10;
     sp[1] = 1;
     sp[2] = r5;
@@ -396,7 +400,7 @@ void func_020e3bf0(void *list) {
 
 void func_020e3ccc(void *arg0) {
     s32 func_0207c2f0(void);
-    s32 func_0207c330(s32, s32);
+    s32 RandomIntRange(s32, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
     M2C_UNK func_01ffa8c4(void *, s32);
     extern s32 data_0212d744;
@@ -409,7 +413,7 @@ void func_020e3ccc(void *arg0) {
     if ((u32)data_0212d744 < r6) {
         r6 = data_0212d744;
     }
-    temp5 = func_0207c330(0, data_0212d744 - r6) + 1;
+    temp5 = RandomIntRange(0, data_0212d744 - r6) + 1;
     sp[0] = 0x10;
     sp[1] = (func_0207c2f0() & 1) == 0;
     sp[2] = r6;

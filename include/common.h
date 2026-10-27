@@ -33,6 +33,7 @@ typedef s32 M2C_UNK32;
 #define M2C_ERROR(desc) (0)
 #define M2C_CARRY 0
 #define M2C_OVERFLOW(a) (0)
+typedef struct { s32 fd; s16 events; s16 revents; } PollFd;
 #endif
 
 #endif

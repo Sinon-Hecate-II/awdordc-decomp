@@ -42,9 +42,9 @@ void func_020b0b0c(void *arg0) {
 M2C_UNK func_01ff9ce8(M2C_UNK);
 M2C_UNK func_0207a66c(s16,s16);
 M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
-extern M2C_UNK data_020f3d60; extern void **data_027e0058; extern void *gCur3DSpriteEngine;
+extern M2C_UNK data_020f3d60; extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
 s16 y,x,row; s32 count,j,i; void *p;
-p=*data_027e0058; y=M2C_FIELD(p,s16 *,0x514a); x=M2C_FIELD(p,s16 *,0x5148);
+p=*gCurrentMap; y=M2C_FIELD(p,s16 *,0x514a); x=M2C_FIELD(p,s16 *,0x5148);
 if(M2C_FIELD(p,u16 *,0x5146)-(y>>4)>12)count=13;else count=12;
 func_01ff9ce8(1);
 i=0; if(count>0) do { j=0; loop: func_0207a66c((s16)(j+(x>>4)),(s16)(i+(y>>4))); j++; if(j<16) goto loop; i++; }while(i<count);
@@ -79,17 +79,33 @@ void func_020b0ccc(void) {
 
 }
 
-void func_020b0cd0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u32 arg3) {
-M2C_UNK func_0207c55c(s32,M2C_UNK,s32,M2C_UNK);
-s32 func_020815bc(M2C_UNK,s32);
-M2C_UNK func_0208166c();
-M2C_UNK func_020ae548(s32,s32,M2C_UNK,M2C_UNK,s32);
-s32 p;
-switch(arg3) {
-case 0:func_0208166c();return;
-case 1:p=func_020815bc(arg0,arg2);func_020ae548(p,0x7fff,14,2,arg2);func_0207c55c(p,arg1,arg2,1);return;
-case 2:p=func_020815bc(arg0,arg2);func_020ae548(p,0x4000,14,2,arg2);func_0207c55c(p,arg1,arg2,1);return;
-case 3:p=func_020815bc(arg0,arg2);func_020ae548(p,0x3ff,14,2,arg2);func_0207c55c(p,arg1,arg2,1);return;
-}
+/* Configures the audio/channel mix for a sound playback: picks amplitude and delegates to the audio driver helpers. */
+void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
+    M2C_UNK func_0207c55c(s32, M2C_UNK, s32, M2C_UNK);
+    s32 func_020815bc(M2C_UNK, s32);
+    M2C_UNK func_0208166c();
+    M2C_UNK func_020ae548(s32, s32, M2C_UNK, M2C_UNK, s32);
+    s32 handle;
+
+    switch (mode) {
+    case 0:
+        func_0208166c(channel, sound, duration);
+        return;
+    case 1:
+        handle = func_020815bc(channel, duration);
+        func_020ae548(handle, 0x7fff, 14, 2, duration);
+        func_0207c55c(handle, sound, duration, 1);
+        return;
+    case 2:
+        handle = func_020815bc(channel, duration);
+        func_020ae548(handle, 0x4000, 14, 2, duration);
+        func_0207c55c(handle, sound, duration, 1);
+        return;
+    case 3:
+        handle = func_020815bc(channel, duration);
+        func_020ae548(handle, 0x3ff, 14, 2, duration);
+        func_0207c55c(handle, sound, duration, 1);
+        return;
+    }
 }
 

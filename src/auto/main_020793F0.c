@@ -81,10 +81,10 @@ void func_02079c6c(s32 arg0, s32 arg1) {
 M2C_UNK func_02079c90(s32 arg0, s32 arg1, s32 *arg2) {
     s32 func_0207c8ec(s32, s32);
     M2C_UNK func_0207d820(Vec3 *, void *);
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 base;
     Vec3 pos;
-    base = *data_027e0058 + 0x6EF8;
+    base = *gCurrentMap + 0x6EF8;
     pos.x = arg0;
     pos.y = arg1;
     pos.z = 0;
@@ -96,10 +96,10 @@ M2C_UNK func_02079c90(s32 arg0, s32 arg1, s32 *arg2) {
 void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {
     M2C_UNK func_02000f90(Vec3 *, void *, Vec3 *);
     s32 func_0207c8ec(s32, s32);
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     Vec3 pos;
     void *temp_r4;
-    temp_r4 = (void *)(*data_027e0058 + 0x6EF8);
+    temp_r4 = (void *)(*gCurrentMap + 0x6EF8);
     pos.x = func_0207c8ec((arg0 << 12) - 0x80000, 0x80);
     pos.y = -func_0207c8ec((arg1 << 12) - 0x60000, 0x60);
     pos.z = 0;

@@ -35,7 +35,7 @@ s32 func_ov003_021ff358(s32 arg0) {
 }
 
 void func_ov003_021ff36c(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220fe1c;
     void *temp_r0;
 
@@ -43,7 +43,7 @@ void func_ov003_021ff36c(void) {
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+    M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
     func_ov003_021f92f4(temp_r0, 0);
 }
 

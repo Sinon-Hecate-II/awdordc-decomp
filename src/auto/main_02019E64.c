@@ -24,6 +24,70 @@ s32 func_0201a09c(u8 *r0) {
     return 0;
 }
 
+void func_0201a134(s32 arg0) {
+    extern M2C_UNK data_02137290;
+    extern M2C_UNK data_02137310;
+    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK data_021375b8;
+    void func_02007f8c(void *, s32, s32);
+    void func_02005e5c(s32);
+    void func_02025298(void);
+    s32 old;
+    s32 nz;
+    void *node;
+    void *sub;
+    void *fld0;
+    void *fld4;
+    u8 t;
+    u8 *p;
+    s32 i;
+    void (*fp)(u32);
+    u32 val;
+    old = M2C_FIELD(&data_02137290, s32 *, 0x50);
+    M2C_FIELD(&data_02137290, s32 *, 0x0C) = arg0;
+    nz = (old != 0);
+    M2C_FIELD(&data_02137290, s32 *, 0x50) = 0;
+    M2C_FIELD(&data_02137290, s32 *, 0x1C) = 0;
+    M2C_FIELD(&data_02137290, s32 *, 0x2C) = 0;
+    M2C_FIELD(&data_02137290, s32 *, 0x60) = 0;
+    M2C_FIELD(&data_02137290, s32 *, 0x64) = 0;
+    M2C_FIELD(&data_02137290, s32 *, 0x20) = 0;
+    if (nz == 0) {
+        return;
+    }
+    func_02007f8c(&data_02137310, 0, 0x60);
+    node = M2C_FIELD(&data_0212dca4, void **, 0x08);
+    while (node != 0) {
+        sub = M2C_FIELD(node, void **, 0xA4);
+        if (sub != 0) {
+            fld0 = M2C_FIELD(sub, void **, 0x00);
+            if (fld0 != 0) {
+                t = M2C_FIELD(sub, u8 *, 0x08);
+                if (t != 0x0A && t != 0x0B) {
+                    M2C_FIELD(sub, u8 *, 0x08) = 0;
+                }
+                fld4 = M2C_FIELD(sub, void **, 0x04);
+                if (fld4 != 0) {
+                    M2C_FIELD(sub, void **, 0x04) = 0;
+                    func_02005e5c((s32)fld0);
+                }
+            }
+        }
+        node = M2C_FIELD(node, void **, 0x68);
+    }
+    i = 0;
+    p = (u8 *)&data_021375b8;
+    for (; i < 8; i++, p += 0x38) {
+        if (M2C_FIELD(p, u16 *, 0x04) != 0) {
+            fp = (void (*)(u32)) M2C_FIELD(&data_02137290, void **, 0x40);
+            val = M2C_FIELD(p, u32 *, 0x34);
+            fp(val);
+            M2C_FIELD(p, u16 *, 0x04) = 0;
+        }
+    }
+    func_02025298();
+}
+
 void func_0201a238(void) {
     extern M2C_UNK data_02137290;
     void func_02005ec8(void);
@@ -106,7 +170,38 @@ void func_0201ab8c(void){s32 func_0200751c(void);void func_02007530(s32);extern 
 
 s32 func_0201abd0(s32 a){extern M2C_UNK data_02137290,data_02137778,data_020faf78,data_02137310,data_0213731a;s32 func_0200751c(void);void func_02007530(s32);u64 func_02007004(void);s32 irq=func_0200751c();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&data_02137290,s32 *,0x50))r=&data_02137778;else if(func_0201a728(a)||func_0201a764(a))r=&data_020faf78;else{p=(u8 *)&data_02137310;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=func_02007004()>>16;M2C_FIELD(&data_0213731a,u16 *,i*12)=a;r=(u8 *)&data_02137310+i*12+4;break;}}}func_02007530(irq);return (s32)r;}
 
-void func_0201aca0(s32 a){extern M2C_UNK data_02137778,data_02137290;void func_02007f8c(void *,s32,s32);void func_02008048(void *,void *,s32);Packet0201ACA0 packet;s32 hi,lo,ahi,alo;u32 own;func_02007f8c(&packet,0,42);func_02007f8c(packet.dest,255,6);func_02008048(&data_02137778,packet.src,6);packet.type=0x608;packet.hw=1;packet.proto=8;packet.sizes=0x406;packet.op=1;func_02008048(&data_02137778,packet.sender,6);own=M2C_FIELD(&data_02137290,u32 *,80);hi=(u16)(own>>16);lo=(u16)own;ahi=(u16)((u32)a>>16);alo=(u16)a;packet.shi=(hi>>8)|(hi<<8);packet.slo=(lo>>8)|(lo<<8);packet.thi=(ahi>>8)|(ahi<<8);packet.tlo=(alo>>8)|(alo<<8);func_0201a824((u8 *)&packet,42,0,0);}
+/* Build and send a 42-byte ARP-style announcement packet for `nodeId`, swapping byte order in the id fields. */
+void func_0201aca0(s32 nodeId) {
+    extern M2C_UNK data_02137778;
+    extern M2C_UNK data_02137290;
+    void func_02007f8c(void *, s32, s32);
+    void func_02008048(void *, void *, s32);
+    Packet0201ACA0 packet;
+    s32 hi;
+    s32 lo;
+    s32 ahi;
+    s32 alo;
+    u32 own;
+    func_02007f8c(&packet, 0, 42);
+    func_02007f8c(packet.dest, 255, 6);
+    func_02008048(&data_02137778, packet.src, 6);
+    packet.type = 0x608;
+    packet.hw = 1;
+    packet.proto = 8;
+    packet.sizes = 0x406;
+    packet.op = 1;
+    func_02008048(&data_02137778, packet.sender, 6);
+    own = M2C_FIELD(&data_02137290, u32 *, 80);
+    hi = (u16)(own >> 16);
+    lo = (u16)own;
+    ahi = (u16)((u32)nodeId >> 16);
+    alo = (u16)nodeId;
+    packet.shi = (hi >> 8) | (hi << 8);
+    packet.slo = (lo >> 8) | (lo << 8);
+    packet.thi = (ahi >> 8) | (ahi << 8);
+    packet.tlo = (alo >> 8) | (alo << 8);
+    func_0201a824((u8 *)&packet, 42, 0, 0);
+}
 
 s32 func_0201ad9c(s32 a){void func_0201aca0(s32);void func_02006030(s32);s32 func_0201abd0(s32);extern M2C_UNK data_02137290;u32 i,j;s32 r;for(i=0;i<8;i++){func_0201aca0(a);for(j=0;j<20;j++){if(!M2C_FIELD(&data_02137290,s32 *,80))return 0;func_02006030(100);r=func_0201abd0(a);if(r)return r;}}return 0;}
 

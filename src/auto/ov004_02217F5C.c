@@ -5,7 +5,7 @@ void func_ov004_022188b8(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x39) = 1;
 }
 
-void func_ov004_022188c4(void *a){extern void **data_027e0058;extern u32 data_0215d8a0[2];func_0208fe30(0x10014);data_0215d8a0[1]=(data_0215d8a0[1]&~0xffff)|(u16)(M2C_FIELD(*data_027e0058,u16 *,0x5142)-0xa1);if(func_020a8958(M2C_FIELD(*data_027e0058,u16 *,0x5142)))func_01ffa8c4(a,7);M2C_FIELD(a,u8 *,0x38)=2;M2C_FIELD(a,u8 *,0x36)=0;}
+void func_ov004_022188c4(void *a){extern void **gCurrentMap;extern u32 data_0215d8a0[2];func_0208fe30(0x10014);data_0215d8a0[1]=(data_0215d8a0[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,0x5142)-0xa1);if(func_020a8958(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))func_01ffa8c4(a,7);M2C_FIELD(a,u8 *,0x38)=2;M2C_FIELD(a,u8 *,0x36)=0;}
 
 void func_ov004_02218b7c(M2C_UNK arg0) {
     M2C_UNK func_ov003_021ff3ac();

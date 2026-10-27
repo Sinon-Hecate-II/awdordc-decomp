@@ -227,6 +227,25 @@ s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
     return 0;
 }
 
+s32 func_0202c8b8(s32 arg0,s32 arg1) {
+void *base=func_0202c2f8(arg0);u32 i;void *p;s32 r;
+if(!base)return 1;
+i=0;
+if(i<M2C_FIELD(base,u32 *,0)){
+p=base+4;
+do{
+switch(M2C_FIELD(p,u8 *,0)){
+case 0:r=func_0202c9bc(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 3:r=func_0202ca40(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 1:r=func_0202caa0(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+case 2:r=func_0202cbe0(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,u8 *,1),arg1,1,0);if(r)return r;break;
+}
+i++;p+=8;
+}while(i<M2C_FIELD(base,u32 *,0));
+}
+return 0;
+}
+
 s32 func_0202c9bc(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
 s32 func_0202caa0(s32,s32,s32,s32,s32);
 void *p=func_0202c03c(a);s32 r;
@@ -244,6 +263,26 @@ if(!p)return 3;
 a=M2C_FIELD(p,s32 *,0);
 if(flags&8){r=func_0202cd78(a,b,c);if(!r)return 7;}else r=func_0202c444(a);
 if(out)*(s32 *)out=r;return 0;
+}
+
+s32 func_0202caa0(s32 a,s32 flags,s32 b,s32 c,s32 out) {
+s32 func_0202cde4(s32,s32,s32);s32 func_0202d1d4(s32,s32,s32,s32,s32);
+void *p;void *q;s32 object;s32 i;s32 bit;s32 result;s32 child;
+p=func_0202c104(a);if(!p)return 4;
+if(flags&2){object=func_0202cde4(M2C_FIELD(p,s32 *,0),b,c);if(!object)return 8;}
+else object=func_0202c444(M2C_FIELD(p,u32 *,0));
+bit=flags&4;
+for(i=0;i<4;i++){
+if(((u16 *)p)[i+2]==65535)continue;
+q=func_0202c168(((u16 *)p)[i+2]);if(!q)return 5;
+result=func_0202cbe0(((u16 *)p)[i+2],flags,b,c,&child);if(result)return result;
+if(((Unk0202PackedId *)q)->flags&1 && bit){
+if(!func_0202d1d4(child,object,i,((Unk0202PackedId *)q)->id,b))return 9;
+}
+if(object&&child)func_02009940(object,i,child);
+}
+if(out)*(s32 *)out=object;
+return 0;
 }
 
 s32 func_0202cbe0(s32 a,s32 flags,s32 b,s32 c,s32 *out) {

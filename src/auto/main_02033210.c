@@ -1,5 +1,8 @@
 /* 14 functions from 0x02033210 to 0x02034164 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct InitConfig { s32 words[7]; } InitConfig;
+typedef struct InitState { u8 pad[0x1000]; u8 flag; u8 pad2[31]; s32 status; } InitState;
+extern u8 data_020fb558[], data_020fb570[];
 
 void func_0203367c(s32 arg0) {
     M2C_UNK func_02006564(s32);
@@ -16,6 +19,23 @@ void func_020336c0(s32 arg0) {
     u8 sp0[20];
     func_02045cbc(sp0);
     func_020336e8(arg0, sp0);
+}
+
+s32 func_02033ccc(void *p, InitConfig *cfg) {
+s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 func_020349b0(void *,s32);
+s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))cfg->words[3];
+func_02007f8c(p,0,0x1c14);
+M2C_FIELD(p,s32 *,0x1a30)=-1;M2C_FIELD(p,s32 *,0x1a34)=-1;
+*(InitConfig *)(p+0x1004)=*cfg;
+M2C_FIELD(p,s32 *,0x19cc)=alloc(data_020fb558,0xb68);
+if(!M2C_FIELD(p,s32 *,0x19cc)){((InitState*)p)->status=1;return 1;}
+M2C_FIELD(p,s32 *,0x19d0)=alloc(data_020fb570,0x5ea);
+if(!M2C_FIELD(p,s32 *,0x19d0)){((InitState*)p)->status=1;return 1;}
+if(!func_02034870(p,p+0x1a08,M2C_FIELD(p,s32 *,0x100c))){((InitState*)p)->status=1;return 1;}
+if(!func_020349b0(p,cfg->words[0])){((InitState*)p)->status=1;return 1;}
+((InitState*)p)->status=func_02034534(p);
+if(!((InitState*)p)->status)((InitState*)p)->flag=255;
+return ((InitState*)p)->status;
 }
 
 s32 func_02033de8(void *arg0) {

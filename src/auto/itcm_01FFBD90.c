@@ -4,13 +4,13 @@
 /* Fill a diamond (Manhattan circle) of the given radius centered at (x,y)
    in the map occupancy grid with value. */
 void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s16 dy, row, col;
     for (dy = -radius, row = y - radius; row <= y + radius; row++, dy++) {
-        if (row >= 0 && row < M2C_FIELD(*data_027e0058, u16 *, 0x5146)) {
+        if (row >= 0 && row < M2C_FIELD(*gCurrentMap, u16 *, 0x5146)) {
             for (col = x - radius + (dy < 0 ? -dy : dy); col <= x + radius - (dy < 0 ? -dy : dy); col++) {
-                if (col >= 0 && col < M2C_FIELD(*data_027e0058, u16 *, 0x5144)) {
-                    ((s8 **)((u8 *)*data_027e0058 + 0x52E8))[row][col] = (s8) value;
+                if (col >= 0 && col < M2C_FIELD(*gCurrentMap, u16 *, 0x5144)) {
+                    ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[row][col] = (s8) value;
                 }
             }
         }
@@ -28,12 +28,12 @@ func_01ffc108((s16)arg0,(s16)arg1,(s16)(*(&data_ov000_021b5c08+(((u32)(*arg2<<26
 
 void func_01ffc294(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     void *temp_r0;
 
-    M2C_FIELD(*data_027e0058, s16 *, 0x52B6) = arg0;
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52B6) = arg0;
     func_01ffada0(arg1, arg2, arg3, arg4, arg5);
-    temp_r0 = *data_027e0058;
+    temp_r0 = *gCurrentMap;
     M2C_FIELD(temp_r0, u16 *, 0x52B6) = (u16) M2C_FIELD(temp_r0, u16 *, 0x52A4);
 }
 
@@ -60,11 +60,11 @@ func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&data_ov000_021b5c08+(((u32)(*arg2<<26
 }
 
 void func_01ffc3e8(s32 x,s32 y) {
-extern void **data_027e0058;
-if(x>0)M2C_FIELD(*data_027e0058+y*4,u8 **,0x52e8)[x-1]=0;
-if(x<M2C_FIELD(*data_027e0058,u16 *,0x5144)-1)M2C_FIELD(*data_027e0058+y*4,u8 **,0x52e8)[x+1]=0;
-if(y>0)M2C_FIELD(*data_027e0058+(y-1)*4,u8 **,0x52e8)[x]=0;
-if(y<M2C_FIELD(*data_027e0058,u16 *,0x5146)-1)M2C_FIELD(*data_027e0058+(y+1)*4,u8 **,0x52e8)[x]=0;
+extern void **gCurrentMap;
+if(x>0)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x-1]=0;
+if(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1)M2C_FIELD(*gCurrentMap+y*4,u8 **,0x52e8)[x+1]=0;
+if(y>0)M2C_FIELD(*gCurrentMap+(y-1)*4,u8 **,0x52e8)[x]=0;
+if(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **,0x52e8)[x]=0;
 }
 
 void func_01ffc718(s8 *arg0, s8 *arg1) {

@@ -1,5 +1,11 @@
 /* 28 functions from 0x020C3D34 to 0x020C4D28 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 v[4]; } SaveDate;
+typedef struct { s32 v[3]; } SaveTime;
+extern const SaveDate data_020f4e48;
+static inline void SaveTime_Clear(SaveTime *p) { M2C_FIELD((u32)p,s32 *,0)=0; M2C_FIELD((u32)p,s32 *,4)=0; M2C_FIELD((u32)p,s32 *,8)=0; }
+static inline s32 SaveTime_Get1(SaveTime *p) { return p->v[1]; }
+static inline s32 SaveTime_Get2(SaveTime *p) { return p->v[2]; }
 
 void func_020c4604(M2C_UNK arg0){extern u16 *data_02101e84;extern void *data_02164094;
 M2C_FIELD(data_02164094,s32*,0)++;
@@ -99,6 +105,45 @@ void func_020c4910(void) {
  M2C_FIELD(p,M2C_UNK **,0)=&data_0212a514;
  M2C_FIELD(p,M2C_UNK **,0x34)=&data_02164098;
  M2C_FIELD(p,M2C_UNK **,0x38)=&data_02164128;
+}
+
+s32 func_020c4954(s32 arg0) {
+void func_020323a4(void *,u32);
+void func_0203287c(void *);
+SaveDate initial;
+SaveTime b;
+SaveDate a;
+SaveTime d;
+SaveDate c;
+M2C_FIELD(arg0,s32 *,0)=0x07090600;
+func_02007f8c(arg0+4,0,0x40);
+M2C_FIELD(arg0,s32 *,0x44)=0;
+M2C_FIELD(arg0,s32 *,0x48)=0;
+M2C_FIELD(arg0,s32 *,0x4c)=0;
+M2C_FIELD(arg0,s32 *,0x50)=0x5dc000;
+M2C_FIELD(arg0,s32 *,0x54)=0x5dc000;
+initial=data_020f4e48;
+a=initial;
+M2C_FIELD(arg0,s32 *,0x58)=a.v[0];
+M2C_FIELD(arg0,s32 *,0x5c)=a.v[1];
+M2C_FIELD(arg0,s32 *,0x60)=a.v[2];
+M2C_FIELD(arg0,s32 *,0x64)=a.v[3];
+SaveTime_Clear(&b);
+M2C_FIELD(arg0,s32 *,0x68)=0;
+M2C_FIELD(arg0,s32 *,0x6c)=b.v[1];
+M2C_FIELD(arg0,s32 *,0x70)=b.v[2];
+c=initial;
+M2C_FIELD(arg0,s32 *,0x74)=c.v[0];
+M2C_FIELD(arg0,s32 *,0x78)=c.v[1];
+M2C_FIELD(arg0,s32 *,0x7c)=c.v[2];
+M2C_FIELD(arg0,s32 *,0x80)=c.v[3];
+SaveTime_Clear(&d);
+M2C_FIELD(arg0,s32 *,0x84)=0;
+M2C_FIELD(arg0,s32 *,0x88)=d.v[1];
+M2C_FIELD(arg0,s32 *,0x8c)=d.v[2];
+func_020323a4((void *)(arg0+4),0x5957324a);
+func_0203287c((void *)(arg0+4));
+return 1;
 }
 
 s32 func_020c4a74(void *arg0) {

@@ -1,5 +1,6 @@
 /* 24 functions from 0x020553C4 to 0x020562D0 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 typedef struct Unk020553C4 { u8 pad[0x428]; s32 handle, unk42c, unk430; } Unk020553C4;
 
 void func_020556e0(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
@@ -17,7 +18,7 @@ func_020501d8(arg0,arg1,buf);
 s32 func_0205575c(M2C_UNK arg0, void *arg1, M2C_UNK *arg2, s32 arg3) {
 s32 func_02049910(M2C_UNK);
 s32 func_0204fff8(M2C_UNK,void *,M2C_UNK);
-s32 func_020500d8(M2C_UNK,void *,M2C_UNK *,s32);
+s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
 s32 func_020501d8(s32,s32,void *);
 M2C_UNK func_020640a8(void *,void *,void *,s32);
 M2C_UNK func_020675e4(void *,void *,...);
@@ -29,7 +30,7 @@ if(!arg2)arg2=&data_020fed78;
 if(arg3==-1)arg3=func_02068c34(arg2);
 func_020675e4(buffer,&data_020fed7c,arg3);
 result=func_020501d8(arg0,arg1,buffer);if(result)return result;
-result=func_020500d8(arg0,arg1,arg2,arg3);if(result)return result;
+result=gpiSendOrBufferStringLen(arg0,arg1,arg2,arg3);if(result)return result;
 result=func_0204fff8(arg0,arg1,0);if(result)return result;
 M2C_FIELD(arg1,s32 *,0x10)=func_02049910(0)+0x12c;
 return 0;
@@ -73,6 +74,21 @@ destroy=func_0205586c;
 v=func_02048c5c(28,4,func_02055848,func_0205585c,destroy);
 p->handle=v;
 return v!=0;
+}
+
+s32 func_02055940(void **a,void *b,s32 c) {
+s32 func_0205817c(void **,s32,s32);void func_02058620(void **,s32,s32);s32 func_02058644(s32,s32 *);
+s32 func_02068eac(s32,void *,s32);void func_02050744(void *,s32,s32);void *func_02037794(s32);s32 func_02050838(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+s32 func_02058254(s32,void *,void *,s32);s32 func_0206ad38(void *);
+extern M2C_UNK data_020feda0,data_020feda8,data_020fedd8,data_020fede4;
+char buffer[16];Unk02050838Pair pair;s32 *p;s32 r;s32 value;
+if(func_0205817c(a,c,1))return 4;
+if(func_02068eac(c,&data_020feda0,5)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(c,&data_020fedd8,buffer,16)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
+value=func_0206ad38(buffer);
+pair=*(Unk02050838Pair *)((u8 *)b+12);
+if(pair.unk_0){p=func_02037794(8);if(!p){func_02058644((s32)a,(s32 *)&data_020fede4);return 1;}p[1]=value;p[0]=0;r=func_02050838(a,pair,p,b,0);if(r)return r;}
+func_02054484(a,b);return 0;
 }
 
 s32 func_02055b84(void **arg0,s32 arg1,s32 *arg2) {

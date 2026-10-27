@@ -77,6 +77,56 @@ v=a[i+3]+b[i+3];if(v>32767)v=32767;else if(v< -32768)v=-32768;out[i+3]=v;
 }
 }
 
+s32 func_ov010_02225640(void *arg) {
+    void func_02000b9c(s32);
+    s32 func_ov010_02224dd8(void *, u32);
+    M2C_UNK func_ov010_02224ea0();
+    s32 func_ov010_0222415c(void *);
+    s32 func_ov010_022224b4(void);
+    M2C_UNK func_ov010_02224270();
+    void func_02007f8c(void *, u32, u32);
+    extern M2C_UNK data_ov010_0222edb4;
+    extern M2C_UNK data_ov010_0222edc0;
+    s32 kind;
+    u8 b;
+    s32 t;
+    func_02000b9c(0x2000c6c);
+    if (!arg) return 0;
+    if (M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) != 0) return 1;
+    kind = M2C_FIELD(arg, s32 *, 8);
+    if (kind != 1 && kind != 2 && kind != 3) return 0;
+    if (!M2C_FIELD(arg, s32 *, 0x18)) return 0;
+    t = M2C_FIELD(arg, s32 *, 0x10);
+    if (!t || !M2C_FIELD(arg, s32 *, 0x14)) return 0;
+    if (t % 32 != 0) return 0;
+    func_02007f8c(&data_ov010_0222edc0, 0, 0x18);
+    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x10) = M2C_FIELD(arg, s32 *, 0x18);
+    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x14) = M2C_FIELD(arg, s32 *, 0x1C);
+    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x1C) = M2C_FIELD(arg, s32 *, 8);
+    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x18) = 0;
+    b = (u8)M2C_FIELD(arg, u8 *, 0xC);
+    if ((u32)b >= 0x20) return 0;
+    M2C_FIELD(&data_ov010_0222edb4, u8 *, 0xC) = b;
+    {
+        s32 r = func_ov010_02224dd8(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
+        if (!r) { func_ov010_02224ea0(); return 0; }
+    }
+    {
+        s32 r = func_ov010_0222415c(arg);
+        if (!r) { func_ov010_02224ea0(); return 0; }
+    }
+    {
+        s32 r = func_ov010_022224b4();
+        if (r) {
+            M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1;
+            return 1;
+        }
+    }
+    func_ov010_02224270();
+    func_ov010_02224ea0();
+    return 0;
+}
+
 void func_ov010_02225778(void) {
     M2C_UNK func_ov010_022225b0();
     M2C_UNK func_ov010_02224270();
@@ -148,10 +198,77 @@ func_ov010_02224f28();
 M2C_FIELD(&data_ov010_0222edd8,s32 *,16)=0;
 }
 
+void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 arg4) {
+    extern s32 data_ov010_0222edd8;
+    extern s32 data_ov010_0222edf8;
+    void func_ov010_02225934(void);
+    void func_02007f8c(void *, u32, u32);
+    void func_0200ddb0(void *, void *, u32);
+    s32 func_0200dfa8(void);
+    void *func_ov010_02222b0c(void *, s32, s32);
+    void func_ov010_022227b0(s32, s32);
+    void func_020067e0(void *, s32);
+    void func_020067a8(s32, s32);
+
+    s32 pos;
+    s32 changed;
+    s32 i;
+
+    if (a0 == 0) {
+        if (count <= 0) {
+            return;
+        }
+        for (i = 0; i < count; i++) {
+            func_02007f8c(arr[i], 0, size);
+        }
+        return;
+    }
+
+    if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 4) != 0) {
+        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 0x10) == 0) {
+            func_0200ddb0(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
+            M2C_FIELD(&data_ov010_0222edd8, s32 *, 4) = 0;
+        }
+    }
+
+    pos = arg4;
+    changed = 0;
+    if ((u32)func_0200dfa8() - (u32)pos < (u32)size) {
+        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) != 0) {
+            M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) = 0;
+            pos += size;
+            changed = 1;
+        }
+    } else {
+        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) != 1) {
+            changed = 1;
+            M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) = 1;
+        }
+    }
+
+    M2C_FIELD(&data_ov010_0222edd8, s32 *, 0) = (s32)func_ov010_02222b0c(arr[0], size, 0);
+
+    if (changed) {
+        func_ov010_022227b0(pos, size);
+    }
+
+    if (count > 0) {
+        i = 0;
+        do {
+            func_020067e0(arr[i], size);
+            i++;
+        } while (i < count);
+    }
+
+    if (changed) {
+        func_020067a8(pos, size);
+    }
+}
+
 void func_ov010_02225cd8(void) {
     M2C_UNK func_ov010_02225aa4(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK func_ov010_02225964;
-    func_ov010_02225aa4(&func_ov010_02225964, 0x44);
+    extern void func_ov010_02225964(void *, s32, void **, s32, s32);
+    func_ov010_02225aa4((void *)&func_ov010_02225964, 0x44);
 }
 
 s32 func_ov010_02225cf0(void) {

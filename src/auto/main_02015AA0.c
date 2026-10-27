@@ -1,5 +1,66 @@
 /* 24 functions from 0x02015AA0 to 0x02016934 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct RangePair { u32 address; u32 size; } RangePair;
+typedef struct MemoryDescriptor {u32 dest;u32 source;u32 size;u32 flags;} MemoryDescriptor;
+typedef struct PacketBits { u8 low:2; u8 high:6; } PacketBits;
+
+/* Builds a MemoryDescriptor describing a resource chunk: validates that src lies in a valid memory range, then either describes it in place (case 0) or copies it into the pool (case 1); case 2 is a fixed loader region. */
+void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
+    s32 func_02007958(void);
+    s32 bad, copy;
+    s32 start;
+    u32 size, end;
+    switch (*kind) {
+    case 0:
+        start = M2C_FIELD(srcInfo, u32 *, 0x28);
+        if ((u32)start >= 0x2000000 && (u32)start < 0x22c0000) {
+            size = M2C_FIELD(srcInfo, u32 *, 0x2c);
+            if (start + size <= 0x22c0000) {
+                M2C_FIELD(out, u32 *, 8) = size;
+                start = M2C_FIELD(srcInfo, u32 *, 0x28);
+                M2C_FIELD(out, u32 *, 4) = start;
+                M2C_FIELD(out, u32 *, 0) = start;
+                M2C_FIELD(out, u32 *, 12) &= ~1;
+                return;
+            }
+        }
+        func_02007958();
+        return;
+    case 1:
+        start = M2C_FIELD(srcInfo, u32 *, 0x38);
+        size = M2C_FIELD(srcInfo, u32 *, 0x3c);
+        bad = 0;
+        copy = 0;
+        end = start + size;
+        if ((u32)start >= 0x2000000 && (u32)start < 0x23fe800) {
+            if (end > 0x2300000) {
+                if (end < 0x23fe800 && size <= 0x40000) copy = 1;
+                else bad = 1;
+            }
+        } else if ((u32)start >= 0x37f8000 && (u32)start < 0x380f000) {
+            if (end <= 0x380f000) copy = 1;
+            else bad = 1;
+        } else bad = 1;
+        if (bad == 1) func_02007958();
+        M2C_FIELD(out, u32 *, 8) = M2C_FIELD(srcInfo, u32 *, 0x3c);
+        M2C_FIELD(out, u32 *, 4) = M2C_FIELD(srcInfo, u32 *, 0x38);
+        if (copy == 0) M2C_FIELD(out, u32 *, 0) = M2C_FIELD(out, u32 *, 4);
+        else {
+            M2C_FIELD(out, u32 *, 0) = *pool;
+            *pool += M2C_FIELD(out, u32 *, 8);
+        }
+        M2C_FIELD(out, u32 *, 12) = (M2C_FIELD(out, u32 *, 12) & ~1) | 1;
+        return;
+    case 2:
+        start = 0x27ffe00;
+        size = 0x160;
+        out->size = size;
+        out->source = start;
+        out->dest = start;
+        M2C_FIELD(out, u32 *, 12) &= ~1;
+        return;
+    }
+}
 
 s32 func_02015c18(void *a,void *b) {
 extern void *data_02136c4c;
@@ -229,6 +290,38 @@ void func_0201637c(void) {
  M2C_FIELD(&data_021311a0,void **,0x20)=p+0x220;
  }
  M2C_FIELD(&data_021311a0,u8 *,0x24)=3;
+}
+
+void func_020163d0(s32 a,s32 b,s32 c) {
+extern M2C_UNK data_021311a0;
+extern M2C_UNK data_021311ee;
+extern M2C_UNK data_021311e8;
+extern M2C_UNK data_021311e0;
+s32 func_02007df8(s32,void *,s32);
+s32 func_02007e20();
+u16 func_02015f48(u16 *,s32);
+void func_02013c44(s32,void *,s32,s32,s32,s32);
+void *p=M2C_FIELD(&data_021311a0,void **,0x1c);
+u32 end=(u32)p+0x358;
+u32 src=M2C_FIELD(&data_021311a0,u32 *,0x20);
+u32 n;
+if(src+0x62<=end)M2C_FIELD(&data_021311a0,u8 *,0x4c)=0x62;
+else {n=end-src;M2C_FIELD(&data_021311a0,u8 *,0x4c)=n;func_02007df8(0,(u8 *)&data_021311ee+(u8)n,0x62-(u8)n);}
+func_02007e20(M2C_FIELD(&data_021311a0,s32 *,0x20),&data_021311ee,M2C_FIELD(&data_021311a0,u8 *,0x4c));
+M2C_FIELD(&data_021311a0,u8 *,0x4a)=M2C_FIELD(&data_021311a0,u8 *,0x27);
+M2C_FIELD(&data_021311a0,u8 *,0x4b)=M2C_FIELD(&data_021311a0,u8 *,0x28);
+p=M2C_FIELD(&data_021311a0,void **,0x1c);
+((PacketBits *)((u8 *)&data_021311a0+0x44))->low=M2C_FIELD(p,u8 *,0x4b2);
+M2C_FIELD(&data_021311a0,u8 *,0x45)=M2C_FIELD(p,u8 *,0x4b3);
+M2C_FIELD(&data_021311a0,u8 *,0x46)=M2C_FIELD(&data_021311a0,u8 *,0x26);
+M2C_FIELD(&data_021311a0,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
+((PacketBits *)((u8 *)&data_021311a0+0x44))->high=M2C_FIELD(p,u8 *,0x4b5);
+M2C_FIELD(&data_021311a0,u8 *,0x47)=M2C_FIELD(&data_021311a0,u8 *,0x29)++;
+M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
+M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+if(++M2C_FIELD(&data_021311a0,u8 *,0x27)>=M2C_FIELD(&data_021311a0,u8 *,0x28))M2C_FIELD(&data_021311a0,u8 *,0x24)=4;
+else M2C_FIELD(&data_021311a0,u32 *,0x20)+=0x62;
+func_02013c44(0,&data_021311e0,0x70,a,b,(u8)(c|3));
 }
 
 void func_02016534(void) {

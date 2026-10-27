@@ -1,5 +1,11 @@
 /* 30 functions from 0x020C7CD0 to 0x020C8CBC (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 bytes[6]; u16 value; u32 year:8,month:6,day:6,hour:6,minute:6; u32 second:6,code:12,rest:14; u32 tail; } CompareRecord;
+typedef struct { u8 low:6, state:2; u8 pad[7]; u16 x:6,y:6,rest:4; u8 unkA; u8 kind:4, high:4; } RestoredUnit;
+static inline void RestoreKind(RestoredUnit *p,u8 v) {p->kind=v;}
+static inline void RestoreX(RestoredUnit *p,u16 v) {p->x=v;}
+static inline void RestoreY(RestoredUnit *p,u16 v) {p->y=v;}
+static inline void RestoreState(RestoredUnit *p,u8 v) {p->state=v;}
 typedef struct { u8 pad0[0xa10]; u16 tiles[0x508]; u8 cells[0x2338]; u16 rows[0xcf6]; u16 width,height; } Map8484;
 typedef union {u32 word; struct {u32 low:10;u32 kind:5;u32 gap:3;u32 mode:4;u32 high:10;} bits;} PackedEntry;
 
@@ -138,21 +144,56 @@ s32 func_020c818c(s32 a,s32 b) {
 
 s32 func_020c8214(void *p){extern M2C_UNK data_ov000_021b5bfc;s32 i;PackedEntry *q;for(i=0;i<M2C_FIELD(p,u8 *,0x2f);i++){q=(PackedEntry *)((u8 *)p+0x3d8)+i;if(M2C_FIELD((u8 *)&data_ov000_021b5bfc+q->bits.kind*112,u8 *,108)){switch(q->bits.mode){case 0:case 1:q->bits.mode=0;break;case 6:q->bits.mode=6;break;case 8:q->bits.mode=8;break;}}}}
 
-void func_020c83f4(u8 *p){extern void **data_027e0058;void func_02068c50(void *,void *);void func_020a231c(s32,s32);s32 i;u8 *base;func_02068c50((u8 *)*data_027e0058+0x5120,p+6);M2C_FIELD(*data_027e0058,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)func_020a231c(i,p[0x28+i]);base=(u8 *)*data_027e0058;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*data_027e0058;M2C_FIELD(base,u16 *,0x5146)=p[5];}
+void func_020c82cc(s32 a) {
+void func_020a68d4(void);
+void *func_020a660c(s32,s32,s32,s32);
+void func_020a3184(s32,void *);
+extern void **gCurrentMap;
+s32 i,x,y,player,kind,state,z;
+u32 *src;
+RestoredUnit *unit;
+func_020a68d4();
+i=0;
+if(i>=M2C_FIELD(a,u8 *,0x2f))return;
+src=(u32 *)(a+0x3d8);
+do {
+s32 v=*src;
+x=(u32)(v<<27)>>27;
+y=(u32)(v<<22)>>27;
+z=(u32)(v<<17)>>27;
+player=(u32)(v<<14)>>29;
+kind=(u32)(v<<10)>>28;
+state=(u32)(v<<8)>>30;
+unit=func_020a660c(x,y,z,player);
+if(unit) {
+RestoreKind(unit,kind);
+RestoreX(unit,x);
+RestoreY(unit,y);
+RestoreState(unit,state);
+if(state==3) {
+s32 v2=M2C_FIELD(*gCurrentMap+player*0x8c,s32 *,0x6810);
+if((u32)(v2<<24)>>24)func_020a3184(player,unit);
+}
+}
+i++;src++;
+}while(i<M2C_FIELD(a,u8 *,0x2f));
+}
+
+void func_020c83f4(u8 *p){extern void **gCurrentMap;void func_02068c50(void *,void *);void func_020a231c(s32,s32);s32 i;u8 *base;func_02068c50((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)func_020a231c(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
 
 s32 func_020c8484(s32 arg) {
-extern void **data_027e0058;
+extern void **gCurrentMap;
 void func_020ceffc(void); u16 func_0207f460(u32);
 s32 x,y; Map8484 *base; u8 *a=(u8 *)arg;
 func_020ceffc();
-base=*data_027e0058;
+base=*gCurrentMap;
 for(y=0;y<base->height;y++) {
 for(x=0;x<base->width;x++) {
 u8 v;
 base->cells[base->rows[y]+x]=(v=*a++);
-base=*data_027e0058;
+base=*gCurrentMap;
 base->tiles[x+base->rows[y]]=func_0207f460(v);
-base=*data_027e0058;
+base=*gCurrentMap;
 }
 }
 return (s32)base;
@@ -167,7 +208,7 @@ void func_020c854c(s32 arg0) {
 
 void func_020c8564(M2C_UNK arg0) {
     M2C_UNK func_020c8214();
-    M2C_UNK func_020c82cc(M2C_UNK);
+
     func_020c8214();
     func_020c82cc(arg0);
 }
@@ -199,25 +240,80 @@ s32 func_020c8624(s32 a,s32 b) {
  func_020be438(p,b,0x6f8);return 1;
 }
 
-u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);s32 func_020c8b0c(s32,s32);s32 p=func_020c7e6c(a);u8 r;if(!func_020c7a3c(b))return 0;if(func_020c8b0c(b,p))r=1;else r=0;return r;}
+u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 func_020c8b0c(u8 *,u8 *);s32 p=func_020c7e6c(a);u8 r;if(!func_020c7a3c(b))return 0;if(func_020c8b0c(b,p))r=1;else r=0;return r;}
 
+/* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
-s32 func_020c7a24(); s32 func_0200f0ac(); void func_02007724(void *);
-extern u32 data_027e15bc;
-s32 date[4],time[3];s32 v=func_020c7a24(p);
-func_0200f0ac(date,time);func_02007724((u8 *)p+64);
-M2C_FIELD(p,u32 *,76)=(M2C_FIELD(p,u32 *,76)&0xfffc003f)|((data_027e15bc<<20)>>14);
-M2C_FIELD(p,u16 *,70)=v;
-M2C_FIELD(p,u32 *,72)=(M2C_FIELD(p,u32 *,72)&~0xff)|(u8)date[0];
-M2C_FIELD(p,u32 *,72)=(M2C_FIELD(p,u32 *,72)&~0x3f00)|((u32)(date[1]<<26)>>18);
-M2C_FIELD(p,u32 *,72)=(M2C_FIELD(p,u32 *,72)&~0xfc000)|((u32)(date[2]<<26)>>12);
-M2C_FIELD(p,u32 *,72)=(M2C_FIELD(p,u32 *,72)&~0x3f00000)|((u32)(time[0]<<26)>>6);
-M2C_FIELD(p,u32 *,72)=(M2C_FIELD(p,u32 *,72)&~0xfc000000)|(time[1]<<26);
-M2C_FIELD(p,u32 *,76)=(M2C_FIELD(p,u32 *,76)&~0x3f)|(time[2]&0x3f);
-M2C_FIELD(p,u32 *,76)&=0xf003ffff;
-M2C_FIELD(p,u32 *,76)&=~0x10000000;
-M2C_FIELD(p,u32 *,76)&=~0xe0000000;
-M2C_FIELD(p,u32 *,80)=0;
+    s32 func_020c7a24(); s32 func_0200f0ac(); void func_02007724(void *);
+    extern u32 data_027e15bc;
+    s32 date[4], time[3];
+    s32 v = func_020c7a24(p);
+    func_0200f0ac(date, time);
+    func_02007724((u8 *)p + 64);
+    M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((data_027e15bc << 20) >> 14);
+    M2C_FIELD(p, u16 *, 70) = v;
+    M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0xff) | (u8)date[0];
+    M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0x3f00) | ((u32)(date[1] << 26) >> 18);
+    M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0xfc000) | ((u32)(date[2] << 26) >> 12);
+    M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0x3f00000) | ((u32)(time[0] << 26) >> 6);
+    M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0xfc000000) | (time[1] << 26);
+    M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & ~0x3f) | (time[2] & 0x3f);
+    M2C_FIELD(p, u32 *, 76) &= 0xf003ffff;
+    M2C_FIELD(p, u32 *, 76) &= ~0x10000000;
+    M2C_FIELD(p, u32 *, 76) &= ~0xe0000000;
+    M2C_FIELD(p, u32 *, 80) = 0;
+}
+
+/* Returns 1 if the two save/checkpoint record blobs compare equal field-by-field. */
+u8 func_020c8b0c(u8 *lhs, u8 *rhs) {
+    s32 i;
+    CompareRecord *p;
+    CompareRecord *q;
+
+    if (lhs[0x27] != rhs[0x27]) {
+        return 0;
+    }
+    if (lhs[0x2f] != rhs[0x2f]) {
+        return 0;
+    }
+    if (lhs[4] != rhs[4]) {
+        return 0;
+    }
+    if (lhs[5] != rhs[5]) {
+        return 0;
+    }
+    p = (CompareRecord *)(lhs + 0x40);
+    q = (CompareRecord *)(rhs + 0x40);
+    for (i = 0; i < 6; i++) {
+        if (p->bytes[i] != q->bytes[i]) {
+            return 0;
+        }
+    }
+    if (p->code != q->code) {
+        return 0;
+    }
+    if (p->value != q->value) {
+        return 0;
+    }
+    if (p->year != q->year) {
+        return 0;
+    }
+    if (p->month != q->month) {
+        return 0;
+    }
+    if (p->day != q->day) {
+        return 0;
+    }
+    if (p->hour != q->hour) {
+        return 0;
+    }
+    if (p->minute != q->minute) {
+        return 0;
+    }
+    if (p->second != q->second) {
+        return 0;
+    }
+    return (u8)(p->tail == q->tail);
 }
 
 s32 func_020c8c6c(s32 a) {

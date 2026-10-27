@@ -126,7 +126,7 @@ void func_ov007_0221a018(void) {
     void func_01ff9e44(void *, s32, s32);
     void func_020ae528(void *);
     u8 func_ov007_02211f00(void);
-    extern void *data_027e0058;
+    extern void *gCurrentMap;
     extern s32 gCur3DSpriteEngine;
     extern s32 data_027e00c4;
     u8 tileGroup;
@@ -139,7 +139,7 @@ void func_ov007_0221a018(void) {
 
     tileGroup = func_ov007_02211f30();
     slot = func_ov007_02211f40();
-    tileAttr = (u8) M2C_FIELD((M2C_FIELD(data_027e0058, s32 *, 0) + slot * 0x8C + 0x6000), u8 *, 0x7CD);
+    tileAttr = (u8) M2C_FIELD((M2C_FIELD(gCurrentMap, s32 *, 0) + slot * 0x8C + 0x6000), u8 *, 0x7CD);
     baseAddr = func_ov000_0216cd4c(tileGroup);
     srcPtr = func_ov000_0216cd78(tileGroup, tileAttr);
     dstPtr = func_ov000_0216cd90(slot);
@@ -156,12 +156,12 @@ void func_ov007_0221a018(void) {
 
 void func_ov007_0221a104(void) {
 extern s32 gCur3DSpriteEngine,data_027e00c4;
-extern void *data_027e0058;
+extern void *gCurrentMap;
 extern s32 data_ov007_02221e08;
 s32 func_0209b5e4(void *,void *);
 s32 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=data_027e00c4;
-data_ov007_02221e08=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0x3980,M2C_FIELD(data_027e0058,u8 **,0)+0x5120);
+data_ov007_02221e08=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0x3980,M2C_FIELD(gCurrentMap,u8 **,0)+0x5120);
 gCur3DSpriteEngine=old;
 }
 

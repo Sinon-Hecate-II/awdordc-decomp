@@ -27,13 +27,29 @@ void func_ov000_0216c068(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x36) = 0;
 }
 
+void func_ov000_0216c09c(void){
+extern void *gCurrentMap,*gCur3DSpriteEngine;
+void (*callback)(void);u16 *volatile v0;u16 *volatile v1;u16 *volatile v2;u16 *volatile v3;u16 *volatile v4;u16 *volatile v5;
+callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(callback)callback();
+func_020c0a88();
+v0=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v0=*v0&~0xc0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
+v1=*(u16 **)gCur3DSpriteEngine;*v1=*v1|0x10;
+v2=*(u16 **)gCur3DSpriteEngine;*v2=*v2|0x20;
+v3=*(u16 **)gCur3DSpriteEngine;*v3=*v3|0x40;
+v4=*(u16 **)gCur3DSpriteEngine;*v4=*v4|0x80;
+v5=*(u16 **)gCur3DSpriteEngine;*v5=*v5|0x100;
+}
+
 void func_ov000_0216c1c4(void) {
     M2C_UNK func_ov000_0216b194();
     func_ov000_0216b194();
 }
 
 void func_ov000_0216c1d0(void) {
-    M2C_UNK func_ov000_0216c09c();
+    void func_ov000_0216c09c(void);
     func_ov000_0216c09c();
 }
 

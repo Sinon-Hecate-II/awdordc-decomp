@@ -46,13 +46,13 @@ void func_020a8804(u8 *arg0) {
 }
 
 s32 func_020a881c(s32 arg0) {
-    extern s32 *data_027e0058;
-    return M2C_FIELD(((arg0 * 0x8C) + *data_027e0058), u8 *, 0x67B8) * 5;
+    extern s32 *gCurrentMap;
+    return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67B8) * 5;
 }
 
 s32 func_020a8844(s32 arg0) {
-    extern s32 *data_027e0058;
-    return M2C_FIELD(((arg0 * 0x8C) + *data_027e0058), u8 *, 0x67B8) * 5;
+    extern s32 *gCurrentMap;
+    return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67B8) * 5;
 }
 
 s32 func_020a886c(void) {
@@ -214,9 +214,9 @@ M2C_UNK *func_020a8bcc(void) {
     return &data_0212614c;
 }
 
-void func_020a8bd8(s32 a,s32 b){extern s32 *data_027e0058;s32 *p=(s32 *)(*data_027e0058+0x67a4+140*a);M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~255)|(b&255);}
+void func_020a8bd8(s32 a,s32 b){extern s32 *gCurrentMap;s32 *p=(s32 *)(*gCurrentMap+0x67a4+140*a);M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~255)|(b&255);}
 
-u32 func_020a8c10(s32 a){extern s32 *data_027e0058;return M2C_FIELD(*data_027e0058+140*a,Bits020a8c10 *,0x6810).value;}
+u32 func_020a8c10(s32 a){extern s32 *gCurrentMap;return M2C_FIELD(*gCurrentMap+140*a,Bits020a8c10 *,0x6810).value;}
 
 u8 func_020a8c3c(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
@@ -254,6 +254,33 @@ loop_1:
 
 s32 func_020a8ce4(s32 arg0, s32 arg1) {
     return (s32) (arg0 * arg1) >> 8;
+}
+
+void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg6,u16 arg7,u16 arg8,volatile u16 arg9) {
+ M2C_UNK func_02087064(s32,s32,s32,u16,s32);
+ M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+ s32 height; s32 flags; s32 scaleY; s32 scaleX; volatile s32 width; volatile s32 z; volatile s32 origin;
+ s32 y; s32 dy; s32 tileH; u16 index; s32 remaining; s32 x; s32 tileW; s32 dx;
+ width=arg3;z=arg2;origin=arg0;
+ if(width && (height=arg4)!=0) {
+ remaining=width; index=arg6;
+ y=arg1-(func_020a8ce4(height,arg9)>>1);
+ scaleX=arg8;flags=arg7;scaleY=arg9;
+ do {
+ tileH=func_020a8cc0((u16)height);
+ x=origin-(func_020a8ce4(width,scaleX)>>1);
+ dy=(tileH*scaleY)>>8;
+ do {
+ tileW=func_020a8cc0((u16)remaining);
+ func_02087064(arg5,tileW,tileH,index,flags);
+ dx=tileW*scaleX;
+ func_020878c4(x,y,z,dx>>8,dy,0,0,tileW,tileH);
+ index+=(tileW*tileH)>>6;
+ x+=dx>>8;remaining-=tileW;
+ }while(remaining);
+ remaining=width;height-=tileH;y+=dy;
+ }while(height);
+ }
 }
 
 s32 func_020a8e28(s32 arg0, s32 arg1) {
@@ -329,6 +356,32 @@ M2C_FIELD(obj,s16 *,12)=0;
 M2C_FIELD(obj,u16 *,2)=M2C_FIELD(obj,u16 *,4);
 break;
 }
+}
+
+void func_020a92bc(void *arg0,s32 arg1) {
+ M2C_UNK func_02007f8c(s32,s32,s32);
+ s32 func_0207c928(s32,s32);
+ s32 func_0207cb5c(s32,s32);
+ s32 func_0207c8ec();
+ s32 clamped, n, value, digit; u32 i;
+ func_02007f8c((s32)arg0+11,0,6);
+ clamped=0xf423f;
+ if(arg1<=clamped) {if(arg1 < -clamped)clamped=-clamped;else clamped=arg1;}
+ M2C_FIELD(arg0,s32 *,28)=clamped;
+ for(n=1;n<=7;n++){
+ value=M2C_FIELD(arg0,s32 *,28);
+ if(value<0)value=-value;
+ if(value<func_0207cb5c(10,n)){M2C_FIELD(arg0,u8 *,10)=n;break;}
+ }
+ if(!arg1)return;
+ for(i=0;(s32)i<M2C_FIELD(arg0,u8 *,10);i++) {
+ switch(i){
+ case 0:M2C_FIELD(arg0+i,u8 *,11)=func_0207c928(M2C_FIELD(arg0,s32 *,28),10);break;
+ case 1:case 2:case 3:case 4:case 5:
+ digit=func_0207c928(M2C_FIELD(arg0,s32 *,28),func_0207cb5c(10,i+1));
+ M2C_FIELD(arg0+i,u8 *,11)=func_0207c8ec(digit,func_0207cb5c(10,i));break;
+ }
+ }
 }
 
 s16 func_020a93e4(void *arg0,s32 arg1) {

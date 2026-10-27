@@ -5,6 +5,7 @@ typedef struct { u8 v[4]; } ByteQuad;
 extern s32 data_0213e358;
 extern u8 data_0213e35c[5][4];
 extern u8 data_020ffa44[16];
+extern u8 data_020eac30[8];
 
 void func_0205e95c(void *arg0) {
     /* Check connection timeouts and retry/reset state as needed. */
@@ -118,6 +119,54 @@ end:
     *dst = 0;
 }
 
+void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+    unsigned long long func_020720f0(s32, s32);
+    u8 S[256];
+    u8 *key;
+    u8 *data;
+    s32 keyLen;
+    s32 dataLen;
+    s16 i;
+    u8 j;
+    u8 idx;
+    u8 k;
+    u8 t;
+    u8 *p;
+
+    key = (u8 *)arg0;
+    data = (u8 *)arg2;
+    keyLen = arg1;
+    dataLen = arg3;
+
+    for (i = 0; i < 256; i++) {
+        S[i] = (u8)i;
+    }
+
+    idx = 0;
+    j = 0;
+    p = S;
+    for (i = 0; i < 256; i++) {
+        j = (u8)((j + *p + key[idx]) % 256);
+        idx = (u8)(func_020720f0(idx + 1, keyLen) >> 32);
+        func_0205ed28(p, S + j);
+        p++;
+    }
+
+    if (dataLen <= 0) {
+        return;
+    }
+    j = 0;
+    k = 0;
+    for (i = 0; i < dataLen; ) {
+        j = (u8)((j + data[i] + 1) % 256);
+        k = (u8)((k + S[j]) % 256);
+        func_0205ed28(S + j, S + k);
+        t = (u8)((S[j] + S[k]) % 256);
+        data[i] = (u8)(data[i] ^ S[t]);
+        i++;
+    }
+}
+
 void func_0205ef8c(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
 
 void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
@@ -184,6 +233,61 @@ void func_0205f64c(M2C_UNK arg0, void *arg1) {
     func_0205f474(arg0, arg1, 2);
     func_0205ebb0(arg1, &data_020ffa74);
     M2C_FIELD(arg1, s32 *, 0x800) = (s32) (M2C_FIELD(arg1, s32 *, 0x800) - 1);
+}
+
+void func_0205f6b0(void *arg0, void *arg1, s32 arg2) {
+    u8 buf[4];
+    u8 key[6];
+    s32 i;
+    s32 match;
+    u32 val;
+    u32 tmp;
+    M2C_UNK (*cb0)(M2C_UNK, M2C_UNK);
+    M2C_UNK (*cb4)(M2C_UNK, M2C_UNK, M2C_UNK);
+
+    key[0] = data_020eac30[0];
+    key[1] = data_020eac30[1];
+    key[2] = data_020eac30[2];
+    key[3] = data_020eac30[3];
+    key[4] = data_020eac30[4];
+    key[5] = data_020eac30[5];
+
+    match = 1;
+    if (arg2 < 10) {
+        match = 0;
+    } else {
+        for (i = 0; i < 6; i++) {
+            if (key[i] != ((u8 *)arg1)[i]) {
+                match = 0;
+                break;
+            }
+        }
+    }
+
+    if (!match) goto no_match;
+
+    buf[0] = ((u8 *)arg1)[6];
+    buf[1] = ((u8 *)arg1)[7];
+    buf[2] = ((u8 *)arg1)[8];
+    buf[3] = ((u8 *)arg1)[9];
+
+    tmp = *(u32 *)buf;
+    val = ((tmp >> 24) & 0xFFU) |
+          ((tmp >> 8) & 0xFF00U) |
+          ((tmp << 8) & 0xFF0000U) |
+          ((tmp << 24) & 0xFF000000U);
+
+    cb0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK), 0xa0);
+    if (cb0 != NULL) {
+        cb0(val, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
+    }
+    return;
+
+no_match:
+    cb4 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK), 0xa4);
+    if (cb4 != NULL) {
+        cb4(arg1, arg2, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
+    }
 }
 
 s32 func_0205f7d8(void *a,s32 b) {

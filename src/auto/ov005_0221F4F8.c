@@ -67,6 +67,25 @@ void func_ov005_0221fbc8(M2C_UNK arg0) {
     }
 }
 
+void func_ov005_0221fc0c(void) {
+M2C_UNK func_02082cb4(); M2C_UNK func_0208232c(); M2C_UNK func_02086608(M2C_UNK);
+extern s32 gCur3DSpriteEngine; extern s32 data_027e00c4; extern s32 data_027e00c8;
+u16 *volatile p0; u16 *volatile p1; u16 *volatile p2; u16 *volatile p3; u16 *volatile p4;
+s32 saved; s32 i;
+func_02082cb4(); saved=gCur3DSpriteEngine; i=0;
+do {
+gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+func_0208232c(); i++;
+p0=*(u16 **)gCur3DSpriteEngine; *p0=*p0|0x10;
+p1=*(u16 **)gCur3DSpriteEngine; *p1=*p1|0x20;
+p2=*(u16 **)gCur3DSpriteEngine; *p2=*p2|0x40;
+p3=*(u16 **)gCur3DSpriteEngine; *p3=*p3|0x80;
+p4=*(u16 **)gCur3DSpriteEngine; *p4=*p4|0x100;
+} while(i<2);
+gCur3DSpriteEngine=saved;
+func_02086608(11);
+}
+
 void func_ov005_0221fd10(void) {
     M2C_UNK func_02086658(M2C_UNK);
     func_02086658(0xB);
@@ -76,18 +95,18 @@ void func_ov005_0221fd20(M2C_UNK arg0) {
     M2C_UNK func_020868e0(s32, M2C_UNK);
     s32 func_020869a0(s32);
     s32 func_020cd6d4();
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK data_ov005_02220bb0;
     s32 temp_r5;
     s32 var_r1;
     u16 temp_r0;
 
-    temp_r5 = M2C_FIELD(*data_027e0058, u16 *, 0x5142) - 0x40;
+    temp_r5 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142) - 0x40;
     if (func_020cd6d4() == 0) {
         return;
     }
     var_r1 = 0;
-    temp_r0 = M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+    temp_r0 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
     if (((u32) temp_r0 >= 0xA1U) && ((u32) temp_r0 < 0xBBU)) {
         var_r1 = 1;
     }

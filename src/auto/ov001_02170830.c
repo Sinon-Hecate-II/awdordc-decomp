@@ -124,23 +124,36 @@ void func_ov001_021714d0(void) {
     *temp_r2 = (*temp_r2 & 0xFE00FF00) | 0xE6008B;
 }
 
-void func_ov001_0217159c(s32 a){
-extern const u8 data_ov001_0218f28c[];
-void func_ov001_02171768(void *);
-void *func_ov001_0218b6f8(s32,s32);void *func_ov001_0218a61c(s32,s32,s32);void func_ov001_0218a474(void *,s32,s32);void func_ov001_021717fc(void);s32 func_ov001_0218c884(s32,void (*)(void),s32,s32);
-s32 n,i;const u8 *p;
-n=data_ov001_0218f2a8[a];
-data_ov001_02193cc8=func_ov001_0218b6f8(28,4);
-M2C_FIELD(data_ov001_02193cc8,s8 *,22)=-2;
-M2C_FIELD(data_ov001_02193cc8,u8 *,23)=a;
-i=0;if(n>0){p=data_ov001_0218f28c+a*2;do{
-((void **)data_ov001_02193cc8)[i]=func_ov001_0218a61c(0,*p++,1);
-func_ov001_0218a474(((void **)data_ov001_02193cc8)[i],-1,1);
-i++;}while(i<n);}
-M2C_FIELD(data_ov001_02193cc8,void **,8)=func_ov001_0218a61c(0,1,1);
-func_ov001_0218a474(M2C_FIELD(data_ov001_02193cc8,void **,8),-1,1);
-func_ov001_02171768((void *)192);
-M2C_FIELD(data_ov001_02193cc8,s32 *,12)=func_ov001_0218c884(0,func_ov001_021717fc,0,120);
+/* Build the state for a render effect indexed by id: allocate the 28-byte
+   control block, load its sprite list from data_ov001_0218f28c, and set up
+   animation timer (120 units). */
+void func_ov001_0217159c(s32 id) {
+    extern const u8 data_ov001_0218f28c[];
+    void func_ov001_02171768(void *);
+    void *func_ov001_0218b6f8(s32, s32);
+    void *func_ov001_0218a61c(s32, s32, s32);
+    void func_ov001_0218a474(void *, s32, s32);
+    void func_ov001_021717fc(void);
+    s32 func_ov001_0218c884(s32, void (*)(void), s32, s32);
+    s32 n, i;
+    const u8 *p;
+    n = data_ov001_0218f2a8[id];
+    data_ov001_02193cc8 = func_ov001_0218b6f8(28, 4);
+    M2C_FIELD(data_ov001_02193cc8, s8 *, 22) = -2;
+    M2C_FIELD(data_ov001_02193cc8, u8 *, 23) = id;
+    i = 0;
+    if (n > 0) {
+        p = data_ov001_0218f28c + id * 2;
+        do {
+            ((void **)data_ov001_02193cc8)[i] = func_ov001_0218a61c(0, *p++, 1);
+            func_ov001_0218a474(((void **)data_ov001_02193cc8)[i], -1, 1);
+            i++;
+        } while (i < n);
+    }
+    M2C_FIELD(data_ov001_02193cc8, void **, 8) = func_ov001_0218a61c(0, 1, 1);
+    func_ov001_0218a474(M2C_FIELD(data_ov001_02193cc8, void **, 8), -1, 1);
+    func_ov001_02171768((void *)192);
+    M2C_FIELD(data_ov001_02193cc8, s32 *, 12) = func_ov001_0218c884(0, func_ov001_021717fc, 0, 120);
 }
 
 void func_ov001_02171694(void){

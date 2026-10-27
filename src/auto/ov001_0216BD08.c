@@ -1,5 +1,6 @@
 /* 32 functions from 0x0216BD08 to 0x0216CCE0 (ov001), found by ds-decomp. */
 #include "common.h"
+extern unsigned char data_ov001_0218fd40[];
 extern unsigned char data_ov001_0218fdb0[];
 typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsigned char type,zero; short len; int value; } PacketWork;
 extern unsigned char data_ov001_02191ec0[];
@@ -30,6 +31,36 @@ int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
  if(!(*(int *)(data_ov001_02191800+48)&*(int *)(data_ov001_02191800+44))) return a;
  *n=0;return 2;
 }
+
+#pragma thumb on
+s32 func_ov001_0216c1c4(void *arg0,s32 arg1) {
+s32 func_ov001_0216cef0(u16);
+void func_ov001_0216cdd4();
+u8 *p=(u8 *)arg0+6;
+u8 *out=(u8 *)arg1;
+u8 *base,*e,*d,*c,*b,*a;
+u32 n;
+e=out;e=out+8;d=out;d=out+240;c=out;c=out+176;b=out;b=out+112;a=out+48;base=p;
+do {
+n=func_ov001_0216cef0(*(u16 *)(p+2));
+switch(*p){
+case 0x10:case 0x11:case 0x12:case 0x13:if(n>5)return -1;break;
+case 0x20:case 0x21:case 0x22:case 0x23:if(n>13)return -1;break;
+case 0x15:case 0x25:if(n>33)return -1;break;
+}
+switch(*p){
+case 0x10:case 0x20:func_ov001_0216cdd4(a,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x11:case 0x21:func_ov001_0216cdd4(b,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x12:case 0x22:func_ov001_0216cdd4(c,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x13:case 0x23:func_ov001_0216cdd4(d,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x15:case 0x25:if(n && p[n+5])return -1;func_ov001_0216cdd4(e,p+6,n);break;
+default:return -1;
+}
+if(*(u16 *)(p+4)==0)break;
+p=base+func_ov001_0216cef0(*(u16 *)(p+4));
+}while(1);
+return 0;
+}
 int func_ov001_0216c3d0(unsigned char *p, void *out) {
  int func_ov001_0216cef0(unsigned short);
  void func_ov001_0216cdd4();
@@ -41,6 +72,41 @@ int func_ov001_0216c3d0(unsigned char *p, void *out) {
  return 0;
 }
 
+#pragma thumb on
+s32 func_ov001_0216c400(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 func_ov001_0216c1c4(void *,s32);
+s32 func_ov001_0216c318(void *,s32);
+s32 func_ov001_0216cef0(u16);
+s32 func_ov001_0216c3d0(u8 *,void *);
+s32 sp8,spC,sp10,sp4,sp0;
+u8 *p; s32 flags,rem; u8 *q; s32 remaining,base,result,len;
+rem=arg2;sp0=arg0;p=arg1;flags=0;sp4=arg3;
+if(rem<=0)return -2;
+search:
+if(p[0]!=data_ov001_0218fd40[sp0]){
+len=func_ov001_0216cef0(*(u16 *)(p+2))+4;
+rem-=len;p+=len;if(rem<=0)return -4;
+goto search;
+}
+q=p;p+=4;
+remaining=func_ov001_0216cef0(*(u16 *)(q+2));
+q=p;
+base=sp4+0x350*sp0;sp10=base;sp10=base+8;sp8=arg4;spC=(sp0+3)<<7;
+do {
+switch(q[0]){
+case 3:result=func_ov001_0216c1c4(q,sp10);flags|=1;break;
+case 4:result=func_ov001_0216c1c4(q,base+0x138);flags|=2;break;
+case 5:result=func_ov001_0216c318(q,base+0x268);flags|=4;break;
+case 6:result=func_ov001_0216c318(q,base+0x2d8);flags|=8;break;
+case 10:result=func_ov001_0216c3d0(q,(void *)(sp8+spC));break;
+default:result=-3;break;
+}
+if(result!=0)return result;
+len=func_ov001_0216cef0(*(u16 *)(q+2))+4;remaining-=len;q+=len;
+}while(remaining>0);
+*(s32 *)(data_ov001_02191800+0x30)|=flags;
+return 0;
+}
 unsigned int func_ov001_0216c510(unsigned int x) { unsigned int result = 0; if (x & 0x10) result = 1; return result; }
 
 int func_ov001_0216c520(int mode, int a, int b, int c) {
@@ -191,4 +257,4 @@ void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
  for(i=0;i<half;i++) { unsigned char *p=b+half; *p ^= a[i]; ++b; }
 }
 #pragma thumb off
-
+#pragma thumb on

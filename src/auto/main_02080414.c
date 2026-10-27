@@ -31,8 +31,30 @@ void func_020804d0(void *arg0) {
  func_01ffa6fc(arg0);
 }
 
+void func_02080554(s16 mode,u16 scale,s32 x,s32 y) {
+s32 func_0207c8ec(s32,s32);
+extern void *data_027e00c4,*data_027e00c8,*gCur3DSpriteEngine;
+s32 a=func_0207c8ec(x*scale,100);
+s32 b=func_0207c8ec(y*scale,100);
+switch(mode){
+case 0:
+M2C_FIELD(data_027e00c4,s16 *,0x3c)=a;
+M2C_FIELD(data_027e00c8,s16 *,0x3c)=M2C_FIELD(data_027e00c4,s16 *,0x3c);
+M2C_FIELD(data_027e00c4,s16 *,0x3e)=b;
+M2C_FIELD(data_027e00c8,s16 *,0x3e)=M2C_FIELD(data_027e00c4,s16 *,0x3e);break;
+case 1:M2C_FIELD(gCur3DSpriteEngine,s16 *,0x3c)=a;M2C_FIELD(gCur3DSpriteEngine,s16 *,0x3e)=b;break;
+case 2:M2C_FIELD(data_027e00c8,s16 *,0x3c)=a;M2C_FIELD(data_027e00c8,s16 *,0x3e)=b;break;
+case 3:M2C_FIELD(data_027e00c4,s16 *,0x3c)=a;M2C_FIELD(data_027e00c4,s16 *,0x3e)=b;break;
+case 4:
+M2C_FIELD(data_027e00c4,s16 *,0x40)=a;
+M2C_FIELD(data_027e00c8,s16 *,0x40)=M2C_FIELD(data_027e00c4,s16 *,0x40);
+M2C_FIELD(data_027e00c4,s16 *,0x42)=b;
+M2C_FIELD(data_027e00c8,s16 *,0x42)=M2C_FIELD(data_027e00c4,s16 *,0x42);break;
+}
+}
+
 void func_0208066c(void *arg0) {
-    M2C_UNK func_02080554(s16, u16, M2C_UNK, M2C_UNK);
+    void func_02080554(s16, u16, M2C_UNK, M2C_UNK);
     func_02080554(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
 }
 
@@ -200,6 +222,72 @@ int func_02080c50(int arg0, int arg1) {
     return var_8;
 }
 
+s32 func_02080cfc(void *arg0, s32 arg1) {
+    int func_0200b774(void *);
+    int func_0200ba54(void *, void *);
+    int func_0200bbe0(void *, void *, s32);
+    int func_0200ba9c(void *);
+    int func_02007958(void);
+    int func_020e34f4(s32);
+    int func_020e35cc(s32);
+    u32 func_0207c7d8(void *, void *, u32);
+    s32 func_0207c860(void *, void *, s32);
+
+    u8 ctx[0x220];
+    int file[18];
+
+    s32 r7 = 0;
+    void *r8;
+    int r9;
+    int r4;
+    u32 r11;
+    int r10;
+    int r6;
+
+    r8 = (void *)func_020e34f4(0x2000);
+
+    func_0200b774(file);
+    if (func_0200ba54(file, arg0) == 0) {
+        func_02007958();
+        return r7;
+    }
+
+    r9 = file[10] - file[9];
+
+    if (r9 < 0x2000) {
+        r4 = r9;
+    } else {
+        r4 = 0x2000;
+    }
+
+    if (func_0200bbe0(file, r8, r4) != r4) {
+        func_02007958();
+        return 0;
+    }
+
+    r7 += r4;
+    r11 = func_0207c7d8(ctx, r8, (u32)arg1);
+
+    if (func_0207c860(ctx, (void *)((u8 *)r8 + 4), r4 - 4) > 0) {
+        do {
+            r6 = 0x2000;
+            r10 = r9 - r7;
+            if (r10 >= 0x2000) {
+                r10 = r6;
+            }
+            if (func_0200bbe0(file, r8, r10) != r10) {
+                func_02007958();
+                return 0;
+            }
+            r7 += r10;
+        } while (func_0207c860(ctx, r8, r10) > 0);
+    }
+
+    func_0200ba9c(file);
+    func_020e35cc((int)r8);
+    return r11;
+}
+
 void *func_02080e30(void *arg0, int arg1) {
     void *sp0[18];
     int off;
@@ -238,6 +326,29 @@ void *func_02080e30(void *arg0, int arg1) {
     }
     func_0200ba9c(sp0);
     return buf;
+}
+
+s32 func_02080efc(s32 path,s32 mode,s32 sizeOut) {
+s32 func_020e34f4(s32);s32 func_020e34bc();s32 func_020e35cc(s32);
+s32 func_0200b774(void *);s32 func_0200ba54(void *,void *);s32 func_0200bbe0(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
+s32 func_0207c7cc(void *);u32 func_0207c7d8(void *, void *, u32);s32 func_0207c860(void *,void *,s32);
+u32 file[18];u8 ctx[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
+if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)func_020e34bc(0x2000);
+func_0200b774(file);
+if(!func_0200ba54(file,(void *)path)){func_02007958();return 0;}
+total=file[10]-file[9];chunk=total<0x2000?total:0x2000;
+if(func_0200bbe0(file,buf,chunk)!=chunk){func_02007958();return 0;}
+read+=chunk;
+size=func_0207c7cc(buf);
+if(mode)output=func_020e34bc(size);else output=func_020e34f4(size);
+func_0207c7d8(ctx,buf,(void *)output);
+if(func_0207c860(ctx,buf+4,chunk-4)>0) { u32 next; do {
+next=total-read;if(next>=0x2000)next=0x2000;
+if(func_0200bbe0(file,buf,next)!=next){func_02007958();return 0;}
+read+=next;
+}while(func_0207c860(ctx,buf,next)>0); }
+func_0200ba9c(file);func_020e35cc((s32)buf);if(sizeOut)*(s32 *)sizeOut=size;
+return output;
 }
 
 void func_02081070(M2C_UNK arg0, M2C_UNK arg1) {

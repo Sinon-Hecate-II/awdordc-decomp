@@ -1,9 +1,41 @@
 /* 21 functions from 0x021867AC to 0x02187590 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 value[7]; } RuntimeZero14;
+typedef struct { u8 low:4, high:4; u8 len; u16 name[10]; } RuntimeProfile;
+static inline void RuntimeClear14(RuntimeZero14 *p) { p->value[0]=0; p->value[1]=0; p->value[2]=0; p->value[3]=0; p->value[4]=0; p->value[5]=0; p->value[6]=0; }
 extern void *data_ov001_02193e1c;
 extern void *data_ov001_02193e18;
 extern const u8 data_ov001_0218fc66[], data_ov001_0218fc52[];
 extern const u16 data_ov001_0218fccc[], data_ov001_0218fcce[];
+
+/* Selects the UI button under the cursor in the active button group, or deselects. */
+void func_ov001_021867ac(void) {
+extern u8 data_ov001_0218fcfc[];
+extern const u16 data_ov001_0218fc70[];
+extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
+s32 func_ov001_0218bbd8(void *);
+s32 func_ov001_0218bb00(s32);
+void func_ov001_0218b2e0(const void *, const void *, void *);
+void func_ov001_02186ba8(s32);
+s32 i;
+u32 rect[2];
+for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
+    func_ov001_0218b2e0(&((const u32 (*)[2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)], rect);
+    if (func_ov001_0218bbd8(rect)) {
+        M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = i;
+        break;
+    }
+}
+if (func_ov001_0218bb00(1)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
+if (func_ov001_0218bb00(2)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
+for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
+    if (i == M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b)) {
+        func_ov001_02186ba8(i);
+        return;
+    }
+}
+M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = -1;
+}
 
 void func_ov001_02186908(s32 arg0) {
 s32 func_ov001_0218c884(s32,void (*)(s32),s32,s32);
@@ -85,6 +117,31 @@ void func_ov001_02186e40(void *arg0) {
     func_ov001_02187ad8(arg0 + 0x1B160);
     M2C_FIELD(data_ov001_02193e1c, s32 *, 0x1B140) = 0;
     M2C_FIELD(data_ov001_02193e1c, s32 *, 0x1B144) = 0;
+}
+
+void func_ov001_02186e80(s32 a,s32 b) {
+void func_02007740(void *);
+void func_02008048(void *,void *,s32);
+s32 func_020179ec(void *,void *,s32,s32,s32);
+void func_02017c40(s32,s32);
+void func_02013e70(void (*)(void));
+void func_ov001_02187590(void);
+RuntimeProfile profile;
+u8 info[84];
+func_02007740(info);
+profile.low=info[1];
+profile.len=*(u16 *)(info+26);
+func_02008048(info+4,profile.name,*(u16 *)(info+26)*2);
+profile.high=0;
+{
+RuntimeZero14 zero={0};
+*(RuntimeZero14 *)data_ov001_02193e1c=zero;
+}
+M2C_FIELD(data_ov001_02193e1c,void **,0x1b140)=(u8 *)data_ov001_02193e1c+0x10040;
+if(func_020179ec(M2C_FIELD(data_ov001_02193e1c,void **,0x1b140),&profile,a,b,2))func_02007958();
+func_02017c40(256,1);
+func_02013e70(func_ov001_02187590);
+func_ov001_021878b4(1);
 }
 
 void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
@@ -215,25 +272,26 @@ if(!func_02013f1c(i))return 0;
 return 1;
 }
 
+/* For each ready player (bit in +10), drop those failing the connection check; set state 7 if none remain, else 4. */
 void func_ov001_02187454(void) {
-u16 i,mask,remaining=0;
-s32 state,ready;
+u16 i,mask,remainingPlayers=0;
+s32 savedState,ready;
 for(i=1;i<16;i++) {
 if(M2C_FIELD(data_ov001_02193e1c,u16 *,10)&(1<<i)) {
 if(!func_02013f70(i,3)) {
 mask=~(1<<i);
-state=func_0200751c();
+savedState=func_0200751c();
 M2C_FIELD(data_ov001_02193e1c,u16 *,2) &= mask;
 M2C_FIELD(data_ov001_02193e1c,u16 *,4) &= mask;
 M2C_FIELD(data_ov001_02193e1c,u16 *,6) &= mask;
 M2C_FIELD(data_ov001_02193e1c,u16 *,8) &= mask;
 M2C_FIELD(data_ov001_02193e1c,u16 *,10) &= mask;
 M2C_FIELD(data_ov001_02193e1c,u16 *,12) &= mask;
-func_02007530(state); func_020180c8(i);
-} else remaining |= 1<<i;
+func_02007530(savedState); func_020180c8(i);
+} else remainingPlayers |= 1<<i;
 }
 }
-if(remaining==0)func_ov001_021878b4(7);
+if(remainingPlayers==0)func_ov001_021878b4(7);
 else func_ov001_021878b4(4);
 }
 

@@ -53,7 +53,7 @@ void func_020608dc(void *arg0) {
     M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, M2C_UNK), 0x44)(arg0, 2, 0, M2C_FIELD(arg0, M2C_UNK *, 0x48));
 }
 
-void func_0206093c(void *arg0, s8 arg1) {
+void func_0206093c(void *arg0, u8 arg1) {
     s32 temp_r3;
 
     temp_r3 = M2C_FIELD(arg0, s32 *, 0x40);
@@ -128,7 +128,7 @@ M2C_UNK func_02060a84(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
 }
 
 void func_02060ac4(M2C_UNK a,M2C_UNK *b){
- M2C_UNK func_020675e4(void *,void *);
+ s32 func_020675e4(void *,void *,...);
  extern M2C_UNK data_02100060;
  u8 buf[20];
  func_020675e4(buf,&data_02100060);
@@ -358,12 +358,12 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     void *func_02037794(s32);
     M2C_UNK func_02060398(void *, s32, s32, s32, M2C_UNK *, void *);
     M2C_UNK func_02061dd0(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
-    extern s32 data_0213db84;
+    extern s32 gDnsQueryState;
     extern M2C_UNK func_02061184;
     void func_0206133c(s32, s32, void *, void *);
     void *obj;
 
-    if ((arg6 == 0) && (data_0213db84 != 1)) {
+    if ((arg6 == 0) && (gDnsQueryState != 1)) {
         return NULL;
     }
     obj = func_02037794(0x638);
@@ -386,8 +386,36 @@ void func_020614b0(s32 arg0) {
     func_020377c4(arg0);
 }
 
+s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
+ extern char *data_020ffc1c[]; extern char data_0210008c[];
+ s32 func_02068c34(const char *); s32 func_020675e4(void *,void *,...);
+ s32 func_020623bc(s32,char *,s32,s32,s32); void func_02049260(s32);
+ char buf[256]={0}; s32 len=0,i; char *p; s32 result;
+ M2C_FIELD(a,s32 *,0x620)=c;
+ M2C_FIELD(a,s32 *,0x40)=0;
+ for(i=0;i<e;i++){
+ p=data_020ffc1c[*(u8 *)(d+(u32)i)];
+ if(len+func_02068c34(p)+1>=256)break;
+ len+=func_020675e4(buf+len,data_0210008c,p);
+ func_0206093c((void *)a,*(u8 *)(d+(u32)i));
+ }
+ result=func_020623bc(a+0x4c,buf,f,g,h);
+ if(result)return result;
+ if(!b){
+ goto check;
+ loop:
+ func_02049260(10);
+ result=func_02061704(a);
+ check:
+ if(M2C_FIELD(a,s32 *,0x4c)==3)goto loop;
+ if(M2C_FIELD(a,s32 *,0x10)<=0)return result;
+ if(result==0)goto loop;
+ }
+ return result;
+}
+
 void func_02061604(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
- void func_020614d4(s32,s32,s32,s32,s32,s32,s32,s32);
+
  func_020614d4(a,b,c,d,e,f,128,g);
 }
 
@@ -409,11 +437,11 @@ void func_020616d8(s32 arg0){
  func_02061b6c(arg0+0x4c,n);
 }
 
-void func_02061704(s32 arg0) {
-    M2C_UNK func_02063dac(s32);
+s32 func_02061704(s32 arg0) {
+    s32 func_02063dac(s32);
 
     func_020608dc((void *) arg0);
-    func_02063dac(arg0 + 0x4C);
+    return func_02063dac(arg0 + 0x4C);
 }
 
 M2C_UNK func_0206171c(void *p){

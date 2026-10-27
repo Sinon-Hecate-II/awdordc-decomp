@@ -4,64 +4,40 @@
 void func_01ff90e4(s32 arg0, s32 arg1, u32 arg2, u16 *arg3)
 {
     extern u16 **gCur3DSpriteEngine;
-    u16 *entry;
     u16 *dst;
-    u16 count;
-    u32 high;
-    u32 low;
-    u32 value;
-    u32 shift;
+    s32 count;
+    s32 lo, hi, mask = 0x3ff, xmask;
+    s32 a, b, c, shift;
+    u16 *base;
+    void *engine;
+    u8 n;
 
     count = *arg3++;
-    entry = *gCur3DSpriteEngine;
-
-    dst = (u16 *)((u8 *)M2C_FIELD(entry, u32 *, 0x38) +
-                  (M2C_FIELD(entry, u8 *, 0x4A) << 3));
-
-    if (count == 0) {
+    engine = gCur3DSpriteEngine;
+    base = M2C_FIELD(engine, u16 * volatile *, 0x38);
+    n = M2C_FIELD(engine, volatile u8 *, 0x4a);
+    dst = base + n * 4;
+    if (!count) {
         return;
     }
-
-    high = arg2 & 0xFC00;
-    low = arg2 & 0x3FF;
-
-    if (M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4A) >= 0x80) {
-        return;
-    }
-
+    hi = arg2 & 0xfc00;
+    lo = arg2 & mask;
+    xmask = mask - 0x200;
     do {
-        count--;
-
-        entry = *gCur3DSpriteEngine;
-        value = arg3[0];
-
-        dst[0] = ((value | arg1) & 0xFF00) +
-                 ((M2C_FIELD(entry, s16 *, 0x3E) +
-                   value + arg1) & 0xFF);
-
-        value = arg3[1];
-        entry = *gCur3DSpriteEngine;
-
-        dst[1] = ((value | arg0) & 0xFE00) +
-                 ((M2C_FIELD(entry, s16 *, 0x3C) +
-                   value + arg0) & 0x1FF);
-
-        value = arg3[2];
-        entry = *gCur3DSpriteEngine;
-
-        shift = (*(u16 *)M2C_FIELD(entry, u32 *, 0x00) >> 13) & 3;
-
-        dst[2] = high +
-                 ((value & 0xFC00) +
-                 ((low + ((value & 0x3FF) >> shift)) & 0x3FF));
-
+        if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a) >= 128) {
+            return;
+        }
+        a = arg3[0];
+        dst[0] = ((a | arg1) & 0xff00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e) + (a + arg1)) & 255);
+        b = arg3[1];
+        dst[1] = ((b | arg0) & 0xfe00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (b + arg0)) & xmask);
+        c = arg3[2];
         arg3 += 3;
-        dst = (u16 *)((u8 *)dst + 8);
-
-        entry = *gCur3DSpriteEngine;
-        M2C_FIELD(entry, u8 *, 0x4A)++;
-
-    } while (count != 0);
+        shift = (u32)(*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30;
+        dst[2] = (c & 0xfc00) + ((lo + (((c & mask) >> shift) & mask)) & mask) + hi;
+        dst += 4;
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a)++;
+    } while (--count);
 }
 
 void func_01ff9ab4(void) {
@@ -77,60 +53,21 @@ void func_01ff9ab4(void) {
 
 void func_01ff9b38(void) {
     M2C_UNK func_01ff9690();
-    M2C_UNK func_0207fafc();
+    void func_0207fafc(void);
     func_01ff9ab4();
     func_01ff91d8();
     func_01ff9690();
     func_0207fafc();
 }
 
-u8 func_01ff9b70(u8 arg0, u32 arg1) {
-    u8 result;
-    switch (arg0) {
-    case 0: return 1;
-    case 1:
-    case 3:
-        if (arg1 <= 2) result = 1; else result = 0;
-        return result;
-    case 2:
-    case 4:
-    case 5:
-        if (arg1 <= 1) result = 1; else result = 0;
-        return result;
-    default: return 0;
-    }
+u8 func_01ff9b70(u8 arg0,u32 arg1) {
+u8 result;
+switch(arg0){case 0:return 1;case 1:case 3:if(arg1<=2)result=1;else result=0;return result;case 2:case 4:case 5:if(arg1<=1)result=1;else result=0;return result;default:return 0;}
 }
 
-u8 func_01ff9bcc(s32 arg0, s32 arg1) {
-    u8 var_r0;
-    u8 var_r0_2;
-    u8 var_r0_3;
-
-    switch (arg0) {                                 /* irregular */
-    case 1:
-        if (arg1 == 3) {
-            var_r0 = 1;
-        } else {
-            var_r0 = 0;
-        }
-        return var_r0;
-    case 2:
-        if ((u32) (u8) (arg1 + 0xFE) <= 1U) {
-            var_r0_2 = 1;
-        } else {
-            var_r0_2 = 0;
-        }
-        return var_r0_2;
-    case 4:
-        if (arg1 == 2) {
-            var_r0_3 = 1;
-        } else {
-            var_r0_3 = 0;
-        }
-        return var_r0_3;
-    default:
-        return 0U;
-    }
+u8 func_01ff9bcc(s32 arg0,s32 arg1) {
+u8 a,b,c;
+switch(arg0){case 1:if(arg1==3)a=1;else a=0;return a;case 2:if((u32)(u8)(arg1+0xfe)<=1)b=1;else b=0;return b;case 4:if(arg1==2)c=1;else c=0;return c;default:return 0;}
 }
 
 s32 func_01ff9c34(u8 arg0, s32 arg1) {
@@ -150,7 +87,7 @@ void func_01ff9ce8(u8 arg0) {
     s32 func_01ff9c34(u8, s32);
     M2C_UNK func_02007e98(M2C_UNK, s32, s32);
     extern u16 **gCur3DSpriteEngine;
-    func_02007e98(0, M2C_FIELD(&gCur3DSpriteEngine[arg0], s32 *, 0x20), func_01ff9c34((u8) ((u32) (**gCur3DSpriteEngine << 0x1D) >> 0x1D), arg0));
+    func_02007e98(0, M2C_FIELD(&gCur3DSpriteEngine[arg0], s32 *, 0x20), func_01ff9c34((u8)(((u32)(**gCur3DSpriteEngine << 0x1D) >> 0x1D)), arg0));
 }
 
 void func_01ff9d38(s32 arg0) {
@@ -177,35 +114,9 @@ void func_01ff9e00(void) {
     extern u16 **gCur3DSpriteEngine;
     s32 i;
     for (i = 0; i < 4; i++) {
-        func_01ff9dd8(i);
-        func_01ff9ce8(i);
+        func_01ff9dd8((u8)i);
+        func_01ff9ce8((u8)i);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << i;
     }
-}
-
-void func_01ff9e44(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ef4(M2C_UNK, s32, M2C_UNK);
-    extern u16 **gCur3DSpriteEngine;
-    func_02007ef4(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
-}
-
-void func_01ff9e78(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    M2C_UNK func_02008048(M2C_UNK, s32, M2C_UNK);
-    extern u16 **gCur3DSpriteEngine;
-    func_02008048(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
-}
-
-void func_01ff9eac(M2C_UNK arg0, s32 arg1, s32 arg2, M2C_UNK arg3) {
-    M2C_UNK func_02007ef4(M2C_UNK, s32, M2C_UNK);
-    s32 var_r1;
-
-    if (arg1 == 0) {
-        var_r1 = 0x05000000;
-    } else {
-        var_r1 = 0x05000400;
-    }
-    func_02007ef4(arg0, var_r1 + arg2, arg3);
 }
 

@@ -1,33 +1,34 @@
 /* 46 functions from 0x020852F4 to 0x02086208 (main), found by ds-decomp. */
 #include "common.h"
-
-void func_020852f4(void) {
-    void *func_01ffa770(M2C_UNK *);
-    M2C_UNK func_02091cd0(void *);
-    extern M2C_UNK data_02102088;
-    void *temp_r0;
-    temp_r0 = func_01ffa770(&data_02102088);
-    if (temp_r0 == 0) return;
-    M2C_FIELD(temp_r0, u8 *, 0x40) = 1;
-    M2C_FIELD(temp_r0, u8 *, 0x41) = 0;
-    func_02091cd0(temp_r0);
+static inline u16 StatusX(void *p) { return M2C_FIELD(p,s16 *,0x34)&511; }
+static inline u8 StatusY(void *p) { return M2C_FIELD(p,s16 *,0x36); }
+static inline u16 StatusTile(u16 state) {
+ extern u16 **gCur3DSpriteEngine;
+ return 1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
+}
+static inline u8 IsSpriteReady(void *p) { return M2C_FIELD(p,s16 *,0x4e)==0; }
+static inline void DrawStatusIcon(s16 x,s16 y,u16 state) {
+ extern u16 **gCur3DSpriteEngine; extern M2C_UNK data_027e0064;
+ M2C_UNK func_01ff883c(u16,u8,u16,M2C_UNK *);
+ func_01ff883c((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),&data_027e0064);
 }
 
-void func_02085324(void) {
-    void *func_01ffa770(M2C_UNK *);
-    extern M2C_UNK data_02102088;
-    void *temp_r0;
-
-    temp_r0 = func_01ffa770(&data_02102088);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, s8 *, 0x40) = 0;
-        M2C_FIELD(temp_r0, s8 *, 0x41) = 0;
-    }
+void func_020852f4(void){
+ void *func_01ffa770(M2C_UNK *); M2C_UNK func_02091cd0(void *); extern M2C_UNK data_02102088;
+ void *p=func_01ffa770(&data_02102088);
+ if(!p)return;
+ M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;func_02091cd0(p);
 }
 
-void func_02085348(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_0208492c();
-    func_02084bf8((u8) (func_0208492c() + 0x81), arg0, arg1);
+void func_02085324(void){
+ void *func_01ffa770(M2C_UNK *); extern M2C_UNK data_02102088;
+ void *p=func_01ffa770(&data_02102088);
+ if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
+}
+
+void func_02085348(M2C_UNK arg0,M2C_UNK arg1){
+ s32 func_0208492c();
+ func_02084bf8((u8)(func_0208492c()+0x81),arg0,arg1);
 }
 
 u8 func_02085370(s32 arg0, M2C_UNK arg1) {
@@ -376,5 +377,35 @@ void func_02085ea4(void *arg0) {
         return;
     }
     func_ov010_022260b8();
+}
+
+void func_02085ebc(void *arg0) {
+ M2C_UNK func_01ff883c(u16,u8,u16,M2C_UNK *);
+ s32 func_020847b8(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
+ extern M2C_UNK data_027e0064; extern u16 **data_027e00c8; extern u16 **gCur3DSpriteEngine;
+ s32 flag; u16 **saved; u16 v; u16 state=3;
+ if(func_020847b8() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
+ if(IsSpriteReady(arg0)){
+ if(func_ov010_02225d8c()){
+ v=func_ov010_02225d9c()?2:1; state=v;
+ }else state=0;
+ }}
+ if(M2C_FIELD(arg0,u8 *,0x4c)){
+ if(!func_ov002_021e1624())return;
+ saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c8;
+ {
+ u32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
+ u32 tile=1023&((s32)((state<<2)+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
+ u32 y=M2C_FIELD(arg0,s16 *,0x36);
+ func_01ff883c((u16)x,(u8)y,(u16)tile,&data_027e0064);
+ }
+ gCur3DSpriteEngine=saved; return;
+ }
+ {
+ u32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
+ u32 tile=1023&((s32)((state<<2)+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
+ u32 y=M2C_FIELD(arg0,s16 *,0x36);
+ func_01ff883c((u16)x,(u8)y,(u16)tile,&data_027e0064);
+ }
 }
 

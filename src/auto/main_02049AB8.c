@@ -1,6 +1,26 @@
 /* 23 functions from 0x02049AB8 to 0x0204AA34 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_02049ab8(u8 *src,s8 *dst,s32 len,s32 mode){
+void func_02049a20(u8 *,s8 *,s32);
+extern const s8 data_020ea970[],data_020ea974[],data_020ea978[];
+const s8 *table; s8 *start=dst,*pad; s32 left=len,rem;
+switch(mode){case 1:table=data_020ea970;break;case 2:table=data_020ea974;break;default:table=data_020ea978;break;}
+while(left>0){func_02049a20(src,dst,left<3?left:3);left-=3;dst+=4;src+=3;}
+rem=len%3;pad=dst;
+if(rem==1)pad=dst-2;else if(rem==2)pad=dst-1;
+*dst=0;
+while(dst>start){
+--dst;
+if(dst>=pad)*dst=table[2];
+else if(*dst<=25)*dst+=65;
+else if(*dst<=51)*dst+=71;
+else if(*dst<=61)*dst-=4;
+else if(*dst==62)*dst=table[0];
+else if(*dst==63)*dst=table[1];
+}
+}
+
 s32 func_02049bf0(s32 *p,s32 n) {
 s32 func_020377a8(s32,s32);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce58,data_020fcedc;
@@ -13,6 +33,22 @@ total=p[2];total+=n;
 v=func_020377a8(p[1],total);
 if(!v)return 0;
 p[1]=v;p[2]=total;return 1;
+}
+
+s32 func_02049c7c(void *connection,s32 *buffer,s32 size,s32 grow) {
+extern M2C_UNK data_020fcef0,data_020fcecc,data_020fce38,data_020fcec4,data_020fcefc,data_020fcedc;
+if(!connection)func_020640a8(&data_020fcef0,&data_020fcecc,&data_020fce38,0x43);
+if(!buffer)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce38,0x44);
+if(size<=0)func_020640a8(&data_020fcefc,&data_020fcecc,&data_020fce38,0x45);
+if(grow<=0)func_020640a8(&data_020fcedc,&data_020fcecc,&data_020fce38,0x46);
+if(!connection)return 0;
+if(!buffer)return 0;
+if(size<=0)return 0;
+if(grow<=0)return 0;
+buffer[0]=(s32)connection;
+buffer[1]=0;buffer[2]=0;buffer[3]=0;buffer[4]=0;buffer[5]=grow;buffer[6]=0;buffer[7]=0;buffer[8]=0;
+if(!func_02049bf0(buffer,size))return 0;
+*(u8*)buffer[1]=0;return 1;
 }
 
 /* Initialize a fixed-size buffer wrapper with a connection, user storage and capacity. */
@@ -98,7 +134,7 @@ void func_0204a2c8(void *arg0) {
 }
 
 s32 func_0204a30c(void *arg0) {
-    s32 func_0204943c(s32, M2C_UNK, s32 *, s32 *);
+    s32 PollOneFd(s32, M2C_UNK, s32 *, s32 *);
     s32 sp4;
     s32 sp0;
     s32 temp_r0;
@@ -106,7 +142,7 @@ s32 func_0204a30c(void *arg0) {
     s32 temp_r3;
 
 loop_1:
-    if ((func_0204943c(M2C_FIELD(arg0, s32 *, 0x48), 0, &sp4, &sp0) == -1) || (sp0 != 0)) {
+    if ((PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), 0, &sp4, &sp0) == -1) || (sp0 != 0)) {
         M2C_FIELD(arg0, s32 *, 0xFC) = 1;
         M2C_FIELD(arg0, s32 *, 0x38) = 5;
         M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
@@ -187,6 +223,39 @@ void func_0204a610(void) {
 
 void func_0204a614(void) {
 
+}
+
+s32 func_0204a618(void *arg0) {
+M2C_UNK func_020651c4(s32,s32,s32);
+s32 spC; s32 sp8; s32 ip,r3,result,left,used,p,inPtr,outPtr;
+spC=0;sp8=0;
+loop:
+ip=M2C_FIELD(arg0,s32 *,0xa8);
+inPtr=M2C_FIELD(arg0,s32 *,0x9c);
+spC=M2C_FIELD(arg0,s32 *,0xa4)-ip;
+r3=M2C_FIELD(arg0,s32 *,0x80);
+outPtr=M2C_FIELD(arg0,s32 *,0x78);
+sp8=M2C_FIELD(arg0,s32 *,0x7c)-r3;
+result=M2C_FIELD(arg0,s32 (**)(void *,void *,s32,s32 *,s32,s32 *),0x180)(arg0,(u8*)arg0+0x164,inPtr+ip,&spC,outPtr+r3,&sp8);
+if(result==2 && !func_02049bf0((s32*)((u8*)arg0+0x74),M2C_FIELD(arg0,s32 *,0x88)))return 0;
+if(result==2 && sp8==0)goto loop;
+M2C_FIELD(arg0,s32 *,0xa8)+=spC;
+M2C_FIELD(arg0,s32 *,0x80)+=sp8;
+used=M2C_FIELD(arg0,s32 *,0xa8);
+if(used>255){
+left=M2C_FIELD(arg0,s32 *,0xa4)-used;
+if(!left)func_0204a2c8((u8*)arg0+0x98);
+else {
+p=M2C_FIELD(arg0,s32 *,0x9c);
+func_020651c4(p,p+used,left);
+M2C_FIELD(arg0,s32 *,0xa8)=0;
+M2C_FIELD(arg0,s32 *,0xa4)=left;
+}
+}
+if(result!=3)return 1;
+M2C_FIELD(arg0,s32 *,0xfc)=1;
+M2C_FIELD(arg0,s32 *,0x38)=17;
+return 0;
 }
 
 s32 func_0204a954(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {

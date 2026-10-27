@@ -309,6 +309,57 @@ void func_020899cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     func_020899fc(arg0, arg1, arg2, func_02086680(arg3));
 }
 
+M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
+    extern void *gCur3DSpriteEngine;
+    extern s32 data_027e00c8, data_027e00c4;
+    u8 func_0208ae88(M2C_UNK, s32);
+    M2C_UNK func_020ae22c(s32);
+    M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);
+    void func_02091c98(void);
+    void func_02091d4c(s32);
+    void func_02089b18(M2C_UNK, M2C_UNK);
+
+    s32 savedBank;
+    void *bank;
+    u32 mode;
+    u16 spriteIndex;
+    s32 i;
+    s32 low3;
+    s32 tmp;
+    M2C_UNK t1, t2;
+
+    savedBank = (s32)gCur3DSpriteEngine;
+    spriteIndex = (u16)(arg2 >> 5);
+    i = 0;
+    low3 = (s32)arg1 & 7;
+    tmp = ~0x62;
+
+    do {
+        if (i == 0) bank = (void *)data_027e00c8;
+        else bank = (void *)data_027e00c4;
+        gCur3DSpriteEngine = bank;
+        mode = (u32)(M2C_FIELD(entity, u8 *, 0x48) << 28) >> 29;
+        if ((mode != 0 || bank == (void *)data_027e00c8) &&
+            (mode != 1 || bank == (void *)data_027e00c4) &&
+            (mode != 3 || bank == (void *)savedBank)) {
+            M2C_FIELD(entity, u16 *, 0x3E) = spriteIndex;
+            M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~7) | low3;
+            M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~0xE0000000) | (low3 << 29);
+            M2C_FIELD(entity, u8 *, 0x49) = (u8)tmp;
+            func_0208ae88(entity, tmp + 0x62);
+            t1 = func_020ae22c(0xD);
+            t2 = func_020ae22c(0xE);
+            func_0208e0f0(0x1400, 1, t1, t2);
+            func_02091c98();
+            func_02091d4c(0x12);
+            func_02089b18(entity, arg3);
+        }
+        i++;
+    } while (i < 2);
+    gCur3DSpriteEngine = (void *)savedBank;
+    return 0;
+}
+
 void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02089b38(M2C_UNK, M2C_UNK);
     M2C_UNK func_02089bdc();

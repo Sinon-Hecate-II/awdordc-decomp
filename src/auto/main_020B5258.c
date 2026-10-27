@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct { u8 kind:6; u8 rest:2; } UnitKindBits;
 extern u8 data_ov000_021b5c0d[];
-extern s32 *data_027e0058;
+extern s32 *gCurrentMap;
 
 u8 func_020b5258(void) {
     s32 func_0208c724();
@@ -31,6 +31,54 @@ M2C_UNK *func_020b5284(u32 arg0) {
     case 8: return &data_02128e6c;
     case 9: return &data_02128e7c;
     default: return NULL;
+    }
+}
+
+/* Draws one of several unit/map status overlays at position (x, y) depending on mode. */
+void func_020b5314(u8 mode, s32 x, s32 y) {
+    M2C_UNK func_0208fb0c(s32, s16, s16);
+    void func_02080750(s32, s32, s32);
+    void func_02080358(s32, s32, s32, s32);
+    M2C_UNK func_0208fb54(s32, s32, s32, s32);
+    typedef M2C_UNK (*Fb0c)(s32, s32, s32);
+    switch (mode) {
+    case 0:
+    case 1:
+    case 2:
+        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        func_02080750(1, 0x14, 0);
+        return;
+    case 3:
+        ((Fb0c)func_0208fb0c)(0x6d, x, y);
+        func_02080750(1, 0x14, 0);
+        return;
+    case 4:
+        ((Fb0c)func_0208fb0c)(0x73, x, y);
+        func_02080750(1, 0x14, 0);
+        return;
+    case 5:
+        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        func_02080750(0, 0xa, 0);
+        return;
+    case 6:
+        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        func_02080750(0, 5, 0);
+        return;
+    case 7:
+        ((Fb0c)func_0208fb0c)(0x11f, x, y);
+        func_02080750(0, 5, 0);
+        return;
+    case 8:
+        func_0208fb54(0x10e, x, y, 0);
+        func_0208fb54(0x10f, x, y, 0x1e);
+        func_02080750(1, 0x14, 0);
+        func_02080358(4, 0, 2, 0);
+        return;
+    case 9:
+        ((Fb0c)func_0208fb0c)(0xfa, x, y);
+        func_02080750(1, 0x1e, 0);
+        func_02080358(8, 0, 4, 0);
+        return;
     }
 }
 
@@ -109,7 +157,7 @@ s32 kind, index; void *p;
 /* Spawns a managed unit object from a unit-table entry. */
 if (!unit) return;
 kind=data_ov000_021b5c0d[((UnitKindBits *)unit)->kind*0x70];
-index=unit ? ((s32)unit-(*data_027e0058+0x59A4))/14 : 0;
+index=unit ? ((s32)unit-(*gCurrentMap+0x59A4))/14 : 0;
 p=func_020b5284(kind);
 if(!p) return;
 p=func_020b5134(p,unit[1],unit[2],0,0,0,(void *)7);
@@ -221,16 +269,16 @@ void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
 }
 
 void func_020b5f74(s32 arg0, s32 arg1) {
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 temp_ip;
     s32 temp_lr;
     s32 temp_r3;
 
-    temp_lr = *data_027e0058;
+    temp_lr = *gCurrentMap;
     temp_ip = arg0 + M2C_FIELD((temp_lr + (arg1 * 2)), u16 *, 0x3758);
     if (M2C_FIELD((temp_lr + (temp_ip * 2)), u16 *, 0xA10) == 0x180) {
         M2C_FIELD((temp_lr + temp_ip), s8 *, 0x1420) = 0x19;
-        temp_r3 = *data_027e0058;
+        temp_r3 = *gCurrentMap;
         M2C_FIELD((temp_r3 + ((arg0 + M2C_FIELD((temp_r3 + (arg1 * 2)), u16 *, 0x3758)) * 2)), s16 *, 0xA10) = 0x1A0;
     }
     func_020cfd28();

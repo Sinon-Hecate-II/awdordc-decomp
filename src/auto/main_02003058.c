@@ -285,6 +285,36 @@ void func_02003a8c(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02
 
 void func_02003aa8(s32 a){void func_02004e20(s32);*(s32 *)0x4000400=0x19;func_02004e20(a);}
 
+void func_02003ac4(void) {
+void func_02003c3c(void);
+void func_02003c64(void);
+void func_02003e24(void);
+func_02003c3c();
+*(volatile u32 *)0x4000504=0;
+while(*(volatile u32 *)0x4000600&0x8000000){}
+*(volatile u16 *)0x4000060=0;
+*(volatile u32 *)0x4000600=0;
+*(volatile u32 *)0x4000010=0;
+*(volatile u16 *)0x4000060|=0x2000;
+*(volatile u16 *)0x4000060|=0x1000;
+*(volatile u16 *)0x4000060&=0xffffcffd;
+*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3000)|0x10;
+*(volatile u16 *)0x4000060&=0xcffb;
+*(volatile u32 *)0x4000600|=0x8000;
+*(volatile u32 *)0x4000600=(*(volatile u32 *)0x4000600&~0xc0000000)|0x80000000;
+func_02003c64();
+*(volatile u32 *)0x4000350=0;
+*(volatile u16 *)0x4000354=0x7fff;
+*(volatile u16 *)0x4000356=0;
+*(volatile u32 *)0x4000358=0;
+*(volatile u16 *)0x400035c=0;
+*(volatile u16 *)0x4000008&=~3;
+func_02003e24();
+*(volatile u32 *)0x40004a4=0x1f0080;
+*(volatile u32 *)0x40004a8=0;
+*(volatile u32 *)0x40004ac=0;
+}
+
 void func_02003cfc(void);
 void func_02003bd0(void){
 while(*(volatile u32 *)0x4000600 & 0x8000000){}

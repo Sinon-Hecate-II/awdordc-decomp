@@ -108,31 +108,31 @@ void func_020a15e4(void) {
 
 #pragma opt_strength_reduction off
 void func_020a15f8(void) {
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 x, y;
     u8 *base;
     u8 *p;
-    base = (u8 *)*data_027e0058;
+    base = (u8 *)*gCurrentMap;
     for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(base, u16 *, 0x5144); x++) {
             base = base + x + M2C_FIELD(base + y * 2, u16 *, 0x3758);
             p = base;
             if ((p[0x1420] & 0x1F) == 0x1C) p[0x539C] = 0xE3;
             else p[0x539C] = 0;
-            base = (u8 *)*data_027e0058;
+            base = (u8 *)*gCurrentMap;
         }
     }
 }
 #pragma opt_strength_reduction reset
 void func_020a16a8(u8 *arg0) {
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 var_ip;
     u8 *var_lr;
     u8 *var_r0;
     u8 temp_r1;
 
     var_r0 = arg0;
-    var_lr = *data_027e0058 + 0x539C;
+    var_lr = *gCurrentMap + 0x539C;
     if (*var_r0 == 0xFF) {
         return;
     }
@@ -157,9 +157,9 @@ void func_020a16a8(u8 *arg0) {
 }
 
 void func_020a1720(u8 *dst) {
-extern s32 *data_027e0058;
+extern s32 *gCurrentMap;
 u8 count=0; s32 i=0; s32 n; u8 *p; void *base;
-base=(void *)*data_027e0058;
+base=(void *)*gCurrentMap;
 n=M2C_FIELD(base,u16 *,0x5144)*M2C_FIELD(base,u16 *,0x5146);
 p=(u8 *)base+0x539c;
 for(;i<n;i++,p++) {

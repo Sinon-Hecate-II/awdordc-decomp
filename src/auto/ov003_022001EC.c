@@ -59,6 +59,30 @@ s32 func_ov003_02200534(u32 arg0) {
 
 s32 func_ov003_0220058c(u32 a){switch(a){case 1:return 0x4e5b;case 2:return 0x76b2;case 3:return 0x46f9;case 4:return 0x5274;default:return 0;}}
 
+void func_ov003_022005e4(s32 arg0, s32 arg1, u32 arg2) {
+    M2C_UNK func_02080cfc(s32, s32);
+    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK func_020814ac(s32, s32, M2C_UNK, s32);
+    s32 func_020a2360(s32);
+    s32 func_020ae7a4(s32, s32, s32);
+    s32 func_020e3218(M2C_UNK *);
+    extern void *gCur3DSpriteEngine;
+    extern M2C_UNK data_ov003_0221042c;
+    extern M2C_UNK data_ov003_02210440;
+    u8 i;
+
+    func_02080cfc(func_020e3218(&data_ov003_0221042c), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
+    func_020814ac(func_ov003_02200520(arg2), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0x20), 0, arg1);
+    func_0208116c(&data_ov003_02210440, arg1 << 5, 0x40);
+    if (arg2 <= 1U) {
+        return;
+    }
+    for (i = 0; i < arg2; i++) {
+        func_020ae7a4(arg1, (u8)(i + 1), func_ov003_02200534((u8)func_020a2360(i + 1)));
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
+}
+
 void func_ov003_022006b0(s32 a, s32 b) {
 s32 func_020a2360(s32);
 s32 func_020ae7a4(s32,s32,s32);
@@ -88,6 +112,47 @@ default:return 255;
 s32 func_ov003_022008b8(u32 a){switch(a){case 0:return 1;case 1:return 2;case 2:return 3;case 3:return 4;case 4:return 5;case 5:return 6;case 6:return 7;case 7:return 8;case 8:return 9;case 9:return 10;case 10:return 11;case 11:return 12;case 12:return 0;default:return 255;}}
 
 s32 func_ov003_02200968(u32 a){switch(a){case 3:return 3;case 4:return 4;case 0:return 0;case 1:return 1;case 2:return 2;case 5:return 5;case 6:return 6;case 7:return 7;case 8:return 8;case 9:return 9;case 10:return 10;case 11:return 11;case 12:return 12;default:return 0;}}
+
+u16 func_ov003_02200a18(u32 arg0, M2C_UNK arg1) {
+    s32 func_020c7ef4(M2C_UNK);
+    s32 func_020c80a4(M2C_UNK);
+    s32 func_020cfbb0(M2C_UNK);
+    s32 temp_r4;
+    u16 var_r0;
+
+    temp_r4 = func_020cfbb0(arg1);
+    switch (arg0) {
+    default:
+    case 0:
+        return 0U;
+    case 1:
+        return 3U;
+    case 3:
+        return (u16) (temp_r4 + 2);
+    case 4:
+        return 0U;
+    case 5:
+        return 1U;
+    case 6:
+        return 2U;
+    case 2:
+        return (u16) (temp_r4 + 5);
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+        if (func_020c7ef4(arg1) == 0) {
+            return 0xDU;
+        }
+        if (func_020c80a4(arg1) != 0) {
+            var_r0 = temp_r4 + 8;
+        } else {
+            var_r0 = temp_r4 + 0xC;
+        }
+        return var_r0;
+    }
+}
 
 s32 func_ov003_02200ae8(u32 a){switch(a){case 0:return 0;case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 7;case 6:return 9;case 7:return 8;default:return -1;}}
 
@@ -195,5 +260,41 @@ M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x68)=v+4;
 M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x6a)=v;
 }
 M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b);
+}
+
+void func_ov003_02200e1c(void *arg0) {
+    M2C_UNK func_020aacf0(s32);
+    s32 var_r0;
+    s32 var_r0_2;
+    u8 var_r8;
+    void *temp_r0;
+    void *temp_r2;
+    void *temp_r3;
+
+    M2C_FIELD(arg0, s8 *, 4) = -1;
+    M2C_FIELD(arg0, s8 *, 5) = -1;
+    var_r8 = 0;
+    do {
+        func_020aacf0(M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), s32 *, 0xE8));
+        temp_r3 = M2C_FIELD((arg0 + (var_r8 * 4)), void **, 0xE8);
+        var_r0 = 1;
+        temp_r2 = M2C_FIELD(temp_r3, void **, 0x64);
+        if ((M2C_FIELD(temp_r2, s8 *, 0xB) != 1) && ((((u32) (M2C_FIELD(temp_r3, u8 *, 0x59) << 0x1B) >> 0x1F) == 0) || (M2C_FIELD(temp_r2, s8 *, 0xC) != 1))) {
+            var_r0 = 0;
+        }
+        if (var_r0 & 0xFF) {
+            M2C_FIELD(arg0, u8 *, 4) = var_r8;
+        }
+        temp_r0 = M2C_FIELD(&((u8 *) arg0)[var_r8 * 4], void **, 0xE8);
+        if ((((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) == (u16) ((u32) (M2C_FIELD(temp_r0, s32 *, 0x40) << 6) >> 0x18)) {
+            var_r0_2 = 1;
+        } else {
+            var_r0_2 = 0;
+        }
+        if (var_r0_2 & 0xFF) {
+            M2C_FIELD(arg0, u8 *, 5) = var_r8;
+        }
+        var_r8 += 1;
+    } while ((u32) var_r8 < 9U);
 }
 

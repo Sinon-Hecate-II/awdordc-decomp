@@ -82,7 +82,7 @@ void func_ov007_02218a60(void *arg0) {
     M2C_UNK func_02082040(void *);
     M2C_UNK func_020a40c0(u8);
     M2C_UNK func_020e35cc(s32);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     void *temp_r4;
     void *temp_r4_2;
 
@@ -98,5 +98,5 @@ void func_ov007_02218a60(void *arg0) {
         func_02082040(temp_r4_2);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
-    func_020a40c0(M2C_FIELD(*data_027e0058, u8 *, 0x5158));
+    func_020a40c0(M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
 }

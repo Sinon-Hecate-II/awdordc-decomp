@@ -1,6 +1,25 @@
 /* 9 functions from 0x022174F4 to 0x02218008 (ov005), found by ds-decomp. */
 #include "common.h"
 
+void func_ov005_022174f4(void) {
+extern void *data_ov005_02221310,*gCur3DSpriteEngine,*data_027e00c4;
+s32 value=M2C_FIELD(data_ov005_02221310,s16 *,0x10);
+void *saved=gCur3DSpriteEngine;
+gCur3DSpriteEngine=data_027e00c4;
+if(func_020bf894(M2C_FIELD(data_ov005_02221310,s16 *,0x10))) {
+func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc),0x40);
+func_020985b0(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
+func_02098a34(value,8,2,0,0);
+func_02098844(8,12,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),1,0,0);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
+func_ov005_0221730c();
+}else{
+func_020809c0(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20)+0x18,0x14,0x18);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
+}
+gCur3DSpriteEngine=saved;
+}
+
 void func_ov005_0221760c(void) {
 extern void *data_ov005_02221310,*gCur3DSpriteEngine,*data_027e00c8;
 s32 value=M2C_FIELD(data_ov005_02221310,s16 *,0x10);

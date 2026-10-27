@@ -400,11 +400,93 @@ p[arg0]=((arg1 << 27) >> 19)|(p[arg0]&~0x1f00);
 
 void func_02082134(s32 a,u32 b){extern void *gCur3DSpriteEngine;u16 *p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+6);p[a]=(p[a]&~0xc000)|((b<<30)>>16);}
 
-M2C_UNK func_020822b8(M2C_UNK *a){extern void *gCur3DSpriteEngine;extern void *data_027e00c8;extern u8 data_02152cdc[];extern u8 data_0214ecdc[];u8 *p;u8 r;s32 i,off;
-i=0;if(gCur3DSpriteEngine==data_027e00c8)r=1;else r=0;
-if(r==1)p=data_02152cdc;else p=data_0214ecdc;
-for(off=0;i<4;i++,off+=0x1000)M2C_FIELD((u8 *)gCur3DSpriteEngine+i*4,u8 **,0x20)=p+off;
-func_02082164();}
+void func_02082164(u8 *arg0) {
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c8;
+    extern void *data_027e00bc;
+    u8 *r4;
+    u16 *p;
+    u16 *q;
+    s32 i;
+    void func_0208259c(void);
+    void func_02082700(void);
+    void func_02082340(s32, void *);
+
+    r4 = arg0;
+
+    func_0208259c();
+    func_02082700();
+
+    p = *(u16 **)gCur3DSpriteEngine;
+    *p = (*p & ~0x7) | (r4[0] & 0x7);
+
+    p = *(u16 **)gCur3DSpriteEngine;
+    {
+        u8 b2 = r4[2];
+        u16 t = *p;
+        u8 low = b2 & 0xF;
+        u16 bit = (low & 0x1) << 12;
+        *p = (t & ~0x1000) | bit;
+    }
+
+    p = *(u16 **)gCur3DSpriteEngine;
+    {
+        u8 b2b = r4[2];
+        u16 t2 = *p;
+        u8 high = (b2b >> 4) & 0xF;
+        u16 bits = (high & 0x3) << 13;
+        *p = (t2 & ~0x6000) | bits;
+    }
+
+    if (gCur3DSpriteEngine == data_027e00c8) {
+        q = (u16 *)data_027e00bc;
+        {
+            u8 t1 = r4[1];
+            *q = (*q & ~0x8) | ((t1 & 0x1) << 3);
+        }
+        q = (u16 *)data_027e00bc;
+        {
+            u8 t3 = r4[3];
+            *(q + 1) = (*(q + 1) & ~0x7) | (t3 & 0x7);
+        }
+        q = (u16 *)data_027e00bc;
+        *(q + 1) = *(q + 1) & ~0x38;
+    }
+
+    r4 += 4;
+    for (i = 0; i < 4; i++) {
+        func_02082340(i, r4);
+        r4 += 2;
+    }
+}
+
+M2C_UNK func_020822b8(M2C_UNK *a) {
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c8;
+    extern u8 data_02152cdc[];
+    extern u8 data_0214ecdc[];
+    void func_02082164(u8 *);
+    u8 *p;
+    u8 r;
+    s32 i;
+
+    if (gCur3DSpriteEngine == data_027e00c8) {
+        r = 1;
+    } else {
+        r = 0;
+    }
+    if (r == 1) {
+        p = data_02152cdc;
+    } else {
+        p = data_0214ecdc;
+    }
+
+    for (i = 0; i < 4; i++) {
+        ((u8 **)gCur3DSpriteEngine)[8 + i] = p + i * 0x1000;
+    }
+
+    func_02082164((u8 *)a);
+}
 
 void func_0208232c(void) {
     M2C_UNK func_020822b8(M2C_UNK *);

@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct Callbacks3506c { void *(*alloc)(void *,int); int b,c; } Callbacks3506c;
 extern M2C_UNK data_0213d138, data_020fb7dc, data_020fb7f0;
-extern M2C_UNK data_020fb674, data_020fb59c;
+extern M2C_UNK data_020fb674, data_020fb59c, data_020fb680, data_020fb684;
 typedef struct Pair02034164 {s32 first, second;} Pair02034164;
 typedef struct Buffer02034164 { s32 start, current, end, size; } Buffer02034164;
 typedef struct Unk02034164 {
@@ -10,9 +10,12 @@ u8 pad[0x1000];
 s32 unk1000, unk1004, unk1008, unk100c;
 s32 (*alloc)(M2C_UNK *, s32);
 M2C_UNK (*free)(M2C_UNK *, s32, s32);
-u8 pad1018[0x10c];
+u8 pad1018[12];
+char url[256];
 s32 unk1124, unk1128;
-u8 pad112c[0x8a0];
+s32 unk112c, unk1130;
+u16 unk1134;
+u8 pad1136[0x896];
 s32 unk19cc, unk19d0;
 u8 pad19d4[0x24];
 s32 buffer[4];
@@ -62,6 +65,60 @@ s32 func_020345f4(Unk02034164 *obj,int a,int b) {
  func_020651c4(p+n,p,func_02068c34((int)p)+1);
  p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
  buf->current+=n;return 0;
+}
+
+s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
+  extern M2C_UNK data_020fb680, data_020fb684;
+  s32 func_02037214(s32, s32, void *, s32);
+  s32 func_02068c34(s32);
+  int func_02034908(s32, void *, s32);
+  s32 ctr = *(s32 *)((u8 *)obj + 0x1000 + 0x9f4);
+  char *fmtstr;
+  Buffer02034164 *buf = (Buffer02034164 *)((u8 *)obj + 0x1f8 + 0x1800);
+  s32 first;
+  s32 lenf;
+  s32 lenn;
+  s32 total;
+  s32 room;
+  s32 r;
+
+  if (ctr == 0)
+    fmtstr = (char *)&data_020fb680;
+  else
+    fmtstr = (char *)&data_020fb684;
+
+  *(s32 *)((u8 *)obj + 0x1000 + 0x9f4) = ctr + 1;
+
+  first = func_02037214(a, b, (void *)0, 0);
+
+  lenf = func_02068c34((s32)fmtstr);
+
+  lenn = func_02068c34((s32)name);
+
+  total = first + (lenf - 2 + lenn);
+
+  room = buf->end - buf->current;
+
+  if (total > room) {
+    if (func_02034908((s32)obj, buf, total - room + 1) == 0) return 1;
+    room = buf->end - buf->current;
+  }
+
+  r = func_0200567c(buf->current, room, fmtstr, name);
+
+  buf->current += r;
+
+  room = buf->end - buf->current;
+
+  r = func_02037214(a, b, (void *)buf->current, room - 1);
+
+  if (r < 0) return 1;
+
+  buf->current += first;
+
+  *(char *)buf->current = 0;
+
+  return 0;
 }
 
 s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
@@ -127,6 +184,51 @@ func_02007f8c(arg1,0,16);
 }
 
 s32 func_02034908(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C_UNK data_020fb6a4;void func_02008048(s32,s32,s32);s32 *b=arg;void (*freep)(void *,s32,s32)=M2C_FIELD(a,void (**)(void *,s32,s32),0x1014);s32 (*alloc)(void *,s32)=M2C_FIELD(a,s32 (**)(void *,s32),0x1010);s32 p;if(c<=0)return 0;p=alloc(&data_020fb6b8,b[3]+c);if(!p)return 0;func_02008048(b[0],p,b[3]);freep(&data_020fb6a4,b[0],0);if(!p)return 0;b[1]+=p-b[0];b[3]+=c;b[0]=p;b[2]=p+b[3];return 1;}
+
+#pragma opt_common_subs off
+s32 func_020349b0(Unk02034164 *p,s32 text) {
+void func_02068d18(s32,s32,s32);char *func_02068fdc(int,void *);s32 func_0206ad38(char *);
+extern M2C_UNK data_020fb6c8,data_020fb6d0,data_020fb6dc,data_020fb6e0;
+char *port=0,*q,*path;u32 n;
+if((u32)func_02068c34(text)>=256)return 0;
+func_02068d18((s32)p->url,text,256);
+n=func_02068c34(text);
+if(n!=func_02068c34((s32)p->url))return 0;
+q=func_02068fdc((s32)p->url,&data_020fb6c8);
+if(q){
+p->unk1124=(s32)(p->url+7);
+p->unk1130=0;p->unk1134=80;
+}else{
+q=func_02068fdc((s32)p->url,&data_020fb6d0);
+if(!q)return 0;
+p->unk1124=(s32)(q+8);
+p->unk1130=1;p->unk1134=443;
+}
+q=func_02068fdc(p->unk1124,&data_020fb6dc);
+if(q){*q=0;port=q+1;}
+q=func_02068fdc(p->unk1124,&data_020fb6e0);
+if(!q)p->unk1128=0;else{*q=0;p->unk1128=(s32)(q+1);}
+if(port)p->unk1134=func_0206ad38(port);
+return 1;
+}
+#pragma opt_common_subs reset
+s32 func_02034b04(Unk02034164 *obj,Buffer02034164 *buf,s32 a,s32 b) {
+void func_02068c50(void *,s32);
+extern M2C_UNK data_020fb6e4,data_020fb704,data_020fb724,data_020fb740;
+s32 (*alloc)(M2C_UNK *,s32)=obj->alloc;
+M2C_UNK (*free)(M2C_UNK *,s32,s32)=obj->free;
+if(buf->end>buf->current)return 0;
+((Pair02034164 *)buf->start)[buf->end].first=alloc(&data_020fb6e4,func_02068c34(a)+1);
+if(((Pair02034164 *)buf->start)[buf->end].first){
+((Pair02034164 *)buf->start)[buf->end].second=alloc(&data_020fb704,func_02068c34(b)+1);
+if(((Pair02034164 *)buf->start)[buf->end].second){
+func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].first,a);
+func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].second,b);
+buf->end++;return 1;}}
+if(((Pair02034164 *)buf->start)[buf->end].first){free(&data_020fb724,((Pair02034164 *)buf->start)[buf->end].first,0);((Pair02034164 *)buf->start)[buf->end].first=0;}
+if(((Pair02034164 *)buf->start)[buf->end].second){free(&data_020fb740,((Pair02034164 *)buf->start)[buf->end].second,0);((Pair02034164 *)buf->start)[buf->end].second=0;}
+return 0;
+}
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off

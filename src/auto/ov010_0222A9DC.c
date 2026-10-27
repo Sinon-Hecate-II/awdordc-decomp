@@ -165,26 +165,27 @@ void func_ov010_0222b11c(M2C_UNK arg0) {
     func_01ffa8c4(arg0, 1);
 }
 
-void func_ov010_0222b140(void *arg0) {
+/* Refresh the entity's sprite on the selected display banks, then queue command 19. */
+void func_ov010_0222b140(void *entity) {
 M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);
 extern s32 data_027e00c4,data_027e00c8,gCur3DSpriteEngine;
-s32 old;u32 current;s32 i;s8 mode;void *p;
-if(M2C_FIELD(arg0,s8 *,0x35)>=0&&func_0208b5ec())func_0208af20();
-if(M2C_FIELD(arg0,s8 *,0x35)>=0){
-old=gCur3DSpriteEngine;i=0;
+s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
+if(M2C_FIELD(entity,s8 *,0x35)>=0&&func_0208b5ec())func_0208af20();
+if(M2C_FIELD(entity,s8 *,0x35)>=0){
+savedBank=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)current=data_027e00c8;else current=data_027e00c4;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
-if(mode==0&&current!=data_027e00c8)continue;
-if(mode==1&&current!=data_027e00c4)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208b564(arg0);
-func_020899cc(p,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x4200001f);
-M2C_FIELD(p,s32 *,0x58)|=0x1000;
+if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
+if(mode==0&&bank!=data_027e00c8)continue;
+if(mode==1&&bank!=data_027e00c4)continue;
+if(mode==3&&bank!=savedBank)continue;
+created=func_0208b564(entity);
+func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x36)<<5,0x4200001f);
+M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine=savedBank;
 }
-func_01ffa8c4((s32)arg0,19);
+func_01ffa8c4((s32)entity,19);
 }
 
 void func_ov010_0222b234(void *arg0) {

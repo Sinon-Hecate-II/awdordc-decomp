@@ -3,75 +3,75 @@
 
 s32 func_020d849c(void *arg0) {
     s32 func_020d2850(u32, u16, u8);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 var_r3;
     if (arg0 == NULL) return 0;
     if (arg0 == NULL) var_r3 = 0;
-    else var_r3 = ((s32)arg0 - (s32)((u8 *)*data_027e0058 + 0x59A4)) / 14;
-    if (func_020d2850((u32)(M2C_FIELD(arg0,u8 *,0) << 26) >> 26, M2C_FIELD(*data_027e0058,u16 *,0x52A4), (u8)((var_r3 >> 6)+1)) != 0) return 2;
+    else var_r3 = ((s32)arg0 - (s32)((u8 *)*gCurrentMap + 0x59A4)) / 14;
+    if (func_020d2850((u32)(M2C_FIELD(arg0,u8 *,0) << 26) >> 26, M2C_FIELD(*gCurrentMap,u16 *,0x52A4), (u8)((var_r3 >> 6)+1)) != 0) return 2;
     if ((M2C_FIELD(arg0,u8 *,12) | M2C_FIELD(arg0,u8 *,13)) != 0) return 2;
     return 1;
 }
 
 void func_020d8540(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     void *temp_r0;
-    temp_r0 = *data_027e0058;
+    temp_r0 = *gCurrentMap;
     M2C_FIELD(temp_r0,u16 *,0x52E6) = (M2C_FIELD(temp_r0,u16 *,0x52E6) & ~0x1FC) | ((u32)(M2C_FIELD(temp_r0,u16 *,0x52C2) << 25) >> 23);
-    temp_r0 = *data_027e0058;
+    temp_r0 = *gCurrentMap;
     M2C_FIELD(temp_r0,u16 *,0x52E6) = (M2C_FIELD(temp_r0,u16 *,0x52E6) & ~0xFE00) | ((u32)(M2C_FIELD(temp_r0,u16 *,0x52C4) << 25) >> 16);
 }
 
 void func_020d8594(void) {
     /* Ease the camera height towards its target (168), using the hardware divider. */
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 func_0207c8ec(s32, s32);
     void *mapData;
-    mapData = *data_027e0058;
+    mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) <= 0) {
         M2C_FIELD(mapData, u16 *, 0x52E6) = (M2C_FIELD(mapData, u16 *, 0x52E6) & ~3) | 1;
-        mapData = *data_027e0058;
+        mapData = *gCurrentMap;
         if (M2C_FIELD(mapData, s16 *, 0x52E4) <= -99) M2C_FIELD(mapData, s16 *, 0x52E4) = 262;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) + 100, 2);
     }
-    mapData = *data_027e0058;
+    mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) > 168) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) <= 169) M2C_FIELD(mapData, s16 *, 0x52E4) = 168;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) - 168, 2);
         func_020d8540();
     }
-    if (M2C_FIELD(*data_027e0058, s16 *, 0x52E4) == 168) func_020d8540();
+    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 168) func_020d8540();
 }
 
 void func_020d867c(void) {
     /* Ease the camera height across the 0/268 wrap boundary, using the hardware divider. */
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 func_0207c8ec(s32, s32);
     void *mapData;
-    mapData = *data_027e0058;
+    mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) >= 168) {
         M2C_FIELD(mapData, u16 *, 0x52E6) = (M2C_FIELD(mapData, u16 *, 0x52E6) & ~3);
-        mapData = *data_027e0058;
+        mapData = *gCurrentMap;
         if (M2C_FIELD(mapData, s16 *, 0x52E4) >= 267) M2C_FIELD(mapData, s16 *, 0x52E4) = -94;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) - 268, 2);
     }
-    mapData = *data_027e0058;
+    mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) < 0) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) >= -1) M2C_FIELD(mapData, s16 *, 0x52E4) = 0;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4), 2);
         func_020d8540();
     }
-    if (M2C_FIELD(*data_027e0058, s16 *, 0x52E4) == 0) func_020d8540();
+    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 0) func_020d8540();
 }
 
 s32 func_020d8764(void) {
     void func_02079c6c(s16,s16,s32 *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 sp0[3];
-    void *temp_r0 = *data_027e0058;
+    void *temp_r0 = *gCurrentMap;
     func_02079c6c(M2C_FIELD(temp_r0,s16 *,0x52C2),M2C_FIELD(temp_r0,s16 *,0x52C4),sp0);
     if (sp0[1] > 128) return sp0[0] < 128 ? 1 : 0;
-    return (u32)(M2C_FIELD(*data_027e0058,u16 *,0x52E6) << 30) >> 30;
+    return (u32)(M2C_FIELD(*gCurrentMap,u16 *,0x52E6) << 30) >> 30;
 }
 
 void func_020d87d8(void) {
@@ -92,16 +92,16 @@ void func_020d87d8(void) {
 }
 
 void func_020d8804(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 temp_r0;
 
     temp_r0 = func_020d8764();
     switch (temp_r0) {                              /* irregular */
     case 0:
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E4) = 0;
+        M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) = 0;
         return;
     case 1:
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E4) = 0xA8;
+        M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) = 0xA8;
         return;
     }
 }

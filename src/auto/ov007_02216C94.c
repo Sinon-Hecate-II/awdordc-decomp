@@ -1,6 +1,36 @@
 /* 19 functions from 0x02216C94 to 0x02217C80 (ov007), found by ds-decomp. */
 #include "common.h"
 
+typedef struct MapPoint { s16 x, y; } MapPoint;
+typedef struct MapScan { u8 pad0[0xa10]; u16 cells[0x16a4]; u16 rows[0xcf6]; u16 width, height; } MapScan;
+
+/* Pick two well-separated interior locations for the two sides (first and second headquarters/spawn points). */
+void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
+    s32 func_ov007_02214d88(s32 low, s32 high);
+    s32 Map_PickRandomInteriorTile(s32 *x, s32 *y, s32 tileValue, void *avoidPoint);
+    MapPoint func_ov007_022157fc(s32 x, s32 y, s32 side, s32 radius, s32 distance);
+    MapPoint func_ov007_02215a0c(s32 side, s32 radius, s32 distance);
+
+    s32 x, y;
+    s32 radius = func_ov007_02214d88(2, 4);
+    s32 distance = func_ov007_02214d88(1, 3);
+
+    if (Map_PickRandomInteriorTile(&x, &y, 1, 0) == 1) {
+        MapPoint placed = func_ov007_022157fc(x, y, 1, radius, distance);
+        ((MapPoint *)first)->x = placed.x; ((MapPoint *)first)->y = placed.y;
+    } else {
+        MapPoint placed = func_ov007_02215a0c(1, radius, distance);
+        ((MapPoint *)first)->x = placed.x; ((MapPoint *)first)->y = placed.y;
+    }
+    if (Map_PickRandomInteriorTile(&x, &y, 1, first) == 1) {
+        MapPoint placed = func_ov007_022157fc(x, y, 2, radius, distance);
+        ((MapPoint *)second)->x = placed.x; ((MapPoint *)second)->y = placed.y;
+    } else {
+        MapPoint placed = func_ov007_02215a0c(2, radius, distance);
+        ((MapPoint *)second)->x = placed.x; ((MapPoint *)second)->y = placed.y;
+    }
+}
+
 M2C_UNK func_ov007_02217598(M2C_UNK *a,M2C_UNK *b){
  s32 func_ov007_02217318(void *,void *,s16 *);
  M2C_UNK func_ov007_02215254(s32,s32,s32);
@@ -47,6 +77,36 @@ M2C_UNK func_ov007_022176fc(void) {
  }
 }
 
+/* On every passable type-3 cell, randomly place tile 34 with a chance based on how many of its neighbors are open; then in a second pass place tile 34 on type-3 cells with exactly two open neighbors. */
+void func_ov007_02217774(void) {
+    extern void **gCurrentMap;
+    s32 func_ov007_022152bc(s32 x, s32 y);
+    s32 func_ov007_02215128(s32 count, s32 mode);
+    M2C_UNK func_ov007_02215254(s32 x, s32 y, s32 value);
+    s32 x, y, openNeighborCount;
+    MapScan *map;
+    map = *gCurrentMap;
+    for (y = 0; y < (s32)map->height; y++) {
+        for (x = 0; x < (s32)map->width; x++) {
+            if (map->cells[x + map->rows[y]] == 3) {
+                openNeighborCount = func_ov007_022152bc(x, y);
+                if (openNeighborCount != -1 && func_ov007_02215128(openNeighborCount, 34))
+                    func_ov007_02215254(x, y, 34);
+            }
+            map = *gCurrentMap;
+        }
+    }
+    for (y = 0; y < (s32)map->height; y++) {
+        for (x = 0; x < (s32)map->width; x++) {
+            if (map->cells[x + map->rows[y]] == 3) {
+                if (func_ov007_022152bc(x, y) == 2)
+                    func_ov007_02215254(x, y, 34);
+            }
+            map = *gCurrentMap;
+        }
+    }
+}
+
 M2C_UNK func_ov007_022178f4(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215dd8(s32 *,s32 *,s32);
@@ -79,18 +139,16 @@ void func_ov007_02217a5c(void) {
     M2C_UNK func_ov007_02215254(s32, s32, M2C_UNK);
     M2C_UNK func_ov007_02216a74();
     M2C_UNK func_ov007_02216bf4();
-    M2C_UNK func_ov007_02216c94(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217110(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217608(void);
     M2C_UNK func_ov007_02217680();
     M2C_UNK func_ov007_022176fc(void);
-    M2C_UNK func_ov007_02217774();
     M2C_UNK func_ov007_022178f4(void);
     M2C_UNK func_ov007_0221796c();
     M2C_UNK func_ov007_022179e4();
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     M2C_UNK sp14;
     M2C_UNK sp10;
     M2C_UNK spC;
@@ -102,7 +160,7 @@ void func_ov007_02217a5c(void) {
 
     func_0207c240();
     y = 0;
-    map = *data_027e0058;
+    map = *gCurrentMap;
     if ((s32) M2C_FIELD(map, u16 *, 0x5146) > 0) {
         do {
             x = 0;
@@ -110,7 +168,7 @@ void func_ov007_02217a5c(void) {
                 do {
                     func_ov007_02215254(x, y, 1);
                     x += 1;
-                    map = *data_027e0058;
+                    map = *gCurrentMap;
                 } while (x < (s32) M2C_FIELD(map, u16 *, 0x5144));
             }
             y += 1;

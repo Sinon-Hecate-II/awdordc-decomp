@@ -1,5 +1,18 @@
 /* 56 functions from 0x02004FF8 to 0x02005F80 (main), found by ds-decomp. */
 #include "common.h"
+static inline u8 *stack_end_02005968(void) {
+extern M2C_UNK data_027e0000;
+extern char data_00000800[];
+return (u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+}
+static inline u8 *stack_start_02005968(void) {
+extern char data_00000000[];
+s32 size=(s32)data_00000000;
+u8 *p;
+if(size<=0)p=(u8 *)0x027e15e0;
+else p=stack_end_02005968();
+return p-size;
+}
 
 void func_02004ff8(u32 arg0, s32 arg1) {
     extern M2C_UNK data_0212dc1c;
@@ -409,40 +422,77 @@ M2C_FIELD(&data_0212dc80,void **,0x28)=b;
 func_02006270((s32)b);
 }
 
+#pragma peephole off
+void func_02005968(void) {
+extern M2C_UNK data_0212dc80,data_0212dca8,data_0212dd74,data_027e0000,data_0212dca4,data_0212dcb4,data_0212defc;
+extern char data_00000000[],data_00000800[]; void func_02006120(void);
+void func_02005ac0(void *,void *,s32,u8 *,u32,s32);
+s32 size;u8 *end,*start;
+if(M2C_FIELD(&data_0212dc80,s32 *,12))return;
+M2C_FIELD(&data_0212dc80,s32 *,12)=1;
+M2C_FIELD(&data_0212dc80,void **,8)=&data_0212dca8;
+M2C_FIELD(&data_0212dc80,s32 *,356)=16;
+M2C_FIELD(&data_0212dc80,s32 *,352)=0;
+M2C_FIELD(&data_0212dc80,s32 *,344)=1;
+M2C_FIELD(&data_0212dc80,s32 *,348)=0;
+M2C_FIELD(&data_0212dc80,s32 *,360)=0;
+M2C_FIELD(&data_0212dc80,void **,44)=&data_0212dd74;
+M2C_FIELD(&data_0212dc80,void **,40)=&data_0212dd74;
+size=(s32)data_00000000;
+if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+start-=size;
+end=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+M2C_FIELD(&data_0212dc80,void **,392)=end;
+M2C_FIELD(&data_0212dc80,void **,388)=start;
+M2C_FIELD(&data_0212dc80,s32 *,396)=0;
+*(u32 *)(end-4)=0xfddb597d;
+*M2C_FIELD(&data_0212dc80,u32 **,388)=0x7bf9dd5b;
+M2C_FIELD(&data_0212dc80,s32 *,404)=0;
+M2C_FIELD(&data_0212dc80,s32 *,400)=0;
+M2C_FIELD(&data_0212dc80,u16 *,36)=0;
+M2C_FIELD(&data_0212dc80,u16 *,38)=0;
+*(void **)0x027fffa0=&data_0212dca4;
+func_020060f8(0);
+func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
+M2C_FIELD(&data_0212dc80,s32 *,164)=32;
+M2C_FIELD(&data_0212dc80,s32 *,152)=1;
+}
+#pragma peephole reset
 s32 func_02005ab0(void) {
     extern s32 data_0212dc8c;
     return data_0212dc8c;
 }
 
-void func_02005ac0(void *arg0,void *arg1,s32 arg2,u8 *arg3,u32 arg4,s32 arg5) {
+/* Initializes a managed memory-block object (obj) backed by buffer (buf) of (bufLen) bytes, with priority (priority) and callback (callback); registers it in the global block list. */
+void func_02005ac0(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
 s32 func_0200751c(void); s32 func_02007530(s32);
 void func_020061a0(); void func_02006198();
 void func_02007e54(s32,void *,s32); void func_02005bbc(void);
 s32 state; s32 id; u8 *base;
 state=func_0200751c();
 id=func_020056b0();
-M2C_FIELD(arg0,s32 *,0x70)=arg5;
-M2C_FIELD(arg0,s32 *,0x6c)=id;
-M2C_FIELD(arg0,s32 *,0x74)=M2C_FIELD(arg0,s32 *,0x64)=0;
-func_020057f8(arg0);
-M2C_FIELD(arg0,u8 **,0x94)=arg3;
-base=arg3-arg4;
-M2C_FIELD(arg0,u8 **,0x90)=base;
-M2C_FIELD(arg0,s32 *,0x98)=0;
-*(u32 *)(M2C_FIELD(arg0,u8 **,0x94)-4)=0xFDDB597D;
-*M2C_FIELD(arg0,u32 **,0x90)=0x7BF9DD5B;
-M2C_FIELD(arg0,s32 *,0x9c)=M2C_FIELD(arg0,s32 *,0xa0)=0;
-func_020061a0(arg0,arg1,arg3-4);
-M2C_FIELD(arg0,s32 *,4)=arg2;
-M2C_FIELD(arg0,void (**)(void),0x3c)=func_02005bbc;
-func_02007e54(0,base+4,arg4-8);
-M2C_FIELD(arg0,s32 *,0x8c)=M2C_FIELD(arg0,s32 *,0x88)=M2C_FIELD(arg0,s32 *,0x84)=0;
-func_02006198(arg0,0);
-M2C_FIELD(arg0,s32 *,0x78)=0;
-M2C_FIELD(arg0,s32 *,0x80)=0;
-M2C_FIELD(arg0,s32 *,0x7c)=0;
-func_02007e54(0,(u8 *)arg0+0xa4,12);
-M2C_FIELD(arg0,s32 *,0xb0)=0;
+M2C_FIELD(obj,s32 *,0x70)=priority;
+M2C_FIELD(obj,s32 *,0x6c)=id;
+M2C_FIELD(obj,s32 *,0x74)=M2C_FIELD(obj,s32 *,0x64)=0;
+func_020057f8(obj);
+M2C_FIELD(obj,u8 **,0x94)=buf;
+base=buf-bufLen;
+M2C_FIELD(obj,u8 **,0x90)=base;
+M2C_FIELD(obj,s32 *,0x98)=0;
+*(u32 *)(M2C_FIELD(obj,u8 **,0x94)-4)=0xFDDB597D;
+*M2C_FIELD(obj,u32 **,0x90)=0x7BF9DD5B;
+M2C_FIELD(obj,s32 *,0x9c)=M2C_FIELD(obj,s32 *,0xa0)=0;
+func_020061a0(obj,callback,buf-4);
+M2C_FIELD(obj,s32 *,4)=owner;
+M2C_FIELD(obj,void (**)(void),0x3c)=func_02005bbc;
+func_02007e54(0,base+4,bufLen-8);
+M2C_FIELD(obj,s32 *,0x8c)=M2C_FIELD(obj,s32 *,0x88)=M2C_FIELD(obj,s32 *,0x84)=0;
+func_02006198(obj,0);
+M2C_FIELD(obj,s32 *,0x78)=0;
+M2C_FIELD(obj,s32 *,0x80)=0;
+M2C_FIELD(obj,s32 *,0x7c)=0;
+func_02007e54(0,(u8 *)obj+0xa4,12);
+M2C_FIELD(obj,s32 *,0xb0)=0;
 func_02007530(state);
 }
 

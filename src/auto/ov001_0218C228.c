@@ -1,6 +1,55 @@
 /* 18 functions from 0x0218C228 to 0x0218C9B4 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct RuntimeRangeNode { struct RuntimeRangeNode *prev, *next; u16 start, size; } RuntimeRangeNode;
+typedef struct { u8 pad[0x180]; RuntimeRangeNode head, tail; s32 unk198, heap; } RuntimeRangePool;
 typedef struct { s32 a; u8 pad[4]; s32 b; u8 rest[52]; } RuntimePair64;
+
+RuntimeRangeNode *func_ov001_0218c228(s32 n,s32 size,s32 forward,s32 *out) {
+s32 func_ov001_0218a74c(s32);
+s32 func_020051f8(s32);
+void func_020051c8(s32);
+void func_02007958(void);
+void func_ov001_0218bf84(void *,void *);
+extern s32 data_ov001_02193e6c;
+RuntimeRangeNode *node,*p;
+s32 old,units;
+node=(RuntimeRangeNode *)func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e6c+n*0x1a0,s32 *,0x19c));
+units=((size+3)&~3)>>2;
+node->size=units;
+old=func_020051f8(1);
+if(forward) {
+p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].head;
+if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].tail) do {
+RuntimeRangeNode *next=p->next;
+s32 pos=p->start+p->size;
+if(pos+units<=next->start) {
+node->start=pos;
+func_ov001_0218bf84(next,node);
+goto forward_done;
+}
+p=next;
+} while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c));
+forward_done:
+if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c)) func_02007958();
+} else {
+p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].tail;
+if(p!=&((RuntimeRangePool *)data_ov001_02193e6c)[n].head) do {
+RuntimeRangeNode *prev=p->prev;
+s32 pos=p->start-units;
+if(pos>=prev->start+prev->size) {
+node->start=pos;
+func_ov001_0218bf84(p,node);
+goto backward_done;
+}
+p=prev;
+} while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180));
+backward_done:
+if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) func_02007958();
+}
+*out=node->start;
+func_020051c8(old);
+return node;
+}
 
 void func_ov001_0218c3a0(u32 arg0) {
     M2C_UNK func_ov001_0218a6f4(s32, u32);
@@ -57,37 +106,58 @@ func_ov001_0218c5b8();
 return;
 }
 
-void func_ov001_0218c4c0(void){extern s32 data_ov001_02193e70[];
-s32 func_02003538(void);s32 func_0200354c(void);s32 func_0200360c(void);s32 func_02003620(void);void func_ov001_0218c5b8(void);void func_0200ec24(s32);
-void func_020026d8(s32);
-void func_02002968(s32);
-void func_02002ab8(s32);
-void func_02002bb8(s32);
-void func_02002c64(s32);
-void func_02002e3c(s32);
-void func_02002f24(s32);
-void func_02003124(s32);
-void func_020031cc(s32);
-void func_0200323c(s32);
-void func_020032bc(s32);
-s32 func_02003104(s32);
-func_02003538();func_0200354c();func_0200360c();func_02003620();func_ov001_0218c5b8();
-func_020026d8(data_ov001_02193e70[0]);
-func_02002968(data_ov001_02193e70[1]);
-func_02002ab8(data_ov001_02193e70[2]);
-func_02002bb8(data_ov001_02193e70[3]);
-func_02002c64(data_ov001_02193e70[4]);
-func_02002e3c(data_ov001_02193e70[5]);
-func_02002f24(data_ov001_02193e70[6]);
-func_02003124(data_ov001_02193e70[7]);
-func_020031cc(data_ov001_02193e70[8]);
-func_0200323c(data_ov001_02193e70[9]);
-func_020032bc(data_ov001_02193e70[10]);
-func_02003104(data_ov001_02193e70[12]);
-*(volatile u16 *)0x4000050=0;*(volatile u16 *)0x4001050=0;
-*(volatile u32 *)0x4000010=0;*(volatile u32 *)0x4000014=0;*(volatile u32 *)0x4000018=0;*(volatile u32 *)0x400001c=0;
-*(volatile u32 *)0x4001010=0;*(volatile u32 *)0x4001014=0;*(volatile u32 *)0x4001018=0;*(volatile u32 *)0x400101c=0;
-func_0200ec24(1);
+/* System init pass 2: invoke NitroSDK startup hooks from data_ov001_02193e70,
+   plus a timing/sync hook, then clear VCOUNT/IRQ mask regs before enabling
+   something via func_0200ec24(1). */
+void func_ov001_0218c4c0(void) {
+    extern s32 data_ov001_02193e70[];
+    s32 func_02003538(void);
+    s32 func_0200354c(void);
+    s32 func_0200360c(void);
+    s32 func_02003620(void);
+    void func_ov001_0218c5b8(void);
+    void func_0200ec24(s32);
+    void func_020026d8(s32);
+    void func_02002968(s32);
+    void func_02002ab8(s32);
+    void func_02002bb8(s32);
+    void func_02002c64(s32);
+    void func_02002e3c(s32);
+    void func_02002f24(s32);
+    void func_02003124(s32);
+    void func_020031cc(s32);
+    void func_0200323c(s32);
+    void func_020032bc(s32);
+    s32 func_02003104(s32);
+
+    func_02003538();
+    func_0200354c();
+    func_0200360c();
+    func_02003620();
+    func_ov001_0218c5b8();
+    func_020026d8(data_ov001_02193e70[0]);
+    func_02002968(data_ov001_02193e70[1]);
+    func_02002ab8(data_ov001_02193e70[2]);
+    func_02002bb8(data_ov001_02193e70[3]);
+    func_02002c64(data_ov001_02193e70[4]);
+    func_02002e3c(data_ov001_02193e70[5]);
+    func_02002f24(data_ov001_02193e70[6]);
+    func_02003124(data_ov001_02193e70[7]);
+    func_020031cc(data_ov001_02193e70[8]);
+    func_0200323c(data_ov001_02193e70[9]);
+    func_020032bc(data_ov001_02193e70[10]);
+    func_02003104(data_ov001_02193e70[12]);
+    *(volatile u16 *)0x4000050 = 0;
+    *(volatile u16 *)0x4001050 = 0;
+    *(volatile u32 *)0x4000010 = 0;
+    *(volatile u32 *)0x4000014 = 0;
+    *(volatile u32 *)0x4000018 = 0;
+    *(volatile u32 *)0x400001c = 0;
+    *(volatile u32 *)0x4001010 = 0;
+    *(volatile u32 *)0x4001014 = 0;
+    *(volatile u32 *)0x4001018 = 0;
+    *(volatile u32 *)0x400101c = 0;
+    func_0200ec24(1);
 }
 
 void func_ov001_0218c5b8(void) {
@@ -119,6 +189,38 @@ void func_ov001_0218c63c(void) {
 
 void func_ov001_0218c668(void) {
     func_0200eca8(1);
+}
+
+void func_ov001_0218c678(void) {
+    M2C_UNK func_ov001_0218b6f8(s32, s32);
+    M2C_UNK func_ov001_0218a698(s32, s32, s32);
+    M2C_UNK func_ov001_0218a664(s32);
+    M2C_UNK func_ov001_0218bf04();
+    void func_ov001_0218bfc4(s32, void *);
+    void func_ov001_0218bfb4(s32, void *);
+    extern s32 data_ov001_02193ea4;
+    extern u8 data_ov001_0218fd28[];
+    u8 *src;
+    s32 i;
+    s32 off;
+
+    data_ov001_02193ea4 = func_ov001_0218b6f8(0x80, 4);
+    src = data_ov001_0218fd28;
+    i = 0;
+    off = 0;
+    for (; i < 2; i++) {
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x34) = *src;
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x3C) = func_ov001_0218b6f8((u32)*src * 0x14, 4);
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0) = func_ov001_0218a698(*src, M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 0x3C), 0x14);
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 4) = func_ov001_0218a664(*src++);
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8) = func_ov001_0218bf04();
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x1C) = 0;
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x30) = 0xFF;
+        func_ov001_0218bfc4(M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8), (u8 *) (data_ov001_02193ea4 + i * 0x40) + 0xC);
+        func_ov001_0218bfb4(M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), s32 *, 8), (u8 *) (data_ov001_02193ea4 + i * 0x40) + 0x20);
+    
+        M2C_FIELD(data_ov001_02193ea4 + ((u32)i << 6), u8 *, 0x38) = 1;
+    }
 }
 
 void func_ov001_0218c78c(void) {

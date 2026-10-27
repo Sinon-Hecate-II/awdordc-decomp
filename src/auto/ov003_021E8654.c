@@ -1,6 +1,38 @@
 /* 9 functions from 0x021E8654 to 0x021E9638 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_021e8654(void *p,s32 delta,s32 force){
+s32 func_ov003_021e6cac(s16,s16,s16);
+s32 next=delta+M2C_FIELD(p,s32*,4);
+if(func_ov003_021e6cac((s16)next,(s16)M2C_FIELD(p,s32*,12),(s16)M2C_FIELD(p,s32*,8))||force){
+M2C_FIELD(p,s32*,4)=next;
+if(M2C_FIELD(p,u8*,20)){
+while(M2C_FIELD(p,s32*,4)>M2C_FIELD(p,s32*,8))
+M2C_FIELD(p,s32*,4)-=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
+while(M2C_FIELD(p,s32*,4)<M2C_FIELD(p,s32*,12))
+M2C_FIELD(p,s32*,4)+=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
+}else{
+s32 x=M2C_FIELD(p,s32*,4),hi=M2C_FIELD(p,s32*,8);
+if(x<=hi){hi=M2C_FIELD(p,s32*,12);if(x>=hi)hi=x;}
+M2C_FIELD(p,s32*,4)=hi;
+}
+}else{
+s32 x=M2C_FIELD(p,s32*,8);
+if(next<=x){x=M2C_FIELD(p,s32*,12);if(next>=x)x=next;}
+M2C_FIELD(p,s32*,4)=x;
+if(M2C_FIELD(p,u8*,20)){
+while(M2C_FIELD(p,s32*,4)>M2C_FIELD(p,s32*,8))
+M2C_FIELD(p,s32*,4)-=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
+while(M2C_FIELD(p,s32*,4)<M2C_FIELD(p,s32*,12))
+M2C_FIELD(p,s32*,4)+=M2C_FIELD(p,s32*,8)-M2C_FIELD(p,s32*,12)+1;
+}else{
+s32 x=M2C_FIELD(p,s32*,4),hi=M2C_FIELD(p,s32*,8);
+if(x<=hi){hi=M2C_FIELD(p,s32*,12);if(x>=hi)hi=x;}
+M2C_FIELD(p,s32*,4)=hi;
+}
+}
+}
+
 void func_ov003_021e87d0(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0x34) = arg1;
     M2C_FIELD(arg0, s16 *, 0x36) = arg2;

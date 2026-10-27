@@ -19,19 +19,19 @@ void func_ov000_021a581c(void) {
     s32 func_020d1938(s32);
     s32 func_020d273c(u16, s32);
     void func_ov000_021a5564(u8);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     u16 saved;
     s32 i;
     void *base;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     saved = M2C_FIELD(base, u16 *, 0x52B6);
     func_01ffb554(base + 0x2338);
     func_01ffb3d0(0);
-    func_01ffb554(*data_027e0058 + 0x1E30);
+    func_01ffb554(*gCurrentMap + 0x1E30);
     for (i = 1; i < 5; i++) {
-        if (func_020d1938(i) != 0 && func_020d273c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), i) == 0)
+        if (func_020d1938(i) != 0 && func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
             func_ov000_021a5564(i);
     }
-    M2C_FIELD(*data_027e0058, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }
 

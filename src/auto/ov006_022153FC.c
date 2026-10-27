@@ -84,6 +84,77 @@ void func_ov006_02215b78(void) {
     func_ov006_022157a0();
 }
 
+void func_ov006_02215b84(u8 *arg0) {
+    M2C_UNK func_020b1c60(u8);
+    M2C_UNK func_ov006_02215c6c();
+    extern void *data_02101e84;
+    u16 temp_r1;
+    u16 temp_r2;
+    u8 var_r3;
+
+    var_r3 = *arg0;
+    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r1 = M2C_FIELD(data_02101e84, u16 *, 2);
+    if (temp_r2 & 1) {
+        func_ov006_02215c6c();
+        return;
+    }
+    if (temp_r1 & 0x40) {
+        switch (*arg0) {
+        case 10:
+            var_r3 = 8;
+            break;
+        case 11:
+            var_r3 = 0xA;
+            break;
+        }
+        if (var_r3 == 0xA || var_r3 == 0xB) {
+            goto L;
+        } else {
+            goto done;
+        }
+    } else if (temp_r1 & 0x80) {
+        switch (*arg0) {
+        case 10:
+            var_r3 = 0xB;
+            break;
+        case 11:
+            var_r3 = 0xD;
+            break;
+        }
+        if (var_r3 != 0xA && var_r3 != 0xB) {
+            goto done;
+        }
+    }
+L:
+    if (temp_r1 & 0x20) {
+        switch (var_r3) {
+        case 10:
+            var_r3 = 9;
+            break;
+        case 11:
+            break;
+        }
+        if (var_r3 != 0xA) {
+            goto done;
+        }
+    } else if (temp_r1 & 0x10) {
+        switch (var_r3) {
+        case 10:
+            if (temp_r1 == temp_r2) {
+                var_r3 = 9;
+            }
+            break;
+        case 11:
+            break;
+        }
+    }
+done:
+    if (*arg0 != var_r3) {
+        func_020b1c60(var_r3);
+    }
+}
+
 void func_ov006_02215dc4(void) {
     M2C_UNK func_0208fe30(s32);
     func_0208fe30(0x10019);
@@ -92,6 +163,81 @@ void func_ov006_02215dc4(void) {
 void func_ov006_02215dd8(void) {
     M2C_UNK func_ov006_022157a0();
     func_ov006_022157a0();
+}
+
+void func_ov006_02215de4(u8 *arg0) {
+    M2C_UNK func_020b1c60(u8);
+    M2C_UNK func_ov006_02215ee4();
+    extern void *data_02101e84;
+    u16 temp_r1;
+    u16 temp_r2;
+    u8 var_r3;
+
+    var_r3 = *arg0;
+    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r1 = M2C_FIELD(data_02101e84, u16 *, 2);
+    if (temp_r2 & 1) {
+        func_ov006_02215ee4();
+        return;
+    }
+    if (temp_r1 & 0x40) {
+        if ((*arg0 != 0xC) && (*arg0 != 0xD)) {
+        } else {
+            var_r3 = 0xB;
+        }
+        if (var_r3 == 0xC || var_r3 == 0xD) {
+            goto L;
+        }
+        goto done;
+    } else if (temp_r1 & 0x80) {
+        switch (*arg0) {
+        case 12:
+            if (temp_r2 == temp_r1) {
+                var_r3 = 0;
+            }
+            break;
+        case 13:
+            if (temp_r2 == temp_r1) {
+                var_r3 = 2;
+            }
+            break;
+        }
+        if (var_r3 != 0xC && var_r3 != 0xD) {
+            goto done;
+        }
+    }
+L:
+    if (temp_r1 & 0x20) {
+        switch (var_r3) {
+        case 12:
+            if (temp_r2 == temp_r1) {
+                var_r3 = 0xD;
+            }
+            break;
+        case 13:
+            var_r3 = 0xC;
+            break;
+        }
+        if (var_r3 != 0xC) {
+            goto done;
+        }
+    }
+    if (temp_r1 & 0x10) {
+        switch (var_r3) {
+        case 12:
+            var_r3 = 0xD;
+            break;
+        case 13:
+            if (temp_r2 == temp_r1) {
+                var_r3 = 0xC;
+            }
+            break;
+        }
+    }
+done:
+    if (*arg0 != var_r3) {
+        func_020b1c60(var_r3);
+    }
 }
 
 void func_ov006_02216188(void) {

@@ -57,9 +57,9 @@ void func_020b4b98(void *arg0) {
 
 void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 data_02168f0c;extern M2C_UNK data_0212882c;func_020b3c44();if(data_02168f0c)return;M2C_FIELD(func_01ffa444(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
 
-void func_020b4c08(u8 arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *data_027e0058;void (*fn)(void);
+void func_020b4c08(u8 arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
 func_020be324(arg0,func_020be120());func_020b4ab4(func_020be120());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
-func_020cfd14();fn=M2C_FIELD(M2C_FIELD(data_027e0058,void **,4),void (**)(void),0x50);if(fn)fn();func_020cd8a8();func_020cfd28();func_020c0a1c(3);}
+func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();func_020cd8a8();func_020cfd28();func_020c0a1c(3);}
 
 void func_020b4ca0(void) {
     s32 func_020bee64();
@@ -154,6 +154,23 @@ void func_020b4e10(M2C_UNK arg0) {
     M2C_UNK func_01ffa444(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02128a0c;
     func_01ffa444(&data_02128a0c, arg0);
+}
+
+s32 func_020b501c(s32 p,s32 a,s32 x,s32 y,s32 rawFlags,s32 b,s32 c){
+s32 func_02077700(void);u32 flags=*(u16 *)&rawFlags;u16 tile;s32 saved=*(volatile s32 *)&c;
+if(!(flags&32)){x<<=4;y<<=4;}
+switch(flags&3){
+case 1:x=(x+8)*48;y=(y+16)*48;break;
+case 0:x=(x+8)*48;y=(y+8)*48;break;
+case 2:x*=48;y*=48;break;
+}
+M2C_FIELD(p,s32 *,0x34)=x;M2C_FIELD(p,s32 *,0x38)=y;M2C_FIELD(p,s32 *,0x3c)=0x8b1;
+M2C_FIELD(p,s32 *,0x40)=flags&8?func_02077700():0x20000;
+if(flags&64)M2C_FIELD(p,u32 *,0x44)&=~0x80000;
+else M2C_FIELD(p,u32 *,0x44)|=0x80000;
+tile=(u16)(saved+0xab);
+if(flags&16)func_0208bd2c(p,a,b+0x329a0,tile,0);
+else func_0208bd2c(p,a,b+0x329a0,tile,1);
 }
 
 s32 func_020b5134(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {

@@ -55,11 +55,11 @@ void func_ov000_02188370(void) {
 
 u8 func_ov000_021883c0(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
     void *base, *table;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -134,11 +134,11 @@ void func_ov000_021884e4(void) {
 
 u8 func_ov000_02188538(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
     void *base, *table;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -154,13 +154,13 @@ s32 func_ov000_021885c8(void) {
     s32 func_020d1938(s32);
     s32 func_020d243c(s32);
     s32 func_020d273c(u16, s32);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 i, offset;
     void *base, *entry;
     if (func_ov000_02187e50() == 1) return 0;
     for (i = 1, offset = 0x8C; i < 5; i++, offset += 0x8C) {
-        if (func_020d1938(i) && !func_020d273c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), i) && func_020d243c(i)) {
-            base = *data_027e0058;
+        if (func_020d1938(i) && !func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) && func_020d243c(i)) {
+            base = *gCurrentMap;
             entry = (u8 *)base + offset;
             if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x67D0) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x67CF) & 0x7F) > 0) return 1;
         }
@@ -186,11 +186,11 @@ void func_ov000_02188688(void) {
 void func_ov000_021886d8(s32 arg0, s32 arg1) {
     s32 func_ov000_021885c8(void);
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
     void *base, *table;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -237,11 +237,11 @@ void func_ov000_02188790(void) {
 
 void func_ov000_021887e4(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
     void *base, *table;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -250,12 +250,12 @@ void func_ov000_021887e4(s32 arg0, s32 arg1) {
 
 u8 func_ov000_02188850(void) {
     s32 func_020d243c(s32);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     void *base, *entry;
     u8 result;
     if (func_ov000_02187e50() == 1) return 0;
-    if (func_020d243c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) == 0) return 0;
-    base = *data_027e0058;
+    if (func_020d243c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) return 0;
+    base = *gCurrentMap;
     entry = (u8 *)base + 0x67A4 + M2C_FIELD(base, u16 *, 0x52A4) * 0x8C;
     if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x2C) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x2B) & 0x7F) > 0) result = 1;
     else result = 0;
@@ -279,11 +279,11 @@ void func_ov000_021888ec(void) {
 
 void func_ov000_02188940(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
     void *base, *table;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -291,16 +291,16 @@ void func_ov000_02188940(s32 arg0, s32 arg1) {
 }
 
 u8 func_ov000_021889ac(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 value;
     s8 *bank;
     u8 result;
     void *base, *entry;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     entry = (u8 *)base + 0x59A4 + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xC) * 14;
     if (func_ov000_02187e50() == 1) return 0;
     value = M2C_FIELD(entry, u16 *, 8);
-    bank = M2C_FIELD((u8 *)*data_027e0058 + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
+    bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
     if (bank[(u32)(value << 26) >> 26] > 0) result = 1;
     else result = 0;
     return result;
@@ -323,13 +323,13 @@ void func_ov000_02188a38(void) {
 
 u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 offset;
     void *base, *table;
     u16 value;
     s8 *bank;
     u8 result;
-    base = *data_027e0058;
+    base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
@@ -337,7 +337,7 @@ u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
     value = M2C_FIELD((u8 *)table + offset, u16 *, 8);
     if (((u32)(value << 26) >> 26) == 0x3F) return 0;
 
-    bank = M2C_FIELD((u8 *)*data_027e0058 + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
+    bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
     if (bank[((u32)(value << 26) >> 26)] > 0) result = 1;
     else result = 0;
     return result;

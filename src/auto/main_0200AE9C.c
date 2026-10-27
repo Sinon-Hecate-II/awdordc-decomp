@@ -122,6 +122,36 @@ s32 func_0200b32c(void *a) {
  func_02007530(irq);return 1;
 }
 
+u32 func_0200b3ec(void *a,u32 memory,u32 size){
+extern M2C_UNK func_0200ac70;
+void func_0200b774(void *);
+s32 func_0200b99c(void *,s32,s32,s32,s32);
+s32 func_0200bbe0(s32,s32,s32);
+s32 func_0200ba9c(void *);
+M2C_UNK func_02007f8c(void *,M2C_UNK,M2C_UNK);
+u8 file[0x48];u32 required,p;
+required=(M2C_FIELD(a,u32 *,0x30)+M2C_FIELD(a,u32 *,0x38)+63)&~31;
+if(required<=size){
+p=(memory+31)&~31;
+func_0200b774(file);
+if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x2c),M2C_FIELD(a,s32 *,0x2c)+M2C_FIELD(a,s32 *,0x30),-1)){
+if(func_0200bbe0((s32)file,p,M2C_FIELD(a,s32 *,0x30))<0)func_02007f8c((void*)p,0,M2C_FIELD(a,s32 *,0x30));
+func_0200ba9c(file);
+}
+M2C_FIELD(a,u32 *,0x2c)=p;
+p+=M2C_FIELD(a,u32 *,0x30);
+if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x34),M2C_FIELD(a,s32 *,0x34)+M2C_FIELD(a,s32 *,0x38),-1)){
+if(func_0200bbe0((s32)file,p,M2C_FIELD(a,s32 *,0x38))<0)func_02007f8c((void*)p,0,M2C_FIELD(a,s32 *,0x38));
+func_0200ba9c(file);
+}
+M2C_FIELD(a,u32 *,0x34)=p;
+M2C_FIELD(a,u32 *,0x44)=memory;
+M2C_FIELD(a,void **,0x50)=&func_0200ac70;
+M2C_FIELD(a,u32 *,0x1c)|=4;
+}
+return required;
+}
+
 s32 func_0200b510(void *a) {
  s32 func_0200b59c();
  s32 func_0200b638(void *);
@@ -175,6 +205,33 @@ void func_0200b774(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
 }
 
+s32 func_0200b79c(void *a,s32 b,s32 c,s32 d) {
+extern Unk032Record data_0212fbec;
+s32 func_0200af74(void *,s32);
+u8 *path=(u8 *)b;Unk032Record rec; s32 i,flag;void *p;
+if(*path==47||*path==92){
+M2C_FIELD(&rec,u16 *,4)=0;
+rec.words[0]=data_0212fbec.words[0];rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;path++;
+}else{
+rec=data_0212fbec;
+for(i=0;i<=3;i++){
+u8 ch=path[i];
+if(ch==0||ch==47||ch==92)break;
+if(ch==58){
+p=(void *)func_0200b144((s32)path,i);if(!p)return 0;
+flag=TestFileFlag(p,2);if(flag==0)return 0;
+rec.words[0]=(u32)p;rec.words[2]=0;M2C_FIELD(&rec,u16 *,6)=0;M2C_FIELD(&rec,u16 *,4)=0;
+path+=i+1;if(*path==47||*path==92)path++;break;
+}
+}
+}
+M2C_FIELD(a,u32 *,8)=rec.words[0];M2C_FIELD(a,u8 **,0x3c)=path;
+M2C_FIELD(a,Unk032Record *,0x30)=rec;
+if(d!=0){M2C_FIELD(a,s32 *,0x40)=1;M2C_FIELD(a,s32 *,0x44)=d;}
+else{M2C_FIELD(a,s32 *,0x40)=0;M2C_FIELD(a,s32 *,0x44)=c;}
+return func_0200af74(a,4);
+}
+
 M2C_UNK func_0200b8e0(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d){s32 func_0200bad8(void *);s32 old=M2C_FIELD(a,s32 *,44),n=c,limit=M2C_FIELD(a,s32 *,40)-old;M2C_FIELD(a,s32 *,48)=b;if(n>limit)n=limit;if(n<0)n=0;M2C_FIELD(a,s32 *,52)=c;M2C_FIELD(a,s32 *,56)=n;if(!d)M2C_FIELD(a,s32 *,12)|=4;func_0200af74((void *)a,0);if(!d){if(func_0200bad8((void *)a))n=M2C_FIELD(a,s32 *,44)-old;else n=-1;}return n;}
 
 s32 func_0200b95c(s32 a,s32 b) {
@@ -215,9 +272,9 @@ s32 func_0200bad8(void *a){void func_02005da4(void *);s32 r=0,key=func_0200751c(
 
 void func_0200bb98(void *a){s32 key=func_0200751c();void *p;if((M2C_FIELD(a,volatile s32 *,12)&1)?1:0){M2C_FIELD(a,volatile s32 *,12)|=2;p=M2C_FIELD(a,void **,8);M2C_FIELD(p,s32 *,28)|=32;}func_02007530(key);}
 
-void func_0200bbe0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 func_0200bbe0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0200b8e0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0200b8e0(arg0, arg1, arg2, 0);
+    return func_0200b8e0(arg0, arg1, arg2, 0);
 }
 
 s32 func_0200bbf0(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}

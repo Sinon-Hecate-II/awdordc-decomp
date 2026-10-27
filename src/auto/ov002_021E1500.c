@@ -216,3 +216,52 @@ void func_ov002_021e1c34(void *a,s32 b) {
     *(volatile s32 *)0x400046c=0x1000;
 }
 
+void func_ov002_021e2204(void *arg0) {
+    M2C_UNK func_02087064(M2C_UNK, u16, u16, s32, s32);
+    M2C_UNK func_02087b94(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
+    M2C_UNK func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, M2C_UNK, M2C_UNK, M2C_UNK);
+    u8 *p20;
+    u8 temp_r5;
+    u16 temp_r6_2;
+    u16 temp_r7;
+    u16 var_r3;
+    u32 temp_r8;
+    u32 temp_r9;
+    u8 temp_r0;
+    u8 temp_r6;
+    u8 var_r2;
+    void *var_r5;
+
+    if (M2C_FIELD(arg0, void **, 0x14) == NULL) {
+        return;
+    }
+    *(s32 *)0x04000444 = 0;
+    p20 = M2C_FIELD(arg0, u8 **, 0x20);
+    temp_r5 = *p20;
+    func_ov002_021e1cac(arg0, 0, 1, (void *) p20, (void *) M2C_FIELD(arg0, s32 *, 0x24), (M2C_UNK) M2C_FIELD(arg0, u8 *, 0x4B), (M2C_UNK) (temp_r5 - M2C_FIELD(arg0, s32 *, 0x30)), (M2C_UNK) temp_r5);
+    var_r5 = M2C_FIELD(arg0, void **, 0x14);
+    var_r3 = M2C_FIELD(var_r5, u16 *, 4);
+    if (var_r3 != 0xFFFF) {
+        do {
+            temp_r0 = M2C_FIELD(var_r5, u8 *, 6);
+            temp_r6 = M2C_FIELD(var_r5, u8 *, 7);
+            temp_r6_2 = ((u32) (temp_r0 << 0x1C) >> 0x1C) * 8;
+            temp_r7 = ((u32) (temp_r0 << 0x18) >> 0x1C) * 8;
+            temp_r8 = (u32) (temp_r6 << 0x1B) >> 0x1F;
+            temp_r9 = (u32) (temp_r6 << 0x1A) >> 0x1F;
+            if (M2C_FIELD(arg0, u8 *, 0x48) != 0) {
+                if (M2C_FIELD(arg0, u8 *, 0x49) == 0) {
+                    var_r2 = M2C_FIELD(arg0, u8 *, 0x3B);
+                } else {
+                    var_r2 = M2C_FIELD(arg0, u8 *, 0x3A);
+                }
+                func_02087064(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)) + M2C_FIELD(arg0, u8 *, 0x51));
+            }
+            func_02087b94(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
+            var_r5 = (u8 *) var_r5 + 8;
+            var_r3 = M2C_FIELD(var_r5, u16 *, 4);
+        } while (var_r3 != 0xFFFF);
+    }
+    *(s32 *)0x04000448 = 1;
+}
+

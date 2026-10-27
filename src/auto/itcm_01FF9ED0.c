@@ -228,6 +228,41 @@ void func_01ffa574(void *arg0) {
     func_01ffa4a0(arg0);
 }
 
+void func_01ffa5b8(void *p){
+extern u8 data_027e15b8,data_027e15b4;
+extern s32 gCur3DSpriteEngine;
+s32 old;
+void *next;
+if(!p)return;
+M2C_FIELD(p,u8*,0x30)|=0x20;
+next=M2C_FIELD(p,void**,0x24);
+if(next)func_01ffa5b8(next);
+M2C_FIELD(p,u8*,0x30)&=~0x20;
+if(M2C_FIELD(p,u8*,0x31)==0 && !(M2C_FIELD(p,u8*,0x30)&8)){
+if(M2C_FIELD(p,u8*,0x30)&16){
+if(data_027e15b8 && data_027e15b4)goto skip;
+M2C_FIELD(p,u8*,0x30)&=~16;
+}
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
+M2C_FIELD(p,u8*,0x30)&=~64;
+do{
+if(!M2C_FIELD(p,s32*,0x10))func_01ffa160(p);
+if(M2C_FIELD(p,s32*,0x10))((void(*)(void*))M2C_FIELD(p,s32*,0x10))(p);
+}while(M2C_FIELD(p,u8*,0x30)&64);
+M2C_FIELD(p,u8*,0x30)&=~64;
+gCur3DSpriteEngine=old;
+}
+skip:
+if(M2C_FIELD(p,u8*,0x30)&1)return;
+if(M2C_FIELD(p,s32*,0x14)){
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
+((void(*)(void*))M2C_FIELD(p,s32*,0x14))(p);
+gCur3DSpriteEngine=old;
+}
+if(M2C_FIELD(p,u8*,0x30)&1)return;
+next=M2C_FIELD(p,void**,0x1c);if(next)func_01ffa5b8(next);
+}
+
 void func_01ffa6fc(void *arg0) {
     s16 *temp_r2;
 
@@ -448,14 +483,52 @@ else{q=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,8);if(M2C_FIELD(q,s8 *,19)>
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)++;
 }
 
-void func_01ffabac(s32 a,s32 b,s32 c,s32 d,u16 e,s32 f,s32 priority){extern s32 gCur3DSpriteEngine;void *p,*q,*next;u8 *base;u32 index;
-if(M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)>=128)return;
-base=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,4);index=M2C_FIELD(gCur3DSpriteEngine,volatile u8 *,0x49);p=base+index*20;
-M2C_FIELD(p,s16 *,8)=a;M2C_FIELD(p,s16 *,10)=b;M2C_FIELD(p,s16 *,12)=c;M2C_FIELD(p,s16 *,14)=d;M2C_FIELD(p,s16 *,16)=e;M2C_FIELD(p,s32 *,4)=f;M2C_FIELD(p,s8 *,19)=priority;
-M2C_FIELD(p,u8 *,18)&=~15;M2C_FIELD(p,u8 *,18)=(M2C_FIELD(p,u8 *,18)&~240)|16;
-if(M2C_FIELD(gCur3DSpriteEngine,void **,8)==0){M2C_FIELD(gCur3DSpriteEngine,void **,8)=p;M2C_FIELD(p,void **,0)=0;}
-else{q=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,8);if(M2C_FIELD(q,s8 *,19)>priority){M2C_FIELD(p,void **,0)=q;M2C_FIELD(gCur3DSpriteEngine,void **,8)=p;}else{for(;;){next=M2C_FIELD(q,void **,0);if(!next || M2C_FIELD(next,s8 *,19)>priority){M2C_FIELD(p,void **,0)=next;M2C_FIELD(q,void **,0)=p;break;}q=next;}}}
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)++;
+/* Allocates a paired-sprite entry in gCur3DSpriteEngine's array, fills in fields, and inserts it into the priority-ordered list. Returns silently if the 128-entry array is full. */
+void func_01ffabac(s32 a, s32 b, s32 c, s32 d, u16 e, s32 f, s32 priority) {
+    extern s32 gCur3DSpriteEngine;
+    void *p, *q, *next;
+    u8 *base;
+    u32 index;
+
+    if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49) >= 128) return;
+
+    base = M2C_FIELD(gCur3DSpriteEngine, u8 *volatile *, 4);
+    index = M2C_FIELD(gCur3DSpriteEngine, volatile u8 *, 0x49);
+    p = base + index * 20;
+
+    M2C_FIELD(p, s16 *, 8) = a;
+    M2C_FIELD(p, s16 *, 10) = b;
+    M2C_FIELD(p, s16 *, 12) = c;
+    M2C_FIELD(p, s16 *, 14) = d;
+    M2C_FIELD(p, s16 *, 16) = e;
+    M2C_FIELD(p, s32 *, 4) = f;
+    M2C_FIELD(p, s8 *, 19) = priority;
+
+    M2C_FIELD(p, u8 *, 18) &= ~15;
+    M2C_FIELD(p, u8 *, 18) = (M2C_FIELD(p, u8 *, 18) & ~240) | 16;
+
+    if (M2C_FIELD(gCur3DSpriteEngine, void **, 8) == 0) {
+        M2C_FIELD(gCur3DSpriteEngine, void **, 8) = p;
+        M2C_FIELD(p, void **, 0) = 0;
+    } else {
+        q = M2C_FIELD(gCur3DSpriteEngine, void *volatile *, 8);
+        if (M2C_FIELD(q, s8 *, 19) > priority) {
+            M2C_FIELD(p, void **, 0) = q;
+            M2C_FIELD(gCur3DSpriteEngine, void **, 8) = p;
+        } else {
+            for (;;) {
+                next = M2C_FIELD(q, void **, 0);
+                if (!next || M2C_FIELD(next, s8 *, 19) > priority) {
+                    M2C_FIELD(p, void **, 0) = next;
+                    M2C_FIELD(q, void **, 0) = p;
+                    break;
+                }
+                q = next;
+            }
+        }
+    }
+
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49)++;
 }
 
 void func_01ffac9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {

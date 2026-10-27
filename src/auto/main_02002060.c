@@ -36,8 +36,69 @@ void func_0200213c(s32 *arg0, s32 *arg1, s32 *arg2) {
     arg2[0] = x; arg2[1] = y; arg2[2] = z;
 }
 
+typedef volatile unsigned int vu32;
+void func_020021c0(s32 *arg0, s32 *arg1) {
+    s64 sq = (s64)*(volatile s32 *)(arg0+1) * arg0[1];
+    sq += (s64)arg0[0] * arg0[0];
+    sq += (s64)arg0[2] * arg0[2];
+    *(volatile u16 *)0x04000280 = 2;
+    *(volatile s32 *)0x04000290 = 0;
+    *(volatile s32 *)0x04000294 = 0x01000000;
+    *(volatile u32 *)0x04000298 = (u32)sq;
+    *(volatile u32 *)0x0400029c = (u32)(sq >> 32);
+    *(volatile u16 *)0x040002b0 = 1;
+    *(volatile u32 *)0x040002b8 = (u32)(sq << 2);
+    *(volatile u32 *)0x040002bc = (u32)((sq << 2) >> 32);
+    while (*(volatile u16 *)0x040002b0 & 0x8000) { }
+    {
+        s32 scale = *(volatile s32 *)0x040002b4;
+        while (*(volatile u16 *)0x04000280 & 0x8000) { }
+        {
+            s64 D = *(volatile s64 *)0x040002a0;
+            s64 P = D * (s64)scale;
+            arg1[0] = (s32)((P * (s64)arg0[0] + (1LL << 44)) >> 45);
+            arg1[1] = (s32)((P * (s64)arg0[1] + (1LL << 44)) >> 45);
+            arg1[2] = (s32)((P * (s64)arg0[2] + (1LL << 44)) >> 45);
+        }
+    }
+}
+
 void func_020022d8(void) {
 
+}
+
+void func_020022dc(void) {
+void func_020025c0(void); s32 func_0200558c(void); void func_02007958(void); void func_02007984(s32,void *,s32,s32); void func_02007e54(s32,void *,s32);
+extern s16 data_0212dbc0; extern s16 data_020f5200;
+s32 v;
+*(volatile u16 *)0x4000304 |= 0x8000;
+*(volatile u16 *)0x4000304 = (*(volatile u16 *)0x4000304 & ~0x20e)|0x20e;
+*(volatile u16 *)0x4000304 |= 1;
+func_020025c0();
+while(M2C_FIELD(&data_0212dbc0,u16 *,2)==0) {
+v=func_0200558c();
+if(v==-3) func_02007958();
+M2C_FIELD(&data_0212dbc0,u16 *,2)=v;
+}
+*(volatile u16 *)0x4000004=0;
+*(volatile u32 *)0x4000000=0;
+if(M2C_FIELD(&data_020f5200,s32 *,4)!=-1) {
+func_02007984(M2C_FIELD(&data_020f5200,s32 *,4),(void *)0x4000008,0,0x60);
+*(volatile u16 *)0x400006c=0;
+func_02007984(M2C_FIELD(&data_020f5200,s32 *,4),(void *)0x4001000,0,0x70);
+} else {
+func_02007e54(0,(void *)0x4000008,0x60);
+*(volatile u16 *)0x400006c=0;
+func_02007e54(0,(void *)0x4001000,0x70);
+}
+*(volatile u16 *)0x4000020=0x100;
+*(volatile u16 *)0x4000026=0x100;
+*(volatile u16 *)0x4000030=0x100;
+*(volatile u16 *)0x4000036=0x100;
+*(volatile u16 *)0x4001020=0x100;
+*(volatile u16 *)0x4001026=0x100;
+*(volatile u16 *)0x4001030=0x100;
+*(volatile u16 *)0x4001036=0x100;
 }
 
 s32 func_02002428(s32 a) {
@@ -151,6 +212,53 @@ void func_02002620(s32 arg0) {
     }
 }
 
+void func_02002968(s32 a) {
+extern M2C_UNK data_0212dbc4;
+M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,4))&~a;
+M2C_FIELD(&data_0212dbc4,u16 *,4)=a;
+switch(a) {
+case 3: *(volatile u8 *)0x4000241=0x8a;
+case 1: *(volatile u8 *)0x4000240=0x82;break;
+case 2: *(volatile u8 *)0x4000241=0x82;break;
+case 0x70: *(volatile u8 *)0x4000246=0x9a;
+case 0x30: *(volatile u8 *)0x4000245=0x92;
+case 0x10: *(volatile u8 *)0x4000244=0x82;break;
+case 0x50: *(volatile u8 *)0x4000246=0x92; *(volatile u8 *)0x4000244=0x82;break;
+case 0x60: *(volatile u8 *)0x4000246=0x8a;
+case 0x20: *(volatile u8 *)0x4000245=0x82;break;
+case 0x40: *(volatile u8 *)0x4000246=0x82;break;
+case 0:break;
+}
+func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+}
+
+void func_02002ab8(s32 mode) {
+    extern M2C_UNK data_0212dbc4;
+    /* Select a 3D VRAM bank mode and update the display control mirror. */
+    M2C_FIELD(&data_0212dbc4, u16 *, 0) = (M2C_FIELD(&data_0212dbc4, u16 *, 0) | M2C_FIELD(&data_0212dbc4, u16 *, 0xe)) & ~mode;
+    M2C_FIELD(&data_0212dbc4, u16 *, 0xe) = mode;
+    switch (mode) {
+    case 0x10:
+        *(volatile u32 *)0x4000000 |= 0x40000000;
+        *(volatile u8 *)0x4000244 = 0x84;
+        break;
+    case 0x40:
+        *(volatile u32 *)0x4000000 |= 0x40000000;
+        *(volatile u8 *)0x4000246 = 0x8c;
+        break;
+    case 0x60:
+        *(volatile u8 *)0x4000246 = 0x8c;
+    case 0x20:
+        *(volatile u8 *)0x4000245 = 0x84;
+        *(volatile u32 *)0x4000000 |= 0x40000000;
+        break;
+    case 0x0:
+        *(volatile u32 *)0x4000000 &= ~0x40000000;
+        break;
+    }
+    func_02002620(M2C_FIELD(&data_0212dbc4, u16 *, 0));
+}
+
 void func_02002bb8(u32 a) {
     extern M2C_UNK data_0212dbc4;
     M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,16))&~a;
@@ -167,5 +275,47 @@ void func_02002bb8(u32 a) {
         *(volatile u32 *)0x04000000 &= ~0x80000000;
     }
     func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+}
+
+void func_02002e3c(s32 a) {
+    extern M2C_UNK data_0212dbc4;
+    M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,0xa))&~a;
+    M2C_FIELD(&data_0212dbc4,u16 *,0xa)=a;
+    switch (a) {
+    case 0x60:
+        *(volatile u8 *)0x4000246 = 0x8b;
+    case 0x20:
+        *(volatile u8 *)0x4000245 = 0x83;
+        break;
+    case 0x40:
+        *(volatile u8 *)0x4000246 = 0x83;
+        break;
+    case 0x70:
+        *(volatile u8 *)0x4000246 = 0x9b;
+    case 0x30:
+        *(volatile u8 *)0x4000245 = 0x93;
+    case 0x10:
+        *(volatile u8 *)0x4000244 = 0x83;
+        break;
+    case 0:
+        break;
+    }
+    func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+}
+
+void func_02002f24(u32 a) {
+extern M2C_UNK data_0212dbc4;
+M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,12))&~a;
+M2C_FIELD(&data_0212dbc4,u16 *,12)=a;
+switch(a) {
+case 3: *(volatile u8 *)0x4000240=0x93;
+case 2: *(volatile u8 *)0x4000241=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
+case 12: *(volatile u8 *)0x4000242=0x93;
+case 8: *(volatile u8 *)0x4000243=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
+case 0: *(volatile u16 *)0x4000060&=~0x4000;break;
+case 1: *(volatile u8 *)0x4000240=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
+case 4: *(volatile u8 *)0x4000242=0x9b; *(volatile u16 *)0x4000060|=0x4000;break;
+}
+func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
 }
 

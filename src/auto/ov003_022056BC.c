@@ -1,7 +1,7 @@
 /* 81 functions from 0x022056BC to 0x022066A8 (ov003), found by ds-decomp. */
 #include "common.h"
 
-extern void **data_027e0058;
+extern void **gCurrentMap;
 
 M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
     M2C_UNK func_01ffa574();
@@ -274,7 +274,7 @@ s32 func_ov003_022063b4(s32 arg0) {
 }
 
 void func_ov003_022063c8(s32 arg0, u8 arg1) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s8 var_r1;
 
     switch (arg1 & 0xff) {
@@ -294,14 +294,14 @@ void func_ov003_022063c8(s32 arg0, u8 arg1) {
         var_r1 = 0;
         break;
     }
-    M2C_FIELD(*data_027e0058, s8 *, 0x5157) = var_r1;
+    M2C_FIELD(*gCurrentMap, s8 *, 0x5157) = var_r1;
 }
 
 s32 func_ov003_02206428(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     u8 temp_r0;
 
-    temp_r0 = M2C_FIELD(*data_027e0058, u8 *, 0x5157);
+    temp_r0 = M2C_FIELD(*gCurrentMap, u8 *, 0x5157);
     switch (temp_r0) {
     case 0:
         return 0;
@@ -343,23 +343,23 @@ s32 func_ov003_022064a8(s32 arg0) {
 }
 
 void func_ov003_022064bc(s32 arg0_unused, s32 arg1) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     u16 var_r3;
 
     if (arg1 == 4) {
         var_r3 = 0;
-        M2C_FIELD(*data_027e0058, s8 *, 0x5159) = 1;
+        M2C_FIELD(*gCurrentMap, s8 *, 0x5159) = 1;
     } else {
         var_r3 = arg1;
-        M2C_FIELD(*data_027e0058, s8 *, 0x5159) = 0;
+        M2C_FIELD(*gCurrentMap, s8 *, 0x5159) = 0;
     }
-    M2C_FIELD(*data_027e0058, u8 *, 0x5158) = (u8) var_r3;
-    M2C_FIELD(*data_027e0058, u8 *, 0x515A) = (u8) var_r3;
-    M2C_FIELD(*data_027e0058, u8 *, 0x515B) = (u8) var_r3;
+    M2C_FIELD(*gCurrentMap, u8 *, 0x5158) = (u8) var_r3;
+    M2C_FIELD(*gCurrentMap, u8 *, 0x515A) = (u8) var_r3;
+    M2C_FIELD(*gCurrentMap, u8 *, 0x515B) = (u8) var_r3;
 }
 
 u8 func_ov003_02206544(void **arg0) {
-    void *temp_r1 = *data_027e0058;
+    void *temp_r1 = *gCurrentMap;
     if (M2C_FIELD(temp_r1, u8 *, 0x5159) != 1) {
         return M2C_FIELD(temp_r1, u8 *, 0x515B);
     }
@@ -393,13 +393,13 @@ s32 func_ov003_022065a0(s32 arg0) {
 }
 
 void func_ov003_022065b4(s32 arg0_unused, s8 arg1) {
-    extern void **data_027e0058;
-    M2C_FIELD(*data_027e0058, s8 *, 0x5156) = arg1;
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s8 *, 0x5156) = arg1;
 }
 
 u8 func_ov003_022065d0(void) {
-    extern void **data_027e0058;
-    return M2C_FIELD(*data_027e0058, u8 *, 0x5156);
+    extern void **gCurrentMap;
+    return M2C_FIELD(*gCurrentMap, u8 *, 0x5156);
 }
 
 s32 func_ov003_022065ec(void) {

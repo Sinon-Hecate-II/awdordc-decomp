@@ -1,6 +1,16 @@
 /* 30 functions from 0x0202F37C to 0x02030348 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_0202f37c(void) {
+ void *func_0202f48c(s32);
+ void *p=func_0202f48c(1); void *q;
+ if(M2C_FIELD(p,u8 *,8)&16) { q=func_0202f48c(16); M2C_FIELD(p,u8 *,8)&=~16; M2C_FIELD(p,void (**)(s32,void *,s32),4)(16,q,3352); }
+ if(M2C_FIELD(p,u8 *,8)&8) { q=func_0202f48c(8); M2C_FIELD(p,u8 *,8)&=~8; M2C_FIELD(p,void (**)(s32,void *,s32),4)(8,q,12); }
+ if(M2C_FIELD(p,u8 *,8)&4) { q=func_0202f48c(4); M2C_FIELD(p,u8 *,8)&=~4; M2C_FIELD(p,void (**)(s32,void *,s32),4)(4,q,88); }
+ if(M2C_FIELD(p,u8 *,8)&2) { q=func_0202f48c(2); M2C_FIELD(p,u8 *,8)&=~2; M2C_FIELD(p,void (**)(s32,void *,s32),4)(2,q,8960); }
+ if(M2C_FIELD(p,u8 *,8)&1) { M2C_FIELD(p,u8 *,8)&=~1; M2C_FIELD(p,void (**)(s32,void *,s32),4)(1,p,24); }
+}
+
 void *func_0202f48c(s32 arg0) {
  extern M2C_UNK data_0213d100;
  if (arg0 & 1) return M2C_FIELD(&data_0213d100, void **, 0x10);
@@ -86,6 +96,39 @@ s32 func_0202f5f4(void) {
   }
  }
  return 1;
+}
+
+void func_0202f694(s32 arg0) {
+ void *a=(void *)arg0;
+ void *func_0202f48c(s32); u8 func_0202f544(void);
+ void func_02030afc(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
+ s32 func_0202f9a0(s32,void *,M2C_UNK,void *); void func_0202fb20(s32,s32);
+ s32 result=-1; u8 v; void *p=func_0202f48c(16);
+ M2C_FIELD(func_0202f48c(1),u8 *,11)=1;
+ switch(func_0202f544()) {
+ case 3:
+ v=M2C_FIELD(p,u8 *,0xD11);
+ if(M2C_FIELD(a,u16 *,10)==0 || M2C_FIELD(a,u8 *,12)==0) {func_02030afc(M2C_FIELD(a,u16 *,0x36));}
+ else if(M2C_FIELD(a,u16 *,10)==1 || M2C_FIELD(a,u8 *,12)==32) {
+ func_02030afc(M2C_FIELD(a,u16 *,0x36));
+ result=func_0202f894(a,M2C_FIELD(p,u8 *,0xD10),p+0x300);
+ }else result=func_0202f894(a,M2C_FIELD(p,u8 *,0xD10),p+0x300);
+ break;
+ case 4:
+ v=M2C_FIELD(p+M2C_FIELD(p,u8 *,0xD0F)*0xC0,u16 *,0x4A6)-1;
+ result=func_0202f910(a,p);
+ if(result>=0) M2C_FIELD(p+0x447+M2C_FIELD(p,u8 *,0xD0F)*4,u8 *,0)|=0x80;
+ break;
+ case 5:
+ v=M2C_FIELD(p,u8 *,0xD11);
+ result=func_0202f894(a,1,p+0x300+M2C_FIELD(p,u8 *,0xD0F)*0x24);
+ if(result>=0) {
+ s32 i=(s16)M2C_FIELD(p,u8 *,0xD0F)*(s16)0x24; void *q=p+0x300;
+ M2C_FIELD(q+i,u8 *,0)=(M2C_FIELD(q+i,u8 *,0)&~15)|1;
+ } break;
+ default:return;
+ }
+ if(result>=0) func_0202fb20(func_0202f9a0(result,a,v,p),(s32)p);
 }
 
 s32 func_0202f800(void *arg0) {
@@ -287,6 +330,8 @@ s32 func_0202fc9c(void) {
     return var_r4;
 }
 
+/* Polls/refreshes the current entry for state 'p': clears the D0D slot, zeroes a temp buffer,
+   calls func_020300e8 to (re)validate, then updates the D0B flags and reports 9 or 8. */
 s32 func_0202fce0(void *p) {
 void func_02007f8c(void *,s32,s32); u8 func_0202ff14(void *);
 void *q=p+0x470+M2C_FIELD(p,u8 *,0xD13)*0xC0;
@@ -305,6 +350,27 @@ if((((s32)M2C_FIELD(q,u16 *,0x2C)>>4)&1)==1) {M2C_FIELD(p+M2C_FIELD(p,u8 *,0xD13
 M2C_FIELD(p,u8 *,0xD15)=0;M2C_FIELD(p,u8 *,0xD14)=0;return 8;
 }
 
+#pragma dont_inline on
+s32 func_020300b0(void *);
+s32 func_0202fdd8(u8 *p) {
+u32 func_02027c84(); s32 func_020300b0(void *); s32 func_020300cc(void *);
+void func_02027754(void *,void *,s32); unsigned long long func_02007004(void);
+s32 state=func_02027c84(p); s32 off; u8 *base; s32 flags; base=p+0x470; off=(s16)p[0xd13]*(s16)192;
+if(state==3) {
+{ s32 (*getFlags)(void *)=func_020300b0; flags=getFlags(p); }
+p[0xd15]++;
+if(p[0xd15]>3){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=1;return 9;}
+if(p[0xd15]!=1) {
+if(p[0xd14]==1)p[0xd0b]&=~12;
+else if(p[0xd14]==2){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=3;return 9;}
+else if(p[0xd14]==3){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=4;return 9;}
+else if(p[0xd15]==3)p[0xd0b]&=~12;
+}
+func_02027754(base+off,p+0xcb8,flags|func_020300cc(p));
+} else if(state==9) {p[0xd15]=0;M2C_FIELD(p,unsigned long long *,0xcb0)=func_02007004();return 10;}
+return 8;
+}
+#pragma dont_inline reset
 s32 func_020300b0(void *arg0) {
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1E) >> 0x1E) == 1) {
         return 0x30000;
@@ -319,19 +385,20 @@ s32 func_020300cc(void *arg0) {
     return 0x80000;
 }
 
-s32 func_020300e8(void *p, u32 n, void *out) {
+/* Builds an outgoing command/payload at `out` from game state `state` using mode `type` (0..9); returns whether out[0] is nonzero. */
+s32 func_020300e8(void *state, u32 type, void *out) {
 void func_02008048(void *,void *,s32);
 void func_0203181c(s32,void *);
 void func_02031784(s32,void *);
-switch(n) {
-case 2:p+=0x100;
-case 1:p+=0x100;
-case 0:M2C_FIELD(out,u8 *,0)=(u32)(M2C_FIELD(p,u8 *,0xE6)<<30)>>30;func_02008048(p+0x80,out+2,0x50);break;
-case 5:p+=0x100;
-case 4:p+=0x100;
-case 3:M2C_FIELD(out,u8 *,0)=1;func_02008048(p+0xD1,out+2,0x14);M2C_FIELD(out,u8 *,0x16)=0;break;
-case 6:M2C_FIELD(out,u8 *,0)=2;func_0203181c(M2C_FIELD(p,u8 *,0xD13)*0xC0+(s32)(p+0x47C),out+2);break;
-case 7:M2C_FIELD(out,u8 *,0)=2;func_02031784(M2C_FIELD(p,u8 *,0xD13)*0xC0+(s32)(p+0x47C),out+2);break;
+switch(type) {
+case 2:state+=0x100;
+case 1:state+=0x100;
+case 0:M2C_FIELD(out,u8 *,0)=(u32)(M2C_FIELD(state,u8 *,0xE6)<<30)>>30;func_02008048(state+0x80,out+2,0x50);break;
+case 5:state+=0x100;
+case 4:state+=0x100;
+case 3:M2C_FIELD(out,u8 *,0)=1;func_02008048(state+0xD1,out+2,0x14);M2C_FIELD(out,u8 *,0x16)=0;break;
+case 6:M2C_FIELD(out,u8 *,0)=2;func_0203181c(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
+case 7:M2C_FIELD(out,u8 *,0)=2;func_02031784(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
 case 8:case 9:break;
 }return M2C_FIELD(out,u8 *,0)!=0;
 }

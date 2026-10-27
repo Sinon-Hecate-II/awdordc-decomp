@@ -87,6 +87,63 @@ else return q;
 return 0;
 }
 
+void func_02072c9c(s32 arg0, void *arg1) {
+    s32 __FindExceptionTable(void *, s32);
+    void *func_02072bac(u8 *, u32 *);
+    void *func_02072c38(u32 *, s32, u32);
+    s32 func_020745fc(void *);
+    u32 sp8;
+    u32 sp4;
+    u32 sp0;
+    u32 *temp_r0;
+    u32 *temp_r0_2;
+    s32 temp_r1;
+    u32 temp_r7;
+    u32 var_r8;
+    void *var_r0;
+    void *var_r1;
+    M2C_FIELD(arg1, s32 *, 4) = 0;
+    M2C_FIELD(arg1, s32 *, 8) = 0;
+    if (__FindExceptionTable(arg1, arg0) == 0) {
+        return;
+    }
+    temp_r0 = M2C_FIELD(arg1, u32 *, 0xC);
+    temp_r1 = M2C_FIELD(arg1, s32 *, 0x10);
+    temp_r0_2 = func_02072c38(temp_r0, (temp_r1 - (s32)temp_r0) / 12, (u32)arg0);
+    if (temp_r0_2 == NULL) {
+        return;
+    }
+    if (M2C_FIELD(temp_r0_2, s32 *, 4) & 1) {
+        var_r1 = (void *)((u8 *)temp_r0_2 + 8);
+    } else {
+        var_r1 = M2C_FIELD(temp_r0_2, void **, 8);
+    }
+    M2C_FIELD(arg1, void **, 4) = var_r1;
+    M2C_FIELD(arg1, s32 *, 0) = M2C_FIELD(temp_r0_2, s32 *, 0);
+    temp_r7 = (u32)(arg0 - M2C_FIELD(temp_r0_2, s32 *, 0));
+    var_r0 = func_020745fc(M2C_FIELD(arg1, void **, 4));
+    var_r8 = 0;
+loop:
+    var_r0 = func_02072bac((u8 *)var_r0, &sp8);
+    if (sp8 == 0) {
+        return;
+    }
+    var_r0 = func_02072bac((u8 *)var_r0, &sp4);
+    var_r0 = func_02072bac((u8 *)var_r0, &sp0);
+    {
+        u32 temp_r2 = var_r8 + sp8;
+        if (temp_r7 < temp_r2) {
+            return;
+        }
+        var_r8 = temp_r2 + sp4;
+        if (temp_r7 > var_r8) {
+            goto loop;
+        }
+    }
+    M2C_FIELD(arg1, void **, 8) = (void *)((u8 *)M2C_FIELD(arg1, void **, 4) + sp0);
+    return;
+}
+
 u8 func_02072da4(void *arg0) {
 u8 *p=M2C_FIELD(arg0,u8 **,8);
 s32 result;

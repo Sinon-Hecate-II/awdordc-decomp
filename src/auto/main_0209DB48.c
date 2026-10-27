@@ -474,17 +474,17 @@ s32 func_0209ea0c(s32 arg0) {
 #pragma scheduling off
 void func_0209ea20(s32 arg0, s32 arg1, s32 arg2) {
 void *func_020a4770(); void **func_01ffa3dc(M2C_UNK *,s32);
-extern void **data_027e0058; extern M2C_UNK data_02156e50; extern M2C_UNK data_0211f87c;
+extern void **gCurrentMap; extern M2C_UNK data_02156e50; extern M2C_UNK data_0211f87c;
 void **base; s32 tick; void *t,*q,*p; s32 v,b,a;
 p=func_020a4770();
 if(!p){func_0209eaf4(arg0,arg1,arg2);return;}
-tick=func_0207c2e0(); base=data_027e0058; M2C_FIELD(&data_02156e50,s32 *,8)=tick;
+tick=func_0207c2e0(); base=gCurrentMap; M2C_FIELD(&data_02156e50,s32 *,8)=tick;
 t=*base;
 func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,t+0x52dc);
-a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*data_027e0058,s16 *,0x6ed4);
+a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);
 if(a<b)M2C_FIELD(p,u8 *,4)=0; else M2C_FIELD(p,u8 *,4)=a-b;
 q=func_01ffa3dc(&data_0211f87c,7);
-M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*data_027e0058,s32 *,0x52d0);
+M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
 M2C_FIELD(q,s32 *,0x60)=arg2;
 M2C_FIELD(q,void **,0x34)=p;
 M2C_FIELD(q,s32 *,0x38)=arg0;

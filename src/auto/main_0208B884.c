@@ -103,6 +103,22 @@ void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 v
     M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xC00000) | 0x400000);
 }
 
+void func_0208bf7c(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
+s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK func_0208116c(M2C_UNK *,s32,M2C_UNK);void *func_02091270(s32,M2C_UNK,M2C_UNK);
+u16 packed;void *sub,*ptr;
+packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
+M2C_FIELD(obj,s32 *,0x54)=func_02080e30(b,1);
+if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);func_0208116c(c,(count+16)<<5,32);}
+sub=func_02091270(M2C_FIELD(obj,s32 *,0x54),13,2);
+M2C_FIELD(obj,void **,0x4c)=sub;func_02091700(sub,0);
+M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x30)=M2C_FIELD(obj,s32 *,0x50);
+M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x28)=packed;
+ptr=M2C_FIELD(obj,void **,0x4c);M2C_FIELD(ptr,u8 *,0x22)|=0x40;
+M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xfc000000)|(func_02091ac0(M2C_FIELD(obj,void **,0x4c))<<26);
+M2C_FIELD(obj,s32 *,0x48)=(M2C_FIELD(obj,s32 *,0x48)&0xffe003ff)|((u32)(func_02091a84(M2C_FIELD(obj,void **,0x4c))<<21)>>11);
+M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xc00000)|0x800000;
+}
+
 void func_0208c080(void *arg0) {
     M2C_UNK func_02091700(s32);
     s32 func_02091a84(s32);

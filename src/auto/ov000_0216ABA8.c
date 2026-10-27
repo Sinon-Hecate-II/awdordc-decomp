@@ -15,11 +15,11 @@ u8 *func_ov000_0216b074(u8 *arg0) {
 void *func_ov000_0216b0c8(void) {
     void *func_020a8b0c(u16);
     s32 func_020cd6d4();
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     void *result;
     switch (func_020cd6d4()) {
     case 0: result = NULL; break;
-    default: result = func_020a8b0c(M2C_FIELD((*data_027e0058 + 0x5120), u16 *, 0x22)); break;
+    default: result = func_020a8b0c(M2C_FIELD((*gCurrentMap + 0x5120), u16 *, 0x22)); break;
     }
     return result;
 }

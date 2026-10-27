@@ -1,5 +1,57 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
+static inline u8 *mapBits020778cc(u8 *dims) { return dims+0xe1; }
+static inline u32 tileFlags020778cc(u16 tile) {
+ extern u32 data_020edebc[][2];
+ return data_020edebc[tile][0] & 0x7fff0000;
+}
+
+typedef struct Unk0207Color3 { u32 words[3]; } Unk0207Color3;
+extern const Unk0207Color3 data_020eb1b4;
+extern const Unk0207Color3 data_020eb1a8;
+extern void *gCur3DSpriteEngine;
+s16 func_0207cfb8(void *);
+s32 func_0207ca38(s32, s32, s32, s32, s32);
+void func_0207d990(s32, void *, void *);
+
+void func_02077624(void) {
+    M2C_UNK func_02003de4();
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    extern u32 data_027e15bc;
+    extern const u16 data_020eb210[];
+    extern const u16 data_020eb250[];
+    extern u16 data_02140fc8[];
+    s32 i;
+    s32 blend;
+    const u16 *src0;
+    const u16 *src1;
+    s32 a;
+    s32 b;
+    s32 lo;
+    s32 mid;
+    s32 hi;
+
+    i = 0;
+    blend = data_027e15bc & 0x3F;
+    if (blend < 0x20) {
+        src0 = data_020eb210;
+        src1 = data_020eb250;
+    } else {
+        src0 = data_020eb250;
+        src1 = data_020eb210;
+        blend -= 0x20;
+    }
+    do {
+        a = src0[i];
+        b = src1[i];
+        lo = func_0207ca38(0, a & 0x1F, b & 0x1F, blend, 0x20);
+        mid = func_0207ca38(0, (a & 0x3E0) >> 5, (b & 0x3E0) >> 5, blend, 0x20);
+        hi = func_0207ca38(0, (a & 0x7C00) >> 0xA, (b & 0x7C00) >> 0xA, blend, 0x20);
+        data_02140fc8[i] = lo | (mid << 5) | (hi << 10);
+        i++;
+    } while (i < 0x20);
+    func_02003de4();
+}
 
 void func_02077700(void) {
     M2C_UNK func_02001fb4(M2C_UNK, s32);
@@ -9,6 +61,49 @@ void func_02077700(void) {
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
 
+#pragma push
+#pragma optimization_level 2
+void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
+ void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
+ extern s32 *gCurrentMap;
+ extern u8 data_02141f08[];
+ extern u8 data_02142ebc[3840];
+ extern u32 data_020edebc[][2];
+ extern u8 data_02141788[];
+ s32 x,y;
+ u32 flags;
+ s32 base;
+ u32 index;
+ u8 *bits;
+ u8 *dims;
+ s32 fog,terrain,a,b;
+ *(volatile u32 *)0x04000444=0;
+ *(volatile u32 *)0x04000470=0;
+ *(volatile u32 *)0x04000470=0;
+ *(volatile u32 *)0x04000470=-16;
+ for(y=top;y<=bottom;y++) {
+ for(x=left;x<=right;x++) {
+ if(x>=0 && y>=0) {
+ base=*gCurrentMap;
+ dims=(u8 *)base+0x5120;
+ if(x<M2C_FIELD(dims,u16 *,0x24) && y<M2C_FIELD(dims,u16 *,0x26)) {
+ flags=tileFlags020778cc(*(u16 *)(data_02142ebc+x*80+y*2));
+ if(flags&0x20000) {
+ bits=mapBits020778cc(dims);
+ index=x+M2C_FIELD(base+y*2,u16 *,0x3758);
+ fog=(u8)(bits[index>>3]&(1<<(index&7)));
+ terrain=M2C_FIELD(base+index,u8 *,0x1420);
+ a=(data_02141f08+x*40)[y];
+ b=(data_02141788+x*40)[y];
+ func_02079310(x,y,0xac,0,terrain,fog,a,b);
+ }
+ }
+ }
+ }
+ }
+ *(volatile u32 *)0x04000448=1;
+}
+#pragma pop
 void func_02077a30(void) {
     M2C_UNK func_02003d8c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     func_02003d8c(0, 0, 0, 0);
@@ -16,8 +111,28 @@ void func_02077a30(void) {
 
 void func_02077a4c(void) {extern M2C_UNK data_02140f70;M2C_FIELD(&data_02140f70,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
 
-void func_02077a7c(void) {void func_02077c8c();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *data_027e0058;
-func_02077c8c();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*data_027e0058+0x6ef8);func_0207cbb0();func_0207749c();}
+void func_02077a7c(void) {void func_02077c8c();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
+func_02077c8c();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
+
+/* Interpolate two constant backdrop colors by blend factor t and store the resulting RGB plus engine viewport dimensions into data_02140f88. */
+M2C_UNK func_02077ab8(s32 arg0) {
+    extern M2C_UNK data_02140f88;
+    Unk0207Color3 colorTop = data_020eb1b4;
+    Unk0207Color3 colorBottom = data_020eb1a8;
+    s32 t = func_0207cfb8((void *)arg0);
+    s32 colors[3];
+    s32 dims[3];
+    void *engine;
+
+    colors[0] = func_0207ca38(0, colorTop.words[0], colorBottom.words[0], t, 0x80);
+    colors[1] = func_0207ca38(0, colorTop.words[1], colorBottom.words[1], t, 0x80);
+    colors[2] = func_0207ca38(0, colorTop.words[2], colorBottom.words[2], t, 0x80);
+    engine = gCur3DSpriteEngine;
+    dims[0] = (M2C_FIELD(engine, s16 *, 0x3C) + M2C_FIELD(engine, s16 *, 0x40)) * 0x30;
+    dims[1] = (M2C_FIELD(engine, s16 *, 0x3E) + M2C_FIELD(engine, s16 *, 0x42)) * 0x30;
+    dims[2] = 0;
+    func_0207d990((s32)&data_02140f88, colors, dims);
+}
 
 void func_02077bb4(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK data_02140f88;u8 temp[64];
 *(volatile u32 *)0x4000440=0;*(volatile u32 *)0x4000454=0;func_02003a8c(&data_02140f88);func_02001034(arg0+28,temp);func_02003a8c(temp);*(volatile u32 *)0x4000440=2;*(volatile u32 *)0x4000454=0;}
@@ -30,10 +145,10 @@ void func_02077c10(void) {
     M2C_UNK func_0207ce54(s32);
     M2C_UNK func_0207d95c(M2C_UNK);
     extern M2C_UNK data_02140f88;
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 temp_r4;
 
-    temp_r4 = *data_027e0058 + 0x2F8;
+    temp_r4 = *gCurrentMap + 0x2F8;
     func_0207d95c(0);
     func_02077ab8(temp_r4 + 0x6C00);
     func_0207ce54(temp_r4 + 0x6C00);
@@ -121,6 +236,148 @@ void func_02077ebc(void) {
     func_0208168c(&data_02100b9c, 0x327A0);
     func_0208166c(&data_02100ba4, 0x1540, 0x20);
     func_02081528();
+}
+
+void func_02078068(void) {
+    M2C_UNK func_02007e98(M2C_UNK, void *, M2C_UNK);
+    u8 *func_020a32f4(s32);
+    s32 func_020a334c(s32);
+    s32 func_020d0468(s32, s32, s32);
+    extern s32 *gCurrentMap;
+    extern u8 data_02141008[];
+    u8 *base;
+    s32 selected;
+    u16 width;
+    u16 height;
+    u8 *unit;
+    u8 kindByte;
+    u8 otherByte;
+    u16 rowVal;
+    s32 idx;
+    s32 x;
+    s32 y;
+
+    base = (u8 *)*gCurrentMap;
+    selected = *(u16 *)(base + 0x52A4);
+    width = *(u16 *)(base + 0x5144);
+    height = *(u16 *)(base + 0x5146);
+    func_02007e98(0, data_02141008, 0x780);
+    unit = func_020a32f4(selected);
+    if (unit == 0) {
+        return;
+    }
+    if (func_020a334c(selected) != 0) {
+        return;
+    }
+    base = (u8 *)*gCurrentMap;
+    kindByte = unit[2];
+    otherByte = unit[1];
+    rowVal = *(u16 *)(base + 0x3758 + kindByte * 2);
+    idx = otherByte + rowVal;
+    if (!(((base[0x5201 + (idx >> 3)] >> (idx & 7)) & 1))) {
+        return;
+    }
+    y = 0;
+    while (y < height) {
+        x = 0;
+        while (x < width) {
+            if (func_020d0468(selected, x, y) != -1) {
+                data_02141008[x * 0x28 + y] = 1;
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+}
+
+void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
+    extern s32 *gCurrentMap;
+    extern u8 data_02141008[];
+    extern u8 data_02141788[];
+    extern u32 data_027e15bc;
+    extern const u8 data_020eb1f0[32];
+    u8 pal[32];
+    u8 *base;
+    u8 *sub;
+    s32 w;
+    s32 h;
+    s32 x;
+    s32 y;
+    s32 i;
+    u8 c;
+
+    base = *(u8 **)gCurrentMap;
+    sub = base + 0x120;
+    w = M2C_FIELD(sub, u16 *, 0x5024);
+    h = M2C_FIELD(sub, u16 *, 0x5026);
+    if (x0 < 0) {
+        x0 = 0;
+    }
+    if (y0 < 0) {
+        y0 = 0;
+    }
+    if (x1 > w - 1) {
+        x1 = w - 1;
+    }
+    if (y1 > h - 1) {
+        y1 = h - 1;
+    }
+    for (y = y0; y <= y1; y++) {
+        for (x = x0; x <= x1; x++) {
+            c = 0;
+            if (M2C_FIELD(y, u8 *, (s32)&data_02141008 + x * 0x28) != 0) {
+                for (i = 0; i < 0x20; i += 2) {
+                    pal[i] = data_020eb1f0[i];
+                    pal[i + 1] = data_020eb1f0[i + 1];
+                }
+                c = pal[(data_027e15bc >> 2) & 0x1F];
+            }
+            M2C_FIELD(y, u8 *, (s32)&data_02141788 + x * 0x28) = c;
+        }
+    }
+}
+
+void func_0207843c(s32 x0, s32 y0, s32 x1, s32 y1) {
+    s32 func_0207e52c(s32, s32);
+    s32 func_0207ef5c(s32, s32, u16);
+    extern s32 *gCurrentMap;
+    extern u8 data_02142ebc[3840];
+    extern u8 data_02143dbc[3840];
+    u8 *base;
+    u8 *sub;
+    s32 x;
+    s32 y;
+    s32 w;
+    s32 h;
+    s32 stride;
+    s32 a;
+    s32 b;
+
+    base = *(u8 **)gCurrentMap;
+    sub = base + 0x120;
+    w = M2C_FIELD(sub, u16 *, 0x5024);
+    h = M2C_FIELD(sub, u16 *, 0x5026);
+    stride = 0x50;
+    if (x0 < 0) {
+        x0 = 0;
+    }
+    if (y0 < 0) {
+        y0 = 0;
+    }
+    if (x1 > w - 1) {
+        x1 = w - 1;
+    }
+    if (y1 > h - 1) {
+        y1 = h - 1;
+    }
+    for (y = y0; y <= y1; y++) {
+        for (x = x0; x <= x1; x++) {
+            a = func_0207e52c(x, y);
+            b = func_0207ef5c(x, y, (u16)a);
+            M2C_FIELD(data_02142ebc, u16 *, x * stride + y * 2) = a;
+            M2C_FIELD(data_02143dbc, u16 *, x * stride + y * 2) = b;
+        }
+    }
 }
 
 void func_02078528(void) {

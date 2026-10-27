@@ -1,5 +1,6 @@
 /* 58 functions from 0x02029E98 to 0x0202AE00 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
 M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_02029c30(void *, s32);
@@ -161,6 +162,29 @@ loop:
 done:
  if (chosen == NULL) return 0;
  return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
+}
+
+s32 func_0202a334(void *arg0, HeapRange *arg1) {
+HeapRange range; void *prev; u8 *p; u32 size;
+range=*arg1;
+prev=0;
+for(p=M2C_FIELD(arg0,u8 **,0);p!=0;p=M2C_FIELD(p,u8 **,12)) {
+if(p<arg1->start) prev=p;
+else {
+if(p==arg1->end) {
+size=M2C_FIELD(p,u32 *,4);
+range.end=(u8 *)(size+(u32)(p+16));
+func_02029f58(arg0,p);
+}
+break;
+}
+}
+if(prev!=0 && (u8 *)(M2C_FIELD(prev,u32 *,4)+(u32)((u8 *)prev+16))==arg1->start){
+range.start=prev;prev=func_02029f58(arg0,prev);
+}
+if((u32)(range.end-range.start)<16) return 0;
+func_02029f80(arg0,func_02029fb0(&range,0x4652),prev);
+return 1;
 }
 
 void *func_0202a424(u32 arg0, u32 arg1, s32 arg2) {

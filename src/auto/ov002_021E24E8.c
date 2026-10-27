@@ -1,5 +1,7 @@
 /* 29 functions from 0x021E24E8 to 0x021E3210 (ov002), found by ds-decomp. */
 #include "common.h"
+typedef struct SlotEntry { s16 value; u8 index:3; u8 rest:5; u8 pad; } SlotEntry;
+static inline void SetSlotIndex(SlotEntry *p, u8 index) { p->index=index; }
 extern M2C_UNK data_ov002_021ea704;
 static inline void *init_021e2848(void *p) {
 M2C_FIELD(p,M2C_UNK **,0)=&data_ov002_021ea704;
@@ -12,25 +14,26 @@ return p;
 
 /* Recursively tear down a node's right/child subtree, freeing every child pointer. */
 void func_ov002_021e25e0(void *, void *);
+/* Recursively tear down a node's right/child subtree, freeing every child pointer. */
 void func_ov002_021e24e8(void *node) {
-void func_020e35cc(void *);
-void *right=M2C_FIELD(node,void **,12);
-void *rightRight;
-if(right) {
-rightRight=M2C_FIELD(right,void **,4);
-if(rightRight) {
-if(M2C_FIELD(rightRight,void **,4)) func_ov002_021e25e0((u8 *)node+8,M2C_FIELD(rightRight,void **,4));
-if(M2C_FIELD(rightRight,void **,0))func_ov002_021e24e8(M2C_FIELD(rightRight,void **,0));
-if(M2C_FIELD(rightRight,void **,0)){func_020e35cc(M2C_FIELD(rightRight,void **,0));M2C_FIELD(rightRight,void **,0)=0;}
-if(M2C_FIELD(rightRight,void **,4)){func_020e35cc(M2C_FIELD(rightRight,void **,4));M2C_FIELD(rightRight,void **,4)=0;}
-}
-if(M2C_FIELD(right,void **,0))func_ov002_021e24e8(M2C_FIELD(right,void **,0));
-if(M2C_FIELD(right,void **,0)){func_020e35cc(M2C_FIELD(right,void **,0));M2C_FIELD(right,void **,0)=0;}
-if(M2C_FIELD(right,void **,4)){func_020e35cc(M2C_FIELD(right,void **,4));M2C_FIELD(right,void **,4)=0;}
-}
-if(M2C_FIELD(node,void **,8))func_ov002_021e24e8(M2C_FIELD(node,void **,8));
-if(M2C_FIELD(node,void **,8)){func_020e35cc(M2C_FIELD(node,void **,8));M2C_FIELD(node,void **,8)=0;}
-if(M2C_FIELD(node,void **,12)){func_020e35cc(M2C_FIELD(node,void **,12));M2C_FIELD(node,void **,12)=0;}
+    void func_020e35cc(void *);
+    void *right = M2C_FIELD(node, void **, 12);
+    void *rightRight;
+    if (right != NULL) {
+        rightRight = M2C_FIELD(right, void **, 4);
+        if (rightRight != NULL) {
+            if (M2C_FIELD(rightRight, void **, 4) != NULL) func_ov002_021e25e0((u8 *)node + 8, M2C_FIELD(rightRight, void **, 4));
+            if (M2C_FIELD(rightRight, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(rightRight, void **, 0));
+            if (M2C_FIELD(rightRight, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
+            if (M2C_FIELD(rightRight, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
+        }
+        if (M2C_FIELD(right, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(right, void **, 0));
+        if (M2C_FIELD(right, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
+        if (M2C_FIELD(right, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
+    }
+    if (M2C_FIELD(node, void **, 8) != NULL) func_ov002_021e24e8(M2C_FIELD(node, void **, 8));
+    if (M2C_FIELD(node, void **, 8) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 8)); M2C_FIELD(node, void **, 8) = NULL; }
+    if (M2C_FIELD(node, void **, 12) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 12)); M2C_FIELD(node, void **, 12) = NULL; }
 }
 
 void func_ov002_021e25e0(void *owner, void *node) {
@@ -259,6 +262,39 @@ s32 func_ov002_021e2e28(void *arg0) {
     return 0;
 }
 
+/* Shuffle the five auto-attack slot indices for a panel: take a fixed order from the caller when given, otherwise randomize-then-anchor specific slots, then build a descending priority index table. */
+void func_ov002_021e2eb8(void *panel, void *slotTable, void *orderSeq) {
+void func_02008048(void *, void *, s32);
+s32 RandomIntRange(s32, s32);
+void func_ov002_021e3030(u8 *, u8 *);
+s32 j, best; void *entry; s32 k, mask, which, i;
+M2C_FIELD(panel, void **, 4) = slotTable;
+if (orderSeq) func_02008048(orderSeq, panel + 0x12, 5);
+else {
+for (i = 0; i < 5; i++) M2C_FIELD(panel + i, u8 *, 0x12) = i;
+for (i = 0; i < 5; i++) func_ov002_021e3030(panel + 0x12 + i, panel + 0x12 + RandomIntRange(0, 4));
+which = -1;
+if (!M2C_FIELD(panel, u8 *, 0x12)) which = 0;
+if (!M2C_FIELD(panel, u8 *, 0x16)) which = 4;
+if (which != -1) func_ov002_021e3030(panel + 0x12 + which, panel + 0x12 + RandomIntRange(1, 3));
+}
+for (i = 0; i < 5; i++) M2C_FIELD(panel + i, u8 *, 0x17) = i;
+for (i = 0; i < 5; i++) func_ov002_021e3030(panel + 0x17 + i, panel + 0x17 + RandomIntRange(0, 4));
+mask = 0;
+for (k = 0; k < 5; k++) {
+entry = panel + k;
+M2C_FIELD(entry, u8 *, 0x1c) = 0;
+best = -1;
+for (j = 0; j < 5; j++) {
+if (!(mask & (1 << j)) && best < M2C_FIELD(panel + j, u8 *, 0x12)) {
+M2C_FIELD(entry, u8 *, 0x1c) = j;
+best = M2C_FIELD(panel + j, u8 *, 0x12);
+}
+}
+mask |= 1 << M2C_FIELD(entry, u8 *, 0x1c);
+}
+}
+
 void func_ov002_021e3030(u8 *arg0, u8 *arg1) {
     u8 temp_r3;
 
@@ -309,4 +345,27 @@ void func_ov002_021e3044(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
+
+void func_ov002_021e3100(void *a){
+extern u8 data_ov002_021f3104[];extern volatile u8 gPlayerSettings[];
+SlotEntry *p;s32 first,n,i;u32 index;u8 *src;void *entry;
+first=0;do{M2C_FIELD(a+((u32)first<<2),s16 *,0x22)=-1;first++;}while(first<5);
+if(!data_ov002_021f3104[(s16)M2C_FIELD(a,u8 *,0x64)*24])return;
+n=0;i=0;p=a+0x22;
+do{
+index=M2C_FIELD(a+i,u8 *,0x17);
+if(M2C_FIELD(a,u8 *,0x64)==gPlayerSettings[0]){
+if(M2C_FIELD(a+index*2,u8 *,8)){
+src=M2C_FIELD(a,u8 **,4);
+p->value=src[0]+src[n+3];n++;
+SetSlotIndex(p,index);p++;
+}
+}else if(M2C_FIELD(a+index*2,u8 *,9)){
+src=M2C_FIELD(M2C_FIELD(a,void **,0x60),u8 **,4);
+p->value=src[0]+src[n+8];n++;
+SetSlotIndex(p,index);p++;
+}
+i++;
+}while(i<5);
+}
 

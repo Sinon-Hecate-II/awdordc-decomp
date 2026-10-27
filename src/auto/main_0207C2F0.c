@@ -8,7 +8,7 @@ Unk0207Color func_0207cbd0(s32);
 typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
 extern Mode0207 data_02168f14;
 extern Unk0207Color data_021017f4[4];
-extern void **data_027e0058;
+extern void **gCurrentMap;
 s32 func_0207ca38(s32, s32, s32, s32, s32);
 
 s32 func_0207c2f0(void) {
@@ -21,7 +21,7 @@ s32 func_0207c2f0(void) {
     return data_0214bfa8 = (temp_r4 + func_0207c8ec(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
 }
 
-s32 func_0207c330(s32 arg0, s32 arg1) {
+s32 RandomIntRange(s32 arg0, s32 arg1) {
     s32 func_0207c928(s32, s32);
     s32 temp;
     if (arg0 == arg1) return arg0;
@@ -341,6 +341,19 @@ s32 func_0207ca08(s32 arg0) {
     return *(volatile s32 *)0x040002B4;
 }
 
+s32 func_0207ca38(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
+s32 t;
+if(arg4==0)return arg2;
+switch(arg0){
+case 0:return arg1+func_0207c8ec(arg3*(arg2-arg1),arg4);
+case 1:return arg1+func_0207c8ec((arg2-arg1)*(arg3*arg3),arg4*arg4);
+case 2:return arg1+func_0207c8ec((arg2-arg1)*(arg3*(arg3*arg3)),arg4*(arg4*arg4));
+case 3:return arg1+func_0207c8ec((arg2-arg1)*(arg3*(arg3*(arg3*arg3))),arg4*(arg4*(arg4*arg4)));
+case 4:t=arg4-arg3;return arg2-func_0207c8ec((arg2-arg1)*(t*t),arg4*arg4);
+case 5:t=arg4-arg3;return arg2-func_0207c8ec((arg2-arg1)*(t*(t*t)),arg4*(arg4*arg4));
+default:return 0;
+}}
+
 s32 func_0207cb5c(s32 arg0, s32 arg1) {
     if (arg1 < 0) {
         return 0;
@@ -376,7 +389,7 @@ Unk0207Color v = data_021017f4[(u8)data_02168f14.mode != 2 ? index : index + 2];
 u8 *base;
 s32 limit;
 
-base = *data_027e0058;
+base = *gCurrentMap;
 limit = *(u16 *)(base + 0x5144);
 if (((u8 *)&v)[12] > limit) {
 ((u8 *)&v)[12] = limit;
@@ -452,9 +465,9 @@ void func_0207ce54(void) {
 }
 
 M2C_UNK func_0207ce60(void *arg0) {
- extern void **data_027e0058;
- M2C_FIELD(arg0,s32 *,0x10) = M2C_FIELD(arg0,s32 *,0) + ((M2C_FIELD(*data_027e0058,s16 *,0x5148) * (s16)0x300) >> 4) + 0x180;
- M2C_FIELD(arg0,s32 *,0x14) = M2C_FIELD(arg0,s32 *,4) + ((M2C_FIELD(*data_027e0058,s16 *,0x514a) * (s16)0x300) >> 4) + 0x180;
+ extern void **gCurrentMap;
+ M2C_FIELD(arg0,s32 *,0x10) = M2C_FIELD(arg0,s32 *,0) + ((M2C_FIELD(*gCurrentMap,s16 *,0x5148) * (s16)0x300) >> 4) + 0x180;
+ M2C_FIELD(arg0,s32 *,0x14) = M2C_FIELD(arg0,s32 *,4) + ((M2C_FIELD(*gCurrentMap,s16 *,0x514a) * (s16)0x300) >> 4) + 0x180;
  M2C_FIELD(arg0,s32 *,0x18) = M2C_FIELD(arg0,s32 *,8);
 }
 
@@ -502,13 +515,13 @@ M2C_UNK func_0207cfc0(M2C_UNK arg) {
 }
 
 u8 func_0207d0b8(void) {
-    extern void **data_027e0058;
-    return M2C_FIELD(*data_027e0058, u8 *, 0x6F04);
+    extern void **gCurrentMap;
+    return M2C_FIELD(*gCurrentMap, u8 *, 0x6F04);
 }
 
 u8 func_0207d0d4(void) {
- extern void **data_027e0058;
- return M2C_FIELD(*data_027e0058, u8 *, 0x6F05);
+ extern void **gCurrentMap;
+ return M2C_FIELD(*gCurrentMap, u8 *, 0x6F05);
 }
 
 void func_0207d0f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {

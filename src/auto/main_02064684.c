@@ -1,5 +1,9 @@
 /* 23 functions from 0x02064684 to 0x0206536C (main), found by ds-decomp. */
 #include "common.h"
+extern u8 data_021001cc[], data_02100218[], data_02100264[], data_0213e61c[];
+extern s32 data_0213e5d4[], data_0213e5f8[];
+extern M2C_UNK data_0212dca4;
+typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
 s32 func_02064934(void *arg0) {
  s32 func_020649a8(void *);
@@ -96,6 +100,68 @@ s32 func_02064b50(void *arg0) {
         var_r0 -= temp_ip - 2;
     }
     return var_r0;
+}
+
+s32 func_02064bcc(void *p){
+extern u8 data_021001cc[],data_02100218[],data_02100264[],data_0213e61c[];
+extern s32 data_0213e5d4[],data_0213e5f8[];
+extern M2C_UNK data_0212dca4;
+s32 func_02006680(void *);s32 func_02064b50(void *);
+u32 n; s32 result;
+if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
+if(!func_02006680(data_0213e61c+24*n)){
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;
+}else if((u32)data_0213e5d4[n]==(u32)M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,0x6c)){data_0213e5f8[n]++;}
+else{func_02006564(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
+result=func_02064b50(p);
+if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+24*n);
+return result;
+}
+
+/* Sets/updates the transfer position, adjusting buffered stream state, and reports progress through the object's callback. */
+s32 func_02064ce8(void *stream, u32 position, s32 mode, ...) {
+s32 func_020641a8(void *, s32);
+s32 func_02064b50(void *);
+extern s32 data_0213e9f4;
+if ((u8)((M2C_FIELD(stream,u32 *,4)<<22)>>29)!=1 || M2C_FIELD(stream,u8 *,13)!=0) { data_0213e9f4=40; return -1; }
+if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && func_020641a8(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; data_0213e9f4=40; return -1; }
+if(mode==1){mode=0;position+=func_02064b50(stream);}
+if(mode!=2 && (M2C_FIELD(stream,u32 *,4)<<27)>>29 !=3 && (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29))-2<=1) {
+u32 current=position; u32 base;
+if(current>=M2C_FIELD(stream,u32 *,24)) goto clear;
+base=M2C_FIELD(stream,u32 *,52); if(current<base) { clear: M2C_FIELD(stream,u32 *,8)&=~7; goto done; }
+update: {
+M2C_FIELD(stream,u32 *,36)=M2C_FIELD(stream,u32 *,28)+(current-base);
+M2C_FIELD(stream,u32 *,40)=M2C_FIELD(stream,u32 *,24)-position;
+M2C_FIELD(stream,u32 *,8)=(M2C_FIELD(stream,u32 *,8)&~7)|2;
+}
+}else M2C_FIELD(stream,u32 *,8)&=~7;
+done:
+if(((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==0){
+s32 (*callback)(s32,u32 *,s32,s32)=M2C_FIELD(stream,s32 (**)(s32,u32 *,s32,s32),56);
+if(callback && callback(M2C_FIELD(stream,s32 *,0),&position,mode,M2C_FIELD(stream,s32 *,72))!=0){
+M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; data_0213e9f4=40;return -1;
+}
+M2C_FIELD(stream,u8 *,12)=0;M2C_FIELD(stream,u32 *,24)=position;M2C_FIELD(stream,u32 *,40)=0;
+}
+return 0;
+}
+
+s32 func_02064ed0(void *p, s32 pos, s32 mode) {
+s32 func_02006680(void *); M2C_UNK func_02006564(); M2C_UNK func_020065e8();
+s32 n, result, owner; void *thread;
+if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
+if(func_02006680(data_0213e61c+n*24)==0) {
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,108);
+data_0213e5f8[n]=1;
+}else if((thread=M2C_FIELD(&data_0212dca4,void **,4),owner=data_0213e5d4[n],owner==M2C_FIELD(thread,s32 *,108))) {data_0213e5f8[n]++;}
+else{func_02006564(data_0213e61c+n*24);
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,108);
+data_0213e5f8[n]=1;
+}
+result=func_02064ce8(p,pos,mode);
+if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+n*24);
+return result;
 }
 
 void func_02064ffc(void *arg0) {

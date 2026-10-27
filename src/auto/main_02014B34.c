@@ -21,6 +21,30 @@ void func_02014ccc(void *arg0) {
  M2C_FIELD(a,s32 *,0)=0; M2C_FIELD(a,s32 *,12)=2;
 }
 
+/* Select units by state into priority groups, then dispatch the matching network action. */
+void func_02015008(void) {
+extern void *data_02136c4c;
+void func_02007df8(s32,void *,s32); s32 func_02014af4(s32,u16); s32 func_02014b34(u16); s32 func_02014d6c(void);
+u16 masks[5];u16 i; s32 result;
+func_02007df8(0,masks,10);
+for(i=1;i<=15;i++){
+switch(M2C_FIELD((u8 *)data_02136c4c+4*i,s32 *,0x14e4)){
+case 2:masks[0]|=1<<i;break;
+case 5:masks[1]|=1<<i;break;
+case 4:masks[2]|=1<<i;break;
+case 8:masks[3]|=1<<i;break;
+case 11:masks[4]|=1<<i;break;
+}
+}
+if(masks[3])result=func_02014af4(5,masks[3]);
+else if(masks[0])result=func_02014af4(1,masks[0]);
+else if(masks[4])result=func_02014af4(6,masks[4]);
+else if(masks[2])result=func_02014af4(2,masks[2]);
+else if(masks[1])result=func_02014b34(masks[1]);
+else result=func_02014d6c();
+if(result==21)func_02014af4(0,0xffff);
+}
+
 void func_02015188(s32 arg0) {
  extern s32 data_02131180;
     extern void *data_02136c4c;

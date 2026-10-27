@@ -36,3 +36,67 @@ void func_0202830c(u16 *p){extern void *data_02138e4c;if(p[1]!=8||p[2]!=22||p[3]
 
 void func_02028924(u16 *p){switch(p[1]){case 0:func_02028160(3);func_020280c8(0,0,0,0x783);return;case 1:func_020282b0();return;case 2:case 3:case 4:default:func_02028160(11);func_020280c8(7,0,0,0x793);return;}}
 
+void func_02028c00(u16 *p) {
+    extern void *data_02138e4c;
+    switch (p[1]) {
+    case 0:
+        if (M2C_FIELD(data_02138e4c, s32 *, 0x2260) == 0xc) {
+            func_02028160(0xa);
+            func_020282b0();
+            return;
+        }
+        M2C_FIELD(data_02138e4c, u16 *, 0x2282) = 0;
+        func_02028160(3);
+        func_020280c8(0, (u8 *)data_02138e4c + 0x2140, 0, 0x83d);
+        return;
+    case 1:
+    case 3:
+        func_02028160(0xa);
+        func_020282b0();
+        return;
+    case 2:
+    case 4:
+    default:
+        func_02028160(0xb);
+        func_020280c8(7, (u8 *)data_02138e4c + 0x2140, 0, 0x84f);
+        return;
+    }
+}
+
+void func_02028cc8(u16 *p) {
+    extern void *data_02138e4c;
+    void func_02028160(s32);
+    void func_020280c8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void func_020282b0(void);
+    void func_02029bd0(M2C_UNK);
+    void func_020067a8(M2C_UNK, M2C_UNK);
+    void func_020296e0(M2C_UNK);
+
+    if (p[1] == 4) {
+        func_02028160(0xb);
+        func_020280c8(7, (u8 *)data_02138e4c + 0x2140, 0, 0x88c);
+        return;
+    }
+    if (p[2] == 0xe) {
+        if (M2C_FIELD(data_02138e4c, s32 *, 0x2260) == 0xc) {
+            func_02028160(0x8);
+            func_020282b0();
+            return;
+        }
+        func_02028160(0x9);
+        func_020280c8(0, (u8 *)data_02138e4c + 0x2140, 0, 0x872);
+        return;
+    }
+    if (p[2] == 0xf) {
+        void *u = *(void **)((u8 *)p + 8);
+        u16 w = *(u16 *)((u8 *)u + 0xe);
+        func_02029bd0((w >> 8) & 0xff);
+        func_020067a8(u, 0x620);
+        func_020296e0(u);
+        return;
+    }
+    func_02028160(0xb);
+    func_020280c8(7, (u8 *)data_02138e4c + 0x2140, p[2], 0x881);
+    return;
+}
+

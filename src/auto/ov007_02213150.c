@@ -77,10 +77,10 @@ void func_ov007_0221330c(void) {
 
 u8 func_ov007_02213324(void) {
     s32 func_020c7eb8(u16);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     u8 var_r0;
 
-    if (func_020c7eb8(M2C_FIELD(*data_027e0058, u16 *, 0x5142)) == 0) {
+    if (func_020c7eb8(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -175,16 +175,16 @@ void func_ov007_022134b4(void *arg0) {
     M2C_UNK func_ov007_02214a6c(s32, s32);
     M2C_UNK func_0207b754(u32, u32);
     M2C_UNK func_0207cfc0(void *);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     void *p;
     func_ov007_02214a6c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
     func_020cfd28();
     func_ov007_022121b0();
     func_ov007_0221ab68();
     func_ov007_022121d4(1);
-    p = *data_027e0058;
+    p = *gCurrentMap;
     func_0207b754((u32)M2C_FIELD(p, u16 *, 0x5144) >> 1, (u32)M2C_FIELD(p, u16 *, 0x5146) >> 1);
-    func_0207cfc0((u8 *)*data_027e0058 + 0x6EF8);
+    func_0207cfc0((u8 *)*gCurrentMap + 0x6EF8);
     func_0208fe30(0x11D);
 }
 
@@ -202,5 +202,49 @@ void func_ov007_02213cf4(void) {
     extern void *gCur3DSpriteEngine;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+}
+
+/* Configures the 3D sprite engine for the requested unit selection mode (arg0->0x3c, 0 or 1), then draws a tile-selection panel sprite via func_020a94fc. */
+void func_ov007_02213d1c(void *obj) {
+    void *func_02089714(void);
+    extern u8 data_02129870[];
+    u32 sp[11];
+    void *engine = func_02089714();
+    switch (M2C_FIELD(obj, s32 *, 0x3c)) {
+    case 0:
+        M2C_FIELD(engine, s16 *, 0x34) = 0x5c;
+        M2C_FIELD(engine, s16 *, 0x36) = 0x60;
+        M2C_FIELD(engine, s32 *, 0x40) = (M2C_FIELD(engine, s32 *, 0x40) & ~0x1ff) | 0x18;
+        M2C_FIELD(engine, s32 *, 0x40) = (M2C_FIELD(engine, s32 *, 0x40) & 0xfffc01ff) | 0x2000;
+        break;
+    case 1:
+        M2C_FIELD(engine, s16 *, 0x34) = 0x8c;
+        M2C_FIELD(engine, s16 *, 0x36) = 0x60;
+        M2C_FIELD(engine, s32 *, 0x40) = (M2C_FIELD(engine, s32 *, 0x40) & ~0x1ff) | 0x18;
+        M2C_FIELD(engine, s32 *, 0x40) = (M2C_FIELD(engine, s32 *, 0x40) & 0xfffc01ff) | 0x2000;
+        break;
+    }
+    M2C_FIELD(sp, void **, 0) = data_02129870;
+    M2C_FIELD(sp, u8 *, 4) = 0;
+    M2C_FIELD(sp, u8 *, 0x14) = 8;
+    M2C_FIELD(sp, u8 *, 0x15) = 8;
+    M2C_FIELD(sp, u8 *, 0x16) = 1;
+    M2C_FIELD(sp, u8 *, 0x17) = 8;
+    M2C_FIELD(sp, u8 *, 0x18) = 8;
+    M2C_FIELD(sp, u8 *, 0x20) = ((u8)((u8)(M2C_FIELD(sp, u8 *, 0x20) & ~1) & ~0x1e) & ~0xe0) | 0x40;
+    M2C_FIELD(sp, u32 *, 0x24) = 0;
+    M2C_FIELD(sp, u8 *, 0x29) = 0;
+    M2C_FIELD(sp, u16 *, 0x12) = 0x35c;
+    M2C_FIELD(sp, u8 *, 0x21) = 11;
+    M2C_FIELD(sp, u8 *, 0x28) = ((u8)(M2C_FIELD(sp, u8 *, 0x28) & ~0xe0) & ~0x1f) | 0x11;
+    func_020a947c(sp, 3);
+    func_020a92bc(sp, M2C_FIELD(obj, s32 *, 0x34));
+    M2C_FIELD(sp, s16 *, 6) = 0x75;
+    M2C_FIELD(sp, s16 *, 8) = 0x60;
+    func_020a94fc(sp);
+    func_020a92bc(sp, M2C_FIELD(obj, s32 *, 0x38));
+    M2C_FIELD(sp, s16 *, 6) = 0xa5;
+    M2C_FIELD(sp, s16 *, 8) = 0x60;
+    func_020a94fc(sp);
 }
 

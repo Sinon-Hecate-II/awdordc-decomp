@@ -38,13 +38,13 @@ void func_ov005_0221efac(void) {
 void func_ov005_0221efb8(void) {
     M2C_UNK func_0208f780(s32);
     extern u16 data_02168f14;
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 var_r0;
     u16 temp_r1;
 
     var_r0 = 0x10017;
     if (!(((u32) (data_02168f14 << 0x1D) >> 0x1D) & 0xFF)) {
-        temp_r1 = M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+        temp_r1 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         if ((s32) temp_r1 <= 0xB0) {
             if (((s32) temp_r1 < 0xB0) && (temp_r1 != 0xAA)) {
 

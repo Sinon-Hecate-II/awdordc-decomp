@@ -41,6 +41,27 @@ void func_0203dcf4(void) {
     func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
 }
 
+/* Handles deferred battle/action state transitions after the active phase check. */
+s32 func_0203dee8(s32 command, s32 parameter) {
+u64 func_02007004(void); s32 func_02038f6c(void);
+M2C_UNK func_02044278(s32); void func_02041be0(s32); void func_02041d14(void); void func_0205afec(s32); void func_0205df50(s32);
+void *state;
+if(func_02038f6c()!=5)return 0;
+if(M2C_FIELD(func_02044268(),u8 *,21)==2)return 1;
+if(command){func_0203dc38(command,parameter+0xfffec780);return 1;}
+M2C_FIELD(func_02044268(),u8 *,0x2d0)=0;
+if(M2C_FIELD(func_02044268(),u8 *,0x1a9)==1 || M2C_FIELD(func_02044268(),u8 *,0x1a8)==1 || M2C_FIELD(func_02044268(),u8 *,0x1a8)==2)return 1;
+if(M2C_FIELD(func_02044268(),s32 *,0x19c)){
+func_0205df50(M2C_FIELD(func_02044268(),s32 *,0x19c));M2C_FIELD(func_02044268(),s32 *,0x19c)=0;}
+if(M2C_FIELD(func_02044268(),u8 *,13)){
+if(!M2C_FIELD(func_02044268(),u8 *,0x1a8)){M2C_FIELD(func_02044268(),u8 *,0x1a8)=3;func_0205afec(*M2C_FIELD(func_02044268(),s32 **,4));}
+}else if(M2C_FIELD(func_02044268(),u8 *,21)==3)func_0203dc38(6,0xfffec5d2);
+else if(M2C_FIELD(func_02044268(),s32 *,0x208))func_02041d14();
+else if(M2C_FIELD(func_02044268(),s32 *,0x1a0)==1){func_02044278(18);state=(void *)func_02044268();M2C_FIELD(state,u64 *,0x1f0)=func_02007004();}
+else func_02041be0(1);
+return 1;
+}
+
 void func_0203e064(M2C_UNK arg0) {
     M2C_UNK func_02040e1c(M2C_UNK);
     if (M2C_FIELD(func_02044268(), u8 *, 0x1A8) == 2) {

@@ -365,6 +365,38 @@ void func_ov009_02225938(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     M2C_FIELD(temp_r0, s32 *, 0x44) = arg4;
 }
 
+void func_ov009_0222598c(s32 arg0) {
+ s32 func_020c5400(void *);
+ s32 func_02007f8c(s32, s32, s32);
+ s32 func_0208206c();
+ s32 func_02082088(void);
+ void func_02008048(void *, void *, s32);
+ M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
+ extern M2C_UNK data_ov009_022268e0;
+ u8 buffer[40];
+ u16 mask;
+ void *p;
+ if (func_ov009_02224194()!=4 && func_ov009_02224194()!=5) {
+ M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=NULL;
+ return;
+ }
+ if(func_020c5400(buffer)) {
+ M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=(void *)arg0;
+ mask=0xFFFF;
+ mask &= (-1 ^ (1U<<func_ov009_02225450()));
+ if(!mask) return;
+ func_02007f8c((s32)(buffer+12),0,26);
+ p=(void *)func_0208206c();
+ func_02008048(p,buffer+12,func_02082088()*2);
+ func_ov009_02224d9c(13,buffer,40,mask);
+ } else {
+ M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
+ M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=NULL;
+ }
+}
+
 s32 func_ov009_02225a98(s32 arg0) {
     s32 func_ov009_02224174();
     extern M2C_UNK data_ov009_022268e0;
@@ -383,7 +415,7 @@ void func_ov009_02225ae0(s32 arg0) {
 }
 
 void func_ov009_02225af4(s32 arg0) {
-    M2C_UNK func_ov009_0222598c(s32);
+
     func_ov009_0222598c(arg0 + 0x34);
 }
 
@@ -594,6 +626,30 @@ void func_ov009_02225dd4(void *arg0) {
         return;
     }
     func_020ad348(2, 8, 1, arg0);
+}
+
+void func_ov009_02225e40(void *entity) {
+M2C_UNK func_020899fc(void *,u8,s32,s32);void *func_0208b564(void *);
+extern s32 data_027e00c4,data_027e00c8,gCur3DSpriteEngine;
+void *created; u32 byte; s32 flags; s32 value; s32 i; s32 savedBank; u32 bank; s8 mode;
+if(M2C_FIELD(entity,s32 *,0x40)==0)return;
+if(func_0208b5ec())func_0208af20();
+value=func_02086680(M2C_FIELD(entity,s32 *,0x38));
+flags=M2C_FIELD(entity,s32 *,0x3c);
+savedBank=gCur3DSpriteEngine;i=0;byte=flags;
+do {
+if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
+if(mode==0&&bank!=data_027e00c8)continue;
+if(mode==1&&bank!=data_027e00c4)continue;
+if(mode==3&&bank!=savedBank)continue;
+created=func_0208b564(entity);
+func_020899fc(created,byte,M2C_FIELD(entity,u16 *,0x36)<<5,value);
+M2C_FIELD(created,s32 *,0x58)|=0x1400;
+if(flags==0)M2C_FIELD(created,s32 *,0x58)|=0x800;
+}while(++i<2);
+gCur3DSpriteEngine=savedBank;
+func_ov009_02225db4();
 }
 
 void func_ov009_02225f44(void) {

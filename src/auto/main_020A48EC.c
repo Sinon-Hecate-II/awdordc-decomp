@@ -6,8 +6,8 @@ typedef struct { u8 x,y; u16 a:3; u16 b:3; u16 type:4; u16 rest:6; u8 value; u8 
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
 Unk020AEntry *func_020a48ec(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u8 g,s32 h) {
- extern s32 *data_027e0058;
- Unk020ABaseEntry *p=(Unk020ABaseEntry *)(*data_027e0058+0x58a4);
+ extern s32 *gCurrentMap;
+ Unk020ABaseEntry *p=(Unk020ABaseEntry *)(*gCurrentMap+0x58a4);
  while(p->type)p++;
  p->x=a;p->y=b;
  p->a=(u16)c;p->b=(u16)d;p->type=(u16)e;
@@ -59,8 +59,8 @@ void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
 u8 func_020a4c7c(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
 
 s32 func_020a4ce8(s32 a) {
-extern s32 *data_027e0058;
-Unk020AEntry *p=(Unk020AEntry *)(*data_027e0058+0x58a4);s32 n=0;
+extern s32 *gCurrentMap;
+Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);s32 n=0;
 while(p->type){if(p->type==a){if(func_020a4c7c(p))n++;}p++;}return n!=0;
 }
 
@@ -88,24 +88,182 @@ s32 func_020a4dd8(void) {
     return 1;
 }
 
+void func_020a5080(Unk020ABaseEntry *a){
+extern s32 *gCurrentMap;void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb80c(s32,s32,s32,s32);
+s32 found=0,x,y,p;u8 id;
+func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);func_01ffb80c(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+p=*gCurrentMap;
+if(M2C_FIELD(((s8 **)(p+0x52e8))[y],s8 *,x)>=0){
+id=M2C_FIELD(((u16 *)(p+0x3758))[y]+(p+x),u8 *,0x508);
+if(id){func_020a4d78((u16)x,(u16)y,id,M2C_FIELD(a,s8 *,7));found=1;}
+}
+}}
+if(!found)func_020a4d64();
+}
+
+s32 func_020a5364(Unk020AEntry *p, s32 color, s32 arg2) {
+    void func_01ffb734(s32, s32, s32, s8);
+    void func_01ffb80c(s32, s32, s32, s32);
+    void func_01ffb918(s32, s32, s32, s8, u8);
+    s32 func_020a4dd0(void);
+    s32 func_020a4dd8(void);
+    extern s32 *gCurrentMap;
+    Unk020ABaseEntry *bp = (Unk020ABaseEntry *)p;
+    if (!func_020a4c7c(p)) return 0;
+    {
+        u16 hdr = M2C_FIELD(p, u16 *, 2);
+        u32 mode = ((u32)hdr << 22) >> 28;
+        switch (mode) {
+        case 4: {
+            s32 dx = func_020a4dd0();
+            s32 dy = func_020a4dd8();
+            func_01ffb734(bp->x + dx, bp->y + dy, 5, color);
+            return 1;
+        }
+        case 5: {
+            u32 m = ((u32)hdr >> 14) & 3;
+            func_01ffb80c(bp->x, bp->y, m, color);
+            return 1;
+        }
+        case 6: {
+            u32 m = ((u32)hdr >> 14) & 3;
+            s32 *context = (s32 *)*gCurrentMap;
+            s32 *inner = (s32 *)*context;
+            u8 extra = M2C_FIELD(p, u8 *, 5);
+            u16 thr = M2C_FIELD(inner, u16 *, 0x52a4);
+            if (thr < (extra & 7)) {
+                func_01ffb918(bp->x, bp->y, m, color, arg2);
+            } else {
+                s32 r = ((s32)m + 1) % 3;
+                func_01ffb80c(bp->x, bp->y, r, color);
+            }
+            return 1;
+        }
+        case 7: {
+            u32 m = ((u32)hdr >> 14) & 3;
+            func_01ffb918(bp->x, bp->y, m, color, arg2);
+            return 1;
+        }
+        default:
+            return 0;
+        }
+    }
+}
+
 void func_020a54c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
 }
 
 void func_020a54d0(void *a) {void func_01ffa574();extern s32 data_0215be08;if(M2C_FIELD(a,s16 *,84)!=data_0215be08)return;func_01ffa574(a);}
 
+void func_020a54f4(void *a){
+M2C_UNK func_01ffa8c4(void *,s32);void *func_020a45f8(s16,s16);
+M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK func_020b7294(s16,s16,u32,s32,void *);
+extern Unk020APosition *data_0215be04;
+Unk020APosition *base=data_0215be04,*p,*q; s32 i=0,offset;s16 n,m;void *entry;
+while(base[i].a==0)i++;
+n=M2C_FIELD(a,s16 *,0x54);offset=n*8;if(M2C_FIELD((u8 *)base+offset,u16 *,0))return;p=(Unk020APosition *)((u8 *)base+i);
+switch(p->b){
+default:break;
+case 4:func_020b6f98((s16)p->c,(s16)p->d,n+1,a);break;
+case 6:case 7:
+entry=func_020a45f8((s16)p->c,(s16)p->d);
+m=M2C_FIELD(a,s16 *,0x54);q=&base[m];
+func_020b7294((s16)q->c,(s16)q->d,(u32)(M2C_FIELD(entry,u16 *,2)<<16)>>30,m+1,a);break;
+case 5:q=&base[n+1];func_020b7138((s16)p->c,(s16)p->d,(s16)q->c,(s16)q->d,n+2,a);
+M2C_FIELD(a,s16 *,0x54)++;break;
+}
+M2C_FIELD(a,s16 *,0x54)++;func_01ffa8c4(a,0);
+}
+
 void func_020a561c(void *arg0) {
-    extern s32 *data_027e0058;
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) (*data_027e0058 + 0x58A4);
+    extern s32 *gCurrentMap;
+    M2C_FIELD(arg0, s32 *, 0x34) = (s32) (*gCurrentMap + 0x58A4);
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
     M2C_FIELD(arg0, s8 *, 0x44) = 0;
 }
 
 void func_020a5648(void) {
-extern s32 *data_027e0058;
-Unk020AEntry *p=(Unk020AEntry *)(*data_027e0058+0x58a4);
-while(p->type){if(func_020a4c7c(p)&& ((Unk020APlayer *)p)->player==M2C_FIELD(*data_027e0058,u16 *,0x52a4)){
+extern s32 *gCurrentMap;
+Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);
+while(p->type){if(func_020a4c7c(p)&& ((Unk020APlayer *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4)){
 switch(p->type){case 4:case 5:case 6:case 7: M2C_FIELD(p,s8 *,6)-=1;break;}
 }p++;}
+}
+
+void func_020a5700(void *arg0) {
+    extern s32 *gCurrentMap;
+    void func_020a4d64(void);
+    u8 func_020a4c7c(Unk020AEntry *);
+    void func_020a4d78(s32, s32, s32, s32);
+    void func_020a4de0(Unk020AEntry *);
+    void func_020a5080(Unk020ABaseEntry *);
+    void func_020a51a4(Unk020ABaseEntry *);
+    s32 func_01ffa8c4(void *, s32);
+    Unk020AEntry *entry;
+    s32 type;
+    func_020a4d64();
+    entry = (Unk020AEntry *)M2C_FIELD(arg0, s32 *, 0x34);
+    type = entry->type;
+    if (type == 0) {
+        func_01ffa8c4(arg0, 1);
+        return;
+    }
+eval:
+    if (func_020a4c7c(entry) == 0) goto advance;
+    {
+        s32 *context = (s32 *)*gCurrentMap;
+        s32 *inner = (s32 *)*context;
+        u16 thr = M2C_FIELD(inner, u16 *, 0x52a4);
+        Unk020ABaseEntry *bp = (Unk020ABaseEntry *)entry;
+        if (thr != bp->player) goto advance;
+        if ((s8)M2C_FIELD(entry, u8 *, 6) != 0) goto advance;
+        switch (type) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        default:
+            goto advance;
+        case 5: {
+            u8 x = M2C_FIELD(entry, u8 *, 0);
+            u8 y = M2C_FIELD(entry, u8 *, 1);
+            func_020a4d78(x, y, 0, type);
+            func_020a4de0(entry);
+            M2C_FIELD(entry, u8 *, 6) = (u8)entry->kind;
+            M2C_FIELD(arg0, s32 *, 0x34) = (s32)entry + 8;
+            return;
+        }
+        case 6: {
+            u8 x = M2C_FIELD(entry, u8 *, 0);
+            u8 y = M2C_FIELD(entry, u8 *, 1);
+            func_020a4d78(x, y, 0, type);
+            func_020a5080((Unk020ABaseEntry *)entry);
+            M2C_FIELD(entry, u8 *, 6) = (u8)entry->kind;
+            M2C_FIELD(arg0, s32 *, 0x34) = (s32)entry + 8;
+            return;
+        }
+        case 7: {
+            u8 x = M2C_FIELD(entry, u8 *, 0);
+            u8 y = M2C_FIELD(entry, u8 *, 1);
+            func_020a4d78(x, y, 0, type);
+            func_020a51a4((Unk020ABaseEntry *)entry);
+            M2C_FIELD(entry, u8 *, 6) = (u8)entry->kind;
+            M2C_FIELD(arg0, s32 *, 0x34) = (s32)entry + 8;
+            return;
+        }
+        }
+    }
+advance:
+    entry = (Unk020AEntry *)M2C_FIELD(arg0, s32 *, 0x34);
+    entry = (Unk020AEntry *)((u8 *)entry + 8);
+    M2C_FIELD(arg0, s32 *, 0x34) = (s32)entry;
+    type = entry->type;
+    if (type != 0) goto eval;
+    func_01ffa8c4(arg0, 1);
+    return;
 }
 

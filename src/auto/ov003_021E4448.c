@@ -1,8 +1,49 @@
 /* 36 functions from 0x021E4448 to 0x021E5118 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_021e4448(void *arg0) {
+    M2C_UNK func_ov003_021f2860(void *);
+    M2C_UNK func_ov003_021f140c(M2C_UNK);
+    M2C_UNK func_ov003_021f2780(M2C_UNK, M2C_UNK *);
+    s32 func_020c85c4(s32, s32);
+    M2C_UNK func_ov006_0221734c(M2C_UNK, M2C_UNK, M2C_UNK);
+    extern M2C_UNK data_ov003_0220f47c;
+    struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
+    u8 i;
+    s32 count;
+    void *base;
+    local.data = (void *)&data_ov003_0220f47c;
+    for (i = 0; i < 5; i++) {
+        local.buf1[i] = 0xFFFF;
+        local.buf0[i] = local.buf1[i];
+    }
+    func_ov003_021f2860(&local);
+    func_ov003_021f140c(1);
+    for (i = 0; i < 5; i++) {
+        count = func_ov003_021f2780((M2C_UNK)&local, local.buf0);
+        base = M2C_FIELD(arg0, void **, 0x68);
+        if (i >= count) {
+            M2C_FIELD((s32)base + (s32)i * 0x6F8, u8 *, 0x27) = 0;
+        } else {
+            func_020c85c4(local.buf0[i], (s32)base + (s32)i * 0x6F8);
+        }
+    }
+    func_ov006_0221734c(arg0, M2C_FIELD(arg0, void **, 0x68), M2C_FIELD(arg0, void **, 0x6C));
+}
+
 void func_ov003_021e450c(void) {
 
+}
+
+void func_ov003_021e4510(void *arg0) {
+s32 func_020c8cbc(void *);void func_ov003_021f2588(void);void *func_020e34bc(s32);void func_02007ef4(void *,void *,u32);void func_020e35cc(void *);
+u8 changed=0;u8 *p;u8 k;u8 *copy;u8 i,j;u8 *dest;u32 off;
+for(k=0;k<5;k++){p=M2C_FIELD(arg0,u8 **,0x6c)+k*0x6f8;if((u16)func_020c8cbc(p)){p[0x27]=0;func_ov003_021f2588();changed=1;}}
+if(!changed)return;
+copy=func_020e34bc(0x22d8);func_02007ef4(M2C_FIELD(arg0,void **,0x6c),copy,0x22d8);
+for(j=0,i=0;i<5;i++){p=copy+i*0x6f8;off=j*0x6f8;dest=M2C_FIELD(arg0,u8 **,0x6c);if(p[0x27]){func_02007ef4(p,dest+off,0x6f8);j++;}}
+while(j<5){M2C_FIELD(M2C_FIELD(arg0,u8 **,0x6c)+j*0x6f8,u8 *,0x27)=0;j++;}
+func_020e35cc(copy);
 }
 
 void func_ov003_021e4610(void **arg0) {
@@ -104,12 +145,12 @@ u8 func_ov003_021e4778(void *arg0) {
 }
 
 void func_ov003_021e47a4(void) {
-    M2C_UNK func_ov003_021e4448();
+    void func_ov003_021e4448();
     func_ov003_021e4448();
 }
 
 void func_ov003_021e47b0(void) {
-    M2C_UNK func_ov003_021e4510();
+    void func_ov003_021e4510();
     func_ov003_021e4510();
 }
 

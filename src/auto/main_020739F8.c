@@ -1,6 +1,76 @@
 /* 43 functions from 0x020739F8 to 0x02074920 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { s32 v[21]; } CtxTail_020739f8;
+typedef struct { s32 f0, f1, f2, f3, f4, f5, f6; CtxTail_020739f8 tail; } CtxState_020739f8;
+typedef struct { s32 t0, t1, t2, t3, t4, t5; } CtxToken_020739f8;
+typedef struct { CtxToken_020739f8 token; CtxState_020739f8 state; } Ctx_020739f8;
+
+s32 func_020739f8(void *arg0, void *arg1) {
+    u8 func_02072da4(CtxToken_020739f8 *);
+    void *func_02072b20(void *, s32 *);
+    s32 func_02072dc0(Ctx_020739f8 *);
+    s32 out;
+    Ctx_020739f8 ctx;
+    CtxState_020739f8 *st;
+    s32 *tk;
+    u8 *p;
+
+    tk = (s32 *)arg1;
+    st = (CtxState_020739f8 *)arg0;
+    ctx.token.t0 = tk[0];
+    ctx.token.t1 = tk[1];
+    ctx.token.t2 = tk[2];
+    ctx.token.t3 = tk[3];
+    ctx.token.t4 = tk[4];
+    ctx.token.t5 = tk[5];
+    ctx.state.f0 = st->f0;
+    ctx.state.f1 = st->f1;
+    ctx.state.f2 = st->f2;
+    ctx.state.f3 = st->f3;
+    ctx.state.f4 = st->f4;
+    ctx.state.f5 = st->f5;
+    ctx.state.f6 = st->f6;
+    ctx.state.tail = st->tail;
+
+    for (;;) {
+        switch (func_02072da4(&ctx.token)) {
+        default:
+        case 1:
+        case 14:
+            return 0;
+        case 0:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 15:
+        case 16:
+        case 17:
+        case 18: {
+            Ctx_020739f8 *cp = &ctx;
+            func_02072dc0(cp);
+            break;
+        }
+        case 13:
+            func_02072b20((u8 *)ctx.token.t2 + 1, &out);
+            p = (u8 *)ctx.state.f6 + out;
+            ((s32 *)arg0)[0] = *(s32 *)(p + 4);
+            ((s32 *)arg0)[1] = *(s32 *)p;
+            ((s32 *)arg0)[2] = 0;
+            ((s32 *)arg0)[3] = (s32)p;
+            return (s32)p;
+        }
+    }
+}
+
 s32 func_02073b4c(M2C_UNK arg0, void *arg1) {
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
     s32 values[2];
@@ -338,5 +408,62 @@ u8 func_020747c8(s32 arg0,void *arg1) {
 u8 result;
 if(M2C_FIELD(arg1,s32 *,4)==func_020746fc(arg0,arg1))result=1;else result=0;
 return result;
+}
+
+s32 func_020747ec(s32 arg0, s32 arg1) {
+    s32 temp_r3;
+    s32 var_ip;
+    s32 var_r3;
+    s32 off;
+    s32 quot;
+    s32 off2;
+    s32 quot2;
+    u16 temp_r2;
+    u16 temp_r2_2;
+
+    var_ip = (arg1 * 0xC) + arg0;
+    var_r3 = var_ip;
+loop_1:
+    temp_r2 = M2C_FIELD(var_r3, u16 *, 8);
+    if (temp_r2 != 0xFFFF) {
+        if (temp_r2 == arg1) {
+            return 0;
+        }
+        if ((((s32) M2C_FIELD((arg0 + ((s32) temp_r2 >> 2)), u8 *, 0xC0C) >> ((u32) (temp_r2 << 0x1E) >> 0x1D)) & 3) != 3) {
+            return 0;
+        }
+        off = var_r3 - arg0;
+        quot = off / 12;
+        var_r3 = (temp_r2 * 0xC) + arg0;
+        if (M2C_FIELD(var_r3, u16 *, 0xA) != (u16) quot) {
+            return 0;
+        }
+        if (M2C_FIELD(var_r3, u8 *, 6) != M2C_FIELD(var_ip, u8 *, 6)) {
+            return 0;
+        }
+        goto loop_1;
+    }
+    temp_r3 = var_ip;
+loop_11:
+    temp_r2_2 = M2C_FIELD(var_ip, u16 *, 0xA);
+    if (temp_r2_2 != 0xFFFF) {
+        if (temp_r2_2 == arg1) {
+            return 0;
+        }
+        if ((((s32) M2C_FIELD((arg0 + ((s32) temp_r2_2 >> 2)), u8 *, 0xC0C) >> ((u32) (temp_r2_2 << 0x1E) >> 0x1D)) & 3) != 3) {
+            return 0;
+        }
+        off2 = var_ip - arg0;
+        quot2 = off2 / 12;
+        var_ip = (temp_r2_2 * 0xC) + arg0;
+        if (M2C_FIELD(var_ip, u16 *, 8) != (u16) quot2) {
+            return 0;
+        }
+        if (M2C_FIELD(var_ip, u8 *, 6) != M2C_FIELD(temp_r3, u8 *, 6)) {
+            return 0;
+        }
+        goto loop_11;
+    }
+    return 1;
 }
 

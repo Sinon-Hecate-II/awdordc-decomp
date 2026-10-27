@@ -10,37 +10,39 @@ void func_020d9d5c(void *arg0) {
     func_01ffa8c4(arg0, M2C_FIELD(arg0, u8 *, 0x40));
 }
 
-void func_020d9d80(void *arg0) {
+/* Draw four 5-wide progress bars (level rows 1/6/11/16) onto the UI screen,
+   mark it dirty, then update the cached entry id if it changed. */
+void func_020d9d80(void *entry) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
     M2C_UNK func_0208fe30(s32);
     extern void **gCur3DSpriteEngine;
     extern void **data_027e00c8;
-    void *temp_r7;
-    void **saved;
+    void *panel;
+    void **savedEngine;
     s32 i;
-    s32 r8;
-    s32 r9;
+    s32 col;
+    s32 levelEnd;
 
-    temp_r7 = M2C_FIELD(arg0, void **, 0x10);
-    saved = gCur3DSpriteEngine;
+    panel = M2C_FIELD(entry, void **, 0x10);
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c8;
 
-    r8 = 1;
-    r9 = 5;
+    col = 1;
+    levelEnd = 5;
     i = 0;
     do {
-        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (r8 << 6)),
+        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (col << 6)),
                       0x1e,
-                      (s32)(u16)(r9 - r8),
-                      (u32)(u16)(M2C_FIELD(arg0, u8 *, 0) != i ? 5 : 6));
-        { s32 nx = r8 + 5; s32 ny = r9 + 5; i++; r8 = (s16)nx; r9 = (s16)ny; }
+                      (s32)(u16)(levelEnd - col),
+                      (u32)(u16)(M2C_FIELD(entry, u8 *, 0) != i ? 5 : 6));
+        { s32 nextCol = col + 5; s32 nextEnd = levelEnd + 5; i++; col = (s16)nextCol; levelEnd = (s16)nextEnd; }
     } while (i < 4);
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 
-    if ((s8)M2C_FIELD(temp_r7, s8 *, 0x43) != M2C_FIELD(arg0, u8 *, 0)) {
-        M2C_FIELD(temp_r7, s8 *, 0x43) = M2C_FIELD(arg0, u8 *, 0);
+    if ((s8)M2C_FIELD(panel, s8 *, 0x43) != M2C_FIELD(entry, u8 *, 0)) {
+        M2C_FIELD(panel, s8 *, 0x43) = M2C_FIELD(entry, u8 *, 0);
         func_0208fe30(0x10019);
     }
 }
@@ -178,6 +180,32 @@ void func_020da1e8(void *arg0) {
 
 void func_020da22c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+
+void func_020da2a0(void *a) {
+    M2C_UNK func_020808dc(u16 *, s32, s32, u32);
+    M2C_UNK func_0208fe30(s32);
+    extern void **gCur3DSpriteEngine, **data_027e00c8;
+    s32 func_02084644(void);void *func_ov010_02229b00(void); s32 state; void *p;
+    void **saved = gCur3DSpriteEngine;
+    s32 i, x, y;
+    gCur3DSpriteEngine = data_027e00c8;
+    x = 10;
+    y = 14;
+    i = 0;
+    do {
+        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 8 + (x << 6)),
+                      24,
+                      (u16)(y - x),
+                      (u16)(M2C_FIELD(a, u8 *, 0) != i ? 7 : 8));
+        { s32 nx = x + 5; s32 ny = y + 5; i++; x = (s16)nx; y = (s16)ny; }
+    } while (i < 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
+    gCur3DSpriteEngine = saved;
+    if(func_02084644()==2) state=(M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4)?1:0;else state=0;
+    {s32 selected=M2C_FIELD(a,u8 *,0);if(selected==state)return;state=selected;}
+    if(func_02084644()==2){p=func_ov010_02229b00();if(state==1)M2C_FIELD(p,u8 *,0x1a)|=4;else M2C_FIELD(p,u8 *,0x1a)&=~4;}
+    func_0208fe30(0x10019);
+}
 
 void func_020da3c8(void *arg0) {
     s32 temp_r0_2;

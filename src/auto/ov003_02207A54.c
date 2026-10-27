@@ -1,5 +1,12 @@
 /* 13 functions from 0x02207A54 to 0x0220856C (ov003), found by ds-decomp. */
 #include "common.h"
+static inline void ResetSlot(void *p, u16 value) {
+M2C_FIELD(p,s32 *,8)=M2C_FIELD(p,s32 *,4);
+M2C_FIELD(p,u16 *,12)=value;
+func_020a9218(p);
+M2C_FIELD(p,u8 *,14)=value;
+M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
+}
 
 u8 func_ov003_02207a54(void *arg0) {
     u8 var_r0;
@@ -123,9 +130,76 @@ u8 func_ov003_0220801c(void *arg0) {
     return var_r0;
 }
 
+void func_ov003_02208034(void *arg0) {
+    M2C_UNK func_02082a8c(s32 *, u16 *);
+    s32 func_020a8ff4(s32);
+    extern u16 **data_027e00c4;
+    extern u16 **gCur3DSpriteEngine;
+    s32 block[5];
+    u16 * sp4;
+    u16 * sp0;
+    s32 var_r0;
+    s32 var_r0_3;
+    u16 **temp_r4;
+    u16 *temp_r1;
+    u16 *temp_r1_2;
+    u16 *var_r1;
+    u16 temp_r0;
+    u16 temp_r5;
+    s32 var_r0_2;
+    s32 var_r0_4;
+    u16 var_r2;
+
+    temp_r4 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c4;
+    if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
+        var_r0 = 1;
+    } else {
+        var_r0 = 0;
+    }
+    if (!(var_r0 & 0xFF)) {
+        var_r0_2 = 0x100;
+    } else {
+        var_r0_2 = func_020a8ff4(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x18));
+    }
+    temp_r5 = var_r0_2;
+    if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
+        var_r0_3 = 1;
+    } else {
+        var_r0_3 = 0;
+    }
+    if (!(var_r0_3 & 0xFF)) {
+        var_r0_4 = 0x100;
+    } else {
+        var_r0_4 = func_020a8ff4(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x1C));
+    }
+    temp_r0 = var_r0_4;
+    if(temp_r5==0 || temp_r0==0){sp4=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp4) = *(*(u16 * volatile *)&sp4) & ~0x80;}else{sp0=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp0) = *(*(u16 * volatile *)&sp0) | 0x80;}
+    M2C_FIELD(block,u16 *,14) = temp_r0;
+    M2C_FIELD(block,s32 *,0) = 0x80;
+    M2C_FIELD(block,s32 *,4) = 0x88;
+    M2C_FIELD(block,u16 *,12) = temp_r5;
+    M2C_FIELD(block,s16 *,16) = 0;
+    M2C_FIELD(block,s16 *,8) = 0x80;
+    M2C_FIELD(block,s16 *,10) = 0x88;
+    func_02082a8c(block, (u16 *)((u8 *)*gCur3DSpriteEngine + 0x24));
+    gCur3DSpriteEngine = temp_r4;
+}
+
+void func_ov003_02208168(void *a){s32 off,i;void *p;i=0;
+if((s32)*M2C_FIELD(a,u8 **,0x44)>0){do{off=i*36;
+ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,24),0);
+ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,28),0);
+ResetSlot(M2C_FIELD(M2C_FIELD(a,u8 **,0x48)+off,void **,32),0);
+i++;
+}while(i<(s32)*M2C_FIELD(a,u8 **,0x44));}
+ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,24),0);
+ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,28),0);
+}
+
 void func_ov003_022084f0(void *arg0) {
     M2C_UNK func_020a91a8(s32);
-    M2C_UNK func_ov003_02208034(void *);
+    void func_ov003_02208034(void *);
     void *temp_r6;
     void *var_r5;
     s32 var_r4;

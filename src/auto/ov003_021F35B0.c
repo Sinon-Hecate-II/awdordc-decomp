@@ -49,16 +49,9 @@ void func_ov003_021f3648(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x44) = 1U;
 }
 
-s32 func_ov003_021f3df4(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
-    return arg0;
-}
-
-/* Tears down / reinitialises an object: swaps its vtable, refreshes display-related state, checks its mode and either re-enters mode 4 or does a soft reset, then releases resources and invokes its destructor. */
-void *func_ov003_021f3e08(void *obj) {
+void *func_ov003_021f3cec(void *obj) {
     extern M2C_UNK data_ov003_0220fdac;
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 func_020c79ec(void);
     void func_020c8664(u16, s32);
     void func_ov003_021f140c(s32);
@@ -73,7 +66,73 @@ void *func_ov003_021f3e08(void *obj) {
     s32 mode_result;
 
     M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
-    base = (u8 *)*data_027e0058 + 0x5120;
+    base = (u8 *)*gCurrentMap + 0x5120;
+    func_020c8664(M2C_FIELD(base, u16 *, 0x22), func_020c79ec());
+    M2C_FIELD(obj, u8 *, 0x34) = 3;
+    inner = M2C_FIELD(obj, void **, 0x40);
+    switch (M2C_FIELD(inner, u8 **, 8)[M2C_FIELD(inner, s8 *, 5)]) {
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            mode_result = 1;
+            break;
+        default:
+            mode_result = 0;
+            break;
+    }
+    if (mode_result) {
+        func_ov003_021f140c(4);
+    } else {
+        if (!func_ov003_021f1608()) {
+            func_ov003_021f1858();
+            M2C_FIELD(obj, u8 *, 0x44) = 0;
+        }
+        func_ov003_021f18a4();
+    }
+    func_020af1e4();
+    func_ov003_021f1a58();
+    func_02082040(M2C_FIELD(obj, void **, 0x38));
+    func_02082040(M2C_FIELD(obj, void **, 0x3C));
+    inner = M2C_FIELD(obj, void **, 0x40);
+    if (inner) {
+        ((void (*)(void *))M2C_FIELD(M2C_FIELD(inner, void **, 0), void **, 4))(inner);
+    }
+    func_02082040(obj);
+    return obj;
+}
+
+s32 func_ov003_021f3df4(s32 arg0) {
+    M2C_UNK func_02082040();
+    func_02082040();
+    return arg0;
+}
+
+/* Tears down / reinitialises an object: swaps its vtable, refreshes display-related state, checks its mode and either re-enters mode 4 or does a soft reset, then releases resources and invokes its destructor. */
+void *func_ov003_021f3e08(void *obj) {
+    extern M2C_UNK data_ov003_0220fdac;
+    extern void **gCurrentMap;
+    s32 func_020c79ec(void);
+    void func_020c8664(u16, s32);
+    void func_ov003_021f140c(s32);
+    s32 func_ov003_021f1608(void);
+    void func_ov003_021f1858(void);
+    void func_ov003_021f18a4(void);
+    void func_020af1e4(void);
+    void func_ov003_021f1a58(void);
+    M2C_UNK func_02082040();
+    void *base;
+    void *inner;
+    s32 mode_result;
+
+    M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
+    base = (u8 *)*gCurrentMap + 0x5120;
     func_020c8664(M2C_FIELD(base, u16 *, 0x22), func_020c79ec());
     M2C_FIELD(obj, u8 *, 0x34) = 3;
     inner = M2C_FIELD(obj, void **, 0x40);

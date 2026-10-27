@@ -1,5 +1,7 @@
 /* 17 functions from 0x02076698 to 0x02077624 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 values[128]; } ColorTable;
+extern const ColorTable data_020eb2e0, data_020eb360, data_020eb3e0, data_020eb460;
 
 void func_02076698(u8 *table,u32 poly){u32 v,i,j;
 for(i=0;i<256;i++){v=i;for(j=0;j<8;j++){if(v&128)v=(v<<1)^poly;else v<<=1;}table[i]=v;}
@@ -78,11 +80,11 @@ void func_0207688c(void) {
 }
 
 void func_02076910(s32 x,s32 y) {
- extern void *data_027e0058;
+ extern void *gCurrentMap;
  extern M2C_UNK data_02142688;
  void *p; s32 b,a;
  if(x<0 || y<0) return;
- p=(u8 *)M2C_FIELD(data_027e0058,void **,0)+0x5120;
+ p=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x5120;
  if(x>=M2C_FIELD(p,u16 *,0x24) || y>=M2C_FIELD(p,u16 *,0x26)) return;
  b=(s32)&data_02142688+(x+1)*42; a=(s32)&data_02142688+x*42;
  M2C_FIELD(y,u8 *,a)=7; M2C_FIELD(y,u8 *,b)=7;
@@ -105,9 +107,24 @@ void func_020774b0(void) {
 }
 
 s32 func_020774cc(void) {
- extern void *data_027e0058;
+ extern void *gCurrentMap;
  extern M2C_UNK data_02140f70;
- if(M2C_FIELD(M2C_FIELD(data_027e0058,void **,4),s32 *,0x60)) return M2C_FIELD(&data_02140f70,s32 *,12)!=0;
+ if(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),s32 *,0x60)) return M2C_FIELD(&data_02140f70,s32 *,12)!=0;
  return 0;
+}
+
+void func_0207750c(void) {
+ extern s32 data_027e15bc;
+ extern M2C_UNK data_02140f70;
+ ColorTable a=data_020eb2e0;
+ ColorTable b=data_020eb360;
+ ColorTable c=data_020eb3e0;
+ ColorTable d=data_020eb460;
+ s32 i=data_027e15bc & 127;
+ s32 x=((volatile u8 *)a.values)[i>>1], y=((volatile u8 *)b.values)[i>>1], z=((volatile u8 *)c.values)[i>>1];
+ M2C_FIELD(&data_02140f70,u16 *,16)=x;
+ M2C_FIELD(&data_02140f70,u16 *,18)=y;
+ M2C_FIELD(&data_02140f70,u16 *,20)=c.values[i>>1];
+ M2C_FIELD(&data_02140f70,u16 *,22)=d.values[i>>1];
 }
 

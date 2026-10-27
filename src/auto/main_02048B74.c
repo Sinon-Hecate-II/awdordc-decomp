@@ -67,6 +67,35 @@ void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
     func_02048c84(arg0, arg1, 4, arg2, arg3, arg4);
 }
 
+M2C_UNK func_02048c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, M2C_UNK arg5) {
+    extern M2C_UNK data_020fcd7c, data_020fcd84, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, data_020fcdb0, data_020fcdb8;
+    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK func_02037794(s32);
+    M2C_UNK func_02048558(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK var_r4;
+    s32 i;
+    if (arg3 == 0) func_020640a8(&data_020fcd7c, &data_020fcd84, &data_020fcd14, 0x38);
+    if (arg4 == 0) func_020640a8(&data_020fcd90, &data_020fcd84, &data_020fcd14, 0x39);
+    if (arg0 == 0) func_020640a8(&data_020fcd98, &data_020fcd84, &data_020fcd14, 0x3a);
+    if (arg1 == 0) func_020640a8(&data_020fcda4, &data_020fcd84, &data_020fcd14, 0x3b);
+    var_r4 = func_02037794(0x14);
+    if (var_r4 == 0) func_020640a8(&data_020fcdb0, &data_020fcd84, &data_020fcd14, 0x3e);
+    M2C_FIELD(var_r4, M2C_UNK **, 0) = (M2C_UNK *)func_02037794((s32)arg1 * 4);
+    if (M2C_FIELD(var_r4, M2C_UNK **, 0) == 0) func_020640a8(&data_020fcdb8, &data_020fcd84, &data_020fcd14, 0x41);
+    i = 0;
+    if ((s32)arg1 <= 0) goto done;
+    do {
+        M2C_FIELD(var_r4, M2C_UNK **, 0)[i] = func_02048558(arg0, arg2, arg5);
+        i++;
+    } while (i < (s32)arg1);
+done:
+    M2C_FIELD(var_r4, s32 *, 4) = (s32)arg1;
+    M2C_FIELD(var_r4, M2C_UNK *, 8) = arg5;
+    M2C_FIELD(var_r4, M2C_UNK *, 0x10) = arg4;
+    M2C_FIELD(var_r4, M2C_UNK *, 0xc) = arg3;
+    return var_r4;
+}
+
 void func_02048dc4(s32 **arg0) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK func_0204861c(s32);
@@ -234,28 +263,40 @@ s32 func_020493b0(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32
 
 s32 func_020493f8(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1001,(int)&value,&size)==-1)return -1;return value;}
 
-s32 func_0204943c(s32 a,s32 *b,s32 c,s32 d){
-s32 func_02021d34(void *,u32,s64);
-struct {s32 fd;s16 events;s16 revents;} p;
-s32 r;
-p.events=0;p.fd=a;
-if(b)p.events|=1;
-if(c)p.events|=8;
-p.revents=0;
-r=func_02021d34(&p,1,0);
-if(r<0)return -1;
-if(b){if(r>0&&(p.revents&0x41))*b=1;else *b=0;}
-if(c){if(r>0&&(p.revents&8))*(s32 *)c=1;else *(s32 *)c=0;}
-if(d){if(r>0&&(p.revents&0x20))*(s32 *)d=1;else *(s32 *)d=0;}
-return r;
+/* Polls a single fd for readability/priority/error; sets output flags accordingly. */
+s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
+    s32 func_02021d34(void *, u32, s64);
+    PollFd p;
+    s32 r;
+
+    p.events = 0;
+    p.fd = fd;
+    if (readable) p.events |= 1;
+    if (pri) p.events |= 8;
+    p.revents = 0;
+    r = func_02021d34(&p, 1, 0);
+    if (r < 0) return -1;
+    if (readable) {
+        if (r > 0 && (p.revents & 0x41)) *readable = 1;
+        else *readable = 0;
+    }
+    if (pri) {
+        if (r > 0 && (p.revents & 8)) *(s32 *)pri = 1;
+        else *(s32 *)pri = 0;
+    }
+    if (err) {
+        if (r > 0 && (p.revents & 0x20)) *(s32 *)err = 1;
+        else *(s32 *)err = 0;
+    }
+    return r;
 }
 
 s32 func_02049534(M2C_UNK arg0) {
-    s32 func_0204943c(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
+    s32 PollOneFd(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     sp0 = 0;
-    if (func_0204943c(arg0, &sp0, 0, 0) == 1) {
+    if (PollOneFd(arg0, &sp0, 0, 0) == 1) {
         return sp0;
     }
     return 0;
@@ -265,7 +306,7 @@ s32 func_0204955c(M2C_UNK arg0) {
     s32 sp0;
 
     sp0 = 0;
-    if (func_0204943c(arg0, 0, &sp0, 0) == 1) {
+    if (PollOneFd(arg0, 0, &sp0, 0) == 1) {
         return sp0;
     }
     return 0;

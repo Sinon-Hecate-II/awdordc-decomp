@@ -4,6 +4,37 @@ typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
 Unk05Pair *func_02048690(s32,s32);
 
+s32 func_0205bb90(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 func_0205b100(u16, s32);
+    s32 func_0205b1b8(s32);
+    s32 func_0205b79c(void *, s32, s32, s32);
+    s32 func_0205b8b0(void *, s32, s32, s32, s32, s32 *);
+    s32 func_0205bae8(void *);
+    void func_0205bb68(void *);
+    s32 sp8;
+    s32 kind;
+    s32 result;
+    if (arg3 < 7) {
+ if (func_0205b1a4(arg0)) result=1; else result=0;
+ return result;
+}
+    kind = func_0205b0cc(arg2, 3);
+    if (!func_0205b1e4((s32)arg0, func_0205b0cc(arg2, 5))) return 0;
+    if (kind == M2C_FIELD(arg0, u16 *, 0x66)) {
+        func_0205bb68(arg0);
+        if (!func_0205b79c(arg0,arg1,arg2+7,arg3-7)) return 0;
+        if (func_0205bae8(arg0)) result=1; else result=0;
+ return result;
+    }
+    if (((s32 (*)(s32,s32))func_0205b100)(kind,M2C_FIELD(arg0,u16 *,0x66)) < 0) {
+        func_0205bb68(arg0);
+        return 1;
+    }
+    if (!func_0205b8b0(arg0,arg1,kind,arg2+7,arg3-7,&sp8)) return 0;
+    if (sp8 && !func_0205b1b8((s32)arg0)) return 0;
+    return 1;
+}
+
 s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_0205b0cc(M2C_UNK, M2C_UNK);
     s32 func_0205b1a4();
@@ -22,6 +53,36 @@ s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
         return 1;
     }
     return 0;
+}
+
+s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
+    s32 func_02048688(s32);
+    s32 func_0205b100(u16, s32);
+    s32 func_0205cbb4(void *, void *);
+    s32 lo;
+    s32 hi;
+    s32 n;
+    s32 i;
+    void *p;
+
+    lo = func_0205b0cc((s32)arg1, 0);
+    if (arg2 == 2) {
+        hi = lo;
+    } else if (arg2 == 4) {
+        hi = func_0205b0cc((s32)arg1, 2);
+    } else {
+        return func_0205b1a4(arg0) != 0;
+    }
+    n = func_02048688(M2C_FIELD(arg0, s32 *, 0x60));
+    for (i = 0; i < n; i++) {
+        p = func_02048690(M2C_FIELD(arg0, s32 *, 0x60), i);
+        if ((func_0205b100(M2C_FIELD(p, u16 *, 8), lo) >= 0) &&
+            (func_0205b100(M2C_FIELD(p, u16 *, 8), hi) <= 0) &&
+            (func_0205cbb4(arg0, p) == 0)) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 s32 func_0205be04(s32 a, void *b, s32 c) {
@@ -52,6 +113,87 @@ s32 func_0205bea4(void *arg0) {
 }
 
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
+
+/* Looks up the entry for the given connection/key; validates or refreshes it. */
+s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
+    s32 func_02049208();
+    s32 func_0205a614(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
+    void *func_0205cca0();
+    void *entry;
+
+    entry = func_0205cca0();
+    if ((M2C_FIELD(conn, s32 *, 0x2C) != 0) &&
+        (func_0205a614(conn, entry, arg1, arg2, 1, 0, 0, 0) == 0)) {
+        return 0;
+    }
+    if (entry == NULL) {
+        return 1;
+    }
+    if (M2C_FIELD(entry, s32 *, 0xC) == 0) {
+        if ((M2C_FIELD(entry, u32 *, 0x20) == 0) ||
+            ((u32)(func_02049208() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
+            return 1;
+        }
+        if (func_0205b110(entry, 6, 1) == 0) {
+            return 0;
+        }
+    } else {
+        if (func_0205b110(entry, 2, 1) == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+s32 func_0205c344(void *conn) {
+    s32 func_02049534(void *);
+    s32 func_020497e0(void *, void *, s32, s32, void *, s32 *);
+    s32 func_02049900(void);
+    s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
+    void func_0205d49c(void *);
+    s32 func_0205bf94(void *, void *, s32, M2C_UNK, M2C_UNK);
+
+    s32 cnt;
+    s32 val_c;
+    M2C_UNK val_10;
+    u8 buffer[0x5dc];
+    s32 read;
+    s32 x;
+
+    if (func_02049534((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
+        return 0;
+    }
+
+    cnt = 8;
+
+    for (;;) {
+        read = func_020497e0((void *)M2C_FIELD(conn, s32 *, 0), buffer, 0x5dc, 0,
+                              (u8 *)&val_c, &cnt);
+        if (read != -1) {
+            u16 hv = *(u16 *)((char *)&val_c + 2);
+            u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
+            if (func_0205bf94(conn, buffer, read, val_10, bsw) == 0) {
+                return 0;
+            }
+            if (func_02049534((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
+                return 1;
+            }
+        } else {
+            x = func_02049900();
+            if (x == -15) {
+                u16 hv = *(u16 *)((char *)&val_c + 2);
+                u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
+                func_0205c244(conn, val_10, bsw);
+                return 0;
+            }
+            if (x != -35) {
+                func_0205d49c(conn);
+            }
+            return 0;
+        }
+    }
+}
 
 s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=func_02049208();n=func_02048688(M2C_FIELD(p,s32 *,0x60));func_020486f8(M2C_FIELD(p,s32 *,0x60),&s);return n+1==func_02048688(M2C_FIELD(p,s32 *,0x60));}
 
@@ -209,6 +351,38 @@ s32 func_0205c924(M2C_UNK arg0) {
         return 1;
     }
     return 0;
+}
+
+s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
+    s32 func_02059d24(void *);
+    s32 func_0206527c(void *, M2C_UNK *, s32);
+    s32 func_0205a9ec(s32, void *, s32);
+    M2C_UNK func_02059df0(M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_02059e78(void *, M2C_UNK, s32);
+    extern M2C_UNK data_020ff818;
+    s32 temp_r4;
+    s32 temp_r5;
+    s32 temp_r6;
+
+    if ((arg2 < 2) || (func_0206527c(arg1, &data_020ff818, 2) != 0)) {
+        if (func_0205a9ec((s32)arg0, arg1, arg2) == 0) {
+            return 0;
+        }
+        return 1;
+    }
+    temp_r6 = arg2 + 2;
+    if (func_02059d24((void *)((char *)arg0 + 0x50)) < temp_r6) {
+        return 1;
+    }
+    temp_r5 = M2C_FIELD(arg0, s32 *, 0x50);
+    temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
+    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)&data_020ff818, 2);
+    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)arg1, arg2);
+    if (func_0205a9ec((s32)arg0, (void *)(temp_r5 + temp_r4), temp_r6) == 0) {
+        return 0;
+    }
+    func_02059e78((void *)((char *)arg0 + 0x50), -1, temp_r6);
+    return 1;
 }
 
 s32 func_0205ca48(void *p){extern M2C_UNK data_020ff818;u8 buf[5];u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);s32 v;buf[2]=100;M2C_FIELD(buf,volatile u8 *,0)=a;M2C_FIELD(buf,volatile u8 *,1)=b;func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}

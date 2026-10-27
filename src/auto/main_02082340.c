@@ -1,5 +1,6 @@
 /* 19 functions from 0x02082340 to 0x02083320 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 entries[0x1800];u8 count; } Lists020830;
 
 void func_020824cc(void) {
     void func_02082a8c(void *, void *);
@@ -26,6 +27,24 @@ void func_020824cc(void) {
     func_02082a8c(data_02101fc0, (u8 *)*gCur3DSpriteEngine + 0x24);
 }
 
+void func_0208259c(void){
+void func_02082a8c(void *,void *);extern void **gCur3DSpriteEngine;extern u8 data_02101fc0[];
+u16 *volatile a;u16 *volatile b;u16 *volatile c;u16 *volatile d;u16 *volatile e;u16 *volatile f;u16 *volatile g;
+a=*gCur3DSpriteEngine;*a=*a&~0x10;
+b=*gCur3DSpriteEngine;*b=*b&~0x20;
+c=*gCur3DSpriteEngine;*c=*c&~0x40;
+d=*gCur3DSpriteEngine;*d=*d&~0x80;
+e=*gCur3DSpriteEngine;*e=*e&~0x100;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,6)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,8)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,10)=0;
+M2C_FIELD(*gCur3DSpriteEngine,u16 *,12)=0;
+f=(u16 *)*gCur3DSpriteEngine+1;*f=*f&~7;
+g=(u16 *)*gCur3DSpriteEngine+1;*g=*g&~0x38;
+func_02082a8c(data_02101fc0,(u8 *)*gCur3DSpriteEngine+0x14);
+func_02082a8c(data_02101fc0,(u8 *)*gCur3DSpriteEngine+0x24);
+}
+
 void func_02082700(void) {
     extern void **gCur3DSpriteEngine;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x38) = 0;
@@ -38,22 +57,28 @@ void func_02082700(void) {
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x46) = 0;
 }
 
-void func_02082994(void) {
-extern void **gCur3DSpriteEngine;
-u16 *volatile a;u16 *volatile b;u16 *volatile c;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,14)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u16 *,16)=0;
-a=*gCur3DSpriteEngine;*a=*a&~0x200;
-b=*gCur3DSpriteEngine;*b=*b&~0x400;
-c=*gCur3DSpriteEngine;*c=*c&~0x800;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,72)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,74)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,73)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,75)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,76)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,78)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,77)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,79)=0;
+/* Resets the current 3D sprite engine's sprite queues and status flags. */
+void Reset3DSpriteEngineState(void) {
+    extern void **gCur3DSpriteEngine;
+    u16 *volatile a;
+    u16 *volatile b;
+    u16 *volatile c;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0xE) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x10) = 0;
+    a = *gCur3DSpriteEngine;
+    *a = *a & ~0x200;
+    b = *gCur3DSpriteEngine;
+    *b = *b & ~0x400;
+    c = *gCur3DSpriteEngine;
+    *c = *c & ~0x800;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x48) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4A) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x49) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4B) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4C) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4E) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4D) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x4F) = 0;
 }
 
 void func_02082a8c(void *arg0, void *arg1) {
@@ -73,6 +98,25 @@ M2C_FIELD(out,s16 *,6)=func_0207c8ec(cosine,M2C_FIELD(in,s16 *,14))>>4;
 b=dy-y;a=dx-x;
 M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
 M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
+}
+
+void func_02082b78(void){
+extern void *data_027e00bc;extern void *data_027e00c0;
+extern void **gCur3DSpriteEngine;extern void **data_027e00c4;extern void **data_027e00c8;
+u16 *volatile a;u16 *volatile b;void **old;s32 i;
+M2C_FIELD(data_027e00bc,s32*,0x34)=1;M2C_FIELD(data_027e00c0,s32*,0x34)=1;
+M2C_FIELD(data_027e00bc,u16*,4)=(M2C_FIELD(data_027e00bc,u16*,4)&~1)|1;
+M2C_FIELD(data_027e00bc,u16*,4)&=~2;
+M2C_FIELD(data_027e00bc,u16*,4)&=~4;
+a=*gCur3DSpriteEngine;*a=*a&~0x1000;
+b=*gCur3DSpriteEngine;*b=*b&~0x6000;
+old=gCur3DSpriteEngine;
+for(i=0;i<2;i++){
+gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+func_020824cc();func_02082700();func_02082770();Reset3DSpriteEngineState();
+M2C_FIELD(*gCur3DSpriteEngine,u8*,0x50)=0;
+}
+gCur3DSpriteEngine=old;
 }
 
 void func_02082c84(void) {
@@ -152,6 +196,31 @@ s32 func_0208302c(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return
 
 u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 func_020c7ef4(s32); s32 func_020cfbb0(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!func_020c7ef4(x))return 7; return func_020cfbb0(x)+7; }
 
+#pragma opt_common_subs off
+void func_020830ec(u32 mode,Lists020830 *p,s32 arg){
+s32 func_020846a4(void);void func_020831f8(void*,s32,s32);
+s32 i;u8 n=0;
+p->count=0;
+switch(mode){
+case 0:case 8:
+for(i=2;i<12;i++){
+if(!func_020846a4()){if(i<8||i>11)goto process;goto next;}else if(i==7)goto next;
+process:
+if(mode==8&&i==7)continue;
+func_020831f8((void*)p+(p->count<<9),(u8)i,arg);
+if(M2C_FIELD((void*)p+(p->count<<9),u8*,0x1ff))p->count++;
+next:;
+}
+break;
+case 6:case 7:case 9:
+p->count=1;
+for(i=0xe1;i<0x113;i++){M2C_FIELD(p,u16*,n*2)=i;n++;}
+M2C_FIELD(p,u8*,0x1ff)=n;M2C_FIELD(p,u8*,0x1fe)=7;
+break;
+case 1:case 2:case 3:case 4:case 5:break;
+}
+}
+#pragma opt_common_subs reset
 void func_020831f8(void *p,s32 b,s32 c){
 s32 func_020846a4(void);s32 func_02083320(s32,s32);
 s32 count=0; s32 i; s32 limit; u8 type;

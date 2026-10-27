@@ -13,6 +13,83 @@ for(i=0,p=(u8 *)&data_0213b2c4;i<16;i++,p+=68){p[44]=0;p[60]=i;func_02029c74(&da
 for(j=0,q=(u8 *)&data_0213b704;j<32;j++,q+=36){func_02029c30(q,12);func_02029c30(q+12,0);q[32]=127;M2C_FIELD(q,s32 *,24)=1;M2C_FIELD(q,s32 *,28)=0;}
 }
 
+void func_0202aeb4(void) {
+    s32 func_02009800(void);
+    void *func_02029ddc(void *, s32);
+    s32 func_02009524(void *);
+    M2C_UNK func_02008c38(u8, s32);
+    void func_02008c18(u8);
+    M2C_UNK func_0202b338(void *);
+    void func_0202ef34(void *);
+    s32 func_0202ef00(void *);
+    s32 func_0202ef4c(void *);
+    void func_0202b298(void *);
+    extern M2C_UNK data_0213b2b8;
+    extern s16 data_020e9ca0[];
+    s32 r11;
+    void *r6;
+    void *r7;
+    s32 r4;
+    r11 = func_02009800();
+    r6 = func_02029ddc(&data_0213b2b8, 0);
+    if (r6 == 0) {
+        return;
+    }
+    r4 = -0x8000;
+    do {
+        r7 = func_02029ddc(&data_0213b2b8, r6);
+        if (*(u8 *)((u8 *)r6 + 0x2D) == 0) {
+            if (func_02009524(*(void **)((u8 *)r6 + 0x30))) {
+                *(u8 *)((u8 *)r6 + 0x2D) = 1;
+            }
+            if (*(u8 *)((u8 *)r6 + 0x2D) == 0) {
+                goto tail;
+            }
+            if (r11 & (1 << *(u8 *)((u8 *)r6 + 0x3C))) {
+                goto tail;
+            }
+            func_0202b338(r6);
+            goto next;
+        }
+        func_0202ef34((u8 *)r6 + 0x1C);
+        {
+            void *four = *(void **)((u8 *)r6 + 0x04);
+            u8 v41 = *(u8 *)((u8 *)r6 + 0x41);
+            u8 fi  = *(u8 *)((u8 *)four + 0x20);
+            u8 v40 = *(u8 *)((u8 *)r6 + 0x40);
+            s32 r8v = data_020e9ca0[v41];
+            s32 r10 = data_020e9ca0[fi];
+            s32 r9v = data_020e9ca0[v40];
+            s32 ef = func_0202ef00((u8 *)r6 + 0x1C);
+            s32 r98 = r9v + r8v;
+            s32 r10r = r10 + r98;
+            s32 pef = data_020e9ca0[ef >> 8];
+            s32 r8final = pef + r10r;
+            if (r8final < r4) {
+                r8final = r4;
+            } else if (r8final > 0x7FFF) {
+                r8final = 0x7FFF;
+            }
+            if (r8final != *(s16 *)((u8 *)r6 + 0x3E)) {
+                func_02008c38(*(u8 *)((u8 *)r6 + 0x3C), r8final);
+                *(s16 *)((u8 *)r6 + 0x3E) = (s16) r8final;
+            }
+        }
+        if (*(u8 *)((u8 *)r6 + 0x2C) == 2) {
+            if (func_0202ef4c((u8 *)r6 + 0x1C)) {
+                func_0202b298(r6);
+            }
+        }
+    tail:
+        if (*(u8 *)((u8 *)r6 + 0x2F)) {
+            func_02008c18(*(u8 *)((u8 *)r6 + 0x3C));
+            *(u8 *)((u8 *)r6 + 0x2F) = 0;
+        }
+    next:
+        r6 = r7;
+    } while (r7 != 0);
+}
+
 void *func_0202b018(void *a,s32 b,s32 c){
 extern M2C_UNK data_0213b704;void *func_02029ddc();void *func_0202b2d0();void func_0202acbc();
 void func_0202b298(void *);M2C_UNK func_0202b1f4(M2C_UNK *,void *);void *old=M2C_FIELD(a,void **,0);void *p=(u8 *)&data_0213b704+b*36;void *q;

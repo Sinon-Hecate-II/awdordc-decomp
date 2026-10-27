@@ -1,6 +1,43 @@
 /* 152 functions from 0x020D8BB4 to 0x020D9A98 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020d8bb4(void) {
+M2C_UNK func_0208349c(u32);
+s32 func_020bee64();
+s32 func_020bf054(s32,s32);
+M2C_UNK func_020ceec8();
+s32 func_020d8b84(s32);
+s32 func_020e4b28(s32);
+extern M2C_UNK data_0215d9b8;
+extern u16 data_02168f14;
+extern s8 data_02168f2c;
+s32 k,j,t,i; s8 *p;
+u16 flags; u32 mode;
+flags=data_02168f14;
+mode=M2C_FIELD(&data_0215d9b8,u16 *,6)&15;
+data_02168f14=(flags&~7)|3;
+func_0208349c(mode);
+func_020ceec8();
+i=0;p=&data_02168f2c;
+do {i++;*p=0;}while(p++,i<59);
+k=0;
+do {
+switch(k){
+case 0:
+j=0;
+do {t=func_020bf054(k,j);
+if(func_020bee64()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+j++;}while(j<3);
+break;
+case 1:
+t=func_020bf054(k,0);
+if(func_020bee64()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+break;
+}
+k++;
+}while(k<=1);
+}
+
 void func_020d8cc4(void) {
 
 }
@@ -10,8 +47,8 @@ void func_020d8cc8(void) {
 }
 
 void func_020d8ccc(s16 arg0) {
-    extern void **data_027e0058;
-    M2C_FIELD(*data_027e0058, s16 *, 0x5142) = arg0;
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s16 *, 0x5142) = arg0;
 }
 
 void func_020d8ce8(s32 arg0) {

@@ -1,5 +1,6 @@
 /* 24 functions from 0x020756A4 to 0x02076698 (main), found by ds-decomp. */
 #include "common.h"
+
 typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x500]; u32 count; } Queue02075;
 
 void func_02075938(void *arg0, s32 arg1) {
@@ -27,6 +28,31 @@ loop_9:
     }
 }
 
+#pragma opt_common_subs off
+s32 func_020759e8(M2C_UNK *p,s32 index,s32 dest) {
+s32 func_0200558c(void);
+void *entry; s32 start=dest; u8 ok=1; u16 id;
+if(M2C_FIELD(p,u8*,0x2050)==0)return 0;
+if(M2C_FIELD(p,u8*,0x2052)==1)return 0;
+id=func_0200558c();
+while(index!=0xffff){
+entry=(void*)p+index*12;
+func_0200fe5c(id);
+if(M2C_FIELD(entry,u16*,8)==0xffff)
+func_0201033c((index<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
+else
+func_0201033c((index<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
+ok=func_02010584()!=0;
+func_0200fe6c(id);
+if(!ok){M2C_FIELD(p,u8*,0x2052)=1;break;}
+index=M2C_FIELD(entry,u16*,10);
+if(M2C_FIELD(entry,u16*,8)==0xffff)dest+=M2C_FIELD(entry,u16*,4)-0x38;
+else dest+=M2C_FIELD(entry,u16*,4)-0x14;
+}
+func_020055f4(id);
+return ok?dest-start:0;
+}
+#pragma opt_common_subs reset
 s32 func_02075b58(M2C_UNK *arg0, s32 arg1) {
     void *temp_ip;
     s32 var_lr;
@@ -110,6 +136,33 @@ void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_02075cbc(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_0213ea18;
     func_02075cbc(&data_0213ea18, arg0, arg1, arg2, arg3);
+}
+
+void func_02076010(s32 type,s32 max){
+void func_02076180(M2C_UNK);
+M2C_UNK *func_02076228(void);s32 func_02076234(void);
+void *func_020e34bc(s32);void func_020e35cc(void *);
+s32 count;u8 **items;s32 best,n,i,k,j,cmp;u8 *p;u32 b,a;
+p=(u8 *)func_02076228();n=func_02076234();
+count=0;items=func_020e34bc((max+1)*4);
+for(i=0;i<n;i++,p+=40){
+if(type==p[2]){
+if(count<max){items[count]=p;count=count+1;continue;}
+items[count]=p;
+best=0;
+k=count+1;
+for(j=1;j<k;j++){
+b=M2C_FIELD(items[j],u32 *,4);a=M2C_FIELD(items[best],u32 *,4);
+if((a&0xffff0000)==0xffff0000 && !(b&0xffff0000) && b!=0)cmp=0;
+else if(!(a&0xffff0000) && (b&0xffff0000)==0xffff0000 && a!=0)cmp=1;
+else cmp=a>b;
+if(cmp)best=j;
+}
+func_02076180(M2C_FIELD(items[best],u16 *,0));
+for(;best<count;best++)items[best]=items[best+1];
+}
+}
+if(items)func_020e35cc(items);
 }
 
 void func_02076180(M2C_UNK arg0) {

@@ -1,5 +1,6 @@
 /* 38 functions from 0x02175F60 to 0x02176F4C (ov001), found by ds-decomp. */
 #include "common.h"
+
 struct MenuValues2 { u8 values[2]; };
 extern struct MenuValues2 data_ov001_0218f6f4;
 
@@ -295,7 +296,7 @@ void func_ov001_02176ab0(void) {
 }
 
 void func_ov001_02176ad8(void) {
-    M2C_UNK func_ov001_02176aec();
+    void func_ov001_02176aec(void);
     void func_ov001_02176c18(void);
     void func_ov001_02176c1c(void);
     func_ov001_02176aec();
@@ -303,6 +304,38 @@ void func_ov001_02176ad8(void) {
     func_ov001_02176c1c();
 }
 
+#pragma opt_strength_reduction off
+void func_ov001_02176aec(void){
+M2C_UNK func_ov001_021716d8(M2C_UNK);
+M2C_UNK func_ov001_02172094(u16,u16,u16,u16);
+void func_ov001_02176d80(s32);
+s32 func_ov001_0218bb00(s32);s32 func_ov001_0218bb24(s32);s32 func_ov001_0218bbd8(void *);
+extern u8 data_ov001_0218f6f6[];
+extern u16 data_ov001_0218f706,data_ov001_0218f70a,data_ov001_0218f708,data_ov001_0218f70c;
+extern u8 data_ov001_02193d5c;
+u32 index;u8 *entry;s32 offset;u16 a,b,c,d;
+entry=data_ov001_0218f6f6;
+for(index=0;index<2;index++,entry+=8){
+if(func_ov001_0218bbd8(entry)){
+func_ov001_021716d8(1);
+offset=(u8)index*8;
+a=M2C_FIELD(&data_ov001_0218f706,u16 *,offset);
+b=M2C_FIELD(&data_ov001_0218f70a,u16 *,offset);
+c=M2C_FIELD(&data_ov001_0218f708,u16 *,offset);
+d=M2C_FIELD(&data_ov001_0218f70c,u16 *,offset);
+M2C_FIELD(&data_ov001_02193d5c,s8 *,0)=index;
+func_ov001_02172094(a,b,c,d);return;
+}
+}
+if(func_ov001_0218bb00(1)){func_ov001_021716d8(1);return;}
+if(func_ov001_0218bb00(2)){func_ov001_021716d8(0);return;}
+if(func_ov001_0218bb24(0x40)){func_ov001_02176d80(1);return;}
+if(func_ov001_0218bb24(0x80)){func_ov001_02176d80(3);return;}
+if(func_ov001_0218bb24(0x20)){func_ov001_02176d80(0);return;}
+if(!func_ov001_0218bb24(0x10))return;
+func_ov001_02176d80(2);
+}
+#pragma opt_strength_reduction reset
 void func_ov001_02176c18(void) {
 
 }

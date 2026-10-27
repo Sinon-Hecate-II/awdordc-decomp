@@ -22,7 +22,7 @@ void func_020b7178(void *task) {
     M2C_UNK func_0208fb0c(M2C_UNK, u32, u32);
     s32 func_020b5200(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020b695c(s32, s32, M2C_UNK);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK data_02128f94;
     u32 y;
     u32 mode;
@@ -41,7 +41,7 @@ void func_020b7178(void *task) {
     case 1:
     case 3:
 loop_8:
-        if (y < (u32) M2C_FIELD(*data_027e0058, u16 *, 0x5146)) {
+        if (y < (u32) M2C_FIELD(*gCurrentMap, u16 *, 0x5146)) {
             func_02076910(x, y);
             y += 1;
             goto loop_8;
@@ -49,7 +49,7 @@ loop_8:
         break;
     case 0:
 loop_11:
-        if ((x != 0) && (y < (u32) M2C_FIELD(*data_027e0058, u16 *, 0x5146))) {
+        if ((x != 0) && (y < (u32) M2C_FIELD(*gCurrentMap, u16 *, 0x5146))) {
             func_02076910(x, y);
             x -= 1;
             y += 1;
@@ -58,7 +58,7 @@ loop_11:
         break;
     case 2:
 loop_15:
-        temp_r0 = *data_027e0058;
+        temp_r0 = *gCurrentMap;
         if ((x < (u32) M2C_FIELD(temp_r0, u16 *, 0x5144)) && (y < (u32) M2C_FIELD(temp_r0, u16 *, 0x5146))) {
             func_02076910(x, y);
             x += 1;

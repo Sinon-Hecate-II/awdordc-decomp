@@ -58,6 +58,28 @@ void func_0204bc64(void *arg0) {
  }
 }
 
+s32 func_0204bec0(void *state,void *context){
+M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+s32 func_02064bcc(s32);
+s32 func_02064230(void *,s32,s32,s32);
+s32 func_0204a9d0(void *,void *,s32);
+extern M2C_UNK data_020fd4a8,data_020fd334,data_020fd2b0,data_020fd508,data_020fd530;
+u8 buf[4096];s32 n,result;
+if(M2C_FIELD(state,s32 *,4)<0)func_020640a8(&data_020fd4a8,&data_020fd334,&data_020fd2b0,0x336);
+if(M2C_FIELD(state,s32 *,4)>=M2C_FIELD(state,s32 *,12))func_020640a8(&data_020fd508,&data_020fd334,&data_020fd2b0,0x337);
+if(M2C_FIELD(state,s32 *,4)!=func_02064bcc(M2C_FIELD(state,s32 *,8)))func_020640a8(&data_020fd530,&data_020fd334,&data_020fd2b0,0x338);
+do{
+n=func_02064230(buf,1,4096,M2C_FIELD(state,s32 *,8));
+if(n<=0){M2C_FIELD(context,s32 *,0xfc)=1;M2C_FIELD(context,s32 *,0x38)=14;return 0;}
+M2C_FIELD(state,s32 *,4)+=n;
+if(M2C_FIELD(state,s32 *,4)>M2C_FIELD(state,s32 *,12)){M2C_FIELD(context,s32 *,0xfc)=1;M2C_FIELD(context,s32 *,0x38)=14;return 0;}
+result=func_0204a9d0(context,buf,n);
+if(result==0)return 0;
+if(M2C_FIELD(state,s32 *,4)==M2C_FIELD(state,s32 *,12))return 1;
+}while(result==1);
+return 2;
+}
+
 /* Posts pending bytes from state->data into context, up to 0x8000 at a time; returns 0 on write error, 1 when fully posted, 2 when no progress. */
 s32 func_0204c01c(void *state, M2C_UNK context) {
     s32 func_0204a954(M2C_UNK, s32, s32);

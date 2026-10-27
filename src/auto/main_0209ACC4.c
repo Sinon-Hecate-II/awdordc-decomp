@@ -4,6 +4,54 @@
 typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
 
+void func_0209b084(void *entity) {
+    s32 func_02095fe8(void);
+    void func_02095ff8(s8);
+    M2C_UNK func_01ffa9e4(M2C_UNK *);
+    void func_01ff9ce8(u8);
+    void func_02095fc0(void);
+    void func_02097768(void);
+    extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+    extern M2C_UNK data_02102eac, data_02102e74;
+
+    s32 saved;
+    s32 i;
+
+    if (func_02095fe8() == 3) {
+        func_02095ff8(0);
+        if (func_02095fe8() == 2) {
+            func_02095ff8(0);
+        }
+    }
+    func_01ffa9e4(&data_02102eac);
+    func_01ffa9e4(&data_02102e74);
+
+    if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x4)) {
+        saved = gCur3DSpriteEngine;
+        for (i = 0; i < 2; i++) {
+            gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
+            {
+                u8 mode = M2C_FIELD(entity, u8 *, 0x5a);
+                if (mode == 0 && gCur3DSpriteEngine != data_027e00c8) continue;
+                if (mode == 1 && gCur3DSpriteEngine != data_027e00c4) continue;
+                if (mode == 3 && gCur3DSpriteEngine != saved) continue;
+            }
+            func_01ff9ce8(M2C_FIELD(entity, u8 *, 0x57));
+            {
+                u8 *p = (u8 *)gCur3DSpriteEngine;
+                s8 idx = M2C_FIELD(entity, s8 *, 0x57);
+                p[0x46] = (u8)(p[0x46] | (1 << idx));
+            }
+        }
+        gCur3DSpriteEngine = saved;
+    }
+
+    if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x8)) goto skip8;
+    func_02095fc0();
+    func_02097768();
+skip8:;
+}
+
 void func_0209b190(M2C_UNK arg0) {
     M2C_UNK func_01ffa6fc(M2C_UNK);
     s32 func_02097be0();

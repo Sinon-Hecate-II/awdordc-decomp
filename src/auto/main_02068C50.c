@@ -24,6 +24,35 @@ while((*p++=*b++)!=0);
 return a;
 }
 
+s32 func_02068d98(u8 *a,u8 *b){
+u32 c,d,z; s32 diff,n;
+c=*a; diff=c-*b; if(diff)return diff;
+n=(u32)a&3;
+if(((u32)b&3)==n){
+if(n){
+if(!c)return 0;
+n=3-n;
+while(n){d=*++a;diff=d-*++b;if(diff)return diff;if(!d)return 0;n--;}
+a++;b++;
+}
+c=*(u32 *)a;
+z=*(u32 *)b;
+if(!((c+0xfefefeff)&~c&0x80808080)){
+while(c==z){
+a+=4;b+=4;c=*(u32 *)a;z=*(u32 *)b;
+if((c+0xfefefeff)&0x80808080)goto bytes;
+}
+a--;b--;goto next;
+}
+bytes:
+c=*a;diff=c-*b;if(diff)return diff;
+}
+next:
+if(!c)return 0;
+do{c=*++a;diff=c-*++b;if(diff)return diff;}while(c);
+return 0;
+}
+
 s32 func_02068eac(u8 *a,u8 *b,s32 n) {
 if(n) {
 do {

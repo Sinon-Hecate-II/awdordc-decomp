@@ -156,6 +156,50 @@ void func_020ae20c(void) {
     func_01ffa9e4(&data_02127bc8);
 }
 
+s32 func_020ae22c(u32 arg0) {
+    switch (arg0) {
+    case 0:
+        return 0;
+    case 1:
+        return 0x7FFF;
+    case 2:
+        return 0x1F;
+    case 3:
+        return 0x3E0;
+    case 4:
+        return 0x7C00;
+    case 5:
+        return 0x3FF;
+    case 6:
+        return 0x7C1F;
+    case 7:
+        return 0x7FE0;
+    case 8:
+        return 0x4210;
+    case 9:
+        return 0x63E0;
+    case 10:
+        return 0;
+    case 11:
+        return 0x211F;
+    case 12:
+        return 0x63E0;
+    case 13:
+        return 0x3D8A;
+    case 14:
+        return 0x2108;
+    case 15:
+        return 0x7E10;
+    case 16:
+        return 0x43FF;
+    case 17:
+        return 0x7FE0;
+    case 18:
+        return 0x421F;
+    }
+    return 0;
+}
+
 u16 func_020ae354(u32 arg0,u32 arg1,u32 arg2,u32 arg3) {
 u32 g1=(arg1&0x3e0)>>5;
 u32 r1=arg1&31;

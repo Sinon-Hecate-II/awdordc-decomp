@@ -95,6 +95,25 @@ if(arg5==0)return;
 *arg5=ch==10?spC:0;
 }
 
+void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, TextDirection dir) {
+    s32 func_ov001_02169294(s32, s32, s32);
+    M2C_UNK func_ov001_0216a744(void *, s32, s32, s32, s32, s32, s32, TextDirection);
+    s32 x = arg1;
+    s32 y = arg2;
+    s32 d;
+
+    if (arg6 & 0x100) {
+        d = arg4 - func_ov001_02169294(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg0, s32 *, 0xC), arg7);
+        x += d * -dir.y;
+        y += d * dir.x;
+    } else if (arg6 & 0x80) {
+        d = ((arg4 + 1) / 2) - ((func_ov001_02169294(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg0, s32 *, 0xC), arg7) + 1) / 2);
+        x += d * -dir.y;
+        y += d * dir.x;
+    }
+    func_ov001_0216a744(arg0, x, y, arg3, arg5, arg6, arg7, dir);
+}
+
 /* Validates a font resource (magic 'NFTR'-ish, version >= 1.00) and relocates its
    internal pointers; on success returns 1 and writes a pointer to its FINF section into *outFinf. */
 s32 func_ov001_0216aab0(void *font, void **outFinf) {
@@ -180,6 +199,44 @@ s32 func_ov001_0216aab0(void *font, void **outFinf) {
         M2C_FIELD(M2C_FIELD(*outFinf, void **, 8), s8 *, 7) = 0;
     }
     return 1;
+}
+
+s32 func_ov001_0216ac04(void *arg0) {
+    u8 *base = (u8 *) arg0;
+    u8 *p = base + M2C_FIELD(base, u16 *, 0xC);
+    s32 count = M2C_FIELD(base, u16 *, 0xE);
+    s32 i = 0;
+
+    if (count <= 0) {
+        return;
+    }
+    do {
+        switch (M2C_FIELD(p, u32 *, 0)) {
+        case 'FINF':
+            M2C_FIELD(p, u32 *, 0x10) += (u32) base;
+            if (M2C_FIELD(p, u32 *, 0x14) != 0) {
+                M2C_FIELD(p, u32 *, 0x14) += (u32) base;
+            }
+            if (M2C_FIELD(p, u32 *, 0x18) != 0) {
+                M2C_FIELD(p, u32 *, 0x18) += (u32) base;
+            }
+            break;
+        case 'CWDH':
+            if (M2C_FIELD(p, u32 *, 0xC) != 0) {
+                M2C_FIELD(p, u32 *, 0xC) += (u32) base;
+            }
+            break;
+        case 'CMAP':
+            if (M2C_FIELD(p, u32 *, 0x10) != 0) {
+                M2C_FIELD(p, u32 *, 0x10) += (u32) base;
+            }
+            break;
+        case 'CGLP':
+            break;
+        }
+        p += M2C_FIELD(p, u32 *, 4);
+        i++;
+    } while (i < M2C_FIELD(base, u16 *, 0xE));
 }
 
 s32 func_ov001_0216ace0(void *arg0,s32 arg1) {

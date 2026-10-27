@@ -1,5 +1,8 @@
 /* 28 functions from 0x020AF760 to 0x020B0658 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 x,y,z; } VecAff;
+extern u8 data_02122d08[],data_021213e0[];
+extern s32 data_027e15bc;
 
 void func_020af760(void) {
 M2C_UNK func_02090448(s32); extern M2C_UNK gPlayerSettings;
@@ -60,7 +63,7 @@ void func_020af828(s32 arg0, s32 arg1) {
 }
 
 void func_020af860(s32 arg0,s32 arg1) {
-M2C_UNK func_0208ffe4(s32,s32); M2C_UNK func_02090100(s32,s32); M2C_UNK func_020af8c8(s32,s32);
+M2C_UNK func_0208ffe4(s32,s32); M2C_UNK func_02090100(s32,s32); void func_020af8c8(s32,s32);
 extern M2C_UNK data_ov002_021f30f4;
 s32 value; void *base=(u8*)&data_ov002_021f30f4+arg0*0x18;
 value=M2C_FIELD(M2C_FIELD(*(void **)base,void **,0x34),s32 *,4);
@@ -68,6 +71,56 @@ if(value==0)return;
 func_0208ffe4(arg0,-1);
 if(arg0==0)func_02090100(arg0,-128);else func_02090100(arg0,127);
 func_020af8c8(arg0,arg1);
+}
+
+void func_020af8c8(s32 arg0, s32 arg1) {
+    M2C_UNK func_020900a4(s32, s32, M2C_UNK);
+    M2C_UNK func_02090158(s32, u8, M2C_UNK);
+    extern M2C_UNK data_02127ed8;
+    extern M2C_UNK data_ov002_021f2f44;
+    extern M2C_UNK data_ov002_021f30f4;
+    extern M2C_UNK data_ov002_021f314e;
+    s32 var_r1;
+    s32 var_r1_2;
+    s32 var_r2;
+    s32 var_r3;
+    u8 temp_r0;
+    void *temp_r1;
+
+    temp_r1 = *(void **)((u8 *)&data_ov002_021f30f4 + (arg0 * 0x18));
+    if (M2C_FIELD(M2C_FIELD(temp_r1, void **, 0x34), s32 *, 4) == 0) {
+        return;
+    }
+    if (M2C_FIELD(temp_r1, u8 *, 0x3D) == 3) {
+        var_r1 = 7;
+    } else if (*((u8 *)&data_ov002_021f314e + (arg0 * 0x2C)) != 0 && arg1 != 0) {
+        var_r1 = 7;
+    } else if (arg1 <= 0) {
+        var_r1 = 0;
+    } else if (arg1 <= 1) {
+        var_r1 = 1;
+    } else if (arg1 <= 3) {
+        var_r1 = 3;
+    } else {
+        var_r1 = 7;
+    }
+    func_020900a4(arg0, ~var_r1, 2);
+    var_r2 = 5;
+    if (*((u8 *)&data_ov002_021f314e + (arg0 * 0x2C)) != 0) {
+        var_r2 = 0;
+    } else {
+        var_r3 = (arg0 * 0x68) + (s32) &data_ov002_021f2f44;
+        var_r1_2 = 0;
+        do {
+            temp_r0 = M2C_FIELD(var_r3, u8 *, 0x12);
+            var_r3 += 1;
+            if ((s32) temp_r0 < arg1) {
+                var_r2 = var_r1_2;
+            }
+            var_r1_2 += 1;
+        } while (var_r1_2 < var_r2);
+    }
+    func_02090158(arg0, *((u8 *)&data_02127ed8 + var_r2), 0);
 }
 
 void func_020af9cc(s32 arg0,s32 arg1,s32 arg2) {
@@ -119,10 +172,29 @@ void func_020afc40(void) {
 
 }
 
+void func_020affac(s32 x,s32 y){
+s32 func_0207b9f4(s32,s32);
+s32 func_0207cfb8(s32);
+void func_02091248(s32);
+void func_020afc44(s32,s32,s32,void *,s32,s32,s32);
+void func_0209107c(void *,s32,s32,VecAff *,s32,s32,s32,s32,s32);
+extern s32 *gCurrentMap;
+VecAff v;
+s32 c;void *b;s32 a; s32 n; s32 mode;
+n=func_0207b9f4(x+8,y+8);
+mode=func_0207cfb8(*gCurrentMap+0x6ef8)<=0?16:24;
+if(mode==16){a=0x21000;b=data_021213e0;c=0x30000;}
+else {a=0x21980;b=data_02122d08;c=0x20000;}
+func_02091248(31);
+if(n>19){func_020afc44(x+8,y+8,n-19,b,a,0x1440,c);return;}
+v.x=(x+8)*48;v.y=(y+8)*48;v.z=0x8a1;
+func_0209107c(b,n,data_027e15bc,&v,a,0x1440,c,0,0);
+}
+
 void func_020b00c0(void) {
     M2C_UNK func_0207ce54(s32);
-    extern s32 *data_027e0058;
-    func_0207ce54(*data_027e0058 + 0x6EF8);
+    extern s32 *gCurrentMap;
+    func_0207ce54(*gCurrentMap + 0x6EF8);
 }
 
 void func_020b00e4(void) {

@@ -124,6 +124,29 @@ func_0201db20(base,(s32)p-base);
 return result;
 }
 
+s32 func_0201e2fc(s32 a){
+extern M2C_UNK data_02137290;extern u8 data_021377e6[];
+u8 *func_0201e078(u8 *,s32,s32);
+u8 *p;u16 hi,lo;u8 *next;s32 result;s32 base=(s32)data_021377e6;
+p=func_0201e078((u8 *)base,3,(s32)&result);
+if(a==0){
+p[0]=0x32;p[1]=4;
+hi=M2C_FIELD(&data_02137290,u32 *,0x34)>>16;p[2]=hi>>8;
+p[3]=M2C_FIELD(&data_02137290,u32 *,0x34)>>16;
+p[4]=(u16)M2C_FIELD(&data_02137290,u32 *,0x34)>>8;
+p[5]=M2C_FIELD(&data_02137290,u32 *,0x34);
+p[6]=0x36;p[7]=4;
+hi=M2C_FIELD(&data_02137290,u32 *,0x20)>>16;p[8]=hi>>8;
+p[9]=M2C_FIELD(&data_02137290,u32 *,0x20)>>16;
+p[10]=(u16)M2C_FIELD(&data_02137290,u32 *,0x20)>>8;
+p[11]=M2C_FIELD(&data_02137290,u32 *,0x20);
+p+=12;
+}
+next=p+1;*p=255;p=next;
+p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
+func_0201db20(base,(s32)p-base);return result;
+}
+
 s32 func_0201e754(void) {
     M2C_UNK func_0201d164();
     M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, M2C_UNK);

@@ -3,6 +3,48 @@
 typedef struct { u16 id; u8 kind; u8 active; s32 value; u8 data[32]; } Entry_02074920;
 typedef struct { Entry_02074920 entries[128]; u32 count; } List_02074920;
 
+u16 func_02074920(void *arg0) {
+u8 *p;
+s32 i;
+s32 skip;
+u32 value;
+u16 best;
+u8 oldrank;
+u8 oldkind;
+u32 oldvalue;
+s32 rank;
+best=0xffff;
+p=arg0;
+for(i=0;i<256;i++,p+=12) {
+rank=(M2C_FIELD((u8 *)arg0+(i>>2),u8 *,0xc0c)>>((i&3)*2))&3;
+switch(rank) {
+case 0: case 1: case 2:
+if(best==0xffff) break;
+if(rank>oldrank)continue;
+if(rank<oldrank)break;
+{
+u8 kind=M2C_FIELD(p,u8 *,6);
+if(kind!=oldkind && rank!=0) {
+if(kind==1)continue;
+if(oldkind==1)break;
+}
+value=M2C_FIELD(p,u32 *,0);
+if((value&0xffff0000)==0xffff0000 && !(oldvalue&0xffff0000) && oldvalue!=0)skip=0;
+else if(!(value&0xffff0000) && (oldvalue&0xffff0000)==0xffff0000 && value!=0)skip=1;
+else skip=value>oldvalue;
+if(skip)continue;
+}
+break;
+case 3: continue;
+}
+oldrank=rank;
+best=i;
+oldvalue=M2C_FIELD(p,u32 *,0);
+oldkind=M2C_FIELD(p,u8 *,6);
+}
+return best;
+}
+
 void func_02074a48(List_02074920 *arg0) {
 u32 i=0;
 for(;i<arg0->count;i++) arg0->entries[i].active=0;

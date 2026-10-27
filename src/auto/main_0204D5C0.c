@@ -1,5 +1,6 @@
 /* 19 functions from 0x0204D5C0 to 0x0204E408 (main), found by ds-decomp. */
 #include "common.h"
+void func_02058644(void **,void *);
 
 void func_0204da30(void *p){
 s32 func_02037794(s32);void func_020377c4(s32);s32 func_02049208();s32 func_0204a740(void*,s32,s32*);s32 func_0204d39c(void*,s32,s32);
@@ -21,9 +22,9 @@ func_020377c4(buffer);
 }
 
 s32 func_0204db04(s32 arg0,s32 arg1,s32 arg2) {
- extern s32 data_0213db84;
+ extern s32 gDnsQueryState;
  s32 func_0204e6a8(s32,s32,s32);
- if(data_0213db84!=1) return 2;
+ if(gDnsQueryState!=1) return 2;
  if(arg0==0) return 2;
  return func_0204e6a8(arg0,arg1,arg2);
 }
@@ -51,6 +52,21 @@ s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
  M2C_FIELD(p,s32 *,0x1a4)=arg2;
  M2C_FIELD(p,s32 *,0x1a8)=arg3;
  return 0;
+}
+
+s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32),s32 e){
+ s32 func_02050f98(void **,void *,void *,void *,void *,s8 *,s8 *,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
+ void func_02058644(void **,void *);
+ extern M2C_UNK data_020fda34,data_020fda44;
+ void *q;
+ if(!p || !(q=*p))return 2;
+ if(!a || !*a)return 2;
+ if(!b || !*b)return 2;
+ if(!cb){func_02058644(p,&data_020fda34);return 2;}
+ if(M2C_FIELD(q,s32 *,0x108)){
+ s32 buf[8]={0};cb(p,buf,e);return 0;
+ }
+ return func_02050f98(p,&data_020fda44,&data_020fda44,&data_020fda44,&data_020fda44,a,b,0,c,0,d,cb,e);
 }
 
 void func_0204dcd8(void **arg0) {
@@ -104,6 +120,45 @@ s32 func_0204deb0(void **arg0,s32 arg1,s32 arg2) {
  return func_0205342c(arg0,arg1,arg2);
 }
 
+s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
+    /* Build an add-buddy request in the connection's send buffer from the session key, new profile id and reason string. */
+    void func_0204fea0(void **, void *, s8 *);
+    void func_0204fed0(void **, void *, s32);
+    void func_020580fc(void *, s8 *, s32);
+    extern s32 data_020fda48, data_020fda78;
+    extern s8 data_020fda88, data_020fda94, data_020fdaa0, data_020fdab0, data_020fdabc;
+    s8 buf[0x401];
+    s8 *c;
+    void *session;
+    if (!connection || !(session = *connection)) return 2;
+    if (M2C_FIELD(session, s32 *, 0x108)) return 0;
+    if (M2C_FIELD(session, s32 *, 0x1d8) == 4) {
+        func_02058644(connection, &data_020fda48);
+        return 2;
+    }
+    if (!reason) {
+        func_02058644(connection, &data_020fda78);
+        return 2;
+    }
+    func_020580fc(buf, reason, 0x401);
+    if (*buf) {
+        c = buf;
+        do {
+            if (*c == 92) *c = 47;
+            c++;
+        } while (*c);
+    }
+    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fda88);
+    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fda94);
+    func_0204fed0(connection, (u8 *)session + 0x1f4, M2C_FIELD(session, s32 *, 0x198));
+    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdaa0);
+    func_0204fed0(connection, (u8 *)session + 0x1f4, newProfileId);
+    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdab0);
+    func_0204fea0(connection, (u8 *)session + 0x1f4, buf);
+    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdabc);
+    return 0;
+}
+
 s32 func_0204e074(void **arg0,s32 arg1) {
  s32 func_0204fa60(void **,s32);
  extern s32 data_020fda48;
@@ -140,6 +195,34 @@ s32 func_0204e184(void **arg0,volatile s32 *arg1) {
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) {*arg1=0; return 0;}
  *arg1=M2C_FIELD(p,s32 *,0x430);
+ return 0;
+}
+
+s32 func_0204e1b4(void **p,s32 index,void *out){
+ void *func_02055d3c(void **,s32);
+ void func_020580fc(void *,s8 *,s32);
+ void func_02058644(void **,void *);
+ void func_020640a8(void *,void *,void *,s32);
+ void func_02065210(void *,s32,s32);
+ extern M2C_UNK data_020fda10,data_020fdac4,data_020fdad4,data_020fdae4,data_020fdaf0;
+ void *q,*entry,*details; s8 *text; s32 count;
+ if(!p || !(q=*p))return 2;
+ if(M2C_FIELD(q,s32 *,0x108)){func_02065210(out,0,0x210);return 0;}
+ if(!out){func_02058644(p,&data_020fdac4);return 2;}
+ count=M2C_FIELD(q,s32 *,0x430);
+ if(index<0 || index>=count){func_02058644(p,&data_020fdad4);return 2;}
+ entry=func_02055d3c(p,index);
+ if(!entry){func_02058644(p,&data_020fdad4);return 2;}
+ details=M2C_FIELD(entry,void **,8);
+ if(!details)func_020640a8(&data_020fdae4,&data_020fdaf0,&data_020fda10,0x5cf);
+ M2C_FIELD(out,s32 *,0)=M2C_FIELD(entry,s32 *,0);
+ M2C_FIELD(out,s32 *,4)=M2C_FIELD(details,s32 *,4);
+ text=M2C_FIELD(details,s8 **,8);
+ if(!text)*text=0;else func_020580fc((u8 *)out+8,text,256);
+ text=M2C_FIELD(details,s8 **,12);
+ if(!text)*text=0;else func_020580fc((u8 *)out+0x108,text,256);
+ M2C_FIELD(out,s32 *,0x208)=M2C_FIELD(details,s32 *,0x10);
+ M2C_FIELD(out,s32 *,0x20c)=M2C_FIELD(details,s32 *,0x14);
  return 0;
 }
 

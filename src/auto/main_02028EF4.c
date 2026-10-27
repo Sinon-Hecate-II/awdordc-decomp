@@ -146,6 +146,64 @@ void func_020293a0(void *arg0, s32 arg1) {
     func_020295e4(node);
 }
 
+void *func_0202942c(void) {
+    void *func_02027d50(void);
+    void *base;
+    void *p2000;
+    void *hdr;
+    u32 cap;
+    u32 nslots;
+    u32 count;
+    u32 i;
+    u8 *slotbase;
+    void *slot;
+    void *prev;
+
+    base = func_02027d50();
+    p2000 = (void *)((s8 *)base + 0x2000);
+    hdr = M2C_FIELD(p2000, void **, 0x270);
+    if (hdr == (void *)0) {
+        return (void *)0;
+    }
+    cap = M2C_FIELD(p2000, u32 *, 0x274);
+    if (cap <= 0xCU) {
+        return (void *)0;
+    }
+    nslots = (cap - 0xCU) / 0xD0U;
+    if (nslots == 0U) {
+        return (void *)0;
+    }
+    count = M2C_FIELD(hdr, u32 *, 0);
+    if (nslots <= count) {
+        return (void *)0;
+    }
+    slotbase = (u8 *)hdr + 0xC;
+    for (i = 0; i < nslots; i++) {
+        slot = (void *)(slotbase + i * 0xD0);
+        if (*(u8 *)slot == 0) {
+            goto found;
+        }
+    }
+    return (void *)0;
+found:
+    *(u8 *)slot = 1;
+    count = M2C_FIELD(hdr, u32 *, 0);
+    M2C_FIELD(slot, u32 *, 4) = count;
+    M2C_FIELD(slot, void **, 0xC) = (void *)0;
+    M2C_FIELD(slot, void **, 8) = M2C_FIELD(hdr, void **, 8);
+    M2C_FIELD(hdr, void **, 8) = slot;
+    prev = M2C_FIELD(slot, void **, 8);
+    if (prev != (void *)0) {
+        M2C_FIELD(prev, void **, 0xC) = slot;
+    } else {
+        M2C_FIELD(hdr, void **, 4) = slot;
+    }
+    count = M2C_FIELD(hdr, u32 *, 0);
+    count = count + 1;
+    M2C_FIELD(hdr, u32 *, 0) = count;
+    return slot;
+}
+
 s32 func_020294f8(void) {
     void *func_02027d50();
     void *temp_r0;

@@ -101,7 +101,7 @@ void func_020912a4(s32 *arg0) {
 }
 
 s32 func_020912bc(s32 *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_020912ec(M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_020912ec(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020913c4(void *);
     M2C_UNK func_020913d4(M2C_UNK);
 
@@ -111,6 +111,23 @@ s32 func_020912bc(s32 *arg0, s32 arg1, s32 arg2) {
         return func_020913d4((M2C_UNK)arg0);
     }
     return 0;
+}
+
+void func_020912ec(M2C_UNK a, M2C_UNK x, M2C_UNK y) {
+void func_02091570(M2C_UNK);
+void func_0209177c(M2C_UNK);
+void func_01ffaacc(u16,u16,u16,s32,s32);
+extern void *gCur3DSpriteEngine;
+void *p=(void *)a;
+u32 flags=0, v;
+if (!p || !*(s32 *)p) return;
+if (M2C_FIELD(p,s32 *,0x14)) {
+func_02091570(a);
+flags=(M2C_FIELD(p,u8 *,0x23)&31)<<9;
+}
+v=M2C_FIELD(p,u32 *,0x28);
+func_01ffaacc((u16)(x|flags),(u16)y,(u16)((v&0xfc00)|(((v&0x3ff)>>((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))&0x3ff)),M2C_FIELD(p,s32 *,0x10),M2C_FIELD(p,s8 *,0x20));
+if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) func_0209177c(a);
 }
 
 void func_020913c4(void *arg0) {
@@ -248,6 +265,24 @@ loop:
 
 void func_02091af4(void) {
 
+}
+
+s32 func_02091af8(void *arg,s32 b,s32 c){
+u16 *a=arg;
+s32 func_0207c928(s32,s32);
+u16 *table,*seq,*p; s32 sum;
+table=(u16 *)((u8 *)a+(a[0]&~1));
+p=(u16 *)((u8 *)a+(a[1]&~1));
+seq=(u16 *)((u8 *)p+(p[b]&~1));
+p=seq;sum=0;
+while(p[0]){sum+=p[0];p+=2;}
+switch(p[1]){
+case 255:c=func_0207c928(c,sum);break;
+case 1:if(c>sum)c=sum;break;
+case 0:return 0;
+}
+if(seq[0]){do{c-=*(volatile u16 *)seq;if(c<=0)break;seq+=2;}while(seq[0]);}
+return (s32)((u8 *)table+(table[seq[1]]&~1));
 }
 
 void func_02091bcc(void) {

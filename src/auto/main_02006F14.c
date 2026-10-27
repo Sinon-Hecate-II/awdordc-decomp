@@ -1,6 +1,7 @@
 /* 51 functions from 0x02006F14 to 0x02007EF4 (main), found by ds-decomp. */
 #include "common.h"
 extern s32 data_0212dfe8;
+extern u32 data_0212dfbc[2];
 extern u16 data_0212dfec[10];
 typedef struct { u8 bytes[0x64]; u16 flags; } SystemInfo;
 
@@ -154,6 +155,72 @@ void func_020073c0(void) {
  s32 saved;
  func_020073d0();
 }
+
+void func_020073d0(void) {
+    M2C_UNK func_020051f8(M2C_UNK);
+    u64 func_02007004(void);
+    void func_020070b4(void *);
+    void func_020071a0(void *, u32, u32);
+    extern u16 data_0212dfc4;
+    extern M2C_UNK data_027e0000;
+
+    void *node;
+    void *next;
+    u64 now;
+    u64 deadline;
+    u32 t20;
+    u32 t1c;
+    u32 cb;
+    u32 arg;
+
+    *(volatile u16 *)0x04000106 = 0;
+    func_020051f8(0x10);
+    M2C_FIELD(&data_027e0000, u32 *, 0x3FF8) |= 0x10;
+
+    now = func_02007004();
+
+    node = M2C_FIELD(&data_0212dfc4, void **, 4);
+    if (node == 0) return;
+
+    deadline = ((u64)M2C_FIELD(node, u32 *, 0x10) << 32) | M2C_FIELD(node, u32 *, 0x0C);
+    if (now < deadline) {
+        func_020070b4(node);
+        return;
+    }
+
+    next = M2C_FIELD(node, void **, 0x18);
+    M2C_FIELD(&data_0212dfc4, void **, 4) = next;
+    if (next == 0) {
+        M2C_FIELD(&data_0212dfc4, u32 *, 8) = 0;
+    } else {
+        M2C_FIELD(next, u32 *, 0x14) = 0;
+    }
+
+    t20 = M2C_FIELD(node, u32 *, 0x20);
+    cb = M2C_FIELD(node, u32 *, 0x00);
+    t1c = M2C_FIELD(node, u32 *, 0x1C);
+    if (t20 == 0 && t1c == 0) {
+        M2C_FIELD(node, u32 *, 0x00) = 0;
+    }
+
+    if (cb != 0) {
+        arg = M2C_FIELD(node, u32 *, 0x04);
+        ((void (*)(u32))(cb))(arg);
+    }
+
+    t20 = M2C_FIELD(node, u32 *, 0x20);
+    t1c = M2C_FIELD(node, u32 *, 0x1C);
+    if (t20 != 0 || t1c != 0) {
+        M2C_FIELD(node, u32 *, 0x00) = cb;
+        func_020071a0(node, 0, 0);
+    }
+
+    node = M2C_FIELD(&data_0212dfc4, void **, 4);
+    if (node != 0) {
+        func_020070b4(node);
+    }
+}
+
 #pragma interworking reset
 
 void func_020074c0(void) {
@@ -226,7 +293,9 @@ void func_02007740(void *arg0) {
  M2C_FIELD(arg0,u16 *,0x50)=0;
 }
 
-s32 func_020077c4(u32 arg0) { return __builtin_arm_clz(arg0); }
+s32 func_020077c4(u32 arg0) {
+    return __builtin_arm_clz(arg0);
+}
 
 void func_020077cc(void) {
  s32 i=0;
@@ -253,6 +322,43 @@ void func_02007800(s32 arg0,s32 arg1) {
  goto loop;
  }
  func_02007530(state);
+}
+
+void func_02007888(void *arg0) {
+    extern u32 data_0212dfbc[2];
+    u32 *base = (u32 *)0x027FFC00;
+    u16 *base16 = (u16 *)0x027FFC00;
+    u16 t0;
+    u32 tmp;
+    u32 *r;
+    u16 *r16;
+    u16 a, b, c, d, e;
+
+    t0 = *(u16 *)0x04000006;
+    *(u32 *)((char *)arg0 + 0x00) = (u32)(func_020070a4() | ((u32)t0 << 16));
+
+    *(u32 *)((char *)arg0 + 0x04) = data_0212dfbc[0] ^ ((u32)base16[0x00F8 / 2] << 16);
+
+    tmp = base[0x003C / 4] ^ (data_0212dfbc[1] ^ base[0x00F4 / 4]);
+    *(u32 *)((char *)arg0 + 0x08) = tmp;
+    *(u32 *)((char *)arg0 + 0x08) = tmp ^ *(u32 *)0x04000600;
+
+    *(u32 *)((char *)arg0 + 0x0C) = base[0x01E8 / 4];
+
+    r = (u32 *)((char *)base + 0x300);
+    r16 = (u16 *)((char *)base + 0x300);
+    *(u32 *)((char *)arg0 + 0x10) = base[0x01EC / 4];
+
+    *(u32 *)((char *)arg0 + 0x14) = base[0x0390 / 4] ^ ((u32)r16[0x0094 / 2] << 16);
+
+    a = r16[0x00AA / 2];
+    b = r16[0x00AC / 2];
+    *(u32 *)((char *)arg0 + 0x18) = (u32)(b | ((u32)a << 16));
+
+    c = *(u16 *)0x04000130;
+    d = base16[0x03A8 / 2];
+    e = r16[0x0098 / 2];
+    *(u32 *)((char *)arg0 + 0x1C) = (u32)(c | d | ((u32)e << 16));
 }
 
 s32 func_02007958(void) {

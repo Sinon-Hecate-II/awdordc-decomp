@@ -1,5 +1,7 @@
 /* 28 functions from 0x021E9638 to 0x021EA57C (ov003), found by ds-decomp. */
 #include "common.h"
+static inline u8 E9638Mode(void *p, u32 n) { return ((u32)(M2C_FIELD(p,u8*,0x39)<<24)>>28)==n; }
+static inline u8 E9638Toggle(void *p) { return ((u32)(M2C_FIELD(p,volatile u8*,0x3a)<<30)>>31)==0; }
 static inline u8 E9638IsFF(u8 v) { return v==255; }
 static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
 #include "coordinate_bits.h"
@@ -79,6 +81,25 @@ u8 func_ov003_021e9ce0(void *arg0) {
     return var_r0;
 }
 
+void func_ov003_021e9cfc(void *p,s32 mode){
+extern void *gCur3DSpriteEngine; extern void *data_027e00c8;
+void func_ov003_022006b0(s32,u8); void func_02089438(void*); void func_02088d94(void*); void func_02088da8(void*);
+void *old;
+M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~0xf0)|((u32)((u8)mode<<28)>>24);
+M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~0x70)|0x10;
+if(E9638Mode(p,1)){
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+func_ov003_022006b0(25,M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;gCur3DSpriteEngine=old;
+}
+if(E9638Mode(p,1)||E9638Mode(p,3))M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=0;
+else M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;
+if(E9638Mode(p,2)){
+void *q=M2C_FIELD(p,void**,0x6c);M2C_FIELD(q,u8*,9)=M2C_FIELD(q,u8*,8);
+func_02089438(M2C_FIELD(p,void**,0x5c));func_02088d94(M2C_FIELD(p,void**,0x5c));
+}else func_02088da8(M2C_FIELD(p,void**,0x5c));
+}
+
 u8 func_ov003_021e9e2c(void *arg0) {
     u8 var_r0;
 
@@ -122,6 +143,25 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
 void func_ov003_021ea134(s32 arg0) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << arg0));
+}
+
+void func_ov003_021ea154(void *p){
+extern void *gCur3DSpriteEngine; extern void *data_027e00c4;
+void func_01ff9ce8(s32); s32 func_ov003_022008b8(u8); void func_02088da8(void*); void func_02088d94(void*); void func_020990fc(void*,s32,s32,s32); void *func_ov003_021e6e94(s32); void *func_02086680(void*); void func_0209b2b4(s32,s32,s32,void*,s32,u16);
+void *old; s8 id,n; u8 flag;
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_01ff9ce8(3);
+id=M2C_FIELD(M2C_FIELD(p,void**,0x40),s8*,15);
+n=func_ov003_022008b8((u8)id);
+if(!n)func_02088da8(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
+else {
+if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))func_02088d94(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
+func_020990fc(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),n,8,0);
+func_0209b2b4(1,8,3,func_02086680(func_ov003_021e6e94(id)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
+}
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;gCur3DSpriteEngine=old;
+flag=E9638Toggle(p);
+M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~2)|((u32)(flag<<31)>>30);
 }
 
 void func_ov003_021ea27c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

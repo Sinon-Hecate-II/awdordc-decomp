@@ -3,6 +3,41 @@
 extern u16 data_ov011_02228ce0[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
+void func_ov011_022247f4(void *p){
+void func_ov011_0222491c(void *);
+extern const u16 data_ov011_02227f50[];
+switch(M2C_FIELD(p,u8 *,0x38)){
+case 1:
+M2C_FIELD(p,u16 *,0x34)++;
+if(M2C_FIELD(p,u16 *,0x34)>120){
+M2C_FIELD(p,u16 *,0x34)=32;
+M2C_FIELD(p,u8 *,0x38)++;
+func_01ffa6fc(p);return;
+}break;
+case 2:
+M2C_FIELD(p,u16 *,0x34)++;
+if(M2C_FIELD(p,u8 *,0x36)){
+if(++M2C_FIELD(p,u8 *,0x36)>=1){
+M2C_FIELD(p,u8 *,0x36)=0;func_01ffa8c4(p,4);
+}return;
+}
+if(M2C_FIELD(p,u16 *,0x34)>=0x528){
+M2C_FIELD(p,u8 *,0x38)=3;
+M2C_FIELD(p,u8 *,0x39)=0;func_01ffa8c4(p,3);
+}break;
+case 3:
+if(M2C_FIELD(p,u16 *,0x34)>data_ov011_02227f50[M2C_FIELD(p,u8 *,0x39)]){
+if(M2C_FIELD(p,u8 *,0x39)>10){
+if(M2C_FIELD(p,s32 *,0x3c)==2)func_01ffa8c4(p,4);
+else func_01ffa8c4(p,2);
+return;
+}
+func_01ffa6fc(p);return;
+}break;
+}
+func_ov011_0222491c(p);
+}
+
 void func_ov011_0222491c(void *entry) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
     M2C_UNK func_0208fe30(s32);

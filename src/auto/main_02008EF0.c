@@ -13,6 +13,7 @@ typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
 
 void func_0200973c(void);
 typedef struct QueueNode09298 { struct QueueNode09298 *next; } QueueNode09298;
+typedef struct { QueueNode09298 *head; s32 count, unk8, unkc; QueueNode09298 *tail; s32 index, unk18, pending, unk20; } State09100;
 typedef struct Queue09298 { s32 unk0, unk4; QueueNode09298 *head, *tail; } Queue09298;
 
 void func_02008ef0(M2C_UNK arg0) {
@@ -71,8 +72,34 @@ M2C_FIELD(p,int *,4)=29;
 M2C_FIELD(p,s32 **,8)=data_0212fb60;
 func_02009298(p);func_020092d0(1);
 }
-#pragma peephole reset
-#pragma opt_strength_reduction reset
+#pragma opt_common_subs off
+s32 func_02009100(s32 flags){
+extern M2C_UNK data_0212e020;extern QueueNode09298 *data_0212e044[];
+s32 func_0200751c(void);s32 func_0200982c(void);
+State09100 *state; s32 irq;QueueNode09298 *head,*tail;
+irq=func_0200751c();
+if(flags&1){
+while(((State09100*)&data_0212e020)->count==func_0200982c()){
+func_02007530(irq);func_0200758c(100);irq=func_0200751c();
+}
+}else if(((State09100*)&data_0212e020)->count==func_0200982c()){
+func_02007530(irq);return 0;
+}
+state=(State09100*)&data_0212e020;
+head=data_0212e044[state->index];
+state->index++;
+if(state->index>8)state->index=0;
+tail=head;
+if(tail->next){do{tail=tail->next;}while(tail->next);}
+if(M2C_FIELD(&data_0212e020,QueueNode09298**,16))M2C_FIELD(&data_0212e020,QueueNode09298**,16)->next=head;
+else state->head=head;
+state->tail=tail;
+state->pending--;
+state->count++;
+func_02007530(irq);
+return (s32)head;
+}
+#pragma opt_common_subs reset
 void *func_02009210(int flags){
 void func_0200968c(void);
 void func_020092d0(int);

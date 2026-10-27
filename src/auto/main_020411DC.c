@@ -109,27 +109,53 @@ void func_02041e44(void) {
     M2C_FIELD(func_02044268(), s8 *, 0x1A8) = 0;
 }
 
-void func_02041fb0(s8 arg0,s32 arg1) {
-u64 func_02007004(void);
-void func_0204433c(s32,s8,void*,s32);
-u8 buf[4];
-u8 i;
-void *p;
-switch(arg1) {
-case 2:
-p=func_02044268();
-if(arg0==M2C_FIELD((u8*)p+M2C_FIELD(func_02044268(),u8*,0xd),u8*,0x2d0))buf[0]=1;else buf[0]=0;
-for(i=1;i<=M2C_FIELD(func_02044268(),u8*,0xd);i++) {
-if(arg0==M2C_FIELD((u8*)func_02044268()+i,u8*,0x2d0)) {buf[1]=i;buf[2]=arg0;break;}
+s32 func_02041e74(u32 mask) {
+s32 func_0203f058(); s32 func_0204084c(); s32 func_02042a08();
+s32 other[32],selected[32]; s32 n=0,m=0; register s32 i; s32 r;
+for(i=1;i<=M2C_FIELD(func_02044268(),u8*,0xd);i++){
+if(mask & (1<<M2C_FIELD((u8*)func_02044268()+i,u8*,0x2d0))){
+selected[m]=M2C_FIELD((u8*)func_02044268()+((u32)i<<2),s32*,0xf4);m++;
+}else {other[n]=M2C_FIELD((u8*)func_02044268()+((u32)i<<2),s32*,0xf4);n++;}
 }
-break;
-case 3:
-buf[0]=M2C_FIELD(func_02044268(),u16*,0x1b0);
-buf[1]=(s32)M2C_FIELD(func_02044268(),u16*,0x1b0)>>8;
-break;
+for(i=0;i<m;i++){
+func_0203f058(16,selected[i],0,0,other,n);
+if(func_0204084c())return 0;
 }
-func_0204433c(arg1,arg0,buf,4);
-p=func_02044268();
-M2C_FIELD(p,u64*,0x1e0)=func_02007004();
+M2C_FIELD(func_02044268(),u8*,0x1a8)=2;
+for(i=0;i<n;i++){r=func_02042a08(other[i],0);if(r!=255)func_02038de4();}
+M2C_FIELD(func_02044268(),u8*,0x1a8)=0;
+return 1;
+}
+
+/* Prepare and send a 4-byte notification packet (type 2 or 3) about a player slot, then timestamp the connection state. */
+void func_02041fb0(s8 arg0, s32 arg1) {
+    u64 func_02007004(void);
+    void func_0204433c(s32, s8, void *, s32);
+    u8 buf[4];
+    u8 i;
+    void *p;
+    switch (arg1) {
+    case 2:
+        p = func_02044268();
+        if (arg0 == M2C_FIELD((u8 *)p + M2C_FIELD(func_02044268(), u8 *, 0xd), u8 *, 0x2d0))
+            buf[0] = 1;
+        else
+            buf[0] = 0;
+        for (i = 1; i <= M2C_FIELD(func_02044268(), u8 *, 0xd); i++) {
+            if (arg0 == M2C_FIELD((u8 *)func_02044268() + i, u8 *, 0x2d0)) {
+                buf[1] = i;
+                buf[2] = arg0;
+                break;
+            }
+        }
+        break;
+    case 3:
+        buf[0] = M2C_FIELD(func_02044268(), u16 *, 0x1b0);
+        buf[1] = (s32)M2C_FIELD(func_02044268(), u16 *, 0x1b0) >> 8;
+        break;
+    }
+    func_0204433c(arg1, arg0, buf, 4);
+    p = func_02044268();
+    M2C_FIELD(p, u64 *, 0x1e0) = func_02007004();
 }
 

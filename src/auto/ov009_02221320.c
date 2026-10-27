@@ -57,6 +57,39 @@ void func_ov009_0222140c(s32 arg0, M2C_UNK arg1, s32 arg2) {
     func_02008048(arg1, arg0 + 0x20, arg2);
 }
 
+void func_ov009_02221424(void *arg0) {
+ s32 func_02001fb4(s32,s32);
+ s32 func_0207c8ec(s32,s32);
+ s32 func_ov009_02222638(s32);
+ M2C_UNK func_ov009_02223a24(u8);
+ s32 func_ov009_02224174();
+ M2C_UNK func_ov009_02224ec4(s32,void *,s32,u16);
+ s32 func_ov009_02225450();
+ s32 t,n,limit,raw; u16 mask; u8 i;
+ t=func_02001fb4(0x3e8000,0x3c000);
+ n=M2C_FIELD(arg0,s32 *,0x38)+1;
+ t=(n*t)>>12;
+ M2C_FIELD(arg0,s32 *,0x38)=n;
+ if(t>4000) {
+ raw=func_ov009_02224174();
+ mask=raw & (-1 ^ (1U<<func_ov009_02225450()));
+ if(mask && (mask & func_ov009_02224174()) && !func_ov009_02222638(1))
+ func_ov009_02224ec4(1,arg0+0x38,4,mask);
+ M2C_FIELD(arg0,s32 *,0x38)=0;
+ }
+ limit=func_0207c8ec(0x1b7740,1000);
+ i=0;
+ do {
+ if(i!=func_ov009_02225450() && (func_ov009_02224174() & (1<<i))) {
+ { void *entry=arg0+i*4;
+ n=M2C_FIELD(entry,s32 *,0x3c)+1;
+ M2C_FIELD(entry,s32 *,0x3c)=n; }
+ if(n>limit) {func_ov009_02223a24(i); ((s32 *)(arg0+0x3c))[i]=0;}
+ }else ((s32 *)(arg0+0x3c))[i]=0;
+ i++;
+ }while(i<4);
+}
+
 void func_ov009_02221538(void *arg0) {
     void *func_01ffa770(M2C_UNK *);
     M2C_UNK func_ov009_02223a90(void *);

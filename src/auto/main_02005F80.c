@@ -415,7 +415,7 @@ void func_02006858(void) {
     M2C_UNK func_02005288();
     M2C_UNK func_02005968();
     void func_02006838(void);
-M2C_UNK func_020068a0();
+void func_020068a0(void);
     M2C_UNK func_02006ce4();
     M2C_UNK func_020074c0();
     M2C_UNK func_020075b4();
@@ -441,6 +441,31 @@ M2C_UNK func_020068a0();
     func_02010c14();
     func_0200e2f8();
     func_02006838();
+}
+
+void func_020068a0(void) {
+    s32 func_02006a38(s32);
+    void func_02006bc4(s32, s32);
+    s32 func_02006b1c(s32);
+    void func_02006bd8(s32, s32);
+    extern M2C_UNK data_0212defc;
+
+    if (M2C_FIELD(&data_0212defc, s32 *, 0) != 0) {
+        return;
+    }
+    M2C_FIELD(&data_0212defc, s32 *, 0) = 1;
+    func_02006bc4(0, func_02006a38(0));
+    func_02006bd8(0, func_02006b1c(0));
+    func_02006bd8(2, 0);
+    func_02006bc4(2, 0);
+    func_02006bc4(3, func_02006a38(3));
+    func_02006bd8(3, func_02006b1c(3));
+    func_02006bc4(4, func_02006a38(4));
+    func_02006bd8(4, func_02006b1c(4));
+    func_02006bc4(5, func_02006a38(5));
+    func_02006bd8(5, func_02006b1c(5));
+    func_02006bc4(6, func_02006a38(6));
+    func_02006bd8(6, func_02006b1c(6));
 }
 
 s32 func_02006a10(s32 arg0) {

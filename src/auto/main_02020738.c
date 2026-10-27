@@ -4,6 +4,115 @@
 
 s32 func_020210b8(void);
 
+s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
+    /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
+    u16 func_0201d04c();
+    s32 func_020208ac(void *);
+    s32 func_0201f1d0(void *, s32, s32);
+    s32 func_0201f328(s32, s32);
+    s32 func_02008048(s32, s32, s32);
+    void *ctx;
+    void *entry;
+    s32 curBuffer;
+    s32 end;
+    s32 other;
+    s32 size;
+    s32 start;
+    curBuffer = buffer;
+    ctx = M2C_FIELD(connection, void **, 0x68);
+
+    entry = (void *)func_0201f1d0(func_020208ac, M2C_FIELD(ctx, s32 *, 0x10c), mode);
+    if (!entry) return -33;
+
+    if ((mode & 1) && M2C_FIELD(connection, s8 *, 0x73) != 1)
+        M2C_FIELD(entry, s8 *, 13) = 3;
+    else
+        M2C_FIELD(entry, s8 *, 13) = 0;
+    start = M2C_FIELD(ctx, s32 *, 0xfc);
+    size = M2C_FIELD(ctx, s32 *, 0xf8);
+    if (startPos + byteCount < size) {
+        M2C_FIELD(entry, s32 *, 16) = start + startPos;
+        M2C_FIELD(entry, s32 *, 20) = byteCount;
+        M2C_FIELD(entry, s32 *, 24) = 0;
+        startPos += byteCount;
+        M2C_FIELD(entry, s32 *, 28) = 0;
+    } else {
+        M2C_FIELD(entry, s32 *, 16) = start + startPos;
+        M2C_FIELD(entry, s32 *, 20) = size - startPos;
+        M2C_FIELD(entry, s32 *, 24) = start;
+        startPos = byteCount - M2C_FIELD(entry, s32 *, 20);
+        M2C_FIELD(entry, s32 *, 28) = startPos;
+        func_02008048(curBuffer + M2C_FIELD(entry, s32 *, 20), M2C_FIELD(entry, s32 *, 24), startPos);
+    }
+    func_02008048(curBuffer, M2C_FIELD(entry, s32 *, 16), M2C_FIELD(entry, s32 *, 20));
+    curBuffer = M2C_FIELD(ctx, u16 *, 0x100);
+    M2C_FIELD(entry, u16 *, 32) = startPos;
+    M2C_FIELD(ctx, u16 *, 0x100) = M2C_FIELD(entry, u16 *, 32);
+    if (M2C_FIELD(connection, s8 *, 0x73) == 1) {
+        if (!M2C_FIELD(connection, u16 *, 0x74)) {
+            M2C_FIELD(connection, u16 *, 0x74) = func_0201d04c();
+            M2C_FIELD(connection, u16 *, 10) = M2C_FIELD(connection, u16 *, 0x74);
+        }
+        M2C_FIELD(entry, u16 *, 36) = M2C_FIELD(connection, u16 *, 0x74);
+        other = M2C_FIELD(connection, s32 *, 0x78);
+        if (!other || fallback) {
+            M2C_FIELD(entry, s32 *, 40) = fallback;
+            M2C_FIELD(entry, u16 *, 38) = tag;
+        } else {
+            M2C_FIELD(entry, s32 *, 40) = other;
+            M2C_FIELD(entry, u16 *, 38) = M2C_FIELD(connection, u16 *, 0x76);
+        }
+    } else
+        M2C_FIELD(entry, s32 *, 40) = 0;
+    if (func_0201f328(M2C_FIELD(ctx, s32 *, 0x10c), (s32)entry)) {
+        byteCount = 0;
+        M2C_FIELD(ctx, u16 *, 0x100) = curBuffer;
+    }
+    return byteCount;
+}
+
+s32 func_020208ac(void *arg0) {
+ void func_02005df4(s32);
+ M2C_UNK func_0201d190(u16,u16,s32);
+ s32 func_0201db20(s32,s32);
+ s32 func_0201d4c0();
+ s32 sent,base,yes,length,valid,valid2;void *object; void *context;u32 total;s32 header;
+ s8 type,type2,type3;
+ object=M2C_FIELD(arg0,void **,4);
+ total=0;
+ type=M2C_FIELD(object,s8 *,0x73);valid=1;
+ context=M2C_FIELD(object,void **,0x68);
+ if(type && type!=4)valid=0;
+ if(!valid || (M2C_FIELD(object,s16 *,0x70)&4)) {
+ s32 flag=M2C_FIELD(arg0,s32 *,0x28);
+ if(flag)func_0201d190(M2C_FIELD(arg0,u16 *,0x24),M2C_FIELD(arg0,u16 *,0x26),flag);
+ type2=M2C_FIELD(object,s8 *,0x73);yes=1;
+ base=M2C_FIELD(object,s32 *,0x4c);
+ if(type2 && type2!=4)yes=0;
+ if(yes)header=54;else header=42;
+ if(type2 && type2!=4)length=M2C_FIELD(object,s32 *,0x48)-header;
+ else length=func_020209dc(M2C_FIELD(object,s32 *,0x48)-header);
+ loop:
+ valid2=func_02020a80(base+header,length,arg0);
+ if(valid2>0) {
+ sent=func_0201db20(base+header,valid2);
+ if(sent<=0) {
+ type3=M2C_FIELD(object,s8 *,0x73);valid=1;
+ if(type3 && type3!=4)valid=0;
+ if(valid){
+ M2C_FIELD(object,s16 *,0x70)&=~14;
+ M2C_FIELD(object,s16 *,0x70)|=128;
+ func_0201d4c0();
+ }
+ total=-76;
+ }else{total+=sent;goto loop;}
+ }
+ }else total=-76;
+ M2C_FIELD(context,u16 *,0x102)=M2C_FIELD(arg0,u16 *,0x20);
+ func_02005df4((s32)context+0x104);
+ return total;
+}
+
 s32 func_020209dc(s32 arg0) {
     s32 func_020720f0(s32, s32);
     extern M2C_UNK data_0212dca4;
@@ -70,7 +179,7 @@ s32 func_02020a80(s32 arg0, s32 arg1, void *arg2) {
 
 s32 func_02020b18(void *arg0) {
     s32 func_02020bc4(void *);
-    s32 func_0201f1d0(void *, s32, s8);
+    s32 func_0201f1d0(void *, s32, s32);
     s32 func_0201f328(s32, s32);
     s32 func_020214a8();
     void *temp_r5;
@@ -120,7 +229,6 @@ s32 func_02020bf4(s32 arg0) {
 }
 
 s32 func_02020c28(s32 arg0) {
-s32 func_0201f1d0(void *, s32, s8);
 M2C_UNK func_0201f244(s32, M2C_UNK); M2C_UNK func_0201f290();
 
 s32 func_02020cf8(void *);

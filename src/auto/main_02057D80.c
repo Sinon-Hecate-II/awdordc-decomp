@@ -1,8 +1,57 @@
 /* 28 functions from 0x02057D80 to 0x02058CA4 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 extern M2C_UNK data_020ff3ec, data_0213dce0;
 extern s32 data_020ff43c;
 extern M2C_UNK data_0213dcd0, data_020ff410, data_020ff414, data_020ff3f4;
+
+/* Processes the pending searches queued on the connection: allocates a temporary list of matching search entries, runs each through gpiProcessSingleSearch, and removes finished ones. */
+s32 gpiProcessSearches(void **connection) {
+    void *func_02037794(s32);
+    void func_020377c4(void *);
+    void func_02058644(s32 *, s32);
+    void func_020640a8(void *, void *, void *, s32);
+    s32 func_020562d0(void **, void *);
+    void func_02054484(void **, void *);
+    extern M2C_UNK data_020fee8c, data_020ff208, data_020fef48, data_020fee20;
+    void *connectionInfo = *connection;
+    void **list;
+    void *entry;
+    s32 count = 0, i, result;
+    if (M2C_FIELD(connectionInfo, s32 *, 0x210) > 0) {
+        list = func_02037794(M2C_FIELD(connectionInfo, s32 *, 0x210) * 4);
+        if (!list) {
+            func_02058644((s32 *)connection, (s32)&data_020fee8c);
+            return 1;
+        }
+        for (entry = M2C_FIELD(connectionInfo, void **, 0x424); entry; entry = M2C_FIELD(entry, void **, 0x20)) {
+            if (M2C_FIELD(entry, s32 *, 0) == 3 &&
+                M2C_FIELD(entry, s32 *, 0x14) != 5 &&
+                !M2C_FIELD(M2C_FIELD(entry, void **, 4), s32 *, 0x13c)) {
+                if (count >= M2C_FIELD(connectionInfo, s32 *, 0x210)) {
+                    func_020640a8(&data_020ff208, &data_020fef48, &data_020fee20, 0x563);
+                }
+                list[count++] = entry;
+                M2C_FIELD(M2C_FIELD(entry, void **, 4), s32 *, 0x13c) = 1;
+            }
+        }
+        for (i = 0; i < count; i++) {
+            result = func_020562d0(connection, list[i]);
+            if (result) {
+                M2C_FIELD(list[i], s32 *, 0x1c) = result;
+            }
+        }
+        for (i = 0; i < count; i++) {
+            void *search = M2C_FIELD(list[i], void **, 4);
+            M2C_FIELD(search, s32 *, 0x13c) = 0;
+            if (M2C_FIELD(search, s32 *, 0x140)) {
+                func_02054484(connection, list[i]);
+            }
+        }
+        func_020377c4(list);
+    }
+    return 0;
+}
 
 s32 func_02057ed0(s32 a,s32 b,s32 c,s32 d,void *p) {
 s32 func_020556e0(s32,s32,s32,s32);s32 func_020501d8(s32,s32,void *);s32 func_0205575c(s32,s32,void *,s32);void func_020675e4(void *,void *,s32,s32);
@@ -22,6 +71,18 @@ u8 buf[64];s32 z,y,x;
 if(!func_02058254(d,&data_020ff244,buf,64))return;
 if(func_02068adc(buf,&data_020ff24c,&x,&y,&z)!=3)return;
 func_02057ed0(a,(s32)&x,b,2,0);
+}
+
+s32 func_02057ff8(void **a,void *b,s32 c) {
+s32 func_0205817c(void **,s32,s32);void func_02058620(void **,s32,s32);void func_02058644(s32 *,s32);
+s32 func_02068eac(s32,void *,s32);void func_02050744(void *,s32,s32);void *func_02037794(s32);s32 func_02050838(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+extern M2C_UNK data_020ff258,data_020ff260,data_020ff290;
+Unk02050838Pair pair;s32 *p;s32 r;
+if(func_0205817c(a,c,1))return 4;
+if(func_02068eac(c,&data_020ff258,4)){func_02058620(a,1,(s32)&data_020ff260);func_02050744(a,3,1);return 3;}
+pair=*(Unk02050838Pair *)((u8 *)b+12);
+if(pair.unk_0){p=func_02037794(4);if(!p){func_02058644((s32 *)a,(s32)&data_020ff290);return 1;}*p=0;r=func_02050838(a,pair,p,b,0);if(r)return r;}
+func_02054484(a,b);return 0;
 }
 
 M2C_UNK func_020580fc(s32 a,s32 b,s32 n) {
@@ -47,10 +108,24 @@ if(c){s32 x=func_02068fdc(b,&data_020ff314)!=0;func_02050744(a,4,x!=0);}
 return 1;}return 0;
 }
 
+s32 func_02058254(s32 a,void *b,void *c,s32 n){
+void func_020640a8(void *,void *,void *,s32);void *func_02068fdc(s32,void *);s32 func_02068c34(void *);
+extern M2C_UNK data_020ff31c,data_020ff2dc,data_020ff2a8,data_020ff32c,data_020ff338,data_020ff348;
+s8 *p;s32 ch,v;s32 i;
+if(!a)func_020640a8(&data_020ff31c,&data_020ff2dc,&data_020ff2a8,269);
+if(!b)func_020640a8(&data_020ff32c,&data_020ff2dc,&data_020ff2a8,270);
+if(!c)func_020640a8(&data_020ff338,&data_020ff2dc,&data_020ff2a8,271);
+if(n<=0)func_020640a8(&data_020ff348,&data_020ff2dc,&data_020ff2a8,272);
+ch=*(s8 *)b;p=func_02068fdc(a,b);if(!p)return 0;
+p+=func_02068c34(b);
+for(i=0;i<n-1 && (v=p[i])!=0 && v!=ch;i++)*(s8 *)((u32)c+(u32)i)=v;
+((s8 *)c)[i]=0;return 1;
+}
+
 s32 func_0205835c(s32 p,s32 a,s32 *out){
-s32 func_0204943c(s32,s32,s32*,s32*);void func_02058170(s32,...);void func_02058620(void**,s32,s32);void func_02050744(void*,s32,s32);
+s32 PollOneFd(s32,s32,s32*,s32*);void func_02058170(s32,...);void func_02058620(void**,s32,s32);void func_02050744(void*,s32,s32);
 extern M2C_UNK data_020ff350,data_020ff364,data_020ff39c,data_020ff3b4;
-s32 x=0,y=0; s32 r=func_0204943c(a,0,&x,&y);
+s32 x=0,y=0; s32 r=PollOneFd(a,0,&x,&y);
 if(r==-1){func_02058170(p,&data_020ff350);func_02058620((void**)p,5,(s32)&data_020ff364);func_02050744((void*)p,3,1);return 3;}
 if(r>0){if(y){func_02058170(p,&data_020ff39c);*out=4;return 0;}if(x){func_02058170(p,&data_020ff3b4);*out=3;return 0;}}
 *out=0;return 0;

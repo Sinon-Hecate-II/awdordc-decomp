@@ -46,8 +46,52 @@ s32 func_0209bd60(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, 
 }
 
 s32 func_0209bdcc(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,u16 h,u16 i) {
-void func_0209be10(s32,s32,s32,s32,s32,s32,s32,u16,s32,u16);
-func_0209be10(a,b,c,d,e,f,g,h,0,i);
+void func_0209be10(void *,s32,s32,s32,s32,s32,s32,u16,u16,u16);
+func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
+}
+
+void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
+    void (*func_02091fb4(u32))(void);
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c8;
+
+    M2C_FIELD(arg0, s32 *, 0x34) = arg6;
+    M2C_FIELD(arg0, s32 *, 0x38) = 0;
+    M2C_FIELD(arg0, u8 *, 0x57) = (u8)arg3;
+    M2C_FIELD(arg0, s32 *, 0x3c) = arg4;
+    M2C_FIELD(arg0, s32 *, 0x40) = arg5;
+    M2C_FIELD(arg0, u16 *, 0x44) = arg7;
+    M2C_FIELD(arg0, u16 *, 0x46) = arg8;
+    M2C_FIELD(arg0, u16 *, 0x4e) = arg9;
+    M2C_FIELD(arg0, u16 *, 0x4c) = arg9;
+    M2C_FIELD(arg0, s32 *, 0x60) = 0;
+    M2C_FIELD(arg0, u8 *, 0x48) = (u8)(arg1 & 0xFF);
+    M2C_FIELD(arg0, u8 *, 0x49) = (u8)(arg2 & 0xFF);
+    M2C_FIELD(arg0, u8 *, 0x4a) = (u8)(arg1 & 0xFF);
+    M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(arg2 & 0xFF);
+    M2C_FIELD(arg0, u8 *, 0x54) = (u8)(0 - 1);
+    M2C_FIELD(arg0, u8 *, 0x55) = 2;
+    M2C_FIELD(arg0, s32 *, 0x50) = (s32)func_02091fb4((u32)arg3);
+    {
+        s32 temp_r0;
+
+        if (gCur3DSpriteEngine == data_027e00c8) {
+            temp_r0 = 1;
+        } else {
+            temp_r0 = 0;
+        }
+        temp_r0 = (s32)(u8)temp_r0;
+        if (temp_r0 != 1) {
+            temp_r0 = 1;
+        } else {
+            temp_r0 = 0;
+        }
+        M2C_FIELD(arg0, u8 *, 0x5a) = (u8)temp_r0;
+    }
+    M2C_FIELD(arg0, u8 *, 0x56) = 0;
+    M2C_FIELD(arg0, u8 *, 0x58) = 0;
+    M2C_FIELD(arg0, u8 *, 0x59) = 0;
+    M2C_FIELD(arg0, u8 *, 0x5c) = 0;
 }
 
 void func_0209bee0(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
@@ -236,6 +280,26 @@ s32 func_0209c2a8(void) {
 
 void func_0209c418(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
+}
+
+s32 func_0209c454(u8 *arg0,s32 arg1) {
+s32 func_0209c1c0(u8 *,s32 *);
+s32 width; s32 zero;  s32 max=0;u8 *p=arg0; u8 c; width=0;
+if(!p)return 0;
+c=*p;
+if(c){zero=0;do{
+switch(c){
+case 10:case 13:
+if(!arg1)return width;
+p++;if(width>max)max=width;width=zero;break;
+case 4:p++;break;
+case 22:case 23:case 28:case 29:p+=2;break;
+default:p+=func_0209c1c0(p,&width);break;
+}
+c=*p;
+}while(c);}
+if(max>width)width=max;
+return width;
 }
 
 s32 func_0209c550(u8 *arg0) {

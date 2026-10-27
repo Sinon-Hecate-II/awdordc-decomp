@@ -3,6 +3,10 @@
 
 typedef struct { void (*handlers[5])(void *); } CodeHandlers;
 extern const CodeHandlers data_ov001_0218f874;
+extern const CodeHandlers data_ov001_0218f860;
+extern const u16 data_ov001_0218f848[];
+extern void *data_ov001_02193da4;
+extern u32 data_ov001_02190770;
 
 void func_ov001_0217bf14(void) {
     M2C_UNK func_ov001_02185024(M2C_UNK);
@@ -31,6 +35,27 @@ void func_ov001_0217bf40(void) {
     func_ov001_02175d54(&func_ov001_0217b688);
 }
 
+#pragma opt_common_subs off
+void func_ov001_0217bf84(void) {
+void *func_ov001_0218b6f8(s32,s32);s32 func_ov001_02175db4(s32*,s32);
+void *func_ov001_0218ad0c(s32,s32);void *func_ov001_0218a5f0(s32,s32);
+void func_ov001_0217c0f8(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
+CodeHandlers handlers=data_ov001_0218f860;
+u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
+s32 a;void *p;
+data_ov001_02193da4=func_ov001_0218b6f8(24,4);
+func_ov001_02175db4(&a,0);
+handlers.handlers[a](data_ov001_02193da4+8);
+p=data_ov001_02193da4;
+if(func_0206527c(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
+else {func_02007f8c(p+8,0,12);M2C_FIELD(data_ov001_02193da4,u8*,20)=0;}
+func_ov001_0217c0f8();func_ov001_02172250(a+11);func_ov001_02171c24(choices[a],-1,0);func_ov001_02171dd0(2);
+M2C_FIELD(data_ov001_02193da4,void**,0)=func_ov001_0218ad0c(0,0);
+M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
+M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;
+func_ov001_0217c8ac();func_ov001_0217c7e8();func_ov001_02175d54((s32*)func_ov001_0217c1b4);
+}
+#pragma opt_common_subs reset
 void func_ov001_0217c0f8(void) {
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190774;
@@ -255,6 +280,26 @@ void func_ov001_0217ca10(void) {
  for(j=0;j<3;j++) {c=p[j]; if(c!=48 && c!=32 && c!=0) break; p[j]=(j==2)?48:32;}
  }
  func_ov001_0217c7e8();
+}
+
+s32 func_ov001_0217ca88(void) {
+extern const u16 data_ov001_0218f848[];
+extern void *data_ov001_02193da4;
+void func_ov001_02184ec4(void *,void *);
+s32 func_ov001_02175db4(s32 *,s32);
+s32 func_0204612c(void *);
+u8 limit[4]="255"; s32 mode; u8 buf[4]; s32 j,i,zero; u8 *base;
+const u8 *src=(const u8 *)data_ov001_0218f848;
+
+for(i=0;i<4;i++){
+u8 *p=(u8 *)data_ov001_02193da4+8+i*3;
+if(*p==32) continue;
+for(j=0;j<3;j++){if(p[j]>limit[j])return 0;if(p[j]<limit[j])break;}
+}
+func_ov001_02184ec4((u8 *)data_ov001_02193da4+8,buf);
+func_ov001_02175db4(&mode,0);
+if(mode==1){zero=0;for(i=0;i<4;i++){for(j=0;j<8;j++){if(zero){if(buf[i]&(1<<(7-j)))return 0;}else if(!(buf[i]&(1<<(7-j))))zero=1;}}return 1;}
+return func_0204612c(buf)!=0;
 }
 
 void func_ov001_0217cbdc(void) {

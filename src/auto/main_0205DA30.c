@@ -2,8 +2,76 @@
 #include "common.h"
 
 typedef struct { u8 bytes[6]; } NetworkAddress6;
+typedef struct { u8 bytes[20]; } NetworkPacket20Bytes;
+typedef struct { u8 bytes[21]; } NetworkPacket21Bytes;
 typedef struct { NetworkAddress6 address; u8 type, length; u32 ip; u8 reserved, value; u8 tail[7]; } NetworkPacket21;
 extern NetworkAddress6 data_020ff88c;
+
+void func_0205dc78(void *arg0) {
+    void func_0205d944(s32, s32, u16, void *, s32);
+    s32 func_02049208(void);
+    extern NetworkAddress6 data_020ff88c;
+    u8 sp04[0x14];
+
+    register s32 r2 asm("r2") = 2;
+    register u8 *r1 asm("r1") = (u8 *)&data_020ff88c;
+    register u8 rb7 asm("r7");
+    register u8 rb6 asm("r6");
+    register u8 *r8 asm("r8");
+    register u8 rb5 asm("r5");
+    u8 vlr;
+    u8 r12v;
+    u8 r3v;
+    register void *r4 asm("r4");
+
+    rb7 = r1[0];
+    rb6 = r1[1];
+    r8 = sp04;
+    rb5 = r1[2];
+    vlr = r1[3];
+    r12v = r1[4];
+    r3v = r1[5];
+    r1 = (u8 *)7;
+    r4 = arg0;
+
+    *r8 = rb7;
+    r8[1] = rb6;
+    r8[2] = rb5;
+    r8[3] = vlr;
+    r8[4] = r12v;
+    sp04[6] = (u8)r2;
+    sp04[7] = (u8)(int)r1;
+    r8[5] = r3v;
+
+    {
+        u32 ip = M2C_FIELD(r4, u32 *, 8);
+        *(u32 *)(sp04 + 8) =
+            ((ip >> 24) & 0xFFU) |
+            ((ip >> 8) & 0xFF00U) |
+            ((ip << 8) & 0xFF0000U) |
+            ((ip << 24) & 0xFF000000U);
+    }
+    *(u32 *)(sp04 + 12) = M2C_FIELD(r4, u32 *, 0x2C);
+    {
+        u16 port = M2C_FIELD(r4, u16 *, 0x30);
+        *(u16 *)(sp04 + 16) = (u16)((((s32)port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
+    }
+    sp04[18] = M2C_FIELD(r4, u8 *, 0x32);
+    sp04[19] = (M2C_FIELD(r4, s32 *, 0x10) != 2) ? 1 : 0;
+
+    {
+        s32 val = M2C_FIELD(r4, s32 *, 4);
+        if (val == -1) {
+            val = M2C_FIELD(r4, s32 *, 0);
+        }
+        func_0205d944(val, M2C_FIELD(r4, s32 *, 0x2C), M2C_FIELD(r4, u16 *, 0x30), sp04, 0x14);
+    }
+    M2C_FIELD(r4, s32 *, 0x28) = func_02049208() + 0x2BC;
+    M2C_FIELD(r4, s32 *, 0x24) = 0xC;
+    if (M2C_FIELD(r4, u8 *, 0x32) != 0) {
+        M2C_FIELD(r4, s8 *, 0x33) = 1;
+    }
+}
 
 s32 func_0205dd98(M2C_UNK arg0) {
     void *func_02021768(M2C_UNK);
@@ -24,10 +92,10 @@ s32 func_0205dd98(M2C_UNK arg0) {
 
 s32 func_0205ddd0(void *arg0, s32 arg1) {
  M2C_UNK func_020675bc(void *,s32,void *,void *,s32);
- extern M2C_UNK data_020ff894, data_0213dc20;
+ extern M2C_UNK data_020ff894, gServiceNameBuffer;
  u8 buffer[0x80];
  if (arg0 == NULL) {
- func_020675bc(buffer,0x80,&data_020ff894,&data_0213dc20,arg1);
+ func_020675bc(buffer,0x80,&data_020ff894,&gServiceNameBuffer,arg1);
  arg0=buffer;
  }
  return func_0205dd98((M2C_UNK)arg0);
@@ -49,10 +117,10 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_UNK func_0205d88c();
     M2C_UNK func_0205da30();
     s32 func_0205de10();
-    extern s32 data_0213db84;
+    extern s32 gDnsQueryState;
     void *temp_r0;
 
-    if (data_0213db84 != 1) {
+    if (gDnsQueryState != 1) {
         return 2;
     }
     if (func_0205de10() == 0) {
@@ -130,7 +198,7 @@ M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
 }
 
 void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
- M2C_UNK func_0205dc78(void *);
+ void func_0205dc78(void *);
  M2C_UNK func_0205e1bc(void *,M2C_UNK);
  s32 var_r0; u16 temp_r2; u8 temp_r1;
  if(M2C_FIELD(arg1,u8 *,0x13)==0) func_0205e1bc(arg0,arg2);
@@ -152,7 +220,7 @@ void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
 
 void func_0205e344(void *arg0, void *arg1, void *arg2) {
     s32 func_02049208();
-    M2C_UNK func_0205dc78(void *);
+    void func_0205dc78(void *);
     s32 temp_r1;
     u16 temp_r3;
 
@@ -184,6 +252,83 @@ void func_0205e344(void *arg0, void *arg1, void *arg2) {
         return;
     }
     func_0205dc78(arg0);
+}
+
+void func_0205e40c(void *arg0, void *arg1, void *arg2) {
+    M2C_UNK func_02049208(void);
+    void func_0205d944(s32, s32, u16, void *, s32);
+    u8 temp_r1;
+
+    temp_r1 = M2C_FIELD(arg1, u8 *, 7);
+    switch (temp_r1) {
+        case 1: {
+            u8 temp_r0 = M2C_FIELD(arg1, u8 *, 0xC);
+            if ((u32)temp_r0 > 2U) {
+                break;
+            }
+            M2C_FIELD((void *)((u8 *)arg0 + (temp_r0 * 4)), s32 *, 0x14) = 1;
+            if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
+                break;
+            }
+            if (M2C_FIELD(arg0, s32 *, 0x18) == 0) {
+                break;
+            }
+            if (M2C_FIELD(arg0, s32 *, 0x1C) == 0) {
+                break;
+            }
+            if (M2C_FIELD(arg0, s32 *, 4) != -1) {
+                if (M2C_FIELD(arg0, s32 *, 0x14) == 0) {
+                    break;
+                }
+            }
+            M2C_FIELD(arg0, s32 *, 0x10) = 1;
+            M2C_FIELD(arg0, s32 *, 0x28) = func_02049208() + 0x2710;
+            M2C_FIELD(arg0, void (**)(s32, s32), 0x34)(
+                M2C_FIELD(arg0, s32 *, 0x10), M2C_FIELD(arg0, s32 *, 0x3C));
+            break;
+        }
+        case 2: {
+            u16 port;
+            u16 swapped;
+
+            M2C_FIELD(arg1, u8 *, 7) = 3;
+            port = M2C_FIELD(arg2, u16 *, 2);
+            swapped = (u16)(((port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
+            func_0205d944(M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg2, s32 *, 4),
+                          swapped, arg1, 0x15);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void func_0205e510(u8 *packet,s32 length,M2C_UNK arg2) {
+s32 func_0205d920(M2C_UNK);
+void *func_0205d75c(void);
+u32 a[5];
+u32 b[6];
+s32 kind;
+u32 ip;
+void *p;
+if(!func_0205d920((M2C_UNK)packet))return;
+kind=packet[7];
+if(kind==5||kind==7){
+if(length<20)return;
+*(NetworkPacket20Bytes *)a=*(NetworkPacket20Bytes *)packet;
+ip=*(u32 *)((u8 *)a+8);
+p=((void *(*)(u32))func_0205d75c)(((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000));
+if(!p)return;
+if(kind==5)func_0205e288(p,&a,arg2);
+else func_0205e344(p,&a,arg2);
+}else{
+if(length<21)return;
+*(NetworkPacket21Bytes *)b=*(NetworkPacket21Bytes *)packet;
+ip=*(u32 *)((u8 *)b+8);
+p=((void *(*)(u32))func_0205d75c)(((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000));
+if(!p)return;
+func_0205e40c(p,&b,arg2);
+}
 }
 
 void func_0205e834(void *arg0, s32 arg1) {

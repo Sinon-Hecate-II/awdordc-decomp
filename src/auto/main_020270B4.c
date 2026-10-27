@@ -7,6 +7,48 @@ void func_02028160(s32);
 
 s32 func_020271cc(void){s32 s=func_0200751c(); void *p=(void *)data_02138e4c; if(!p){func_02007530(s);return 1;} if(M2C_FIELD(p,s32 *,0x2260)!=1){func_02007530(s);return 1;} data_02138e4c=0;func_02007530(s);return 0;}
 
+void func_02028384(void);
+s32 func_02027428(void) {
+    s32 s = func_0200751c();
+    void *p = (void *)data_02138e4c;
+    s32 v;
+    s32 r;
+
+    if (p == 0) {
+        func_02007530(s);
+        return 1;
+    }
+    v = M2C_FIELD(p, s32 *, 0x2260);
+    switch (v) {
+    case 1:
+        func_02007530(s);
+        return 1;
+    case 3:
+        r = func_020121d8((M2C_UNK)func_02028384);
+        switch (r) {
+        case 2:
+            func_02028160(4);
+            M2C_FIELD((void *)data_02138e4c, u16 *, 0x2280) = 2;
+            func_02007530(s);
+            return 3;
+        case 8:
+            func_02007530(s);
+            return 4;
+        case 3:
+        default:
+            func_02028160(0xB);
+            func_02007530(s);
+            return 7;
+        }
+    case 4:
+        func_02007530(s);
+        return 2;
+    default:
+        func_02007530(s);
+        return 0;
+    }
+}
+
 void func_02027518(s32 a,s32 b){s32 func_020276b0(void); void func_02027538(void); if(a==0 || b==0)func_020276b0();else func_02027538();}
 
 s32 func_02027c84(void){s32 s=func_0200751c();s32 r=0;void *p=(void *)data_02138e4c;if(p)r=M2C_FIELD(p,s32 *,0x2260);func_02007530(s);return r;}

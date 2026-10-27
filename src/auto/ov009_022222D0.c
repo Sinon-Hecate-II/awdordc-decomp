@@ -1,5 +1,24 @@
 /* 30 functions from 0x022222D0 to 0x02223290 (ov009), found by ds-decomp. */
 #include "common.h"
+#pragma cplusplus on
+class Ov009Callback { public: void run(); };
+typedef void (Ov009Callback::*Ov009CallbackFn)();
+struct Ov009Functor {
+ Ov009CallbackFn fn;
+ explicit Ov009Functor(Ov009CallbackFn p):fn(p) {}
+ Ov009Functor(const Ov009Functor& other):fn(other.fn) {}
+ void operator()(u8 *p) const { (((Ov009Callback *)p)->*fn)(); }
+};
+static inline void ov009Apply(u8 *first,u8 *end,s32 size,Ov009Functor fn) {
+ if(size) do { fn(first); first+=12; } while(first!=end);
+}
+#pragma push
+#pragma optimization_level 1
+static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {
+ if(size) { u8 *end=first+size; do { (((Ov009Callback *)first)->*fn)(); first+=12; } while(first!=end); }
+}
+#pragma pop
+#pragma cplusplus off
 
 
 void func_ov009_022222d0(s32 arg0) {
@@ -81,6 +100,39 @@ void func_ov009_02222468(void *arg0) {
     (void)*(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208=sp0;
 }
+
+#pragma cplusplus on
+#pragma optimization_level 2
+extern "C" void func_ov009_022224e0(void) {
+ s32 func_ov009_02221338(void *,s32);
+ extern s32 data_ov009_022268e0;
+ extern s32 data_ov009_02226980;
+ extern s32 data_ov009_022269b0;
+ extern s32 data_ov009_022269e0;
+ extern Ov009CallbackFn data_ov009_022263e0[];
+ volatile s32 saved;
+ void *node;
+ Ov009CallbackFn a,b;
+ saved=*(volatile u16 *)0x04000208;
+ *(volatile u16 *)0x04000208=0;
+ node=M2C_FIELD(&data_ov009_022268e0,void **,0x64);
+ if(node) do {
+ M2C_FIELD(&data_ov009_022268e0,void **,0x64)=M2C_FIELD(node,void **,0);
+ func_ov009_02221338(node,M2C_FIELD(node,s32 *,12)+16);
+ node=M2C_FIELD(&data_ov009_022268e0,void **,0x64);
+ } while(node);
+ M2C_FIELD(&data_ov009_022268e0,s32 *,0x68)=0;
+ M2C_FIELD(&data_ov009_022268e0,s32 *,0x64)=0;
+ M2C_FIELD(&data_ov009_022268e0,s32 *,0x6c)=0;
+ (void)*(volatile u16 *)0x04000208;
+ *(volatile u16 *)0x04000208=saved;
+ a=data_ov009_022263e0[1];
+ ov009CallRange((u8 *)&data_ov009_02226980,48,a);
+ b=data_ov009_022263e0[2];
+ ov009CallRange((u8 *)&data_ov009_022269b0,48,b);
+}
+#pragma optimization_level 4
+#pragma cplusplus off
 
 s32 func_ov009_02222638(s32 arg0) {
     extern M2C_UNK data_ov009_022268e0;

@@ -378,10 +378,10 @@ void func_0208fa28(void) {
 
 s32 func_0208fa3c(void) {
     s32 func_0207cfb8(s32);
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     s32 var_r0;
 
-    if (func_0207cfb8(*data_027e0058 + 0x6EF8) <= 0) {
+    if (func_0207cfb8(*gCurrentMap + 0x6EF8) <= 0) {
         var_r0 = 0x10;
     } else {
         var_r0 = 0x18;

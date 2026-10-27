@@ -69,6 +69,15 @@ if (!a) return;
 M2C_FIELD(*(void **)a,void (**)(void *),4)(a);
 }
 
+s32 func_0207044c(u32 arg0, u32 arg1) {
+    double d;
+    float f;
+    ((u32 *)&d)[0] = arg0;
+    ((u32 *)&d)[1] = arg1;
+    f = (float)d;
+    return *(s32 *)&f;
+}
+
 u64 func_02070550(u32 lo, u32 hi) {
     s32 n;
     u32 m, l, h;

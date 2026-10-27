@@ -66,13 +66,13 @@ void func_020d0bac(void *p,s32 a) {
 }
 
 void func_020d0bf8(M2C_UNK arg0) {
-    M2C_UNK func_0207c330(s32, s32);
+    M2C_UNK RandomIntRange(s32, s32);
     s32 func_020a78fc();
     s32 func_020a7914(M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = func_020a78fc();
-    func_0207c330(func_020a7914(arg0), temp_r4);
+    RandomIntRange(func_020a7914(arg0), temp_r4);
 }
 
 void func_020d0c1c(void *a,void *b) {
@@ -185,15 +185,15 @@ return;normal:func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),6,7);
 }
 
 void func_020d1174(u8 *a) {
-extern s32 *data_027e0058;
+extern s32 *gCurrentMap;
 func_02091c20(((u32)(a[0]<<26)>>26)+0x43,1);
-if(a[12])func_020d1174((u8 *)(*data_027e0058+0x59a4)+a[12]*14);
-if(a[13])func_020d1174((u8 *)(*data_027e0058+0x59a4)+a[13]*14);
+if(a[12])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[12]*14);
+if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
 }
 
 void func_020d1644(void) {
 
-    extern s32 *data_027e0058;
-    func_020d1094(*data_027e0058 + 0x6EB8, 0);
+    extern s32 *gCurrentMap;
+    func_020d1094(*gCurrentMap + 0x6EB8, 0);
 }
 

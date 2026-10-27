@@ -23,6 +23,18 @@ void func_ov003_021efe9c(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
 }
 
+void func_ov003_021efeb0(void *arg0) {
+M2C_UNK func_02088ff4(s32);s16 func_020a8ff4(void *);s32 func_ov003_021f15d4();s16 func_ov003_021f1608();
+s16 value;void *p,*q;
+value=func_ov003_021f1608();
+p=M2C_FIELD(arg0,void **,60); M2C_FIELD(p,s16 *,14)=func_020a8ff4(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+q=M2C_FIELD(arg0,void **,64);M2C_FIELD(q,s8 *,16)=99;M2C_FIELD(q,s8 *,17)=99;
+p=M2C_FIELD(arg0,void **,72); M2C_FIELD(p,s16 *,14)=func_020a8ff4(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+p=M2C_FIELD(arg0,void **,68); M2C_FIELD(p,s16 *,14)=func_020a8ff4(p);M2C_FIELD(p,s16 *,16)=0xc0;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+p=M2C_FIELD(arg0,void **,80); M2C_FIELD(p,s16 *,14)=func_020a8ff4(p);M2C_FIELD(p,s16 *,16)=value;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+p=M2C_FIELD(arg0,void **,76); M2C_FIELD(p,s16 *,14)=func_020a8ff4(p);M2C_FIELD(p,s16 *,16)=0xc0;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+func_02088ff4(M2C_FIELD(arg0,s32 *,84));if(func_ov003_021f15d4()==0)return;p=M2C_FIELD(arg0,void **,100);func_02088ff4(M2C_FIELD(p,s32 *,0));func_02088ff4(M2C_FIELD(p,s32 *,4));}
+
 void func_ov003_021effb8(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }

@@ -42,10 +42,48 @@ void func_0200112c(s32 *arg0,s32 arg1,s32 arg2) {
 arg0[0]=arg2; arg0[1]=arg1; arg0[2]=0; arg0[3]=-arg1; arg0[4]=arg2; arg0[5]=0; arg0[6]=0; arg0[7]=0; arg0[8]=4096; arg0[9]=0; arg0[10]=0; arg0[11]=0;
 }
 
+void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
+    s32 sp18[3];
+    s32 sp0c[3];
+    s32 sp00[3];
+    s32 r5 = arg1;
+    s32 *r6 = arg0;
+    s32 *r4 = arg3;
+
+    sp18[0] = r6[0] - arg2[0];
+    sp18[1] = r6[1] - arg2[1];
+    sp18[2] = r6[2] - arg2[2];
+    func_020021c0(sp18);
+    func_0200213c(r5, sp18, sp0c);
+    func_020021c0(sp0c);
+    func_0200213c(r5, sp18, sp00);
+    r4[0] = sp0c[0];
+    r4[1] = sp0c[1];
+    r4[2] = sp18[0];
+    r4[3] = sp18[1];
+    r4[4] = sp18[2];
+    r4[5] = sp00[0];
+    r4[6] = sp00[1];
+    r4[7] = sp00[2];
+    r4[8] = sp18[2];
+    r4[9] = -func_02002100(r6, sp00);
+    r4[10] = -func_02002100(r6, sp18);
+    r4[11] = -func_02002100(r6, sp18);
+}
+
 void func_02001524(void *arg0,UnkVec3 *arg1) {
 *arg1++=*(UnkVec3 *)arg0; arg0=(u8 *)arg0+16;
 *arg1++=*(UnkVec3 *)arg0; arg0=(u8 *)arg0+16;
 *arg1++=*(UnkVec3 *)arg0;
+}
+
+void func_0200154c(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void func_02007f68(void *, void *);
+    if (arg0 != arg1) func_02007f68(arg0, arg1);
+    arg1[12] = arg0[12] + (s32)(((long long)arg3 * arg0[4] + (long long)arg2 * arg0[0] + (long long)arg4 * arg0[8]) >> 12);
+    arg1[13] = arg0[13] + (s32)(((long long)arg3 * arg0[5] + (long long)arg2 * arg0[1] + (long long)arg4 * arg0[9]) >> 12);
+    arg1[14] = arg0[14] + (s32)(((long long)arg3 * arg0[6] + (long long)arg2 * arg0[2] + (long long)arg4 * arg0[10]) >> 12);
+    arg1[15] = arg0[15] + (s32)(((long long)arg3 * arg0[7] + (long long)arg2 * arg0[3] + (long long)arg4 * arg0[11]) >> 12);
 }
 
 void func_02001fb4(void) {

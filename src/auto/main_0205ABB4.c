@@ -89,6 +89,22 @@ void func_0205adc0(void) {
     func_0205a994();
 }
 
+s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
+void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 func_0205d588(s32,u32 *,u16 *);
+void *p;u32 ip;u16 port;s32 result,done;
+if(!func_0205d588(c,&ip,&port)||!ip||!port)return 4;
+if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
+result=func_0205a830(a,&p);if(result)return result;
+M2C_FIELD(p,s32 *,32)=f;
+result=func_0205a890(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
+if(!h){if((unsigned short)b)*b=p;return 0;}
+M2C_FIELD(p,s32 *,36)++;
+do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
+M2C_FIELD(p,s32 *,36)--;
+if(M2C_FIELD(p,s32 *,12)==5)*b=p;
+return M2C_FIELD(p,s32 *,24);
+}
+
 void func_0205af48(void *a,s32 b,s32 c,s32 d) {
 s32 func_02048688(s32);
 void func_0205d70c(s32 *,s32 *);
@@ -202,7 +218,7 @@ func_02059e78((u8 *)a+0x50,0,removed);return 1;}
 s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02048688(s32);
     s32 func_0205a1b8(void *, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_0205a51c(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 gti2ReceiveFilterCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
     s32 var_r0;
 
@@ -211,7 +227,7 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
         return 1;
     }
     if (func_02048688(M2C_FIELD(arg0, s32 *, 0x9C)) != 0) {
-        if (func_0205a51c(arg0, 0, arg1, arg2, 0) != 0) {
+        if (gti2ReceiveFilterCallback(arg0, 0, arg1, arg2, 0) != 0) {
             var_r0 = 1;
         } else {
             var_r0 = 0;
@@ -227,11 +243,11 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 s32 func_0205b370(void *a,s32 b,s32 c) {
 s32 func_02048688(s32);
 s32 func_0205a1b8(void *,s32,s32,s32);
-s32 func_0205a51c(void *,s32,s32,s32,s32);
+s32 gti2ReceiveFilterCallback(void *,s32,s32,s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12),r;
 if(n!=5&&n!=6){if(!func_0205b1a4((s32)a))return 0;}
 else {
-if(func_02048688(M2C_FIELD(a,s32 *,0x9c))){if(func_0205a51c(a,0,b,c,1))r=1;else r=0;return r;}
+if(func_02048688(M2C_FIELD(a,s32 *,0x9c))){if(gti2ReceiveFilterCallback(a,0,b,c,1))r=1;else r=0;return r;}
 if(!func_0205a1b8(a,b,c,1))return 0;
 }
 return 1;
@@ -258,6 +274,19 @@ func_02059bbc(x,(u8 *)b+32);
 if(!func_0205c780(a,x,M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c)))return 0;
 if(M2C_FIELD(a,void **,0x38)){func_020377c4(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
 M2C_FIELD(a,s32 *,12)=1;return 1;
+}
+
+s32 func_0205b590(void *a,s32 b,s32 c){
+s32 func_02059cc4(void *,void *);s32 func_0205cb4c(void *);s32 func_02049208(void);s32 func_02059fb4(void *,void *,s32,u16,s32,s32,s32);
+if(M2C_FIELD(a,s32 *,12)!=3)return func_0205b1a4((s32)a)!=0;
+if(c<32)return func_0205b1a4((s32)a)!=0;
+if(!func_02059cc4((void *)b,a+0x68))return func_0205b1a4((s32)a)!=0;
+if(!M2C_FIELD(M2C_FIELD(a,void **,8),s32 *,32)){
+if(!func_0205cb4c(a))return 0;
+func_0205ac6c(a);return 1;
+}
+M2C_FIELD(a,s32 *,12)=4;
+return func_02059fb4(M2C_FIELD(a,void **,8),a,M2C_FIELD(a,s32 *,0),M2C_FIELD(a,u16 *,4),func_02049208()-M2C_FIELD(a,s32 *,0x8c),b+32,c-32)!=0;
 }
 
 s32 func_0205b6a0(void *a) {s32 func_0205a0d0();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(func_0205b1a4(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(func_0205a0d0(a,0,0,0))return 1;return 0;}

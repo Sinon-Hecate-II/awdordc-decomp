@@ -107,6 +107,44 @@ void func_020abf94(void) {
  s32 i=0; do {func_020abe3c(i,1);func_020abee4(i,0);i++;}while(i<2);
 }
 
+void func_020abfcc(u16 arg0, u16 arg1) {
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    void func_020aca8c(s32);
+    extern s32 gCur3DSpriteEngine;
+    s32 a;
+    s32 c;
+
+    a = func_0207ca38(0, 0, 0x100, arg0, arg1);
+    c = func_0207ca38(0, 0, 0xc0, arg0, arg1);
+    if (a == 0 || c == 0) {
+        func_020aca8c(2);
+        return;
+    }
+    if (a >= 0x100) {
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x48) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4a) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4b) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4c) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4e) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0;
+    } else {
+        u8 b0 = (u8)((a + 0x100) >> 1);
+        u8 b1 = (u8)((0x100 - a) >> 1);
+        u8 b2 = (u8)((0xc0 - c) >> 1);
+        u8 b3 = (u8)((c + 0xc0) >> 1);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x48) = b0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4a) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = b1;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4b) = b2;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4c) = b0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4e) = b3;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = b1;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0xc0;
+    }
+}
+
 void func_020ac598(s32 arg0) {
     M2C_UNK func_01ff91d8();
     M2C_UNK func_01ff9690();
@@ -141,6 +179,63 @@ void func_020ac5e0(void *arg0) {
  if(M2C_FIELD(arg0,s32 *,0x34)==2)M2C_FIELD(arg0,s32 *,0x34)=1; break;
  }
  func_020ac144(M2C_FIELD(arg0,u8 *,0x3c),0,M2C_FIELD(arg0,s32 *,0x34));
+}
+
+void func_020ac65c(void *arg0) {
+    s32 saved;
+    s8 val;
+    s8 neg;
+    s32 i;
+    s32 temp;
+    void *bank;
+    u8 mode;
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    void func_020abfcc(u16, u16);
+    void func_020ac998(s32);
+    void func_01ffa6fc(void *);
+    void func_020ac598(s32);
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c4, data_027e00c8;
+
+    M2C_FIELD(arg0, u16 *, 0x38)++;
+    temp = func_0207ca38(0, 0x10, 0, M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
+    saved = gCur3DSpriteEngine;
+    val = (s8)temp;
+    neg = (s8)(-temp);
+
+    i = 0;
+    do {
+        if (i == 0) bank = (void *)data_027e00c8; else bank = (void *)data_027e00c4;
+        gCur3DSpriteEngine = (s32)bank;
+        mode = M2C_FIELD(arg0, u8 *, 0x3c);
+        if (mode == 0 && bank != (void *)data_027e00c8) goto next;
+        if (mode == 1 && bank != (void *)data_027e00c4) goto next;
+        if (mode == 3 && bank != (void *)saved) goto next;
+
+        switch (M2C_FIELD(arg0, s32 *, 0x34)) {
+        case 0:
+            M2C_FIELD(M2C_FIELD(bank, s32 *, 0), s8 *, 0x50) = neg;
+            break;
+        case 1:
+            M2C_FIELD(M2C_FIELD(bank, s32 *, 0), s8 *, 0x50) = val;
+            break;
+        case 2:
+            func_020abfcc(M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
+            break;
+        }
+        if (M2C_FIELD(arg0, u16 *, 0x38) >= M2C_FIELD(arg0, u16 *, 0x3a)) {
+            func_020ac998(M2C_FIELD(arg0, s32 *, 0x34) & 0xff);
+            func_01ffa6fc(arg0);
+        }
+    next:
+        ++i;
+    } while (i < 2);
+
+    gCur3DSpriteEngine = saved;
+    if (M2C_FIELD(arg0, s32 *, 0x18) != 1) {
+        return;
+    }
+    func_020ac598(M2C_FIELD(arg0, u8 *, 0x3c));
 }
 
 void func_020ac7a0(void *arg0) {

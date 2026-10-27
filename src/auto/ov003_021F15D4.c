@@ -1,5 +1,10 @@
 /* 32 functions from 0x021F15D4 to 0x021F25CC (ov003), found by ds-decomp. */
 #include "common.h"
+static inline void loadBank3(s32 k,u32 m) {
+extern s32 gCur3DSpriteEngine;
+void func_020a9a30(s32,s32,s32,void *);
+func_020a9a30(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
+}
 
 s32 func_ov003_021f15d4(void) {
     s32 func_ov003_021f1584();
@@ -102,6 +107,33 @@ void func_ov003_021f18b4(u8 *arg0) {
 void func_ov003_021f1920(void) {
     M2C_UNK func_020af1e4();
     func_020af1e4();
+}
+
+void func_ov003_021f192c(void *a) {
+extern s32 gCur3DSpriteEngine,data_027e00c8,data_027e00c4;
+extern u8 data_ov003_022111c0;extern M2C_UNK data_ov003_0220fc78;
+void *func_0208931c(s32);s32 func_020aaf74(void *);
+void func_020a9a30(s32,s32,s32,void *);
+s32 old=gCur3DSpriteEngine,current;void *p; s32 i=0;u8 mode;s32 k,n;u32 m;
+do {
+if(i==0)current=data_027e00c8;else current=data_027e00c4;
+gCur3DSpriteEngine=current;mode=M2C_FIELD(a,u8 *,0);
+if(mode==0&&current!=data_027e00c8)continue;
+if(mode==1&&current!=data_027e00c4)continue;
+if(mode==3&&current!=old)continue;
+p=func_0208931c(9);
+M2C_FIELD(&data_ov003_022111c0,void **,16)=p;
+k=M2C_FIELD(a,u8 *,1);m=M2C_FIELD(a,u8 *,8);n=M2C_FIELD(a,u32 *,4);
+M2C_FIELD(p,u8 *,0x58)=k;
+func_020a9a30(2,0,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(n<<5));
+{void *engine=(void *)gCur3DSpriteEngine;func_020a9a30(2,2,k,(void *)((m<<5)+(u32)M2C_FIELD(engine,void **,0x30)));}
+M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
+M2C_FIELD(p,u16 *,0x3e)=n&0x7ffffff;
+M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((m<<24)>>6);
+M2C_FIELD(p,u16 *,0x3c)=0xc00;
+}while(++i<2);
+gCur3DSpriteEngine=old;
+M2C_FIELD(&data_ov003_0220fc78,void **,0)=a;
 }
 
 void func_ov003_021f1a58(void) {

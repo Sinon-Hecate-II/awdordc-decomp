@@ -139,6 +139,30 @@ void func_02021a64(void *arg0) {
     M2C_FIELD(&data_02138b34, M2C_UNK (**)(M2C_UNK, s32, s32), 4)(0, arg0 - 4, M2C_FIELD(arg0, s32 *, -4));
 }
 
+/* Copy a (possibly network) configuration record into the shared context and
+   initialise its allocator/free callbacks plus the byte-swapped endpoint fields. */
+void func_02021a90(void *cfg) {
+extern M2C_UNK data_02138b74;
+s32 *func_02021a38(s32);
+void func_02021a64(void *);
+void func_0201ee58(void *);
+u32 v;
+M2C_FIELD(&data_02138b34,u32 *,0x40)=M2C_FIELD(cfg,u32 *,12)==1;
+v=M2C_FIELD(cfg,u32 *,16);M2C_FIELD(&data_02138b34,u32 *,68)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,20);M2C_FIELD(&data_02138b34,u32 *,72)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,24);M2C_FIELD(&data_02138b34,u32 *,76)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,28);M2C_FIELD(&data_02138b34,u32 *,80)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+v=M2C_FIELD(cfg,u32 *,32);M2C_FIELD(&data_02138b34,u32 *,84)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+M2C_FIELD(&data_02138b34,s32 *(**)(s32),0x58)=func_02021a38;
+M2C_FIELD(&data_02138b34,void (**)(void *),0x5c)=func_02021a64;
+M2C_FIELD(&data_02138b34,u32 *,12)=M2C_FIELD(cfg,u32 *,4);
+M2C_FIELD(&data_02138b34,u32 *,4)=M2C_FIELD(cfg,u32 *,8);
+M2C_FIELD(&data_02138b34,u32 *,0x60)=0x40;
+M2C_FIELD(&data_02138b34,u32 *,0x70)=M2C_FIELD(cfg,u32 *,0x2c);
+M2C_FIELD(&data_02138b34,u32 *,0x74)=M2C_FIELD(cfg,u32 *,0x30);
+func_0201ee58(&data_02138b74);
+}
+
 void func_02021c04(void) {
     M2C_UNK func_02020f6c();
     func_02020f6c();

@@ -1,50 +1,130 @@
 /* 39 functions from 0x02037214 to 0x0203804C (main), found by ds-decomp. */
 #include "common.h"
+static inline void seed371(u64 *seed) {
+extern u64 data_0213d1e0[];
+data_0213d1e0[0]=*seed;
+data_0213d1e0[1]=0x5d588b656c078965ULL;
+data_0213d1e0[2]=0x269ec3;
+}
+static inline u32 next371(void) {
+extern u64 data_0213d1e0[];
+data_0213d1e0[0]=data_0213d1e0[1]*data_0213d1e0[0]+data_0213d1e0[2];
+return data_0213d1e0[0]>>32;
+}
 
-s32 func_02037508(s32 *arg0, s32 *arg1) {
-    extern M2C_UNK data_0213d1cc;
-    if (arg0 != (s32 *)0) {
-        *arg0 = M2C_FIELD(&data_0213d1cc, s32 *, 4);
+/* Returns the current state code, exposing its param through outParam and a derived type through outType. */
+s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
+    u32 i;
+    s32 required;
+    u32 j;
+    char vals[4];
+    char *out;
+    u32 written;
+
+    if (len & 3u) {
+        return -1;
     }
-    if (arg1 != (s32 *)0) {
+    required = 0;
+    for (i = 0u; i < len; i++) {
+        if ((s8)src[i] != (s8)0x2a) {
+            required = required + 6;
+        }
+    }
+    required = required / 8;
+    if (dest == (char *)0) {
+        return required;
+    }
+    if (maxDest < (u32)required) {
+        return -1;
+    }
+    if (len == 0u) {
+        dest[0] = 0;
+        return 0;
+    }
+    out = dest;
+    written = 0u;
+    while (written < (u32)required) {
+        for (j = 0u; j < 4u; j++) {
+            s8 c;
+            s8 v;
+            c = (s8)src[j];
+            if (c >= (s8)0x41 && c <= (s8)0x5a) {
+                v = (s8)(c - (s8)0x41);
+            } else if (c >= (s8)0x61 && c <= (s8)0x7a) {
+                v = (s8)(c - (s8)0x47);
+            } else if (c >= (s8)0x30 && c <= (s8)0x39) {
+                v = (s8)(c + (s8)0x4);
+            } else if (c == (s8)0x2e) {
+                v = (s8)0x3e;
+            } else if (c == (s8)0x2d) {
+                v = (s8)0x3f;
+            } else {
+                v = (s8)0;
+            }
+            vals[j] = (char)v;
+        }
+        src = src + 4;
+        out[0] = (char)(((s8)vals[0] << 2) | ((s8)vals[1] >> 4));
+        written = (u32)(out + 1 - dest);
+        if (written >= (u32)required) {
+            break;
+        }
+        out[1] = (char)(((s8)vals[1] << 4) | ((s8)vals[2] >> 2));
+        written = (u32)(out + 2 - dest);
+        if (written >= (u32)required) {
+            break;
+        }
+        out[2] = (char)(((s8)vals[2] << 6) | ((s8)vals[3]));
+        out = out + 3;
+        written = (u32)(out - dest);
+    }
+    return (s32)written;
+}
+
+s32 func_02037508(s32 *outParam, s32 *outType) {
+    extern M2C_UNK data_0213d1cc;
+    if (outParam != (s32 *)0) {
+        *outParam = M2C_FIELD(&data_0213d1cc, s32 *, 4);
+    }
+    if (outType != (s32 *)0) {
         switch (M2C_FIELD(&data_0213d1cc, s32 *, 0)) {
         case 2:
         case 3:
         case 4:
         case 5:
         case 8:
-            *arg1 = 6;
+            *outType = 6;
             break;
         case 6:
-            *arg1 = 3;
+            *outType = 3;
             break;
         case 7:
-            *arg1 = 4;
+            *outType = 4;
             break;
         case 10:
         case 11:
         case 12:
         case 13:
-            *arg1 = 1;
+            *outType = 1;
             break;
         case 1:
         case 9:
-            *arg1 = 7;
+            *outType = 7;
             break;
         case 14:
-            *arg1 = 5;
+            *outType = 5;
             break;
         case 15:
         case 17:
         case 19:
-            *arg1 = 6;
+            *outType = 6;
             break;
         case 16:
         case 18:
-            *arg1 = 2;
+            *outType = 2;
             break;
         default:
-            *arg1 = 0;
+            *outType = 0;
             break;
         }
     }
@@ -362,6 +442,23 @@ extract:
     func_02068d18(arg1, r5 + 1, len);
     arg1[len] = 0;
     return len;
+}
+
+u32 func_02037eec(u32 max) {
+extern u64 data_0213d1e0[];
+void func_02007724(void *);u64 func_02007004(void);
+u64 seed,v;
+if(data_0213d1e0[0]==0&&data_0213d1e0[1]==0&&data_0213d1e0[2]==0){
+func_02007724(&seed);
+seed=((seed>>24)&0xffffffULL)|(func_02007004()<<24);
+data_0213d1e0[0]=seed;
+data_0213d1e0[1]=0x5d588b656c078965ULL;
+data_0213d1e0[2]=0x269ec3;
+}
+data_0213d1e0[0]=data_0213d1e0[1]*data_0213d1e0[0]+data_0213d1e0[2];
+v=data_0213d1e0[0]>>32;
+if(max==0)return v;
+return (v*max)>>32;
 }
 
 s32 func_02038020(u16 *a){s32 i=0;if(*a){do{i++;}while(a[i]);}return i;}

@@ -48,11 +48,11 @@ u32 func_0208a714(void *arg0) {
 
 void func_0208ab78(void *arg0) {
     M2C_UNK func_02082770();
-    M2C_UNK func_02082994();
+    M2C_UNK Reset3DSpriteEngineState();
     M2C_UNK func_020b26dc();
     M2C_UNK func_020d472c();
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x15) >> 0x1F) & 0xFF) {
-        func_02082994();
+        Reset3DSpriteEngineState();
         func_02082770();
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {

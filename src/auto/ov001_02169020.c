@@ -77,6 +77,52 @@ sx=data_ov001_0218c9e4[iy][ix][0];sy=data_ov001_0218c9e4[iy][ix][1];
 }
 s32 func_ov001_02169494(u8 *a){extern s32 data_ov001_0218ca04[4][4];return data_ov001_0218ca04[a[1]][a[0]];}
 
+void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp) {
+    M2C_UNK func_02007e98(s32, s32, s32);
+    u64 mask;
+    u32 lo, hi, v0, v1, n0, n1;
+    u32 *p;
+    u32 *end;
+
+    if (w == 8 && h == 8) {
+        func_02007e98((s32) color, (s32) dst, bpp * 8);
+        return;
+    }
+    if (bpp == 4) {
+        mask = (~0ull >> (64 - (shift * 4 + w * 4))) << (shift * 4);
+        lo = (u32) mask;
+        v0 = color & lo;
+        n0 = ~lo;
+        p = dst + start;
+        end = p + h;
+        if (p >= end) {
+            return;
+        }
+        do {
+            *p = (*p & n0) | v0;
+            p++;
+        } while (p < end);
+        return;
+    }
+    mask = (~0ull >> (64 - (shift * 8 + w * 8))) << (shift * 8);
+    lo = (u32) mask;
+    hi = (u32) (mask >> 32);
+    v0 = color & lo;
+    v1 = color & hi;
+    n0 = ~lo;
+    n1 = ~hi;
+    p = dst + start * 2;
+    end = p + h * 2;
+    if (p >= end) {
+        return;
+    }
+    do {
+        p[0] = (p[0] & n0) | v0;
+        p[1] = (p[1] & n1) | v1;
+        p += 2;
+    } while (p < end);
+}
+
 void func_ov001_02169bd0(void *a,s32 b){M2C_UNK func_02007e98(s32,s32,s32);s32 bits=M2C_FIELD(a,u8 *,12);u32 v; if(bits==4) {u32 t=b|b<<4;v=t|t<<8;}else{v=(u32)b|((u32)b<<8);}func_02007e98(v|v<<16,M2C_FIELD(a,s32 *,0),(M2C_FIELD(a,s32 *,4)*M2C_FIELD(a,s32 *,8))*((bits*64)/8));}
 
 void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,size;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);size=(bits<<6)/8;stride=size*M2C_FIELD(a,s32 *,16);width=size*M2C_FIELD(a,s32 *,4);i=0;if(M2C_FIELD(a,s32 *,8)<=0)return;do{func_02007e98(v,p,width);i++;p+=stride;}while(i<M2C_FIELD(a,s32 *,8));}

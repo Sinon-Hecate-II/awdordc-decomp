@@ -1,5 +1,8 @@
 /* 33 functions from 0x020617BC to 0x02062770 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct Addr617BC { u8 len, family; u16 port; u32 addr; } Addr617BC;
+typedef struct Bytes617BC { u8 b[4]; } Bytes617BC;
+static inline void Copy617BC(u8 *d,u8 *s) { *(Bytes617BC *)d=*(Bytes617BC *)s; }
 extern u8 data_02100120[];
 extern u8 data_0210012c[];
 extern u8 data_02100094[];
@@ -192,7 +195,40 @@ void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32
 
 s32 func_02061da0(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
+void func_02061dd0(void *p,void *a,void *b,void *c,s32 d,s32 force,s32 cb,s32 userdata){
+extern u8 data_0210013c[],data_021000c4[],data_0210014c[];extern s32 gDnsQueryState[];extern M2C_UNK data_0210011c;
+void func_020640a8(void*,void*,void*,s32);s32 func_020609bc(s32);void func_02068c50(void*,void*);void func_02062e28(void*,void*);s32 func_02049208(void);void func_020677a8(s32);void func_0204926c(void);
+if(!p)func_020640a8(data_0210013c,data_0210012c,data_021000c4,0x11c);
+if(!force && gDnsQueryState[0]!=1)return;
+M2C_FIELD(p,s32*,0)=1;func_02061c8c(p);func_020609bc((s32)p);
+func_02068c50((u8*)p+0xc,a);func_02068c50((u8*)p+0x30,b);func_02068c50((u8*)p+0x54,c);
+M2C_FIELD(p,s32*,0x488)=cb;M2C_FIELD(p,s32*,0x48c)=0;
+if(!cb)func_020640a8(data_0210014c,data_0210012c,data_021000c4,0x132);
+M2C_FIELD(p,s32*,0x494)=userdata;M2C_FIELD(p,void**,0x498)=&data_0210011c;
+M2C_FIELD(p,s32*,0x4a0)=0;M2C_FIELD(p,s32*,0x4b0)=-1;
+M2C_FIELD(p,s32*,0x7c)=0;M2C_FIELD(p,s32*,0x80)=0;M2C_FIELD(p,s32*,8)=0;
+M2C_FIELD(p,s32*,0x484)=-1;M2C_FIELD(p,s32*,0x480)=0;
+M2C_FIELD(p,s32*,0x4a4)=0;M2C_FIELD(p,s32*,0x4b8)=d;
+func_02062e28(p,&data_0210011c);M2C_FIELD(p,s32*,0x5cc)=0;
+func_020677a8(func_02049208());func_0204926c();
+}
+
 s32 func_02061efc(void *a) {s32 func_02068c34(M2C_UNK *);s32 func_02068eac(void *,void *,u32);void func_02062e28(void *,void *);void func_020626d4(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)func_02068c34(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!func_02068eac(p,q,func_02068c34(q))){func_02062e28(a,(u8 *)p+func_02068c34(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));func_020626d4(a);}
+
+s32 func_02062010(void *p){
+s32 func_02061fb8(void*,s32);void func_02068c50(void*,void*);void func_020675e4(void*,void*,...);s32 func_020498e4(void*);void *func_02021768(void*);s32 func_020496a4(s32,s32,s32);s32 func_02049740(s32,void*,s32);s32 func_020496b8(s32);
+extern void *data_0213e4bc;extern u8 data_02100160[];
+u8 buf[128];u8 addr[8];s32 n,fd;void *host;
+n=func_02061fb8((u8*)p+12,20);
+if(M2C_FIELD(&data_0213e4bc,void**,4))func_02068c50(buf,M2C_FIELD(&data_0213e4bc,void**,4));
+else func_020675e4(buf,data_02100160,(u8*)p+12,n);
+addr[1]=2;M2C_FIELD(addr,u16*,2)=0xee70;M2C_FIELD(addr,u32*,4)=func_020498e4(buf);
+if(M2C_FIELD(addr,u32*,4)==-1){host=func_02021768(buf);if(!host)return 2;Copy617BC((u8*)&M2C_FIELD(addr,u32*,4),*M2C_FIELD(host,u8***,12));}
+fd=M2C_FIELD(p,s32*,0x4b0);
+if(fd==-1){fd=func_020496a4(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
+if(func_02049740(fd,&addr,8)==0)return 0;
+func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
+}
 
 void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     M2C_UNK func_020651a4(s32, M2C_UNK *, s32);

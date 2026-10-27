@@ -2,9 +2,9 @@
 #include "common.h"
 
 s32 func_ov007_02215dd8(s32 *arg0, s32 *arg1, s32 arg2) {
-    s32 func_0207c330(s32, s32);
+    s32 RandomIntRange(s32, s32);
     s32 func_ov007_022156a4();
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 temp_r0;
     s32 var_r6;
     void *temp_r2;
@@ -15,10 +15,10 @@ loop_1:
     if (var_r6 > 0x64) {
         return 0;
     }
-    *arg0 = func_0207c330(0, M2C_FIELD(*data_027e0058, u16 *, 0x5144) - 1);
-    temp_r0 = func_0207c330(0, M2C_FIELD(*data_027e0058, u16 *, 0x5146) - 1);
+    *arg0 = RandomIntRange(0, M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1);
+    temp_r0 = RandomIntRange(0, M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1);
     *arg1 = temp_r0;
-    temp_r2 = *data_027e0058;
+    temp_r2 = *gCurrentMap;
     if ((arg2 == M2C_FIELD((temp_r2 + ((*arg0 + M2C_FIELD((temp_r2 + (temp_r0 * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) && (func_ov007_022156a4() != 0)) {
         return 1;
     }
@@ -26,9 +26,9 @@ loop_1:
 }
 
 s32 func_ov007_02215e94(s32 *arg0, s32 *arg1, s32 arg2, void *arg3, s32 arg4) {
-    s32 func_0207c330(s32, s32);
-    s32 func_ov000_021a8a04(s16, s16, s16, s16);
-    extern void **data_027e0058;
+    s32 RandomIntRange(s32, s32);
+    s32 ManhattanDistance(s16, s16, s16, s16);
+    extern void **gCurrentMap;
     s32 temp_r0;
     s32 temp_r1;
     s32 var_r5;
@@ -39,13 +39,63 @@ loop_1:
     if (var_r5 > 0x64) {
         return 0;
     }
-    *arg0 = func_0207c330(0, M2C_FIELD(*data_027e0058, u16 *, 0x5144) - 1);
-    *arg1 = func_0207c330(0, M2C_FIELD(*data_027e0058, u16 *, 0x5146) - 1);
+    *arg0 = RandomIntRange(0, M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1);
+    *arg1 = RandomIntRange(0, M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1);
     temp_r1 = *arg0;
-    if ((arg2 == M2C_FIELD((*data_027e0058 + ((temp_r1 + M2C_FIELD((*data_027e0058 + (*arg1 * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) && (func_ov000_021a8a04(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16) temp_r1, (s16) *arg1) <= arg4)) {
+    if ((arg2 == M2C_FIELD((*gCurrentMap + ((temp_r1 + M2C_FIELD((*gCurrentMap + (*arg1 * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) && (ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16) temp_r1, (s16) *arg1) <= arg4)) {
         return 1;
     }
     goto loop_1;
+}
+
+void func_ov007_02216118(s32 arg0, s32 arg1) {
+    s32 func_ov007_02214ff8(s32, s32, s32);
+    s32 func_ov007_02215128(s32, s32);
+    s32 func_ov007_02215254(s32, s32, s32);
+    s32 Map_MarkUnitsMoved(void);
+    extern void **gCurrentMap;
+    extern u8 data_ov007_02221a84[];
+
+    s32 sp0 = 0;
+    s8 *row;
+    s32 r6;
+    s32 r7;
+    void *r0;
+
+loop_outer:
+    r7 = 0;
+    r0 = *gCurrentMap;
+    if (M2C_FIELD(r0, u16 *, 0x5146) > 0) {
+        row = (s8*)data_ov007_02221a84;
+        do {
+            r6 = 0;
+            if (M2C_FIELD(r0, u16 *, 0x5144) > 0) {
+                do {
+                    if (row[r6] == 0 && arg1 == M2C_FIELD((r0 + ((r6 + M2C_FIELD((r0 + r7 * 2), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
+                        s32 cnt = func_ov007_02214ff8(r6, r7, arg0);
+                        if (func_ov007_02215128(cnt, arg0) != 1) {
+                            row[r6] = 1;
+                        } else {
+                            func_ov007_02215254(r6, r7, arg0);
+                            row[r6] = 2;
+                        }
+                    }
+                    r6 += 1;
+                    r0 = *gCurrentMap;
+                } while (r6 < M2C_FIELD(r0, u16 *, 0x5144));
+            }
+            r7 += 1;
+            row += 0x1E;
+        } while (r7 < M2C_FIELD(r0, u16 *, 0x5146));
+    }
+    if (Map_MarkUnitsMoved() == 0) {
+        return;
+    }
+    sp0 += 1;
+    if (sp0 > 0x64) {
+        return;
+    }
+    goto loop_outer;
 }
 
 void func_ov007_02216bf4(void) {
@@ -54,7 +104,7 @@ void func_ov007_02216bf4(void) {
     s32 func_ov007_02215bc4(s32 *, s32 *, s32);
     s32 func_ov007_02215254(s32, s32, s32);
     s32 Map_MarkUnitsMoved(void);
-    s32 func_ov007_02216118(s32, s32);
+    void func_ov007_02216118(s32, s32);
     extern u8 data_ov007_02221a84[];
 
     s32 sp4;

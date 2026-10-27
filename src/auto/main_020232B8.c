@@ -144,6 +144,23 @@ void func_02023c74(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_02025748(arg0 + 0x3A4, arg1, arg2);
 }
 
+void func_020240c0(u8 *dst,s32 len){
+M2C_UNK func_02025fc0(void*);s32 func_0200751c(void);M2C_UNK func_02007530(s32);M2C_UNK func_02026014();void func_02026134(void*,void*);void func_020241f0(M2C_UNK*,s32);
+extern s8 data_02138cc0;extern u64 data_021372f8[3];extern M2C_UNK data_02138e38;extern u8 data_02138e4b;
+u8 ctx[92],hash[20];u32 seed; s32 out,index,state,j;u32 carry,total;u8 *p,*q;
+if(!*(u8*)&data_02138cc0){data_021372f8[0]=data_021372f8[1]*data_021372f8[0]+data_021372f8[2];seed=data_021372f8[0]>>32;func_020241f0((M2C_UNK*)&seed,4);}
+out=0;index=20;
+while(out<len){
+if(index==20){
+func_02025fc0(ctx);state=func_0200751c();func_02026014(ctx,&data_02138e38,20);func_02026134(ctx,hash);
+carry=1;j=19;p=&data_02138e4b;q=hash+19;
+for(;j>=0;j--){total=carry+(*p+*q--);*p--=total;carry=total>>8;}
+seed=total;func_02007530(state);index=0;
+}
+{u8 c=hash[index++];if(c)dst[out++]=c;}
+}
+}
+
 void func_020241f0(M2C_UNK *p,s32 n) {
  s32 func_0200751c(void);
  M2C_UNK func_02007530(s32);

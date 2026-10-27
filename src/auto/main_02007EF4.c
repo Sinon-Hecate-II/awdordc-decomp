@@ -92,6 +92,123 @@ void func_020081d0(u32 *arg0,u8 *dst){
  }
 }
 
+void func_0200826c(u32 *arg0, s16 *arg1) {
+    u8 *in = (u8 *)arg0;
+    s16 *out = arg1;
+    s32 acc = 0;
+    s32 bit = 0;
+    s32 remaining = (s32)(*arg0 >> 8);
+    in += 4;
+    while (remaining > 0) {
+        u8 code = *in++;
+        s32 n = 8;
+        for (;;) {
+            if (--n < 0) break;
+            if (!(code & 0x80)) {
+                acc |= (*in++) << bit;
+                remaining--;
+                bit ^= 8;
+                if (bit == 0) *out++ = acc;
+                if (bit == 0) acc = 0;
+            } else {
+                s32 count = 3 + (*in >> 4);
+                u32 len = (((*in++ & 0xF) << 8) | *in++) + 1;
+                s32 shift = (8 - bit) ^ ((len & 1) << 3);
+                remaining -= count;
+                do {
+                    u32 dist;
+                    u32 word;
+                    s32 val;
+                    shift ^= 8;
+                    dist = ((len + ((8 - bit) >> 3)) >> 1) << 1;
+                    word = *(u16 *)((u8 *)out - dist);
+                    val = (word & (0xFF << shift)) >> shift;
+                    acc |= val << bit;
+                    bit ^= 8;
+                    if (bit == 0) *out++ = acc;
+                    if (bit == 0) acc = 0;
+                    count--;
+                } while (count > 0);
+            }
+            if (remaining <= 0) break;
+            code <<= 1;
+        }
+    }
+}
+
+void func_0200836c(void *arg0, u32 *arg1) {
+    s32 sp0;
+    s32 temp_r2;
+    s32 temp_r4;
+    s32 temp_r6;
+    s32 temp_r9;
+    s32 var_lr;
+    s32 var_r8;
+    u32 *var_r0;
+    u32 *var_r1;
+    u32 var_ip;
+    u32 var_r3;
+    u32 var_r5;
+    u8 *temp_r7;
+    u8 *var_r2;
+
+    var_r1 = arg1;
+    temp_r2 = arg0 + 4;
+    temp_r7 = temp_r2 + 1;
+    temp_r4 = M2C_FIELD(arg0, u8 *, 0) & 0xF;
+    var_r3 = 0;
+    var_lr = 0;
+    sp0 = (temp_r4 & 7) + 4;
+    var_ip = (u32) M2C_FIELD(arg0, u8 *, 0) >> 8;
+    var_r0 = temp_r2 + ((M2C_FIELD(arg0, u8 *, 4) + 1) * 2);
+    var_r2 = temp_r7;
+loop_1:
+    if ((s32) var_ip > 0) {
+        var_r8 = 0x20;
+        var_r5 = *var_r0;
+        var_r0 += 4;
+loop_3:
+        var_r8 -= 1;
+        if ((s64) var_r8 >= 0) {
+            temp_r9 = 1 & (var_r5 >> 0x1F);
+            temp_r6 = *var_r2 << temp_r9;
+            var_r2 = (((u32) var_r2 >> 1) * 2) + (((*var_r2 & 0x3F) + 1) * 2) + temp_r9;
+            if (temp_r6 & 0x80) {
+                var_r3 = (var_r3 >> temp_r4) | (*var_r2 << (0x20 - temp_r4));
+                var_r2 = temp_r7;
+                var_lr += 1;
+                if (var_lr != sp0) {
+
+                } else {
+                    *var_r1 = var_r3;
+                    var_r1 += 4;
+                }
+                if (var_lr != sp0) {
+
+                } else {
+                    var_ip -= 4;
+                }
+                if (var_lr != sp0) {
+
+                } else {
+                    var_lr = 0;
+                }
+            }
+            if ((s32) var_ip <= 0) {
+
+            } else {
+                var_r5 *= 2;
+            }
+            if ((s32) var_ip <= 0) {
+
+            } else {
+                goto loop_3;
+            }
+        }
+        goto loop_1;
+    }
+}
+
 void func_02008464(u32 *arg0) {
     s32 temp_r2;
     s32 var_r2;
@@ -100,7 +217,7 @@ void func_02008464(u32 *arg0) {
     u8 *var_r0;
     u8 temp_r4;
 
-    var_r0 = arg0 + 4;
+    var_r0 = (u8 *)(arg0 + 4);
     var_r7 = (u32) *arg0 >> 8;
 loop_1:
     if ((s32) var_r7 > 0) {
@@ -247,6 +364,83 @@ s32 func_0200864c(void *arg0,u8 *src,s32 size){
  hdr=*src++;cnt=hdr&127;if(hdr&128)cnt+=2;cnt++;if(--size==0)break;
  }
 done:M2C_FIELD(arg0,u8**,0)=dst;M2C_FIELD(arg0,s32*,4)=remaining;M2C_FIELD(arg0,u8*,11)=hdr;M2C_FIELD(arg0,u16*,12)=cnt;return remaining;
+}
+
+s32 func_02008700(void *arg0,u8 *src,s32 size){
+ struct S { u16 *out; s32 remain; u16 acc; u8 pos; u8 hdr; u16 cnt; };
+ volatile struct S *s=arg0;
+ u32 out;s32 remaining;u32 hdr;s32 cnt;u32 acc;s32 pos;u32 val;
+ out=(u32)s->out;remaining=s->remain;hdr=s->hdr;cnt=s->cnt;acc=s->acc;pos=s->pos;
+loop:
+ if(remaining<=0)goto done;
+ if(!(hdr&128)){
+lit:
+  if(cnt<=0)goto next;
+  cnt--;val=*src++;acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}if(--size==0)goto done;
+  goto lit;
+ }
+ else if(cnt>0){val=*src++;do{acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}}while(--cnt>0);if(--size==0)goto done;}
+next:
+ hdr=*src++;cnt=hdr&127;if(hdr&128)cnt+=2;cnt++;if(--size!=0)goto loop;
+done:s->out=(u16*)out;s->remain=remaining;s->hdr=hdr;s->cnt=cnt;s->acc=acc;s->pos=pos;return remaining;
+}
+
+s32 func_020087ec(void *arg0, u8 *src, s32 size) {
+    struct S { u8 *out; s32 remain; u16 unk8; u8 unkA; u8 hdr; u8 cnt; u8 prev; u8 have; };
+    volatile struct S *s = (volatile struct S *)arg0;
+    u8 *out = s->out;
+    s32 remain = s->remain;
+    u32 hdr = s->hdr;
+    s32 cnt = s->cnt;
+    u32 prev = s->prev;
+    u32 have = s->have;
+
+    if (remain <= 0) goto done;
+    if (cnt == 0) goto reload;
+loop:
+    if (size == 0) goto done;
+    if (!(hdr & 0x80)) {
+        *out++ = *src++;
+        remain--;
+        size--;
+    } else {
+        if (have == 0) {
+            prev = *src++;
+            have = 1;
+            size--;
+        }
+        if (size == 0) goto done;
+        {
+            u32 dist = (((prev & 0xF) << 8) | *src++) + 1;
+            s32 count = 3 + ((s32)prev >> 4);
+            have = 0;
+            size--;
+            if (count != 0) {
+                do {
+                    *out = out[-(s32)dist];
+                    out++;
+                    remain--;
+                } while (--count > 0);
+            }
+        }
+    }
+    if (remain == 0) goto done;
+    hdr <<= 1;
+    if (--cnt != 0) goto loop;
+reload:
+    if (size == 0) goto done;
+    hdr = *src++;
+    cnt = 8;
+    size--;
+    goto loop;
+done:
+    s->out = out;
+    s->remain = remain;
+    s->hdr = hdr;
+    s->cnt = cnt;
+    s->prev = prev;
+    s->have = have;
+    return remain;
 }
 
 #pragma peephole reset

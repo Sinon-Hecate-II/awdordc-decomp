@@ -6,6 +6,7 @@ extern s32 data_ov001_02193e6c;
 typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLink;
 extern s32 data_ov001_02193e60[2];
 
+
 typedef struct TouchFlags {
     u8 active : 1;
     u8 pressed : 1;
@@ -13,9 +14,83 @@ typedef struct TouchFlags {
     u8 unused : 5;
 } TouchFlags;
 
+typedef struct InputState {
+    u8 pad[0x28];
+    u16 field_0x28;
+    u16 field_0x2a;
+    volatile u16 field_0x2c;
+    volatile u16 field_0x2e;
+    u16 pressed;
+    u16 newPressed;
+    u16 repeat;
+    u16 released;
+    TouchFlags flags;
+} InputState;
+
+typedef struct InputGlobal {
+    s32 field0;
+    InputState *state;
+} InputGlobal;
+
 void func_ov001_0218b368(s32 a,s32 b){
 if(a==1){volatile u32 *p=(volatile u32 *)0x04001000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);return;}
 {volatile u32 *p=(volatile u32 *)0x04000000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);}
+}
+
+void func_ov001_0218b3c4(s32 a,s32 b,u16 *p){if(a==1){if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04001042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04001042+4)=((y<<8)&0xff00)|(w&255);}}else{if(b==0){u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000040=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000040+4)=((y<<8)&0xff00)|(w&255);}else {u32 x=p[0],y=p[1],z=p[2],w=p[3]; *(volatile u16 *)0x04000042=((x<<8)&0xff00)|(z&255); *(volatile u16 *)(0x04000042+4)=((y<<8)&0xff00)|(w&255);}}}
+
+/* Set the window IN/OUT control register fields for the selected display engine. */
+void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
+    switch (target) {
+    case 0:
+        if (engine == 1) {
+            u32 v = (*(volatile u16 *)0x04001048 & ~0x3f) | value;
+            if (blend) v |= 0x20;
+            *(volatile u16 *)0x04001048 = v;
+            return;
+        } else {
+            u32 v = (*(volatile u16 *)0x04000048 & ~0x3f) | value;
+            if (blend) v |= 0x20;
+            *(volatile u16 *)0x04000048 = v;
+            return;
+        }
+    case 1:
+        if (engine == 1) {
+            u32 v = (*(volatile u16 *)0x04001048 & ~0x3f00) | (value << 8);
+            if (blend) v |= 0x2000;
+            *(volatile u16 *)0x04001048 = v;
+            return;
+        } else {
+            u32 v = (*(volatile u16 *)0x04000048 & ~0x3f00) | (value << 8);
+            if (blend) v |= 0x2000;
+            *(volatile u16 *)0x04000048 = v;
+            return;
+        }
+    case 2:
+        if (engine == 1) {
+            u32 v = (*(volatile u16 *)0x0400104a & ~0x3f00) | (value << 8);
+            if (blend) v |= 0x2000;
+            *(volatile u16 *)0x0400104a = v;
+            return;
+        } else {
+            u32 v = (*(volatile u16 *)0x0400004a & ~0x3f00) | (value << 8);
+            if (blend) v |= 0x2000;
+            *(volatile u16 *)0x0400004a = v;
+            return;
+        }
+    case 3:
+        if (engine == 1) {
+            u32 v = (*(volatile u16 *)0x0400104a & ~0x3f) | value;
+            if (blend) v |= 0x20;
+            *(volatile u16 *)0x0400104a = v;
+            return;
+        } else {
+            u32 v = (*(volatile u16 *)0x0400004a & ~0x3f) | value;
+            if (blend) v |= 0x20;
+            *(volatile u16 *)0x0400004a = v;
+            return;
+        }
+    }
 }
 
 void func_ov001_0218b648(s32 a){
@@ -96,9 +171,45 @@ void func_ov001_0218b818(void) {
 
 void func_ov001_0218b850(void) {
     M2C_UNK func_ov001_0218b964();
-    M2C_UNK func_ov001_0218b860();
+    void func_ov001_0218b860();
     func_ov001_0218b860();
     func_ov001_0218b964();
+}
+
+void func_ov001_0218b860(void) {
+    extern M2C_UNK data_ov001_02193e48;
+    extern u8 data_ov001_02193e50[];
+    u16 keyin = *(volatile u16 *)0x4000130;
+    u16 gval = *(volatile u16 *)0x27fffa8;
+    u16 pressed = (u16)(((keyin | gval) ^ 0x2fff) & 0x2fff);
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32) =
+        (M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) ^ pressed) & pressed;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x36) =
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) &
+        (M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) ^ pressed);
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) = pressed;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) =
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32);
+    {
+        int i = 0;
+        while (i < 14) {
+            u16 bit = (u16)(1 << i);
+            if (!(pressed & bit)) {
+                data_ov001_02193e50[i] = 0;
+            } else {
+                u8 cnt = data_ov001_02193e50[i];
+                cnt = (u8)(cnt + 1);
+                data_ov001_02193e50[i] = cnt;
+                if (cnt == 0x28) {
+                    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) |= bit;
+                } else if (cnt == 0x2f) {
+                    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) |= bit;
+                    data_ov001_02193e50[i] = 0x28;
+                }
+            }
+            i++;
+        }
+    }
 }
 
 s32 func_ov001_0218bb00(s32 arg0) {

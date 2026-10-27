@@ -1,6 +1,32 @@
 /* 19 functions from 0x0204AA34 to 0x0204B9B8 (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_0204aa34(void) {
+extern M2C_UNK data_0213dcac,data_020fd068,data_020fd090,data_020fd014;
+s32 i, newCount, oldCount; void *p;
+for(i=0;i<M2C_FIELD(&data_0213dcac,s32 *,12);i++) {
+if(M2C_FIELD(M2C_FIELD(&data_0213dcac,void ***,4)[i],s32 *,0)==0)return i;
+}
+if(M2C_FIELD(&data_0213dcac,s32 *,0)!=M2C_FIELD(&data_0213dcac,s32 *,12))
+func_020640a8(&data_020fd068,&data_020fd090,&data_020fd014,0x33);
+oldCount=M2C_FIELD(&data_0213dcac,s32 *,12);
+newCount=oldCount+4;
+p=func_020377a8(M2C_FIELD(&data_0213dcac,void **,4),newCount*4);
+if(p==NULL)return -1;
+M2C_FIELD(&data_0213dcac,void **,4)=p;
+for(i=oldCount;i<newCount;i++){
+M2C_FIELD(&data_0213dcac,void ***,4)[i]=func_02037794(0x184);
+p=M2C_FIELD(&data_0213dcac,void ***,4)[i];
+if(p==NULL){
+for(--i;i>=oldCount;--i)func_020377c4(M2C_FIELD(&data_0213dcac,void ***,4)[i]);
+return -1;
+}
+M2C_FIELD(p,s32 *,0)=0;
+}
+M2C_FIELD(&data_0213dcac,s32 *,12)=newCount;
+return oldCount;
+}
+
 void *func_0204aecc(s32 arg0) {
  extern M2C_UNK data_020fd108, data_020fd090, data_020fd050, data_020fd118, data_0213dcac;
  M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
@@ -97,6 +123,48 @@ void func_0204b154(void *arg0) {
  }
 }
 
+void func_0204c738(void *);
+void func_0204c7fc(void *);
+void func_0204ca4c(void *);
+void func_0204cbac(void *);
+void func_0204ce20(void *);
+void func_0204ceb8(void *);
+void func_0204d084(void *);
+void func_0204d5c0(void *);
+void func_0204da30(void *);
+/* Run one tick of an async operation/state machine: validate the handle, dispatch by its kind, then settle (signal completion and release the handle) unless it is still busy. */
+s32 func_0204b210(void *operation) {
+    extern M2C_UNK data_020fd170, data_020fd17c, data_020fd158, data_020fd188;
+    void func_0204a498(void *);
+    void func_0204ace8(void *);
+    s32 status;
+
+    if (!operation) func_020640a8(&data_020fd170, &data_020fd17c, &data_020fd158, 0x5B);
+    if (func_0204aecc(M2C_FIELD(operation, s32 *, 4)) != operation)
+        func_020640a8(&data_020fd188, &data_020fd17c, &data_020fd158, 0x5C);
+    if (M2C_FIELD(operation, s32 *, 0x12C)) return 0;
+    M2C_FIELD(operation, s32 *, 0x12C) = 1;
+    if (M2C_FIELD(operation, s32 *, 0x10) == 0) func_0204c738(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 1) func_0204c7fc(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 2) func_0204ca4c(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 3) func_0204cbac(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 6) func_0204d084(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 7) func_0204d5c0(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 8) func_0204da30(operation);
+    if (M2C_FIELD(operation, s32 *, 0x108)) func_0204afd8(operation);
+    status = M2C_FIELD(operation, s32 *, 0xFC);
+    if (status == 0)
+        M2C_FIELD(operation, s32 *, 0x12C) = 0;
+    else {
+        func_0204b154(operation);
+        func_0204a498(operation);
+        func_0204ace8(operation);
+    }
+    return status;
+}
+
 void func_0204b378(void) {
  M2C_UNK func_0204a608(); M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
  extern s32 data_020fd00c, data_020fd010, data_0213dcbc;
@@ -132,8 +200,8 @@ void func_0204b3cc(void) {
 
 void func_0204b674(void) {
     void func_0204af74(M2C_UNK *);
-    extern M2C_UNK func_0204b210;
-    func_0204af74(&func_0204b210);
+    s32 func_0204b210(void *);
+    func_0204af74((M2C_UNK *)func_0204b210);
 }
 
 s32 func_0204b688(void *arg0) {

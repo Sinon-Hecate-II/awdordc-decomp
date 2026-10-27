@@ -8,11 +8,11 @@ s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207b2f0(s32 *, s32 *, s32);
     void *func_01ffa3dc(M2C_UNK *, s32);
     extern M2C_UNK data_02100c20;
-    extern void *data_027e0058;
+    extern void *gCurrentMap;
     void *p;
     if (func_0207b7c4() != 0) return 1;
     if (func_0207b2f0(&arg0, &arg1, arg2) == 0) return 0;
-    M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), u8 *, 0x5154) = 0;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5154) = 0;
     p = func_01ffa3dc(&data_02100c20, 7);
     M2C_FIELD(p, s16 *, 0x38) = arg0 << 4;
     M2C_FIELD(p, s16 *, 0x3A) = arg1 << 4;
@@ -21,12 +21,12 @@ s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
 
 s32 func_0207b648(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207b2f0(s32 *, s32 *, s32);
-    extern void *data_027e0058;
+    extern void *gCurrentMap;
     void (*callback)(void);
     if (func_0207b2f0(&arg0, &arg1, arg2) == 0) return 0;
-    M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x5148) = arg0 << 4;
-    M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x514A) = arg1 << 4;
-    callback = M2C_FIELD(M2C_FIELD(data_027e0058, void **, 4), void (**)(void), 0x1C);
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) = arg0 << 4;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514A) = arg1 << 4;
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1C);
     if (callback != NULL) callback();
     return 1;
 }
@@ -34,15 +34,15 @@ s32 func_0207b648(s32 arg0, s32 arg1, s32 arg2) {
 void func_0207b6d0(void) {
     s32 func_020d1938(s32);
     s32 func_020d243c(s32);
-    extern void *data_027e0058;
+    extern void *gCurrentMap;
     u32 x, y;
     void *p;
     if (func_020d1938(1) != 0 && func_020d243c(1) != 0) {
-        p = M2C_FIELD(data_027e0058, void **, 0);
+        p = M2C_FIELD(gCurrentMap, void **, 0);
         x = M2C_FIELD(p, u8 *, 0x685B) & 0x7F;
         y = M2C_FIELD(p, u8 *, 0x685C) & 0x7F;
     } else {
-        p = M2C_FIELD(data_027e0058, void **, 0);
+        p = M2C_FIELD(gCurrentMap, void **, 0);
         x = (u32) M2C_FIELD(p, u16 *, 0x5144) >> 1;
         y = (u32) M2C_FIELD(p, u16 *, 0x5146) >> 1;
     }
@@ -101,31 +101,43 @@ void func_0207b800(void) {
     extern M2C_UNK data_02144d64;
     extern M2C_UNK data_02144dc8;
     extern M2C_UNK data_02144f98;
-    extern void *data_027e0058;
-    M2C_FIELD(data_027e0058, M2C_UNK **, 0) = &data_02144f98;
-    M2C_FIELD(data_027e0058, M2C_UNK **, 4) = &data_02144d64;
-    M2C_FIELD(data_027e0058, M2C_UNK **, 8) = &data_02144d60;
-    M2C_FIELD(data_027e0058, M2C_UNK **, 0xC) = &data_02144dc8;
+    extern void *gCurrentMap;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, 0) = &data_02144f98;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, 4) = &data_02144d64;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, 8) = &data_02144d60;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, 0xC) = &data_02144dc8;
 }
 
+/* Configure the current 3D sprite engine: set control bit 3, clear the low 3 bits of the sprite header, then initialise engine slots from the default data block (and a second pass / the alternate block when not on the secondary engine). */
 void func_0207b84c(void) {
-void func_020822b8(void *);
-extern M2C_UNK data_02100c64,data_02100c70;
-extern u16 *data_027e00bc;
-extern u16 **data_027e00c8, **gCur3DSpriteEngine;
-u16 *volatile p0; u16 *volatile p1; u16 *volatile p2; u8 equal;
-*data_027e00bc |=8;
-p0=*gCur3DSpriteEngine; *p0=*p0 & ~7;
-func_020822b8(&data_02100c64);
-if(gCur3DSpriteEngine==data_027e00c8)equal=1;else equal=0;
-if(equal){
-*data_027e00bc |=8;
-p1=*gCur3DSpriteEngine; *p1=*p1 & ~7;
-func_020822b8(&data_02100c64);
-return;
-}
-p2=*gCur3DSpriteEngine; *p2=*p2 & ~7;
-func_020822b8(&data_02100c70);
+    void func_020822b8(void *);
+    extern M2C_UNK data_02100c64, data_02100c70;
+    extern u16 *data_027e00bc;
+    extern u16 **data_027e00c8, **gCur3DSpriteEngine;
+    u16 *volatile sprite0;
+    u16 *volatile sprite1;
+    u16 *volatile sprite2;
+    u8 isSecondaryEngine;
+
+    *data_027e00bc |= 8;
+    sprite0 = *gCur3DSpriteEngine;
+    *sprite0 = *sprite0 & ~7;
+    func_020822b8(&data_02100c64);
+    if (gCur3DSpriteEngine == data_027e00c8) {
+        isSecondaryEngine = 1;
+    } else {
+        isSecondaryEngine = 0;
+    }
+    if (isSecondaryEngine) {
+        *data_027e00bc |= 8;
+        sprite1 = *gCur3DSpriteEngine;
+        *sprite1 = *sprite1 & ~7;
+        func_020822b8(&data_02100c64);
+        return;
+    }
+    sprite2 = *gCur3DSpriteEngine;
+    *sprite2 = *sprite2 & ~7;
+    func_020822b8(&data_02100c70);
 }
 
 void func_0207b940(void) {
@@ -217,10 +229,10 @@ u32 func_0207badc(s32 arg0, s32 arg1, M2C_UNK arg2) {
 
 s32 func_0207bb3c(s32 arg0, s32 arg1, s32 *arg2) {
     void func_02079d0c(s32, s32, s32 *);
-    extern void *data_027e0058;
+    extern void *gCurrentMap;
     s32 result = 1;
     s32 maxX, maxY;
-    void *map = M2C_FIELD(data_027e0058, void **, 0);
+    void *map = M2C_FIELD(gCurrentMap, void **, 0);
     maxX = M2C_FIELD(map, u16 *, 0x5144) * 0x300 - 1;
     maxY = M2C_FIELD(map, u16 *, 0x5146) * 0x300 - 1;
     func_02079d0c(arg0, arg1, arg2);
@@ -305,6 +317,73 @@ return M2C_FIELD(base,s32 *,0x10)+M2C_FIELD(base,s32 *,0x60)*index;
 s32 func_0207bdac(s32 arg0) {
 extern s32 data_0214bfa4;
 return M2C_FIELD(data_0214bfa4,s32 *,0x50)+arg0;
+}
+
+void func_0207bdc4(void) {
+    s32 func_0207bdac(s32);
+    void func_01ff9e44(void *, s32, s32);
+    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK func_020e3218(M2C_UNK *);
+    void func_020814e4(M2C_UNK *);
+    M2C_UNK func_02081590(M2C_UNK *, M2C_UNK);
+    void func_02081528(void);
+    s32 func_0207bd88(s32);
+    extern s32 data_0214bfa4;
+    extern u8 data_021011d4[];
+    extern u8 data_021011d0[];
+    extern M2C_UNK data_0211e12c;
+    extern M2C_UNK data_02101408;
+    extern M2C_UNK data_02101414;
+    extern M2C_UNK data_02101420;
+    extern M2C_UNK data_0210142c;
+
+    s32 i;
+    u8 kind;
+    s32 r4 = 0;
+    s32 base;
+    s32 count;
+    s8 *p;
+
+    func_01ff9e44(&data_0211e12c, func_0207bdac(0) << 5, 0x60);
+    r4 = 0;
+
+    base = data_0214bfa4;
+    count = M2C_FIELD(base, s32 *, 0x54);
+    p = (s8 *)base + 0x3C;
+    for (i = 0; i < count; i++, p++) {
+        kind = *p;
+        if (kind != 0) {
+            r4 = data_021011d4[kind << 3];
+            break;
+        }
+    }
+
+    func_0200bc5c(&data_02101408);
+
+    switch (r4) {
+    case 0x30:
+        func_020814e4(func_020e3218(&data_0210142c));
+        break;
+    case 0x40:
+        func_020814e4(func_020e3218(&data_02101420));
+        break;
+    case 0x60:
+        func_020814e4(func_020e3218(&data_02101414));
+        break;
+    }
+
+    for (i = 0; i < M2C_FIELD(data_0214bfa4, s32 *, 0x54); i++) {
+        base = data_0214bfa4;
+        kind = M2C_FIELD(base, u8 *, i + 0x3C);
+        if (kind != 0) {
+            M2C_UNK ptr = M2C_FIELD(&data_021011d0, M2C_UNK *, kind << 3);
+            M2C_UNK res = func_020e3218(ptr);
+            s32 idx = func_0207bd88(i);
+            func_02081590(res, idx);
+        }
+    }
+
+    func_02081528();
 }
 
 void func_0207bf00(s32 arg0,s32 arg1) {

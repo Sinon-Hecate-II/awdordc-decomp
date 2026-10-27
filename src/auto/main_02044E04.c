@@ -67,6 +67,34 @@ s32 func_020453e4(s32 *a) {
 
 s32 func_02045620(void){void func_020478b8(void);extern s32 data_0213db20;func_020478b8();return data_0213db20=0;}
 
+s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
+    s32 func_0203761c();
+    s32 func_02047940(s32, s32, s32, s32, s32, s32);
+    extern s32 data_0213db20;
+    s32 r;
+    if (func_0203761c() != 0) {
+        return 1;
+    }
+    if (data_0213db20 != 1 && data_0213db20 != 5) {
+        return 7;
+    }
+    if (arg0 > 0x3e8u || arg4 > 0x2fcu) {
+        return 2;
+    }
+    if (arg3 == 0 && arg4 != 0) {
+        return 2;
+    }
+    r = func_02047940((s32)arg0, M2C_FIELD(&data_0213db20, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
+    if (r == 2) {
+        return 8;
+    }
+    if (r != 3) {
+        return 9;
+    }
+    data_0213db20 = 2;
+    return 0;
+}
+
 s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
     s32 func_0203761c();
     s32 func_02047dd4(s32, u32, s32, s32);
@@ -115,6 +143,61 @@ s32 func_02045a88(void) {
     return data_0213db20;
 }
 
+s32 func_0203761c(void);
+s32 func_02045a98(s32 a, s32 b) {
+    s32 buf[3];
+    s32 *pVar1;
+    s32 iVar2;
+    s32 *pVar3;
+    s32 uVar4;
+    s32 *pVar5;
+    
+    if (func_0203761c() != 0) {
+        return 1;
+    }
+    if (func_020453e4(buf) != 0) {
+        return 1;
+    }
+    iVar2 = buf[1];
+    if ((u32)iVar2 < 8) {
+        switch (iVar2) {
+        case 0:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            return 15;
+        case 1:
+            break;
+        }
+    }
+    if (a == 0) {
+        return 2;
+    }
+    pVar3 = (s32 *)buf[2];
+    if (pVar3 == NULL || a >= *pVar3) {
+        return 2;
+    }
+    pVar5 = pVar3 + 2;
+    if (b != 0) {
+        do {
+            uVar4 = pVar5[5];
+            pVar5 = (s32 *)((char *)(pVar5 + 6) + uVar4);
+            b--;
+        } while (b != 0);
+    }
+    uVar4 = pVar5[5];
+    pVar1 = (s32 *)((char *)(pVar5 + 6) + uVar4);
+    pVar5 = (s32 *)buf[0];
+    if ((char *)pVar1 - (char *)pVar5 > *(s32 *)((char *)pVar3 + (int)pVar5)) {
+        return 2;
+    }
+    pVar1 = (s32 *)buf[5]; // placeholder to match remaining stores
+    return 0;
+}
+
 s32 func_02045ba0(s32 *a) {
     s32 func_0203761c();
     s32 func_020453e4(s32 *);
@@ -153,5 +236,43 @@ s32 func_02045c90(M2C_UNK arg0) {
         return 1;
     }
     return 0;
+}
+
+void func_02045cbc(void *arg0) {
+    void func_02008048(void *, void *, u32);
+    extern M2C_UNK data_0213db34;
+    extern M2C_UNK data_0213db39;
+    extern M2C_UNK data_0213db3e;
+    extern M2C_UNK data_0213db40;
+    u32 *p = (u32 *)arg0;
+    u32 a, b;
+    s32 h;
+    u32 m;
+
+    func_02008048(&data_0213db34, arg0, 6);
+    a = p[0];
+    b = p[1];
+    p[0] = a & (0x7FF - 0x800);
+    p[1] = b & 0x7FF;
+
+    func_02008048(&data_0213db39, arg0 + 8, 6);
+    a = p[2];
+    b = p[3];
+    p[2] = (a >> 3) | (b << 29);
+    p[3] = b >> 3;
+    a = p[2];
+    b = p[3];
+    p[2] = a & (0x7FF - 0x800);
+    p[3] = b & 0x7FF;
+
+    func_02008048(&data_0213db3e, arg0 + 0x10, 2);
+    h = (s32)*(u16 *)(arg0 + 0x10);
+    h = h >> 6;
+    *(u16 *)(arg0 + 0x10) = (u16)h;
+    h = (s32)*(u16 *)(arg0 + 0x10);
+    h = h & 0x3FF;
+    *(u16 *)(arg0 + 0x10) = (u16)h;
+
+    func_02008048(&data_0213db40, arg0 + 0x12, 2);
 }
 

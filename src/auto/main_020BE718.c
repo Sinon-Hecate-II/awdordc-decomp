@@ -1,5 +1,11 @@
 /* 10 functions from 0x020BE718 to 0x020BF25C (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u32 pad; u32 year:8, month:6, day:6, hour:6, minute:6; } PackedDate;
+static inline u32 dateYear(PackedDate *p) { return p->year; }
+static inline u32 dateMonth(PackedDate *p) { return p->month; }
+static inline u32 dateDay(PackedDate *p) { return p->day; }
+static inline u32 dateHour(PackedDate *p) { return p->hour; }
+static inline u32 dateMinute(PackedDate *p) { return p->minute; }
 
 s32 func_020bee64(M2C_UNK arg0) {
     s32 func_020be4c0(M2C_UNK);
@@ -11,7 +17,7 @@ s32 func_020bee64(M2C_UNK arg0) {
 }
 
 void func_020bee8c(void) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     M2C_UNK func_0200f0ac(s32 *, s32 *);
     void *func_020bfa60();
     s32 date[4];
@@ -25,8 +31,8 @@ void func_020bee8c(void) {
     M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0x3F00000) | ((u32)(time[0] << 26) >> 6);
     M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0xFC000000) | (time[1] << 26);
 
-    M2C_FIELD(p, u16 *, 0) = M2C_FIELD(*data_027e0058, u16 *, 0x5142);
-    M2C_FIELD(p, u16 *, 2) = M2C_FIELD(*data_027e0058, u16 *, 0x52A2);
+    M2C_FIELD(p, u16 *, 0) = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+    M2C_FIELD(p, u16 *, 2) = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
 }
 
 void func_020bef44(void) {
@@ -103,4 +109,14 @@ s32 func_020bf0dc(s32 arg0, s32 arg1) {
         return 0;
     }
 }
+
+void func_020bf10c(s8 *arg0,void *arg1) {
+M2C_UNK func_020675e4(); u32 func_020e31e0();
+extern u8 data_0212956c[],data_0212958c[],data_021295a8[];
+switch(func_020e31e0()){
+case 0:func_020675e4(arg0,data_0212956c,dateYear(arg1),dateMonth(arg1),dateDay(arg1),dateHour(arg1),dateMinute(arg1));return;
+case 1:func_020675e4(arg0,data_0212958c,dateMonth(arg1),dateDay(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
+case 2:case 3:case 4:case 5:func_020675e4(arg0,data_021295a8,dateDay(arg1),dateMonth(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
+default:*arg0=0;return;
+}}
 

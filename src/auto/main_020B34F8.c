@@ -56,19 +56,20 @@ M2C_UNK func_020b38d0(M2C_UNK arg0) {
     return func_0208fe30(0x10019);
 }
 
-u8 func_020b3960(void *p, int x) {
+/* Returns whether tile column x is currently visible in the camera viewport. */
+u8 func_020b3960(void *camera, int x) {
 int func_0207c8ec(int,int);
-u8 a,b; s16 c,d,f; int e;
-b=M2C_FIELD(p,u8*,5); c=M2C_FIELD(p,s16*,10); a=M2C_FIELD(p,u8*,4);
-e=(s16)func_0207c8ec(c+b-1,b);
-if(x<0 || c<=x)return 0;
-d=M2C_FIELD(p,s16*,12);
-f=func_0207c8ec(x,b);
-if(e>a)e=a;
-c=e;
-if(M2C_FIELD(p,s16*,18)>0) {d-= (s16)func_0207c8ec(M2C_FIELD(p,s16*,18)+(M2C_FIELD(p,u8*,7)-1),M2C_FIELD(p,u8*,7)); c++;}
-else if(M2C_FIELD(p,s16*,18)<0) {d-=(s16)func_0207c8ec(M2C_FIELD(p,s16*,18),M2C_FIELD(p,u8*,7)); c++;}
-return d<=f && f<d+c;
+u8 visibleTiles, tileSize; s16 total, scroll, tile; int tileCount;
+visibleTiles=M2C_FIELD(camera,u8*,4); tileSize=M2C_FIELD(camera,u8*,5); total=M2C_FIELD(camera,s16*,10);
+tileCount=(s16)func_0207c8ec(total+tileSize-1,tileSize);
+if(x<0 || total<=x)return 0;
+scroll=M2C_FIELD(camera,s16*,12);
+tile=func_0207c8ec(x,tileSize);
+if(tileCount>visibleTiles)tileCount=visibleTiles;
+total=tileCount;
+if(M2C_FIELD(camera,s16*,18)>0) {scroll-= (s16)func_0207c8ec(M2C_FIELD(camera,s16*,18)+(M2C_FIELD(camera,u8*,7)-1),M2C_FIELD(camera,u8*,7)); total++;}
+else if(M2C_FIELD(camera,s16*,18)<0) {scroll-=(s16)func_0207c8ec(M2C_FIELD(camera,s16*,18),M2C_FIELD(camera,u8*,7)); total++;}
+return scroll<=tile && tile<scroll+total;
 }
 
 void func_020b3a58(M2C_UNK arg0) {
@@ -124,7 +125,7 @@ void func_020b3b84(void) {
     M2C_UNK func_020bf798();
     s32 func_020cd6d4();
     M2C_UNK func_020e4870();
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     s32 temp_r0;
     s32 var_r6;
     u16 temp_r0_2;
@@ -140,13 +141,13 @@ void func_020b3b84(void) {
     if (func_020cd6d4() != 0) {
         var_r6 = 0;
         do {
-            temp_r0_2 = func_020a8aac(M2C_FIELD(*data_027e0058, u16 *, 0x5142), var_r6);
+            temp_r0_2 = func_020a8aac(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), var_r6);
             if (temp_r0_2 != 0) {
                 func_02086810(temp_r0_2, 1);
             }
             var_r6 += 1;
         } while (var_r6 < 4);
-        func_02086810(M2C_FIELD(*data_027e0058, u16 *, 0x5142), 1);
+        func_02086810(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), 1);
     }
     func_020bf798();
 }

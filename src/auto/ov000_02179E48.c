@@ -2,8 +2,8 @@
 #include "common.h"
 
 s32 func_ov000_0217aa2c(s32 x,s32 y) {
-extern void **data_027e0058;
-void **state=data_027e0058;
+extern void **gCurrentMap;
+void **state=gCurrentMap;
 void *base=*state;
 register s32 left,top,right,bottom; s32 i,result,d,v;
 left=x-1;
@@ -30,47 +30,47 @@ return result;
 }
 
 u8 func_ov000_0217ab10(s32 arg0, s32 arg1, s32 arg2) {
- extern void **data_027e0058;
+ extern void **gCurrentMap;
  s32 func_020d27c0(s32);
- void *base = *data_027e0058;
+ void *base = *gCurrentMap;
  u8 id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  if (id == 0) return 0;
  return func_020d27c0(id) != 1;
 }
 
 u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
- extern void **data_027e0058;
+ extern void **gCurrentMap;
  s32 func_ov000_021a97d0(s32, s32);
  void *base;
  u8 id;
  if (func_ov000_0217ab10(arg0,arg1,0) == 0) return 0;
- base = *data_027e0058;
+ base = *gCurrentMap;
  id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  return func_ov000_021a97d0(arg2, ((u32)(M2C_FIELD(base + id * 14, u8 *, 0x59A4) << 26) >> 26)) > 1;
 }
 
 u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
- extern void **data_027e0058;
+ extern void **gCurrentMap;
  s32 func_ov000_021a9860(s32,s32);
  s32 func_ov000_021a8fc0(s32);
  s32 func_ov000_021a98a8(s32);
  void *base;
  s32 id;
  if (func_ov000_021a9860(arg0,arg1) == 0) return 0;
- base = *data_027e0058;
+ base = *gCurrentMap;
  id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  if (id == 0) return 1;
  if (func_ov000_021a8fc0((s16)id) == 0) return 0;
- return func_ov000_021a98a8(((u32)(M2C_FIELD(*data_027e0058 + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
+ return func_ov000_021a98a8(((u32)(M2C_FIELD(*gCurrentMap + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
 }
 
 u8 func_ov000_0217ac78(s32 arg0, s32 arg1) {
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     u8 temp_r2;
     u8 var_r0;
     void *temp_r3;
 
-    temp_r3 = *data_027e0058;
+    temp_r3 = *gCurrentMap;
     temp_r2 = M2C_FIELD((temp_r3 + (arg0 + M2C_FIELD((temp_r3 + (arg1 * 2)), u16 *, 0x3758))), u8 *, 0x1420);
     if ((temp_r2 & 0x1F) != 0x11) {
         return 0U;

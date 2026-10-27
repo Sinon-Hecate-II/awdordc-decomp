@@ -1,5 +1,11 @@
 /* 23 functions from 0x0217CCE8 to 0x0217DC7C (ov001), found by ds-decomp. */
 #include "common.h"
+extern M2C_UNK data_ov001_02193dac;
+extern const u8 data_ov001_0218f9bc[];
+void func_ov001_0217f6cc(void);
+void func_ov001_0217ded8(void);
+void func_ov001_0217dbd8(s32);
+void func_ov001_0217dc44(s32);
 
 void *func_ov001_0218445c();
 
@@ -203,6 +209,26 @@ s32 func_ov001_0217d9d4(void) {
     }
     func_ov001_0217da58(temp_r0);
     return 1;
+}
+
+/* Dispatch a screen selection (0..13): set up UI state, graphics, and continue via func_ov001_0217ded8. */
+s32 func_ov001_0217da58(u32 a){
+if(func_ov001_0217e5e8()==0){func_ov001_02185024(9);return;}
+switch(a){
+case 2:case 3:func_ov001_02185024(6);func_ov001_0217dbd8(((a-2)^1)!=0);return;
+case 7:case 8:func_ov001_02185024(6);func_ov001_0217dc44(((a-7)^1)!=0);return;
+case 0:case 1:case 4:case 5:case 6:break;
+}
+M2C_FIELD(M2C_FIELD(&data_ov001_02193dac,void **,8),u8 *,64)=a;
+if(a-11<=1){
+func_ov001_0217f4e0();
+if(func_ov001_0217f62c()==0){
+func_ov001_02185024(9);func_ov001_021862d8(6,1,1,-1,0);func_ov001_02175d54((M2C_UNK *)func_ov001_0217f6cc);return;
+}
+if(a==11)func_ov001_02185024(6);else func_ov001_02185024(14);
+}else if(a==13){func_ov001_0217f4e0();func_ov001_02185024(7);}
+else {func_ov001_02185024(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_0218f9bc[a]));func_ov001_0217e95c();}
+func_ov001_02183a08();func_ov001_02175d54((M2C_UNK *)func_ov001_0217ded8);
 }
 
 void func_ov001_0217dbd8(s32 arg0) {

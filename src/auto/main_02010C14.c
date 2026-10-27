@@ -17,6 +17,49 @@ void func_02010c90(s32 a,s32 b,s32 c){extern u8 data_0212fde0[];void func_02005e
 
 void func_02010cc4(void){extern u8 data_0212fde0[];s32 func_0200751c();M2C_UNK func_02007530(s32);void func_02005da4(s32);s32 zero=0;u8 *p=data_0212fde0;s32 a;for(;;){a=func_0200751c();while(!(M2C_FIELD(p,s32 *,276)&8))func_02005da4(zero);func_02007530(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
 
+/* Sends a packet over the device, retrying while the device reports "busy/again" (status 4). */
+s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
+void func_02005da4(s32);
+void func_020067e0(s32 *, s32);
+void func_020067a8(s32 *, s32);
+void func_02006804(void);
+void func_0200758c(s32);
+s32 func_02009e8c(s32, s32);
+s32 func_02009eb0(s32, s32, s32);
+s32 func_0200751c(void);
+M2C_UNK func_02007530(s32);
+s32 count;
+s32 *pkt;
+s32 status;
+s32 savedIrq;
+count = retries;
+if (!(M2C_FIELD(dev, volatile s32 *, 0x114) & 2)) {
+M2C_FIELD(dev, volatile s32 *, 0x114) = M2C_FIELD(dev, volatile s32 *, 0x114) | 2;
+if (func_02009e8c(11, 1) == 0) {
+do { func_0200758c(100); } while (func_02009e8c(11, 1) == 0);
+}
+func_02010d14(dev, 0, 1);
+}
+func_020067e0(M2C_FIELD(dev, s32 **, 0), 96);
+func_02006804();
+again:
+M2C_FIELD(dev, s32 **, 4) = packet;
+M2C_FIELD(dev, volatile s32 *, 0x114) = M2C_FIELD(dev, volatile s32 *, 0x114) | 32;
+do { } while (func_02009eb0(11, (s32)packet, 1) < 0);
+if (!packet) {
+pkt = M2C_FIELD(dev, s32 **, 0);
+do { } while (func_02009eb0(11, (s32)pkt, 1) < 0);
+}
+savedIrq = func_0200751c();
+while (M2C_FIELD(dev, volatile s32 *, 0x114) & 32) func_02005da4(0);
+func_02007530(savedIrq);
+func_020067a8(M2C_FIELD(dev, s32 **, 0), 96);
+status = *M2C_FIELD(dev, s32 **, 0);
+if (status == 4 && --count > 0) goto again;
+if (status == 0) return 1;
+return 0;
+}
+
 void func_02010e68(void) { void func_02009d34(void); void func_02009e40(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; func_02009d34();func_02009e40(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
 
 void func_02010e94(s32 a,s32 b) { void func_02010ef8(void); void func_02007958(void); extern M2C_UNK data_02130640; s32 result;

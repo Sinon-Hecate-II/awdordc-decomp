@@ -31,6 +31,42 @@ void func_0208726c(s32 *x,s32 *y,s32 angle,s32 dist) {
  *x=((a>>11)&1)+(a>>12); *y=((b>>11)&1)+(b>>12);
 }
 
+void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
+    u16 temp_r0;
+    u16 temp_r10;
+    u16 temp_r6;
+    u16 temp_lr;
+    u16 temp_r7;
+    u16 temp_r4;
+    u16 temp_r5;
+    u16 temp_r2;
+    u16 temp_r1;
+
+    temp_r0 = (u16) ((s32) (((arg6 << 0xC) + 0x800) << 8) >> 0x10);
+    temp_r10 = (u16) ((s32) (((arg5 << 0xC) + 0x800) << 8) >> 0x10);
+    temp_r6 = (u16) ((s32) (((arg8 << 0xC) + 0x800) << 8) >> 0x10);
+    temp_lr = (u16) ((s32) (((arg7 << 0xC) + 0x800) << 8) >> 0x10);
+    *(volatile u32 *) 0x4000500 = 1;
+    temp_r7 = (u16) (s16) arg1;
+    temp_r4 = (u16) (s16) arg0;
+    temp_r5 = (u16) (s16) (arg1 + arg4);
+    temp_r2 = (u16) (s16) (arg0 + arg3);
+    *(volatile u32 *) 0x4000488 = temp_r10 | ((u32) temp_r0 << 0x10);
+    *(volatile u32 *) 0x400048C = temp_r4 | ((u32) temp_r7 << 0x10);
+    temp_r1 = (u16) (s16) arg2;
+    *(volatile u32 *) 0x400048C = (u32) temp_r1;
+    *(volatile u32 *) 0x4000488 = temp_r10 | ((u32) temp_r6 << 0x10);
+    *(volatile u32 *) 0x400048C = temp_r4 | ((u32) temp_r5 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) temp_r1;
+    *(volatile u32 *) 0x4000488 = temp_lr | ((u32) temp_r6 << 0x10);
+    *(volatile u32 *) 0x400048C = temp_r2 | ((u32) temp_r5 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) temp_r1;
+    *(volatile u32 *) 0x4000488 = temp_lr | ((u32) temp_r0 << 0x10);
+    *(volatile u32 *) 0x400048C = temp_r2 | ((u32) temp_r7 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) temp_r1;
+    *(volatile u32 *) 0x4000504 = 0;
+}
+
 void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
 void func_02087b94(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10) {
     if (arg9 != 0 && arg10 != 0) {

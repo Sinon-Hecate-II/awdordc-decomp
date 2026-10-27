@@ -2,6 +2,22 @@
 #include "common.h"
 typedef struct { s32 v[4]; } Unk0205Copy;
 
+u8 *func_02059bbc(void *out_,void *in_){
+u64 func_020720f0(s32,s32);s32 func_02068c34(s32);s32 func_02059a04(s8 *);s32 func_02067774(void);s32 func_0206409c(s32);extern s8 data_020ff548[];
+s8 *in;u8 *out;s32 prev,n,step,v,i,flag,a,b;
+in=in_;out=out_;
+n=func_02068c34((s32)data_020ff548);flag=func_02059a04(in);i=0;step=0;
+do{
+if(!flag||i==0||i==13){v=func_02067774()%93+33;}
+else{
+if(i==1||i==14)prev=in[i];else prev=in[i-1];
+v=*(u8 *)((u32)in+(u32)i);a=(s32)(func_020720f0(i+v,n)>>32);b=(s32)(func_020720f0(prev*step,n)>>32);
+a=data_020ff548[a];b=data_020ff548[b];v=func_0206409c(b^((u8 *)in)[(a+i*v)%32])%93+33;
+}
+*(u8 *)((u32)out+(u32)i)=v;step+=0x4647;i++;
+}while(i<32);return out;
+}
+
 s32 func_02059cc4(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}
 
 s32 func_02059cf8(void *arg0, s32 arg1) {
@@ -91,6 +107,20 @@ s32 func_02059f18(void *arg0) {
         return 0;
     }
     return 1;
+}
+
+s32 func_02059fb4(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e){
+extern int data_020ff78c,data_020ff77c,data_020ff738;
+if(!p||!q)func_020640a8(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
+if(!p||!q)return 1;
+if(!M2C_FIELD(p,void **,0x20))return 1;
+if(!e||!d){d=0;e=0;}
+M2C_FIELD(p,s32 *,0x1c)++;
+M2C_FIELD(q,s32 *,0x24)++;
+((void (*)(void *,void *,s32,s32,s32,s32,s32))M2C_FIELD(p,void **,0x20))(p,q,a,b,c,d,e);
+M2C_FIELD(p,s32 *,0x1c)--;M2C_FIELD(q,s32 *,0x24)--;
+if(M2C_FIELD(p,s32 *,0x14)&&!M2C_FIELD(p,s32 *,0x1c)){func_0205cef8(p);return 0;}
+return 1;
 }
 
 s32 func_0205a0d0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -189,24 +219,30 @@ s32 func_0205a360(void *arg0, void *arg1) {
     return 1;
 }
 
-s32 func_0205a424(void *p,void *a,s32 b,s32 c,s32 d){
-void *func_02048690(int,int);void *entry;
-extern int data_020ff7a4,data_020ff77c,data_020ff6ec;
-if(!p)func_020640a8(&data_020ff7a4,&data_020ff77c,&data_020ff6ec,0x101);
-if(!p)return 1;
-entry=func_02048690(M2C_FIELD(p,void **,0x98),a);if(!entry)return 1;
-if(!c||!b){b=0;c=0;}
-M2C_FIELD(p,int *,0x24)++;
-M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)++;
+/* Invoke the send-filter callback entry, with nesting/refcount bookkeeping and release when idle. */
+s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
+    void *func_02048690(int, int);
+    void *callback;
+    extern int data_020ff7a4, data_020ff77c, data_020ff6ec;
+    if (!connection) func_020640a8(&data_020ff7a4, &data_020ff77c, &data_020ff6ec, 0x101);
+    if (!connection) return 1;
+    callback = func_02048690(M2C_FIELD(connection, void **, 0x98), callbackIndex);
+    if (!callback) return 1;
+    if (!c || !b) { b = 0; c = 0; }
+    M2C_FIELD(connection, int *, 0x24)++;
+    M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x1c)++;
+    ((void (*)(void *, void *, s32, s32, s32))M2C_FIELD(callback, void **, 0))(connection, callbackIndex, b, c, d);
+    M2C_FIELD(connection, int *, 0x24)--;
+    M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x1c)--;
+    if (M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x14) && !M2C_FIELD(M2C_FIELD(connection, void **, 8), int *, 0x1c)) {
+        func_0205cef8(M2C_FIELD(connection, void **, 8));
+        return 0;
+    }
+    return 1;
+}
 
-((void (*)(void *,void *,s32,s32,s32))M2C_FIELD(entry,void **,0))(p,a,b,c,d);
-M2C_FIELD(p,int *,0x24)--;
-M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)--;
-if(M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x14)&&!M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)){
-func_0205cef8(M2C_FIELD(p,void **,8));return 0;
-}return 1;}
-
-s32 func_0205a51c(void *p,void *a,s32 b,s32 c,s32 d){
+/* Invoke receive-filter callback entry 0 (or a), with nesting/refcount bookkeeping; release the filter table when idle. */
+s32 gti2ReceiveFilterCallback(void *p,void *a,s32 b,s32 c,s32 d){
 void *func_02048690(int,int);void *entry;
 extern int data_020ff7a4,data_020ff77c,data_020ff71c;
 if(!p)func_020640a8(&data_020ff7a4,&data_020ff77c,&data_020ff71c,0x12d);
@@ -223,7 +259,25 @@ if(M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x14)&&!M2C_FIELD(M2C_FIELD(p,void **,
 func_0205cef8(M2C_FIELD(p,void **,8));return 0;
 }return 1;}
 
-s32 func_0205a738(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){
+s32 func_0205a614(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){
+extern int data_020ff774,data_020ff77c,data_020ff680;
+void (*cb)(void *,void *,s32,s32,s32,s32,s32);
+if(!p)func_020640a8(&data_020ff774,&data_020ff77c,&data_020ff680,0x160);
+if(!p)return 1;
+if(f)cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x28);
+else cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x2c);
+if(!cb)return 1;
+if(!e||!d){e=0;d=0;}
+M2C_FIELD(p,s32 *,0x1c)++;
+if(q)M2C_FIELD(q,s32 *,0x24)++;
+cb(p,q,a,b,c,d,e);
+M2C_FIELD(p,s32 *,0x1c)--;
+if(q)M2C_FIELD(q,s32 *,0x24)--;
+if(M2C_FIELD(p,s32 *,0x14)&&!M2C_FIELD(p,s32 *,0x1c)){func_0205cef8(p);return 0;}
+return 1;}
+
+/* Invoke the "unrecognized message" callback with refcount tracking, releasing the owning handler when idle. */
+s32 gti2UnrecognizedMessageCallback(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){
 extern int data_020ff774,data_020ff77c,data_020ff754;
 *out=0;
 if(!p)func_020640a8(&data_020ff774,&data_020ff77c,&data_020ff754,0x197);
@@ -242,7 +296,7 @@ s32 func_0205a830(s32 a,void **p) {s32 func_0205cf54(s32);s32 r=func_0205cf54(a)
 s32 func_0205a860(s32 a,void **p) {s32 func_0205cf54(s32);s32 r=func_0205cf54(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
 
 s32 func_0205a890(void *p,s32 a,s32 b,Unk0205Copy *q,...) {
-s32 func_0205d70c(s32 *,s32 *);void func_02059aa0(void *);void func_02059bbc(void *,void *);void func_0205c694(void *,void *);
+s32 func_0205d70c(s32 *,s32 *);void func_02059aa0(void *);u8 *func_02059bbc(void *,void *);void func_0205c694(void *,void *);
 s32 local[8];s32 r;
 func_0205d70c(&a,&b);
 if(b>0){r=func_02037794(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;func_020651a4(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
