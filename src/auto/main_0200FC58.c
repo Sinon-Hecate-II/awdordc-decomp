@@ -179,6 +179,35 @@ s32 func_02010438(void) {
     return M2C_FIELD(data_0212fde0, s32 *, 0x1C);
 }
 
+s32 func_0201044c(s32 arg0) {
+extern void *data_0212fde0;extern M2C_UNK data_0212dca4;
+void func_02000b9c(s32);s32 func_0200751c(void);void func_02007530(s32);void func_02005da4(void *);void func_02005df4(void *);void func_02005e5c(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
+void *p=&data_0212fde0; s32 state,state2;s32 value;void (*callback)(s32);
+func_02000b9c(0x2000bc4);
+if(arg0==0)func_02007958();
+func_0200fd78();
+state=func_0200751c();
+while(M2C_FIELD(p,u32 *,0x114)&4)func_02005da4(p+0x10c);
+M2C_FIELD(p,u32 *,0x114)|=4;
+M2C_FIELD(p,s32 *,0x38)=0;M2C_FIELD(p,s32 *,0x3c)=0;
+func_02007530(state);
+func_0200fe94(arg0);
+M2C_FIELD(&data_0212fde0,s32 *,0x104)=M2C_FIELD(&data_0212dca4,s32 *,4);
+func_02010d14(p,2,1);
+M2C_FIELD(*(void **)p,s32 *,0xc)=0;
+M2C_FIELD(*(void **)p,void **,0x10)=p+0x120;
+M2C_FIELD(*(void **)p,s32 *,0x14)=1;
+func_02010d14(p,6,1);
+callback=M2C_FIELD(p,void (**)(s32),0x38);value=M2C_FIELD(p,s32 *,0x3c);
+state2=func_0200751c();
+M2C_FIELD(p,u32 *,0x114)&=~0x4c;
+func_02005df4(p+0x10c);
+if(M2C_FIELD(p,u32 *,0x114)&0x10)func_02005e5c(p+0x44);
+func_02007530(state2);
+if(callback)callback(value);
+return **(s32 **)p==0;
+}
+
 void func_02010584(void) {
     M2C_UNK func_0200fda0();
     func_0200fda0();

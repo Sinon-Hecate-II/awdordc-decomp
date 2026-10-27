@@ -127,6 +127,44 @@ void func_020501d8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     gpiSendOrBufferStringLen(arg0, arg1, arg2, func_02068c34(arg2));
 }
 
+s32 func_02050430(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
+ s32 func_020640a8(s32 *,s32 *,s32 *,s32);
+ s32 func_020651c4(s32,s32,s32);
+ extern s32 data_020fdee4,data_020fdf5c,data_020fdf74,data_020fe0e0,data_020fe0ec,data_020fe0f8;
+ s32 sp18,sp14;
+ s32 done;
+ void *buffer;
+ s32 result;
+ s32 remaining;
+ s32 end;
+ s32 *out;
+ s32 data;
+ s32 start;
+ buffer=arg2;out=arg3;
+ if(!arg2)func_020640a8(&data_020fdf5c,&data_020fdf74,&data_020fdee4,0x1b9);
+ done=0;
+ end=M2C_FIELD(buffer,s32 *,8);
+ start=M2C_FIELD(buffer,s32 *,12);
+ data=M2C_FIELD(buffer,s32 *,0);
+ remaining=end-start;
+ if(!remaining)return 0;
+ do {
+ result=gpiSendOrBufferChar(arg0,arg1,(s8 *)(data+(start+done)),remaining,&sp18,&sp14,(s32 *)arg5);
+ if(result)return result;
+ if(sp14){remaining-=sp14;done+=sp14;}
+ }while(sp14 && remaining);
+ if(arg4) {
+ if(done>0){func_020651c4(data,data+done,remaining+1);end-=done;}
+ }else start+=done;
+ if(end<0)func_020640a8(&data_020fe0e0,&data_020fdf74,&data_020fdee4,0x1de);
+ if(start<0)func_020640a8(&data_020fe0ec,&data_020fdf74,&data_020fdee4,0x1df);
+ if(start>end)func_020640a8(&data_020fe0f8,&data_020fdf74,&data_020fdee4,0x1e0);
+ M2C_FIELD(buffer,s32 *,8)=end;
+ M2C_FIELD(buffer,s32 *,12)=start;
+ if(out)*out=sp18;
+ return 0;
+}
+
 s32 func_020505b0(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg4) {
     s8 *func_02068ee0(M2C_UNK, M2C_UNK);
     s32 func_02068eac(s32, M2C_UNK *, s32);

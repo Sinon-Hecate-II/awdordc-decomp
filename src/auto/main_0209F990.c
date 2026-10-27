@@ -1,5 +1,9 @@
 /* 17 functions from 0x0209F990 to 0x020A0964 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct PathPlayerId { u32 id:8; u32 rest:24; } PathPlayerId;
+extern u16 data_02168f14;
+extern u8 data_021261d0[];
+extern u8 data_ov000_021b5c0e[];
 
 #pragma opt_strength_reduction off
 s32 func_0209fd2c(void) {
@@ -132,6 +136,42 @@ void func_020a004c(u16 arg0, u16 arg1) {
     M2C_FIELD(data_0211fb5c, s8 *, 0x35) = arg1;
 }
 
+M2C_UNK func_020a0068(s32 arg0) {
+extern void *data_0211fb5c;extern s32 *gCurrentMap;
+void *map,*player,*path; s8 i;u32 id; s32 weather,kind,terrain; s8 *cost;
+if(M2C_FIELD(data_0211fb5c,s8 *,0x5b)<arg0)return;
+M2C_FIELD(data_0211fb5c,s8 *,0x5b)=arg0-1;
+M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x4e)=M2C_FIELD(data_0211fb5c,s8 *,0x5a);
+for(i=1;i<=M2C_FIELD(data_0211fb5c,s8 *,0x5b);i++){
+map=(void *)*gCurrentMap;
+player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
+id=((u32)(data_02168f14<<18)>>31)?(u8)M2C_FIELD(player,u32 *,0x6c):0;
+path=data_0211fb5c+i;
+weather=func_020a33c4();
+cost=M2C_FIELD(data_021261d0+id*156+weather*40,s8 **,M2C_FIELD(player,u8 *,0x25)*4);
+kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
+terrain=M2C_FIELD(map+M2C_FIELD(path,s8 *,0x36)+M2C_FIELD(map+M2C_FIELD(path,s8 *,0x42)*2,u16 *,0x3758),u8 *,0x1420)&31;
+M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[data_ov000_021b5c0e[kind*112]*32+terrain];
+}
+}
+
+void func_020a01c0(s32 x,s32 y){
+extern void *data_0211fb5c;extern s32 *gCurrentMap;
+void *map; void *player;void *path;s32 i;s32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;
+M2C_FIELD(data_0211fb5c,s8 *,0x5b)++;
+M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x36)=x;
+M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x42)=y;
+map=(void *)*gCurrentMap;
+player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
+if((u32)(data_02168f14<<18)>>31)id=((PathPlayerId *)(player+0x6c))->id;else id=0;
+path=data_0211fb5c;i=M2C_FIELD(path,s8 *,0x5b);
+weather=func_020a33c4();
+kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
+terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
+cost=M2C_FIELD(data_021261d0+id*156+weather*40,s8 **,M2C_FIELD(player,u8 *,0x25)*4);
+M2C_FIELD(path+i,s8 *,0x4e)=M2C_FIELD(path+i-1,s8 *,0x4e)-cost[data_ov000_021b5c0e[kind*112]*32+terrain];
+}
+
 s32 func_020a0300(s32 x,s32 y) {
  extern void *data_0211fb5c;
  s8 i; void *p=data_0211fb5c; char *q;
@@ -142,7 +182,7 @@ s32 func_020a0300(s32 x,s32 y) {
 }
 
 M2C_UNK func_020a0360(void) {
-    M2C_UNK func_020a01c0(s32, s32);
+    void func_020a01c0(s32, s32);
     extern s32 *gCurrentMap;
     extern void *data_0211fb5c;
 
@@ -257,7 +297,7 @@ s32 func_020a061c(void) {
 
 void func_020a06a0(s32 arg0) {
  extern void *data_0211fb5c; extern s32 *gCurrentMap;
- s32 func_020a7694(s32); M2C_UNK func_020a0068(s32); M2C_UNK func_020a01c0(s32,s32); M2C_UNK func_020a0360(void); M2C_UNK func_020a0d18(); void func_020a004c(u16,u16);
+ s32 func_020a7694(s32); M2C_UNK func_020a0068(s32); void func_020a01c0(s32,s32); M2C_UNK func_020a0360(void); M2C_UNK func_020a0d18(); void func_020a004c(u16,u16);
  void *p;
  M2C_FIELD(data_0211fb5c,s8 *,0x5a)=func_020a7694(M2C_FIELD((void *)*gCurrentMap,s32 *,0x52d0));
  M2C_FIELD(data_0211fb5c,s8 *,0x5b)=0;
@@ -268,6 +308,25 @@ void func_020a06a0(s32 arg0) {
  if(arg0!=0)func_020a0360();
  M2C_FIELD((void *)*gCurrentMap,u8 *,0x5388)=4;
  func_020a004c(0xffff,0xffff);func_020a0d18();
+}
+
+s32 func_020a0750(s32 x,s32 y){
+extern s32 *gCurrentMap;
+void *p; s32 v; u8 *unit; s32 cell; s32 owner; s32 kind; s32 terrain; s32 result=0;
+if(x<0||y<0||x>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144)||y>=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146))return 0;
+p=(void *)*gCurrentMap;
+v=M2C_FIELD(M2C_FIELD(p+y*4,s8 **,0x52e8),s8 *,x);
+if(v<0||v>110)return 0;
+if(M2C_FIELD(p,u8 *,x+M2C_FIELD(p+y*2,u16 *,0x3758)))return result;
+result+=(110-v)<<8;
+result+=func_020d03ec((M2C_FIELD(p,u8 *,0x52d4)>>6)+1,x,y)?64:0;
+p=(void *)*gCurrentMap;
+cell=x+M2C_FIELD(p+y*2,u16 *,0x3758);
+unit=M2C_FIELD(p,u8 **,0x52d0);
+owner=(M2C_FIELD(p,u8 *,0x52d4)>>6)+1;
+kind=(u32)(unit[0]<<26)>>26;
+terrain=M2C_FIELD(p+cell,u8 *,0x1420)&31;
+return result+func_020d05f4(owner,kind,terrain);
 }
 
 s32 func_020a086c(s16 *arg0, s16 *arg1) {

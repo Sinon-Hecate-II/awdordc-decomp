@@ -335,6 +335,56 @@ s32 func_020bd684(void) {
     return 0;
 }
 
+void func_020bd7a4(s32 *outIndex, s32 count) {
+    void func_0207bb3c(u16, u16, s32 *);
+    s32 func_0207c8ec(s32, s32);
+    s32 func_020947c0(void);
+    s32 func_020bd940(s32, s32, s32);
+    void func_020bd0a8(s16, s16);
+    void func_020bd0e0(void);
+    s32 func_020bdf24(s32, s32);
+    extern void *data_02101e88;
+    extern void **gCurrentMap;
+    s32 coords[3];
+    u16 touchX;
+    u16 touchY;
+    s32 pixelX;
+    s32 pixelY;
+    void *map;
+    s32 idx;
+    touchX = M2C_FIELD(data_02101e88, u16 *, 0);
+    touchY = M2C_FIELD(data_02101e88, u16 *, 2);
+    if (func_020947c0() != 0) return;
+    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) return;
+    func_0207bb3c(touchX, touchY, coords);
+    pixelX = func_0207c8ec(coords[0], 0x300);
+    pixelY = func_0207c8ec(coords[1], 0x300);
+    idx = func_020bd940(count, pixelX, pixelY);
+    if (idx >= 0) {
+        M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
+        M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = pixelY;
+        *outIndex = idx;
+        if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+            if (func_020bdf24(touchX, touchY)) {
+                *outIndex = *outIndex + 1;
+                if (*outIndex == count) {
+                    *outIndex = 0;
+                }
+            } else {
+                M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = pixelX;
+                M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = pixelY;
+                map = *gCurrentMap;
+                func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
+            }
+        }
+    }
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, s16 *, 0x52CA) == pixelX && M2C_FIELD(map, s16 *, 0x52CC) == pixelY) return;
+    func_020bd0e0();
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = 255;
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 255;
+}
+
 s32 func_020bd940(s32 n,s32 x,s32 y){void *func_0209f8e4(s32);s32 i;for(i=0;i<n;i++){void *p=func_0209f8e4(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
 
 /* Returns an action code for the unit under the current cursor when it matches the selected tile. */

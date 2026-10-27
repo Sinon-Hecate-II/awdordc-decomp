@@ -1,6 +1,8 @@
 /* 47 functions from 0x02090E0C to 0x02091E04 (main), found by ds-decomp. */
 #include "common.h"
 
+extern u8 data_020f362c[];
+
 void func_02090eb8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6) {
     s32 func_02081070(M2C_UNK, M2C_UNK);
     M2C_UNK func_02090e0c(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
@@ -38,7 +40,7 @@ void func_0209106c(void *arg0) {
 
 s32 func_0209107c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {
     M2C_UNK func_02091af8(void *, s32, s32);
-    s32 func_0207d0f0(s32, s32, s32, s32, s32, s32, u8);
+    void func_0207d0f0(s32, s32, s32, s32, s32, s32, u8);
     s32 temp_r0;
 
     temp_r0 = func_02091af8(arg0, arg1, arg2);
@@ -50,7 +52,7 @@ s32 func_0209107c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
 }
 
 M2C_UNK func_020910d0(void *arg0) {
-    M2C_UNK func_02091110(M2C_UNK);
+    void func_02091110(void *);
     void func_020913c4(void *);
     M2C_UNK func_020913d4(M2C_UNK);
     s32 ok;
@@ -67,6 +69,11 @@ M2C_UNK func_020910d0(void *arg0) {
     func_02091110((M2C_UNK)arg0);
     func_020913c4(arg0);
     return func_020913d4((M2C_UNK)arg0);
+}
+
+void func_02091110(void *arg0) {
+    void func_02091230(void);
+    (void)arg0;
 }
 
 void func_02091230(void) {
@@ -132,6 +139,94 @@ if (M2C_FIELD(p,s32 *,0x30) && (M2C_FIELD(p,u8 *,0x22)&1)) func_0209177c(a);
 
 void func_020913c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
+}
+
+void func_0209177c(M2C_UNK a) {
+    void func_0207c3dc(s32, s32, s32, s32);
+    void func_0207c464(s32, s32, s32, s32);
+    extern u8 data_02102a10[];
+    extern void *gCur3DSpriteEngine;
+
+    M2C_UNK arg0 = a;
+    s32 r6;
+    u16 *r7;
+    u16 *r8;
+    s32 r9;
+    u8 *r5;
+    void **r4;
+    s32 r11;
+
+    if (arg0 == 0) {
+        return;
+    }
+    if (*(s32 *)arg0 == 0) {
+        return;
+    }
+
+    r5 = data_02102a10;
+    r4 = &gCur3DSpriteEngine;
+    r11 = 0;
+    r6 = 0;
+
+    {
+        u8 *base = (u8 *)M2C_FIELD(arg0, void **, 0x10);
+        u16 count = *(u16 *)base;
+        r7 = (u16 *)(base + 2);
+        r8 = r7 + (count * 3);
+        r9 = (s32)count - 1;
+        if ((s32)count <= 0) {
+            goto cleanup;
+        }
+    }
+
+loop:
+    {
+        void *engine = *r4;
+
+        if (((*(u16 *)engine) & 0x1000) != 0) {
+            u8 byte22 = *(u8 *)((char *)arg0 + 0x22);
+            u16 first = r7[0];
+            u16 second = r7[1];
+            s32 idx = ((second & 0xC000) >> 14) + ((first & 0xC000) >> 12);
+            u8 m1 = r5[idx * 2];
+            u8 m2 = r5[idx * 2 + 1];
+            s32 product = (s32)m1 * (s32)m2;
+            s32 offsetVal = *(s32 *)((char *)arg0 + 0x30) + (r8[0] << 5);
+            s32 spirit = *(s32 *)((char *)arg0 + 0x28);
+
+            if (byte22 & 0x04) {
+                func_0207c464(offsetVal, spirit + r6, product << 5, r11);
+            } else {
+                s32 spiritShifted = ((u32)spirit << 22) >> 17;
+                s32 secondArg = *(s32 *)((char *)engine + 0x1C) + spiritShifted + r6;
+                func_0207c3dc(offsetVal, secondArg, product << 5, 0);
+            }
+        }
+    }
+
+    {
+        u16 first = r7[0];
+        u16 second = r7[1];
+        s32 idx = ((second & 0xC000) >> 14) + ((first & 0xC000) >> 12);
+        u8 m1 = r5[idx * 2];
+        u8 m2 = r5[idx * 2 + 1];
+        s32 product = (s32)m1 * (s32)m2;
+        r6 += product << 5;
+    }
+
+    if (r9 > 0) {
+        r7 += 3;
+        r8 += 1;
+        r9 -= 1;
+        goto loop;
+    }
+
+cleanup:
+    {
+        u8 b = *(u8 *)((char *)arg0 + 0x22);
+        b &= (u8)~0x01;
+        *(u8 *)((char *)arg0 + 0x22) = b;
+    }
 }
 
 void func_02091954(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {

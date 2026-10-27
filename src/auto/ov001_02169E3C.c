@@ -1,5 +1,6 @@
 /* 19 functions from 0x02169E3C to 0x0216AD74 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 x,y; } TextSize;
 typedef struct { s8 x, y; } TextDirection;
 
 void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
@@ -9,6 +10,25 @@ void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, s32 *, 0x14) = arg5;
     M2C_FIELD(arg0, s32 *, 0x10) = arg6;
+}
+
+s32 func_ov001_0216a058(s32 a,void *b,s32 x,s32 y,s32 c,s32 ch){
+s32 func_ov001_02169154(void*,u16);void *func_ov001_0216919c(void*,s32);
+s32 n;void *pair[2];u8 *r;
+n=func_ov001_02169154(b,*(u16 *)&ch);
+if(n==65535)n=M2C_FIELD(M2C_FIELD(b,void**,0),u16*,2);
+pair[0]=func_ov001_0216919c(b,n);
+r=M2C_FIELD(M2C_FIELD(b,void**,0),u8**,8);
+pair[1]=r+8+n*M2C_FIELD(r,u16*,2);
+r=M2C_FIELD(M2C_FIELD(b,void**,0),u8**,8);
+switch(r[7]){
+case 0:case 7:x+=M2C_FIELD(pair[0],s8*,0);break;
+case 1:case 2:x-=r[0];y+=M2C_FIELD(pair[0],s8*,0);break;
+case 3:case 4:x-=M2C_FIELD(pair[0],s8*,0)+M2C_FIELD(pair[0],u8*,1);y-=r[1];break;
+case 5:case 6:y-=M2C_FIELD(pair[0],s8*,0)+r[1];break;
+}
+M2C_FIELD(M2C_FIELD(a,void**,20),void (**)(s32,void*,s32,s32,s32,void*),0)(a,b,x,y,c,pair);
+return M2C_FIELD(pair[0],s8*,2);
 }
 
 void func_ov001_0216a17c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -82,7 +102,7 @@ return (t+(a>>2))*(s+(b>>2))+z;
 }
 
 void func_ov001_0216a690(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {
-s32 func_ov001_0216a058(s32,void *,s32,s32,s32,s32);
+
 s32 spC,sp8;
 s32 step,space;void *font;s32 (*next)(s32 *);s32 ch,x,y;
 space=M2C_FIELD(arg0,s32 *,8);font=M2C_FIELD(arg0,void **,4);spC=arg4;
@@ -95,9 +115,39 @@ if(arg5==0)return;
 *arg5=ch==10?spC:0;
 }
 
+void func_ov001_0216a744(void *a,s32 bx,s32 by,s32 width,s32 color,s32 flags,s32 text,TextDirection dir){
+s32 func_ov001_021691e8(s32,s32,s32,s32);
+s32 line; s32 dx,dy,x,y,ox,oy,d,step; s32 baseX,baseY,c;
+step=M2C_FIELD(a,s32*,12)+M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void**,4),void**,0),s8*,1);
+dx=step*-dir.y;dy=step*dir.x;baseX=bx;baseY=by;line=text;c=color;
+if(!text)return;
+ox=0;oy=0;
+do{
+x=baseX+ox;y=baseY+oy;
+if(flags&0x800){d=width-func_ov001_021691e8(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),line,0);x+=d*dir.x;y+=d*dir.y;}
+else if(flags&0x400){d=(width+1)/2-(func_ov001_021691e8(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),line,0)+1)/2;x+=d*dir.x;y+=d*dir.y;}
+func_ov001_0216a690(a,x,y,c,line,&line,dir);
+ox+=dx;oy+=dy;
+}while(line);
+}
+
+#pragma opt_propagation off
+void func_ov001_0216a8ac(void *a,s32 x,s32 y,s32 b,s32 flags,s32 text,TextDirection dir){
+TextSize func_ov001_02169308(s32,s32,s32,s32);
+
+TextSize result,tmp,size;s32 d;
+tmp=func_ov001_02169308(M2C_FIELD(a,s32*,4),M2C_FIELD(a,s32*,8),M2C_FIELD(a,s32*,12),text);
+size=tmp;result=size;
+if(flags&16){d=-(result.x+1)/2;x+=d*dir.x;y+=d*dir.y;}
+else if(flags&32){d=-result.x;x+=d*dir.x;y+=d*dir.y;}
+if(flags&2){d=-(result.y+1)/2;x+=d*-dir.y;y+=d*dir.x;}
+else if(flags&4){d=-result.y;x+=d*-dir.y;y+=d*dir.x;}
+func_ov001_0216a744(a,x,y,result.x,b,flags,text,dir);
+}
+#pragma opt_propagation reset
 void func_ov001_0216a9d0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, TextDirection dir) {
     s32 func_ov001_02169294(s32, s32, s32);
-    M2C_UNK func_ov001_0216a744(void *, s32, s32, s32, s32, s32, s32, TextDirection);
+    
     s32 x = arg1;
     s32 y = arg2;
     s32 d;

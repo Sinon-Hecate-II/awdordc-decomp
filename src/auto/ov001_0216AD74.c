@@ -11,6 +11,53 @@ if(data_ov001_02191800[3]) {func_ov001_0216ad64(data_ov001_02191800[3]);data_ov0
 if(data_ov001_02191800[1]) {func_ov001_0216ad64(data_ov001_02191800[1]);data_ov001_02191800[1]=0;}
 }
 
+#pragma thumb on
+s32 func_ov001_0216b930(void *arg0) {
+ M2C_UNK func_ov001_0216cdd4(void *,M2C_UNK *,s32);
+ M2C_UNK func_ov001_0216cde4(void *,s32,s32);
+ s32 func_ov001_0216cf08(M2C_UNK *);
+ extern u32 data_ov001_02191800[];
+ extern M2C_UNK data_ov001_02191ec8,data_ov001_02191ff8,data_ov001_02192128,data_ov001_02192198;
+ u8 *p3=(u8 *)&data_ov001_02192128;
+ u8 *dst=(u8 *)arg0+0x117;
+ u8 *p4;
+ u8 *p1=(u8 *)&data_ov001_02191ec8;
+ u8 *p2=(u8 *)&data_ov001_02191ff8;
+ p4=(u8 *)&data_ov001_02192198;
+ if(dst==0)return -1;
+ M2C_FIELD(arg0,u16 *,0)=data_ov001_02191800[11]&data_ov001_02191800[12];
+ func_ov001_0216cde4(dst,0,0x154);
+if(M2C_FIELD(arg0,u16 *,0)&1) {
+func_ov001_0216cdd4(dst+0,(M2C_UNK *)(p1+48),M2C_FIELD(p1,s32 *,4));
+func_ov001_0216cdd4(dst+6,(M2C_UNK *)(p1+112),M2C_FIELD(p1,s32 *,4));
+func_ov001_0216cdd4(dst+12,(M2C_UNK *)(p1+176),M2C_FIELD(p1,s32 *,4));
+func_ov001_0216cdd4(dst+18,(M2C_UNK *)(p1+240),M2C_FIELD(p1,s32 *,4));
+if(func_ov001_0216bb28(p1+8,func_ov001_0216cf08((M2C_UNK *)(p1+8))))goto fail;
+func_ov001_0216cdd4(dst+24,(M2C_UNK *)(p1+8),func_ov001_0216cf08((M2C_UNK *)(p1+8)));
+}
+if(M2C_FIELD(arg0,u16 *,0)&2) {
+func_ov001_0216cdd4(dst+57,(M2C_UNK *)(p2+48),M2C_FIELD(p2,s32 *,4));
+func_ov001_0216cdd4(dst+71,(M2C_UNK *)(p2+112),M2C_FIELD(p2,s32 *,4));
+func_ov001_0216cdd4(dst+85,(M2C_UNK *)(p2+176),M2C_FIELD(p2,s32 *,4));
+func_ov001_0216cdd4(dst+99,(M2C_UNK *)(p2+240),M2C_FIELD(p2,s32 *,4));
+if(func_ov001_0216bb28(p2+8,func_ov001_0216cf08((M2C_UNK *)(p2+8))))goto fail;
+func_ov001_0216cdd4(dst+113,(M2C_UNK *)(p2+8),func_ov001_0216cf08((M2C_UNK *)(p2+8)));
+}
+if(M2C_FIELD(arg0,u16 *,0)&4) {
+if(func_ov001_0216bb28(p3+0x30,M2C_FIELD(p3,s32 *,4)-1))goto fail;
+func_ov001_0216cdd4(dst+146,(M2C_UNK *)(p3+48),M2C_FIELD(p3,s32 *,4));
+if(func_ov001_0216bb28(p3+8,func_ov001_0216cf08((M2C_UNK *)(p3+8))))goto fail;
+func_ov001_0216cdd4(dst+210,(M2C_UNK *)(p3+8),func_ov001_0216cf08((M2C_UNK *)(p3+8)));
+}
+if(M2C_FIELD(arg0,u16 *,0)&8) {
+if(func_ov001_0216bb28(p4+0x30,M2C_FIELD(p4,s32 *,4)-1))goto fail;
+func_ov001_0216cdd4(dst+243,(M2C_UNK *)(p4+48),M2C_FIELD(p4,s32 *,4));
+if(func_ov001_0216bb28(p4+8,func_ov001_0216cf08((M2C_UNK *)(p4+8))))goto fail;
+func_ov001_0216cdd4(dst+307,(M2C_UNK *)(p4+8),func_ov001_0216cf08((M2C_UNK *)(p4+8)));
+}
+M2C_FIELD(arg0,u8 *,0x116)=0;return 0;
+fail:func_ov001_0216cde4(dst,0,0x154);return -1;
+}
 s32 func_ov001_0216bb28(u8 *p,s32 n) {s32 i; for(i=0;i<n;i++){u32 c=*p++;if(c<32||c>127)return -1;}return 0;}
 
 #pragma thumb on

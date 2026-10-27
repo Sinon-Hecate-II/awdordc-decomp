@@ -304,6 +304,50 @@ u16 func_020a8f4c(s32 arg0) {
 
 void func_020a8f8c(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
 
+s16 func_020a8ff4(void *arg0) {
+    s32 func_0207c8ec();
+    extern M2C_UNK data_020e5b30;
+    s16 temp_ip;
+    s16 temp_ip_2;
+    s16 var_r0;
+    s32 temp_r3_2;
+    u16 temp_r3;
+    u8 temp_r0;
+
+    temp_r0 = M2C_FIELD(arg0, u8 *, 0);
+    switch (temp_r0) {
+    default:
+        return 0;
+    case 1:
+        if (M2C_FIELD(arg0, s16 *, 0xC) == 0) {
+            var_r0 = M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA));
+        } else {
+            var_r0 = (M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(M2C_FIELD(arg0, u16 *, 2) * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE)), M2C_FIELD(arg0, s16 *, 0xC))) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE));
+        }
+        return var_r0;
+    case 3:
+        temp_ip = M2C_FIELD(arg0, s16 *, 0xC);
+        if (temp_ip == 0) {
+            return (s16) (M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA)));
+        }
+        temp_r3 = M2C_FIELD(arg0, u16 *, 2);
+        return (s16) ((M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(temp_r3 * (temp_r3 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip * temp_ip)) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE)));
+    case 4:
+        temp_ip_2 = M2C_FIELD(arg0, s16 *, 0xC);
+        temp_r3_2 = temp_ip_2 - M2C_FIELD(arg0, u16 *, 2);
+        return (s16) ((M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0x10)) - (M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(temp_r3_2 * (temp_r3_2 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip_2 * temp_ip_2)));
+    case 0: {
+        u16 u = M2C_FIELD(arg0, u16 *, 2);
+        s16 a = M2C_FIELD(arg0, s16 *, 0xA);
+        s16 base = M2C_FIELD(arg0, s16 *, 8);
+        s16 val = *(s16 *)((s8 *)&data_020e5b30 + ((s32)(u >> 4) << 2));
+        return (s16)(base + (a * val * 0x10 >> 0x10));
+    }
+    case 2:
+        return (s16) (M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0xE) * M2C_FIELD(arg0, s16 *, 0xA)));
+    }
+}
+
 void func_020a9188(void *arg0, u16 arg1) {
     s32 func_0207c8ec();
     M2C_FIELD(arg0, s16 *, 6) = func_0207c8ec(0x10000);

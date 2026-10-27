@@ -52,6 +52,35 @@ if (table[a&31] > 0) result=1; else result=0;
 return result;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+void func_ov000_021a34bc(s32 arg0){
+extern void **gCurrentMap;
+u8 func_ov000_021a3484(s32);
+s32 y,x; s8 value;void *base=*gCurrentMap;
+y=0;
+if(y>=M2C_FIELD(base,u16*,0x5146))return;
+value=arg0;
+do {
+for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
+s8 *cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52e8)+x;
+if(*cell>=0 && arg0!=*cell && func_ov000_021a3484(M2C_FIELD((u8 *)base+x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758),u8 *,0x1420))){
+if(x!=0){cell=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)+x; if(cell[-1]<0)cell[-1]=value;}
+base=*gCurrentMap;
+if(x!=M2C_FIELD(base,u16*,0x5144)-1){
+cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52e8)+x;
+if(cell[1]<0)cell[1]=value;
+}
+if(y!=0){cell=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e4);if(cell[x]<0)cell[x]=value;}
+base=*gCurrentMap;
+if(y!=M2C_FIELD(base,u16*,0x5146)-1){cell=M2C_FIELD((u8 *)base+y*4,s8 **,0x52ec);if(cell[x]<0)cell[x]=value;}
+}
+base=*gCurrentMap;
+}
+y++;
+}while(y<M2C_FIELD(base,u16*,0x5146));
+}
+#pragma pop
 s32 func_ov000_021a3644(s32 arg0) {
 extern void **gCurrentMap;
 extern u16 data_ov000_021aeef4[];

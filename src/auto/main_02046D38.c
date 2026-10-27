@@ -7,6 +7,101 @@ void func_02045cbc(void *);
 s32 func_02045d94(void *, s32);
 s32 func_02046ebc(void *);
 
+u64 func_02046d38(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+    void func_02008048(u8 *, u8 *, u32);
+    extern u8 data_020ea944[];
+    extern u8 data_020ea94c[];
+
+    register u32 vlr asm("lr");
+    register u32 r12v asm("r12");
+    register u32 r4 asm("r4");
+    register u32 r5 asm("r5");
+    register u32 r6 asm("r6");
+    register u32 r7 asm("r7");
+    u32 r2;
+    u32 r3;
+    u32 r0;
+    u32 r1;
+    u8 sp8[8];
+    u8 sp0[8];
+    s32 i;
+
+    sp8[0]=0; (void)sp8; (void)sp0;
+
+    vlr = 0;
+    r12v = vlr & 0;
+    r4 = 0xffff;
+    r5 = r4 + 0xff0000;
+    r2 = arg2 & 0x1;
+    r6 = r12v << 0x2;
+    r3 = arg3 & 0x3;
+    r5 = arg1 & r5;
+    r1 = r3 | (r2 << 0x2);
+    r6 = r6 | (r2 >> 0x1e);
+    r7 = r12v << 0x3;
+    r2 = arg0 & r4;
+    r0 = r1 | (r5 << 0x3);
+    r1 = r0 | (r2 << 0x1b);
+    r3 = (r12v << 0x1b) | (r2 >> 0x5);
+    r7 = r7 | (r5 >> 0x1d);
+    r0 = r12v | r6;
+    r0 = r7 | r0;
+    r0 = r3 | r0;
+
+    *(u32 *)&sp8[0] = r1;
+    *(u32 *)&sp8[4] = r0;
+
+    i = 0;
+    r2 = (u32)&sp8[0] + 0; /* placeholder */
+    {
+        u8 *p = sp8;
+        for (i = 0; i < 6; i++) {
+            p[i] ^= 0xd6;
+        }
+    }
+
+    {
+        for (i = 0; i < 5; i++) {
+            u8 x = sp8[i];
+            sp8[i] = data_020ea94c[x & 0x0f] | (data_020ea94c[(x >> 4) & 0x0f] << 4);
+        }
+    }
+
+    func_02008048(sp8, sp0, 8);
+
+    {
+        extern u8 data_020ea944[];
+        for (i = 0; i < 5; i++) {
+            sp8[data_020ea944[i]] = sp0[i];
+        }
+    }
+
+    sp8[5] &= 7;
+    sp8[6] = 0;
+    sp8[7] = 0;
+
+    {
+        u32 lo = *(u32 *)&sp8[0];
+        u32 hi = *(u32 *)&sp8[4];
+        u32 nlo = lo << 1;
+        u32 nhi = (hi << 1) | (lo >> 31);
+        *(u32 *)&sp8[0] = nlo;
+        *(u32 *)&sp8[4] = nhi;
+    }
+
+    sp8[0] |= (sp8[5] >> 3) & 1;
+
+    for (i = 0; i < 6; i++) {
+        sp8[i] ^= 0x67;
+    }
+
+    sp8[7] = 0;
+    sp8[5] &= 7;
+    sp8[6] = 0;
+
+    return *(u64 *)&sp8[0];
+}
+
 s32 func_02047098(s32 arg0) { Unk046State s; if (func_02046ebc(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
 
 s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }

@@ -21,3 +21,15 @@ void func_02000b9c(void) {
 
 }
 
+extern void func_020e4490(void);
+extern void func_020e4570(void);
+extern void func_02086508(void);
+extern void func_020e4594(void);
+void main(void)
+{
+    func_020e4490();
+    func_020e4570();
+    func_02086508();
+    func_020e4594();
+}
+

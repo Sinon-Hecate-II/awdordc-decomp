@@ -109,8 +109,8 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
  void func_ov010_022282d4(s32);
- s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a470(void);
+ s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a76c(void);
  s32 func_ov000_0216a7c4(void);
  void *func_020c4acc(void);
@@ -124,7 +124,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  extern u16 data_ov010_0222eee0;
  extern M2C_UNK data_ov010_0222efc0;
  Ov010CallbackFn c,a,b,d;
- register u8 *p;
+ u8 *p;
  func_ov010_02226a88();
  func_ov010_022282d4(3);
  func_ov010_022282d4(4);
@@ -137,8 +137,8 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  for(p=(u8 *)&data_ov010_0222f02c;p!=data_ov010_0222f1dc;p+=0x6c) {
   (((Ov010Callback *)p)->*c)();
  }
- M2C_FIELD(&data_ov010_0222eee0,u8 *,0x107)=1;
  d=c;
+ M2C_FIELD(&data_ov010_0222eee0,u8 *,0x107)=1;
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x108)=arg0;
  func_ov000_0216a470();
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x104)=func_ov000_0216a564();

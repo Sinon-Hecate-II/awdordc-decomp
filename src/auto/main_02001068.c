@@ -86,6 +86,22 @@ void func_0200154c(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     arg1[15] = arg0[15] + (s32)(((long long)arg3 * arg0[7] + (long long)arg2 * arg0[3] + (long long)arg4 * arg0[11]) >> 12);
 }
 
+void func_02001624(s32 *arg0,s32 *arg1,s32 arg2,s32 arg3,s32 arg4) {
+arg1[0]=(s32)(((long long)arg2*arg0[0])>>12);
+arg1[1]=(s32)(((long long)arg2*arg0[1])>>12);
+arg1[2]=(s32)(((long long)arg2*arg0[2])>>12);
+arg1[3]=(s32)(((long long)arg2*arg0[3])>>12);
+arg1[4]=(s32)(((long long)arg3*arg0[4])>>12);
+arg1[5]=(s32)(((long long)arg3*arg0[5])>>12);
+arg1[6]=(s32)(((long long)arg3*arg0[6])>>12);
+arg1[7]=(s32)(((long long)arg3*arg0[7])>>12);
+arg1[8]=(s32)(((long long)arg4*arg0[8])>>12);
+arg1[9]=(s32)(((long long)arg4*arg0[9])>>12);
+arg1[10]=(s32)(((long long)arg4*arg0[10])>>12);
+arg1[11]=(s32)(((long long)arg4*arg0[11])>>12);
+if(arg0!=arg1) { s32 a=arg0[13], b=arg0[12]; arg1[12]=b; arg1[13]=a; a=arg0[15]; b=arg0[14]; arg1[14]=b; arg1[15]=a; }
+}
+
 void func_02001fb4(void) {
     M2C_UNK func_02001ff8();
     M2C_UNK func_02002060();

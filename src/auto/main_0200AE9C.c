@@ -1,11 +1,28 @@
 /* 35 functions from 0x0200AE9C to 0x0200BDA4 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u32 words[3]; } Unk032Record;
+typedef struct FileLink { struct FileLink *prev,*next; } FileLink;
+static inline void UnlinkFileRequest(FileLink *a) {
+FileLink *p=a->prev,*n=a->next;
+if(p)p->next=n;if(n)n->prev=p;
+}
+static inline void MoveFileRequest(FileLink *a, FileLink *head) {
+FileLink *n; FileLink *p; p=a->prev;n=a->next;
+if(p)p->next=n;if(n)n->prev=p;
+{ FileLink *next=head->next;while(next){head=next;next=next->next;} }
+head->next=a;a->prev=head;a->next=0;
+}
+static inline void AppendFileRequest(FileLink *head,FileLink *a) {
+FileLink *next=head->next;
+while(next){head=next;next=next->next;}
+head->next=a;a->prev=head;a->next=0;
+}
 typedef struct { u32 words[2]; } Unk02BDFileRange;
 
+static inline s32 TestRequestFlag(void *a,s32 mask) { return (M2C_FIELD(a,volatile s32 *,12)&mask)?1:0; }
 static inline s32 TestFileFlag(void *a, s32 mask) {
  s32 result;
- if(M2C_FIELD(a,s32 *,0x1c)&mask) result=1;
+ if(M2C_FIELD(a,volatile s32 *,0x1c)&mask) result=1;
  else result=0;
  return result;
 }
@@ -25,6 +42,29 @@ s32 func_0200af30(void *arg0) {
         return 1;
     }
     return 0;
+}
+
+s32 func_0200af74(void *a,s32 cmd) {
+s32 func_0200751c(void); M2C_UNK func_02007530(s32);M2C_UNK func_0200a050(void *,s32);void func_02005da4(void *);
+register void *file; register s32 key; register void *request=a; register u32 mask; void *prev,*next,*tail;
+file=M2C_FIELD(a,void **,8);mask=1<<cmd;
+M2C_FIELD(a,s32 *,16)=cmd;M2C_FIELD(a,s32 *,20)=2;M2C_FIELD(a,volatile s32 *,12)|=1;
+key=func_0200751c();
+if(M2C_FIELD(file,s32 *,28)&128){func_0200a050(a,3);func_02007530(key);return 0;}
+if(mask&0x1fc)M2C_FIELD(a,volatile s32 *,12)|=4;
+MoveFileRequest(a,(FileLink *)((u8 *)file+32));
+if(!TestFileFlag(file,8)&&!TestFileFlag(file,16)){
+M2C_FIELD(file,s32 *,28)|=16;func_02007530(key);
+if(M2C_FIELD(file,s32 *,88)&512) M2C_FIELD(file,void (**)(void *,s32),84)(a,9);
+{ s32 key2=func_0200751c();M2C_FIELD(a,volatile s32 *,12)|=64;
+if(!TestRequestFlag(a,4)){func_02007530(key2);func_0200ae9c(a);return 1;}
+func_02007530(key2);}
+}else{
+if(!TestRequestFlag(a,4)){func_02007530(key);return 1;}
+do{func_02005da4((u8 *)a+24);}while(!(M2C_FIELD(a,volatile s32 *,12)&64));
+func_02007530(key);
+}
+return func_0200af30(a);
 }
 
 void func_0200b118(void *arg0) {

@@ -210,6 +210,23 @@ void func_020ba780(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_020ba654(arg0, arg1, arg2, 1);
 }
 
+u8 func_020ba790(s32 x,s32 y){
+extern void **gCurrentMap;extern u8 data_ov000_021b5c0e[];extern s8 data_ov000_021b54a0[];extern M2C_UNK data_0212616c;
+s32 func_020a6fe4(void *,s32);
+u8 *base=*gCurrentMap,*units=base+0x59a4;s32 offset,kind,tile;u8 *selected;u8 id;
+id=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)];offset=(s16)id*(s16)14;
+if(!id)return 0;
+if((id&0xc0)!=(M2C_FIELD(base,u8 *,0x52d4)&0xc0))return 0;
+if(!func_020a6fe4(units+offset,(u32)(M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0)<<26)>>26))return 0;
+base=*gCurrentMap;selected=M2C_FIELD(base,u8 **,0x52d0);
+if(selected[1]==x&&selected[2]==y)return 0;
+kind=data_ov000_021b5c0e[((u32)(units[offset]<<26)>>26)*112];
+if(kind==7){if(!data_ov000_021b54a0[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;}
+tile=M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31;
+if(M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+kind*32,s8 *,tile)==-1)return 0;
+return M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+data_ov000_021b5c0e[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;
+}
+
 s32 func_020ba924(s32 a,s32 b) {
  extern void **gCurrentMap;
  extern u8 data_ov000_021b56c0[];

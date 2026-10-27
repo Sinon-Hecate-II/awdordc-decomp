@@ -144,6 +144,59 @@ void func_ov001_02181d4c(void) {
     func_ov001_02181ee8();
 }
 
+void func_ov001_02181d60(void) {
+    M2C_UNK func_ov001_021716d8(M2C_UNK);
+    M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov001_02175e04(M2C_UNK);
+    void func_ov001_021820f0(M2C_UNK);
+    s32 func_ov001_0218bb00(s32);
+    s32 func_ov001_0218bb24(s32);
+    s32 func_ov001_0218bbd8(void *);
+    extern M2C_UNK data_ov001_0218fab6;
+    extern M2C_UNK data_ov001_0218faf6;
+    extern M2C_UNK data_ov001_0218faf8;
+    extern M2C_UNK data_ov001_0218fafa;
+    extern M2C_UNK data_ov001_0218fafc;
+    extern M2C_UNK data_ov001_02193dd4;
+
+    u32 index;
+    u8 *entry;
+    s32 t0, t1, t2, t3;
+    u8 *base0, *base1, *base2, *base3;
+    s32 row;
+    u16 va, vb, vc, vd;
+
+    for (index = 0; index < 4; index++) {
+        entry = (u8 *)&data_ov001_0218fab6 + func_ov001_02175e04(1) * 32 + index * 8;
+        if (func_ov001_0218bbd8(entry) != 0) {
+            func_ov001_021716d8(1);
+            M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = (s8)index;
+            t0 = func_ov001_02175e04(1);
+            t1 = func_ov001_02175e04(1);
+            t2 = func_ov001_02175e04(1);
+            t3 = func_ov001_02175e04(1);
+            base0 = (u8 *)&data_ov001_0218faf6 + t0 * 32;
+            base2 = (u8 *)&data_ov001_0218faf8 + t2 * 32;
+            base1 = (u8 *)&data_ov001_0218fafa + t1 * 32;
+            base3 = (u8 *)&data_ov001_0218fafc + t3 * 32;
+            row = (s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) * 8;
+            va = *(u16 *)(base0 + row);
+            vb = *(u16 *)(base1 + row);
+            vc = *(u16 *)(base2 + row);
+            vd = *(u16 *)(base3 + row);
+            func_ov001_02172094(va, vb, vc, vd);
+            return;
+        }
+    }
+    if (func_ov001_0218bb00(1) != 0) { func_ov001_021716d8(1); return; }
+    if (func_ov001_0218bb00(2) != 0) { func_ov001_021716d8(0); return; }
+    if (func_ov001_0218bb24(0x40) != 0) { func_ov001_021820f0(1); return; }
+    if (func_ov001_0218bb24(0x80) != 0) { func_ov001_021820f0(3); return; }
+    if (func_ov001_0218bb24(0x20) != 0) { func_ov001_021820f0(0); return; }
+    if (func_ov001_0218bb24(0x10) == 0) return;
+    func_ov001_021820f0(2);
+}
+
 void func_ov001_02181ee4(void) {
 
 }

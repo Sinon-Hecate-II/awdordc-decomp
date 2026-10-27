@@ -278,6 +278,67 @@ s32 func_0209c2a8(void) {
     return (s32) (temp_r1 + ((u32) (temp_r1 >> 2) >> 0x1D)) >> 3;
 }
 
+s32 func_0209c2c4(u8 *arg0) {
+    s32 func_02086680(u32);
+    s32 func_0209c268(u8 *);
+    s32 func_0209c1c0(u8 *, s32 *);
+    extern u8 data_0212616c[];
+    extern void **gCurrentMap;
+    s32 sp0;
+    u8 *r9;
+
+    sp0 = 0;
+    r9 = arg0;
+    if (*r9 != 0) {
+        do {
+            u8 c;
+            c = *r9;
+            if (c == 0) break;
+            if (c <= 0x16) {
+                if (c == 0x16) {
+                    r9 += 2;
+                } else if (c >= 0x8) {
+                    if (c == 0x8) {
+                        r9 += func_0209c1c0(r9, &sp0);
+                    } else if (c == 0xB) {
+                        u8 sub = (u8)(r9[1] - 0x80);
+                        if (sub <= 3) {
+                            if (sub <= 1) {
+                                sp0 += 0x10;
+                                r9 += 2;
+                            } else {
+                                u16 sel;
+                                s8 kind;
+                                sel = *(u16 *)((u8 *)*gCurrentMap + 0x52A4);
+                                kind = *(s8 *)((u8 *)*gCurrentMap + (u32)sel * 0x8C + 0x6810);
+                                sp0 += func_0209c268((u8 *)func_02086680(*(u32 *)(data_0212616c + (int)kind * 0x9C)));
+                                r9 += 2;
+                            }
+                        }
+                    } else {
+                        sp0 += 0x10;
+                        r9 += 2;
+                    }
+                } else {
+                    sp0 += 0x10;
+                    r9 += 2;
+                }
+            } else {
+                if (c >= 0x17 && c <= 0x1D && (c == 0x17 || c == 0x1C || c == 0x1D)) {
+                    r9 += 2;
+                } else {
+                    sp0 += 0x10;
+                    r9 += 2;
+                }
+            }
+        } while (*r9 != 0);
+    }
+    if (sp0 < 0) {
+        sp0 = 0;
+    }
+    return sp0;
+}
+
 void func_0209c418(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
 }

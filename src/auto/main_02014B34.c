@@ -1,6 +1,73 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_02014b34(u16 arg0) {
+    s32 func_02015f10(M2C_UNK, u16, s32);
+    s32 func_020189a4(s8 *);
+    extern u8 data_020f5544;
+    extern void *data_02136c4c;
+    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK sp6;
+    s16 sp2;
+    s8 sp0;
+    s32 temp_r0;
+    s8 temp_r3;
+    s8 var_r4;
+    u16 var_r0;
+    u16 var_r0_3;
+    u16 var_r5;
+    u32 temp_r2;
+    u32 temp_r3_2;
+    u8 var_r0_2;
+    u8 var_r3;
+
+    (void)arg0;
+    var_r5 = 0;
+    var_r4 = -1;
+    func_02007f8c(&sp6, 0, 0x10);
+    var_r0 = 1;
+    do {
+        if (M2C_FIELD((data_02136c4c + (var_r0 * 4)), s32 *, 0x14E4) == 5) {
+            temp_r3 = M2C_FIELD((data_02136c4c + var_r0), s8 *, 0x1525);
+            *(&sp6 + temp_r3) = *(&sp6 + temp_r3) + 1;
+        }
+        var_r0 += 1;
+    } while ((u32) var_r0 <= 0xFU);
+    var_r3 = data_020f5544;
+    var_r0_2 = 0;
+loop_5:
+    temp_r2 = var_r3 + 1;
+    temp_r3_2 = temp_r2 >> 0x1F;
+    var_r3 = temp_r3_2 + ROTATE_RIGHT((temp_r2 << 0x1C) - temp_r3_2, 0x1C);
+    if ((M2C_FIELD(((var_r3 * 0x5D4) + data_02136c4c), u8 *, 0x1D52) != 0) && (*(&sp6 + var_r3) != 0)) {
+        var_r4 = (s8) var_r3;
+    } else {
+        var_r0_2 += 1;
+        if ((u32) var_r0_2 < 0x10U) {
+            goto loop_5;
+        }
+    }
+    if (var_r4 == -1) {
+        return 0x15;
+    }
+    var_r0_3 = 1;
+    data_020f5544 = (u8) var_r4;
+    do {
+        if ((M2C_FIELD((data_02136c4c + (var_r0_3 * 4)), s32 *, 0x14E4) == 5) && (var_r4 == M2C_FIELD((data_02136c4c + var_r0_3), s8 *, 0x1525))) {
+            var_r5 |= 1 << var_r0_3;
+        }
+        var_r0_3 += 1;
+    } while ((u32) var_r0_3 <= 0xFU);
+    sp0 = 3;
+    sp2 = (s16) var_r4;
+    temp_r0 = func_020189a4(&sp0);
+    if (temp_r0 != 0) {
+        func_02008048((var_r4 * 0x5D4) + (data_02136c4c + 0x1788), temp_r0, 0xE4);
+    }
+    return func_02015f10(0xEA, var_r5, data_02136c4c);
+}
+
 void func_02014ccc(void *arg0) {
  s32 func_0200b144(void *,s32);
  void func_0200b774(void *);

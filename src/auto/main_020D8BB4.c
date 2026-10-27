@@ -143,6 +143,65 @@ void func_020d903c(M2C_UNK arg0) {
 
 void func_020d9054(s32 a){M2C_UNK func_01ffa42c(M2C_UNK *,M2C_UNK);extern M2C_UNK data_0212c498;extern void *data_0212c36c;M2C_FIELD(data_0212c36c,s16 *,0)=M2C_FIELD(data_0212c36c,s16 *,2);M2C_FIELD(data_0212c36c,s16 *,2)=M2C_FIELD(data_0212c36c,s16 *,4);func_01ffa42c(&data_0212c498,a);}
 
+void func_020d908c(void) {
+    M2C_UNK func_020d4d78(void);
+    void func_020822b8(void *);
+    void func_02082770(void);
+    void func_02082700(void);
+    void func_020c0a88(void);
+    void func_0207c780(M2C_UNK *, M2C_UNK);
+    void func_01ff85b8(void *, s32, s32);
+    void func_01ff9e44(M2C_UNK *, s32, s32);
+    void func_02091cd0(void);
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c4;
+    extern u16 data_020f4ea8[6];
+    extern M2C_UNK data_020efad4;
+    extern M2C_UNK data_020f28f0;
+    extern M2C_UNK data_020f28d0;
+    u16 buf[6];
+    void *oldEngine;
+    u16 *volatile t;
+    u16 *volatile v0;
+    u16 *volatile v1;
+    u16 *volatile v2;
+    u16 *volatile v3;
+    u16 *volatile v4;
+    s32 i;
+    buf[0] = data_020f4ea8[0];
+    buf[1] = data_020f4ea8[1];
+    buf[3] = data_020f4ea8[3];  /* store order to match */
+    buf[2] = data_020f4ea8[2];
+    buf[4] = data_020f4ea8[4];
+    buf[5] = data_020f4ea8[5];
+    oldEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c4;
+    func_020d4d78();
+    gCur3DSpriteEngine = oldEngine;
+    t = (u16 *)*(void **)gCur3DSpriteEngine;
+    *t = (u16)(*t & ~7);
+    func_020822b8(buf);
+    func_02082770();
+    func_02082700();
+    func_020c0a88();
+    func_0207c780(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
+    func_0207c780(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));
+    func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);
+    func_01ff9e44(&data_020f28d0, 0x20, 0x20);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x8);
+    func_02091cd0();
+    v0 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *v0 = (u16)(*v0 | 0x10);
+    v1 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *v1 = (u16)(*v1 | 0x20);
+    v2 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *v2 = (u16)(*v2 | 0x40);
+    v3 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *v3 = (u16)(*v3 | 0x80);
+    v4 = (u16 *)*(void **)gCur3DSpriteEngine;
+    *v4 = (u16)(*v4 | 0x100);
+}
+
 void func_020d9244(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     extern void *gCur3DSpriteEngine;

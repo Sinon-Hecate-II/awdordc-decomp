@@ -1,5 +1,6 @@
 /* 42 functions from 0x020C6CF8 to 0x020C7CD0 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 
 void func_020c6cf8(void) {
     M2C_UNK func_020d468c();
@@ -46,6 +47,34 @@ void func_020c6dec(void) {
     M2C_UNK func_020bbd8c();
     func_020bbd8c();
     func_020c0784();
+}
+
+s32 func_020c6dfc(void) {
+extern void **gCurrentMap; extern u16 data_02168f14;
+s32 func_020a7cfc(void *);s32 func_020cf908(s32,s32,s32,s32);
+s32 func_020a8a14(s32,s32);s32 func_020a32f4(s32);s32 func_020a3150(s32);
+s32 func_020a88e8(s32);s32 func_020d2c18(s32);s32 func_020a735c(void *);
+s32 func_020a2788(s32,s32);s32 func_020d2d50(s32,s32);
+u8 *p; s32 a; s32 b; s32 player;
+if(((u32)(data_02168f14<<18)>>31)==0)return 2;
+p=*gCurrentMap;
+if(M2C_FIELD(p,s16 *,0x52dc)!=M2C_FIELD(p,s16 *,0x52d8) || M2C_FIELD(p,s16 *,0x52de)!=M2C_FIELD(p,s16 *,0x52da))return 2;
+if(func_020a7cfc(M2C_FIELD(p,void **,0x52d0)))return 2;
+p=*gCurrentMap;
+if(!func_020cf908(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD(p,u16 *,0x52a4),(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26))return 2;
+p=*gCurrentMap;
+if(func_020a8a14(M2C_FIELD(p,u16 *,0x5142),M2C_FIELD(p,u16 *,0x52a4))&64)return 2;
+p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
+if(M2C_FIELD(p+player*140,Bits020a8c10 *,0x6810).value==0)return 2;
+if(func_020a32f4(player))return 2;
+if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 2;
+if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))return 2;
+a=func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+b=func_020a735c(M2C_FIELD(*gCurrentMap,void **,0x52d0));
+if(!func_020a2788(a,b))return 2;
+p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
+a=func_020d2d50(player,(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26);
+return a>M2C_FIELD(p+player*140,s32 *,0x67a4)?2:0;
 }
 
 void func_020c6ffc(void) {
@@ -382,5 +411,86 @@ switch(M2C_FIELD(p+i,u8 *,0x28)){case 0:case 1:case 2:case 3:case 4:break;defaul
 }
 checksum=M2C_FIELD(p,u16 *,0x46);
 return (u8)(checksum==func_020c7a24((s32)p));
+}
+
+void func_020c7b48(void *arg0, void *arg1) {
+    void *func_020e34bc(s32);
+    void func_02007ef4(void *, void *, s32);
+    void func_02007e98(M2C_UNK, void *, M2C_UNK);
+    void func_020e35cc(void *);
+    void *var_r4;
+    s32 i;
+    u8 *p;
+    u8 *q;
+    struct W4 { s32 a[4]; } *s, *d;
+
+    if (arg0 == arg1) {
+        var_r4 = func_020e34bc(0x6F8);
+        func_02007ef4(arg0, var_r4, 0x6F8);
+    } else {
+        var_r4 = arg0;
+    }
+    func_02007e98(0, arg1, 0x2AC);
+    *(s32 *)arg1 = *(s32 *)var_r4;
+    p = (u8 *)var_r4 + 6;
+    q = (u8 *)arg1 + 6;
+    i = 16;
+    ((u8 *)arg1)[4] = ((u8 *)var_r4)[4];
+    ((u8 *)arg1)[5] = ((u8 *)var_r4)[5];
+    do {
+        u8 t0 = p[0];
+        u8 t1 = p[1];
+        p += 2;
+        i--;
+        q[0] = t0;
+        q[1] = t1;
+        q += 2;
+    } while (i != 0);
+    q[0] = p[0];
+    s = (struct W4 *)((u8 *)var_r4 + 0x30);
+    d = (struct W4 *)((u8 *)arg1 + 0x30);
+    {
+        void *rr7 = (u8 *)var_r4 + 0x40;
+        void *lr = (u8 *)arg1 + 0x40;
+        ((u8 *)arg1)[0x27] = ((u8 *)var_r4)[0x27];
+        i = 0;
+        ((u8 *)arg1)[0x28] = ((u8 *)var_r4)[0x28];
+        ((u8 *)arg1)[0x29] = ((u8 *)var_r4)[0x29];
+        ((u8 *)arg1)[0x2A] = ((u8 *)var_r4)[0x2A];
+        ((u8 *)arg1)[0x2B] = ((u8 *)var_r4)[0x2B];
+        ((u8 *)arg1)[0x2C] = ((u8 *)var_r4)[0x2C];
+        ((u8 *)arg1)[0x2D] = ((u8 *)var_r4)[0x2D];
+        ((u8 *)arg1)[0x2E] = ((u8 *)var_r4)[0x2E];
+        ((u8 *)arg1)[0x2F] = ((u8 *)var_r4)[0x2F];
+        *d = *s;
+        *(struct W4 *)lr = *(struct W4 *)rr7;
+        rr7 = (char *)rr7 + 16;
+        lr = (char *)lr + 16;
+        *(s32 *)lr = *(s32 *)rr7;
+    }
+    {
+        s32 prod = (s32)((u8 *)var_r4)[4] * (s32)((u8 *)var_r4)[5];
+        i = 0;
+        if (prod > 0) {
+            do {
+                ((u8 *)arg1)[0x54 + i] = ((u8 *)var_r4)[0x54 + i];
+                i++;
+            } while (i < prod);
+        }
+    }
+    {
+        u8 count = ((u8 *)var_r4)[0x2F];
+        i = 0;
+        if ((s32)count > 0) {
+            do {
+                *(s32 *)((u8 *)arg1 + i * 4 + 0x1E4) = *(s32 *)((u8 *)var_r4 + i * 4 + 0x3D8);
+                i++;
+            } while (i < (s32)count);
+        }
+    }
+    if (arg0 != arg1) {
+        return;
+    }
+    func_020e35cc(var_r4);
 }
 

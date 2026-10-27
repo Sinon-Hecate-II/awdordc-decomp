@@ -312,6 +312,26 @@ s32 func_02031b28(u32 arg0) {
     return -1;
 }
 
+#pragma opt_strength_reduction off
+s32 func_02031b98(s32 arg,u8 *dst,s32 n,s32 capacity){
+u8 *src=(u8 *)arg;u32 size=((u32)(n*3))>>2;s32 rem; s32 full; s32 pos; s32 block;s32 j;s32 val;u32 word;u32 tail;u8 *in;u8 *out;
+if((u32)capacity>=size){rem=n&3;full=n-rem;}else return -1;
+pos=0;
+if(full>0){block=0;do{
+val=0;j=0;in=src+pos;
+do{val|=func_02031b28(*in++)<<((3-j)*6);j++;}while(j<4);
+j=0;word=val;out=dst+block*3;
+do{*out++=((u8 *)&word)[2-j];j++;}while(j<3);
+pos+=4;block++;
+}while(pos<full);}
+if(rem!=0){
+val=0;j=0;tail=0;
+if(rem>0){s32 accum=0;in=src+full;do{val|=func_02031b28(*in++)<<((3-j)*6);j++;accum|=val;}while(j<rem);tail=accum;}
+j=0;if(rem>0){out=dst+(full*3)/4;do{*out++=((u8 *)&tail)[2-j];j++;}while(j<rem);}
+}
+return size;
+}
+#pragma opt_strength_reduction on
 s32 func_02031d00(M2C_UNK arg0) {
     M2C_UNK func_02000b9c(s32);
     s32 func_02046884(M2C_UNK);

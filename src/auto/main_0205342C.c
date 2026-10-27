@@ -1,5 +1,6 @@
 /* 7 functions from 0x0205342C to 0x020543E8 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct RequestPair534 { s32 a,b; } RequestPair534;
 typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 
 s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
@@ -20,6 +21,32 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     func_0204fed0(arg0, temp_r4 + 0x1F4, arg2);
     func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fe84c);
     return 0;
+}
+
+s32 func_02053c9c(void **a,s32 b,s32 c,s32 d,s32 e,s32 f) {
+s32 func_02055b84(void **,s32,void **);void *func_02037794(s32);M2C_UNK func_02058644(void **,M2C_UNK *);void func_02052408(void *,void *);
+s32 func_02050838(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 func_0204ec8c(void **,s32);
+extern M2C_UNK data_020fe824;
+register void *buffer; register s32 id; register s32 finish=d; register s32 value=b;
+void *found,*req; void *base=*a; s32 enabled,result;RequestPair534 pair;
+req=0;enabled=0;if(c==1)enabled=1;
+if(M2C_FIELD(base,s32 *,256)==0)enabled=0;
+if(e && enabled && func_02055b84(a,b,&found) && M2C_FIELD(found,void **,12)) {
+buffer=func_02037794(516);
+if(!buffer){func_02058644(a,&data_020fe824);return 1;}
+func_02052408(M2C_FIELD(found,void **,12),buffer);
+M2C_FIELD(buffer,s32 *,0)=0;M2C_FIELD(buffer,s32 *,4)=b;
+pair.a=e;pair.b=f;
+result=func_02054330(a,2,0,&req,1,e,f);if(result)return result;
+id=M2C_FIELD(req,s32 *,24);
+result=func_02050838(a,pair,buffer,req,0);if(result)return result;
+func_02054484(a,req);
+}else{
+result=func_02054330(a,2,0,&req,d,e,f);if(result)return result;
+id=M2C_FIELD(req,s32 *,24);result=func_02053c04(a,b,id);if(result)return result;
+}
+if(d){result=func_0204ec8c(a,id);if(result)return result;}
+return 0;
 }
 
 /* Allocates and initializes an object structure. */

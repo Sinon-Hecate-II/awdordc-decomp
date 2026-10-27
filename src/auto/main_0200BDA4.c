@@ -2,6 +2,59 @@
 #include "common.h"
 typedef struct { u32 first, second; } Unk0200FilePair;
 
+void func_0200bda4(s32 arg0) {
+    s32 func_0200558c(void);
+    void func_02010c14(void);
+    void func_0200b118(void *);
+    s32 func_0200b184(void *, M2C_UNK, M2C_UNK);
+    void func_0200b6a8(void *, s32, s32);
+    s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
+    s32 func_0200bd9c(void);
+    s32 func_0200bd94(void);
+    s32 func_0200bd20(void);
+    s32 func_0200bd28(s32, s32);
+    s32 func_0200bcd8(s32, s32, s32, s32);
+    extern M2C_UNK data_0212fbfc;
+    extern M2C_UNK data_0212fc14;
+    extern u32 data_020f5220;
+
+    u32 *config = (u32 *)0x27ffc40;
+
+    M2C_FIELD(&data_0212fbfc, s32 *, 4) = arg0;
+    M2C_FIELD(&data_0212fbfc, s32 *, 0) = func_0200558c();
+    M2C_FIELD(&data_0212fbfc, s32 *, 8) = 0;
+    M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
+    M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = 0;
+    M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
+    func_02010c14();
+    func_0200b118(&data_0212fc14);
+    func_0200b184(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
+
+    if (*(u16 *)config == 2) {
+        M2C_FIELD(&data_0212fbfc, s32 *, 8) = -1;
+        M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
+        M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = -1;
+        M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
+        func_0200b6a8(&data_0212fc14, (s32)func_0200bd9c, -1);
+        func_0200b2bc(&data_0212fc14, 0, 0, 0, 0, 0,
+                      (void *)func_0200bd94, (void *)func_0200bd20);
+        return;
+    }
+
+    func_0200b6a8(&data_0212fc14, (s32)func_0200bd28, 0x602);
+
+    {
+        u32 v0 = config[0x80];
+        if (v0 != (u32)-1 && v0 != 0) {
+            u32 v2 = config[0x82];
+            if (v2 != (u32)-1 && v2 != 0) {
+                func_0200b2bc(&data_0212fc14, 0, (s32)v2, (s32)config[0x83], (s32)v0, (s32)config[0x81],
+                              (void *)func_0200bcd8, (void *)func_0200bd20);
+            }
+        }
+    }
+}
+
 void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0200b3ec(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212fc14;
@@ -257,5 +310,68 @@ void func_0200c9c8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
     M2C_FIELD(arg0, s32 *, 0x18) = 0;
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
+}
+
+void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
+    void func_02008048(void *, void *, u32);
+    extern void (*data_020f53f4)(void *, void *, u32);
+    u8 *buf;
+    u32 size;
+    void *src;
+    u32 pending;
+    u32 full;
+    s32 remaining;
+
+    size = arg2;
+    src = arg1;
+    buf = (u8 *)arg0 + 0x20;
+    if (size == 0) {
+        return;
+    }
+    {
+        u32 lo = M2C_FIELD(arg0, u32 *, 0x14);
+        u32 newlo = lo + (size << 3);
+        if (newlo < lo) {
+            M2C_FIELD(arg0, u32 *, 0x18) = M2C_FIELD(arg0, u32 *, 0x18) + 1;
+        }
+        M2C_FIELD(arg0, u32 *, 0x18) = M2C_FIELD(arg0, u32 *, 0x18) + (size >> 29);
+        M2C_FIELD(arg0, u32 *, 0x14) = newlo;
+    }
+    pending = M2C_FIELD(arg0, u32 *, 0x1C);
+    if (pending != 0) {
+        if (pending + size >= 0x40U) {
+            u32 take = 0x40U - pending;
+            func_02008048(src, buf + pending, take);
+            size = size - take;
+            src = (u8 *)src + take;
+            data_020f53f4(arg0, buf, 0x40);
+            M2C_FIELD(arg0, u32 *, 0x1C) = 0;
+        } else {
+            func_02008048(src, buf + pending, size);
+            M2C_FIELD(arg0, u32 *, 0x1C) = M2C_FIELD(arg0, u32 *, 0x1C) + size;
+            return;
+        }
+    }
+    if (size >= 0x40U) {
+        full = size & ~0x3fU;
+        size = size - full;
+        if (((u32)src & 3U) == 0U) {
+            data_020f53f4(arg0, src, full);
+            src = (u8 *)src + full;
+        } else {
+            remaining = full;
+            do {
+                func_02008048(src, buf, 0x40);
+                src = (u8 *)src + 0x40;
+                data_020f53f4(arg0, buf, 0x40);
+                remaining = remaining - 0x40;
+            } while (remaining > 0);
+        }
+    }
+    M2C_FIELD(arg0, u32 *, 0x1C) = size;
+    if (size == 0) {
+        return;
+    }
+    func_02008048(src, buf, size);
 }
 

@@ -49,6 +49,25 @@ data_027e00cc[0x24]=M2C_FIELD(base,u16 *,0x5144);
 data_027e00cc[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 }
 
+void func_01ffb5ec(s32 cx,s32 cy,s32 radius,s8 value){
+extern void **gCurrentMap;
+s32 y,x,end,d,w;void *base;
+d=radius;
+for(y=cy;y<=cy+radius;y++,d--){
+base=*gCurrentMap;if(y>=M2C_FIELD(base,u16 *,0x5146))break;
+w=d*2+1;x=cx-d;if(x<0){w+=x;x=0;}
+end=x+w;if(end>M2C_FIELD(base,u16 *,0x5144))end=M2C_FIELD(base,u16 *,0x5144);
+for(;x<end;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
+}
+d=radius-1;
+for(y=cy-1;y>=cy-radius;y--,d--){
+if(y<0)break;
+base=*gCurrentMap;w=d*2+1;x=cx-d;if(x<0){w+=x;x=0;}
+w=x+w;if(w>M2C_FIELD(base,u16 *,0x5144))w=M2C_FIELD(base,u16 *,0x5144);
+for(;x<w;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
+}
+}
+
 void func_01ffb734(int cx,int cy,int radius,s8 value) {
  extern void **gCurrentMap;
  int x,d,right,bottom,left,top; void *base=*gCurrentMap;
@@ -130,6 +149,28 @@ for(x=left;x<=arg2;x++) {
 ((s8 **)*gCurrentMap)[arg0+0x14ba][x]=arg3;
 }
 base=*gCurrentMap;
+}
+}
+
+void func_01ffb9c4(s8 arg0){
+extern void **gCurrentMap;
+s32 y,x;void *base=*gCurrentMap;
+for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
+for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
+s8 *cell=((s8**)base)[y+0x14ba]+x;
+if(*cell>=0 && arg0!=*cell){
+if(x!=0 && cell[-1]<0)cell[-1]=arg0;
+base=*gCurrentMap;
+if(x!=M2C_FIELD(base,u16*,0x5144)-1){
+cell=((s8**)base)[y+0x14ba]+x;
+if(cell[1]<0)cell[1]=arg0;
+}
+if(y!=0){cell=((s8**)*gCurrentMap)[y+0x14b9];if(cell[x]<0)cell[x]=arg0;}
+base=*gCurrentMap;
+if(y!=M2C_FIELD(base,u16*,0x5146)-1){cell=((s8**)base)[y+0x14bb];if(cell[x]<0)cell[x]=arg0;}
+}
+base=*gCurrentMap;
+}
 }
 }
 

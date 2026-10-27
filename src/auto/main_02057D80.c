@@ -131,6 +131,78 @@ if(r>0){if(y){func_02058170(p,&data_020ff39c);*out=4;return 0;}if(x){func_020581
 *out=0;return 0;
 }
 
+s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
+    void func_020640a8(void *, void *, void *, s32);
+    void func_02058620(void **, s32, M2C_UNK);
+    void func_02050744(void *, s32, s32);
+    extern M2C_UNK data_020ff3cc, data_020ff2dc, data_020ff2b8, data_020ff32c, data_020ff338, data_020ff3dc;
+    s32 idx;
+    s8 *p;
+    s8 *dstA;
+    s8 *cursor;
+    s32 cnt;
+    s8 ch;
+    s8 *dstB;
+    s8 *cursor2;
+    s32 cnt2;
+    s8 ch2;
+    s8 next;
+    if (!arg1) {
+        func_020640a8(&data_020ff3cc, &data_020ff2dc, &data_020ff2b8, 0x199);
+    }
+    if (!arg3) {
+        func_020640a8(&data_020ff32c, &data_020ff2dc, &data_020ff2b8, 0x19a);
+    }
+    if (!arg4) {
+        func_020640a8(&data_020ff338, &data_020ff2dc, &data_020ff2b8, 0x19b);
+    }
+    idx = *arg2;
+    p = (s8 *)arg1 + idx;
+    if (*p != 0x5c) {
+        func_02058620(arg0, 1, (s32)&data_020ff3dc);
+        func_02050744(arg0, 3, 1);
+        return 3;
+    }
+    dstA = (s8 *)arg3;
+    cursor = p + 2;
+    cnt = 0;
+    ch = p[1];
+    if (ch != 0x5c) {
+        if (ch == 0) {
+            func_02058620(arg0, 1, (s32)&data_020ff3dc);
+            func_02050744(arg0, 3, 1);
+            return 3;
+        }
+        while (1) {
+            if (cnt == 0x1ff) {
+                func_02058620(arg0, 1, (s32)&data_020ff3dc);
+                func_02050744(arg0, 3, 1);
+                return 3;
+            }
+            *dstA++ = ch;
+            ch = *cursor++;
+            cnt++;
+            if (ch == 0x5c) break;
+        }
+    }
+    *dstA = 0;
+    dstB = (s8 *)arg4;
+    cursor2 = cursor;
+    cnt2 = 0;
+    ch2 = *cursor2++;
+    while (1) {
+        if (cnt2 == 0x1ff) break;
+        *dstB++ = ch2;
+        cnt2++;
+        next = *cursor2++;
+        if (next == 0x5c || next == 0) break;
+        ch2 = next;
+    }
+    *dstB = 0;
+    *arg2 = idx + (s32)(cursor2 - p - 1);
+    return 0;
+}
+
 void func_02058620(void **arg0, s32 arg1, M2C_UNK arg2) {
     void *temp_r4;
 

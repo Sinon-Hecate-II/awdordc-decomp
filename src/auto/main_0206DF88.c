@@ -72,6 +72,93 @@ void func_0206e3e0(u8 *p, u64 value) {
     *((s16 *)(p + 2)) = (s16)(p[4] - 1);
 }
 
+void func_0206e4ac(u8 *arg0, u8 *arg1, u8 *arg2) {
+    u8 buf[0x40];
+    u32 acc;
+    s32 total;
+    u8 *cursor;
+    u8 *endmark;
+    s32 t;
+    s32 idx;
+    s32 cnt;
+    s32 lim;
+    s32 n;
+    u8 *base1;
+    u8 *base2;
+    u8 *p1;
+    u8 *p2;
+    u8 tt;
+
+    acc = 0;
+    total = arg1[4] + arg2[4] - 1;
+    cursor = buf + total + 1;
+    endmark = cursor;
+    arg0[0] = 0;
+    if (total > 0) {
+        base1 = arg1 + 5;
+        base2 = arg2 + 5;
+        do {
+            t = arg2[4] - 1;
+            idx = total - t - 1;
+            if (idx < 0) {
+                idx = 0;
+                t = total - 1;
+            }
+            cnt = t + 1;
+            lim = arg1[4] - idx;
+            if (cnt > lim) {
+                cnt = lim;
+            }
+            p1 = base1 + idx;
+            p2 = base2 + t;
+            n = cnt;
+            while (n > 0) {
+                u8 a = *p1++;
+                u8 b = *p2--;
+                n--;
+                acc += (u32)a * (u32)b;
+            }
+            total--;
+            cursor--;
+            *cursor = (u8)(acc % 10);
+            acc = acc / 10;
+        } while (total > 0);
+    }
+    *(s16 *)(arg0 + 2) = *(s16 *)(arg1 + 2) + *(s16 *)(arg2 + 2);
+    if (acc != 0) {
+        cursor--;
+        *cursor = (u8)acc;
+        *(s16 *)(arg0 + 2) = *(s16 *)(arg0 + 2) + 1;
+    }
+    n = 0;
+    while (n < 0x20 && cursor < endmark) {
+        arg0[5 + n] = *cursor++;
+        n++;
+    }
+    arg0[4] = (u8)n;
+    if (cursor >= endmark) {
+        return;
+    }
+    tt = cursor[0];
+    if (tt < 5) {
+        return;
+    }
+    if (tt == 5) {
+        u8 *p = cursor + 1;
+        while (p < endmark) {
+            if (*p != 0) {
+                goto call;
+            }
+            p++;
+        }
+        if (!(cursor[-1] & 1)) {
+            return;
+        }
+    }
+call:
+    func_0206e350(arg0, arg0[4]);
+}
+
 void func_0206e630(u8 *p,s8 *s,s16 e) {
  s32 n=0;
  M2C_FIELD(p,s16 *,2)=e; p[0]=0;

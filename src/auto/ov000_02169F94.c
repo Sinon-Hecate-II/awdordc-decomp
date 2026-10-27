@@ -127,6 +127,81 @@ extern M2C_UNK data_ov000_021b67cc;
 return *(s32 *)((u8 *)&data_ov000_021b67cc+i*8);
 }
 
+s32 func_ov000_0216a5ac(s32 arg0) {
+    s32 func_ov000_0216a38c(s32, s32);
+    u32 func_ov000_0216a3a8(s32, s32);
+
+    s32 *p;
+    s32 i;
+    u32 flag;
+    unsigned long long total0;
+    unsigned long long total1;
+    unsigned long long total2;
+    unsigned long long best;
+    u32 n;
+    u8 byte;
+    s16 mode;
+    s8 bestIndex;
+
+    p = (s32 *)0;
+    i = 0;
+    flag = 1;
+    total0 = 0;
+    total1 = 0;
+    total2 = 0;
+    best = 0;
+    bestIndex = 0;
+
+    p = (s32 *)func_ov000_0216a38c(1, 0);
+    while (*p != 0) {
+        n = func_ov000_0216a3a8(1, i);
+        if (n != 0) {
+            flag = 0;
+        }
+        byte = *(u8 *)((u8 *)func_ov000_0216a38c(1, i) + 0x18);
+        n = n * byte;
+        mode = *(s16 *)((u8 *)func_ov000_0216a38c(1, i) + 6);
+        switch (mode) {
+            case 0:
+                total0 = total0 + n;
+                break;
+            case 1:
+                total1 = total1 + n;
+                break;
+            case 2:
+                total2 = total2 + n;
+                break;
+        }
+        if ((unsigned long long)n > best) {
+            best = n;
+            bestIndex = (s8)i;
+        }
+        i = i + 1;
+        p = (s32 *)((u8 *)p + 0x30);
+    }
+
+    if (arg0 != 0) {
+        if (flag != 0) {
+            return -1;
+        }
+        return bestIndex;
+    }
+    if (flag != 0) {
+        return -1;
+    }
+    if (total0 < total1) {
+        if (total1 < total2) {
+            return 2;
+        }
+        return 1;
+    } else {
+        if (total0 < total2) {
+            return 2;
+        }
+        return 0;
+    }
+}
+
 void func_ov000_0216a76c(void) {
     M2C_UNK func_ov000_0216a5ac(M2C_UNK);
     func_ov000_0216a5ac(0);

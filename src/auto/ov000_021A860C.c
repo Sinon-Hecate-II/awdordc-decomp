@@ -127,6 +127,34 @@ s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0
 
 s32 func_ov000_021a8b78(void *a){s32 func_0207c8ec(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=func_0207c8ec(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
 
+#pragma opt_strength_reduction off
+s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
+extern void **gCurrentMap;
+s32 func_020d27c0(s32);
+s32 func_ov000_021a947c(u16,s32,s16,s16);
+s32 func_020a600c(u16);
+s32 i,dy,ny,j,right,left,top,bottom,d;void *base;
+left=x-radius;if(left<0)left=0;
+top=y-radius;if(top<0)top=0;
+base=*gCurrentMap;
+right=M2C_FIELD(base,u16 *,0x5144)-1;
+if(x+radius<right)right=x+radius;
+bottom=M2C_FIELD(base,u16 *,0x5146)-1;
+if(y+radius<bottom)bottom=y+radius;
+j=top;for(;j<=bottom;j++)for(i=left;i<=right;i++){
+d=0;if(x-i>0)d+=x-i;else d+=i-x;dy=y-j;ny=j-y;if(dy>0)d+=dy;else d+=ny;
+if(d>=0&&d<=radius){base=*gCurrentMap;
+d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
+if(!d)continue;
+if(func_020d27c0(d)==1)continue;
+if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,(s16)i,(s16)j))continue;
+base=*gCurrentMap;
+d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
+if(func_020a600c(d))return 1;
+}}
+return 0;
+}
+#pragma opt_strength_reduction reset
 s32 func_ov000_021a8d7c(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;u8 func_ov000_021a8fc0(s32);
 s32 i,dy,ny,j,right,left,top,bottom,d;void *base;

@@ -1,8 +1,15 @@
 /* 42 functions from 0x02224B9C to 0x02225A9C (ov011), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 a,b,c,d; } MenuRecord011;
+static inline s32 *NextMenuRecord011(void *a) { s32 *p=M2C_FIELD(a,s32 **,0x4c); M2C_FIELD(a,s32 **,0x4c)=p+4; return p; }
+static inline void ReadMenuRecord011(void *a,s32 *v,s32 *l) {
+s32 *p=M2C_FIELD(a,s32 **,0x4c);
+*v=p[2]; *l=p[3]; M2C_FIELD(a,s32 **,0x4c)=p+4;
+}
+typedef struct { u8 pad[0x35]; u8 count:4; u8 other:4; } MenuCount011;
 typedef struct { s32 words[5]; } ContextTemplate;
 extern ContextTemplate data_ov011_02227f3c;
-extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
+extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8, *data_027e01d8;
 
 /* Submit a 2D sprite/quad to one of the two 3D sprite engines (screen 0 or 1,
    selected by arg1, or to the engine already active when arg1 is 3) using the
@@ -199,11 +206,11 @@ void func_ov011_022253f0(void *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
     M2C_FIELD(arg0, s16 *, 0x42) = arg4;
 }
 
-void func_ov011_02225408(void *arg0, s8 arg1) {
+void func_ov011_02225408(void *arg0, u8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x35) = arg1;
 }
 
-void func_ov011_02225410(void *arg0, s8 arg1) {
+void func_ov011_02225410(void *arg0, u8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x34) = arg1;
 }
 
@@ -225,8 +232,8 @@ void func_ov011_02225604(void *arg0) {
 }
 
 void func_ov011_02225624(void *arg0) {
- M2C_UNK func_01ffa574(void *); void func_ov011_02225428(void *,s32);
- if(M2C_FIELD(arg0,s32 *,0x50))func_ov011_02225428(arg0,M2C_FIELD(arg0,s32 *,0x50));
+ M2C_UNK func_01ffa574(void *); void func_ov011_02225428(void *);
+if(M2C_FIELD(arg0,s32 *,0x50))func_ov011_02225428(arg0);
  func_ov011_02225348(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
  if(M2C_FIELD(arg0,u32 *,0x44)<199)return; func_01ffa574(arg0);
 }
@@ -253,6 +260,27 @@ func_0209b67c((u16)((x+1)&511),15,w,0xe800,17);
 gCur3DSpriteEngine=saved;
 }
 
+#pragma opt_common_subs off
+void func_ov011_0222588c(void *a) {
+extern s32 data_ov011_02228cec;
+s32 func_ov011_02225a18(void *); void *func_ov011_02227ea4(void *);
+s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y;
+data_ov011_02228cec=0; ((MenuCount011 *)a)->count=0;
+while(func_ov011_02225a18(a)==2 && (k=((MenuCount011 *)a)->count)<3) {
+p=M2C_FIELD(a,s32 **,0x4c); v=p[2];l=p[3]; M2C_FIELD(a,s32 **,0x4c)=p+4;
+values[k]=v;labels[k]=l; ((MenuCount011 *)a)->count=(u8)(((MenuCount011 *)a)->count+1);
+}
+for(i=0,n=((MenuCount011 *)a)->count;i<n;i++,n=((MenuCount011 *)a)->count) {
+((void **)((u8 *)a+0x40))[i]=func_ov011_02227ea4(a);
+func_ov011_02225420(((void **)((u8 *)a+0x40))[i],labels[i]);
+func_ov011_02225408(((void **)((u8 *)a+0x40))[i],(u8)i);
+func_ov011_02225238(((void **)((u8 *)a+0x40))[i]);
+y=60+(128/n)*(i+1)-128/(n*2);
+func_ov011_022253f0(((void **)((u8 *)a+0x40))[i],-16,y,272,y);
+func_ov011_02225418(((void **)((u8 *)a+0x40))[i],values[i]);
+func_ov011_02225410(((void **)((u8 *)a+0x40))[i],((MenuCount011 *)a)->count);
+}}
+#pragma opt_common_subs reset
 s32 func_ov011_02225a18(void *arg0) {
     return *M2C_FIELD(arg0, s32 **, 0x4C);
 }

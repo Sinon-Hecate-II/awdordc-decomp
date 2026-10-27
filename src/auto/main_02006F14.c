@@ -99,6 +99,73 @@ void func_02007190(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
+void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
+    u64 func_02007004(void);
+    void func_020070b4(void *);
+    u64 func_02072088(u64, u64);
+    extern u16 data_0212dfc4;
+
+    (void)arg1;
+    (void)arg2;
+
+    {
+        u32 period_lo = M2C_FIELD(arg0, u32 *, 0x20);
+        u32 period_hi = M2C_FIELD(arg0, u32 *, 0x1C);
+        if (period_lo != 0 || period_hi != 0) {
+            u64 now = func_02007004();
+            u32 stored_hi = M2C_FIELD(arg0, u32 *, 0x28);
+            u32 stored_lo = M2C_FIELD(arg0, u32 *, 0x24);
+            u64 stored = ((u64)stored_hi << 32) | stored_lo;
+            if (stored < now) {
+                u64 period = ((u64)period_lo << 32) | period_hi;
+                u64 q = func_02072088(now - stored, period);
+                u64 inc = period * (q + 1);
+                stored += inc;
+                stored_lo = (u32)stored;
+                stored_hi = (u32)(stored >> 32);
+                M2C_FIELD(arg0, u32 *, 0x0C) = stored_lo;
+                M2C_FIELD(arg0, u32 *, 0x10) = stored_hi;
+
+                {
+                    void *node = M2C_FIELD(&data_0212dfc4, void **, 4);
+                    u64 newdl = ((u64)stored_hi << 32) | stored_lo;
+                    while (node != 0) {
+                        u32 nlo = M2C_FIELD(node, u32 *, 0x0C);
+                        u32 nhi = M2C_FIELD(node, u32 *, 0x10);
+                        u64 nodedl = ((u64)nhi << 32) | nlo;
+                        if ((s64)newdl < (s64)nodedl) break;
+                        node = M2C_FIELD(node, void **, 0x18);
+                    }
+                    if (node != 0) {
+                        void *next = M2C_FIELD(node, void **, 0x14);
+                        M2C_FIELD(arg0, void **, 0x14) = next;
+                        M2C_FIELD(node, void **, 0x14) = arg0;
+                        M2C_FIELD(arg0, void **, 0x18) = node;
+                        if (next != 0) {
+                            M2C_FIELD(next, void **, 0x18) = arg0;
+                        } else {
+                            M2C_FIELD(&data_0212dfc4, void **, 4) = arg0;
+                            func_020070b4(arg0);
+                        }
+                    } else {
+                        void *old_head = M2C_FIELD(&data_0212dfc4, void **, 8);
+                        M2C_FIELD(arg0, void **, 0x18) = 0;
+                        M2C_FIELD(&data_0212dfc4, void **, 8) = arg0;
+                        M2C_FIELD(arg0, void **, 0x14) = old_head;
+                        if (old_head != 0) {
+                            M2C_FIELD(old_head, void **, 0x18) = arg0;
+                        } else {
+                            M2C_FIELD(&data_0212dfc4, void **, 8) = arg0;
+                            M2C_FIELD(&data_0212dfc4, void **, 4) = arg0;
+                            func_020070b4(arg0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 #pragma scheduling off
 void func_020072cc(void *arg0, u64 delay, s32 arg3, s32 arg4) {
  M2C_UNK func_02007958();
@@ -240,6 +307,13 @@ void func_020074c0(void) {
 s32 func_02007508(void) {
     M2C_ERROR(/* unknown instruction: msr cpsr_c, $r1 */);
     return M2C_ERROR(/* unknown instruction: mrs $r0, cpsr */) & 0x80;
+}
+
+extern void func_00000678(unsigned int);
+void func_0200758c(unsigned int value)
+{
+    if (value >= 4)
+        return func_00000678(value - 4);
 }
 
 void func_02007598(void) {

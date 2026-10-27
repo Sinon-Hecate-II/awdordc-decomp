@@ -1,6 +1,12 @@
 /* 12 functions from 0x02214E24 to 0x02215DD8 (ov007), found by ds-decomp. */
 #include "common.h"
-typedef struct Map14E24 { u8 pad[0xa10]; u16 cells[(0x3758-0xa10)/2]; u16 rows[32]; } Map14E24;
+typedef struct { u16 x,y; } Point15A0C;
+#pragma opt_common_subs off
+#pragma opt_propagation off
+static inline volatile Point15A0C *PointZero15A0C(volatile Point15A0C *p) { ((volatile u16 *)p)[0]=0;((volatile u16 *)p)[1]=0;return p; }
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
+typedef struct Map14E24 { u8 pad[0xa10]; u16 cells[(0x3758-0xa10)/2]; u16 rows[32]; u8 pad3798[0x5144-0x3798];u16 width,height; } Map14E24;
 extern s32 *gCurrentMap;
 extern u8 data_ov007_02221a84[800];
 
@@ -116,6 +122,24 @@ s32 func_ov007_02215704(s32 x, s32 y) {
     return 0;
 }
 
+#pragma opt_common_subs on
+Point15A0C func_ov007_02215a0c(s32 a,s32 b,s32 c) {
+s32 RandomIntRange(s32,s32);Point15A0C func_ov007_022157fc(s32,s32,s32,s32,s32);
+s32 tries=0,i,j;s32 *map;s32 x,y,yy,xx;Point15A0C result;
+retry:
+if(++tries>100){volatile Point15A0C empty;volatile u16 *p=(volatile u16 *)&empty;*p++=0;*p=0;return empty;}
+x=RandomIntRange(0,M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1);
+y=RandomIntRange(0,M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1);
+for(j=y-1;j<=y+1;j++){
+if(j<0)goto retry;map=gCurrentMap;if(j>=((Map14E24 *)*map)->height)goto retry;
+for(i=x-1;i<=x+1;i++){
+if(i<0||i>=((Map14E24 *)*map)->width)goto retry;
+if(M2C_FIELD((u8 *)*map+((Map14E24 *)*map)->rows[j]+i,u8 *,0x1420)&0xe0)goto retry;
+}}
+for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)func_ov007_02215254(xx,yy,1);
+return func_ov007_022157fc(x,y,a,b,c);
+}
+#pragma opt_common_subs reset
 s32 func_ov007_02215bc4(s32 *x,s32 *y,s32 value) {
  s32 RandomIntRange(s32,s32);
  extern s32 *gCurrentMap;

@@ -9,6 +9,92 @@ static inline void RestoreState(RestoredUnit *p,u8 v) {p->state=v;}
 typedef struct { u8 pad0[0xa10]; u16 tiles[0x508]; u8 cells[0x2338]; u16 rows[0xcf6]; u16 width,height; } Map8484;
 typedef union {u32 word; struct {u32 low:10;u32 kind:5;u32 gap:3;u32 mode:4;u32 high:10;} bits;} PackedEntry;
 
+void func_020c7cd0(void *arg0, void *arg1) {
+    void *func_020e34bc(s32);
+    void func_02007ef4(void *, void *, s32);
+    void func_02007e98(s32, s32, s32);
+    void func_020e35cc(void *);
+    struct W4 { s32 a[4]; };
+
+    register void *r6 asm("r6");
+    register void *r5 asm("r5");
+    register void *r4 asm("r4");
+    register u8 *r7 asm("r7");
+    register u8 *r3 asm("r3");
+    register struct W4 *r8 asm("r8");
+    register s32 r2 asm("r2");
+    register s32 r12v asm("r12");
+    register void *lr asm("lr");
+
+    r6 = arg0;
+    r5 = arg1;
+    r4 = r6;
+    if (r6 == r5) {
+        r4 = func_020e34bc(0x2AC);
+        func_02007ef4(r6, r4, 0x2AC);
+    }
+    func_02007e98(0, (s32)r5, 0x6F8);
+    *(s32 *)r5 = *(s32 *)r4;
+    r7 = (u8 *)r4 + 6;
+    r3 = (u8 *)r5 + 6;
+    ((u8 *)r5)[4] = ((u8 *)r4)[4];
+    ((u8 *)r5)[5] = ((u8 *)r4)[5];
+    r2 = 16;
+    do {
+        u8 t0 = r7[0];
+        u8 t1 = r7[1];
+        r7 = r7 + 2;
+        r2 = r2 - 1;
+        r3[0] = t0;
+        r3[1] = t1;
+        r3 = r3 + 2;
+    } while (r2 != 0);
+    r3[0] = r7[0];
+    r8 = (struct W4 *)((u8 *)r5 + 0x30);
+    r7 = (u8 *)r4 + 0x40;
+    lr = (u8 *)r5 + 0x40;
+    ((u8 *)r5)[0x27] = ((u8 *)r4)[0x27];
+    ((u8 *)r5)[0x28] = ((u8 *)r4)[0x28];
+    ((u8 *)r5)[0x29] = ((u8 *)r4)[0x29];
+    ((u8 *)r5)[0x2A] = ((u8 *)r4)[0x2A];
+    ((u8 *)r5)[0x2B] = ((u8 *)r4)[0x2B];
+    ((u8 *)r5)[0x2C] = ((u8 *)r4)[0x2C];
+    ((u8 *)r5)[0x2D] = ((u8 *)r4)[0x2D];
+    ((u8 *)r5)[0x2E] = ((u8 *)r4)[0x2E];
+    ((u8 *)r5)[0x2F] = ((u8 *)r4)[0x2F];
+    *r8 = *(struct W4 *)((u8 *)r4 + 0x30);
+    *(struct W4 *)lr = *(struct W4 *)r7;
+    r7 = (u8 *)r7 + 16;
+    lr = (u8 *)lr + 16;
+    *(s32 *)lr = *(s32 *)r7;
+    r12v = 0;
+    if ((s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]) > 0) {
+        do {
+            r7 = (u8 *)r4 + r12v;
+            r3 = (u8 *)r5 + r12v; /* avoid? r3 gets overwritten; but target r0/r? let's instead direct */
+        } while (0);
+    }
+    /* The above placeholder wrong. Do loops directly: */
+    r12v = 0;
+    if ((s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]) > 0) {
+        do {
+            ((u8 *)r5)[0x54 + r12v] = ((u8 *)r4)[0x54 + r12v];
+            r12v = r12v + 1;
+        } while (r12v < (s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]));
+    }
+    r2 = 0;
+    if ((s32)((u8 *)r4)[0x2F] > 0) {
+        do {
+            *(s32 *)((u8 *)r5 + r2 * 4 + 0x3D8) = *(s32 *)((u8 *)r4 + r2 * 4 + 0x1E4);
+            r2 = r2 + 1;
+        } while (r2 < (s32)((u8 *)r4)[0x2F]);
+    }
+    if (r6 != r5) {
+        return;
+    }
+    func_020e35cc(r4);
+}
+
 s32 func_020c7e58(s32 arg0) {
     extern M2C_UNK data_02164d64;
     return (0x54 * arg0) + (s32) &data_02164d64;

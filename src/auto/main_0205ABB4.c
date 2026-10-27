@@ -1,5 +1,6 @@
 /* 42 functions from 0x0205ABB4 to 0x0205BB90 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 offset,size,command;u16 sequence; } Command5B8B0;
 
 s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_0205aa34();
@@ -311,6 +312,24 @@ s32 func_0205b79c(void *object, s32 command, s32 param_a, s32 param_b) {
 
 void func_0205b89c(void *arg0, void *arg1) {
     func_0205b100(M2C_FIELD(arg0, u16 *, 0xC), M2C_FIELD(arg1, u16 *, 0xC));
+}
+
+s32 func_0205b8b0(void *a,s32 command,u16 sequence,void *data,s32 size,s32 *error){
+s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_02059d24(void *);void func_020487fc(s32,void *,void *);void func_02059df0(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
+s32 count=func_02048688(M2C_FIELD(a,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 seq2;
+for(i=0;i<count;i++){u16 seq=M2C_FIELD(func_02048690(M2C_FIELD(a,s32 *,0x5c),i),u16 *,12);if(seq==sequence){*error=0;return 1;}if(func_0205b100(seq,sequence)>0)break;}
+if(func_02059d24(a+0x44)<size){*error=1;return 1;}
+record.offset=M2C_FIELD(a,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
+func_020487fc(M2C_FIELD(a,s32 *,0x5c),&record,func_0205b89c);
+if(count+1!=func_02048688(M2C_FIELD(a,s32 *,0x5c))){*error=1;return 1;}
+func_02059df0(a+0x44,data,size);
+if(count==0){if(!func_0205caac(a,M2C_FIELD(a,u16 *,0x66),(u16)(sequence-1)))return 0;}
+else {seq2=M2C_FIELD(func_02048690(M2C_FIELD(a,s32 *,0x5c),count),u16 *,12);if(seq2==sequence){
+prev=func_02048690(M2C_FIELD(a,s32 *,0x5c),count-1);
+if((u16)func_0205b100(sequence,M2C_FIELD(prev,u16 *,12))>1){
+if(!func_0205caac(a,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))return 0;
+}}}
+*error=0;return 1;
 }
 
 void func_0205ba64(void *a,void *b,s32 c) {void *func_02048690(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;func_0204890c(M2C_FIELD(a,s32 *,92),c);n=func_02048688(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=func_02048690(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);func_02059e78((char*)a+68,x,y);}

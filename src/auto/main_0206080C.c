@@ -1,5 +1,9 @@
 /* 57 functions from 0x0206080C to 0x020617BC (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 count; char buf[128]; } Packet60E;
+typedef struct { u8 a,b; } Pair60E;
+static inline void CopyPair60E(u8 *d,const u8 *s) { *(Pair60E *)d=*(const Pair60E *)s; }
+static inline u16 SwapPair60E(u16 v) { return (u8)(v>>8)|((v<<8)&0xff00); }
 
 void func_0206080c(void *arg0) {
     u32 func_02049208();
@@ -258,6 +262,29 @@ void func_02060d90(M2C_UNK arg0, s32 arg1) {
     } while (var_r8 != NULL);
 }
 
+void func_02060e10(M2C_UNK a,s8 *p,s32 n){
+s32 func_02061da0(s8 *,s32);
+s32 func_020675e4(void *,void *,...);
+s32 func_02068c34(const char *);
+extern M2C_UNK data_02100084;
+volatile Packet60E packet;s8 *start; s32 pass,len,fields,row,col; s8 *key,*value;
+while(*p){len=func_02061da0(p,n);if(len<0)return;key=p;n-=len;p+=len;
+len=func_02061da0(p,n);if(len<0)return;value=p;p+=len;n-=len;func_02060a84(a,key,value);}
+p++;n--;
+for(pass=0;pass<2;pass++){
+if(n<2)return;
+CopyPair60E((u8 *)&packet.count,(u8 *)p);p+=2;start=p;n-=2;
+packet.count=(u8)(packet.count>>8)|((packet.count<<8)&0xff00);
+fields=0;while(*p){len=func_02061da0(p,n);if(len<0)return;if(len>100)return;p+=len;fields++;n-=len;}
+p++;n--;
+for(row=0;row<packet.count;row++){key=start;for(col=0;col<fields;col++){
+len=func_02061da0(p,n);if(len<0)return;
+func_020675e4(packet.buf,&data_02100084,key,row);func_02060a84(a,(M2C_UNK *)packet.buf,p);
+p+=len;n-=len;key+=func_02068c34(key)+1;
+}}
+}
+}
+
 #pragma push
 #pragma optimize_ifs off
 s32 func_02060fe8(s8 *arg0, s32 arg1) {
@@ -343,6 +370,40 @@ s32 func_02061168(s32 arg0) {
     return 0;
 }
 
+void func_02061184(void *a,u32 event,void *p,void *q){
+void func_0206045c(void *,void *,s32,s32);
+void func_0206040c(void *,s32);
+s32 func_02048688(s32);
+M2C_UNK func_020626d4(void *);
+s32 flag;
+switch(event){
+case 0:
+M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,0,p,M2C_FIELD(q,s32 *,0x634));
+if((!(M2C_FIELD(p,u8 *,0x14)&3)||!(M2C_FIELD(p,u8 *,0x14)&0x40))&&!(M2C_FIELD(p,u8 *,0x14)&0x2c)&&!M2C_FIELD(q,s32 *,0x624)){
+if(M2C_FIELD(p,u8 *,0x15)&1)flag=!(M2C_FIELD(q,s32 *,0x4c)&&M2C_FIELD(q,s32 *,0x40));else flag=2;
+func_0206045c(q,p,0,flag);
+}break;
+case 1:
+if(!(M2C_FIELD(p,u8 *,0x14)&0x43))
+M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,2,p,M2C_FIELD(q,s32 *,0x634));
+else M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,1,p,M2C_FIELD(q,s32 *,0x634));
+break;
+case 2:
+if(M2C_FIELD(p,u8 *,0x14)&0x2c)func_0206095c(q,p);
+M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,3,p,M2C_FIELD(q,s32 *,0x634));break;
+case 3:
+if(M2C_FIELD(q,s32 *,0x620))func_020626d4(a);
+if(!func_02048688(M2C_FIELD(a,s32 *,4))||!M2C_FIELD(q,s32 *,0x10))
+M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,4,0,M2C_FIELD(q,s32 *,0x634));break;
+case 5:
+M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,5,0,M2C_FIELD(q,s32 *,0x634));break;
+case 6:func_0206040c(q,M2C_FIELD(q,s32 *,0x4ec));break;
+}
+if(!p)return;
+if(M2C_FIELD(p,s32 *,0)!=M2C_FIELD(q,s32 *,0x628))return;
+if(M2C_FIELD(p,u16 *,4)==M2C_FIELD(q,u16 *,0x62c))M2C_FIELD(q,s32 *,0x628)=0;
+}
+
 void func_0206133c(s32 arg0,s32 arg1,void *arg2,void *arg3){
  switch(arg1){
  case 1:M2C_FIELD(arg3,M2C_UNK (**)(void *,s32,void *,s32),0x630)(arg3,2,arg2,M2C_FIELD(arg3,s32 *,0x634));break;
@@ -359,7 +420,7 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     M2C_UNK func_02060398(void *, s32, s32, s32, M2C_UNK *, void *);
     M2C_UNK func_02061dd0(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
     extern s32 gDnsQueryState;
-    extern M2C_UNK func_02061184;
+    void func_02061184(void *,u32,void *,void *);
     void func_0206133c(s32, s32, void *, void *);
     void *obj;
 
@@ -373,7 +434,7 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     M2C_FIELD(obj, s32 *, 0x630) = arg7;
     M2C_FIELD(obj, s32 *, 0x634) = arg8;
     M2C_FIELD(obj, s32 *, 0x624) = 0;
-    func_02061dd0(obj + 0x4C, arg0, arg1, arg2, arg3, arg6, &func_02061184, obj);
+    func_02061dd0(obj + 0x4C, arg0, arg1, arg2, arg3, arg6, (M2C_UNK *)&func_02061184, obj);
     func_02060398(obj, arg4, arg5, arg6, (M2C_UNK *)&func_0206133c, obj);
     return obj;
 }

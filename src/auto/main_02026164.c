@@ -238,6 +238,66 @@ void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
     func_02007f8c((u8 *)(dst + k), 0, (u32)((len - k) * 2));
 }
 
+void func_0202667c(u16 *dst, u16 *src, s32 n) {
+    s32 m;
+    m = func_02026244(src, n);
+    if (n > m * 2) {
+        func_02007f8c((u8 *)(dst + m * 2), 0, (u32)((n - m * 2) * 2));
+    }
+    if (m <= 0) {
+        return;
+    }
+    {
+        s32 r4 = 0;
+        s32 r5 = 0;
+        for (;;) {
+            if (r5 >= n) {
+                break;
+            }
+            {
+                u16 w = src[r4];
+                u32 sq = (u32)w * w;
+                dst[r5] = (u16)sq;
+                if (r5 == n - 1) {
+                    break;
+                }
+                r4++;
+                dst[r5 + 1] = (u16)(sq >> 16);
+                if (r4 >= m) {
+                    break;
+                }
+                r5 += 2;
+            }
+        }
+    }
+    {
+        s32 r6;
+        for (r6 = 0; r6 < m; r6++) {
+            s32 r4 = r6 + 1;
+            for (;;) {
+                s32 r5;
+                if (r4 >= m) {
+                    break;
+                }
+                r5 = r6 + r4;
+                if (r5 >= n) {
+                    break;
+                }
+                {
+                    u32 prod = (u32)src[r4] * (u32)src[r6];
+                    if (prod > 0x7fff8000U) {
+                        func_02026524(dst, prod, r5, n);
+                        func_02026524(dst, prod, r5, n);
+                    } else {
+                        func_02026524(dst, prod << 1, r5, n);
+                    }
+                }
+                r4++;
+            }
+        }
+    }
+}
+
 s32 func_020267b0(u16 *arg0) {
     if (*(volatile u16 *)arg0) {
     }
@@ -256,6 +316,94 @@ s32 func_020267cc(volatile u16 *arg0) {
 
 s32 func_020267e0(void *arg0) {
     return M2C_FIELD(arg0, u16 *, -6) | (M2C_FIELD(arg0, u16 *, -4) << 0x10);
+}
+
+void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
+    M2C_UNK func_02008048(s32, s32, s32);
+    s32 func_0202626c(u16 *, s32);
+    void func_0202629c(u16 *, u16 *, u16 *, s32);
+    void func_020263dc(u16 *, u16 *, u16 *, s32);
+    void func_02026558(u16 *, u16 *, u16 *, s32);
+    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+
+    u16 *base;
+    s32 n;
+    u16 *p1;
+    u16 *p2;
+    u16 *p3;
+    u16 *p4;
+    u16 *p5;
+    u16 *p6;
+    s32 bytes;
+
+    base = arg4;
+    n = arg3;
+    p1 = base + n;
+    p2 = p1 + n;
+    p3 = p2 + n;
+    p4 = p3 + n;
+    p5 = p4 + n;
+    p6 = p5 + n;
+    bytes = n << 1;
+
+    func_02008048((s32)arg1, (s32)base, bytes);
+    func_02008048((s32)arg2, (s32)p2, bytes);
+    p3[0] = 1;
+
+    if (func_0202626c(base, n) > 0) {
+        do {
+            func_020267fc(p1, p2, base, p5, n, p6);
+            func_02008048((s32)base, (s32)p2, bytes);
+            func_02008048((s32)p5, (s32)base, bytes);
+            func_02026558(p5, p1, p3, n);
+            func_020263dc(p5, p4, p5, n);
+            func_02008048((s32)p3, (s32)p4, bytes);
+            func_02008048((s32)p5, (s32)p3, bytes);
+        } while (func_0202626c(base, n) > 0);
+        func_0202629c(p4, p4, arg2, n);
+        func_020267fc(0, p4, arg2, arg0, n, p6);
+    }
+}
+
+void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
+{
+  M2C_UNK func_02007f8c(u8 *, s32, u32);
+  M2C_UNK func_02008048(s32, s32, s32);
+  void func_0202629c(u16 *, u16 *, u16 *, s32);
+  void func_020263dc(u16 *, u16 *, u16 *, s32);
+  s32 func_020264ec(u16 *, u16 *, s32);
+  void func_02026558(u16 *, u16 *, u16 *, s32);
+      void func_0202667c(u16 *, u16 *, s32);
+  M2C_UNK func_020651c4(M2C_UNK, M2C_UNK, M2C_UNK);
+  func_02008048((s32) arg0, (s32) arg1, arg3 * 2);
+  if (arg2 == 1)
+  {
+    func_0202667c((s32) arg0, (s32) arg1, arg3);
+  }
+  else
+    if (arg2 != 0)
+  {
+    func_02026558(arg0, arg1, (u16 *) arg2, arg3);
+  }
+  func_02026558(arg7, arg0, arg6, arg4);
+  arg2 = (arg3 - arg4) * 2;
+  func_02007f8c((u8 *) (arg7 + arg4), 0, (u32) arg2);
+  func_02026558(arg8, arg7, arg5, arg3);
+  func_0202629c(arg0, arg0, arg8, arg3);
+  func_020651c4((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
+  func_02007f8c((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
+  switch (func_020264ec(arg0, arg5, arg3))
+  {
+    case 0:
+      func_02007f8c((u8 *) arg0, 0, (u32) (arg3 * 2));
+      return;
+
+    case 1:
+      func_020263dc(arg0, arg0, arg5, arg3);
+      return;
+
+  }
+
 }
 
 void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {

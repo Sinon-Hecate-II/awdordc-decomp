@@ -1,5 +1,6 @@
 /* 25 functions from 0x0202E470 to 0x0202F37C (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 pad[0xd0a];u8 a;u8 b:2;u8 padb:6;u8 c:4;u8 d:2;u8 padd:2; } Config0202ef;
 typedef struct { s32 unk_0; s32 unk_4; } Unk0202ed18;
 
 s32 func_0202ed18(void *,s32);
@@ -141,6 +142,32 @@ s32 func_0202ef4c(void *arg0) {
         return 1;
     }
     return 0;
+}
+
+s32 func_0202ef64(void *a) {
+void func_02007e54(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 func_020270b4(void *,s32);void func_0202f37c(void);
+extern M2C_UNK data_0213d100;
+void *p,*q;Config0202ef *cfg;s32 r;
+p=M2C_FIELD(a,void *(**)(s32,s32),0)(1,24);
+M2C_FIELD(&data_0213d100,void **,16)=p;func_02007e54(0,p,24);
+p=M2C_FIELD(&data_0213d100,void **,16);
+M2C_FIELD(p,s32 *,0)=M2C_FIELD(a,s32 *,0);M2C_FIELD(p,s32 *,4)=M2C_FIELD(a,s32 *,4);
+M2C_FIELD(p,u8 *,9)=1;M2C_FIELD(p,u8 *,22)=1;M2C_FIELD(p,u8 *,8)=1;
+M2C_FIELD(&data_0213d100,s32 *,0)=func_0202f2f4(16,0xd18);
+M2C_FIELD(&data_0213d100,s32 *,4)=func_0202f2f4(2,0x2300);
+M2C_FIELD(&data_0213d100,s32 *,8)=func_0202f2f4(4,88);
+M2C_FIELD(&data_0213d100,s32 *,12)=func_0202f2f4(8,12);
+func_02007e54(0,M2C_FIELD(&data_0213d100,void **,0),0xd18);
+func_02007e54(0,M2C_FIELD(&data_0213d100,void **,4),0x2300);
+func_02007e54(0,M2C_FIELD(&data_0213d100,void **,8),88);
+func_02007e54(0,M2C_FIELD(&data_0213d100,void **,12),12);
+cfg=M2C_FIELD(&data_0213d100,Config0202ef **,0);
+cfg->a=M2C_FIELD(a,u8 *,8);cfg->b=M2C_FIELD(a,u8 *,9);
+q=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(q,s32 *,0)=M2C_FIELD(a,s32 *,0);M2C_FIELD(q,s32 *,4)=M2C_FIELD(a,s32 *,4);M2C_FIELD(q,s32 *,8)=0;
+cfg->c=M2C_FIELD(a,u8 *,10);cfg->d=M2C_FIELD(a,u8 *,11);
+func_02045c90();
+r=func_020270b4(M2C_FIELD(&data_0213d100,void **,4),0x2300);
+if(r==1 || r>=4){func_0202f37c();return 0;}return 1;
 }
 
 s32 func_0202f10c(void) {

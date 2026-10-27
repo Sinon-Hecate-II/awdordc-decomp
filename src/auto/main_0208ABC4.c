@@ -11,6 +11,64 @@ typedef struct {
 u8 func_0208b5a8(void);
 
 /* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
+M2C_UNK func_0208abc4(M2C_UNK arg0) {
+    void func_0208ad48(void *);
+    void func_0208af20(void *);
+    u8 func_0208ae88(Unk0208ABC4 *, s32);
+    M2C_UNK func_0208fe30(s32);
+    void func_020d47d0(void);
+    void func_020d47f0(void);
+    extern u16 *data_02101e84;
+
+    if (((u32)(M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) != 0) {
+        return;
+    }
+    func_0208ad48(arg0);
+    if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 1) {
+        if (!((*(u16 *)data_02101e84) & 3)) {
+            return;
+        }
+        func_0208fe30(0x1000d);
+        func_0208af20(arg0);
+    } else if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 2) {
+        if (!((*(u16 *)data_02101e84) & 3)) {
+            return;
+        }
+        func_0208fe30(0x10010);
+        func_0208af20(arg0);
+    } else if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 3) {
+        if ((*(u16 *)data_02101e84) & 0x20) {
+            if (func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
+                func_0208fe30(0x10010);
+            }
+        }
+        if ((*(u16 *)data_02101e84) & 0x10) {
+            if (func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
+                func_0208fe30(0x10010);
+            }
+        }
+        if ((*(u16 *)data_02101e84) & 1) {
+            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 0) {
+                func_020d47d0();
+                func_0208fe30(0x1000d);
+            }
+            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 1) {
+                func_020d47f0();
+                func_0208fe30(0x1000f);
+                func_0208af20(arg0);
+                return;
+            }
+            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) & 2) {
+                func_020d47f0();
+                func_0208fe30(0x1000f);
+                func_0208af20(arg0);
+                return;
+            }
+        }
+    }
+    return;
+}
+
 void func_0208ad48(void *entity) {
     unsigned flagRight;
     unsigned flagLeft;

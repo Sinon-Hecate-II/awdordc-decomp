@@ -443,6 +443,156 @@ done:
     return remain;
 }
 
+s32 func_020088ec(void *arg0, u8 *arg1, s32 arg2) {
+    s32 temp_ip;
+    s32 temp_r11_3;
+    s32 var_r2;
+    s32 var_r4;
+    u16 *var_r3;
+    u32 var_lr;
+    u32 var_r9;
+    u8 *var_r1;
+    u8 temp_r11;
+    u8 temp_r11_2;
+    s32 var_r10;
+    s32 var_r5;
+    s32 var_r6;
+    s32 var_r7;
+    s32 var_r8;
+
+    var_r1 = arg1;
+    var_r2 = arg2;
+    var_r3 = M2C_FIELD(arg0, u16 **, 0);
+    var_r4 = M2C_FIELD(arg0, s32 *, 4);
+    var_r5 = M2C_FIELD(arg0, u8 *, 0xB);
+    var_r6 = M2C_FIELD(arg0, u8 *, 0xC);
+    var_r7 = M2C_FIELD(arg0, u8 *, 0xD);
+    var_r8 = M2C_FIELD(arg0, u8 *, 0xE);
+    var_r9 = M2C_FIELD(arg0, u16 *, 8);
+    var_r10 = M2C_FIELD(arg0, u8 *, 0xA);
+loop_1:
+    if (var_r4 > 0) {
+        if (var_r6 != 0) {
+loop_3:
+            if (var_r2 != 0) {
+                if (!(var_r5 & 0x80)) {
+                    temp_r11 = *var_r1;
+                    var_r1 += 1;
+                    var_r2 -= 1;
+                    var_r9 |= temp_r11 << var_r10;
+                    var_r10 += 8;
+                    if (var_r10 == 0x10) {
+                        *var_r3 = var_r9;
+                        var_r3 += 1;
+                        var_r4 -= 2;
+                        var_r9 = 0;
+                        var_r10 = 0;
+                    }
+                    goto block_23;
+                }
+                if (var_r8 == 0) {
+                    var_r7 = *var_r1;
+                    var_r1 += 1;
+                    var_r8 = 1;
+                    var_r2 -= 1;
+                }
+                if (var_r2 != 0) {
+                    temp_r11_2 = *var_r1;
+                    var_r1 += 1;
+                    var_r8 = 0;
+                    var_r2 -= 1;
+                    temp_r11_3 = (temp_r11_2 | ((var_r7 & 0xF) << 8)) + 1;
+                    var_r7 = ((s32) var_r7 >> 4) + 3;
+                    if (var_r7 != 0) {
+                        do {
+                            temp_ip = temp_r11_3 - (var_r10 >> 3);
+                            if (temp_ip == 0) {
+                                var_r9 |= (var_r9 & 0xF) << 8;
+                            } else {
+                                var_lr = *(var_r3 - ((u32) (temp_ip + 1) >> 1));
+                                if (!(temp_ip & 1)) {
+
+                                } else {
+                                    var_lr = (var_lr >> 8);
+                                }
+                                if (temp_ip & 1) {
+
+                                } else {
+                                    var_lr = var_lr & 255;
+                                }
+                                var_r9 |= var_lr << var_r10;
+                            }
+                            var_r10 += 8;
+                            if (var_r10 == 0x10) {
+                                *var_r3 = var_r9;
+                                var_r3 += 1;
+                                var_r4 -= 2;
+                                var_r9 = 0;
+                                var_r10 = 0;
+                            }
+                            var_r7 -= 1;
+                        } while ((s64) (s32) var_r7 > 0);
+                    }
+block_23:
+                    if (var_r4 != 0) {
+                        var_r5 *= 2;
+                        var_r6 -= 1;
+                        if (var_r6 == 0) {
+                            goto block_25;
+                        }
+                        goto loop_3;
+                    }
+                }
+            }
+        } else {
+block_25:
+            if (var_r2 != 0) {
+                var_r5 = *var_r1;
+                var_r1 += 1;
+                var_r6 = 8;
+                var_r2 -= 1;
+                goto loop_1;
+            }
+        }
+    }
+    M2C_FIELD(arg0, u16 **, 0) = var_r3;
+    M2C_FIELD(arg0, s32 *, 4) = var_r4;
+    M2C_FIELD(arg0, u8 *, 0xB) = var_r5;
+    M2C_FIELD(arg0, u8 *, 0xC) = var_r6;
+    M2C_FIELD(arg0, u8 *, 0xD) = var_r7;
+    M2C_FIELD(arg0, u8 *, 0xE) = var_r8;
+    M2C_FIELD(arg0, u16 *, 8) = var_r9;
+    M2C_FIELD(arg0, u8 *, 0xA) = var_r10;
+    return var_r4;
+}
+
+s32 func_02008a60(void *p,u8 *src,s32 len){
+u32 *dst=M2C_FIELD(p,u32**,0);s32 left=M2C_FIELD(p,s32*,4);u8 *tree=M2C_FIELD(p,u8**,8);
+u32 bits=M2C_FIELD(p,u32*,12),out=M2C_FIELD(p,u32*,16);
+s32 count=M2C_FIELD(p,s16*,20),nb=M2C_FIELD(p,u8*,22),no=M2C_FIELD(p,u8*,23),width=M2C_FIELD(p,u8*,24);
+if(count){
+if(count<0){count=*src++;len--;*tree++=count;count=((count+1)<<1)-1;}
+do{if(!len)goto end;*tree++=*src++;len--;if(--count==0)tree=(u8*)p+29;}while(count>0);
+}
+while(left>0){
+while(nb<32){if(!len)goto end;bits|=(*(u32*)src)<<nb;src++;len--;nb+=8;}
+do{
+u32 bit=bits>>31;u32 node=*tree;
+tree=(u8*)(((u32)tree>>1)<<1)+((node&63)+1)*2+bit;
+count=0;bits<<=1;nb--;
+if((node<<bit)&128){
+out=(out>>width)|(*tree<<(32-width));tree=(u8*)p+29;no+=width;
+if(no==32){*dst++=out;no=0;left-=4;if(left<=0){left=0;goto end;}}
+}
+}while(nb>0);
+}
+end:
+M2C_FIELD(p,u32**,0)=dst;M2C_FIELD(p,s32*,4)=left;M2C_FIELD(p,u8**,8)=tree;
+M2C_FIELD(p,u32*,12)=bits;M2C_FIELD(p,u32*,16)=out;
+M2C_FIELD(p,s16*,20)=count;M2C_FIELD(p,u8*,22)=nb;M2C_FIELD(p,u8*,23)=no;M2C_FIELD(p,u8*,24)=width;
+return left;
+}
+
 #pragma peephole reset
 #pragma opt_strength_reduction reset
 void func_02008bb8(void) {

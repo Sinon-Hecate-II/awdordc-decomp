@@ -100,3 +100,20 @@ void func_02028cc8(u16 *p) {
     return;
 }
 
+void func_02028c00(u16 *);
+void func_02028dd8(u16 *p) {
+extern void *data_02138e4c;
+switch(p[1]){
+case 0:
+if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==12){func_02028160(10);func_020282b0();return;}
+switch(func_0201280c(func_02028c00,0)){
+case 2:return;
+case 8:func_02028160(12);func_020280c8(1,(u8 *)data_02138e4c+0x2140,0,0x8b4);return;
+case 3:func_02028160(10);func_020282b0();return;
+default:func_02028160(11);func_020280c8(7,(u8 *)data_02138e4c+0x2140,0,0x8c0);return;
+}
+case 1:case 3:func_02028160(10);func_020282b0();return;
+case 2:case 4:default:func_02028160(11);func_020280c8(7,(u8 *)data_02138e4c+0x2140,0,0x8d3);return;
+}
+}
+

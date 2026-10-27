@@ -178,6 +178,42 @@ void func_02044744(s32 a,s32 b,s32 c,s32 d){extern s32 data_0213db14;void func_0
 
 void func_02044780(s32 a,s32 b){extern s32 data_0213db14;s32 func_020390b4(s32);s32 c;if(!M2C_FIELD(data_0213db14,s32 *,0x60c))return;c=func_020390b4(a);M2C_FIELD(data_0213db14,void (**)(s32,s32),0x60c)(b,c);}
 
+void func_020447c0(void) {
+extern s32 data_0213db14;
+s32 func_02038eb0(u8 **);s32 func_02038f34(s32);void *func_020449f0(s32);
+u64 func_02007004(void);u64 func_02072088(u64,u64);
+s32 func_02038e94(void);s32 func_02044a08(s32);s32 func_02044de0();
+void func_02044a40(s32,s32,s32,s32);
+u8 *list; s32 count,i,id; void *p; void *q; s32 n; s32 total; u64 now;
+if(!data_0213db14)return;
+count=func_02038eb0(&list);
+for(i=0;i<count;i++){
+id=list[i];
+if(func_02038f34(id)){
+p=func_020449f0(id);
+if(M2C_FIELD(data_0213db14,void (**)(s32),0x608) && M2C_FIELD(p,u32 *,0x2c)){
+now=func_02007004();
+if((u32)func_02072088((now-M2C_FIELD(p,u64 *,0x24))<<6,0x82ea)>M2C_FIELD(p,u32 *,0x2c)){
+M2C_FIELD(data_0213db14,void (**)(s32),0x608)(id);
+M2C_FIELD(p,u64 *,0x24)=now;
+}}
+}
+if(id!=func_02038e94() && func_02044a08(id)==1){
+q=func_020449f0(id);
+n=M2C_FIELD(data_0213db14,u16 *,0x610);
+if(M2C_FIELD(q,s32 *,0x14)-M2C_FIELD(q,s32 *,0xc)<=n)n=M2C_FIELD(q,s32 *,0x14)-M2C_FIELD(q,s32 *,0xc);
+if(func_02044de0(id)>=n){
+func_02044a40(id,M2C_FIELD(q,s32 *,0)+M2C_FIELD(q,s32 *,0xc),n,1);
+M2C_FIELD(q,s32 *,0xc)+=n;
+total=M2C_FIELD(q,s32 *,0x14);
+if(M2C_FIELD(q,s32 *,0xc)==total){
+M2C_FIELD(q,u8 *,0x1c)=0;M2C_FIELD(q,s32 *,0)=0;
+M2C_FIELD(q,s32 *,0xc)=0;M2C_FIELD(q,s32 *,0x14)=0;
+if(M2C_FIELD(data_0213db14,void (**)(s32,s32),0x600))M2C_FIELD(data_0213db14,void (**)(s32,s32),0x600)(total,id);
+}}}
+}
+}
+
 void func_02044954(s32 a){extern s32 data_0213db14;if(!data_0213db14)return;M2C_FIELD(data_0213db14+a*0x30,s32 *,0xc)=0;M2C_FIELD(data_0213db14+a*0x30,s32 *,0x10)=0;M2C_FIELD(data_0213db14+a*0x30,s32 *,0x14)=0;M2C_FIELD(data_0213db14+a*0x30,s32 *,0x18)=0;M2C_FIELD(data_0213db14+a*0x30,u8 *,0x1c)=0;if(((u8 *)(data_0213db14+0x1d))[a*0x30])((u8 *)(data_0213db14+0x1d))[a*0x30]=1;M2C_FIELD(data_0213db14+a*0x30,u16 *,0x22)=0;}
 
 void func_020449dc(void) {

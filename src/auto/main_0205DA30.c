@@ -3,76 +3,78 @@
 
 typedef struct { u8 bytes[6]; } NetworkAddress6;
 typedef struct { u8 bytes[20]; } NetworkPacket20Bytes;
+typedef struct { NetworkAddress6 address; u8 type, length; u32 ip, value; u16 port; u8 flag, mode; } NetworkPacket20;
 typedef struct { u8 bytes[21]; } NetworkPacket21Bytes;
 typedef struct { NetworkAddress6 address; u8 type, length; u32 ip; u8 reserved, value; u8 tail[7]; } NetworkPacket21;
 extern NetworkAddress6 data_020ff88c;
 
+#pragma opt_propagation off
 void func_0205dc78(void *arg0) {
     void func_0205d944(s32, s32, u16, void *, s32);
     s32 func_02049208(void);
     extern NetworkAddress6 data_020ff88c;
     u8 sp04[0x14];
 
-    register s32 r2 asm("r2") = 2;
-    register u8 *r1 asm("r1") = (u8 *)&data_020ff88c;
-    register u8 rb7 asm("r7");
-    register u8 rb6 asm("r6");
-    register u8 *r8 asm("r8");
-    register u8 rb5 asm("r5");
-    u8 vlr;
-    u8 r12v;
-    u8 r3v;
-    register void *r4 asm("r4");
+    register u8 *pr1 asm("r1") = (u8 *)&data_020ff88c;
+    register s32 vr2 asm("r2");
+    register u8 vr7 asm("r7");
+    register u8 vr6 asm("r6");
+    register u8 *vr8 asm("r8") = sp04;
+    register u8 vr5 asm("r5");
+    register u8 vlr asm("lr");
+    register u8 vr12 asm("r12");
+    register u8 vr3 asm("r3");
+    register void *vr4 asm("r4");
 
-    rb7 = r1[0];
-    rb6 = r1[1];
-    r8 = sp04;
-    rb5 = r1[2];
-    vlr = r1[3];
-    r12v = r1[4];
-    r3v = r1[5];
-    r1 = (u8 *)7;
-    r4 = arg0;
+    vr7 = pr1[0];
+    vr6 = pr1[1];
+    vr5 = pr1[2];
+    vlr = pr1[3];
+    vr12 = pr1[4];
+    vr3 = pr1[5];
+    vr4 = arg0;
 
-    *r8 = rb7;
-    r8[1] = rb6;
-    r8[2] = rb5;
-    r8[3] = vlr;
-    r8[4] = r12v;
-    sp04[6] = (u8)r2;
-    sp04[7] = (u8)(int)r1;
-    r8[5] = r3v;
+    *vr8 = vr7;
+    vr8[1] = vr6;
+    vr8[2] = vr5;
+    vr8[3] = vlr;
+    vr8[4] = vr12;
+    vr2 = 2;
+    pr1 = (u8 *)7;
+    sp04[6] = (u8)vr2;
+    sp04[7] = (u8)pr1;
+    vr8[5] = vr3;
 
     {
-        u32 ip = M2C_FIELD(r4, u32 *, 8);
+        u32 ip = M2C_FIELD(vr4, u32 *, 8);
         *(u32 *)(sp04 + 8) =
             ((ip >> 24) & 0xFFU) |
             ((ip >> 8) & 0xFF00U) |
             ((ip << 8) & 0xFF0000U) |
             ((ip << 24) & 0xFF000000U);
     }
-    *(u32 *)(sp04 + 12) = M2C_FIELD(r4, u32 *, 0x2C);
+    *(u32 *)(sp04 + 12) = M2C_FIELD(vr4, u32 *, 0x2C);
     {
-        u16 port = M2C_FIELD(r4, u16 *, 0x30);
+        u16 port = M2C_FIELD(vr4, u16 *, 0x30);
         *(u16 *)(sp04 + 16) = (u16)((((s32)port >> 8) & 0xFF) | ((port << 8) & 0xFF00));
     }
-    sp04[18] = M2C_FIELD(r4, u8 *, 0x32);
-    sp04[19] = (M2C_FIELD(r4, s32 *, 0x10) != 2) ? 1 : 0;
+    sp04[18] = M2C_FIELD(vr4, u8 *, 0x32);
+    sp04[19] = (M2C_FIELD(vr4, s32 *, 0x10) != 2) ? 1 : 0;
 
     {
-        s32 val = M2C_FIELD(r4, s32 *, 4);
+        s32 val = M2C_FIELD(vr4, s32 *, 4);
         if (val == -1) {
-            val = M2C_FIELD(r4, s32 *, 0);
+            val = M2C_FIELD(vr4, s32 *, 0);
         }
-        func_0205d944(val, M2C_FIELD(r4, s32 *, 0x2C), M2C_FIELD(r4, u16 *, 0x30), sp04, 0x14);
+        func_0205d944(val, M2C_FIELD(vr4, s32 *, 0x2C), M2C_FIELD(vr4, u16 *, 0x30), sp04, 0x14);
     }
-    M2C_FIELD(r4, s32 *, 0x28) = func_02049208() + 0x2BC;
-    M2C_FIELD(r4, s32 *, 0x24) = 0xC;
-    if (M2C_FIELD(r4, u8 *, 0x32) != 0) {
-        M2C_FIELD(r4, s8 *, 0x33) = 1;
+    M2C_FIELD(vr4, s32 *, 0x28) = func_02049208() + 0x2BC;
+    M2C_FIELD(vr4, s32 *, 0x24) = 0xC;
+    if (M2C_FIELD(vr4, u8 *, 0x32) != 0) {
+        M2C_FIELD(vr4, s8 *, 0x33) = 1;
     }
 }
-
+#pragma opt_propagation reset
 s32 func_0205dd98(M2C_UNK arg0) {
     void *func_02021768(M2C_UNK);
     s32 func_020498e4();

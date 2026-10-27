@@ -67,7 +67,7 @@ void func_ov003_02207a8c(void *arg0) {
 
 #pragma thumb off
 void func_ov003_02207b84(void *arg0) {
-M2C_UNK func_ov003_02207c7c(void *); M2C_UNK func_ov003_02207e80(void *);
+void func_ov003_02207c7c(void *); void func_ov003_02207e80(void *);
 s32 var_ip,var_lr,var_r5,var_r5_2,var_r6,var_r7; void *temp_r8; s32 var_r9,var_r10; void *temp_r1,*temp_r5;
 temp_r1=M2C_FIELD(arg0,void **,0x50);var_r9=0;
 M2C_FIELD(temp_r1,u16 *,2)=M2C_FIELD(temp_r1,u16 *,4);
@@ -117,6 +117,89 @@ u8 func_ov003_02207e38(void *arg0, s32 arg1) {
         var_r0 = 0;
     }
     return (u8) var_r0;
+}
+
+void func_ov003_02207e80(void *arg0) {
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **data_027e00c4;
+    M2C_UNK func_01ff9ce8(s32);
+    void *func_020bf25c(s32);
+    s32 func_02086680(s32);
+    void func_02068c50(void *, void *);
+    s32 func_020675e4(void *, void *, ...);
+    void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, void *, u16, u16);
+    extern char data_ov003_02211188[];
+
+    u16 **savedEngine;
+    u8 kind;
+    char buf[0x100];
+    void *x;
+    void *inner;
+    u16 kindVal;
+    u8 idx;
+    u8 byte38;
+    u8 bit;
+    u8 flag34;
+    u8 var_r0;
+    u16 scale;
+    u8 oldBit;
+
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c4;
+
+    func_01ff9ce8(1);
+
+    flag34 = (*(u8 *)((char *)arg0 + 0x34) != 0) ? 1 : 0;
+    var_r0 = flag34;
+
+    if (var_r0 == 0) {
+        x = *(void **)((char *)arg0 + 0x5C);
+        inner = (x != 0) ? *(void **)((char *)x + 0) : 0;
+
+        kind = *(u8 *)((char *)*(void **)((char *)arg0 + 0x3C) + 0xF);
+
+        byte38 = *(u8 *)((char *)arg0 + 0x38);
+        bit = (u8)(((u32)byte38 << 29) >> 31);
+        if (inner != 0) {
+            kindVal = *(u16 *)((char *)inner + 0x8);
+        } else {
+            kindVal = (u16)-1;
+        }
+        idx = (u8)(kindVal - 0xB);
+        scale = (u16)(((u32)bit << 8) - bit + 1);
+
+        switch (kind) {
+        case 9:
+            func_02068c50(buf, func_020bf25c(0));
+            break;
+        case 11:
+            func_02068c50(buf, func_020bf25c(1));
+            break;
+        case 10:
+            func_02068c50(buf, func_020bf25c(5));
+            break;
+        default: {
+            void *base = *(void **)((char *)arg0 + 0x48);
+            void *slot = (void *)((char *)base + (u32)idx * 0x24);
+            void *p = *(void **)slot;
+            func_020675e4((void *)buf, (void *)data_ov003_02211188,
+                          func_02086680(*(s32 *)((char *)p + 0xC)));
+            break;
+        }
+        }
+
+        func_0209b2b4(0, 0, 1, (void *)buf, 0x3000, scale);
+    }
+
+    {
+        void *engine = *gCur3DSpriteEngine;
+        *(u8 *)((char *)engine + 0x46) |= 0x2;
+        byte38 = *(u8 *)((char *)arg0 + 0x38);
+        oldBit = (u8)(((u32)byte38 << 29) >> 31);
+        *(u8 *)((char *)arg0 + 0x38) = (byte38 & ~0x4) | (oldBit ? 0 : 0x4);
+    }
+
+    gCur3DSpriteEngine = savedEngine;
 }
 
 u8 func_ov003_0220801c(void *arg0) {

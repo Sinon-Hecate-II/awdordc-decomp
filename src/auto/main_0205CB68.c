@@ -175,6 +175,92 @@ else func_020675e4(p,data_020ff854,b);
 return p;
 }
 
+s32 func_0205d588(char *a, s32 *b, u16 *c) {
+    char *func_02068ee0(char *, s32);
+    M2C_UNK func_020640a8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void func_020651a4(void *, const void *, s32);
+    s32 func_0206ad38(char *);
+    s32 func_020498e4(void *);
+    void *func_02021768(void *);
+    extern u16 data_020ead40[];
+    extern char data_020ff858[];
+    extern char data_020ff878[];
+    extern char data_020ff834[];
+    char buf[0x104];
+    char *r8;
+    s32 *r7;
+    u16 *r6;
+    s32 r4;
+    s32 r5;
+
+    r8 = a;
+    r7 = b;
+    r6 = c;
+    r4 = 0;
+    r5 = 0;
+    if (r8 != 0 && *r8 != 0) {
+        char *colon = func_02068ee0(r8, ':');
+        r5 = (s32)colon;
+        if (colon != 0) {
+            if (colon != r8) {
+                s32 r9 = (s32)colon - (s32)r8;
+                if (r9 >= 0x100) {
+                    func_020640a8((M2C_UNK)data_020ff858, (M2C_UNK)data_020ff878, (M2C_UNK)data_020ff834, 0x81);
+                    func_020651a4(buf, r8, r9);
+                    r8 = buf;
+                    buf[r9] = 0;
+                }
+                {
+                    char *r3 = colon + 1;
+                    signed char ch = *r3;
+                    while (ch != 0) {
+                        if (ch < 0) {
+                            if (!(data_020ead40[ch] & 0x8)) {
+                                return 0;
+                            }
+                        } else if (ch >= 0x80) {
+                            return 0;
+                        }
+                        r3++;
+                        ch = *r3;
+                    }
+                }
+            } else {
+                r8 = 0;
+                r4 = 0;
+            }
+            {
+                s32 rr = func_0206ad38((char *)(r5 + 1));
+                if (rr > 0xffff) {
+                    return 0;
+                }
+                r5 = (u16)rr;
+            }
+        }
+        if (r8 != 0) {
+            r4 = func_020498e4(r8);
+            if (r4 == -1) {
+                void *t = func_02021768(r8);
+                if (t == 0) {
+                    return 0;
+                }
+                {
+                    void *q = *(void **)((char *)t + 0xc);
+                    void *rrr = *(void **)((char *)q + 0);
+                    r4 = *(s32 *)((char *)rrr + 0);
+                }
+            }
+        }
+    }
+    if (r7 != 0) {
+        *r7 = r4;
+    }
+    if (r6 != 0) {
+        *r6 = (u16)r5;
+    }
+    return 1;
+}
+
 void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
     s32 func_02068c34(M2C_UNK *);
     extern M2C_UNK data_020ff888;

@@ -1,5 +1,7 @@
 /* 27 functions from 0x021893E4 to 0x0218A384 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct A070Node { struct A070Node *prev; struct A070Node *next; s32 start; u8 size; u8 pad[3]; } A070Node;
+typedef struct A070Pool { u8 pad[0x200]; A070Node head; A070Node tail; s32 unk220; s32 handle; } A070Pool;
 
 void func_ov001_0218959c(void) {
     M2C_UNK func_ov001_02189828(void);
@@ -49,6 +51,57 @@ M2C_UNK func_ov001_02189828(void) {
     func_02007f8c((u8 *)data_ov001_02193e28 + 0x100, 0, 0x100);
     func_02007f8c(data_ov001_02193e28, 0, 0x100);
     *(u32 *)((u8 *)data_ov001_02193e28 + 0xAB0) = (u32)data_ov001_02193e28;
+}
+
+void func_ov001_0218986c(s32 arg0, s32 arg1, void *arg2) {
+    M2C_UNK func_ov001_02188394(void);
+    M2C_UNK func_ov001_02188a5c(void *);
+    M2C_UNK func_ov001_02188380(void);
+    M2C_UNK func_ov001_02188a34(s32);
+    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    extern void *data_ov001_02193e28;
+    u16 i;
+    u8 *p;
+
+    if (*(u8 *)((u8 *)data_ov001_02193e28 + 0xa93) == 1) {
+        p = *(u8 **)((u8 *)data_ov001_02193e28 + 0xab0);
+        *(u16 *)p = (u16)arg0;
+        *(((u16 *)p) + 1) = (u16)arg1;
+        func_02008048(arg2, p + 4, 0x40);
+        return;
+    }
+
+    *(u32 *)((u8 *)data_ov001_02193e28 + 0x204) += 1;
+    p = *(u8 **)((u8 *)data_ov001_02193e28 + 0xab0);
+    *(u16 *)p = 0xbc;
+    p[4] = *(u8 *)((u8 *)data_ov001_02193e28 + 0xa92);
+
+    if (func_ov001_02188394() != 5) {
+        return;
+    }
+    if (func_ov001_02188a5c(data_ov001_02193e28) == 0) {
+        *(u32 *)((u8 *)data_ov001_02193e28 + 0x204) += 4;
+        return;
+    }
+    if (*(u8 *)((u8 *)data_ov001_02193e28 + 0xa93) == 0) {
+        *(u32 *)((u8 *)data_ov001_02193e28 + 0x204) += 1;
+    } else {
+        *(u32 *)((u8 *)data_ov001_02193e28 + 0x204) = 0;
+        if (func_ov001_02188380() != 3) {
+            *(u8 *)((u8 *)data_ov001_02193e28 + 0xa90) = 0x1b;
+            return;
+        }
+    }
+
+    for (i = 0; i < 2; i = (u16)(i + 1)) {
+        void *src = func_ov001_02188a34(i);
+        if (src == 0) {
+            *(s32 *)((u8 *)data_ov001_02193e28 + 0x208 + i * 4) = 0;
+        } else {
+            func_02008048(src, (u8 *)data_ov001_02193e28 + 0x100 + i * 0x44, 0x44);
+            *(s32 *)((u8 *)data_ov001_02193e28 + 0x208 + i * 4) = 1;
+        }
+    }
 }
 
 #pragma optimization_level 2
@@ -145,7 +198,7 @@ s32 func_ov001_02189dc0(void) {
 }
 
 void *func_ov001_02189dc8(void *arg0,u32 *arg1,s32 arg2){
-void func_ov001_0218a74c(s32);void func_0200b774(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void func_0200bbe0(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
+s32 func_ov001_0218a74c(s32);void func_0200b774(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void func_0200bbe0(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
 extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
 void *buf;u32 work[18];u32 size;s32 align;void *out;
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c,s32*,0x84));
@@ -218,6 +271,74 @@ void func_ov001_0218a01c(void) {
         var_r6 += 0x228;
     } while (var_r5 < 2);
     func_ov001_0218b71c(&data_ov001_02193e30);
+}
+
+void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
+    s32 func_ov001_0218a74c(s32);
+    s32 func_020051f8(s32);
+    void func_020051c8(s32);
+    void func_02007958(void);
+    void func_ov001_0218bf84(void *, void *);
+    extern s32 data_ov001_02193e30;
+    s32 idx = in_idx;
+    s32 arg1 = in_arg1;
+    s32 off = idx * 0x228;
+    A070Node *node;
+    s32 state;
+    s32 arg2 = in_arg2;
+    A070Node *cur;
+    A070Node *next;
+    A070Node *prev;
+    A070Node *bound;
+    A070Node *headBound;
+    s32 curEnd;
+    s32 need;
+
+    node = (A070Node *)func_ov001_0218a74c(*((s32 *)(data_ov001_02193e30 + off + 0x224)));
+    state = func_020051f8(1);
+    if (arg2 != 0) {
+        bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
+        cur = (A070Node *)(data_ov001_02193e30 + off + 0x200);
+        if (cur != bound) {
+            do {
+                next = cur->next;
+                curEnd = cur->start + cur->size * 8;
+                need = curEnd + arg1 * 8;
+                if ((u32)need <= (u32)next->start) {
+                    node->start = curEnd;
+                    func_ov001_0218bf84(next, node);
+                    break;
+                }
+                cur = next;
+            } while (next != bound);
+        }
+        if (cur == bound) {
+            func_02007958();
+        }
+    } else {
+        bound = (A070Node *)(data_ov001_02193e30 + off + 0x210);
+        headBound = (A070Node *)(data_ov001_02193e30 + off + 0x200);
+        cur = bound;
+        if (cur != headBound) {
+            do {
+                prev = cur->prev;
+                curEnd = cur->start - arg1 * 8;
+                need = prev->start + prev->size * 8;
+                if ((u32)curEnd >= (u32)need) {
+                    node->start = curEnd;
+                    func_ov001_0218bf84(cur, node);
+                    break;
+                }
+                cur = prev;
+            } while (prev != headBound);
+        }
+        if (cur == headBound) {
+            func_02007958();
+        }
+    }
+    func_020051c8(state);
+    node->size = (u8)arg1;
+    return node;
 }
 
 void func_ov001_0218a1cc(void *arg0) {

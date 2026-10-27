@@ -1,5 +1,7 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
+static inline u8 mapByte020778cc(s32 map,u32 index) { return M2C_FIELD(map+index,u8 *,0x1420); }
+static inline u8 mapFog020778cc(u8 *bits,u32 index) { return bits[index>>3] & (1<<(index&7)); }
 static inline u8 *mapBits020778cc(u8 *dims) { return dims+0xe1; }
 static inline u32 tileFlags020778cc(u16 tile) {
  extern u32 data_020edebc[][2];
@@ -64,7 +66,7 @@ void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *
 #pragma push
 #pragma optimization_level 2
 void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
- void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
+ void func_02079310(s32,s32,s32,s32,u8,u8,u8,u8);
  extern s32 *gCurrentMap;
  extern u8 data_02141f08[];
  extern u8 data_02142ebc[3840];
@@ -76,7 +78,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  u32 index;
  u8 *bits;
  u8 *dims;
- s32 fog,terrain,a,b;
+ u8 b,a,terrain,fog;
  *(volatile u32 *)0x04000444=0;
  *(volatile u32 *)0x04000470=0;
  *(volatile u32 *)0x04000470=0;
@@ -91,8 +93,8 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  if(flags&0x20000) {
  bits=mapBits020778cc(dims);
  index=x+M2C_FIELD(base+y*2,u16 *,0x3758);
- fog=(u8)(bits[index>>3]&(1<<(index&7)));
- terrain=M2C_FIELD(base+index,u8 *,0x1420);
+ fog=mapFog020778cc(bits,index);
+ terrain=mapByte020778cc(base,index);
  a=(data_02141f08+x*40)[y];
  b=(data_02141788+x*40)[y];
  func_02079310(x,y,0xac,0,terrain,fog,a,b);

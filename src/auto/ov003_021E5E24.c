@@ -131,6 +131,70 @@ u8 func_ov003_021e647c(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x60);
 }
 
+void *func_ov003_021e69d8(void *arg0) {
+    M2C_UNK func_01ffa574();
+    M2C_UNK func_020c127c();
+    M2C_UNK func_020c8e40();
+    M2C_UNK func_020e4ca0();
+    extern M2C_UNK data_ov003_0220f720;
+    extern M2C_UNK data_ov003_0220f74c;
+    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK func_02082040();
+    s32 *temp_r5;
+    void **temp_r0;
+    void **temp_r0_2;
+    void **temp_r0_3;
+    void **temp_r0_4;
+    void **temp_r0_5;
+
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220f720;
+    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220f74c;
+    func_020e4ca0();
+    temp_r0 = M2C_FIELD(arg0, void ***, 0x68);
+    if (temp_r0 != NULL) {
+        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+        func_02082040();
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x40) != 0) {
+        func_02082040();
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
+        func_02082040();
+    }
+    temp_r5 = M2C_FIELD(arg0, s32 **, 0x48);
+    if (temp_r5 != NULL) {
+        if (*temp_r5 != 0) {
+            func_01ffa574();
+        }
+        func_02082040(temp_r5);
+    }
+    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x4C);
+    if (temp_r0_2 != NULL) {
+        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    }
+    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x50);
+    if (temp_r0_3 != NULL) {
+        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    }
+    temp_r0_4 = M2C_FIELD(arg0, void ***, 0x58);
+    if (temp_r0_4 != NULL) {
+        M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
+    }
+    temp_r0_5 = M2C_FIELD(arg0, void ***, 0x54);
+    if (temp_r0_5 != NULL) {
+        M2C_FIELD(*temp_r0_5, void (**)(void *), 4)(temp_r0_5);
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
+        func_01ffa574();
+    }
+    func_020c127c();
+    func_ov003_021f140c(4);
+    func_020c8e40();
+    return arg0;
+}
+
 s32 func_ov003_021e6af0(s32 arg0) {
     M2C_UNK func_02082040();
     func_02082040();
@@ -139,6 +203,71 @@ s32 func_ov003_021e6af0(s32 arg0) {
 
 void func_ov003_021e6b04(void) {
 
+}
+
+void *func_ov003_021e6b08(void *arg0) {
+    M2C_UNK func_01ffa574();
+    M2C_UNK func_020c127c();
+    M2C_UNK func_020c8e40();
+    M2C_UNK func_020e4ca0();
+    extern M2C_UNK data_ov003_0220f720;
+    extern M2C_UNK data_ov003_0220f74c;
+    M2C_UNK func_ov003_021f140c(s32);
+    M2C_UNK func_02082040();
+    s32 *temp_r5;
+    void **temp_r0;
+    void **temp_r0_2;
+    void **temp_r0_3;
+    void **temp_r0_4;
+    void **temp_r0_5;
+
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220f720;
+    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220f74c;
+    func_020e4ca0();
+    temp_r0 = M2C_FIELD(arg0, void ***, 0x68);
+    if (temp_r0 != NULL) {
+        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+        func_02082040();
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x40) != 0) {
+        func_02082040();
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
+        func_02082040();
+    }
+    temp_r5 = M2C_FIELD(arg0, s32 **, 0x48);
+    if (temp_r5 != NULL) {
+        if (*temp_r5 != 0) {
+            func_01ffa574();
+        }
+        func_02082040(temp_r5);
+    }
+    temp_r0_2 = M2C_FIELD(arg0, void ***, 0x4C);
+    if (temp_r0_2 != NULL) {
+        M2C_FIELD(*temp_r0_2, void (**)(void *), 4)(temp_r0_2);
+    }
+    temp_r0_3 = M2C_FIELD(arg0, void ***, 0x50);
+    if (temp_r0_3 != NULL) {
+        M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
+    }
+    temp_r0_4 = M2C_FIELD(arg0, void ***, 0x58);
+    if (temp_r0_4 != NULL) {
+        M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
+    }
+    temp_r0_5 = M2C_FIELD(arg0, void ***, 0x54);
+    if (temp_r0_5 != NULL) {
+        M2C_FIELD(*temp_r0_5, void (**)(void *), 4)(temp_r0_5);
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
+        func_01ffa574();
+    }
+    func_020c127c();
+    func_ov003_021f140c(4);
+    func_020c8e40();
+    func_02082040(arg0);
+    return arg0;
 }
 
 void func_ov003_021e6c28(void) {

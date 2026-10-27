@@ -90,6 +90,63 @@ s32 func_ov003_0220058c(u32);
 func_020ae7a4(a,1,func_ov003_0220058c((u8)func_020a2360(b+1)));
 }
 
+void func_ov003_022006dc(s32 arg0) {
+    extern void **gCurrentMap;
+    s32 func_020846a4(void);
+    void func_020833d0(void);
+    s32 func_020bfda8(s32);
+    void func_020a231c(s32, s32);
+    void func_020a232c(s32, s32);
+    void func_020a2204(s32);
+    void func_02007e98(s32, void *, s32);
+    s8 func_020a2370(s32);
+    s32 func_020a22fc(s32);
+    s32 func_ov003_02200808(u32);
+    s32 func_0208492c(void);
+    void func_02084d88(void *, s32);
+
+    u8 sp[0x24];
+    u8 r5;
+    u8 *r6;
+    s32 val;
+
+    if (func_020846a4() == 0) {
+        return;
+    }
+    func_020833d0();
+    if (arg0 == 0) {
+        func_020bfda8(0);
+        M2C_FIELD(*gCurrentMap, u8 *, 0x5141) = 2;
+        func_020a231c(1, 1);
+        func_020a231c(2, 2);
+        func_020a231c(3, 3);
+        func_020a231c(4, 4);
+        func_020a232c(1, 1);
+        func_020a232c(2, 2);
+        func_020a232c(3, 3);
+        func_020a232c(4, 4);
+    }
+    func_020a2204(0);
+    func_02007e98(0, sp, 0x24);
+    r5 = 0;
+    do {
+        r6 = sp + r5;
+        r6[0xe] = (u8)func_020a2370(r5 + 1);
+        val = func_020a22fc(r5 + 1);
+        val = val & 0xFF;
+        val = func_ov003_02200808(val);
+        r5 = (u8)(r5 + 1);
+        r6[0x12] = (u8)val;
+    } while (r5 < 4);
+    val = func_0208492c();
+    val = val + 1;
+    val = func_020a22fc(val);
+    val = val & 0xFF;
+    val = func_ov003_02200808(val);
+    sp[0xd] = (u8)val;
+    func_02084d88(sp, 0x24);
+}
+
 s32 func_ov003_02200808(u32 a) {
 switch(a) {
 case 1:return 0;

@@ -526,7 +526,7 @@ void func_02090894(void **arg0) {
     void **temp_r5;
 
     var_r4 = arg0;
-    func_02090a88();
+    func_02090a88(arg0);
     if (arg0 != NULL) {
         do {
             temp_r5 = M2C_FIELD(var_r4, void ***, 8);

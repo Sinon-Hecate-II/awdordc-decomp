@@ -1,5 +1,9 @@
 /* 22 functions from 0x02063704 to 0x02064684 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 b[2]; } Bytes2;
+typedef struct { u8 b[4]; } Bytes4;
+static inline void Copy2(void *d,const void *s) { *(Bytes2 *)d=*(const Bytes2 *)s; }
+static inline void Copy4(void *d,const void *s) { *(Bytes4 *)d=*(const Bytes4 *)s; }
 
 typedef struct M2C_S_02063BD0 {
     u32 field_0;
@@ -80,6 +84,39 @@ s32 func_020639c0(void *arg0) {
     return 0;
 }
 
+#pragma scheduling off
+s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
+s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 func_020623bc(void *,s32,s32,s32,s32);
+u8 packet[16]; u16 size; u16 temp; s32 result;
+if(M2C_FIELD(arg0,s32 *,0)==1) {
+func_020623bc(arg0,0,0,2,0);
+}
+if(M2C_FIELD(arg0,s32 *,0)==1)return 3;
+temp=arg4+9;size=(u8)(temp>>8)|((temp<<8)&0xff00);
+packet[0]=((u8 *)&size)[0]; packet[1]=((u8 *)&size)[1];
+packet[3]=((u8 *)&arg1)[0];packet[4]=((u8 *)&arg1)[1];packet[5]=((u8 *)&arg1)[2];packet[6]=((u8 *)&arg1)[3];packet[7]=((u8 *)&arg2)[0];packet[8]=((u8 *)&arg2)[1];
+packet[2]=2;
+result=func_02062324(arg0,packet,9);if(result)return result;
+if(func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0)return 3; return 0;
+}
+#pragma scheduling reset
+extern s32 data_0213e4b4[];
+s32 func_02063c88(void *arg0) {
+s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
+s32 func_02061ac8(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
+void func_0206113c(s32,s32); s32 func_02061a38(void *,s32); u32 func_02049208(void); void func_020496b8(s32);
+u8 buf[0x5dc]; u16 addr[4]; s32 len=8; s32 entry;
+while(func_02049534(M2C_FIELD(arg0,s32 *,0x4b0))) {
+if(func_020497e0(M2C_FIELD(arg0,s32 *,0x4b0),buf,0x5db,0,addr,&len)!=-1 &&
+func_02061ac8(arg0,*(s32 *)(addr+2),addr[1])==-1) {
+entry=func_02061090(arg0,*(s32 *)(addr+2),addr[1]); if(func_02061168())return 5;
+func_0206113c(entry,17);func_02061a38(arg0,entry);
+}}
+if(func_02049208()-M2C_FIELD(arg0,u32 *,0x4b4)>2000) {
+func_020496b8(M2C_FIELD(arg0,s32 *,0x4b0));M2C_FIELD(arg0,s32 *,0x4b0)=-1;M2C_FIELD(arg0,s32 *,0)=1;
+M2C_FIELD(arg0,void (**)(void *,s32,s32,s32),0x488)(arg0,3,data_0213e4b4[0],M2C_FIELD(arg0,s32 *,0x494));
+}return 0; }
+
 s32 func_02063dac(void *arg0) {
     void func_02061bdc(void *);
     s32 func_020639c0(void *);
@@ -123,6 +160,33 @@ void func_02063e1c(M2C_UNK arg0) {
     func_02063e68(arg0);
 }
 
+#pragma opt_common_subs off
+M2C_UNK func_02063e68(M2C_UNK arg0){
+s32 func_02006680(void*);M2C_UNK func_02006564();M2C_UNK func_020065e8();
+M2C_UNK func_020649a8(s32);M2C_UNK func_020746f0(void);
+extern u8 data_0213e61c[];extern M2C_UNK data_0212dca4,data_0213e4c4,data_0213e4d4;
+extern s32 data_0213e5d4[],data_0213e5f8[];
+s32 n;M2C_UNK (*cb)(void);void *thread;s32 owner;
+if(!func_02006680(data_0213e61c)){
+data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),s32*,108);data_0213e5f8[0]=1;
+}else if((thread=M2C_FIELD(&data_0212dca4,void**,4),owner=data_0213e5d4[0],owner==M2C_FIELD(thread,s32*,108))){
+data_0213e5f8[0]++;
+}else{
+func_02006564(data_0213e61c);
+data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),s32*,108);data_0213e5f8[0]=1;
+}
+while(M2C_FIELD(&data_0213e4c4,s32*,8)>0){
+n=M2C_FIELD(&data_0213e4c4,s32*,8)-1;
+cb=((M2C_UNK (**)(void))&data_0213e4d4)[n];
+M2C_FIELD(&data_0213e4c4,s32*,8)=n;cb();
+}
+if(--data_0213e5f8[0]==0)func_020065e8(data_0213e61c);
+if(M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)){
+M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)();M2C_FIELD(&data_0213e4c4,M2C_UNK (**)(void),0)=0;
+}
+func_020649a8(0);func_020746f0();
+}
+#pragma opt_common_subs reset
 void func_02063f90(void) {
     M2C_UNK func_0207191c(s32);
     extern s32 data_021002ec;

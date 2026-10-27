@@ -7,15 +7,18 @@ typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLi
 extern s32 data_ov001_02193e60[2];
 
 
+typedef struct InputXY { u16 x,y; } InputXY;
 typedef struct TouchFlags {
     u8 active : 1;
     u8 pressed : 1;
     u8 released : 1;
-    u8 unused : 5;
+    u8 lifted : 1;
+    u8 unused : 4;
 } TouchFlags;
 
+typedef struct TouchSample { u16 x,y,active,status; } TouchSample;
 typedef struct InputState {
-    u8 pad[0x28];
+    TouchSample samples[5];
     u16 field_0x28;
     u16 field_0x2a;
     volatile u16 field_0x2c;
@@ -27,6 +30,7 @@ typedef struct InputState {
     TouchFlags flags;
 } InputState;
 
+static inline s32 TouchSampleValid(TouchSample *s) { return s->active==1 && s->status==0; }
 typedef struct InputGlobal {
     s32 field0;
     InputState *state;
@@ -170,7 +174,7 @@ void func_ov001_0218b818(void) {
 }
 
 void func_ov001_0218b850(void) {
-    M2C_UNK func_ov001_0218b964();
+    void func_ov001_0218b964(void);
     void func_ov001_0218b860();
     func_ov001_0218b860();
     func_ov001_0218b964();
@@ -210,6 +214,33 @@ void func_ov001_0218b860(void) {
             i++;
         }
     }
+}
+
+void func_ov001_0218b964(void) {
+extern M2C_UNK data_ov001_02193e48;
+s32 func_020020c4(s32,s32); s32 func_0200d9f4(void);void func_0200dbf0(void *);void func_ov001_0218b2bc(u16,u16,void *);
+register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; TouchSample *sample;
+old=((InputGlobal *)&data_ov001_02193e48)->state->flags.active?1:0;
+active=0;index=func_0200d9f4();
+p=((InputGlobal *)&data_ov001_02193e48)->state;
+*(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
+for(i=active;i<4;) {
+sample=&((InputGlobal *)&data_ov001_02193e48)->state->samples[index];
+if(TouchSampleValid(sample)) {
+active=1;func_0200dbf0(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
+}
+i++;index=func_020020c4(index+4,5);
+}
+g=(InputGlobal *)&data_ov001_02193e48;delta=active^old;
+g->state->flags.pressed=(u8)(active&delta);
+g->state->flags.lifted=(u8)(old&delta);
+M2C_FIELD(g->state,u8 *,0x38)=(M2C_FIELD(g->state,u8 *,0x38)&~1)|(active&1);
+g->state->flags.released=g->state->flags.pressed;
+if(!active) { M2C_FIELD(g,u8 *,1)=0;return; }
+{
+if(++M2C_FIELD(g,u8 *,1)==40) g->state->flags.released=1;
+else if(M2C_FIELD(g,u8 *,1)==47){g->state->flags.released=1;M2C_FIELD(g,u8 *,1)=40;}
+}
 }
 
 s32 func_ov001_0218bb00(s32 arg0) {

@@ -13,6 +13,56 @@ s32 func_0204183c(s32 *p,u32 n) {
  }return 1;
 }
 
+void func_020418c4(void) {
+    void *func_02044268(void);
+    void func_02041a4c(void);
+    s32 func_02041b0c(void);
+    M2C_UNK func_0205afec(s32);
+    void func_0205df50(s32);
+    s32 func_02040dc8(M2C_UNK);
+    s32 func_0204084c(void);
+
+    M2C_FIELD(func_02044268(), s32 *, 0x20c) = 0;
+    if (M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 2) {
+        func_02041a4c();
+        return;
+    }
+    M2C_FIELD(func_02044268(), u8 *, 0x1a9) = 1;
+    if (M2C_FIELD(func_02044268(), u8 *, 0x15) == 3) {
+        M2C_FIELD(func_02044268(), u8 *, 0x1a9) = 1;
+        if (M2C_FIELD(func_02044268(), u8 *, 0xd) != 0) {
+            func_0205afec(*M2C_FIELD(func_02044268(), s32 **, 0x4));
+        } else {
+            func_02040dc8(M2C_FIELD(func_02044268(), s32 *, 0xf4));
+            if (((s32 (*)())func_0204084c)() != 0) return;
+        }
+        func_02041a4c();
+        return;
+    }
+    if (M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 4 ||
+        M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 5 ||
+        M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 6 ||
+        M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 7 ||
+        M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 0xb ||
+        M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 0xc) {
+        if (M2C_FIELD(func_02044268(), s32 *, 0x204) != 0) {
+            func_02040dc8(M2C_FIELD(func_02044268(), s32 *, 0xf4));
+            if (((s32 (*)())func_0204084c)() != 0) return;
+        }
+        func_02041b0c();
+        if (((s32 (*)())func_0204084c)() != 0) return;
+    }
+    if (M2C_FIELD(func_02044268(), s32 *, 0x19c) != 0) {
+        func_0205df50(M2C_FIELD(func_02044268(), s32 *, 0x19c));
+        M2C_FIELD(func_02044268(), s32 *, 0x19c) = 0;
+    }
+    if (M2C_FIELD(func_02044268(), u8 *, 0xd) != 0) {
+        M2C_FIELD(func_02044268(), u8 *, 0x1a9) = 1;
+        func_0205afec(*M2C_FIELD(func_02044268(), s32 **, 0x4));
+    }
+    func_02041a4c();
+}
+
 void func_02041a4c(void) {
  extern s32 data_020fc904;
  s32 func_02042f94(); s32 func_0203aeb4();

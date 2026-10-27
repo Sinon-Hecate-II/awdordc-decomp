@@ -176,6 +176,76 @@ void func_020cc08c(void) {
     func_01ffa3dc(&data_0212b4ec, 7);
 }
 
+void func_020cc0a4(u8 *p){
+extern void **gCurrentMap;
+extern void *gCur3DSpriteEngine;
+s32 func_020cfd28(void);
+void func_020c1230(s32,s32,s32,s32);
+void func_020c1d28(s32,s32,s32,s32);
+void Reset3DSpriteEngineState(void);
+void func_02082770(void);
+void func_02091d4c(s32);
+s32 func_020cfbdc(s32);
+void func_0209b2b4(s32,s32,s32,s32,s32,s32);
+s32 x,y;
+func_020cfd28();
+*(s16 *)(p+52)=0;
+*(s16 *)(p+54)=*(s16 *)((u8 *)*gCurrentMap+0x5148);
+*(s16 *)(p+56)=*(s16 *)((u8 *)*gCurrentMap+0x514a);
+*(s16 *)(p+58)=0;
+func_020c1230(*(s32 *)((u8 *)gCur3DSpriteEngine+16),*(s32 *)((u8 *)gCur3DSpriteEngine+36),1,2);
+((u8 *)gCur3DSpriteEngine)[70]|=2;
+y=-((192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1);
+x=-((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1);
+*(s16 *)(*(u8 **)gCur3DSpriteEngine+58)=x;
+*(s16 *)(*(u8 **)gCur3DSpriteEngine+66)=y;
+func_020c1d28((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1,(192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1,0x35c,11);
+Reset3DSpriteEngineState();
+func_02082770();
+func_02091d4c(0);
+*(s16 *)(*(u8 **)gCur3DSpriteEngine+60)=0;
+*(s16 *)(*(u8 **)gCur3DSpriteEngine+68)=0;
+func_0209b2b4(1,0,2,func_020cfbdc(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
+*(s16 *)((u8 *)*gCurrentMap+0x52b4)=9;
+}
+
+void func_020cc234(u8 *p){
+extern void *gCur3DSpriteEngine;
+M2C_UNK func_01ffa6fc(void *);
+u16 *volatile p0;
+u16 *volatile p1;
+u16 *volatile p2;
+u16 *volatile p3;
+u16 *volatile p4;
+u16 *volatile p5;
+u16 *volatile p6;
+u16 *volatile p7;
+u16 *volatile p8;
+u16 *volatile p9;
+u16 *volatile p10;
+s32 value;
+u8 brightness;
+(*(s16 *)(p+52))++;
+value=*(s16 *)(p+52);
+brightness=value>>1;
+p0=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p0=(*p0&~0xc0)|0xc0;
+(*(u8 **)gCur3DSpriteEngine)[81]=0;
+(*(u8 **)gCur3DSpriteEngine)[82]=0;
+(*(u8 **)gCur3DSpriteEngine)[83]=brightness;
+p1=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p1=(*p1&~1)|1;
+p2=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p2=*p2&~2;
+p3=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p3=*p3&~4;
+p4=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p4=*p4&~8;
+p5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p5=*p5|16;
+p6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p6=*p6&~256;
+p7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p7=*p7&~512;
+p8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p8=*p8&~1024;
+p9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p9=*p9&~2048;
+p10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p10=*p10&~4096;
+if(*(s16 *)(p+52)<12)return;
+func_01ffa6fc(p);
+}
+
 void func_020cc430(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_0208fe30(s32);

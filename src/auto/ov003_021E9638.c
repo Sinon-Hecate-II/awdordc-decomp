@@ -1,10 +1,43 @@
 /* 28 functions from 0x021E9638 to 0x021EA57C (ov003), found by ds-decomp. */
 #include "common.h"
+typedef struct {u8 pad[0x14];void *sprites[12];void *labels[12];void *last;void *main;} SpriteGroup9638;
 static inline u8 E9638Mode(void *p, u32 n) { return ((u32)(M2C_FIELD(p,u8*,0x39)<<24)>>28)==n; }
 static inline u8 E9638Toggle(void *p) { return ((u32)(M2C_FIELD(p,volatile u8*,0x3a)<<30)>>31)==0; }
 static inline u8 E9638IsFF(u8 v) { return v==255; }
 static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
 #include "coordinate_bits.h"
+
+void func_ov003_021e9638(SpriteGroup9638 *self,void *arg) {
+extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;extern u8 data_ov003_0220f896[];
+void *func_020993d4(void *);void *func_0208931c(void *);void func_020990d4(void *,s32,u16);void func_020991f4(void *,s32);void func_02088da8(void *);s32 func_02098588(s32);void func_020990fc(void *,s32,s32,s32);
+void *old=gCur3DSpriteEngine;s32 i;
+gCur3DSpriteEngine=data_027e00c4;
+self->main=func_020993d4(arg);
+func_020990d4(self->main,0x4400,1);
+func_020991f4(self->main,1);
+M2C_FIELD(self->main,u16 *,0x3c)=0x400;
+func_02088da8(self->main);
+gCur3DSpriteEngine=data_027e00c8;
+for(i=0;i<12;i++){
+self->sprites[i]=func_020993d4(arg);
+func_020990d4(self->sprites[i],0x5c00+i*2*func_02098588(0),(u16)i);
+func_020990fc(self->sprites[i],i+1,0,0);
+func_020991f4(self->sprites[i],1);
+M2C_FIELD(self->sprites[i],u16 *,0x3c)=0x400;
+func_02088da8(self->sprites[i]);
+self->labels[i]=func_0208931c(arg);
+M2C_FIELD(self->labels[i],void **,0x44)=data_ov003_0220f896;
+M2C_FIELD(self->labels[i],u16 *,0x3e)=0x540;
+M2C_FIELD(self->labels[i],u16 *,0x3c)=0x800;
+func_02088da8(self->labels[i]);
+}
+self->last=func_0208931c(arg);
+M2C_FIELD(self->last,void **,0x44)=data_ov003_0220f896;
+M2C_FIELD(self->last,u16 *,0x3e)=0x560;
+M2C_FIELD(self->last,u16 *,0x3c)=0x800;
+func_02088da8(self->last);
+gCur3DSpriteEngine=old;
+}
 
 void func_ov003_021e97bc(void *p,s16 x,s16 y,s32 a,s32 b) { E9638Set(p,x,y,a,b); }
 

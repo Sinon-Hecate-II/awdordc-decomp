@@ -1,5 +1,6 @@
 /* 18 functions from 0x020E24C0 to 0x020E34BC (main), found by ds-decomp. */
 #include "common.h"
+
 extern s32 data_02168fd0[];
 extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_0212d704, data_0212d714, data_0212d724, data_0212d734;
 
@@ -49,6 +50,68 @@ s32 func_020e3018(s32 arg0) {
 M2C_UNK *func_020e304c(void) {
     extern M2C_UNK data_0212d68c;
     return &data_0212d68c;
+}
+
+void func_020e3058(void **arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, u8 arg5, s32 arg6, s32 arg7, u8 arg8) {
+    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK func_02088d94(void *);
+    M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
+    M2C_UNK func_020aab24(void *, M2C_UNK, s32, u8, s32);
+    M2C_UNK func_020aad18(void *);
+    s32 func_020aae10(void *);
+    s32 func_020aae44(void *);
+    M2C_UNK func_020ab150(void *, u16);
+    void *func_020ab1c4(s32);
+    void *temp_r5;
+    s16 temp_r6,temp_r7;
+    s16 temp_r8,temp_r9;
+    s32 temp_r10;
+    s16 temp_r6_2,temp_r7_2;
+    s32 temp_r8_2;
+    s32 var_r0_2,var_r0_3;
+    u8 var_r0;
+
+    *arg0 = func_020ab1c4(arg7);
+    if (arg8 != 0) {
+        var_r0 = 1;
+    } else {
+        var_r0 = 0;
+    }
+    func_020aab24(*arg0, arg3, arg4, arg5, (s32) var_r0);
+    temp_r8 = arg2;
+    temp_r9 = arg1;
+    temp_r5 = *arg0;
+    func_02088e84(temp_r5, temp_r9, temp_r8, temp_r9, (s32) temp_r8);
+    if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
+        var_r0_2 = 1;
+    } else {
+        var_r0_2 = 0;
+    }
+    if (var_r0_2 & 0xFF) {
+        temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
+        temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
+        temp_r10 = func_020aae10(temp_r5);
+        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32)(u16) temp_r10, (s32)(u16) func_020aae44(temp_r5));
+    }
+    M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r9;
+    M2C_FIELD(temp_r5, s16 *, 0x36) = temp_r8;
+    if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
+        var_r0_3 = 1;
+    } else {
+        var_r0_3 = 0;
+    }
+    if (var_r0_3 & 0xFF) {
+        temp_r6_2 = M2C_FIELD(temp_r5, s16 *, 0x52);
+        temp_r7_2 = M2C_FIELD(temp_r5, s16 *, 0x50);
+        temp_r8_2 = func_020aae10(temp_r5);
+        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7_2, temp_r6_2, (s32)(u16) temp_r8_2, (s32)(u16) func_020aae44(temp_r5));
+    }
+    func_02088d94(*arg0);
+    func_020aad18(*arg0);
+    if (arg6 == -1) {
+        return;
+    }
+    func_020ab150(*arg0, (u16) arg6);
 }
 
 u8 func_020e31e0(void) {

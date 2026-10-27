@@ -6,6 +6,33 @@ typedef struct { u32 a:5; u32 c:1; u32 b:26; } FifoWord;
 
 s32 func_02009eb0(u32 a,u32 b,u32 c) { s32 func_0200751c(void);s32 func_02007530(s32);FifoWord v; s32 key;v.a=a;v.c=c;v.b=b;if(*(volatile u16 *)0x04000184&0x4000){*(volatile u16 *)0x04000184|=0xc000;return -1;}key=func_0200751c();if(*(volatile u16 *)0x04000184&2){func_02007530(key);return -2;}*(volatile u32 *)0x04000188=*(u32 *)&v;func_02007530(key);return 0;}
 
+void func_02009f38(void){
+s32 func_0200751c(void);s32 func_02007530(s32);
+extern void (*data_0212fb68[])(u32,u32,u32);
+FifoWord v;s32 result,key;u32 tag;void (*cb)(u32,u32,u32);
+for(;;){
+if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;result=-3;}
+else{
+key=func_0200751c();
+if(*(volatile u16*)0x04000184&0x100){func_02007530(key);result=-4;}
+else{*(u32*)&v=*(volatile u32*)0x04100000;func_02007530(key);result=0;}
+}
+if(result==-4)return;
+if(result==-3)continue;
+tag=v.a;if(!tag)continue;
+cb=data_0212fb68[tag];
+if(cb)cb(tag,v.b,v.c);
+else if(!v.c){
+v.c=1;
+if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;continue;}
+key=func_0200751c();
+if(*(volatile u16*)0x04000184&2){func_02007530(key);continue;}
+*(volatile u32*)0x04000188=*(u32*)&v;
+func_02007530(key);
+}
+}
+}
+
 void func_0200a050(void *p,s32 a) {s32 func_0200751c(void);s32 func_02007530(s32);s32 func_02005df4(void *);s32 k;void *prev,*next;k=func_0200751c();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;func_02005df4((u8 *)p+24);func_02007530(k);}
 
 s32 func_0200a23c(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
@@ -94,6 +121,31 @@ M2C_FIELD(p,u32 *,0x28)=M2C_FIELD(q,u32 *,0x34)+out[0];
 M2C_FIELD(p,u32 *,0x2c)=M2C_FIELD(out,u16 *,6)&0xfff;
 }
 return r;
+}
+
+s32 func_0200a470(void *p){
+void *q=M2C_FIELD(p,void **,0x30);
+u32 in[2];u8 header;u16 extra;s32 r;
+in[0]=M2C_FIELD(p,u32 *,8);in[1]=M2C_FIELD(p,u32 *,0x28);
+r=func_0200a28c(in,(M2C_UNK)&header,1);if(r)return r;
+M2C_FIELD(q,u32 *,0x10)=header&127;
+M2C_FIELD(q,u32 *,12)=(header>>7)&1;
+if(!M2C_FIELD(q,u32 *,0x10))return 1;
+if(!M2C_FIELD(p,u32 *,0x34)){
+r=func_0200a28c(in,(M2C_UNK)((u8*)q+20),M2C_FIELD(q,u32 *,0x10));if(r)return r;
+((u8*)q+M2C_FIELD(q,u32 *,0x10))[20]=0;
+}else in[1]+=M2C_FIELD(q,u32 *,0x10);
+if(M2C_FIELD(q,u32 *,12)){
+r=func_0200a28c(in,(M2C_UNK)&extra,2);if(r)return r;
+M2C_FIELD(q,u32 *,0)=M2C_FIELD(p,u32 *,8);
+M2C_FIELD(q,u16 *,4)=extra&0xfff;
+M2C_FIELD(q,u16 *,6)=0;M2C_FIELD(q,u32 *,8)=0;
+}else{
+M2C_FIELD(q,u32 *,0)=M2C_FIELD(p,u32 *,8);
+M2C_FIELD(q,u32 *,4)=M2C_FIELD(p,u16 *,0x26);
+M2C_FIELD(p,u16 *,0x26)+=1;
+}
+M2C_FIELD(p,u32 *,0x28)=in[1];return r;
 }
 
 s32 func_0200ab2c(void *p) {

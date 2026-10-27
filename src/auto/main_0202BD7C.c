@@ -2,6 +2,71 @@
 #include "common.h"
 typedef struct { u32 id:24; u32 flags:8; } Unk0202PackedId;
 
+s32 func_0202bd7c(void *arg0, s32 arg1, s32 arg2) {
+    s32 func_0200bbe0(void *, void *, u32);
+    s32 func_0200bbf0(void *, u32, s32);
+    void *func_0202c5f0(s32 *, s32, s32, s32, s32);
+    extern M2C_UNK func_0202c488;
+    extern M2C_UNK func_0202c494;
+    extern M2C_UNK func_0202c4a0;
+    void *temp_r0;
+    void *temp_r0_2;
+    void *temp_r0_3;
+    s32 temp_r1;
+    s32 ret;
+
+    if (func_0200bbf0(arg0 + 0x34, 0, 0) == 0) {
+        return 0;
+    }
+    if (func_0200bbe0(arg0 + 0x34, arg0, 0x30) != 0x30) {
+        return 0;
+    }
+    if (arg1 != 0) {
+        temp_r0 = func_0202c5f0((s32 *)arg1, M2C_FIELD(arg0, s32 *, 0x1C), (s32)&func_0202c488, (s32)arg0, 0);
+        M2C_FIELD(arg0, void **, 0x8C) = temp_r0;
+        if (temp_r0 == 0) {
+            return 0;
+        }
+        if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x18), 0) == 0) {
+            return 0;
+        }
+        ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x8C), M2C_FIELD(arg0, s32 *, 0x1C));
+        if (ret != M2C_FIELD(arg0, s32 *, 0x1C)) {
+            return 0;
+        }
+        temp_r0_2 = func_0202c5f0((s32 *)arg1, M2C_FIELD(arg0, s32 *, 0x24), (s32)&func_0202c494, (s32)arg0, 0);
+        M2C_FIELD(arg0, void **, 0x84) = temp_r0_2;
+        if (temp_r0_2 == 0) {
+            return 0;
+        }
+        if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x20), 0) == 0) {
+            return 0;
+        }
+        ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x84), M2C_FIELD(arg0, s32 *, 0x24));
+        if (ret != M2C_FIELD(arg0, s32 *, 0x24)) {
+            return 0;
+        }
+        if (arg2 != 0) {
+            temp_r1 = M2C_FIELD(arg0, s32 *, 0x14);
+            if (temp_r1 != 0) {
+                temp_r0_3 = func_0202c5f0((s32 *)arg1, temp_r1, (s32)&func_0202c4a0, (s32)arg0, 0);
+                M2C_FIELD(arg0, void **, 0x88) = temp_r0_3;
+                if (temp_r0_3 == 0) {
+                    return 0;
+                }
+                if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x10), 0) == 0) {
+                    return 0;
+                }
+                ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x88), M2C_FIELD(arg0, s32 *, 0x14));
+                if (ret != M2C_FIELD(arg0, s32 *, 0x14)) {
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
 void func_0202bf54(void *arg0,s32 arg1){extern s32 data_0213c250;u32 i; s32 off;void *p;
 func_02007e70(arg1,arg0,0x30);
 off=M2C_FIELD(arg0,s32 *,0x18);M2C_FIELD(arg0,s32 *,0x8c)=off==0?0:arg1+off;

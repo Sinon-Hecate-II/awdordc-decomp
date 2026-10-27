@@ -13,6 +13,78 @@ void func_02097c84(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02097cb8(u32 arg0) { s32 func_0209e9dc(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=func_0209e9dc((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
 
+s32 func_02097ce4(u32 arg0){switch(arg0){
+case 0: return 6;
+case 1: return 6;
+case 2: return 6;
+case 3: return 6;
+case 4: return 6;
+case 9: return 6;
+case 8: return 6;
+case 6: return 5;
+case 5: return 6;
+case 11: return 6;
+case 10: return 6;
+case 12: return 6;
+case 15: return 6;
+case 16: return 6;
+case 7: return 6;
+case 13: return 6;
+case 17: return 6;
+case 18: return 5;
+case 14: return 5;
+case 19: return 5;
+case 20: return 6;
+case 21: return 6;
+case 22: return 6;
+case 23: return 6;
+case 24: return 5;
+case 25: return 6;
+case 26: return 6;
+case 27: return 6;
+case 28: return 6;
+case 29: return 6;
+case 30: return 6;
+case 31: return 6;
+case 32: return 6;
+default:return 5;}}
+
+s32 func_02097e84(u32 arg0){switch(arg0){
+case 0:return 0x10026;
+case 1:return 0x10026;
+case 2:return 0x10027;
+case 3:return 0x10029;
+case 4:return 0x10028;
+case 9:return 0x10027;
+case 8:return 0x10026;
+case 6:return 0x10026;
+case 5:return 0x10028;
+case 11:return 0x10028;
+case 10:return 0x10028;
+case 12:return 0x10027;
+case 15:return 0x10028;
+case 16:return 0x10027;
+case 7:return 0x10026;
+case 13:return 0x10026;
+case 17:return 0x10026;
+case 18:return 0x10027;
+case 14:return 0x10027;
+case 19:return 0x10027;
+case 20:return 0x10026;
+case 21:return 0x10026;
+case 22:return 0x10026;
+case 23:return 0x10026;
+case 24:return 0x10029;
+case 25:return 0x10026;
+case 26:return 0x10026;
+case 27:return 0x10026;
+case 28:return 0x10026;
+case 29:return 0x10026;
+case 30:return 0x10026;
+case 31:return 0x10026;
+case 32:return 0x10029;
+default:return 0x10026;}}
+
 s32 func_02098278(s32 a){extern M2C_UNK data_021031e8,data_021031f0,data_021031fc,data_02103208,data_02103214,data_02103220,data_0210322c,data_02103238,data_02103244,data_02103250,data_0210325c,data_02103268;switch(a){case 0:return (s32)&data_021031e8;case 1:return (s32)&data_021031f0;case 2:return (s32)&data_021031fc;case 3:return (s32)&data_02103208;case 4:return (s32)&data_02103214;case 5:return (s32)&data_02103220;case 6:return (s32)&data_0210322c;case 7:return (s32)&data_02103238;case 8:return (s32)&data_02103244;case 9:return (s32)&data_02103250;case 10:return (s32)&data_0210325c;case 11:return (s32)&data_02103268;default:return 0;}}
 
 /* Returns a filename string from one of the face/skin filename tables based on a transformed index and type. */

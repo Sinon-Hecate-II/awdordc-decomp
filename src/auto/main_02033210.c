@@ -4,6 +4,29 @@ typedef struct InitConfig { s32 words[7]; } InitConfig;
 typedef struct InitState { u8 pad[0x1000]; u8 flag; u8 pad2[31]; s32 status; } InitState;
 extern u8 data_020fb558[], data_020fb570[];
 
+#pragma opt_common_subs off
+s32 func_020334d8(void *p,void *a,void *b){
+extern M2C_UNK data_0213d114,data_0213d120;extern s32 data_0213d13c;
+extern u8 data_020fb3ec[],data_020fb3f8[],data_020fb400[],data_020fb408[],data_020fb410[],data_020fb414[],data_020fb41c[];
+s32 func_02068c34(s32);s32 func_020346d0(void *,void *,void *,s32);s32 func_020336e8(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
+u8 buffer[0x94];
+s32 v0=M2C_FIELD(&data_0213d114,s32 *,0x10),v1=M2C_FIELD(&data_0213d114,s32 *,0xc);
+if(v0==0 && v1==0){
+if(func_020346d0(p,data_020fb3f8,data_020fb3ec,func_02068c34((s32)data_020fb3ec)))return 8;
+}else{
+if(func_020346d0(p,data_020fb3f8,data_020fb400,func_02068c34((s32)data_020fb400)))return 8;
+}
+if(func_020346d0(p,data_020fb408,a,func_02068c34((s32)a)))return 8;
+if(!func_020336e8((s32)buffer,&data_0213d120))return 5;
+if(!func_02033988(p,buffer,data_0213d13c))return 8;
+if(M2C_FIELD(&data_0213d114,s32 *,4)==1){
+if(func_020346d0(p,data_020fb414,data_020fb410,func_02068c34((s32)data_020fb410)))return 8;
+}
+if(func_0206cd90(b)){
+if(func_020346d0(p,data_020fb41c,b,func_0206cd90(b)*2))return 8;
+}
+return 0;
+}
 void func_0203367c(s32 arg0) {
     M2C_UNK func_02006564(s32);
     M2C_UNK func_020065e8(void *);
@@ -14,7 +37,7 @@ void func_0203367c(s32 arg0) {
 }
 
 void func_020336c0(s32 arg0) {
-    void func_020336e8(s32, void *);
+    s32 func_020336e8(s32, void *);
     void func_02045cbc(void *);
     u8 sp0[20];
     func_02045cbc(sp0);

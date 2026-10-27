@@ -88,6 +88,71 @@ s32 func_ov004_02213b48(void) {
  if(count!=0)return 0; return 1;
 }
 
+void func_ov004_02213bb8(void) {
+    extern void **gCurrentMap;
+    extern u16 data_ov000_021aeef4[];
+    s32 RandomIntRange(s32, s32);
+    u16 func_020a7bbc(s32);
+    void func_02086930(s32, s8);
+    u8 buf[27];
+    u8 out[32];
+    s32 i, t, cnt, maxCount, chosen, primCount, outCount;
+    u8 *map;
+    for (i = 0; i < 27; i++) buf[i] = 0;
+    map = *gCurrentMap;
+    i = data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 1;
+    while (i < data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 0x33) {
+        cnt = ((u8 *)map)[0x59A4 + i * 14] & 0x3F;
+        if (cnt) buf[cnt]++;
+        i++;
+    }
+    outCount = 0;
+    primCount = 0;
+    while (primCount < 3) {
+        maxCount = 0;
+        chosen = -1;
+        t = 0;
+        while (t < 27) {
+            cnt = buf[t];
+            if (cnt != 0) {
+                if (maxCount <= cnt) {
+                    if (chosen != -1 && maxCount == cnt) {
+                        u16 wt = func_020a7bbc(t);
+                        u16 wp = func_020a7bbc(chosen);
+                        if (wt >= wp) {
+                            maxCount = cnt;
+                            chosen = t;
+                        }
+                    } else {
+                        maxCount = cnt;
+                        chosen = t;
+                    }
+                }
+            }
+            t++;
+        }
+        if (chosen == -1) break;
+        buf[chosen] = 0;
+        out[outCount] = (u8)chosen;
+        outCount++;
+        primCount++;
+    }
+    if (maxCount != 0) {
+        for (i = 0; i < 27; i++) {
+            if (buf[i] == (u8)maxCount) {
+                out[outCount] = (u8)i;
+                outCount++;
+            }
+        }
+    }
+    if (maxCount == 0 || outCount == 0) {
+        func_02086930(0, 0);
+    } else {
+        i = RandomIntRange(0, outCount - 1);
+        func_02086930(0, (s8)out[i]);
+    }
+}
+
 void func_ov004_02213d90(void) {
     M2C_UNK func_02086720(s32);
     s32 func_02086a20(M2C_UNK);

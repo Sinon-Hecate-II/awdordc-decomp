@@ -44,6 +44,31 @@ u8 h=M2C_FIELD((void *)0x027ffc80,u8 *,0x63);
 if((!a&&!c&&!b&&!d)||func_0200da04(p,a,b,e,f,c,d,g,h)) {p[0]=0;p[1]=0;p[2]=0;p[3]=0; return 1;} return 1;
 }
 
+void func_0200d650(s16 *p){
+s32 func_0200751c(void);void func_02007530(s32);
+s32 t,n;
+if(!p){M2C_FIELD(&data_0212fc70,u16*,0x34)=0;return;}
+t=func_0200751c();
+if((n=p[2])!=0){
+*(volatile u16*)0x4000280=0;
+*(volatile u32*)0x4000290=0x10000000;
+*(volatile s64*)0x4000298=(u32)n;
+M2C_FIELD(&data_0212fc70,s32*,28)=p[0];
+M2C_FIELD(&data_0212fc70,s32*,32)=p[2];
+while(*(volatile u16*)0x4000280&0x8000){}
+M2C_FIELD(&data_0212fc70,s32*,36)=*(volatile s32*)0x40002a0;
+}else{M2C_FIELD(&data_0212fc70,s32*,28)=0;M2C_FIELD(&data_0212fc70,s32*,32)=0;M2C_FIELD(&data_0212fc70,s32*,36)=0;}
+if((n=p[3])!=0){
+*(volatile u16*)0x4000280=0;
+*(volatile u32*)0x4000290=0x10000000;
+*(volatile s64*)0x4000298=(u32)n;
+M2C_FIELD(&data_0212fc70,s32*,40)=p[1];
+M2C_FIELD(&data_0212fc70,s32*,44)=p[3];
+while(*(volatile u16*)0x4000280&0x8000){}
+M2C_FIELD(&data_0212fc70,s32*,48)=*(volatile s32*)0x40002a0;
+}else{M2C_FIELD(&data_0212fc70,s32*,40)=0;M2C_FIELD(&data_0212fc70,s32*,44)=0;M2C_FIELD(&data_0212fc70,s32*,48)=0;}
+func_02007530(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
+
 void func_0200d778(void) {
 s32 func_0200751c(void); void func_02007530(s32); s32 func_02009eb0(s32,u32,s32);
 s32 t=func_0200751c();u32 v; void *p; s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
@@ -101,6 +126,20 @@ if(M2C_FIELD(p,void (**)(s32,s32,s32),4))M2C_FIELD(p,void (**)(s32,s32,s32),4)(2
 u16 func_0200d9f4(void) {
     extern M2C_UNK data_0212fc70;
     return M2C_FIELD(&data_0212fc70, u16 *, 0x10);
+}
+
+extern s32 data_0212fc8c[];
+extern s32 p[];
+void func_0200dbf0(u16 *a,u16 *b) {
+s32 *p;
+if(!M2C_FIELD(&data_0212fc70,u16 *,0x34)) { ((TouchPair *)a)[0]=((TouchPair *)b)[0]; ((TouchPair *)a)[1]=((TouchPair *)b)[1]; return; }
+p=data_0212fc8c;
+a[2]=b[2]; a[3]=b[3];
+if(!b[2]) {a[0]=0;a[1]=0;return;}
+a[0]=(((long long)(b[0]<<2)-p[0])*p[2])>>22;
+if((s16)a[0]<0)a[0]=0;else if((s16)a[0]>255)a[0]=255;
+a[1]=(((long long)(b[1]<<2)-p[3])*p[5])>>22;
+if((s16)a[1]<0)a[1]=0;else if((s16)a[1]>191)a[1]=191;
 }
 
 void func_0200dd14(u32 a) {while(M2C_FIELD(&data_0212fc70,volatile u16 *,0x3a)&a) {}}

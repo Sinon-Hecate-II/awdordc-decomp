@@ -144,6 +144,52 @@ u8 func_0209546c(void) {
     return var_r0;
 }
 
+void func_02095ad0(u8 *p){
+s32 func_02091dc4(s32);
+void func_02091ddc(s32);
+s32 func_0207ca38(s32,s32,s32,s32,s32);
+void func_01ffa574(void *);
+extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
+u16 *volatile a;
+u16 *volatile b;
+s32 mode,screen;
+u32 first;
+u8 second;
+s32 saved,engine;
+s32 i;
+mode=func_02091dc4(*(s32 *)(p+92));
+func_02091ddc(*(s32 *)(p+92));
+(*(s32 *)(p+100))++;
+second=func_0207ca38(0,0,16,*(s32 *)(p+100),*(s32 *)(p+96));
+saved=gCur3DSpriteEngine;
+first=16-second;
+i=0;
+do{
+if(i==0)engine=data_027e00c8;else engine=data_027e00c4;
+gCur3DSpriteEngine=engine;
+screen=*(s32 *)(p+92);
+if(screen==0 && engine!=data_027e00c8)goto next;
+if(screen==1 && engine!=data_027e00c4)goto next;
+if(screen==3 && engine!=saved)goto next;
+switch(mode){
+case 2:
+a=(u16 *)(*(u8 **)engine+18);*a=(*a&~0xc0)|0x40;
+(*(u8 **)gCur3DSpriteEngine)[81]=first;
+(*(u8 **)gCur3DSpriteEngine)[82]=second;
+break;
+case 3:
+b=(u16 *)(*(u8 **)engine+18);*b=(*b&~0xc0)|0x40;
+(*(u8 **)gCur3DSpriteEngine)[81]=second;
+(*(u8 **)gCur3DSpriteEngine)[82]=first;
+break;
+}
+next:i++;
+}while(i<2);
+gCur3DSpriteEngine=saved;
+if(*(s32 *)(p+100)<*(s32 *)(p+96))return;
+func_01ffa574(p);
+}
+
 void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102ae8;

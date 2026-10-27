@@ -189,6 +189,101 @@ void func_020e47f8(void) {
 
 s32 func_020e4818(s32 a){extern u8 data_0215dba4[];u32 *p=(u32 *)(data_0215dba4+a*0x118);p[0]&=~15;p[0]&=~240;p[1]=(u16)(p[1]&0xffff0000);p[0]&=~0xff00;p[0]&=~0xff0000;p[0]&=~0xff000000;return p[0];}
 
+void func_020e4870(s32 arg0) {
+    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK data_0215d8a0;
+    extern void **gCurrentMap;
+    extern u8 data_0215dba4[];
+    extern u8 data_0215dbac[];
+    extern M2C_UNK data_0215d8a8;
+    extern u8 data_0215dcac[];
+    extern M2C_UNK data_0215d9a8;
+    extern u8 data_0215dcb4[];
+    extern M2C_UNK data_0215d9b0;
+
+    s32 i;
+    u16 t;
+    u32 d0;
+    u32 d1;
+    void **gmap;
+    void *gm;
+    u32 gm0;
+    u16 f1;
+    u16 f2;
+    u32 b;
+    u32 off;
+    u32 *dst;
+    u32 *src;
+    u8 *d2;
+    u8 *s2;
+
+    t = ((u16 *)&data_0215d9b8)[3];
+    d0 = ((u32 *)&data_0215d8a0)[0];
+
+    t = (u16)((t & ~0x70) | (((u16)arg0 << 4) & 0x70));
+    ((u16 *)&data_0215d9b8)[3] = t;
+
+    d0 = (d0 & ~0x0F) | ((u32)arg0 & 0x0F);
+    ((u32 *)&data_0215d8a0)[0] = d0;
+
+    gmap = gCurrentMap;
+    gm = *gmap;
+    gm0 = *(u32 *)gm;
+
+    d1 = ((u32 *)&data_0215d8a0)[1];
+    d1 = d1 & ~0x0000FFFFu;
+    f1 = (u16)((*(u16 *)((u8 *)gm0 + 0x5142)) - 0xA1);
+    d1 = d1 | f1;
+    ((u32 *)&data_0215d8a0)[1] = d1;
+
+    f2 = *(u16 *)((u8 *)gm0 + 0x52A2);
+    d1 = ((u32 *)&data_0215d8a0)[1];
+    ((u32 *)&data_0215d8a0)[1] = (f2 << 16) | (d1 & 0x0000FFFFu);
+
+    b = (d0 >> 8) & 0xFFu;
+    if (b < 0xFFu) {
+        b++;
+    }
+    d0 = (((u32 *)&data_0215d8a0)[0] & ~0x0000FF00u) | (b << 8);
+    ((u32 *)&data_0215d8a0)[0] = d0;
+
+    off = (u32)(arg0 * 0x118);
+    *(u32 *)(data_0215dba4 + off) = d0;
+    *(u32 *)(data_0215dba4 + off + 4) = ((u32 *)&data_0215d8a0)[1];
+
+    dst = (u32 *)(data_0215dbac + off);
+    src = (u32 *)&data_0215d8a8;
+    i = 16;
+    do {
+        dst[0] = src[0];
+        dst[1] = src[1];
+        dst[2] = src[2];
+        dst[3] = src[3];
+        dst += 4;
+        src += 4;
+    } while (--i);
+
+    d2 = data_0215dcac + off;
+    s2 = (u8 *)&data_0215d9a8;
+    i = 4;
+    do {
+        d2[0] = s2[0];
+        d2[1] = s2[1];
+        s2 += 2;
+        d2 += 2;
+    } while (--i);
+
+    d2 = data_0215dcb4 + off;
+    s2 = (u8 *)&data_0215d9b0;
+    i = 4;
+    do {
+        d2[0] = s2[0];
+        d2[1] = s2[1];
+        s2 += 2;
+        d2 += 2;
+    } while (--i);
+}
+
 void func_020e49ec(void) {
     M2C_UNK func_02086ae4(s32, M2C_UNK);
     M2C_UNK func_0209c7fc();
