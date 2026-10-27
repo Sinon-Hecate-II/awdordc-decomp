@@ -25,7 +25,7 @@ void func_ov001_0217def8(void) {
 
 void func_ov001_0217e238(void) {
     s32 func_02002088(u16, s32);
-    M2C_UNK func_ov001_0217e2f8(s32, s32);
+    void func_ov001_0217e2f8(s32, s32);
     void func_ov001_0217e494(s32, s32);
     M2C_UNK func_ov001_0217e95c();
     M2C_UNK func_ov001_02183720();
@@ -59,6 +59,25 @@ void func_ov001_0217e238(void) {
     func_ov001_0217e95c();
 }
 
+#pragma opt_common_subs off
+void func_ov001_0217e2f8(s32 arg0,s32 arg1){
+void *func_ov001_0218445c(void);
+void func_ov001_0217e780(u8*,s32);void func_ov001_0217e8d4(void*,s32);
+u8 *p=func_ov001_0218445c();s32 n;u8 text[33];
+switch((u32)arg0){
+case 0:func_ov001_0217e780(p+0x40,arg1);break;
+case 1:
+switch((u32)(p[0xe6]<<30)>>30){case 0:return;case 1:n=10;break;case 2:n=26;break;case 3:n=32;break;}
+if(((u32)(p[0xe6]<<24)>>26)==1)n/=2;
+func_02007f8c(text,0,33);func_02065210(text,42,n);func_ov001_0217e780(text,arg1);break;
+case 3:if(p[0xf5])return;func_ov001_0217e8d4(p+0xc0,arg1);break;
+case 4:if(p[0xf5])return;func_ov001_0217e8d4(p+0xf0,arg1);break;
+case 5:if(p[0xf5])return;func_ov001_0217e8d4(p+0xc4,arg1);break;
+case 7:if(p[0xf6])return;func_ov001_0217e8d4(p+0xc8,arg1);break;
+case 8:if(p[0xf6])return;func_ov001_0217e8d4(p+0xcc,arg1);break;
+}
+}
+#pragma opt_common_subs reset
 s32 func_ov001_0217e5e8(u32 arg0) {
     void *func_ov001_0218445c();
     s32 var_r1;

@@ -67,6 +67,28 @@ void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     *(volatile u32 *) 0x4000504 = 0;
 }
 
+void func_02087a08(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC) {
+    u16 vA = (u16) ((s32) (((argA << 0xC) + 0x800) << 8) >> 0x10);
+    u16 v9 = (u16) ((s32) (((arg9 << 0xC) + 0x800) << 8) >> 0x10);
+    u16 vC = (u16) ((s32) (((argC << 0xC) + 0x800) << 8) >> 0x10);
+    u16 vB = (u16) ((s32) (((argB << 0xC) + 0x800) << 8) >> 0x10);
+
+    *(volatile u32 *) 0x4000500 = 1;
+    *(volatile u32 *) 0x4000488 = (u32) v9 | ((u32) vA << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg1 << 0x10;
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
+    *(volatile u32 *) 0x4000488 = (u32) v9 | ((u32) vC << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg4 | ((u32) (u16) arg5 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
+    *(volatile u32 *) 0x4000488 = (u32) vB | ((u32) vC << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg6 | ((u32) (u16) arg7 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
+    *(volatile u32 *) 0x4000488 = (u32) vB | ((u32) vA << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg2 | ((u32) (u16) arg3 << 0x10);
+    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
+    *(volatile u32 *) 0x4000504 = 0;
+}
+
 void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
 void func_02087b94(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10) {
     if (arg9 != 0 && arg10 != 0) {

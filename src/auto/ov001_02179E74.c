@@ -210,6 +210,44 @@ void func_ov001_0217a9ac(void) {
     func_ov001_02175d54(&func_ov001_0217aa1c);
 }
 
+#pragma optimization_level 4
+#pragma opt_strength_reduction off
+void func_ov001_0217aa1c(void) {
+extern s32 data_ov001_02193d98,data_ov001_02193d9c;
+extern s32 func_ov001_02181a84,func_ov001_02180860,func_ov001_0217b444,func_ov001_021828ac;
+s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);void *func_ov001_0218445c(void);
+s32 i; void *p;
+if(func_ov001_0218a800(1))return;
+if(func_ov001_0218a800(0))return;
+if(!func_ov001_0217170c())return;
+func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4),s32 *,0x3c));
+for(i=0;i<5;i++){
+p=M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4)+i*4,void **,16);if(p)func_ov001_0218c104(p);
+p=M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4)+i*4,void **,36);if(p)func_ov001_0218c104(p);
+}
+func_ov001_0218af0c(M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4),void **,12));
+func_ov001_02183980();func_ov001_02172184();func_ov001_02171cf8();func_ov001_021836f4();
+func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4),void **,4));
+func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4),void **,8));
+func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
+*(u32 *)0x04000010=0;*(u32 *)0x04000018=0;
+if(M2C_FIELD(M2C_FIELD(&data_ov001_02193d98,void **,4),u8 *,0x54)==0){
+func_ov001_02183fa0();func_ov001_02184880(M2C_FIELD(func_ov001_0218445c(),u8 *,0xf4));func_ov001_02175d64(2,0);func_ov001_02175d54(&func_ov001_02181a84);
+}else if(M2C_FIELD(&data_ov001_02193d98,u8 *,0)==4){
+func_ov001_02183fa0();func_ov001_02175d64(0,1);func_ov001_02175d54(&func_ov001_02180860);
+}else{
+p=M2C_FIELD(&data_ov001_02193d98,void **,4);
+func_ov001_02184498(M2C_FIELD(p,void **,0)+M2C_FIELD(p,u8 *,0x52)*42);
+func_ov001_02175d64(0,0);
+p=M2C_FIELD(&data_ov001_02193d98,void **,4);
+if(M2C_FIELD(M2C_FIELD(p,void **,0)+M2C_FIELD(p,u8 *,0x52)*42,u8 *,40)){
+func_ov001_02175d64(0,1);func_ov001_02175da0(1,1);func_ov001_02175d54(&func_ov001_0217b444);
+}else{
+func_ov001_02175d64(0,1);func_ov001_02175da0(0,1);func_ov001_02175d54(&func_ov001_021828ac);
+}
+}
+func_ov001_0218b71c(&data_ov001_02193d9c);
+}
 void func_ov001_0217ac18(void) {
     s32 func_02002088(s32, u16);
           void func_ov001_0217acc0(s32, s32);

@@ -3,6 +3,8 @@
 extern s32 data_0210019c, data_0210012c;
 extern u8 data_021000b4[16];
 typedef struct { u8 lo, hi; } PairBytes;
+static inline void copy633(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; *((PairBytes *)dst+1)=*((PairBytes *)src+1); }
+static inline void copy633h(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; }
 
 void func_02062770(void *a,s8 *b,s32 n) {
 s32 func_02068c34(void *);
@@ -148,6 +150,69 @@ s32 func_0206325c(void *a,u8 *p,s32 n) {
  p+=len+1;n-=len+1;
  }
  return 0;
+}
+
+s32 func_02063338(void *arg0, u8 *arg1, s32 arg2) {
+    s32 func_02061da0(s8 *, s32);
+    s32 flag;
+    void *saved;
+    s32 count;
+    u16 hdr1;
+    u32 hdr0;
+    u32 x;
+    u8 *hx; u8 *h0; u8 *h1;
+    u8 *p;
+    u8 *cmd;
+    s32 i;
+    s32 remaining;
+    s32 k;
+    void (*fp)(void *, void *, u32, u16, u32, void *, s32);
+
+    remaining=arg2;
+    if (remaining < 2) {
+        return 4;
+    }
+    p = arg1;
+    count = p[1];
+    flag = p[0];
+    p += 2;
+    remaining -= 2;
+    i = 0;
+    while (i < count) {
+        h0=(u8 *)&hdr0; hx=(u8 *)&x; h1=(u8 *)&hdr1;
+        saved = p;
+        k = func_02061da0((s8 *)p, remaining);
+        if (k == -1) {
+            return 4;
+        }
+        remaining -= k;
+        cmd = p + k;
+        if (remaining < 0xb) {
+            return 4;
+        }
+        p = cmd + 0xa;
+        remaining -= 0xa;
+        *(volatile PairBytes *)h0=*(PairBytes *)cmd;
+        { u8 lo=cmd[2]; u8 hi=cmd[3]; h0[3]=hi; h0[2]=lo; }
+        *(volatile PairBytes *)h1=*(PairBytes *)(cmd+4);
+        *(volatile PairBytes *)hx=*(PairBytes *)(cmd+6);
+        *((volatile PairBytes *)hx+1)=*(PairBytes *)(cmd+8);
+        { u32 a=(x<<24)&0xff000000u; u32 b=(x<<8)&0xff0000u; u32 c=(x>>24)&255; u32 d=(x>>8)&0xff00u; x=a|(b|(c|d)); }
+        k = func_02061da0((s8 *)p, remaining);
+        if (k == -1) {
+            return 4;
+        }
+        fp = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)arg0 + 0x490);
+        fp(arg0, saved, hdr0, hdr1, x, p, *(s32 *)((u8 *)arg0 + 0x494));
+        i++;
+        p += k;
+        remaining -= k;
+    }
+    if (flag != 0) {
+        fp = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)arg0 + 0x490);
+        fp(arg0, 0, 0, 0, 0, 0, *(s32 *)((u8 *)arg0 + 0x494));
+    }
+    return 0;
 }
 
 s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {

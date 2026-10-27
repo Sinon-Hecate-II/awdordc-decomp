@@ -1,5 +1,68 @@
 /* 6 functions from 0x021A7610 to 0x021A860C (ov000), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 money; s32 unk4; s32 income; u8 pad[128]; } AiPlayer;
+
+void func_ov000_021a7d08(void) {
+    s32 func_020d1938(s32);
+    s32 func_020d273c(u16, s32);
+    extern void **gCurrentMap;
+    extern u16 data_ov000_021e1474[];
+    extern u16 data_ov000_021e14aa[];
+    extern u16 data_ov000_021aeef4[];
+    void func_ov000_021a7610(void);
+
+    register s32 r5 asm("r5");
+    register s32 r4 asm("r4");
+
+    for (r5 = 0; r5 < 0x1B; r5++) {
+        data_ov000_021e1474[r5] = 0;
+        data_ov000_021e14aa[r5] = data_ov000_021e1474[r5];
+    }
+
+    for (r4 = 1; r4 < 5; r4++) {
+        u16 field;
+        s32 start;
+        s32 limit;
+        register s32 inner asm("r2");
+        u8 *p;
+        void *map;
+
+        if (!func_020d1938(r4)) {
+            continue;
+        }
+        map = *gCurrentMap;
+        field = *(u16 *)((u8 *)map + 0x52A4);
+        if (func_020d273c(field, r4) == 1) {
+            start = data_ov000_021aeef4[r4] + 1;
+            limit = data_ov000_021aeef4[r4] + 0x33;
+            for (inner = start; inner < limit; inner++) {
+                u8 kind;
+                p = *(u8 **)map + 0x59A4 + inner * 0xE;
+                kind = (u8)(((unsigned int)p[0] << 26) >> 26);
+                if (kind == 0) {
+                    continue;
+                }
+                if ((((unsigned int)p[0x0B]) << 24) >> 31) {
+                    continue;
+                }
+                data_ov000_021e14aa[kind] += (u16)(((unsigned int)*(u16 *)(p + 6) << 19) >> 19);
+            }
+        } else {
+            start = data_ov000_021aeef4[r4] + 1;
+            limit = data_ov000_021aeef4[r4] + 0x33;
+            for (inner = start; inner < limit; inner++) {
+                u8 kind;
+                p = *(u8 **)map + 0x59A4 + inner * 0xE;
+                kind = (u8)(((unsigned int)p[0] << 26) >> 26);
+                if (kind == 0) {
+                    continue;
+                }
+                data_ov000_021e1474[kind] += (u16)(((unsigned int)*(u16 *)(p + 6) << 19) >> 19);
+            }
+        }
+    }
+    func_ov000_021a7610();
+}
 
 s32 func_ov000_021a7e98(s32 arg0) {
     s32 func_020d2d18(u16, M2C_UNK);
@@ -25,3 +88,38 @@ s32 func_ov000_021a7e98(s32 arg0) {
     }
     return func_ov000_021a6c8c();
 }
+
+s32 func_ov000_021a8438(s32 index) {
+ extern u8 data_ov000_021e00ac[],data_ov000_021b5c6c[],data_ov000_021b5be0[],data_ov000_021b5bfc[],data_ov000_021df7d0[];
+ extern u8 *data_ov000_021df580; extern u32 data_ov000_021df8ac[];extern void **gCurrentMap;
+ s32 func_ov000_021a98e4(u8);s32 func_020d2d18(u16,s32);s32 func_ov000_021a4e08(u32,u32,s32);
+ u8 *entry=data_ov000_021e00ac+index*12;
+ u32 score; s32 retry=0; s32 best,i;u8 *attr;u8 *map;AiPlayer *player;s32 price;u32 flag;s32 cost,money,offset;
+ if(entry[2]==3 && (((u32)(*(u16 *)(data_ov000_021df580+10)<<29)>>29)&2))return -1;
+ for(;;) {
+ best=0;score=0;
+ for(i=1,attr=data_ov000_021b5c6c;i<27;i++,attr+=112) {
+ if(score<data_ov000_021df8ac[i]) {
+ if(func_ov000_021a98e4((u8)i)==1 && (attr[19]&7))continue;
+ score=data_ov000_021df8ac[i];best=i;
+ }}
+ if(best==0)return -1;
+ if(entry[2]!=data_ov000_021b5be0[best])goto reject;
+ cost=func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
+ price=(u16)cost;map=*gCurrentMap;player=(AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4);
+ money=player->money;
+ if(money<price)goto reject;
+ if(!retry || (flag=data_ov000_021b5bfc[best*112+19]&16)!=0) {
+ if(func_ov000_021a4e08(entry[0],entry[1],best)<70)goto accept;
+ if(data_ov000_021b5bfc[best*112+19]&16)goto reject;
+ if(best==22)goto reject;
+ retry=1;continue;
+ } else {
+ if(flag!=0)goto reject;
+ if(price>(player->income>>1) && price>(money>>1))goto reject;
+ }
+ accept:data_ov000_021df7d0[6]=best;return index;
+ reject:data_ov000_021df8ac[best]=0;
+ }
+}
+

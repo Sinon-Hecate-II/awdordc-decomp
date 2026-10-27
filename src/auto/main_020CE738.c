@@ -36,10 +36,92 @@ if(func_020a600c((u16)id))M2C_FIELD(unit,u16*,4)|=0x40;
 }
 }
 
+void func_020ced08(void) {
+    extern void **gCurrentMap;
+    extern s8 data_ov000_021b56c0[];
+    extern u16 data_ov000_021aeee8[];
+    void func_020cf2c8(void);
+    s32 func_020d1980(s32);
+    void func_0207ab84(s32, s32, u8);
+
+    s32 r8;
+    s32 counter;
+    void *p;
+    u8 tile;
+    u8 xc;
+    u8 yc;
+    u16 *rowTable;
+    u16 row;
+    u8 posTile;
+    s32 i;
+    s32 found;
+    void *p2;
+    u16 *rt2;
+    u16 row2;
+    u8 pos2;
+    void *p3;
+    u16 *rt3;
+    u16 row3;
+
+    func_020cf2c8();
+    r8 = 0;
+    counter = 0;
+    found = 0;
+    for (;;) {
+        p = *gCurrentMap;
+        tile = ((u8 *)p)[r8 + 0x6C60];
+        xc = ((u8 *)p)[r8 + 0x6C61];
+        yc = ((u8 *)p)[r8 + 0x6C62];
+
+        if (tile == 0xFF) {
+            return;
+        }
+        if (data_ov000_021b56c0[tile & 0x1F] != 0) {
+            rowTable = (u16 *)((u8 *)p + 0x3758);
+            row = rowTable[yc];
+            posTile = ((u8 *)p)[xc + row + 0x1420];
+            if ((posTile & 0xE0) != 0) {
+                found = 0;
+                for (i = 1; i < 5; i++) {
+                    if (func_020d1980(i) != 0) {
+                        p2 = *gCurrentMap;
+                        rt2 = (u16 *)((u8 *)p2 + 0x3758);
+                        row2 = rt2[yc];
+                        pos2 = ((u8 *)p2)[xc + row2 + 0x1420];
+                        if (data_ov000_021aeee8[i] == (pos2 & 0xE0)) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                }
+                if (found == 0) {
+                    if (tile == 0x0F) {
+                        p3 = *gCurrentMap;
+                        rt3 = (u16 *)((u8 *)p3 + 0x3758);
+                        row3 = rt3[yc];
+                        ((u8 *)p3)[xc + row3 + 0x1420] = 0x10;
+                        row3 = rt3[yc];
+                        *((u16 *)((u8 *)p3 + (xc + row3) * 2 + 0xA10)) = 0x1C2;
+                    } else {
+                        ((u8 *)p)[xc + (s32)row + 0x1420] = (u8)tile;
+                        func_0207ab84(xc, yc, 0);
+                    }
+                }
+            }
+        }
+
+        r8 += 6;
+        counter++;
+        if (counter >= 99) {
+            break;
+        }
+    }
+}
+
 void func_020ceea8(void) {
     M2C_UNK func_020a15f8();
     M2C_UNK func_020a4d58();
-    M2C_UNK func_020ced08();
+    void func_020ced08(void);
     M2C_UNK func_020d1b80();
     M2C_UNK func_020d1f2c();
     M2C_UNK func_020d216c();

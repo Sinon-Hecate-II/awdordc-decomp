@@ -105,6 +105,66 @@ func_02004078(sn,cs);
 func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 }
 
+void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 func_020a7d80(void *);
+    s32 func_020a7dc4(void *);
+    s32 func_020a8604(s32);
+    s32 func_020a7d38(void *);
+    s32 func_020a7cc8(void *);
+    s32 func_020a7ce4(void *);
+    s32 func_020d2850(s32, u16, s32);
+    s32 func_020a7cb0(void *);
+    s32 func_020a7cfc(void *);
+    s32 func_020a7d50(void *);
+    void func_020791ac(Vec3 *, RenderUnit *, s32, s32, s32, u8);
+    extern s32 *gCurrentMap;
+
+    s32 base, flags, kind, vecx, vecy, vecz;
+    u16 rowoff;
+    u8 val, player;
+    u8 *unit;
+    Vec3 pos;
+
+    base = *gCurrentMap;
+    rowoff = *(u16 *)((u8 *)base + arg1 * 2 + 0x3758);
+    val = *(u8 *)((u8 *)base + arg0 + rowoff + 0x508);
+    if (val == 0) return;
+
+    flags = 0;
+    unit = (u8 *)base + 0x59a4 + (s32)(val * 14);
+    player = (u8)((val & 0xc0) >> 6);
+
+    if (func_020a7d80((void *)unit)) flags |= 0x2;
+    if (func_020a7dc4((void *)unit)) {
+        kind = unit[0] & 0x3f;
+        if (func_020a8604(kind)) flags |= 0x8;
+        else flags |= 0x4;
+    }
+    if (func_020a7d38((void *)unit)) flags |= 0x20;
+    {
+        u8 b = *(u8 *)((u8 *)base + (player + 1) * 0x8c + 0x67c3);
+        if (!(b & 0x2)) flags |= 0x1;
+    }
+    if (func_020a7cc8((void *)unit)) flags |= 0x40;
+    if (func_020a7ce4((void *)unit)) flags |= 0x80;
+    {
+        kind = unit[0] & 0x3f;
+        if (func_020d2850(kind, *(u16 *)((u8 *)base + 0x52a4), player + 1)) flags |= 0x100;
+    }
+    if (func_020a7cb0((void *)unit)) flags |= 0x200;
+    if (func_020a7cfc((void *)unit)) flags |= 0x400;
+    if (func_020a7d50((void *)unit)) flags |= 0x800;
+
+    vecx = (arg0 * 16 + 8) * 48;
+    vecy = (arg1 * 16 + 16) * 48;
+    vecz = arg1 * 16 + 1073;
+
+    pos.x = vecx;
+    pos.y = vecy;
+    pos.z = vecz;
+    func_020791ac(&pos, (RenderUnit *)unit, player + 1, flags, arg2, (u8)arg3);
+}
+
 #pragma scheduling on
 void func_020791ac(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
 s32 func_020a7298(s32,u8);s32 func_0207cfb8(s32);s32 func_0207c8ec(s32,s32);

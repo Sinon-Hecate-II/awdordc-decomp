@@ -1,5 +1,11 @@
 /* 24 functions from 0x0205F83C to 0x0206080C (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 v[4]; } PacketBytes4;
+typedef struct { u8 header[3]; PacketBytes4 id; u8 rest[249]; } Packet256;
+typedef struct { u8 v[13]; } PacketBytes13;
+typedef struct { u8 v[8]; } PacketBytes8;
+extern PacketBytes13 data_02100014;
+extern PacketBytes8 data_02100024;
 
 void func_0205fb50(void *arg0){
  s32 func_02049208(void);
@@ -120,6 +126,30 @@ void func_020601a4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
+void func_020601b8(void *a,void *b,s32 unused){
+s32 func_02049208(void);
+M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
+u8 buf[256]; u8 addr[8]; s32 n,i;
+func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=func_02049208();
+addr[1]=2;
+if(M2C_FIELD(b,u8 *,20)&32)return;
+if(M2C_FIELD(a,s32 *,0)==1){
+i=0;buf[0]=254;buf[1]=253;buf[2]=i;
+*(PacketBytes4 *)(buf+3)=*(PacketBytes4 *)(b+28);
+if(M2C_FIELD(b,u8 *,20)&4){
+buf[7]=M2C_FIELD(a,s32 *,64);
+for(;i<M2C_FIELD(a,s32 *,64);i++)buf[8+i]=M2C_FIELD(a+i,u8 *,44);
+buf[M2C_FIELD(a,s32 *,64)+8]=0;buf[M2C_FIELD(a,s32 *,64)+9]=0;
+n=M2C_FIELD(a,s32 *,64)+10;
+}else{buf[7]=255;buf[8]=255;buf[9]=255;n=10;}
+}else if(M2C_FIELD(b,u8 *,20)&4){*(PacketBytes13 *)buf=data_02100014;n=13;}
+else{*(PacketBytes8 *)buf=data_02100024;n=8;}
+if(M2C_FIELD(b,s32 *,0)==M2C_FIELD(a,s32 *,40)&&(M2C_FIELD(b,u8 *,21)&2)){
+*(s32 *)(addr+4)=M2C_FIELD(b,s32 *,8);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,12);
+}else{*(s32 *)(addr+4)=M2C_FIELD(b,s32 *,0);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,4);}
+func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
+}
+
 void func_02060398(void *arg0,s32 arg1,s32 arg2,s32 d,s32 e,s32 f){void *a;s32 b;s32 c;M2C_UNK func_0204926c();s32 func_020496a4(s32,s32);extern s32 gDnsQueryState;a=arg0;b=arg1;c=arg2;if(!d && gDnsQueryState!=1)return;func_0204926c();M2C_FIELD(a,s32 *,4)=b;M2C_FIELD(a,s32 *,0)=c;M2C_FIELD(a,s32 *,64)=0;M2C_FIELD(a,s32 *,68)=e;M2C_FIELD(a,s32 *,72)=f;M2C_FIELD(a,s32 *,40)=0;M2C_FIELD(a,s32 *,32)=func_020496a4(2,2);func_020601a4(a+20);func_020601a4(a+8);}
 
 void func_0206040c(void *arg0, s32 arg1) {
@@ -179,7 +209,7 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
     M2C_FIELD(owner, void (**)(void *, s32, void *, s32), 0x44)(owner, 0, entry, M2C_FIELD(owner, s32 *, 0x48));
 }
 
-void func_020605d8(void *arg0, void *arg1, M2C_UNK arg2) {
+void func_020605d8(void *arg0, void *arg1, void *arg2, s32 unused) {
     s32 func_02049208();
     M2C_UNK func_02060138(void *, void *);
     M2C_UNK func_02060d90(void *, M2C_UNK);
@@ -209,7 +239,31 @@ void func_020605d8(void *arg0, void *arg1, M2C_UNK arg2) {
     M2C_FIELD(arg0, M2C_UNK (**)(void *, M2C_UNK, void *, s32), 0x44)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x48));
 }
 
-s32 func_02060670(void) {
+s32 func_02060670(void *a,void *b,void *c,s32 d) {
     return 1;
 }
 
+#pragma opt_strength_reduction off
+void func_02060678(void *p,s32 mode){
+s32 func_02049534(s32);s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
+
+s8 buf[2048];u8 addr[8];s32 alen=8;s32 n;void *q; s32 sock;u32 peer,ip;
+sock=mode?M2C_FIELD(p,s32 *,0x24):M2C_FIELD(p,s32 *,0x20);
+while(func_02049534(sock)){
+n=func_020497e0(sock,buf,2047,0,addr,&alen);if(n==-1)return;buf[n]=0;
+for(q=M2C_FIELD(p,void **,8);q;q=M2C_FIELD(q,void **,0x20)){
+if(mode&&(M2C_FIELD(q,u8 *,0x15)&8)&&M2C_FIELD(q,u32 *,0x10)==M2C_FIELD(addr,u32 *,4))goto found;
+ip=M2C_FIELD(addr,u32 *,4);peer=M2C_FIELD(q,u32 *,0);
+if(peer==ip){if(M2C_FIELD(q,u16 *,4)!=M2C_FIELD(addr,u16 *,2))goto fallback;goto found;}
+fallback:
+if(mode)goto found;
+if(peer==M2C_FIELD(p,u32 *,0x28)&&(M2C_FIELD(q,u8 *,0x15)&2)&&M2C_FIELD(q,u32 *,8)==ip&&M2C_FIELD(q,u16 *,12)==M2C_FIELD(addr,u16 *,2))goto found;
+continue;
+found:
+if(mode){if(!func_02060670(p,q,buf,n))continue;break;}
+else{if(M2C_FIELD(p,s32 *,0)==1)func_020604d8(p,q,buf,n);else func_020605d8(p,q,buf,n);break;}
+}
+next_packet:;
+}
+}
+#pragma opt_strength_reduction reset

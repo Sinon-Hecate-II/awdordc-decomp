@@ -2,6 +2,25 @@
 #include "common.h"
 
 #pragma scheduling off
+s32 func_ov000_0217acd4(s32 dir) {
+extern void *data_027e0a90,*data_027e00cc,*data_027e0a98;extern s32 data_027e0a94;extern void **gCurrentMap;extern s32 (*data_ov000_021df650)();
+u8 *p;void *map;s32 x,y,w,h,c,limit;
+M2C_FIELD(data_027e00cc,u8 *,36)=M2C_FIELD(data_027e0a90,u8 *,0);
+M2C_FIELD(data_027e00cc,u8 *,37)=M2C_FIELD(data_027e0a90,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(data_027e00cc,u8 *,37)--;break;case 3:M2C_FIELD(data_027e00cc,u8 *,37)++;break;case 4:M2C_FIELD(data_027e00cc,u8 *,36)--;break;case 5:M2C_FIELD(data_027e00cc,u8 *,36)++;break;default:break;}
+if(data_027e0a94>=349)return 0;
+map=*gCurrentMap;p=data_027e00cc;
+x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return 0;valid:;
+limit=M2C_FIELD(p,s16 *,32);c=M2C_FIELD(data_027e0a90,u8 *,3)+p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31];
+if(c>limit)return 0;
+if(data_ov000_021df650(x,y,p[38])==1)return 1;
+M2C_FIELD(data_027e0a98,u8 *,0)=M2C_FIELD(data_027e00cc,u8 *,36);
+M2C_FIELD(data_027e0a98,u8 *,1)=M2C_FIELD(data_027e00cc,u8 *,37);
+M2C_FIELD(data_027e0a98,u8 *,2)=dir;
+M2C_FIELD(data_027e0a98,u8 *,3)=c;
+data_027e0a98+=4;data_027e0a94++;return 0;
+}
+
 s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_01ffb454(s32);
     s32 func_ov000_0217acd4(s32);
@@ -86,6 +105,47 @@ found:
     M2C_FIELD(data_027e00cc, s8 *, 0x25) = M2C_FIELD(*gCurrentMap, u16 *, 0x5146);
     return 1;
 }
+
+s32 func_ov000_0217b1e8(s32 dir) {
+extern void *data_027e0a90,*data_027e00cc,*data_027e0a98;extern s32 data_027e0a94;extern void **gCurrentMap;extern s32 (*data_ov000_021df650)();
+u8 *p;void *map;s32 x,y,w,h,c,limit;
+if(M2C_FIELD(data_027e0a90,u8 *,3)>M2C_FIELD(data_027e00cc,s16 *,32))return 0;
+M2C_FIELD(data_027e00cc,u8 *,36)=M2C_FIELD(data_027e0a90,u8 *,0);
+M2C_FIELD(data_027e00cc,u8 *,37)=M2C_FIELD(data_027e0a90,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(data_027e00cc,u8 *,37)--;break;case 3:M2C_FIELD(data_027e00cc,u8 *,37)++;break;case 4:M2C_FIELD(data_027e00cc,u8 *,36)--;break;case 5:M2C_FIELD(data_027e00cc,u8 *,36)++;break;default:break;}
+if(data_027e0a94>=349)return 0;
+map=*gCurrentMap;p=data_027e00cc;
+x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return 0;valid:;
+c=M2C_FIELD(data_027e0a90,u8 *,3)+p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31];
+if(c>255)c=255;
+if(data_ov000_021df650(x,y,p[38])==1)return 1;
+M2C_FIELD(data_027e0a98,u8 *,0)=M2C_FIELD(data_027e00cc,u8 *,36);
+M2C_FIELD(data_027e0a98,u8 *,1)=M2C_FIELD(data_027e00cc,u8 *,37);
+M2C_FIELD(data_027e0a98,u8 *,2)=dir;
+M2C_FIELD(data_027e0a98,u8 *,3)=c;
+data_027e0a98+=4;data_027e0a94++;return 0;
+}
+
+s32 func_ov000_0217b708(s32 dir) {
+extern void *data_027e0a90,*data_027e00cc,*data_027e0a98;extern s32 data_027e0a94;extern void **gCurrentMap;extern s32 (*data_ov000_021df650)();
+u8 *p;void *map;s32 x,y,w,h,c,limit;
+M2C_FIELD(data_027e00cc,u8 *,36)=M2C_FIELD(data_027e0a90,u8 *,0);
+M2C_FIELD(data_027e00cc,u8 *,37)=M2C_FIELD(data_027e0a90,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(data_027e00cc,u8 *,37)--;break;case 3:M2C_FIELD(data_027e00cc,u8 *,37)++;break;case 4:M2C_FIELD(data_027e00cc,u8 *,36)--;break;case 5:M2C_FIELD(data_027e00cc,u8 *,36)++;break;default:break;}
+if(data_027e0a94>=349)return 0;
+map=*gCurrentMap;p=data_027e00cc;
+x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return 0;valid:;
+if(!func_ov000_021a9044(2,M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31))return 0;
+c=M2C_FIELD(data_027e0a90,u8 *,3)+1;p=data_027e00cc;limit=M2C_FIELD(p,s16 *,32);
+if(c>limit)return 0;
+if(data_ov000_021df650(p[36],p[37],p[38])==1)return 1;
+M2C_FIELD(data_027e0a98,u8 *,0)=M2C_FIELD(data_027e00cc,u8 *,36);
+M2C_FIELD(data_027e0a98,u8 *,1)=M2C_FIELD(data_027e00cc,u8 *,37);
+M2C_FIELD(data_027e0a98,u8 *,2)=dir;
+M2C_FIELD(data_027e0a98,u8 *,3)=c;
+data_027e0a98+=4;data_027e0a94++;return 0;
+}
+
 #pragma scheduling reset
 s32 func_ov000_0217bc34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov000_0217ab10();

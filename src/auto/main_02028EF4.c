@@ -356,6 +356,80 @@ void func_020296e0(void *arg0) {
     M2C_FIELD(&data_02138e50, M2C_UNK (**)(void *, void *, void *, u16), 0x28)(arg0 + 0x1E, arg0 + 0x18, arg0 + 0x2C, M2C_FIELD(arg0, u16 *, 6));
 }
 
+s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 func_0200751c(void);
+    void func_02007530(s32);
+    s32 func_02027d50(void);
+    void func_02006564(void *);
+    void func_020065e8(void *);
+    void func_02008048(void *, void *, s32);
+    s32 func_02012e74(s32, void *, void *, u32);
+    void func_02005da4(void *);
+    void func_020299d0(void *);
+    extern M2C_UNK data_02138e5c;
+    extern M2C_UNK data_02138e54;
+    extern M2C_UNK data_02138e50;
+
+    s32 state;
+    s32 base2;
+    s32 res;
+    s32 val;
+    s32 r6;
+
+    state = func_0200751c();
+    if (func_02027d50() == 0) {
+        func_02007530(state);
+        return -1;
+    }
+    func_02006564(&data_02138e5c);
+    base2 = func_02027d50();
+    if (base2 == 0) {
+        func_020065e8(&data_02138e5c);
+        func_02007530(state);
+        return -1;
+    }
+    if (M2C_FIELD((void *)(base2 + 0x2000), s32 *, 0x260) == 9) {
+        if (M2C_FIELD((void *)(base2 + 0x2000), u8 *, 0x26b) == 1) {
+            func_020065e8(&data_02138e5c);
+            func_02007530(state);
+            return -4;
+        }
+    }
+    func_02008048(arg1, (void *)(base2 + 0xf00), arg2);
+    if (arg4 > 0) {
+        func_02008048(arg3, (void *)(base2 + 0xf00 + arg2), arg4);
+    }
+    r6 = arg2 + arg4;
+    res = func_02012e74((s32)func_020299d0, arg0, (void *)(base2 + 0xf00), (u32)r6);
+    switch (res) {
+        case 3:
+            break;
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        default:
+            func_020065e8(&data_02138e5c);
+            func_02007530(state);
+            return -5;
+    }
+    func_02005da4(&data_02138e54);
+    val = M2C_FIELD(&data_02138e50, s32 *, 0x24);
+    if (val == 0) {
+        func_020065e8(&data_02138e5c);
+        func_02007530(state);
+        return r6;
+    }
+    val;
+    func_020065e8(&data_02138e5c);
+    func_02007530(state);
+    return -5;
+}
+
 void func_020299d0(void *arg0) {
     void func_020281f8(void);
     void func_02005df4(void *);

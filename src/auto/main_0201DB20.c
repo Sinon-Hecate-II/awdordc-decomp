@@ -91,6 +91,24 @@ void func_0201dc68(void) {
     if ((s32)((u32)(func_02007004() >> 16) - start) < 23) goto loop;
 }
 
+u8 *func_0201e078(u8 *arg0, s32 arg1, s32 arg2) {
+    extern M2C_UNK data_02137290;
+    extern M2C_UNK data_02137778;
+    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
+    void func_02008048(s32, u8 *, s32);
+    u32 temp;
+    u64 val;
+    u8 *p = arg0;
+
+    func_02007f8c((s32)arg0, 0, 236);
+    *(u16 *)arg0 = 0x101;
+    arg0[2] = 6;
+    val = *(u64 *)((char *)&data_02137290 + 0x68);
+    *(u16 *)(arg0 + 4) = (u16)(val >> 8);
+    *(u16 *)(arg0 + 6) = (u16)(val >> 8);
+    return arg0;
+}
+
 s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
     s32 temp_r4;

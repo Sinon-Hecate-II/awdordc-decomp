@@ -76,3 +76,90 @@ void func_ov011_0222166c(void *arg0) {
     func_01ffa8c4(arg0, 4);
 }
 
+void func_ov011_02222010(s32 unused, u32 arg0, s32 arg1) {
+    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK func_02080cfc(M2C_UNK *, s32);
+    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_020812a4(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK *func_020e3218(M2C_UNK *);
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c4;
+    extern s32 data_027e00c8;
+    extern M2C_UNK data_ov011_02228934;
+    extern M2C_UNK data_ov011_02228940;
+    extern M2C_UNK data_ov011_02228950;
+    extern M2C_UNK data_ov011_02228960;
+    extern M2C_UNK data_ov011_02228970;
+    extern M2C_UNK data_ov011_02228980;
+    extern M2C_UNK data_ov011_02228994;
+    extern M2C_UNK data_ov011_022289a4;
+    extern M2C_UNK data_ov011_022289b8;
+    extern M2C_UNK data_ov011_022289c8;
+    extern M2C_UNK data_ov011_022289dc;
+    extern M2C_UNK data_ov011_022289ec;
+    extern M2C_UNK data_ov011_02228a00;
+    extern M2C_UNK data_ov011_02228a10;
+    extern M2C_UNK data_ov011_02228a20;
+
+    s32 saved_r5;
+    s32 var_r6;
+    s32 var_r7;
+
+    func_0200bc5c(&data_ov011_02228934);
+
+    saved_r5 = gCur3DSpriteEngine;
+
+    var_r6 = 0;
+    do {
+        if (var_r6 == 0) {
+            var_r7 = data_027e00c8;
+        } else {
+            var_r7 = data_027e00c4;
+        }
+
+        gCur3DSpriteEngine = var_r7;
+
+        if (arg1 == 0 && var_r7 != data_027e00c8) goto inc;
+        if (arg1 == 1 && var_r7 != data_027e00c4) goto inc;
+        if (arg1 == 3 && var_r7 != saved_r5) goto inc;
+
+        switch (arg0) {
+            case 0:
+                func_02080cfc(func_020e3218(&data_ov011_02228940), M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_0208116c(&data_ov011_02228950, 0x200, 0x20);
+                break;
+            case 1:
+                func_02080cfc(&data_ov011_02228960, M2C_FIELD(var_r7, s32 *, 0x1C) + 0x800);
+                func_0208116c(&data_ov011_02228970, 0x2C0, 0x20);
+                break;
+            case 3:
+                func_02080cfc(func_020e3218(&data_ov011_02228980), M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_0208116c(&data_ov011_02228994, 0x200, 0x20);
+                break;
+            case 4:
+                func_02080cfc(func_020e3218(&data_ov011_022289a4), M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_0208116c(&data_ov011_022289b8, 0x200, 0x20);
+                break;
+            case 5:
+                func_02080cfc(func_020e3218(&data_ov011_022289c8), M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_0208116c(&data_ov011_022289dc, 0x200, 0x20);
+                break;
+            case 6:
+                func_02080cfc(func_020e3218(&data_ov011_022289ec), M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_0208116c(&data_ov011_02228a00, 0x200, 0x20);
+                break;
+            case 7:
+                func_02080cfc(&data_ov011_02228a10, M2C_FIELD(var_r7, s32 *, 0x1C));
+                func_020812a4(&data_ov011_02228a20, 0, 0, 0x200);
+                break;
+            default:
+                break;
+        }
+
+inc:
+        var_r6 += 1;
+    } while (var_r6 < 2);
+
+    gCur3DSpriteEngine = saved_r5;
+}
+

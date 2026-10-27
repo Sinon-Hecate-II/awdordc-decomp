@@ -123,6 +123,130 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
     } while (p < end);
 }
 
+void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
+    M2C_UNK func_ov001_021695e8(s32 *);
+    s32 sp28;
+    s32 sp24;
+    s32 sp20;
+    s32 sp1C;
+    s32 sp18;
+    s32 sp14;
+    s32 sp10;
+    s32 spC;
+    s32 sp8;
+    s32 sp4;
+    s32 sp0;
+    s32 temp_r11_2;
+    s32 temp_r11_3;
+    s32 temp_r3;
+    s32 temp_r3_3;
+    s32 temp_r6;
+    s32 temp_r7;
+    s32 temp_r7_2;
+    s32 temp_r7_4;
+    s32 temp_r8;
+    s32 var_r10;
+    s32 var_r5_2;
+    s32 var_r7_2;
+    s32 var_r9;
+    u32 temp_ip;
+    u32 temp_r11;
+    u32 temp_r3_2;
+    u32 temp_r7_3;
+    u32 var_r11;
+    u32 var_r5;
+    u32 var_r6;
+    u32 var_r7;
+    u8 temp_r2;
+    u8 temp_r2_2;
+    u8 temp_r4;
+
+    temp_r7 = M2C_FIELD(arg0, u8 *, 0xC) << 6;
+    temp_r4 = M2C_FIELD(M2C_FIELD(arg5, void **, 0), u8 *, 1);
+    var_r10 = arg2;
+    var_r9 = arg3;
+    temp_r8 = (s32) (temp_r7 + ((u32) (temp_r7 >> 2) >> 0x1D)) >> 3;
+    temp_r11 = M2C_FIELD(arg0, u32 *, 4);
+    temp_ip = M2C_FIELD(arg0, u32 *, 8);
+    temp_r2 = M2C_FIELD(M2C_FIELD(*arg1, u8 **, 8), u8 *, 1);
+    if (temp_r4 == 0) {
+        return;
+    }
+    temp_r7_2 = var_r10 + temp_r4;
+    if (temp_r7_2 < 0) {
+        return;
+    }
+    temp_r3 = var_r9 + temp_r2;
+    if (temp_r3 < 0) {
+        return;
+    }
+    if (var_r10 <= 0) {
+        var_r5 = 0;
+    } else {
+        var_r5 = (u32) var_r10 >> 3;
+    }
+    temp_r7_3 = temp_r7_2 + 7;
+    if (var_r9 <= 0) {
+        var_r6 = 0;
+    } else {
+        var_r6 = (u32) var_r9 >> 3;
+    }
+    var_r7 = temp_r7_3 >> 3;
+    temp_r3_2 = temp_r3 + 7;
+    if (temp_r11 <= (u32) (temp_r7_3 >> 3)) {
+        var_r7 = temp_r11;
+    }
+    var_r11 = temp_r3_2 >> 3;
+    if (temp_ip <= (u32) (temp_r3_2 >> 3)) {
+        var_r11 = temp_ip;
+    }
+    temp_r3_3 = var_r7 - var_r5;
+    temp_r11_2 = var_r11 - var_r6;
+    if (temp_r3_3 < 0) {
+        return;
+    }
+    if (temp_r11_2 < 0) {
+        return;
+    }
+    temp_r7_4 = M2C_FIELD(arg0, s32 *, 0x10);
+    sp0 = temp_r8 * (temp_r7_4 - temp_r3_3);
+    var_r7_2 = (temp_r8 * ((temp_r7_4 * var_r6) + var_r5)) + M2C_FIELD(arg0, s32 *, 0);
+    sp8 = M2C_FIELD(arg5, s32 *, 4);
+    sp14 = (s32) temp_r4;
+    sp28 = arg4 - 1;
+    sp18 = (s32) temp_r2;
+    if (var_r10 >= 0) {
+        var_r10 &= 7;
+    }
+    temp_r2_2 = M2C_FIELD(M2C_FIELD(*arg1, u8 **, 8), u8 *, 6);
+    if (var_r9 >= 0) {
+        var_r9 &= 7;
+    }
+    temp_r11_3 = var_r9 - (temp_r11_2 * 8);
+    sp20 = (s32) temp_r2_2;
+    temp_r6 = var_r10 - (temp_r3_3 * 8);
+    sp24 = (s32) M2C_FIELD(arg0, u8 *, 0xC);
+    sp1C = temp_r2_2 * *M2C_FIELD(*arg1, u8 **, 8);
+    if (var_r9 <= temp_r11_3) {
+        return;
+    }
+    do {
+        var_r5_2 = var_r10;
+        sp10 = var_r9;
+        if (var_r10 > temp_r6) {
+            do {
+                sp4 = var_r7_2;
+                spC = var_r5_2;
+                func_ov001_021695e8(&sp4);
+                var_r5_2 -= 8;
+                var_r7_2 += temp_r8;
+            } while (var_r5_2 > temp_r6);
+        }
+        var_r9 -= 8;
+        var_r7_2 += sp0;
+    } while (var_r9 > temp_r11_3);
+}
+
 void func_ov001_02169bd0(void *a,s32 b){M2C_UNK func_02007e98(s32,s32,s32);s32 bits=M2C_FIELD(a,u8 *,12);u32 v; if(bits==4) {u32 t=b|b<<4;v=t|t<<8;}else{v=(u32)b|((u32)b<<8);}func_02007e98(v|v<<16,M2C_FIELD(a,s32 *,0),(M2C_FIELD(a,s32 *,4)*M2C_FIELD(a,s32 *,8))*((bits*64)/8));}
 
 void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,size;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);size=(bits<<6)/8;stride=size*M2C_FIELD(a,s32 *,16);width=size*M2C_FIELD(a,s32 *,4);i=0;if(M2C_FIELD(a,s32 *,8)<=0)return;do{func_02007e98(v,p,width);i++;p+=stride;}while(i<M2C_FIELD(a,s32 *,8));}

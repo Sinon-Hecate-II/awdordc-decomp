@@ -32,7 +32,7 @@ void func_02024b24(void *p) {
 }
 
 s32 func_02024b94(void *arg0) {
- void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void func_02023318(void *);s32 func_02023f20(void *);void func_020244c0(void *);void func_02024618(void *);void func_020247ac(void *);s32 func_02024a6c(void *);
+ void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void func_02023318(void *);s32 func_02023f20(void *);void func_020244c0(void *);void func_020247ac(void *);s32 func_02024a6c(void *);
  void *p=M2C_FIELD(arg0,void **,12);s32 state;
  func_02024618(arg0);
  do {
@@ -252,3 +252,69 @@ void func_02025188(s8 arg0) {
         M2C_FIELD(temp_r0, s8 *, 9) = arg0;
     }
 }
+#include "common.h"
+#pragma opt_common_subs off
+s32 func_02024618(void *p){
+
+u32 func_02022070(void);
+void func_020240c0(void *,s32);
+M2C_UNK func_02008048(s32,void *,u32);
+void func_02021e7c(void *,s32,u16);
+M2C_UNK func_0201d844(s8 *,s32,s32,s32,void *);
+void func_02023c74(void *,void *,s32);
+extern u16 data_020faffc[];
+
+u8 *q=M2C_FIELD(p,u8 **,12),*buf,*cursor;
+u32 rnd,i;
+s32 len,n;
+
+buf=data_021372a4(152);
+if(!buf){q[0x455]=9;
+return 9;
+}
+buf[9]=3;
+buf[10]=0;
+rnd=func_02022070();
+q[0x34]=rnd>>24;
+q[0x35]=rnd>>16;
+q[0x36]=rnd>>8;
+q[0x37]=rnd;
+
+func_020240c0(q+0x38,28);
+func_02008048((s32)(q+0x34),buf+11,32);
+func_02021e7c(q,M2C_FIELD(p,s32 *,0x1c),M2C_FIELD(p,u16 *,0x18));
+
+if(q[0x30]){buf[0x2b]=32;func_02008048((s32)(q+0x74),buf+0x2c,32);cursor=buf+0x4c;}
+else{buf[0x2b]=0;cursor=buf+0x2c;}
+cursor[0]=0;
+cursor[1]=4;
+cursor+=2;
+
+for(i=0;
+i<2;
+i++){cursor[0]=data_020faffc[i]>>8;
+cursor[1]=data_020faffc[i];
+cursor+=2;
+}
+cursor[0]=1;
+cursor[1]=0;
+cursor+=2;
+len=cursor-buf-5;
+n=len-4;
+
+buf[0]=22;
+buf[1]=3;
+buf[2]=0;
+buf[3]=len>>8;
+buf[4]=len;
+buf[5]=1;
+buf[6]=n>>16;
+buf[7]=n>>8;
+buf[8]=n;
+
+func_0201d844(buf,len+5,0,0,p);
+func_02023c74(q,buf+5,len);
+data_021372d0[0](buf);
+
+}
+#pragma opt_common_subs reset

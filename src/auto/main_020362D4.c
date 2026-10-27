@@ -1,6 +1,95 @@
 /* 11 functions from 0x020362D4 to 0x02037214 (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_020364f4(void) {
+    u64 func_02007004(void);
+    s32 func_02021558(M2C_UNK, void *);
+    M2C_UNK func_02021750(s32, s32);
+    M2C_UNK func_0202175c(s32);
+    void func_0203667c(void);
+    void func_02036718(void);
+    M2C_UNK func_020376d8(s32, M2C_UNK *, s32);
+    extern M2C_UNK data_0213d138;
+
+    register void *p asm("r4");
+
+    p = M2C_FIELD(&data_0213d138, void **, 0x10);
+    if (p == 0 || M2C_FIELD(p, s32 *, 0x38) == 0) {
+        return 4;
+    }
+
+    if (M2C_FIELD(p, s32 *, 0x3c) == 0) {
+        if (M2C_FIELD(p, u32 *, 0x44) != 0 || M2C_FIELD(p, u32 *, 0x40) != 0) {
+            u64 now;
+            u32 hi;
+            u32 lo;
+            now = func_02007004();
+            hi = M2C_FIELD(p, u32 *, 0x44);
+            lo = M2C_FIELD(p, u32 *, 0x40);
+            if (((u64)hi << 32) | (u64)lo < now) {
+                M2C_FIELD(p, s32 *, 0x3c) = 2;
+                M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38) = 3;
+                func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0), 2);
+                func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0));
+            }
+        }
+    }
+
+sw: {
+        void *pp;
+        s32 st;
+        pp = M2C_FIELD(&data_0213d138, void **, 0x10);
+        st = M2C_FIELD(pp, s32 *, 0x38);
+        if (st == 1) goto case1;
+        if (st == 2) goto case2;
+        if (st == 3) goto case3;
+        goto def;
+    }
+
+case1: {
+        void *pp;
+        s32 r;
+        pp = M2C_FIELD(&data_0213d138, void **, 0x10);
+        r = func_02021558(M2C_FIELD(pp, s32 *, 0), (void *)((char *)pp + 4));
+        if (r < 0) {
+            if (r != -26) goto err;
+        }
+        goto ok;
+    }
+
+err: {
+        void *pp;
+        pp = M2C_FIELD(&data_0213d138, void **, 0x10);
+        M2C_FIELD(pp, s32 *, 0x3c) = 3;
+        M2C_FIELD(pp, s32 *, 0x38) = 3;
+        func_02021750(M2C_FIELD(pp, s32 *, 0), 2);
+        func_0202175c(M2C_FIELD(pp, s32 *, 0));
+        return 0;
+    }
+
+ok:
+    func_0203667c();
+    return 0;
+
+case2:
+    func_0203667c();
+    return 0;
+
+case3:
+    func_02036718();
+    return 0;
+
+def: {
+        void *pp;
+        s32 saved;
+        pp = M2C_FIELD(&data_0213d138, void **, 0x10);
+        saved = M2C_FIELD(pp, s32 *, 0x3c);
+        func_020376d8(0, pp, 0);
+        M2C_FIELD(&data_0213d138, void **, 0x10) = 0;
+        return saved;
+    }
+}
+
 void func_0203667c(void) {
  s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 func_02068c34(M2C_UNK *);
  extern M2C_UNK data_020fb968; extern M2C_UNK data_0213d138;
@@ -106,6 +195,38 @@ s32 func_02036f14(void) {
     func_020376d8(0, data_0213d1c8, 0);
     data_0213d1c8 = 0;
     return var_r4;
+}
+
+s32 func_0203703c(void) {
+s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); void func_02036860(void); s32 func_0206ad38(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
+extern void *data_0213d1c8; extern s32 data_0213e9f4;
+extern u8 data_020fba60[],data_020fba68[],data_020fba74[],data_020fba80[];
+s32 value; s8 buf[51]; void *p=data_0213d1c8; s32 r,i;
+if(func_02034c58(p,0)) {
+if(func_02034ef8(p,data_020fba60))func_02036860();
+if(func_02034ef8(p,data_020fba68)){
+r=func_0206ad38();
+if(data_0213e9f4!=34 && r==200 && func_02034f50(p,data_020fba74,&value,4)>0){
+r=func_0206ad38(&value);
+if(data_0213e9f4!=34){
+if(r==1)goto error;
+if(r<100)goto readbuf;
+if(r==100)goto readbuf;
+error:
+func_02037638(18,-33000-r);return 0;
+readbuf:
+func_02034f50(p,data_020fba80,buf,51);
+process:
+*M2C_FIELD(data_0213d1c8,s32 **,0x1d20)=0;
+for(i=0;i<M2C_FIELD(data_0213d1c8,s32 *,0x1d24);i++){
+if(buf[i]=='0')M2C_FIELD(data_0213d1c8,u8 **,0x1d1c)[i]=0;
+else {M2C_FIELD(data_0213d1c8,u8 **,0x1d1c)[i]=1; ++*M2C_FIELD(data_0213d1c8,s32 **,0x1d20);}
+}return 1;
+}
+}
+}
+}
+func_02037638(18,-33020);return 0;
 }
 
 void func_020371f4(void) {

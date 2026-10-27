@@ -184,6 +184,83 @@ void func_ov001_021765b4(void) {
     func_ov001_02175e20();
 }
 
+void func_ov001_02176628(void) {
+    void func_ov001_02184404(void);
+    void func_ov001_02175e74(void);
+    void func_ov001_02171fa0(void);
+    void func_ov001_021721c4(void);
+    void func_ov001_02171c10(void);
+    u8 func_ov001_02175ddc(void);
+    s32 func_ov001_02175e04(s32);
+    s32 func_ov001_02175dec(void);
+    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK func_ov001_02175ec4(M2C_UNK);
+    s32 func_ov001_02171d30(void *);
+    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    void func_ov001_0218a504(s32, M2C_UNK);
+    M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
+    extern s32 data_ov001_02193d58;
+    extern M2C_UNK data_ov001_021903c4;
+    extern M2C_UNK data_ov001_021903a8[7];
+    extern M2C_UNK data_ov001_021903d4;
+    extern M2C_UNK data_ov001_021903e8;
+    extern M2C_UNK data_ov001_021903fc;
+    extern M2C_UNK data_ov001_02190410;
+    extern M2C_UNK data_ov001_02190424;
+    extern M2C_UNK data_ov001_0219043c;
+    extern M2C_UNK data_ov001_02190454;
+    extern M2C_UNK data_ov001_0219046c;
+    extern M2C_UNK data_ov001_02190484;
+    extern M2C_UNK data_ov001_0219049c;
+    extern M2C_UNK data_ov001_021904b4;
+    extern M2C_UNK data_ov001_021904c8;
+    extern M2C_UNK func_0200466c;
+    extern M2C_UNK func_02004108;
+    extern M2C_UNK func_02004314;
+    extern M2C_UNK func_020041b8;
+    extern M2C_UNK func_020046cc;
+    extern M2C_UNK func_020040b4;
+    extern M2C_UNK func_020042bc;
+    extern M2C_UNK func_02004160;
+    extern M2C_UNK func_0200442c;
+    extern M2C_UNK func_ov001_02176808;
+
+    func_ov001_02184404();
+    func_ov001_02175e74();
+    func_ov001_02171fa0();
+    func_ov001_021721c4();
+    func_ov001_02171c10();
+    if (func_ov001_02175ddc() == 1 && func_ov001_02175e04(2) != 0) {
+        data_ov001_02193d58 = func_ov001_02175ec4((M2C_UNK)&data_ov001_021903c4);
+    } else {
+        data_ov001_02193d58 = func_ov001_02175ec4((M2C_UNK)data_ov001_021903a8[func_ov001_02175ddc()]);
+    }
+    func_ov001_0218a504(1, func_ov001_02171d30(&data_ov001_021903d4));
+    func_ov001_0218a504(0, func_ov001_02171d30(&data_ov001_021903e8));
+    func_ov001_02171d90(&data_ov001_021903fc, &func_0200466c);
+    func_ov001_02171d90(&data_ov001_02190410, &func_02004108);
+    func_ov001_02171d90(&data_ov001_02190424, &func_02004314);
+    func_ov001_02171d90(&data_ov001_0219043c, &func_020041b8);
+    func_ov001_02171d90(&data_ov001_02190454, &func_020046cc);
+    func_ov001_02171d90(&data_ov001_0219046c, &func_020040b4);
+    func_ov001_02171d90(&data_ov001_02190484, &func_020042bc);
+    func_ov001_02171d90(&data_ov001_0219049c, &func_02004160);
+    switch (func_ov001_02175dec()) {
+    case 0:
+        func_ov001_02171d90(&data_ov001_021904b4, &func_0200442c);
+        break;
+    case 1:
+        func_ov001_02171d90(&data_ov001_021904c8, &func_0200442c);
+        break;
+    }
+    M2C_FIELD((void *)0x0400100A, u16 *, 0) = (M2C_FIELD((void *)0x0400100A, u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
+    func_ov001_0218b314(1, 2);
+    func_ov001_0218b314(0, 2);
+    func_ov001_02175d54(&func_ov001_02176808);
+}
+
 void func_ov001_02176808(void) {
     extern M2C_UNK func_ov001_02176844;
     func_ov001_0218a824(2, 1, 2, 0x14);

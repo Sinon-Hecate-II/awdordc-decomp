@@ -1,6 +1,69 @@
 /* 10 functions from 0x02179E48 to 0x0217ACD4 (ov000), found by ds-decomp. */
 #include "common.h"
 
+u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c0f[];
+    extern s32 func_0207c8ec(s32, s32);
+    extern s32 func_020a86f0(s32);
+    extern s32 func_020a86bc(s32, s32);
+    void *base;
+    u8 *sel;
+    u8 attr;
+    s8 *row;
+    s8 cell;
+    s32 kind;
+    s32 t;
+    s32 w;
+    s32 A, B;
+    s8 cell2;
+    u8 unitByte;
+    s32 lhs, rhs;
+
+    base = *gCurrentMap;
+    sel = *(u8 **)(base + 0x52D0);
+    kind = (s32)(((u32)(sel[0] << 26)) >> 26);
+    attr = data_ov000_021b5c0f[kind * 0x70];
+    if (!(attr & 0x30)) return 1;
+    row = ((s8 **)(base + 0x52E8))[y];
+    cell = row[x];
+    if (cell == 0) return 1;
+    t = func_0207c8ec(cell - 1, arg2);
+
+    base = *gCurrentMap;
+    sel = *(u8 **)(base + 0x52D0);
+    kind = (s32)(((u32)(sel[0] << 26)) >> 26);
+    attr = data_ov000_021b5c0f[kind * 0x70];
+
+    if (attr & 0x10) {
+        w = *(u16 *)(base + 0x52A4);
+        A = func_020a86f0(w);
+        B = func_020a86bc(w, kind);
+        B = B + 1;
+        row = ((s8 **)(base + 0x52E8))[y];
+        cell2 = row[x];
+        unitByte = sel[0x0A];
+        lhs = (s32)((((u32)(unitByte << 25)) >> 25) - (cell2 * A));
+        rhs = t * B;
+        if (lhs < rhs) return 0;
+        return 1;
+    } else if (kind == 0x16) {
+        w = *(u16 *)(base + 0x52A4);
+        A = func_020a86f0(w);
+        B = func_020a86bc(w, kind);
+        B = B + 5;
+        row = ((s8 **)(base + 0x52E8))[y];
+        cell2 = row[x];
+        unitByte = sel[0x0A];
+        lhs = (s32)((((u32)(unitByte << 25)) >> 25) - (cell2 * A));
+        rhs = t * B;
+        if (lhs < rhs) return 0;
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 s32 func_ov000_0217aa2c(s32 x,s32 y) {
 extern void **gCurrentMap;
 void **state=gCurrentMap;

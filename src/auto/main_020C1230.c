@@ -86,6 +86,25 @@ M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
  } while(y<height);
 }
 
+void func_020c1454(u16 *dst) {
+s32 func_020a61e8(void*);
+extern void **gCurrentMap;
+extern u16 data_0211e538[],data_02129660[],data_0216402c[],data_021296e8[],data_02163fdc[];
+extern u8 data_0216408c[];
+s32 i,owner,x,y;u8 *unit;u16 *out,*src;u32 kind;
+for(i=1;i<256;i++){
+unit=(u8*)*gCurrentMap+0x59a4+i*14;
+kind=(u32)(unit[0]<<26)>>26;
+if(kind && func_020a61e8(unit)){
+x=unit[1];y=unit[2];
+if(unit){if(unit) owner=(s32)(unit-((u8*)*gCurrentMap+0x59a4))/14;else owner=0;owner=(owner>>6)+1;}else owner=0;
+src=data_0211e538+data_021296e8[19+data_0216408c[owner]];
+out=dst+data_0216402c[x]+data_02163fdc[y];
+out[0]&=data_02129660[0];out[2]&=data_02129660[1];out[4]&=data_02129660[2];out[6]&=data_02129660[3];
+out[0]|=src[0];out[2]|=src[2];out[4]|=src[4];out[6]|=src[6];
+}}
+}
+
 #pragma opt_common_subs off
 M2C_UNK func_020c15ec(s32 arg){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);

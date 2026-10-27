@@ -1,5 +1,6 @@
 /* 23 functions from 0x020CAB8C to 0x020CBACC (main), found by ds-decomp. */
 #include "common.h"
+typedef struct UnitCB9 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 hp; u8 tail[6]; } UnitCB9;
 typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealthCB;
 extern u8 data_0212b1b8[][4];
 
@@ -311,5 +312,39 @@ else M2C_FIELD(p,s16 *,0x36)=1;
 
 void func_020cb8f8(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x50) = 1;
+}
+
+void func_020cb904(void *state){
+extern void **gCurrentMap;extern M2C_UNK data_ov000_021b5bfc;
+u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;
+if(func_020c98b4(state))return;
+for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
+map=*gCurrentMap;
+unit=(UnitCB9 *)(map+0x59a4+(M2C_FIELD(map,u16 *,0x52a8)+i)*14);
+if(!unit->kind || (unit->flags&8))continue;
+a=0;b=0;
+if(func_020d280c(M2C_FIELD(map,u16 *,0x52a4),unit->x,unit->y)){
+s32 kind=unit->kind; s32 x; s32 y; s32 terrain; s8 *table;
+map=*gCurrentMap; x=unit->x;y=unit->y;
+terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
+table=M2C_FIELD((u8 *)&data_ov000_021b5bfc+kind*112,s8 **,0x58);
+if(table[terrain]){
+if(!func_020a8604(kind)){
+a+=func_020cb038(unit,0);
+}
+a+=func_020cb170(unit,0);
+b+=func_020cb254(unit,func_020a7558(unit),1);
+}
+}
+n=func_020a2668(unit,unit->x,unit->y);
+if(n)b+=func_020cb254(unit,n,1);
+if(a||b){
+if(b)func_020c98d8(unit->x,unit->y,1);
+else func_020c98d8(unit->x,unit->y,2);
+M2C_FIELD(state,u16 *,0x50)=i+1;
+break;
+}
+}
+if(i==51)func_01ffa6fc(state);
 }
 

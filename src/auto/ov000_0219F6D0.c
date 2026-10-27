@@ -18,6 +18,74 @@ s32 func_ov000_0219f6fc(void) {
     return 1;
 }
 
+s32 func_ov000_0219f728(void) {
+    void func_020cc6a4(void);
+    s32 func_020d19b4(u16);
+    void func_020cf5ec(s32);
+    s32 func_020cd674(void);
+    extern u16 data_02168f14;
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021df7d0[];
+    extern void *data_ov000_021df580;
+    extern s32 data_ov000_021e1468;
+    u8 *unit;
+    u8 col;
+    u8 *base;
+    u8 attr;
+    u8 row;
+    u8 bits;
+    u32 cell;
+    u16 player;
+    s32 visible;
+    s32 limit = 0x1e;
+
+    if ((((u32)(data_02168f14 << 22)) >> 31) == 0) {
+        if (func_020d19b4(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a4)) != 0) {
+            if ((u8)(data_ov000_021df7d0[0] + 0xfc) <= 1) {
+                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;
+            } else if (data_ov000_021df7d0[0] == 0x13) {
+                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 4;
+            } else {
+                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 6;
+            }
+            func_020cc6a4();
+            return 1;
+        }
+    }
+    if (data_ov000_021df7d0[0] == 4) {
+        base = M2C_FIELD(gCurrentMap, void **, 0);
+        player = M2C_FIELD(base, u16 *, 0x52a4);
+        attr = M2C_FIELD(base + player * 0x8c, u8 *, 0x67c3);
+        unit = base + 0x59a4 + data_ov000_021df7d0[6] * 14;
+        row = unit[2];
+        col = unit[1];
+        if (attr & 2) {
+            visible = 1;
+        } else {
+            cell = col + M2C_FIELD(base + row * 2, u16 *, 0x3758);
+            bits = M2C_FIELD(base + (cell >> 3), u8 *, 0x5201) & (1 << (cell & 7));
+            visible = (bits != 0);
+        }
+        if (visible != 0) {
+            M2C_FIELD(base, u16 *, 0x52c2) = col;
+            M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52c4) = unit[2];
+            func_020cf5ec(2);
+        }
+    }
+    if (func_020cd674() != 0) limit = 0x14;
+    data_ov000_021e1468 = data_ov000_021e1468 + 1;
+    if (data_ov000_021e1468 > limit) {
+        if ((u8)(data_ov000_021df7d0[0] + 0xfc) <= 1) {
+            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;
+        } else if (data_ov000_021df7d0[0] == 0x13) {
+            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 4;
+        } else {
+            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 6;
+        }
+    }
+    return 0;
+}
+
 s32 func_ov000_0219f918(void) {
 void func_020bb0d0(u8);
 void func_020bb0ec(u8,u8);

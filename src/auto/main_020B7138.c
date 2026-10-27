@@ -1,5 +1,6 @@
 /* 17 functions from 0x020B7138 to 0x020B8078 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 pad[0x44]; u32 tile:16; u32 flags:16; } SpriteTile;
 
 void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     void *func_01ffa42c(M2C_UNK *, s32);
@@ -69,6 +70,28 @@ loop_15:
     }
     func_0207b774(x, y);
     func_020b695c(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
+}
+
+void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
+ M2C_UNK func_0207b774(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK func_0208fb0c(M2C_UNK,u32,u32);
+ u32 func_020a4ab0(u32);
+ void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
+ void func_020b51dc(void); s32 func_020b51f0(void);
+ extern M2C_UNK data_02128f9c,data_02128fa4,data_02128fac;
+ s32 t,t2; u32 tile; s32 x,y; void *p,*q;
+ tile=func_020a4ab0(arg2); x=0; y=0;
+ func_020b51dc(); t=func_020b5200(&data_02128f9c,0);
+ switch(arg2) {case 0:x=-132;y=132;break;case 1:y=176;break;case 2:x=132;y=x;break;case 3:y=172;break;default:break;}
+ p=func_020b5188(&data_02128fa4,x+arg0*16,y+arg1*16,48,t,0,arg4);
+ if(p) {
+ ((SpriteTile *)p)->tile=(u16)(tile+0x4000);
+ M2C_FIELD(p,s32 *,0x58)=arg3; M2C_FIELD(p,s32 *,0x5c)=arg0; M2C_FIELD(p,s32 *,0x60)=arg1; M2C_FIELD(p,u32 *,0x64)=arg2; M2C_FIELD(p,void (**)(void *),0x68)=func_020b7178; arg4=p;
+ }
+ t2=func_020b51f0();
+ switch(arg2) {case 0:x=-12;y=12;break;case 1:x=0;y=16;break;case 2:x=12;y=x;break;case 3:x=0;y=12;break;default:break;}
+ q=func_020b5188(&data_02128fac,x+arg0*16,y+arg1*16,32,t2,1,arg4);
+ if(q) {func_0208fb0c(0x103,arg0,arg1+2); ((SpriteTile *)q)->tile=(u16)tile;}
+ func_0207b774(arg0,arg1+2);func_0207b7e8(q);
 }
 
 /* Draw a centered gauge and two flanking icon sprites for the object. */

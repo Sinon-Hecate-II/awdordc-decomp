@@ -1,6 +1,40 @@
 /* 31 functions from 0x020CC9C8 to 0x020CD8A8 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020cc9c8(void *obj) {
+ extern s32 *gCurrentMap;s32 func_0207cfb8(s32);s32 func_0207cee0(s32);s32 func_0207cf48(s32);void func_0208fe30(s32);
+ s32 oldH,oldW,newH,newW,x,y,width,height,map,dx,dy;
+ if(func_0207cfb8(*gCurrentMap+0x6ef8)==0) {M2C_FIELD(obj,s32 *,0x5c)=0;M2C_FIELD(obj,s32 *,0x60)=128;func_0208fe30(0x1001e);}
+ else {M2C_FIELD(obj,s32 *,0x5c)=128;M2C_FIELD(obj,s32 *,0x60)=0;func_0208fe30(0x1001f);}
+ oldH=func_0207cee0(M2C_FIELD(obj,s32 *,0x5c));oldW=func_0207cf48(M2C_FIELD(obj,s32 *,0x5c));
+ newH=func_0207cee0(M2C_FIELD(obj,s32 *,0x60));newW=func_0207cf48(M2C_FIELD(obj,s32 *,0x60));
+ map=*gCurrentMap;x=M2C_FIELD(map,s16 *,0x5148);y=M2C_FIELD(map,s16 *,0x514a);
+ dx=M2C_FIELD(map,s16 *,0x52c2)-(x>>4);dy=M2C_FIELD(map,s16 *,0x52c4)-(y>>4);
+ M2C_FIELD(obj,s16 *,0x6c)=M2C_FIELD(*gCurrentMap,s16 *,0x5148);
+ M2C_FIELD(obj,s16 *,0x6e)=M2C_FIELD(*gCurrentMap,s16 *,0x5148);
+ M2C_FIELD(obj,s16 *,0x70)=M2C_FIELD(*gCurrentMap,s16 *,0x514a);
+ M2C_FIELD(obj,s16 *,0x72)=M2C_FIELD(*gCurrentMap,s16 *,0x514a);
+ if(dx>=newW-2) {
+ map=*gCurrentMap;width=M2C_FIELD(map,u16 *,0x5144);
+ x=M2C_FIELD(map,s16 *,0x52c2);if(x<width-3)width=x+3;
+ M2C_FIELD(obj,s16 *,0x6e)=(width-newW)<<4;
+ }
+ if(dy>=newH-2) {
+ map=*gCurrentMap;height=M2C_FIELD(map,u16 *,0x5146);
+ y=M2C_FIELD(map,s16 *,0x52c4);if(y<height-3)height=y+3;
+ M2C_FIELD(obj,s16 *,0x72)=(height-newH)<<4;
+ }
+ if(oldW<newW) {
+ width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
+ if(width<newW+(M2C_FIELD(obj,s16 *,0x6e)>>4))M2C_FIELD(obj,s16 *,0x6e)=(width-newW)<<4;
+ }
+ if(oldH<newH) {
+ height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+ if(height<newH+(M2C_FIELD(obj,s16 *,0x72)>>4))M2C_FIELD(obj,s16 *,0x72)=(height-newH)<<4;
+ }
+ M2C_FIELD(obj,s32 *,0x64)=0;M2C_FIELD(obj,s32 *,0x68)=15;
+}
+
 void func_020ccbc0(void *arg0) {
 extern s32 *gCurrentMap;
 s32 func_0207ca38(s32,s32,s32,s32,s32);

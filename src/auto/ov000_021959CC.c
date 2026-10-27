@@ -270,6 +270,106 @@ void func_ov000_021963f8(void) {
     func_ov000_0218a9ac(sp0[0], sp0[1]);
 }
 
+#pragma opt_strength_reduction off
+s32 func_ov000_02196430(s16 *arg0) {
+    s32 func_ov000_02194ab8(s16 *);
+    s32 func_ov000_021a9c28(void);
+    s32 func_ov000_021954dc(s16 *);
+    s32 func_ov000_02195574(s16 *);
+    s32 func_ov000_02195788(s16 *);
+    s32 func_020d243c(u16);
+    s32 func_ov000_02195f1c(s16 *);
+    s32 func_ov000_02196084(s16 *);
+    s32 func_ov000_021961d4(s16 *);
+    s32 func_ov000_02196330(void);
+    s32 func_ov000_02196398(s16 *);
+    extern void **gCurrentMap;
+
+    u8 *map;
+    u8 *unit;
+    u32 key;
+
+    map = (u8 *)*gCurrentMap;
+    unit = (u8 *)*(void **)(map + 0x52d0);
+    key = (u32)(unit[0x0b] << 28) >> 28;
+
+    switch (key) {
+    case 0:
+    case 1:
+        if (func_ov000_02194ab8(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 2:
+        if (func_ov000_021a9c28() == 1) {
+            if (func_ov000_021954dc(arg0) == 0) {
+                return 0;
+            }
+        } else {
+            if (func_ov000_02194ab8(arg0) == 0) {
+                return 0;
+            }
+        }
+        break;
+    case 3:
+        if (func_ov000_02195574(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 4:
+        if (func_ov000_02195788(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 5: {
+        u16 player = *(u16 *)(map + 0x52a4);
+        if (func_020d243c(player) == 1) {
+            if (func_ov000_02195f1c(arg0) == 0) {
+                return 0;
+            }
+        } else {
+            if (func_ov000_02195788(arg0) == 0) {
+                return 0;
+            }
+        }
+        break;
+    }
+    case 6:
+        if (func_ov000_02195788(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 7:
+    case 9:
+        if (func_ov000_02196084(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 8:
+        if (func_ov000_021961d4(arg0) == 0) {
+            return 0;
+        }
+        break;
+    case 10: {
+        arg0[0] = (s16)unit[1];
+        arg0[1] = (s16)(((u8 *)*(void **)(((u8 *)*gCurrentMap) + 0x52d0))[2]);
+        break;
+    }
+    default:
+        if (func_ov000_02196330() == 1) {
+            if (func_ov000_02196398(arg0) == 0) {
+                return 0;
+            }
+        } else {
+            if (func_ov000_02194ab8(arg0) == 0) {
+                return 0;
+            }
+        }
+        break;
+    }
+    return 1;
+}
+#pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
     s32 func_ov000_021a9934(u32, u32);
     void func_ov000_02179be0(void);

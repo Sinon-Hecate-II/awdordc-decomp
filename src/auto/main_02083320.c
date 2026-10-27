@@ -80,6 +80,40 @@ void func_0208352c(void *arg0) {
  }while(i<n);
 }
 
+#pragma opt_strength_reduction off
+void func_020835d4(void *obj) {
+ extern s16 data_020e5b30[];
+ s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+ s32 c;u16 x,y; s32 s,b,a,d,e,i,offset,pos,glyph;
+ x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
+ c=data_020e5b30[1]<<4;s=data_020e5b30[0];
+ M2C_FIELD(obj,u16 *,0x54)++;
+ a=func_0207c8ec(c,256);b=func_0207c8ec((-s)<<4,64);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,64);
+ func_01ff8ddc(31,(s16)a,(s16)b,(s16)d,(s16)e);
+ for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
+ if(M2C_FIELD(obj,u16 *,0x54)<M2C_FIELD((u8 *)obj+i,u8 *,0x44))break;
+ offset=M2C_FIELD(obj,u16 *,0x54)-M2C_FIELD((u8 *)obj+i,u8 *,0x44);
+ if(offset>8)offset=0;else offset=func_0207ca38(4,256,0,offset,8);
+ pos=x+offset;if(pos>=256)break;
+ func_01ffaacc((u16)((pos&511)|0x3e00),(u16)((y&255)|256),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
+ glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);
+ if(glyph==255)x+=14;else x+=data_02101fdc[glyph]-2;
+ }
+ if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
+}
+
+#pragma opt_strength_reduction off
+void func_02083c5c(void *obj) {
+ extern u8 data_027e008c[];
+ s32 i; s32 x=M2C_FIELD(obj,u16 *,0x56),y=M2C_FIELD(obj,u16 *,0x58);s32 top=(y-16)&255,glyph;
+ func_01ffaacc((u16)((x-42)&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+224)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+ for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
+ func_01ffaacc((u16)(x&511),(u16)(y&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
+ glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);if(glyph==255)x=(u16)(x+14);else x=(u16)(x+(data_02101fdc[glyph]-2));
+ }
+ x-=19;
+ func_01ffaacc((u16)(x&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+}
 void func_020841c8(void *a){
 s32 i; u16 x,y; void *p;
 x=M2C_FIELD(a,u16 *,0x56);y=M2C_FIELD(a,u16 *,0x58);

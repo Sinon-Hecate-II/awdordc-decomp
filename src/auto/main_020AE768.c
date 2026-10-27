@@ -28,6 +28,57 @@ void func_020ae7e0(void) {
     func_020ae7ec();
 }
 
+M2C_UNK func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
+    M2C_UNK func_020e31e0(void);
+    M2C_UNK *func_020e3218(M2C_UNK *);
+    void func_020675e4(void *, void *, ...);
+    void func_0200bc5c(void *);
+    void func_02082134(s32, s32);
+    void func_020814e4(void *);
+    void func_02081590(void *, s32);
+    void func_02081578(void *, void *);
+    s32 func_01ff9c34(u8, s32);
+    void func_01ff85b8(void *, s32, s32);
+    void func_02081528(void);
+    extern void *gCur3DSpriteEngine;
+    extern char data_02127eac[], data_02127eb8[], data_02127ec0[], data_02127ec8[], data_02127ed0[];
+
+    void *r6 = arg0;
+    s32 r5 = arg1;
+    s32 r4 = arg2;
+    char sp100[0x100];
+    char sp0[0x100];
+
+    if (func_020e31e0() == 2 && *(u8 *)((char *)r6 + 0x34) == 0) {
+        func_020675e4(sp100, func_020e3218(*(void **)(*(void **)((char *)r6 + 0x38))));
+    } else {
+        func_020675e4(sp100, *(void **)(*(void **)((char *)r6 + 0x38)));
+    }
+    func_02082134(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
+    func_0200bc5c(data_02127eac);
+    func_020675e4(sp0, data_02127eb8, sp100);
+    func_020814e4(sp0);
+    func_020675e4(sp0, data_02127ec0, sp100);
+    func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0xc));
+    func_020675e4(sp0, data_02127ec8, sp100);
+    func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20));
+    func_020675e4(sp0, data_02127ed0, sp100);
+    func_02081578(sp0, (void *)((char *)*(void **)((char *)gCur3DSpriteEngine + 0x30) + (r4 << 5)));
+    {
+        void *e0 = *(void **)gCur3DSpriteEngine;
+        u8 low = (u8)(((u32)(*(u16 *)e0 << 29)) >> 29);
+        s32 vv = func_01ff9c34(low, r5);
+        s32 sz = r4 << 12;
+        s32 vv16 = (vv << 16) >> 16;
+        s32 sz16 = (sz << 16) >> 16;
+        void *ptr = *(void **)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20);
+        func_01ff85b8(ptr, vv16, sz16);
+    }
+    func_02081528();
+    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) = (u8)(*(u8 *)((char *)gCur3DSpriteEngine + 0x46) | 0x10);
+    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) = (u8)(*(u8 *)((char *)gCur3DSpriteEngine + 0x46) | (1 << r5));
+}
+
 M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
     extern M2C_UNK data_02127e4c, data_02127e40;

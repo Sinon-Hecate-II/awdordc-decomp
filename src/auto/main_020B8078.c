@@ -3,6 +3,74 @@
 
 extern u8 data_021290b4[40];
 
+void func_020b8078(void *arg0) {
+    extern void **gCurrentMap;
+    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    s32 func_020abe90(M2C_UNK);
+    void *func_020b7f58(M2C_UNK);
+    void *func_020b7fb8(M2C_UNK);
+    void *func_020b8018(M2C_UNK);
+    s32 func_020cd1e4();
+    s32 func_020cd28c();
+    s32 func_020cd2b8();
+    s32 func_020cd2f8();
+    s32 func_020cd3bc();
+    extern M2C_UNK data_0212906c;
+    extern M2C_UNK data_02129074;
+    extern M2C_UNK data_02129084;
+    extern M2C_UNK data_02129094;
+    extern M2C_UNK data_021290a4;
+    extern M2C_UNK func_020b7c4c;
+    extern M2C_UNK func_020b7c5c;
+    extern M2C_UNK func_020b7ef0;
+    register void *var_r4 asm("r4");
+    register u8 var_r5 asm("r5");
+    u8 temp_r0;
+
+    var_r4 = NULL;
+    var_r5 = (u8) M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
+    if (func_020abe90(3) == 1) {
+        return;
+    }
+    if (func_020cd1e4() != 0) {
+        var_r4 = func_020b7f58(arg0);
+        var_r5 = (u8) func_020cd2f8();
+    } else if (func_020cd28c() != 0) {
+        var_r4 = func_020b7fb8(arg0);
+        var_r5 = (u8) func_020cd3bc();
+    } else if (func_020cd2b8() != 0) {
+        var_r4 = func_020b8018(arg0);
+    }
+    if (var_r4 == NULL) {
+        return;
+    }
+    M2C_FIELD(var_r4, s32 *, 0x34) = 0x80;
+    M2C_FIELD(var_r4, s32 *, 0x38) = 0x60;
+    M2C_FIELD(var_r4, s32 *, 0x3C) = 0;
+    M2C_FIELD(var_r4, s32 *, 0x44) = (s32) (M2C_FIELD(var_r4, s32 *, 0x44) | 0x300000);
+    M2C_FIELD(var_r4, M2C_UNK **, 0x68) = &func_020b7c4c;
+    M2C_FIELD(var_r4, M2C_UNK **, 0x6C) = &func_020b7c5c;
+    M2C_FIELD(var_r4, M2C_UNK **, 0x70) = &func_020b7ef0;
+    func_0200bc5c(&data_0212906c);
+    temp_r0 = M2C_FIELD(((var_r5 * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C1);
+    switch (temp_r0) {
+    case 1:
+        func_0208116c(&data_02129074, 0x360, 0x20);
+        return;
+    case 2:
+        func_0208116c(&data_02129084, 0x360, 0x20);
+        return;
+    case 3:
+        func_0208116c(&data_02129094, 0x360, 0x20);
+        return;
+    case 4:
+        func_0208116c(&data_021290a4, 0x360, 0x20);
+        return;
+    }
+    return;
+}
+
 void func_020b8208(void *arg0) {
 s16 *p=(s16 *)arg0;
 p[42]=0; p[41]=4;

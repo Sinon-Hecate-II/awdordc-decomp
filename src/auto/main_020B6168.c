@@ -1,6 +1,80 @@
 /* 32 functions from 0x020B6168 to 0x020B7138 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020b6168(void *arg0) {
+    extern void **gCurrentMap;
+    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    s32 func_0208c080(void *, s32);
+    void func_02080750(s32, s32, s32);
+    void func_02080358(s32, s32, s32, s32);
+    M2C_UNK func_0208fb0c(M2C_UNK, u8, u8);
+    M2C_UNK func_020cc6a4(void);
+    void func_020b6124(void *);
+
+    u8 *core;
+    s32 xc, yc, range;
+    s32 minX, minY, maxX, maxY;
+    s32 t;
+    s32 x, y;
+    s32 dx, dy, dist, adx, ady;
+    void *p;
+    u32 bits;
+
+    core = (u8 *)*gCurrentMap;
+
+    xc = M2C_FIELD(arg0, s16 *, 0x44);
+    yc = M2C_FIELD(arg0, s16 *, 0x46);
+    range = M2C_FIELD(arg0, s16 *, 0x4C);
+
+    minX = xc - range;
+    if (minX < 0) minX = 0;
+    minY = yc - range;
+    if (minY < 0) minY = 0;
+
+    maxX = (s32)M2C_FIELD(core, u16 *, 0x5144) - 1;
+    t = xc + range;
+    if (t < maxX) maxX = t;
+
+    maxY = (s32)M2C_FIELD(core, u16 *, 0x5146) - 1;
+    t = yc + range;
+    if (t < maxY) maxY = t;
+
+    if (minY <= maxY) {
+        for (y = minY; y <= maxY; y++) {
+            for (x = minX; x <= maxX; x++) {
+                dx = xc - x;
+                if (dx > 0) dist = dx;
+                else dist = x - xc;
+                dy = yc - y;
+                if (dy > 0) dist += dy;
+                else dist += y - yc;
+                if (dist < 0) continue;
+                if (dist > range) continue;
+
+                adx = dx;
+                if (adx < 0) adx = -adx;
+                ady = dy;
+                if (ady < 0) ady = -ady;
+
+                p = func_020b5188((M2C_UNK *)((u8 *)arg0 + 0x34), x, y, 0x10, 0, 0, arg0);
+                func_0208c080(p, 2);
+                bits = M2C_FIELD(p, u32 *, 0x48);
+                bits = (bits & 0xFFFFFC00u) | (u32)(((adx + ady) * 8) & 0xFF);
+                M2C_FIELD(p, u32 *, 0x48) = bits;
+                M2C_FIELD(p, s32 *, 0x58) = x;
+                M2C_FIELD(p, s32 *, 0x5C) = y;
+                M2C_FIELD(p, s32 *, 0x60) = M2C_FIELD(arg0, s16 *, 0x4E);
+                M2C_FIELD(p, void (**)(void *), 0x6C) = func_020b6124;
+            }
+        }
+    }
+
+    func_02080750(2, 0x3C, 0);
+    func_02080358(4, 0, 2, 0);
+    func_0208fb0c(0x93, (u8)M2C_FIELD(arg0, s16 *, 0x44), (u8)M2C_FIELD(arg0, s16 *, 0x46));
+    func_020cc6a4();
+}
+
 void func_020b6320(void) {
     M2C_UNK func_020cfd28();
     M2C_UNK func_020b524c();

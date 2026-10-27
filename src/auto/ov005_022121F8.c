@@ -35,10 +35,56 @@ void func_ov005_02212244(s32 arg0,s32 arg1) {
  gCur3DSpriteEngine=saved;
 }
 
+void func_ov005_02212624(s32 arg0,M2C_UNK arg1) {
+M2C_UNK func_02080860(s32,s32,s32,u16,s32);
+M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
+M2C_UNK func_0209b2dc(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
+M2C_UNK func_0209b3e8(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
+s32 func_020a7298(u16,M2C_UNK);
+void *func_ov000_0216a38c(M2C_UNK);
+u32 func_ov000_0216a3a8(M2C_UNK,M2C_UNK);
+s32 func_ov000_0216a414(M2C_UNK,M2C_UNK);
+s32 func_ov005_02211a54(M2C_UNK,M2C_UNK);
+extern void *data_027e00c8,*gCur3DSpriteEngine;
+void *p;u32 money;u32 t,y;void *saved;
+p=func_ov000_0216a38c(1);money=func_ov000_0216a3a8(1,arg1);t=func_ov000_0216a414(1,arg1);
+y=(arg0+1)*46+0x144;saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+if(func_ov005_02211a54(1,arg1)==0){
+func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
+func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)y);
+if(money>0x5f5e0ffU)money=0x5f5e0ff;
+func_0209b3e8(22,(s16)(arg0+5),1,money,0x1000,(u16)(y+30));
+}else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)y);
+func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=saved;
+}
+
+#pragma opt_common_subs off
+void func_ov005_022127b4(s32 arg0,s32 arg1){
+M2C_UNK func_02080860(s32,s32,s32,u16,s32);
+M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
+M2C_UNK func_0209b2dc(s32,s16,s32,s32,s32,s32,s32);
+M2C_UNK func_0209b3e8(s32,s16,s32,u32,s32,s32);
+s32 func_020a7298(u16,s32);
+void *func_ov000_0216a38c(s32);
+u32 func_ov000_0216a3a8(s32,s32);s32 func_ov000_0216a414(s32,s32);s32 func_ov005_02211a54(s32,s32);
+extern void *gCur3DSpriteEngine,*data_027e00c8;
+void *p;u32 value;s32 status;u32 position;void *saved;
+p=func_ov000_0216a38c(2);value=func_ov000_0216a3a8(2,arg1);status=func_ov000_0216a414(2,arg1);
+position=(arg0+1)*46+0x144;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+if(!func_ov005_02211a54(2,arg1)){
+func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
+func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
+if(value>99999999U)value=99999999;
+func_0209b3e8(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
+}else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,4096,3,(u16)position);
+func_ov005_02212244(arg0+5,status);gCur3DSpriteEngine=saved;
+}
+#pragma opt_common_subs reset
 void func_ov005_02212944(s32 arg0,s32 arg1) {
  M2C_UNK func_ov005_022122e0(s32,s32);
- M2C_UNK func_ov005_02212624(s32,s32);
- M2C_UNK func_ov005_022127b4(s32,s32);
+ void func_ov005_02212624(s32,s32);
+ void func_ov005_022127b4(s32,s32);
  extern void *data_ov005_02221300;
  switch(M2C_FIELD(data_ov005_02221300,s8 *,1)) {
  case 0: func_ov005_022122e0(arg0,arg1); return;

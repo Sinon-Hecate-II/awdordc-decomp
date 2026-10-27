@@ -1,6 +1,39 @@
 /* 47 functions from 0x01FF9ED0 to 0x01FFADA0 (itcm), found by ds-decomp. */
 #include "common.h"
 
+#pragma opt_common_subs off
+void func_01ff9ed0(void){
+s32 func_01ff9c34(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
+extern s32 gCur3DSpriteEngine;extern s32 data_027e00c8,data_027e00c4;extern u16 *data_027e00bc;
+s32 saved=gCur3DSpriteEngine,i=0,j,base,size,dest;void *p;u8 same; s32 flag; s32 tile; void *src;
+do{
+p=(void*)(i==0?data_027e00c8:data_027e00c4);
+same=(s32)p==data_027e00c8;gCur3DSpriteEngine=(s32)p;
+if(same==1)base=0x6000000;else base=0x6200000;
+for(j=0;j<4;++j){
+p=(void*)gCur3DSpriteEngine;
+if((M2C_FIELD(p,u8*,0x46)&(1<<j)) && !(M2C_FIELD(p,u8*,0x47)&(1<<j))){
+flag=(s32)p==data_027e00c8;
+size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
+same=(u8)flag;
+if(same)dest=((u32)(data_027e00bc[1]<<29)>>29)<<16;else dest=0;
+p=(void*)gCur3DSpriteEngine;
+tile=M2C_FIELD(*M2C_FIELD(p,u8**,0)+j*2,u16*,6);
+src=M2C_FIELD((u8*)p+j*4,void**,0x20);
+func_02007ef4(src,base+dest+(((u32)(tile<<19)>>27)<<11),size);
+}}
+p=(void*)gCur3DSpriteEngine;
+if((M2C_FIELD(p,u8*,0x46)&16) && !(M2C_FIELD(p,u8*,0x47)&16)){
+*M2C_FIELD(p,u16**,0x30)=M2C_FIELD(p,u16*,0x44);
+func_01ff9eac(M2C_FIELD((void*)gCur3DSpriteEngine,void**,0x30),(u8)i,0,1024);
+}
+M2C_FIELD((void*)gCur3DSpriteEngine,u8*,0x47)=0;
+p=(void*)gCur3DSpriteEngine;
+M2C_FIELD(p,u8*,0x46)=M2C_FIELD(p,u8*,0x47);
+i++;
+}while(i<2);gCur3DSpriteEngine=saved;
+}
+#pragma opt_common_subs reset
 s32 func_01ffa13c(s32 arg0) {
     extern s32 data_021581ac[];
     return data_021581ac[arg0];

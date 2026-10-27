@@ -4,7 +4,7 @@ typedef struct { u8 kind:6; u8 owner:2; u8 x,y,unk3; u16 flags; u16 hp:7; u16 am
 extern u8 data_ov000_021b5c0a[], data_ov000_021b5c05[];
 extern s8 *data_ov000_021b5c58[];
 extern u8 data_ov000_021b5c0f[];
-typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
+extern s16 data_ov000_021aeef4[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
 
 void func_020a5ac8(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
@@ -71,6 +71,65 @@ return 1;
 
 u8 func_020a5d2c(s32 a,s32 b){extern s32 *gCurrentMap;u8 *p=(u8 *)*gCurrentMap;s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return (M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67c3)&2)?1:0;}
 
+s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
+    extern s32 *gCurrentMap;
+    s32 func_020a7d38(Unit5B *);
+    u8 func_020a5d2c(s32, s32);
+    s32 r4 = 0;
+    s32 r6 = arg1;
+    s32 r5 = arg2;
+    s32 r7;
+
+    if (arg0 == 0) {
+        r7 = r4;
+        return 1;
+    }
+    r7 = (arg0 - (*(s32 *)*gCurrentMap + 0x59a4)) / 14;
+    r7 = (u16)r7;
+
+    if (arg0 == 0) {
+        return 1;
+    }
+    if (!func_020a7d38((Unit5B *)arg0)) {
+        return 1;
+    }
+    if (*((u8 *)*(s32 *)*gCurrentMap + ((r7 >> 6) + 1) * 0x8c + 0x67c3) & 0x2) {
+        return 1;
+    }
+    {
+        s32 row = *(u16 *)((u8 *)*(s32 *)*gCurrentMap + r5 * 2 + 0x3758);
+        u8 tile = *((u8 *)*(s32 *)*gCurrentMap + r6 + row + 0x1420);
+        s32 k = (tile & 0xe0) >> 5;
+        if (*((u8 *)*(s32 *)*gCurrentMap + k * 0x8c + 0x67c3) & 0x2) {
+            return 1;
+        }
+    }
+
+    if (r6 > 0) {
+        r4 = (u16)(r4 + func_020a5d2c((s16)(r6 - 1), r5));
+    }
+    if (r5 > 0) {
+        r4 = (u16)(r4 + func_020a5d2c(r6, (s16)(r5 - 1)));
+    }
+    {
+        s32 maxw = *(u16 *)((u8 *)*(s32 *)*gCurrentMap + 0x5144);
+        if (r6 < maxw - 1) {
+            r4 = (u16)(r4 + func_020a5d2c((s16)(r6 + 1), r5));
+        }
+    }
+    {
+        s32 maxh = *(u16 *)((u8 *)*(s32 *)*gCurrentMap + 0x5146);
+        if (r5 < maxh - 1) {
+            r4 = (u16)(r4 + func_020a5d2c(r6, (s16)(r5 + 1)));
+        }
+    }
+
+    if (r4 != 0) {
+        return 1;
+    }
+    return 0;
+}
+
 void func_020a5f4c(s32 arg0) {
     M2C_UNK func_020a5d8c(s32, u8, u8);
     extern s32 *gCurrentMap;
@@ -81,6 +140,78 @@ void func_020a5f4c(s32 arg0) {
 }
 
 s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020d27c0(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return func_020d27c0(v);}
+
+s32 func_020a600c(s32 arg0) {
+    extern s32 *gCurrentMap;
+    extern s16 data_ov000_021aeef4[];
+    s32 func_020a7d38(Unit5B *);
+    s32 func_020d27c0(s32);
+    s32 func_020d27ec(s32, s32);
+    s32 func_020a5f80(s32, s32);
+
+    u32 basePtr = *(u32 *)*gCurrentMap;
+    Unit5B *unit = (Unit5B *)(basePtr + 0x59a4 + arg0 * 14);
+    u16 acc = 0;
+    u8 x, y;
+
+    if (unit == 0) {
+        return 1;
+    }
+    if (!func_020a7d38(unit)) {
+        return 1;
+    }
+    if (unit->flags & 0x40) {
+        return 1;
+    }
+
+    x = unit->x;
+    y = unit->y;
+
+    if (unit != 0) {
+        u32 bp = *(u32 *)*gCurrentMap;
+        s32 idx = (s32)((u8 *)unit - (u8 *)(bp + 0x59a4)) / 14;
+        if (func_020d27c0(idx)) {
+            return 1;
+        }
+    }
+
+    {
+        u32 bp = *(u32 *)*gCurrentMap;
+        u16 rowOff = *(u16 *)((u8 *)bp + y * 2 + 0x3758);
+        u16 w = *(u16 *)((u8 *)bp + 0x52a4);
+        u8 tile = *(u8 *)((u8 *)bp + x + rowOff + 0x1420);
+        s16 val = data_ov000_021aeef4[w];
+        if (func_020d27ec(val, tile)) {
+            return 1;
+        }
+    }
+
+    if (x > 0) {
+        acc = (u16)(acc + func_020a5f80((s16)(x - 1), y));
+    }
+    if (y > 0) {
+        acc = (u16)(acc + func_020a5f80(x, (s16)(y - 1)));
+    }
+    {
+        u32 bp = *(u32 *)*gCurrentMap;
+        s32 maxw = *(u16 *)((u8 *)bp + 0x5144);
+        if (x < maxw - 1) {
+            acc = (u16)(acc + func_020a5f80((s16)(x + 1), y));
+        }
+    }
+    {
+        u32 bp = *(u32 *)*gCurrentMap;
+        s32 maxh = *(u16 *)((u8 *)bp + 0x5146);
+        if (y < maxh - 1) {
+            acc = (u16)(acc + func_020a5f80(x, (s16)(y + 1)));
+        }
+    }
+
+    if (acc != 0) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_020a61e8(void *arg0) {
     s32 func_020a5d8c(s32, u8, u8);

@@ -332,3 +332,62 @@ func_02033e80(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),func
 return 0;
 }
 
+s32 func_02033038(void) {
+    extern M2C_UNK data_0213d114,data_020fb37c,data_020fb38c,data_0213d120;
+    s32 func_02034c58(u32,u32,void*);
+    s32 func_02033210(void);
+    s32 func_020470dc(void*,void*);
+    void func_02047098(void*);
+    void func_0204712c(void*);
+
+    u8 *g = *(u8**)((u8*)&data_0213d114 + 8);
+    void *(*alloc)(void*,s32) = *(void *(**)(void*,s32))(g + 0x1000 + 0x20c);
+    void (*freefn)(void*,void*,s32) = *(void (**)(void*,void*,s32))(g + 0x1000 + 0x210);
+
+    if (func_02034c58(*(u32*)(g + 0x1000 + 0x314), 0, g + 0x1000) != 1) {
+        *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+        return 14;
+    }
+    if (func_02033210() != 0) {
+        return 14;
+    }
+
+    {
+        s32 state = *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8);
+        if (state >= 0x4e84) {
+            if (state == 0x4e88) {
+                func_0204712c(&data_0213d120);
+                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e88;
+                return 16;
+            }
+            if (state == 0x4e8c) {
+                void *p = alloc((void*)&data_020fb37c, 0x700);
+                if (p == 0) {
+                    *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
+                    return 17;
+                }
+                func_02047098((void*)(((u32)p + 0x1f) & ~0x1fu));
+                freefn((void*)&data_020fb38c, p, 0);
+                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
+                return 17;
+            }
+            return 18;
+        }
+        if (state == 0x4e22) {
+            void *p = alloc((void*)&data_020fb37c, 0x71f);
+            if (p == 0) {
+                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+                return 2;
+            }
+            if (func_020470dc(&data_0213d120, (void*)(((u32)p + 0x1f) & ~0x1fu)) == 1) {
+                freefn((void*)&data_020fb38c, p, 0);
+                return 21;
+            }
+            freefn((void*)&data_020fb38c, p, 0);
+            *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+            return 15;
+        }
+        return 18;
+    }
+}
+

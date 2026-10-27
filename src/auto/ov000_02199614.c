@@ -41,6 +41,63 @@ do { i++; d[12]=s[12]; s++; d++; } while(i<6);
 func_02085348(data_02156e50,0x14);
 }
 
+void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
+    void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
+    void func_ov000_0217d3b8(s32);
+    M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
+    void func_01ffc328(void *);
+    void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
+    s32 func_02084464(void *, void *);
+    s32 func_0207c2e0(void);
+    s32 func_020a641c(s32, s32);
+    void func_ov000_02199ce0(void);
+    extern s32 *gCurrentMap;
+    extern M2C_UNK data_ov000_021df604;
+    extern u8 data_ov000_021df7dc[];
+    extern u8 data_ov000_021df7d0[];
+    extern u8 data_02168f0c[];
+
+    u8 *unit;
+
+    func_ov000_0217e798(arg0, arg1, &arg2, &arg3, &arg4);
+
+    func_ov000_0217d3b8(arg2);
+
+    unit = *(u8 **)((u8 *)*gCurrentMap + 0x52D0);
+
+    if (unit[1] == arg0 && unit[2] == arg1 &&
+        (arg2 == 2 || ((u8 *)*gCurrentMap)[0x52D6] != 0)) {
+
+        unit[0xA] |= 0x80;
+        func_02072b10(&data_ov000_021df604, 1);
+        func_01ffc328(unit);
+        func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
+        func_02084464(((u8 *)*gCurrentMap) + 0x5388, data_ov000_021df7dc);
+
+        data_ov000_021df7d0[1] = ((u8 *)*gCurrentMap)[0x52D4];
+
+        *(s32 *)(data_ov000_021df7d0 + 8) = func_0207c2e0();
+
+        data_ov000_021df7d0[4] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52D8));
+        data_ov000_021df7d0[5] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52DA));
+        data_ov000_021df7d0[2] = (u8)arg0;
+        data_ov000_021df7d0[3] = (u8)arg1;
+        data_ov000_021df7d0[0] = arg2;
+        data_ov000_021df7d0[6] = arg3;
+        data_ov000_021df7d0[7] = arg4;
+
+        data_ov000_021df7d0[0x12] = (u8)((((u32)unit[0xA] << 25) >> 25) -
+                                          func_020a641c((s32)unit,
+                                                        (s32)(((u8 *)*gCurrentMap)[0x52D5])));
+        data_ov000_021df7d0[0x13] = 1;
+    }
+
+    if (data_02168f0c[0] != 0) {
+        func_ov000_02199ce0();
+        func_02072b10(&data_ov000_021df604, 1);
+    }
+}
+
 void func_ov000_02199f38(void) {
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021df604;

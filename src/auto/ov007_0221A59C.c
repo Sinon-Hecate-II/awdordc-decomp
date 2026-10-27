@@ -78,6 +78,91 @@ s32 func_ov007_0221acac(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
+s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+    u16 func_0207f460(u16);
+    void func_02076980(s32, s32, s32, s32);
+    void func_0207843c(s32, s32, s32, s32);
+    s32 func_ov007_0221acac(s32, s32, s32, s32);
+    void func_ov007_0221ac20(s32, s32, s8, s16);
+    void func_ov007_0221b688(s32, s32);
+    s32 func_ov007_0221b754(s32, s32);
+    s32 func_ov007_0221bad0(s32, s32);
+    extern void **gCurrentMap;
+    extern u8 data_ov007_0221f574[];
+
+    u16 var_r4;
+    u16 var_r5;
+    u8 buf[0x30];
+    s32 rc;
+    s32 i;
+    u8 *p;
+    u16 *ps;
+    u8 *pd;
+
+    var_r4 = (u16)(arg2 | (arg3 << 5));
+    var_r5 = func_0207f460(var_r4);
+
+    rc = func_ov007_0221acac(arg0, arg1, arg2, arg3);
+    if (rc != 1) {
+        return rc;
+    }
+    switch (arg2) {
+    case 0x1b:
+        if (func_ov007_0221b754(arg0, arg1) != 0) {
+            var_r4 = 0x3b;
+            var_r5 = 0x146;
+        }
+        break;
+    case 0x1c:
+        if (func_ov007_0221b754(arg0, arg1) != 0) {
+            var_r4 = 0x3c;
+            var_r5 = 0x166;
+        }
+        break;
+    case 0x0d:
+        if (func_ov007_0221bad0(arg0, arg1) != 0) {
+            var_r4 = 0x0e;
+            var_r5 = 0x25;
+        }
+        break;
+    }
+
+    func_ov007_0221ac20(arg0, arg1, (s8)var_r4, (s16)var_r5);
+
+    if (arg4 == 0) {
+        return 1;
+    }
+
+    ps = (u16 *)data_ov007_0221f574;
+    pd = buf;
+    for (i = 0; i < 12; i++) {
+        ((u16 *)pd)[0] = ps[0];
+        ((u16 *)pd)[1] = ps[1];
+        ps += 2;
+        pd += 4;
+    }
+
+    p = buf;
+    i = 0;
+    do {
+        s32 x2 = arg0 + *(s16 *)p;
+        s32 y2 = arg1 + *(s16 *)(p + 2);
+        if (x2 >= 0 && y2 >= 0) {
+            void *m = *gCurrentMap;
+            if (x2 < (s32) M2C_FIELD(m, u16 *, 0x5144) && y2 < (s32) M2C_FIELD(m, u16 *, 0x5146)) {
+                func_ov007_0221b688(x2, y2);
+            }
+        }
+        i++;
+        p += 6;
+    } while (i < 8);
+
+    func_02076980(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
+    func_0207843c(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
+
+    return 1;
+}
+
 s32 func_ov007_0221b24c(s32 a,s32 b,s32 c,s32 d) {
 extern void **gCurrentMap;
 s32 func_ov007_0221b6c8();
@@ -96,7 +181,7 @@ return (u8)(d==func_ov007_0221b704(a,b));
 /* Flood-fills a connected 30x30 region of tiles currently matching oldTile/oldDir,
    converting each one to newTile/newDir (and extending to its neighbours). */
 s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTile, s32 oldDir) {
-    s32 func_ov007_0221b0a4(s32, s32, M2C_UNK, M2C_UNK, s32);
+    s32 func_ov007_0221b0a4(s32, s32, M2C_UNK, M2C_UNK, u8);
     s32 func_ov007_0221b24c(s32, s32, s32, s32);
     s32 rightX;
     s32 bottomY;

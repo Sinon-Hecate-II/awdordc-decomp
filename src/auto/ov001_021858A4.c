@@ -119,6 +119,76 @@ void func_ov001_02185ba8(s32 arg0) {
     func_ov001_0218c92c(1, arg0);
 }
 
+s32 func_ov001_02185bf4(s32 arg0) {
+    void *func_ov001_0218b6f8(s32, s32);
+    u64 func_02007004(void);
+    s32 func_02012218(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 func_02011af8(void *);
+    u16 func_02011e98(void);
+    void func_02007740(void *);
+    void func_02008048(void *, void *, s32);
+    s32 func_ov001_02185d78(void);
+    M2C_UNK func_ov001_0218c884(M2C_UNK, void (*)(void), M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov001_0218b71c(M2C_UNK);
+    void func_ov001_02185ea8();
+    void func_ov001_0218619c();
+    extern void *data_ov001_02193e14;
+    extern const u8 data_ov001_0218fbfc[];
+    extern const u8 data_ov001_0218fbf0[];
+
+    u8 buf[0x54];
+    void *p;
+    u16 h;
+    M2C_UNK task;
+    s32 i;
+    u32 *dst;
+    const u32 *src;
+
+    p = func_ov001_0218b6f8(0x1ba0, 0x20);
+    data_ov001_02193e14 = p;
+    M2C_FIELD(p, s32 *, 0x1370) = arg0;
+
+    {
+        u64 ts = func_02007004();
+        M2C_FIELD(p, u32 *, 0x1B88) = (u32)ts;
+        M2C_FIELD(p, u32 *, 0x1B8C) = (u32)(ts >> 32);
+    }
+
+    if (func_02012218((M2C_UNK)p, (M2C_UNK)func_ov001_02185ea8, 3) != 2) {
+        func_ov001_0218b71c((M2C_UNK)&data_ov001_02193e14);
+        return 0;
+    }
+
+    func_02011af8((void *)((u8 *)p + 0x13B8));
+
+    h = M2C_FIELD(p, u16 *, 0x13B8);
+    if (h == 2) {
+        dst = (u32 *)((u8 *)p + 0x1374);
+        src = (const u32 *)data_ov001_0218fbfc;
+        for (i = 0; i < 4; i++) {
+            dst[i] = src[i];
+        }
+        dst[4] = src[4];
+        M2C_FIELD(p, void **, 0x1374) = (u8 *)p + 0xF00;
+    }
+
+    M2C_FIELD(p, u16 *, 0x137C) = func_02011e98();
+
+    func_02007740(buf);
+    func_02008048((void *)((u8 *)p + 0x1388), (void *)data_ov001_0218fbf0, 8);
+    M2C_FIELD(p, u8 *, 0x1391) = 1;
+    func_02008048(buf + 4, (void *)((u8 *)p + 0x1394), M2C_FIELD(buf, u16 *, 0x1A) << 1);
+
+    if (func_ov001_02185d78()) {
+        task = func_ov001_0218c884(0, (void (*)(void))func_ov001_0218619c, 0, 0x78);
+        M2C_FIELD(p, M2C_UNK *, 0x1B90) = task;
+        return 1;
+    }
+
+    func_ov001_0218b71c((M2C_UNK)&data_ov001_02193e14);
+    return 0;
+}
+
 s32 func_ov001_02185d78(void) {
     s32 func_020125b0(void (*)(void), void *);
     void func_ov001_02185ea8();

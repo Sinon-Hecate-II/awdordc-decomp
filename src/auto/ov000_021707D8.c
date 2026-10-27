@@ -13,7 +13,28 @@ void func_ov000_02170ca0(void) {
     func_01ffa6fc(temp_r4);
 }
 
-#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+void func_ov000_02170ccc(void *p){
+extern void *gCur3DSpriteEngine,*data_027e00c8;extern void **gCurrentMap;
+extern M2C_UNK data_ov000_021b8bc8,data_ov000_021b8bd8,data_ov000_021b8be8,data_ov000_021b8bf8,data_ov000_021b8c08;
+void func_020994e0(s32);M2C_UNK func_01ff9ce8(M2C_UNK);void func_0200bc5c(void *);void *func_020e3218(void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_02080944(void *,s32,s32,s32);void func_02081528(void);void func_0208116c(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void func_02007ef4(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
+void *old=gCur3DSpriteEngine;s32 i;void *dst;u8 *u;s32 t,off;
+gCur3DSpriteEngine=data_027e00c8;func_020994e0(0);func_01ff9ce8(1);func_01ff9ce8(2);
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=1;
+func_0200bc5c(&data_ov000_021b8bc8);func_020814e4(func_020e3218(&data_ov000_021b8bd8));
+func_02081590(func_020e3218(&data_ov000_021b8be8),M2C_FIELD(data_027e00c8,void **,0x14));
+func_02081590(func_020e3218(&data_ov000_021b8bf8),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
+func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);func_02081528();func_0208116c(&data_ov000_021b8c08,192,32);func_020c0fac(p);
+i=0;if(func_020cfb94()>0){t=0x35c;do{
+u=(u8 *)*gCurrentMap+0x67a4+(i+1)*140;dst=(u8 *)M2C_FIELD(data_027e00c8,void * volatile *,0x1c)+(t<<5);
+func_02007ef4(func_ov000_0216ce10(u[0x27]),dst,128);
+off=(i+27)<<5;func_01ff9e44(func_ov000_0216ce84(u[0x1d]),off,32);
+if(u[0x1c])func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
+i++;t+=4;}while(i<func_020cfb94());}
+func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=old;
+}
+#pragma opt_strength_reduction reset
 void func_ov000_02170ea4(void){
 extern u16 *data_02101e84;extern void *gCur3DSpriteEngine,*data_027e00c8;extern void **gCurrentMap;extern M2C_UNK data_027e0064;
 s32 func_020cfb94(void);void func_01ffaacc(s32,s32,u16,void *,s32);

@@ -27,11 +27,11 @@ u8 func_020d27c0(s32 arg0) {
 }
 
 s32 func_020d27ec(s32 arg0, s32 arg1) {
-    arg0 >>= 6;
-    if ((arg1 >>= 5) == 0) {
+    s32 temp = arg0 >> 6;
+    if ((arg1 >> 5) == 0) {
         return 0;
     }
-    return func_020d273c(arg0 + 1, arg1);
+    return func_020d273c(temp + 1, arg1 >> 5);
 }
 
 s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {

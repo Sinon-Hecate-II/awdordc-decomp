@@ -242,6 +242,57 @@ gCur3DSpriteEngine=old;
 if(M2C_FIELD(arg,s16 *,0x54)>=6) func_01ffa574(arg);
 }
 
+void func_ov007_022198fc(void) {
+    M2C_UNK func_ov007_02219430(void);
+    void func_01ff9ce8(s32);
+    void func_02088d94(void *);
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **data_027e00c8;
+    u16 * volatile sp18;
+    u16 * volatile sp14;
+    u16 * volatile sp10;
+    u16 * volatile spC;
+    u16 * volatile sp8;
+    u16 * volatile sp4;
+    u16 * volatile sp0;
+    u16 **old;
+    void *r5;
+
+    r5 = (void *)func_ov007_02219430();
+    if (M2C_FIELD(r5, u8 *, 0x35) != 0) {
+        old = gCur3DSpriteEngine;
+        gCur3DSpriteEngine = data_027e00c8;
+        func_01ff9ce8(1);
+        func_01ff9ce8(2);
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) | 2);
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) | 4);
+        sp18 = (u16 *)((u8 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) + 0x12);
+        *sp18 = *sp18 & ~0xc0;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x51) = 0;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x52) = 0;
+        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x53) = 0;
+        sp14 = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        *sp14 = *sp14 & ~0x200;
+        sp10 = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        *sp10 = *sp10 & ~0x400;
+        spC = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        *spC = *spC & ~0x800;
+        gCur3DSpriteEngine = old;
+    } else {
+        old = gCur3DSpriteEngine;
+        gCur3DSpriteEngine = data_027e00c8;
+        func_02088d94(M2C_FIELD(r5, void **, 0x50));
+        func_02088d94(M2C_FIELD(r5, void **, 0x54));
+        sp8 = *gCur3DSpriteEngine;
+        *sp8 = *sp8 & ~0x200;
+        sp4 = *gCur3DSpriteEngine;
+        *sp4 = *sp4 & ~0x400;
+        sp0 = *gCur3DSpriteEngine;
+        *sp0 = *sp0 & ~0x800;
+        gCur3DSpriteEngine = old;
+    }
+}
+
 void func_ov007_02219ab4(M2C_UNK arg0) {
     M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221fe20;

@@ -1,5 +1,12 @@
 /* 50 functions from 0x020C4D28 to 0x020C5D0C (main), found by ds-decomp. */
 #include "common.h"
+static inline s32 IsNewerValue(u32 b, u32 a) {
+register u32 result=a&0xffff0000;
+if(result==0xffff0000 && !(b&0xffff0000) && b!=0) result=0;
+else if(!result && (b&0xffff0000)==0xffff0000 && a!=0) result=1;
+else result=a>b;
+return result;
+}
 extern void *gCur3DSpriteEngine;
 
 void func_020c4d28(M2C_UNK arg0) {
@@ -84,6 +91,25 @@ void func_020c5030(s32 arg0, s32 arg1) {
         M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_0212a500;
         M2C_FIELD(temp_r0_2, s32 *, 0x34) = var_r5;
     }
+}
+
+void func_020c509c(void *arg0){
+M2C_UNK func_02007df8(s32,s32,s32);M2C_UNK func_02007f8c(void *,s32,s32);s32 func_020761c0(u16,void *);s32 func_020761e0(u16);
+void *func_02076228(void);s32 func_02076234(void);
+u8 *p,*best;s32 n,i,id,better;s32 j;void *dest,*base;
+p=func_02076228();best=0;n=func_02076234();i=0;
+if(n>0)do{if(p[2]==3){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));if(!better)goto next;}best=p;}next:i++;p+=40;}while(i<n);
+if(best)id=*(u16 *)best;else id=-1;
+if(id!=-1 && func_020761e0((u16)id)==0xc34){
+func_020761c0((u16)id,M2C_FIELD(arg0,void **,52));
+if(M2C_FIELD(M2C_FIELD(arg0,void **,52),s32 *,0)==0x07090600)return;
+}
+base=M2C_FIELD(arg0,void **,52);*(s32 *)base=0x07090600;func_02007f8c(base+4,0,0x2d0);
+j=0;dest=base+0x2d4;
+do{func_02007df8(0,dest,26);
+M2C_FIELD(base,s16 *,0x2ee)=0;M2C_FIELD(base,s16 *,0x2f0)=0;M2C_FIELD(base,s16 *,0x2f2)=0;
+M2C_FIELD(base,s8 *,0x2f4)=-1;M2C_FIELD(base,s8 *,0x2f5)=-2;j++;M2C_FIELD(base,s8 *,0x2f6)=-2;dest+=40;base+=40;
+}while(j<60);
 }
 
 void func_020c5230(M2C_UNK arg0) {

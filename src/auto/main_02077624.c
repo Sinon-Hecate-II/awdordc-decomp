@@ -63,6 +63,67 @@ void func_02077700(void) {
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
 
+void func_02077740(void) {
+    extern s32 *gCurrentMap;
+    s32 *base;
+    u16 width;
+    u16 height;
+    s32 mode;
+    u16 px;
+    u16 py;
+    u16 tx;
+    u16 ty;
+
+    base = *gCurrentMap;
+    width = *(u16 *)((u8 *)base + 0x5144);
+    height = *(u16 *)((u8 *)base + 0x5146);
+    mode = func_0207cfb8((void *)((u8 *)base + 0x6EF8));
+
+    if (mode <= 0) mode = 0x10;
+    else mode = 0x18;
+
+    switch (mode) {
+    case 0x10:
+        *(volatile u32 *)0x40004a8 = 0x6c9364a4;
+        px = width << 8;
+        py = height << 8;
+        break;
+    case 0x18:
+        *(volatile u32 *)0x40004a8 = 0x6d2364b4;
+        px = width << 9;
+        py = height << 9;
+        break;
+    }
+
+    tx = width * 3;
+    tx = tx << 8;
+    ty = height * 3;
+    ty = ty << 8;
+
+    *(volatile u32 *)0x40004ac = 0x152;
+    *(volatile u32 *)0x40004a4 = 0x3080080;
+    *(volatile u32 *)0x4000480 = 0x7fff;
+    *(volatile u32 *)0x4000500 = 1;
+
+    *(volatile u32 *)0x4000488 = 0;
+    *(volatile u32 *)0x400048c = 0;
+    *(volatile u32 *)0x400048c = 0x420;
+
+    *(volatile u32 *)0x4000488 = (u32)py << 16;
+    *(volatile u32 *)0x400048c = (u32)ty << 16;
+    *(volatile u32 *)0x400048c = 0x420;
+
+    *(volatile u32 *)0x4000488 = (u32)px | ((u32)py << 16);
+    *(volatile u32 *)0x400048c = (u32)tx | ((u32)ty << 16);
+    *(volatile u32 *)0x400048c = 0x420;
+
+    *(volatile u32 *)0x4000488 = (u32)px;
+    *(volatile u32 *)0x400048c = (u32)tx;
+    *(volatile u32 *)0x400048c = 0x420;
+
+    *(volatile u32 *)0x4000504 = (u32)width << 24;
+}
+
 #pragma push
 #pragma optimization_level 2
 void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {

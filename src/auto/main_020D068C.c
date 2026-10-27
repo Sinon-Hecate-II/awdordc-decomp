@@ -1,5 +1,9 @@
 /* 17 functions from 0x020D068C to 0x020D166C (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 bytes[14]; } D068CUnit;
+extern s32 *gCurrentMap;
+static inline s32 D068CIndex(void *p) { s32 n; if(p) n=((s32)p-(*gCurrentMap+0x59a4))/14; else n=0; return n; }
+static inline s32 D068COwner(void *p) { if(p) return (D068CIndex(p)>>6)+1; return 0; }
 typedef struct { unsigned char value:6; } D068CBits;
 void func_020d0bf8(M2C_UNK);
 static inline u32 D068CLow(void *p) { return M2C_FIELD(p,D068CBits*,0).value; }
@@ -16,6 +20,42 @@ static inline void D068CApply(void *p) {
 }
 void func_020d0bf8(M2C_UNK);
 void func_020d0bac(void *,s32);
+
+void func_020d068c(void *p,s16 index) {
+s32 func_020d05f4(); s32 func_020a3518();
+void *q,*m; s16 stride=14;
+q=(void *)*gCurrentMap+0x59a4+index*stride;
+M2C_FIELD(p,void **,0)=q;
+m=(void *)*gCurrentMap;
+M2C_FIELD(p,s16 *,4)=M2C_FIELD(m+(M2C_FIELD(q,u8 *,1)+M2C_FIELD(m+M2C_FIELD(q,u8 *,2)*2,u16 *,0x3758)),u8 *,0x1420)&31;
+M2C_FIELD(p,s16 *,6)=func_020d05f4(D068COwner(M2C_FIELD(p,void **,0)),D068CLow(M2C_FIELD(p,void **,0)),M2C_FIELD(p,s16 *,4));
+M2C_FIELD(p,s16 *,8)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<25)>>25;
+M2C_FIELD(p,s16 *,10)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<21)>>28;
+M2C_FIELD(p,s16 *,12)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));
+M2C_FIELD(p,s16 *,14)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<25)>>25;
+M2C_FIELD(p,s16 *,16)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<21)>>28;
+M2C_FIELD(p,s16 *,18)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));
+M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
+}
+
+void func_020d0868(void *a,void **b,s32 c,s32 d) {
+s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
+extern u8 data_ov000_021b5bfc[];
+register u32 x; register u32 y; s16 z; u8 *p=data_ov000_021b5bfc+D068CLow(M2C_FIELD(a,void **,0))*112;
+x=0; y=0; z=0;
+M2C_FIELD(a,s16 *,22)=func_020a875c(M2C_FIELD(a,void **,0));
+if(c==1) {
+void *q=*b; u32 flag=D068CFlag(q);
+z=func_020a792c(D068CLow(M2C_FIELD(a,void **,0)),D068CLow(q),1,flag);
+if(z) {void *q=*b; u32 flag=D068CFlag(q); y=M2C_FIELD(q,u8 *,0)<<26; y=(u16)func_020a86f8(M2C_FIELD(a,void **,0),(u32)y>>26,1,flag);}
+if(p[12]==1) {void *q=M2C_FIELD(a,void **,0);if((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28){void *r=*b; u32 flag=D068CFlag(r);x=M2C_FIELD(r,u8 *,0)<<26; x=(u16)func_020a86f8(q,(u32)x>>26,0,flag);}}
+} else if(p[12]<=c && c<=func_020a76d4(M2C_FIELD(a,void **,0))) {
+void *q=M2C_FIELD(a,void **,0);
+if(((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28) && d==1){void *r=*b; u32 flag=D068CFlag(r);x=M2C_FIELD(r,u8 *,0)<<26; x=(u16)func_020a86f8(q,(u32)x>>26,0,flag);}
+}
+if((u32)x<=(u32)y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;return;}
+M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
+}
 
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
  s32 func_020a8204();

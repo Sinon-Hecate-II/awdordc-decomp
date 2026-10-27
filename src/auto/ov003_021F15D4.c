@@ -32,6 +32,30 @@ s32 func_ov003_021f1608(void) {
     }
 }
 
+void func_ov003_021f163c(M2C_UNK a,u32 b,M2C_UNK c,M2C_UNK d,u8 e) { void func_ov003_021f1a70(void); void func_ov003_021f1bc0(void);
+func_ov003_021f1bc0();func_ov003_021f14d8(c,d,e);func_ov003_021f13ec(0);func_ov003_021f1a70();func_ov003_021f14b4();
+switch(b){case 0:func_ov003_021fd488(a);return;
+case 1:func_ov003_021f01f0(a);return;
+case 2:func_ov003_021f05fc(a);return;
+case 3:func_ov003_022056bc(a);return;
+case 4:func_ov003_021fd850(a);return;
+case 5:func_ov003_021fdc1c(a);return;
+case 6:func_ov003_021fdfe8(a);return;
+case 7:func_ov003_021e4908(a);return;
+case 8:case 9:func_02085000(0,0x6e0,a);return;
+case 10:func_020e0f14(a);return;
+case 11:func_020e147c(a);return;
+case 12:func_020e19e8(a);return;
+case 13:func_020e1f54(a);return;
+case 14:func_020e24c0(a);return;
+case 15:func_020e2a2c(a);return;
+case 16:case 17:func_ov003_021f1c0c();func_02086330();func_02085054(0,0x6e0,a);return;
+case 18:func_ov003_021fe3b4(a);return;
+case 19:func_ov003_021fe780(a);return;
+case 20:func_ov003_021feb4c(a);return;
+case 21:func_ov003_021e64a8(a);return;
+default:return;}}
+
 void func_ov003_021f17e0(void) {
     M2C_UNK func_ov003_021f13c8();
     M2C_UNK func_01ffaa5c();

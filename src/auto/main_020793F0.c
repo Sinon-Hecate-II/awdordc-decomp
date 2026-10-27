@@ -6,7 +6,7 @@ typedef struct {
 } Vec3;
 
 void func_020796b0(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_020799dc(M2C_UNK, s32, s32, s32);
+    void func_020799dc(void *, void *, void *, u32);
     extern M2C_UNK data_020eb4e0;
     s32 ptr;
     s32 index;

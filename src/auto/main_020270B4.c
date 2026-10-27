@@ -1,6 +1,7 @@
 /* 16 functions from 0x020270B4 to 0x02028038 (main), found by ds-decomp. */
 #include "common.h"
 extern s32 data_02138e4c;
+void func_02027e80(s32, void *, s32);
 s32 func_0200751c(void);
 void func_02007530(s32);
 void func_02028160(s32);
@@ -179,6 +180,57 @@ void func_02027d60(void *a, s32 b) {
         M2C_FIELD((void *)data_02138e4c, u32 *, 0x2278) = v12;
         M2C_FIELD((void *)data_02138e4c, u32 *, 0x227c) = (u32)b;
     }
+}
+
+void func_02027e80(s32 a, void *b, s32 c) {
+    u32 func_02027cb4(u32);
+    s32 func_02028038(s32);
+    u16 func_02011e98(void);
+    void func_02008048(void *, void *, u32);
+    extern s32 data_02138e4c;
+    extern u8 data_020ea758[];
+    extern u8 data_020ea760[];
+    u8 *r4 = (u8 *)b;
+    s32 tmp;
+    u32 i;
+    func_02027cb4((u32)c);
+    M2C_FIELD((void *)data_02138e4c, void **, 0x2288) = (void *)((s32)data_02138e4c + 0x1500);
+    M2C_FIELD((void *)data_02138e4c, u16 *, 0x228c) = 0x400;
+    tmp = func_02028038(0);
+    M2C_FIELD((void *)data_02138e4c, u16 *, 0x228e) = (u16)(((s32)1 << tmp) >> 1);
+    if (M2C_FIELD((void *)data_02138e4c, u16 *, 0x2268) == 0) {
+        u16 v = func_02011e98();
+        M2C_FIELD((void *)data_02138e4c, u16 *, 0x2290) = v;
+        {
+            u32 x = M2C_FIELD((void *)data_02138e4c, u32 *, 0x2264);
+            M2C_FIELD((void *)data_02138e4c, u16 *, 0x2298) = (x & 0x300000) != 0x300000 ? 1 : 0;
+        }
+    }
+    if (a == 0) {
+        func_02008048((void *)data_020ea758, (void *)((u8 *)data_02138e4c + 0x2292), 6);
+    } else {
+        func_02008048((void *)a, (void *)((u8 *)data_02138e4c + 0x2292), 6);
+    }
+    if (b == 0 || b == data_020ea760) {
+        func_02008048((void *)data_020ea760, (void *)((u8 *)data_02138e4c + 0x229c), 0x20);
+        M2C_FIELD((void *)data_02138e4c, u16 *, 0x229a) = 0;
+    } else {
+        func_02008048((void *)b, (void *)((u8 *)data_02138e4c + 0x229c), 0x20);
+        i = 0;
+        if (r4[0] != 0) {
+            for (;;) {
+                i++;
+                if (i >= 0x20) {
+                    r4++;
+                    break;
+                }
+                r4++;
+                if (r4[0] == 0) break;
+            }
+        }
+        M2C_FIELD((void *)data_02138e4c, u16 *, 0x229a) = (u16)i;
+    }
+    M2C_FIELD((void *)data_02138e4c, u32 *, 0x2284) = 0;
 }
 
 void func_02028018(void){M2C_FIELD((void *)data_02138e4c,u32 *,0x2264)=0xaaa082;}

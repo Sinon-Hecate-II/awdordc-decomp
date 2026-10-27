@@ -1,5 +1,6 @@
 /* 9 functions from 0x02198848 to 0x02199614 (ov000), found by ds-decomp. */
 #include "common.h"
+typedef struct Unit98 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 health:7; u16 rest:9; u8 tail[6]; } Unit98;
 
 void func_ov000_02198c08(void) {
     M2C_UNK func_02007f8c(M2C_UNK *, M2C_UNK, s32);
@@ -62,6 +63,32 @@ void func_ov000_02198c60(void) {
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }
 
+void func_ov000_02198da4(u8 player) {
+extern s32 *gCurrentMap;
+extern u16 data_ov000_021aeef4[];
+extern u8 data_ov000_021b5bfc[];
+s32 i, value; Unit98 *unit; s32 kind;
+if(!func_ov000_021973f8(14))return;
+M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
+for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
+if(!(unit->kind))continue;
+if(M2C_FIELD(unit,u16 *,4)&8){
+s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(map+y*2,u16 *,0x3758); x=(s32)((u8 *)map+x); row+=x; idx=M2C_FIELD(row,u8 *,0x508);
+if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
+}
+kind=unit->kind;
+if(data_ov000_021b5bfc[kind*112+19]&16)continue;
+value=func_ov000_02197434(kind,14);
+if(value<25)continue;
+if(!func_ov000_02197814(M2C_FIELD(*gCurrentMap,s32 *,0x52d0),unit,1))continue;
+value=func_ov000_02197470(value,0,unit->owner);
+value=func_ov000_021974bc(value,0,unit);
+value=func_ov000_0219763c(value,unit,unit->health);
+func_ov000_02197a8c(unit,value,14,100,0,1,0);
+}
+}
+
 void func_ov000_02198f60(void) {
     s32 func_020d1938(s32);
     s32 func_020d273c(u16, s32);
@@ -102,6 +129,32 @@ void func_ov000_02199330(void) {
         }
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+}
+
+void func_ov000_021993bc(u8 player) {
+extern s32 *gCurrentMap;
+extern u16 data_ov000_021aeef4[];
+extern u8 data_ov000_021b5bfc[];
+s32 value, bonus, i; Unit98 *unit; s32 kind;
+if(!func_ov000_021973f8(6))return;
+bonus=func_020d0ddc((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
+for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
+if(!(unit->kind))continue;
+if(M2C_FIELD(unit,u16 *,4)&8){
+s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(map+y*2,u16 *,0x3758); x=(s32)((u8 *)map+x); row+=x; idx=M2C_FIELD(row,u8 *,0x508);
+if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
+}
+kind=unit->kind;
+value=func_ov000_02197434(kind,6);
+if(value<25)continue;
+if(!func_ov000_021a98e4(unit->kind) && func_ov000_021a97d0(6,unit->kind)>=50)continue;
+value=func_ov000_02197470(value,0,unit->owner);
+value=func_ov000_021974bc(value,0,unit);
+value=func_ov000_0219763c(value,unit,unit->health);
+func_ov000_02197a8c(unit,value,6,100,0,0,bonus);
+}
 }
 
 void func_ov000_02199588(void) {

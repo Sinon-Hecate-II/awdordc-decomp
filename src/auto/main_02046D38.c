@@ -106,6 +106,69 @@ s32 func_02047098(s32 arg0) { Unk046State s; if (func_02046ebc(&s)==0) return 0;
 
 s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
 
+s32 func_0204712c(void *arg0) {
+    void func_02045cbc(void *);
+    void func_0200ee70(void);
+    s32 func_0200ef4c(void *);
+    s32 func_0200eff8(void *);
+    long long func_0200f7e0(void *, void *);
+    u16 func_02006f8c(void);
+    void func_02007724(void *);
+    u64 func_02007004(void);
+    u64 func_02046d38(u32, u32, u32, u32);
+
+    u8 *p;
+    u8 sp[0x24];
+    long long diff;
+    u32 seed;
+    u32 spval;
+    u8 flag;
+    u32 r9;
+    u16 f10;
+    u32 r8;
+    u16 cand;
+    u64 res;
+
+    p = arg0;
+    sp[0] = 0; sp[1] = 0; sp[2] = 0; sp[3] = 0; sp[4] = 0; sp[5] = 0;
+
+    func_02045cbc(p);
+    func_0200ee70();
+    if (func_0200ef4c(&sp[0x14]) != 0) return 0;
+    if (func_0200eff8(&sp[0x8]) != 0) return 0;
+
+    diff = func_0200f7e0(&sp[0x14], &sp[0x8]);
+    if (diff < 0) return 0;
+    if (func_02006f8c() == 0) return 0;
+
+    seed = (u32)diff + (u32)func_02007004;
+    func_02007724(sp);
+    spval = sp[2] | (sp[1] << 8) | (sp[0] << 16);
+    flag = (spval != 0x9bf) ? 1 : 0;
+    r9 = seed * 0x5d588b65u + 0x269ec3u;
+    f10 = (u16)(((r9 >> 16) * 1000u) >> 16);
+    *(u32 *)((u8 *)p + 0x8) = 0;
+    *(u32 *)((u8 *)p + 0xc) = 0;
+    *(u16 *)((u8 *)p + 0x10) = f10;
+    r8 = sp[5] | (sp[4] << 8) | (sp[3] << 16);
+
+    r9 = r9 * 0x5d588b65u + 0x269ec3u;
+    for (;;) {
+        if (r9 == 0) { r9 = r9 * 0x5d588b65u + 0x269ec3u; continue; }
+        cand = (u16)r9;
+        if (*(u16 *)((u8 *)p + 0x12) == cand) { r9 = r9 * 0x5d588b65u + 0x269ec3u; continue; }
+        *(u16 *)((u8 *)p + 0x12) = cand;
+        res = func_02046d38(cand, r8, flag, 0);
+        *(u32 *)((u8 *)p + 0x8) = (u32)res;
+        *(u32 *)((u8 *)p + 0xc) = (u32)(res >> 32);
+        if (*(u32 *)((u8 *)p + 0x8) == 0 && *(u32 *)((u8 *)p + 0xc) == 0) {
+            r9 = r9 * 0x5d588b65u + 0x269ec3u;
+            continue;
+        }
+        return 1;
+    }
+}
+
 void func_020472cc(Unk046State *p) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
 
 s32 func_02047320(void) { Unk046State s; func_02045cbc(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }

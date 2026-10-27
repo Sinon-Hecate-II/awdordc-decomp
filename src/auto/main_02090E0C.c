@@ -141,6 +141,85 @@ void func_020913c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
 }
 
+void func_02091570(M2C_UNK a) {
+    s16 func_0207c8ec(s32, s32);
+    void func_01ff8ddc(s32, s16, s16, s16, s16);
+    extern s16 data_020e5b30[];
+    void *arg0 = (void *)a;
+    s32 *sp4 = (s32 *)arg0;
+
+    s32 r11, r10, r7, r6, r5, r4, r3v, r1;
+    u16 *r8p;
+    s16 r9s, r3s;
+    s16 res1, res2, res3, res4;
+    s32 count, r9i, r3i;
+
+    r6 = -2;
+
+    if (arg0 == (void *)0) return;
+    if (*sp4 == 0) return;
+    {
+        u8 *base = *(u8 **)((char *)arg0 + 0x14);
+        if (base == (u8 *)0) return;
+        r8p = (u16 *)(base + 2);
+        count = *(u16 *)base & 0x7FFF;
+    }
+    r7 = 0;
+    if (count <= 0) return;
+
+    do {
+        r5 = r8p[2];
+        if (r5 >= 2) {
+            r10 = r5;
+        } else if ((u32)r5 > 2U) {
+            r10 = 2;
+        } else if (r5 < -2) {
+            r10 = -2;
+        } else {
+            r10 = r5;
+        }
+
+        r1 = r8p[1];
+
+        r3i = ((s32)r8p[0]) >> 4;
+        r3s = data_020e5b30[r3i * 2 + 1];
+
+        if (r1 >= 2) {
+            r4 = r1;
+        } else if ((u32)r1 > 2U) {
+            r4 = 2;
+        } else if (r1 < -2) {
+            r4 = -2;
+        } else {
+            r4 = r1;
+        }
+
+        r9i = ((s32)r8p[0]) >> 4;
+        r9s = data_020e5b30[r9i * 2];
+
+        if (r5 < 2) {
+            if ((u32)r5 > 2U) r5 = 2;
+            else if (r5 < -2) r5 = -2;
+        }
+
+        if (r1 < 2) {
+            if ((u32)r1 > 2U) r1 = 2;
+            else if (r1 < -2) r1 = -2;
+        }
+
+        r11 = (s32)r3s << 4;
+        res1 = func_0207c8ec(r11, r1);
+        res2 = func_0207c8ec((-(s32)r9s) << 4, r5);
+        res3 = func_0207c8ec((s32)r9s << 4, r4);
+        res4 = (s16)func_0207c8ec(r11, r10);
+
+        func_01ff8ddc((((s32)*(u8 *)((char *)arg0 + 0x23)) + r7) & 0xFF,
+                     res1, res2, res3, res4);
+        r7 += 1;
+        r8p += 3;
+    } while (r7 < count);
+}
+
 void func_0209177c(M2C_UNK a) {
     void func_0207c3dc(s32, s32, s32, s32);
     void func_0207c464(s32, s32, s32, s32);

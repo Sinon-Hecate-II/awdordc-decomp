@@ -2,6 +2,103 @@
 #include "common.h"
 typedef struct Work19334 { s32 (*first)(struct Work19334 *); void (*second)(struct Work19334 *); s32 result; s32 rest[6]; } Work19334;
 
+void func_02018ff0(void) {
+    extern M2C_UNK data_02136ca0;
+    extern s16 data_02136c9c;
+    extern M2C_UNK data_02136cc0;
+    extern M2C_UNK data_02136cc4;
+    extern M2C_UNK data_027ffc30;
+    extern s32 func_02018c9c(void);
+    void func_02018e24(M2C_UNK, void *);
+    void func_02018da8(void *);
+    void func_02018df0(void *);
+    void func_02018e80(M2C_UNK, void *);
+    M2C_UNK func_02018ea4(M2C_UNK);
+    s32 func_0200519c(s32);
+    void func_020067a8(M2C_UNK, M2C_UNK);
+    M2C_UNK func_02007a74(s32, M2C_UNK, M2C_UNK, u32);
+    void func_02007e70(void *, void *, s32);
+    void func_02006774(void);
+    void WaitByLoop(s32);
+
+    s32 buf[4];
+    s32 old;
+    u16 saved_ie;
+    s32 r6;
+    s32 r7;
+    u16 hw;
+
+    if (M2C_FIELD(&data_02136ca0, s32 *, 0) != 0) {
+        return;
+    }
+    hw = M2C_FIELD(&data_02136c9c, u16 *, 0);
+    M2C_FIELD(&data_02136ca0, s32 *, 0) = 1;
+    if (!(hw & 1)) {
+        return;
+    }
+
+    old = func_0200519c(0x40000);
+    saved_ie = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = 1;
+    func_02018e24(M2C_FIELD(&data_02136c9c, u16 *, 2), (void *)&buf[2]);
+
+    r6 = ((*(volatile u16 *)0x4000204) & 0x8000) >> 15;
+    func_02018da8((void *)buf);
+
+    {
+        u16 x = *(volatile u16 *)0x4000204;
+        x &= ~0x8000;
+        *(volatile u16 *)0x4000204 = x;
+    }
+    func_020067a8((M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
+    func_02007a74(1, (M2C_UNK)0x8000080, (M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
+
+    {
+        u16 x = *(volatile u16 *)0x4000204;
+        x = (u16)((x & ~0x8000) | (r6 << 15));
+        *(volatile u16 *)0x4000204 = x;
+    }
+    func_02018df0((void *)buf);
+
+    func_02018e80(M2C_FIELD(&data_02136c9c, u16 *, 2), (void *)&buf[2]);
+
+    if (M2C_FIELD(&data_02136cc4, u8 *, 0) == 0) {
+        if (M2C_FIELD(&data_02136cc4, u8 *, -1) == 0) {
+            u8 *dst = (u8 *)&data_027ffc30;
+            *(u16 *)dst = M2C_FIELD(&data_02136cc0, u16 *, 0xBE);
+            {
+                s32 i;
+                for (i = 0; i < 3; i++) {
+                    dst[i + 2] = M2C_FIELD(&data_02136cc0, u8 *, 0xB5 + i);
+                }
+            }
+            *(u16 *)(dst + 6) = M2C_FIELD(&data_02136cc0, u16 *, 0xB0);
+            *(u32 *)(dst + 8) = M2C_FIELD(&data_02136cc0, u32 *, 0xAC);
+        }
+    }
+
+    {
+        s32 ok = func_02018c9c();
+        M2C_FIELD(&data_02136cc4, u8 *, 0) = (ok != 0) ? 1 : 0;
+        M2C_FIELD(&data_02136cc4, u8 *, -1) = 1;
+    }
+
+    func_02007e70((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
+    func_02006774();
+    func_02018ea4((((s32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
+
+    r7 = 1;
+    {
+        u16 *p = (u16 *)&data_02136c9c;
+        while (*p != 1) {
+            WaitByLoop(r7);
+        }
+    }
+
+    *(volatile u16 *)0x4000208 = saved_ie;
+    func_0200519c(old);
+}
+
 void func_020191e4(s32 a,s32 b) {
 extern s16 data_02136c9c;
 if((b&63)==1){data_02136c9c=1;return;}

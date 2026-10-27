@@ -8,43 +8,37 @@ s32 func_02014b34(u16 arg0) {
     extern void *data_02136c4c;
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK sp6;
-    s16 sp2;
-    s8 sp0;
+    u8 sp[0x18];
     s32 temp_r0;
     s8 temp_r3;
     s8 var_r4;
     u16 var_r0;
     u16 var_r0_3;
     u16 var_r5;
-    u32 temp_r2;
-    u32 temp_r3_2;
-    u8 var_r0_2;
-    u8 var_r3;
+    s32 var_r0_2;
+    s32 var_r3;
 
     (void)arg0;
     var_r5 = 0;
     var_r4 = -1;
-    func_02007f8c(&sp6, 0, 0x10);
+    func_02007f8c(sp + 6, 0, 0x10);
     var_r0 = 1;
     do {
         if (M2C_FIELD((data_02136c4c + (var_r0 * 4)), s32 *, 0x14E4) == 5) {
             temp_r3 = M2C_FIELD((data_02136c4c + var_r0), s8 *, 0x1525);
-            *(&sp6 + temp_r3) = *(&sp6 + temp_r3) + 1;
+            sp[6 + temp_r3] = sp[6 + temp_r3] + 1;
         }
         var_r0 += 1;
     } while ((u32) var_r0 <= 0xFU);
     var_r3 = data_020f5544;
     var_r0_2 = 0;
 loop_5:
-    temp_r2 = var_r3 + 1;
-    temp_r3_2 = temp_r2 >> 0x1F;
-    var_r3 = temp_r3_2 + ROTATE_RIGHT((temp_r2 << 0x1C) - temp_r3_2, 0x1C);
-    if ((M2C_FIELD(((var_r3 * 0x5D4) + data_02136c4c), u8 *, 0x1D52) != 0) && (*(&sp6 + var_r3) != 0)) {
+    var_r3 = (var_r3 + 1) % 16;
+    if ((M2C_FIELD(((var_r3 * 0x5D4) + data_02136c4c), u8 *, 0x1D52) != 0) && (sp[6 + var_r3] != 0)) {
         var_r4 = (s8) var_r3;
     } else {
         var_r0_2 += 1;
-        if ((u32) var_r0_2 < 0x10U) {
+        if (var_r0_2 < 0x10) {
             goto loop_5;
         }
     }
@@ -59,11 +53,11 @@ loop_5:
         }
         var_r0_3 += 1;
     } while ((u32) var_r0_3 <= 0xFU);
-    sp0 = 3;
-    sp2 = (s16) var_r4;
-    temp_r0 = func_020189a4(&sp0);
+    sp[0] = 3;
+    *(s16 *)(sp + 2) = (s16) var_r4;
+    temp_r0 = func_020189a4((s8 *)sp);
     if (temp_r0 != 0) {
-        func_02008048((var_r4 * 0x5D4) + (data_02136c4c + 0x1788), temp_r0, 0xE4);
+        func_02008048((M2C_UNK)((var_r4 * 0x5D4) + (data_02136c4c + 0x1788)), temp_r0, 0xE4);
     }
     return func_02015f10(0xEA, var_r5, data_02136c4c);
 }

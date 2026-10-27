@@ -57,6 +57,110 @@ void *func_ov006_022156e4(void *arg0) {
     return self;
 }
 
+void func_ov006_02215950(u8 *arg0) {
+    M2C_UNK func_020b1c60(u8);
+    void func_ov006_02215ae0(void *);
+    extern void *data_02101e84;
+    u8 temp_r1;
+    u16 temp_r3;
+    u16 temp_r2;
+    u8 var_ip;
+
+    temp_r1 = *arg0;
+    temp_r3 = M2C_FIELD(data_02101e84, u16 *, 0);
+    var_ip = temp_r1;
+    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 2);
+    if (temp_r3 & 1) {
+        func_ov006_02215ae0(arg0);
+        return;
+    }
+    if (temp_r2 & 0x40) {
+        if (temp_r1 == 0) {
+            if (temp_r2 == temp_r3) {
+                var_ip = 0xC;
+            }
+        } else if (temp_r1 == 1) {
+            if (temp_r2 == temp_r3) {
+                var_ip = 0xD;
+            }
+        } else if (temp_r1 == 2) {
+            if (temp_r2 == temp_r3) {
+                var_ip = 0xD;
+            }
+        } else {
+            var_ip = (u8)(temp_r1 - 3);
+        }
+        if ((u8)var_ip >= 0xA) goto done;
+        goto middle;
+    } else if (temp_r2 & 0x80) {
+        if (temp_r1 == 7) {
+            var_ip = 0xA;
+        } else if (temp_r1 == 8) {
+            var_ip = 0xA;
+        } else if (temp_r1 == 9) {
+            var_ip = 0xC;
+        } else {
+            var_ip = (u8)(temp_r1 + 3);
+        }
+        if ((u8)var_ip >= 0xA) goto done;
+        goto middle;
+    }
+middle:
+    if (temp_r2 & 0x20) {
+        switch (var_ip) {
+        case 9:
+            if (temp_r2 == temp_r3) {
+                var_ip = 0xA;
+            }
+            break;
+        case 0:
+        case 3:
+        case 6:
+            if (temp_r2 == temp_r3) {
+                var_ip = (u8)(var_ip + 2);
+            }
+            break;
+        default:
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+        case 7:
+        case 8:
+            var_ip = (u8)(var_ip - 1);
+            break;
+        }
+    } else if (temp_r2 & 0x10) {
+        switch (var_ip) {
+        case 9:
+            if (temp_r2 == temp_r3) {
+                var_ip = 0xA;
+            }
+            break;
+        case 2:
+        case 5:
+        case 8:
+            if (temp_r2 == temp_r3) {
+                var_ip = (u8)(var_ip - 2);
+            }
+            break;
+        default:
+        case 0:
+        case 1:
+        case 3:
+        case 4:
+        case 6:
+        case 7:
+            var_ip = (u8)(var_ip + 1);
+            break;
+        }
+    }
+done:
+    if (temp_r1 != var_ip) {
+        func_020b1c60(var_ip);
+    }
+}
+
 void func_ov006_02215ae0(void *arg0) {
     M2C_UNK func_0208fe30(s32);
     s8 *temp_r0;
