@@ -55,6 +55,7 @@ void func_0209ccd4(void *arg0) {
 }
 
 void func_0209cce4(s32 arg0) {
+    void *func_01ffa3dc(M2C_UNK *);
     extern M2C_UNK data_0211dff0;
     M2C_FIELD(func_01ffa3dc(&data_0211dff0), s32 *, 0x34) = arg0;
 }

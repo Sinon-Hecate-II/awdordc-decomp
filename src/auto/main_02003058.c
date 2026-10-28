@@ -61,13 +61,12 @@ func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
 }
 
 s32 func_0200333c(M2C_UNK *a) {
-extern M2C_UNK data_0212dbc4;
-u32 v=M2C_FIELD(a,u16 *,0);
-u16 *p=(u16 *)&data_0212dbc4;
-M2C_FIELD(a,volatile u16 *,0)=0;
-*p|=v;
-func_02002620(v);
-return v;
+    extern M2C_UNK data_0212dbc4;
+    u16 v = M2C_FIELD(a, u16 *, 0);
+    M2C_FIELD(a, u16 *, 0) = 0;
+    M2C_FIELD(&data_0212dbc4, u16 *, 0) = (u16)(M2C_FIELD(&data_0212dbc4, u16 *, 0) | v);
+    func_02002620((s32)v);
+    return (s32)v;
 }
 
 void func_02003370(void) {
@@ -241,7 +240,15 @@ void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);
 }
 
-void func_020039a0(u16 *p,s32 a,s32 b){if(b<0)goto negative;p[0]=a|0x80;p[2]=b;return;negative:p[0]=a|0xc0;p[2]=-b;}
+void func_020039a0(void *arg0, s32 arg1, s32 arg2) {
+    if (arg2 >= 0) {
+        M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0x80);
+        M2C_FIELD(arg0, s16 *, 4) = (s16) arg2;
+        return;
+    }
+    M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0);
+    M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg2);
+}
 
 void func_020039c8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_FIELD(arg0, s16 *, 2) = (s16) (arg3 | (arg4 << 8));

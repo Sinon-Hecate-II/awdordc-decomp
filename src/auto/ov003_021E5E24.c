@@ -495,7 +495,7 @@ void func_ov003_021e6c28(void) {
 #pragma opt_strength_reduction off
 void *func_ov003_021e6c2c(void *p) {
     void *func_ov003_021e6b08(void *);
-    return func_ov003_021e6b08((char *)p - 52);
+    return func_ov003_021e6b08((char *)p - 0x34);
 }
 #pragma opt_strength_reduction reset
 void func_ov003_021e5c68(void *);
@@ -522,6 +522,16 @@ void func_ov003_021e6c6c(void *arg0) {
 void func_ov003_021e6c7c(void *arg0) {
     void func_ov003_021e637c(void *);
     ((void (*)(void *))func_ov003_021e637c)((char *)arg0 + 0xFFFFFFCC);
+}
+
+s32 func_ov003_021e6c8c(s32 arg0) {
+    s32 func_ov003_021e5118(s32);
+    return func_ov003_021e5118((s32)((u32)arg0 + 0xFFFFFFCC));
+}
+
+void *func_ov003_021e6c9c(void *arg0) {
+    void *func_ov003_021e69d8(void *);
+    return func_ov003_021e69d8((void *)((u32)arg0 + 0xFFFFFFCC));
 }
 
 u8 func_ov003_021e6cac(s32 arg0, s32 arg1, s32 arg2) {

@@ -1,6 +1,9 @@
 /* 5 functions from 0x0220856C to 0x02209310 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_0220856c(void) {
+}
+
 u8 func_ov003_02209258(void *arg0) {
     u8 var_r0;
 

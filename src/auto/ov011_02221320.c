@@ -137,6 +137,8 @@ void func_ov011_0222166c(void *arg0) {
     func_01ffa8c4(arg0, 4);
 }
 
+void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) { }
+
 void func_ov011_02222010(s32 unused, u32 arg0, s32 arg1) {
     M2C_UNK func_0200bc5c(M2C_UNK *);
     M2C_UNK func_02080cfc(M2C_UNK *, s32);

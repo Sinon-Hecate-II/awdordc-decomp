@@ -542,7 +542,24 @@ ov010CallArray((u8 *)&data_ov010_0222ef58,48,data_ov010_0222c128[2]);
 ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
 }
 
-s32 func_ov010_02226be8(s32 a){extern M2C_UNK data_ov010_0222eee0;u32 saved=*(volatile u16 *)0x4000208;void *p;*(volatile u16 *)0x4000208=0;p=M2C_FIELD(&data_ov010_0222eee0,void **,0x60);while(p){if(a==M2C_FIELD(p,u8 *,8)){(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 1;}p=M2C_FIELD(p,void **,0);}(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
+s32 func_ov010_02226be8(s32 a) {
+    extern M2C_UNK data_ov010_0222eee0;
+    u32 saved = *(volatile u16 *)0x4000208;
+    void *p;
+    *(volatile u16 *)0x4000208 = 0;
+    p = M2C_FIELD(&data_ov010_0222eee0, void **, 0x60);
+    while (p) {
+        if (a == M2C_FIELD(p, u8 *, 8)) {
+            (void)*(volatile u16 *)0x4000208;
+            *(volatile u16 *)0x4000208 = saved;
+            return 1;
+        }
+        p = M2C_FIELD(p, void **, 0);
+    }
+    (void)*(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = saved;
+    return 0;
+}
 
 void func_ov010_02226c68(void *arg0) {
 s32 func_02001fb4(s32,s32);s32 func_0207c8ec(s32,s32);s32 func_02038f34(u8);void func_02038438(void);

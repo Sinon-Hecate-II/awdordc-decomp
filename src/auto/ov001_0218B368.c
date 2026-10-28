@@ -367,9 +367,9 @@ func_020067e0(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x4
 }
 
 void func_ov001_0218c0b8(void) {
-extern s32 data_ov001_02193e68;
-func_ov001_0218c94c(1,((s32 *)data_ov001_02193e68)[0x202]);
-func_ov001_0218b71c((s32 *)&data_ov001_02193e68);
+    extern s32 data_ov001_02193e68;
+    func_ov001_0218c94c(1, ((s32 *)data_ov001_02193e68)[0x202]);
+    func_ov001_0218b71c((s32 *)&data_ov001_02193e68);
 }
 
 void func_ov001_0218c0e4(s32 n){

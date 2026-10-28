@@ -1,6 +1,8 @@
 /* 5 functions from 0x02089D30 to 0x0208ABC4 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_02089d30(void *arg0) { }
+
 u32 func_0208a6b0(void *arg0) {
     u32 func_020846a4(void);
     u32 func_0208fe30(M2C_UNK);

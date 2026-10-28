@@ -215,6 +215,23 @@ func_020677a8(func_02049208());func_0204926c();
 
 s32 func_02061efc(void *a) {s32 func_02068c34(M2C_UNK *);s32 func_02068eac(void *,void *,u32);void func_02062e28(void *,void *);void func_020626d4(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)func_02068c34(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!func_02068eac(p,q,func_02068c34(q))){func_02062e28(a,(u8 *)p+func_02068c34(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));func_020626d4(a);}
 
+s32 func_02061fb8(void *arg0, s32 arg1) {
+    extern u8 data_020eac40[128];
+    s64 func_020722fc(s32, s32);
+    s8 *p = (s8 *)arg0;
+    s8 c;
+    s32 h = 0;
+    while (*p != 0) {
+        c = *p;
+        if (c >= 0 && c < 0x80) {
+            c = data_020eac40[c];
+        }
+        h = 0x9CCF9319 * h + c;
+        p++;
+    }
+    return (s32)((func_020722fc(h, arg1)) >> 32);
+}
+
 s32 func_02062010(void *p){
 s32 func_02061fb8(void*,s32);void func_02068c50(void*,void*);void func_020675e4(void*,void*,...);s32 func_020498e4(void*);void *func_02021768(void*);s32 func_020496a4(s32,s32,s32);s32 func_02049740(s32,void*,s32);s32 func_020496b8(s32);
 extern void *data_0213e4bc;extern u8 data_02100160[];

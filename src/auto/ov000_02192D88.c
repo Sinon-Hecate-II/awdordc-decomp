@@ -1,6 +1,8 @@
 /* 4 functions from 0x02192D88 to 0x02193D6C (ov000), found by ds-decomp. */
 #include "common.h"
 
+int func_ov000_02192d88(void) { return 0; }
+
 void func_ov000_021935c4(void *arg0) {
 }
 

@@ -3,6 +3,322 @@
 typedef struct RequestPair534 { s32 a,b; } RequestPair534;
 typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 
+#pragma peephole off
+s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
+    M2C_UNK func_020492a8(s8 *);
+    s32 func_02052edc(s32 *, M2C_UNK *, s8 *);
+    s32 func_02052f1c(s32 *, M2C_UNK *, s8 *);
+    s32 func_02052f5c(s32 *, s32, s32);
+    M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
+    s32 func_02068c34(s8 *);
+    s32 func_0206ad38(s8 *);
+    extern M2C_UNK data_020eacc0;
+    extern M2C_UNK data_020fe72c;
+    extern M2C_UNK data_020fe734;
+    extern M2C_UNK data_020fe744;
+    extern M2C_UNK data_020fe74c;
+    extern M2C_UNK data_020fe758;
+    extern M2C_UNK data_020fe764;
+    extern M2C_UNK data_020fe770;
+    extern M2C_UNK data_020fe77c;
+    extern M2C_UNK data_020fe788;
+    extern M2C_UNK data_020fe7bc;
+    extern M2C_UNK data_020fe7cc;
+    extern M2C_UNK data_020fe7d4;
+    extern M2C_UNK data_020fe7dc;
+    extern M2C_UNK data_020fe7e4;
+    extern M2C_UNK data_020fe7ec;
+    extern M2C_UNK data_020fe7f4;
+    extern M2C_UNK data_020fe7fc;
+    extern M2C_UNK data_020fe804;
+    extern M2C_UNK data_020fe880;
+    extern M2C_UNK data_020fe884;
+    extern M2C_UNK data_020fe888;
+    extern M2C_UNK data_020fe918;
+    extern M2C_UNK data_020fe928;
+    extern M2C_UNK data_020fe938;
+    extern M2C_UNK data_020fe944;
+    extern M2C_UNK data_020fe95c;
+    extern M2C_UNK data_020fe970;
+    extern M2C_UNK data_020fe984;
+    s8 sp0[0x100];
+    s32 temp_r0;
+    s32 temp_r0_10;
+    s32 temp_r0_11;
+    s32 temp_r0_12;
+    s32 temp_r0_13;
+    s32 temp_r0_14;
+    s32 temp_r0_15;
+    s32 temp_r0_16;
+    s32 temp_r0_17;
+    s32 temp_r0_18;
+    s32 temp_r0_19;
+    s32 temp_r0_20;
+    s32 temp_r0_21;
+    s32 temp_r0_22;
+    s32 temp_r0_23;
+    s32 temp_r0_24;
+    s32 temp_r0_25;
+    s32 temp_r0_26;
+    s32 temp_r0_27;
+    s32 temp_r0_28;
+    s32 temp_r0_2;
+    s32 temp_r0_3;
+    s32 temp_r0_4;
+    s32 temp_r0_5;
+    s32 temp_r0_6;
+    s32 temp_r0_7;
+    s32 temp_r0_8;
+    s32 temp_r0_9;
+    s32 temp_r4;
+    s8 temp_r0_29;
+    s8 var_r1;
+    u32 temp_r1;
+
+    temp_r4 = *arg0;
+    if (arg2 == NULL) {
+        func_02058644(arg0, &data_020fe928);
+        return 2;
+    }
+    temp_r1 = arg1 - 0x700;
+    switch (temp_r1) {
+    default:
+    case 10:
+    case 12:
+    case 19:
+        func_02058644(arg0, &data_020fe918);
+        return 2;
+    case 0:
+        if (*arg2 == 0) {
+            func_02058644(arg0, &data_020fe928);
+            return 2;
+        }
+        func_020580fc(sp0, arg2, 0x1F);
+        func_020580fc(temp_r4 + 0x110, sp0, 0x1F);
+        temp_r0 = func_02052edc(arg0, &data_020fe72c, sp0);
+        if (temp_r0 != 0) {
+            return temp_r0;
+        }
+        return 0;
+    case 1:
+        if (*arg2 == 0) {
+            func_02058644(arg0, &data_020fe928);
+            return 2;
+        }
+        func_020580fc(sp0, arg2, 0x15);
+        func_020580fc(temp_r4 + 0x12F, sp0, 0x15);
+        temp_r0_2 = func_02052edc(arg0, &data_020fe734, sp0);
+        if (temp_r0_2 != 0) {
+            return temp_r0_2;
+        }
+        return 0;
+    case 2:
+        if (*arg2 == 0) {
+            func_02058644(arg0, &data_020fe928);
+            return 2;
+        }
+        func_020580fc(sp0, arg2, 0x33);
+        func_020492a8(sp0);
+        func_020580fc(temp_r4 + 0x144, sp0, 0x33);
+        temp_r0_3 = func_02052f1c(arg0, &data_020fe744, sp0);
+        if (temp_r0_3 != 0) {
+            return temp_r0_3;
+        }
+        return 0;
+    case 3:
+        if (*arg2 == 0) {
+            func_02058644(arg0, &data_020fe928);
+            return 2;
+        }
+        func_020580fc(sp0, arg2, 0x1F);
+        func_020580fc(temp_r4 + 0x177, sp0, 0x1F);
+        temp_r0_4 = func_02052f1c(arg0, &data_020fe938, sp0);
+        if (temp_r0_4 != 0) {
+            return temp_r0_4;
+        }
+        return 0;
+    case 4:
+        func_020580fc(sp0, arg2, 0x1F);
+        temp_r0_5 = func_02052edc(arg0, &data_020fe74c, sp0);
+        if (temp_r0_5 != 0) {
+            return temp_r0_5;
+        }
+        return 0;
+    case 5:
+        func_020580fc(sp0, arg2, 0x1F);
+        temp_r0_6 = func_02052edc(arg0, &data_020fe758, sp0);
+        if (temp_r0_6 != 0) {
+            return temp_r0_6;
+        }
+        return 0;
+    case 7:
+        func_020580fc(sp0, arg2, 0x4C);
+        temp_r0_7 = func_02052edc(arg0, &data_020fe770, sp0);
+        if (temp_r0_7 != 0) {
+            return temp_r0_7;
+        }
+        return 0;
+    case 8:
+        func_020580fc(sp0, arg2, 0xB);
+        temp_r0_8 = func_02052edc(arg0, &data_020fe77c, sp0);
+        if (temp_r0_8 != 0) {
+            return temp_r0_8;
+        }
+        return 0;
+    case 9:
+        if (func_02068c34(arg2) != 2) {
+            func_02058644(arg0, &data_020fe944);
+            return 2;
+        }
+        func_020580fc(sp0, arg2, 3);
+        temp_r0_9 = func_02052edc(arg0, &data_020fe788, sp0);
+        if (temp_r0_9 != 0) {
+            return temp_r0_9;
+        }
+        return 0;
+    case 11:
+        var_r1 = *arg2;
+        if (((s32) var_r1 >= 0) && ((s32) var_r1 < 0x80)) {
+            var_r1 = (s8) *(&data_020eacc0 + var_r1);
+        }
+        temp_r0_29 = var_r1;
+        if (temp_r0_29 == 0x4D) {
+            M2C_FIELD(sp0, s8 *, 0) = (s8) M2C_FIELD(&data_020fe880, u8 *, 0);
+            M2C_FIELD(sp0, u8 *, 1) = (u8) M2C_FIELD(&data_020fe880, u8 *, 1);
+        } else if (temp_r0_29 == 0x46) {
+            M2C_FIELD(sp0, s8 *, 0) = (s8) M2C_FIELD(&data_020fe884, u8 *, 0);
+            M2C_FIELD(sp0, u8 *, 1) = (u8) M2C_FIELD(&data_020fe884, u8 *, 1);
+        } else {
+            M2C_FIELD(sp0, s8 *, 0) = (s8) M2C_FIELD(&data_020fe888, u8 *, 0);
+            M2C_FIELD(sp0, u8 *, 1) = (u8) M2C_FIELD(&data_020fe888, u8 *, 1);
+        }
+        temp_r0_10 = func_02052edc(arg0, &data_020fe7bc, sp0);
+        if (temp_r0_10 != 0) {
+            return temp_r0_10;
+        }
+        return 0;
+    case 6:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_11 = func_02052edc(arg0, &data_020fe764, sp0);
+        if (temp_r0_11 != 0) {
+            return temp_r0_11;
+        }
+        return 0;
+    case 13:
+        temp_r0_12 = func_02052f5c(arg0, 0x70D, func_0206ad38(arg2));
+        if (temp_r0_12 != 0) {
+            return temp_r0_12;
+        }
+        return 0;
+    case 14:
+        temp_r0_13 = func_02052f5c(arg0, 0x70E, func_0206ad38(arg2));
+        if (temp_r0_13 != 0) {
+            return temp_r0_13;
+        }
+        return 0;
+    case 15:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_14 = func_02052edc(arg0, &data_020fe95c, sp0);
+        if (temp_r0_14 != 0) {
+            return temp_r0_14;
+        }
+        return 0;
+    case 16:
+        temp_r0_15 = func_02052f5c(arg0, 0x710, func_0206ad38(arg2));
+        if (temp_r0_15 != 0) {
+            return temp_r0_15;
+        }
+        return 0;
+    case 17:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_16 = func_02052edc(arg0, &data_020fe970, sp0);
+        if (temp_r0_16 != 0) {
+            return temp_r0_16;
+        }
+        return 0;
+    case 18:
+        temp_r0_17 = func_02052f5c(arg0, 0x712, func_0206ad38(arg2));
+        if (temp_r0_17 != 0) {
+            return temp_r0_17;
+        }
+        return 0;
+    case 20:
+        temp_r0_18 = func_02052f5c(arg0, 0x714, func_0206ad38(arg2));
+        if (temp_r0_18 != 0) {
+            return temp_r0_18;
+        }
+        return 0;
+    case 21:
+        temp_r0_19 = func_02052f5c(arg0, 0x715, func_0206ad38(arg2));
+        if (temp_r0_19 != 0) {
+            return temp_r0_19;
+        }
+        return 0;
+    case 22:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_20 = func_02052edc(arg0, &data_020fe984, sp0);
+        if (temp_r0_20 != 0) {
+            return temp_r0_20;
+        }
+        return 0;
+    case 23:
+        func_020580fc(sp0, arg2, 0x33);
+        temp_r0_21 = func_02052edc(arg0, &data_020fe7cc, sp0);
+        if (temp_r0_21 != 0) {
+            return temp_r0_21;
+        }
+        return 0;
+    case 24:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_22 = func_02052edc(arg0, &data_020fe7d4, sp0);
+        if (temp_r0_22 != 0) {
+            return temp_r0_22;
+        }
+        return 0;
+    case 25:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_23 = func_02052edc(arg0, &data_020fe7dc, sp0);
+        if (temp_r0_23 != 0) {
+            return temp_r0_23;
+        }
+        return 0;
+    case 26:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_24 = func_02052edc(arg0, &data_020fe7e4, sp0);
+        if (temp_r0_24 != 0) {
+            return temp_r0_24;
+        }
+        return 0;
+    case 27:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_25 = func_02052edc(arg0, &data_020fe7ec, sp0);
+        if (temp_r0_25 != 0) {
+            return temp_r0_25;
+        }
+        return 0;
+    case 28:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_26 = func_02052edc(arg0, &data_020fe7f4, sp0);
+        if (temp_r0_26 != 0) {
+            return temp_r0_26;
+        }
+        return 0;
+    case 29:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_27 = func_02052edc(arg0, &data_020fe7fc, sp0);
+        if (temp_r0_27 != 0) {
+            return temp_r0_27;
+        }
+        return 0;
+    case 30:
+        func_020580fc(sp0, arg2, 0x100);
+        temp_r0_28 = func_02052edc(arg0, &data_020fe804, sp0);
+        if (temp_r0_28 != 0) {
+            return temp_r0_28;
+        }
+        return 0;
+    }
+}
 s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
     M2C_UNK func_0204fed0(void **, void *, s32);

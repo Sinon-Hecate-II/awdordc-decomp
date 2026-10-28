@@ -1,6 +1,9 @@
 /* 2 functions from 0x02215664 to 0x02216518 (ov005), found by ds-decomp. */
 #include "common.h"
 
+void func_ov005_02215664(void *arg0) {
+}
+
 void func_ov005_02216498(void) {
     M2C_UNK func_020b1bf4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020b1c78(M2C_UNK);

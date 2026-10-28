@@ -38,8 +38,9 @@ s32 func_02001114(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return temp_r0 + 0xC;
 }
 
-void func_0200112c(s32 *arg0,s32 arg1,s32 arg2) {
-arg0[0]=arg2; arg0[1]=arg1; arg0[2]=0; arg0[3]=-arg1; arg0[4]=arg2; arg0[5]=0; arg0[6]=0; arg0[7]=0; arg0[8]=4096; arg0[9]=0; arg0[10]=0; arg0[11]=0;
+void func_0200112c(s32 *arg0, s32 arg1, s32 arg2) {
+    volatile s32 *p = arg0;
+    p[0]=arg2; p[1]=arg1; p[2]=0; arg1=-arg1; p[3]=arg1; p[4]=arg2; p[5]=0; p[6]=0; p[7]=0; p[8]=4096; p[9]=0; p[10]=0; p[11]=0;
 }
 
 void func_02001148(void *arg0, void *arg1, void *arg2) { (void)arg0; (void)arg1; (void)arg2; }

@@ -5,6 +5,9 @@ void func_ov000_02171774(s32 arg0) {
     (void)arg0;
 }
 
+void func_ov000_02171a68(void) {
+}
+
 void func_ov000_021723bc(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_0208fe30(s32);

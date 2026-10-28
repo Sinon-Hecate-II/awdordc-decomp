@@ -33,6 +33,28 @@ int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
 }
 
 #pragma thumb on
+s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
+    s32 var_r3;
+    s32 var_r4;
+    u8 *var_r5;
+    u8 temp_r0;
+
+    var_r3 = 0;
+    var_r5 = arg0 + (arg1 - 1);
+    var_r4 = 0;
+    if (arg1 > 0) {
+        do {
+            temp_r0 = *var_r5;
+            var_r4 += 1;
+            var_r5 -= 1;
+            var_r3 = temp_r0 + (var_r3 << 8);
+        } while (var_r4 < arg1);
+    }
+    return var_r3;
+}
+#pragma thumb off
+
+#pragma thumb on
 s32 func_ov001_0216c1c4(void *arg0,s32 arg1) {
 s32 func_ov001_0216cef0(u16);
 void func_ov001_0216cdd4();

@@ -52,3 +52,7 @@ void func_ov006_02211314(M2C_UNK arg0) {
         gCur3DSpriteEngine = temp_r4;
     }
 }
+
+void func_ov006_02211388(void *arg0) {
+}
+

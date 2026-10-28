@@ -6,6 +6,10 @@ static inline s32 Min851B8(s32 a,s32 b) { return b<a?b:a; }
 static inline u8 Terrain851B8(s32 x,s32 y) { extern void **gCurrentMap;u8 *p=*gCurrentMap;return M2C_FIELD(p+x+M2C_FIELD(p+y*2,u16 *,0x3758),u8 *,0x1420); }
 
 #pragma opt_common_subs off
+void func_ov000_021843ec(s32 a, s32 b, s32 c, s32 d) {
+    (void)a; (void)b; (void)c; (void)d;
+}
+
 void func_ov000_0218500c(s32 x,s32 y,s32 type,s32 radius){
 extern void **gCurrentMap;extern u8 data_ov000_021e0550[];
 s32 func_020ce0ec(u8,s32);

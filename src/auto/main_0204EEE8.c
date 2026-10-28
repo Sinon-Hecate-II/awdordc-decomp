@@ -1,6 +1,10 @@
 /* 9 functions from 0x0204EEE8 to 0x0204FED0 (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_0204eee8(void *arg0, void *arg1) {
+    return 0;
+}
+
 s32 func_0204f89c(void **arg0,s32 arg1,s32 arg2,void *arg3) {
  void func_0204fea0(M2C_UNK,M2C_UNK,M2C_UNK);
  extern M2C_UNK data_020fddcc;

@@ -214,9 +214,11 @@ s16 func_020b86b4(void *arg0) {
 
 s32 func_020b86e4(void *arg0) {
     s16 old = M2C_FIELD(arg0, s16 *, 0x40);
-    if (old + 6 >= M2C_FIELD(arg0, s16 *, 0x42)) return 0;
+    if (old + 6 >= M2C_FIELD(arg0, s16 *, 0x42)) goto done;
     M2C_FIELD(arg0, s16 *, 0x40)++;
     return 1;
+done:
+    return 0;
 }
 
 s16 func_020b870c(void *arg0){

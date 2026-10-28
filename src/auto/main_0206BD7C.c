@@ -93,6 +93,9 @@ result=end-func_02068c34(p)-1;
 func_020650a4(result,p,func_02068c34(p));
 return result;
 }
+
+s32 func_0206c3c8(void *a, void *b, void *c, void *d) { return 0; }
+
 s32 func_0206ccb8(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_0206adc0(s32, M2C_UNK, s32);
     s32 temp_r3;

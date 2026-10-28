@@ -586,9 +586,7 @@ void func_ov003_02206174(M2C_UNK arg0, s32 arg1) {
 
 s32 func_ov003_0220619c(void) {
     extern M2C_UNK data_02168f14;
-    u16 v;
-    v = (u16)M2C_FIELD(&data_02168f14, u16 *, 0);
-    return (s32)((v >> 8) & 1);
+    return (s32) ((u32) (M2C_FIELD(&data_02168f14, u16 *, 0) << 23) >> 31);
 }
 
 s32 func_ov003_022061b4(void) {
@@ -615,6 +613,14 @@ s32 func_ov003_022061d8(s32 arg0) {
     M2C_UNK func_02082040();
     func_02082040();
     return arg0;
+}
+
+void func_ov003_022061ec(M2C_UNK arg0, s32 arg1) {
+    extern M2C_UNK data_02168f14;
+    u16 v;
+    v = M2C_FIELD(&data_02168f14, u16 *, 0);
+    v = (u16)((v & ~0x38) | (((u32)(u16)arg1 << 29) >> 26));
+    M2C_FIELD(&data_02168f14, u16 *, 0) = v;
 }
 
 s32 func_ov003_02206270(void) {

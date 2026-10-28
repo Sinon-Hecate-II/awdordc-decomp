@@ -91,6 +91,8 @@ void func_02076910(s32 x,s32 y) {
  M2C_FIELD(y+1,u8 *,a)=7; M2C_FIELD(y+1,u8 *,b)=7;
 }
 
+void func_02076980(void) {}
+
 void func_02077480(void){extern M2C_UNK data_02140f70;
 if(M2C_FIELD(&data_02140f70,s32*,12)==0)M2C_FIELD(&data_02140f70,s32*,12)=1;
 }

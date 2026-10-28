@@ -47,6 +47,8 @@ void func_ov003_0220accc(void *obj, s32 index) {
     M2C_FIELD(M2C_FIELD(obj, void **, 0x58), s16 *, 6) = -4;
 }
 
+void func_ov003_0220adb4(void *arg0) { }
+
 s16 func_ov003_0220b7b8(void *arg0) {
     return M2C_FIELD(arg0, s16 *, 0x12);
 }

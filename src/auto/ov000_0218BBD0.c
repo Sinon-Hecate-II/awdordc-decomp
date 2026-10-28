@@ -1,6 +1,10 @@
 /* 4 functions from 0x0218BBD0 to 0x0218CBC0 (ov000), found by ds-decomp. */
 #include "common.h"
 
+int func_ov000_0218bbd0(void *arg0) {
+    return 0;
+}
+
 s32 func_ov000_0218c400(s32 arg0) { (void)arg0; return 0; }
 
 void func_ov000_0218ca94(void) {

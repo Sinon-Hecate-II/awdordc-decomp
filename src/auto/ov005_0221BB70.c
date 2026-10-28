@@ -55,6 +55,10 @@ M2C_UNK func_ov005_0221bcb0() {
     return 0;
 }
 
+int func_ov005_0221c150(void *arg0) {
+    return 0;
+}
+
 void func_ov005_0221c9c0(void) {
     M2C_UNK func_ov005_0221b4d8();
     func_ov005_0221b4d8();

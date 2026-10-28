@@ -1,6 +1,8 @@
 /* 3 functions from 0x02209310 to 0x02209D0C (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_02209310(void *arg0) { }
+
 s32 func_ov003_02209cc8(void *arg0) {
     return M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), u8 *, 6) | M2C_FIELD(arg0, u8 *, 6);
 }

@@ -606,6 +606,16 @@ void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 a
     func_ov001_0216a398(temp_r5, M2C_FIELD(arg0, u8 *, 0x2E), M2C_FIELD(arg0, u8 *, 0x2F), arg1, arg2, 0, (s32) M2C_FIELD(arg0, u16 *, 0x2C), 2);
 }
 
+void func_ov001_0218b298(s32 arg0) {
+    extern M2C_UNK data_ov001_02193e40;
+    void *p = M2C_FIELD(&data_ov001_02193e40, void **, 0);
+    if (arg0 == (s32)p + 0x610) {
+        M2C_FIELD(p, u8 *, 0x67c) = 1;
+    } else {
+        M2C_FIELD(p, u8 *, 0x67d) = 1;
+    }
+}
+
 void func_ov001_0218b2bc(s16 arg0, s16 arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 0) = arg0;
     M2C_FIELD(arg2, s16 *, 2) = arg1;

@@ -1,6 +1,9 @@
 /* 11 functions from 0x02216518 to 0x022174F4 (ov005), found by ds-decomp. */
 #include "common.h"
 
+void func_ov005_02216518(u32 arg0) {
+}
+
 void func_ov005_02217264(M2C_UNK arg0) {
     M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220510;
@@ -12,6 +15,16 @@ void func_ov005_0221727c(void) {
     extern M2C_UNK data_ov005_02221304;
     func_02090248(0xF);
     M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x8E) = -1;
+}
+
+void func_ov005_022172a0(void) {
+    void func_ov005_02214f80(s16);
+    void func_ov005_02214a84(u8);
+    extern M2C_UNK data_ov005_02221304;
+    s16 val = M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x90);
+    func_ov005_02214f80(val);
+    M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x90) = -1;
+    func_ov005_02214a84((u8) M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), u8 *, 0x8A));
 }
 
 void func_ov005_0221730c(void) {

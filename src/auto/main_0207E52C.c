@@ -1,6 +1,8 @@
 /* 3 functions from 0x0207E52C to 0x0207F460 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_0207e52c(void *arg0, s32 arg1) { }
+
 s32 func_0207ef5c(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207dc0c(s32, s32);
     s32 func_0207de50(s32, s32);

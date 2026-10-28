@@ -546,8 +546,8 @@ void func_02018e80(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_020054c0(void);
     void func_02007530(s32);
     void *r4 = arg1;
-    s32 tmp = M2C_FIELD(r4, s32 *, 0);
-    if (tmp == 0) {
+    (void)arg0;
+    if (M2C_FIELD(r4, s32 *, 0) == 0) {
         func_020054c0();
     }
     func_02007530(M2C_FIELD(r4, s32 *, 4));

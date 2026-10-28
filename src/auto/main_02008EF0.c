@@ -487,5 +487,13 @@ else base[226]&=~(1<<a);
 return func_02007530(s);
 }
 
-s32 func_02009e8c(s32 a,s32 b){u32 *base=(u32 *)0x027ffc00;s32 r=1;if(!(base[b+0xe2]&(1<<a)))r=0;return r;}
+s32 func_02009e8c(s32 a, s32 b) {
+    extern u8 data_027ffc00[];
+    u32 val = *((u32 *)((u8 *)data_027ffc00 + b * 4 + 0x388));
+    s32 r = 1;
+    if (!(val & (1 << a))) {
+        r = 0;
+    }
+    return r;
+}
 

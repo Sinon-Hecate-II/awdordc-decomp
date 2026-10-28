@@ -1,6 +1,8 @@
 /* 6 functions from 0x02173468 to 0x021743F0 (ov000), found by ds-decomp. */
 #include "common.h"
 
+void func_ov000_02173468(void *arg0) { }
+
 u8 func_ov000_02173e6c(void *arg0) {
     s32 func_020d46e8();
     s32 func_020d4ea8();

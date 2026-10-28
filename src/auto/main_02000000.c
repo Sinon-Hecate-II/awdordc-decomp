@@ -1,6 +1,8 @@
 /* 31 functions from 0x02000000 to 0x02001068 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { s32 a; s32 b; } Pair_100c;
+
 #pragma opt_strength_reduction off
 void func_02000954(s32 value, s32 *dest, s32 size) {
     s32 end = (s32)dest + size;
@@ -27,10 +29,18 @@ extern void func_02086508(void);
 extern void func_020e4594(void);
 void main(void)
 {
+  void func_020e4490(void);
+  void func_020e4570(void);
+  void func_02086508(void);
+  void func_020e4594(void);
+  func_020e4570();
+  func_02086508();
+  func_020e4594();
+  for (;;)
+  {
     func_020e4490();
-    func_020e4570();
-    func_02086508();
-    func_020e4594();
+  }
+
 }
 
 s32 func_02000ca0(void *arg0, void *arg1) {
@@ -48,5 +58,14 @@ void func_02000f90(void *arg0, void *arg1, void *arg2) {
     r[0] = (s32)(((s64)x1 * q[3] + (s64)x0 * q[0] + (s64)x2 * q[6]) >> 12);
     r[1] = (s32)(((s64)x1 * q[4] + (s64)x0 * q[1] + (s64)x2 * q[7]) >> 12);
     r[2] = (s32)(((s64)x1 * q[5] + (s64)x0 * q[2] + (s64)x2 * q[8]) >> 12);
+}
+
+void func_0200100c(Pair_100c *p) {
+    *p++ = (Pair_100c){ 0x1000, 0 };
+    *p++ = (Pair_100c){ 0, 0 };
+    *p++ = (Pair_100c){ 0x1000, 0 };
+    *p++ = (Pair_100c){ 0, 0 };
+    *p++ = (Pair_100c){ 0x1000, 0 };
+    *p++ = (Pair_100c){ 0, 0 };
 }
 

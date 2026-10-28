@@ -138,6 +138,9 @@ loop_1:
     goto loop_1;
 }
 
+void func_ov009_02221ae8(void) {
+}
+
 void func_ov009_02222278(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02008048(M2C_UNK, s32);
     extern M2C_UNK data_ov009_02226b40;

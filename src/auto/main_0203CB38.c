@@ -11,6 +11,8 @@ void func_0205e510(void *, int, void *);
 void func_0205f83c(int, void *, int, void *);
 int func_0206527c(void *, void *, int);
 
+void func_0203cb38(void *arg0) { }
+
 s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
     UnkPacket packet;
     u8 c;

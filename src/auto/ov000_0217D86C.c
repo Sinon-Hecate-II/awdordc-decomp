@@ -138,6 +138,8 @@ func_01ffb554((u8 *)*gCurrentMap+0x1e30);return 1;
 func_01ffb554((u8 *)*gCurrentMap+0x1e30);return 0;
 }
 
+int func_ov000_0217de64(void) { return 0; }
+
 u8 func_ov000_0217e6bc(s32 arg0,s32 arg1){
 s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *data_ov000_021df580;
 void *base,*world,*entry;u8 result;

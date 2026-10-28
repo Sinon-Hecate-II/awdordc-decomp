@@ -61,7 +61,10 @@ void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
     func_0200b3ec(&data_0212fc14, arg0, arg1);
 }
 
-u32 func_0200bf0c(void *arg0) {s32 x=M2C_FIELD(arg0,s32 *,28);if(((u32)x>>24)&1) return (u32)(x<<8)>>8;return M2C_FIELD(arg0,u32 *,8);}
+u32 func_0200bf0c(void *arg0) {
+    s32 x = M2C_FIELD(arg0, s32 *, 28);
+    return (((u32)x >> 24) & 1) ? ((u32)(x << 8) >> 8) : M2C_FIELD(arg0, u32 *, 8);
+}
 
 void func_0200bf28(void *arg0) {
     M2C_UNK func_020067a8(s32, s32);

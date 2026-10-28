@@ -241,3 +241,7 @@ void func_02019590(void *p,s8 *s,s32 n) {
  M2C_FIELD(p,s8**,4)+=n;
 }
 
+s32 func_020195e8(char *arg0, s32 arg1, const char *arg2, void *arg3) {
+    return 0;
+}
+

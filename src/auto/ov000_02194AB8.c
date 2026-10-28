@@ -2,6 +2,11 @@
 #include "common.h"
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind1955;
 
+int func_ov000_02194ab8(short *arg0) {
+    (void)arg0;
+    return 0;
+}
+
 void func_ov000_021954a4(void) {
     s32 func_ov000_02194ab8(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);

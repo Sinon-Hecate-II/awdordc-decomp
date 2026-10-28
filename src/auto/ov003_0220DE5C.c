@@ -1,6 +1,8 @@
 /* 4 functions from 0x0220DE5C to 0x0220ED80 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_0220de5c(void *a) { }
+
 void func_ov003_0220ea28(void *arg0) {
     extern u8 data_ov003_02211060[];
     extern u8 data_0215d9b8[];

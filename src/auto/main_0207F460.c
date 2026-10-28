@@ -188,15 +188,14 @@ void func_0207f9f4(void) {
     s32 i;
     u8 *entry;
     u8 *selected;
-    s32 zero = 0;
     u8 **entries = data_0210188c;
     Unk0207F9F4 *table = (Unk0207F9F4 *)data_0214c0c8;
     i = 0;
     do {
         entry = entries[i];
         if (entry == 0) {
-            table[i].unk0 = zero;
-            table[i].unk2 = zero;
+            table[i].unk0 = 0;
+            table[i].unk2 = 0;
         } else {
             selected = entry + func_0207f99c(entry) * 3;
             table[i].unk0 = (s8)selected[1];
@@ -237,6 +236,9 @@ void func_0207fad4(void) {
     extern void *data_027e00bc;
     M2C_FIELD(data_027e00bc, u16 *, 4) &= ~2;
     func_020051f8(2);
+}
+
+void func_0207fafc(void) {
 }
 
 void func_02080358(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {

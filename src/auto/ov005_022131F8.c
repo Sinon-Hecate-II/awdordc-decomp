@@ -26,6 +26,8 @@ void func_ov005_0221339c(u8 *arg0) {
     func_0208fe30(0x10019);
 }
 
+void func_ov005_022133c8(void *arg0) { }
+
 void func_ov005_02213cf4(void) {
     M2C_UNK func_020b2224();
     M2C_UNK func_020b1bf4(s32, s32, s32, s32);

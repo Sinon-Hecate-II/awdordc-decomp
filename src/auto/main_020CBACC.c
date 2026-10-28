@@ -40,11 +40,12 @@ void func_020cbc08(void) {
 
 void func_020cbc20(void *arg0) {
  extern void **gCurrentMap;
- void *p=M2C_FIELD(arg0,void **,0x34);
+ void *self = arg0;
+ void *p = M2C_FIELD(self, void **, 0x34);
  s32 n;
- func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5);
- if (!p) n=0;
- else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59A4))/14;
+ func_020b5594(M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2), 5);
+ if (!p) n = 0;
+ else n = ((s32) p - (s32) ((u8 *) *gCurrentMap + 0x59A4)) / 14;
  func_020a6728(n);
  func_020cfd28();
 }

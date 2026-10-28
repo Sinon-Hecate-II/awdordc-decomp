@@ -5,6 +5,8 @@ extern M2C_UNK data_020f5550;
 
 #pragma push
 #pragma optimization_level 2
+s32 func_02017158(M2C_UNK arg0) { return 0; }
+
 u32 func_02017984(void){u8 buf[6];s32 i;u32 sum;u8 *p;func_02007724(buf);i=0;p=&buf[i];sum=0;do{sum+=*p++;i++;}while(i<6);return ((sum+*(u32 *)0x27ffc3c)*7)%20;}
 
 s32 func_020179ec(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {

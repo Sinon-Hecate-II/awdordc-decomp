@@ -343,6 +343,15 @@ void func_0209c418(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
 }
 
+void func_0209c428(void *arg0) {
+    void func_0209c418(void *);
+    func_0209c418(arg0);
+    if (*(u8 *) M2C_FIELD(arg0, void **, 0x34) == 0x0D ||
+        *(u8 *) M2C_FIELD(arg0, void **, 0x34) == 0x0A) {
+        func_0209c428(arg0);
+    }
+}
+
 s32 func_0209c454(u8 *arg0,s32 arg1) {
 s32 func_0209c1c0(u8 *,s32 *);
 s32 width; s32 zero;  s32 max=0;u8 *p=arg0; u8 c; width=0;

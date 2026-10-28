@@ -1,6 +1,9 @@
 /* 3 functions from 0x021E4B94 to 0x021E59E4 (ov002), found by ds-decomp. */
 #include "common.h"
 
+void func_ov002_021e4b94(void *arg0) {
+}
+
 void func_ov002_021e5974(s32 *arg0, s32 *arg1) {
     s32 temp_r3;
 

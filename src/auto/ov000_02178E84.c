@@ -1,6 +1,10 @@
 /* 5 functions from 0x02178E84 to 0x02179E48 (ov000), found by ds-decomp. */
 #include "common.h"
 
+s32 func_ov000_02178e84(s32 arg0, s32 arg1) {
+    return 1;
+}
+
 s32 func_ov000_02179b08(void *arg0) {
 s32 func_ov000_021a89a4(void *);s32 func_ov000_021a98a8(u32);
 extern u8 data_ov000_021b5c0f[];extern void *data_ov000_021df57c;extern void *data_ov000_021df580;

@@ -1,6 +1,9 @@
 /* 6 functions from 0x0216D2B4 to 0x0216E178 (ov000), found by ds-decomp. */
 #include "common.h"
 
+void func_ov000_0216d2b4(void *arg0) {
+}
+
 M2C_UNK func_ov000_0216dd0c(void) {
     return 0;
 }

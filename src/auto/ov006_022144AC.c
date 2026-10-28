@@ -1,6 +1,11 @@
 /* 17 functions from 0x022144AC to 0x022153FC (ov006), found by ds-decomp. */
 #include "common.h"
 
+int func_ov006_022144ac(void *arg0) {
+    (void)arg0;
+    return 0;
+}
+
 void func_ov006_02215010(void) {
     M2C_UNK func_ov006_02212184();
     func_ov006_02212184();

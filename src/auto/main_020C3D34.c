@@ -7,6 +7,8 @@ static inline void SaveTime_Clear(SaveTime *p) { M2C_FIELD((u32)p,s32 *,0)=0; M2
 static inline s32 SaveTime_Get1(SaveTime *p) { return p->v[1]; }
 static inline s32 SaveTime_Get2(SaveTime *p) { return p->v[2]; }
 
+s32 func_020c3d34(void *a, void *b, void *c, void *d) { return 0; }
+
 void func_020c4604(M2C_UNK arg0){extern u16 *data_02101e84;extern void *data_02164094;
 M2C_FIELD(data_02164094,s32*,0)++;
 if((M2C_FIELD(data_02164094,s32*,0)<250)&&!(*data_02101e84&1))return;

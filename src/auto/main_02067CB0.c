@@ -1,6 +1,10 @@
 /* 6 functions from 0x02067CB0 to 0x02068C50 (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_02067cb0(s32 (*arg0)(void *, s32, s32), void *arg1, s32 arg2, s32 arg3, s32 arg4) {
+    return 0;
+}
+
 s32 func_02068a04(void *arg0, s32 arg1, s32 arg2) {
     s8 *temp_r1;
     s32 temp_r2;

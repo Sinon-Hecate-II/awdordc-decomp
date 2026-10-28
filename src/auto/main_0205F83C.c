@@ -100,10 +100,8 @@ void func_0205fbb0(void *arg0, s32 arg1) {
 
 void func_0205fdbc(s32 arg0,s32 arg1){
  extern s32 data_020ffc1c[];
- if(arg0<50)goto done;
- if(arg0>254)goto done;
+ if(arg0<50)return;if(arg0>254)return;
  data_020ffc1c[arg0]=arg1;
-done: return;
 }
 
 u8 func_0205fddc(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){

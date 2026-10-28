@@ -1,6 +1,8 @@
 /* 7 functions from 0x0221D008 to 0x0221E004 (ov007), found by ds-decomp. */
 #include "common.h"
 
+void func_ov007_0221d008(void *arg0) {}
+
 void func_ov007_0221dbb0(u8 *arg0) {
 M2C_UNK func_020b1c60(u8);
 extern void *data_02101e84;

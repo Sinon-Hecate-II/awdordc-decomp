@@ -34,6 +34,8 @@ s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
     return bestIndex;
 }
 
+s32 func_ov000_021a21f8(s32 arg0) { return 0; }
+
 #pragma opt_propagation off
 s32 func_ov000_021a2db8(void) {
  void func_01ffada0(s32,s32,s32,s32,s32);

@@ -1,6 +1,7 @@
 /* 53 functions from 0x0200402C to 0x02004FF8 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct { u32 w[8]; } FuncCopy32Block;
+typedef struct { u32 a,b,c,d,e,f,g,h; } FuncCopy8;
+
 typedef struct { u32 x, y, z; } FuncCopyV3;
 
 void func_0200402c(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,M2C_UNK *arg4) {
@@ -456,14 +457,20 @@ void func_02004ddc(void) {
 
 typedef u32 Block3[3];
 void func_02004e20(FuncCopyV3 *src, FuncCopyV3 *dst) {
-    *dst = src[0];
-    *dst = src[1];
-    *dst = src[2];
-    *dst = src[3];
+    *dst = *src++;
+    *dst = *src++;
+    *dst = *src++;
+    *dst = *src++;
 }
 
 void func_02004e44(void *arg0, void *arg1) {
-    memcpy(arg1, arg0, 64);
+    u32 *s = arg0;
+    u32 *d = arg1;
+    int i = 0;
+    while (i < 16) {
+        d[i] = s[i];
+        i++;
+    }
 }
 
 void func_02004ed4(void) {

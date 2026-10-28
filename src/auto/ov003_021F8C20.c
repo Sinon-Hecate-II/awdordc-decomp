@@ -288,3 +288,7 @@ void func_ov003_021f9200(void *obj) {
     }
 }
 
+int func_ov003_021f92f4(void *arg0) {
+    return 0;
+}
+

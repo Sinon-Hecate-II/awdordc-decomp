@@ -605,6 +605,11 @@ void func_0202ab7c(s32 arg0, s8 arg1) {
     data_0213b724[arg0 * 0x24] = (u8)arg1;
 }
 
+void func_0202ab94(s32 arg0, s32 arg1) {
+    extern u8 data_0213b71c[];
+    *(s32 *)(data_0213b71c + arg0 * 0x24) = (s32)(u16)arg1;
+}
+
 void func_0202abb4(s32 arg0, s32 arg1) {
     extern u8 data_0213b720[];
     *(s32 *)(data_0213b720 + arg0 * 0x24) = arg1;
@@ -615,16 +620,31 @@ void func_0202ac60(s32 *arg0) {
     func_0202b10c(*arg0);
 }
 
+void func_0202ac70(M2C_UNK arg0) {
+    extern M2C_UNK data_0213b2c4;
+    s32 var_r4;
+    u8 *var_r5;
+
+    var_r5 = (u8 *)&data_0213b2c4;
+    var_r4 = 0;
+    do {
+        if (M2C_FIELD(var_r5, u8 *, 0x2C) != 0) {
+            func_0202b10c(var_r5, arg0);
+        }
+        var_r4 += 1;
+        var_r5 += 0x44;
+    } while (0x10 > var_r4);
+}
+
 void func_0202acb0(s32 *arg0) {
     *arg0 = 0;
 }
 
 void func_0202acbc(s32 **arg0) {
-    if (*arg0 == (s32 *)0) {
-        return;
+    if (*arg0 != (s32 *)0) {
+        **arg0 = 0;
+        *arg0 = (s32 *)0;
     }
-    **arg0 = 0;
-    *arg0 = (s32 *)0;
 }
 
 void func_0202acdc(void **arg0, s8 arg1) {
@@ -654,12 +674,11 @@ void func_0202ad04(void **arg0, s32 arg1) {
 
 void func_0202ad30(void **arg0) {
     M2C_UNK func_02008c50(u8);
-    void *p;
-    p = *arg0;
-    if (p == 0) {
+    void **a = arg0;
+    if (*a == 0) {
         return;
     }
-    func_02008c50(M2C_FIELD(p, u8 *, 0x3C));
+    func_02008c50(M2C_FIELD(*a, u8 *, 0x3C));
 }
 
 void func_0202ad50(void *arg0, s32 arg1, s32 arg2) {

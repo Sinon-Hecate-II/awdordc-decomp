@@ -5,11 +5,9 @@ struct MenuValues2 { u8 values[2]; };
 extern struct MenuValues2 data_ov001_0218f6f4;
 
 void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    u32 *offsets = M2C_FIELD(arg0, u32 **, 0);
-    u8 *base = M2C_FIELD(arg0, u8 **, 4);
-    u16 *ptr = (u16 *)(base + offsets[(u16)arg1]);
+    arg0 = (u8 *)M2C_FIELD(arg0, void **, 4) + M2C_FIELD(arg0, u32 **, 0)[(u16)arg1];
     if (arg2 >= 0) {
-        ptr[arg2] = arg3 + '0';
+        ((u16 *)arg0)[arg2] = arg3 + 0x30;
     }
 }
 

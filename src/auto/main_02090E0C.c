@@ -645,6 +645,12 @@ u8 func_02091db4(void) {
     return M2C_FIELD(func_02091da8(), u8 *, 0x48);
 }
 
+u8 func_02091dc4(s32 arg0) {
+    M2C_UNK *func_02091da8(void);
+    M2C_UNK *base = func_02091da8();
+    return M2C_FIELD((char *)base + arg0, u8 *, 0x44);
+}
+
 s32 func_02091ddc(M2C_UNK arg0) {
     u8 func_02091dc4(M2C_UNK);
     if (func_02091dc4(arg0) == 0x2) {

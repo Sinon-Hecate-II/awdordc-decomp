@@ -14,6 +14,8 @@ int func_ov003_021e6cc4(s16,int,int,int);
 int func_ov003_021e6e5c(void);
 
 
+void func_ov003_021ee8b8(void *arg0) { }
+
 void func_ov003_021ef1e8(void *arg0) {
     void func_01ffa6fc(void *);
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0xC) {

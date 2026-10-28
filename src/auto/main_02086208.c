@@ -169,11 +169,13 @@ s32 func_02086520(s32 arg0) {
 void func_02086574(void) {
     void func_020865a0(void);
     extern M2C_UNK data_02157678;
-    s32 *array = (s32 *)&data_02157678;
     s32 i;
-    for (i = 0; i < 0x28; i++) {
-        array[i] = 0;
-    }
+    s32 *p = (s32 *)&data_02157678;
+    i = 0;
+    do {
+        p[i] = 0;
+        i = i + 1;
+    } while (i < 0x28);
     func_020865a0();
 }
 
@@ -256,7 +258,9 @@ s32 func_02086730(void) {
 void func_02086740(u32 arg0, s32 arg1) {
     extern M2C_UNK data_0215771c;
     s32 shift = arg0 & 7;
-    M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3) = (M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+    s32 mask = 1 << shift;
+    u8 byte = M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3);
+    M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3) = (byte & ~mask) | (mask * arg1);
 }
 
 void func_02086774(u32 arg0, s32 arg1) {

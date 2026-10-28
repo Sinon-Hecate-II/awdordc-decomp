@@ -1,6 +1,8 @@
 /* 16 functions from 0x0208E18C to 0x0208EE90 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { s32 a; s32 b; } Pair;
+
 
 void func_0208e18c(void) { }
 
@@ -104,6 +106,13 @@ void *func_0208ed88(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x64) = 0;
     M2C_FIELD(arg0, s32 *, 0x68) = 0;
     return arg0;
+}
+
+void func_0208ee1c(void *arg0) {
+    unsigned long long *dst = M2C_FIELD(arg0, unsigned long long **, 0x68);
+    if (dst != 0) {
+        *dst = M2C_FIELD(arg0, unsigned long long *, 0x60);
+    }
 }
 
 void func_0208ee60(void *arg0, u32 arg1, s32 arg2) {

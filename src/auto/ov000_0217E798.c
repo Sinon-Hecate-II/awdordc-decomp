@@ -53,6 +53,8 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
     func_ov000_0217e8c4(arg0, arg1, arg2, arg3, arg4);
 }
 
+int func_ov000_0217e8c4(int arg0, int arg1, unsigned char *arg2, unsigned char *arg3, unsigned char *arg4) { return 0; }
+
 s32 func_ov000_0217f318(s16 x,s16 y) {
 extern void **gCurrentMap;
 s32 func_020d27a4();s32 func_ov000_021a93ec();s32 func_ov000_02176e28();
