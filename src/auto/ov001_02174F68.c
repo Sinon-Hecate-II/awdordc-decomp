@@ -3,6 +3,11 @@
 
 typedef struct { s32 x; u32 y; } Position;
 
+void func_ov001_02174f68(s32 arg0, Position arg1) {
+    (void)arg0;
+    (void)arg1;
+}
+
 void func_ov001_02175290(void) {
     s32 func_ov001_0218a24c(s32, M2C_UNK);
     M2C_UNK func_ov001_0218a384(s32, M2C_UNK, u16, u16);

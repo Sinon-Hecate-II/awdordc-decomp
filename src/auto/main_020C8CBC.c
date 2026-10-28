@@ -425,6 +425,90 @@ u8 func_020c98b4(void) {
     return var_r0;
 }
 
+s32 func_020c98d8(s32 x, s32 y, s32 mode) {
+    M2C_UNK func_01ffa770(M2C_UNK *);
+    void func_0200bc5c(M2C_UNK *);
+    M2C_UNK func_020e3218(M2C_UNK *);
+    M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
+    M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
+    s32 func_0207b764(s32, s32);
+    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, s32);
+    void func_020c9654(s32, s32, s32);
+    extern void **gCurrentMap;
+    extern M2C_UNK data_0212b3e4;
+    extern M2C_UNK data_0212b77c;
+    extern M2C_UNK data_0212b788;
+    extern M2C_UNK data_0212b794;
+    extern M2C_UNK data_0212b79c;
+    extern M2C_UNK data_0212b7a4;
+    extern M2C_UNK data_0212b7b0;
+    extern M2C_UNK data_0212b7bc;
+    extern M2C_UNK data_0212b7c8;
+    u16 height;
+    s32 xs;
+    s32 ys;
+    u8 terrain;
+    void *obj;
+    s32 pass;
+    u16 row;
+    s32 idx;
+    u8 occ;
+    s32 low;
+    s32 px;
+    s32 py;
+
+    height = M2C_FIELD(*gCurrentMap, u16 *, 0x52a4);
+    xs = x << 4;
+    ys = y << 4;
+    terrain = M2C_FIELD((s8 *)(*gCurrentMap) + height * 0x8c + 0x6000, u8 *, 0x7c3);
+    px = xs + 8;
+    py = ys + 8;
+
+    if (terrain & 0x2) {
+        pass = 1;
+    } else {
+        row = M2C_FIELD((s8 *)(*gCurrentMap) + y * 2 + 0x3700, u16 *, 0x58);
+        idx = x + row;
+        occ = M2C_FIELD((s8 *)(*gCurrentMap) + ((u32)idx >> 3) + 0x5000, u8 *, 0x201);
+        low = idx & 7;
+        if (occ & (1 << (u32)low)) pass = 1;
+        else pass = 0;
+    }
+    if (!pass) return 0;
+
+    if (mode != 0 && mode != 1 && mode != 2) goto second_path;
+
+    if (func_01ffa770(&data_0212b3e4) == 0) {
+        func_0200bc5c(&data_0212b77c);
+        func_020813c4(func_020e3218(&data_0212b788), 0x329a0);
+        func_0208143c(&data_0212b794, 0x1560, 0x20);
+    }
+    obj = (void *)func_01ffa3dc(&data_0212b3e4, 7);
+    M2C_FIELD(obj, s32 *, 0x34) = px;
+    M2C_FIELD(obj, s32 *, 0x38) = py;
+    M2C_FIELD(obj, s32 *, 0x3c) = x;
+    M2C_FIELD(obj, s32 *, 0x40) = y;
+    M2C_FIELD(obj, s32 *, 0x44) = mode;
+    if (mode == 0) M2C_FIELD(obj, s32 *, 0x48) = 0;
+    else if (mode == 1) M2C_FIELD(obj, s32 *, 0x48) = 2;
+    else if (mode == 2) M2C_FIELD(obj, s32 *, 0x48) = 4;
+    func_0207b764(x, y);
+    return 1;
+
+second_path:
+    switch (mode) {
+        case 3: break;
+        case 4: func_020b5134(&data_0212b79c, x, y, 8, 0, 0, 7); break;
+        case 5: func_020b5134(&data_0212b7a4, x, y, 8, 0, 0, 7); break;
+        case 6: func_020b5134(&data_0212b7b0, x, y, 8, 0, 0, 7); break;
+        case 7: func_020b5134(&data_0212b7bc, x, y, 8, 0, 0, 7); break;
+        default: func_020b5134(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
+    }
+    func_020c9654(x, y, mode);
+    return 1;
+}
+
 void func_020c9b70(void) {
     M2C_UNK func_020d28bc();
     M2C_UNK func_ov000_0216aa84();

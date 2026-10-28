@@ -83,6 +83,8 @@ void func_ov004_02211358(void) {
     func_02090034(0, 0x1E);
 }
 
+M2C_UNK func_ov004_02211374(void) { return 0; }
+
 void func_ov004_02211740(void) {
 
 }

@@ -14,3 +14,9 @@ s32 func_0207ef5c(s32 arg0, s32 arg1, s32 arg2) {
     if (!(flags & 4)) return 0;
     return func_0207de50(arg0, arg1);
 }
+
+s32 func_0207efb4(s32 arg0) {
+    (void)arg0;
+    return 0;
+}
+

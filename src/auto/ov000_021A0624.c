@@ -111,6 +111,8 @@ if(total>max)total=max;
 return total*func_ov000_021a0aec(arg0,arg1,(u32)(M2C_FIELD(arg2,u8 *,0)<<26)>>26);
 }
 
+s32 func_ov000_021a0bec(void) { return 0; }
+
 s32 func_ov000_021a10e4(s32 arg0,void *arg1) {
 u32 type=data_ov000_021e00ae[arg0*12];
 if(type==1){

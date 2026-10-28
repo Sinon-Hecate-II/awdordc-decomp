@@ -12,6 +12,12 @@ extern u16 data_020ec03c[64];
 extern u16 data_020ebf3c[64];
 
 #pragma opt_common_subs off
+s32 func_0207de50(s32 arg0, s32 arg1) {
+    (void)arg0;
+    (void)arg1;
+    return 0;
+}
+
 u16 func_0207e150(s32 x,s32 y) { s16 first[12], second[12], base[12]; u8 a=0,b;
 { const u16 *src=(const u16 *)data_020ebe58; u16 *dst=(u16 *)base; u32 count=6; do { u16 a=src[0],b=src[1]; src+=2; dst[0]=a; dst[1]=b; dst+=2; }while(--count); }
 { const u16 *src=(const u16 *)base; u16 *dst=(u16 *)first; u32 count=6; do { u16 a=src[0],b=src[1]; src+=2; dst[0]=a; dst[1]=b; dst+=2; }while(--count); }

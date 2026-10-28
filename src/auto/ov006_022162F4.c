@@ -4,6 +4,135 @@
 typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 
 /* Attaches a shared argument to a block of 3D sprite entries in three tables, then draws a 6x2 grid of 24x24 sprites from a sprite list. */
+void func_ov006_022162f4(void *arg0) {
+    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 func_0207c928(u8, M2C_UNK);
+    M2C_UNK func_02088044(void *);
+    M2C_UNK func_0208fe30(s32);
+    M2C_UNK func_020a8f8c(void *);
+    M2C_UNK func_020b1c60(M2C_UNK);
+    extern s8 data_ov006_02218e10[];
+    extern u16 data_02101e84[];
+    s16 temp_r2_5;
+    s16 temp_r3;
+    s16 temp_r5;
+    s32 var_r0;
+    s32 var_r0_2;
+    s8 temp_r0_2;
+    s8 temp_r2;
+    s8 temp_r2_2;
+    s8 temp_r2_3;
+    s8 temp_r2_4;
+    s8 var_r1;
+    s8 var_r4;
+    u16 temp_r0;
+    u16 temp_r1;
+    s8 *var_r1_2;
+    s8 *var_r2;
+
+    func_020a8f8c(M2C_FIELD(arg0, void **, 0x48));
+    func_02088044(M2C_FIELD(arg0, void **, 0x40));
+    var_r4 = M2C_FIELD(arg0, s8 *, 0x38);
+    temp_r0 = data_02101e84[0];
+    temp_r1 = data_02101e84[1];
+    if (temp_r0 & 2) {
+        func_020b1c60(0xC);
+        return;
+    }
+    if (temp_r0 & 0x400) {
+        if ((s32) var_r4 > 0) {
+            if ((var_r4 == 0xB) && (data_ov006_02218e10[var_r4] != 0)) {
+                data_ov006_02218e10[var_r4] = 0;
+            } else {
+                temp_r2 = var_r4 - 1;
+                if (((s32) temp_r2 >= 0) && ((s32) temp_r2 < 0xC) && ((data_ov006_02218e10[temp_r2] != 0) || (((s32) temp_r2 > 0) && (data_ov006_02218e10[temp_r2 - 1] != 0)))) {
+                    M2C_FIELD(arg0, s8 *, 0x38) = temp_r2;
+                }
+                var_r1 = M2C_FIELD(arg0, s8 *, 0x38);
+                if ((s32) var_r1 < 0xB) {
+                    var_r2 = data_ov006_02218e10 + var_r1;
+                    do {
+                        var_r1 += 1;
+                        *var_r2 = (s8) var_r2[1];
+                        var_r2 += 1;
+                    } while ((s32) var_r1 < 0xB);
+                }
+                data_ov006_02218e10[0xB] = 0;
+            }
+            func_0208fe30(0x1000D);
+            return;
+        }
+        if ((var_r4 == 0) && (data_ov006_02218e10[var_r4] != 0)) {
+            if ((s32) var_r4 < 0xB) {
+                var_r1_2 = data_ov006_02218e10 + var_r4;
+                do {
+                    var_r4 += 1;
+                    *var_r1_2 = (s8) var_r1_2[1];
+                    var_r1_2 += 1;
+                } while ((s32) var_r4 < 0xB);
+            }
+            data_ov006_02218e10[0xB] = 0;
+            func_0208fe30(0x1000D);
+            return;
+        }
+        func_0208fe30(0x1001D);
+        return;
+    }
+    if (temp_r0 & 8) {
+        func_020b1c60(0xD);
+        return;
+    }
+    if (temp_r1 & 0x200) {
+        temp_r2_2 = var_r4 - 1;
+        if (((s32) temp_r2_2 >= 0) && ((s32) temp_r2_2 < 0xC) && ((data_ov006_02218e10[temp_r2_2] != 0) || (((s32) temp_r2_2 > 0) && (data_ov006_02218e10[temp_r2_2 - 1] != 0)))) {
+            M2C_FIELD(arg0, s8 *, 0x38) = temp_r2_2;
+        }
+    } else if (temp_r1 & 0x100) {
+        temp_r2_3 = var_r4 + 1;
+        if (((s32) temp_r2_3 >= 0) && ((s32) temp_r2_3 < 0xC) && ((data_ov006_02218e10[temp_r2_3] != 0) || (((s32) temp_r2_3 > 0) && (data_ov006_02218e10[temp_r2_3 - 1] != 0)))) {
+            M2C_FIELD(arg0, s8 *, 0x38) = temp_r2_3;
+        }
+    }
+    temp_r0_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0xC);
+    if ((s32) temp_r0_2 >= 0) {
+        temp_r2_4 = temp_r0_2;
+        if (((s32) temp_r2_4 >= 0) && ((s32) temp_r2_4 < 0xC) && ((data_ov006_02218e10[temp_r2_4] != 0) || (((s32) temp_r2_4 > 0) && (data_ov006_02218e10[temp_r2_4 - 1] != 0)))) {
+            M2C_FIELD(arg0, s8 *, 0x38) = temp_r2_4;
+        }
+    }
+    temp_r5 = (func_0207c928(M2C_FIELD(arg0, s8 *, 0x38), 6) * 0x18) + 0x38;
+    temp_r3 = M2C_FIELD(arg0, s16 *, 0x3A);
+    temp_r2_5 = (func_0207c8ec(M2C_FIELD(arg0, s8 *, 0x38), 6) * 0x18) + 8;
+    if ((temp_r3 == -0x8000) && (M2C_FIELD(arg0, s16 *, 0x3C) == -0x8000)) {
+        goto block_57;
+    }
+    var_r0 = temp_r3 - temp_r5;
+    if (var_r0 < 0) {
+        var_r0 = 0 - var_r0;
+    }
+    if (var_r0 <= 1) {
+        var_r0_2 = M2C_FIELD(arg0, s16 *, 0x3C) - temp_r2_5;
+        if (var_r0_2 < 0) {
+            var_r0_2 = 0 - var_r0_2;
+        }
+        if (var_r0_2 <= 1) {
+block_57:
+            M2C_FIELD(arg0, s16 *, 0x3A) = temp_r5;
+            M2C_FIELD(arg0, s16 *, 0x3C) = temp_r2_5;
+        } else {
+            goto block_58;
+        }
+    } else {
+block_58:
+        M2C_FIELD(arg0, s16 *, 0x3A) = (s16) ((s32) (temp_r5 + temp_r3 + 1) >> 1);
+        M2C_FIELD(arg0, s16 *, 0x3C) = (s16) ((s32) (temp_r2_5 + M2C_FIELD(arg0, s16 *, 0x3C) + 1) >> 1);
+    }
+    if (var_r4 == M2C_FIELD(arg0, s8 *, 0x38)) {
+        return;
+    }
+    func_0208fe30(0x10019);
+}
+
 void func_ov006_0221661c(void *spriteList) {
     extern void *gCur3DSpriteEngine, *data_027e00c8;
     extern u8 data_ov006_02218340[], data_ov006_0221837c[], data_ov006_02218388[];
@@ -43,6 +172,10 @@ void func_ov006_0221679c(void *arg0) {
 void func_ov006_022167b8(void) {
     M2C_UNK func_ov006_0221619c();
     func_ov006_0221619c();
+}
+
+void func_ov006_022167c4(void *arg0) {
+    (void) arg0;
 }
 
 void func_ov006_02216bac(void) {

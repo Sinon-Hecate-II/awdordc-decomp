@@ -1,6 +1,16 @@
 /* 34 functions from 0x0200ED40 to 0x0200FC58 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef union RTCStatus {
+    u16 value;
+    struct {
+        u16 mode : 4;
+        u16 reserved : 2;
+        u16 enabled : 1;
+        u16 unused : 9;
+    } bits;
+} RTCStatus;
+
 void func_0200ed40(void **arg0, void *arg1) {
     if (arg0 != NULL) {
         M2C_FIELD(arg1, void **, 8) = (void *) *arg0;
@@ -199,6 +209,125 @@ if(result==0) func_0200f6b4();
 return M2C_FIELD(&data_0212fd34,s32 *,0x24);
 }
 
+void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
+ extern M2C_UNK data_0212fd34;
+ s32 func_0200fa50(void *);
+ s32 func_0200f6fc(void);
+ u8 command;
+ u8 status;
+ s32 result;
+ s32 *out;
+ void (*callback)(s32,s32);
+ if (arg2) {
+  if (M2C_FIELD(&data_0212fd34,s32 *,0x1c)) M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;
+  if (M2C_FIELD(&data_0212fd34,s32 *,4)) M2C_FIELD(&data_0212fd34,s32 *,4)=0;
+  callback=M2C_FIELD(&data_0212fd34,void (**)(s32,s32),8);
+  if(callback) { M2C_FIELD(&data_0212fd34,s32 *,8)=0; callback(6,M2C_FIELD(&data_0212fd34,s32 *,0x14)); }
+  return;
+ }
+ command=(u8)((arg1 & 0x7f00)>>8);
+ status=(u8)arg1;
+ if (command==0x30) {
+  if(M2C_FIELD(&data_0212fd34,void (**)(void),0x20)) M2C_FIELD(&data_0212fd34,void (**)(void),0x20)();
+  return;
+ }
+ if (status==0) {
+  result=0;
+  switch(M2C_FIELD(&data_0212fd34,u32 *,0x18)) {
+   case 0:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    out[0]=func_0200f634((*(volatile u32 *)0x27ffde8 <<24)>>24);
+    out[1]=func_0200f634((*(volatile u32 *)0x27ffde8 <<19)>>27);
+    out[2]=func_0200f634((*(volatile u32 *)0x27ffde8 <<10)>>26);
+    out[3]=func_0200fa50(out);
+    break;
+   case 1:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    out[0]=func_0200f634((*(volatile u32 *)0x27ffdec <<26)>>26);
+    out[1]=func_0200f634((*(volatile u32 *)0x27ffdec <<17)>>25);
+    out[2]=func_0200f634((*(volatile u32 *)0x27ffdec <<9)>>25);
+    break;
+   case 2:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    out[0]=func_0200f634(*(volatile u32 *)0x27ffde8 &255);
+    out[1]=func_0200f634((*(volatile u32 *)0x27ffde8 <<19)>>27);
+    out[2]=func_0200f634((*(volatile u32 *)0x27ffde8 <<10)>>26);
+    out[3]=func_0200fa50(out);
+    out=M2C_FIELD(&data_0212fd34,s32 **,0x10);
+    out[0]=func_0200f634((*(volatile u32 *)0x27ffdec <<26)>>26);
+    out[1]=func_0200f634((*(volatile u32 *)0x27ffdec <<17)>>25);
+    out[2]=func_0200f634((*(volatile u32 *)0x27ffdec <<9)>>25);
+    break;
+   case 6:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    switch(((RTCStatus *)0x27ffdea)->bits.mode) {
+     case 4: out[0]=1; break;
+     default: out[0]=0; break;
+    }
+    break;
+   case 7:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    if(((u32)*(u16 *)0x27ffdea <<25)>>31) out[0]=1; else out[0]=0;
+    break;
+   case 8:
+    out=M2C_FIELD(&data_0212fd34,s32 **,0xc);
+    out[0]=(*(volatile u32 *)0x27ffdec <<29)>>29;
+    out[1]=func_0200f634((*(volatile u32 *)0x27ffdec <<18)>>26);
+    out[2]=func_0200f634((*(volatile u32 *)0x27ffdec <<9)>>25);
+    out[3]=0;
+    if((*(volatile u32 *)0x27ffdec <<24)>>31) out[3]+=1;
+    if((*(volatile u32 *)0x27ffdec <<16)>>31) out[3]+=2;
+    if((*(volatile u32 *)0x27ffdec <<8)>>31) out[3]+=4;
+    break;
+   case 9:
+    if(M2C_FIELD(&data_0212fd34,s32 *,0x1c)==0) {
+     if(*M2C_FIELD(&data_0212fd34,s32 **,0xc)==1) {
+      if((((RTCStatus *)0x27ffdea)->bits.mode)!=4) {
+       M2C_FIELD(&data_0212fd34,s32 *,0x1c)++;
+       *(u16 *)0x27ffdea=(*(u16 *)0x27ffdea &~15)|4;
+       if(!func_0200f6fc()) { M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;result=3; }
+      }
+     } else if((((RTCStatus *)0x27ffdea)->bits.mode)!=0) {
+      M2C_FIELD(&data_0212fd34,s32 *,0x1c)++;
+      *(u16 *)0x27ffdea=*(u16 *)0x27ffdea &~15;
+      if(!func_0200f6fc()) { M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;result=3; }
+     }
+    } else M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;
+    break;
+   case 10:
+    if(M2C_FIELD(&data_0212fd34,s32 *,0x1c)==0) {
+     if(*M2C_FIELD(&data_0212fd34,s32 **,0xc)==1) {
+      if((((u32)*(u16 *)0x27ffdea <<25)>>31)==0) {
+       M2C_FIELD(&data_0212fd34,s32 *,0x1c)++;
+       *(u16 *)0x27ffdea=*(u16 *)0x27ffdea |64;
+       if(!func_0200f6fc()) { M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;result=3; }
+      }
+     } else if(((u32)*(u16 *)0x27ffdea <<25)>>31) {
+      M2C_FIELD(&data_0212fd34,s32 *,0x1c)++;
+      *(u16 *)0x27ffdea=*(u16 *)0x27ffdea &~64;
+      if(!func_0200f6fc()) { M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;result=3; }
+     }
+    } else M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;
+    break;
+   case 3: case 4: case 5: case 11: case 12: case 13: case 14: case 15: break;
+   default: M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0; result=4;break;
+  }
+ } else {
+  M2C_FIELD(&data_0212fd34,s32 *,0x1c)=0;
+  switch(status) {
+   case 1: result=4;break;
+   case 2: result=5;break;
+   case 3: result=1;break;
+   case 0: case 4: default: result=6;break;
+  }
+ }
+ if(M2C_FIELD(&data_0212fd34,s32 *,0x1c)==0) {
+  if(M2C_FIELD(&data_0212fd34,s32 *,4)) M2C_FIELD(&data_0212fd34,s32 *,4)=0;
+  callback=M2C_FIELD(&data_0212fd34,void (**)(s32,s32),8);
+  if(callback) { M2C_FIELD(&data_0212fd34,s32 *,8)=0; callback(result,M2C_FIELD(&data_0212fd34,s32 *,0x14)); }
+ }
+}
+
 s32 func_0200f634(u32 arg0) {
     s32 var_ip;
     s32 var_lr;
@@ -236,6 +365,13 @@ void func_0200f6a4(s32 arg0) {
     M2C_FIELD(&data_0212fd34, s32 *, 0x24) = arg0;
 }
 
+s32 func_0200f6b4(void) {
+extern s32 data_0212fd38;
+s32 state;
+do {state=data_0212fd38;} while(state==1);
+return state;
+}
+
 s32 func_0200f6cc(void) {
     s32 func_0200f70c(s32);
     return func_0200f70c(0x10);
@@ -249,8 +385,8 @@ s32 func_0200f6ec(void) {
     return func_0200f70c(0x12);
 }
 
-void func_0200f6fc(void) {
-    func_0200f70c(0x27);
+s32 func_0200f6fc(void) {
+    return func_0200f70c(0x27);
 }
 
 s32 func_0200f70c(s32 arg0) {

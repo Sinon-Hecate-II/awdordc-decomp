@@ -123,19 +123,11 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
     } while (p < end);
 }
 
+M2C_UNK func_ov001_021695e8(s32 *a0) { (void)a0; return 0; }
+
 void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
     M2C_UNK func_ov001_021695e8(s32 *);
-    s32 sp28;
-    s32 sp24;
-    s32 sp20;
-    s32 sp1C;
-    s32 sp18;
-    s32 sp14;
-    s32 sp10;
-    s32 spC;
-    s32 sp8;
-    s32 sp4;
-    s32 sp0;
+    s32 sp[11];
     s32 temp_r11_2;
     s32 temp_r11_3;
     s32 temp_r3;
@@ -209,12 +201,12 @@ void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
         return;
     }
     temp_r7_4 = M2C_FIELD(arg0, s32 *, 0x10);
-    sp0 = temp_r8 * (temp_r7_4 - temp_r3_3);
+    sp[0] = temp_r8 * (temp_r7_4 - temp_r3_3);
     var_r7_2 = (temp_r8 * ((temp_r7_4 * var_r6) + var_r5)) + M2C_FIELD(arg0, s32 *, 0);
-    sp8 = M2C_FIELD(arg5, s32 *, 4);
-    sp14 = (s32) temp_r4;
-    sp28 = arg4 - 1;
-    sp18 = (s32) temp_r2;
+    sp[2] = M2C_FIELD(arg5, s32 *, 4);
+    sp[5] = (s32) temp_r4;
+    sp[10] = arg4 - 1;
+    sp[6] = (s32) temp_r2;
     if (var_r10 >= 0) {
         var_r10 &= 7;
     }
@@ -223,31 +215,118 @@ void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
         var_r9 &= 7;
     }
     temp_r11_3 = var_r9 - (temp_r11_2 * 8);
-    sp20 = (s32) temp_r2_2;
+    sp[8] = (s32) temp_r2_2;
     temp_r6 = var_r10 - (temp_r3_3 * 8);
-    sp24 = (s32) M2C_FIELD(arg0, u8 *, 0xC);
-    sp1C = temp_r2_2 * *M2C_FIELD(*arg1, u8 **, 8);
+    sp[9] = (s32) M2C_FIELD(arg0, u8 *, 0xC);
+    sp[7] = temp_r2_2 * *M2C_FIELD(*arg1, u8 **, 8);
     if (var_r9 <= temp_r11_3) {
         return;
     }
     do {
         var_r5_2 = var_r10;
-        sp10 = var_r9;
+        sp[4] = var_r9;
         if (var_r10 > temp_r6) {
             do {
-                sp4 = var_r7_2;
-                spC = var_r5_2;
-                func_ov001_021695e8(&sp4);
+                sp[1] = var_r7_2;
+                sp[3] = var_r5_2;
+                func_ov001_021695e8(&sp[1]);
                 var_r5_2 -= 8;
                 var_r7_2 += temp_r8;
             } while (var_r5_2 > temp_r6);
         }
         var_r9 -= 8;
-        var_r7_2 += sp0;
+        var_r7_2 += sp[0];
     } while (var_r9 > temp_r11_3);
 }
 
 void func_ov001_02169bd0(void *a,s32 b){M2C_UNK func_02007e98(s32,s32,s32);s32 bits=M2C_FIELD(a,u8 *,12);u32 v; if(bits==4) {u32 t=b|b<<4;v=t|t<<8;}else{v=(u32)b|((u32)b<<8);}func_02007e98(v|v<<16,M2C_FIELD(a,s32 *,0),(M2C_FIELD(a,s32 *,4)*M2C_FIELD(a,s32 *,8))*((bits*64)/8));}
 
 void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,size;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);size=(bits<<6)/8;stride=size*M2C_FIELD(a,s32 *,16);width=size*M2C_FIELD(a,s32 *,4);i=0;if(M2C_FIELD(a,s32 *,8)<=0)return;do{func_02007e98(v,p,width);i++;p+=stride;}while(i<M2C_FIELD(a,s32 *,8));}
+
+void func_ov001_02169ca0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp);
+    s32 sp2C;
+    s32 sp28;
+    s32 sp24;
+    s32 sp20;
+    s32 sp1C;
+    s32 sp18;
+    s32 sp14;
+    s32 sp10;
+    s32 spC;
+    s32 temp_r1;
+    s32 temp_r1_2;
+    s32 temp_r1_3;
+    s32 temp_r1_4;
+    s32 temp_r2;
+    s32 temp_r3;
+    s32 temp_r6;
+    s32 temp_r6_2;
+    s32 var_r0;
+    s32 var_r0_2;
+    s32 var_r1;
+    s32 var_r1_2;
+    s32 var_r4;
+    s32 var_r7;
+    s32 var_r8;
+    u8 temp_r11;
+
+    temp_r11 = M2C_FIELD(arg0, u8 *, 0xC);
+    sp28 = arg2 + arg4;
+    sp24 = arg3 + arg5;
+    if (temp_r11 == 4) {
+        temp_r1 = arg1 | (arg1 * 0x10);
+        var_r1 = temp_r1 | (temp_r1 << 8);
+    } else {
+        var_r1 = arg1 | (arg1 << 8);
+    }
+    spC = arg3;
+    temp_r6 = temp_r11 << 6;
+    temp_r1_2 = spC & ~7;
+    sp2C = temp_r1_2;
+    temp_r2 = M2C_FIELD(arg0, s32 *, 0x10);
+    temp_r3 = arg2 & ~7;
+    sp18 = temp_r3;
+    sp14 = (s32) (temp_r6 + ((u32) (temp_r6 >> 2) >> 0x1D)) >> 3;
+    temp_r1_3 = (sp24 + 7) & ~7;
+    sp20 = temp_r1_3;
+    sp10 = temp_r2 * sp14;
+    sp1C = (sp14 * ((((s32) (temp_r1_2 + ((u32) (temp_r1_2 >> 2) >> 0x1D)) >> 3) * temp_r2) + ((s32) (temp_r3 + ((u32) (temp_r3 >> 2) >> 0x1D)) >> 3))) + M2C_FIELD(arg0, s32 *, 0);
+    temp_r6_2 = (sp28 + 7) & ~7;
+    if (sp2C >= temp_r1_3) {
+        return;
+    }
+    do {
+        if (sp2C >= spC) {
+            var_r8 = 0;
+        } else {
+            var_r8 = spC - sp2C;
+        }
+        var_r7 = sp1C;
+        var_r0 = sp24 - sp2C;
+        if (var_r0 > 8) {
+            var_r0 = 8;
+        }
+        var_r4 = sp18;
+        if (sp18 < temp_r6_2) {
+            do {
+                var_r0_2 = sp28 - var_r4;
+                if (var_r4 < arg2) {
+                    var_r1_2 = arg2 - var_r4;
+                } else {
+                    var_r1_2 = 0;
+                }
+                if (var_r0_2 > 8) {
+                    var_r0_2 = 8;
+                }
+                func_ov001_021694b0(var_r7, var_r1_2, var_r8, var_r0_2 - var_r1_2, var_r0 - var_r8, var_r1 | (var_r1 << 0x10), (s32) temp_r11);
+                var_r4 += 8;
+                var_r7 += sp14;
+            } while (var_r4 < temp_r6_2);
+        }
+        sp1C += sp10;
+        temp_r1_4 = sp2C + 8;
+        sp2C = temp_r1_4;
+    } while (temp_r1_4 < sp20);
+}
 

@@ -148,10 +148,11 @@ void func_0200e20c(s32 arg0) {
 
 s32 func_0200e21c(void) {
     extern s32 data_0212fcb0;
-    for (;;) {
-        s32 status = *(volatile s32 *)&data_0212fcb0;
-        if (status != 1) return status;
-    }
+    s32 status;
+    do {
+        status = *(volatile s32 *)&data_0212fcb0;
+    } while (status == 1);
+    return status;
 }
 
 s32 func_0200e234(void) {
@@ -437,6 +438,8 @@ void func_0200e8f4(M2C_UNK arg0) {
 
     } while (func_02009eb0(8, arg0, 0) != 0);
 }
+
+M2C_UNK func_0200e920(M2C_UNK a, M2C_UNK b, M2C_UNK c) { return (M2C_UNK)0; }
 
 s32 func_0200eb50(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 extern M2C_UNK data_0212fccc;

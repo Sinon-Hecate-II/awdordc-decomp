@@ -24,6 +24,10 @@ if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;
 return result;
 }
 
+M2C_UNK func_020b35d4(M2C_UNK arg0) {
+    return 0;
+}
+
 M2C_UNK func_020b38d0(M2C_UNK arg0) {
     M2C_UNK func_020b3038(M2C_UNK);
     M2C_UNK func_0208fe30(M2C_UNK);
@@ -161,3 +165,6 @@ void func_020b3c2c(M2C_UNK arg0) {
 void func_020b3c44(void) {
 
 }
+
+void func_020b3c48(s32 arg0) { (void)arg0; }
+

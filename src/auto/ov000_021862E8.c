@@ -12,6 +12,13 @@ for(i=1;i<5;i++){if(func_020d1938(i)!=0 && func_020d273c(M2C_FIELD(*gCurrentMap,
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=saved;
 }
 
+void func_ov000_0218639c(void) {
+}
+
+M2C_UNK func_ov000_02186624(u8 arg0, u8 arg1) {
+    (void)arg0; (void)arg1;
+}
+
 void func_ov000_02186940(void *arg0) {
     void func_ov000_021862e8();
     M2C_UNK func_ov000_02186624(u8, u8);
@@ -32,6 +39,8 @@ if(func_ov000_021a98e4((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)!=1)return 0;
 result= !(*(&data_ov000_021b5c0f+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))&32);
 return result;
 }
+
+void func_ov000_02186a18(void) { }
 
 s32 func_ov000_02186d94(s32 a, s32 b, s32 c) {
     extern void **gCurrentMap;
@@ -54,4 +63,6 @@ s32 func_ov000_02186d94(s32 a, s32 b, s32 c) {
     table = M2C_FIELD(&data_0212616c, s8 **, 0x64);
     return (table[(dataByte << 5) + idxByte] >= 0) ? 1 : 0;
 }
+
+s32 func_ov000_02186e64(s32 x, s32 y) { return 0; }
 

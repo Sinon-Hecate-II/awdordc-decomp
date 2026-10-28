@@ -369,6 +369,109 @@ void func_01ff8a8c(s32 x, s32 y, u32 attr, u16 *src) {
     } while (--count);
 }
 
+void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
+    extern void *gCur3DSpriteEngine;
+    extern u8 data_02101f94[];
+    void *engine;
+    u16 *src;
+    u16 count;
+    u16 *base;
+    u8 idx;
+    u16 *rec;
+    s32 stack8;
+    u16 flags;
+    s32 stack4;
+    s32 stack0;
+    s32 first;
+    s16 e3e;
+    u8 firstHi;
+    u16 u;
+    u8 uhi;
+    s32 m;
+    u8 dv;
+    u16 w;
+    u16 *field0ptr;
+    u16 e0val;
+    u32 shift;
+    s32 part;
+    s32 tmp;
+
+    engine = gCur3DSpriteEngine;
+    src = p5;
+    count = *src++;
+    base = *(u16 **)((u8 *)engine + 0x34);
+    idx = *((u8 *)engine + 0x48);
+    rec = base + (s32)idx * 4;
+    if (count == 0) {
+        return;
+    }
+    stack8 = p1 + ((p3 << 24) >> 24);
+    flags = p4;
+    stack4 = (s32)(flags & 0x3ff);
+    stack0 = (s32)(flags & 0xfc00);
+
+    engine = gCur3DSpriteEngine;
+    if (*((u8 *)engine + 0x48) >= 0x80) {
+        return;
+    }
+
+    while (count != 0) {
+        first = (s32)(u16)src[0];
+        {
+            s32 r7 = stack8 + ((first << 24) >> 24);
+            if (r7 > -64 && r7 <= 0xc0) {
+                engine = gCur3DSpriteEngine;
+                e3e = *(s16 *)((u8 *)engine + 0x3e);
+                firstHi = (u8)((first >> 14) & 0xff);
+                rec[0] = (u16)(((first | p3) & 0xff00) + (u8)(e3e + p1 + first + p3));
+
+                u = src[1];
+                uhi = (u8)((u >> 14) & 0xff);
+                m = (s32)(u & 0x1ff);
+                if (m & 0x100) {
+                    m |= 0xfe00;
+                }
+                dv = data_02101f94[(uhi + firstHi * 4) << 1];
+
+                m = -m - dv;
+                m = (s16)m;
+                m = p2 + m;
+                m = p0 + m;
+                m = *(s16 *)((u8 *)engine + 0x3c) + m;
+                m = m & 0x1ff;
+                rec[1] = (u16)(((u | (u16)p2) & 0xfe00) + m);
+
+                {
+                    u16 tsrc = src[1];
+                    u16 rv = rec[1];
+                    if (tsrc & 0x1000) {
+                        rv = (u16)(rv & ~0x1000);
+                    } else {
+                        rv = (u16)(rv | 0x1000);
+                    }
+                    rec[1] = rv;
+                }
+
+                w = src[2];
+                field0ptr = *(u16 **)((u8 *)engine + 0x00);
+                e0val = field0ptr[0];
+                shift = ((u32)e0val << 17) >> 30;
+                part = 0x3ff & (((s32)(w & dv)) >> (s32)shift);
+                tmp = stack4 + part;
+                tmp = tmp & 0x3ff;
+                tmp = (s32)(w & 0xfc00) + tmp;
+                rec[2] = (u16)(stack0 + tmp);
+
+                engine = gCur3DSpriteEngine;
+                rec += 4;
+                *((u8 *)engine + 0x48) = (u8)(*((u8 *)engine + 0x48) + 1);
+            }
+        }
+        src += 3;
+        count--;
+    }
+}
+
 void func_01ff8ddc(s32 a,s16 b,s16 c,s16 d,s16 e) {
  extern void *gCur3DSpriteEngine;
  s32 n=a*16;

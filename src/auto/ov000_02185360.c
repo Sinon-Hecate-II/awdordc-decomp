@@ -66,6 +66,10 @@ data_027e0a98[2]=dir;
 data_027e0a98+=4;data_027e0a94++;
 }
 
+M2C_UNK func_ov000_02185c20(M2C_UNK arg0, M2C_UNK arg1) {
+    return 0;
+}
+
 s32 func_ov000_02185fb8(u8 *a,u8 *b,s32 c){
  s32 func_0206409c(s32); s32 func_ov000_021a97e0(s32,u32); extern void **gCurrentMap;
  s32 dist,n;
@@ -74,3 +78,7 @@ s32 func_ov000_02185fb8(u8 *a,u8 *b,s32 c){
  if(b){if(!b)n=0;else n=((s32)b-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
  if(dist>c+(func_ov000_021a97e0(n,(u32)(b[0]<<26)>>26)+1))return 0;return 1;
 }
+
+void func_ov000_02186070(u8 a, s32 b) {
+}
+

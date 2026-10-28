@@ -1,6 +1,10 @@
 /* 16 functions from 0x02070B70 to 0x02071A64 (main), found by ds-decomp. */
 #include "common.h"
 
+double func_02070b70(double arg0, double arg1) { return 0.0; }
+
+float func_02070f24(float a, float b) { return a + b; }
+
 s32 func_02071140(void) {
     return 0x7FFFFFFF;
 }
@@ -31,6 +35,11 @@ s32 func_02071438(s32 arg0, s32 arg1) {
     M2C_ERROR(/* unknown instruction: mrs $r12, cpsr */);
     M2C_ERROR(/* unknown instruction: msr cpsr_f, $r12 */);
     return 0;
+}
+
+float func_02071564(float a, float b) {
+    (void)a; (void)b;
+    return 0.0f;
 }
 
 s32 func_0207191c(u32 arg0) {

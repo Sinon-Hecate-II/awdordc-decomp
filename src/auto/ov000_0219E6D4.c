@@ -158,6 +158,10 @@ s32 func_ov000_0219e948(void) {
     return var_r5;
 }
 
+s32 func_ov000_0219e9f4() {
+    return 0;
+}
+
 void func_ov000_0219f3fc(void) {
     void func_0208fb0c(s32, u8, u8);
     void func_020a67fc(u8, u8, u8);

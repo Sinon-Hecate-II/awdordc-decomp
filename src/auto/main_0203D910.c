@@ -1,6 +1,9 @@
 /* 19 functions from 0x0203D910 to 0x0203E908 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_0203d910(s32 a, s32 b) {
+}
+
 void func_0203db94(s32 arg0,s32 arg1,u8 *arg2) {
  s32 func_0203f3c0(void *,u8 *,s32); s32 func_0206abd8(void *,s32,s32);
  void func_0203f45c(s32,s32,s32,s32,s32 *,s32);

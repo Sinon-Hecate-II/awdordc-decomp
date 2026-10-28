@@ -5,6 +5,8 @@ void func_0202dfa8(void *);
 void func_0202e12c(M2C_UNK);
 void func_0202e02c(M2C_UNK,void *);
 
+s32 func_0202dbac(void *a, void *b, s32 c, s32 d, s32 e, s32 f) { (void)a;(void)b;(void)c;(void)d;(void)e;(void)f; return 0; }
+
 void func_0202de1c(void *arg0,s32 arg1) {
 void func_0202eed8(void *,s32);
 s32 saved=arg1;

@@ -2,6 +2,8 @@
 #include "common.h"
 #include "ov000_unit_entry.h"
 
+M2C_UNK func_ov000_021a3dac(void) { return 0; }
+
 s32 func_ov000_021a41f8(void){
 s32 func_020d2d18(u16,s32);u8 func_ov000_021a43a0(s32);s32 func_ov000_021a3dac(void);
 s32 func_ov000_021a6264(s32);s32 func_ov000_021a5ffc(s32);u8 func_ov000_021a88c8(s32);

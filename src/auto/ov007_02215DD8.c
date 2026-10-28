@@ -145,6 +145,14 @@ loop_outer:
     goto loop_outer;
 }
 
+s32 func_ov007_02216234() {
+    return 0;
+}
+
+void func_ov007_022167b8(s32 a, s32 b, s32 c, s32 d, s32 e) {
+    return;
+}
+
 void func_ov007_02216a74(void) {
 s32 func_ov007_02214e24(void);
 s32 func_ov007_02214d88(s32,s32);

@@ -60,6 +60,134 @@ loop:
     func_020b1c78(0);
 }
 
+void func_ov005_02213d94(void *arg0) {
+  void *func_ov005_02211a38(s32);
+  int func_ov005_0221298c(s16);
+  s32 func_ov005_02212118(void);
+  s32 func_ov005_022121a8(void);
+  M2C_UNK func_020aacf0(M2C_UNK);
+  M2C_UNK func_0208fe30(s32);
+  void func_020b21e0(void);
+  void func_020b2268(void);
+  M2C_UNK func_01ffa6fc(M2C_UNK);
+  void func_ov005_02212ef0(void);
+  extern void *data_ov005_02221300;
+  extern u16 *data_02101e84;
+
+  void *p;
+  void *main;
+  void *obj;
+  s16 r1, r3, r2, r0v;
+  s32 temp;
+  u32 base, value;
+  s16 a, b;
+  s32 flag;
+  s8 v, t;
+  u16 flags;
+
+  p = func_ov005_02211a38(M2C_FIELD(data_ov005_02221300, s8 *, 1));
+  if (M2C_FIELD(p, s16 *, 4) == 0) {
+    r1 = M2C_FIELD(p, s16 *, 2);
+    r3 = M2C_FIELD(p, s16 *, 0);
+    if (r3 != (r1 * 2)) {
+      temp = (r1 * 2) - r3;
+      if (temp < 0) temp = -temp;
+      r2 = (s16)(temp >> 1);
+      if (r2 == 0) r2 = 1;
+      r0v = M2C_FIELD(p, s16 *, 0);
+      if (r3 > (r1 * 2)) r0v = r0v - r2;
+      else r0v = r0v + r2;
+      M2C_FIELD(p, s16 *, 0) = r0v;
+    }
+    M2C_FIELD(p, s16 *, 4) = 1;
+    func_ov005_0221298c(M2C_FIELD(p, s16 *, 0));
+  } else {
+    M2C_FIELD(p, s16 *, 4) = 0;
+  }
+
+  if (M2C_FIELD(p, s16 *, 2) == 0) {
+    main = data_ov005_02221300;
+    obj = M2C_FIELD(main, void **, 0x58);
+    base = (u32)(M2C_FIELD(obj, u8 *, 0x59) << 28) >> 28;
+    base = base + 2;
+    value = base << 16;
+    M2C_FIELD(obj, u32 *, 0x40) = (M2C_FIELD(obj, u32 *, 0x40) & ~0x3fc0000) | (((value >> 16) << 24) >> 6);
+    M2C_FIELD(obj, u8 *, 0x5a) = 0;
+  } else {
+    main = data_ov005_02221300;
+    obj = M2C_FIELD(main, void **, 0x58);
+    base = (u32)(M2C_FIELD(obj, u8 *, 0x59) << 28) >> 28;
+    value = base << 16;
+    M2C_FIELD(obj, u32 *, 0x40) = (M2C_FIELD(obj, u32 *, 0x40) & ~0x3fc0000) | (((value >> 16) << 24) >> 6);
+    M2C_FIELD(obj, u8 *, 0x5a) = 0;
+  }
+
+  main = data_ov005_02221300;
+  obj = M2C_FIELD(main, void **, 0x5c);
+  base = (u32)(M2C_FIELD(obj, u8 *, 0x59) << 28) >> 28;
+  a = M2C_FIELD(p, s16 *, 8);
+  b = M2C_FIELD(p, s16 *, 2);
+  if (b == (s16)(a - 7)) base = base + 2;
+  value = base << 16;
+  M2C_FIELD(obj, u32 *, 0x40) = (M2C_FIELD(obj, u32 *, 0x40) & ~0x3fc0000) | (((value >> 16) << 24) >> 6);
+  M2C_FIELD(obj, u8 *, 0x5a) = 0;
+
+  main = data_ov005_02221300;
+  func_020aacf0(M2C_FIELD(main, void **, 0x50));
+  func_020aacf0(M2C_FIELD(main, void **, 0x54));
+  func_020aacf0(M2C_FIELD(main, void **, 0x58));
+  func_020aacf0(M2C_FIELD(main, void **, 0x5c));
+  func_020aacf0(M2C_FIELD(main, void **, 0x60));
+
+  main = data_ov005_02221300;
+  obj = M2C_FIELD(main, void **, 0x58);
+  obj = M2C_FIELD(obj, void **, 0x64);
+  flag = 0;
+  v = (s8)M2C_FIELD(obj, s8 *, 0x0b);
+  if (v == 1) flag = 1;
+  else if (M2C_FIELD(M2C_FIELD(main, void **, 0x58), u8 *, 0x59) & 0x10) {
+    if (M2C_FIELD(obj, s8 *, 0x0c) == 1) flag = 1;
+  }
+  if (flag) { func_ov005_02212118(); return; }
+
+  main = data_ov005_02221300;
+  obj = M2C_FIELD(main, void **, 0x5c);
+  obj = M2C_FIELD(obj, void **, 0x64);
+  flag = 0;
+  v = (s8)M2C_FIELD(obj, s8 *, 0x0b);
+  if (v == 1) flag = 1;
+  else if (M2C_FIELD(M2C_FIELD(main, void **, 0x5c), u8 *, 0x59) & 0x10) {
+    if (M2C_FIELD(obj, s8 *, 0x0c) == 1) flag = 1;
+  }
+  if (flag) { func_ov005_022121a8(); return; }
+
+  flags = *data_02101e84;
+  main = data_ov005_02221300;
+  if (flags & 0x2) {
+    func_0208fe30(0x1000f);
+    func_020b21e0();
+    func_020b2268();
+    func_01ffa6fc(arg0);
+    return;
+  }
+  if (flags & 0x100) {
+    t = M2C_FIELD(main, s8 *, 1);
+    if (t == 2) t = 0; else t = (s8)(t + 1);
+    M2C_FIELD(main, s8 *, 1) = t;
+    func_0208fe30(0x10020);
+    func_ov005_02212ef0();
+    return;
+  }
+  if (flags & 0x200) {
+    t = M2C_FIELD(main, s8 *, 1);
+    if (t == 0) t = 2; else t = (s8)(t - 1);
+    M2C_FIELD(main, s8 *, 1) = t;
+    func_0208fe30(0x10020);
+    func_ov005_02212ef0();
+    return;
+  }
+}
+
 void func_ov005_02214094(void) {
     M2C_UNK func_020af1e4();
     M2C_UNK func_020842d4();

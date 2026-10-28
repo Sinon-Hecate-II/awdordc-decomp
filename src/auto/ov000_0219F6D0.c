@@ -224,6 +224,9 @@ void func_ov000_0219fd54(void) {
     func_02091c20(0x11, 1);
 }
 
+void func_ov000_0219fdc8(void) {
+}
+
 void func_ov000_021a01c0(void) {
 extern u8 *data_ov000_021df578;
 extern u8 data_ov000_021dfd94[];
@@ -277,3 +280,8 @@ void func_ov000_021a029c(void) {
     func_ov000_021a01c0();
     func_ov000_021a0204();
 }
+
+s32 func_ov000_021a02ac(void) {
+    return 0;
+}
+

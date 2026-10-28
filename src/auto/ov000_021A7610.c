@@ -122,4 +122,5 @@ s32 func_ov000_021a8438(s32 index) {
  reject:data_ov000_021df8ac[best]=0;
  }
 }
-
+void func_ov000_021a7610(void) {
+}

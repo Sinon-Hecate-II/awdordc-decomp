@@ -4,7 +4,7 @@ struct BytePair_0205 { u8 v[2]; };
 struct Packet_0205 { u8 a,b; u16 c; s32 d; };
 
 s32 func_0205cb68(s32 a, s32 b, s32 c) {
-    s32 func_0205d228(s32,s32,s32,void *,s32);
+    s32 func_0205d228(void *,s32,s32,void *,s32);
     extern u8 data_020ff818[];
     u8 v[3];
     v[2]=0x68;
@@ -50,9 +50,13 @@ void func_0205cc90(s32 *arg0) {
 s32 func_0205cca0(void *p,s32 a,s16 b) {
 s32 *func_02048ff8(s32,void *);
 s32 data[40]; void *ptr; s32 *res;
-data[0]=a; M2C_FIELD(data,s16 *,4)=b; ptr=data;
+data[0]=a; M2C_FIELD(data,s16 *,4)=(s16)b; ptr=data;
 res=func_02048ff8(M2C_FIELD(p,s32 *,12),&ptr);
 if(res)return *res;return 0;
+}
+
+s32 func_0205ccd8(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
+    return 0;
 }
 
 void func_0205cef8(void *arg0) {
@@ -75,9 +79,114 @@ void func_0205cf3c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x20) = arg1;
 }
 
-void func_0205cf44(void) {
+void *func_0205cf44(void) {
     M2C_UNK func_02037794(M2C_UNK);
-    func_02037794(0xA0);
+    return func_02037794(0xA0);
+}
+
+s32 func_0205cf54(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
+    s32 func_0205cca0(void *, s32, s16);
+    void *func_0205cf44(void);
+    void func_02065210(void *, s32, s32);
+    s32 func_02049208(void);
+    s32 func_02059cf8(void *, s32);
+    s32 func_02048558(s32, s32, void (*)(void *));
+    void func_02048eac(void *, void **);
+    s32 func_020377c4(void *);
+    s32 func_0204861c(s32);
+
+    void *alloc = 0;
+    s32 timestamp;
+    s32 result;
+
+    if (((s32 (*)(void *, s32, s16, s32))func_0205cca0)(arg0, arg2, (s16)arg3, 0) != 0) {
+        return 5;
+    }
+
+    alloc = func_0205cf44();
+    if (alloc == 0) {
+        goto fail;
+    }
+
+    func_02065210(alloc, 0, 0xA0);
+    *(s32 *)alloc = arg2;
+    *(u16 *)((u8 *)alloc + 4) = (u16)arg3;
+    *(void **)((u8 *)alloc + 8) = arg0;
+    timestamp = func_02049208();
+    *(s32 *)((u8 *)alloc + 0x1C) = timestamp;
+    *(s32 *)((u8 *)alloc + 0x88) = *(s32 *)((u8 *)alloc + 0x1C);
+    *(u16 *)((u8 *)alloc + 0x64) = 0;
+    *(u16 *)((u8 *)alloc + 0x66) = 0;
+
+    if (func_02059cf8((u8 *)alloc + 0x44, *(s32 *)((u8 *)arg0 + 0x3C)) == 0) {
+        goto fail;
+    }
+    if (func_02059cf8((u8 *)alloc + 0x50, *(s32 *)((u8 *)arg0 + 0x38)) == 0) {
+        goto fail;
+    }
+
+    result = func_02048558(0x10, 0x40, 0);
+    *(s32 *)((u8 *)alloc + 0x5C) = result;
+    if (*(s32 *)((u8 *)alloc + 0x5C) == 0) {
+        goto fail;
+    }
+
+    result = func_02048558(0x10, 0x40, 0);
+    *(s32 *)((u8 *)alloc + 0x60) = result;
+    if (*(s32 *)((u8 *)alloc + 0x60) == 0) {
+        goto fail;
+    }
+
+    result = func_02048558(0x4, 0x2, 0);
+    *(s32 *)((u8 *)alloc + 0x98) = result;
+    if (*(s32 *)((u8 *)alloc + 0x98) == 0) {
+        goto fail;
+    }
+
+    result = func_02048558(0x4, 0x2, 0);
+    *(s32 *)((u8 *)alloc + 0x9C) = result;
+    if (*(s32 *)((u8 *)alloc + 0x9C) == 0) {
+        goto fail;
+    }
+
+    func_02048eac(*(void **)((u8 *)arg0 + 0xC), &alloc);
+    result = func_0205cca0(arg0, arg2, (s16)arg3);
+    *(s32 *)arg1 = result;
+    if (result != 0) {
+        return 0;
+    }
+
+    if (alloc == 0) {
+        goto done;
+    }
+
+    func_020377c4(*(void **)((u8 *)alloc + 0x44));
+    func_020377c4(*(void **)((u8 *)alloc + 0x50));
+
+    result = *(s32 *)((u8 *)alloc + 0x5C);
+    if (result != 0) {
+        func_0204861c(result);
+    }
+    result = *(s32 *)((u8 *)alloc + 0x60);
+    if (result != 0) {
+        func_0204861c(result);
+    }
+    result = *(s32 *)((u8 *)alloc + 0x98);
+    if (result != 0) {
+        func_0204861c(result);
+    }
+    result = *(s32 *)((u8 *)alloc + 0x9C);
+    if (result != 0) {
+        func_0204861c(result);
+    }
+
+    func_020377c4(alloc);
+
+done:
+    return 1;
+
+fail:
+    return 0;
 }
 
 s32 func_0205d164(s32 arg) {
@@ -107,6 +216,72 @@ s32 func_0205d164(s32 arg) {
         }
     }
     return 0;
+}
+
+s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
+    void func_0205d70c(M2C_UNK **, s32 *);
+    s32 func_0204955c(s32);
+    s32 func_02049824(s32, s32, s32, s32, void *, s32);
+    s32 func_02049900(s32);
+    s32 func_0205c244(void *, s32, s32);
+    void func_0205d49c(void *);
+    s32 func_0205cca0(void *, s32, s16);
+    s32 func_0205a614(void *, void *, s32, s32, s32, s32, s32, s32);
+
+    struct Packet_0205 pkt;
+    struct Packet_0205 *pp;
+    s32 res;
+    s32 combined;
+
+    func_0205d70c((M2C_UNK **)&arg3, &arg4);
+
+    if (func_0204955c(*(s32 *)p) == 0) {
+        return 1;
+    }
+
+    pp = &pkt;
+    combined = ((arg2 >> 8) & 0xff) | ((arg2 << 8) & 0xff00);
+
+    pp->d = 0;
+    *(s32 *)pp = 0;
+    pp->c = (u16)combined;
+    pp->b = 2;
+    pp->d = arg1;
+
+    res = func_02049824(*(s32 *)p, (s32)arg3, arg4, 0, pp, 8);
+    if (res == -1) {
+        s32 r = func_02049900(*(s32 *)p);
+        if (r == -15) {
+            s32 c = func_0205c244(p, arg1, arg2);
+            if (c != 0) {
+                goto success;
+            }
+            return 0;
+        }
+        if (r == -42 || r == -6) {
+            return 1;
+        }
+        if (r == -35) {
+            goto success;
+        }
+        func_0205d49c(p);
+        return 0;
+    }
+
+    if (*(s32 *)((u8 *)p + 0x28) == 0) {
+        goto success;
+    }
+
+    {
+        void *cca = (void *)func_0205cca0(p, arg1, arg2);
+        s32 t = func_0205a614(p, cca, arg1, arg2, 0, (s32)arg3, arg4, 1);
+        if (t == 0) {
+            return 0;
+        }
+    }
+
+success:
+    return 1;
 }
 
 s32 func_0205d3d0(void **a,void **b) {
@@ -340,7 +515,7 @@ s32 func_0205d920(M2C_UNK arg0) {
 void func_0205d944(s32 a,s32 b,s32 c,s32 d,s32 e) {
 s32 func_02049824(s32,s32,s32,s32,void *,s32);
 struct Packet_0205 p;
-p.d=b; c=((c>>8)&255)|((c<<8)&0xff00); p.b=2; p.c=c;
+p.d=b; p.c=((c>>8)&255)|((c<<8)&0xff00); p.b=2;
 func_02049824(a,d,e,0,&p,8);
 }
 

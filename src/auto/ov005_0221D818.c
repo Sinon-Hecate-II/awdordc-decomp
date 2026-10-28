@@ -44,6 +44,38 @@ void func_ov005_0221e214(void) {
     func_02086370();
 }
 
+#pragma opt_strength_reduction off
+void func_ov005_0221e22c(M2C_UNK arg0){
+ s32 func_020cd1e4(void); void *func_01ffa42c(M2C_UNK *,M2C_UNK);
+ M2C_UNK func_0200bc5c(M2C_UNK *);
+ void *func_02090eb8(M2C_UNK *,s32,s32,s32,u16,s32,void *);
+ void func_ov005_0221a38c(void *); s32 RandomIntRange(s32,s32);
+ void func_ov005_02219fa0(s32,s32,s32);
+ extern M2C_UNK data_ov005_02220db8,data_ov005_02220f90,data_ov005_02220a4c,data_ov005_02220a78;
+ extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
+ extern u16 data_02168f14; extern u8 data_0215c334[];
+ void *result,*saved; s32 i,x,y,flag;
+ if(!func_020cd1e4())return;
+ result=func_01ffa42c(&data_ov005_02220db8,arg0);
+ if(result){
+ M2C_FIELD(result,void **,0)=&data_ov005_02220f90;
+ M2C_FIELD(result,u8 *,0x44)=0;M2C_FIELD(result,u8 *,0x45)=0;M2C_FIELD(result,u8 *,0x46)=0;M2C_FIELD(result,u8 *,0x47)=0;
+ M2C_FIELD(result,u16 *,0x48)=0;M2C_FIELD(result,u16 *,0x4a)=0;M2C_FIELD(result,u16 *,0x4c)=0;M2C_FIELD(result,u16 *,0x4e)=0;
+ M2C_FIELD(result,u16 *,0x50)=0;M2C_FIELD(result,u16 *,0x52)=0;M2C_FIELD(result,u16 *,0x54)=0;M2C_FIELD(result,u16 *,0x56)=0;
+ M2C_FIELD(result,s32 *,0x40)=0;M2C_FIELD(result,s32 *,0x3c)=432;
+ func_0200bc5c(&data_ov005_02220a4c);
+ saved=gCur3DSpriteEngine;
+ for(i=0;i<2;i++){
+ gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+ M2C_FIELD(result+i*4,void **,0x34)=func_02090eb8(&data_ov005_02220a78,0,0,0,(u16)(0xa000|((472 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&1023)),0,result);
+ }
+ gCur3DSpriteEngine=saved;func_ov005_0221a38c(result);
+ }
+ if(((u32)(data_02168f14<<29)>>29)!=1)flag=1;else flag=0;
+ if((flag&255) && data_0215c334[3]!=4)return;
+ for(i=0;i<8;i++){x=RandomIntRange(-48,-16);y=RandomIntRange(288,352);func_ov005_02219fa0(x,y,RandomIntRange(0,3));}
+ for(i=0;i<16;i++){x=RandomIntRange(-32,128);y=RandomIntRange(400,432);func_ov005_02219fa0(x,y,RandomIntRange(0,3));}
+}
 /* Initializes ov005's scene state when the system is ready and the global mode is not state 1. */
 void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);

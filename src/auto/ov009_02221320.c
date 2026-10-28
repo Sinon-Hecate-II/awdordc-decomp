@@ -113,6 +113,10 @@ void func_ov009_02221580(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x40) = 0;
 }
 
+void func_ov009_022215a4(void *arg0) {
+    (void)arg0;
+}
+
 void func_ov009_02221a94(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_ov009_02224d1c(s32);

@@ -4,6 +4,24 @@
 typedef struct { u32 low:16, mode:3, a:1, b:1, c:1, d:2, e:2, high:6; } Flags0208;
 typedef struct { u32 low:10, middle:11, high:11; } Flags0208B;
 
+void func_0208b884(void *arg0) {
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c8;
+    extern void *data_027e00c4;
+    M2C_UNK func_0209b9a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_01ff90e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+
+    void *saved = gCur3DSpriteEngine;
+    s32 r9;
+    for (r9 = 0; r9 < 2; r9++) {
+        if (r9 == 0) gCur3DSpriteEngine = data_027e00c8;
+        else gCur3DSpriteEngine = data_027e00c4;
+        func_0209b9a8(0, 0, 0, 0);
+    }
+    gCur3DSpriteEngine = saved;
+    (void)arg0;
+}
+
 void func_0208bc00(void) {
     M2C_UNK func_0208b778();
     func_0208b778();
@@ -172,6 +190,10 @@ s32 func_0208c214(void *arg0) {
     if (temp_r0 == 0) return temp_r0;
     func_020d4704();
     return func_02094758();
+}
+
+M2C_UNK func_0208c248(void) {
+    return 0;
 }
 
 s32 func_0208c49c(void *arg0) {

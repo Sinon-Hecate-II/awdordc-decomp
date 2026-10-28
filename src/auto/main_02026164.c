@@ -298,10 +298,8 @@ void func_0202667c(u16 *dst, u16 *src, s32 n) {
     }
 }
 
-s32 func_020267b0(u16 *arg0) {
-    if (*(volatile u16 *)arg0) {
-    }
-    return 0;
+u64 func_020267b0(u16 *arg0) {
+    return (u64)*arg0 << 32;
 }
 
 s32 func_020267bc(volatile u16 *arg0) {
@@ -311,7 +309,9 @@ s32 func_020267bc(volatile u16 *arg0) {
 }
 
 s32 func_020267cc(volatile u16 *arg0) {
-    return (arg0[0], (arg0[-1] << 0x10) | arg0[-2]);
+    if (arg0[0]) {
+    }
+    return (arg0[-1] << 0x10) | arg0[-2];
 }
 
 s32 func_020267e0(void *arg0) {
@@ -325,40 +325,41 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     void func_02026558(u16 *, u16 *, u16 *, s32);
     void func_0202667c(u16 *, u16 *, s32);
     void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
-    extern void *(*data_021372a4)(s32);
+    extern u16 *(*data_021372a4)(s32);
     extern void (*data_021372d0)(void *);
 
-    void *temp_r4;
-    u16 *temp_r5;
     u32 var_r6;
-    s32 sp8;
+    u16 *temp_r4;
+    u16 *temp_r5;
+    u32 sp8;
     s32 temp_r11;
 
-    sp8 = (s32)arg1;
+    sp8 = (u32)arg1;
     temp_r4 = data_021372a4(arg3 * 8);
     if (temp_r4 == 0) {
         return;
     }
-    temp_r5 = (u16 *)temp_r4 + arg3;
-    func_02007f8c((u8 *)arg0 + 2, 0, (u32)((arg3 - 1) * 2));
+    temp_r5 = temp_r4 + arg3;
+    func_02007f8c((u8 *)(arg0 + 1), 0, (u32)((arg3 - 1) * 2));
     *arg0 = 1;
     var_r6 = (u32)((arg3 - func_02026244(arg2, arg3)) * 16);
-    while (var_r6 < (u32)(arg3 * 16)) {
-        if (arg2[arg3 - ((s32)var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
+    for (; var_r6 < (u32)(arg3 * 16); var_r6++) {
+        if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
             func_02008048(sp8, (s32)arg0, arg3 * 2);
+            var_r6++;
+            break;
         }
-        var_r6 += 1;
     }
     if (var_r6 < (u32)(arg3 * 16)) {
         temp_r11 = arg3 * 2;
         do {
-            func_0202667c((u16 *)temp_r4, arg0, arg3);
+            func_0202667c(temp_r4, arg0, arg3);
             func_02008048((s32)temp_r4, (s32)arg0, temp_r11);
             if (arg4 != 0) {
                 func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);
             }
-            if (arg2[arg3 - ((s32)var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
-                func_02026558((u16 *)temp_r4, arg0, (u16 *)sp8, arg3);
+            if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
+                func_02026558(temp_r4, arg0, (u16 *)sp8, arg3);
                 func_02008048((s32)temp_r4, (s32)arg0, temp_r11);
                 if (arg4 != 0) {
                     func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);

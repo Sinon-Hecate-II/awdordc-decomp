@@ -42,6 +42,8 @@ void func_0200112c(s32 *arg0,s32 arg1,s32 arg2) {
 arg0[0]=arg2; arg0[1]=arg1; arg0[2]=0; arg0[3]=-arg1; arg0[4]=arg2; arg0[5]=0; arg0[6]=0; arg0[7]=0; arg0[8]=4096; arg0[9]=0; arg0[10]=0; arg0[11]=0;
 }
 
+void func_02001148(void *arg0, void *arg1, void *arg2) { (void)arg0; (void)arg1; (void)arg2; }
+
 void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     s32 sp18[3];
     s32 sp0c[3];
@@ -102,6 +104,72 @@ arg1[11]=(s32)(((long long)arg4*arg0[11])>>12);
 if(arg0!=arg1) { s32 a=arg0[13], b=arg0[12]; arg1[12]=b; arg1[13]=a; a=arg0[15]; b=arg0[14]; arg1[14]=b; arg1[15]=a; }
 }
 
+void func_02001748(void *a, void *b, void *c) { (void)a;(void)b;(void)c; }
+
+u64 func_02001fd4(void);
+#pragma opt_strength_reduction off
+void func_02001dac(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p) {
+    s64 t1;
+    s64 q1;
+    s64 t2;
+    s64 q2;
+    s64 t3;
+    s64 q3;
+
+    func_02002030(d - c);
+
+    p[1] = 0;
+    p[2] = 0;
+    p[3] = 0;
+    p[4] = 0;
+    p[6] = 0;
+    p[7] = 0;
+    p[8] = 0;
+    p[9] = 0;
+    p[11] = 0;
+    p[15] = g;
+
+    t1 = (s64)func_02001fd4();
+
+    *(volatile s32 *)0x04000290 = 0;
+    *(volatile s32 *)0x04000294 = 0x1000;
+    *(volatile s32 *)0x04000298 = a - b;
+    *(volatile s32 *)0x0400029c = 0;
+
+    if (g != 0x1000) {
+        q1 = ((s64)t1 * g) / 0x1000;
+    } else {
+        q1 = t1;
+    }
+    p[0] = (s32)(((q1 << 13) + 0x80000000ULL) >> 32);
+
+    t2 = (s64)func_02001fd4();
+
+    *(volatile s32 *)0x04000290 = 0;
+    *(volatile s32 *)0x04000294 = 0x1000;
+    *(volatile s32 *)0x04000298 = e - f;
+    *(volatile s32 *)0x0400029c = 0;
+
+    if (g != 0x1000) {
+        q2 = ((s64)t2 * g) / 0x1000;
+    } else {
+        q2 = t2;
+    }
+    p[5] = (s32)(((q2 << 13) + 0x80000000ULL) >> 32);
+
+    t3 = (s64)func_02001fd4();
+
+    if (g != 0x1000) {
+        q3 = ((s64)t3 * g) / 0x1000;
+    } else {
+        q3 = t3;
+    }
+
+    p[10] = (s32)(((q3 << 13) + 0x80000000ULL) >> 32);
+    p[12] = (s32)(((q1 * (-(c + d))) + 0x80000000ULL) >> 32);
+    p[13] = (s32)(((q2 * (-(a + b))) + 0x80000000ULL) >> 32);
+    p[14] = (s32)(((q3 * (e + f)) + 0x80000000ULL) >> 32);
+}
 void func_02001fb4(void) {
     M2C_UNK func_02001ff8();
     M2C_UNK func_02002060();

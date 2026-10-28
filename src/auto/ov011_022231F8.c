@@ -4,6 +4,8 @@ typedef struct { s32 words[5]; } ContextTemplate;
 extern ContextTemplate data_ov011_02227f28;
 extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
 
+M2C_UNK func_ov011_022231f8() { return 0; }
+
 void func_ov011_02223b70(s32 unused,s32 value,u32 mode) {
 void func_02082a8c(void*,void*);
 ContextTemplate temp=data_ov011_02227f28;

@@ -15,6 +15,11 @@ void func_ov001_02173fa4(void *arg0);
 void func_ov001_02174018(void *arg0);
 void func_ov001_0217408c(int arg0);
 
+void func_ov001_0217332c(void) { return; }
+
+void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3) {
+}
+
 void func_ov001_021737d8(s8 arg0) {
     s32 var_r4;
     s32 var_r5;
@@ -100,6 +105,10 @@ void func_ov001_02173924(void) {
     func_ov001_0218a474(M2C_FIELD(data_ov001_02193d1c, s32 *, 0x114), -1, 2);
     temp_ip = M2C_FIELD(data_ov001_02193d1c, s8 *, 0x121) * 2;
     func_ov001_0218a384(M2C_FIELD(data_ov001_02193d1c, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
+}
+
+M2C_UNK func_ov001_02173a00(M2C_UNK arg0) {
+    return 0;
 }
 
 void func_ov001_02173e38(void *arg0) {

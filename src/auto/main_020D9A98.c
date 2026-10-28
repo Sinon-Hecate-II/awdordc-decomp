@@ -1,6 +1,11 @@
 /* 19 functions from 0x020D9A98 to 0x020DAA90 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020d9a98(void *arg0) {
+    (void)arg0;
+    return;
+}
+
 void func_020d9d5c(void *arg0) {
     M2C_UNK func_01ffa8c4(void *, u8);
     s32 func_020d4810();
@@ -227,6 +232,126 @@ void func_020da3c8(void *arg0) {
 
 void func_020da40c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+
+void func_020da480(void *arg0) {
+    M2C_UNK func_02084a40(void);
+    M2C_UNK func_02086330(void);
+    M2C_UNK func_02082340(M2C_UNK, void *);
+    M2C_UNK func_02091d4c(M2C_UNK);
+    M2C_UNK func_01ff9ce8(M2C_UNK);
+    M2C_UNK func_0200bc5c(void *);
+    M2C_UNK func_020e3218(void *);
+    M2C_UNK func_020814e4(void);
+    M2C_UNK func_02081590(M2C_UNK, void *);
+    M2C_UNK func_0208116c(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_02081528(void);
+    M2C_UNK func_020ae22c(M2C_UNK);
+    M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_01ff9dd8(M2C_UNK);
+    M2C_UNK func_020d47f0(void);
+    extern void **gCur3DSpriteEngine;
+    extern void **data_027e00c8;
+    extern void *data_027e00bc;
+    extern u8 data_0212c5f2[];
+    extern u8 data_0212c5f0[];
+    extern u8 data_0212d1f4[];
+    extern u8 data_0212d1fc[];
+    extern u8 data_0212d20c[];
+    extern u8 data_0212d218[];
+    extern u8 data_0212d224[];
+    extern u8 data_0212d234[];
+    extern void **data_027e00c4;
+
+    void *savedEngine;
+    void *unitStruct;
+    void *tmpPtr;
+    void *st;
+    u16 *pcl;
+    M2C_UNK r0v;
+
+    func_02084a40();
+    func_02086330();
+
+    unitStruct = *(void **)((u8 *)arg0 + 0x68);
+    *(u16 *)((u8 *)unitStruct + 0xe) = 0;
+    *(u16 *)((u8 *)unitStruct + 0x10) = 0;
+    *(u16 *)((u8 *)unitStruct + 0xc) = 0xc;
+    *(u16 *)((u8 *)unitStruct + 0x2) = *(u16 *)((u8 *)unitStruct + 0x4);
+
+    tmpPtr = data_027e00bc;
+    *(u16 *)tmpPtr = (u16)(*(u16 *)tmpPtr & ~0x8);
+
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c8;
+
+    func_02082340(1, data_0212c5f2);
+    func_02082340(0, data_0212c5f0);
+
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl |= 0x10;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl |= 0x20;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl |= 0x40;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl &= ~0x80;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl |= 0x100;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)((u8 *)st + 0x12);
+    *pcl &= ~0xc0;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *((u8 *)pcl + 0x51) = 0;
+    *((u8 *)pcl + 0x52) = 0;
+    *((u8 *)pcl + 0x53) = 0;
+    ((u8 *)*gCur3DSpriteEngine)[0x46] |= 2;
+
+    func_02091d4c(9);
+    func_01ff9ce8(0);
+    func_0200bc5c(data_0212d1f4);
+    r0v = func_020e3218(data_0212d1fc);
+    (void)r0v;
+    func_020814e4();
+    func_02081590(func_020e3218(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
+
+    func_0208116c(data_0212d218, 0xa0, 0x80);
+    ((u8 *)*gCur3DSpriteEngine)[0x46] |= 1;
+
+    r0v = func_020e3218(data_0212d224);
+    func_02081590(r0v, (void *)((u8 *)*(void **)((u8 *)*gCur3DSpriteEngine + 0x1c) + 0x7100));
+
+    func_0208116c(data_0212d234, 0x2c0, 0x20);
+    func_02081528();
+    r0v = func_020ae22c(9);
+    func_0208ca2c(0x1000, 1, r0v, 2);
+
+    gCur3DSpriteEngine = data_027e00c4;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *pcl |= 0x10;
+    *pcl |= 0x20;
+    *pcl |= 0x40;
+    *pcl &= ~0x80;
+    *pcl |= 0x100;
+    pcl = (u16 *)((u8 *)st + 0x12);
+    *pcl &= ~0xc0;
+    st = *gCur3DSpriteEngine;
+    pcl = (u16 *)st;
+    *((u8 *)pcl + 0x51) = 0;
+    *((u8 *)pcl + 0x52) = 0;
+    *((u8 *)pcl + 0x53) = 0;
+
+    func_01ff9ce8(0);
+    func_01ff9dd8(0);
+    gCur3DSpriteEngine = savedEngine;
+    func_020d47f0();
+}
 
 void func_020da8e4(s32,void *);
 void func_020da948(s32,M2C_UNK,u32,void *);

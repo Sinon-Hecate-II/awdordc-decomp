@@ -1,6 +1,10 @@
 /* 21 functions from 0x021E3210 to 0x021E41AC (ov002), found by ds-decomp. */
 #include "common.h"
 
+void func_ov002_021e3210(void *arg0) {
+    (void)arg0;
+}
+
 void func_ov002_021e3578(void *arg0) {
     s8 func_ov002_021e30d0(void *);
     extern u8 gPlayerSettings;

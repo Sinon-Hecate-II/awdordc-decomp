@@ -4,6 +4,10 @@
 extern s32 data_02168fd0[];
 extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_0212d704, data_0212d714, data_0212d724, data_0212d734;
 
+M2C_UNK func_020e24c0(M2C_UNK arg0) { return 0; }
+
+M2C_UNK func_020e2a2c(M2C_UNK arg0) { return 0; }
+
 void *func_020e2f9c(void *arg0) {
  M2C_UNK func_02082040();
  M2C_UNK func_020e4ca0();

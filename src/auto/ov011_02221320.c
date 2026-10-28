@@ -17,7 +17,7 @@ s32 func_ov011_02221338(s32 arg0) {
     return arg0;
 }
 
-void func_ov011_0222134c(void) {
+void func_ov011_0222134c(void *arg0) {
     M2C_UNK func_020822b8(u16 *);
     extern s32 data_027e00c4;
     extern s32 data_027e00c8;
@@ -35,6 +35,67 @@ void func_ov011_0222134c(void) {
     gCur3DSpriteEngine = data_027e00c4;
     func_020822b8((u16 *)&second);
     gCur3DSpriteEngine = temp_r4;
+}
+
+void func_ov011_0222140c(void *arg0) {
+    M2C_UNK func_02082c84(void);
+    M2C_UNK func_020026d8(s32);
+    M2C_UNK func_02003124(s32);
+    M2C_UNK func_020031cc(s32);
+    M2C_UNK func_02002968(s32);
+    M2C_UNK func_02002ab8(s32);
+    M2C_UNK func_0200323c(s32);
+    M2C_UNK func_020032bc(s32);
+    M2C_UNK func_020aca8c(void);
+    M2C_UNK func_02082770(void);
+    M2C_UNK func_01ff9b38(void);
+    void func_ov011_0222134c(void *);
+    void func_ov011_0222161c(void *);
+
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c4;
+    extern s32 data_027e00c8;
+
+    s32 saved;
+    s32 i;
+
+    func_02082c84();
+    func_020026d8(3);
+    func_02003124(4);
+    func_020031cc(8);
+    func_02002968(0x10);
+    func_02002ab8(0x60);
+    func_0200323c(0x80);
+    func_020032bc(0x100);
+    func_ov011_0222134c(arg0);
+
+    saved = gCur3DSpriteEngine;
+    for (i = 0; i < 2; i++) {
+        if (i == 0) {
+            gCur3DSpriteEngine = data_027e00c8;
+        } else {
+            gCur3DSpriteEngine = data_027e00c4;
+        }
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x10;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x20;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x40;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x80;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x100;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x200;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x400;
+        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x800;
+        *(volatile u16 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x12) &= (u16)~0xC0;
+        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x51) = 0;
+        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x52) = 0;
+        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x53) = 0;
+        *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
+        func_020aca8c();
+        func_02082770();
+        func_01ff9b38();
+    }
+    gCur3DSpriteEngine = saved;
+    *((u8 *)arg0 + 0x38) = 0;
+    func_ov011_0222161c(arg0);
 }
 
 void func_ov011_0222161c(void *arg0) {

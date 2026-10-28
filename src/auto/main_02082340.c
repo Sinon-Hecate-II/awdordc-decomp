@@ -84,6 +84,54 @@ void func_02082700(void) {
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x46) = 0;
 }
 
+void func_02082770(void) {
+    extern void **gCur3DSpriteEngine;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    u16 *volatile sp0;
+
+    *(u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12) = 0;
+    sp30 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp30 = *sp30 & ~0xC0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = 0;
+    sp2C = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp2C = *sp2C & ~0x1;
+    sp28 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp28 = *sp28 & ~0x2;
+    sp24 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp24 = *sp24 & ~0x4;
+    sp20 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp20 = *sp20 & ~0x8;
+    sp1C = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp1C = *sp1C & ~0x10;
+    sp18 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp18 = *sp18 & ~0x20;
+    sp14 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp14 = *sp14 & ~0x100;
+    sp10 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp10 = *sp10 & ~0x200;
+    spC = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *spC = *spC & ~0x400;
+    sp8 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp8 = *sp8 & ~0x800;
+    sp4 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp4 = *sp4 & ~0x1000;
+    sp0 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp0 = *sp0 & ~0x2000;
+}
+
 /* Resets the current 3D sprite engine's sprite queues and status flags. */
 void Reset3DSpriteEngineState(void) {
     extern void **gCur3DSpriteEngine;

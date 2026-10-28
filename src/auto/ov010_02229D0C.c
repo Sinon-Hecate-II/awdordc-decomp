@@ -300,6 +300,144 @@ void func_ov010_0222a2b4(void *arg0) {
     func_020ad348(2, 8, 1, arg0);
 }
 
+void func_ov010_0222a320(void *arg0) {
+    extern void **data_ov010_0222c8f4;
+    extern void *data_027e00c4;
+    extern void *data_027e00c8;
+    void func_ov010_0222832c(void *, void *);
+    void *func_02086680(void *);
+    void func_ov010_0222bc54(void *, void *);
+    void func_0206f8b8(s32, void *, s32);
+    void func_ov010_0222a750(void *, void *, void *);
+    void func_0206fa14(void *);
+    void func_ov010_0222bbe8(void *, void *);
+    s32 func_0208b5ec(void);
+    void func_0208af20(void);
+    void *func_0208b564(void *);
+    void func_020899fc(void *, s32, s32, void *);
+    void func_ov010_0222a238(void);
+    void func_ov010_0222a278(void);
+
+    u8 *r4 = (u8 *)arg0;
+    u8 sp[0x44];
+    void *r9, *r10, *r11;
+    u8 *r5p, *r6p;
+    s32 r8;
+    void *r7v;
+
+    func_ov010_0222832c(*(void **)(r4 + 0x3c), *(void **)(r4 + 0x40));
+    func_ov010_0222bc54(r4 + 0x44, func_02086680(*(void **)(r4 + 0x40)));
+
+    {
+        s32 v = *(s32 *)(r4 + 0x3c);
+        s32 a = v < 0 ? -v : v;
+        func_0206f8b8(a, sp + 0x24, 10);
+    }
+
+    func_ov010_0222a750(sp + 0x18, r4 + 0x44, data_ov010_0222c8f4);
+    func_ov010_0222a750(sp + 0xc, sp + 0x18, func_02086680((void *)0x42000000));
+    func_ov010_0222a750(sp + 0, sp + 0xc, sp + 0x24);
+    func_ov010_0222bbe8(r4 + 0x44, sp + 0);
+    func_0206fa14(sp + 0);
+    func_0206fa14(sp + 0xc);
+    func_0206fa14(sp + 0x18);
+
+    if (*(s32 *)(r4 + 0x38) == 0) {
+        return;
+    }
+
+    switch (*(s32 *)(r4 + 0x40)) {
+        case 0:
+        case 1:
+            func_ov010_0222a238();
+            return;
+        case 2:
+            if (func_0208b5ec() == 0) {
+                func_ov010_0222a238();
+                return;
+            }
+            func_0208af20();
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            if (func_0208b5ec() == 0) {
+                func_ov010_0222a278();
+                return;
+            }
+            func_0208af20();
+            break;
+        case 7:
+            if (func_0208b5ec() == 0) {
+                func_ov010_0222a278();
+                return;
+            }
+            func_0208af20();
+            break;
+        default:
+            func_ov010_0222a238();
+            return;
+    }
+
+    r11 = data_ov010_0222c8f4;
+    r9 = *(void **)r11;
+    r5p = (u8 *)&data_027e00c4;
+    r6p = (u8 *)&data_027e00c8;
+    if (*(s32 *)(r4 + 0x44) & 1) {
+        r10 = *(void **)(r4 + 0x4c);
+    } else {
+        r10 = (void *)(r4 + 0x45);
+    }
+
+    r8 = 0;
+    while (r8 < 2) {
+        void *r2;
+        void *loadp;
+        if (r8 == 0) {
+            r2 = *(void **)r6p;
+            loadp = (void *)r6p;
+        } else {
+            r2 = *(void **)r5p;
+            loadp = (void *)r5p;
+        }
+        *(void **)r11 = r2;
+        {
+            s8 r1s = *(s8 *)(r4 + 0x35);
+            int skip = 0;
+            if (r1s == 0) {
+                void *r0v = *(void **)loadp;
+                if (r2 != r0v) skip = 1;
+            } else if (r1s == 1) {
+                void *r0v;
+                if (r8 == 0) r0v = *(void **)r5p;
+                else r0v = *(void **)r6p;
+                if (r2 != r0v) skip = 1;
+            } else if (r1s == 3) {
+                if (r2 != r9) skip = 1;
+            } else {
+                skip = 1;
+            }
+            if (!skip) {
+                r7v = func_0208b564(r4);
+                func_020899fc(r7v, 2, *(u16 *)(r4 + 0x36) << 5, r10);
+                *(s32 *)((u8 *)r7v + 0x58) |= 0x1400;
+            }
+        }
+        r8++;
+    }
+    *(void **)r11 = r9;
+
+    switch (*(s32 *)(r4 + 0x40)) {
+        case 2:
+            func_ov010_0222a238();
+            return;
+        default:
+            func_ov010_0222a278();
+            return;
+    }
+}
+
 void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return;v=M2C_FIELD(arg0,u32 *,0x40);switch(v){case 0:case 1:case 2:func_ov010_0222a258();return;default:func_ov010_0222a258();return;case 3:case 4:case 5:case 6:case 7:return;}}
 
 void func_ov010_0222a6e4(void *arg0) {

@@ -20,3 +20,12 @@ s32 func_ov000_021aa558(s32 arg0, s32 arg1) {
     }
     return arg1 - (arg0 * 2);
 }
+
+s32 func_ov000_021aa568(void *arg0) {
+    return 0;
+}
+
+s32 func_ov000_021aa870(void *arg0) {
+    return 0;
+}
+

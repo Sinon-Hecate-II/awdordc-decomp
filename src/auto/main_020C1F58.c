@@ -1,5 +1,17 @@
 /* 10 functions from 0x020C1F58 to 0x020C2E4C (main), found by ds-decomp. */
 #include "common.h"
+extern void *gCur3DSpriteEngine;
+extern u8 data_020e5b30[];
+extern u8 data_027e005c[];
+extern u8 data_027e00b4[];
+extern u8 data_02129780[];
+extern u8 data_027e007c[];
+
+M2C_UNK func_020c1f58(M2C_UNK arg0){ func_0200bc5c(0); }
+
+M2C_UNK func_020c253c() {
+    return 0;
+}
 
 void func_020c2aa4(u8 *p){
 void func_01ffa6fc(void *);

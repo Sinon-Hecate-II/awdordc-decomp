@@ -4,6 +4,35 @@ M2C_UNK func_020e0e8c();
 M2C_UNK func_020e0194();
 M2C_UNK func_020e02ac();
 typedef struct { unsigned char value:4; } E0194Bits;
+typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
+static inline s32 E0B04Process(void *entity) {
+s32 func_020846a4(void);s32 func_0208477c(void);s32 func_02084a6c(void);
+s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
+M2C_UNK func_020899cc(void *,s32,s32,s32);
+extern s32 data_027e00c8,data_027e00c4,gCur3DSpriteEngine;
+void *created; s32 bank; register s32 i; s32 saved; u8 mode;
+if(!func_020846a4())return 0;
+if(func_0208477c())return 0;
+if(func_02084a6c()){
+M2C_FIELD(entity,u16 *,0x48)|=0x1000;
+if(func_0208b5ec())func_0208af20();
+saved=gCur3DSpriteEngine;i=0;
+do{
+if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,u8 *,0x44);
+if(mode==0&&bank!=data_027e00c8)goto next;
+if(mode==1&&bank!=data_027e00c4)goto next;
+if(mode==3&&bank!=saved)goto next;
+created=func_0208b564(entity);
+func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x46)<<5,0x44000001);
+M2C_FIELD(created,u32 *,0x58)|=0x1000;
+next: ++i;
+}while(i<2);
+gCur3DSpriteEngine=saved;return 1;
+}
+return 0;
+
+}
 static inline u32 func_020e_low(void *p) { return M2C_FIELD(p,E0194Bits*,0x59).value; }
 static inline u16 func_020e_get_value(void *p) { return (M2C_FIELD(p,u32*,0x40)<<6)>>24; }
 static inline u8 func_020e_check(void *p) { return func_020e_low(p)+2 != func_020e_get_value(p); }
@@ -236,37 +265,71 @@ void func_020e0af8(void) {
     func_020e0ab0();
 }
 
-void func_020e0d6c(void) {
-    M2C_UNK func_020e0b04();
-    func_020e0b04();
+void func_020e0b04(void *entity) {
+s32 func_020846a4(void);s32 func_0208477c(void);s32 func_02084a6c(void);
+s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
+M2C_UNK func_020899cc(void *,s32,s32,s32);
+void func_020d47f0(void);void func_01ffa8c4(void *,s32);void func_0208fe30(s32);void func_01ffa6fc(void *);
+void func_020aacf0(void *);
+extern u16 *data_02101e84;
+extern s32 data_027e00c8,data_027e00c4,gCur3DSpriteEngine;
+void *created; s32 bank; register s32 i; u8 mode; s32 saved; u32 keys; s32 changed; void *p;u8 allowed;u32 frame;
+if(M2C_FIELD(entity,void **,0x50))func_020aacf0(M2C_FIELD(entity,void **,0x50));
+if(M2C_FIELD(entity,void **,0x54))func_020aacf0(M2C_FIELD(entity,void **,0x54));
+if(M2C_FIELD(entity,void **,0x58))func_020aacf0(M2C_FIELD(entity,void **,0x58));
+keys=*data_02101e84;
+M2C_FIELD(entity,u16 *,0x48)&=~0x20;
+if(E0B04Process(entity)){func_020d47f0();func_01ffa8c4(entity,0x40);return;}
+p=M2C_FIELD(entity,void **,0x50);
+if(!func_020e_check(p))return;
+frame=func_020e_low(p);
+allowed=1;
+if(M2C_FIELD(M2C_FIELD(p,void **,0x64),s8 *,11)!=1){
+if(!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31)||M2C_FIELD(M2C_FIELD(p,void **,0x64),s8 *,12)!=1)allowed=0;
+}
+if((u8)(allowed & 0xff)==0&&!(keys&1))return;
+if(M2C_FIELD(entity,u16 *,0x48)&8)return;
+if(M2C_FIELD(p,s8 *,0x5a)>=0){
+M2C_FIELD(p,E0B04Bits *,0x40).value=(u16)(frame+1);
+M2C_FIELD(p,u8 *,0x5a)=12;
+}
+if(M2C_FIELD(entity,u16 *,0x48)&8)return;
+func_0208fe30(0x1000e);
+M2C_FIELD(entity,u16 *,0x48)|=8;
+func_01ffa6fc(entity);
 }
 
-void func_020e0d78(void) {
-    func_020e0d6c();
+void func_020e0d6c(void *entity) {
+    void func_020e0b04(void *);
+    func_020e0b04(entity);
 }
 
-void func_020e0d84(void) {
-    func_020e0b04();
+void func_020e0d78(void *entity) {
+    func_020e0d6c(entity);
 }
 
-void func_020e0d90(void) {
-    func_020e0b04();
+void func_020e0d84(void *entity) {
+    func_020e0b04(entity);
 }
 
-void func_020e0d9c(void) {
-    func_020e0d6c();
+void func_020e0d90(void *entity) {
+    func_020e0b04(entity);
 }
 
-void func_020e0da8(void) {
-    func_020e0d6c();
+void func_020e0d9c(void *entity) {
+    func_020e0d6c(entity);
 }
 
-void func_020e0db4(void) {
-    func_020e0d78();
+void func_020e0da8(void *entity) {
+    func_020e0d6c(entity);
 }
 
-void func_020e0dc0(void) {
-    func_020e0d78();
+void func_020e0db4(void *entity) {
+    func_020e0d78(entity);
+}
+
+void func_020e0dc0(void *entity) {
+    func_020e0d78(entity);
 }
 
 void func_020e0dcc(M2C_UNK arg0) {

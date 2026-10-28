@@ -25,6 +25,8 @@ s16 func_ov005_02214210(void) {
     return (s16) (M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) - temp_r3);
 }
 
+void func_ov005_0221425c() { return; }
+
 void func_ov005_022147ac(s32 a,s32 b) {
 extern void *gCur3DSpriteEngine,*data_027e00c8; extern M2C_UNK data_ov005_02221304;
 s32 func_ov005_022140f8(s32); void *func_020ad570(s32);

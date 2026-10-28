@@ -233,6 +233,8 @@ void func_02077c78(void) {
     *(s32 *)0x04000540 = 0;
 }
 
+void func_02077c8c(void) { return; }
+
 void func_02077eb8(void) {
 
 }
@@ -350,6 +352,71 @@ void func_02078068(void) {
             x = x + 1;
         }
         y = y + 1;
+    }
+}
+
+void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
+    u8 func_020bd118(void);
+    s32 func_020774cc(void);
+    u8 func_020a4700(s32, s32);
+    extern s32 *gCurrentMap;
+    extern u8 data_02141f08[];
+    extern M2C_UNK data_02140f70;
+    u16 width;
+    u16 height;
+    u8 flag;
+    s32 x;
+    s32 y;
+
+    width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
+    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
+    flag = func_020bd118();
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > width - 1) x1 = width - 1;
+    if (y1 > height - 1) y1 = height - 1;
+
+    if (!func_020774cc()) {
+        for (y = y0; y <= y1; y++) {
+            for (x = x0; x <= x1; x++) {
+                data_02141f08[x * 0x28 + y] = 0;
+            }
+        }
+        return;
+    }
+
+    for (y = y0; y <= y1; y++) {
+        for (x = x0; x <= x1; x++) {
+            u16 rowVal;
+            s32 cell;
+            u8 tile;
+            u8 cellVal;
+            s8 elev;
+
+            rowVal = *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2);
+            cell = x + rowVal;
+            tile = *((u8 *)*gCurrentMap + 0x1420 + cell);
+            elev = (s8)*((u8 *)*gCurrentMap + 0x1e30 + cell);
+            if (elev >= 0) cellVal = 2;
+            else cellVal = 0;
+            elev = (s8)*((u8 *)*gCurrentMap + 0x1e30 + cell);
+            if (elev >= 0x40) cellVal = 3;
+
+            if ((tile & 0x1F) == 0x1D &&
+                *(s32 *)(((u8 *)&data_02140f70) + 0xC) != 0 &&
+                func_020a4700(x, y) != 0) {
+                cellVal = 1;
+            }
+
+            if (flag) {
+                if (*(s16 *)((u8 *)*gCurrentMap + 0x52C2) == x &&
+                    *(s16 *)((u8 *)*gCurrentMap + 0x52C4) == y) {
+                    cellVal = 1;
+                }
+            }
+
+            data_02141f08[x * 0x28 + y] = cellVal;
+        }
     }
 }
 

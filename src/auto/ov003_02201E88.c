@@ -8,6 +8,109 @@ static inline u8 E1E88IsOne(u8 v) { return v == 1; }
 static inline void E1E88Set(void *p, u8 v) { M2C_FIELD(p,s8*,0x59)=v; }
 static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIELD(p,s8*,0x59)=a; }
 
+void func_ov003_02201e88(void *arg0, void *arg1) {
+    s32 func_020846a4();
+    s32 func_020848f8();
+    void func_02088da8(void *);
+    void *func_0208931c(void *);
+    void func_02098e04(void *, s32, s32);
+    void func_02098e2c(void *, s32);
+    void *func_02099088(void *);
+    M2C_UNK func_020a22fc(s32);
+    M2C_UNK func_020a2370(s32);
+    M2C_UNK func_020a23b4(s32);
+    M2C_UNK func_020cfb94();
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c4;
+    extern u8 data_ov003_02210484[];
+    u8 buf[4];
+    s32 saved;
+    u32 n;
+    u8 k;
+    u8 m;
+    s8 j;
+    s32 i;
+    u32 flag;
+    u8 v11;
+    s32 val;
+    s32 t;
+    void *p;
+    u16 v;
+
+    n = (u32) func_020cfb94();
+    k = 0;
+    do {
+        buf[k] = 0xFF;
+        k = k + 1;
+    } while ((u32) k < 4);
+    k = 0;
+    t = func_020848f8();
+    j = 0;
+    do {
+        if (t & (1 << j)) {
+            buf[k] = (u8) j;
+            k = k + 1;
+        }
+        j = j + 1;
+    } while (j < 4);
+    for (m = 0; (u32) m < n; m++) {
+        u8 c = buf[m];
+        if (c != 0xFF && m != c) {
+            if ((s32) c <= (s32) (n - 1) && buf[c] == 0xFF) {
+                buf[c] = c;
+                buf[m] = 0xFF;
+            }
+        }
+    }
+    saved = (s32) gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c4;
+    i = 0;
+    do {
+        val = (u8) func_020a22fc(i + 1);
+        if (func_020a23b4(i + 1) == 2) {
+            flag = 2;
+        } else {
+            flag = 1;
+        }
+        v11 = (u8) func_020a2370(i + 1);
+        p = func_02099088(arg1);
+        ((void **) arg0)[i + 1] = p;
+        func_02098e04(p, (0x1D0 + (i << 4)) << 5, 7);
+        p = ((void **) arg0)[i + 1];
+        func_02098e2c(p, val);
+        p = ((void **) arg0)[i + 1];
+        *(u16 *) ((u8 *) p + 0x3C) = 0x800;
+        p = ((void **) arg0)[i + 1];
+        func_02088da8(p);
+        p = func_0208931c(arg1);
+        ((void **) arg0)[i + 5] = p;
+        *(void **) ((u8 *) p + 0x44) = data_ov003_02210484;
+        if ((u8) flag == 1) {
+            if (func_020846a4() != 0) {
+                v = (u16) ((buf[i] << 4) + 0x180);
+            } else {
+                v = (u16) (0x180 + (i << 4));
+            }
+        } else {
+            v = 0x1C0;
+        }
+        *(u16 *) ((u8 *) ((void **) arg0)[i + 5] + 0x3E) = (u32) (v << 5) >> 5;
+        *(u16 *) ((u8 *) ((void **) arg0)[i + 5] + 0x3C) = 0x6800;
+        func_02088da8(((void **) arg0)[i + 5]);
+        p = func_0208931c(arg1);
+        ((void **) arg0)[i + 9] = p;
+        *(void **) ((u8 *) p + 0x44) = data_ov003_02210484;
+        p = ((void **) arg0)[i + 9];
+        *(u16 *) ((u8 *) p + 0x3E) = (u32) ((((v11 - 1) * 0x10) + 0x140) << 5) >> 5;
+        p = ((void **) arg0)[i + 9];
+        *(u16 *) ((u8 *) p + 0x3C) = 0x6800;
+        p = ((void **) arg0)[i + 9];
+        func_02088da8(p);
+        i++;
+    } while (i < 4);
+    gCur3DSpriteEngine = (void *) saved;
+}
+
 void func_ov003_022020e0(void *p,u8 v){
 s32 func_0207c8ec(u8,s32); s32 func_0207c928(u8,s32); void func_020808dc(s32,s32,s32,s32); extern void *gCur3DSpriteEngine;
 s32 flag; s8 a; u8 id; s32 x;
@@ -124,6 +227,8 @@ p=M2C_FIELD(arg0,void**,0x40);
 func_02088da8(M2C_FIELD(p,s32*,0));func_02088da8(M2C_FIELD(p,s32*,4));
 for(i=0;(u32)i<8;i++){func_02088da8(((s32*)(p+8))[i]);func_02088da8(((s32*)(p+0x28))[i]);}
 func_02088da8(M2C_FIELD(arg0,s32*,0x4c));}
+
+void func_ov003_0220277c(void *arg0) { (void)arg0; }
 
 void func_ov003_02202b68(void *p) {
  M2C_UNK func_020aacf0(s32);

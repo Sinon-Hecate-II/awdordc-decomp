@@ -2,6 +2,10 @@
 #include "common.h"
 
 /* Initializes a unit entry's nested battle state from a character template and stat table. */
+void func_ov000_02175310(void *arg0, void *arg1) {
+    (void)arg0; (void)arg1;
+}
+
 void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     s32 func_020a7b0c(s32);
     s32 func_020a7b24(s32);
@@ -172,4 +176,7 @@ void func_ov000_02175ed8(void *arg0) {
     func_02007ef4(func_020e3438(4) + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
     gCur3DSpriteEngine = temp_r4;
 }
-
+M2C_UNK func_ov000_02175a20(void *a) {
+    (void)a;
+    return 0;
+}

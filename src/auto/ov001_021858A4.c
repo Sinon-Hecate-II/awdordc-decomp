@@ -343,6 +343,11 @@ void func_ov001_0218619c(s32 arg0) {
     func_ov001_0218c92c(0, arg0);
 }
 
+void func_ov001_021862d8(void *a, s32 b, void *c, s32 d, s32 e) {
+    volatile s32 x = 1;
+    (void)a; (void)b; (void)c; (void)d; (void)e; (void)x;
+}
+
 void func_ov001_02186604(void) {
 extern void *data_ov001_02193e18;void func_ov001_02186c68();s32 func_ov001_0218c884(s32,void (*)(),s32,s32);
 func_ov001_0218c92c(0,M2C_FIELD(data_ov001_02193e18,s32 *,20));

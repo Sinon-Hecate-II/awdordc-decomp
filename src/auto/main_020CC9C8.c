@@ -122,6 +122,77 @@ void func_020cce4c(void) {
     func_01ffa3dc(&data_0212b894, 7);
 }
 
+s32 func_020cce64(s32 arg0) {
+    extern s32 *gCurrentMap;
+    extern u8 data_02168f0c;
+    s32 func_020d1980(s32);
+    s32 func_020d19b4(s32);
+    s32 func_020d1938(s32);
+    s32 func_02084614(void);
+    s32 func_02084aa0(s32);
+
+    s32 base = *gCurrentMap;
+    u8 field7 = M2C_FIELD(arg0 * 0x8C + base, u8 *, 0x67CA);
+
+    if (!func_020d1980(arg0)) return 0;
+
+    if (((u8 *)&data_02168f0c)[0]) {
+        s32 r8 = 1;
+        s32 i;
+        for (i = 1; i < 5; i++) if (func_020d19b4(i)) r8 = i;
+        if (func_02084614() == 1) {
+            if (((u8 *)&data_02168f0c)[1]) return 3;
+            if (((u8 *)&data_02168f0c)[2]) return 3;
+        }
+        if (func_02084614() == 2) {
+            if (r8 == arg0) {
+                if (((u8 *)&data_02168f0c)[1]) return 2;
+                if (((u8 *)&data_02168f0c)[2] && ((u8 *)&data_02168f0c)[3] == 0) return 2;
+            }
+            if (((u8 *)&data_02168f0c)[1]) {
+                u8 other = M2C_FIELD(r8 * 0x8C + base, u8 *, 0x67CA);
+                if (field7 != other) return 1;
+                return 2;
+            }
+            if (((u8 *)&data_02168f0c)[2]) {
+                if (((u8 *)&data_02168f0c)[3] == 0) {
+                    u8 other = M2C_FIELD(r8 * 0x8C + base, u8 *, 0x67CA);
+                    if (field7 != other) return 1;
+                    return 2;
+                }
+                if (func_02084aa0(arg0 - 1)) return 2;
+                for (i = 1; i < 5; i++) {
+                    if (func_020d1980(i) && func_020d1938(i)) {
+                        u8 other = M2C_FIELD(i * 0x8C + base, u8 *, 0x67CA);
+                        if (field7 == other) return 1;
+                    }
+                }
+                return 2;
+            }
+        }
+    }
+
+    {
+        s32 r4 = 0, r5 = 0, r6 = 0;
+        s32 i;
+        for (i = 1; i < 5; i++) {
+            if (func_020d1980(i)) {
+                r4++;
+                if (func_020d1938(i)) r5++; else r6++;
+            }
+        }
+        if (r5 == r4) return 3;
+        if (r6 == r4) return 3;
+        for (i = 1; i < 5; i++) {
+            if (func_020d1980(i) && func_020d1938(i)) {
+                u8 other = M2C_FIELD(i * 0x8C + base, u8 *, 0x67CA);
+                if (field7 == other) return 1;
+            }
+        }
+        return 2;
+    }
+}
+
 s32 func_020cd164(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 base;

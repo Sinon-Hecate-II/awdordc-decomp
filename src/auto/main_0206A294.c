@@ -17,6 +17,14 @@ void func_0206a374(M2C_UNK arg0) {
     func_0206a294(arg0, 0);
 }
 
+u32 func_0206a384(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, M2C_UNK *e, M2C_UNK *f, M2C_UNK *g) {
+    return 0;
+}
+
+M2C_UNK func_0206a76c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, M2C_UNK *arg4, M2C_UNK *arg5, M2C_UNK *arg6) {
+    return 0;
+}
+
 s32 func_0206ac70(M2C_UNK p,M2C_UNK end,M2C_UNK base){
 u32 func_0206a384();void func_02068a04();extern s32 data_0213e9f4;
 s32 count,negative,overflow; M2C_UNK state[2];u32 value;

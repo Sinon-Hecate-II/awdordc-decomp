@@ -32,6 +32,10 @@ gCur3DSpriteEngine=saved;
 M2C_FIELD(data_ov005_02221310,s16 *,0x18)=-1;
 }
 
+void func_ov005_022176a0(void) {
+    return;
+}
+
 void func_ov005_02217dc0(u8 *arg0) {
 extern void *data_02101e84,*data_ov005_02221310;
 u32 old=*arg0; u16 keys=M2C_FIELD(data_02101e84,u16 *,2);s32 value=old;

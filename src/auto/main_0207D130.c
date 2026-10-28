@@ -2,9 +2,20 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 data_02101884;
+extern const s16 data_020ebe8c[24];
+extern const s16 data_020ebe58[24];
+extern const u16 data_021018a4[16];
+extern const u16 data_021018c4[256];
+extern const u8 data_020edebc[];
+
 extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc[], data_020ed6bc[], data_020edabc[], data_020ec2bc[];
 extern u32 data_0214c0c0[2];
 extern const u16 data_020ebddc[8];
+
+void func_0207d130(void *a, void *b, s32 c, s32 d) {
+    extern void **gCur3DSpriteEngine;
+    (void)a; (void)b; (void)c; (void)d; (void)gCur3DSpriteEngine;
+}
 
 void func_0207d49c(s32 a,s32 b,s32 flags){
 s32 left=0x800,half=a>>1,ax=a<<12,by=b<<12; s32 right=ax+0x800,top=0x800,bottom=by+0x800;
@@ -196,3 +207,103 @@ u8 func_0207dbfc(void) {
     extern u8 data_02101884;
     return data_02101884;
 }
+
+u16 func_0207dc0c(s32 x, s32 y) {
+    s16 first[24];
+    s16 second[12];
+    s32 mask = 0;
+    {
+        const u16 *src = (const u16 *)data_020ebe8c;
+        u16 *dst = (u16 *)first;
+        s32 count = 12;
+        do {
+            u16 a = src[0];
+            u16 bb = src[1];
+            src += 2;
+            dst[0] = a;
+            dst[1] = bb;
+            dst += 2;
+        } while (--count);
+    }
+    {
+        void *map = *gCurrentMap;
+        const u16 *tileAttr = ((const u16 **)&data_02101884)[1];
+        const u32 (*attrs)[2] = (const u32 (*)[2])data_020edebc;
+        {
+            s32 i;
+            s16 *p = first;
+            for (i = 0; i < 8; i++, p += 3) {
+                s32 nx = x + p[0];
+                s32 ny = y + p[1];
+                if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(map, u16 *, 0x5144) && ny < M2C_FIELD(map, u16 *, 0x5146)) {
+                    u16 off = M2C_FIELD((u8 *)map + ny * 2, u16 *, 0x3758);
+                    u16 tile = M2C_FIELD((u8 *)map + (nx + off) * 2, u16 *, 0xa10);
+                    if ((attrs[tileAttr[tile]][0] & 0x20000) == 0) {
+                        mask |= 1 << i;
+                        mask &= 0xff;
+                    }
+                }
+            }
+        }
+        if (mask != 0) {
+            s32 sub = mask & 0x5a;
+            switch (sub) {
+            case 2:
+                if (mask & 0x94) goto skip_second;
+                break;
+            case 8:
+                if (mask & 0xe0) goto skip_second;
+                break;
+            case 16:
+                if (mask & 0x29) goto skip_second;
+                break;
+            case 64:
+                if (mask & 0x07) goto skip_second;
+                break;
+            default:
+                goto skip_second;
+            }
+            {
+                s32 b = 0;
+                {
+                    const u16 *src = (const u16 *)data_020ebe58;
+                    u16 *dst = (u16 *)second;
+                    s32 count = 6;
+                    do {
+                        u16 a = src[0];
+                        u16 bb = src[1];
+                        src += 2;
+                        dst[0] = a;
+                        dst[1] = bb;
+                        dst += 2;
+                    } while (--count);
+                }
+                {
+                    s32 i;
+                    s16 *p = second;
+                    for (i = 0; i < 4; i++, p += 3) {
+                        s32 nx = x + p[0];
+                        s32 ny = y + p[1];
+                        if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(map, u16 *, 0x5144) && ny < M2C_FIELD(map, u16 *, 0x5146)) {
+                            u16 off = M2C_FIELD((u8 *)map + ny * 2, u16 *, 0x3758);
+                            u16 tile = M2C_FIELD((u8 *)map + (nx + off) * 2, u16 *, 0xa10);
+                            if ((attrs[tileAttr[tile]][0] & 0x80000) != 0) {
+                                b |= 1 << i;
+                                b &= 0xff;
+                            }
+                        }
+                    }
+                    {
+                        u16 val = data_021018a4[b];
+                        if (val != 0) {
+                            return val;
+                        }
+                    }
+                }
+            }
+        }
+skip_second:
+        return data_021018c4[mask];
+    }
+}
+

@@ -68,3 +68,91 @@ void func_020ab598(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3C) = temp_r6_2;
     M2C_FIELD(arg0, u16 *, 0x32) = (u16) M2C_FIELD(arg0, u16 *, 0x34);
 }
+
+void func_020ab664(void *arg0, s16 arg1, s32 flag, s32 arg3) {
+    s32 func_0207c8ec(s16, s16);
+    s32 func_0207c928(s16, s16);
+    u8 func_020a8c3c(s32, s32, s32);
+    void func_020ab884(void *);
+
+    s32 x = (s32)arg1 + (s32)(s16)M2C_FIELD(arg0, s32 *, 0x14);
+    s32 c0 = func_0207c8ec((s16)M2C_FIELD(arg0, s32 *, 0x14), M2C_FIELD(arg0, s16 *, 0x8));
+
+    {
+        s32 field18 = M2C_FIELD(arg0, s32 *, 0x18);
+        if (field18 < x) {
+            s32 saved = func_0207c8ec((s16)field18, M2C_FIELD(arg0, s16 *, 0x8));
+            s32 sec = func_0207c8ec((s16)(x - (s32)arg1), M2C_FIELD(arg0, s16 *, 0x8));
+            if (sec < saved) {
+                x = field18;
+            }
+        }
+    }
+
+    if (flag == 0) {
+        u8 inrange = func_020a8c3c(x, M2C_FIELD(arg0, s32 *, 0x1c), M2C_FIELD(arg0, s32 *, 0x18));
+        if (inrange == 0) {
+            x = (s32)(s16)M2C_FIELD(arg0, s32 *, 0x14);
+        }
+    }
+
+    {
+        s32 field18 = M2C_FIELD(arg0, s32 *, 0x18);
+        s32 tmp = func_0207c928((s16)field18, M2C_FIELD(arg0, s16 *, 0x8));
+        if (tmp != (M2C_FIELD(arg0, s16 *, 0x8) - 1)) {
+            if (x < 0) {
+                s32 nx = x + field18 + 1;
+                s32 t1 = func_0207c8ec((s16)field18, M2C_FIELD(arg0, s16 *, 0x8));
+                s32 t2 = func_0207c8ec((s16)nx, M2C_FIELD(arg0, s16 *, 0x8));
+                if (t2 != t1) {
+                    x = field18;
+                } else {
+                    x = nx;
+                }
+            }
+        }
+    }
+
+    {
+        s32 field18 = M2C_FIELD(arg0, s32 *, 0x18);
+        if (x > field18) {
+            x = 0;
+        }
+        M2C_FIELD(arg0, s32 *, 0x14) = x;
+    }
+
+    if (M2C_FIELD(arg0, u8 *, 0x24) != 0) {
+        s32 field18 = M2C_FIELD(arg0, s32 *, 0x18);
+        s32 f14 = M2C_FIELD(arg0, s32 *, 0x14);
+        s32 f1c;
+        while (f14 > field18) {
+            f1c = M2C_FIELD(arg0, s32 *, 0x1c);
+            f14 = f14 - (field18 - f1c + 1);
+            M2C_FIELD(arg0, s32 *, 0x14) = f14;
+        }
+        f1c = M2C_FIELD(arg0, s32 *, 0x1c);
+        if (f14 < f1c) {
+            while (f14 < f1c) {
+                f1c = M2C_FIELD(arg0, s32 *, 0x1c);
+                f14 = f14 + (field18 - f1c + 1);
+                M2C_FIELD(arg0, s32 *, 0x14) = f14;
+            }
+        }
+    } else {
+        s32 f14 = M2C_FIELD(arg0, s32 *, 0x14);
+        s32 field18 = M2C_FIELD(arg0, s32 *, 0x18);
+        if (f14 <= field18) {
+            s32 f1c = M2C_FIELD(arg0, s32 *, 0x1c);
+            if (f14 < f1c) {
+                f14 = f1c;
+            }
+            M2C_FIELD(arg0, s32 *, 0x14) = f14;
+        }
+    }
+
+    if (c0 != func_0207c8ec((s16)M2C_FIELD(arg0, s32 *, 0x14), M2C_FIELD(arg0, s16 *, 0x8))) {
+        M2C_FIELD(arg0, u8 *, 0x4) = (u8)arg3;
+    }
+    func_020ab884(arg0);
+}
+

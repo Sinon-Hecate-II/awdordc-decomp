@@ -61,14 +61,14 @@ u16 func_020070a4(void) {
 
 void func_020070b4(void *arg0) {
  void func_02005154(u32, void (*)(void), u32);
- void func_020073c0(void);
+ s32 func_020073c0(s32);
  void func_020051c8(u32);
  u64 now = func_02007004();
  s64 delta;
  u32 timer;
  *(volatile u16 *)0x04000106 = 0;
  delta = M2C_FIELD(arg0, s64 *, 0xC) - now;
- ((void (*)(u32, void (*)(void)))func_02005154)(1, func_020073c0);
+ ((void (*)(u32, void (*)(void)))func_02005154)(1, (void (*)(void))func_020073c0);
  timer = 0;
  if (delta < 0) timer = 0xFFFE;
  else if (delta < 0x10000) timer = (u16)~(u32)delta;
@@ -216,13 +216,12 @@ void func_02007338(void *arg0) {
  func_02007530(state);
 }
 
-#pragma interworking off
-void func_020073c0(void) {
- void func_020073d0(void);
- s32 saved;
- func_020073d0();
+#pragma interworking on
+s32 func_020073c0(s32 arg0) {
+    void func_020073d0(void);
+    func_020073d0();
+    return arg0;
 }
-
 void func_020073d0(void) {
     M2C_UNK func_020051f8(M2C_UNK);
     u64 func_02007004(void);

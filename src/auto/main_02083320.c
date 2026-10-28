@@ -102,6 +102,11 @@ void func_020835d4(void *obj) {
  if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
 }
 
+M2C_UNK func_020837b4(void *a) {
+    (void)a;
+    return 0;
+}
+
 #pragma opt_strength_reduction off
 void func_02083c5c(void *obj) {
  extern u8 data_027e008c[];
@@ -114,6 +119,12 @@ void func_02083c5c(void *obj) {
  x-=19;
  func_01ffaacc((u16)(x&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
 }
+
+s32 func_02083e50(void *arg0) {
+    (void)arg0;
+    return 0;
+}
+
 void func_020841c8(void *a){
 s32 i; u16 x,y; void *p;
 x=M2C_FIELD(a,u16 *,0x56);y=M2C_FIELD(a,u16 *,0x58);

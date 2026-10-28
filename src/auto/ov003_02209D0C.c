@@ -61,6 +61,10 @@ remaining=M2C_FIELD(a,u8 *,0x34)-1;M2C_FIELD(a,u8 *,0x34)=remaining;yes=(remaini
 func_ov003_02207e80(a);return func_ov003_02208034(a);
 }
 
+void func_ov003_0220a864(M2C_UNK arg0) {
+    (void) arg0;
+}
+
 void func_ov003_0220ac58(void *arg0) {
 void *p=M2C_FIELD(arg0,void **,0x58);
 s16 current=M2C_FIELD(p,s16 *,2);

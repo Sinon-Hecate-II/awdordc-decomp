@@ -21,6 +21,10 @@ u8 pad19d4[0x24];
 s32 buffer[4];
 } Unk02034164;
 
+void func_02034164(void) {
+    return;
+}
+
 void func_02034480(Unk02034164 *arg0) {
 M2C_UNK func_02007f8c(void *,s32,s32);
 void func_020348c8(void *,s32 *);
@@ -228,6 +232,10 @@ buf->end++;return 1;}}
 if(((Pair02034164 *)buf->start)[buf->end].first){free(&data_020fb724,((Pair02034164 *)buf->start)[buf->end].first,0);((Pair02034164 *)buf->start)[buf->end].first=0;}
 if(((Pair02034164 *)buf->start)[buf->end].second){free(&data_020fb740,((Pair02034164 *)buf->start)[buf->end].second,0);((Pair02034164 *)buf->start)[buf->end].second=0;}
 return 0;
+}
+
+s32 func_02034c58(Unk02034164 *arg0, s32 arg1) {
+    return 0;
 }
 
 #pragma opt_strength_reduction off

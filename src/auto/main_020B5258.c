@@ -249,6 +249,122 @@ void func_020b59a0(void *arg0) {
     func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
+void func_020b59c0(void *arg0) {
+    void *u = (void *) M2C_FIELD(arg0, s32 *, 0x34);
+    u32 mode = (((u32) *(u16 *) ((char *) u + 2)) << 22) >> 28;
+    s32 x = M2C_FIELD(arg0, s32 *, 0x38);
+    s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
+
+    switch (mode) {
+    case 6:
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 3) * 2);
+            *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0xC9;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 4) * 2);
+            *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0xE0;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 5) * 2);
+            *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0xF7;
+        }
+        break;
+    case 7:
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + y * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x - 1) + row) * 2) += 0x40;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + y * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x + 1) + row) * 2) += 0x40;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x - 1) + row) * 2) += 0x40;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x + 1) + row) * 2) += 0x40;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x - 2) + row) * 2) += 0x40;
+        }
+        {
+            void *base = (void *) *gCurrentMap;
+            u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+            *(u16 *) ((char *) base + 0xA10 + ((x + 2) + row) * 2) += 0x40;
+        }
+        if (x < 12) {
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x1C;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 2) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x1C;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 3) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x1C;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 4) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x1C;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 5) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x1C;
+            }
+        } else {
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 1) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x24;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 2) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x24;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 3) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x24;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char *) base + 0x3758 + (y - 4) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x24;
+            }
+            {
+                void *base = (void *) *gCurrentMap;
+                u16 row = *(u16 *) ((char*) base + 0x3758 + (y - 5) * 2);
+                *(u16 *) ((char *) base + 0xA10 + (x + row) * 2) += 0x24;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    func_020a4a68();
+    func_020cfd28();
+}
+
 void func_020b5d94(u8 *arg0,s32 arg1) {
 void *func_01ffa42c(M2C_UNK *,s32); extern M2C_UNK data_02128bc4;
 void *p=func_01ffa42c(&data_02128bc4,arg1);

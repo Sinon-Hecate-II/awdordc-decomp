@@ -212,6 +212,9 @@ void func_02002620(s32 arg0) {
     }
 }
 
+void func_020026d8(s32 arg0) {
+}
+
 void func_02002968(s32 a) {
 extern M2C_UNK data_0212dbc4;
 M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,4))&~a;

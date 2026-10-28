@@ -141,6 +141,95 @@ void func_020913c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
 }
 
+M2C_UNK func_020913d4(M2C_UNK arg0raw) {
+    void func_020912a4(s32 *);
+    void *arg0 = (void *)arg0raw;
+    M2C_UNK *cur;
+    u16 word0;
+    u16 cmd;
+    u8 flags;
+    u32 idx;
+    void *base;
+    void *p10;
+    u16 first;
+    u32 masked;
+
+    if (arg0 == (void *)0 || *(s32 *)arg0 == 0) {
+        return 0;
+    }
+    if (M2C_FIELD(arg0, u16 *, 0x1C) == 0) {
+        return 0xFFFF;
+    }
+
+    if (M2C_FIELD(arg0, s16 *, 0x1A) != 0) {
+        M2C_FIELD(arg0, s16 *, 0x1A) = (s16)(M2C_FIELD(arg0, s16 *, 0x1A) - 1);
+        if (M2C_FIELD(arg0, s16 *, 0x1A) > 0) {
+            return 0xFFFF;
+        }
+        M2C_FIELD(arg0, s16 *, 0x1A) = 0;
+        M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
+
+        cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
+        word0 = *(u16 *)cur;
+        if (word0 == 0) {
+            cmd = *((u16 *)cur + 1);
+            switch (cmd) {
+            case 0:
+                func_020912a4((s32 *)arg0);
+                return 0;
+            case 1:
+                return 1;
+            case 0xFF:
+                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0x8);
+                return func_020913d4(arg0raw);
+            default:
+                M2C_FIELD(arg0, u16 *, 0x24) = cmd;
+                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
+                return func_020913d4(arg0raw);
+            }
+        }
+
+        {
+            u16 maxv = M2C_FIELD(arg0, u16 *, 0x1C);
+            M2C_FIELD(arg0, u16 *, 0x1E) = (u16)(word0 * maxv + M2C_FIELD(arg0, u16 *, 0x1E));
+            if (M2C_FIELD(arg0, u16 *, 0x1E) >= 0x100) {
+                M2C_FIELD(arg0, s16 *, 0x1A) = (s16)(M2C_FIELD(arg0, u16 *, 0x1E) >> 8);
+                M2C_FIELD(arg0, u16 *, 0x1E) = (u16)(M2C_FIELD(arg0, u16 *, 0x1E) & 0xFF);
+            } else {
+                M2C_FIELD(arg0, s16 *, 0x1A) = 1;
+            }
+            return func_020913d4(arg0raw);
+        }
+    }
+
+    flags = M2C_FIELD(arg0, u8 *, 0x22);
+    cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
+    if ((flags & 0x2) == 0) {
+        idx = *((u16 *)cur + 1);
+        base = M2C_FIELD(arg0, void **, 0x4);
+        M2C_FIELD(arg0, void **, 0x10) = (void *)(((void **)base)[idx]);
+    } else {
+        idx = *((u16 *)cur + 1);
+        base = (void *)M2C_FIELD(arg0, void **, 0x4);
+        masked = *(u16 *)((u8 *)base + idx * 2);
+        masked = masked & ~1U;
+        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)base + masked);
+    }
+
+    p10 = M2C_FIELD(arg0, void **, 0x10);
+    first = *(u16 *)p10;
+    if (!(first & 0x8000)) {
+        M2C_FIELD(arg0, void **, 0x14) = (void *)0;
+    } else {
+        M2C_FIELD(arg0, void **, 0x14) = p10;
+        masked = first & 0x7FFF;
+        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)p10 + (masked * 3 + 1) * 2);
+        flags = (u8)(flags | 0x1);
+        M2C_FIELD(arg0, u8 *, 0x22) = flags;
+    }
+    return 0xFFFF;
+}
+
 void func_02091570(M2C_UNK a) {
     s16 func_0207c8ec(s32, s32);
     void func_01ff8ddc(s32, s16, s16, s16, s16);
@@ -498,6 +587,11 @@ void func_02091c54(s32 arg0, s32 arg1) {
         return;
     }
     data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
+}
+
+M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
+    extern unsigned int data_0215da2c[];
+    data_0215da2c[arg0] = (unsigned int)arg1;
 }
 
 void func_02091c98(void) {

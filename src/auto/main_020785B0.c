@@ -91,6 +91,8 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     func_020901b0(arg0, -1, arg1, var_r5);
 }
 
+void func_02078828(void) { }
+
 #pragma scheduling off
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
 void func_02004078(s32,s32); void func_02079db0(s32,s32,s32,s32,s32,s32);
@@ -103,6 +105,9 @@ func_02004078(sn,cs);
 *(volatile u32 *)0x4000470=-c;*(volatile u32 *)0x4000470=-d;*(volatile u32 *)0x4000470=0;}
 *(volatile u32 *)0x4000470=0;*(volatile u32 *)0x4000470=0x300;*(volatile u32 *)0x4000470=0;
 func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
+}
+
+void func_02078d68(void *arg0) {
 }
 
 void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {

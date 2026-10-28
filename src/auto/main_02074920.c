@@ -175,3 +175,9 @@ if(func_0201033c(0,&out,4,0,0,0,6,1,0)) result=1; else result=0;
 func_0200fe6c(low); func_020055f4(low); return result;
 }
 
+void func_02074dec(s32 arg0) { (void)arg0; }
+
+void func_020753f8(void *a, void *b, void *c, s32 d, M2C_UNK e, M2C_UNK f) {
+  return;
+}
+

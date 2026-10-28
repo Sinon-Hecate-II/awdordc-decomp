@@ -1,6 +1,14 @@
 /* 5 functions from 0x02225A9C to 0x02226658 (ov011), found by ds-decomp. */
 #include "common.h"
 
+void func_ov011_02225a9c(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    (void)arg0; (void)arg1; (void)arg2; (void)arg3;
+}
+
+void func_ov011_02225d98(void *arg0) {
+    return;
+}
+
 void func_ov011_022264e4(void) {
     M2C_UNK func_0209cd00(M2C_UNK *);
     M2C_UNK func_020af1e4();

@@ -4,6 +4,125 @@ typedef struct { s32 pad[2]; s32 slots[5]; } ObjectSlots;
 
 void func_ov002_021e7c84(u8 *p) { extern s32 gPlayerSettings; p[0]=0;p[1]=0;((u8 *)&gPlayerSettings)[12]=8;((u8 *)&gPlayerSettings)[36]=12;((u8 *)&gPlayerSettings)[16]=0;((u8 *)&gPlayerSettings)[40]=1;((u8 *)&gPlayerSettings)[17]=3;((u8 *)&gPlayerSettings)[41]=3;((u8 *)&gPlayerSettings)[18]=0;((u8 *)&gPlayerSettings)[42]=0;((u8 *)&gPlayerSettings)[3]=0;p[13]=100;p[37]=100;p[14]=80;p[38]=20;p[15]=3;p[39]=3;p[21]=1;p[45]=2;p[22]=2;p[46]=2;p[23]=1;p[47]=1;((u8 *)&gPlayerSettings)[20]=1;((u8 *)&gPlayerSettings)[44]=1;((u8 *)&gPlayerSettings)[19]=0;((u8 *)&gPlayerSettings)[43]=0;((u8 *)&gPlayerSettings)[24]=0;((u8 *)&gPlayerSettings)[48]=1;((u8 *)&gPlayerSettings)[25]=0;((u8 *)&gPlayerSettings)[49]=1;}
 
+void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
+    extern u8 data_ov002_021f2e54[];
+    extern u8 data_ov002_021f2e44[];
+    extern u8 data_ov002_021f2e48[];
+    extern u8 data_ov002_021f1171[];
+    extern u8 data_ov002_021f2e50[];
+    extern u8 data_ov002_021f2e4c[];
+    extern u8 data_ov002_021f2e70[];
+    extern void **gCurrentMap;
+    s32 RandomIntRange(s32, s32);
+    u8 *p;
+    s32 r5;
+    s32 i19;
+    u8 *ptr19;
+    u8 r1;
+    u8 r8;
+    u8 r7;
+    u8 r6;
+    u8 lr;
+    u8 flag;
+    s32 t;
+    s32 rr;
+    u8 v;
+    p = (u8 *)arg0;
+    r5 = arg1 * 24;
+    i19 = p[r5 + 0x19];
+    ptr19 = p + 0x19;
+    i19 = i19 - 1;
+    ptr19[r5] = (u8)i19;
+    r1 = data_ov002_021f2e54[arg2];
+    r8 = p[r5 + 0x18];
+    r7 = p[r5 + 0x13];
+    r6 = p[r5 + 0x14];
+    lr = p[r5 + 0x10];
+    switch (arg2) {
+        case 2:
+            if (lr == 0x07) r1 = 0x01;
+            break;
+        case 3:
+            if (r7 != 0) {
+                if (lr == 0x07) r1 = 0x01; else r1 = 0x00;
+            } else if (r8 != 0) {
+                if (lr == 0x07) r1 = 0x05; else r1 = 0x04;
+            } else {
+                if (lr == 0x07) r1 = 0x03; else r1 = 0x02;
+            }
+            break;
+        case 10:
+            if (r7 == 0) {
+                if (r8 == 0) r1 = 0x09; else r1 = 0x0A;
+            } else {
+                r1 = 0x0B;
+            }
+            break;
+        case 16:
+            if (r6 == 0) r1 = 0x17;
+            break;
+        case 18:
+            if (r8 == 0) r1 = 0x18; else r1 = 0x19;
+            break;
+        case 21:
+            if (arg3 == 0x16) r1 = 0x1D;
+            break;
+        case 22:
+            if (r8 == 0) {
+                if (arg3 == 0x16) r1 = 0x1F; else r1 = 0x1E;
+            } else {
+                if (arg3 == 0x16) r1 = 0x21; else r1 = 0x20;
+            }
+            break;
+        case 23:
+            if ((u8)arg4 != 0) r1 = 0x26;
+            break;
+        case 24:
+            if (r7 == 0) {
+                if (arg3 == 0x16) r1 = 0x23; else r1 = 0x22;
+            } else {
+                r1 = 0x24;
+            }
+            break;
+        case 25:
+            if (arg3 == 0x16) r1 = 0x28;
+            break;
+        default:
+            break;
+    }
+    p[r5 + 0x0C] = r1;
+    flag = ((u8 *)*gCurrentMap)[0x5157];
+    if (flag == 0x04 && lr == 0x04) {
+        rr = RandomIntRange(0, 2);
+        p[r5 + 0x10] = data_ov002_021f2e44[rr];
+        return;
+    }
+    if (flag == 0x08) {
+        t = (s32)lr - 1;
+        if (t <= 1) {
+            rr = RandomIntRange(0, 2);
+            p[r5 + 0x10] = data_ov002_021f2e48[rr];
+            return;
+        }
+    }
+    if (lr == 0x13) {
+        if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
+            v = p[0x03];
+            p[r5 + 0x10] = data_ov002_021f2e50[v];
+            return;
+        }
+    }
+    if (lr == 0x15) {
+        if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
+            v = p[0x03];
+            p[r5 + 0x10] = data_ov002_021f2e70[v];
+            return;
+        }
+    }
+    v = p[0x03];
+    p[r5 + 0x10] = data_ov002_021f2e70[v + (u32)lr * 4];
+}
+
 s32 func_ov002_021e7fec(s32 arg0,s32 arg1) { switch(M2C_FIELD(arg0+arg1*24,u8 *,12)) {case 0x25: case 0x26:return 1; default:return 0;} }
 
 u8 func_ov002_021e8014(s32 arg0, s32 arg1) {
@@ -59,6 +178,190 @@ u8 func_ov002_021e80a4(s32 arg0, s32 arg1) {
         var_r0 = 0;
     }
     return var_r0;
+}
+
+void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
+    extern void **gCurrentMap;
+    s32 func_ov000_0216ca8c(u8, u8);
+    s32 func_020a7cfc(void *);
+    void func_020d03ec(s32, u8, u8);
+    s32 func_020a27f8(s32, s32);
+    u8 *a;
+    u8 *r7;
+    void *r6;
+    void *base;
+    s32 r5;
+    u8 low6;
+    s32 t6;
+    u16 w;
+    s16 r2v;
+    s32 r1s;
+    s32 high;
+    s32 r4v;
+    void *map;
+    u8 u1;
+    u8 u2;
+    u16 tbl;
+    s32 diff;
+    s64 prod;
+    s32 high2;
+    s32 tmp;
+    s32 sign;
+    s32 q;
+    s32 idx2;
+    void *mapb;
+    u32 vv;
+    s32 r0;
+    u8 *ptr;
+    s32 diff3;
+    s64 prod3;
+    s32 high3;
+    s32 tmp3;
+    s32 sign3;
+    s32 q3;
+    s32 idx3;
+    s32 idx4;
+    s32 diff4;
+    s64 prod4;
+    s32 high4;
+    s32 tmp4;
+    s32 sign4;
+    s32 q4;
+    u8 low;
+    u8 res;
+    s32 idx5;
+    s32 diff5;
+    s64 prod5;
+    s32 high5;
+    s32 tmp5;
+    s32 sign5;
+    s32 q5;
+    u8 v2;
+    s32 idx6;
+    s32 diff6;
+    s64 prod6;
+    s32 high6;
+    s32 tmp6;
+    s32 sign6;
+    s32 q6;
+    u8 *dest;
+    u8 v3;
+
+    a = (u8 *)arg0;
+    r7 = (u8 *)arg2;
+    r6 = (void *)arg3;
+    r5 = idx * 0x18;
+    low6 = (u8)(((unsigned)r7[0] << 26) >> 26);
+    a[r5 + 0xc] = low6;
+    t6 = *(s16 *)((u8 *)r6 + 0x1e);
+    a[r5 + 0x14] = (u8)(t6 != 0);
+    t6 = *(s16 *)((u8 *)r6 + 0x1e);
+    a[r5 + 0x13] = (u8)(t6 == 2);
+    w = *(u16 *)((u8 *)r7 + 6);
+    a[r5 + 0xd] = (u8)(((unsigned)w << 25) >> 25);
+    a[r5 + 0xe] = (u8)*(s16 *)((u8 *)r6 + 0xe);
+    a[r5 + 0xf] = (u8)(((unsigned)r7[0] << 24) >> 30);
+    a[0x10 + r5] = (u8)*(s16 *)((u8 *)r6 + 0x4);
+    r0 = func_ov000_0216ca8c(r7[1], r7[2]);
+    if (r0 == 0x28) a[0x10 + r5] = 0x1b;
+    r0 = func_ov000_0216ca8c(r7[1], r7[2]);
+    if (r0 == 0x29) a[0x10 + r5] = 0x1c;
+    r2v = *(s16 *)((u8 *)r6 + 0x6);
+    r1s = (s32)((u32)r2v >> 31);
+    high = (s32)(((s64)0x66666667 * r2v) >> 32);
+    r4v = r1s + (high >> 2);
+    a[r5 + 0x11] = (u8)r4v;
+    map = *gCurrentMap;
+    u1 = r7[2];
+    u2 = r7[1];
+    tbl = *(u16 *)((u8 *)map + 0x3758 + u1 * 2);
+    a[r5 + 0x12] = (u8)(((((*(u8 *)((u8 *)map + 0x1420 + u2 + tbl)) & 0xE0)) >> 5));
+    if (r7 == 0) idx2 = 0;
+    else {
+        base = (u8 *)map + 0x59a4;
+        diff = (s32)((u8 *)r7 - (u8 *)base);
+        prod = (s64)0x92492493 * diff;
+        high2 = (s32)(prod >> 32);
+        tmp = diff + high2;
+        sign = (s32)((u32)diff >> 31);
+        q = (sign + (tmp >> 3)) >> 6;
+        idx2 = q + 1;
+    }
+    mapb = *gCurrentMap;
+    vv = *(u32 *)((u8 *)mapb + idx2 * 0x8c + 0x6810);
+    a[r5 + 0x15] = (u8)((vv << 24) >> 24);
+    r0 = func_020a7cfc(r7);
+    if (r0 != 0) {
+        a[r5 + 0x16] = 2;
+        ptr = a + r5 + 0x16;
+    } else {
+        if (r7 == 0) idx3 = 0;
+        else {
+            base = (u8 *)map + 0x59a4;
+            diff3 = (s32)((u8 *)r7 - (u8 *)base);
+            prod3 = (s64)0x92492493 * diff3;
+            high3 = (s32)(prod3 >> 32);
+            tmp3 = diff3 + high3;
+            sign3 = (s32)((u32)diff3 >> 31);
+            q3 = (sign3 + (tmp3 >> 3)) >> 6;
+            idx3 = q3 + 1;
+        }
+        func_020d03ec(idx3, r7[1], r7[2]);
+        a[r5 + 0x16] = 1;
+        ptr = a + r5 + 0x16;
+    }
+    if (ptr[0] != 0) {
+        if (r7 == 0) idx4 = 0;
+        else {
+            base = (u8 *)map + 0x59a4;
+            diff4 = (s32)((u8 *)r7 - (u8 *)base);
+            prod4 = (s64)0x92492493 * diff4;
+            high4 = (s32)(prod4 >> 32);
+            tmp4 = diff4 + high4;
+            sign4 = (s32)((u32)diff4 >> 31);
+            q4 = (sign4 + (tmp4 >> 3)) >> 6;
+            idx4 = q4 + 1;
+        }
+        low = (u8)(((unsigned)r7[0] << 26) >> 26);
+        res = (u8)func_020a27f8(idx4, (s32)low);
+        a[r5 + 0x17] = res;
+    } else {
+        a[r5 + 0x17] = 0;
+    }
+    if (r7 == 0) idx5 = 0;
+    else {
+        base = (u8 *)map + 0x59a4;
+        diff5 = (s32)((u8 *)r7 - (u8 *)base);
+        prod5 = (s64)0x92492493 * diff5;
+        high5 = (s32)(prod5 >> 32);
+        tmp5 = diff5 + high5;
+        sign5 = (s32)((u32)diff5 >> 31);
+        q5 = (sign5 + (tmp5 >> 3)) >> 6;
+        idx5 = q5 + 1;
+    }
+    v2 = *(u8 *)((u8 *)map + idx5 * 0x8c + 0x67cd);
+    a[r5 + 0x18] = v2;
+    if (r7 == 0) idx6 = 0;
+    else {
+        base = (u8 *)map + 0x59a4;
+        diff6 = (s32)((u8 *)r7 - (u8 *)base);
+        prod6 = (s64)0x92492493 * diff6;
+        high6 = (s32)(prod6 >> 32);
+        tmp6 = diff6 + high6;
+        sign6 = (s32)((u32)diff6 >> 31);
+        q6 = (sign6 + (tmp6 >> 3)) >> 6;
+        idx6 = q6 + 1;
+    }
+    dest = a + 0x19;
+    v3 = *(u8 *)((u8 *)map + idx6 * 0x8c + 0x67c1);
+    dest[r5] = v3;
+    if (v3 == 3) {
+        dest[r5] = 4;
+        return;
+    }
+    if (v3 == 4) {
+        dest[r5] = 3;
+    }
 }
 
 void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){

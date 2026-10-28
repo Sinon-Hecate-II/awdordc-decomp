@@ -2,6 +2,20 @@
 #include "common.h"
 
 /* Rounds the decimal number held at `number` at digit position `digitPos`. */
+M2C_UNK func_0206adf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK *arg2) {
+    return arg0;
+}
+
+void func_0206b370(void) { }
+
+M2C_UNK func_0206b5c0(void) {
+    return 0;
+}
+
+M2C_UNK func_0206b8c0(M2C_UNK arg0) {
+    return 0;
+}
+
 void func_0206bc58(void *number, s32 digitPos) {
     s32 carry;
     s8 *tail;

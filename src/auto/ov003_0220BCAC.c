@@ -1,6 +1,87 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_0220bcac(void *arg0) {
+    extern s32 func_0207c8ec(s32, s32);
+    extern void func_020a979c(void *, s16, s16);
+    extern void func_ov003_0220c0e8(void *);
+
+    void *sub;
+    void *p;
+    s16 f12, f14, f16, f08, f14p, f12p, diff;
+    s16 r6;
+    s32 val, q, sum;
+
+    sub = M2C_FIELD(arg0, void **, 0x60);
+    M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
+    f14 = M2C_FIELD(sub, s16 *, 0x14);
+    if (M2C_FIELD(sub, s16 *, 0x16) >= 0x5F) {
+        if (0x5F >= f14)
+            M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
+        else
+            M2C_FIELD(sub, s16 *, 0x12) = f14;
+    }
+    p = M2C_FIELD(sub, void **, 0x1C);
+    f12 = M2C_FIELD(sub, s16 *, 0x12);
+    f14p = M2C_FIELD(p, s16 *, 0x14);
+    f12p = M2C_FIELD(p, s16 *, 0x12);
+    f16 = M2C_FIELD(sub, s16 *, 0x16);
+    f14 = M2C_FIELD(sub, s16 *, 0x14);
+    r6 = M2C_FIELD(sub, s16 *, 0x8);
+    diff = f14p - f12p;
+    val = f12 * diff;
+    q = func_0207c8ec(val, f16 - f14);
+    sum = r6 + q;
+    func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
+
+    sub = M2C_FIELD(arg0, void **, 0x64);
+    M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
+    f14 = M2C_FIELD(sub, s16 *, 0x14);
+    if (M2C_FIELD(sub, s16 *, 0x16) >= 0x5F) {
+        if (0x5F >= f14)
+            M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
+        else
+            M2C_FIELD(sub, s16 *, 0x12) = f14;
+    }
+    p = M2C_FIELD(sub, void **, 0x1C);
+    f12 = M2C_FIELD(sub, s16 *, 0x12);
+    f14p = M2C_FIELD(p, s16 *, 0x14);
+    f12p = M2C_FIELD(p, s16 *, 0x12);
+    f16 = M2C_FIELD(sub, s16 *, 0x16);
+    f14 = M2C_FIELD(sub, s16 *, 0x14);
+    r6 = M2C_FIELD(sub, s16 *, 0x8);
+    diff = f14p - f12p;
+    val = f12 * diff;
+    q = func_0207c8ec(val, f16 - f14);
+    sum = r6 + q;
+    func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
+
+    func_ov003_0220c0e8(arg0);
+
+    p = M2C_FIELD(arg0, void **, 0x40);
+    M2C_FIELD(p, s32 *, 0x4) = 0;
+    if (*(u8 *)((u8 *)p + 0x14)) {
+        while (M2C_FIELD(p, s32 *, 0x4) > M2C_FIELD(p, s32 *, 0x8))
+            M2C_FIELD(p, s32 *, 0x4) -= M2C_FIELD(p, s32 *, 0x8) - M2C_FIELD(p, s32 *, 0xC) + 1;
+        while (M2C_FIELD(p, s32 *, 0x4) < M2C_FIELD(p, s32 *, 0xC))
+            M2C_FIELD(p, s32 *, 0x4) += M2C_FIELD(p, s32 *, 0x8) - M2C_FIELD(p, s32 *, 0xC) + 1;
+    }
+    M2C_FIELD(p, s32 *, 0x1C) = 0;
+    if (*(u8 *)((u8 *)p + 0x2C)) {
+        while (M2C_FIELD(p, s32 *, 0x1C) > M2C_FIELD(p, s32 *, 0x20))
+            M2C_FIELD(p, s32 *, 0x1C) -= M2C_FIELD(p, s32 *, 0x20) - M2C_FIELD(p, s32 *, 0x24) + 1;
+        while (M2C_FIELD(p, s32 *, 0x1C) < M2C_FIELD(p, s32 *, 0x24))
+            M2C_FIELD(p, s32 *, 0x1C) += M2C_FIELD(p, s32 *, 0x20) - M2C_FIELD(p, s32 *, 0x24) + 1;
+    }
+    M2C_FIELD(p, s32 *, 0x34) = 0;
+    if (*(u8 *)((u8 *)p + 0x44)) {
+        while (M2C_FIELD(p, s32 *, 0x34) > M2C_FIELD(p, s32 *, 0x38))
+            M2C_FIELD(p, s32 *, 0x34) -= M2C_FIELD(p, s32 *, 0x38) - M2C_FIELD(p, s32 *, 0x3C) + 1;
+        while (M2C_FIELD(p, s32 *, 0x34) < M2C_FIELD(p, s32 *, 0x3C))
+            M2C_FIELD(p, s32 *, 0x34) += M2C_FIELD(p, s32 *, 0x38) - M2C_FIELD(p, s32 *, 0x3C) + 1;
+    }
+}
+
 s8 func_ov003_0220bf68(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 0xB);
 }
@@ -87,6 +168,121 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;
  if(v!=16){p[0x34]=30;func_ov003_0220a698(p,v);func_ov003_0220828c(p,5,255);func_01ff9d88(1);M2C_FIELD(data_027e00c4,u8 *,0x46)|=2;}
  else {func_020d47f0();func_01ffa6fc(p);}
+}
+
+void func_ov003_0220c43c(void *arg0) {
+    s32 func_020d4810(void);
+    void func_ov003_02207e80(void *);
+    void func_ov003_0220c328(void *, s32);
+    void func_02083464(void);
+    extern void **gCur3DSpriteEngine;
+
+    u8 *obj = (u8 *)arg0;
+    u8 r1 = obj[0x38];
+
+    if (!(((u32)r1 << 27) >> 31)) {
+        return;
+    }
+    obj[0x38] = (u8)(r1 & ~0x10);
+
+    {
+        u16 * volatile sp2c;
+        sp2c = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp2c = (u16)((*sp2c & ~0x1) | 0x1);
+    }
+    {
+        u16 * volatile sp28;
+        sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp28 = (u16)(*sp28 & ~0x2);
+    }
+    {
+        u16 * volatile sp24;
+        sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp24 = (u16)(*sp24 & ~0x4);
+    }
+    {
+        u16 * volatile sp20;
+        sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp20 = (u16)(*sp20 & ~0x8);
+    }
+    {
+        u16 * volatile sp1c;
+        sp1c = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp1c = (u16)(*sp1c & ~0x10);
+    }
+    {
+        u16 * volatile sp18;
+        sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp18 = (u16)(*sp18 & ~0x20);
+    }
+    {
+        u16 * volatile sp14;
+        sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp14 = (u16)(*sp14 & ~0x100);
+    }
+    {
+        u16 * volatile sp10;
+        sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp10 = (u16)(*sp10 & ~0x200);
+    }
+    {
+        u16 * volatile spC;
+        spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *spC = (u16)(*spC & ~0x400);
+    }
+    {
+        u16 * volatile sp8;
+        sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp8 = (u16)(*sp8 | 0x800);
+    }
+    {
+        u16 * volatile sp4;
+        sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp4 = (u16)(*sp4 & ~0x1000);
+    }
+    {
+        u16 * volatile sp0;
+        sp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp0 = (u16)(*sp0 | 0x2000);
+    }
+
+    {
+        u8 val = (u8)(((u32)obj[0x36] << 28) >> 28);
+
+        switch (val) {
+        case 0:
+            break;
+        case 1: {
+            s32 r0 = func_020d4810();
+            if (r0 == 0) {
+                return;
+            }
+            func_ov003_02207e80(obj);
+            {
+                u16 **pp = (u16 **)(obj + 0x5c);
+                u16 *unit = *pp;
+                s32 r1v;
+                if (unit != 0) {
+                    r1v = (s32)unit[4];
+                } else {
+                    r1v = -1;
+                }
+                r1v = r1v - 0xb;
+                func_ov003_0220c328(obj, (s32)(u8)r1v);
+            }
+            return;
+        }
+        case 2: {
+            func_ov003_02207e80(obj);
+            return;
+        }
+        case 3: {
+            func_02083464();
+            return;
+        }
+        }
+    }
+    return;
 }
 
 void func_ov003_0220c6a4(void) {

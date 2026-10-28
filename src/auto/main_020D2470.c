@@ -1,6 +1,8 @@
 /* 48 functions from 0x020D2470 to 0x020D3464 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020d2470(void) { }
+
 u8 func_020d273c(s32 a, s32 b) {
     extern s32 *gCurrentMap;
     return M2C_FIELD(((a * 0x8C) + *gCurrentMap), u8 *, 0x67CA) == M2C_FIELD(((b * 0x8C) + *gCurrentMap), u8 *, 0x67CA);
@@ -336,6 +338,69 @@ s32 func_020d2dcc(s32 arg0) {
             p += 14;
         } while (i < end);
     }
+    return 0;
+}
+
+void *func_020d2e3c(u16 arg0) {
+    extern s32 *gCurrentMap;
+    extern u16 data_ov000_021aeef4[];
+    s32 *mp;
+    u8 *base;
+    u16 *curP;
+    s16 cur;
+    u16 T;
+    u16 x;
+    u16 start;
+
+    mp = *gCurrentMap;
+    base = (u8 *)mp;
+    T = data_ov000_021aeef4[arg0];
+    cur = *(s16 *)(base + 0x52c0);
+    curP = (u16 *)(base + 0x52c0);
+    start = (u16)(cur + 1);
+
+    if (start < 0x33) {
+        for (x = start; x < 0x33; x++) {
+            u8 kind = base[0x59a4 + (x + T) * 14];
+            if ((kind & 0x3f) != 0) {
+                u16 field = *(u16 *)(base + 0x59a8 + (x + T) * 14);
+                if ((field & 1) == 0) {
+                    *curP = x;
+                    {
+                        u8 *base2 = (u8 *)*gCurrentMap;
+                        s16 cur2 = *(s16 *)(base2 + 0x52c0);
+                        if (cur2 >= 0x32) {
+                            *(s16 *)(base2 + 0x52c0) = 0;
+                        }
+                        return (void *)(base2 + 0x59a4 + (x + T) * 14);
+                    }
+                }
+            }
+        }
+    }
+
+    if (cur + 1 <= 1) {
+        return 0;
+    }
+
+    for (x = 1; x <= cur; x++) {
+        u8 kind = base[0x59a4 + (x + T) * 14];
+        if ((kind & 0x3f) != 0) {
+            u16 field = *(u16 *)(base + 0x59a8 + (x + T) * 14);
+            if ((field & 1) == 0) {
+                *curP = x;
+                {
+                    u8 *base2 = (u8 *)*gCurrentMap;
+                    s16 cur2 = *(s16 *)(base2 + 0x52c0);
+                    if (cur2 >= 0x32) {
+                        *(s16 *)(base2 + 0x52c0) = 0;
+                    }
+                    return (void *)(base2 + 0x59a4 + (x + T) * 14);
+                }
+            }
+        }
+    }
+
     return 0;
 }
 

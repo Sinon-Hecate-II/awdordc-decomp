@@ -47,6 +47,72 @@ apply:
     return 0;
 }
 
+s32 func_020637fc(void *arg0) {
+    s32 func_02049810(s32, void *, s32, s32);
+    M2C_UNK func_02061efc(void *);
+    s32 func_0206325c(void *, u8 *, s32);
+    s32 func_02063338(void *, u8 *, s32);
+    s32 func_020634f4(void *, u8 *, s32);
+    s32 func_02063678(M2C_UNK, u8 *, s32);
+    void func_020640a8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void func_020651c4(void *, void *, s32);
+    extern u8 data_021000d8[], data_0210012c[], data_021001b4[];
+    u16 size;
+    u8 *hdr;
+    u8 *buf;
+    s32 result = 0;
+
+    hdr = (u8 *) &size;
+    while (M2C_FIELD(arg0, s32 *, 0x80) >= 3) {
+        Copy2(hdr, M2C_FIELD(arg0, void **, 0x7C));
+        size = (u8) (size >> 8) | ((size << 8) & 0xff00);
+        if (size > 0x1000) {
+            result = 4;
+            break;
+        }
+        if (M2C_FIELD(arg0, s32 *, 0x80) < size) {
+            return 0;
+        }
+        buf = M2C_FIELD(arg0, u8 **, 0x7C);
+        switch (((s8 *) buf)[2]) {
+        case 1:
+            result = func_0206325c(arg0, buf + 3, size - 3);
+            break;
+        case 2:
+            result = func_02063704(arg0, buf + 3, size - 3);
+            break;
+        case 3:
+            if (func_02049810(M2C_FIELD(arg0, s32 *, 0x4B0), buf, size, 0) <= 0) {
+                return 3;
+            }
+            break;
+        case 4:
+            result = func_02063678(arg0, buf + 3, size - 3);
+            break;
+        case 5:
+            result = func_020634f4(arg0, buf + 3, size - 3);
+            break;
+        case 6:
+            result = func_02063338(arg0, buf + 3, size - 3);
+            break;
+        }
+        if ((M2C_FIELD(arg0, s32 *, 0x80) -= size) < 0) {
+            func_020640a8((M2C_UNK) data_021001b4, (M2C_UNK) data_0210012c, (M2C_UNK) data_021000d8, 0x5B4);
+        }
+        if (M2C_FIELD(arg0, s32 *, 0x80) != 0 && M2C_FIELD(arg0, u8 **, 0x7C) != NULL) {
+            func_020651c4(M2C_FIELD(arg0, u8 **, 0x7C), M2C_FIELD(arg0, u8 **, 0x7C) + size,
+                          M2C_FIELD(arg0, s32 *, 0x80));
+        }
+        if (result != 0) {
+            break;
+        }
+    }
+    if (result != 0) {
+        func_02061efc(arg0);
+    }
+    return result;
+}
+
 s32 func_020639c0(void *arg0) {
     s32 func_02049534(s32);
     s32 func_020497cc(s32, s32, s32, M2C_UNK);

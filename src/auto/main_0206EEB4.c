@@ -41,6 +41,9 @@ void func_0206f034(void *arg0, s32 arg1, s32 arg2, void *arg3) {
  M2C_FIELD(arg3,s16 *,2)-=M2C_FIELD(arg3,u8 *,4)-1;
  i=0; if ((s32)M2C_FIELD(arg3,u8 *,4)>0) do { void *p=(u8 *)arg3+i; u8 c=M2C_FIELD(p,u8 *,5); i++; M2C_FIELD(p,u8 *,5)=c+0x30; } while(i<M2C_FIELD(arg3,u8 *,4));
 }
+
+void func_0206f0dc(s32 arg0) { (void)arg0; }
+
 #pragma opt_strength_reduction reset
 s32 func_0206f700(unsigned long long x) {
  x=x-((x>>1)&0x5555555555555555ULL);

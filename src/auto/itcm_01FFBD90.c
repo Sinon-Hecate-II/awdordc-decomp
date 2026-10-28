@@ -3,6 +3,19 @@
 
 /* Fill a diamond (Manhattan circle) of the given radius centered at (x,y)
    in the map occupancy grid with value. */
+void func_01ffbd90(u8 *arg0) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5bfc[];
+    s32 func_020a76d4(u8 *);
+
+    void *map = *gCurrentMap;
+    s32 r = func_020a76d4(arg0);
+    (void)map;
+    (void)data_ov000_021b5bfc;
+    (void)r;
+    (void)arg0;
+}
+
 void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
     extern void **gCurrentMap;
     s16 dy, row, col;
@@ -67,6 +80,36 @@ if(y>0)M2C_FIELD(*gCurrentMap+(y-1)*4,u8 **,0x52e8)[x]=0;
 if(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **,0x52e8)[x]=0;
 }
 
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+void func_01ffc4b8(s32 x,s32 y,s8 *out){
+ void func_01ffc718(s8 *,s8 *);extern void **gCurrentMap;s32 func_0207c2f0(void);
+ s8 *start; s16 dirs[4],costs[4];s32 i,min,dir; s16 count;
+ s32 map; s8 *row;
+ start=out;
+ M2C_FIELD(*gCurrentMap,s8 *,0x52d5)=M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x];
+ dir=0;
+ map=(s32)*gCurrentMap;row=M2C_FIELD(map+(y<<2),s8 **,0x52e8)+x;
+ while(*row!=0){
+ if(x+1==M2C_FIELD(map,u16 *,0x5144))costs[0]=255;else costs[0]=(u8)row[1];
+ if(x==0)costs[1]=255;else costs[1]=(u8)row[-1];
+ if(y+1==M2C_FIELD(map,u16 *,0x5146))costs[3]=255;else costs[3]=M2C_FIELD(map+y*4,u8 **,0x52ec)[x];
+ if(y==0)costs[2]=255;else costs[2]=M2C_FIELD(map+y*4,u8 **,0x52e4)[x];
+ count=0;min=256;
+ for(i=0;i<4;i++){if(min>costs[i])min=costs[i];}
+ for(i=0;i<4;i++){if(min==costs[i])dirs[count++]=i;}
+ switch(count){
+ case 1:dir=dirs[0];break;
+ case 2:dir=dirs[(func_0207c2f0()>>14)&1];break;
+ case 3:dir=dirs[func_0207c2f0()%3];break;
+ case 4:dir=dirs[func_0207c2f0()%4];break;
+ }
+ *out++=dir;
+ switch(dir){case 0:x++;break;case 1:x--;break;case 3:y++;break;case 2:y--;break;}
+ map=(s32)*gCurrentMap;row=M2C_FIELD(map+(y<<2),s8 **,0x52e8)+x;
+ }
+ func_01ffc718(start,out);
+}
 void func_01ffc718(s8 *arg0, s8 *arg1) {
  s8 buf[20]; s32 i=0,j; s8 c;
  if(arg1!=arg0) {do {buf[i++]=*--arg1;} while(arg1!=arg0);}

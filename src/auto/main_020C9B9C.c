@@ -1,6 +1,8 @@
 /* 17 functions from 0x020C9B9C to 0x020CAB8C (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_020c9b9c(void *arg0) { (void)arg0; return 0; }
+
 void func_020c9e14(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_020cbc88(void *, void *);
@@ -125,6 +127,10 @@ s32 func_020ca190(void) {
         if ((u32)M2C_FIELD((u8 *)*gCurrentMap + var_r0 * 0x8C, u8 *, 0x67BC) >= (u32)data_02168f14[2]) return var_r0;
         var_r0 += 1;
     } while (var_r0 < 5U);
+    return 0;
+}
+
+s32 func_020ca1ec(void) {
     return 0;
 }
 
@@ -279,6 +285,10 @@ void func_020ca77c(M2C_UNK arg0) {
     M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b1fc;
     func_01ffa42c(&data_0212b1fc, arg0);
+}
+
+void func_020ca794(void *arg0) {
+    return;
 }
 
 /* Handles a confirmation-style selection menu: moves the cursor, opens detail view on confirm, or signals cancel. */

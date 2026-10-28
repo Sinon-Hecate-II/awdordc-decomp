@@ -161,6 +161,10 @@ void func_ov001_0217c2b4(void) {
     func_ov001_0217c668();
 }
 
+s32 func_ov001_0217c2c4(void) {
+    return 0;
+}
+
 s32 func_ov001_0217c5d4(s32 arg0) {
     M2C_UNK func_02008048(void *, u8 *, s32);
     s32 func_0206ad38(u8 *);

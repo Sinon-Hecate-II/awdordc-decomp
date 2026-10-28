@@ -305,6 +305,10 @@ block_6:
     return 0;
 }
 
+s32 func_020623bc(void *a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
+    return 0;
+}
+
 void func_0206262c(void *a) {void func_02061d24(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)func_02061d24(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
 
 void func_02062670(void *a) {

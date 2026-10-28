@@ -120,6 +120,11 @@ void func_0203ec48(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_0200567c(arg0, 0x100, &data_020fc9a4, &data_020fc978, 3, &data_020fc958, arg1, arg2, arg2, &data_020fc960, arg3, &data_020fc96c, &data_020fc958);
 }
 
+s32 func_0203ecb0(s32 arg0, s32 arg1, s32 arg2) {
+    (void)arg0; (void)arg1; (void)arg2;
+    return 0;
+}
+
 s32 func_0203ef9c(void *arg0) {
     s32 func_02043008();
     s32 func_0205b048(s32);

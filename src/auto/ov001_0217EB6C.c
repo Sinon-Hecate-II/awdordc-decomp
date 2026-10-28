@@ -4,6 +4,49 @@ typedef struct { u8 bytes[4]; } FourBytes;
 typedef struct { u8 bytes[14]; } FourteenBytes;
 typedef struct { u16 a,b,c,d; } FourShorts;
 
+#pragma opt_strength_reduction off
+s32 func_ov001_0217eb6c(void){
+ s32 func_ov001_0218bbd8(void *);s32 func_ov001_0218bd1c(FourShorts *);
+ s32 func_02002088(u16,s32);
+ extern M2C_UNK data_ov001_0218fd20,data_ov001_02193dac;
+ extern FourBytes data_ov001_0218f8c4;
+ extern u8 data_ov001_0218f9a4[],data_ov001_0218f952[];
+ s32 value,i,j,k,offset;u8 *p;
+ if(!func_ov001_0218bbd8(&data_ov001_0218fd20))return 14;
+ value=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);
+ {FourShorts rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+4);i=0;do{
+ if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return data_ov001_0218f9a4[value];}
+ rect.b+=29;i++;value++;
+ }while(i<4);
+ value=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);
+ for(j=0;j<4;j++,value++){
+ if(value==2){
+ rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
+ offset=j*29;rect.b+=offset;
+ if(func_ov001_0218bd1c(&rect))return 2;
+ rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
+ offset=j*29;rect.b+=offset;
+ if(func_ov001_0218bd1c(&rect))return 3;
+ break;
+ }
+ }
+ value=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);
+ for(k=0;k<4;k++,value++){
+ if(value==6){
+ rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
+ offset=k*29;rect.b+=offset;
+ if(func_ov001_0218bd1c(&rect))return 7;
+ rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
+ offset=k*29;rect.b+=offset;
+ if(func_ov001_0218bd1c(&rect))return 8;
+ break;
+ }
+ }
+ p=data_ov001_0218f952;
+ for(i=0;i<3;i++,p+=8){if(func_ov001_0218bbd8(p))return i+11;}
+ return 14;
+}}
+#pragma opt_strength_reduction on
 s32 func_ov001_0217ede0(s32 arg0) {
     s32 func_02002088(u16, s32);
     extern M2C_UNK data_ov001_02193dac;
@@ -102,6 +145,10 @@ void func_ov001_0217f038(void) {
 M2C_UNK func_ov001_0217f110(void){void *func_ov001_0218445c(void);s32 func_02002088(u16,s32);void func_ov001_0217f038(void);extern M2C_UNK data_ov001_02193dac;extern u8 data_ov001_0218f9a4[];void *p;s32 i,j;if((u8)(M2C_FIELD(&data_ov001_02193dac,u8 *,0)+245)<=2){func_ov001_0217f038();return;}p=func_ov001_0218445c();i=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);j=M2C_FIELD(&data_ov001_02193dac,u8 *,2);j+=i;switch(j){case 2:if(M2C_FIELD(p,u8 *,0xf5))M2C_FIELD(&data_ov001_02193dac,u8 *,0)=2;else M2C_FIELD(&data_ov001_02193dac,u8 *,0)=3;break;case 6:if(M2C_FIELD(p,u8 *,0xf6))M2C_FIELD(&data_ov001_02193dac,u8 *,0)=7;else M2C_FIELD(&data_ov001_02193dac,u8 *,0)=8;break;default:M2C_FIELD(&data_ov001_02193dac,u8 *,0)=data_ov001_0218f9a4[j];break;}func_ov001_0217f038();}
 
 void func_ov001_0217f1c0(u32 a){void func_ov001_0217f038(void);extern M2C_UNK data_ov001_02193dac;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&data_ov001_02193dac,u8 *,0)=a;M2C_FIELD(&data_ov001_02193dac,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);func_ov001_0217f038();}
+
+void func_ov001_0217f1f0(s32 arg0) {
+    (void)arg0;
+}
 
 void func_ov001_0217f4e0(void){void func_ov001_021837e4(s32,u8,u8);extern M2C_UNK data_ov001_02193dac;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&data_ov001_02193dac,u8 *,0)-11];func_ov001_021837e4(M2C_FIELD(M2C_FIELD(&data_ov001_02193dac,void **,8),s32 *,16),v,v);}
 

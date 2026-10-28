@@ -218,6 +218,74 @@ loop_7:
     goto loop_7;
 }
 
+s32 func_0204c0fc(void *state, void *context, s32 flag) {
+    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK func_020675e4(void *, void *, ...);
+    s32 func_02068c34(const char *);
+    s32 func_0204a9d0(void *, void *, s32);
+    s32 func_0204bcdc(void *, void *);
+    s32 func_0204bec0(void *, void *);
+    s32 func_0204c01c(void *, M2C_UNK);
+    extern M2C_UNK data_020fd598, data_020fd334, data_020fd24c, data_020fd5b8, data_020fd5bc, data_020fd5c4, data_020fd5ec, data_020fd618, data_020fd648, data_020fd330, data_020fd69c;
+
+    u8 buf[0x800];
+
+    if (M2C_FIELD(state, s32 *, 4) == -1) {
+        M2C_FIELD(state, s32 *, 4) = 0;
+        if (M2C_FIELD(M2C_FIELD(context, void **, 0x13c), s32 *, 0xc) == 0) {
+            if (M2C_FIELD(M2C_FIELD(state, void **, 0), s32 *, 0) != 0) {
+                func_020640a8(&data_020fd598, &data_020fd334, &data_020fd24c, 0x3a9);
+            }
+            func_020675e4(buf, flag ? &data_020fd5b8 : &data_020fd5bc,
+                          M2C_FIELD(M2C_FIELD(state, void **, 0), s32 *, 4));
+        } else {
+            void *d = M2C_FIELD(state, void **, 0);
+            s32 type = M2C_FIELD(d, s32 *, 0);
+            if (type == 0) {
+                func_020675e4(buf, &data_020fd618,
+                              flag ? &data_020fd5c4 : &data_020fd5ec,
+                              M2C_FIELD(d, s32 *, 4));
+            } else if (type == 1 || type == 2) {
+                s32 a0, a1;
+                if (type == 1) {
+                    a0 = M2C_FIELD(d, s32 *, 0xc);
+                    a1 = M2C_FIELD(d, s32 *, 0x10);
+                } else {
+                    a0 = M2C_FIELD(d, s32 *, 0x10);
+                    a1 = M2C_FIELD(d, s32 *, 0x14);
+                }
+                func_020675e4(buf, &data_020fd648,
+                              flag ? &data_020fd5c4 : &data_020fd5ec,
+                              M2C_FIELD(d, s32 *, 4), a0, a1);
+            } else {
+                func_020640a8(&data_020fd330, &data_020fd334, &data_020fd24c, 0x3dc);
+            }
+        }
+        {
+            s32 len = func_02068c34((const char *)buf);
+            s32 res = func_0204a9d0(context, buf, len);
+            if (res == 0) return 0;
+            if (res == 2) return 2;
+        }
+    }
+
+    {
+        void *d = M2C_FIELD(state, void **, 0);
+        s32 type = M2C_FIELD(d, s32 *, 0);
+        if (type == 0) return func_0204bcdc(state, context);
+        if (type == 1) return func_0204bec0(state, context);
+        if (type != 2) {
+            func_020640a8(&data_020fd69c, &data_020fd334, &data_020fd24c, 0x3f5);
+        }
+        return func_0204c01c(state, context);
+    }
+}
+
+s32 func_0204c300(void *arg0) {
+    (void)arg0;
+    return 0;
+}
+
 s32 func_0204c580(void *a) {
 s32 func_02049274(s8 *); s32 func_02068eac(s8 *,void *,s32); s8 *func_02068ee0(s32,s32); s32 func_02068f1c(s8 *,void *); s32 func_0206ad38(s8 *);
 extern u8 data_020fd858[],data_020fd864[],data_020fd7c4[],data_020fd874[],data_020fd884[],data_020fd88c[],data_020fd898[];extern s8 data_020fd89c[];

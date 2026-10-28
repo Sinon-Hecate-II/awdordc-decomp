@@ -96,6 +96,12 @@ void func_ov007_02215254(s32 arg0, s32 arg1, s16 arg2) {
     M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = func_0207efb4(arg2);
 }
 
+s32 func_ov007_022152bc(M2C_UNK arg0, s32 arg1) {
+    (void) arg0;
+    (void) arg1;
+    return 0;
+}
+
 s32 func_ov007_022156a4(s32 x,s32 y) {
  s32 func_ov007_0221b754(s32,s32);
  s32 i,j;
@@ -120,6 +126,67 @@ s32 func_ov007_02215704(s32 x, s32 y) {
         return 1;
     }
     return 0;
+}
+
+Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 RandomIntRange(s32, s32);
+    Map14E24 *m;
+    u16 t;
+    s32 rx, ry;
+    s32 scale;
+    s32 placed, tries;
+
+    scale = arg2 * 5;
+
+    func_ov007_02215254(arg0, arg1, (s16)(scale + 0x1c0));
+
+    placed = 0;
+    tries = 0;
+    for (placed = 0; placed < arg3; placed++) {
+        s32 base;
+        base = scale + 0xc1;
+        rx = RandomIntRange(arg0 - 2, arg0 + 2);
+        ry = RandomIntRange(arg1 - 2, arg1 + 2);
+        if (rx < 0) { placed--; continue; }
+        m = (Map14E24 *)*gCurrentMap;
+        if (rx >= m->width) { placed--; continue; }
+        if (ry < 0) { placed--; continue; }
+        if (ry >= m->height) { placed--; continue; }
+        t = m->cells[rx + m->rows[ry]];
+        if (t != 1 || ry < 0 || ry >= m->height || rx < 0 || rx >= m->width) {
+            tries++;
+            if (tries > 100) { placed--; break; }
+            placed--;
+            continue;
+        }
+        func_ov007_02215254(rx, ry, (s16)(base + 0x100));
+    }
+
+    placed = 0;
+    tries = 0;
+    {
+        s32 base = scale + 0xc3;
+        for (placed = 0; placed < arg4; placed++) {
+            rx = RandomIntRange(arg0 - 2, arg0 + 2);
+            ry = RandomIntRange(arg1 - 2, arg1 + 2);
+            m = (Map14E24 *)*gCurrentMap;
+            t = m->cells[rx + m->rows[ry]];
+            if (t != 1 || ry < 0 || ry >= m->height || rx < 0 || rx >= m->width) {
+                tries++;
+                if (tries > 100) { placed--; break; }
+                placed--;
+                continue;
+            }
+            func_ov007_02215254(rx, ry, (s16)(base + 0x100));
+        }
+    }
+
+    {
+        Point15A0C result;
+        result.x = (u16)arg0;
+        result.y = (u16)arg1;
+        return result;
+    }
 }
 
 #pragma opt_common_subs on

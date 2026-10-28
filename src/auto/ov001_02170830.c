@@ -113,13 +113,13 @@ void func_ov001_021714d0(void) {
     s32 *temp_r3;
     s32 *temp_r3_2;
 
-    M2C_FIELD(data_ov001_02193cc4, u8 *, 9) = func_020020c4(M2C_FIELD(data_ov001_02193cc4, u8 *, 9) + 1, 0x28);
+    M2C_FIELD(data_ov001_02193cc4, u8 *, 9) = func_020020c4(M2C_FIELD(data_ov001_02193cc4, u8 *, 9) + 1, (M2C_UNK)0x28);
     func_ov001_0218a55c(0, func_02002088(M2C_FIELD(data_ov001_02193cc4, u8 *, 9), 5) + 0x47, M2C_FIELD(data_ov001_02193cc4, s32 **, 4));
     temp_r3 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
     M2C_FIELD(temp_r3, u16 *, 4) = (u16) ((M2C_FIELD(temp_r3, u16 *, 4) & ~0xC00) | 0x400);
     temp_r3_2 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
     M2C_FIELD(temp_r3_2, s32 *, 0) &= ~0xC00;
-    M2C_FIELD(temp_r3_2, u16 *, 4) = (u16) ((M2C_FIELD(temp_r3_2, u16 *, 4) & ~0xF000) | (*(&data_ov001_0218f278 + M2C_FIELD(data_ov001_02193cc4, u8 *, 8)) << 0xC));
+    M2C_FIELD(temp_r3_2, u16 *, 4) = (u16) ((M2C_FIELD(temp_r3_2, u16 *, 4) & ~0xF000) | (((u8 *)&data_ov001_0218f278)[M2C_FIELD(data_ov001_02193cc4, u8 *, 8)] << 0xC));
     temp_r2 = M2C_FIELD(data_ov001_02193cc4, s32 **, 4);
     *temp_r2 = (*temp_r2 & 0xFE00FF00) | 0xE6008B;
 }

@@ -2,6 +2,71 @@
 #include "common.h"
 
 
+#pragma opt_strength_reduction off
+void func_ov000_021707d8(void) {
+extern void *gCur3DSpriteEngine,*data_027e00c8;
+extern void **gCurrentMap;
+extern u8 data_02168f14[];
+s32 func_020cd6d4(void);s32 func_020a8a84(u16);void *func_020cfb78(void);
+void func_0209c048(s16,s16,void *,s32,s32,s32);
+void func_0209c024(s16,s16,void *,void *,s32,s32);
+s32 func_020e31e0(void);s32 func_0207cb88(s32);s32 func_020cfb94(void);
+s32 func_020d303c(s32);s32 func_020d30a8(s32);
+void *func_020a8bc0(void);void *func_020a8bcc(void);
+void *old;
+void *dst;
+s32 c,d;u8 *dummy; s32 y,color,a,b,x;volatile s32 e;
+u8 *p,*map;
+old=gCur3DSpriteEngine;dst=M2C_FIELD(old,void **,0x24);
+gCur3DSpriteEngine=data_027e00c8;
+if(func_020cd6d4()){
+func_0209c048(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
+func_0209c024(5,1,dst,func_020cfb78(),0,0);
+}else func_0209c024(2,1,dst,func_020cfb78(),0,0);
+if(!func_020e31e0()) x=26;
+else x=30-(3-func_0207cb88(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
+func_0209c048((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
+{s32 i=0;
+if(func_020cfb94()>0){y=6;do{
+s32 x;
+x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
+if(p[0x1e] && !p[0x19]){
+a=func_020d303c(x);if(a>999)a=999;
+b=func_020d30a8(x);if(b>999)b=999;
+x=M2C_FIELD(p,s32 *,0);c=p[0x18];if(c>999)c=999;d=M2C_FIELD(p,s32 *,8);if(d>999999)d=999999;e=x;if(x>999999)e=999999;
+color=p[0x1c]?3:0;
+func_0209c048(8,(s16)y,dst,a,0,color);
+func_0209c048(12,(s16)y,dst,b,0,color);
+if(p[0x1c]){
+func_0209c024(16,(s16)y,dst,func_020a8bc0(),0,color);
+func_0209c024(23,(s16)y,dst,func_020a8bc0(),0,color);
+func_0209c024(30,(s16)y,dst,func_020a8bc0(),0,color);
+}else{
+map=*gCurrentMap;
+if((!map[0x5156] && map[0x5158]!=2) || p[0x26]==map[0x67ca+M2C_FIELD(map,u16 *,0x52a4)*140]){
+func_0209c048(16,(s16)y,dst,c,0,color);
+func_0209c048(23,(s16)y,dst,d,0,color);
+func_0209c048(30,(s16)y,dst,e,0,color);
+}else{
+if(data_02168f14[2]){
+func_0209c048(16,(s16)y,dst,c,0,color);
+func_0209c048(23,(s16)y,dst,d,0,color);
+}else{
+func_0209c024(16,(s16)y,dst,func_020a8bcc(),0,color);
+func_0209c024(23,(s16)y,dst,func_020a8bcc(),0,color);
+}
+func_0209c024(30,(s16)y,dst,func_020a8bcc(),0,color);
+}}
+y+=3;
+}i++;}while(i<func_020cfb94());}}
+map=*gCurrentMap;
+if((!map[0x5156] && map[0x5158]!=2)||data_02168f14[2]){
+a=map[0x67bc];if(a>999)a=999;
+func_0209c048(16,17,dst,a,0,0);
+}else func_0209c024(16,17,dst,func_020a8bcc(),0,0);
+gCur3DSpriteEngine=old;
+}
+#pragma opt_strength_reduction reset
 void func_ov000_02170ca0(void) {
     M2C_UNK func_01ffa6fc(s32);
     s32 func_01ffa770(M2C_UNK *);
@@ -120,6 +185,8 @@ void func_ov000_02171214(void) {
     extern M2C_UNK data_ov000_021b8c18;
     func_01ffa3dc(&data_ov000_021b8c18, 7);
 }
+
+s32 func_ov000_0217122c(s32 arg0) { return 0; }
 
 void func_ov000_02171468(u8 *p){
 extern void *gCur3DSpriteEngine,*data_027e00c8;

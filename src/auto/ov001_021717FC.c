@@ -202,6 +202,13 @@ func_ov001_0218af94(p,data_ov001_0218f2dc[x*2],data_ov001_0218f2de[y*2],2,0x209,
 func_ov001_0218b298(p);
 }
 
+s32 func_ov001_02171f88(void) {
+    s32 func_ov001_02175ddc(s32);
+    extern s32 data_ov001_0218f2c0[];
+    s32 index = ((s32 (*)(void))func_ov001_02175ddc)();
+    return data_ov001_0218f2c0[index];
+}
+
 void func_ov001_02171fa0(void) {
  s32 func_ov001_0218b6f8(s32,s32);
  data_ov001_02193d10=func_ov001_0218b6f8(16,4);

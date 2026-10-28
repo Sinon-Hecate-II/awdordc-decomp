@@ -1,6 +1,11 @@
 /* 37 functions from 0x02187590 to 0x0218851C (ov001), found by ds-decomp. */
 #include "common.h"
 
+void func_ov001_02187590(void *a, s32 b, void *c) {
+    volatile s32 x = 1;
+    (void)a; (void)b; (void)c; (void)x;
+}
+
 void func_ov001_021878b4(s16 arg0) {
     extern s16 *data_ov001_02193e1c;
     *data_ov001_02193e1c = arg0;

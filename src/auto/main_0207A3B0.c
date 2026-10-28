@@ -1,6 +1,11 @@
 /* 20 functions from 0x0207A3B0 to 0x0207B2F0 (main), found by ds-decomp. */
 #include "common.h"
 
+int func_0207a3b0(int a, int b, unsigned short c, unsigned char d, int e, int f, int g, int h, int i, int j, int k) {
+    (void)a;(void)b;(void)c;(void)d;(void)e;(void)f;(void)g;(void)h;(void)i;(void)j;(void)k;
+    return 0;
+}
+
 void func_0207a61c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u8 arg5, u8 arg6) {
     M2C_UNK func_0207a3b0(s32, M2C_UNK, u16, u8, s32, s32, s32, s32, s32, s32, s32);
     func_0207a3b0(arg0 + (arg1 * 2) + (arg2 << 6), arg3, arg4, arg5, (s32) arg6, 0, 0, 0, 0, 0, 0);
@@ -58,6 +63,247 @@ void func_0207a77c(s32 arg0) {
  temp_r1 = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(s32),0x2c);
  if (temp_r1 == 0) return;
  temp_r1(arg0);
+}
+
+void func_0207a7a4(s32 arg0, s32 arg1) {
+    extern void *gCurrentMap;
+    extern void *data_02101e88;
+    extern void *data_02101e84;
+    extern u8 data_02144cdc;
+    extern u8 data_02100bac;
+
+    M2C_UNK func_0207d0b8(void);
+    M2C_UNK func_0207d0d4(void);
+
+    s32 r5 = func_0207d0b8();
+    s32 r0v = func_0207d0d4();
+    void *r9 = M2C_FIELD(gCurrentMap, void **, 0);
+    void *r8p = M2C_FIELD(data_02101e88, void **, 0);
+    s32 r12f = 0;
+    u32 lr = 0;
+    s32 r6f = 0;
+    s32 r7f = 0;
+    u16 r2v = M2C_FIELD(r8p, u16 *, 0);
+    u16 r3v = M2C_FIELD(r8p, u16 *, 2);
+    void *base9 = M2C_FIELD(r9, void **, 0);
+    void *p5200 = (u8 *)base9 + 0x5200;
+    s16 valC2 = M2C_FIELD(p5200, s16 *, 0xc2);
+    s32 stack0 = valC2;
+    s16 valC4 = M2C_FIELD(p5200, s16 *, 0xc4);
+
+    if (arg0 != 0) {
+        u8 b;
+        void *base, *q, *base2, *q2, *base3, *q3, *base4, *q4;
+        u8 st, st2, st3, st4;
+        b = M2C_FIELD(r8p, u8 *, 0x12);
+        if (b != 0) {
+            data_02144cdc = 1;
+        } else {
+            void *g = data_02101e84;
+            u8 t = data_02100bac;
+            u16 h = M2C_FIELD(g, u16 *, 0x6);
+            if (h & t) {
+                data_02144cdc = 0;
+            }
+        }
+        if (data_02144cdc != 0) {
+            u8 v = M2C_FIELD(r8p, u8 *, 0x12);
+            if (v != 0) {
+                if (r2v < 0xc) r12f = 1;
+                if (r3v < 0xc) r6f = 1;
+                if (r2v >= 0xf4) lr = 1;
+                if (r3v >= 0xb4) r7f = 1;
+            }
+        } else {
+            s16 a4a, a48;
+            s32 a, c;
+            void *base5 = M2C_FIELD(r9, void **, 0);
+            void *q5 = (u8 *)base5 + 0x5100;
+            a4a = M2C_FIELD(q5, s16 *, 0x4a);
+            a48 = M2C_FIELD(q5, s16 *, 0x48);
+            a = valC4 - (a4a >> 4);
+            c = stack0 - (a48 >> 4);
+            if (c < 1) r12f = 1;
+            if (a < 1) r6f = 1;
+            if (c > r5 - 2) lr = 1;
+            if (a > r0v - 2) r7f = 1;
+        }
+        base = M2C_FIELD(r9, void **, 0);
+        q = (u8 *)base + 0x5000;
+        st = M2C_FIELD(q, u8 *, 0x154);
+        if ((st & 0x3) == 0) {
+            if (r12f) { st |= 0x2; M2C_FIELD(q, u8 *, 0x154) = st; }
+            if (lr) {
+                base2 = M2C_FIELD(gCurrentMap, void **, 0);
+                base2 = M2C_FIELD(base2, void **, 0);
+                q2 = (u8 *)base2 + 0x5000;
+                st2 = M2C_FIELD(q2, u8 *, 0x154);
+                st2 |= 0x1;
+                M2C_FIELD(q2, u8 *, 0x154) = st2;
+            }
+        }
+        base3 = M2C_FIELD(gCurrentMap, void **, 0);
+        base3 = M2C_FIELD(base3, void **, 0);
+        q3 = (u8 *)base3 + 0x5000;
+        st3 = M2C_FIELD(q3, u8 *, 0x154);
+        if ((st3 & 0xc) == 0) {
+            if (r6f) { st3 |= 0x4; M2C_FIELD(q3, u8 *, 0x154) = st3; }
+            if (r7f) {
+                base4 = M2C_FIELD(gCurrentMap, void **, 0);
+                base4 = M2C_FIELD(base4, void **, 0);
+                q4 = (u8 *)base4 + 0x5000;
+                st4 = M2C_FIELD(q4, u8 *, 0x154);
+                st4 |= 0x8;
+                M2C_FIELD(q4, u8 *, 0x154) = st4;
+            }
+        }
+    }
+
+    {
+        void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
+        u8 st, st2;
+        u16 a;
+        s16 bb, bb2;
+        s32 t;
+        h = M2C_FIELD(gCurrentMap, void **, 0);
+        base = M2C_FIELD(h, void **, 0);
+        q = (u8 *)base + 0x5000;
+        st = M2C_FIELD(q, u8 *, 0x154);
+        if (st & 0x1) {
+            b = M2C_FIELD(h, void **, 0);
+            qp = (u8 *)b + 0x5100;
+            a = M2C_FIELD(qp, u16 *, 0x44);
+            bb = M2C_FIELD(qp, s16 *, 0x48);
+            t = a - (bb >> 4);
+            if (t <= r5) {
+                st ^= 0x1;
+                M2C_FIELD(q, u8 *, 0x154) = st;
+            } else {
+                M2C_FIELD(qp, s16 *, 0x48) = (s16)(bb + arg1);
+            }
+            h2 = M2C_FIELD(gCurrentMap, void **, 0);
+            base2 = M2C_FIELD(h2, void **, 0);
+            qp2 = (u8 *)base2 + 0x5100;
+            bb2 = M2C_FIELD(qp2, s16 *, 0x48);
+            if ((bb2 & 0xf) == 0) {
+                q2 = (u8 *)base2 + 0x5000;
+                st2 = M2C_FIELD(q2, u8 *, 0x154);
+                st2 ^= 0x1;
+                M2C_FIELD(q2, u8 *, 0x154) = st2;
+            }
+        }
+    }
+
+    {
+        void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
+        u8 st, st2;
+        s16 bb, bb2;
+        h = M2C_FIELD(gCurrentMap, void **, 0);
+        base = M2C_FIELD(h, void **, 0);
+        q = (u8 *)base + 0x5000;
+        st = M2C_FIELD(q, u8 *, 0x154);
+        if (st & 0x2) {
+            b = M2C_FIELD(h, void **, 0);
+            qp = (u8 *)b + 0x5100;
+            bb = M2C_FIELD(qp, s16 *, 0x48);
+            if (bb <= 0) {
+                st ^= 0x2;
+                M2C_FIELD(q, u8 *, 0x154) = st;
+            } else {
+                M2C_FIELD(qp, s16 *, 0x48) = (s16)(bb - arg1);
+            }
+            h2 = M2C_FIELD(gCurrentMap, void **, 0);
+            base2 = M2C_FIELD(h2, void **, 0);
+            qp2 = (u8 *)base2 + 0x5100;
+            bb2 = M2C_FIELD(qp2, s16 *, 0x48);
+            if ((bb2 & 0xf) == 0) {
+                q2 = (u8 *)base2 + 0x5000;
+                st2 = M2C_FIELD(q2, u8 *, 0x154);
+                st2 ^= 0x2;
+                M2C_FIELD(q2, u8 *, 0x154) = st2;
+            }
+        }
+    }
+
+    {
+        void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
+        u8 st, st2;
+        s16 bb, bb2;
+        h = M2C_FIELD(gCurrentMap, void **, 0);
+        base = M2C_FIELD(h, void **, 0);
+        q = (u8 *)base + 0x5000;
+        st = M2C_FIELD(q, u8 *, 0x154);
+        if (st & 0x4) {
+            b = M2C_FIELD(h, void **, 0);
+            qp = (u8 *)b + 0x5100;
+            bb = M2C_FIELD(qp, s16 *, 0x4a);
+            if (bb <= 0) {
+                st ^= 0x4;
+                M2C_FIELD(q, u8 *, 0x154) = st;
+            } else {
+                M2C_FIELD(qp, s16 *, 0x4a) = (s16)(bb - arg1);
+            }
+            h2 = M2C_FIELD(gCurrentMap, void **, 0);
+            base2 = M2C_FIELD(h2, void **, 0);
+            qp2 = (u8 *)base2 + 0x5100;
+            bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
+            if ((bb2 & 0xf) == 0) {
+                q2 = (u8 *)base2 + 0x5000;
+                st2 = M2C_FIELD(q2, u8 *, 0x154);
+                st2 ^= 0x4;
+                M2C_FIELD(q2, u8 *, 0x154) = st2;
+            }
+        }
+    }
+
+    {
+        void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
+        u8 st, st2;
+        u16 a;
+        s16 bb, bb2;
+        s32 t;
+        h = M2C_FIELD(gCurrentMap, void **, 0);
+        base = M2C_FIELD(h, void **, 0);
+        q = (u8 *)base + 0x5000;
+        st = M2C_FIELD(q, u8 *, 0x154);
+        if (st & 0x8) {
+            b = M2C_FIELD(h, void **, 0);
+            qp = (u8 *)b + 0x5100;
+            a = M2C_FIELD(qp, u16 *, 0x46);
+            bb = M2C_FIELD(qp, s16 *, 0x4a);
+            t = a - (bb >> 4);
+            if (t <= r0v) {
+                st ^= 0x8;
+                M2C_FIELD(q, u8 *, 0x154) = st;
+            } else {
+                M2C_FIELD(qp, s16 *, 0x4a) = (s16)(bb + arg1);
+            }
+            h2 = M2C_FIELD(gCurrentMap, void **, 0);
+            base2 = M2C_FIELD(h2, void **, 0);
+            qp2 = (u8 *)base2 + 0x5100;
+            bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
+            if ((bb2 & 0xf) == 0) {
+                q2 = (u8 *)base2 + 0x5000;
+                st2 = M2C_FIELD(q2, u8 *, 0x154);
+                st2 ^= 0x8;
+                M2C_FIELD(q2, u8 *, 0x154) = st2;
+            }
+        }
+    }
+
+    {
+        void *h, *base, *q;
+        void *fp;
+        void (*cb)(void);
+        h = M2C_FIELD(gCurrentMap, void **, 0);
+        base = M2C_FIELD(h, void **, 0);
+        q = (u8 *)base + 0x4;
+        fp = M2C_FIELD(q, void **, 0);
+        cb = (void (*)(void))M2C_FIELD(fp, void (**)(void), 0x1c);
+        if (cb != 0) {
+            cb();
+        }
+    }
 }
 
 void func_0207ab24(s32 arg0, s32 arg1) {

@@ -277,6 +277,59 @@ void func_ov010_02228320(void) {
     func_020375fc();
 }
 
+#pragma optimize_ifs off
+s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
+    s32 var_r0;
+    s32 var_r1;
+
+    var_r0 = arg0;
+    if ((arg1 != 0) && (arg1 != 1) && (arg1 != 2)) {
+        var_r1 = 1;
+    } else {
+        var_r1 = 0;
+    }
+    if (var_r0 < 0) {
+        var_r0 = 0 - var_r0;
+    }
+    if ((var_r0 == 0x4E85) || ((var_r0 >= 0x59D8) && (var_r0 <= 0x5DBF))) {
+        return 0x42000007;
+    }
+    if (var_r0 == 0x4E8C) {
+        return 0x42000008;
+    }
+    if (var_r0 == 0x4E8E) {
+        return 0x42000009;
+    }
+    if ((var_r0 >= 0xC800) && (var_r0 <= 0xC863)) {
+        return 0x4200000A;
+    }
+    if ((var_r0 >= 0xC350) && (var_r0 <= 0xC3B3)) {
+        return 0x4200000B;
+    }
+    if (var_r0 == 0xC79F) {
+        return 0x4200000D;
+    }
+    if (((var_r0 >= 0xC738) && (var_r0 <= 0xC79B)) || ((var_r0 >= 0xC79C) && (var_r0 <= 0xC7FF)) || ((var_r0 >= 0xC864) && (var_r0 <= 0xC8C7))) {
+        return 0x4200000C;
+    }
+    if (((var_r0 >= 0xCB20) && (var_r0 <= 0xCB23)) || ((var_r0 >= 0xCB84) && (var_r0 <= 0xCB87)) || ((var_r0 >= 0xCBE8) && (var_r0 <= 0xCBEB))) {
+        return 0x4200000E;
+    }
+    if (var_r0 == 0x13A2E) {
+        return 0x4200000F;
+    }
+    if (((var_r0 >= 0x4E20) && (var_r0 <= 0x5207)) || ((var_r0 >= 0xCB20) && (var_r0 <= 0xCB83)) || ((var_r0 >= 0xCB84) && (var_r0 <= 0xCBE7)) || ((var_r0 >= 0xCBE8) && (var_r0 <= 0xCC4B)) || ((var_r0 >= 0xCC4C) && (var_r0 <= 0xCCAF)) || ((var_r0 >= 0xCF08) && (var_r0 <= 0xCF6B)) || ((var_r0 >= 0xCF6C) && (var_r0 <= 0xCFCF)) || ((var_r0 >= 0xCFD0) && (var_r0 <= 0xD033))) {
+        return 0x42000006;
+    }
+    if ((var_r1 == 0) && (var_r0 >= 0x7918) && (var_r0 <= 0x7CFF)) {
+        return 0x42000011;
+    }
+    if (var_r1 != 0) {
+        return 0x42000010;
+    }
+    return 0x42000012;
+}
+#pragma optimize_ifs reset
 void func_ov010_02228614(void) {
     M2C_UNK func_0203783c(M2C_UNK *);
     M2C_UNK func_02037854(M2C_UNK);
@@ -372,6 +425,58 @@ void func_ov010_02228748(M2C_UNK arg0) {
     M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov010_0222c1b8;
     func_01ffa42c(&data_ov010_0222c1b8, arg0);
+}
+
+M2C_UNK func_ov010_02228760(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
+    extern M2C_UNK data_ov010_0222c3fc;
+    extern M2C_UNK data_ov010_0222f1dc;
+    extern M2C_UNK data_ov010_0222c3f0;
+    extern M2C_UNK data_ov010_0222eee0;
+    extern M2C_UNK data_ov010_0222efc0;
+    extern M2C_UNK data_ov010_0222efec;
+    extern M2C_UNK data_ov010_0222c128;
+    extern M2C_UNK data_ov010_0222f02c;
+    extern M2C_UNK data_ov010_0222c160;
+    extern M2C_UNK data_ov010_0222c3bc;
+    extern M2C_UNK data_ov010_0222c330;
+    extern M2C_UNK data_ov010_0222c3a8;
+    M2C_UNK func_ov010_022282d4(M2C_UNK);
+    void func_ov010_0222791c(M2C_UNK);
+    M2C_UNK func_ov010_02226a88(void);
+    void *func_020c4acc(void);
+    void *func_020c4b60(void);
+    M2C_UNK func_ov010_02228b20(M2C_UNK);
+    M2C_UNK func_ov010_02228b38(M2C_UNK);
+    M2C_UNK func_ov010_02228b68(M2C_UNK);
+    M2C_UNK func_ov010_02228b80(M2C_UNK);
+    M2C_UNK func_ov010_02228b98(M2C_UNK);
+    M2C_UNK func_ov010_02228bb0(M2C_UNK);
+    void func_ov010_02229498(M2C_UNK);
+    void func_ov010_022294b0(M2C_UNK);
+    void func_ov010_022294c8(M2C_UNK);
+    M2C_UNK func_ov010_02229a50(void);
+    void func_ov000_0216a470(void);
+    void func_ov000_0216a564(void);
+    void func_ov000_0216a76c(void);
+    void func_ov000_0216a7c4(void);
+    M2C_UNK func_01ffa3dc(M2C_UNK, M2C_UNK);
+    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK);
+    M2C_UNK func_0203804c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_02038688(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_02074114(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+
+    M2C_UNK r4 = a;
+    func_ov010_022282d4(2);
+    func_ov010_0222791c(r4);
+    func_ov010_02226a88();
+    r4 = (M2C_UNK)func_020c4acc();
+    func_020c4b60();
+    func_ov010_02229a50();
+    func_ov000_0216a470();
+    func_ov000_0216a564();
+    func_ov000_0216a76c();
+    func_ov000_0216a7c4();
+    return 0;
 }
 
 void func_ov010_02228a38(void *arg0) {

@@ -48,6 +48,11 @@ void func_ov000_02176a9c(M2C_UNK arg0) {
     gCur3DSpriteEngine = temp_r4;
 }
 
+void func_ov000_02176af8(s32 arg0, s32 arg1) {
+    (void)arg0;
+    (void)arg1;
+}
+
 u8 func_ov000_02176dcc(void *arg0) {
     s32 func_020d46e8();
     s32 func_020d4ea8();

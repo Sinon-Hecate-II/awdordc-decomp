@@ -84,6 +84,11 @@ if(n-5<2)return;
 }else *out=M2C_FIELD(a,u16 *,0x4a8);
 }
 
+s32 func_02062a2c(M2C_UNK arg0, s32 arg1, u8 *arg2, s32 arg3, s32 arg4) {
+    (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4;
+    return 0;
+}
+
 /* Validates an encoded data block and, if valid, decodes it. */
 s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     s32 func_02061090(M2C_UNK, s32, u16);

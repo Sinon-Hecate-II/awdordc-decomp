@@ -155,6 +155,10 @@ sum=func_0201a63c((u16)sum);M2C_FIELD(p,u16 *,6)=(sum>>8)|(sum<<8);
 func_0201b140(p,8,arg0,arg1,M2C_FIELD(arg2,u32 *,0x1c),17);
 }
 
+s32 func_0201b524(void *a, void *b, void *c, void *d) {
+    return 0;
+}
+
 void func_0201b798(void *arg0) {
     M2C_UNK func_02008048(M2C_UNK *, void *, M2C_UNK);
     M2C_UNK func_0201a824(s32, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -246,34 +250,39 @@ void func_0201bb88(void *arg0, u8 *arg1, M2C_UNK arg2) {
     s32 func_0201a658(u8 *, M2C_UNK);
     M2C_UNK func_0201b984(void *, u8 *, M2C_UNK);
     M2C_UNK func_0201ba68(void *, u8 *, M2C_UNK);
-    u16 temp_r0;
-    u16 temp_r8;
-    u16 temp_r7;
-    u16 temp_lr;
-    u32 var0;
-    u32 var1;
-    u8 temp_r0_2;
+    u16 w0;
+    u16 w1;
+    u16 w2;
+    u16 w3;
+    u32 a;
+    u32 b;
+    u8 c;
 
     if (func_0201a658(arg1, arg2) != 0xFFFF) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, u16 *, 0x12);
-    temp_r8 = M2C_FIELD(arg0, u16 *, 0x10);
-    temp_r7 = M2C_FIELD(arg0, u16 *, 0xE);
-    temp_lr = M2C_FIELD(arg0, u16 *, 0xC);
+    w0 = M2C_FIELD(arg0, u16 *, 0x12);
+    w1 = M2C_FIELD(arg0, u16 *, 0x10);
+    w2 = M2C_FIELD(arg0, u16 *, 0xE);
+    w3 = M2C_FIELD(arg0, u16 *, 0xC);
 
-    var0 = ((temp_r7 << 8) | ((s32)temp_r7 >> 8)) | ((((temp_lr << 8) | ((s32)temp_lr >> 8))) << 16);
-    var1 = ((temp_r0 << 8) | ((s32)temp_r0 >> 8)) | ((((temp_r8 << 8) | ((s32)temp_r8 >> 8))) << 16);
+    w0 = (u16)((w0 << 8) | (w0 >> 8));
+    w1 = (u16)((w1 << 8) | (w1 >> 8));
+    w2 = (u16)((w2 << 8) | (w2 >> 8));
+    w3 = (u16)((w3 << 8) | (w3 >> 8));
 
-    if (func_0201bb68(var0, var1) == 0) {
+    a = ((u32)w3 << 16) | w2;
+    b = ((u32)w1 << 16) | w0;
+
+    if (func_0201bb68(a, b) == 0) {
         return;
     }
-    temp_r0_2 = *arg1;
-    switch (temp_r0_2) {
-    case 0:
+    c = *arg1;
+    if (c == 0) {
         func_0201ba68(arg0, arg1, arg2);
         return;
-    case 8:
+    }
+    if (c == 8) {
         func_0201b984(arg0, arg1, arg2);
         return;
     }

@@ -3,6 +3,7 @@
 typedef struct { u8 pixels[32]; } Unk020ETile;
 typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
 u16 *func_020e4c10(u16 *,u16 *,u16 *,u32);
+extern s32 data_02168ff4;
 
 void func_020e4490(void) {
     M2C_UNK func_020e4378();
@@ -473,5 +474,118 @@ void func_020e4e8c(void *arg0) {
     extern M2C_UNK data_02168ff8;
     func_0200dedc(&data_02168ff8);
     M2C_FIELD(arg0, u8 *, 0x3C) = (u8) (M2C_FIELD(arg0, u8 *, 0x3C) | 2);
+}
+
+void func_020e4eb0(void *arg0) {
+    void func_020067a8(void *, s32);
+    s32 func_0207c8ec(s32, s32);
+    void func_01ffaacc(s32, s32, s32, s32, s32);
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c4;
+    extern s32 data_02168ff4;
+    extern u8 data_027e00ac[];
+
+    u8 cond;
+    u8 idx;
+    u8 nidx;
+    u8 *r3p;
+    u8 *r2p;
+    s32 saved;
+    u8 *arr;
+    u8 b;
+    u32 i;
+    u32 maxv;
+    u8 t;
+    s32 tier;
+    u32 sum;
+    u8 *p;
+    s32 divres;
+    s32 r10;
+    s32 r8v;
+    u32 r9v;
+    u16 a0;
+    u16 **eng;
+    u16 *base;
+    u32 sh;
+    u16 arg2;
+
+    saved = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c4;
+
+    cond = (*(volatile s16 *)((char *)arg0 + 0x3e) == 0);
+    if (!cond) goto skip_all;
+
+    arr = (u8 *)data_02168ff4;
+    func_020067a8(arr, 0x20);
+
+    maxv = 0;
+    i = 0;
+    do {
+        b = arr[i];
+        if (b >= 0x15 && b <= 0xea) {
+            t = b;
+            if (b < 0x80) {
+                t = (u8)(0x100 - b);
+            }
+            if (maxv < t) {
+                maxv = t;
+            }
+        }
+        i = i + 1;
+    } while (i < 0x20);
+
+    if (maxv > 0xd0) tier = 4;
+    else if (maxv > 0xbb) tier = 3;
+    else if (maxv > 0xa3) tier = 2;
+    else if (maxv > 0x8d) tier = 1;
+    else tier = 0;
+
+    idx = ((u8 *)arg0)[0x40];
+    r3p = (u8 *)arg0 + 0x41;
+    r2p = (u8 *)arg0 + 0x4b;
+    ((u8 *)arg0 + idx)[0x41] = (u8)tier;
+
+    idx = ((u8 *)arg0)[0x40];
+    nidx = idx + 1;
+    ((u8 *)arg0)[0x40] = nidx;
+    if ((u8)(nidx & 0xff) >= 0x0a) {
+        ((u8 *)arg0)[0x40] = 0;
+    }
+
+    sum = 0;
+    p = r3p;
+    if (p != r2p) {
+        do {
+            sum += *p;
+            p++;
+        } while (p != r2p);
+    }
+
+    divres = func_0207c8ec(sum, 10);
+    r10 = divres;
+    if (r10 > 3) {
+        r10 = 3;
+    } else if (r10 < 0) {
+        r10 = 0;
+    }
+
+    r8v = 0x50;
+    r9v = 0;
+    if (r10 > 0) {
+        do {
+            a0 = (u16)(r8v & ((s32)data_027e00ac - 0x200));
+            eng = (u16 **)gCur3DSpriteEngine;
+            base = eng[0];
+            sh = ((u32)base[0] << 17) >> 30;
+            arg2 = (u16)(((s32)data_027e00ac & (0x140 >> sh)) | 0x6000);
+            func_01ffaacc(a0, 0x28, arg2, 0x3ff, 0x11);
+
+            r9v = (r9v + 1) & 0xff;
+            r8v = (s16)(r8v + 0x20);
+        } while (r9v < (u32)r10);
+    }
+
+skip_all:
+    gCur3DSpriteEngine = saved;
 }
 

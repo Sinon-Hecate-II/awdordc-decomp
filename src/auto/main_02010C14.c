@@ -245,6 +245,10 @@ value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0
 args=(s32 *)((u32)&count&~3)+1;result=3;while(count){args++;if(args[-1]==value)result=0;count--;}return result;
 }
 
+M2C_UNK func_02011548(void) {
+    return 0;
+}
+
 void func_020118f4(void) {
     u16 temp_r0;
 

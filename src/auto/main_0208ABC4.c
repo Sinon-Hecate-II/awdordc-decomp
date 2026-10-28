@@ -154,6 +154,8 @@ void func_0208af20(void *arg0) {
     func_0208a714(arg0);
 }
 
+M2C_UNK func_0208af98(M2C_UNK arg0, M2C_UNK arg1) { return 0; }
+
 void func_0208b4e4(void) {
     M2C_UNK func_0208a750();
     func_0208a750();

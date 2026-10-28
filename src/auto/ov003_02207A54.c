@@ -8,6 +8,19 @@ M2C_FIELD(p,u8 *,14)=value;
 M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
 }
 
+/* Point both animation slots of a sprite at anim, clear its timer and flags. */
+static inline void SetSlotAnim(void *p, s32 anim) {
+M2C_FIELD(p,s32 *,4)=anim;
+M2C_FIELD(p,s32 *,8)=anim;
+M2C_FIELD(p,u16 *,12)=0;
+func_020a9218(p);
+M2C_FIELD(p,u8 *,14)=0;
+M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
+}
+
+extern u8 data_ov003_02210ac4[];
+extern u8 data_ov003_02210c44[];
+
 u8 func_ov003_02207a54(void *arg0) {
     u8 var_r0;
 
@@ -278,6 +291,53 @@ i++;
 }while(i<(s32)*M2C_FIELD(a,u8 **,0x44));}
 ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,24),0);
 ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,28),0);
+}
+
+void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
+    s32 a, b, c, d;
+    s32 i;
+    s32 off;
+    void *base;
+    void *slot;
+
+    func_ov003_02208168(arg0);
+    switch (arg1) {
+    case 0:
+    case 5:
+        a = 12;
+        c = 0;
+        d = 6;
+        b = 17;
+        break;
+    case 10:
+        a = 22;
+        b = 27;
+        c = a;
+        d = b;
+        break;
+    }
+    for (i = 0; i < (s32)*M2C_FIELD(arg0, u8 **, 0x44); i++) {
+        off = i * 0x24;
+        base = M2C_FIELD(arg0, s32 *, 0x48) + off;
+        if (i == arg2) {
+            SetSlotAnim(M2C_FIELD(base, void **, 0x18), (void *)(data_ov003_02210ac4 + c * 12));
+            SetSlotAnim(M2C_FIELD(base, void **, 0x1C), (void *)(data_ov003_02210ac4 + d * 12));
+            SetSlotAnim(M2C_FIELD(base, void **, 0x20), (void *)data_ov003_02210c44);
+            if (M2C_FIELD(base, u8 *, 0x11) == 0) {
+                M2C_FIELD(base, u8 *, 0x13) = 0;
+                M2C_FIELD(base, u8 *, 0x11) = 1;
+            }
+            M2C_FIELD(base, u16 *, 0xC) = 0x100;
+        } else {
+            SetSlotAnim(M2C_FIELD(base, void **, 0x18), (void *)(data_ov003_02210ac4 + a * 12));
+            SetSlotAnim(M2C_FIELD(base, void **, 0x1C), (void *)(data_ov003_02210ac4 + b * 12));
+            M2C_FIELD(M2C_FIELD(base, void **, 0x20), u8 *, 0xE) = 1;
+        }
+    }
+    slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x18);
+    SetSlotAnim(slot, (void *)(data_ov003_02210ac4 + a * 12));
+    slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x1C);
+    SetSlotAnim(slot, (void *)(data_ov003_02210ac4 + b * 12));
 }
 
 void func_ov003_022084f0(void *arg0) {

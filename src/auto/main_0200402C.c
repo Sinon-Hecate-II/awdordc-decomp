@@ -93,11 +93,12 @@ void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
+    s32 off = (s32)0x06400000;
     if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, arg1 + 0x06400000, arg2);
+        func_02007a04(data_020f5204, arg0, arg1 + off, arg2);
         return;
     }
-    func_02007e70(arg0, arg1 + 0x06400000, arg2);
+    func_02007e70(arg0, arg1 + off, arg2);
 }
 
 void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {

@@ -2,6 +2,11 @@
 #include "common.h"
 extern unsigned char data_ov010_0222f02c[];
 
+M2C_UNK func_ov010_02226d9c(void *a) {
+    (void)a;
+    return 0;
+}
+
 void func_ov010_02227264(void *arg0) {
 M2C_UNK func_01ffa6fc(void *);
 s32 func_0204428c(u8);
@@ -19,6 +24,8 @@ M2C_FIELD(arg0,s32 *,0x40)=0;
 func_01ffa6fc(arg0);
 }
 
+void func_ov010_022272cc(void *arg0) { (void)arg0; }
+
 s32 func_ov010_0222791c(s32 arg0) {
     extern M2C_UNK data_ov010_0222eee0;
     s32 temp_r2;
@@ -33,6 +40,9 @@ extern M2C_UNK data_ov010_0222eee0;
 void (*cb)(s32,s32) = M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x38);
 if (!cb) return;
 cb(a,b);
+}
+
+void func_ov010_02227954(void) {
 }
 
 void func_ov010_02227bc8(void) {

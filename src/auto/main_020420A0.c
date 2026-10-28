@@ -1,7 +1,26 @@
 /* 16 functions from 0x020420A0 to 0x0204309C (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020420a0(void) { }
+
 s32 func_02042310(s32 a,s32 b){void *func_02044268(void);u64 func_02007004(void);void func_0203f058(s32,s32,s32,s32,s32 *,s32);s32 func_0204084c(void);s32 v,k;if(b==13){v=M2C_FIELD(func_02044268(),s32 *,0x20c);k=1;}else k=0;func_0203f058(b,a,0,0,&v,k);if(func_0204084c())return 0;{void *p=func_02044268();M2C_FIELD(p,u64 *,0x1e8)=func_02007004();}return 1;}
+
+s32 func_02042390(s32 arg0, s32 arg1, s32 arg2) {
+    void *func_02044268(void);
+    s32 func_02038f6c(void);
+    void func_02041be0(s32);
+
+    if (func_02038f6c() != 6) {
+        return 1;
+    }
+    if (arg1 == 0xf) {
+        if (M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 0x8) {
+            func_02041be0(0x2);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_020425b4(void) {
     void *func_02044268(void);

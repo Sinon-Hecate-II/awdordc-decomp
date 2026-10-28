@@ -113,6 +113,8 @@ void func_ov003_021e3708(void) {
     func_01ffa6fc();
 }
 
+void func_ov003_021e3714(void *arg0) { (void)arg0; }
+
 void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     s32 func_0207c8ec(s32, s32);
     s32 func_0207c928(s32, s32);
@@ -164,5 +166,9 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
         tile += 8;
         i++;
     } while (i < 8);
+}
+
+void func_ov003_021e3aec(void *arg0) {
+    (void)arg0;
 }
 

@@ -2,6 +2,12 @@
 #include "common.h"
 
 extern u8 data_021290b4[40];
+extern void *gCur3DSpriteEngine;
+extern void *data_027e00c8;
+extern u8 data_02129114[12];
+extern u8 data_02129120[16];
+extern u8 data_02129130[16];
+extern u8 data_02129140[16];
 
 void func_020b8078(void *arg0) {
     extern void **gCurrentMap;
@@ -283,4 +289,96 @@ void *func_020b895c(void) {
     extern M2C_UNK data_021290dc;
     return func_01ffa770(&data_021290dc);
 }
+
+void func_020b8970(void *arg0) {
+    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    void func_01ff9ce8(s32);
+    void func_02080944(void *, s32, s32, s32);
+    void func_02080cfc(void *, void *);
+    void func_02087d84(void *, s32, s32, s32, s32, s32);
+    void func_02088e84(void *, s32, s32, s32, s32);
+    void func_02088f1c(void *);
+    void func_0208ca2c(void *, s32, s32, s32);
+    void func_020994e0(s32);
+    void func_0209c024(s32, s32, void *, s32, s32, s32);
+    void func_0209c048(s32, s32, void *, s32, s32, s32);
+    s32 func_020a8b78(void);
+    s32 func_020aae10(void *);
+    s32 func_020aae44(void *);
+    s32 func_020ae22c(s32);
+    u8 func_020b846c(s32);
+    void func_020b8594(s32);
+    void func_020b8910(void);
+    void func_020c0fac(void *);
+    s32 func_020cd6fc(void);
+    void func_020e3058(void *, s32, s32, s32, s32, s32, s32, void *, s32);
+    void *func_020e3218(void *);
+    void *temp_r4;
+    void *temp_r5;
+    s16 temp_r6;
+    s16 temp_r7;
+    s32 temp_r9;
+    s32 temp_r10;
+    s32 var_r5;
+
+    temp_r4 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c8;
+    func_020994e0(0);
+    M2C_FIELD(arg0, u8 *, 0x34) = 0;
+    M2C_FIELD(arg0, s16 *, 0x38) = 0;
+    M2C_FIELD(arg0, s16 *, 0x36) = 0;
+    M2C_FIELD(arg0, s16 *, 0x3a) = 0;
+    M2C_FIELD(arg0, s16 *, 0x42) = 0x2e;
+    M2C_FIELD(arg0, s16 *, 0x3e) = 0;
+    M2C_FIELD(arg0, s16 *, 0x40) = 0;
+    M2C_FIELD(arg0, s16 *, 0x44) = 0;
+    M2C_FIELD(arg0, s16 *, 0x3c) = 0;
+    M2C_FIELD(arg0, s16 *, 0x46) = 0;
+    if (func_020cd6fc() != 0) {
+        M2C_FIELD(arg0, u8 *, 0x34) = 1;
+    }
+    var_r5 = 0;
+    if (M2C_FIELD(arg0, s16 *, 0x42) > 0) {
+        do {
+            if (func_020b846c(var_r5) != 0) {
+                M2C_FIELD(arg0, s16 *, 0x44) = (s16) (M2C_FIELD(arg0, s16 *, 0x44) + 1);
+            }
+            var_r5++;
+        } while (var_r5 < M2C_FIELD(arg0, s16 *, 0x42));
+    }
+    func_01ff9ce8(1);
+    func_01ff9ce8(2);
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3a) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
+    func_0200bc5c((M2C_UNK *) data_02129114);
+    func_02080cfc(func_020e3218(data_02129120), M2C_FIELD(data_027e00c8, void **, 0x14));
+    func_02080cfc(func_020e3218(data_02129130), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+    func_0208116c((M2C_UNK *) data_02129140, 0xc0, 0x20);
+    func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 0x20, 0x18, 6);
+    func_020e3058((u8 *) arg0 + 0x48, 0x5e, 0x8b, 0xa, 0x39c, 3, -1, arg0, 1);
+    func_020e3058((u8 *) arg0 + 0x4c, 0x82, 0x8b, 0xb, 0x3a4, 3, -1, arg0, 0);
+    func_020e3058((u8 *) arg0 + 0x50, 0xc0, 0xa0, 0, 0x3ac, 3, 1, arg0, 0);
+    temp_r5 = M2C_FIELD(arg0, void **, 0x50);
+    func_02088e84(temp_r5, 0xc0, 0xa0, 0x100, 0xa0);
+    if ((u8) (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0)) {
+        temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
+        temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
+        temp_r9 = func_020aae10(temp_r5);
+        temp_r10 = func_020aae44(temp_r5);
+        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r9, (u16) temp_r10);
+    }
+    func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
+    func_020c0fac(arg0);
+    func_0208ca2c((void *) 0x6b80, 0xb, func_020ae22c(0xc), 2);
+    func_0209c048(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
+    func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
+    func_0209c048(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);
+    func_020b8594(M2C_FIELD(arg0, s16 *, 0x3e));
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
+    func_020b8910();
+    gCur3DSpriteEngine = temp_r4;
+}
+
 #pragma optimization_level 4

@@ -397,6 +397,179 @@ void func_ov007_02214814(s32 arg0, s32 arg1) {
     func_020cf2c8();
 }
 
+#pragma optimization_level 4
+#pragma opt_strength_reduction off
+void func_ov007_02214864(s32 arg0) {
+    M2C_UNK func_020a68d4();
+    M2C_UNK func_020d216c();
+    M2C_UNK func_020d1f2c();
+    M2C_UNK func_020ceffc();
+    M2C_UNK func_020cf2c8();
+    void func_ov007_02214814(s32, s32);
+    extern s32 *gCurrentMap;
+
+    if (arg0 < 0) {
+        func_ov007_02214814(*(u16 *) ((u8 *) *gCurrentMap + 0x5144), *(u16 *) ((u8 *) *gCurrentMap + 0x5146));
+        return;
+    }
+    func_020a68d4();
+    func_020d216c();
+    func_020d1f2c();
+    func_020ceffc();
+    {
+        s32 x;
+        s32 y;
+        for (y = 0; y < *(u16 *) ((u8 *) *gCurrentMap + 0x5146); y++) {
+
+            for (x = 0; x < *(u16 *) ((u8 *) *gCurrentMap + 0x5144); x++) {
+                switch (arg0) {
+                case 8:
+                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 3;
+                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 8;
+                    break;
+                case 1:
+                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 1;
+                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 1;
+                    break;
+                case 4:
+                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 0x20;
+                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 4;
+                    break;
+                case 3:
+                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 0x21;
+                    *(u8*) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 3;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+    func_020cf2c8();
+}
+
+void func_ov007_02214a6c(s32 arg0, s32 arg1) {
+    M2C_UNK func_020c79ec(void);
+    M2C_UNK func_020c79f8(void);
+    M2C_UNK func_020c7a08(void);
+    M2C_UNK func_020c879c(M2C_UNK);
+    M2C_UNK func_020a68d4(void);
+    M2C_UNK func_020d216c(void);
+    M2C_UNK func_020d1f2c(void);
+    M2C_UNK func_020ceffc(void);
+    M2C_UNK func_0207f460(void);
+    void *func_020a660c(M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_ov007_0221b688(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020cf2c8(void);
+    extern s32 *gCurrentMap;
+
+    s32 width = arg0;
+    s32 height = arg1;
+    void *map;
+    M2C_UNK r4v;
+    M2C_UNK funcRes0, funcRes1, funcRes2;
+    void *r6;
+    void *r5;
+    s32 i, x, y;
+    s32 w2, h2;
+    M2C_UNK dword;
+    s32 maskA, maskB, maskC, maskD;
+    void *ptr;
+    u32 linear;
+    M2C_UNK val;
+    s32 u;
+    u16 rowOffset, idx;
+
+    funcRes0 = func_020c79ec();
+    r4v = funcRes0;
+    funcRes1 = func_020c79f8();
+    r5 = (void *)funcRes1;
+    funcRes2 = func_020c7a08();
+    r6 = (void *)funcRes2;
+    func_020c879c(r4v);
+
+    map = (void *)*gCurrentMap;
+    M2C_FIELD(map, u16 *, 0x5144) = (u16)width;
+    M2C_FIELD(map, u16 *, 0x5146) = (u16)height;
+
+    func_020a68d4();
+    func_020d216c();
+    func_020d1f2c();
+    func_020ceffc();
+
+    map = (void *)*gCurrentMap;
+    r5 = (void *)funcRes1;
+
+    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
+        s32 xdim = M2C_FIELD(map, u16 *, 0x5144);
+        for (x = 0; x < xdim; x++) {
+            map = (void *)*gCurrentMap;
+            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            idx = (u16)(x + rowOffset);
+            M2C_FIELD(map, u16 *, idx * 2 + 0xA10) = 3;
+            map = (void *)*gCurrentMap;
+            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            idx = (u16)(x + rowOffset);
+            M2C_FIELD(map, u8 *, idx + 0x1420) = 8;
+        }
+    }
+
+    map = (void *)*gCurrentMap;
+    w2 = M2C_FIELD(r6, u8 *, 0x04);
+    h2 = M2C_FIELD(r6, u8 *, 0x05);
+    r5 = (void *)funcRes1;
+    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
+        s32 xdim = M2C_FIELD(map, u16 *, 0x5144);
+        for (x = 0; x < xdim; x++) {
+            if (x >= w2 || y >= h2) continue;
+            map = (void *)*gCurrentMap;
+            linear = (u32)(y * w2 + x);
+            val = M2C_FIELD(r5, u8 *, linear);
+            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            idx = (u16)(x + rowOffset);
+            M2C_FIELD(map, u8 *, idx + 0x1420) = (u8)val;
+            val = func_0207f460();
+            M2C_FIELD(map, u16 *, idx * 2 + 0xA10) = (u16)val;
+        }
+    }
+
+    i = 0;
+    r5 = (void *)((u8 *)r6 + 0x384);
+    val = M2C_FIELD(r6, u8 *, 0x2F);
+    for (i = 0; i < val; i++) {
+        dword = M2C_FIELD(r5, u32 *, 0);
+        maskA = (dword << 0x1B) >> 0x1B;
+        maskB = (dword << 0x16) >> 0x1B;
+        maskC = (dword << 0x11) >> 0x1B;
+        maskD = (dword << 0x0E) >> 0x1D;
+        if (width <= maskA) continue;
+        if (maskB >= height) continue;
+        ptr = func_020a660c(maskA, maskB, maskC);
+        if (ptr != 0) {
+            s32 bits = (dword << 0x0A) >> 0x1C;
+            u8 old = M2C_FIELD(ptr, u8 *, 0x0B);
+            old = (u8)((old & ~0x0F) | (bits & 0x0F));
+            M2C_FIELD(ptr, u8 *, 0x0B) = old;
+        }
+        r5 = (void *)((u8 *)r5 + 4);
+    }
+
+    if (width > 0) {
+        u = height - 1;
+        for (x = 0; x < width; x++) {
+            func_ov007_0221b688(x, u);
+        }
+    }
+    if (height > 0) {
+        u = width - 1;
+        for (y = 0; y < height; y++) {
+            func_ov007_0221b688(u, y);
+        }
+    }
+
+    func_020cf2c8();
+}
+
 s32 Map_MinDistanceThreshold(s32 arg0) {
     M2C_UNK func_0207ca08(M2C_UNK);
     M2C_UNK func_0207c8ec(M2C_UNK, M2C_UNK);

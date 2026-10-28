@@ -404,6 +404,8 @@ s32 func_ov010_02223a40(void *arg0, void *arg1, u32 arg2) {
     return 1;
 }
 
+s32 func_ov010_02223b18(void *arg0, void *arg1) { return 0; }
+
 s32 func_ov010_02223ec8(s32 a) {
 s32 func_ov010_022243b0(s32);
 extern s32 data_ov010_0222edc0;

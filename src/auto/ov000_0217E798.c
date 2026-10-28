@@ -77,3 +77,84 @@ if(best<score){result=unit;best=score;}
 return result;
 }
 
+M2C_UNK func_ov000_0217f494(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    extern M2C_UNK data_ov000_021b5bfc;
+    s32 func_020a76d4(void *);
+    s32 func_020d27a4(s32, s32);
+    s32 func_ov000_021a93ec(s32, s32);
+    M2C_UNK func_ov000_02176e28(M2C_UNK, void *);
+    void *map;
+    void *base;
+    u8 *sel;
+    s32 minX, minY, maxX, maxY;
+    s32 xx, yy;
+    s32 result = 0;
+    s32 best = 0;
+    s32 range;
+    s32 minAllowed;
+    s16 pos[2];
+
+    map = *gCurrentMap;
+    base = *(void **)map;
+    sel = (u8 *)*(void **)((u8 *)base + 0x5000 + 0x2d0);
+
+    minX = x - func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
+    if (minX < 0) minX = 0;
+
+    minY = y - func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
+    if (minY < 0) minY = 0;
+
+    range = func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
+    maxX = (s32)M2C_FIELD(base, u16 *, 0x5144) - 1;
+    if (x + range < maxX + 1 ? 0 : 0, x + range < (s32)M2C_FIELD(base, u16 *, 0x5144)) {
+        /* placeholder */
+    }
+    if (x + range < (s32)M2C_FIELD(base, u16 *, 0x5144)) maxX = x + range;
+
+    range = func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
+    maxY = (s32)M2C_FIELD(base, u16 *, 0x5146) - 1;
+    if (y + range < (s32)M2C_FIELD(base, u16 *, 0x5146)) maxY = y + range;
+
+    minAllowed = *((u8 *)&data_ov000_021b5bfc + ((sel[0] & 0x3F) * 0x70) + 0x0C);
+
+    pos[0] = (s16)x;
+    pos[1] = (s16)y;
+
+    for (yy = minY; yy <= maxY; yy++) {
+        for (xx = minX; xx <= maxX; xx++) {
+            s32 distX, distY, dist;
+            u8 cand;
+            u8 prop;
+            s32 score;
+            u16 rowOff;
+
+            distX = x - xx;
+            if (distX <= 0) distX = xx - x;
+            distY = y - yy;
+            if (distY <= 0) distY = yy - y;
+            dist = distX + distY;
+
+            if (dist < minAllowed) continue;
+            if (dist > func_020a76d4((u8 *)base + 0x5000 + 0x2d0)) continue;
+
+            rowOff = *(u16 *)((u8 *)base + (yy * 2) + 0x3758);
+            cand = *((u8 *)base + xx + rowOff);
+            if (cand == 0) continue;
+
+            prop = *((u8 *)base + 0x52D4);
+            if (func_020d27a4(prop, cand) == 1) continue;
+
+            if (!func_ov000_021a93ec(xx, yy)) continue;
+
+            score = func_ov000_02176e28((M2C_UNK)(cand | 0x20000), pos);
+            if (best < score) {
+                result = (M2C_UNK)cand;
+                best = score;
+            }
+        }
+    }
+
+    return (M2C_UNK)result;
+}
+

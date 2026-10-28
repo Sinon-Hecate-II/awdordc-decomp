@@ -40,6 +40,12 @@ void func_01ff90e4(s32 arg0, s32 arg1, u32 arg2, u16 *arg3)
     } while (--count);
 }
 
+M2C_UNK func_01ff91d8(void) {
+return 0;
+}
+
+M2C_UNK func_01ff9690() { return 0; }
+
 void func_01ff9ab4(void) {
     extern u16 *data_027e00bc;
     func_0200245c(((u32)(M2C_FIELD(data_027e00bc, u16 *, 4) << 31) >> 31) != 0);

@@ -1,6 +1,14 @@
 /* 61 functions from 0x02005F80 to 0x02006F14 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct QueueFields {
+    u32 wait[4];
+    void **buffer;
+    s32 capacity;
+    s32 first;
+    s32 count;
+} QueueFields;
+
 s32 func_02005f80(void *arg0, s32 arg1) {
     M2C_UNK func_020057f8(void *);
     M2C_UNK func_020058a0();
@@ -24,10 +32,10 @@ s32 func_02005f80(void *arg0, s32 arg1) {
         return 0;
     }
     if (M2C_FIELD(cur, s32 *, 0x70) != arg1) {
-        if (prev == NULL) {
-            M2C_FIELD(&data_0212dc80, void **, 0x2C) = (void *) M2C_FIELD(arg0, void **, 0x68);
-        } else {
+        if (prev != NULL) {
             M2C_FIELD(prev, void **, 0x68) = (void *) M2C_FIELD(arg0, void **, 0x68);
+        } else {
+            M2C_FIELD(&data_0212dc80, void **, 0x2C) = (void *) M2C_FIELD(arg0, void **, 0x68);
         }
         M2C_FIELD(arg0, s32 *, 0x70) = arg1;
         func_020057f8(arg0);
@@ -49,6 +57,7 @@ void func_02006030(s32 arg0) {
     M2C_UNK func_02005da4(void *);
     extern M2C_UNK data_0212dc80;
     extern void func_020060d8(void **);
+    register s32 argSaved = arg0;
     s32 buf[11];
     void *node;
     s32 state;
@@ -57,7 +66,7 @@ void func_02006030(s32 arg0) {
     func_02007190(buf);
     node = M2C_FIELD(M2C_FIELD(&data_0212dc80, void **, 8), void **, 0);
     state = func_0200751c();
-    delay = ((u64)(u32)arg0 * 0x82EAULL) >> 6;
+    delay = ((u64)(u32)argSaved * 0x82EAULL) >> 6;
     M2C_FIELD(node, void **, 0xB0) = buf;
     func_020072cc(buf, delay, func_020060d8, &node);
     while (node != NULL) {
@@ -90,11 +99,16 @@ s32 func_020060f8(s32 arg0) {
     return temp;
 }
 
-void func_02006120(void) {
-    s32 func_02007508(void);
-    M2C_UNK func_02007968(void);
-    func_02007508();
+void func_02006120(void)
+{
+  s32 func_02007508(void);
+  M2C_UNK func_02007968(void);
+  func_02007508();
+  for (;;)
+  {
     func_02007968();
+  }
+
 }
 
 s32 func_02006130(void) {
@@ -104,10 +118,11 @@ s32 func_02006130(void) {
     s32 state;
     s32 r;
     s32 v;
+    s32 limit = -1;
 
     state = func_0200751c();
     v = M2C_FIELD(&data_0212dc80, s32 *, 4);
-    if ((u32)v < 0xFFFFFFFFu) {
+    if ((u32)v < (u32)limit) {
         r = v;
         M2C_FIELD(&data_0212dc80, s32 *, 4) = v + 1;
     }
@@ -225,15 +240,14 @@ s32 func_02006434(void *arg0, s32 arg1, s32 arg2) {
         }
         func_02005da4(arg0);
     }
-    M2C_FIELD(arg0, s32 *, 0x18) = (s32)(func_020720f0(M2C_FIELD(arg0, s32 *, 0x18) + M2C_FIELD(arg0, s32 *, 0x14) - 1, M2C_FIELD(arg0, s32 *, 0x14)) >> 32);
-    ((s32 *)M2C_FIELD(arg0, void **, 0x10))[M2C_FIELD(arg0, s32 *, 0x18)] = arg1;
+    ((s32 *)M2C_FIELD(arg0, void **, 0x10))[M2C_FIELD(arg0,s32 *,0x18) = (s32)(func_020720f0(M2C_FIELD(arg0,s32 *,0x18)+M2C_FIELD(arg0,s32 *,0x14)-1,M2C_FIELD(arg0,s32 *,0x14))>>32)] = arg1;
     M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(arg0, s32 *, 0x1C) + 1;
     func_02005df4((u8 *)arg0 + 8);
     func_02007530(state);
     return 1;
 }
 
-s32 func_020064d0(void *arg0, void **arg1, s32 arg2) {
+s32 func_020064d0(void *arg0, s32 *arg1, s32 arg2) {
     s32 func_0200751c(void);
     void func_02007530(s32);
     M2C_UNK func_02005da4(void *);
@@ -249,8 +263,8 @@ s32 func_020064d0(void *arg0, void **arg1, s32 arg2) {
     }
     if (arg1 != NULL) {
         u32 idx = M2C_FIELD(arg0, u32 *, 0x18);
-        void *base = M2C_FIELD(arg0, void **, 0x10);
-        *arg1 = ((void **)base)[idx];
+        s32 *base = M2C_FIELD(arg0,s32 **,0x10);
+        *arg1 = base[idx];
     }
     func_02007530(state);
     return 1;
@@ -279,15 +293,13 @@ void func_02006564(void *arg0) {
         void *cur = M2C_FIELD(arg0, void **, 0x8);
         if (cur == NULL) {
             M2C_FIELD(arg0, void **, 0x8) = head;
-            c = M2C_FIELD(arg0, u32 *, 0xC);
-            c = c + 1;
+            c = M2C_FIELD(arg0, u32 *, 0xC) + 1;
             M2C_FIELD(arg0, u32 *, 0xC) = c;
             func_020066f4(head, arg0);
             break;
         }
         if (cur == head) {
-            c = M2C_FIELD(arg0, u32 *, 0xC);
-            c = c + 1;
+            c = M2C_FIELD(arg0, u32 *, 0xC) + 1;
             M2C_FIELD(arg0, u32 *, 0xC) = c;
             break;
         }
@@ -354,7 +366,8 @@ s32 func_02006680(void *arg0) {
     cur = M2C_FIELD(arg0, void **, 0x8);
     if (cur == NULL) {
         M2C_FIELD(arg0, void **, 0x8) = head;
-        M2C_FIELD(arg0, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0xC) + 1;
+        u32 tmp = M2C_FIELD(arg0, u32 *, 0xC) + 1;
+        M2C_FIELD(arg0, u32 *, 0xC) = tmp;
         func_020066f4(head, arg0);
         r6 = 1;
     } else if (cur == head) {
@@ -593,16 +606,11 @@ void func_02006c58(void) {
     M2C_FIELD(&data_0212defc, s32 *, 4) = 0;
 }
 
-void func_02006dd8(s32 arg0) {
-    M2C_UNK func_02006dec();
-    M2C_UNK func_02006e7c();
-    func_02006dec();
-    func_02006e7c();
-    return;
-}
-
+#pragma optimization_level 4
+void func_02006dd8(void) {void func_02006dec(void);void func_02006e7c(void);func_02006dec();func_02006e7c();}
 void func_02006ef8(s32 arg0) {
     extern u16 data_0212dfb0;
-    data_0212dfb0 |= 1 << arg0;
+    u16 v = data_0212dfb0;
+    data_0212dfb0 = v | (1u << arg0);
 }
 

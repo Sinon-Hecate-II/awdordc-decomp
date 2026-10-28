@@ -245,6 +245,112 @@ M2C_UNK func_020cfd38(void) {
     func_0207843c(0, 0, 48, 40);
 }
 
+s32 func_020cfe2c(void) {
+    extern s32 *gCurrentMap;
+    s32 func_020a5f4c(u16);
+    s32 h;
+    s32 y;
+    s32 w;
+    s32 x;
+    u8 *base;
+    s32 i;
+    u8 *entry;
+    u8 kind;
+    u16 flags;
+    s32 ey;
+    s32 ex;
+    u16 row2;
+    u8 val;
+    u16 recFlags;
+    u16 unitIdx;
+    s32 attr;
+    s32 off;
+    u8 bm;
+    s32 bit;
+
+    h = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x5146);
+    for (y = 0; y < h; y++) {
+        u16 row = M2C_FIELD((void *)*gCurrentMap + y * 2, u16 *, 0x3758);
+        w = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x5144);
+        for (x = 0; x < w; x++) {
+            *((u8 *)*gCurrentMap + row + x) = (u8)y;
+            *((u8 *)*gCurrentMap + row + x + 0x508) = (u8)y;
+        }
+    }
+    base = (u8 *)*gCurrentMap + 0x59A4;
+    for (i = 1; i < 256; i++) {
+        entry = base + i * 14;
+        kind = entry[0] & 0x3F;
+        if (kind == 0) {
+            continue;
+        }
+        flags = *(u16 *)(entry + 4);
+        if ((flags & 2) && !(flags & 4)) {
+            continue;
+        }
+        ey = entry[2];
+        ex = entry[1];
+        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
+        val = *((u8 *)*gCurrentMap + row2 + ex + 0x508);
+        if (val != 0) {
+            recFlags = *(u16 *)((u8 *)*gCurrentMap + (s32)val * 14 + 0x59A8);
+            if (!(recFlags & 4)) {
+                continue;
+            }
+            *((u8 *)*gCurrentMap + row2 + ex + 0x508) = (u8)i;
+        }
+        if (flags & 2) {
+            continue;
+        }
+        unitIdx = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x52A4);
+        attr = *((u8 *)*gCurrentMap + (s32)unitIdx * 0x8C + 0x67C2);
+        if (attr == 2) {
+            *((u8 *)*gCurrentMap + row2 + ex) = (u8)i;
+            continue;
+        }
+        off = ex + row2;
+        bm = *((u8 *)*gCurrentMap + (off >> 3) + 0x5160);
+        bit = off & 7;
+        if (bm & (1 << bit)) {
+            continue;
+        }
+        *((u8 *)*gCurrentMap + row2 + ex) = (u8)i;
+    }
+    for (i = 1; i < 256; i++) {
+        entry = base + i * 14;
+        kind = entry[0] & 0x3F;
+        if (kind == 0) {
+            continue;
+        }
+        flags = *(u16 *)(entry + 4);
+        if (flags & 2) {
+            continue;
+        }
+        if (flags & 0x40) {
+            continue;
+        }
+        unitIdx = M2C_FIELD((void *)*gCurrentMap, u16 *, 0x52A4);
+        attr = *((u8 *)*gCurrentMap + (s32)unitIdx * 0x8C + 0x67C2);
+        if (attr == 2) {
+            continue;
+        }
+        if (func_020a5f4c((u16)i) == 0) {
+            continue;
+        }
+        ey = entry[2];
+        ex = entry[1];
+        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
+        off = ex + row2;
+        bm = *((u8 *)*gCurrentMap + (off >> 3) + 0x5160);
+        bit = off & 7;
+        if (bm & (1 << bit)) {
+            continue;
+        }
+        row2 = M2C_FIELD((void *)*gCurrentMap + ey * 2, u16 *, 0x3758);
+        *((u8 *)*gCurrentMap + row2 + ex) = 0;
+    }
+}
+
 void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, s32);
     func_02007f8c(arg0, arg1, 0x508);

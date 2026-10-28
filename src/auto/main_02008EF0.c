@@ -7,7 +7,7 @@ void func_02009f38(void);
 void func_0200902c(void);
 void func_0200962c(void);
 void *func_02009210(int);
-void func_020092d0(int);
+s32 func_020092d0(s32);
 void func_02009854(void *);
 typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
 
@@ -101,11 +101,12 @@ return (s32)head;
 }
 #pragma opt_common_subs reset
 void *func_02009210(int flags){
-void func_0200968c(void);
-void func_020092d0(int);
-s32 func_020096fc(void);
-void *func_020096b4(void);
-s32 func_02009100(int);
+  void func_0200968c(void);
+  s32 func_020092d0(s32);
+  s32 func_020096fc(void);
+  void *func_020096b4(void);
+  s32 func_02009100(int);
+
 void *p;
 if(!func_020096fc())return 0;
 p=func_020096b4();
@@ -136,6 +137,64 @@ s32 s=func_0200751c(); Queue09298 *p=(Queue09298 *)&data_0212e020;
 QueueNode09298 *tail=p->tail;
 if(!tail){p->head=arg0;p->tail=arg0;}else {tail->next=arg0;p->tail=arg0;}
 arg0->next=0;return func_02007530(s);
+}
+
+s32 func_020092d0(s32 flags) {
+    s32 func_0200751c(void);
+    s32 func_02007530(s32);
+    M2C_UNK func_0200758c(M2C_UNK);
+    s32 func_02009100(s32);
+    M2C_UNK func_020067e0(M2C_UNK, M2C_UNK);
+    s32 func_02009eb0(s32, M2C_UNK, s32);
+    void func_0200968c(void);
+    extern M2C_UNK data_0212e020;
+    extern u8 data_0212e300[];
+    extern QueueNode09298 *data_0212e044[];
+    State09100 *g = (State09100 *)&data_0212e020;
+    s32 irq = func_0200751c();
+    if (g->unk8 == 0) { func_02007530(irq); return 1; }
+    if (g->pending >= 8) {
+        if (!(flags & 1)) { func_02007530(irq); return 0; }
+        func_02009100(1);
+        if (g->unk8 == 0) { func_02007530(irq); return 1; }
+    }
+    func_020067e0((M2C_UNK)data_0212e300, 0x1800);
+    {
+        s32 res = func_02009eb0(7, g->unk8, 0);
+        if (res < 0) {
+            if (!(flags & 1)) { func_02007530(irq); return 0; }
+            while (1) {
+                if (g->pending >= 8) {
+                    func_02007530(irq);
+                    func_02009100(0);
+                    irq = func_0200751c();
+                    func_020067e0((M2C_UNK)data_0212e300, 0x1800);
+                    if (g->unk8 == 0) { func_02007530(irq); return 1; }
+                    continue;
+                }
+                res = func_02009eb0(7, g->unk8, 0);
+                if (res >= 0) break;
+                func_02007530(irq);
+                func_02009100(0);
+                irq = func_0200751c();
+                func_020067e0((M2C_UNK)data_0212e300, 0x1800);
+                if (g->unk8 == 0) { func_02007530(irq); return 1; }
+            }
+        }
+    }
+    {
+        s32 idx = g->unk18;
+        g->unk18 = idx + 1;
+        data_0212e044[idx] = (QueueNode09298 *)g->unk8;
+        if (g->unk18 > 8) g->unk18 = 0;
+        g->unk8 = 0;
+        g->unkc = 0;
+        g->pending = g->pending + 1;
+        g->unk20 = g->unk20 + 1;
+    }
+    func_02007530(irq);
+    if (flags & 2) func_0200968c();
+    return 1;
 }
 
 void func_0200948c(int a) {
@@ -289,6 +348,90 @@ void func_02009aa4(void *arg0) {
 }
 
 void func_02009aec(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
+
+s32 func_02009b0c(void *base, u8 *dst, s32 *state) {
+    u32 r12 = 0;
+    for (;;) {
+        u32 cur = (u32)state[0];
+        u32 count = *(u32 *)((char *)base + 0x38);
+        u32 entry;
+        u32 type;
+        u32 idx;
+        if (cur >= count) {
+            return 0;
+        }
+        entry = *(u32 *)((char *)base + cur * 4 + 0x3c);
+        type = entry & 0xff;
+        dst[0] = (u8)entry;
+        idx = entry >> 8;
+        switch (type) {
+        case 0:
+            goto skip;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5: {
+            u16 *rec = (u16 *)((char *)base + idx + state[1] * 12);
+            *(u16 *)(dst + 0) = rec[1];
+            *(u16 *)(dst + 2) = rec[2];
+            *(u16 *)(dst + 4) = rec[3];
+            *(u16 *)(dst + 6) = rec[4];
+            *(u16 *)(dst + 8) = rec[5];
+            *(u16 *)(dst + 10) = rec[6];
+            state[1] = state[1] + 1;
+            return 1;
+        }
+        case 0x10: {
+            u16 *p = (u16 *)((char *)base + idx);
+            *(u16 *)(dst + 2) = p[0];
+            *(u16 *)(dst + 4) = p[1];
+            *(u16 *)(dst + 6) = p[2];
+            *(u16 *)(dst + 8) = p[3];
+            *(u16 *)(dst + 10) = p[4];
+            state[0] = state[0] + 1;
+            return 1;
+        }
+        case 0x11: {
+            u8 hi = *((u8 *)base + idx + 1);
+            u8 lo = *((u8 *)base + idx);
+            u32 n = (u32)hi - (u32)lo + 1;
+            if ((u32)state[1] < n) {
+                u8 *p = (u8 *)base + hi;
+                if (p[n] != 0) {
+                    u16 *rec = (u16 *)(p + n * 12);
+                    r12 = (u32)rec;
+                    *(u16 *)(dst + 0) = rec[4];
+                    *(u16 *)(dst + 2) = rec[5];
+                    *(u16 *)(dst + 4) = rec[6];
+                    *(u16 *)(dst + 6) = rec[7];
+                    *(u16 *)(dst + 8) = rec[8];
+                    *(u16 *)(dst + 10) = rec[9];
+                    state[1] = state[1] + 1;
+                    return 1;
+                }
+            }
+            goto skip;
+        }
+        default:
+            goto skip;
+        }
+    skip:
+        {
+            u32 sub = (u32)state[1];
+            if (sub < 8) {
+                state[1] = (s32)(sub + 1);
+            } else {
+                u32 c = (u32)state[0] + 1;
+                state[0] = (s32)c;
+                state[1] = 0;
+                if (c >= count) {
+                    return 0;
+                }
+            }
+        }
+    }
+}
 
 s32 func_02009cbc(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x38);

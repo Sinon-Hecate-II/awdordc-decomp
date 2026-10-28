@@ -93,6 +93,133 @@ s32 func_02012f40(M2C_UNK arg0) {
     return var_r0;
 }
 
+s32 func_02012fac(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void *func_02011440(void);
+    s32 func_020114b4();
+    s32 func_02011934(void);
+    s32 func_02011994(void);
+    void func_02007e98(s32, void *, s32);
+    s32 func_02076614(s32);
+    void func_02013590(void *);
+    void func_02013794(void *);
+    s32 r4;
+    s32 r8 = 1;
+    s32 r10 = arg0;
+    s32 r7 = arg1;
+    s32 r6 = arg2;
+    s32 r5 = arg3;
+    s32 sp5 = arg4;
+    u16 *base;
+    u16 idx;
+    s32 r0v;
+    s32 r2v;
+    s32 r9v;
+    s32 ret;
+    u16 tmpu;
+
+    r0v = func_020114b4(2, 9, 10);
+    if (r0v != 0) {
+        return r0v;
+    }
+    if (r10 == 0) {
+        return 6;
+    }
+    if ((u32)r7 >= 0x10u) {
+        return 6;
+    }
+    if (r6 == 0) {
+        return 6;
+    }
+    r4 = func_02011934();
+    if (r4 != 0) {
+        goto tail_65c;
+    }
+    r8 = func_02011994();
+    func_02007e98(0, (void *)r10, 0x820);
+    base = (u16 *)(r10 + 0x800);
+    base[4] = 0;
+    base[5] = 0;
+    base[6] = 0;
+    base[8] = (u16)r5;
+    base[11] = (u16)r7;
+    base[7] = 0;
+    r0v = 1;
+    r0v = r6 | (r0v << r4);
+    r2v = (sp5 != 0) ? 1 : 0;
+    base[12] = (u16)r2v;
+    r0v = (u16)r0v;
+    base[7] = (u16)r0v;
+    r0v = func_02076614(0);
+    base = (u16 *)(r10 + 0x800);
+    r2v = r5 * r0v;
+    base[9] = (u16)r0v;
+    base[10] = (u16)r2v;
+    base = (u16 *)(r10 + 0x800);
+    r0v = base[10];
+    if (r0v > 0x1fc) {
+        base[7] = 0;
+        return 6;
+    }
+    base[10] = (u16)(r0v + 4);
+    base[14] = 1;
+    if (r4 != 0) {
+        goto tail_65c;
+    }
+    r4 = r8 | 1;
+    r2v = 0;
+    do {
+        u16 *dst = (u16 *)(r10 + (r2v << 9));
+        u16 val = ((u16 *)(r10 + 0x800))[7];
+        val = (u16)(val & (u16)r4);
+        *dst = val;
+        r2v = r2v + 1;
+    } while (r2v < 4);
+    r7 = r10;
+    r9v = 0;
+    r6 = 1;
+    for (;;) {
+        base = (u16 *)(r10 + 0x800);
+        idx = base[4];
+        idx = (u16)((idx + 1) & 3);
+        base[4] = idx;
+        {
+            u16 v80e = base[7];
+            u16 v = (u16)(v80e & (u16)r8);
+            u16 v816 = base[11];
+            u16 v814 = base[10];
+            ret = func_02012c28((s32)func_02013590, r10, r7, v814, v, v816, (u16)r6);
+            if (ret == 7) {
+                u16 *pp = (u16 *)(r10 + (r9v << 1) + 0x800);
+                *pp = 0xffff;
+                tmpu = base[5];
+                tmpu = (u16)((tmpu + 1) & 3);
+                base[5] = tmpu;
+            } else {
+                if (ret != 0 && ret != 2) {
+                    u16 *b2 = (u16 *)(r10 + 0x800);
+                    b2[14] = 5;
+                    return 1;
+                }
+            }
+        }
+        r7 = r7 + 0x200;
+        r9v = r9v + 1;
+        base = (u16 *)(r10 + 0x800);
+        {
+            u16 v818 = base[12];
+            r0v = (v818 == 1) ? 2 : 1;
+        }
+        if (r9v >= r0v) {
+            break;
+        }
+    }
+
+tail_65c:
+    base = (u16 *)(r10 + 0x800);
+    base[5] = 3;
+    return 0;
+}
+
 s32 func_02013200(void *arg0) {
     M2C_UNK func_02011a20(u16, M2C_UNK, M2C_UNK);
     if (arg0 == NULL) {
@@ -104,6 +231,11 @@ s32 func_02013200(void *arg0) {
     func_02011a20(M2C_FIELD(arg0, u16 *, 0x816), 0, 0);
     M2C_FIELD(arg0, u16 *, 0x80E) = 0U;
     M2C_FIELD(arg0, s16 *, 0x81C) = 0;
+    return 0;
+}
+
+s32 func_02013248(void *a, void *b, void *c) {
+    (void)a; (void)b; (void)c;
     return 0;
 }
 

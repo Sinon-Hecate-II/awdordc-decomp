@@ -28,6 +28,10 @@ void func_020ae7e0(void) {
     func_020ae7ec();
 }
 
+s32 func_020ae7ec(void) {
+    return 0;
+}
+
 M2C_UNK func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020e31e0(void);
     M2C_UNK *func_020e3218(M2C_UNK *);
@@ -245,6 +249,11 @@ void func_020af230(void) {
     M2C_UNK func_01ffa9f8(M2C_UNK *);
     extern M2C_UNK data_02127e4c;
     func_01ffa9f8(&data_02127e4c);
+}
+
+M2C_UNK func_020af244(void *arg0) {
+    (void)arg0;
+    return 0;
 }
 
 void func_020af620(void) {

@@ -1,6 +1,12 @@
 /* 37 functions from 0x020D7BC8 to 0x020D8BB4 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020d7bc8(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
+    (void)a;(void)b;(void)c;(void)d;(void)e;(void)f;(void)g;(void)h;
+}
+
+void func_020d8084(void *arg0, s32 arg1, s32 arg2, s32 arg3) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; }
+
 s32 func_020d849c(void *arg0) {
     s32 func_020d2850(u32, u16, u8);
     extern void **gCurrentMap;

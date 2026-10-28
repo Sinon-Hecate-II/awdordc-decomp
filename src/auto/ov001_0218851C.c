@@ -247,6 +247,173 @@ M2C_FIELD(data_ov001_02193e28,u8 *,0xa90)=6;
 func_ov001_0218730c();return 1;
 }
 
+void func_ov001_02188f40(void) {
+    s32 func_ov001_02188ec4(void);
+    s32 func_ov001_02189318(void);
+    void func_ov001_021893c0(void);
+    void func_ov001_021893e4(void);
+    void func_ov001_0218959c(void);
+    void func_ov001_021895c8(void);
+    void func_ov001_021897a4(void);
+    s32 func_ov001_021897bc(void);
+    s32 func_ov001_02188394(void);
+    s32 func_ov001_02188c28(void);
+    void func_ov001_02188b20(void);
+    void func_0201808c(void);
+    extern void *data_ov001_02193e28;
+#define G ((u8 *)data_ov001_02193e28)
+    u8 state = G[0xa90];
+
+    switch (state) {
+    case 0:
+    case 1:
+        return;
+    case 2: {
+        u8 r2 = G[0xaac];
+        if (r2 == 1) {
+            G[0xaac] = 0;
+            func_ov001_02188ec4();
+        } else if (r2 == 2) {
+            G[0xaac] = 0;
+            G[0xa90] = 0x22;
+        }
+        return;
+    }
+    case 3:
+        func_ov001_02189318();
+        return;
+    case 4:
+        func_ov001_021893c0();
+        G[0xa90] = 4;
+        return;
+    case 5:
+        (*(u32 *)(G + 0xa98))++;
+        func_ov001_021893e4();
+        return;
+    case 6:
+    case 7:
+        func_ov001_021893e4();
+        return;
+    case 8:
+        func_ov001_0218959c();
+        return;
+    case 9:
+    case 10:
+    case 11:
+        func_ov001_021895c8();
+        return;
+    case 12:
+        func_ov001_021897a4();
+        return;
+    case 13:
+    case 14:
+    case 15:
+    case 16:
+        return;
+    case 17:
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x11;
+        return;
+    case 18: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        func_ov001_021897bc();
+        return;
+    }
+    case 19:
+        func_0201808c();
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x16;
+        return;
+    case 20: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        func_ov001_02188394();
+        return;
+    }
+    case 21:
+        return;
+    case 22:
+        func_ov001_02188b20();
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x16;
+        return;
+    case 23: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        func_ov001_02188394();
+        return;
+    }
+    case 24:
+        return;
+    case 25:
+        func_ov001_02188b20();
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x19;
+        return;
+    case 26: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        func_ov001_02188394();
+        return;
+    }
+    case 27:
+        return;
+    case 28:
+        func_ov001_02188b20();
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x1c;
+        return;
+    case 29: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        if (func_ov001_02188394() == 1) {
+            func_ov001_02188c28();
+            G[0xa90] = 0x1d;
+        } else {
+            G[0xa90] = 0x1c;
+        }
+        return;
+    }
+    case 30:
+        return;
+    case 31: {
+        u32 x = *(u32 *)(G + 0xa9c);
+        u32 rem = x - (x / 18) * 18;
+        if (rem != 1) return;
+        if (x <= 0x37) return;
+        func_ov001_02188b20();
+        return;
+    }
+    case 32:
+        return;
+    case 33: {
+        *(u32 *)(G + 0xa9c) = 0;
+        G[0xa90] = 0x21;
+        if (func_ov001_02188394() == 1) {
+            func_ov001_02188c28();
+            G[0xa90] = 0x22;
+        }
+        return;
+    }
+    case 34: {
+        u32 old = *(u32 *)(G + 0xa9c);
+        (*(u32 *)(G + 0xa9c))++;
+        if (old <= 0x1e) return;
+        func_ov001_02188394();
+        return;
+    }
+    default:
+        return;
+    }
+#undef G
+}
+
 void func_ov001_021892c4(u8 *arg0,u8 *arg1) {
 extern void *data_ov001_02193e28;
 *arg0=M2C_FIELD(data_ov001_02193e28,u8 *,0xA90);

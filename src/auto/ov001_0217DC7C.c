@@ -1,6 +1,10 @@
 /* 12 functions from 0x0217DC7C to 0x0217EB6C (ov001), found by ds-decomp. */
 #include "common.h"
 
+M2C_UNK func_ov001_0217dc7c(void) {
+    return 0;
+}
+
 void func_ov001_0217ded8(void) {
     M2C_UNK func_ov001_02183a08();
     M2C_UNK func_ov001_02175d54(M2C_UNK *);
@@ -22,6 +26,8 @@ void func_ov001_0217def8(void) {
     func_ov001_0218a824(3, 0, 0x1D, 8);
     func_ov001_02175d54(&func_ov001_0217df44);
 }
+
+void func_ov001_0217df44(void) { }
 
 void func_ov001_0217e238(void) {
     s32 func_02002088(u16, s32);

@@ -94,6 +94,11 @@ void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
  func_0207b774(arg0,arg1+2);func_0207b7e8(q);
 }
 
+void func_020b7464(void *arg0) {
+    (void)arg0;
+    return;
+}
+
 /* Draw a centered gauge and two flanking icon sprites for the object. */
 void func_020b7724(void *obj) {
 void func_0209b67c(u16,s32,u16,u16,s32);
@@ -133,6 +138,96 @@ void func_020b78ac(void) {
     func_01ffa3dc(&data_02128d2c, 7);
 }
 
+void func_020b78c4(void *arg0) {
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    extern void *gCur3DSpriteEngine;
+
+    void *r8 = arg0;
+    u32 field = *(u32 *)((u8 *)r8 + 0x48);
+    u16 a = (u16)((field >> 10) & 0x7FF);
+    u16 b = (u16)((field >> 21) & 0xFFFF);
+    u16 c = (u16)(a >> 2);
+    s32 r6 = 0x80;
+    s32 r0 = 0x10;
+    u16 q2;
+    u16 r4u;
+    void *spEngine;
+    void *base;
+    u16 *bp;
+
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile sp0C;
+    u16 *volatile sp08;
+    u16 *volatile sp04;
+
+    if (b <= c) {
+        r6 = func_0207ca38(4, -0x40, 0x80, (s32)b, (s32)c);
+        r0 = func_0207ca38(4, 0, 0x10, (s32)b, (s32)c);
+    }
+
+    q2 = (u16)(((u32)a * 3) >> 2);
+    if (b >= q2) {
+        r4u = (u16)(b - q2);
+        r6 = func_0207ca38(4, 0x80, 0x140, (s32)r4u, (s32)c);
+        r0 = func_0207ca38(4, 0x10, 0, (s32)r4u, (s32)c);
+    }
+
+    *(s32 *)((u8 *)r8 + 0x34) = r6;
+    *(s32 *)((u8 *)r8 + 0x38) = 0x60;
+
+    spEngine = gCur3DSpriteEngine;
+    base = *(void **)spEngine;
+    bp = (u16 *)((u8 *)base + 0x12);
+
+    sp2C = bp;
+    *sp2C = (u16)(*sp2C & ~0x1);
+
+    sp28 = bp;
+    *sp28 = (u16)(*sp28 & ~0x2);
+
+    sp24 = bp;
+    *sp24 = (u16)(*sp24 & ~0x4);
+
+    sp20 = bp;
+    *sp20 = (u16)(*sp20 & ~0x8);
+
+    sp1C = bp;
+    *sp1C = (u16)(*sp1C & ~0x10);
+
+    sp18 = bp;
+    *sp18 = (u16)(*sp18 | 0x100);
+
+    sp14 = bp;
+    *sp14 = (u16)(*sp14 | 0x200);
+
+    sp10 = bp;
+    *sp10 = (u16)(*sp10 | 0x400);
+
+    sp0C = bp;
+    *sp0C = (u16)(*sp0C | 0x800);
+
+    sp08 = bp;
+    *sp08 = (u16)(*sp08 | 0x1000);
+
+    sp04 = bp;
+    {
+        u16 v = *sp04;
+        v = (u16)(v & ~0xC0);
+        v = (u16)(v | 0x40);
+        *sp04 = v;
+    }
+
+    *(u8 *)((u8 *)base + 0x51) = (u8)r0;
+    *(u8 *)((u8 *)base + 0x52) = (u8)(0x10 - r0);
+}
+
 #pragma opt_scalarize off
 #pragma opt_decomposeaggregates off
 #pragma cplusplus on
@@ -152,18 +247,18 @@ extern "C" void func_020b7b54(void) {
 #pragma cplusplus off
 void func_020b7bbc(void) {
     s32 func_0208c528(s32);
-    void func_020b78c4(void);
-    void func_020b7b54(void);
-    extern M2C_UNK data_02128ffc, data_02129004;
-    s32 temp_r4;
-    s32 resource;
-    s32 size = 0x6B80;
-    temp_r4 = func_0208c528(7);
-    func_0208c5fc(func_020e3218(&data_02128ffc), 0x6B80, 0xB);
-    resource = func_020e3218(&data_02129004);
-    func_0208bddc(temp_r4, resource, size, 0xB, 0);
-    M2C_FIELD(temp_r4, s32 *, 0x44) |= 0x380000;
-    M2C_FIELD(temp_r4, void (**)(void), 0x6C) = func_020b78c4;
+          void func_020b78c4(void *);
+      void func_020b7b54(void);
+      extern M2C_UNK data_02128ffc, data_02129004;
+      s32 temp_r4;
+      s32 resource;
+      s32 size = 0x6B80;
+      temp_r4 = func_0208c528(7);
+      func_0208c5fc(func_020e3218(&data_02128ffc), 0x6B80, 0xB);
+      resource = func_020e3218(&data_02129004);
+      func_0208bddc(temp_r4, resource, size, 0xB, 0);
+      M2C_FIELD(temp_r4, s32 *, 0x44) |= 0x380000;
+      M2C_FIELD(temp_r4, void (**)(void *), 0x6C) = func_020b78c4;
     M2C_FIELD(temp_r4, void (**)(void), 0x70) = func_020b7b54;
     func_0208fe30(0x127);
 }
@@ -172,6 +267,8 @@ void func_020b7c4c(void) {
     M2C_UNK func_0208fe30(M2C_UNK);
     func_0208fe30(0xE5);
 }
+
+void func_020b7c5c(void *arg0) { (void)arg0; }
 
 #pragma cplusplus on
 extern "C" void func_020b7ef0(void) {

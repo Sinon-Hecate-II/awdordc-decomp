@@ -2,6 +2,8 @@
 #include "common.h"
 void func_02058644(void **,void *);
 
+void func_0204d5c0(void *arg0) { }
+
 void func_0204da30(void *p){
 s32 func_02037794(s32);void func_020377c4(s32);s32 func_02049208();s32 func_0204a740(void*,s32,s32*);s32 func_0204d39c(void*,s32,s32);
 s32 size,buffer,status,n,start;u32 elapsed;

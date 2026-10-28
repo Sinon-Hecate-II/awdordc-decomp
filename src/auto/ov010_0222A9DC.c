@@ -1,6 +1,15 @@
 /* 30 functions from 0x0222A9DC to 0x0222B9DC (ov010), found by ds-decomp. */
 #include "common.h"
 
+void func_ov010_0222a9dc(void *arg0) {
+    M2C_UNK func_ov010_02228180(void *);
+    M2C_UNK func_01ffa8c4(void *, s32);
+
+    if (func_ov010_02228180(arg0) == 3) {
+        func_01ffa8c4(arg0, 8);
+    }
+}
+
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_020abe90(M2C_UNK);
     s32 func_020ad3f0(void);

@@ -1,6 +1,117 @@
 /* 7 functions from 0x0217C9F4 to 0x0217D86C (ov000), found by ds-decomp. */
 #include "common.h"
 
+s32 func_ov000_0217c9f4(void *arg0) {
+    s32 func_ov000_021a98e4(u32);
+    s32 func_ov000_0217c4c8(void *);
+    s32 func_ov000_021a97e0(s32, u32);
+    s32 func_ov000_0217c420(void *, void *);
+    s32 func_020d27c0(s32);
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5bfc[];
+    extern u8 data_ov000_021b5c0f[];
+
+    u8 *unit;
+    u32 kind;
+    u8 selX, selY;
+    void *map;
+    void *base;
+    s32 n;
+    s32 radius;
+    s32 minX, minY, maxX, maxY;
+    s32 x, y;
+    s32 r7;
+    s32 width, height;
+    u8 *selectedUnit;
+    u16 hf;
+    s32 dx, dy, dist;
+    s32 terrainCost;
+    u16 rowOff;
+    u8 terrainKind;
+    u8 *record;
+    u32 k;
+
+    unit = (u8 *)arg0;
+
+    kind = ((u32)unit[0] << 26) >> 26;
+    if (func_ov000_021a98e4(kind) == 1) {
+        return func_ov000_0217c4c8(arg0);
+    }
+    if (func_ov000_021a98e4(kind) != 0) {
+        return 0;
+    }
+    if (kind == 0x19) {
+        hf = *(u16 *)(unit + 6);
+        if (((u32)(hf << 21) >> 28) == 0) {
+            return 0;
+        }
+    }
+
+    map = *gCurrentMap;
+    base = *(void **)map;
+    selX = unit[1];
+    selY = unit[2];
+
+    if (unit == 0) {
+        n = 0;
+    } else {
+        n = (((s32)unit - ((s32)base + 0x59a4)) / 14) >> 6;
+        n = n + 1;
+    }
+    radius = func_ov000_021a97e0(n, kind);
+
+    minX = (s32)selX - radius;
+    if (minX < 0) minX = 0;
+    minY = (s32)selY - radius;
+    if (minY < 0) minY = 0;
+
+    width = M2C_FIELD(map, u16 *, 0x5144);
+    maxX = (s32)selX + radius;
+    if (maxX > width - 1) maxX = width - 1;
+
+    height = M2C_FIELD(map, u16 *, 0x5146);
+    maxY = (s32)selY + radius;
+    if (maxY > height - 1) maxY = height - 1;
+
+    r7 = 0;
+
+    for (y = minY; y <= maxY; y++) {
+        for (x = minX; x <= maxX; x++) {
+            dx = (s32)selX - x;
+            if (dx <= 0) dx = x - (s32)selX;
+            dist = dx;
+            dy = (s32)selY - y;
+            if (dy <= 0) dy = y - (s32)selY;
+            dist += dy;
+            if (dist < 0) continue;
+            if (dist > radius) continue;
+
+            if ((((signed char **)((u8 *)base + 0x52E8))[y])[x] < 0) continue;
+
+            rowOff = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
+            terrainKind = *((u8 *)base + x + rowOff);
+            if (terrainKind == 0) continue;
+            if (func_020d27c0((s32)terrainKind) == 0) continue;
+
+            record = (u8 *)base + 0x59a4 + (s32)terrainKind * 14;
+            if (func_ov000_0217c420(record, (void *)unit) == 0) continue;
+
+            r7++;
+            k = ((u32)record[0] << 26) >> 26;
+            if (data_ov000_021b5bfc[k * 112 + 0x13] & 0x10) r7++;
+        }
+    }
+
+    selectedUnit = *(u8 **)((u8 *)base + 0x52D0);
+    if (func_ov000_0217c420(selectedUnit, (void *)unit) == 1) {
+        r7++;
+        k = ((u32)selectedUnit[0] << 26) >> 26;
+        if (data_ov000_021b5c0f[k * 112] & 0x10) r7++;
+    }
+
+    return r7;
+}
+
 int func_ov000_0217d000(int r0, int r1) {
     r1 &= 0x1F;
     if (r1 == 0x11) {
@@ -46,6 +157,140 @@ case13:
     }
 }
 
+s32 func_ov000_0217d150(s32 arg0, s32 arg1, void *arg2) {
+    void func_01ffb554(void *);
+    s32 func_01ffada0(s32, s32, s32, s32);
+    s32 func_020d27a4(s32, s32);
+    s32 func_ov000_021a97d0(s32, s32);
+    s32 func_ov000_021a98a8(u32);
+    s32 func_ov000_021a9904(u32);
+    extern void **gCurrentMap;
+    extern void *data_ov000_021df580;
+
+    s32 sp0;
+    void *map;
+    void *base;
+    void *dataBase;
+    u8 dataField5;
+    s32 selectedKind;
+    s32 outerLimit;
+    s32 r8;
+    s32 r9;
+    s32 innerLimit;
+    s32 *unitArray;
+    signed char terrainCost;
+    u16 rowOff;
+    s32 kindIndex;
+    u8 *record;
+    u8 kind;
+    void *selectedUnit;
+    u8 arg2kind;
+    u16 recField6;
+    s32 checkByte;
+    u16 recField4;
+    s32 terrainValue;
+    u8 dataField2;
+
+    sp0 = 0;
+    map = *gCurrentMap;
+    base = *(void **)map;
+    dataBase = *(void **)data_ov000_021df580;
+    dataField5 = ((u8 *)dataBase)[5];
+    selectedKind = (s32)(((u8 *)*(void **)((u8 *)base + 0x52d0))[0]);
+    selectedKind = (selectedKind << 26) >> 26;
+    outerLimit = (s32)(*((s16 *)((u8 *)base + 0x5146)));
+    arg2kind = (u8)(((u8 *)arg2)[0] << 26 >> 26);
+    dataField2 = ((u8 *)dataBase)[2];
+
+    (void)sp0;
+
+    func_01ffb554((void *)((u8 *)base + 0x2338));
+    func_01ffada0(arg0, arg1, selectedKind, (s32)dataField5);
+
+    r8 = 0;
+    if (outerLimit <= 0) {
+        goto final;
+    }
+
+outerLoop:
+    unitArray = *(s32 **)((u8 *)base + r8 * 4 + 0x52e8);
+    innerLimit = (s32)(*((s16 *)((u8 *)base + 0x5144)));
+    r9 = 0;
+    if (innerLimit <= 0) {
+        goto outerInc;
+    }
+    while (r9 < innerLimit) {
+        terrainCost = (signed char)unitArray[r9];
+        if (terrainCost < 0) {
+            goto innerNext;
+        }
+        rowOff = *((u16 *)((u8 *)base + r8 * 2 + 0x3758));
+        kindIndex = (s32)(*((u8 *)base + (s32)rowOff + r9));
+        record = (u8 *)base + 0x59a4 + kindIndex * 0x0e;
+        kind = (u8)((record[0] << 26) >> 26);
+        selectedUnit = *(void **)((u8 *)base + 0x52d0);
+        if (kind != 0) {
+            if ((void *)record == selectedUnit) {
+                goto innerNext;
+            }
+        }
+        if (record == (u8 *)0) {
+            if (!func_020d27a4((s32)*((u8 *)base + 0x52d4), 0)) {
+                goto innerNext;
+            }
+        } else {
+            if (!func_020d27a4((s32)*((u8 *)base + 0x52d4), kindIndex)) {
+                goto innerNext;
+            }
+        }
+        if (!func_ov000_021a97d0((s32)kind, (s32)arg2kind)) {
+            goto innerNext;
+        }
+        if (func_ov000_021a9904((u32)kind) != 0) {
+            goto innerNext;
+        }
+        if (func_ov000_021a98a8((u32)kind) != 0) {
+            goto innerNext;
+        }
+        if (kind == 4) {
+            goto innerNext;
+        }
+        recField6 = *((u16 *)(record + 6));
+        if ((recField6 & 0x7f) < 0x3c) {
+            goto innerNext;
+        }
+        recField4 = *((u16 *)(record + 4));
+        if (recField4 & 0x1) {
+            checkByte = (s32)*((u8 *)base + 0x52d4);
+            (void)checkByte;
+            terrainValue = (s32)*((u8 *)base + (s32)rowOff + r9 + 0x2d48);
+            if (terrainValue < (s32)dataField2) {
+                goto innerNext;
+            }
+        }
+        func_01ffb554((void *)((u8 *)base + 0x1e30));
+        return 1;
+
+innerNext:
+        r9++;
+        if (r9 < innerLimit) {
+            continue;
+        }
+        break;
+    }
+
+outerInc:
+    outerLimit = (s32)(*((s16 *)((u8 *)base + 0x5146)));
+    r8++;
+    if (r8 < outerLimit) {
+        goto outerLoop;
+    }
+
+final:
+    func_01ffb554((void *)((u8 *)base + 0x1e30));
+    return 0;
+}
+
 void func_ov000_0217d3b8(s32 arg0) {
     s32 func_ov000_021a8ac8(void *);
     extern void **gCurrentMap;
@@ -59,6 +304,8 @@ void func_ov000_0217d3b8(s32 arg0) {
         M2C_FIELD(unit, u8 *, 0xB) |= 0x20;
     }
 }
+
+void func_ov000_0217d428(void) { }
 
 void func_ov000_0217d6dc(void) {
     extern void **gCurrentMap;

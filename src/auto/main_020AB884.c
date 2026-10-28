@@ -1,6 +1,10 @@
 /* 24 functions from 0x020AB884 to 0x020AC7DC (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020ab884(void *arg0) {
+    return;
+}
+
 s16 func_020abb24(void *arg0) {
     s32 func_020a8ff4(void *);
     s16 temp_r4_3;
@@ -215,6 +219,143 @@ void func_020abfcc(u16 arg0, u16 arg1) {
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = b1;
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0xc0;
     }
+}
+
+M2C_UNK func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
+    u8 func_020abf3c(u8);
+    void func_020abe3c(u8, s8);
+    void func_020abee4(u8, s8);
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c8;
+    extern s32 data_027e00c4;
+    s32 savedEngine;
+    s32 i;
+    s32 x;
+    u16 *volatile sp44;
+    u16 *volatile sp48;
+    u16 *volatile sp40;
+    u16 *volatile sp3c;
+    u16 *volatile sp38;
+    u16 *volatile sp34;
+    u16 *volatile sp30;
+    u16 *volatile sp2c;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1c;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    u16 *volatile sp0;
+
+    savedEngine = gCur3DSpriteEngine;
+
+    for (i = 0; i < 2; i++) {
+        if (i == 0) {
+            gCur3DSpriteEngine = data_027e00c8;
+        } else {
+            gCur3DSpriteEngine = data_027e00c4;
+        }
+
+        if (arg0 == 0 && gCur3DSpriteEngine != data_027e00c8) {
+            continue;
+        }
+        if (arg0 == 1 && gCur3DSpriteEngine != data_027e00c4) {
+            continue;
+        }
+        if (arg0 == 3 && gCur3DSpriteEngine != savedEngine) {
+            continue;
+        }
+
+        x = func_020abf3c(arg0);
+        if (x == 0 || x == 1) {
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0;
+        } else if (x == 2) {
+            sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
+            *sp44 = *sp44 & ~0x200;
+
+            sp48 = (u16 *)*(u8 **)gCur3DSpriteEngine;
+            *sp48 = *sp48 & ~0x400;
+        }
+
+        if (arg2 == 0) {
+            *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
+        } else if (arg2 == 1) {
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
+        } else if (arg2 == 2) {
+            sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
+            *sp44 = *sp44 | 0x200;
+
+            sp40 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp40 = *sp40 & ~1;
+
+            sp3c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp3c = *sp3c & ~2;
+
+            sp38 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp38 = *sp38 & ~4;
+
+            sp34 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp34 = *sp34 & ~8;
+
+            sp30 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp30 = *sp30 & ~0x10;
+
+            sp2c = (u16 *)*(u8 **)gCur3DSpriteEngine;
+            *sp2c = *sp2c | 0x400;
+
+            sp28 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp28 = *sp28 & ~0x100;
+
+            sp24 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp24 = *sp24 & ~0x200;
+
+            sp20 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp20 = *sp20 & ~0x400;
+
+            sp1c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp1c = *sp1c & ~0x800;
+
+            sp18 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+            *sp18 = *sp18 & ~0x1000;
+
+            sp14 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *sp14 = (*sp14 & ~1) | 1;
+
+            sp10 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *sp10 = *sp10 | 0x2;
+
+            spC = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *spC = *spC | 0x4;
+
+            sp8 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *sp8 = *sp8 | 0x8;
+
+            sp4 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *sp4 = *sp4 | 0x10;
+
+            sp0 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+            *sp0 = *sp0 | 0x20;
+
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x48) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4a) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x49) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4b) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4c) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4e) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4d) = 0;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4f) = 0;
+        }
+
+        ((void(*)(u8, s32))func_020abe3c)(arg0, arg1);
+        ((void(*)(u8, s32))func_020abee4)(arg0, (s32)arg2);
+    }
+
+    gCur3DSpriteEngine = savedEngine;
+    return 0;
 }
 
 void func_020ac598(s32 arg0) {

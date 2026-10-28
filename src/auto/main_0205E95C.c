@@ -70,7 +70,7 @@ void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK data_020ff
 
 void func_0205eb50(u8 *p,s32 a){s32 n=M2C_FIELD(p,s32 *,0x100);if(n>=254)goto end;if(a<1)goto end;if(a>254)goto end;M2C_FIELD(p,s32 *,0x100)=n+1;p[n]=a;end:return;}
 
-void func_0205eb7c(void *a,M2C_UNK b){M2C_UNK func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
+void func_0205eb7c(void *a,M2C_UNK b){M2C_UNK func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
 M2C_UNK func_0205ebb0(void *a,M2C_UNK *b){s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);s32 n=func_02068c34(b)+1;s32 used=M2C_FIELD(a,s32 *,0x800);if(n>0x800-used)n=0x800-used;if(!n)return;func_020651a4((u8 *)a+used,b,n);M2C_FIELD(a,s32 *,0x800)+=n;((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;}
 
@@ -200,6 +200,8 @@ void func_0205f05c(void *arg0,M2C_UNK arg1) {
  }
 }
 
+M2C_UNK func_0205f10c(M2C_UNK a0, M2C_UNK a1, M2C_UNK a2, s32 a3, s32 a4) { (void)a0; (void)a1; (void)a2; (void)a3; (void)a4; return 0; }
+
 void func_0205f364(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     M2C_UNK func_0205f10c(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     func_0205f10c(arg0, arg1, 0, arg2, arg3);
@@ -222,9 +224,16 @@ void func_0205f3bc(M2C_UNK a,M2C_UNK b,u8 *p,s32 n) {
  func_0205f364(a,b,x,q,y,r,z,s);
 }
 
+void func_0205f474(M2C_UNK arg0, void *arg1, M2C_UNK arg2) {
+    u8 x = data_020eac30[4];
+    (void)x;
+    (void)arg0; (void)arg1; (void)arg2;
+    return;
+}
+
 void func_0205f64c(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_0205ebb0(void *, M2C_UNK *);
-    M2C_UNK func_0205f474(M2C_UNK, void *, M2C_UNK);
+                      void func_0205f474(M2C_UNK, void *, M2C_UNK);
     extern M2C_UNK data_020ffa74;
     M2C_FIELD(arg1, s32 *, 0x800) = 1;
     M2C_FIELD(arg1, s8 *, 0) = 0x5C;

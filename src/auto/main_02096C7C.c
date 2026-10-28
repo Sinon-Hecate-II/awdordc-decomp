@@ -271,6 +271,116 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
     func_0209e320(temp_r0);
 }
 
+void func_020974d0(s32 arg0) {
+    s32 func_02091db4();
+    s32 func_02091e24();
+    void func_020943a8(s32);
+    M2C_UNK func_02098e04(void *, s32, u16);
+    M2C_UNK func_020990d4(void *, s32, u16);
+    M2C_UNK func_0209e184(void *, M2C_UNK, M2C_UNK, u16);
+    void *func_0209e9a4(s32);
+    extern void *data_027e00c4;
+    extern void *data_027e00c8;
+    extern void *data_027e01d8;
+    void *spC;
+    s32 sp8;
+    s32 sp4;
+    s32 sp0;
+    void **var_r0;
+    s32 temp_r0;
+    s32 temp_r0_2;
+    s32 temp_r0_4;
+    s32 var_r8;
+    s32 var_r8_2;
+    s32 var_r9;
+    s32 var_r9_2;
+    u16 temp_r5;
+    u16 var_r6;
+    u16 var_r6_2;
+    void *temp_r0_3;
+    void *temp_r0_5;
+    void *temp_r0_6;
+    void *temp_r0_7;
+    void *temp_r0_8;
+    void *temp_r7;
+    void *temp_r7_2;
+
+    sp0 = arg0;
+    spC = data_027e01d8;
+    sp8 = 0;
+    do {
+        if (sp8 == 0) {
+            var_r0 = &data_027e00c8;
+        } else {
+            var_r0 = &data_027e00c4;
+        }
+        data_027e01d8 = *var_r0;
+        if (((func_02091e24() != 0) || (data_027e01d8 == data_027e00c8)) && ((func_02091e24() != 1) || (data_027e01d8 == data_027e00c4)) && ((func_02091e24() != 3) || (data_027e01d8 == spC))) {
+            temp_r0_2 = func_02091db4();
+            switch (temp_r0_2) {                    /* irregular */
+            case 0:
+                temp_r0_3 = func_0209e9a4(sp0);
+                func_0209e184(temp_r0_3, 1, 0, 8U);
+                M2C_FIELD(temp_r0_3, s16 *, 0x2E) = 2;
+                M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x400;
+                break;
+            case 1:
+                sp4 = 0;
+                var_r8 = 0x9000;
+                var_r9 = 0x9800;
+                do {
+                    temp_r0_5 = func_0209e9a4(sp0);
+                    func_0209e184(temp_r0_5, 1, 0x8000, (u16) (sp4 + 0xD));
+                    var_r6 = 0;
+                    temp_r5 = (u16) sp4;
+                    M2C_FIELD(temp_r0_5, u16 *, 0x2E) = temp_r5;
+                    M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x400;
+loop_17:
+                    temp_r0_6 = func_0209e2c0(temp_r0_5, var_r6);
+                    temp_r7 = M2C_FIELD(temp_r0_6, void **, 0x60);
+                    func_02098e04(temp_r7, var_r8, (u16) (sp4 + 0xA));
+                    func_020990d4(temp_r0_6, var_r9, temp_r5);
+                    M2C_FIELD(temp_r7, s16 *, 0x3C) = 0x400;
+                    var_r6 += 1;
+                    M2C_FIELD(temp_r0_6, s16 *, 0x3C) = 0x400;
+                    if ((s32) var_r6 < 2) {
+                        goto loop_17;
+                    }
+                    var_r8 += 0x200;
+                    temp_r0_4 = sp4 + 1;
+                    sp4 = temp_r0_4;
+                    var_r9 += 0xA00;
+                } while (temp_r0_4 < 3);
+                break;
+            case 2:
+                temp_r0_7 = func_0209e9a4(sp0);
+                func_0209e184(temp_r0_7, 2, 0, 0xDU);
+                M2C_FIELD(temp_r0_7, s16 *, 0x2E) = 2;
+                M2C_FIELD(temp_r0_7, s16 *, 0x3C) = 0x400;
+                var_r6_2 = 0;
+                var_r8_2 = 0x1800;
+                var_r9_2 = 0x2000;
+                do {
+                    temp_r0_8 = func_0209e2c0(temp_r0_7, var_r6_2);
+                    temp_r7_2 = M2C_FIELD(temp_r0_8, void **, 0x60);
+                    func_02098e04(temp_r7_2, var_r8_2, (u16) (var_r6_2 + 0xA));
+                    func_020990d4(temp_r0_8, var_r9_2, var_r6_2);
+                    M2C_FIELD(temp_r7_2, s16 *, 0x3C) = 0x400;
+                    M2C_FIELD(temp_r0_8, s16 *, 0x3C) = 0x400;
+                    var_r8_2 += 0x200;
+                    var_r9_2 += 0x8000;
+                    var_r6_2 += 1;
+                } while ((s32) var_r6_2 < 2);
+                break;
+            }
+        }
+        temp_r0 = sp8 + 1;
+        sp8 = temp_r0;
+    } while (temp_r0 < 2);
+    data_027e01d8 = spC;
+    func_020943a8(-1);
+}
+
 void func_02097768(void) {
 
 }

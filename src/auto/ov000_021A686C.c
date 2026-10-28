@@ -75,6 +75,55 @@ s32 func_ov000_021a6a00(void) {
  return result;
 }
 
+#pragma opt_strength_reduction off
+s32 func_ov000_021a6ac0(void) {
+  void func_01ffada0(s32,s32,s32,s32,s32);
+  void func_ov000_021a5f50(void);
+  s32 func_020d27c0(s32);
+  extern s32 *gCurrentMap;
+  extern u8 *data_ov000_021df578;
+  extern M2C_UNK data_ov000_021e00ac;
+  extern u8 data_ov000_021b5bfc[];
+  u8 *p;
+  s32 base;
+  u8 *unit;
+  s32 i;
+  s32 v;
+  s32 best;
+  s32 result;
+  s32 id;
+  s32 y;
+  s32 x;
+  best=126;
+  result=-1;
+  p=(u8 *)&data_ov000_021e00ac;
+  func_ov000_021a5f50();
+  i=0;
+  if((s32)*data_ov000_021df578>0) do {
+  if(p[3]<252 && p[2]==3) {
+  y=p[0];base=*gCurrentMap;x=p[1];
+  v=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),s8 *,0x2338);
+  if(best>=v) {
+  func_01ffada0(y,x,23,data_ov000_021b5bfc[0xa18]+1,0x20);
+  base=*gCurrentMap;
+  for(x=0;x<M2C_FIELD(base,u16 *,0x5146);x++) {
+  for(y=0;y<M2C_FIELD(base,u16 *,0x5144);y++,base=*gCurrentMap) {
+  if(M2C_FIELD(base+x*4,s8 **,0x52e8)[y]<0)continue;
+  id=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),u8 *,0);
+  unit=(u8 *)(base+0x59a4)+id*14;
+  if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)!=23)continue;
+  if(func_020d27c0(id)!=0)continue;
+  if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>=50)goto next;
+  }
+  }
+  result=i;best=v;
+  }
+  }
+  next: i++;p+=12;
+  } while(i<*data_ov000_021df578);
+  return result;
+}
+#pragma opt_strength_reduction on
 s32 func_ov000_021a6c8c(void) {
  extern s32 *gCurrentMap;
  extern u8 *data_ov000_021df578;
@@ -174,6 +223,8 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
  return value;
 }
 
+s32 func_ov000_021a7084(void *a, void *b) { return 0; }
+
 u8 func_ov000_021a72c0(u32 arg0) {
     s32 func_020b9e20(u16);
     extern s8 data_ov000_021aab78[];
@@ -193,5 +244,137 @@ u8 func_ov000_021a72c0(u32 arg0) {
         return 1U;
     }
     return 0U;
+}
+
+s32 func_ov000_021a7348(void) {
+    s32 func_020d1938(s32);
+    s32 func_020d273c(s32);
+    s32 func_ov000_021a911c(s32);
+    extern s32 *gCurrentMap;
+    extern void *data_ov000_021df580;
+    extern u16 data_ov000_021aeef4[];
+    extern u8 data_ov000_021b5bfc[];
+    extern u8 data_0212616c[];
+
+    s32 r5 = 0;
+    s32 r6 = 0;
+    s32 r7 = 0;
+    s32 player;
+    void *mapBase;
+    u16 start;
+    s32 idx;
+    u8 *unit;
+    u32 kind;
+    u8 attr;
+    u16 hp;
+    u8 owner;
+    u8 *map;
+    u16 row;
+    u8 terrain;
+    u8 kindAttr;
+    u8 x, y;
+    u8 ownerAttr;
+    s8 *costBase;
+    s8 *costTable;
+    u8 t2;
+    s8 cost;
+    u8 attr2;
+    s32 doCost;
+    u16 tmpMode;
+    u32 modeVal;
+    u16 tmpUnit;
+
+    tmpMode = *(u16 *)((u8 *)data_ov000_021df580 + 10);
+    modeVal = tmpMode << 26;
+    modeVal = modeVal >> 29;
+    if (!(modeVal & 4)) {
+        return 0;
+    }
+
+    for (player = 1; player < 5; player++) {
+        if (func_020d1938(player) == 0) {
+            continue;
+        }
+        mapBase = (void *)*gCurrentMap;
+        tmpUnit = *(u16 *)((u8 *)mapBase + 0x52a4);
+        if (func_020d273c(tmpUnit) == 1) {
+            start = data_ov000_021aeef4[player];
+            for (idx = start + 1; idx < start + 0x33; idx++) {
+                unit = (u8 *)mapBase + 0x59a4 + idx * 14;
+                kind = unit[0] & 0x3f;
+                if (kind == 0) {
+                    continue;
+                }
+                if (kind == 6) {
+                    owner = unit[11] & 0x0f;
+                    if (owner != 5) {
+                        r5--;
+                    }
+                }
+                attr = data_ov000_021b5bfc[kind * 0x70 + 0x15];
+                if (kind == 0x17) {
+                    r6--;
+                }
+                if (attr & 1) {
+                    hp = *(u16 *)(unit + 6);
+                    r7 -= (hp & 0x7f);
+                }
+            }
+        } else {
+            start = data_ov000_021aeef4[player];
+            for (idx = start + 1; idx < start + 0x33; idx++) {
+                unit = (u8 *)mapBase + 0x59a4 + idx * 14;
+                kind = unit[0] & 0x3f;
+                if (kind == 0) {
+                    continue;
+                }
+                kindAttr = data_ov000_021b5bfc[kind * 0x70 + 0x13];
+                if (!(kindAttr & 0x10)) {
+                    continue;
+                }
+                x = unit[1];
+                y = unit[2];
+                map = (u8 *)*gCurrentMap;
+                row = *(u16 *)(map + y * 2 + 0x3758);
+                terrain = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
+                doCost = 1;
+                if (terrain == 0x12) {
+                    if (func_ov000_021a911c(idx) == 1) {
+                        doCost = 0;
+                    }
+                }
+                if (doCost) {
+                    ownerAttr = data_ov000_021b5bfc[0xa22];
+                    costBase = *(s8 **)(data_0212616c + 0x64);
+                    costTable = costBase + ownerAttr * 32;
+                    t2 = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
+                    cost = costTable[t2];
+                    if (cost > 0) {
+                        r6++;
+                    } else {
+                        r5++;
+                    }
+                    kind = unit[0] & 0x3f;
+                    if (kind != 0x13) {
+                        attr2 = data_ov000_021b5bfc[kind * 0x70 + 0x16];
+                        if (attr2 & 3) {
+                            hp = *(u16 *)(unit + 6);
+                            r7 += (hp & 0x7f);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (r5 < 0 && r6 < 0) {
+        return 0;
+    }
+    if (r5 > r6) {
+        if (r7 > 0) return 3; else return 1;
+    } else if (r5 < r6) {
+        if (r7 > 0) return 4; else return 2;
+    }
+    return 0;
 }
 

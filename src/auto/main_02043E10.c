@@ -2,6 +2,14 @@
 #include "common.h"
 void func_02008048(void *,void *,s32);
 
+s32 func_02043e10(M2C_UNK arg0, M2C_UNK arg1, void *arg2, s32 arg3) {
+    (void) arg0;
+    (void) arg1;
+    (void) arg2;
+    (void) arg3;
+    return 0;
+}
+
 s32 func_020441e8(s32 arg0) {
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     void *temp_r0;

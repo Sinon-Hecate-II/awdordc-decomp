@@ -125,6 +125,85 @@ void func_ov001_021759c4(void) {
     *(volatile u32 *)0x4001000 &= ~0x10000;
 }
 
+void func_ov001_02175a8c(void) {
+    void func_0200245c(s32);
+    void func_020026d8(s32);
+    void func_02002968(s32);
+    void func_02002514(s32, s32, s32);
+    void func_02002598(void *, s32);
+    void func_020039a0(s32, s32, s32);
+    void func_02003124(s32);
+    void func_020031cc(s32);
+    void func_0200257c(s32);
+    void func_ov001_0218aab4(void);
+    void func_ov001_0218bfd4(void);
+    void func_ov001_0218c168(void);
+    void func_ov001_02189f48(void);
+    void func_020024cc(void);
+
+    func_0200245c(0);
+    func_020026d8(1);
+    func_02002968(2);
+    func_02002514(1, 0, 0);
+
+    *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0x1f00);
+    *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0xe000);
+    func_02002598((void *)0x0400006C, 0);
+
+    *(volatile u32 *)0x04000000 =
+        (*(volatile u32 *)0x04000000 & 0xffcfffef) | 0x10 | 0x200000;
+    *(volatile u16 *)0x04000008 = (*(volatile u16 *)0x04000008 & ~0x40);
+    *(volatile u16 *)0x0400000a = (*(volatile u16 *)0x0400000a & ~0x40);
+    *(volatile u16 *)0x0400000c = (*(volatile u16 *)0x0400000c & ~0x40);
+    *(volatile u16 *)0x0400000e = (*(volatile u16 *)0x0400000e & ~0x40);
+    *(volatile u32 *)0x04000010 = 0;
+    *(volatile u32 *)0x04000014 = 0;
+    *(volatile u32 *)0x04000018 = 0;
+    *(volatile u32 *)0x0400001c = 0;
+    func_020039a0(0x04000050, 0x3f, 0x10);
+    func_02003124(0x80);
+    func_020031cc(0x100);
+    func_0200257c(0);
+
+    *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 & ~0x1f00);
+    *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 & ~0xe000);
+    func_02002598((void *)0x0400106C, 0);
+
+    *(volatile u32 *)0x04001000 =
+        (*(volatile u32 *)0x04001000 & 0xffcfffef) | 0x10;
+    *(volatile u16 *)0x04001008 = (*(volatile u16 *)0x04001008 & ~0x40);
+    *(volatile u16 *)0x0400100a = (*(volatile u16 *)0x0400100a & ~0x40);
+    *(volatile u16 *)0x0400100c = (*(volatile u16 *)0x0400100c & ~0x40);
+    *(volatile u16 *)0x0400100e = (*(volatile u16 *)0x0400100e & ~0x40);
+    *(volatile u32 *)0x04001010 = 0;
+    *(volatile u32 *)0x04001014 = 0;
+    *(volatile u32 *)0x04001018 = 0;
+    *(volatile u32 *)0x0400101c = 0;
+    func_020039a0(0x04001050, 0x3f, 0x10);
+
+    *(volatile u16 *)0x04000008 = (*(volatile u16 *)0x04000008 & 0x43) | 0xc00;
+    *(volatile u16 *)0x0400000a = (*(volatile u16 *)0x0400000a & 0x43) | 0x108 | 0xc00;
+    *(volatile u16 *)0x0400000c = (*(volatile u16 *)0x0400000c & 0x43) | 0xe10;
+    *(volatile u16 *)0x0400000e = (*(volatile u16 *)0x0400000e & 0x43) | 0xf10;
+    *(volatile u16 *)0x04001008 = (*(volatile u16 *)0x04001008 & 0x43) | 0xc00;
+    *(volatile u16 *)0x0400100a = (*(volatile u16 *)0x0400100a & 0x43) | 0xd00;
+    *(volatile u16 *)0x0400100c = (*(volatile u16 *)0x0400100c & 0x43) | 0xe00;
+    *(volatile u16 *)0x0400100e = (*(volatile u16 *)0x0400100e & 0x43) | 0xf00;
+
+    *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0x38000000);
+    *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0x7000000);
+    *(volatile u16 *)0x04000304 = (*(volatile u16 *)0x04000304 & ~0x8000);
+
+    func_ov001_0218aab4();
+    func_ov001_0218bfd4();
+    func_ov001_0218c168();
+    func_ov001_02189f48();
+    func_020024cc();
+
+    *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 | 0x10000);
+    func_0200245c(1);
+}
+
 void func_ov001_02175d04(void) {
     M2C_UNK func_02002490();
     M2C_UNK func_ov001_02184ff8();

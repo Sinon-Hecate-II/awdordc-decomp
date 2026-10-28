@@ -2,6 +2,8 @@
 #include "common.h"
 static inline s32 SpriteTile124(s32 tile) { extern s32 gCur3DSpriteEngine; return (tile >> ((u32)(*(u16 *)*(void **)gCur3DSpriteEngine <<17)>>30))&1023; }
 
+M2C_UNK func_ov004_022120c0(void) { return 0; }
+
 void func_ov004_022124e0(s32 x,s32 y,s32 z,s32 number) {
 void func_01ffaacc(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK data_027e005c,data_027e006c;
 func_01ffaacc((u16)x,(u16)y,(u16)(z+SpriteTile124(14)),&data_027e005c,11);

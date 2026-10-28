@@ -50,6 +50,9 @@ s32 func_ov003_021e6eb8(s32 arg0) {
     return func_020bf894();
 }
 
+void func_ov003_021e6ef4(void *arg0, int arg1) {
+}
+
 u8 func_ov003_021e73bc(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), u8 *, 0x74);
 }
@@ -113,5 +116,53 @@ void func_ov003_021e7458(void *arg0, s32 arg1, s32 arg2) {
 
 s8 func_ov003_021e74a4(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 4);
+}
+
+void func_ov003_021e74ac(void *p,s32 mode){
+ s32 func_020846a4(void);M2C_UNK func_02087db8(void *,M2C_UNK);
+ M2C_UNK func_020aad18(void *);s32 func_ov003_021e6cac(s32,s32,s32);
+ void func_ov003_021e6ef4(void *,s32);
+ u32 i,j; s32 flag; void *obj;
+ switch(mode){
+ case 0:
+ if(func_020846a4()!=0)M2C_FIELD(p,s8 *,0xe4)=0;else M2C_FIELD(p,s8 *,0xe4)=4;
+ M2C_FIELD(p,s8 *,0xe5)=0;
+ i=0;do{
+ if(!func_ov003_021e6cac(i,21,24)){
+ if(func_ov003_021e6cac(i,0,3))func_ov003_021e7458(p,i,0);
+ else if(func_ov003_021e6cac(i,4,7))func_ov003_021e7458(p,i,4);
+ else func_020aad18(M2C_FIELD(p+i*4,void **,0x78));
+ }else{
+ obj=M2C_FIELD(M2C_FIELD(p+i*4,void **,0x78),void **,0x64);
+ if(M2C_FIELD(obj,u8 *,0x12))flag=1;else flag=0;
+ if(flag&255)func_02087db8(obj,1);
+ }
+ i=(u8)(i+1);
+ }while(i<26);
+ M2C_FIELD(M2C_FIELD(p,void **,0x78),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)-1;
+ M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)-1)*4,void **,0x78),s16 *,0x6e)=0;
+ M2C_FIELD(M2C_FIELD(p,void **,0x88),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+3;
+ M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)+3)*4,void **,0x78),s16 *,0x6e)=4;
+ M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)-1;
+ M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6e)=0;break;
+ case 1:
+ M2C_FIELD(p,s8 *,0xe5)=21; j=0;M2C_FIELD(p,s8 *,0xe4)=21;
+ do{
+ if(j>=21){
+ if(func_ov003_021e6cac(j,21,24))func_ov003_021e7458(p,j,21);
+ else func_020aad18(M2C_FIELD(p+j*4,void **,0x78));
+ }else{
+ obj=M2C_FIELD(M2C_FIELD(p+j*4,void **,0x78),void **,0x64);
+ if(M2C_FIELD(obj,u8 *,0x12))flag=1;else flag=0;
+ if(flag&255)func_02087db8(obj,1);
+ }
+ j=(u8)(j+1);
+ }while(j<26);
+ M2C_FIELD(M2C_FIELD(p,void **,0xcc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+20;
+ M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)+20)*4,void **,0x78),s16 *,0x6e)=21;
+ M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+20;
+ M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6e)=21;break;
+ }
+ func_ov003_021e6ef4(p,25);
 }
 

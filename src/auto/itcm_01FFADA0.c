@@ -3,6 +3,83 @@
 
 typedef struct UnkB454Bits { u32 value : 8; u32 rest : 24; } UnkB454Bits;
 
+M2C_UNK func_01ffada0(M2C_UNK a0, M2C_UNK a1, M2C_UNK a2, M2C_UNK a3, M2C_UNK a4) { (void)a0;(void)a1;(void)a2;(void)a3;(void)a4; return 0; }
+
+void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
+    extern void *data_027e0a90;
+    extern s8 *data_027e00cc;
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b55c0[];
+    extern s32 data_027e0a94;
+    extern void *data_027e0a98;
+    s32 func_020d280c(s32, s32, s32);
+
+    u8 *q = (u8 *)data_027e0a90;
+    s8 *terrain = data_027e00cc;
+    u8 q0 = q[0];
+    u8 q1 = q[1];
+    u8 r5 = (u8)(arg1 + q0);
+    u8 r4 = (u8)(arg2 + q1);
+    s16 score;
+    u8 terrainType;
+    void *m;
+    u16 row;
+    s8 costVal;
+    u8 terrainAttr;
+    void **tablePtr;
+    s8 *signedTable;
+    s16 field22;
+    u8 *cursor;
+
+    if (r5 >= (u8)terrain[0x24]) return;
+    if (r4 >= (u8)terrain[0x25]) return;
+
+    m = *gCurrentMap;
+    field22 = *(s16 *)(terrain + 0x22);
+    row = *(u16 *)((u8 *)m + r4 * 2 + 0x3758);
+    tablePtr = (void **)((u8 *)m + q1 * 4 + 0x52e8);
+    signedTable = (s8 *)tablePtr[0];
+    costVal = signedTable[q0];
+    terrainType = ((u8 *)m)[r5 + row + 0x1000 + 0x420] & 0x1f;
+    terrainAttr = (u8)terrain[terrainType];
+    score = (s16)(costVal + terrainAttr);
+
+    if (field22 & 0x10) {
+        if (data_ov000_021b55c0[terrainType] != 0) {
+            s32 mapField = *(u16 *)((u8 *)m + 0x52b6);
+            if (func_020d280c(mapField, r5, r4) == 0) {
+                score = 0x00ff;
+            }
+            m = *gCurrentMap;
+            tablePtr = (void **)((u8 *)m + r4 * 4 + 0x52e8);
+            if (score >= (s16)((u8 *)tablePtr[0])[r5]) {
+                return;
+            }
+        }
+    }
+
+    if (field22 & 0x0d) {
+        s8 cellType = ((s8 *)m)[r5 + row];
+        if (cellType == 0) {
+            goto enqueue;
+        }
+    }
+
+enqueue:
+    if (score > *(s16 *)(terrain + 0x20)) return;
+    if (data_027e0a94 >= 0x15d) return;
+    data_027e0a94++;
+    cursor = (u8 *)data_027e0a98;
+    cursor[0] = r5;
+    cursor[1] = r4;
+    cursor[2] = (u8)arg0;
+    cursor[3] = (u8)score;
+    data_027e0a98 = cursor + 4;
+    m = *gCurrentMap;
+    tablePtr = (void **)((u8 *)m + r4 * 4 + 0x52e8);
+    ((u8 *)tablePtr[0])[r5] = (u8)score;
+}
+
 void func_01ffb3d0(s8 arg0) {
 extern void **gCurrentMap;
 s32 y=0,x; void *base=*gCurrentMap;
@@ -172,5 +249,8 @@ if(y!=M2C_FIELD(base,u16*,0x5146)-1){cell=((s8**)base)[y+0x14bb];if(cell[x]<0)ce
 base=*gCurrentMap;
 }
 }
+}
+
+void func_01ffbb04(void) {
 }
 

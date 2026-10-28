@@ -6,7 +6,7 @@ void func_0200fc58(void) {
     extern void *data_0212fde0;
     extern void *data_0212fd80;
     void func_02007e98(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_020067e0(M2C_UNK, M2C_UNK);
+    void func_020067e0(void *, u32);
     void func_02008048(void *, void *, u32);
     void func_02005ac0(void *, void *, s32, u8 *, u32, s32);
     void func_02005e5c(void *);
@@ -122,6 +122,8 @@ void func_0200fe6c(M2C_UNK arg0) {
  func_0200fbcc(arg0, 2);
 }
 
+void func_0200fe94(s32 arg0) { (void)arg0; }
+
 s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *data_0212fde0;
     extern M2C_UNK data_0212dca4;
@@ -181,7 +183,7 @@ s32 func_02010438(void) {
 
 s32 func_0201044c(s32 arg0) {
 extern void *data_0212fde0;extern M2C_UNK data_0212dca4;
-void func_02000b9c(s32);s32 func_0200751c(void);void func_02007530(s32);void func_02005da4(void *);void func_02005df4(void *);void func_02005e5c(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
+void func_02000b9c(s32);s32 func_0200751c(void);void func_02007530(s32);void func_02005da4(void *);void func_02005df4(void *);void func_02005e5c(void *);void func_0200fe94(s32);s32 func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
 void *p=&data_0212fde0; s32 state,state2;s32 value;void (*callback)(s32);
 func_02000b9c(0x2000bc4);
 if(arg0==0)func_02007958();
@@ -274,11 +276,11 @@ void func_020106dc(void) {
     s32 r5;
     s32 r6;
     s32 state;
-    void *q;
-    void *p;
+    s32 *q;
+    s32 *p;
 
     func_02007ca4(M2C_FIELD(&data_0212fde0, s32 *, 0x28));
-    q = &data_0212fde0;
+    q = (s32 *)&data_0212fde0;
     a = M2C_FIELD(q, s32 *, 0x24);
     b = M2C_FIELD(q, s32 *, 0x1c) + 0x200;
     c = M2C_FIELD(q, s32 *, 0x20) + 0x200;
@@ -294,7 +296,7 @@ void func_020106dc(void) {
     if (flag) goto fail;
     func_020051f8(0x80000);
     func_02005228(0x80000);
-    p = &data_0212fde0;
+    p = (s32 *)&data_0212fde0;
     r = func_02010a28();
     func_02010f84(r);
     M2C_FIELD(M2C_FIELD(p, s32 **, 0), s32 *, 0) = 0;

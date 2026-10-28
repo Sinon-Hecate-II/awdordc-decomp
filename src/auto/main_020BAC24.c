@@ -1,6 +1,11 @@
 /* 13 functions from 0x020BAC24 to 0x020BBBBC (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020bac24(void) {
+    extern void **gCurrentMap;
+    (void)gCurrentMap;
+}
+
 void func_020bb028(void) {
     M2C_UNK func_020bf858();
     M2C_UNK func_020cfd28();
@@ -44,6 +49,9 @@ void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0209ea20(M2C_UNK, M2C_UNK, M2C_UNK);
     func_020bb03c();
     func_0209ea20(arg0, arg1, 0);
+}
+
+void func_020bb110(void) {
 }
 
 void func_020bb458(void) {
@@ -159,6 +167,9 @@ void func_020bb608(s32 arg0) {
             M2C_FIELD(sel, u16 *, 0x4) = h;
         }
     }
+}
+
+void func_020bb768(void) {
 }
 
 void func_020bbac8(void) {

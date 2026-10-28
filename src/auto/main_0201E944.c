@@ -1,6 +1,10 @@
 /* 35 functions from 0x0201E944 to 0x0201F89C (main), found by ds-decomp. */
 #include "common.h"
 
+s32 func_0201e944(M2C_UNK a, s32 b, M2C_UNK c, s32 d, s32 e) {
+    return 0;
+}
+
 s32 func_0201ebec(u8 *arg0, u8 **arg1) {
     s32 var_ip;
     u8 *var_r0;

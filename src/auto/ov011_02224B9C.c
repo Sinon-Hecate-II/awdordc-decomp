@@ -15,6 +15,75 @@ extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8, *data_027e01d8;
    selected by arg1, or to the engine already active when arg1 is 3) using the
    geometry template data_ov011_02227f3c with its corner fields overwritten;
    arg2 picks the vertex list offset inside the active engine's state block. */
+void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
+    M2C_UNK func_ov011_02222010(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s16 func_0207ca38(M2C_UNK, M2C_UNK, s16, u32, s32);
+    M2C_UNK func_ov011_02222830(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void G3_SubmitSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s16);
+    extern M2C_UNK data_ov011_02227f08;
+    extern M2C_UNK data_ov011_02228ce0;
+    u8 sp8;
+    u8 sp7;
+    u8 sp6;
+    u8 sp5;
+    u8 sp4;
+    u8 *states;
+    u8 state;
+    u16 counter;
+
+    sp4 = M2C_FIELD(&data_ov011_02227f08, u8 *, 0);
+    sp5 = M2C_FIELD(&data_ov011_02227f08, u8 *, 1);
+    sp6 = M2C_FIELD(&data_ov011_02227f08, u8 *, 2);
+    sp7 = M2C_FIELD(&data_ov011_02227f08, u8 *, 3);
+    sp8 = M2C_FIELD(&data_ov011_02227f08, u8 *, 4);
+    states = &sp4;
+    switch (arg1) {
+    default:
+        return;
+    case 1:
+        func_ov011_02222010(arg0, 5, 0);
+        func_ov011_022216d8(arg0, 9, 0, 2);
+        func_ov011_022216d8(arg0, 0xA, 1, 2);
+        func_ov011_022216d8(arg0, 0xD, 0, 3);
+        func_ov011_022216d8(arg0, 0xE, 1, 3);
+        func_ov011_02224e04(arg0, 2, 2, 0x100, 0x80);
+        func_ov011_02224e04(arg0, 2, 3, 0, 0x80);
+        /* fallthrough */
+    case 0:
+        M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) = 0U;
+        M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) = 0U;
+        return;
+    case 3:
+        if ((M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) == (&sp4)[M2C_FIELD(&data_ov011_02228ce0, u8 *, 0)]) && ((u32) M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) > 4U)) {
+            M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) = 0U;
+            M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) = (u8) (M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) + 1);
+        }
+        if ((u32) M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) <= 4U) {
+            u32 temp_r1 = (u8) M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) >> 0x1F;
+            u8 temp_ip = (&sp4)[M2C_FIELD(&data_ov011_02228ce0, u8 *, 0)];
+            if ((temp_r1 + ROTATE_RIGHT((M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) << 0x1F) - temp_r1, 0x1F)) != 0) {
+                func_ov011_02222830(arg0, 2, 3, 2, (s32) func_0207ca38(0, 0, (s16)0x10, M2C_FIELD(&data_ov011_02228ce0, u16 *, 2), (s32) temp_ip));
+            } else {
+                func_ov011_02222830(arg0, 2, 3, 2, (s32) func_0207ca38(0, (s16)0x10, 0, M2C_FIELD(&data_ov011_02228ce0, u16 *, 2), (s32) temp_ip));
+            }
+        }
+        M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) = (u16) (M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) + 1);
+        func_ov011_02224e04(arg0, 2, 2, 0x80, 0x60);
+        func_ov011_02224e04(arg0, 2, 3, 0x80, 0x60);
+        return;
+    case 4:
+        func_ov011_022216d8(arg0, 0xF, 0, 3);
+        func_ov011_022216d8(arg0, 0x10, 1, 3);
+        /* fallthrough */
+    case 5:
+        M2C_FIELD(&data_ov011_02228ce0, u8 *, 0) = 0U;
+        M2C_FIELD(&data_ov011_02228ce0, u16 *, 2) = 0U;
+        /* fallthrough */
+        return;
+    }
+}
+
 void G3_SubmitSpriteQuad(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s16 arg4) {
 void func_02082a8c(void *, void *);
 ContextTemplate temp = data_ov011_02227f3c;

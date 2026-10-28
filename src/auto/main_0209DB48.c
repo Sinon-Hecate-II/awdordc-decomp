@@ -394,6 +394,11 @@ loop_1:
     goto loop_1;
 }
 
+s32 func_0209e320(void *arg0) {
+    (void)arg0;
+    return 0;
+}
+
 M2C_UNK func_0209e5d0(void *arg0) {
     void *func_020993d4(void *);
     void func_02099310(void *, s32);
@@ -419,6 +424,8 @@ M2C_UNK func_0209e5d0(void *arg0) {
 }
 
 M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return func_02082770(v);}
+
+s32 func_0209e660(void *arg0) { (void)arg0; return 0; }
 
 void func_0209e980(void) {
     M2C_UNK func_0209e5d0();

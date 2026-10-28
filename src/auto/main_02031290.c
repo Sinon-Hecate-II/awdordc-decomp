@@ -130,7 +130,7 @@ s32 func_0203152c(void) {
 
 void func_0203155c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     extern u8 data_020ea894[];
-    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_02008048(void *, void *, u32);
     s32 func_0202f5ac(u8);
     s32 func_0203161c(void *);
     s32 func_02031670(s32);
@@ -223,9 +223,9 @@ s32 func_020317f8(M2C_UNK arg0) {
     return 0;
 }
 
-void func_0203181c(s32 arg0) {
-    M2C_UNK func_0203197c(s32);
-    func_0203197c(arg0 + 0xC);
+void func_0203181c(s32 arg0, u8 *dst) {
+    void func_0203197c(u8 *, u8 *);
+    func_0203197c((u8 *)arg0 + 0xC, dst);
 }
 
 M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
@@ -281,6 +281,45 @@ M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
     key = (signed char *)data_020fb23c[0];
     for (i = 0; i < 0x18; i++) {
         p[i] = (u8)(p[i] ^ key[i]);
+    }
+}
+
+void func_0203197c(u8 *src, u8 *dst) {
+    u8 tmp[0x10];
+    extern M2C_UNK data_020fb23c[];
+    extern u8 data_020ea908[];
+    extern u8 data_020ea918[];
+    void func_02008048(void *, void *, u32);
+
+    s32 i;
+    for (i = 0; i < 0xD; i++) {
+        dst[i] = (u8)(src[i] ^ src[(i % 7) + 0xD]);
+    }
+    for (i = 0; i < 0x7; i++) {
+        dst[i + 0x3] = (u8)(dst[i + 0x3] ^ src[i + 0xD]);
+    }
+    for (i = 0; i < 0xD; i++) {
+        dst[i] = (u8)(dst[i] ^ ((signed char *)data_020fb23c[1])[i]);
+    }
+    func_02008048(dst, tmp, 0xD);
+    for (i = 0; i < 0xD; i++) {
+        dst[data_020ea908[i]] = tmp[i];
+    }
+    for (i = 0; i < 0xD; i++) {
+        dst[i] = (u8)(dst[i] ^ ((signed char *)data_020fb23c[3])[i]);
+    }
+    for (i = 0; i < 0xD; i++) {
+        u8 b = dst[i];
+        u8 hi = (u8)((b >> 4) & 0x0F);
+        u8 lo = (u8)(b & 0x0F);
+        dst[i] = (u8)((data_020ea918[hi] << 4) | data_020ea918[lo]);
+    }
+    for (i = 0; i < 0x3; i++) {
+        dst[i] = (u8)(dst[i] ^ dst[i + 0x6]);
+        dst[i + 0x3] = (u8)(dst[i + 0x3] ^ dst[i + 0x9]);
+        dst[i + 0x6] = (u8)(dst[i + 0x6] ^ dst[i + 0x3]);
+        dst[i + 0x9] = (u8)(dst[i + 0x9] ^ dst[i]);
+        dst[0xC] = (u8)(dst[0xC] ^ dst[i]);
     }
 }
 

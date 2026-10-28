@@ -79,6 +79,10 @@ void func_ov006_022150f8(void) {
     func_ov006_022144ac();
 }
 
+void func_ov006_02215104(s32 arg0) {
+    (void)arg0;
+}
+
 u8 func_ov006_022153f4(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x34);
 }

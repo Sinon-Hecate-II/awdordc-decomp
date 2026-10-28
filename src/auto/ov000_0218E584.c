@@ -1,6 +1,155 @@
 /* 7 functions from 0x0218E584 to 0x0218F468 (ov000), found by ds-decomp. */
 #include "common.h"
 
+M2C_UNK func_ov000_0218e584() { return 0; }
+
+M2C_UNK func_ov000_0218e9ac(void) {
+    M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_01ffb9c4(s8);
+    s32 func_ov000_02177f24(s32, s32, s16 *);
+    void func_ov000_02199d74(u32, u32, u32, u32, u32);
+    u8 func_ov000_021a995c(u8 *, s32);
+    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 func_ov000_021a93a8(void *, u8, u8);
+    u8 func_ov000_0217a8a0(s32, s32, s32);
+    void func_ov000_0218a9ac(s32, s32);
+    void func_ov000_0217c3a4(void);
+    extern void **gCurrentMap;
+    extern void *data_ov000_021df580;
+    extern void *data_ov000_021df644;
+    extern s8 data_ov000_021b5bfc[];
+    extern s8 data_ov000_021b55a0[];
+
+    s32 bestY;
+    s32 bestScore = 0x7fff;
+    s32 bestX = -1;
+    s32 x, y;
+    void *base;
+    u8 *selected;
+    u8 kindSel;
+    s16 buf[2];
+    s32 height, width;
+    u8 *rowPtr;
+    u8 byteVal;
+    u8 *entity;
+    u8 kind;
+    s32 curScore = 0;
+    u8 *p580;
+    u8 *p644;
+    u8 threshold, thr, thr5, threshold2, thrFin;
+    u16 rowOff, rowOff2, rowOffY, rowOffFin;
+    u8 terrainVal, terrainVal2;
+    u8 tile, tableVal, tileFin;
+    s8 finalCell;
+
+    base = *(void **)*gCurrentMap;
+    selected = *(u8 **)((u8 *)base + 0x5000 + 0x2D0);
+    kindSel = (u8)(((u32)(selected[0] << 26)) >> 26);
+    func_01ffada0((M2C_UNK)selected[1], (M2C_UNK)selected[2], (M2C_UNK)kindSel, (M2C_UNK)0x6e, (M2C_UNK)1);
+    func_01ffb9c4(0x6f);
+
+    bestY = -1;
+    base = *(void **)*gCurrentMap;
+    height = *(u16 *)((u8 *)base + 0x5100 + 0x46);
+    if (height <= 0) goto outer_done;
+    width = *(u16 *)((u8 *)base + 0x5100 + 0x44);
+    y = 0;
+outer_top:
+    if (y >= height) goto outer_done;
+    x = 0;
+    if (width <= 0) goto width_done;
+inner_top:
+    if (x >= width) goto width_done;
+    rowPtr = ((u8 **)((u8 *)base + 0x52E8))[y];
+    if (rowPtr[x] < 0) goto next_cell;
+    rowOff = *(u16 *)((u8 *)base + (y << 1) + 0x3758);
+    byteVal = *((u8 *)base + rowOff + x);
+    entity = (u8 *)((u8 *)base + 0x59A4 + byteVal * 14);
+    kind = entity[0] & 0x3F;
+    if (kind == 0) goto next_cell;
+    if (entity == selected) goto next_cell;
+    if (kind == 0x0D) {
+        if (!data_ov000_021b5bfc[kindSel * 0x70 + 0x6A]) goto next_cell;
+        if (!(entity[4] & 1)) goto next_cell;
+        if (!func_ov000_02177f24(x, y, buf)) goto next_cell;
+        rowOff2 = *(u16 *)((u8 *)base + (s32)buf[1] * 2 + 0x3758);
+        p644 = *(u8 **)data_ov000_021df644;
+        threshold = p644[2];
+        terrainVal = *((u8 *)base + (s32)buf[0] + rowOff2 + 0x2000 + 0x0D48);
+        if (terrainVal >= threshold) goto next_cell;
+        func_ov000_02199d74((u32)buf[0], (u32)buf[1], 2, 0, 0);
+        goto next_cell;
+    }
+    if (kind == 0x15) {
+        if (kindSel == 0x11) {
+            if ((s32)(s8)rowPtr[x] <= bestScore) {
+                bestX = x;
+                bestY = y;
+                bestScore = curScore;
+            }
+            p580 = *(u8 **)data_ov000_021df580;
+            thr = p580[5];
+            if ((s32)(s8)rowPtr[x] > (s32)thr) goto next_cell;
+            if (!func_ov000_021a995c(entity, (s32)kindSel)) goto next_cell;
+            func_ov000_02199d74((u32)(s16)x, (u32)(s16)y, 7, 0, 0);
+            goto next_cell;
+        }
+        goto case17;
+    }
+case17:
+    if (func_ov000_021a9214(selected, x, y) == 0) {
+        if (!func_ov000_021a93a8(selected, x, y)) goto next_cell;
+        p580 = *(u8 **)data_ov000_021df580;
+        thr5 = p580[5];
+        if (!func_ov000_0217a8a0(x, y, (s32)thr5)) goto next_cell;
+    }
+    p644 = *(u8 **)data_ov000_021df644;
+    threshold2 = p644[2];
+    rowOffY = *(u16 *)((u8 *)base + (y << 1) + 0x3758);
+    terrainVal2 = *((u8 *)base + (s32)x + (s32)rowOffY + 0x2000 + 0x0D48);
+    if (terrainVal2 >= threshold2) goto next_cell;
+    tile = (*((u8 *)base + (s32)x + (s32)rowOffY + 0x1000 + 0x0420)) & 0x1F;
+    curScore = (s32)(s8)rowPtr[x];
+    tableVal = (u8)data_ov000_021b55a0[tile];
+    if (tableVal != 0) {
+        p580 = *(u8 **)data_ov000_021df580;
+        curScore += (s32)p580[5];
+    }
+    if (func_ov000_021a93a8(selected, x, y) == 1) {
+        curScore = 0;
+    }
+    if (curScore <= bestScore) {
+        bestX = x;
+        bestY = y;
+        bestScore = curScore;
+    }
+next_cell:
+    x++;
+    goto inner_top;
+width_done:
+    y++;
+    goto outer_top;
+outer_done:
+    if (bestScore == 0x7fff) {
+        goto func_done;
+    }
+    func_ov000_0217c3a4();
+    p580 = *(u8 **)data_ov000_021df580;
+    thrFin = p580[5];
+    base = *(void **)*gCurrentMap;
+    rowPtr = ((u8 **)((u8 *)base + 0x52E8))[bestY];
+    finalCell = (s8)rowPtr[bestX];
+    if (finalCell > (s8)thrFin) goto final_alt;
+    rowOffFin = *(u16 *)((u8 *)base + (bestY << 1) + 0x3758);
+    tileFin = *((u8 *)base + (s32)bestX + (s32)rowOffFin);
+    if (tileFin != 0) goto final_alt;
+    func_ov000_02199d74((u32)bestX, (u32)bestY, 2, 0, 0);
+    goto func_done;
+final_alt:
+    func_ov000_0218a9ac(bestX, bestY);
+func_done:;
+}
+
 void func_ov000_0218edd8(void) {
     M2C_UNK func_ov000_0218dda4();
     M2C_UNK func_ov000_0218e340();
@@ -120,6 +269,11 @@ outer_done:
         *(u16 *)((u8 *)bestEntity + 8) = tmp;
         func_ov000_02199d74(foundX, foundY, 6, 0, 0);
     }
+}
+
+void func_ov000_0218f0ec(void) {
+    extern void **gCurrentMap;
+    /* placeholder copied from sibling; may need manual refinement */
 }
 
 void func_ov000_0218f37c(void) {

@@ -8,6 +8,10 @@ static inline void *Next021e8e8c(void *head, void *node) {
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
+void func_ov002_021e8984(void *arg0) {
+    (void)arg0;
+}
+
 void func_ov002_021e8ca4(void *arg0) {
 void func_020e35cc(void *);
 void func_ov002_021e9318(void *);
@@ -99,6 +103,8 @@ void func_ov002_021e9008(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0x88) = arg1;
     M2C_FIELD(arg0, s16 *, 0x8A) = arg2;
 }
+
+void func_ov002_021e9318(void *x) { return; }
 
 /* Recursively tear down a node's right chain, cleaning up its left children. */
 void func_ov002_021e95f0(void *owner, void *node) {

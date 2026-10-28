@@ -1,6 +1,9 @@
 /* 12 functions from 0x0221A59C to 0x0221B56C (ov007), found by ds-decomp. */
 #include "common.h"
 
+void func_ov007_0221a59c(void) {
+}
+
 void func_ov007_0221ab20(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_022200b0;
@@ -75,6 +78,10 @@ s32 func_ov007_0221acac(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
     if (func_ov007_0221b030(arg0, arg1, arg2, arg3) != 0) {
         return 1;
     }
+    return 0;
+}
+
+s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return 0;
 }
 

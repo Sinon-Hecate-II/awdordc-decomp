@@ -75,6 +75,60 @@ s32 func_020b9e70(s32 arg0,s32 arg1) {
  switch(arg1) { case 17: return 0; default: return 1; }
 }
 
+s32 func_020b9ec0(s32 arg0,s32 arg1){
+  s32 func_020a7bbc(s32); s32 func_ov004_02213820(void);
+  extern M2C_UNK data_ov000_021aab78;
+  extern void **gCurrentMap;
+  u16 n;
+  (void)arg0;
+  if(M2C_FIELD(&data_ov000_021aab78,s8*,arg1)==-1)return 0;
+  if(func_020a7bbc(arg1)==0)return 0;
+  switch(arg1){
+  case 17: return 0;
+  default:
+    switch(arg1){
+    case 8:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xaa)return 0;
+      break;
+    case 9:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xae)return 0;
+      break;
+    case 26:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xa5)return 0;
+      if(n==0xa5&&func_ov004_02213820()==0)return 0;
+      break;
+    case 6: case 11: case 12:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xa6)return 0;
+      break;
+    case 18: case 19:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xa7)return 0;
+      break;
+    case 13: case 14: case 15: case 16:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xa8)return 0;
+      break;
+    case 24: case 25:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xaa)return 0;
+      break;
+    case 20: case 22: case 23:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xab)return 0;
+      break;
+    case 21:
+      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
+      if(n>=0xa1&&n<=0xac)return 0;
+      break;
+    }
+    return 1;
+  }
+}
+
 #pragma opt_common_subs off
 s32 func_020ba12c(s32 x,s32 y,s32 type,s32 mode) {
 extern void **gCurrentMap;

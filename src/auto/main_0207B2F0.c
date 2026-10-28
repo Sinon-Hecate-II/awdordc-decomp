@@ -4,6 +4,59 @@
 u8 func_0207b7c4(void);
 void func_0207b754(M2C_UNK, M2C_UNK);
 
+s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
+    s32 func_0207d0b8(void);
+    s32 func_0207d0d4(void);
+    void func_020cf498(s32, s32);
+    extern void *gCurrentMap;
+    s32 deltaX = 0;
+    s32 rawY = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x514A);
+    s32 rawX = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5148);
+    s32 deltaY = deltaX;
+    s32 tileX = rawX / 16;
+    s32 tileY = rawY / 16;
+    s32 halfX = func_0207d0b8();
+    s32 halfY = func_0207d0d4();
+    func_020cf498((s16)*px, (s16)*py);
+    if (third != 0) {
+        *px -= halfX >> 1;
+        *py -= halfY >> 1;
+        *py += 1;
+        if (*px < 0) *px = 0;
+        if (*py < 0) *py = 0;
+        if (*px + halfX > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144)) *px = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144) - halfX;
+        if (*py + halfY > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) *py = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146) - halfY;
+        if (*px < 0) *px = 0;
+        if (*py < 0) *py = 0;
+        if (tileX == *px && tileY == *py) goto done_zero;
+        return 1;
+    }
+    if (*px < tileX + 1) {
+        if (tileX != 0) deltaX = -1;
+    }
+    if (*py < tileY + 1) {
+        if (tileY != 0) deltaY = -1;
+    }
+    if (*px > tileX + halfX - 2) {
+        if (tileX + halfX < *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144)) deltaX = -(halfX - 2);
+    }
+    if (*py > tileY + halfY - 2) {
+        if (tileY + halfY < *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) deltaY = -(halfY - 2);
+    }
+    if (deltaX == 0) *px = tileX; else *px += deltaX;
+    if (deltaY == 0) *py = tileY; else *py += deltaY;
+    if (*px < 0) *px = 0;
+    if (*py < 0) *py = 0;
+    if (*px + halfX > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144)) *px = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144) - halfX;
+    if (*py + halfY > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) *py = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146) - halfY;
+    if (*px < 0) *px = 0;
+    if (*py < 0) *py = 0;
+    if (tileX == *px && tileY == *py) goto done_zero;
+    return 1;
+done_zero:
+    return 0;
+}
+
 s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207b2f0(s32 *, s32 *, s32);
     void *func_01ffa3dc(M2C_UNK *, s32);

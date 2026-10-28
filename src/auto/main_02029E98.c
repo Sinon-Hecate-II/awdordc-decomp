@@ -588,11 +588,9 @@ s32 func_0202aaf8(void) {
 
 void func_0202ab40(s32 arg0) {
     extern M2C_UNK data_0213b2a0;
-    u32 *p;
-    u32 cur;
-    p = (u32 *)&data_0213b2a0;
-    cur = p[1];
-    p[1] = cur & ~(1U << (u32)arg0);
+    M2C_UNK *g = &data_0213b2a0;
+    M2C_UNK m = 1;
+    g[1] = g[1] & ~(m << arg0);
 }
 
 void func_0202ab60(void) {
@@ -605,6 +603,11 @@ void func_0202ab60(void) {
 void func_0202ab7c(s32 arg0, s8 arg1) {
     extern u8 data_0213b724[];
     data_0213b724[arg0 * 0x24] = (u8)arg1;
+}
+
+void func_0202abb4(s32 arg0, s32 arg1) {
+    extern u8 data_0213b720[];
+    *(s32 *)(data_0213b720 + arg0 * 0x24) = arg1;
 }
 
 void func_0202ac60(s32 *arg0) {
@@ -624,9 +627,15 @@ void func_0202acbc(s32 **arg0) {
     *arg0 = (s32 *)0;
 }
 
-void func_0202acf0(void *arg0, s8 arg1) {
-    if (M2C_FIELD(arg0, void **, 0) != NULL) {
-        M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0x40) = arg1;
+void func_0202acdc(void **arg0, s8 arg1) {
+if (*(void * volatile *)arg0 != NULL) {
+M2C_FIELD(*(void * volatile *)arg0,s8 *,0x41)=arg1;
+}
+}
+
+void func_0202acf0(void **arg0, s8 arg1) {
+    if (*(void * volatile *)arg0 != NULL) {
+        M2C_FIELD(*(void * volatile *)arg0, s8 *, 0x40) = arg1;
     }
 }
 

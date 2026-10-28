@@ -88,6 +88,10 @@ s32 func_020a4dd8(void) {
     return 1;
 }
 
+void func_020a4de0(Unk020AEntry *a) {
+    return;
+}
+
 void func_020a5080(Unk020ABaseEntry *a){
 extern s32 *gCurrentMap;void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb80c(s32,s32,s32,s32);
 s32 found=0,x,y,p;u8 id;

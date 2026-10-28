@@ -6,6 +6,11 @@ u8 func_ov000_021889ac(void);
 u8 func_ov000_02188850(void);
 
 
+void func_ov000_02187f7c(void) {
+    extern void **gCurrentMap;
+    (void)gCurrentMap;
+}
+
 s32 func_ov000_021882c4(void) {
     s32 func_ov000_02189f3c();
     s32 flag, count, current;
@@ -341,5 +346,83 @@ u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
     if (bank[((u32)(value << 26) >> 26)] > 0) result = 1;
     else result = 0;
     return result;
+}
+
+s32 func_ov000_02188b50(s32 arg0, s32 arg1) {
+    s32 func_ov000_021a98a8(s32);
+    u8 func_ov000_021883c0(s32, s32);
+    u8 func_ov000_02188538(s32, s32);
+    u8 func_ov000_02188a8c(s32, s32);
+    extern void **gCurrentMap;
+    void *base, *table;
+    u8 *entry;
+    s32 (*fp)(s32, s32);
+    s32 ln;
+    s32 rc;
+
+    base = *gCurrentMap;
+    table = (u8 *)base + 0x59A4;
+    entry = (u8 *)table + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
+
+    if (func_ov000_021a98a8((s32)((entry[0] << 26) >> 26)) == 0 && (entry[0] & 0x3F) == 0x0D) {
+        fp = (s32 (*)(s32, s32))func_ov000_021883c0;
+    } else {
+        ln = entry[0x0B] & 0x0F;
+        switch (ln) {
+            case 0:
+            case 1:
+                fp = (s32 (*)(s32, s32))func_ov000_02188538;
+                break;
+            case 2:
+                fp = (s32 (*)(s32, s32))func_ov000_021886d8;
+                break;
+            case 3:
+            case 4:
+                fp = (s32 (*)(s32, s32))func_ov000_021887e4;
+                break;
+            case 5:
+                fp = (s32 (*)(s32, s32))func_ov000_02188940;
+                break;
+            case 6:
+                fp = 0;
+                break;
+            case 7:
+            case 8:
+            case 9:
+                fp = (s32 (*)(s32, s32))func_ov000_02188a8c;
+                break;
+            default:
+                fp = 0;
+                break;
+        }
+    }
+
+    rc = fp(arg0, arg1);
+    if (rc == 1) return 1;
+
+    ln = entry[0x0B] & 0x0F;
+    if (ln == 7 || ln == 8 || ln == 9) {
+        return 0;
+    }
+
+    if (func_ov000_02188538(arg0, arg1) == 1) {
+        entry[0x0B] = (u8)(entry[0x0B] & 0xF0);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+        return 1;
+    }
+    if (((s32 (*)(s32, s32))func_ov000_021887e4)(arg0, arg1) == 1) {
+        entry[0x0B] = (u8)((entry[0x0B] & 0xF0) | 0x03);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+        return 1;
+    }
+    if (((s32 (*)(s32, s32))func_ov000_021886d8)(arg0, arg1) == 1) {
+        entry[0x0B] = (u8)((entry[0x0B] & 0xF0) | 0x02);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
+        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+        return 1;
+    }
+    return 0;
 }
 

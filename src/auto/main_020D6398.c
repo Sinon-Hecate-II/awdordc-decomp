@@ -136,3 +136,12 @@ void func_020d694c(s32 arg0, s32 arg1, s32 arg2) {
     } while (value != 0);
 }
 
+void func_020d6a20(s32 a, s32 b, u32 c, u32 d) {
+    s32 func_020e31e0(void);
+    (void)a; (void)b; (void)c; (void)d;
+    if (func_020e31e0() != 0) {
+        return;
+    }
+    return;
+}
+

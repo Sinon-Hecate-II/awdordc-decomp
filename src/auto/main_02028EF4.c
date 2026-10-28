@@ -4,6 +4,114 @@
 extern u8 data_02138e7c;
 extern u8 data_02138e80[16];
 
+void func_02028ef4(void *arg0) {
+    s32 func_020121d8(M2C_UNK *);
+    s32 func_02012740(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK func_020280c8(M2C_UNK, void *, u16, s32);
+    M2C_UNK func_02028160(M2C_UNK);
+    extern void *data_02138e4c;
+    extern M2C_UNK func_02028384;
+    extern M2C_UNK func_0202899c;
+    M2C_UNK var_r3;
+    s32 temp_r0;
+    s32 temp_r0_2;
+    s32 temp_r2;
+    u16 temp_r3;
+    u16 temp_r4;
+    u16 var_r0;
+    u32 temp_r1;
+
+    if (M2C_FIELD(arg0, u16 *, 2) == 0) {
+        var_r0 = 0;
+        M2C_FIELD(data_02138e4c, s8 *, 0x226B) = 0;
+        M2C_FIELD(data_02138e4c, s16 *, 0x2282) = 0;
+        temp_r1 = M2C_FIELD(data_02138e4c, u32 *, 0x2260);
+        switch (temp_r1) {                          /* switch 1 */
+        default:                                    /* switch 1 */
+        case 0:                                     /* switch 1 */
+        case 1:                                     /* switch 1 */
+        case 2:                                     /* switch 1 */
+        case 3:                                     /* switch 1 */
+        case 4:                                     /* switch 1 */
+        case 11:                                    /* switch 1 */
+            func_02028160(0xB);
+            func_020280c8(7, NULL, (u16) M2C_FIELD(data_02138e4c, u32 *, 0x2260), 0x959);
+            return;
+        case 5:                                     /* switch 1 */
+        case 6:                                     /* switch 1 */
+            func_02028160(3);
+            func_020280c8(1, NULL, 0U, 0x8F5);
+            return;
+        case 7:                                     /* switch 1 */
+            func_02028160(3);
+            func_020280c8(0, NULL, 0U, 0x8FB);
+            return;
+        case 8:                                     /* switch 1 */
+            temp_r4 = M2C_FIELD(data_02138e4c, u16 *, 0x22F8);
+            M2C_FIELD(data_02138e4c, u16 *, 0x22F8) = 0U;
+            if ((temp_r4 == 0x12) && (temp_r3 = M2C_FIELD(data_02138e4c, u16 *, 0x2170), ((temp_r3 & 0x24) != 0x24))) {
+                M2C_FIELD(data_02138e4c, u16 *, 0x2170) = (u16) (temp_r3 | 0x24);
+                temp_r2 = M2C_FIELD(data_02138e4c, s32 *, 0x2264);
+                if ((temp_r2 & 0xC0000) == 0xC0000) {
+                    var_r0 = 1;
+                }
+                if ((temp_r2 & 0x30000) != 0x30000) {
+                    var_r3 = 1;
+                } else {
+                    var_r3 = 0;
+                }
+                temp_r0 = func_02012740(&func_0202899c, data_02138e4c + 0x2140, 0, var_r3, (s32) var_r0);
+                switch (temp_r0) {                  /* switch 2; irregular */
+                case 2:                             /* switch 2 */
+                    return;
+                case 8:                             /* switch 2 */
+                    func_02028160(0xC);
+                    func_020280c8(1, data_02138e4c + 0x2140, temp_r4, 0x91C);
+                    return;
+                default:                            /* switch 2 */
+                case 3:                             /* switch 2 */
+                    func_02028160(0xB);
+                    func_020280c8(7, data_02138e4c + 0x2140, temp_r4, 0x925);
+                    return;
+                }
+            } else {
+                func_02028160(3);
+                func_020280c8(1, data_02138e4c + 0x2140, temp_r4, 0x92D);
+                return;
+            }
+            break;
+        case 9:                                     /* switch 1 */
+        case 12:                                    /* switch 1 */
+            func_02028160(3);
+            func_020280c8(0, data_02138e4c + 0x2140, 1U, 0x935);
+            return;
+        case 10:                                    /* switch 1 */
+            func_02028160(3);
+            func_020280c8(0, data_02138e4c + 0x2140, 0U, 0x93C);
+            return;
+        case 13:                                    /* switch 1 */
+            temp_r0_2 = func_020121d8(&func_02028384);
+            switch (temp_r0_2) {                    /* switch 3; irregular */
+            case 2:                                 /* switch 3 */
+                return;
+            case 8:                                 /* switch 3 */
+                func_02028160(0xC);
+                func_020280c8(1, NULL, 0U, 0x94A);
+                return;
+            default:                                /* switch 3 */
+            case 3:                                 /* switch 3 */
+                func_02028160(0xB);
+                func_020280c8(7, NULL, 0U, 0x953);
+                return;
+            }
+            break;
+        }
+    } else {
+        func_02028160(0xB);
+        func_020280c8(7, NULL, 0U, 0x960);
+    }
+}
+
 void func_02029220(void) {
     s32 func_0200751c(void);
     void func_02007530(s32);
@@ -354,6 +462,15 @@ void func_020296e0(void *arg0) {
         return;
     }
     M2C_FIELD(&data_02138e50, M2C_UNK (**)(void *, void *, void *, u16), 0x28)(arg0 + 0x1E, arg0 + 0x18, arg0 + 0x2C, M2C_FIELD(arg0, u16 *, 6));
+}
+
+void func_02029828(s32 arg0) {
+s32 func_0200751c(void);
+void func_02007530(s32);
+extern M2C_UNK data_02138e50;
+s32 state=func_0200751c();
+M2C_FIELD(&data_02138e50,s32 *,0x28)=arg0;
+func_02007530(state);
 }
 
 s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {

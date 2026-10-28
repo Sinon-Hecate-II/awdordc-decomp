@@ -68,6 +68,10 @@ void func_ov007_0221c648(M2C_UNK arg0) {
     func_ov007_0221c250();
 }
 
+int func_ov007_0221c718() {
+    return 0;
+}
+
 void func_ov007_0221cd5c(void) {
     M2C_UNK func_ov007_0221c718();
     func_ov007_0221c718();

@@ -39,6 +39,75 @@ void func_020252cc(M2C_UNK *arg0, void *arg1, u32 arg2) {
     func_02008048(arg1, arg0, arg2);
 }
 
+void func_020252e4(void *arg0, s32 arg1) {
+    extern u8 data_020fb064;
+    extern u32 data_020fb0e4;
+    u32 buf[16];
+    u32 a, b, c, d;
+    s32 i;
+    u8 *indexPtr = (u8 *)&data_020fb064;
+    u32 *kPtr = (u32 *)&data_020fb0e4;
+    func_020252cc(buf, (void *)arg1, 0x40);
+    a = M2C_FIELD(arg0, u32 *, 0);
+    b = M2C_FIELD(arg0, u32 *, 4);
+    c = M2C_FIELD(arg0, u32 *, 8);
+    d = M2C_FIELD(arg0, u32 *, 0xC);
+    for (i = 0; i < 16; i += 4, indexPtr += 4, kPtr += 4) {
+        u32 t;
+        t = a + ((b & c) | (~b & d)) + buf[indexPtr[0]] + kPtr[0];
+        a = d; d = c; c = b; b = b + ((t << 7) | (t >> 25));
+        t = a + ((b & c) | (~b & d)) + buf[indexPtr[1]] + kPtr[1];
+        a = d; d = c; c = b; b = b + ((t << 12) | (t >> 20));
+        t = a + ((b & c) | (~b & d)) + buf[indexPtr[2]] + kPtr[2];
+        a = d; d = c; c = b; b = b + ((t << 17) | (t >> 15));
+        t = a + ((b & c) | (~b & d)) + buf[indexPtr[3]] + kPtr[3];
+        a = d; d = c; c = b; b = b + ((t << 22) | (t >> 10));
+    }
+    indexPtr = (u8 *)&data_020fb064 + 16;
+    kPtr = (u32 *)&data_020fb0e4 + 16;
+    for (i = 0; i < 16; i += 4, indexPtr += 4, kPtr += 4) {
+        u32 t;
+        t = a + ((b & d) | (~d & c)) + buf[indexPtr[0]] + kPtr[0];
+        a = d; d = c; c = b; b = b + ((t << 5) | (t >> 27));
+        t = a + ((b & d) | (~d & c)) + buf[indexPtr[1]] + kPtr[1];
+        a = d; d = c; c = b; b = b + ((t << 9) | (t >> 23));
+        t = a + ((b & d) | (~d & c)) + buf[indexPtr[2]] + kPtr[2];
+        a = d; d = c; c = b; b = b + ((t << 14) | (t >> 18));
+        t = a + ((b & d) | (~d & c)) + buf[indexPtr[3]] + kPtr[3];
+        a = d; d = c; c = b; b = b + ((t << 20) | (t >> 12));
+    }
+    indexPtr = (u8 *)&data_020fb064 + 32;
+    kPtr = (u32 *)&data_020fb0e4 + 32;
+    for (i = 0; i < 16; i += 4, indexPtr += 4, kPtr += 4) {
+        u32 t;
+        t = a + (b ^ c ^ d) + buf[indexPtr[0]] + kPtr[0];
+        a = d; d = c; c = b; b = b + ((t << 4) | (t >> 28));
+        t = a + (b ^ c ^ d) + buf[indexPtr[1]] + kPtr[1];
+        a = d; d = c; c = b; b = b + ((t << 11) | (t >> 21));
+        t = a + (b ^ c ^ d) + buf[indexPtr[2]] + kPtr[2];
+        a = d; d = c; c = b; b = b + ((t << 16) | (t >> 16));
+        t = a + (b ^ c ^ d) + buf[indexPtr[3]] + kPtr[3];
+        a = d; d = c; c = b; b = b + ((t << 23) | (t >> 9));
+    }
+    indexPtr = (u8 *)&data_020fb064 + 48;
+    kPtr = (u32 *)&data_020fb0e4 + 48;
+    for (i = 0; i < 16; i += 4, indexPtr += 4, kPtr += 4) {
+        u32 t;
+        t = a + (c ^ (b | ~d)) + buf[indexPtr[0]] + kPtr[0];
+        a = d; d = c; c = b; b = b + ((t << 6) | (t >> 26));
+        t = a + (c ^ (b | ~d)) + buf[indexPtr[1]] + kPtr[1];
+        a = d; d = c; c = b; b = b + ((t << 10) | (t >> 22));
+        t = a + (c ^ (b | ~d)) + buf[indexPtr[2]] + kPtr[2];
+        a = d; d = c; c = b; b = b + ((t << 15) | (t >> 17));
+        t = a + (c ^ (b | ~d)) + buf[indexPtr[3]] + kPtr[3];
+        a = d; d = c; c = b; b = b + ((t << 21) | (t >> 11));
+    }
+    M2C_FIELD(arg0, u32 *, 0) += a;
+    M2C_FIELD(arg0, u32 *, 4) += b;
+    M2C_FIELD(arg0, u32 *, 8) += c;
+    M2C_FIELD(arg0, u32 *, 0xC) += d;
+}
+
 void func_02025700(void *arg0) {
     func_02007f8c(arg0, 0, 0x58);
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
@@ -132,6 +201,73 @@ value=(p[1]<<16)|(arg1[i]<<24)|(p[2]<<8);
 i+=4;
 *arg0++=last|value;
 }while(i<arg2);
+}
+
+void func_02025938(void *arg0, s32 arg1) {
+    u32 w[16];
+    u32 a, b, c, d, e;
+    u32 t;
+    s32 i;
+    u8 *block = (u8 *)arg1;
+
+    func_020258f0(w, block, 0x40);
+
+    a = ((u32 *)arg0)[0];
+    b = ((u32 *)arg0)[1];
+    c = ((u32 *)arg0)[2];
+    d = ((u32 *)arg0)[3];
+    e = ((u32 *)arg0)[4];
+
+    for (i = 0; i < 20; i++) {
+        if (i >= 16)
+            w[i & 15] = func_02025868(i & 15, w);
+        t = (b & c) | ((~b) & d);
+        t += a + e + w[i & 15] + 0x5A827999;
+        e = d;
+        d = c;
+        c = (b << 30) | (b >> 2);
+        b = a;
+        a = (t << 5) | (t >> 27);
+    }
+    for (i = 20; i < 40; i++) {
+        if (i >= 16)
+            w[i & 15] = func_02025868(i & 15, w);
+        t = b ^ c ^ d;
+        t += a + e + w[i & 15] + 0x6ED9EBA1;
+        e = d;
+        d = c;
+        c = (b << 30) | (b >> 2);
+        b = a;
+        a = (t << 5) | (t >> 27);
+    }
+    for (i = 40; i < 60; i++) {
+        if (i >= 16)
+            w[i & 15] = func_02025868(i & 15, w);
+        t = (b & c) | (b & d) | (c & d);
+        t += a + e + w[i & 15] + 0x8F1BBCDC;
+        e = d;
+        d = c;
+        c = (b << 30) | (b >> 2);
+        b = a;
+        a = (t << 5) | (t >> 27);
+    }
+    for (i = 60; i < 80; i++) {
+        if (i >= 16)
+            w[i & 15] = func_02025868(i & 15, w);
+        t = b ^ c ^ d;
+        t += a + e + w[i & 15] + 0xCA62C1D6;
+        e = d;
+        d = c;
+        c = (b << 30) | (b >> 2);
+        b = a;
+        a = (t << 5) | (t >> 27);
+    }
+
+    ((u32 *)arg0)[0] += a;
+    ((u32 *)arg0)[1] += b;
+    ((u32 *)arg0)[2] += c;
+    ((u32 *)arg0)[3] += d;
+    ((u32 *)arg0)[4] += e;
 }
 
 void func_02025fc0(void *arg0) {

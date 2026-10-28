@@ -350,6 +350,97 @@ void func_020c86a8(void *p) {
     M2C_FIELD(p, u32 *, 80) = 0;
 }
 
+void func_020c879c(void *arg0) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b56c0[];
+    void func_02007e98(s32, s32, s32);
+    void func_02068c50(void *, void *);
+    s32 func_020a23b4(s32);
+    s32 func_020a2360(s32);
+    void func_02007ef4(void *, void *, s32);
+    void func_020c86a8(void *);
+    void *func_020bfa74(void);
+
+    u8 *r4 = (u8 *)arg0;
+    u8 *r5;
+    s32 r6, r7, width, height, rowOffset;
+    u8 sp[8];
+    void *map;
+    void *base;
+    u8 *cursor;
+
+    r5 = r4 + 0x54;
+    func_02007e98(0, (s32)r4, 0x6f8);
+
+    *(s32 *)r4 = 0x20070731;
+    map = *gCurrentMap;
+    base = *(void **)map;
+    func_02068c50(r4 + 6, (u8 *)base + 0x5120);
+    r4[4] = (u8)*(u16 *)((u8 *)base + 0x5144);
+    r4[5] = (u8)*(u16 *)((u8 *)base + 0x5146);
+
+    r7 = 0;
+    r6 = 0;
+    while (r6 < 5) {
+        if (func_020a23b4(r6)) {
+            r7 = (r7 + 1) & 0xFFFF;
+        }
+        r6 = ((r6 + 1) << 16) >> 16;
+    }
+    if (r7 < 2) {
+        r4[0x27] = 0xff;
+    } else {
+        r4[0x27] = (u8)r7;
+    }
+
+    r6 = 0;
+    while (r6 < 5) {
+        s32 val = func_020a2360(r6);
+        r4[r6 + 0x28] = (u8)val;
+        r6 = ((r6 + 1) << 16) >> 16;
+    }
+
+    for (r6 = 0; r6 < 6; r6++) {
+        sp[r6] = 0;
+    }
+
+    width = *(s16 *)((u8 *)base + 0x5146);
+    if (width > 0) {
+        height = *(s16 *)((u8 *)base + 0x5144);
+        cursor = r5;
+        r7 = 0;
+        while (r7 < width) {
+            if (height > 0) {
+                rowOffset = *(u16 *)((u8 *)base + r7 * 2 + 0x3758);
+                r6 = 0;
+                while (r6 < height) {
+                    u8 v = *(u8 *)((u8 *)base + r6 + rowOffset + 0x1420);
+                    *cursor++ = v;
+                    if ((s32)(s8)data_ov000_021b56c0[v & 0x1f] != 0) {
+                        sp[5]++;
+                        sp[v >> 5]++;
+                    }
+                    r6++;
+                }
+            }
+            r7++;
+        }
+        r5 = cursor;
+    }
+
+    for (r6 = 1; r6 < 0x100; r6++) {
+    }
+    r4[0x2f] = 255;
+
+    func_020bfa74();
+    {
+        void *tmp = func_020bfa74();
+        func_02007ef4(tmp, r4 + 0x30, 0x10);
+    }
+    func_020c86a8(r4);
+    (void)r5; (void)sp; (void)map;
+}
+
 /* Returns 1 if the two save/checkpoint record blobs compare equal field-by-field. */
 u8 func_020c8b0c(u8 *lhs, u8 *rhs) {
     s32 i;

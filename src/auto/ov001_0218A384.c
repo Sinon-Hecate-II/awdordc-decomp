@@ -401,7 +401,7 @@ void func_ov001_0218ad0c(s32 arg0, s32 arg1) {
     s32 func_020036b8(void);
     s32 func_02003684(void);
     void func_ov001_0216a230(s32, s32, s32, s32, s32, s32, s32, u32);
-    void func_ov001_0218b1ec(void *);
+    void func_ov001_0218b1ec();
     void *func_ov001_0218c884(s32, M2C_UNK, void *, s32);
     void func_ov001_0218ae84(M2C_UNK, void *);
     extern M2C_UNK data_ov001_02193e40;
@@ -587,11 +587,8 @@ void func_ov001_0218b12c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     func_ov001_0216a9d0(arg0 + 0x18, arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
 }
 
-void func_ov001_0218b1ec(void *arg0) {
-    void (*fn)(void *);
-    void **p = (void **)M2C_FIELD(arg0, void **, 0x14);
-    fn = (void (*)(void *))p[1];
-    fn(arg0);
+void func_ov001_0218b1ec(void *arg0, s32 arg1) {
+M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
 }
 
 void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {

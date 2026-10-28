@@ -9,6 +9,65 @@ typedef struct {
 } UnkState_021a36e4;
 #include "ov000_unit_entry.h"
 
+#pragma push
+#pragma opt_strength_reduction off
+s32 func_ov000_021a2fe8(void) {
+ extern void **gCurrentMap;
+ extern u8 data_ov000_021e00ac[];
+ extern M2C_UNK data_ov000_021df7d0;
+ void func_ov000_021a07c0(s32);
+ s32 func_ov000_021a6150(s32);
+ s32 func_ov000_021a8fc0(s16);
+ s32 id;
+ u32 unitId;
+ UnkStruct_ov000_021A860C *unit;
+ u8 transports, count;
+ s32 x,y;
+ u8 *record;
+ void *base;
+ if(func_ov000_021a6e08(3)==1)return 0;
+retry:
+ id=func_ov000_021a6150(2);
+ if(id==-1){func_ov000_021a0204();return 0;}
+ record=data_ov000_021e00ac+id*12;
+ {
+ s32 unused=0;
+ func_01ffada0(record[0],record[1],2,110,0);
+ }
+ count=0;transports=0;
+ base=*gCurrentMap;
+ for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
+ for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
+ if(M2C_FIELD((u8*)base+y*4,s8**,0x52e8)[x]>=0){
+ unitId=M2C_FIELD((u8*)base+x+M2C_FIELD((u8*)base+y*2,u16*,0x3758),u8*,0);
+ if(unitId){
+ if(func_020ba924(x,y)==1)goto reject;
+ unit=(UnkStruct_ov000_021A860C *)((u8*)*gCurrentMap+0x59a4)+unitId;
+ if(!func_020d27c0(unitId)){
+ if(!func_ov000_021a98a8(unit->unk0)){
+ if(!func_020a7bd4(unit->unk0))goto next;
+ goto reject;
+ }
+ }else if(func_ov000_021a8fc0((s16)unitId)==1){
+ if(unit->unk0==19 && unit->unkC[0]==0)transports++;
+ if(func_ov000_021a98c8(unit->unk0))count++;
+ }
+ }
+ }
+next:
+ base=*gCurrentMap;
+ }
+ }
+ if((transports+1)*3>count)goto reject;
+ M2C_FIELD(&data_ov000_021df7d0,u8*,6)=19;
+ func_ov000_021a07c0(id);
+ func_ov000_021a0204();return 1;
+reject:
+ record[3]=253;
+ goto retry;
+}
+#pragma pop
+
 s32 func_ov000_021a3210(void){
 s32 func_0207c8ec(s32,s32);s32 func_020d2d18(u16,s32);
 void func_ov000_021a07c0(s32);s32 func_ov000_021a2fe8(void);s32 func_ov000_021a6150(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);
@@ -127,6 +186,8 @@ if(type!=0 && func_ov000_021a98c8(type)==0 && ((UnkState_021a36e4 *)entry)->stat
 }
 return count;
 }
+
+s32 func_ov000_021a3854(void) { return 0; }
 
 s32 func_ov000_021a3c84(void){
 s32 func_020d2d18(u16,s32);s32 func_ov000_021a43a0(s32);s32 func_ov000_021a3854(void);

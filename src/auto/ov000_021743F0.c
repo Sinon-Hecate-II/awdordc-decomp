@@ -4,6 +4,11 @@
 typedef struct { s32 fields[8]; } Ov000MenuState;
 typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
 
+void func_ov000_021743f0(void *arg0) {
+    int func_020d4ea8(void);
+    func_020d4ea8();
+}
+
 void func_ov000_021749b4(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x13) == 0) {
         return;
@@ -184,6 +189,11 @@ s32 func_ov000_02174d78(void) {
     if (func_ov000_02174c0c() == 0) return 0;
     func_ov000_02174ab4(data_ov000_021df5fc);
     return 1;
+}
+
+void func_ov000_02174da4(s32 arg0, s32 arg1) {
+    (void)arg0;
+    (void)arg1;
 }
 
 s32 func_ov000_02175074(void) {

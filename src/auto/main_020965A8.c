@@ -83,6 +83,8 @@ done:
     return found;
 }
 
+void func_0209670c(void *arg0, s32 arg1) { (void)arg0; (void)arg1; }
+
 void func_02096b24(void) {
     M2C_UNK func_02086720();
     extern M2C_UNK data_02102e14;

@@ -114,6 +114,10 @@ s32 func_0205bea4(void *arg0) {
 
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
+s32 func_0205bf94(void *arg0, void *arg1, s32 arg2, M2C_UNK arg3, M2C_UNK arg4) {
+    return 0;
+}
+
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
 s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02049208();

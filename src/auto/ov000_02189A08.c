@@ -11,6 +11,9 @@ typedef struct {
     u8 unk6[8];
 } UnkStruct_ov000_02189A08;
 
+void func_ov000_02189a08(void) {
+}
+
 void func_ov000_02189df4(void) {
     M2C_UNK func_ov000_02188d64();
     M2C_UNK func_ov000_021895bc();
@@ -175,5 +178,158 @@ next:;
 }
 }}
 return 0;
+}
+
+#pragma push
+#pragma opt_strength_reduction off
+s32 func_ov000_0218a520(s32 x, s32 y) {
+    s32 func_ov000_021a98e4(s32);
+    s32 func_020a7cfc(void *);
+    s32 func_ov000_02178e84(s32, s32);
+    s32 func_ov000_021a9904(s32);
+    s32 func_ov000_021a90a8(s32, s32, s32);
+    s32 func_ov000_02178778(s32, s32);
+    s32 func_ov000_021a9084(s32);
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c0f[];
+    extern u8 data_ov000_021df9bc[];
+    extern u8 data_ov000_021dfc4c[];
+    extern u8 *data_ov000_021df644;
+
+    u8 unitKind = ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52D0))[0] & 0x3F;
+    if (func_ov000_021a98e4(unitKind) != 0) {
+        return 0;
+    }
+    if (func_020a7cfc(*(void **)((u8 *)*gCurrentMap + 0x52D0)) != 0) {
+        return 0;
+    }
+    {
+        u8 attr = data_ov000_021b5c0f[unitKind * 0x70];
+        if (attr & 0x7) {
+            u16 width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
+            s32 idx = y * width + x;
+            if (data_ov000_021df9bc[idx >> 3] & (1 << (idx & 7))) {
+                return 1;
+            }
+            if (attr & 0x10) {
+                s32 idx2 = y * width + x;
+                if (data_ov000_021dfc4c[idx2 >> 3] & (1 << (idx2 & 7))) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    }
+    {
+        u8 *ptr = data_ov000_021df644;
+        u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
+        u8 *cell = (u8 *)*gCurrentMap + x + rowOffset + 0x2000;
+        if (cell[0x840] >= ptr[1]) {
+            return 0;
+        }
+        if (cell[0xD48] >= ptr[2]) {
+            return 0;
+        }
+    }
+    if (!func_ov000_02178e84(x, y)) {
+        return 0;
+    }
+    {
+        u8 unitKind2 = ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52D0))[0] & 0x3F;
+        u8 attr2 = data_ov000_021b5c0f[unitKind2 * 0x70];
+        if (attr2 == 0x20) {
+            return 0;
+        }
+        if (func_ov000_021a9904(unitKind2) == 2) {
+            return 0;
+        }
+    }
+    {
+        u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
+        u8 terrain = ((u8 *)*gCurrentMap + x + rowOffset + 0x1000)[0x420] & 0x1F;
+        if (terrain != 0x13 && terrain != 0x15) {
+            return 0;
+        }
+    }
+    {
+        u8 selByte = ((u8 *)*gCurrentMap)[0x52D4];
+        if (!func_ov000_021a90a8(selByte, x, y)) {
+            return 0;
+        }
+    }
+    if (func_ov000_02178778(x, y) == 1) {
+        return 0;
+    }
+    {
+        u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
+        u8 finalByte = ((u8 *)*gCurrentMap + x + rowOffset + 0x1000)[0x420];
+        if (func_ov000_021a9084(finalByte) != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+#pragma pop
+s32 func_ov000_0218a798(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 func_ov000_021a8a38(s32, s32, s32, s32);
+    s32 ManhattanDistance(s32, s32, s32, s32);
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c0f[];
+    extern u16 data_ov000_021aeef4[];
+    extern u8 data_ov000_021b5bfc[];
+    void *map;
+    void *selected;
+    s32 savedAttr;
+    s32 bestVisible = 0x7FFFFFFF;
+    s32 bestOther = 0x7FFFFFFF;
+    s32 i;
+    s32 end;
+    s32 x;
+    s32 y;
+    UnkStruct_ov000_02189A08 *entry;
+    u32 type;
+    s32 d1;
+    s32 val;
+
+    map = *gCurrentMap;
+    selected = M2C_FIELD(map, void **, 0x52D0);
+    savedAttr = data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)selected)->unk0 * 0x70];
+    if (savedAttr & 0x7) { savedAttr = 0x7; }
+
+    map = *gCurrentMap;
+    i = data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 1;
+    end = data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 0x33;
+    if (i < end) {
+        x = (s16)arg0;
+        y = (s16)arg1;
+        do {
+            entry = &((UnkStruct_ov000_02189A08 *)((u8 *)map + 0x59A4))[i];
+            type = entry->unk0;
+            if (type != 0 && entry != (UnkStruct_ov000_02189A08 *)M2C_FIELD(map, void **, 0x52D0) && !(entry->unk4 & 0x8)) {
+                u8 *info = data_ov000_021b5bfc + type * 0x70;
+                u8 attr = info[0x13];
+                if ((savedAttr & attr) && !(entry->unk4 & 0x1)) {
+                    d1 = ManhattanDistance(x, y, entry->unk1, entry->unk2);
+                    val = func_ov000_021a8a38(x, y, entry->unk1, entry->unk2) + (d1 << 8);
+                    if (bestVisible >= val) { bestVisible = val; }
+                } else {
+                    d1 = ManhattanDistance(x, y, entry->unk1, entry->unk2);
+                    val = func_ov000_021a8a38(x, y, entry->unk1, entry->unk2) + (d1 << 8);
+                    if (bestOther >= val) { bestOther = val; }
+                }
+            }
+            i += 1;
+            map = *gCurrentMap;
+            end = data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 0x33;
+        } while (i < end);
+    }
+
+    if (bestVisible != 0x7FFFFFFF) {
+        return bestVisible;
+    }
+    if (bestOther != 0x7FFFFFFF) {
+        return bestOther;
+    }
+    return func_ov000_021a8a38((s16)arg0, (s16)arg1, (s16)arg2, (s16)arg3);
 }
 

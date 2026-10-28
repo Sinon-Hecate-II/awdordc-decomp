@@ -31,6 +31,8 @@ M2C_FIELD(obj,s32 *,0x44)=c;
 func_ov005_02219e58(obj);
 }
 
+M2C_UNK func_ov005_0221a0c0(void *x) { return 0; }
+
 void func_ov005_0221a38c(void **arg0) {
     M2C_UNK func_02090810(s32, M2C_UNK, s16);
     extern s32 data_027e00c4, data_027e00c8, gCur3DSpriteEngine;
@@ -177,6 +179,17 @@ void func_ov005_0221a688(void *arg) {
         M2C_FIELD(obj, s32 *, 0x5c) = 0;
     }
     gCur3DSpriteEngine = saved;
+}
+
+M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
+    extern s32 gCur3DSpriteEngine, data_027e00c4;
+    M2C_FIELD(self, s32 *, 0x40) = M2C_FIELD(self, s32 *, 0x40) + 1;
+    {
+        s32 saved = gCur3DSpriteEngine;
+        gCur3DSpriteEngine = data_027e00c4;
+        (void)saved;
+    }
+    return 0;
 }
 
 #pragma opt_strength_reduction reset

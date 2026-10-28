@@ -31,6 +31,201 @@ void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
     }
 }
 
+M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UNK *out_b, M2C_UNK *out_c) {
+    s32 func_ov007_02214d88(s32, s32);
+    s32 func_ov007_02215e94(s32 *, s32 *, s32, void *, s32);
+    s32 func_ov007_02215f6c(s32 *, s32 *, s32, s16 *, s16 *, s32);
+    M2C_UNK func_ov007_02215254(s32, s32, s32);
+
+    s32 x = 0, y = 0;
+    s32 count;
+    s32 saved;
+    s32 mode;
+
+    for (mode = 0; mode < 5; mode++) {
+        switch (mode) {
+            case 0: count = func_ov007_02214d88(0, 5); break;
+            case 1: count = func_ov007_02214d88(3, 5); break;
+            case 2: count = func_ov007_02214d88(3, 7); break;
+            case 3: count = func_ov007_02214d88(0, 5); break;
+            case 4: count = func_ov007_02214d88(0, 3); break;
+        }
+        saved = 0;
+        if (count <= 0) continue;
+        while (saved < count) {
+            switch (mode) {
+            case 0:
+                if (!func_ov007_02215e94(&x, &y, 1, arg0, 10)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1c7);
+                if (!func_ov007_02215e94(&x, &y, 1, arg1, 10)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1cc);
+                break;
+            case 1:
+                if (!func_ov007_02215e94(&x, &y, 1, arg0, 8)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1c2);
+                ((s16 *)out_a)[0] = (s16)x; ((s16 *)out_a)[1] = (s16)y;
+                if (!func_ov007_02215e94(&x, &y, 1, arg1, 8)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1c2);
+                ((s16 *)out_b)[0] = (s16)x; ((s16 *)out_b)[1] = (s16)y;
+                break;
+            case 2:
+                if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 10)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1c2);
+                ((s16 *)out_c)[0] = (s16)x; ((s16 *)out_c)[1] = (s16)y;
+                break;
+            case 3:
+                if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 5)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1b9);
+                ((s16 *)out_c)[0] = (s16)x; ((s16 *)out_c)[1] = (s16)y;
+                break;
+            case 4:
+                if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 5)) goto done_inner;
+                func_ov007_02215254(x, y, 0x1d9);
+                break;
+            }
+            saved++;
+        }
+        done_inner:
+        ;
+    }
+}
+
+M2C_UNK func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *arg3, M2C_UNK *arg4) {
+    s32 func_ov007_02214e24(void);
+    s32 func_ov007_02216234(s16, s16, s16, s16, s32, M2C_UNK *, M2C_UNK *, M2C_UNK *);
+    M2C_UNK func_ov007_022167b8(s16, s16, s16, s16, M2C_UNK);
+    M2C_UNK func_ov007_0221b8c0(s32, s32);
+    M2C_UNK func_ov007_02215704(s32, s32);
+    M2C_UNK func_ov007_02215254(s32, s32, s32);
+    extern void **gCurrentMap;
+    extern s8 data_ov007_02221a84[];
+    MapPoint sp18, sp14;
+    s32 sp10;
+    s8 *data;
+    s32 x;
+    s32 y;
+    MapScan *map;
+
+    func_ov007_02214e24();
+    if (func_ov007_02216234(((MapPoint *)arg0)->x, ((MapPoint *)arg0)->y, ((MapPoint *)arg1)->x, ((MapPoint *)arg1)->y, 4, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
+        func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+    }
+    if (((MapPoint *)arg2)->x != 0xFF && ((MapPoint *)arg3)->x != 0xFF && ((MapPoint *)arg4)->x != 0xFF) {
+        if (func_ov007_02216234(((MapPoint *)arg2)->x, ((MapPoint *)arg2)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
+            func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+        }
+        if (func_ov007_02216234(((MapPoint *)arg3)->x, ((MapPoint *)arg3)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
+            func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+        }
+    }
+
+    map = (MapScan *)*gCurrentMap;
+    if ((s32)map->height <= 0) return;
+    data = data_ov007_02221a84;
+    y = 0;
+    do {
+        map = (MapScan *)*gCurrentMap;
+        x = y;
+        if ((s32)map->width > 0) {
+            do {
+                if (data[x] == 2) {
+                    if (func_ov007_0221b8c0(x, y) != 1) {
+                        if (func_ov007_02215704(x, y) != 1) {
+                            func_ov007_02215254(x, y, 6);
+                        }
+                    }
+                }
+                x += 1;
+                map = (MapScan *)*gCurrentMap;
+            } while (x < (s32)map->width);
+        }
+        y += 1;
+        data += 0x1E;
+        map = (MapScan *)*gCurrentMap;
+    } while (y < (s32)map->height);
+
+    return;
+}
+
+s32 func_ov007_02217318(void *arg0, void *arg1, s16 *arg2) {
+    extern void **gCurrentMap;
+    s32 func_ov007_022152bc(s32, s32);
+    s32 RandomIntRange(s32, s32);
+    MapPoint *pa, *pb;
+    s32 cx, cy, count;
+    s32 ax, bx, by, ly, d;
+    s32 lx;
+    s32 pick;
+    s32 found;
+    s32 ay;
+    MapScan *map;
+
+    pa = arg0;
+    pb = arg1;
+    found = 0;
+    bx = pb->x;
+    ax = pa->x;
+    d = ax - bx;
+    if (d < 0) d = -d;
+    if ((u32) d < 5U) {
+        if (ax < bx) { lx = bx - 10; ax += 10; }
+        else { lx = ax - 10; ax = bx + 10; }
+    } else {
+        if (ax < bx) { lx = ax; ax += 10; }
+        else { lx = ax - 10; }
+    }
+    by = pb->y, ay = pa->y;
+    d = ay - by;
+    if (d < 0) d = -d;
+    if ((u32) d < 5U) {
+        if (ay < by) { ly = by - 10; ay += 10; }
+        else { ly = ay - 10; ay = by + 10; }
+    } else {
+        if (ay < by) { ly = ay; ay += 10; }
+        else { ly = ay - 10; }
+    }
+    if (lx < 0) lx = 0;
+    if (ly < 0) ly = 0;
+    map = *gCurrentMap;
+    if (ax >= (s32) map->width) ax = (s32) map->width - 1;
+    if (ay >= (s32) map->height) ay = (s32) map->height - 1;
+    count = 0;
+    for (cy = ly; cy < ay; cy++) {
+        for (cx = lx; cx < ax; cx++) {
+            map = *gCurrentMap;
+            if (map->cells[cx + map->rows[cy]] == 3) {
+                if (func_ov007_022152bc(cx, cy) != -1) {
+                    arg2[0] = cx;
+                    found = 1;
+                    arg2[1] = (s16) cy;
+                    count++;
+                }
+            }
+        }
+    }
+    if (count >= 2) {
+        pick = RandomIntRange(0, count - 1);
+        count = 0;
+        for (cy = ly; cy <= ay; cy++) {
+            for (cx = lx; cx <= ax; cx++) {
+                map = *gCurrentMap;
+                if (map->cells[cx + map->rows[cy]] == 3) {
+                    if (func_ov007_022152bc(cx, cy) != -1) {
+                        if (count < pick) {
+                            count++;
+                        } else {
+                            arg2[0] = cx;
+                            arg2[1] = cy;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return found;
+}
+
 M2C_UNK func_ov007_02217598(M2C_UNK *a,M2C_UNK *b){
  s32 func_ov007_02217318(void *,void *,s16 *);
  M2C_UNK func_ov007_02215254(s32,s32,s32);

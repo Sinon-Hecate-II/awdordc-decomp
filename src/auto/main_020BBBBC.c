@@ -106,6 +106,10 @@ func_020d2b10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),func_020d2d50(M2C_FIELD(*gCur
 if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(27,1);
 }
 
+void func_020bbed4(void){}
+
+void func_020bc0e0(void) { }
+
 #pragma push
 #pragma opt_strength_reduction off
 void func_020bc454(void) {

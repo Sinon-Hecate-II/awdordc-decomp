@@ -1,6 +1,8 @@
 /* 4 functions from 0x0218BBD0 to 0x0218CBC0 (ov000), found by ds-decomp. */
 #include "common.h"
 
+s32 func_ov000_0218c400(s32 arg0) { (void)arg0; return 0; }
+
 void func_ov000_0218ca94(void) {
 extern void **gCurrentMap;
 switch(func_ov000_021a98e4((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)){

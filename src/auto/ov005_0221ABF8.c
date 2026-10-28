@@ -1,6 +1,8 @@
 /* 14 functions from 0x0221ABF8 to 0x0221BB70 (ov005), found by ds-decomp. */
 #include "common.h"
 
+M2C_UNK func_ov005_0221abf8(void *arg0) { (void)arg0; return 0; }
+
 void func_ov005_0221b000(void) {
     void *func_01ffa770(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
@@ -38,6 +40,63 @@ void func_ov005_0221b088(void *arg0) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3C) = 0;
     M2C_FIELD(arg0, s32 *, 0x34) = 0;
     func_01ffa574(arg0);
+}
+
+M2C_UNK func_ov005_0221b114(void *arg0) {
+    extern void *gCur3DSpriteEngine;
+    extern u8 data_027e0084[];
+    M2C_UNK func_0207c964(s32, s32, s32 *, s32 *);
+    M2C_UNK func_01ffaacc(u16, u16, u16, void *, s32);
+
+    s32 sp24, sp20;
+    s32 sp1c, sp18;
+    s32 sp14, sp10;
+    s32 spc, sp8;
+    s32 xbase;
+    u16 engine0;
+    s32 shift, adjust, tile;
+
+    M2C_FIELD(gCur3DSpriteEngine, u16 *, 0x3C) = (u16)(-M2C_FIELD(arg0, s32 *, 0x38));
+
+    xbase = (M2C_FIELD(arg0, s32 *, 0x38) + 0xa4) & 0x1ff;
+    sp24 = M2C_FIELD(arg0, s32 *, 0x3C);
+    sp20 = 0;
+    func_0207c964(sp24, 10, &sp24, &sp20);
+    engine0 = M2C_FIELD(gCur3DSpriteEngine, u16 *, 0x0);
+    shift = ((u32)(engine0 << 17)) >> 30;
+    adjust = 0x3ff & (0x140 >> shift);
+    tile = ((sp20 & 0x3ff) + adjust) | 0x6000;
+    func_01ffaacc((u16)xbase, (u16)0x12, (u16)tile, data_027e0084, 0);
+
+    xbase = (M2C_FIELD(arg0, s32 *, 0x38) + 0xa4) & 0x1ff;
+    sp1c = M2C_FIELD(arg0, s32 *, 0x40);
+    sp18 = 0;
+    func_0207c964(sp1c, 10, &sp1c, &sp18);
+    engine0 = M2C_FIELD(gCur3DSpriteEngine, u16 *, 0x0);
+    shift = ((u32)(engine0 << 17)) >> 30;
+    adjust = 0x3ff & (0x140 >> shift);
+    tile = ((sp18 & 0x3ff) + adjust) | 0x7000;
+    func_01ffaacc((u16)xbase, (u16)0x26, (u16)tile, data_027e0084, 0);
+
+    xbase = (M2C_FIELD(arg0, s32 *, 0x38) + 0xa4) & 0x1ff;
+    sp14 = M2C_FIELD(arg0, s32 *, 0x44);
+    sp10 = 0;
+    func_0207c964(sp14, 10, &sp14, &sp10);
+    engine0 = M2C_FIELD(gCur3DSpriteEngine, u16 *, 0x0);
+    shift = ((u32)(engine0 << 17)) >> 30;
+    adjust = 0x3ff & (0x140 >> shift);
+    tile = ((sp10 & 0x3ff) + adjust) | 0x8000;
+    func_01ffaacc((u16)xbase, (u16)0x3a, (u16)tile, data_027e0084, 0);
+
+    xbase = (M2C_FIELD(arg0, s32 *, 0x38) + 0xa4) & 0x1ff;
+    spc = M2C_FIELD(arg0, s32 *, 0x3C) + M2C_FIELD(arg0, s32 *, 0x40) + M2C_FIELD(arg0, s32 *, 0x44);
+    sp8 = 0;
+    func_0207c964(spc, 10, &spc, &sp8);
+    engine0 = M2C_FIELD(gCur3DSpriteEngine, u16 *, 0x0);
+    shift = ((u32)(engine0 << 17)) >> 30;
+    adjust = 0x3ff & (0x140 >> shift);
+    tile = ((sp8 & 0x3ff) + adjust) | 0x9000;
+    func_01ffaacc((u16)xbase, (u16)0x50, (u16)tile, data_027e0084, 0);
 }
 
 void func_ov005_0221b424(void) {
@@ -91,5 +150,10 @@ void func_ov005_0221b4c0(void) {
 void func_ov005_0221b4cc(void) {
     M2C_UNK func_ov005_0221b114();
     func_ov005_0221b114();
+}
+
+s32 func_ov005_0221b4d8(void *arg0) {
+    (void)arg0;
+    return 0;
 }
 

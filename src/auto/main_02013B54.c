@@ -231,6 +231,57 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
  callback(arg0,arg1,arg2);
 }
 
+M2C_UNK func_020140c4(s32 a, void *b) {
+    (void)a;(void)b;
+    return 0;
+}
+
+void func_02014564(void *arg0, u16 arg1) {
+    void *func_02018a28();
+    void func_02008048();
+    void func_02014050();
+    extern s32 data_02136c4c;
+    extern s32 data_02131180;
+    s32 func_02015214();
+
+    u16 r6 = arg1;
+    u8 stack[0x34];
+    u8 type = 0;
+    void *r5;
+    s32 r4;
+    s32 *map;
+
+    if (r6 == 0) return;
+    if (r6 > 0x0F) return;
+
+    r5 = func_02018a28((u8 *)arg0 + 10, &type, r6);
+    map = (s32 *)data_02136c4c;
+    r4 = M2C_FIELD(data_02136c4c + (r6 - 1) * 4, s32 *, 0x14E8);
+
+    switch (type) {
+    case 8:
+        if (r4 == 2) {
+            if (r5 == 0) return;
+            func_02008048(r5, stack, 0x1D);
+            *(s32 *)((u8 *)map + (r6 - 1) * 4 + 0x14A8) = *(s32 *)stack;
+            *(u16 *)((u8 *)map + (r6 - 1) * 2 + 0x148A) = *(u16 *)(stack + 0x1A);
+            {
+                void *dest = (u8 *)map + 0x1340 + (r6 - 1) * 0x16;
+                func_02008048(stack + 4, dest, 0x16);
+                *((u8 *)dest) = (u8)((*((u8 *)dest) & 0x0F) | (r6 << 4));
+                func_02014050(r6, 0x0A, (M2C_UNK)(stack + 4));
+            }
+            return;
+        }
+        break;
+    case 9:
+    case 10:
+    case 11:
+    default:
+        break;
+    }
+}
+
 void func_02014a48(s32 arg0) {
  extern s32 data_02136c4c; extern s32 data_02131180;
  void *func_02011c74(s32,u16); void func_02014564(void *,u16);

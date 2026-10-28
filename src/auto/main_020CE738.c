@@ -2,6 +2,9 @@
 #include "common.h"
 extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0212bd14[],data_0212bd28[],data_0212bd38[],data_0212bd48[];
 
+void func_020ce738(void) {
+}
+
 void func_020ce9a0(void) {
 extern void **gCurrentMap;
 void func_020cd7bc(u8,u8); void func_020cd754(u8);void func_020ce738(void);
@@ -34,6 +37,58 @@ if(func_020a600c((u16)id))M2C_FIELD(unit,u16*,4)|=0x40;
 }
 }
 }
+}
+
+void func_020ceb48(void) {
+    extern void **gCurrentMap;
+    void func_020cbdbc(void);
+    void func_0207ce28(void *);
+    void func_020d4754(void);
+    void func_020d47b0(void);
+    void func_020a68d4(void);
+    void func_020a45cc(void);
+    void func_02007e98(s32, void *, s32);
+    void func_0207688c(void);
+    extern u16 data_02156e4c;
+    s32 i;
+
+    *(u16 *)((u8 *)*gCurrentMap + 0x52c2) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52c4) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52c6) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52c8) = 0;
+    func_020cbdbc();
+
+    *(u16 *)((u8 *)*gCurrentMap + 0x5148) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x514a) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x514c) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x514e) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x5150) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x5152) = 0;
+    *(u8 *)((u8 *)*gCurrentMap + 0x5154) = 0;
+    for (i = 0; i < 4; i++) {
+        *(u8 *)((u8 *)*gCurrentMap + 0x515c + i) = 0;
+    }
+
+    func_0207ce28((u8 *)*gCurrentMap + 0x6ef8);
+
+    *(u8 *)((u8 *)*gCurrentMap + 0x52ae) = 0;
+    *(u8 *)((u8 *)*gCurrentMap + 0x52af) = 0;
+
+    func_020d4754();
+    func_020d47b0();
+
+    data_02156e4c = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52b0) = 4;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52b4) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52a4) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + 0x52a2) = 1;
+
+    func_020a68d4();
+    func_020a45cc();
+
+    func_02007e98(0, *gCurrentMap, 0x5120);
+
+    func_0207688c();
 }
 
 void func_020ced08(void) {
@@ -176,6 +231,75 @@ void func_020cf058(M2C_UNK arg0) {
     } while (var_r5 < 5);
 }
 
+void func_020cf0a8(s32 id) {
+    void *func_020c79ec(void);
+    s32 func_020846a4(void);
+    s32 func_020c85c4(s32, s32);
+    void func_020c854c(s32);
+    void func_020cfa58(u32);
+    u32 func_020cfbb0(u32);
+    void *func_020cfbdc(u32);
+    void *func_02068c50(void *, const void *);
+    void func_020ceffc(void);
+    void func_020cf058(s32);
+    void func_020cfb54(void);
+    extern void **gCurrentMap;
+    extern u8 *data_02168f08;
+
+    s32 width;
+    s32 height;
+    s32 y;
+    s32 x;
+    u16 row;
+    u16 tileId;
+    u8 look;
+
+    *(u16 *)((u8 *)*gCurrentMap + 0x5142) = (u16)id;
+
+    if (id >= 0xE1 && id < 0x1A9) {
+        void *p = func_020c79ec();
+        if (func_020846a4() == 0) {
+            func_020c85c4(id, (s32)p);
+        }
+        func_020c854c((s32)p);
+        return;
+    }
+
+    func_020cfa58((u32)(u16)id);
+
+    *(u16 *)((u8 *)*gCurrentMap + 0x5144) = (u16)data_02168f08[0];
+    *(u16 *)((u8 *)*gCurrentMap + 0x5146) = (u16)data_02168f08[1];
+    ((u8 *)*gCurrentMap)[0x5141] = (u8)func_020cfbb0((u32)(u16)id);
+    func_02068c50((u8 *)*gCurrentMap + 0x5120, func_020cfbdc((u32)(u16)id));
+    func_020ceffc();
+    func_020cf058(id);
+
+    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
+    if (height > 0) {
+        y = 0;
+        do {
+            width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
+            if (width > 0) {
+                x = y;
+                do {
+                    row = *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2);
+                    tileId = ((u16 *)data_02168f08)[x + row + 1];
+                    *(u16 *)((u8 *)*gCurrentMap + 0xA10 + (x + row) * 2) = tileId;
+                    look = ((u8 *)*gCurrentMap)[0x6A60 + tileId];
+                    ((u8 *)*gCurrentMap)[0x1420 + x + row] = look;
+
+                    x = x + 1;
+                    width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
+                } while (x < width);
+            }
+            y = y + 1;
+            height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
+        } while (y < height);
+    }
+
+    func_020cfb54();
+}
+
 void func_020cf278(s32 arg0) {
 s32 func_020a8898(s32); void func_020ceec8(void);
 extern void **gCurrentMap;
@@ -183,6 +307,44 @@ u8 old=M2C_FIELD(*gCurrentMap,u8 *,0x5157);
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=func_020a8898(arg0);
 func_020ceec8();
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
+}
+
+void func_020cf2c8(void) {
+    extern void **gCurrentMap;
+    extern s8 data_ov000_021b56c0[];
+    void func_01ffb554(void *);
+    void func_01ffb3d0(s32);
+    s32 count;
+    s32 i;
+    s32 x;
+    s32 y;
+    s32 k;
+    s32 a;
+    u8 tile;
+
+    count = 0;
+    func_01ffb554((u8 *)*gCurrentMap + 0x1928);
+    func_01ffb3d0(-1);
+    for (i = 0; i < 5; i++)
+        M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67bc) = 0;
+    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
+        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
+            tile = M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap + (y << 1), u16 *, 0x3758) + x, u8 *, 0x1420);
+            k = tile & 0x1f;
+            a = data_ov000_021b56c0[k];
+            if (a != 0 && k != 0x14 && k != 0x15)
+                M2C_FIELD((u8 *)*gCurrentMap + ((tile & 0xe0) >> 5) * 0x8c, u8 *, 0x67bc) += 1;
+            if (a != 0 || k == 0x18) {
+                M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap + (y << 1), u16 *, 0x3758) + x, u8 *, 0x1928) = (u8)count;
+                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = (u8)k;
+                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c61) = (u8)x;
+                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c62) = (u8)y;
+                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c63) = 0;
+                count++;
+            }
+        }
+    }
+    M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = 0xff;
 }
 
 void func_020cf498(s16 arg0, s16 arg1) {

@@ -7,6 +7,9 @@ typedef struct { u8 v[8]; } PacketBytes8;
 extern PacketBytes13 data_02100014;
 extern PacketBytes8 data_02100024;
 
+void func_0205f83c(void *a, void *b, s32 c, void *d) {
+}
+
 void func_0205fb50(void *arg0){
  s32 func_02049208(void);
  M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
@@ -16,6 +19,83 @@ void func_0205fb50(void *arg0){
  func_0205ef8c(sp8,8,(u8 *)arg0+0x84);
  func_02049824(M2C_FIELD(arg0,s32 *,0),sp8,*(s32 *)(sp8+0x800),0,(u8 *)arg0+0xcc,8);
  M2C_FIELD(arg0,s32 *,0xb0)=func_02049208();
+}
+
+void func_0205fbb0(void *arg0, s32 arg1) {
+    s32 func_02021c10(s32);
+    s32 func_02049208(void);
+    M2C_UNK func_02049824(s32, void *, s32, s32, void *, s32);
+    M2C_UNK func_0205eb7c(void *, s32);
+    M2C_UNK func_0205ebb0(void *, void *);
+    M2C_UNK func_0205ef8c(void *, s32, void *);
+    M2C_UNK func_0205f364(void *, void *, s32, s32, s32, s32, s32, s32);
+    M2C_UNK func_020675e4(void *, void *, s32, ...);
+    extern s32 data_0213e358;
+    extern s32 data_0213e35c[];
+    extern M2C_UNK data_020ffa88;
+    extern M2C_UNK data_020ffa94;
+    extern M2C_UNK data_020ffaa0;
+    extern M2C_UNK data_020ffaa8;
+    extern M2C_UNK data_020ffaac;
+    extern M2C_UNK data_020ffab0;
+    extern M2C_UNK data_020ffac0;
+    extern M2C_UNK data_020ffacc;
+    extern M2C_UNK data_020ffad8;
+    char sp10[0x14];
+    char sp24[0x804];
+    M2C_UNK *var_r1;
+    s32 temp_r0;
+    s32 temp_r2;
+    s32 var_r8;
+
+    *(s32 *)(sp24 + 0x800) = 0;
+    func_0205ef8c(sp24, 3, (char *)arg0 + 0x84);
+    var_r8 = 0;
+    if (data_0213e358 > 0) {
+        do {
+            func_020675e4(sp10, &data_020ffa88, var_r8);
+            func_0205ebb0(sp24, sp10);
+            func_0205ebb0(sp24, (M2C_UNK *)func_02021c10(data_0213e35c[var_r8]));
+            var_r8 += 1;
+        } while (var_r8 < data_0213e358);
+    }
+    func_0205ebb0(sp24, &data_020ffa94);
+    func_0205eb7c(sp24, *(s32 *)((char *)arg0 + 0xC0));
+    func_0205ebb0(sp24, &data_020ffaa0);
+    if (*(s32 *)((char *)arg0 + 0xC8) != 0) {
+        var_r1 = &data_020ffaa8;
+    } else {
+        var_r1 = &data_020ffaac;
+    }
+    func_0205ebb0(sp24, var_r1);
+    if (arg1 != 0) {
+        func_0205ebb0(sp24, &data_020ffab0);
+        func_0205eb7c(sp24, arg1);
+    }
+    func_0205ebb0(sp24, &data_020ffac0);
+    func_0205ebb0(sp24, (char *)arg0 + 4);
+    if (*(s32 *)((char *)arg0 + 0xA8) != 0) {
+        func_0205ebb0(sp24, &data_020ffacc);
+        func_0205eb7c(sp24, *(s32 *)((char *)arg0 + 0x104));
+        func_0205ebb0(sp24, &data_020ffad8);
+        func_0205eb7c(sp24, (s32)*(u16 *)((char *)arg0 + 0x108));
+    }
+    if (arg1 != 2) {
+        func_0205f364(arg0, sp24, 0xFF, 0, 0xFF, 0, 0xFF, 0);
+    } else {
+        temp_r2 = *(s32 *)(sp24 + 0x800);
+        if ((0x800 - temp_r2) >= 1) {
+            *(s32 *)(sp24 + 0x800) = temp_r2 + 1;
+            sp24[temp_r2] = 0;
+        }
+    }
+    func_02049824(*(s32 *)arg0, sp24, *(s32 *)(sp24 + 0x800), 0, (char *)arg0 + 0xCC, 8);
+    temp_r0 = func_02049208();
+    *(s32 *)((char *)arg0 + 0xAC) = temp_r0;
+    *(s32 *)((char *)arg0 + 0xB0) = temp_r0;
+    if (arg1 != 0) {
+        *(s32 *)((char *)arg0 + 0xB4) = 0;
+    }
 }
 
 void func_0205fdbc(s32 arg0,s32 arg1){

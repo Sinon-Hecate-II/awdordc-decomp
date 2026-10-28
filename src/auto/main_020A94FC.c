@@ -1,9 +1,83 @@
 /* 8 functions from 0x020A94FC to 0x020A9A30 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020a94fc(void *arg0) {
+    extern void *gCur3DSpriteEngine;
+    extern u8 data_027e0064[];
+    extern u8 data_027e0084[];
+    M2C_UNK func_020a93e4(void *, s32);
+    M2C_UNK func_020a8c54(s32, s32, s32, s32);
+    M2C_UNK func_020a92bc(void *, s32);
+    M2C_UNK func_01ffaacc(s32, s32, s32, s32, s32);
+
+    u8 *p = (u8 *)arg0;
+    u8 field20, field28, field21, count, ci, idx, priority, field14, field15, field16;
+    s16 field8, field12, res;
+    s32 saved, base, combined, v1;
+    void *field24;
+
+    if (p[4] == 1) {
+        return;
+    }
+
+    if (p[0x20] & 1) {
+        saved = *(s32 *)(p + 0x1C);
+        func_020a92bc(arg0, 0);
+        res = func_020a93e4(arg0, 0);
+        field16 = p[0x16];
+        field12 = *(s16 *)(p + 0x12);
+        field20 = p[0x20];
+        field8 = *(s16 *)(p + 0x8);
+        field28 = p[0x28];
+        field21 = p[0x21];
+
+        base = (field20 >> 1) * field16 + field12;
+        base = 0x3FF & (base >> ((*(u16 *)gCur3DSpriteEngine) >> 13));
+        combined = base | (field21 << 12) | ((field28 >> 5) << 10);
+        func_01ffaacc(res & 0x1FF, field8 & 0xFF, combined, (s32)data_027e0064, field28 & 0x1F);
+        func_020a92bc(arg0, saved);
+        return;
+    }
+
+    if (p[0x29] != 0) {
+        p[0xA] = p[0x29];
+    }
+    count = p[0xA];
+    if (count <= 0) {
+        return;
+    }
+
+    field8 = *(s16 *)(p + 0x8);
+    field14 = p[0x14];
+    field15 = p[0x15];
+    field24 = *(void **)(p + 0x24);
+    field16 = p[0x16];
+    field21 = p[0x21];
+    field28 = p[0x28];
+    field12 = *(s16 *)(p + 0x12);
+
+    for (ci = 0; ci < count; ci++) {
+        res = func_020a93e4(arg0, ci);
+        if (!func_020a8c54(res, field8, field14, field15)) {
+            return;
+        }
+        idx = p[0xB + ci];
+        base = field16 * idx + field12;
+        base = 0x3FF & (base >> ((*(u16 *)gCur3DSpriteEngine) >> 13));
+        combined = base | (field21 << 12) | ((field28 >> 5) << 10);
+        priority = field28 & 0x1F;
+        if (field24 != 0) {
+            func_01ffaacc(res & 0x1FF, field8 & 0xFF, combined, (s32)field24, priority);
+            return;
+        } else {
+            func_01ffaacc(res & 0x1FF, field8 & 0xFF, combined, (s32)data_027e0084, priority);
+        }
+    }
+}
+
 void func_020a9774(void *arg0, s16 arg1, s16 arg2, s8 arg3, s32 arg4) {
     M2C_UNK func_020a92bc(void *, s32);
-    M2C_UNK func_020a94fc(void *);
+    void func_020a94fc(void *);
     M2C_FIELD(arg0, s16 *, 6) = arg1;
     M2C_FIELD(arg0, s16 *, 8) = arg2;
     M2C_FIELD(arg0, s8 *, 0x21) = arg3;

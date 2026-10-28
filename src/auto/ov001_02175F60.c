@@ -24,7 +24,7 @@ void func_ov001_02175f8c(void *arg0) {
     extern void *data_ov001_02193d50;
     extern u8 data_ov001_0219031c[28];
     extern M2C_UNK data_ov001_02193d58;
-    extern void func_ov001_0217612c(void);
+    extern void func_ov001_0217612c(void *);
     typedef struct { u32 a, b, c, d, e, f; u8 g; u8 pad[3]; } Buf28;
     Buf28 buf;
     data_ov001_02193d50 = (void *)func_ov001_0218b6f8(0x1E2A4, 0x20);
@@ -77,6 +77,100 @@ void func_ov001_02176108(void) {
 void *func_ov001_02176114(void) {
     extern void *data_ov001_02193d50;
     return (u8 *)data_ov001_02193d50 + 0x1E280;
+}
+
+void func_ov001_0217612c(void *arg0) {
+  void func_ov001_02188f40(void);
+  s32 func_ov001_021892c4(void *, void *);
+  extern void *data_ov001_02193d50;
+  M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
+  M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+  u8 sp1;
+  u8 sp0;
+  u8 *main;
+  void (*fp)(s32);
+
+  func_ov001_02188f40();
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  if (main[0x2a0] != 0 && main[0x2a1] == 0 && *(void **)(main + 0x298) != 0) {
+    (*(void (*)(s32))*(void **)(main + 0x298))(0);
+    return;
+  }
+
+  func_ov001_021892c4(&sp1, &sp0);
+
+  {
+    s32 v = sp1;
+    if (v > 0x1a) goto L_gt1a;
+    if (v == 0x1a) goto L_block26;
+    if (v > 0x14) goto L_gt14;
+    if (v < 0) goto L_tail;
+    switch (v) {
+      case 6: goto L_block6;
+      case 13: goto L_block13;
+      case 14: goto L_block14;
+      case 20: goto L_block20;
+      default: goto L_tail;
+    }
+  L_gt14:
+    if (v == 0x17) goto L_block20;
+    goto L_return;
+  L_gt1a:
+    if (v > 0x1d) goto L_gt1d;
+    if (v == 0x1d) goto L_block26;
+    goto L_return;
+  L_gt1d:
+    if (v == 0x22) goto L_tail;
+    goto L_return;
+  }
+
+L_block6:
+  if (sp0 == 0) goto L_return;
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  fp = (void (*)(s32))*(void **)(main + 0x298);
+  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
+  fp(0);
+  goto L_return;
+
+L_block13:
+  if (sp0 == 0) goto L_return;
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  fp = (void (*)(s32))*(void **)(main + 0x298);
+  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
+  fp(2);
+  goto L_return;
+
+L_block14:
+  if (sp0 == 0) goto L_return;
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  fp = (void (*)(s32))*(void **)(main + 0x298);
+  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
+  fp(3);
+  goto L_return;
+
+L_block20:
+  if (sp0 == 0) goto L_return;
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  fp = (void (*)(s32))*(void **)(main + 0x298);
+  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
+  fp(4);
+  goto L_return;
+
+L_block26:
+  if (sp0 == 0) goto L_return;
+  main = (u8 *)data_ov001_02193d50 + 0x1e000;
+  fp = (void (*)(s32))*(void **)(main + 0x298);
+  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
+  fp(1);
+  goto L_return;
+
+L_tail:
+  func_ov001_0218c92c(0, (M2C_UNK)arg0);
+  func_ov001_0218b71c((M2C_UNK *)&data_ov001_02193d50);
+  return;
+
+L_return:
+  return;
 }
 
 void func_ov001_021763cc(void) {

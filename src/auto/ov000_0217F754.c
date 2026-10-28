@@ -49,6 +49,12 @@ data_ov000_021df580[3]=func_0207c928(func_0207c2f0(),100);
 data_ov000_021df580[5]=func_ov000_021a89a4(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 }
 
+void func_ov000_0217f96c(void *arg0) {
+    (void)arg0;
+}
+
+void func_ov000_0217fe68(void *arg0) { (void)arg0; }
+
 void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *data_ov000_021df580;extern u8 *data_ov000_021df658;
 s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void func_ov000_02199d74(s32,s32,s32,s32,s32);

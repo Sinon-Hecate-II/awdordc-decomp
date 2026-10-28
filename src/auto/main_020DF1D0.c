@@ -1,6 +1,16 @@
 /* 11 functions from 0x020DF1D0 to 0x020E0194 (main), found by ds-decomp. */
 #include "common.h"
 
+M2C_UNK func_020df1d0(void) { return 0; }
+
+M2C_UNK func_020df718(void) {
+    return 0;
+}
+
+M2C_UNK func_020dfb58(void) {
+    return 0;
+}
+
 void func_020e0134(void) {
     M2C_UNK func_020debf4();
     func_020debf4();

@@ -135,6 +135,10 @@ func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));
 }
 }
 
+void func_02036860(void) { }
+
+M2C_UNK func_02036a7c(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s8 *g) { return 0; }
+
 void func_02036ec0(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
  M2C_UNK func_02036a7c(s32,s32,s32,s32,s32,s32,s8 *);
  s8 x[1];

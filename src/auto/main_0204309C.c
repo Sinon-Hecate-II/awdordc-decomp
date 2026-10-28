@@ -58,6 +58,14 @@ if(code)func_0203dc38(code,off+0xfffeac28);
 return ret;
 }
 
+void func_020432d4(void *arg0, s32 arg1, s32 arg2) {
+    extern M2C_UNK data_0213d39c;
+    M2C_FIELD(&data_0213d39c, s32 *, 0x18)++;
+    if (arg1 == 0) {
+        func_020436dc(arg2);
+    }
+}
+
 void func_020436d8(void) {
 
 }

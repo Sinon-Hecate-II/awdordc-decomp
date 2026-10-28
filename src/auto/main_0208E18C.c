@@ -2,6 +2,12 @@
 #include "common.h"
 
 
+void func_0208e18c(void) { }
+
+void func_0208e864(s16 arg0, s32 arg1, u16 arg2, u8 arg3, s32 arg4) {
+    return;
+}
+
 void func_0208eb30(void *arg0, u32 arg1, s32 arg2) {
     M2C_UNK func_0208e7ec(u32, s32);
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);

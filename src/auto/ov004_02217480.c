@@ -28,6 +28,8 @@ i++;offset+=32;
 func_01ffa8c4(state,1);
 }
 
+void func_ov004_02217514(void *arg0) { (void)arg0; }
+
 void func_ov004_02217bb8(void *state) {
     s32 func_0207c8ec(s32, M2C_UNK);
     M2C_UNK func_0208fe30(s32);

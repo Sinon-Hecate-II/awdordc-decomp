@@ -3,6 +3,8 @@
 extern M2C_UNK data_021577e4;
 extern u32 data_021577e8[9], data_0215780c[9];
 
+M2C_UNK func_0208ee90(void) { return 0; }
+
 void func_0208f3a4(void) {
     M2C_UNK func_0208ee90();
     func_0208ee90();

@@ -1,6 +1,9 @@
 /* 6 functions from 0x020E5080 to 0x020E5824 (main), found by ds-decomp. */
 #include "common.h"
 
+void func_020e5080(M2C_UNK arg0) {
+}
+
 void func_020e5678(void) {
     M2C_UNK func_0200df70();
     M2C_UNK func_0200e868(M2C_UNK);

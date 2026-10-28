@@ -3,6 +3,7 @@
 typedef struct RangePair { u32 address; u32 size; } RangePair;
 typedef struct MemoryDescriptor {u32 dest;u32 source;u32 size;u32 flags;} MemoryDescriptor;
 typedef struct PacketBits { u8 low:2; u8 high:6; } PacketBits;
+typedef struct PacketSource165 { u8 pad[0x358]; u8 field358,pad359; u16 field35a,field35c; } PacketSource165;
 
 /* Builds a MemoryDescriptor describing a resource chunk: validates that src lies in a valid memory range, then either describes it in place (case 0) or copies it into the pool (case 1); case 2 is a fixed loader region. */
 void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
@@ -331,6 +332,62 @@ M2C_FIELD(&data_021311a0,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0
 M2C_FIELD(&data_021311a0,u8 *,0x24)=5;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_lifetimes off
+void func_02016564(s32 a,s32 b,s32 c) {
+extern M2C_UNK data_021311a0,data_02131248,data_021311f0,data_021311e8,data_021311e0;
+s32 func_02007df8(s32,void *,s32);s32 func_02007e20();
+u16 func_02015f48(u16 *,s32);
+void func_02013c44(s32,void *,s32,s32,s32,s32);
+void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
+p=M2C_FIELD(&data_021311a0,void **,0x1c);
+if(M2C_FIELD(&data_021311a0,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))func_02016534();
+state=&data_021311a0;
+((PacketBits *)((u8 *)state+0x44))->low=2;
+p=M2C_FIELD(state,void **,0x1c); header=(u8 *)p+0x300;
+M2C_FIELD(state,u8 *,0x45)=M2C_FIELD(p,u8 *,0x4b3);
+M2C_FIELD(state,u8 *,0x46)=M2C_FIELD(state,u8 *,0x26);
+M2C_FIELD(state,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
+((PacketBits *)((u8 *)state+0x44))->high=M2C_FIELD(p,u8 *,0x4b5);
+M2C_FIELD(state,u8 *,0x47)=M2C_FIELD(state,u8 *,0x29)++;
+M2C_FIELD(state,u8 *,0x4a)=M2C_FIELD(p,u8 *,0x358);
+M2C_FIELD(state,u16 *,0x4c)=M2C_FIELD(header,u16 *,0x5a);
+M2C_FIELD(state,u16 *,0x4e)=M2C_FIELD(header,u16 *,0x5c);
+if(!M2C_FIELD(state,s32 *,0x10)){
+callback=M2C_FIELD(state,void (**)(u32),0x14);
+if(callback)callback(M2C_FIELD(p,u32 *,0x4b8));
+}
+i=0;dest=(u8 *)&data_02131248;p=M2C_FIELD(&data_021311a0,void **,0x1c); goto checkCopy;
+copyLoop: dest[i]=M2C_FIELD((u32)p+i,u8 *,0x4a8); i++;
+checkCopy: if(i<8)goto copyLoop;
+func_02007df8(0,&data_021311f0,0x58);
+p=M2C_FIELD(&data_021311a0,void **,0x1c);
+count=0;
+mask=M2C_FIELD(p,u16 *,0x4b0)^M2C_FIELD(p,u16 *,0x35a);
+i=0;goto checkEntries;entriesLoop: {
+if(!(mask&(2<<i)))goto nextEntry;
+func_02007e20((u8 *)M2C_FIELD(&data_021311a0,void **,0x1c)+0x35e + i*22,(u8 *)&data_021311f0+count*22,22);
+count++;
+M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u16 *,0x4b0)|=2<<i;
+if(count==4)goto entriesDone;
+}
+nextEntry:i++;
+checkEntries:if(i<15)goto entriesLoop;
+entriesDone:
+if(count<4)M2C_FIELD(&data_021311f0,u8 *,count*22)&=~0xf0;
+M2C_FIELD(&data_021311a0,u16 *,0x48)=0;
+M2C_FIELD(&data_021311a0,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+p=M2C_FIELD(&data_021311a0,void **,0x1c);
+if(M2C_FIELD(p,u16 *,0x4b0)==M2C_FIELD(p,u16 *,0x35a))M2C_FIELD(&data_021311a0,u8 *,0x24)=1;
+func_02013c44(0,&data_021311e0,0x70,a,b,(u8)(c|3));
+if(M2C_FIELD(&data_021311a0,s32 *,0x10)==1){
+callback=M2C_FIELD(&data_021311a0,void (**)(u32),0x14);
+if(callback)callback(M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u32 *,0x4b8));
+}
+}
+#pragma pop
 s32 func_020167d0(void *arg0) {
 s32 func_02011d58();s32 bits;u16 n,start,candidate;
 bits=func_02011d58();if(!bits)return 0;

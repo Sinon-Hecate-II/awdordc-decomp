@@ -3,6 +3,10 @@
 void *func_02044268();
 void func_02041e44(void);
 
+void func_020411dc(s32 arg0) {
+    (void)arg0;
+}
+
 s32 func_0204183c(s32 *p,u32 n) {
  s32 func_020428bc();
  u32 i;

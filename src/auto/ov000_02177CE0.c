@@ -93,6 +93,11 @@ if(weight<20)result+=0x400000;
 return result;
 }
 
+s32 func_ov000_02178268(s32 arg0, s32 arg1, void *arg2) {
+    (void)arg0; (void)arg1; (void)arg2;
+    return 0;
+}
+
 s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
     s32 func_ov000_02177ce0(s32, s32);
  s32 func_ov000_021a9a28(u32,s32,s32);

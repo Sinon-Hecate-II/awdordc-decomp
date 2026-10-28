@@ -5,6 +5,11 @@ typedef struct { u8 enabled:1; u8 mode:3; u8 unused:4; } SaveFlags;
 typedef struct { u16 low:7; u16 mode:3; u16 high:6; } SaveMode;
 extern M2C_UNK data_0215d890, data_0215deec, data_0212616c;
 
+void *func_020bf25c(s32 arg0) {
+    (void)arg0;
+    return 0;
+}
+
 void func_020bf798(void){
 void func_020be718(void *);void func_020be438(s32,void *,s32);
 u16 size=0x5cc;

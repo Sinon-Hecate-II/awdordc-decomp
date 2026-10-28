@@ -62,3 +62,8 @@ s32 func_02052f1c(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r0;
 }
 
+s32 func_02052f5c(s32 a, s32 b, s32 c) {
+    (void)a; (void)b; (void)c;
+    return 0;
+}
+

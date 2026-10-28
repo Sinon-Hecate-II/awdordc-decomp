@@ -2,6 +2,10 @@
 #include "common.h"
 typedef struct { u8 x,y; u8 unk[10]; } UnkA66Entry;
 
+void func_ov000_021a58c8(u8 arg0) {
+    (void)arg0;
+}
+
 void func_ov000_021a5b28(void) {
     void func_01ffb3d0(s32);
     void func_01ffb554(void *);
@@ -23,6 +27,8 @@ void func_ov000_021a5b28(void) {
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }
+
+void func_ov000_021a5bd4(u8 arg0) { (void)arg0; }
 
 void func_ov000_021a5f50(void) {
     void func_01ffb3d0(s32);

@@ -169,6 +169,8 @@ void func_02089438(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x64) = (s16) ((u32) (M2C_FIELD(arg0, s32 *, 0x40) << 0xE) >> 0x17);
 }
 
+M2C_UNK func_0208946c(void) { return 0; }
+
 void func_020896e4(void) {
     M2C_UNK func_0208946c();
     func_0208946c();

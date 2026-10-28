@@ -31,6 +31,54 @@ void func_0208726c(s32 *x,s32 *y,s32 angle,s32 dist) {
  *x=((a>>11)&1)+(a>>12); *y=((b>>11)&1)+(b>>12);
 }
 
+s32 func_020720f0(s32,s32);
+#pragma push
+#pragma optimization_level 4
+#pragma opt_common_subs off
+void func_020872c8(s32 x,s32 y,s32 z,s32 r,s32 n,u16 color){s32 px,qx,py,qy,i;*(volatile u32*)0x4000500=0;*(volatile u32*)0x4000480=color;if(n&1) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=n;i++){func_0208726c(&qx,&qy,(u16)func_020720f0(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+px) | ((u32)(u16)(s16)(y+py)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+px=qx;py=qy;}}else if(n&2) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>1);i++){func_0208726c(&qx,&qy,(u16)func_020720f0(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+px) | ((u32)(u16)(s16)(y+py)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-qx) | ((u32)(u16)(s16)(y-qy)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-px) | ((u32)(u16)(s16)(y-py)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+px=qx;py=qy;}}else {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>2);i++){func_0208726c(&qx,&qy,(u16)func_020720f0(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+px) | ((u32)(u16)(s16)(y+py)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-qx) | ((u32)(u16)(s16)(y-qy)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-px) | ((u32)(u16)(s16)(y-py)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-qy) | ((u32)(u16)(s16)(y+qx)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x-py) | ((u32)(u16)(s16)(y+px)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) | (u32)(u16)(s16)(x);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qy) | ((u32)(u16)(s16)(y-qx)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+*(volatile u32*)0x400048c=(u32)(u16)(s16)(x+py) | ((u32)(u16)(s16)(y-px)<<16);
+*(volatile u32*)0x400048c=(u32)(u16)(s16)z;
+px=qx;py=qy;}}*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;}
+#pragma pop
 void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     u16 temp_r0;
     u16 temp_r10;

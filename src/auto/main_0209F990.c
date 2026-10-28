@@ -6,6 +6,148 @@ extern u8 data_021261d0[];
 extern u8 data_ov000_021b5c0e[];
 
 #pragma opt_strength_reduction off
+s32 func_0209f990(void) {
+    void func_0209f8c0(void);
+    s32 func_0209f8d4(void);
+    void func_0209f8f8(s32, s32, s32, s32);
+    s32 func_020a4828(s32, s32);
+    void *func_020a45f8(s32, s32);
+    u8 func_020d27a4(s32, s32);
+    void func_020d166c(s32, s32, void *);
+    u8 func_020d273c(s32, s32);
+    s32 func_020d0a88(u8 *, M2C_UNK);
+    void func_020d1690(s32, s32, void *);
+    extern s32 *gCurrentMap;
+
+    M2C_UNK *obj;
+    s32 y;
+    s32 x;
+    s32 id;
+    s32 visible;
+    void *dim;
+    s32 bits;
+
+    func_0209f8c0();
+    obj = (M2C_UNK *)*gCurrentMap;
+    if ((s32)M2C_FIELD(obj, u16 *, 0x5146) <= 0) {
+        return func_0209f8d4();
+    }
+    y = 0;
+    do {
+        obj = (M2C_UNK *)*gCurrentMap;
+        x = 0;
+        if ((s32)M2C_FIELD(obj, u16 *, 0x5144) > 0) {
+            do {
+                obj = (M2C_UNK *)*gCurrentMap;
+                if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0) {
+                    id = M2C_FIELD(obj, u8 *, x + M2C_FIELD((u8 *)obj + y * 2, u16 *, 0x3758));
+                    visible = func_020a4828(x, y);
+                    if (id != 0) {
+                        if (func_020d27a4(M2C_FIELD(obj, u8 *, 0x52d4), id) == 0) {
+                            func_020d166c(M2C_FIELD(obj, u8 *, 0x52d4), id, (void *)((u8 *)obj + 0x52dc));
+                            obj = (M2C_UNK *)*gCurrentMap;
+                            if (M2C_FIELD(obj, s16 *, 0x6ed6) != 0) {
+                                func_0209f8f8(x, y, id, 0);
+                            }
+                        }
+                    } else {
+                        if (visible != 0) {
+                            dim = func_020a45f8(x, y);
+                            if (dim != (void *)0) {
+                                bits = (s32)(M2C_FIELD(dim, u8 *, 5) & 7);
+                                if (bits != 0) {
+                                    if (func_020d273c((M2C_FIELD(obj, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
+                                        goto next_cell;
+                                    }
+                                }
+                            }
+                            func_020d1690(M2C_FIELD(obj, u8 *, 0x52d4), visible, (void *)((u8 *)obj + 0x52dc));
+                            obj = (M2C_UNK *)*gCurrentMap;
+                            if (M2C_FIELD(obj, s16 *, 0x6ed6) != 0) {
+                                func_0209f8f8(x, y, 0, (s32)(u16)visible);
+                            }
+                        }
+                    }
+                }
+            next_cell:
+                x++;
+                obj = (M2C_UNK *)*gCurrentMap;
+            } while (x < (s32)M2C_FIELD(obj, u16 *, 0x5144));
+        }
+        y++;
+    } while (y < (s32)M2C_FIELD((M2C_UNK *)*gCurrentMap, u16 *, 0x5146));
+    return func_0209f8d4();
+}
+s32 func_0209fb70(void) {
+    void func_0209f8c0(void);
+    s32 func_0209f8d4(void);
+    void func_0209f8f8(s32, s32, s32, s32);
+    s32 func_020a4828(s32, s32);
+    void *func_020a45f8(s32, s32);
+    u8 func_020d27a4(s32, s32);
+    s32 func_020d0a08(M2C_UNK, void *);
+    s32 func_020d0a88(u8 *, M2C_UNK);
+    u8 func_020d273c(s32, s32);
+    extern s32 *gCurrentMap;
+
+    M2C_UNK *obj;
+    s32 x;
+    s32 y;
+    s32 id;
+    s32 visible;
+    void *dim;
+    s32 bits;
+
+    func_0209f8c0();
+    obj = (M2C_UNK *)*gCurrentMap;
+    if ((s32)M2C_FIELD(obj, u16 *, 0x5146) <= 0) {
+        return func_0209f8d4();
+    }
+    y = 0;
+    if ((s32)M2C_FIELD(obj, u16 *, 0x5144) > 0) {
+    }
+    do {
+        obj = (M2C_UNK *)*gCurrentMap;
+        x = 0;
+        if ((s32)M2C_FIELD(obj, u16 *, 0x5144) > 0) {
+            do {
+                obj = (M2C_UNK *)*gCurrentMap;
+                if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0) {
+                    id = M2C_FIELD(obj, u8 *, x + M2C_FIELD((u8 *)obj + y * 2, u16 *, 0x3758));
+                    visible = func_020a4828(x, y);
+                    if (id != 0) {
+                        if (func_020d27a4(M2C_FIELD(obj, u8 *, 0x52d4), id) == 0) {
+                            if (func_020d0a08(M2C_FIELD(obj, M2C_UNK *, 0x52d0), (u8 *)obj + 0x59a4 + id * 14) != 0) {
+                                func_0209f8f8(x, y, id, 0);
+                            }
+                        }
+                    } else {
+                        if (visible != 0) {
+                            dim = func_020a45f8(x, y);
+                            if (dim != 0) {
+                                bits = (s32)(M2C_FIELD(dim, u8 *, 5) & 7);
+                                if (bits != 0) {
+                                    if (func_020d273c((M2C_FIELD(obj, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
+                                        goto next_cell;
+                                    }
+                                }
+                            }
+                            if (func_020d0a88((u8 *)M2C_FIELD(obj, M2C_UNK *, 0x52d0), visible) != 0) {
+                                func_0209f8f8(x, y, 0, (s32)(u16)visible);
+                            }
+                        }
+                    }
+                }
+next_cell:
+                x++;
+                obj = (M2C_UNK *)*gCurrentMap;
+            } while (x < (s32)M2C_FIELD(obj, u16 *, 0x5144));
+        }
+        y++;
+    } while (y < (s32)M2C_FIELD((M2C_UNK *)*gCurrentMap, u16 *, 0x5146));
+    return func_0209f8d4();
+}
+
 s32 func_0209fd2c(void) {
     /* Walk the map grid; for every cell whose stored value is >= 0 and
        whose passability test succeeds, append (x, y, value) to the output

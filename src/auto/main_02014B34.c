@@ -205,15 +205,15 @@ s32 func_0201579c(s32 arg0, s32 arg1) {
     M2C_UNK func_02018738(void *);
     extern u8 data_02131184;
     extern void *data_02136c4c;
+    u8 var_r4;
+    u8 var_r6;
     s32 temp_r2;
     s32 temp_r5;
     s32 temp_r6;
-    u8 var_r4;
-    u8 var_r6;
     void *temp_r9;
 
     var_r4 = 0xFF;
-                      temp_r5 = func_0200751c();
+    temp_r5 = func_0200751c();
     if (func_02018418() == 0) {
         func_02007530(temp_r5);
         return 0;

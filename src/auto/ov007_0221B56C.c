@@ -56,21 +56,15 @@ s32 func_ov007_0221b704(s32 a,s32 b) {
 s32 func_ov007_0221b754(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 p;
-    u16 t, w, h;
+    u16 t;
     if (arg0 < 0 || arg1 < 0) {
         goto ret0;
     }
     p = *gCurrentMap;
-    w = *(u16 *)((s8 *)p + 0x5144);
-    if (arg0 < w) {
-        h = *(u16 *)((s8 *)p + 0x5146);
-        if (arg1 < h) {
-            goto in_bounds;
-        }
+    if (arg0 >= M2C_FIELD(p, u16 *, 0x5144) || arg1 >= M2C_FIELD(p, u16 *, 0x5146)) {
+        return 1;
     }
-    return 1;
-in_bounds:
-    t = *(u16 *)((s8 *)p + (arg0 + *(u16 *)((s8 *)p + arg1 * 2 + 0x3758)) * 2 + 0xA10);
+    t = M2C_FIELD(p + (arg0 + M2C_FIELD(p + arg1 * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
     switch (t) {
         case 0x3:
         case 0x7:
@@ -98,6 +92,44 @@ ret0:
     return 0;
 }
 
+s32 func_ov007_0221b8c0(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 p;
+    s32 t;
+    s32 r;
+    if (x < 0 || y < 0) {
+        goto fail;
+    }
+    p = *gCurrentMap;
+    if (x < M2C_FIELD(p, u16 *, 0x5144)) {
+        if (y < M2C_FIELD(p, u16 *, 0x5146)) {
+            goto in_bounds;
+        }
+    }
+    return 0;
+in_bounds:
+    r = M2C_FIELD(p + y * 2, u16 *, 0x3758);
+    t = x + r;
+    t = M2C_FIELD(p + t * 2, u16 *, 0xA10);
+    t -= 0x79;
+    t -= 0x100;
+    switch (t) {
+        case 0: case 1: case 2: case 3: case 4:
+        case 30: case 31: case 32: case 33: case 34:
+        case 60: case 61: case 62: case 63: case 64:
+        case 68: case 69: case 70: case 71: case 72: case 73: case 74: case 75:
+        case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83:
+        case 84: case 85: case 86: case 87: case 88: case 89: case 90: case 91:
+        case 92: case 93: case 94: case 95: case 96: case 97: case 98: case 99:
+        case 100:
+            return 1;
+        default:
+            goto fail;
+    }
+fail:
+    return 0;
+}
+
 s32 func_ov007_0221bad0(s32 a,s32 b) {
  extern s32 *gCurrentMap; s32 p; u16 v;
  if(a<0||b<0)goto fail;
@@ -111,13 +143,13 @@ s32 func_ov007_0221bad0(s32 a,s32 b) {
 }
 
 s32 func_ov007_0221bb44(s32 a,s32 b,s32 c,s32 d,s32 e){
-u8 func_ov007_0221bd00(s32,s32,s32);s32 func_ov007_02211ffc(s32);extern s32 *gCurrentMap;
+u8 func_ov007_0221bd00(s32,s32,s32);s32 func_ov007_02211ffc(s32);extern s32 *data_027e0058;
 s32 p,id;u8 *entry;
 if(!func_ov007_0221bd00(a,b,c))return 0;
-p=*gCurrentMap;id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
+p=*data_027e0058;id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
 if(id){entry=(u8 *)(p+0x59a4)+id*14;
 if(((id&0xc0)>>6)+1==d){
-if(c==((u32)(entry[0]<<26)>>26)&&((u32)(entry[11]<<28)>>28)==e)return 2;
+if(c==((u32)(entry[0]<<26)>>26)&&((u32)(entry[11]<<28)>>28)==(unsigned)e)return 2;
 }else{if(func_ov007_02211ffc(d)>=50)return 0;}
 }else{if(func_ov007_02211ffc(d)>=50)return 0;}
 return 1;
@@ -164,6 +196,9 @@ s32 func_ov007_0221bd74(s32 a,s32 b) {
  return (u32)(M2C_FIELD(p+id*14,u8 *,0x59A4)<<26)>>26;
 }
 
+#pragma push
+#pragma optimizewithasm off
+#pragma peephole off
 s32 func_ov007_0221bdc0(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
@@ -171,7 +206,7 @@ s32 func_ov007_0221bdc0(s32 a,s32 b) {
  if(!id)return -1;
  return ((id&0xC0)>>6)+1;
 }
-
+#pragma pop
 s32 func_ov007_0221be00(s32 a,s32 b) {
  extern s32 *gCurrentMap;
  s32 p=*gCurrentMap;
@@ -196,12 +231,12 @@ void func_ov007_0221be4c(u8 *a,s32 b) {
 }
 
 void func_ov007_0221bee4(s32 a,s32 b,s32 c,s32 d){
-extern s32 *gCurrentMap;
+extern s32 *data_027e0058;
 void *func_020e34bc(u32); void func_020e35cc(void *);
 u8 *buf; s32 i,off; u8 *t;
 if(a==1&&b==2&&c==3&&d==4)return;
 buf=func_020e34bc(0xE00);i=0;off=0;t=buf;
-do{u8 *s=(u8 *)(*gCurrentMap+0x59A4);u8 *p=s+off;u32 x,y;
+do{u8 *s=(u8 *)(*data_027e0058+0x59A4);u8 *p=s+off;u32 x,y;
 i++;
 t[0]=s[off];t[1]=p[1];t[2]=p[2];
 M2C_FIELD(t,u16 *,4)=M2C_FIELD(p,u16 *,4);
@@ -329,6 +364,8 @@ void func_ov007_0221c4d4(void) {
  func_02086720(0);
 }
 
+#pragma push
+#pragma optimization_level 3
 void func_ov007_0221c51c(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_022201d8;

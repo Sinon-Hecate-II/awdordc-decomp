@@ -301,6 +301,8 @@ void func_0200c494(void *arg0, void *arg1, u32 arg2) {
         func_02008048(arg1, (u8 *)arg0 + 0x18, arg2 & 0x3f);
 }
 
+void func_0200c614(void *arg0) { }
+
 void func_0200c9c8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
     M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
@@ -373,5 +375,98 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
         return;
     }
     func_02008048(src, buf, size);
+}
+
+void func_0200cb6c(void *arg0, void *arg1) {
+    extern void (*data_020f53f4)(void *, void *, u32);
+    void func_02007e54(u32, void *, s32);
+    u32 *w;
+    u8 *buf;
+    u8 *out;
+    s32 orig;
+    u32 count;
+    u32 i;
+    u32 lo;
+    u32 hi;
+    u32 h0;
+    u32 h1;
+    u32 h2;
+    u32 h3;
+    u32 h4;
+
+    w = (u32 *)((u8 *)arg0 + 0x20);
+    buf = (u8 *)arg0 + 0x20;
+    out = (u8 *)arg1;
+    orig = *(s32 *)((u8 *)arg0 + 0x1c);
+
+    if ((orig & 3) == 0) {
+        w[orig >> 2] = 0;
+    }
+    count = (u32)orig;
+    buf[count] = 0x80;
+    count = count + 1;
+    while (count & 3) {
+        buf[count] = 0;
+        count = count + 1;
+    }
+    i = (u32)((orig >> 2) + 1);
+    if (orig >= 0x38) {
+        while (i < 16) {
+            w[i] = 0;
+            i = i + 1;
+        }
+        data_020f53f4(arg0, buf, 0x40);
+        i = 0;
+        while (i < 14) {
+            w[i] = 0;
+            i = i + 1;
+        }
+    } else {
+        while (i < 16) {
+            w[i] = 0;
+            i = i + 1;
+        }
+    }
+    lo = *(u32 *)((u8 *)arg0 + 0x14);
+    buf[0x3f] = (u8)lo;
+    buf[0x3e] = (u8)(lo >> 8);
+    buf[0x3d] = (u8)(lo >> 16);
+    buf[0x3c] = (u8)(lo >> 24);
+    hi = *(u32 *)((u8 *)arg0 + 0x18);
+    buf[0x3b] = (u8)hi;
+    buf[0x3a] = (u8)(hi >> 8);
+    buf[0x39] = (u8)(hi >> 16);
+    buf[0x38] = (u8)(hi >> 24);
+    data_020f53f4(arg0, buf, 0x40);
+
+    h0 = *(u32 *)((u8 *)arg0 + 0x00);
+    h1 = *(u32 *)((u8 *)arg0 + 0x04);
+    h2 = *(u32 *)((u8 *)arg0 + 0x08);
+    h3 = *(u32 *)((u8 *)arg0 + 0x0c);
+    h4 = *(u32 *)((u8 *)arg0 + 0x10);
+
+    out[0] = (u8)(h0 >> 24);
+    out[1] = (u8)(h0 >> 16);
+    out[2] = (u8)(h0 >> 8);
+    out[3] = (u8)h0;
+    out[4] = (u8)(h1 >> 24);
+    out[5] = (u8)(h1 >> 16);
+    out[6] = (u8)(h1 >> 8);
+    out[7] = (u8)h1;
+    out[8] = (u8)(h2 >> 24);
+    out[9] = (u8)(h2 >> 16);
+    out[10] = (u8)(h2 >> 8);
+    out[11] = (u8)h2;
+    out[12] = (u8)(h3 >> 24);
+    out[13] = (u8)(h3 >> 16);
+    out[14] = (u8)(h3 >> 8);
+    out[15] = (u8)h3;
+    out[16] = (u8)(h4 >> 24);
+    out[17] = (u8)(h4 >> 16);
+    out[18] = (u8)(h4 >> 8);
+    out[19] = (u8)h4;
+
+    *(u32 *)((u8 *)arg0 + 0x1c) = 0;
+    func_02007e54(0, (void *)&arg0, 4);
 }
 

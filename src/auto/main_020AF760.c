@@ -172,6 +172,103 @@ void func_020afc40(void) {
 
 }
 
+void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, s32 arg6) {
+    void func_0209107c(void *, s32, s32, VecAff *, s32, s32, s32, s32, s32);
+    extern s32 data_027e15bc;
+    volatile s32 sp30;
+    volatile s32 sp2C;
+    volatile s32 sp28;
+    volatile s32 sp24;
+    volatile s32 sp20;
+    volatile s32 sp1C;
+    volatile s32 sp18;
+    volatile s32 sp14;
+    s32 temp_r0;
+    s32 temp_r0_2;
+    s32 temp_r0_3;
+    s32 temp_r0_4;
+    s32 temp_r4;
+    s32 temp_r4_2;
+    s32 var_r11;
+    s32 var_r11_2;
+    s32 var_r11_3;
+    s32 var_r11_4;
+    s32 var_r4;
+    s32 var_r4_2;
+    s32 var_r4_3;
+    s32 var_r4_4;
+
+    temp_r4 = arg0 * 0x30;
+    sp14 = arg0;
+    sp2C = (arg1 - (arg2 * 0x10)) * 0x30;
+    sp30 = 0x8A1;
+    sp28 = temp_r4;
+    func_0209107c(arg3, 0x14, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    sp2C = (arg1 + (arg2 * 0x10)) * 0x30;
+    sp28 = temp_r4;
+    func_0209107c(arg3, 0x15, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    temp_r4_2 = arg1 * 0x30;
+    sp28 = (sp14 - (arg2 * 0x10)) * 0x30;
+    sp2C = temp_r4_2;
+    func_0209107c(arg3, 0x16, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    sp2C = temp_r4_2;
+    sp28 = (sp14 + (arg2 * 0x10)) * 0x30;
+    func_0209107c(arg3, 0x17, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    temp_r0 = arg2 - 1;
+    var_r11 = 1;
+    sp18 = temp_r0;
+    if (temp_r0 >= 1) {
+        var_r4 = 0x10;
+        do {
+            sp28 = (sp14 - var_r4) * 0x30;
+            sp2C = (arg1 - ((arg2 - var_r11) * 0x10)) * 0x30;
+            func_0209107c(arg3, 0x18, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            var_r11 += 1;
+            var_r4 += 0x10;
+        } while (var_r11 <= sp18);
+    }
+    temp_r0_2 = arg2 - 1;
+    sp1C = temp_r0_2;
+    var_r4_2 = 1;
+    if (temp_r0_2 >= 1) {
+        var_r11_2 = sp14 + 0x10;
+        do {
+            sp28 = var_r11_2 * 0x30;
+            sp2C = (arg1 - ((arg2 - var_r4_2) * 0x10)) * 0x30;
+            func_0209107c(arg3, 0x19, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            var_r4_2 += 1;
+            var_r11_2 += 0x10;
+        } while (var_r4_2 <= sp1C);
+    }
+    temp_r0_3 = arg2 - 1;
+    sp20 = temp_r0_3;
+    var_r4_3 = 1;
+    if (temp_r0_3 >= 1) {
+        var_r11_3 = 0x10;
+        do {
+            sp28 = (sp14 - var_r11_3) * 0x30;
+            sp2C = (arg1 + ((arg2 - var_r4_3) * 0x10)) * 0x30;
+            func_0209107c(arg3, 0x1A, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            var_r4_3 += 1;
+            var_r11_3 += 0x10;
+        } while (var_r4_3 <= sp20);
+    }
+    temp_r0_4 = arg2 - 1;
+    sp24 = temp_r0_4;
+    var_r4_4 = 1;
+    if (temp_r0_4 < 1) {
+        return;
+    }
+    var_r11_4 = sp14 + 0x10;
+    do {
+        sp28 = var_r11_4 * 0x30;
+        sp2C = (arg1 + ((arg2 - var_r4_4) * 0x10)) * 0x30;
+        func_0209107c(arg3, 0x1B, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+        var_r4_4 += 1;
+        var_r11_4 += 0x10;
+    } while (var_r4_4 <= sp24);
+}
+
 void func_020affac(s32 x,s32 y){
 s32 func_0207b9f4(s32,s32);
 s32 func_0207cfb8(s32);
@@ -217,5 +314,69 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)=(M2C_FIELD(M2C_FIELD(
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)&~3)|0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|2;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
+}
+
+void func_020b01bc(s32 a, s32 b, s32 c, s32 d, s32 e) { (void)a;(void)b;(void)c;(void)d;(void)e; }
+
+void func_020b0408(void) {
+    void func_020b0154(void);
+    void Reset3DSpriteEngineState(void);
+    extern s32 *gCurrentMap;
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    u16 *volatile sp0;
+    u8 v51;
+    u8 v52;
+    u8 v0 = 0;
+
+    func_020b0154();
+    if (*(u8 *)((s32)*gCurrentMap + 0x5157) == 1) {
+        v51 = 0xa;
+        v52 = 0x8;
+    } else {
+        v51 = 0x6;
+        v52 = 0x10;
+    }
+    sp30 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp30 = (*sp30 & ~0xc0) | 0x40;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = v51;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = v52;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = v0;
+    sp2C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp2C = (*sp2C & ~1) | 1;
+    sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp28 = *sp28 & ~2;
+    sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp24 = *sp24 & ~4;
+    sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp20 = *sp20 & ~8;
+    sp1C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp1C = *sp1C & ~0x10;
+    sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp18 = *sp18 & ~0x20;
+    sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp14 = *sp14 & ~0x100;
+    sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp10 = *sp10 & ~0x200;
+    spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *spC = *spC | 0x400;
+    sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp8 = *sp8 | 0x800;
+    sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp4 = *sp4 | 0x1000;
+    sp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp0 = *sp0 | 0x2000;
+    Reset3DSpriteEngineState();
 }
 

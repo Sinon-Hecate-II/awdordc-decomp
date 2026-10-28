@@ -254,6 +254,54 @@ u8 func_ov003_021f1bfc(void) {
     return data_ov003_022111c0;
 }
 
+M2C_UNK func_ov003_021f1c0c(void) {
+    extern M2C_UNK gCur3DSpriteEngine;
+    extern M2C_UNK data_027e00c8;
+    extern M2C_UNK data_027e00c4;
+    extern M2C_UNK data_ov003_0220fc78;
+
+    volatile M2C_UNK saved = gCur3DSpriteEngine;
+    volatile u8 *info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
+
+    gCur3DSpriteEngine = data_027e00c8;
+    if (info[0] != 0 && info[1] == 0) {
+        s32 i;
+        for (i = 0; i <= 4; i++) {
+            volatile u16 *eng = *(u16 **)gCur3DSpriteEngine;
+            switch (i) {
+                case 0: eng[0] |= 0x10; break;
+                case 1: eng[0] |= 0x20; break;
+                case 2: eng[0] |= 0x40; break;
+                case 3: eng[0] |= 0x80; break;
+                case 4: eng[0] |= 0x100; break;
+                default: break;
+            }
+        }
+    }
+
+    gCur3DSpriteEngine = data_027e00c4;
+    info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
+    if (info[3] != 0 && info[4] == 0) {
+        s32 i;
+        for (i = 0; i <= 4; i++) {
+            volatile u16 *eng = *(u16 **)gCur3DSpriteEngine;
+            switch (i) {
+                case 0: eng[0] &= ~0x10; break;
+                case 1: eng[0] &= ~0x20; break;
+                case 2: eng[0] &= ~0x40; break;
+                case 3: eng[0] &= ~0x80; break;
+                case 4: eng[0] &= ~0x100; break;
+                default: break;
+            }
+        }
+    }
+
+    gCur3DSpriteEngine = saved;
+    return 0;
+}
+
+void func_ov003_021f2008(void) { }
+
 void func_ov003_021f242c(u16 *arg0) {
     u8 i, j;
     u16 a, b;

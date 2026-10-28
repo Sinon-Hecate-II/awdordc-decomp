@@ -424,6 +424,104 @@ void func_ov001_021841cc(u16 *p) {
     }
 }
 
+void func_ov001_02184230(u16 *arg0) {
+    void func_020067a8(void *, s32);
+    void func_02008048(void *, void *, u32);
+    s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
+    void func_02011f2c(M2C_UNK *, M2C_UNK *);
+    extern s32 data_ov001_02193e00;
+    extern u8 data_ov001_0218fb64[];
+    extern u8 data_ov001_0218fb60[];
+
+    typedef struct { u8 kind; u8 length; u8 pad[2]; void *data; } ParsedItem;
+    typedef struct { u8 count; u8 pad[3]; ParsedItem items[16]; } ParsedItems;
+
+    u8 *base = (u8 *)arg0;
+    u8 *slots = (u8 *)data_ov001_02193e00 + 0x1300;
+    s32 cnt = *(s16 *)(base + 0xe);
+    s32 i;
+
+    func_020067a8((void *)((u8 *)data_ov001_02193e00 + 0xf00), 0x400);
+
+    for (i = 0; i < cnt; i++) {
+        u8 *r4 = *(u8 **)(base + 0x10 + i * 4);
+        s32 j;
+        u8 *slot;
+        if (r4[0xc] == 0) continue;
+        if (*(u16 *)(r4 + 0x3c) != 0) continue;
+
+        /* first search */
+        slot = slots;
+        j = 0;
+        for (;;) {
+            if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)(r4 + 4), 6) == 0) {
+                break;
+            }
+            j++;
+            if (j >= 20) {
+                break;
+            }
+            slot += 0x2a;
+        }
+
+        if (j == 20) {
+            s32 jj;
+            slot = slots;
+            jj = 0;
+            for (;;) {
+                if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) == 0) {
+                    break;
+                }
+                jj++;
+                if (jj >= 20) {
+                    break;
+                }
+                slot += 0x2a;
+            }
+            if (jj == 20) {
+                return;
+            }
+            slot = slots + jj * 0x2a;
+        } else {
+            slot = slots + j * 0x2a;
+        }
+
+        func_02008048((void *)(r4 + 4), (void *)(slot + 0x20), 6);
+        func_02008048((void *)(r4 + 0xc), (void *)slot, 0x20);
+        *(u16 *)(slot + 0x26) = *(u16 *)(base + 0x50 + i * 2);
+
+        if (((*(u16 *)(r4 + 0x2c)) & 0x10) == 0) {
+            slot[0x28] = 0;
+            continue;
+        }
+
+        slot[0x28] = 1;
+        {
+            ParsedItems parsed;
+            u8 pc;
+            s32 k;
+            func_02011f2c((M2C_UNK *)&parsed, (M2C_UNK *)r4);
+            pc = parsed.count;
+            if (pc > 0) {
+                for (k = 0; k < pc; k++) {
+                    if (parsed.items[k].kind == 0x30) {
+                        slot[0x28] = 2;
+                        break;
+                    }
+                    if (parsed.items[k].kind == 0xdd &&
+                        parsed.items[k].length >= 4) {
+                        if (func_0206527c((M2C_UNK)parsed.items[k].data,
+                                            (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
+                            slot[0x28] = 2;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void func_ov001_02184404(void) {
     s32 func_ov001_0218b6f8(s32, M2C_UNK);
     void func_02076710(u16 *, u32);
@@ -461,6 +559,63 @@ void func_ov001_02184498(void *arg0) {
     extern s32 data_ov001_02193e04;
     func_02008048(arg0, (void *)((s8 *)data_ov001_02193e04 + 0x440), 0x20);
     *(u8 *)((s8 *)data_ov001_02193e04 + 0x4e7) = 0;
+}
+
+void func_ov001_021844c8(u8 *arg0) {
+    void func_02007f8c(void *, s32, u32);
+    void func_02008048(void *, void *, u32);
+    s32 func_ov001_0218c3e0(u8 *, s32);
+    s32 func_ov001_02184f4c(u8);
+    extern s32 data_ov001_02193e04;
+
+    u8 *base;
+    s32 r5;
+    base = (u8 *)data_ov001_02193e04;
+
+    func_02007f8c(base + 0x480, 0, 0x10);
+    r5 = func_ov001_0218c3e0(arg0, 0x20);
+
+    switch (r5) {
+        case 0:
+        case 10:
+        case 0x1a:
+        case 0x20: {
+            u8 *r8 = base + 0x480;
+            s32 r4 = 0;
+            base[0x4e6] = (u8)(base[0x4e6] & 0x03);
+            if (r5 > 0) {
+                do {
+                    s32 hi = func_ov001_02184f4c(arg0[r4]);
+                    s32 lo = func_ov001_02184f4c(arg0[r4 + 1]);
+                    *r8++ = (u8)((hi << 4) | lo);
+                    r4 += 2;
+                } while (r4 < r5);
+            }
+            break;
+        }
+        default: {
+            base[0x4e6] = (u8)((base[0x4e6] & 0x03) | 0x04);
+            func_02008048(arg0, base + 0x480, 0x10);
+            break;
+        }
+    }
+
+    switch (r5) {
+        case 0:
+            base[0x4e6] = (u8)(base[0x4e6] & 0xfc);
+            break;
+        case 5:
+        case 10:
+            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x01);
+            break;
+        case 13:
+        case 0x1a:
+            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x02);
+            break;
+        default:
+            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x03);
+            break;
+    }
 }
 
 void func_ov001_02184660(u8 *arg0) {

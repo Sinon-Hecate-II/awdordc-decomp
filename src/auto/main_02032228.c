@@ -332,6 +332,9 @@ func_02033e80(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),func
 return 0;
 }
 
+void func_02032d84(void) {
+}
+
 s32 func_02033038(void) {
     extern M2C_UNK data_0213d114,data_020fb37c,data_020fb38c,data_0213d120;
     s32 func_02034c58(u32,u32,void*);

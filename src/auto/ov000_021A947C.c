@@ -1,6 +1,69 @@
 /* 29 functions from 0x021A947C to 0x021AA3FC (ov000), found by ds-decomp. */
 #include "common.h"
 
+s32 func_ov000_021a947c(s32 x, s32 y, s32 a, s32 b) {
+    extern void **gCurrentMap;
+    extern void *data_ov000_021df580;
+    extern u8 data_ov000_021b5c0f[];
+    extern s8 data_ov000_021b5680[];
+    s32 func_020a33c4(s32);
+    u8 func_ov000_021a9164(s32, s32, s32);
+    s32 func_ov000_021a93b0(s32, s32, s32);
+
+    register s32 rx asm("r8") = x;
+    register s32 ry asm("r7") = y;
+    register s32 ra asm("r6") = a;
+    register s32 rb asm("r5") = b;
+    register u16 racc asm("r4") = 0;
+
+    if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) == 0) {
+        if (M2C_FIELD(data_ov000_021df580, u8 *, 0xD) != 2) {
+            return 1;
+        }
+        if (!func_ov000_021a93b0(rx, ra, rb)) {
+            return 1;
+        }
+        if (M2C_FIELD(*gCurrentMap, u8 *, rx * 0x8C + 0x6810) == 3) {
+            if (func_020a33c4(rx) != 0) {
+                return 1;
+            }
+        }
+    }
+
+    if (func_ov000_021a9164(rx & 0xFF, ra, rb) == 1) {
+        return 1;
+    }
+
+    if (data_ov000_021b5c0f[ry * 0x70] == 0x10) {
+        u16 row = M2C_FIELD((u8 *)*gCurrentMap + rb * 2, u16 *, 0x3758);
+        u8 terrain = M2C_FIELD((u8 *)*gCurrentMap + ra + row, u8 *, 0x1420) & 0x1F;
+        if (data_ov000_021b5680[terrain] == 0) {
+            return 1;
+        }
+    }
+
+    if (ra > 0) {
+        racc = (u16)(racc + func_ov000_021a9164(rx & 0xFF, (s16)(ra - 1), rb));
+    }
+    if (rb > 0) {
+        racc = (u16)(racc + func_ov000_021a9164(rx & 0xFF, ra, (s16)(rb - 1)));
+    }
+    {
+        u16 width = M2C_FIELD(*gCurrentMap, u16 *, 0x5144);
+        if (ra < (s32)width - 1) {
+            racc = (u16)(racc + func_ov000_021a9164(rx & 0xFF, (s16)(ra + 1), rb));
+        }
+    }
+    {
+        u16 height = M2C_FIELD(*gCurrentMap, u16 *, 0x5146);
+        if (rb < (s32)height - 1) {
+            racc = (u16)(racc + func_ov000_021a9164(rx & 0xFF, ra, (s16)(rb + 1)));
+        }
+    }
+
+    return racc != 0;
+}
+
 void func_ov000_021a96a8(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
@@ -235,6 +298,10 @@ s32 second=(u8)((1<<(index&7))&data_ov000_021dfba8[index>>3])!=0?0:2;
 result|=second|first;
 }
 return result;
+}
+
+s32 func_ov000_021a9f30(void) {
+    return 0;
 }
 
 s32 func_ov000_021aa214(void) {

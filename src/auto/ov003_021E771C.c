@@ -22,3 +22,9 @@ s32 func_ov003_021e8308(void *arg0) {
     return 0;
 }
 
+void func_ov003_021e8354(s32 arg0, s32 arg1, s32 arg2) {
+    (void)arg0;
+    (void)arg1;
+    (void)arg2;
+}
+

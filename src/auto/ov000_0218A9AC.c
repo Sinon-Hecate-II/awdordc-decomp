@@ -103,3 +103,5 @@ void func_ov000_0218b02c(void) {
     p = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
     func_ov000_02199d74(p[1], p[2], 2, 0, 0);
 }
+void func_ov000_0218a9ac(s32 arg0, s32 arg1) {
+}

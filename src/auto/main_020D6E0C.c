@@ -8,6 +8,10 @@ extern s32 *gCurrentMap;
 void func_020d7944(s32, s32, s32, s32);
 
 #pragma opt_common_subs off
+void func_020d759c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    (void) arg0; (void) arg1; (void) arg2;
+}
+
 void func_020d7944(s32 x,s32 y,s32 index,s32 unit){
 s32 func_ov000_0216ccf0(s32);s32 func_ov000_0216cd00(s32);s32 func_ov000_0216cd78(s32,u8);
 void func_0207c3dc(s32,s32,s32,s32);void func_01ffaacc(u16,u16,u16,void *,s32);void func_020d694c(s32,u8,s32);

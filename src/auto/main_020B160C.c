@@ -284,6 +284,11 @@ return (M2C_UNK)M2C_FIELD(data_02128690,void **,12);
 
 void func_020b1d14(void){extern void *data_02128690,*data_02101e84,*data_02101e88;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(data_02128690,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(data_02101e84,u16 *,2))return;if(M2C_FIELD(data_02101e88,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
 
+void func_020b1d84(void *arg0, s32 arg1, void *arg2) {
+    (void)arg0; (void)arg1; (void)arg2;
+    return;
+}
+
 void func_020b204c(void){extern void *data_02128690;void *p; s32 d,c,b,a,sum;p=M2C_FIELD(data_02128690,void **,12);if(!p)return;a=M2C_FIELD(p,s16 *,20);b=M2C_FIELD(p,s16 *,22);c=M2C_FIELD(p,s16 *,24);d=M2C_FIELD(p,s16 *,26);M2C_FIELD(data_02128690,s16 *,16)=(s16)a;M2C_FIELD(data_02128690,s16 *,18)=(s16)b;M2C_FIELD(data_02128690,s16 *,20)=(s16)(a+c);sum=b+d;M2C_FIELD(data_02128690,s16 *,22)=(s16)b;M2C_FIELD(data_02128690,s16 *,24)=(s16)a;M2C_FIELD(data_02128690,s16 *,26)=(s16)sum;M2C_FIELD(data_02128690,s16 *,28)=(s16)(a+c);M2C_FIELD(data_02128690,s16 *,30)=(s16)sum;}
 
 s32 func_020b20e0(a) s32 a; {extern u8 data_0215c45c[];s32 i=0;u8 *p=data_0215c45c;do{if(p[1]&&a==p[0])return (s32)data_0215c45c+60*i;i++;p+=60;}while(i<85);return 0;}

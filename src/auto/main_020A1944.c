@@ -81,6 +81,8 @@ void func_020a1a0c(void) {
     if (dummy) {}
 }
 
+void func_020a1adc(void) {}
+
 s32 func_020a1d74(s32 arg0) {
     extern M2C_UNK data_0215c324;
     s32 var_r0;

@@ -50,3 +50,8 @@ zero:
     if (pos == 0) goto zero;
     M2C_FIELD(str,u8 *,4)=pos;
 }
+
+void func_02066444(void) {
+    return;
+}
+
