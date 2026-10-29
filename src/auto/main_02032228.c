@@ -293,25 +293,22 @@ void func_02032be4(void *arg0) {
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213d114;
-    void *p;
-    void *dst;
-    s32 v;
 
-    p = M2C_FIELD(&data_0213d114, void **, 8);
+    void *p = M2C_FIELD(&data_0213d114, void **, 8);
     if (p == 0) {
         func_02007f8c(arg0, 0, 0x1C4);
         p = M2C_FIELD(&data_0213d114, void **, 8);
-        dst = (u8 *)p + 8;
-        dst = (u8 *)dst + 0x1000;
-        func_02008048(dst, arg0, 0x1C4);
+        func_02008048((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
     }
-    v = M2C_FIELD(arg0, s32 *, 0);
-    if (v < 0x4E20 || v >= 0x7530) {
-        M2C_FIELD(arg0, s32 *, 0) = 0x5206;
-    }
-    v = M2C_FIELD(arg0, s32 *, 0);
-    if (v >= 0x4E84) {
-        M2C_FIELD(arg0, s32 *, 0) = -v;
+    {
+        s32 v = M2C_FIELD(arg0, s32 *, 0);
+        if (v < 0x4E20 || v >= 0x7530) {
+            M2C_FIELD(arg0, s32 *, 0) = 0x5206;
+        }
+        v = M2C_FIELD(arg0, s32 *, 0);
+        if (v >= 0x4E84) {
+            M2C_FIELD(arg0, s32 *, 0) = -v;
+        }
     }
 }
 

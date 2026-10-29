@@ -64,6 +64,7 @@ void func_0209106c(void *arg0) {
     func_020912a4(M2C_FIELD(arg0, s32 *, 0x58));
 }
 
+#pragma opt_peephole off
 s32 func_0209107c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {
     M2C_UNK func_02091af8(void *, s32, s32);
     void func_0207d0f0(s32, s32, s32, s32, s32, s32, u8);
@@ -76,7 +77,7 @@ s32 func_0209107c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     func_0207d0f0(temp_r0, arg3, arg4, arg5, arg6, arg7, arg8);
     return 1;
 }
-
+#pragma opt_peephole reset
 M2C_UNK func_020910d0(void *arg0) {
     void func_02091110(void *);
     void func_020913c4(void *);

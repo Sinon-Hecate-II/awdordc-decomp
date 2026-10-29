@@ -298,14 +298,29 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     if (arg2 < 6) {
         return 4;
     }
-    *(volatile u8 *)((u8 *)&sp4 + 0) = arg1[0];
-    *(volatile u8 *)((u8 *)&sp4 + 1) = arg1[1];
-    *(volatile u8 *)((u8 *)&sp4 + 2) = arg1[2];
-    *(volatile u8 *)((u8 *)&sp4 + 3) = arg1[3];
-    *(volatile u8 *)((u8 *)&sp0 + 0) = arg1[4];
-    *(volatile u8 *)((u8 *)&sp0 + 1) = arg1[5];
-    if (func_02061ac8(arg0, sp4, sp0) == -1) {
-        return 0;
+    {
+        u8 a0 = arg1[0];
+        u8 a1 = arg1[1];
+        u8 *lr = (u8 *)&sp4;
+        u8 *rc = (u8 *)&sp0;
+        lr[0] = a0;
+        lr[1] = a1;
+        {
+            u8 a2 = arg1[2];
+            u8 a3 = arg1[3];
+            lr[2] = a2;
+            lr[3] = a3;
+        }
+        {
+            u8 a4 = arg1[4];
+            u8 a5 = arg1[5];
+            s32 saved = sp4;
+            rc[0] = a4;
+            rc[1] = a5;
+            if (func_02061ac8(arg0, saved, sp0) == -1) {
+                return 0;
+            }
+        }
     }
     func_02061b6c(arg0);
     return 0;

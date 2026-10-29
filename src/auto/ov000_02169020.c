@@ -282,21 +282,20 @@ void func_ov000_02169800(void) {
 }
 
 void func_ov000_02169804(void *arg0,void *arg1) {
-s8 *src=arg0,*dst=arg1; s8 next; s8 token;
+ s8 *src=arg0,*dst=arg1; s8 token;
 loop:
-token=*src;
-switch(token) { case -1: case 4: goto end; case 9: break; default: goto normal; }
-dst[0]=token;
-next=src[1]; src+=2; dst[1]=next; dst+=2;
-goto loop;
+ token=*src;
+ if (token==-1 || token==4) goto end;
+ if (token!=9) goto normal;
+ dst[0]=token;
+ { s8 next=src[1]; src+=2; dst[1]=next; dst+=2; }
+ goto loop;
 end:
-*dst=*(volatile s8 *)src;
-return;
+ *dst=*(volatile s8 *)src;
 normal:
-src++;
-*dst++=token;
-goto loop;
-return;
+ src++;
+ *dst++=token;
+ goto loop;
 }
 
 void func_ov000_02169850(void) {

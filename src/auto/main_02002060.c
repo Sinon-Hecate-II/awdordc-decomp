@@ -273,9 +273,11 @@ void func_02002bb8(u32 a) {
         if (a == 0x20) {
             *(volatile u32 *)0x04000000 |= 0x80000000;
             *(volatile u8 *)0x04000245 = 0x85;
-        } else if (a == 0x40) {
-            *(volatile u32 *)0x04000000 |= 0x80000000;
-            *(volatile u8 *)0x04000246 = 0x85;
+        } else {
+            if (a == 0x40) {
+                *(volatile u32 *)0x04000000 |= 0x80000000;
+                *(volatile u8 *)0x04000246 = 0x85;
+            }
         }
     } else {
         *(volatile u32 *)0x04000000 &= ~0x80000000;

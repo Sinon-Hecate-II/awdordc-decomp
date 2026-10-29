@@ -74,9 +74,6 @@ void func_020d9f40(void *arg0) {
     s32 r9;
     s32 r10;
     s32 r8;
-    s32 first_byte;
-    s32 nr9;
-    s32 nr10;
 
     temp_r7 = M2C_FIELD(arg0, void **, 0x10);
     saved = gCur3DSpriteEngine;
@@ -87,19 +84,18 @@ void func_020d9f40(void *arg0) {
     r8 = 0;
     for (i = 0; i < 4; i++) {
         func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (r9 << 6)), 0x1e, (s32)(u16)(r10 - r9), 5);
-        nr9 = r9 + 5;
-        nr10 = r10 + 5;
+        r9 = r9 + 5;
+        r10 = r10 + 5;
         r8 = r8 + 1;
-        r9 = (s16)(nr9);
-        r10 = (s16)(nr10);
+        r9 = (s16)(r9);
+        r10 = (s16)(r10);
     }
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
     gCur3DSpriteEngine = saved;
 
-    first_byte = M2C_FIELD(arg0, u8 *, 0x0);
-    if ((s8)M2C_FIELD(temp_r7, s8 *, 0x43) != (u8)first_byte) {
-        M2C_FIELD(temp_r7, s8 *, 0x43) = (u8)first_byte;
+    if ((s8)M2C_FIELD(temp_r7, s8 *, 0x43) != M2C_FIELD(arg0, u8 *, 0)) {
+        M2C_FIELD(temp_r7, s8 *, 0x43) = M2C_FIELD(arg0, u8 *, 0);
         func_0208fe30(0x10019);
     }
 }
@@ -436,6 +432,8 @@ void func_020da948(s32 arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
     case 6:
         func_020d47f0();
         func_01ffa8c4(arg3, 1);
+        return;
+    case 7:
         return;
     default:
         return;

@@ -113,7 +113,7 @@ data_027e00cc[i]=(table+unit[0x12]*32)[i];
 void func_01ffb50c(void) {
 extern s8 data_ov000_021b54e0[]; extern s8 *data_027e00cc;
 s32 i; s8 *p=data_ov000_021b54e0;
-for(i=0;i<32;i++) { s32 value=*p++; if(value) data_027e00cc[i]=1; else ((u8 *)data_027e00cc)[i]=255; }
+for(i=0;i<32;i++) { s32 value=p[0]; p=(s8 *)((u8 *)p+1); if(value) data_027e00cc[i]=1; else ((u8 *)data_027e00cc)[i]=255; }
 }
 #pragma opt_peephole reset
 void func_01ffb554(s32 arg0) {

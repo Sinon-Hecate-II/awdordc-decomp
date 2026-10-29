@@ -17,10 +17,10 @@ s32 func_ov005_0221eef4(void *arg0) {
     extern void **data_027e00c4, **data_027e00c8, **gCur3DSpriteEngine;
     extern u16 *data_02101e84;
     extern s32 data_ov005_02220ad0[];
-    volatile u16 *volatile p;
     void **saved;
-    void **chosen;
     s32 i;
+    volatile u16 *volatile p;
+    void **chosen;
     if (!(data_027e15bc & 3)) {
         saved = gCur3DSpriteEngine;
         i = 0;

@@ -285,14 +285,14 @@ break;
 
 void func_02013794(void *p) {
 void func_02007e20(void *,void *,u32);s32 func_02011934(void);
-void *q=M2C_FIELD(p,void **,0x1C);u16 *data;u32 len;u16 mask;s32 bit;
+void *q=M2C_FIELD(p,void **,0x1C);u16 *data;u16 mask;u32 len;s32 bit;
 if(!q)return;
 if(M2C_FIELD(p,u16 *,2)==0) {
 switch((s32)M2C_FIELD(p,u16 *,4)) {
-case 7:case 8:case 9:break;
-case 25:case 26:break;
+case 7:case 9:
+case 25:case 26:
 case 21:
-data=M2C_FIELD(p,u16 **,0xC);len=M2C_FIELD(p,u16 *,0x10);mask=*data;bit=func_02011934();
+len=M2C_FIELD(p,u16 *,0x10);data=M2C_FIELD(p,u16 **,0xC);mask=*data;bit=func_02011934();
 if(len!=M2C_FIELD(q,u16 *,0x814)){if(len>0x200)len=0x200;}
 if(len<4)return;
 if(!(mask&(1<<bit)))return;

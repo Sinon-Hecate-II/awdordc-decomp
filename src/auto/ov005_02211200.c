@@ -309,24 +309,25 @@ return result;
 }
 
 void func_ov005_02211a8c(void) {
-extern s32 data_ov005_02221300, gCur3DSpriteEngine,data_027e00c4;
+extern s32 data_ov005_02221300, data_027e00c4;
+extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov005_02220270;
 s32 func_ov000_0216a38c(s32,s32); s32 func_ov000_0216a414(s32,s32);
 void func_0208b758(s32,s32); void func_0208b698(s32,void *);
-s32 q,index,old,b,a;
+s16 a;
+s8 b;
+s32 q, index, old;
 s32 p=data_ov005_02221300;
-a=M2C_FIELD(func_ov005_02211a38(M2C_FIELD(p,s8 *,1)),s16 *,2);
-b=M2C_FIELD(p,s8 *,2);
-a+=b;
-b=0;
-q=func_ov000_0216a38c(M2C_FIELD(p,s8 *,1),b+a);
-index=func_ov000_0216a414(M2C_FIELD(data_ov005_02221300,s8 *,1),b+a);
-old=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c4;
-if(func_ov005_02211a54(M2C_FIELD(data_ov005_02221300,s8 *,1),b+a)==0)
+a = M2C_FIELD(func_ov005_02211a38(M2C_FIELD(p,s8 *,1)),s16 *,2);
+b = M2C_FIELD(p,s8 *,2);
+q = func_ov000_0216a38c(M2C_FIELD(p,s8 *,1), a+b);
+index = func_ov000_0216a414(M2C_FIELD(data_ov005_02221300,s8 *,1), a+b);
+old = gCur3DSpriteEngine;
+gCur3DSpriteEngine = data_027e00c4;
+if (func_ov005_02211a54(M2C_FIELD(data_ov005_02221300,s8 *,1),a+b)==0)
 func_0208b758(M2C_FIELD(data_ov005_02221300,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
 else func_0208b698(M2C_FIELD(data_ov005_02221300,s32 *,0x48),&data_ov005_02220270);
-gCur3DSpriteEngine=old;
+gCur3DSpriteEngine = old;
 }
 
 void func_ov005_02211b4c(void) {

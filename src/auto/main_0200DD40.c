@@ -249,11 +249,12 @@ s32 func_0200e464(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0212fccc;
     M2C_UNK func_0200eb50(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     if (func_0200e234() == 0) return 1;
-    M2C_FIELD(&data_0212fccc, s32 *, 4) = 0;
+    *(volatile s32 *)((u8 *)&data_0212fccc + 4) = 0;
     func_0200e8f4(0x03006000);
-    do {} while (M2C_FIELD(&data_0212fccc, s32 *, 4) == 0);
-    M2C_FIELD(&data_0212fccc, s32 *, 4) = 0;
-    M2C_FIELD(&data_0212fccc, s32 *, 8) = 0;
+    do {
+    } while (*(volatile s32 *)((u8 *)&data_0212fccc + 4) == 0);
+    *(volatile s32 *)((u8 *)&data_0212fccc + 4) = 0;
+    *(volatile s32 *)((u8 *)&data_0212fccc + 8) = 0;
     func_0200eb50(0, 2, 0, 1);
     func_0200e8f4((u8)arg0 | 0x02006100);
     func_0200e8f4(0x01010000 | (u16)arg1);

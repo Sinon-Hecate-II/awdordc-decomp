@@ -340,16 +340,10 @@ data_02163eec+=8;
 
 #pragma opt_instruction_scheduling off
 void func_020c0b40(void) {
-    M2C_UNK func_020c0634(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 idx;
-    if (data_02163eec == data_02163ef0) return;
-    data_02163eec -= 8;
-    idx = M2C_FIELD(data_02163eec, s8 *, 2);
-    func_020c0634(M2C_FIELD(data_02163eec, s32 *, 4),
-                  M2C_FIELD(data_02163eec, s8 *, 0),
-                  M2C_FIELD(data_02163eec, s8 *, 1),
-                  idx,
-                  M2C_FIELD(data_02163eec, s8 *, 3));
+M2C_UNK func_020c0634(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);
+if(data_02163eec==data_02163ef0)return;
+data_02163eec-=8;
+func_020c0634(M2C_FIELD(data_02163eec,s32 *,4),M2C_FIELD(data_02163eec,s8 *,0),M2C_FIELD(data_02163eec,s8 *,1),M2C_FIELD(data_02163eec,s8 *,2),M2C_FIELD(data_02163eec,s8 *,3));
 }
 #pragma opt_instruction_scheduling reset
 void func_020c0b88(s8 arg0) {

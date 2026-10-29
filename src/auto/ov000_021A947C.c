@@ -244,21 +244,20 @@ loop:
 }
 
 s32 func_ov000_021a9c90(s32 x,s32 y) {
- extern void **gCurrentMap; extern void *data_ov000_021df580;
- s32 count=0,i,d,v,xmin=x-1,ymin,xmax,ymax;
+ extern void **data_027e0058; extern void *data_ov000_021df580;
+ s32 count=0,i,xmin=x-1,d,v,ymin,xmax,ymax;
  if(xmin<0)xmin=0;
  ymin=y-1;
  if(ymin<0)ymin=0;
- xmax=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
+ xmax=M2C_FIELD(*data_027e0058,u16 *,0x5144)-1;
  if(x+1<xmax)xmax=x+1;
- ymax=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
+ ymax=M2C_FIELD(*data_027e0058,u16 *,0x5146)-1;
  if(y+1<ymax)ymax=y+1;
- for(;ymin<=ymax;ymin++){for(i=xmin;i<=xmax;i++){
+ for(;ymin<=ymax;ymin++)for(i=xmin;i<=xmax;i++){
  d=0; if(x-i>0)d+=x-i;else d+=i-x; if(y-ymin>0)d+=y-ymin;else d+=ymin-y;
  if(d<1||d>1)continue;
- v=M2C_FIELD(((s8 **)((u8 *)*gCurrentMap+0x52e8))[ymin],s8 *,i);
+ v=M2C_FIELD(((s8 **)((u8 *)*data_027e0058+0x52e8))[ymin],s8 *,i);
  if(v>=0 && v<=M2C_FIELD(data_ov000_021df580,u8 *,5))count++;
- }
  }
  return count;
 }

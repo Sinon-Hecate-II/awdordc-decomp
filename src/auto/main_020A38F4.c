@@ -14,21 +14,20 @@ void func_020a38f4(s32 a) {
  }
 }
 
-#pragma scheduling off
+#pragma opt_instruction_scheduling off
 void func_020a3934(s32 a,s32 b) {
  extern s32 *data_027e0058;
  s32 func_020d1938(s32);
  s32 i;
  switch(a){case 1:case 2:case 3:
- i=1;b=(u8)b;
+ i=1;
  do{
- if(func_020d1938(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=b;
+ if(func_020d1938(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=(u8)b;
  i++;
  }while(i<5);
- break;
- }
+ break;}
 }
-#pragma scheduling reset
+#pragma opt_instruction_scheduling reset
 void func_020a398c(s32 a) {
  extern s32 *gCurrentMap;
  if(a==0)return;

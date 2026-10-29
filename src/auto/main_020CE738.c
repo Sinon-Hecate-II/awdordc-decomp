@@ -380,22 +380,17 @@ void func_020cf4f0(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, s16 *out
 }
 
 void func_020cf5ec(s32 arg0) {
-    extern void **gCurrentMap;
     void func_020cf4f0(s16, s16, s32, s16 *, s16 *);
-    s16 buf[2];
-    func_020cf4f0(
-        (s16)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0), s16 *, 0x52c2) << 4),
-        (s16)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0), s16 *, 0x52c4) << 4),
-        arg0,
-        &buf[1],
-        &buf[0]
-    );
-    {
-        void *p = M2C_FIELD(*gCurrentMap, void **, 0x4);
-        void (*cb)(s16, s16, s32) = M2C_FIELD(p, void (**)(s16, s16, s32), 0x8);
-        if (cb != 0) {
-            cb(buf[1], buf[0], arg0);
-        }
+    extern void **gCurrentMap;
+    s16 sp6;
+    s16 sp4;
+    void (*cb)(s16, s16, s32);
+    void *p = (void *)*gCurrentMap;
+    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
+    func_020cf4f0((s16)(pp[0] * 16), (s16)(pp[1] * 16), arg0, &sp6, &sp4);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16, s16, s32), 8);
+    if (cb != NULL) {
+        cb(sp6, sp4, arg0);
     }
 }
 

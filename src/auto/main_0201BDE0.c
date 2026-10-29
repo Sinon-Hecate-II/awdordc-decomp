@@ -105,38 +105,12 @@ s32 func_0201c1a8(s32 a,s32 b,s32 c) {
 }
 
 void func_0201c230(void *arg0, void *arg1, s32 arg2) {
-    s32 func_0201bb68(s32, s32);
-    s32 func_0201c1a8(s32, s32, s32);
-    void *func_0201bc58();
-    M2C_UNK func_0201c0bc();
-    M2C_UNK func_02005ec8();
-    u16 t0, t1, t2, t3;
-    u32 p0, p1;
-    void *r;
-
-    t0 = M2C_FIELD(arg0, u16 *, 0x12);
-    t1 = M2C_FIELD(arg0, u16 *, 0x10);
-    t2 = M2C_FIELD(arg0, u16 *, 0xe);
-    t3 = M2C_FIELD(arg0, u16 *, 0xc);
-    p0 = ((t2 << 8) | (t2 >> 8)) | (((u32)((t3 << 8) | (t3 >> 8))) << 16);
-    p1 = ((t0 << 8) | (t0 >> 8)) | (((u32)((t1 << 8) | (t1 >> 8))) << 16);
-
-    if (!func_0201bb68((s32)p0, (s32)p1)) {
-        return;
-    }
-    if (func_0201c1a8((s32)arg0, (s32)arg1, arg2)) {
-        return;
-    }
-    r = func_0201bc58(arg0, arg1);
-    if (r != NULL) {
-        func_0201c0bc(arg0, arg1, r);
-        return;
-    }
-    func_02005ec8();
-    r = func_0201bc58(arg0, arg1);
-    if (r != NULL) {
-        func_0201c0bc(arg0, arg1, r);
-    }
+s32 func_0201bb68(s32,s32);s32 func_0201c1a8(s32,s32,s32);void *func_0201bc58();M2C_UNK func_0201c0bc();M2C_UNK func_02005ec8();
+u16 a,b,c,d;u32 p0,p1;void *r;
+a=M2C_FIELD(arg0,u16 *,0x12);b=M2C_FIELD(arg0,u16 *,0x10);c=M2C_FIELD(arg0,u16 *,0xe);d=M2C_FIELD(arg0,u16 *,0xc);
+p0=((u32)(u16)((d>>8)|(d<<8))<<16)|(u16)((c>>8)|(c<<8));p1=((u32)(u16)((b>>8)|(b<<8))<<16)|(u16)((a>>8)|(a<<8));
+if(!func_0201bb68(p0,p1))return;if(func_0201c1a8((s32)arg0,(s32)arg1,arg2))return;
+r=func_0201bc58(arg0,arg1);if(r){func_0201c0bc(arg0,arg1,r);return;}func_02005ec8();r=func_0201bc58(arg0,arg1);if(r)func_0201c0bc(arg0,arg1,r);
 }
 
 /* Build a response packet from a received request and mark it ready. */

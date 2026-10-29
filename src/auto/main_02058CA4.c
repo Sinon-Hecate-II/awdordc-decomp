@@ -1,5 +1,6 @@
 /* 28 functions from 0x02058CA4 to 0x02059BBC (main), found by ds-decomp. */
 #include "common.h"
+typedef struct ByteBlock16 { u8 bytes[16]; } ByteBlock16;
 
 #pragma opt_common_subs off
 s32 func_02058ca4(void){
@@ -172,42 +173,19 @@ void func_020590d0(void *arg0) {
 }
 
 void func_0205915c(void *arg0) {
-    s32 func_0206ad38(M2C_UNK);
-    s8 *func_02068fdc(s8 *, s8 *);
-    s32 func_02058f9c(s32, s32, s32);
-    M2C_UNK func_02059448(s32, s32, s32, s32, s32);
-    M2C_UNK *func_02058f10(void *, M2C_UNK *);
-    extern M2C_UNK data_020ff4cc;
-    extern M2C_UNK data_020ff4b8;
-    extern M2C_UNK data_020ff4d4;
-    extern M2C_UNK data_020ff4d8;
-    extern M2C_UNK data_020ff4dc;
-    extern M2C_UNK data_020ff4e4;
-    extern M2C_UNK data_020ff4a8;
-    s32 temp_r7;
-    s32 temp_r6;
-    s32 temp_r5;
-    s32 temp_r8;
-    s8 *temp_r0;
-    s8 *temp_r3;
-
-    temp_r7 = func_0206ad38(func_02058f10(arg0, &data_020ff4cc));
-    temp_r6 = func_0206ad38(func_02058f10(arg0, &data_020ff4b8));
-    temp_r5 = func_0206ad38(func_02058f10(arg0, &data_020ff4d4));
-    temp_r8 = func_0206ad38(func_02058f10(arg0, &data_020ff4d8));
-    temp_r5 = func_02058f9c(1, temp_r6, temp_r5);
-    if (temp_r5 == -1) {
-        return;
-    }
-    temp_r6 = func_0206ad38(func_02058f10(arg0, &data_020ff4dc));
-    temp_r0 = func_02068fdc((s8 *)arg0, (s8 *)&data_020ff4e4);
-    if (temp_r0 == 0) {
-        temp_r3 = (s8 *)&data_020ff4a8;
-        temp_r6 = 0;
-    } else {
-        temp_r3 = temp_r0 + 6;
-    }
-    func_02059448(temp_r5, temp_r7, temp_r8, (s32)temp_r3, temp_r6);
+s32 func_0206ad38(M2C_UNK);s8 *func_02068fdc(s8 *,s8 *);s32 func_02058f9c(s32,s32,s32);M2C_UNK func_02059448(s32,s32,s32,s32,s32);M2C_UNK *func_02058f10(void *,M2C_UNK *);
+extern M2C_UNK data_020ff4cc,data_020ff4b8,data_020ff4d4,data_020ff4d8,data_020ff4dc,data_020ff4e4,data_020ff4a8;
+s32 result; s32 n,a,b,c,d; s8 *p,*text;
+a=func_0206ad38(func_02058f10(arg0,&data_020ff4cc));
+b=func_0206ad38(func_02058f10(arg0,&data_020ff4b8));
+c=func_0206ad38(func_02058f10(arg0,&data_020ff4d4));
+d=func_0206ad38(func_02058f10(arg0,&data_020ff4d8));
+result=func_02058f9c(1,b,c);
+if(result==-1)return;
+n=func_0206ad38(func_02058f10(arg0,&data_020ff4dc));
+p=func_02068fdc(arg0,(s8 *)&data_020ff4e4);
+if(!p){text=(s8 *)&data_020ff4a8;n=0;}else text=p+6;
+func_02059448(result,a,d,(s32)text,n);
 }
 
 void func_02059240(void *arg0) {
@@ -320,45 +298,17 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 
+#pragma opt_common_subs on
 void func_0205954c(void) {
-    s32 func_02048688(s32);
-    void func_0204861c(s32);
-    void func_02058df4(s8 *, s32);
-    M2C_UNK func_02059448(s32, s32, s32, s32, s32);
-    extern M2C_UNK data_0213dce0;
-    extern const u8 data_020ea9ac[];
-    extern M2C_UNK data_020ff498;
-    extern M2C_UNK data_020ff43c;
-    u8 buf1[16];
-    u8 buf0[16];
-    s32 i;
-
-    if (M2C_FIELD(&data_0213dce0, s32 *, 4) == 0) return;
-    i = func_02048688(M2C_FIELD(&data_0213dce0, s32 *, 4)) - 1;
-    if (i >= 0) {
-        {
-            const u8 *src = data_020ea9ac;
-            u8 *dst = buf0;
-            u32 count = 8;
-            do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-        }
-        do {
-            {
-                const u8 *src = buf0;
-                u8 *dst = buf1;
-                u32 count = 8;
-                do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-            }
-            M2C_FIELD(&data_020ff43c, M2C_UNK **, 8) = &data_020ff498;
-            func_02058df4((s8 *)buf1, 15);
-            func_02059448(i, 0, 0, (s32)buf1, 0);
-            i -= 1;
-        } while (i >= 0);
-    }
-    func_0204861c(M2C_FIELD(&data_0213dce0, s32 *, 4));
-    M2C_FIELD(&data_0213dce0, s32 *, 4) = 0;
+ s32 func_02048688(s32); void func_0204861c(s32); void func_02058df4(s8 *,s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
+ extern M2C_UNK data_0213dce0,data_020ff498,data_020ff43c; extern const u8 data_020ea9ac[];
+ s32 i; ByteBlock16 buf1,buf0; s32 zero=0; s32 mask=15;
+ if(!M2C_FIELD(&data_0213dce0,s32 *,4))return;
+ i=func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
+ if(i>=0){buf0=*(const ByteBlock16 *)data_020ea9ac; do{buf1=buf0; M2C_FIELD(&data_020ff43c,M2C_UNK **,8)=&data_020ff498;func_02058df4((s8 *)&buf1,mask);func_02059448(i,zero,zero,(s32)&buf1,zero);}while(--i>=0);}
+ func_0204861c(M2C_FIELD(&data_0213dce0,s32 *,4)); M2C_FIELD(&data_0213dce0,s32 *,4)=0;
 }
-
+#pragma opt_common_subs off
 s32 func_02059640(void *arg0, s32 arg1) {
     s32 *func_02048690(s32, s32);
     extern M2C_UNK data_0213dce0;
@@ -479,16 +429,43 @@ void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 s32 func_02059a04(u8 *arg0) {
-    s32 i;
-    s32 parity;
-    u8 first = arg0[0];
-    parity = 0;
-    for (i = 1; i < 0x20; i++) {
-        u8 prev = arg0[i - 1];
-        parity = (first & 1) ^ (parity ^ ((i ^ prev) & 1)) ^ ((u32)first < 0x4F) ^ (prev < first);
-        if (parity == 0 && (arg0[i] & 1) == 1) return 0;
+    s32 var_lr;
+    s32 var_r4;
+    s32 var_r8;
+    s32 var_r9;
+    u8 temp_r10;
+    u8 temp_r5;
+    void *temp_r7;
+
+    temp_r5 = *arg0;
+    var_lr = 0;
+    var_r4 = 1;
+loop_1:
+    temp_r7 = arg0 + var_r4;
+    temp_r10 = M2C_FIELD(temp_r7, u8 *, -1);
+    if ((u32) temp_r10 < (u32) temp_r5) {
+        var_r8 = 1;
+    } else {
+        var_r8 = 0;
     }
-    return 1;
+    if ((u32) temp_r5 < 0x4FU) {
+        var_r9 = 1;
+    } else {
+        var_r9 = 0;
+    }
+    var_lr = (temp_r5 & 1) ^ (var_lr ^ ((var_r4 ^ temp_r10) & 1)) ^ var_r9 ^ var_r8;
+    if ((var_lr == 0) || (M2C_FIELD(temp_r7, u8 *, 0) & 1)) {
+        if ((var_lr == 0) && ((M2C_FIELD(temp_r7, u8 *, 0) & 1) == 1)) {
+            /* Duplicate return node #13. Try simplifying control flow for better match */
+            return 0;
+        }
+        var_r4 += 1;
+        if (var_r4 >= 0x20) {
+            return 1;
+        }
+        goto loop_1;
+    }
+    return 0;
 }
 
 u8 *func_02059aa0(u8 *arg0) {

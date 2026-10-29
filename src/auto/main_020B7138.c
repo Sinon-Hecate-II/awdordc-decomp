@@ -247,18 +247,18 @@ extern "C" void func_020b7b54(void) {
 #pragma cplusplus off
 void func_020b7bbc(void) {
     s32 func_0208c528(s32);
-          void func_020b78c4(void *);
-      void func_020b7b54(void);
-      extern M2C_UNK data_02128ffc, data_02129004;
-      s32 temp_r4;
-      s32 resource;
-      s32 size = 0x6B80;
-      temp_r4 = func_0208c528(7);
-      func_0208c5fc(func_020e3218(&data_02128ffc), 0x6B80, 0xB);
-      resource = func_020e3218(&data_02129004);
-      func_0208bddc(temp_r4, resource, size, 0xB, 0);
-      M2C_FIELD(temp_r4, s32 *, 0x44) |= 0x380000;
-      M2C_FIELD(temp_r4, void (**)(void *), 0x6C) = func_020b78c4;
+    void func_020b78c4(void *);
+    void func_020b7b54(void);
+    extern M2C_UNK data_02128ffc, data_02129004;
+    s32 temp_r4;
+    s32 resource;
+    s32 size = 0x6B80;
+    temp_r4 = func_0208c528(7);
+    func_0208c5fc(func_020e3218(&data_02128ffc), 0x6B80, 0xB);
+    resource = func_020e3218(&data_02129004);
+    func_0208bddc(temp_r4, resource, size, 0xB, 0);
+    M2C_FIELD(temp_r4, s32 *, 0x44) |= 0x380000;
+    M2C_FIELD(temp_r4, void (**)(void *), 0x6C) = func_020b78c4;
     M2C_FIELD(temp_r4, void (**)(void), 0x70) = func_020b7b54;
     func_0208fe30(0x127);
 }

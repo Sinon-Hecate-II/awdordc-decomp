@@ -453,19 +453,19 @@ case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); 
 
 void func_ov006_02217f20(void *arg0) {
 s32 func_02084cf8(); s32 func_02086980(s32); void *func_020c7e88(s32);
-s32 i,j,k;
-for(i=0;i<10;i++){
-M2C_FIELD(arg0,s32 **,0x44)[i]=0;
-M2C_FIELD(arg0,u16 **,0x48)[i]=0;
-M2C_FIELD(arg0,u8 **,0x4c)[i]=0;
+s32 j; s32 i;
+for(j=0;j<10;j++){
+M2C_FIELD(arg0,s32 **,0x44)[j]=0;
+M2C_FIELD(arg0,u16 **,0x48)[j]=0;
+M2C_FIELD(arg0,u8 **,0x4c)[j]=0;
 }
 M2C_FIELD(arg0,s32 **,0x44)[0]=func_02084cf8();
 M2C_FIELD(arg0,u32 *,0x34)=1; M2C_FIELD(arg0,u8 *,0x38)=1;
-for(k=0;k<50;k++){
-if(func_02086980(k)){
-j=k+0xe1;
-M2C_FIELD(arg0,s32 **,0x44)[M2C_FIELD(arg0,u32 *,0x34)]=M2C_FIELD(func_020c7e88(j),s32 *,0x10);
-M2C_FIELD(arg0,u16 **,0x48)[M2C_FIELD(arg0,u32 *,0x34)]=j;
+for(j=0;j<50;j++){
+if(func_02086980(j)){
+i=j+0xe1;
+M2C_FIELD(arg0,s32 **,0x44)[M2C_FIELD(arg0,u32 *,0x34)]=M2C_FIELD(func_020c7e88(i),s32 *,0x10);
+M2C_FIELD(arg0,u16 **,0x48)[M2C_FIELD(arg0,u32 *,0x34)]=i;
 M2C_FIELD(arg0,u32 *,0x34)++;
 M2C_FIELD(arg0,u8 *,0x38)++;
 if(M2C_FIELD(arg0,u32 *,0x34)>=10)break;

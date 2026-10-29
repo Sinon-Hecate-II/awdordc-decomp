@@ -223,14 +223,14 @@ s32 func_02049274(s32 arg0) {
     return temp_r0;
 }
 
-#pragma peephole off
+#pragma opt_cond_exec off
 s8 *func_020492a8(s8 *p) {
 extern M2C_UNK data_020eac40;
 s8 *q=p; s32 c=*p;
 if(c){do{if(c>=0 && c<128){c=((u8 *)&data_020eac40)[c];} *p=c;c=*++p;}while(c);}
 return q;
 }
-#pragma peephole reset
+#pragma opt_cond_exec reset
 s32 func_020492ec(M2C_UNK arg0, s32 arg1) {
     s32 func_020219e8(M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
@@ -428,10 +428,10 @@ if(out)*out=v;
 }
 
 s32 func_02049974(s32 x) {
-u32 lo=(u16)x;
-u32 a=((u32)x>>16)*16807;
-u32 v=lo*16807;
-v+=(a&0x7fff)<<16;
+u32 lo=(u32)x<<16;
+u32 hi=(u32)x>>16;
+u32 a=hi*16807;
+u32 v=(lo>>16)*16807+((a<<17)>>1);
 if(v>0x7fffffffU)v=(v&0x7fffffffU)+1;
 v+=a>>15;
 if(v>0x7fffffffU)v=(v&0x7fffffffU)+1;

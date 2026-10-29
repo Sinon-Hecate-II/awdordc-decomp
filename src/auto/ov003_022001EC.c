@@ -229,44 +229,9 @@ s32 func_ov003_022008b8(u32 a){switch(a){case 0:return 1;case 1:return 2;case 2:
 s32 func_ov003_02200968(u32 a){switch(a){case 3:return 3;case 4:return 4;case 0:return 0;case 1:return 1;case 2:return 2;case 5:return 5;case 6:return 6;case 7:return 7;case 8:return 8;case 9:return 9;case 10:return 10;case 11:return 11;case 12:return 12;default:return 0;}}
 
 u16 func_ov003_02200a18(u32 arg0, M2C_UNK arg1) {
-    s32 func_020c7ef4(M2C_UNK);
-    s32 func_020c80a4(M2C_UNK);
-    s32 func_020cfbb0(M2C_UNK);
-    s32 temp_r4;
-    u16 var_r0;
-
-    temp_r4 = func_020cfbb0(arg1);
-    switch (arg0) {
-    default:
-    case 0:
-        return 0U;
-    case 1:
-        return 3U;
-    case 3:
-        return (u16) (temp_r4 + 2);
-    case 4:
-        return 0U;
-    case 5:
-        return 1U;
-    case 6:
-        return 2U;
-    case 2:
-        return (u16) (temp_r4 + 5);
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-        if (func_020c7ef4(arg1) == 0) {
-            return 0xDU;
-        }
-        if (func_020c80a4(arg1) != 0) {
-            var_r0 = temp_r4 + 8;
-        } else {
-            var_r0 = temp_r4 + 0xC;
-        }
-        return var_r0;
-    }
+s32 func_020c7ef4(M2C_UNK); s32 func_020c80a4(M2C_UNK); s32 func_020cfbb0(M2C_UNK);
+s32 n=func_020cfbb0(arg1);s32 r;
+switch(arg0){case 1:return 3;case 3:return n+2;case 4:return 0;case 5:return 1;case 6:return 2;case 2:return n+5;case 7:case 8:case 9:case 10:case 11:if(!func_020c7ef4(arg1))return 13;r=func_020c80a4(arg1)?n+8:n+12;return (u16)r;default:case 0:break;}return 0;
 }
 
 s32 func_ov003_02200ae8(u32 a){switch(a){case 0:return 0;case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 7;case 6:return 9;case 7:return 8;default:return -1;}}
@@ -364,11 +329,18 @@ return (u16)(b<<4);
 s32 func_ov003_02200d80(s32 a,s32 b){extern s32 data_ov003_022104a4[],data_ov003_022104b4[],data_ov003_02210494[];switch(a){case 6:b=data_ov003_022104a4[b];break;case 1:b=data_ov003_022104b4[b];break;case 2:b=data_ov003_02210494[b];break;}return b;}
 
 void func_ov003_02200dc8(void *a,u32 b) {
-s32 func_0207c928(u8,s32); s32 func_01ffa810(u32);
-u32 v; void *p;
-if(b<8) M2C_FIELD(a,u8 *,6)=b;
-else if(b==8){ v=(u8)func_0207c928(M2C_FIELD(a,u8 *,6),4); p=a+b*4; M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x68)=(s16)(v+4); M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x6a)=v; }
-M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b); }
+s32 func_0207c928(u8,s32);
+s32 func_01ffa810(u32);
+u8 v;void *p;
+if(b<8)M2C_FIELD(a,u8 *,6)=b;
+else if(b==8){
+v=func_0207c928(M2C_FIELD(a,u8 *,6),4);
+p=a+b*4;
+M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x68)=v+4;
+M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x6a)=v;
+}
+M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b);
+}
 
 void func_ov003_02200e1c(void *arg0) {
     M2C_UNK func_020aacf0(s32);

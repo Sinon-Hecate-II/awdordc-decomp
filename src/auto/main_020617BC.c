@@ -270,7 +270,7 @@ void func_0206218c(s8 **arg0, s8 arg1, s32 *arg2) {
     *arg0 += 1;
 }
 
-void func_020621b0(u8 **a,s32 b,s32 *c,...) {u8 *p=*a;u8 *q=(u8 *)&b;u8 x,y;x=q[0];y=q[1];p[0]=x;p[1]=y;x=q[2];y=q[3];p[2]=x;p[3]=y;*c+=4;*a+=4;}
+void func_020621b0(u8 **a,s32 b,s32 *c,...) {u8 *p=*a;u8 *q=(u8 *)&b;u8 y,x;y=q[0];x=q[1];p[0]=y;p[1]=x;y=q[2];x=q[3];p[2]=y;p[3]=x;*c+=4;*a+=4;}
 
 void func_02062204(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
 M2C_UNK func_020651a4(s32,M2C_UNK *,s32);

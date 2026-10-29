@@ -63,6 +63,8 @@ void func_020834c4(void) {
  for(i=0;i<15;i++) M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,i)=0;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_0208352c(void *arg0) {
  M2C_UNK func_01ffa8c4(void *,M2C_UNK);
  s32 func_0207ca38(s32,s32,s32,s32,s32);
@@ -74,13 +76,12 @@ void func_0208352c(void *arg0) {
  do {
  a=func_0207ca38(0,0,48,i,M2C_FIELD(arg0,volatile u16 *,0x5a)-1);
  a=(a+func_0207ca38(4,0,48,i,n-1))>>1;
- M2C_FIELD(arg0,volatile s8 *,i+0x44)=a;
+ M2C_FIELD(arg0,s8 *,i+0x44)=a;
  n=M2C_FIELD(arg0,u16 *,0x5a);
  ++i;
  }while(i<n);
 }
-
-#pragma opt_strength_reduction off
+#pragma pop
 void func_020835d4(void *obj) {
  extern s16 data_020e5b30[];
  s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);

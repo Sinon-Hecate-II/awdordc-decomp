@@ -161,12 +161,12 @@ void func_02019334(void *arg0) {
 extern s32 data_02136e68;
 s32 func_0200751c(void); void func_02007530(s32);
 void func_02005da4(s32); void func_02005bbc(void);
-u32 saved; Work19334 w; void (*second)(Work19334 *);
-do {
+s32 saved; Work19334 w; void (*second)(Work19334 *);
+for(;;) {
 func_02007f8c((s32)&w,0,0x24);
 saved=func_0200751c();
 while(!M2C_FIELD(arg0,Work19334 * volatile *,0xc0)) func_02005da4(0);
-w=*M2C_FIELD(arg0,Work19334 **,0xc0);
+w=*M2C_FIELD((short)arg0,Work19334 **,0xc0);
 func_02007530(saved);
 if(w.first) w.result=w.first(&w);
 saved=func_0200751c();
@@ -176,7 +176,7 @@ if(second) second(&w);
 if(!data_02136e68) break;
 M2C_FIELD(arg0,Work19334 **,0xc0)=0;
 func_02007530(saved);
-} while(1);
+}
 func_02005bbc();
 }
 

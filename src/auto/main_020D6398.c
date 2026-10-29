@@ -105,35 +105,12 @@ void func_020d6778(s32 mode) {
 }
 
 void func_020d694c(s32 arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_01ffaacc(M2C_UNK, M2C_UNK, u16, M2C_UNK *, s32);
-    extern M2C_UNK data_027e0084;
-    extern u16 **gCur3DSpriteEngine;
-    s32 x;
-    s32 color;
-    s32 value;
-    s32 digit;
-    s32 mode1;
-    s32 mode2;
-    s32 first;
-    s32 second;
-    u16 tile;
-
-    x = arg0;
-    color = arg1 & 0xFF;
-    value = arg2;
-    do {
-        digit = value % 10;
-        mode1 = (s32)((u32)(*(u16 *)*(u32 *)gCur3DSpriteEngine << 0x11) >> 0x1E);
-        first = 0x150 >> mode1;
-        first &= 0x3FF;
-        mode2 = (s32)((u32)(*(u16 *)gCur3DSpriteEngine << 0x11) >> 0x1E);
-        second = (digit * 2) >> mode2;
-        second &= 0x3FF;
-        tile = (u16)((first | 0x9000) + second);
-        func_01ffaacc(x & 0x1FF, color, tile, &data_027e0084, 8);
-        x -= 8;
-        value /= 10;
-    } while (value != 0);
+M2C_UNK func_01ffaacc(u16,u16,u16,M2C_UNK *,s32);
+extern M2C_UNK data_027e0084;extern u16 **gCur3DSpriteEngine;
+do {
+func_01ffaacc((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&data_027e0084,8);
+arg0-=8;arg2/=10;
+}while(arg2);
 }
 
 void func_020d6a20(s32 a, s32 b, u32 c, u32 d) {

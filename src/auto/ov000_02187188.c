@@ -462,33 +462,15 @@ if(data_ov000_021df648==func_ov000_02188338) func_ov000_021879f4();
 func_ov000_02187c3c();
 }
 
+#pragma optimization_level 2
 u8 func_ov000_02187e50(void) {
-    s32 base = *gCurrentMap;
-    s32 v;
-    u32 x;
-    u32 y;
-    u8 result;
-
-    {
-        void *ptr = M2C_FIELD(base, void **, 0x52d0);
-        v = M2C_FIELD(ptr, u16 *, 8);
-    }
-
-    x = (u32)(v << 26) >> 26;
-
-    if (x == 63)
-        return 0;
-
-    y = (u32)(v << 20) >> 26;
-
-    if (((s8 **)((u8 *)base + 0x52e8))[y][x] >= 0)
-        result = 1;
-    else
-        result = 0;
-
-    return result;
+ s32 base=*gCurrentMap;
+ s32 v=M2C_FIELD(M2C_FIELD(base,void **,0x52d0),u16 *,8);
+ u32 x=(u32)(v<<26)>>26;
+ if(x==63) return 0;
+ return (u8)(((s8 **)((u8 *)base+0x52e8))[(u32)(v<<20)>>26][x]>=0);
 }
-
+#pragma optimization_level reset
 u8 func_ov000_021a9084(s32);
 s32 func_ov000_02187eac(u16 *arg0) {
     extern void **gCurrentMap;

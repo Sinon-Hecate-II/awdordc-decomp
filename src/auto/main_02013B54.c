@@ -161,15 +161,17 @@ void func_02013e70(s32 arg0) {
 
 void *func_02013e98(s32 arg0) {
  s32 func_0200751c(); void func_02007530(s32);
- s32 func_02015214(); void func_02008048(void *,void *);
+ s32 func_02015214();
+ void func_02008048(void *,void *);
  extern s32 data_02136c4c;
- s32 state=func_0200751c();
+ s32 state=func_0200751c()+0;
  if(data_02136c4c && func_02015214(arg0)) {
- { void *base=(void *)data_02136c4c; void *dest=base+0x1772; void *src=base+0x1340; src+=(arg0-1)*0x16; func_02008048(src,dest); }
+ func_02008048((void *)(data_02136c4c+0x1340+(arg0-1)*0x16),(void *)(data_02136c4c+0x1772));
  func_02007530(state);
  return (void *)(data_02136c4c+0x1772);
  }
- func_02007530(state); return 0;
+ func_02007530(state);
+ return 0;
 }
 
 s32 func_02013f1c(s32 arg0) {
@@ -182,36 +184,16 @@ s32 func_02013f1c(s32 arg0) {
 }
 
 s32 func_02013f70(s32 arg0, u32 arg1) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    s32 func_02015214(s32);
-    extern s32 data_02136c4c;
-    s32 state;
-    s32 ret;
-    u32 val;
-    s32 r5;
-
-    state = func_0200751c();
-    switch (arg1) {
-        case 0: r5 = 0xa; val = 4; break;
-        case 1: r5 = 0xa; val = 3; break;
-        case 2: r5 = 0xe; val = 2; break;
-        case 3: r5 = 0x7; val = 5; break;
-        default:
-            func_02007530(state);
-            return 0;
-    }
-    if (data_02136c4c != 0 && func_02015214(arg0) != 0) {
-        s32 *base = (s32 *)data_02136c4c;
-        s32 idx = arg0 - 1;
-        if (r5 == base[idx + 0x14e8 / 4]) {
-            *((u16 *)((s8 *)base + idx * 2 + 0x1754)) = (u16)val;
-            func_02007530(state);
-            return 1;
-        }
-    }
-    func_02007530(state);
-    return 0;
+s32 func_0200751c(void);void func_02007530(s32);s32 func_02015214(s32);extern s32 data_02136c4c;
+u32 val; s32 expected; s32 state;
+state=func_0200751c();
+switch(arg1){case 0:expected=10;val=4;break;case 1:expected=10;val=3;break;case 2:expected=14;val=2;break;case 3:expected=7;val=5;break;default:func_02007530(state);return 0;}
+if(data_02136c4c && func_02015214(arg0)){
+s32 idx=arg0-1;u8 *base=(u8 *)data_02136c4c;
+if(expected==*(s32 *)(base+idx*4+0x14e8)){
+*(u16 *)(base+idx*2+0x1754)=val;func_02007530(state);return 1;
+}}
+func_02007530(state);return 0;
 }
 
 void func_02014050(s32 arg0, s32 arg1, M2C_UNK arg2) {

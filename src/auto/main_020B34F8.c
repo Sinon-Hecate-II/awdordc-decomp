@@ -4,19 +4,18 @@
 u8 func_020b34f8(void *arg0) {
 s32 func_0207c8ec();
 M2C_UNK func_0208fe30(s32);
-s32 old; s32 active,i,factor,delta; s16 n; s32 bounded; s32 step; u8 result; s32 limit;
+s32 active,i,factor,delta; s16 old,n; u8 step,result; s32 limit;
 if(M2C_FIELD(arg0,s16 *,18)!=0)active=1;else active=0;
 if(active&255)return 0;
 step=M2C_FIELD(arg0,u8 *,5);
 limit=M2C_FIELD(arg0,u8 *,4);
 n=func_0207c8ec(M2C_FIELD(arg0,s16 *,10)+step-1,step);
-bounded=n; if(limit<bounded)bounded=limit; n=bounded;
+n=limit>=n?n:limit;
 old=M2C_FIELD(arg0,s16 *,12);
-i=0;
-if(n>0)do {
+for(i=0;i<n;i++){
 if(M2C_FIELD(arg0,s16 *,12)!=0)M2C_FIELD(arg0,s16 *,12)-=1;
 if(M2C_FIELD(arg0,s16 *,8)-step>=0)M2C_FIELD(arg0,s16 *,8)-=step;
-i++; }while(i<n);
+}
 if(old!=M2C_FIELD(arg0,s16 *,12))func_0208fe30(0x10019);
 delta=M2C_FIELD(arg0,s16 *,12);factor=M2C_FIELD(arg0,u8 *,7);delta-=old;
 M2C_FIELD(arg0,s16 *,18)=delta*factor;

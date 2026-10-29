@@ -41,14 +41,7 @@ s32 func_020282a8(u32 arg0) {
 }
 
 #pragma optimization_level 2
-void func_020282b0(void) {
-extern void *data_02138e4c; void func_02028ef4(void); s32 func_02012274(void (*)(void));
-u8 *p=(u8 *)data_02138e4c+0x2000;
-if(p[0x26b])return;
-p[0x26b]=1;
-if(func_02012274(func_02028ef4)==2)return;
-func_02028160(11);func_020280c8(7,0,0,0x610);
-}
+void func_020282b0(void){extern void *data_02138e4c; void func_02028ef4(void);s32 func_02012274(void (*)(void));u8 *p=(u8 *)data_02138e4c+0x2000;if(p[0x26b])return;p[0x26b]=1;if(func_02012274(func_02028ef4)==2)return;func_02028160(11);func_020280c8(7,0,0,0x610);}
 #pragma optimization_level reset
 void func_0202830c(u16 *p){extern void *data_02138e4c;if(p[1]!=8||p[2]!=22||p[3]!=37)return;switch(M2C_FIELD(data_02138e4c,s32 *,0x2260)){case 8:func_02028160(12);return;case 9:case 12:func_020282b0();return;case 10:func_02028160(12);return;}}
 

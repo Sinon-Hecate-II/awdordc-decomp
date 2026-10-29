@@ -458,6 +458,7 @@ p=(void *)(data_ov001_02193e30+i*0x228);func_ov001_0218bfb4(M2C_FIELD(p,s32*,0x2
 
 #pragma push
 #pragma merge_constants off
+#pragma opt_common_subs off
 void func_ov001_0218a01c(void) {
     void func_ov001_0218a6d8(s32);
     void func_ov001_0218b71c(void *);
@@ -471,6 +472,7 @@ void func_ov001_0218a01c(void) {
         i++;
         offset+=0x228;
     }while(i<2);
+    (void)data_ov001_02193e30;
     func_ov001_0218b71c(&data_ov001_02193e30);
 }
 #pragma pop

@@ -287,6 +287,7 @@ p+=len;n-=len;key+=func_02068c34(key)+1;
 
 #pragma push
 #pragma optimize_ifs off
+#pragma peephole off
 s32 func_02060fe8(s8 *arg0, s32 arg1) {
     extern u8 data_020eac40[];
     s64 func_020722fc(s32, s32);
@@ -298,7 +299,7 @@ s32 func_02060fe8(s8 *arg0, s32 arg1) {
     if (c != 0) {
         do {
             if (c >= 0 && c < 0x80) {
-                c = data_020eac40[c];
+                c = ((volatile u8 *)data_020eac40)[c];
             }
             hash = hash * 0x9CCF9319 + c;
             c = *++arg0;

@@ -25,6 +25,35 @@ M2C_UNK func_0206a76c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, M2
     return 0;
 }
 
+#pragma push
+#pragma opt_common_subs off
+s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
+    u32 func_0206a384();
+    void func_02068a04();
+    extern s32 data_0213e9f4;
+    s32 count;
+    s32 negative;
+    s32 overflow;
+    M2C_UNK state[2];
+    u32 value;
+    s32 ret;
+    state[0] = arg0;
+    state[1] = 0;
+    value = func_0206a384(arg2, 0x7fffffff, func_02068a04, state, &count, &negative, &overflow);
+    if (arg1 != 0) {
+        *arg1 = arg0 + count;
+    }
+    if (overflow != 0) {
+        data_0213e9f4 = 34;
+        ret = -1;
+        return ret;
+    }
+    if (negative != 0) {
+        return -(s32)value;
+    }
+    return (s32)value;
+}
+#pragma pop
 s32 func_0206ac70(M2C_UNK p,M2C_UNK end,M2C_UNK base){
 u32 func_0206a384();void func_02068a04();extern s32 data_0213e9f4;
 s32 count,negative,overflow; M2C_UNK state[2];u32 value;

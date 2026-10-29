@@ -439,20 +439,21 @@ void func_0208fb54(s32 a,s32 b,s32 c,s32 d){
  M2C_FIELD(p,s16*,0x52)=d;
 }
 
+#pragma opt_strength_reduction off
 void func_0208fba0(void){
  void func_0208fc50(void);void func_0208fc4c(void);
  extern M2C_UNK data_0215783c,data_02157834,data_02157838,data_02157850,data_02157830,data_02157860;
  extern s32 data_027e15bc;
- s32 i; u8 *p;
+ u8 *p; s32 i;
  func_0202a968();func_0202acb0(&data_0215783c);func_0202acb0(&data_02157834);func_0202d9c0(&data_02157838);
- for(p=(u8*)&data_02157850,i=0;i<4;i++,p+=4)func_0202acb0(p);
+ for (p=(u8*)&data_02157850,i=0;i<4;i++,p+=4)func_0202acb0(p);
  M2C_FIELD(&data_02157830,u8*,0)=0;
  M2C_FIELD(&data_02157830,s32*,0x18)=0;
  M2C_FIELD(&data_02157830,s32*,0x1c)=data_027e15bc;
  for(i=0;i<8;i++)((s32*)&data_02157860)[i]=0;
  func_0208fc50();func_0208fc4c();func_020903d4();func_0208fc4c();func_02090604();func_020903b0();
 }
-
+#pragma opt_strength_reduction reset
 void func_0208fc4c(void) {
 
 }

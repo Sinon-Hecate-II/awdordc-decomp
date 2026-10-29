@@ -88,10 +88,9 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     void func_ov002_021e3e0c(void *, s16, s16, s16, u16, u16, u16, u16, u8, u8, u8, u8);
     extern u8 data_ov002_021f30f4[];
     extern u8 data_ov002_021f306e[];
-    void *tmp;
-    void *p;
     u8 idx;
     u8 idx2;
+    void *p;
     u16 a;
     u16 b;
     u16 c;
@@ -101,7 +100,7 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     s16 y;
     s16 z;
     if (M2C_FIELD(arg0, void **, 0x64) != 0) {
-        tmp = func_02082028(8);
+        void *tmp = func_02082028(8);
         if (tmp != 0) {
             M2C_FIELD(tmp, s32 *, 0) = 0;
             M2C_FIELD(tmp, s32 *, 4) = 0;

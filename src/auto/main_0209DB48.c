@@ -25,13 +25,13 @@ void func_0209db48(void) {
     void func_0209daec(void);
     extern void *data_027e00c4;
     extern void *data_027e00c8;
-    extern void *gCur3DSpriteEngine;
+    extern void *data_027e01d8;
 
     void *cur;
     void *saved;
     s32 i;
 
-    saved = gCur3DSpriteEngine;
+    saved = data_027e01d8;
     i = 0;
     do {
         void *head;
@@ -42,7 +42,7 @@ void func_0209db48(void) {
         } else {
             head = data_027e00c4;
         }
-        gCur3DSpriteEngine = head;
+        data_027e01d8 = head;
         cur = *(void **)((char *)head + 0x8);
         while (cur != NULL) {
             raw = *(unsigned char *)((char *)cur + 0x12);
@@ -79,7 +79,7 @@ void func_0209db48(void) {
         }
         i++;
     } while (i < 2);
-    gCur3DSpriteEngine = saved;
+    data_027e01d8 = saved;
     func_0209daec();
 }
 
@@ -478,23 +478,14 @@ s32 func_0209ea0c(s32 arg0) {
     return arg0;
 }
 
-#pragma scheduling off
-void func_0209ea20(s32 arg0, s32 arg1, s32 arg2) {
-void *func_020a4770(); void **func_01ffa3dc(M2C_UNK *,s32);
-extern void **gCurrentMap; extern M2C_UNK data_02156e50; extern M2C_UNK data_0211f87c;
-void **base; s32 tick; void *t,*q,*p; s32 v,b,a;
-p=func_020a4770();
-if(!p){func_0209eaf4(arg0,arg1,arg2);return;}
-tick=func_0207c2e0(); base=gCurrentMap; M2C_FIELD(&data_02156e50,s32 *,8)=tick;
-t=*base;
-func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,t+0x52dc);
-a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);
-if(a<b)M2C_FIELD(p,u8 *,4)=0; else M2C_FIELD(p,u8 *,4)=a-b;
-q=func_01ffa3dc(&data_0211f87c,7);
-M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
-M2C_FIELD(q,s32 *,0x60)=arg2;
-M2C_FIELD(q,void **,0x34)=p;
-M2C_FIELD(q,s32 *,0x38)=arg0;
-M2C_FIELD(q,s32 *,0x3c)=arg1;
+#pragma opt_propagation off
+void func_0209ea20(s32 arg0,s32 arg1,s32 arg2){
+void *func_020a4770();void **func_01ffa3dc(M2C_UNK *,s32);extern void **gCurrentMap;extern M2C_UNK data_02156e50,data_0211f87c;
+void *p,*q,*t; s32 a,b,tick;void **base;
+p=func_020a4770();if(!p){func_0209eaf4(arg0,arg1,arg2);return;}
+tick=func_0207c2e0();base=gCurrentMap;M2C_FIELD(&data_02156e50,s32 *,8)=tick;t=*base;
+func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,(u8 *)t+0x52dc);
+a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);if(a<b)M2C_FIELD(p,u8 *,4)=0;else M2C_FIELD(p,u8 *,4)=a-b;
+q=func_01ffa3dc(&data_0211f87c,7);M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);M2C_FIELD(q,s32 *,0x60)=arg2;M2C_FIELD(q,void **,0x34)=p;M2C_FIELD(q,s32 *,0x38)=arg0;M2C_FIELD(q,s32 *,0x3c)=arg1;
 }
-#pragma scheduling reset
+#pragma opt_propagation reset

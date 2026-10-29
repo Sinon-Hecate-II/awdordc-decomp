@@ -241,7 +241,7 @@ do {
 p=M2C_FIELD(arg0,void **,0x6c)+i;
 old=M2C_FIELD(p,s8 *,10);
 if(M2C_FIELD(p,u8 *,0x74)==255) flag=1; else flag=0;
-if((u8)flag==0){
+if(!(flag&255)){
 q=func_02084e24();
 if(q) value=M2C_FIELD(q,s8 *,13); else value=func_ov003_02200808((u8)func_020a22fc(i+1));
 }else{

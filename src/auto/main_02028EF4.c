@@ -121,17 +121,21 @@ void func_02029220(void) {
     void *base;
     void *r1;
     void *ptr;
+    s32 val;
 
     state = func_0200751c();
     base = func_02027d50();
-    if (base == NULL) {
+    if (base == (void *)0) {
         func_02007530(state);
         return;
     }
     r1 = (void *)((s8 *)base + 0x2000);
     ptr = M2C_FIELD(r1, void **, 0x270);
-    if (ptr != NULL && M2C_FIELD(r1, s32 *, 0x274) > 0) {
-        func_02007f8c(ptr, 0);
+    if (ptr != (void *)0) {
+        val = M2C_FIELD(r1, s32 *, 0x274);
+        if (val > 0) {
+            func_02007f8c(ptr, 0);
+        }
     }
     func_02007530(state);
 }

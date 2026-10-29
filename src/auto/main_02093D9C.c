@@ -223,26 +223,28 @@ s32 func_020941d4(void *arg0) {
 }
 
 s32 func_02094214(void *arg0) {
- M2C_UNK func_0207843c(s32,s32,s32,s32);
- s16 func_0207f460(s32);
- extern s32 *gCurrentMap;
- s16 packed;
- s32 base;
- s32 x,value;
- u32 y;
- void *cmd;
- cmd=M2C_FIELD(arg0,void **,4);
- packed=M2C_FIELD(cmd,s16 *,8);
- value=M2C_FIELD(cmd,s32 *,0xC);
- y=(u8)(packed>>8);
- base=*gCurrentMap;
- x=(u8)packed;
- M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),s8 *,0x1420)=value;
- base=*gCurrentMap;
- M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758))*2,s16 *,0xA10)=func_0207f460(value);
- func_0207843c(x-1,y-1,x+1,y+1);
- M2C_FIELD(arg0,void **,4)+=0x10;
- return 1;
+    M2C_UNK func_0207843c(s32, s32, s32, s32);
+    s16 func_0207f460(s32);
+    extern s32 *gCurrentMap;
+
+    s16 packed;
+    s32 base;
+    s32 x, value;
+    u32 y;
+    void *cmd;
+
+    cmd = M2C_FIELD(arg0, void **, 4);
+    packed = M2C_FIELD(cmd, s16 *, 8);
+    value = M2C_FIELD(cmd, s32 *, 0xC);
+    y = (u8)(packed >> 8);
+    base = *gCurrentMap;
+    x = (u8)packed;
+    M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), s8 *, 0x1420) = value;
+    base = *gCurrentMap;
+    M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)) * 2, s16 *, 0xA10) = func_0207f460(value);
+    func_0207843c(x - 1, y - 1, x + 1, y + 1);
+    M2C_FIELD(arg0, void **, 4) += 16;
+    return 1;
 }
 
 s32 func_020942b0(void *arg0) {
@@ -531,7 +533,7 @@ void *func_020948c4(s32 arg0) {
     s32 temp_ip;
     s16 temp_r0;
 
-    temp_r0 = func_02094724(0);
+    temp_r0 = (s16)func_02094724(0);
     if (temp_r0 == -1) {
         return NULL;
     }
@@ -542,7 +544,7 @@ void *func_020948c4(s32 arg0) {
     func_02095fd4();
     func_02094798();
     func_020d4704();
-    temp_ip = temp_r0 * 0x18;
+    temp_ip = (s32)temp_r0 * (s32)0x18;
     *(s32 *)((u8 *)&data_02157fe8 + temp_ip) = arg0;
     *(s32 *)((u8 *)&data_02157ff0 + temp_ip) = 0;
     *(s32 *)((u8 *)&data_02157fec + temp_ip) = arg0;
@@ -584,8 +586,11 @@ void func_02094958(void *arg0) {
         fn = (s32 (*)(void *)) data_02102b50[idx];
         if (fn == 0) {
             M2C_FIELD(arg0, void **, 4) = (void *) ((u8 *) M2C_FIELD(arg0, void **, 4) + 0x10);
-        } else if (!fn(arg0)) {
-            return;
+        } else {
+            s32 result = fn(arg0);
+            if (!result) {
+                return;
+            }
         }
     }
 }

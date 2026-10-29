@@ -33,8 +33,19 @@ func_0203dc38(code,off+0xfffeb010);
 return a;
 }
 
-s32 func_020431e0(s32 a) {s32 code=a; if(a==0)return 0; switch(a){case 1:code=0;break;case 2:code=0;break;default:code=6;break;} if(code)func_0203dc38(code,0xfffeb007); return a;}
-
+#pragma opt_propagation off
+s32 func_020431e0(s32 a) {
+s32 code;
+if(a==0)return 0;
+switch(a){
+case 1:return 1;
+case 2:return 2;
+default:code=6;break;
+}
+if(code)func_0203dc38(code,0xfffeb007);
+return a;
+}
+#pragma opt_propagation reset
 u32 func_02043230(u32 a,u32 unused,u32 off) {
 u32 ret=a;
 u32 code;
@@ -241,9 +252,7 @@ void func_02043c4c(s32 arg0) {
     s32 func_02043184();
     M2C_UNK func_0203ecb0(M2C_UNK, s32);
     void *p;
-    s32 zero;
 
-    zero = 0;
     p = func_02044268();
     if (M2C_FIELD(p, s32 *, 0x1A0) == 1) {
         func_02044278(6);
@@ -262,13 +271,13 @@ void func_02043c4c(s32 arg0) {
         M2C_FIELD(p, u8 *, 0x17C) = (u8)(M2C_FIELD(p, u8 *, 0x17C) + 1);
     } else {
         p = func_02044268();
-        M2C_FIELD(p, u8 *, 0x17C) = 0;
+        M2C_FIELD(p, s8 *, 0x17C) = 0;
         p = func_02044268();
         M2C_FIELD(p, s32 *, 0x180) = arg0;
     }
     p = func_02044268();
-    M2C_FIELD(p, s32 *, 0x184) = zero;
-    M2C_FIELD(p, s32 *, 0x188) = zero;
+    M2C_FIELD(p, s32 *, 0x184) = 0;
+    M2C_FIELD(p, s32 *, 0x188) = 0;
     func_0203ecb0(1, arg0);
     if (func_02043184() != 0) {
         return;

@@ -254,18 +254,21 @@ void func_01ffa4e8(void *p) {
  }
 }
 
-#pragma opt_common_subs off
+#pragma opt_peephole off
 void func_01ffa574(void *arg0) {
-    void *p = arg0;
-    if (p == 0) return;
-    if (M2C_FIELD(p, s32 *, 4) == 0) return;
-    if (M2C_FIELD(p, u8 *, 0x30) & 2) return;
-    func_01ffa2cc(p);
-    func_01ffa468(p);
-    func_01ffa4e8(p);
-    func_01ffa4a0(p);
+    if (arg0 == NULL) {
+        return;
+    } else if (M2C_FIELD(arg0, s32 *, 4) == 0) {
+        return;
+    } else if (M2C_FIELD(arg0, u8 *, 0x30) & 2) {
+        return;
+    }
+    func_01ffa2cc(arg0);
+    func_01ffa468(arg0);
+    func_01ffa4e8(arg0);
+    func_01ffa4a0(arg0);
 }
-#pragma opt_common_subs on
+#pragma opt_peephole reset
 void func_01ffa5b8(void *p){
 extern u8 data_027e15b8,data_027e15b4;
 extern s32 gCur3DSpriteEngine;

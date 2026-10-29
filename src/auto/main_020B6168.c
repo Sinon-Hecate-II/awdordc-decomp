@@ -271,7 +271,6 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
 
 void func_020b6814(void *arg0) {
 s32 func_020b5594(s32,s32,s32);s32 func_020b5e00(s32,s32,void *);s32 func_020b5964(s32,void *);s32 func_020b5d94(s32,void *);
-void *p=arg0;
 s32 a=M2C_FIELD(arg0,s32 *,0x34);
 if(M2C_FIELD(arg0,s16 *,0x6e)>0) {func_020b5594(M2C_FIELD(arg0,s32 *,0x38),M2C_FIELD(arg0,s32 *,0x3c),0 );return;}
 switch(M2C_FIELD(arg0,s16 *,0x6c)) {

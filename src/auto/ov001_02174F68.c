@@ -3,9 +3,34 @@
 
 typedef struct { s32 x; u32 y; } Position;
 
+
 void func_ov001_02174f68(s32 arg0, Position arg1) {
     (void)arg0;
     (void)arg1;
+}
+
+void func_ov001_021751c8(s32 arg0, s32 arg1) {
+void func_ov001_0218a304(s32,s32,s32,u8);
+extern void *data_ov001_02193d20;
+extern u8 data_ov001_0218f5e4[],data_ov001_0218f5d8[];
+void *p;u32 color;s32 index;
+if(arg0<0)return;
+if(arg0<10){
+p=M2C_FIELD((u8 *)data_ov001_02193d20+arg0*4,void **,0x10);
+color=((volatile u8 *)data_ov001_0218f5e4)[arg1];
+M2C_FIELD(p,u32 *,0)&=~0xc00;
+M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xf000)|(color<<12);
+return;
+}
+index=arg0-10;
+if(index<2){
+p=M2C_FIELD((u8 *)data_ov001_02193d20+index*4,void **,0x38);
+color=((volatile u8 *)data_ov001_0218f5e4)[arg1];
+M2C_FIELD(p,u32 *,0)&=~0xc00;
+M2C_FIELD(p,u16 *,4)=(M2C_FIELD(p,u16 *,4)&~0xf000)|(color<<12);
+return;
+}
+func_ov001_0218a304(M2C_FIELD((u8 *)data_ov001_02193d20+(arg0-12)*4,s32 *,0x40),-1,0,data_ov001_0218f5d8[arg1]);
 }
 
 void func_ov001_02175290(void) {

@@ -137,6 +137,34 @@ void func_ov003_0220c0e8(void *arg0) {
     func_020bfa30(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s16 *, 0x12));
 }
 
+void func_ov003_0220c10c(void *arg0) {
+    void func_ov003_0220c0e8(void *);
+    u8 idx;
+    s32 v;
+    u8 k;
+    void **p;
+    void *q;
+
+    p = *(void ***) ((u8 *) arg0 + 0x5c);
+    q = *p;
+    if (q != 0) {
+        v = *(u16 *) ((u8 *) q + 8);
+    } else {
+        v = -1;
+    }
+    k = *(u8 *) (*(void **) ((u8 *) arg0 + 0x3c) + 0xf);
+    idx = (u8)(v - 0xb);
+    if (k == 8) {
+        if (idx == 0 || idx == 1) {
+            func_ov003_0220c0e8(arg0);
+        }
+    } else {
+        if (idx != 0) {
+            func_ov003_0220c0e8(arg0);
+        }
+    }
+}
+
 void func_ov003_0220c190(void *arg,s32 index){
 extern void *data_027e00c4;
 s32 func_020bee64(s32);

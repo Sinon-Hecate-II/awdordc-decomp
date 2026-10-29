@@ -402,8 +402,10 @@ void func_0202bc1c(void){M2C_UNK func_02008cf0(s32,s32,s32,s32);s32 func_020094f
 
 void func_0202bc7c(void){M2C_UNK func_02007e54(s32,s32,s32);void func_020067e0(s32,s32);M2C_UNK func_02008cc8();extern M2C_UNK data_0213bc54,data_0213bc9c;void *p=&data_0213bc9c;s32 channel; s32 dest,size;
 if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
-dest=M2C_FIELD(p,s32 *,12);size=M2C_FIELD(p,s32 *,20);M2C_FIELD(p,s32 *,28)=0;func_02007e54(0,dest,size);func_02007e54(0,M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
-func_020067e0(M2C_FIELD(p,s32 *,12),M2C_FIELD(p,s32 *,20));func_020067e0(M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
+dest=M2C_FIELD(p,s32 *,12);M2C_FIELD(p,s32 *,28)=0;size=M2C_FIELD(p,s32 *,20);func_02007e54(0,dest,size);
+func_02007e54(0,M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
+func_020067e0(M2C_FIELD(p,s32 *,12),M2C_FIELD(p,s32 *,20));
+func_020067e0(M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
 channel=M2C_FIELD(p,s32 *,44);func_02008cc8(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);
 }
 
