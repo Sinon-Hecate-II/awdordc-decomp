@@ -251,32 +251,34 @@ s32 func_020848f8(void) {
 s32 func_0208492c(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(func_02084644()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
 
 u16 func_02084970(void) {
-    s32 temp_r0;
+    s32 bit;
     u16 var_r5;
     u8 var_r6;
     u8 var_r6_2;
     void *temp_r0_2;
     void *temp_r0_3;
 
+    bit = 0;
     var_r5 = 0;
-    temp_r0 = func_02084644();
-    switch (temp_r0) {                              /* irregular */
+    switch (func_02084644()) {
     case 1:
         var_r6 = 0;
+        bit = 1;
         do {
             temp_r0_2 = func_ov009_02224070(var_r6);
             if (temp_r0_2 != NULL) {
-                var_r5 |= 1 << M2C_FIELD(temp_r0_2, s8 *, 0x17);
+                var_r5 = (u16)(var_r5 | ((u32) bit << M2C_FIELD(temp_r0_2, s8 *, 0x17)));
             }
             var_r6 += 1;
         } while ((u32) var_r6 < 4U);
         break;
     case 2:
         var_r6_2 = 0;
+        bit = 1;
         do {
             temp_r0_3 = func_ov010_02229b0c(var_r6_2);
             if (temp_r0_3 != NULL) {
-                var_r5 |= 1 << M2C_FIELD(temp_r0_3, s8 *, 0x1B);
+                var_r5 = (u16)(var_r5 | ((u32) bit << M2C_FIELD(temp_r0_3, s8 *, 0x1B)));
             }
             var_r6_2 += 1;
         } while ((u32) var_r6_2 < 4U);
@@ -605,7 +607,7 @@ s32 func_02084f2c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
     s32 temp_r0;
 
     temp_r0 = func_02084644();
-    switch (temp_r0) {                              /* irregular */
+    switch (temp_r0) {
     case 1:
         return func_ov009_02225938(arg0, arg1, arg2, arg3, arg4, arg5);
     case 2:
@@ -736,7 +738,7 @@ s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *func_01ffa3dc(void *,s32);exter
 
 void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02085238(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02085238(arg0, arg1, 0, 0);
+    return (void)func_02085238(arg0, arg1, 0, 0);
 }
 
 void func_020852a8(void) {

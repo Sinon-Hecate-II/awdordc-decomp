@@ -547,15 +547,12 @@ M2C_UNK **func_ov003_022060d4(M2C_UNK **arg0) {
     extern M2C_UNK func_ov003_021f05f8;
     register u8 var_r5;
     M2C_UNK *temp_r0;
-    M2C_UNK (**temp_vt)(void);
-
     *arg0 = &data_ov003_02210764;
     var_r5 = 0;
     do {
         temp_r0 = arg0[var_r5 + 0x32];
         if (temp_r0 != 0) {
-            temp_vt = *temp_r0;
-            temp_vt[1]();
+            M2C_FIELD(*temp_r0, M2C_UNK (**)(), 0x4)();
         }
         var_r5 += 1;
     } while (var_r5 < 8);

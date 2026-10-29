@@ -116,7 +116,31 @@ loop_15:
     return var_r2;
 }
 
-s32 func_02030888(void *a){s32 i;u8 *p;u8 t;register u8 n;void *q;n=0;i=0;if((s32)M2C_FIELD(a,u8 *,0xd12)>0){q=a;p=(u8 *)a+0x447;do{if(M2C_FIELD((a+(i<<2)),u8 *,0x444)==0 && (t=*p, M2C_FIELD(q,u16 *,0x4a6)-1 != (u32)(t<<25)>>25)){*p=t&~128;n++;}else *p|=128;i++;p+=4;q=(u8 *)q+0xc0;}while(i<(s32)M2C_FIELD(a,u8 *,0xd12));}return n;}
+s32 func_02030888(void *a) {
+    u8 n;
+    s32 i;
+    u8 *p;
+    void *q;
+
+    n = 0;
+    i = 0;
+    if ((s32) M2C_FIELD(a, u8 *, 0xD12) > 0) {
+        q = a;
+        p = (u8 *) a + 0x447;
+        do {
+            if ((M2C_FIELD(a + i * 4, u8 *, 0x444) == 0) && ((M2C_FIELD(q, u16 *, 0x4A6) - 1) != ((u32) (*p << 0x19) >> 0x19))) {
+                *p &= ~0x80;
+                n++;
+            } else {
+                *p |= 0x80;
+            }
+            i++;
+            p += 4;
+            q = (u8 *) q + 0xC0;
+        } while (i < (s32) M2C_FIELD(a, u8 *, 0xD12));
+    }
+    return n;
+}
 
 s32 func_02030918(void *a) {
  u8 n;u8 i;u8 r;
