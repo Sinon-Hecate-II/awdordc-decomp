@@ -492,15 +492,15 @@ void func_ov001_02177bf0(void) {
     extern M2C_UNK data_ov001_0218f77c;
     extern M2C_UNK data_ov001_0218f780;
     extern M2C_UNK data_ov001_02193d68;
-    s32 var_r4;
+    u32 var_r4;
     u8 *var_r5;
     s32 offset;
     var_r5 = data_ov001_0218f762;
     for (var_r4 = 0; (u32)var_r4 < 3; var_r4++, var_r5 += 8) {
         if (func_ov001_0218bbd8(var_r5) != 0) {
             func_ov001_021716d8(1);
-            offset = (u8)var_r4 * 8;
-            M2C_FIELD(&data_ov001_02193d68, u8 *, 0) = var_r4;
+            offset = ((var_r4 % 256) * 8);
+            M2C_FIELD(&data_ov001_02193d68, u8 *, 0) = (u8)var_r4;
             func_ov001_02172094(M2C_FIELD(&data_ov001_0218f77a,u16 *,offset), M2C_FIELD(&data_ov001_0218f77e,u16 *,offset), M2C_FIELD(&data_ov001_0218f77c,u16 *,offset), M2C_FIELD(&data_ov001_0218f780,u16 *,offset));
             return;
         }

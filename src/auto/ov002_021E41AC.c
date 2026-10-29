@@ -121,23 +121,23 @@ void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  } while(j<2);
 }
 
-void func_ov002_021e4674(u8 *x,u32 y,s32 unused,s32 tiles,s32 pal) {
+#pragma opt_strength_reduction off
+void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
  M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 j,i,k;
- u8 *xx;
- s32 pp;
+ s32 pp, j, i, k;
+ u32 xx;
  pp=pal;
  j=0;k=0;
  do {
- i=0;xx=x;do {
+ xx=x;i=0;do {
  func_02087064(4,8,32,tiles+(i+k)*8,pp);
- func_020878c4((s32)xx,y,0,8,32,0,0,8,32);
+ func_020878c4(xx,y,0,8,32,0,0,8,32);
  xx+=8;i++; if(i>=9) break; } while(1);
  k+=9;j++;y+=32;
  }while(j<2);
 }
-
+#pragma opt_strength_reduction reset
 void func_ov002_021e4728(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
  M2C_UNK func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);

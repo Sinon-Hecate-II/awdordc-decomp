@@ -365,8 +365,9 @@ s32 func_02006680(void *arg0) {
     head = M2C_FIELD(&data_0212dca4, void **, 0x4);
     cur = M2C_FIELD(arg0, void **, 0x8);
     if (cur == NULL) {
+        u32 tmp;
         M2C_FIELD(arg0, void **, 0x8) = head;
-        u32 tmp = M2C_FIELD(arg0, u32 *, 0xC) + 1;
+        tmp = M2C_FIELD(arg0, u32 *, 0xC) + 1;
         M2C_FIELD(arg0, u32 *, 0xC) = tmp;
         func_020066f4(head, arg0);
         r6 = 1;
@@ -604,6 +605,28 @@ s32 func_02006bec(s32 arg0, s32 arg1, s32 arg2) {
 void func_02006c58(void) {
     extern M2C_UNK data_0212defc;
     M2C_FIELD(&data_0212defc, s32 *, 4) = 0;
+}
+
+M2C_UNK func_02006ce4(void) {
+    extern u32 data_027ffd9c;
+    extern u32 data_0212df04[3];
+    void func_02006d54(void);
+    u32 v;
+    u32 *base;
+    v = data_027ffd9c;
+    if (v >= 0x2600000u) {
+        if (v < 0x2800000u) {
+            data_0212df04[0] = v;
+        } else {
+            data_0212df04[0] = 0;
+        }
+    }
+    if (data_0212df04[0] == 0) {
+        data_027ffd9c = (u32)func_02006d54;
+        base = (u32 *)0x27e3000;
+        base[0x3f7] = (u32)func_02006d54;
+        data_0212df04[2] = 0;
+    }
 }
 
 #pragma optimization_level 4

@@ -18,30 +18,30 @@ void func_ov000_0219c9e8(s32 arg0) {
     u8 func_020a7b24(s32);
     void func_ov000_0219c874(s32);
     void func_ov000_0219c7ec(s32);
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     extern u8 data_ov000_021df824;
     extern s8 data_ov000_021df868;
-    u8 *var_r9;
-    s8 *var_r10;
     s32 var_r8;
+    u8 *var_r9;
     u8 var_r1;
+    s8 *var_r10;
 
     var_r9 = &data_ov000_021df824;
     var_r10 = &data_ov000_021df868;
     var_r8 = 0;
 loop:
     var_r1 = *var_r9;
-    if (var_r1 == 0) goto done;
-    if ((u32)((M2C_FIELD(var_r1 * 14 + *gCurrentMap, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x11) {
+    if (!var_r1) goto done;
+    if ((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x11) {
         *var_r10 = (s8)(func_020a7b24(14) + 1);
-    } else if ((u32)((M2C_FIELD(var_r1 * 14 + *gCurrentMap, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x0F) {
+    } else if ((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A) == 0x0F) {
         *var_r10 = (s8)(func_020a7b24(14) + 2);
     } else {
-        *var_r10 = (s8)func_020a7b24((u32)((M2C_FIELD(var_r1 * 14 + *gCurrentMap, u8 *, 0x59A4) << 0x1A) >> 0x1A));
+        *var_r10 = (s8)func_020a7b24((u32)((M2C_FIELD(var_r1 * 14 + *data_027e0058, u8 *, 0x59A4) << 0x1A) >> 0x1A));
     }
-    var_r9++;
+    var_r9 += 1;
     var_r10++;
-    var_r8++;
+    var_r8 += 1;
     goto loop;
 done:
     if (arg0 == 0) {

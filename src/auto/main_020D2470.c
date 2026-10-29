@@ -5,7 +5,15 @@ void func_020d2470(void) { }
 
 u8 func_020d273c(s32 a, s32 b) {
     extern s32 *gCurrentMap;
-    return M2C_FIELD(((a * 0x8C) + *gCurrentMap), u8 *, 0x67CA) == M2C_FIELD(((b * 0x8C) + *gCurrentMap), u8 *, 0x67CA);
+    s32 base;
+    s32 work;
+    u8 *p1;
+    u8 *p2;
+    base = *gCurrentMap + 0x3A4;
+    work = base + 0x6400;
+    p1 = (u8 *)(work + a * 0x8C);
+    p2 = (u8 *)(work + b * 0x8C);
+    return p1[0x26] == p2[0x26];
 }
 
 u8 func_020d277c(s32 arg0, s32 arg1) {
@@ -39,11 +47,15 @@ s32 func_020d27ec(s32 arg0, s32 arg1) {
 s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
     u8 func_020d273c(s32, s32);
+    s32 p;
     u16 val;
     u8 byte;
+    s32 pos;
 
-    val = M2C_FIELD(*gCurrentMap, u16 *, arg2 * 2 + 0x3758);
-    byte = M2C_FIELD(*gCurrentMap, u8 *, arg1 + val + 0x1420);
+    p = *gCurrentMap;
+    val = *(u16 *)(p + arg2 * 2 + 0x3758);
+    pos = arg1 + val;
+    byte = *(u8 *)(p + pos + 0x1420);
     if ((byte >> 5) == 0) {
         return 0;
     }
@@ -51,13 +63,13 @@ s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_020d2850(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     extern u8 data_ov000_021b5c5c[];
     s32 result = 0;
 
-    if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) == 0 &&
-        M2C_FIELD(*gCurrentMap, u8 *, 0x5158) == 2 &&
-        (M2C_FIELD(*gCurrentMap, u8 *, arg2 * 0x8C + 0x67C3) & 2) == 0) {
+    if (M2C_FIELD(*data_027e0058, u8 *, 0x5156) == 0 &&
+        M2C_FIELD(*data_027e0058, u8 *, 0x5158) == 2 &&
+        (M2C_FIELD(*data_027e0058, u8 *, arg2 * 0x8C + 0x67C3) & 2) == 0) {
         result = (data_ov000_021b5c5c[arg0 * 0x70] != 0);
     }
     return result;
@@ -224,6 +236,7 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
     }
 }
 
+#pragma opt_strength_reduction off
 s32 func_020d2c18(s32 arg0) {
     extern s32 *gCurrentMap;
     s32 func_020a27b8(s32, s32);
@@ -234,7 +247,7 @@ s32 func_020d2c18(s32 arg0) {
     val = M2C_FIELD(base + 0x3A4 + 0x6400 + arg0 * 0x8C, u32 *, 0x6C);
     return func_020a27b8((s32)(val << 24 >> 24), (s32)(val << 20 >> 30));
 }
-
+#pragma opt_strength_reduction on
 s32 func_020d2c58(s32 arg0) {
     extern M2C_UNK data_02168f08;
     s32 func_020a334c(void);
@@ -323,16 +336,21 @@ void func_020d2d90(s32 arg0) {
 s32 func_020d2dcc(s32 arg0) {
     extern u16 data_ov000_021aeef4[];
     extern s32 *gCurrentMap;
+    s32 val;
     s32 end;
     s32 i;
+    u8 *base;
+    u8 *p;
 
-    i = data_ov000_021aeef4[arg0] + 1;
-    end = data_ov000_021aeef4[arg0] + 0x33;
+    val = data_ov000_021aeef4[arg0];
+    i = val + 1;
+    end = val + 0x33;
     if (i < end) {
-        u8 *p = (u8 *)*gCurrentMap + 0x59A4 + i * 14;
+        base = (u8 *)*gCurrentMap + 0x59A4;
+        p = base + i * 14;
         do {
             if (((u32)(*p << 26) >> 26) == 0) {
-                return (s32)p;
+                return (s32)(base + i * 14);
             }
             i++;
             p += 14;
@@ -422,8 +440,8 @@ s32 func_020d303c(s32 arg0) {
     s32 acc;
     u8 *p;
 
-    i = 0;
     acc = 0;
+    i = acc;
     p = (u8 *)*gCurrentMap + arg0 * 0x8C;
     do {
         acc += p[0x67D7];

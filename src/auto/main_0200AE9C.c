@@ -148,7 +148,7 @@ s32 func_0200b32c(void *a) {
  irq=func_0200751c();
  if(M2C_FIELD(a,s32 *,0x1c)&2)flag=1;else flag=0;
  if(flag!=0){
- r=func_0200b59c(a);
+ r=((s32(*)(void*,s32))func_0200b59c)(a, M2C_FIELD(a,s32 *,0x1c));
  M2C_FIELD(a,s32 *,0x1c)|=128;
  p=M2C_FIELD(a,void **,0x24);
  while(p){next=M2C_FIELD(p,void **,4);func_0200a050(p,3);p=next;}

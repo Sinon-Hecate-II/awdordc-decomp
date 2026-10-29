@@ -9,6 +9,32 @@ void func_02090eb8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
     func_02090e0c(func_02081070(arg0, 1), arg1, arg2, arg3, (s32) arg4, arg5, 1, arg6);
 }
 
+void *func_02090f0c(void *arg0) {
+    M2C_UNK func_02090894();
+    M2C_UNK func_02090c7c();
+    M2C_UNK func_020e35cc(s32);
+    M2C_UNK func_02082040();
+    extern M2C_UNK data_021029cc;
+    M2C_UNK (*temp_r1)(void *);
+
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021029cc;
+    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
+        func_02090894();
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+        func_02090c7c();
+    }
+    temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x34);
+    if (temp_r1 != NULL) {
+        temp_r1(arg0);
+    }
+    if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
+        func_020e35cc(M2C_FIELD(arg0, s32 *, 0x40));
+    }
+    func_02082040(arg0);
+    return arg0;
+}
+
 void *func_02090f78(void *arg0) {
     M2C_UNK func_02090894();
     M2C_UNK func_02090c7c();
@@ -309,6 +335,46 @@ void func_02091570(M2C_UNK a) {
     } while (r7 < count);
 }
 
+void func_02091700(void *arg0, s32 arg1) {
+    void func_02091928(void *);
+    typedef void (*fn2_t)(void *, void *);
+    void *tail;
+    void *root;
+    u8 *base1;
+    u32 off;
+    u32 v;
+
+    if (arg0 == NULL) {
+        return;
+    }
+    root = *(void **)arg0;
+    if (root == NULL) {
+        return;
+    }
+    if (((u8 *)arg0)[0x22] & 0x2) {
+        base1 = (u8 *)root;
+        root = *(void **)arg0;
+        base1 = (u8 *)root;
+        off = *(u16 *)(base1 + 2);
+        base1 = base1 + (off & ~1u);
+        v = *(u16 *)(base1 + (arg1 << 1)) & ~1u;
+        *((void **)((u8 *)arg0 + 8)) = (void *)(base1 + v);
+        base1 = (u8 *)*(void **)arg0;
+        off = *(u16 *)(base1 + 2);
+        base1 = base1 + (off & ~1u);
+        v = *(u16 *)(base1 + (arg1 << 1)) & ~1u;
+        tail = (void *)(base1 + v);
+    } else {
+        u32 idx = arg1 + 1;
+        void *p = ((void **)root)[idx];
+        *((void **)((u8 *)arg0 + 8)) = p;
+        p = ((volatile void **)root)[idx];
+        *((void **)((u8 *)arg0 + 0xC)) = p;
+        tail = p;
+    }
+    ((fn2_t)func_02091928)(arg0, tail);
+}
+
 void func_0209177c(M2C_UNK a) {
     void func_0207c3dc(s32, s32, s32, s32);
     void func_0207c464(s32, s32, s32, s32);
@@ -495,11 +561,13 @@ u16 func_02091a70(void *arg0) {
     return temp_r2;
 }
 
+#pragma push
+#pragma scheduling off
 s32 func_02091a84(void *arg0) {
     u16 *p = M2C_FIELD(arg0, u16 **, 0x8);
     s32 sum = 0;
 
-    for (;;) {
+    while (1) {
         u16 a = p[0];
         if (a == 0) {
             u16 b = p[1];
@@ -513,7 +581,7 @@ s32 func_02091a84(void *arg0) {
         p = p + 2;
     }
 }
-
+#pragma pop
 void func_02091abc(void) {
 
 }
@@ -521,20 +589,19 @@ void func_02091abc(void) {
 s32 func_02091ac0(void *arg0) {
     u16 *p = M2C_FIELD(arg0, u16 **, 0x8);
     s32 sum = 0;
-    u16 a;
-    u16 b;
 
-loop:
-    a = p[0];
-    if (a == 0) {
-        b = p[1];
-        if (b == 0 || b == 1 || b == 0xFF) {
-            return sum;
+    for (;;) {
+        u16 a = p[0];
+        if (a == 0) {
+            u16 b = p[1];
+            if (b == 0 || b == 1 || b == 0xFF) {
+                return sum;
+            }
         }
+        sum = sum + 1;
+        p = p + 2;
     }
-    sum = sum + 1;
-    p = p + 2;
-    goto loop;
+    __builtin_unreachable();
 }
 
 void func_02091af4(void) {
@@ -580,26 +647,27 @@ void func_02091bf4(void) {
     func_02091c88(0, sp0);
 }
 
+#pragma peephole off
 void func_02091c20(s32 arg0, s32 arg1) {
     extern u32 data_0215da2c[];
-    u32 temp = data_0215da2c[arg0] + (u32)arg1;
-    if (temp >= 0x000F423FU) {
+    if (arg1 + data_0215da2c[arg0] >= 0x000F423FU) {
         data_0215da2c[arg0] = 0x000F423FU;
         return;
     }
     data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
 }
-
+#pragma scheduling off
 void func_02091c54(s32 arg0, s32 arg1) {
     extern u32 data_0215da2c[];
-    u32 temp = data_0215da2c[arg0] + (u32)arg1;
-    if (temp >= 0x05F5E0FFU) {
+    if (arg1 + data_0215da2c[arg0] >= 0x05F5E0FFU) {
         data_0215da2c[arg0] = 0x05F5E0FFU;
         return;
     }
-    data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
+    else {
+        data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
+        return;
+    }
 }
-
 M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
     extern unsigned int data_0215da2c[];
     data_0215da2c[arg0] = (unsigned int)arg1;

@@ -304,7 +304,7 @@ void func_020be488(s32 a) {
     func_020be188(v);
 }
 
-s32 func_020be4c0(s32 arg0) { void *func_02076228(void); s32 func_02076234(void); u8 *p,*best; s32 n,i,id; register s32 better;register u32 high;u32 b,a;
+s32 func_020be4c0(s32 arg0) { void *func_02076228(void); s32 func_02076234(void); u8 *p,*best; s32 n,i,better,id;u32 b,a,high;
 p=func_02076228();best=0;n=func_02076234();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){a=M2C_FIELD(p,u32 *,4);b=M2C_FIELD(best,u32 *,4);high=a&0xffff0000;
 if(high==0xffff0000 && !(b&0xffff0000) && b!=0)better=0;

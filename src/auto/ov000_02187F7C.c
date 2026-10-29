@@ -297,18 +297,15 @@ void func_ov000_02188940(s32 arg0, s32 arg1) {
 
 u8 func_ov000_021889ac(void) {
     extern void **gCurrentMap;
-    s32 value;
+    u16 value;
     s8 *bank;
-    u8 result;
     void *base, *entry;
     base = *gCurrentMap;
     entry = (u8 *)base + 0x59A4 + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xC) * 14;
     if (func_ov000_02187e50() == 1) return 0;
     value = M2C_FIELD(entry, u16 *, 8);
     bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
-    if (bank[(u32)(value << 26) >> 26] > 0) result = 1;
-    else result = 0;
-    return result;
+    return bank[(u32)(value << 26) >> 26] > 0;
 }
 
 s32 func_ov000_02188a30(void) {

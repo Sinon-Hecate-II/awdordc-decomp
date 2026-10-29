@@ -163,7 +163,7 @@ f32 func_02071c50(f32 a, f32 b) {
     return a - b;
 }
 
-u64 func_02072088(u64 a, u64 b) { return b ? a / b : a; }
+u64 func_02072088(u64 a,u64 b){return b?a/b:a;}
 
 u64 func_020720d0(u64 a,u64 b){return a*b;}
 

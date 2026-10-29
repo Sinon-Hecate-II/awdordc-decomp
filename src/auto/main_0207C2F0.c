@@ -385,22 +385,22 @@ void func_0207cbb0(void) {
 }
 
 Unk0207Color func_0207cbd0(s32 index) {
-Unk0207Color v = data_021017f4[(u8)data_02168f14.mode != 2 ? index : index + 2];
-u8 *base;
-s32 limit;
+    Unk0207Color v = data_021017f4[(u8)data_02168f14.mode != 2 ? index : (index + 2)];
+    u8 *base;
+    s32 limit;
 
-base = *gCurrentMap;
-limit = *(u16 *)(base + 0x5144);
-if (((u8 *)&v)[12] > limit) {
-((u8 *)&v)[12] = limit;
-v.words[0] = (((u8 *)&v)[12] - 1) * 0x180;
-}
-limit = *(u16 *)(base + 0x5146);
-if (((u8 *)&v)[13] > limit) {
-((u8 *)&v)[13] = limit;
-v.words[1] = (((u8 *)&v)[13] - 1) * 0x180;
-}
-return v;
+    base = *gCurrentMap;
+    limit = *(u16 *)(base + 0x5144);
+    if (((u8 *)&v)[12] > limit) {
+        ((u8 *)&v)[12] = limit;
+        v.words[0] = (((u8 *)&v)[12] - 1) * 0x180;
+    }
+    limit = *(u16 *)(base + 0x5146);
+    if (((u8 *)&v)[13] > limit) {
+        ((u8 *)&v)[13] = limit;
+        v.words[1] = (((u8 *)&v)[13] - 1) * 0x180;
+    }
+    return v;
 }
 
 M2C_UNK func_0207cc9c(M2C_UNK *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {

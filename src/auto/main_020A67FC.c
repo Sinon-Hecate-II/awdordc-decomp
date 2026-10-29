@@ -6,7 +6,32 @@ static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 func_0207c8e
 extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],data_ov000_021b5c5c[],data_ov000_021b5c5d[];
 extern void **gCurrentMap;
 
-s32 func_020a67fc(s32 a,s32 b,s32 c){s32 func_020d2d18(u16,s32);s32 func_020a6658(s32,s32,s32);void func_020d2b10(u16,s32);s32 func_020d19b4(u16);void func_02091c20(s32,s32);void func_020cfd28(void);s32 r,cost;register s32 id;register void *p;cost=func_020d2d18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),c)*10;p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);if(M2C_FIELD((u8 *)p+(u32)id*140,s32 *,0x67a4)<cost)return 0;r=func_020a6658(a,b,c);if(!r)return 0;func_020d2b10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),cost);if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(c+40,1);func_020cfd28();return r;}
+s32 func_020a67fc(s32 a, s32 b, s32 c) {
+    s32 func_020d2d18(u16, s32);
+    s32 func_020a6658(s32, s32, s32);
+    void func_020d2b10(u16, s32);
+    s32 func_020d19b4(u16);
+    void func_02091c20(s32, s32);
+    void func_020cfd28(void);
+    extern void **gCurrentMap;
+    s32 r, cost, id;
+    void *p;
+
+    cost = func_020d2d18(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), c) * 10;
+    p = *gCurrentMap;
+    id = M2C_FIELD(p, u16 *, 0x52a4);
+    if (M2C_FIELD((u8 *) p + (u32) (id * 0x8C), s32 *, 0x67a4) < cost) {
+        return 0;
+    }
+    r = func_020a6658(a, b, c);
+    if (!r) return 0;
+    func_020d2b10(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), cost);
+    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
+        func_02091c20(c + 0x28, 1);
+    }
+    func_020cfd28();
+    return r;
+}
 
 void func_020a68d4(void) {
     extern void **gCurrentMap;
@@ -157,8 +182,9 @@ void func_020a6fcc(void) {
     func_01ffa3dc(&data_021206a0, 7);
 }
 
+#pragma opt_propagation off
 s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=data_ov000_021b5c5c[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
-
+#pragma opt_propagation reset
 s32 func_020a7074(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
 s32 func_0207c8ec(s32,s32);s32 func_020a7cfc(void *);
 s32 x,y,h;

@@ -26,15 +26,15 @@ void func_ov011_0222134c(void *arg0) {
     typedef struct { u16 a, b, c, d, e, f; } T;
     T first;
     T second;
-    s32 temp_r4;
+    register s32 saved;
     first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
-    temp_r4 = gCur3DSpriteEngine;
+    saved = gCur3DSpriteEngine;
     second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
     gCur3DSpriteEngine = data_027e00c8;
     func_020822b8((u16 *)&first);
     gCur3DSpriteEngine = data_027e00c4;
     func_020822b8((u16 *)&second);
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = saved;
 }
 
 void func_ov011_0222140c(void *arg0) {

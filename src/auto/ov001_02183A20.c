@@ -160,6 +160,7 @@ void func_ov001_02183cec(s8 arg0) {
     M2C_FIELD(data_ov001_02193dfc, s8 *, 0x1D) = var_r1;
 }
 
+#pragma peephole off
 void func_ov001_02183d18(void) {
     void func_ov001_0218bd64(M2C_UNK *);
     void func_ov001_02183f30(s32);
@@ -174,7 +175,7 @@ void func_ov001_02183d18(void) {
     s32 lim;
 
     func_ov001_0218bd64(&sp0);
-    arrval = (u32)data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1B)];
+    arrval = data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1B)];
     field12 = M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12);
     sp_half = M2C_FIELD(&sp0, u16 *, 0x2);
     v = (s32)sp_half - (s32)field12;
@@ -191,7 +192,7 @@ void func_ov001_02183d18(void) {
     }
     M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1D) = 3;
 }
-
+#pragma peephole reset
 s32 func_ov001_02183d80(void) {
     void func_ov001_02183e58(s32, M2C_UNK *);
     s32 func_ov001_0218bbd8(M2C_UNK *);
@@ -301,14 +302,14 @@ void func_ov001_02183f6c(void) {
 }
 
 #pragma push
-#pragma pool_constants off
+#pragma peephole off
 void func_ov001_02183fa0(void) {
- u16 func_02011d58(void);
- M2C_UNK func_ov001_0218b71c(M2C_UNK *);
- extern M2C_UNK data_ov001_02193e00;
- if(data_ov001_02193e00==0) return;
- while(func_02011d58()!=0x8000) {}
- func_ov001_0218b71c(&data_ov001_02193e00);
+    u16 func_02011d58(void);
+    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+    extern M2C_UNK data_ov001_02193e00;
+    if (data_ov001_02193e00 == 0) return;
+    while (func_02011d58() != 0x8000) {}
+    func_ov001_0218b71c(&data_ov001_02193e00);
 }
 #pragma pop
 s32 func_ov001_02183fd4(void) {
@@ -375,18 +376,17 @@ s32 func_ov001_02184170(void **arg0) {
     s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
     extern s32 data_ov001_02193e00;
-    s8 *r8;
-    s32 r6;
-    s32 r7;
+    u8 *r5 = data_ov001_0218fb64;
+    u8 *r8 = (u8 *)data_ov001_02193e00 + 0x1300;
+    s32 r6 = 0;
+    s32 r7 = 0;
 
-    r8 = (s8 *)data_ov001_02193e00 + 0x1300;
-    *arg0 = (void *)r8;
-    r6 = 0;
-    r7 = 0;
-    for (r7 = 0; r7 < 20; r7++) {
-        if (func_0206527c((M2C_UNK)(r8 + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
+    *arg0 = r8;
+    while (r7 < 20) {
+        if (func_0206527c((M2C_UNK)(r8 + 0x20), (M2C_UNK)r5, 6) != 0) {
             r6 = r6 + 1;
         }
+        r7 = r7 + 1;
         r8 = r8 + 0x2a;
     }
     return r6;

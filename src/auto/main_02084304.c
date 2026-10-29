@@ -159,7 +159,21 @@ s32 func_0208477c(void) {
 }
 
 #pragma opt_common_subs off
-s32 func_020847b8(void) { s32 func_02011af8(void *); extern u16 data_02156e64; if (func_02011af8(&data_02156e64)==0) { if(data_02156e64) return 1; else return 0; } return 0; }
+s32 func_020847b8(void) {
+    s32 func_02011af8(u16 *);
+    extern u16 data_02156e64;
+    s32 var_r0;
+
+    if (func_02011af8(&data_02156e64) == 0) {
+        if (data_02156e64 != 0) {
+            var_r0 = 1;
+        } else {
+            var_r0 = 0;
+        }
+        return var_r0;
+    }
+    return 0;
+}
 #pragma opt_common_subs reset
 s32 func_020847f4(void){s32 a=func_02084644();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
 

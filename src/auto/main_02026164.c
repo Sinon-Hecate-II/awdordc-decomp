@@ -34,25 +34,29 @@ void func_02026164(u8 *state, const u8 *key, s32 keylen) {
 }
 
 void func_020261d8(u8 *state, u8 *data, s32 len) {
-    u8 *S = state + 2;
-    u8 i = state[0];
-    u8 j = state[1];
     s32 n;
+    u8 j;
+    u8 i;
+    u8 *S;
+
+    S = state + 2;
+    j = state[0];
+    i = state[1];
     for (n = 0; n < len; n++) {
         u8 si;
         u8 sj;
         u8 k;
-        i = (u8)((i + 1) & 0xff);
-        si = S[i];
-        j = (u8)((j + si) & 0xff);
-        sj = S[j];
-        S[i] = sj;
-        S[j] = si;
+        j = (u8)((j + 1) & 0xff);
+        si = S[j];
+        i = (u8)((i + si) & 0xff);
+        sj = S[i];
+        S[j] = sj;
+        S[i] = si;
         k = (u8)((si + sj) & 0xff);
         data[n] ^= S[k];
     }
-    state[0] = i;
-    state[1] = j;
+    state[0] = j;
+    state[1] = i;
 }
 
 s32 func_02026244(u16 *arr, s32 n) {
@@ -181,13 +185,11 @@ s32 func_020264ec(u16 *a, u16 *b, s32 n) {
 
 void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
     u32 s;
-    while (i < len) {
+    while (carry != 0 && i < len) {
         s = carry + arr[i];
         arr[i] = (u16)s;
         i++;
         carry = s >> 16;
-        if (carry != 0) continue;
-        return;
     }
 }
 
@@ -467,8 +469,9 @@ void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {
 
     var_r4 = dst;
     var_r5 = count;
+    var_r6 = src;
     func_02007f8c((u8 *)var_r4, 0, (u32)(size * 2));
-    var_r6 = src + (var_r5 - 1);
+    var_r6 = var_r6 + (var_r5 - 1);
     if (var_r5 > 1) {
         do {
             var_r5 -= 2;

@@ -283,7 +283,7 @@ void func_0208874c(void) {
 }
 
 #pragma optimization_level 4
-void func_02088774(s32 a) { void func_02007e20(void *,s32,s32); extern u8 data_021577c0[]; extern void *gCur3DSpriteEngine; s32 offset=(a<<5)&~1; void *p=gCur3DSpriteEngine; func_02007e20(data_021577c0,offset+M2C_FIELD(p,s32 *,0x30),32); }
+void func_02088774(s32 a){void func_02007e20(void *,s32,s32);extern u8 data_021577c0[];extern void *data_027e01d8;s32 offset=(a<<5)&~1;void *p=data_027e01d8;func_02007e20(data_021577c0,offset+M2C_FIELD(p,s32 *,0x30),32);}
 #pragma optimization_level reset
 void func_020887a8(void *p,s32 a,s32 b,s32 c,s32 d){void func_020887ec(void *);s32 x=M2C_FIELD(p,s16 *,0x34),y=M2C_FIELD(p,s16 *,0x36),z=M2C_FIELD(p,s8 *,0x49),w=M2C_FIELD(p,s32 *,0x44);M2C_FIELD(p,s16 *,0x34)=a;M2C_FIELD(p,s16 *,0x36)=b;M2C_FIELD(p,s8 *,0x49)=c;M2C_FIELD(p,s32 *,0x44)=d;func_020887ec(p);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,s8 *,0x49)=z;M2C_FIELD(p,s32 *,0x44)=w;}
 

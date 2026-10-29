@@ -37,11 +37,24 @@ void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
 void func_ov001_02171128(void){u64 func_02007004(void);void func_02072088(u64,u64);func_02072088(func_02007004()<<6,0x82ea);}
 
 #pragma thumb on
-s32 func_ov001_02171178(s8 *a,s32 b){
- s8 *p=a;u8 t=b;s32 i=0; s32 v,ch;
- v=(t&0xf0)>>4;
- do{if(v<=9)ch=v+0x30;else ch=v+0x37;i++;*p++=ch;v=t&15;}while(i<2);
- *p=0;return p-a;
+s32 func_ov001_02171178(s8 *a, s32 b) {
+    s32 i = 0;
+    u8 t = (u8)b;
+    s32 v = (t & 0xF0) >> 4;
+    s8 *p = a;
+    do {
+        s32 ch;
+        if (v <= 9) {
+            ch = v + 0x30;
+        } else {
+            ch = v + 0x37;
+        }
+        i++;
+        *p++ = (s8)ch;
+        v = t & 0x0F;
+    } while (i < 2);
+    *p = 0;
+    return (s32)(p - a);
 }
 s32 func_ov001_021711ac(s8 *arg0,s8 *arg1){
  s8 *sp0=arg0; s8 *p=arg0; s32 i; s8 *q=arg1,*t;s8 v;
@@ -94,7 +107,16 @@ r=M2C_FIELD(data_ov001_02193cc4,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
 M2C_FIELD(data_ov001_02193cc4,s32 *,0)=func_ov001_0218c884(1,func_ov001_021714d0,0,120);
 }
 #pragma merge_constants off
-void func_ov001_02171494(void) { void func_ov001_0218c94c(s32,s32);void func_ov001_0218c104(s32);void func_ov001_0218b71c(void **); extern void *data_ov001_02193cc4; func_ov001_0218c94c(1,M2C_FIELD(data_ov001_02193cc4,s32 *,0));func_ov001_0218c104(M2C_FIELD(data_ov001_02193cc4,s32 *,4));func_ov001_0218b71c(&data_ov001_02193cc4);}
+void func_ov001_02171494(void) {
+    M2C_UNK func_ov001_0218b71c(void **);
+    M2C_UNK func_ov001_0218c104(s32);
+    M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);
+    extern void *data_ov001_02193cc4;
+    extern void *data_ov001_02193cc8;
+    func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193cc4, s32 *, 0));
+    func_ov001_0218c104(M2C_FIELD(data_ov001_02193cc4, s32 *, 4));
+    func_ov001_0218b71c(&data_ov001_02193cc8 - 1);
+}
 #pragma merge_constants reset
 void func_ov001_021714d0(void) {
     s32 func_02002088(u8, M2C_UNK);

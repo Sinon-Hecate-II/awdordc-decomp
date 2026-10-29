@@ -270,12 +270,9 @@ void func_ov010_0222b414(void) {
 }
 
 void func_ov010_0222b418(void *arg0) {
-    M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     void *func_0208b564(void *);
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
-    M2C_UNK func_020c4a74(M2C_UNK);
-    extern s32 gCur3DSpriteEngine;
+    M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
+    extern s32 data_027e00c4, data_027e00c8, gCur3DSpriteEngine;
     s8 temp_r1;
     s32 var_r8;
     s32 var_r2;
@@ -284,37 +281,29 @@ void func_ov010_0222b418(void *arg0) {
 
     if (func_020d4810() != 0) {
         func_020c4a74(0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
+        M2C_FIELD(arg0, u8 *, 0x34) = (u8)(M2C_FIELD(arg0, u8 *, 0x34) | 1u);
         func_01ffa8c4(arg0, 3);
         return;
     }
+
     if (M2C_FIELD(arg0, s8 *, 0x35) >= 0) {
         temp_r9 = gCur3DSpriteEngine;
         var_r8 = 0;
         do {
-            if (var_r8 == 0) {
-                var_r2 = data_027e00c8;
-            } else {
-                var_r2 = data_027e00c4;
-            }
+            if (var_r8 == 0) var_r2 = data_027e00c8;
+            else var_r2 = data_027e00c4;
             gCur3DSpriteEngine = var_r2;
             temp_r1 = M2C_FIELD(arg0, s8 *, 0x35);
-            switch (temp_r1) {                      /* irregular */
-            case 0:
-                if (var_r2 == data_027e00c8) {
-                    if (((temp_r1 != 1) || (var_r2 == data_027e00c4)) && ((temp_r1 != 3) || (var_r2 == temp_r9))) {
-                    default:
-                        temp_r0 = func_0208b564(arg0);
-                        func_020899cc(temp_r0, 2, M2C_FIELD(arg0, u16 *, 0x36) << 5, 0x42000017);
-                        M2C_FIELD(temp_r0, s32 *, 0x58) = (s32) (M2C_FIELD(temp_r0, s32 *, 0x58) | 0x1000);
-                    }
-                }
-                break;
-            }
-            var_r8++;
-        } while (2 > var_r8);
+            if (temp_r1 == 0 && var_r2 != data_027e00c8) continue;
+            if (temp_r1 == 1 && var_r2 != data_027e00c4) continue;
+            if (temp_r1 == 3 && var_r2 != temp_r9) continue;
+            temp_r0 = func_0208b564(arg0);
+            func_020899cc(temp_r0, 2, (s32)M2C_FIELD(arg0, u16 *, 0x36) << 5, 0x42000017);
+            M2C_FIELD(temp_r0, s32 *, 0x58) = (s32)(M2C_FIELD(temp_r0, s32 *, 0x58) | 0x1000);
+        } while (++var_r8 < 2);
         gCur3DSpriteEngine = temp_r9;
     }
+
     func_01ffa8c4(arg0, 0xC);
 }
 

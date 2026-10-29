@@ -134,8 +134,9 @@ void func_ov000_0219afdc(void *arg0, s32 arg1, s32 arg2) {
     s32 half;
     s32 i;
     void *map;
+    u8 dummy;  // Force register pressure
 
-    out = arg0;
+    out = (u8 *)arg0;
     src = data_ov000_021dee5c + arg1 * 64;
     in = data_ov000_021df05c + arg2 * 0xC0;
     rnd = RandomIntRange(0, 100);

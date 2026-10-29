@@ -190,13 +190,17 @@ u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
 s32 func_ov010_02223624(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
 #pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
- s32 func_0200751c(void); void func_02007530(s32);
- extern s32 data_ov010_0222d88c; extern s32 data_ov010_0222d890[],data_ov010_0222d89c[],data_ov010_0222d8a8[];
- s32 *a,*b,*c;
- data_ov010_0222d88c=func_0200751c();
- a=data_ov010_0222d8a8; b=data_ov010_0222d89c; c=data_ov010_0222d890;
- a[arg0]=0;c[arg0]=0;b[arg0]=0;
- func_02007530(data_ov010_0222d88c);
+    s32 func_0200751c(void);
+    void func_02007530(s32);
+    extern s32 data_ov010_0222d88c;
+    extern s32 data_ov010_0222d8a8[];
+    extern s32 data_ov010_0222d89c[];
+    extern s32 data_ov010_0222d890[];
+    data_ov010_0222d88c = func_0200751c();
+    data_ov010_0222d8a8[arg0] = 0;
+    data_ov010_0222d89c[arg0] = 0;
+    data_ov010_0222d890[arg0] = 0;
+    func_02007530(data_ov010_0222d88c);
 }
 
 void func_ov010_0222369c(s32 arg0) {

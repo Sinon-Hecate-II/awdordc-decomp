@@ -348,7 +348,7 @@ s32 func_020310c0(void *arg0, s32 arg1) {
     }
     temp_r2 = M2C_FIELD(arg0, u8 *, 0xD12);
     var_r1 = 0;
-    if (temp_r2 != 0) {
+    if ((s32) temp_r2 > 0) {
 loop_3:
         if (M2C_FIELD((arg0 + (var_r1 * 4)), u8 *, 0x444) != 0) {
             var_r1 += 1;

@@ -232,12 +232,12 @@ void func_0203f31c(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, u8 *arg3) {
     s32 len;
     u8 *tail;
     len = (s32)func_0200567c((M2C_UNK)buf, 0x200, (M2C_UNK)&data_020fca08, (M2C_UNK)&data_020fca10, 3, (M2C_UNK)&data_020fca18);
-    buf[len] = (char)arg1;
+    buf[len] = (u8)arg1;
     buf[len + 1] = 0;
     tail = (u8 *)buf + len + 1;
     if (arg3 != 0) {
         s32 alen = func_02068c34(arg3);
-        func_02008048(arg3, tail, alen);
+        func_02008048(arg3, tail, (u32)alen);
         tail[alen] = 0;
     }
     func_0204e634(arg0, arg2, (M2C_UNK)buf);

@@ -127,28 +127,37 @@ void func_ov001_02173e38(void *arg0) {
 }
 
 void func_ov001_02173ebc(void *arg0) {
-    u32 sp4;
-    s32 temp_r3;
-    s32 sp0;
+    void func_ov001_0218c924(void *, void *);
+    void func_ov001_0217355c(u8, s32, s32, u32);
+    M2C_UNK A;
+    M2C_UNK B;
+    u8 b;
+    u32 v;
+    volatile struct { s32 sp0; u32 sp4; } stk;
 
-    temp_r3 = *(s32 *)M2C_FIELD(data_ov001_02193d1c, s32 **, 0xC0);
-    sp4 = ((u32)temp_r3 & 0x01FF0000) >> 0x10;
-    sp0 = (temp_r3 & 0xff) + 0xC;
-    func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 3, sp0, sp4);
-    if (sp0 < 0xC0) {
+    A = (M2C_UNK)data_ov001_02193d1c;
+    B = M2C_FIELD(A, M2C_UNK *, 0xc0);
+    b = M2C_FIELD(A, u8 *, 0x11d);
+    v = M2C_FIELD(B, u32 *, 0);
+    stk.sp0 = (s32)(v & 0xffU) + 0xc;
+    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
+    func_ov001_0217355c(b, 3, stk.sp0, stk.sp4);
+    if (stk.sp0 < 0xc0) {
         return;
     }
     func_ov001_0218c924(arg0, &func_ov001_02173f30);
 }
 
 void func_ov001_02173f30(void *arg0) {
-    s32 sp0;
-    u32 sp4;
+    void func_ov001_0217355c(u8, s32, s32, u32);
+    void func_ov001_0218c924(void *, void *);
     u32 temp_ip;
+    volatile u32 sp4;
+    volatile s32 sp0;
 
     temp_ip = *(u32 *)M2C_FIELD(data_ov001_02193d1c, u32 **, 0x90);
+    sp0 = (s32)(temp_ip & 0xff) + 0xC;
     sp4 = (temp_ip & 0x01FF0000) >> 0x10;
-    sp0 = (temp_ip & 0xff) + 0xC;
     func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 2, sp0, sp4);
     if (sp0 < 0xC0) {
         return;
@@ -157,30 +166,44 @@ void func_ov001_02173f30(void *arg0) {
 }
 
 void func_ov001_02173fa4(void *arg0) {
-    s32 sp0;
-    u32 sp4;
-    u32 temp_ip;
+    void func_ov001_0218c924(void *, void *);
+    void func_ov001_0217355c(u8, s32, s32, u32);
+    M2C_UNK A;
+    M2C_UNK B;
+    u8 b;
+    u32 v;
+    volatile struct { s32 sp0; u32 sp4; } stk;
 
-    temp_ip = *(u32 *)M2C_FIELD(data_ov001_02193d1c, u32 **, 0x60);
-    sp4 = (temp_ip & 0x01FF0000) >> 0x10;
-    sp0 = (temp_ip & 0xff) + 0xC;
-    func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 1, sp0, sp4);
-    if (sp0 < 0xC0) {
+    A = (M2C_UNK)data_ov001_02193d1c;
+    B = M2C_FIELD(A, M2C_UNK *, 0x60);
+    b = M2C_FIELD(A, u8 *, 0x11d);
+    v = M2C_FIELD(B, u32 *, 0);
+    stk.sp0 = (s32)(v & 0xffU) + 0xc + 0;
+    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
+    func_ov001_0217355c(b, 1, stk.sp0, stk.sp4);
+    if (stk.sp0 < 0xc0) {
         return;
     }
     func_ov001_0218c924(arg0, &func_ov001_02174018);
 }
 
 void func_ov001_02174018(void *arg0) {
-    s32 sp0;
-    u32 sp4;
-    u32 temp_ip;
+    void func_ov001_0218c924(void *, void *);
+    void func_ov001_0217355c(u8, s32, s32, u32);
+    M2C_UNK A;
+    M2C_UNK B;
+    u8 b;
+    u32 v;
+    volatile struct { s32 sp0; u32 sp4; } stk;
 
-    temp_ip = *(u32 *)M2C_FIELD(data_ov001_02193d1c, u32 **, 0x30);
-    sp4 = (temp_ip & 0x01FF0000) >> 0x10;
-    sp0 = (temp_ip & 0xff) + 0xC;
-    func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 0, sp0, sp4);
-    if (sp0 < 0xC0) {
+    A = (M2C_UNK)data_ov001_02193d1c;
+    B = M2C_FIELD(A, M2C_UNK *, 0x30);
+    b = M2C_FIELD(A, u8 *, 0x11d);
+    v = M2C_FIELD(B, u32 *, 0);
+    stk.sp0 = (s32)(v & 0xffU) + 0xc;
+    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
+    func_ov001_0217355c(b, 0, stk.sp0, stk.sp4);
+    if (stk.sp0 < 0xc0) {
         return;
     }
     func_ov001_0218c924(arg0, &func_ov001_0217408c);

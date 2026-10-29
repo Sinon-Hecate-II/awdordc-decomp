@@ -131,12 +131,17 @@ return p;
 }
 
 
-s32 func_02009298(QueueNode09298 *arg0) {
-s32 func_0200751c(void);extern M2C_UNK data_0212e020;
-s32 s=func_0200751c(); Queue09298 *p=(Queue09298 *)&data_0212e020;
-QueueNode09298 **slot=&p->tail;
-if(*slot==0)p->head=arg0;else (*slot)->next=arg0;
-*slot=arg0;arg0->next=0;return func_02007530(s);
+s32 func_02009298(M2C_UNK *arg0) {
+    s32 func_0200751c(void);
+    s32 func_02007530(s32);
+    extern M2C_UNK data_0212e020;
+    s32 s = func_0200751c();
+    M2C_UNK **p = (M2C_UNK **)&data_0212e020;
+    if (p[3] == 0) p[2] = arg0;
+    else *p[3] = arg0;
+    p[3] = arg0;
+    *arg0 = 0;
+    return func_02007530(s);
 }
 
 s32 func_020092d0(s32 flags) {

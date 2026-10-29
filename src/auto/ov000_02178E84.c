@@ -33,7 +33,11 @@ if(func_ov000_021a98a8(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;
 else value=M2C_FIELD(data_ov000_021df580,u8 *,5);
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(data_ov000_021df57c,u8 *,15);
 else scale=M2C_FIELD(data_ov000_021df57c,u8 *,14);
-value=scale*value;if(value>110)value=110;else value=value;return value;
+value=scale*value;
+if (value > 110) {
+    value = 110;
+}
+return value;
 }
 
 s32 func_ov000_02179ce4(u8 *arg0) {

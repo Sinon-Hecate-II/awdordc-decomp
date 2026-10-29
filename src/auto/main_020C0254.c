@@ -340,11 +340,16 @@ data_02163eec+=8;
 
 #pragma opt_instruction_scheduling off
 void func_020c0b40(void) {
-CEntry *p; s32 flag;
-if(data_02163eec==data_02163ef0)return;
-p=(CEntry *)(data_02163eec-=8);
-flag=p->flag;
-func_020c0634(p->value,((volatile CEntry *)p)->x,((volatile CEntry *)p)->y,((volatile CEntry *)p)->index,flag);
+    M2C_UNK func_020c0634(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 idx;
+    if (data_02163eec == data_02163ef0) return;
+    data_02163eec -= 8;
+    idx = M2C_FIELD(data_02163eec, s8 *, 2);
+    func_020c0634(M2C_FIELD(data_02163eec, s32 *, 4),
+                  M2C_FIELD(data_02163eec, s8 *, 0),
+                  M2C_FIELD(data_02163eec, s8 *, 1),
+                  idx,
+                  M2C_FIELD(data_02163eec, s8 *, 3));
 }
 #pragma opt_instruction_scheduling reset
 void func_020c0b88(s8 arg0) {

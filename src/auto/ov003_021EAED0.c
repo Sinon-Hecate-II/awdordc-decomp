@@ -108,39 +108,37 @@ u8 func_ov003_021ebc90(s32 arg0, s32 arg1) {
     return (u8) M2C_FIELD(((arg1 * 0x18) + arg0), s32 *, 0x18);
 }
 
-void func_ov003_021ebca4(s32 arg0,s32 arg1,s32 arg2) {
- s32 offset;
- s32 base;
- void *p;
+void func_ov003_021ebca4(void *arg0,s32 arg1,s32 arg2) {
+ s32 offset=arg1*0x18;
+ void *base=(char*)arg0+0x18;
+ void *p=(char*)arg0+offset;
  void *q;
- s32 value;
  s32 temp;
- offset=arg1*0x18;
- base=arg0+0x18;
- M2C_FIELD(base+offset,s32 *,0)=arg2;
- p=(void *)(arg0+offset);
+ M2C_FIELD(base,s32 *,offset)=arg2;
  if(M2C_FIELD(p,u8 *,0x28)) {
-  if(M2C_FIELD(base+offset,s32 *,0)>M2C_FIELD(p,s32 *,0x1c)) {
+  if(M2C_FIELD(base,s32 *,offset)>M2C_FIELD(p,s32 *,0x1c)) {
    do {
     temp=M2C_FIELD(p,s32 *,0x18)-(M2C_FIELD(p,s32 *,0x1c)-M2C_FIELD(p,s32 *,0x20)+1);
     M2C_FIELD(p,s32 *,0x18)=temp;
    } while(temp>M2C_FIELD(p,s32 *,0x1c));
   }
-  q=(void *)(arg0+offset);
-  if(M2C_FIELD(base+offset,s32 *,0)>=M2C_FIELD(q,s32 *,0x20)) return;
+  q=(char*)arg0+offset;
+  if(M2C_FIELD(base,s32 *,offset)>=M2C_FIELD(q,s32 *,0x20)) return;
   do {
    temp=M2C_FIELD(q,s32 *,0x18)+(M2C_FIELD(q,s32 *,0x1c)-M2C_FIELD(q,s32 *,0x20)+1);
    M2C_FIELD(q,s32 *,0x18)=temp;
   } while(temp<M2C_FIELD(q,s32 *,0x20));
   return;
  }
- value=M2C_FIELD(p,s32 *,0x1c);
- temp=M2C_FIELD(base+offset,s32 *,0);
- if(temp<=value) {
-  value=M2C_FIELD(p,s32 *,0x20);
-  if(temp>=value) value=temp;
+ {
+  s32 value=M2C_FIELD(p,s32 *,0x1c);
+  s32 t=M2C_FIELD(base,s32 *,offset);
+  if(t<=value) {
+   value=M2C_FIELD(p,s32 *,0x20);
+   if(t>=value) value=t;
+  }
+  M2C_FIELD(base,s32 *,offset)=value;
  }
- M2C_FIELD(base+offset,s32 *,0)=value;
 }
 
 s8 func_ov003_021ebd64(void *arg0,s32 arg1) {

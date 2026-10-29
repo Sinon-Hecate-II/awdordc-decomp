@@ -182,6 +182,7 @@ void func_ov001_0216e340(M2C_UNK arg0) {
     func_ov001_0216e310(arg0, 0);
 }
 
+#pragma opt_common_subs off
 s32 func_ov001_0216e34c(s32 a) {
 extern M2C_UNK data_ov001_02192790;
 s32 func_ov001_0216e2d8(void);
@@ -198,7 +199,7 @@ do {func_02006030(10);r=func_ov001_0216e2d8();
 while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0;result=-2;} r=func_ov001_0216e2d8(); }
 }while(active);return result;
 }
-
+#pragma opt_common_subs reset
 s32 func_ov001_0216e3f0(void) {
 extern M2C_UNK data_ov001_02192790;
 s32 r,again=1;

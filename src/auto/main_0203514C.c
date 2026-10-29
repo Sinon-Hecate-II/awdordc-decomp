@@ -1,7 +1,7 @@
 /* 5 functions from 0x0203514C to 0x0203538C (main), found by ds-decomp. */
 #include "common.h"
 
-void func_0203514c(void){extern void *data_0213d138;extern M2C_UNK data_020fb800,data_020fb810,data_020fb82c,data_020fb84c;register void *p;void (*cb)(void*,void*,s32)=*(void (**)(void*,void*,s32))((char *)data_0213d138+0x110c);p=M2C_FIELD(&data_0213d138,void**,0x14);if(p){func_02034480();cb(&data_020fb800,M2C_FIELD(&data_0213d138,void**,0x14),0);M2C_FIELD(&data_0213d138,void**,0x14)=0;}func_02032b10();if(!data_0213d138)return;if(M2C_FIELD(data_0213d138,void**,0x1114)){cb(&data_020fb810,M2C_FIELD(data_0213d138,void**,0x1114),0);M2C_FIELD(data_0213d138,void**,0x1114)=0;}if(M2C_FIELD(data_0213d138,void**,0x1118)){cb(&data_020fb82c,M2C_FIELD(data_0213d138,void**,0x1118),0);M2C_FIELD(data_0213d138,void**,0x1118)=0;}cb(&data_020fb84c,data_0213d138,0);data_0213d138=0;}
+void func_0203514c(void){extern void *data_0213d138;extern M2C_UNK data_020fb800,data_020fb810,data_020fb82c,data_020fb84c;void (*cb)(void*,void*,s32)=*(void (**)(void*,void*,s32))((char *)data_0213d138+0x110c);if(M2C_FIELD(&data_0213d138,void**,20)){func_02034480();cb(&data_020fb800,M2C_FIELD(&data_0213d138,void**,20),0);M2C_FIELD(&data_0213d138,void**,20)=0;}func_02032b10();if(!data_0213d138)return;if(M2C_FIELD(data_0213d138,void**,0x1114)){cb(&data_020fb810,M2C_FIELD(data_0213d138,void**,0x1114),0);M2C_FIELD(data_0213d138,void**,0x1114)=0;}if(M2C_FIELD(data_0213d138,void**,0x1118)){cb(&data_020fb82c,M2C_FIELD(data_0213d138,void**,0x1118),0);M2C_FIELD(data_0213d138,void**,0x1118)=0;}cb(&data_020fb84c,data_0213d138,0);data_0213d138=0;}
 
 void func_02035244(void) {
     M2C_UNK func_02005d60(void *);

@@ -76,5 +76,6 @@ void func_ov000_0216ebd8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, s16 *, 0x6E) = 0;
 }
 
+#pragma opt_lifetimes off
 s32 func_ov000_0216ec1c(void){extern u8 *data_ov000_021df5e4[2];extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];s32 i,n;void *base;u8 (*entries)[14];u16 start;for(i=0;i<64;i++)data_ov000_021df5e4[1][i]=0;base=*gCurrentMap;start=data_ov000_021aeef4[M2C_FIELD(base,u16 *,0x52a4)];for(i=start+1;i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){entries=base+0x59a4;if((u32)(entries[i][0]<<26)>>26)n++;}return n;}
-
+#pragma opt_lifetimes reset

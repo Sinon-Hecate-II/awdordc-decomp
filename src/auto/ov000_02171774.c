@@ -88,7 +88,7 @@ s32 func_ov000_021724cc(void *arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 void *func_ov000_021724dc(void *arg0) {
 void *func_02082028(s32);
-register s32 i,j,k; register void *p,*q; void *t;
+s32 i,j,k; void *p,*q,*t;
 M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0;
 M2C_FIELD(arg0,s32 *,12)=0; M2C_FIELD(arg0,s32 *,16)=0; M2C_FIELD(arg0,u8 *,20)=0;
 p=func_02082028(0x11c);

@@ -251,6 +251,19 @@ s32 func_0202a468(void *arg0, s32 arg1, s32 arg2) {
     return func_0202a284(arg0, arg1, -arg2);
 }
 
+void func_0202a498(s32 arg0, s32 arg1) {
+    void func_02029f2c(void *, void *);
+    void *func_02029f58(void *, void *);
+    s32 func_0202a334(void *, HeapRange *);
+    s32 temp_r4;
+    s32 sp0[2];
+
+    temp_r4 = arg1 - 0x10;
+    func_02029f2c(sp0, (void *)temp_r4);
+    func_02029f58((void *)(arg0 + 0x2C), (void *)temp_r4);
+    func_0202a334((void *)(arg0 + 0x24), (HeapRange *)sp0);
+}
+
 s32 func_0202a4d4(void *arg0, s32 arg1) {
     u16 temp_r3;
     u16 bit;
@@ -269,6 +282,27 @@ void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
     M2C_FIELD(arg0, s32 *, 0x2C) = 0;
     return arg0;
+}
+
+void *func_0202a544(void *arg0, s32 arg1, s32 arg2) {
+    M2C_UNK func_02007e54(M2C_UNK, u32, s32);
+    u32 f0;
+    u32 r5;
+    u32 r6;
+    u32 diff;
+
+    f0 = M2C_FIELD(arg0, u32 *, 0);
+    r5 = (u32)(~(arg2 - 1)) & ((u32)(arg2 - 1) + f0);
+    r6 = (u32)arg1 + r5;
+    if (r6 > M2C_FIELD(arg0, u32 *, 4)) {
+        return (void *)0;
+    }
+    diff = r6 - f0;
+    if (((u8)M2C_FIELD(arg0, s32 *, -4) & 0x1) != 0) {
+        func_02007e54(0, f0, (s32)diff);
+    }
+    M2C_FIELD(arg0, u32 *, 0) = r6;
+    return (void *)r5;
 }
 
 u32 func_0202a5a0(void *arg0, s32 arg1, s32 arg2) {
@@ -555,8 +589,12 @@ s32 func_0202aa64(s32 arg0) {
         return 0;
     }
     func_02008dbc(arg0, 0);
-    M2C_FIELD(&data_0213b2a0, s32 *, 8) = M2C_FIELD(&data_0213b2a0, s32 *, 8) | arg0;
-    return (s32)1;
+    {
+        M2C_UNK *p = &data_0213b2a0;
+        s32 v = M2C_FIELD(p, s32 *, 8) | arg0;
+        M2C_FIELD(p, s32 *, 8) = v;
+    }
+    return 1;
 }
 
 void func_0202aaac(s32 arg0) {
@@ -584,17 +622,15 @@ s32 func_0202aaf8(void) {
     flags = M2C_FIELD(&data_0213b2a0, u32 *, 4);
     mask = 1;
     i = 0;
-    if ((flags & mask) == 0) {
-        M2C_FIELD(&data_0213b2a0, u32 *, 4) = flags | mask;
-        return i;
+    if ((flags & mask) != 0) {
+        do {
+            i = i + 1;
+            mask = mask << 1;
+            if (i == 8) {
+                return -1;
+            }
+        } while ((flags & mask) != 0);
     }
-    do {
-        i = i + 1;
-        if (i == 8) {
-            return -1;
-        }
-        mask = mask << 1;
-    } while ((flags & mask) != 0);
     M2C_FIELD(&data_0213b2a0, u32 *, 4) = flags | mask;
     return i;
 }

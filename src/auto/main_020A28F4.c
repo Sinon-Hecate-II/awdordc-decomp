@@ -259,12 +259,11 @@ u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;
 u8 *func_020a32f4(s32 a){extern s32 *gCurrentMap;s32 base=*gCurrentMap;s32 p=base+0x67a4+140*a;u32 b;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;b=M2C_FIELD(p,u8 *,112);if(!b)return 0;return (u8 *)(base+0x59a4+14*b);}
 
 s32 func_020a334c(s32 a) {
-extern s32 *gCurrentMap;
-s32 p=*gCurrentMap+0x67a4+140*a;
-register s32 v=M2C_FIELD(p,u32 *,108);
-register s32 test=(u32)(v<<24)>>24;
-if(test==0) return 0;
-return (u8)((u32)(v<<20)>>30);
+    extern s32 *gCurrentMap;
+    s32 p = *gCurrentMap + 0x67a4 + 140 * a;
+    s32 v = M2C_FIELD(p, s32 *, 108);
+    if (((u32)(v << 24) >> 24) == 0) return 0;
+    return (u8)((u32)(v << 20) >> 30);
 }
 
 void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
@@ -300,7 +299,7 @@ void func_020a34f4(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-s32 func_020a3518(s32 a) {extern s32 *gCurrentMap; s32 v=M2C_FIELD(*gCurrentMap+0x67a4+140*a,s32 *,108); if(((u32)(v<<24)>>24)==0)return 0;return (u32)v>>21;}
+s32 func_020a3518(s32 a){extern s32 *data_027e0058;s32 v=M2C_FIELD(*data_027e0058+0x67a4+140*a,s32 *,108);if(((u32)(v<<24)>>24)==0)return 0;else return (u32)v>>21;}
 #pragma opt_common_subs reset
 void func_020a3550(s32 a,s32 b){
  extern s32 *gCurrentMap;

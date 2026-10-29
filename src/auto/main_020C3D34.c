@@ -19,13 +19,29 @@ M2C_FIELD(data_02164094,s32*,0)++;M2C_FIELD(data_02164094,s32*,4)++;
 if(M2C_FIELD(data_02164094,s32*,0)>=250)M2C_FIELD(data_02164094,s32*,0)=250;
 if(M2C_FIELD(data_02164094,s32*,4)<64)return;func_01ffa6fc(arg0);}
 
-void func_020c46b4(void){M2C_UNK func_020e35cc(void *);extern void *data_02164094;extern u16 **data_027e00c4;extern u16 **gCur3DSpriteEngine;u16 **temp_r0;
-if(data_02164094!=0){func_020e35cc(data_02164094);data_02164094=0;}
-temp_r0=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
-{u16 *ptr=*gCur3DSpriteEngine;*ptr &=~0x200;}
-{u16 *ptr=*gCur3DSpriteEngine;*ptr &=~0x400;}
-{u16 *ptr=*gCur3DSpriteEngine;*ptr &=~0x800;}
-gCur3DSpriteEngine=temp_r0;}
+void func_020c46b4(void) {
+ M2C_UNK func_020e35cc(void *);
+ extern void *data_02164094;
+ extern u16 **gCur3DSpriteEngine;
+ extern u16 **data_027e00c4;
+ u16 **old;
+ u16 * volatile sp8;
+ u16 * volatile sp4;
+ u16 * volatile sp0;
+ if (data_02164094 != 0) {
+  func_020e35cc(data_02164094);
+  data_02164094 = 0;
+ }
+ old = gCur3DSpriteEngine;
+ gCur3DSpriteEngine = data_027e00c4;
+ sp8 = *gCur3DSpriteEngine;
+ *sp8 = (*sp8 & ~0x200);
+ sp4 = *gCur3DSpriteEngine;
+ *sp4 = (*sp4 & ~0x400);
+ sp0 = *gCur3DSpriteEngine;
+ *sp0 = (*sp0 & ~0x800);
+ gCur3DSpriteEngine = old;
+}
 
 void func_020c4764(M2C_UNK arg0) {
     M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
@@ -174,15 +190,15 @@ M2C_UNK *func_020c4acc(void) {
 s32 func_020c4ad8(s32 *arg0) {
     M2C_UNK func_02007df8(M2C_UNK, void *, M2C_UNK);
     M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
-    s32 *var_r10;
-    void *var_r9;
-    s32 var_r8;
+    register s32 var_r8;
+    register void *var_r9;
+    register s32 *var_r10;
 
     var_r10 = arg0;
     *var_r10 = 0x07090600;
-    func_02007f8c(var_r10 + 4, 0, 0x2D0);
+    func_02007f8c((s32)((u8*)var_r10 + 4), 0, 0x2D0);
     var_r8 = 0;
-    var_r9 = var_r10 + 0x2D4;
+    var_r9 = (u8*)var_r10 + 0x2D4;
     do {
         func_02007df8(0, var_r9, 0x1A);
         M2C_FIELD(var_r10, s16 *, 0x2EE) = 0;
@@ -192,8 +208,8 @@ s32 func_020c4ad8(s32 *arg0) {
         M2C_FIELD(var_r10, s8 *, 0x2F5) = -2;
         var_r8 += 1;
         M2C_FIELD(var_r10, s8 *, 0x2F6) = -2;
-        var_r9 += 0x28;
-        var_r10 += 0x28;
+        var_r9 = (u8*)var_r9 + 0x28;
+        var_r10 = (s32*)((u8*)var_r10 + 0x28);
     } while (var_r8 < 0x3C);
     return 1;
 }

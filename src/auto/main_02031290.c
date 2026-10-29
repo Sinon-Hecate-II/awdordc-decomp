@@ -214,6 +214,20 @@ s32 func_0203174c(M2C_UNK a) { M2C_UNK func_0203182c(M2C_UNK,M2C_UNK *); s32 fun
 
 void func_02031784(M2C_UNK a,M2C_UNK b) { M2C_UNK func_0203182c(M2C_UNK,M2C_UNK *); void func_02031930(M2C_UNK *,M2C_UNK); M2C_UNK buf[6]; func_0203182c(a,buf); func_02031930(buf,b); }
 
+void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
+    M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
+    s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
+    void func_02008048(void *, void *, u32);
+    extern M2C_UNK data_020fb2a4;
+    M2C_UNK buf0[2];
+    M2C_UNK buf1[4];
+    func_0203182c(arg0, buf0);
+    if (func_0206527c((M2C_UNK)buf0, &data_020fb2a4, 8) != 0) {
+        return;
+    }
+    func_02008048(buf1, (void *)arg1, 0xA);
+}
+
 s32 func_020317f8(M2C_UNK arg0) {
     s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fb2b0;
@@ -282,6 +296,19 @@ M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
     for (i = 0; i < 0x18; i++) {
         p[i] = (u8)(p[i] ^ key[i]);
     }
+}
+
+void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
+    M2C_UNK func_0200c454(M2C_UNK *);
+    M2C_UNK func_0200c494(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_0200c55c(M2C_UNK *, M2C_UNK *);
+    void func_02008048(void *, void *, u32);
+    u8 digest[20];
+    u8 ctx[88];
+    func_0200c454(ctx);
+    func_0200c494(ctx, (M2C_UNK)arg0, 0x18);
+    func_0200c55c(digest, ctx);
+    func_02008048(digest + 3, (void *)arg1, 0xD);
 }
 
 void func_0203197c(u8 *src, u8 *dst) {
@@ -532,23 +559,18 @@ s32 func_02031f74(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_02076810(u8 *, s32 *, s32);
     u8 buf[0x100];
     s32 in[2];
-    s32 c1;
-    s32 c2;
     s32 h;
-    s32 masked;
-
-    c1 = arg1 & 0;
-    c2 = arg0 & 0x80000000;
-    if (c1 == 0 && c2 == 0) {
-        in[0] = arg0;
-        in[1] = arg2;
-        func_02076698(buf, 7);
-        h = func_02076810(buf, in, 8);
-        masked = h & 0x7f;
-        if ((masked >> 31) == 0 && masked == arg1) {
-            return 1;
-        }
+    volatile s32 masked;
+    if ((arg1 & 0) != 0 || (arg0 & (s32)0x80000000) != 0) {
         return 0;
+    }
+    in[0] = arg0;
+    in[1] = arg2;
+    func_02076698(buf, 7);
+    h = func_02076810(buf, in, 8);
+    masked = h & 0x7F;
+    if (((masked >> 31) == 0) && (masked == arg1)) {
+        return 1;
     }
     return 0;
 }

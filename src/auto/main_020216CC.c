@@ -8,6 +8,7 @@ void func_020216cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg
     u16 temp_r4;
     u16 var_r5;
     u32 temp_r6;
+    s32 k = 0;
 
     if (arg4 == NULL) {
         var_r5 = 0;
@@ -18,6 +19,7 @@ void func_020216cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg
         var_r5 = (u8) ((s32) temp_r4 >> 8) | ((temp_r4 << 8) & 0xFF00);
         var_r4 = ((temp_r6 << 0x18) & 0xFF000000) | (((temp_r6 << 8) & 0xFF0000) | ((u8) (temp_r6 >> 0x18) | ((temp_r6 >> 8) & 0xFF00)));
     }
+    if (k) { (void)0; }
     func_02020478(arg0, arg1, arg2, var_r5, var_r4, arg3);
 }
 
@@ -254,18 +256,14 @@ extern M2C_UNK data_02138cc8;
 s32 state; u32 now; u8 *best; u32 maxage; s32 i; u8 *p; u32 age; u64 ticks; u8 valid;
 state=func_0200751c(); ticks=func_02007004();
 best=(u8 *)&data_02138cc8; maxage=0; now=(u32)(ticks>>16);
-i=0; p=(u8 *)&data_02138cc8;
-loop:
-{
+for(i=0,p=(u8 *)&data_02138cc8;i<4;i++,p+=0x5C){
 valid=p[0x5A];
-if(valid && arg1 && arg1==M2C_FIELD(p,s32 *,0x54) && arg2 && arg2==M2C_FIELD(p,u16 *,0x58)){best=p;goto done;}
+if(valid && arg1 && arg1==M2C_FIELD(p,s32 *,0x54) && arg2 && arg2==M2C_FIELD(p,u16 *,0x58)){best=p;break;}
 if(maxage!=~0U){
 if(!valid){maxage=~0U;best=p;}
 else {age=now-M2C_FIELD(p,u32 *,0x50);if(age>maxage){maxage=age;best=p;}}
 }
 }
-i++; p+=0x5C; if(i<4)goto loop;
-done:
 func_02008048(arg0+0x74,best,0x20);
 func_02008048(arg0,best+0x20,0x30);
 M2C_FIELD(best,u32 *,0x50)=now; best[0x5A]=1; M2C_FIELD(best,s32 *,0x54)=arg1;M2C_FIELD(best,u16 *,0x58)=arg2;

@@ -346,10 +346,10 @@ void func_020085d4(void *arg0, s32 arg1, u32 *arg2) {
 #pragma opt_propagation off
 void func_02008604(void *arg0, s32 arg1, u32 *arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, u32 *, 4) = *arg2 >> 8;
-    M2C_FIELD(arg0, s8 *, 0x18) = (u32)(*arg2 << 28) >> 28;
+    M2C_FIELD(arg0, u32 *, 4) = (u32) ((u32) *arg2 >> 8);
+    M2C_FIELD(arg0, s8 *, 0x18) = (s8) ((u32) (*arg2 << 0x1C) >> 0x1C);
     M2C_FIELD(arg0, s16 *, 0x14) = -1;
-    M2C_FIELD(arg0, void **, 8) = (u8*)arg0 + 0x1c;
+    M2C_FIELD(arg0, void **, 8) = (void *) (arg0 + 0x1C);
     M2C_FIELD(arg0, s32 *, 0x10) = 0;
     M2C_FIELD(arg0, s8 *, 0x17) = 0;
     M2C_FIELD(arg0, s32 *, 0xC) = 0;

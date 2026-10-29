@@ -188,7 +188,7 @@ void func_020e47f8(void) {
     } while (var_r4 < 3);
 }
 
-s32 func_020e4818(s32 a){extern u8 data_0215dba4[];u32 *p=(u32 *)(data_0215dba4+a*0x118);p[0]&=~15;p[0]&=~240;p[1]=(u16)(p[1]&0xffff0000);p[0]&=~0xff00;p[0]&=~0xff0000;p[0]&=~0xff000000;return p[0];}
+s32 func_020e4818(s32 a){extern u8 data_0215dba4[];u32 *p=(u32 *)(data_0215dba4+a*0x118);p[0]&=~15;p[0]&=~240;{u32 t=p[1];t&=0xffff0000U;p[1]=(u16)t;}p[0]&=~0xff00;p[0]&=~0xff0000;p[0]&=~0xff000000;return p[0];}
 
 void func_020e4870(s32 arg0) {
     extern M2C_UNK data_0215d9b8;
@@ -408,8 +408,21 @@ s32 func_020e4b54(void) {
 
 s32 func_020e4b9c(u16 key,...){extern u16 data_0212da1c;extern u16 data_020f4eb4[];volatile u8 a=0;volatile u8 b=0;u16 *p=func_020e4c10(data_020f4eb4,data_020f4eb4+data_0212da1c,&key,*(u32 *)&b);if(*p!=key)return 0;return p-data_020f4eb4;}
 
-u16 *func_020e4c10(u16 *first,u16 *last,u16 *key,u32 unused){s32 n=last-first;while(n>0){s32 half=n/2;u16 *p=first+half;if(*p>=*key){n=half;continue;}half++;n-=half;first=p+1;}return first;}
-
+#pragma opt_propagation off
+u16 *func_020e4c10(u16 *first, u16 *last, u16 *key, u32 unused) {
+    s32 n = last - first;
+    while (n > 0) {
+        s32 half = n / 2;
+        u16 *p = first + half;
+        if (*p >= *key) n = half;
+        else {
+            first = p + 1;
+            n -= half + 1;
+        }
+    }
+    return first;
+}
+#pragma opt_propagation reset
 void func_020e4c64(void) {
     s32 func_02081070(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212da20;
@@ -467,7 +480,25 @@ s8 func_020e4d80(void *arg0) {
     return func_01ffa6fc(arg0);
 }
 
-s32 func_020e4e44(void *a) {s16 n=M2C_FIELD(a,s16 *,62);s32 done;s32 flags;if(n>0)M2C_FIELD(a,s16 *,62)=n-1;if(M2C_FIELD(a,s16 *,62)==0)done=1;else done=0;if(!(done&255))return 0;flags=M2C_FIELD(a,u8 *,60)&~2;M2C_FIELD(a,s8 *,60)=(u8)flags|1;return 1;}
+s32 func_020e4e44(void *arg0) {
+    s16 temp_r1;
+    s32 var_r1;
+
+    temp_r1 = M2C_FIELD(arg0, s16 *, 0x3E);
+    if ((s32) temp_r1 > 0) {
+        M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (temp_r1 - 1);
+    }
+    if (M2C_FIELD(arg0, s16 *, 0x3E) == 0) {
+        var_r1 = 1;
+    } else {
+        var_r1 = 0;
+    }
+    if (!(var_r1 & 0xFF)) {
+        return 0;
+    }
+    M2C_FIELD(arg0, u8 *, 0x3C) = (u8) ((u8) (M2C_FIELD(arg0, u8 *, 0x3C) & ~2) | 1);
+    return 1;
+}
 
 void func_020e4e8c(void *arg0) {
     M2C_UNK func_0200dedc(M2C_UNK *);

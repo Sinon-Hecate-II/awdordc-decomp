@@ -50,19 +50,19 @@ void func_ov003_021e1530(void *state, s32 id) {
 
 void func_ov003_021e161c(void *arg0) {
 void func_020aacf0(void *);
-s32 a,b; u8 i; void *p,*q,*r;
+s32 flag,b; u8 i; void *p,*q,*r;
 i=0;
-M2C_FIELD(arg0,u8 *,4)=-1;
-M2C_FIELD(arg0,u8 *,5)=-1;
+M2C_FIELD(arg0,u8 *,4)=(signed char)-1;
+M2C_FIELD(arg0,u8 *,5)=(signed char)-1;
 do{
 p=M2C_FIELD(arg0+i*4,void **,0xc);
 if(p){
 func_020aacf0(p);
 r=M2C_FIELD((u32)arg0+i*4,void **,0xc);
-a=1;
+flag=1;
 q=M2C_FIELD(r,void **,0x64);
-if(M2C_FIELD(q,s8 *,0xb)!=1 && (((u32)(M2C_FIELD(r,u8 *,0x59)<<27)>>31)==0 || M2C_FIELD(q,s8 *,0xc)!=1))a=0;
-if(a&255)M2C_FIELD(arg0,u8 *,4)=i;
+if(M2C_FIELD(q,s8 *,0xb)!=1 && (((u32)(M2C_FIELD(r,u8 *,0x59)<<27)>>31)==0 || M2C_FIELD(q,s8 *,0xc)!=1))flag=0;
+if(flag&255)M2C_FIELD(arg0,u8 *,4)=i;
 p=M2C_FIELD((u32)arg0+(i<<2),void **,0xc);
 if((((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+1)==(u16)((u32)(M2C_FIELD(p,u32 *,0x40)<<6)>>24))b=1;else b=0;
 if(b&255)M2C_FIELD(arg0,u8 *,5)=i;

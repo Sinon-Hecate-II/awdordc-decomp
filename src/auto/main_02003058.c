@@ -5,38 +5,13 @@ extern u16 data_0212dbc2;
 
 s32 func_02003ec4(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x1f00)>>8;return 0;}
 s32 func_02003ef4(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x2000)>>13;return 0;}
-void func_02003f34(s32 a){M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;
-M2C_FIELD(a,volatile s32 *,0)=0;M2C_FIELD(a,volatile s32 *,4)=0;M2C_FIELD(a,volatile s32 *,8)=0;M2C_FIELD(a,volatile s32 *,12)=0;}
+void func_02003f34(void *arg0) {
+    volatile s32 *p = (volatile s32 *)arg0;
+    s32 i;
+    for (i = 0; i < 32; i++) {
+        p[i] = 0;
+    }
+}
 
 void func_02003058(s32 a){extern M2C_UNK data_0212dbc4;M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,6))&~a;M2C_FIELD(&data_0212dbc4,u16 *,6)=a;switch(a){case 0:break;case 12:*(volatile u8 *)0x4000243=0x8a;*(volatile u8 *)0x4000242=0x82;break;case 4:*(volatile u8 *)0x4000242=0x82;break;case 8:*(volatile u8 *)0x4000243=0x82;break;}func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));}
 

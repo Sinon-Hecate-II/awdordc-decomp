@@ -354,8 +354,8 @@ done:
 }
 
 void func_ov006_02215ae0(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
     s8 *temp_r0;
+    M2C_UNK func_0208fe30(s32);
     s8 temp_r3;
 
     temp_r0 = M2C_FIELD(arg0, void **, 0x10);
@@ -370,9 +370,12 @@ void func_ov006_02215ae0(void *arg0) {
     func_0208fe30(0x1000D);
 }
 
-void func_ov006_02215b64(void) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(0x10019);
+void func_ov006_02215b64(void)
+{
+  M2C_UNK func_0208fe30(s32);
+  volatile long new_var;
+  ;
+  func_0208fe30(0x10019);
 }
 
 void func_ov006_02215b78(void) {
@@ -562,9 +565,10 @@ done:
     }
 }
 
-void func_ov006_02216188(void) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(0x10019);
+void func_ov006_02216188(void)
+{
+  M2C_UNK func_0208fe30(s32);
+  func_0208fe30((0, 0x10019));
 }
 
 extern u16 **gCur3DSpriteEngine;

@@ -456,7 +456,10 @@ void func_ov003_021ea3f4(void *arg0) {
 
 void func_ov003_021ea4a8(void *arg0,s32 arg1){
 void *func_02084e24(u8);M2C_UNK func_0208fe30(s32);
-s32 temp_r2,var_r1;u8 var_r7,var_r0;void *temp_r8,*temp_r0;
+s32 dummy=0;
+u8 var_r7,var_r0;
+s32 temp_r2,var_r1;
+void *temp_r0,*temp_r8;
 var_r7=0;
 if(M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4)<=0)return;
 do{
@@ -471,5 +474,6 @@ if(!temp_r2){if(arg1)func_0208fe30(0x1000f);M2C_FIELD(temp_r8,u8*,0x7c)=0;}
 }else if(temp_r2){if(arg1)func_0208fe30(0x1000d);M2C_FIELD(temp_r8,u8*,0x7c)=1;}
 var_r7++;
 }while(var_r7<M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4));
+dummy=dummy+1;
 }
 

@@ -6,7 +6,7 @@ extern u32 data_0215d8a8[];
    recomputes the clipped target position, and clamps the source rectangle. */
 void func_ov004_02217480(void *state) {
 void func_01ffa8c4(void *, s32);
-void *entry; s32 i, offset; void *base; u32 flags, kind; s16 x,y;
+void *entry; s32 i, offset; void *base; u32 flags; s16 x,y;
 i=0;
 M2C_FIELD(state,u8 *,0x36)=0;
 M2C_FIELD(state,u8 *,0x35)=0;
@@ -15,8 +15,7 @@ offset=0;
 do {
 if(i<0) entry=0; else if(i>=64) entry=0; else entry=base+offset;
 flags=data_0215d8a8[M2C_FIELD(entry,u8 *,7)];
-kind=(flags<<3)>>29;
-if((flags>>29)!=kind){
+if((flags>>29)!=((flags<<3)>>29)){
 M2C_FIELD(state,u8 *,0x37)=i;
 if(entry==0)return;
 y=M2C_FIELD(entry,s16 *,2); x=M2C_FIELD(entry,s16 *,0);

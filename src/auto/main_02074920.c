@@ -125,41 +125,40 @@ void func_02074c58(void *arg0) {
     void func_0200fe5c(u16);
     void func_0200fe6c(u8);
     s32 func_0201033c(s32, s32 *, s32, s32, s32, s32, s32, s32, s32);
-    u8 func_02010424(void);
-    u8 func_0201044c(s32);
-    u8 var_r6;
-    u16 id1;
+    s32 func_02010424(void);
+    s32 func_0201044c(s32);
     u8 tmp;
     u16 id2;
+    u16 id;
     s32 sp14;
 
     if (func_0200fe08() == 0) {
-        var_r6 = 0;
+        id = 0;
     } else {
-        id1 = (u16)func_0200558c();
-        func_0200fe5c(id1);
-        tmp = func_0201044c(0x1202);
-        func_0200fe6c((u8)id1);
-        func_020055f4((u8)id1);
+        id = (u16)func_0200558c();
+        ((void(*)(M2C_UNK))func_0200fe5c)(id);
+        tmp = (u8)func_0201044c(0x1202);
+        ((void(*)(M2C_UNK))func_0200fe6c)(id);
+        ((void(*)(M2C_UNK))func_020055f4)(id);
         if (tmp == 0) {
-            var_r6 = 0;
+            id = 0;
         } else {
-            if (func_02010424() != 2) {
-                var_r6 = 0;
+            if ((u8)func_02010424() != 2) {
+                id = 0;
             } else {
                 id2 = (u16)func_0200558c();
-                func_0200fe5c(id2);
-                var_r6 = (u8)func_0201033c(0, &sp14, 4, 0, 0, 0, 6, 1, 0);
-                func_0200fe6c((u8)id2);
-                func_020055f4((u8)id2);
-                if (var_r6 == 0) {
-                    var_r6 = 0;
+                ((void(*)(M2C_UNK))func_0200fe5c)(id2);
+                id = (u8)func_0201033c(0, &sp14, 4, 0, 0, 0, 6, 1, 0);
+                ((void(*)(M2C_UNK))func_0200fe6c)(id2);
+                ((void(*)(M2C_UNK))func_020055f4)(id2);
+                if (id == 0) {
+                    id = 0;
                 }
             }
         }
     }
-    M2C_FIELD(arg0, u8 *, 0x2050) = var_r6;
-    if (var_r6 == 0) {
+    M2C_FIELD(arg0, u8 *, 0x2050) = (u8)id;
+    if ((id & 0xFF) == 0) {
         M2C_FIELD(arg0, u8 *, 0x2052) = 1;
     }
 }

@@ -349,6 +349,7 @@ void func_ov002_021e3030(u8 *arg0, u8 *arg1) {
     *arg1 = temp_r3;
 }
 
+#pragma opt_strength_reduction off
 void func_ov002_021e3044(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_lr;
     s32 temp_r2;
@@ -389,7 +390,6 @@ void func_ov002_021e3044(s32 arg0, s32 arg1, s32 arg2) {
         var_r4 += 1;
     } while (var_r4 < 5);
 }
-
 s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
 
 void func_ov002_021e3100(void *a){

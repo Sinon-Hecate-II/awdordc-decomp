@@ -217,10 +217,10 @@ void func_02097348(s32 arg0) {
     M2C_UNK func_02088da8(s32);
     M2C_UNK func_02088e0c(void *, s32);
     s32 func_020abe90(u8);
-    register s32 temp_r4 = 0;
     void *temp_r0;
     register void *temp_r7;
     long var_r8;
+    register unsigned temp_r4;
 
     temp_r0 = func_0209e9dc(2);
     if (temp_r0 == NULL) {
@@ -232,7 +232,7 @@ void func_02097348(s32 arg0) {
     if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r0, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
         var_r8 = 0;
     }
-    switch (arg0) {
+    switch (arg0) {                                 /* irregular */
     case 0:
         func_02088f8c(temp_r7, 0, 0, -0x40, 0, var_r8);
         func_02088e0c(temp_r7, var_r8);
@@ -514,9 +514,9 @@ void func_02097aa8(void) {
 
 void func_02097aac(s32 arg0, u8 arg1) {
     s32 func_02091e24();
-    extern void *data_027e00c4;
-    extern void *data_027e00c8;
     extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c8;
+    extern void *data_027e00c4;
     void *temp_r4;
     void *var_r0;
     s32 var_r5;
@@ -531,7 +531,6 @@ void func_02097aac(s32 arg0, u8 arg1) {
     r6 = arg1 * 2 + 1;
     base = (u16 *) arg0;
     var_r5 = 0;
-    lr = 1;
     do {
         if (var_r5 == 0) {
             var_r0 = data_027e00c8;
@@ -543,10 +542,10 @@ void func_02097aac(s32 arg0, u8 arg1) {
             ((func_02091e24() != 1) || (gCur3DSpriteEngine == data_027e00c4)) &&
             ((func_02091e24() != 3) || (gCur3DSpriteEngine == temp_r4))) {
             if (r6 > 1) {
+                lr = 1;
                 r8 = 0x20;
                 r3 = 0;
                 r12 = r3;
-                lr = 1;
                 do {
                     for (r12 = 0; r12 < 0x20; r12++) {
                         base[r8 + r12] = 0;

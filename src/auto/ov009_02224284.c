@@ -1,5 +1,23 @@
 /* 36 functions from 0x02224284 to 0x0222525C (ov009), found by ds-decomp. */
 #include "common.h"
+static inline u32 ov009DisableInterrupts(void) {
+    u32 previous = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    return previous;
+}
+static inline u32 ov009RestoreInterrupts(u32 saved) {
+    u32 previous = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = saved;
+    return previous;
+}
+#pragma cplusplus on
+class Ov009InterruptGuard {
+    u32 saved;
+public:
+    Ov009InterruptGuard() : saved(ov009DisableInterrupts()) {}
+    ~Ov009InterruptGuard() { ov009RestoreInterrupts(saved); }
+};
+#pragma cplusplus off
 
 s32 func_ov009_02224284(void) {
     s32 func_ov009_02224194();
@@ -254,23 +272,17 @@ s32 func_ov009_02224688(void) {
     return 1;
 }
 
-s32 func_ov009_022246ac(s32 arg0) {
-    extern M2C_UNK data_ov009_02226cc0;
-    s32 result;
-    s32 interrupt;
-    u16 saved;
-    result = (s32)&data_ov009_02226cc0 + 0xc8 * arg0;
-    saved = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    interrupt = saved;
-    if (M2C_FIELD(result,s32 *,0xc4) == 0 ||
-        M2C_FIELD(result,u16 *,0x3c) < 0x10U ||
-        M2C_FIELD(result,u16 *,0x40) != 1) result = 0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = interrupt;
-    return result;
+#pragma cplusplus on
+extern "C" s32 func_ov009_022246ac(s32 arg0) {
+extern M2C_UNK data_ov009_02226cc0;
+Ov009InterruptGuard guard;
+s32 result = (s32)&data_ov009_02226cc0 + arg0 * 0xc8;
+if (M2C_FIELD(result, s32 *, 0xc4) == 0 ||
+    M2C_FIELD(result, u16 *, 0x3c) < 0x10U ||
+    M2C_FIELD(result, u16 *, 0x40) != 1) result = 0;
+return result;
 }
-
+#pragma cplusplus off
 s32 func_ov009_02224718(s32 arg0) {
     extern M2C_UNK data_ov009_022268e0;
     s32 temp_r2;

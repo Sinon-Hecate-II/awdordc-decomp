@@ -293,53 +293,44 @@ s32 func_020aae94(void *arg0) {
 void func_020aaeb0(void *arg0) {
     s8 v5a;
     u8 byte59;
-    u8 nibble;
-    u32 rest;
+    u32 nibble;
+    u16 rest;
+    u8 cond;
     void *p64;
     s8 t;
     u32 q;
     u32 v;
-    u32 f;
 
     v5a = *(s8 *)((u8 *)arg0 + 0x5a);
     if (v5a < 0) {
         return;
     }
     byte59 = *(u8 *)((u8 *)arg0 + 0x59);
-    nibble = byte59 & 0x0f;
-    rest = *(u32 *)((u8 *)arg0 + 0x40) >> 18;
-    if ((u32)(nibble + 2) != rest) {
+    nibble = (u32)((byte59 << 28) >> 28);
+    rest = (u16)((( *(u32 *)((u8 *)arg0 + 0x40) << 6) >> 24));
+    cond = (u8)((s32)(nibble + 2) != (s32)rest);
+    if (cond) {
         p64 = *(void **)((u8 *)arg0 + 0x64);
         t = *(s8 *)((u8 *)p64 + 0x0c);
         if (t != 1) {
             q = *(u32 *)p64;
-            if (q == 0) {
-                v = (u32)-1;
-            } else {
-                v = *(u16 *)((u8 *)q + 0x08);
-            }
+            v = q ? *(u16 *)((u8 *)q + 0x08) : 0xFFFFFFFFu;
             if (v != 1) {
                 if (v5a == 0) {
-                    f = *(u32 *)((u8 *)arg0 + 0x40);
-                    f = (f & ~0x03FC0000u) | ((u32)nibble << 18);
-                    *(u32 *)((u8 *)arg0 + 0x40) = f;
+                    *(u32 *)((u8 *)arg0 + 0x40) = (*(u32 *)((u8 *)arg0 + 0x40) & ~0x03FC0000u) | (nibble << 18);
                 }
-                goto done_block;
+                goto func_020aaeb0_done;
             }
         }
-        f = *(u32 *)((u8 *)arg0 + 0x40);
-        f = (f & ~0x03FC0000u) | ((u32)(nibble + 1) << 18);
-        *(u32 *)((u8 *)arg0 + 0x40) = f;
-        (void) f;
-done_block:
+        *(u32 *)((u8 *)arg0 + 0x40) = (*(u32 *)((u8 *)arg0 + 0x40) & ~0x03FC0000u) | ((nibble + 1) << 18);
+func_020aaeb0_done:
         ;
     }
     v5a = *(s8 *)((u8 *)arg0 + 0x5a);
     if (v5a > 0) {
-        v5a = v5a - 1;
+        v5a = (s8)(v5a - 1);
         *(s8 *)((u8 *)arg0 + 0x5a) = v5a;
     }
-    return;
 }
 
 M2C_UNK *func_020aaf74(void) {

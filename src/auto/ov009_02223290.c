@@ -538,15 +538,15 @@ s32 func_ov009_022241c4(s32 arg0) {
 s32 func_ov009_022241dc(void) {
  void func_02007724(void *); void func_ov009_02222430(u32); s32 func_ov009_0222287c(s32);
  extern M2C_UNK data_ov009_022268e0;
- u16 mac[3]; s32 result;
+ u16 mac[3]; s32 res;
  func_02007724(mac);
- func_ov009_02222430(mac[2]+(mac[1]+(*(volatile u32 *)0x027FFC3C+mac[0])));
+ func_ov009_02222430(*(u32 *)0x027FFC3C+mac[0]+mac[1]+mac[2]);
  M2C_FIELD(&data_ov009_022268e0,u16 *,2)=0;
  M2C_FIELD(&data_ov009_022268e0,u16 *,10)=101;
  func_ov009_02221320(3);
- result=func_ov009_0222287c(1);
- if(result==25) {func_ov009_022227d4();func_ov009_02221320(8);return 0;}
- if(result==2) return 1;
+ res=func_ov009_0222287c(1);
+ if(res==25) {func_ov009_022227d4();func_ov009_02221320(8);return 0;}
+ if(res==2) return 1;
  func_ov009_022227d4();func_ov009_02221320(8);return 0;
 }
 

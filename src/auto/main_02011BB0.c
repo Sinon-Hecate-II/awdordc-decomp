@@ -390,14 +390,13 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
 }
 
 void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){
-void func_02007e54();s32 func_020128f4(s32,s32,s32,s32,u16,void *);
-PacketParams_02012a64 x; s32 z;
-func_02007e54(0,&x,16);
-x.g=k;x.d=g;x.e=h;x.f=i;x.flags=0x1e03;
-if(j&&f){x.flags|=4;x.c=f;}
-x.a=f;x.b=f;
-
-func_020128f4(a,b,c,d,e,&x);
+    void func_02007e54();
+    PacketParams_02012a64 x;
+    func_02007e54(0,&x,16);
+    x.g=(u8)k;x.d=g;x.e=(u8)h;x.f=(u8)i;x.flags=0x1e03;
+    if(j&f){x.flags|=4;x.c=f;}
+    x.a=f;x.b=f;
+    func_020128f4(a,b,c,d,e,&x);
 }
 
 void func_02012b08(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f){

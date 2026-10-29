@@ -198,12 +198,5 @@ return (*(volatile u64 *)0x040002a0 + 0x80000) >> 20;
 }
 
 #pragma opt_common_subs off
-s32 func_02002030(s32 arg0) {
-M2C_FIELD((void *)0x04000280,s16 *,0)=1;
-M2C_FIELD((void *)0x04000280,s32 *,0x10)=0;
-M2C_FIELD((void *)0x04000280,s32 *,0x14)=0x1000;
-M2C_FIELD((void *)0x04000280,s32 *,0x18)=arg0;
-M2C_FIELD((void *)0x04000280,s32 *,0x1c)=0;
-return 0;
-}
+
 #pragma opt_common_subs reset

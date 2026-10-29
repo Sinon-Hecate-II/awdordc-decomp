@@ -413,30 +413,29 @@ void func_0203ca88(void *arg0) {
         return;
     }
     temp_r0 = M2C_FIELD(func_02044268(), u8 *, 0x15);
-    switch (temp_r0) {                              /* switch 1; irregular */
-    case 0:                                         /* switch 1 */
-    case 1:                                         /* switch 1 */
+    switch (temp_r0) {
+    case 0:
+    case 1:
         temp_r0_2 = M2C_FIELD(func_02044268(), u32 *, 0x1A0);
-        switch (temp_r0_2) {                        /* switch 2 */
-        default:                                    /* switch 2 */
+        switch (temp_r0_2) {
+        default:
             return;
-        case 1:                                     /* switch 2 */
-        case 2:                                     /* switch 2 */
-        case 3:                                     /* switch 2 */
-        case 4:                                     /* switch 2 */
-        case 6:                                     /* switch 2 */
-        case 11:                                    /* switch 2 */
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 6:
+        case 11:
             func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
             return;
-            return;
         }
-        break;
-    case 2:                                         /* switch 1 */
-        if (M2C_FIELD(func_02044268(), s32 *, 0x1A0) != 0xB) {
+    case 2:
+        if (M2C_FIELD(func_02044268(), u32 *, 0x1A0) != 0xB) {
             return;
         }
         func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
         return;
     }
+    return;
 }
 

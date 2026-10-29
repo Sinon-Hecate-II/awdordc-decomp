@@ -67,18 +67,18 @@ void func_020e3580(s32 arg0,s32 arg1) {
 }
 
 void func_020e35cc(s32 arg0) {
- void func_0202a498(s32, s32);
- extern s32 data_02168fe4;
- volatile u32 saved;
- u32 temp;
- u16 restore;
- temp = *(volatile u16 *)0x04000208;
- *(volatile u16 *)0x04000208 = 0;
- saved = temp;
- func_0202a498(data_02168fe4, arg0);
- restore = saved;
- (void)*(volatile u16 *)0x04000208;
- *(volatile u16 *)0x04000208 = restore;
+    void func_0202a498(s32, s32);
+    extern s32 data_02168fe4;
+    volatile s32 saved;
+    u32 temp;
+    u16 restore;
+    temp = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    saved = temp;
+    func_0202a498(data_02168fe4, arg0);
+    restore = saved;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = restore;
 }
 
 void func_020e3610(M2C_UNK arg0) {

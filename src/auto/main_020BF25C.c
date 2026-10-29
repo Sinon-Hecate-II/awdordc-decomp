@@ -10,16 +10,16 @@ void *func_020bf25c(s32 arg0) {
     return 0;
 }
 
-#pragma peephole off
+#pragma opt_propagation off
 void func_020bf798(void) {
     M2C_UNK func_020be718(M2C_UNK *);
     M2C_UNK func_020be438(s32, M2C_UNK *, s32);
     extern M2C_UNK data_0215deec;
-    volatile s32 size = 0x5CC;
+    s32 size = 0x5CC;
     func_020be718(&data_0215deec);
     func_020be438(4, &data_0215deec, size);
 }
-#pragma peephole reset
+#pragma opt_propagation reset
 M2C_UNK func_020bf7c4(void){
 void func_020bfa08(void);void func_020bfa48(void);
 s32 func_020be324(s32,void *);void func_020beabc(void *);void func_020be5d0(void);

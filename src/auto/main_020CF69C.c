@@ -8,35 +8,33 @@ extern s32 *gCurrentMap;
 extern s32 data_02168f08;
 
 void func_020cf69c(s32 arg0, s32 arg1) {
- M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
- extern s32 *gCurrentMap;
- s16 sp6; s16 sp4;
- void (*cb)(s16,s16,s32);
- void *p = (void *)*gCurrentMap;
- s16 *position=(s16 *)(p+0x52C2);
- s16 x=M2C_FIELD(p,s16 *,0x52C2); s16 y=position[1];
- func_020cf4f0((s16)(x*16), (s16)(y*16), (s16)arg0,&sp6,&sp4);
- cb=M2C_FIELD((void *)gCurrentMap[1],void (**)(s16,s16,s32),8);
- if(cb != NULL) cb(sp6,sp4,arg0);
- cb=M2C_FIELD((void *)gCurrentMap[1],void (**)(s16,s16,s32),8);
- if(cb == NULL) return;
- cb(sp6,sp4,arg1);
+    M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
+    extern s32 *gCurrentMap;
+    s16 sp6; s16 sp4;
+    void (*cb)(s16,s16,s32);
+    void *p = (void *)*gCurrentMap;
+    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
+    func_020cf4f0((s16)(pp[0]*16), (s16)(pp[1]*16), (s16)arg0, &sp6, &sp4);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    if (cb != NULL) cb(sp6, sp4, arg0);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    if (cb == NULL) return;
+    cb(sp6, sp4, arg1);
 }
 
 void func_020cf754(s32 arg0, s32 arg1) {
- M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
- extern s32 *gCurrentMap;
- s16 sp6; s16 sp4;
- void (*cb)(s16,s16,s32);
- void *p = (void *)*gCurrentMap;
- s16 *position=(s16 *)(p+0x52C2);
- s16 x=M2C_FIELD(p,s16 *,0x52C2); s16 y=position[1];
- func_020cf4f0((s16)(x*16), (s16)(y*16), (s16)arg0,&sp6,&sp4);
- cb=M2C_FIELD((void *)gCurrentMap[1],void (**)(s16,s16,s32),8);
- if(cb != NULL) cb(sp6,sp4,arg0);
- cb=M2C_FIELD((void *)gCurrentMap[1],void (**)(s16,s16,s32),8);
- if(cb == NULL) return;
- cb(sp6,sp4,arg1+8);
+    M2C_UNK func_020cf4f0(s16,s16,s16,s16 *,s16 *);
+    extern s32 *gCurrentMap;
+    s16 sp6; s16 sp4;
+    void (*cb)(s16,s16,s32);
+    void *p = (void *)*gCurrentMap;
+    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
+    func_020cf4f0((s16)(pp[0]*16), (s16)(pp[1]*16), (s16)arg0, &sp6, &sp4);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    if (cb != NULL) cb(sp6, sp4, arg0);
+    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16,s16,s32), 8);
+    if (cb == NULL) return;
+    cb(sp6, sp4, arg1 + 8);
 }
 
 void func_020cf80c(void) {
