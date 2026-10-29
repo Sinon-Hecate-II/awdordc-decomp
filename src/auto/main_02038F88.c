@@ -112,43 +112,21 @@ void func_02039204(s32 arg0) {
 }
 
 s32 func_02039224(s32 arg0) {
-    s32 func_0203e0ec();
-    s32 func_0203e338(u8 **);
-    u8 *sp0;
-    s32 temp_r0;
-    s32 var_r0;
-    u8 *var_r3;
-
-    temp_r0 = func_0203e338(&sp0);
-    var_r0 = 0;
-    if (temp_r0 > 0) {
-        var_r3 = sp0;
-loop_2:
-        if (arg0 != *var_r3) {
-            var_r0 += 1;
-            var_r3 += 1;
-            if (var_r0 < temp_r0) {
-                goto loop_2;
-            }
-        }
-    }
-    if (var_r0 == temp_r0) {
-        return 0;
-    }
-    return func_0203e0ec();
+s32 func_0203e0ec();
+s32 func_0203e338(u8 **);
+u8 *list;
+s32 i, count;
+count=func_0203e338(&list);
+for(i=0;i<count;i++) {
+if(list[i]==arg0) break;
+}
+return i==count ? 0 : func_0203e0ec();
 }
 
 u32 func_02039284(u8 *src, s32 n) {
-    u32 acc = 0;
-    u32 i = 0;
-    if (n > 0) {
-        u32 bit = 1;
-        do {
-            acc |= bit << (u32)src[i];
-            i = i + 1;
-        } while (i < (u32)n);
-    }
-    return acc;
+u32 acc=0; u32 i=0;
+if(n>0) { u32 bit=1; do {acc |= bit << (u32)src[i]; i++;}while((s32)i<n);}
+return acc;
 }
 
 s32 func_020392b8(s32 ret){
@@ -591,20 +569,20 @@ s32 func_02039db4(u32 arg0, s32 arg1) {
     func_02039e60();
 }
 
+#pragma push
+#pragma opt_common_subs off
 void func_02039e04(void) {
-    extern M2C_UNK data_0213d380;
-    M2C_UNK func_020376d8(s32, s32, s32);
-    void func_02032a84(void);
-    void func_02032b10(void);
-    if (M2C_FIELD(M2C_FIELD(&data_0213d380, s32 *, 4), s32 *, 0x24)) {
-        func_02032a84();
-        func_02032b10();
-        func_020376d8(0, M2C_FIELD(M2C_FIELD(&data_0213d380, s32 *, 4), s32 *, 0x24), 0);
-        M2C_FIELD(M2C_FIELD(&data_0213d380, s32 *, 4), s32 *, 0x24) = 0;
-        M2C_FIELD(&data_0213d380, s32 *, 4) = 0;
-    }
+extern M2C_UNK data_0213d380;
+M2C_UNK func_020376d8(s32,s32,s32);
+void func_02032a84(void); void func_02032b10(void);
+if(M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24)){
+func_02032a84();func_02032b10();
+func_020376d8(0,M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24),0);
+M2C_FIELD(M2C_FIELD(&data_0213d380,s32 *,4),s32 *,0x24)=0;
 }
-
+M2C_FIELD(&data_0213d380,s32 *,4)=0;
+}
+#pragma pop
 void func_02039e60(void) {
     extern M2C_UNK data_0213d380;
     M2C_UNK *p;

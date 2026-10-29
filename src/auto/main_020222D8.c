@@ -60,9 +60,8 @@ while((d=*p++)==(c=*q++)) { if(d==0)return 0; }
 if(c!=42)return 1;
 p--;a=func_02022a54(p);b=func_02022a54(q);
 if(b>a)return 1;
-p=p+(a-b);
+p+=a-b;
 }
-return 1;
 }
 
 void func_02022ae4(void *a, void *b) {

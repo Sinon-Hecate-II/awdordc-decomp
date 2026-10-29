@@ -553,21 +553,35 @@ u16 func_02082088(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,
 
 void func_02082098(u32 arg0,u32 arg1) {
 extern void *gCur3DSpriteEngine; extern void *data_027e00c8;
-u8 b; u32 base; u16 *p;
+u8 b; u32 base; u32 index; void *engine; u32 bits; u16 *p; u32 old;
 if(gCur3DSpriteEngine==data_027e00c8)b=1;else b=0;
 if(b==1)base=0x06000000;else base=0x06200000;
 M2C_FIELD((u8 *)gCur3DSpriteEngine+arg0*4,u32 *,12)=base+(arg1<<14);
-p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+6);
-p[arg0]=((arg1 << 28) >> 26)|(p[arg0]&~0x3c);
+engine=gCur3DSpriteEngine; index=arg0*2;
+p=(u16 *)((u8 *)M2C_FIELD(engine,void **,0)+6);
+bits=arg1<<28; old=*(u16 *)((u8 *)p+index);
+*(u16 *)((u8 *)p+index)=(old&~0x3c)|(bits>>26);
 }
 
 void func_02082104(u32 arg0,u32 arg1) {
 extern void *gCur3DSpriteEngine;
-u16 *p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+6);
-p[arg0]=((arg1 << 27) >> 19)|(p[arg0]&~0x1f00);
+u32 index=arg0*2;
+void *engine=gCur3DSpriteEngine;
+u32 bits=arg1<<27;
+u16 *p=(u16 *)((u8 *)M2C_FIELD(engine,void **,0)+6);
+u32 old=M2C_FIELD(p,u16 *,index);
+M2C_FIELD(p,u16 *,index)=(old&~0x1f00)|(bits>>19);
 }
 
-void func_02082134(s32 a,u32 b){extern void *gCur3DSpriteEngine;u16 *p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+6);p[a]=(p[a]&~0xc000)|((b<<30)>>16);}
+void func_02082134(s32 arg0, u32 arg1) {
+    extern void *gCur3DSpriteEngine;
+    u32 index = arg0 * 2;
+    void *engine = gCur3DSpriteEngine;
+    u32 bits = arg1 << 30;
+    u16 *p = (u16 *)((u8 *)M2C_FIELD(engine, void **, 0) + 6);
+    u32 old = M2C_FIELD(p, u16 *, index);
+    M2C_FIELD(p, u16 *, index) = (old & ~0xc000) | (bits >> 16);
+}
 
 void func_02082164(u8 *arg0) {
     extern void *gCur3DSpriteEngine;

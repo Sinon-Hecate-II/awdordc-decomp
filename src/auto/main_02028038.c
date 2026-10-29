@@ -15,7 +15,13 @@ void func_020280c8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_0202810c(temp_r0, arg0, arg1, arg2, arg3);
 }
 
-M2C_UNK func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){extern void *data_02138e4c;State_02028038 *p=(State_02028038 *)((u8 *)data_02138e4c+0x2000);CallbackArgs_0202810c args;if(!p->callback)return;args.a=a;args.c=c;args.d=d;args.e=e;args.b=b;p->callback(&args);}
+M2C_UNK func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){
+ extern void *data_02138e4c;
+ CallbackArgs_0202810c args;
+ if(!M2C_FIELD((u8 *)data_02138e4c+0x2000,void (**)(CallbackArgs_0202810c *),0x27c))return;
+ args.a=a;args.c=c;args.d=d;args.e=e;args.b=b;
+ M2C_FIELD((u8 *)data_02138e4c+0x2000,void (**)(CallbackArgs_0202810c *),0x27c)(&args);
+}
 
 void func_02028160(s32 a){void func_0202826c(void);s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);extern void *data_02138e4c;s32 old=func_0200751c();State_02028038 *p;s32 state;if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)data_02138e4c+0x22cc);p=(State_02028038 *)data_02138e4c;p=(State_02028038 *)((u8 *)p+0x2000);if(p->state!=11)p->state=a;if(a==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
 
@@ -34,8 +40,16 @@ s32 func_020282a8(u32 arg0) {
     return __builtin_clz(arg0);
 }
 
-void func_020282b0(void){extern void *data_02138e4c; void func_02028ef4(void);s32 func_02012274(void (*)(void));volatile u8 *p=(u8 *)data_02138e4c+0x2000;if(p[0x26b])return;p[0x26b]=1;if(func_02012274(func_02028ef4)==2)return;func_02028160(11);func_020280c8(7,0,0,0x610);}
-
+#pragma optimization_level 2
+void func_020282b0(void) {
+extern void *data_02138e4c; void func_02028ef4(void); s32 func_02012274(void (*)(void));
+u8 *p=(u8 *)data_02138e4c+0x2000;
+if(p[0x26b])return;
+p[0x26b]=1;
+if(func_02012274(func_02028ef4)==2)return;
+func_02028160(11);func_020280c8(7,0,0,0x610);
+}
+#pragma optimization_level reset
 void func_0202830c(u16 *p){extern void *data_02138e4c;if(p[1]!=8||p[2]!=22||p[3]!=37)return;switch(M2C_FIELD(data_02138e4c,s32 *,0x2260)){case 8:func_02028160(12);return;case 9:case 12:func_020282b0();return;case 10:func_02028160(12);return;}}
 
 void func_02028384(void *arg0) {

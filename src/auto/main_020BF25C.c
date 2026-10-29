@@ -10,13 +10,16 @@ void *func_020bf25c(s32 arg0) {
     return 0;
 }
 
-void func_020bf798(void){
-void func_020be718(void *);void func_020be438(s32,void *,s32);
-u16 size=0x5cc;
-func_020be718(&data_0215deec);
-func_020be438(4,&data_0215deec,size);
+#pragma peephole off
+void func_020bf798(void) {
+    M2C_UNK func_020be718(M2C_UNK *);
+    M2C_UNK func_020be438(s32, M2C_UNK *, s32);
+    extern M2C_UNK data_0215deec;
+    volatile s32 size = 0x5CC;
+    func_020be718(&data_0215deec);
+    func_020be438(4, &data_0215deec, size);
 }
-
+#pragma peephole reset
 M2C_UNK func_020bf7c4(void){
 void func_020bfa08(void);void func_020bfa48(void);
 s32 func_020be324(s32,void *);void func_020beabc(void *);void func_020be5d0(void);
@@ -89,15 +92,16 @@ void func_020bf930(M2C_UNK arg0) {
     }
 }
 
+#pragma opt_common_subs off
 void func_020bf97c(void) {
 s32 func_0207cfb8(void);extern M2C_UNK data_0215d990;
 switch(func_0207cfb8()){
-case 0:((SaveMode *)((u8 *)&data_0215d990+0x2e))->mode=0;return;
+case 0:M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x380;return;
 case 128:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
 default:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
 }
 }
-
+#pragma opt_common_subs reset
 u8 func_020bf9e0(void) {
     extern M2C_UNK data_0215d890;
     return M2C_FIELD(&data_0215d890, u8 *, 0x12C);

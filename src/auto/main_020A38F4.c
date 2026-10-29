@@ -16,13 +16,13 @@ void func_020a38f4(s32 a) {
 
 #pragma scheduling off
 void func_020a3934(s32 a,s32 b) {
- extern s32 *gCurrentMap;
+ extern s32 *data_027e0058;
  s32 func_020d1938(s32);
- u32 value;s32 i;
+ s32 i;
  switch(a){case 1:case 2:case 3:
- i=1;value=b&0xff;
+ i=1;b=(u8)b;
  do{
- if(func_020d1938(i))M2C_FIELD(*gCurrentMap+i,u8 *,0x515b)=value;
+ if(func_020d1938(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=b;
  i++;
  }while(i<5);
  break;

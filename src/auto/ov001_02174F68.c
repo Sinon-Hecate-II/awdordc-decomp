@@ -63,59 +63,37 @@ void func_ov001_021753c8(M2C_UNK arg0) {
 }
 
 void func_ov001_02175440(M2C_UNK arg0) {
-    void func_ov001_02174f68(s32, Position);
-    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
-    void func_ov001_021754b0(M2C_UNK);
-    extern void *data_ov001_02193d20;
-    s32 temp_r3 = *M2C_FIELD(data_ov001_02193d20, s32 **, 0x34);
-    s32 vx = (u8)temp_r3 + 12;
-    u32 vy = (u32)(temp_r3 & 0x01FF0000) >> 16;
-    Position pos;
-    pos.x = vx;
-    pos.y = vy;
-    func_ov001_02174f68(3, pos);
-    if (pos.x >= 0xC0) {
-        func_ov001_0218c924(arg0, func_ov001_021754b0);
-    }
+M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_021754b0(M2C_UNK);extern void *data_ov001_02193d20;
+s32 bits=*M2C_FIELD(data_ov001_02193d20,s32 **,0x34);
+volatile Position pos = {(u8)bits+12,(u32)(bits&0x01ff0000)>>16};
+((void(*)(s32))func_ov001_02174f68)(3);
+if(pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_021754b0);
 }
 
 void func_ov001_021754b0(M2C_UNK arg0) {
-    void func_ov001_02174f68(s32, Position);
-    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
-    void func_ov001_02175520(M2C_UNK);
-    extern void *data_ov001_02193d20;
-    s32 temp_r3 = *M2C_FIELD(data_ov001_02193d20, s32 **, 0x28);
-    s32 vx = (u8)temp_r3 + 12;
-    u32 vy = (u32)(temp_r3 & 0x01FF0000) >> 16;
-    Position pos = { vx, vy };
-    func_ov001_02174f68(2, pos);
-    if (pos.x < 0xC0) return;
-    func_ov001_0218c924(arg0, func_ov001_02175520);
+M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175520(M2C_UNK);extern void *data_ov001_02193d20;
+s32 bits=*M2C_FIELD(data_ov001_02193d20,s32 **,0x28);
+Position pos;
+pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
+((void(*)(s32))func_ov001_02174f68)(2);
+if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175520);
 }
 
 void func_ov001_02175520(M2C_UNK arg0) {
-    void func_ov001_02174f68(s32, Position);
-    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
-    void func_ov001_02175590(M2C_UNK);
-    extern void *data_ov001_02193d20;
-    s32 temp_r3 = *M2C_FIELD(data_ov001_02193d20, s32 **, 0x1c);
-    s32 vx = (u8)temp_r3 + 12;
-    u32 vy = (u32)(temp_r3 & 0x01FF0000) >> 16;
-    Position pos = { vx, vy };
-    func_ov001_02174f68(1, pos);
-    if (pos.x < 0xC0) return;
-    func_ov001_0218c924(arg0, func_ov001_02175590);
+M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175590(M2C_UNK);extern void *data_ov001_02193d20;
+s32 bits=*M2C_FIELD(data_ov001_02193d20,s32 **,0x1c);
+Position pos;
+pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
+((void(*)(s32))func_ov001_02174f68)(1);
+if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175590);
 }
 
 void func_ov001_02175590(M2C_UNK arg0) {
-    void func_ov001_02174f68(s32, Position);
-    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
-    void func_ov001_02175600(M2C_UNK);
-    extern void *data_ov001_02193d20;
-    s32 temp_r3 = *M2C_FIELD(data_ov001_02193d20, s32 **, 0x10);
-    Position pos = { (u8)temp_r3 + 12, (u32)(temp_r3 & 0x01FF0000) >> 16 };
-    func_ov001_02174f68(0, pos);
-    if (pos.x < 0xC0) return;
-    func_ov001_0218c924(arg0, func_ov001_02175600);
+M2C_UNK func_ov001_0218c924(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175600(M2C_UNK);extern void *data_ov001_02193d20;
+s32 bits=*M2C_FIELD(data_ov001_02193d20,s32 **,0x10);
+Position pos;
+pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
+((void(*)(s32))func_ov001_02174f68)(0);
+if(*(volatile s32*)&pos.x<192)return;func_ov001_0218c924(arg0,func_ov001_02175600);
 }
 

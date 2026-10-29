@@ -62,15 +62,12 @@ s32 func_0206e2e4(u8 *p,s32 i) {
  i--; if(M2C_FIELD(p+i,u8 *,5)&1)return 1; return -1;
 }
 
+#pragma opt_dead_code off
 void func_0206e350(u8 *p,s32 n) {
- u8 *start=p+5; u8 *q=start+n-1;
- do {
- if(*q<9) { ++*q; break; }
- if(q==start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; break; }
- *q--=0;
- } while(1);
+u8 *start=p+5; u8 *q=start+n-1;
+for(;;){if(*q<9){++*q;return;}else if(q==start){*q=1;M2C_FIELD(p,s16 *,2)+=1;return;}else {*q--=0;continue;}}
 }
-
+#pragma opt_dead_code reset
 void func_0206e39c(void) {
 
 }

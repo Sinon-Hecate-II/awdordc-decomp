@@ -228,7 +228,25 @@ if(M2C_FIELD(b,s32 *,0)==M2C_FIELD(a,s32 *,40)&&(M2C_FIELD(b,u8 *,21)&2)){
 func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 }
 
-void func_02060398(void *arg0,s32 arg1,s32 arg2,s32 d,s32 e,s32 f){void *a;s32 b;s32 c;M2C_UNK func_0204926c();s32 func_020496a4(s32,s32);extern s32 gDnsQueryState;a=arg0;b=arg1;c=arg2;if(!d && gDnsQueryState!=1)return;func_0204926c();M2C_FIELD(a,s32 *,4)=b;M2C_FIELD(a,s32 *,0)=c;M2C_FIELD(a,s32 *,64)=0;M2C_FIELD(a,s32 *,68)=e;M2C_FIELD(a,s32 *,72)=f;M2C_FIELD(a,s32 *,40)=0;M2C_FIELD(a,s32 *,32)=func_020496a4(2,2);func_020601a4(a+20);func_020601a4(a+8);}
+void func_02060398(void *arg0,s32 arg1,s32 arg2,s32 d,s32 e,s32 f){
+ void *a=arg0;
+ s32 b=arg1;
+ s32 c=arg2;
+ M2C_UNK func_0204926c();
+ s32 func_020496a4(s32,s32);
+ extern s32 gDnsQueryState;
+ if(!d && gDnsQueryState!=1)return;
+ func_0204926c();
+ M2C_FIELD(a,s32 *,0)=c;
+ M2C_FIELD(a,s32 *,4)=b;
+ M2C_FIELD(a,s32 *,64)=0;
+ M2C_FIELD(a,s32 *,68)=e;
+ M2C_FIELD(a,s32 *,72)=f;
+ M2C_FIELD(a,s32 *,40)=0;
+ M2C_FIELD(a,s32 *,32)=func_020496a4(2,2);
+ func_020601a4(a+20);
+ func_020601a4(a+8);
+}
 
 void func_0206040c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x28) = arg1;

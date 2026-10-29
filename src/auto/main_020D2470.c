@@ -409,9 +409,11 @@ u8 func_020d2ff0(s32 arg0) {
     return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67D5);
 }
 
-u8 func_020d3014(s32 arg0, s32 arg1) {
-    extern s32 *gCurrentMap;
-    return M2C_FIELD(((arg0 * 0x8C) + arg1 + *gCurrentMap), u8 *, 0x67D7);
+u8 func_020d3014(s32 a, s32 b) {
+extern s32 *gCurrentMap;
+u8 *p=(u8 *)(a*0x8c+*gCurrentMap);
+p+=b;
+return p[0x67d7];
 }
 
 s32 func_020d303c(s32 arg0) {

@@ -283,6 +283,21 @@ void func_ov001_021801a4(void) {
     func_ov001_02175d54((M2C_UNK *)&func_ov001_0217ff60);
 }
 
+void func_ov001_021801c4(void) {
+M2C_UNK func_ov001_02171e58(M2C_UNK);
+M2C_UNK func_ov001_021722ac(void);
+M2C_UNK func_ov001_02185024(M2C_UNK);
+void func_ov001_02180200(void);
+void func_ov001_02180280(void);
+extern s8 data_ov001_02193dc0;
+data_ov001_02193dc0=0;
+func_ov001_02180200();
+func_ov001_021722ac();
+func_ov001_02171e58(0x26);
+func_ov001_02185024(0x10);
+func_ov001_02175d54((M2C_UNK *)&func_ov001_02180280);
+}
+
 void func_ov001_02180200(void) {
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190900;
@@ -368,6 +383,27 @@ s32 func_ov001_021803cc(void) {
     return 0;
 }
 
+void func_ov001_021803ec(void) {
+extern u8 data_ov001_02193dc4;
+void func_ov001_021804f0(void);
+void func_ov001_02180448(void);
+M2C_UNK func_ov001_021722ac(void);
+M2C_UNK func_ov001_02171c24(M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK func_ov001_02171dd0(M2C_UNK);
+M2C_UNK func_ov001_02171e58(M2C_UNK);
+M2C_UNK func_ov001_021713c4(M2C_UNK);
+M2C_UNK func_ov001_02185024(M2C_UNK);
+data_ov001_02193dc4=0;
+func_ov001_02180448();
+func_ov001_021722ac();
+func_ov001_02171c24(0x37,-1,0);
+func_ov001_02171dd0(2);
+func_ov001_02171e58(0x24);
+func_ov001_021713c4(0);
+func_ov001_02185024(0xb);
+func_ov001_02175d54((M2C_UNK *)&func_ov001_021804f0);
+}
+
 void func_ov001_02180448(void) {
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190914, data_ov001_0219092c, data_ov001_02190944;
@@ -389,6 +425,18 @@ void func_ov001_021804f0(void) {
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
     func_ov001_02175d54(&func_ov001_02180544);
+}
+
+void func_ov001_02180544(void) {
+void func_ov001_02180584(void);
+M2C_UNK func_ov001_021763cc(void);
+M2C_UNK func_ov001_02171e20(M2C_UNK);
+s32 func_ov001_0218a800(s32);
+if(func_ov001_0218a800(1))return;
+if(func_ov001_0218a800(0))return;
+func_ov001_021763cc();
+func_ov001_02171e20(1);
+func_ov001_02175d54((M2C_UNK *)&func_ov001_02180584);
 }
 
 void func_ov001_02180584(void) {

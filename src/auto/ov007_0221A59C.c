@@ -85,6 +85,29 @@ s32 func_ov007_0221ad24(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     return 0;
 }
 
+s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 func_020c1a80(s32);
+    s32 func_ov007_0221b6c8(s32, s32);
+    s32 func_ov007_0221202c(s32, s32);
+    s32 func_ov007_0221204c(void);
+    if (func_020c1a80(arg2) == 0) {
+        goto ret1;
+    }
+    if (arg2 == 0xF) {
+        if (func_ov007_0221202c(0, arg3) > 0) {
+            return 0;
+        }
+    }
+    if (func_ov007_0221204c() < 0x63) {
+        goto ret1;
+    }
+    if (func_020c1a80(func_ov007_0221b6c8(arg0, arg1)) == 0) {
+        return 0;
+    }
+ret1:
+    return 1;
+}
+
 s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     u16 func_0207f460(u16);
     void func_02076980(s32, s32, s32, s32);

@@ -10,18 +10,17 @@ void func_020cab8c(void) {
     func_01ffa3dc(&data_0212b4a4, 7);
 }
 
+#pragma optimization_level 4
 s32 func_020caba4(s32 a,s32 b,s32 c){
  extern void **gCurrentMap;
- s32 i=0;u8 *q;void *p;s32 x;
+ s32 i=0;void *p;register u8 *q;
  do{
  if(c&data_0212b1b8[i][0]){
  p=*gCurrentMap;q=(u8 *)data_0212b1b8+((u32)i<<2);
- x=M2C_FIELD(p,s16 *,0x52dc);
- if(a==x+M2C_FIELD(q,s8 *,2) && b==M2C_FIELD(p,s16 *,0x52de)+M2C_FIELD(q,s8 *,3))return i;
+ if(a==M2C_FIELD(p,s16 *,0x52dc)+M2C_FIELD(q,s8 *,2) && b==M2C_FIELD(p,s16 *,0x52de)+M2C_FIELD(q,s8 *,3))return i;
  } i++;
  }while(i<4);return -1;
 }
-
 s32 func_020cac1c(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&data_0212b1b8[a][0]));return a;}
 
 s32 func_020cac3c(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&data_0212b1b8[a][0]));return a;}

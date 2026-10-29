@@ -143,6 +143,7 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
     extern M2C_UNK data_020fe07c;
     extern M2C_UNK data_020fe0a8;
     extern M2C_UNK data_020fe0cc;
+    s32 *buf;
     void *data;
     s32 end;
     s32 size;
@@ -151,22 +152,24 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
     s32 closed;
     s32 err;
 
+    buf = (s32 *)inputBuffer;
+
     if (sock == -1) {
         func_020640a8(&data_020fe028, &data_020fdf74, &data_020fded4, 0x150);
-        if (inputBuffer == 0) {
-            func_020640a8(&data_020fe040, &data_020fdf74, &data_020fded4, 0x151);
-        }
-        if (bytesRead == 0) {
-            func_020640a8(&data_020fe054, &data_020fdf74, &data_020fded4, 0x152);
-        }
-        if (connClosed == 0) {
-            func_020640a8(&data_020fe068, &data_020fdf74, &data_020fded4, 0x153);
-        }
+    }
+    if (inputBuffer == 0) {
+        func_020640a8(&data_020fe040, &data_020fdf74, &data_020fded4, 0x151);
+    }
+    if (bytesRead == 0) {
+        func_020640a8(&data_020fe054, &data_020fdf74, &data_020fded4, 0x152);
+    }
+    if (connClosed == 0) {
+        func_020640a8(&data_020fe068, &data_020fdf74, &data_020fded4, 0x153);
     }
 
-    end = ((s32 *)inputBuffer)[2];
-    data = (void *)((s32 *)inputBuffer)[0];
-    size = ((s32 *)inputBuffer)[1];
+    end = buf[2];
+    data = (void *)buf[0];
+    size = buf[1];
     total = 0;
     closed = total;
 
@@ -212,9 +215,9 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
         ((M2C_UNK (*)(M2C_UNK, M2C_UNK *, M2C_UNK, s32))func_02058170)(connection, &data_020fe0cc, (M2C_UNK *)arg5, total);
     }
 
-    ((s32 *)inputBuffer)[0] = (s32)data;
-    ((s32 *)inputBuffer)[2] = end;
-    ((s32 *)inputBuffer)[1] = size;
+    buf[0] = (s32)data;
+    buf[2] = end;
+    buf[1] = size;
     *bytesRead = total;
     *connClosed = closed;
     return 0;

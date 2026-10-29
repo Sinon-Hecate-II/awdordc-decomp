@@ -409,10 +409,16 @@ s32 func_020a046c(void) {
 }
 
 M2C_UNK func_020a0560(void) {
- extern void *data_0211fb5c; extern s32 *gCurrentMap;
- M2C_UNK func_01ffc294(u16,s32,s32,u32,s32,s32);
- void *r; void *p; void *q; q=(void *)*gCurrentMap; p=data_0211fb5c; r=p+M2C_FIELD(p,s8 *,0x5b);
- func_01ffc294((u16)((M2C_FIELD(q,u8 *,0x52d4)>>6)+1),M2C_FIELD(r,s8 *,0x36),M2C_FIELD(r,s8 *,0x42),(u32)(M2C_FIELD(M2C_FIELD(q,u8 **,0x52d0),u8 *,0)<<26)>>26,M2C_FIELD(r,s8 *,0x4e),1);
+    extern void *data_0211fb5c; extern s32 *gCurrentMap;
+    void func_01ffc294(u16, s32, s32, u32, s32, s32);
+    s8 *p;
+    s8 *q;
+    u8 *map;
+
+    p = data_0211fb5c;
+    q = p + p[0x5b];
+    map = (u8 *)*gCurrentMap;
+    func_01ffc294((u16)((map[0x52d4] >> 6) + 1), q[0x36], q[0x42], (u32)(M2C_FIELD(M2C_FIELD(map, u8 **, 0x52d0), u8 *, 0) << 26) >> 26, q[0x4e], 1);
 }
 
 void func_020a05d8(M2C_UNK arg0, M2C_UNK arg1) {

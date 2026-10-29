@@ -344,15 +344,16 @@ M2C_FIELD(p,u16 *,0x81c)=5;
 }else func_02007530(irq);
 }
 
-s32 func_02013aa8(void *arg0, void *arg1, register u32 arg2) {
+#pragma scheduling off
+s32 func_02013aa8(void *arg0, void *arg1, s32 arg2) {
 u16 a=M2C_FIELD(arg1,u16 *,0); u16 b=M2C_FIELD(arg1,u16 *,2);
-register s32 mask=1;
+u32 mask=1u<<arg2;
 if(!arg0) return 0; if(!arg1) return 0;
-if(!(a & (mask<<arg2))) return 0;
-if(!(b & (1<<arg2))) return 0;
+if(!(a & mask)) return 0;
+if(!(b & mask)) return 0;
 return func_02013afc(arg0,a,(s32)arg1+4,arg2);
 }
-
+#pragma scheduling reset
 s32 func_02013afc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_02076614(s32);
     return (M2C_FIELD(arg0, u16 *, 0x810) * func_02076614(arg1 & ((1 << arg3) - 1))) + arg2;

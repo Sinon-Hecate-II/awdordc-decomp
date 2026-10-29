@@ -178,20 +178,18 @@ void func_020b654c(s32 arg0) {
 void func_020b6570(void *arg0) {
     s32 func_0207ca38(s32, s32, s32, u16, s32);
     M2C_UNK func_0208c0d0(void *, u8);
-    u32 temp_r1;
-    u32 upper;
-    u16 temp_r7;
-    u16 temp_r5;
-    s32 temp_r6;
-    s32 temp_r5_2;
-    temp_r1 = M2C_FIELD(arg0, u32 *, 0x48);
-    upper = temp_r1 >> 21;
-    temp_r5 = (u16)upper;
-    temp_r7 = (u16)((temp_r1 << 11) >> 21);
-    temp_r6 = func_0207ca38(4, 31, 0, temp_r5, temp_r7);
-    temp_r5_2 = func_0207ca38(4, 0, 0x40000, temp_r5, temp_r7);
-    func_0208c0d0(arg0, (u8)temp_r6);
-    M2C_FIELD(arg0, s32 *, 0x40) = temp_r5_2;
+    u32 bits;
+    u16 a;
+    u16 b;
+    s32 r;
+    s32 r2;
+    bits = M2C_FIELD(arg0, u32 *, 0x48);
+    a = (u16)(bits >> 21);
+    b = (u16)((bits << 11) >> 21);
+    r = func_0207ca38(4, 31, 0, a, b);
+    r2 = func_0207ca38(4, 0, 0x40000, a, b);
+    func_0208c0d0(arg0, (u8)r);
+    M2C_FIELD(arg0, s32 *, 0x40) = r2;
 }
 
 void func_020b65e4(void *arg0) {

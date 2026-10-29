@@ -6,6 +6,7 @@ s32 func_ov000_0216aba8(s32 a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     return 0;
 }
 
+#pragma optimization_level 0
 u8 *func_ov000_0216b074(u8 *arg0) {
     while (*arg0 != 0x17 && *arg0 != 0x18 && *arg0 != 0x19) {
         if (*arg0 == 0x22) {
@@ -15,29 +16,11 @@ u8 *func_ov000_0216b074(u8 *arg0) {
     }
     return arg0;
 }
-
-#pragma optimize_ifs off
-void *func_ov000_0216b0c8(void) {
-    void *func_020a8b0c(u16);
-    s32 func_020cd6d4();
-    extern s32 *gCurrentMap;
-    void *result;
-    switch (func_020cd6d4()) {
-    case 0: result = NULL; break;
-    default: result = func_020a8b0c(M2C_FIELD((*gCurrentMap + 0x5120), u16 *, 0x22)); break;
-    }
-    return result;
-}
-s32 func_ov000_0216b104(void) {
-    s32 func_ov000_0216aba8(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void *temp_r0 = func_ov000_0216b0c8();
-    if (temp_r0 == NULL) return 0;
-    switch (M2C_FIELD(temp_r0, s32 *, 0x28)) {
-    case 0: return 0;
-    default: return func_ov000_0216aba8(M2C_FIELD(temp_r0, s32 *, 0x28), 0, 0, 0, 0);
-    }
-}
-#pragma optimize_ifs reset
+#pragma optimization_level reset
+void *func_ov000_0216b0c8(void) { void *func_020a8b0c(u16); s32 func_020cd6d4(); extern s32 *gCurrentMap; void *result; switch(func_020cd6d4()){case 0:result=0;break;default:result=func_020a8b0c(M2C_FIELD(*gCurrentMap+0x5120,u16 *,0x22));break;}return result; }
+#pragma optimization_level 0
+s32 func_ov000_0216b104(void) { s32 func_ov000_0216aba8(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32); void *p=func_ov000_0216b0c8(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return func_ov000_0216aba8(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
+#pragma optimization_level reset
 s32 func_ov000_0216b154(void) {
     return 0;
 }

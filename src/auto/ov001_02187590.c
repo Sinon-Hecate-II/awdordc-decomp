@@ -16,18 +16,20 @@ u16 func_ov001_021878c8(void) {
     return *(u16 *)data_ov001_02193e1c;
 }
 
+#pragma opt_common_subs off
 u16 func_ov001_021878dc(s32 arg0) {
-    extern s16 *data_ov001_02193e1c;
-    extern struct { u16 *ptrs[6]; } data_ov001_02190c68;
-    data_ov001_02190c68.ptrs[0] = (u16 *)data_ov001_02193e1c + 1;
-    data_ov001_02190c68.ptrs[1] = (u16 *)data_ov001_02193e1c + 2;
-    data_ov001_02190c68.ptrs[2] = (u16 *)data_ov001_02193e1c + 3;
-    data_ov001_02190c68.ptrs[3] = (u16 *)data_ov001_02193e1c + 4;
-    data_ov001_02190c68.ptrs[4] = (u16 *)data_ov001_02193e1c + 5;
-    data_ov001_02190c68.ptrs[5] = (u16 *)data_ov001_02193e1c + 6;
-    return **(u16 **)((s32)&data_ov001_02190c68 + arg0 * 4);
+extern s16 *data_ov001_02193e1c;
+extern u16 *data_ov001_02190c68[];
+s16 *p=data_ov001_02193e1c;
+data_ov001_02190c68[0]=(u16 *)p+1;
+data_ov001_02190c68[1]=(u16 *)p+2;
+data_ov001_02190c68[2]=(u16 *)p+3;
+data_ov001_02190c68[3]=(u16 *)p+4;
+data_ov001_02190c68[4]=(u16 *)p+5;
+data_ov001_02190c68[5]=(u16 *)p+6;
+return **(u16 **)((u32)data_ov001_02190c68+(arg0<<2));
 }
-
+#pragma opt_common_subs reset
 s32 func_ov001_02187934(s32 arg0) {
     void *func_0200751c(s32);
     void func_02007530(void *);
@@ -142,14 +144,11 @@ s32 func_ov001_02187c60(void) {
 extern M2C_UNK data_ov001_02193e20;
 void func_ov001_02187cc4(void *);
 s32 func_02013b54(void *,s32,void *);
-s32 (*callback)();
 void *p;
 s32 value;
 func_ov001_02187b14(3);
 p=M2C_FIELD(&data_ov001_02193e20,void **,4);
-callback=M2C_FIELD(p,s32 (**)(),0x13AC);
-p=(u8 *)p+0x13C0;
-value=callback(p);
+value=M2C_FIELD(p,s32 (**)(void *,void *),0x13AC)((u8 *)p+0x13C0,p);
 if(func_02013b54((void *)func_ov001_02187cc4,value,(u8 *)M2C_FIELD(&data_ov001_02193e20,void **,4)+0x13C0)==2) return 1;
 func_ov001_02187b90(); func_ov001_02187b14(9); return 0;
 }

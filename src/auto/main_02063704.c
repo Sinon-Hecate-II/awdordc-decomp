@@ -259,6 +259,28 @@ void func_02063f90(void) {
     func_0207191c(data_021002ec);
 }
 
+#pragma opt_strength_reduction off
+#pragma peephole off
+s32 func_02064034(void) {
+s32 func_020649a8(s32);
+extern u8 data_021001cc[];
+void *p;
+s32 result;
+s32 offset;
+s32 i;
+p=data_021001cc;
+result=0;
+i=1;
+do {
+if(((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && func_020649a8((s32)p)!=0)result=-1;
+if(i>=3)p=NULL;
+else {offset=i*0x4C;i++;p=data_021001cc+offset;}
+}while(p!=NULL);
+return result;
+}
+#pragma peephole reset
+#pragma opt_strength_reduction reset
+
 s32 func_0206409c(s32 arg0) {
     s32 var_r0;
 

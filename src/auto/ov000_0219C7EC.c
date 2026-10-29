@@ -7,7 +7,12 @@ void func_ov000_0219c874(s32 a){extern u8 data_ov000_021df824;extern s8 data_ov0
 
 void func_ov000_0219c8fc(void){void func_ov000_0219c7ec(s32);extern s32 *gCurrentMap;extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;s32 *base=gCurrentMap;u8 *p=&data_ov000_021df824;s8 *q=&data_ov000_021df868;s32 n=0;u8 x;loop: x=*p;if(x!=0){s32 a=x*14+(*base+0x59a4);p++;*q=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>24;if(((u32)(M2C_FIELD(a,u16 *,8)<<26)>>26)!=63)(*q)++;q++;n++;goto loop;}func_ov000_0219c7ec(n);}
 #pragma opt_common_subs reset
-void func_ov000_0219c984(void){void func_ov000_0219c7ec(s32);extern s32 *gCurrentMap;extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;register s32 *base;register u8 *p;register s8 *q;s32 n;u8 x;base=gCurrentMap;p=&data_ov000_021df824;q=&data_ov000_021df868;n=0;loop: x=*p;if(x!=0){p++;*q++=(u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25;n++;goto loop;}func_ov000_0219c7ec(n);}
+void func_ov000_0219c984(void){
+void func_ov000_0219c7ec(s32);extern s32 *gCurrentMap;extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;
+u8 *p; s32 *base; s8 *q; s32 n;u8 x;
+base=gCurrentMap;p=&data_ov000_021df824;q=&data_ov000_021df868;n=0;
+loop:x=*p;if(x!=0){p++;*q++=(u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25;n++;goto loop;}func_ov000_0219c7ec(n);
+}
 
 void func_ov000_0219c9e8(s32 arg0) {
     u8 func_020a7b24(s32);

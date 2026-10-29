@@ -171,25 +171,26 @@ M2C_UNK func_02079c50(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02079c6c(s32 arg0, s32 arg1) {
-    M2C_UNK func_02079c90();
+    void func_02079c90();
     func_02079c90((arg0 * 0x300) + 0x180, (arg1 * 0x300) + 0x180);
 }
 
-M2C_UNK func_02079c90(s32 arg0, s32 arg1, s32 *arg2) {
-    s32 func_0207c8ec(s32, s32);
-    M2C_UNK func_0207d820(Vec3 *, void *);
-    extern s32 *gCurrentMap;
-    s32 base;
-    Vec3 pos;
-    base = *gCurrentMap + 0x6EF8;
-    pos.x = arg0;
-    pos.y = arg1;
-    pos.z = 0;
-    func_0207d820(&pos, (void *)(base + 0x70));
-    arg2[0] = func_0207c8ec((arg2[0] + 0x1000) << 8, 0x2000);
-    arg2[1] = func_0207c8ec((0x1000 - arg2[1]) * 0xC0, 0x2000);
+#pragma opt_common_subs off
+void func_02079c90(s32 arg0, s32 arg1, s32 *arg2) {
+s32 func_0207c8ec(s32, s32);
+M2C_UNK func_0207d820(Vec3 *, void *);
+extern s32 *gCurrentMap;
+s32 base;
+Vec3 pos;
+base = *gCurrentMap + 0x6EF8;
+pos.x = arg0;
+pos.y = arg1;
+pos.z = 0;
+func_0207d820(&pos, (void *)(base + 0x70));
+arg2[0] = func_0207c8ec((arg2[0] + 0x1000) << 8, 0x2000);
+arg2[1] = func_0207c8ec((0x1000 - arg2[1]) * 0xC0, 0x2000);
 }
-
+#pragma opt_common_subs reset
 void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {
     M2C_UNK func_02000f90(Vec3 *, void *, Vec3 *);
     s32 func_0207c8ec(s32, s32);

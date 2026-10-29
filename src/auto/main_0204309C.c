@@ -33,13 +33,7 @@ func_0203dc38(code,off+0xfffeb010);
 return a;
 }
 
-s32 func_020431e0(s32 a) {
-s32 code=6;
-if(a==0)return 0;
-switch(a){case 1:return 1;case 2:return 2;}
-if(code)func_0203dc38(code,0xfffeb007);
-return a;
-}
+s32 func_020431e0(s32 a) {s32 code=a; if(a==0)return 0; switch(a){case 1:code=0;break;case 2:code=0;break;default:code=6;break;} if(code)func_0203dc38(code,0xfffeb007); return a;}
 
 u32 func_02043230(u32 a,u32 unused,u32 off) {
 u32 ret=a;

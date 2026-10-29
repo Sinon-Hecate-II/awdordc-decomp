@@ -120,6 +120,18 @@ void func_01ffa244(s32 arg0) {
     *data_021581a8 = (void *) arg0;
 }
 
+void func_01ffa284(void *arg0, u32 arg1) {
+ extern s32 data_021581ac[];
+ void **table=(void **)data_021581ac;
+ void *prev=table[arg1];
+ if(prev!=NULL) {
+ M2C_FIELD(prev,void **,0x20)=arg0;
+ M2C_FIELD(arg0,void **,0x24)=table[arg1];
+ }
+ M2C_FIELD(arg0,u32 *,0x18)=arg1;
+ table[arg1]=arg0;
+}
+
 void func_01ffa2ac(void *arg0, void *arg1) {
     void *temp_r2;
 
@@ -242,25 +254,14 @@ void func_01ffa4e8(void *p) {
  }
 }
 
+#pragma opt_common_subs off
 void func_01ffa574(void *arg0) {
-    s32 v;
-
-    if (arg0 == NULL) {
-        return;
-    }
-    v = M2C_FIELD(arg0, s32 *, 4);
-    if (v == 0) {
-        return;
-    }
-    if (M2C_FIELD(arg0, u8 *, 0x30) & 2) {
-        return;
-    }
-    func_01ffa2cc(arg0);
-    func_01ffa468(arg0);
-    func_01ffa4e8(arg0);
-    func_01ffa4a0(arg0);
+ if(arg0==NULL)return;
+ if(M2C_FIELD(arg0,volatile s32 *,4)==0)return;
+ if(M2C_FIELD(arg0,u8 *,0x30)&2)return;
+ func_01ffa2cc(arg0);func_01ffa468(arg0);func_01ffa4e8(arg0);func_01ffa4a0(arg0);
 }
-
+#pragma opt_common_subs on
 void func_01ffa5b8(void *p){
 extern u8 data_027e15b8,data_027e15b4;
 extern s32 gCur3DSpriteEngine;
@@ -588,31 +589,21 @@ void func_01ffacd4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     gCur3DSpriteEngine = temp_r5;
 }
 
-void func_01ffad0c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    struct Ent { u8 pad[0x12]; u8 flags; u8 pad2; };
-    void func_01ffaacc(s32, s32, s32, s32, s32);
-    extern s32 gCur3DSpriteEngine;
-    struct Ent *arr = (struct Ent *) M2C_FIELD((void *) gCur3DSpriteEngine, s32 *, 4);
-    struct Ent *q = &arr[M2C_FIELD((void *) gCur3DSpriteEngine, u8 *, 0x49)];
-    u8 temp;
-
-    func_01ffaacc(arg0, arg1, arg2, arg3, arg4);
-    temp = q->flags;
-    q->flags = (u8) ((temp & ~0xF) | 0x1);
+void func_01ffad0c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
+void func_01ffaacc(s32,s32,s32,s32,s32);
+extern s32 gCur3DSpriteEngine;
+void *p=(void *)gCur3DSpriteEngine;
+u8 *q=(u8 *)M2C_FIELD(p,volatile s32 *,4)+M2C_FIELD(p,volatile u8 *,0x49)*0x14;
+func_01ffaacc(arg0,arg1,arg2,arg3,arg4);
+q[0x12]=(q[0x12]&~15)|1;
 }
 
-void func_01ffad4c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5, s32 arg6) {
-    void func_01ffabac(s32, s32, s32, s32, u16, s32, s32);
-    extern s32 gCur3DSpriteEngine;
-    u16 a4 = arg4;
-    s32 a5 = arg5;
-    s32 a6 = arg6;
-    u8 *q;
-    u8 temp;
-
-    q = (u8 *) (M2C_FIELD((void *) gCur3DSpriteEngine, s32 *, 4) + M2C_FIELD((void *) gCur3DSpriteEngine, u8 *, 0x49) * 0x14);
-    func_01ffabac(arg0, arg1, arg2, arg3, a4, a5, a6);
-    temp = M2C_FIELD(q, u8 *, 0x12);
-    M2C_FIELD(q, u8 *, 0x12) = (u8) ((temp & ~0xF) | 0x1);
+void func_01ffad4c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,s32 arg6) {
+void func_01ffabac(s32,s32,s32,s32,u16,s32,s32);
+extern s32 gCur3DSpriteEngine;
+void *p=(void *)gCur3DSpriteEngine;
+u8 *q=(u8 *)M2C_FIELD(p,volatile s32 *,4)+M2C_FIELD(p,volatile u8 *,0x49)*0x14;
+func_01ffabac(arg0,arg1,arg2,arg3,arg4,arg5,arg6);
+q[0x12]=(q[0x12]&~15)|1;
 }
 

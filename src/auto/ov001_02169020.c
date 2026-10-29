@@ -239,8 +239,15 @@ void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
     } while (var_r9 > temp_r11_3);
 }
 
-void func_ov001_02169bd0(void *a,s32 b){M2C_UNK func_02007e98(s32,s32,s32);s32 bits=M2C_FIELD(a,u8 *,12);u32 v; if(bits==4) {u32 t=b|b<<4;v=t|t<<8;}else{v=(u32)b|((u32)b<<8);}func_02007e98(v|v<<16,M2C_FIELD(a,s32 *,0),(M2C_FIELD(a,s32 *,4)*M2C_FIELD(a,s32 *,8))*((bits*64)/8));}
-
+#pragma optimization_level 3
+void func_ov001_02169bd0(void *a,s32 b) {
+M2C_UNK func_02007e98(s32,s32,s32);
+s32 bits=M2C_FIELD(a,u8 *,12);s32 v,w=M2C_FIELD(a,s32 *,4),h;
+v=bits==4 ? ((b|(b<<4))|((b|(b<<4))<<8)) : (b|(b<<8));
+v|=v<<16; h=M2C_FIELD(a,s32 *,8);
+func_02007e98(v,M2C_FIELD(a,s32 *,0),w*h*((bits<<6)/8));
+}
+#pragma optimization_level reset
 void func_ov001_02169c20(void *arg0,s32 arg1){M2C_UNK func_02007e98(s32,s32,s32);register s32 width;register s32 stride;register s32 p;register s32 i;register void *a;register s32 v;s32 bits,t,size;a=arg0;v=arg1;bits=M2C_FIELD(a,u8 *,12);p=M2C_FIELD(a,s32 *,0);if(bits==4){t=v|(v<<4);t|=t<<8;}else t=v|(v<<8);v=t|(t<<16);size=(bits<<6)/8;stride=size*M2C_FIELD(a,s32 *,16);width=size*M2C_FIELD(a,s32 *,4);i=0;if(M2C_FIELD(a,s32 *,8)<=0)return;do{func_02007e98(v,p,width);i++;p+=stride;}while(i<M2C_FIELD(a,s32 *,8));}
 
 void func_ov001_02169ca0(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {

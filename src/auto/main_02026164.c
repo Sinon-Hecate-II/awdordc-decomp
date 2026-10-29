@@ -431,7 +431,7 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
   func_02008048((s32) arg0, (s32) arg1, arg3 * 2);
   if (arg2 == 1)
   {
-    func_0202667c((s32) arg0, (s32) arg1, arg3);
+    func_0202667c(arg0, arg1, arg3);
   }
   else
     if (arg2 != 0)

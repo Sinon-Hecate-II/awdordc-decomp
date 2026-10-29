@@ -208,13 +208,9 @@ default:func_02080cfc(data_0212bd48,p+0x6000);break;
 func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
 }
 
-void func_020ceffc(void) {
-extern void **gCurrentMap;
-s32 i;
-for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++)
-M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144);
-}
-
+#pragma opt_strength_reduction off
+void func_020ceffc(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
+#pragma opt_strength_reduction reset
 void func_020cf058(M2C_UNK arg0) {
     M2C_UNK func_020a231c(s32, s32);
     s32 func_020a8a4c(M2C_UNK, s32);

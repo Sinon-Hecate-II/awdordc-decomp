@@ -164,13 +164,13 @@ void func_ov009_022236c0(void *arg0) {
     callback(arg0);
 }
 
-M2C_UNK func_ov009_022236f4(s32 arg0, u16 arg1, u16 arg2) {
-    M2C_UNK func_02008048(s32,s32,M2C_UNK);
-    extern M2C_UNK data_ov009_022268e0;
-    u8 buffer[12];
-    func_02008048(arg0, (s32)buffer, 12);
-    if (M2C_FIELD(&data_ov009_022268e0, M2C_UNK (**)(s32,u16,u16), 0x60) == NULL) return;
-    M2C_FIELD(&data_ov009_022268e0, M2C_UNK (**)(s32,u16,u16), 0x60)(arg0,arg1,arg2);
+void func_ov009_022236f4(s32 arg0,u16 arg1,u16 arg2) {
+M2C_UNK func_02008048(s32,s32,M2C_UNK);
+extern M2C_UNK data_ov009_022268e0;
+u8 buffer[12];
+func_02008048(arg0,(s32)buffer,12);
+if(M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,u16,u16),0x60)==NULL)return;
+M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,u16,u16),0x60)(arg0,arg1,arg2);
 }
 
 void func_ov009_02223a24(void) {
@@ -181,18 +181,22 @@ void func_ov009_02223a24(void) {
 void func_ov009_02223a30(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
     extern M2C_UNK data_ov009_022268e0, data_ov009_02226b40;
     s8 *entry = (s8 *)&data_ov009_02226b40 + arg3 * 0x60;
-    u32 flags = M2C_FIELD(entry,u8 *,0x16) & ~1;
-    u32 mask = M2C_FIELD(&data_ov009_022268e0,u16 *,8) | (1 << arg3);
-    void (*callback)(s32,s32,s32,s32,s32);
+    u32 flags;
+    u32 mask;
+    M2C_UNK (*callback)(s32,s32,s32,s32,s32);
+    flags = M2C_FIELD(entry,u8 *,0x16);
+    mask = M2C_FIELD(&data_ov009_022268e0,u16 *,8);
+    flags &= ~1;
+    mask = (1 << arg3) | mask;
     M2C_FIELD(entry,u8 *,0x16) = flags;
     M2C_FIELD(&data_ov009_022268e0,u16 *,8) = mask;
-    callback = M2C_FIELD(&data_ov009_022268e0,void (**)(s32,s32,s32,s32,s32),0x1c);
+    callback = M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,s32,s32,s32,s32),0x1c);
     if (callback == NULL) return;
     callback(arg0,arg1,arg2,arg3,arg4);
 }
 
 void func_ov009_02223a90(void *arg0) {
-    M2C_UNK func_ov009_022236f4(s32, u16, u16);
+    void func_ov009_022236f4(s32, u16, u16);
     s32 temp_r0;
 
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
@@ -327,17 +331,9 @@ void func_ov009_02223d14(void *arg0) {
     func_ov009_02221320(1);
 }
 
-#pragma scheduling off
-s32 func_ov009_02223d40(s32 a) {
- extern M2C_UNK data_ov009_022268e0,func_ov009_02223da0;
- s32 func_02013e24(M2C_UNK *,s32);
- s32 result; u8 *p;
- if(a) {p=(u8 *)&data_ov009_022268e0; p[0x156]=p[0x156]|2;}
- else {p=(u8 *)&data_ov009_022268e0; p[0x156]=p[0x156]&~2;}
- result=func_02013e24(&func_ov009_02223da0,M2C_FIELD(&data_ov009_022268e0,u8 *,0x156)&2);
- switch(result) {case 2: case 3: break; default: func_ov009_022227d4(); return 0;} return 1;
-}
-#pragma scheduling reset
+#pragma opt_common_subs off
+s32 func_ov009_02223d40(s32 a) { extern M2C_UNK data_ov009_022268e0,func_ov009_02223da0; s32 func_02013e24(M2C_UNK *,s32); s32 result; u8 flags; if(a) {flags=M2C_FIELD(&data_ov009_022268e0,u8 *,0x156);flags|=2; M2C_FIELD(&data_ov009_022268e0,u8 *,0x156)=flags;} else {flags=M2C_FIELD(&data_ov009_022268e0,u8 *,0x156);flags&=~2; M2C_FIELD(&data_ov009_022268e0,u8 *,0x156)=flags;} result=func_02013e24(&func_ov009_02223da0,M2C_FIELD(&data_ov009_022268e0,u8 *,0x156)&2); switch(result){case 2:case 3:break;default:func_ov009_022227d4();return 0;}return 1;}
+#pragma opt_common_subs reset
 void func_ov009_02223da0(void *arg0) {
     M2C_UNK func_ov009_02221320(M2C_UNK);
     M2C_UNK func_ov009_02222748();

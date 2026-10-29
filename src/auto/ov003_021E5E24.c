@@ -509,10 +509,8 @@ void func_ov003_021e6c4c(s32 arg0) {
     ((void(*)(s32))func_ov003_021e6b04)(arg0 - 52);
 }
 #pragma opt_peephole reset
-void func_ov003_021e6c5c(s32 arg0) {
-    void func_ov003_021e5c8c(s32);
-    func_ov003_021e5c8c(arg0 + 0xFFFFFFCC);
-}
+void func_ov003_021e5c8c(s32);
+void func_ov003_021e6c5c(s32 arg0) { func_ov003_021e5c8c((s32)((char *)arg0 - 52)); }
 
 void func_ov003_021e6c6c(void *arg0) {
     void func_ov003_021e6424(void *);

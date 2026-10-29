@@ -26,10 +26,13 @@ if(arg1) i++;
 return table.values[i];
 }
 
-void func_02098cb8(M2C_UNK arg0, u16 arg1, u32 arg2, M2C_UNK arg3, u8 arg4, s32 arg5) {
-    M2C_UNK func_01ffaacc(u16, u8, M2C_UNK, s32, s32);
-    s32 func_02098bd4(M2C_UNK, u8);
-    func_01ffaacc((u16)(arg1 & 0x1FF), (u8)arg2, arg3, func_02098bd4(arg0, arg4), arg5);
+void func_02098cb8(M2C_UNK arg0,s32 arg1,u32 arg2,M2C_UNK arg3,u8 arg4,s32 arg5) {
+M2C_UNK func_01ffaacc(u16,u8,M2C_UNK,s32,s32);
+s32 func_02098bd4(M2C_UNK,u8);
+s32 result=func_02098bd4(arg0,arg4);
+arg2=(u8)arg2;
+arg1 &= 0x1ff;
+func_01ffaacc((u16)arg1,arg2,arg3,result,arg5);
 }
 
 M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {

@@ -218,6 +218,17 @@ s32 func_ov000_0217c2d4(u8 *arg0) {
     return 0;
 }
 
+void func_ov000_0217c3a4(void) {
+extern void **gCurrentMap;
+s32 func_ov000_021a98a8();
+void *p;
+if(!func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26))return;
+p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
+M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0x3F)|0x3F;
+p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
+M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0xFC0)|0xFC0;
+}
+
 void func_ov000_0217c4c8(void *arg0) {
     (void)arg0;
 }

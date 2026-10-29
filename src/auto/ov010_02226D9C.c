@@ -50,17 +50,20 @@ void func_ov010_02227bc8(void) {
     func_ov010_02228cbc();
 }
 
+#pragma opt_common_subs off
 void func_ov010_02227bd4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
 extern M2C_UNK data_ov010_0222eee0;
 void (*cb)(s32,s32,s32,s32,s32,s32);
 u8 *p = &data_ov010_0222f02c[d*0x6c];
-M2C_FIELD(p,u8 *,0x1a) &= ~1;
-M2C_FIELD(&data_ov010_0222eee0,u16 *,0) |= 1 << d;
+s32 value=M2C_FIELD(p,u8 *,0x1a);
+s32 flags=M2C_FIELD(&data_ov010_0222eee0,u16 *,0);
+M2C_FIELD(p,u8 *,0x1a) = value & ~1;
+M2C_FIELD(&data_ov010_0222eee0,u16 *,0) = flags | (1 << d);
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32,s32,s32,s32),0x34);
 if (!cb) return;
 cb(a,b,c,d,e,f);
 }
-
+#pragma opt_common_subs reset
 void func_ov010_02227c3c(s32 a,s32 b) {
 extern M2C_UNK data_ov010_0222eee0;
 void (*cb)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x10);

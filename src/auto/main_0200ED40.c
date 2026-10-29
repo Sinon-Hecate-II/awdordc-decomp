@@ -18,27 +18,16 @@ void func_0200ed40(void **arg0, void *arg1) {
     }
 }
 
-void func_0200ed54(M2C_UNK *arg0, M2C_UNK arg1) {
-    M2C_UNK var_r0;
-    M2C_UNK var_r2;
-    if (arg0 == NULL) return;
-    var_r2 = *arg0;
-    if (var_r2 == 0) {
-        M2C_FIELD(arg1, M2C_UNK *, 8) = 0;
-        *arg0 = arg1;
-        return;
-    }
-    var_r0 = M2C_FIELD(var_r2, M2C_UNK *, 8);
-    if (var_r0 != 0) {
-        do {
-            var_r2 = var_r0;
-            var_r0 = M2C_FIELD(var_r0, M2C_UNK *, 8);
-        } while (var_r0 != 0);
-    }
-    M2C_FIELD(arg1, M2C_UNK *, 8) = var_r0;
-    M2C_FIELD(var_r2, M2C_UNK *, 8) = arg1;
+#pragma scheduling off
+void func_0200ed54(M2C_UNK *arg0,M2C_UNK arg1) {
+M2C_UNK p,n;
+if(!arg0)return;
+p=*arg0;
+if(!p){M2C_FIELD(arg1,M2C_UNK *,8)=0; *arg0=arg1;return;}
+n=M2C_FIELD(p,M2C_UNK *,8);
+if(n)do{p=n;n=M2C_FIELD(n,M2C_UNK *,8);}while(n);
+M2C_FIELD(arg1,M2C_UNK *,8)=n; M2C_FIELD(p,M2C_UNK *,8)=arg1;
 }
-
 void func_0200eda0(M2C_UNK *arg0, M2C_UNK arg1) {
     M2C_UNK var_r2;
     M2C_UNK var_r3;
@@ -72,29 +61,18 @@ void func_0200ede8(void *arg0) {
     } while (var_r4 != NULL);
 }
 
-void func_0200ee10(void *arg0) {
-    extern M2C_UNK data_0212fcd8;
-    func_0200ed40((void **)&data_0212fcd8, arg0);
-}
+void func_0200ee10(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }
 
-void func_0200ee28(M2C_UNK arg0) {
-    void func_0200ed54(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212fce0;
-    func_0200ed54(&data_0212fce0, arg0);
-}
-
-void func_0200ee40(M2C_UNK arg0) {
-    void func_0200eda0(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212fcd8;
-    func_0200eda0(&data_0212fcd8, arg0);
-}
-
+void func_0200ee28(M2C_UNK arg0) { extern M2C_UNK data_0212fce0; void (*f)(M2C_UNK *,M2C_UNK)=func_0200ed54; f(&data_0212fce0,arg0); }
+#pragma scheduling reset
+void func_0200ee40(M2C_UNK arg0) { extern M2C_UNK data_0212fcd8; void (*f)(M2C_UNK *,M2C_UNK)=func_0200eda0; f(&data_0212fcd8,arg0); }
+#pragma peephole reset
+#pragma scheduling reset
 void func_0200ee58(M2C_UNK arg0) {
     void func_0200eda0(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212fce0;
     func_0200eda0(&data_0212fce0, arg0);
 }
-
 void func_0200ee70(void) {
     M2C_UNK func_02009d34();
     M2C_UNK func_02009e40(M2C_UNK, M2C_UNK *);
@@ -166,7 +144,7 @@ s32 func_0200ef84(s32 arg0, s32 arg1, s32 arg2) {
     if (func_0200f6ec() != 0) return 0;
     return 3;
 }
-
+#pragma opt_common_subs reset
 s32 func_0200eff8(s32 arg0) {
     s32 func_0200ef84(s32, s32, s32);
     void func_0200f6a4(s32);
@@ -200,7 +178,7 @@ s32 func_0200f030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (func_0200f6cc() != 0) return 0;
     return 3;
 }
-
+#pragma opt_common_subs reset
 s32 func_0200f0ac(s32 arg0, s32 arg1) {
 void func_0200f6a4(s32); s32 func_0200f6b4(void); extern M2C_UNK data_0212fd34;
 s32 result = func_0200f030(arg0,arg1,(s32)func_0200f6a4,0);
@@ -411,15 +389,16 @@ s32 func_0200f7c8(void *arg0) {
     return (((M2C_FIELD(arg0, s32 *, 0) * 0x3C) + M2C_FIELD(arg0, s32 *, 4)) * 0x3C) + M2C_FIELD(arg0, s32 *, 8);
 }
 
+#pragma opt_strength_reduction off
 long long func_0200f7e0(void *arg0, void *arg1) {
-s32 func_0200f7c8(void *);
-s32 days=func_0200f734(arg0); s32 seconds;
-if(days==-1) return -1;
-seconds=func_0200f7c8(arg1);
-if(seconds==-1) return -1;
-return (long long)days*86400+seconds;
+ s32 func_0200f7c8(void *);
+ s32 days=func_0200f734(arg0); s32 seconds;
+ if(days==-1) return -1;
+ seconds=func_0200f7c8(arg1);
+ if(seconds==-1) return -1;
+ return (long long)days*86400LL+seconds;
 }
-
+#pragma opt_strength_reduction reset
 void func_0200f844(void *arg0, s32 arg1) {
     extern s32 data_020f550c[];
     s32 d = arg1;
@@ -486,13 +465,13 @@ void func_0200f844(void *arg0, s32 arg1) {
 }
 
 void func_0200f944(s32 *arg0,s32 arg1) {
-s32 minutes;
-if(arg1<0) arg1=0;
-if(arg1>86399) arg1=86399;
-minutes=arg1/60;
-arg0[2]=arg1%60;
-arg0[1]=minutes%60;
-arg0[0]=minutes/60;
+    s32 minutes;
+    if(arg1<0) arg1=0;
+    if(arg1>86399) arg1=86399;
+    minutes=arg1/60;
+    arg0[2]=arg1%60;
+    arg0[1]=minutes%60;
+    arg0[0]=minutes/60;
 }
 
 void func_0200f9c4(void *arg0,s32 *arg1,long long time) {

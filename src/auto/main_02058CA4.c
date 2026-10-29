@@ -398,6 +398,20 @@ M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
  return *result;
 }
 
+s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
+ s32 *func_02058658(s32, void *, s32, M2C_UNK *);
+ extern M2C_UNK data_0213dce0;
+ s32 *result;
+ void *obj = arg0;
+ if (obj == NULL) obj = M2C_FIELD(&data_0213dce0, void **, 0x28);
+ if (obj == NULL) result = (s32 *)&arg3;
+ else {
+ result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, (s32 *)&arg3);
+ if (result == NULL) result = func_02058658(M2C_FIELD(obj, s32 *, 0xc), arg1, 1, (s32 *)&arg3);
+ }
+ return *(s64 *)result;
+}
+
 s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     s32 *func_02058658(s32, void *, s32, M2C_UNK *);
     extern M2C_UNK data_0213dce0;
@@ -420,7 +434,7 @@ void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 void func_02059830(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
-    M2C_UNK func_02059708(void *, void *, M2C_UNK, s64, s32);
+    s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp8[64];
@@ -447,7 +461,7 @@ void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 void func_02059948(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
-    M2C_UNK func_02059708(void *, void *, M2C_UNK, s64, s32);
+    s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp8[64];

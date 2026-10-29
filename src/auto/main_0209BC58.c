@@ -209,21 +209,21 @@ void func_0209c0bc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
 }
 
 s32 func_0209c168(void *arg0, s32 arg1) {
-    u8 temp_r1;
-    u8 var_r2;
+    s32 sum;
+    u32 mod;
 
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0x56) + arg1;
-    var_r2 = temp_r1;
-    M2C_FIELD(arg0, u8 *, 0x56) = temp_r1;
-    if ((u32) var_r2 >= 8U) {
+    sum = M2C_FIELD(arg0, u8 *, 0x56) + arg1;
+    mod = sum & 0xFF;
+    M2C_FIELD(arg0, u8 *, 0x56) = (u8)sum;
+    if (mod >= 8) {
         do {
-            M2C_FIELD(arg0, u8 *, 0x56) = (u8) (M2C_FIELD(arg0, u8 *, 0x56) - 8);
-            M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + 2);
-            M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 1);
-            var_r2 = M2C_FIELD(arg0, u8 *, 0x56);
-        } while ((u32) var_r2 >= 8U);
+            M2C_FIELD(arg0, u8 *, 0x56) = (u8)(M2C_FIELD(arg0, u8 *, 0x56) - 8);
+            M2C_FIELD(arg0, u16 *, 0x4C) = (u16)(M2C_FIELD(arg0, u16 *, 0x4C) + 2);
+            M2C_FIELD(arg0, u8 *, 0x4A) = (u8)(M2C_FIELD(arg0, u8 *, 0x4A) + 1);
+            mod = M2C_FIELD(arg0, u8 *, 0x56);
+        } while (mod >= 8);
     }
-    if (var_r2 != 0) {
+    if (mod != 0) {
         return 1;
     }
     return 0;
@@ -455,14 +455,14 @@ void *func_0209c658(M2C_UNK arg0) {
     return NULL;
 }
 
-s32 func_0209c690(void) {
+s32 func_0209c690(M2C_UNK arg0) {
     void *func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
     void *temp_r0;
     u8 temp_r1;
 
-    temp_r0 = ((void *(*)(M2C_UNK, M2C_UNK))func_02099b18)(0x1d, 0);
-    if (temp_r0 == NULL) {
-        return 0;
+    temp_r0 = func_02099b18(arg0, 0x1d, 0);
+    if (temp_r0 == 0) {
+        goto fail;
     }
     temp_r1 = *(u8 *)((u8 *)temp_r0 + 1) & 0x7F;
     switch (temp_r1) {
@@ -472,13 +472,15 @@ s32 func_0209c690(void) {
     case 3:
         return temp_r1;
     default:
-        return 0;
+        break;
     }
+fail:
+    return 0;
 }
 
 void *func_0209c6d8(s32 arg0) {
     u8 result;
-    u8 *base;
+    u8 flag;
 
     if (gCur3DSpriteEngine == data_027e00c8) {
         result = 1;
@@ -486,12 +488,11 @@ void *func_0209c6d8(s32 arg0) {
         result = 0;
     }
     if (result != 1) {
-        result = 1;
+        flag = 1;
     } else {
-        result = 0;
+        flag = 0;
     }
-    base = data_021580a8;
-    return base + (result << 7) + (arg0 << 2);
+    return (void *)(data_021580a8 + (flag << 7) + (arg0 << 2));
 }
 
 void func_0209c720(s32 arg0, s16 arg1, s8 arg2, s32 arg3, u8 arg4) {
@@ -553,8 +554,8 @@ void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void func_0209c7fc(void) {
     s32 *var_r5;
     s32 var_r4;
-    s32 temp_r2;
     s32 temp_r3;
+    s32 temp_r2;
     s32 temp_lr;
     s32 temp_r12;
     u32 const1 = 0xFFFE007F;
@@ -562,8 +563,6 @@ void func_0209c7fc(void) {
 
     var_r5 = data_0215d8a8;
     var_r4 = 0;
-    const1 = 0xFFFE007F;
-    const2 = 0xFC01FFFF;
     do {
         var_r4 += 1;
         temp_r2 = *var_r5;
@@ -579,28 +578,28 @@ void func_0209c7fc(void) {
     *(s32 *)((u8 *)&data_0215d8a0 + 8) = (*(s32 *)((u8 *)&data_0215d8a0 + 8) & ~7) | 1;
 }
 
+#pragma opt_strength_reduction off
 void func_0209c868(void) {
-    s32 *p = (s32 *)&data_0215d8a8;
     s32 i = 0;
+    u32 *p = (u32 *)&data_0215d8a8;
 
     do {
-        s32 t;
+        u32 t;
 
+        i++;
         t = *p;
-        i = i + 1;
-        if (((u32)t << 29 >> 29) == 1) {
+        if (((t << 29) >> 29) == 1) {
             *p = (t & ~7) | 2;
         }
         t = *p;
-        if (((u32)t << 29 >> 29) == 3) {
+        if (((t << 29) >> 29) == 3) {
             *p = (t & ~7) | 4;
         }
         t = *p;
-        *p = (t & ~0x1C000000) | (((u32)t >> 29) << 26);
-        p = p + 1;
+        *p++ = (t & ~0x1C000000) | ((t >> 29) << 26);
     } while (i < 0x40);
 }
-
+#pragma opt_strength_reduction on
 void func_0209cbe4(u32 *arg0) {
     u32 temp_r2;
 

@@ -447,9 +447,9 @@ u16 bl=(ab*x+bb*y)>>5;
 return (r&31)|((g&31)<<5)|((bl&31)<<10);
 }
 
-M2C_UNK func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    return func_020ae548(arg0, arg1, arg2, arg3, 0x20);
+void func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+    void func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    func_020ae548(arg0, arg1, arg2, arg3, 0x20);
 }
 
 void func_020ae480(u16 *p,s32 a,s32 b,s32 c) {
@@ -469,15 +469,11 @@ ptr++;
 }
 
 void func_020ae528(M2C_UNK arg0) {
-    M2C_UNK func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     func_020ae548(arg0, 0, 8, 8, 0x20);
 }
 
-s32 func_020ae548(s32 arg0,s32 a,s32 b,s32 c,s32 n) {
-s32 i;u16 *p;
-n/=2;p=(u16 *)arg0;i=0;
-if(n>0)for(;i<n;i++){*p=func_020ae354(*p,a,b,c);p++;}
-}
+void func_020ae548(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=func_020ae354(*p,a,b,c);p++;}}
 
 u16 func_020ae5a0(u16 a) {
 u16 r=a&31,g=(a&0x3e0)>>5,b=(a&0x7c00)>>10;

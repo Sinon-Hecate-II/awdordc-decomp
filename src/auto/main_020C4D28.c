@@ -239,19 +239,14 @@ s32 func_020c52ec(s32 arg0) {
     return var_r4;
 }
 
+#pragma optimize_for_size off
 s32 func_020c5328(s32 arg0) {
-s32 temp_r0;
-s32 result;
-temp_r0=func_020c4b60();
-if(temp_r0==0) return 0;
-if(func_02032380(arg0*0xC+(temp_r0+4))==0) {
-result=0;
-} else {
-result=arg0*0x28+(temp_r0+0x2D4);
+s32 p=func_020c4b60();
+if(p==0) return 0;
+if(!func_02032380(arg0*12+(p+4))) { p=0; return p; }
+return arg0*40+(p+0x2d4);
 }
-return result;
-}
-
+#pragma optimize_for_size reset
 s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02007e20(M2C_UNK, s32, M2C_UNK);
     s32 temp_r0;

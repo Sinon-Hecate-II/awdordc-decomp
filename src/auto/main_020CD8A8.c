@@ -1,13 +1,14 @@
 /* 14 functions from 0x020CD8A8 to 0x020CE738 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma scheduling off
 void func_020cdb70(s32 a,s32 b) {
 s32 func_020cd7ec(u16,u16);extern void **gCurrentMap;
-u8 v;u16 id;s32 i,j;
-i=1;v=b;id=a;
-for(i=1;i<4;i++){j=a+i;if(j>=5)j-=4;if(func_020cd7ec(id,(u16)j)==2)M2C_FIELD(*gCurrentMap+j*140,u8 *,0x67c3)=v;}
+s32 i,j;u16 id;u8 v;
+i=1;id=a;v=b;
+do {j=a+i;if(j>=5)j-=4;if(func_020cd7ec(id,(u16)j)==2)M2C_FIELD(*gCurrentMap+j*140,u8 *,0x67c3)=v;i++;}while(i<4);
 }
-
+#pragma scheduling reset
 s32 func_020cdbdc(s32 a){s32 func_020d1938(s32);s32 func_020d19b4(s32);extern void **gCurrentMap;s32 count;u8 team;s32 i,off,own;u8 v;s32 p,q;if(func_020d19b4(a))return 0;off=140;own=a*140;team=0;count=0;i=1;do{if(func_020d1938(i)&&i!=a){if(count==0){if(func_020d19b4(i)){p=(s32)*gCurrentMap;v=M2C_FIELD(p+off,u8 *,0x67ca);if(v!=M2C_FIELD(own+p,u8 *,0x67ca)){team=v;count++;}}}else if(func_020d19b4(i)){q=(s32)*gCurrentMap;v=M2C_FIELD(q+off,u8 *,0x67ca);if(team!=v&&v!=M2C_FIELD(own+q,u8 *,0x67ca))return 0;}}i++;off+=140;}while(i<5);return 1;}
 
 #pragma opt_strength_reduction off

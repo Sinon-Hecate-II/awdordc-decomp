@@ -150,18 +150,19 @@ void func_0201eed4(void) {
     func_0201a26c(base);
 }
 
+#pragma opt_strength_reduction off
 void func_0201f030(void) {
-    extern s32 data_020faf98;
-    extern s32 data_021372e0, data_021372ac, data_021372bc;
-    extern M2C_UNK data_021372f0, data_02138ac0;
-    data_021372e0 = M2C_FIELD(data_020faf98, s32 *, 4);
-    data_021372ac = M2C_FIELD(data_020faf98, s32 *, 8);
-    data_021372bc = M2C_FIELD(data_020faf98, s32 *, 0xC);
-    M2C_FIELD(&data_021372f0, s32 *, 0) = M2C_FIELD(data_020faf98, s32 *, 0x10);
-    M2C_FIELD(&data_021372f0, s32 *, 4) = M2C_FIELD(data_020faf98, s32 *, 0x14);
-    M2C_FIELD(&data_02138ac0, s32 *, 8) |= 2;
+extern s32 data_020faf98;
+extern s32 data_021372e0, data_021372ac, data_021372bc;
+extern M2C_UNK data_021372f0, data_02138ac0;
+data_021372e0 = M2C_FIELD(data_020faf98, s32 *, 4);
+data_021372ac = M2C_FIELD(data_020faf98, s32 *, 8);
+data_021372bc = M2C_FIELD(data_020faf98, s32 *, 0xC);
+M2C_FIELD(&data_021372f0, s32 *, 0) = M2C_FIELD(data_020faf98, s32 *, 0x10);
+M2C_FIELD(&data_021372f0, s32 *, 4) = M2C_FIELD(data_020faf98, s32 *, 0x14);
+M2C_FIELD(&data_02138ac0, s32 *, 8) |= 2;
 }
-
+#pragma opt_strength_reduction reset
 void func_0201f09c(void) {
     extern M2C_UNK data_02138ac0;
     M2C_FIELD(&data_02138ac0, s32 *, 8) = (s32) (M2C_FIELD(&data_02138ac0, s32 *, 8) | 2);

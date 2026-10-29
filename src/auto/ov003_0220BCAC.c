@@ -1,6 +1,7 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
 
+void func_ov003_0220c414(void *, u8);
 void func_ov003_0220bcac(void *arg0) {
     extern s32 func_0207c8ec(s32, s32);
     extern void func_020a979c(void *, s16, s16);
@@ -168,6 +169,12 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;
  if(v!=16){p[0x34]=30;func_ov003_0220a698(p,v);func_ov003_0220828c(p,5,255);func_01ff9d88(1);M2C_FIELD(data_027e00c4,u8 *,0x46)|=2;}
  else {func_020d47f0();func_01ffa6fc(p);}
+}
+
+void func_ov003_0220c414(void *arg0, u8 arg1) {
+    int v = arg1;
+    *(u8 *)((u8 *)arg0 + 0x38) = *(u8 *)((u8 *)arg0 + 0x38) | 0x10;
+    *(u8 *)((u8 *)arg0 + 0x36) = (*(u8 *)((u8 *)arg0 + 0x36) & ~0xF) | ((v & 0xFF) & 0xF);
 }
 
 void func_ov003_0220c43c(void *arg0) {

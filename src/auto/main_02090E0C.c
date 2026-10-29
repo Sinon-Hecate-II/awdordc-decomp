@@ -397,6 +397,17 @@ cleanup:
     }
 }
 
+void func_02091928(void *arg0) {
+    M2C_UNK func_020913d4(M2C_UNK);
+    u16 temp_r4;
+    M2C_FIELD(arg0, s16 *, 0x1A) = 0;
+    temp_r4 = M2C_FIELD(arg0, u16 *, 0x1C);
+    M2C_FIELD(arg0, s16 *, 0x1A) = 0;
+    M2C_FIELD(arg0, u16 *, 0x1C) = 0x100;
+    func_020913d4((M2C_UNK)arg0);
+    M2C_FIELD(arg0, u16 *, 0x1C) = temp_r4;
+}
+
 void func_02091954(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_020918a4(M2C_UNK);
     M2C_UNK func_020913d4(M2C_UNK);

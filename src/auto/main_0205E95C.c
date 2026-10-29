@@ -68,11 +68,21 @@ void func_0205ea70(void *arg0) {
 
 void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK data_020ff8d8;void func_020496b8(s32,s32);void func_02049270(s32);void func_020377c4(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))func_0205fbb0(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&data_020ff8d8)return;func_020377c4(p);}
 
-void func_0205eb50(u8 *p,s32 a){s32 n=M2C_FIELD(p,s32 *,0x100);if(n>=254)goto end;if(a<1)goto end;if(a>254)goto end;M2C_FIELD(p,s32 *,0x100)=n+1;p[n]=a;end:return;}
-
+#pragma optimization_level 2
+#pragma opt_cond_exec off
+void func_0205eb50(u8 *p, s32 a) {
+    s32 n = M2C_FIELD(p, s32 *, 0x100);
+    if (n >= 254) return;
+    if (a < 1) return;
+    if (a > 254) return;
+    M2C_FIELD(p, s32 *, 0x100) = n + 1;
+    p[n] = (u8)a;
+}
+#pragma opt_cond_exec reset
+#pragma optimization_level reset
 void func_0205eb7c(void *a,M2C_UNK b){M2C_UNK func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
-M2C_UNK func_0205ebb0(void *a,M2C_UNK *b){s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);s32 n=func_02068c34(b)+1;s32 used=M2C_FIELD(a,s32 *,0x800);if(n>0x800-used)n=0x800-used;if(!n)return;func_020651a4((u8 *)a+used,b,n);M2C_FIELD(a,s32 *,0x800)+=n;((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;}
+M2C_UNK func_0205ebb0(void *a,M2C_UNK *b){s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);s32 n=func_02068c34(b)+1;s32 used=M2C_FIELD(a,s32 *,0x800);if(n>0x800-used)n=0x800-used;if(n==0)return;func_020651a4((u8 *)a+used,b,n);M2C_FIELD(a,s32 *,0x800)+=n;((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;}
 
 void func_0205ec0c(void){void *func_02049584(void);void *p=func_02049584();s32 i;u8 *s;u8 x,y;if(!p)return;data_0213e358=0;for(i=0;i<5;){s=M2C_FIELD(p,u8 ***,12)[i];if(!s)return;y=s[1];x=s[0];data_0213e35c[i][0]=x;data_0213e35c[i][1]=y;y=s[3];x=s[2];data_0213e35c[i][2]=x;data_0213e35c[i][3]=y;data_0213e358=++i;}}
 

@@ -306,15 +306,17 @@ if(func_020c9430(1)) v++;
 return v;
 }
 
+#pragma opt_strength_reduction off
 void func_020c9580(s32 a) {
 extern void **gCurrentMap;
 extern M2C_UNK data_0212b1ba,data_0212b1bb,data_ov000_021e146c;
 s32 func_020a15b4(s32,s32);
 s32 i=func_020c9430(a)-1;
 void *p=*gCurrentMap;
-M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(M2C_FIELD(&data_0212b1ba,s8 *,i*4)+M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(&data_0212b1bb,s8 *,i*4)+M2C_FIELD(p,s16 *,0x52de));
+s32 x=M2C_FIELD(p,s16 *,0x52dc), y=M2C_FIELD(p,s16 *,0x52de);
+M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x+M2C_FIELD(&data_0212b1ba,s8 *,i*4),y+M2C_FIELD(&data_0212b1bb,s8 *,i*4));
 }
-
+#pragma opt_strength_reduction reset
 void func_020c95e4(void) {
 extern M2C_UNK data_02168f04;
 s32 func_020c9550();

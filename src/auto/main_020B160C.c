@@ -43,12 +43,14 @@ void func_020b1770(void) {
 }
 
 void func_020b179c(void) {
-    M2C_UNK func_02007ef4(M2C_UNK *,s32,M2C_UNK);
-    M2C_UNK func_020c0a88();
-    extern void *gCur3DSpriteEngine;
-    func_02007ef4((M2C_UNK *)M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),0x800);
-    func_02007ef4((M2C_UNK *)M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14),0x800);
-    func_020c0a88();
+ M2C_UNK func_02007ef4(M2C_UNK *,s32,M2C_UNK);
+ M2C_UNK func_020c0a88();
+ extern void *gCur3DSpriteEngine;
+ void *p; s32 src; M2C_UNK *dst;
+ p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x10); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x24);
+ func_02007ef4(dst,src,0x800);
+ p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x14); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x28);
+ func_02007ef4(dst,src,0x800); func_020c0a88();
 }
 
 void func_020b17dc(void) {

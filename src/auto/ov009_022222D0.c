@@ -1,6 +1,22 @@
 /* 30 functions from 0x022222D0 to 0x02223290 (ov009), found by ds-decomp. */
 #include "common.h"
+static inline u32 ov009DisableInterrupts(void) {
+    u32 previous = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    return previous;
+}
+static inline u32 ov009RestoreInterrupts(u32 saved) {
+    u32 previous = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = saved;
+    return previous;
+}
 #pragma cplusplus on
+class Ov009InterruptGuard {
+    u32 saved;
+public:
+    Ov009InterruptGuard() : saved(ov009DisableInterrupts()) {}
+    ~Ov009InterruptGuard() { ov009RestoreInterrupts(saved); }
+};
 class Ov009Callback { public: void run(); };
 typedef void (Ov009Callback::*Ov009CallbackFn)();
 struct Ov009Functor {
@@ -80,25 +96,16 @@ u32 func_ov009_02222440(void) {
     return M2C_FIELD(&data_ov009_022268e0,u32 *,0x5C)=(u32)(temp*(temp+1))>>2;
 }
 
-void func_ov009_02222468(void *arg0) {
-    M2C_UNK func_ov009_02221338(void *,s32);
-    s32 sp0;
-    void *node;
-    u16 previous=*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208=0;
-    sp0=previous;
-    if (M2C_FIELD(arg0,void **,0)!=NULL) {
-      do {
-        node=M2C_FIELD(arg0,void **,0);
-        M2C_FIELD(arg0,void **,0)=M2C_FIELD(node,void **,0);
-        func_ov009_02221338(node,M2C_FIELD(node,s32 *,0xC)+0x10);
-      } while(M2C_FIELD(arg0,void **,0)!=NULL);
-    }
-    M2C_FIELD(arg0,s32 *,4)=0;
-    M2C_FIELD(arg0,void **,0)=NULL;
-    M2C_FIELD(arg0,s32 *,8)=0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208=sp0;
+void func_ov009_02222468(void *a) {
+M2C_UNK func_ov009_02221338(void *,s32);
+volatile u32 saved; u32 temp; void *p;
+temp=*(volatile u16 *)0x4000208;
+*(volatile u16 *)0x4000208=0;
+p=M2C_FIELD(a,void **,0); saved=temp;
+while(p!=0) {M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0);func_ov009_02221338(p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(a,void **,0);}
+M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;
+(void)*(volatile u16 *)0x4000208;
+*(volatile u16 *)0x4000208=saved;
 }
 
 #pragma cplusplus on
@@ -134,27 +141,18 @@ extern "C" void func_ov009_022224e0(void) {
 #pragma optimization_level 4
 #pragma cplusplus off
 
-s32 func_ov009_02222638(s32 arg0) {
-    extern M2C_UNK data_ov009_022268e0;
-    s32 saved;
-    void *node;
-    u16 previous=*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208=0;
-    saved=previous;
-    node=M2C_FIELD(&data_ov009_022268e0,void **,0x64);
-    while(node!=NULL) {
-        if(arg0==M2C_FIELD(node,u8 *,8)) {
-            (void)*(volatile u16 *)0x04000208;
-            *(volatile u16 *)0x04000208=saved;
-            return 1;
-        }
-        node=M2C_FIELD(node,void **,0);
-    }
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208=saved;
-    return 0;
+#pragma cplusplus on
+extern "C" s32 func_ov009_02222638(s32 arg0) {
+extern M2C_UNK data_ov009_022268e0;
+Ov009InterruptGuard guard;
+void *node=M2C_FIELD(&data_ov009_022268e0,void **,0x64);
+while(node) {
+if(arg0==M2C_FIELD(node,u8 *,8))return 1;
+node=M2C_FIELD(node,void **,0);
 }
-
+return 0;
+}
+#pragma cplusplus off
 void func_ov009_022226b8(void *arg0) {
     void func_ov009_02222748();
     void *func_01ffa770(M2C_UNK *);

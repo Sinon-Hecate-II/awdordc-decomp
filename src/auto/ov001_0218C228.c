@@ -109,6 +109,7 @@ return;
 /* System init pass 2: invoke NitroSDK startup hooks from data_ov001_02193e70,
    plus a timing/sync hook, then clear VCOUNT/IRQ mask regs before enabling
    something via func_0200ec24(1). */
+#pragma opt_global_reg_alloc off
 void func_ov001_0218c4c0(void) {
     extern s32 data_ov001_02193e70[];
     s32 func_02003538(void);
@@ -159,7 +160,7 @@ void func_ov001_0218c4c0(void) {
     *(volatile u32 *)0x400101c = 0;
     func_0200ec24(1);
 }
-
+#pragma opt_global_reg_alloc reset
 void func_ov001_0218c5b8(void) {
     M2C_UNK func_02003104(s32);
     M2C_UNK func_020035f8();
@@ -229,11 +230,11 @@ void func_ov001_0218a6d8(s32);
 void func_ov001_0218b71c(void *);
 extern s32 data_ov001_02193ea4;
 s32 i;
-for(i=0;i!=2;i++) {
+for(i=0;i<2;i++) {
 func_ov001_0218bf30(((RuntimePair64 *)data_ov001_02193ea4)[i].b);
 func_ov001_0218a6d8(((RuntimePair64 *)data_ov001_02193ea4)[i].a);
 }
-func_ov001_0218b71c((u8 *)&data_ov001_02193ea4);
+func_ov001_0218b71c((u8 *)((u8 *)&data_ov001_02193ea4 + 0));
 }
 
 void func_ov001_0218c7d4(s32 n) {

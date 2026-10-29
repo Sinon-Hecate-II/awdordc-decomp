@@ -74,6 +74,31 @@ void func_ov003_021e87dc(void *arg0) {
     } while ((u32) var_r8 < 0x1AU);
 }
 
+u8 func_ov003_021e88a4(void *arg0) {
+s32 result=1;
+void *p=M2C_FIELD(arg0,void **,0x64);
+if(M2C_FIELD(p,s8 *,0xb)!=1 && ((((u32)(M2C_FIELD(arg0,u8 *,0x59)<<27)>>31)==0) || M2C_FIELD(p,s8 *,0xc)!=1))result=0;
+return result;
+}
+
+void func_ov003_021e88e0(void) {
+s32 func_02084d3c(s32 *,M2C_UNK);
+M2C_UNK func_02084d88(s32 *,M2C_UNK);
+s32 buffer[9];
+if(func_02084d3c(buffer,0x24)==0)return;
+buffer[0]=1;
+func_02084d88(buffer,0x24);
+}
+
+void func_ov003_021e891c(void) {
+s32 func_02084d3c(s32 *,M2C_UNK);
+M2C_UNK func_02084d88(s32 *,M2C_UNK);
+s32 buffer[9];
+if(func_02084d3c(buffer,0x24)==0)return;
+buffer[1]=1;
+func_02084d88(buffer,0x24);
+}
+
 void func_ov003_021e8958(void *arg0) { (void)arg0; }
 
 void func_ov003_021e8f80(void *arg0, s32 arg1) {

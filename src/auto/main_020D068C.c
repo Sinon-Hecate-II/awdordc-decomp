@@ -57,16 +57,9 @@ if((u32)x<=(u32)y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;
 M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
 
-s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
- s32 func_020a8204();
- s32 func_020a86f8();
- u16 temp_r0,var_r6;
- var_r6=0;
- if(func_020a8204()!=0)var_r6=D068CCall(arg0,arg1,0);
- temp_r0=D068CCall(arg0,arg1,1);
- return var_r6!=0 || temp_r0!=0;
-}
-
+#pragma opt_common_subs off
+s32 func_020d0a08(M2C_UNK arg0,void *arg1) { s32 func_020a8204(); s32 func_020a86f8(); u16 temp_r0,var_r6; var_r6=0; if(func_020a8204()!=0)var_r6=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1)); temp_r0=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1)); return var_r6!=0 || temp_r0!=0; }
+#pragma opt_common_subs reset
 s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  s32 func_020a5ae0();
  s32 func_020a796c();
@@ -94,17 +87,9 @@ void func_020d0afc(void *arg0,s32 arg1,M2C_UNK arg2) {
  if(M2C_FIELD(arg0,s16*,0x14)<0)M2C_FIELD(arg0,s16*,0x14)=0;
 }
 
-void func_020d0bac(void *p,s32 a) {
- extern u8 data_02168f08[];
- if(((u32)M2C_FIELD(data_02168f08,u16*,12)<<20)>>31)return;
- if(a!=0) {
- if(M2C_FIELD(p,s16*,0x14)!=0) {
- s32 t=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0));
- M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;
- }
- }
-}
-
+#pragma opt_cond_exec off
+void func_020d0bac(void *p,s32 a) { extern u8 data_02168f08[]; if(((u32)M2C_FIELD(data_02168f08,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
+#pragma opt_cond_exec reset
 void func_020d0bf8(M2C_UNK arg0) {
     M2C_UNK RandomIntRange(s32, s32);
     s32 func_020a78fc();

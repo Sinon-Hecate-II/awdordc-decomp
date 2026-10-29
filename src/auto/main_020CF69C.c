@@ -415,14 +415,7 @@ s32 func_020d03c4(s32 arg0) {
     return arg0 * 0x508 + temp;
 }
 
-s32 func_020d03ec(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 *gCurrentMap;
-    s32 temp = *gCurrentMap;
-    s32 off = M2C_FIELD(temp + arg2 * 2, u16 *, 0x3758);
-    s32 acc = arg1 + off;
-    s32 base = temp + arg0 * 0x508;
-    return M2C_FIELD(acc + base, u8 *, 0x37F8);
-}
+s32 func_020d03ec(s32 arg0,s32 arg1,s32 arg2) {extern s32 *gCurrentMap; s32 temp=*gCurrentMap; return M2C_FIELD((temp+arg0*0x508)+(arg1+M2C_FIELD(temp+arg2*2,u16 *,0x3758)),u8 *,0x37F8);}
 
 void func_020d0428(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;s32 p=*gCurrentMap;s32 off=M2C_FIELD(p+c*2,u16 *,0x3758);s32 row=p+a*0x508;M2C_FIELD(row+(b+off),u8 *,0x37f8)=d;}
 

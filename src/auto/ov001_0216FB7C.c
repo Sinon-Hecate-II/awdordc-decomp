@@ -259,4 +259,67 @@ loop_1:
     M2C_FIELD(sp0, s8 *, 0xE) = (s8) (temp_r0 >> 8);
     M2C_FIELD(sp0, u8 *, 0xF) = temp_r0;
 }
+
+void func_ov001_0217073c(void *arg0) {
+    *(s32 *)((u8 *)arg0 + 0x14) = 0;
+    *(s32 *)((u8 *)arg0 + 0x10) = 0;
+    *(s32 *)(arg0) = 0x67452301;
+    *(s32 *)((u8 *)arg0 + 0x4) = 0xEFCDAB89;
+    *(s32 *)((u8 *)arg0 + 0x8) = 0x98BADCFE;
+    *(s32 *)((u8 *)arg0 + 0xC) = 0x10325476;
+}
+
+#pragma thumb on
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+void func_ov001_02170764(void *arg0,s32 arg1,u32 arg2){
+M2C_UNK func_ov001_02170830(void *,void *);
+M2C_UNK func_ov001_021710d0(void *,s32,u32);
+u32 offset,old,bits,total,used;
+offset=(M2C_FIELD(arg0,u32 *,0x10)>>3)&63;
+old=M2C_FIELD(arg0,u32 *,0x10);
+bits=arg2<<3;total=old+bits;
+M2C_FIELD(arg0,u32 *,0x10)=total;
+if(total<bits)M2C_FIELD(arg0,u32 *,0x14)++;
+M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
+used=64-offset;
+if(arg2>=used){
+func_ov001_021710d0(arg0+24+offset,arg1,used);
+func_ov001_02170830(arg0,arg0+24);
+while(used+63<arg2){func_ov001_02170830(arg0,(void *)(arg1+used));used+=64;}
+offset=0;
+}else used=0;
+func_ov001_021710d0(arg0+24+offset,arg1+used,arg2-used);
+}
+
+#pragma thumb on
+void func_ov001_021707dc(void *arg0, void *arg1) {
+    void func_ov001_02170764(void *, s32, u32);
+    void func_ov001_02171078(u8 *, volatile u32 *, u32);
+    void func_ov001_021710e8(s8 *, s32, u32);
+    extern M2C_UNK data_ov001_0218fe68;
+    u8 sp0[8];
+    u32 temp_r1;
+
+    func_ov001_02171078(sp0, (volatile u32 *)((u8 *)arg1 + 0x10), 8);
+    temp_r1 = (*(u32 *)((u8 *)arg1 + 0x10) >> 3) & 0x3F;
+    {
+        s32 var_r2;
+        if (temp_r1 < 0x38) {
+            var_r2 = 0x38 - temp_r1;
+        } else {
+            var_r2 = 0x78 - temp_r1;
+        }
+        func_ov001_02170764(arg1, (s32)&data_ov001_0218fe68, (u32)var_r2);
+    }
+    func_ov001_02170764(arg1, (s32)sp0, 8);
+    func_ov001_02171078((u8 *)arg0, (volatile u32 *)arg1, 0x10);
+    func_ov001_021710e8((s8 *)arg1, 0, 0x58);
+}
+#pragma thumb off
+
+#pragma pop
+#pragma thumb off
+
 #pragma thumb off

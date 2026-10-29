@@ -659,8 +659,12 @@ loop_3:
 }
 
 s32 func_02020714(void *arg0) {
-void *p=M2C_FIELD(arg0,void **,0x68); volatile u16 *q=p+0x100;
-s32 a=q[0],b=q[1],c=M2C_FIELD(p,s32 *,0xf8);
-b=b-a-1;if(b<0)b+=c;return b;
+    volatile u16 *q = M2C_FIELD(arg0, void **, 0x68) + 0x100;
+    s32 c = M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), s32 *, 0xf8);
+    s32 a = q[0];
+    s32 b = q[1];
+    b = b - a - 1;
+    if (b < 0) b += c;
+    return b;
 }
 

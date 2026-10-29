@@ -286,10 +286,11 @@ M2C_UNK func_0209b370(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 e,s32 f,u16 g,u16 
  M2C_UNK func_0209be10(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32,s32,s32,s32,s32,s32);
  M2C_UNK func_02099e58(s32); void *func_01ffa3dc(M2C_UNK *,s32);
  extern s32 gCur3DSpriteEngine; extern M2C_UNK data_021032d8;
- void *p=(void *)gCur3DSpriteEngine;
- p=M2C_FIELD(p,void **,0x54);
- func_0209be10((s32)p,a,b,c,d,e,f,(s32)g,(s32)h,(s32)i);
- func_02099e58((s32)p); func_01ffa3dc(&data_021032d8,7);
+ s32 temp_r5;
+ temp_r5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x54);
+ func_0209be10(temp_r5, a, b, c, d, e, f, (s32)g, (s32)h, (s32)i);
+ func_02099e58(temp_r5);
+ func_01ffa3dc(&data_021032d8, 7);
 }
 
 void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {

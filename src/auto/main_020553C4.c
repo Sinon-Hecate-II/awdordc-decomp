@@ -141,13 +141,11 @@ void func_0205586c(void *arg0) {
 }
 
 s32 func_020558e8(void **arg0) {
-s32 func_02048c5c(s32,s32,...);
-Unk020553C4 *p=*arg0;s32 v; register void (*destroy)(void *);
+s32 func_02048c5c();
+Unk020553C4 *p=*arg0;
 p->unk430=0;p->unk42c=0;
-destroy=func_0205586c;
-v=func_02048c5c(28,4,func_02055848,func_0205585c,destroy);
-p->handle=v;
-return v!=0;
+p->handle=func_02048c5c(28,4,func_02055848,func_0205585c,func_0205586c);
+return p->handle!=0;
 }
 
 s32 func_02055940(void **a,void *b,s32 c) {

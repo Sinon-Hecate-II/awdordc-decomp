@@ -576,12 +576,11 @@ s32 func_ov003_02206160(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_02206174(M2C_UNK arg0, s32 arg1) {
-    extern M2C_UNK data_02168f14;
-    u16 v;
-    v = M2C_FIELD(&data_02168f14, u16 *, 0);
-    v = (u16)((v & ~0x100) | ((arg1 & 1) << 8));
-    M2C_FIELD(&data_02168f14, u16 *, 0) = v;
+void func_ov003_02206174(M2C_UNK arg0,s32 arg1){
+extern M2C_UNK data_02168f14;u16 v;
+v=M2C_FIELD(&data_02168f14,u16 *,0);
+v=(u16)((v&~0x100)|(((u32)(u16)arg1<<31)>>23));
+M2C_FIELD(&data_02168f14,u16 *,0)=v;
 }
 
 s32 func_ov003_0220619c(void) {
@@ -622,6 +621,16 @@ void func_ov003_022061ec(M2C_UNK arg0, s32 arg1) {
     v = (u16)((v & ~0x38) | (((u32)(u16)arg1 << 29) >> 26));
     M2C_FIELD(&data_02168f14, u16 *, 0) = v;
 }
+
+s32 func_ov003_02206214(void){
+extern M2C_UNK data_02168f14;
+switch((u8)(((u32)M2C_FIELD(&data_02168f14,u16 *,0)<<26)>>29)){
+case 2:return 2;
+case 1:return 1;
+case 3:return 3;
+case 0:return 0;
+default:return 0;
+}}
 
 s32 func_ov003_02206270(void) {
     return 1;

@@ -7,7 +7,7 @@ s32 func_ov010_02223114(void) {
     M2C_UNK func_ov010_022223e8(void *, void *, s32);
     void *func_ov010_02223440(s32);
     M2C_UNK func_ov010_02223478(void *);
-    M2C_UNK func_ov010_022235a4(void *, void *);
+    void func_ov010_022235a4();
     M2C_UNK func_ov010_02223624(void *, void *, s32);
     s32 func_ov010_02223764(void *, u8);
     M2C_UNK func_ov010_02224ef8();
@@ -180,22 +180,23 @@ else out[i]=(((x+0x21)>>(seg+1))&15 | seg<<4)^mask;
 }
 }
 
+void func_ov010_022235a4(const u8 *src,s16 *dst,u32 count) { u32 i; for(i=0;i<count;i++) { s32 v=~src[i]; s32 magnitude=(((v&15)<<3)+132)<<((v&0x70)>>4); if(v&0x80) magnitude=132-magnitude; else magnitude-=132; dst[i]=magnitude; } }
+
 void func_ov010_022235f8(s8 *out,s16 *in,u32 n) {
 u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
 }
 
+#pragma opt_strength_reduction off
+s32 func_ov010_02223624(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
+#pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    extern s32 data_ov010_0222d88c;
-    extern s32 data_ov010_0222d890[];
-    extern s32 data_ov010_0222d89c[];
-    extern s32 data_ov010_0222d8a8[];
-    data_ov010_0222d88c = func_0200751c();
-    data_ov010_0222d8a8[arg0] = 0;
-    data_ov010_0222d89c[arg0] = 0;
-    data_ov010_0222d890[arg0] = 0;
-    func_02007530(data_ov010_0222d88c);
+ s32 func_0200751c(void); void func_02007530(s32);
+ extern s32 data_ov010_0222d88c; extern s32 data_ov010_0222d890[],data_ov010_0222d89c[],data_ov010_0222d8a8[];
+ s32 *a,*b,*c;
+ data_ov010_0222d88c=func_0200751c();
+ a=data_ov010_0222d8a8; b=data_ov010_0222d89c; c=data_ov010_0222d890;
+ a[arg0]=0;c[arg0]=0;b[arg0]=0;
+ func_02007530(data_ov010_0222d88c);
 }
 
 void func_ov010_0222369c(s32 arg0) {
@@ -216,32 +217,14 @@ void func_ov010_0222369c(s32 arg0) {
 }
 
 void func_ov010_022236e4(void) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    M2C_UNK func_ov010_02224ef8(void *);
-    extern s32 data_ov010_0222d88c;
-    extern s32 data_ov010_0222d890[];
-    extern s32 data_ov010_0222d89c[];
-    s32 i;
-    void *node;
-    void *next;
-    node = (void *)func_0200751c();
-    i = 0;
-    data_ov010_0222d88c = (s32)node;
-    for (; i < 3; i++) {
-        node = (void *)data_ov010_0222d890[i];
-        while (node != NULL) {
-            next = M2C_FIELD(node, void **, 8);
-            data_ov010_0222d890[i] = (s32)next;
-            if (next != NULL) {
-                M2C_FIELD(next, s32 *, 4) = 0;
-            }
-            func_ov010_02224ef8(node);
-            node = (void *)data_ov010_0222d890[i];
-        }
-        data_ov010_0222d89c[i] = 0;
-    }
-    func_02007530(data_ov010_0222d88c);
+ s32 func_0200751c(void);void func_02007530(s32);M2C_UNK func_ov010_02224ef8(void *);
+ extern s32 data_ov010_0222d88c,data_ov010_0222d890[],data_ov010_0222d89c[];
+ s32 i;void *node;void *next;
+ data_ov010_0222d88c=func_0200751c();
+ i=0;goto check;
+ loop: node=(void *)data_ov010_0222d890[i];while(node){next=M2C_FIELD(node,void **,8);data_ov010_0222d890[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;func_ov010_02224ef8(node);node=(void *)data_ov010_0222d890[i];}data_ov010_0222d89c[i]=0;i++;
+ check:if(i<3)goto loop;
+ func_02007530(data_ov010_0222d88c);
 }
 
 #pragma opt_common_subs off

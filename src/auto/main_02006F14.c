@@ -28,19 +28,19 @@ u16 func_02006f8c(void) {
     return data_0212dfb4;
 }
 
+#pragma optimization_level 2
 void func_02006f9c(void) {
-    void func_02005154(u32, void (*)(void), u32);
-    extern u16 data_0212dfb4;
-    M2C_FIELD(&data_0212dfb4, s64 *, 8) += 1;
-    if (M2C_FIELD(&data_0212dfb4, s32 *, 4) != 0) {
-        *(volatile u16 *)0x04000102 = 0;
-        *(volatile u16 *)0x04000100 = 0;
-        *(volatile u16 *)0x04000102 = 0xC1;
-        M2C_FIELD(&data_0212dfb4, s32 *, 4) = 0;
-    }
-    func_02005154(0, func_02006f9c, 0);
+void func_02005154(u32,void (*)(void),u32); extern u16 data_0212dfb4;
+M2C_FIELD(&data_0212dfb4,u64 *,8)++;
+if(M2C_FIELD(&data_0212dfb4,s32 *,4)) {
+*(volatile u16 *)0x04000102=0;
+*(volatile u16 *)0x04000100=0;
+*(volatile u16 *)0x04000102=0xc1;
+M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
 }
-
+func_02005154(0,func_02006f9c,0);
+}
+#pragma optimization_level reset
 u64 func_02007004(void) {
     u32 func_0200751c(void);
     void func_02007530(u32);
@@ -166,26 +166,25 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     }
 }
 
-#pragma scheduling off
-void func_020072cc(void *arg0, u64 delay, s32 arg3, s32 arg4) {
+#pragma opt_common_subs off
+void func_020072cc(void *arg0, u64 delay, void (*callback)(void *), void *arg4) {
  M2C_UNK func_02007958();
  u32 func_0200751c(void);
  void func_02007530(u32);
  void func_020071a0();
- u32 state;
  u64 time;
+ u32 state;
  if (arg0 == 0 || M2C_FIELD(arg0, s32 *, 0) != 0) func_02007958();
  state = func_0200751c();
  M2C_FIELD(arg0, s32 *, 0x1C) = 0;
  M2C_FIELD(arg0, s32 *, 0x20) = 0;
- M2C_FIELD(arg0, s32 *, 0) = arg3;
- M2C_FIELD(arg0, s32 *, 4) = arg4;
+ M2C_FIELD(arg0, void (**)(void *), 0) = callback;
+ M2C_FIELD(arg0, void **, 4) = arg4;
  time = delay + func_02007004();
  func_020071a0(arg0, (u32)time, (u32)(time >> 32));
  func_02007530(state);
 }
-
-#pragma scheduling reset
+#pragma opt_common_subs reset
 void func_02007338(void *arg0) {
  u32 func_0200751c(void);
  void func_02007530(u32);
@@ -337,6 +336,13 @@ void func_020075b4(void) {
 
     } while (func_02009e8c(0xC, 1) == 0);
     func_02009e40(0xC, &func_02007608);
+}
+
+void func_02007608(s32 arg0,s32 arg1) {
+M2C_UNK func_02007958();
+extern M2C_UNK data_0212dfe4;
+if(((u32)((arg1&0x7F00)<<8)>>16)==0x10) {M2C_FIELD(&data_0212dfe4,s16 *,0)=1;return;}
+func_02007958();
 }
 
 void func_0200763c(s32 arg0) {

@@ -209,7 +209,7 @@ void func_020c05f0(void) {
 
 void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_020c0634(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020c0a98();
+    void func_020c0a98();
     func_020c0a98();
     func_020c0634(arg0, arg1, arg2, arg3, arg4);
 }
@@ -321,8 +321,8 @@ void func_020c0a88(void) {
     func_020c0a3c(2);
 }
 
-M2C_UNK func_020c0a98(void) {
-s32 i; CEntry *p=(CEntry *)data_02163ef0;
+void func_020c0a98(void) {
+CEntry *p=(CEntry *)data_02163ef0; s32 i;
 data_02163eec=p;
 for(i=0;i<8;i++){p[i].x=0;p[i].y=0;p[i].index=0;p[i].flag=0;p[i].value=0;}
 }
@@ -338,14 +338,15 @@ M2C_FIELD(data_02163eec,s8 *,3)=M2C_FIELD(p,u8 *,0x4f);
 data_02163eec+=8;
 }
 
+#pragma opt_instruction_scheduling off
 void func_020c0b40(void) {
-M2C_UNK func_020c0634(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);
-CEntry *p;
+CEntry *p; s32 flag;
 if(data_02163eec==data_02163ef0)return;
 p=(CEntry *)(data_02163eec-=8);
-func_020c0634(p->value,p->x,p->y,p->index,p->flag);
+flag=p->flag;
+func_020c0634(p->value,((volatile CEntry *)p)->x,((volatile CEntry *)p)->y,((volatile CEntry *)p)->index,flag);
 }
-
+#pragma opt_instruction_scheduling reset
 void func_020c0b88(s8 arg0) {
     extern void *data_02163eec;
     M2C_FIELD(data_02163eec, s8 *, 2) = arg0;

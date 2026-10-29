@@ -29,15 +29,16 @@ void func_ov003_02202dc8(void *arg0, s32 arg1) {
     }
 }
 
+#pragma opt_common_subs off
 u8 func_ov003_02202e94(s32 arg0, s32 arg1) {
     u8 temp = arg1 + 0xFF;
     u8 result = 0;
     if ((u32)temp <= 5U) {
-        result = ((1 << temp) & 0x23) ? 1 : result;
+        result = ((1 << temp) & 0x23) != 0;
     }
     return result;
 }
-
+#pragma opt_common_subs reset
 void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 func_0207c8ec(u8, M2C_UNK);
     s32 func_0207c928(u8, M2C_UNK);

@@ -108,6 +108,12 @@ void func_ov010_02227e20(s32 arg0, s32 arg1) {
     }
 }
 
+void func_ov010_02227f14(void) {
+ s32 func_02038eb0(u8 **); s32 func_ov010_02229a08(void); void func_020445cc(u32,void *,s32); extern M2C_UNK data_ov010_0222eee0;
+ u8 *list; s32 n=func_02038eb0(&list); s32 i; u32 id; u32 index;
+ for(i=0;i<n;i++){id=list[i];if(id!=func_ov010_02229a08()){if(id<(u32)func_ov010_02229a08())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&data_ov010_0222eee0,u8 **,0x3c)+index*0x5a0,0x5a0);}}
+}
+
 void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02008048(M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222f02c;

@@ -207,12 +207,12 @@ s32 func_020194b8(s8 *arg0) {
     return var_r2;
 }
 
-s32 func_020194e0(s8 *a,s8 *b) {
- s32 x,y;
- for(; (y=*b,x=*a)==(s32)y && x!=0; a++,b++) {}
- return x-y;
+#pragma opt_propagation off
+s32 func_020194e0(s8 *a, s8 *b) {
+ for (; *a == *b && *a != 0; a++, b++) {}
+ return *a - *b;
 }
-
+#pragma opt_propagation reset
 void func_0201950c(void *arg0, s8 arg1) {
     if (M2C_FIELD(arg0, s32 *, 0) != 0) {
         *M2C_FIELD(arg0, s8 **, 4) = arg1;

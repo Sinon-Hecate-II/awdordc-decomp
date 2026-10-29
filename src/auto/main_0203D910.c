@@ -140,17 +140,9 @@ void func_0203e064(M2C_UNK arg0) {
     func_02040e1c(arg0);
 }
 
-s32 func_0203e088(s32 arg0,s32 arg1) {
- s32 func_0203e0ec(s32,s32); s32 i;
- if(func_02044268()==0) return 0;
- for(i=0;i<arg1;i++) {
- if(arg0==((s32 *)(func_02044268()+0xf4))[i]) {
- func_0203e0ec(i,arg1); return 1;
- }
- }
- return 0;
-}
-
+#pragma opt_strength_reduction off
+s32 func_0203e088(s32 arg0,s32 arg1) { s32 func_0203e0ec(s32,s32); s32 i; if(func_02044268()==0)return 0; for(i=0;i<arg1;i++){ if(arg0==M2C_FIELD(func_02044268()+i*4,s32 *,0xf4)){func_0203e0ec(i,arg1);return 1;}} return 0; }
+#pragma opt_strength_reduction reset
 s32 func_0203e0ec(s32 arg0, s32 arg1) {
     s32 func_02044268(void); void func_0203e2e4(void);
     s32 r9, r8, r11;

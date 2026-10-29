@@ -73,18 +73,9 @@ double func_0206f818(double x, s32 n) {
  return func_0206e08c(x,exponent);
 }
 
-#pragma scheduling off
-s32 func_0206f844(u8 *a,u8 *b) {
- u32 c,d;
- do {
- c=*a++; c=(u8)((s32)c<0?c:((s32)c<128?data_020eac40[c]:c));
- d=*b++; d=(u8)((s32)d<0?d:((s32)d<128?data_020eac40[d]:d));
- if(c<d)return -1;
- if(c>d)return 1;
- }while(c);
- return 0;
-}
-#pragma scheduling reset
+#pragma optimization_level 3
+s32 func_0206f844(u8 *a,u8 *b) { u32 c,d; do { c=*a++; c=(u8)((s32)c<0?c:((s32)c>=128?c:data_020eac40[c])); d=*b++; d=(u8)((s32)d<0?d:((s32)d>=128?d:data_020eac40[d])); if(c<d)return -1; if(c>d)return 1; }while(c); return 0; }
+#pragma optimization_level 4
 void func_0206f8ac(void) {
     M2C_UNK func_0206f844();
     func_0206f844();

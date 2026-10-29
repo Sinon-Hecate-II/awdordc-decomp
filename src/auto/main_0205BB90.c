@@ -1,5 +1,6 @@
 /* 26 functions from 0x0205BB90 to 0x0205CB68 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 a,b; } Unk05Bytes;
 typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
 Unk05Pair *func_02048690(s32,s32);
@@ -92,6 +93,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
 
 s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 func_02049208(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,func_02049208()-sp0)!=0; }
 
+#pragma opt_common_subs off
 s32 func_0205bea4(void *arg0) {
     s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
     M2C_UNK var_r2;
@@ -111,7 +113,7 @@ s32 func_0205bea4(void *arg0) {
     }
     return 1;
 }
-
+#pragma opt_common_subs reset
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
 s32 func_0205bf94(void *arg0, void *arg1, s32 arg2, M2C_UNK arg3, M2C_UNK arg4) {
@@ -240,8 +242,9 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     return 1;
 }
 
+#pragma scheduling off
 s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));u64 pair; s32 lo,hi;s32 v;if(n<=0)func_020640a8(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=*(u64 *)func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);lo=(u32)pair;hi=pair>>32;if(func_0205a9ec(p,lo+M2C_FIELD(p,s32 *,0x50),hi)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
-
+#pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;
 
@@ -389,7 +392,7 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_0205ca48(void *p){extern M2C_UNK data_020ff818;u8 buf[5];u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);s32 v;buf[2]=100;M2C_FIELD(buf,volatile u8 *,0)=a;M2C_FIELD(buf,volatile u8 *,1)=b;func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 func_0205ca48(void *p){extern M2C_UNK data_020ff818;u8 buf[5];u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);s32 v;buf[2]=100;buf[0]=a;buf[1]=b;func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 
 s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
     extern M2C_UNK data_020ff818;

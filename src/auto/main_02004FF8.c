@@ -65,6 +65,7 @@ s32 func_02005080(u32 arg0) {
     return 0;
 }
 
+#pragma scheduling off
 void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_020051c8(s32);
     extern M2C_UNK data_0212dc1c;
@@ -78,22 +79,9 @@ void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&data_0212dc24, s32 *, offset) = arg2;
     M2C_FIELD(&data_0212dc20, s32 *, offset) = func_020051c8(1 << shift) & (1 << shift);
 }
-
-void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_020051c8(s32);
-    extern M2C_UNK data_0212dc4c;
-    extern M2C_UNK data_0212dc50;
-    extern M2C_UNK data_0212dc54;
-    s32 offset;
-    s32 shift;
-    offset = arg0 * 12;
-    shift = arg0 + 3;
-    M2C_FIELD(&data_0212dc4c, s32 *, offset) = arg1;
-    M2C_FIELD(&data_0212dc54, s32 *, offset) = arg2;
-    func_020051c8(1 << shift);
-    M2C_FIELD(&data_0212dc50, s32 *, offset) = 1;
-}
-
+#pragma opt_lifetimes off
+void func_02005154(s32 arg0,s32 arg1,s32 arg2){s32 func_020051c8(s32);extern M2C_UNK data_0212dc4c,data_0212dc50,data_0212dc54;s32 offset=arg0*12;M2C_FIELD(&data_0212dc4c,s32 *,offset)=arg1;M2C_FIELD(&data_0212dc54,s32 *,offset)=arg2;func_020051c8(1<<(arg0+3));M2C_FIELD(&data_0212dc50,s32 *,offset)=1;}
+#pragma opt_lifetimes reset
 s32 func_0200519c(s32 arg0) {
     s32 old;
     u16 ime;
@@ -142,12 +130,14 @@ s32 func_02005228(s32 arg0) {
     return old;
 }
 
+#pragma opt_propagation off
 void func_02005254(void) {
     extern M2C_UNK data_027e0000;
+    s32 off = 0x800;
     M2C_FIELD(&data_027e0000, s32 *, 0x3F7C) = 0xFDDB597D;
-    M2C_FIELD((&data_027e0000 + 0x3F80), s32 *, -0x800) = 0x7BF9DD5B;
+    *(s32 *)((u8 *)&data_027e0000 + 0x3F80 - off) = 0x7BF9DD5B;
 }
-
+#pragma opt_propagation reset
 void func_02005288(void) {
 extern s32 data_0212dc7c;
 void WaitByLoop(s32); void func_020053a0(s32,s32,s32);void func_02005424(s32,s32,s32);void func_02007e54(s32,void *,s32);
@@ -287,18 +277,14 @@ u16 func_02005584(void *arg0) {
 }
 
 s32 func_0200558c(void){
-u32 *p=(u32 *)0x027FFFB0;u32 n=__CLZ(*p);s32 base;
-if(n!=32)base=64;
-else {p++;n=__CLZ(*p);if(n==32)return -3;base=96;}
-*p&=~(0x80000000U>>n);return base+n;
+u32 *p=(u32*)0x027fffb0; u32 n=__CLZ(*p); s32 result=64;
+if(n==32){p++;n=__CLZ(*p);if(n==32)return -3;result=96;}
+result+=n;*p=*p & ~(0x80000000U>>n);return result;
 }
 
-void func_020055f4(s32 a){
-u32 *p=(u32 *)0x027FFFB0;
-if(a>=96){p++;a-=96;}else a-=64;
-*p|=0x80000000U>>a;
-}
-
+#pragma optimization_level 0
+void func_020055f4(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
+#pragma optimization_level reset
 void func_0200563c(s32 arg0, s32 arg1, ...) {
     void func_02005664();
     char *args;

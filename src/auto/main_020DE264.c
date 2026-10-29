@@ -24,7 +24,7 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     extern M2C_UNK data_0212d440;
     extern M2C_UNK data_0212d450;
     void func_020de50c(void);
-    void func_020de5b0(void);
+    s32 func_020de5b0(M2C_UNK);
     void func_020de610(void);
 
     void *old = gCur3DSpriteEngine;
@@ -123,6 +123,22 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     v3c = M2C_FIELD((void *)arg0, s32 *, 0x3c);
     func_ov010_02228d48((s32)arg1, code2, (s32)func_020de610, (s32)arg0, tmp, (s32)arg0, v3c);
 }
+
+s32 func_020de5b0(register M2C_UNK arg0) {
+    M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
+    void *func_ov010_02229b00();
+    extern M2C_UNK data_0212c5e0;
+    extern M2C_UNK data_0212c5d0;
+    if (!(M2C_FIELD(func_ov010_02229b00(), u8 *, 0x1A) & 2)) {
+        return -1;
+    }
+    if (func_0203c0b0(arg0, &data_0212c5e0, 1) != 1) {
+        return -1;
+    }
+    func_0203c0b0(arg0, &data_0212c5d0, 0x5DC000);
+    return 0x7FFFFF;
+}
+
 void func_020de610(void) {
 
 }
@@ -153,6 +169,8 @@ M2C_UNK func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
     (void)arg0; (void)arg1;
     return 0;
 }
+
+void func_020deb44(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
 
 void func_020deb74(M2C_UNK arg0) {
     M2C_UNK func_020ddfd8(M2C_UNK, M2C_UNK);

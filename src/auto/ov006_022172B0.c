@@ -199,7 +199,7 @@ void func_ov006_02217948(void *arg0) {
     M2C_UNK func_020e3f88(void *, s32, void *);
     s32 temp_r0;
 
-    M2C_FIELD(arg0, s32 *, 0x3C) = 0xA;
+    M2C_FIELD(arg0, s32 *, 0x3C) = 10;
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x38);
     switch (temp_r0) {                              /* irregular */
     case 0:

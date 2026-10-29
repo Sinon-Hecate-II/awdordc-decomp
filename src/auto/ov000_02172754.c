@@ -293,8 +293,8 @@ void func_ov000_02173058(void *arg0) {
  s32 base; void *saved; s32 index;
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c4;
  index=func_ov000_021724b8(func_ov000_0217244c(),*M2C_FIELD(arg0,s32 **,0x18));
- base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c);
- if(index!=-1) func_02007ef4(func_020e3438(2)+(s16)index*0x4e0,base+0x2880);
+ base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2880;
+ if(index!=-1) func_02007ef4(0x4e0*(s16)index+func_020e3438(2),base);
  gCur3DSpriteEngine=saved;
 }
 

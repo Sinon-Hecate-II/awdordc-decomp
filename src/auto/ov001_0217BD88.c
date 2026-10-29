@@ -277,19 +277,9 @@ M2C_UNK func_ov001_0217c7e8(void){
  func_ov001_0218b298(M2C_FIELD(data_ov001_02193da4,s32 *,0));
 }
 
-void func_ov001_0217c8ac(void) {
-extern void *data_ov001_02193da4;
-extern M2C_UNK data_ov001_0218f888;
-s32 *p;
-u8 index;
-u32 value;
-index = M2C_FIELD(data_ov001_02193da4,u8 *,0x14);
-p = M2C_FIELD(data_ov001_02193da4,s32 **,4);
-if ((s32)index > 3) index = 3;
-value = M2C_FIELD(&data_ov001_0218f888,u8 *,index * 3 + 2);
-*p = (*p & 0xFE00FF00) | 0x28 | ((value << 23) >> 7);
-}
-
+#pragma scheduling off
+void func_ov001_0217c8ac(void) { extern void *data_ov001_02193da4; extern M2C_UNK data_ov001_0218f888; void *obj=data_ov001_02193da4; register s32 index=M2C_FIELD(obj,u8 *,0x14); register u32 *p=M2C_FIELD(obj,u32 **,4); u32 value; if(index>3) index=3; value=M2C_FIELD(&data_ov001_0218f888,u8 *,index*3+2); *p=(*p&0xfe00ff00)|0x28|((value<<23)>>7); }
+#pragma scheduling reset
 void func_ov001_0217c900(void) {
     extern void *data_ov001_02193da4;
     extern M2C_UNK func_ov001_0217c95c;

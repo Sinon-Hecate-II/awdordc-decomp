@@ -258,7 +258,14 @@ u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;
 
 u8 *func_020a32f4(s32 a){extern s32 *gCurrentMap;s32 base=*gCurrentMap;s32 p=base+0x67a4+140*a;u32 b;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;b=M2C_FIELD(p,u8 *,112);if(!b)return 0;return (u8 *)(base+0x59a4+14*b);}
 
-s32 func_020a334c(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;s32 v=M2C_FIELD(p,s32 *,108);a=v;if(((u32)(v<<24)>>24)==0)a=0;else a=(u8)((u32)(a<<20)>>30);return a;}
+s32 func_020a334c(s32 a) {
+extern s32 *gCurrentMap;
+s32 p=*gCurrentMap+0x67a4+140*a;
+register s32 v=M2C_FIELD(p,u32 *,108);
+register s32 test=(u32)(v<<24)>>24;
+if(test==0) return 0;
+return (u8)((u32)(v<<20)>>30);
+}
 
 void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
 
@@ -283,16 +290,18 @@ void func_020a3498(M2C_UNK arg0) {
     func_020a338c(arg0, 0);
 }
 
-void func_020a34a8(s32 a){extern s32 *gCurrentMap;u32 v,n;s32 p; p=*gCurrentMap;p+=0x67a4;p+=140*a;v=M2C_FIELD(p,u32 *,108);n=(v<<14)>>28;if(n>=10)return;M2C_FIELD(p,u32 *,108)=(v&~0x3c000)|(((n+1)<<28)>>14);}
-
+#pragma opt_common_subs off
+void func_020a34a8(s32 a){extern s32 *gCurrentMap;u32 v,n;u8 *p=(u8 *)*gCurrentMap+0x67a4;p+=140*a;v=*(u32 *)(p+108);n=(v<<14)>>28;if(n>=10)return;*(u32 *)(p+108)=(v&~0x3c000)|(((n+1)<<28)>>14);}
+#pragma opt_common_subs reset
 void func_020a34f4(M2C_UNK arg0) {
     s32 func_020a3594(M2C_UNK, M2C_UNK);
     M2C_UNK func_020a3684(M2C_UNK, s32);
     func_020a3684(arg0, 0 - func_020a3594(arg0, 2));
 }
 
-s32 func_020a3518(s32 a){extern s32 *gCurrentMap;s32 v=M2C_FIELD(*gCurrentMap+0x67a4+140*a,s32 *,108);if(((u32)(v<<24)>>24)==0)return 0;else return (u32)v>>21;}
-
+#pragma opt_common_subs off
+s32 func_020a3518(s32 a) {extern s32 *gCurrentMap; s32 v=M2C_FIELD(*gCurrentMap+0x67a4+140*a,s32 *,108); if(((u32)(v<<24)>>24)==0)return 0;return (u32)v>>21;}
+#pragma opt_common_subs reset
 void func_020a3550(s32 a,s32 b){
  extern s32 *gCurrentMap;
  s32 *p;

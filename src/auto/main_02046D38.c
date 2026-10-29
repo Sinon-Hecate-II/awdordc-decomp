@@ -384,8 +384,9 @@ s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
     return 0;
 }
 
-void func_02047750(s32 arg0) { register M2C_UNK *p; extern M2C_UNK data_020fca58,data_020fcad0,data_020fcaf8; M2C_FIELD(&data_020fca58,s32 *,8)=-1; M2C_FIELD(&data_020fca58,s32 *,0x54)=0; M2C_FIELD(&data_020fca58,s32 *,0x58)=0; if(arg0) p=&data_020fcad0; else p=&data_020fcaf8; M2C_FIELD(&data_020fca58,s32 *,0x5c)=0; M2C_FIELD(&data_020fca58,s32 *,0x60)=0; M2C_FIELD(&data_020fca58,s32 *,0x64)=0; M2C_FIELD(&data_020fca58,M2C_UNK **,0)=p; func_02044e04(0); M2C_FIELD(&data_020fca58,s32 *,4)=3; }
-
+#pragma opt_propagation off
+void func_02047750(s32 arg0) { M2C_UNK *p; extern M2C_UNK data_020fca58,data_020fcad0,data_020fcaf8; M2C_FIELD(&data_020fca58,s32 *,8)=-1; M2C_FIELD(&data_020fca58,s32 *,0x54)=0; M2C_FIELD(&data_020fca58,s32 *,0x58)=0; p=arg0?&data_020fcad0:&data_020fcaf8; M2C_FIELD(&data_020fca58,s32 *,0x5c)=0; M2C_FIELD(&data_020fca58,s32 *,0x60)=0; M2C_FIELD(&data_020fca58,s32 *,0x64)=0; M2C_FIELD(&data_020fca58,M2C_UNK **,0)=p; func_02044e04(0); M2C_FIELD(&data_020fca58,s32 *,4)=3; }
+#pragma opt_propagation reset
 s32 func_020477ac(void) {
     extern M2C_UNK data_020fca58;
     void func_020473a8(void);

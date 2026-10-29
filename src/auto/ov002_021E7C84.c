@@ -410,8 +410,11 @@ M2C_FIELD(p,u8 *,0x29)=0;
 func_ov002_021e3f2c(p,M2C_FIELD(p,u8 *,0x27));
 }
 
-s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=arg1) { if((u32)M2C_FIELD(arg0+(u16)i*8,u16 *,6)>(u32)M2C_FIELD(arg0+arg1*8,u16 *,6)) result+=20; } i++; }while(i<5); return result; }
-
+#pragma opt_strength_reduction off
+#pragma opt_loop_invariants off
+s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=arg1) { if((u32)M2C_FIELD(arg0+i*8,u16 *,6)>(u32)M2C_FIELD(arg0+arg1*8,u16 *,6)) result+=20; } i++; }while(i<5); return result; }
+#pragma opt_loop_invariants reset
+#pragma opt_strength_reduction reset
 void func_ov002_021e8738(void *p) {
     M2C_UNK func_02082028(s32);
     void func_ov002_021e8d0c(void *, s8, s8);

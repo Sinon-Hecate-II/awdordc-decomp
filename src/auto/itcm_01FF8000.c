@@ -197,7 +197,7 @@ func_01ff8624(M2C_FIELD(gCur3DSpriteEngine,u8 *,72),0);func_01ff85ec();i++;
 }while(i<2);gCur3DSpriteEngine=saved;
 }
 
-void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{if(i)p=data_027e00c8;else p=data_027e00c4;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
+void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?data_027e00c8:data_027e00c4;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
 
 /* Draw a run of sprites from src into the current 3D sprite engine bank. */
 void func_01ff883c(s32 x, s32 y, s32 attr, u16 *src) {

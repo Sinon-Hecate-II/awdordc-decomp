@@ -287,10 +287,11 @@ void func_ov000_0217074c(void) {
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021df5e4;
     void *temp_r4;
-    s32 value;
     void *next;
-    next = data_027e00c8;
+    s32 value;
     temp_r4 = gCur3DSpriteEngine;
+    next = data_027e00c8;
+    value = 0;
     value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
     gCur3DSpriteEngine = next;
     func_020e35cc(value);

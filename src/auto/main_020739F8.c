@@ -88,23 +88,21 @@ void func_02073c78(void) {
 
 }
 
+#pragma scheduling off
 void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
-    M2C_UNK func_02073148();
-    M2C_UNK func_0207462c(void *, s32 *, s32);
-    void *base;
-    s32 offset;
-    void *entry;
-    func_02073148(arg0, arg1, arg3);
-    base = M2C_FIELD(arg0, void **, 0x18);
-    offset = M2C_FIELD(arg2, s32 *, 8);
-    entry = (u8 *)base + offset;
-    M2C_FIELD(entry, s32 *, 0) = M2C_FIELD(arg0, s32 *, 4);
-    M2C_FIELD(entry, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
-    M2C_FIELD(entry, s32 *, 8) = M2C_FIELD(arg0, s32 *, 8);
-    M2C_FIELD(entry, s32 *, 0x14) = arg3;
-    func_0207462c(arg0, arg1, *arg1 + M2C_FIELD(arg2, s32 *, 4));
+ M2C_UNK func_02073148(void *, s32 *, s32);
+ M2C_UNK func_0207462c(void *, s32 *, s32);
+ void *base; s32 offset; void *entry;
+ register s32 value=arg3;
+ func_02073148(arg0,arg1,value);
+ base=M2C_FIELD(arg0,void **,0x18); offset=M2C_FIELD(arg2,s32 *,8); entry=(u8*)base+offset;
+ M2C_FIELD(entry,s32 *,0)=M2C_FIELD(arg0,s32 *,4);
+ M2C_FIELD(entry,s32 *,4)=M2C_FIELD(arg0,s32 *,0);
+ M2C_FIELD(entry,s32 *,8)=M2C_FIELD(arg0,s32 *,8);
+ M2C_FIELD(entry,s32 *,0x14)=value;
+ func_0207462c(arg0,arg1,*arg1+M2C_FIELD(arg2,s32 *,4));
 }
-
+#pragma scheduling on
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);
@@ -274,11 +272,7 @@ void func_02074074(void) {
 
 #pragma cplusplus on
 #pragma exceptions on
-extern "C" void func_020740b8(u32 arg0, u32 arg1, s32 arg2, M2C_UNK (*arg3)(u32)) {
-    while (arg1 > arg0) { arg1 -= arg2; arg3(arg1); }
-}
-#pragma cplusplus on
-#pragma exceptions on
+extern "C" void func_020740b8(u32 arg0,u32 arg1,s32 arg2,M2C_UNK (*arg3)(u32)) { try { while(arg1>arg0) { arg1-=arg2; arg3(arg1); } } catch (...) { for (;;) {} } }
 extern "C" void func_020740b8(u32, u32, s32, M2C_UNK (*)(u32));
 extern "C" void func_02074114(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32), s32 arg4) {
     s32 current;

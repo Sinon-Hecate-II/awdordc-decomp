@@ -78,13 +78,13 @@ data_ov000_021df658++;
 }
 
 s32 func_ov000_02180410(void) {
-    extern u16 data_02168f14;
-    extern void **gCurrentMap;
-    void *temp_r1;
-    if (((u32)(data_02168f14 << 29) >> 29) & 0xFF) return 0;
-    temp_r1 = *gCurrentMap;
-    if (M2C_FIELD(temp_r1, u16 *, 0x5142) == 0xAF && M2C_FIELD(temp_r1, u16 *, 0x52A4) == 2) return 1;
-    return 0;
+ extern u16 data_02168f14;
+ extern void **gCurrentMap;
+ void *p;
+ if (((u32)(data_02168f14<<29)>>29)&0xFF) return 0;
+ p=*gCurrentMap;
+ switch(M2C_FIELD(p,u16 *,0x5142)) { case 0xAF: if(M2C_FIELD(p,u16 *,0x52A4)==2)return 1; break; }
+ return 0;
 }
 
 void func_ov000_0218046c(void) {

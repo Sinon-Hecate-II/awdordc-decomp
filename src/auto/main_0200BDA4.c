@@ -61,11 +61,9 @@ void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
     func_0200b3ec(&data_0212fc14, arg0, arg1);
 }
 
-u32 func_0200bf0c(void *arg0) {
-    s32 x = M2C_FIELD(arg0, s32 *, 28);
-    return (((u32)x >> 24) & 1) ? ((u32)(x << 8) >> 8) : M2C_FIELD(arg0, u32 *, 8);
-}
-
+#pragma opt_strength_reduction off
+u32 func_0200bf0c(void *arg0) {s32 x=M2C_FIELD(arg0,s32 *,28);if(!(((u32)x>>24)&1)) return M2C_FIELD(arg0,u32 *,8);return (u32)(x<<8)>>8;}
+#pragma opt_strength_reduction reset
 void func_0200bf28(void *arg0) {
     M2C_UNK func_020067a8(s32, s32);
     M2C_UNK func_0200681c(s32, s32);
@@ -82,7 +80,16 @@ void func_0200bf28(void *arg0) {
     func_02007f8c(temp_r4 + temp_r5, 0, temp_r6 - temp_r5);
 }
 
-void func_0200bf64(u32 *arg0,void *arg1) {extern M2C_UNK data_0212fc14;volatile u32 tmp[2];arg1=(void *)M2C_FIELD(arg1,u32 *,24);tmp[1]=(u32)arg1;arg0[0]=(u32)&data_0212fc14;tmp[0]=(u32)&data_0212fc14;arg0[1]=(u32)arg1;}
+void func_0200bf64(u32 *arg0,void *arg1) {
+    extern M2C_UNK data_0212fc14;
+    volatile u32 tmp[2];
+    u32 base = (u32)&data_0212fc14;
+    u32 x = M2C_FIELD(arg1,u32 *,24);
+    tmp[1] = x;
+    arg0[0] = base;
+    tmp[0] = base;
+    arg0[1] = x;
+}
 
 s32 func_0200bf8c(u32 *arg0,s32 arg1,u32 arg2,s32 arg3,u32 arg4,u32 arg5,u32 arg6,u32 arg7) {
 void func_0200b774(void *); s32 func_0200b99c(void *,s32,u32,u32,s32); s32 func_0200bbe0(void *,void *,s32); void func_0200ba9c(void *); s32 func_0200b9e4(void *,Unk0200FilePair);

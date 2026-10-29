@@ -23,12 +23,16 @@ void func_020871a8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 arg5) {
     *(volatile u32 *) 0x4000480 = 0x7FFF;
 }
 
-void func_0208726c(s32 *x,s32 *y,s32 angle,s32 dist) {
- extern s16 data_020e5b30[];
- s32 i=(angle>>4)*2; s32 a,b,d=-dist;
- a=data_020e5b30[i]; b=data_020e5b30[i+1];
- a=-(d*a); b=d*b;
- *x=((a>>11)&1)+(a>>12); *y=((b>>11)&1)+(b>>12);
+void func_0208726c(s32 *x, s32 *y, s32 angle, s32 dist) {
+    extern s16 data_020e5b30[];
+    s32 i = (angle >> 4) * 2;
+    s32 a = data_020e5b30[i];
+    s32 b = data_020e5b30[i + 1];
+    s32 d = -dist;
+    s32 p = -(d * a);
+    s32 q = d * b;
+    *x = ((p >> 11) & 1) + (p >> 12);
+    *y = ((q >> 11) & 1) + (q >> 12);
 }
 
 s32 func_020720f0(s32,s32);
@@ -167,6 +171,7 @@ void func_02087c6c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u16 f) {
  *(volatile u32 *)0x4000480=0x7fff;
 }
 
+#pragma opt_strength_reduction off
 void func_02087d18(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
  s32 n=M2C_FIELD(p,u16 *,0x10); s32 i; u16 *q=M2C_FIELD(p,u16 **,0x14);
  for(i=0;i<n;i++,q+=6) {
@@ -176,7 +181,7 @@ void func_02087d18(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
  }
  }
 }
-
+#pragma opt_strength_reduction reset
 void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *func_02087e68(void *,s32);u16 *p=func_02087e68(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}
 
 void func_02087db8(void *arg0, s32 arg1) {

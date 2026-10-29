@@ -429,6 +429,13 @@ void func_02004cf0(void) {
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14) = 0;
 }
 
+void func_02004d3c(void) {
+ s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
+ s32 state=func_020033cc(); s32 index=state>>4;
+ u32 base=((u16*)&data_020e9b30)[index]<<12;
+ M2C_FIELD(&data_0212dbfc,s32*,12)=state; M2C_FIELD(&data_0212dbfc,u32*,8)=base;
+}
+
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
@@ -456,13 +463,14 @@ void func_02004ddc(void) {
 }
 
 typedef u32 Block3[3];
+#pragma opt_common_subs off
 void func_02004e20(FuncCopyV3 *src, FuncCopyV3 *dst) {
     *dst = *src++;
     *dst = *src++;
     *dst = *src++;
     *dst = *src++;
 }
-
+#pragma opt_common_subs reset
 void func_02004e44(void *arg0, void *arg1) {
     u32 *s = arg0;
     u32 *d = arg1;

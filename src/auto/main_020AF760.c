@@ -16,9 +16,13 @@ void func_020af79c(void) {
 }
 
 void func_020af7ac(void) {
-extern u8 data_0215c430; extern u8 data_0215c42c;
-s32 i=0; volatile u8 *p=&data_0215c430; volatile u8 *q=&data_0215c42c; u8 zero=0;
-do { i++; *p++=zero; *q++=zero; } while(i<2);
+ extern u8 data_0215c430;
+ extern u8 data_0215c42c;
+ s32 i;
+ volatile u8 *p=&data_0215c430;
+ volatile u8 *q=&data_0215c42c;
+ u8 zero=0;
+ for (i=0;i<2;i++) { *p++=zero; *q++=zero; }
 }
 
 void func_020af7dc(void) {
@@ -62,15 +66,15 @@ void func_020af828(s32 arg0, s32 arg1) {
     func_0208ff94(0x7F);
 }
 
-void func_020af860(s32 arg0,s32 arg1) {
-M2C_UNK func_0208ffe4(s32,s32); M2C_UNK func_02090100(s32,s32); void func_020af8c8(s32,s32);
-extern M2C_UNK data_ov002_021f30f4;
-s32 value; void *base=(u8*)&data_ov002_021f30f4+arg0*0x18;
-value=M2C_FIELD(M2C_FIELD(*(void **)base,void **,0x34),s32 *,4);
-if(value==0)return;
-func_0208ffe4(arg0,-1);
-if(arg0==0)func_02090100(arg0,-128);else func_02090100(arg0,127);
-func_020af8c8(arg0,arg1);
+void func_020af860(s32 arg0, s32 arg1) {
+ M2C_UNK func_0208ffe4(s32, s32);
+ M2C_UNK func_02090100(s32, s32);
+ void func_020af8c8(s32, s32);
+ extern M2C_UNK data_ov002_021f30f4;
+ if (M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&data_ov002_021f30f4 + (u32)arg0 * 0x18), void **, 0x34), s32 *, 4) == 0) return;
+ func_0208ffe4(arg0, -1);
+ if (arg0 == 0) func_02090100(arg0, -128); else func_02090100(arg0, 127);
+ func_020af8c8(arg0, arg1);
 }
 
 void func_020af8c8(s32 arg0, s32 arg1) {

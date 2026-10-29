@@ -42,8 +42,43 @@ void func_0206ad38(M2C_UNK arg0) {
     func_0206ac70(arg0, 0, 0xA);
 }
 
+#pragma push
+#pragma opt_common_subs off
+s32 func_0206ad4c(void *arg0, s32 arg1) {
+    s32 temp_r3;
+    s32 var_r1;
+    u32 temp_r2;
+
+    var_r1 = arg1;
+    if ((arg0 == NULL) || (temp_r3 = M2C_FIELD(arg0, s32 *, 4), (((u32) (temp_r3 << 0x16) >> 0x1D) == 0))) {
+        return 0;
+    }
+    temp_r2 = (u32) (temp_r3 << 0x14) >> 0x1E;
+    switch (temp_r2) {                              /* irregular */
+    case 2:
+        var_r1 = 1;
+        break;
+    case 0:
+        if (var_r1 > 0) {
+            M2C_FIELD(arg0, s32 *, 4) = (s32) ((temp_r3 & ~0xC00) | 0x800);
+        } else if (var_r1 < 0) {
+            M2C_FIELD(arg0, s32 *, 4) = (s32) ((temp_r3 & ~0xC00) | 0x400);
+        }
+        break;
+    case 1:
+        var_r1 = -1;
+        break;
+    }
+    return var_r1;
+}
+#pragma pop
 void func_0206adc0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020651a4(M2C_UNK, M2C_UNK, s32);
     func_020651a4(arg0, arg1, arg2 * 2);
+}
+
+u16 *func_0206add0(u16 *p,s32 value,u32 n) {
+if(n){do {if(*p==value)return p;p++;}while(--n);}
+return NULL;
 }
 

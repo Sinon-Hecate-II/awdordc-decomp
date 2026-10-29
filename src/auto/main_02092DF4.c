@@ -380,11 +380,11 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 
 s32 func_0209380c(void *arg0){
 extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
+register void *p=M2C_FIELD(arg0,void **,4);
 void *base=*gCurrentMap;
-u32 packed=M2C_FIELD(p,u32 *,12);
-u32 a=packed&255;
-u32 b=(packed>>8)&255;
+register u32 packed=M2C_FIELD(p,u32 *,12);
+u8 a=packed;
+u8 b=packed>>8;
 u32 index=M2C_FIELD((u8 *)base+ (M2C_FIELD(p,s16 *,8)+M2C_FIELD((u8 *)base+M2C_FIELD(p,s16 *,10)*2,u16 *,0x3758)),u8 *,0x508);
 if(index)func_02093614((u8 *)base+0x59a4+index*14,a,b);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;

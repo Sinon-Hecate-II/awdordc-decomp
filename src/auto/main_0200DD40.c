@@ -271,6 +271,7 @@ s32 func_0200e4f8(u32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
+#pragma scheduling off
 s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     void func_0200e8f4(s32);
     extern M2C_UNK data_0212fccc;
@@ -279,12 +280,12 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     if (func_0200e234() == 0) return 1;
     M2C_FIELD(&data_0212fccc, void (**)(s32, s32 *), 0x1C) = arg2;
     M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg3;
-    ((u16 (*)[4])&data_0212fd0c)[arg0][0] = 0;
-    ((s32 (*)[2])&data_0212fd10)[arg0][0] = arg1;
+    ((u16 *)&data_0212fd0c)[arg0 * 4] = 0;
+    ((volatile s32 (*)[2])&data_0212fd10)[arg0][0] = arg1;
     func_0200e8f4((u8)arg0 | 0x03006500);
     return 0;
 }
-
+#pragma scheduling on
 s32 func_0200e5c4(M2C_UNK arg0, M2C_UNK arg1) {
     void func_0200e270(void);
     s32 func_0200e558(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);

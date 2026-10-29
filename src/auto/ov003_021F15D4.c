@@ -167,18 +167,9 @@ void func_ov003_021f1a58(void) {
 }
 
 void func_ov003_021f1a70(void) {
-    extern M2C_UNK data_ov003_0220fc88;
-    u8 i;
-    u8 j;
-    i = 0;
-    do {
-        j = 0;
-        do {
-            M2C_FIELD((s32)&data_ov003_0220fc88 + i * 16, s32 *, j * 4) = 0;
-            j++;
-        } while ((u32)j < 4);
-        i++;
-    } while ((u32)i < 2);
+ extern s32 data_ov003_0220fc88[2][4];
+ u8 i=0,j;
+ do { j=0; do { data_ov003_0220fc88[i][j]=0; j++; }while(j<4); i++; }while(i<2);
 }
 
 void func_ov003_021f1ab8(s32 arg0) {
@@ -212,7 +203,7 @@ void func_ov003_021f1b38(s32 arg0, s32 arg1) {
     M2C_UNK func_02082340();
     extern s32 data_027e00c8;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK data_ov003_0220fc88;
+    extern s32 data_ov003_0220fc88[2][4];
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c8;
@@ -363,16 +354,10 @@ void func_ov003_021f2574(void) {
 }
 
 void func_ov003_021f2588(u32 arg0) {
-    extern M2C_UNK data_ov003_022111d4;
-    u8 i;
-    u16 value = 0xFFFF;
-    i = 0;
-    do {
-        if (arg0 == M2C_FIELD(&data_ov003_022111d4, u16 *, i * 2)) {
-            M2C_FIELD(&data_ov003_022111d4, u16 *, i * 2) = value;
-        }
-        i++;
-    } while ((u32)i < 5);
-    func_ov003_021f242c((u16 *)&data_ov003_022111d4);
+extern M2C_UNK data_ov003_022111d4;
+u16 *base=(u16 *)&data_ov003_022111d4;
+u8 i=0;
+do { if(arg0==base[i]) base[i]=0xffff; i++; } while(i<5);
+func_ov003_021f242c((u16 *)&data_ov003_022111d4);
 }
 

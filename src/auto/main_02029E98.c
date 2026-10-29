@@ -251,6 +251,17 @@ s32 func_0202a468(void *arg0, s32 arg1, s32 arg2) {
     return func_0202a284(arg0, arg1, -arg2);
 }
 
+s32 func_0202a4d4(void *arg0, s32 arg1) {
+    u16 temp_r3;
+    u16 bit;
+
+    temp_r3 = M2C_FIELD(arg0, u16 *, 0x36);
+    bit = (u16)(temp_r3 & 1);
+    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(temp_r3 & ~1);
+    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(M2C_FIELD(arg0, u16 *, 0x36) | (arg1 & 1));
+    return bit;
+}
+
 void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_02029e98();
     func_02029e98(arg0, 0x46524D48, arg0 + 0x30, arg1, arg2);
@@ -551,11 +562,13 @@ s32 func_0202aa64(s32 arg0) {
 void func_0202aaac(s32 arg0) {
     M2C_UNK func_02008ddc(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213b2a0;
+    M2C_UNK *g;
     if (arg0 == 0) {
         return;
     }
     func_02008ddc(arg0, 0);
-    M2C_FIELD(&data_0213b2a0, u32 *, 8) &= ~arg0;
+    g = &data_0213b2a0;
+    g[2] = g[2] & ~arg0;
 }
 
 void func_0202aadc(s32 arg0) {
@@ -659,19 +672,14 @@ void func_0202acf0(void **arg0, s8 arg1) {
     }
 }
 
+#pragma opt_common_subs off
 void func_0202ad04(void **arg0, s32 arg1) {
     M2C_UNK func_0202eed8(void *, s32);
-    void *p;
-    p = *arg0;
-    if (p == 0) {
-        return;
+    if (*arg0 != 0 && M2C_FIELD(*arg0, u8 *, 0x2C) != 2) {
+        func_0202eed8((u8 *)*arg0 + 0x1C, arg1 << 8);
     }
-    if (M2C_FIELD(p, u8 *, 0x2C) == 2) {
-        return;
-    }
-    func_0202eed8((void *)((u8 *)p + 0x1C), arg1 << 8);
 }
-
+#pragma opt_common_subs reset
 void func_0202ad30(void **arg0) {
     M2C_UNK func_02008c50(u8);
     void **a = arg0;
@@ -699,20 +707,22 @@ void func_0202ad90(void *arg0, s32 arg1, s32 arg2) {
     func_02008c84(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);
 }
 
+#pragma opt_common_subs off
 void func_0202adb0(void **arg0, s16 arg1) {
-    if (*arg0 == NULL) {
+    void *p = *arg0;
+    if (p == NULL) {
         return;
     }
-    M2C_FIELD(*arg0, s16 *, 0x34) = 1;
+    M2C_FIELD(p, s16 *, 0x34) = 1;
     M2C_FIELD(*arg0, s16 *, 0x38) = arg1;
 }
-
+#pragma opt_common_subs reset
 void func_0202add4(void **arg0, s16 arg1, s16 arg2) {
-    if (*arg0 == NULL) {
+    if (*(void * volatile *)arg0 == NULL) {
         return;
     }
-    *(s16 *)((u8 *)*arg0 + 0x34) = 2;
-    *(s16 *)((u8 *)*arg0 + 0x38) = arg1;
-    *(s16 *)((u8 *)*arg0 + 0x3a) = arg2;
+    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x34) = 2;
+    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
+    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x3A) = arg2;
 }
 

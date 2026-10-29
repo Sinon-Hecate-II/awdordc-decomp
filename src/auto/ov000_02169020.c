@@ -266,48 +266,37 @@ s32 func_ov000_0216975c(void) {
 }
 
 s32 func_ov000_021697a0(volatile s8 *p) {
- s32 count=0;
- for(;;) {
- switch(*p++) {
- case 9: p++; break;
- case -1: case 4: case 10: return count;
- case 0: case 1: case 2: case 3: count++;break;
- }
- }
+s32 count=0;
+do {
+switch(*p++) {
+case 9: p++; break;
+case -1: case 4: case 10: return count;
+case 0: case 1: case 2: case 3: count++; break;
+}
+} while(1);
+return count;
 }
 
 void func_ov000_02169800(void) {
 
 }
 
-void func_ov000_02169804(void *arg0, void *arg1) {
-    s8 temp_ip;
-    s8 temp_r3;
-    void *var_r0;
-    void *var_r1;
-
-    var_r0 = arg0;
-    var_r1 = arg1;
-loop_1:
-    temp_ip = M2C_FIELD(var_r0, s8 *, 0);
-    switch (temp_ip) {                              /* irregular */
-    case -1:
-    case 4:
-        break;
-    case 9:
-        M2C_FIELD(var_r1, s8 *, 0) = temp_ip;
-        temp_r3 = M2C_FIELD(var_r0, s8 *, 1);
-        var_r0 += 2;
-        M2C_FIELD(var_r1, s8 *, 1) = temp_r3;
-        var_r1 += 2;
-        goto loop_1;
-    default:
-        var_r0 += 1;
-        M2C_FIELD(var_r1, s8 *, 0) = temp_ip;
-        var_r1 += 1;
-        goto loop_1;
-    }
-    M2C_FIELD(var_r1, s8 *, 0) = (s8) M2C_FIELD(var_r0, s8 *, 0);
+void func_ov000_02169804(void *arg0,void *arg1) {
+s8 *src=arg0,*dst=arg1; s8 next; s8 token;
+loop:
+token=*src;
+switch(token) { case -1: case 4: goto end; case 9: break; default: goto normal; }
+dst[0]=token;
+next=src[1]; src+=2; dst[1]=next; dst+=2;
+goto loop;
+end:
+*dst=*(volatile s8 *)src;
+return;
+normal:
+src++;
+*dst++=token;
+goto loop;
+return;
 }
 
 void func_ov000_02169850(void) {

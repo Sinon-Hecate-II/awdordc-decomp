@@ -397,20 +397,27 @@ u8 func_020cd728(void) {
     return value;
 }
 
+#pragma push
+#pragma opt_common_subs off
 void func_020cd754(s32 arg0) {
-extern s32 *gCurrentMap;
-void func_02007f8c(s32, s32);
-s32 base = *gCurrentMap;
-if (M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2)
-func_02007f8c((base+0x5160) + arg0*(u32)0xA1,255);
-else func_02007f8c((base+0x5160) + arg0*(u32)0xA1,0);
+extern s32 *gCurrentMap; void func_02007f8c(s32,s32);
+s32 base=*gCurrentMap; s32 address;
+if(M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) {
+address=base+0x5160; address+=arg0*161;
+func_02007f8c(address,255);
+}else {
+address=base+0x5160; address+=arg0*161;
+func_02007f8c(address,0);
 }
-
-void func_020cd7bc(s32 arg0,s32 arg1) {
-extern s32 *gCurrentMap;
-void func_02008048(s32,s32);
-s32 base=*gCurrentMap+0x5160;
-func_02008048(base+arg0*(u32)0xA1,base+arg1*(u32)0xA1);
+}
+#pragma pop
+void func_020cd7bc(s32 arg0, s32 arg1) {
+ extern s32 *gCurrentMap;
+ void func_02008048(s32,s32);
+ s32 base=*gCurrentMap+0x160;
+ s32 size=0xa1;
+ base=base+0x5000;
+ func_02008048(size*arg0+base,size*arg1+base);
 }
 
 s32 func_020cd7ec(s32 arg0, s32 arg1) {

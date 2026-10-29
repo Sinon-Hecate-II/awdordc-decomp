@@ -20,12 +20,12 @@ void func_ov011_022264e4(void) {
 }
 
 void func_ov011_02226508(void *arg0) {
-    extern s32 gCur3DSpriteEngine;
-    M2C_FIELD(arg0, u16 *, 0x3A)++;
-    M2C_FIELD(arg0, u8 *, 0x37)++;
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1F) >> 0x1F) == 0) return;
-    gCur3DSpriteEngine = gCur3DSpriteEngine;
-    M2C_FIELD(arg0, u8 *, 0x38)++;
+extern s32 gCur3DSpriteEngine;
+M2C_FIELD(arg0,u16 *,0x3A)++;
+M2C_FIELD(arg0,u8 *,0x37)++;
+if (((u32)(M2C_FIELD(arg0,u8 *,0x34)<<31)>>31)==0) return;
+*(volatile s32 *)&gCur3DSpriteEngine = *(volatile s32 *)&gCur3DSpriteEngine;
+M2C_FIELD(arg0,u8 *,0x38)++;
 }
 
 void func_ov011_02226550(s32 arg0,s32 arg1) {

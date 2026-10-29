@@ -210,24 +210,9 @@ loop_2:
     return var_r4;
 }
 
-void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_02007e70(void *, s32, M2C_UNK);
-    s32 var_r0;
-    u16 temp_r0;
-    void *temp_ip;
-
-    temp_ip = arg3 + 0x6C;
-    M2C_FIELD(temp_ip, s8 *, 0x401) = arg0;
-    temp_r0 = M2C_FIELD(arg1, u16 *, 2);
-    var_r0 = (s32) temp_r0 >> 2;
-    if (!(temp_r0 & 2)) {
-        var_r0 += 0x19;
-    }
-    M2C_FIELD(temp_ip, u8 *, 0x402) = (u8) var_r0;
-    M2C_FIELD(temp_ip, u8 *, 0x403) = (u8) ((M2C_FIELD(temp_ip, u8 *, 0x403) & ~0x7F) | (arg2 & 0x7F));
-    func_02007e70(arg1, arg3 + 0xBF0, 0xC0);
-}
-
+#pragma opt_common_subs off
+void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) { M2C_UNK func_02007e70(void *, s32, M2C_UNK); s32 value;u16 code;void *p; p=(void *)(arg3+0x6c);M2C_FIELD(p,u8 *,0x401)=arg0;code=M2C_FIELD(arg1,u16 *,2);value=(s32)code>>2;if(!(code&2))value+=25;M2C_FIELD(p,u8 *,0x402)=(u8)value; M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);func_02007e70(arg1,arg3+0xbf0,0xc0);}
+#pragma opt_common_subs reset
 void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  M2C_UNK func_02007e70(void *, s32, M2C_UNK);
  u16 n;

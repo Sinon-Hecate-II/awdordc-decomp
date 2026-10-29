@@ -241,10 +241,9 @@ s32 func_02034c58(Unk02034164 *arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 func_02034ef8(void *a,s32 b){s32 func_02068d98(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(func_02068d98(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
-#pragma opt_common_subs reset
-#pragma opt_strength_reduction reset
-s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,func_02068c34(p),c,d);if(n==-1)return n;if((u32)n<d){c[n]=0;return n;}return n;}
-#pragma optimize_ifs reset
+#pragma peephole off
+s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,func_02068c34(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
+#pragma peephole reset
 s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);void func_02068c50(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(func_02068c34(p)>=d)return 0;func_02068c50(c,p);return 1;}
 
 void func_02034fe4(void *arg0, void *arg1, s32 arg2) {

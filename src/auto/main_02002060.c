@@ -127,11 +127,14 @@ void func_02002490(void) {
 }
 
 void func_020024cc(void) {
-extern s16 data_0212dbc0,data_020f5200;
-u32 v=*(u16 *)&data_0212dbc0;
-data_020f5200=(u16)(v-v+1);
-if(v){*(u32 *)0x4000000=(*(u32 *)0x4000000 & ~0x30000)|(v<<16);return;}
-*(u32 *)0x4000000 |= 0x10000;
+ extern s16 data_020f5200, data_0212dbc0;
+ u16 v = data_0212dbc0;
+ data_020f5200 = 1;
+ if (v != 0) {
+  *(volatile u32 *)0x4000000 = (*(volatile u32 *)0x4000000 & ~0x30000) | ((u32)v << 16);
+  return;
+ }
+ *(volatile u32 *)0x4000000 |= 0x10000;
 }
 
 void func_02002514(u32 a,u32 b,u32 c) {

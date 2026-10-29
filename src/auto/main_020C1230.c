@@ -186,18 +186,16 @@ s32 func_020c1878(u8 *arg0) {
     return count;
 }
 
-s32 func_020c1980(s32 arg0,s32 arg1,s32 index) {
+#pragma opt_strength_reduction off
+s32 func_020c1980(s32 offset,u8 *base,s32 index) {
  s32 sum=0;
  if(index<0) {
- arg1=arg0+arg1;
- for(index=0;index<5;index++,arg1+=12) sum+=*(u8 *)arg1;
- } else {
- arg0+=index*12;
- sum+=*(u8 *)(arg1+arg0);
- }
+ base=(u8 *)offset+ (s32)base;
+ for(index=0;index<5;index++,base+=12) sum+=*base;
+ } else sum+=base[index*12+offset];
  return sum;
 }
-
+#pragma opt_strength_reduction reset
 s32 func_020c19c4(s32 a){switch((u32)(a&31)){case 15:return 0;case 16:return 1;case 17:return 2;case 18:return 3;case 19:return 4;case 20:return 5;case 21:return 6;case 22:return 7;case 23:return 9;case 24:return 8;case 25:return 8;case 28:return 10;case 26:return 11;default:return -1;}}
 
 u8 func_020c1a80(void) {

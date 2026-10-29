@@ -300,22 +300,17 @@ void func_ov001_02183f6c(void) {
     data_ov001_02193e00 = func_ov001_0218b6f8(0x1E60, 0x20);
 }
 
+#pragma push
+#pragma pool_constants off
 void func_ov001_02183fa0(void) {
-    M2C_UNK func_02011d58(M2C_UNK);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e00;
-
-    if (data_ov001_02193e00 == 0) {
-        return;
-    }
-    if (func_02011d58(data_ov001_02193e00) != 0x8000) {
-        goto end;
-    }
-    func_ov001_0218b71c(&data_ov001_02193e00);
-end:
-    return;
+ u16 func_02011d58(void);
+ M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+ extern M2C_UNK data_ov001_02193e00;
+ if(data_ov001_02193e00==0) return;
+ while(func_02011d58()!=0x8000) {}
+ func_ov001_0218b71c(&data_ov001_02193e00);
 }
-
+#pragma pop
 s32 func_ov001_02183fd4(void) {
     s32 func_02007df8(s32, void *, s32);
     s32 func_02012218(void *, void (*)(void), s32);
@@ -678,32 +673,22 @@ void func_ov001_0218479c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
     extern s32 data_ov001_02193e04;
     extern char data_ov001_02190b58[];
-    u8 *p;
-    u8 *q;
-    u8 t0;
-    u8 t1;
-    u8 a;
-    u8 b;
-
-    p = (u8 *)data_ov001_02193e04;
-    q = p + 0xc4;
-    t0 = q[0x402];
-    t1 = q[0x403];
-    a = p[0x4c4];
-    b = q[0x401];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, a, b, t0, t1);
+    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *q = (u8 *)((u32)p + 0xc4);
+    u8 t0 = q[0x402];
+    u8 t1 = q[0x403];
+    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c4], q[0x401], t0, t1);
 }
 
 void func_ov001_021847e0(s32 arg0) {
     void func_0200563c(s32, s32, ...);
     extern s32 data_ov001_02193e04;
     extern char data_ov001_02190b58[];
-    u8 *p;
     u8 *q;
+    u8 *p = (u8 *)data_ov001_02193e04;
     u8 t0;
     u8 t1;
 
-    p = (u8 *)data_ov001_02193e04;
     q = p + 0xc8;
     t0 = q[0x402];
     t1 = q[0x403];
@@ -714,20 +699,11 @@ void func_ov001_02184824(s32 arg0) {
     void func_0200563c(s32, s32, ...);
     extern s32 data_ov001_02193e04;
     extern char data_ov001_02190b58[];
-    u8 *p;
-    u8 *q;
-    u8 t0;
-    u8 t1;
-    u8 a;
-    u8 b;
-
-    p = (u8 *)data_ov001_02193e04;
-    q = p + 0xcc;
-    t0 = q[0x402];
-    t1 = q[0x403];
-    a = p[0x4cc];
-    b = q[0x401];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, a, b, t0, t1);
+    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *q = p + 0xcc;
+    u8 t0 = q[0x402];
+    u8 t1 = q[0x403];
+    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4cc], q[0x401], t0, t1);
 }
 
 u8 func_ov001_02184868(s32 arg0) {

@@ -241,10 +241,10 @@ void func_0201a238(void) {
     void func_02005ec8(void);
     void func_02006030(s32);
     s32 f = M2C_FIELD(&data_02137290, s32 *, 0x24);
-    if (f) {
-        func_02006030(f);
-    } else {
+    if (f == 0) {
         func_02005ec8();
+    } else {
+        func_02006030(f);
     }
 }
 
@@ -372,6 +372,20 @@ void func_0201a26c(void *arg0) {
     func_02005e5c((s32)&data_02137438);
 }
 
+#pragma opt_common_subs off
+void *func_0201a4a8(void) {
+s32 func_0200751c(void);void func_02007530(s32);s32 func_02005d90(s32);void func_02005e5c(s32);
+extern M2C_UNK data_02137438;extern M2C_UNK data_02137290;
+s32 saved=func_0200751c();
+s32 result=func_02005d90((s32)&data_02137438);
+if(result==0 && M2C_FIELD(&data_02137290,s32 *,0x44)==0) {
+M2C_FIELD(&data_02137290,s32 *,0x44)=1;
+func_02005e5c((s32)&data_02137438);
+}
+func_02007530(saved);return (void *)result;
+}
+#pragma opt_common_subs on
+
 void func_0201a4f8(s32 arg0) {
     extern M2C_UNK data_02137290;
     M2C_FIELD(&data_02137290, s32 *, 0x3C) = arg0;
@@ -491,8 +505,9 @@ void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void func_0201a880(s32,s32,s32,s32,s
 
 u8 *func_0201aacc(s32 *out){s32 func_0200751c(void);void func_02007530(s32);void func_02005da4(s32);extern M2C_UNK data_02137290,data_0212dca4;s32 key;u32 size;u8 *p;u32 len;key=func_0200751c();while(M2C_FIELD(&data_02137290,u32 *,48)==M2C_FIELD(&data_02137290,u32 *,40)){M2C_FIELD(&data_02137290,s32 *,84)=M2C_FIELD(&data_0212dca4,s32 *,4);func_02005da4(0);M2C_FIELD(&data_02137290,s32 *,84)=0;}func_02007530(key);p=M2C_FIELD(&data_02137290,u8 **,88);do{size=M2C_FIELD(&data_02137290,u32 *,92);if(size-M2C_FIELD(&data_02137290,u32 *,48)<2)M2C_FIELD(&data_02137290,u32 *,48)=0;len=M2C_FIELD(p,u16 *,M2C_FIELD(&data_02137290,u32 *,48));if(!len)M2C_FIELD(&data_02137290,u32 *,48)=0;}while(!len);*out=len-2;return M2C_FIELD(&data_02137290,u8 **,88)+M2C_FIELD(&data_02137290,u32 *,48)+2;}
 
-void func_0201ab8c(void){s32 func_0200751c(void);void func_02007530(s32);extern M2C_UNK data_02137290;s32 key;register u32 n;register u8 *p;register void *q;key=func_0200751c();q=&data_02137290;n=M2C_FIELD(q,volatile u32 *,48);p=M2C_FIELD(q,u8 **,88);n+=M2C_FIELD(p,u16 *,M2C_FIELD(q,volatile u32 *,48));M2C_FIELD(q,volatile u32 *,48)=n;if(M2C_FIELD(q,volatile u32 *,48)>=M2C_FIELD(q,u32 *,92))M2C_FIELD(q,volatile u32 *,48)=0;func_02007530(key);}
-
+#pragma opt_strength_reduction off
+void func_0201ab8c(void){s32 func_0200751c(void);void func_02007530(s32);extern M2C_UNK data_02137290;s32 key=func_0200751c();M2C_FIELD(&data_02137290,volatile u32 *,48)+=M2C_FIELD(M2C_FIELD(&data_02137290,u8 **,88),u16 *,M2C_FIELD(&data_02137290,volatile u32 *,48));if(M2C_FIELD(&data_02137290,volatile u32 *,48)>=M2C_FIELD(&data_02137290,u32 *,92))M2C_FIELD(&data_02137290,volatile u32 *,48)=0;func_02007530(key);}
+#pragma opt_strength_reduction reset
 s32 func_0201abd0(s32 a){extern M2C_UNK data_02137290,data_02137778,data_020faf78,data_02137310,data_0213731a;s32 func_0200751c(void);void func_02007530(s32);u64 func_02007004(void);s32 irq=func_0200751c();u32 i;void *r=0;u8 *p;if(a==0x7f000001 || a==M2C_FIELD(&data_02137290,s32 *,0x50))r=&data_02137778;else if(func_0201a728(a)||func_0201a764(a))r=&data_020faf78;else{p=(u8 *)&data_02137310;for(i=0;i<8;i++,p+=12){if(a==*(s32 *)p){a=func_02007004()>>16;M2C_FIELD(&data_0213731a,u16 *,i*12)=a;r=(u8 *)&data_02137310+i*12+4;break;}}}func_02007530(irq);return (s32)r;}
 
 /* Build and send a 42-byte ARP-style announcement packet for `nodeId`, swapping byte order in the id fields. */

@@ -349,15 +349,12 @@ return M2C_FIELD(a,s16 *,0x3a)-old;
 }
 
 s32 func_ov000_0216fb2c(void *arg0) {
-    s16 temp_r2;
-
-    temp_r2 = M2C_FIELD(arg0, s16 *, 0x3A);
-    if ((s32) (temp_r2 + 6) >= (s32) M2C_FIELD(arg0, s16 *, 0x3C)) {
-        return 0;
-    }
-    M2C_FIELD(arg0, s16 *, 0x3A) = (s16) (temp_r2 + 1);
-    func_0208fe30(0x10019);
-    return 1;
+s16 n=M2C_FIELD(arg0,s16 *,0x3a);
+s32 next=n+6;
+if(next>=M2C_FIELD(arg0,s16 *,0x3c))return 0;
+M2C_FIELD(arg0,s16 *,0x3a)++;
+func_0208fe30(0x10019);
+return 1;
 }
 
 s16 func_ov000_0216fb64(void *a) {

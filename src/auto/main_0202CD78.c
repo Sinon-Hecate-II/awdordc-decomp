@@ -395,7 +395,7 @@ if(*arg0==0)return;
 func_0202de1c(*arg0,arg1);
 }
 
-void func_0202d960(void *volatile *a,s32 b){void func_0202eed8(void *,s32,...);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;func_0202eed8(p+0xe8,b<<8);}
+void func_0202d960(void *volatile *a,s32 b){void func_0202eed8(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;func_0202eed8(p+0xe8,b<<8);}
 
 void func_0202d994(volatile s32 *a,s32 b,s32 c){extern s16 data_020e9ca0[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,data_020e9ca0[c]);}
 

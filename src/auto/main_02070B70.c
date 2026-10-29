@@ -67,12 +67,22 @@ s32 func_0207191c(u32 arg0) {
     return var_r3 << 0x14;
 }
 
+#pragma opt_common_subs off
 u32 func_020719a0(s32 x) {
-u32 a=x&0x7fffffff; s32 n=158; n-=a>>23;
-if(n>0) {a=(a<<8)|0x80000000; {u32 v=a>>n; if(x&0x80000000)v=-v; return v;}}
-return ~(x>>31)+0x80000000;
+    s32 n = 158;
+    u32 a = x & 0x7fffffff;
+    n -= (s32)(a >> 23);
+    if (n > 0) {
+        a = (a << 8) | 0x80000000;
+        {
+            u32 v = a >> n;
+            if (x < 0) v = -v;
+            return v;
+        }
+    }
+    return ~(x >> 31) + 0x80000000U;
 }
-
+#pragma opt_common_subs reset
 s32 func_020719d4(s32 arg0) {
     s32 temp_r0;
     s32 temp_r2;
@@ -103,32 +113,5 @@ s32 func_020719d4(s32 arg0) {
     return temp_r0 + 1;
 }
 
-u8 func_02071a1c(u8 arg0) {
-    s32 temp_ip;
-    s32 var_r3;
-    u8 temp_r0;
-    u8 var_r0;
-
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        return var_r0;
-    }
-    var_r3 = 0x9E;
-    if ((s32) (var_r0 - 0) >= 0) {
-        temp_ip = CLZ(var_r0);
-        var_r0 <<= temp_ip;
-        var_r3 = 0x9E - temp_ip;
-    }
-    temp_r0 = ((u32) (var_r0 * 2) >> 9) | (var_r3 << 0x17);
-    if (var_r0 == 0) {
-        return temp_r0;
-    }
-    if (!(var_r0 & 0x80)) {
-        return temp_r0;
-    }
-    if (!(var_r0 & 0x7F) && !(temp_r0 & 1)) {
-        return temp_r0;
-    }
-    return temp_r0 + 1;
-}
+u32 func_02071a1c(u32 a){u32 n,exp=158,low,r;if(a==0)return a;if((s32)a>=0){for(n=0;(s32)a>=0;n++)a<<=1;exp-=n;}low=a&255;r=((a+a)>>9)|(exp<<23);if(!low)return r;if(!(low&128))return r;if((low&127)||(r&1))r++;return r;}
 

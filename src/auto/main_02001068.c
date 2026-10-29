@@ -11,38 +11,41 @@ arg1[10]=arg0[10]+(s32)(((long long)arg2*arg0[1]+(long long)arg3*arg0[4]+(long l
 arg1[11]=arg0[11]+(s32)(((long long)arg2*arg0[2]+(long long)arg3*arg0[5]+(long long)arg4*arg0[8])>>12);
 }
 
-s32 func_02001114(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r0_3;
-    void *temp_r0_4;
-    void *temp_r0_5;
-
-    M2C_FIELD(arg0, s32 *, 0) = arg1;
-    temp_r0_2 = arg0 + 4;
-    M2C_FIELD(temp_r0_2, s32 *, 0x1C) = arg3;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(temp_r0_2, s32 *, 4) = 0;
-    temp_r0_3 = temp_r0_2 + 8;
-    M2C_FIELD(temp_r0_2, s32 *, 8) = 0;
-    M2C_FIELD(temp_r0_3, s32 *, 4) = arg2;
-    M2C_FIELD(temp_r0_3, s32 *, 8) = 0;
-    temp_r0_4 = temp_r0_3 + 0xC;
-    M2C_FIELD(temp_r0_3, s32 *, 0xC) = 0;
-    M2C_FIELD(temp_r0_4, s32 *, 4) = 0;
-    temp_r0_5 = temp_r0_4 + 8;
-    temp_r0 = temp_r0_5 + 4;
-    M2C_FIELD(temp_r0_5, s32 *, 4) = 0;
-    M2C_FIELD(temp_r0, s32 *, 4) = 0;
-    M2C_FIELD(temp_r0, s32 *, 8) = 0;
-    return temp_r0 + 0xC;
+s32 func_02001114(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 *p = arg0;
+    *p++ = arg1;
+    p[7] = arg3;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = arg2;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0;
+    p++;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0;
+    return (s32)p;
 }
 
+#pragma thumb on
 void func_0200112c(s32 *arg0, s32 arg1, s32 arg2) {
-    volatile s32 *p = arg0;
-    p[0]=arg2; p[1]=arg1; p[2]=0; arg1=-arg1; p[3]=arg1; p[4]=arg2; p[5]=0; p[6]=0; p[7]=0; p[8]=4096; p[9]=0; p[10]=0; p[11]=0;
+    s32 *p = arg0;
+    *p++ = arg2;
+    *p++ = arg1;
+    *p++ = 0;
+    *p++ = -arg1;
+    *p++ = arg2;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0x1000;
+    *p++ = 0;
+    *p++ = 0;
+    *p++ = 0;
 }
-
+#pragma thumb off
 void func_02001148(void *arg0, void *arg1, void *arg2) { (void)arg0; (void)arg1; (void)arg2; }
 
 void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
@@ -194,13 +197,13 @@ while (*(volatile u16 *)0x04000280 & 0x8000) {}
 return (*(volatile u64 *)0x040002a0 + 0x80000) >> 20;
 }
 
+#pragma opt_common_subs off
 s32 func_02002030(s32 arg0) {
-*(volatile u16 *)0x04000280=1;
-*(volatile s32 *)0x04000290=0;
-*(volatile s32 *)0x04000294=0x1000;
-*(volatile s32 *)0x04000298=arg0;
-arg0=0;
-*(volatile s32 *)0x0400029c=arg0;
-return arg0;
+M2C_FIELD((void *)0x04000280,s16 *,0)=1;
+M2C_FIELD((void *)0x04000280,s32 *,0x10)=0;
+M2C_FIELD((void *)0x04000280,s32 *,0x14)=0x1000;
+M2C_FIELD((void *)0x04000280,s32 *,0x18)=arg0;
+M2C_FIELD((void *)0x04000280,s32 *,0x1c)=0;
+return 0;
 }
-
+#pragma opt_common_subs reset

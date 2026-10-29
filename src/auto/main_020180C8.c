@@ -111,17 +111,12 @@ s32 func_02018418(void) {
     return M2C_FIELD(M2C_FIELD(&data_02136c40, void **, 8), u8 *, 0x50d) == 1;
 }
 
-void func_02018438(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_02136c40;
-    u16 buf[2];
-    void **p;
-    if (arg1 == 2 || arg1 == 0) {
-        return;
-    }
-    buf[0] = (u16)arg0;
-    p = M2C_FIELD(&data_02136c40, void **, 8);
-    buf[1] = (u16)arg1;
-    M2C_FIELD(p, void (**)(s32, void *), 0x51c)(0xff, buf);
+void func_02018438(s32 arg0,s32 arg1) {
+ extern M2C_UNK data_02136c40; u16 buf[2]; void *p; void (*cb)(s32,void*);
+ if(arg1==2||arg1==0)return;
+ buf[0]=arg0; p=M2C_FIELD(&data_02136c40,void**,8); buf[1]=arg1;
+ cb=M2C_FIELD(p,void(**)(s32,void*),0x51c);
+ cb(255,buf);
 }
 
 void func_02018470(M2C_UNK arg0) {
@@ -543,14 +538,12 @@ void func_02018e24(M2C_UNK arg0, void *arg1) {
 }
 
 void func_02018e80(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_020054c0(void);
+    M2C_UNK func_020054c0(M2C_UNK);
     void func_02007530(s32);
-    void *r4 = arg1;
-    (void)arg0;
-    if (M2C_FIELD(r4, s32 *, 0) == 0) {
-        func_020054c0();
+    if (M2C_FIELD(arg1, s32 *, 0) == 0) {
+        func_020054c0(arg0);
     }
-    func_02007530(M2C_FIELD(r4, s32 *, 4));
+    func_02007530(M2C_FIELD(arg1, s32 *, 4));
 }
 
 void func_02018ea4(M2C_UNK arg0) {

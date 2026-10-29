@@ -181,11 +181,11 @@ void func_020be078(void) {
 M2C_UNK func_020be0ac(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,s32 e,s32 f) {
  s32 func_01ff8e44(M2C_UNK,M2C_UNK);
  M2C_UNK func_01ff883c(u16,u8,u16,s32);
- extern u16 **gCur3DSpriteEngine;
+ extern u16 **data_027e01d8;
  s32 v=func_01ff8e44(c,d);
  u32 shift;
  a &= 511;
- shift=(u32)(**gCur3DSpriteEngine<<17)>>30;
+ shift=(u32)(**data_027e01d8<<17)>>30;
  b=(u8)b;
  e |= (f>>shift)&1023;
  return func_01ff883c((u16)a,b,(u16)e,v);

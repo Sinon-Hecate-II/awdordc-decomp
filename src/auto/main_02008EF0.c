@@ -134,9 +134,9 @@ return p;
 s32 func_02009298(QueueNode09298 *arg0) {
 s32 func_0200751c(void);extern M2C_UNK data_0212e020;
 s32 s=func_0200751c(); Queue09298 *p=(Queue09298 *)&data_0212e020;
-QueueNode09298 *tail=p->tail;
-if(!tail){p->head=arg0;p->tail=arg0;}else {tail->next=arg0;p->tail=arg0;}
-arg0->next=0;return func_02007530(s);
+QueueNode09298 **slot=&p->tail;
+if(*slot==0)p->head=arg0;else (*slot)->next=arg0;
+*slot=arg0;arg0->next=0;return func_02007530(s);
 }
 
 s32 func_020092d0(s32 flags) {
@@ -260,8 +260,7 @@ u8 func_0200978c(int a,int b,int c){extern M2C_UNK data_0212fb00;void *p=(char *
 
 s32 func_020097bc(s32 a){
 extern M2C_UNK data_0212fb00;void *p=(char *)&data_0212fb00+(a&255)*12;
-u8 generation=a>>8;
-if(M2C_FIELD(p,u8 *,8)!=generation)return;
+if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
 }
 

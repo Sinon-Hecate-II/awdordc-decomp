@@ -15,7 +15,9 @@ void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_020ae7a4(u32 a,u32 b,u16 c) {
 extern void *gCur3DSpriteEngine;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+( (a<<5)&~1),u16 *,b*2)=c;
+s32 offset=(a<<5)&~1;
+register u8 *base=M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30);
+*(u16 *)(base+offset+b*2)=c;
 }
 
 s32 func_020ae7cc(s32 arg0) {

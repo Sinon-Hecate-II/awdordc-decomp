@@ -364,18 +364,11 @@ return (u16)(b<<4);
 s32 func_ov003_02200d80(s32 a,s32 b){extern s32 data_ov003_022104a4[],data_ov003_022104b4[],data_ov003_02210494[];switch(a){case 6:b=data_ov003_022104a4[b];break;case 1:b=data_ov003_022104b4[b];break;case 2:b=data_ov003_02210494[b];break;}return b;}
 
 void func_ov003_02200dc8(void *a,u32 b) {
-s32 func_0207c928(u8,s32);
-s32 func_01ffa810(u32);
-u8 v;void *p;
-if(b<8)M2C_FIELD(a,u8 *,6)=b;
-else if(b==8){
-v=func_0207c928(M2C_FIELD(a,u8 *,6),4);
-p=a+b*4;
-M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x68)=v+4;
-M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x6a)=v;
-}
-M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b);
-}
+s32 func_0207c928(u8,s32); s32 func_01ffa810(u32);
+u32 v; void *p;
+if(b<8) M2C_FIELD(a,u8 *,6)=b;
+else if(b==8){ v=(u8)func_0207c928(M2C_FIELD(a,u8 *,6),4); p=a+b*4; M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x68)=(s16)(v+4); M2C_FIELD(M2C_FIELD(p,void **,0xe8),s16 *,0x6a)=v; }
+M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b); }
 
 void func_ov003_02200e1c(void *arg0) {
     M2C_UNK func_020aacf0(s32);

@@ -25,7 +25,37 @@ s32 func_ov000_021aa568(void *arg0) {
     return 0;
 }
 
+void func_ov000_021aab20(s32, s32, s32, s32, s32, s32);
+s32 func_ov000_021aa820(s32 a, s32 b, s32 c, s32 d) {
+    s32 x;
+    s32 y;
+    typedef s32 (*Fn)(s32, s32, s32, s32, s32, s32);
+    switch (d) {
+    case 0:
+        x = 2;
+        y = 0x1e;
+        break;
+    case 1:
+        x = 2;
+        y = 0x50;
+        break;
+    default:
+        return 0;
+    }
+    return ((Fn)func_ov000_021aab20)(a, b, c, d, x, y);
+}
+
 s32 func_ov000_021aa870(void *arg0) {
     return 0;
+}
+
+void func_ov000_021aab20(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+    typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
+    ((Fn)func_ov000_021aa870)(a, b, c, d, e, f, 0);
+}
+
+void func_ov000_021aab4c(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+    typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
+    ((Fn)func_ov000_021aa870)(a, b, c, d, e, f, 1);
 }
 

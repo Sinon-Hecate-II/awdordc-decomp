@@ -28,8 +28,9 @@ void func_02045ffc(M2C_UNK a) { M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK)
 
 u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
 
-M2C_UNK func_02046058(u8 arg0,M2C_UNK *arg1) { u8 *dst=(u8 *)arg1; register u32 bits=~0U ^ (~0U >> arg0); register s32 i=0; register s32 shift=0; do {dst[i]=bits>>(24-shift);i++;shift+=8;}while(i<4); }
-
+#pragma opt_common_subs off
+M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) { u8 *dst=(u8*)arg1; u32 bits=~0U; s32 i=0; s32 shift=0; bits ^= bits >> arg0; do { dst[i]=bits>>(24-shift); ++i; shift+=8; } while(i<4); }
+#pragma opt_common_subs reset
 s32 func_02046088(void *a) { u8 *p=a; s32 i=0;do {if(p[i])return 1;i++;}while(i<32);return 0; }
 
 s32 func_020460b0(M2C_UNK arg0, M2C_UNK arg1) {
@@ -286,5 +287,6 @@ block_13:
 
 s32 func_02046c8c(s32 a) { void func_02007df8(s32,s32,s32); void func_02046ebc(void *); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;func_02007df8(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);func_02046ebc(sp0);p=func_020467b8(sp0);i=0;do{func_02008048((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
 
-#pragma optimization_level 2
+#pragma opt_common_subs off
 void func_02046d0c(s32 a,s32 b) { void func_02007df8(s32,s32,s32); func_02007df8(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }
+#pragma opt_common_subs reset
