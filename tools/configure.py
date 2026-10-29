@@ -99,7 +99,7 @@ def main() -> None:
         n.rule("rom_config", f"{DSD} rom config --elf $in --config {CONFIG}")
         n.rule("rom_build", f"{SH}{DSD} rom build --config $in --rom $out && {PY} tools/same.py --header $out {BASEROM}")
         n.rule("same", f"{PY} tools/same.py $in {BASEROM} $out")
-        n.rule("objdiff", f"{DSD} objdiff --config-path {CONFIG} --custom-make ninja")
+        n.rule("objdiff", f"{DSD} objdiff --config-path {CONFIG} --custom-make ninja && {PY} tools/bytematch_objdiff.py")
         n.rule("check", f"{SH}{DSD} check modules --config-path {CONFIG} --fail && {PY} tools/same.py --touch $out")
         n.rule("configure", f"{PY} tools/configure.py {q(sys.argv[1:])}", generator=True)
 
@@ -130,7 +130,7 @@ def main() -> None:
         # source file's object, keeping going past work in progress: `ninja -k 0 all_source`
         n.build("all_source", "phony", objs)
         n.build("prepare", "phony", ["objdiff.json", *targets, *objs])
-        n.build("build.ninja", "configure", [__file__, *dsd_configs, *[str(s) for s in sources()],
+        n.build("build.ninja", "configure", [__file__, "tools/bytematch_objdiff.py", *dsd_configs, *[str(s) for s in sources()],
                                              *([str(FILE_COMPILERS)] if FILE_COMPILERS.exists() else [])])
         n.default(["objdiff.json", str(BUILD / "rom.ok"), *objs])
 
