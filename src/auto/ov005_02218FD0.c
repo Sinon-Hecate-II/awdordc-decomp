@@ -2,8 +2,8 @@
 #include "common.h"
 
 void func_ov005_02219a24(void *p){
-extern s32 gCur3DSpriteEngine;
-s32 i,v; s32 a,b;
+extern s32 data_027e01d8;
+s32 i,v; u32 a,b;
 if(M2C_FIELD(p,s32 *,0x60)<=0){func_01ffa730(p);return;}
 M2C_FIELD(p,s32 *,0x5c)++;
 v=func_0207ca38(0,0,16,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x60));
@@ -11,15 +11,15 @@ a=(u8)(16-v);b=(u8)v;
 for(i=0;i<16;i++){
 M2C_FIELD(p,u16 **,0x54)[i]=func_020ae354(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
 }
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=16;
+M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x60)){
 M2C_FIELD(p,s32 *,0x5c)=0;func_01ffa6fc(p);
 }
 }
 
 void func_ov005_02219aec(void *p){
-extern s32 gCur3DSpriteEngine;
-s32 i,v; u32 a; u8 b;
+extern s32 data_027e01d8;
+s32 i,v; u32 a,b;
 if(M2C_FIELD(p,s32 *,0x64)<=0){func_01ffa730(p);return;}
 M2C_FIELD(p,s32 *,0x5c)++;
 v=func_0207ca38(0,16,0,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x64));
@@ -27,7 +27,7 @@ a=(u8)(16-v);b=(u8)v;
 i=0; do {
 M2C_FIELD(p,u16 **,0x54)[i]=func_020ae354(((u16 *)p)[i+26],(u16)M2C_FIELD(p,s32 *,0x58),a,b);
 i++; }while(i<16);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=16;
+M2C_FIELD(data_027e01d8,u8 *,0x46)|=16;
 if(M2C_FIELD(p,s32 *,0x5c)==M2C_FIELD(p,s32 *,0x64)){
 M2C_FIELD(p,s32 *,0x5c)=0;func_01ffa6fc(p);
 }

@@ -1,5 +1,18 @@
 /* 43 functions from 0x020739F8 to 0x02074920 (main), found by ds-decomp. */
 #include "common.h"
+#pragma cplusplus on
+extern "C" {
+void func_020742f8(void);
+M2C_UNK func_020742e0(void);
+void *func_02072bac(void *, s32 *);
+void *func_02072b20(void *, s32 *);
+s32 func_02073b4c(M2C_UNK,void *);
+void func_020746a4(void);
+void func_0207465c(void *,void *,void *);
+void func_02073c78(void);
+extern u8 data_021009a4[],data_02100998[],data_021009bc[];
+}
+#pragma cplusplus off
 
 typedef struct { s32 v[21]; } CtxTail_020739f8;
 typedef struct { s32 f0, f1, f2, f3, f4, f5, f6; CtxTail_020739f8 tail; } CtxState_020739f8;
@@ -84,11 +97,27 @@ s32 func_02073b4c(M2C_UNK arg0, void *arg1) {
     return 0;
 }
 
+#pragma cplusplus on
+#pragma exceptions on
+extern "C" void func_02073bd0(void *arg0){
+u8 *p=M2C_FIELD(arg0,u8 **,20);s32 values[4];
+try{func_020742f8();}catch(...){
+void *q=func_02072bac(p+1,&values[0]);
+q=func_02072bac(q,&values[1]);
+values[3]=(s32)func_02072b20(q,&values[2]);
+if(func_02073b4c(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
+if(func_02073b4c((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
+}
+func_020742e0();
+}
+#pragma exceptions off
+#pragma cplusplus off
+
 void func_02073c78(void) {
 
 }
 
-#pragma scheduling off
+#pragma scheduling on
 void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
  M2C_UNK func_02073148(void *, s32 *, s32);
  M2C_UNK func_0207462c(void *, s32 *, s32);
@@ -102,7 +131,6 @@ void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
  M2C_FIELD(entry,s32 *,0x14)=value;
  func_0207462c(arg0,arg1,*arg1+M2C_FIELD(arg2,s32 *,4));
 }
-#pragma scheduling on
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);

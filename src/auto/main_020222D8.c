@@ -67,10 +67,11 @@ p+=a-b;
 void func_02022ae4(void *a, void *b) {
 }
 
-void func_02022d08(s32 p,s32 q) {
-s32 old,n; u8 *s;
-func_02008048(q+2,p+0x54,0x20);
-old=M2C_FIELD(p,u8 *,0x30);n=M2C_FIELD(q,u8 *,0x22);s=(u8 *)(q+0x23);
+#pragma opt_propagation off
+void func_02022d08(s32 p,u8 *s) {
+s32 old,n;
+func_02008048(s+2,p+0x54,0x20);
+old=M2C_FIELD(p,u8 *,0x30);n=s[0x22];s+=0x23;
 if(old && n==0x20 && !func_0206527c(p+0x74,s,0x20))M2C_FIELD(p,u8 *,0x31)=1;
 else {
 if(old)func_02022008(p);
@@ -78,10 +79,10 @@ if(!n) M2C_FIELD(p,u8 *,0x30)=0;
 else {func_02008048(s,p+0x74,0x20);M2C_FIELD(p,u8 *,0x30)=1;}
 M2C_FIELD(p,u8 *,0x31)=0;
 }
-M2C_FIELD(p,u16 *,0x32)=(s[n]<<8)+s[n+1];
+M2C_FIELD(p,u16 *,0x32)=(s[n]<<8)+(s+n)[1];
 M2C_FIELD(p,u8 *,0x455)=2;
 }
-
+#pragma opt_propagation reset
 s32 func_02022dbc(u8 *p,s32 n,s32 stride,s32 target) {
 s32 i,v;
 for(i=0;i<n;i++,p+=stride) {
@@ -109,6 +110,7 @@ s32 func_02022e68(s32 arg0, s32 arg1) {
     return 0;
 }
 
+#pragma opt_propagation off
 void func_02022e78(u8 *p,u8 *q){
 s32 func_02008048(); void func_02007f8c();
 s32 size,offset,n;u16 value;
@@ -119,12 +121,12 @@ if(!value)return;
 M2C_FIELD(p,u16*,0x32)=value;
 offset=(q[4]<<8)+q[5];n=(q[6]<<8)+q[7];
 p[0x30]=0;
-offset+=(size+8);
+offset=(size+8)+offset;
 if(n>=32)func_02008048(q+offset,p+0x34,32);
 else {func_02007f8c(p+0x34,0,32-n);func_02008048(q+offset,p+0x54-n,n);}
 p[0x455]=1;
 }
-
+#pragma opt_propagation reset
 void func_02022f40(void *arg0,u8 *arg1) {
 s32 func_02008048(); void func_02021de8(void *);
 u32 n; u8 *p; u16 value;

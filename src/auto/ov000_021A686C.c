@@ -68,7 +68,7 @@ s32 func_ov000_021a6a00(void) {
  if(p[3]<252 && p[2]==3) {
  y=p[1];base=*gCurrentMap;x=p[0];
  v=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),s8 *,0x2338);
- if(best >= v && func_ov000_021a4e08(x,y,23)<40){best=v;result=i;}
+ if((s32)best >= v && func_ov000_021a4e08(x,y,23)<40){best=v;result=i;}
  }
  i++;p+=12;
  }while(i<*data_ov000_021df578);
@@ -146,36 +146,14 @@ s32 func_ov000_021a6c8c(void) {
 extern unsigned char *data_ov000_021df578;
 extern int data_ov000_021e00ac;
 extern int *gCurrentMap;
-int func_ov000_021a6d4c(void)
-{
-    int min = 0x7fff;
-    int result = -1;
-    int i;
-    unsigned char *entry = (unsigned char *)&data_ov000_021e00ac;
-
-    for (i = 0; i < data_ov000_021df578[0]; i++) {
-        if (entry[3] < 0xfc) {
-            if (func_ov000_021a4e08(entry[0], entry[1], 7) < 60) {
-                if (entry[2] == 1) {
-                    signed char *values =
-                        *(signed char **)((unsigned char *)gCurrentMap[0] +
-                            0x5000 + entry[1] * 4 + 0x2e8);
-
-                    int value = values[entry[0]];
-
-                    if (min > value) {
-                        min = value;
-                        result = i;
-                    }
-                }
-            }
-        }
-
-        entry += 12;
-    }
-
-    return result;
-}
+int func_ov000_021a6d4c(void) {
+unsigned char *entry; int i; int min; int result;
+min=0x7fff;result=-1;entry=(unsigned char *)&data_ov000_021e00ac;
+for(i=0;i<data_ov000_021df578[0];i++,entry+=12) {
+if(entry[3]<0xfc && func_ov000_021a4e08(entry[0],entry[1],7)<60 && entry[2]==1) {
+int value=(*(signed char **)((unsigned char *)gCurrentMap[0]+0x5000+entry[1]*4+0x2e8))[entry[0]];
+if(min>value){min=value;result=i;}
+}}return result;}
 
 s32 func_ov000_021a6e08(s32 a) {
  extern u8 *data_ov000_021df578;

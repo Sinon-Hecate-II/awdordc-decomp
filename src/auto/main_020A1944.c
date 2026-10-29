@@ -1,5 +1,6 @@
 /* 39 functions from 0x020A1944 to 0x020A28F4 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
 
 s32 func_020a1944(s32 arg0) {
     if (arg0 < 0xC8) {
@@ -39,9 +40,7 @@ void func_020a1a0c(void) {
     s32 j;
     s32 i;
     u8 *p;
-    s32 dummy;
 
-    dummy = 0;
     p = (u8 *)&data_0215c324;
     for (i = 0; i < 4; i++, p++) {
         p[0] = 0;
@@ -78,7 +77,6 @@ void func_020a1a0c(void) {
             break;
         }
     }
-    if (dummy) {}
 }
 
 void func_020a1adc(void) {}
@@ -201,62 +199,50 @@ void func_020a2148(u16 *arg0) {
 }
 
 void func_020a2204(u16 *arg0) {
-    u16 *func_020bfa74(void);
-    s32 func_020cd6d4(void);
-    void func_020c002c(u16 *);
-    s32 func_020846a4(void);
-    u32 func_020bf894(s32);
-    void func_020a230c(s32, s8);
-    void func_020a232c(s32, s8);
-    void func_020a23a4(s32, s8);
-    extern M2C_UNK data_0211faf4;
-
-    u16 *p;
-    s32 i;
-    u16 val;
-    s32 low;
-    s32 r6;
-    s32 r7;
-    s32 r8;
-    s32 idx;
-    s32 r9;
-
-    if (arg0 == 0) {
-        p = func_020bfa74();
-        arg0 = p;
-        if (func_020cd6d4() != 0) {
-            return;
-        }
-        func_020c002c(p);
-        for (idx = 1; idx < 5; idx++) {
-            func_020a230c(idx, 0);
-            func_020a232c(idx, idx);
-            func_020a23a4(idx, 0);
-        }
-    }
-    p = arg0;
-    i = 0;
-    do {
-        val = *p;
-        r6 = 0;
-        r9 = i + 1;
-        low = ((s32)val << 24) >> 24;
-        r7 = ((s32)val << 20) >> 28;
-        r8 = ((s32)val << 16) >> 28;
-        if (func_020bf894(low)) {
-            r6 = ((s32)(*p) << 24) >> 24;
-        }
-        if (func_020846a4()) {
-            r6 = M2C_FIELD(&data_0211faf4, u8 *, r9);
-            r7 = r9;
-            r8 = 0;
-        }
-        func_020a230c(r9, r6);
-        func_020a232c(r9, r7);
-        func_020a23a4(r9, r8);
-        i++;
-        p++;
-    } while (i < 4);
+u16 *func_020bfa74(void);
+s32 func_020cd6d4(void);
+void func_020c002c(u16 *);
+s32 func_020846a4(void);
+u32 func_020bf894(s32);
+void func_020a230c(s32,s32);
+void func_020a232c(s32,s32);
+void func_020a23a4(s32,s32);
+extern M2C_UNK data_0211faf4;
+u16 *p;
+s32 i;
+u16 val;
+s32 low;
+s32 r6;
+s32 r7;
+s32 r8;
+s32 idx;
+s32 r9;
+if(arg0==0){
+p=func_020bfa74(); arg0=p;
+}
+p=arg0;
+if(func_020cd6d4()!=0) return;
+func_020c002c(p);
+for(idx=1;idx<5;idx++){
+func_020a230c(idx,0);
+func_020a232c(idx,idx);
+func_020a23a4(idx,0);
+}
+p=arg0; i=0;
+do {
+val=*p; r6=0; r9=i+1;
+low=((SaveInitEntry *)p)->id;
+r7=((SaveInitEntry *)p)->index;
+r8=((SaveInitEntry *)p)->mode;
+if(func_020bf894(low)) r6=((SaveInitEntry *)p)->id;
+if(func_020846a4()){
+r6=M2C_FIELD(&data_0211faf4,u8 *,r9); r7=r9; r8=0;
+}
+func_020a230c(r9,r6);
+func_020a232c(r9,r7);
+func_020a23a4(r9,r8);
+i++;p++;
+}while(i<4);
 }
 
 s32 func_020a22fc(s32 arg0) {
@@ -264,7 +250,7 @@ s32 func_020a22fc(s32 arg0) {
     return M2C_FIELD(&data_0215c386, u8 *, arg0);
 }
 
-void func_020a230c(s32 arg0, s8 arg1) {
+void func_020a230c(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c386;
     M2C_FIELD(&data_0215c386, s8 *, arg0) = arg1;
 }
@@ -274,7 +260,7 @@ void func_020a231c(s32 arg0, s8 arg1) {
     M2C_FIELD(&data_0215c381, s8 *, arg0) = arg1;
 }
 
-void func_020a232c(s32 arg0, s8 arg1) {
+void func_020a232c(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c38b;
     M2C_FIELD(&data_0215c38b, s8 *, arg0) = arg1;
 }
@@ -309,7 +295,7 @@ u16 func_020a2390(s32 arg0) {
  return M2C_FIELD(&data_0215c396, u16 *, arg0 * 2);
 }
 
-void func_020a23a4(s32 arg0, s8 arg1) {
+void func_020a23a4(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0215c37c;
     M2C_FIELD(&data_0215c37c, s8 *, arg0) = arg1;
 }

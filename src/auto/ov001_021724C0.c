@@ -1,5 +1,11 @@
 /* 18 functions from 0x021724C0 to 0x0217332C (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct SpritePosition { s32 x, y; } SpritePosition;
+static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
+    u32 value = *sprite;
+    pos->y = (value & 0x1ff0000) >> 16;
+    pos->x = value & 255;
+}
 
 void func_ov001_021724c0(void) {
 }
@@ -32,57 +38,44 @@ s32 func_ov001_02172894(void) {
  return 0;
 }
 
+#pragma opt_common_subs off
 void func_ov001_021728b0(s32 arg0) {
- extern void *data_ov001_02193d1c;
- void func_ov001_02172944();
- struct { s32 x, y; } xy, *pos = &xy;
- u32 value = *M2C_FIELD(data_ov001_02193d1c, u32 **, 0x30);
- pos->y = (value & 0x1FF0000) >> 16;
- pos->x = value & 0xFF;
- pos->x -= 12;
- if (pos->x > 0x51) {
-  func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 0, pos->x);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 0, 0x51);
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 1, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_02172944);
+extern void *data_ov001_02193d1c;
+void func_ov001_02172944(s32);
+struct {s32 x,y;} xy,*pos=&xy;
+u32 value=*M2C_FIELD(data_ov001_02193d1c,u32 **,0x30);
+pos->y=(value&0x1ff0000)>>16;
+pos->x=(value&255)-12;
+if(pos->x>0x51) {func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d),0,pos->x);return;}
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d),0,0x51);
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d),1,0xc0);
+func_ov001_0218c924(arg0,func_ov001_02172944);
 }
-
+#pragma optimization_level 2
 void func_ov001_02172944(s32 arg0) {
- extern void *data_ov001_02193d1c;
- void func_ov001_021729d8();
- struct { s32 x, y; } xy, *pos = &xy;
- u32 value = *M2C_FIELD(data_ov001_02193d1c, u32 **, 0x60);
- pos->y = (value & 0x1FF0000) >> 16;
- pos->x = value & 0xFF;
- pos->x -= 12;
- if (pos->x > 0x67) {
-  func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 1, pos->x);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 1, 0x67);
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 2, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_021729d8);
+extern void *data_ov001_02193d1c;
+void func_ov001_021729d8(s32);
+SpritePosition xy,*pos=&xy;
+GetSpritePosition(M2C_FIELD(data_ov001_02193d1c,u32 **,0x60),pos);
+pos->x-=12;
+if(pos->x>0x67) {func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d) ,1,pos->x);return;}
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d) ,1,0x67);
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d),2,0xc0);
+func_ov001_0218c924(arg0,func_ov001_021729d8);
 }
-
+#pragma optimization_level 3
 void func_ov001_021729d8(s32 arg0) {
- extern void *data_ov001_02193d1c;
- void func_ov001_02172a6c();
- struct { s32 x, y; } xy, *pos = &xy;
- u32 value = *M2C_FIELD(data_ov001_02193d1c, u32 **, 0x90);
- pos->y = (value & 0x1FF0000) >> 16;
- pos->x = value & 0xFF;
- pos->x -= 12;
- if (pos->x > 0x7D) {
-  func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 2, pos->x);
-  return;
- }
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 2, 0x7D);
- func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 3, 0xC0);
- func_ov001_0218c924(arg0, func_ov001_02172a6c);
+extern void *data_ov001_02193d1c;
+void func_ov001_02172a6c(s32);
+SpritePosition xy,*pos=&xy;
+GetSpritePosition(M2C_FIELD(data_ov001_02193d1c,u32 **,0x90),pos);
+pos->x-=12;
+if(pos->x>0x7d) {func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d) ,2,pos->x);return;}
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d) ,2,0x7d);
+func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c,u8 *,0x11d),3,0xc0);
+func_ov001_0218c924(arg0,func_ov001_02172a6c);
 }
-
+#pragma peephole off
 void func_ov001_02172a6c(s32 arg0) {
  extern void *data_ov001_02193d1c;
  void func_ov001_02172b00();
@@ -99,7 +92,7 @@ void func_ov001_02172a6c(s32 arg0) {
  func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 4, 0xC0);
  func_ov001_0218c924(arg0, func_ov001_02172b00);
 }
-
+#pragma peephole reset
 void func_ov001_02172b00(s32 arg0) {
  extern void *data_ov001_02193d1c;
  void func_ov001_02172b8c(void);

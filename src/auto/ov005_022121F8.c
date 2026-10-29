@@ -15,6 +15,7 @@ s16 func_ov005_022121f8(void) {
  return M2C_FIELD(p,s16 *,2)-old;
 }
 
+#pragma opt_strength_reduction off
 void func_ov005_02212244(s32 arg0,s32 arg1) {
  M2C_UNK func_02080860(s32,s32,s32,u16,s32);
  extern void *data_027e00c8;
@@ -34,7 +35,7 @@ void func_ov005_02212244(s32 arg0,s32 arg1) {
  }while(i<3);
  gCur3DSpriteEngine=saved;
 }
-
+#pragma opt_strength_reduction reset
 M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     void *func_ov000_0216a38c(M2C_UNK);
     u32 func_ov000_0216a3a8(M2C_UNK, M2C_UNK);

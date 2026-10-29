@@ -113,31 +113,13 @@ void func_02028ef4(void *arg0) {
 }
 
 void func_02029220(void) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    void *func_02027d50(void);
-    void func_02007f8c(void *, s32);
-    s32 state;
-    void *base;
-    void *r1;
-    void *ptr;
-    s32 val;
-
-    state = func_0200751c();
-    base = func_02027d50();
-    if (base == (void *)0) {
-        func_02007530(state);
-        return;
-    }
-    r1 = (void *)((s8 *)base + 0x2000);
-    ptr = M2C_FIELD(r1, void **, 0x270);
-    if (ptr != (void *)0) {
-        val = M2C_FIELD(r1, s32 *, 0x274);
-        if (val > 0) {
-            func_02007f8c(ptr, 0);
-        }
-    }
-    func_02007530(state);
+s32 func_0200751c(void); void func_02007530(s32); void *func_02027d50(void); void func_02007f8c(void *,s32,s32);
+s32 state; void *base; void *p; void *ptr; s32 val;
+state=func_0200751c(); base=func_02027d50();
+if (!base) { func_02007530(state); return; }
+p=(s8*)base+0x2000; ptr=M2C_FIELD(p,void**,0x270);
+if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) func_02007f8c(ptr,0,val); }
+func_02007530(state);
 }
 
 s32 func_02029274(void) {

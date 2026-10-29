@@ -421,7 +421,7 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     extern u8 data_02141008[];
     extern u8 data_02141788[];
     extern u32 data_027e15bc;
@@ -436,7 +436,7 @@ void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 i;
     u8 c;
 
-    base = *(u8 **)gCurrentMap;
+    base = *(u8 **)data_027e0058;
     sub = base + 0x120;
     w = M2C_FIELD(sub, u16 *, 0x5024);
     h = M2C_FIELD(sub, u16 *, 0x5026);
@@ -467,91 +467,30 @@ void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
 }
 
-void func_0207843c(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 func_0207e52c(s32, s32);
-    s32 func_0207ef5c(s32, s32, u16);
-    extern s32 *gCurrentMap;
-    extern u8 data_02142ebc[3840];
-    extern u8 data_02143dbc[3840];
-    u8 *base;
-    u8 *sub;
-    s32 x;
-    s32 y;
-    s32 w;
-    s32 h;
-    s32 stride;
-    s32 a;
-    s32 b;
-
-    base = *(u8 **)gCurrentMap;
-    sub = base + 0x120;
-    w = M2C_FIELD(sub, u16 *, 0x5024);
-    h = M2C_FIELD(sub, u16 *, 0x5026);
-    stride = 0x50;
-    if (x0 < 0) {
-        x0 = 0;
-    }
-    if (y0 < 0) {
-        y0 = 0;
-    }
-    if (x1 > w - 1) {
-        x1 = w - 1;
-    }
-    if (y1 > h - 1) {
-        y1 = h - 1;
-    }
-    for (y = y0; y <= y1; y++) {
-        for (x = x0; x <= x1; x++) {
-            a = func_0207e52c(x, y);
-            b = func_0207ef5c(x, y, (u16)a);
-            M2C_FIELD(data_02142ebc, u16 *, x * stride + y * 2) = a;
-            M2C_FIELD(data_02143dbc, u16 *, x * stride + y * 2) = b;
-        }
-    }
+#pragma opt_strength_reduction off
+void func_0207843c(s32 x0,s32 y0,s32 x1,s32 y1){
+s32 func_0207e52c(s32,s32);s32 func_0207ef5c(s32,s32,u16);
+extern s32 *gCurrentMap;extern u8 data_02142ebc[3840],data_02143dbc[3840];
+u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off;u16 *p; s32 a,x,y,w,h,b;u16 *q;
+w=M2C_FIELD(sub,u16*,0x5024);h=M2C_FIELD(sub,u16*,0x5026);
+if(x0<0)x0=0;if(y0<0)y0=0;if(x1>w-1)x1=w-1;if(y1>h-1)y1=h-1;
+p=(u16*)data_02142ebc;q=(u16*)data_02143dbc;y=y0;goto outercheck;outer: x=x0;off=y*2;goto innercheck;inner:
+a=func_0207e52c(x,y);b=func_0207ef5c(x,y,(u16)a);
+M2C_FIELD((u8*)p+x*80,u16*,off)=a;
+M2C_FIELD(data_02143dbc,u16*,x*80+y*2)=b;
+x++;innercheck:if(x<=x1)goto inner;
+y++;outercheck:if(y<=y1)goto outer;
 }
-
+#pragma opt_strength_reduction on
 void func_02078528(void) {
-    unsigned long long func_020722fc(unsigned long, unsigned long);
-    extern u8 data_020ebd78[32];
-    extern u32 data_027e15bc;
-    extern u8 data_020ebd58[32];
-    extern M2C_UNK data_02140f70;
-    s32 idx = 0;
-    s32 accum = 0;
-    s32 sum = 0;
-    s32 i = 0;
-    u8 *p;
-    u8 t;
-    unsigned long long res;
-    s32 rem;
-
-    p = data_020ebd78;
-    i = 0;
-    do {
-        t = *p++;
-        i = i + 1;
-        sum = sum + t;
-    } while (i < 0x1E);
-
-    res = func_020722fc(data_027e15bc, (unsigned long)sum);
-    rem = (s32)(res >> 32);
-
-    p = data_020ebd78;
-    i = 0;
-    for (;;) {
-        t = *p;
-        accum = accum + t;
-        if (accum > rem) {
-            idx = i;
-            break;
-        }
-        i = i + 1;
-        p = p + 1;
-        if (i >= 0x1E) {
-            break;
-        }
-    }
-
-    *(u8 *)&data_02140f70 = data_020ebd58[idx];
+unsigned long long func_020722fc(unsigned long, unsigned long);
+extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 data_027e15bc;extern M2C_UNK data_02140f70;
+s32 sum,idx,accum;u8 *p;s32 i;unsigned long long res;s32 rem;
+sum=0;accum=0;idx=0;i=0;p=data_020ebd78;
+do{sum+=*p++;i++;}while(i<30);
+res=func_020722fc(data_027e15bc,sum);rem=res>>32;
+{u8 *q=data_020ebd78;s32 j=0;
+do{accum+=*q;if(accum>rem){idx=j;break;}j++;q++;}while(j<30);}
+*(u8*)&data_02140f70=data_020ebd58[idx];
 }
 

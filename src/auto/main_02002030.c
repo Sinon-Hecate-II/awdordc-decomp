@@ -15,10 +15,7 @@ u64 func_02001fd4(void);
 #pragma opt_common_subs reset
 
 s32 func_02002030(s32 arg0) {
-M2C_FIELD((void *)0x04000280,s16 *,0)=1;
-M2C_FIELD((void *)0x04000280,s32 *,0x10)=0;
-M2C_FIELD((void *)0x04000280,s32 *,0x14)=0x1000;
-M2C_FIELD((void *)0x04000280,s32 *,0x18)=arg0;
-M2C_FIELD((void *)0x04000280,s32 *,0x1c)=0;
-return 0;
+volatile s32 *p=(volatile s32 *)0x04000280;
+s32 v=1;*(volatile s16 *)p=v;
+v=0;p[4]=v;v=0x1000;p[5]=v;p[6]=arg0;v=0;p[7]=v;return v;
 }

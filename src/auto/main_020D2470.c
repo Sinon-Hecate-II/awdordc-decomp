@@ -76,32 +76,25 @@ s32 func_020d2850(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_020d28bc(void) {
-    extern s32 *gCurrentMap;
-    s32 func_020d1938(s32);
-    s32 *base;
-    s32 i;
-    s32 ioff;
-    s32 j;
-    s32 joff;
-
-    base = *gCurrentMap;
-    ioff = 0x8C;
-    for (i = 1; i < 5; i++) {
-        if (func_020d1938(i) != 0) {
-            joff = 0x8C;
-            for (j = 1; j < 5; j++) {
-                if (j != i) {
-                    if (M2C_FIELD(base, u8 *, joff + 0x67C2) != 0) {
-                        if (M2C_FIELD(base, u8 *, joff + 0x67CA) == M2C_FIELD(base, u8 *, ioff + 0x67CA)) {
-                            M2C_FIELD(base, u16 *, joff + 0x67BE) = 0;
-                        }
-                    }
-                }
-                joff += 0x8C;
-            }
-        }
-        ioff += 0x8C;
-    }
+ extern s32 *gCurrentMap; s32 func_020d1938(s32);
+ s32 i,ioff,j,joff; unsigned char *base,*other,*self;
+ i=1;ioff=0x8c;
+ do {
+ if(func_020d1938(i)) {
+ j=1;joff=0x8c;
+ do {
+ if(j!=i) {
+ base=(unsigned char *)*gCurrentMap;other=base+joff;
+ if(other[0x67c2]) {
+ self=base+ioff;
+ if(other[0x67ca]==self[0x67ca])*(u16 *)(other+0x67be)=0;
+ }
+ }
+ j++;joff+=0x8c;
+ }while(j<5);
+ }
+ i++;ioff+=0x8c;
+ }while(i<5);
 }
 
 void func_020d2958(void) {
@@ -120,23 +113,13 @@ void func_020d2958(void) {
 }
 
 s32 func_020d29a8(M2C_UNK arg0) {
-    s32 func_020d2a00(M2C_UNK);
-    s32 func_020d2a6c(M2C_UNK);
-    s32 func_020d303c(M2C_UNK);
-    if (func_020d1938() == 0) {
-        return 1;
-    }
-    if (func_020d2a00(arg0) != 0) {
-        if (func_020d303c(arg0) != 0) {
-            return 1;
-        }
-        if (func_020d2a6c(arg0) != 0) {
-            return 1;
-        }
-        /* Duplicate return node #7. Try simplifying control flow for better match */
-        return 0;
-    }
-    return 0;
+ s32 func_020d2a00(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
+ if (!func_020d1938()) return 1;
+ if (func_020d2a00(arg0)) {
+ if (func_020d303c(arg0)) return 1;
+ if (func_020d2a6c(arg0)) return 1;
+ }
+ return 0;
 }
 
 s32 func_020d2a00(s32 arg0) {
@@ -203,20 +186,15 @@ void func_020d2b10(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 func_020d19b4(s32);
     void func_02091c54(s32, s32);
-    s32 t;
 
-    t = func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4));
-    if (t == 0) {
-        goto end;
+    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+        func_02091c54(0xB, arg1);
+        *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C)) -= arg1;
+        *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) += arg1;
+        if (*((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) > 0x3B9AC9FF) {
+            *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) = 0x3B9AC9FF;
+        }
     }
-    func_02091c54(0xB, arg1);
-    *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C)) -= arg1;
-    *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) += arg1;
-    if (*((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) > 0x3B9AC9FF) {
-        *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) = 0x3B9AC9FF;
-    }
-end:
-    return;
 }
 
 void func_020d2bc0(s32 arg0, s32 arg1) {
@@ -249,31 +227,15 @@ s32 func_020d2c18(s32 arg0) {
 }
 #pragma opt_strength_reduction on
 s32 func_020d2c58(s32 arg0) {
-    extern M2C_UNK data_02168f08;
-    s32 func_020a334c(void);
-    s32 func_020a3594(s32, s32);
-    s32 func_020a3518(s32);
-    s32 r5;
-    s32 count = 0;
-
-    if ((((u32)M2C_FIELD(&data_02168f08, u16 *, 0xC) << 19) >> 31) == 0) {
-        return 0;
-    }
-    if (func_020a334c() != 0) {
-        return 0;
-    }
-    if (func_020a3594(arg0, 2) == 0) {
-        return 0;
-    }
-    r5 = func_020a3518(arg0);
-    if (r5 >= func_020a3594(arg0, 1)) {
-        count++;
-    }
-    r5 = func_020a3518(arg0);
-    if (r5 >= func_020a3594(arg0, 2)) {
-        count++;
-    }
-    return count;
+ extern M2C_UNK data_02168f08;
+ s32 func_020a334c(s32);s32 func_020a3594(s32,s32);s32 func_020a3518(s32);
+ s32 r5; s32 count=0;
+ if((((u32)M2C_FIELD(&data_02168f08,u16 *,12)<<19)>>31)==0)return 0;
+ if(func_020a334c(arg0))return 0;
+ if(!func_020a3594(arg0,2))return 0;
+ r5=func_020a3518(arg0);if(r5>=func_020a3594(arg0,1))count++;
+ r5=func_020a3518(arg0);if(r5>=func_020a3594(arg0,2))count++;
+ return count;
 }
 
 void func_020d2cf0(M2C_UNK arg0) {

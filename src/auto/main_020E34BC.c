@@ -60,10 +60,9 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
     saved = temp;
     func_0202a468((s32)p, arg0, arg1);
     {
-        volatile u16 *mmio = (volatile u16 *)0x04000208;
         u32 s = saved;
-        (void)*mmio;
-        *mmio = s;
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = s;
     }
 }
 

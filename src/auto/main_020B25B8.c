@@ -7,16 +7,16 @@ extern u16 **gCur3DSpriteEngine;extern void *data_027e00c8,*data_027e00c4,*data_
 void *old,*p;u8 mode;s32 j,i;u8 *q;
 if(func_020b2714())return;
 old=gCur3DSpriteEngine;
-for(i=0;i<2;i++){
+i=0;do{
 if(i==0)p=data_027e00c8;else p=data_027e00c4;
 gCur3DSpriteEngine=p;
 mode=M2C_FIELD(data_02128690,u8*,0x24);
 if((mode!=0||p==data_027e00c8)&&(mode!=1||p==data_027e00c4)&&(mode!=3||p==old)){
-q=data_0215c45c;
-for(j=0;j<85;j++,q+=60){if(q[1])func_020b2d5c(q);}
+j=0;q=data_0215c45c;
+do{if(q[1])func_020b2d5c(q);j++;q+=60;}while(j<85);
 func_020b1d84();
 }
-}
+i++;}while(i<2);
 gCur3DSpriteEngine=old;
 }
 
@@ -357,16 +357,16 @@ return value;
 u8 func_020b3290(void *arg0) {
     M2C_UNK func_0207c8ec();
     M2C_UNK func_0208fe30(s32);
-    u8 temp_r4;
-    s16 temp_r6;
-    u8 var_r7;
+    s32 temp_r4;
+    s32 temp_r5;
+    s32 temp_r6;
+    s32 var_r7;
     s16 temp_r0;
     s16 temp_r1;
     s16 temp_r2;
-    s16 temp_r5;
-    s16 var_r1;
+    s32 var_r1;
     s32 temp_r0_2;
-    s32 var_r0_2;
+    s32 var_r0_2; s32 delta, factor;
     u8 var_r0;
 
     if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
@@ -383,25 +383,26 @@ u8 func_020b3290(void *arg0) {
     temp_r0 = func_0207c8ec((temp_r6 + temp_r4) - 1, temp_r4);
     temp_r2 = temp_r0;
     if ((s32) var_r7 >= (s32) temp_r0) {
-        var_r7 = (u8) temp_r2;
+        var_r7 = temp_r2;
     }
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0xC);
-    temp_r5 = M2C_FIELD(arg0, s16 *, 0xC);
+    temp_r5 = M2C_FIELD(arg0, volatile s16 *, 0xC);
+    temp_r1 = M2C_FIELD(arg0, volatile s16 *, 0xC);
     if (temp_r2 == (temp_r1 + (s16) var_r7)) {
         return 0U;
     }
     M2C_FIELD(arg0, s16 *, 0xC) = (s16) (temp_r1 + 1);
-    temp_r0_2 = temp_r6 - 1;
     M2C_FIELD(arg0, s16 *, 8) = (s16) (M2C_FIELD(arg0, s16 *, 8) + temp_r4);
+    temp_r0_2 = temp_r6 - 1;
     var_r1 = M2C_FIELD(arg0, s16 *, 8);
     if ((s32) var_r1 > temp_r0_2) {
-        var_r1 = (s16) temp_r0_2;
+        var_r1 = temp_r0_2;
     }
     M2C_FIELD(arg0, s16 *, 8) = var_r1;
     if (temp_r5 != M2C_FIELD(arg0, s16 *, 0xC)) {
         func_0208fe30(0x10019);
     }
-    M2C_FIELD(arg0, s16 *, 0x12) = (s16) ((M2C_FIELD(arg0, s16 *, 0xC) - temp_r5) * M2C_FIELD(arg0, u8 *, 7));
+    delta=M2C_FIELD(arg0,s16 *,0xc);factor=M2C_FIELD(arg0,volatile u8 *,7);delta-=temp_r5;
+M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
     if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
@@ -429,15 +430,16 @@ if(M2C_FIELD(arg0,s16 *,0x12)!=0)result=1;else result=0;
 return result;
 }
 
-u8 func_020b3410(void *p){
+u8 func_020b3410(void *arg0){
 M2C_UNK func_0207c8ec(); M2C_UNK func_0208fe30(s32);
-s32 step,total,n,i,old,active,delta,factor;s16 limit,count;u8 result;
+s32 old,step,total,n,i,active,delta,factor;s16 limit,count;u8 result;
+void *p=arg0;
 if(M2C_FIELD(p,s16*,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
-step=M2C_FIELD(p,u8*,5);total=M2C_FIELD(p,s16*,0xa);n=M2C_FIELD(p,volatile u8*,4);
+step=M2C_FIELD(p,u8*,5);total=M2C_FIELD(p,s16*,0xa);n=M2C_FIELD(p,u8*,4);
 limit=(s16)func_0207c8ec(total+step-1,step);
 if(n>=limit)n=limit;
-count=(s16)n; {
+count=(s16)n;
 old=M2C_FIELD(p,s16*,0xc);
 for(i=0;i<count;i++){
 if(limit!=M2C_FIELD(p,volatile s16*,0xc)+count)M2C_FIELD(p,s16*,0xc)=M2C_FIELD(p,volatile s16*,0xc)+1;
@@ -448,6 +450,5 @@ delta=M2C_FIELD(p,s16*,0xc);factor=M2C_FIELD(p,volatile u8*,7);delta-=old;
 M2C_FIELD(p,s16*,0x12)=delta*factor;
 if(M2C_FIELD(p,s16*,0x12)!=0)result=1;else result=0;
 return result;
-}
 }
 

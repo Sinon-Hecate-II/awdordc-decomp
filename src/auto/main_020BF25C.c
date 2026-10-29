@@ -1,6 +1,13 @@
 /* 35 functions from 0x020BF25C to 0x020C0254 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u16 a, b; } SavePair;
+typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
+typedef struct {
+    SaveInitEntry entries[4];
+    u32 a:1; u32 b:11; u32 c:1; u32 d:3; u32 e:1;
+    u32 f:4; u32 g:7; u32 h:4;
+    u32 j:17; u32 k:14; u32 l:1;
+} SaveInit;
 typedef struct { u8 enabled:1; u8 mode:3; u8 unused:4; } SaveFlags;
 typedef struct { u16 low:7; u16 mode:3; u16 high:6; } SaveMode;
 extern M2C_UNK data_0215d890, data_0215deec, data_0212616c;
@@ -96,7 +103,7 @@ void func_020bf930(M2C_UNK arg0) {
 void func_020bf97c(void) {
 s32 func_0207cfb8(void);extern M2C_UNK data_0215d990;
 switch(func_0207cfb8()){
-case 0:M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x380;return;
+case 0:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380);return;
 case 128:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
 default:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
 }
@@ -143,60 +150,18 @@ M2C_UNK *func_020bfa74(void) {
 }
 
 void func_020bfa80(u16 *arg0) {
-    extern M2C_UNK data_0211faf4;
-    u16 *p;
-    u32 t;
-    s32 i;
-    u8 *dp;
-    u16 old_i;
-
-    p = arg0;
-    if (p == 0) {
-        p = (u16 *) func_020bfa74();
-    }
-    t = *(u32 *)(p + 4);
-    t = t & ~1u;
-    t = t & 0xFFFFF001u;
-    t = t & ~0x1000u;
-    t = t & ~0xE000u;
-    t = t & ~0x10000u;
-    t = t & ~0x1E0000u;
-    t = t & ~0x0FE00000u;
-    *(u32 *)(p + 4) = t;
-    t = *(u32 *)(p + 6);
-    t = t & 0xFFFE0000u;
-    t = t & 0x8001FFFFu;
-    t = t | 0x07D00000u;
-    *(u32 *)(p + 6) = t;
-    dp = (u8 *) &data_0211faf4;
-    t = *(u32 *)(p + 4);
-    t = (t & ~0xF0000000u) | 0x20000000u;
-    *(u32 *)(p + 4) = t;
-    t = *(u32 *)(p + 6);
-    t = (t & ~0x80000000u) | 0x80000000u;
-    *(u32 *)(p + 6) = t;
-    i = 0;
-    do {
-        old_i = (u16) i;
-        p[0] = (u16) ((p[0] & ~0xFFu) | dp[1]);
-        {
-            u16 x = (u16) (i + 1);
-            p[0] = (u16) ((p[0] & ~0xF00u) | (u16) (((u32) x << 28) >> 20));
-        }
-        t = p[0];
-        i = i + 1;
-        dp = dp + 1;
-        if (old_i == 0) {
-            t = (t & ~0xF000u) | 0x1000u;
-        } else {
-            t = (t & ~0xF000u) | 0x2000u;
-        }
-        p[0] = (u16) t;
-        if (i >= 4) {
-            break;
-        }
-        p = p + 1;
-    } while (1);
+extern M2C_UNK data_0211faf4;
+SaveInit *p=(SaveInit *)arg0;
+s32 i;
+if(!p) p=(SaveInit *)func_020bfa74();
+p->a=0; p->b=0; p->c=0; p->d=0; p->e=0; p->f=0; p->g=0;
+p->j=0; p->k=1000; p->h=2; p->l=1;
+for(i=0;i<4;i++){
+p->entries[i].id=((u8 *)&data_0211faf4)[i+1];
+p->entries[i].index=(u16)(i+1);
+if(i==0) p->entries[i].mode=1;
+else p->entries[i].mode=2;
+}
 }
 
 void func_020bfb74(void *a) {

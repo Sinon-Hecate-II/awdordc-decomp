@@ -302,34 +302,25 @@ void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
  } while(1);
 }
 
-void func_0209b4a8(M2C_UNK arg0, M2C_UNK arg1, u16 arg2) {
-    s32 func_020e34bc();
-    M2C_UNK func_020e35cc(s32);
-    void func_02007ef4(M2C_UNK, M2C_UNK, u32);
-    s32 i;
-    s32 count;
-    M2C_UNK buf;
-    u8 *src;
-    u8 *dst;
-    src = (u8 *)arg0;
-    dst = (u8 *)arg1;
-    buf = func_020e34bc(0x100);
-    count = (arg2 + 7) >> 3;
-    count = (count + 3) >> 2;
-    for (i = 0; i < count; i++) {
-        func_02007ef4(src, buf, 0x100);
-        func_02007ef4(buf, dst, 0x20);
-        func_02007ef4((u8 *)buf + 0x40, (u8 *)dst + 0x20, 0x20);
-        func_02007ef4((u8 *)buf + 0x80, (u8 *)dst + 0x40, 0x20);
-        func_02007ef4((u8 *)buf + 0xc0, (u8 *)dst + 0x60, 0x20);
-        func_02007ef4((u8 *)buf + 0x20, (u8 *)dst + 0x80, 0x20);
-        func_02007ef4((u8 *)buf + 0x60, (u8 *)dst + 0xa0, 0x20);
-        func_02007ef4((u8 *)buf + 0xa0, (u8 *)dst + 0xc0, 0x20);
-        func_02007ef4((u8 *)buf + 0xe0, (u8 *)dst + 0xe0, 0x20);
-        src += 0x100;
-        dst += 0x100;
-    }
-    func_020e35cc((s32)buf);
+void func_0209b4a8(M2C_UNK arg0,M2C_UNK arg1,u16 arg2){
+s32 func_020e34bc(); M2C_UNK func_020e35cc(s32);void func_02007ef4(M2C_UNK,M2C_UNK,u32);
+s32 i,count; M2C_UNK buf;u8 *src,*dst;
+src=(u8 *)arg0;dst=(u8 *)arg1;
+buf=func_020e34bc(256);
+count=(((s32)arg2+7)>>3)+3;count>>=2;
+i=0;if(count>0)do{
+func_02007ef4(src,buf,256);
+func_02007ef4(buf,dst,32);
+func_02007ef4((u8 *)buf+64,dst+32,32);
+func_02007ef4((u8 *)buf+128,dst+64,32);
+func_02007ef4((u8 *)buf+192,dst+96,32);
+func_02007ef4((u8 *)buf+32,dst+128,32);
+func_02007ef4((u8 *)buf+96,dst+160,32);
+func_02007ef4((u8 *)buf+160,dst+192,32);
+func_02007ef4((u8 *)buf+224,dst+224,32);
+src+=256;dst+=256;
+i++;}while(i<count);
+func_020e35cc((s32)buf);
 }
 
 void func_0209b59c(M2C_UNK arg0, s32 arg1) {

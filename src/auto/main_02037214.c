@@ -513,13 +513,13 @@ s32 func_02037c90(void) {
 s32 func_02037ca0(s32 a,s32 b){
 extern s32 data_0213d1b4;extern s64 data_0213d1b8,data_0213d1c0;
 s32 func_0200f0ac(s32,s32);s64 func_0200f7e0(s32,s32);void func_0200f9c4(s32,s32);
-s64 t;u64 d;
+s64 t,d;
 if(!data_0213d1b4)return 0;
 if(func_0200f0ac(a,b))return 0;
 t=func_0200f7e0(a,b);if(t==-1)return 0;
 if(t<data_0213d1b8)t+=0xbc191380LL;
 d=t-data_0213d1c0;
-if((s64)d<0 || (s64)d>0xbc19137fLL)return 0;
+if(d<0 || d>0xbc19137fLL)return 0;
 func_0200f9c4(a,b);return 1;
 }
 

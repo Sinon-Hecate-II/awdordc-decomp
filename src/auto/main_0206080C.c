@@ -285,29 +285,9 @@ p+=len;n-=len;key+=func_02068c34(key)+1;
 }
 }
 
-#pragma push
-#pragma optimize_ifs off
-#pragma peephole off
-s32 func_02060fe8(s8 *arg0, s32 arg1) {
-    extern u8 data_020eac40[];
-    s64 func_020722fc(s32, s32);
-    s32 hash;
-    s32 c;
-
-    hash = 0;
-    c = *arg0;
-    if (c != 0) {
-        do {
-            if (c >= 0 && c < 0x80) {
-                c = ((volatile u8 *)data_020eac40)[c];
-            }
-            hash = hash * 0x9CCF9319 + c;
-            c = *++arg0;
-        } while (c != 0);
-    }
-    return func_020722fc(hash, arg1) >> 32;
-}
-#pragma pop
+#pragma optimization_level 2
+s32 func_02060fe8(s8 *arg0,s32 arg1) { extern u8 data_020eac40[]; s64 func_020722fc(s32,s32); s32 hash=0; s32 c=*arg0; if(c) do { if(c<0) goto accumulate; if(c>=128) goto accumulate; c=data_020eac40[c]; accumulate: hash=hash*0x9ccf9319+c;c=*++arg0; }while(c); return func_020722fc(hash,arg1)>>32; }
+#pragma optimization_level 4
 void func_02061040(void *arg0) {
     M2C_UNK func_02061d24(M2C_UNK, s32);
     func_02061d24(0, M2C_FIELD(arg0, s32 *, 0));

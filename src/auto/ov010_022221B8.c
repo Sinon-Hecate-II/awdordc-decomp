@@ -293,14 +293,14 @@ return 1;
 void func_ov010_022226fc(void *arg0) {
 extern void *data_ov010_0222c98c[]; extern u8 data_ov010_0222c998[]; extern M2C_UNK data_ov010_0222c960;
 void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010_02223314(u32); void func_ov010_02224f28(void);
-s32 i;
-for(i=0;(u32)i<3;i++) {
+u32 i;
+for(i=0;i<3;i++) {
 if(data_ov010_0222c98c[i]==arg0) {
-{u32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20); data_ov010_0222c98c[i]=0; M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;}
+{s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20); data_ov010_0222c98c[i]=0; M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;}
 func_ov010_022239c8(data_ov010_0222c998+i*0x94);
 func_ov010_0222369c(i);
 func_ov010_02223314(i);
-{void *state=&data_ov010_0222c960; s32 mask=M2C_FIELD(arg0,s32 *,8); M2C_FIELD(state,u32 *,4)=M2C_FIELD(state,u32 *,4)&~mask;}
+{void *state=&data_ov010_0222c960; u32 mask=M2C_FIELD(arg0,u32 *,8); M2C_FIELD(state,u32 *,4)=M2C_FIELD(state,u32 *,4)&~mask;}
 break;
 }
 }

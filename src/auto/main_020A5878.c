@@ -218,14 +218,15 @@ s32 func_020a600c(s32 arg0) {
     return 0;
 }
 
+#pragma scheduling off
 s32 func_020a61e8(void *arg0) {
     s32 func_020a5d8c(s32, u8, u8);
     extern s32 *gCurrentMap;
     u8 *p;
+    u8 *base;
     u16 w;
     u8 b2;
     u8 b1;
-    u8 *base;
     u16 u;
     u32 idx;
     u8 byte;
@@ -240,8 +241,8 @@ s32 func_020a61e8(void *arg0) {
     }
     b2 = p[2];
     base = (u8 *)*gCurrentMap;
-    base = (u8 *)*(s32 *)base;
     b1 = p[1];
+    base = (u8 *)*(s32 *)base;
     u = *(u16 *)(base + b2 * 2 + 0x3758);
     idx = b1 + u;
     byte = *(u8 *)(base + (idx >> 3) + 0x5201);
@@ -268,7 +269,7 @@ s32 func_020a61e8(void *arg0) {
 ret1:
     return 1;
 }
-
+#pragma scheduling reset
 s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020a61e8(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return func_020a61e8(p+0x59a4+v*14);}
 
 /* Adds `amount`-scaled income to the funds of the player/commander that owns terrain entry `entry`, capped at 999999999, and notifies the funds display if applicable. */

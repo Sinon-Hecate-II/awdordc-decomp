@@ -629,11 +629,11 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = func_ov001_0218c884(0, func_ov001_02183a20, 0, 0x80);
 }
 
-void func_ov001_02183980(void){
-extern void *data_ov001_02193dfc;
-func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193dfc,s32 *,12));
-func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193dfc,s32 *,0));
-func_ov001_0218b71c(0x02193dfc);
+void func_ov001_02183980(void) {
+extern void *data_ov001_02193dfc; extern void *data_ov001_02193e00;
+func_ov001_0218c94c(0,M2C_FIELD(data_ov001_02193dfc,s32*,12));
+func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193dfc,s32*,0));
+func_ov001_0218b71c(&data_ov001_02193e00-1);
 }
 
 u8 func_ov001_021839bc(void) {

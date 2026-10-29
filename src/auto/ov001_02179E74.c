@@ -35,6 +35,7 @@ void func_ov001_02179ea8(void) {
     if (temp == 0) {
         M2C_FIELD(&data_ov001_02193d98, u8 *, 0) = 0;
         M2C_FIELD(&data_ov001_02193d98, u16 *, 2) = 0;
+    }
         M2C_FIELD(M2C_FIELD(&data_ov001_02193d98, void **, 4), u8 *, 0x51) =
             (u8)func_ov001_02184170(M2C_FIELD(&data_ov001_02193d98, void **, 4));
         func_ov001_02179f80();
@@ -43,7 +44,6 @@ void func_ov001_02179ea8(void) {
         func_ov001_02171dd0((M2C_UNK)2);
         func_ov001_0217a0d4();
         func_ov001_0217a17c();
-    }
     M2C_FIELD(M2C_FIELD(&data_ov001_02193d98, void **, 4), s32 *, 0xc) = (s32)func_ov001_0218ad0c((M2C_UNK)0, (M2C_UNK)0);
     M2C_FIELD(M2C_FIELD(&data_ov001_02193d98, void **, 4), s32 *, 0x3c) =
         (s32)func_ov001_0218c884((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);

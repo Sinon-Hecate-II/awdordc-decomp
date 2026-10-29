@@ -281,7 +281,7 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     void *func_0202b158(s32, void *);
     s32 func_0202caa0(void *, s32, s32, s32, s32 *);
     s32 func_0202c9bc(s32, s32, s32, s32, s32 *);
-    void func_0202b0b0(void);
+    void func_0202b0b0(void *);
     void func_0202b0bc(void *, void *, s32);
     void func_0202acf0(void *, s8);
     void func_0202ad30(void *, s32);
@@ -292,8 +292,6 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     s32 tmp4;
     s32 tmp8;
 
-    *(&handle); /* placeholder */
-
     handle = func_0202b018((void *)arg0, arg1, arg3);
     if (handle == 0) {
         return 0;
@@ -302,11 +300,11 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     tmp4 = 0;
     tmp8 = 0;
     if (func_0202caa0((void *)arg2, 6, (s32)p, 0, &tmp4) != 0) {
-        func_0202b0b0();
+        func_0202b0b0(handle);
         return 0;
     }
     if (func_0202c9bc(arg5, 1, (s32)p, 0, &tmp8) != 0) {
-        func_0202b0b0();
+        func_0202b0b0(handle);
         return 0;
     }
     func_0202b0bc(handle, (void *)((u8 *)tmp8 + *(s32 *)((u8 *)tmp8 + 0x18)), 0);
@@ -314,6 +312,16 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
     func_0202ad30((void *)arg0, (s32)((u8 *)arg4)[7]);
     func_0202adb0((void **)arg0, (s16)arg5);
     return 1;
+}
+
+s32 func_0202d610(s32 a,s32 b,s32 c,s32 d,void *e,s32 f,s32 g,s32 h){
+void *func_0202b018(void*,s32,s32);void *func_0202b158(s32,void*);s32 func_0202caa0();void func_0202b0b0();void func_0202b0bc();void func_0202add4();
+void func_0202acf0(void*,s8);void func_0202ad30(void*,s32);register u8 *entry=e;s32 local; void *v=func_0202b018((void*)a,b,d);void *t;
+if(!v)return 0;
+t=func_0202b158(b,v);
+if(func_0202caa0(c,6,t,0,&local)){func_0202b0b0(v);return 0;}
+func_0202b0bc(v,f+M2C_FIELD(f,s32*,0x18),M2C_FIELD(entry,s32*,0),local);
+((void(*)(void*,s32))func_0202acf0)((void*)a,M2C_FIELD(entry,u8*,6));func_0202ad30((void*)a,M2C_FIELD(entry,u8*,7));func_0202add4(a,g,h);return 1;
 }
 
 void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
@@ -369,6 +377,15 @@ loop_7:
     func_0202dfcc(&data_0213c440, arg0);
 }
 
+s32 func_0202d7d8(s32 a){
+u8 *func_0202c294(s32);void *func_0202c5f0(s32*,s32,s32,s32,s32);void func_0202de74();extern u8 data_0213c92c[];extern M2C_UNK func_0202e158;
+s32 j,i,size,handle;u8 *p,*q;s32 callback=(s32)&func_0202e158;
+i=0;p=data_0213c92c;
+do {q=func_0202c294(i);if(q){j=0;p[0x124]=q[0];if((s32)q[0]>0){do{u8 v=q[j+1];u8 *dst=p+j;j++;dst[0x126]=v;}while(j<q[0]);}
+if(a){size=p[0x124]<<11;handle=(s32)func_0202c5f0((s32*)a,size,callback,(s32)p,0);if(!handle)return 0;func_0202de74(p);M2C_FIELD(p,s32*,0x12c)=handle;M2C_FIELD(p,s32*,0x130)=size;}}
+i++;p+=0x174;}while(i<4);return 1;
+}
+
 s32 func_0202d8a0(s32 a,s32 b,s32 c){void *func_0202c1cc(s32);s32 func_0202dbac(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=func_0202c1cc(b);if(!p)return 0;return func_0202dbac(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
 
 s32 func_0202d8fc(s32 arg) {
@@ -417,7 +434,7 @@ void func_0202d9e4(void) {
 void func_0202b70c(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
 s32 func_0202ef00(void *); void func_0202ef34(void *); s32 func_0202ef4c(void *);
 extern u8 data_0213c92c[]; extern s16 data_020e9ca0[];
-s32 i; s32 a; s32 b; s32 c; u8 *p; p=data_0213c92c; i=0;
+s32 i; s16 a; s32 b; u8 *p; p=data_0213c92c; i=0;
 do {
 s32 flags=M2C_FIELD(p,s32 *,0x110);
 if((flags<<31)>>31) {
@@ -430,8 +447,7 @@ M2C_FIELD(p,s32 *,0x110)=(M2C_FIELD(p,s32 *,0x110)|2)&~4;
 if((M2C_FIELD(p,s32 *,0x110)<<30)>>31) {
 func_0202ef34(p+0xe8);
 a=data_020e9ca0[M2C_FIELD(p,s32 *,0x154)];
-c=func_0202ef00(p+0xe8)>>8;
-b=data_020e9ca0[M2C_FIELD(p,s32 *,0x158)]+(data_020e9ca0[c]+a);
+b=data_020e9ca0[M2C_FIELD(p,s32 *,0x158)]+(data_020e9ca0[func_0202ef00(p+0xe8)>>8]+a);
 if(b!=M2C_FIELD(p,s32 *,0x15c)){func_0202b77c(p,b); M2C_FIELD(p,s32 *,0x15c)=b;}
 if(((M2C_FIELD(p,s32 *,0x110)<<28)>>31) && func_0202ef4c(p+0xe8))func_0202de74(p);
 }

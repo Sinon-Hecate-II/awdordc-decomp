@@ -4,35 +4,26 @@
 void func_ov001_02185f38(u16 *);
 void func_ov001_02186090(u16 *);
 
+#pragma opt_strength_reduction off
 void func_ov001_021858a4(s32 arg0) {
-    extern s32 data_ov001_02193e0c;
-    extern const u8 data_ov001_0218fbd2[];
-    M2C_UNK func_ov001_0218a4d4(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov001_0218a384(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218c924(M2C_UNK, M2C_UNK);
-    void func_ov001_02185980(s32);
-    void **arr;
-    s32 pos[2];
-    s32 i;
-
-    arr = M2C_FIELD(&data_ov001_02193e0c, void **, 4);
-    func_ov001_0218a4d4(arr[2], 0, &pos[1], &pos[0]);
-    pos[1] -= 0x8;
-    if (pos[1] > 0x50) {
-        for (i = 2; i < 5; i++) {
-            func_ov001_0218a384(arr[i], -1, pos[1],
-                                 M2C_FIELD(data_ov001_0218fbd2 + i * 4, u16 *, 2));
-        }
-    } else {
-        pos[1] = 0x50;
-        for (i = 2; i < 5; i++) {
-            func_ov001_0218a384(arr[i], -1, pos[1],
-                                 M2C_FIELD(data_ov001_0218fbd2 + i * 4, u16 *, 2));
-        }
-        func_ov001_0218c924(arg0, (M2C_UNK)func_ov001_02185980);
-    }
+extern s32 data_ov001_02193e0c;
+extern const u8 data_ov001_0218fbd2[];
+M2C_UNK func_ov001_0218a4d4(M2C_UNK,M2C_UNK,M2C_UNK *,M2C_UNK *);
+M2C_UNK func_ov001_0218a384(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK func_ov001_0218c924(M2C_UNK,M2C_UNK);
+void func_ov001_02185980(s32);
+s32 pos[2],i;
+func_ov001_0218a4d4(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[2],0,&pos[1],&pos[0]);
+pos[1]-=8;
+if(pos[1]>80){
+for(i=2;i<5;i++)func_ov001_0218a384(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i],-1,pos[1],((const u16 (*)[2])data_ov001_0218fbd2)[i][1]);
+return;
 }
-
+pos[1]=80;
+for(i=2;i<5;i++)func_ov001_0218a384(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i],-1,pos[1],((const u16 (*)[2])data_ov001_0218fbd2)[i][1]);
+func_ov001_0218c924(arg0,(M2C_UNK)func_ov001_02185980);
+}
+#pragma opt_strength_reduction reset
 void func_ov001_02185980(s32 arg0) {
     extern M2C_UNK data_ov001_02193e0c;
     extern const u8 data_ov001_0218fbd2[];
@@ -58,38 +49,26 @@ void func_ov001_02185980(s32 arg0) {
     func_ov001_0218c924(arg0, (M2C_UNK)func_ov001_02185a5c);
 }
 
+#pragma opt_strength_reduction off
 void func_ov001_02185a5c(s32 arg0) {
-    extern s32 data_ov001_02193e0c;
-    extern const u8 data_ov001_0218fbd2[];
-    extern s32 data_ov001_02193e10;
-    M2C_UNK func_ov001_0218a4d4(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov001_0218a384(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a1cc(M2C_UNK);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK);
-    s32 pos[2];
-    s32 i;
-    void **arr;
-
-    arr = M2C_FIELD(&data_ov001_02193e0c, void **, 4);
-    func_ov001_0218a4d4(arr[0], 0, &pos[1], &pos[0]);
-    pos[1] -= 0x8;
-    for (i = 0; i < 5; i++) {
-        func_ov001_0218a384(arr[i], -1, pos[1], M2C_FIELD(data_ov001_0218fbd2 + i * 4, u16 *, 2));
-    }
-    if (pos[1] > 0x1d6) {
-        return;
-    }
-    if (pos[1] < 0x100) {
-        return;
-    }
-    func_ov001_0218c92c(0, arg0);
-    for (i = 0; i < 5; i++) {
-        func_ov001_0218a1cc(arr[i]);
-    }
-    func_ov001_0218b71c(&data_ov001_02193e10);
+extern s32 data_ov001_02193e0c,data_ov001_02193e10;
+extern const u8 data_ov001_0218fbd2[];
+M2C_UNK func_ov001_0218a4d4(M2C_UNK,M2C_UNK,M2C_UNK *,M2C_UNK *);
+M2C_UNK func_ov001_0218a384(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK func_ov001_0218c92c(M2C_UNK,M2C_UNK);
+M2C_UNK func_ov001_0218a1cc(M2C_UNK);
+M2C_UNK func_ov001_0218b71c(M2C_UNK);
+s32 pos[2],i;
+func_ov001_0218a4d4(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[0],0,&pos[1],&pos[0]);
+pos[1]-=8;
+for(i=0;i<5;i++)func_ov001_0218a384(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i],-1,pos[1],M2C_FIELD(data_ov001_0218fbd2+i*4,u16 *,2));
+if(pos[1]>0x1d6)return;
+if(pos[1]<0x100)return;
+func_ov001_0218c92c(0,arg0);
+for(i=0;i<5;i++)func_ov001_0218a1cc(M2C_FIELD(&data_ov001_02193e0c,void ***,4)[i]);
+func_ov001_0218b71c(&data_ov001_02193e10);
 }
-
+#pragma opt_strength_reduction reset
 s32 func_ov001_02185b34(void) {
     extern M2C_UNK data_ov001_02193e0c;
     if (M2C_FIELD(&data_ov001_02193e0c, void **, 4) == NULL) {
@@ -225,9 +204,7 @@ s32 func_ov001_02185dac(void) {
         func_ov001_0218c94c(0);
     }
     if (*(u8 *)((s8 *)data_ov001_02193e14 + 0x1b94) == 2) {
-        void **p;
-        p = (void **)&data_ov001_02193e14;
-        func_ov001_0218b71c((M2C_UNK)p);
+        func_ov001_0218b71c((M2C_UNK)(void *)(&data_ov001_02193e14));
     }
     return 1;
 }

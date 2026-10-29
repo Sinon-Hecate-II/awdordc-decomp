@@ -104,21 +104,21 @@ void func_0205ed84(void *src_void, s32 count, void *dst_void) {
     u8 buf[3];
     u8 out[4];
     s32 i;
+    s32 j;
     i = 0;
     if (count <= 0) goto end;
     for (;;) {
-        s32 j;
         for (j = 0; j < 3; j++) {
             if (i < count) {
                 buf[j] = *src++;
             } else {
-                buf[j] = (u8) j;
+                buf[j] = 0;
             }
             i++;
         }
         out[0] = (u8) (buf[0] >> 2);
-        out[1] = (u8) (((buf[0] & 3) << 4) | (buf[1] >> 4));
-        out[2] = (u8) (((buf[1] & 0x0f) << 2) | (buf[2] >> 6));
+        out[1] = (u8) (((buf[0] & 3) << 4) + (buf[1] >> 4));
+        out[2] = (u8) (((buf[1] & 0x0f) << 2) + (buf[2] >> 6));
         out[3] = (u8) (buf[2] & 0x3f);
         for (j = 0; j < 4; j++) {
             *dst++ = func_0205ed3c(out[j]);

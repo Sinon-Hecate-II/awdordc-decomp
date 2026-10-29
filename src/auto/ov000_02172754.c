@@ -192,12 +192,18 @@ void func_ov000_02172dc0(void *p){
 M2C_UNK func_020807e4(s32,s32,u16,s32);
 void *ctx,*saved;
 if(M2C_FIELD(p,s32*,12)%4==0){
-s32 *frames[6]={&data_ov000_021b976c,&data_ov000_021b9bec,&data_ov000_021bb06c,&data_ov000_021b9c6c,&data_ov000_021b99ec,&data_ov000_021bb1ec};
-s32 index; u16 color; s32 **table=frames;
-saved=gCur3DSpriteEngine;ctx=data_027e00c4;gCur3DSpriteEngine=ctx;
+s32 *frames[6]={&data_ov000_021b976c,&data_ov000_021b9bec,&data_ov000_021bb06c,&data_ov000_021b9c6c,&data_ov000_021bb1ec,&data_ov000_021b99ec};
+s32 **table=frames;
+saved=gCur3DSpriteEngine;
+ctx=data_027e00c4;
+gCur3DSpriteEngine=ctx;
+{
+s32 index;
+s32 base;
 index=M2C_FIELD(p,s32*,12)/4;
-color=M2C_FIELD(p,s32*,0)?0x52:1;
-func_020807e4((s32)table[index],M2C_FIELD(ctx,s32*,0x24)+0xc4,(u16)color,4);
+base=M2C_FIELD(ctx,s32*,0x24);
+func_020807e4((s32)table[index],base+0xc4,(u16)(M2C_FIELD(p,s32*,0)?0x52:1),4);
+}
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }

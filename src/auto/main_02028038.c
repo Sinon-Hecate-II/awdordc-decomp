@@ -3,8 +3,14 @@
 typedef struct CallbackArgs_0202810c { s16 a,b; s32 c,d,e; } CallbackArgs_0202810c;
 typedef struct State_02028038 { u8 pad[0x260]; s32 state; u32 bits; u8 pad268[0x14]; void (*callback)(CallbackArgs_0202810c *); } State_02028038;
 
-u16 func_02028038(s32 a){extern void *data_02138e4c;s32 bits=M2C_FIELD(data_02138e4c,u32 *,0x2264);s32 b=a,i;for(i=0;i<13;i++,b++){if(bits&(1<<(b%13+1)))break;}return (a+i)%13+1;}
-
+#pragma opt_common_subs off
+u16 func_02028038(s32 a){
+extern void *data_02138e4c;
+s32 i,b,bits,rem;void *p=data_02138e4c;
+i=0;b=a;bits=M2C_FIELD(p,u32*,0x2264);do{rem=b%13;if(bits&(1<<(rem+1)))break;i++;b++;}while(i<13);
+rem=(a+i)%13;return rem+1;
+}
+#pragma opt_common_subs on
 void func_020280c8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_0202810c(s16, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern void *data_02138e4c;
@@ -23,8 +29,9 @@ M2C_UNK func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){
  M2C_FIELD((u8 *)data_02138e4c+0x2000,void (**)(CallbackArgs_0202810c *),0x27c)(&args);
 }
 
-void func_02028160(s32 a){void func_0202826c(void);s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);extern void *data_02138e4c;s32 old=func_0200751c();State_02028038 *p;s32 state;if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)data_02138e4c+0x22cc);p=(State_02028038 *)data_02138e4c;p=(State_02028038 *)((u8 *)p+0x2000);if(p->state!=11)p->state=a;if(a==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
-
+#pragma opt_common_subs off
+void func_02028160(s32 a){void func_0202826c(void);s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);extern void *data_02138e4c;s32 old=func_0200751c();void *p;if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)data_02138e4c+0x22cc);p=(u8 *)data_02138e4c+0x2000;if(M2C_FIELD(p,s32 *,0x260)!=11)M2C_FIELD(p,s32 *,0x260)=a;if(a==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
+#pragma opt_common_subs on
 M2C_UNK func_020281f8(void){void func_0202826c(void);extern void *data_02138e4c;s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);s32 old=func_0200751c();func_02007338((u8 *)data_02138e4c+0x22cc);if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
 
 void func_0202826c(void) {

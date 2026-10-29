@@ -46,15 +46,8 @@ s32 func_02061818(s32 *arg0, s32 *arg1) {
     if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
         var = func_02070b70(0.0, var);
     }
-    var_r0 = func_0207044c(var);
-    if ((u32)func_02071438(var_r0, 0) > 0U) {
-        return 1;
-    }
-    var_r0 = func_0207044c(var);
-    if ((u32)func_02071494(var_r0, 0) > 0U) {
-        return -1;
-    }
-    return 0;
+    if ((float)var > 0.0f) return 1;
+    return -((float)var < 0.0f);
 }
 
 s32 func_020618f0(s32 *arg0, s32 *arg1) {

@@ -184,25 +184,14 @@ void func_020bbac8(void) {
 }
 
 void func_020bbb08(void) {
-    M2C_UNK func_020a39f8();
-    M2C_UNK func_0207c2e0();
-    M2C_UNK func_020a6fcc();
-    extern void **gCurrentMap;
-    extern u8 data_02156e50[];
-
-    M2C_FIELD(*gCurrentMap, u8 **, 0) = M2C_FIELD(*gCurrentMap, u8 **, 0);
-    {
-        void *obj = M2C_FIELD(*gCurrentMap, void **, 0);
-        u8 *p = (u8 *)obj + 0x5120;
-        p[0x3A] = (u8)func_020a39f8();
-    }
-    *(u32 *)(data_02156e50 + 8) = (u32)func_0207c2e0();
-    M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x52A4) * 0x8C, u8 *, 0x67D1) =
-        (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C2);
-    M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x52A4) * 0x8C, u8 *, 0x67D2) =
-        (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C4);
-    func_020a6fcc();
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 1;
+ M2C_UNK func_020a39f8(); M2C_UNK func_0207c2e0(); M2C_UNK func_020a6fcc();
+ extern void **gCurrentMap; extern u8 data_02156e50[];
+ u8 *p = (u8 *)*gCurrentMap + 0x5120;
+ p[0x3a] = func_020a39f8();
+ *(u32 *)(data_02156e50+8) = func_0207c2e0();
+ M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
+ M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
+ func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;
 }
 
 void func_020bbba4(void) {

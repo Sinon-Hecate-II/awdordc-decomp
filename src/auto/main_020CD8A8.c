@@ -103,37 +103,20 @@ void func_020ce61c(void *arg0) {
 }
 
 void func_020ce630(s16 a, s16 b, s8 *c) {
-    void func_020ce508(void *, s32, s32);
-    extern void **gCurrentMap;
-    s16 x = a;
-    s16 y = b;
-    s8 *p = c;
-    for (;;) {
-        s8 cmd = *p++;
-        switch (cmd + 1) {
-        case 0:
-            return;
-        case 1:
-            x--;
-            break;
-        case 2:
-            x++;
-            break;
-        case 3:
-            y--;
-            break;
-        case 4:
-            y++;
-            break;
-        case 5:
-            return;
-        case 11:
-            return;
-        default:
-            break;
-        }
-        func_020ce508(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y);
-    }
+void func_020ce508(void *, s32, s32);
+extern void **gCurrentMap;
+s16 x=a,y=b; s8 *p=c;
+for (;;) {
+switch (*p++ + 1) {
+case 1: x--; break;
+case 2: x++; break;
+case 4: y--; break;
+case 3: y++; break;
+case 0: case 5: case 11: return;
+default: break;
+}
+func_020ce508(M2C_FIELD(*gCurrentMap, void **, 0x52d0),x,y);
+}
 }
 
 s32 func_020ce6f4(s32 a,s32 b) {

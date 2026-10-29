@@ -23,7 +23,7 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     extern M2C_UNK data_0212d430;
     extern M2C_UNK data_0212d440;
     extern M2C_UNK data_0212d450;
-    void func_020de50c(void);
+    s32 func_020de50c(s32, void *);
     s32 func_020de5b0(M2C_UNK);
     void func_020de610(void);
 
@@ -122,6 +122,23 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
 
     v3c = M2C_FIELD((void *)arg0, s32 *, 0x3c);
     func_ov010_02228d48((s32)arg1, code2, (s32)func_020de610, (s32)arg0, tmp, (s32)arg0, v3c);
+}
+
+s32 func_020de50c(s32 arg0, void *arg1) {
+s32 func_0203c0b0(s32,s32 *,s32); void *func_ov010_02229b00(void); extern M2C_UNK data_0212c5d8;
+s32 saved,a,n,v; register s32 d; s32 t; void *p;
+p=func_ov010_02229b00();
+if(!(M2C_FIELD(p,u8 *,0x1a)&2)) return -1;
+saved=M2C_FIELD(p,s32 *,0x20);
+d=(saved>>12)-(func_0203c0b0(arg0,&data_0212c5d8,0x5dc000)>>12);
+if(d<0) a=-d; else a=d;
+t=M2C_FIELD(arg1,u16 *,0x4a);
+if(t<a) {n=t+20; if(n>=50000)n=50000; M2C_FIELD(arg1,u16 *,0x4a)=n;return -1;}
+if(d<0)n=-d; else n=d;
+v=0x7fffff-n;
+if(v>0x7fffff)v=0x7fffff;
+else if(v<0)v=0;
+return v;
 }
 
 s32 func_020de5b0(register M2C_UNK arg0) {

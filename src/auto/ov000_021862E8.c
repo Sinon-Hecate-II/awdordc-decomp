@@ -42,26 +42,23 @@ return result;
 
 void func_ov000_02186a18(void) { }
 
-s32 func_ov000_02186d94(s32 a, s32 b, s32 c) {
-    extern void **gCurrentMap;
-    u8 func_ov000_021a9d8c(u32, s32);
-    extern u8 data_ov000_021b5c0e[];
-    extern M2C_UNK data_0212616c;
-    void *p;
-    u16 n;
-    u8 idxByte;
-    u8 dataByte;
-    s8 *table;
-    if (a < 0 || b < 0) return 0;
-    p = *gCurrentMap;
-    if (!(a < M2C_FIELD(p, u16 *, 0x5144) && b < M2C_FIELD(p, u16 *, 0x5146))) return 0;
-    if (func_ov000_021a9d8c((s16)a, (s16)b) != 0) return 0;
-    p = *gCurrentMap;
-    n = M2C_FIELD((u8 *)p + b * 2, u16 *, 0x3758);
-    idxByte = M2C_FIELD((u8 *)p + a + n, u8 *, 0x1420) & 0x1f;
-    dataByte = data_ov000_021b5c0e[c * 0x70];
-    table = M2C_FIELD(&data_0212616c, s8 **, 0x64);
-    return (table[(dataByte << 5) + idxByte] >= 0) ? 1 : 0;
+s32 func_ov000_02186d94(s32 a,s32 b,s32 c){
+extern void **gCurrentMap; u8 func_ov000_021a9d8c(u32,s32);
+extern u8 data_ov000_021b5c0e[];extern M2C_UNK data_0212616c;
+void *p; s32 off; s32 n; s32 idxByte,dataByte; s8 *table;
+if(a<0 || b<0)goto fail;
+p=*gCurrentMap;
+if(a<M2C_FIELD(p,u16 *,0x5144)&&b<M2C_FIELD(p,u16 *,0x5146))goto valid;
+fail:return 0;
+valid:
+if(func_ov000_021a9d8c((s16)a,(s16)b))return 0;
+off=c*0x70;
+p=*gCurrentMap;
+n=M2C_FIELD(p+b*2,u16 *,0x3758);
+table=M2C_FIELD(&data_0212616c,s8 **,0x64);
+idxByte=M2C_FIELD(p+(a+n),u8 *,0x1420);
+dataByte=data_ov000_021b5c0e[off];
+return ((table+(dataByte<<5))[idxByte&31]>=0)?1:0;
 }
 
 s32 func_ov000_02186e64(s32 x, s32 y) { return 0; }

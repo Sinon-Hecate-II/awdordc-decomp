@@ -225,17 +225,7 @@ void func_ov001_0218c678(void) {
 }
 
 void func_ov001_0218c78c(void) {
-void func_ov001_0218bf30(s32);
-void func_ov001_0218a6d8(s32);
-void func_ov001_0218b71c(void *);
-extern s32 data_ov001_02193ea4;
-s32 i;
-for(i=0;i<2;i++) {
-func_ov001_0218bf30(((RuntimePair64 *)data_ov001_02193ea4)[i].b);
-func_ov001_0218a6d8(((RuntimePair64 *)data_ov001_02193ea4)[i].a);
-}
-func_ov001_0218b71c((void *)0x02193ea4);
-}
+void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); extern s32 data_ov001_02193ea4; extern s32 data_ov001_02193e70[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)data_ov001_02193ea4)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)data_ov001_02193ea4)[i].a); } func_ov001_0218b71c(data_ov001_02193e70+13); }
 
 void func_ov001_0218c7d4(s32 n) {
     s32 func_ov001_0218a74c(s32);

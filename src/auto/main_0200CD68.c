@@ -3,6 +3,7 @@
 typedef struct { u16 x,y; } TouchPair;
 typedef struct { u8 pad[0x58]; u16 a,b; u8 e,f; u16 c,d; u8 g,h; } TouchInput;
 typedef struct { u32 v[7]; } InputConfig;
+typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u8 pad[0x30]; u16 flags38, flags3a; } TouchState;
 extern InputConfig data_020ea6d8;
 extern M2C_UNK data_0212fc70;
 extern M2C_UNK func_0200c9c8, func_0200ca18, func_0200cb6c, func_0200d2c4;
@@ -91,6 +92,7 @@ while(!func_02009e8c(6,1)) {}
 func_02009e40(6,&func_0200d2c4);
 }
 
+#pragma opt_lifetimes off
 s32 func_0200d5bc(u16 *p) {
 s32 func_0200da04(void *,u16,u16,u8,s32,s32,s32,s32,s32);
 u16 a=M2C_FIELD((void *)0x027ffc80,u16 *,0x58);
@@ -103,7 +105,7 @@ u8 g=M2C_FIELD((void *)0x027ffc80,u8 *,0x62);
 u8 h=M2C_FIELD((void *)0x027ffc80,u8 *,0x63);
 if((!a&&!c&&!b&&!d)||func_0200da04(p,a,b,e,f,c,d,g,h)) {p[0]=0;p[1]=0;p[2]=0;p[3]=0; return 1;} return 1;
 }
-
+#pragma opt_lifetimes reset
 void func_0200d650(s16 *p){
 s32 func_0200751c(void);void func_02007530(s32);
 s32 t,n;
@@ -129,14 +131,14 @@ M2C_FIELD(&data_0212fc70,s32*,48)=*(volatile s32*)0x40002a0;
 }else{M2C_FIELD(&data_0212fc70,s32*,40)=0;M2C_FIELD(&data_0212fc70,s32*,44)=0;M2C_FIELD(&data_0212fc70,s32*,48)=0;}
 func_02007530(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
 
-void func_0200d778(void) {
-s32 func_0200751c(void); void func_02007530(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=func_0200751c();u32 v; void *p; s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
-if(!ok) {func_02007530(t);p=&data_0212fc70;v=M2C_FIELD(p,u16 *,0x38); v|=1; M2C_FIELD(p,u16 *,0x38)=v;
-if(M2C_FIELD(p,void (**)(s32,s32,s32),4))M2C_FIELD(p,void (**)(s32,s32,s32),4)(0,4,0);
-} else { p=&data_0212fc70; v=M2C_FIELD(p,u16 *,0x3a); v|=1; M2C_FIELD(p,u16 *,0x3a)=v;M2C_FIELD(p,u16 *,0x38)&=~1;func_02007530(t);}
+#pragma opt_propagation off
+void func_0200d778(void){
+s32 func_0200751c(void);void func_02007530(s32);s32 func_02009eb0(s32,u32,s32);
+void (*callback)(s32,s32,s32);s32 t=func_0200751c();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
+if(!ok){TouchState *p;func_02007530(t);p=(TouchState*)&data_0212fc70;p->flags38 = 1 | (u32)p->flags38;callback=p->callback;if(callback)callback(0,4,0);}
+else{TouchState *p=(TouchState*)&data_0212fc70;p->flags3a = 1 | (u32)p->flags3a;p->flags38 = ~1 & (u32)p->flags38;func_02007530(t);}
 }
-
+#pragma opt_propagation on
 s32 func_0200d80c(u16 *a) {
 void func_0200dd14(u32);
 func_0200dd14(1);if(M2C_FIELD(&data_0212fc70,u16 *,0x38)&1)return 1;

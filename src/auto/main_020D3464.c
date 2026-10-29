@@ -804,53 +804,27 @@ void func_020d42f8(void) {
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0xc;
 }
 
-void func_020d432c(void) {
-    M2C_UNK func_020c0a1c(M2C_UNK);
-    void func_ov000_0219c7c4(void);
-    extern void **gCurrentMap;
-    extern M2C_UNK data_02168f08;
-
-    void *base;
-    u32 r3;
-    u8 *r1;
-    u16 idx;
-    u8 val;
-    u16 tmp;
-
-    func_020c0a1c(3);
-    base = *gCurrentMap;
-    r3 = M2C_FIELD(base, u32 *, 0);
-    r1 = (u8 *)r3 + 0x5200;
-    idx = M2C_FIELD(r1, u16 *, 0xa4);
-    val = M2C_FIELD((void *)r3, u8 *, idx * 0x8c + 0x67c2);
-
-    switch (val) {
-    case 0:
-        return;
-    case 1:
-        tmp = M2C_FIELD(&data_02168f08, u16 *, 0xc);
-        if ((((u32)tmp << 22) >> 31) == 0) {
-            M2C_FIELD(r1, u16 *, 0xb0) = 0xd;
-            return;
-        }
-        M2C_FIELD(r1, u16 *, 0xb0) = 0xe;
-        func_ov000_0219c7c4();
-        return;
-    case 2:
-        M2C_FIELD(r1, u16 *, 0xb0) = 0xe;
-        func_ov000_0219c7c4();
-        return;
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-        M2C_FIELD(r1, u16 *, 0xb0) = 0x13;
-        return;
-    default:
-        return;
-    }
-}
-
+#pragma merge_duplicate_code off
+void func_020d432c(void){
+M2C_UNK func_020c0a1c(M2C_UNK);void func_ov000_0219c7c4(s32);extern void **gCurrentMap;extern M2C_UNK data_02168f08;
+u8 *base,*p;u16 idx;u8 val;
+func_020c0a1c(3);
+base=(u8*)*gCurrentMap;p=base+0x5200;
+idx=M2C_FIELD(p,u16*,0xa4);
+val=M2C_FIELD(base+idx*0x8c,u8*,0x67c2);
+switch(val){
+case 0:break;
+case 1:
+if((((u32)M2C_FIELD(&data_02168f08,u16*,12)<<22)>>31)==0){M2C_FIELD(p,u16*,0xb0)=13;return;}
+M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
+case 2:M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
+case 3:M2C_FIELD(p,u16*,0xb0)=19;return;
+case 4:M2C_FIELD(p,u16*,0xb0)=19;return;
+case 5:M2C_FIELD(p,u16*,0xb0)=19;return;
+case 6:M2C_FIELD(p,u16*,0xb0)=19;return;
+default:break;
+}}
+#pragma merge_duplicate_code reset
 void func_020d4400(void) {
     M2C_UNK func_0208f8a0();
     extern void **gCurrentMap;

@@ -54,6 +54,7 @@ void func_ov009_022222d0(s32 arg0) {
     func_ov009_02224d9c(0xF,sp0,0x28,(u16)(1<<arg0));
 }
 
+#pragma scheduling off
 s32 func_ov009_02222348(s32 arg0) {
 M2C_UNK func_02008048(s32,void *,s32);
 s32 func_0206527c(s32,void *,s32);
@@ -76,11 +77,12 @@ i++;p+=0xc8;
 if(freeIndex<0)return 0;
 offset=freeIndex*0xc8;
 func_02008048(arg0,(u8 *)&data_ov009_02226cc0+offset,0xc0);
-M2C_FIELD(&data_ov009_02226d80,s16*,offset)=0x1e0;
-M2C_FIELD(&data_ov009_02226d84,volatile s32*,offset)=1;
+p=(u8 *)&data_ov009_02226d80;
+M2C_FIELD(p,u16*,offset)=0x1e0;
+M2C_FIELD(&data_ov009_02226d84,s32*,offset)=1;
 return 1;
 }
-
+#pragma scheduling on
 s32 func_ov009_02222428(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0xC4);
 }
@@ -315,14 +317,14 @@ void func_ov009_02222a00(M2C_UNK arg0, M2C_UNK arg1) {
 s16 func_ov009_02222a20(s32 arg0) {
     u32 func_02076614();
     u32 func_ov009_02222440();
-    s32 __builtin_clz(u32);
     s16 result = 0;
     u32 temp = func_02076614();
     s32 n;
     u16 count;
     s32 i;
     if (temp == 1) {
-        n = 0x20 - __builtin_clz(~arg0 & (arg0 - 1));
+        u32 z = (u32)(~arg0 & (arg0 - 1));
+        n = 0x20 - (s32)_clz(z);
         result = n + 1;
     } else if (temp > 1U) {
         count = (temp * (func_ov009_02222440() & 0xFF)) >> 8;
@@ -427,20 +429,18 @@ void func_ov009_02222f0c(void *arg0) {
 s32 func_ov009_02222f84(void) {
 s32 func_02011d58(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
 extern M2C_UNK data_ov009_022268e0; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
-u32 mask; s32 result; u16 *state;
+s32 mask; s32 result; u16 *state;
 mask=func_02011d58();
 if(mask==0x8000) {func_ov009_022227d4(3);return 0;}
 if(mask==0) {func_ov009_02222910(0x17);return 0;}
 state=(u16 *)&data_ov009_022268e0;
-if(M2C_FIELD(state,u16 *,6)==0) {
-loop:
-{
-M2C_FIELD(state,u16 *,0x84)++;
-if(M2C_FIELD(state,u16 *,0x84)>14) M2C_FIELD(state,u16 *,0x84)=1;
-if(mask&(1<<(M2C_FIELD(state,u16 *,0x84)-1))) goto selected;
-goto loop;
-}
-} else M2C_FIELD(state,u16 *,0x84)=M2C_FIELD(state,u16 *,6);
+if(state[3]==0) {
+do {
+state[66]++;
+if(state[66]>14) state[66]=1;
+if(mask&(1<<(state[66]-1))) goto selected;
+}while(1);
+} else state[66]=state[3];
 selected:
 M2C_FIELD(&data_ov009_022268e0,u16 *,0x86)=func_02011e98();
 M2C_FIELD(&data_ov009_022268e0,void **,0x80)=&data_ov009_02226a80;

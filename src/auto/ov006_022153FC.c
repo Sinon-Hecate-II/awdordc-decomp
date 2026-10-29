@@ -122,12 +122,10 @@ void *func_ov006_022156e4(void *arg0) {
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov006_02218610;
     void *p;
-    void *self;
 
-    self = arg0;
-    M2C_FIELD(self, void **, 0) = &data_ov006_02218610;
-    p = M2C_FIELD(self, void **, 0x3C);
-    if (p != NULL) {
+    M2C_FIELD(arg0, void **, 0) = &data_ov006_02218610;
+    p = M2C_FIELD(arg0, void **, 0x3C);
+    if (p != 0) {
         func_01ffa574(M2C_FIELD(p, void **, 0));
         func_01ffa574(M2C_FIELD(p, void **, 4));
         func_01ffa574(M2C_FIELD(p, void **, 8));
@@ -136,24 +134,24 @@ void *func_ov006_022156e4(void *arg0) {
         func_01ffa574(M2C_FIELD(p, void **, 0x14));
         func_02082040(p);
     }
-    p = M2C_FIELD(self, void **, 0x40);
-    if (p != NULL) {
+    p = M2C_FIELD(arg0, void **, 0x40);
+    if (p != 0) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
-    p = M2C_FIELD(self, void **, 0x44);
-    if (p != NULL) {
+    p = M2C_FIELD(arg0, void **, 0x44);
+    if (p != 0) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
-    p = M2C_FIELD(self, void **, 0x48);
-    if (p != NULL) {
+    p = M2C_FIELD(arg0, void **, 0x48);
+    if (p != 0) {
         func_02082040(p);
     }
-    p = M2C_FIELD(self, void **, 0x4C);
-    if (p != NULL) {
+    p = M2C_FIELD(arg0, void **, 0x4C);
+    if (p != 0) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
     func_020e4ca0();
-    return self;
+    return (void *)arg0;
 }
 
 M2C_UNK func_ov006_022157a0(void *arg0) {

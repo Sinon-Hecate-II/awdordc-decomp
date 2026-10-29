@@ -204,7 +204,7 @@ s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
 s32 func_0201e238(void) {
 extern M2C_UNK data_02137290; extern u8 data_021377e6[];
 u8 *func_0201e078(u8 *,s32,s32);
-u8 *p; u16 hi,lo; s32 result; s32 base=(s32)data_021377e6;
+volatile u8 *p; u16 hi,lo; s32 result; s32 base=(s32)data_021377e6;
 p=func_0201e078((u8 *)base,1,(s32)&result);
 if(M2C_FIELD(&data_02137290,u32 *,0x34)) {
 p[0]=0x32; p[1]=4;

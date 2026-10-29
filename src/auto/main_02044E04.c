@@ -22,7 +22,7 @@ s32 func_02044e68(void) {
     return 1;
 }
 
-s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);s32 flag;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);flag=M2C_FIELD(p,s32 *,12);if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}func_020452f0(p);if(flag)return 1;return 0;}
+s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);s32 flag;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);flag=M2C_FIELD(p,s32 *,12);if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}func_020452f0(p);return flag!=0;}
 
 void func_02044f24(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
 void (*cb)(s32,s32,s32,s32,s32,s32)=M2C_FIELD(p,void (**)(s32,s32,s32,s32,s32,s32),8);
@@ -234,12 +234,14 @@ s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
         return 2;
     }
     r = func_02047940((s32)arg0, M2C_FIELD(&data_0213db20, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
-    if (r == 2) {
-        return 8;
-    }
-    if (r != 3) {
-        return 9;
-    }
+    if (r == 2) goto L8;
+    if (r != 3) goto Ldata;
+    goto L9;
+L8:
+    return 8;
+L9:
+    return 9;
+Ldata:
     data_0213db20 = 2;
     return 0;
 }
@@ -316,10 +318,15 @@ s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
     if (b < 0) return 2;
     {
         s32 r = func_02047dd4(a, c, b, d);
-        if (r == 2) return 12;
-        if (r == 3) return 11;
-        data_0213db20 = 4;
-        return 0;
+        switch (r) {
+            case 3:
+                return 11;
+            case 2:
+                return 12;
+            default:
+                data_0213db20 = 4;
+                return 0;
+        }
     }
 }
 
@@ -330,8 +337,10 @@ s32 func_020459ec(void) {
     if (func_0203761c()) return 1;
     if (data_0213db20 != 2 && data_0213db20 != 3 && data_0213db20 != 4) return 14;
     switch (func_020477ac()) {
-        case 0:
         case 1:
+            data_0213db20 = 6;
+            break;
+        case 0:
             data_0213db20 = 6;
             break;
         case 2:

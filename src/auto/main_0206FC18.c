@@ -86,23 +86,19 @@ s32 func_0207044c(u32 arg0, u32 arg1) {
     return *(s32 *)&f;
 }
 
-u64 func_02070550(u32 lo, u32 hi) {
-    s32 n;
-    u32 m, l, h;
-    if (!(hi&0x80000000)) {
-        n=0x43e - (hi>>20);
-        if(n<0) goto overflow;
-        if(n>=64) return 0;
-        m=(hi<<11)|0x80000000|(lo>>21);
-        if(n>32) { h=0; l=m>>(n-32); }
-        else { h=m>>n; l=((lo<<11)>>n)|(m<<(32-n)); }
-        return ((u64)h<<32)+l;
-    }
-    if(hi>0xfff00000) goto overflow;
-    if(hi==0xfff00000 && lo) goto overflow;
-    return 0;
-overflow:
-    return ~0ULL;
+u64 func_02070550(u32 lo,u32 hi){s32 n;u32 m;
+if(!(hi&0x80000000)){
+n=0x43e - (hi>>20);
+if(n<0)goto overflow;
+if(n<64){
+m=(hi<<11)|0x80000000; m|=lo>>21;
+if(n>32){n-=32;return (u64)(m>>n);}
+return ((u64)(m>>n)<<32)|((lo<<11)>>n)|(m<<(32-n));
+}return 0ULL;
+}
+if((hi+0x100000U)>0 || (hi==0xfff00000U && lo))goto overflow;
+return 0ULL;
+overflow:return ~0ULL;
 }
 
 s32 func_020705dc(s32 arg0) {

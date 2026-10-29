@@ -84,49 +84,27 @@ void func_ov001_0216a17c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 int __builtin_clz(unsigned int);
 int __cntlzw(unsigned int);
+#pragma intrinsic(__clz)
 void func_ov001_0216a1a8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    extern u8 data_ov001_0218c9e4[];
-    extern s32 data_ov001_0218c9d8;
-    struct { u32 a:8; u32 b:8; u32 c:16; } value;
-    s32 x, y;
-    u8 *p;
-    x = arg2 < 8 ? 31 - __cntlzw(arg2) : 3;
-    y = arg3 < 8 ? 31 - __cntlzw(arg3) : 3;
-    p = data_ov001_0218c9e4 + y * 8 + x * 2;
-    value.a = p[0];
-    value.b = p[1];
-    func_ov001_0216a030(arg0, arg1, arg2, arg3, arg4, (s32)&data_ov001_0218c9d8, *(s32 *)&value);
+extern u8 data_ov001_0218c9e4[];
+extern s32 data_ov001_0218c9d8;
+struct { u32 a:8; u32 b:8; u32 c:16; } value;
+s32 x,y; u8 *p;
+x=3; if(arg2<8) {x=0; while ((u32)arg2>>(x+1)) ++x;}
+y=3; if(arg3<8) {y=0; while ((u32)arg3>>(y+1)) ++y;}
+p=data_ov001_0218c9e4+y*8+x*2;
+value.a=p[0]; value.b=p[1];
+func_ov001_0216a030(arg0,arg1,arg2,arg3,arg4,(s32)&data_ov001_0218c9d8,*(s32*)&value);
 }
-
-void func_ov001_0216a230(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u32 arg7) {
-
-    s32 endX, endY, tile, y, row, col, x;
-    u16 *p;
-    u32 palette;
-    y = arg4;
-    tile = arg6;
-    if (arg5 <= 32) {
-        func_ov001_0216a2e0(arg0 + (arg5 * y + arg3) * 2, arg1, arg2, arg5, tile, arg7);
-        return;
-    }
-    endY = y + arg2;
-    endX = arg3 + arg1;
-    palette = arg7 << 28;
-    if (y >= endY) return;
-    do {
-        row = y < 32 ? y : y + 32;
-        x = arg3;
-        p = (u16 *)(arg0 + (row << 6));
-        if (arg3 < endX) {
-            do {
-                col = x < 32 ? x : x + 0x3E0;
-                p[col] = tile | (palette >> 16);
-                x++;
-                tile++;
-            } while (x < endX);
-        }
-        y++;
-    } while (y < endY);
+void func_ov001_0216a230(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,u32 arg7) {
+s32 endX,endY,tile,y,row,col,x; u16 *p;
+y=arg4; tile=arg6;
+if(arg5<=32){func_ov001_0216a2e0(arg0+(arg5*y+arg3)*2,arg1,arg2,arg5,tile,arg7);return;}
+endY=y+arg2; endX=arg3+arg1;
+arg1=arg7<<28;
+if(y>=endY)return;
+do{row=y<32?y:y+32;x=arg3;p=(u16*)(arg0+(row<<6));
+if(arg3<endX){do{col=x<32?x:x+0x3e0;p[col]=tile++|((u32)arg1>>16);x++;}while(x<endX);}y++;}while(y<endY);
 }
 
 s32 func_ov001_0216a2e0(s32 base,s32 w,s32 h,s32 stride,s32 tile,s32 pal) {
@@ -137,6 +115,7 @@ do{p=(u16 *)base;x=0;if(w>0){do{v=tile|((u32)pal>>16);x++;tile++;*p++=v;}while(x
 return base;
 }
 
+#pragma opt_propagation off
 s32 func_ov001_0216a33c(u32 a,u32 b) {
 u32 x=a>>3,y=b>>3,z=0,t,s,u,v;
 z=x*y+z;
@@ -146,7 +125,7 @@ s=((b&2)>>1)+(b&1);v=b&4;
 z=x*(s*2+(v>>2))+z;
 return (t+(u>>2))*(s+(v>>2))+z;
 }
-
+#pragma opt_propagation reset
 void func_ov001_0216a398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; (void)arg6; (void)arg7;
 }
@@ -341,12 +320,11 @@ s32 func_ov001_0216ac04(void *arg0) {
 
 #pragma optimize_for_size on
 s32 func_ov001_0216ace0(void *arg0,s32 arg1) {
- s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value; u8 *p;
- if(n>=arg1) {shift=n-arg1; value=byte>>shift; M2C_FIELD(arg0,volatile s8 *,4)=shift; goto done;}
+ s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value=0; u8 *p;
+ if(n>=arg1) {shift=n-arg1; value=byte>>shift; M2C_FIELD(arg0,s8 *,4)=shift; goto done;}
  p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<shift);
  done: return value & (0xff>>(8-arg1));
 }
-#pragma optimize_for_size off
 u16 func_ov001_0216ad40(u16 **arg0) {
 u16 *p=*arg0;
 u16 v=*p++;

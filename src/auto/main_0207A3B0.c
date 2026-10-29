@@ -329,17 +329,17 @@ void func_0207ab24(s32 arg0, s32 arg1) {
 
 s32 func_0207ab84(s32 arg0, s32 arg1, u8 arg2) {
 extern u16 data_0211fafc[];
-extern void *gCurrentMap;
+extern void *data_027e0058;
 s32 i=0;
 s32 base;
 u16 value;
 void *p;
 if(data_0211fafc[0] != 0xffff) {
-p=M2C_FIELD(gCurrentMap,void **,0);
+p=M2C_FIELD(data_027e0058,void **,0);
 value=M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10);
 do { if(data_0211fafc[i]==value) break; i++; } while(data_0211fafc[i] != 0xffff);
 }
-p=M2C_FIELD(gCurrentMap,void **,0);
+p=M2C_FIELD(data_027e0058,void **,0);
 base=(i/5)*5;
 M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=data_0211fafc[base+(arg2>>5)];
 return (s16)base;
@@ -352,7 +352,7 @@ s32 i=0; s32 base; u16 value; void *p;
 if(data_0211fafc[0]!=0xffff){
 p=M2C_FIELD(gCurrentMap,void **,0);
 value=M2C_FIELD((u8*)p+2*(arg0+M2C_FIELD((u8*)p+arg1*2,u16 *,0x3758)),u16 *,0xa10);
-do{if(data_0211fafc[i]==value)break;i++;}while(data_0211fafc[i]!=0xffff);
+do{if(value==data_0211fafc[i])break;i++;}while(data_0211fafc[i]!=0xffff);
 }
 base=(i/5)*5;
 if(base<5){
@@ -472,51 +472,17 @@ void func_0207af6c(void *arg0) {
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
-void func_0207af7c(void *arg0) {
-    s32 temp_r0;
-    s32 temp_r6;
-    s32 temp_r1;
-    s32 temp_r2;
-    s32 temp_r7;
-    s32 temp_lr;
-    s32 temp_r3;
-    s32 temp_r12;
-    void *temp_r4;
-    void *temp_r5 = arg0;
-
-    if ((s16) M2C_FIELD(temp_r5, s16 *, 0x6E) != 8) {
-        func_0207a748(1);
-        func_01ffa574(temp_r5);
-        return;
-    }
-    M2C_FIELD(temp_r5, s16 *, 0x6E) = (s16) ((s16) M2C_FIELD(temp_r5, s16 *, 0x6E) + 1);
-    if ((s16) M2C_FIELD(temp_r5, s16 *, 0x6C) > 0xCC) {
-        return;
-    }
-    func_02091230();
-    if ((s16) M2C_FIELD(temp_r5, s16 *, 0x6C) <= 0) {
-        return;
-    }
-    temp_r4 = (void *) M2C_FIELD(temp_r5, s32 *, 0x54);
-    temp_r1 = 0;
-    do {
-        temp_r7 = temp_r1 << 3;
-        temp_lr = (s16) M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 0);
-        temp_r6 = (s16) M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 4);
-        temp_r1++;
-        temp_r2 = temp_r1 << 16;
-        temp_r1 = temp_lr + temp_r6;
-        M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 0) = temp_r1;
-        temp_r6 = (s16) M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 2);
-        temp_lr = (s16) M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 6);
-        temp_r1 = temp_r2 >> 16;
-        temp_r6 += temp_lr;
-        M2C_FIELD((u8 *)temp_r4 + temp_r7, s16 *, 2) = temp_r6;
-        {
-            volatile u32 *addr = (volatile u32 *)0x040004A4;
-            *addr = 0x1F0080;
-        }
-    } while ((s16) M2C_FIELD(temp_r5, s16 *, 0x6C) > (s16)(temp_r2 >> 16));
+void func_0207af7c(void *arg0){
+s16 (*p)[4]=M2C_FIELD(arg0,void **,0x54);s16 i;
+if(M2C_FIELD(arg0,s16 *,0x6e)==8){func_0207a748(1);func_01ffa574(arg0);return;}
+M2C_FIELD(arg0,s16 *,0x6e)++;
+if(M2C_FIELD(arg0,s16 *,0x6c)>204)return;
+func_02091230();
+for(i=0;i<M2C_FIELD(arg0,s16 *,0x6c);i++){
+p[i][0]+=p[i][2];
+p[i][1]+=p[i][3];
+*(volatile u32 *)0x040004a4=0x1f0080;
+}
 }
 
 void func_0207b028(M2C_UNK arg0) {

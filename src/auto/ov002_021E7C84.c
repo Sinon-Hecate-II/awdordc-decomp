@@ -365,13 +365,13 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
 }
 
 void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
-extern void **gCurrentMap;
+extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
 s32 func_020a7d38(void*);
 void func_ov002_021e7d34(void*,s32,u32,u32,s32);
-p[0]=!(a==M2C_FIELD(*gCurrentMap,u8**,0x52d0));
+p[0]=a!=M2C_FIELD(*data_027e0058,u8**,0x52d0);
 p[1]=!p[0];
-switch(M2C_FIELD(*gCurrentMap,u8*,0x5157)){
+switch(M2C_FIELD(*data_027e0058,u8*,0x5157)){
 case 3: case 4: case 6:p[3]=1;break;
 case 1:p[3]=2;break;
 case 2:p[3]=3;break;

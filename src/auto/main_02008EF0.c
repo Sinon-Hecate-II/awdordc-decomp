@@ -54,7 +54,9 @@ extern s32 *data_0212fb60;
 int i;void *p;
 func_0200962c();
 M2C_FIELD(&data_0212e020,void **,0)=&data_0212e300;
-for(i=0;i<255;i++)M2C_FIELD(&data_0212e300,void **,i*24)=(char *)&data_0212e300+(i+1)*24;
+i=0;goto check;
+loop:M2C_FIELD(&data_0212e300,void **,i*24)=(char *)&data_0212e300+(i+1)*24;
+i++;check: if(i<255)goto loop;
 M2C_FIELD(&data_0212f020,int *,0xac8)=0;
 M2C_FIELD(&data_0212e020,void **,16)=&data_0212fae8;
 M2C_FIELD(&data_0212e020,int *,8)=0;
@@ -460,16 +462,17 @@ void func_02009d34(void) {
     func_02009d40();
 }
 
+#pragma scheduling off
 s32 func_02009d40(void){
-s32 func_0200751c(void);s32 state=func_0200751c();int i,stable;
+s32 func_0200751c(void);s32 state=func_0200751c();int i,timeout,value,stable;
 if(!data_0212fb64){
 data_0212fb64=1;
-*(volatile u32 *)0x027fff88=0;
+{Shared09d40 *p=(Shared09d40 *)0x027ffc00; p->value=0;}
 for(i=0;i<32;i++)data_0212fb68[i]=0;
 *(volatile u16 *)0x04000184=0xc408;
 func_02005228(0x40000);func_02004ff8(0x40000,func_02009f38);func_020051c8(0x40000);
 stable=0;
-for(;;){int value=*(volatile u16 *)0x04000180&15;int timeout;
+for(;;){value=*(volatile u16 *)0x04000180&15;
 *(volatile u16 *)0x04000180=value<<8;
 if(!value&&stable>4)break;
 timeout=1000;
@@ -481,7 +484,7 @@ stable++;
 }
 return func_02007530(state);
 }
-
+#pragma scheduling on
 s32 func_02009e40(s32 a,M2C_UNK *b){
 s32 func_0200751c(void);extern s32 data_0212fb68[];
 s32 s=func_0200751c();s32 *base=(s32 *)0x027ffc00;

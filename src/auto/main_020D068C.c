@@ -23,8 +23,8 @@ void func_020d0bac(void *,s32);
 
 void func_020d068c(void *p,s16 index) {
 s32 func_020d05f4(); s32 func_020a3518();
-void *q,*m; s16 stride=14;
-q=(void *)*gCurrentMap+0x59a4+index*stride;
+void *q,*m;
+q=(void *)*gCurrentMap+0x59a4+index*14;
 M2C_FIELD(p,void **,0)=q;
 m=(void *)*gCurrentMap;
 M2C_FIELD(p,s16 *,4)=M2C_FIELD(m+(M2C_FIELD(q,u8 *,1)+M2C_FIELD(m+M2C_FIELD(q,u8 *,2)*2,u16 *,0x3758)),u8 *,0x1420)&31;

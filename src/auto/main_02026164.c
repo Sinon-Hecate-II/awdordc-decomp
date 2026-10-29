@@ -193,28 +193,16 @@ void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
     }
 }
 
-void func_02026558(u16 *dst, u16 *src1, u16 *src2, s32 len) {
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
-    s32 func_02026244(u16 *, s32);
-    void func_02026524(u16 *, u32, s32, s32);
-    s32 a;
-    s32 b;
-    s32 i;
-    s32 j;
-
-    func_02007f8c((u8 *)dst, 0, (u32)(len * 2));
-    a = func_02026244(src1, len);
-    b = func_02026244(src2, len);
-    if (b <= 0) return;
-    i = 0;
-    while (i < b) {
-        j = 0;
-        while (j < a && j < len - i) {
-            func_02026524(dst, (u32)src1[j] * (u32)src2[i], i + j, len);
-            j++;
-        }
-        i++;
-    }
+void func_02026558(u16 *dst,u16 *src1,u16 *src2,s32 len){
+M2C_UNK func_02007f8c(u8 *,s32,u32);s32 func_02026244(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
+s32 a,b,i,j;
+func_02007f8c((u8 *)dst,0,(u32)(len*2));
+a=func_02026244(src1,len);b=func_02026244(src2,len);
+for(i=0;i<b;i++){
+j=0;while(j<a && j<len-i){
+func_02026524(dst,(u32)src1[j]*(u32)src2[i],i+j,len);j++;
+}
+}
 }
 
 void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {

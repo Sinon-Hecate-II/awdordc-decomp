@@ -155,8 +155,12 @@ extern void *data_ov001_02193d20;
 void func_ov001_021745cc(s32);
 u32 v; s32 pos[2];
 v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,16),u32*,0);
-((volatile s32 *)pos)[1]=(v&0x1ff0000)>>16;
-((volatile s32 *)pos)[0]=(v&255)-12;
+{
+    u32 masked = v & 0x01ff0000;
+    s32 low = (v & 0xFF) - 12;
+    ((volatile s32 *)pos)[1] = masked >> 16;
+    ((volatile s32 *)pos)[0] = low;
+}
 if(pos[0]>76){func_ov001_02174f68(0,pos[0]);return;}
 func_ov001_02174f68(0,76);
 func_ov001_02174f68(1,192);
@@ -166,21 +170,26 @@ func_ov001_0218c924(arg0,func_ov001_021745cc);
 void func_ov001_021745cc(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_02174650(s32);
-u32 v; s32 pos[2];
+u32 v; u32 lo; u32 hi; s32 x; s32 y; s32 pos[2];
 v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,28),u32*,0);
-((volatile s32 *)pos)[1]=(v&0x1ff0000)>>16;
-((volatile s32 *)pos)[0]=(v&255)-12;
-if(pos[0]>99){func_ov001_02174f68(1,pos[0]);return;}
+lo=v&255;
+hi=v&0x1ff0000;
+x=(s32)lo-12;
+y=(s32)(hi>>16);
+((volatile s32 *)pos)[1]=y;
+((volatile s32 *)pos)[0]=x;
+if(x>99){func_ov001_02174f68(1,x);return;}
 func_ov001_02174f68(1,99);
 func_ov001_02174f68(2,192);
 func_ov001_0218c924(arg0,func_ov001_02174650);
 }
 
+#pragma opt_propagation off
 void func_ov001_02174650(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_021746d4(s32);
-u32 v,y; s32 x,pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,40),u32*,0);
+u32 v; s32 x; u32 y; s32 pos[2];
+v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,40),u32 *,0);
 y=v&0x1ff0000;
 x=(v&255)-12;
 ((volatile s32 *)pos)[1]=y>>16;
@@ -190,20 +199,22 @@ func_ov001_02174f68(2,122);
 func_ov001_02174f68(3,192);
 func_ov001_0218c924(arg0,func_ov001_021746d4);
 }
-
+#pragma opt_propagation off
 void func_ov001_021746d4(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_02174758(s32);
-u32 v; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,52),u32*,0);
-((volatile s32 *)pos)[1]=(v>>16)&511;
-((volatile s32 *)pos)[0]=(u8)v-12;
+u32 v; s32 x; u32 y; s32 pos[2];
+v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,52),u32 *,0);
+y=v&0x1ff0000;
+x=(v&255)-12;
+((volatile s32 *)pos)[1]=y>>16;
+((volatile s32 *)pos)[0]=x;
 if(pos[0]>145){func_ov001_02174f68(3,pos[0]);return;}
 func_ov001_02174f68(3,145);
 func_ov001_02174f68(4,192);
 func_ov001_0218c924(arg0,func_ov001_02174758);
 }
-
+#pragma opt_propagation on
 void func_ov001_02174758(s32 arg0){extern void *data_ov001_02193d20;
 void func_ov001_021747cc(void);
 s32 pos[2];

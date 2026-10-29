@@ -1,5 +1,7 @@
 /* 10 functions from 0x02226D9C to 0x02227D34 (ov010), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 bytes[26]; u16 count0, count1, count2; s8 state0, state1, state2; u8 pad[5]; } Ov010Entry;
+typedef struct { u8 pad[0x2d4]; Ov010Entry entries[1]; } Ov010State;
 extern unsigned char data_ov010_0222f02c[];
 
 M2C_UNK func_ov010_02226d9c(void *a) {
@@ -72,20 +74,25 @@ cb(a,b);
 }
 
 void func_ov010_02227c5c(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_ov010_0222eee0;
-    void (*cb)(s32, s32, s32);
-    s32 r0_val;
-    
-    // The code does some pointer math.
-    // mul r5, r8, r0 (r8=arg0, r0=0x28) => r5 = arg0 * 40
-    // mul r12, r7, r0 (r7=arg1, r0=0x28) => r12 = arg1 * 40
-    
-    // It seems r4 is a base pointer, likely returned by func_020c4b60
-    
-    // Let's try to sketch it.
-    void *func_020c4b60(void);
-    void *r4 = func_020c4b60();
-    
-    // The operations are complex, but clearly manipulate 16-bit values.
+void *func_020c4b60(void);
+void func_02007df8(s32,void *,s32);
+extern M2C_UNK data_ov010_0222eee0;
+Ov010State *base;
+s32 offset;
+void (*cb)(s32,s32,s32);
+base=func_020c4b60();
+offset=arg0*40;
+M2C_FIELD((u8 *)base+0x2ee,u16 *,arg1*40)+=((Ov010State *)((u8 *)base+offset))->entries[0].count0;
+M2C_FIELD((u8 *)base+0x2f0,u16 *,arg1*40)+=((Ov010State *)((u8 *)base+offset))->entries[0].count1;
+M2C_FIELD((u8 *)base+0x2f2,u16 *,arg1*40)+=((Ov010State *)((u8 *)base+offset))->entries[0].count2;
+func_02007df8(0,base->entries[arg0].bytes,26);
+base->entries[arg0].count0=0;
+base->entries[arg0].count1=0;
+base->entries[arg0].count2=0;
+base->entries[arg0].state0=-1;
+base->entries[arg0].state1=-2;
+base->entries[arg0].state2=-2;
+cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),20);
+if(cb)cb(arg0,arg1,arg2);
 }
 

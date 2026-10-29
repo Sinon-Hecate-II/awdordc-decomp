@@ -45,14 +45,14 @@ u64 func_02007004(void) {
     u32 func_0200751c(void);
     void func_02007530(u32);
     extern u16 data_0212dfb4;
-    volatile u64 count;
     volatile u16 timer;
+    volatile u64 count;
     u32 state = func_0200751c();
     timer = *(volatile u16 *)0x04000100;
     count = M2C_FIELD(&data_0212dfb4, u64 *, 8) & 0x0000FFFFFFFFFFFFULL;
     if ((*(volatile u32 *)0x04000214 & 8) && !(timer & 0x8000)) count++;
     func_02007530(state);
-    return (count << 16) | (s64)(s32)timer;
+    return (count << 16) | timer;
 }
 
 u16 func_020070a4(void) {
@@ -350,6 +350,33 @@ void func_0200763c(s32 arg0) {
     do {
 
     } while (func_02009eb0(0xC, arg0 << 8, 0) != 0);
+}
+
+void func_02007668(s32 arg0) {
+    M2C_UNK func_01ff81e4();
+    void func_0200519c(s32);
+    void func_02005228(s32);
+    u16 func_0200558c(void);
+    void func_0200763c(s32);
+    M2C_UNK func_02007958();
+    void func_02007ca4(s32);
+    u16 func_0200fe24(u16);
+
+    if (*(u16 *)0x027FFC40 == 2) {
+        u16 x;
+        func_02007958();
+        x = func_0200558c();
+        func_0200fe24((u16)(x << 16 >> 16));
+        func_02007ca4(0);
+        func_02007ca4(1);
+        func_02007ca4(2);
+        func_02007ca4(3);
+        func_0200519c(0x40000);
+        func_02005228(0xFFFFFFFF);
+    }
+    *(s32 *)0x027FFC20 = arg0;
+    func_0200763c(0x10);
+    func_01ff81e4();
 }
 
 void func_02007724(M2C_UNK arg0) {

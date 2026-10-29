@@ -29,46 +29,9 @@ func_02008048(a,(u8*)&data_02137310+off+4,6);
 M2C_FIELD(&data_0213731a,u16*,off)=now;
 }
 
-void func_0201af48(void *arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3, u32 arg4, u16 arg5) {
-    M2C_UNK func_02008048(M2C_UNK *, void *, M2C_UNK);
-    s32 func_0201a704(u32);
-    s32 func_0201a764(u32);
-    M2C_UNK func_0201a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK *func_0201abd0(void);
-    M2C_UNK *func_0201ad9c(s32);
-    extern M2C_UNK data_02137778;
-    M2C_UNK *var_r0;
-    s32 temp_r0;
-    u32 val;
-
-    val = ((u32) arg5 << 8);
-    val = val | (arg5 >> 8);
-    M2C_FIELD(arg0, s16 *, -2) = (s16) val;
-    if (func_0201a764(arg4) == 0) {
-        temp_r0 = func_0201a704(arg4);
-        if (temp_r0 == 0) {
-            return;
-        }
-        var_r0 = func_0201abd0();
-        if (var_r0 == 0) {
-            var_r0 = func_0201ad9c(temp_r0);
-            if (var_r0 == 0) {
-                return;
-            }
-        }
-        func_02008048(var_r0, arg0 - 0xE, 6);
-    } else {
-        M2C_FIELD(arg0, u8 *, -0xE) = 1;
-        M2C_FIELD(arg0, u8 *, -0xD) = 0;
-        M2C_FIELD(arg0, u8 *, -0xC) = 0x5E;
-        M2C_FIELD(arg0, u8 *, -0xB) = (u8) ((arg4 >> 0x10) & 0x7F);
-        M2C_FIELD(arg0, u8 *, -0xA) = (u8) (arg4 >> 8);
-        M2C_FIELD(arg0, u8 *, -9) = (u8) arg4;
-        func_02008048(&data_02137778, arg0 - 8, 6);
-    }
-    func_0201a824(arg0 - 0xE, arg1 + 0xE, arg2, arg3);
-}
-
+#pragma scheduling off
+void func_0201af48(void *a,s32 b,M2C_UNK c,M2C_UNK d,u32 ip,u16 type){M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);s32 func_0201a704(u32);s32 func_0201a764(u32);M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK *func_0201abd0(void);M2C_UNK *func_0201ad9c(s32);extern M2C_UNK data_02137778;M2C_UNK *p;s32 n;M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);if(!func_0201a764(ip)){n=func_0201a704(ip);if(!n)return;p=func_0201abd0();if(!p){p=func_0201ad9c(n);if(!p)return;}func_02008048(p,(u8 *)a-14,6);}else{M2C_FIELD(a,u8 *,-14)=1;M2C_FIELD(a,u8 *,-13)=0;M2C_FIELD(a,u8 *,-12)=0x5e;M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;M2C_FIELD(a,u8 *,-10)=ip>>8;M2C_FIELD(a,u8 *,-9)=ip;func_02008048(&data_02137778,(u8 *)a-8,6);}func_0201a824((u8 *)a-14,b+14,c,d);}
+#pragma scheduling on
 void func_0201b018(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
 s32 func_0200751c(void);void func_02007530(s32);
 M2C_UNK func_02008048(M2C_UNK*,void*,M2C_UNK);
@@ -115,22 +78,7 @@ if(var_r9+var_r7==0)return;
 func_0201b018(arg0,var_r9,var_r8,var_r7,arg4,var_r4);
 }
 
-void func_0201b338(void *arg0, void *arg1, void *arg2) {
-    u32 func_0201a588(void *, u32, u32);
-    M2C_UNK func_0201a63c(M2C_UNK);
-    void func_0201b140(void *,u32,void *,u32,u32,u8);
-    extern M2C_UNK data_0212dca4;
-    extern M2C_UNK data_02137290;
-    void *var_r4;
-    u16 temp_lr;
-    u32 temp_val;
-    u32 sp_0;
-    u32 sp_4;
-
-    var_r4 = (void *) M2C_FIELD(arg2, u32 *, 0x4C);
-    M2C_FIELD(var_r4, s16 *, 0x22) = 8;
-    M2C_FIELD(var_r4, s16 *, 0x26) = (s16) ((u32)(&data_0212dca4) >> 4); // wait, ldr r2, [pc, #0x88] -> ldr r2, [data_0212dca4 + 4] or something. Let's use extern u32 data_02137290; extern u32 data_0212dca4;
-}
+void func_0201b338(void *a,u32 b,void *c){u32 func_0201a588(void *,u32,u32);s32 func_0201a63c(s32);void func_0201b140(void *,u32,void *,u32,u32,u8);extern M2C_UNK data_0212dca4,data_02137290;void *p;u32 value;u16 id;s32 sum;p=(void *)M2C_FIELD(c,u32 *,0x4c);M2C_FIELD(p,u16 *,0x22)=8;id=M2C_FIELD(&data_02137290,u16 *,4);value=M2C_FIELD(&data_0212dca4,u32 *,4);M2C_FIELD(p,u16 *,0x26)=value;M2C_FIELD(p,u16 *,0x24)=0;M2C_FIELD(c,u16 *,10)=id;M2C_FIELD(&data_02137290,u16 *,4)=id+1;M2C_FIELD(p,u16 *,0x28)=id;sum=func_0201a588((u8 *)p+0x22,8,0);sum=func_0201a588(a,b,sum);sum=func_0201a63c((u16)sum);M2C_FIELD(p,u16 *,0x24)=(sum>>8)|(sum<<8);func_0201b140((u8 *)p+0x22,8,a,b,M2C_FIELD(c,u32 *,0x1c),1);}
 
 void func_0201b3e8(void *arg0,s32 arg1,void *arg2) {
 u32 func_0201a588(void *,u32,u32);s32 func_0201a63c(s32);void func_0201b140(void *,u32,void *,u32,u32,u8);
@@ -310,44 +258,5 @@ next: node=M2C_FIELD(node,void **,0x68);
 return 0;
 }
 
-s32 func_0201bd2c(void *arg0, void *arg1, void *arg2) {
-    s32 var_ip;
-    s32 var_r3;
-    s32 var_r5;
-    s32 var_r6;
-    u16 temp_lr;
-    u16 temp_lr_2;
-    u16 temp_lr_3;
-    u16 temp_r4_2;
-    u8 temp_r4;
-
-    temp_r4 = M2C_FIELD(arg2, u8 *, 8);
-    var_r3 = 0;
-    var_r5 = 0;
-    if ((temp_r4 != 0xA) && (temp_r4 != 0xB)) {
-        var_r5 = 1;
-    }
-    var_ip = 0;
-    var_r6 = 0;
-    if (var_r5 != 0) {
-        temp_lr = M2C_FIELD(arg1, u16 *, 2);
-        if (M2C_FIELD(arg2, u16 *, 0xA) == (u16) ((temp_lr >> 8) | (temp_lr << 8))) {
-            var_r6 = 1;
-        }
-    }
-    if (var_r6 != 0) {
-        temp_lr_2 = M2C_FIELD(arg1, u16 *, 0);
-        if (M2C_FIELD(arg2, u16 *, 0x18) == (u16) ((temp_lr_2 >> 8) | (temp_lr_2 << 8))) {
-            var_ip = 1;
-        }
-    }
-    if (var_ip != 0) {
-        temp_lr_3 = M2C_FIELD(arg0, u16 *, 0xC);
-        temp_r4_2 = M2C_FIELD(arg0, u16 *, 0xE);
-        if (M2C_FIELD(arg2, s32 *, 0x1C) == ((u16) ((temp_r4_2 >> 8) | (temp_r4_2 << 8)) | ((u16) ((temp_lr_3 >> 8) | (temp_lr_3 << 8)) << 0x10))) {
-            var_r3 = 1;
-        }
-    }
-    return var_r3;
-}
+s32 func_0201bd2c(void *a,void *b,void *c){s32 result,ok,first,second;u16 x,y,z,w;u8 kind;kind=M2C_FIELD(c,u8 *,8);result=0;ok=0;second=0;first=0;if(kind!=10&&kind!=11)ok=1;if(ok){x=M2C_FIELD(b,u16 *,2);if(M2C_FIELD(c,u16 *,10)==(u16)((x>>8)|(x<<8)))first=1;}if(first){y=M2C_FIELD(b,u16 *,0);if(M2C_FIELD(c,u16 *,24)==(u16)((y>>8)|(y<<8)))second=1;}if(second){z=M2C_FIELD(a,u16 *,12);w=M2C_FIELD(a,u16 *,14);if(M2C_FIELD(c,u32 *,28)==(((u16)((z>>8)|(z<<8))<<16)|(u16)((w>>8)|(w<<8))))result=1;}return result;}
 

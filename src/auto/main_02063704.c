@@ -165,6 +165,32 @@ packet[2]=2;
 result=func_02062324(arg0,packet,9);if(result)return result;
 if(func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0)return 3; return 0;
 }
+
+void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    s32 func_02063aa8(void *, u32, u32, void *, s32);
+    u32 sp44;
+    M2C_UNK spA;
+    s8 sp9;
+    s8 sp8;
+    s8 sp7;
+    s8 sp6;
+    s8 sp5;
+    s8 sp4;
+
+    sp7 = 0x66;
+    sp44 = ((sp44 << 0x18) & 0xFF000000) | (((sp44 << 8) & 0xFF0000) | ((u8) (sp44 >> 0x18) | ((sp44 >> 8) & 0xFF00)));
+    sp4 = 0xFD;
+    sp5 = 0xFC;
+    sp6 = 0x1E;
+    sp8 = 0x6A;
+    sp9 = 0xB2;
+    M2C_FIELD(&spA, u8 *, 0) = (u8) M2C_FIELD(&sp44, u8 *, 0);
+    M2C_FIELD(&spA, u8 *, 1) = (u8) M2C_FIELD(&sp44, u8 *, 1);
+    M2C_FIELD(&spA, u8 *, 2) = (u8) M2C_FIELD(&sp44, u8 *, 2);
+    M2C_FIELD(&spA, u8 *, 3) = (u8) M2C_FIELD(&sp44, u8 *, 3);
+    func_02063aa8((void *)arg0, (u32)arg1, (u32)arg2, (void *)&sp4, 0xA);
+}
+
 #pragma scheduling reset
 extern s32 data_0213e4b4[];
 s32 func_02063c88(void *arg0) {
@@ -260,6 +286,18 @@ void func_02063f90(void) {
 }
 
 #pragma opt_strength_reduction off
+s32 func_02063fa8(void){
+s32 func_020649a8(s32);extern u8 data_021001cc[];
+u8 *p=data_021001cc;s32 result=0,i=1;u8 *base=p;s32 zero=result;
+do{ s32 v;u32 a;v=M2C_FIELD(p,s32*,4);a=(u32)(v<<22)>>29;
+if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))func_020649a8)(p,b,a))result=-1;}
+if(i>=3)p=0;else{ s32 off=i*76;i++;p=(u8*)&data_021001cc+off;}
+}while(p);
+return result;
+}
+#pragma opt_strength_reduction on
+
+#pragma opt_strength_reduction off
 #pragma peephole off
 s32 func_02064034(void) {
 s32 func_020649a8(s32);
@@ -338,6 +376,31 @@ s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
     if (((u32) M2C_FIELD(arg0, s32 *, 4) << 0x13) >> 0x1F == 0) {
         func_020640e8(M2C_FIELD(arg0, s32 *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28));
     }
+    return 0;
+}
+
+s32 func_020641a8(void *arg0, M2C_UNK *arg1) {
+    void (*func_020640e4)(M2C_UNK, M2C_UNK *);
+    void func_020640ec(void *);
+
+    s32 temp_r2 = M2C_FIELD(arg0, s32 *, 0x24) - M2C_FIELD(arg0, s32 *, 0x1C);
+    M2C_UNK temp_r0;
+    if (temp_r2 == 0) {
+        return 0;
+    }
+    M2C_FIELD(arg0, s32 *, 0x28) = temp_r2;
+    if ((((u32)M2C_FIELD(arg0, s32 *, 0x04) << 0x13) >> 0x1F) == 0) {
+        func_020640e4(M2C_FIELD(arg0, M2C_UNK *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28));
+    }
+    temp_r0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK), 0x40)(M2C_FIELD(arg0, M2C_UNK *, 0x00), M2C_FIELD(arg0, M2C_UNK *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    if (arg1 != (M2C_UNK *)0) {
+        *arg1 = M2C_FIELD(arg0, s32 *, 0x28);
+    }
+    if (temp_r0 != 0) {
+        return temp_r0;
+    }
+    M2C_FIELD(arg0, s32 *, 0x18) += M2C_FIELD(arg0, s32 *, 0x28);
+    func_020640ec(arg0);
     return 0;
 }
 

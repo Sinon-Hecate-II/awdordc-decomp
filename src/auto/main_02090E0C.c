@@ -6,7 +6,10 @@ extern u8 data_020f362c[];
 void func_02090eb8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6) {
     s32 func_02081070(M2C_UNK, M2C_UNK);
     M2C_UNK func_02090e0c(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
-    func_02090e0c(func_02081070(arg0, 1), arg1, arg2, arg3, (s32) arg4, arg5, 1, arg6);
+    s32 t;
+    s32 a4 = (s32)arg4;
+    t = func_02081070(arg0, 1);
+    func_02090e0c(t, arg1, arg2, arg3, a4, arg5, 1, arg6);
 }
 
 void *func_02090f0c(void *arg0) {
@@ -40,9 +43,10 @@ void *func_02090f78(void *arg0) {
     M2C_UNK func_02090c7c();
     M2C_UNK func_020e35cc(s32);
     extern M2C_UNK data_021029cc;
+    M2C_UNK *d = &data_021029cc;
     M2C_UNK (*temp_r1)(void *);
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021029cc;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = d;
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
         func_02090894();
     }
@@ -61,21 +65,16 @@ void *func_02090f78(void *arg0) {
 
 void func_0209106c(void *arg0) {
     void func_020912a4(s32 *);
-    func_020912a4(M2C_FIELD(arg0, s32 *, 0x58));
+    void (*fp)(s32 *) = func_020912a4;
+    fp(M2C_FIELD(arg0, s32 *, 0x58));
 }
 
 #pragma opt_peephole off
-s32 func_0209107c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {
-    M2C_UNK func_02091af8(void *, s32, s32);
-    void func_0207d0f0(s32, s32, s32, s32, s32, s32, u8);
-    s32 temp_r0;
-
-    temp_r0 = func_02091af8(arg0, arg1, arg2);
-    if (temp_r0 == 0) {
-        return 0;
-    }
-    func_0207d0f0(temp_r0, arg3, arg4, arg5, arg6, arg7, arg8);
-    return 1;
+s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8) {
+M2C_UNK func_02091af8(void*,s32,s32); void func_0207d0f0(s32,s32,s32,s32,s32,s32,s32);
+register s32 result=func_02091af8(arg0,arg1,arg2);
+if (!result) return 0;
+func_0207d0f0(result,arg3,arg4,arg5,arg6,arg7,arg8); return 1;
 }
 #pragma opt_peephole reset
 M2C_UNK func_020910d0(void *arg0) {
@@ -475,51 +474,23 @@ void func_02091928(void *arg0) {
     M2C_FIELD(arg0, u16 *, 0x1C) = temp_r4;
 }
 
-void func_02091954(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_020918a4(M2C_UNK);
-    M2C_UNK func_020913d4(M2C_UNK);
-    void *r5;
-    M2C_UNK r4;
-    M2C_UNK r1;
-
-    r5 = (void *)arg0;
-    r4 = arg2;
-    M2C_FIELD(r5, u8 *, 0x22) = (u8)arg3;
-    func_020918a4(arg0);
-    r1 = 0;
-    M2C_FIELD(r5, M2C_UNK *, 0x30) = r1;
-    M2C_FIELD(r5, M2C_UNK *, 0x28) = r1;
-    M2C_FIELD(r5, M2C_UNK *, 0x2C) = r1;
-    M2C_FIELD(r5, s16 *, 0x18) = (s16)r1;
-    M2C_FIELD(r5, s16 *, 0x1A) = (s16)r1;
-    M2C_FIELD(r5, u8 *, 0x20) = (u8)r4;
-    M2C_FIELD(r5, u8 *, 0x21) = (u8)0x1F;
-    M2C_FIELD(r5, M2C_UNK *, 0x14) = r1;
-    M2C_FIELD(r5, u8 *, 0x23) = (u8)r1;
-    M2C_FIELD(r5, s16 *, 0x1A) = (s16)r1;
-    M2C_FIELD(r5, s16 *, 0x1C) = (s16)0x100;
-    M2C_FIELD(r5, s16 *, 0x1E) = (s16)r1;
-    M2C_FIELD(r5, s16 *, 0x24) = (s16)r1;
-    func_020913d4((M2C_UNK)r5);
+void func_02091954(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3) {
+M2C_UNK func_020918a4(M2C_UNK); M2C_UNK func_020913d4(M2C_UNK);
+void *r5=(void*)arg0; M2C_UNK r4=arg2; M2C_UNK r1;
+M2C_FIELD(r5,u8*,0x22)=arg3; func_020918a4(arg0); r1=0;
+M2C_FIELD(r5,s32*,0x30)=r1; M2C_FIELD(r5,s32*,0x28)=r1; M2C_FIELD(r5,s32*,0x2c)=r1;
+M2C_FIELD(r5,s16*,0x18)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
+M2C_FIELD(r5,u8*,0x20)=r4; M2C_FIELD(r5,u8*,0x21)=31; M2C_FIELD(r5,s32*,0x14)=r1;
+M2C_FIELD(r5,u8*,0x23)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
+M2C_FIELD(r5,s16*,0x1c)=256; M2C_FIELD(r5,s16*,0x1e)=r1; M2C_FIELD(r5,s16*,0x24)=r1;
+func_020913d4((M2C_UNK)r5);
 }
 
 s32 func_020919b4(M2C_UNK arg0) {
-    extern s32 data_02157918;
-    s32 var_r2;
-    s32 *var_r3;
-
-    var_r3 = &data_02157918;
-    var_r2 = 0;
-loop_1:
-    if (*var_r3 == arg0) {
-        return (var_r2 * 0x34) + (s32) &data_02157918;
-    }
-    var_r3 = (s32 *)((s8 *)var_r3 + 0x34);
-    var_r2 += 1;
-    if (var_r2 >= 0x20) {
-        return 0;
-    }
-    goto loop_1;
+extern s32 data_02157918; s32 i=0; s32 *p=&data_02157918;
+do { if(*p==arg0) return i*0x34+(s32)&data_02157918;
+p=(s32*)((u8*)p+0x34); ++i;
+}while(i<32); return 0;
 }
 
 void func_020919f4(void *arg0) {
@@ -697,10 +668,9 @@ gCur3DSpriteEngine=save;
 }
 
 void func_02091d20(void) {
-    M2C_UNK func_02007e20(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_020f41e0;
-    extern void *gCur3DSpriteEngine;
-    func_02007e20(&data_020f41e0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x800, 0x800);
+M2C_UNK func_02007e20(M2C_UNK*,s32,M2C_UNK);
+extern M2C_UNK data_020f41e0; extern void *gCur3DSpriteEngine;
+func_02007e20(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);
 }
 
 void func_02091d4c(s32 arg0) {

@@ -1,6 +1,8 @@
 /* 34 functions from 0x0200ED40 to 0x0200FC58 (main), found by ds-decomp. */
 #include "common.h"
 
+extern volatile s32 data_0212fd38;
+
 typedef union RTCStatus {
     u16 value;
     struct {
@@ -344,9 +346,10 @@ void func_0200f6a4(s32 arg0) {
 }
 
 s32 func_0200f6b4(void) {
-extern s32 data_0212fd38;
+extern volatile s32 data_0212fd38;
+volatile s32 *p = &data_0212fd38;
 s32 state;
-do {state=data_0212fd38;} while(state==1);
+do {state=*p;} while(state==1);
 return state;
 }
 
@@ -402,7 +405,7 @@ long long func_0200f7e0(void *arg0, void *arg1) {
 void func_0200f844(void *arg0, s32 arg1) {
     extern s32 data_020f550c[];
     s32 d = arg1;
-    s32 years = 0;
+    u32 years;
     s32 m;
     s32 r;
 
@@ -413,9 +416,9 @@ void func_0200f844(void *arg0, s32 arg1) {
         d = 0x8EAC;
     }
     M2C_FIELD(arg0, s32 *, 0xC) = (d + 6) % 7;
-    for (;;) {
-        s32 sub;
+    for (years=0;;) {
         s32 saved;
+        s32 sub;
         if (!(years & 3)) {
             sub = 0x16E;
         } else {
@@ -454,7 +457,8 @@ void func_0200f844(void *arg0, s32 arg1) {
     while (1) {
         if (d >= data_020f550c[r]) {
             M2C_FIELD(arg0, s32 *, 4) = r + 1;
-            M2C_FIELD(arg0, s32 *, 8) = d - data_020f550c[r] + 1;
+            d -= *(volatile s32 *)&data_020f550c[r];
+            M2C_FIELD(arg0, s32 *, 8) = d + 1;
             return;
         }
         r--;
@@ -483,13 +487,14 @@ func_0200f844(arg0,time/86400);
 }
 
 s32 func_0200fa50(void *arg0) {
-register s32 month=M2C_FIELD(arg0,s32 *,4)-2;
+register s32 month=M2C_FIELD(arg0,s32 *,4)-(2);
 register s32 year=M2C_FIELD(arg0,s32 *,0)+2000;
 s32 century,yy,days,day=M2C_FIELD(arg0,s32 *,8);
-if(month<1) year--;
+if(month<(1)) year--;
 century=year/100; yy=year%100;
 if(month<1) month+=12;
-days=day+(month*26-2)/10; days+=yy; days+=yy/4; days+=century/4; days+=century*5;
+days=day+(month*26-2)/10+yy;
+days=days+yy/4+century/4+century*5;
 return days%7;
 }
 
@@ -522,36 +527,15 @@ func_02007530(state);
 }
 
 void func_0200fbcc(s32 arg0, s32 arg1) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    void func_02007958(void);
-    void func_02005df4(void *);
-    extern M2C_UNK data_0212fde0;
-    void *p = &data_0212fde0;
-    s32 state;
-    s32 temp;
-
-    state = func_0200751c();
-    if (M2C_FIELD(p, s32 *, 8) == arg0) {
-        if (M2C_FIELD(p, s32 *, 12) == 0) {
-            func_02007958();
-            goto done;
-        }
-    } else {
-        if (M2C_FIELD(p, s32 *, 0x18) != arg1) func_02007958();
-    }
-    temp = M2C_FIELD(p, s32 *, 12) - 1;
-    M2C_FIELD(p, s32 *, 12) = temp;
-    if (temp == 0) {
-        s32 nv = -3;
-        s32 zv = 0;
-        u8 *av = (u8 *)p + 0x10;
-        M2C_FIELD(p, s32 *, 8) = nv;
-        M2C_FIELD(p, s32 *, 0x18) = zv;
-        func_02005df4(av);
-    }
+s32 func_0200751c(void); void func_02007530(s32); void func_02007958(void); void func_02005df4(void *,s32);
+extern M2C_UNK data_0212fde0;
+void *p=&data_0212fde0; s32 state; s32 temp; state=func_0200751c();
+if (M2C_FIELD(p,s32 *,8)!=arg0 || M2C_FIELD(p,s32 *,12)==0) {func_02007958(); goto done;}
+if(M2C_FIELD(p,s32 *,0x18)!=arg1) func_02007958();
+if(--M2C_FIELD(p,s32 *,12)==0) {
+{ s32 a=-3; s32 b=0; void *q=(u8 *)p+0x10; M2C_FIELD(p,s32 *,8)=a; M2C_FIELD(p,s32 *,0x18)=b; func_02005df4(q,b); }
+}
 done:
-    *M2C_FIELD(p, s32 **, 0) = 0;
-    func_02007530(state);
+*M2C_FIELD(p,s32 **,0)=0;func_02007530(state);
 }
 

@@ -169,7 +169,7 @@ s32 func_0203b63c(s32 arg0,s32 arg1) {
  if(a>0)if(func_0204e2f4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),a,&out))return 0;
  if(a<=0||out==-1)return 0;
  a=func_0204e1b4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),out,b);
- return a ? 0 : 1;
+ if(a == 0) return 1; return 0;
 }
 
 u32 func_0203b6f8(u32 a,u32 unused,u32 off){void func_0203accc(u32,u32);u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}func_0203accc(code,off+0xfffeeaa8);return ret;}

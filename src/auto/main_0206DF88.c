@@ -91,10 +91,8 @@ void func_0206e3e0(u8 *p, u64 value) {
     p[0] = 0;
     p[4] = 0;
     while (value) {
-        u8 old = p[4];
-        p[4] = (u8)(old + 1);
-        p[5 + old] = (u8)func_02072094(value, 10ULL);
-        value = func_02072088(value, 10ULL);
+        p[5 + p[4]++] = value % 10ULL;
+        value /= 10ULL;
     }
     lo = p + 5;
     hi = lo + p[4] - 1;

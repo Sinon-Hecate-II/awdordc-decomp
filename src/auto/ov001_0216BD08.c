@@ -1,4 +1,5 @@
 /* 32 functions from 0x0216BD08 to 0x0216CCE0 (ov001), found by ds-decomp. */
+#pragma ipa off
 #include "common.h"
 extern unsigned char data_ov001_0218fd40[];
 extern unsigned char data_ov001_0218fdb0[];
@@ -33,6 +34,88 @@ int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
 }
 
 #pragma thumb on
+int func_ov001_0216bebc(int a,unsigned char *p,int *n,unsigned char *q) {
+ int func_ov001_0216c098(); int func_ov001_0216cef0(unsigned short); int func_ov001_0216cec8(int); void func_ov001_0216b918(int);
+ unsigned char *r,*t;
+ if(a!=2) {++*n;return a;}
+ r=p+12;t=p+36;
+ if(func_ov001_0216c098(q+16,(int)r+16)<0) {++*n;return a;}
+ if(*t!=7) {++*n;return a;}
+ if(func_ov001_0216cef0(*(unsigned short *)(t+2))==0) {++*n;return a;}
+ if(func_ov001_0216cec8(*(int *)(t+4))==0) return 100;
+ if(func_ov001_0216cec8(*(int *)(t+4))==-2) {func_ov001_0216b918(20);return -1;}
+ if(func_ov001_0216cec8(*(int *)(t+4))==-3) {func_ov001_0216b918(21);return -1;}
+ func_ov001_0216b918(24);return -1;
+}
+
+s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
+    void func_ov001_0216cde4();
+    int func_ov001_0216cef0(u16);
+    void func_ov001_0216cdd4();
+    int func_ov001_0216c1a0();
+    int func_ov001_0216cec8();
+    extern unsigned char data_ov001_02191800[];
+
+    M2C_UNK r4;
+    M2C_UNK r5;
+    M2C_UNK r6;
+    M2C_UNK r7;
+    s32 r2;
+    u8 t;
+    u16 f;
+    s32 v;
+
+    r5 = arg1;
+    r6 = arg0;
+    func_ov001_0216cde4(r5, 0, 0x104);
+    r7 = r5 + 0x80;
+    r4 = r6;
+    r2 = func_ov001_0216cef0(*(u16 *)((u8 *)r4 + 2));
+    if (r2 <= 0) {
+        return -1;
+    }
+    for (;;) {
+        t = *(u8 *)r4;
+        if (t > 6) {
+            return -1;
+        }
+        switch (t) {
+        case 0:
+            func_ov001_0216cdd4(r5, (M2C_UNK)((u8 *)r4 + 6));
+            break;
+        case 1:
+            func_ov001_0216cdd4(r7, (M2C_UNK)((u8 *)r4 + 6));
+            break;
+        case 2:
+            func_ov001_0216cdd4(r5 + 0x100, (M2C_UNK)((u8 *)r4 + 6));
+            break;
+        case 3:
+            if (func_ov001_0216cef0(*(u8 *)((u8 *)r4 + 6)) <= 0) {
+                return -1;
+            }
+            break;
+        case 4:
+            v = func_ov001_0216c1a0((M2C_UNK)((u8 *)r4 + 6), r2);
+            v = func_ov001_0216cec8(v);
+            *(s32 *)(data_ov001_02191800 + 0x34) = v;
+            break;
+        case 5:
+            v = func_ov001_0216c1a0((M2C_UNK)((u8 *)r4 + 6), r2);
+            v = func_ov001_0216cec8(v);
+            *(s32 *)(data_ov001_02191800 + 0x38) = v;
+            break;
+        case 6:
+        default:
+            return -1;
+        }
+        f = *(u16 *)((u8 *)r4 + 4);
+        if (f == 0) {
+            return 0;
+        }
+        r4 = (M2C_UNK)((u8 *)r6 + func_ov001_0216cef0(f));
+    }
+}
+
 s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
     s32 var_r3;
     s32 var_r4;
@@ -82,6 +165,24 @@ if(*(u16 *)(p+4)==0)break;
 p=base+func_ov001_0216cef0(*(u16 *)(p+4));
 }while(1);
 return 0;
+}
+
+#pragma thumb on
+int func_ov001_0216c318(void *p,int out) {
+ int func_ov001_0216cef0(unsigned short); void func_ov001_0216cdd4();
+ unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8; unsigned char *data=(unsigned char *)(out+48); unsigned int n; int kind;
+ for(;;) {
+ n=func_ov001_0216cef0(*(unsigned short *)(r+2)); kind=*r;
+ switch(kind) {case 0x30:case 0x40:if(n>64)return -1;break;case 0x35:case 0x45:if(n>33)return -1;break;}
+ switch(kind) {
+ case 0x30:case 0x40:func_ov001_0216cdd4(data,r+6,n);*(int *)(out+4)=n;break;
+ case 0x35:case 0x45:if(n && r[n+5]) return -1;func_ov001_0216cdd4(text,r+6,n);break;
+ default:return -1;
+ }
+ if(!*(unsigned short *)(r+4))break;
+ r=base+func_ov001_0216cef0(*(unsigned short *)(r+4));
+ }
+ return 0;
 }
 int func_ov001_0216c3d0(unsigned char *p, void *out) {
  int func_ov001_0216cef0(unsigned short);
@@ -209,7 +310,7 @@ int func_ov001_0216ca1c(int a,int b,int c,unsigned int d,void *e,void *f,int g) 
  func_ov001_0216cdd4(data_ov001_0219256a,f,g);
  func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
  func_ov001_0216cb08(packet,b,a,c);
- if(d!=func_ov001_0216cb74(b,c)) {
+ if((int *)func_ov001_0216cb74(b,c)!=(int *)d) {
  func_ov001_0216b918(0x12); func_ov001_0216ad64(packet[2]); return -1;
  }
  func_ov001_0216ad64(packet[2]); return 0;

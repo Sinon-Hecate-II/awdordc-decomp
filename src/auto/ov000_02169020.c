@@ -33,12 +33,13 @@ void func_ov000_0216906c(void) {
 
 void func_ov000_02169070(void *p) {
  extern s16 data_ov000_021ae960[];
- u32 t;
+ u16 t;
  M2C_FIELD(p,u16 *,0x48)+=M2C_FIELD(p,s16 *,0x4a);
  M2C_FIELD(p,s16 *,0x4c)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
  M2C_FIELD(p,s16 *,0x4e)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
  t=M2C_FIELD(p,u16 *,0x48);
- if(t<16)return;
+ t=t;
+ if (t<16) return;
  M2C_FIELD(p,u16 *,0x48)=t-16;
  M2C_FIELD(p,s16 *,0x4c)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
  M2C_FIELD(p,s16 *,0x4e)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
@@ -266,15 +267,25 @@ s32 func_ov000_0216975c(void) {
 }
 
 s32 func_ov000_021697a0(volatile s8 *p) {
-s32 count=0;
-do {
-switch(*p++) {
-case 9: p++; break;
-case -1: case 4: case 10: return count;
-case 0: case 1: case 2: case 3: count++; break;
-}
-} while(1);
-return count;
+    s32 count = 0;
+loop:
+    switch (*p++) {
+    case 9:
+        p++;
+        break;
+    case -1:
+    case 4:
+    case 10:
+        return count;
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        count++;
+        break;
+    }
+    goto loop;
+    return count;
 }
 
 void func_ov000_02169800(void) {
@@ -303,61 +314,23 @@ void func_ov000_02169850(void) {
 }
 
 extern u32* D_027E0058;
-int func_ov000_02169854(int arg0, int arg1, const signed char *arg2) {
-    unsigned int *pVar1;
-    int iVar2;
-    unsigned int uVar3;
-    int iVar4;
-
-    pVar1 = *(unsigned int **)gCurrentMap;
-    pVar1 = *(unsigned int **)*pVar1;
-    
-    if ((*(unsigned char *)((char *)pVar1 + (arg1 * 0x8C + 0x5200) + 0xA4 + 0x6000 + 0x7C3) & 2) != 0) {
-        return 1;
-    }
-
-    iVar4 = 1;
-    uVar3 = *(unsigned char *)((char *)pVar1 + (arg0 * 2 + 0x3700) + 0x58);
-    uVar3 += arg0;
-    
-    if (((*(unsigned char *)((char *)pVar1 + (uVar3 >> 3) + 0x5000 + 0x201) >> (uVar3 & 7)) & 1) != 0) {
-        return 1;
-    }
-
-    while (1) {
-        iVar2 = *arg2++;
-        switch (iVar2 + 1) {
-            case 1:
-                return 0;
-            case 2:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                return iVar4;
-            case 3:
-                arg2++;
-                break;
-            case 4:
-                iVar4 = 0;
-                break;
-            case 5:
-                iVar4 = 1;
-                break;
-            case 6:
-                arg0--;
-                break;
-            case 7:
-                arg0++;
-                break;
-            case 12:
-                arg1++;
-                break;
-            case 13:
-                arg1--;
-                break;
-        }
-    }
+int func_ov000_02169854(int x,int y,const signed char *cmd) {
+u8 *map=(u8 *)*gCurrentMap;
+u32 pos;
+if(*(u8 *)(map+*(u16 *)(map+0x52a4)*140+0x67c3)&2)return 1;
+for(;;){
+pos=x+*(u16 *)(map+y*2+0x3758);
+if((u8)(map[(pos>>3)+0x5201] & (1<<(pos&7))))return 1;
+switch(*cmd++){
+case 9:cmd++;break;
+case -1: case 4:return 0;
+case 10:return 1;
+case 0:x--;break;
+case 1:x++;break;
+case 2:y++;break;
+case 3:y--;break;
+}
+}
 }
 
 s32 func_ov000_02169940(s8 *p) {
@@ -370,15 +343,28 @@ s32 func_ov000_02169940(s8 *p) {
 }
 
 void func_ov000_02169998(u8 *p,s8 *q) {
- loop: switch(*q++) {
- case 9: q++; goto loop;
- case -1: case 4: return;
- case 0: p[1]--;goto loop;
- case 1: p[1]++;goto loop;
- case 2: p[2]++;goto loop;
- case 3: p[2]--;goto loop;
- default: goto loop;
- }
+  for (;;) {
+    switch (*q++) {
+    case 9: q++; break;
+    case -1:
+    case 4:
+      return;
+    case 0:
+      p[1]--;
+      break;
+    case 1:
+      p[1]++;
+      break;
+    case 2:
+      p[2]++;
+      break;
+    case 3:
+      p[2]--;
+      break;
+    default:
+      break;
+    }
+  }
 }
 
 void func_ov000_02169a24(void) {

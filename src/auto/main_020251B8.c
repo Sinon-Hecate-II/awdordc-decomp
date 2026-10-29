@@ -9,8 +9,8 @@ void *q; u8 *p; s32 i; void *node;
 func_0200751c();
 i=0;p=(u8 *)&data_02138cc8;
 do{
-if(p[0x5a]==0){}else if(now-M2C_FIELD(p,s32 *,0x50)>957)p[0x5a]=0;
-i++;p+=0x5c;
+if(p[0x5a]!=0 &&(now-M2C_FIELD(p,s32 *,0x50)>957))p[0x5a]=0;
+p+=0x5c;i++;
 }while(i<4);
 func_02007530();
 node=M2C_FIELD(&data_0212dca4,void **,8);
@@ -117,31 +117,17 @@ void func_02025700(void *arg0) {
 }
 
 void func_02025748(void *arg0, s32 arg1, u32 arg2) {
-    void func_02008048(s32, void *, u32);
-    void func_020252e4(void *, s32);
-    s32 index;
-    u32 low;
-    u32 old;
-    u32 count;
-    old = M2C_FIELD(arg0, u32 *, 0x10);
-    low = old + arg2 * 8;
-    M2C_FIELD(arg0, u32 *, 0x10) = low;
-    if (low < arg2 * 8) M2C_FIELD(arg0, u32 *, 0x14) += 1;
-    index = (old >> 3) & 0x3F;
-    count = 0x40 - index;
-    M2C_FIELD(arg0, u32 *, 0x14) += arg2 >> 29;
-    if (arg2 >= count) {
-        func_02008048(arg1, (u8 *)arg0 + 0x18 + index, count);
-        index = 0;
-        func_020252e4(arg0, (s32)arg0 + 0x18);
-        if (count + 0x3F < arg2) {
-            do {
-                func_020252e4(arg0, arg1 + count);
-                count += 0x40;
-            } while (count + 0x3F < arg2);
-        }
-    } else count = 0;
-    func_02008048((u8 *)arg1 + count, (u8 *)arg0 + 0x18 + index, arg2 - count);
+void func_02008048(s32,void *,u32); void func_020252e4(void *,s32);
+u32 index,low,old,count;
+old=M2C_FIELD(arg0,u32 *,0x10);
+low=old+(arg2<<3); M2C_FIELD(arg0,u32 *,0x10)=low;
+if(low<(arg2<<3))M2C_FIELD(arg0,u32 *,0x14)++;
+arg2=arg2; old >>= 3; index=old&63; count=64-index;
+M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
+if(arg2>=count){func_02008048(arg1,(u8 *)arg0+24+index,count);index=0;func_020252e4(arg0,(s32)arg0+24);
+while(count+63<arg2){func_020252e4(arg0,arg1+(s32)count);count+=64;}
+}else count=0;
+func_02008048(arg1+count,(u8 *)arg0+24+index,arg2-count);
 }
 
 
@@ -279,30 +265,24 @@ void func_02025fc0(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x10) = 0xC3D2E1F0;
 }
 
-M2C_UNK func_02026014(void *arg0, s32 arg1, u32 arg2) {
-void func_02008048(s32,void *,u32);
-void func_02025938(void *,s32);
-s32 index;
-u32 low,old,count;
+#pragma opt_strength_reduction off
+M2C_UNK func_02026014(void *arg0,s32 arg1,u32 arg2) {
+void func_02008048(s32,void *,u32); void func_02025938(void *,s32);
+s32 index; u32 low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x18);
-low=old+arg2*8;
-M2C_FIELD(arg0,u32 *,0x18)=low;
-if(low<arg2*8) M2C_FIELD(arg0,u32 *,0x14)+=1;
-index=(old>>3)&0x3f;
-count=0x40-index;
+index=(old>>3)&63;
+low=old+arg2*8;M2C_FIELD(arg0,u32 *,0x18)=low;
+if(low<arg2*8)M2C_FIELD(arg0,u32 *,0x14)++;
+count=64-index;
 M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
 if(arg2>=count) {
 func_02008048(arg1,(u8 *)arg0+0x1c+index,count);
-index=0;
-func_02025938(arg0,(s32)arg0+0x1c);
-if(count+0x3f<arg2) do {
-func_02025938(arg0,arg1+count);
-count+=0x40;
-}while(count+0x3f<arg2);
+index=0;func_02025938(arg0,(s32)arg0+0x1c);
+while(count+63<arg2){func_02025938(arg0,arg1+count);count+=64;}
 }else count=0;
 func_02008048(arg1+count,(u8 *)arg0+0x1c+index,arg2-count);
 }
-
+#pragma opt_strength_reduction reset
 void func_020260cc(void *arg0, M2C_UNK *arg1) {
     extern M2C_UNK data_020fb1e4;
     s32 temp_r0;

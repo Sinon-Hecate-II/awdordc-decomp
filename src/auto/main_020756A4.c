@@ -5,29 +5,22 @@ typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x
 
 void func_020756a4(void *arg0) { (void)arg0; }
 
-void func_02075938(void *arg0, s32 arg1) {
-    M2C_UNK func_02074aec(void *);
-    s32 var_r4;
-    s32 var_r5;
-    u32 temp_r8;
-    void *temp_r7;
-    var_r5 = arg1;
-    if ((M2C_FIELD(arg0, u8 *, 0x2050) != 0) && (M2C_FIELD(arg0, u8 *, 0x2052) != 1)) {
-        if ((((s32) M2C_FIELD((arg0 + (var_r5 >> 2)), u8 *, 0xC0C) >> ((u32) (var_r5 << 0x1E) >> 0x1D)) & 3) != 3) return;
-        var_r4 = (var_r5 * 0xC) + (s32) arg0;
-        if (M2C_FIELD(var_r4, u8 *, 6) == 1) return;
-        func_02074aec(arg0 + 0xC4C);
+void func_02075938(void *arg0,s32 arg1) {
+M2C_UNK func_02074aec(void*);
+s32 var_r4,var_r5; u32 mask; u32 temp_r8; void *temp_r7;
+var_r5=arg1;
+if(M2C_FIELD(arg0,u8*,0x2050)!=0 && M2C_FIELD(arg0,u8*,0x2052)!=1) {
+if((((s32)M2C_FIELD(arg0+(var_r5>>2),u8*,0xc0c)>>((u32)(var_r5<<30)>>29))&3)!=3)return;
+var_r4=var_r5*12+(s32)arg0;
+if(M2C_FIELD(var_r4,u8*,6)==1)return;
+func_02074aec(arg0+0xc4c);
 loop_9:
-        temp_r8 = (u32) (var_r5 << 0x1E) >> 0x1D;
-        temp_r7 = arg0 + (var_r5 >> 2);
-        var_r5 = (u8) (M2C_FIELD(temp_r7, u8 *, 0xC0C) & (-1 ^ (3 << temp_r8)));
-        M2C_FIELD(temp_r7, u8 *, 0xC0C) = var_r5 | (2 << temp_r8);
-        var_r5 = (s32) M2C_FIELD(var_r4, u16 *, 0xA);
-        if (var_r5 != 0xFFFF) {
-            register var_r4 = (var_r5 * 0xC) + (s32) arg0;
-            goto loop_9;
-        }
-    }
+temp_r8=(u32)(var_r5<<30)>>29; temp_r7=arg0+(var_r5>>2);
+mask=-1^(3<<temp_r8); var_r5=(u8)(M2C_FIELD(temp_r7,u8*,0xc0c)&mask);
+M2C_FIELD(temp_r7,u8*,0xc0c)=var_r5|(2<<temp_r8);
+var_r5=M2C_FIELD(var_r4,u16*,10);
+if(var_r5!=65535){var_r4=var_r5*12+(s32)arg0;goto loop_9;}
+}
 }
 
 #pragma opt_common_subs off
@@ -74,21 +67,22 @@ s32 func_02075b58(M2C_UNK *arg0, s32 arg1) {
     return var_lr;
 }
 
-M2C_UNK func_02075bc8(M2C_UNK *p) {
+void func_02075bc8(M2C_UNK *p) {
 u8 *q;u32 i;
 if(((Queue02075*)p)->active!=0 && ((Queue02075*)p)->state!=1){
-if(!func_02074d44(p)){M2C_FIELD(p,u8*,0x2052)=1;return;}
+if(!func_02074d44(p)){((Queue02075*)p)->state=1;return;}
 func_02074a48((void*)p+0xc4c);
 q=(void*)p+0x2054;i=0;
-if((s32)((Queue02075*)p)->count>0){
-for(;i<((Queue02075*)p)->count;i++,q+=20){
-
+if(((Queue02075*)p)->count>i){
+if(i<((Queue02075*)p)->count){
+do {
 switch(q[15]){
 case 1:func_020753f8(p,*(s32*)q,*(s32*)(q+4),*(s32*)(q+8),q[14],*(s32*)(q+16));break;
 case 2:func_02075938(p,*(u16*)(q+12));break;
 }
+i++;q+=20;
+}while(i<((Queue02075*)p)->count);
 }
-
 }
 func_020756a4(p);
 ((Queue02075*)p)->count=0;
@@ -146,7 +140,7 @@ void func_02075ecc(void) {
 }
 
 void func_02075ee8(void) {
-    M2C_UNK func_02075bc8(M2C_UNK *);
+
     extern M2C_UNK data_0213ea18;
     func_02075bc8(&data_0213ea18);
 }

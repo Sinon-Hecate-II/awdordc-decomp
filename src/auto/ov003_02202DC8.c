@@ -10,23 +10,19 @@ typedef struct {
     s32 min;
 } Ov003Elem; /* size 0x18 */
 
-void func_ov003_02202dc8(void *arg0, s32 arg1) {
-    s32 off = arg1 * 24;
-    *(s32 *)((char *)arg0 + 12 + off) += *(s32 *)((char *)arg0 + off + 24);
-    if (*(u8 *)((char *)arg0 + off + 28) != 0) {
-        while (*(s32 *)((char *)arg0 + 12 + off) > *(s32 *)((char *)arg0 + off + 16)) {
-            *(s32 *)((char *)arg0 + 12 + off) -= (*(s32 *)((char *)arg0 + off + 16) - *(s32 *)((char *)arg0 + off + 20) + 1);
-        }
-        while (*(s32 *)((char *)arg0 + 12 + off) < *(s32 *)((char *)arg0 + off + 20)) {
-            *(s32 *)((char *)arg0 + 12 + off) += (*(s32 *)((char *)arg0 + off + 16) - *(s32 *)((char *)arg0 + off + 20) + 1);
-        }
-    } else {
-        if (*(s32 *)((char *)arg0 + 12 + off) > *(s32 *)((char *)arg0 + off + 16)) {
-            *(s32 *)((char *)arg0 + 12 + off) = *(s32 *)((char *)arg0 + off + 16);
-        } else if (*(s32 *)((char *)arg0 + 12 + off) < *(s32 *)((char *)arg0 + off + 20)) {
-            *(s32 *)((char *)arg0 + 12 + off) = *(s32 *)((char *)arg0 + off + 20);
-        }
-    }
+void func_ov003_02202dc8(void *arg0,s32 arg1){
+s32 off=arg1*24; s32 limit,value;
+((Ov003Elem *)((char *)arg0+12))[arg1].field_00+=M2C_FIELD(arg0+off,s32 *,24);
+if(M2C_FIELD(arg0+off,u8 *,28)){
+while(((Ov003Elem *)((char *)arg0+12))[arg1].field_00>M2C_FIELD(arg0+off,s32 *,16))
+((Ov003Elem *)((char *)arg0+12))[arg1].field_00-=M2C_FIELD(arg0+off,s32 *,16)-M2C_FIELD(arg0+off,s32 *,20)+1;
+while(((Ov003Elem *)((char *)arg0+12))[arg1].field_00<M2C_FIELD(arg0+off,s32 *,20))
+((Ov003Elem *)((char *)arg0+12))[arg1].field_00+=M2C_FIELD(arg0+off,s32 *,16)-M2C_FIELD(arg0+off,s32 *,20)+1;
+}else{
+limit=M2C_FIELD(arg0+off,s32 *,16);value=((Ov003Elem *)((char *)arg0+12))[arg1].field_00;
+if(value<=limit){limit=M2C_FIELD(arg0+off,s32 *,20);if(value>=limit)limit=value;}
+((Ov003Elem *)((char *)arg0+12))[arg1].field_00=limit;
+}
 }
 
 #pragma opt_common_subs off
@@ -220,11 +216,11 @@ void func_ov003_02203280(void *arg0) {
     }
     func_ov003_021f1bd4();
     { s32 temp_r6 = M2C_FIELD(arg0, s32 *, 0x44);
-    u8 var_r7 = 0;
+    u32 var_r7 = 0;
     do {
         temp_r0_2 = M2C_FIELD((temp_r6 + (var_r7 * 4)), void ***, 0xC8);
         M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, M2C_FIELD(((var_r7 * 0x18) + temp_r6), s32 *, 0xC));
-        var_r7 += 1;
+        var_r7 = (u8)(var_r7+1);
     } while ((u32) var_r7 < 8U);
     }
     data_02168f14 |= 0x2000;
@@ -341,7 +337,7 @@ void func_ov003_02203368(void *arg0) {
 }
 
 void func_ov003_022035fc(void *arg0, s32 arg1) {
-s32 value,limit; void *p=(char *)arg0+arg1*24;
+s32 value,limit; void *p=(char *)arg0+(s32)arg1*24;
 #define F(o,t) (*(t *)((char *)arg0+(o)+arg1*24))
 F(12,s32)-=F(24,s32);
 if(F(28,u8)){
@@ -366,16 +362,7 @@ s8 func_ov003_022036e4(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 4);
 }
 
-u8 func_ov003_022036ec(void *arg0) {
-    u8 var_r0;
-
-    if (M2C_FIELD(arg0, s8 *, 5) != -1) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    return var_r0;
-}
+u8 func_ov003_022036ec(void *arg0) { u8 var_r0; if (M2C_FIELD(arg0, s8 *, 5) != -1) { var_r0 = 1; } else { var_r0 = 0; } return var_r0; }
 
 s8 func_ov003_02203708(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 5);

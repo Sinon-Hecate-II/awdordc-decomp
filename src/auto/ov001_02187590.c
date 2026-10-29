@@ -32,29 +32,26 @@ return *data_ov001_02190c68[arg0];
 }
 #pragma pop
 s32 func_ov001_02187934(s32 arg0) {
-    void *func_0200751c(s32);
-    void func_02007530(void *);
-    s32 func_02008048(void *, void *, s32);
-    extern s16 *data_ov001_02193e1c;
-    u16 buf[7];
-    u16 mask;
-    s16 *gp;
-    void *r;
-    r = func_0200751c(arg0);
-    gp = data_ov001_02193e1c;
-    mask = (u16)(1 << arg0);
-    if (!((u16)gp[1] & mask)) {
-        func_02007530(r);
-        return 0;
-    }
-    func_02008048(gp, buf, 0xE);
-    func_02007530(r);
-    if (buf[2] & mask) return 2;
-    if (buf[3] & mask) return 3;
-    if (buf[4] & mask) return 4;
-    if (buf[5] & mask) return 5;
-    if (buf[6] & mask) return 6;
-    return 1;
+void *func_0200751c(s32);
+void func_02007530(void *);
+s32 func_02008048(void *,void *,s32);
+extern s16 *data_ov001_02193e1c;
+u16 buf[7];
+s16 *gp;
+u32 mask;
+void *r;
+r=func_0200751c(arg0);
+mask=(1U<<arg0)<<16;
+gp=data_ov001_02193e1c;
+if (!((u16)gp[1]&(mask>>16))){func_02007530(r);return 0;}
+func_02008048(gp,buf,14);
+func_02007530(r);
+if(buf[2]&(mask>>16))return 2;
+if(buf[3]&(mask>>16))return 3;
+if(buf[4]&(mask>>16))return 4;
+if(buf[5]&(mask>>16))return 5;
+if(buf[6]&(mask>>16))return 6;
+return 1;
 }
 
 s32 func_ov001_021879fc(s32 arg0) {
@@ -425,14 +422,18 @@ s32 func_ov001_021883a8(void) {
     extern M2C_UNK data_ov001_02193e20;
     u16 buf[3];
     u16 rv;
+    u16 zero = 0;
 
     func_02007724((u8 *)buf);
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =
-        buf[0] + *(s32 *)0x027ffc3c + buf[1] + buf[2];
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =
-        M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) * 0x10dcd + 0x39 + 0x3000;
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), u16 *, 0x5c) = 0;
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), u16 *, 0x5e) = 0x65;
+    {
+        s32 *gp = (s32 *)0x027ffc3c;
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =
+            buf[0] + *gp + buf[1] + buf[2];
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =
+            M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) * 0x10dcd + 0x39 + 0x3000;
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), u16 *, 0x5c) = zero;
+        M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), u16 *, 0x5e) = 0x65;
+    }
     func_ov001_02187b14(3);
     rv = func_ov001_02188480(1);
     if (rv == 0x18) {

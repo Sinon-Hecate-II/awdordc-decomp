@@ -453,18 +453,16 @@ void func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 void func_020ae480(u16 *p,s32 a,s32 b,s32 c) {
-s16 r,bl,g; s32 i;u16 *ptr;u16 v;
-ptr=p;i=0;
+s16 r,g,bl; s32 i=0;u16 v;;
 do {
-v=*ptr;i++;
+v=*p;i++;
 r=(v&31)+a;
 g=b+((s32)(v&0x3e0)>>5);
 if(r<0)r=0;
 bl=c+((s32)(v&0x7c00)>>10);
 if(g<0)g=0;if(bl<0)bl=0;
 if(r>31)r=31;if(g>31)g=31;if(bl>31)bl=31;
-*ptr=(r&31)|((u32)(g<<27)>>22)|((u32)(bl<<27)>>17);
-ptr++;
+*p++=(r&31)|((u32)(g<<27)>>22)|((u32)(bl<<27)>>17);
 }while(i<16);
 }
 

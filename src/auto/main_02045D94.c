@@ -1,7 +1,7 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 len=256; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,len,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
 s32 func_02045e70(u16 *a) { s32 func_020465c4(s32,s32,M2C_UNK); extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
 
@@ -16,14 +16,15 @@ s32 func_02045eb4(M2C_UNK arg0) {
 
 s32 func_02045ee0(s32 arg0,s32 *arg1,s32 arg2) { void func_02046654(s32,s32,s32); extern M2C_UNK data_0213db28; register s32 a=arg0; register s32 i=0; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); do {if(arg1[i]) {do {func_02046654(b,256,a);}while(!func_020466d0(a,b,256,arg2));} i++;a+=256;b+=256;}while(i<4);return func_0204671c()!=0; }
 
+#pragma opt_strength_reduction off
 s32 func_02045f68(u8 *arg0) {
- u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); extern M2C_UNK data_0213db28;
- register u8 *a=arg0; register s32 i=0; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8);
- do { *(u16 *)(arg0+(i<<8)+254)=func_02076838(arg0+0x500,a,254);
- do {func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(arg0+0x400)));
- i++;a+=256;b+=256;}while(i<4); return func_0204671c()!=0;
+u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); extern M2C_UNK data_0213db28;
+register u8 *a=arg0; register s32 i=0; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8);
+do { *(u16 *)(arg0+(i<<8)+254)=func_02076838(arg0+0x500,a,254);
+do {func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(arg0+0x400)));
+i++;a+=256;b+=256;}while(i<4); return func_0204671c()!=0;
 }
-
+#pragma opt_strength_reduction reset
 void func_02045ffc(M2C_UNK a) { M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34; func_02008048(a,&data_0213db34,14); }
 
 u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }

@@ -358,13 +358,13 @@ M2C_UNK func_0209c764(u16,u16,u16,M2C_UNK,s32);
 M2C_UNK func_020d694c(s32,s32,s32);
 s32 func_ov000_0216cd00(s32);
 extern void *gCurrentMap;
-s32 i=0,x,y,k;u32 j;void *p,*q;u16 t;u8 v;
+s32 i=0,x,y,k;s32 j;void *p,*q;u16 t;u8 v;
 if((s32)M2C_FIELD(arg0,u8 *,0x4d)<=0)return;
 j=0;
 do{
 p=(void *)func_020c03bc(arg0,i);t=M2C_FIELD(p,u16 *,0x24);
 if(t!=0xffff){
-x=M2C_FIELD(arg0,s16 *,0x54);y=M2C_FIELD(arg0,s16 *,0x56)+(j<<3);
+x=M2C_FIELD(arg0,s16 *,0x54);y=M2C_FIELD(arg0,s16 *,0x56)+((u32)j<<3);
 func_0209c764(t,(u16)(x+2),(u16)y,0,11);
 t=M2C_FIELD(p,u16 *,0x24);
 if((t!=0)&&(t!=1)){}else{q=*(void **)gCurrentMap;v=M2C_FIELD(M2C_FIELD(q,s32 *,0x52d0)+t,u8 *,12);
@@ -461,36 +461,23 @@ func_0207bf00(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));
 }
 
 void *func_020c0fac(void *arg0) {
-    void *func_020ab1c4(s32);
-    void func_020aab24(void *, s32, s32, s32, s32);
-    void func_02088e84(void *, s16, s16, s16, s32);
-    u32 func_020aae10(void *);
-    u32 func_020aae44(void *);
-    void func_02087d84(void *, s32, s32, s32, u16, u16);
-    void func_020ab150(void *, s16);
-    void func_020aad18(void *);
-    void func_02088f1c(void *);
-    void *unit;
-    s16 y;
-    s16 x;
-    u32 a, b;
-    int cond;
-
-    unit = func_020ab1c4((s32)arg0);
-    func_020aab24(unit, 2, 0x120, 3, 1);
-    func_02088e84(unit, 0xE0, 0xA0, 0x100, 0xA0);
-    cond = (M2C_FIELD(M2C_FIELD(unit, void **, 0x64), u8 *, 0x12) != 0) ? 1 : 0;
-    if (cond) {
-        y = M2C_FIELD(unit, s16 *, 0x52);
-        x = M2C_FIELD(unit, s16 *, 0x50);
-        a = func_020aae10(unit);
-        b = func_020aae44(unit);
-        func_02087d84(M2C_FIELD(unit, void **, 0x64), 1, x, y, (u16)a, (u16)b);
-    }
-    func_020ab150(unit, 2);
-    func_020aad18(unit);
-    func_02088f1c(unit);
-    return unit;
+void *func_020ab1c4(s32);
+void func_020aab24(void *,s32,s32,s32,s32);
+void func_02088e84(void *,s16,s16,s16,s32);
+u32 func_020aae10(void *); u32 func_020aae44(void *);
+void func_02087d84(void *,s32,s32,s32,u16,u16);
+void func_020ab150(void *,s16); void func_020aad18(void *);void func_02088f1c(void *);
+void *unit; s16 y; s16 x; u32 a,b; u32 cond;
+unit=func_020ab1c4((s32)arg0);
+func_020aab24(unit,2,0x120,3,1);
+func_02088e84(unit,0xe0,0xa0,0x100,0xa0);
+cond=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;
+if(cond & 0xff){
+y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);
+a=func_020aae10(unit);b=func_020aae44(unit);
+func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)a,(u16)b);
+}
+func_020ab150(unit,2);func_020aad18(unit);func_02088f1c(unit);return unit;
 }
 
 void func_020c1078(void) {
@@ -511,10 +498,10 @@ void func_020c1078(void) {
 }
 
 void *func_020c10a4(s32 x,s32 y,s32 flag){
-extern void *gCurrentMap;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
+extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
 MapC10 *p;u32 idx; s32 k,n,v;
 if(x>=0 && y>=0){
-p=*(void**)gCurrentMap;
+p=*(void**)data_027e0058;
 if(x<p->width&&y<p->height)goto valid;
 }
 return data_02163f9c;

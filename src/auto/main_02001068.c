@@ -86,10 +86,10 @@ void func_02001524(void *arg0,UnkVec3 *arg1) {
 void func_0200154c(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void func_02007f68(void *, void *);
     if (arg0 != arg1) func_02007f68(arg0, arg1);
-    arg1[12] = arg0[12] + (s32)(((long long)arg3 * arg0[4] + (long long)arg2 * arg0[0] + (long long)arg4 * arg0[8]) >> 12);
-    arg1[13] = arg0[13] + (s32)(((long long)arg3 * arg0[5] + (long long)arg2 * arg0[1] + (long long)arg4 * arg0[9]) >> 12);
-    arg1[14] = arg0[14] + (s32)(((long long)arg3 * arg0[6] + (long long)arg2 * arg0[2] + (long long)arg4 * arg0[10]) >> 12);
-    arg1[15] = arg0[15] + (s32)(((long long)arg3 * arg0[7] + (long long)arg2 * arg0[3] + (long long)arg4 * arg0[11]) >> 12);
+    arg1[12] = arg0[12] + (s32)(((long long)arg3 * arg0[4] + (long long)arg2 * arg0[0] + (long long)arg4 * arg0[8] + 0) >> 12);
+    arg1[13] = arg0[13] + (s32)(((long long)arg3 * arg0[5] + (long long)arg2 * arg0[1] + (long long)arg4 * arg0[9] + 0) >> 12);
+    arg1[14] = arg0[14] + (s32)(((long long)arg3 * arg0[6] + (long long)arg2 * arg0[2] + (long long)arg4 * arg0[10] + 0) >> 12);
+    arg1[15] = arg0[15] + (s32)(((long long)arg3 * arg0[7] + (long long)arg2 * arg0[3] + (long long)arg4 * arg0[11] + 0) >> 12);
 }
 
 void func_02001624(s32 *arg0,s32 *arg1,s32 arg2,s32 arg3,s32 arg4) {

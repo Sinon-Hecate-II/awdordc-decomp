@@ -49,8 +49,10 @@ s32 func_020c8d7c(s32 a){
 s32 func_020c79ec();void *func_020c7a08();s32 func_020c8018(s32);
 s32 func_020be324(u8,s32);s32 func_0207c368(void *,s32);
 extern u8 data_02164d64[];
-s32 n=func_020c79ec(),v,b;u8 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
-if(a>=225 && a<425)b=1;if(b)c=1;else c=0;if(!c)return 0;
+s32 n=func_020c79ec(),v,b;u8 flag;void *p;func_020c79f8();p=func_020c7a08();b=0;
+if (a >= 225 && a < 425) b = 1;
+if (b) flag = 1; else flag = 0;
+if (!flag) return 0;
 v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
 if(!func_0207c368(p+6,33))return 0;
 func_02007ef4(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);

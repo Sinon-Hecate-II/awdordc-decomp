@@ -9,40 +9,16 @@ typedef struct QueueFields {
     s32 count;
 } QueueFields;
 
-s32 func_02005f80(void *arg0, s32 arg1) {
-    M2C_UNK func_020057f8(void *);
-    M2C_UNK func_020058a0();
-    s32 func_0200751c();
-    void func_02007530(s32);
-    extern M2C_UNK data_0212dc80;
-    extern M2C_UNK data_0212dcb4;
-    void *cur;
-    void *prev;
-    s32 state;
-
-    cur = M2C_FIELD(&data_0212dc80, void **, 0x2C);
-    prev = NULL;
-    state = func_0200751c();
-    while (cur != NULL && cur != arg0) {
-        prev = cur;
-        cur = M2C_FIELD(cur, void **, 0x68);
-    }
-    if (cur == NULL || cur == &data_0212dcb4) {
-        func_02007530(state);
-        return 0;
-    }
-    if (M2C_FIELD(cur, s32 *, 0x70) != arg1) {
-        if (prev != NULL) {
-            M2C_FIELD(prev, void **, 0x68) = (void *) M2C_FIELD(arg0, void **, 0x68);
-        } else {
-            M2C_FIELD(&data_0212dc80, void **, 0x2C) = (void *) M2C_FIELD(arg0, void **, 0x68);
-        }
-        M2C_FIELD(arg0, s32 *, 0x70) = arg1;
-        func_020057f8(arg0);
-        func_020058a0();
-    }
-    func_02007530(state);
-    return 1;
+s32 func_02005f80(void *arg0,s32 arg1) {
+M2C_UNK func_020057f8(void *); M2C_UNK func_020058a0(); s32 func_0200751c(); void func_02007530(s32); extern M2C_UNK data_0212dc80; extern M2C_UNK data_0212dcb4;
+void *cur; void *prev; s32 state;
+cur=M2C_FIELD(&data_0212dc80,void **,0x2c);prev=0;state=func_0200751c();
+while(cur!=0 && cur!=arg0){prev=cur;cur=M2C_FIELD(cur,void **,0x68);}
+if(cur==0 || cur==&data_0212dcb4){func_02007530(state);return 0;}
+if(M2C_FIELD(cur,s32 *,0x70)!=arg1){
+if(prev==0){M2C_FIELD(&data_0212dc80,void **,0x2c)=M2C_FIELD(arg0,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(arg0,void **,0x68);}
+M2C_FIELD(arg0,s32 *,0x70)=arg1;func_020057f8(arg0);func_020058a0();}
+func_02007530(state);return 1;
 }
 
 s32 func_02006028(void *arg0) {
@@ -151,6 +127,33 @@ s32 func_02006164(void) {
 
 void func_02006198(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0xB4) = arg1;
+}
+
+void func_020061a0(void *arg0, s32 arg1, s32 arg2) {
+arg1+=4;
+M2C_FIELD(arg0,s32 *,0x40)=arg1;
+M2C_FIELD(arg0,s32 *,0x44)=arg2;
+arg2-=0x40;
+if(arg2&4)arg2-=4;
+M2C_FIELD(arg0,s32 *,0x38)=arg2;
+arg1 &= 1;
+if(arg1) arg1=0x3f;
+else arg1=0x1f;
+M2C_FIELD(arg0,s32 *,0)=arg1;
+    M2C_FIELD(arg0, s32 *, 4) = 0;
+    M2C_FIELD(arg0, s32 *, 8) = 0;
+    M2C_FIELD(arg0, s32 *, 0xC) = 0;
+    M2C_FIELD(arg0, s32 *, 0x10) = 0;
+    M2C_FIELD(arg0, s32 *, 0x14) = 0;
+    M2C_FIELD(arg0, s32 *, 0x18) = 0;
+    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
+    M2C_FIELD(arg0, s32 *, 0x20) = 0;
+    M2C_FIELD(arg0, s32 *, 0x24) = 0;
+    M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    M2C_FIELD(arg0, s32 *, 0x2C) = 0;
+    M2C_FIELD(arg0, s32 *, 0x30) = 0;
+    M2C_FIELD(arg0, s32 *, 0x34) = 0;
+    M2C_FIELD(arg0, s32 *, 0x3C) = 0;
 }
 
 s32 func_020062b4(void) {
@@ -497,52 +500,15 @@ s32 func_02006a24(s32 arg0) {
 }
 
 s32 func_02006a38(s32 arg0) {
-    s32 func_020062bc(void);
-    extern M2C_UNK data_0212defc;
-    extern M2C_UNK data_027e0000;
-
-    switch (arg0) {
-    case 0:
-        return 0x023e0000;
-    case 1:
-        if (M2C_FIELD(&data_0212defc, s32 *, 4) == 0) {
-            return 0x02700000;
-        }
-        if ((func_020062bc() & 3) != 1) {
-            return 0x02000000;
-        }
-        return 0;
-    case 2:
-        return 0x023e0000;
-    case 3:
-        return 0x02000000;
-    case 4: {
-        s32 r0 = (s32)&data_027e0000;
-        s32 r1 = 0;
-        s32 r2 = 0x800;
-        s32 r3 = r0 + 0x3f80;
-        r2 = r3 - r2;
-        if (r1 != 0) {
-            if (r1 < 0) {
-                return 0x027e15e0 - r1;
-            } else {
-                return r2 - r1;
-            }
-        } else {
-            if ((u32)r0 < (u32)0x027e15e0) {
-                r0 = 0x027e15e0;
-            }
-            return r0;
-        }
-    }
-    case 5:
-        return 0x027ff680;
-    case 6:
-        return 0x037f8000;
-    default:
-        return 0;
-    }
-}
+s32 func_020062bc(void); extern M2C_UNK data_0212defc,data_027e0000; extern char data_00000000[],data_00000800[];
+switch(arg0) {
+case 0:return 0x23e0000;
+case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((func_020062bc()&3)==1)return 0;else goto mainram;} else return 0x2700000;
+case 3:mainram:return 0x2000000;
+case 4:{s32 b; u32 c,e; s32 a; a=(s32)&data_027e0000; b=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
+if((void *)b==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(b<0)return 0x27e15e0-b;return c-b;}
+case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
+}}
 
 s32 func_02006b1c(s32 arg0) {
     s32 func_020062bc(void);
@@ -552,11 +518,11 @@ s32 func_02006b1c(s32 arg0) {
     case 0:
         return 0x0223c840;
     case 2:
-        if (M2C_FIELD(&data_0212defc, s32 *, 0x4) == 0) {
-            return 0x023e0000;
+        if (M2C_FIELD(&data_0212defc, s32 *, 4) == 0) {
+            goto Lzero;
         }
         if ((func_020062bc() & 0x3) != 1) {
-            return 0x01ffc780;
+            goto Lone;
         }
         return 0;
     case 3:
@@ -566,10 +532,14 @@ s32 func_02006b1c(s32 arg0) {
     case 5:
         return 0x037f8000;
     case 6:
-        return 0;
+    case 1:
     default:
         return 0;
     }
+Lzero:
+    return 0x023e0000;
+Lone:
+    return 0x01ffc780;
 }
 
 void func_02006bc4(s32 arg0, s32 arg1) {

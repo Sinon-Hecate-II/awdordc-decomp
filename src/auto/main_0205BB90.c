@@ -222,7 +222,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
         *status = 1;
         return 1;
     }
-    if (!func_0205c474((void *)p, M2C_FIELD(p, u16 *, 0x64), arg2)) {
+    if (!((s32 (*)(void *,u32,s32))func_0205c474)((void *)p, M2C_FIELD(p, u16 *, 0x64), arg2)) {
         s32 r = func_0205b1b8(p);
         if (r == 0) {
             return 0;
@@ -392,28 +392,26 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_0205ca48(void *p){extern M2C_UNK data_020ff818;u8 buf[5];u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);s32 v;buf[2]=100;buf[0]=a;buf[1]=b;func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
-
-s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
+s32 func_0205ca48(void *p){
     extern M2C_UNK data_020ff818;
-    u8 buf[8];
-    u8 a, b;
-    s32 r6;
-    buf[2] = 0x65;
-    a = M2C_FIELD(&data_020ff818, u8 *, 0);
-    b = M2C_FIELD(&data_020ff818, u8 *, 1);
-    M2C_FIELD(buf, u8 *, 0) = a;
-    M2C_FIELD(buf, u8 *, 1) = b;
-    func_0205b0ec(buf, 3, arg1);
-    r6 = 5;
-    if (arg1 != arg2) {
-        func_0205b0ec(buf, r6, arg2);
-        r6 += 2;
-    }
-    if (func_0205a9ec(p, buf, r6) == 0) {
-        return 0;
-    }
-    return 1;
+    u8 buf[5];
+    u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);
+    s32 v;
+    buf[2]=0x64;buf[0]=a;buf[1]=b;
+    func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));
+    if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;
+    return v;
+}
+
+s32 func_0205caac(void *p,s32 arg1,s32 arg2){
+extern M2C_UNK data_020ff818;
+u8 buf[8]; s32 n=0;
+buf[n++]=M2C_FIELD(&data_020ff818,u8 *,0);
+buf[n++]=M2C_FIELD(&data_020ff818,u8 *,1);
+buf[n++]=0x65;
+func_0205b0ec(buf,n,arg1); n+=2;
+if(arg1!=arg2){func_0205b0ec(buf,n,arg2);n+=2;}
+if(func_0205a9ec(p,buf,n)==0)return 0;return 1;
 }
 
 s32 func_0205cb38(s32 a,void *b,s32 c) { s32 func_0205a9ec(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return func_0205a9ec(a,b,c); }

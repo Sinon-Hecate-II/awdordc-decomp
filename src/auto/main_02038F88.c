@@ -112,15 +112,30 @@ void func_02039204(s32 arg0) {
 }
 
 s32 func_02039224(s32 arg0) {
-s32 func_0203e0ec();
-s32 func_0203e338(u8 **);
-u8 *list;
-s32 i, count;
-count=func_0203e338(&list);
-for(i=0;i<count;i++) {
-if(list[i]==arg0) break;
-}
-return i==count ? 0 : func_0203e0ec();
+    s32 func_0203e0ec();
+    s32 func_0203e338(u8 **);
+    u8 *sp0;
+    s32 temp_r0;
+    s32 var_r0;
+    u8 *var_r3;
+
+    temp_r0 = func_0203e338(&sp0);
+    var_r0 = 0;
+    if (temp_r0 > 0) {
+        var_r3 = sp0;
+loop_2:
+        if (arg0 != *var_r3) {
+            var_r0 += 1;
+            var_r3 += 1;
+            if (var_r0 < temp_r0) {
+                goto loop_2;
+            }
+        }
+    }
+    if (var_r0 == temp_r0) {
+        return 0;
+    }
+    return func_0203e0ec();
 }
 
 u32 func_02039284(u8 *src, s32 n) {

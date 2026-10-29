@@ -1,5 +1,6 @@
 /* 14 functions from 0x0219E6D4 to 0x0219F6D0 (ov000), found by ds-decomp. */
 #include "common.h"
+
 #pragma inline_depth(0)
 static inline s32 E6D4Offset(s16 index) { return index * (s16)14; }
 static inline s32 E6D4Call(u8 *p,s16 index) { s32 func_0207b764(u8,u8); u8 *q=p+0x59a4+E6D4Offset(index);return func_0207b764(q[1],q[2]); }
@@ -183,69 +184,70 @@ void func_ov000_0219f448(void) {
 }
 
 void func_ov000_0219f494(void) {
-    extern void **gCurrentMap;
-    extern s8 *data_ov000_021df580;
-    extern u8 data_ov000_021df7d0[];
-    void func_020a6fcc(void);
-    u8 *p;
-    s32 i;
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52b0) = 1;
-    func_020a6fcc();
-    p = data_ov000_021df7d0;
-    *data_ov000_021df580 = 0;
-    M2C_FIELD(*gCurrentMap, u8 *, 0x515a) = p[6];
-    for (i = 0; i < 4; i++) {
-        M2C_FIELD(*gCurrentMap, u8 *, 0x515c + i) = p[0xc];
-        p++;
-    }
+extern void **gCurrentMap;
+extern s8 *data_ov000_021df580;
+extern u8 data_ov000_021df7d0[];
+void func_020a6fcc(void);
+s32 i;
+u8 *p;
+M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;
+func_020a6fcc();
+p=data_ov000_021df7d0;
+*data_ov000_021df580=0;
+M2C_FIELD(*gCurrentMap,u8 *,0x515a)=p[6];
+for(i=0;i<4;i++){
+M2C_FIELD((u8 *)*gCurrentMap+i,u8 *,0x515c)=p[12];
+p++;
+}
 }
 
+#pragma opt_common_subs off
+#pragma opt_propagation off
 u8 func_ov000_0219f518(void){
 extern void **gCurrentMap;
 extern u8 data_ov000_021df7d0[];
 extern s8 *data_ov000_021df580;
 extern s32 data_ov000_021e1468;
 s32 func_0207b764(u8,u8);
-s16 index;
+u8 result;
+s32 value;
 u8 *p;
-u16 fld;
-u8 yes;
+s16 index;
 s32 offset;
 u8 *q;
-u8 *qbase;
-s32 result;
-s32 y;
-u32 x;
-u32 bit;
-index = (s16)data_ov000_021df7d0[6];
-p = *gCurrentMap;
-fld = M2C_FIELD(p, u16 *, 0x52a4);
-yes = M2C_FIELD(p + fld * (s16)0x8c, u8 *, 0x67c3);
-offset = index * (s16)0xe;
-qbase = p + (s32)0x1a4;
-q = qbase + (s32)0x5800 + offset;
-y = q[2];
-x = q[1];
-result = 0;
-if (yes & 2) yes = 1;
-else {
-    bit = x + M2C_FIELD(p + y * 2, u16 *, 0x3758);
-    yes = 1;
-    if ((u8)(M2C_FIELD(p + (bit >> 3), u8 *, 0x5201) & (1 << (bit & 7))) == 0) yes = 0;
+s32 yes,y;
+u32 x,bit;
+p=*gCurrentMap;
+index=data_ov000_021df7d0[6];
+offset=index*(s16)14;
+yes=M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3);
+q=p+0x59a4+offset;
+y=q[2];x=q[1];
+value=0;
+if(yes&2)yes=1;
+else{
+bit=x+M2C_FIELD(p+y*2,u16 *,0x3758);
+yes=1;
+if((u8)(M2C_FIELD(p+(bit>>3),u8 *,0x5201)&(1<<(bit&7)))==0)yes=0;
 }
-if (yes) {
-    q = qbase + (s32)0x5800 + offset;
-    result = func_0207b764(q[1], q[2]);
+if(yes){
+q=p+0x59a4+offset;
+value=func_0207b764(q[1],q[2]);
 }
-data_ov000_021e1468 = 0;
-M2C_FIELD(data_ov000_021df580, u8 *, 1) = 7;
-return result == 0;
+data_ov000_021e1468=0;
+M2C_FIELD(data_ov000_021df580,u8 *,1)=7;
+result=value==0;
+return result;
 }
-
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 u8 func_ov000_0219f5fc(void){
 s32 func_0207b764(u8,u8);extern void **gCurrentMap;extern u8 data_ov000_021df7d0[];extern s8 *data_ov000_021df580;extern s32 data_ov000_021e1468;
-void *p=*gCurrentMap;u8 y=data_ov000_021df7d0[7],x=data_ov000_021df7d0[6];s32 r=0;u32 n;u8 ok=1;
-if(!(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3)&2)){
+void *p=*gCurrentMap;u8 y=data_ov000_021df7d0[7],x=data_ov000_021df7d0[6];s32 r=0;u32 n;u32 flags; s32 ok;
+flags=M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3);
+if(flags&2)ok=1;
+else {
+ok=1;
 n=x+M2C_FIELD((u8 *)p+y*2,u16 *,0x3758);
 if(!(u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5201)&(1<<(n&7))))ok=0;
 }

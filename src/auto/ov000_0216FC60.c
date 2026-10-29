@@ -38,39 +38,28 @@ void func_ov000_0217000c(void) {
 }
 
 void func_ov000_02170020(void) {
-    void *func_ov000_021700fc(void);
-    M2C_UNK func_020b1bf4(s32, s32, s32, s32);
-    M2C_UNK func_020b1c78(s32);
-    M2C_UNK func_020b22a4(s32, s32, void *, s32);
-    
-    void *p;
-    s32 r7;
-    s16 limit;
-    s32 r8;
-    s32 r5;
-    
-    p = func_ov000_021700fc();
-    func_020b1bf4(0, -0x10, 0x100, -0x10);
-    
-    func_020b22a4(0, 0, (void*)&data_ov000_021b8a00, 0xfb);
-    func_020b22a4(0, 0, (void*)&data_ov000_021b89d8, 0xfa);
-    func_020b22a4(0, 0, (void*)&data_ov000_021b8a28, 0xf9);
-    func_020b22a4(0, 0, (void*)&data_ov000_021b8a50, 0xf8);
-    
-    r7 = 0;
-    limit = M2C_FIELD(p, s16 *, 0x3c);
-    if (limit > 0) {
-        r8 = 0x27;
-        r5 = 4;
-        do {
-            if (r7 != 6) {
-                func_020b22a4(r5, r8, (void*)&data_ov000_021b89b0, r7);
-            }
-            r7++;
-            r8 += 0x10;
-        } while (r7 < limit);
-    }
-    func_020b1c78(0);
+void *func_ov000_021700fc(void);
+M2C_UNK func_020b1bf4(s32,s32,s32,s32);
+M2C_UNK func_020b1c78(s32);
+M2C_UNK func_020b22a4(s32,s32,void *,s32);
+void *p; s32 i; s32 y;
+p=func_ov000_021700fc();
+func_020b1bf4(0,-16,256,-16);
+func_020b22a4(0,0,&data_ov000_021b8a00,251);
+func_020b22a4(0,0,&data_ov000_021b89d8,250);
+func_020b22a4(0,0,&data_ov000_021b8a28,249);
+func_020b22a4(0,0,&data_ov000_021b8a50,248);
+i=0;
+if(M2C_FIELD(p,s16 *,0x3c)>0) {
+y=39;
+loop:
+if(i!=6) {
+func_020b22a4(4,y,&data_ov000_021b89b0,i);
+i++; y+=16;
+if(i<M2C_FIELD(p,s16 *,0x3c)) goto loop;
+}
+}
+func_020b1c78(0);
 }
 
 void *func_ov000_021700fc(void) {
