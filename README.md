@@ -4,6 +4,8 @@
 
 A work-in-progress decompilation of **Advance Wars: Days of Ruin** (also known as **Advance Wars: Dark Conflict**) for the Nintendo DS.
 
+This decompilation currently only supports the USA version of **Advance Wars: Days of Ruin (YW2E)**. Support for the European version, **Advance Wars: Dark Conflict**, may be added in the future.
+
 This project aims to reconstruct the game's code in readable C, understand its internal systems, and work towards matching the original compiled binaries as closely as possible. **It is not a completed, standalone game or a ROM download.**
 
 The following decomplication is majority AI assisted (whatever you want to call it), i'll done a write up further down below to explain stuff  
