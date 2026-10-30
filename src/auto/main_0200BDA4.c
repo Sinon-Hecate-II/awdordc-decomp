@@ -445,6 +445,7 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
     func_02008048(src, buf, size);
 }
 
+#pragma opt_strength_reduction off
 void func_0200cb6c(void *arg0, void *arg1) {
     extern void (*data_020f53f4)(void *, void *, u32);
     void func_02007e54(u32, void *, s32);
@@ -452,8 +453,8 @@ void func_0200cb6c(void *arg0, void *arg1) {
     u8 *buf;
     u8 *out;
     s32 orig;
-    u32 count;
-    u32 i;
+    s32 count;
+    s32 i;
     u32 lo;
     u32 hi;
     u32 h0;
@@ -470,14 +471,14 @@ void func_0200cb6c(void *arg0, void *arg1) {
     if ((orig & 3) == 0) {
         w[orig >> 2] = 0;
     }
-    count = (u32)orig;
+    count = orig;
     buf[count] = 0x80;
     count = count + 1;
     while (count & 3) {
         buf[count] = 0;
         count = count + 1;
     }
-    i = (u32)((orig >> 2) + 1);
+    i = (orig >> 2) + 1;
     if (orig >= 0x38) {
         while (i < 16) {
             w[i] = 0;
@@ -537,4 +538,4 @@ void func_0200cb6c(void *arg0, void *arg1) {
     *(u32 *)((u8 *)arg0 + 0x1c) = 0;
     func_02007e54(0, (void *)&arg0, 4);
 }
-
+#pragma opt_strength_reduction reset

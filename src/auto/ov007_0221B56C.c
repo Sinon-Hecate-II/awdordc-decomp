@@ -94,26 +94,23 @@ ret0:
 
 s32 func_ov007_0221b8c0(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 p;
-    s32 t;
     s32 r;
+    s32 t;
+    register s32 p;
     if (x < 0 || y < 0) {
         goto fail;
     }
     p = *gCurrentMap;
-    if (x < M2C_FIELD(p, u16 *, 0x5144)) {
-        if (y < M2C_FIELD(p, u16 *, 0x5146)) {
-            goto in_bounds;
-        }
+    if (x < M2C_FIELD(p, u16 *, 0x5144) && y < M2C_FIELD(p, u16 *, 0x5146)) {
+        goto in_bounds;
     }
     return 0;
 in_bounds:
-    r = M2C_FIELD(p + y * 2, u16 *, 0x3758);
-    t = x + r;
-    t = M2C_FIELD(p + t * 2, u16 *, 0xA10);
-    t -= 0x79;
-    t -= 0x100;
-    switch (t) {
+    t = M2C_FIELD(p + (x + M2C_FIELD(p + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
+    r = r - 0x100;
+    r = t;
+    r = r - 0x79;
+    switch (r) {
         case 0: case 1: case 2: case 3: case 4:
         case 30: case 31: case 32: case 33: case 34:
         case 60: case 61: case 62: case 63: case 64:

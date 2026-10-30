@@ -15,33 +15,31 @@ void func_020d1690(u8 arg0, s32 arg1, void *arg2) {
     s32 func_ov000_0216b154(void);
     void func_020d0afc(void *, s32, s32);
 
-    u8 *r7 = (u8 *)*gCurrentMap + 0x59a4 + arg0 * 14;
-    u8 saved1 = r7[1];
-    u8 saved2 = r7[2];
     s32 r4 = 0, r5 = 0, r6 = 0;
+    u8 *unit = (u8 *)*gCurrentMap + 0x59a4 + arg0 * 14;
+    u8 saved1 = unit[1];
+    u8 saved2 = unit[2];
     s32 low7, d4, prod;
     u32 f6;
     u8 *m;
     s16 cc;
 
     if (arg2 != NULL) {
-        r7[1] = (u8)*(s16 *)arg2;
-        r7[2] = (u8)*((s16 *)arg2 + 1);
+        unit[1] = (u8)*(s16 *)arg2;
+        unit[2] = (u8)*((s16 *)arg2 + 1);
         func_020d068c((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
-        if (func_020a8204(r7)) {
-            r4 = func_020a86f8(r7, func_020a5ae0(arg1), 0, 0);
+        if (func_020a8204(unit)) {
+            r4 = func_020a86f8(unit, func_020a5ae0(arg1), 0, 0);
         } else {
-            u8 kind = r7[0] & 0x3F;
-            r6 = func_020a796c(kind, arg1, 1);
+            r6 = func_020a796c(((u32)unit[0] << 26) >> 26, arg1, 1);
             if (r6) {
-                r5 = func_020a86f8(r7, func_020a5ae0(arg1), 1, 0);
+                r5 = func_020a86f8(unit, func_020a5ae0(arg1), 1, 0);
             }
         }
     } else {
-        u8 kind = r7[0] & 0x3F;
-        r6 = func_020a796c(kind, arg1, 1);
+        r6 = func_020a796c(((u32)unit[0] << 26) >> 26, arg1, 1);
         if (r6) {
-            r5 = func_020a86f8(r7, func_020a5ae0(arg1), 1, 0);
+            r5 = func_020a86f8(unit, func_020a5ae0(arg1), 1, 0);
         }
     }
 
@@ -61,11 +59,11 @@ void func_020d1690(u8 arg0, s32 arg1, void *arg2) {
     func_020d0afc((u8 *)*gCurrentMap + 0x6eb8, 0, 0);
 
     m = (u8 *)*gCurrentMap;
-    f6 = *(u16 *)(m + 0x6eb8 + 6);
-    low7 = (s32)(f6 & 0x7F);
-    if (low7 == 0) low7 = 0; /* r3 */
-    /* recompute r3 */
-    if (f6 % 128 == 0) {
+    {
+        void *o = *(void **)((u8 *)*gCurrentMap + 0x6eb8);
+        f6 = *(u16 *)((u8 *)o + 6);
+    }
+    if ((f6 & 0x7F) == 0) {
         low7 = 0;
     } else {
         low7 = func_0207c8ec((f6 & 0x7F) - 1, 10) + 1;
@@ -83,8 +81,8 @@ void func_020d1690(u8 arg0, s32 arg1, void *arg2) {
         }
     }
 
-    r7[1] = saved1;
-    r7[2] = saved2;
+    unit[1] = saved1;
+    unit[2] = saved2;
 }
 
 s32 func_020d18e8(s32 *arg0) {
@@ -270,6 +268,8 @@ void func_020d1f2c(void) {
     void func_020d1dc8(void);
     s32 func_020d3154(s32);
 
+    int dummy_unused = 0;
+
     {
         s32 r5 = 4 - func_020cfb94();
         if (r5 >= 1) {
@@ -343,6 +343,7 @@ void func_020d1f2c(void) {
         }
     }
 
+    (void)dummy_unused;
     return;
 }
 

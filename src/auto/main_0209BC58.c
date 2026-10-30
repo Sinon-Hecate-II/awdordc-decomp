@@ -479,20 +479,10 @@ fail:
 }
 
 void *func_0209c6d8(s32 arg0) {
-    u8 result;
-    u8 flag;
-
-    if (gCur3DSpriteEngine == data_027e00c8) {
-        result = 1;
-    } else {
-        result = 0;
-    }
-    if (result != 1) {
-        flag = 1;
-    } else {
-        flag = 0;
-    }
-    return (void *)(data_021580a8 + (flag << 7) + (arg0 << 2));
+ u8 result=(gCur3DSpriteEngine==data_027e00c8);
+ s32 flag=result!=1;
+ u8 *base=data_021580a8;
+ return base+(flag<<7)+(arg0<<2);
 }
 
 s32 func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,volatile u8 arg4){

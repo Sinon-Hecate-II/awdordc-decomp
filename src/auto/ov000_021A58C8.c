@@ -3,10 +3,46 @@
 typedef struct { u8 pad[3]; u8 used:1; u8 rest:7; } Candidate1F14;
 typedef struct { u8 x,y; u8 unk[10]; } UnkA66Entry;
 
+#pragma opt_strength_reduction off
 void func_ov000_021a58c8(u8 arg0) {
-    (void)arg0;
+void func_01ffada0(s32,s32,s32,s32,s32);s32 func_ov000_021a8fc0(u8);
+extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+s32 id,x,y,v,unitOffset; s32 x2,y2; u8 *tile; s32 oldValue; void *base;u8 *unit;
+M2C_FIELD(*gCurrentMap,u16 *,0x52B6)=arg0;
+id=data_ov000_021aeef4[arg0]+1;
+if(id>=data_ov000_021aeef4[arg0]+51)return;
+unitOffset=id*14;
+do {
+base=*gCurrentMap;unit=(u8 *)(base+0x59A4)+unitOffset;
+if(((u32)(unit[0]<<26)>>26)==0)goto next;
+if(((u32)(unit[0]<<26)>>26)!=22)goto next;
+if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)<=20)goto next;
+func_01ffada0(unit[1],unit[2],23,110,32);
+base=*gCurrentMap;
+for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
+if(M2C_FIELD(base+y*4,s8 **,0x52E8)[x]<0)continue;
+if(!func_ov000_021a8fc0(M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0x508)))continue;
+base=*gCurrentMap;
+unit=(u8 *)(base+0x59A4)+M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0)*14;
+if(((u32)(unit[0]<<26)>>26)!=23)continue;
+if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>=40)goto next;
 }
-
+}
+for(y2=0;y2<M2C_FIELD(base,u16 *,0x5146);y2++){
+for(x2=0;x2<M2C_FIELD(base,u16 *,0x5144);x2++,base=*gCurrentMap){
+v=M2C_FIELD(base+y2*4,s8 **,0x52E8)[x2];
+if(v<0)continue;
+tile=(u8 *)(base+x2+M2C_FIELD(base+y2*2,u16 *,0x3758));
+oldValue=M2C_FIELD(tile,s8 *,0x2338);
+if(v<=oldValue) M2C_FIELD(tile+0x2000,s8 *,0x338)=v;
+}
+}
+next:;
+id++;unitOffset+=14;
+}while(id<data_ov000_021aeef4[arg0]+51);
+}
+#pragma opt_strength_reduction reset
 void func_ov000_021a5b28(void) {
     void func_01ffb3d0(s32);
     void func_01ffb554(void *);

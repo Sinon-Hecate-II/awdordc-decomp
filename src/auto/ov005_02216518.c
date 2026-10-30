@@ -72,7 +72,7 @@ u8 func_ov005_02217320(void) {
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov005_02217334(s16 arg0) { extern u8 *data_ov005_02221310; s32 i=0; void *p; u32 frame,word; M2C_FIELD(data_ov005_02221310,s16 *,0x12)=arg0; do { if(i==arg0){p=M2C_FIELD(data_ov005_02221310,void **,0x2c+i*4); frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);word=M2C_FIELD(p,u32 *,0x40);frame++;}else{p=M2C_FIELD(data_ov005_02221310,void **,0x2c+i*4);frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);word=M2C_FIELD(p,u32 *,0x40);} M2C_FIELD(p,u32 *,0x40)=(word&~0x3fc0000)|((u32)((u16)frame<<24)>>6);i++;}while(i<4); }
+void func_ov005_02217334(s16 arg0) { extern u8 *data_ov005_02221310; s32 i=0; void *p; u32 f,word; M2C_FIELD(data_ov005_02221310,s16 *,0x12)=arg0; do { if(i==arg0){p=M2C_FIELD(data_ov005_02221310,void **,0x2c+i*4); f=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28); word=M2C_FIELD(p,u32 *,0x40); f++; } else { p=M2C_FIELD(data_ov005_02221310,void **,0x2c+i*4); f=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28); word=M2C_FIELD(p,u32 *,0x40); } M2C_FIELD(p,u32 *,0x40)=(word&~0x3fc0000)|((u32)(((u16)f)<<24)>>6); i++; } while(i<4); }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 void func_ov005_022173b4(void) {

@@ -123,3 +123,35 @@ s32 func_ov000_021a8438(s32 index) {
 }
 void func_ov000_021a7610(void) {
 }
+
+void func_ov000_021a7ac0(s32 index) {
+extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
+extern u8 *data_ov000_021df57c;
+extern u8 data_ov000_021e00ac[],data_ov000_021e00ad[],data_ov000_021b5bfc[];
+extern void **gCurrentMap;
+void func_01ffada0(s32,s32,s32,s32,s32); s32 func_020d27c0(s32); void func_ov000_021a7610(void);
+s32 minx,maxy,r,cx,cy; s32 maxx,y,x,i,off,miny; u8 *unit,*map,*entry;
+for(i=0;i<27;i++) {data_ov000_021e1474[i]=0;data_ov000_021e14aa[i]=data_ov000_021e1474[i];}
+off=index*12;
+func_01ffada0(data_ov000_021e00ac[off],data_ov000_021e00ad[off],7,data_ov000_021df57c[16],0);
+cy=data_ov000_021e00ad[off]; r=data_ov000_021df57c[16]; cx=data_ov000_021e00ac[off];
+minx=cx-r; if(minx<0)minx=0;
+miny=cy-r; if(miny<0)miny=0;
+map=*gCurrentMap;
+maxx=r+cx; if(maxx>*(u16 *)(map+0x5144)-1)maxx=*(u16 *)(map+0x5144)-1;
+maxy=r+cy; if(maxy>*(u16 *)(map+0x5146)-1)maxy=*(u16 *)(map+0x5146)-1;
+entry=data_ov000_021e00ac+off;
+for(y=miny;y<=maxy;y++)for(x=minx;x<=maxx;x++){
+s32 dx=entry[0]-x,dy=entry[1]-y,d;
+if(dx<=0)dx=x-entry[0];if(dy<=0)dy=y-entry[1];d=0+dx+dy;
+if(d<0||d>data_ov000_021df57c[16])continue;
+map=*gCurrentMap;
+i=map[*(u16 *)(map+0x3758+y*2)+x]; if(!i)continue;
+unit=map+0x59a4+i*14;
+if((data_ov000_021b5bfc[(((u32)(unit[0]<<26)>>26))*112+19]&7)&&((s8 **)(map+0x52e8))[y][x]<0)continue;
+if(func_020d27c0(i)==1)data_ov000_021e14aa[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
+else data_ov000_021e1474[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
+}
+func_ov000_021a7610();
+}
+

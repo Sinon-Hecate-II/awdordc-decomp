@@ -304,7 +304,6 @@ void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 off;
     void *base;
-    void *slot;
 
     func_ov003_02208168(arg0);
     switch (arg1) {
@@ -318,8 +317,8 @@ void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
     case 10:
         a = 22;
         b = 27;
-        c = a;
-        d = b;
+        c = 22;
+        d = 27;
         break;
     }
     for (i = 0; i < (s32)*M2C_FIELD(arg0, u8 **, 0x44); i++) {
@@ -340,10 +339,8 @@ void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
             M2C_FIELD(M2C_FIELD(base, void **, 0x20), u8 *, 0xE) = 1;
         }
     }
-    slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x18);
-    SetSlotAnim(slot, (void *)(data_ov003_02210ac4 + a * 12));
-    slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x1C);
-    SetSlotAnim(slot, (void *)(data_ov003_02210ac4 + b * 12));
+    SetSlotAnim(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x18), (void *)(data_ov003_02210ac4 + a * 12));
+    SetSlotAnim(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x1C), (void *)(data_ov003_02210ac4 + b * 12));
 }
 
 void func_ov003_022084f0(void *arg0) {

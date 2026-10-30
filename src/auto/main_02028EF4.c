@@ -1,6 +1,8 @@
 /* 37 functions from 0x02028EF4 to 0x02029E98 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct ListLinks { void *next; void *prev; } ListLinks;
+
 extern u8 data_02138e7c;
 extern u8 data_02138e80[16];
 
@@ -151,33 +153,19 @@ s32 func_02029274(void) {
     return result;
 }
 
+#pragma push
+#pragma opt_common_subs off
 s32 func_020292cc(s32 arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    void *func_02027d50(void);
-    s32 state;
-    void *base;
-    u8 flag;
-    s32 result;
-
-    state = func_0200751c();
-    base = func_02027d50();
-    if (base == NULL) {
-        func_02007530(state);
-        return 0;
-    }
-    flag = M2C_FIELD((void *)((s8 *)base + 0x2000), u8 *, 0x26a);
-    if (arg0 != 0) {
-        result = (flag != 0) ? 1 : 0;
-        M2C_FIELD((void *)((s8 *)base + 0x2000), u8 *, 0x26a) = 1;
-    } else {
-        result = (flag != 0) ? 1 : 0;
-        M2C_FIELD((void *)((s8 *)base + 0x2000), u8 *, 0x26a) = 0;
-    }
-    func_02007530(state);
-    return result;
+ s32 func_0200751c(void); void func_02007530(s32); void *func_02027d50(void);
+ s32 state; void *base; u8 flag; s32 result;
+ state=func_0200751c(); base=func_02027d50();
+ if(base==NULL){func_02007530(state);return 0;}
+ flag=M2C_FIELD(base,u8 *,0x226a);
+ if(arg0!=0){result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=1;}
+ else {result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=0;}
+ func_02007530(state);return result;
 }
-
+#pragma pop
 s32 func_02029348(void *arg0) {
     s32 func_0200751c(void);
     void func_02007530(s32);
@@ -710,22 +698,14 @@ s32 func_02029b9c(void) {
 }
 
 void func_02029bd0(s32 arg0) {
-    extern u8 data_02138e7c;
-    extern u8 data_02138e80[16];
-    s32 var_r0;
-    u8 var_u8;
-
-    var_r0 = arg0 >> 2;
-    if (!(arg0 & 2)) {
-        var_r0 += 0x19;
-    }
-    var_u8 = (u8)var_r0;
-    data_02138e80[data_02138e7c % 16] = var_u8;
-    if (data_02138e7c < 0x10) {
-        data_02138e7c++;
-    } else {
-        data_02138e7c = (data_02138e7c + 1) % 16 + 0x10;
-    }
+extern u8 data_02138e7c;
+extern u8 data_02138e80[16];
+s32 value=arg0>>2;
+if(!(arg0&2)) value+=25;
+value=(s8)value;
+data_02138e80[data_02138e7c%16] = value;
+if(data_02138e7c<16) data_02138e7c++;
+else data_02138e7c=(data_02138e7c+1)%16+16;
 }
 
 void func_02029c30(void *arg0, s16 arg1) {
@@ -778,29 +758,18 @@ void func_02029cc8(void *arg0, void *arg1) {
 }
 
 void func_02029d18(void *arg0, void *arg1, void *arg2) {
-    void func_02029c74(void *, void *);
-    void func_02029cc8(void *, void *);
-    u16 off;
-    void *oldNext;
-    void *newPtr;
-
-    if (arg1 == (void *)0) {
-        func_02029c74(arg0, arg2);
-        return;
-    }
-    if (arg1 == M2C_FIELD(arg0, void **, 0)) {
-        func_02029cc8(arg0, arg2);
-        return;
-    }
-    off = M2C_FIELD(arg0, u16 *, 0xA);
-    oldNext = M2C_FIELD(arg1, void **, off);
-    newPtr = (void *)((char *)arg2 + off);
-    M2C_FIELD(arg2, void **, off) = oldNext;
-    M2C_FIELD(newPtr, void **, 4) = arg1;
-    oldNext = (void *)((char *)oldNext + off);
-    M2C_FIELD(oldNext, void **, 4) = arg2;
-    M2C_FIELD(arg1, void **, M2C_FIELD(arg0, u16 *, 0xA)) = arg2;
-    M2C_FIELD(arg0, u16 *, 8) = (u16)(M2C_FIELD(arg0, u16 *, 8) + 1);
+void func_02029c74(void *,void *); void func_02029cc8(void *,void *);
+ListLinks *link; void *oldNext; u16 off;
+if(!arg1) {func_02029c74(arg0,arg2);return;}
+if(arg1==M2C_FIELD(arg0,void **,0)) {func_02029cc8(arg0,arg2);return;}
+off=M2C_FIELD(arg0,u16 *,10);
+link=(ListLinks *)((char *)arg2+off);
+oldNext=M2C_FIELD(arg1,void **,off);
+link->next=oldNext;
+link->prev=arg1;
+((ListLinks *)((char *)oldNext+off))->prev=arg2;
+M2C_FIELD(arg1,s32 *,M2C_FIELD(arg0,u16 *,10))=(s32)arg2;
+M2C_FIELD(arg0,u16 *,8)++;
 }
 
 void func_02029d7c(void *arg0, void *arg1) {

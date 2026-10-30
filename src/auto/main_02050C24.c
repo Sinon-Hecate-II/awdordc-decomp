@@ -122,7 +122,7 @@ block_13:
 s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5, s8 *arg6, s8 *arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC) {
     void *func_02037794(M2C_UNK);
     M2C_UNK func_020492a8(void *);
-    s32 func_0204e84c();
+    s32 func_0204e84c(void **);
     s32 func_0204ec8c(void **, s32);
     s32 func_02050c24(void **, void *);
     M2C_UNK func_02052038(void **, M2C_UNK);
@@ -144,7 +144,7 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
 
     temp_r4 = *arg0;
     if (M2C_FIELD(temp_r4, s32 *, 0x1D8) == 4) {
-        temp_r0_4 = func_0204e84c();
+        temp_r0_4 = func_0204e84c(arg0);
         if (temp_r0_4 != 0) {
             return temp_r0_4;
         }
@@ -153,16 +153,11 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
         func_02058644(arg0, &data_020fe3fc);
         return 2;
     }
-    if (arg8 != 0) {
-        if (arg8 == 1) {
-            M2C_FIELD(temp_r4, s32 *, 0x10C) = 1;
-            goto block_10;
-        }
-        func_02058644(arg0, &data_020fe410);
-        return 2;
+    switch(arg8) {
+    case 1: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 1; break;
+    case 0: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 0; break;
+    default: func_02058644(arg0, &data_020fe410); return 2;
     }
-    M2C_FIELD(temp_r4, s32 *, 0x10C) = 0;
-block_10:
     M2C_FIELD(temp_r4, s32 *, 0x10C) = 1;
     func_020580fc(temp_r4 + 0x110, arg1, 0x1F);
     func_020580fc(temp_r4 + 0x12F, arg2, 0x15);

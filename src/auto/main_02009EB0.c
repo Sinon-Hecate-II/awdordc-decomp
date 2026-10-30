@@ -326,19 +326,18 @@ s32 func_0200ac50(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
 
 s32 func_0200ac70(s32 a,s32 b,s32 c,s32 d){func_02008048(c,b,d);return 0;}
 
+#pragma opt_common_subs off
 M2C_UNK *func_0200ac88(void *arg0) {
     M2C_UNK func_02005df4(void *);
     s32 func_0200751c();
     M2C_UNK func_02007530(s32);
     void func_0200a050(void *, s32);
     M2C_UNK func_0200b774(M2C_UNK *);
-    void *sp8;
-    M2C_UNK sp0;
+    s32 temp_r4;
+    s32 temp_r4_2;
     M2C_UNK *temp_r5;
     M2C_UNK *var_r0_2;
     M2C_UNK *var_r5;
-    s32 temp_r4;
-    s32 temp_r4_2;
     s32 var_r0;
     s32 var_r0_3;
     s32 var_r0_4;
@@ -348,6 +347,7 @@ M2C_UNK *func_0200ac88(void *arg0) {
     s32 var_r0_8;
     s32 var_r1;
     s32 var_r7;
+    u8 sp0[0x48];
 
     temp_r4 = func_0200751c();
     if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x20) {
@@ -370,7 +370,7 @@ M2C_UNK *func_0200ac88(void *arg0) {
                     if (M2C_FIELD(arg0, M2C_UNK **, 0x24) == var_r0_2) {
                         M2C_FIELD(arg0, M2C_UNK **, 0x24) = var_r5;
                     }
-                    func_0200a050((void*)var_r0_2, 3);
+                    func_0200a050(var_r0_2, 3);
                     if (var_r5 == NULL) {
                         var_r5 = M2C_FIELD(arg0, M2C_UNK **, 0x24);
                     }
@@ -412,13 +412,13 @@ M2C_UNK *func_0200ac88(void *arg0) {
                 }
                 temp_r4_2 = func_0200751c();
                 M2C_FIELD(temp_r5, s32 *, 0xC) = (s32) (M2C_FIELD(temp_r5, s32 *, 0xC) | 0x40);
-                if (M2C_FIELD(temp_r5, s32 *, 0xC) & 4) {
+                if (*(volatile s32 *)((s8 *)temp_r5 + 0xC) & 4) {
                     var_r0_6 = 1;
                 } else {
                     var_r0_6 = 0;
                 }
                 if (var_r0_6 != 0) {
-                    func_02005df4(temp_r5 + 0x18);
+                    func_02005df4((u8 *)temp_r5 + 0x18);
                     func_02007530(temp_r4_2);
                     return NULL;
                 }
@@ -437,9 +437,9 @@ block_41:
     if (var_r0_7 != 0) {
         M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) & ~0x10);
         if (M2C_FIELD(arg0, s32 *, 0x58) & 0x400) {
-            func_0200b774(&sp0);
-            sp8 = arg0;
-            M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK *, M2C_UNK), 0x54)(&sp0, 0xA);
+            func_0200b774(sp0);
+            M2C_FIELD(sp0, void **, 8) = arg0;
+            M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK *, M2C_UNK), 0x54)(sp0, 0xA);
         }
     }
     if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x40) {
@@ -454,4 +454,4 @@ block_41:
     func_02007530(temp_r4);
     return NULL;
 }
-
+#pragma opt_common_subs reset

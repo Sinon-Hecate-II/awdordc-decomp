@@ -22,16 +22,16 @@ set_obj_xy(p,i,xy[1]+dx,xy[0]+dy);
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK func_ov001_0218a474(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    u8 *entries = M2C_FIELD(arg0, u8 **, 8);
-    s32 i;
-    if (arg1 >= 0) {
-        *((u16 *)(entries + arg1 * 8 + 4)) = ( *((u16 *)(entries + arg1 * 8 + 4)) & ~0xC00) | (arg2 << 10);
-    } else {
-        for (i = 0; i < M2C_FIELD(arg0, u8 *, 12); i++) {
-            *((u16 *)(entries + i * 8 + 4)) = ( *((u16 *)(entries + i * 8 + 4)) & ~0xC00) | (arg2 << 10);
-        }
-    }
+void func_ov001_0218a474(M2C_UNK arg0, s32 arg1, s32 arg2) {
+u8 *entries=M2C_FIELD(arg0,u8 **,8);
+s32 i;
+if(arg1>=0) {
+M2C_FIELD(entries+arg1*8,u16 *,4)=(M2C_FIELD(entries+arg1*8,u16 *,4)&~0xc00)|(arg2<<10);
+} else {
+for(i=0;i<M2C_FIELD(arg0,u8 *,12);i++) {
+M2C_FIELD(entries+i*8,u16 *,4)=(M2C_FIELD(entries+i*8,u16 *,4)&~0xc00)|(arg2<<10);
+}
+}
 }
 #pragma opt_strength_reduction on
 void func_ov001_0218a4d4(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
@@ -338,17 +338,16 @@ void func_ov001_0218aab4(void) {
 }
 
 void func_ov001_0218abb8(void) {
-    void func_ov001_02189ebc(s32);
-    void func_ov001_0218a6d8(s32, ...);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e40;
-    M2C_UNK *r4 = &data_ov001_02193e40;
-    s32 i;
-    for (i = 0; i < 2; i++) {
-        func_ov001_02189ebc(*((s32 *)((u8 *)(*r4) + 0x674) + i));
-    }
-    func_ov001_0218a6d8(*((s32 *)((u8 *)data_ov001_02193e40 + 0x670)));
-    func_ov001_0218b71c(&data_ov001_02193e40);
+ void func_ov001_02189ebc(s32);
+ void func_ov001_0218a6d8(s32,...);
+ M2C_UNK func_ov001_0218b71c(M2C_UNK *);
+ extern M2C_UNK data_ov001_02193e40;
+ extern M2C_UNK data_ov001_02193e44;
+ M2C_UNK *p=&data_ov001_02193e40;
+ s32 i;
+ for(i=0;i<2;i++)func_ov001_02189ebc(*((s32 *)((u8 *)(*p)+0x674)+i));
+ func_ov001_0218a6d8(*((s32 *)((u8 *)data_ov001_02193e40+0x670)));
+ func_ov001_0218b71c(&data_ov001_02193e44-1);
 }
 
 void *func_ov001_0218ac04(s32 a,s32 b,s32 c,s32 d,s32 *out,s32 e){
@@ -551,7 +550,7 @@ void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 a
           s32 func_ov001_0218a24c(void *, s32);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a304(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a474(M2C_UNK, M2C_UNK, s32);
+    void func_ov001_0218a474(M2C_UNK, M2C_UNK, s32);
     s32 temp_r5;
 
     temp_r5 = func_ov001_0218a24c(arg3, 0);

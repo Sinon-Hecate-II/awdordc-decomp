@@ -177,19 +177,11 @@ void func_02039478(s32 arg0, s32 arg1) {
     }
 }
 
-void func_020394d8(s32 arg0, s32 arg1) {
-    extern void *data_0213d1f8;
-    void func_02039204(s32);
-    s32 v;
-    v = M2C_FIELD(data_0213d1f8, s32 *, 0x28);
-    switch (v) {
-        case 4:
-            break;
-        default:
-            func_02039204(v);
-            M2C_FIELD(data_0213d1f8, void (**)(s32, s32, s32), 0x78)(arg0, arg1, M2C_FIELD(data_0213d1f8, s32 *, 0x7c));
-            break;
-    }
+void func_020394d8(s32 arg0,s32 arg1) {
+extern void *data_0213d1f8; void func_02039204(s32);
+s32 v=M2C_FIELD(data_0213d1f8,s32 *,0x28);
+if(v!=4)func_02039204(v);
+M2C_FIELD(data_0213d1f8,void (**)(s32,s32,s32),0x78)(arg0,arg1,M2C_FIELD(data_0213d1f8,s32 *,0x7c));
 }
 
 void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {

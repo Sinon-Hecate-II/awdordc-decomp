@@ -190,8 +190,106 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     return 0;
 }
 
-void func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) { (void)a0; (void)a1; (void)a2; (void)a3; (void)a4; }
+#pragma opt_common_subs off
+s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
+    s32 func_ov000_021a9860(s32, s32);
+    s32 func_ov000_0217bdb4(s32, s32);
+    extern void **gCurrentMap;
 
+    s32 r9 = a0;
+    s32 r10 = a2;
+    s32 bestScore = -1;
+    s32 bestY = -1;
+    s32 bestX = -1;
+    s32 lowX;
+    s32 lowY;
+    void *map;
+    s32 highX;
+    s32 highY;
+    s32 x;
+    s32 y;
+
+    (void)a4;
+
+    lowX = r9 - r10;
+    if (lowX < 0) lowX = 0;
+    lowY = a1 - r10;
+    if (lowY < 0) lowY = 0;
+
+    map = *gCurrentMap;
+    bestX = -1;
+
+    highX = r9 + r10;
+    {
+        s32 w = *((u16 *)((u8 *)map + 0x5144)) - 1;
+        if (highX > w) highX = w;
+    }
+    highY = a1 + r10;
+    {
+        s32 h = *((u16 *)((u8 *)map + 0x5146)) - 1;
+        if (highY > h) highY = h;
+    }
+
+    if (lowY > highY) goto done;
+
+    for (y = lowY; y <= highY; y++) {
+        for (x = lowX; x <= highX; x++) {
+            s32 dx = r9 - x;
+            s32 dy;
+            s32 dist;
+
+            if (dx <= 0) dx = x - r9;
+            dy = a1 - y;
+            dist = dx;
+            if (dy > 0) dist += dy; else dist += y - a1;
+            if (dist < 0) continue;
+            if (dist > r10) continue;
+
+            if (!func_ov000_021a9860(x, y)) continue;
+
+            map = *gCurrentMap;
+            {
+                u16 rowOff = *((u16 *)((u8 *)map + (y << 1) + 0x3758));
+                s8 terrain = *((s8 *)((u8 *)map + x + rowOff + 0x1928));
+                u8 attr = *((u8 *)((u8 *)map + terrain * 6 + 0x6c63));
+                if (attr != 0) {
+                    if (func_ov000_0217bdb4(x, y) != 0) continue;
+                }
+            }
+
+            map = *gCurrentMap;
+            {
+                u16 rowOff = *((u16 *)((u8 *)map + (y << 1) + 0x3758));
+                u8 tileByte = *((u8 *)((u8 *)map + x + rowOff + 0x1420));
+                s32 idx = (tileByte & 0x1f) - 15;
+                s32 score = 0;
+
+                switch (idx) {
+                    case 0: score = 5; break;
+                    case 2: score = 4; break;
+                    case 3: score = 2; break;
+                    case 4: score = 1; break;
+                    case 7: score = 1; break;
+                    case 9: score = 3; break;
+                    default: score = 0; break;
+                }
+
+                if (score >= bestScore) {
+                    bestScore = score;
+                    bestX = x;
+                    bestY = y;
+                }
+            }
+        }
+    }
+
+ done:
+    if (bestX == -1) return 0;
+    a3[0] = (s16)bestX;
+    a3[1] = (s16)bestY;
+    return 1;
+}
+#pragma opt_common_subs reset
 s32 func_ov000_0217c2d4(u8 *arg0) {
 s32 func_01ffada0(s32,s32,s32,s32,s32); s32 func_ov000_021a9860(s32,s32); extern void **gCurrentMap;
 s32 x,y; void *base;

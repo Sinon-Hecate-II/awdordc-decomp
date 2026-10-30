@@ -113,8 +113,9 @@ void func_02002490(void) {
 
 void func_020024cc(void) {
  extern s16 data_020f5200, data_0212dbc0;
- u16 v = data_0212dbc0;
+ u16 v;
  data_020f5200 = 1;
+ v = data_0212dbc0;
  if (v != 0) {
   *(volatile u32 *)0x4000000 = (*(volatile u32 *)0x4000000 & ~0x30000) | ((u32)v << 16);
   return;

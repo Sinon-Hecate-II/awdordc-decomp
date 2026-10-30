@@ -245,55 +245,26 @@ loop_1:
     }
 }
 
-void func_020084d0(u32 *arg0, s16 *arg1) {
-    u32 remaining;
-    u8 *src;
-    s16 *dst;
-    u16 acc;
-    s32 pos;
-    s16 *out;
-
-    remaining = *arg0++ >> 8;
-    src = (u8 *)arg0;
-    out = arg1;
-    acc = 0;
-    pos = 0;
-    while ((s32)remaining > 0) {
-        u8 hdr = *src++;
-        s32 cnt = hdr & 0x7F;
-        int run = (hdr & 0x80) != 0;
-        if (!run) {
-            cnt += 1;
-        } else {
-            cnt += 3;
-        }
-        remaining -= cnt;
-        if (!run) {
-            do {
-                u8 x = *src++;
-                acc |= (u16)(x << pos);
-                pos ^= 8;
-                if (pos == 0) {
-                    *out++ = (s16)acc;
-                    acc = 0;
-                }
-                cnt--;
-            } while (cnt > 0);
-        } else {
-            u8 val = *src++;
-            do {
-                acc |= (u16)(val << pos);
-                pos ^= 8;
-                if (pos == 0) {
-                    *out++ = (s16)acc;
-                    acc = 0;
-                }
-                cnt--;
-            } while (cnt > 0);
-        }
-    }
+#pragma thumb on
+void func_020084d0(const u8 *src, u16 *out) {
+u32 acc=0; s32 remaining=*(const u32 *)src>>8; s32 pos=0;
+volatile u32 header; volatile u32 val;
+src+=4;
+while(remaining>0) {
+s32 cnt;
+header=*src; ++src;
+cnt=(header<<25)>>25;
+if((header>>7)==0) {
+cnt++; remaining-=cnt;
+do { acc|=*src<<pos; ++src; pos^=8; if(!pos) {*out++=acc;acc=0;} }while(--cnt>0);
+} else {
+cnt+=3; remaining-=cnt;
+val=*src; ++src;
+do {acc|=val<<pos;pos^=8;if(!pos){*out++=acc;acc=0;}}while(--cnt>0);
 }
-
+}
+}
+#pragma thumb off
 void func_02008538(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_02007d20(s32, s32);
     void func_02007da4(s32, s32, s32, s32);

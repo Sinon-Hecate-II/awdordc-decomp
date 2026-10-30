@@ -1,5 +1,17 @@
 /* 22 functions from 0x0209ACC4 to 0x0209BC58 (main), found by ds-decomp. */
 #include "common.h"
+#pragma opt_propagation off
+static inline void EmitSprite(u16 x, u16 y, u32 tile, u16 *desc) {
+    void func_01ff90e4(u16, u16, u32, u16 *);
+    func_01ff90e4(x,y,tile,desc);
+}
+static inline void DrawSpritePair(u16 x, s32 y, s32 tile, u16 *desc) {
+    void func_01ff90e4(u16, u16, u32, u16 *);
+    extern s32 gCur3DSpriteEngine;
+    func_01ff90e4(x,(u16)y,(u16)tile,desc);
+    func_01ff90e4(x,(u16)((y & 0xff00)|((y+8)&255)),(u16)(tile+(0x3ff & (4 >> (((u32)**(u16 **)gCur3DSpriteEngine <<17)>>30)))),desc);
+}
+#pragma opt_propagation reset
 
 typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
@@ -344,7 +356,59 @@ s32 func_0209b5e4(M2C_UNK a,s32 b) {
  return n;
 }
 
-void func_0209b67c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) { (void)a0; (void)a1; (void)a2; (void)a3; (void)a4; }
+void func_0209b67c(u16 a0, s32 a1, u16 a2, u16 a3, s32 a4) {
+    void func_01ffaacc(s32, s32, s32, void *, s32);
+    extern u8 data_027e005c[];
+    extern u8 data_027e00a4[];
+    extern u8 data_027e0084[];
+    extern s32 gCur3DSpriteEngine;
+
+    s32 y = a1;
+    u16 param = a3;
+    s32 priority = a4;
+    s32 n = ((s32)a2 + 7) >> 3;
+    u16 x = a0;
+
+    if (n >= 4) {
+        do {
+            u32 _eng;
+            s32 mode;
+            func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e005c, priority);
+            n -= 4;
+            _eng = *(u16 *)(s32)gCur3DSpriteEngine;
+            mode = (s32)((_eng << 17) >> 30);
+            param = (u16)(param + (0x3ff & (8 >> mode)));
+            x = (u16)(((((x & 0x1ff) + 0x20) & 0x1ff) | (x & 0xfe00)));
+        } while (n >= 4);
+    }
+
+    if (n >= 2) {
+        u32 _eng;
+        s32 mode;
+        s32 y2;
+        func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e00a4, priority);
+        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
+        mode = (s32)((_eng << 17) >> 30);
+        y2 = (y & 0xff00) | ((y + 8) & 0xff);
+        func_01ffaacc((s32)x, y2, (s32)(u16)(param + (0x3ff & (4 >> mode))), (void *)data_027e0084, priority);
+        n -= 2;
+        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
+        mode = (s32)((_eng << 17) >> 30);
+        param = (u16)(param + (0x3ff & (2 >> mode)));
+        x = (u16)((((((x & 0x1ff) + 0x10) & 0x1ff) | (x & 0xfe00))));
+    }
+
+    if (n >= 1) {
+        u32 _eng;
+        s32 mode;
+        s32 y2;
+        func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e0084, priority);
+        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
+        mode = (s32)((_eng << 17) >> 30);
+        y2 = (y & 0xff00) | ((y + 8) & 0xff);
+        func_01ffaacc((s32)x, y2, (s32)(u16)(param + (0x3ff & (4 >> mode))), (void *)data_027e0084, priority);
+    }
+}
 
 void func_0209b8c0(void *arg0) {
     void func_0209b4a8(s32, s32, u16);
@@ -381,8 +445,46 @@ s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
     return temp_r0;
 }
 
-void func_0209b9a8(void) { return; }
+#pragma opt_common_subs off
+#pragma opt_common_subs off
+#pragma opt_propagation off
+void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
+    void func_01ff90e4(u16, u16, u32, u16 *);
+    extern u8 data_027e005c[];
+    extern u8 data_027e00a4[];
+    extern u8 data_027e0084[];
+    extern s32 gCur3DSpriteEngine;
 
+    s32 n = ((s32)a2 + 7) >> 3;
+    u32 x = a0;
+    u32 y = a1;
+    u16 param = a3;
+
+    if (n >= 4) {
+        do {
+            u32 mode;
+            EmitSprite((u16)x, (u16)y, (u32)param, (u16 *)data_027e005c);
+            n -= 4;
+            mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
+            param = (u16)(param + (0x3ff & (8 >> (s32)mode)));
+            x = (u16)(((((x & 0x1ff) + 0x20) & 0x1ff) | (x & 0xfe00)));
+        } while (n >= 4);
+    }
+
+    if (n >= 2) {
+        u32 mode;
+        DrawSpritePair((u16)x,y,param,(u16 *)data_027e00a4);
+        mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
+        param = (u16)(param + (0x3ff & (2 >> (s32)mode)));
+        x = (u16)((((((x & 0x1ff) + 0x10) & 0x1ff) | (x & 0xfe00))));
+        n -= 2;
+    }
+
+    if (n >= 1) {
+        DrawSpritePair((u16)x,(u16)y,(u16)param,(u16 *)data_027e0084);
+    }
+}
+#pragma opt_common_subs reset
 void func_0209bbd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     void func_0209bc18(M2C_UNK, M2C_UNK, s32, s32, u16, u16);
     M2C_UNK func_02086680(M2C_UNK);

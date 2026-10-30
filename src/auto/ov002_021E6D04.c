@@ -1,5 +1,6 @@
 /* 17 functions from 0x021E6D04 to 0x021E7C84 (ov002), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1,b8:1,b9:1,b10:1,b11:1,b12:1,b13:1,b14:1,b15:1; } SetupFlags;
 typedef struct { u8 low:4; u8 high:4; } NibbleFlags;
 static inline u8 IsEntryReady(void *p) {
 s32 ready=1;
@@ -50,6 +51,7 @@ void func_ov002_021e6d04(void *arg0) {
     } while (var_r9 < 2);
 }
 
+#pragma opt_common_subs off
 void func_ov002_021e6db4(void *arg0) {
     void func_ov002_021e7a64(void *);
     void func_ov002_021e3890(void *);
@@ -112,7 +114,7 @@ void func_ov002_021e6db4(void *arg0) {
         } while (r7 < 2);
     }
 
-#pragma scheduling off
+
     {
         volatile u16 *r1;
         M2C_FIELD(data_027e00bc, u16 *, 0) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0) | 0x10);
@@ -123,26 +125,26 @@ void func_ov002_021e6db4(void *arg0) {
         M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0xC0) | 0x40);
         M2C_FIELD(data_027e00bc, u8 *, 0x51) = 0x10;
         M2C_FIELD(data_027e00bc, u8 *, 0x52) = 0;
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x1) | 0x1);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x2);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) | 0x4);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x8);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x10);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x20);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x100);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x200);
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b0=1;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b1=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b2=1;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b3=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b4=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b5=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b8=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b9=0;
         r1 = (volatile u16 *)0x4000060;
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) | 0x400);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) | 0x800);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x1000);
-        M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16)(M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x2000);
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b10=1;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b11=1;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b12=0;
+        ((SetupFlags *)((u8 *)data_027e00bc+0x12))->b13=0;
         r1[0] = (u16)((r1[0] & ~0x3000) | 0x8);
     }
-#pragma scheduling reset
+
 
     func_02086d18();
 }
-
+#pragma opt_common_subs reset
 void func_ov002_021e795c(void *);
 void func_ov002_021e7120(void *);
 void func_ov002_021e7474(void *);
@@ -314,9 +316,12 @@ s32 func_ov002_021e7a14(M2C_UNK arg0, M2C_UNK arg1) {
     return 4;
 }
 
+#pragma scheduling off
+#pragma scheduling reset
 void func_ov002_021e7a64(void *arg0) {
     extern M2C_UNK gPlayerSettings;
     extern u8 data_ov002_021f1134[];
+extern u8 data_ov002_021f2f40;
     extern u8 data_ov002_021f1bf4[];
     u8 func_ov002_021e8014(s32, s32);
     s32 func_ov002_021e79c4(M2C_UNK, M2C_UNK);
@@ -356,20 +361,20 @@ void func_ov002_021e7a64(void *arg0) {
     M2C_FIELD(arg0, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
     M2C_FIELD(arg0, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
 
-    if (data_ov002_021f1134[0] == 0) {
+    if (data_ov002_021f2f40 == 0) {
         u8 idx = M2C_FIELD(arg0, u8 *, 0x0);
-        u8 flag = (idx == 0) ? 1 : 0;
+        s32 flag = (idx == 0) ? 1 : 0;
         u8 v = M2C_FIELD(M2C_FIELD((u8 *)arg0 + flag * 0x18, void **, 0x4), u8 *, 0x3d);
         if (v != 2) {
             u8 *q = (u8 *)arg0 + idx * 0x18;
-            if (v == 3) {
-                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), u8 *, 0x3d);
-                if (v2 != 3) {
+            if (v != 3) {
+                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), volatile u8 *, 0x3d);
+                if (v2 == 2) {
                     M2C_FIELD(arg0, u8 *, 0x1) = idx;
                 }
             } else {
-                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), u8 *, 0x3d);
-                if (v2 == 2) {
+                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), volatile u8 *, 0x3d);
+                if (v2 != 3) {
                     M2C_FIELD(arg0, u8 *, 0x1) = idx;
                 }
             }
@@ -410,4 +415,3 @@ void func_ov002_021e7a64(void *arg0) {
         }
     }
 }
-

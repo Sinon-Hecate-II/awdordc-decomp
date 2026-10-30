@@ -308,5 +308,9 @@ func_done:
     func_ov000_02199d74((s16)bestY, (s16)bestX, (M2C_UNK)4, (u8)(temp & 0xFF), 0);
 }
 
-s32 func_ov000_0218e340(void) { return 0; }
+s32 func_ov000_0218e340(void) {
+    int dummy_unused = 0;
+    (void)dummy_unused;
+    return 0;
+}
 

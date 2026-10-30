@@ -12,7 +12,7 @@ rem=(a+i)%13;return rem+1;
 }
 #pragma opt_common_subs on
 void func_020280c8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_0202810c(s16, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void func_0202810c(s16, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern void *data_02138e4c;
     s16 temp_r0;
 
@@ -21,12 +21,13 @@ void func_020280c8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_0202810c(temp_r0, arg0, arg1, arg2, arg3);
 }
 
-M2C_UNK func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){
+void func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){
  extern void *data_02138e4c;
  CallbackArgs_0202810c args;
- if(!M2C_FIELD((u8 *)data_02138e4c+0x2000,void (**)(CallbackArgs_0202810c *),0x27c))return;
- args.a=a;args.c=c;args.d=d;args.e=e;args.b=b;
- M2C_FIELD((u8 *)data_02138e4c+0x2000,void (**)(CallbackArgs_0202810c *),0x27c)(&args);
+ State_02028038 *base=(State_02028038 *)((char *)data_02138e4c+0x2000);
+ if(!base->callback)return;
+ args.a=a;args.b=b;args.c=c;args.d=d;args.e=e;
+ base->callback(&args);
 }
 
 #pragma opt_common_subs off

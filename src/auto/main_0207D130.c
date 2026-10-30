@@ -223,6 +223,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
     s16 first[24];
     s16 second[12];
     s32 mask = 0;
+    int dummy_unused = 0;
     {
         const u16 *src = (const u16 *)data_020ebe8c;
         u16 *dst = (u16 *)first;
@@ -307,6 +308,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
                     {
                         u16 val = data_021018a4[b];
                         if (val != 0) {
+                            (void)dummy_unused;
                             return val;
                         }
                     }
@@ -314,6 +316,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
             }
         }
 skip_second:
+        (void)dummy_unused;
         return data_021018c4[mask];
     }
 }

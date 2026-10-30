@@ -104,7 +104,6 @@ func_020e35cc(tmp);
 s32 func_ov000_0216f1b4(s32 arg0) {
     extern void **gCurrentMap;
     extern u16 data_ov000_021aeef4[];
-    s32 stride = 14;
     void *base;
     u8 *arr;
     u8 *fc;
@@ -123,7 +122,7 @@ s32 func_ov000_0216f1b4(s32 arg0) {
     base = *gCurrentMap;
     arr = (u8 *)base + 0x59A4;
     a8 = *(u16 *)((u8 *)base + 0x52A8);
-    fc = arr + (arg0 + a8) * stride;
+    fc = arr + (arg0 + a8) * 14;
     if (!(*(u16 *)(fc + 4) & 0x8)) {
         return 0;
     }
@@ -132,8 +131,8 @@ s32 func_ov000_0216f1b4(s32 arg0) {
     T = data_ov000_021aeef4[a4];
     upper = T + 0x33;
 
-    cell = arr + (T + 1) * stride;
-    for (idx = T + 1; idx < upper; idx++, cell += stride) {
+    cell = arr + (T + 1) * 14;
+    for (idx = T + 1; idx < upper; idx++, cell += 14) {
         if ((cell[0] & 0x3F) == 0) {
             goto outer_continue;
         }
@@ -149,8 +148,8 @@ s32 func_ov000_0216f1b4(s32 arg0) {
             T2 = data_ov000_021aeef4[a4];
             upper2 = T2 + 0x33;
             r0v = idx - a8;
-            c2 = arr + (T2 + 1) * stride;
-            for (j = T2 + 1; j < upper2; j++, c2 += stride) {
+            c2 = arr + (T2 + 1) * 14;
+            for (j = T2 + 1; j < upper2; j++, c2 += 14) {
                 if ((c2[0] & 0x3F) == 0) {
                     continue;
                 }
@@ -174,8 +173,8 @@ s32 func_ov000_0216f1b4(s32 arg0) {
                 T2 = data_ov000_021aeef4[a4];
                 upper2 = T2 + 0x33;
                 r0v = idx - a8;
-                c2 = arr + (T2 + 1) * stride;
-                for (j = T2 + 1; j < upper2; j++, c2 += stride) {
+                c2 = arr + (T2 + 1) * 14;
+                for (j = T2 + 1; j < upper2; j++, c2 += 14) {
                     if ((c2[0] & 0x3F) == 0) {
                         continue;
                     }
@@ -195,8 +194,8 @@ s32 func_ov000_0216f1b4(s32 arg0) {
                 T2 = data_ov000_021aeef4[a4];
                 upper2 = T2 + 0x33;
                 r0v = idx - a8;
-                c2 = arr + (T2 + 1) * stride;
-                for (j = T2 + 1; j < upper2; j++, c2 += stride) {
+                c2 = arr + (T2 + 1) * 14;
+                for (j = T2 + 1; j < upper2; j++, c2 += 14) {
                     if ((c2[0] & 0x3F) == 0) {
                         continue;
                     }

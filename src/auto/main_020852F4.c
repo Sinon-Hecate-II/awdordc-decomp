@@ -419,6 +419,7 @@ void func_020859b4(M2C_UNK arg0) {
         }
         break;
     case 1:                                         /* switch 1 */
+        // add declaration for func_020c4acc? It was not declared but current best includes call
         temp_r7 = M2C_FIELD(&data_02157634, u8 *, 1);
         var_r8 = 0;
         do {

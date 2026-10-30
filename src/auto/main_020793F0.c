@@ -201,18 +201,17 @@ void func_02079c6c(s32 arg0, s32 arg1) {
 
 #pragma opt_common_subs off
 void func_02079c90(s32 arg0, s32 arg1, s32 *arg2) {
-s32 func_0207c8ec(s32, s32);
-M2C_UNK func_0207d820(Vec3 *, void *);
-extern s32 *gCurrentMap;
-s32 base;
-Vec3 pos;
-base = *gCurrentMap + 0x6EF8;
-pos.x = arg0;
-pos.y = arg1;
-pos.z = 0;
-func_0207d820(&pos, (void *)(base + 0x70));
-arg2[0] = func_0207c8ec((arg2[0] + 0x1000) << 8, 0x2000);
-arg2[1] = func_0207c8ec((0x1000 - arg2[1]) * 0xC0, 0x2000);
+    s32 func_0207c8ec(s32, s32);
+    M2C_UNK func_0207d820(Vec3 *, void *);
+    extern s32 *gCurrentMap;
+    s32 base = *gCurrentMap + 0x6ef8;
+    Vec3 pos;
+    pos.x = arg0;
+    pos.y = arg1;
+    pos.z = 0;
+    func_0207d820(&pos, (void *)(base + 0x70));
+    arg2[0] = func_0207c8ec((arg2[0] + 0x1000) << 8, 0x2000);
+    arg2[1] = func_0207c8ec((0x1000 - arg2[1]) * 0xc0, 0x2000);
 }
 #pragma opt_common_subs reset
 void func_02079d0c(s32 arg0, s32 arg1, s32 *arg2) {

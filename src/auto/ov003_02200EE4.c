@@ -50,12 +50,6 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     u16 func_020aae10(void *);
     u16 func_020aae44(void *);
     void *func_020ab1c4(s32);
-    s32 zero4;
-    s32 three;
-    s32 val15c;
-    s32 eight;
-    s32 zero7;
-    u8 loop_i;
     void *temp_r4;
     s16 temp_r5;
     s16 temp_r6;
@@ -68,6 +62,14 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     u16 temp_r7_2;
     s32 temp_r0_2;
     s32 var_r0_2;
+    u8 var_r8;
+    s32 zero7;
+    s32 eight;
+    s32 val15c;
+    s32 three;
+    s32 zero4;
+    void *temp_r1;
+    void *temp_r0ptr;
 
     M2C_FIELD(arg0, void **, 0) = func_020ab1c4(arg1);
     func_020aab24(M2C_FIELD(arg0, void **, 0), 2, 0x14C, 3, 1);
@@ -106,20 +108,23 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     }
     func_02088da8(M2C_FIELD(arg0, void **, 4));
 
-    loop_i = 0;
-    zero7 = loop_i;
+    var_r8 = 0;
+    zero7 = var_r8;
     eight = 8;
     val15c = 0x15C;
     three = 3;
-    zero4 = loop_i;
+    zero4 = var_r8;
     do {
-        M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 8) = func_020ab1c4(arg1);
-        func_020aab24(M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 8), eight, val15c, three, zero7);
-        func_02088da8(M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 8));
-        M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 0x28) = func_020ab1c4(arg1);
-        func_020aab24(M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 0x28), 9, 0x164, 3, zero4);
-        func_02088da8(M2C_FIELD((void *)((u8 *)arg0 + (loop_i * 4)), void **, 0x28));
-        loop_i += 1;
-    } while ((u32)loop_i < 8U);
+        temp_r0ptr = func_020ab1c4(arg1);
+        temp_r1 = (void *)((u8 *)arg0 + (var_r8 * 4));
+        M2C_FIELD(temp_r1, void **, 8) = temp_r0ptr;
+        func_020aab24(M2C_FIELD(temp_r1, void **, 8), eight, val15c, three, zero7);
+        func_02088da8(M2C_FIELD(temp_r1, void **, 8));
+        temp_r0ptr = func_020ab1c4(arg1);
+        M2C_FIELD(temp_r1, void **, 0x28) = temp_r0ptr;
+        func_020aab24(M2C_FIELD(temp_r1, void **, 0x28), 9, 0x164, 3, zero4);
+        func_02088da8(M2C_FIELD(temp_r1, void **, 0x28));
+        var_r8 += 1;
+    } while ((u32)var_r8 < 8U);
 }
 

@@ -809,20 +809,34 @@ if(!M2C_FIELD(p,void **,0x38) && !M2C_FIELD(p,void **,0x3C))func_01ffa574(p);
 else if(M2C_FIELD(p,void **,0x38))func_02090bd8(M2C_FIELD(p,void **,0x38));
 }
 
-#pragma scheduling off
+#pragma optimization_level 4
 void func_02090d84(void *arg0) {
-void *p=arg0;
-(*(void (**)(void *))*(void **)arg0)(arg0);
-p=((void **)p)[3]; if(!p)return;
-arg0=p; (*(void (**)(void *))*(void **)arg0)(arg0);
-p=((void **)p)[3]; if(!p)return;
-arg0=p; (*(void (**)(void *))*(void **)arg0)(arg0);
-p=((void **)p)[3]; if(!p)return;
-arg0=p; (*(void (**)(void *))*(void **)arg0)(arg0);
-arg0=((void **)p)[3]; if(!arg0)return;
-func_02090d84(arg0);
+    void *r4;
+
+    r4 = arg0;
+    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
+    r4 = M2C_FIELD(r4, void **, 0xC);
+    if (r4 == 0) {
+        return;
+    }
+    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
+    r4 = M2C_FIELD(r4, void **, 0xC);
+    if (r4 == 0) {
+        return;
+    }
+    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
+    r4 = M2C_FIELD(r4, void **, 0xC);
+    if (r4 == 0) {
+        return;
+    }
+    M2C_FIELD(*(void **)r4, void (**)(void *), 0)(r4);
+    r4 = M2C_FIELD(r4, void **, 0xC);
+    if (r4 == 0) {
+        return;
+    }
+    func_02090d84(r4);
 }
-#pragma scheduling reset
+#pragma optimization_level reset
 void func_02090e00(void) {
     M2C_UNK func_02090cbc();
     func_02090cbc();

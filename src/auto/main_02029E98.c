@@ -576,21 +576,13 @@ void func_0202aa58(void) {
 }
 
 s32 func_0202aa64(s32 arg0) {
-    M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213b2a0;
-    if (arg0 == 0) {
-        return 1;
-    }
-    if (arg0 & M2C_FIELD(&data_0213b2a0, s32 *, 8)) {
-        return 0;
-    }
-    func_02008dbc(arg0, 0);
-    {
-        M2C_UNK *p = &data_0213b2a0;
-        s32 v = M2C_FIELD(p, s32 *, 8) | arg0;
-        M2C_FIELD(p, s32 *, 8) = v;
-    }
-    return 1;
+ M2C_UNK func_02008dbc(M2C_UNK,M2C_UNK);
+ extern M2C_UNK data_0213b2a0;
+ if(arg0==0)return 1;
+ if(arg0 & M2C_FIELD(&data_0213b2a0,s32 *,8))return 0;
+ func_02008dbc(arg0,0);
+ { s32 *p=(s32 *)((char *)&data_0213b2a0+8); *p |= arg0; }
+ return 1;
 }
 
 void func_0202aaac(s32 arg0) {
@@ -610,27 +602,19 @@ void func_0202aadc(s32 arg0) {
     data_0213b2a0 &= ~arg0;
 }
 
+#pragma push
+#pragma opt_common_subs off
 s32 func_0202aaf8(void) {
-    extern M2C_UNK data_0213b2a0;
-    u32 flags;
-    u32 mask;
-    s32 i;
-    flags = M2C_FIELD(&data_0213b2a0, u32 *, 4);
-    mask = 1;
-    i = 0;
-    if ((flags & mask) != 0) {
-        do {
-            i = i + 1;
-            mask = mask << 1;
-            if (i == 8) {
-                return -1;
-            }
-        } while ((flags & mask) != 0);
-    }
-    M2C_FIELD(&data_0213b2a0, u32 *, 4) = flags | mask;
-    return i;
+ extern M2C_UNK data_0213b2a0;
+ s32 mask=1; s32 i;
+ for(i=0;i<8;i++,mask<<=1) {
+ if(!(M2C_FIELD(&data_0213b2a0,u32 *,4)&mask)) {
+ u32 *p=(u32 *)&data_0213b2a0;
+ p[1]|=mask; return i;
+ }
+ } return -1;
 }
-
+#pragma pop
 void func_0202ab40(s32 arg0) {
     extern M2C_UNK data_0213b2a0;
     M2C_UNK *g = &data_0213b2a0;

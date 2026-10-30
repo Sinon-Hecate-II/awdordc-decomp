@@ -160,7 +160,7 @@ void func_020de610(void) {
 
 }
 
-M2C_UNK func_020de614(M2C_UNK a0, M2C_UNK a1) { (void)a0; (void)a1; return 0; }
+M2C_UNK func_020de614(M2C_UNK a0, M2C_UNK a1) { return 0; }
 
 void func_020de868(s32 arg0, s32 arg1, void *arg2) {
     if (arg0 != 0) {

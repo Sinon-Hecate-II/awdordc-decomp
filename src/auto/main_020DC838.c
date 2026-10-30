@@ -13,7 +13,7 @@ static inline void func_020dcc00(void *q) {
     M2C_FIELD(q, u32 *, 0x40) = (M2C_FIELD(q, u32 *, 0x40) & ~0x3fc0000) | (((value >> 16) << 24) >> 6);
 }
 
-M2C_UNK func_020dc838(void *entity_) {
+M2C_UNK func_020dc838(void *entity) {
     void func_020aacf0(void *);
     void func_020d47f0(void);
     void func_01ffa8c4(void *, s32);
@@ -23,10 +23,9 @@ M2C_UNK func_020dc838(void *entity_) {
     typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
     typedef struct { unsigned char value:4; } E0194Bits;
 
-    register void *entity asm("r4") = entity_;
-    register u32 keys asm("r0");
-    register void *p asm("r1");
-    register u8 allowed asm("r12");
+    u32 keys;
+    void *p;
+    u8 allowed;
 
     if (M2C_FIELD(entity, void **, 0x50)) func_020aacf0(M2C_FIELD(entity, void **, 0x50));
     if (M2C_FIELD(entity, void **, 0x54)) func_020aacf0(M2C_FIELD(entity, void **, 0x54));
@@ -37,12 +36,9 @@ M2C_UNK func_020dc838(void *entity_) {
 
     p = M2C_FIELD(entity, void **, 0x58);
     allowed = 1;
-    {
-        void *rp = M2C_FIELD(p, void **, 0x64);
-        if (M2C_FIELD(rp, s8 *, 0xb) != 1) {
-            if (!((u32)(M2C_FIELD(p, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(rp, s8 *, 0xc) != 1)
-                allowed = 0;
-        }
+    if (M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xb) != 1) {
+        if (!((u32)(M2C_FIELD(p, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xc) != 1)
+            allowed = 0;
     }
 
     if ((u8)(allowed & 0xff) == 0) {

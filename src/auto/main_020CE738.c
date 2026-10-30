@@ -2,9 +2,49 @@
 #include "common.h"
 extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0212bd14[],data_0212bd28[],data_0212bd38[],data_0212bd48[];
 
+#pragma opt_strength_reduction off
 void func_020ce738(void) {
+s32 func_020cd728(void);void func_020ce61c(void *);s32 func_020d1980(s32);
+s32 func_020ce6f4(s32,s32);void func_020ce434(s16,s16,s16,u32,u8,u8);
+extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];extern s8 data_ov000_021b56c0[];
+s32 tile;s32 owner,x,y,kind; s32 id,player,playerUnitID,unitOffset,playerOffset;u8 *unit;void *base;s16 value;
+if(func_020cd728()){
+for(id=1,unitOffset=14;id<256;id++,unitOffset+=14){
+unit=(u8 *)*gCurrentMap+0x59A4+unitOffset;
+if(((u32)(unit[0]<<26)>>26)!=0)func_020ce61c(unit);
 }
-
+}else{
+for(player=1,playerOffset=140;player<5;player++,playerOffset+=140){
+if(func_020d1980(player) && M2C_FIELD((u8 *)*gCurrentMap+playerOffset,u8 *,0x67C3)!=0){
+playerUnitID=data_ov000_021aeef4[player]+1;
+if(playerUnitID<data_ov000_021aeef4[player]+51){
+unitOffset=playerUnitID*14;
+do {
+unit=(u8 *)*gCurrentMap+0x59A4+unitOffset;
+if(((u32)(unit[0]<<26)>>26)!=0)func_020ce61c(unit);
+playerUnitID++;unitOffset+=14;
+}while(playerUnitID<data_ov000_021aeef4[player]+51);
+}
+}
+}
+}
+base=*gCurrentMap;
+for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
+tile=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0x1420);
+kind=tile&31;
+if(data_ov000_021b56c0[kind] && (owner=(tile&0xE0)>>5)!=0){
+value=func_020ce6f4(tile,M2C_FIELD(base,u8 *,0x5158));
+func_020ce434((s16)x,(s16)y,value,M2C_FIELD((u8 *)*gCurrentMap+owner*140,u8 *,0x67C3),(u8)owner,1);
+}
+if(kind==26){
+value=func_020ce6f4(tile,M2C_FIELD(*gCurrentMap,u8 *,0x5158));
+func_020ce434((s16)x,(s16)y,value,3,0,1);
+}
+}
+}
+}
+#pragma opt_strength_reduction reset
 void func_020ce9a0(void) {
 extern void **gCurrentMap;
 void func_020cd7bc(u8,u8); void func_020cd754(u8);void func_020ce738(void);

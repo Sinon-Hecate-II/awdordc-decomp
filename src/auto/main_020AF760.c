@@ -317,7 +317,67 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
 }
 
-void func_020b01bc(s32 a, s32 b, s32 c, s32 d, s32 e) { (void)a;(void)b;(void)c;(void)d;(void)e; }
+void func_020b01bc(void) {
+    void func_020b0154(void);
+    void Reset3DSpriteEngineState(void);
+    extern s32 *gCurrentMap;
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    u16 *volatile sp0;
+    u8 v51;
+    u8 v52;
+    u8 v0 = 0;
+
+    func_020b0154();
+    if (*(u8 *)((s32)*gCurrentMap + 0x5157) == 1) {
+        v51 = 0xa;
+        v52 = 0x8;
+    } else {
+        v51 = 0xc;
+        v52 = 0x8;
+    }
+    sp30 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp30 = (*sp30 & ~0xc0) | 0x40;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = v51;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = v52;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = v0;
+    sp2C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp2C = (*sp2C & ~1) | 1;
+    sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp28 = *sp28 & ~2;
+    sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp24 = *sp24 & ~4;
+    sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp20 = *sp20 & ~8;
+    sp1C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp1C = *sp1C & ~0x10;
+    sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp18 = *sp18 & ~0x20;
+    sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp14 = *sp14 & ~0x100;
+    sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp10 = *sp10 & ~0x200;
+    spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *spC = *spC | 0x400;
+    sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp8 = *sp8 | 0x800;
+    sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp4 = *sp4 | 0x1000;
+    sp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp0 = *sp0 | 0x2000;
+    Reset3DSpriteEngineState();
+}
 
 /* Configure the 3D sprite engine for a map view: set the per-layer 2-bit
  * rotation modes (layers 0-3 to 1/0/2/3 via func_020b0154), pick the two

@@ -163,18 +163,18 @@ void func_020a12c0(void *arg0) {
 void func_020a12d8(void) {
     M2C_UNK func_020774b0();
     M2C_UNK func_020a0d18();
-    M2C_UNK func_020a1300(M2C_UNK, M2C_UNK);
-    func_020774b0();
-    func_020a0d18();
-    func_020a1300(0, 0);
-}
+    void func_020a1300(M2C_UNK, M2C_UNK);
+      func_020774b0();
+      func_020a0d18();
+      func_020a1300(0, 0);
+  }
 
-void func_020a12f4(void) {
-    M2C_UNK func_0207749c();
-    func_0207749c();
-}
+  void func_020a12f4(void) {
+      M2C_UNK func_0207749c();
+      func_0207749c();
+  }
 
-s32 func_020a1300(s32 arg0, s32 arg1) {
+void func_020a1300(s32 arg0, s32 arg1) {
     M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     s32 func_020a125c(s32);
     s32 func_020a11fc(s32);
@@ -196,7 +196,7 @@ s32 func_020a1300(s32 arg0, s32 arg1) {
 
     ctx = (s8 *)data_0211fb5c;
     if (ctx[0x5b] == 0) {
-        return 0;
+        return;
     }
     map = (void *)*gCurrentMap;
     selected = *(void **)((u8 *)map + 0x52d0);
@@ -207,7 +207,7 @@ s32 func_020a1300(s32 arg0, s32 arg1) {
         pl = pl + 1;
     }
     if (*(u16 *)((u8 *)map + 0x52a4) != pl) {
-        return 0;
+        return;
     }
     *(volatile s32 *)0x040004A4 = 0x1F0080;
     *(volatile s32 *)0x04000444 = 0;
@@ -215,7 +215,7 @@ s32 func_020a1300(s32 arg0, s32 arg1) {
     i = ctx[0x5b];
     if (i < 0) {
         *(volatile s32 *)0x04000448 = 1;
-        return 0;
+        return;
     }
     for (; i >= 0; i--) {
         dir = func_020a125c((u8)i);
@@ -246,7 +246,7 @@ s32 func_020a1300(s32 arg0, s32 arg1) {
         func_0207d130(&data_027e0064, vec, 0x22F20, 0x1460, 0x30000, 0, 0, 0x80, 0x80, 0x1800, val);
     }
     *(volatile s32 *)0x04000448 = 1;
-    return 0;
+    return;
 }
 
 void func_020a1508(void) {

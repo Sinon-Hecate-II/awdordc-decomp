@@ -167,7 +167,7 @@ func_02086658(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-M2C_UNK func_ov005_02211768(void *arg0) {
+void func_ov005_02211768(void *arg0) {
     void func_020aacf0(void *);
     void func_0208fe30(s32);
     void func_01ffa8c4(void *, s32);
@@ -212,11 +212,11 @@ M2C_UNK func_ov005_02211768(void *arg0) {
     for (i = 0; i < 5; i++) {
         func_020aacf0(M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38));
         p = M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38);
-        ok = 1;
         isCur = (M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xC) == 1);
         if (isCur) {
             M2C_FIELD(arg0, s32 *, 0x34) = i;
         }
+        ok = 1;
         p = M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38);
         f = M2C_FIELD(p, void **, 0x64);
         if (M2C_FIELD(f, s8 *, 0xB) != 1
@@ -228,11 +228,12 @@ M2C_UNK func_ov005_02211768(void *arg0) {
         }
     }
     for (j = 0; j < 5; j++) {
-        p = M2C_FIELD((u8 *) arg0 + j * 4, void **, 0x38);
         if (M2C_FIELD(arg0, s32 *, 0x34) == j) {
+            p = M2C_FIELD((u8 *) arg0 + j * 4, void **, 0x38);
             M2C_FIELD(p, s32 *, 0x40) = (s32) ((M2C_FIELD(p, s32 *, 0x40) & ~0x03FC0000)
                 | ((u32) ((u16) (((u32) (*(volatile u8 *) ((u8 *) p + 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         } else {
+            p = M2C_FIELD((u8 *) arg0 + j * 4, void **, 0x38);
             M2C_FIELD(p, s32 *, 0x40) = (s32) ((M2C_FIELD(p, s32 *, 0x40) & ~0x03FC0000)
                 | ((u32) ((u16) ((u32) (*(volatile u8 *) ((u8 *) p + 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
         }
@@ -269,9 +270,8 @@ void func_ov005_022119c0(void) {
     func_ov005_0221174c();
 }
 
-void func_ov005_022119cc(void) {
-    M2C_UNK func_ov005_02211768();
-    func_ov005_02211768();
+void func_ov005_022119cc(void *arg0) {
+    func_ov005_02211768(arg0);
 }
 
 void func_ov005_022119d8(void) {

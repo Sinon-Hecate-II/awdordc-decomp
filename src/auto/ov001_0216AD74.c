@@ -65,16 +65,11 @@ s32 func_ov001_0216bb4c(u32 *arg0) {
 s32 func_ov001_0216cdb4(void *,M2C_UNK *,s32);
 s32 func_ov001_0216cf08(M2C_UNK *);
 extern M2C_UNK data_ov001_0218fda4;
-s32 result;
-u32 n;
+s32 result; u32 n;
 s32 matches;
 s32 i;
-u8 *p;
-u8 *text;
-p=(u8 *)arg0;
-matches=0;
-result=0;
-n=*(u32 *)p;
+u8 *p; u8 *text;
+p=(u8 *)arg0; n=*(u32 *)p; result=0; matches=result;
 if(n==0)return 5;
 if(n>64)n=64;
 i=0;
@@ -82,7 +77,7 @@ if((s32)n>0) {
 text=p+8;
 do {
 if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&data_ov001_0218fda4) && !func_ov001_0216cdb4(text,&data_ov001_0218fda4,func_ov001_0216cf08(&data_ov001_0218fda4)))matches++;
-i++;p+=0x54;text+=0x54;
+p+=0x54;text+=0x54;i++;
 }while(i<(s32)n);
 }
 if(matches>1)result=4;

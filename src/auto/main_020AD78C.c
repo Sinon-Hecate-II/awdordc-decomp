@@ -91,6 +91,7 @@ void func_020ad968(void) {
     func_020822b8((u16 *) &sp0);
 }
 
+#pragma opt_common_subs off
 void func_020ad9b8(M2C_UNK a0) {
     void func_020ad968(void);
     void func_020ad67c(void);
@@ -161,15 +162,15 @@ void func_020ad9b8(M2C_UNK a0) {
 
     gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_common_subs reset
 void func_020adc20(void) {
-    M2C_UNK func_020e35cc();
+    void func_020e35cc(void);
     extern s32 data_0215c428;
     if (data_0215c428 == 0) {
         return;
     }
     func_020e35cc();
-    data_0215c428 = 0;
+    *((s32 *)&data_0215c428) = 0;
 }
 
 u8 func_020adc4c(void) {
@@ -303,11 +304,16 @@ void func_020ae028(s32 arg0) {
 }
 
 s32 func_020ae068(void) {
- extern s32 data_0215c428;
- if(func_020adfd0()==0) return 0;
- if(data_0215c428==0) return 0;
- *(s16 *)data_0215c428 |=4;
- return 1;
+    s32 func_020adfd0(void);
+    extern s32 data_0215c428;
+    if (func_020adfd0() == 0) {
+        return 0;
+    }
+    if (data_0215c428 != 0) {
+        *(s16 *)data_0215c428 |= 4;
+        return 1;
+    }
+    return 0;
 }
 
 s32 func_020ae0a8(void) {

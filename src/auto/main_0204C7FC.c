@@ -119,7 +119,6 @@ void func_0204cbac(void *arg0) {
   extern s32 data_0213dca8;
   u8 *buf;
   u8 tmp[16];
-  s32 temp_r0;
   if (M2C_FIELD(arg0, s32 *, 0x5c) == 0) {
     buf = (u8 *)arg0 + 0x50;
     func_02049ef4(buf,
@@ -160,8 +159,7 @@ void func_0204cbac(void *arg0) {
   if (func_0204a30c(arg0) == 0) return;
   if (M2C_FIELD(arg0, s32 *, 0x60) < M2C_FIELD(arg0, s32 *, 0x5c)) return;
   func_0204a2c8((u8 *)arg0 + 0x50);
-  temp_r0 = M2C_FIELD(arg0, s32 *, 0x13c) ? 4 : 5;
-  M2C_FIELD(arg0, s32 *, 0x10) = temp_r0;
+  M2C_FIELD(arg0, s32 *, 0x10) = M2C_FIELD(arg0, s32 *, 0x13c) ? 4 : 5;
   func_0204a518(arg0, 0, 0);
 }
 
@@ -317,17 +315,19 @@ s32 func_0204d39c(void *p, void *src, s32 n) {
 
     u8 *q;
     s32 left;
+    s32 state;
+
     if (!p) func_020640a8(&data_020fd858, &data_020fd864, &data_020fd81c, 0x35d);
     if (!src) func_020640a8(&data_020fd9a0, &data_020fd864, &data_020fd81c, 0x35e);
     if (n <= 0) func_020640a8(&data_020fd9b4, &data_020fd864, &data_020fd81c, 0x35f);
-    if (!M2C_FIELD(p, s32 *, 0x110)) return func_0204d1ac(p, (s32)src, n);
+    if (!M2C_FIELD(p, s32 *, 0x110)) goto tail;
     if (n <= 0) return 1;
 
     q = (u8 *)src;
     left = n;
 
     while (left > 0) {
-        s32 state = M2C_FIELD(p, s32 *, 0x128);
+        state = M2C_FIELD(p, s32 *, 0x128);
         if (state == 0) {
             s8 *found = func_02068ee0((s8 *)q, 10);
             if (found) {
@@ -378,5 +378,8 @@ s32 func_0204d39c(void *p, void *src, s32 n) {
         }
     }
     return 1;
+
+tail:
+    return func_0204d1ac(p, (s32)src, n);
 }
 

@@ -1,25 +1,191 @@
 /* 16 functions from 0x020420A0 to 0x0204309C (main), found by ds-decomp. */
 #include "common.h"
 
-void func_020420a0(void) { }
-
+#pragma opt_strength_reduction off
+s32 func_020420a0(void) {
+ void *func_02044268(void);
+ u64 func_02007004(void);
+ u64 func_02072088(u64,u64);
+ s32 func_02038f6c(void);
+ s32 func_02041038(s32);
+ void func_02041fb0(s32,s32);
+ s32 func_02041e74(s32);
+ void func_02041e44(void);
+ void func_02041be0(s32);
+ void func_020411dc(s32);
+ s32 func_02040e1c(s32);
+ u64 now,delta;
+ s32 i;
+ void *p;
+ if(M2C_FIELD(func_02044268(),s32 *,0x1a0)==9 ||
+ M2C_FIELD(func_02044268(),s32 *,0x1a0)==16 ||
+ M2C_FIELD(func_02044268(),s32 *,0x1a0)==17) {
+ now=func_02007004();
+ delta=func_02072088((now-M2C_FIELD(func_02044268(),u64 *,0x1e0))<<6,0x82eaULL);
+ } else return 1;
+ switch(M2C_FIELD(func_02044268(),s32 *,0x1a0)){
+ case 9:
+ if(delta>6000ULL){
+ if(func_02038f6c()==5 && M2C_FIELD(func_02044268(),u8 *,0x1ad)>=5){
+ if(func_02041038(M2C_FIELD(func_02044268(),s32 *,0xf4))==0) return 0;
+ } else {
+ M2C_FIELD(func_02044268(),u8 *,0x1ad)++;
+ func_02041fb0(M2C_FIELD(func_02044268(),u8 *,0x2d0),3);
+ }
+ }
+ break;
+ case 16:
+ if(delta>6000ULL){
+ M2C_FIELD(func_02044268(),u8 *,0x1ab)++;
+ if(M2C_FIELD(func_02044268(),u8 *,0x1ab)>5){
+ u8 mode=M2C_FIELD(func_02044268(),u8 *,0x15);
+ if(mode==1){
+ func_02041e44();
+ func_02041be0(1);
+ } else {
+ if(func_02041e74(M2C_FIELD(func_02044268(),s32 *,0x1d4))==0) return 0;
+ if(M2C_FIELD(func_02044268(),u8 *,0xd)!=0){
+ M2C_FIELD(func_02044268(),u8 *,0x1ab)=0;
+ M2C_FIELD(func_02044268(),u64 *,0x1e0)=func_02007004();
+ } else {
+ if(func_02040e1c(M2C_FIELD(func_02044268(),s32 *,0x20c))==0) return 0;
+ }
+ }
+ } else {
+ for(i=1;i<=M2C_FIELD(func_02044268(),u8 *,0xd);i++){
+ p=func_02044268();
+ if((M2C_FIELD(p,u32 *,0x1d4)&(1<<M2C_FIELD((u8 *)func_02044268()+i,u8 *,0x2d0)))==0){
+ func_02041fb0(M2C_FIELD((u8 *)func_02044268()+i,u8 *,0x2d0),2);
+ } else {
+ func_020411dc(4);
+ return 1;
+ }
+ }
+ }
+ }
+ break;
+ case 17:
+ if(delta>(u64)(s32)M2C_FIELD((u8 *)func_02044268()+0x100,u16 *,0xb0)) func_020411dc(4);
+ break;
+ }
+ return 1;
+}
+#pragma opt_strength_reduction reset
 s32 func_02042310(s32 a,s32 b){void *func_02044268(void);u64 func_02007004(void);void func_0203f058(s32,s32,s32,s32,s32 *,s32);s32 func_0204084c(void);s32 v,k;if(b==13){v=M2C_FIELD(func_02044268(),s32 *,0x20c);k=1;}else k=0;func_0203f058(b,a,0,0,&v,k);if(func_0204084c())return 0;{void *p=func_02044268();M2C_FIELD(p,u64 *,0x1e8)=func_02007004();}return 1;}
 
 s32 func_02042390(s32 arg0, s32 arg1, s32 arg2) {
     void *func_02044268(void);
     s32 func_02038f6c(void);
+    void func_02044278(s32);
+    void func_02041dd4(s32);
+    s32 func_02042310(s32, s32);
+    u64 func_02007004(void);
+    u64 func_02072088(u64, u64);
+    u8 func_02042a08(s32, s32);
+    s32 func_02042a6c(s32);
     void func_02041be0(s32);
+
+    s32 b = arg1;
+    s32 a = arg0;
+    s32 c = arg2;
+
+    void *P;
+    void *P0;
+    void *P2;
+    u64 now;
+    u64 base;
+    u64 delta;
+    u64 q;
+    u64 half;
+    u64 excess;
+    u16 thresh;
+    u8 idx;
+    u8 cnt;
+    u8 i;
+    u8 bit;
+    u32 mask;
+    s32 node;
 
     if (func_02038f6c() != 6) {
         return 1;
     }
-    if (arg1 == 0xf) {
-        if (M2C_FIELD(func_02044268(), s32 *, 0x1a0) == 0x8) {
-            func_02041be0(0x2);
-            return 1;
+
+    if (b == 0xd) {
+        P0 = func_02044268();
+        if (M2C_FIELD(P0, s32 *, 0x1a0) != 0x8) {
+            func_02044278(8);
+            func_02041dd4(c);
+            if (func_02042310(a, 0xe) == 0) {
+                return 0;
+            }
+            goto lbl_508;
         }
+    } else if (b == 0xf) {
+        if (func_02042310(a, 0xf) == 0) {
+            return 0;
+        }
+        goto lbl_508;
+    } else if (b != 0xe) {
+        goto lbl_508;
     }
-    return 0;
+
+    /* L_e */
+    P = func_02044268();
+    if (M2C_FIELD(P, s32 *, 0x1a0) != 0xe) goto lbl_4d4;
+
+    now = func_02007004();
+    base = M2C_FIELD(P, u64 *, 0x1e8);
+    delta = now - base;
+    q = func_02072088(delta << 6, 0x82eaULL);
+    if (q <= 600ULL) goto lbl_434;
+
+    half = q >> 1;
+    excess = half - 300ULL;
+    thresh = M2C_FIELD((u8 *)P + 0x100, u16 *, 0xb2);
+    if (excess <= (u64)thresh) goto lbl_434;
+
+    M2C_FIELD((u8 *)P + 0x100, u16 *, 0xb2) = (u16)excess;
+    idx = func_02042a08(a, 0);
+    if (idx != 0xff) {
+        M2C_FIELD(P, s32 *, 0x1d8) |= (1 << idx);
+        if (func_02042a6c(1) != M2C_FIELD(P, s32 *, 0x1d8)) goto lbl_508;
+    }
+
+lbl_434:
+    P = func_02044268();
+    cnt = M2C_FIELD(P, u8 *, 0xd);
+    if (cnt >= 1) {
+        for (i = 1; i <= cnt; i++) {
+            P2 = func_02044268();
+            node = M2C_FIELD((u8 *)P2 + i * 4, s32 *, 0xf4);
+            bit = M2C_FIELD((u8 *)P2 + i, u8 *, 0x2d0);
+            mask = M2C_FIELD(func_02044268(), u32 *, 0x1d8);
+            if ((mask & (1U << bit)) == 0) {
+                if (func_02042310(node, 13) == 0) {
+                    return 0;
+                }
+            }
+        }
+        func_02044278(0xf);
+        goto lbl_508;
+    }
+
+lbl_4c8:
+    if (func_02042310(a, 0xf) == 0) {
+        return 0;
+    }
+    goto lbl_508;
+
+lbl_4d4:
+    P = func_02044268();
+    if (M2C_FIELD(P, s32 *, 0x1a0) == 0x8) {
+        func_02041be0(2);
+        return 1;
+    }
+    goto lbl_508;
+
+lbl_508:
+    return 1;
 }
 
 #pragma opt_strength_reduction off

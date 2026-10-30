@@ -3,6 +3,7 @@
 typedef struct InitPair4E { s32 first, second; } InitPair4E;
 typedef struct InitState4E { u8 pad[0x1a4]; InitPair4E pairs[6]; } InitState4E;
 
+#pragma opt_common_subs off
 s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
     M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
     M2C_UNK func_02058644(void **, M2C_UNK *);
@@ -21,65 +22,66 @@ s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
     s8 *var_r2_2;
     void *temp_r4;
 
-    if (arg0 != NULL) {
-        temp_r4 = *arg0;
-        if (temp_r4 != NULL) {
-            if (M2C_FIELD(temp_r4, s32 *, 0x108) != 0) {
-                return 0;
-            }
-            if (M2C_FIELD(temp_r4, s32 *, 0x1D8) == 4) {
-                func_02058644(arg0, &data_020fda48);
-                return 2;
-            }
-            if (arg2 == NULL) {
-                func_02058644(arg0, &data_020fdaf8);
-                return 2;
-            }
-            if (arg3 == NULL) {
-                func_02058644(arg0, &data_020fdb10);
-                return 2;
-            }
-            func_020580fc(sp100, arg2, 0x100);
-            if (sp100[0] != 0) {
-                var_r2 = sp100;
-                do {
-                    if (*var_r2 == 0x5C) {
-                        *var_r2 = 0x2F;
-                    }
-                    var_r2 += 1;
-                } while (*var_r2 != 0);
-            }
-            func_020580fc(sp0, arg3, 0x100);
-            if (sp0[0] != 0) {
-                var_r2_2 = sp0;
-                do {
-                    if (*var_r2_2 == 0x5C) {
-                        *var_r2_2 = 0x2F;
-                    }
-                    var_r2_2 += 1;
-                } while (*var_r2_2 != 0);
-            }
-            if ((arg1 == M2C_FIELD(temp_r4, s32 *, 0x214)) && (func_02068d98(sp100, temp_r4 + 0x218) == 0) && (func_02068d98(sp0, temp_r4 + 0x318) == 0)) {
-                return 0;
-            }
-            M2C_FIELD(temp_r4, s32 *, 0x214) = arg1;
-            func_020580fc(temp_r4 + 0x218, sp100, 0x100);
-            func_020580fc(temp_r4 + 0x318, sp0, 0x100);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb28);
-            func_0204fed0(arg0, temp_r4 + 0x1F4, arg1);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fda94);
-            func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-            func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb34);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, sp100);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb44);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, sp0);
-            func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdabc);
-            return 0;
-        }
+    if (arg0 == NULL) {
+        return 2;
     }
-    return 2;
+    temp_r4 = *arg0;
+    if (temp_r4 == NULL) {
+        return 2;
+    }
+    if (M2C_FIELD(temp_r4, s32 *, 0x108) != 0) {
+        return 0;
+    }
+    if (M2C_FIELD(temp_r4, s32 *, 0x1D8) == 4) {
+        func_02058644(arg0, &data_020fda48);
+        return 2;
+    }
+    if (arg2 == NULL) {
+        func_02058644(arg0, &data_020fdaf8);
+        return 2;
+    }
+    if (arg3 == NULL) {
+        func_02058644(arg0, &data_020fdb10);
+        return 2;
+    }
+    func_020580fc(sp100, arg2, 0x100);
+    if (sp100[0] != 0) {
+        var_r2 = sp100;
+        do {
+            if (*var_r2 == 0x5C) {
+                *var_r2 = 0x2F;
+            }
+            var_r2 += 1;
+        } while (*var_r2 != 0);
+    }
+    func_020580fc(sp0, arg3, 0x100);
+    if (sp0[0] != 0) {
+        var_r2_2 = sp0;
+        do {
+            if (*var_r2_2 == 0x5C) {
+                *var_r2_2 = 0x2F;
+            }
+            var_r2_2 += 1;
+        } while (*var_r2_2 != 0);
+    }
+    if ((arg1 == M2C_FIELD(temp_r4, s32 *, 0x214)) && (func_02068d98(sp100, temp_r4 + 0x218) == 0) && (func_02068d98(sp0, temp_r4 + 0x318) == 0)) {
+        return 0;
+    }
+    M2C_FIELD(temp_r4, s32 *, 0x214) = arg1;
+    func_020580fc(temp_r4 + 0x218, sp100, 0x100);
+    func_020580fc(temp_r4 + 0x318, sp0, 0x100);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb28);
+    func_0204fed0(arg0, temp_r4 + 0x1F4, arg1);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fda94);
+    func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
+    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb34);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, sp100);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb44);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, sp0);
+    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdabc);
+    return 0;
 }
-
+#pragma opt_common_subs reset
 s32 func_0204e634(void **arg0,s32 arg1,s32 arg2) {
 s32 func_0204f978(void **,s32,s32,s32);
 M2C_UNK func_02058644(void **,M2C_UNK *);

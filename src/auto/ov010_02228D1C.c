@@ -141,7 +141,9 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
 }
 #pragma cplusplus off
 
-void func_ov010_02228f80(void) { }
+void func_ov010_02228f80(void) {
+    return;
+}
 
 #pragma cplusplus on
 #pragma optimization_level 2

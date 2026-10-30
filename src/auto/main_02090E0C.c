@@ -373,10 +373,10 @@ void func_02091570(M2C_UNK a) {
     void *arg0 = (void *)a;
     s32 *sp4 = (s32 *)arg0;
 
-    s32 r4,res2,r5,res1,r6,r7;
+    s32 res2,r4,res1,r5,r6,r7;
     u16 *r8p;
     s16 r9s;
-    s32 r10,res3,r11;
+    s32 res3,r10,r11;
     s16 r3s,res4;
     s32 r1,count,r9i,r3i;
 
@@ -446,44 +446,32 @@ void func_02091570(M2C_UNK a) {
     } while (r7 < count);
 }
 
-void func_02091700(void *arg0, s32 arg1) {
-    void func_02091928(void *);
-    typedef void (*fn2_t)(void *, void *);
-    void *tail;
-    void *root;
-    u8 *base1;
-    u32 off;
-    u32 v;
-
-    if (arg0 == NULL) {
-        return;
-    }
-    root = *(void **)arg0;
-    if (root == NULL) {
-        return;
-    }
-    if (((u8 *)arg0)[0x22] & 0x2) {
-        base1 = (u8 *)root;
-        root = *(void **)arg0;
-        base1 = (u8 *)root;
-        off = *(u16 *)(base1 + 2);
-        base1 = base1 + (off & ~1u);
-        v = *(u16 *)(base1 + (arg1 << 1)) & ~1u;
-        *((void **)((u8 *)arg0 + 8)) = (void *)(base1 + v);
-        base1 = (u8 *)*(void **)arg0;
-        off = *(u16 *)(base1 + 2);
-        base1 = base1 + (off & ~1u);
-        v = *(u16 *)(base1 + (arg1 << 1)) & ~1u;
-        tail = (void *)(base1 + v);
-    } else {
-        u32 idx = arg1 + 1;
-        void *p = ((void **)root)[idx];
-        *((void **)((u8 *)arg0 + 8)) = p;
-        p = ((volatile void **)root)[idx];
-        *((void **)((u8 *)arg0 + 0xC)) = p;
-        tail = p;
-    }
-    ((fn2_t)func_02091928)(arg0, tail);
+void func_02091700(void *arg0,s32 arg1) {
+void func_02091928(void *);
+void *root;
+u8 *base;
+void *tail;
+u32 off;
+if(arg0==NULL)return;
+root=*(void **)arg0;
+if(root==NULL)return;
+if(M2C_FIELD(arg0,u8 *,0x22)&2) {
+base=(u8 *)root;
+off=*(u16 *)(base+2)&~1u;
+base+=off;
+tail=base+(*(u16 *)(base+arg1*2)&~1u);
+M2C_FIELD(arg0,void **,8)=tail;
+base=*(u8 **)arg0;
+off=*(u16 *)(base+2)&~1u;
+base+=off;
+tail=base+(*(u16 *)(base+arg1*2)&~1u);
+} else {
+u32 idx=arg1+1;
+M2C_FIELD(arg0,void **,8)=((void **)root)[idx];
+tail=((void **)root)[idx];
+}
+M2C_FIELD(arg0,void **,12)=tail;
+func_02091928(arg0);
 }
 
 void func_0209177c(M2C_UNK a) {

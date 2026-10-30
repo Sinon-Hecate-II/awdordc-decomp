@@ -65,7 +65,7 @@ M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
 
 #pragma opt_common_subs off
-s32 func_020d0a08(M2C_UNK arg0,void *arg1) { s32 func_020a8204(); s32 func_020a86f8(); u16 temp_r0,var_r6; var_r6=0; if(func_020a8204()!=0)var_r6=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1)); temp_r0=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1)); return var_r6!=0 || temp_r0!=0; }
+s32 func_020d0a08(M2C_UNK arg0,void *arg1) { s32 func_020a8204(); s32 func_020a86f8(); u16 r,t; r=0; if(func_020a8204()!=0){ r=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1)); } t=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1)); return r!=0 || t!=0; }
 #pragma opt_common_subs reset
 s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  s32 func_020a5ae0();
@@ -182,7 +182,7 @@ s32 func_020d0ddc(void) {
 
 void func_020d0de4(s16 index,s16 other,s16 *pos) {
  s32 func_020d0ddc();
- s32 oldy,oldx,dist;
+ u8 oldy,oldx; s32 dist;
  oldy=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1);
  M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1)=pos[0];
  oldx=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,2);
@@ -199,8 +199,8 @@ void func_020d0de4(s16 index,s16 other,s16 *pos) {
  else
   func_020d0cdc((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
  func_020d0d7c((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
- M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a5)=oldy;
  M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a6)=oldx;
+ M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a5)=oldy;
 }
 
 void func_020d1034(void *arg0) {

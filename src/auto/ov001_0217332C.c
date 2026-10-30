@@ -1,6 +1,7 @@
 /* 12 functions from 0x0217332C to 0x0217416C (ov001), found by ds-decomp. */
 #include "common.h"
 
+
 void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
 void func_ov001_0217385c(s32 arg0, s32 arg1);
 s32 *func_ov001_0218a24c(s32 arg0, s32 arg1);

@@ -220,12 +220,12 @@ void func_ov003_0220c43c(void *arg0) {
     extern void **gCur3DSpriteEngine;
 
     u8 *obj = (u8 *)arg0;
-    u8 r1 = obj[0x38];
+    u32 r1 = obj[0x38];
 
     if (!(((u32)r1 << 27) >> 31)) {
         return;
     }
-    obj[0x38] = (u8)(r1 & ~0x10);
+    obj[0x38] &= ~0x10;
 
     {
         u16 * volatile sp2c;
@@ -289,7 +289,7 @@ void func_ov003_0220c43c(void *arg0) {
     }
 
     {
-        u8 val = (u8)(((u32)obj[0x36] << 28) >> 28);
+        u32 val = ((Ov003ModeByte *)(obj + 0x36))->mode;
 
         switch (val) {
         case 0:
@@ -302,7 +302,7 @@ void func_ov003_0220c43c(void *arg0) {
             func_ov003_02207e80(obj);
             {
                 u16 **pp = (u16 **)(obj + 0x5c);
-                u16 *unit = *pp;
+                u16 *unit = **(u16 ***)(obj + 0x5c);
                 s32 r1v;
                 if (unit != 0) {
                     r1v = (s32)unit[4];

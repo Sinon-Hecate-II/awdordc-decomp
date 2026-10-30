@@ -101,10 +101,10 @@ M2C_UNK func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK
     extern s8 data_ov007_02221a84[];
     MapPoint sp18, sp14;
     s32 sp10;
+    MapScan *map;
     s8 *data;
     s32 x;
     s32 y;
-    MapScan *map;
 
     func_ov007_02214e24();
     if (func_ov007_02216234(((MapPoint *)arg0)->x, ((MapPoint *)arg0)->y, ((MapPoint *)arg1)->x, ((MapPoint *)arg1)->y, 4, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {

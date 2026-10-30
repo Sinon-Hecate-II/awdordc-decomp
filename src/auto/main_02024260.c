@@ -4,7 +4,7 @@
 extern void *(*data_021372a4)(s32);
 extern void (*data_021372d0[])(void *);
 
-s32 func_02024260(void *p) {
+s32 func_02024260(void *arg0) {
     u32 func_02022070(void);
     void func_020240c0(void *, s32);
     M2C_UNK func_02008048(s32, void *, u32);
@@ -26,7 +26,7 @@ s32 func_02024260(void *p) {
     s32 t2, t1;
     s32 total, payload;
 
-    r9 = p;
+    r9 = arg0;
     q = M2C_FIELD(r9, void **, 0xC);
     node = M2C_FIELD(q, void **, 0x820);
     nodeSize = node ? M2C_FIELD(node, s32 *, 0x0) : 0;
@@ -113,7 +113,7 @@ s32 func_02024260(void *p) {
     M2C_FIELD(buf, u8 *, 3) = (u8)(payload >> 8);
     M2C_FIELD(buf, u8 *, 4) = (u8)payload;
     func_02023c74(q, (void *)((u8 *)buf + 5), payload);
-    func_0201d844((s8 *)buf, payload + 5, 0, 0, p);
+    func_0201d844((s8 *)buf, payload + 5, 0, 0, arg0);
     data_021372d0[0](buf);
 
     return M2C_FIELD(q, u8 *, 0x31);

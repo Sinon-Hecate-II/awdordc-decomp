@@ -268,7 +268,12 @@ void func_0201a26c(void *arg0) {
     extern s32 data_02137438;
     extern s32 data_021382c0;
 
+    int dummy_unused;
     u8 *d = (u8 *)&data_02137290;
+
+    dummy_unused = 0;
+    (void)dummy_unused;
+
     func_02000b9c(0x2000bdc);
 
     {

@@ -386,6 +386,7 @@ if(M2C_FIELD(&data_021311a0,s32 *,0x10)==1){
 callback=M2C_FIELD(&data_021311a0,void (**)(u32),0x14);
 if(callback)callback(M2C_FIELD(M2C_FIELD(&data_021311a0,void **,0x1c),u32 *,0x4b8));
 }
+/*v6*/
 }
 #pragma pop
 s32 func_020167d0(void *arg0) {

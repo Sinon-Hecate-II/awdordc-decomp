@@ -103,11 +103,11 @@ void func_020807d0(void) {
 #pragma opt_common_subs off
 void func_020807e4(u8 *a,u16 *b,s32 c,s32 d) {
  u16 v=(c&0x3ff)|((d&15)<<12);
- s32 h=a[1];
+ u16 *p=(u16 *)(a+2);
  s32 w=a[0];
- const u16 *p=(const u16 *)(a+2);
+ s32 h=a[1];
  s32 x,y;
- for(y=0;y<h;y++)for(x=0;w>x;++x)b[y*32+x]=*p+++v;
+ for(y=0;y<h;y++)for(x=0;x<w;x++)b[y*32+x]=*p+++v;
 }
 #pragma opt_common_subs on
 void func_02080860(u16 *p,s32 w,s32 h,u32 tile,u16 pal) {

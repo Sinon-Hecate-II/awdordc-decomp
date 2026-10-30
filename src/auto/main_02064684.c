@@ -172,14 +172,14 @@ if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+n*24);
 return result;
 }
 
+#pragma opt_propagation off
 void func_02064ffc(void *arg0) {
-    M2C_UNK func_02064ed0(void *, M2C_UNK, M2C_UNK);
-    s8 zero = 0;
-    ((s8 *)arg0)[0xD] = zero;
-    func_02064ed0(arg0, zero, zero);
-    ((s8 *)arg0)[0xD] = zero;
+s32 func_02064ed0(void *, s32, s32);
+M2C_FIELD(arg0,u8 *,13)=0;
+func_02064ed0(arg0,0,0);
+M2C_FIELD(arg0,u8 *,13)=0;
 }
-
+#pragma opt_propagation reset
 M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  extern u32 data_0210040c[];
  return (*(M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK))data_0210040c[2])(a,b,c);

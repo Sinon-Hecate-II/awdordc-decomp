@@ -201,7 +201,7 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
  return value;
 }
 
-s32 func_ov000_021a7084(void *a, void *b) { return 0; }
+s32 func_ov000_021a7084(void *a, void *b) { (void)a; (void)b; return 0; }
 
 u8 func_ov000_021a72c0(u32 arg0) {
     s32 func_020b9e20(u16);

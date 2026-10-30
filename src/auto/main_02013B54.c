@@ -159,21 +159,17 @@ void func_02013e70(s32 arg0) {
  func_02007530(state);
 }
 
+#pragma opt_strength_reduction off
 void *func_02013e98(s32 arg0) {
- s32 func_0200751c(); void func_02007530(s32);
- s32 func_02015214();
- void func_02008048(void *,void *);
- extern s32 data_02136c4c;
- s32 state=func_0200751c()+0;
- if(data_02136c4c && func_02015214(arg0)) {
- func_02008048((void *)(data_02136c4c+0x1340+(arg0-1)*0x16),(void *)(data_02136c4c+0x1772));
- func_02007530(state);
- return (void *)(data_02136c4c+0x1772);
- }
- func_02007530(state);
- return 0;
+s32 func_0200751c(void); void func_02007530(s32); s32 func_02015214(); void func_02008048(void *,void *); extern s32 data_02136c4c;
+s32 state=func_0200751c();
+if(data_02136c4c && func_02015214(arg0)){
+func_02008048((void *)(data_02136c4c+0x1340+(arg0-1)*22),(void *)(data_02136c4c+0x1772));
+func_02007530(state); return (void *)(data_02136c4c+0x1772);
 }
-
+func_02007530(state); return 0;
+}
+#pragma opt_strength_reduction reset
 s32 func_02013f1c(s32 arg0) {
  extern s32 data_02136c4c;
  s32 func_02015214();

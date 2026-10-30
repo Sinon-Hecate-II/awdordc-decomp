@@ -27,6 +27,7 @@ s32 func_ov000_021a947c(s32 x, s32 y, s32 a, s32 b) {
             if (func_020a33c4(rx) != 0) {
                 return 1;
             }
+            /* target has mov r0,#0; cmp r0,#0 after call? */
         }
     }
 

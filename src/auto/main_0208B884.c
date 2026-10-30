@@ -1,6 +1,7 @@
 /* 33 functions from 0x0208B884 to 0x0208C830 (main), found by ds-decomp. */
 #include "common.h"
 
+
 typedef struct { u32 low:16, mode:3, a:1, b:1, c:1, d:2, e:2, high:6; } Flags0208;
 typedef struct { u32 low:10, middle:11, high:11; } Flags0208B;
 
@@ -165,18 +166,19 @@ void func_0208c0dc(void *obj) {
     func_0208c0d0(obj, (u8)v);
 }
 
-void func_0208c1dc(void *arg0) {
-    M2C_UNK func_02091a70(s32);
-    func_02091a70(M2C_FIELD(arg0, s32 *, 0x4C));
+s32 func_0208c1dc(void *arg0) {
+    s32 func_02091a70(s32);
+    return func_02091a70(M2C_FIELD(arg0, s32 *, 0x4C));
 }
 
-void func_0208c1ec(void *arg0) {
+s32 func_0208c1ec(void *arg0) {
     M2C_UNK func_0207c8ec(s32, M2C_UNK);
-    func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x34), 0x300);
+    return func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x34), 0x300);
 }
 
-void func_0208c200(void *arg0) {
-    func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x38), 0x300);
+s32 func_0208c200(void *arg0) {
+    M2C_UNK func_0207c8ec(s32, M2C_UNK);
+    return func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x38), 0x300);
 }
 
 s32 func_0208c214(void *arg0) {
@@ -349,10 +351,13 @@ u8 func_0208c724(void) {
     return var_r0;
 }
 
-void func_0208c748(void) {
-    M2C_UNK func_01ffa9e4(M2C_UNK *);
-    extern M2C_UNK data_02102790;
-    func_01ffa9e4(&data_02102790);
+void func_0208c748(void)
+{
+  M2C_UNK func_01ffa9e4(M2C_UNK *);
+  M2C_UNK *new_var;
+  extern M2C_UNK data_02102790;
+  new_var = &data_02102790;
+  func_01ffa9e4(new_var);
 }
 
 void func_0208c75c(void *arg0, s32 arg1) {

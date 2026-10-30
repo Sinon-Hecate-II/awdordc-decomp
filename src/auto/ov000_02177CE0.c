@@ -1,23 +1,56 @@
 /* 6 functions from 0x02177CE0 to 0x02178778 (ov000), found by ds-decomp. */
 #include "common.h"
 
+s32 func_ov000_02177ce0(s32 x,s32 y){
+extern u8 data_ov000_021b5c0f[], data_ov000_021dfcf0[];
+extern void **gCurrentMap;extern void *data_ov000_021df580;extern s8 data_ov000_021b55a0[];
+s32 func_ov000_021a9d8c(s16,s16);s32 func_020d27ec(s32,s32,s32);
+s32 func_020d0654(s32,s32,s32);s32 func_0207c8ec(s32,s32);
+s32 func_020d03ec(s32,s32,s32);s32 func_ov000_021a9214(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
+void *base,*cell; s32 cost,result,kind,weight;
+if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,0x5144)||y>=M2C_FIELD(*gCurrentMap,u16 *,0x5146))return -1;
+if(func_ov000_021a9d8c((s16)x,(s16)y))return -1;
+base=*gCurrentMap;
+cost=M2C_FIELD(M2C_FIELD(base+y*4,s8 **,0x52e8),s8 *,x);
+if(cost<0||cost>M2C_FIELD(data_ov000_021df580,u8 *,5))return -1;
+cell=base+(x+M2C_FIELD(base+y*2,u16 *,0x3758));
+result=15-cost;
+kind=M2C_FIELD(cell,u8 *,0x1420)&31;
+weight=M2C_FIELD(cell,u8 *,0x2840)+M2C_FIELD(cell,u8 *,0x2d48)*2;
+if(result<0)result=0;
+if(data_ov000_021b5c0f[((u32)(*M2C_FIELD(base,u8 **,0x52d0)<<26)>>26)*112]&7){
+u32 index=y*M2C_FIELD(base,u16 *,0x5144)+x;
+if((u8)((1<<(index&7))&data_ov000_021dfcf0[index>>3]))result+=16;
+}
+if(!data_ov000_021b55a0[kind]||!func_020d27ec(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(cell,u8 *,0x1420),data_ov000_021b55a0[kind])){
+base=*gCurrentMap;
+result+=(func_0207c8ec(func_020d0654(M2C_FIELD(base,u16 *,0x52a4),(u32)(*M2C_FIELD(base,u8 **,0x52d0)<<26)>>26,kind),10)+1)<<5;
+}
+if(func_020d03ec(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))result+=0x200;
+result+=(0x300-weight)<<10;
+if(!data_ov000_021b55a0[kind]&&func_ov000_021a9214(M2C_FIELD(*gCurrentMap,void **,0x52d0),x,y)==1)result+=0x100000;
+if(func_ov000_021a93a8(M2C_FIELD(*gCurrentMap,void **,0x52d0),x,y)==1)result+=0x200000;
+if(weight<20)result+=0x400000;
+return result;
+}
+
 s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
     s32 func_ov000_02177ce0(s32, s32);
     extern void **gCurrentMap;
     extern s32 data_027e15bc;
-    register s32 magic asm("r3") = 0x270F;
-    register s32 x asm("r10") = arg0;
+    s32 magic = 0x270F;
+    s32 x = arg0;
     s32 sp0 = arg1;
     s16 *sp4 = arg2;
     s32 sp8;
     s32 spC;
-    register s32 best asm("r4") = 0;
-    register s32 outer asm("r8");
-    register s32 innerMax asm("r9");
-    register s32 inner asm("r5");
-    register s32 d0 asm("r6");
-    register s32 d1 asm("r7");
-    register s32 outerS16 asm("r11");
+    s32 best = 0;
+    s32 outer;
+    s32 innerMax;
+    s32 inner;
+    s32 d0;
+    s32 d1;
+    s32 outerS16;
     void *base;
     s32 temp;
     s32 adx;

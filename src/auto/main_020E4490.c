@@ -408,9 +408,10 @@ s32 func_020e4b54(void) {
     return 0;
 }
 
+#pragma push
+#pragma opt_common_subs off
 s32 func_020e4b9c(u16 key,...){extern u16 data_0212da1c;extern u16 data_020f4eb4[];volatile u8 a=0;volatile u8 b=0;u16 *p=func_020e4c10(data_020f4eb4,data_020f4eb4+data_0212da1c,&key,*(u32 *)&b);if(*p!=key)return 0;return p-data_020f4eb4;}
-
-#pragma opt_propagation off
+#pragma pop
 u16 *func_020e4c10(u16 *first,u16 *last,u16 *key,u32 unused){
 s32 n=last-first;
 while(n>0){
@@ -490,6 +491,7 @@ L944:
     return func_01ffa6fc(arg0);
 }
 
+#pragma scheduling off
 s32 func_020e4e44(void *arg0) {
     s16 temp_r1;
     s32 var_r1;
@@ -509,7 +511,7 @@ s32 func_020e4e44(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x3C) = (u8) ((u8) (M2C_FIELD(arg0, u8 *, 0x3C) & ~2) | 1);
     return 1;
 }
-
+#pragma scheduling reset
 void func_020e4e8c(void *arg0) {
     M2C_UNK func_0200dedc(M2C_UNK *);
     extern M2C_UNK data_02168ff8;

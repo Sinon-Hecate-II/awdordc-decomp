@@ -182,9 +182,7 @@ M2C_UNK func_ov001_0217a3bc();M2C_UNK func_ov001_0217a610();
 func_ov001_0217a3bc();func_ov001_0217a610();(func_ov001_0217a880)();
 }
 
-M2C_UNK func_ov001_0217a3bc(void) {
-    return 0;
-}
+M2C_UNK func_ov001_0217a3bc(void) { return 0; }
 
 s32 func_ov001_0217a610(void) {
     return 0;

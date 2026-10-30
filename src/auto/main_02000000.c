@@ -49,15 +49,11 @@ s32 func_02000ca0(void *arg0, void *arg1) {
 }
 
 void func_02000f90(void *arg0, void *arg1, void *arg2) {
-    s32 *p = arg0;
-    s32 *q = arg1;
-    s32 *r = arg2;
-    s32 x0 = (s32)p[0];
-    s32 x1 = (s32)p[1];
-    s32 x2 = (s32)p[2];
-    r[0] = (s32)(((s64)x1 * q[3] + (s64)x0 * q[0] + (s64)x2 * q[6]) >> 12);
-    r[1] = (s32)(((s64)x1 * q[4] + (s64)x0 * q[1] + (s64)x2 * q[7]) >> 12);
-    r[2] = (s32)(((s64)x1 * q[5] + (s64)x0 * q[2] + (s64)x2 * q[8]) >> 12);
+ s32 *a=arg0,*m=arg1,*o=arg2;
+ s32 x=a[0], y=a[1], z=a[2]; s64 t;
+ t=(s64)y*m[3]; t=(s64)x*m[0]+t; t+=(s64)z*m[6]; o[0]=t>>12;
+ t=(s64)y*m[4]; t=(s64)x*m[1]+t; t+=(s64)z*m[7]; o[1]=t>>12;
+ t=(s64)y*m[5]; t=(s64)x*m[2]+t; t+=(s64)z*m[8]; o[2]=t>>12;
 }
 
 #pragma push

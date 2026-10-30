@@ -430,6 +430,68 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
 
 }
 
+void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
+    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    s32 func_02026244(u16 *, s32);
+    void func_02026484(u16 *, u16 *, u32, s32);
+    void func_02026558(u16 *, u16 *, u16 *, s32);
+    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+    void func_02026b70(u16 *, u16 *, u16 *, s32, u16 *);
+    void func_02026cbc(u16 *, u16 *, s32, s32, s32, u16 *, u16 *, u16 *, u16 *);
+    extern u16 *(*data_021372a4)(s32);
+    extern void (*data_021372d0)(void *);
+
+    s32 n = arg3;
+    u16 *buf;
+    s32 t;
+    u16 *r6;
+    u16 *sp24;
+    u16 *r7;
+    u16 *r8;
+    u16 *sp20;
+    u16 *r5;
+    s32 counter;
+
+    buf = data_021372a4(n * 0x16);
+    if (buf == 0) {
+        return;
+    }
+    func_02007f8c((u8 *)buf, 0, (u32)(n * 0x16));
+
+    r6 = buf + n;
+    sp24 = r6 + n;
+    r7 = sp24 + n;
+    r8 = r7 + n;
+    sp20 = r8 + n;
+    r5 = sp20 + n;
+
+    t = func_02026244((u16 *)arg4, n);
+    buf[t] = 1;
+
+    func_02026b70(r6, buf, (u16 *)arg4, n, sp24);
+    func_02026558(r7, buf, r6, n);
+    func_02026484(r6, r7, 1, n);
+    func_020267fc(r6, r6, (u16 *)arg4, (u16 *)0, n, r5);
+    func_02026558(sp24, (u16 *)arg1, buf, n);
+    func_020267fc((u16 *)0, sp24, (u16 *)arg4, sp24, n, r5);
+    func_020267fc((u16 *)0, buf, (u16 *)arg4, (u16 *)arg0, n, r5);
+
+    if ((t << 4) != 0) {
+        for (counter = 0; counter < (t << 4); counter++) {
+            func_02026cbc((u16 *)arg0, sp20, 1, n, t, (u16 *)arg4, r6, r7, r8);
+            {
+                u16 word = ((u16 *)arg2)[t - (counter >> 4) - 1];
+                if (word & (0x8000u >> (counter & 0x0F))) {
+                    func_02026cbc((u16 *)arg0, sp20, (s32)sp24, n, t, (u16 *)arg4, r6, r7, r8);
+                }
+            }
+        }
+    }
+    func_02026cbc((u16 *)arg0, sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
+
+    data_021372d0(buf);
+}
+
 void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     s16 *var_r4;

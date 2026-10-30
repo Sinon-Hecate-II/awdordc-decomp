@@ -88,7 +88,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=8;
 func_0208fe30(0x1001c);return 1;
 }
 
-s32 func_020d5aa0(u8 arg0, u8 arg1, s32 arg2, s32 arg3, u8 arg4) { (void)arg0;(void)arg1;(void)arg2;(void)arg3;(void)arg4; return 0; }
+s32 func_020d5aa0(u8 arg0, u8 arg1, s32 arg2, s32 arg3, u8 arg4) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; return 0; }
 
 void func_020d5d0c(u8 *p,s32 index,s32 arg2){
 extern void *gCurrentMap; extern M2C_UNK data_0211fbc4;

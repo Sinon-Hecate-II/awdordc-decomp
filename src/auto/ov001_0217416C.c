@@ -171,7 +171,7 @@ void func_ov001_021745cc(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_02174650(s32);
 u32 v; u32 lo; u32 hi; s32 x; s32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,28),u32*,0);
+v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,28),u32*,0);
 lo=v&255;
 hi=v&0x1ff0000;
 x=(s32)lo-12;

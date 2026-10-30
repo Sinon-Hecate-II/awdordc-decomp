@@ -408,8 +408,9 @@ s16 func_020b316c(void *arg0) {
 
 u8 func_020b320c(void *p) {
 s32 func_0207c8ec(s32);
+s32 step=M2C_FIELD(p,volatile u8 *,5);
 s32 a=M2C_FIELD(p,u8 *,4);
-s16 b=func_0207c8ec(M2C_FIELD(p,u8 *,5)+M2C_FIELD(p,s16 *,0xa)-1);
+s16 b=func_0207c8ec(M2C_FIELD(p,s16 *,0xa)+step-1);
 if(a>=b)a=b;
 return M2C_FIELD(p,s16 *,0xc)+(s16)a<b;
 }

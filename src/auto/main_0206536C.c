@@ -106,6 +106,13 @@ char *func_0206536c(char *input, s32 **args, HexFormat *out) {
  *out=f;
  return format+1;
 }
+
+char *func_020658fc(int value, char *out, HexFormat fmt) {
+    (void)value;
+    (void)fmt;
+    return out;
+}
+
 #pragma opt_common_subs reset
 s32 func_02065b48(void) { return 0; }
 

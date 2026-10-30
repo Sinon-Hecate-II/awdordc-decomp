@@ -337,20 +337,19 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*data_027e00c8;
 s32 func_0207c928(s32,s32); s16 func_ov003_022004f0(s32); s32 func_ov003_022008b8(u8);
-void func_020809c0(void*,s32,s32); void func_02098844(u32,s32,s32,s32,u16,u16,u8); void func_02098a34(s32,s32,s32,s32,u8);
-void *old,*saved; u8 i,a; s16 b; s8 c; u16 v; u32 arg;
-old=gCur3DSpriteEngine;
+void func_020809c0(void*,s32,s32); void func_02098844(u32,s32,s32,s32,u32,u16,u8); void func_02098a34(s32,s32,s32,s32,u8);
+u8 i; void *old,*saved; register s16 b; register u8 a; s8 c; 
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
+old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=data_027e00c8;
 a=(func_0207c928(i,2)!=0);
 if(i<2)b=0;
-else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
+else b=(u16)func_ov003_022004f0(2)>>3;
 c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
-if(c){
-v=((u16)((((s8)(c-1))<<7)+2))>>1;
-func_02098844(1,b,0,(s32)M2C_FIELD(gCur3DSpriteEngine,void**,0x20+a*4)+2,v,i,0);
+if(c==0){
+func_020809c0((void*)((u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+(b+1)*2),7,7);
 }else{
-func_020809c0((void*)((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x20+a*4)+(b+1)*2),7,7);
+func_02098844(1,b,0,(s32)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+2,((u32)((((s8)(c-1))<<7)+2)<<15>>16),i,0);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<a;
 gCur3DSpriteEngine=old;
@@ -361,14 +360,17 @@ for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 a=(func_0207c928(i,2)!=0);
 if(i>=2)func_ov003_022004f0(2);
 c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
-if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2))arg=0;
-else arg=1;
-if(c)func_02098a34(c,1,a,i,arg);
+if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2)){
+if(c)func_02098a34(c,1,a,i,0);
+}else{
+if(c)func_02098a34(c,1,a,i,1);
+}
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 gCur3DSpriteEngine=saved;
-M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~0x70)&~0x8;
+M2C_FIELD(p,u8*,0x3a)&=~0x70;
+M2C_FIELD(p,u8*,0x3a)&=~0x8;
 }
 
 void func_ov003_021ea134(s32 arg0) {

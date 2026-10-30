@@ -23,10 +23,10 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
     w_12 = M2C_FIELD(arg0, u16 *, 0x12);
     w_10 = M2C_FIELD(arg0, u16 *, 0x10);
 
-    left = ((w_12 << 8) | (w_12 >> 8)) |
-           (((w_10 << 8) | (w_10 >> 8)) << 16);
-    right = ((w_e << 8) | (w_e >> 8)) |
-            (((w_c << 8) | (w_c >> 8)) << 16);
+    left = ((w_12 >> 8) | (w_12 << 8)) |
+           (((w_10 >> 8) | (w_10 << 8)) << 16);
+    right = ((w_e >> 8) | (w_e << 8)) |
+            (((w_c >> 8) | (w_c << 8)) << 16);
 
     if (left != right) {
         s32 tmp;
@@ -39,8 +39,8 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
             return;
         }
         t2 = M2C_FIELD(arg0, u16 *, 2);
-        tmp = (t2 << 8) | (t2 >> 8);
-        if (arg1 < tmp) {
+        tmp = (t2 >> 8) | (t2 << 8);
+        if (arg1 < (tmp >> 16)) {
             return;
         }
         b0 = M2C_FIELD(arg0, u8 *, 0);
@@ -49,13 +49,13 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         }
         f12 = M2C_FIELD(arg0, u16 *, 0x12);
         f10 = M2C_FIELD(arg0, u16 *, 0x10);
-        dataA = ((f12 << 8) | (f12 >> 8)) |
-                (((f10 << 8) | (f10 >> 8)) << 16);
+        dataA = ((f12 >> 8) | (f12 << 8)) |
+                (((f10 >> 8) | (f10 << 8)) << 16);
         if (M2C_FIELD(&data_02137290, s32 *, 0x50) == (s32)dataA) {
             f0e = M2C_FIELD(arg0, u16 *, 0xE);
             f0c = M2C_FIELD(arg0, u16 *, 0xC);
-            dataB = ((f0e << 8) | (f0e >> 8)) |
-                    (((f0c << 8) | (f0c >> 8)) << 16);
+            dataB = ((f0e >> 8) | (f0e << 8)) |
+                    (((f0c >> 8) | (f0c << 8)) << 16);
             func_0201ae0c(arg0 - 8, dataB, 1);
         }
     }
@@ -80,7 +80,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         b0 = M2C_FIELD(rp, u8 *, 0);
         off = (s32)((u32)(b0 << 0x1C) >> 0x1A);
         ptr = (u8 *)rp + off;
-        val = ((t2b << 8) | (t2b >> 8)) - off;
+        val = ((t2b >> 8) | (t2b << 8)) - off;
 
         if (type == 0x11) {
             func_0201c940(rp, ptr, val);

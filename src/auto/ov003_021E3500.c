@@ -113,7 +113,97 @@ void func_ov003_021e3708(void) {
     func_01ffa6fc();
 }
 
-void func_ov003_021e3714(void *arg0) { (void)arg0; }
+void func_ov003_021e3714(void *arg0) {
+    u8 func_ov003_021e1500(s32, s32, s32);
+    s32 func_0207c928(s32, s32);
+    void *func_020be120(void);
+    void func_02007ef4(void *, void *, u32);
+    void func_020ceb48(void);
+    void func_020cf278(s32);
+    void func_020cf0a8(s32);
+    void func_020809c0(u16 *, s32, s32);
+    void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
+    void func_01ff9ce8(void);
+    void func_020c12f8(s32, M2C_UNK, s32, s32);
+    s32 func_020c1878(void *);
+
+    extern void **gCurrentMap;
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **data_027e00c4;
+
+    s32 id;
+    u16 value;
+    u8 kind;
+    void *dest;
+    u16 *savedEngine;
+    u8 *eng;
+    void *ptr;
+    u8 b0;
+    u16 arg5;
+    u8 b1;
+    s32 mul;
+    u8 bb;
+    u8 cond;
+    void *p5c;
+
+    id = *(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 0x06);
+    value = (u16)0;
+
+    if (func_ov003_021e1500(id, 0, 4)) {
+        value = *(u16 *)((u8 *)*(void **)((u8 *)arg0 + 0x5C) + id * 2 + 0x08);
+        return;
+    }
+    if (!func_ov003_021e1500(id, 5, 9)) {
+        return;
+    }
+
+    value = (u16)(id + 0x10E);
+    kind = (u8)func_0207c928(id, 5);
+    if (id < 5) {
+        dest = (void *)((u8 *)arg0 + 0x68 + kind * 0x6F8);
+    } else {
+        dest = (void *)((u8 *)arg0 + 0x6C + kind * 0x6F8);
+    }
+    func_02007ef4(dest, func_020be120(), 0x6F8);
+
+    func_020ceb48();
+    func_020cf278(value);
+    func_020cf0a8(value);
+
+    *(u16 *)((u8 *)arg0 + 0x62) = (u16)(*(u16 *)((u8 *)*gCurrentMap + 0x5144) << 2);
+    *(u16 *)((u8 *)arg0 + 0x64) = (u16)(*(u16 *)((u8 *)*gCurrentMap + 0x5146) << 2);
+
+    savedEngine = *gCur3DSpriteEngine;
+    *gCur3DSpriteEngine = *data_027e00c4;
+
+    func_020809c0((u16 *)((u8 *)*gCur3DSpriteEngine + 0x2C), 9, 2);
+
+    b0 = *(u8 *)((u8 *)arg0 + 0x60);
+    arg5 = (u16)(((b0 >> 2) & 3) << 4) + 1;
+
+    ptr = (void *)((u8 *)((id < 5) ? ((u8 *)arg0 + 0x68) : ((u8 *)arg0 + 0x6C)) + kind * 0x6F8 + 6);
+    func_0209b2b4(0, 0, 3, ptr, 0x9000, arg5);
+    func_01ff9ce8();
+
+    eng = (u8 *)*gCur3DSpriteEngine;
+    *(eng + 0x46) |= 0x08;
+
+    b1 = *(u8 *)((u8 *)arg0 + 0x60);
+    mul = (((b1 >> 2) & 3) * 0x142) + 1;
+    func_020c12f8((s32)(eng + 0x0C), (s32)(eng + 0x20), mul, 5);
+
+    bb = *(u8 *)((u8 *)arg0 + 0x60);
+    cond = (((bb >> 2) & 3) == 0) ? 1 : 0;
+    *(u8 *)((u8 *)arg0 + 0x60) = (u8)((bb & ~0x0C) | (cond << 2));
+
+    eng = (u8 *)*gCur3DSpriteEngine;
+    *(eng + 0x46) |= 0x01;
+
+    *gCur3DSpriteEngine = savedEngine;
+
+    p5c = *(void **)((u8 *)arg0 + 0x5C);
+    func_020c1878((u8 *)p5c + 0x1C);
+}
 
 void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     s32 func_0207c8ec(s32, s32);

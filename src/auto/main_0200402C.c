@@ -104,14 +104,10 @@ func_02007e70(arg0,base+(u32)arg1,arg2);
 }
 #pragma pop
 void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, arg1 + 0x06600000, arg2);
-        return;
-    }
-    func_02007e70(arg0, arg1 + 0x06600000, arg2);
+M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32); extern s32 data_020f5204;
+u8 *base=(u8 *)0x06600000;
+if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,(s32)(base+arg1),arg2);return;}
+func_02007e70(arg0,(s32)(base+arg1),arg2);
 }
 
 void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
@@ -564,12 +560,13 @@ s32 func_02004ed8(s32 arg0) {
     extern M2C_UNK data_027e0000;
     extern M2C_UNK data_0212dc20;
     s32 saved;
+    s32 shift;
     u32 mask;
     s32 field20;
     saved = M2C_FIELD(&data_0212dc1c, s32 *, arg0 * 12);
+    shift = (s32)(u16)M2C_FIELD(&data_020f5208, u16 *, arg0 * 2);
     M2C_FIELD(&data_0212dc1c, s32 *, arg0 * 12) = 0;
-    mask = (u32)M2C_FIELD(&data_020f5208, u16 *, arg0 * 2);
-    mask = 1u << mask;
+    mask = 1u << shift;
     if (saved != 0) {
         void *target = (void *)M2C_FIELD(&data_0212dc24, M2C_UNK *, arg0 * 12);
         ((void (*)(void *))saved)(target);
@@ -583,7 +580,6 @@ s32 func_02004ed8(s32 arg0) {
     if (field20 == 0) {
         func_020051f8((s32)mask);
     }
-    return 0;
 }
 
 void func_02004f60(void) {

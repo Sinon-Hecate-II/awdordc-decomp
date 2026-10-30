@@ -75,18 +75,20 @@ if(pos[0]<192)return;
 func_ov001_0218c924(a,(M2C_UNK *)func_ov001_02171aa8);
 }
 
-void func_ov001_02171aa8(s32 a){
+#pragma pool_data off
+void func_ov001_02171aa8(s32 a) {
 extern void *data_ov001_02193cc8;
 void func_ov001_0218c92c(s32,s32);
 void func_ov001_0218a1cc(s32);
 s32 i;
+s32 p;
 func_ov001_0218c92c(0,a);
-if(M2C_FIELD(data_ov001_02193cc8,s32 *,16))func_ov001_0218c92c(0,M2C_FIELD(data_ov001_02193cc8,s32 *,16));
+p=M2C_FIELD(data_ov001_02193cc8,s32 *,16); if(p != 0) func_ov001_0218c92c(0,p);
 for(i=0;i<2;i++)if(((s32 *)data_ov001_02193cc8)[i])func_ov001_0218a1cc(((s32 *)data_ov001_02193cc8)[i]);
 func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193cc8,s32 *,8));
 func_ov001_0218b71c((M2C_UNK *)&data_ov001_02193cc8);
 }
-
+#pragma pool_data reset
 void func_ov001_02171b20(s32 a){
 extern void *data_ov001_02193cc8;extern const u8 data_ov001_0218f2a8[],data_ov001_0218f28c[][2];
 s32 func_ov001_0218a24c(s32,s32);void func_ov001_0218a55c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);

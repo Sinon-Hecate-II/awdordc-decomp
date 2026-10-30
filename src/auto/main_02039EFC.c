@@ -110,7 +110,7 @@ void func_0203a2b4(void) {
         func_02032b10();
         func_020376d8(0, M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), M2C_UNK *, 0x24), 0);
         M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), M2C_UNK *, 0x24) = 0;
-        if (func_02032370((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x1C)) {
+        if (func_02032370(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), void **, 0x1C))) {
             M2C_FIELD(&data_0213d380, void (**)(void *, void *), 8)(
                 (void *)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x48),
                 (void *)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x148));

@@ -450,7 +450,127 @@ void func_0200e8f4(M2C_UNK arg0) {
     } while (func_02009eb0(8, arg0, 0) != 0);
 }
 
-M2C_UNK func_0200e920(M2C_UNK a, M2C_UNK b, M2C_UNK c) { return (M2C_UNK)0; }
+M2C_UNK func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    M2C_UNK func_0200751c(void);
+    void func_02007530(M2C_UNK);
+    M2C_UNK func_020051f8(M2C_UNK);
+    M2C_UNK func_0200519c(M2C_UNK);
+    void func_0200ede8(M2C_UNK);
+    M2C_UNK func_02018c9c(void);
+    M2C_UNK func_0200ec44(void);
+    s32 func_0200e898(s32 *, s32 *);
+    s32 func_0200e76c(M2C_UNK, M2C_UNK);
+    M2C_UNK func_0200e464(M2C_UNK, M2C_UNK);
+    void func_02007968(void);
+    M2C_UNK func_0200eb50(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 func_0200e6c8(s32);
+    void func_0200758c(M2C_UNK);
+    s32 func_0200e840(void);
+    extern M2C_UNK data_0212fccc;
+
+    M2C_UNK r10 = arg0;
+    M2C_UNK r9 = arg1;
+    M2C_UNK r11 = arg2;
+    volatile M2C_UNK *hw208 = (volatile M2C_UNK *)0x4000208;
+    M2C_UNK r8;
+    M2C_UNK sp8;
+    M2C_UNK sp4;
+    M2C_UNK r5;
+    M2C_UNK r6;
+    M2C_UNK sp0;
+    M2C_UNK sp14;
+    M2C_UNK sp10;
+    M2C_UNK r7;
+    M2C_UNK *p4m;
+    M2C_UNK *p4m1;
+    volatile M2C_UNK *p27 = (volatile M2C_UNK *)0x27ffc3c;
+    M2C_UNK spc;
+    M2C_UNK sp12;
+    M2C_UNK r4 = 0;
+
+    func_0200ede8(M2C_FIELD(&data_0212fccc, M2C_UNK *, 0xC));
+
+    r8 = *hw208;
+    *hw208 = 0;
+
+    sp8 = func_0200751c();
+    sp4 = func_020051f8(0x3fffff);
+    func_0200519c(0x40000);
+    func_02007530(sp8);
+
+    {
+        M2C_UNK tmp = *hw208;
+        (void)tmp;
+    }
+    *hw208 = 1;
+
+    if (r10 & 0x8) {
+        volatile M2C_UNK *w = (volatile M2C_UNK *)0x27ffc40;
+        M2C_UNK v = *w;
+        if (v == 0x2) r10 &= ~0x8;
+    }
+    if (r10 & 0x10) {
+        if (func_02018c9c() == 0) r10 &= ~0x10;
+    }
+
+    p4m = (M2C_UNK *)0x4000000;
+    p4m1 = (M2C_UNK *)0x4001000;
+    r5 = *p4m;
+    r6 = *p4m1;
+    sp0 = func_0200ec44();
+    func_0200e898(&sp14, &sp10);
+    func_0200e76c(2, 0);
+
+    sp12 = *p27;
+    if (sp12 != *p27) {
+        sp12 = *p27;
+        *p4m = *p4m & (M2C_UNK)~0x30000;
+        *p4m1 = *p4m1 & (M2C_UNK)~0x10000;
+    }
+    {
+        M2C_UNK cur2 = *p27;
+        (void)cur2;
+    }
+
+    r7 = (M2C_UNK)(((r10 | (sp14 << 5) | (sp10 << 6)) << 16) >> 16);
+    r9 = (M2C_UNK)(((r9 | r11) << 16) >> 16);
+
+    if (func_0200e464(r7, r9) == 0) {
+        func_02007968();
+    }
+
+    if (r10 & 0x8) {
+        volatile M2C_UNK *w2 = (volatile M2C_UNK *)0x4000214;
+        M2C_UNK v2 = *w2;
+        if (v2 & 0x100000) r4 = 1;
+    }
+
+    if (r4 == 0) {
+        if (sp0 == 1) {
+            func_0200eb50(1, 1, 1, 1);
+        } else {
+            func_0200e6c8(0);  // need arg? assembly calls with r1 maybe from loop? It uses func_0200e6c8 maybe no args; but signature s32(s32). Pass 0? 
+        }
+    }
+
+    *p4m = r5;
+    *p4m1 = r6;
+    func_0200758c(0x708100);
+    func_0200751c();
+    func_0200519c(sp4);
+    func_02007530(sp8);
+
+    if (r4 != 0) {
+    } else {
+        func_0200e840();
+    }
+
+    func_0200ede8(M2C_FIELD(&data_0212fccc, M2C_UNK *, 0x14));
+
+    (void)r8;
+    (void)hw208;
+    return (M2C_UNK)0;
+}
 
 s32 func_0200eb50(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 extern M2C_UNK data_0212fccc;

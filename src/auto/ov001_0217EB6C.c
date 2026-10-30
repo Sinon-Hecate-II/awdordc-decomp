@@ -11,21 +11,22 @@ s32 func_ov001_0217eb6c(void){
  extern M2C_UNK data_ov001_0218fd20,data_ov001_02193dac;
  extern FourBytes data_ov001_0218f8c4;
  extern u8 data_ov001_0218f9a4[],data_ov001_0218f952[];
- s32 value,i,j,k,offset;u8 *p;
+ FourShorts rect; s32 value,i,j,k;u8 *p;
  if(!func_ov001_0218bbd8(&data_ov001_0218fd20))return 14;
  value=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);
- {FourShorts rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+4);i=0;do{
+ rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+4);
+ for(i=0;i<4;i++,value++){
  if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return data_ov001_0218f9a4[value];}
- rect.b+=29;i++;value++;
- }while(i<4);
+ rect.b+=29;
+ }
  value=func_02002088(M2C_FIELD(&data_ov001_02193dac,u16 *,4),29);
  for(j=0;j<4;j++,value++){
  if(value==2){
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
- offset=j*29;rect.b+=offset;
+ rect.b += j * 29;
  if(func_ov001_0218bd1c(&rect))return 2;
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
- offset=j*29;rect.b+=offset;
+ rect.b += j * 29;
  if(func_ov001_0218bd1c(&rect))return 3;
  break;
  }
@@ -34,10 +35,10 @@ s32 func_ov001_0217eb6c(void){
  for(k=0;k<4;k++,value++){
  if(value==6){
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
- offset=k*29;rect.b+=offset;
+ rect.b += k * 29;
  if(func_ov001_0218bd1c(&rect))return 7;
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
- offset=k*29;rect.b+=offset;
+ rect.b += k * 29;
  if(func_ov001_0218bd1c(&rect))return 8;
  break;
  }
@@ -45,7 +46,7 @@ s32 func_ov001_0217eb6c(void){
  p=data_ov001_0218f952;
  for(i=0;i<3;i++,p+=8){if(func_ov001_0218bbd8(p))return i+11;}
  return 14;
-}}
+}
 #pragma opt_strength_reduction on
 s32 func_ov001_0217ede0(s32 arg0) {
     s32 func_02002088(u16, s32);

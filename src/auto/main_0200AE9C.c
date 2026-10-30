@@ -272,7 +272,25 @@ else{M2C_FIELD(a,s32 *,0x40)=0;M2C_FIELD(a,s32 *,0x44)=c;}
 return func_0200af74(a,4);
 }
 
-M2C_UNK func_0200b8e0(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d){s32 func_0200bad8(void *);void *self=(void*)a;s32 n=c;s32 old=M2C_FIELD(self,s32 *,44),limit=M2C_FIELD(self,s32 *,40)-old;M2C_FIELD(self,s32 *,48)=b;if(n>limit)n=limit;if(n<0)n=0;M2C_FIELD(self,s32 *,52)=c;M2C_FIELD(self,s32 *,56)=n;if(!d)M2C_FIELD(self,s32 *,12)|=4;func_0200af74(self,0);if(!d){if(func_0200bad8(self))n=M2C_FIELD(self,s32 *,44)-old;else n=-1;}return n;}
+M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
+    s32 func_0200bad8(void *);
+    void *self = (void *)a;
+    s32 old = M2C_FIELD(self, s32 *, 0x2c);
+    s32 limit = M2C_FIELD(self, s32 *, 0x28) - old;
+    s32 n = (s32)c;
+    M2C_FIELD(self, M2C_UNK *, 0x30) = b;
+    if (n > limit) n = limit;
+    if (n < 0) n = 0;
+    M2C_FIELD(self, M2C_UNK *, 0x34) = c;
+    M2C_FIELD(self, s32 *, 0x38) = n;
+    if (!d) M2C_FIELD(self, volatile s32 *, 0xc) |= 4;
+    func_0200af74(self, 0);
+    if (!d) {
+        if (func_0200bad8(self)) n = M2C_FIELD(self, s32 *, 0x2c) - old;
+        else n = -1;
+    }
+    return n;
+}
 
 s32 func_0200b95c(s32 a,s32 b) {
  s32 func_0200b79c(void *,s32,s32,s32);

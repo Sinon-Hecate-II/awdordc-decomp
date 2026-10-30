@@ -129,16 +129,21 @@ void func_02006198(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0xB4) = arg1;
 }
 
+#pragma optimization_level 1
 void func_020061a0(void *arg0, s32 arg1, s32 arg2) {
 arg1+=4;
 M2C_FIELD(arg0,s32 *,0x40)=arg1;
 M2C_FIELD(arg0,s32 *,0x44)=arg2;
 arg2-=0x40;
-if(arg2&4)arg2-=4;
+if(!(arg2&4))goto aligned;
+arg2-=4;
+aligned:
 M2C_FIELD(arg0,s32 *,0x38)=arg2;
 arg1 &= 1;
-if(arg1) arg1=0x3f;
-else arg1=0x1f;
+if(arg1)goto thumb_state;
+arg1=0x1f;goto state_done;
+thumb_state: arg1=0x3f;
+state_done:
 M2C_FIELD(arg0,s32 *,0)=arg1;
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 8) = 0;
@@ -155,7 +160,7 @@ M2C_FIELD(arg0,s32 *,0)=arg1;
     M2C_FIELD(arg0, s32 *, 0x34) = 0;
     M2C_FIELD(arg0, s32 *, 0x3C) = 0;
 }
-
+#pragma optimization_level reset
 s32 func_020062b4(void) {
     return 0;
 }

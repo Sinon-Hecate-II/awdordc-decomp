@@ -235,7 +235,97 @@ void func_02077c78(void) {
     *(s32 *)0x04000540 = 0;
 }
 
-void func_02077c8c(void) { return; }
+void func_02077c8c(void) {
+    void func_02003ac4(void);
+    void func_02003c64(void);
+    M2C_UNK func_02003dfc(s32, s32, s16, s32, s32);
+    M2C_UNK func_02003de4(M2C_UNK);
+    void func_02077a30(void);
+    extern u32 data_027e00bc;
+    extern void *gCur3DSpriteEngine;
+    extern s32 *gCurrentMap;
+    extern u16 data_02140fc8[];
+
+    u8 *obj;
+    u16 *p;
+    void **eng;
+    u8 *cur;
+    u8 *node;
+    u8 *hw;
+    u16 *hp;
+    u32 val;
+
+    obj = (u8 *)data_027e00bc;
+    *(u32 *)(obj + 0x34) = 1;
+    eng = (void **)gCur3DSpriteEngine;
+    cur = (u8 *)*eng;
+    p = (u16 *)cur;
+    p[0] = p[0] & ~7;
+    p = (u16 *)data_027e00bc;
+    p[0] = p[0] | 8;
+    node = (u8 *)*eng;
+    p = (u16 *)node;
+    p[0] = p[0] | 0x10;
+    node = (u8 *)*eng;
+    p = (u16 *)node;
+    p[0] = p[0] | 0x20;
+    node = (u8 *)*eng;
+    p = (u16 *)node;
+    p[0] = p[0] | 0x40;
+    node = (u8 *)*eng;
+    p = (u16 *)node;
+    p[0] = p[0] | 0x80;
+    node = (u8 *)*eng;
+    p = (u16 *)node;
+    p[0] = p[0] | 0x100;
+
+    node = (u8 *)*eng;
+    obj = node;
+    p = (u16 *)*(u32 *)obj;
+    p[3] = (p[3] & ~3) | 3;
+    obj = node;
+    p = (u16 *)*(u32 *)obj;
+    p[4] = p[4] & ~3;
+    obj = node;
+    p = (u16 *)*(u32 *)obj;
+    p[5] = p[5] & ~3;
+    obj = node;
+    p = (u16 *)*(u32 *)obj;
+    p[6] = p[6] & ~3;
+
+    func_02003ac4();
+    func_02003c64();
+
+    {
+        void **q = (void **)((u8 *)gCurrentMap + 4);
+        void *field4 = *q;
+        void (**cbp)(void) = (void (**)(void))((u8 *)field4 + 0x4c);
+        void (*cb)(void) = *cbp;
+        if (cb != 0) {
+            cb();
+        }
+    }
+
+    hw = (u8 *)0x4000000;
+    val = *(u32 *)hw;
+    val = (val & ~0x1f00) | 0x1100;
+    *(u32 *)hw = val;
+    p = (u16 *)hw;
+    p[4] = p[4] & ~3;
+    p[0x30] = p[0x30] & (u16)0xcfef;
+    p[0x30] = (p[0x30] & ~0x3000) | 8;
+    p[0x28] = 0;
+    func_02003dfc(0, 0x1f, (s16)0x7fff, 0x3f, 0);
+
+    {
+        u16 *hptr = (u16 *)((u8 *)data_02140fc8 - 0x520);
+        *(u32 *)data_02140fc8 = 0x4000540;
+        hptr[0] = (hptr[0] & (u16)0xcffd) | 2;
+        func_02003de4((M2C_UNK)data_02140fc8);
+        func_02077a30();
+        *(u32 *)0x4000540 = 0;
+    }
+}
 
 void func_02077eb8(void) {
 

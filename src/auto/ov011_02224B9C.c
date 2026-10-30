@@ -21,6 +21,7 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
     s16 func_0207ca38(M2C_UNK, M2C_UNK, s16, u32, s32);
     M2C_UNK func_ov011_02222830(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void G3_SubmitSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s16);
+    void func_ov011_02224e04(M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_ov011_02227f08;
     extern M2C_UNK data_ov011_02228ce0;
     u8 sp8;

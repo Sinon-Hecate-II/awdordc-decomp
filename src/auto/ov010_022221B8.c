@@ -39,7 +39,7 @@ void func_ov010_022221b8(void *arg0, s32 arg1, s32 arg2, void *arg3) {
     u8 var_r7_4;
     void *var_r1;
 
-    var_r0 = arg0;
+    var_r0 = (s8 *)arg0;
     var_r1 = (void *)arg1;
     temp_r2 = (u32)arg2 >> 2;
     var_r11 = 0;

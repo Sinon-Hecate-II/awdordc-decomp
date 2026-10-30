@@ -277,19 +277,19 @@ s32 func_ov000_0218a798(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern u8 data_ov000_021b5c0f[];
     extern u16 data_ov000_021aeef4[];
     extern u8 data_ov000_021b5bfc[];
-    void *map;
-    void *selected;
     s32 savedAttr;
     s32 bestVisible = 0x7FFFFFFF;
     s32 bestOther = 0x7FFFFFFF;
     s32 i;
     s32 end;
-    s32 x;
+    u32 x;
     s32 y;
     UnkStruct_ov000_02189A08 *entry;
     u32 type;
     s32 d1;
     s32 val;
+    void *selected;
+    void *map;
 
     map = *gCurrentMap;
     selected = M2C_FIELD(map, void **, 0x52D0);

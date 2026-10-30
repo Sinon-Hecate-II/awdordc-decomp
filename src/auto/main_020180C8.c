@@ -394,30 +394,19 @@ void func_02018960(s32 arg0) {
 }
 
 void *func_020189a4(void *arg0, void *arg1) {
-    u8 temp_r1;
-    void *var_r3;
-
-    var_r3 = arg1;
-    var_r3 = (u8 *)var_r3 + 1;
-    M2C_FIELD(arg1, u8 *, 0) = (u8) M2C_FIELD(arg0, u8 *, 0);
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0);
-    switch (temp_r1) {
-    default:
-    case 0:
-        return (void *)0;
-    case 4:
-        M2C_FIELD(arg1, s8 *, 1) = (s8) M2C_FIELD(arg0, u16 *, 2);
-        M2C_FIELD(var_r3, s8 *, 1) = (s8) ((s32) (M2C_FIELD(arg0, u16 *, 2) & 0xFF00) >> 8);
-        M2C_FIELD(var_r3, s8 *, 2) = (s8) M2C_FIELD(arg0, u16 *, 4);
-        M2C_FIELD(var_r3, s8 *, 3) = (s8) ((s32) (M2C_FIELD(arg0, u16 *, 4) & 0xFF00) >> 8);
-        var_r3 = (u8 *)var_r3 + 4;
-    case 1:
-    case 2:
-    case 3:
-    case 5:
-    case 6:
-        return var_r3;
-    }
+u8 *p=arg1;
+*p++=M2C_FIELD(arg0,u8 *,0);
+switch(M2C_FIELD(arg0,u8 *,0)) {
+case 4:
+p[0]=M2C_FIELD(arg0,u16 *,2);
+p[1]=(M2C_FIELD(arg0,u16 *,2)&0xff00)>>8;
+p[2]=M2C_FIELD(arg0,u16 *,4);
+p[3]=(M2C_FIELD(arg0,u16 *,4)&0xff00)>>8;
+p+=4; break;
+default: case 0: return 0;
+case 1: case 2: case 3: case 5: case 6: break;
+}
+return p;
 }
 
 void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
@@ -486,6 +475,23 @@ s32 func_02018b44(u8 *arg0, s32 arg1) {
     *((u32 *)((u8 *)field4 + 0x1E0 + r4 * 4)) |= (1U << type);
     if (!func_02018bd0(r6)) return 0;
     return (s32)(field4 + r4 * 32);
+}
+
+s32 func_02018bd0(s32 arg0) {
+extern M2C_UNK data_02136c84;
+u16 i;
+u32 word;
+s32 count;
+i=0;
+count=M2C_FIELD(&data_02136c84,s32 *,12);
+if(count>0) {
+word=M2C_FIELD(M2C_FIELD(&data_02136c84,s32 *,4)+(arg0-1)*4,u32 *,0x1e0);
+do {
+if(!(word&(1u<<i)))return 0;
+i++;
+}while(count>i);
+}
+return 1;
 }
 
 void func_02018c24(void) {
@@ -584,25 +590,16 @@ void func_02018df0(void *arg0) {
  *(volatile u16 *)0x04000204=b;
 }
 #pragma opt_propagation reset
-void func_02018e24(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_0200751c(void);
-    void func_02007530(M2C_UNK);
-    M2C_UNK func_02005584(M2C_UNK);
-    M2C_UNK func_020054cc(M2C_UNK);
-    M2C_UNK WaitByLoop(M2C_UNK);
-    M2C_UNK *q = (M2C_UNK *)arg1;
-    M2C_UNK saved;
-    M2C_UNK r;
-    M2C_UNK a = arg0;
-    M2C_UNK one = 1;
-    saved = func_0200751c();
-    q[1] = saved;
-    r = func_02005584(0x27FFFE8) & 0x40;
-    q[0] = r;
-    if (r != 0) return;
-    if (func_020054cc(a) == 0) return;
-    func_02007530(saved);
-    WaitByLoop(one);
+void func_02018e24(M2C_UNK arg0,void *arg1) {
+M2C_UNK func_0200751c(void); void func_02007530(s32); M2C_UNK func_02005584(M2C_UNK); M2C_UNK func_020054cc(M2C_UNK); M2C_UNK WaitByLoop(M2C_UNK);
+for(;;){
+M2C_FIELD(arg1,s32 *,4)=func_0200751c();
+M2C_FIELD(arg1,s32 *,0)=func_02005584(0x27fffe8)&0x40;
+if(M2C_FIELD(arg1,s32 *,0)!=0)return;
+if(func_020054cc(arg0)==0)return;
+func_02007530(M2C_FIELD(arg1,s32 *,4));
+WaitByLoop(1);
+}
 }
 
 void func_02018e80(M2C_UNK arg0, void *arg1) {

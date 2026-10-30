@@ -334,8 +334,7 @@ void func_020640a8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_02063df8();
 }
 
-void func_020640e4(void) {
-
+void func_020640e4(M2C_UNK a, M2C_UNK *b) {
 }
 
 void func_020640e8(M2C_UNK, M2C_UNK *) {
@@ -377,7 +376,6 @@ s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
 }
 
 s32 func_020641a8(void *arg0, M2C_UNK *arg1) {
-    void (*func_020640e4)(M2C_UNK, M2C_UNK *);
     void func_020640ec(void *);
 
     s32 temp_r2 = M2C_FIELD(arg0, s32 *, 0x24) - M2C_FIELD(arg0, s32 *, 0x1C);

@@ -37,6 +37,7 @@ void func_ov011_0222134c(void *arg0) {
     gCur3DSpriteEngine = saved;
 }
 
+#pragma opt_common_subs off
 void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_02082c84(void);
     M2C_UNK func_020026d8(s32);
@@ -85,9 +86,9 @@ void func_ov011_0222140c(void *arg0) {
         *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x400;
         *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x800;
         *(volatile u16 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x12) &= (u16)~0xC0;
-        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x51) = 0;
-        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x52) = 0;
-        *(volatile u8 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x53) = 0;
+        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x51] = 0;
+        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x52] = 0;
+        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x53] = 0;
         *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
         func_020aca8c();
         func_02082770();
@@ -97,7 +98,7 @@ void func_ov011_0222140c(void *arg0) {
     *((u8 *)arg0 + 0x38) = 0;
     func_ov011_0222161c(arg0);
 }
-
+#pragma opt_common_subs reset
 void func_ov011_0222161c(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {
         M2C_FIELD(arg0, s16 *, 0x34) = 0;

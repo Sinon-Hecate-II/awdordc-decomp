@@ -77,23 +77,21 @@ void func_0202ee2c(void) {
 
 }
 
+#pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
- void func_02005da4(void *);
- void func_02006564(void *);
- void func_020065e8(void *);
- void *func_0202e09c(void *);
- void func_0202e470(void *);
- void func_0202e12c(void *);
- void *p; void *base=arg0+0xC8;
+ void func_02005da4(void *); void func_02006564(void *); void func_020065e8(void *);
+ void *func_0202e09c(void *); void func_0202e470(void *); void func_0202e12c(void *);
+ register char *base=(char *)arg0+0xC8;
  func_02005da4(arg0+0x4C0);
- for(;;) {
+ for (;;) {
+ register void *p;
  func_02006564(base+0x400);
  p=func_0202e09c(arg0+0x4E0);
- if(!p){func_020065e8(base+0x400);continue;}
+ if (!p) {func_020065e8(base+0x400);continue;}
  func_0202e470(p);func_0202e12c(p);func_020065e8(base+0x400);
  }
 }
-
+#pragma opt_common_subs reset
 void *func_0202ee80(void *arg0,s32 arg1) {
  void *p;
  if(arg1<0)return NULL;

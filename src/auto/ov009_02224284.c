@@ -1,5 +1,9 @@
 /* 36 functions from 0x02224284 to 0x0222525C (ov009), found by ds-decomp. */
 #include "common.h"
+static inline void ov009SaveInterrupts(u32 *saved) {
+    *saved = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+}
 static inline u32 ov009DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -69,11 +73,14 @@ s32 func_ov009_022242c8(void) {
     extern M2C_UNK data_ov009_02226fe0;
 
     s32 stk[8];
-    u8 *end;       /* r4 */
-    s32 *sp18;     /* r5 */
-    u8 *cur;       /* r6 */
+    u8 *end;
+    s32 *sp18;
+    u8 *cur;
     s32 x;
     s32 y;
+    s32 z = 0;
+    s32 r4v;
+    s32 r0v;
 
     if (func_ov009_02224508(0) != 0) {
         return 1;
@@ -89,13 +96,15 @@ s32 func_ov009_022242c8(void) {
     func_02007f8c(&data_ov009_02226a20, 0, 0x16);
 
     M2C_FIELD(&data_ov009_022268e0, u8 *, 0x156) = 0;
-    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x157) = (u8)-1;
-    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x158) = (u8)-1;
-    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x159) = (u8)-2;
-    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15a) = (u8)-2;
+    r4v = z - 1;
+    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x157) = (u8)r4v;
+    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x158) = (u8)r4v;
+    r0v = z - 2;
+    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x159) = (u8)r0v;
+    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15a) = (u8)r0v;
     M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15b) = 0;
     M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15c) = 0;
-    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15d) = (u8)-1;
+    M2C_FIELD(&data_ov009_022268e0, u8 *, 0x15d) = (u8)r4v;
     func_02007f8c(&data_ov009_02226a40, 0, 0x40);
 
     y = M2C_FIELD(&data_ov009_022263e0, s32 *, 0x34);
@@ -697,33 +706,20 @@ s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 a
     return 1;
 }
 
+#pragma optimization_level 4
+#pragma opt_propagation on
+#pragma opt_deadcode on
 s32 func_ov009_022250f8(s32 arg0) {
-    extern M2C_UNK data_ov009_022269b0;
-    s32 offset = arg0 * 12;
-    s32 result = 0;
-    M2C_UNK *ptr;
-    u32 saved = ov009_disable_irq();
-    if (M2C_FIELD(&data_ov009_022269b0, void **, offset) == NULL) {
-        ov009_restore_irq(saved);
-        return 0;
-    }
-    {
-        u32 nested = ov009_disable_irq();
-        ptr = M2C_FIELD(&data_ov009_022269b0, void **, offset);
-        if (ptr == NULL) {
-            (void)*(volatile u16 *)0x04000208;
-            *(volatile u16 *)0x04000208 = nested;
-        } else {
-            (void)*(volatile u16 *)0x04000208;
-            result = M2C_FIELD(ptr, s32 *, 12);
-            *(volatile u16 *)0x04000208 = nested;
-        }
-    }
-    result += 12;
-    ov009_restore_irq(saved);
-    return result;
+extern M2C_UNK data_ov009_022269b0;
+s32 offset=arg0*12; u32 saved; s32 result=0; u32 nested; void *ptr;
+ov009SaveInterrupts(&saved);
+if(M2C_FIELD(&data_ov009_022269b0,void**,offset)==NULL){(void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=saved; return 0;}
+ov009SaveInterrupts(&nested);
+ptr=M2C_FIELD(&data_ov009_022269b0,void**,offset);
+if(ptr==NULL){(void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=nested;}
+else {(void)*(volatile u16*)0x04000208; result=M2C_FIELD(ptr,s32*,12); *(volatile u16*)0x04000208=nested;}
+result+=12; (void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=saved; return result;
 }
-
 void *func_ov009_02225178(s32 arg0, void *arg1) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     M2C_UNK func_ov009_02221338(void *, s32);

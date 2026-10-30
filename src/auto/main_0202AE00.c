@@ -1,6 +1,8 @@
 /* 36 functions from 0x0202AE00 to 0x0202BD7C (main), found by ds-decomp. */
 #include "common.h"
+void func_0202b338();
 typedef struct { u32 words[2]; } Unk02BDFileRange;
+typedef struct { s32 pad[3]; s32 buffer0, buffer1, size, unk18, state, unk20, channel0, channel1, channel; } AudioBufferState;
 extern s32 data_0213bbd4[];
 extern s32 data_0213bb94[16];
 void func_0202b8e0(void *);
@@ -19,7 +21,7 @@ void func_0202aeb4(void) {
     s32 func_02009524(void *);
     M2C_UNK func_02008c38(u8, s32);
     void func_02008c18(u8);
-    M2C_UNK func_0202b338(void *);
+    void func_0202b338(void *);
     void func_0202ef34(void *);
     s32 func_0202ef00(void *);
     s32 func_0202ef4c(void *);
@@ -99,7 +101,7 @@ q=func_0202b2d0(c);if(!q)return 0;func_0202b1f4(p,q);M2C_FIELD(q,void **,0)=a;M2
 }
 
 void func_0202b0b0(void) {
-    M2C_UNK func_0202b338();
+    void func_0202b338();
     func_0202b338();
 }
 
@@ -143,7 +145,7 @@ void func_0202b298(void *arg0) {
 
 void *func_0202b2d0(s32 a){void *func_02029ddc();M2C_UNK func_02029d7c();M2C_UNK func_0202b244(void *);extern M2C_UNK data_0213b2ac,data_0213b2b8;void *p=func_02029ddc(&data_0213b2ac,0);if(!p){p=func_02029ddc(&data_0213b2b8,0);if(a<M2C_FIELD(p,u8 *,61))return 0;func_0202b298(p);}func_02029d7c(&data_0213b2ac,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
 
-M2C_UNK func_0202b338(void *a){M2C_UNK func_02029d7c();void func_02029c74();extern M2C_UNK data_0213b2b8,data_0213b2ac;void *p=M2C_FIELD(a,void **,0);void *list;
+void func_0202b338(void *a){M2C_UNK func_02029d7c();void func_02029c74();extern M2C_UNK data_0213b2b8,data_0213b2ac;void *p=M2C_FIELD(a,void **,0);void *list;
 if(p){M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(a,s32 *,0)=0;}
 list=M2C_FIELD(a,void **,4);func_02029d7c(list,a);M2C_FIELD(a,s32 *,4)=0;
 if(M2C_FIELD(a,void **,8)){func_02029c74(list+12,M2C_FIELD(a,void **,8));M2C_FIELD(M2C_FIELD(a,void **,8),s32 *,12)=0;M2C_FIELD(a,s32 *,8)=0;}
@@ -400,15 +402,24 @@ M2C_FIELD(p,s32 *,0)=0;
 
 void func_0202bc1c(void){M2C_UNK func_02008cf0(s32,s32,s32,s32);s32 func_020094f8();M2C_UNK func_020092d0(s32);M2C_UNK func_0200948c(s32);extern M2C_UNK data_0213bc54,data_0213bc9c;s32 r;void *p=&data_0213bc9c;s32 channel;if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;channel=M2C_FIELD(p,s32 *,44);func_02008cf0(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);r=func_020094f8();func_020092d0(1);func_0200948c(r);}
 
-void func_0202bc7c(void){M2C_UNK func_02007e54(s32,s32,s32);void func_020067e0(s32,s32);M2C_UNK func_02008cc8();extern M2C_UNK data_0213bc54,data_0213bc9c;void *p=&data_0213bc9c;s32 channel; s32 dest,size;
+#pragma scheduling off
+void func_0202bc7c(void) {
+void func_02007e54(s32,s32,s32); void func_020067e0(s32,s32); M2C_UNK func_02008cc8();
+extern M2C_UNK data_0213bc54,data_0213bc9c;
+AudioBufferState *p=(AudioBufferState *)&data_0213bc9c;
+s32 channel; s32 dest,size;
 if(!M2C_FIELD(&data_0213bc54,s32 *,72))return;
-dest=M2C_FIELD(p,s32 *,12);M2C_FIELD(p,s32 *,28)=0;size=M2C_FIELD(p,s32 *,20);func_02007e54(0,dest,size);
-func_02007e54(0,M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
-func_020067e0(M2C_FIELD(p,s32 *,12),M2C_FIELD(p,s32 *,20));
-func_020067e0(M2C_FIELD(p,s32 *,16),M2C_FIELD(p,s32 *,20));
-channel=M2C_FIELD(p,s32 *,44);func_02008cc8(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);
+dest=p->buffer0;
+size=p->size;
+p->state=0;
+func_02007e54(p->state,dest,size);
+func_02007e54(0,p->buffer1,p->size);
+func_020067e0(p->buffer0,p->size);
+func_020067e0(p->buffer1,p->size);
+channel=p->channel;
+func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
-
+#pragma scheduling on
 void func_0202bd00(void *a,s32 b,s32 c,s32 d){M2C_UNK func_0200b774(void *);s32 func_0200b95c(void *,s32);s32 func_0200b9e4(void *,Unk02BDFileRange);s32 func_0202bd7c(void *,s32,s32);extern void *data_0213c250;
 M2C_FIELD(a,s32 *,140)=0;M2C_FIELD(a,s32 *,132)=0;M2C_FIELD(a,s32 *,136)=0;
 if(!func_0200b95c(a+124,b))return;func_0200b774(a+52);

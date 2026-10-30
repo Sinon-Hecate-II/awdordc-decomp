@@ -2,6 +2,7 @@
 #include "common.h"
 
 typedef struct { u8 bytes[6]; } NetworkAddress6;
+typedef struct { NetworkAddress6 address; u8 type,length; u32 ip; u8 reserved,value,flag,addr[4],port[2]; char name[64]; } NetworkHandshakePacket;
 typedef struct { u8 bytes[20]; } NetworkPacket20Bytes;
 typedef struct { NetworkAddress6 address; u8 type, length; u32 ip, value; u16 port; u8 flag, mode; } NetworkPacket20;
 typedef struct { u8 bytes[21]; } NetworkPacket21Bytes;
@@ -118,7 +119,7 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_020496a4(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_0205d7f4();
     M2C_UNK func_0205d88c();
-    M2C_UNK func_0205da30();
+    void func_0205da30();
     s32 func_0205de10();
     extern s32 gDnsQueryState;
     void *temp_r0;
@@ -165,7 +166,7 @@ void func_0205df50(void) {
 }
 
 void func_0205df88(void *p) {
-s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void func_0205e510(u8 *,s32,M2C_UNK); s32 func_02049208(void); s32 func_0205da30(); void func_0205dc78(void *);
+s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void func_0205e510(u8 *,s32,M2C_UNK); s32 func_02049208(void); void func_0205da30(); void func_0205dc78(void *);
 extern u8 data_0213e158[];
 u8 address[8]; s32 size=8; u8 packet[8]; s32 n;
 if(M2C_FIELD(p,s32 *,16)==4){func_0205d88c(p);return;}
@@ -520,4 +521,50 @@ void func_0205e8b0(void *arg0) {
  if(n!=-1){data_0213e3b0[n]=0;func_0205f83c(arg0,data_0213e3b0,n,spC);}
  }while(func_02049534(M2C_FIELD(arg0,s32 *,0))!=0);
 }
+#pragma opt_propagation off
+#pragma scheduling off
+void func_0205da30(void *arg0) {
+s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 func_02049208(void);
+void func_0205d944(s32,s32,u16,void *,s32);
+s32 func_02068c50(void *,s32); s32 func_02068c34(void *);
+extern M2C_UNK gServiceNameBuffer,data_0213e144;
+union { NetworkHandshakePacket header; u8 bytes[88]; } packet; NetworkHandshakePacket *p=&packet.header; u8 *buf=packet.bytes;
+u32 ip,a,b,c,d;
+s32 len,sock,pa,pb;
+u16 port;
+{
+u8 a0=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[0],a1=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[1],a2=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[2],a3=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[3],a4=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[4],a5=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[5];
+p->address.bytes[0]=a0;p->address.bytes[1]=a1;p->address.bytes[2]=a2;p->address.bytes[3]=a3;p->address.bytes[4]=a4;p->address.bytes[5]=a5;
+p->length=0;
+}
+p->type=2;
+p->value=M2C_FIELD(arg0,s32 *,12);
+ip=M2C_FIELD(arg0,u32 *,8);
+p->ip=((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000);
+p->flag=M2C_FIELD(arg0,s32 *,4)!=(s32)(p->length-1);
+a=func_0205d998();b=func_0205d998();c=func_0205d998();d=func_0205d998();
+ip=((c>>24)&255)|((d>>8)&0xff00)|((b<<8)&0xff0000)|((a<<24)&0xff000000);
+packet.bytes[15]=ip>>24;packet.bytes[16]=ip>>16;packet.bytes[17]=ip>>8;packet.bytes[18]=ip;
+packet.bytes[19]=0;packet.bytes[20]=0;
+func_02068c50(packet.bytes+21,(s32)&gServiceNameBuffer);
+len=func_02068c34(&gServiceNameBuffer)+22;
+if(p->flag && M2C_FIELD(arg0,s32 *,20)==0){
+buf[12]=0;func_0205d944(M2C_FIELD(arg0,s32 *,4),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);
+}
+if(M2C_FIELD(arg0,s32 *,24)==0){
+buf[12]=1;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);
+}
+sock=p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0);
+pa=func_0205d9fc(p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0));
+pb=func_0205d9fc(sock);
+port=((pa>>8)&255)|((pb<<8)&0xff00);
+packet.bytes[20]=port;packet.bytes[19]=port>>8;
+if(M2C_FIELD(arg0,s32 *,28)==0){
+buf[12]=2;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&data_0213e144,s32 *,8),0x6cfd,buf,len);
+}
+M2C_FIELD(arg0,s32 *,40)=func_02049208()+500;
+M2C_FIELD(arg0,s32 *,36)=30;
 
+}
+#pragma opt_propagation reset
+#pragma scheduling reset

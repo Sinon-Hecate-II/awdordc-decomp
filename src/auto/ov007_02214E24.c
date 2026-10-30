@@ -130,11 +130,13 @@ s32 func_ov007_02215704(s32 x, s32 y) {
 
 Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 RandomIntRange(s32, s32);
+    s32 scale;
+    s32 placed;
+    s32 tries;
+    s32 rx;
+    s32 ry;
     Map14E24 *m;
     u16 t;
-    s32 rx, ry;
-    s32 scale;
-    s32 placed, tries;
 
     scale = arg2 * 5;
 

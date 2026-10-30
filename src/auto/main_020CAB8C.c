@@ -13,11 +13,12 @@ void func_020cab8c(void) {
 #pragma optimization_level 4
 s32 func_020caba4(s32 a,s32 b,s32 c){
  extern void **gCurrentMap;
- s32 i=0;void *p;register u8 *q;
+ s32 i=0;void *p;u8 *q;s16 mx;
  do{
  if(c&data_0212b1b8[i][0]){
  p=*gCurrentMap;q=(u8 *)data_0212b1b8+((u32)i<<2);
- if(a==M2C_FIELD(p,s16 *,0x52dc)+M2C_FIELD(q,s8 *,2) && b==M2C_FIELD(p,s16 *,0x52de)+M2C_FIELD(q,s8 *,3))return i;
+ mx=M2C_FIELD(p,s16 *,0x52dc);
+ if(a==mx+M2C_FIELD(q,s8 *,2) && b==M2C_FIELD(p,s16 *,0x52de)+M2C_FIELD(q,s8 *,3))return i;
  } i++;
  }while(i<4);return -1;
 }

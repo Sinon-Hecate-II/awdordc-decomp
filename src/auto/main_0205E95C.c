@@ -80,9 +80,18 @@ void func_0205eb50(u8 *p, s32 a) {
 }
 #pragma opt_cond_exec reset
 #pragma optimization_level reset
-void func_0205eb7c(void *a,M2C_UNK b){M2C_UNK func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
+void func_0205eb7c(void *a,M2C_UNK b){void func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
-M2C_UNK func_0205ebb0(void *a,M2C_UNK *b){s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);s32 n=func_02068c34(b)+1;s32 used=M2C_FIELD(a,s32 *,0x800);if(n>0x800-used)n=0x800-used;if(n==0)return;func_020651a4((u8 *)a+used,b,n);M2C_FIELD(a,s32 *,0x800)+=n;((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;}
+void func_0205ebb0(void *a,M2C_UNK *b){
+s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);
+s32 n=func_02068c34(b)+1;
+s32 used=M2C_FIELD(a,s32 *,0x800);
+if(n>0x800-used)n=0x800-used;
+if(!n)return;
+func_020651a4((u8 *)a+used,b,n);
+M2C_FIELD(a,s32 *,0x800)+=n;
+((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;
+}
 
 void func_0205ec0c(void){void *func_02049584(void);void *p=func_02049584();s32 i;u8 *s;u8 x,y;if(!p)return;data_0213e358=0;for(i=0;i<5;){s=M2C_FIELD(p,u8 ***,12)[i];if(!s)return;y=s[1];x=s[0];data_0213e35c[i][0]=x;data_0213e35c[i][1]=y;y=s[3];x=s[2];data_0213e35c[i][2]=x;data_0213e35c[i][3]=y;data_0213e358=++i;}}
 
@@ -248,7 +257,7 @@ void func_0205f474(M2C_UNK arg0, void *arg1, M2C_UNK arg2) {
 }
 
 void func_0205f64c(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_0205ebb0(void *, M2C_UNK *);
+    void func_0205ebb0(void *, M2C_UNK *);
                       void func_0205f474(M2C_UNK, void *, M2C_UNK);
     extern M2C_UNK data_020ffa74;
     M2C_FIELD(arg1, s32 *, 0x800) = 1;
