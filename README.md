@@ -57,7 +57,7 @@ awdordc-decomp/
 └── README.md
 ```
 
-Some directories and generated files referenced by the build scripts (such as `config/`, `extract/`, `build/`, `build.ninja`, and `objdiff.json`) may need to be generated or provided separately; they are not all committed to the repository.
+The build scripts also reference `config/`, `extract/`, `build/`, `build.ninja`, and `objdiff.json`. These are not all committed: `config/` must be supplied for the matching game version, `extract/` holds local ROM inputs and extracted data, and the build system generates `build/`, `build.ninja`, and `objdiff.json`.
 
 ## Building
 
