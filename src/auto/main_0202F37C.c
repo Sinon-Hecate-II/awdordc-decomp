@@ -258,11 +258,11 @@ void func_0202fb20(s32 arg0, s32 arg1) {
     var_r6 = var_r4 - 1;
     if (var_r6 >= 0) {
         var_r10 = (var_r6 * 0xC0) + temp_r8;
-        var_r9 = temp_r7 + (var_r6 * 4);
+        var_r9 = (M2C_UNK *) (temp_r7 + (var_r6 * 4));
 loop_2:
         if ((u32) M2C_FIELD((temp_r7 + (var_r4 * 4)), u8 *, 2) >= (u32) M2C_FIELD((temp_r7 + (var_r6 * 4)), u8 *, 2)) {
             func_02007e70(var_r9, (s32)&sp0, 4);
-            temp_r5 = temp_r7 + (var_r4 * 4);
+            temp_r5 = (M2C_UNK *) (temp_r7 + (var_r4 * 4));
             func_02007e70(temp_r5, (s32)var_r9, 4);
             func_02007e70(&sp0, (s32)temp_r5, 4);
             func_02007e70((M2C_UNK *) var_r10, (s32)sp4, 0xC0);
@@ -433,7 +433,7 @@ s32 func_020302f4(void) {
 
 s32 func_02030324(void) {
     s32 func_020301dc(s32);
-    if (func_020301dc(func_0202f48c(1) + 0xA) == 1) {
+    if (func_020301dc((s32)(func_0202f48c(1) + 0xA)) == 1) {
         return 0x12;
     }
     return 0x11;

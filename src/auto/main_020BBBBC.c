@@ -197,19 +197,19 @@ s32 func_020bc910(void) {
     void *func_020d2e3c(u16);
     void func_0208fe30(void *);
     s32 func_0207b764(u8, u8);
-    s32 func_020d5aa0(s32, s32, s32, s32, s32);
+    s32 func_020d5aa0(s16, s16, s32, s32, u8);
     void func_020d58c4(s32, s32);
 
     extern s32 *gCurrentMap;
     extern void *data_02101e84;
 
-    void *mapbase = *(void **)gCurrentMap;
-    s16 x = *(s16 *)((char *)mapbase + 0x52C2);
-    s16 y = *(s16 *)((char *)mapbase + 0x52C4);
-    u16 flags = *(u16 *)data_02101e84;
+    s32 *map = *gCurrentMap;
+    s16 x = M2C_FIELD(map, s16 *, 0x52C2);
+    s16 y = M2C_FIELD(map, s16 *, 0x52C4);
+    u16 flags = M2C_FIELD(data_02101e84, u16 *, 0);
 
     if (flags & 0x8) {
-        func_020d549c((char *)mapbase + 0x5200);
+        func_020d549c((char *)map + 0x5200);
         return 1;
     }
     if (flags & 0x4) {
@@ -225,7 +225,7 @@ s32 func_020bc910(void) {
         return 0;
     }
     if (flags & 0x200) {
-        u16 w = *(u16 *)((char *)mapbase + 0x52A4);
+        u16 w = M2C_FIELD(map, u16 *, 0x52A4);
         void *r6 = func_020d2e3c(w);
         if (r6 != 0) {
             func_0208fe30((void *)0x1001A);
@@ -234,7 +234,7 @@ s32 func_020bc910(void) {
     }
 
     {
-        u16 infoFlags = *(u16 *)data_02101e84;
+        u16 infoFlags = M2C_FIELD(data_02101e84, u16 *, 0);
         if (infoFlags & 0x1) {
             s32 res = func_020d5aa0(x, y, 1, 1, 0);
             if (res != 0) {
@@ -246,9 +246,9 @@ s32 func_020bc910(void) {
         }
     }
     {
-        void *mapbase2 = *(void **)gCurrentMap;
-        s16 xx = *(s16 *)((char *)mapbase2 + 0x52C2);
-        s16 yy = *(s16 *)((char *)mapbase2 + 0x52C4);
+        s32 *map2 = *gCurrentMap;
+        s16 xx = M2C_FIELD(map2, s16 *, 0x52C2);
+        s16 yy = M2C_FIELD(map2, s16 *, 0x52C4);
         func_020d58c4(xx, yy);
     }
     return 1;

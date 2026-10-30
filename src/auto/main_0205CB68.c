@@ -197,7 +197,7 @@ s32 func_0205d164(s32 arg) {
     void *p = (void *)arg;
     s32 v = M2C_FIELD(p, s32 *, 0x14);
     if (v == 0) v = M2C_FIELD(p, s32 *, 0x24);
-    if (v != 0) return v;
+    if (v != 0u) return v;
     if (M2C_FIELD(p, s32 *, 0x0C) == 7) {
         s32 *field8 = M2C_FIELD(p, s32 *, 0x08);
         s32 base = M2C_FIELD(field8, s32 *, 0x10);

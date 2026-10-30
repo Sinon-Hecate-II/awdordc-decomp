@@ -14,8 +14,8 @@ func_ov000_0219c7ec(n);
 #pragma opt_common_subs reset
 void func_ov000_0219c984(void){
 void func_ov000_0219c7ec(s32);extern s32 *gCurrentMap;extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;
-u8 *p; s32 *base; s8 *q; s32 n;u8 x;
-base=gCurrentMap;p=&data_ov000_021df824;q=&data_ov000_021df868;n=0;
+u8 *p; s8 *q; s32 *base; s32 n;u8 x;
+p=&data_ov000_021df824;base=gCurrentMap;q=&data_ov000_021df868;n=0;
 loop:x=*p;if(x!=0){p++;*q++=(u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25;n++;goto loop;}func_ov000_0219c7ec(n);
 }
 
@@ -323,6 +323,7 @@ void func_ov000_0219d0f4(void) {
     *data_ov000_021df580 = 2;
 }
 
+#pragma scheduling off
 void func_ov000_0219d220(void) {
     extern s32 *gCurrentMap;
     extern u16 data_ov000_021aeef4[];
@@ -339,7 +340,6 @@ void func_ov000_0219d220(void) {
     s8 *out;
     u16 baseIndex;
     u32 type;
-    u32 nibble;
     void *table;
     void *obj;
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
@@ -353,13 +353,11 @@ void func_ov000_0219d220(void) {
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1) {
-                    nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
-                    if (nibble != 0) {
-                        if (func_ov000_021a8984((s32)nibble) != 0) {
-                            out = data_ov000_021df658;
-                            data_ov000_021df658 = out + 1;
-                            *out = index;
-                        }
+                    u32 nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
+                    if (nibble != 0 && func_ov000_021a8984((s32)nibble) != 0) {
+                        out = data_ov000_021df658;
+                        data_ov000_021df658 = out + 1;
+                        *out = index;
                     }
                 }
             }
@@ -374,7 +372,7 @@ void func_ov000_0219d220(void) {
     data_ov000_021df654 = &func_ov000_02180ff4;
     *data_ov000_021df580 = 2;
 }
-
+#pragma scheduling on
 void func_ov000_0219d358(void) {
 extern s32 *gCurrentMap;
 extern u16 data_ov000_021aeef4[];

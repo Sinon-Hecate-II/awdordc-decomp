@@ -31,12 +31,13 @@ u16 func_02006f8c(void) {
 #pragma optimization_level 2
 void func_02006f9c(void) {
 void func_02005154(u32,void (*)(void),u32); extern u16 data_0212dfb4;
-M2C_FIELD(&data_0212dfb4,u64 *,8)++;
-if(M2C_FIELD(&data_0212dfb4,s32 *,4)) {
+s32 zero=0; u32 *base=(u32*)&data_0212dfb4;
+M2C_FIELD(base,u64 *,8)++;
+if (M2C_FIELD(base,s32 *,4)) {
 *(volatile u16 *)0x04000102=0;
 *(volatile u16 *)0x04000100=0;
 *(volatile u16 *)0x04000102=0xc1;
-M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
+M2C_FIELD(base,s32 *,4)=0;
 }
 func_02005154(0,func_02006f9c,0);
 }
@@ -179,7 +180,7 @@ void func_020072cc(void *arg0, u64 delay, void (*callback)(void *), void *arg4) 
  M2C_FIELD(arg0, s32 *, 0x1C) = 0;
  M2C_FIELD(arg0, s32 *, 0x20) = 0;
  M2C_FIELD(arg0, void (**)(void *), 0) = callback;
- M2C_FIELD(arg0, void **, 4) = arg4;
+ M2C_FIELD(arg0, void **, 4) = (void*)*(volatile s32*)&arg4;
  time = delay + func_02007004();
  func_020071a0(arg0, (u32)time, (u32)(time >> 32));
  func_02007530(state);
@@ -232,7 +233,8 @@ void func_020073d0(void) {
     void *node;
     void *next;
     u64 now;
-    u64 deadline;
+    u32 deadline_hi;
+    u32 deadline_lo;
     u32 t20;
     u32 t1c;
     u32 cb;
@@ -244,33 +246,34 @@ void func_020073d0(void) {
 
     now = func_02007004();
 
-    node = M2C_FIELD(&data_0212dfc4, void **, 4);
+    node = M2C_FIELD(&data_0212dfc4, void **, 0x4);
     if (node == 0) return;
 
-    deadline = ((u64)M2C_FIELD(node, u32 *, 0x10) << 32) | M2C_FIELD(node, u32 *, 0x0C);
-    if (now < deadline) {
+    deadline_hi = M2C_FIELD(node, u32 *, 0x10);
+    deadline_lo = M2C_FIELD(node, u32 *, 0x0C);
+    if (now < ((u64)deadline_hi << 32 | deadline_lo)) {
         func_020070b4(node);
         return;
     }
 
     next = M2C_FIELD(node, void **, 0x18);
-    M2C_FIELD(&data_0212dfc4, void **, 4) = next;
+    M2C_FIELD(&data_0212dfc4, void **, 0x4) = next;
     if (next == 0) {
-        M2C_FIELD(&data_0212dfc4, u32 *, 8) = 0;
+        M2C_FIELD(&data_0212dfc4, u32 *, 0x8) = 0;
     } else {
         M2C_FIELD(next, u32 *, 0x14) = 0;
     }
 
     t20 = M2C_FIELD(node, u32 *, 0x20);
-    cb = M2C_FIELD(node, u32 *, 0x00);
     t1c = M2C_FIELD(node, u32 *, 0x1C);
+    cb = M2C_FIELD(node, u32 *, 0x00);
     if (t20 == 0 && t1c == 0) {
         M2C_FIELD(node, u32 *, 0x00) = 0;
     }
 
     if (cb != 0) {
         arg = M2C_FIELD(node, u32 *, 0x04);
-        ((void (*)(u32))(cb))(arg);
+        ((void (*)(u32))cb)(arg);
     }
 
     t20 = M2C_FIELD(node, u32 *, 0x20);
@@ -280,7 +283,7 @@ void func_020073d0(void) {
         func_020071a0(node, 0, 0);
     }
 
-    node = M2C_FIELD(&data_0212dfc4, void **, 4);
+    node = M2C_FIELD(&data_0212dfc4, void **, 0x4);
     if (node != 0) {
         func_020070b4(node);
     }
@@ -399,10 +402,10 @@ void func_02007740(void *arg0) {
  M2C_FIELD(arg0,u16 *,0x50)=0;
 }
 
+#pragma intrinsic on
 s32 func_020077c4(u32 arg0) {
-    return __builtin_arm_clz(arg0);
+    return __CLZ(arg0);
 }
-
 void func_020077cc(void) {
  s32 i=0;
  data_0212dfe8=0;
@@ -430,41 +433,44 @@ void func_02007800(s32 arg0,s32 arg1) {
  func_02007530(state);
 }
 
-void func_02007888(void *arg0) {
+void func_02007888(void *out_arg) {
     extern u32 data_0212dfbc[2];
+    u32 *out = out_arg;
     u32 *base = (u32 *)0x027FFC00;
-    u16 *base16 = (u16 *)0x027FFC00;
-    u16 t0;
-    u32 tmp;
-    u32 *r;
-    u16 *r16;
-    u16 a, b, c, d, e;
+    u16 t0 = *(u16 *)0x04000006;
+    base = (u32 *)((unsigned char *)base + 0);
+    out = out;
 
-    t0 = *(u16 *)0x04000006;
-    *(u32 *)((char *)arg0 + 0x00) = (u32)(func_020070a4() | ((u32)t0 << 16));
+    out[0] = func_020070a4() | ((u32)t0 << 16);
 
-    *(u32 *)((char *)arg0 + 0x04) = data_0212dfbc[0] ^ ((u32)base16[0x00F8 / 2] << 16);
+    out[1] = data_0212dfbc[0] ^ (((u32)*(u16 *)((unsigned char *)base + 0xF8)) << 16);
 
-    tmp = base[0x003C / 4] ^ (data_0212dfbc[1] ^ base[0x00F4 / 4]);
-    *(u32 *)((char *)arg0 + 0x08) = tmp;
-    *(u32 *)((char *)arg0 + 0x08) = tmp ^ *(u32 *)0x04000600;
+    {
+        u32 tmp = base[0x3C / 4] ^ (data_0212dfbc[1] ^ base[0xF4 / 4]);
+        out[2] = tmp;
+        out[2] = tmp ^ *(u32 *)0x04000600;
+    }
 
-    *(u32 *)((char *)arg0 + 0x0C) = base[0x01E8 / 4];
+    out[3] = base[0x1E8 / 4];
 
-    r = (u32 *)((char *)base + 0x300);
-    r16 = (u16 *)((char *)base + 0x300);
-    *(u32 *)((char *)arg0 + 0x10) = base[0x01EC / 4];
+    {
+        u32 *r = (u32 *)((unsigned char *)base + 0x300);
+        out[4] = base[0x1EC / 4];
+        out[5] = base[0x390 / 4] ^ (((u32)*(u16 *)((unsigned char *)r + 0x94)) << 16);
 
-    *(u32 *)((char *)arg0 + 0x14) = base[0x0390 / 4] ^ ((u32)r16[0x0094 / 2] << 16);
+        {
+            u16 a = *(u16 *)((unsigned char *)r + 0xAA);
+            u16 b = *(u16 *)((unsigned char *)r + 0xAC);
+            out[6] = (u32)b | ((u32)a << 16);
+        }
 
-    a = r16[0x00AA / 2];
-    b = r16[0x00AC / 2];
-    *(u32 *)((char *)arg0 + 0x18) = (u32)(b | ((u32)a << 16));
-
-    c = *(u16 *)0x04000130;
-    d = base16[0x03A8 / 2];
-    e = r16[0x0098 / 2];
-    *(u32 *)((char *)arg0 + 0x1C) = (u32)(c | d | ((u32)e << 16));
+        {
+            u16 c = *(u16 *)0x04000130;
+            u16 d = *(u16 *)((unsigned char *)base + 0x3A8);
+            u16 e = *(u16 *)((unsigned char *)r + 0x98);
+            out[7] = (u32)c | (u32)d | ((u32)e << 16);
+        }
+    }
 }
 
 s32 func_02007958(void) {

@@ -94,11 +94,11 @@ void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     u16 temp_r2;
     u16 temp_r1;
 
+    *(volatile u32 *) 0x4000500 = 1;
     temp_r0 = (u16) ((s32) (((arg6 << 0xC) + 0x800) << 8) >> 0x10);
     temp_r10 = (u16) ((s32) (((arg5 << 0xC) + 0x800) << 8) >> 0x10);
     temp_r6 = (u16) ((s32) (((arg8 << 0xC) + 0x800) << 8) >> 0x10);
     temp_lr = (u16) ((s32) (((arg7 << 0xC) + 0x800) << 8) >> 0x10);
-    *(volatile u32 *) 0x4000500 = 1;
     temp_r7 = (u16) (s16) arg1;
     temp_r4 = (u16) (s16) arg0;
     temp_r5 = (u16) (s16) (arg1 + arg4);
@@ -173,7 +173,7 @@ void func_02087c6c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u16 f) {
 
 #pragma opt_strength_reduction off
 void func_02087d18(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
- s32 n=M2C_FIELD(p,u16 *,0x10); s32 i; u16 *q=M2C_FIELD(p,u16 **,0x14);
+ u16 *q=M2C_FIELD(p,u16 **,0x14); s32 i; s32 n=M2C_FIELD(p,u16 *,0x10);
  for(i=0;i<n;i++,q+=6) {
  if(q[5]==0) {
  q[0]=a; q[1]=b; q[2]=c; q[3]=d; q[4]=e; q[5]=f;
@@ -218,27 +218,44 @@ loop_1:
 
 void func_02087e34(void *arg0) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    func_02007f8c(M2C_FIELD(arg0, s32 *, 0x14), 0, M2C_FIELD(arg0, u16 *, 0x10) * 0xC);
-    M2C_FIELD(arg0, s8 *, 0x12) = 0;
+    void *p = arg0;
+    M2C_FIELD(p, s32 *, 0) = 0;
+    M2C_FIELD(p, s32 *, 4) = 0;
+    {
+        u16 count = M2C_FIELD(p, u16 *, 0x10);
+        s32 size = count * 0xC;
+        func_02007f8c(M2C_FIELD(p, s32 *, 0x14), 0, size);
+    }
+    M2C_FIELD(p, s8 *, 0x12) = 0;
 }
 
 void *func_02087e68(void *a,s32 b) {s32 i;u16 n;u8 *p;n=M2C_FIELD(a,u16 *,16);p=M2C_FIELD(a,u8 **,20);for(i=0;i<(s32)n;i++,p+=12)if(M2C_FIELD(p,u16 *,8)==b)return p;return 0;}
 
 void func_02087ea0(void *arg0, void *arg1) {
-    void *temp_r3;
-
     if (!(M2C_FIELD(arg1, u16 *, 0xA) & 4)) {
-        return;
+        goto done;
     }
-    temp_r3 = M2C_FIELD(arg0, void **, 0);
-    M2C_FIELD(arg0, void **, 0) = arg1;
-    M2C_FIELD(arg0, void **, 4) = temp_r3;
-    M2C_FIELD(arg0, s8 *, 0xF) = 0;
+    {
+        void *old = M2C_FIELD(arg0, void **, 0);
+        M2C_FIELD(arg0, void **, 0) = arg1;
+        M2C_FIELD(arg0, void **, 4) = old;
+        M2C_FIELD(arg0, s8 *, 0xF) = 0;
+    }
+done:
+    return;
 }
 
-void func_02087ec0(void *a, s32 b) {void *func_02087e68(void *,s32); if(b==-1){M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,u8 *,15)=255;return;}func_02087ea0(a,func_02087e68(a,b));}
+void func_02087ec0(void *a, s32 b) {
+    void *func_02087e68(void *, s32);
+    void func_02087ea0(void *, void *);
+    if (b == ~0) {
+        M2C_FIELD(a, s32 *, 4) = 0;
+        M2C_FIELD(a, s32 *, 0) = 0;
+        M2C_FIELD(a, u8 *, 15) = 0xFF;
+        return;
+    }
+    func_02087ea0(a, func_02087e68(a, b));
+}
 
 void func_02087f00(void *p, s32 id) { void func_02087ec0(void *, s32); func_02087ec0(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
 
@@ -255,13 +272,11 @@ s32 func_02087f70(void *arg0, s32 arg1, s32 arg2) {
     s16 temp_r6_2;
 
     temp_r4 = M2C_FIELD(arg0, s16 *, 0x18);
-    if ((arg1 < temp_r4) || ((s32) (temp_r4 + M2C_FIELD(arg0, u16 *, 0x1C)) <= arg1)) {
-        return 0;
-    }
+    if (temp_r4 > arg1) return 0;
+    if ((s32)(temp_r4 + M2C_FIELD(arg0, u16 *, 0x1C)) <= arg1) return 0;
     temp_r4_2 = M2C_FIELD(arg0, s16 *, 0x1A);
-    if ((arg2 < temp_r4_2) || ((s32) (temp_r4_2 + M2C_FIELD(arg0, u16 *, 0x1E)) <= arg2)) {
-        return 0;
-    }
+    if (temp_r4_2 > arg2) return 0;
+    if ((s32)(temp_r4_2 + M2C_FIELD(arg0, u16 *, 0x1E)) <= arg2) return 0;
     temp_r4_3 = M2C_FIELD(arg0, u16 *, 0x10);
     var_ip = M2C_FIELD(arg0, void **, 0x14);
     var_lr = 0;
@@ -270,10 +285,14 @@ loop_7:
         if (M2C_FIELD(var_ip, u16 *, 0xA) != 0) {
             temp_r3 = M2C_FIELD(arg0, u16 *, 0x20);
             temp_r6 = M2C_FIELD(var_ip, s16 *, 0);
-            if ((arg1 >= (s32) (temp_r6 - temp_r3)) && ((s32) (temp_r3 + (temp_r6 + M2C_FIELD(var_ip, u16 *, 4))) > arg1)) {
-                temp_r6_2 = M2C_FIELD(var_ip, s16 *, 2);
-                if ((arg2 >= (s32) (temp_r6_2 - temp_r3)) && ((s32) (temp_r3 + (temp_r6_2 + M2C_FIELD(var_ip, u16 *, 6))) > arg2)) {
-                    return 0;
+            if ((s32)(temp_r6 - temp_r3) > arg1) { } else {
+                if ((s32)(temp_r3 + (temp_r6 + M2C_FIELD(var_ip, u16 *, 4))) > arg1) {
+                    temp_r6_2 = M2C_FIELD(var_ip, s16 *, 2);
+                    if ((s32)(temp_r6_2 - temp_r3) > arg2) { } else {
+                        if ((s32)(temp_r3 + (temp_r6_2 + M2C_FIELD(var_ip, u16 *, 6))) > arg2) {
+                            return 0;
+                        }
+                    }
                 }
             }
         }

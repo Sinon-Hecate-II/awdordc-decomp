@@ -2,20 +2,59 @@
 #include "common.h"
 typedef struct { s32 v[4]; } Unk0205Copy;
 
-u8 *func_02059bbc(void *out_,void *in_){
-u64 func_020720f0(s32,s32);s32 func_02068c34(s32);s32 func_02059a04(s8 *);s32 func_02067774(void);s32 func_0206409c(s32);extern s8 data_020ff548[];
-s8 *in;u8 *out;s32 prev,n,step,v,i,flag,a,b;
-in=in_;out=out_;
-n=func_02068c34((s32)data_020ff548);flag=func_02059a04(in);i=0;step=0;
-do{
-if(!flag||i==0||i==13){v=func_02067774()%93+33;}
-else{
-if(i==1||i==14)prev=in[i];else prev=in[i-1];
-v=*(u8 *)((u32)in+(u32)i);a=(s32)(func_020720f0(i+v,n)>>32);b=(s32)(func_020720f0(prev*step,n)>>32);
-a=data_020ff548[a];b=data_020ff548[b];v=func_0206409c(b^((u8 *)in)[(a+i*v)%32])%93+33;
-}
-*(u8 *)((u32)out+(u32)i)=v;step+=0x4647;i++;
-}while(i<32);return out;
+u8 *func_02059bbc(void *out_, void *in_)
+{
+  u64 func_020720f0(s32, s32);
+  s32 func_02068c34(s32);
+  s32 func_02059a04(s8 *);
+  s32 func_02067774(void);
+  s32 func_0206409c(s32);
+  extern s8 data_020ff548[];
+  s8 *in = in_;
+  u8 *out = out_;
+  s32 prev;
+  s32 n;
+  s32 step;
+  int new_var;
+  s32 v;
+  s32 i;
+  s32 flag;
+  s32 a;
+  s32 b;
+  n = func_02068c34((s32) data_020ff548);
+  flag = func_02059a04(in);
+  i = 0;
+  step = 0;
+  new_var = i == 14;
+  do
+  {
+    if (((!flag) || (i == 0)) || (i == 13))
+    {
+ do { v = (func_02067774() % 93) + 33; } while (0);
+    }
+    else
+    {
+      if ((i == 1) || new_var)
+      {
+        prev = in[i];
+      }
+      else
+      {
+        prev = in[i - 1];
+      }
+      v = *((u8 *) (((u32) in) + ((u32) i)));
+      a = (s32) (func_020720f0(i + v, n) >> 32);
+      b = (s32) (func_020720f0(prev * step, n) >> 32);
+      a = data_020ff548[a];
+      b = data_020ff548[b];
+      v = (func_0206409c(((u8 *) in)[(a + (i * v)) % 32] ^ b) % 93) + 33;
+    }
+    *((u8 *) (((u32) out) + ((u32) i))) = v;
+    step += 0x4647;
+    i++;
+  }
+  while (i < 32);
+  return out;
 }
 
 s32 func_02059cc4(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}

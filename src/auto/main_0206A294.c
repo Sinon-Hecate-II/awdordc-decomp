@@ -71,8 +71,7 @@ void func_0206ad38(M2C_UNK arg0) {
     func_0206ac70(arg0, 0, 0xA);
 }
 
-#pragma push
-#pragma opt_common_subs off
+#pragma opt_propagation off
 s32 func_0206ad4c(void *arg0, s32 arg1) {
     s32 temp_r3;
     s32 var_r1;
@@ -100,7 +99,7 @@ s32 func_0206ad4c(void *arg0, s32 arg1) {
     }
     return var_r1;
 }
-#pragma pop
+#pragma opt_propagation reset
 void func_0206adc0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020651a4(M2C_UNK, M2C_UNK, s32);
     func_020651a4(arg0, arg1, arg2 * 2);

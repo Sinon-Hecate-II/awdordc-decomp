@@ -135,9 +135,10 @@ s32 func_020639c0(void *arg0) {
     }
     var_r4 = 0;
     M2C_FIELD(arg0, s32 *, 0x80) = M2C_FIELD(arg0, s32 *, 0x80) + temp_r0;
-    if (M2C_FIELD(arg0, s32 *, 0) != 2 && M2C_FIELD(arg0, s32 *, 0x5C8) > 0) {
-        func_0206006c((u8 *)arg0 + 0x4BC, M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, M2C_FIELD(arg0, s32 *, 0x80) - temp_r5);
-    }
+    if (M2C_FIELD(arg0, s32 *, 0) == 2) goto skip_block;
+    if (M2C_FIELD(arg0, s32 *, 0x5C8) <= 0) goto skip_block;
+    func_0206006c((u8 *)arg0 + 0x4BC, M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, M2C_FIELD(arg0, s32 *, 0x80) - temp_r5);
+skip_block:
     if (M2C_FIELD(arg0, s32 *, 0) == 3) {
         var_r4 = func_02062e30(arg0);
     }
@@ -302,8 +303,8 @@ return result;
 s32 func_02064034(void) {
 s32 func_020649a8(s32);
 extern u8 data_021001cc[];
-void *p;
 s32 result;
+void *p;
 s32 offset;
 s32 i;
 p=data_021001cc;

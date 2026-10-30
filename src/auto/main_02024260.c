@@ -119,12 +119,72 @@ s32 func_02024260(void *p) {
     return M2C_FIELD(q, u8 *, 0x31);
 }
 
+void func_020244c0(void *arg0) {
+    void func_02023c74(void *, void *, s32);
+    void *temp_r5;
+    void *temp_r4;
+
+    temp_r5 = M2C_FIELD(arg0, void **, 0xC);
+    temp_r4 = data_021372a4(0x83);
+    if (temp_r4 == NULL) {
+        M2C_FIELD(temp_r5, u8 *, 0x455) = 9;
+        return;
+    }
+    M2C_FIELD(temp_r4, u8 *, 0) = 0x14;
+    M2C_FIELD(temp_r4, u8 *, 1) = 3;
+    M2C_FIELD(temp_r4, u8 *, 2) = 0;
+    M2C_FIELD(temp_r4, u8 *, 3) = 0;
+    M2C_FIELD(temp_r4, u8 *, 4) = 1;
+    M2C_FIELD(temp_r4, u8 *, 5) = 1;
+    func_02007f8c(temp_r5 + 0x1CC, 0, 8);
+    M2C_FIELD(temp_r4, u8 *, 6) = 0x16;
+    M2C_FIELD(temp_r4, u8 *, 7) = 3;
+    M2C_FIELD(temp_r4, u8 *, 8) = 0;
+    M2C_FIELD(temp_r4, u8 *, 9) = 0;
+    M2C_FIELD(temp_r4, u8 *, 0xA) = 0x28;
+    M2C_FIELD(temp_r4, u8 *, 0xB) = 0x14;
+    M2C_FIELD(temp_r4, u8 *, 0xC) = 0;
+    M2C_FIELD(temp_r4, u8 *, 0xD) = 0;
+    M2C_FIELD(temp_r4, u8 *, 0xE) = 0x24;
+    func_02008048(temp_r5 + 0x3A4, temp_r5 + 0x3FC, 0x58);
+    func_02023520(temp_r5, temp_r4 + 0xF, 0);
+    func_02008048(temp_r5 + 0x3FC, temp_r5 + 0x3A4, 0x58);
+    func_02008048(temp_r5 + 0x2EC, temp_r5 + 0x348, 0x5C);
+    func_020235fc(temp_r5, temp_r4 + 0x1F, 0);
+    func_02008048(temp_r5 + 0x348, temp_r5 + 0x2EC, 0x5C);
+    func_02023c74(temp_r5, temp_r4 + 0xB, 0x28);
+    func_0201d844(temp_r4, func_02023a04(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
+    data_021372d0[0](temp_r4);
+}
+
 s32 func_02024a6c(void *p){s32 func_02023f20(void *);if(func_02023f20(p)!=7)return 1;return func_02023f20(p)!=6;}
 
 s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 func_02024260(void *);void func_02023318(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(func_02024260(p)){func_02023318(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
 
 #pragma peephole on
-void func_02024b24(void *p){void func_0201d25c(void *);void func_0201d434(void *);void func_02025fc0(void *);void func_02025700(void *);void *q=M2C_FIELD(p,void **,12);again: func_0201d25c(p);M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=1;func_02025fc0((u8 *)q+0x2ec);func_02025700((u8 *)q+0x3a4);if(!func_02024a9c(p)){M2C_FIELD(q,u8 *,0x455)=8;return;}func_0201d434(p);M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a);M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);goto again;}
+void func_02024b24(void *p) {
+    void func_0201d25c(void *);
+    void func_0201d434(void *);
+    void func_02025fc0(void *);
+    void func_02025700(void *);
+    int func_02024a9c(void *);
+    void *q = M2C_FIELD(p, void **, 12);
+    do {
+        func_0201d25c(p);
+        M2C_FIELD(q, u8 *, 0x455) = 0;
+        M2C_FIELD(q, s32 *, 0x1d4) = 0;
+        M2C_FIELD(q, u8 *, 0x454) = 1;
+        func_02025fc0((u8 *)q + 0x2ec);
+        func_02025700((u8 *)q + 0x3a4);
+        if (!func_02024a9c(p)) {
+            M2C_FIELD(q, u8 *, 0x455) = 8;
+            return;
+        }
+        func_0201d434(p);
+        M2C_FIELD(p, u16 *, 0x18) = M2C_FIELD(p, u16 *, 0x1a);
+        M2C_FIELD(p, s32 *, 0x1c) = M2C_FIELD(p, s32 *, 0x20);
+    } while (1);
+}
 #pragma peephole reset
 s32 func_02024b94(void *arg0) {
  void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void func_02023318(void *);s32 func_02023f20(void *);void func_020244c0(void *);void func_020247ac(void *);s32 func_02024a6c(void *);

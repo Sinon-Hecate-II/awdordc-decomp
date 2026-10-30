@@ -423,7 +423,7 @@ void func_02006838(void) {
     if (*(u16 *)((char *)io + 6) != 0) {
         return;
     }
-    io[0x82] = saved;
+    *(volatile u32 *)&io[0x82] = saved;
 }
 
 void func_02006858(void) {

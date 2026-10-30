@@ -110,8 +110,8 @@ data_0215be0c=M2C_FIELD(p,s16 *,0x6e);
 map=*gCurrentMap;selector=M2C_FIELD(p,s16 *,0x70);
 unit=(u8*)M2C_FIELD(map,void **,0x52d0)+selector;
 units=(u8*)map+0x59a4;
-index=(s16)unit[12]*14;
-func_020c93fc((u8)M2C_FIELD(p,s16 *,0x70),(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
+index=unit[12]*14;
+func_020c93fc((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
 map=*gCurrentMap;
 ((void(*)(s32,s32,s32))func_020cad00)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));
 func_01ffa6fc(p);
@@ -282,7 +282,7 @@ void func_020cb704(void *a){s32 func_020ba510(s32,s32);extern s32 data_0215be0c;
 void func_020cb78c(void *arg0){
 void func_01ffa574(void *);void func_020bac24(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK func_ov000_02199f50(s32,u8,u8,u8);
 extern s32 data_0215be0c;extern void **gCurrentMap;
-s32 i;u8 *m;u8 *q;s32 x;void *p;
+s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
 loop:
 i=M2C_FIELD(arg0,s16 *,0x34);
@@ -295,9 +295,9 @@ if(!M2C_FIELD(arg0,s16 *,0x36))func_ov000_02199f50(6,M2C_FIELD(*gCurrentMap,u8 *
 func_020d468c();
 return;
 }
-if(data_0215be0c&((u8 *)data_0212b1b8)[(u32)i<<2]){
+if(data_0215be0c&data_0212b1b8[i][0]){
 m=*gCurrentMap;q=(u8 *)data_0212b1b8+i*4;
-x=(s32)(m+M2C_FIELD(m,s16 *,0x52dc));func_020cb6a4(M2C_FIELD((M2C_FIELD(m+2*(M2C_FIELD(m,s16 *,0x52de)+M2C_FIELD(q,s8 *,3)),u16 *,0x3758)+(M2C_FIELD(q,s8 *,2)+x)),u8 *,0x508)*14+(m+0x59a4));
+func_020cb6a4(M2C_FIELD((M2C_FIELD(m+2*(M2C_FIELD(m,s16 *,0x52de)+M2C_FIELD(q,s8 *,3)),u16 *,0x3758)+(M2C_FIELD(q,s8 *,2)+(s32)(m+M2C_FIELD(m,s16 *,0x52dc)))),u8 *,0x508)*14+(m+0x59a4));
 M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;
 }

@@ -265,38 +265,47 @@ void func_020e0af8(void) {
     func_020e0ab0();
 }
 
+/* Updates child objects and resumes the entity script when its primary child is ready or A is pressed. */
 void func_020e0b04(void *entity) {
-s32 func_020846a4(void);s32 func_0208477c(void);s32 func_02084a6c(void);
-s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
-M2C_UNK func_020899cc(void *,s32,s32,s32);
-void func_020d47f0(void);void func_01ffa8c4(void *,s32);void func_0208fe30(s32);void func_01ffa6fc(void *);
-void func_020aacf0(void *);
-extern u16 *data_02101e84;
-extern s32 data_027e00c8,data_027e00c4,gCur3DSpriteEngine;
-void *created; s32 bank; register s32 i; u8 mode; s32 saved; u32 keys; s32 changed; void *p;u8 allowed;u32 frame;
-if(M2C_FIELD(entity,void **,0x50))func_020aacf0(M2C_FIELD(entity,void **,0x50));
-if(M2C_FIELD(entity,void **,0x54))func_020aacf0(M2C_FIELD(entity,void **,0x54));
-if(M2C_FIELD(entity,void **,0x58))func_020aacf0(M2C_FIELD(entity,void **,0x58));
-keys=*data_02101e84;
-M2C_FIELD(entity,u16 *,0x48)&=~0x20;
-if(E0B04Process(entity)){func_020d47f0();func_01ffa8c4(entity,0x40);return;}
-p=M2C_FIELD(entity,void **,0x50);
-if(!func_020e_check(p))return;
-frame=func_020e_low(p);
-allowed=1;
-if(M2C_FIELD(M2C_FIELD(p,void **,0x64),s8 *,11)!=1){
-if(!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31)||M2C_FIELD(M2C_FIELD(p,void **,0x64),s8 *,12)!=1)allowed=0;
-}
-if((u8)(allowed & 0xff)==0&&!(keys&1))return;
-if(M2C_FIELD(entity,u16 *,0x48)&8)return;
-if(M2C_FIELD(p,s8 *,0x5a)>=0){
-M2C_FIELD(p,E0B04Bits *,0x40).value=(u16)(frame+1);
-M2C_FIELD(p,u8 *,0x5a)=12;
-}
-if(M2C_FIELD(entity,u16 *,0x48)&8)return;
-func_0208fe30(0x1000e);
-M2C_FIELD(entity,u16 *,0x48)|=8;
-func_01ffa6fc(entity);
+    s32 func_020846a4(void); s32 func_0208477c(void); s32 func_02084a6c(void);
+    s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
+    M2C_UNK func_020899cc(void *, s32, s32, s32);
+    void func_020d47f0(void); void func_01ffa8c4(void *, s32);
+    void func_0208fe30(s32); void func_01ffa6fc(void *);
+    void func_020aacf0(void *);
+    extern u16 *data_02101e84;
+    extern s32 data_027e00c8, data_027e00c4, gCur3DSpriteEngine;
+    void *created; s32 bank; register s32 i; u8 mode; s32 saved;
+    u32 keys; s32 changed; void *primaryChild; u8 canAdvance; u32 frame;
+
+    if (M2C_FIELD(entity, void **, 0x50)) func_020aacf0(M2C_FIELD(entity, void **, 0x50));
+    if (M2C_FIELD(entity, void **, 0x54)) func_020aacf0(M2C_FIELD(entity, void **, 0x54));
+    if (M2C_FIELD(entity, void **, 0x58)) func_020aacf0(M2C_FIELD(entity, void **, 0x58));
+    keys = *data_02101e84;
+    M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
+    if (E0B04Process(entity)) {
+        func_020d47f0();
+        func_01ffa8c4(entity, 0x40);
+        return;
+    }
+    primaryChild = M2C_FIELD(entity, void **, 0x50);
+    if (!func_020e_check(primaryChild)) return;
+    frame = func_020e_low(primaryChild);
+    canAdvance = 1;
+    if (M2C_FIELD(M2C_FIELD(primaryChild, void **, 0x64), s8 *, 11) != 1) {
+        if (!((u32)(M2C_FIELD(primaryChild, u8 *, 0x59) << 27) >> 31) ||
+            M2C_FIELD(M2C_FIELD(primaryChild, void **, 0x64), s8 *, 12) != 1) canAdvance = 0;
+    }
+    if ((u8)(canAdvance & 0xff) == 0 && !(keys & 1)) return;
+    if (M2C_FIELD(entity, u16 *, 0x48) & 8) return;
+    if (M2C_FIELD(primaryChild, s8 *, 0x5a) >= 0) {
+        M2C_FIELD(primaryChild, E0B04Bits *, 0x40).value = (u16)(frame + 1);
+        M2C_FIELD(primaryChild, u8 *, 0x5a) = 12;
+    }
+    if (M2C_FIELD(entity, u16 *, 0x48) & 8) return;
+    func_0208fe30(0x1000e);
+    M2C_FIELD(entity, u16 *, 0x48) |= 8;
+    func_01ffa6fc(entity);
 }
 
 void func_020e0d6c(void *entity) {

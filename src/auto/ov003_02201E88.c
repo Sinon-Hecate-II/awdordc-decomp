@@ -8,7 +8,7 @@ static inline u8 E1E88IsOne(u8 v) { return v == 1; }
 static inline void E1E88Set(void *p, u8 v) { M2C_FIELD(p,s8*,0x59)=v; }
 static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIELD(p,s8*,0x59)=a; }
 
-void func_ov003_02201e88(void *arg0, void *arg1) {
+void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 func_020846a4();
     s32 func_020848f8();
     void func_02088da8(void *);
@@ -23,92 +23,93 @@ void func_ov003_02201e88(void *arg0, void *arg1) {
     extern void *gCur3DSpriteEngine;
     extern void *data_027e00c4;
     extern u8 data_ov003_02210484[];
-    u8 buf[4];
-    s32 saved;
-    u32 n;
-    u8 k;
-    u8 m;
-    s8 j;
-    s32 i;
-    u32 flag;
-    u8 v11;
-    s32 val;
-    s32 t;
-    void *p;
-    u16 v;
+    u8 participantSlots[4];
+    s32 savedSpriteEngine;
+    u32 playerCount;
+    u8 slotCount;
+    u8 slot;
+    s8 participant;
+    s32 player;
+    u32 iconMode;
+    u8 team;
+    s32 appearance;
+    s32 participantMask;
+    void *sprite;
+    u16 tileIndex;
 
-    n = (u32) func_020cfb94();
-    k = 0;
+    /* Create three setup icons per player, remapping participant icons when needed. */
+    playerCount = (u32) func_020cfb94();
+    slotCount = 0;
     do {
-        buf[k] = 0xFF;
-        k = k + 1;
-    } while ((u32) k < 4);
-    k = 0;
-    t = func_020848f8();
-    j = 0;
+        participantSlots[slotCount] = 0xFF;
+        slotCount = slotCount + 1;
+    } while ((u32) slotCount < 4);
+    slotCount = 0;
+    participantMask = func_020848f8();
+    participant = 0;
     do {
-        if (t & (1 << j)) {
-            buf[k] = (u8) j;
-            k = k + 1;
+        if (participantMask & (1 << participant)) {
+            participantSlots[slotCount] = (u8) participant;
+            slotCount = slotCount + 1;
         }
-        j = j + 1;
-    } while (j < 4);
-    for (m = 0; (u32) m < n; m++) {
-        u8 c = buf[m];
-        if (c != 0xFF && m != c) {
-            if ((s32) c <= (s32) (n - 1) && buf[c] == 0xFF) {
-                buf[c] = c;
-                buf[m] = 0xFF;
+        participant = participant + 1;
+    } while (participant < 4);
+    for (slot = 0; (u32) slot < playerCount; slot++) {
+        u8 mappedSlot = participantSlots[slot];
+        if (mappedSlot != 0xFF && slot != mappedSlot) {
+            if ((s32) mappedSlot <= (s32) (playerCount - 1) && participantSlots[mappedSlot] == 0xFF) {
+                participantSlots[mappedSlot] = mappedSlot;
+                participantSlots[slot] = 0xFF;
             }
         }
     }
-    saved = (s32) gCur3DSpriteEngine;
+    savedSpriteEngine = (s32) gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
-    i = 0;
+    player = 0;
     do {
-        val = (u8) func_020a22fc(i + 1);
-        if (func_020a23b4(i + 1) == 2) {
-            flag = 2;
+        appearance = (u8) func_020a22fc(player + 1);
+        if (func_020a23b4(player + 1) == 2) {
+            iconMode = 2;
         } else {
-            flag = 1;
+            iconMode = 1;
         }
-        v11 = (u8) func_020a2370(i + 1);
-        p = func_02099088(arg1);
-        ((void **) arg0)[i + 1] = p;
-        func_02098e04(p, (0x1D0 + (i << 4)) << 5, 7);
-        p = ((void **) arg0)[i + 1];
-        func_02098e2c(p, val);
-        p = ((void **) arg0)[i + 1];
-        *(u16 *) ((u8 *) p + 0x3C) = 0x800;
-        p = ((void **) arg0)[i + 1];
-        func_02088da8(p);
-        p = func_0208931c(arg1);
-        ((void **) arg0)[i + 5] = p;
-        *(void **) ((u8 *) p + 0x44) = data_ov003_02210484;
-        if ((u8) flag == 1) {
+        team = (u8) func_020a2370(player + 1);
+        sprite = func_02099088(allocationGroup);
+        ((void **) spriteSlots)[player + 1] = sprite;
+        func_02098e04(sprite, (0x1D0 + (player << 4)) << 5, 7);
+        sprite = ((void **) spriteSlots)[player + 1];
+        func_02098e2c(sprite, appearance);
+        sprite = ((void **) spriteSlots)[player + 1];
+        *(u16 *) ((u8 *) sprite + 0x3C) = 0x800;
+        sprite = ((void **) spriteSlots)[player + 1];
+        func_02088da8(sprite);
+        sprite = func_0208931c(allocationGroup);
+        ((void **) spriteSlots)[player + 5] = sprite;
+        *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
+        if ((u8) iconMode == 1) {
             if (func_020846a4() != 0) {
-                v = (u16) ((buf[i] << 4) + 0x180);
+                tileIndex = (u16) ((participantSlots[player] << 4) + 0x180);
             } else {
-                v = (u16) (0x180 + (i << 4));
+                tileIndex = (u16) (0x180 + (player << 4));
             }
         } else {
-            v = 0x1C0;
+            tileIndex = 0x1C0;
         }
-        *(u16 *) ((u8 *) ((void **) arg0)[i + 5] + 0x3E) = (u32) (v << 5) >> 5;
-        *(u16 *) ((u8 *) ((void **) arg0)[i + 5] + 0x3C) = 0x6800;
-        func_02088da8(((void **) arg0)[i + 5]);
-        p = func_0208931c(arg1);
-        ((void **) arg0)[i + 9] = p;
-        *(void **) ((u8 *) p + 0x44) = data_ov003_02210484;
-        p = ((void **) arg0)[i + 9];
-        *(u16 *) ((u8 *) p + 0x3E) = (u32) ((((v11 - 1) * 0x10) + 0x140) << 5) >> 5;
-        p = ((void **) arg0)[i + 9];
-        *(u16 *) ((u8 *) p + 0x3C) = 0x6800;
-        p = ((void **) arg0)[i + 9];
-        func_02088da8(p);
-        i++;
-    } while (i < 4);
-    gCur3DSpriteEngine = (void *) saved;
+        *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3E) = (u32) (tileIndex << 5) >> 5;
+        *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3C) = 0x6800;
+        func_02088da8(((void **) spriteSlots)[player + 5]);
+        sprite = func_0208931c(allocationGroup);
+        ((void **) spriteSlots)[player + 9] = sprite;
+        *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
+        sprite = ((void **) spriteSlots)[player + 9];
+        *(u16 *) ((u8 *) sprite + 0x3E) = (u32) ((((team - 1) * 0x10) + 0x140) << 5) >> 5;
+        sprite = ((void **) spriteSlots)[player + 9];
+        *(u16 *) ((u8 *) sprite + 0x3C) = 0x6800;
+        sprite = ((void **) spriteSlots)[player + 9];
+        func_02088da8(sprite);
+        player++;
+    } while (player < 4);
+    gCur3DSpriteEngine = (void *) savedSpriteEngine;
 }
 
 void func_ov003_022020e0(void *p,u8 v){
@@ -249,7 +250,6 @@ void func_ov003_02202bb0(void *p){
  M2C_FIELD(p,u8 *,0x39)=0;
  if(M2C_FIELD(p,u8 *,0x39)==1)flag=1;else flag=0;
  if(flag&255) E1E88Set(M2C_FIELD(p,void **,0x4C),0); else E1E88Set(M2C_FIELD(p,void **,0x4C),1);
- 
  func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c),32,32,0);
  flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
  if(flag){
@@ -270,27 +270,29 @@ void func_ov003_02202cc4(void *arg0) {
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
     extern u16 data_02168f14;
+    void *obj;
     s32 temp_r6;
     s32 var_r0;
     u8 var_r7;
     void **temp_r0_2;
     void *temp_r0;
 
+    obj = arg0;
     func_0208fe30(0x1000F);
     func_020d47f0();
-    temp_r0 = *M2C_FIELD(arg0, void ***, 0x40);
+    temp_r0 = *M2C_FIELD(obj, void ***, 0x40);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
     }
     func_ov003_021f1be8();
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
+    if (((u32) (M2C_FIELD(obj, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
     if (var_r0 & 0xFF) {
-        temp_r6 = M2C_FIELD(arg0, s32 *, 0x44);
+        temp_r6 = M2C_FIELD(obj, s32 *, 0x44);
         var_r7 = 0;
         do {
             temp_r0_2 = M2C_FIELD((temp_r6 + (var_r7 * 4)), void ***, 0xC8);
@@ -299,13 +301,13 @@ void func_ov003_02202cc4(void *arg0) {
         } while ((u32) var_r7 < 8U);
         data_02168f14 |= 0x2000;
     }
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
+    func_02088da8(M2C_FIELD(obj, s32 *, 0x4C));
     func_ov003_021f140c(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    func_01ffa6fc(arg0);
+    M2C_FIELD(obj, s8 *, 0x38) = 0;
+    func_01ffa6fc(obj);
     if (func_ov003_02200c7c() == 0) {
         return;
     }
-    func_ov003_02204fd0(arg0);
+    func_ov003_02204fd0(obj);
 }
 

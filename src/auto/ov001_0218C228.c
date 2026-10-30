@@ -25,11 +25,10 @@ s32 pos=p->start+p->size;
 if(pos+units<=next->start) {
 node->start=pos;
 func_ov001_0218bf84(next,node);
-goto forward_done;
+break;
 }
 p=next;
 } while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c));
-forward_done:
 if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x18c)) func_02007958();
 } else {
 p=&((RuntimeRangePool *)data_ov001_02193e6c)[(u32)n].tail;
@@ -39,11 +38,10 @@ s32 pos=p->start-units;
 if(pos>=prev->start+prev->size) {
 node->start=pos;
 func_ov001_0218bf84(p,node);
-goto backward_done;
+break;
 }
 p=prev;
 } while(p!=(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180));
-backward_done:
 if(p==(RuntimeRangeNode *)(data_ov001_02193e6c+n*0x1a0+0x180)) func_02007958();
 }
 *out=node->start;

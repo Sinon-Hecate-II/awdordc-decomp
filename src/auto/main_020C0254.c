@@ -217,7 +217,7 @@ void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 a
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
 void func_020b1b3c(void); s32 func_01ffa3dc(s32 *,s32); void func_020d4704(void);
 extern s32 data_02129630;
-MenuC0634 *p; u16 height=16; s32 i; s16 n=0; s32 offset;
+MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
 func_020b1b3c(); p=(MenuC0634 *)func_01ffa3dc(&data_02129630,7); i=0; offset=0;
 p->entries=(void *)entries;
 for(;;) {

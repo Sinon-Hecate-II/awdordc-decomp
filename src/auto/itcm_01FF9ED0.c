@@ -268,42 +268,42 @@ void func_01ffa574(void *arg0) {
     func_01ffa4e8(arg0);
     func_01ffa4a0(arg0);
 }
-#pragma opt_peephole reset
-void func_01ffa5b8(void *p){
-extern u8 data_027e15b8,data_027e15b4;
-extern s32 gCur3DSpriteEngine;
-s32 old;
-void *next;
-if(!p)return;
-M2C_FIELD(p,u8*,0x30)|=0x20;
-next=M2C_FIELD(p,void**,0x24);
-if(next)func_01ffa5b8(next);
-M2C_FIELD(p,u8*,0x30)&=~0x20;
-if(M2C_FIELD(p,u8*,0x31)==0 && !(M2C_FIELD(p,u8*,0x30)&8)){
-if(M2C_FIELD(p,u8*,0x30)&16){
-if(data_027e15b8 && data_027e15b4)goto skip;
-M2C_FIELD(p,u8*,0x30)&=~16;
-}
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
-M2C_FIELD(p,u8*,0x30)&=~64;
-do{
-if(!M2C_FIELD(p,s32*,0x10))func_01ffa160(p);
-if(M2C_FIELD(p,s32*,0x10))((void(*)(void*))M2C_FIELD(p,s32*,0x10))(p);
-}while(M2C_FIELD(p,u8*,0x30)&64);
-M2C_FIELD(p,u8*,0x30)&=~64;
-gCur3DSpriteEngine=old;
-}
+#pragma scheduling off
+void func_01ffa5b8(void *p) {
+    extern u8 data_027e15b8, data_027e15b4;
+    extern s32 gCur3DSpriteEngine;
+    s32 old;
+    void *next;
+    if (!p) return;
+    M2C_FIELD(p, u8 *, 0x30) |= 0x20;
+    next = M2C_FIELD(p, void **, 0x24);
+    if (next) func_01ffa5b8(next);
+    M2C_FIELD(p, u8 *, 0x30) &= ~0x20;
+    if (M2C_FIELD(p, u8 *, 0x31) == 0 && !(M2C_FIELD(p, u8 *, 0x30) & 8)) {
+        if (M2C_FIELD(p, u8 *, 0x30) & 16) {
+            if (data_027e15b8 && data_027e15b4) goto skip;
+            M2C_FIELD(p, u8 *, 0x30) &= ~16;
+        }
+        old = gCur3DSpriteEngine; gCur3DSpriteEngine = M2C_FIELD(p, s32 *, 0x28);
+        M2C_FIELD(p, u8 *, 0x30) &= ~64;
+        do {
+            if (!M2C_FIELD(p, s32 *, 0x10)) func_01ffa160(p);
+            if (M2C_FIELD(p, s32 *, 0x10)) ((void(*)(void *))M2C_FIELD(p, s32 *, 0x10))(p);
+        } while (M2C_FIELD(p, u8 *, 0x30) & 64);
+        M2C_FIELD(p, u8 *, 0x30) &= ~64;
+        gCur3DSpriteEngine = old;
+    }
 skip:
-if(M2C_FIELD(p,u8*,0x30)&1)return;
-if(M2C_FIELD(p,s32*,0x14)){
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
-((void(*)(void*))M2C_FIELD(p,s32*,0x14))(p);
-gCur3DSpriteEngine=old;
+    if (M2C_FIELD(p, u8 *, 0x30) & 1) return;
+    if (M2C_FIELD(p, s32 *, 0x14)) {
+        old = gCur3DSpriteEngine; gCur3DSpriteEngine = M2C_FIELD(p, s32 *, 0x28);
+        ((void(*)(void *))M2C_FIELD(p, s32 *, 0x14))(p);
+        gCur3DSpriteEngine = old;
+    }
+    if (M2C_FIELD(p, u8 *, 0x30) & 1) return;
+    next = M2C_FIELD(p, void **, 0x1c); if (next) func_01ffa5b8(next);
 }
-if(M2C_FIELD(p,u8*,0x30)&1)return;
-next=M2C_FIELD(p,void**,0x1c);if(next)func_01ffa5b8(next);
-}
-
+#pragma scheduling reset
 void func_01ffa6fc(void *arg0) {
     s16 *temp_r2;
 

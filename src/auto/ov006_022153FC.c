@@ -102,17 +102,17 @@ void func_ov006_022153fc(M2C_UNK arg0) {
     gCur3DSpriteEngine = (u16 **)temp_r4;
 }
 
-void *func_ov006_02215620(void *arg0){
+void *func_ov006_02215620(void *p){
 extern M2C_UNK data_ov006_02218610;
 M2C_UNK func_01ffa574(M2C_UNK);M2C_UNK func_02082040(M2C_UNK);M2C_UNK func_020e4ca0();
-s32 *arr;void *p=arg0;
+s32 *arr;void *q;
 M2C_FIELD(p,void **,0)=&data_ov006_02218610;
 arr=M2C_FIELD(p,s32 **,0x3c);
 if(arr){func_01ffa574(arr[0]);func_01ffa574(arr[1]);func_01ffa574(arr[2]);func_01ffa574(arr[3]);func_01ffa574(arr[4]);func_01ffa574(arr[5]);func_02082040((s32)arr);}
-arr=M2C_FIELD(p,void **,0x40);if(arr)M2C_FIELD(M2C_FIELD(arr,void **,0),void (**)(void *),4)((void *)arr);
-arr=M2C_FIELD(p,void **,0x44);if(arr)M2C_FIELD(M2C_FIELD(arr,void **,0),void (**)(void *),4)((void *)arr);
-arr=M2C_FIELD(p,void **,0x48);if(arr)func_02082040((s32)arr);
-arr=M2C_FIELD(p,void **,0x4c);if(arr)M2C_FIELD(M2C_FIELD(arr,void **,0),void (**)(void *),4)((void *)arr);
+q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
+q=M2C_FIELD(p,void **,0x44);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
+q=M2C_FIELD(p,void **,0x48);if(q)func_02082040((s32)q);
+q=M2C_FIELD(p,void **,0x4c);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 func_020e4ca0();func_02082040((s32)p);return p;
 }
 
@@ -495,16 +495,18 @@ void func_ov006_02215de4(u8 *arg0) {
     u16 temp_r1;
     u16 temp_r2;
     u8 var_r3;
+    u8 temp_ip;
 
-    var_r3 = *arg0;
+    temp_ip = *arg0;
     temp_r2 = M2C_FIELD(data_02101e84, u16 *, 0);
+    var_r3 = temp_ip;
     temp_r1 = M2C_FIELD(data_02101e84, u16 *, 2);
     if (temp_r2 & 1) {
         func_ov006_02215ee4();
         return;
     }
     if (temp_r1 & 0x40) {
-        if ((*arg0 != 0xC) && (*arg0 != 0xD)) {
+        if ((temp_ip != 0xC) && (temp_ip != 0xD)) {
         } else {
             var_r3 = 0xB;
         }
@@ -513,7 +515,7 @@ void func_ov006_02215de4(u8 *arg0) {
         }
         goto done;
     } else if (temp_r1 & 0x80) {
-        switch (*arg0) {
+        switch (temp_ip) {
         case 12:
             if (temp_r2 == temp_r1) {
                 var_r3 = 0;
@@ -558,7 +560,7 @@ L:
         }
     }
 done:
-    if (*arg0 != var_r3) {
+    if (temp_ip != var_r3) {
         func_020b1c60(var_r3);
     }
 }

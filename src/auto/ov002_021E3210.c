@@ -73,37 +73,63 @@ for(p=a+34,i=0;i<5;i++,p+=4)M2C_FIELD(p,u8 *,2)&=~7;
 s32 func_ov002_021e377c(void *arg0) {
     extern u8 data_ov002_021f30f4;
     extern u8 data_ov002_021f3103;
-    s32 a;
-    s32 b;
-    s32 min;
-    s32 max;
     u8 *p;
     s32 i;
+    s32 min;
+    s32 max;
+    s32 a;
+    s32 b;
     s16 t;
     s32 sum;
+    u8 temp;
 
+    temp = M2C_FIELD(arg0, u8 *, 0x64);
     max = 0;
-    if (M2C_FIELD(arg0, u8 *, 0x64) == 0) { a = 1; } else { a = 0; }
-    if (M2C_FIELD(arg0, u8 *, 0x64) == 0) { b = 1; } else { b = 0; }
+    if (temp == 0) {
+        a = 1;
+    } else {
+        a = 0;
+    }
+    if (temp == 0) {
+        b = 1;
+    } else {
+        b = 0;
+    }
     min = -1;
-    if (M2C_FIELD((u8 *)M2C_FIELD(&data_ov002_021f30f4, void **, b * 0x18) + M2C_FIELD(&data_ov002_021f3103, u8 *, a * 0x18) * 4, s32 *, 0x1C) == 0) {
+    if (M2C_FIELD((u8 *)M2C_FIELD(&data_ov002_021f30f4, void **, b * 0x18) + M2C_FIELD(&data_ov002_021f3103, u8 *, a * 0x18) * 4, s32 *, 0x1c) == 0) {
         for (p = arg0 + 0x36, i = 0; i < 5; i++, p += 4) {
             t = M2C_FIELD(p, s16 *, 0);
             if (t == -1) break;
-            if (min == -1) { min = t; } else if (min >= t) { min = t; }
+            if (min == -1) {
+                min = t;
+            } else if (min >= t) {
+                min = t;
+            }
             sum = t + M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), void **, 4), u8 *, 2);
-            if (max <= sum) { max = sum; }
+            if (max <= sum) {
+                max = sum;
+            }
         }
     }
     for (p = arg0 + 0x4a, i = 0; i < 5; i++, p += 4) {
         t = M2C_FIELD(p, s16 *, 0);
         if (t == -1) break;
-        if (min == -1) { min = t; } else if (min >= t) { min = t; }
-        if (max <= t) { max = t; }
+        if (min == -1) {
+            min = t;
+        } else if (min >= t) {
+            min = t;
+        }
+        if (max <= t) {
+            max = t;
+        }
     }
-    if (min == -1) { return 0; }
+    if (min == -1) {
+        return 0;
+    }
     sum = max - min;
-    if (sum <= 1) { sum = 1; }
+    if (sum <= 1) {
+        sum = 1;
+    }
     return sum;
 }
 

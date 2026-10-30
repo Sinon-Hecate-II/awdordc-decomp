@@ -18,7 +18,7 @@ s32 func_020d3464(void) {
 
         switch (idx) {
         case 0:
-        case 8: {
+        case 7: {
             u16 i = M2C_FIELD(base, u16 *, 0x52A4);
             {
                 u8 *p = (u8 *)base + 0x67A4 + i * 0x8C;
@@ -46,6 +46,7 @@ s32 func_020d3464(void) {
                 break;
             }
         }
+        case 10:
         case 11:
         case 12:
         case 13: {
@@ -56,12 +57,13 @@ s32 func_020d3464(void) {
             }
             break;
         }
-        case 7: {
+        case 6: {
             u16 i = M2C_FIELD(base, u16 *, 0x52A4);
             {
                 u8 *p = (u8 *)base + 0x67A4 + i * 0x8C;
                 func_0209cbe4(p + 0x88);
             }
+            break;
         }
         default:
             break;

@@ -133,8 +133,9 @@ cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),12);if(cb==0)return;cb(
 s32 func_ov010_02228050(void) {
     extern M2C_UNK data_ov010_0222eee0;
     s32 result = 1;
-    if (M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x20) != 0) {
-        result += ((s32 (*)(void)) M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x20))();
+    s32 (*fp)(void) = (s32 (*)(void)) M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x20);
+    if (fp != NULL) {
+        result += fp();
     }
     return result;
 }
@@ -195,10 +196,11 @@ callback_call:
 }
 
 void func_ov010_0222815c(void) {
-extern M2C_UNK data_ov010_0222eee0;
-void (*cb)(void) = M2C_FIELD(&data_ov010_0222eee0,void (**)(void),0x44);
-if (!cb) return;
-cb();
+    void (*cb)(void);
+    extern M2C_UNK data_ov010_0222eee0;
+    cb = *(void (**)())((char *)&data_ov010_0222eee0 + 0x44);
+    if (!cb) return;
+    cb();
 }
 
 void func_ov010_0222817c(void) {

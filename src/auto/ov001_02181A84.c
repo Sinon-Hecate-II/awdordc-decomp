@@ -47,7 +47,8 @@ void func_ov001_02181a84(void) {
         r5 = func_ov001_02175ddc();
         {
             u8 u = (u8)M2C_FIELD((void *)r4, u8 *, 0xF4);
-            func_ov001_02171c24(0x32, (s8)M2C_FIELD(&data_ov001_0218fb38, s8 *, r5), u + 1);
+            s8 d = (s8)M2C_FIELD(&data_ov001_0218fb38, s8 *, r5);
+            func_ov001_02171c24(0x32, d, u + 1);
         }
         func_ov001_02171dd0(1);
     }

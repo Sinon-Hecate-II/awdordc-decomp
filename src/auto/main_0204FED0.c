@@ -265,37 +265,39 @@ s32 func_020505b0(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg
     M2C_UNK sp0[4];
     s8 *temp_r0;
     s32 temp;
-    s32 field8;
-    (void)connection;
+    s32 *arg4sp;
 
+    (void)connection;
     *arg2 = NULL;
-    field8 = M2C_FIELD(arg1, s32 *, 8);
-    if (field8 >= 5) {
-        temp_r0 = func_02068ee0(M2C_FIELD(arg1, M2C_UNK *, 0), 0xA);
-        if (temp_r0 != NULL) {
-            if (func_02068eac((s32)(temp_r0 - 5), &data_020fe104, 5) != 0) {
-                return 3;
-            }
-            *temp_r0 = 0;
-            if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe10c, sp0, 0x10) == 0) {
-                return 3;
-            }
-            *arg3 = func_0206ad38(sp0);
-            if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe110, sp0, 0x10) == 0) {
-                return 3;
-            }
-            temp = func_0206ad38(sp0);
-            if (field8 > (temp + 1 + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)))) {
-                if (temp_r0[temp + 1] != 0) {
-                    return 3;
-                }
-                *arg2 = temp_r0 + 1;
-                *arg4 = temp;
-                M2C_FIELD(arg1, s32 *, 0xC) = (temp + 1) + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)) + 1;
-            } else {
-                *temp_r0 = 0xA;
-            }
+    arg4sp = arg4;
+    if (M2C_FIELD(arg1, s32 *, 8) < 5) {
+        return 0;
+    }
+    temp_r0 = func_02068ee0(M2C_FIELD(arg1, M2C_UNK *, 0), 0xA);
+    if (temp_r0 == NULL) {
+        return 0;
+    }
+    if (func_02068eac((s32)(temp_r0 - 5), &data_020fe104, 5) != 0) {
+        return 3;
+    }
+    *temp_r0 = 0;
+    if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe10c, sp0, 0x10) == 0) {
+        return 3;
+    }
+    *arg3 = func_0206ad38(sp0);
+    if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe110, sp0, 0x10) == 0) {
+        return 3;
+    }
+    temp = func_0206ad38(sp0);
+    if (M2C_FIELD(arg1, s32 *, 8) > (temp + 1 + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)))) {
+        if (temp_r0[temp + 1] != 0) {
+            return 3;
         }
+        *arg2 = temp_r0 + 1;
+        *arg4sp = temp;
+        M2C_FIELD(arg1, s32 *, 0xC) = (temp + 1) + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)) + 1;
+    } else {
+        *temp_r0 = 0xA;
     }
     return 0;
 }

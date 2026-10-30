@@ -3,71 +3,127 @@
 typedef struct {u8 pad[0x58];u16 row;} ScanRow;
 static inline u16 ScanHeight(void *p){return M2C_FIELD(p,u16 *,0x5146);}
 
-M2C_UNK func_ov000_0218d908(void) {
-    return 0;
-}
-
-void func_ov000_0218dda4(void) {
-    M2C_UNK func_01ffc328(s32);
-    M2C_UNK func_ov000_02199d74(s16, s16, M2C_UNK, u8, s32);
-    s32 func_ov000_021aa820(s16 *, u16, M2C_UNK, M2C_UNK);
+#pragma opt_strength_reduction off
+/* Chooses a reachable recovery destination, preferring a suitable transport or a low-score tile. */
+void func_ov000_0218d908(void) {
     extern void **gCurrentMap;
-    s16 pos[2];
-    s32 var_r3;
-    s32 var_r2;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
-    s8 *temp_r8;
-    s8 *var_lr;
-    s8 temp_r0_2;
-    u16 temp_ip;
-    void **owner;
-void *temp_r7;
-void *temp_r0;
+    extern void *data_ov000_021df580;
+    extern u8 *data_ov000_021df644;
+    extern u8 data_ov000_021b5bfc[], data_ov000_021dfcf0[];
+    s32 func_ov000_0218d40c(void);
+    M2C_UNK func_01ffc328(s32);
+    s32 func_ov000_021a9934(s32, s32);
+    s32 func_ov000_021a8fc0(s16);
+    s32 func_ov000_021a995c(void *, s32);
+    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 func_ov000_021a93a8(void *, s32, s32);
+    s32 func_ov000_021a9d8c(s16, s16);
+    s32 func_ov000_02178778(s16, s16);
+    s32 func_ov000_02178e84(s16, s16);
+    s32 func_ov000_021a9e08(s32, s32, s32, s32);
+    void func_ov000_0217c3a4(void);
+    M2C_UNK func_ov000_02199d74(s16, s16, M2C_UNK, u8, s32);
+    s32 bestX = -1, bestY = -1, bestScore = 0x7fffffff, bestCost = 0x7fff, useTransport = 0;
+    u8 *unit;
+    s32 y, x;
+    void *map;
+    s32 score, moveCost;
 
-    var_r5 = -1;
-    var_r4 = -1;
-    var_r6 = -1;
-    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
-    var_r3 = 0;
-    owner=gCurrentMap;
-    temp_r7 = *owner;
-    if ((s32) M2C_FIELD(temp_r7, u16 *, 0x5146) > 0) {
-        temp_ip = M2C_FIELD(temp_r7, u16 *, 0x5144);
-        do {
-            var_r2 = 0;
-            if ((s32) temp_ip > 0) {
-                temp_r8 = M2C_FIELD((temp_r7 + ((u32)var_r3 << 2)), s8 **, 0x52E8);
-                var_lr = temp_r8;
-                do {
-                    if ((s32) *var_lr >= 0) {
-                        temp_r0 = temp_r7 + ((ScanRow *)(temp_r7 + ((u32)var_r3 << 1) + 0x3700))->row + var_r2;
-                        if (((M2C_FIELD(temp_r0, u8 *, 0x1420) & 0x1F) == 0x18) && (M2C_FIELD(temp_r0, u8 *, 0) == 0)) {
-                            temp_r0_2 = *(temp_r8 + var_r2);
-                            if ((s32) temp_r0_2 > var_r6) {
-                                var_r4 = var_r2;
-                                var_r5 = var_r3;
-                                var_r6 = (s32) temp_r0_2;
-                            }
-                        }
+    if (!func_ov000_0218d40c()) return;
+    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
+    y = 0;
+    map = *gCurrentMap;
+    while (y < M2C_FIELD(map, u16 *, 0x5146)) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, 0x5144)) {
+            do {
+                s8 *costRow = M2C_FIELD((u8 *)map + y * 4, s8 **, 0x52e8);
+                u16 flags;
+                if (costRow[x] < 0) goto nextTile;
+                flags = M2C_FIELD(data_ov000_021df580, u16 *, 8);
+                if (flags & 1) {
+                    if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), s8 *, 0x2338) < 0) {
+                        costRow[x] = -1;
+                        goto nextTile;
                     }
-                    var_r2 += 1;
-                    var_lr += 1;
-                } while (var_r2 < (s32) temp_ip);
+                }
+                if (!(flags & 0x101) && func_ov000_021a9934(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                    map = *gCurrentMap;
+                    unit = (u8 *)map + 0x59a4 + (s16)M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0) * 14;
+                    if (unit && func_ov000_021a8fc0((s16)(unit ? (unit - ((u8 *)map + 0x59a4)) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && func_ov000_021a995c(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                        if (useTransport && M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x] > bestCost) goto nextTile;
+                        bestX = x;
+                        bestY = y;
+                        bestCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
+                        bestScore = 0;
+                        useTransport = 1;
+                        goto nextTile;
+                    }
+                }
+                if (!func_ov000_021a9214(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y) && !func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y)) goto nextTile;
+                if (func_ov000_021a9d8c((s16)x, (s16)y)) goto nextTile;
+                if (func_ov000_02178778((s16)x, (s16)y) == 1) goto nextTile;
+                if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
+                map = *gCurrentMap;
+                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= data_ov000_021df644[2]) goto nextTile;
+                if (data_ov000_021b5bfc[((u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 112 + 19] & 7) {
+                    u32 tileIndex = y * M2C_FIELD(map, u16 *, 0x5144) + x;
+                    u32 bit = tileIndex & 7;
+                    if (!(u8)((1 << bit) & data_ov000_021dfcf0[tileIndex >> 3])) goto nextTile;
+                }
+                score = func_ov000_021a9e08(x, y, 1, 2);
+                moveCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
+                if (score > bestScore) goto nextTile;
+                if (score == bestScore && moveCost > bestCost) goto nextTile;
+                bestScore = score;
+                bestCost = moveCost;
+                bestX = x;
+                bestY = y;
+                useTransport = 0;
+nextTile:
+                x++;
+                map = *gCurrentMap;
+            } while (x < M2C_FIELD(map, u16 *, 0x5144));
+        }
+        y++;
+    }
+    if (bestX == -1) return;
+    {
+        u8 *state = data_ov000_021df580;
+        u16 flags = M2C_FIELD(state, u16 *, 8);
+        if (flags & 1) {
+            unit = M2C_FIELD(map, u8 **, 0x52d0);
+            if (bestX == unit[1] && bestY == unit[2]) {
+                M2C_FIELD(state, u16 *, 8) = flags | 2;
+                return;
             }
-            var_r3 += 1;
-        } while (var_r3 < (s32) ScanHeight(temp_r7));
+        }
     }
-    if (var_r6 == -1) {
-        return;
-    }
-    pos[0] = (s16) var_r4;
-    pos[1] = (s16) var_r5;
-    if (func_ov000_021aa820(pos, M2C_FIELD(*owner, u16 *, 0x52A4), 1, 0) != 1) {
-        return;
-    }
-    func_ov000_02199d74((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);
+    func_ov000_0217c3a4();
+    if (useTransport) func_ov000_02199d74((s16)bestX, (s16)bestY, 7, 0, 0);
+    else func_ov000_02199d74((s16)bestX, (s16)bestY, 2, 0, 0);
+}
+#pragma opt_strength_reduction reset
+void func_ov000_0218dda4(void) {
+ M2C_UNK func_01ffc328(s32); M2C_UNK func_ov000_02199d74(s16,s16,M2C_UNK,u8,s32); s32 func_ov000_021aa820(s16*,u16,M2C_UNK,M2C_UNK); extern void **gCurrentMap;
+ s16 pos[2]; s32 y,x,bx,by,best; s8 *row,*p; s8 c; u16 width; void **owner; void *base,*cell;
+ by=-1; bx=-1; best=-1;
+ func_01ffc328(M2C_FIELD(*gCurrentMap,s32*,0x52d0));
+ y=0; owner=gCurrentMap; base=*owner;
+ if(y<M2C_FIELD(base,u16*,0x5146)) {
+ width=M2C_FIELD(base,u16*,0x5144);
+ do { x=0; if(x<width) {
+ row=M2C_FIELD(base+((u32)y<<2),s8**,0x52e8); p=row;
+ do {if(*p>=0) {cell=base+((ScanRow*)(base+((u32)y<<1)+0x3700))->row+x;
+ if((M2C_FIELD(cell,u8*,0x1420)&31)==24 && M2C_FIELD(cell,u8*,0)==0) {c=row[x]; if(c>best){bx=x;by=y;best=c;}}}
+ x++; p++;
+ }while(x<width);}
+ y++;
+ }while(y<((ScanRow*)(base+0x50ee))->row);}
+ if(best==-1)return;
+ pos[0]=bx;pos[1]=by;
+ if(func_ov000_021aa820(pos,M2C_FIELD(*owner,u16*,0x52a4),1,0)!=1)return;
+ func_ov000_02199d74((s16)bx,(s16)by,19,(u8)pos[0],(u8)pos[1]);
 }
 
 void func_ov000_0218df00(void) {

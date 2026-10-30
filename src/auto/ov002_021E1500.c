@@ -327,7 +327,7 @@ void func_ov002_021e2204(void *arg0) {
                 } else {
                     var_r2 = M2C_FIELD(arg0, u8 *, 0x3A);
                 }
-                func_02087064(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)) + M2C_FIELD(arg0, u8 *, 0x51));
+                func_02087064(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
             }
             func_02087b94(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
             var_r5 = (u8 *) var_r5 + 8;

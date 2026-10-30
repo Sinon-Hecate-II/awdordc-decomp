@@ -207,16 +207,15 @@ void func_020abfcc(u16 arg0, u16 arg1) {
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0;
     } else {
         u8 b0 = (u8)((a + 0x100) >> 1);
-        u8 b1 = (u8)((0x100 - a) >> 1);
         u8 b2 = (u8)((0xc0 - c) >> 1);
         u8 b3 = (u8)((c + 0xc0) >> 1);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x48) = b0;
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4a) = 0;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = b1;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x49) = (u8)((0x100 - a) >> 1);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4b) = b2;
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4c) = b0;
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4e) = b3;
-        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = b1;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4d) = (u8)((0x100 - a) >> 1);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x4f) = 0xc0;
     }
 }

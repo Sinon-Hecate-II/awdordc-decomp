@@ -75,6 +75,10 @@ void func_020b6168(void *arg0) {
     func_020cc6a4();
 }
 
+/* Step the screen-transition down-counter (func_020b524c -> func_0208c6fc, which
+ * fires func_02081528 once the counter wraps to zero), then finalize the current
+ * map view and run its registered callbacks (func_020cfd28 -> func_020d0270 +
+ * func_020cfd38). */
 void func_020b6320(void) {
     M2C_UNK func_020cfd28();
     M2C_UNK func_020b524c();
@@ -82,27 +86,30 @@ void func_020b6320(void) {
     func_020cfd28();
 }
 
-void func_020b6330(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
+/* Spawn a path-marker task at tile (x, y) with the given range and tile index,
+ * copy its label string into the task, then move the view onto the marker. */
+void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     void *func_01ffa42c();
     M2C_UNK func_02068c50(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128e98;
-    void *p;
-    p = func_01ffa42c(&data_02128cec, arg4);
-    M2C_FIELD(p, s16 *, 0x44) = arg0;
-    M2C_FIELD(p, s16 *, 0x46) = arg1;
-    M2C_FIELD(p, s16 *, 0x4C) = arg2;
-    M2C_FIELD(p, s16 *, 0x4E) = arg3;
-    M2C_FIELD(p, s32 *, 0x50) = 0;
-    func_02068c50(p + 0x34, &data_02128e98);
-    func_0207b774(arg0, arg1);
+    void *task;
+    task = func_01ffa42c(&data_02128cec, parent);
+    M2C_FIELD(task, s16 *, 0x44) = x;
+    M2C_FIELD(task, s16 *, 0x46) = y;
+    M2C_FIELD(task, s16 *, 0x4C) = range;
+    M2C_FIELD(task, s16 *, 0x4E) = tileIdx;
+    M2C_FIELD(task, s32 *, 0x50) = 0;
+    func_02068c50(task + 0x34, &data_02128e98);
+    func_0207b774(x, y);
 }
 
 void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     void *func_01ffa42c();
     M2C_UNK func_02068c50(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128ea4;
+    M2C_UNK *g = &data_02128cec;
     void *p;
-    p = func_01ffa42c(&data_02128cec, arg4);
+    p = func_01ffa42c(g, arg4);
     M2C_FIELD(p, s16 *, 0x44) = arg0;
     M2C_FIELD(p, s16 *, 0x46) = arg1;
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
@@ -116,8 +123,9 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     void *func_01ffa42c();
     M2C_UNK func_02068c50(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128eb0;
+    M2C_UNK *g = &data_02128cec;
     void *p;
-    p = func_01ffa42c(&data_02128cec, arg4);
+    p = func_01ffa42c(g, arg4);
     M2C_FIELD(p, s16 *, 0x44) = arg0;
     M2C_FIELD(p, s16 *, 0x46) = arg1;
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
@@ -139,7 +147,7 @@ void func_020b6444(void *arg0) {
     u8 *u;
     s32 n, x, y;
 
-    u = M2C_FIELD(arg0, u8 *, 0x5c);
+    u = M2C_FIELD(arg0, u8 **, 0x5c);
     x = u[1] << 4;
     y = u[2] << 4;
     if (u) {
@@ -162,13 +170,13 @@ void func_020b6444(void *arg0) {
         func_0208c080(p, 0);
     }
     {
-        u8 *uu = M2C_FIELD(arg0, u8 *, 0x5c);
+        u8 *uu = M2C_FIELD(arg0, u8 **, 0x5c);
         func_0208fb0c(0x12f, uu[1], uu[2]);
     }
 }
 
 void func_020b654c(s32 arg0) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *func_01ffa42c();
     M2C_UNK func_0207b7a4(s32);
     extern M2C_UNK data_02128adc;
     M2C_FIELD(func_01ffa42c(&data_02128adc), s32 *, 0x5C) = arg0;
@@ -254,8 +262,12 @@ void func_020b6718(void *arg0) {
 
 void func_020b6794(void *arg0) {
     M2C_UNK func_020ce434(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK func_020cfd28(void);
     extern void **gCurrentMap;
-    func_020ce434(M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 2, 1, (s32) (u8) M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 2);
+    void **m = gCurrentMap;
+    void *p = arg0;
+    u8 v = (u8)M2C_FIELD(*m, u16 *, 0x52A4);
+    func_020ce434(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, 1, v, 2);
     func_020cfd28();
 }
 
@@ -263,7 +275,8 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_02128b8c;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_02128b8c, arg2);
+    void *func_01ffa42c();
+ temp_r0 = func_01ffa42c(&data_02128b8c, arg2);
     M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
     func_0207b774(arg0, arg1);
@@ -285,7 +298,7 @@ default:break;
 }
 
 s32 func_020b689c(s32 a,s32 b) {
-void func_020a488c(s32,s16 *);extern M2C_UNK data_02128abc;
+void func_020a488c(s32,s16 *);void *func_01ffa42c();extern M2C_UNK data_02128abc;
 s16 xy[2];s32 p;
 func_020a488c(a,xy);p=func_01ffa42c(&data_02128abc,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0];M2C_FIELD(p,s32 *,0x3c)=xy[1];
@@ -295,11 +308,11 @@ M2C_FIELD(p,s32 *,0x34)=a;return p;
 }
 
 s32 func_020b68f0(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_02128abc;extern void **gCurrentMap;
+extern M2C_UNK data_02128abc;extern void **data_027e0058;void *func_01ffa42c();
 s32 p=func_01ffa42c(&data_02128abc,c);
 void *base;
 M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
-M2C_FIELD(p,s16 *,0x6c)=1;base=*gCurrentMap;
+M2C_FIELD(p,s16 *,0x6c)=1;base=*data_027e0058;
 M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(base+(a+M2C_FIELD(base+b*2,u16 *,0x3758)),u8 *,0x539c)&127;
 M2C_FIELD(p,s32 *,0x34)=0;return p;
 }
@@ -335,11 +348,12 @@ if(n>0)func_0207b774(func_020720f0(x,n),func_020720f0(y,n));
 
 void func_020b6b40(void *arg0) {
 s32 func_0208c1ec(void *); s32 func_0208c200(void *);
-s32 a; u32 bits=M2C_FIELD(arg0,u32 *,0x48);
+s32 a; s32 t; u32 bits=M2C_FIELD(arg0,u32 *,0x48);
 u16 count=(u16)(bits>>21);
 if(count) return;
 a=func_0208c1ec(arg0);
-func_0208fb0c(0xfc,a,func_0208c200(arg0));
+t=func_0208c200(arg0);
+func_0208fb0c(0xfc,a,t);
 }
 
 s32 func_020b6b80(void *p) {
@@ -380,7 +394,8 @@ void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
     extern M2C_UNK data_02128cac;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_02128cac, arg3);
+    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+temp_r0 = func_01ffa42c(&data_02128cac, arg3);
     M2C_FIELD(temp_r0, s32 *, 0x38) = (s32) (arg0 + 1);
     M2C_FIELD(temp_r0, s32 *, 0x3C) = (s32) (arg1 + 1);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;
@@ -416,7 +431,8 @@ void func_020b7050(void *arg0) {
 void func_020b70b0(void *arg0) {
     extern M2C_UNK data_02128f74;
     extern M2C_UNK data_02128f80;
-    func_020b5134(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, func_020b5200(&data_02128f74, 2), 2, arg0);
+    s32 temp = func_020b5200(&data_02128f74, 2);
+    func_020b5134(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, temp, 2, arg0);
     func_0208fb0c(0x106, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
 }
 

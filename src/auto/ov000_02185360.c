@@ -25,19 +25,22 @@ xx++;
 }
 
 void func_ov000_021854e0(s32 x,s32 y,s32 radius,s32 offset){
-s32 left,right,xx,yy,bottom,top,dist;
-left=offset+(x-radius);if(left<0)left=0;
-top=offset+(y-radius);if(top<0)top=0;
-right=(offset+(x+radius)<M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1)?offset+(x+radius):M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
-bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
-if(offset+(y+radius)<bottom)bottom=offset+(y+radius);
+extern void **gCurrentMap; extern u8 data_ov000_021e0550[];
+s32 left,right,xx,yy,bottom,top,dist,width,height;
+left=offset+(x-radius); if(left<0) left=0;
+top=offset+(y-radius); if(top<0) top=0;
+width=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
+right=offset+(x+radius);
+if(right>width) right=width;
+height=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
+bottom=height;
+if(offset+(y+radius)<bottom) bottom=offset+(y+radius);
 for(yy=top;yy<=bottom;yy++){
-xx=left; while(xx<=right){
+for(xx=left;xx<=right;xx++){
 dist=0;
-if(x-xx>0)dist+=x-xx;else dist+=xx-x;
-if(y-yy>0)dist+=y-yy;else dist+=yy-y;
-if(dist>=0 && dist<=radius+offset)data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=255;
-xx++;
+if(x-xx>0) dist+=x-xx; else dist+=xx-x;
+if(y-yy>0) dist+=y-yy; else dist+=yy-y;
+if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=255;
 }
 }
 }

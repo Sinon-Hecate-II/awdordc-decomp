@@ -150,7 +150,7 @@ void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
     s32 func_0200751c(void);
     void func_02007530(s32);
     s32 func_02009eb0(s32, u32, s32);
-    s32 i;
+    u32 i;
     s32 t;
     u8 ok;
 

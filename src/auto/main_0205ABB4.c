@@ -98,7 +98,7 @@ if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))
 result=func_0205a830(a,&p);if(result)return result;
 M2C_FIELD(p,s32 *,32)=f;
 result=func_0205a890(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
-if(!h){if((unsigned short)b)*b=p;return 0;}
+if(!h){if(b)*b=p;return 0;}
 M2C_FIELD(p,s32 *,36)++;
 do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
 M2C_FIELD(p,s32 *,36)--;

@@ -190,6 +190,63 @@ s32 func_ov001_0217a610(void) {
     return 0;
 }
 
+void func_ov001_0217a880(void) {
+    s32 func_ov001_021716c4();
+    M2C_UNK func_ov001_02171750();
+    M2C_UNK func_ov001_02185024(M2C_UNK);
+    void func_ov001_0217b3c0(void);
+    s32 func_02002088(s32, u16);
+    void func_ov001_02183a08(void);
+    M2C_UNK func_ov001_021862d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    void func_ov001_0217b3f0(void);
+    void func_ov001_0217a98c(void);
+    extern M2C_UNK data_ov001_02193d98;
+    void *map;
+    s32 r;
+    map = M2C_FIELD(&data_ov001_02193d98, void **, 4);
+    if (M2C_FIELD(map, M2C_UNK *, 0x38) != 0) return;
+    if (M2C_FIELD(map, u8 *, 0x57) != 0) return;
+    r = func_ov001_021716c4();
+    switch (r) {
+    case 0:
+        func_ov001_02185024(7);
+        goto done;
+    case 1:
+        if (M2C_FIELD(&data_ov001_02193d98, u8 *, 0) == 4) {
+            map = M2C_FIELD(&data_ov001_02193d98, void **, 4);
+            M2C_FIELD(map, u8 *, 0x54) = 1;
+            func_ov001_02185024(6);
+            func_ov001_0217b3c0();
+            goto done;
+        } else {
+            u8 field28;
+            s32 idx = (u8)M2C_FIELD(&data_ov001_02193d98, u8 *, 0) + func_02002088(M2C_FIELD(&data_ov001_02193d98, u16 *, 2), 0x1c);
+            field28 = M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&data_ov001_02193d98, void **, 4), void **, 0) + idx * 42, u8 *, 0x28);
+            if (field28 == 2) {
+                func_ov001_02185024(9);
+                func_ov001_02183a08();
+                func_ov001_02171750();
+                func_ov001_021862d8(0xe, 1, 1, -1, 0);
+                func_ov001_02175d54((M2C_UNK *)&func_ov001_0217b3f0);
+                goto done;
+            } else {
+                void *map2 = M2C_FIELD(&data_ov001_02193d98, void **, 4);
+                M2C_FIELD(map2, u8 *, 0x54) = 1;
+                map = M2C_FIELD(&data_ov001_02193d98, void **, 4);
+                M2C_FIELD(map, u8 *, 0x52) = (u8)idx;
+                func_ov001_02185024(6);
+                func_ov001_02175d54((M2C_UNK *)&func_ov001_0217a98c);
+                goto done;
+            }
+        }
+    default:
+        return;
+    }
+done:
+    return;
+}
+
 void func_ov001_0217a98c(void) {
     M2C_UNK func_ov001_02171750();
     M2C_UNK func_ov001_02175d54(M2C_UNK *);

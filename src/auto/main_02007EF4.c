@@ -150,7 +150,7 @@ void func_0200836c(void *arg0, u32 *arg1) {
     u32 var_r3;
     u32 var_r5;
     u8 *temp_r7;
-    u8 *var_r2;
+    u8 *var_r2x;
 
     var_r1 = arg1;
     temp_r2 = arg0 + 4;
@@ -161,7 +161,7 @@ void func_0200836c(void *arg0, u32 *arg1) {
     sp0 = (temp_r4 & 7) + 4;
     var_ip = (u32) M2C_FIELD(arg0, u8 *, 0) >> 8;
     var_r0 = temp_r2 + ((M2C_FIELD(arg0, u8 *, 4) + 1) * 2);
-    var_r2 = temp_r7;
+    var_r2x = temp_r7;
 loop_1:
     if ((s32) var_ip > 0) {
         var_r8 = 0x20;
@@ -171,11 +171,11 @@ loop_3:
         var_r8 -= 1;
         if ((s64) var_r8 >= 0) {
             temp_r9 = 1 & (var_r5 >> 0x1F);
-            temp_r6 = *var_r2 << temp_r9;
-            var_r2 = (((u32) var_r2 >> 1) * 2) + (((*var_r2 & 0x3F) + 1) * 2) + temp_r9;
+            temp_r6 = *var_r2x << temp_r9;
+            var_r2x = (((u32) var_r2x >> 1) * 2) + (((*var_r2x & 0x3F) + 1) * 2) + temp_r9;
             if (temp_r6 & 0x80) {
-                var_r3 = (var_r3 >> temp_r4) | (*var_r2 << (0x20 - temp_r4));
-                var_r2 = temp_r7;
+                var_r3 = (var_r3 >> temp_r4) | (*var_r2x << (0x20 - temp_r4));
+                var_r2x = temp_r7;
                 var_lr += 1;
                 if (var_lr != sp0) {
 

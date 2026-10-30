@@ -307,12 +307,13 @@ void func_ov000_0217d3b8(s32 arg0) {
 
 void func_ov000_0217d428(void) { }
 
+#pragma opt_strength_reduction off
 void func_ov000_0217d6dc(void) {
-    extern void **gCurrentMap;
+    extern void **data_027e0058;
     extern u16 data_ov000_021aeef4[];
     s32 func_ov000_021a98a8(u32);
 
-    void ***mapSlot = &gCurrentMap;
+    void ***mapSlot = &data_027e0058;
     u16 *tblBase = data_ov000_021aeef4;
 
     void *map;
@@ -384,7 +385,7 @@ loopinc:
         break;
     }
 }
-
+#pragma opt_strength_reduction on
 void func_ov000_0217d850(void) {
     extern void *data_ov000_021df580;
     M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8) (M2C_FIELD(data_ov000_021df580, u8 *, 7) & ~8);

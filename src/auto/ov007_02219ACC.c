@@ -82,22 +82,26 @@ func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+a*2+b*64,2,3,(u16)tile);
 
 #pragma opt_strength_reduction off
 void func_ov007_02219d10(void){
+ /* Stage the B-layer grid: 10 columns x 5 rows of 2x2 cells, each cell cleared,
+    given its digits (tile-sum table) and stamped into the tile buffer, then two
+    8x4 palette blocks placed per the row-0 table byte; flags the layer engine's
+    DMA dirty bits (0x46 |= 2,2,1) before restoring the current engine. */
  extern s32 gCur3DSpriteEngine,data_027e00c4;
  s32 func_ov007_0221202c(s32,s32);u8 func_ov007_02211f00(void);
  void func_020808dc(void *,s32,s32,u16);
- s32 old,i,y;
- old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
- i=0;y=2;do{
- if(i==0)func_ov007_02219c58(17,y,i,func_ov007_0221202c(8,i));
- else func_ov007_02219c58(17,y,i,func_ov007_0221202c(0,i));
- func_ov007_02219c58(19,y,i,func_ov007_0221202c(1,i));
- func_ov007_02219c58(21,y,i,func_ov007_0221202c(2,i));
- func_ov007_02219c58(23,y,i,func_ov007_0221202c(3,i));
- func_ov007_02219c58(25,y,i,func_ov007_0221202c(4,i));
- func_ov007_02219c58(27,y,i,func_ov007_0221202c(7,i));
- func_ov007_02219c58(29,y,i,func_ov007_0221202c(9,i));
- y+=3;i++;
- }while(i<5);
+ s32 savedEngine,row,rowStart;
+ savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+ row=0;rowStart=2;do{
+ if(row==0)func_ov007_02219c58(17,rowStart,row,func_ov007_0221202c(8,row));
+ else func_ov007_02219c58(17,rowStart,row,func_ov007_0221202c(0,row));
+ func_ov007_02219c58(19,rowStart,row,func_ov007_0221202c(1,row));
+ func_ov007_02219c58(21,rowStart,row,func_ov007_0221202c(2,row));
+ func_ov007_02219c58(23,rowStart,row,func_ov007_0221202c(3,row));
+ func_ov007_02219c58(25,rowStart,row,func_ov007_0221202c(4,row));
+ func_ov007_02219c58(27,rowStart,row,func_ov007_0221202c(7,row));
+ func_ov007_02219c58(29,rowStart,row,func_ov007_0221202c(9,row));
+ rowStart+=3;row++;
+ }while(row<5);
  switch(func_ov007_02211f00()){
  case 0:
  func_020808dc(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+0x480,8,4,3);
@@ -111,7 +115,7 @@ void func_ov007_02219d10(void){
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
- gCur3DSpriteEngine=old;
+ gCur3DSpriteEngine=savedEngine;
 }
 void func_ov007_02219f4c(void) {
     u8 func_ov007_02211f90(void);

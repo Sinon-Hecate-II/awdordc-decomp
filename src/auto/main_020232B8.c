@@ -182,7 +182,8 @@ s32 func_020237bc(s32 x,s32 unused,s32 value) {
  func_020261d8(x+0x1E0);return value;
 }
 
-s32 func_020237d4(void *arg0, u8 *arg1) {
+/* Verifies the digest of a message received on a comm channel: the payload is already RC4-decrypted by func_020237bc, then the channel's MD5 (type 4, ctx +0x3FC) or SHA1 (type 5, ctx +0x348) is run twice - key+pad, then key+pad+counter+message - and the result compared with the digest stored at the end of the payload. On mismatch the channel state (+0x455) becomes 9; the channel counter (+0x2EC) is bumped and the message length without the digest is returned. */
+s32 func_020237d4(void *channel, u8 *msg) {
     M2C_UNK func_02007f8c();
     M2C_UNK func_02025700();
     M2C_UNK func_02025748();
@@ -192,55 +193,55 @@ s32 func_020237d4(void *arg0, u8 *arg1) {
     M2C_UNK func_020260cc();
     M2C_UNK func_020261d8();
     u8 digest[20];
-    u8 sp0[0x30];
-    s32 var_r7;
+    u8 pad[0x30];
+    s32 dataLen;
     s32 digestSize;
     u16 temp_r0;
 
-    var_r7 = func_020237bc((s32)arg0,(s32)(arg1+5),(arg1[3] << 8) + arg1[4]);
-    switch (*(u16 *)((u8 *)arg0 + 0x32)) {
+    dataLen = func_020237bc((s32)channel,(s32)(msg+5),(msg[3] << 8) + msg[4]);
+    switch (*(u16 *)((u8 *)channel + 0x32)) {
     case 4:
-        var_r7 -= 16;
-        arg1[3]=var_r7>>8;arg1[4]=var_r7;
-        func_02025700(arg0 + 0x3FC);
-        func_02025748(arg0 + 0x3FC, *(void **)((u8 *)arg0 + 0x1D4), 0x10);
-        func_02007f8c(sp0, 0x36, 0x30);
-        func_02025748(arg0 + 0x3FC, sp0, 0x30);
-        func_02025748(arg0 + 0x3FC, arg0 + 0x2E4, 8);
-        func_02025748(arg0 + 0x3FC, arg1, 1);
-        func_02025748(arg0 + 0x3FC, arg1 + 3, var_r7 + 2);
-        func_02025800(arg0 + 0x3FC, digest);
-        func_02025700(arg0 + 0x3FC);
-        func_02025748(arg0 + 0x3FC, *(void **)((u8 *)arg0 + 0x1D4), 0x10);
-        func_02007f8c(sp0, 0x5C, 0x30);
-        func_02025748(arg0 + 0x3FC, sp0, 0x30);
-        func_02025748(arg0 + 0x3FC, digest, 0x10);
-        func_02025800(arg0 + 0x3FC, digest);
+        dataLen -= 16;
+        msg[3]=dataLen>>8;msg[4]=dataLen;
+        func_02025700(channel + 0x3FC);
+        func_02025748(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
+        func_02007f8c(pad, 0x36, 0x30);
+        func_02025748(channel + 0x3FC, pad, 0x30);
+        func_02025748(channel + 0x3FC, channel + 0x2E4, 8);
+        func_02025748(channel + 0x3FC, msg, 1);
+        func_02025748(channel + 0x3FC, msg + 3, dataLen + 2);
+        func_02025800(channel + 0x3FC, digest);
+        func_02025700(channel + 0x3FC);
+        func_02025748(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
+        func_02007f8c(pad, 0x5C, 0x30);
+        func_02025748(channel + 0x3FC, pad, 0x30);
+        func_02025748(channel + 0x3FC, digest, 0x10);
+        func_02025800(channel + 0x3FC, digest);
         digestSize=16;
         break;
     case 5:
-        var_r7 -= 20;
-        arg1[3]=var_r7>>8;arg1[4]=var_r7;
-        func_02025fc0(arg0 + 0x348);
-        func_02026014(arg0 + 0x348, *(void **)((u8 *)arg0 + 0x1D4), 0x14);
-        func_02007f8c(sp0, 0x36, 0x28);
-        func_02026014(arg0 + 0x348, sp0, 0x28);
-        func_02026014(arg0 + 0x348, arg0 + 0x2E4, 8);
-        func_02026014(arg0 + 0x348, arg1, 1);
-        func_02026014(arg0 + 0x348, arg1 + 3, var_r7 + 2);
-        func_020260cc(arg0 + 0x348, digest);
-        func_02025fc0(arg0 + 0x348);
-        func_02026014(arg0 + 0x348, *(void **)((u8 *)arg0 + 0x1D4), 0x14);
-        func_02007f8c(sp0, 0x5C, 0x28);
-        func_02026014(arg0 + 0x348, sp0, 0x28);
-        func_02026014(arg0 + 0x348, digest, 0x14);
-        func_020260cc(arg0 + 0x348, digest);
+        dataLen -= 20;
+        msg[3]=dataLen>>8;msg[4]=dataLen;
+        func_02025fc0(channel + 0x348);
+        func_02026014(channel + 0x348, *(void **)((u8 *)channel + 0x1D4), 0x14);
+        func_02007f8c(pad, 0x36, 0x28);
+        func_02026014(channel + 0x348, pad, 0x28);
+        func_02026014(channel + 0x348, channel + 0x2E4, 8);
+        func_02026014(channel + 0x348, msg, 1);
+        func_02026014(channel + 0x348, msg + 3, dataLen + 2);
+        func_020260cc(channel + 0x348, digest);
+        func_02025fc0(channel + 0x348);
+        func_02026014(channel + 0x348, *(void **)((u8 *)channel + 0x1D4), 0x14);
+        func_02007f8c(pad, 0x5C, 0x28);
+        func_02026014(channel + 0x348, pad, 0x28);
+        func_02026014(channel + 0x348, digest, 0x14);
+        func_020260cc(channel + 0x348, digest);
         digestSize=20;
         break;
     }
-    if(func_0206527c(arg1+5+var_r7,digest,digestSize))M2C_FIELD(arg0,u8*,0x455)=9;
-    func_02023798(arg0+0x2EC);
-    return var_r7+5;
+    if(func_0206527c(msg+5+dataLen,digest,digestSize))M2C_FIELD(channel,u8*,0x455)=9;
+    func_02023798(channel+0x2EC);
+    return dataLen+5;
 }
 
 s32 func_02023a04(void *arg0, u8 *arg1) {

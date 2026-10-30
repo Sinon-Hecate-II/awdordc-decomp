@@ -390,24 +390,25 @@ void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void func_ov002_021e85e8(void *p) {
-M2C_UNK func_ov002_021e3f2c(void *,u8);
+M2C_UNK func_ov002_021e3f2c(void *, u8);
 extern M2C_UNK data_ov002_021f3124;
-extern u8 data_ov002_021f2fa9[],data_ov002_021f30fd[];
+extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
 extern u8 *data_ov002_021f30f4[];
 s32 i;
-u32 flag;
-flag = p != &data_ov002_021f3124;
-M2C_FIELD(p,u8 *,0x27)=flag;
-for(i=0;i<5;i++) ((ObjectSlots *)p)->slots[i]=0;
-M2C_FIELD(p,u8 *,0x2a)=data_ov002_021f2fa9[(s16)M2C_FIELD(p,u8 *,0x27)*(s16)104];
-M2C_FIELD(p,u8 *,0x2b)=(((data_ov002_021f30fd[(s16)M2C_FIELD(p,u8 *,0x27)*(s16)24]+9)/10+1)&~1U)>>1;
-if(M2C_FIELD(p,u8 *,0x2a)&&M2C_FIELD(p,u8 *,0x2b)) M2C_FIELD(p,u8 *,0x2b)=1;
-M2C_FIELD(p,u16 *,0x1c)=256;
-M2C_FIELD(p,u16 *,0x1e)=0;M2C_FIELD(p,u16 *,0x20)=0;M2C_FIELD(p,u16 *,0x22)=0;M2C_FIELD(p,u16 *,0x24)=0;
-M2C_FIELD(p,s8 *,0x26)=-1;
-if(M2C_FIELD(*(u8 **)((u8 *)data_ov002_021f30f4+(s16)M2C_FIELD(p,u8 *,0x27)*(s16)24),u8 *,0x3d)!=2) M2C_FIELD(p,u8 *,0x28)=0; else M2C_FIELD(p,u8 *,0x28)=1;
-M2C_FIELD(p,u8 *,0x29)=0;
-func_ov002_021e3f2c(p,M2C_FIELD(p,u8 *,0x27));
+u8 flag;
+flag = (u8)(p != &data_ov002_021f3124);
+M2C_FIELD(p, u8 *, 0x27) = flag;
+for (i = 0; i < 5; i++) ((ObjectSlots *)p)->slots[i] = 0;
+M2C_FIELD(p, u8 *, 0x2A) = data_ov002_021f2fa9[M2C_FIELD(p, u8 *, 0x27) * 104];
+M2C_FIELD(p, u8 *, 0x2B) = (((data_ov002_021f30fd[M2C_FIELD(p, u8 *, 0x27) * 24] + 9) / 10 + 1) & ~1U) >> 1;
+if (M2C_FIELD(p, u8 *, 0x2A) && M2C_FIELD(p, u8 *, 0x2B)) M2C_FIELD(p, u8 *, 0x2B) = 1;
+M2C_FIELD(p, u16 *, 0x1C) = 256;
+M2C_FIELD(p, u16 *, 0x1E) = 0; M2C_FIELD(p, u16 *, 0x20) = 0; M2C_FIELD(p, u16 *, 0x22) = 0; M2C_FIELD(p, u16 *, 0x24) = 0;
+M2C_FIELD(p, s8 *, 0x26) = -1;
+if (M2C_FIELD(*(u8 **)((u8 *)data_ov002_021f30f4 + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
+M2C_FIELD(p, u8 *, 0x28) = 0; else M2C_FIELD(p, u8 *, 0x28) = 1;
+M2C_FIELD(p, u8 *, 0x29) = 0;
+func_ov002_021e3f2c(p, M2C_FIELD(p, u8 *, 0x27));
 }
 
 #pragma opt_strength_reduction off

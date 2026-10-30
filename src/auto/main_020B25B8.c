@@ -308,6 +308,74 @@ for(y=0;y<a;y=(u8)(y+1))for(x=0;x<arg2;x++)func_02087d18((u8*)arg0+24,(s16)(x*ar
 return arg0;
 }
 
+void func_020b3038(void *arg0, s32 arg1) {
+    M2C_UNK func_0207c8ec();
+    s16 val8;
+    u8 step;
+    s16 orig_a;
+    s32 r8;
+    s16 orig_c;
+    s16 fres;
+    s32 r7, r8c, r8const, r9;
+    s16 c, f;
+    s16 cur;
+    s16 diff;
+
+    val8 = M2C_FIELD(arg0, s16 *, 0x8);
+    if (arg1 == val8) {
+        return;
+    }
+    step = M2C_FIELD(arg0, u8 *, 0x5);
+    orig_a = M2C_FIELD(arg0, s16 *, 0xA);
+    r8 = M2C_FIELD(arg0, u8 *, 0x4);
+    orig_c = M2C_FIELD(arg0, s16 *, 0xC);
+    fres = (s16) func_0207c8ec(orig_a + step - 1, step);
+    if (arg1 < 0) {
+        return;
+    }
+    if (orig_a <= arg1) {
+        return;
+    }
+    if (fres <= r8) {
+        r8 = fres;
+    }
+    if (arg1 < val8) {
+        do {
+            M2C_FIELD(arg0, s16 *, 0x8) = (s16) (M2C_FIELD(arg0, s16 *, 0x8) - 1);
+            c = M2C_FIELD(arg0, s16 *, 0xC);
+            f = (s16) func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x8), step);
+            diff = (s16) (f - c);
+            if (diff < 0) {
+                if (c > 0) {
+                    M2C_FIELD(arg0, s16 *, 0xC) = (s16) (M2C_FIELD(arg0, s16 *, 0xC) - 1);
+                }
+            }
+        } while (arg1 < M2C_FIELD(arg0, s16 *, 0x8));
+    } else {
+        r7 = orig_a - 1;
+        r8c = r8;
+        r8const = r8c - 1;
+        r9 = fres - r8c;
+        do {
+            M2C_FIELD(arg0, s16 *, 0x8) = (s16) (M2C_FIELD(arg0, s16 *, 0x8) + 1);
+            cur = M2C_FIELD(arg0, s16 *, 0x8);
+            if ((s32) cur > r7) {
+                cur = (s16) r7;
+            }
+            M2C_FIELD(arg0, s16 *, 0x8) = cur;
+            c = M2C_FIELD(arg0, s16 *, 0xC);
+            f = (s16) func_0207c8ec(cur, step);
+            diff = (s16) (f - c);
+            if (diff > (s16) r8const) {
+                if (c < r9) {
+                    M2C_FIELD(arg0, s16 *, 0xC) = (s16) (c + 1);
+                }
+            }
+        } while (M2C_FIELD(arg0, s16 *, 0x8) < arg1);
+    }
+    M2C_FIELD(arg0, s16 *, 0x12) = (s16) ((M2C_FIELD(arg0, s16 *, 0xC) - orig_c) * M2C_FIELD(arg0, u8 *, 0x7));
+}
+
 s16 func_020b316c(void *arg0) {
     s16 temp_r2;
     u8 temp_r3;

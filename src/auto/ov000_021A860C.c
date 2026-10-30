@@ -164,7 +164,7 @@ return 0;
 #pragma opt_strength_reduction reset
 s32 func_ov000_021a8d7c(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;u8 func_ov000_021a8fc0(s32);
-s32 i,dy,ny,j,right,left,top,bottom,d;void *base;
+s32 j,i,right,left,top,bottom,d;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;
@@ -172,8 +172,8 @@ right=M2C_FIELD(base,u16 *,0x5144)-1;
 if(x+radius<right)right=x+radius;
 bottom=M2C_FIELD(base,u16 *,0x5146)-1;
 if(y+radius<bottom)bottom=y+radius;
-j=top;for(;j<=bottom;j++)for(i=left;i<=right;i++){
-d=0;if(x-i>0)d+=x-i;else d+=i-x;dy=y-j;ny=j-y;if(dy>0)d+=dy;else d+=ny;
+for(j=top;j<=bottom;j++)for(i=left;i<=right;i++){
+d=0;if(x-i>0)d+=x-i;else d+=i-x;if(y-j>0)d+=y-j;else d+=j-y;
 if(d>=0&&d<=radius){base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
 if(d&&func_ov000_021a8fc0(d)!=1)return 1;

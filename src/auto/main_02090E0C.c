@@ -3,9 +3,37 @@
 
 extern u8 data_020f362c[];
 
+M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6, s32 arg7) {
+    extern M2C_UNK data_021029d8;
+    extern M2C_UNK data_021029cc;
+    M2C_UNK func_01ffa3dc(M2C_UNK, M2C_UNK);
+    M2C_UNK func_02082028(M2C_UNK);
+    void func_020906a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void *r4;
+    M2C_UNK alloc;
+
+    if (arg7 == 0) {
+        arg7 = 9;
+    }
+    r4 = (void *)func_01ffa3dc((M2C_UNK)&data_021029d8, arg7);
+    if (r4 != 0) {
+        *(M2C_UNK *)r4 = (M2C_UNK)&data_021029cc;
+        M2C_FIELD(r4, M2C_UNK *, 0x40) = arg0;
+        M2C_FIELD(r4, M2C_UNK *, 0x38) = 0;
+        M2C_FIELD(r4, M2C_UNK *, 0x3C) = 0;
+        M2C_FIELD(r4, M2C_UNK *, 0x34) = 0;
+        M2C_FIELD(r4, u8 *, 0x44) = *((u8 *)&arg6);
+        alloc = func_02082028(0x30);
+        if (alloc != 0) {
+            func_020906a8(alloc, (M2C_UNK)r4, arg0, arg1, arg2, arg3, arg4, arg5);
+        }
+    }
+    return (M2C_UNK)r4;
+}
+
 void func_02090eb8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, s32 arg5, s32 arg6) {
     s32 func_02081070(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02090e0c(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    M2C_UNK func_02090e0c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, s32, s32, s32);
     s32 t;
     s32 a4 = (s32)arg4;
     t = func_02081070(arg0, 1);
@@ -61,6 +89,41 @@ void *func_02090f78(void *arg0) {
         func_020e35cc(M2C_FIELD(arg0, s32 *, 0x40));
     }
     return arg0;
+}
+
+void func_02090fdc(void *arg0) {
+    M2C_UNK func_020910d0(void *);
+    M2C_UNK func_01ffa574(void *);
+    volatile s32 sp8;
+    volatile s32 sp4;
+    volatile s32 sp0;
+    s32 *temp_r0;
+    s32 var_r0;
+    s32 var_r1;
+
+    sp0 = M2C_FIELD(arg0, s32 *, 0x5C) * 0x30;
+    sp4 = M2C_FIELD(arg0, s32 *, 0x60) * 0x30;
+    sp8 = M2C_FIELD(arg0, s32 *, 0x64);
+    {
+        M2C_UNK (*fp)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK) = (M2C_UNK(*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))func_020910d0;
+        if (fp((M2C_UNK)M2C_FIELD(arg0, s32 **, 0x58), (M2C_UNK)&sp0, 0x30000, 0) != 0) {
+            return;
+        }
+    }
+    temp_r0 = M2C_FIELD(arg0, s32 **, 0x58);
+    var_r1 = 1;
+    if ((temp_r0 != NULL) && (*temp_r0 != 0)) {
+        var_r1 = 0;
+    }
+    if (var_r1 == 0) {
+        var_r0 = 1;
+    } else {
+        var_r0 = 0;
+    }
+    if (var_r0 != 0) {
+        return;
+    }
+    func_01ffa574(arg0);
 }
 
 void func_0209106c(void *arg0) {
@@ -463,6 +526,40 @@ cleanup:
     }
 }
 
+void func_020918a4(M2C_UNK arg0, M2C_UNK arg1) {
+    char *r0 = (char *)arg0;
+    char *base;
+    char *r3;
+    u32 off0;
+    u32 off2;
+    u32 b;
+    u32 nested;
+    *(M2C_UNK *)r0 = arg1;
+    if (((unsigned char *)r0)[0x22] & 0x2) {
+        base = (char *)*(M2C_UNK *)r0;
+        off0 = *(unsigned short *)base;
+        off0 = off0 & ~1;
+        *(M2C_UNK *)(r0 + 4) = (M2C_UNK)(base + off0);
+        r3 = (char *)*(M2C_UNK *)r0;
+        off2 = *(unsigned short *)(r3 + 2);
+        b = off2 & ~1;
+        nested = *(unsigned short *)(r3 + b);
+        nested = nested & ~1;
+        *(M2C_UNK *)(r0 + 8) = (M2C_UNK)(r3 + b + nested);
+        r3 = (char *)*(M2C_UNK *)r0;
+        off2 = *(unsigned short *)(r3 + 2);
+        b = off2 & ~1;
+        nested = *(unsigned short *)(r3 + b);
+        nested = nested & ~1;
+        *(M2C_UNK *)(r0 + 0xC) = (M2C_UNK)(r3 + b + nested);
+    } else {
+        base = (char *)*(M2C_UNK *)r0;
+        *(M2C_UNK *)(r0 + 4) = *(M2C_UNK *)base;
+        *(M2C_UNK *)(r0 + 8) = *(M2C_UNK *)(base + 4);
+        *(M2C_UNK *)(r0 + 0xC) = *(M2C_UNK *)(base + 4);
+    }
+}
+
 void func_02091928(void *arg0) {
     M2C_UNK func_020913d4(M2C_UNK);
     u16 temp_r4;
@@ -475,9 +572,9 @@ void func_02091928(void *arg0) {
 }
 
 void func_02091954(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3) {
-M2C_UNK func_020918a4(M2C_UNK); M2C_UNK func_020913d4(M2C_UNK);
+void func_020918a4(M2C_UNK, M2C_UNK); M2C_UNK func_020913d4(M2C_UNK);
 void *r5=(void*)arg0; M2C_UNK r4=arg2; M2C_UNK r1;
-M2C_FIELD(r5,u8*,0x22)=arg3; func_020918a4(arg0); r1=0;
+M2C_FIELD(r5,u8*,0x22)=arg3; func_020918a4(arg0,arg1); r1=0;
 M2C_FIELD(r5,s32*,0x30)=r1; M2C_FIELD(r5,s32*,0x28)=r1; M2C_FIELD(r5,s32*,0x2c)=r1;
 M2C_FIELD(r5,s16*,0x18)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
 M2C_FIELD(r5,u8*,0x20)=r4; M2C_FIELD(r5,u8*,0x21)=31; M2C_FIELD(r5,s32*,0x14)=r1;
@@ -558,24 +655,25 @@ void func_02091abc(void) {
 
 }
 
+#pragma push
+#pragma scheduling off
 s32 func_02091ac0(void *arg0) {
     u16 *p = M2C_FIELD(arg0, u16 **, 0x8);
     s32 sum = 0;
 
-    for (;;) {
+    do {
         u16 a = p[0];
         if (a == 0) {
             u16 b = p[1];
-            if (b == 0 || b == 1 || b == 0xFF) {
+            if (b == 0 || b == 1 || b == 0xff) {
                 return sum;
             }
         }
         sum = sum + 1;
         p = p + 2;
-    }
-    __builtin_unreachable();
+    } while (1);
 }
-
+#pragma pop
 void func_02091af4(void) {
 
 }
@@ -620,26 +718,25 @@ void func_02091bf4(void) {
 }
 
 #pragma peephole off
-void func_02091c20(s32 arg0, s32 arg1) {
+void func_02091c20(s32 index, s32 value) {
     extern u32 data_0215da2c[];
-    if (arg1 + data_0215da2c[arg0] >= 0x000F423FU) {
-        data_0215da2c[arg0] = 0x000F423FU;
+    if (value + data_0215da2c[index] >= 0x000F423FU) {
+        data_0215da2c[index] = 0x000F423FU;
+        return;
+    }
+    data_0215da2c[index] = data_0215da2c[index] + value;
+}
+#pragma peephole off
+void func_02091c54(s32 arg0, s32 arg1) {
+    extern u32 data_0215da2c[];
+    const u32 limit = 0x05F5E0FFU;
+    if (arg1 + data_0215da2c[arg0] >= limit) {
+        data_0215da2c[arg0] = limit;
         return;
     }
     data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
 }
-#pragma scheduling off
-void func_02091c54(s32 arg0, s32 arg1) {
-    extern u32 data_0215da2c[];
-    if (arg1 + data_0215da2c[arg0] >= 0x05F5E0FFU) {
-        data_0215da2c[arg0] = 0x05F5E0FFU;
-        return;
-    }
-    else {
-        data_0215da2c[arg0] = data_0215da2c[arg0] + arg1;
-        return;
-    }
-}
+#pragma peephole reset
 M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
     extern unsigned int data_0215da2c[];
     data_0215da2c[arg0] = (unsigned int)arg1;

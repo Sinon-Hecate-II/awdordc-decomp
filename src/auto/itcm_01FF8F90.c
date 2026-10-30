@@ -1,6 +1,108 @@
 /* 17 functions from 0x01FF8F90 to 0x01FF9ED0 (itcm), found by ds-decomp. */
 #include "common.h"
 
+s32 func_01ff8f90(s32 arg0, s32 arg1, u16 *arg2) {
+    s32 sp0;
+    s32 temp_r10;
+    s32 temp_r3_3;
+    s32 temp_r5;
+    s32 temp_r7_2;
+    s32 temp_r8;
+    s32 temp_r9;
+    s32 var_ip;
+    s32 var_r5;
+    s32 var_r6;
+    u16 temp_r3;
+    u16 temp_r3_2;
+    u16 temp_r7;
+    u8 temp_r4;
+    u8 temp_r8_2;
+    void *var_r2;
+
+    if (arg2 != NULL) {
+        temp_r3 = *arg2;
+        var_r2 = arg2 + 2;
+        var_ip = 0;
+        sp0 = (s32) temp_r3;
+        if ((s32) temp_r3 > 0) {
+loop_3:
+            temp_r3_2 = M2C_FIELD(var_r2, u16 *, 2);
+            temp_r7 = M2C_FIELD(var_r2, u16 *, 0);
+            var_r5 = 8;
+            temp_r8 = temp_r3_2 & 0x4000;
+            var_r6 = 8;
+            temp_r9 = temp_r3_2 & 0x8000;
+            if (temp_r8 == 0x4000) {
+                var_r5 = 0x10;
+                var_r6 = 0x10;
+            }
+            temp_r10 = temp_r3_2 & 0xC000;
+            if (temp_r9 == 0x8000) {
+                var_r5 = 0x20;
+                var_r6 = 0x20;
+            }
+            if (temp_r10 == 0xC000) {
+                var_r5 = 0x40;
+                var_r6 = 0x40;
+            }
+            if ((temp_r7 & 0x4000) == 0x4000) {
+                var_r5 = 0x10;
+                if (temp_r8 == 0x4000) {
+                    var_r5 = 0x20;
+                }
+                var_r6 = 8;
+                if (temp_r9 == 0x8000) {
+                    var_r5 = 0x20;
+                    var_r6 = 0x10;
+                }
+                if (temp_r10 == 0xC000) {
+                    var_r5 = 0x40;
+                    var_r6 = 0x20;
+                }
+            }
+            if ((temp_r7 & 0x8000) == 0x8000) {
+                var_r6 = 0x10;
+                if (temp_r8 == 0x4000) {
+                    var_r6 = 0x20;
+                }
+                var_r5 = 8;
+                if (temp_r9 == 0x8000) {
+                    var_r5 = 0x10;
+                    var_r6 = 0x20;
+                }
+                if (temp_r10 == 0xC000) {
+                    var_r5 = 0x20;
+                    var_r6 = 0x40;
+                }
+            }
+            temp_r7_2 = arg0 + (temp_r3_2 & 0x1FF);
+            temp_r8_2 = arg1 + (u8) temp_r7;
+            temp_r3_3 = temp_r7_2 & 0x1FF;
+            if ((temp_r3_3 <= 0x100) && ((s32) temp_r8_2 <= 0xC0)) {
+                return 1;
+            }
+            temp_r5 = (var_r5 + temp_r7_2) & 0x1FF;
+            if ((temp_r5 <= 0x100) && ((s32) temp_r8_2 <= 0xC0)) {
+                return 1;
+            }
+            temp_r4 = var_r6 + temp_r8_2;
+            if ((temp_r5 <= 0x100) && ((s32) temp_r4 <= 0xC0)) {
+                return 1;
+            }
+            if ((temp_r3_3 <= 0x100) && ((s32) temp_r4 <= 0xC0)) {
+                return 1;
+            }
+            var_ip += 1;
+            var_r2 += 6;
+            if (var_ip >= sp0) {
+                return 0;
+            }
+            goto loop_3;
+        }
+    }
+    return 0;
+}
+
 void func_01ff90e4(s32 arg0, s32 arg1, u32 arg2, u16 *arg3)
 {
     extern u16 **gCur3DSpriteEngine;

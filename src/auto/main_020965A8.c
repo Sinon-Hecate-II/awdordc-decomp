@@ -7,7 +7,7 @@ extern u16 data_02168f14[];
 
 s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     extern s32 data_027e15bc;
 
     u8 *node = (u8 *)arg0;
@@ -28,7 +28,7 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
     func_01ffada0(node[0], node[1], node[2], 0x6e, 0);
 
     {
-        void *base = (void *)*gCurrentMap;
+        void *base = (void *)*data_027e0058;
         s32 row = 0;
         s32 col;
         s32 inner_count;
@@ -38,7 +38,7 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
 
     outer_loop:
         if (row >= (s32)*(u16 *)((u8 *)base + 0x5146)) goto done;
-        base = (void *)*gCurrentMap;
+        base = (void *)*data_027e0058;
         inner_count = *(s32 *)((u8 *)base + 0x5144) & 0xffff;
         /* ensure load as u16 below */
         inner_count = (s32)*(u16 *)((u8 *)base + 0x5144);
@@ -62,7 +62,7 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
                 out[0] = (s16)col;
                 out[1] = (s16)row;
                 found = 1;
-                base = (void *)*gCurrentMap;
+                base = (void *)*data_027e0058;
                 threshold = ((s8 **)((u8 *)base + (row << 2) + 0x52e8))[0][col];
                 inner_count = (s32)*(u16 *)((u8 *)base + 0x5144);
                 col += 1;
@@ -75,7 +75,7 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
 
     outer_next:
         row += 1;
-        base = (void *)*gCurrentMap;
+        base = (void *)*data_027e0058;
         goto outer_loop;
     }
 

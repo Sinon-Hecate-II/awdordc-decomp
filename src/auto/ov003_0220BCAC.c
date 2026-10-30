@@ -96,7 +96,7 @@ void func_ov003_0220bf70(void) {
 
 void func_ov003_0220bf98(void *a) {
 M2C_UNK func_020a8f8c(s32);M2C_UNK func_ov003_022084f0(void *);
-s32 i,offset,flag;
+s32 offset,flag,i;
 func_020a8f8c(M2C_FIELD(a,s32 *,0x54));
 flag=M2C_FIELD(a,u8 *,0x34)!=0;
 if((u8)flag){func_ov003_022084f0(a);return;}
@@ -104,27 +104,29 @@ func_020a8f8c(M2C_FIELD(a,s32 *,0x50));
 i=0;if((s32)*M2C_FIELD(a,u8 **,0x44)<=0)return;
 offset=0;do {
 void *p=(u8 *)M2C_FIELD(a,void **,0x48)+offset;
-s32 value,limit,delta,v;u32 x,y;
+u32 x,y;
+s32 value,limit,delta,v;
 x=M2C_FIELD(p,u8 *,0x11);y=M2C_FIELD(p,u8 *,0x12);
-value=M2C_FIELD(p,s8 *,0x13);delta=M2C_FIELD(p,s8 *,0x15);
 if(x==y){
-limit=M2C_FIELD(p,s8 *,0x14);v=value+delta;
-if(v<=limit){if(v<0)v=0;limit=v;}
-M2C_FIELD(p,s8 *,0x13)=limit;
+ value=M2C_FIELD(p,s8 *,0x13);delta=M2C_FIELD(p,s8 *,0x15);
+ limit=M2C_FIELD(p,s8 *,0x14);v=value+delta;
+ if(v<=limit){if(v<0)v=0;limit=v;}
+ M2C_FIELD(p,s8 *,0x13)=limit;
 }else{
-limit=M2C_FIELD(p,s8 *,0x14);v=value-delta;
-if(v<=limit){if(v<0)v=0;limit=v;}
-M2C_FIELD(p,s8 *,0x13)=limit;
+ value=M2C_FIELD(p,s8 *,0x13);delta=M2C_FIELD(p,s8 *,0x15);
+ limit=M2C_FIELD(p,s8 *,0x14);v=value-delta;
+ if(v<=limit){if(v<0)v=0;limit=v;}
+ M2C_FIELD(p,s8 *,0x13)=limit;
 }
 y=M2C_FIELD(p,u8 *,0x12);
 if(M2C_FIELD(p,u8 *,0x11)!=y&&M2C_FIELD(p,s8 *,0x13)==0)M2C_FIELD(p,u8 *,0x11)=y;
 limit=M2C_FIELD(p,u16 *,14);x=M2C_FIELD(p,u16 *,12);delta=M2C_FIELD(p,u8 *,16);
 if(x<(u32)limit){
-v=x+delta;if(v<=limit){if(v<205)v=205;limit=v;}
-M2C_FIELD(p,u16 *,12)=limit;
+ v=x+delta;if(v<=limit){if(v<205)v=205;limit=v;}
+ M2C_FIELD(p,u16 *,12)=limit;
 }else{
-v=x-delta;if(v>256)limit=256;else if(v>=limit)limit=v;
-M2C_FIELD(p,u16 *,12)=limit;
+ v=x-delta;if(v>256)limit=256;else if(v>=limit)limit=v;
+ M2C_FIELD(p,u16 *,12)=limit;
 }
 i++;offset+=36;
 }while(i<(s32)*M2C_FIELD(a,u8 **,0x44));
@@ -200,9 +202,8 @@ void func_ov003_0220c328(void *arg0, int arg1) {
 }
 
 void func_ov003_0220c414(void *arg0, u8 arg1) {
-    int v = arg1;
-    *(u8 *)((u8 *)arg0 + 0x38) = *(u8 *)((u8 *)arg0 + 0x38) | 0x10;
-    *(u8 *)((u8 *)arg0 + 0x36) = (*(u8 *)((u8 *)arg0 + 0x36) & ~0xF) | ((v & 0xFF) & 0xF);
+    M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) | 0x10);
+    M2C_FIELD(arg0, u8 *, 0x36) = (u8) ((M2C_FIELD(arg0, u8 *, 0x36) & ~0xF) | (arg1 & 0xF));
 }
 
 void func_ov003_0220c43c(void *arg0) {

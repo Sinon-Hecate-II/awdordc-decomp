@@ -37,19 +37,18 @@ if(func_ov000_021a98e4(arg0)==1)return 4;
 return 0;
 }
 
-void func_ov000_021a07c0(s8 arg0) {
+void func_ov000_021a07c0(s32 arg0) {
 s32 func_ov000_021a43e8(); s32 func_ov000_021a98e4(M2C_UNK);
 extern u8 data_ov000_021df7d0[]; extern void *data_ov000_021df578; extern u8 *data_ov000_021df580;
 extern u8 data_ov000_021e00af[],data_ov000_021dfd98[],data_ov000_021dfd99[],data_ov000_021dfd9a[];
 extern s8 data_ov000_021e00b0[];
-register s32 offset; s32 index; register u32 flags;
+s32 offset; s32 index;
 data_ov000_021df7d0[7]=func_ov000_021a06e4(data_ov000_021df7d0[6]);
 offset=arg0*12;
 data_ov000_021e00af[offset]=252;
 M2C_FIELD(data_ov000_021df578,u8*,7)++;
 M2C_FIELD(data_ov000_021df578,u8*,4)=arg0;
-flags=data_ov000_021b5c0f[(s16)data_ov000_021df7d0[6]*112];
-if((flags&7) && func_ov000_021a43e8()==0){
+if((data_ov000_021b5c0f[(s16)data_ov000_021df7d0[6]*(s16)112]&7) && func_ov000_021a43e8()==0){
 if(func_ov000_021a98e4(data_ov000_021df7d0[6])==0){index=data_ov000_021e00b0[offset];data_ov000_021dfd98[index*8]++;}
 if(func_ov000_021a98e4(data_ov000_021df7d0[6])==1){index=data_ov000_021e00b0[offset];data_ov000_021dfd99[index*8]++;}
 if(data_ov000_021df7d0[6]==26){index=data_ov000_021e00b0[offset];data_ov000_021dfd9a[index*8]++;}

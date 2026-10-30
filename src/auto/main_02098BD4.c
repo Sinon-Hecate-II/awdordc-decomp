@@ -507,12 +507,10 @@ u8 func_02099818(s32 arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3) {
  return data_ov000_021b7e7c[arg0];
 }
 
-#pragma push
 #pragma opt_common_subs off
 void func_02099854(void *arg0,s32 arg1,s32 arg2,s32 arg3){
-
 extern u8 data_0211dcf0[];
-u16 *dst; s32 offset,row,col; volatile u16 *src; u16 a=arg3*16,b=a*16,c=b*16,t,x,y,z,w;u8 key,index;void *node;
+u16 *dst; s32 offset,row,col; u16 *src; u16 a=arg3*16,b=a*16,c=b*16,t,x,y,z,w;u8 key,index;void *node;
 index=M2C_FIELD(arg0,u8 *,1);key=M2C_FIELD(arg0,u8 *,0);
 if(index<0x40U){key=0x96;index=0xb2;}
 retry:
@@ -529,12 +527,12 @@ src=node+6;
 if(arg2){func_020996d0(src,7,arg1,arg2,arg3);return;}
 row=0;offset=0;
 do{dst=(u16 *)(arg1+offset);col=0;
-do{t=*src;col++;src++;x=t&15;y=t&0xf0;z=t&0xf00;w=t&0xf000;
+do{t=*src++;col++;x=t&15;y=t&0xf0;z=t&0xf00;w=t&0xf000;
 if(x)x+=arg3;if(y)y+=a;if(z)z+=b;if(w)w+=c;
 *dst++=w|(z|(x|y));
 }while(col<16);row++;offset+=32;}while(row<2);
 }
-#pragma pop
+#pragma opt_common_subs reset
 u8 func_020999b8(void *arg0) {
     s32 func_0209600c();
     u8 var_r0;

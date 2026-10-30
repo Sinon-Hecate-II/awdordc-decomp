@@ -48,7 +48,7 @@ s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
                     if (d0 > 0) dist = dist + d0;
                     else dist = dist + d1;
                     if (dist == 1) {
-                        temp = func_ov000_02177ce0((s16) inner, (s16) outer);
+                        temp = func_ov000_02177ce0((s32)(s16)inner, (s32)(s16)outer);
                         if (temp >= best && (temp != best || !(data_027e15bc & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;
@@ -61,7 +61,7 @@ s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
             outer++;
         } while (outer <= sp8);
     }
-    if (sp4[0] == magic) return 0;
+    if (sp4[0] == (s16) magic) return 0;
     return 1;
 }
 

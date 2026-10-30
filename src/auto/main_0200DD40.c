@@ -86,28 +86,37 @@ s32 func_0200dfa8(void) {
     return *(s32 *)0x027FFF90;
 }
 
-void func_0200dfb8(s32 a,u32 b,s32 c){
-extern M2C_UNK data_0212fcac;
-void (*cb)(s32,s32);u16 cmd;s32 result;
-if(c){
-if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
-if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(6,M2C_FIELD(&data_0212fcac,s32 *,12));}
+#pragma scheduling off
+void func_0200dfb8(s32 a, u32 b, s32 c) {
+    extern M2C_UNK data_0212fcac;
+    void (*cb)(s32, s32);
+    u16 cmd;
+    s32 result;
+    if (c) {
+        if (M2C_FIELD(&data_0212fcac, s32 *, 4)) M2C_FIELD(&data_0212fcac, s32 *, 4) = 0;
+        cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 8);
+        if (cb) { M2C_FIELD(&data_0212fcac, s32 *, 8) = 0; cb(6, M2C_FIELD(&data_0212fcac, s32 *, 12)); }
+    }
+    cmd = (b & 0x7F00) >> 8;
+    switch (b & 0xFF) {
+        case 0: result = 0; break;
+        case 1: result = 4; break;
+        case 2: result = 2; break;
+        case 3: result = 5; break;
+        case 4: result = 1; break;
+        default: result = 6; break;
+    }
+    if (cmd == 81) {
+        cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 20);
+        if (cb) cb(result, M2C_FIELD(&data_0212fcac, s32 *, 24));
+        return;
+    }
+    if (cmd == 64 && M2C_FIELD(&data_0212fcac, u16 **, 28)) *M2C_FIELD(&data_0212fcac, u16 **, 28) = *(volatile u16 *)0x027FFF94;
+    if (M2C_FIELD(&data_0212fcac, s32 *, 4)) M2C_FIELD(&data_0212fcac, s32 *, 4) = 0;
+    cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 8);
+    if (cb) { M2C_FIELD(&data_0212fcac, s32 *, 8) = 0; cb(result, M2C_FIELD(&data_0212fcac, s32 *, 12)); }
 }
-cmd=(b&0x7f00)>>8;
-a=b&255;
-switch(a){case 0:result=0;break;case 1:result=4;break;case 2:result=2;break;case 3:result=5;break;case 4:result=1;break;default:result=6;break;}
-if(cmd==81){
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),20);
-if(cb)cb(result,M2C_FIELD(&data_0212fcac,s32 *,24));
-return;
-}
-if(cmd==64 && M2C_FIELD(&data_0212fcac,u16 **,28)) *M2C_FIELD(&data_0212fcac,u16 **,28)=*(volatile u16 *)0x027fff94;
-if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
-cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
-if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(result,M2C_FIELD(&data_0212fcac,s32 *,12));}
-}
-
+#pragma scheduling on
 s32 func_0200e0e0(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     if (func_02009eb0(9, arg3 | 0x02004100, 0) < 0) {
         return 0;
@@ -281,8 +290,8 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     if (func_0200e234() == 0) return 1;
     M2C_FIELD(&data_0212fccc, void (**)(s32, s32 *), 0x1C) = arg2;
     M2C_FIELD(&data_0212fccc, s32 **, 0x20) = arg3;
-    ((u16 *)&data_0212fd0c)[arg0 * 4] = 0;
-    ((volatile s32 (*)[2])&data_0212fd10)[arg0][0] = arg1;
+    ((u16 (*)[4])&data_0212fd0c)[arg0][0] = 0;
+    ((s32 (*)[2])&data_0212fd10)[arg0][0] = arg1;
     func_0200e8f4((u8)arg0 | 0x03006500);
     return 0;
 }

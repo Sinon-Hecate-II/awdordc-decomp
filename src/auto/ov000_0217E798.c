@@ -56,18 +56,18 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
 int func_ov000_0217e8c4(int arg0, int arg1, unsigned char *arg2, unsigned char *arg3, unsigned char *arg4) { return 0; }
 
 s32 func_ov000_0217f318(s16 x,s16 y) {
-extern void **gCurrentMap;
+extern void **data_027e0058;
 s32 func_020d27a4();s32 func_ov000_021a93ec();s32 func_ov000_02176e28();
 s32 result,best,minx,miny,maxx,maxy; register s32 xx,yy; s32 d,unit,score;void *p;s16 pos[2];
 result=0;best=0;minx=x-1;if(minx<0)minx=0;
-p=*gCurrentMap; miny=y-1;if(miny<0)miny=0;
+p=*data_027e0058; miny=y-1;if(miny<0)miny=0;
 maxx=M2C_FIELD(p,u16*,0x5144)-1;
 maxy=M2C_FIELD(p,u16*,0x5146)-1;
 if(x+1<maxx)maxx=x+1;if(y+1<maxy)maxy=y+1;
 for(yy=miny;yy<=maxy;yy++)for(xx=minx;xx<=maxx;xx++){
 d=tileDistance(x,y,xx,yy);
 if(d<1 || d>1)continue;
-p=*gCurrentMap;
+p=*data_027e0058;
 unit=M2C_FIELD((u8*)p+xx+M2C_FIELD((u8*)p+((u32)yy<<1),u16*,0x3758),u8*,0);
 if(unit==0)continue;
 if(func_020d27a4(M2C_FIELD(p,u8*,0x52d4),unit)==1)continue;

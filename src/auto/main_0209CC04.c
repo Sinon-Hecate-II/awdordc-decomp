@@ -699,11 +699,9 @@ s32 func_0209da3c(void *arg0) {
 }
 
 s32 func_0209da68(void *arg0) {
-    s32 func_0208b5c4();
-    if (func_0208b5c4() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
-    }
-    return 0;
+s32 func_0208b5c4();
+if(func_0208b5c4()==0) M2C_FIELD(arg0,s32*,8)+=8;
+return 0;
 }
 
 void func_0209da8c(void *arg0) {

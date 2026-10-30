@@ -141,29 +141,33 @@ void func_020b9874(s8 mask) {
     extern M2C_UNK data_0215d850;
     extern void **gCurrentMap;
 
+    u8 *buf = data_0215d858;
+    s8 *table = data_ov000_021aab94;
+    u8 *attrs = data_ov000_021b5bfc;
     u8 count = 0;
     u8 i = 0;
-    if (data_ov000_021aab94[0] != -1) {
+    if (table[0] != -1) {
         do {
-            u8 kind = (u8)data_ov000_021aab94[i];
-            if (mask & data_ov000_021b5bfc[kind * 0x70 + 0x13]) {
-                void *g = *gCurrentMap;
+            u8 kind = (u8)table[i];
+            if (mask & attrs[kind * 0x70 + 0x13]) {
+                void **gp = gCurrentMap;
+                void *g = *gp;
                 u16 idx = *(u16 *)((u8 *)g + 0x52a4);
-                if (func_020b9e20(M2C_FIELD(g, u16 *, 0x52a4), kind) != 0) {
-                    void *g2 = *gCurrentMap;
+                if (func_020b9e20((s32)&((u8 *)g)[0x52a4], kind) != 0) {
+                    void *g2 = *gp;
                     s32 base = func_020d2d38(idx, kind);
                     s32 total = *(s32 *)((u8 *)g2 + idx * 0x8c + 0x67a4);
                     u8 flag = (total < base) ? 1 : 0;
-                    data_0215d858[count * 2 + 1] = flag;
-                    data_0215d858[count * 2] = kind;
+                    buf[count * 2 + 1] = flag;
+                    buf[count * 2] = kind;
                     count++;
                 }
             }
             i++;
-        } while (data_ov000_021aab94[i] != -1);
+        } while (table[i] != -1);
     }
     M2C_FIELD(&data_0215d850, s32 *, 4) = count;
-    data_0215d858[count * 2] = 0;
+    buf[count * 2] = 0;
 }
 
 void func_020b9978(void) {

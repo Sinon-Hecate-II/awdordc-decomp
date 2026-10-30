@@ -400,14 +400,17 @@ u8 func_020cd728(void) {
 #pragma push
 #pragma opt_common_subs off
 void func_020cd754(s32 arg0) {
-extern s32 *gCurrentMap; void func_02007f8c(s32,s32);
-s32 base=*gCurrentMap; s32 address;
-if(M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) {
-address=base+0x5160; address+=arg0*161;
-func_02007f8c(address,255);
-}else {
-address=base+0x5160; address+=arg0*161;
-func_02007f8c(address,0);
+extern s32 *gCurrentMap;
+void func_02007f8c(s32,s32);
+s32 base=*gCurrentMap;
+s32 factor=0xA1;
+s32 address;
+if (M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) {
+address=base+0x5160;
+func_02007f8c(factor*arg0+address,255);
+} else {
+address=base+0x5160;
+func_02007f8c(factor*arg0+address,0);
 }
 }
 #pragma pop

@@ -82,33 +82,60 @@ if(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-void func_01ffc4b8(s32 x,s32 y,s8 *out){
- void func_01ffc718(s8 *,s8 *);extern void **gCurrentMap;s32 func_0207c2f0(void);
- s8 *start; s16 dirs[4],costs[4];s32 i,min,dir; s16 count;
- s32 map; s8 *row;
- start=out;
- M2C_FIELD(*gCurrentMap,s8 *,0x52d5)=M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x];
- dir=0;
- map=(s32)*gCurrentMap;row=M2C_FIELD(map+(y<<2),s8 **,0x52e8)+x;
- while(*row!=0){
- if(x+1==M2C_FIELD(map,u16 *,0x5144))costs[0]=255;else costs[0]=(u8)row[1];
- if(x==0)costs[1]=255;else costs[1]=(u8)row[-1];
- if(y+1==M2C_FIELD(map,u16 *,0x5146))costs[3]=255;else costs[3]=M2C_FIELD(map+y*4,u8 **,0x52ec)[x];
- if(y==0)costs[2]=255;else costs[2]=M2C_FIELD(map+y*4,u8 **,0x52e4)[x];
- count=0;min=256;
- for(i=0;i<4;i++){if(min>costs[i])min=costs[i];}
- for(i=0;i<4;i++){if(min==costs[i])dirs[count++]=i;}
- switch(count){
- case 1:dir=dirs[0];break;
- case 2:dir=dirs[(func_0207c2f0()>>14)&1];break;
- case 3:dir=dirs[func_0207c2f0()%3];break;
- case 4:dir=dirs[func_0207c2f0()%4];break;
- }
- *out++=dir;
- switch(dir){case 0:x++;break;case 1:x--;break;case 3:y++;break;case 2:y--;break;}
- map=(s32)*gCurrentMap;row=M2C_FIELD(map+(y<<2),s8 **,0x52e8)+x;
- }
- func_01ffc718(start,out);
+/* Trace a path of movement directions from tile (x,y). At each step it reads the
+ * direction stored in the map's per-row direction grids (0x52e8 for the current
+ * row, 0x52e4/0x52ec for the row above/below, plus the neighbour cells for
+ * left/right), picks the direction with the lowest cost and breaks ties with a
+ * random pick, records it in dirPath, and advances. Stops when the current cell's
+ * direction is 0; then reverses the recorded turn list and caps it with 4
+ * (func_01ffc718). The starting cell's direction is also copied to map+0x52d5. */
+void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
+    void func_01ffc718(s8 *, s8 *);
+    extern void **gCurrentMap;
+    s32 func_0207c2f0(void);
+    s8 *start;
+    s16 dirs[4];
+    s16 costs[4];
+    s32 i;
+    s32 min;
+    s32 dir;
+    s16 count;
+    s32 map;
+    s8 *row;
+    start = dirPath;
+    M2C_FIELD(*gCurrentMap, s8 *, 0x52d5) = M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
+    dir = 0;
+    map = (s32)*gCurrentMap;
+    row = M2C_FIELD(map + (y << 2), s8 **, 0x52e8) + x;
+    while (*row != 0) {
+        if (x + 1 == M2C_FIELD(map, u16 *, 0x5144)) costs[0] = 255;
+        else costs[0] = (u8)row[1];
+        if (x == 0) costs[1] = 255;
+        else costs[1] = (u8)row[-1];
+        if (y + 1 == M2C_FIELD(map, u16 *, 0x5146)) costs[3] = 255;
+        else costs[3] = M2C_FIELD(map + y * 4, u8 **, 0x52ec)[x];
+        if (y == 0) costs[2] = 255;
+        else costs[2] = M2C_FIELD(map + y * 4, u8 **, 0x52e4)[x];
+        count = 0;
+        min = 256;
+        for (i = 0; i < 4; i++) {
+            if (min > costs[i]) min = costs[i];
+        }
+        for (i = 0; i < 4; i++) {
+            if (min == costs[i]) dirs[count++] = i;
+        }
+        switch (count) {
+        case 1: dir = dirs[0]; break;
+        case 2: dir = dirs[(func_0207c2f0() >> 14) & 1]; break;
+        case 3: dir = dirs[func_0207c2f0() % 3]; break;
+        case 4: dir = dirs[func_0207c2f0() % 4]; break;
+        }
+        *dirPath++ = dir;
+        switch (dir) { case 0: x++; break; case 1: x--; break; case 3: y++; break; case 2: y--; break; }
+        map = (s32)*gCurrentMap;
+        row = M2C_FIELD(map + (y << 2), s8 **, 0x52e8) + x;
+    }
+    func_01ffc718(start, dirPath);
 }
 void func_01ffc718(s8 *arg0, s8 *arg1) {
  s8 buf[20]; s32 i=0,j; s8 c;

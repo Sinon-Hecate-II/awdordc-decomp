@@ -106,12 +106,10 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
 
     s32 i, j, x, y;
     s32 result = -1;
+    u8 *pi = a;
+    u8 *pj = pi;
 
-    if (b <= 0) {
-        return result;
-    }
-
-    for (i = 0; i < b; i++) {
+    for (i = 0; i < b; i++, pi += 12, pj = pi) {
         x = func_0203ae6c(i);
         if (x == 0) {
             continue;
@@ -122,26 +120,27 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
         }
 
         for (j = i + 1; j < b; j++) {
+            pj = a + j * 12;
             y = func_0203ae6c(j);
             if (x != y) {
                 continue;
             }
 
-            if (func_02031e70(a) != 2) {
+            if (func_02031e70(pi) != 2) {
                 continue;
             }
 
-            if (func_02031e70(a + j * 12) != 3) {
+            if (func_02031e70(pj) != 3) {
                 continue;
             }
 
-            func_020326c4(a, x);
+            func_020326c4(pi, x);
 
-            if (func_02031e38(a + j * 12) == 0) {
+            if (func_02031e38(pj) == 0) {
                 continue;
             }
 
-            func_02031eb8(a);
+            func_02031eb8(pi);
             func_0203b3fc(a, j, i);
 
             M2C_FIELD(M2C_FIELD(&data_0213d38c, void **, 8), u8 *, 0x1D) = 1;

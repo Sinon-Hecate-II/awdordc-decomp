@@ -5,21 +5,22 @@ extern s32 data_0213e5d4[], data_0213e5f8[];
 extern M2C_UNK data_0212dca4;
 typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
+#pragma scheduling off
 s32 func_02064934(void *arg0) {
  s32 func_020649a8(void *);
  s32 temp_r0, temp_r4, var_r2;
- if (arg0 == NULL) return -1;
+ if (arg0 == 0) return -1;
  if (((u32)(M2C_FIELD(arg0,s32 *,4)<<0x16)>>0x1d)==0) return 0;
- temp_r4=func_020649a8(arg0);
- temp_r0=M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
- var_r2=0;
- M2C_FIELD(arg0,s32 *,4)&=~0x380;
- M2C_FIELD(arg0,s32 *,0)=0;
+ temp_r4 = func_020649a8(arg0);
+ temp_r0 = M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
+ var_r2 = 0;
+ M2C_FIELD(arg0,s32 *,4) &= ~0x380;
+ M2C_FIELD(arg0,s32 *,0) = 0;
  if (((u32)(M2C_FIELD(arg0,s32 *,8)<<0x1c)>>0x1f)!=0) return -1;
- if (temp_r4!=0 || temp_r0!=0) var_r2=1;
+ if (temp_r4 != 0 || temp_r0 != 0) var_r2 = 1;
  return -var_r2;
 }
-
+#pragma scheduling on
 s32 func_020649a8(void *arg0) {
     s32 func_02064034();
     s32 func_020641a8(void *, M2C_UNK);
@@ -67,21 +68,28 @@ char *func_02064a90(char *s) {
  return s;
 }
 
-char *func_02064ad4(s32 value,char *buffer,s32 radix) {
- s32 negative=0, i=0;
- if(value<0) {value=-value; negative=1;}
- do {
- s32 rem=value%radix;
- if(rem>9) buffer[i]=rem+0x37; else buffer[i]=rem+0x30;
- i++;
- value=value/radix;
- } while(value!=0);
- if(negative) buffer[i++]='-';
- buffer[i]=0;
- func_02064a90(buffer);
- return buffer;
+#pragma opt_strength_reduction off
+char *func_02064ad4(s32 value, char *buffer, s32 radix) {
+    s32 negative = 0, i = 0, rem;
+    if (value < 0) { value = -value; negative = 1; }
+    do {
+        rem = value % radix;
+        if (rem > 9) {
+            buffer[i] = (char)(rem + 0x37);
+        } else {
+            buffer[i] = (char)(rem + 0x30);
+        }
+        i++;
+        value = value / radix;
+    } while (value != 0);
+    if (negative) {
+        buffer[i++] = '-';
+    }
+    buffer[i] = 0;
+    func_02064a90(buffer);
+    return buffer;
 }
-
+#pragma opt_strength_reduction reset
 s32 func_02064b50(void *arg0) {
     extern s32 data_0213e9f4;
     s32 var_r0;
@@ -166,9 +174,10 @@ return result;
 
 void func_02064ffc(void *arg0) {
     M2C_UNK func_02064ed0(void *, M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg0, s8 *, 0xD) = 0;
-    func_02064ed0(arg0, 0, 0);
-    M2C_FIELD(arg0, s8 *, 0xD) = 0;
+    s8 zero = 0;
+    ((s8 *)arg0)[0xD] = zero;
+    func_02064ed0(arg0, zero, zero);
+    ((s8 *)arg0)[0xD] = zero;
 }
 
 M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
@@ -286,7 +295,9 @@ u32 v=(u8)value; u32 k;
 if(n>=32) {
 k=(-(u32)p)&3;
 if(k) {n-=k;do {*p++=(u8)v;}while(--k);}
-if(v) v |= ((v<<24)|(v<<16))|(v<<8);
+if (v == 0) goto skip_v;
+v |= ((v<<24)|(v<<16))|(v<<8);
+skip_v:
 k=n>>5;
 if(k) do {
 ((u32 *)p)[0]=v;((u32 *)p)[1]=v;((u32 *)p)[2]=v;((u32 *)p)[3]=v;
@@ -298,6 +309,7 @@ if(k) do {*(u32 *)p=v;p+=4;}while(--k);
 n&=3;
 }
 if(n) do {*p++=(u8)v;}while(--n);
+(void)k;
 return (s32)p;
 }
 

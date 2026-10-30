@@ -180,6 +180,10 @@ void func_0209f390(void){
     M2C_FIELD(*gCurrentMap,u8 *,0x5155)=0x13;
 }
 
+/* Battle start-up: fill the per-player setup tables for players 1-4 (id/team
+ * slots via the func_020a23xx byte setters), clear the map's edge counters,
+ * and initialize the player config record at data_02168f14 (flags word plus
+ * default values 0/1000/0/0), setting its default flag bits. */
 void func_0209f5dc(void) {
     void func_020a230c(s32, s32);
     void func_020a231c(s32, s32);
@@ -191,10 +195,10 @@ void func_0209f5dc(void) {
     extern u16 data_02168f14;
     u8 *p;
     u8 *q;
-    u16 *d;
-    u32 t;
+    u16 *cfg;
+    u32 bits;
 
-    d = &data_02168f14;
+    cfg = &data_02168f14;
 
     p = (u8 *)*gCurrentMap;
     p += 0x5000;
@@ -228,18 +232,18 @@ void func_0209f5dc(void) {
     func_020a233c(3, 0);
     func_020a233c(4, 0);
 
-    *(u16 *)((u8 *)d + 4) = 0;
-    *((u8 *)d + 3) = 0;
-    *((u8 *)d + 2) = 0;
-    t = *d;
-    t |= 0x100;
-    *d = t;
-    t = *d;
-    t &= ~0x200;
-    *d = t;
-    *(u16 *)((u8 *)d + 6) = 0x3e8;
-    *(u32 *)((u8 *)d + 8) = 0;
-    *(u32 *)((u8 *)d + 12) = 0;
+    *(u16 *)((u8 *)cfg + 4) = 0;
+    *((u8 *)cfg + 3) = 0;
+    *((u8 *)cfg + 2) = 0;
+    bits = *cfg;
+    bits |= 0x100;
+    *cfg = bits;
+    bits = *cfg;
+    bits &= ~0x200;
+    *cfg = bits;
+    *(u16 *)((u8 *)cfg + 6) = 0x3e8;
+    *(u32 *)((u8 *)cfg + 8) = 0;
+    *(u32 *)((u8 *)cfg + 12) = 0;
 
     q = (u8 *)*gCurrentMap;
     q += 0x5000;
@@ -263,34 +267,34 @@ void func_0209f5dc(void) {
     q += 0x5000;
     q[0x155] = 3;
 
-    t = *d;
-    t |= 0x400;
-    *d = t;
-    t = *d;
-    t &= ~0x800;
-    *d = t;
-    t = *d;
-    t &= ~0x38;
-    t |= 0x10;
-    *d = t;
-    t = *d;
-    t &= ~0x40;
-    *d = t;
-    t = *d;
-    t &= ~0x80;
-    *d = t;
-    t = *d;
-    t |= 0x2000;
-    *d = t;
-    t = *d;
-    t |= 0x1000;
-    *d = t;
-    t = *d;
-    t |= 0x4000;
-    *d = t;
-    t = *d;
-    t |= 0x8000;
-    *d = t;
+    bits = *cfg;
+    bits |= 0x400;
+    *cfg = bits;
+    bits = *cfg;
+    bits &= ~0x800;
+    *cfg = bits;
+    bits = *cfg;
+    bits &= ~0x38;
+    bits |= 0x10;
+    *cfg = bits;
+    bits = *cfg;
+    bits &= ~0x40;
+    *cfg = bits;
+    bits = *cfg;
+    bits &= ~0x80;
+    *cfg = bits;
+    bits = *cfg;
+    bits |= 0x2000;
+    *cfg = bits;
+    bits = *cfg;
+    bits |= 0x1000;
+    *cfg = bits;
+    bits = *cfg;
+    bits |= 0x4000;
+    *cfg = bits;
+    bits = *cfg;
+    bits |= 0x8000;
+    *cfg = bits;
 }
 
 void func_0209f858(void) {

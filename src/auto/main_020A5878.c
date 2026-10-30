@@ -34,22 +34,22 @@ s32 func_020a5ae0(u32 arg0) {
 }
 
 s32 func_020a5b2c(Unit5B *p) {
-extern s32 *gCurrentMap;
-s32 func_020a7d38(Unit5B *);
-u8 *base = (u8 *)*gCurrentMap;
-s32 kind = p->kind;
-s32 idx = M2C_FIELD(base + (p->x + M2C_FIELD(base + p->y * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31;
-s32 cost = (s8)data_ov000_021b5c58[kind * 112][idx];
-if (!func_020a5c40(p)) return 0;
-if (func_020a7d38(p) && p->kind == 22) cost = 5;
-if (cost < 0) { cost = 0; }
-{
-    u8 fuel = p->fuel;
-    if (cost >= fuel) p->fuel = 0;
-    else p->fuel = (u8)(fuel - cost);
-}
-if (!p->fuel && (data_ov000_021b5c0f[p->kind * 112] & 48)) return 1;
-return 0;
+    extern s32 *gCurrentMap;
+    s32 func_020a7d38(Unit5B *);
+    u8 *base = (u8 *)*gCurrentMap;
+    s32 kind = p->kind;
+    s32 idx = M2C_FIELD(base + (p->x + M2C_FIELD(base + p->y * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31;
+    s32 cost = (s8)(*(s8 **)((u8 *)data_ov000_021b5c58 + kind * 112))[idx];
+    if (!func_020a5c40((u8 *)p)) return 0;
+    if (func_020a7d38(p) && p->kind == 22) cost = 5;
+    if (cost < 0) cost = 0;
+    {
+        u8 fuel = p->fuel;
+        if (fuel <= cost) p->fuel = 0;
+        else p->fuel = (u8)(fuel - cost);
+    }
+    if (!p->fuel && (data_ov000_021b5c0f[p->kind * 112] & 48)) return 1;
+    return 0;
 }
 
 s32 func_020a5c40(u8 *p){
@@ -139,9 +139,10 @@ s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
 void func_020a5f4c(s32 arg0) {
     M2C_UNK func_020a5d8c(s32, u8, u8);
     extern s32 *gCurrentMap;
-    s32 base = (s32)((u8 *)*gCurrentMap + 0x1a4);
-    s32 entry = 14 * arg0 + (base + 0x5800);
-    func_020a5d8c(entry, M2C_FIELD(entry, u8 *, 1), M2C_FIELD(entry, u8 *, 2));
+    s32 mul = 14;
+    u8 *base = (u8 *)(*gCurrentMap + 0x1a4);
+    u8 *entry = base + 0x5800 + mul * arg0;
+    func_020a5d8c((s32)entry, entry[1], entry[2]);
 }
 #pragma opt_propagation reset
 s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020d27c0(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return func_020d27c0(v);}
@@ -289,7 +290,14 @@ if(func_020d19b4(id)&&!func_020cd728())func_02091c54(12,income);
 
 s32 func_020a641c(u8 *p,s32 a){extern s32 *gCurrentMap;s32 func_020a85c0(u32);s32 func_020a86f0(s32);s32 n,v;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(func_020a85c0((u32)(p[0]<<26)>>26))return 0;v=func_020a86f0(n)*a;n=(u32)(p[10]<<25)>>25;if(v>n)v=n;return v;}
 
-void func_020a64bc(void *p){s32 n=((s32 (*)(void *))func_020a641c)(p);u8 b=M2C_FIELD(p,u8 *,10);s32 low=(u32)(b<<25)>>25;n=low-n;n&=127;M2C_FIELD(p,u8 *,10)=(b&~127)|n;}
+void func_020a64bc(void *p){
+s32 n=((s32 (*)(void *))func_020a641c)(p);
+u8 b=M2C_FIELD(p,u8 *,10);
+s32 low=(u32)(b<<25)>>25;
+n=(u8)(low-n);
+n=n&127;
+M2C_FIELD(p,u8 *,10)=(u8)((b&~127)|n);
+}
 
 void func_020a64ec(void) {
     M2C_UNK func_ov000_02169518();

@@ -19,7 +19,7 @@ data_02168f14=(flags&~7)|3;
 func_0208349c(mode);
 func_020ceec8();
 i=0;p=&data_02168f2c;
-do {i++;*p=0;}while(p++,i<59);
+do {i++;*p=0;p+=1;}while(i<59);
 k=0;
 do {
 switch(k){

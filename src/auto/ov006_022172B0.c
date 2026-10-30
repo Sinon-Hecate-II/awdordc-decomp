@@ -133,6 +133,54 @@ else func_02086720(0x46000016);
 M2C_FIELD(&data_ov006_02218e20,s32 *,8)=1;
 }
 
+void func_ov006_0221762c(void *arg0) {
+    M2C_UNK func_020c47e4(M2C_UNK);
+    M2C_UNK func_020c85c4(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020c7b48(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020c7cd0(M2C_UNK, M2C_UNK);
+    s32 func_02084cf8(void);
+    s32 func_020c7a3c(M2C_UNK);
+    void func_020e3788(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    extern const Ov006Date data_ov006_02218394;
+
+    const u32 *rd;
+    u32 a[4];
+    u32 b[3];
+    u32 c[4];
+    u32 d[3];
+    u32 i;
+    u32 *cell;
+
+    rd = (const u32 *)&data_ov006_02218394;
+    a[0] = rd[0]; a[1] = rd[1]; a[2] = rd[2]; a[3] = rd[3];
+    b[0] = 0; b[1] = 0; b[2] = 0;
+    c[0] = a[0]; c[1] = a[1]; c[2] = a[2]; c[3] = a[3];
+    d[0] = 0; d[1] = 0; d[2] = 0;
+
+    cell = (u32 *)M2C_FIELD(arg0, u32 *, 0x4C);
+
+    func_020c47e4((M2C_UNK)c);
+    func_020c85c4(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    func_020c7b48(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
+    func_020c7cd0(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    cell[0x14] = (u32)func_02084cf8();
+
+    cell[0x12] = (cell[0x12] & ~0xFFU) | (c[0] & 0xFFU);
+    cell[0x12] = (cell[0x12] & ~0x3F00U) | ((c[1] << 26) >> 18);
+    cell[0x12] = (cell[0x12] & ~0xFC000U) | ((c[2] << 26) >> 12);
+    cell[0x12] = (cell[0x12] & ~0x3F00000U) | ((d[0] << 26) >> 6);
+    cell[0x12] = (cell[0x12] & ~0xFC000000U) | (d[1] << 26);
+    cell[0x13] = (cell[0x13] & ~0x3FU) | (d[2] & 0x3FU);
+    cell[0x13] &= 0xF003FFFFU;
+
+    if (func_020c7a3c(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
+        func_020e3788((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);
+    } else {
+        func_01ffa8c4(arg0, 2);
+    }
+}
+
 void func_ov006_02217794(void *arg0) {
     if ((M2C_FIELD(arg0, s32 *, 0x38) != 0) && (func_0208471c() == 0)) {
         return;
@@ -273,19 +321,17 @@ void func_ov006_022179b4(void *arg0) {
     var_r3 = 0;
     var_r4 = 0;
     if (temp_r2 > 0U) {
-loop_16:
-        if (var_r6 & (1 << var_r4)) {
-            if (var_r3 == (u32)temp_r1) {
-                M2C_FIELD(arg0, s32 *, 0x54) = (s32) ((var_r4 * 0x6F8) + M2C_FIELD(arg0, s32 *, 0x50));
-                goto done;
-            } else {
-                var_r3 += 1;
+        do {
+            if (var_r6 & (1 << var_r4)) {
+                if (var_r3 == temp_r1) {
+                    M2C_FIELD(arg0, s32 *, 0x54) = (s32) ((var_r4 * 0x6F8) + M2C_FIELD(arg0, s32 *, 0x50));
+                    goto done;
+                } else {
+                    var_r3 += 1;
+                }
             }
-        }
-        var_r4 += 1;
-        if (var_r4 < temp_r2) {
-            goto loop_16;
-        }
+            var_r4 += 1;
+        } while (var_r4 < temp_r2);
     }
 done:
     if (M2C_FIELD(arg0, s32 *, 0x54) != 0) {

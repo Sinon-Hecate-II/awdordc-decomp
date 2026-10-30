@@ -17,28 +17,39 @@ void func_0207d130(void *a, void *b, s32 c, s32 d) {
     (void)a; (void)b; (void)c; (void)d; (void)gCur3DSpriteEngine;
 }
 
-void func_0207d49c(s32 a,s32 b,s32 flags){
-s32 left=0x800,half=a>>1,ax=a<<12,by=b<<12; s32 right=ax+0x800,top=0x800,bottom=by+0x800;
-s32 vright,vy,vleft; s16 y1,x1,y2,x2;
-vy=(s16)-b;vleft=(s16)-half;vright=(s16)half;
-if(flags&0x1000){left=right-0x1000;right=-top;}
-if(flags&0x2000){top=bottom-0x1000;bottom=-0x800;}
-y1=(s16)(top>>8);x1=(s16)(left>>8);
-y2=(s16)(bottom>>8);x2=(s16)(right>>8);
-*(volatile u32 *)0x4000500=1;
-*(volatile u32 *)0x4000488=(u32)(u16)x1|((u32)(u16)y1<<16);
-*(volatile u32 *)0x400048c=(u32)(u16)vleft|((u32)(u16)vy<<16);
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x1|((u32)(u16)y2<<16);
-*(volatile u32 *)0x400048c=(u16)vleft;
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x2|((u32)(u16)y2<<16);
-*(volatile u32 *)0x400048c=(u16)vright;
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000488=(u32)(u16)x2|((u32)(u16)y1<<16);
-*(volatile u32 *)0x400048c=(u32)(u16)vright|((u32)(u16)vy<<16);
-*(volatile u32 *)0x400048c=0;
-*(volatile u32 *)0x4000504=0;
+void func_0207d49c(s32 a, s32 b, s32 flags) {
+    s32 left = 0x800, half = a >> 1, ax = a << 12, by = b << 12;
+    s32 right = ax + 0x800, top = 0x800, bottom = by + 0x800;
+    s16 vright, vy, vleft, y1, x1, y2, x2;
+    vy = (s16)-b;
+    vleft = (s16)-half;
+    vright = (s16)half;
+    if (flags & 0x1000) {
+        left = right - 0x1000;
+        right = -top;
+    }
+    if (flags & 0x2000) {
+        top = bottom - 0x1000;
+        bottom = -0x800;
+    }
+    y1 = (s16)(top >> 8);
+    x1 = (s16)(left >> 8);
+    y2 = (s16)(bottom >> 8);
+    x2 = (s16)(right >> 8);
+    *(volatile u32 *)0x4000500 = 1;
+    *(volatile u32 *)0x4000488 = (u32)(u16)x1 | ((u32)(u16)y1 << 16);
+    *(volatile u32 *)0x400048c = (u32)(u16)vleft | ((u32)(u16)vy << 16);
+    *(volatile u32 *)0x400048c = 0;
+    *(volatile u32 *)0x4000488 = (u32)(u16)x1 | ((u32)(u16)y2 << 16);
+    *(volatile u32 *)0x400048c = (u16)vleft;
+    *(volatile u32 *)0x400048c = 0;
+    *(volatile u32 *)0x4000488 = (u32)(u16)x2 | ((u32)(u16)y2 << 16);
+    *(volatile u32 *)0x400048c = (u16)vright;
+    *(volatile u32 *)0x400048c = 0;
+    *(volatile u32 *)0x4000488 = (u32)(u16)x2 | ((u32)(u16)y1 << 16);
+    *(volatile u32 *)0x400048c = (u32)(u16)vright | ((u32)(u16)vy << 16);
+    *(volatile u32 *)0x400048c = 0;
+    *(volatile u32 *)0x4000504 = 0;
 }
 
 void func_0207d5c0(s32 a,s32 b,s32 flags){

@@ -91,25 +91,50 @@ void func_0200bf64(u32 *arg0,void *arg1) {
     arg0[1] = x;
 }
 
-s32 func_0200bf8c(u32 *arg0,s32 arg1,u32 arg2,s32 arg3,u32 arg4,u32 arg5,u32 arg6,u32 arg7) {
-void func_0200b774(void *); s32 func_0200b99c(void *,s32,u32,u32,s32); s32 func_0200bbe0(void *,void *,s32); void func_0200ba9c(void *); s32 func_0200b9e4(void *,Unk0200FilePair);
-u32 work[18]; Unk0200FilePair pair; u32 base,size; register u32 offset;
-if(arg1==0){size=arg5;base=arg4;}else{size=arg7;base=arg6;}
-offset=arg2*32;
-if(size<=(arg2<<5))return 0;
-func_0200b774(work);
-if(!func_0200b99c(work,arg3,base+offset,base+size,-1))return 0;
-if(func_0200bbe0(work,arg0,32)!=32){func_0200ba9c(work);return 0;}
-func_0200ba9c(work);
-arg0[8]=arg1;
-func_0200bf64((u32 *)&pair,arg0);
-if(!func_0200b9e4(work,pair))return 0;
-arg0[9]=work[9];arg0[10]=work[10]-work[9];
-func_0200ba9c(work);
-return 1;
-}
+#pragma scheduling off
+s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7) {
+    void func_0200b774(void *);
+    s32 func_0200b99c(void *, s32, u32, u32, s32);
+    s32 func_0200bbe0(void *, void *, s32);
+    void func_0200ba9c(void *);
+    s32 func_0200b9e4(void *, Unk0200FilePair);
+    u32 work[18];
+    Unk0200FilePair pair;
+    u32 size;
+    u32 base;
+    u32 shifted;
 
-#pragma optimization_level 2
+    if (arg1 == 0) {
+        size = arg5;
+        base = arg4;
+    } else {
+        size = arg7;
+        base = arg6;
+    }
+    shifted = arg2 << 5;
+    if (size <= shifted) {
+        return 0;
+    }
+    func_0200b774(work);
+    if (!func_0200b99c(work, arg3, base + shifted, base + size, -1)) {
+        return 0;
+    }
+    if (func_0200bbe0(work, arg0, 32) != 32) {
+        func_0200ba9c(work);
+        return 0;
+    }
+    func_0200ba9c(work);
+    arg0[8] = arg1;
+    func_0200bf64((u32 *)&pair, arg0);
+    if (!func_0200b9e4(work, pair)) {
+        return 0;
+    }
+    arg0[9] = work[9];
+    arg0[10] = work[10] - work[9];
+    func_0200ba9c(work);
+    return 1;
+}
+#pragma scheduling reset
 s32 func_0200c084(u32 *arg0,s32 arg1,u32 arg2) {
 void func_0200b774(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200ba9c(void *);void func_02008048();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
@@ -309,6 +334,40 @@ void func_0200c494(void *arg0, void *arg1, u32 arg2) {
     }
     if (arg2 & 0x3f)
         func_02008048(arg1, (u8 *)arg0 + 0x18, arg2 & 0x3f);
+}
+
+void func_0200c55c(M2C_UNK arg0, void *arg1) {
+    void func_0200c494(void *, void *, u32);
+    void func_0200c614(void *);
+    s32 func_02007f8c();
+    void func_02008048();
+    extern M2C_UNK data_020f522c;
+    s32 temp_r6;
+    s32 temp_r7;
+    s32 var_r3;
+    u32 temp_r3;
+    u32 var_r2;
+
+    temp_r3 = M2C_FIELD(arg1, u32 *, 0x10);
+    temp_r6 = (M2C_FIELD(arg1, s32 *, 0x14) * 8) | (temp_r3 >> 0x1D);
+    temp_r7 = temp_r3 * 8;
+    func_0200c494(arg1, &data_020f522c, 1);
+    var_r3 = M2C_FIELD(arg1, u32 *, 0x10) & 0x3F;
+    var_r2 = 0x40 - var_r3;
+    if (var_r2 < 8U) {
+        func_02007f8c(arg1 + 0x18 + var_r3);
+        func_0200c614(arg1);
+        var_r3 = 0;
+        var_r2 = 0x40;
+    }
+    if (var_r2 > 8U) {
+        func_02007f8c(arg1 + 0x18 + var_r3, 0, var_r2 - 8);
+    }
+    M2C_FIELD(arg1, s32 *, 0x50) = temp_r7;
+    M2C_FIELD(arg1, s32 *, 0x54) = temp_r6;
+    func_0200c614(arg1);
+    func_02008048(arg1, arg0, 0x10);
+    func_02007f8c(arg1, 0, 0x58);
 }
 
 void func_0200c614(void *arg0) { }

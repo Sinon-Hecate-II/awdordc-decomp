@@ -34,17 +34,56 @@ void func_01ff82e4(u32 r0, void *r1, u32 r2) {
     }
 }
 
-s32 func_01ff8300(void){
-s32 func_01ff83a8(u32,void *,s32);void func_0200673c(void);void func_02006748(void);void func_02006804(void);void func_02006810(void);s32 func_0200751c(void);void func_02007530(s32);
-u32 base;u32 start;void *dst;s32 size;s32 start2;void *dst2;s32 size2;s32 state;s32 diff;
-base=*(u32 *)0x27ffc2c;
-if(base>=0x8000)func_01ff83a8(base,(void *)0x27ffe00,0x160);
-start=*(u32 *)0x27ffe20;dst=*(void **)0x27ffe28;size=*(s32 *)0x27ffe2c;start2=*(s32 *)0x27ffe30;dst2=*(void **)0x27ffe38;size2=*(s32 *)0x27ffe3c;
-state=func_0200751c();func_02006748();func_0200673c();func_02007530(state);func_02006810();func_02006804();
-start+=base;
-if(start>=0x8000)goto copy;
-diff=0x8000-start;dst=(u8 *)dst+diff;size-=diff;start=0x8000;
-copy:func_01ff83a8(start,dst,size);return func_01ff83a8(start2+base,dst2,size2);
+s32 func_01ff8300(void)
+{
+  s32 func_01ff83a8(u32, void *, s32);
+  void func_0200673c(void);
+  void func_02006748(void);
+  void func_02006804(void);
+  void func_02006810(void);
+  s32 func_0200751c(void);
+  void func_02007530(s32);
+  u32 base;
+  u32 start;
+  void *dst;
+  s32 size;
+  s32 start2;
+  void *dst2;
+  s32 size2;
+  s32 state;
+  s32 diff;
+  base = *((u32 *) 0x27ffc2c);
+  if (base >= 0x8000)
+  {
+    func_01ff83a8(base, (void *) 0x27ffe00, 0x160);
+  }
+  start = *((u32 *) 0x27ffe20);
+  dst = *((void **) 0x27ffe28);
+  size = *((s32 *) 0x27ffe2c);
+  start2 = *((s32 *) 0x27ffe30);
+  dst2 = *((void **) 0x27ffe38);
+  size2 = *((s32 *) 0x27ffe3c);
+  state = func_0200751c();
+  func_02006748();
+  func_0200673c();
+  func_02007530(state);
+  func_02006810();
+  func_02006804();
+  start += base;
+  if (start >= 0x8000)
+  {
+    goto copy;
+  }
+  diff = 0x8000 - start;
+  dst = ((u8 *) dst) + diff;
+  size -= diff;
+  start = 0x8000;
+  state = start;
+  diff = diff;
+  copy:
+  func_01ff83a8(state, dst, size);
+
+  return func_01ff83a8(start2 + base, dst2, size2);
 }
 
 int func_01ff83a8(u32 arg0, void *arg1, s32 arg2) {
@@ -152,12 +191,13 @@ void func_01ff8624(s32 start, s32 end) {
     extern void *gCur3DSpriteEngine, *data_027e00c8;
     void *base;
     u16 *dst;
-    s32 i, n, a, b, c, j;
+    s32 limit, i, n, a, b, c, j;
     u8 same;
     n = M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a);
     same = gCur3DSpriteEngine == data_027e00c8;
     if (same == 1) base = (void *)0x7000000; else base = (void *)0x7000400;
-    if (n > 0x80 - start) n = 0x80 - start;
+    limit = 0x80 - start;
+    if (n > limit) n = limit;
     dst = (u16 *)((u8 *)base + start * 8);
     i = 0;
     if (n > 0) {

@@ -208,8 +208,8 @@ void func_020293a0(void *arg0, s32 arg1) {
     s32 func_020294f8(void);
     void func_020295e4(void *);
     void func_02007ef4(void *, void *, u32);
-    void *base;
     void *node;
+    void *base;
     u8 flag;
 
     base = func_02027d50();
@@ -240,6 +240,7 @@ void func_020293a0(void *arg0, s32 arg1) {
     func_020295e4(node);
 }
 
+#pragma opt_strength_reduction off
 void *func_0202942c(void) {
     void *func_02027d50(void);
     void *base;
@@ -273,8 +274,8 @@ void *func_0202942c(void) {
     }
     slotbase = (u8 *)hdr + 0xC;
     for (i = 0; i < nslots; i++) {
-        slot = (void *)(slotbase + i * 0xD0);
-        if (*(u8 *)slot == 0) {
+        slot = (void *)(slotbase + i * 0xD0U);
+        if (*(u8 *)slot == 0U) {
             goto found;
         }
     }
@@ -297,7 +298,7 @@ found:
     M2C_FIELD(hdr, u32 *, 0) = count;
     return slot;
 }
-
+#pragma opt_strength_reduction on
 s32 func_020294f8(void) {
     void *func_02027d50();
     void *temp_r0;
@@ -345,30 +346,27 @@ void *func_02029594(void *arg0) {
     void *temp_r0_2;
     void *temp_r2;
     void *var_r0;
-    void *var_r4;
 
-    temp_r0 = (void *)func_02027d50();
-    temp_r0_2 = (void *)((u8 *)temp_r0 + 0x2000);
-    var_r4 = NULL;
-    temp_r2 = M2C_FIELD(temp_r0_2, void **, 0x270);
+    temp_r0 = func_02027d50();
+    temp_r0_2 = temp_r0 + 0x2000;
+    temp_r2 = ((void **)temp_r0_2)[0x270 / 4];
     if (temp_r2 == NULL) {
         return NULL;
     }
-    if (M2C_FIELD(temp_r0_2, u32 *, 0x274) <= 0xCU) {
+    if (((u32 *)temp_r0_2)[0x274 / 4] <= 0xCU) {
         return NULL;
     }
-    var_r0 = M2C_FIELD(temp_r2, void **, 0x4);
+    var_r0 = ((void **)temp_r2)[1];
     if (var_r0 == NULL) {
         return var_r0;
     }
 loop_6:
-    if (M2C_FIELD(var_r0, s32 *, 0x4) != (s32)arg0) {
-        var_r0 = M2C_FIELD(var_r0, void **, 0xC);
+    if (((void **)var_r0)[1] != arg0) {
+        var_r0 = ((void **)var_r0)[3];
         if (var_r0 != NULL) {
             goto loop_6;
         }
     }
-    (void)var_r4;
     return var_r0;
 }
 
@@ -600,12 +598,10 @@ void func_020299d0(void *arg0) {
     }
     M2C_FIELD(&data_02138e50, u32 *, 0x24) = M2C_FIELD(arg0, u16 *, 2);
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        goto done;
+        return;
     }
     func_020281f8();
     func_02005df4(&data_02138e54);
-done:
-    return;
 }
 
 void func_02029a10(void) {

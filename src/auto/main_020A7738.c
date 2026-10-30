@@ -351,16 +351,16 @@ u32 func_020a7f38(void *arg0) {
 }
 
 void func_020a7f48(void *unit,s32 x,s32 y,s32 mode) {
-extern void **gCurrentMap;
+extern void **data_027e0058;
 void func_020d0288(void *,s32,s32,s32,s32,s32);s32 func_020d02b4(void *);
 u8 func_020a8478(s32,s32);u8 func_020a80fc(s32,s32);u8 func_020a8164(s32,s32);void func_020a7f18(void *,u32);
 s32 iter[8];void *map;void *base; s32 idx;
-map=*gCurrentMap;
+map=*data_027e0058;
 func_020d0288(iter,mode,x,y,M2C_FIELD(map,u16 *,0x5144),M2C_FIELD(map,u16 *,0x5146));
 for(;;){
 if(!func_020d02b4(iter))return;
 if(func_020a8478(iter[4],iter[5])){
-map=*gCurrentMap;
+map=*data_027e0058;
 idx=M2C_FIELD(M2C_FIELD(map+2*iter[5],u16 *,0x3758)+(map+iter[4]),u8 *,0x508);
 base=map+0x59a4;
 if(!func_020a80fc((s32)unit,(s32)(base+idx*14)))break;

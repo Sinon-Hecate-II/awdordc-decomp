@@ -216,13 +216,13 @@ void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 void func_020039a0(void *arg0, s32 arg1, s32 arg2) {
-    if (arg2 >= 0) {
-        M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0x80);
-        M2C_FIELD(arg0, s16 *, 4) = (s16) arg2;
+    if (arg2 < 0) {
+        M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0);
+        M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg2);
         return;
     }
-    M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0);
-    M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg2);
+    M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0x80);
+    M2C_FIELD(arg0, s16 *, 4) = (s16) arg2;
 }
 
 void func_020039c8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {

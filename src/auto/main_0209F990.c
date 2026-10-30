@@ -368,43 +368,32 @@ M2C_UNK func_020a0360(void) {
 s32 func_020a046c(void) {
     extern void *data_0211fb5c;
     extern s32 *gCurrentMap;
-    M2C_UNK *obj;
-    s32 r12;
-    s32 r6_val;
-    u8 *p4;
-    u8 *p6;
 
-    obj = (M2C_UNK *)*gCurrentMap;
-    if ((s8)M2C_FIELD(obj, s8 *, 0x5b) < 1) {
+    s8 i;
+    u8 *r;
+    u8 *dest;
+
+    i = 1;
+    if (((s8 *)((u8 *)data_0211fb5c))[0x5b] < 1) {
         return 0;
     }
-    r12 = 1;
-    p4 = *(u8 **)data_0211fb5c;
     do {
-        M2C_UNK *r7 = (M2C_UNK *)((u8 *)obj + r12);
-        s8 lr_val = M2C_FIELD(r7, s8 *, 0x35);
-        s8 r6_val_inner = M2C_FIELD(r7, s8 *, 0x36);
-        u8 *dest = *(u8 **)p4 + r12 + 0x5000;
-        
-        if (r6_val_inner < lr_val) {
-            M2C_FIELD(dest, u8 *, 0x387) = 0;
-        } else if (r6_val_inner > lr_val) {
-            M2C_FIELD(dest, u8 *, 0x387) = r12; // wait, r2 was r12 in assembly: mov r2, r12
+        r = (u8 *)data_0211fb5c + i;
+        if ((s8)r[0x36] < (s8)r[0x35]) {
+            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 0;
+        } else if ((s8)r[0x36] > (s8)r[0x35]) {
+            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = (u8)i;
         } else {
-            s8 lr_val2 = M2C_FIELD(r7, s8 *, 0x42);
-            s8 r6_val2 = M2C_FIELD(r7, s8 *, 0x41);
-            if (lr_val2 < r6_val2) {
-                M2C_FIELD(dest, u8 *, 0x387) = 3;
+            if ((s8)r[0x42] < (s8)r[0x41]) {
+                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 3;
             } else {
-                M2C_FIELD(dest, u8 *, 0x387) = 2;
+                *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 2;
             }
         }
-        obj = (M2C_UNK *)*gCurrentMap;
-        r12++;
-    } while (r12 < (s8)M2C_FIELD(obj, s8 *, 0x5b));
+        i++;
+    } while (i <= (s8)((u8 *)data_0211fb5c)[0x5b]);
 
-    p6 = *(u8 **)data_0211fb5c;
-    M2C_FIELD(*(u8 **)p6 + 0x5000, u8 *, r12 + 0x388 - 1) = 2; // wait, let's look at the offset
+    *((u8 *)((u8 *)*gCurrentMap + (i - 1) + 0x5388)) = 4;
     return 0;
 }
 

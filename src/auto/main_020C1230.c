@@ -146,41 +146,52 @@ void func_020c183c(void *arg0) {
     );
 }
 
-s32 func_020c1878(u8 *arg0) {
+s32 func_020c1878(u8 *dst) {
     s32 func_020c19c4(s32);
     extern void **gCurrentMap;
-    s32 x, y;
     u8 *base;
     s32 count = 0;
-    u8 val;
-    s32 slot;
-    s32 band;
+    s32 x, y;
+    s32 slot, band;
     u16 rowOff;
+    u8 val;
     u16 cell;
 
-    for (y = 0; y < 5; y++) {
-        for (x = 0; x < 12; x++) {
-            arg0[y * 12 + x] = 0;
+    {
+        u8 *row = dst;
+        for (y = 0; y < 5; y++, row += 12) {
+            for (x = 0; x < 12; x++) {
+                row[x] = 0;
+            }
         }
     }
 
     base = (u8 *)*gCurrentMap;
-    if (M2C_FIELD(base, u16 *, 0x5146) <= 0) {
-        return count;
-    }
-    for (y = 0; y < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5146); y++) {
-        for (x = 0; x < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5144); x++) {
-            base = (u8 *)*gCurrentMap;
-            rowOff = M2C_FIELD(base + y * 2, u16 *, 0x3758);
-            cell = M2C_FIELD(base, u16 *, 0xA10 + (x + rowOff) * 2);
-            val = base[cell + 0x6A60];
-            band = (val & 0xE0) >> 5;
-            slot = func_020c19c4(val);
-            if (slot >= 0) {
-                arg0[band * 12 + slot]++;
-                count++;
+    if (M2C_FIELD(base, u16 *, 0x5146) > 0) {
+        for (y = 0; y < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5146); y++) {
+            for (x = 0; x < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5144); x++) {
+                base = (u8 *)*gCurrentMap;
+                {
+                    u8 *p = base + y * 2 + 0x3700;
+                    rowOff = *(volatile u16 *)(p + 0x58);
+                }
+                {
+                    u8 *q = base + (x + rowOff) * 2 + 0xA00;
+                    cell = *(volatile u16 *)(q + 0x10);
+                }
+                {
+                    u8 *r = base + cell + 0x6000;
+                    val = *(volatile u8 *)(r + 0xA60);
+                }
+                band = (val & 0xE0) >> 5;
+                slot = func_020c19c4(val);
+                if (slot >= 0) {
+                    u8 *pp = dst + band * 12;
+                    pp[slot]++;
+                    count++;
+                }
+                base = (u8 *)*gCurrentMap;
             }
-            base = (u8 *)*gCurrentMap;
         }
     }
     return count;

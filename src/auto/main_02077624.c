@@ -339,7 +339,7 @@ void func_02078068(void) {
     otherByte = unit[1];
     rowVal = *(u16 *)(base + 0x3758 + kindByte * 2);
     idx = otherByte + rowVal;
-    if (!(((base[0x5201 + (idx >> 3)] >> (idx & 7)) & 1))) {
+    if (!(base[0x5201 + (idx >> 3)] & (1 << (idx & 7)))) {
         return;
     }
     y = 0;

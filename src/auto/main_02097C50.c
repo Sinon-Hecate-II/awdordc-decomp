@@ -85,7 +85,8 @@ case 31:return 0x10026;
 case 32:return 0x10029;
 default:return 0x10026;}}
 
-s32 func_02098034(u32 arg0){
+/* Returns the file path (as s32) of the character face texture for the given unit index, or 0 if that unit has no face. Indices map to /face/<name> strings: 0 null, 1 edo, 2 brown, 3 rin, 4 cat, 5 atory, 6 trak, 7 carlyle, 8 dita, 9 jig, 10 agat, 11 eriza, 12 mengel, 13 cole, 14 loot, 15 cat_nazo, 16 morit, 17 geral, 18 belie, 19 mayor, 20-24 sol_1..sol_5, 25-27 boy_1..boy_3, 28-30 man_1..man_3, 31-32 girl_1/girl_2, 33 system, 34 nazo. */
+s32 func_02098034(u32 unit){
 extern u8 data_0210302c[];
 extern u8 data_02103038[];
 extern u8 data_02103044[];
@@ -121,7 +122,7 @@ extern u8 data_021031ac[];
 extern u8 data_021031bc[];
 extern u8 data_021031cc[];
 extern u8 data_021031dc[];
-switch(arg0){
+switch(unit){
 case 0:return (s32)data_0210302c;
 case 1:return (s32)data_02103038;
 case 2:return (s32)data_02103044;

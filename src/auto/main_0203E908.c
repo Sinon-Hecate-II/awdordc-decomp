@@ -201,23 +201,51 @@ s32 func_0203f058(u8 command, s32 arg1, s32 arg2, u16 arg3, s32 *values, s32 cou
     return result;
 }
 
-s32 func_0203f20c(s32 command,s32 dest,s32 mode,s32 payload,s32 count){
-void func_02007e70(s32,void *,s32);void *func_02044268(void);s32 func_0205d4d8(s32,s32,s32);s32 func_02061638(s32,s32,s32,void *,s32);
-extern PacketTag5 data_020fca00;
-SendPacket packet;u8 e,d,c,b,a;u8 *tag;s32 i,result;void *context;
-if(payload!=0 && count!=0)func_02007e70(payload,packet.payload,count*4);else count=0;
-count*=4;tag=(u8 *)&packet;e=data_020fca00.e;a=data_020fca00.a;b=data_020fca00.b;c=data_020fca00.c;d=data_020fca00.d;
-tag[4]=e;tag[0]=a;tag[1]=b;tag[2]=c;tag[3]=d;
-packet.kind=3;packet.command=command;packet.length=count;
-packet.id=M2C_FIELD(func_02044268(),u16 *,0x1a);
-packet.value=M2C_FIELD(func_02044268(),s32 *,0x1c);
-packet.state=M2C_FIELD(func_02044268(),s32 *,0x200);
-for(i=0;i<5;i++){
-context=func_02044268();
-result=func_02061638(M2C_FIELD(context,s32 *,0xe4),func_0205d4d8(dest,0,0),mode,tag,packet.length+20);
-switch(result){case 0:return 0;case 2:break;default:return result;}
-}
-return result;
+s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
+    void func_02007e70(s32, void *, s32);
+    void *func_02044268(void);
+    s32 func_0205d4d8(s32, s32, s32);
+    s32 func_02061638(s32, s32, s32, void *, s32);
+    extern PacketTag5 data_020fca00;
+    SendPacket packet;
+    u8 e, d, c, b, a;
+    u8 *tag;
+    s32 i, result;
+    void *context;
+    if (payload != 0 && count != 0) {
+        func_02007e70(payload, packet.payload, count * 4);
+    } else {
+        count = 0;
+    }
+    count *= 4;
+    tag = (u8 *)&packet;
+    e = data_020fca00.e;
+    a = data_020fca00.a;
+    b = data_020fca00.b;
+    c = data_020fca00.c;
+    d = data_020fca00.d;
+    tag[4] = e;
+    tag[0] = a;
+    tag[1] = b;
+    tag[2] = c;
+    tag[3] = d;
+    packet.kind = 3;
+    packet.command = command;
+    packet.length = count;
+    packet.id = M2C_FIELD(func_02044268(), u16 *, 0x1a);
+    packet.value = M2C_FIELD(func_02044268(), s32 *, 0x1c);
+    packet.state = M2C_FIELD(func_02044268(), s32 *, 0x200);
+    for (i = 0; i < 5; i++) {
+        context = func_02044268();
+        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), func_0205d4d8(dest, 0, 0), mode, tag, packet.length + 20);
+        if (result == 0) {
+            return result;
+        }
+        if (result != 2) {
+            return result;
+        }
+    }
+    return result;
 }
 
 void func_0203f31c(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, u8 *arg3) {

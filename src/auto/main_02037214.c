@@ -562,7 +562,7 @@ func_02068d18(arg1,p+1,len);arg1[len]=0;return len;
 
 u32 func_02037eec(u32 max) {
 extern u64 data_0213d1e0[];
-void func_02007724(void *);u64 func_02007004(void);
+void func_02007724(void *); u64 func_02007004(void);
 u64 seed,v;
 if(data_0213d1e0[0]==0&&data_0213d1e0[1]==0&&data_0213d1e0[2]==0){
 func_02007724(&seed);

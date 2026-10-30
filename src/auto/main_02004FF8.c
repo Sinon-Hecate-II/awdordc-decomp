@@ -283,13 +283,15 @@ u16 func_02005584(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 4);
 }
 
+int __clz(unsigned int);
+#pragma intrinsic(__clz)
 s32 func_0200558c(void){
-u32 *p=(u32*)0x027fffb0; u32 n=__CLZ(*p); s32 result=64;
-if(n==32){p++;n=__CLZ(*p);if(n==32)return -3;result=96;}
+u32 *p=(u32*)0x027fffb0;
+u32 n=__builtin_arm_clz(*p);
+s32 result=64;
+if(n==32){p++;n=__builtin_arm_clz(*p);if(n==32)return -3;result=96;}
 result+=n;*p=*p & ~(0x80000000U>>n);return result;
 }
-
-#pragma optimization_level 0
 void func_020055f4(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
 #pragma optimization_level reset
 void func_0200563c(s32 arg0, s32 arg1, ...) {

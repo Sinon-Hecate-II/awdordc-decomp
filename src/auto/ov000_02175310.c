@@ -115,7 +115,6 @@ void func_ov000_02175878(void *arg0) {
     u8 local[6];
     u8 flag;
     u8 idx;
-    s32 fld;
     void *saved;
     s32 color;
     s32 base;
@@ -126,8 +125,7 @@ void func_ov000_02175878(void *arg0) {
     local[3] = data_ov000_021ae2a0[3];
     local[4] = data_ov000_021ae2a0[4];
     local[5] = data_ov000_021ae2a0[5];
-    fld = M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x60);
-    idx = (u8)(local[fld] << 5);
+    idx = (u8)(local[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x60)] << 5);
     color = M2C_FIELD(arg0, s32 *, 0) ? 0xA3 : 0x103;
     flag = M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0) != 0;
     saved = gCur3DSpriteEngine;

@@ -517,38 +517,35 @@ void func_0209c720(s32 arg0, s16 arg1, s8 arg2, s32 arg3, u8 arg4) {
     p[3] = (u8)(r1 | r3);
 }
 
-void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    void *func_0209c6d8(s32);
     s32 func_01ff8e44(s32, s32);
-    void func_01ffaacc(s32, s32, s32);
+    void func_01ffaacc(s32, s32, s32, s32);
+    extern M2C_UNK gCur3DSpriteEngine;
     u8 *r4;
-    u8 r1_val;
-    s32 r0_val;
-    s32 r2_val;
-    s32 r1_shifted;
-    s32 temp_r0;
-    u8 r12_val;
-    u16 r2_half;
-    u16 r1_half;
-    u32 r0_mask;
+    u8 byte3;
+    u32 high;
+    u32 low;
+    s32 temp0;
+    u8 byte2;
+    u16 half_self;
+    u16 half_eng;
+    u32 mask;
 
-    r4 = func_0209c6d8(arg0);
-    r1_val = r4[3];
-    r0_val = (r1_val << 24) >> 28;
-    r2_val = r1_val << 28;
-    r1_shifted = r2_val >> 25;
-    r1_shifted = r0_val << 3;
-    temp_r0 = func_01ff8e44(r0_val, r1_shifted);
-    if (temp_r0 == 0) {
-        return;
-    }
-    r12_val = r4[2];
-    r2_half = *(u16 *)r4;
-    r1_half = *(u16 *)gCur3DSpriteEngine;
-    r0_mask = 0x3FF;
-    r0_mask = r0_mask & (r2_half >> ((r1_half >> 13) & 3));
-    r0_mask = arg3 | r0_mask;
-    r0_mask = r0_mask | (r12_val << 12);
-    func_01ffaacc(arg1, arg2, r0_mask & 0xFFFF);
+    r4 = (u8 *)func_0209c6d8(arg0);
+    byte3 = r4[3];
+    high = ((u32)byte3 << 24) >> 28;
+    low = ((u32)(byte3 & 0x0F)) << 3;
+    temp0 = func_01ff8e44((s32)low, (s32)(high << 3));
+    if (temp0 == 0) return;
+    byte2 = r4[2];
+    half_self = *(u16 *)r4;
+    half_eng = *(u16 *)((void *)gCur3DSpriteEngine);
+    mask = 0x3FF;
+    mask = mask & (half_self >> (((u32)half_eng >> 13) & 3));
+    mask = (u32)arg3 | mask;
+    mask = mask | ((u32)byte2 << 12);
+    func_01ffaacc(arg1, arg2, (s32)(mask & 0xFFFF), arg4);
 }
 
 void func_0209c7fc(void) {

@@ -50,6 +50,13 @@ static inline int CountAdjacentBounds1913(u8 ux,u8 uy){
 
 static inline s32 Health1911(Unit1911 *u) {s32 h=u->health;return h?func_0207c8ec(h-1,10)+1:0;}
 
+/* AI heal pass: mark the selected (medic) unit as acting, then scan every tile
+ * on the map. For each living unit (value != 0) of the same kind as the selected
+ * unit, not already at full health (h != 10), trigger the heal routine
+ * (func_ov000_02199d74) at that tile when the combined health clears one of the
+ * thresholds: the unit's cell attribute is a healable type (func_ov000_021a91d0)
+ * and h+cur<=15; or cur<7 and h+cur<=12; or h+cur<=10. opt_common_subs is
+ * disabled because the three heal checks intentionally duplicate the call. */
 void func_ov000_02190f74(void){
 #pragma push
 #pragma opt_common_subs off

@@ -143,6 +143,7 @@ if(v){M2C_FIELD(p,volatile s16 *,0x70)|=0x40;return -76;}
 M2C_FIELD(p,volatile s16 *,0x70)|=4;return 0;
 }
 
+#pragma optimization_level 2
 s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     s32 func_02006564();
     s32 func_020065e8();
@@ -171,8 +172,8 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
         var_r5 = 1;
     }
     var_r1 = 0;
-    if (arg0 != 0 && (M2C_FIELD(arg0, s16 *, 0x70) & 1)) {
-        var_r1 = 1;
+    if (arg0 != 0) {
+        var_r1 = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
     }
     if (var_r1 == 0) {
         return -0x27;
@@ -182,7 +183,7 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     if (temp_r0 != 0 && temp_r0 != 4) {
         var_r1_2 = 0;
     }
-    if (var_r1_2 != 0 && (!(M2C_FIELD(arg0, s16 *, 0x70) & 4) || (M2C_FIELD(arg0, s16 *, 0x70) & 8))) {
+    if (var_r1_2 != 0 && (!(M2C_FIELD(arg0, volatile s16 *, 0x70) & 4) || (M2C_FIELD(arg0, volatile s16 *, 0x70) & 8))) {
         return -0x38;
     }
     temp_r4 = M2C_FIELD(arg0, void **, 0x64);
@@ -197,7 +198,7 @@ s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4
     func_020065e8(temp_r4 + 0xE0);
     return var_r5;
 }
-
+#pragma optimization_level reset
 s32 func_0201fd60(void *p,s32 b,s32 c,s32 d,s32 e,s32 f,s32 flags) {
  s32 func_02020220(void *,s32,s32,s32,s32,s32);
  s32 func_0201fdfc(void *,s32,s32,s32,s32,s32);

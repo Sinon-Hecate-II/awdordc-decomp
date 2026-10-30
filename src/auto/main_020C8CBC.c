@@ -313,9 +313,14 @@ void func_020c9580(s32 a) {
 extern void **gCurrentMap;
 extern M2C_UNK data_0212b1ba,data_0212b1bb,data_ov000_021e146c;
 s32 func_020a15b4(s32,s32);
-s32 i=func_020c9430(a)-1;
-void *p=*gCurrentMap;
-s32 x=M2C_FIELD(p,s16 *,0x52dc), y=M2C_FIELD(p,s16 *,0x52de);
+s32 x;
+s32 y;
+s32 i;
+void *p;
+i=func_020c9430(a)-1;
+p=*gCurrentMap;
+x=M2C_FIELD(p,s16 *,0x52dc);
+y=M2C_FIELD(p,s16 *,0x52de);
 M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x+M2C_FIELD(&data_0212b1ba,s8 *,i*4),y+M2C_FIELD(&data_0212b1bb,s8 *,i*4));
 }
 #pragma opt_strength_reduction reset

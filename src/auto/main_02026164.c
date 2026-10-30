@@ -369,25 +369,26 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     void func_02026558(u16 *, u16 *, u16 *, s32);
     void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
 
-    u16 *base;
-    s32 n;
-    u16 *p1;
-    u16 *p2;
-    u16 *p3;
-    u16 *p4;
-    u16 *p5;
-    u16 *p6;
     s32 bytes;
+    u16 *p5;
+    u16 *p4;
+    u16 *p3;
+    u16 *p2;
+    u16 *p1;
+    u16 *base;
+    u16 *p6;
+    s32 n;
 
-    base = arg4;
     n = arg3;
+    base = arg4;
+    p6 = 0;
+    bytes = n << 1;
     p1 = base + n;
     p2 = p1 + n;
     p3 = p2 + n;
     p4 = p3 + n;
     p5 = p4 + n;
     p6 = p5 + n;
-    bytes = n << 1;
 
     func_02008048((s32)arg1, (s32)base, bytes);
     func_02008048((s32)arg2, (s32)p2, bytes);

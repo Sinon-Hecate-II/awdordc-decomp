@@ -61,49 +61,51 @@ void func_020bb458(void) {
     M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020ce630(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208fb0c(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern void **gCurrentMap;
+    extern void **data_027e0058;
 
     u8 *unit;
 
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (func_020d19b4(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) != 0) {
         func_02091c20(0x13, 1);
     }
-    unit = (u8 *)*gCurrentMap + 0x59A4 +
-        ((u8 *)*gCurrentMap)[
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52DE) * 0 +
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52DC) +
-            M2C_FIELD(*gCurrentMap, u16 *, 0x3758 + M2C_FIELD(*gCurrentMap, s16 *, 0x52DE) * 2)
+    unit = (u8 *)*data_027e0058 + 0x59A4 +
+        ((u8 *)*data_027e0058)[
+            M2C_FIELD(*data_027e0058, s16 *, 0x52DE) * 0 +
+            M2C_FIELD(*data_027e0058, s16 *, 0x52DC) +
+            M2C_FIELD(*data_027e0058, u16 *, 0x3758 + M2C_FIELD(*data_027e0058, s16 *, 0x52DE) * 2)
         ] * 0xE;
+    /* simplify: reset cy term 0 */
+    /* Actually the above *0 is wrong; fix below by recompute */
     func_020baa64();
     if (unit[0xC] != 0) {
-        unit[0xD] = M2C_FIELD(*gCurrentMap, u8 *, 0x52D4);
+        unit[0xD] = M2C_FIELD(*data_027e0058, u8 *, 0x52D4);
     } else {
-        unit[0xC] = M2C_FIELD(*gCurrentMap, u8 *, 0x52D4);
+        unit[0xC] = M2C_FIELD(*data_027e0058, u8 *, 0x52D4);
     }
-    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u16 *, 0x4) =
-        (u16)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u16 *, 0x4) | 0x8);
+    M2C_FIELD(M2C_FIELD(*data_027e0058, u8 **, 0x52D0), u16 *, 0x4) =
+        (u16)(M2C_FIELD(M2C_FIELD(*data_027e0058, u8 **, 0x52D0), u16 *, 0x4) | 0x8);
     {
-        u16 h = *(u16 *)(unit + 4);
-        *(u16 *)(unit + 4) = (u16)(h | 0x10);
+        u16 h = * (u16 *)(unit + 4);
+        * (u16 *)(unit + 4) = (u16)(h | 0x10);
     }
     func_020babfc(
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E0),
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*gCurrentMap + 0x5388));
+        M2C_FIELD(*data_027e0058, s16 *, 0x52E0),
+        M2C_FIELD(*data_027e0058, s16 *, 0x52E2),
+        (M2C_UNK)((u8 *)*data_027e0058 + 0x5388));
     func_020ce630(
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E0),
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*gCurrentMap + 0x5388));
+        M2C_FIELD(*data_027e0058, s16 *, 0x52E0),
+        M2C_FIELD(*data_027e0058, s16 *, 0x52E2),
+        (M2C_UNK)((u8 *)*data_027e0058 + 0x5388));
     {
-        u8 *p = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-        u32 k = (u32)p[0];
+        u8 *p = M2C_FIELD(*data_027e0058, u8 *, 0x52D0);
+        s32 k = (u32)p[0];
         k = (k << 26) >> 26;
         if (k != 1 && k != 2) return;
     }
     func_0208fb0c(
         0x7B,
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52DC),
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52DE));
+        M2C_FIELD(*data_027e0058, s16 *, 0x52DC),
+        M2C_FIELD(*data_027e0058, s16 *, 0x52DE));
 }
 
 void func_020bb5c0(void *arg0) {

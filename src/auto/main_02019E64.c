@@ -181,26 +181,23 @@ void func_0201a134(s32 arg0) {
     void func_02005e5c(s32);
     void func_02025298(void);
     s32 old;
-    s32 nz;
     void *node;
     void *sub;
-    void *fld0;
-    void *fld4;
     u8 t;
-    u8 *p;
+    void *fld4;
     s32 i;
+    u8 *p;
     void (*fp)(u32);
     u32 val;
     old = M2C_FIELD(&data_02137290, s32 *, 0x50);
     M2C_FIELD(&data_02137290, s32 *, 0x0C) = arg0;
-    nz = (old != 0);
     M2C_FIELD(&data_02137290, s32 *, 0x50) = 0;
     M2C_FIELD(&data_02137290, s32 *, 0x1C) = 0;
     M2C_FIELD(&data_02137290, s32 *, 0x2C) = 0;
     M2C_FIELD(&data_02137290, s32 *, 0x60) = 0;
     M2C_FIELD(&data_02137290, s32 *, 0x64) = 0;
     M2C_FIELD(&data_02137290, s32 *, 0x20) = 0;
-    if (nz == 0) {
+    if (old == 0) {
         return;
     }
     func_02007f8c(&data_02137310, 0, 0x60);
@@ -208,8 +205,7 @@ void func_0201a134(s32 arg0) {
     while (node != 0) {
         sub = M2C_FIELD(node, void **, 0xA4);
         if (sub != 0) {
-            fld0 = M2C_FIELD(sub, void **, 0x00);
-            if (fld0 != 0) {
+            if (M2C_FIELD(sub, void **, 0x00) != 0) {
                 t = M2C_FIELD(sub, u8 *, 0x08);
                 if (t != 0x0A && t != 0x0B) {
                     M2C_FIELD(sub, u8 *, 0x08) = 0;
@@ -217,7 +213,7 @@ void func_0201a134(s32 arg0) {
                 fld4 = M2C_FIELD(sub, void **, 0x04);
                 if (fld4 != 0) {
                     M2C_FIELD(sub, void **, 0x04) = 0;
-                    func_02005e5c((s32)fld0);
+                    func_02005e5c((s32)M2C_FIELD(sub, void **, 0x00));
                 }
             }
         }

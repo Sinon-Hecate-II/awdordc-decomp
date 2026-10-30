@@ -25,32 +25,138 @@ static inline void DisableMenuSprite_02213e98(MenuSprite_02213e98 *s) {
 
 void func_02088ff4(void *);
 u32 func_020c5464(s16);
-void func_ov006_02213e98(void *a){
- void *p=M2C_FIELD(a,void **,0x48);
+/* Updates menu state and sprite frames based on selection */
+void func_ov006_02213e98(void *arg0) {
+ void *p = M2C_FIELD(arg0, void **, 0x48);
  MenuSprite_02213e98 **sprites;
- M2C_FIELD(p,s16 *,14)=0;M2C_FIELD(p,s16 *,16)=-255;M2C_FIELD(p,s16 *,12)=12;M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
- sprites=M2C_FIELD(a,void **,0x3c);
+ M2C_FIELD(p, s16 *, 14) = 0;
+ M2C_FIELD(p, s16 *, 16) = -255;
+ M2C_FIELD(p, s16 *, 12) = 12;
+ M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+ sprites = M2C_FIELD(arg0, void **, 0x3c);
  func_02088ff4(sprites[0]);
- SetMenuFrame_02213e98(sprites[1],(u16)(sprites[1]->base+2));
- SetMenuFrame_02213e98(sprites[2],(u16)(sprites[2]->base+2));
- func_02088ff4(sprites[3]);func_02088ff4(sprites[4]);func_02088ff4(sprites[5]);
- switch(func_020c5464(M2C_FIELD(M2C_FIELD(a,void **,0x4c),s16 *,8))){
+ SetMenuFrame_02213e98(sprites[1], (u16)(sprites[1]->base + 2));
+ SetMenuFrame_02213e98(sprites[2], (u16)(sprites[2]->base + 2));
+ func_02088ff4(sprites[3]);
+ func_02088ff4(sprites[4]);
+ func_02088ff4(sprites[5]);
+ switch (func_020c5464(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4c), s16 *, 8))) {
  case 0:
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[3];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[4];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[5];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}break;
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[3];
+  u32 frame = s->base;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (!disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[4];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[5];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ break;
  case 1:
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[3];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[4];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[5];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}break;
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[3];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[4];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[5];
+  u32 frame = s->base;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (!disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ break;
  case 2:
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[3];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[4];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[5];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}break;
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[3];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[4];
+  u32 frame = s->base;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (!disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[5];
+  u32 frame = s->base;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (!disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ break;
  case 3:
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[3];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[4];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
- {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(a,void **,0x3c))[5];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}break;
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[3];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[4];
+  u32 frame = s->base + 2;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ {
+  MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[5];
+  u32 frame = s->base;
+  u8 disabled = (s->base + 2 != (u16)s->frame);
+  if (!disabled) {
+   s->frame = (u16)frame;
+   s->timer = 0;
+  }
+ }
+ break;
  }
 }
 

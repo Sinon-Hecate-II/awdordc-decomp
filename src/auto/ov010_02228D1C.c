@@ -451,11 +451,11 @@ s32 func_ov010_02229920(s32 a, void *b) {
 extern QueueNode *data_ov010_0222ef88;
 extern s32 data_ov010_0222ef8c, data_ov010_0222ef90;
 s32 offset=a*12;
-u32 saved;
+u32 saved=*(volatile u16 *)0x4000208;
+void *force=&saved;
 
 QueueNode *p;
 QueueNode **head=(QueueNode **)((char *)&data_ov010_0222ef88+offset);
-saved=*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=0;
 p=*head;
 if(!p){(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
@@ -465,6 +465,7 @@ func_ov010_02226908(0,p,p->size+16);
 M2C_FIELD(&data_ov010_0222ef90,s32 *,offset)--;
 (void)*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=saved;
+(void)force;
 return M2C_FIELD(b,s32 *,8)+12;
 }
 

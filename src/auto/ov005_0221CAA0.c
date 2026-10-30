@@ -13,7 +13,7 @@ static inline void boxBounds(s32 x,s32 y,u32 w,u32 h,void *p) { boxPosition(p,x,
 void func_ov005_0221cff8(void *arg0) {
 void *func_01ffa770(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
 extern u8 data_ov005_02220d50[];
-s32 i,y;void *sprite,*p;s32 width,height;
+s32 i,y;void *sprite,*p;u32 width,height;
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x38));
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x3c));
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x40));

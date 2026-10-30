@@ -366,12 +366,13 @@ extern s32 data_ov001_02193e68;void func_020067e0(s32,s32);void func_02004210(s3
 func_020067e0(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x400);func_02004264(data_ov001_02193e68+0x400,0,0x400);
 }
 
+#pragma pool_constants off
 void func_ov001_0218c0b8(void) {
-    extern s32 data_ov001_02193e68;
-    func_ov001_0218c94c(1, ((s32 *)data_ov001_02193e68)[0x202]);
-    func_ov001_0218b71c((s32 *)&data_ov001_02193e68);
+extern s32 data_ov001_02193e68;
+func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
+func_ov001_0218b71c((void *)(0x02193e68 + 0));
 }
-
+#pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){
 extern s32 data_ov001_02193e68; void func_ov001_0218a74c(s32);
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e68+(n<<2),s32 *,0x800));

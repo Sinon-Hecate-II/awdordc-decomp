@@ -201,20 +201,28 @@ s32 func_ov001_0216c1c4(void *,s32);
 s32 func_ov001_0216c318(void *,s32);
 s32 func_ov001_0216cef0(u16);
 s32 func_ov001_0216c3d0(u8 *,void *);
-s32 sp8,spC,sp10,sp4,sp0;
-u8 *p; s32 flags,rem; u8 *q; s32 remaining,base,result,len;
-rem=arg2;sp0=arg0;p=arg1;flags=0;sp4=arg3;
+s32 sp0=arg0;
+u8 *p=arg1;
+s32 rem=arg2;
+s32 sp4=arg3;
+s32 flags=0;
+u8 *q;
+s32 remaining,base,result,len;
+s32 sp8,spC,sp10;
 if(rem<=0)return -2;
 search:
-if(p[0]!=data_ov001_0218fd40[sp0]){
+q=p;
+if(q[0]!=data_ov001_0218fd40[sp0]){
 len=func_ov001_0216cef0(*(u16 *)(p+2))+4;
 rem-=len;p+=len;if(rem<=0)return -4;
 goto search;
 }
-q=p;p+=4;
 remaining=func_ov001_0216cef0(*(u16 *)(q+2));
-q=p;
-base=sp4+0x350*sp0;sp10=base;sp10=base+8;sp8=arg4;spC=(sp0+3)<<7;
+base=sp4+0x350*sp0;
+sp8=arg4;
+spC=(sp0+3)<<7;
+sp10=base;
+sp10=sp10+8;
 do {
 switch(q[0]){
 case 3:result=func_ov001_0216c1c4(q,sp10);flags|=1;break;
@@ -377,7 +385,7 @@ void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) 
 }
 void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
  int i; int half=n/2;
- for(i=0;i<half;i++) { unsigned char *p=b+half; *p ^= a[i]; ++b; }
+ for(i=0;i<half;i++) { b[half] ^= a[i]; b++; }
 }
 #pragma thumb off
 #pragma thumb on

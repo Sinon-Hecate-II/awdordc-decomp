@@ -157,9 +157,8 @@ void func_ov003_021e47b0(void) {
 u32 func_ov003_021e47bc(void *arg0) {
     extern M2C_UNK data_ov003_0220f47c;
     struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
-    u8 count;
     u8 i;
-    void *base;
+    u8 count;
     M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) & ~0x80);
     local.data = (void *)&data_ov003_0220f47c;
     for (i = 0; i < 5; i++) {
@@ -168,11 +167,9 @@ u32 func_ov003_021e47bc(void *arg0) {
     }
     func_ov003_021f2860(&local);
     count = 0;
-    base = M2C_FIELD(arg0, void **, 0x6C);
     for (i = 0; i < 5; i++) {
-        base = M2C_FIELD(arg0, void **, 0x6C);
-        if (M2C_FIELD((s32)base + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
-            count = (u8)(count + 1);
+        if (M2C_FIELD((s32)M2C_FIELD(arg0, void **, 0x6C) + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
+            count++;
         }
     }
     if (count == 0 && func_ov003_021f2780((s32)&local, local.buf0) == 0) {
@@ -180,9 +177,8 @@ u32 func_ov003_021e47bc(void *arg0) {
     }
     count = 0;
     for (i = 0; i < 5; i++) {
-        base = M2C_FIELD(arg0, void **, 0x68);
-        if (M2C_FIELD((s32)base + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
-            count = (u8)(count + 1);
+        if (M2C_FIELD((s32)M2C_FIELD(arg0, void **, 0x68) + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
+            count++;
         }
     }
     if (count == 0 && func_ov003_021f2780((s32)&local, local.buf1) == 0) {

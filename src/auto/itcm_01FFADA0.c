@@ -147,8 +147,8 @@ for(;x<w;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
 }
 
 void func_01ffb734(int cx,int cy,int radius,s8 value) {
- extern void **gCurrentMap;
- int x,d,right,bottom,left,top; void *base=*gCurrentMap;
+ extern void **data_027e0058;
+ int x,d,right,bottom,left,top; void *base=*data_027e0058;
  left=cx-radius;if(left<0)left=0;top=cy-radius;if(top<0)top=0;
  right=M2C_FIELD(base,u16 *,0x5144)-1;if(cx+radius<right)right=cx+radius;
  bottom=M2C_FIELD(base,u16 *,0x5146)-1;if(cy+radius<bottom)bottom=cy+radius;
@@ -156,7 +156,7 @@ void func_01ffb734(int cx,int cy,int radius,s8 value) {
  d=0;
  if(cx-x>0)d+=cx-x;else d+=x-cx;
  if(cy-top>0)d+=cy-top;else d+=top-cy;
- if(d>=0 && d<=radius)((s8 **)*gCurrentMap)[top+0x14ba][x]=value;
+ if(d>=0 && d<=radius)((s8 **)*data_027e0058)[top+0x14ba][x]=value;
  }
 }
 

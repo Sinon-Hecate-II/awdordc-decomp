@@ -83,6 +83,88 @@ case 7:if(p[0xf6])return;func_ov001_0217e8d4(p+0xc8,arg1);break;
 case 8:if(p[0xf6])return;func_ov001_0217e8d4(p+0xcc,arg1);break;
 }
 }
+
+void func_ov001_0217e494(s32 arg0, s32 arg1) {
+    void *func_ov001_0218445c(void);
+    s32 func_ov001_0217e5e8(u32);
+    void func_ov001_0217e67c(s32, s32, s32);
+    extern M2C_UNK data_ov001_02193dac;
+    void *p;
+    s32 r4 = arg0;
+    s32 r5 = 0;
+    s32 r1;
+
+    p = func_ov001_0218445c();
+
+    switch (r4) {
+        case 0:
+        case 1:
+            r4 = 0;
+            if (func_ov001_0217e5e8(0) == 0) {
+                r5 = 2;
+            }
+            break;
+        case 2: {
+            u8 f5 = ((u8 *)p)[0xF5];
+            void **root = M2C_FIELD(&data_ov001_02193dac, void **, 8);
+            u8 b4 = ((u8 *)root)[4];
+            r4 = (f5 != 0) ? 1 : 2;
+            if (b4 != 0) {
+                r5 = 1;
+            }
+            r1 = 0;
+            if (((u8 *)root)[5] != 0) {
+                r1 = 1;
+            }
+            func_ov001_0217e67c(r4, r1, arg1);
+            return;
+        }
+        case 3:
+        case 4:
+        case 5:
+            r4 = 0;
+            if (((u8 *)p)[0xF5] != 0) {
+                r5 = 2;
+            } else {
+                r5 = 0;
+            }
+            break;
+        case 6: {
+            u8 f6 = ((u8 *)p)[0xF6];
+            r5 = 0;
+            if (f6 != 0) {
+                r4 = 1;
+            } else {
+                r4 = 2;
+                if (((u8 *)p)[0xF5] == 0) {
+                    r5 = 2;
+                }
+            }
+            {
+                void **root = M2C_FIELD(&data_ov001_02193dac, void **, 8);
+                if (((u8 *)root)[6] != 0) {
+                    r5 = 1;
+                }
+                r1 = 0;
+                if (((u8 *)root)[7] != 0) {
+                    r1 = 1;
+                }
+                func_ov001_0217e67c(r4, r1, arg1);
+                return;
+            }
+        }
+        case 7:
+        case 8:
+            func_ov001_0217e67c(0, 2, arg1);
+            return;
+        default:
+            r4 = 0;
+            r5 = 2;
+            break;
+    }
+    func_ov001_0217e67c(r4, r5, arg1);
+}
+
 #pragma opt_common_subs reset
 s32 func_ov001_0217e5e8(u32 arg0) {
     void *func_ov001_0218445c();

@@ -232,38 +232,95 @@ void func_ov001_02185f38(u16 *arg0) {
     extern const u8 data_ov001_0218fbf0[];
     extern const u8 data_ov001_0218fbe8[];
     u8 *rec;
+    s32 k;
+    u8 *slot;
     s32 j;
     u8 *base;
-    u8 *slot;
-    s32 k;
 
     for (j = 0; j < arg0[7]; j++) {
         rec = ((void **)arg0)[4 + j];
         func_020067a8(rec, 0xC0);
         if (func_0206527c(rec + 0xC, data_ov001_0218fbf0, 8) != 0) continue;
-        base = (u8 *)data_ov001_02193e14 + 0x1300;
-        slot = data_ov001_02193e14;
+        base = data_ov001_02193e14;
+        slot = base + 0x1300;
         for (k = 0; k < 16; k++) {
-            if (func_0206527c(rec + 4, base, 6) == 0) {
-                if (*(u8 *)(slot + k * 7 + 0x1306) != 0) goto next;
+            if (func_0206527c(rec + 4, slot, 6) == 0) {
+                if (*(u8 *)(base + k * 7 + 0x1306) != 0) goto next;
                 if (!(rec[0x15] & 1)) goto next;
-                if (M2C_FIELD(slot, void **, 0x1370) != NULL) {
-                    ((void (*)(s32))M2C_FIELD(slot, void **, 0x1370))(1);
+                if (M2C_FIELD(base, void **, 0x1370) != NULL) {
+                    ((void (*)(s32))M2C_FIELD(base, void **, 0x1370))(1);
                 }
                 return;
             }
-            base += 7;
+            slot += 7;
         }
-        base = slot + 0x1300;
+        slot = base + 0x1300;
         for (k = 0; k < 16; k++) {
-            if (func_0206527c(base, data_ov001_0218fbe8, 6) == 0) {
-                func_02008048(rec + 4, slot + 0x1300 + k * 7, 6);
+            if (func_0206527c(slot, data_ov001_0218fbe8, 6) == 0) {
+                func_02008048(rec + 4, base + 0x1300 + k * 7, 6);
                 *(u8 *)((u8 *)data_ov001_02193e14 + k * 7 + 0x1306) = (rec[0x15] & 1) ? 1 : 0;
                 break;
             }
-            base += 7;
+            slot += 7;
         }
     next:;
+    }
+}
+
+void func_ov001_02186090(u16 *arg0) {
+    void func_020067a8(void *, s32);
+    s32 func_0206527c(void *, const void *, s32);
+    extern void *data_ov001_02193e14;
+    extern const u8 data_ov001_0218fbf0[];
+    extern M2C_UNK data_ov001_0219174c;
+
+    void *g = data_ov001_02193e14;
+    if (*((u8 *)g + 0x1B95) != 0) {
+        void (*cb)(s32, void *) = *(void (**)(s32, void *))( (u8 *)g + 0x1370);
+        if (cb != 0) {
+            cb(0x8000000, &data_ov001_0219174c);
+        }
+        return;
+    }
+
+    func_020067a8((u8 *)g + 0x0F00, 0x400);
+
+    {
+        s32 j;
+        u8 *base;
+        u8 *slot;
+        u8 *rec;
+        s32 k;
+        u16 count = arg0[7];
+
+        for (j = 0; j < count; j++) {
+            rec = ((void **)arg0)[4 + j];
+            if (func_0206527c(rec + 0x0C, data_ov001_0218fbf0, 8) != 0) {
+                continue;
+            }
+            if (!(rec[0x15] & 1)) {
+                continue;
+            }
+            base = (u8 *)g + 0x1300;
+            slot = g;
+            for (k = 0; k < 16; k++) {
+                if (func_0206527c(rec + 4, base, 6) == 0) {
+                    if (*((u8 *)g + k * 7 + 0x1306) != 0) {
+                        break;
+                    }
+                    {
+                        void (*cb)(s32) = *(void (**)(s32))((u8 *)g + 0x1370);
+                        if (cb == 0) {
+                            *((u8 *)g + 0x1B95) = 1;
+                            return;
+                        }
+                        cb(1);
+                        return;
+                    }
+                }
+                base += 7;
+            }
+        }
     }
 }
 

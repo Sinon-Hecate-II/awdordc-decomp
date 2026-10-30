@@ -75,58 +75,65 @@ s32 func_020b9e70(s32 arg0,s32 arg1) {
  switch(arg1) { case 17: return 0; default: return 1; }
 }
 
-s32 func_020b9ec0(s32 arg0,s32 arg1){
-  s32 func_020a7bbc(s32); s32 func_ov004_02213820(void);
-  extern M2C_UNK data_ov000_021aab78;
-  extern void **gCurrentMap;
-  u16 n;
-  (void)arg0;
-  if(M2C_FIELD(&data_ov000_021aab78,s8*,arg1)==-1)return 0;
-  if(func_020a7bbc(arg1)==0)return 0;
-  switch(arg1){
-  case 17: return 0;
-  default:
-    switch(arg1){
-    case 8:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xaa)return 0;
-      break;
-    case 9:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xae)return 0;
-      break;
-    case 26:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xa5)return 0;
-      if(n==0xa5&&func_ov004_02213820()==0)return 0;
-      break;
-    case 6: case 11: case 12:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xa6)return 0;
-      break;
-    case 18: case 19:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xa7)return 0;
-      break;
-    case 13: case 14: case 15: case 16:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xa8)return 0;
-      break;
-    case 24: case 25:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xaa)return 0;
-      break;
-    case 20: case 22: case 23:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xab)return 0;
-      break;
-    case 21:
-      n=M2C_FIELD(*gCurrentMap,u16*,0x5142);
-      if(n>=0xa1&&n<=0xac)return 0;
-      break;
+/* Report whether facility type `facility` is available on the current map in
+ * mode 0: reject it if the per-facility table (data_ov000_021aab78) marks it
+ * invalid (-1) or its attribute word (data_ov000_021b5c00[type*0x70]) is zero;
+ * otherwise each facility type is blocked on the special maps whose id lies in
+ * [0xa1, limit] (larger limits cover more facilities). */
+s32 func_020b9ec0(s32 unit, s32 facility) {
+    s32 func_020a7bbc(s32);
+    s32 func_ov004_02213820(void);
+    extern M2C_UNK data_ov000_021aab78;
+    extern void **gCurrentMap;
+    u16 mapId;
+    (void)unit;
+    if (M2C_FIELD(&data_ov000_021aab78, s8 *, facility) == -1) return 0;
+    if (func_020a7bbc(facility) == 0) return 0;
+    switch (facility) {
+    case 17:
+        return 0;
+    default:
+        switch (facility) {
+        case 8:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xaa) return 0;
+            break;
+        case 9:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xae) return 0;
+            break;
+        case 26:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xa5) return 0;
+            if (mapId == 0xa5 && func_ov004_02213820() == 0) return 0;
+            break;
+        case 6: case 11: case 12:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xa6) return 0;
+            break;
+        case 18: case 19:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xa7) return 0;
+            break;
+        case 13: case 14: case 15: case 16:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xa8) return 0;
+            break;
+        case 24: case 25:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xaa) return 0;
+            break;
+        case 20: case 22: case 23:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xab) return 0;
+            break;
+        case 21:
+            mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+            if (mapId >= 0xa1 && mapId <= 0xac) return 0;
+            break;
+        }
+        return 1;
     }
-    return 1;
-  }
 }
 
 #pragma opt_common_subs off
@@ -332,17 +339,17 @@ void func_020baaac(void) {
 
 void func_020baae0(s16 x,s16 y) {
 extern void **gCurrentMap;
-MapBAAE0 *p; s32 d; s32 xx; s32 right; s32 yy; s32 bottom; s32 left=x-1; u8 *unit;
+MapBAAE0 *p; s32 d; s32 xx; s32 right; s32 yy; s32 bottom; s32 left=x-1; s32 top; u8 *unit;
 if(left<0)left=0;
-yy=y-1;p=*gCurrentMap;if(yy<0)yy=0;
-right=p->width-1 < (s32)(x+1) ? p->width-1 : (s32)(x+1);
+top=y-1;p=*gCurrentMap;if(top<0)top=0;
+right=p->width-1 < x+1 ? p->width-1 : x+1;
 bottom=p->height-1 < y+1 ? p->height-1 : y+1;
-for(;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
+for(yy=top;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
 d=DistanceBAAE0(x,y,xx,yy);
 if(d<1 || d>1)continue;
 p=*gCurrentMap;
 unit=p->units[p->cells[xx+p->rows[yy]]];
-if(((u32)(unit[0]<<26)>>26)!=0) { if(M2C_FIELD(unit,u16 *,4)&32)M2C_FIELD(unit,u16 *,4)|=64; }
+if(((u32)(unit[0]<<26)>>26) && (M2C_FIELD(unit,u16 *,4)&32))M2C_FIELD(unit,u16 *,4)|=64;
 }
 }
 

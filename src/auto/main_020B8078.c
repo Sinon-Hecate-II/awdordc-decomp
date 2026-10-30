@@ -292,6 +292,7 @@ void *func_020b895c(void) {
     return func_01ffa770(&data_021290dc);
 }
 
+/* Initializes the shop menu and its UI elements */
 void func_020b8970(void *arg0) {
     M2C_UNK func_0200bc5c(M2C_UNK *);
     M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);

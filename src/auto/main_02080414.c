@@ -209,7 +209,7 @@ int func_02080c50(int arg0, int arg1) {
     if (var_8 != 0) {
         do {
             var_9 = var_8 - var_7;
-            if (!(var_9 < 0x2800)) {
+            if ((unsigned int)var_9 >= 0x2800) {
                 var_9 = 0x2800;
             }
             if (func_0200bbe0(sp0, arg1 + var_7, var_9) != var_9) {
@@ -234,15 +234,15 @@ s32 func_02080cfc(void *arg0, s32 arg1) {
     u32 func_0207c7d8(void *, void *, u32);
     s32 func_0207c860(void *, void *, s32);
 
-    u8 ctx[0x220];
     int file[18];
+    u8 ctx[0x220];
 
     s32 r7 = 0;
     void *r8;
-    int r9;
-    int r4;
+    u32 r9;
+    u32 r4;
     u32 r11;
-    int r10;
+    u32 r10;
     int r6;
 
     r8 = (void *)func_020e34f4(0x2000);
@@ -253,40 +253,40 @@ s32 func_02080cfc(void *arg0, s32 arg1) {
         return r7;
     }
 
-    r9 = file[10] - file[9];
+    r9 = (u32)(file[10] - file[9]);
 
-    if (r9 < 0x2000) {
+    if (r9 < 0x2000U) {
         r4 = r9;
     } else {
-        r4 = 0x2000;
+        r4 = 0x2000U;
     }
 
-    if (func_0200bbe0(file, r8, r4) != r4) {
+    if (func_0200bbe0(file, r8, (s32)r4) != (s32)r4) {
         func_02007958();
         return 0;
     }
 
-    r7 += r4;
+    r7 += (s32)r4;
     r11 = func_0207c7d8(ctx, r8, (u32)arg1);
 
-    if (func_0207c860(ctx, (void *)((u8 *)r8 + 4), r4 - 4) > 0) {
+    if (func_0207c860(ctx, (void *)((char *)r8 + 4), (s32)r4 - 4) > 0) {
         do {
             r6 = 0x2000;
-            r10 = r9 - r7;
-            if (r10 >= 0x2000) {
-                r10 = r6;
+            r10 = r9 - (u32)r7;
+            if (r10 >= 0x2000U) {
+                r10 = (u32)r6;
             }
-            if (func_0200bbe0(file, r8, r10) != r10) {
+            if (func_0200bbe0(file, r8, (s32)r10) != (s32)r10) {
                 func_02007958();
                 return 0;
             }
-            r7 += r10;
-        } while (func_0207c860(ctx, r8, r10) > 0);
+            r7 += (s32)r10;
+        } while (func_0207c860(ctx, r8, (s32)r10) > 0);
     }
 
     func_0200ba9c(file);
     func_020e35cc((int)r8);
-    return r11;
+    return (s32)r11;
 }
 
 void *func_02080e30(void *arg0, int arg1) {

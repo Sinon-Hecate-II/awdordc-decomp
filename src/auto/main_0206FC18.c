@@ -77,13 +77,90 @@ void func_02070134(void) {
     return;
 }
 
-s32 func_0207044c(u32 arg0, u32 arg1) {
-    double d;
-    float f;
-    ((u32 *)&d)[0] = arg0;
-    ((u32 *)&d)[1] = arg1;
-    f = (float)d;
-    return *(s32 *)&f;
+s32 func_0207044c(u32 r0, u32 r1) {
+    u32 sign;
+    u32 exp;
+    u32 huge_mant;
+    u32 lowshifted;
+    u32 t;
+    u32 sticky;
+    u32 res;
+    u32 r12;
+
+    sign = r1 & 0x80000000u;
+    exp = (r1 >> 20) & 0x7ffu;
+    if (exp == 0u) goto L8ac;
+    if (exp >= 2032u) goto L890;
+
+    if (exp < 0x380u) goto L8bc;
+
+    r12 = exp - 0x380u;
+    if (r12 >= 0xffu) goto L92c;
+
+    r1 = r1 << 12;
+    {
+        u32 r3 = sign | (r1 >> 9) | (r0 >> 29);
+        lowshifted = r0 << 3;
+        r0 = r3 | (r12 << 23);
+        if (lowshifted == 0u) goto ret;
+        if ((lowshifted & 0x80000000u) == 0u) goto ret;
+        t = lowshifted << 1;
+        if (t != 0u) r0 += 1u;
+        else if ((r0 & 1u) != 0u) r0 += 1u;
+        goto ret;
+    }
+
+L890:
+    huge_mant = r0 | (r1 << 12);
+    if (huge_mant != 0u) goto L8a4;
+    r0 = sign | 0x7f800000u;
+    goto ret;
+L8a4:
+    r0 = 0x7fffffffu;
+    goto ret;
+L8ac:
+    r0 = sign;
+    goto ret;
+L8bc:
+    {
+        s32 s12 = (s32)exp - 0x380;
+        if (s12 == -23) goto L910;
+        if (s12 < -23) goto L924;
+        {
+            u32 m;
+            u32 r3;
+            u32 shift;
+            u32 shift2;
+            m = (r1 << 11) | 0x80000000u;
+            r3 = (m >> 8) | (r0 >> 29);
+            shift = (u32)(1 - s12);
+            lowshifted = r0 << 3;
+            res = sign | (r3 >> shift);
+            shift2 = 32u - shift;
+            sticky = (r3 << shift2) | ((lowshifted != 0u) ? 1u : 0u);
+            if (sticky == 0u) { r0 = res; goto ret; }
+            if ((sticky & 0x80000000u) == 0u) { r0 = res; goto ret; }
+            t = sticky << 1;
+            if (t != 0u) res += 1u;
+            else if ((res & 1u) != 0u) res += 1u;
+            r0 = res;
+            goto ret;
+        }
+    }
+L910:
+    r0 = r0 | (r1 << 12);
+    r1 = r0;
+    r0 = sign;
+    if (r1 != 0u) r0 += 1u;
+    goto ret;
+L924:
+    r0 = sign;
+    goto ret;
+L92c:
+    r0 = sign | 0x7f800000u;
+    goto ret;
+ret:
+    return (s32)r0;
 }
 
 u64 func_02070550(u32 lo,u32 hi){s32 n;u32 m;

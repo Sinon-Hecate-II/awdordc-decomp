@@ -251,13 +251,11 @@ void func_ov001_02187f68(void *arg0) {
     switch (M2C_FIELD(arg0, u16 *, 4)) {
     case 10: {
         if (M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x44) == 2) {
-            if (M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x40) == 4) {
-                if (func_ov001_02188094() != 0) {
-                    return;
-                }
-                if (M2C_FIELD(&data_ov001_02193e20, void (**)(s32, void *), 0) != 0) {
-                    M2C_FIELD(&data_ov001_02193e20, void (**)(s32, void *), 0)(0x08000000, &data_ov001_02191614);
-                }
+            if (M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x40) == 4 && func_ov001_02188094() != 0) {
+                return;
+            }
+            if (M2C_FIELD(&data_ov001_02193e20, void (**)(s32, void *), 0) != 0) {
+                M2C_FIELD(&data_ov001_02193e20, void (**)(s32, void *), 0)(0x08000000, &data_ov001_02191614);
             }
             func_ov001_02187b14(9);
             return;

@@ -151,8 +151,8 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
     s32 func_0202a050(void *, void *, s32, s32, s32);
     s32 base, aligned;
     s32 first;
-    u32 size, best;
     void *node;
+    u32 size, best;
     void *chosen;
     s32 address;
     node = M2C_FIELD(arg0, void **, 0x24);
@@ -178,35 +178,33 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
- s32 func_0202a050(void *, void *, s32, s32, s32);
- s32 base, aligned;
- s32 first;
- u32 size, best;
- void *node;
- void *chosen;
- s32 address;
- node = M2C_FIELD(arg0, void **, 0x28);
- chosen = NULL;
- if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
- else first = 0;
- address = 0;
- best = -1U;
- if (node != NULL) {
-loop:
-
- size = M2C_FIELD(node, u32 *, 4);
- base = (s32)(node + 16);
- aligned = ~(arg2 - 1) & ((size + base) - arg1);
- if ((aligned - base) >= 0 && best > size) {
- chosen = node; best = size; address = aligned;
- if (first || size == arg1) goto done;
- }
- node = M2C_FIELD(node, void **, 8);
- if (node != NULL) goto loop;
- }
-done:
- if (chosen == NULL) return 0;
- return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
+    s32 func_0202a050(void *, void *, s32, s32, s32);
+    s32 base, aligned;
+    s32 first;
+    void *node;
+    u32 size, best;
+    register void *chosen;
+    s32 address;
+    node = M2C_FIELD(arg0, void **, 0x28);
+    chosen = NULL;
+    if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
+    else first = 0;
+    address = 0;
+    best = -1U;
+    while (node != NULL) {
+        size = M2C_FIELD(node, u32 *, 4);
+        base = (s32)(node + 16);
+        aligned = ~(arg2 - 1) & (size + base - arg1);
+        if (aligned - base >= 0 && best > size) {
+            chosen = node;
+            best = size;
+            address = aligned;
+            if (first || size == arg1) break;
+        }
+        node = M2C_FIELD(node, void **, 8);
+    }
+    if (chosen == NULL) return 0;
+    return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
 }
 
 s32 func_0202a334(void *arg0, HeapRange *arg1) {
@@ -265,13 +263,14 @@ void func_0202a498(s32 arg0, s32 arg1) {
 }
 
 s32 func_0202a4d4(void *arg0, s32 arg1) {
-    u16 temp_r3;
+    u16 old;
     u16 bit;
 
-    temp_r3 = M2C_FIELD(arg0, u16 *, 0x36);
-    bit = (u16)(temp_r3 & 1);
-    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(temp_r3 & ~1);
-    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(M2C_FIELD(arg0, u16 *, 0x36) | (arg1 & 1));
+    old = M2C_FIELD(arg0, u16 *, 0x36);
+    arg1 &= 1;
+    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(old & ~1);
+    bit = (u16)(old & 1);
+    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(M2C_FIELD(arg0, u16 *, 0x36) | arg1);
     return bit;
 }
 
@@ -383,17 +382,14 @@ void func_0202a6b0(void *arg0, s32 arg1) {
 
 s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
     s32 func_0206409c(M2C_UNK);
-    s32 temp_r1_2;
-    u32 temp_r0;
-    u32 temp_r1;
-
-    temp_r1_2 = func_0206409c(arg1) - 1;
-    temp_r1 = M2C_FIELD(arg0, u32 *, 0x28);
-    temp_r0 = ~temp_r1_2 & (temp_r1_2 + M2C_FIELD(arg0, s32 *, 0x24));
-    if (temp_r0 > temp_r1) {
-        return 0;
-    }
-    return temp_r1 - temp_r0;
+    void *p = arg0;
+    s32 one = 1;
+    s32 t = func_0206409c(arg1) - one;
+    u32 f24 = M2C_FIELD(p, s32 *, 0x24);
+    u32 f28 = M2C_FIELD(p, u32 *, 0x28);
+    u32 tmp = (~t) & (t + f24);
+    if (tmp > f28) return 0;
+    return (s32)(f28 - tmp);
 }
 
 s32 func_0202a714(void *arg0, s32 arg1) {
@@ -664,6 +660,31 @@ void func_0202abb4(s32 arg0, s32 arg1) {
     *(s32 *)(data_0213b720 + arg0 * 0x24) = arg1;
 }
 
+s32 func_0202abcc(s32 arg0, M2C_UNK arg1, s32 arg2) {
+    M2C_UNK func_02029c74(s32, void *);
+    s32 func_0202c4ac(void *, s32);
+    void *func_0202c5f0(s32 *, s32, s32, s32, s32);
+    extern M2C_UNK data_0213b704;
+    extern M2C_UNK func_0202b3bc;
+    s32 temp_r0_2;
+    void *temp_r0;
+
+    temp_r0 = func_0202c5f0((s32 *)arg1, arg2 + 0x14, (s32)&func_0202b3bc, 0, 0);
+    if (temp_r0 == 0) {
+        return 0;
+    }
+    M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x10) = arg0;
+    M2C_FIELD(temp_r0, s32 *, 0x8) = 0;
+    temp_r0_2 = func_0202c4ac((void *)((char *)temp_r0 + 0x14), arg2);
+    if (temp_r0_2 == 0) {
+        return 0;
+    }
+    M2C_FIELD(temp_r0, s32 *, 0x8) = temp_r0_2;
+    func_02029c74((s32)&data_0213b704 + arg0 * 0x24 + 0xC, temp_r0);
+    return 1;
+}
+
 void func_0202ac60(s32 *arg0) {
     M2C_UNK func_0202b10c(s32);
     func_0202b10c(*arg0);
@@ -690,10 +711,10 @@ void func_0202acb0(s32 *arg0) {
 }
 
 void func_0202acbc(s32 **arg0) {
-    if (*arg0 != (s32 *)0) {
-        **arg0 = 0;
-        *arg0 = (s32 *)0;
-    }
+    s32 **p = arg0;
+    if (*p == NULL) return;
+    **p = 0;
+    *p = NULL;
 }
 
 void func_0202acdc(void **arg0, s8 arg1) {
@@ -708,21 +729,22 @@ void func_0202acf0(void **arg0, s8 arg1) {
     }
 }
 
-#pragma opt_common_subs off
+#pragma push
+#pragma optimizewithasm off
+#pragma peephole off
 void func_0202ad04(void **arg0, s32 arg1) {
     M2C_UNK func_0202eed8(void *, s32);
     if (*arg0 != 0 && M2C_FIELD(*arg0, u8 *, 0x2C) != 2) {
         func_0202eed8((u8 *)*arg0 + 0x1C, arg1 << 8);
     }
 }
-#pragma opt_common_subs reset
-void func_0202ad30(void **arg0) {
+#pragma pop
+void func_0202ad30(volatile void **arg0) {
     M2C_UNK func_02008c50(u8);
-    void **a = arg0;
-    if (*a == 0) {
+    if (*arg0 == NULL) {
         return;
     }
-    func_02008c50(M2C_FIELD(*a, u8 *, 0x3C));
+    func_02008c50(M2C_FIELD(*arg0, u8 *, 0x3C));
 }
 
 void func_0202ad50(void *arg0, s32 arg1, s32 arg2) {
@@ -745,12 +767,11 @@ void func_0202ad90(void *arg0, s32 arg1, s32 arg2) {
 
 #pragma opt_common_subs off
 void func_0202adb0(void **arg0, s16 arg1) {
-    void *p = *arg0;
-    if (p == NULL) {
+    if (*(void * volatile *)arg0 == NULL) {
         return;
     }
-    M2C_FIELD(p, s16 *, 0x34) = 1;
-    M2C_FIELD(*arg0, s16 *, 0x38) = arg1;
+    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x34) = 1;
+    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
 }
 #pragma opt_common_subs reset
 void func_0202add4(void **arg0, s16 arg1, s16 arg2) {

@@ -314,7 +314,7 @@ void func_02032be4(void *arg0) {
 
 s32 func_02032c74(s32 arg0){
 extern M2C_UNK data_020fb2f8,data_020fb35c,data_0213d114,data_0213d120,data_0212dca4;
-s32 func_02068d98(void *,void *);s32 func_02033ccc(void *,const void *);void func_02045cbc(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
+s32 func_02068d98(void *,void *);s32 func_02033ccc(void *,void *);void func_02045cbc(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
 if(func_02068d98(M2C_FIELD(&data_020fb2f8,void **,0),&data_020fb35c))M2C_FIELD(&data_020fb2f8,s32 *,20)=1;
 { void *p=M2C_FIELD(&data_0213d114,void **,8);
 M2C_FIELD(&data_020fb2f8,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);

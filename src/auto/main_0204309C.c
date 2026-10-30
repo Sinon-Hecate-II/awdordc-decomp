@@ -184,8 +184,7 @@ void func_02043a24(s32 a, void *b) {
         p = func_02044268();
         func_0205eb7c(b, *(s32 *)((char *)p + 0x20));
         return;
-    } else if (a > 10) {
-    } else if (a < 8) {
+    } else if (a < 8 || a > 10) {
     } else if (a == 8) {
         p = func_02044268();
         func_0205eb7c(b, ((u8 *)p)[0x14]);
@@ -204,7 +203,7 @@ void func_02043a24(s32 a, void *b) {
     if (data_0213d3bd[idx] != 0) {
         func_0205ebb0(b, *(void **)((char *)data_0213d3c4 + idx));
     } else {
-        func_0205eb7c(b, *(s32 *)((char *)data_0213d3c4 + idx));
+        func_0205eb7c(b, **(s32 **)((char *)data_0213d3c4 + idx));
     }
 }
 

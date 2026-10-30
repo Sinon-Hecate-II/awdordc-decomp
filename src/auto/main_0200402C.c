@@ -236,6 +236,31 @@ void func_0200472c(M2C_UNK arg0,s32 arg1,u32 arg2) {
  func_02007e70(arg0,temp_ip+arg1,arg2);
 }
 
+void func_0200478c(void) {
+    s32 func_02003370(void);
+    extern M2C_UNK data_0212dbe0;
+    s32 r = func_02003370();
+
+    M2C_FIELD(&data_0212dbe0, s32 *, 0x14) = r;
+    switch (r) {
+    case 0x10:
+        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6880000;
+        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
+        return;
+    case 0x40:
+        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6894000;
+        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0x4000;
+        return;
+    case 0x20:
+    case 0x60:
+        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6890000;
+        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
+        return;
+    default:
+        return;
+    }
+}
+
 void func_0200482c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
@@ -500,10 +525,9 @@ void func_02004e20(FuncCopyV3 *src, FuncCopyV3 *dst) {
 void func_02004e44(void *arg0, void *arg1) {
     u32 *s = arg0;
     u32 *d = arg1;
-    int i = 0;
-    while (i < 16) {
+    s32 i;
+    for (i = 0; i < 16; i++) {
         d[i] = s[i];
-        i++;
     }
 }
 
@@ -535,6 +559,36 @@ void func_02004e60(s32 arg0, u32 mask) {
 
 void func_02004ed4(void) {
 
+}
+
+s32 func_02004ed8(s32 arg0) {
+    s32 func_020051f8(s32);
+    extern M2C_UNK data_0212dc1c;
+    extern M2C_UNK data_020f5208;
+    extern M2C_UNK data_0212dc24;
+    extern M2C_UNK data_027e0000;
+    extern M2C_UNK data_0212dc20;
+    s32 saved;
+    u32 mask;
+    s32 field20;
+    saved = M2C_FIELD(&data_0212dc1c, s32 *, arg0 * 12);
+    M2C_FIELD(&data_0212dc1c, s32 *, arg0 * 12) = 0;
+    mask = (u32)M2C_FIELD(&data_020f5208, u16 *, arg0 * 2);
+    mask = 1u << mask;
+    if (saved != 0) {
+        void *target = (void *)M2C_FIELD(&data_0212dc24, M2C_UNK *, arg0 * 12);
+        ((void (*)(void *))saved)(target);
+    }
+    field20 = M2C_FIELD(&data_0212dc20, s32 *, arg0 * 12);
+    {
+        u32 v = M2C_FIELD(&data_027e0000, u32 *, 0x3FF8);
+        v |= mask;
+        M2C_FIELD(&data_027e0000, u32 *, 0x3FF8) = v;
+    }
+    if (field20 == 0) {
+        func_020051f8((s32)mask);
+    }
+    return 0;
 }
 
 void func_02004f60(void) {

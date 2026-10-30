@@ -243,7 +243,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));u64 pair; s32 lo,hi;s32 v;if(n<=0)func_020640a8(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=*(u64 *)func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);lo=(u32)pair;hi=pair>>32;if(func_0205a9ec(p,lo+M2C_FIELD(p,s32 *,0x50),hi)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)func_020640a8(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 #pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;

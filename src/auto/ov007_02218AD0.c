@@ -160,8 +160,8 @@ void func_ov007_02218d8c(void *arg0) {
     extern u16 **data_027e01d8;
     extern M2C_UNK data_027e0064;
     void *sp4;
-    s32 temp_r7;
     u32 var_r10;
+    s32 temp_r7;
     long var_r8;
     s32 var_r9;
 
@@ -336,17 +336,21 @@ if(func_ov007_02217d30(arg)) {func_0208fe30(0x10019);return;}
 func_02088044(M2C_FIELD(arg,void **,0x58));
 p=M2C_FIELD(arg,void **,0x58);
 if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
-v=ov007_item_id(p);
+q=M2C_FIELD(p,void **,0);
+v=q?M2C_FIELD(q,u16 *,8):-1;
 func_0208fe30(0x10019);
 M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x3a)=v;
 }
 if((u8)(M2C_FIELD(M2C_FIELD(arg,void **,0x58),s8 *,11)>=0)) {func_ov007_02217cd0(arg);return;}
 func_02088044(M2C_FIELD(arg,void **,0x5c));
 p=M2C_FIELD(arg,void **,0x5c);
-if(!(u8)(M2C_FIELD(p,s8 *,9)>=0)) return;
+if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
+q=M2C_FIELD(p,void **,0);
+v=q?M2C_FIELD(q,u16 *,8):-1;
 {
-v=ov007_item_id(p);
-if(v!=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38)) func_ov007_02219bb4(arg,v);
+ s32 selected=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38);
+ if(v!=selected) func_ov007_02219bb4(arg,v);
+}
 }
 }
 
@@ -380,12 +384,12 @@ void func_ov007_022193d4(void) {
     func_ov007_02219230();
 }
 
-void func_ov007_022193e0(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
+M2C_UNK func_ov007_022193e0(void *arg0) {
+    M2C_UNK func_0208fe30(M2C_UNK);
     u8 temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, u8 *, 0x37);
-    switch (temp_r1) {                              /* irregular */
+    switch (temp_r1) {
     case 1:
         M2C_FIELD(arg0, u8 *, 0x37) = 0U;
         break;
@@ -393,13 +397,13 @@ void func_ov007_022193e0(void *arg0) {
         M2C_FIELD(arg0, u8 *, 0x37) = 1U;
         break;
     }
-    func_0208fe30(0x10020);
+    return func_0208fe30((M2C_UNK)0x10020);
 }
 
-void func_ov007_02219418(void) {
+M2C_UNK func_ov007_02219418(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221ff90;
-    func_01ffa3dc(&data_ov007_0221ff90, 7);
+    return func_01ffa3dc(&data_ov007_0221ff90, 7);
 }
 
 M2C_UNK func_ov007_02219430(void) {
@@ -479,11 +483,7 @@ void func_ov007_02219634(void) {
     gCur3DSpriteEngine = old;
 }
 
-void func_ov007_022196f4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221fdf8;
-    func_01ffa42c(&data_ov007_0221fdf8, arg0);
-}
+void func_ov007_022196f4(void *arg0) { M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))func_01ffa42c; extern M2C_UNK data_ov007_0221fdf8; f((void **)&data_ov007_0221fdf8,arg0); }
 
 void func_ov007_0221970c(void *arg) {
 M2C_UNK func_ov007_02219430(void);
@@ -575,9 +575,5 @@ void func_ov007_022198fc(void) {
     }
 }
 
-void func_ov007_02219ab4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221fe20;
-    func_01ffa42c(&data_ov007_0221fe20, arg0);
-}
+void func_ov007_02219ab4(void *arg0) { M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))func_01ffa42c; extern M2C_UNK data_ov007_0221fe20; f((void **)&data_ov007_0221fe20,arg0); }
 

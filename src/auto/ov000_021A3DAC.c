@@ -153,8 +153,7 @@ s32 func_ov000_021a4704(void) {
     s32 i;
     s32 idx;
     void *base = *gCurrentMap;
-    u16 start = data_ov000_021aeef4[M2C_FIELD(base, u16 *, 0x52A4)];
-    s32 end;
+    u16 start = data_ov000_021aeef4[*(unsigned short *)((char *)base + 0x52A4)];
 
     i = start + 1;
     if (i < (s32)(start + 0x33)) {
@@ -186,8 +185,7 @@ s32 func_ov000_021a4704(void) {
             i += 1;
             base = *gCurrentMap;
             idx += 0xE;
-            end = data_ov000_021aeef4[M2C_FIELD(base, u16 *, 0x52A4)] + 0x33;
-        } while (i < end);
+        } while (i < (s32)(data_ov000_021aeef4[*(unsigned short *)((char *)*gCurrentMap + 0x52A4)] + 0x33));
     }
     if (count7 <= (count8 << 1)) {
         return 1;
@@ -274,13 +272,18 @@ s32 func_ov000_021a4944(s32 arg0) {
     extern u8 data_ov000_021dfd98[];
     extern u8 data_ov000_021dfd99[];
     extern u8 data_ov000_021dfd9a[];
+    u8 *p99;
+    u8 *p9a;
     u8 *p98;
+    s32 var_ip;
     s32 temp_r1;
     s32 temp_r2;
-    s32 var_ip;
-    var_ip = data_ov000_021dfd99[arg0 * 8];
-    temp_r1 = data_ov000_021dfd9a[arg0 * 8];
+
+    p99 = data_ov000_021dfd99;
+    p9a = data_ov000_021dfd9a;
     p98 = data_ov000_021dfd98;
+    var_ip = p99[arg0 * 8];
+    temp_r1 = p9a[arg0 * 8];
     temp_r2 = var_ip - temp_r1;
     if (temp_r2 != 0) {
         var_ip = temp_r2 + (temp_r1 >> 1);

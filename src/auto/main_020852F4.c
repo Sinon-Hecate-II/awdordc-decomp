@@ -628,17 +628,17 @@ void func_02085ebc(void *arg0) {
  if(!func_ov002_021e1624())return;
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c8;
  {
- u32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
- u32 tile=1023&((s32)((state<<2)+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
- u32 y=M2C_FIELD(arg0,s16 *,0x36);
+ s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
+ s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
+ s32 y=M2C_FIELD(arg0,s16 *,0x36);
  func_01ff883c((u16)x,(u8)y,(u16)tile,&data_027e0064);
  }
  gCur3DSpriteEngine=saved; return;
  }
  {
- u32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
- u32 tile=1023&((s32)((state<<2)+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
- u32 y=M2C_FIELD(arg0,s16 *,0x36);
+ s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
+ s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
+ s32 y=M2C_FIELD(arg0,s16 *,0x36);
  func_01ff883c((u16)x,(u8)y,(u16)tile,&data_027e0064);
  }
 }

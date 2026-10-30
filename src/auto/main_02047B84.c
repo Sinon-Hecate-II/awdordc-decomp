@@ -203,7 +203,7 @@ u8 address[8];
 s32 len;
 u32 flags;
 len=8;
-if(-1==gDnsQueryState[1]){
+if(gDnsQueryState[1]==-1){
 gDnsQueryState[0]=1;
 return 1;
 }

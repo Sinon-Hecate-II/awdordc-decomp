@@ -77,8 +77,8 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   s32 func_02068c34(s32);
   int func_02034908(s32, void *, s32);
   s32 ctr = *(s32 *)((u8 *)obj + 0x1000 + 0x9f4);
-  char *fmtstr;
   Buffer02034164 *buf = (Buffer02034164 *)((u8 *)obj + 0x1f8 + 0x1800);
+  char *fmtstr;
   s32 first;
   s32 lenf;
   s32 lenn;

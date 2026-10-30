@@ -7,7 +7,7 @@ void func_ov003_021e5b18(void *arg0) {
     M2C_UNK func_020aacf0(void *);
     extern u16 *data_02101e84;
     extern void *data_02101e88;
-    register u8 temp_r4;
+    register u8 temp_r4 asm("r4");
     s32 var_r0;
     u16 temp_r5;
     unsigned int var_r3;

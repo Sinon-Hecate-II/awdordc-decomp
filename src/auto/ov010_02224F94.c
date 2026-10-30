@@ -99,9 +99,11 @@ void func_ov010_02225174(void) {
 #pragma opt_strength_reduction off
 s32 func_ov010_0222519c(s16 *a,u32 bytes){
 extern s32 data_ov010_0222d930;
-s32 input,value,prev,square;u32 n,i;s64 sum;
+s32 value,input,prev,square,st4,st16;u32 n,i;s64 sum;
 input=a[0]*(s16)0xe9f;
-value=(input+M2C_FIELD(&data_ov010_0222d930,s32 *,4)+M2C_FIELD(&data_ov010_0222d930,s32 *,16)*0xd3e)>>12;
+st4=M2C_FIELD(&data_ov010_0222d930,s32 *,4);
+st16=M2C_FIELD(&data_ov010_0222d930,s32 *,16);
+value=(input+st4+st16*0xd3e)>>12;
 square=value*value;n=bytes>>1;
 M2C_FIELD(&data_ov010_0222d930,s32 *,16)=value;
 prev=-input;M2C_FIELD(&data_ov010_0222d930,s32 *,4)=prev;
@@ -376,16 +378,16 @@ u64 now; u8 kind; s32 *state;
 if(!b)return 0;
 if(M2C_FIELD(b,u32*,0)!=0x5f564354)return 2;
 if(!M2C_FIELD(&data_ov010_0222edb4,s32*,28)||!M2C_FIELD(&data_ov010_0222edb4,s32*,8))return 0;
-out[1]=out[0]=0;
+out[0]=0;out[1]=0;
 now=func_02007004();
 kind=M2C_FIELD(b,u8*,4);
-if((0xf0&kind)==0x40) {
+if((kind & 0xF0) == 0x40) {
 state=&data_ov010_0222edb4;
-state[1]=state[1]+1;
+state[1]++;
 func_ov010_02222f28(a,b,c,now);
 return 0;
 }
-if(kind==0||kind==255) return func_ov010_02224334(a,b,c,out)!=0;
+if(kind == 0 || kind == 0xFF) return func_ov010_02224334(a,b,c,out) != 0;
 return 0;
 }
 

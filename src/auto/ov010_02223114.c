@@ -62,7 +62,7 @@ n=(data_ov010_0222be36+M2C_FIELD(&data_ov010_0222c960,s32*,0xF14)*3)[idx];
 i=0; goto test;
 loop: {
 u32 bits=M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C);
-k=_clz(bits);if(k==32)goto done;
+k=__builtin_clz(bits);if(k==32)goto done;
 M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C)=bits&~(0x80000000U>>k);
 func_020444cc((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
 if(!M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)){

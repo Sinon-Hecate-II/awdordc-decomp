@@ -181,7 +181,10 @@ s32 func_ov009_02224508(s32 arg0) {
 
 void func_ov009_02224528(s32 arg0) {
     extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, s32 *, 0x50) = (-1 ^ (1 << arg0)) & M2C_FIELD(&data_ov009_022268e0, s32 *, 0x50);
+    s32 v;
+    v = M2C_FIELD(&data_ov009_022268e0, s32 *, 0x50);
+    v = v & (-1 ^ (1 << arg0));
+    M2C_FIELD(&data_ov009_022268e0, s32 *, 0x50) = v;
 }
 
 void func_ov009_0222454c(void) {

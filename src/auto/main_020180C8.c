@@ -407,6 +407,33 @@ void func_02018960(s32 arg0) {
     M2C_FIELD((u8 *)base + idx * 4, u32 *, 0x1E0) = 0;
 }
 
+void *func_020189a4(void *arg0, void *arg1) {
+    u8 temp_r1;
+    void *var_r3;
+
+    var_r3 = arg1;
+    var_r3 = (u8 *)var_r3 + 1;
+    M2C_FIELD(arg1, u8 *, 0) = (u8) M2C_FIELD(arg0, u8 *, 0);
+    temp_r1 = M2C_FIELD(arg0, u8 *, 0);
+    switch (temp_r1) {
+    default:
+    case 0:
+        return (void *)0;
+    case 4:
+        M2C_FIELD(arg1, s8 *, 1) = (s8) M2C_FIELD(arg0, u16 *, 2);
+        M2C_FIELD(var_r3, s8 *, 1) = (s8) ((s32) (M2C_FIELD(arg0, u16 *, 2) & 0xFF00) >> 8);
+        M2C_FIELD(var_r3, s8 *, 2) = (s8) M2C_FIELD(arg0, u16 *, 4);
+        M2C_FIELD(var_r3, s8 *, 3) = (s8) ((s32) (M2C_FIELD(arg0, u16 *, 4) & 0xFF00) >> 8);
+        var_r3 = (u8 *)var_r3 + 4;
+    case 1:
+    case 2:
+    case 3:
+    case 5:
+    case 6:
+        return var_r3;
+    }
+}
+
 void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
     extern M2C_UNK data_02136c84;
     s32 func_02018bd0(s32);
@@ -448,6 +475,31 @@ void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
         return (void *)0;
     }
     return (void *)r4;
+}
+
+s32 func_02018b44(u8 *arg0, s32 arg1) {
+    extern M2C_UNK data_02136c84;
+    void func_02008048(M2C_UNK, M2C_UNK, s32);
+    s32 func_02018bd0(s32);
+
+    u32 field4;
+    register u8 type;
+    s32 field12;
+    register s32 r4;
+    s32 field8;
+    register s32 r6 = arg1;
+
+    field4 = M2C_FIELD(&data_02136c84, u32 *, 0x4);
+    if (field4 == 0) return 0;
+    type = arg0[2];
+    field12 = M2C_FIELD(&data_02136c84, s32 *, 0xC);
+    if (type > (u8)field12) return 0;
+    r4 = arg1 - 1;
+    field8 = M2C_FIELD(&data_02136c84, s32 *, 0x8);
+    func_02008048((M2C_UNK)(arg0 + 3), (M2C_UNK)(field4 + r4 * 32 + type * field8), field8);
+    *((u32 *)((u8 *)field4 + 0x1E0 + r4 * 4)) |= (1U << type);
+    if (!func_02018bd0(r6)) return 0;
+    return (s32)(field4 + r4 * 32);
 }
 
 void func_02018c24(void) {
@@ -532,18 +584,8 @@ void func_02018da8(void *arg0) {
 }
 
 void func_02018df0(void *arg0) {
-    volatile u16 *p = (volatile u16 *)0x04000204;
-    u16 h;
-    s32 a;
-    s32 b;
-    h = *p;
-    a = *(s32 *)arg0;
-    h = (u16)((h & ~0xC) | (a << 2));
-    *p = h;
-    h = *p;
-    b = *((s32 *)arg0 + 1);
-    h = (u16)((h & ~0x10) | (b << 4));
-    *p = h;
+    *(u16 *)0x04000204 = (*(u16 *)0x04000204 & ~0xC) | (M2C_FIELD(arg0, s32 *, 0) * 4);
+    *(u16 *)0x04000204 = (*(u16 *)0x04000204 & ~0x10) | (M2C_FIELD(arg0, s32 *, 4) * 0x10);
 }
 
 void func_02018e24(M2C_UNK arg0, void *arg1) {

@@ -91,11 +91,14 @@ s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
 
 M2C_UNK func_ov001_0218a61c(s32 arg0, s32 arg1) {
     extern M2C_UNK data_ov001_02193e34;
+    M2C_UNK func_ov001_0218a070(s32, s32);
+    s32 func_ov001_0218a24c(void *, s32);
+    void func_ov001_0218a55c(s32, s32, s32);
+    void *base;
     u16 count;
-    M2C_UNK *base;
     M2C_UNK t;
-    base = (M2C_UNK *)(&data_ov001_02193e34);
-    count = *(u16 *)((u8 *)base[arg0] + arg1 * 8);
+    base = ((M2C_UNK **)&data_ov001_02193e34)[arg0];
+    count = *(u16 *)((u8 *)base + arg1 * 8);
     t = func_ov001_0218a070(arg0, count);
     func_ov001_0218a55c(arg0, arg1, func_ov001_0218a24c(t, 0));
     return t;
@@ -503,6 +506,7 @@ void func_ov001_0218af94(void *arg0, s32 arg4, s32 arg5) {
     M2C_FIELD(&spC, u8 *, 0) = 0;
     M2C_FIELD(&spC, s8 *, 1) = 0;
     temp_ip = M2C_FIELD(M2C_FIELD(*M2C_FIELD(arg0, void ***, 0x1C), void **, 8), u8 *, 7);
+    (void)temp_ip;
     switch (temp_ip) {
     default:
         break;

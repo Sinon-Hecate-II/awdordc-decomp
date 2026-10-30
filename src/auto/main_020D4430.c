@@ -186,12 +186,12 @@ extern void func_020cbdbc(void);
 extern int func_020846a4(void);
 extern void func_020852a8(void);
 extern void func_020901b0(int, int, int, int);
-int func_020d4b30()
-{
+int func_020d4b30() {
+    extern void **gCurrentMap;
     void (*callback)(void);
     void *ptr;
 
-    ptr = *(void **)0x027E0058;
+    ptr = (void *)gCurrentMap;
     ptr = *(void **)((char *)ptr + 4);
     callback = *(void (**)(void))((char *)ptr + 0x40);
 

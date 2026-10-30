@@ -11,7 +11,8 @@ M2C_FIELD(arg0,u16 *,0x38)++;
 v=func_0207ca38(0,0,16,M2C_FIELD(arg0,u16 *,0x38),M2C_FIELD(arg0,u16 *,0x3a));
 pos=v;neg=-v;
 saved=gCur3DSpriteEngine;
-for(i=0;i<2;i++) {
+i=0;
+do {
 if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
 gCur3DSpriteEngine=bank;
 mode=M2C_FIELD(arg0,u8 *,0x3c);
@@ -27,8 +28,8 @@ if(M2C_FIELD(arg0,u16 *,0x38)>=M2C_FIELD(arg0,u16 *,0x3a)){
 func_020aca8c((u8)M2C_FIELD(arg0,s32 *,0x34));
 func_01ffa6fc(arg0);
 }
-next:;
-}
+next: i++;
+}while(i<2);
 gCur3DSpriteEngine=saved;
 if(M2C_FIELD(arg0,s32 *,0x18)==1)func_020ac598(M2C_FIELD(arg0,u8 *,0x3c));
 }

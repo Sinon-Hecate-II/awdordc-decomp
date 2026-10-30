@@ -16,13 +16,9 @@ void func_020af79c(void) {
 }
 
 void func_020af7ac(void) {
- extern u8 data_0215c430;
- extern u8 data_0215c42c;
- s32 i;
- volatile u8 *p=&data_0215c430;
- volatile u8 *q=&data_0215c42c;
- u8 zero=0;
- for (i=0;i<2;i++) { *p++=zero; *q++=zero; }
+extern u8 data_0215c430; extern u8 data_0215c42c;
+s32 i=0; volatile u8 *p=&data_0215c430; volatile u8 *q=&data_0215c42c; u8 zero=0;
+do { i++; *p++=zero; *q++=zero; } while(i<2);
 }
 
 void func_020af7dc(void) {
@@ -322,6 +318,11 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD
 
 void func_020b01bc(s32 a, s32 b, s32 c, s32 d, s32 e) { (void)a;(void)b;(void)c;(void)d;(void)e; }
 
+/* Configure the 3D sprite engine for a map view: set the per-layer 2-bit
+ * rotation modes (layers 0-3 to 1/0/2/3 via func_020b0154), pick the two
+ * layer-scope bytes by the map's 0x5157 mode flag, then update the engine's
+ * flag word at +0x12 (layer 3 enabled, all layer-select/enable bits cleared,
+ * the high mode bits 0x400-0x2000 set) before resetting the engine state. */
 void func_020b0408(void) {
     void func_020b0154(void);
     void Reset3DSpriteEngineState(void);

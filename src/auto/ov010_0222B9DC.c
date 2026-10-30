@@ -154,11 +154,10 @@ void *func_ov010_0222bbe8(void *arg0, void *arg1) {
 void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_ov010_0222bcd8(void *, M2C_UNK, u32, M2C_UNK);
     u32 var_r2;
-
-    if (((u32) (M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) != 0) {
-        var_r2 = M2C_FIELD(arg0, u32 *, 4);
+    if (((u32)(M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) == 0) {
+        var_r2 = (u32)(M2C_FIELD(arg0, u8 *, 0) << 0x18) >> 0x19;
     } else {
-        var_r2 = (u32) ((u8) M2C_FIELD(arg0, s32 *, 0) << 0x18) >> 0x19;
+        var_r2 = M2C_FIELD(arg0, u32 *, 4);
     }
     func_ov010_0222bcd8(arg0, 0, var_r2, arg1);
 }

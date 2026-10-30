@@ -255,10 +255,12 @@ func_ov001_0218a384(((s32 *)data_ov001_02193d10)[3],-1,b,d);
 M2C_UNK func_ov001_02172184(void) {
     void func_ov001_0218a1cc(s32);
     extern s32 data_ov001_02193d10;
+
     s32 i;
     for (i = 0; i < 4; i++) {
-        if (((s32 *)data_ov001_02193d10)[i] != 0) {
-            func_ov001_0218a1cc(((s32 *)data_ov001_02193d10)[i]);
+        s32 val = ((s32 *)data_ov001_02193d10)[i];
+        if (val != 0) {
+            func_ov001_0218a1cc(val);
         }
         ((s32 *)data_ov001_02193d10)[i] = 0;
     }

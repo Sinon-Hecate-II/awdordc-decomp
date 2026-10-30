@@ -277,45 +277,65 @@ void func_0204b3cc(void) {
     func_0204a614();
 }
 
-s32 func_0204b428(char *url,char *name,void *buffer,s32 size,s32 arg4,s32 arg5,s32 arg6,s32 arg7,s32 arg8,s32 arg9) {
-extern s32 data_020fd1c4,data_020fd17c,data_020fd14c,data_020fd1d4,data_020fd1e4,data_0213dcbc;
-void *func_02049274(char *);
-s32 ghiInitFixedBuffer(void *,void *,void *,s32);
-s32 func_02049c7c(void *,void *,s32,s32);
-s32 func_0204bad4(void *);
-void func_02049260(s32);
-void *p; s32 result;
-if(!url||!*url)func_020640a8(&data_020fd1c4,&data_020fd17c,&data_020fd14c,0x128);
-if(size<0)func_020640a8(&data_020fd1d4,&data_020fd17c,&data_020fd14c,0x129);
-if(buffer&&size==0)func_020640a8(&data_020fd1e4,&data_020fd17c,&data_020fd14c,0x12a);
-if(!url||!*url)return -1;
-if(size<0)return -1;
-if(buffer&&size==0)return -1;
-if(!data_0213dcbc)func_0204b378();
-p=func_0204ab50();if(!p)return -1;
-M2C_FIELD(p,s32 *,12)=0;
-M2C_FIELD(p,void **,20)=func_02049274(url);
-if(!M2C_FIELD(p,void **,20)){func_0204ace8(p);return -1;}
-if(name&&*name){
-M2C_FIELD(p,void **,40)=func_02049274(name);
-if(!M2C_FIELD(p,void **,40)){func_0204ace8(p);return -1;}
-}
-M2C_FIELD(p,s32 *,0x13c)=arg4;
-M2C_FIELD(p,s32 *,0x30)=arg6;
-M2C_FIELD(p,s32 *,0x3c)=arg7;
-M2C_FIELD(p,s32 *,0x40)=arg8;
-M2C_FIELD(p,s32 *,0x44)=arg9;
-M2C_FIELD(p,s32 *,0x134)=arg5;
-M2C_FIELD(p,s32 *,0xe0)=buffer!=0;
-if(M2C_FIELD(p,s32 *,0xe0))result=ghiInitFixedBuffer(p,(u8 *)p+0xbc,buffer,size);
-else result=func_02049c7c(p,(u8 *)p+0xbc,0x800,0x800);
-if(!result){func_0204ace8(p);return -1;}
-if(arg4&&!func_0204bad4(p)){func_0204ace8(p);return -1;}
-if(arg6){
-if(!func_0204b210(p))do{func_02049260(10);}while(!func_0204b210(p));
-return 0;
-}
-return M2C_FIELD(p,s32 *,4);
+s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
+    extern s32 data_020fd1c4, data_020fd17c, data_020fd14c, data_020fd1d4, data_020fd1e4, data_0213dcbc;
+    void *func_02049274(char *);
+    s32 ghiInitFixedBuffer(void *, void *, void *, s32);
+    s32 func_02049c7c(void *, void *, s32, s32);
+    s32 func_0204bad4(void *);
+    void func_02049260(s32);
+    void *connection;
+    s32 bufferInitialized;
+
+    /* Start an HTTP download into a caller buffer or growable buffer, optionally blocking. */
+    if (!url || !*url) func_020640a8(&data_020fd1c4, &data_020fd17c, &data_020fd14c, 0x128);
+    if (bufferSize < 0) func_020640a8(&data_020fd1d4, &data_020fd17c, &data_020fd14c, 0x129);
+    if (buffer && bufferSize == 0) func_020640a8(&data_020fd1e4, &data_020fd17c, &data_020fd14c, 0x12a);
+    if (!url || !*url) return -1;
+    if (bufferSize < 0) return -1;
+    if (buffer && bufferSize == 0) return -1;
+    if (!data_0213dcbc) func_0204b378();
+    connection = func_0204ab50();
+    if (!connection) return -1;
+    M2C_FIELD(connection, s32 *, 12) = 0;
+    M2C_FIELD(connection, void **, 20) = func_02049274(url);
+    if (!M2C_FIELD(connection, void **, 20)) {
+        func_0204ace8(connection);
+        return -1;
+    }
+    if (headers && *headers) {
+        M2C_FIELD(connection, void **, 40) = func_02049274(headers);
+        if (!M2C_FIELD(connection, void **, 40)) {
+            func_0204ace8(connection);
+            return -1;
+        }
+    }
+    M2C_FIELD(connection, s32 *, 0x13c) = post;
+    M2C_FIELD(connection, s32 *, 0x30) = blocking;
+    M2C_FIELD(connection, s32 *, 0x3c) = progressCallback;
+    M2C_FIELD(connection, s32 *, 0x40) = completedCallback;
+    M2C_FIELD(connection, s32 *, 0x44) = callbackParam;
+    M2C_FIELD(connection, s32 *, 0x134) = throttle;
+    M2C_FIELD(connection, s32 *, 0xe0) = buffer != 0;
+    if (M2C_FIELD(connection, s32 *, 0xe0))
+        bufferInitialized = ghiInitFixedBuffer(connection, (u8 *)connection + 0xbc, buffer, bufferSize);
+    else
+        bufferInitialized = func_02049c7c(connection, (u8 *)connection + 0xbc, 0x800, 0x800);
+    if (!bufferInitialized) {
+        func_0204ace8(connection);
+        return -1;
+    }
+    if (post && !func_0204bad4(connection)) {
+        func_0204ace8(connection);
+        return -1;
+    }
+    if (blocking) {
+        if (!func_0204b210(connection)) do {
+            func_02049260(10);
+        } while (!func_0204b210(connection));
+        return 0;
+    }
+    return M2C_FIELD(connection, s32 *, 4);
 }
 
 void func_0204b674(void) {

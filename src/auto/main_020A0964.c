@@ -333,7 +333,13 @@ void func_020a16a8(u8 *arg0) {
 
 void func_020a1720(u8 *dst) {
 extern s32 *gCurrentMap;
-u8 count=0; s32 i=0; s32 n; u8 *p; void *base;
+s32 i;
+u8 count;
+u8 *p;
+s32 n;
+void *base;
+count = 0;
+i = count;
 base=(void *)*gCurrentMap;
 n=M2C_FIELD(base,u16 *,0x5144)*M2C_FIELD(base,u16 *,0x5146);
 p=(u8 *)base+0x539c;

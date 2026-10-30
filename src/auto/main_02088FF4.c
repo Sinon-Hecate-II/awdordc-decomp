@@ -3,24 +3,25 @@
 void func_02089c34(void *, s32);
 extern M2C_UNK data_02102638;
 
-void func_02088ff4(void *arg0) {
-    M2C_UNK func_02088da8();
-    if (M2C_FIELD(arg0, u8 *, 0x4F) == 0) {
-        M2C_FIELD(arg0, s16 *, 0x34) = (s16) M2C_FIELD(arg0, s16 *, 0x54);
-        M2C_FIELD(arg0, s16 *, 0x36) = (s16) M2C_FIELD(arg0, s16 *, 0x56);
-        M2C_FIELD(arg0, s8 *, 0x4D) = 0;
-        M2C_FIELD(arg0, u8 *, 0x48) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) & ~0xC0);
-        func_02088da8();
+#pragma opt_common_subs off
+void func_02088ff4(void *p) {
+    M2C_UNK func_02088da8(void *);
+    if (!M2C_FIELD(p, u8 *, 0x4F)) {
+        M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x54);
+        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x56);
+        M2C_FIELD(p, s8 *, 0x4D) = 0;
+        M2C_FIELD(p, u8 *, 0x48) = (u8)(M2C_FIELD(p, u8 *, 0x48) & ~0xC0);
+        func_02088da8(p);
         return;
     }
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x18) >> 0x1E) == 3) {
+    if ((((u32)M2C_FIELD(p, u8 *, 0x48) << 24) >> 30) == 3) {
         return;
     }
-    M2C_FIELD(arg0, s8 *, 0x4C) = 0;
-    M2C_FIELD(arg0, s8 *, 0x4D) = 0;
-    M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0xC0) | 0xC0);
+    M2C_FIELD(p, s8 *, 0x4C) = 0;
+    M2C_FIELD(p, s8 *, 0x4D) = 0;
+    M2C_FIELD(p, u8 *, 0x48) = (u8)((M2C_FIELD(p, u8 *, 0x48) & ~0xC0) | 0xC0);
 }
-
+#pragma opt_common_subs reset
 u8 func_02089064(void *arg0) {
     u8 var_r0;
 
@@ -144,12 +145,19 @@ void *func_02089340(void *arg0) {
 
 void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_0208ca2c(u32, s32, s32, M2C_UNK);
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    M2C_FIELD(arg0, s16 *, 0x5C) = arg3;
+    *(volatile u16 *)((s8 *)arg0 + 0x3E) = (u16)(arg1 >> 5);
+    {
+        s32 t = *(volatile s32 *)((s8 *)arg0 + 0x40);
+        u32 shifted = (u32)arg2 << 0x18;
+        shifted >>= 6;
+        t &= ~0x03FC0000;
+        t |= (s32)shifted;
+        *(volatile s32 *)((s8 *)arg0 + 0x40) = t;
+    }
+    *(volatile s16 *)((s8 *)arg0 + 0x5C) = (s16)arg3;
     func_0208ca2c(arg1, arg2, arg3, 2);
-    M2C_FIELD(arg0, s16 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s8 *, 0x49) = 0;
+    *(volatile s16 *)((s8 *)arg0 + 0x3C) = 0;
+    *(volatile s8 *)((s8 *)arg0 + 0x49) = 0;
 }
 
 M2C_UNK func_020893f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -163,10 +171,10 @@ void func_02089424(M2C_UNK arg0) {
 }
 
 void func_02089438(void *arg0) {
-    M2C_FIELD(arg0, s16 *, 0x5E) = (s16) M2C_FIELD(arg0, s16 *, 0x34);
-    M2C_FIELD(arg0, s16 *, 0x60) = (s16) M2C_FIELD(arg0, s16 *, 0x36);
-    M2C_FIELD(arg0, s16 *, 0x62) = (s16) ((u32) (M2C_FIELD(arg0, s32 *, 0x40) << 0x17) >> 0x17);
-    M2C_FIELD(arg0, s16 *, 0x64) = (s16) ((u32) (M2C_FIELD(arg0, s32 *, 0x40) << 0xE) >> 0x17);
+    *(volatile s16 *)((volatile s8 *)arg0 + 0x5E) = *(volatile s16 *)((volatile s8 *)arg0 + 0x34);
+    *(volatile s16 *)((volatile s8 *)arg0 + 0x60) = *(volatile s16 *)((volatile s8 *)arg0 + 0x36);
+    *(volatile s16 *)((volatile s8 *)arg0 + 0x62) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0x17) >> 0x17);
+    *(volatile s16 *)((volatile s8 *)arg0 + 0x64) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0xE) >> 0x17);
 }
 
 M2C_UNK func_0208946c(void) { return 0; }
@@ -321,29 +329,32 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     void func_02091d4c(s32);
     void func_02089b18(M2C_UNK, M2C_UNK);
 
-    s32 savedBank;
+    void *savedBank;
     void *bank;
     u32 mode;
     u16 spriteIndex;
     s32 i;
     s32 low3;
     s32 tmp;
-    M2C_UNK t1, t2;
+    M2C_UNK t1;
+    M2C_UNK t2;
 
-    savedBank = (s32)gCur3DSpriteEngine;
+    savedBank = gCur3DSpriteEngine;
     spriteIndex = (u16)(arg2 >> 5);
     i = 0;
     low3 = (s32)arg1 & 7;
     tmp = ~0x62;
-
     do {
-        if (i == 0) bank = (void *)data_027e00c8;
-        else bank = (void *)data_027e00c4;
+        if (i == 0) {
+            bank = (void *)data_027e00c8;
+        } else {
+            bank = (void *)data_027e00c4;
+        }
         gCur3DSpriteEngine = bank;
         mode = (u32)(M2C_FIELD(entity, u8 *, 0x48) << 28) >> 29;
         if ((mode != 0 || bank == (void *)data_027e00c8) &&
             (mode != 1 || bank == (void *)data_027e00c4) &&
-            (mode != 3 || bank == (void *)savedBank)) {
+            (mode != 3 || bank == savedBank)) {
             M2C_FIELD(entity, u16 *, 0x3E) = spriteIndex;
             M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~7) | low3;
             M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~0xE0000000) | (low3 << 29);
@@ -358,7 +369,7 @@ M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
         }
         i++;
     } while (i < 2);
-    gCur3DSpriteEngine = (void *)savedBank;
+    gCur3DSpriteEngine = savedBank;
     return 0;
 }
 
@@ -369,6 +380,7 @@ void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
     func_02089b38(arg0, arg1);
 }
 
+#pragma opt_common_subs off
 M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  s32 func_02068c34(s32);
  s32 func_020e34bc(s32);
@@ -390,17 +402,33 @@ M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  M2C_FIELD(arg0,s32 *,0x6C)=func_020e34bc(8);
  func_02089c34((void *)arg0,M2C_FIELD(arg0,s32 *,0x64));
 }
-
+#pragma opt_common_subs reset
 M2C_UNK func_02089bdc(void *arg0) {
- s32 func_020e35cc(s32);
- s32 p;
- p=M2C_FIELD(arg0,s32 *,0x64); if(p){func_020e35cc(p);} p=0; M2C_FIELD(arg0,s32 *,0x64)=0;
- p=M2C_FIELD(arg0,s32 *,0x68); if(p){func_020e35cc(p);} p=0; M2C_FIELD(arg0,s32 *,0x68)=0;
- p=M2C_FIELD(arg0,s32 *,0x6C); if(p){func_020e35cc(p);} p=0; M2C_FIELD(arg0,s32 *,0x6C)=0;
- M2C_FIELD(arg0,s32 *,0x70)=p;
- return p;
+    s32 func_020e35cc(s32);
+    s32 p;
+    p = *(volatile s32 *)((s8 *)arg0 + 0x64);
+    if (p != 0) {
+        func_020e35cc(p);
+    }
+    p = 0;
+    *(volatile s32 *)((s8 *)arg0 + 0x64) = p;
+    p = *(volatile s32 *)((s8 *)arg0 + 0x68);
+    if (p != 0) {
+        func_020e35cc(p);
+    }
+    p = 0;
+    *(volatile s32 *)((s8 *)arg0 + 0x68) = p;
+    p = *(volatile s32 *)((s8 *)arg0 + 0x6C);
+    if (p != 0) {
+        func_020e35cc(p);
+    }
+    p = 0;
+    *(volatile s32 *)((s8 *)arg0 + 0x6C) = p;
+    *(volatile s32 *)((s8 *)arg0 + 0x70) = p;
+    return p;
 }
 
+#pragma peephole off
 void func_02089c34(void *arg0, s32 arg1) {
     s32 func_0209c658(s32);
     u32 temp_r1;
@@ -413,7 +441,7 @@ void func_02089c34(void *arg0, s32 arg1) {
     temp_r1 = M2C_FIELD(arg0, u32 *, 0x58);
     M2C_FIELD(arg0, u32 *, 0x58) = (u32) ((temp_r1 & ~7) | ((temp_r1 >> 0x1D) & 7));
 }
-
+#pragma peephole reset
 void func_02089c80(void *arg0) {
  s32 func_0209c658(s32);
  M2C_UNK func_01ffa8c4(void *,s32);

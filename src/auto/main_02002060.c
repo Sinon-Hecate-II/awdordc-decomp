@@ -37,30 +37,15 @@ void func_0200213c(s32 *arg0, s32 *arg1, s32 *arg2) {
 }
 
 typedef volatile unsigned int vu32;
-void func_020021c0(s32 *arg0, s32 *arg1) {
-    s64 sq = (s64)*(volatile s32 *)(arg0+1) * arg0[1];
-    sq += (s64)arg0[0] * arg0[0];
-    sq += (s64)arg0[2] * arg0[2];
-    *(volatile u16 *)0x04000280 = 2;
-    *(volatile s32 *)0x04000290 = 0;
-    *(volatile s32 *)0x04000294 = 0x01000000;
-    *(volatile u32 *)0x04000298 = (u32)sq;
-    *(volatile u32 *)0x0400029c = (u32)(sq >> 32);
-    *(volatile u16 *)0x040002b0 = 1;
-    *(volatile u32 *)0x040002b8 = (u32)(sq << 2);
-    *(volatile u32 *)0x040002bc = (u32)((sq << 2) >> 32);
-    while (*(volatile u16 *)0x040002b0 & 0x8000) { }
-    {
-        s32 scale = *(volatile s32 *)0x040002b4;
-        while (*(volatile u16 *)0x04000280 & 0x8000) { }
-        {
-            s64 D = *(volatile s64 *)0x040002a0;
-            s64 P = D * (s64)scale;
-            arg1[0] = (s32)((P * (s64)arg0[0] + (1LL << 44)) >> 45);
-            arg1[1] = (s32)((P * (s64)arg0[1] + (1LL << 44)) >> 45);
-            arg1[2] = (s32)((P * (s64)arg0[2] + (1LL << 44)) >> 45);
-        }
-    }
+void func_020021c0(s32 *a, s32 *b) {
+ s64 sq=(s64)*(volatile s32*)a*a[0]; sq+=(s64)a[1]*a[1]; sq+=(s64)a[2]*a[2];
+ *(volatile u16*)0x4000280=2; *(volatile s32*)0x4000290=0; *(volatile s32*)0x4000294=0x1000000;
+ *(volatile u32*)0x4000298=(u32)sq; *(volatile u32*)0x400029c=(u32)(sq>>32);
+ *(volatile u16*)0x40002b0=1;
+ *(volatile u32*)0x40002b8=(u32)(sq<<2); *(volatile u32*)0x40002bc=(u32)((sq<<2)>>32);
+ while(*(volatile u16*)0x40002b0&0x8000){}
+ {s32 scale=*(volatile s32*)0x40002b4; s64 D,P; while(*(volatile u16*)0x4000280&0x8000){} D=*(volatile s64*)0x40002a0; P=D*scale;
+ b[0]=(s32)((P*a[0]+(1LL<<44))>>45); b[1]=(s32)((P*a[1]+(1LL<<44))>>45); b[2]=(s32)((P*a[2]+(1LL<<44))>>45); }
 }
 
 void func_020022d8(void) {

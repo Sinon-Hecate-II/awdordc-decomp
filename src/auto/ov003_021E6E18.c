@@ -118,51 +118,72 @@ s8 func_ov003_021e74a4(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 4);
 }
 
-void func_ov003_021e74ac(void *p,s32 mode){
- s32 func_020846a4(void);M2C_UNK func_02087db8(void *,M2C_UNK);
- M2C_UNK func_020aad18(void *);s32 func_ov003_021e6cac(s32,s32,s32);
- void func_ov003_021e6ef4(void *,s32);
- u32 i,j; s32 flag; void *obj;
- switch(mode){
- case 0:
- if(func_020846a4()!=0)M2C_FIELD(p,s8 *,0xe4)=0;else M2C_FIELD(p,s8 *,0xe4)=4;
- M2C_FIELD(p,s8 *,0xe5)=0;
- i=0;do{
- if(!func_ov003_021e6cac(i,21,24)){
- if(func_ov003_021e6cac(i,0,3))func_ov003_021e7458(p,i,0);
- else if(func_ov003_021e6cac(i,4,7))func_ov003_021e7458(p,i,4);
- else func_020aad18(M2C_FIELD(p+i*4,void **,0x78));
- }else{
- obj=M2C_FIELD(M2C_FIELD(p+i*4,void **,0x78),void **,0x64);
- if(M2C_FIELD(obj,u8 *,0x12))flag=1;else flag=0;
- if(flag&255)func_02087db8(obj,1);
- }
- i=(u8)(i+1);
- }while(i<26);
- M2C_FIELD(M2C_FIELD(p,void **,0x78),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)-1;
- M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)-1)*4,void **,0x78),s16 *,0x6e)=0;
- M2C_FIELD(M2C_FIELD(p,void **,0x88),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+3;
- M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)+3)*4,void **,0x78),s16 *,0x6e)=4;
- M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)-1;
- M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6e)=0;break;
- case 1:
- M2C_FIELD(p,s8 *,0xe5)=21; j=0;M2C_FIELD(p,s8 *,0xe4)=21;
- do{
- if(j>=21){
- if(func_ov003_021e6cac(j,21,24))func_ov003_021e7458(p,j,21);
- else func_020aad18(M2C_FIELD(p+j*4,void **,0x78));
- }else{
- obj=M2C_FIELD(M2C_FIELD(p+j*4,void **,0x78),void **,0x64);
- if(M2C_FIELD(obj,u8 *,0x12))flag=1;else flag=0;
- if(flag&255)func_02087db8(obj,1);
- }
- j=(u8)(j+1);
- }while(j<26);
- M2C_FIELD(M2C_FIELD(p,void **,0xcc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+20;
- M2C_FIELD(M2C_FIELD(p+(M2C_FIELD(p,s8 *,4)+20)*4,void **,0x78),s16 *,0x6e)=21;
- M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6c)=M2C_FIELD(p,s8 *,4)+20;
- M2C_FIELD(M2C_FIELD(p,void **,0xdc),s16 *,0x6e)=21;break;
- }
- func_ov003_021e6ef4(p,25);
+/* Re-initialize a 26-slot waypoint/segment list. Each slot (p+i*4, +0x78) is a
+ * segment; seg+0x64 is its sub-object whose +0x12 entry count tells whether it
+ * is active. In mode 0 (path), slots 0-20 are (re)built for the current path
+ * state (func_ov003_021e7458) or cleared (func_020aad18), and slots 21-25 are
+ * released if active; in mode 1 (grid), slots 0-20 are released and 21-25 built.
+ * The list's head/tail next-pointers are re-linked to the active range, then the
+ * display is refreshed (func_ov003_021e6ef4). */
+void func_ov003_021e74ac(void *list, s32 mode) {
+    s32 func_020846a4(void);
+    M2C_UNK func_02087db8(void *, M2C_UNK);
+    M2C_UNK func_020aad18(void *);
+    s32 func_ov003_021e6cac(s32, s32, s32);
+    void func_ov003_021e6ef4(void *, s32);
+    u32 i;
+    u32 j;
+    s32 active;
+    void *sub;
+
+    switch (mode) {
+    case 0:
+        if (func_020846a4() != 0) M2C_FIELD(list, s8 *, 0xe4) = 0;
+        else M2C_FIELD(list, s8 *, 0xe4) = 4;
+        M2C_FIELD(list, s8 *, 0xe5) = 0;
+        i = 0;
+        do {
+            if (!func_ov003_021e6cac(i, 21, 24)) {
+                if (func_ov003_021e6cac(i, 0, 3)) func_ov003_021e7458(list, i, 0);
+                else if (func_ov003_021e6cac(i, 4, 7)) func_ov003_021e7458(list, i, 4);
+                else func_020aad18(M2C_FIELD(list + i * 4, void **, 0x78));
+            } else {
+                sub = M2C_FIELD(M2C_FIELD(list + i * 4, void **, 0x78), void **, 0x64);
+                if (M2C_FIELD(sub, u8 *, 0x12)) active = 1;
+                else active = 0;
+                if (active & 255) func_02087db8(sub, 1);
+            }
+            i = (u8)(i + 1);
+        } while (i < 26);
+        M2C_FIELD(M2C_FIELD(list, void **, 0x78), s16 *, 0x6c) = M2C_FIELD(list, s8 *, 4) - 1;
+        M2C_FIELD(M2C_FIELD(list + (M2C_FIELD(list, s8 *, 4) - 1) * 4, void **, 0x78), s16 *, 0x6e) = 0;
+        M2C_FIELD(M2C_FIELD(list, void **, 0x88), s16 *, 0x6c) = M2C_FIELD(list, s8 *, 4) + 3;
+        M2C_FIELD(M2C_FIELD(list + (M2C_FIELD(list, s8 *, 4) + 3) * 4, void **, 0x78), s16 *, 0x6e) = 4;
+        M2C_FIELD(M2C_FIELD(list, void **, 0xdc), s16 *, 0x6c) = M2C_FIELD(list, s8 *, 4) - 1;
+        M2C_FIELD(M2C_FIELD(list, void **, 0xdc), s16 *, 0x6e) = 0;
+        break;
+    case 1:
+        M2C_FIELD(list, s8 *, 0xe5) = 21;
+        j = 0;
+        M2C_FIELD(list, s8 *, 0xe4) = 21;
+        do {
+            if (j >= 21) {
+                if (func_ov003_021e6cac(j, 21, 24)) func_ov003_021e7458(list, j, 21);
+                else func_020aad18(M2C_FIELD(list + j * 4, void **, 0x78));
+            } else {
+                sub = M2C_FIELD(M2C_FIELD(list + j * 4, void **, 0x78), void **, 0x64);
+                if (M2C_FIELD(sub, u8 *, 0x12)) active = 1;
+                else active = 0;
+                if (active & 255) func_02087db8(sub, 1);
+            }
+            j = (u8)(j + 1);
+        } while (j < 26);
+        M2C_FIELD(M2C_FIELD(list, void **, 0xcc), s16 *, 0x6c) = M2C_FIELD(list, s8 *, 4) + 20;
+        M2C_FIELD(M2C_FIELD(list + (M2C_FIELD(list, s8 *, 4) + 20) * 4, void **, 0x78), s16 *, 0x6e) = 21;
+        M2C_FIELD(M2C_FIELD(list, void **, 0xdc), s16 *, 0x6c) = M2C_FIELD(list, s8 *, 4) + 20;
+        M2C_FIELD(M2C_FIELD(list, void **, 0xdc), s16 *, 0x6e) = 21;
+        break;
+    }
+    func_ov003_021e6ef4(list, 25);
 }
 

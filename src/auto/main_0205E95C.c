@@ -108,20 +108,26 @@ void func_0205ed84(void *src_void, s32 count, void *dst_void) {
     i = 0;
     if (count <= 0) goto end;
     for (;;) {
-        for (j = 0; j < 3; j++) {
+        j = 0;
+        for (;;) {
             if (i < count) {
                 buf[j] = *src++;
             } else {
                 buf[j] = 0;
             }
             i++;
+            j++;
+            if (j > 2) break;
         }
         out[0] = (u8) (buf[0] >> 2);
         out[1] = (u8) (((buf[0] & 3) << 4) + (buf[1] >> 4));
         out[2] = (u8) (((buf[1] & 0x0f) << 2) + (buf[2] >> 6));
         out[3] = (u8) (buf[2] & 0x3f);
-        for (j = 0; j < 4; j++) {
+        j = 0;
+        for (;;) {
             *dst++ = func_0205ed3c(out[j]);
+            j++;
+            if (j > 3) break;
         }
         if (i >= count) break;
     }

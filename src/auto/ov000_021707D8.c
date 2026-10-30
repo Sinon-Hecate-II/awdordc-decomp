@@ -136,11 +136,11 @@ void func_ov000_02171028(void) {
     func_01ffa3dc(&data_ov000_021b8b88, 7);
 }
 
-#pragma scheduling off
+#pragma opt_common_subs off
 void func_ov000_02171040(void *p){
 extern void *gCur3DSpriteEngine,*data_027e00c8;extern void **gCurrentMap;
 extern M2C_UNK data_ov000_021b8c58,data_ov000_021b8c60,data_ov000_021b8c70,data_ov000_021b8c7c,data_ov000_021b8c88;
-s32 func_020a8afc(s32);void func_0209b26c();
+s32 func_020a8afc(s32);void func_0209b26c(s32,s32,s32,s32,s32,s32);
 void func_0200bc5c(void *);void *func_020e3218(void *);
 void func_020814e4(void *);void func_02081590(void *,void *);void func_020815fc(void *,s32,s32);
 void func_02081528(void);void func_02091d4c(s32);
@@ -161,7 +161,7 @@ func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_020c0fac(p);gCur3DSpriteEngine=old;
 }
-#pragma scheduling reset
+#pragma opt_common_subs reset
 void func_ov000_021711a4(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_0208fe30(s32);
