@@ -1,5 +1,6 @@
 /* 26 functions from 0x020AE768 to 0x020AF760 (main), found by ds-decomp. */
 #include "common.h"
+static inline u16 SpriteTileSize(s32 n) { return n << 12; }
 
 void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_020ae67c(M2C_UNK, M2C_UNK);
@@ -35,7 +36,8 @@ s32 func_020ae7ec(void) {
     return 0;
 }
 
-M2C_UNK func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
+#pragma opt_common_subs off
+void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020e31e0(void);
     M2C_UNK *func_020e3218(M2C_UNK *);
     void func_020675e4(void *, void *, ...);
@@ -45,7 +47,7 @@ M2C_UNK func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     void func_02081590(void *, s32);
     void func_02081578(void *, void *);
     s32 func_01ff9c34(u8, s32);
-    void func_01ff85b8(void *, s32, s32);
+    void func_01ff85b8(void *, u16, u16);
     void func_02081528(void);
     extern void *gCur3DSpriteEngine;
     extern char data_02127eac[], data_02127eb8[], data_02127ec0[], data_02127ec8[], data_02127ed0[];
@@ -75,23 +77,23 @@ M2C_UNK func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
         void *e0 = *(void **)gCur3DSpriteEngine;
         u8 low = (u8)(((u32)(*(u16 *)e0 << 29)) >> 29);
         s32 vv = func_01ff9c34(low, r5);
-        s32 sz = r4 << 12;
-        s32 vv16 = (vv << 16) >> 16;
-        s32 sz16 = (sz << 16) >> 16;
+        s32 sz = SpriteTileSize(r4);
+        u16 vv16 = vv;
+        u16 sz16 = (u16)(sz & 0xffff);
         void *ptr = *(void **)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20);
         func_01ff85b8(ptr, vv16, sz16);
     }
     func_02081528();
-    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) = (u8)(*(u8 *)((char *)gCur3DSpriteEngine + 0x46) | 0x10);
-    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) = (u8)(*(u8 *)((char *)gCur3DSpriteEngine + 0x46) | (1 << r5));
+    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x10;
+    *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 1 << r5;
 }
-
+#pragma opt_common_subs reset
 M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
     extern M2C_UNK data_02127e4c, data_02127e40;
     void *func_01ffa3dc(M2C_UNK *, s32);
     M2C_UNK func_020ae7cc(s32);
-    M2C_UNK func_020aebb8(void *, M2C_UNK, M2C_UNK);
+    /* func_020aebb8 is defined above. */
     s32 ee = e;
     void *saved = gCur3DSpriteEngine;
     void *p;
@@ -150,7 +152,6 @@ void func_020aeebc(M2C_UNK a,M2C_UNK b,s32 c) {
 extern void *gCur3DSpriteEngine,*data_027e00c8;
 extern M2C_UNK data_02127e4c,data_02127e40;
 void *func_01ffa3dc(M2C_UNK *,s32);
-M2C_UNK func_020aebb8(void *,M2C_UNK,M2C_UNK);
 void *saved=gCur3DSpriteEngine;
 void *p;
 gCur3DSpriteEngine=data_027e00c8;
@@ -176,7 +177,6 @@ void func_020aef7c(M2C_UNK a,M2C_UNK b,s32 c) {
 extern void *gCur3DSpriteEngine,*data_027e00c4;
 extern M2C_UNK data_02127e4c,data_02127e40;
 void *func_01ffa3dc(M2C_UNK *,s32);
-M2C_UNK func_020aebb8(void *,M2C_UNK,M2C_UNK);
 void *saved=gCur3DSpriteEngine; void *p;
 gCur3DSpriteEngine=data_027e00c4;
 p=func_01ffa3dc(&data_02127e4c,1);

@@ -248,14 +248,44 @@ s32 func_020267bc(volatile u16 *arg0) {
     return arg0[-1] << 0x10;
 }
 
-s32 func_020267cc(volatile u16 *arg0) {
-    if (arg0[0]) {
-    }
-    return (arg0[-1] << 0x10) | arg0[-2];
+u64 func_020267cc(volatile u16 *arg0) {
+    u32 high = arg0[0];
+    return ((u64)high << 32) | (u32)((arg0[-1] << 16) | arg0[-2]);
 }
 
-s32 func_020267e0(void *arg0) {
-    return M2C_FIELD(arg0, u16 *, -6) | (M2C_FIELD(arg0, u16 *, -4) << 0x10);
+u64 func_020267e0(void *arg0) {
+    return (u64)M2C_FIELD(arg0, u16 *, -2) << 32 | (u32)(M2C_FIELD(arg0, u16 *, -6) | (M2C_FIELD(arg0, u16 *, -4) << 16));
+}
+
+void func_020267fc(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
+M2C_UNK func_02008048(s32,s32,s32);
+M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
+u64 func_02072088(u64,u64);
+s32 i;u32 digit;u16 *r,*q;s32 nb,na,bytes;u64 divisor;
+q=work+n;r=q+n;
+func_02007f8c((u8 *)q,0,n*4);
+na=func_02026244(a,n);nb=func_02026244(b,n);
+if(na>0 && nb>0){
+i=nb+(n-na)-1;
+if(i>=n){func_02008048((s32)a,(s32)r,n*2);}
+else {
+func_02008048((s32)a,(s32)(q+i),na*2);
+if(nb>2){bytes=nb*2;divisor=func_020267cc(b+nb-1);}
+else if(nb>1){bytes=nb*2;divisor=func_020267bc(b+nb-1);}
+else {bytes=nb*2;divisor=func_020267b0(b+nb-1);}
+if(i<n) do {
+func_020651c4((s32)(q+1),(s32)q,(n*2-1)*2);
+digit=func_02072088(func_020267e0((u8 *)r+bytes),divisor);
+if(digit>65535)digit=65535;
+again:
+func_02026604(work,b,(u16)digit,n);
+if(func_020264ec(r,work,n)<0){digit--;goto again;}
+func_020263dc(r,r,work,n);*q=digit;
+}while(++i<n);
+}
+}
+if(out)func_02008048((s32)q,(s32)out,n*2);
+if(rem)func_02008048((s32)r,(s32)rem,n*2);
 }
 
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {

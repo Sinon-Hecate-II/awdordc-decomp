@@ -1,5 +1,13 @@
 /* 14 functions from 0x0201DB20 to 0x0201E944 (main), found by ds-decomp. */
 #include "common.h"
+static inline u32 NextPacketRandom(void) {
+ extern M2C_UNK data_02137290;
+ M2C_FIELD(&data_02137290,u64*,0x68)=M2C_FIELD(&data_02137290,u64*,0x70)*M2C_FIELD(&data_02137290,u64*,0x68)+M2C_FIELD(&data_02137290,u64*,0x78);
+ return M2C_FIELD(&data_02137290,u64*,0x68)>>32;
+}
+static inline u16 PacketSwap(u16 x) { return (x>>8)|(x<<8); }
+static inline void PacketPut32(u8 *p,u32 x) { *(u16*)p=PacketSwap(x>>16); *(u16*)(p+2)=PacketSwap(x); }
+static inline void PacketAddress(u8 *p) { extern M2C_UNK data_02137778; void func_02008048(s32,u8*,s32); func_02008048((s32)&data_02137778,p,6); }
 
 u32 func_0201db20(s32 a, s32 b) {
     extern M2C_UNK data_0212dca4;
@@ -169,24 +177,24 @@ epilogue:
     func_0201d14c();
 }
 
-u8 *func_0201e078(u8 *arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_02137290;
-    extern M2C_UNK data_02137778;
-    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
-    void func_02008048(s32, u8 *, s32);
-    u32 temp;
-    u64 val;
-    u8 *p = arg0;
-
-    func_02007f8c((s32)arg0, 0, 236);
-    *(u16 *)arg0 = 0x101;
-    arg0[2] = 6;
-    val = *(u64 *)((char *)&data_02137290 + 0x68);
-    *(u16 *)(arg0 + 4) = (u16)(val >> 8);
-    *(u16 *)(arg0 + 6) = (u16)(val >> 8);
-    return arg0;
+#pragma opt_common_subs off
+u8 *func_0201e078(u8 *p,s32 kind,s32 out) {
+extern M2C_UNK data_02137290; extern M2C_UNK data_02137778; extern M2C_UNK data_020faf8c;
+M2C_UNK func_02007f8c(s32,M2C_UNK,s32); void func_02008048(s32,u8*,s32);
+u32 value; u16 hi,lo;
+func_02007f8c((s32)p,0,236); *(u16*)p=0x101;p[2]=6;
+value=NextPacketRandom();if(out)*(u32*)out=value;
+*(u16*)(p+4)=PacketSwap(value>>16);*(u16*)(p+6)=PacketSwap(value);
+*(u16*)(p+12)=PacketSwap(M2C_FIELD(&data_02137290,u32*,0x50)>>16);
+*(u16*)(p+14)=PacketSwap(M2C_FIELD(&data_02137290,u32*,0x50));
+func_02008048((s32)&data_02137778,p+0x1c,6);
+*(u16*)(p+0xec)=0x8263;*(u16*)(p+0xee)=0x6353;*(u16*)(p+0xf0)=0x135;
+p[0xf2]=kind;p[0xf3]=0x3d;p[0xf4]=7;p[0xf5]=1;
+func_02008048((s32)&data_02137778,p+0xf6,6);
+p[0xfc]=12;p[0xfd]=10;func_02008048((s32)&data_020faf8c,p+0xfe,10);
+p[0x108]=0x37;p[0x109]=3;p[0x10a]=1;p[0x10b]=3;p[0x10c]=6;return p+0x10d;
 }
-
+#pragma opt_common_subs reset
 s32 func_0201e204(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
     s32 temp_r4;

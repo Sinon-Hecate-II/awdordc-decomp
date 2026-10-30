@@ -38,18 +38,9 @@ void func_020cbc08(void) {
     func_01ffa3dc(&data_0212b534, 7);
 }
 
-void func_020cbc20(void *arg0) {
- extern void **gCurrentMap;
- void *self = arg0;
- void *p = M2C_FIELD(self, void **, 0x34);
- s32 n;
- func_020b5594(M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2), 5);
- if (!p) n = 0;
- else n = ((s32) p - (s32) ((u8 *) *gCurrentMap + 0x59A4)) / 14;
- func_020a6728(n);
- func_020cfd28();
-}
-
+#pragma opt_common_subs off
+void func_020cbc20(void *arg0) { extern void **gCurrentMap; void *p=*(void * volatile *)((u8 *)arg0+0x34); s32 n; func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5); if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14; func_020a6728(n);func_020cfd28();}
+#pragma opt_common_subs reset
 void func_020cbc88(void *arg0) {
  void *func_01ffa42c(M2C_UNK *);
  extern M2C_UNK data_0212b22c;

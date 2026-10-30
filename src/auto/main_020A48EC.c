@@ -109,7 +109,7 @@ if(!found)func_020a4d64();
 
 void func_020a51a4(Unk020ABaseEntry *p) {
 extern s32 *gCurrentMap; void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void func_020a4d64(void);
-s16 pos[2];s32 left; register s32 right; s32 xx,yy,bottom,top,dist;
+s16 pos[2];s32 map;register s32 left;register s32 right;register s32 xx;register s32 yy;register s32 bottom;register s32 top;register s32 dist;
 func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);
 func_01ffb918(p->x,p->y,(u32)(M2C_FIELD(p,u16 *,2)<<16)>>30,0,0);
 if(!func_ov000_021aab4c(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){func_020a4d64();return;}
@@ -118,11 +118,11 @@ left=pos[0]-2;if(left<0)left=0;
 top=pos[1]-2;if(top<0)top=0;
 right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(pos[0]+2<right)right=pos[0]+2;
 bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(pos[1]+2<bottom)bottom=pos[1]+2;
-for(yy=top;yy<=bottom;yy++){xx=left;while(xx<=right){
+for(yy=top;yy<=bottom;yy++){for(xx=left;xx<=right;xx++){
 dist=0;if(pos[0]-xx>0)dist+=pos[0]-xx;else dist+=xx-pos[0];
 if(pos[1]-yy>0)dist+=pos[1]-yy;else dist+=yy-pos[1];
-if(dist>=0 && dist<=2){u8 c; s32 map=*gCurrentMap;c=M2C_FIELD(((u16 *)map)[yy+0x1bac]+(map+xx),u8 *,0x508);if(c)func_020a4d78((u16)xx,(u16)yy,c,M2C_FIELD(p,s8 *,7));}
-xx++;}}
+if(dist>=0 && dist<=2){u8 c;s32 mm=*gCurrentMap;c=M2C_FIELD(((u16 *)mm)[yy+0x1bac]+(mm+xx),u8 *,0x508);if(c)func_020a4d78((u16)xx,(u16)yy,c,M2C_FIELD(p,s8 *,7));}
+}}
 }
 
 s32 func_020a5364(Unk020AEntry *p, s32 color, s32 arg2) {

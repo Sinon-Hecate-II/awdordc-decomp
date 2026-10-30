@@ -13,68 +13,42 @@ return data_0213d1e0[0]>>32;
 }
 
 /* Returns the current state code, exposing its param through outParam and a derived type through outType. */
-s32 func_02037214(void *arg0, u32 arg1, s8 *arg2, s32 arg3) {
-    extern s8 *data_020fba88;
-    void func_02007f8c(void *, s32, s32);
-    void func_02008048(void *, void *, u32);
-    s8 *table;
-    s32 total;
-    void *src;
-    void *srcEnd;
-    s8 *dst;
-    s32 r6;
-    s32 r9;
-    u8 buf[3];
-
-    if (arg1 % 3u != 0u) {
-        total = (s32)(arg1 / 3u) * 4 + 4;
-    } else {
-        total = (s32)(arg1 / 3u) * 4;
-    }
-    if (arg2 == (s8 *)0) {
-        return total;
-    }
-    if (arg3 < total) {
-        return -1;
-    }
-    src = arg0;
-    srcEnd = (void *)((char *)arg0 + arg1);
-    dst = arg2;
-    table = data_020fba88;
-    if (src != srcEnd) {
-        do {
-            s32 remaining = (s32)((char *)srcEnd - (char *)src);
-            r9 = remaining;
-            if (r9 >= 3) {
-                r9 = 3;
-            }
-            r6 = (r9 * 8 + 5) / 6;
-            func_02007f8c(buf, 0, 3);
-            func_02008048(src, buf, (u32)r9);
-            dst[0] = (s8)table[buf[0] >> 2];
-            if (r6 < 2) {
-                dst[1] = (s8)0x2a;
-            } else {
-                dst[1] = (s8)table[((buf[0] << 4) & 0x3c) | (buf[1] >> 4)];
-            }
-            if (r6 < 3) {
-                dst[2] = (s8)0x2a;
-            } else {
-                dst[2] = (s8)table[((buf[1] << 2) & 0x3c) | (buf[2] >> 6)];
-            }
-            if (r6 < 4) {
-                dst[3] = (s8)0x2a;
-            } else {
-                dst[3] = (s8)table[buf[2] & 0x3f];
-            }
-            src = (void *)((char *)src + r9);
-            dst = (s8 *)((char *)dst + 4);
-        } while (src != srcEnd);
-    }
-    total = (s32)((char *)dst - (char *)arg2);
-    return total;
+#pragma opt_propagation off
+s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
+ extern s8 *data_020fba88;
+ void func_02007f8c(void *,s32,s32);
+ void func_02008048(void *,void *,u32);
+ u32 extra,total;
+ s32 count;
+ u8 *src=arg0,*end;
+ s8 *dst;
+ s32 n,bits;
+ u8 buf[3];
+ s8 *table; s32 c,b,a;
+ extra=arg1%3 ? 4:0;
+ total=extra+(arg1/3)*4;
+ if(!arg2)return total;
+ if(arg3<total)return -1;
+ end=src+arg1;
+ dst=arg2;
+ while(src!=end){
+ n=end-src;
+ bits=n*8;
+ count=bits/6+(bits%6!=0);
+ if(n>=3)n=3;
+ func_02007f8c(buf,0,3);
+ func_02008048(src,buf,n);
+ dst[0]=data_020fba88[buf[0]>>2];
+ if(count<2)c=42;else {a=buf[0];b=buf[1];table=data_020fba88;a=(a<<4)&63;b=a|(b>>4);c=table[b];}dst[1]=c;
+ if(count<3)c=42;else {a=buf[1];b=buf[2];c=data_020fba88[((a<<2)&63)|(b>>6)];}dst[2]=c;
+ if(count<4)c=42;else {a=buf[2];c=data_020fba88[a&63];}
+ src=src+n;
+ * (dst+3)=c;
+ dst=dst+4;
+ }
+ return dst-arg2;
 }
-
+#pragma opt_propagation reset
 s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
     u32 i;
     s32 required;

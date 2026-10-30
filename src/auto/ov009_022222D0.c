@@ -1,5 +1,6 @@
 /* 30 functions from 0x022222D0 to 0x02223290 (ov009), found by ds-decomp. */
 #include "common.h"
+
 static inline u32 ov009DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -461,6 +462,7 @@ void func_ov009_0222306c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC4) = 0;
 }
 
+#pragma scheduling off
 void func_ov009_02223078(void *arg0) {
     void func_ov009_02222748(s32);
     M2C_UNK func_ov009_02221320(M2C_UNK);
@@ -477,10 +479,10 @@ void func_ov009_02223078(void *arg0) {
     extern M2C_UNK data_ov009_022268e0;
 
     u32 buf[8];
+    u8 *r5;
     u32 *r6 = buf;
     s32 x;
     u8 *r7;
-    u8 *r5;
     void *elem;
     void **tbl;
     void (*fn)(void *);
@@ -496,8 +498,8 @@ void func_ov009_02223078(void *arg0) {
     void (*cb2)(void *);
 
     {
-        u32 b = M2C_FIELD(&data_ov009_022263e0, u32 *, 0x1c);
-        u32 a = M2C_FIELD(&data_ov009_022263e0, u32 *, 0x18);
+        s32 a = M2C_FIELD(&data_ov009_022263e0, u32 *, 0x18);
+        s32 b = M2C_FIELD(&data_ov009_022263e0, u32 *, 0x1c);
         r6[3] = b;
         r6[2] = a;
         r6[4] = a;
@@ -507,22 +509,25 @@ void func_ov009_02223078(void *arg0) {
     }
     r7 = (u8 *)&data_ov009_02226cc0;
     r5 = (u8 *)&data_ov009_02226fe0;
-    while (r7 != r5) {
+    goto test;
+loop: {
         x = (s32)r6[1];
         elem = (void *)(r7 + (x >> 1));
         if (!(x & 1)) {
-            (void)r6[0];
-            break;
-        }
+            fn = (void (*)(void *))r6[0];
+        } else {
         tbl = *(void **)elem;
-        fn = (void (*)(void *))tbl[(s32)r6[0]];
+        fn = *(void (**)(void *))((u8 *)tbl+(s32)r6[0]);
+        }
         fn(elem);
         r7 += 0xc8;
     }
+test:
+    if(r7 != r5) goto loop;
 
     arg2v = M2C_FIELD(arg0, u16 *, 2);
-    r6[6] = r6[0];
-    r6[7] = r6[1];
+    buf[6] = buf[0];
+    buf[7] = buf[1];
 
     if (arg2v != 0) {
         func_ov009_02222748(arg2v);
@@ -537,6 +542,7 @@ void func_ov009_02223078(void *arg0) {
     }
 
     t8 = M2C_FIELD(arg0, u16 *, 8);
+    if(t8==3 || t8==4) goto done;
     if (t8 == 5) {
         func_020067a8(&data_ov009_02226a80, 0xc0);
         if (M2C_FIELD(&data_ov009_022268e0, s32 *, 0x30) != 0 &&
@@ -548,7 +554,7 @@ void func_ov009_02223078(void *arg0) {
             cond = 0;
             if (v36 >= 0x10) {
                 v38 = M2C_FIELD(arg0, u16 *, 0x38);
-                if (v38 == 1) cond = 1;
+                cond = (v38 == 1);
             }
             if (cond) {
                 rhs = M2C_FIELD(&data_ov009_022268e0, u32 *, 0x108);
@@ -564,11 +570,12 @@ void func_ov009_02223078(void *arg0) {
         }
     }
 
+done:
     res = func_ov009_02222f84();
     if (res != 0) return;
     func_ov009_02221320(8);
 }
-
+#pragma scheduling reset
 s32 func_ov009_02223244(void) {
     s32 func_02012700(void (*)(void *));
     void func_ov009_0222326c(void *);

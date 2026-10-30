@@ -248,13 +248,20 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     s32 func_ov000_02187320(s32, s32, void *, void *);
     s32 func_ov000_0217bd44(s32, s32, s32, s32);
     s32 func_ov000_02188b50(s32, s32);
-    void func_ov000_02199d74(s16, s16, s32, s32, s32);
+    void func_ov000_02199d74(s32, s32, s32, s32, s32);
     s32 func_ov000_021a98a8(u32);
 
     s16 pos1[2];
     s16 pos2[2];
     s32 r;
     s32 t;
+    void *base;
+    void *selected;
+    u8 *unitC;
+    u8 *unitD;
+    u8 idxC;
+    u8 idxD;
+    s32 kind;
 
     r = func_ov000_02187320(arg0, arg1, pos1, pos2);
     if (r == 0) {
@@ -270,44 +277,39 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
         return;
     }
 
-    {
-        void *base = *gCurrentMap;
-        void *selected = M2C_FIELD(base, void **, 0x52D0);
-        u8 idxC;
-        u8 *unitC;
-        s32 kind;
-        u8 idxD;
-        u8 *unitD;
-        idxC = M2C_FIELD(selected, u8 *, 0xC);
-        unitC = (u8 *)base + 0x59A4 + idxC * 0xE;
-        kind = unitC[0] & 0x3f;
-        if (func_ov000_021a98a8((u32)kind) != 0) {
-            return;
-        }
-        if (kind == 0x0D) {
-            return;
-        }
-        if ((unitC[11] & 0x0F) >= 6) {
-            return;
-        }
+    base = *gCurrentMap;
+    selected = M2C_FIELD(base, void **, 0x52D0);
+    idxC = M2C_FIELD(selected, u8 *, 0xC);
+    unitC = (u8 *)base + 0x59A4 + idxC * 0xE;
 
-        idxD = M2C_FIELD(selected, u8 *, 0xD);
-        unitD = (u8 *)base + 0x59A4 + idxD * 0xE;
-        kind = unitD[0] & 0x3f;
-        if (func_ov000_021a98a8((u32)kind) != 0) {
-            return;
-        }
-        if (kind == 0x0D) {
-            return;
-        }
-        if ((unitD[11] & 0x0F) >= 6) {
-            return;
-        }
-
-        unitD[11] = (unitD[11] & 0xF0) | (unitC[11] & 0x0F);
-        func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
+    kind = unitC[0] & 0x3F;
+    if (func_ov000_021a98a8((u32)kind) != 0) {
         return;
     }
+    if (kind == 0x0D) {
+        return;
+    }
+    if ((unitC[11] & 0x0F) >= 6) {
+        return;
+    }
+
+    idxD = M2C_FIELD(selected, u8 *, 0xD);
+    unitD = (u8 *)base + 0x59A4 + idxD * 0xE;
+
+    kind = unitD[0] & 0x3F;
+    if (func_ov000_021a98a8((u32)kind) != 0) {
+        return;
+    }
+    if (kind == 0x0D) {
+        return;
+    }
+    if ((unitD[11] & 0x0F) >= 6) {
+        return;
+    }
+
+    unitD[11] = (unitD[11] & 0xF0) | (unitC[11] & 0x0F);
+    func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
+    return;
 }
 
 void func_ov000_02187820(void) {

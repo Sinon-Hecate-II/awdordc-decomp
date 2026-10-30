@@ -276,6 +276,7 @@ void func_020913c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
 }
 
+#pragma opt_if-conversion off
 M2C_UNK func_020913d4(M2C_UNK arg0raw) {
     void func_020912a4(s32 *);
     void *arg0 = (void *)arg0raw;
@@ -304,7 +305,7 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
         M2C_FIELD(arg0, s16 *, 0x1A) = 0;
         M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
 
-        cur = M2C_FIELD(arg0, M2C_UNK **, 0xC);
+        cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
         word0 = *(u16 *)cur;
         if (word0 == 0) {
             cmd = *((u16 *)cur + 1);
@@ -338,7 +339,7 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
     }
 
     flags = M2C_FIELD(arg0, u8 *, 0x22);
-    cur = M2C_FIELD(arg0, M2C_UNK **, 0xC);
+    cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
     if ((flags & 0x2) == 0) {
         idx = *((u16 *)cur + 1);
         base = M2C_FIELD(arg0, void **, 0x4);
@@ -364,19 +365,20 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
     }
     return 0xFFFF;
 }
-
+#pragma opt_if-conversion reset
 void func_02091570(M2C_UNK a) {
-    s16 func_0207c8ec(s32, s32);
+    s32 func_0207c8ec(s32, s32);
     void func_01ff8ddc(s32, s16, s16, s16, s16);
     extern s16 data_020e5b30[];
     void *arg0 = (void *)a;
     s32 *sp4 = (s32 *)arg0;
 
-    s32 r11, r10, r7, r6, r5, r4, r3v, r1;
+    s32 r4,res2,r5,res1,r6,r7;
     u16 *r8p;
-    s16 r9s, r3s;
-    s16 res1, res2, res3, res4;
-    s32 count, r9i, r3i;
+    s16 r9s;
+    s32 r10,res3,r11;
+    s16 r3s,res4;
+    s32 r1,count,r9i,r3i;
 
     r6 = -2;
 

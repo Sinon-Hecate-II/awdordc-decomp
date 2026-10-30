@@ -546,18 +546,18 @@ void func_ov007_022198fc(void) {
         gCur3DSpriteEngine = data_027e00c8;
         func_01ff9ce8(1);
         func_01ff9ce8(2);
-        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) | 2);
-        M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x46) | 4);
-        sp18 = (u16 *)((u8 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) + 0x12);
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+        sp18 = (u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
         *sp18 = *sp18 & ~0xc0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x51) = 0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x52) = 0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x53) = 0;
-        sp14 = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        sp14 = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
         *sp14 = *sp14 & ~0x200;
-        sp10 = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        sp10 = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
         *sp10 = *sp10 & ~0x400;
-        spC = (u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0);
+        spC = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
         *spC = *spC & ~0x800;
         gCur3DSpriteEngine = old;
     } else {

@@ -13,10 +13,10 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
     volatile u16 *ctl = (volatile u16 *)0x40002b0;
     volatile s32 *result = (volatile s32 *)0x40002b4;
     volatile s32 *in = (volatile s32 *)0x40002b8;
-    s32 sum;
+    u32 sum;
     u32 h;
     s32 cur;
-    s32 i;
+    u32 i;
 
     M2C_FIELD(&data_ov010_0222c02c, s32 *, 4) = b >> 8;
     if (c) {
@@ -26,20 +26,20 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
     if (M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) == 0) {
         sum = 0;
         for (i = 0; i < 4; i++) {
-            sum += M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
+            sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
         }
         *ctl = 0;
-        *in = sum >> 2;
+        *in = (s32)(sum >> 2);
         while (*ctl & 0x8000) {
         }
         h = (u32)*result;
         if (b != 0 && b >= (h << 1)) {
             sum = 0;
             for (i = 0; i < 4; i++) {
-                sum += M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
+                sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
             }
             *ctl = 0;
-            *in = sum >> 2;
+            *in = (s32)(sum >> 2);
             while (*ctl & 0x8000) {
             }
             h = (u32)*result;
@@ -60,10 +60,10 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
 
     sum = 0;
     for (i = 0; i < 4; i++) {
-        sum += M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
+        sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
     }
     *ctl = 0;
-    *in = sum >> 2;
+    *in = (s32)(sum >> 2);
     while (*ctl & 0x8000) {
     }
     h = (u32)*result;

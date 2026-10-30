@@ -222,10 +222,7 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     s32 local;
     s32 idx;
     s32 key;
-    s32 r4 = 0;
-    s32 *r5;
     s32 r6 = 0;
-    s32 r7;
 
     if ((M2C_FIELD(a, s32 *, 0x24) << 31) >> 31) {
         func_0202b760(a);
@@ -249,6 +246,9 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     }
 
     if (M2C_FIELD(a, s32 *, 0x48) > 0) {
+        s32 *r5;
+        s32 r7;
+        s32 r4;
         u8 *cell;
         r5 = data_0213bbd4;
         r7 = e << 5;

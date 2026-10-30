@@ -173,12 +173,13 @@ s32 func_020227c8(void *arg0, void *arg1) {
     s32 t;
     s32 r3count;
     s32 r2;
+    s32 length;
     if (!*(u32 *)((u8 *)arg0 + 0x5a4) || !*(u32 *)((u8 *)arg0 + 0x5a8) ||
         !*(u32 *)((u8 *)arg1 + 0x10) || !*(u32 *)((u8 *)arg1 + 0xc) ||
-        !*(u32 *)((u8 *)arg1 + 0x8) || !*(u32 *)((u8 *)arg1 + 0x4)) {
+        !*(u32 *)((u8 *)arg1 + 0x8) || !(length=*(s32 *)((u8 *)arg1 + 0x4))) {
         return 2;
     }
-    cnt = (*(s32 *)((u8 *)arg1 + 0x4) * 2) / 2;
+    cnt = (length * 2) / 2;
     {
         void *(*alloc)(u32) = (void *(*)(u32))data_021372a4[0];
         base = (u8 *)alloc((u32)(cnt * 8));
@@ -196,32 +197,27 @@ s32 func_020227c8(void *arg0, void *arg1) {
     func_020269dc(base, r6, (s32)r9, cnt, r10);
     func_02022104(t);
     func_0202704c(r6, base, *(s32 *)((u8 *)arg1 + 0x4), cnt);
-    if (base[cnt * 2] != 0) {
+    t = base[cnt * 2];
+    cnt = 0;
+    if (t != 0 || r6[1] != 1) {
         cnt = 2;
-    } else if (r6[1] != 1) {
-        cnt = 2;
-    } else {
-        r3count = *(s32 *)((u8 *)arg1 + 0x4);
-        r2 = 2;
-        if (r3count > 2) {
-            while (r2 < r3count) {
-                if (r6[r2] != (u8)0xff) {
-                    break;
-                }
-                r2++;
-            }
-        }
-        if (r2 + 1 >= r3count) {
-            cnt = 2;
-        } else if (r6[r2] != 0 || r6[r2 + 1] != 0x30) {
-            cnt = 2;
-        } else {
-            s32 field = *(s32 *)((u8 *)arg0 + 0x47c);
-            if (func_0206527c((u8 *)arg0 + 0x468, r6 + r3count - field, field) != 0) {
-                cnt = 2;
-            }
-        }
+        goto done;
     }
+    r3count = *(s32 *)((u8 *)arg1 + 4);
+    r2 = 2;
+    while (r2 < r3count) {
+        if (r6[r2] != 0xff) break;
+        r2++;
+    }
+    if (r2 + 1 >= r3count) goto bad;
+    if (r6[r2] != 0 || r6[r2 + 1] != 0x30) goto bad;
+    {
+        s32 field = *(s32 *)((u8 *)arg0 + 0x47c);
+        if (!func_0206527c((u8 *)arg0 + 0x468, r6 + r3count - field, field)) goto done;
+    }
+bad:
+    cnt = 2;
+done:
     {
         void (*freefn)(void *) = (void (*)(void *))data_021372d0[0];
         freefn(base);

@@ -218,7 +218,7 @@ i=0;buf[0]=254;buf[1]=253;buf[2]=i;
 *(PacketBytes4 *)(buf+3)=*(PacketBytes4 *)(b+28);
 if(M2C_FIELD(b,u8 *,20)&4){
 buf[7]=M2C_FIELD(a,s32 *,64);
-for(;i<M2C_FIELD(a,s32 *,64);i++)buf[8+i]=M2C_FIELD(a+i,u8 *,44);
+for(;i<M2C_FIELD((unsigned)a,s32 *,64);i++)buf[8+i]=M2C_FIELD(a+i,u8 *,44);
 buf[M2C_FIELD(a,s32 *,64)+8]=0;buf[M2C_FIELD(a,s32 *,64)+9]=0;
 n=M2C_FIELD(a,s32 *,64)+10;
 }else{buf[7]=255;buf[8]=255;buf[9]=255;n=10;}
@@ -352,8 +352,7 @@ n=func_020497e0(sock,buf,2047,0,addr,&alen);if(n==-1)return;buf[n]=0;
 for(q=M2C_FIELD(p,void **,8);q;q=M2C_FIELD(q,void **,0x20)){
 if(mode&&(M2C_FIELD(q,u8 *,0x15)&8)&&M2C_FIELD(q,u32 *,0x10)==M2C_FIELD(addr,u32 *,4))goto found;
 ip=M2C_FIELD(addr,u32 *,4);peer=M2C_FIELD(q,u32 *,0);
-if(peer==ip){if(M2C_FIELD(q,u16 *,4)!=M2C_FIELD(addr,u16 *,2))goto fallback;goto found;}
-fallback:
+if(peer==ip){if(M2C_FIELD(q,u16 *,4)==M2C_FIELD(addr,u16 *,2))goto found;}
 if(mode)goto found;
 if(peer==M2C_FIELD(p,u32 *,0x28)&&(M2C_FIELD(q,u8 *,0x15)&2)&&M2C_FIELD(q,u32 *,8)==ip&&M2C_FIELD(q,u16 *,12)==M2C_FIELD(addr,u16 *,2))goto found;
 continue;

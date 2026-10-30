@@ -39,11 +39,12 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
     s32 func_0204b428(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 
     CallbackRecord rec;
-    void *node;
     void *buf;
+    void *node;
     s32 result;
     s32 old;
 
+    buf = 0;
     if (func_0203761c() != 0) {
         return -8;
     }
@@ -56,11 +57,10 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
     node = func_02045294(&rec);
     if (node == 0) {
         func_02045138(-5);
-        ((void (*)(s32, s32, s32, s32))a5)(0, 0, -5, a6);
-        return -4;
+        ((void (*)(s32, s32, s32, s32))a5)((s32)buf, (s32)buf, -5, a6);
+        return -5;
     }
 
-    buf = 0;
     if (a1 > 0) {
         buf = func_02037694(4, a1);
         if (buf == 0) {
@@ -69,19 +69,18 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
             func_020452f0(node);
             return -5;
         }
+        *(s32 *)((char *)node + 0x10) = (s32)buf;
     }
 
-    *(s32 *)((char *)node + 0x10) = (s32)buf;
-
-    if (a3 == 0) {
+    if (a3 != 0) {
         result = func_0204b428(a0, 0, (s32)buf, a1,
-                                0, 0, 0,
+                                *(s32 *)a3, 0, 0,
                                 (s32)func_02044f24,
                                 (s32)func_02044e88,
                                 (s32)node);
     } else {
         result = func_0204b428(a0, 0, (s32)buf, a1,
-                                *(s32 *)a3, 0, 0,
+                                0, 0, 0,
                                 (s32)func_02044f24,
                                 (s32)func_02044e88,
                                 (s32)node);
@@ -95,8 +94,6 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
             func_020376d8(4, old, 0);
         }
         func_020452f0(node);
-        *(s32 *)((char *)node + 0x14) = result;
-        return result;
     }
 
     *(s32 *)((char *)node + 0x14) = result;

@@ -99,131 +99,53 @@ void func_020d3628(void) {
 }
 
 s32 func_020d364c(void) {
-    M2C_UNK func_ov000_0219c6c0();
-    M2C_UNK func_02084644();
-    M2C_UNK func_ov009_02224194();
-    void func_ov009_022244ec(M2C_UNK);
-    M2C_UNK func_ov010_022282f8();
-    M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
-    void func_ov010_02228298(M2C_UNK);
-    M2C_UNK func_02084a6c();
-    void func_02081fd4(void);
-    extern M2C_UNK data_02168f08;
-    extern void **gCurrentMap;
-
-    if (M2C_FIELD(&data_02168f08, u8 *, 4) == 0) {
-        return 0;
-    }
-    if (func_ov000_0219c6c0() != 0) {
-        return 0;
-    }
-    if (M2C_FIELD(&data_02168f08, u8 *, 5) != 0 ||
-        M2C_FIELD(&data_02168f08, u8 *, 6) != 0) {
-        return 0;
-    }
-
-    {
-        s32 r4 = 0;
-        s32 r5 = 0;
-        s32 sw = func_02084644();
-
-        if (sw == 1) {
-            if (func_ov009_02224194() == 8) {
-                goto ov010;
-            }
-            if (func_ov009_02224194() != 9) {
-                goto tail;
-            }
-            func_ov009_022244ec(1);
-            r4 = 1;
-            goto tail;
-        } else if (sw == 2) {
-            goto ov010;
-        } else {
-            goto tail;
-        }
-
-    ov010: {
-            s32 rr = func_ov010_022282f8();
-            s32 ok;
-            if (rr != 0) {
-                ok = 1;
-            } else {
-                ok = r4;
-            }
-            if (ok != 0) {
-                M2C_UNK a;
-                M2C_UNK b;
-                func_ov010_02228314(&a, &b);
-                switch ((s32)b) {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                    func_ov010_02228298(6);
-                    break;
-                default:
-                    break;
-                }
-                r4 = 1;
-                if (func_02084a6c() != 0) {
-                    r5 = 1;
-                }
-            }
-        }
-
-    tail:
-        if (r4 == 0 && r5 == 0) {
-            return 0;
-        }
-
-        {
-            void **gm = gCurrentMap;
-            void *outer = *gm;
-            void *inner = *(void **)outer;
-            u16 *q = (u16 *)((u8 *)inner + 0x5200);
-            s32 idx = (s32)q[0xb0 / 2] - 0xd;
-            if ((u32)idx > 7) {
-                return 0;
-            }
-            switch (idx) {
-            case 0:
-            case 1:
-            case 6:
-            case 7:
-                break;
-            default:
-                return 0;
-            }
-            M2C_FIELD(&data_02168f08, u8 *, 5) = (u8)r4;
-            M2C_FIELD(&data_02168f08, u8 *, 6) = (u8)r5;
-            if (r4 != 0) {
-                func_02081fd4();
-                gm = gCurrentMap;
-                outer = *gm;
-                inner = *(void **)outer;
-                q = (u16 *)((u8 *)inner + 0x5200);
-                {
-                    u16 old = q[0xb0 / 2];
-                    q[0xb2 / 2] = old;
-                    q[0xb0 / 2] = 0x17;
-                }
-            } else if (r5 != 0) {
-                func_02081fd4();
-                gm = gCurrentMap;
-                outer = *gm;
-                inner = *(void **)outer;
-                q = (u16 *)((u8 *)inner + 0x5200);
-                q[0xb0 / 2] = 0x18;
-            }
-            return 1;
-        }
-    }
-
-    return 0;
+ M2C_UNK func_ov000_0219c6c0();
+ M2C_UNK func_02084644();
+ M2C_UNK func_ov009_02224194();
+ void func_ov009_022244ec(M2C_UNK);
+ M2C_UNK func_ov010_022282f8();
+ M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
+ void func_ov010_02228298(M2C_UNK);
+ M2C_UNK func_02084a6c();
+ void func_02081fd4(void);
+ extern M2C_UNK data_02168f08;
+ extern void **gCurrentMap;
+ s32 r4,r5,a,b;
+ if(M2C_FIELD(&data_02168f08,u8 *,4)==0) return 0;
+ if(func_ov000_0219c6c0()!=0) return 0;
+ if(M2C_FIELD(&data_02168f08,u8 *,5)!=0 || M2C_FIELD(&data_02168f08,u8 *,6)!=0) return 0;
+ r4=0; r5=0;
+ switch(func_02084644()){
+ case 1:
+ if(func_ov009_02224194()==8 || func_ov009_02224194()==9){
+ func_ov009_022244ec(1); r4=1;
+ } break;
+ case 2:
+ if(func_ov010_022282f8()!=0 ? 1 : r4){
+ func_ov010_02228314(&a,&b);
+ switch(b){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: func_ov010_02228298(6); break;}
+ r4=1;
+ }
+ break;
+ }
+ if(func_02084a6c()!=0) r5=1;
+ if(r4!=0 || r5!=0){
+ switch(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)){
+ case 13: case 14: case 19: case 20:
+ M2C_FIELD(&data_02168f08,u8 *,5)=r4;
+ M2C_FIELD(&data_02168f08,u8 *,6)=r5;
+ if(r4!=0){
+ func_02081fd4();
+ M2C_FIELD(*gCurrentMap,u16 *,0x52b2)=M2C_FIELD(*gCurrentMap,u16 *,0x52b0);
+ M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=23;
+ } else if(r5!=0){
+ func_02081fd4();
+ M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=24;
+ }
+ return 1;
+ }
+ }
+ return 0;
 }
 
 void func_020d3830(void) {
@@ -340,17 +262,13 @@ void func_020d3a3c(void) {
 
 #pragma optimization_level 2
 void func_020d3aa4(void *arg0) {
-    M2C_UNK func_02086330();
-    M2C_UNK func_02085054(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_02168f08;
-    if (M2C_FIELD(&data_02168f08, u8 *, 5) != 0) {
-        return;
-    }
-    if (M2C_FIELD(&data_02168f08, u8 *, 7) != 0) {
-        return;
-    }
-    func_02086330();
-    func_02085054(0, 0x25c, arg0);
+ M2C_UNK func_02086330();
+ M2C_UNK func_02085054(M2C_UNK, M2C_UNK, M2C_UNK);
+ extern M2C_UNK data_02168f08;
+ if (M2C_FIELD(&data_02168f08,u8 *,5) != 0 || M2C_FIELD(&data_02168f08,u8 *,7) == 0) {
+ func_02086330();
+ func_02085054(0,0x25c,arg0);
+ }
 }
 #pragma optimization_level reset
 void func_020d3ae4(void) {
@@ -403,7 +321,8 @@ void func_020d3b24(void) {
     func_020d3400();
 
     {
-        void *ctl = M2C_FIELD(*gCurrentMap, void **, 4);
+        void *map = *gCurrentMap;
+        void *ctl = M2C_FIELD(map, void **, 4);
         void (*cb)(void) = M2C_FIELD(ctl, void (**)(void), 0x30);
         if (cb != 0) {
             cb();
@@ -417,11 +336,12 @@ void func_020d3b24(void) {
     if (func_020d4774() != 0) return;
 
     {
-        void *mainBase = M2C_FIELD(*gCurrentMap, void **, 0);
+        void *map = *gCurrentMap;
+        void *mainBase = M2C_FIELD(map, void **, 0);
+        u16 *sp = (u16 *)((u8 *)mainBase + 0x5200 + 0xb0);
         u8 *p = (u8 *)mainBase + 0x5200;
-        u16 state = *(u16 *)(p + 0xb0);
-        if (state > 0x1a) return;
-        switch (state) {
+        if (*sp > 0x1a) return;
+        switch (*sp) {
         case 0:
             return;
         case 1:

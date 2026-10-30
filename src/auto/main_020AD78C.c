@@ -1,6 +1,7 @@
 /* 29 functions from 0x020AD78C to 0x020AE768 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma opt_common_subs off
 void func_020ad78c(void) {
     void func_020ad67c(void);
     s32 func_020ad690(void);
@@ -26,10 +27,11 @@ void func_020ad78c(void) {
     extern char data_02127d98[];
     extern char data_02127d9c[];
 
-    register u16 **saved asm("r4");
+    u16 **saved;
     char sp[0x40];
-    register s32 idx asm("r3");
-    register M2C_UNK h asm("r5");
+    s32 idx;
+    M2C_UNK h;
+    u16 *eng;
 
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
@@ -66,17 +68,19 @@ void func_020ad78c(void) {
     if (func_020ad690() == 0) {
         h = func_020e3218((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 0);
-        ((u8 *)*gCur3DSpriteEngine)[0x46] |= 0x1;
+        eng = *gCur3DSpriteEngine;
+        *(volatile u8 *)((char *)eng + 0x46) |= 0x1;
     } else {
         h = func_020e3218((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 8);
-        ((u8 *)*gCur3DSpriteEngine)[0x46] |= 0x2;
+        eng = *gCur3DSpriteEngine;
+        *(volatile u8 *)((char *)eng + 0x46) |= 0x2;
     }
 
     func_02081528();
     gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_common_subs reset
 void func_020ad968(void) {
     M2C_UNK func_020822b8(u16 *);
     typedef struct { u16 a, b, c, d, e, f; } T;
@@ -204,6 +208,7 @@ void func_020adc78(void) {
     gCur3DSpriteEngine = saved_list;
 }
 
+#pragma opt_common_subs off
 void func_020adde0(void) {
     u8 func_0207b7c4(void);
     void func_020d8f1c(s16, s32);
@@ -216,14 +221,12 @@ void func_020adde0(void) {
     extern u16 **gCur3DSpriteEngine;
     extern u16 **data_027e00c4;
 
-    s16 *p = (s16 *)data_0215c428;
-    u16 **saved;
-    s16 v;
-    s32 idx;
-    u16 *eng;
-    u16 *slotbase;
-    s16 sparg;
-    s32 res;
+    register s16 *p = (s16 *)data_0215c428;
+    register u16 **saved;
+    register s16 v;
+    register s32 idx;
+    register s16 sparg;
+    register s32 res;
 
     if (p[0] & 4) {
         if (func_0207b7c4() != 0) {
@@ -240,17 +243,15 @@ void func_020adde0(void) {
         func_020ad74c();
     } else if (p[3] == 1) {
         if (func_020ad690() == 0) {
-            u16 *q = *gCur3DSpriteEngine;
-            q[3] &= ~3;
-            q[4] = (q[4] & ~3) | 1;
-            q[5] = (q[5] & ~3) | 2;
-            q[6] = (q[6] & ~3) | 3;
+            (*gCur3DSpriteEngine)[3] &= ~3;
+            (*gCur3DSpriteEngine)[4] = ((*gCur3DSpriteEngine)[4] & ~3) | 1;
+            (*gCur3DSpriteEngine)[5] = ((*gCur3DSpriteEngine)[5] & ~3) | 2;
+            (*gCur3DSpriteEngine)[6] = ((*gCur3DSpriteEngine)[6] & ~3) | 3;
         } else {
-            u16 *q = *gCur3DSpriteEngine;
-            q[3] = (q[3] & ~3) | 1;
-            q[4] &= ~3;
-            q[5] = (q[5] & ~3) | 2;
-            q[6] = (q[6] & ~3) | 3;
+            (*gCur3DSpriteEngine)[3] = ((*gCur3DSpriteEngine)[3] & ~3) | 1;
+            (*gCur3DSpriteEngine)[4] &= ~3;
+            (*gCur3DSpriteEngine)[5] = ((*gCur3DSpriteEngine)[5] & ~3) | 2;
+            (*gCur3DSpriteEngine)[6] = ((*gCur3DSpriteEngine)[6] & ~3) | 3;
         }
     } else {
         if (p[3] == p[4]) {
@@ -260,11 +261,9 @@ void func_020adde0(void) {
 
     v = p[5];
     idx = func_020ad690();
-    eng = *gCur3DSpriteEngine;
-    eng[28 + idx] = v;
+    (*gCur3DSpriteEngine)[28 + idx] = v;
 
-    slotbase = *gCur3DSpriteEngine;
-    *((u16 *)((char *)slotbase + 0x40 + (idx << 1))) = 0;
+    *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (idx << 1))) = 0;
 
     sparg = p[4];
     res = func_0207ca38(4, 0x100, 0, p[3], sparg);
@@ -277,7 +276,7 @@ void func_020adde0(void) {
 
     gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_common_subs reset
 s32 func_020adfd0(void) {
  s32 func_01ffa770(M2C_UNK *);
  extern M2C_UNK data_02127bc8;

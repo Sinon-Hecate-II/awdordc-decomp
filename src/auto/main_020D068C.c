@@ -41,19 +41,26 @@ M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 void func_020d0868(void *a,void **b,s32 c,s32 d) {
 s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
 extern u8 data_ov000_021b5bfc[];
-register u32 x; register u32 y; s16 z; u8 *p=data_ov000_021b5bfc+D068CLow(M2C_FIELD(a,void **,0))*112;
-x=0; y=0; z=0;
+u16 x=0; u16 y; s16 z; u8 *p=data_ov000_021b5bfc+D068CLow(M2C_FIELD(a,void **,0))*112;
+y=0; z=0;
 M2C_FIELD(a,s16 *,22)=func_020a875c(M2C_FIELD(a,void **,0));
 if(c==1) {
 void *q=*b; u32 flag=D068CFlag(q);
 z=func_020a792c(D068CLow(M2C_FIELD(a,void **,0)),D068CLow(q),1,flag);
-if(z) {void *q=*b; u32 flag=D068CFlag(q); y=M2C_FIELD(q,u8 *,0)<<26; y=(u16)func_020a86f8(M2C_FIELD(a,void **,0),(u32)y>>26,1,flag);}
-if(p[12]==1) {void *q=M2C_FIELD(a,void **,0);if((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28){void *r=*b; u32 flag=D068CFlag(r);x=M2C_FIELD(r,u8 *,0)<<26; x=(u16)func_020a86f8(q,(u32)x>>26,0,flag);}}
+if(z) {
+void *q=*b;
+u8 kind_byte=M2C_FIELD(q,u8 *,0);
+u32 shifted=(u32)kind_byte<<26;
+u32 flagv=D068CFlag(q);
+u32 kind=shifted>>26;
+y=(u16)func_020a86f8(M2C_FIELD(a,void **,0),kind,1,flagv);
+}
+if(p[12]==1) {void *q=M2C_FIELD(a,void **,0);if((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28){void *r=*b; u8 rb=M2C_FIELD(r,u8 *,0);u32 rs=(u32)rb<<26;u32 rf=D068CFlag(r);u32 rk=rs>>26; x=(u16)func_020a86f8(q,rk,0,rf);}}
 } else if(p[12]<=c && c<=func_020a76d4(M2C_FIELD(a,void **,0))) {
 void *q=M2C_FIELD(a,void **,0);
-if(((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28) && d==1){void *r=*b; u32 flag=D068CFlag(r);x=M2C_FIELD(r,u8 *,0)<<26; x=(u16)func_020a86f8(q,(u32)x>>26,0,flag);}
+if(((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28) && d==1){void *r=*b; u8 rb=M2C_FIELD(r,u8 *,0);u32 rs=(u32)rb<<26;u32 rf=D068CFlag(r);u32 rk=rs>>26; x=(u16)func_020a86f8(q,rk,0,rf);}
 }
-if((u32)x<=(u32)y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;return;}
+if(x<=y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;return;}
 M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
 

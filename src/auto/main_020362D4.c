@@ -23,10 +23,14 @@ s32 func_020364f4(void) {
             u64 now;
             u32 hi;
             u32 lo;
+            u32 nowHi;
+            u32 nowLo;
             now = func_02007004();
             hi = M2C_FIELD(p, u32 *, 0x44);
             lo = M2C_FIELD(p, u32 *, 0x40);
-            if (((u64)hi << 32) | (u64)lo < now) {
+            nowHi = (u32)(now >> 32);
+            nowLo = (u32)now;
+            if (hi < nowHi || (hi == nowHi && lo < nowLo)) {
                 M2C_FIELD(p, s32 *, 0x3c) = 2;
                 M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38) = 3;
                 func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0), 2);

@@ -5,7 +5,7 @@ typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
 
 s32 func_0209acc4(void *arg0) {
-    s32 func_0208fe30();
+    s32 func_0208fe30(void *);
     s32 func_02099818(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
     s32 func_020999b8(void *);
@@ -20,6 +20,7 @@ s32 func_0209acc4(void *arg0) {
     s32 var_r6;
     s32 temp_r7;
     s32 temp_r8;
+    void *notify;
 
 main_loop:
     {
@@ -50,12 +51,17 @@ main_loop:
                     func_02099854(M2C_FIELD(arg0, void **, 0x34), M2C_FIELD(arg0, s32 *, 0x3C) + (M2C_FIELD(arg0, u16 *, 0x4C) << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
                     var_r6 = 7;
                 } else {
+                    s32 pixels;
                     void *p = M2C_FIELD(arg0, void **, 0x34);
-                    u16 t1 = M2C_FIELD(arg0, u16 *, 0x4C);
+
                     if (temp_r8 != 0) {
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 1), M2C_FIELD(arg0, s32 *, 0x3C) + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
+                        u16 t1 = M2C_FIELD(arg0, u16 *, 0x4C);
+                        pixels = M2C_FIELD(arg0,volatile s32 *,0x3c);
+                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 1), pixels + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
                     } else {
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 0), M2C_FIELD(arg0, s32 *, 0x3C) + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
+                        u16 t1 = M2C_FIELD(arg0, u16 *, 0x4C);
+                        pixels = M2C_FIELD(arg0,volatile s32 *,0x3c);
+                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 0), pixels + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
                     }
                 }
                 if ((u8) M2C_FIELD(arg0, u8 *, 0x56) <= 1U) {
@@ -64,8 +70,8 @@ main_loop:
                 if (func_0209c168(arg0, var_r6) != 0) {
                     func_0209ac6c(arg0, func_020999e8(arg0));
                 }
-                if (M2C_FIELD(arg0, s32 *, 0x60) != 0 && (s8) M2C_FIELD(arg0, s8 *, 0x55) != 0) {
-                    func_0208fe30();
+                if ((notify=M2C_FIELD(arg0, void **, 0x60)) != 0 && (s8) M2C_FIELD(arg0, s8 *, 0x55) != 0) {
+                    func_0208fe30(notify);
                 }
             }
             if (!(temp_r7 == 0 && temp_r8 == 0)) {
@@ -107,7 +113,9 @@ void func_0209aeb4(void *arg0) {
     s32 saved;
     s32 i;
 
-    combined = (u16)(func_0209dc9c() | func_0209dde0());
+    combined = func_0209dc9c();
+    combined = combined | func_0209dde0();
+    combined = (u16)combined;
 
     if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x1) {
         if (func_01ffa770(&data_02102eac) != 0) return;
@@ -118,57 +126,48 @@ void func_0209aeb4(void *arg0) {
         if (func_0209546c() != 0) return;
     }
 
-    if ((s8)M2C_FIELD(arg0, s8 *, 0x55) < 1) goto skip55;
-    if (func_02096038() == 0) goto skip55;
-    if (combined & 0x400) func_02095ff8(1);
-    if (combined & 0x30) {
-        if (M2C_FIELD(arg0, u16 *, 0x4C) != M2C_FIELD(arg0, u16 *, 0x4E)) {
-            func_02099e58((M2C_UNK)arg0);
-            if (func_020999b8(arg0) != 0) {
-                func_02099e58((M2C_UNK)arg0);
-                {
-                    s8 t;
-                    M2C_FIELD(arg0, s8 *, 0x54) = M2C_FIELD(arg0, s8 *, 0x54) + 1;
-                    t = M2C_FIELD(arg0, s8 *, 0x54);
-                    if (t < 0) goto cb_wrap;
-                    if (t < (s8)M2C_FIELD(arg0, s8 *, 0x55)) return;
-                    M2C_FIELD(arg0, s8 *, 0x54) = 0;
-                cb_wrap:
-                    {
-                        void (*cb)(void) = (void (*)(void))M2C_FIELD(arg0, void **, 0x50);
-                        cb();
-                    }
+    if (M2C_FIELD(arg0,s8 *,0x55) >= 1 && func_02096038()) {
+        if (combined & 0x400) func_02095ff8(1);
+        if ((combined & 0x30) && M2C_FIELD(arg0,u16 *,0x4c) != M2C_FIELD(arg0,u16 *,0x4e))
+            func_02099e58((s32)arg0);
+    }
+    if (func_020999b8(arg0)) func_02099e58((s32)arg0);
+    M2C_FIELD(arg0,s8 *,0x54) = M2C_FIELD(arg0,s8 *,0x54)+1;
+    {
+        s32 t=M2C_FIELD(arg0,s8 *,0x54);
+        if (t >= 0 && t < M2C_FIELD(arg0,s8 *,0x55)) return;
+        if (t >= 0) M2C_FIELD(arg0,s8 *,0x54)=0;
+        ((void (*)(void))M2C_FIELD(arg0,void **,0x50))();
+    }
+    saved = gCur3DSpriteEngine;
+    {
+        for (i = 0; i < 2; i++) {
+            s32 cur;
+            if (i == 0) cur = data_027e00c8; else cur = data_027e00c4;
+            gCur3DSpriteEngine = cur;
+            {
+                u8 mode = M2C_FIELD(arg0, u8 *, 0x5A);
+                if (mode == 0) {
+                    if (cur != data_027e00c8) goto skip_tail;
+                }
+                if (mode == 1) {
+                    if (cur != data_027e00c4) goto skip_tail;
+                }
+                if (mode == 3) {
+                    if (cur != saved) goto skip_tail;
                 }
             }
-        }
-    }
-skip55:;
-
-    saved = gCur3DSpriteEngine;
-    for (i = 0; i < 2; i++) {
-        s32 cur;
-        if (i == 0) cur = data_027e00c8; else cur = data_027e00c4;
-        gCur3DSpriteEngine = cur;
-        {
-            u8 mode = M2C_FIELD(arg0, u8 *, 0x5A);
-            if (mode == 0) {
-                if (cur != data_027e00c8) goto skip_tail;
-            } else if (mode == 1) {
-                if (cur != data_027e00c4) goto skip_tail;
-            } else if (mode == 3) {
-                if (cur != saved) goto skip_tail;
+            if (func_0209acc4(arg0) == 0) {
+                if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x1) {
+                    func_02097964();
+                    func_01ffa6fc(arg0);
+                } else {
+                    func_01ffa574(arg0);
+                }
             }
+        skip_tail:
+            ;
         }
-        if (func_0209acc4(arg0) == 0) {
-            if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x1) {
-                func_02097964();
-                func_01ffa6fc((M2C_UNK)arg0);
-            } else {
-                func_01ffa574((M2C_UNK)arg0);
-            }
-        }
-    skip_tail:
-        ;
     }
     gCur3DSpriteEngine = saved;
 }

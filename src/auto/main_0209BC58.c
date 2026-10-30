@@ -495,26 +495,12 @@ void *func_0209c6d8(s32 arg0) {
     return (void *)(data_021580a8 + (flag << 7) + (arg0 << 2));
 }
 
-s32 func_0209c720(s32 arg0, s16 arg1, s8 arg2, s32 arg3, u8 arg4) {
-    void *func_0209c6d8(s32);
-    u8 *p;
-    u8 old;
-    u8 r1, r2, r3, r12;
-
-    (void)arg3;
-    p = (u8 *)func_0209c6d8(arg0);
-    *(s16 *)p = arg1;
-    p[2] = (u8)arg2;
-    old = p[3];
-    r2 = arg4;
-    r1 = (u8)(old & ~0xF);
-    r3 = (u8)(r2 & 0xF);
-    r12 = (u8)(r1 | r3);
-    r1 = (u8)(r12 & 0xFF);
-    r1 = (u8)(r1 & ~0xF0);
-    r3 = (u8)((int)r2 << 0x1C);
-    r3 = (u8)((int)r3 >> 0x18);
-    p[3] = (u8)(r1 | r3);
+s32 func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,volatile u8 arg4){
+void *func_0209c6d8(s32);u8 *p=func_0209c6d8(arg0);u8 old;u32 value;
+*(s16 *)p=arg1;p[2]=arg2;
+old=*(volatile u8 *)(p+3);value=arg4;
+old=(old&~15)|(value&15);
+p[3]=(old&~240)|((value<<28)>>24);
 }
 
 void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {

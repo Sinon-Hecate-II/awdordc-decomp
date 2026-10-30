@@ -2,6 +2,7 @@
 #include "common.h"
 static inline u32 LowerChar(u32 c) { c-=0x41; if(c<=25) return c+0x61;return c+0x41; }
 typedef struct { u32 a,b,c; } UnkA3Block;
+typedef struct { UnkA3Block block; u32 kind, length; u8 name[128]; } PathEntry;
 typedef struct { u32 a:5; u32 c:1; u32 b:26; } FifoWord;
 
 s32 func_02009eb0(u32 a,u32 b,u32 c) { s32 func_0200751c(void);s32 func_02007530(s32);FifoWord v; s32 key;v.a=a;v.c=c;v.b=b;if(*(volatile u16 *)0x04000184&0x4000){*(volatile u16 *)0x04000184|=0xc000;return -1;}key=func_0200751c();if(*(volatile u16 *)0x04000184&2){func_02007530(key);return -2;}*(volatile u32 *)0x04000188=*(u32 *)&v;func_02007530(key);return 0;}
@@ -163,7 +164,7 @@ s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
     return var_r0;
 }
 
-void func_0200a34c(void *arg0, s16 arg1) {
+void func_0200a34c(void *arg0, s32 arg1) {
     M2C_UNK func_0200a0ac(void *, M2C_UNK);
     M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) | 4);
     M2C_FIELD(arg0, s32 *, 0x30) = (s32) M2C_FIELD(arg0, s32 *, 8);
@@ -232,83 +233,58 @@ M2C_FIELD(p,u32 *,0x28)=in[1];return r;
 }
 
 s32 func_0200a59c(void *p) {
-    s32 func_0200a0ac(void *, s32);
-    void func_0200a34c(void *, s16);
-    s32 func_0200a23c(u8 *, u8 *, u32);
-
-    u8 *r5 = M2C_FIELD(p, u8 **, 0x3c);
-    u32 r6 = M2C_FIELD(p, u32 *, 0x40);
-    u8 firstChar;
-    s32 r8 = 0;
-    u8 r7 = 0;
-    UnkA3Block blk;
-    volatile u32 cmp1 = 0;
-    volatile u32 cmp2 = 0;
-    u8 buf[0x80];
-    u32 *out = 0;
-
-    func_0200a0ac(p, 2);
-    firstChar = r5[0];
-    if (firstChar == 0) goto tail;
-
-scan_loop:
-    r8 = 0;
-    for (;;) {
-        u8 c = r5[r8];
-        if (c == 0 || c == '/' || c == '\\') break;
-        r8++;
-    }
-    r7 = r5[r8];
-    if (!(r7 == 0 && r6 == 0)) r7 = 1; else r7 = 0;
-    if (r8 == 0) return 1;
-
-    if (firstChar == (u8)'.') {
-        if (r8 == 1) {
-            r5++;
-            goto advance;
-        }
-        if (r8 == 2 && r5[1] == (u8)'.') {
-            if (M2C_FIELD(p, u16 *, 0x24) != 0) {
-                func_0200a34c(p, (s16)M2C_FIELD(p, s32 *, 0x2c));
-            }
-            r5 += 2;
-            goto advance;
-        }
-    }
-
-    if (r8 > 0x7f) return 1;
-    M2C_FIELD(p, u32 *, 0x30) = (u32)&blk;
-    M2C_FIELD(p, u32 *, 0x34) = 0;
-    if (func_0200a0ac(p, 3) != 0) return 1;
-    if (r7 != cmp1) goto mismatch;
-    if (r8 != cmp2) goto mismatch;
-    if (func_0200a23c(r5, buf, (u32)r8) != 0) goto mismatch;
-    if (r7 == 0) goto match_zero;
-    M2C_FIELD(p, u32 *, 0x30) = blk.a;
-    M2C_FIELD(p, u32 *, 0x34) = blk.b;
-    M2C_FIELD(p, u32 *, 0x38) = blk.c;
-    r5 += r8;
-    func_0200a0ac(p, 2);
-    goto advance;
-
-match_zero:
-mismatch:
-    if (r6 != 0) return 1;
-    out = M2C_FIELD(p, u32 **, 0x44);
-    out[0] = blk.a;
-    out[1] = blk.b;
-    return 0;
-
-advance:
-tail:
-    if (r5[0] != 0) r5++;
-    if (r5[0] != 0) goto scan_loop;
-    if (r6 == 0) return 1;
-    out = M2C_FIELD(p, u32 **, 0x44);
-    out[0] = M2C_FIELD(p, u32 *, 0x20);
-    out[1] = M2C_FIELD(p, u32 *, 0x24);
-    out[2] = M2C_FIELD(p, u32 *, 0x28);
-    return 0;
+ s32 func_0200a0ac(void *,s32);
+ void func_0200a34c(void *,s32);
+ s32 func_0200a23c(u8 *,u8 *,u32);
+ u8 *path=M2C_FIELD(p,u8 **,0x3c);
+ s32 mode=M2C_FIELD(p,s32 *,0x40);
+ s32 ok,first,kind,length;
+ PathEntry entry;
+ func_0200a0ac(p,2);
+ first=*path;
+ while(first!=0){
+ length=0;
+ {s32 one=1,zero=0;
+ goto scan;
+ next: length++;
+ scan: kind=path[length];ok=zero;
+ if(kind!=0 && kind!=47 && kind!=92)ok=one;
+ if(ok)goto next;
+ }
+ if(kind!=0 || mode!=0)kind=1;
+ if(length==0)return 1;
+ if(first==46){
+ if(length==1){path++;goto advance;}
+ if((length==2)&(path[1]==46)){
+ if(M2C_FIELD(p,u16 *,0x24)!=0)func_0200a34c(p,M2C_FIELD(p,s32 *,0x2c));
+ path+=2;goto advance;
+ }
+ }
+ if(length>127)return 1;
+ M2C_FIELD(p,void **,0x30)=&entry;
+ M2C_FIELD(p,u32 *,0x34)=0;
+ for(;;){
+ if(func_0200a0ac(p,3)!=0)return 1;
+ if(kind==entry.kind && length==entry.length && func_0200a23c(path,entry.name,length)==0)break;
+ }
+ if(kind){
+ *(UnkA3Block *)((u8 *)p+0x30)=entry.block;
+ path+=length;
+ func_0200a0ac(p,2);
+ }else{
+ u32 *out;
+ if(mode)return 1;
+ out=*(u32 * volatile *)((u8 *)p+0x44);
+ {u32 b,a; a=*(volatile u32 *)&entry.block.a;b=*(volatile u32 *)&entry.block.b;*(volatile u32 *)&out[0]=a;out[1]=b;}
+ return 0;
+ }
+ advance:
+ path+=(*path!=0);
+ first=*path;
+ }
+ if(!mode)return 1;
+ *(UnkA3Block *)M2C_FIELD(p,void **,0x44)=*(UnkA3Block *)((u8 *)p+0x20);
+ return 0;
 }
 
 void func_0200a780(void *arg0) { (void)arg0; }

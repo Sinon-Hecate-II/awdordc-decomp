@@ -259,6 +259,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     ((u8 *)base)[0x25] = (u8)*(u16 *)((u8 *)mapData + 0x5146);
 }
 
+#pragma opt_common_subs off
 u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c0f[];
@@ -266,12 +267,13 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     extern s32 func_020a86f0(s32);
     extern s32 func_020a86bc(s32, s32);
     void *base;
+    void **map;
     u8 *sel;
     u8 attr;
     s8 *row;
     s8 cell;
-    s32 kind;
     s32 t;
+    s32 kind;
     s32 w;
     s32 A, B;
     s8 cell2;
@@ -293,35 +295,32 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     kind = (s32)(((u32)(sel[0] << 26)) >> 26);
     attr = data_ov000_021b5c0f[kind * 0x70];
 
-    if (attr & 0x10) {
-        w = *(u16 *)(base + 0x52A4);
-        A = func_020a86f0(w);
-        B = func_020a86bc(w, kind);
-        B = B + 1;
+    if (attr & 0x10) goto special;
+    if (kind == 0x16) {
+        map = *(void **volatile *)&gCurrentMap;
+        base = *(void *volatile *)map;
+    special:
+        A = func_020a86f0(*(u16 *)(base + 0x52A4));
+        B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
         row = ((s8 **)(base + 0x52E8))[y];
         cell2 = row[x];
-        unitByte = sel[0x0A];
-        lhs = (s32)((((u32)(unitByte << 25)) >> 25) - (cell2 * A));
-        rhs = t * B;
+        unitByte = (*(u8 **)(base + 0x52D0))[0xA];
+        lhs = (((u32)(unitByte << 25)) >> 25) - cell2 * A;
+        rhs = t * (B + 5);
         if (lhs < rhs) return 0;
-        return 1;
-    } else if (kind == 0x16) {
-        w = *(u16 *)(base + 0x52A4);
-        A = func_020a86f0(w);
-        B = func_020a86bc(w, kind);
-        B = B + 5;
-        row = ((s8 **)(base + 0x52E8))[y];
-        cell2 = row[x];
-        unitByte = sel[0x0A];
-        lhs = (s32)((((u32)(unitByte << 25)) >> 25) - (cell2 * A));
-        rhs = t * B;
-        if (lhs < rhs) return 0;
-        return 1;
     } else {
-        return 0;
+        A = func_020a86f0(*(u16 *)(base + 0x52A4));
+        B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
+        row = ((s8 **)(base + 0x52E8))[y];
+        cell2 = row[x];
+        unitByte = (*(u8 **)(base + 0x52D0))[0xA];
+        lhs = (((u32)(unitByte << 25)) >> 25) - cell2 * A;
+        rhs = t * (B + 1);
+        if (lhs < rhs) return 0;
     }
+    return 1;
 }
-
+#pragma opt_common_subs reset
 s32 func_ov000_0217aa2c(s32 x,s32 y) {
 extern void **data_027e0058;
 void **state=data_027e0058;

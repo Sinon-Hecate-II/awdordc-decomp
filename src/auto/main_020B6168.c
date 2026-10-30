@@ -376,6 +376,91 @@ M2C_FIELD(q,u32 *,0x48)=(M2C_FIELD(q,u32 *,0x48)&~1023)|((u8)n&1023);
 M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
 }
 
+#pragma opt_common_subs off
+void func_020b6c6c(void *arg0) {
+    M2C_UNK func_0208c1ec(void *);
+    M2C_UNK func_0208c200(void *);
+    M2C_UNK func_0208fb0c(s32, s32, s32);
+    s32 func_020b6b80(void *);
+    u32 func_0207c2f0(void);
+    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    extern M2C_UNK data_02128f08;
+    M2C_UNK temp_r4;
+    M2C_UNK temp_r5;
+    s32 temp_r6;
+    u16 temp_r8;
+
+    temp_r6 = M2C_FIELD(arg0, s32 *, 0x60);
+    temp_r8 = (u16)((M2C_FIELD(arg0, u32 *, 0x48) >> 21) & 0xffff);
+    temp_r4 = func_0208c1ec(arg0);
+    temp_r5 = func_0208c200(arg0) - 1;
+
+    switch (temp_r8) {
+    case 0:
+        func_0208fb0c(0xFD, (s32)temp_r4, (s32)temp_r5);
+        break;
+    case 0x14:
+        func_0208fb0c(0xFE, (s32)temp_r4, (s32)temp_r5);
+        break;
+    case 0x20:
+        func_0208fb0c(0x100, (s32)temp_r4, (s32)temp_r5);
+        break;
+    case 0x5A:
+        func_0208fb0c(0xFF, (s32)temp_r4, (s32)temp_r5);
+        break;
+    case 0x68:
+        func_0208fb0c(0x102, (s32)temp_r4, (s32)temp_r5);
+        break;
+    default:
+        break;
+    }
+    if (temp_r8 == 0x3C) {
+        (void)func_020b6b80(arg0);
+    }
+    if ((s32)temp_r8 < 0x20) {
+        return;
+    }
+    if ((s32)temp_r8 > 0x5A) {
+        return;
+    }
+    {
+        u32 r1 = temp_r8 >> 31;
+        u32 x = (temp_r8 << 29) - r1;
+        u32 rot = r1 + ((x >> 29) | (x << 3));
+        if (rot != 0) {
+            return;
+        }
+    }
+    if (func_0207c2f0() & 1) {
+        u32 t = func_0207c2f0();
+        u32 r1 = t >> 31;
+        u32 x = (t << 31) - r1;
+        u32 rot = r1 + ((x >> 31) | (x << 1));
+        temp_r4 = (M2C_UNK)((s32)temp_r4 + (s32)(rot + 2));
+    } else {
+        u32 t = func_0207c2f0();
+        u32 r1 = t >> 31;
+        u32 x = (t << 31) - r1;
+        u32 rot = r1 + ((x >> 31) | (x << 1));
+        temp_r4 = (M2C_UNK)((s32)temp_r4 - (s32)(rot + 2));
+    }
+    if (func_0207c2f0() & 1) {
+        u32 t = func_0207c2f0();
+        u32 r1 = t >> 31;
+        u32 x = (t << 31) - r1;
+        u32 rot = r1 + ((x >> 31) | (x << 1));
+        temp_r5 = (M2C_UNK)((s32)temp_r5 + (s32)(rot + 2));
+    } else {
+        u32 t = func_0207c2f0();
+        u32 r1 = t >> 31;
+        u32 x = (t << 31) - r1;
+        u32 rot = r1 + ((x >> 31) | (x << 1));
+        temp_r5 = (M2C_UNK)((s32)temp_r5 - (s32)(rot + 2));
+    }
+    func_0208fb0c(0x101, (s32)temp_r4, (s32)temp_r5);
+    func_020b5134(&data_02128f08, (s32)temp_r4, (s32)temp_r5, 0x10, (s32)temp_r6, 1, arg0);
+}
+#pragma opt_common_subs reset
 void func_020b6e4c(void) {
     M2C_UNK func_020b6b80();
     func_020b6b80();

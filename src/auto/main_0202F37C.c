@@ -1,5 +1,7 @@
 /* 30 functions from 0x0202F37C to 0x02030348 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct SelectionEntryFlag { u8 low:4; u8 high:4; } SelectionEntryFlag;
+typedef struct SelectionFlagBlock { u8 pad[0xc00]; u8 low:6; u8 mode:2; } SelectionFlagBlock;
 
 void func_0202f37c(void) {
  void *func_0202f48c(s32);
@@ -355,6 +357,91 @@ func_02027754(base+off,p+0xcb8,flags|func_020300cc(p));
 } else if(state==9) {p[0xd15]=0;M2C_FIELD(p,unsigned long long *,0xcb0)=func_02007004();return 10;}
 return 8;
 }
+
+u8 func_0202ff14(void *arg0) {
+    s32 func_0202f800(void *);
+    s32 func_020305e8(s32);
+    s32 func_02068eac(void *, void *, s32);
+    s32 sp0;
+    s32 temp_r0_2;
+    s32 temp_r0_3;
+    s32 temp_r4;
+    u8 *var_r2;
+    void *var_r3;
+    s32 var_r4;
+    s32 var_r5;
+    s32 var_r5_2;
+    s32 var_r6;
+    u16 temp_r0;
+    u8 temp_r0_4;
+    void *temp_r11;
+    void *var_r7;
+    void *var_r8;
+    u8 *var_r9;
+
+    temp_r4 = (M2C_FIELD(arg0, u8 *, 0xD13) * 0xC0) + (s32) (arg0 + 0x470);
+    sp0 = 0;
+    if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0C) << 0x18) >> 0x1E) == 0) {
+        temp_r0 = M2C_FIELD(temp_r4, u16 *, 0xA);
+        var_r6 = sp0;
+        if (temp_r0 == 0x20) {
+            temp_r0_2 = func_0202f800((void*)temp_r4);
+            sp0 = temp_r0_2;
+            if (temp_r0_2 > 0) { var_r6 += 1; } else { sp0 = 0; }
+        } else if (temp_r0 == 8) {
+            temp_r0_3 = func_020305e8(temp_r4);
+            sp0 = temp_r0_3;
+            if (temp_r0_3 != 0) { var_r6 += 1; } else { sp0 = 0; }
+        }
+        var_r5 = 0;
+        if ((s32) M2C_FIELD(arg0, u8 *, 0xD10) > 0) {
+            var_r7 = arg0;
+            var_r8 = arg0 + 0x304;
+            var_r9 = arg0 + 0x300;
+            temp_r11 = arg0 + 0x10C;
+            do {
+                if ((M2C_FIELD(temp_r4, u16 *, 0xA) == M2C_FIELD(var_r7, u8 *, 0x303)) && (func_02068eac((void*)(temp_r4 + 0xC), var_r8, M2C_FIELD(temp_r4,u16*,0xA)) == 0)) {
+                    if (var_r6 == 0) {
+                        sp0 = (s32) M2C_FIELD(var_r7, u8 *, 0x301);
+                    } else {
+                        *var_r9 = (*var_r9 & ~0xF0) | 0x10;
+                        ((SelectionFlagBlock*)temp_r11)->mode=1;
+                    }
+                    var_r6 += 1;
+                }
+                var_r5 += 1;
+                var_r7 += 0x24;
+                var_r8 += 0x24;
+                var_r9 += 0x24;
+            } while (var_r5 < (s32) M2C_FIELD(arg0, u8 *, 0xD10));
+        }
+    } else {
+        var_r5_2 = sp0;
+        var_r4 = var_r5_2;
+        if ((s32) M2C_FIELD(arg0, u8 *, 0xD10) > 0) {
+            var_r3 = arg0;
+            var_r2 = arg0 + 0x300;
+            do {
+                temp_r0_4 = *var_r2;
+                if (((SelectionEntryFlag*)var_r2)->high == 1) {
+                    if (var_r4 == 0) {
+                        ((SelectionEntryFlag*)var_r2)->high=0;
+                        sp0 = (s32) M2C_FIELD(var_r3, u8 *, 0x301);
+                    }
+                    var_r4 += 1;
+                }
+                var_r5_2 += 1;
+                var_r2 += 0x24;
+                var_r3 += 0x24;
+            } while (var_r5_2 < (s32) M2C_FIELD(arg0, u8 *, 0xD10));
+        }
+        if (var_r4 == 1) {
+            M2C_FIELD(arg0, u8 *, 0xD0C) = (u8) (M2C_FIELD(arg0, u8 *, 0xD0C) & ~0xC0);
+        }
+    }
+    return (u8) sp0;
+}
+
 #pragma dont_inline reset
 s32 func_020300b0(void *arg0) {
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1E) >> 0x1E) == 1) {

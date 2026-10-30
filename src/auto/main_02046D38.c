@@ -7,191 +7,58 @@ void func_02045cbc(void *);
 s32 func_02045d94(void *, s32);
 s32 func_02046ebc(void *);
 
-u64 func_02046d38(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
-    void func_02008048(u8 *, u8 *, u32);
-    extern u8 data_020ea944[];
-    extern u8 data_020ea94c[];
-
-    register u32 vlr asm("lr");
-    register u32 r12v asm("r12");
-    register u32 r4 asm("r4");
-    register u32 r5 asm("r5");
-    register u32 r6 asm("r6");
-    register u32 r7 asm("r7");
-    u32 r2;
-    u32 r3;
-    u32 r0;
-    u32 r1;
-    u8 sp8[8];
-    u8 sp0[8];
-    s32 i;
-
-    sp8[0]=0; (void)sp8; (void)sp0;
-
-    vlr = 0;
-    r12v = vlr & 0;
-    r4 = 0xffff;
-    r5 = r4 + 0xff0000;
-    r2 = arg2 & 0x1;
-    r6 = r12v << 0x2;
-    r3 = arg3 & 0x3;
-    r5 = arg1 & r5;
-    r1 = r3 | (r2 << 0x2);
-    r6 = r6 | (r2 >> 0x1e);
-    r7 = r12v << 0x3;
-    r2 = arg0 & r4;
-    r0 = r1 | (r5 << 0x3);
-    r1 = r0 | (r2 << 0x1b);
-    r3 = (r12v << 0x1b) | (r2 >> 0x5);
-    r7 = r7 | (r5 >> 0x1d);
-    r0 = r12v | r6;
-    r0 = r7 | r0;
-    r0 = r3 | r0;
-
-    *(u32 *)&sp8[0] = r1;
-    *(u32 *)&sp8[4] = r0;
-
-    i = 0;
-    r2 = (u32)&sp8[0] + 0; /* placeholder */
-    {
-        u8 *p = sp8;
-        for (i = 0; i < 6; i++) {
-            p[i] ^= 0xd6;
-        }
-    }
-
-    {
-        for (i = 0; i < 5; i++) {
-            u8 x = sp8[i];
-            sp8[i] = data_020ea94c[x & 0x0f] | (data_020ea94c[(x >> 4) & 0x0f] << 4);
-        }
-    }
-
-    func_02008048(sp8, sp0, 8);
-
-    {
-        extern u8 data_020ea944[];
-        for (i = 0; i < 5; i++) {
-            sp8[data_020ea944[i]] = sp0[i];
-        }
-    }
-
-    sp8[5] &= 7;
-    sp8[6] = 0;
-    sp8[7] = 0;
-
-    {
-        u32 lo = *(u32 *)&sp8[0];
-        u32 hi = *(u32 *)&sp8[4];
-        u32 nlo = lo << 1;
-        u32 nhi = (hi << 1) | (lo >> 31);
-        *(u32 *)&sp8[0] = nlo;
-        *(u32 *)&sp8[4] = nhi;
-    }
-
-    sp8[0] |= (sp8[5] >> 3) & 1;
-
-    for (i = 0; i < 6; i++) {
-        sp8[i] ^= 0x67;
-    }
-
-    sp8[7] = 0;
-    sp8[5] &= 7;
-    sp8[6] = 0;
-
-    return *(u64 *)&sp8[0];
+u64 func_02046d38(u32 a,u32 b,u32 c,u32 d){
+void func_02008048(u8 *,u8 *,u32);extern u8 data_020ea944[];extern u8 data_020ea94c[];
+union { u64 value; u8 bytes[8]; } packed;u8 tmp[8];s32 i;u8 *p;u8 *q;u8 *order;
+packed.value=((u64)d&3) | (((u64)c&1)<<2) | (((u64)b&0xffffff)<<3) | (((u64)a&0xffff)<<27);
+p=packed.bytes;
+for(i=0;i<6;i++){*p^=0xd6;p++;}
+p=packed.bytes;
+for(i=0;i<5;i++){u8 x=*p;*p++=(data_020ea94c[(x>>4)&15]<<4)|data_020ea94c[x&15];}
+func_02008048(packed.bytes,tmp,8);
+q=tmp;order=data_020ea944;
+for(i=0;i<5;i++)packed.bytes[*order++]=*q++;
+packed.bytes[5]&=7;packed.bytes[7]=0;packed.bytes[6]=0;
+packed.value<<=1;
+packed.bytes[0]|=(packed.bytes[5]>>3)&1;
+p=packed.bytes;for(i=0;i<6;i++){*p^=0x67;p++;}
+packed.bytes[7]=0;packed.bytes[6]=0;packed.bytes[5]&=7;
+return packed.value;
 }
 
+#pragma opt_common_subs off
 s32 func_02046ebc(void *arg0) {
-    void func_02045cbc(void *);
-    void func_0200ee70(void);
-    s32 func_0200ef4c(void *);
-    s32 func_0200eff8(void *);
-    long long func_0200f7e0(void *, void *);
-    u16 func_02006f8c(void);
-    void func_02007724(void *);
-    u64 func_02007004(void);
-    u64 func_02046d38(u32, u32, u32, u32);
-
-    u8 *p = (u8 *)arg0;
-    u8 sp[0x24];
-    long long diff;
-    u32 seed;
-    u32 spval;
-    u8 flag;
-    u32 r9;
-    u16 f10;
-    u32 r8;
-    u16 cand;
-    u64 res;
-
-    func_02045cbc(p);
-    func_0200ee70();
-    if (func_0200ef4c(&sp[0x14]) != 0) return 0;
-    if (func_0200eff8(&sp[0x8]) != 0) return 0;
-
-    diff = func_0200f7e0(&sp[0x14], &sp[0x8]);
-    if (diff < 0) return 0;
-    if (func_02006f8c() == 0) return 0;
-
-    seed = (u32)diff + (u32)func_02007004;
-    func_02007724(sp);
-    spval = sp[2] | (sp[1] << 8) | (sp[0] << 16);
-    flag = (spval != 0x9bf) ? 1 : 0;
-    r9 = seed * 0x5d588b65u + 0x269ec3u;
-    f10 = (u16)(((r9 >> 16) * 1000u) >> 16);
-    *(u16 *)(p + 0x10) = f10;
-    *(u32 *)(p + 0) = 0;
-    *(u32 *)(p + 4) = 0;
-    cand = *(u16 *)(p + 0x12);
-    r8 = sp[5] | (sp[4] << 8) | (sp[3] << 16);
-    *(u32 *)(p + 8) = 0;
-    *(u32 *)(p + 12) = 0;
-
-    if (cand == 0) {
-        do { r9 = r9 * 0x5d588b65u + 0x269ec3u; } while (r9 == 0);
-        cand = (u16)r9;
-        *(u16 *)(p + 0x12) = cand;
-        res = func_02046d38(cand, r8, flag, 0);
-        *(u32 *)(p + 8) = (u32)res;
-        *(u32 *)(p + 12) = (u32)(res >> 32);
-        if (*(u32 *)(p + 8) != 0 || *(u32 *)(p + 12) != 0) {
-            return 1;
-        }
-    }
-
-    cand = *(u16 *)(p + 0x12) + 1;
-    *(u16 *)(p + 0x12) = cand;
-    res = func_02046d38(cand, r8, flag, 0);
-    *(u32 *)(p + 8) = (u32)res;
-    *(u32 *)(p + 12) = (u32)(res >> 32);
-    if (*(u32 *)(p + 8) != 0 || *(u32 *)(p + 12) != 0) {
-        return 1;
-    }
-
-    for (;;) {
-        r9 = r9 * 0x5d588b65u + 0x269ec3u;
-        if (r9 == 0) {
-            r9 = r9 * 0x5d588b65u + 0x269ec3u;
-            continue;
-        }
-        cand = (u16)r9;
-        if (*(u16 *)(p + 0x12) == cand) {
-            r9 = r9 * 0x5d588b65u + 0x269ec3u;
-            continue;
-        }
-        *(u16 *)(p + 0x12) = cand;
-        res = func_02046d38(cand, r8, flag, 0);
-        *(u32 *)(p + 8) = (u32)res;
-        *(u32 *)(p + 12) = (u32)(res >> 32);
-        if (*(u32 *)(p + 8) == 0 && *(u32 *)(p + 12) == 0) {
-            r9 = r9 * 0x5d588b65u + 0x269ec3u;
-            continue;
-        }
-        return 1;
-    }
+void func_02045cbc(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long func_0200f7e0(void *,void *);u16 func_02006f8c(void);void func_02007724(void *);u64 func_02007004(void);
+u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;register u32 mult=0x5d588b65;register u32 inc=0x269ec3;u32 state;u8 flag;u32 mac;
+func_02045cbc(p);func_0200ee70();
+if(func_0200ef4c(sp+0x14))return 0;
+if(func_0200eff8(sp+8))return 0;
+diff=func_0200f7e0(sp+0x14,sp+8);if(diff<0)return 0;
+seed=diff;
+if(func_02006f8c()!=0)seed+=(u32)func_02007004;
+func_02007724(sp);
+state=(u32)seed*mult+inc;
+flag=(((sp[0]<<16)|(sp[1]<<8)|sp[2])!=0x9bf);
+mac=(sp[3]<<16)|(sp[4]<<8)|sp[5];
+*(u16 *)(p+0x10)=((state>>16)*1000)>>16;
+*(u64 *)p=0;
+if(*(u16 *)(p+0x12)==0){
+*(u64 *)(p+8)=0;
+while(*(u64 *)(p+8)==0){
+state=state*mult+inc;while(state==0)state=state*mult+inc;
+*(u16 *)(p+0x12)=state;
+*(u64 *)(p+8)=func_02046d38(*(u16 *)(p+0x12),mac,flag,0);
 }
-
+}else {
+*(u64 *)(p+8)=0;
+while(*(u64 *)(p+8)==0){
+*(u16 *)(p+0x12)+=1;
+*(u64 *)(p+8)=func_02046d38(*(u16 *)(p+0x12),mac,flag,0);
+}
+}
+return 1;
+}
+#pragma opt_common_subs reset
 s32 func_02047098(s32 arg0) { Unk046State s; if (func_02046ebc(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
 
 s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }

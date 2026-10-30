@@ -82,6 +82,27 @@ void func_ov007_0221e6bc(void) {
     func_0208fe30(0x10019);
 }
 
+void func_ov007_0221e6d0(void *arg0) {
+extern u16 **gCur3DSpriteEngine, **data_027e00c8;
+extern s16 data_ov007_02220dd0[],data_ov007_02220d58[],data_ov007_02220d80[],data_ov007_02220da8[];
+void *func_020b22a4(s32,s32,void*,s32);
+void func_020b1c78(s32); void func_020b2158(s32);
+void func_02087d18(s32,s16,s16,s32,s32,u16,s32);
+void *saved=gCur3DSpriteEngine;
+s16 *table; s32 y, x, k, a, b, c; u8 i;
+gCur3DSpriteEngine=data_027e00c8;
+y=0; k=0; table=data_ov007_02220dd0;
+do { x=0; do {
+void *p=func_020b22a4(x*table[2],y*table[3],table,k);
+x++; M2C_FIELD(p,void**,0x10)=arg0; k++;
+} while(x<15); y++; } while(y<5);
+a=0; table=data_ov007_02220d58; do {void *p=func_020b22a4(a*table[2],0,table,a+100); a++; M2C_FIELD(p,void**,0x10)=arg0;} while(a<3);
+b=0; table=data_ov007_02220d80; do {void *p=func_020b22a4(b*table[2],0,table,b+103); b++; M2C_FIELD(p,void**,0x10)=arg0;} while(b<2);
+c=0; table=data_ov007_02220da8; do {void *p=func_020b22a4(c*table[2],0,table,c+105); c++; M2C_FIELD(p,void**,0x10)=arg0;} while(c<2);
+gCur3DSpriteEngine=saved;func_020b1c78(0);func_020b2158(0);
+for(i=0;i<17;i++) func_02087d18(M2C_FIELD(arg0,s32*,0x38),(s16)(i*8+16),16,8,16,i,14);
+}
+
 void func_ov007_0221e85c(void *arg0) {
     M2C_UNK func_02087e34(s32);
     M2C_UNK func_020b2140();

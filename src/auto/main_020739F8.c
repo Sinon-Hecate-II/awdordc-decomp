@@ -18,6 +18,7 @@ typedef struct { s32 v[21]; } CtxTail_020739f8;
 typedef struct { s32 f0, f1, f2, f3, f4, f5, f6; CtxTail_020739f8 tail; } CtxState_020739f8;
 typedef struct { s32 t0, t1, t2, t3, t4, t5; } CtxToken_020739f8;
 typedef struct { CtxToken_020739f8 token; CtxState_020739f8 state; } Ctx_020739f8;
+typedef struct { s32 a,b,c,d; } CtxOperands_020739f8;
 
 s32 func_020739f8(void *arg0, void *arg1) {
     u8 func_02072da4(CtxToken_020739f8 *);
@@ -130,6 +131,7 @@ void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
  M2C_FIELD(entry,s32 *,0x14)=value;
  func_0207462c(arg0,arg1,*arg1+M2C_FIELD(arg2,s32 *,4));
 }
+#pragma opt_common_subs off
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);
@@ -139,65 +141,52 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
     s32 func_02073b4c(M2C_UNK, void *);
     void func_02073c7c(s32 *, s32 *, void *, s32);
-    s32 sp0;
-    s32 sp4;
-    s32 sp8;
-    s32 sp10;
-    s32 sp14;
-    s32 sp18;
-    s32 *tk = (s32 *)arg1;
-    CtxState_020739f8 *st = (CtxState_020739f8 *)arg0;
+    s32 code;
     Ctx_020739f8 ctx;
+    s32 values[3];
+    CtxOperands_020739f8 operands;
 
-    ctx.token.t0 = tk[0];
-    ctx.token.t1 = tk[1];
-    ctx.token.t2 = tk[2];
-    ctx.token.t3 = tk[3];
-    ctx.token.t4 = tk[4];
-    ctx.token.t5 = tk[5];
-    ctx.state.f0 = st->f0;
-    ctx.state.f1 = st->f1;
-    ctx.state.f2 = st->f2;
-    ctx.state.f3 = st->f3;
-    ctx.state.f4 = st->f4;
-    ctx.state.f5 = st->f5;
-    ctx.state.f6 = st->f6;
-    ctx.state.tail = st->tail;
+    ctx.token.t0 = ((s32 *)arg1)[0];
+    ctx.token.t1 = ((s32 *)arg1)[1];
+    ctx.token.t2 = ((s32 *)arg1)[2];
+    ctx.token.t3 = ((s32 *)arg1)[3];
+    ctx.token.t4 = ((s32 *)arg1)[4];
+    ctx.token.t5 = ((s32 *)arg1)[5];
+    ctx.state.f0 = ((CtxState_020739f8 *)arg0)->f0;
+    ctx.state.f1 = ((CtxState_020739f8 *)arg0)->f1;
+    ctx.state.f2 = ((CtxState_020739f8 *)arg0)->f2;
+    ctx.state.f3 = ((CtxState_020739f8 *)arg0)->f3;
+    ctx.state.f4 = ((CtxState_020739f8 *)arg0)->f4;
+    ctx.state.f5 = ((CtxState_020739f8 *)arg0)->f5;
+    ctx.state.f6 = ((CtxState_020739f8 *)arg0)->f6;
+    ctx.state.tail = ((CtxState_020739f8 *)arg0)->tail;
 
+    code = func_02072da4((CtxToken_020739f8 *)(&ctx + 0));
     for (;;) {
-        s32 code = func_02072da4(&ctx.token);
         switch (code) {
-        case 1:
-        case 15:
-        default:
-            func_020742e0();
-            break;
-        case 13: {
+        case 12: {
             u8 *node = (u8 *)ctx.token.t2;
-            sp10 = node[1] | (node[2] << 8) | (node[3] << 16) | (node[4] << 24);
+            values[0] = node[1] | (node[2] << 8) | (node[3] << 16) | (node[4] << 24);
             {
-                u8 *r = (u8 *)func_02072bac(node + 5, &sp14);
-                func_02072b20(r, &sp18);
+                u8 *r = (u8 *)func_02072bac(node + 5, &values[1]);
+                func_02072b20(r, &values[2]);
             }
-            if (func_02074330(st->f0, sp10, arg2) != 0) {
-                return node;
+            if (func_02074330(((CtxState_020739f8 *)arg0)->f0, values[0], arg2) != 0) {
+                goto done;
             }
-            func_02072dc0(&ctx);
             break;
         }
-        case 16: {
+        case 15: {
             u8 *node = (u8 *)ctx.token.t2;
             u8 *r;
-            r = (u8 *)func_02072bac(node + 1, &sp0);
-            r = (u8 *)func_02072bac(r, &sp4);
-            r = (u8 *)func_02072b20(r, &sp8);
-            sp14 = (s32)r; /* unused placeholder; actually offset 12 */
-            if (func_02073b4c(st->f0, &sp0) != 0) {
-                func_02072dc0(&ctx);
-                break;
+            r = (u8 *)func_02072bac(node + 1, &operands.a);
+            r = (u8 *)func_02072bac(r, &operands.b);
+            r = (u8 *)func_02072b20(r, &operands.c);
+            operands.d = (s32)r;
+            if (func_02073b4c(((CtxState_020739f8 *)arg0)->f0, &operands.a) != 0) {
+                    break;
             }
-            func_02073c7c((s32 *)arg0, (s32 *)arg1, (void *)&sp0, (s32)node);
-            func_02072dc0(&ctx);
+            func_02073c7c((s32 *)arg0, (s32 *)arg1, (void *)&operands.a, (s32)node);
             break;
         }
         case 0:
@@ -211,17 +200,25 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
         case 9:
         case 10:
         case 11:
-        case 12:
-        case 14:
+        case 13:
+        case 16:
         case 17:
         case 18:
         case 19:
-            func_02072dc0(&ctx);
             break;
+        case 1:
+        case 14:
+        default:
+            func_020742e0();
+            goto done;
         }
+        func_02072dc0(&ctx);
+        code = func_02072da4((CtxToken_020739f8 *)(&ctx + 0));
     }
+done:
+    return (u8 *)ctx.token.t2;
 }
-
+#pragma opt_common_subs reset
 void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
     void *entry;
     entry = (u8 *)M2C_FIELD(arg0, void **, 0x18) + arg1;
@@ -398,101 +395,54 @@ void func_02074310(s32 arg0, s32 arg1, void *arg2) {
     data_0213ea14 = arg2;
 }
 
-s32 func_02074330(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2) {
-    u8 *p = (u8 *)arg0;
-    u8 *q;
-    u8 *r;
-    s32 num = 0;
-    u8 t;
-    u8 t2;
-    u8 d;
-
-    *(s32 *)arg2 = 0;
-    if (arg1 == 0) return 1;
-    q = (u8 *)arg1;
-
-    if (*q == 0x50) {
-        r = q + 1;
-        if (*r == 0x56) r++;
-        if (*r == 0x4B) r++;
-        if (*r == 0x76) {
-            if (*p == 0x50 || *p == 0x2A) return 1;
-        }
-        q = (u8 *)arg1;
-    }
-
-    t = *p;
-    if (t != 0x21 && t != 0x2A) goto L_A9C;
-
-core:
-    if (*p++ != *q++) return 0;
-    t = *p;
-    if (t != *q++) goto recovery;
-    p++;
-    if (t != 0x21) goto core;
-
-    num = 0;
-    if (*p == 0x21) goto store;
-parse:
-    do {
-        d = *p++;
-        num = num * 10 + d;
-        num -= 0x30;
-    } while (*p != 0x21);
-store:
-    *(s32 *)arg2 = num;
-    return 1;
-
-recovery:
-    do { t = *p++; } while (t != 0x21);
-    do { t = *p++; } while (t != 0x21);
-    if (*p == 0) return 0;
-    q = (u8 *)arg1 + 1;
-    goto core;
-
-L_A9C:
-    t = *p;
-    if (t != 0x50 && t != 0x52) goto L_AB8;
-    if (t == *q) goto L_A44;
-    if (t != *q) goto L_AE0;
-    if (t == 0) return 1;
-    p++;
-    q++;
-    t = *p;
-    t2 = *q;
-    if (t == t2) goto L_AC4;
-    return 0;
-
-L_A44:
-    q++;
-    p++;
-    t = *q;
-    if (t != 0x4B) goto L_A64;
-    t = *p;
-    q++;
-    if (t == 0x4B) p++;
-    t = *p;
-    if (t == 0x4B) return 0;
-    t2 = *q;
-    if (t2 != 0x56) goto L_A8C;
-    if (t == 0x56) p++;
-    q++;
-    t = *p;
-    if (t == 0x56) return 0;
-    goto L_A9C;
-
-L_AC4:
-    return 0;
-L_A64:
-    return 0;
-L_A8C:
-    return 0;
-L_AB8:
-    return 0;
-L_AE0:
-    return 0;
+#pragma opt_common_subs off
+s32 func_02074330(M2C_UNK arg0,s32 arg1,M2C_UNK *arg2){
+u8 *p=(u8 *)arg0;u8 *q=(u8 *)arg1;s32 num;u8 t,u;
+*(s32 *)arg2=0;if(!arg1)return 1;
+if(*(u8 *)arg1=='P'){
+if(*++q=='V')q++;
+if(*q=='K')q++;
+if(*q=='v' && (*p=='P'||*p=='*'))return 1;
 }
-
+q=(u8 *)arg1;
+t=*p;
+if(t=='!'||*p=='*'){
+if(*p++!=*q++)return 0;
+compare:
+t=*p;
+if(t==*q++){
+p++;
+if(t!='!')goto compare;
+num=0;
+if(*p!='!')do{num=num*10+*p-'0';p++;}while(*p!='!');
+*(s32 *)arg2=num;return 1;
+}
+while(*p++!='!'){}
+while(*p++!='!'){}
+if(!*p)return 0;
+q=(u8 *)arg1+1;goto compare;
+}
+goto check;
+prefix:
+u=*++q;p++;
+if(u=='K'){
+q++;if(*p=='K')p++;
+t=*p;if(t=='K')return 0;
+}
+if(*q=='V'){
+if(t=='V')p++;
+q++;if(*p=='V')return 0;
+}
+check:
+t=*p;
+if(t=='P'||t=='R'){if(t==*q)goto prefix;}
+while(t==*q){
+if(t==0)return 1;
+t=*++p;++q;
+}
+return 0;
+}
+#pragma opt_common_subs reset
 s32 func_020744e0(void *arg0) {
     s32 temp;
     s32 *p;

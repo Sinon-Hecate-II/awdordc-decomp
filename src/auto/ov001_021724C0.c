@@ -1,5 +1,6 @@
 /* 18 functions from 0x021724C0 to 0x0217332C (ov001), found by ds-decomp. */
 #include "common.h"
+void func_ov001_02172ba4(void);
 typedef struct SpritePosition { s32 x, y; } SpritePosition;
 static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
     u32 value = *sprite;
@@ -113,7 +114,7 @@ void func_ov001_02172b8c(void) {
     func_ov001_0217332c();
 }
 
-M2C_UNK func_ov001_02172ba4(void) {
+void func_ov001_02172ba4(void) {
     extern void *data_ov001_02193d1c;
     extern u16 data_ov001_0218fd20[];
     extern u16 data_ov001_0218f36c[];
@@ -147,8 +148,8 @@ M2C_UNK func_ov001_02172ba4(void) {
         }
     }
     {
-        u16 *b = data_ov001_0218f34c;
         u16 *c = data_ov001_0218f35c;
+        u16 *b = data_ov001_0218f34c;
         for (i = 0; i < 4; i++) {
             func_ov001_0218b2e0(b, c, buf);
             if (func_ov001_0218bbd8(buf)) {
@@ -161,13 +162,15 @@ M2C_UNK func_ov001_02172ba4(void) {
                 M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11e) = (u8)(i + 0x2f);
                 return;
             }
-            b += 2;
             c += 2;
+            b += 2;
         }
     }
     {
-        u16 *d = data_ov001_0218f344;
-        u16 *e = data_ov001_0218f32c;
+        u16 *e;
+        u16 *d;
+        d = data_ov001_0218f344;
+        e = data_ov001_0218f32c;
         for (i = 0; i < 2; i++) {
             func_ov001_0218b2e0(d, e, buf);
             if (func_ov001_0218bbd8(buf)) {
@@ -407,4 +410,5 @@ void func_ov001_021732d8(s32 arg0) {
  func_ov001_0217385c(M2C_FIELD(data_ov001_02193d1c,s8 *,0x11f),0);
  M2C_FIELD(data_ov001_02193d1c,s8 *,0x11f)=arg0;
 }
+
 

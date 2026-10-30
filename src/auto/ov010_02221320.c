@@ -110,26 +110,23 @@ void func_ov010_02221320(u8 *arg0, void *arg1, u32 arg2, void *arg3) {
 void func_ov010_02221474(s8 *arg0, void *arg1, u32 arg2, void *arg3) {
     extern s8 data_ov010_0222bd68[];
     extern s16 data_ov010_0222bd78[];
+    s8 *var_r0;
+    void *var_r1;
+    u32 temp_r2;
+    u32 var_r4;
+    s32 var_r5;
+    s32 var_r6;
+    u8 temp_r6;
     s16 temp_r7;
-    s16 temp_r9;
-    s16 temp_r9_2;
-    s16 temp_r10;
+    s32 savedIndex;
+    u32 temp_r8;
+    s32 temp_r9;
+    s32 temp_r9_2;
+    s32 temp_r10;
     s32 var_r10;
     s32 var_r10_2;
-    s32 var_r10_3;
     s32 var_r11;
     s32 var_r11_2;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r9;
-    s8 *var_r0;
-    u32 temp_r2;
-    u32 temp_r8;
-    u32 var_r4;
-    u8 temp_r6;
-    s32 var_r5;
-    s32 var_r6_2;
-    void *var_r1;
 
     var_r0 = arg0;
     var_r1 = arg1;
@@ -143,7 +140,7 @@ void func_ov010_02221474(s8 *arg0, void *arg1, u32 arg2, void *arg3) {
         temp_r6 = M2C_FIELD(arg3, u8 *, 2);
         temp_r7 = M2C_FIELD(arg3, s16 *, 0);
         temp_r9 = data_ov010_0222bd78[temp_r6];
-        var_r10 = M2C_FIELD(var_r1, s16 *, 0) - temp_r7;
+        var_r10 = M2C_FIELD(var_r1, volatile s16 *, 0) - temp_r7;
         if (var_r10 < 0) {
             var_r5 = 8;
             var_r10 = 0 - var_r10;
@@ -174,12 +171,12 @@ void func_ov010_02221474(s8 *arg0, void *arg1, u32 arg2, void *arg3) {
         if (var_r5 & 8) {
             var_r10_2 = 0 - var_r10_2;
         }
-        var_r9 = temp_r7 + var_r10_2;
-        if (var_r9 < -0x8000) {
-            var_r9 = -0x8000;
+        temp_r9 = temp_r7 + var_r10_2;
+        if (temp_r9 < -0x8000) {
+            temp_r9 = -0x8000;
         }
-        if (var_r9 > (s32) temp_r2) {
-            var_r9 = (s32) temp_r2;
+        if (temp_r9 > (s32) temp_r2) {
+            temp_r9 = (s32) temp_r2;
         }
         var_r6 = temp_r6 + data_ov010_0222bd68[var_r5];
         if (var_r6 < 0) {
@@ -187,58 +184,59 @@ void func_ov010_02221474(s8 *arg0, void *arg1, u32 arg2, void *arg3) {
         } else if (var_r6 > 0x58) {
             var_r6 = 0x58;
         }
-        M2C_FIELD(arg3, s16 *, 0) = (s16) var_r9;
-        M2C_FIELD(arg3, u8 *, 2) = (u8) var_r6;
+        M2C_FIELD(arg3, s16 *, 0) = (s16) temp_r9;
+        M2C_FIELD(arg3, s8 *, 2) = (s8) var_r6;
         temp_r9_2 = M2C_FIELD(arg3, s16 *, 0);
-        temp_r10 = data_ov010_0222bd78[var_r6];
-        var_r11 = M2C_FIELD(var_r1, s16 *, 2) - temp_r9_2;
+        savedIndex = (u8)var_r6;
+        temp_r10 = data_ov010_0222bd78[savedIndex];
+        var_r11 = M2C_FIELD(var_r1, volatile s16 *, 2) - temp_r9_2;
         if (var_r11 < 0) {
-            var_r6_2 = 8;
+            var_r6 = 8;
             var_r11 = 0 - var_r11;
         } else {
-            var_r6_2 = 0;
+            var_r6 = 0;
         }
         if (var_r11 >= (s32) temp_r10) {
-            var_r6_2 |= 4;
+            var_r6 |= 4;
             var_r11 -= temp_r10;
         }
         if (var_r11 >= (s32) (temp_r10 >> 1)) {
-            var_r6_2 |= 2;
+            var_r6 |= 2;
             var_r11 -= temp_r10 >> 1;
         }
         if (var_r11 >= (s32) (temp_r10 >> 2)) {
-            var_r6_2 |= 1;
+            var_r6 |= 1;
         }
         var_r11_2 = temp_r10 >> 3;
-        if (var_r6_2 & 4) {
+        if (var_r6 & 4) {
             var_r11_2 += temp_r10;
         }
-        if (var_r6_2 & 2) {
+        if (var_r6 & 2) {
             var_r11_2 += temp_r10 >> 1;
         }
-        if (var_r6_2 & 1) {
+        if (var_r6 & 1) {
             var_r11_2 += temp_r10 >> 2;
         }
-        if (var_r6_2 & 8) {
+        if (var_r6 & 8) {
             var_r11_2 = 0 - var_r11_2;
         }
-        var_r10_3 = temp_r9_2 + var_r11_2;
-        if (var_r10_3 < -0x8000) {
-            var_r10_3 = -0x8000;
+        temp_r10 = temp_r9_2 + var_r11_2;
+        if (temp_r10 < -0x8000) {
+            temp_r10 = -0x8000;
         }
-        if (var_r10_3 > (s32) temp_r2) {
-            var_r10_3 = (s32) temp_r2;
+        if (temp_r10 > (s32) temp_r2) {
+            temp_r10 = (s32) temp_r2;
         }
-        var_r7 = var_r6 + data_ov010_0222bd68[var_r6_2];
+        savedIndex = savedIndex + data_ov010_0222bd68[var_r6];
         var_r1 += 4;
-        if (var_r7 < 0) {
-            var_r7 = 0;
-        } else if (var_r7 > 0x58) {
-            var_r7 = 0x58;
+        if (savedIndex < 0) {
+            savedIndex = 0;
+        } else if (savedIndex > 0x58) {
+            savedIndex = 0x58;
         }
-        M2C_FIELD(arg3, s16 *, 0) = (s16) var_r10_3;
-        M2C_FIELD(arg3, u8 *, 2) = (u8) var_r7;
-        *var_r0 = (s8)(var_r5 | (var_r6_2 << 4));
+        M2C_FIELD(arg3, s16 *, 0) = (s16) temp_r10;
+        M2C_FIELD(arg3, s8 *, 2) = (s8) savedIndex;
+        *var_r0 = (s8)((u8)var_r5 | ((u8)var_r6 << 4));
         var_r0 += 1;
         var_r4 += 1;
     } while (var_r4 < temp_r8);

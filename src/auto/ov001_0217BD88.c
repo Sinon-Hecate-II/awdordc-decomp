@@ -10,7 +10,7 @@ extern u32 data_ov001_02190770;
 
 s32 func_ov001_0217bd88(void) {
     s32 a, b;
-    u8 *p;
+    register u8 *p asm("r3") = 0;
     s32 len;
     s32 i;
     extern void *data_ov001_02193da0;
@@ -20,14 +20,14 @@ s32 func_ov001_0217bd88(void) {
         func_ov001_02171c24(0x35, -1, 0);
         func_ov001_02175db4(&a, &b);
         if (a == 0) {
-            p = *(u8 **)data_ov001_02193da0;
+            p = (u8 *)*(void **)data_ov001_02193da0;
             return p[8] != 0;
         }
     }
     if (b != 1) {
         return 0;
     }
-    p = *(u8 **)data_ov001_02193da0;
+    p = (u8 *)*(void **)data_ov001_02193da0;
     if (p[8] == 0) {
         return 0;
     }

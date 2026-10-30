@@ -163,9 +163,13 @@ f32 func_02071c50(f32 a, f32 b) {
     return a - b;
 }
 
+long long func_02071ec8(long long a, long long b) { return a % b; }
+
 u64 func_02072088(u64 a,u64 b){return b?a/b:a;}
 
 u64 func_020720d0(u64 a,u64 b){return a*b;}
+
+u64 func_020722fc(u32 n, u32 d) { if (!d) return ((u64)d<<32)|n; return ((u64)(n%d)<<32)|(n/d); }
 
 M2C_UNK func_020724f8(M2C_UNK arg0, M2C_UNK arg1) { (void)arg0; (void)arg1; return 0; }
 

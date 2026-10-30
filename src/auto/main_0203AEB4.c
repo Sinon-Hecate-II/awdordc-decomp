@@ -278,8 +278,8 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 func_0203b608(s32);
     s32 func_0204e0c4(void **, s32);
 
-    u8 local[0x18];
     void *data = &data_0213d38c;
+    u8 local[0x1c];
     void *p;
     void *q;
     s32 i = 0;

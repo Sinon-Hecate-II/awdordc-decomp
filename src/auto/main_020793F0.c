@@ -118,6 +118,30 @@ void func_0207971c(void *arg0, void *arg1) {
     func_020799dc(r8, ptr, (void *)((unsigned char *)ptr + 6), (u32)r4);
 }
 
+#pragma scheduling off
+void func_020799dc(void *arg0, void *arg1, void *arg2, u32 arg3) {
+extern M2C_UNK data_02140f70;
+s32 x=((s16*)arg1)[0], y=((s16*)arg1)[1];
+s32 h=((s16*)arg2)[1], px=((s32*)arg0)[0], w=((s16*)arg2)[0], py=((s32*)arg0)[1];
+s32 vx=(s16)(px-192), vy=(s16)(py-384);
+s32 tx=(s32)(((x<<12)+2048)<<8)>>16, ty=(s32)(((y<<12)+2048)<<8)>>16;
+s32 by=(s32)((((y+h)<<12)+2048)<<8)>>16, rx=(s32)((((x+w)<<12)+2048)<<8)>>16;
+s32 ey=(s16)py, ex=(s16)(px+192);
+
+(*(volatile u32*)0x40004a8)=0x6d504000; (*(volatile u32*)0x40004ac)=arg3>>4;
+(*(volatile u32*)0x40004a4)=M2C_FIELD(&data_02140f70,u32*,8)|(M2C_FIELD(&data_02140f70,u32*,4)|0xc0)|0x21f0000;
+(*(volatile u32*)0x4000480)=0x7fff; (*(volatile u32*)0x4000500)=1;
+(*(volatile u32*)0x4000488)=(u16)tx|((u16)ty<<16);
+(*(volatile u32*)0x400048c)=(u16)vx|((u16)vy<<16); (*(volatile u32*)0x400048c)=0x831;
+(*(volatile u32*)0x4000488)=(u16)tx|((u16)by<<16);
+(*(volatile u32*)0x400048c)=(u16)vx|((u16)ey<<16); (*(volatile u32*)0x400048c)=0x831;
+(*(volatile u32*)0x4000488)=(u16)rx|((u16)by<<16);
+(*(volatile u32*)0x400048c)=(u16)ex|((u16)ey<<16); (*(volatile u32*)0x400048c)=0x831;
+(*(volatile u32*)0x4000488)=(u16)rx|((u16)ty<<16);
+(*(volatile u32*)0x400048c)=(u16)ex|((u16)vy<<16); (*(volatile u32*)0x400048c)=0x831;
+(*(volatile u32*)0x4000504)=0;
+}
+#pragma scheduling reset
 void func_02079b64(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 0x80;
     M2C_FIELD(arg0, s32 *, 0x60) = 0x180;

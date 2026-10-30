@@ -1,5 +1,7 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
+static inline s32 cellIndex02078170(s32 x,s32 y) { extern s32 *gCurrentMap; return x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758); }
+static inline u8 initialCell02078170(s8 elev) { return elev>=0 ? 2:0; }
 static inline u8 mapByte020778cc(s32 map,u32 index) { return M2C_FIELD(map+index,u8 *,0x1420); }
 static inline u8 mapFog020778cc(u8 *bits,u32 index) { return bits[index>>3] & (1<<(index&7)); }
 static inline u8 *mapBits020778cc(u8 *dims) { return dims+0xe1; }
@@ -355,6 +357,9 @@ void func_02078068(void) {
     }
 }
 
+#pragma optimization_level 2
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
     u8 func_020bd118(void);
     s32 func_020774cc(void);
@@ -362,29 +367,23 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
     extern s32 *gCurrentMap;
     extern u8 data_02141f08[];
     extern M2C_UNK data_02140f70;
+    u8 *dims;
     u16 width;
     u16 height;
-    u8 flag;
     s32 x;
+    u8 flag;
     s32 y;
 
-    width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
-    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
+    dims = (u8 *)*gCurrentMap + 0x120;
+    width = M2C_FIELD(dims,u16 *,0x5024);
+    height = M2C_FIELD(dims,u16 *,0x5026);
     flag = func_020bd118();
     if (x0 < 0) x0 = 0;
     if (y0 < 0) y0 = 0;
     if (x1 > width - 1) x1 = width - 1;
     if (y1 > height - 1) y1 = height - 1;
 
-    if (!func_020774cc()) {
-        for (y = y0; y <= y1; y++) {
-            for (x = x0; x <= x1; x++) {
-                data_02141f08[x * 0x28 + y] = 0;
-            }
-        }
-        return;
-    }
-
+    if (func_020774cc()) {
     for (y = y0; y <= y1; y++) {
         for (x = x0; x <= x1; x++) {
             u16 rowVal;
@@ -397,9 +396,8 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
             cell = x + rowVal;
             tile = *((u8 *)*gCurrentMap + 0x1420 + cell);
             elev = (s8)*((u8 *)*gCurrentMap + 0x1e30 + cell);
-            if (elev >= 0) cellVal = 2;
-            else cellVal = 0;
-            elev = (s8)*((u8 *)*gCurrentMap + 0x1e30 + cell);
+            cellVal = initialCell02078170(elev);
+            elev = *(s8 *)((u8 *)*gCurrentMap + 0x1e30 + cellIndex02078170(x,y));
             if (elev >= 0x40) cellVal = 3;
 
             if ((tile & 0x1F) == 0x1D &&
@@ -415,11 +413,20 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
                 }
             }
 
-            data_02141f08[x * 0x28 + y] = cellVal;
+            (data_02141f08+x * 0x28)[y] = cellVal;
+        }
+    }
+    } else {
+    for (y = y0; y <= y1; y++) {
+            for (x = x0; x <= x1; x++) {
+                (data_02141f08+x * 0x28)[y] = 0;
+            }
         }
     }
 }
-
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma optimization_level reset
 void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     extern s32 *data_027e0058;
     extern u8 data_02141008[];

@@ -1,5 +1,7 @@
 /* 10 functions from 0x02172754 to 0x02173468 (ov000), found by ds-decomp. */
 #include "common.h"
+typedef struct PaletteIndices { u8 values[6]; } PaletteIndices;
+static inline u16 *ScenePalette(u32 n) { extern void *gCur3DSpriteEngine; return (u16 *)(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+((n<<5)&~1)); }
 extern s32 data_ov000_021b976c, data_ov000_021b9bec, data_ov000_021bb06c, data_ov000_021b9c6c, data_ov000_021b99ec, data_ov000_021bb1ec;
 extern void *data_027e00c4;
 extern void *gCur3DSpriteEngine;
@@ -119,7 +121,7 @@ void func_ov000_02172754(void *arg0) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_ov000_02172aa0(void) {
+void func_ov000_02172aa0(void *unused) {
  M2C_UNK func_0207c780(M2C_UNK *,s32); u32 func_ov000_02175074();
  void *saved; s32 base; M2C_UNK *p;
  base=M2C_FIELD(data_027e00c4,s32 *,0x28); saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c4;
@@ -211,26 +213,28 @@ M2C_FIELD(p,s32*,12)++;
 if(M2C_FIELD(p,s32*,12)>=24)M2C_FIELD(p,s32*,12)=0;
 }
 
+#pragma opt_strength_reduction off
 void func_ov000_02172e90(void *arg0) {
     M2C_UNK func_020ae354(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern u8 data_ov000_021ae25c[12];
 
     void *saved;
     u8 buf[6];
+    u8 *p;
     s32 i;
     s32 off;
+    s32 stride=0x8c;
     void *rec;
     u8 mapByte;
     s32 rcd;
-    s32 counter;
     s32 t;
+    s32 counter;
     u8 r3v;
     u16 h;
     u8 *tab;
-    u8 *p;
-
-    buf[0] = data_ov000_021ae25c[6];
+ 
     buf[1] = data_ov000_021ae25c[7];
+    buf[0] = data_ov000_021ae25c[6];
     buf[2] = data_ov000_021ae25c[8];
     buf[3] = data_ov000_021ae25c[9];
     buf[4] = data_ov000_021ae25c[10];
@@ -247,19 +251,20 @@ void func_ov000_02172e90(void *arg0) {
     i = 0;
     off = 0;
     do {
-        rec = (void *)((i + 1) * 0x8c + (s32)*gCurrentMap + 0x67a4);
+        rec = (void *)((i + 1) * stride + (s32)*gCurrentMap + 0x6000);
         rcd = *(s32 *)((s8 *)arg0 + 0x18) + 0x3c + off;
-        mapByte = *(u8 *)((s8 *)rec + 0x1d);
+        mapByte = *(u8 *)((s8 *)rec + 0x7c1);
         tab = *(u8 **)((s8 *)gCur3DSpriteEngine + 0x30);
-        p = tab + (buf[mapByte] << 5);
-        h = *(u16 *)((s8 *)p + 0x1e);
+        p = tab + ((buf[mapByte] << 5)&~1);
+        tab = *(u8 **)((s8 *)gCur3DSpriteEngine + 0x30);
+        tab += ((buf[mapByte] << 5)&~1);
 
-        if (*(u8 *)((s8 *)rcd + 0x34) == 0) {
-            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(h, 0, 8, 8);
+        if (*(u8 *)((s8 *)rcd + 0x34) != 0) {
+            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(*(u16*)(tab+0x1e), 0, 8, 8);
         } else {
             if (*(u8 *)((s8 *)rcd + 0x30) != 0) {
                 counter = *(s32 *)((s8 *)arg0 + 0x10);
-                t = counter / 32;
+                t = counter % 32;
                 if (t <= 0x10) {
                     r3v = (u8)((t >> 1) & 0xff);
                 } else {
@@ -290,7 +295,7 @@ void func_ov000_02172e90(void *arg0) {
         (u8)(*(u8 *)((s8 *)gCur3DSpriteEngine + 0x46) | 0x10);
     gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_strength_reduction reset
 void func_ov000_02173058(void *arg0) {
  s32 func_ov000_0217244c();
  s32 func_ov000_021724b8(s32,s32);
@@ -381,7 +386,7 @@ void func_ov000_021732c0(void *arg0) {
     void func_020c1230(M2C_UNK, M2C_UNK, s32, s32);
     void func_020c1d28(s32, s32, s32, s32);
     s32 func_020cfb78(void);
-    void func_ov000_02172aa0(void);
+    void func_ov000_02172aa0(void *);
     void func_ov000_02172d28(void *);
     void func_ov000_021730cc(void *);
     extern void *gCur3DSpriteEngine;
@@ -390,8 +395,8 @@ void func_ov000_021732c0(void *arg0) {
 
     void *saved;
     void **mapPtr;
-    u32 temp_r2;
-    u32 temp_r3;
+    s32 temp_r2;
+    s32 temp_r3;
     u32 xm;
     u32 ym;
 
@@ -399,7 +404,7 @@ void func_ov000_021732c0(void *arg0) {
     gCur3DSpriteEngine = data_027e00c4;
     M2C_FIELD(M2C_FIELD(data_027e00c4, void **, 0), s16 *, 0x38) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x40) = 0;
-    func_ov000_02172aa0();
+    func_ov000_02172aa0(arg0);
     if (M2C_FIELD(arg0, u8 *, 0x15) == 0) {
         func_ov000_02172d28(arg0);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = 0;
@@ -409,8 +414,8 @@ void func_ov000_021732c0(void *arg0) {
         mapPtr = *gCurrentMap;
         temp_r2 = M2C_FIELD(mapPtr, u16 *, 0x5144) * 4;
         temp_r3 = M2C_FIELD(mapPtr, u16 *, 0x5146) * 4;
-        xm = 0x58 - ((s32) (temp_r2 + (temp_r2 >> 0x1F)) >> 1);
-        ym = 0x60 - ((s32) (temp_r3 + (temp_r3 >> 0x1F)) >> 1);
+        xm = 0x58 - (temp_r2 / 2);
+        ym = 0x60 - (temp_r3 / 2);
         func_020c1230(M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x10), M2C_FIELD(gCur3DSpriteEngine, M2C_UNK *, 0x24), 1, 10);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = (s16) (0 - xm);

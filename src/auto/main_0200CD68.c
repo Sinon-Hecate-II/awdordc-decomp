@@ -16,6 +16,7 @@ cfg.v[4]=(u32)&func_0200c9c8; cfg.v[5]=(u32)&func_0200ca18; cfg.v[6]=(u32)&func_
 func_0200cdfc(a,b,c,d,e,&cfg);
 }
 
+#pragma scheduling off
 void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5) {
     u8 sp80[64];
     u8 sp40[64];
@@ -23,7 +24,6 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
     s32 var_r2;
     s32 var_r3;
     s32 var_r5;
-    u8 *var_r1;
     u8 *var_r6;
     u8 temp_r0;
 
@@ -73,7 +73,7 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
         M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *), 0x18)(M2C_FIELD(arg5, s32 *, 8), arg0);
     }
 }
-
+#pragma scheduling reset
 M2C_UNK func_0200cfc8(M2C_UNK a0, M2C_UNK a1, s32 a2) { (void)a0; (void)a1; (void)a2; return 0; }
 
 void func_0200d544(void) {

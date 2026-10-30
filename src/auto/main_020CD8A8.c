@@ -14,13 +14,12 @@ s32 func_020cdbdc(s32 a){s32 func_020d1938(s32);s32 func_020d19b4(s32);extern vo
 #pragma opt_strength_reduction off
 void func_020cdcc4(s32 a,s32 b,s16 r,s32 v){
 extern void **gCurrentMap;s32 func_020a4828(s32,s32);void func_020d1690(s32,s32,void *);s32 func_020d27a4(s32,s32);void func_020d166c(s32,s32,void *);
-s16 x,d,y;s32 id;void *p;
+s16 d,y,x;s32 id;void *p;
 for(d=-r,y=b-r;y<=b+r;y++,d++){
 if(y<0||y>=M2C_FIELD(*gCurrentMap,u16 *,0x5146))continue;
 for(x=a-r+(d<0?-d:d);x<=a+r-(d<0?-d:d);x++){
 if(x<0||x>=M2C_FIELD(*gCurrentMap,u16 *,0x5144))continue;
-id=func_020a4828(x,y);
-if(id){p=*gCurrentMap;}else{p=*gCurrentMap;}
+id=func_020a4828(x,y);p=*gCurrentMap;
 if(id){func_020d1690(M2C_FIELD(p,u8 *,0x52d4),id,p+0x52dc);
 if(M2C_FIELD(*gCurrentMap,s16 *,0x6ed6))M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]=(s8)v;
 }else{

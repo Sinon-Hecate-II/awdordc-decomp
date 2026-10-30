@@ -1,5 +1,7 @@
 /* 48 functions from 0x020D2470 to 0x020D3464 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 kind:6; u8 flags:2; } SelectionKind;
+typedef struct { SelectionKind kind; u8 pad[3]; u16 flags; u8 tail[8]; } SelectionUnit;
 
 void func_020d2470(void) { }
 
@@ -216,14 +218,15 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 
 #pragma opt_strength_reduction off
 s32 func_020d2c18(s32 arg0) {
-    extern s32 *data_027e0058;
-    s32 func_020a27b8(s32, s32);
-    u32 val;
-    s32 base;
-
-    base = *data_027e0058;
-    val = M2C_FIELD(base + 0x3A4 + 0x6400 + arg0 * 0x8C, u32 *, 0x6C);
-    return func_020a27b8((s32)(val << 24 >> 24), (s32)(val << 20 >> 30));
+ extern s32 *data_027e0058;
+ s32 func_020a27b8(s32, s32);
+ s32 val;
+ u32 high;
+ s32 base;
+ base = *data_027e0058;
+ val = M2C_FIELD(base + 0x3A4 + 0x6400 + arg0 * 0x8C, s32 *, 0x6C);
+ high = (u32)(val << 20);
+ return func_020a27b8((u32)(val << 24) >> 24, high >> 30);
 }
 #pragma opt_strength_reduction on
 s32 func_020d2c58(s32 arg0) {
@@ -321,69 +324,57 @@ s32 func_020d2dcc(s32 arg0) {
     return 0;
 }
 
+#pragma opt_common_subs on
 void *func_020d2e3c(u16 arg0) {
-    extern s32 *gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
-    s32 *mp;
-    u8 *base;
-    u16 *curP;
-    s16 cur;
-    u16 T;
-    u16 x;
-    u16 start;
-
-    mp = *gCurrentMap;
-    base = (u8 *)mp;
-    T = data_ov000_021aeef4[arg0];
-    cur = *(s16 *)(base + 0x52c0);
-    curP = (u16 *)(base + 0x52c0);
-    start = (u16)(cur + 1);
-
-    if (start < 0x33) {
-        for (x = start; x < 0x33; x++) {
-            u8 kind = base[0x59a4 + (x + T) * 14];
-            if ((kind & 0x3f) != 0) {
-                u16 field = *(u16 *)(base + 0x59a8 + (x + T) * 14);
-                if ((field & 1) == 0) {
-                    *curP = x;
-                    {
-                        u8 *base2 = (u8 *)*gCurrentMap;
-                        s16 cur2 = *(s16 *)(base2 + 0x52c0);
-                        if (cur2 >= 0x32) {
-                            *(s16 *)(base2 + 0x52c0) = 0;
-                        }
-                        return (void *)(base2 + 0x59a4 + (x + T) * 14);
-                    }
-                }
-            }
-        }
-    }
-
-    if (cur + 1 <= 1) {
-        return 0;
-    }
-
-    for (x = 1; x <= cur; x++) {
-        u8 kind = base[0x59a4 + (x + T) * 14];
-        if ((kind & 0x3f) != 0) {
-            u16 field = *(u16 *)(base + 0x59a8 + (x + T) * 14);
-            if ((field & 1) == 0) {
-                *curP = x;
-                {
-                    u8 *base2 = (u8 *)*gCurrentMap;
-                    s16 cur2 = *(s16 *)(base2 + 0x52c0);
-                    if (cur2 >= 0x32) {
-                        *(s16 *)(base2 + 0x52c0) = 0;
-                    }
-                    return (void *)(base2 + 0x59a4 + (x + T) * 14);
-                }
-            }
-        }
-    }
-
-    return 0;
+extern s32 *gCurrentMap;
+extern u16 data_ov000_021aeef4[];
+register s32 start;
+s32 *map;
+u32 offset;
+u8 *base;
+u32 team;
+s16 *current;
+u16 x;
+SelectionUnit *units;
+map=gCurrentMap;
+base=(u8 *)*map;
+team=data_ov000_021aeef4[arg0];
+start=*(s16 *)(base+0x52c0)+1;
+current=(s16 *)(base+0x52c0);
+x=start;
+if(x<51) {
+units=(SelectionUnit *)(base+0x59a4);
+do {
+offset=(x+team)*14;
+if (((SelectionKind *)((u8 *)units+offset))->kind &&
+!(M2C_FIELD(base+team*14+x*14,u16 *,0x59a8)&1)) {
+*current=x;
+base=(u8 *)*gCurrentMap;
+current=(s16 *)(base+0x52c0);
+if(*(s16 *)(base+0x52c0)>=50) *current=0;
+return (u8 *)*gCurrentMap+0x59a4+offset;
 }
-
+} while(++x<51);
+}
+x=1;
+if(start>1) {
+base=(u8 *)*map;
+units=(SelectionUnit *)(base+0x59a4);
+do {
+offset=(x+team)*14;
+if (((SelectionKind *)((u8 *)units+offset))->kind &&
+!(M2C_FIELD(base+team*14+x*14,u16 *,0x59a8)&1)) {
+*current=x;
+base=(u8 *)*gCurrentMap;
+current=(s16 *)(base+0x52c0);
+if(*(s16 *)(base+0x52c0)>=50) *current=0;
+return (u8 *)*gCurrentMap+0x59a4+offset;
+}
+} while (++x < *(s16 *)(base+0x52c0)+1);
+}
+return 0;
+}
+#pragma opt_common_subs reset
 u8 func_020d2ff0(s32 arg0) {
     extern s32 *gCurrentMap;
     return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67D5);

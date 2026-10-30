@@ -2,53 +2,56 @@
 #include "common.h"
 typedef struct { s32 x,y; } TextSize;
 typedef struct { s8 x, y; } TextDirection;
+typedef struct { u32 a:8; u32 b:8; u32 c:16; } TileOrigin;
 
+#pragma scheduling off
 void func_ov001_02169e3c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_ov001_0216939c(s32, s32, s32, s32, s32, s32);
     void func_ov001_021694b0(s32, s32, s32, s32, s32, s32, s32);
-    s32 bpp; u32 color; u32 c;
-    s32 x1, y1, x0, y0, xe, ye, stride, bx, by;
-    s32 f10, f4, f8, f0, sx, sy;
-    s32 x, off, sh, xo, wd, t;
+    TileOrigin value;
+    s32 y0,x1,y1,ye,f0,bx,x0,sy,sx,f8,f4,stride,bpp;
+    s32 x,sh,col,xe,by,off,xo,wd,t; u32 color,c;
 
     bpp = M2C_FIELD(arg0, u8 *, 0xc);
     x1 = arg2 + arg4;
     y1 = arg3 + arg5;
     x0 = arg2 & ~7;
     y0 = arg3 & ~7;
-    if (bpp == 4) { c = arg1 | (arg1 << 4); c = c | (c << 8); }
-    else { c = arg1 | (arg1 << 8); }
-    color = c | (c << 16);
+    c = arg1;
+    if (bpp == 4) c |= c << 4;
+    c |= c << 8;
+    arg1 = c | (c << 16);
     ye = (y1 + 7) & ~7;
     stride = (bpp << 6) / 8;
     bx = x0 / 8;
     by = y0 / 8;
-    f10 = M2C_FIELD(arg0, s32 *, 0x10);
+    value = M2C_FIELD(arg0, TileOrigin *, 0x10);
     xe = (x1 + 7) & ~7;
     f4 = M2C_FIELD(arg0, s32 *, 4);
     f8 = M2C_FIELD(arg0, s32 *, 8);
     f0 = M2C_FIELD(arg0, s32 *, 0);
-    sx = f10 & 0xff;
-    sy = (f10 >> 8) & 0xff;
+    sx = value.a;
+    sy = value.b;
     if (y0 >= ye) return;
     do {
         off = y0 < arg3 ? arg3 - y0 : 0;
-        sh = y1 - y0;
-        if (sh > 8) sh = 8;
-        sh -= off;
+        t = y1 - y0;
+        if (t > 8) t = 8;
+        sh = t - off;
+        col = bx;
         for (x = x0; x < xe; x += 8) {
-            t = func_ov001_0216939c(bx, by, f4, f8, sx, sy);
+            t = func_ov001_0216939c(col, by, f4, f8, sx, sy);
             xo = x < arg2 ? arg2 - x : 0;
             wd = x1 - x;
             if (wd > 8) wd = 8;
-            func_ov001_021694b0(stride * t + f0, xo, off, wd - xo, sh, color, bpp);
-            bx++;
+            func_ov001_021694b0(stride * t + f0, xo, off, wd - xo, sh, arg1, bpp);
+            col++;
         }
         by++;
         y0 += 8;
     } while (y0 < ye);
 }
-
+#pragma scheduling reset
 void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     M2C_FIELD(arg0, s32 *, 4) = arg2;
     M2C_FIELD(arg0, s32 *, 8) = arg3;
