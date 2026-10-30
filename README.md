@@ -6,6 +6,8 @@ A work-in-progress decompilation of **Advance Wars: Days of Ruin** (also known a
 
 This project aims to reconstruct the game's code in readable C, understand its internal systems, and work towards matching the original compiled binaries as closely as possible. **It is not a completed, standalone game or a ROM download.**
 
+The following decomplication is majority AI assisted (whatever you want to call it), i'll done a write up further down below to explain stuff  
+
 > [!IMPORTANT]
 > This repository is a work in progress. Source files may be automatically generated, incomplete, poorly named, or not yet matching. Build and ROM verification results depend on the supplied original game version and the required toolchain.
 
@@ -112,6 +114,26 @@ Contributions that improve readability, document game structures, identify funct
 Please keep changes focused, explain what was identified or fixed, and include any relevant object comparisons or build results. Avoid committing copyrighted ROMs, extracted commercial assets, proprietary compiler binaries, or generated build output.
 
 You can open an [issue](https://github.com/Sinon-Hecate-II/awdordc-decomp/issues) to discuss findings or propose a change.
+
+## AI / Vibing Coding 
+
+Nearly 90-95% of this Decomp was done by AI, i'm not inherently proud of that as i'm usually the type of guy who is pretty against AI But i knew when i saw with all these decomps going out people were just gonna use it to flex saying "They did this" when in reality its just AI i'm not gonna claim i did this as its nearly all AI i'm not gonna go into a whole rant on decomps and AI here seems pointless in Github readme but i'll list down below the models that were used in this decomp and how many tokens were used 
+
+All of the AI models have been free* I haven't spent a single bit of money on this decomp, all of ChatGPT/Codex were through a free trial they had on Plus sub and the team were constantly doing resets every day which has allowed me to progress way quicker this must likely would have taken another month or two using this method considering the weekly resets. All the other models were through some sort of free API or Limited API but tldr i haven't spend a single bit of money
+
+I'll post the token count from ChatGPT mainly once everything has finished
+
+Gemini 3.8 Flash 
+Gemini 3.5 Flash Lite
+ChatGPT Codex (GPT-6.1 Sol)
+ChatGPT 6 Asta
+ChatGPT 6
+Deepseek 4.1 Flash
+Deepseek 4 Flash 0731-1
+Qwen 3.8 27B
+Nemotron 3 Ultra 550b
+Beam 1.0
+Decomp Autopilot
 
 ## Legal notice
 
