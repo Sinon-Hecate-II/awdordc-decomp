@@ -1,0 +1,769 @@
+    .text       start:0x02000000 end:0x020e5824 kind:code align:32
+    .exceptix   start:0x020e5824 end:0x020e5824 kind:rodata align:4
+    .init       start:0x020e5824 end:0x020e5b30 kind:code align:4
+    .rodata     start:0x020e5b30 end:0x020f51ec kind:rodata align:4
+    .ctor       start:0x020f51ec end:0x020f51f8 kind:rodata align:4
+    .data       start:0x020f5200 end:0x0212dbc0 kind:data align:32
+    .bss        start:0x0212dbc0 end:0x02169020 kind:bss align:32
+
+src/auto/main_02000000.c:
+    .text start:0x02000000 end:0x02001068
+
+src/auto/main_02001068.c:
+    .text start:0x02001068 end:0x02002030
+
+src/auto/main_02002030.c:
+    .text start:0x02002030 end:0x02002060
+
+src/auto/main_02002060.c:
+    .text start:0x02002060 end:0x02003058
+
+src/auto/main_02003058.c:
+    .text start:0x02003058 end:0x0200402c
+
+src/auto/main_0200402C.c:
+    .text start:0x0200402c end:0x02004ff8
+
+src/auto/main_02004FF8.c:
+    .text start:0x02004ff8 end:0x02005f80
+
+src/auto/main_02005F80.c:
+    .text start:0x02005f80 end:0x02006f14
+
+src/auto/main_02006F14.c:
+    .text start:0x02006f14 end:0x02007ef4
+
+src/auto/main_02007EF4.c:
+    .text start:0x02007ef4 end:0x02008ef0
+
+src/auto/main_02008EF0.c:
+    .text start:0x02008ef0 end:0x02009eb0
+
+src/auto/main_02009EB0.c:
+    .text start:0x02009eb0 end:0x0200ae9c
+
+src/auto/main_0200AE9C.c:
+    .text start:0x0200ae9c end:0x0200bda4
+
+src/auto/main_0200BDA4.c:
+    .text start:0x0200bda4 end:0x0200cd68
+
+src/auto/main_0200CD68.c:
+    .text start:0x0200cd68 end:0x0200dd40
+
+src/auto/main_0200DD40.c:
+    .text start:0x0200dd40 end:0x0200ed40
+
+src/auto/main_0200ED40.c:
+    .text start:0x0200ed40 end:0x0200fc58
+
+src/auto/main_0200FC58.c:
+    .text start:0x0200fc58 end:0x02010c14
+
+src/auto/main_02010C14.c:
+    .text start:0x02010c14 end:0x02011bb0
+
+src/auto/main_02011BB0.c:
+    .text start:0x02011bb0 end:0x02012b70
+
+src/auto/main_02012B70.c:
+    .text start:0x02012b70 end:0x02013b54
+
+src/auto/main_02013B54.c:
+    .text start:0x02013b54 end:0x02014b34
+
+src/auto/main_02014B34.c:
+    .text start:0x02014b34 end:0x02015248
+
+src/auto/main_02015248.c:
+    .text start:0x02015248 end:0x02015aa0
+
+src/auto/main_02015AA0.c:
+    .text start:0x02015aa0 end:0x02016934
+
+src/auto/main_02016934.c:
+    .text start:0x02016934 end:0x02017158
+
+src/auto/main_02017158.c:
+    .text start:0x02017158 end:0x020180c8
+
+src/auto/main_020180C8.c:
+    .text start:0x020180c8 end:0x02018ff0
+
+src/auto/main_02018FF0.c:
+    .text start:0x02018ff0 end:0x02019e64
+
+src/auto/main_02019E64.c:
+    .text start:0x02019e64 end:0x0201ae0c
+
+src/auto/main_0201AE0C.c:
+    .text start:0x0201ae0c end:0x0201bde0
+
+src/auto/main_0201BDE0.c:
+    .text start:0x0201bde0 end:0x0201cb4c
+
+src/auto/main_0201CB4C.c:
+    .text start:0x0201cb4c end:0x0201db20
+
+src/auto/main_0201DB20.c:
+    .text start:0x0201db20 end:0x0201e944
+
+src/auto/main_0201E944.c:
+    .text start:0x0201e944 end:0x0201f89c
+
+src/auto/main_0201F89C.c:
+    .text start:0x0201f89c end:0x02020738
+
+src/auto/main_02020738.c:
+    .text start:0x02020738 end:0x020216cc
+
+src/auto/main_020216CC.c:
+    .text start:0x020216cc end:0x020222d8
+
+src/auto/main_020222D8.c:
+    .text start:0x020222d8 end:0x020232b8
+
+src/auto/main_020232B8.c:
+    .text start:0x020232b8 end:0x02024260
+
+src/auto/main_02024260.c:
+    .text start:0x02024260 end:0x020251b8
+
+src/auto/main_020251B8.c:
+    .text start:0x020251b8 end:0x02026164
+
+src/auto/main_02026164.c:
+    .text start:0x02026164 end:0x020270b4
+
+src/auto/main_020270B4.c:
+    .text start:0x020270b4 end:0x02028038
+
+src/auto/main_02028038.c:
+    .text start:0x02028038 end:0x02028ef4
+
+src/auto/main_02028EF4.c:
+    .text start:0x02028ef4 end:0x02029e98
+
+src/auto/main_02029E98.c:
+    .text start:0x02029e98 end:0x0202ae00
+
+src/auto/main_0202AE00.c:
+    .text start:0x0202ae00 end:0x0202bd7c
+
+src/auto/main_0202BD7C.c:
+    .text start:0x0202bd7c end:0x0202cd78
+
+src/auto/main_0202CD78.c:
+    .text start:0x0202cd78 end:0x0202dbac
+
+src/auto/main_0202DBAC.c:
+    .text start:0x0202dbac end:0x0202e470
+
+src/auto/main_0202E470.c:
+    .text start:0x0202e470 end:0x0202f37c
+
+src/auto/main_0202F37C.c:
+    .text start:0x0202f37c end:0x02030348
+
+src/auto/main_02030348.c:
+    .text start:0x02030348 end:0x02031290
+
+src/auto/main_02031290.c:
+    .text start:0x02031290 end:0x02032228
+
+src/auto/main_02032228.c:
+    .text start:0x02032228 end:0x02033210
+
+src/auto/main_02033210.c:
+    .text start:0x02033210 end:0x02034164
+
+src/auto/main_02034164.c:
+    .text start:0x02034164 end:0x0203514c
+
+src/auto/main_0203514C.c:
+    .text start:0x0203514c end:0x0203538c
+
+src/auto/main_0203538C.c:
+    .text start:0x0203538c end:0x020362d4
+
+src/auto/main_020362D4.c:
+    .text start:0x020362d4 end:0x02037214
+
+src/auto/main_02037214.c:
+    .text start:0x02037214 end:0x0203804c
+
+src/auto/main_0203804C.c:
+    .text start:0x0203804c end:0x02038f88
+
+src/auto/main_02038F88.c:
+    .text start:0x02038f88 end:0x02039efc
+
+src/auto/main_02039EFC.c:
+    .text start:0x02039efc end:0x0203aeb4
+
+src/auto/main_0203AEB4.c:
+    .text start:0x0203aeb4 end:0x0203be54
+
+src/auto/main_0203BE54.c:
+    .text start:0x0203be54 end:0x0203cb38
+
+src/auto/main_0203CB38.c:
+    .text start:0x0203cb38 end:0x0203d910
+
+src/auto/main_0203D910.c:
+    .text start:0x0203d910 end:0x0203e908
+
+src/auto/main_0203E908.c:
+    .text start:0x0203e908 end:0x0203f45c
+
+src/auto/main_0203F45C.c:
+    .text start:0x0203f45c end:0x02040340
+
+src/auto/main_02040340.c:
+    .text start:0x02040340 end:0x020411dc
+
+src/auto/main_020411DC.c:
+    .text start:0x020411dc end:0x020420a0
+
+src/auto/main_020420A0.c:
+    .text start:0x020420a0 end:0x0204309c
+
+src/auto/main_0204309C.c:
+    .text start:0x0204309c end:0x02043e10
+
+src/auto/main_02043E10.c:
+    .text start:0x02043e10 end:0x02044e04
+
+src/auto/main_02044E04.c:
+    .text start:0x02044e04 end:0x02045d94
+
+src/auto/main_02045D94.c:
+    .text start:0x02045d94 end:0x02046d38
+
+src/auto/main_02046D38.c:
+    .text start:0x02046d38 end:0x02047b84
+
+src/auto/main_02047B84.c:
+    .text start:0x02047b84 end:0x02048b74
+
+src/auto/main_02048B74.c:
+    .text start:0x02048b74 end:0x02049ab8
+
+src/auto/main_02049AB8.c:
+    .text start:0x02049ab8 end:0x0204aa34
+
+src/auto/main_0204AA34.c:
+    .text start:0x0204aa34 end:0x0204b9b8
+
+src/auto/main_0204B9B8.c:
+    .text start:0x0204b9b8 end:0x0204c7fc
+
+src/auto/main_0204C7FC.c:
+    .text start:0x0204c7fc end:0x0204d5c0
+
+src/auto/main_0204D5C0.c:
+    .text start:0x0204d5c0 end:0x0204e408
+
+src/auto/main_0204E408.c:
+    .text start:0x0204e408 end:0x0204eee8
+
+src/auto/main_0204EEE8.c:
+    .text start:0x0204eee8 end:0x0204fed0
+
+src/auto/main_0204FED0.c:
+    .text start:0x0204fed0 end:0x02050c24
+
+src/auto/main_02050C24.c:
+    .text start:0x02050c24 end:0x0205180c
+
+src/auto/main_0205180C.c:
+    .text start:0x0205180c end:0x02052600
+
+src/auto/main_02052600.c:
+    .text start:0x02052600 end:0x0205342c
+
+src/auto/main_0205342C.c:
+    .text start:0x0205342c end:0x020543e8
+
+src/auto/main_020543E8.c:
+    .text start:0x020543e8 end:0x020553c4
+
+src/auto/main_020553C4.c:
+    .text start:0x020553c4 end:0x020562d0
+
+src/auto/main_020562D0.c:
+    .text start:0x020562d0 end:0x02057d80
+
+src/auto/main_02057D80.c:
+    .text start:0x02057d80 end:0x02058ca4
+
+src/auto/main_02058CA4.c:
+    .text start:0x02058ca4 end:0x02059bbc
+
+src/auto/main_02059BBC.c:
+    .text start:0x02059bbc end:0x0205abb4
+
+src/auto/main_0205ABB4.c:
+    .text start:0x0205abb4 end:0x0205bb90
+
+src/auto/main_0205BB90.c:
+    .text start:0x0205bb90 end:0x0205cb68
+
+src/auto/main_0205CB68.c:
+    .text start:0x0205cb68 end:0x0205da30
+
+src/auto/main_0205DA30.c:
+    .text start:0x0205da30 end:0x0205e95c
+
+src/auto/main_0205E95C.c:
+    .text start:0x0205e95c end:0x0205f83c
+
+src/auto/main_0205F83C.c:
+    .text start:0x0205f83c end:0x0206080c
+
+src/auto/main_0206080C.c:
+    .text start:0x0206080c end:0x020617bc
+
+src/auto/main_020617BC.c:
+    .text start:0x020617bc end:0x02062770
+
+src/auto/main_02062770.c:
+    .text start:0x02062770 end:0x02063704
+
+src/auto/main_02063704.c:
+    .text start:0x02063704 end:0x02064684
+
+src/auto/main_02064684.c:
+    .text start:0x02064684 end:0x0206536c
+
+src/auto/main_0206536C.c:
+    .text start:0x0206536c end:0x02066320
+
+src/auto/main_02066320.c:
+    .text start:0x02066320 end:0x02066ba8
+
+src/auto/main_02066BA8.c:
+    .text start:0x02066ba8 end:0x020677b8
+
+src/auto/main_020677B8.c:
+    .text start:0x020677b8 end:0x02067cb0
+
+src/auto/main_02067CB0.c:
+    .text start:0x02067cb0 end:0x02068c50
+
+src/auto/main_02068C50.c:
+    .text start:0x02068c50 end:0x02069048
+
+src/auto/main_02069048.c:
+    .text start:0x02069048 end:0x0206a294
+
+src/auto/main_0206A294.c:
+    .text start:0x0206a294 end:0x0206adf8
+
+src/auto/main_0206ADF8.c:
+    .text start:0x0206adf8 end:0x0206bd7c
+
+src/auto/main_0206BD7C.c:
+    .text start:0x0206bd7c end:0x0206cd20
+
+src/auto/main_0206CD20.c:
+    .text start:0x0206cd20 end:0x0206ce00
+
+src/auto/main_0206CE00.c:
+    .text start:0x0206ce00 end:0x0206df88
+
+src/auto/main_0206DF88.c:
+    .text start:0x0206df88 end:0x0206eeb4
+
+src/auto/main_0206EEB4.c:
+    .text start:0x0206eeb4 end:0x0206fc18
+
+src/auto/main_0206FC18.c:
+    .text start:0x0206fc18 end:0x02070b70
+
+src/auto/main_02070B70.c:
+    .text start:0x02070b70 end:0x02071a64
+
+src/auto/main_02071A64.c:
+    .text start:0x02071a64 end:0x02072a54
+
+src/auto/main_02072A54.c:
+    .text start:0x02072a54 end:0x020739f8
+
+src/auto/main_020739F8.c:
+    .text start:0x020739f8 end:0x02074920
+
+src/auto/main_02074920.c:
+    .text start:0x02074920 end:0x020756a4
+
+src/auto/main_020756A4.c:
+    .text start:0x020756a4 end:0x02076698
+
+src/auto/main_02076698.c:
+    .text start:0x02076698 end:0x02077624
+
+src/auto/main_02077624.c:
+    .text start:0x02077624 end:0x020785b0
+
+src/auto/main_020785B0.c:
+    .text start:0x020785b0 end:0x020793f0
+
+src/auto/main_020793F0.c:
+    .text start:0x020793f0 end:0x0207a3b0
+
+src/auto/main_0207A3B0.c:
+    .text start:0x0207a3b0 end:0x0207b2f0
+
+src/auto/main_0207B2F0.c:
+    .text start:0x0207b2f0 end:0x0207c2f0
+
+src/auto/main_0207C2F0.c:
+    .text start:0x0207c2f0 end:0x0207d130
+
+src/auto/main_0207D130.c:
+    .text start:0x0207d130 end:0x0207de50
+
+src/auto/main_0207DE50.c:
+    .text start:0x0207de50 end:0x0207e52c
+
+src/auto/main_0207E52C.c:
+    .text start:0x0207e52c end:0x0207f460
+
+src/auto/main_0207F460.c:
+    .text start:0x0207f460 end:0x02080414
+
+src/auto/main_02080414.c:
+    .text start:0x02080414 end:0x02081400
+
+src/auto/main_02081400.c:
+    .text start:0x02081400 end:0x02082340
+
+src/auto/main_02082340.c:
+    .text start:0x02082340 end:0x02083320
+
+src/auto/main_02083320.c:
+    .text start:0x02083320 end:0x02084304
+
+src/auto/main_02084304.c:
+    .text start:0x02084304 end:0x020852f4
+
+src/auto/main_020852F4.c:
+    .text start:0x020852f4 end:0x02086208
+
+src/auto/main_02086208.c:
+    .text start:0x02086208 end:0x020871a8
+
+src/auto/main_020871A8.c:
+    .text start:0x020871a8 end:0x02088044
+
+src/auto/main_02088044.c:
+    .text start:0x02088044 end:0x02088ff4
+
+src/auto/main_02088FF4.c:
+    .text start:0x02088ff4 end:0x02089d30
+
+src/auto/main_02089D30.c:
+    .text start:0x02089d30 end:0x0208abc4
+
+src/auto/main_0208ABC4.c:
+    .text start:0x0208abc4 end:0x0208b884
+
+src/auto/main_0208B884.c:
+    .text start:0x0208b884 end:0x0208c830
+
+src/auto/main_0208C830.c:
+    .text start:0x0208c830 end:0x0208d408
+
+src/auto/main_0208D408.c:
+    .text start:0x0208d408 end:0x0208e18c
+
+src/auto/main_0208E18C.c:
+    .text start:0x0208e18c end:0x0208ee90
+
+src/auto/main_0208EE90.c:
+    .text start:0x0208ee90 end:0x0208fe7c
+
+src/auto/main_0208FE7C.c:
+    .text start:0x0208fe7c end:0x02090e0c
+
+src/auto/main_02090E0C.c:
+    .text start:0x02090e0c end:0x02091e04
+
+src/auto/main_02091E04.c:
+    .text start:0x02091e04 end:0x02092df4
+
+src/auto/main_02092DF4.c:
+    .text start:0x02092df4 end:0x02093d9c
+
+src/auto/main_02093D9C.c:
+    .text start:0x02093d9c end:0x02094d8c
+
+src/auto/main_02094D8C.c:
+    .text start:0x02094d8c end:0x02095c90
+
+src/auto/main_02095C90.c:
+    .text start:0x02095c90 end:0x020965a8
+
+src/auto/main_020965A8.c:
+    .text start:0x020965a8 end:0x02096c7c
+
+src/auto/main_02096C7C.c:
+    .text start:0x02096c7c end:0x02097c50
+
+src/auto/main_02097C50.c:
+    .text start:0x02097c50 end:0x02098bd4
+
+src/auto/main_02098BD4.c:
+    .text start:0x02098bd4 end:0x02099b18
+
+src/auto/main_02099B18.c:
+    .text start:0x02099b18 end:0x02099e6c
+
+src/auto/main_02099E6C.c:
+    .text start:0x02099e6c end:0x0209acc4
+
+src/auto/main_0209ACC4.c:
+    .text start:0x0209acc4 end:0x0209bc58
+
+src/auto/main_0209BC58.c:
+    .text start:0x0209bc58 end:0x0209cc04
+
+src/auto/main_0209CC04.c:
+    .text start:0x0209cc04 end:0x0209db48
+
+src/auto/main_0209DB48.c:
+    .text start:0x0209db48 end:0x0209eaf4
+
+src/auto/main_0209EAF4.c:
+    .text start:0x0209eaf4 end:0x0209f990
+
+src/auto/main_0209F990.c:
+    .text start:0x0209f990 end:0x020a0964
+
+src/auto/main_020A0964.c:
+    .text start:0x020a0964 end:0x020a1944
+
+src/auto/main_020A1944.c:
+    .text start:0x020a1944 end:0x020a28f4
+
+src/auto/main_020A28F4.c:
+    .text start:0x020a28f4 end:0x020a38f4
+
+src/auto/main_020A38F4.c:
+    .text start:0x020a38f4 end:0x020a48ec
+
+src/auto/main_020A48EC.c:
+    .text start:0x020a48ec end:0x020a5878
+
+src/auto/main_020A5878.c:
+    .text start:0x020a5878 end:0x020a67fc
+
+src/auto/main_020A67FC.c:
+    .text start:0x020a67fc end:0x020a7738
+
+src/auto/main_020A7738.c:
+    .text start:0x020a7738 end:0x020a86f8
+
+src/auto/main_020A86F8.c:
+    .text start:0x020a86f8 end:0x020a94fc
+
+src/auto/main_020A94FC.c:
+    .text start:0x020a94fc end:0x020a9a30
+
+src/auto/main_020A9A30.c:
+    .text start:0x020a9a30 end:0x020aa93c
+
+src/auto/main_020AA93C.c:
+    .text start:0x020aa93c end:0x020ab4c0
+
+src/auto/main_020AB4C0.c:
+    .text start:0x020ab4c0 end:0x020ab884
+
+src/auto/main_020AB884.c:
+    .text start:0x020ab884 end:0x020ac7dc
+
+src/auto/main_020AC7DC.c:
+    .text start:0x020ac7dc end:0x020ad78c
+
+src/auto/main_020AD78C.c:
+    .text start:0x020ad78c end:0x020ae768
+
+src/auto/main_020AE768.c:
+    .text start:0x020ae768 end:0x020af760
+
+src/auto/main_020AF760.c:
+    .text start:0x020af760 end:0x020b0658
+
+src/auto/main_020B0658.c:
+    .text start:0x020b0658 end:0x020b160c
+
+src/auto/main_020B160C.c:
+    .text start:0x020b160c end:0x020b25b8
+
+src/auto/main_020B25B8.c:
+    .text start:0x020b25b8 end:0x020b34f8
+
+src/auto/main_020B34F8.c:
+    .text start:0x020b34f8 end:0x020b4264
+
+src/auto/main_020B4264.c:
+    .text start:0x020b4264 end:0x020b5258
+
+src/auto/main_020B5258.c:
+    .text start:0x020b5258 end:0x020b6168
+
+src/auto/main_020B6168.c:
+    .text start:0x020b6168 end:0x020b7138
+
+src/auto/main_020B7138.c:
+    .text start:0x020b7138 end:0x020b8078
+
+src/auto/main_020B8078.c:
+    .text start:0x020b8078 end:0x020b8ccc
+
+src/auto/main_020B8CCC.c:
+    .text start:0x020b8ccc end:0x020b9c8c
+
+src/auto/main_020B9C8C.c:
+    .text start:0x020b9c8c end:0x020bac24
+
+src/auto/main_020BAC24.c:
+    .text start:0x020bac24 end:0x020bbbbc
+
+src/auto/main_020BBBBC.c:
+    .text start:0x020bbbbc end:0x020bcb94
+
+src/auto/main_020BCB94.c:
+    .text start:0x020bcb94 end:0x020bda88
+
+src/auto/main_020BDA88.c:
+    .text start:0x020bda88 end:0x020be718
+
+src/auto/main_020BE718.c:
+    .text start:0x020be718 end:0x020bf25c
+
+src/auto/main_020BF25C.c:
+    .text start:0x020bf25c end:0x020c0254
+
+src/auto/main_020C0254.c:
+    .text start:0x020c0254 end:0x020c1230
+
+src/auto/main_020C1230.c:
+    .text start:0x020c1230 end:0x020c1f58
+
+src/auto/main_020C1F58.c:
+    .text start:0x020c1f58 end:0x020c2e4c
+
+src/auto/main_020C2E4C.c:
+    .text start:0x020c2e4c end:0x020c3d34
+
+src/auto/main_020C3D34.c:
+    .text start:0x020c3d34 end:0x020c4d28
+
+src/auto/main_020C4D28.c:
+    .text start:0x020c4d28 end:0x020c5d0c
+
+src/auto/main_020C5D0C.c:
+    .text start:0x020c5d0c end:0x020c6cf8
+
+src/auto/main_020C6CF8.c:
+    .text start:0x020c6cf8 end:0x020c7cd0
+
+src/auto/main_020C7CD0.c:
+    .text start:0x020c7cd0 end:0x020c8cbc
+
+src/auto/main_020C8CBC.c:
+    .text start:0x020c8cbc end:0x020c9b9c
+
+src/auto/main_020C9B9C.c:
+    .text start:0x020c9b9c end:0x020cab8c
+
+src/auto/main_020CAB8C.c:
+    .text start:0x020cab8c end:0x020cbacc
+
+src/auto/main_020CBACC.c:
+    .text start:0x020cbacc end:0x020cc9c8
+
+src/auto/main_020CC9C8.c:
+    .text start:0x020cc9c8 end:0x020cd8a8
+
+src/auto/main_020CD8A8.c:
+    .text start:0x020cd8a8 end:0x020ce738
+
+src/auto/main_020CE738.c:
+    .text start:0x020ce738 end:0x020cf69c
+
+src/auto/main_020CF69C.c:
+    .text start:0x020cf69c end:0x020d068c
+
+src/auto/main_020D068C.c:
+    .text start:0x020d068c end:0x020d166c
+
+src/auto/main_020D166C.c:
+    .text start:0x020d166c end:0x020d2470
+
+src/auto/main_020D2470.c:
+    .text start:0x020d2470 end:0x020d3464
+
+src/auto/main_020D3464.c:
+    .text start:0x020d3464 end:0x020d4430
+
+src/auto/main_020D4430.c:
+    .text start:0x020d4430 end:0x020d5430
+
+src/auto/main_020D5430.c:
+    .text start:0x020d5430 end:0x020d6398
+
+src/auto/main_020D6398.c:
+    .text start:0x020d6398 end:0x020d6e0c
+
+src/auto/main_020D6E0C.c:
+    .text start:0x020d6e0c end:0x020d7bc8
+
+src/auto/main_020D7BC8.c:
+    .text start:0x020d7bc8 end:0x020d8bb4
+
+src/auto/main_020D8BB4.c:
+    .text start:0x020d8bb4 end:0x020d9a98
+
+src/auto/main_020D9A98.c:
+    .text start:0x020d9a98 end:0x020daa90
+
+src/auto/main_020DAA90.c:
+    .text start:0x020daa90 end:0x020db920
+
+src/auto/main_020DB920.c:
+    .text start:0x020db920 end:0x020dc838
+
+src/auto/main_020DC838.c:
+    .text start:0x020dc838 end:0x020dd4f8
+
+src/auto/main_020DD4F8.c:
+    .text start:0x020dd4f8 end:0x020de264
+
+src/auto/main_020DE264.c:
+    .text start:0x020de264 end:0x020df1d0
+
+src/auto/main_020DF1D0.c:
+    .text start:0x020df1d0 end:0x020e0194
+
+src/auto/main_020E0194.c:
+    .text start:0x020e0194 end:0x020e0f14
+
+src/auto/main_020E0F14.c:
+    .text start:0x020e0f14 end:0x020e19e8
+
+src/auto/main_020E19E8.c:
+    .text start:0x020e19e8 end:0x020e24c0
+
+src/auto/main_020E24C0.c:
+    .text start:0x020e24c0 end:0x020e34bc
+
+src/auto/main_020E34BC.c:
+    .text start:0x020e34bc end:0x020e4490
+
+src/auto/main_020E4490.c:
+    .text start:0x020e4490 end:0x020e5080
+
+src/auto/main_020E5080.c:
+    .text start:0x020e5080 end:0x020e5824
