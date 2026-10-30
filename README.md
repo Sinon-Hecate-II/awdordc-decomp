@@ -1,6 +1,7 @@
 # Advance Wars: Days of Ruin / Dark Conflict — Decompilation
 
 [![Progress](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp.svg)](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp)
+[![Functions](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp.svg?mode=shield&label=Functions&measure=matched_functions)](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp)
 
 A work-in-progress decompilation of **Advance Wars: Days of Ruin** (also known as **Advance Wars: Dark Conflict**) for the Nintendo DS.
 
