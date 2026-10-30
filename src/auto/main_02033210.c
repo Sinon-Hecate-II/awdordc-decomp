@@ -9,6 +9,7 @@ s32 func_02033210(void) {
     return 0;
 }
 
+#pragma opt_common_subs on
 s32 func_020334d8(void *p,void *a,void *b){
 extern M2C_UNK data_0213d114,data_0213d120;extern s32 data_0213d13c;
 extern u8 data_020fb3ec[],data_020fb3f8[],data_020fb400[],data_020fb408[],data_020fb410[],data_020fb414[],data_020fb41c[];
@@ -31,6 +32,7 @@ if(func_020346d0(p,data_020fb41c,b,func_0206cd90(b)*2))return 8;
 }
 return 0;
 }
+#pragma opt_common_subs off
 void func_0203367c(s32 arg0) {
     M2C_UNK func_02006564(s32);
     M2C_UNK func_020065e8(void *);

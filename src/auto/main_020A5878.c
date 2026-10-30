@@ -155,8 +155,7 @@ s32 func_020a600c(s32 arg0) {
     s32 func_020d27ec(s32, s32);
     s32 func_020a5f80(s32, s32);
 
-    u32 basePtr = *(u32 *)*gCurrentMap;
-    Unit5B *unit = (Unit5B *)(basePtr + 0x59a4 + arg0 * 14);
+    Unit5B *unit = (Unit5B *)((u8 *)*(s32 *)((u8 *)*gCurrentMap) + 0x59a4 + arg0 * 14);
     u16 acc = 0;
     u8 x, y;
 
@@ -174,18 +173,18 @@ s32 func_020a600c(s32 arg0) {
     y = unit->y;
 
     if (unit != 0) {
-        u32 bp = *(u32 *)*gCurrentMap;
-        s32 idx = (s32)((u8 *)unit - (u8 *)(bp + 0x59a4)) / 14;
+        s32 base = *(s32 *)((u8 *)*gCurrentMap);
+        s32 idx = (s32)((u8 *)unit - ((u8 *)base + 0x59a4)) / 14;
         if (func_020d27c0(idx)) {
             return 1;
         }
     }
 
     {
-        u32 bp = *(u32 *)*gCurrentMap;
-        u16 rowOff = *(u16 *)((u8 *)bp + y * 2 + 0x3758);
-        u16 w = *(u16 *)((u8 *)bp + 0x52a4);
-        u8 tile = *(u8 *)((u8 *)bp + x + rowOff + 0x1420);
+        u8 *base = (u8 *)*(s32 *)((u8 *)*gCurrentMap);
+        u16 rowOff = *(u16 *)(base + y * 2 + 0x3758);
+        u16 w = *(u16 *)(base + 0x52a4);
+        u8 tile = *(u8 *)(base + x + rowOff + 0x1420);
         s16 val = data_ov000_021aeef4[w];
         if (func_020d27ec(val, tile)) {
             return 1;
@@ -199,15 +198,15 @@ s32 func_020a600c(s32 arg0) {
         acc = (u16)(acc + func_020a5f80(x, (s16)(y - 1)));
     }
     {
-        u32 bp = *(u32 *)*gCurrentMap;
-        s32 maxw = *(u16 *)((u8 *)bp + 0x5144);
+        u8 *base = (u8 *)*(s32 *)((u8 *)*gCurrentMap);
+        s32 maxw = *(u16 *)(base + 0x5144);
         if (x < maxw - 1) {
             acc = (u16)(acc + func_020a5f80((s16)(x + 1), y));
         }
     }
     {
-        u32 bp = *(u32 *)*gCurrentMap;
-        s32 maxh = *(u16 *)((u8 *)bp + 0x5146);
+        u8 *base = (u8 *)*(s32 *)((u8 *)*gCurrentMap);
+        s32 maxh = *(u16 *)(base + 0x5146);
         if (y < maxh - 1) {
             acc = (u16)(acc + func_020a5f80(x, (s16)(y + 1)));
         }

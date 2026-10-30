@@ -338,14 +338,12 @@ void func_02094424(void) {
     s32 i;
     s32 j;
     s32 base;
+    s32 zero;
 
+    zero = 0;
     saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i = i + 1) {
-        if (i == 0) {
-            gCur3DSpriteEngine = data_027e00c8;
-        } else {
-            gCur3DSpriteEngine = data_027e00c4;
-        }
+        gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
 
         if (((func_02091e24() != 0) || (gCur3DSpriteEngine == data_027e00c8)) &&
             ((func_02091e24() != 1) || (gCur3DSpriteEngine == data_027e00c4)) &&
@@ -383,9 +381,9 @@ void func_02094424(void) {
             base = 0x124;
             for (j = 0; j < 3; j = j + 1) {
                 func_02097150(j, base);
-                func_02097164(j, 0);
-                func_02097178(j, 0);
-                func_020971c0(j, 0);
+                func_02097164(j, zero);
+                func_02097178(j, zero);
+                func_020971c0(j, zero);
                 base = base + 0x80;
             }
         }

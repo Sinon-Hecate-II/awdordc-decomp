@@ -7,6 +7,7 @@ s32 func_02040340(s32 a, s32 b, s32 c, s32 d, s32 e) {
     return 0;
 }
 
+#pragma opt_strength_reduction off
 s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     void *func_02044268(void);

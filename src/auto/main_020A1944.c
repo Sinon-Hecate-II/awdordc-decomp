@@ -349,7 +349,7 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     if (arg2 < 0) {
         return 0;
     }
-    if (arg3 < 0) {
+    if (0 > arg3) {
         return 0;
     }
 
@@ -360,7 +360,7 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
         ret = func_020d0468(idx, arg2, arg3);
     }
 
-    kind = ((u32)M2C_FIELD(arg1, u8 *, 0x0) << 26) >> 26;
+    kind = (M2C_FIELD(arg1, u8 *, 0x0) << 26) >> 26;
     if (ret == -1) {
         return 1;
     }

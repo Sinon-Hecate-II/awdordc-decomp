@@ -446,22 +446,33 @@ u8 func_020a8204(void *arg0) {
 
 void func_020a8240(u8 *unit, s32 dx, s32 dy, u8 *out) {
 extern void **gCurrentMap;
-s32 x=unit[1], y=unit[2]; s32 n; s32 step; s32 n2;
-n=dx<0?-dx:dx; step=dx>0?1:-(dx<0);
-for(;n>0;n--){
-x+=step;
-if(!A8240InBounds(x,y))break;
-if(M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758)+((u8 *)*gCurrentMap+x),u8 *,0x508)!=0)break;
-if(step>0)*out++=1; if(step<0)*out++=0;
+s32 x;
+s32 y;
+s32 n;
+s32 step;
+x = unit[1];
+y = unit[2];
+n = dx < 0 ? -dx : dx;
+step = dx > 0 ? 1 : -(dx < 0);
+while (n > 0) {
+    x += step;
+    if (!A8240InBounds(x, y)) break;
+    if (M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x508) != 0) break;
+    n--;
+    if (step > 0) *out++ = 1;
+    if (step < 0) *out++ = 0;
 }
-n2=dy<0?-dy:dy; dy=dy>0?1:-(dy<0);
-for(;n2>0;n2--){
-y+=dy;
-if(!A8240InBounds(x,y))break;
-if(M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758)+((u8 *)*gCurrentMap+x),u8 *,0x508)!=0)break;
-if(dy>0)*out++=2; if(dy<0)*out++=3;
+n = dy < 0 ? -dy : dy;
+step = dy > 0 ? 1 : -(dy < 0);
+while (n > 0) {
+    y += step;
+    if (!A8240InBounds(x, y)) break;
+    if (M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x508) != 0) break;
+    n--;
+    if (step > 0) *out++ = 2;
+    if (step < 0) *out++ = 3;
 }
-*out=255;
+*out = 255;
 }
 
 int func_020a83e4(u8 *p, s8 *dir) { for (;;) { switch (*dir++) { case 9: dir++; break; case -1: case 4: return; case 0: p[1]--; break; case 1: p[1]++; break; case 3: p[2]--; break; case 2: p[2]++; break; case 10: default: break; } } }

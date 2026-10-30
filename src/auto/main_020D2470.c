@@ -216,12 +216,12 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 
 #pragma opt_strength_reduction off
 s32 func_020d2c18(s32 arg0) {
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     s32 func_020a27b8(s32, s32);
     u32 val;
     s32 base;
 
-    base = *gCurrentMap;
+    base = *data_027e0058;
     val = M2C_FIELD(base + 0x3A4 + 0x6400 + arg0 * 0x8C, u32 *, 0x6C);
     return func_020a27b8((s32)(val << 24 >> 24), (s32)(val << 20 >> 30));
 }

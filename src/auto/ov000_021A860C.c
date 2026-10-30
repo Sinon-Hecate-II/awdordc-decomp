@@ -140,7 +140,7 @@ extern void **gCurrentMap;
 s32 func_020d27c0(s32);
 s32 func_ov000_021a947c(u16,s32,s16,s16);
 s32 func_020a600c(u16);
-s32 i,dy,ny,j,right,left,top,bottom,d;void *base;
+s32 i,right,left,top,bottom,d,dy,ny,j;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;

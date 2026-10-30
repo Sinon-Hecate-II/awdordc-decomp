@@ -4,57 +4,57 @@ typedef struct { s32 v[4]; } MenuBounds;
 extern const MenuBounds data_020f4e88;
 extern u8 data_02168f14[16];
 
-s32 func_020d6398(s32 x, s32 y) {
-    extern void **gCurrentMap;
-    s32 func_020a85b8(s32);
-    u8 func_020ba790(s32, s32);
-    s32 func_020a7074(void *, void *);
-    u8 func_020d273c(s32, s32);
+s32 func_020d6398(s32 x,s32 y){
+extern void **gCurrentMap;
+s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 func_020a7074(void*,void*); u8 func_020d273c(s32,s32);
+u8 *base=*gCurrentMap;
+s32 id=base[x+*(u16*)(base+y*2+0x3758)];
+s32 cell,off,a,b,n;
+u8 *table,*unit,*selected;
+if(*(u16*)(base+0x52a8)!=(base[0x52d4]&0xc0))return 0;
+cell=(*(s8**)(base+y*4+0x52e8))[x];
+if(cell<0 || cell>110)return 0;
+if(id==0)return 1;
+if(id==base[0x52d6])return 0;
+if(func_020ba790(x,y)==1)return 1;
+base=*gCurrentMap; off=id*14;
+if(func_020a7074(*(u8**)(base+0x52d0),base+0x59a4+off)==1)return 1;
+base=*gCurrentMap;
+if(func_020a85b8((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)){
+base=*gCurrentMap;table=base+0x59a4;unit=table+off;
+if(unit){if(unit)n=(unit-table)/14;else n=0;b=(n>>6)+1;}else b=0;
+selected=*(u8**)(base+0x52d0);
+if(selected){if(selected)n=(selected-table)/14;else n=0;a=(n>>6)+1;}else a=0;
+if(func_020d273c(a,b)==0)return 1;
+}
+return 0;
+}
 
-    u8 *base = *gCurrentMap;
-    u16 rowOff = *(u16 *)(base + y * 2 + 0x3758);
-    u8 unitId = base[x + rowOff];
-    s8 *rowPtr;
-    s8 cell;
-    u8 *selected;
-    u8 *unitBase;
-    u8 *unit;
-    s32 idx0, idx1, selectedId, kind;
-
-    if (*(u16 *)(base + 0x52a8) != (base[0x52d4] & 0xc0)) return 0;
-
-    rowPtr = *(s8 **)(base + y * 4 + 0x52e8);
-    cell = rowPtr[x];
-    if (cell < 0) goto bad;
-    if (cell > 0x6e) goto bad;
-
-    if (unitId == 0) return 1;
-    if (unitId == base[0x52d6]) return 0;
-
-    if (func_020ba790(x, y) == 1) return 1;
-
-    selected = *(u8 **)(base + 0x52d0);
-    unitBase = base + 0x59a4;
-    unit = unitBase + unitId * 14;
-    if (func_020a7074(selected, unit) == 1) return 1;
-
-    kind = selected[0] & 0x3f;
-    if (func_020a85b8(kind) == 0) return 0;
-
-    if (unit == (u8 *)0) idx1 = 0;
-    else idx1 = (unitId >> 6) + 1;
-
-    if (selected == (u8 *)0) idx0 = 0;
-    else {
-        selectedId = (selected - unitBase) / 14;
-        idx0 = (selectedId >> 6) + 1;
-    }
-
-    if (func_020d273c(idx0, idx1) == 0) return 1;
-    return 0;
-
-bad:
-    return 0;
+s32 func_020d6544(s32 ax,s32 ay,s32 kind,s8 *path,s32 end){
+extern void **gCurrentMap;extern u8 data_0212616c[],data_ov000_021b5bfc[];
+s32 func_020a85b8(s32);
+s16 oldx=ax,oldy=ay,x=oldx,y=oldy;
+s32 cost=0,dir,owner,terrain;
+void **map;
+s8 *costs;u8 *cell,*base;
+if(func_020a85b8(kind))return 0;
+map=gCurrentMap;costs=*(s8**)(data_0212616c+0x64);
+while((dir=*path)!=4 && dir!=-1){
+switch(dir){case 0:x--;break;case 1:x++;break;case 2:y++;break;case 3:y--;break;}
+base=*map;cell=base+x+*(u16*)(base+y*2+0x3758);
+owner=cell[0x508];
+if(owner && base[(owner>>6)*140+0x6856]!=base[*(u16*)(base+0x52a4)*140+0x67ca]){
+path[0]=10;path[1]=end;
+*(s16*)((u8*)*gCurrentMap+0x52dc)=oldx;
+*(s16*)((u8*)*gCurrentMap+0x52de)=oldy;
+((u8*)*gCurrentMap)[0x52d5]=cost;
+return 1;
+}
+terrain=cell[0x1420];
+cost+=(costs+data_ov000_021b5bfc[((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)*112+0x12]*32)[terrain&31];
+oldx=x;oldy=y;path++;
+}
+return 0;
 }
 
 s32 func_020d66fc(s8 *arg0) {

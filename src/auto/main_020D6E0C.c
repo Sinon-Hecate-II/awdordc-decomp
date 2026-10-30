@@ -23,7 +23,14 @@ health=func_ov000_0216cd00(unit);tile=(index+1)*4+0x218;
 func_0207c3dc(func_ov000_0216cd78(kind,color),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
 yy=y&255;xx=x&511;
 func_01ffaacc((u16)xx,(u16)yy,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&data_027e0064,9);
-DrawSecond7944((u16)xx,(u16)(yy+0x400));
+yy+=0x400;
+{
+u32 a=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
+u32 b=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
+s32 t=(0x150 >> ((a<<17)>>30))&1023;
+s32 t2=(0x60 >> ((b<<17)>>30))&1023;
+func_01ffaacc((u16)xx,(u16)yy,(u16)((t|0x9000)+t2),&data_027e0064,10);
+}
 if(health==10)return;
 func_020d694c((x+8)&511,(y+8)&255,health);
 }
@@ -36,4 +43,10 @@ v = ((u8 *)p)[13];
 if (!v) return;
 func_020d7944(x + offsets.v[kind][n], y-16, n, *gCurrentMap + 0x59a4 + v*14);
 }
-
+static inline s32 SecondTile7944(void) {
+extern void *gCur3DSpriteEngine;
+u32 b,a;
+a=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
+b=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
+return (((0x150 >> ((a<<17)>>30))&1023)|0x9000)+((0x60 >> ((b<<17)>>30))&1023);
+}

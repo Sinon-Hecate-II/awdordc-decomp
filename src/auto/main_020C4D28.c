@@ -1,7 +1,7 @@
 /* 50 functions from 0x020C4D28 to 0x020C5D0C (main), found by ds-decomp. */
 #include "common.h"
 static inline s32 IsNewerValue(u32 b, u32 a) {
-register u32 result=a&0xffff0000;
+register u32 result asm("lr") = a & 0xffff0000;
 if(result==0xffff0000 && !(b&0xffff0000) && b!=0) result=0;
 else if(!result && (b&0xffff0000)==0xffff0000 && a!=0) result=1;
 else result=a>b;

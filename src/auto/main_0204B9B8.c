@@ -51,9 +51,10 @@ s32 func_0204bad4(void *arg0) {
     s32 func_0204b958(void *);
     extern M2C_UNK data_020fd440, data_020fd334, data_020fd1fc, data_020fd454;
 
-    s32 count;
     s32 i;
+    s32 count;
     s32 buf[4];
+    s32 zero = 0;
 
     if (M2C_FIELD(arg0, void **, 0x13c) == 0) {
         func_020640a8(&data_020fd440, &data_020fd334, &data_020fd1fc, 0x278);
@@ -75,13 +76,10 @@ s32 func_0204bad4(void *arg0) {
         i = 0;
         do {
             buf[0] = (s32)func_02048690(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0), i);
-            buf[1] = 0;
-            buf[2] = 0;
-            buf[3] = 0;
-            if (func_0204b9b8(buf) != 0) {
-                func_020486f8(M2C_FIELD(arg0, s32 *, 0x140), buf);
-                i++;
-            } else {
+            buf[1] = zero;
+            buf[2] = zero;
+            buf[3] = zero;
+            if (func_0204b9b8(buf) == 0) {
                 i--;
                 if (i >= 0) {
                     do {
@@ -94,6 +92,8 @@ s32 func_0204bad4(void *arg0) {
                 M2C_FIELD(arg0, s32 *, 0x140) = 0;
                 return 0;
             }
+            func_020486f8(M2C_FIELD(arg0, s32 *, 0x140), buf);
+            i++;
         } while (i < count);
     }
     if (func_02048688(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0)) != func_02048688(M2C_FIELD(arg0, s32 *, 0x140))) {
@@ -289,7 +289,7 @@ s32 func_0204c300(void *arg0) {
 s32 func_0204c580(void *a) {
 s32 func_02049274(s8 *); s32 func_02068eac(s8 *,void *,s32); s8 *func_02068ee0(s32,s32); s32 func_02068f1c(s8 *,void *); s32 func_0206ad38(s8 *);
 extern u8 data_020fd858[],data_020fd864[],data_020fd7c4[],data_020fd874[],data_020fd884[],data_020fd88c[],data_020fd898[];extern s8 data_020fd89c[];
-s8 *p,*q; s32 n,v,t,space; s8 ch; s32 secure;
+s8 *p,*q; s32 n,v; s8 ch; s32 secure;
 if(!a)func_020640a8(data_020fd858,data_020fd864,data_020fd7c4,37);
 if(!a)return 0;
 if(!M2C_FIELD(a,s32 *,20))func_020640a8(data_020fd874,data_020fd864,data_020fd7c4,43);
@@ -305,8 +305,9 @@ if(*p==58){p++;M2C_FIELD(a,u16 *,32)=func_0206ad38(p);if(!M2C_FIELD(a,u16 *,32))
 do {s8 c=*++p; if(c==0)break; if(c==47)break;}while(1);
 }else{if(secure)M2C_FIELD(a,u16 *,32)=443;else M2C_FIELD(a,u16 *,32)=80;}
 done: if(!*p)p=data_020fd89c;
-space=32;t=func_02049274(p);v=t;M2C_FIELD(a,s32 *,36)=t;
-q=func_02068ee0(t,space);
+M2C_FIELD(a,s32 *,36)=func_02049274(p);
+v=M2C_FIELD(a,s32 *,36);
+q=func_02068ee0(v,32);
 if(q){do{*q=43;v=M2C_FIELD(a,s32 *,36);q=func_02068ee0(v,32);}while(q);}
 if(v==0)return 0;return 1;
 }

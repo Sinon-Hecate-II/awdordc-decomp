@@ -177,8 +177,7 @@ void *func_0206fa14(void *arg0) {
     return arg0;
 }
 
-#pragma thumb off
-#pragma frame_pointer on
+#pragma use_frame_pointer on
 void func_0206fa3c(StringStorage *self,u32 capacity) {
 u32 func_02068c34(void *);void *func_02082034(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *func_02082028(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
@@ -203,5 +202,4 @@ self->large.flag=allocated & 1;
 if(!allocated)self->small.length=(u8)size;
 else {self->large.length=size;self->large.data=buffer;self->large.capacity=capacity;}
 }
-#pragma use_frame_pointer reset
 

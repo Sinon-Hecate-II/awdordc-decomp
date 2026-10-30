@@ -90,35 +90,56 @@ func_02074b84((void*)p+0xc4c);
 }
 }
 
-M2C_UNK func_02075cbc(M2C_UNK *p,M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 type){
-M2C_UNK *func_02076228(void);s32 func_02076234(void);
-u8 *q=(u8 *)p+0x2054; u32 seq=0,i,n; s32 found=0;u8 *best,*entry;s32 j,cmp;u32 x,y;
-if(!((Queue02075 *)p)->active||((Queue02075 *)p)->state==1)return;
-if(type){
-n=((Queue02075 *)p)->count;
-for(i=0;i<n;i++,q+=20){
-if(q[15]==1 && q[14]==type){seq=M2C_FIELD(q,u32 *,16)+1;if(!seq)seq++;found=1;}
-}
-if(!found){
-entry=(u8 *)func_02076228();best=0;n=func_02076234();
-for(j=0;j<(s32)n;j++,entry+=40){
-if(type==entry[2]){
-if(best){
-x=M2C_FIELD(best,u32 *,4);y=M2C_FIELD(entry,u32 *,4);
-if((y&0xffff0000)==0xffff0000 && !(x&0xffff0000) && x!=0)cmp=0;
-else if(!(y&0xffff0000) && (x&0xffff0000)==0xffff0000 && y!=0)cmp=1;
-else cmp=y>x;
-if(!cmp)continue;
-}
-best=entry;
-}
-}
-if(best){seq=M2C_FIELD(best,u32 *,4)+1;if(!seq)seq++;}
-}
-}
-q=(u8 *)p+0x2054+((Queue02075 *)p)->count*20;
-q[15]=1;M2C_FIELD(q,s32 *,0)=a;M2C_FIELD(q,s32 *,4)=b;M2C_FIELD(q,s32 *,8)=c;q[14]=type;M2C_FIELD(q,u32 *,16)=seq;
-((Queue02075 *)p)->count++;
+M2C_UNK func_02075cbc(M2C_UNK *p, M2C_UNK a, M2C_UNK b, M2C_UNK c, s32 type) {
+    M2C_UNK *func_02076228(void);
+    s32 func_02076234(void);
+    u8 *q = (u8 *)p + 0x2054;
+    u32 seq = 0, i, n;
+    s32 found = 0;
+    u8 *best, *entry;
+    s32 j, cmp;
+    u32 x, y;
+    if (!((Queue02075 *)p)->active || ((Queue02075 *)p)->state == 1) return;
+    if (type) {
+        n = ((Queue02075 *)p)->count;
+        for (i = 0; i < n; i++, q += 20) {
+            if (q[15] == 1 && q[14] == type) {
+                seq = M2C_FIELD(q, u32 *, 16) + 1;
+                if (!seq) seq++;
+                found = 1;
+            }
+        }
+        if (!found) {
+            entry = (u8 *)func_02076228();
+            best = 0;
+            n = func_02076234();
+            for (j = 0; j < (s32)n; j++, entry += 40) {
+                if (type == entry[2]) {
+                    if (best) {
+                        x = M2C_FIELD(best, u32 *, 4);
+                        y = M2C_FIELD(entry, u32 *, 4);
+                        if ((y & 0xffff0000) == 0xffff0000 && !(x & 0xffff0000) && x != 0) cmp = 0;
+                        else if (!(y & 0xffff0000) && (x & 0xffff0000) == 0xffff0000 && y != 0) cmp = 1;
+                        else cmp = y > x;
+                        if (!cmp) continue;
+                    }
+                    best = entry;
+                }
+            }
+            if (best) {
+                seq = M2C_FIELD(best, u32 *, 4) + 1;
+                if (!seq) seq++;
+            }
+        }
+    }
+    q = (u8 *)p + 0x2054 + ((Queue02075 *)p)->count * 20;
+    q[15] = 1;
+    M2C_FIELD(q, s32 *, 0) = a;
+    M2C_FIELD(q, s32 *, 4) = b;
+    M2C_FIELD(q, s32 *, 8) = c;
+    q[14] = type;
+    M2C_FIELD(q, u32 *, 16) = seq;
+    ((Queue02075 *)p)->count++;
 }
 
 void func_02075e84(M2C_UNK *arg0, s32 arg1) {

@@ -12,14 +12,13 @@ void func_ov000_021a7d08(void) {
     void func_ov000_021a7610(void);
 
     register s32 r5 asm("r5");
-    register s32 r4 asm("r4");
 
     for (r5 = 0; r5 < 0x1B; r5++) {
         data_ov000_021e1474[r5] = 0;
         data_ov000_021e14aa[r5] = data_ov000_021e1474[r5];
     }
 
-    for (r4 = 1; r4 < 5; r4++) {
+    for (r5 = 1; r5 < 5; r5++) {
         u16 field;
         s32 start;
         s32 limit;
@@ -27,14 +26,14 @@ void func_ov000_021a7d08(void) {
         u8 *p;
         void *map;
 
-        if (!func_020d1938(r4)) {
+        if (!func_020d1938(r5)) {
             continue;
         }
         map = *gCurrentMap;
         field = *(u16 *)((u8 *)map + 0x52A4);
-        if (func_020d273c(field, r4) == 1) {
-            start = data_ov000_021aeef4[r4] + 1;
-            limit = data_ov000_021aeef4[r4] + 0x33;
+        if (func_020d273c(field, r5) == 1) {
+            start = data_ov000_021aeef4[r5] + 1;
+            limit = data_ov000_021aeef4[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
                 u8 kind;
                 p = *(u8 **)map + 0x59A4 + inner * 0xE;
@@ -48,8 +47,8 @@ void func_ov000_021a7d08(void) {
                 data_ov000_021e14aa[kind] += (u16)(((unsigned int)*(u16 *)(p + 6) << 19) >> 19);
             }
         } else {
-            start = data_ov000_021aeef4[r4] + 1;
-            limit = data_ov000_021aeef4[r4] + 0x33;
+            start = data_ov000_021aeef4[r5] + 1;
+            limit = data_ov000_021aeef4[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
                 u8 kind;
                 p = *(u8 **)map + 0x59A4 + inner * 0xE;

@@ -121,7 +121,7 @@ void func_02018438(s32 arg0, s32 arg1) {
     buf[0] = (u16)arg0;
     p = M2C_FIELD(&data_02136c40, void **, 8);
     buf[1] = (u16)arg1;
-    M2C_FIELD(p, void (**)(s32, void *), 0x51c)(0xff, buf);
+    (*(void (**)(s32, void *))((u8 *)p + 0x51c))(0xff, buf);
 }
 
 void func_02018470(M2C_UNK arg0) {

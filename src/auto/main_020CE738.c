@@ -284,7 +284,7 @@ void func_020cf0a8(s32 id) {
                     look = ((u8 *)*gCurrentMap)[0x6A60 + tileId];
                     ((u8 *)*gCurrentMap)[0x1420 + x + row] = look;
 
-                    x = x + 1;
+                    x += 1;
                     width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
                 } while (x < width);
             }
@@ -319,6 +319,7 @@ void func_020cf2c8(void) {
     u8 tile;
 
     count = 0;
+    y = 0;
     func_01ffb554((u8 *)*gCurrentMap + 0x1928);
     func_01ffb3d0(-1);
     for (i = 0; i < 5; i++)

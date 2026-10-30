@@ -411,18 +411,18 @@ s32 func_020e4b54(void) {
 s32 func_020e4b9c(u16 key,...){extern u16 data_0212da1c;extern u16 data_020f4eb4[];volatile u8 a=0;volatile u8 b=0;u16 *p=func_020e4c10(data_020f4eb4,data_020f4eb4+data_0212da1c,&key,*(u32 *)&b);if(*p!=key)return 0;return p-data_020f4eb4;}
 
 #pragma opt_propagation off
-u16 *func_020e4c10(u16 *first, u16 *last, u16 *key, u32 unused) {
-    s32 n = last - first;
-    while (n > 0) {
-        s32 half = n / 2;
-        u16 *p = first + half;
-        if (*p >= *key) n = half;
-        else {
-            first = p + 1;
-            n -= half + 1;
-        }
-    }
-    return first;
+u16 *func_020e4c10(u16 *first,u16 *last,u16 *key,u32 unused){
+s32 n=last-first;
+while(n>0){
+s32 half=n/2;
+u16 *p=first+half;
+if(*p<*key){
+half++;
+first=p+1;
+n-=half;
+}else n=half;
+}
+return first;
 }
 #pragma opt_propagation reset
 void func_020e4c64(void) {

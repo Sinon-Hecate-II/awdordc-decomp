@@ -90,18 +90,19 @@ void func_02004264(M2C_UNK arg0, s32 arg1, u32 arg2) {
     func_02007e70(arg0, arg1 + 0x07000400, arg2);
 }
 
+#pragma push
+#pragma opt_propagation off
 void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
-    M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    extern s32 data_020f5204;
-    s32 off = 0x06400000;
-    if (data_020f5204 != -1 && arg2 > 0x30U) {
-        func_02007a04(data_020f5204, arg0, arg1 + off, arg2);
-        return;
-    }
-    func_02007e70(arg0, arg1 + off, arg2);
+M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32);
+M2C_UNK func_02007e70(M2C_UNK,s32,u32);
+extern s32 data_020f5204;
+const u32 base=0x06400000;
+if(data_020f5204!=-1 && arg2>0x30U) {
+func_02007a04(data_020f5204,arg0,base+(u32)arg1,arg2);return;
 }
-
+func_02007e70(arg0,base+(u32)arg1,arg2);
+}
+#pragma pop
 void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);

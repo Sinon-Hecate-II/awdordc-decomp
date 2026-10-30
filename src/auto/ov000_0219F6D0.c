@@ -168,18 +168,21 @@ data_ov000_021e146c[n]=0;
 if(state==5){
 u8 *map=*gCurrentMap;
 u8 *unit=M2C_FIELD(map,u8 **,0x52d0);
-s32 index=(s16)unit[n+12]*14;
-u8 *base=map+0x59a4;
+u8 *entry=unit+n;
+s32 index=(s16)entry[12]*14;
+u8 *base=map+0x59a4;u32 id;
 s32 player=0;
 if(unit) player=((unit-base)/14)>>6;
-data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,((UnitId6 *)(base+index))->id,data_ov000_021df58c);
+id=((UnitId6 *)(base+index))->id;
+data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,id,data_ov000_021df58c);
 }else if(state!=0){
-u8 *map;u8 *unit;s32 index;u8 *base;s32 player=0;
+u8 *map;u8 *unit;u8 *entry;s32 index;u8 *base;u32 id;s32 player=0;
 data_0215be0c=state-1;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
-index=(s16)unit[n+12]*14;base=map+0x59a4;
+entry=unit+n;index=(s16)entry[12]*14;base=map+0x59a4;
 if(unit) player=((unit-base)/14)>>6;
-data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+data_0215be0c);
+id=((UnitId6 *)(base+index))->id;
+data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,id,data_ov000_021df584+data_0215be0c);
 func_020cad00(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc),M2C_FIELD(*gCurrentMap,s16 *,0x52de));
 func_020bb608(n);
 }}

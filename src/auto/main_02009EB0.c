@@ -42,9 +42,9 @@ s32 func_0200a0ac(void *a, s32 b) {
     extern s32 (*data_020ea674[])(void *);
     void func_0200a050(void *, s32);
 
+    u32 d = (u32)1 << b;
     void *c = M2C_FIELD(a, void **, 0x8);
     s32 flag = 1;
-    u32 d = (u32)1 << b;
     s32 e;
     s32 k;
     s32 has200;
@@ -238,16 +238,17 @@ s32 func_0200a59c(void *p) {
 
     u8 *r5 = M2C_FIELD(p, u8 **, 0x3c);
     u32 r6 = M2C_FIELD(p, u32 *, 0x40);
-    u8 firstChar = r5[0];
-    u8 r7 = 0;
+    u8 firstChar;
     s32 r8 = 0;
+    u8 r7 = 0;
     UnkA3Block blk;
-    u32 cmp1 = 0;
-    u32 cmp2 = 0;
+    volatile u32 cmp1 = 0;
+    volatile u32 cmp2 = 0;
     u8 buf[0x80];
     u32 *out = 0;
 
     func_0200a0ac(p, 2);
+    firstChar = r5[0];
     if (firstChar == 0) goto tail;
 
 scan_loop:
@@ -299,16 +300,9 @@ mismatch:
     return 0;
 
 advance:
+tail:
     if (r5[0] != 0) r5++;
     if (r5[0] != 0) goto scan_loop;
-    if (r6 == 0) return 1;
-    out = M2C_FIELD(p, u32 **, 0x44);
-    out[0] = M2C_FIELD(p, u32 *, 0x20);
-    out[1] = M2C_FIELD(p, u32 *, 0x24);
-    out[2] = M2C_FIELD(p, u32 *, 0x28);
-    return 0;
-
-tail:
     if (r6 == 0) return 1;
     out = M2C_FIELD(p, u32 **, 0x44);
     out[0] = M2C_FIELD(p, u32 *, 0x20);

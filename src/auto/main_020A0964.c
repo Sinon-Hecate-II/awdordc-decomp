@@ -361,30 +361,33 @@ void func_020a17c0(s32 arg0, s32 arg1) {
     M2C_UNK func_01ffb554(M2C_UNK);
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
-    s32 x, y;
-    u8 *base = (u8 *)*gCurrentMap;
-    func_01ffb554(base + 0x1e30);
-    func_01ffada0(arg0, arg1, 0x1d, 0x6e, 0);
+    s32 y, x;
+    u8 *base;
+
+    base = (u8 *)*gCurrentMap;
+    func_01ffb554(base + 0x1E30);
+    func_01ffada0(arg0, arg1, 0x1D, 0x6E, 0);
+
     base = (u8 *)*gCurrentMap;
     for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {
         base = (u8 *)*gCurrentMap;
         for (x = 0; x < M2C_FIELD(base, u16 *, 0x5144); x++) {
-            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, 0x52e8), s8 *, x) < 0) {
+            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, 0x52E8), s8 *, x) < 0) {
                 base = (u8 *)*gCurrentMap;
                 continue;
             }
             {
                 u16 off = M2C_FIELD(base + (y << 1), u16 *, 0x3758);
                 u8 cell = M2C_FIELD(base + off + x, u8 *, 0x1420);
-                if (((cell & 0xe0) >> 5) != 0) {
-                    M2C_FIELD(base + (off + x) * 2 + 0xa00, u16 *, 0x10) = 3;
+                if (((cell & 0xE0) >> 5) != 0) {
+                    M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 3;
                     base = (u8 *)*gCurrentMap;
                     M2C_FIELD(base + off + x, u8 *, 0x1420) = 8;
                 } else {
-                    if (cell == 0x1c) {
-                        M2C_FIELD(base + (off + x) * 2 + 0xa00, u16 *, 0x10) = 5;
+                    if (cell == 0x1C) {
+                        M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 5;
                     } else {
-                        M2C_FIELD(base + (off + x) * 2 + 0xa00, u16 *, 0x10) = 4;
+                        M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 4;
                     }
                     base = (u8 *)*gCurrentMap;
                     M2C_FIELD(base + off + x, u8 *, 0x1420) = 1;
@@ -392,7 +395,6 @@ void func_020a17c0(s32 arg0, s32 arg1) {
                 base = (u8 *)*gCurrentMap;
             }
         }
-        base = (u8 *)*gCurrentMap;
     }
 }
 #pragma opt_strength_reduction reset

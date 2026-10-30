@@ -23,7 +23,7 @@ void func_ov003_021e3500(void *arg0) {
     u8 cnt;
     u8 i;
     u8 j;
-    s32 base;
+    unsigned long base;
     void *temp_r6;
     u8 temp_r1;
 

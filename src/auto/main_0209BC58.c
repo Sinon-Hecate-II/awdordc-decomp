@@ -495,7 +495,7 @@ void *func_0209c6d8(s32 arg0) {
     return (void *)(data_021580a8 + (flag << 7) + (arg0 << 2));
 }
 
-void func_0209c720(s32 arg0, s16 arg1, s8 arg2, s32 arg3, u8 arg4) {
+s32 func_0209c720(s32 arg0, s16 arg1, s8 arg2, s32 arg3, u8 arg4) {
     void *func_0209c6d8(s32);
     u8 *p;
     u8 old;

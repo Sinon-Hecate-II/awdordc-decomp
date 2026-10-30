@@ -225,8 +225,8 @@ outer_continue:
 
 #pragma opt_strength_reduction off
 void func_ov000_0216f3d0(s32 row,s32 index){
- void *saved;
  UnkStruct_ov000_021A860C *u;
+ void *saved;
  int base;
  int shift;
  u8 *m;

@@ -1,5 +1,10 @@
 /* 29 functions from 0x020AA93C to 0x020AB884 (main), found by ds-decomp. */
 #include "common.h"
+static inline u32 aaeb0State(void *p) {
+    u32 q;
+    q = M2C_FIELD(p, u32 *, 0);
+    return (q != 0) ? M2C_FIELD((void *) q, u16 *, 8) : 0xFFFFFFFF;
+}
 static inline void *allocAAB(void) {
 void *func_02082028(s32); s32 func_020e34bc(s32); s32 func_02007f8c(s32,s32,s32);
     void *temp_r0;
@@ -43,6 +48,8 @@ extern void *data_027e01d8;
 extern void *gCur3DSpriteEngine;
 typedef struct { u32 x:9; u32 y:9; u32 rest:14; } UnkAAFields;
 typedef struct { u8 kind:7; u8 hidden:1; u8 style:4; u8 a:1; u8 b:1; u8 c:1; u8 d:1; } FlagsAAB;
+typedef struct { u8 value:4; } E0194Bits;
+typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 
 #pragma opt_dead_stores off
 void *func_020aa93c(u32 kind) {
@@ -145,11 +152,11 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK func_02088e7c(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
+    s32 func_020aae78(void *);
     s32 func_020e34bc(M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    s32 temp_r0_2;
-    u32 temp_lr;
     void *temp_r0;
+    s32 temp_r0_2;
 
     M2C_FIELD(arg0, s8 *, 0x5A) = 0;
     M2C_FIELD(arg0, u8 *, 0x58) = (u8) ((M2C_FIELD(arg0, u8 *, 0x58) & ~0x7F) | (arg1 & 0x7F));
@@ -160,18 +167,19 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, u16 *, 0x6A) = 0xFF00;
     M2C_FIELD(arg0, u16 *, 0x6C) = 0xFF00;
     M2C_FIELD(arg0, u16 *, 0x6E) = 0xFF00;
-    M2C_FIELD(arg0,FlagsAAB *,0x58).d=1;
-    M2C_FIELD(arg0,FlagsAAB *,0x58).c=0;
-    M2C_FIELD(arg0,FlagsAAB *,0x58).b=0;
-    M2C_FIELD(arg0,FlagsAAB *,0x58).hidden=0;
-    M2C_FIELD(arg0,FlagsAAB *,0x58).a=0;
-    { void *engine=*(void *volatile *)&gCur3DSpriteEngine; u8 kind=M2C_FIELD(arg0,volatile FlagsAAB *,0x58).kind; u16 index=M2C_FIELD(arg0,u16 *,0x5c);
-    func_020a9a30(0,0,kind,M2C_FIELD(engine,s32 *,0x1c)+(index<<5)); }
-    if(arg4) {
-    u8 style=M2C_FIELD(arg0,volatile FlagsAAB *,0x58).style;
-    void *engine=gCur3DSpriteEngine;
-    u32 kind=M2C_FIELD(arg0,FlagsAAB *,0x58).kind;
-    func_020a9a30(0,2,kind,M2C_FIELD(engine,s32 *,0x30)+((style+16)<<5));
+    M2C_FIELD(arg0, FlagsAAB *, 0x58).d = 1;
+    M2C_FIELD(arg0, FlagsAAB *, 0x58).c = 0;
+    M2C_FIELD(arg0, FlagsAAB *, 0x58).b = 0;
+    M2C_FIELD(arg0, FlagsAAB *, 0x58).hidden = 0;
+    M2C_FIELD(arg0, FlagsAAB *, 0x58).a = 0;
+    { void *engine = *(void *volatile *)&gCur3DSpriteEngine;
+      func_020a9a30(0, 0, (u32) (M2C_FIELD(arg0, volatile u8 *, 0x58) << 0x19) >> 0x19,
+                    M2C_FIELD(engine, s32 *, 0x1C) + ((u32) M2C_FIELD(arg0, u16 *, 0x5C) << 5)); }
+    if (arg4 != 0) {
+        u8 style = M2C_FIELD(arg0, volatile FlagsAAB *, 0x58).style;
+        void *engine = *(void *volatile *)&gCur3DSpriteEngine;
+        u32 kind = M2C_FIELD(arg0, FlagsAAB *, 0x58).kind;
+        func_020a9a30(0, 2, kind, M2C_FIELD(engine, s32 *, 0x30) + ((style + 16) << 5));
     }
     M2C_FIELD(arg0, s32 *, 0x44) = func_020aae78(arg0);
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 & ~0xF8000000);
@@ -281,49 +289,32 @@ s32 func_020aae94(void *arg0) {
     return M2C_FIELD(func_020aa93c((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 8);
 }
 
+#pragma opt_common_subs off
 void func_020aaeb0(void *arg0) {
-    s8 v5a;
-    u8 byte59;
     u32 nibble;
-    u16 rest;
-    u8 cond;
-    void *p64;
-    s8 t;
-    u32 q;
-    u32 v;
+    s8 v5a;
+    s32 test;
+    void *p;
 
-    v5a = *(s8 *)((u8 *)arg0 + 0x5a);
+    v5a = M2C_FIELD(arg0, s8 *, 0x5A);
     if (v5a < 0) {
         return;
     }
-    byte59 = *(u8 *)((u8 *)arg0 + 0x59);
-    nibble = (u32)((byte59 << 28) >> 28);
-    rest = (u16)((( *(u32 *)((u8 *)arg0 + 0x40) << 6) >> 24));
-    cond = (u8)((s32)(nibble + 2) != (s32)rest);
-    if (cond) {
-        p64 = *(void **)((u8 *)arg0 + 0x64);
-        t = *(s8 *)((u8 *)p64 + 0x0c);
-        if (t != 1) {
-            q = *(u32 *)p64;
-            v = q ? *(u16 *)((u8 *)q + 0x08) : 0xFFFFFFFFu;
-            if (v != 1) {
-                if (v5a == 0) {
-                    *(u32 *)((u8 *)arg0 + 0x40) = (*(u32 *)((u8 *)arg0 + 0x40) & ~0x03FC0000u) | (nibble << 18);
-                }
-                goto func_020aaeb0_done;
-            }
+    nibble = M2C_FIELD(arg0, E0194Bits *, 0x59).value;
+    if (nibble + 2 != (u16) ((M2C_FIELD(arg0, u32 *, 0x40) << 6) >> 24)) test = 1; else test = 0;
+    if (test & 255) {
+        p = M2C_FIELD(arg0, void **, 0x64);
+        if (M2C_FIELD(p, s8 *, 0xC) == 1 || aaeb0State(p) == 1) {
+            M2C_FIELD(arg0, E0B04Bits *, 0x40).value = (u16) (nibble + 1);
+        } else if (v5a == 0) {
+            M2C_FIELD(arg0, E0B04Bits *, 0x40).value = (u16) nibble;
         }
-        *(u32 *)((u8 *)arg0 + 0x40) = (*(u32 *)((u8 *)arg0 + 0x40) & ~0x03FC0000u) | ((nibble + 1) << 18);
-func_020aaeb0_done:
-        ;
     }
-    v5a = *(s8 *)((u8 *)arg0 + 0x5a);
+    v5a = M2C_FIELD(arg0, s8 *, 0x5A);
     if (v5a > 0) {
-        v5a = (s8)(v5a - 1);
-        *(s8 *)((u8 *)arg0 + 0x5a) = v5a;
+        M2C_FIELD(arg0, s8 *, 0x5A) = (s8) (v5a - 1);
     }
 }
-
 M2C_UNK *func_020aaf74(void) {
     extern M2C_UNK data_02126b0c;
     return &data_02126b0c;

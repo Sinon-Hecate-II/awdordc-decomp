@@ -225,8 +225,9 @@ active=0;index=func_0200d9f4();
 p=((InputGlobal *)&data_ov001_02193e48)->state;
 *(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
 for(i=active;i<4;) {
-sample=&((InputGlobal *)&data_ov001_02193e48)->state->samples[index];
-if(TouchSampleValid(sample)) {
+sample=((InputGlobal *)&data_ov001_02193e48)->state->samples;
+sample+=index;
+if(sample->active==1) if(sample->status==0) {
 active=1;func_0200dbf0(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
 }
 i++;index=func_020020c4(index+4,5);

@@ -382,13 +382,10 @@ void func_02049810(void) {
 
 s32 func_02049824(int a,int b,int c,int d,UnkSocketAddress *e,int f){
 s32 func_020216cc(int,int,int,int,UnkSocketAddress *);
-s32 func_0204968c(s32,s32);
-UnkSocketAddress addr;
-UnkSocketAddress *v=&addr;
-UnkSocketAddress *u=e;
-*v=*u;
-addr.bytes[0]=(u8)f;
-return func_0204968c(func_020216cc(a,b,c,d,&addr),-1);
+volatile UnkSocketAddress addr;
+addr=*e;
+addr.bytes[0]=f;
+return func_0204968c(func_020216cc(a,b,c,d,(UnkSocketAddress *)&addr),-1);
 }
 
 s32 func_0204987c(s32 a,s32 b,s32 c,s32 d,s32 *e) {

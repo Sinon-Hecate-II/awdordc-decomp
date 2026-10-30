@@ -1,5 +1,6 @@
 /* 12 functions from 0x0221A59C to 0x0221B56C (ov007), found by ds-decomp. */
 #include "common.h"
+struct TileNeighbors_0221 { s16 values[24]; };
 
 void func_ov007_0221a59c(void) {
 }
@@ -49,7 +50,7 @@ gCur3DSpriteEngine=saved;
 func_ov007_0221ab4c();
 }
 
-void func_ov007_0221ac20(s32 a,s32 b,s8 c,s16 d) {
+void func_ov007_0221ac20(s32 a,s32 b,u16 c,u16 d) {
 extern void **gCurrentMap;
 s32 func_ov007_0221bd74(s32,s32);
 s32 func_ov007_0221bd00(s32,s32,s32);
@@ -109,27 +110,27 @@ ret1:
 }
 
 s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
-    u16 func_0207f460(u16);
+    s32 func_0207f460(s32);
     void func_02076980(s32, s32, s32, s32);
     void func_0207843c(s32, s32, s32, s32);
     s32 func_ov007_0221acac(s32, s32, s32, s32);
-    void func_ov007_0221ac20(s32, s32, s8, s16);
+    void func_ov007_0221ac20(s32, s32, u16, u16);
     void func_ov007_0221b688(s32, s32);
     s32 func_ov007_0221b754(s32, s32);
     s32 func_ov007_0221bad0(s32, s32);
     extern void **gCurrentMap;
     extern u8 data_ov007_0221f574[];
 
-    u16 var_r4;
-    u16 var_r5;
-    u8 buf[0x30];
+    s32 var_r4;
+    s32 var_r5;
+    struct TileNeighbors_0221 buf;
     s32 rc;
     s32 i;
     u8 *p;
     u16 *ps;
     u8 *pd;
 
-    var_r4 = (u16)(arg2 | (arg3 << 5));
+    var_r4 = arg2 | (arg3 << 5);
     var_r5 = func_0207f460(var_r4);
 
     rc = func_ov007_0221acac(arg0, arg1, arg2, arg3);
@@ -157,22 +158,12 @@ s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
         break;
     }
 
-    func_ov007_0221ac20(arg0, arg1, (s8)var_r4, (s16)var_r5);
+    func_ov007_0221ac20(arg0, arg1, (u16)var_r4, (u16)var_r5);
 
-    if (arg4 == 0) {
-        return 1;
-    }
+    if (arg4 != 0) {
 
-    ps = (u16 *)data_ov007_0221f574;
-    pd = buf;
-    for (i = 0; i < 12; i++) {
-        ((u16 *)pd)[0] = ps[0];
-        ((u16 *)pd)[1] = ps[1];
-        ps += 2;
-        pd += 4;
-    }
-
-    p = buf;
+    buf=*(const struct TileNeighbors_0221 *)data_ov007_0221f574;
+    p = (u8 *)&buf;
     i = 0;
     do {
         s32 x2 = arg0 + *(s16 *)p;
@@ -190,6 +181,7 @@ s32 func_ov007_0221b0a4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     func_02076980(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
     func_0207843c(arg0 - 2, arg1 - 2, arg0 + 2, arg1 + 2);
 
+    }
     return 1;
 }
 
