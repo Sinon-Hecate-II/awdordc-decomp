@@ -1,0 +1,19 @@
+﻿{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Advance Wars: Days of Ruin",
+  "system": "NDS",
+  "type": "decomp",
+  "project": "Advance Wars: Days of Ruin Decompilation",
+  "status": "in-progress",
+  "original": {
+    "region": "USA"
+  },
+  "toolchain": "Objdiff",
+  "maintainers": [
+    {
+      "name": "Sinon-Hecate-II",
+      "link": "https://github.com/Sinon-Hecate-II"
+    }
+  ],
+  "notes": "Matching decompilation of the USA Nintendo DS release (yw2e)."
+}
