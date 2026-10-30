@@ -41,6 +41,8 @@ A source file existing in the repository **does not** mean it is fully understoo
 
 ```text
 awdordc-decomp/
+├── config/
+│   └── yw2e/arm9/            # Game configuration, symbols, delinks and compiler overrides
 ├── include/                  # Shared types, structs, and declarations
 │   ├── common.h
 │   ├── coordinate_bits.h
@@ -57,7 +59,7 @@ awdordc-decomp/
 └── README.md
 ```
 
-The build scripts also reference `config/`, `extract/`, `build/`, `build.ninja`, and `objdiff.json`. These are not all committed: `config/` must be supplied for the matching game version, `extract/` holds local ROM inputs and extracted data, and the build system generates `build/`, `build.ninja`, and `objdiff.json`.
+The repository includes the `config/yw2e/arm9/` configuration, including `config.yaml`, `file_compilers.json`, and supporting delink and symbol files. Local ROM inputs belong in `extract/`; the build system generates files such as `build.ninja` and `objdiff.json`, as well as build outputs. Some build-related files may already be tracked in the repository.
 
 ## Building
 
@@ -71,9 +73,9 @@ The checked-in build configuration expects:
 - **CodeWarrior for Nintendo DS**, with the required `mwccarm.exe` and `mwldarm.exe` executables. The default compiler selected by `tools/configure.py` is `2.0/sp1p5`; individual sources may use versions specified in `file_compilers.json`.
 - **Wibo**, optionally, to run the Windows compiler binaries on Linux or macOS.
 - A legally obtained copy of the **matching original Nintendo DS ROM**, for local verification.
-- The matching `config/<version>/arm9/config.yaml` and related decompilation configuration files.
+- The included `config/yw2e/arm9/config.yaml` and related decompilation configuration files.
 
-**Note:** The current repository does not include a committed `config/` directory, so the build instructions below cannot be run successfully from a fresh clone without the corresponding configuration. Do not assume that the version identifier can be guessed from the game's regional title.
+**Note:** The `yw2e` configuration is committed to this repository. You still need a matching original ROM and the external toolchain; the presence of configuration files alone does not guarantee a successful build.
 
 ### Configure
 
@@ -84,21 +86,21 @@ git clone https://github.com/Sinon-Hecate-II/awdordc-decomp.git
 cd awdordc-decomp
 ```
 
-Place your matching original ROM at `extract/baserom.nds` and provide the corresponding version configuration under `config/<version>/arm9/`.
+Place your matching original ROM at `extract/baserom.nds`. The repository already includes the `yw2e` configuration under `config/yw2e/arm9/`.
 
 Generate the Ninja build file:
 
 ```bash
-python tools/configure.py <version> --dsd /path/to/dsd --compilers /path/to/codewarrior
+python tools/configure.py yw2e --dsd /path/to/dsd --compilers /path/to/codewarrior
 ```
 
 On Linux or macOS, pass a path to Wibo when needed:
 
 ```bash
-python tools/configure.py <version> --dsd /path/to/dsd --compilers /path/to/codewarrior --wibo /path/to/wibo
+python tools/configure.py yw2e --dsd /path/to/dsd --compilers /path/to/codewarrior --wibo /path/to/wibo
 ```
 
-Replace `<version>` with the actual directory name beneath `config/`. The paths are examples, not included tools.
+The `yw2e` argument selects the configuration included in this repository. Tool paths are examples and must point to your local installations.
 
 ### Build targets
 
