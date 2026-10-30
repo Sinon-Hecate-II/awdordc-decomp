@@ -19,10 +19,10 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     extern M2C_UNK data_020fecb0;
     extern M2C_UNK data_020fecd8;
     extern M2C_UNK data_020fed0c;
-    s32 stack[3];
+    s32 addr[2]; s32 node;
     s32 *qp;
 
-    if (func_02055b84(arg0, M2C_FIELD(arg1, s32 *, 0xc), stack) == 0) {
+    if (func_02055b84(arg0, M2C_FIELD(arg1, s32 *, 0xc), &node) == 0) {
         func_02058644(arg0, &data_020feb6c);
         return 3;
     }
@@ -38,13 +38,12 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
         return 3;
     }
     func_02055124(M2C_FIELD(arg1, s32 *, 0x8));
-    stack[1] = 0;
-    stack[2] = 0;
-    *((u8 *)stack + 5) = 2;
-    qp = (s32 *) ((s32 *) stack[0])[2];
-    stack[2] = qp[4];
-    *((s16 *)stack + 3) = (s16) qp[5];
-    if (func_02049740(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)&stack[1], 8) == -1) {
+    InitSocketAddress(addr);
+    *((u8 *)addr + 1) = 2;
+    qp = (s32 *)node;
+    addr[1] = M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x10);
+    *((s16 *)addr + 1) = (s16) M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x14);
+    if (func_02049740(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)addr, 8) == -1) {
         s32 r = func_02049900(M2C_FIELD(arg1, s32 *, 0x8));
         if ((r != -6) && (r != -0x1a) && (r != -0x4c)) {
             func_02058620(arg0, 5, &data_020fed0c);

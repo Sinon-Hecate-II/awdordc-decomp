@@ -130,15 +130,7 @@ if(t==0) {if(arg1==0) {func_ov010_02228298(3);M2C_FIELD(&data_ov010_0222eee0,u8 
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32,s32),12);if(cb==0)return;cb(arg0,arg1,arg2);
 }
 
-s32 func_ov010_02228050(void) {
-    extern M2C_UNK data_ov010_0222eee0;
-    s32 result = 1;
-    s32 (*fp)(void) = (s32 (*)(void)) M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x20);
-    if (fp != NULL) {
-        result += fp();
-    }
-    return result;
-}
+s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK data_ov010_0222eee0; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
 
 void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     s32 func_ov010_022282f8(void);
@@ -195,12 +187,10 @@ callback_call:
     )(arg0, arg1, arg2, arg3, arg4, arg5);
 }
 
-void func_ov010_0222815c(void) {
-    void (*cb)(void);
-    extern M2C_UNK data_ov010_0222eee0;
-    cb = *(void (**)())((char *)&data_ov010_0222eee0 + 0x44);
-    if (!cb) return;
-    cb();
+void func_ov010_0222815c(s32 a,s32 b) {
+ extern M2C_UNK data_ov010_0222eee0;
+ void (*cb)(s32,s32)=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,s32),0x44);
+ if(!cb)return; cb(a,b);
 }
 
 void func_ov010_0222817c(void) {

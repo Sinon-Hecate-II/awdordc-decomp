@@ -164,7 +164,7 @@ packet[0]=((u8 *)&size)[0]; packet[1]=((u8 *)&size)[1];
 packet[3]=((u8 *)&arg1)[0];packet[4]=((u8 *)&arg1)[1];packet[5]=((u8 *)&arg1)[2];packet[6]=((u8 *)&arg1)[3];packet[7]=((u8 *)&arg2)[0];packet[8]=((u8 *)&arg2)[1];
 packet[2]=2;
 result=func_02062324(arg0,packet,9);if(result)return result;
-if(func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0)return 3; return 0;
+return func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
 
 void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -303,18 +303,12 @@ return result;
 s32 func_02064034(void) {
 s32 func_020649a8(s32);
 extern u8 data_021001cc[];
-s32 result;
-void *p;
-s32 offset;
-s32 i;
-p=data_021001cc;
-result=0;
-i=1;
+void *p; s32 result; s32 i; s32 offset;
+p=data_021001cc; result=0; i=1;
 do {
-if(((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && func_020649a8((s32)p)!=0)result=-1;
-if(i>=3)p=NULL;
-else {offset=i*0x4C;i++;p=data_021001cc+offset;}
-}while(p!=NULL);
+if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && func_020649a8((s32)p)) result=-1;
+if(i<3) {offset=i*0x4c; i++; p=data_021001cc+offset;} else p=NULL;
+}while(p);
 return result;
 }
 #pragma peephole reset

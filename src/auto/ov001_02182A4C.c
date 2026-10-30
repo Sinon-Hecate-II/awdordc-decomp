@@ -559,8 +559,7 @@ void func_ov001_021836f4(void) {
     extern void *data_ov001_02193df0;
     void func_ov001_0218c94c(s32, s32);
     void func_ov001_0218b71c(void *);
-    s32 *dp = data_ov001_02193df0;
-    func_ov001_0218c94c(1, *dp);
+    func_ov001_0218c94c(1, *(s32 *)data_ov001_02193df0);
     func_ov001_0218b71c(&data_ov001_02193df0);
 }
 #pragma merge_duplicate_code reset

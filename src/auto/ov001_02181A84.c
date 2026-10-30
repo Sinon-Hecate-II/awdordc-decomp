@@ -162,10 +162,10 @@ void func_ov001_02181d60(void) {
 
     u32 index;
     u8 *entry;
-    s32 t0, t1, t2, t3;
+    u32 t0, t1, t2, t3;
     u8 *base0, *base1, *base2, *base3;
     s32 row;
-    u16 va, vb, vc, vd;
+    s32 va, vb, vc, vd;
 
     for (index = 0; index < 4; index++) {
         entry = (u8 *)&data_ov001_0218fab6 + func_ov001_02175e04(1) * 32 + index * 8;

@@ -108,7 +108,7 @@ s32 func_0202a050(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void *func_02029f58(void *, void *);
     void *func_02029f80(void *, void *, void *);
     M2C_UNK func_02007e54(M2C_UNK, u32, s32);
-    s32 sp[7];
+    s32 sp[6];
     s32 temp_r3;
     s32 temp_r5;
     s32 var_r4;
@@ -262,18 +262,16 @@ void func_0202a498(s32 arg0, s32 arg1) {
     func_0202a334((void *)(arg0 + 0x24), (HeapRange *)sp0);
 }
 
-s32 func_0202a4d4(void *arg0, s32 arg1) {
-    u16 old;
-    u16 bit;
-
-    old = M2C_FIELD(arg0, u16 *, 0x36);
-    arg1 &= 1;
-    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(old & ~1);
-    bit = (u16)(old & 1);
-    M2C_FIELD(arg0, u16 *, 0x36) = (u16)(M2C_FIELD(arg0, u16 *, 0x36) | arg1);
-    return bit;
+#pragma opt_propagation off
+s32 func_0202a4d4(void *arg0,u32 arg1) {
+u32 old; u32 bit;
+old=M2C_FIELD(arg0,u16 *,0x36);
+bit=old&1;
+M2C_FIELD(arg0,u16 *,0x36)=old & ~1;
+M2C_FIELD(arg0,u16 *,0x36)=M2C_FIELD(arg0,u16 *,0x36)|(arg1&1);
+return bit;
 }
-
+#pragma opt_propagation reset
 void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_02029e98();
     func_02029e98(arg0, 0x46524D48, arg0 + 0x30, arg1, arg2);
@@ -380,18 +378,20 @@ void func_0202a6b0(void *arg0, s32 arg1) {
     }
 }
 
+#pragma opt_propagation off
 s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
-    s32 func_0206409c(M2C_UNK);
-    void *p = arg0;
-    s32 one = 1;
-    s32 t = func_0206409c(arg1) - one;
-    u32 f24 = M2C_FIELD(p, s32 *, 0x24);
-    u32 f28 = M2C_FIELD(p, u32 *, 0x28);
-    u32 tmp = (~t) & (t + f24);
-    if (tmp > f28) return 0;
-    return (s32)(f28 - tmp);
+ s32 func_0206409c(M2C_UNK);
+ s32 t; u32 value,end,mask;
+ t=func_0206409c(arg1)-1;
+ value=M2C_FIELD(arg0,u32 *,0x24);
+ mask=~t;
+ t+=value;
+ end=M2C_FIELD(arg0,u32 *,0x28);
+ mask &=t;
+ if(mask>end)return 0;
+ return end-mask;
 }
-
+#pragma opt_propagation reset
 s32 func_0202a714(void *arg0, s32 arg1) {
     void *func_0202a544(void *, M2C_UNK, M2C_UNK);
     s32 temp_r4;
@@ -710,11 +710,10 @@ void func_0202acb0(s32 *arg0) {
     *arg0 = 0;
 }
 
-void func_0202acbc(s32 **arg0) {
-    s32 **p = arg0;
-    if (*p == NULL) return;
-    **p = 0;
-    *p = NULL;
+void func_0202acbc(s32 * volatile *arg0) {
+if(*arg0==NULL)return;
+**arg0=0;
+*arg0=NULL;
 }
 
 void func_0202acdc(void **arg0, s8 arg1) {
@@ -732,19 +731,16 @@ void func_0202acf0(void **arg0, s8 arg1) {
 #pragma push
 #pragma optimizewithasm off
 #pragma peephole off
-void func_0202ad04(void **arg0, s32 arg1) {
-    M2C_UNK func_0202eed8(void *, s32);
-    if (*arg0 != 0 && M2C_FIELD(*arg0, u8 *, 0x2C) != 2) {
-        func_0202eed8((u8 *)*arg0 + 0x1C, arg1 << 8);
-    }
+void func_0202ad04(void * volatile *arg0, s32 arg1, s32 arg2) {
+ M2C_UNK func_0202eed8(void *, s32, s32);
+ void *p;
+ if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) func_0202eed8((u8 *)p+0x1C,arg1<<8,arg2); }
 }
 #pragma pop
-void func_0202ad30(volatile void **arg0) {
-    M2C_UNK func_02008c50(u8);
-    if (*arg0 == NULL) {
-        return;
-    }
-    func_02008c50(M2C_FIELD(*arg0, u8 *, 0x3C));
+void func_0202ad30(void * volatile *arg0, s32 arg1) {
+M2C_UNK func_02008c50(u8,s32);
+if(*arg0==NULL)return;
+func_02008c50(M2C_FIELD(*arg0,u8 *,0x3c),arg1);
 }
 
 void func_0202ad50(void *arg0, s32 arg1, s32 arg2) {

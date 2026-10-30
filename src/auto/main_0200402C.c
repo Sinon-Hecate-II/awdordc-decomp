@@ -94,7 +94,7 @@ void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 data_020f5204;
-    s32 off = (s32)0x06400000;
+    s32 off = 0x06400000;
     if (data_020f5204 != -1 && arg2 > 0x30U) {
         func_02007a04(data_020f5204, arg0, arg1 + off, arg2);
         return;
@@ -481,10 +481,11 @@ void func_02004cf0(void) {
 }
 
 void func_02004d3c(void) {
- s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
- s32 state=func_020033cc(); s32 index=state>>4;
- u32 base=((u16*)&data_020e9b30)[index]<<12;
- M2C_FIELD(&data_0212dbfc,s32*,12)=state; M2C_FIELD(&data_0212dbfc,u32*,8)=base;
+s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
+s32 state=func_020033cc();
+u32 base=((u16*)&data_020e9b30)[state>>4];
+*(volatile s32 *)((char*)&data_0212dbfc+12)=state;
+M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
 }
 
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -516,10 +517,8 @@ void func_02004ddc(void) {
 typedef u32 Block3[3];
 #pragma opt_common_subs off
 void func_02004e20(FuncCopyV3 *src, FuncCopyV3 *dst) {
-    *dst = *src++;
-    *dst = *src++;
-    *dst = *src++;
-    *dst = *src++;
+volatile FuncCopyV3 *d=dst;
+*d=*src++; *d=*src++; *d=*src++; *d=*src++;
 }
 #pragma opt_common_subs reset
 void func_02004e44(void *arg0, void *arg1) {

@@ -366,7 +366,7 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
         *outIndex = idx;
         if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
             if (func_020bdf24(touchX, touchY)) {
-                *outIndex = *outIndex + 1;
+                (*outIndex)++;
                 if (*outIndex == count) {
                     *outIndex = 0;
                 }

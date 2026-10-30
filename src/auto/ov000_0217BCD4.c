@@ -2,12 +2,12 @@
 #include "common.h"
 
 #pragma scheduling off
-void func_ov000_0217bcd4(void) {
-    void func_ov000_0217b3bc(void);
-    extern s32 (*data_ov000_021df650)(s32, s32, s32);
-    extern s32 func_ov000_0217ab5c(s32, s32, s32);
-    data_ov000_021df650 = func_ov000_0217ab5c;
-    func_ov000_0217b3bc();
+s32 func_ov000_0217bcd4(s8 a, s8 b, s8 c, s16 d) {
+s32 func_ov000_0217b3bc(s8,s8,s8,s16);
+extern s32 (*data_ov000_021df650)(s32,s32,s32);
+extern s32 func_ov000_0217ab5c(s32,s32,s32);
+data_ov000_021df650=func_ov000_0217ab5c;
+return func_ov000_0217b3bc(a,b,c,d);
 }
 s32 func_ov000_0217bcf4(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_ov000_0217abd8(s32, s32, s32);

@@ -368,9 +368,9 @@ func_020067e0(data_ov001_02193e68,0x800);func_02004210(data_ov001_02193e68,0,0x4
 
 #pragma pool_constants off
 void func_ov001_0218c0b8(void) {
-extern s32 data_ov001_02193e68;
-func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
-func_ov001_0218b71c((void *)(0x02193e68 + 0));
+    extern s32 data_ov001_02193e68;
+    func_ov001_0218c94c(1, M2C_FIELD(data_ov001_02193e68, s32 *, 0x808));
+    func_ov001_0218b71c((void *)0x02193e68);
 }
 #pragma pool_constants reset
 void func_ov001_0218c0e4(s32 n){

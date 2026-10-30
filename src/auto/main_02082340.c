@@ -9,6 +9,7 @@ typedef struct { u16 f0:2; u16 f2:4; u16 f6:1; u16 f7:1; u16 f8:5; u16 f13:1; u1
 /* The engine's first entry has its own layout. */
 typedef struct { u16 f0:3; u16 f3:13; } SpriteHead;
 
+#pragma scheduling off
 void func_02082340(s32 arg0,SpriteAttr *arg1){
 void func_02007e98(s32,s32,s32);
 void func_02007ef4(s32,s32,s32);
@@ -25,10 +26,10 @@ func_02082134(arg0,(u8)arg1->f9);
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine+arg0,s32 *,0xc),0x40);
 func_01ff9ce8(arg0);
 v=func_01ff9c34((u8)((SpriteHead *)*gCur3DSpriteEngine)->f0,arg0);
-src=base+((u32)((SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f8<<11);
-func_02007ef4(M2C_FIELD(gCur3DSpriteEngine+arg0,s32 *,0x20),src,v);
+src=base+((u32)((volatile SpriteTile *)((u8 *)*gCur3DSpriteEngine+6))[arg0].f8<<11);
+func_02007ef4(M2C_FIELD(gCur3DSpriteEngine+arg0,volatile s32 *,0x20),src,v);
 }
-
+#pragma scheduling on
 void func_020824cc(void) {
     void func_02082a8c(void *, void *);
     extern void **gCur3DSpriteEngine;

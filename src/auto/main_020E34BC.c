@@ -16,8 +16,8 @@ typedef struct {
 } IntrState;
 
 static inline BOOL check_val(void *arg0, s32 *sp) {
-    s32 val;
     s32 *arr;
+    s32 val;
     s32 j;
     s32 count;
 

@@ -185,25 +185,21 @@ void func_ov002_021e48e8(u8 *x,s32 y,s32 z,s32 w) {
  } while(i<5);
 }
 
-#pragma push
 #pragma scheduling off
 void func_ov002_021e497c(s32 x,s32 y,s32 flip,s32 tile) {
 void func_01ffaacc(u16,u16,u16,void *,s32);
 void func_01ffad0c(u16,u16,u16,void *,s32);
 extern u16 **gCur3DSpriteEngine;
 extern u8 data_ov002_021f2d2a[],data_ov002_021f2d1c[];
-s32 pal;
 if(!flip) {
-pal=flip==0?1:2;
-func_01ffaacc((u16)(x&511),(u16)(y&255),(u16)((0x3ff&(0x11e>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((pal)<<12)),data_ov002_021f2d2a,1);
+func_01ffaacc((u16)(x&511),(u16)(y&255),(u16)((0x3ff&(0x11e>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12)),data_ov002_021f2d2a,1);
 func_01ffaacc((u16)((x+16)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12)),data_ov002_021f2d1c,0);
 } else {
-pal=flip==0?1:2;
-func_01ffad0c((u16)((x+80)&511),(u16)(y&255),(u16)((0x3ff&(0x11e>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((pal)<<12)),data_ov002_021f2d2a,1);
+func_01ffad0c((u16)((x+80)&511),(u16)(y&255),(u16)((0x3ff&(0x11e>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12)),data_ov002_021f2d2a,1);
 func_01ffaacc((u16)((x+8)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12)),data_ov002_021f2d1c,0);
 }
 }
-#pragma pop
+#pragma scheduling reset
 s32 func_ov002_021e4b68(void) {
     extern M2C_UNK data_ov002_021f3124;
     if ((M2C_FIELD(&data_ov002_021f3124, u8 *, 0) == M2C_FIELD(&data_ov002_021f3124, u8 *, 1)) && (M2C_FIELD(&data_ov002_021f3124, u8 *, 0x2C) == M2C_FIELD(&data_ov002_021f3124, u8 *, 0x2D))) {

@@ -198,8 +198,13 @@ void func_020b8594(s32 arg0) {
 }
 
 s32 func_020b8694(void *arg0) {
-s32 n=M2C_FIELD(arg0,s16 *,0x40);
-switch(n) { case 0: return 0; default: M2C_FIELD(arg0,s16 *,0x40)=n-1; return 1; }
+    s16 n = M2C_FIELD(arg0, s16 *, 0x40);
+
+    if (n != 0) {
+        M2C_FIELD(arg0, s16 *, 0x40) = n - 1;
+        return 1;
+    }
+    return 0;
 }
 #pragma optimization_level 4
 s16 func_020b86b4(void *arg0) {

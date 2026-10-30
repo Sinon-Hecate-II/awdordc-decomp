@@ -34,7 +34,38 @@ void func_0208f3d4(void *arg0) {
 }
 
 #pragma opt_common_subs off
-u16 func_0208f404(u8 *arg0, s32 arg1) /*c*/ {u32 poly;u32 byte;u32 crc = 0;s32 i;if (arg1 > 0) {poly = 0x18003;do {byte = *arg0;i = 0;do {crc = crc << 1;if (crc & 0x10000) {crc = crc << 16;crc = poly ^ (crc >> 16);}byte = byte << 17;crc = crc << 16;byte = byte >> 16;crc = crc >> 16;if (byte & 0x100) {crc = crc ^ 1;}i = i + 1;} while (i < 8);arg1 = arg1 - 1;arg0 = arg0 + 1;} while (arg1 > 0);}return (u16)crc;}
+u16 func_0208f404(u8 *arg0, s32 arg1) {
+    u32 crc = 0;
+    u32 byte;
+    s32 i;
+    u32 poly;
+
+    if (arg1 > 0) {
+        poly = 0x18003;
+        do {
+            byte = *arg0;
+            i = 0;
+            do {
+                crc = crc << 1;
+                if (crc & 0x10000) {
+                    crc = crc << 16;
+                    crc = poly ^ (crc >> 16);
+                }
+                byte = byte << 17;
+                crc = crc << 16;
+                byte = byte >> 16;
+                crc = crc >> 16;
+                if (byte & 0x100) {
+                    crc = crc ^ 1;
+                }
+                i = i + 1;
+            } while (i < 8);
+            arg1 = arg1 - 1;
+            arg0 = arg0 + 1;
+        } while (arg1 > 0);
+    }
+    return (u16)crc;
+}
 #pragma opt_common_subs reset
 void func_0208f478(void) {
 

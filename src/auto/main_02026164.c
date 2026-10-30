@@ -228,64 +228,14 @@ void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
     func_02007f8c((u8 *)(dst + k), 0, (u32)((len - k) * 2));
 }
 
-void func_0202667c(u16 *dst, u16 *src, s32 n) {
-    s32 m;
-    m = func_02026244(src, n);
-    if (n > m * 2) {
-        func_02007f8c((u8 *)(dst + m * 2), 0, (u32)((n - m * 2) * 2));
-    }
-    if (m <= 0) {
-        return;
-    }
-    {
-        s32 r4 = 0;
-        s32 r5 = 0;
-        for (;;) {
-            if (r5 >= n) {
-                break;
-            }
-            {
-                u16 w = src[r4];
-                u32 sq = (u32)w * w;
-                dst[r5] = (u16)sq;
-                if (r5 == n - 1) {
-                    break;
-                }
-                r4++;
-                dst[r5 + 1] = (u16)(sq >> 16);
-                if (r4 >= m) {
-                    break;
-                }
-                r5 += 2;
-            }
-        }
-    }
-    {
-        s32 r6;
-        for (r6 = 0; r6 < m; r6++) {
-            s32 r4 = r6 + 1;
-            for (;;) {
-                s32 r5;
-                if (r4 >= m) {
-                    break;
-                }
-                r5 = r6 + r4;
-                if (r5 >= n) {
-                    break;
-                }
-                {
-                    u32 prod = (u32)src[r4] * (u32)src[r6];
-                    if (prod > 0x7fff8000U) {
-                        func_02026524(dst, prod, r5, n);
-                        func_02026524(dst, prod, r5, n);
-                    } else {
-                        func_02026524(dst, prod << 1, r5, n);
-                    }
-                }
-                r4++;
-            }
-        }
-    }
+void func_0202667c(u16 *dst,u16 *src,s32 n){
+s32 m=func_02026244(src,n); s32 i,k,j; u32 p;
+if(n>m*2)func_02007f8c((u8*)(dst+m*2),0,(n-m*2)*2);
+i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
+for(k=0;k<m;k++){i=k+1;goto test;
+body:p=(u32)src[i]*src[k];if(p<=0x7fff8000U)func_02026524(dst,p<<1,j,n);else{func_02026524(dst,p,j,n);func_02026524(dst,p,j,n);}i++;
+test:if(i<m){j=k+i;if(j<n)goto body;}
+}
 }
 
 u64 func_020267b0(u16 *arg0) {

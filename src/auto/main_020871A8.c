@@ -119,26 +119,26 @@ void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     *(volatile u32 *) 0x4000504 = 0;
 }
 
-void func_02087a08(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC) {
-    u16 vA = (u16) ((s32) (((argA << 0xC) + 0x800) << 8) >> 0x10);
-    u16 v9 = (u16) ((s32) (((arg9 << 0xC) + 0x800) << 8) >> 0x10);
-    u16 vC = (u16) ((s32) (((argC << 0xC) + 0x800) << 8) >> 0x10);
-    u16 vB = (u16) ((s32) (((argB << 0xC) + 0x800) << 8) >> 0x10);
-
-    *(volatile u32 *) 0x4000500 = 1;
-    *(volatile u32 *) 0x4000488 = (u32) v9 | ((u32) vA << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg1 << 0x10;
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
-    *(volatile u32 *) 0x4000488 = (u32) v9 | ((u32) vC << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg4 | ((u32) (u16) arg5 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
-    *(volatile u32 *) 0x4000488 = (u32) vB | ((u32) vC << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg6 | ((u32) (u16) arg7 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
-    *(volatile u32 *) 0x4000488 = (u32) vB | ((u32) vA << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg2 | ((u32) (u16) arg3 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) (u16) arg8;
-    *(volatile u32 *) 0x4000504 = 0;
+void func_02087a08(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 z,s32 t0,s32 t1,s32 t2,s32 t3) {
+register u16 vA=(u16)((s32)(((t1<<12)+0x800)<<8)>>16);
+u16 v9=(u16)((s32)(((t0<<12)+0x800)<<8)>>16);
+register u16 vC=(u16)((s32)(((t3<<12)+0x800)<<8)>>16);
+u16 vB=(u16)((s32)(((t2<<12)+0x800)<<8)>>16);
+s16 bb=(s16)b,aa=(s16)a,ff=(s16)f,ee=(s16)e,zz=(s16)z,hh=(s16)h,gg=(s16)g,dd=(s16)d,cc=(s16)c;
+*(volatile u32*)0x4000500=1;
+*(volatile u32*)0x4000488=v9|((u32)vA<<16);
+*(volatile u32*)0x400048c=(u16)aa|((u32)(u16)bb<<16);
+*(volatile u32*)0x400048c=(u16)zz;
+*(volatile u32*)0x4000488=v9|((u32)vC<<16);
+*(volatile u32*)0x400048c=(u16)ee|((u32)(u16)ff<<16);
+*(volatile u32*)0x400048c=(u16)zz;
+*(volatile u32*)0x4000488=vB|((u32)vC<<16);
+*(volatile u32*)0x400048c=(u16)gg|((u32)(u16)hh<<16);
+*(volatile u32*)0x400048c=(u16)zz;
+*(volatile u32*)0x4000488=vB|((u32)vA<<16);
+*(volatile u32*)0x400048c=(u16)cc|((u32)(u16)dd<<16);
+*(volatile u32*)0x400048c=(u16)zz;
+*(volatile u32*)0x4000504=0;
 }
 
 void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
@@ -216,92 +216,47 @@ loop_1:
     }
 }
 
-void func_02087e34(void *arg0) {
-    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
-    void *p = arg0;
-    M2C_FIELD(p, s32 *, 0) = 0;
-    M2C_FIELD(p, s32 *, 4) = 0;
-    {
-        u16 count = M2C_FIELD(p, u16 *, 0x10);
-        s32 size = count * 0xC;
-        func_02007f8c(M2C_FIELD(p, s32 *, 0x14), 0, size);
-    }
-    M2C_FIELD(p, s8 *, 0x12) = 0;
-}
-
+#pragma optimization_level 2
+void func_02087e34(void *arg0) { M2C_UNK func_02007f8c(s32,M2C_UNK,s32); M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0; func_02007f8c(M2C_FIELD(arg0,s32 *,0x14),0,M2C_FIELD(arg0,u16 *,0x10)*12); M2C_FIELD(arg0,u8 *,0x12)=0; }
+#pragma optimization_level reset
 void *func_02087e68(void *a,s32 b) {s32 i;u16 n;u8 *p;n=M2C_FIELD(a,u16 *,16);p=M2C_FIELD(a,u8 **,20);for(i=0;i<(s32)n;i++,p+=12)if(M2C_FIELD(p,u16 *,8)==b)return p;return 0;}
 
-void func_02087ea0(void *arg0, void *arg1) {
-    if (!(M2C_FIELD(arg1, u16 *, 0xA) & 4)) {
-        goto done;
-    }
-    {
-        void *old = M2C_FIELD(arg0, void **, 0);
-        M2C_FIELD(arg0, void **, 0) = arg1;
-        M2C_FIELD(arg0, void **, 4) = old;
-        M2C_FIELD(arg0, s8 *, 0xF) = 0;
-    }
-done:
-    return;
+#pragma optimize_for_size off
+void func_02087ea0(void *arg0,void *arg1){
+if(M2C_FIELD(arg1,u16*,0xA)&4){
+u32 zero=0; void *old=M2C_FIELD(arg0,void**,0);
+M2C_FIELD(arg0,void**,0)=arg1;
+M2C_FIELD(arg0,void**,4)=old;
+M2C_FIELD(arg0,s8*,0xF)=zero;
+}}
+#pragma push
+#pragma opt_propagation off
+void func_02087ec0(void *a,s32 b){
+void *func_02087e68(void*,s32);void func_02087ea0(void*,void*);
+if(b==-1){M2C_FIELD(a,s32*,4)=0;M2C_FIELD(a,s32*,0)=0;M2C_FIELD(a,u8*,15)=255;return;}
+func_02087ea0(a,func_02087e68(a,b));
 }
-
-void func_02087ec0(void *a, s32 b) {
-    void *func_02087e68(void *, s32);
-    void func_02087ea0(void *, void *);
-    if (b == ~0) {
-        M2C_FIELD(a, s32 *, 4) = 0;
-        M2C_FIELD(a, s32 *, 0) = 0;
-        M2C_FIELD(a, u8 *, 15) = 0xFF;
-        return;
-    }
-    func_02087ea0(a, func_02087e68(a, b));
-}
-
+#pragma pop
 void func_02087f00(void *p, s32 id) { void func_02087ec0(void *, s32); func_02087ec0(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
 
 s32 func_02087f20(s32 a,void *b,s32 c,s32 d) {s32 x=M2C_FIELD(b,s16 *,0);s32 y;if(c<x || x+M2C_FIELD(b,u16 *,4)<=c)return 0;y=M2C_FIELD(b,s16 *,2);if(d<y || y+M2C_FIELD(b,u16 *,6)<=d)return 0;return 1;}
 
-s32 func_02087f70(void *arg0, s32 arg1, s32 arg2) {
-    s16 temp_r4;
-    s16 temp_r4_2;
-    s16 temp_r6;
-    void *var_ip;
-    s32 var_lr;
-    u16 temp_r3;
-    u16 temp_r4_3;
-    s16 temp_r6_2;
-
-    temp_r4 = M2C_FIELD(arg0, s16 *, 0x18);
-    if (temp_r4 > arg1) return 0;
-    if ((s32)(temp_r4 + M2C_FIELD(arg0, u16 *, 0x1C)) <= arg1) return 0;
-    temp_r4_2 = M2C_FIELD(arg0, s16 *, 0x1A);
-    if (temp_r4_2 > arg2) return 0;
-    if ((s32)(temp_r4_2 + M2C_FIELD(arg0, u16 *, 0x1E)) <= arg2) return 0;
-    temp_r4_3 = M2C_FIELD(arg0, u16 *, 0x10);
-    var_ip = M2C_FIELD(arg0, void **, 0x14);
-    var_lr = 0;
-    if ((s32) temp_r4_3 > 0) {
-loop_7:
-        if (M2C_FIELD(var_ip, u16 *, 0xA) != 0) {
-            temp_r3 = M2C_FIELD(arg0, u16 *, 0x20);
-            temp_r6 = M2C_FIELD(var_ip, s16 *, 0);
-            if ((s32)(temp_r6 - temp_r3) > arg1) { } else {
-                if ((s32)(temp_r3 + (temp_r6 + M2C_FIELD(var_ip, u16 *, 4))) > arg1) {
-                    temp_r6_2 = M2C_FIELD(var_ip, s16 *, 2);
-                    if ((s32)(temp_r6_2 - temp_r3) > arg2) { } else {
-                        if ((s32)(temp_r3 + (temp_r6_2 + M2C_FIELD(var_ip, u16 *, 6))) > arg2) {
-                            return 0;
-                        }
-                    }
-                }
-            }
-        }
-        var_lr += 1;
-        var_ip = (void *) ((u8 *) var_ip + 0xC);
-        if (var_lr < (s32) temp_r4_3) {
-            goto loop_7;
-        }
-    }
-    return 1;
+s32 func_02087f70(void *a,s32 x,s32 y){
+s32 left=M2C_FIELD(a,s16*,0x18);
+s32 top;u16 n;void *p;s32 i;u16 pad;s16 px,py;
+if(x<left || left+M2C_FIELD(a,u16*,0x1c)<=x)return 0;
+top=M2C_FIELD(a,s16*,0x1a);
+if(y<top || top+M2C_FIELD(a,u16*,0x1e)<=y)return 0;
+n=M2C_FIELD(a,u16*,0x10);p=M2C_FIELD(a,void**,0x14);
+for(i=0;i<n;i++,p=(u8*)p+12){
+if(M2C_FIELD(p,u16*,10)){
+pad=M2C_FIELD(a,u16*,0x20);px=M2C_FIELD(p,s16*,0);
+if(x<px-pad)continue;
+if(px+M2C_FIELD(p,u16*,4)+pad<=x)continue;
+py=M2C_FIELD(p,s16*,2);
+if(y<py-pad)continue;
+if(py+M2C_FIELD(p,u16*,6)+pad>y)return 0;
+}}
+return 1;
 }
 

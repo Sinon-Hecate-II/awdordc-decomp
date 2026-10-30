@@ -225,12 +225,9 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     } else {
         s32 value;
         s32 count;
-        value = M2C_FIELD(&data_ov009_022263e0, s32 *, 4);
-        value &= 0xff;
-        count = (s32)&data_ov009_0222696e - (s32)&data_ov009_022263e0;
-        if (count < 0) {
-            count = 0;
-        }
+        value = (s32)(u8)M2C_FIELD(&data_ov009_022263e0, s32 *, 4);
+        count = (s32)&data_ov009_0222696e - (s32)&data_ov009_02226968;
+        if (count < 0) count = 0;
         func_02065210((s32)&data_ov009_02226968, value, count);
     }
 
@@ -243,7 +240,7 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     stk[0] = x;
     stk[1] = y;
 
-    p = stk;
+    p = (s32 *)stk;
     base = (s32 *)&data_ov009_02226cc0;
     limit = (s32 *)&data_ov009_02226fe0;
     do {
@@ -550,11 +547,11 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK data_ov009_022268e0;
 
-    u16 saved;
-    void *ptr;
+    u32 saved;
     u16 masked;
     s32 r5;
     s32 first;
+    void *ptr;
 
     if (func_ov009_02224194() != 4) {
         if (func_ov009_02224194() != 5) {
@@ -566,7 +563,7 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
     arg3 = arg3 & func_ov009_02224174();
     first = func_ov009_02225450();
-    masked = (u16)(arg3 & ~(1 << first));
+    masked = (u16)(arg3 & (-1 ^ (1 << first)));
     r5 = func_ov009_02225450();
 
     saved = *(volatile u16 *)0x04000208;

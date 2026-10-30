@@ -456,26 +456,9 @@ p=(void *)(data_ov001_02193e30+i*0x228);func_ov001_0218bfb4(M2C_FIELD(p,s32*,0x2
 }
 }
 
-#pragma push
-#pragma merge_constants off
-#pragma opt_common_subs off
-void func_ov001_0218a01c(void) {
-    void func_ov001_0218a6d8(s32);
-    void func_ov001_0218b71c(void *);
-    void func_ov001_0218bf30(s32);
-    extern s32 data_ov001_02193e30;
-    s32 i, offset;
-    i=0; offset=0;
-    do {
-        func_ov001_0218bf30(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x220));
-        func_ov001_0218a6d8(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x224));
-        i++;
-        offset+=0x228;
-    }while(i<2);
-    (void)data_ov001_02193e30;
-    func_ov001_0218b71c(&data_ov001_02193e30);
-}
-#pragma pop
+#pragma opt_propagation off
+void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void func_ov001_0218b71c(void *); void func_ov001_0218bf30(s32); extern s32 data_ov001_02193e30; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(data_ov001_02193e30+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);func_ov001_0218b71c(&data_ov001_02193e30); }
+#pragma opt_propagation reset
 void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 func_ov001_0218a74c(s32);
     s32 func_020051f8(s32);

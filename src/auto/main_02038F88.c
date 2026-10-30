@@ -111,32 +111,7 @@ void func_02039204(s32 arg0) {
     M2C_FIELD(data_0213d1f8, s32 *, 0x24) = arg0;
 }
 
-s32 func_02039224(s32 arg0) {
-    s32 func_0203e0ec();
-    s32 func_0203e338(u8 **);
-    u8 *sp0;
-    s32 temp_r0;
-    s32 var_r0;
-    u8 *var_r3;
-
-    temp_r0 = func_0203e338(&sp0);
-    var_r0 = 0;
-    if (temp_r0 > 0) {
-        var_r3 = sp0;
-loop_2:
-        if (arg0 != *var_r3) {
-            var_r0 += 1;
-            var_r3 += 1;
-            if (var_r0 < temp_r0) {
-                goto loop_2;
-            }
-        }
-    }
-    if (var_r0 == temp_r0) {
-        return 0;
-    }
-    return func_0203e0ec();
-}
+s32 func_02039224(s32 arg0) { s32 func_0203e0ec(s32,s32); s32 func_0203e338(u8 **); u8 *p,*q; s32 n,i; n=func_0203e338(&p); i=0; if(n>0) { q=p; do { if(arg0==*q)break; i++; q++; }while(i<n); } if(i==n)return 0; return func_0203e0ec(i,n); }
 
 u32 func_02039284(u8 *src, s32 n) {
 u32 acc=0; u32 i=0;

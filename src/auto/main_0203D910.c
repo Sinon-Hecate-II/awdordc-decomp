@@ -185,9 +185,9 @@ s32 func_0203e0ec(s32 arg0, s32 arg1) {
                 baseFirst = func_02044268();
                 baseSecond = func_02044268();
                 q = (void *)((s32)r9 + (s32)baseSecond);
-                bb = *(u8 *)((u8 *)q + r4 + 0x2d1);
+                bb = *(u8 *)(r4 + (s32)q + 0x2d1);
                 w = (void *)((s32)r9 + (s32)baseFirst);
-                *(u8 *)((u8 *)w + r4 + 0x2d0) = bb;
+                *(u8 *)(r4 + (s32)w + 0x2d0) = bb;
                 r4++;
             } while (r4 < r5);
         }

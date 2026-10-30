@@ -65,16 +65,16 @@ s32 func_02005080(u32 arg0) {
     return 0;
 }
 
-#pragma scheduling off
+#pragma scheduling on
 void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_020051c8(s32);
     extern M2C_UNK data_0212dc1c;
     extern M2C_UNK data_0212dc20;
     extern M2C_UNK data_0212dc24;
-    s32 offset;
     s32 shift;
-    shift = arg0 + 8;
+    s32 offset;
     offset = arg0 * 12;
+    shift = arg0 + 8;
     M2C_FIELD(&data_0212dc1c, s32 *, offset) = arg1;
     M2C_FIELD(&data_0212dc24, s32 *, offset) = arg2;
     M2C_FIELD(&data_0212dc20, s32 *, offset) = func_020051c8(1 << shift) & (1 << shift);

@@ -1,5 +1,6 @@
 /* 152 functions from 0x020D8BB4 to 0x020D9A98 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 values[6]; } SetupParams12;
 
 void func_020d8bb4(void) {
 M2C_UNK func_0208349c(u32);
@@ -159,7 +160,7 @@ void func_020d908c(void) {
     extern M2C_UNK data_020efad4;
     extern M2C_UNK data_020f28f0;
     extern M2C_UNK data_020f28d0;
-    u16 buf[6];
+    SetupParams12 buf;
     void *oldEngine;
     u16 *volatile t;
     u16 *volatile v0;
@@ -168,19 +169,14 @@ void func_020d908c(void) {
     u16 *volatile v3;
     u16 *volatile v4;
     s32 i;
-    buf[0] = data_020f4ea8[0];
-    buf[1] = data_020f4ea8[1];
-    buf[3] = data_020f4ea8[3];  /* store order to match */
-    buf[2] = data_020f4ea8[2];
-    buf[4] = data_020f4ea8[4];
-    buf[5] = data_020f4ea8[5];
+    buf = *(const SetupParams12 *)data_020f4ea8;
     oldEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
     func_020d4d78();
     gCur3DSpriteEngine = oldEngine;
     t = (u16 *)*(void **)gCur3DSpriteEngine;
     *t = (u16)(*t & ~7);
-    func_020822b8(buf);
+    func_020822b8(&buf);
     func_02082770();
     func_02082700();
     func_020c0a88();

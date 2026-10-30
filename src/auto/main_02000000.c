@@ -60,24 +60,7 @@ void func_02000f90(void *arg0, void *arg1, void *arg2) {
     r[2] = (s32)(((s64)x1 * q[5] + (s64)x0 * q[2] + (s64)x2 * q[8]) >> 12);
 }
 
-void func_0200100c(Pair_100c *p) {
-    p->a = 0x1000;
-    p->b = 0;
-    p++;
-    p->a = 0;
-    p->b = 0;
-    p++;
-    p->a = 0x1000;
-    p->b = 0;
-    p++;
-    p->a = 0;
-    p->b = 0;
-    p++;
-    p->a = 0x1000;
-    p->b = 0;
-    p++;
-    p->a = 0;
-    p->b = 0;
-    p++;
-}
-
+#pragma push
+#pragma opt_propagation off
+void func_0200100c(Pair_100c *p) { Pair_100c a={4096,0}, b={0,0}; *p++=a; *p++=b; *p++=a; *p++=b; *p++=a; *p++=b; }
+#pragma pop

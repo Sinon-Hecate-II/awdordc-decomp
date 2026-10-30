@@ -201,7 +201,7 @@ void func_02028cc8(u16 *p) {
             func_020280c8(0, (u8 *)data_02138e4c + 0x2140, 0, 0x872);
             return;
         case 0xf:
-            func_02029bd0(((u16)*((u8 *)*(void **)((u8 *)p + 8) + 0xe) >> 8) & 0xff);
+            func_02029bd0((*(u16 *)((u8 *)*(void **)((u8 *)p + 8) + 0xe) >> 8) & 0xff);
             func_020067a8(*(void **)((u8 *)p + 8), 0x620);
             func_020296e0(*(void **)((u8 *)p + 8));
             return;

@@ -115,6 +115,49 @@ u8 func_ov003_02207c5c(void *arg0) {
     return (u8) (var_r0 - 0xB);
 }
 
+void func_ov003_02207c7c(void *arg0) {
+void func_02087d84(void *,u16,s32,s16,u16,s32);
+s32 func_020a8ce4(s32,s32);
+s32 func_020a8e28(s32,s32);
+s32 func_ov003_02206690(s32,s32,s32);
+void *inner,*inner2;
+u16 selected;
+s32 x;
+s32 xpre,value,width,i,minus=-1,constant=0xcd;
+s32 cond,cond2,cond3;
+u8 kind,idx;
+void *p;
+inner=*M2C_FIELD(arg0,void ***,0x5c);
+selected=inner?M2C_FIELD(inner,u16 *,8):minus;
+xpre=func_020a8e28(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
+i=11;
+if(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11<=11)return;
+x=(s16)xpre;
+do {
+width=M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1);
+value=func_020a8ce4(width,constant);
+if(i==selected){
+inner2=*M2C_FIELD(arg0,void ***,0x5c);
+cond=0;
+idx=(u8)((inner2?M2C_FIELD(inner2,u16 *,8):minus)-11);
+kind=M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,15);
+if(kind==8){if(idx<=1)cond=1;}
+if(!(cond&255)){
+idx=(u8)((inner2?M2C_FIELD(inner2,u16 *,8):minus)-11);
+if(kind==8)cond2=1;else cond2=0;
+cond3=(cond2&255) && func_ov003_02206690(idx,2,4)!=0;
+if(cond3&255)goto half;
+}else {half: width>>=1;}
+p=M2C_FIELD(arg0,void **,0x44);
+func_02087d84(M2C_FIELD(arg0,void **,0x5c),(u16)i,16,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)width,M2C_FIELD(p,u8 *,2));
+}else{
+p=M2C_FIELD(arg0,void **,0x44);
+func_02087d84(M2C_FIELD(arg0,void **,0x5c),(u16)i,x,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)value,M2C_FIELD(p,u8 *,2));
+}
+i++;
+}while(i<M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11);
+}
+
 u8 func_ov003_02207e38(void *arg0, s32 arg1) {
     s32 func_ov003_02206690(s32, s32, s32);
     s32 var_r0;
@@ -133,86 +176,49 @@ u8 func_ov003_02207e38(void *arg0, s32 arg1) {
 }
 
 void func_ov003_02207e80(void *arg0) {
-    extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c4;
-    M2C_UNK func_01ff9ce8(s32);
-    void *func_020bf25c(s32);
-    s32 func_02086680(s32);
-    void func_02068c50(void *, void *);
-    s32 func_020675e4(void *, void *, ...);
-    void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, void *, u16, u16);
-    extern char data_ov003_02211188[];
-
-    u16 **savedEngine;
-    u8 kind;
-    char buf[0x100];
-    void *x;
-    void *inner;
-    u16 kindVal;
-    u8 idx;
-    u8 byte38;
-    u8 bit;
-    u8 flag34;
-    u8 var_r0;
-    u16 scale;
-    u8 oldBit;
-
-    savedEngine = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-
-    func_01ff9ce8(1);
-
-    flag34 = (*(u8 *)((char *)arg0 + 0x34) != 0) ? 1 : 0;
-    var_r0 = flag34;
-
-    if (var_r0 == 0) {
-        x = *(void **)((char *)arg0 + 0x5C);
-        inner = (x != 0) ? *(void **)((char *)x + 0) : 0;
-
-        kind = *(u8 *)((char *)*(void **)((char *)arg0 + 0x3C) + 0xF);
-
-        byte38 = *(u8 *)((char *)arg0 + 0x38);
-        bit = (u8)(((u32)byte38 << 29) >> 31);
-        if (inner != 0) {
-            kindVal = *(u16 *)((char *)inner + 0x8);
-        } else {
-            kindVal = (u16)-1;
-        }
-        idx = (u8)(kindVal - 0xB);
-        scale = (u16)(((u32)bit << 8) - bit + 1);
-
-        switch (kind) {
-        case 9:
-            func_02068c50(buf, func_020bf25c(0));
-            break;
-        case 11:
-            func_02068c50(buf, func_020bf25c(1));
-            break;
-        case 10:
-            func_02068c50(buf, func_020bf25c(5));
-            break;
-        default: {
-            void *base = *(void **)((char *)arg0 + 0x48);
-            void *slot = (void *)((char *)base + (u32)idx * 0x24);
-            void *p = *(void **)slot;
-            func_020675e4((void *)buf, (void *)data_ov003_02211188,
-                          func_02086680(*(s32 *)((char *)p + 0xC)));
-            break;
-        }
-        }
-
-        func_0209b2b4(0, 0, 1, (void *)buf, 0x3000, scale);
-    }
-
-    {
-        void *engine = *gCur3DSpriteEngine;
-        *(u8 *)((char *)engine + 0x46) |= 0x2;
-        byte38 = *(u8 *)((char *)arg0 + 0x38);
-        oldBit = (u8)(((u32)byte38 << 29) >> 31);
-        *(u8 *)((char *)arg0 + 0x38) = (byte38 & ~0x4) | (oldBit ? 0 : 0x4);
-    }
-
-    gCur3DSpriteEngine = savedEngine;
+extern u16 **gCur3DSpriteEngine;
+extern u16 **data_027e00c4;
+M2C_UNK func_01ff9ce8(s32);
+void *func_020bf25c(s32,u8);
+s32 func_02086680(s32);
+void func_02068c50(void *,void *);
+s32 func_020675e4(void *,void *,...);
+void func_0209b2b4(s32,s32,s32,void *,u16,u16);
+extern char data_ov003_02211188[];
+u16 **saved=gCur3DSpriteEngine;
+char buf[256];
+s32 scale;
+void *inner,*kindptr;
+u8 flag,kind,idx,old,byte38;
+u32 bit;
+gCur3DSpriteEngine=data_027e00c4;
+func_01ff9ce8(1);
+flag=M2C_FIELD(arg0,u8 *,0x34)!=0;
+if(!flag){
+inner=*M2C_FIELD(arg0,void ***,0x5c);
+byte38=M2C_FIELD(arg0,u8 *,0x38);
+kindptr=M2C_FIELD(arg0,void **,0x3c);
+idx=(u8)((inner?M2C_FIELD(inner,u16 *,8):-1)-11);
+bit=((u32)byte38<<29)>>31;
+kind=M2C_FIELD(kindptr,u8 *,15);
+scale=(bit<<8)-bit+1;
+switch(kind){
+case 9:func_02068c50(buf,func_020bf25c(0,idx));break;
+case 11:func_02068c50(buf,func_020bf25c(5,idx));break;
+case 10:func_02068c50(buf,func_020bf25c(1,idx));break;
+default:
+idx=(u8)((inner?M2C_FIELD(inner,u16 *,8):-1)-11);
+func_020675e4(buf,data_ov003_02211188,func_02086680(M2C_FIELD(*(void **)((char *)M2C_FIELD(arg0,void **,0x48)+(s16)idx*(s16)36),s32 *,12)));
+break;
+}
+func_0209b2b4(0,0,1,buf,0x3000,(u16)scale);
+}
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
+bit=((u32)M2C_FIELD(arg0,volatile u8 *,0x38)<<29)>>31;
+old=M2C_FIELD(arg0,u8 *,0x38);
+flag=!bit;
+M2C_FIELD(arg0,u8 *,0x38)=(old&~4)|(((u32)flag<<31)>>29);
+gCur3DSpriteEngine=saved;
 }
 
 u8 func_ov003_0220801c(void *arg0) {

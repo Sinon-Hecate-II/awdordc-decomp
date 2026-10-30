@@ -47,7 +47,8 @@ s32 func_020739f8(void *arg0, void *arg1) {
     ctx.state.tail = st->tail;
 
     for (;;) {
-        switch (func_02072da4(&ctx.token)) {
+        u8 cmd = func_02072da4((CtxToken_020739f8 *)(&ctx + 0));
+        switch (cmd) {
         default:
         case 1:
         case 14:
@@ -67,11 +68,9 @@ s32 func_020739f8(void *arg0, void *arg1) {
         case 15:
         case 16:
         case 17:
-        case 18: {
-            Ctx_020739f8 *cp = &ctx;
-            func_02072dc0(cp);
+        case 18:
+            func_02072dc0((Ctx_020739f8 *)(&ctx + 0));
             break;
-        }
         case 13:
             func_02072b20((u8 *)ctx.token.t2 + 1, &out);
             p = (u8 *)ctx.state.f6 + out;

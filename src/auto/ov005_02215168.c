@@ -101,9 +101,9 @@ void func_ov005_022153fc(u8 *a) {
     extern u16 *data_02101e84;
 
     void *p = M2C_FIELD(&data_ov005_02221304, void **, 8);
-    s32 max = M2C_FIELD(p, s16 *, 0x9a) - 6;
     s32 n = *a;
     s32 pos = M2C_FIELD(p, s16 *, 0x98);
+    s32 max = M2C_FIELD(p, s16 *, 0x9a) - 6;
     if (max < 0) max = 0;
 
     if (pos == 0 && n == 0) {

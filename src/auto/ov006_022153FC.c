@@ -575,9 +575,10 @@ extern u16 **gCur3DSpriteEngine;
 extern u16 **data_027e00c8;
 #pragma optimization_level 2
 void func_ov006_0221619c(void *arg0) {
+extern u16 **gCur3DSpriteEngine;extern u16 **data_027e00c8;extern s8 data_ov006_02218e10[];
 M2C_UNK func_0208df84(s16,s16,s32,s32,s32,s32);
 s32 func_020a8ff4(s32);M2C_UNK func_020a92bc(void *,s32);M2C_UNK func_020a94fc(void *);M2C_UNK func_020b1c44(s32,s32);
-u16 **saved;u16 neg;s32 i,x,y;u16 reset;void *p;s32 offset;
+u16 **saved;u16 neg;s32 reset,i,x,y;void *p;s32 offset;
 offset=func_020a8ff4(M2C_FIELD(arg0,s32 *,0x48));
 func_020b1c44(offset,0);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;neg=-offset;

@@ -60,6 +60,7 @@ u16 func_020070a4(void) {
     return *(u16 *)0x04000100;
 }
 
+#pragma opt_if-conversion off
 void func_020070b4(void *arg0) {
  void func_02005154(u32, void (*)(void), u32);
  s32 func_020073c0(s32);
@@ -69,15 +70,14 @@ void func_020070b4(void *arg0) {
  u32 timer;
  *(volatile u16 *)0x04000106 = 0;
  delta = M2C_FIELD(arg0, s64 *, 0xC) - now;
- ((void (*)(u32, void (*)(void)))func_02005154)(1, (void (*)(void))func_020073c0);
+ func_02005154(1, (void (*)(void))func_020073c0, 0);
  timer = 0;
  if (delta < 0) timer = 0xFFFE;
- else if (delta < 0x10000) timer = (u16)~(u32)delta;
+ else if (delta < 0x10000) { timer = ~(u32)delta; timer &= 0xffff; }
  *(volatile u16 *)0x04000104 = timer;
  *(volatile u16 *)0x04000106 = 0xC1;
  func_020051c8(0x10);
 }
-
 void func_02007140(void) {
  void func_02006ef8(s32);
  M2C_UNK func_020051f8(M2C_UNK);
@@ -168,22 +168,17 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
 }
 
 #pragma opt_common_subs off
-void func_020072cc(void *arg0, u64 delay, void (*callback)(void *), void *arg4) {
- M2C_UNK func_02007958();
- u32 func_0200751c(void);
- void func_02007530(u32);
- void func_020071a0();
- u64 time;
- u32 state;
- if (arg0 == 0 || M2C_FIELD(arg0, s32 *, 0) != 0) func_02007958();
- state = func_0200751c();
- M2C_FIELD(arg0, s32 *, 0x1C) = 0;
- M2C_FIELD(arg0, s32 *, 0x20) = 0;
- M2C_FIELD(arg0, void (**)(void *), 0) = callback;
- M2C_FIELD(arg0, void **, 4) = (void*)*(volatile s32*)&arg4;
- time = delay + func_02007004();
- func_020071a0(arg0, (u32)time, (u32)(time >> 32));
- func_02007530(state);
+void func_020072cc(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
+ M2C_UNK func_02007958(); u32 func_0200751c(void); void func_02007530(u32); void func_020071a0();
+ u32 state; u64 time;
+ if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)func_02007958();
+ state=func_0200751c();
+ M2C_FIELD(arg0,s32 *,0x1c)=0;
+ M2C_FIELD(arg0,s32 *,0x20)=0;
+ M2C_FIELD(arg0,volatile s32 *,0)=arg3;
+ M2C_FIELD(arg0,s32 *,4)=arg4;
+ time=delay+func_02007004();
+ func_020071a0(arg0,(u32)time,(u32)(time>>32)); func_02007530(state);
 }
 #pragma opt_common_subs reset
 void func_02007338(void *arg0) {

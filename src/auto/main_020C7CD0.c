@@ -70,14 +70,6 @@ void func_020c7cd0(void *arg0, void *arg1) {
     r12v = 0;
     if ((s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]) > 0) {
         do {
-            r7 = (u8 *)r4 + r12v;
-            r3 = (u8 *)r5 + r12v; /* avoid? r3 gets overwritten; but target r0/r? let's instead direct */
-        } while (0);
-    }
-    /* The above placeholder wrong. Do loops directly: */
-    r12v = 0;
-    if ((s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]) > 0) {
-        do {
             ((u8 *)r5)[0x54 + r12v] = ((u8 *)r4)[0x54 + r12v];
             r12v = r12v + 1;
         } while (r12v < (s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]));

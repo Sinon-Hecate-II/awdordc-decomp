@@ -501,7 +501,8 @@ func_ov000_0218edd8();func_ov000_0218f37c();func_ov000_0218fbd4();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
 p=*gCurrentMap;done=0;
 players=(PlayerRecord02180738 *)((u8 *)p+0x67a4);
-type=players[M2C_FIELD(p,u16 *,0x52a4)].bytes[0x2a];
+players += M2C_FIELD(p,u16 *,0x52a4);
+type=players->bytes[0x2a];
 if(type==3 || (type==2 && ((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26)!=2)){func_ov000_02186a18();done=1;}
 func_ov000_0218ca94();func_ov000_021911bc();
 if(!done){p=*gCurrentMap;if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=0)func_ov000_02186a18();}

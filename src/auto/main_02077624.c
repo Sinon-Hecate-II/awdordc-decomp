@@ -139,7 +139,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  u32 index;
  u8 *bits;
  u8 *dims;
- u8 b,a,terrain,fog;
+ u8 fog,terrain,a,b;
  *(volatile u32 *)0x04000444=0;
  *(volatile u32 *)0x04000470=0;
  *(volatile u32 *)0x04000470=0;

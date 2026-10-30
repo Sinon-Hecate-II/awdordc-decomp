@@ -89,68 +89,34 @@ s32 func_ov004_02213b48(void) {
 }
 
 void func_ov004_02213bb8(void) {
-    extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
-    s32 RandomIntRange(s32, s32);
-    u16 func_020a7bbc(s32);
-    void func_02086930(s32, s8);
-    u8 buf[27];
-    u8 out[32];
-    s32 i, t, cnt, maxCount, chosen, primCount, outCount;
-    u8 *map;
-    for (i = 0; i < 27; i++) buf[i] = 0;
-    map = *gCurrentMap;
-    i = data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 1;
-    while (i < data_ov000_021aeef4[M2C_FIELD(map, u16 *, 0x52A4)] + 0x33) {
-        cnt = ((u8 *)map)[0x59A4 + i * 14] & 0x3F;
-        if (cnt) buf[cnt]++;
-        i++;
-    }
-    outCount = 0;
-    primCount = 0;
-    while (primCount < 3) {
-        maxCount = 0;
-        chosen = -1;
-        t = 0;
-        while (t < 27) {
-            cnt = buf[t];
-            if (cnt != 0) {
-                if (maxCount <= cnt) {
-                    if (chosen != -1 && maxCount == cnt) {
-                        u16 wt = func_020a7bbc(t);
-                        u16 wp = func_020a7bbc(chosen);
-                        if (wt >= wp) {
-                            maxCount = cnt;
-                            chosen = t;
-                        }
-                    } else {
-                        maxCount = cnt;
-                        chosen = t;
-                    }
-                }
-            }
-            t++;
-        }
-        if (chosen == -1) break;
-        buf[chosen] = 0;
-        out[outCount] = (u8)chosen;
-        outCount++;
-        primCount++;
-    }
-    if (maxCount != 0) {
-        for (i = 0; i < 27; i++) {
-            if (buf[i] == (u8)maxCount) {
-                out[outCount] = (u8)i;
-                outCount++;
-            }
-        }
-    }
-    if (maxCount == 0 || outCount == 0) {
-        func_02086930(0, 0);
-    } else {
-        i = RandomIntRange(0, outCount - 1);
-        func_02086930(0, (s8)out[i]);
-    }
+extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+s32 RandomIntRange(s32,s32); s32 func_020a7bbc(s32); void func_02086930(s32,u8);
+u8 buf[27],out[27]; s32 i,t,cnt,maxCount,chosen,primCount,j; u32 outCount; void **map; s32 wt; u8 *dst;
+for(j=0;j<27;j++)buf[j]=0;
+map=gCurrentMap;
+for(i=data_ov000_021aeef4[M2C_FIELD(*map,u16 *,0x52a4)]+1;i<data_ov000_021aeef4[M2C_FIELD(*map,u16 *,0x52a4)]+0x33;i++){
+cnt=(u32)((s32)M2C_FIELD((char *)*(void * volatile *)map+i*14,u8 *,0x59a4)<<26)>>26;
+if(cnt)buf[cnt]++;
+}
+outCount=0;dst=out;
+primCount=outCount;
+do {
+maxCount=0;chosen=-1;
+for(t=0;t<27;t++){
+if(buf[t]==0)continue;
+if(maxCount>buf[t])continue;
+if(chosen!=-1 && maxCount==buf[t]){
+wt=func_020a7bbc(t);
+if(wt<func_020a7bbc(chosen))continue;
+}
+maxCount=buf[t];chosen=t;
+}
+if(chosen==-1)break;
+buf[(u8)chosen]=0;*dst++=chosen;primCount++;outCount++;
+} while(primCount<3);
+if(maxCount!=0){u8 *end=out+outCount;for(i=0;i<27;i++){if(maxCount==buf[i]){*end++=i;outCount++;}}}
+if(outCount){i=RandomIntRange(0,outCount-1);func_02086930(0,out[i]);}
+else func_02086930(0,0);
 }
 
 void func_ov004_02213d90(void) {

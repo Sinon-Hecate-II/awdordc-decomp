@@ -293,17 +293,17 @@ s32 func_ov010_02225640(void *arg) {
     extern M2C_UNK data_ov010_0222edb4;
     extern M2C_UNK data_ov010_0222edc0;
     s32 kind;
-    u8 b;
     s32 t;
+    u8 b;
     func_02000b9c(0x2000c6c);
-    if (!arg) return 0;
+    if (arg == 0) return 0;
     if (M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) != 0) return 1;
     kind = M2C_FIELD(arg, s32 *, 8);
     if (kind != 1 && kind != 2 && kind != 3) return 0;
-    if (!M2C_FIELD(arg, s32 *, 0x18)) return 0;
+    if (M2C_FIELD(arg, s32 *, 0x18) == 0) return 0;
     t = M2C_FIELD(arg, s32 *, 0x10);
-    if (!t || !M2C_FIELD(arg, s32 *, 0x14)) return 0;
-    if (t % 32 != 0) return 0;
+    if (t == 0 || M2C_FIELD(arg, s32 *, 0x14) == 0) return 0;
+    if (t % (s32)32 != 0) return 0;
     func_02007f8c(&data_ov010_0222edc0, 0, 0x18);
     M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x10) = M2C_FIELD(arg, s32 *, 0x18);
     M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x14) = M2C_FIELD(arg, s32 *, 0x1C);
@@ -312,21 +312,9 @@ s32 func_ov010_02225640(void *arg) {
     b = (u8)M2C_FIELD(arg, u8 *, 0xC);
     if ((u32)b >= 0x20) return 0;
     M2C_FIELD(&data_ov010_0222edb4, u8 *, 0xC) = b;
-    {
-        s32 r = func_ov010_02224dd8(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
-        if (!r) { func_ov010_02224ea0(); return 0; }
-    }
-    {
-        s32 r = func_ov010_0222415c(arg);
-        if (!r) { func_ov010_02224ea0(); return 0; }
-    }
-    {
-        s32 r = func_ov010_022224b4();
-        if (r) {
-            M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1;
-            return 1;
-        }
-    }
+    { s32 r = func_ov010_02224dd8(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14)); if (!r) { func_ov010_02224ea0(); return 0; } }
+    { s32 r = func_ov010_0222415c(arg); if (!r) { func_ov010_02224ea0(); return 0; } }
+    { s32 r = func_ov010_022224b4(); if (r) { M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1; return 1; } }
     func_ov010_02224270();
     func_ov010_02224ea0();
     return 0;
@@ -420,12 +408,14 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 arg4) {
     s32 i;
 
     if (a0 == 0) {
+        i = 0;
         if (count <= 0) {
             return;
         }
-        for (i = 0; i < count; i++) {
+        do {
             func_02007f8c(arr[i], 0, size);
-        }
+            i++;
+        } while (i < count);
         return;
     }
 

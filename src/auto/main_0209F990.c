@@ -327,39 +327,36 @@ M2C_UNK func_020a0360(void) {
     void func_020a01c0(s32, s32);
     extern s32 *gCurrentMap;
     extern void *data_0211fb5c;
-
     M2C_UNK *map;
     u8 *stream;
     s8 cmd;
     u8 *base;
+    u8 *q;
 
     map = (M2C_UNK *)*gCurrentMap;
-    stream = (u8 *)*((s32 *)map) + 0x388 + 0x5000;
+    stream = (u8 *)*((s32 *)map) + 0x388;
+    stream += 0x5000;
     cmd = *stream++;
     base = (u8 *)data_0211fb5c;
 
     switch (cmd + 1) {
         case 1:
-        case 6: {
-            u8 *q = base + (s8)base[0x5b];
+        case 6:
+            q = base + (s8)base[0x5b];
             func_020a01c0((s8)(q[0x36] - 1), (s8)q[0x42]);
             break;
-        }
-        case 2: {
-            u8 *q = base + (s8)base[0x5b];
+        case 2:
+            q = base + (s8)base[0x5b];
             func_020a01c0((s8)(q[0x36] + 1), (s8)q[0x42]);
             break;
-        }
-        case 3: {
-            u8 *q = base + (s8)base[0x5b];
+        case 4:
+            q = base + (s8)base[0x5b];
             func_020a01c0((s8)q[0x36], (s8)(q[0x42] - 1));
             break;
-        }
-        case 4: {
-            u8 *q = base + (s8)base[0x5b];
+        case 3:
+            q = base + (s8)base[0x5b];
             func_020a01c0((s8)q[0x36], (s8)(q[0x42] + 1));
             break;
-        }
         default:
             break;
     }

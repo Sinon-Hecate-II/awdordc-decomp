@@ -301,17 +301,14 @@ void func_ov001_02183f6c(void) {
     data_ov001_02193e00 = func_ov001_0218b6f8(0x1E60, 0x20);
 }
 
-#pragma push
-#pragma peephole off
+#pragma optimization_level 3
 void func_ov001_02183fa0(void) {
-    u16 func_02011d58(void);
-    M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e00;
-    if (data_ov001_02193e00 == 0) return;
-    while (func_02011d58() != 0x8000) {}
-    func_ov001_0218b71c(&data_ov001_02193e00);
+ u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00;
+ if(data_ov001_02193e00==0)return;
+ while(func_02011d58()!=0x8000){}
+ func_ov001_0218b71c(&data_ov001_02193e00);
 }
-#pragma pop
+#pragma optimization_level reset
 s32 func_ov001_02183fd4(void) {
     s32 func_02007df8(s32, void *, s32);
     s32 func_02012218(void *, void (*)(void), s32);

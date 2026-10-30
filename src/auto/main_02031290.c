@@ -614,14 +614,15 @@ s32 func_02031f74(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_02031fe4(u32 arg0, u32 arg1, s32 arg2) {
-    M2C_UNK func_02031f74(M2C_UNK, M2C_UNK, s32);
-    if (func_02031f74(arg0, arg1, arg2) != 0) {
-        return (s32) arg0;
-    }
-    return 0;
+#pragma opt_propagation off
+s32 func_02031fe4(u32 arg0,u32 arg1,s32 arg2) {
+M2C_UNK func_02031f74(M2C_UNK,M2C_UNK,s32);
+s32 ok=func_02031f74(arg0,arg1,arg2);
+s32 mask=0;
+if(ok) {mask--; mask=arg0 & mask;}
+return mask;
 }
-
+#pragma opt_propagation reset
 void func_02032004(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
     extern M2C_UNK data_020fb2bc;

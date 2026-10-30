@@ -221,6 +221,63 @@ s32 func_ov001_0216d1e4(void) {
     return result;
 }
 
+#pragma push
+#pragma optimization_level 2
+#pragma opt_propagation off
+#pragma thumb on
+s32 func_ov001_0216d394(void *arg0,s32 *arg1){
+ s32 func_02006390(void *,s32 *,s32);void func_02007190(void *);void func_020072cc(void *,s32,s32,void *,s32);void func_02007338(void *);
+ void func_02007f8c(s32,u8);void func_02029220(void);
+ s32 func_ov001_0216d8e4(s32,void *,s32,s32);
+ extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
+ u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset; void *p;
+ active=1;p=arg0;result=active-2;ready=0;
+ if(M2C_FIELD(p,s32 *,0x24)==0)flags=0x80000;
+ else if(M2C_FIELD(p,s32 *,0x24)==1)flags=0xc0000;
+ flags|=0x30000;
+ ((void (*)(s32,s32,s32))func_02007f8c)((s32)&data_ov001_021926e0,0,96);
+ if(M2C_FIELD(p,s32 *,40)==5)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=1;
+ else if(M2C_FIELD(p,s32 *,40)==13)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=2;
+ else if(M2C_FIELD(p,s32 *,40)==16)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=3;
+ else return -1;
+ packet=(u8 *)&data_ov001_021926e0;
+ offset=(ready*5)*4+2;
+ packet[1]=ready;
+ func_02008048((s32)((u8 *)p+44),(s32)(packet+offset),M2C_FIELD(p,s32 *,40));
+ func_02029220();
+ if(func_ov001_0216d8e4(0,(u8 *)p+4,M2C_FIELD(p,s32 *,0),0x30bffe)){
+ tries=0;func_02007190(timer);func_020072cc(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
+ goto test;
+ do {
+ func_02006390(&data_ov001_02192600,&msg,1);
+ switch(msg){
+ case 18:if(!ready){active=0;}
+ case 19:goto test;
+ case 5:if(ready)break;
+ func_02007338(timer);
+ if(func_ov001_0216d8a0((s32)&data_ov001_02192620,1)!=1){active=0;break;}
+ func_ov001_0216d02c(p,&data_ov001_02192620);
+ i=0;bound=M2C_FIELD(&data_ov001_02192620,u16 *,10);for(;i<bound;i++){}
+ if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
+ ready=1;break;
+ case 10:
+ func_ov001_0216d02c(p,&data_ov001_02192620);
+ if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;
+ break;
+ case 12:active=0;result=0;break;
+ case 13:
+ if(++tries<3){if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;}else active=0;
+ break;
+ case 4:case 8:break;
+ default:active=0;break;
+ } next:; test:; }while(active);
+ func_02007338(timer);
+ while(func_02006390(&data_ov001_02192600,&msg,0)==1){}
+ }
+ func_ov001_0216d050(arg1,(s32)&data_ov001_02192620,result==0);
+ return result;
+}
+#pragma pop
 void func_ov001_0216d564(void) {
     void func_02006030(void);
     func_02006030();

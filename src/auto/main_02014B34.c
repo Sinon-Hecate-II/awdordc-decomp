@@ -2,64 +2,30 @@
 #include "common.h"
 
 s32 func_02014b34(u16 arg0) {
-    s32 func_02015f10(M2C_UNK, u16, s32);
-    s32 func_020189a4(s8 *);
-    extern u8 data_020f5544;
-    extern void *data_02136c4c;
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
-    u8 sp[0x18];
-    s32 temp_r0;
-    s8 temp_r3;
-    s8 var_r4;
-    u16 var_r0;
-    u16 var_r0_3;
-    u16 var_r5;
-    s32 var_r0_2;
-    s32 var_r3;
-
-    (void)arg0;
-    var_r5 = 0;
-    var_r4 = -1;
-    func_02007f8c(sp + 6, 0, 0x10);
-    var_r0 = 1;
-    do {
-        if (M2C_FIELD((data_02136c4c + (var_r0 * 4)), s32 *, 0x14E4) == 5) {
-            temp_r3 = M2C_FIELD((data_02136c4c + var_r0), s8 *, 0x1525);
-            sp[6 + temp_r3] = sp[6 + temp_r3] + 1;
-        }
-        var_r0 += 1;
-    } while ((u32) var_r0 <= 0xFU);
-    var_r3 = data_020f5544;
-    var_r0_2 = 0;
-loop_5:
-    var_r3 = (var_r3 + 1) % 16;
-    if ((M2C_FIELD(((var_r3 * 0x5D4) + data_02136c4c), u8 *, 0x1D52) != 0) && (sp[6 + var_r3] != 0)) {
-        var_r4 = (s8) var_r3;
-    } else {
-        var_r0_2 += 1;
-        if (var_r0_2 < 0x10) {
-            goto loop_5;
-        }
-    }
-    if (var_r4 == -1) {
-        return 0x15;
-    }
-    var_r0_3 = 1;
-    data_020f5544 = (u8) var_r4;
-    do {
-        if ((M2C_FIELD((data_02136c4c + (var_r0_3 * 4)), s32 *, 0x14E4) == 5) && (var_r4 == M2C_FIELD((data_02136c4c + var_r0_3), s8 *, 0x1525))) {
-            var_r5 |= 1 << var_r0_3;
-        }
-        var_r0_3 += 1;
-    } while ((u32) var_r0_3 <= 0xFU);
-    sp[0] = 3;
-    *(s16 *)(sp + 2) = (s16) var_r4;
-    temp_r0 = func_020189a4((s8 *)sp);
-    if (temp_r0 != 0) {
-        func_02008048((M2C_UNK)((var_r4 * 0x5D4) + (data_02136c4c + 0x1788)), temp_r0, 0xE4);
-    }
-    return func_02015f10(0xEA, var_r5, data_02136c4c);
+ s32 func_020189a4(s8 *,void *);s32 func_02015f10(s32,u16,s32);
+ extern u8 data_020f5544;extern void *data_02136c4c;
+ M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK func_02008048(M2C_UNK,M2C_UNK,M2C_UNK);
+ void *base;u8 packet[6];u8 counts[16];s32 ptr;s8 selected=-1;u16 idx,idx2,mask=0;u8 tries,candidate;s8 owner;
+ func_02007f8c((s32)counts,0,16);base=data_02136c4c;
+ for(idx=1;idx<=15;idx++){
+ if(M2C_FIELD(base+idx*4,s32 *,0x14e4)==5){
+ owner=M2C_FIELD(base+idx,s8 *,0x1525);counts[owner]++;
+ }}
+ candidate=data_020f5544;
+ for(tries=0;tries<16;tries++){
+ candidate=(candidate+1)%16;
+ if(M2C_FIELD(base+candidate*0x5d4,u8 *,0x1d52)&&counts[candidate]){
+ selected=candidate;break;
+ }}
+ if(selected==-1)return 21;
+ data_020f5544=selected;
+ for(idx2=1;idx2<=15;idx2++){
+ if(M2C_FIELD(base+idx2*4,s32 *,0x14e4)==5 && selected==M2C_FIELD(base+idx2,s8 *,0x1525))mask|=1<<idx2;
+ }
+ packet[0]=3;*(s16 *)(packet+2)=selected;
+ ptr=func_020189a4((s8 *)packet,base);
+ if(ptr)func_02008048((s32)(data_02136c4c+0x1788+selected*0x5d4),ptr,0xe4);
+ return func_02015f10(0xea,mask,(s32)data_02136c4c);
 }
 
 void func_02014ccc(void *arg0) {

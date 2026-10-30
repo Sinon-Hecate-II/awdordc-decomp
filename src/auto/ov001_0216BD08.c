@@ -116,25 +116,10 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
-    s32 var_r3;
-    s32 var_r4;
-    u8 *var_r5;
-    u8 temp_r0;
-
-    var_r3 = 0;
-    var_r5 = arg0 + (arg1 - 1);
-    var_r4 = 0;
-    if (arg1 > 0) {
-        do {
-            temp_r0 = *var_r5;
-            var_r4 += 1;
-            var_r5 -= 1;
-            var_r3 = temp_r0 + (var_r3 << 8);
-        } while (var_r4 < arg1);
-    }
-    return var_r3;
-}
+#pragma thumb on
+#pragma opt_strength_reduction off
+s32 func_ov001_0216c1a0(s32 arg0,s32 arg1) { s32 result; s32 i; u8 *p; u8 byte; result=0;p=(u8 *)(arg0+(arg1-1));i=0;if(arg1>0)do{byte=*p;i++;p--;result=byte+(result<<8);}while(i<arg1);return result; }
+#pragma opt_strength_reduction reset
 #pragma thumb off
 
 #pragma thumb on
@@ -383,9 +368,9 @@ void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) 
  if(j>=len) j=0;
  }
 }
+#pragma thumb on
 void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
  int i; int half=n/2;
- for(i=0;i<half;i++) { b[half] ^= a[i]; b++; }
+ for(i=0;i<half;i++) { b[half] ^= a[i]; ++b; }
 }
 #pragma thumb off
-#pragma thumb on

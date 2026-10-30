@@ -10,7 +10,7 @@ do{
 p=(void*)(i==0?data_027e00c8:data_027e00c4);
 same=(s32)p==data_027e00c8;gCur3DSpriteEngine=(s32)p;
 if(same==1)base=0x6000000;else base=0x6200000;
-for(j=0;j<4;++j){
+for(j=0;j<4;j++){
 p=(void*)gCur3DSpriteEngine;
 if((M2C_FIELD(p,u8*,0x46)&(1<<j)) && !(M2C_FIELD(p,u8*,0x47)&(1<<j))){
 flag=(s32)p==data_027e00c8;
@@ -18,8 +18,8 @@ size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
 same=(u8)flag;
 if(same)dest=((u32)(data_027e00bc[1]<<29)>>29)<<16;else dest=0;
 p=(void*)gCur3DSpriteEngine;
-tile=M2C_FIELD(*M2C_FIELD(p,u8**,0)+j*2,u16*,6);
 src=M2C_FIELD((u8*)p+j*4,void**,0x20);
+tile=M2C_FIELD(*M2C_FIELD(p,u8**,0)+j*2,u16*,6);
 func_02007ef4(src,base+dest+(((u32)(tile<<19)>>27)<<11),size);
 }}
 p=(void*)gCur3DSpriteEngine;
@@ -254,21 +254,9 @@ void func_01ffa4e8(void *p) {
  }
 }
 
-#pragma opt_peephole off
-void func_01ffa574(void *arg0) {
-    if (arg0 == NULL) {
-        return;
-    } else if (M2C_FIELD(arg0, s32 *, 4) == 0) {
-        return;
-    } else if (M2C_FIELD(arg0, u8 *, 0x30) & 2) {
-        return;
-    }
-    func_01ffa2cc(arg0);
-    func_01ffa468(arg0);
-    func_01ffa4e8(arg0);
-    func_01ffa4a0(arg0);
-}
-#pragma scheduling off
+#pragma optimization_level 1
+void func_01ffa574(void *arg0) { void *p; if((p=arg0)==0)return; if(M2C_FIELD(p,s32 *,4)==0)return; if(M2C_FIELD(p,u8 *,0x30)&2)return; func_01ffa2cc(p);func_01ffa468(p);func_01ffa4e8(p);func_01ffa4a0(p); }
+#pragma optimization_level reset
 void func_01ffa5b8(void *p) {
     extern u8 data_027e15b8, data_027e15b4;
     extern s32 gCur3DSpriteEngine;

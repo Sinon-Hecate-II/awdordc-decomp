@@ -342,32 +342,9 @@ loop_5:
 }
 
 void *func_02029594(void *arg0) {
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r2;
-    void *var_r0;
-
-    temp_r0 = func_02027d50();
-    temp_r0_2 = temp_r0 + 0x2000;
-    temp_r2 = ((void **)temp_r0_2)[0x270 / 4];
-    if (temp_r2 == NULL) {
-        return NULL;
-    }
-    if (((u32 *)temp_r0_2)[0x274 / 4] <= 0xCU) {
-        return NULL;
-    }
-    var_r0 = ((void **)temp_r2)[1];
-    if (var_r0 == NULL) {
-        return var_r0;
-    }
-loop_6:
-    if (((void **)var_r0)[1] != arg0) {
-        var_r0 = ((void **)var_r0)[3];
-        if (var_r0 != NULL) {
-            goto loop_6;
-        }
-    }
-    return var_r0;
+ void *base=func_02027d50(); void *block=(u8 *)base+0x2000; void *head=M2C_FIELD(block,void **,0x270); void *p=0;
+ if(head!=0 && M2C_FIELD(block,u32 *,0x274)>12){p=M2C_FIELD(head,void **,4);if(p!=0){do {if(M2C_FIELD(p,void **,4)==arg0)break;p=M2C_FIELD(p,void **,12);}while(p!=0);}}
+ return p;
 }
 
 void func_020295e4(void *arg0) {
@@ -588,20 +565,12 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 void func_020299d0(void *arg0) {
-    void func_020281f8(void);
-    void func_02005df4(void *);
-    extern M2C_UNK data_02138e50;
-    extern M2C_UNK data_02138e54;
-
-    if (M2C_FIELD(arg0, u16 *, 0) != 0x12) {
-        return;
-    }
-    M2C_FIELD(&data_02138e50, u32 *, 0x24) = M2C_FIELD(arg0, u16 *, 2);
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        return;
-    }
-    func_020281f8();
-    func_02005df4(&data_02138e54);
+void func_020281f8(void); void func_02005df4(void *);
+extern M2C_UNK data_02138e50; extern M2C_UNK data_02138e54;
+if(M2C_FIELD(arg0,u16 *,0)!=0x12) return;
+M2C_FIELD(&data_02138e50,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
+if(M2C_FIELD(arg0,u16 *,2)==0) func_020281f8();
+func_02005df4(&data_02138e54);
 }
 
 void func_02029a10(void) {

@@ -77,6 +77,7 @@ void func_ov001_0217bf40(void) {
 }
 
 #pragma opt_common_subs off
+#pragma scheduling off
 void func_ov001_0217bf84(void) {
 void *func_ov001_0218b6f8(s32,s32);s32 func_ov001_02175db4(s32*,s32);
 void *func_ov001_0218ad0c(s32,s32);void *func_ov001_0218a5f0(s32,s32);
@@ -96,6 +97,7 @@ M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
 M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;
 func_ov001_0217c8ac();func_ov001_0217c7e8();func_ov001_02175d54((s32*)func_ov001_0217c1b4);
 }
+#pragma scheduling reset
 #pragma opt_common_subs reset
 void func_ov001_0217c0f8(void) {
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);

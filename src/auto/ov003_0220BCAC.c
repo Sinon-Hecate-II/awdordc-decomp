@@ -1,7 +1,12 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
 
-void func_ov003_0220c414(void *, u8);
+typedef struct {
+    u8 mode : 4;
+    u8 unk_4 : 4;
+} Ov003ModeByte;
+
+void func_ov003_0220c414(void *, s32);
 void func_ov003_0220bcac(void *arg0) {
     extern s32 func_0207c8ec(s32, s32);
     extern void func_020a979c(void *, s16, s16);
@@ -201,9 +206,10 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  else {func_020d47f0();func_01ffa6fc(p);}
 }
 
-void func_ov003_0220c414(void *arg0, u8 arg1) {
-    M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) | 0x10);
-    M2C_FIELD(arg0, u8 *, 0x36) = (u8) ((M2C_FIELD(arg0, u8 *, 0x36) & ~0xF) | (arg1 & 0xF));
+void func_ov003_0220c414(void *arg0, s32 arg1) {
+u8 mode=arg1;
+M2C_FIELD(arg0,u8 *,0x38) |= 0x10;
+((Ov003ModeByte *)((u8 *)arg0+0x36))->mode=mode;
 }
 
 void func_ov003_0220c43c(void *arg0) {

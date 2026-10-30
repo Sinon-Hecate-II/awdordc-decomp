@@ -416,16 +416,9 @@ void func_02006718(void *arg0, void *arg1) {
     M2C_FIELD(temp_r1, void **, 0x10) = temp_r2;
 }
 
-void func_02006838(void) {
-    u32 *io = (u32 *)0x04000000;
-    u32 saved = io[0x82];
-    io[0x82] = (u32)io;
-    if (*(u16 *)((char *)io + 6) != 0) {
-        return;
-    }
-    *(volatile u32 *)&io[0x82] = saved;
-}
-
+#pragma opt_propagation off
+void func_02006838(void) { u32 saved; u32 *io; io=(u32 *)0x04000000; saved=io[0x82]; io[0x82]=(u32)io; do {} while(*(volatile u16 *)((u8 *)io+6)); io[0x82]=saved; }
+#pragma opt_propagation reset
 void func_02006858(void) {
     M2C_UNK func_02004fe0();
     M2C_UNK func_02005254();

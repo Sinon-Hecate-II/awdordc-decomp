@@ -185,6 +185,7 @@ void func_020b578c(void *arg0) {
     func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
+#pragma scheduling off
 void func_020b57ac(void *arg0) {
     s32 x = M2C_FIELD(arg0, s32 *, 0x38);
     s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
@@ -220,7 +221,7 @@ void func_020b57ac(void *arg0) {
     }
     {
         void *q = (void *)gCurrentMap;
-        s32 yr = y - 2;
+        u32 yr = (u32)y - 2;
         void *base = (void *)*(s32 *)q;
         u16 row = *(u16 *)((char *)base + 0x3758 + yr * 2);
         *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
@@ -237,7 +238,7 @@ void func_020b57ac(void *arg0) {
     }
     func_020cfd28();
 }
-
+#pragma scheduling reset
 void func_020b5964(s32 a,s32 b) {
 void func_020a488c(s32,s16 *); void *func_01ffa42c(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
 s16 xy[2]; void *p;

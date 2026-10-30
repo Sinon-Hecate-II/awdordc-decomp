@@ -193,9 +193,9 @@ void func_02018584(void *r7) {
     s32 func_02006028(void *);
     void func_02005bbc(void);
 
-    s32 saved;
     void *r4;
     void (*r6)(void *);
+    s32 saved;
 
     while (1) {
         saved = func_0200751c();
@@ -583,11 +583,21 @@ void func_02018da8(void *arg0) {
     *(u16 *)0x04000204 &= ~0x10;
 }
 
+#pragma opt_propagation off
 void func_02018df0(void *arg0) {
-    *(u16 *)0x04000204 = (*(u16 *)0x04000204 & ~0xC) | (M2C_FIELD(arg0, s32 *, 0) * 4);
-    *(u16 *)0x04000204 = (*(u16 *)0x04000204 & ~0x10) | (M2C_FIELD(arg0, s32 *, 4) * 0x10);
+ u32 a,b;
+ a=M2C_FIELD(arg0,u32 *,0);
+ b=*(volatile u16 *)0x04000204;
+ b &=~0xC;
+ b |=a<<2;
+ *(volatile u16 *)0x04000204=b;
+ a=M2C_FIELD(arg0,u32 *,4);
+ b=*(volatile u16 *)0x04000204;
+ b &=~0x10;
+ b |=a<<4;
+ *(volatile u16 *)0x04000204=b;
 }
-
+#pragma opt_propagation reset
 void func_02018e24(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_0200751c(void);
     void func_02007530(M2C_UNK);

@@ -517,7 +517,9 @@ s32 func_0205d920(M2C_UNK arg0) {
 void func_0205d944(s32 a,s32 b,s32 c,s32 d,s32 e) {
 s32 func_02049824(s32,s32,s32,s32,void *,s32);
 struct Packet_0205 p;
-p.d=b; p.c=((c>>8)&255)|((c<<8)&0xff00); p.b=2;
+p.c=((c>>8)&255)|((c<<8)&0xff00);
+p.d=b;
+p.b=2;
 func_02049824(a,d,e,0,&p,8);
 }
 
