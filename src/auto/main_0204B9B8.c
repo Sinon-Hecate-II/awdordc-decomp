@@ -281,9 +281,29 @@ s32 func_0204c0fc(void *state, void *context, s32 flag) {
     }
 }
 
-s32 func_0204c300(void *arg0) {
-    (void)arg0;
-    return 0;
+s32 func_0204c300(void *arg0){
+M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_0204a30c(void *);void func_0204a2c8(void *);s32 func_0204a9d0(void *,void *,s32);s32 func_02068c34(const char *);
+extern M2C_UNK data_020fd6c0,data_020fd334,data_020fd210,data_020fd440,data_020fd6cc,data_020fd454,data_020fd6ec,data_020fd710,data_020fd760,data_020fd76c,data_020fd798;
+void *p;s32 r,n;
+if(!arg0)func_020640a8(&data_020fd6c0,&data_020fd334,&data_020fd210,0x404);
+if(!M2C_FIELD(arg0,s32 *,0x13c))func_020640a8(&data_020fd440,&data_020fd334,&data_020fd210,0x405);
+if(!M2C_FIELD(arg0,s32 *,0x140))func_020640a8(&data_020fd6cc,&data_020fd334,&data_020fd210,0x406);
+if(func_02048688(M2C_FIELD(M2C_FIELD(arg0,void **,0x13c),s32 *,0))!=func_02048688(M2C_FIELD(arg0,s32 *,0x140)))func_020640a8(&data_020fd454,&data_020fd334,&data_020fd210,0x407);
+if(M2C_FIELD(arg0,s32 *,0x144)<0)func_020640a8(&data_020fd6ec,&data_020fd334,&data_020fd210,0x408);
+if(M2C_FIELD(arg0,s32 *,0x144)>func_02048688(M2C_FIELD(arg0,s32 *,0x140)))func_020640a8(&data_020fd710,&data_020fd334,&data_020fd210,0x409);
+n=func_02048688(M2C_FIELD(arg0,s32 *,0x140));
+if(M2C_FIELD(arg0,s32 *,0x5c)){if(!func_0204a30c(arg0))return 0;if(M2C_FIELD(arg0,s32 *,0x60)<M2C_FIELD(arg0,s32 *,0x5c))return 2;func_0204a2c8(arg0+0x50);
+if(M2C_FIELD(arg0,volatile s32 *,0x144)==n)return 1;}
+while(M2C_FIELD(arg0,s32 *,0x144)<n){
+p=func_02048690(M2C_FIELD(arg0,s32 *,0x140),M2C_FIELD(arg0,s32 *,0x144));
+if(!p)func_020640a8(&data_020fd760,&data_020fd334,&data_020fd210,0x42f);
+r=func_0204c0fc(p,arg0,M2C_FIELD(arg0,s32 *,0x144)==0);
+if(!r){if(!M2C_FIELD(arg0,s32 *,0xfc)||!M2C_FIELD(arg0,s32 *,0x38))func_020640a8(&data_020fd76c,&data_020fd334,&data_020fd210,0x43b);return 0;}
+if(r==2)return 2;
+M2C_FIELD(arg0,s32 *,0x144)++;
+}
+if(M2C_FIELD(M2C_FIELD(arg0,void **,0x13c),s32 *,12)){if(!func_0204a9d0(arg0,&data_020fd798,func_02068c34(&data_020fd798)))return 0;}
+return M2C_FIELD(arg0,s32 *,0x5c)?2:1;
 }
 
 s32 func_0204c580(void *a) {

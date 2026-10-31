@@ -1,36 +1,19 @@
 /* 28 functions from 0x02026164 to 0x020270B4 (main), found by ds-decomp. */
 #include "common.h"
 
-void func_02026164(u8 *state, const u8 *key, s32 keylen) {
-    s32 i;
-    u8 *S;
-    s32 jj;
-    s32 ii;
-    s32 k;
-    u8 sk;
-    u8 keybyte;
-    u8 sj;
-
-    state[0] = 0;
-    state[1] = 0;
-    S = state + 2;
-    for (i = 0; i < 256; i++) {
-        S[i] = (u8)i;
-    }
-    ii = 0;
-    jj = 0;
-    for (k = 0; k < 256; k++) {
-        sk = S[k];
-        keybyte = key[ii];
-        ii = (ii + 1) & 0xff;
-        if (ii >= keylen) {
-            ii = 0;
-        }
-        jj = (jj + sk + keybyte) & 0xff;
-        sj = S[jj];
-        S[k] = sj;
-        S[jj] = sk;
-    }
+void func_02026164(u8 *state,const u8 *key,s32 keylen) {
+s32 i; u8 *S; s32 jj; s32 ii; s32 k; u8 sk,keybyte,sj;
+state[0]=0;state[1]=0;S=state+2;
+for(i=0;i<256;i++)S[i]=(u8)i;
+ii=0;jj=0;
+for(k=0;k<256;k++){
+sk=S[k];keybyte=key[ii];
+ii=(ii+1)&255;
+jj=(jj+(sk+keybyte))&255;
+sj=S[jj];
+if(ii>=keylen)ii=0;
+S[k]=sj;S[jj]=sk;
+}
 }
 
 void func_020261d8(u8 *state, u8 *data, s32 len) {

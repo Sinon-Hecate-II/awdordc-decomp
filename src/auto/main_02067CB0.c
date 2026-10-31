@@ -45,10 +45,9 @@ s32 func_02068a88(s8 *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_02068adc(s32 arg0, s32 arg1, ...) {
-    s32 func_02068a88(s8 *, s32, s32);
-    char *args;
-    args = (char *)(((u32)&arg1 & ~3U) + 4);
-    func_02068a88(arg0, arg1, args);
+ char *args;
+ args=(char *)(((u32)&arg1 & ~3U)+4);
+ func_02068a88((s8 *)arg0,arg1,(s32)args);
 }
 
 s32 func_02068b04(s32 arg0) {

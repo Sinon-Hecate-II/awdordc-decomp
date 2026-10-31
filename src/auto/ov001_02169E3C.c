@@ -120,13 +120,19 @@ return base;
 
 #pragma opt_propagation off
 s32 func_ov001_0216a33c(u32 a,u32 b) {
-u32 x=a>>3,y=b>>3,z=0,t,s,u,v;
-z=x*y+z;
-t=((a&2)>>1)+(a&1);u=a&4;
-z=y*(t*2+(u>>2))+z;
-s=((b&2)>>1)+(b&1);v=b&4;
-z=x*(s*2+(v>>2))+z;
-return (t+(u>>2))*(s+(v>>2))+z;
+ u32 x,z,t,s,u,v;
+ register u32 y;
+ y=b>>3;
+ x=a>>3;
+ z=0;
+ t=((a&2)>>1)+(a&1);
+ u=a&4;
+ z=x*y+z;
+ z=y*(t*2+(u>>2))+z;
+ s=((b&2)>>1)+(b&1);
+ v=b&4;
+ z=x*(s*2+(v>>2))+z;
+ return (t+(u>>2))*(s+(v>>2))+z;
 }
 #pragma opt_propagation reset
 void func_ov001_0216a398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
@@ -323,9 +329,9 @@ s32 func_ov001_0216ac04(void *arg0) {
 
 #pragma optimize_for_size on
 s32 func_ov001_0216ace0(void *arg0,s32 arg1) {
- s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value=0; u8 *p;
- if(n>=arg1) {shift=n-arg1; value=byte>>shift; M2C_FIELD(arg0,s8 *,4)=shift; goto done;}
- p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<shift);
+ s32 n=M2C_FIELD(arg0,s8 *,4); u32 byte=M2C_FIELD(arg0,u8 *,5); s32 shift; u32 value=(u32)0; u8 *p;
+ if(n>=arg1) {shift=n-arg1; value=(byte)>>(shift); M2C_FIELD(arg0,s8 *,4)=shift; goto done;}
+ p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<(shift));
  done: return value & (0xff>>(8-arg1));
 }
 u16 func_ov001_0216ad40(u16 **arg0) {

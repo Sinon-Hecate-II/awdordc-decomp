@@ -1,5 +1,6 @@
 /* 38 functions from 0x02175F60 to 0x02176F4C (ov001), found by ds-decomp. */
 #include "common.h"
+static inline s32 ov001_event_value(u8 value) { return value; }
 
 struct MenuValues2 { u8 values[2]; };
 extern struct MenuValues2 data_ov001_0218f6f4;
@@ -76,100 +77,75 @@ void *func_ov001_02176114(void) {
     return (u8 *)data_ov001_02193d50 + 0x1E280;
 }
 
+#pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
-  void func_ov001_02188f40(void);
-  s32 func_ov001_021892c4(void *, void *);
-  extern void *data_ov001_02193d50;
-  M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
-  M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-  u8 sp1;
-  u8 sp0;
-  u8 *main;
-  void (*fp)(s32);
-
-  func_ov001_02188f40();
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  if (main[0x2a0] != 0 && main[0x2a1] == 0 && *(void **)(main + 0x298) != 0) {
-    (*(void (*)(s32))*(void **)(main + 0x298))(0);
-    return;
-  }
-
-  func_ov001_021892c4(&sp1, &sp0);
-
-  {
-    s32 v = sp1;
-    if (v > 0x1a) goto L_gt1a;
-    if (v == 0x1a) goto L_block26;
-    if (v > 0x14) goto L_gt14;
-    if (v < 0) goto L_tail;
-    switch (v) {
-      case 6: goto L_block6;
-      case 13: goto L_block13;
-      case 14: goto L_block14;
-      case 20: goto L_block20;
-      default: goto L_tail;
-    }
-  L_gt14:
-    if (v == 0x17) goto L_block20;
-    goto L_return;
-  L_gt1a:
-    if (v > 0x1d) goto L_gt1d;
-    if (v == 0x1d) goto L_block26;
-    goto L_return;
-  L_gt1d:
-    if (v == 0x22) goto L_tail;
-    goto L_return;
-  }
-
-L_block6:
-  if (sp0 == 0) goto L_return;
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  fp = (void (*)(s32))*(void **)(main + 0x298);
-  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
-  fp(0);
-  goto L_return;
-
-L_block13:
-  if (sp0 == 0) goto L_return;
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  fp = (void (*)(s32))*(void **)(main + 0x298);
-  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
-  fp(2);
-  goto L_return;
-
-L_block14:
-  if (sp0 == 0) goto L_return;
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  fp = (void (*)(s32))*(void **)(main + 0x298);
-  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
-  fp(3);
-  goto L_return;
-
-L_block20:
-  if (sp0 == 0) goto L_return;
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  fp = (void (*)(s32))*(void **)(main + 0x298);
-  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
-  fp(4);
-  goto L_return;
-
-L_block26:
-  if (sp0 == 0) goto L_return;
-  main = (u8 *)data_ov001_02193d50 + 0x1e000;
-  fp = (void (*)(s32))*(void **)(main + 0x298);
-  if (fp == 0) { main[0x2a0] = 1; goto L_return; }
-  fp(1);
-  goto L_return;
-
-L_tail:
-  func_ov001_0218c92c(0, (M2C_UNK)arg0);
-  func_ov001_0218b71c((M2C_UNK *)&data_ov001_02193d50);
-  return;
-
-L_return:
-  return;
+void func_ov001_02188f40(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
+M2C_UNK func_ov001_0218c92c(M2C_UNK,M2C_UNK); M2C_UNK func_ov001_0218b71c(M2C_UNK*);
+void *func_ov001_02189308(void); void func_02007e20(const void*,void*,u32);
+u8 sp1,sp0; u8 *main; void (*fp)(s32);
+func_ov001_02188f40();
+if(M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)!=0 && M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a1)==0){
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);if(fp)fp(0);return;}
+func_ov001_021892c4(&sp1,&sp0);
+{s32 v=(s32)(u32)sp1;
+if(v>26)goto high26;
+if(v>=26)goto block26;
+if(v>20)goto high20;
+switch(v+0){
+case 0:goto done;
+case 1:goto done;
+case 2:goto done;
+case 3:goto done;
+case 4:goto done;
+case 5:goto block5;
+case 6:goto done;
+case 7:goto done;
+case 8:goto done;
+case 9:goto done;
+case 10:goto done;
+case 11:goto done;
+case 12:goto block12;
+case 13:goto block13;
+case 14:goto done;
+case 15:goto done;
+case 16:goto done;
+case 17:goto done;
+case 18:goto done;
+case 19:goto done;
+case 20:goto block20;
+default:goto done;}
+high20:if(v==23)goto block20;return;
+high26:if(v>29)goto high29;if(v==29)goto block26;return;
+high29:if(v==34)goto tail;return;
 }
+block5:
 
+if(sp0==0)return;
+main=(u8*)data_ov001_02193d50+0x2280;func_02007e20(func_ov001_02189308(),main+0x1c000,0x16);
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
+if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(0);return;
+block13:
+if(sp0==0)return;
+
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
+if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(1);return;
+block20:
+if(sp0==0)return;
+
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
+if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(3);return;
+block26:
+if(sp0==0)return;
+
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
+if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(4);return;
+block12:
+if(sp0==0)return;
+
+fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
+if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
+tail:func_ov001_0218c92c(0,(M2C_UNK)arg0);func_ov001_0218b71c((M2C_UNK*)&data_ov001_02193d50);done:return;}
+#pragma opt_propagation reset
 void func_ov001_021763cc(void) {
     s32 func_ov001_0218b6f8(s32, s32);
     s32 func_ov001_021711e0(s32, s32, void *, void *, void *, s32);

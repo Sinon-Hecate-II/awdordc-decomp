@@ -51,8 +51,9 @@ s32 func_ov001_02171178(s8 *a, s32 b) {
         } else {
             ch = v + 0x37;
         }
-        i++;
-        *p++ = (s8)ch;
+        i = i + 1;
+        *p = (s8)ch;
+        p = p + 1;
         v = t & 0x0F;
     } while (i < 2);
     *p = 0;

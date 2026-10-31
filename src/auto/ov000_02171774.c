@@ -3,6 +3,7 @@
 
 void func_ov000_02171774(s32 arg0) {
     (void)arg0;
+    return;
 }
 
 void func_ov000_02171a68(void) {

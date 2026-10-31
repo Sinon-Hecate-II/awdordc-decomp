@@ -385,9 +385,7 @@ s32 func_ov009_02222b3c(void) {
     }
 }
 
-void func_ov009_02222b8c(void *arg0) {
-    (void)arg0;
-}
+void func_ov009_02222b8c(void *arg0) { (void)arg0; }
 
 s32 func_ov009_02222e1c(void) {
 void func_ov009_02223ac8(void *); void func_ov009_02222f0c(void *);

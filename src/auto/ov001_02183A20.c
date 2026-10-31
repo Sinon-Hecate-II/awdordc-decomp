@@ -164,35 +164,28 @@ void func_ov001_02183cec(s8 arg0) {
 
 #pragma peephole off
 void func_ov001_02183d18(void) {
-    void func_ov001_0218bd64(M2C_UNK *);
-    void func_ov001_02183f30(s32);
-    extern void *data_ov001_02193dfc;
-    extern u8 data_ov001_0218fb5c[];
-    M2C_UNK sp0;
-    u32 arrval;
-    u16 field12;
-    u16 sp_half;
-    s32 v;
-    u8 field19;
-    s32 lim;
-
-    func_ov001_0218bd64(&sp0);
-    arrval = data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1B)];
-    field12 = M2C_FIELD(data_ov001_02193dfc, u16 *, 0x12);
-    sp_half = M2C_FIELD(&sp0, u16 *, 0x2);
-    v = (s32)sp_half - (s32)field12;
-    v -= (s32)(arrval >> 1);
-    if (v < 0) {
-        v = 0;
-    } else {
-        field19 = M2C_FIELD(data_ov001_02193dfc, u8 *, 0x19);
-        lim = (s32)field19 - (s32)arrval;
-        if (v >= lim) {
-            v = lim;
-        }
-        func_ov001_02183f30(v);
-    }
-    M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1D) = 3;
+void func_ov001_0218bd64(M2C_UNK *);
+void func_ov001_02183f30(s32);
+extern void *data_ov001_02193dfc;
+extern u8 data_ov001_0218fb5c[];
+M2C_UNK sp0;
+u32 arrval;
+u16 field12,sp_half;
+s32 v; u8 field19; s32 lim;
+func_ov001_0218bd64(&sp0);
+arrval=data_ov001_0218fb5c[M2C_FIELD(data_ov001_02193dfc,u8 *,0x1b)];
+field12=M2C_FIELD(data_ov001_02193dfc,u16 *,0x12);
+sp_half=M2C_FIELD(&sp0,u16 *,2);
+v=(s32)sp_half-(s32)field12;
+v-=(s32)(arrval>>1);
+if(v<0) v=0;
+else {
+field19=M2C_FIELD(data_ov001_02193dfc,u8 *,0x19);
+lim=(s32)field19-(s32)arrval;
+if(v>=lim) v=lim;
+}
+func_ov001_02183f30(v);
+M2C_FIELD(data_ov001_02193dfc,u8 *,0x1d)=3;
 }
 #pragma peephole reset
 s32 func_ov001_02183d80(void) {
@@ -303,14 +296,16 @@ void func_ov001_02183f6c(void) {
     data_ov001_02193e00 = func_ov001_0218b6f8(0x1E60, 0x20);
 }
 
-#pragma optimization_level 3
+#pragma opt_common_subs off
+#pragma pool_constants off
 void func_ov001_02183fa0(void) {
  u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00;
  if(data_ov001_02193e00==0)return;
  while(func_02011d58()!=0x8000){}
  func_ov001_0218b71c(&data_ov001_02193e00);
 }
-#pragma optimization_level reset
+#pragma pool_constants reset
+#pragma opt_common_subs reset
 s32 func_ov001_02183fd4(void) {
     s32 func_02007df8(s32, void *, s32);
     s32 func_02012218(void *, void (*)(void), s32);

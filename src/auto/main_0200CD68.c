@@ -6,7 +6,11 @@ typedef struct { u32 v[7]; } InputConfig;
 typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u8 pad[0x30]; u16 flags38, flags3a; } TouchState;
 extern InputConfig data_020ea6d8;
 extern M2C_UNK data_0212fc70;
-extern M2C_UNK func_0200c9c8, func_0200ca18, func_0200cb6c, func_0200d2c4;
+extern M2C_UNK func_0200c9c8, func_0200ca18, func_0200cb6c;
+void func_0200d2c4(u32,u32,u32);
+typedef struct { u32 x:12; u32 y:12; u32 touch:1; u32 valid:2; u32 unused:5; } TouchPacket;
+typedef union { TouchPair pair; TouchPacket bits; } TouchSample;
+typedef struct { u16 x,y,touch,valid; } TouchResult;
 
 void func_0200cd68(u32 a,u32 b,u32 c,u32 d,u32 e) {
 void func_0200cdfc(u8 *,u8 *,s32,u8 *,s32,void *);
@@ -74,7 +78,79 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
     }
 }
 #pragma scheduling reset
-M2C_UNK func_0200cfc8(M2C_UNK a0, M2C_UNK a1, s32 a2) { (void)a0; (void)a1; (void)a2; return 0; }
+void func_0200cfc8(u32 *state, const u8 *data, s32 len) {
+    u32 a, b, c, d, e;
+    u32 W[80];
+    s32 i;
+    while (len > 0) {
+        for (i = 0; i < 16; i++) {
+            u32 x = ((const u32 *)data)[i];
+            x = ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | (x << 24);
+            W[i] = x;
+        }
+        data += 64;
+        a = state[0]; b = state[1]; c = state[2]; d = state[3]; e = state[4];
+        for (i = 0; i < 80; i++) {
+            u32 f, k, temp;
+            if (i < 20) { f = (b & c) | (~b & d); k = 0x5A827999; }
+            else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+            else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+            else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+            if (i >= 16) {
+                u32 t = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
+                W[i] = (t << 1) | (t >> 31);
+            }
+            temp = ((a << 5) | (a >> 27)) + f + e + k + W[i];
+            e = d; d = c; c = ((b << 30) | (b >> 2)); b = a; a = temp;
+        }
+        state[0] += a; state[1] += b; state[2] += c; state[3] += d; state[4] += e;
+        len -= 64;
+    }
+}
+
+void func_0200d2c4(u32 unused,u32 value,u32 error){
+u16 code=(u16)value;u16 command=(u16)((code&0x7f00)>>8);s32 status;
+TouchSample sample1,sample2;TouchResult *out; u8 touch,valid;u16 y,x;
+if(error){
+M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1<<command;
+if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,4,0);return;
+}
+if(command==16){
+M2C_FIELD(&data_0212fc70,u16 *,0x10)++;
+if(M2C_FIELD(&data_0212fc70,u16 *,0x10)>=M2C_FIELD(&data_0212fc70,u16 *,0x18))M2C_FIELD(&data_0212fc70,u16 *,0x10)=0;
+sample1.pair=*(volatile TouchPair *)0x27fffaa;
+x=sample1.bits.x;y=sample1.bits.y;touch=sample1.bits.touch;valid=sample1.bits.valid;
+out=M2C_FIELD(&data_0212fc70,TouchResult **,0x14)+M2C_FIELD(&data_0212fc70,u16 *,0x10);
+out->x=x;out->y=y;out->touch=touch;out->valid=valid;
+if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,0,(u8)M2C_FIELD(&data_0212fc70,u16 *,0x10));return;
+}
+if(!(value&0x1000000))return;
+switch((u8)code){
+case 0:
+switch(command){case 0:
+sample2.pair=*(volatile TouchPair *)0x27fffaa;x=sample2.bits.x;y=sample2.bits.y;touch=sample2.bits.touch;valid=sample2.bits.valid;
+M2C_FIELD(&data_0212fc70,u16 *,8)=x;
+M2C_FIELD(&data_0212fc70,u16 *,10)=y;
+M2C_FIELD(&data_0212fc70,u16 *,12)=touch;
+M2C_FIELD(&data_0212fc70,u16 *,14)=valid;
+M2C_FIELD(&data_0212fc70,u16 *,0x36)=0;
+break;
+case 1:M2C_FIELD(&data_0212fc70,u16 *,0x36)=2;break;
+case 2:M2C_FIELD(&data_0212fc70,u16 *,0x36)=0;break;
+}
+M2C_FIELD(&data_0212fc70,u16 *,0x3a)&=~(1<<command);
+if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,0,0);return;
+case 4:status=3;goto report;
+case 2:status=1;goto report;
+case 3:status=2;
+report:
+M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1<<command;
+M2C_FIELD(&data_0212fc70,u16 *,0x3a)&=~(1<<command);
+if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,(u8)status,0);
+return;
+default:func_02007958();return;
+}
+}
 
 void func_0200d544(void) {
 void func_02009d34(void); s32 func_02009e8c(s32,s32); void func_02009e40(s32,void *);

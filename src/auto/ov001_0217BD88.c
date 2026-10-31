@@ -278,22 +278,7 @@ M2C_UNK func_ov001_0217c7e8(void){
  func_ov001_0218b298(M2C_FIELD(data_ov001_02193da4,s32 *,0));
 }
 #pragma opt_store reset
-void func_ov001_0217c8ac(void) {
-    extern void *data_ov001_02193da4;
-    extern M2C_UNK data_ov001_0218f888;
-    void *obj;
-    u8 idx;
-    u32 *p;
-    u8 value;
-    u32 old;
-    obj = data_ov001_02193da4;
-    idx = M2C_FIELD(obj, u8 *, 0x14);
-    p = M2C_FIELD(obj, u32 **, 4);
-    if ((s32)idx > 3) idx = 3;
-    value = M2C_FIELD(&data_ov001_0218f888, u8 *, idx * 3 + 2);
-    old = *p;
-    *p = (old & 0xFE00FF00) | 0x28 | (((u32)value << 23) >> 7);
-}
+void func_ov001_0217c8ac(void){extern void *data_ov001_02193da4;extern M2C_UNK data_ov001_0218f888;void *obj;u8 idx;u32 *p;u8 value;u32 old;obj=data_ov001_02193da4;idx=M2C_FIELD(obj,u8*,0x14);p=M2C_FIELD(obj,u32**,4);if((s32)idx>3)idx=3;value=M2C_FIELD(&data_ov001_0218f888,u8*,idx*3+2);old=*p;*p=(old & 0xFE00FF00)|0x28|(((u32)value << 23) >> 7);}
 #pragma scheduling on
 void func_ov001_0217c900(void) {
     extern void *data_ov001_02193da4;

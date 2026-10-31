@@ -588,38 +588,26 @@ u64 func_02031f14(s32 arg0, s32 arg1) {
     return (u32) arg0 | ((u64) (func_02076810(buf, in, 8) & 0x7f) << 32);
 }
 
-void func_02031f58(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02031f74(M2C_UNK, M2C_UNK, s32);
-    func_02031f74(arg1, arg2, M2C_FIELD(arg0, s32 *, 0x24));
+void func_02031f58(void *arg0, u64 arg1) {
+s32 func_02031f74(u64,s32);
+func_02031f74(arg1,M2C_FIELD(arg0,s32 *,0x24));
 }
-
-s32 func_02031f74(s32 arg0, s32 arg1, s32 arg2) {
-    void func_02076698(u8 *, s32);
-    s32 func_02076810(u8 *, s32 *, s32);
-    u8 buf[0x100];
-    s32 in[2];
-    s32 h;
-    volatile s32 masked;
-    if ((arg1 & 0) != 0 || (arg0 & (s32)0x80000000) != 0) {
-        return 0;
-    }
-    in[0] = arg0;
-    in[1] = arg2;
-    func_02076698(buf, 7);
-    h = func_02076810(buf, in, 8);
-    masked = h & 0x7F;
-    if (((masked >> 31) == 0) && (masked == arg1)) {
-        return 1;
-    }
-    return 0;
+s32 func_02031f74(u64 arg0,s32 arg2) {
+void func_02076698(u8 *,s32);
+s32 func_02076810(u8 *,s32 *,s32);
+u8 buf[256]; s32 in[2]; s32 h;
+if(arg0 & 0x80000000ULL) return 0;
+in[0]=(s32)arg0; in[1]=arg2;
+func_02076698(buf,7);
+h=func_02076810(buf,in,8)&127;
+return (s64)h == (arg0>>32);
 }
 
 #pragma opt_propagation off
-s32 func_02031fe4(u32 arg0,u32 arg1,s32 arg2) {
-M2C_UNK func_02031f74(M2C_UNK,M2C_UNK,s32);
-s32 ok=func_02031f74(arg0,arg1,arg2);
+s32 func_02031fe4(u64 arg0,s32 arg2) {
+s32 ok=func_02031f74(arg0,arg2);
 s32 mask=0;
-if(ok) {mask--; mask=arg0 & mask;}
+if(ok) {mask--; mask=(u32)arg0 & mask;}
 return mask;
 }
 #pragma opt_propagation reset

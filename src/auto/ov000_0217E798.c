@@ -79,84 +79,115 @@ if(best<score){result=unit;best=score;}
 return result;
 }
 
-M2C_UNK func_ov000_0217f494(s32 x, s32 y) {
+s32 func_ov000_0217f494(s32 x, s32 y) {
     extern void **gCurrentMap;
-    extern M2C_UNK data_ov000_021b5bfc;
-    s32 func_020a76d4(void *);
+    extern u8 data_ov000_021b5bfc[];
+    s32 func_020a76d4(u8 *);
     s32 func_020d27a4(s32, s32);
     s32 func_ov000_021a93ec(s32, s32);
-    M2C_UNK func_ov000_02176e28(M2C_UNK, void *);
-    void *map;
+    s32 func_ov000_02176e28(u32, void *);
+
     void *base;
     u8 *sel;
-    s32 minX, minY, maxX, maxY;
-    s32 xx, yy;
-    s32 result = 0;
-    s32 best = 0;
-    s32 range;
-    s32 minAllowed;
+    s32 minx;
+    s32 miny;
+    s32 maxx;
+    s32 maxy;
+    s32 inner;
+    s32 outer;
+    s32 dx;
+    s32 dy;
+    s32 dist;
+    s32 tableVal;
+    u8 kind;
+    s32 cap;
+    u16 rowOff;
+    u8 cand;
+    u8 prop;
+    s32 score;
+    s32 bestScore;
+    s32 result;
+    s32 outerS16;
     s16 pos[2];
+    s32 temp;
+    s32 ret;
 
-    map = *gCurrentMap;
-    base = *(void **)map;
-    sel = (u8 *)*(void **)((u8 *)base + 0x5000 + 0x2d0);
+    base = *gCurrentMap;
+    sel = (u8 *)M2C_FIELD(base, u8 **, 0x52d0);
 
-    minX = x - func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
-    if (minX < 0) minX = 0;
+    result = 0;
+    bestScore = 0;
 
-    minY = y - func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
-    if (minY < 0) minY = 0;
+    temp = func_020a76d4(sel);
+    minx = x - temp;
+    if (minx < 0) minx = 0;
 
-    range = func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
-    maxX = (s32)M2C_FIELD(base, u16 *, 0x5144) - 1;
-    if (x + range < maxX + 1 ? 0 : 0, x + range < (s32)M2C_FIELD(base, u16 *, 0x5144)) {
-        /* placeholder */
+    temp = func_020a76d4(sel);
+    miny = y - temp;
+    if (miny < 0) miny = 0;
+
+    temp = func_020a76d4(sel);
+    if (x + temp < M2C_FIELD(base, u16 *, 0x5144) - 1) {
+        ret = func_020a76d4(sel);
+        maxx = x + ret;
+    } else {
+        maxx = M2C_FIELD(base, u16 *, 0x5144) - 1;
     }
-    if (x + range < (s32)M2C_FIELD(base, u16 *, 0x5144)) maxX = x + range;
 
-    range = func_020a76d4((u8 *)base + 0x5000 + 0x2d0);
-    maxY = (s32)M2C_FIELD(base, u16 *, 0x5146) - 1;
-    if (y + range < (s32)M2C_FIELD(base, u16 *, 0x5146)) maxY = y + range;
+    temp = func_020a76d4(sel);
+    if (y + temp < M2C_FIELD(base, u16 *, 0x5146) - 1) {
+        ret = func_020a76d4(sel);
+        maxy = y + ret;
+    } else {
+        maxy = M2C_FIELD(base, u16 *, 0x5146) - 1;
+    }
 
-    minAllowed = *((u8 *)&data_ov000_021b5bfc + ((sel[0] & 0x3F) * 0x70) + 0x0C);
+    kind = (u8)(((u32)(sel[0] << 26)) >> 26);
+    tableVal = data_ov000_021b5bfc[kind * 0x70 + 0x0c];
 
     pos[0] = (s16)x;
     pos[1] = (s16)y;
 
-    for (yy = minY; yy <= maxY; yy++) {
-        for (xx = minX; xx <= maxX; xx++) {
-            s32 distX, distY, dist;
-            u8 cand;
-            u8 prop;
-            s32 score;
-            u16 rowOff;
+    outer = miny;
+    if (outer <= maxy) {
+        do {
+            inner = minx;
+            if (inner <= maxx) {
+                do {
+                    dx = x - inner;
+                    if (dx <= 0) dx = inner - x;
 
-            distX = x - xx;
-            if (distX <= 0) distX = xx - x;
-            distY = y - yy;
-            if (distY <= 0) distY = yy - y;
-            dist = distX + distY;
+                    dy = y - outer;
+                    dist = dx;
+                    if (dy > 0) dist = dist + dy; else dist = dist + (outer - y);
 
-            if (dist < minAllowed) continue;
-            if (dist > func_020a76d4((u8 *)base + 0x5000 + 0x2d0)) continue;
-
-            rowOff = *(u16 *)((u8 *)base + (yy * 2) + 0x3758);
-            cand = *((u8 *)base + xx + rowOff);
-            if (cand == 0) continue;
-
-            prop = *((u8 *)base + 0x52D4);
-            if (func_020d27a4(prop, cand) == 1) continue;
-
-            if (!func_ov000_021a93ec(xx, yy)) continue;
-
-            score = func_ov000_02176e28((M2C_UNK)(cand | 0x20000), pos);
-            if (best < score) {
-                result = (M2C_UNK)cand;
-                best = score;
+                    if (dist >= tableVal) {
+                        cap = func_020a76d4(sel);
+                        if (dist <= cap) {
+                            rowOff = *((u16 *)((u8 *)base + outer * 2 + 0x3758));
+                            cand = *((u8 *)base + inner + rowOff);
+                            if (cand != 0) {
+                                prop = *((u8 *)base + 0x52D4);
+                                if (func_020d27a4(prop, cand) != 1) {
+                                    if (func_ov000_021a93ec(inner, outer) != 0) {
+                                        outerS16 = (s16)outer;
+                                        score = func_ov000_02176e28((u32)cand | 0x20000, pos);
+                                        if (score > bestScore) {
+                                            result = cand;
+                                            bestScore = score;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    inner++;
+                } while (inner <= maxx);
             }
-        }
+            outer++;
+        } while (outer <= maxy);
     }
 
-    return (M2C_UNK)result;
+    return result;
 }
 

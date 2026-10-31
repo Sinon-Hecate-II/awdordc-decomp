@@ -48,6 +48,8 @@ void func_02014ccc(void *arg0) {
  M2C_FIELD(a,s32 *,0)=0; M2C_FIELD(a,s32 *,12)=2;
 }
 
+s32 func_02014d6c(void) { return 0; }
+
 /* Select units by state into priority groups, then dispatch the matching network action. */
 void func_02015008(void) {
 extern void *data_02136c4c;

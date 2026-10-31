@@ -88,10 +88,61 @@ s32 func_020a4dd8(void) {
     return 1;
 }
 
+#pragma opt_strength_reduction off
 void func_020a4de0(Unk020AEntry *a) {
-    return;
+extern s32 *gCurrentMap;extern u8 data_ov000_021b5bfc[];
+void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb734(s32,s32,s32,s8);
+s32 func_020d273c(s32,s32);s32 func_ov000_021a947c(s32,s32,s32);s32 func_020a600c(s32);
+s32 dx,dy;
+u16 bx,by;
+u8 *unit;
+u32 best;
+s32 n,y,x,bestId;
+u32 score;
+u8 ids[4],*out;
+s32 map,i,id;
+u16 row;
+u8 *scan,*cell;
+func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);
+dx=func_020a4dd0();dy=func_020a4dd8();
+func_01ffb734(M2C_FIELD(a,u8 *,0)+dx,M2C_FIELD(a,u8 *,1)+dy,5,0);
+n=0;out=ids;
+do{
+bestId=0;best=0;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+map=*gCurrentMap;
+if(M2C_FIELD(M2C_FIELD(map+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
+row=M2C_FIELD(map+y*2,u16 *,0x3758);
+id=M2C_FIELD(row+(map+x),u8 *,0);
+if(!id)continue;
+if(func_020d273c(M2C_FIELD(map,u16 *,0x52a4),(id>>6)+1)==1)continue;
+if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))continue;
+i=0;
+if(n>0){map=*gCurrentMap;row=M2C_FIELD(map+y*2,u16 *,0x3758);id=M2C_FIELD(row+(map+x),u8 *,0);scan=ids;
+do{if(*scan==id)break;scan++;i++;}while(i<n);}
+if(i!=n)continue;
+map=*gCurrentMap;
+id=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+unit=(u8 *)(map+0x59a4+id*14);
+if(M2C_FIELD(unit,u16 *,4)&32)continue;
+if(!func_020a600c(id))continue;
+score=M2C_FIELD(data_ov000_021b5bfc+((u32)(unit[0]<<26)>>26)*112,u16 *,4)*((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25);
+if(best>score)continue;
+bx=(u16)x;by=(u16)y;best=score;
+map=*gCurrentMap;
+row=M2C_FIELD(map+y*2,u16 *,0x3758);
+bestId=M2C_FIELD(row+(map+x),u8 *,0);
+}}
+if(!bestId)break;
+*out++=bestId;
+func_020a4d78(bx,by,bestId,M2C_FIELD(a,s8 *,7));
+n++;
+}while(n<4);
+if(n)return;
+func_020a4d64();
 }
-
+#pragma opt_strength_reduction reset
 void func_020a5080(Unk020ABaseEntry *a){
 extern s32 *gCurrentMap;void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb80c(s32,s32,s32,s32);
 s32 found=0,x,y,p;u8 id;

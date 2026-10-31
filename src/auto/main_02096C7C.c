@@ -306,7 +306,7 @@ void func_020974d0(s32 arg0) {
     void *temp_r7_2;
 
     sp0 = arg0;
-    spC = data_027e01d8;
+    spC = (void *)data_027e01d8;
     sp8 = 0;
     do {
         if (sp8 == 0) {
@@ -315,7 +315,7 @@ void func_020974d0(s32 arg0) {
             var_r0 = &data_027e00c4;
         }
         data_027e01d8 = *var_r0;
-        if (((func_02091e24() != 0) || (data_027e01d8 == data_027e00c8)) && ((func_02091e24() != 1) || (data_027e01d8 == data_027e00c4)) && ((func_02091e24() != 3) || (data_027e01d8 == spC))) {
+        if (((func_02091e24() != 0) || (data_027e01d8 == data_027e00c8)) && ((func_02091e24() != 1) || (data_027e01d8 == data_027e00c4)) && ((func_02091e24() != 3) || (data_027e01d8 == (void *)spC))) {
             temp_r0_2 = func_02091db4();
             switch (temp_r0_2) {                    /* irregular */
             case 0:

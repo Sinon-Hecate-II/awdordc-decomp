@@ -7,13 +7,16 @@ static inline s32 ov007_item_id(void *p) {
 }
 
 
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_ov007_02218ad0(void *arg0) {
     M2C_UNK func_01ff8ddc(M2C_UNK, s16, s16, s16, s32);
-    s32 func_0207c8ec(s32, u16);
+    s32 func_0207c8ec(s32, s32);
     extern M2C_UNK data_020e5b30;
-    s32 sp8;
+    volatile s32 sp8;
     s32 sp4;
-    s16 temp_r4;
+    s16 temp_r4; s16 sine;
     s32 temp_r0;
     s32 temp_r11;
     s32 temp_r11_2;
@@ -27,16 +30,16 @@ void func_ov007_02218ad0(void *arg0) {
     s32 temp_r7_3;
     s32 temp_r8;
     s32 temp_r8_2;
-    u16 var_r1;
-    u16 var_r1_2;
-    u16 var_r7;
-    u16 var_r7_2;
-    u16 var_r8;
-    u16 var_r8_2;
-    u16 var_r8_3;
-    u16 var_r9;
-    u16 var_r9_2;
-    u16 var_r9_3;
+    s32 var_r1;
+    s32 var_r1_2;
+    s32 var_r7;
+    s32 var_r7_2;
+    s32 var_r8;
+    s32 var_r8_2;
+    s32 var_r8_3;
+    s32 var_r9;
+    s32 var_r9_2;
+    s32 var_r9_3;
 
     var_r1 = M2C_FIELD(arg0, u16 *, 0x3C);
     if ((s32) var_r1 >= 2) {
@@ -60,6 +63,7 @@ void func_ov007_02218ad0(void *arg0) {
             var_r8 = var_r1;
         }
     }
+    sine = M2C_FIELD(&data_020e5b30,s16 *,0);
     if ((s32) var_r1 >= 2) {
         var_r9 = var_r1;
     } else if ((u32) var_r1 > 2U) {
@@ -78,12 +82,14 @@ void func_ov007_02218ad0(void *arg0) {
         }
     }
     temp_r11 = temp_r4 * 0x10;
-    temp_r6 = (0 - M2C_FIELD(&data_020e5b30, s16 *, 0)) * 0x10;
-    temp_r5 = M2C_FIELD(&data_020e5b30, s16 *, 0) * 0x10;
+    temp_r6 = (0 - sine) * 0x10;
+    temp_r5 = sine * 0x10;
     sp8 = func_0207c8ec(temp_r11, var_r1);
     temp_r8 = func_0207c8ec(temp_r6, var_r9);
     temp_r7 = func_0207c8ec(temp_r5, var_r8);
-    func_01ff8ddc(0, (s16) sp8, (s16) temp_r8, (s16) temp_r7, (s32) (s16) func_0207c8ec(temp_r11, var_r7));
+    temp_r0=func_0207c8ec(temp_r11,var_r7);
+    sp4=sp8;
+    func_01ff8ddc(0,(s16)sp4,(s16)temp_r8,(s16)temp_r7,(s16)temp_r0);
     var_r1_2 = M2C_FIELD(arg0, u16 *, 0x3E);
     if ((s32) var_r1_2 >= 2) {
         var_r7_2 = var_r1_2;
@@ -152,7 +158,7 @@ void func_ov007_02218ad0(void *arg0) {
     temp_r5_2 = func_0207c8ec(temp_r5, 0x100U);
     func_01ff8ddc(2, (s16) temp_r4_2, (s16) temp_r6_2, (s16) temp_r5_2, (s32) (s16) func_0207c8ec(temp_r7_3, var_r8_3));
 }
-
+#pragma pop
 void func_ov007_02218d8c(void *arg0) {
     M2C_UNK func_01ffaacc(u16, s32, u16, M2C_UNK *, s32);
     s32 func_ov007_02217c50();

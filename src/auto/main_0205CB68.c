@@ -2,6 +2,7 @@
 #include "common.h"
 struct BytePair_0205 { u8 v[2]; };
 struct Packet_0205 { u8 a,b; u16 c; s32 d; };
+struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 s32 func_0205cb68(s32 a, s32 b, s32 c) {
 s32 func_0205d228(void *,s32,s32,void *,s32);
@@ -56,8 +57,55 @@ res=func_02048ff8(M2C_FIELD(p,s32 *,12),&ptr);
 if(res)return *res;return 0;
 }
 
-s32 func_0205ccd8(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
-    return 0;
+s32 func_0205ccd8(void **a, char *b, s32 c, s32 d, s32 e) {
+void func_0204926c(void);
+s32 func_0205d588(char *,s32 *,u16 *);
+M2C_UNK func_02037794(s32);
+void func_02065210(void *,s32,s32);
+s32 func_02048c84(s32,s32,s32,void *,void *,s32);
+s32 func_02048558(s32,s32,void (*)(void *));
+s32 func_020377c4(void *);
+M2C_UNK func_02048dc4(s32);
+s32 func_0204861c(s32);
+s32 func_020496a4(s32,s32,s32);
+s32 func_020496e0(s32,void *,s32);
+M2C_UNK func_020496b8(s32);
+s32 func_020498b8(s32,void *,s32 *);
+s32 addr;
+u16 port;
+s32 len;
+void *p;
+s32 swapped;
+func_0204926c();
+if(d==0)d=0x10000;
+if(c==0)c=0x10000;
+if(!func_0205d588(b,&addr,&port))return 4;
+p=(void *)func_02037794(0x44);
+if(!p)return 1;
+func_02065210(p,0,0x44);
+M2C_FIELD(p,s32 *,0)=-1;
+M2C_FIELD(p,s32 *,0x3c)=d;
+M2C_FIELD(p,s32 *,0x38)=c;
+M2C_FIELD(p,s32 *,0x24)=e;
+M2C_FIELD(p,s32 *,0xc)=func_02048c84(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
+if(!M2C_FIELD(p,s32 *,0xc)){func_020377c4(p);return 1;}
+M2C_FIELD(p,s32 *,0x10)=func_02048558(4,4,(void (*)(void *))func_0205cc90);
+if(!M2C_FIELD(p,s32 *,0x10)){func_02048dc4(M2C_FIELD(p,s32 *,0xc));func_020377c4(p);return 1;}
+M2C_FIELD(p,s32 *,0)=func_020496a4(2,2,0);
+if(M2C_FIELD(p,s32 *,0)==-1){func_02048dc4(M2C_FIELD(p,s32 *,0xc));func_0204861c(M2C_FIELD(p,s32 *,0x10));func_020377c4(p);return 3;}
+swapped=((port>>8)&0xff)|((port<<8)&0xff00);
+{ struct Packet_0205 pkt={0};
+pkt.b=2;
+pkt.d=addr;
+pkt.c=swapped;
+if(func_020496e0(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
+func_020496b8(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));func_0204861c(M2C_FIELD(p,s32 *,0x10));func_020377c4(p);return 3;
+}
+len=8;func_020498b8(M2C_FIELD(p,s32 *,0),&pkt,&len);
+M2C_FIELD(p,s32 *,4)=pkt.d;
+M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
+*a=p;return 0;
+}
 }
 
 void func_0205cef8(void *arg0) {

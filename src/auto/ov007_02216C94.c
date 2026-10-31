@@ -37,11 +37,15 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
     s32 func_ov007_02215f6c(s32 *, s32 *, s32, s16 *, s16 *, s32);
     M2C_UNK func_ov007_02215254(s32, s32, s32);
 
-    s32 x = 0, y = 0;
-    s32 count;
+    s32 x, y;
     s32 saved;
+    s32 count;
     s32 mode;
 
+    ((s16 *)out_c)[0] = (s16)0xff;
+    ((s16 *)out_b)[0] = (s16)0xff;
+    ((s16 *)out_a)[0] = (s16)0xff;
+    count = 0;
     for (mode = 0; mode < 5; mode++) {
         switch (mode) {
             case 0: count = func_ov007_02214d88(0, 5); break;
@@ -52,7 +56,7 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
         }
         saved = 0;
         if (count <= 0) continue;
-        while (saved < count) {
+        do {
             switch (mode) {
             case 0:
                 if (!func_ov007_02215e94(&x, &y, 1, arg0, 10)) goto done_inner;
@@ -84,7 +88,7 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
                 break;
             }
             saved++;
-        }
+        } while (saved < count);
         done_inner:
         ;
     }

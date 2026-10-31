@@ -2,7 +2,52 @@
 #include "common.h"
 
 /* Tear down and free the global session/context object at data_0213d1f8: its socket/peer at +0x384, state at +0x458, the sub-structure at +0x1C (four channels plus cleanup), plus close out remaining resources and reset the pointer. */
-void func_0203804c(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+void func_0203804c(void *a,void *b,s32 c,char *d,char *e,s32 f,s32 g,s32 h,s32 i){
+extern void *data_0213d1f8;
+extern u8 data_0213df10[];
+extern u8 data_0213e010[];
+void func_020375fc(void);
+void func_02039100(void);
+void func_0203d910(void);
+void func_02039838(void);
+void func_02039844(void);
+void func_02039b9c(void);
+void func_02039478(void);
+void func_02039be4(void *,void *,void *,s32,s32,void *,void *,s32);
+void func_0203a9dc(void *,void *,void *,s32,s32);
+void func_0203c110(void *,void *,void *,void *,void *,void *,s32,s32);
+void func_02044708(void *);
+u32 len;
+data_0213d1f8=a;
+func_020375fc();
+M2C_FIELD(data_0213d1f8,s32 *,0)=0;
+M2C_FIELD(data_0213d1f8,s32 *,4)=(s32)func_0203d910;
+M2C_FIELD(data_0213d1f8,s32 *,8)=(s32)func_02039838;
+M2C_FIELD(data_0213d1f8,s32 *,12)=(s32)func_02039844;
+M2C_FIELD(data_0213d1f8,s32 *,16)=(s32)func_02039b9c;
+M2C_FIELD(data_0213d1f8,s32 *,20)=f?f:0x2000;
+M2C_FIELD(data_0213d1f8,s32 *,24)=g?g:0x2000;
+M2C_FIELD(data_0213d1f8,s32 *,28)=0;
+M2C_FIELD(data_0213d1f8,s32 *,32)=(s32)b;
+M2C_FIELD(data_0213d1f8,s32 *,36)=0;
+M2C_FIELD(data_0213d1f8,s32 *,40)=0;
+M2C_FIELD(data_0213d1f8,u8 *,44)=0;
+M2C_FIELD(data_0213d1f8,u8 *,45)=0;
+M2C_FIELD(data_0213d1f8,s32 *,100)=0;
+M2C_FIELD(data_0213d1f8,s32 *,104)=(s32)data_0213df10;
+M2C_FIELD(data_0213d1f8,s32 *,108)=(s32)data_0213e010;
+M2C_FIELD(data_0213d1f8,s32 *,112)=0;M2C_FIELD(data_0213d1f8,s32 *,116)=0;M2C_FIELD(data_0213d1f8,s32 *,120)=0;M2C_FIELD(data_0213d1f8,s32 *,124)=0;M2C_FIELD(data_0213d1f8,s32 *,128)=0;M2C_FIELD(data_0213d1f8,s32 *,132)=0;M2C_FIELD(data_0213d1f8,s32 *,136)=0;M2C_FIELD(data_0213d1f8,s32 *,140)=0;M2C_FIELD(data_0213d1f8,s32 *,144)=0;M2C_FIELD(data_0213d1f8,s32 *,148)=0;
+func_02039100();
+func_02039be4((u8 *)data_0213d1f8+0x98,b,(u8 *)data_0213d1f8+0x1c,c,M2C_FIELD(b,s32 *,0x24),(u8 *)data_0213d1f8+0x2e,func_02039478,0);
+func_0203a9dc((u8 *)data_0213d1f8+0x318,(u8 *)data_0213d1f8+0x1c,(u8 *)data_0213d1f8+0x2e,h,i);
+func_0203c110((u8 *)data_0213d1f8+0x374,(u8 *)data_0213d1f8+0x1c,data_0213d1f8,(u8 *)data_0213d1f8+4,data_0213df10,data_0213e010,h,i);
+func_02044708((u8 *)data_0213d1f8+0x7f8);
+if((u32)func_02068c34(d)>=0x100)len=255;else len=func_02068c34(d);
+func_02008048(d,data_0213df10,len);
+data_0213df10[len]=0;
+if((u32)func_02068c34(e)>=0x100)len=255;else len=func_02068c34(e);
+func_02008048(e,data_0213e010,len);
+data_0213e010[len]=0;
 }
 
 void func_020382d0(void) {

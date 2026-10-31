@@ -1,11 +1,13 @@
 /* 22 functions from 0x0209ACC4 to 0x0209BC58 (main), found by ds-decomp. */
 #include "common.h"
 #pragma opt_propagation off
-static inline void EmitSprite(u16 x, u16 y, u32 tile, u16 *desc) {
+static inline void EmitSprite(u16 x, s32 yArg, u32 tile, u16 *desc) {
     void func_01ff90e4(u16, u16, u32, u16 *);
-    func_01ff90e4(x,y,tile,desc);
+    s32 y = (u16)yArg;
+    func_01ff90e4(x,(u16)y,tile,desc);
 }
-static inline void DrawSpritePair(u16 x, s32 y, s32 tile, u16 *desc) {
+static inline void DrawSpritePair(s32 xArg, s32 y, s32 tile, u16 *desc) {
+    s32 x = (u16)xArg;
     void func_01ff90e4(u16, u16, u32, u16 *);
     extern s32 gCur3DSpriteEngine;
     func_01ff90e4(x,(u16)y,(u16)tile,desc);
@@ -445,9 +447,7 @@ s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
     return temp_r0;
 }
 
-#pragma opt_common_subs off
-#pragma opt_common_subs off
-#pragma opt_propagation off
+#pragma scheduling off
 void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     void func_01ff90e4(u16, u16, u32, u16 *);
     extern u8 data_027e005c[];
@@ -463,17 +463,21 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     if (n >= 4) {
         do {
             u32 mode;
-            EmitSprite((u16)x, (u16)y, (u32)param, (u16 *)data_027e005c);
+            u32 nextParam;
+            u32 nextX;
+            EmitSprite((u16)x, y, (u32)param, (u16 *)data_027e005c);
             n -= 4;
             mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
-            param = (u16)(param + (0x3ff & (8 >> (s32)mode)));
-            x = (u16)(((((x & 0x1ff) + 0x20) & 0x1ff) | (x & 0xfe00)));
+            nextParam = param + (0x3ff & (8 >> (s32)mode));
+            nextX = ((((x & 0x1ff) + 0x20) & 0x1ff) | (x & 0xfe00));
+            param = (u16)nextParam;
+            x = (u16)nextX;
         } while (n >= 4);
     }
 
     if (n >= 2) {
         u32 mode;
-        DrawSpritePair((u16)x,y,param,(u16 *)data_027e00a4);
+        DrawSpritePair(x,y,param,(u16 *)data_027e00a4);
         mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
         param = (u16)(param + (0x3ff & (2 >> (s32)mode)));
         x = (u16)((((((x & 0x1ff) + 0x10) & 0x1ff) | (x & 0xfe00))));
@@ -481,10 +485,10 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     }
 
     if (n >= 1) {
-        DrawSpritePair((u16)x,(u16)y,(u16)param,(u16 *)data_027e0084);
+        DrawSpritePair(x,y,param,(u16 *)data_027e0084);
     }
 }
-#pragma opt_common_subs reset
+#pragma scheduling reset
 void func_0209bbd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     void func_0209bc18(M2C_UNK, M2C_UNK, s32, s32, u16, u16);
     M2C_UNK func_02086680(M2C_UNK);

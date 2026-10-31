@@ -2,7 +2,9 @@
 #include "common.h"
 
 void func_020a0964(s32 a, s32 b, u16 *out) {
-    (void)a; (void)b; (void)out;
+    s32 dummy = a + b;
+    (void)dummy;
+    (void)out;
 }
 
 M2C_UNK func_020a0d18(void) {

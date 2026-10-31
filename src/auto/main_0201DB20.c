@@ -252,8 +252,120 @@ func_0201db20(base,(s32)p-base);return result;
 }
 
 s32 func_0201e404(s32 arg0, s32 arg1) {
-    (void)arg0; (void)arg1;
-    return 0;
+    u64 func_02007004(void);
+    s32 func_0201dbb8(void);
+    void func_0201a238(void);
+    s32 func_0201d618(s32 *);
+    s32 func_0201a7f8(u16 *, u16 *);
+    void func_0201d70c(s32);
+    extern M2C_UNK data_02137290;
+    extern M2C_UNK data_02137778;
+
+    s32 slots[2];
+    u32 timer;
+    s32 result;
+    u32 limit;
+    s32 *lenp;
+    s32 len;
+    u8 *q;
+    u8 *cur;
+    u8 *endb;
+    u8 tag;
+    u32 combo;
+    u32 now;
+    u8 flen;
+    u16 t0, t1;
+
+    slots[0] = arg0;
+    lenp = &slots[1];
+    limit = (arg1 + 1) * 15;
+    timer = (u32)(func_02007004() >> 16);
+    result = 0;
+    goto timer_check;
+
+top_loop:
+    if (func_0201dbb8() == 0) {
+        func_0201a238();
+    } else {
+        q = (u8 *)func_0201d618(lenp);
+        len = slots[1];
+        if (q == 0) goto fail;
+        if ((u32)len <= 0xF0) goto fail;
+        if (q[0] != 2) goto fail;
+        t0 = *(u16 *)(q + 4);
+        t1 = *(u16 *)(q + 6);
+        if (((((u32)PacketSwap(t0)) << 16) | (u32)PacketSwap(t1)) != (u32)slots[0]) goto fail;
+        if (func_0201a7f8((u16 *)&data_02137778, (u16 *)(q + 0x1C)) != 0) goto fail;
+        if (q[0xEC] != 0x63 || q[0xED] != 0x82 || q[0xEE] != 0x53 || q[0xEF] != 0x63) goto fail;
+
+        combo = ((u32)q[0x10] << 24) | ((u32)q[0x11] << 16) | ((u32)q[0x12] << 8) | (u32)q[0x13];
+        result = 3;
+        cur = q + 0xF0;
+        endb = q + len;
+
+        if (cur >= endb) goto fail;
+        tag = *cur++;
+
+        while (1) {
+            switch (tag) {
+            case 0x01:
+                M2C_FIELD(&data_02137290, u32 *, 0x1C) =
+                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                break;
+            case 0x03:
+                M2C_FIELD(&data_02137290, u32 *, 0x2C) =
+                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                break;
+            case 0x06:
+                if (cur[0] < 8) {
+                    M2C_FIELD(&data_02137290, u32 *, 0x64) = 0;
+                } else {
+                    M2C_FIELD(&data_02137290, u32 *, 0x64) =
+                        ((u32)cur[5] << 24) | ((u32)cur[6] << 16) | ((u32)cur[7] << 8) | (u32)cur[8];
+                }
+                M2C_FIELD(&data_02137290, u32 *, 0x60) =
+                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                break;
+            case 0x33:
+                if (cur[0] == 0x02) {
+                    result = 1;
+                    M2C_FIELD(&data_02137290, u32 *, 0x34) = combo;
+                } else if (cur[0] == 0x05) {
+                    result = 2;
+                    M2C_FIELD(&data_02137290, u32 *, 0x50) = combo;
+                }
+                break;
+            case 0x35:
+                M2C_FIELD(&data_02137290, u32 *, 0x20) =
+                    ((u32)cur[1] << 24) | ((u32)cur[2] << 16) | ((u32)cur[3] << 8) | (u32)cur[4];
+                break;
+            default:
+                break;
+            }
+
+            flen = cur[0];
+            cur += flen + 1;
+            if (cur >= endb) goto fail;
+            tag = *cur++;
+
+            if (tag == 0xFF) {
+                func_0201d70c(slots[1]);
+                if (M2C_FIELD(&data_02137290, s32 (**)(void), 0x48)() == 0) goto final;
+                if (result != 0) goto final;
+                goto timer_check;
+            }
+        }
+    }
+
+fail:
+    result = 0;
+
+timer_check:
+    now = (u32)(func_02007004() >> 16);
+    if ((u32)(now - timer) < limit) goto top_loop;
+
+final:
+    return result;
 }
 
 s32 func_0201e754(void) {

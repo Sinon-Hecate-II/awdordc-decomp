@@ -2,6 +2,7 @@
 #include "common.h"
 
 typedef struct { s32 a; s32 b; } Pair;
+typedef struct { u8 pad[0x60]; u64 v; u64 *p; } UnkNode0208EE1C;
 
 
 void func_0208e18c(void) { }
@@ -9,7 +10,31 @@ void func_0208e18c(void) { }
 void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; func_0200bc5c(data_02102888); func_020814e4(data_02102898); func_02081590(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); func_020815fc(data_021028b0,(arg1+16)<<5,32); func_02081528(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }
 
 void func_0208e864(s16 arg0, s32 arg1, u16 arg2, u8 arg3, s32 arg4) {
-    return;
+s32 func_0207c8ec(s32,s32);
+void func_01ffaacc(u16,u16,u16,void *,u8);
+extern s32 gCur3DSpriteEngine;
+extern u8 data_027e00a4[],data_027e0084[];
+s32 minutes,centis;
+u16 y;
+const s32 mask=0x3ff;
+minutes=func_0207c8ec(arg4,60);
+centis=func_0207c8ec((arg4%60)*100,60);
+if(arg4<600)arg2+=(32>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask;
+y=(u16)arg1;
+func_01ffaacc((u16)arg0,y,(u16)(arg2+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e00a4,arg3);
+arg0+=48;
+func_01ffaacc((u16)arg0,y,(u16)(arg2+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
+arg0-=8;
+centis=func_0207c8ec(centis,10);
+func_01ffaacc((u16)arg0,y,(u16)(arg2+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
+arg0-=8;
+func_01ffaacc((u16)arg0,y,(u16)(arg2+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
+arg0-=8;
+do{
+func_01ffaacc((u16)arg0,y,(u16)(arg2+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
+minutes=func_0207c8ec(minutes,10);
+arg0-=8;
+}while(minutes!=0);
 }
 
 void func_0208eb30(void *arg0, u32 arg1, s32 arg2) {
@@ -128,10 +153,9 @@ void *func_0208ed88(void *arg0) {
 }
 
 #pragma opt_propagation off
-void func_0208ee1c(void *arg0) {
-    unsigned long long *dst = M2C_FIELD(arg0, unsigned long long **, 0x68);
-    if (dst != 0) {
-        *dst = M2C_FIELD(arg0, unsigned long long *, 0x60);
+void func_0208ee1c(UnkNode0208EE1C *s) {
+    if (s->p) {
+        *s->p = s->v;
     }
 }
 

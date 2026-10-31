@@ -173,6 +173,11 @@ if(M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,u16,u16),0x60)==NULL)return;
 M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,u16,u16),0x60)(arg0,arg1,arg2);
 }
 
+s32 func_ov009_02223744(u16 arg0, u8 arg1, s32 arg2, u16 arg3) {
+    (void)arg0; (void)arg1; (void)arg2; (void)arg3;
+    return 0;
+}
+
 void func_ov009_02223a24(void) {
     M2C_UNK func_ov009_0222529c();
     func_ov009_0222529c();
@@ -184,11 +189,13 @@ s8 *entry=(s8*)&data_ov009_02226b40+arg3*0x60;
 u8 flags=M2C_FIELD(entry,u8*,0x16);
 u16 mask=M2C_FIELD(&data_ov009_022268e0,u16*,8);
 M2C_UNK (*callback)(s32,s32,s32,s32,s32);
-flags &=~1;mask|=1<<arg3;
+flags = flags & ~1;
+mask = mask | (1 << arg3);
 M2C_FIELD(entry,u8*,0x16)=flags;
 M2C_FIELD(&data_ov009_022268e0,u16*,8)=mask;
 callback=M2C_FIELD(&data_ov009_022268e0,M2C_UNK (**)(s32,s32,s32,s32,s32),0x1c);
-if(callback)callback(arg0,arg1,arg2,arg3,arg4);
+if(callback==NULL)return;
+callback(arg0,arg1,arg2,arg3,arg4);
 }
 
 void func_ov009_02223a90(void *arg0) {

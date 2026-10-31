@@ -268,7 +268,9 @@ void func_020b7c4c(void) {
     func_0208fe30(0xE5);
 }
 
-void func_020b7c5c(void *arg0) { (void)arg0; }
+void func_020b7c5c(void *arg0) {
+    (void)arg0;
+}
 
 #pragma cplusplus on
 extern "C" void func_020b7ef0(void) {

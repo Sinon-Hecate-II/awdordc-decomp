@@ -432,14 +432,16 @@ void func_ov010_02224ef8(void *p){extern M2C_UNK data_ov010_0222d908;s32 func_02
 
 #pragma opt_common_subs off
 void func_ov010_02224f28(void) {
- extern M2C_UNK data_ov010_0222c02c;
- s32 i;
- for(i=0;i<4;i++) data_ov010_0222d920[i]=0x1000000;
- data_ov010_0222d914[1]=0;
- data_ov010_0222d914[0]=0;
- M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=0;
- M2C_FIELD(&data_ov010_0222c02c,s32 *,4)=0;
- data_ov010_0222d914[2]=0;
+    extern M2C_UNK data_ov010_0222c02c;
+    s32 i;
+    for (i = 0; i < 4; i++) {
+        data_ov010_0222d920[i] = 0x1000000;
+    }
+    data_ov010_0222d914[1] = 0;
+    data_ov010_0222d914[0] = 0;
+    M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) = 0;
+    M2C_FIELD(&data_ov010_0222c02c, s32 *, 4) = 0;
+    data_ov010_0222d914[2] = 0;
 }
 #pragma opt_common_subs reset
 void func_ov010_02224f74(s32 arg0) {

@@ -465,32 +465,31 @@ void func_ov007_02214a6c(s32 arg0, s32 arg1) {
 
     s32 width = arg0;
     s32 height = arg1;
-    void *map;
-    M2C_UNK r4v;
-    M2C_UNK funcRes0, funcRes1, funcRes2;
-    void *r6;
+    void *r4v;
     void *r5;
-    s32 i, x, y;
-    s32 w2, h2;
-    M2C_UNK dword;
-    s32 maskA, maskB, maskC, maskD;
-    void *ptr;
-    u32 linear;
+    void *r6;
+    s32 y;
+    s32 x;
+    void *map;
     M2C_UNK val;
-    s32 u;
+    s32 w2, h2;
+    u32 linear;
     u16 rowOffset, idx;
+    M2C_UNK dword;
+    s32 maskA, maskB, maskC;
+    s32 bits;
+    u8 old;
+    void *ptr;
+    s32 u;
 
-    funcRes0 = func_020c79ec();
-    r4v = funcRes0;
-    funcRes1 = func_020c79f8();
-    r5 = (void *)funcRes1;
-    funcRes2 = func_020c7a08();
-    r6 = (void *)funcRes2;
+    r4v = func_020c79ec();
+    r5 = (void *)func_020c79f8();
+    r6 = (void *)func_020c7a08();
     func_020c879c(r4v);
 
     map = (void *)*gCurrentMap;
-    M2C_FIELD(map, u16 *, 0x5144) = (u16)width;
-    M2C_FIELD(map, u16 *, 0x5146) = (u16)height;
+    *(u16 *)((u8 *)map + 0x5144) = (u16)width;
+    *(u16 *)((u8 *)map + 0x5146) = (u16)height;
 
     func_020a68d4();
     func_020d216c();
@@ -498,58 +497,54 @@ void func_ov007_02214a6c(s32 arg0, s32 arg1) {
     func_020ceffc();
 
     map = (void *)*gCurrentMap;
-    r5 = (void *)funcRes1;
-
-    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
-        s32 xdim = M2C_FIELD(map, u16 *, 0x5144);
+    for (y = 0; y < *(u16 *)((u8 *)map + 0x5146); y++) {
+        s32 xdim = *(u16 *)((u8 *)map + 0x5144);
         for (x = 0; x < xdim; x++) {
             map = (void *)*gCurrentMap;
-            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
             idx = (u16)(x + rowOffset);
-            M2C_FIELD(map, u16 *, idx * 2 + 0xA10) = 3;
+            *(u16 *)((u8 *)map + idx * 2 + 0x0A10) = 3;
             map = (void *)*gCurrentMap;
-            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
             idx = (u16)(x + rowOffset);
-            M2C_FIELD(map, u8 *, idx + 0x1420) = 8;
+            *(u8 *)((u8 *)map + idx + 0x1420) = 8;
         }
     }
 
     map = (void *)*gCurrentMap;
-    w2 = M2C_FIELD(r6, u8 *, 0x04);
-    h2 = M2C_FIELD(r6, u8 *, 0x05);
-    r5 = (void *)funcRes1;
-    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
-        s32 xdim = M2C_FIELD(map, u16 *, 0x5144);
+    w2 = *(u8 *)((u8 *)r6 + 0x04);
+    h2 = *(u8 *)((u8 *)r6 + 0x05);
+    for (y = 0; y < *(u16 *)((u8 *)map + 0x5146); y++) {
+        s32 xdim = *(u16 *)((u8 *)map + 0x5144);
         for (x = 0; x < xdim; x++) {
             if (x >= w2 || y >= h2) continue;
             map = (void *)*gCurrentMap;
             linear = (u32)(y * w2 + x);
-            val = M2C_FIELD(r5, u8 *, linear);
-            rowOffset = M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758);
+            val = *(M2C_UNK *)((u8 *)r5 + linear);
+            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
             idx = (u16)(x + rowOffset);
-            M2C_FIELD(map, u8 *, idx + 0x1420) = (u8)val;
+            *(u8 *)((u8 *)map + idx + 0x1420) = (u8)val;
             val = func_0207f460();
-            M2C_FIELD(map, u16 *, idx * 2 + 0xA10) = (u16)val;
+            *(u16 *)((u8 *)map + idx * 2 + 0x0A10) = (u16)val;
         }
     }
 
-    i = 0;
+    y = 0;
     r5 = (void *)((u8 *)r6 + 0x384);
-    val = M2C_FIELD(r6, u8 *, 0x2F);
-    for (i = 0; i < val; i++) {
-        dword = M2C_FIELD(r5, u32 *, 0);
-        maskA = (dword << 0x1B) >> 0x1B;
-        maskB = (dword << 0x16) >> 0x1B;
-        maskC = (dword << 0x11) >> 0x1B;
-        maskD = (dword << 0x0E) >> 0x1D;
-        if (width <= maskA) continue;
-        if (maskB >= height) continue;
+    val = *(M2C_UNK *)((u8 *)r6 + 0x2F);
+    for (y = 0; y < (s32)val; y++) {
+        dword = *(M2C_UNK *)r5;
+        maskA = (s32)(((u32)dword << 27) >> 27);
+        maskB = (s32)(((u32)dword << 22) >> 27);
+        maskC = (s32)(((u32)dword << 17) >> 27);
+        if (width <= maskA) { r5 = (void *)((u8 *)r5 + 4); continue; }
+        if (maskB >= height) { r5 = (void *)((u8 *)r5 + 4); continue; }
         ptr = func_020a660c(maskA, maskB, maskC);
         if (ptr != 0) {
-            s32 bits = (dword << 0x0A) >> 0x1C;
-            u8 old = M2C_FIELD(ptr, u8 *, 0x0B);
+            bits = (s32)(((u32)dword << 10) >> 28);
+            old = *(u8 *)((u8 *)ptr + 0x0B);
             old = (u8)((old & ~0x0F) | (bits & 0x0F));
-            M2C_FIELD(ptr, u8 *, 0x0B) = old;
+            *(u8 *)((u8 *)ptr + 0x0B) = old;
         }
         r5 = (void *)((u8 *)r5 + 4);
     }

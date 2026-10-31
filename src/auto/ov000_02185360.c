@@ -83,5 +83,43 @@ s32 func_ov000_02185fb8(u8 *a,u8 *b,s32 c){
 }
 
 void func_ov000_02186070(u8 a, s32 b) {
+ extern u16 data_ov000_021aeef4[];
+ s32 func_ov000_021a98e4(s32);
+ s32 func_020a7cfc(void *);
+ s32 func_ov000_021a97d0(u32,u32);
+ s32 func_ov000_021a97e0(s32,u32);
+ void func_01ffada0(s32,s32,s32,s32,s32);
+ void func_01ffb9c4(s32);
+ u8 *p, *q=(u8 *)b;
+ s32 i,n,x,y,v,old;
+ u8 *cell;
+ M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=a;
+ for(i=data_ov000_021aeef4[a]+1;i<data_ov000_021aeef4[a]+0x33;i++){
+ p=(u8 *)*gCurrentMap+0x59a4+i*14;
+ if(!((u32)(p[0]<<26)>>26))continue;
+ if(func_ov000_021a98e4((u32)(p[0]<<26)>>26))continue;
+ if(M2C_FIELD(p,u16 *,4)&8)continue;
+ if(func_020a7cfc(p))continue;
+ if(!func_ov000_021a97d0((u32)(p[0]<<26)>>26,(u32)(q[0]<<26)>>26))continue;
+ if(!func_ov000_02185fb8(q,p,0))continue;
+ if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;
+ n=func_ov000_021a97e0(n,(u32)(p[0]<<26)>>26);
+ func_01ffada0(p[1],p[2],(u32)(p[0]<<26)>>26,n,12);
+ func_01ffb9c4(0x6f);
+ if(M2C_FIELD(((s8 **)((u8 *)*gCurrentMap+0x52e8))[q[2]],s8 *,q[1])<0)continue;
+ func_ov000_02185c20(q[1],q[2]);
+ y=0; while(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)){
+ x=0; while(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)){
+ v=(s8)data_ov000_021e0f60[x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144)];
+ if(v>=0){
+ cell=(u8 *)*gCurrentMap+x+((u16 *)*gCurrentMap)[y+0x1bac];
+ old=M2C_FIELD(cell,s8 *,0x2338);
+ if(old<0 || v<old)M2C_FIELD(cell,s8 *,0x2338)=v;
+ }
+ x++;
+ }
+ y++;
+ }
+ }
 }
 

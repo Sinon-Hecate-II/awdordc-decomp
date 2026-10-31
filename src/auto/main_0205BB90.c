@@ -93,7 +93,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
 
 s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 func_02049208(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,func_02049208()-sp0)!=0; }
 
-#pragma opt_common_subs off
+#pragma opt_peephole on
 s32 func_0205bea4(void *arg0) {
     s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
     M2C_UNK var_r2;
@@ -113,11 +113,54 @@ s32 func_0205bea4(void *arg0) {
     }
     return 1;
 }
-#pragma opt_common_subs reset
+#pragma opt_peephole reset
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
-s32 func_0205bf94(void *arg0, void *arg1, s32 arg2, M2C_UNK arg3, M2C_UNK arg4) {
-    return 0;
+s32 func_0205bf94(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
+void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
+s32 func_0205a614(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
+s32 func_0206527c(void *,M2C_UNK *,s32);
+s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
+s32 func_0205cb68(s32,s32,u16);
+s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
+void func_0205cb4c(void *);s32 func_0205b2e0(void *,void *,s32);
+s32 func_0205b1a4(); s32 func_0205bb90(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
+extern M2C_UNK data_020ff818;
+void *connection,*c; s32 handled,control,result,kind;
+u8 *buf=message;
+connection=func_0205cca0(socket,address,port);
+if(M2C_FIELD(socket,s32*,0x2c)!=0){
+if(!func_0205a614(socket,connection,address,port,0,(s32)buf,len,0))return 0;
+}
+if(len>2 && !func_0206527c(buf,&data_020ff818,2))control=1;else control=0;
+if(connection==0){
+if(!gti2UnrecognizedMessageCallback(socket,address,port,buf,len,&handled))return 0;
+if(handled)return 1;
+if(control && buf[2]==1)goto incoming;
+if(control && buf[2]==104)goto accepted1;
+if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
+accepted1:return 1;
+incoming:
+if(M2C_FIELD(socket,s32*,0x20)==0)return 1;
+result=func_0205a860(socket,&connection,address,port);
+if(result==0)goto connected;
+if(result==5)goto accepted2;
+if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
+accepted2:return 1;
+}
+connected:
+c=connection;
+if(M2C_FIELD(c,s32*,0xc)==7){
+if(control && buf[2]==104)goto accepted3;
+if(!((s32 (*)(void *))func_0205cb4c)(c))return 0;
+accepted3:return 1;
+}
+if(control && len>=4 && !func_0206527c(buf+2,&data_020ff818,2)){buf+=2;len-=2;control=0;}
+if(!control)return func_0205b2e0(c,buf,len)!=0;
+kind=buf[2];
+if(kind<0)return func_0205b1a4(c)!=0;
+if(kind<8)return func_0205bb90(c,kind,(s32)buf,len)!=0;
+return func_0205bedc(c,kind,buf,len)!=0;
 }
 
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
@@ -394,13 +437,14 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
 
 s32 func_0205ca48(void *p){
     extern M2C_UNK data_020ff818;
+    void *q=p;
+    u8 *g=(u8*)&data_020ff818;
+    u8 a=g[0], b=g[1];
     u8 buf[5];
-    u8 a=M2C_FIELD(&data_020ff818,u8 *,0),b=M2C_FIELD(&data_020ff818,u8 *,1);
-    s32 v;
-    buf[2]=0x64;buf[0]=a;buf[1]=b;
-    func_0205b0ec(buf,3,M2C_FIELD(p,u16 *,0x66));
-    if(func_0205a9ec(p,buf,5)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;
-    return v;
+    buf[2]=0x64; buf[0]=a; buf[1]=b;
+    func_0205b0ec(buf,3,M2C_FIELD(q,u16 *,0x66));
+    if(func_0205a9ec(q,buf,5)){M2C_FIELD(q,s32 *,0x90)=0;return 1;}
+    return 0;
 }
 
 s32 func_0205caac(void *p,s32 arg1,s32 arg2){

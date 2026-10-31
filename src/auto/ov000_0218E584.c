@@ -273,7 +273,7 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
     extern void **gCurrentMap;
-    /* placeholder copied from sibling; may need manual refinement */
+    (void)gCurrentMap;
 }
 
 void func_ov000_0218f37c(void) {

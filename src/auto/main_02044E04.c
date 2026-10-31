@@ -243,66 +243,18 @@ Ldata:
     return 0;
 }
 
-s32 func_0204571c(s32 a, s32 b, s32 c, void *d) {
-    M2C_UNK func_0203761c(void);
-    s32 func_02047b84(s32, s32, s32, s32, void *);
-    extern M2C_UNK data_0213db20;
-    s32 r;
-
-    if (func_0203761c() != 0) {
-        return 1;
-    }
-    if ((M2C_FIELD(&data_0213db20, s32 *, 0) != 1) && (M2C_FIELD(&data_0213db20, s32 *, 0) != 5)) {
-        return 10;
-    }
-    if ((u32) b > 0x3e8) {
-        return 2;
-    }
-    if (d == NULL) {
-        return 2;
-    }
-    switch (a) {
-    case 0:
-        if (M2C_FIELD(d, s32 *, 0) != 8) return 2;
-        if (M2C_FIELD(d, s32 *, 4) != 0 && M2C_FIELD(d, s32 *, 4) != 1) return 2;
-        break;
-    case 1:
-        if (M2C_FIELD(d, s32 *, 0) != 0xC) return 2;
-        if (M2C_FIELD(d, s32 *, 4) != 0 && M2C_FIELD(d, s32 *, 4) != 1) return 2;
-        if ((u32) M2C_FIELD(d, s32 *, 8) > 0x1e) return 2;
-        if (M2C_FIELD(d, s32 *, 8) == 0) return 2;
-        break;
-    case 2:
-    case 4:
-    case 5:
-        if (M2C_FIELD(d, s32 *, 0) != 0xC) return 2;
-        if (M2C_FIELD(d, s32 *, 4) != 0 && M2C_FIELD(d, s32 *, 4) != 1) return 2;
-        if ((u32) M2C_FIELD(d, s32 *, 8) > 0x1e) return 2;
-        if (M2C_FIELD(d, s32 *, 8) <= 1) return 2;
-        break;
-    case 3:
-        if (M2C_FIELD(d, s32 *, 0) != 0x10C) return 2;
-        if (M2C_FIELD(d, s32 *, 4) != 0 && M2C_FIELD(d, s32 *, 4) != 1) return 2;
-        if ((u32) M2C_FIELD(d, s32 *, 8) > 0x41) return 2;
-        if (M2C_FIELD(d, s32 *, 8) <= 1) return 2;
-        break;
-    case 6:
-        if (M2C_FIELD(d, s32 *, 0) != 0x10) return 2;
-        if (M2C_FIELD(d, s32 *, 4) != 0 && M2C_FIELD(d, s32 *, 4) != 1) return 2;
-        if ((u32) M2C_FIELD(d, s32 *, 8) > 0x1e) return 2;
-        if (M2C_FIELD(d, s32 *, 8) == 0) return 2;
-        if ((u32) M2C_FIELD(d, s32 *, 0x10) > 0x7fffffff) return 2;
-        if (M2C_FIELD(d, s32 *, 0x10) == 0) return 2;
-        break;
-    default:
-        break;
-    }
-    r = func_02047b84(a, b, M2C_FIELD(&data_0213db20, s32 *, 4), c, d);
-    if (r == 2) return 0xB;
-    if (r != 3) return 0xC;
-    M2C_FIELD(&data_0213db20, s32 *, 0) = 3;
-    return 0;
-}
+s32 func_0204571c(s32 a,u32 b,s32 c,void *d){
+s32 func_0203761c(void);s32 func_02047b84(s32,u32,s32,s32,void *);extern M2C_UNK data_0213db20;s32 r;
+if(func_0203761c())return 1;
+if(M2C_FIELD(&data_0213db20,s32 *,0)!=1&&M2C_FIELD(&data_0213db20,s32 *,0)!=5)return 10;
+if(b>1000||!d)return 2;
+switch(a){
+case 0:if(M2C_FIELD(d,s32 *,0)!=8)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;break;
+case 1:if(M2C_FIELD(d,s32 *,0)!=12)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=0)return 2;break;
+case 2:case 4:case 5:if(M2C_FIELD(d,s32 *,0)!=12)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=1)return 2;break;
+case 3:if(M2C_FIELD(d,s32 *,0)!=268)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>65||M2C_FIELD(d,u32 *,8)<=1)return 2;break;
+case 6:if(M2C_FIELD(d,s32 *,0)!=16)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=0)return 2;if(M2C_FIELD(d,u32 *,16)>0x7fffffff||M2C_FIELD(d,u32 *,16)==0)return 2;break;
+}r=func_02047b84(a,b,M2C_FIELD(&data_0213db20,s32 *,4),c,d);switch(r){case 3:return 11;case 2:return 12;default:M2C_FIELD(&data_0213db20,s32 *,0)=3;return 0;}}
 
 s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
     s32 func_0203761c();

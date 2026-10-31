@@ -228,6 +228,130 @@ void func_ov000_0219fd54(void) {
 }
 
 void func_ov000_0219fdc8(void) {
+    void func_ov000_021a08fc(void);
+    void func_ov000_02199588(void);
+    s32 func_ov000_021a19a8(void);
+    s32 func_ov000_021a1ab8(void);
+    s32 func_ov000_021a1b1c(void);
+    s32 func_ov000_021a1d08(void);
+    s32 func_ov000_021a21f8(s32);
+    s32 func_ov000_021a1f14(void);
+    void func_ov000_021a16e8(void);
+    s32 func_ov000_021a4320(void);
+    s32 func_ov000_021a1dec(void);
+    s32 func_ov000_021a2db8(void);
+    s32 func_ov000_021a20d4(void);
+    void func_ov000_021a07c0(s32);
+    void func_ov000_021a029c(void);
+    extern u8 *data_ov000_021df578;
+    extern void *data_ov000_021df580;
+    extern u8 data_ov000_021df7d0[];
+    extern void **gCurrentMap;
+
+    register u8 **addr578 = &data_ov000_021df578;
+    register void ***addrMap = (void ***)&gCurrentMap;
+    register s32 reg6 = 0;
+    register s32 reg7 = 1;
+
+    if (addr578[0][2] != 0 && addr578[0][7] >= 0x32) {
+        M2C_FIELD(data_ov000_021df580, u8 *, 0) = 6;
+        return;
+    }
+    switch (addr578[0][2]) {
+        case 0:
+            func_ov000_021a08fc();
+            addr578[0][2]++;
+            func_ov000_02199588();
+            break;
+        case 1:
+            if (func_ov000_021a19a8() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 2:
+            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 && addr578[0][7] == 0) {
+                addr578[0][2]++;
+                break;
+            }
+        case 3:
+            if (func_ov000_021a1ab8() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 4:
+            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
+                addr578[0][2]++;
+                break;
+            }
+        case 5:
+            if (func_ov000_021a1b1c() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 6:
+            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
+                addr578[0][2]++;
+                break;
+            }
+        case 7:
+            if (addr578[0][0xc] != 0) {
+                data_ov000_021df7d0[6] = addr578[0][0xc];
+                func_ov000_021a07c0(addr578[0][0xd]);
+                data_ov000_021df7d0[7] = 1;
+                addr578[0][0xc] = 0;
+                return;
+            }
+            if (func_ov000_021a21f8(reg7) != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 8:
+            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) > 1) {
+                addr578[0][2]++;
+                break;
+            }
+            if (addr578[0][0xc] != 0) {
+                data_ov000_021df7d0[6] = addr578[0][0xc];
+                func_ov000_021a07c0(addr578[0][0xd]);
+                data_ov000_021df7d0[7] = 1;
+                addr578[0][0xc] = 0;
+                return;
+            }
+            if (func_ov000_021a21f8(reg6) != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 9:
+            if (func_ov000_021a1f14() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 10:
+            func_ov000_021a16e8();
+            addr578[0][2]++;
+            break;
+        case 11:
+            if (func_ov000_021a4320() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 12:
+            if (func_ov000_021a1dec() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        case 13:
+            if (func_ov000_021a2db8() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+        default:
+            if (func_ov000_021a20d4() != 0) return;
+            addr578[0][2]++;
+            func_ov000_021a029c();
+            break;
+    }
+    M2C_FIELD(data_ov000_021df580, u8 *, 0) = 6;
 }
 
 void func_ov000_021a01c0(void) {

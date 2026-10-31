@@ -1,5 +1,40 @@
 /* 17 functions from 0x020C9B9C to 0x020CAB8C (main), found by ds-decomp. */
 #include "common.h"
+static inline s32 RangeLeft(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)-range;
+}
+static inline s32 RangeTop(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)-range;
+}
+static inline s32 RangeRight(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)+range;
+}
+static inline s32 RangeRightLimit(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+s32 sum=M2C_FIELD(p,s16 *,0x52dc)+range;
+s32 limit=M2C_FIELD(p,u16 *,0x5144)-1;
+if(sum<limit)return RangeRight();
+return limit;
+}
+static inline s32 RangeBottomLimit(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+s32 sum=M2C_FIELD(p,s16 *,0x52de)+range;
+s32 limit=M2C_FIELD(p,u16 *,0x5146)-1;
+if(sum<limit){
+range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+return M2C_FIELD(*gCurrentMap,s16 *,0x52de)+range;
+}
+return limit;
+}
+static inline s32 RangeBottom(void) {
+extern void **gCurrentMap; s32 func_020a7714(void *);
+void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)+range;
+}
 
 s32 func_020c9b9c(void *arg0) { (void)arg0; return 0; }
 
@@ -131,6 +166,84 @@ s32 func_020ca190(void) {
 }
 
 s32 func_020ca1ec(void) {
+    extern void **gCurrentMap;
+    s32 i, j;
+    u8 buf[5];
+    u8 *p;
+    u8 *base;
+    s32 mism;
+
+    p = buf + 1;
+    for (i = 1; i < 5; i++, p++) {
+        *p = 0;
+        if (func_020d1938(i) && !func_020d3248(i) && func_020d336c(i)
+            && func_020d332c(i) && func_020d32d4(i)) {
+            *p = 1;
+        }
+    }
+
+    base = *(u8 **)*gCurrentMap;
+    if (base[0x5155] & 0x04) {
+        i = 1;
+        while (i < 5) {
+            u8 *curPtr = (buf + 1) + (i - 1);
+            if (*curPtr) {
+                u8 *innerPtr = buf + 1;
+                j = 1;
+                while (j < 5) {
+                    if (i != j && func_020d1938(j) && func_020d273c(i, j) && innerPtr[0] == 0) {
+                        *curPtr = 0;
+                        func_020d31f0(i, 1);
+                    }
+                    j++;
+                    innerPtr++;
+                }
+            }
+            i++;
+        }
+    }
+
+    if (base[0x5155] & 0x10) {
+        i = 1;
+        while (i < 5) {
+            u8 *curPtr = (buf + 1) + (i - 1);
+            if (*curPtr) {
+                u8 *innerPtr = buf + 1;
+                j = 1;
+                while (j < 5) {
+                    if (i != j && func_020d19b4(j) && func_020d273c(i, j) && innerPtr[0] == 0) {
+                        *curPtr = 0;
+                        func_020d31f0(i, 1);
+                    }
+                    j++;
+                    innerPtr++;
+                }
+            }
+            i++;
+        }
+    }
+
+    for (i = 1; i < 5; i++) {
+        u8 *bufi = (buf + 1) + (i - 1);
+        if (bufi[0] == 0) {
+            continue;
+        }
+        mism = 0;
+        for (j = 1; j < 5; j++) {
+            if (i == j) {
+                continue;
+            }
+            if (((buf + 1) + (j - 1))[0] == 0) {
+                continue;
+            }
+            if (base[i * 0x8C + 0x67CA] != base[j * 0x8C + 0x67CA]) {
+                mism++;
+            }
+        }
+        if (mism == 0) {
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -287,10 +400,35 @@ void func_020ca77c(M2C_UNK arg0) {
     func_01ffa42c(&data_0212b1fc, arg0);
 }
 
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+#pragma opt_propagation off
 void func_020ca794(void *arg0) {
-    return;
+extern void **gCurrentMap;
+void func_0209f8c0(void);void func_01ffb3d0(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void func_0208fe30(s32);
+s32 y1,x0,y0,x1,dist,v,x,y;void *p;
+M2C_FIELD(arg0,s16*,0x6c)=0;
+func_0209f8c0();func_01ffb3d0(-1);
+x0=RangeLeft()<0?0:RangeLeft();
+y0=RangeTop()<0?0:RangeTop();
+x1=RangeRightLimit();
+y1=RangeBottomLimit();
+for(y=y0;y<=y1;y++){for(x=x0;x<=x1;x++){
+dist=0;p=*gCurrentMap;
+v=M2C_FIELD(p,s16*,0x52dc)-x;if(v<=0)v=x-M2C_FIELD(p,s16*,0x52dc);dist+=v;
+v=M2C_FIELD(p,s16*,0x52de)-y;if(v<=0)v=y-M2C_FIELD(p,s16*,0x52de);dist+=v;
+if(dist>=0 && dist<=func_020a7714(M2C_FIELD(p,void **,0x52d0))){
+func_0209f8f8(x,y,0,0);
+M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }
-
+}}
+M2C_FIELD(arg0,s16*,0x6e)=func_0209f8d4();
+func_0208fe30(0x10019);
+M2C_FIELD(*gCurrentMap,s16*,0x52c2)=M2C_FIELD(*gCurrentMap,s16*,0x52dc);
+M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);
+}
+#pragma pop
 /* Handles a confirmation-style selection menu: moves the cursor, opens detail view on confirm, or signals cancel. */
 void func_020caa34(void *dialog) {
     M2C_UNK func_020bdfdc(void);

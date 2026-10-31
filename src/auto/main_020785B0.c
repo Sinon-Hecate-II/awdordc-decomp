@@ -108,6 +108,7 @@ func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 }
 
 void func_02078d68(void *arg0) {
+    (void)arg0;
 }
 
 void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {

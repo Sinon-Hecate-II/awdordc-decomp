@@ -267,46 +267,53 @@ s32 func_ov000_0216975c(void) {
 }
 
 s32 func_ov000_021697a0(volatile s8 *p) {
-    s32 count = 0;
+ s32 count=0;
 loop:
-    switch (*p++) {
-    case 9:
-        p++;
-        break;
-    case -1:
-    case 4:
-    case 10:
-        return count;
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-        count++;
-        break;
-    }
-    goto loop;
-    return count;
+ switch(*p++) {
+ case 9: p++; break;
+ case -1: case 4: case 10: return count;
+ case 0: case 1: case 2: case 3: count++; break;
+ }
+ goto loop;
 }
 
 void func_ov000_02169800(void) {
 
 }
 
-void func_ov000_02169804(void *arg0,void *arg1) {
- s8 *src=arg0,*dst=arg1; s8 token;
-loop:
- token=*src;
- if (token==-1 || token==4) goto end;
- if (token!=9) goto normal;
- dst[0]=token;
- { s8 next=src[1]; src+=2; dst[1]=next; dst+=2; }
- goto loop;
-end:
- *dst=*(volatile s8 *)src;
-normal:
- src++;
- *dst++=token;
- goto loop;
+void func_ov000_02169804(void *arg0, void *arg1)
+{
+  s8 *src = arg0;
+  s8 *dst = arg1;
+  s8 token;
+  loop:
+  token = *src;
+
+  if ((token == (-1)) || (token == 4))
+  {
+    goto end;
+  }
+  if (token != 9)
+  {
+    goto normal;
+  }
+  dst[0] = token;
+  {
+    s8 next = src[1];
+    src += 2;
+    dst[1] = next;
+    dst += 2;
+  }
+  goto loop;
+  end:
+  *dst = *((volatile s8 *) src);
+
+  normal:
+  src++;
+
+  *(dst++) = token;
+  dst[0] = token;
+  goto loop;
 }
 
 void func_ov000_02169850(void) {

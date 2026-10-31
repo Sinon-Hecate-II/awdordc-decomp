@@ -1,5 +1,17 @@
 /* 7 functions from 0x0217C9F4 to 0x0217D86C (ov000), found by ds-decomp. */
 #include "common.h"
+typedef struct {
+unsigned char kind:6, flags0:2;
+u8 x,y,pad3[5];
+unsigned short targetX:6,targetY:6,field12:2,mode:2;
+u8 pad10;
+unsigned char field11:5, active:1,field11hi:2;
+u8 pad12[2];
+} Unit0217d428;
+typedef struct { u8 pad[3];u8 count;u8 pad4[2]; } Record0217d428;
+static inline void SetTarget0217d428(Unit0217d428 *unit,u16 x,u16 y) {
+unit->targetX=x;unit->targetY=y;
+}
 
 s32 func_ov000_0217c9f4(void *arg0) {
     s32 func_ov000_021a98e4(u32);
@@ -157,140 +169,55 @@ case13:
     }
 }
 
-s32 func_ov000_0217d150(s32 arg0, s32 arg1, void *arg2) {
-    void func_01ffb554(void *);
-    s32 func_01ffada0(s32, s32, s32, s32);
-    s32 func_020d27a4(s32, s32);
-    s32 func_ov000_021a97d0(s32, s32);
-    s32 func_ov000_021a98a8(u32);
-    s32 func_ov000_021a9904(u32);
-    extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-
-    s32 sp0;
-    void *map;
-    void *base;
-    void *dataBase;
-    u8 dataField5;
-    s32 selectedKind;
-    s32 outerLimit;
-    s32 r8;
-    s32 r9;
-    s32 innerLimit;
-    s32 *unitArray;
-    signed char terrainCost;
-    u16 rowOff;
-    s32 kindIndex;
-    u8 *record;
-    u8 kind;
-    void *selectedUnit;
-    u8 arg2kind;
-    u16 recField6;
-    s32 checkByte;
-    u16 recField4;
-    s32 terrainValue;
-    u8 dataField2;
-
-    sp0 = 0;
-    map = *gCurrentMap;
-    base = *(void **)map;
-    dataBase = *(void **)data_ov000_021df580;
-    dataField5 = ((u8 *)dataBase)[5];
-    selectedKind = (s32)(((u8 *)*(void **)((u8 *)base + 0x52d0))[0]);
-    selectedKind = (selectedKind << 26) >> 26;
-    outerLimit = (s32)(*((s16 *)((u8 *)base + 0x5146)));
-    arg2kind = (u8)(((u8 *)arg2)[0] << 26 >> 26);
-    dataField2 = ((u8 *)dataBase)[2];
-
-    (void)sp0;
-
-    func_01ffb554((void *)((u8 *)base + 0x2338));
-    func_01ffada0(arg0, arg1, selectedKind, (s32)dataField5);
-
-    r8 = 0;
-    if (outerLimit <= 0) {
-        goto final;
-    }
-
-outerLoop:
-    unitArray = *(s32 **)((u8 *)base + r8 * 4 + 0x52e8);
-    innerLimit = (s32)(*((s16 *)((u8 *)base + 0x5144)));
-    r9 = 0;
-    if (innerLimit <= 0) {
-        goto outerInc;
-    }
-    while (r9 < innerLimit) {
-        terrainCost = (signed char)unitArray[r9];
-        if (terrainCost < 0) {
-            goto innerNext;
-        }
-        rowOff = *((u16 *)((u8 *)base + r8 * 2 + 0x3758));
-        kindIndex = (s32)(*((u8 *)base + (s32)rowOff + r9));
-        record = (u8 *)base + 0x59a4 + kindIndex * 0x0e;
-        kind = (u8)((record[0] << 26) >> 26);
-        selectedUnit = *(void **)((u8 *)base + 0x52d0);
-        if (kind != 0) {
-            if ((void *)record == selectedUnit) {
-                goto innerNext;
-            }
-        }
-        if (record == (u8 *)0) {
-            if (!func_020d27a4((s32)*((u8 *)base + 0x52d4), 0)) {
-                goto innerNext;
-            }
-        } else {
-            if (!func_020d27a4((s32)*((u8 *)base + 0x52d4), kindIndex)) {
-                goto innerNext;
-            }
-        }
-        if (!func_ov000_021a97d0((s32)kind, (s32)arg2kind)) {
-            goto innerNext;
-        }
-        if (func_ov000_021a9904((u32)kind) != 0) {
-            goto innerNext;
-        }
-        if (func_ov000_021a98a8((u32)kind) != 0) {
-            goto innerNext;
-        }
-        if (kind == 4) {
-            goto innerNext;
-        }
-        recField6 = *((u16 *)(record + 6));
-        if ((recField6 & 0x7f) < 0x3c) {
-            goto innerNext;
-        }
-        recField4 = *((u16 *)(record + 4));
-        if (recField4 & 0x1) {
-            checkByte = (s32)*((u8 *)base + 0x52d4);
-            (void)checkByte;
-            terrainValue = (s32)*((u8 *)base + (s32)rowOff + r9 + 0x2d48);
-            if (terrainValue < (s32)dataField2) {
-                goto innerNext;
-            }
-        }
-        func_01ffb554((void *)((u8 *)base + 0x1e30));
-        return 1;
-
-innerNext:
-        r9++;
-        if (r9 < innerLimit) {
-            continue;
-        }
-        break;
-    }
-
-outerInc:
-    outerLimit = (s32)(*((s16 *)((u8 *)base + 0x5146)));
-    r8++;
-    if (r8 < outerLimit) {
-        goto outerLoop;
-    }
-
-final:
-    func_01ffb554((void *)((u8 *)base + 0x1e30));
-    return 0;
+#pragma opt_strength_reduction off
+s32 func_ov000_0217d150(s32 a,s32 b,u8 *other){
+extern void **gCurrentMap;
+extern void *data_ov000_021df580;
+extern u8 *data_ov000_021df644;
+void func_01ffb554(void *);
+void func_01ffada0(s32,s32,u32,s32,s32);
+u8 *unit;
+s32 y,x,map,index;
+u8 *base;
+s32 row;
+u32 minimum;
+func_01ffb554((u8 *)*gCurrentMap+0x2338);
+func_01ffada0(a,b,((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26),M2C_FIELD(data_ov000_021df580,u8 *,5),0);
+map=(s32)*gCurrentMap;
+y=0;
+if(y<M2C_FIELD(map,u16 *,0x5146))do {
+x=0;
+if(x<M2C_FIELD(map,u16 *,0x5144))do {
+if(M2C_FIELD(M2C_FIELD(map+y*4,s8 **,0x52e8),s8 *,x)<0)goto next;
+base=(u8 *)map+0x59a4;
+row=M2C_FIELD(map+y*2,u16 *,0x3758);
+unit=base+M2C_FIELD(row,u8 *,map+x)*14;
+if(!((u32)(unit[0]<<26)>>26)||unit==M2C_FIELD(map,u8 **,0x52d0))goto next;
+index=unit ? (unit-base)/14:0;
+if(!func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),index))goto next;
+if(!func_ov000_021a97d0((u32)(unit[0]<<26)>>26,(u32)(other[0]<<26)>>26))goto next;
+if(func_ov000_021a9904((u32)(unit[0]<<26)>>26))goto next;
+if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26))goto next;
+if(((u32)(unit[0]<<26)>>26)==4)goto next;
+if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)<60)goto next;
+if(M2C_FIELD(unit,u16 *,4)&1){
+map=(s32)*gCurrentMap;
+minimum=data_ov000_021df644[2];
+row=M2C_FIELD(map+y*2,u16 *,0x3758);
+if(M2C_FIELD(row+(map+x),u8 *,0x2d48)<minimum)goto next;
 }
-
+func_01ffb554((u8 *)*gCurrentMap+0x1e30);
+return 1;
+next:
+map=(s32)*gCurrentMap;
+x++;
+}while(x<M2C_FIELD(map,u16 *,0x5144));
+y++;
+}while(y<M2C_FIELD(map,u16 *,0x5146));
+func_01ffb554((u8 *)map+0x1e30);
+return 0;
+}
+#pragma opt_strength_reduction on
 void func_ov000_0217d3b8(s32 arg0) {
     s32 func_ov000_021a8ac8(void *);
     extern void **gCurrentMap;
@@ -305,9 +232,43 @@ void func_ov000_0217d3b8(s32 arg0) {
     }
 }
 
-void func_ov000_0217d428(void) { }
-
+#pragma push
 #pragma opt_strength_reduction off
+void func_ov000_0217d428(void) {
+extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+s32 func_ov000_021a98a8(u32);s32 func_ov000_02179b08(void *);void func_01ffada0(s32,s32,u32,s32,s32);
+s32 func_ov000_021a9860(s32,s32);s32 func_ov000_021a89a4(void *);
+s32 i,off,bx,by,best,x,y,v,id;Unit0217d428 *unit;u8 *rec;void *p;
+i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
+if(i>=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
+off=i*14;do{
+unit=(Unit0217d428*)((u8*)*gCurrentMap+0x59a4+off);
+if(unit->kind==0)goto nextUnit;
+if(!func_ov000_021a98a8(unit->kind))goto nextUnit;
+if(unit->active==0)goto nextUnit;
+v=func_ov000_02179b08(unit);
+func_01ffada0(unit->x,unit->y,unit->kind,v,0);
+by=-1;bx=-1;best=32767;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
+p=*gCurrentMap;
+if(M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x]<0)continue;
+if(!func_ov000_021a9860(x,y))continue;
+p=*gCurrentMap;id=M2C_FIELD((u8*)p+x+M2C_FIELD((u8*)p+y*2,u16*,0x3758),s8*,0x1928);
+if(M2C_FIELD((u8*)p+id*6,u8*,0x6c63)!=0)continue;
+v=M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x];
+if(best>=v){bx=x;by=y;best=v;}
+}}
+if(best==32767)goto nextUnit;
+p=*gCurrentMap;id=M2C_FIELD((u8*)p+bx+M2C_FIELD((u8*)p+by*2,u16*,0x3758),s8*,0x1928);
+((Record0217d428*)((u8*)p+0x6c60))[id].count++;
+SetTarget0217d428(unit,bx,by);
+if(best<=func_ov000_021a89a4(unit))unit->active=0;
+else unit->mode=1;
+nextUnit: i++;off+=14;
+}while(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
+}
+#pragma pop
 void func_ov000_0217d6dc(void) {
     extern void **data_027e0058;
     extern u16 data_ov000_021aeef4[];

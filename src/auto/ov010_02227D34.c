@@ -303,11 +303,7 @@ s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
     s32 var_r1;
 
     var_r0 = arg0;
-    if ((arg1 != 0) && (arg1 != 1) && (arg1 != 2)) {
-        var_r1 = 1;
-    } else {
-        var_r1 = 0;
-    }
+    switch(arg1) { case 0: case 1: case 2: var_r1=0; break; default: var_r1=1; break; }
     if (var_r0 < 0) {
         var_r0 = 0 - var_r0;
     }

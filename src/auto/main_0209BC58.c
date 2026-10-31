@@ -1,5 +1,13 @@
 /* 34 functions from 0x0209BC58 to 0x0209CC04 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct SpriteStateWord {
+    u32 state : 3;
+    u32 field3 : 4;
+    u32 field7 : 10;
+    u32 field17 : 9;
+    u32 field26 : 3;
+    u32 field29 : 3;
+} SpriteStateWord;
 
 extern s32 gCur3DSpriteEngine;
 extern s32 data_027e00c8;
@@ -524,55 +532,168 @@ void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_01ffaacc(arg1, arg2, (s32)(mask & 0xFFFF), arg4);
 }
 
+#pragma opt_propagation off
+#pragma opt_lifetimes off
 void func_0209c7fc(void) {
-    s32 *var_r5;
-    s32 var_r4;
-    s32 temp_r3;
-    s32 temp_r2;
-    s32 temp_lr;
-    s32 temp_r12;
-    u32 const1 = 0xFFFE007F;
-    u32 const2 = 0xFC01FFFF;
-
-    var_r5 = data_0215d8a8;
-    var_r4 = 0;
-    do {
-        var_r4 += 1;
-        temp_r2 = *var_r5;
-        temp_lr = temp_r2 & ~7;
-        temp_r3 = temp_lr & ~0x78;
-        temp_r12 = temp_r3 & const1;
-        temp_r2 = temp_r12 & const2;
-        temp_r3 = temp_r2 & ~0x1C000000;
-        temp_r2 = temp_r3 & ~0xE0000000;
-        *var_r5 = temp_r3;
-        *var_r5++ = temp_r2;
-    } while (var_r4 < 0x40);
-    *(s32 *)((u8 *)&data_0215d8a0 + 8) = (*(s32 *)((u8 *)&data_0215d8a0 + 8) & ~7) | 1;
+s32 i; volatile s32 *p; s32 a,b,c,d;
+u32 mask1,mask2;
+p=data_0215d8a8; mask1=0xfffe007f; mask2=0xfc01ffff; i=0;
+do {
+a=*p;
+i++;
+b=a&~7;
+c=b&~0x78;
+d=c&mask1;
+a=d&mask2;
+c=a&~0x1c000000;
+a=c&~0xe0000000;
+*(volatile s32 *)p=c;
+*p++=a;
+}while(i<64);
+*(s32 *)((u8 *)&data_0215d8a0+8)=(*(s32 *)((u8 *)&data_0215d8a0+8)&~7)|1;
 }
-
-#pragma opt_strength_reduction off
+#pragma opt_propagation off
 void func_0209c868(void) {
-    s32 i = 0;
-    u32 *p = (u32 *)&data_0215d8a8;
-
-    do {
-        u32 t;
-
-        i++;
-        t = *p;
-        if (((t << 29) >> 29) == 1) {
-            *p = (t & ~7) | 2;
-        }
-        t = *p;
-        if (((t << 29) >> 29) == 3) {
-            *p = (t & ~7) | 4;
-        }
-        t = *p;
-        *p++ = (t & ~0x1C000000) | ((t >> 29) << 26);
-    } while (i < 0x40);
+s32 i;
+SpriteStateWord *p;
+p=(SpriteStateWord *)data_0215d8a8;
+i=0;
+do {
+i++;
+if(p->state==1)p->state=2;
+if(p->state==3)p->state=4;
+p->field26=p->field29;
+p++;
+}while(i<64);
 }
-#pragma opt_strength_reduction on
+
+void func_0209c8d4(void) {
+    s32 func_02084644();
+    s32 func_020846a4();
+    M2C_UNK func_02086844(u16, M2C_UNK);
+    M2C_UNK func_02086878(u16, M2C_UNK);
+    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    s32 func_020a1944();
+    M2C_UNK func_020bf814(u16);
+    s32 func_020bf894(s32);
+    s32 func_020cd1e4();
+    s32 func_020d1afc();
+    s32 func_020d1b40();
+    s32 func_020e4b54();
+    extern M2C_UNK data_0215c334;
+    extern M2C_UNK data_0215c340;
+    extern s32 data_0215d8a0[2];
+    extern s32 data_0215d8a8[58];
+    extern u16 data_02168f14;
+    extern void **data_027e0058;
+    s32 temp_r0;
+    s32 temp_r0_2;
+    s32 temp_r0_3;
+    s32 temp_r3;
+    s32 temp_r5;
+    s32 temp_r9;
+    s32 var_r0;
+    s32 var_r0_2;
+    s32 var_r5;
+    s32 var_r7;
+    u16 temp_r8;
+    u32 temp_r3_2;
+    u32 var_r1;
+    u8 temp_r11;
+
+    temp_r11 = M2C_FIELD(&data_0215c334, u8 *, 4);
+    temp_r8 = M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+    var_r7 = 0;
+    temp_r9 = temp_r8 - 0xA1;
+    do {
+        if (func_020bf894(var_r7) != 0) {
+            var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r7);
+        } else {
+            var_r0 = M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r7));
+        }
+        var_r7 += 1;
+        M2C_FIELD(&data_0215c334, s32 *, 8) = var_r0;
+    } while (var_r7 < 0xF);
+    if (func_020846a4() == 0) {
+        func_02086844(temp_r8, 1);
+        if (func_020cd1e4() != 0) {
+            if ((func_020d1afc() != 0) && (func_020d1b40() == 0)) {
+                func_02091c20(0x1A, 1);
+                func_02086878(temp_r8, 1);
+            }
+            switch (temp_r8) {                      /* switch 1; irregular */
+            case 0xB1:                              /* switch 1 */
+                func_02091c20(0x1D, 1);
+                break;
+            case 0xBA:                              /* switch 1 */
+                func_02091c20(0x1E, 1);
+                break;
+            }
+            if (!(((u32) (data_02168f14 << 0x1D) >> 0x1D) & 0xFF)) {
+                temp_r5 = data_0215d8a8[temp_r9];
+                if ((u32) M2C_FIELD(&data_0215c334, u16 *, 6) >= (u32) ((u32) (temp_r5 << 6) >> 0x17)) {
+                    temp_r3 = (((temp_r5 & ~0x78) | ((u32) (*(s32 *)((u8 *)&data_0215c340 + (temp_r11 * 0xC)) << 0x1C) >> 0x19)) & 0xFC01FFFF) | ((u32) (M2C_FIELD(&data_0215c334, u16 *, 6) << 0x17) >> 6);
+                    data_0215d8a8[temp_r9] = temp_r3;
+                    temp_r3_2 = (temp_r3 & 0xFFFE007F) | ((u32) (M2C_FIELD(*data_027e0058, u16 *, 0x52A2) << 0x16) >> 0xF);
+                    data_0215d8a8[temp_r9] = (temp_r3_2 & ~0x1C000000) | ((u32) ((temp_r3_2 >> 0x1D) << 0x1D) >> 3);
+                    data_0215d8a8[temp_r9] = (data_0215d8a8[temp_r9] & ~0xE0000000) | (func_020a1944() << 0x1D);
+                }
+                temp_r0 = data_0215d8a8[temp_r9];
+                temp_r0_2 = temp_r0 & ~7;
+                if ((u32) ((u32) (temp_r0 << 0x1D) >> 0x1D) < 3U) {
+                    var_r0_2 = temp_r0_2 | 3;
+                } else {
+                    var_r0_2 = temp_r0_2 | 4;
+                }
+                data_0215d8a8[temp_r9] = var_r0_2;
+                func_020bf814(temp_r8);
+                if (func_020e4b54() != 0) {
+                    var_r1 = (u32) (data_0215d8a0[0] << 8) >> 0x18;
+                    if ((s32) var_r1 < 0xFF) {
+                        var_r1 += 1;
+                    }
+                    data_0215d8a0[0] = (data_0215d8a0[0] & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
+                }
+                switch (M2C_FIELD(&data_0215c334, u8 *, 3)) { /* switch 2 */
+                default:                            /* switch 2 */
+                    break;
+                case 4:                             /* switch 2 */
+                    func_02091c20(2, 1);
+                    break;
+                case 3:                             /* switch 2 */
+                    func_02091c20(3, 1);
+                    break;
+                case 2:                             /* switch 2 */
+                    func_02091c20(4, 1);
+                    break;
+                case 1:                             /* switch 2 */
+                    func_02091c20(5, 1);
+                    break;
+                }
+            }
+        }
+    }
+    var_r5 = 0;
+    do {
+        if (!(M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r5)) && (func_020bf894(var_r5) != 0)) {
+            M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) | (1 << var_r5));
+        } else {
+            M2C_FIELD(&data_0215c334, s32 *, 8) = (s32) (M2C_FIELD(&data_0215c334, s32 *, 8) & (-1 ^ (1 << var_r5)));
+        }
+        var_r5 += 1;
+    } while (var_r5 < 0xF);
+    temp_r0_3 = func_02084644();
+    switch (temp_r0_3) {                            /* switch 3; irregular */
+    case 1:                                         /* switch 3 */
+        func_02091c20(0x21, 1);
+        return;
+    case 2:                                         /* switch 3 */
+        func_02091c20(0x20, 1);
+        return;
+    }
+}
+
+#pragma opt_propagation reset
 void func_0209cbe4(u32 *arg0) {
     u32 temp_r2;
 

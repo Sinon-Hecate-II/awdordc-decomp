@@ -7,18 +7,18 @@ typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
 #pragma scheduling off
 s32 func_02064934(void *arg0) {
- s32 func_020649a8(void *);
- s32 temp_r0, temp_r4, var_r2;
- if (arg0 == 0) return -1;
- if (((u32)(M2C_FIELD(arg0,s32 *,4)<<0x16)>>0x1d)==0) return 0;
- temp_r4 = func_020649a8(arg0);
- temp_r0 = M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
- var_r2 = 0;
- M2C_FIELD(arg0,s32 *,4) &= ~0x380;
- M2C_FIELD(arg0,s32 *,0) = 0;
- if (((u32)(M2C_FIELD(arg0,s32 *,8)<<0x1c)>>0x1f)!=0) return -1;
- if (temp_r4 != 0 || temp_r0 != 0) var_r2 = 1;
- return -var_r2;
+s32 func_020649a8(void *);
+s32 a,b,result;
+if(!arg0)return -1;
+if(((u32)(M2C_FIELD(arg0,s32 *,4)<<22)>>29)==0)return 0;
+b=func_020649a8(arg0);
+a=M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
+result=0;
+M2C_FIELD(arg0,volatile s32 *,4)&=~0x380;
+M2C_FIELD(arg0,volatile s32 *,0)=0;
+if(((u32)(M2C_FIELD(arg0,volatile s32 *,8)<<28)>>31)!=0)return -1;
+if(b!=0||a!=0)result=1;
+return -result;
 }
 #pragma scheduling on
 s32 func_020649a8(void *arg0) {

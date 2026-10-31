@@ -126,9 +126,123 @@ if(weight<20)result+=0x400000;
 return result;
 }
 
-s32 func_ov000_02178268(s32 arg0, s32 arg1, void *arg2) {
-    (void)arg0; (void)arg1; (void)arg2;
-    return 0;
+s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5bfc[];
+    extern s32 data_027e15bc;
+    s32 func_020a76d4(u8 *);
+    s32 func_ov000_02178080(s32, s32);
+
+    s32 magic;
+    s32 spC;
+    s32 r8;
+    s32 r9;
+    s32 sp8;
+    s32 best;
+    s32 ret;
+    s32 ret2;
+    s32 r2v;
+    s32 wlim;
+    s32 r1v;
+    s32 hlim;
+    u8 *up;
+    u8 kind;
+    s32 tableVal;
+    s32 cap;
+    s32 cost;
+    s32 outerY;
+    s32 r7;
+    s32 r11;
+    s32 outerS16;
+    s32 adx;
+    s32 dist;
+    s32 inner;
+
+    magic = 0x270F;
+    best = 0;
+
+    *out = (s16)magic;
+
+    up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+    ret = func_020a76d4(up);
+    if (x - ret < 0) {
+        spC = 0;
+    } else {
+        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        spC = x - ret2;
+    }
+
+    up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+    ret = func_020a76d4(up);
+    if (y - ret < 0) {
+        r8 = 0;
+    } else {
+        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        r8 = y - ret2;
+    }
+
+    up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+    ret = func_020a76d4(up);
+    r2v = x + ret;
+    wlim = M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1;
+    if (r2v < wlim) {
+        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        r9 = x + ret2;
+    } else {
+        r9 = wlim;
+    }
+
+    up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+    ret = func_020a76d4(up);
+    r1v = y + ret;
+    hlim = M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1;
+    if (r1v < hlim) {
+        ret2 = func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        sp8 = y + ret2;
+    } else {
+        sp8 = hlim;
+    }
+
+    if (r8 <= sp8) {
+        do {
+            inner = spC;
+            if (inner <= r9) {
+                do {
+                    outerY = r8;
+                    r7 = y - outerY;
+                    r11 = outerY - y;
+                    outerS16 = (s16)outerY;
+                    adx = x - inner;
+                    if (adx <= 0) adx = inner - x;
+                    dist = adx;
+                    if (r7 > 0) dist = dist + r7; else dist = dist + r11;
+
+                    up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+                    kind = (u8)(((u32)(up[0] << 26)) >> 26);
+                    tableVal = data_ov000_021b5bfc[kind * 0x70 + 0x0c];
+
+                    if (dist >= tableVal) {
+                        cap = func_020a76d4(up);
+                        if (dist <= cap) {
+                            cost = func_ov000_02178080(inner, outerY);
+                            if (cost >= best) {
+                                if (cost != best || !(data_027e15bc & 1)) {
+                                    best = cost;
+                                    out[0] = (s16)inner;
+                                    out[1] = outerS16;
+                                }
+                            }
+                        }
+                    }
+                    inner++;
+                } while (inner <= r9);
+            }
+            r8++;
+        } while (r8 <= sp8);
+    }
+
+    if (out[0] == (s16)magic) return 0;
+    return 1;
 }
 
 s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {

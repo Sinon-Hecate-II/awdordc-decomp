@@ -164,20 +164,7 @@ s32 func_02034864(s32 arg0) {
     return var_r0;
 }
 
-s32 func_02034870(void *arg0,void *arg1,s32 arg2) {
-extern M2C_UNK data_020fb690;
-s32 (*fn)(M2C_UNK *,s32)=M2C_FIELD(arg0,s32 (**)(M2C_UNK *,s32),0x1010);
-s32 v;
-if(!arg2)return 0;
-v=fn(&data_020fb690,arg2);
-M2C_FIELD(arg1,s32 *,0)=v;
-if(!v)return 0;
-M2C_FIELD(arg1,s32 *,4)=v;
-M2C_FIELD(arg1,s32 *,12)=arg2;
-v=M2C_FIELD(arg1,s32 *,0)+arg2;
-M2C_FIELD(arg1,s32 *,8)=v;
-return (v!=0);
-}
+s32 func_02034870(void *arg0,void *arg1,s32 arg2){extern M2C_UNK data_020fb690;s32 (*fn)(M2C_UNK *,s32)=M2C_FIELD(arg0,s32 (**)(M2C_UNK *,s32),0x1010);s32 v;if(!arg2)return 0;v=fn(&data_020fb690,arg2);M2C_FIELD(arg1,s32 *,0)=v;if(!v)return 0;M2C_FIELD(arg1,s32 *,4)=v;M2C_FIELD(arg1,s32 *,12)=arg2;v=M2C_FIELD(arg1,s32 *,0)+arg2;M2C_FIELD(arg1,s32 *,8)=v;return (v!=0);}
 
 void func_020348c8(void *arg0,s32 *arg1) {
 M2C_UNK func_02007f8c(void *,s32,s32); extern M2C_UNK data_020fb6a4;
@@ -234,30 +221,56 @@ if(((Pair02034164 *)buf->start)[buf->end].second){free(&data_020fb740,((Pair0203
 return 0;
 }
 
-s32 func_02034c58(Unk02034164 *arg0, s32 arg1) {
-    return 0;
+s32 func_02034c58(Unk02034164 *arg0,s32 arg1) {
+char *func_02068fdc(s32,void*); s32 func_02068eac(s32,void*,s32); s32 func_02068c34(s32); M2C_UNK func_02007f8c(void*,s32,s32);
+extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,data_020fb5cc,data_020fb770,data_020fb774,data_020fb778;
+s32 buf[3]; char *base,*end,*header,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
+buf[0]=(s32)((u8*)arg0+0x1a38);buf[1]=32;buf[2]=0;
+func_02007f8c((void*)buf[0],0,256);
+input=M2C_FIELD(arg0,s32*,0x1a08);
+base=func_02068fdc(input,&data_020fb59c);
+if(!base)return 0;
+end=base+4+func_02068c34((s32)(base+4));
+header=func_02068fdc(input,&data_020fb75c);
+if(!header)return 0;
+save=header[4];header[4]=0;
+result=func_02034b04(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(header+1));
+header[4]=save;
+if(result!=1)return 0;
+if(arg1==1 || func_02068eac((s32)(header+1),&data_020fb76c,3)!=0)return 1;
+p=func_02068fdc((s32)(header+5),&data_020fb5cc);
+if(!p)return 0;
+p+=2;
+while(p[0]!=13 && p[1]!=10){
+colon=func_02068fdc((s32)p,&data_020fb770);if(!colon)break;
+save=*colon;*colon=0;value=colon+2;
+term=func_02068fdc((s32)value,&data_020fb5cc);
+if(!term){*colon=save;break;}
+save2=*term;*term=0;
+if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
+result=func_02068c34((s32)value);
+*colon=save;*term=save2;p=value+result+2;
+}
+p=base+4;
+while(p<end){
+colon=func_02068fdc((s32)p,&data_020fb774);if(!colon)break;
+save=*colon;*colon=0;value=colon+1;
+term=func_02068fdc((s32)value,&data_020fb778);
+if(!term)term=func_02068fdc((s32)value,&data_020fb5cc);
+if(term){save2=*term;*term=0;}
+if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
+result=func_02068c34((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;
+}
+return 1;
 }
 
+#pragma opt_propagation on
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 func_02034ef8(void *a,s32 b){s32 func_02068d98(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(func_02068d98(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
-#pragma peephole off
-s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){
-    s32 func_02034ef8(void *,s32);
-    s32 func_02068c34(s32);
-    s32 func_0203739c(s32,s32,u8 *,u32);
-    s32 p=func_02034ef8(a,b);
-    s32 n;
-    if(!p) return 0;
-    n=func_0203739c(p,func_02068c34(p),c,d);
-    if(n==-1) return n;
-    if((u32)n < d){
-        c[n]=0;
-        return n;
-    }
-    return n;
-}
-#pragma peephole reset
+#pragma optimize_ifs off
+s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,func_02068c34(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
+#pragma optimize_ifs reset
 s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);void func_02068c50(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(func_02068c34(p)>=d)return 0;func_02068c50(c,p);return 1;}
 
 void func_02034fe4(void *arg0, void *arg1, s32 arg2) {

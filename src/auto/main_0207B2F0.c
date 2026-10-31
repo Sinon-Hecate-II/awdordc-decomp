@@ -10,9 +10,9 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     void func_020cf498(s32, s32);
     extern void *gCurrentMap;
     s32 deltaX = 0;
-    s32 rawY = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x514A);
-    s32 rawX = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5148);
     s32 deltaY = deltaX;
+    s16 rawY = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x514A);
+    s16 rawX = *(s16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5148);
     s32 tileX = rawX / 16;
     s32 tileY = rawY / 16;
     s32 halfX = func_0207d0b8();
@@ -28,8 +28,8 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
         if (*py + halfY > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) *py = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146) - halfY;
         if (*px < 0) *px = 0;
         if (*py < 0) *py = 0;
-        if (tileX == *px && tileY == *py) goto done_zero;
-        return 1;
+        if (tileX == *px && tileY == *py) return 0;
+        goto done_one;
     }
     if (*px < tileX + 1) {
         if (tileX != 0) deltaX = -1;
@@ -43,18 +43,17 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     if (*py > tileY + halfY - 2) {
         if (tileY + halfY < *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) deltaY = -(halfY - 2);
     }
-    if (deltaX == 0) *px = tileX; else *px += deltaX;
-    if (deltaY == 0) *py = tileY; else *py += deltaY;
+    if (deltaX != 0) { *px += deltaX; } else { *px = tileX; }
+    if (deltaY != 0) { *py += deltaY; } else { *py = tileY; }
     if (*px < 0) *px = 0;
     if (*py < 0) *py = 0;
     if (*px + halfX > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144)) *px = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5144) - halfX;
     if (*py + halfY > *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146)) *py = *(u16 *)((u8 *)*(volatile void **)gCurrentMap + 0x5146) - halfY;
     if (*px < 0) *px = 0;
     if (*py < 0) *py = 0;
-    if (tileX == *px && tileY == *py) goto done_zero;
+    if (*px == tileX && *py == tileY) return 0;
+done_one:
     return 1;
-done_zero:
-    return 0;
 }
 
 s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {

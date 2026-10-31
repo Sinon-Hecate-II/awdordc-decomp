@@ -315,6 +315,130 @@ func_01ffaacc((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,a
 }
 
 void func_02088964(void *arg0) {
+    void func_02088d94(void *);
+    void func_02088da8(void *);
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
+
+    u16 *volatile flags0;
+    u16 *volatile flags1;
+    u16 *volatile flags2;
+    u16 *volatile flags3;
+    u16 *volatile flags4;
+    u16 *volatile flags5;
+    u16 *volatile flags6;
+    u16 *volatile flags7;
+    u16 *volatile flags8;
+    u16 *volatile flags9;
+    u16 *volatile flags10;
+    void *previousEngine;
+    void *engine;
+    void *chosen;
+    s32 visibility;
+    u32 field40;
+    int i;
+    s32 top2;
+    s32 category;
+
+    top2 = (s32)(((u32)(unsigned char)M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30);
+    if (top2 == 0) {
+        return;
+    }
+    if (M2C_FIELD(arg0, u8 *, 0x4b) == 0 && top2 == 1) {
+        func_02088d94(arg0);
+        M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(M2C_FIELD(arg0, u8 *, 0x4b) + 1);
+        visibility = func_0207ca38(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x4b), M2C_FIELD(arg0, u8 *, 0x4a));
+        field40 = M2C_FIELD(arg0, u32 *, 0x40);
+        field40 = (field40 & ~0xFC000000U) | ((u32)visibility << 26);
+        M2C_FIELD(arg0, u32 *, 0x40) = field40;
+        if (top2 == 2) {
+            field40 = M2C_FIELD(arg0, u32 *, 0x40);
+            field40 = (field40 & ~0xFC000000U) | ((16U - (field40 >> 26)) << 26);
+            M2C_FIELD(arg0, u32 *, 0x40) = field40;
+        }
+    }
+
+    previousEngine = gCur3DSpriteEngine;
+    category = (s32)(((u32)(unsigned char)M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29);
+
+    for (i = 0; i < 2; i++) {
+        if (i == 0) {
+            chosen = data_027e00c8;
+        } else {
+            chosen = data_027e00c4;
+        }
+        if (category == 0 && chosen != data_027e00c8) {
+            continue;
+        }
+        if (category == 1 && chosen != data_027e00c4) {
+            continue;
+        }
+        if (category == 3 && chosen != previousEngine) {
+            continue;
+        }
+
+        gCur3DSpriteEngine = chosen;
+        engine = M2C_FIELD(chosen, void **, 0);
+        flags0 = (u16 *)((u8 *)engine + 0x12);
+        *flags0 = (u16)(*flags0 & ~0x1);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags1 = (u16 *)((u8 *)engine + 0x12);
+        *flags1 = (u16)(*flags1 & ~0x2);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags2 = (u16 *)((u8 *)engine + 0x12);
+        *flags2 = (u16)(*flags2 & ~0x4);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags3 = (u16 *)((u8 *)engine + 0x12);
+        *flags3 = (u16)(*flags3 & ~0x8);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags4 = (u16 *)((u8 *)engine + 0x12);
+        *flags4 = (u16)(*flags4 & ~0x10);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags5 = (u16 *)((u8 *)engine + 0x12);
+        *flags5 = (u16)(*flags5 | 0x100);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags6 = (u16 *)((u8 *)engine + 0x12);
+        *flags6 = (u16)(*flags6 | 0x200);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags7 = (u16 *)((u8 *)engine + 0x12);
+        *flags7 = (u16)(*flags7 | 0x400);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags8 = (u16 *)((u8 *)engine + 0x12);
+        *flags8 = (u16)(*flags8 | 0x800);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags9 = (u16 *)((u8 *)engine + 0x12);
+        *flags9 = (u16)(*flags9 & ~0x1000);
+
+        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        flags10 = (u16 *)((u8 *)engine + 0x12);
+        *flags10 = (u16)((*flags10 & ~0xC0) | 0x40);
+
+        {
+            int top6;
+            top6 = (int)(M2C_FIELD(arg0, u32 *, 0x40) >> 26);
+            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+            M2C_FIELD(engine, u8 *, 0x51) = (u8)top6;
+            M2C_FIELD(engine, u8 *, 0x52) = (u8)(16 - top6);
+        }
+    }
+
+    gCur3DSpriteEngine = previousEngine;
+    if ((u8)M2C_FIELD(arg0, u8 *, 0x4b) < (u8)M2C_FIELD(arg0, u8 *, 0x4a)) {
+        return;
+    }
+    if (top2 == 2) {
+        func_02088da8(arg0);
+        M2C_FIELD(arg0, u8 *, 0x48) = (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30);
+    }
 }
 
 void func_02088c78(void *p) {

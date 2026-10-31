@@ -1,5 +1,12 @@
 /* 8 functions from 0x021EBEC0 to 0x021ECCD4 (ov003), found by ds-decomp. */
 #include "common.h"
+#pragma opt_propagation off
+static inline s32 ov003_entries_differ(s32 arg0) {
+ s32 count; s32 entry; u8 i;
+ i=0; count=M2C_FIELD(arg0,s8*,4)-1;
+ for(;i<count;i++){entry=arg0+i*24; if(M2C_FIELD(entry,s32*,0x18)!=M2C_FIELD(entry,s32*,0x30))return 1;}
+ return 0;
+}
 
 void func_ov003_021ec4e4(u8 *);
 #pragma inline off
@@ -113,10 +120,30 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
 
 void func_ov003_021ec780(u8 *p,s32 i) {p+=14;p[i]=p[i]==1?2:1;}
 
-void func_ov003_021ec79c(void *arg0, s32 arg1, s32 arg2) {
-    (void)arg0; (void)arg1; (void)arg2;
-}
-
+s32 func_ov003_021e6cac(u8,s32,s32);
+void func_ov003_021e8654(s32,s32,s32);
+s32 func_ov003_021e8308(void*);
+#pragma inline on
+#pragma opt_propagation on
+void func_ov003_021ec79c(void *arg0,s32 arg1,s32 arg2){s32 n=M2C_FIELD(arg0+0x18,s32*,arg1*24)-1;
+if(((s32 (*)(s16,s16,s16))func_ov003_021e6cac)((s16)n,(s16)M2C_FIELD(arg0+0x20,s32*,arg1*24),(s16)M2C_FIELD(arg0+0x1c,s32*,arg1*24))||arg2){M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
+if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
+if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
+} else {
+M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
+}}else{
+if(n>M2C_FIELD(arg0+0x1c,s32*,arg1*24))n=M2C_FIELD(arg0+0x1c,s32*,arg1*24);else n=n<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):n;
+M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
+if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
+if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
+} else {
+M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
+}}
+if(ov003_entries_differ(arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
+if(ov003_entries_differ(arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
+if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
+if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
+if(func_ov003_021e8308((void*)arg0))return;func_ov003_021ec79c(arg0,arg1,arg2);}
 void func_ov003_021eca9c(void *arg0, u32 arg1) {
     s32 func_020846a4();
     void func_0208fe30(u32);

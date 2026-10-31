@@ -1,10 +1,42 @@
 /* 24 functions from 0x020AB884 to 0x020AC7DC (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma opt_strength_reduction off
 void func_020ab884(void *arg0) {
-    return;
+s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 func_020ab30c(void *);void func_020ab344(void *,s16,s32);s32 func_020a8ff4(void *);
+s16 a,b,position,duration; s32 y; s32 endRow; s32 row; s16 stride; s32 height; s16 finalRow;
+if(M2C_FIELD(arg0,s32 *,0x18)>=(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8)) && M2C_FIELD(arg0,u8 *,4)){
+a=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+if(a<=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8)) &&
+(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8))>=1){
+if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))==0)func_020ab344(arg0,0,0);
+else {row=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(row-1),0);}
+}else{
+a=func_0207c8ec(func_020ab30c(arg0),M2C_FIELD(arg0,s16 *,8));
+if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))>=a){
+a=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));
+if((s16)func_0207c8ec(func_020ab30c(arg0),M2C_FIELD(arg0,s16 *,8))<a){
+endRow=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8))<<16;
+row=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))<<16;
+if((row>>16)==(endRow>>16))
+{finalRow=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));height=M2C_FIELD(arg0,s16 *,6);stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(finalRow-height+1),0);}
+else {row=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(row+1),0);}
+M2C_FIELD(arg0,u8 *,4)=0;
 }
-
+}
+}
+}
+y=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)func_0207c928((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+M2C_FIELD(arg0,s16 *,46)=y;
+position=M2C_FIELD(arg0,s16 *,44);duration=M2C_FIELD(arg0,s16 *,78);
+M2C_FIELD(arg0,s16 *,80)=func_020a8ff4((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=position;M2C_FIELD(arg0,s16 *,78)=duration;
+M2C_FIELD(arg0,u16 *,68)=M2C_FIELD(arg0,u16 *,70);
+position=M2C_FIELD(arg0,s16 *,46);duration=M2C_FIELD(arg0,s16 *,96);
+M2C_FIELD(arg0,s16 *,98)=func_020a8ff4((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,100)=position;M2C_FIELD(arg0,s16 *,96)=duration;
+M2C_FIELD(arg0,u16 *,86)=M2C_FIELD(arg0,u16 *,88);
+}
+#pragma opt_strength_reduction reset
 s16 func_020abb24(void *arg0) {
     s32 func_020a8ff4(void *);
     s16 temp_r4_3;

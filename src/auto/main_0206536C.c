@@ -113,10 +113,28 @@ char *func_020658fc(int value, char *out, HexFormat fmt) {
     return out;
 }
 
-#pragma opt_common_subs reset
-s32 func_02065b48(void) { return 0; }
-
-#pragma opt_strength_reduction off
+#pragma opt_scheduling off
+char *func_02065b48(u64 n,char *end,HexFormat f) {
+char *p=end; int alt,conv,width,sign,precision; u64 base; int negative=0,count=0,digit;
+*--p=0;
+precision=f.precision;alt=f.d;conv=f.f;width=f.width;sign=f.b;
+if(n==0 && precision==0 && (!alt || conv!='o'))return p;
+switch(conv) {
+case 'd':case 'i':base=10;if((s64)n<0){if(n!=0x8000000000000000ULL)n=-n;negative=1;}break;
+case 'o':sign=0;base=8;break;
+case 'u':sign=0;base=10;break;
+case 'x':case 'X':sign=0;base=16;break;
+}
+do {digit=n%base;n/=base;if(digit<10)digit+='0';else if(conv=='x')digit+=87;else digit+=55;*--p=digit;count++;}while(n!=0);
+if(base==8 && alt && *p!='0'){*--p='0';count++;}
+if(f.a==2){precision=width;if(negative || sign)precision--;if(base==16 && alt)precision-=2;}
+if(precision+(end-p)>509)return 0;
+while(count<precision){*--p='0';count++;}
+if(base==16 && alt){p[-1]=conv;p[-2]='0';p-=2;}
+if(negative)*--p='-';else if(sign==1)*--p='+';else if(sign==2)*--p=' ';
+return p;
+}
+#pragma opt_scheduling on
 char *func_02065e44(double value,char *end,HexFormat fmt) {
  char *p=end;
  int precision=fmt.precision;

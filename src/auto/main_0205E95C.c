@@ -93,8 +93,21 @@ M2C_FIELD(a,s32 *,0x800)+=n;
 ((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;
 }
 
-void func_0205ec0c(void){void *func_02049584(void);void *p=func_02049584();s32 i;u8 *s;u8 x,y;if(!p)return;data_0213e358=0;for(i=0;i<5;){s=M2C_FIELD(p,u8 ***,12)[i];if(!s)return;y=s[1];x=s[0];data_0213e35c[i][0]=x;data_0213e35c[i][1]=y;y=s[3];x=s[2];data_0213e35c[i][2]=x;data_0213e35c[i][3]=y;data_0213e358=++i;}}
-
+#pragma opt_common_subs off
+void func_0205ec0c(void) {
+void *func_02049584(void);
+void *p=func_02049584();
+s32 i;volatile u8 *s;u8 x,y;
+if(!p)return;
+data_0213e358=0;
+for(i=0;i<5;) {
+s=M2C_FIELD(p,u8 ***,12)[i];if(!s)return;
+x=s[0];y=s[1];data_0213e35c[i][0]=x;data_0213e35c[i][1]=y;
+x=s[2];y=s[3];data_0213e35c[i][2]=x;data_0213e35c[i][3]=y;
+data_0213e358=++i;
+}
+}
+#pragma opt_common_subs reset
 s32 func_0205ec80(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 func_02068d98(s32,void *);void *func_02021768(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&func_02068d98(a,data_020ffa44)){p=func_02021768(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
 
 void func_0205ed28(u8 *arg0, u8 *arg1) {

@@ -8,6 +8,7 @@ extern PacketBytes13 data_02100014;
 extern PacketBytes8 data_02100024;
 
 void func_0205f83c(void *a, void *b, s32 c, void *d) {
+    (void)a; (void)b; (void)c; (void)d;
 }
 
 void func_0205fb50(void *arg0){
@@ -230,26 +231,26 @@ if(M2C_FIELD(b,s32 *,0)==M2C_FIELD(a,s32 *,40)&&(M2C_FIELD(b,u8 *,21)&2)){
 func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 }
 
-void func_02060398(void *arg0,s32 arg1,s32 arg2,s32 d,s32 e,s32 f){
- void *a=arg0;
- s32 b=arg1;
- s32 c=arg2;
- M2C_UNK func_0204926c();
- s32 func_020496a4(s32,s32);
- extern s32 gDnsQueryState;
- if(!d && gDnsQueryState!=1)return;
- func_0204926c();
- M2C_FIELD(a,s32 *,0)=c;
- M2C_FIELD(a,s32 *,4)=b;
- M2C_FIELD(a,s32 *,64)=0;
- M2C_FIELD(a,s32 *,68)=e;
- M2C_FIELD(a,s32 *,72)=f;
- M2C_FIELD(a,s32 *,40)=0;
- M2C_FIELD(a,s32 *,32)=func_020496a4(2,2);
- func_020601a4(a+20);
- func_020601a4(a+8);
+#pragma opt_common_subs off
+void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    M2C_UNK func_0204926c();
+    s32 func_020496a4(M2C_UNK, M2C_UNK);
+    extern s32 data_0213db84;
+    if ((arg3 == 0) && (data_0213db84 != 1)) {
+        return;
+    }
+    func_0204926c();
+    M2C_FIELD(arg0, s32 *, 0) = arg2;
+    M2C_FIELD(arg0, s32 *, 4) = arg1;
+    M2C_FIELD(arg0, s32 *, 0x40) = 0;
+    M2C_FIELD(arg0, s32 *, 0x44) = arg4;
+    M2C_FIELD(arg0, s32 *, 0x48) = arg5;
+    M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    M2C_FIELD(arg0, s32 *, 0x20) = func_020496a4(2, 2);
+    func_020601a4(arg0 + 0x14);
+    func_020601a4(arg0 + 8);
 }
-
+#pragma opt_common_subs reset
 void func_0206040c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x28) = arg1;
 }

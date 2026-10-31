@@ -1,110 +1,157 @@
 /* 10 functions from 0x02179E48 to 0x0217ACD4 (ov000), found by ds-decomp. */
 #include "common.h"
-
-s32 func_ov000_02179e48(void *arg0) {
-    (void)arg0;
-    return 0;
+static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
+    s32 distance = 0;
+    if (x0 - x1 > 0) distance += x0 - x1;
+    else distance += x1 - x0;
+    if (y0 - y1 > 0) distance += y0 - y1;
+    else distance += y1 - y0;
+    return distance;
 }
 
+#pragma opt_strength_reduction off
+s32 func_ov000_02179e48(void *pos){
+extern void **gCurrentMap;
+extern u8 data_ov000_021b5c08;
+s32 func_ov000_021a98e4(s32);
+u16 func_ov000_021a97e0(u16,s32);
+s32 func_ov000_021a9820(u16,u32);
+s32 bx,by,kind,min,range,best;
+s32 dist,dy,cx,y,x1,x,cy,x0,y1,negative;
+void **slot;
+void *map;
+if(func_ov000_021a98e4((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26)!=1){
+if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26)!=21)return 1;
+}
+dist=0;
+by=9999;bx=by;
+map=*gCurrentMap;
+kind=(u32)(M2C_FIELD(M2C_FIELD(map,u8 **,0x52d0),u8 *,0)<<26)>>26;
+if(kind==21){
+min=0;
+range=func_ov000_021a97e0(M2C_FIELD(map,u16 *,0x52a4),17)+1;
+}else{
+min=M2C_FIELD(&data_ov000_021b5c08,u8 *,kind*112);
+range=func_ov000_021a9820(M2C_FIELD(map,u16 *,0x52a4),kind);
+}
+best=range+1;
+cx=M2C_FIELD(pos,s16 *,0);
+x0=cx-range;if(x0<0)x0=0;
+cy=M2C_FIELD(pos,s16 *,2);
+y=cy-range;if(y<0)y=0;
+slot=gCurrentMap;
+map=*gCurrentMap;
+x1=M2C_FIELD(map,u16 *,0x5144)-1;
+if(cx+range<x1)x1=cx+range;
+y1=M2C_FIELD(map,u16 *,0x5146)-1;
+if(cy+range<y1)y1=cy+range;
+if(y<=y1)do {
+x=x0;
+if(x<=x1)do {
+dist=0;
+if(cx-x>0)dist+=cx-x;else dist+=x-cx;
+dy=cy-y;negative=y-cy;
+if(dy>0)dist+=dy;else dist+=negative;
+if(dist>=min && dist<=range && dist<=best){
+map=*gCurrentMap;
+kind=M2C_FIELD(M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8),s8 *,x);
+if(kind<0||kind>110)goto next;
+if(bx!=9999 && dist==best){
+if(kind>M2C_FIELD(M2C_FIELD((u8 *)map+by*4,s8 **,0x52e8),s8 *,bx))goto next;
+}
+best=dist;bx=x;by=y;
+}
+next:
+x++;
+}while(x<=x1);
+y++;
+}while(y<=y1);
+if(bx==9999)return 0;
+M2C_FIELD(pos,s16 *,0)=bx;
+M2C_FIELD(pos,s16 *,2)=by;
+return 1;
+}
+#pragma opt_strength_reduction off
 s32 func_ov000_0217a0a8(void *arg0) {
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
-    s32 func_ov000_021a98e4(s32);
-    s32 func_ov000_021a8fc0(s32);
-    s32 func_ov000_021a96a8(s32, s32, s32);
-    u8 *p;
-    void *map;
-    void *mapData;
-    u8 *sel;
-    u8 attr;
-    u8 id;
-    s32 unitKind;
-    s16 fieldE6;
-    s16 fieldF2;
-    s32 baseX;
-    s32 baseY;
-    s32 minX;
-    s32 minY;
-    s32 maxX;
-    s32 maxY;
-    s32 x;
-    s32 y;
-    s32 d;
-    u16 rowOffset;
-    u8 *unitSpec;
-    u8 candKind;
-    u8 attrs2;
-    u16 field4;
-    u16 field6;
-    s32 selX;
-    s32 selY;
-    s32 selKind;
-    u8 p0kind;
-    s32 firstRes;
-    s32 secondRes;
-    u16 selField6;
-    u16 candField6;
-    p = (u8 *)arg0;
-    map = *gCurrentMap;
-    sel = *(u8 **)((u8 *)map + 0x52D0);
-    unitKind = (s32)(((u32)(sel[0] << 26)) >> 26);
-    attr = data_ov000_021b5bfc[unitKind * 0x70];
-    if (!(attr & 0x27)) return 0;
-    if (func_ov000_021a98e4(unitKind) != 0) return 0;
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    fieldE6 = *(s16 *)((u8 *)mapData + 0x6EE6);
-    if (fieldE6 == 0) return 0;
-    fieldF2 = *(s16 *)((u8 *)mapData + 0x6EF2);
-    if (fieldF2 >= 0x1E) return 0;
-    baseX = p[1];
-    baseY = p[2];
-    minX = baseX - 4;
-    if (minX < 0) minX = 0;
-    minY = baseY - 4;
-    if (minY < 0) minY = 0;
-    maxX = baseX + 4;
-    maxY = baseY + 4;
-    if (maxX > ((s32)*(u16 *)((u8 *)mapData + 0x5144) - 1)) maxX = (s32)*(u16 *)((u8 *)mapData + 0x5144) - 1;
-    if (maxY > ((s32)*(u16 *)((u8 *)mapData + 0x5146) - 1)) maxY = (s32)*(u16 *)((u8 *)mapData + 0x5146) - 1;
-    for (y = minY; y <= maxY; y++) {
-        for (x = minX; x <= maxX; x++) {
-            d = baseX - x;
-            if (d < 0) d = -d;
-            d += (baseY > y ? baseY - y : y - baseY);
-            if (d > 4) continue;
-            rowOffset = *(u16 *)((u8 *)mapData + 0x3758 + y * 2);
-            id = *((u8 *)mapData + x + rowOffset);
-            if (id == 0) continue;
-            if (func_ov000_021a8fc0((s32)id) == 0) continue;
-            sel = *(u8 **)((u8 *)mapData + 0x52D0);
-            selX = sel[1];
-            selY = sel[2];
-            if (x == selX && y == selY) continue;
-            unitSpec = (u8 *)mapData + 0x59A4 + (s32)id * 14;
-            candKind = unitSpec[0] & 0x3F;
-            if (func_ov000_021a98e4((s32)candKind) == 1) continue;
-            if (candKind == 0) continue;
-            attrs2 = data_ov000_021b5bfc[(s32)candKind * 0x70 + 0x13];
-            if (attrs2 & 0x10) continue;
-            field4 = *(u16 *)(unitSpec + 4);
-            if (field4 & 0x01) continue;
-            field6 = *(u16 *)(unitSpec + 6);
-            if ((field6 >> 11) != 0) continue;
-            selKind = sel[0] & 0x3F;
-            p0kind = p[0] & 0x3F;
-            firstRes = func_ov000_021a96a8(selKind, (s32)p0kind, 0);
-            secondRes = func_ov000_021a96a8((s32)candKind, (s32)p0kind, 0);
-            candField6 = field6 & 0x1FFF;
-            selField6 = *(u16 *)(((u8 *)mapData + 0x59A4 + (s32)(sel[0] & 0x3F) * 14) + 6) & 0x1FFF;
-            if (selField6 * firstRes + 0x7D0 < candField6 * secondRes) return 1;
-        }
-    }
-    return 0;
+extern void **gCurrentMap;
+extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
+s32 func_ov000_021a98e4(s32);s32 func_ov000_021a8fc0(s32);s32 func_ov000_021a96a8(s32,s32,s32);
+u8 *p=arg0,*map=*gCurrentMap,*sel,*unit;
+s32 kind,bx,by,x0,y0,x1,y1,x;
+u32 ck;
+s32 y,d,a,b;
+sel=M2C_FIELD(map,u8 **,0x52d0);
+kind=(u32)(sel[0]<<26)>>26;
+if(!(data_ov000_021b5c0f[kind*112]&0x27))return 0;
+if(func_ov000_021a98e4(kind))return 0;
+map=*gCurrentMap;
+if(!M2C_FIELD(map,s16 *,0x6ee6))return 0;
+if(M2C_FIELD(map,s16 *,0x6ef2)>=30)goto done;
+bx=p[1];by=p[2];x0=bx-4;if(x0<0)x0=0;
+y0=by-4;if(y0<0)y0=0;
+x1=M2C_FIELD(map,u16 *,0x5144)-1;if(bx+4<x1)x1=bx+4;
+y1=M2C_FIELD(map,u16 *,0x5146)-1;if(by+4<y1)y1=by+4;
+for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
+d=0;
+if(p[1]-x>0)d+=p[1]-x;else d+=x-p[1];
+if(p[2]-y>0)d+=p[2]-y;else d+=y-p[2];
+if(d<0||d>4)continue;
+map=*gCurrentMap;
+kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+if(!kind)continue;
+if(!func_ov000_021a8fc0(kind))continue;
+map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
+if(x==sel[1]&&y==sel[2])continue;
+unit=map+0x59a4+kind*14;
+if(func_ov000_021a98e4((u32)(unit[0]<<26)>>26)==1)continue;
+ck=(u32)(unit[0]<<26)>>26;
+if(data_ov000_021b5bfc[ck*112+19]&16)continue;
+if(M2C_FIELD(unit,u16 *,4)&1)continue;
+if(ck==0)continue;
+if((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)continue;
+map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
+a=func_ov000_021a96a8((u32)(sel[0]<<26)>>26,(u32)(p[0]<<26)>>26,0);
+b=func_ov000_021a96a8(ck,(u32)(p[0]<<26)>>26,0);
+map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
+if((s32)((u32)(M2C_FIELD(sel,u16 *,6)<<25)>>25)*a+2000 < (s32)((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*b)return 1;
 }
-
-M2C_UNK func_ov000_0217a378(M2C_UNK a) {
-    return 0;
+done:return 0;
+}
+#pragma opt_strength_reduction reset
+void func_ov000_0217a378(s32 dir) {
+extern void *data_027e0a90,*data_027e00cc,*data_027e0a98;
+extern void *data_027e0a94;
+extern void **gCurrentMap;
+u8 *p,*prev;
+s32 c,x,y;
+void *map;
+s32 w,h,limit,cost,steps,total;
+s8 *row;
+M2C_FIELD(data_027e00cc,u8 *,36)=M2C_FIELD(data_027e0a90,u8 *,0);
+M2C_FIELD(data_027e00cc,u8 *,37)=M2C_FIELD(data_027e0a90,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(data_027e00cc,u8 *,37)--;break;case 3:M2C_FIELD(data_027e00cc,u8 *,37)++;break;case 4:M2C_FIELD(data_027e00cc,u8 *,36)--;break;case 5:M2C_FIELD(data_027e00cc,u8 *,36)++;break;default:break;}
+if((s32)data_027e0a94>=349)return;
+map=*gCurrentMap;p=data_027e00cc;
+x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return;valid:;
+limit=M2C_FIELD(p,s16 *,32);
+cost=p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31];
+prev=data_027e0a90;
+c=prev[3]+cost;
+if(c>limit)return;
+limit=M2C_FIELD(p,s16 *,34);
+steps=M2C_FIELD((u8 *)map+(prev[0]+M2C_FIELD((u8 *)map+prev[1]*2,u16 *,0x3758)),s8 *,0x2338);
+total=(s16)limit*(s16)steps;
+if(total<c){c=total+cost;steps++;}
+row=M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8);
+if(row[x]<=c && row[x]>=0)return;
+row[x]=c;
+map=*gCurrentMap;p=data_027e00cc;
+M2C_FIELD((u8 *)map+(p[36]+M2C_FIELD((u8 *)map+p[37]*2,u16 *,0x3758)),u8 *,0x2338)=steps;
+M2C_FIELD(data_027e0a98,u8 *,0)=M2C_FIELD(data_027e00cc,u8 *,36);
+M2C_FIELD(data_027e0a98,u8 *,1)=M2C_FIELD(data_027e00cc,u8 *,37);
+M2C_FIELD(data_027e0a98,u8 *,2)=dir;
+M2C_FIELD(data_027e0a98,u8 *,3)=c;
+data_027e0a98+=4;data_027e0a94=(void *)((s32)data_027e0a94+1);
 }
 
 void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -112,7 +159,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_01ffb3d0(s32);
     u16 func_ov000_021a97e0(u16, s32);
     void func_01ffb454(s32);
-    s32 func_ov000_0217a378(s32);
+
 
     extern void **gCurrentMap;
     extern u8 data_027e0a8c;

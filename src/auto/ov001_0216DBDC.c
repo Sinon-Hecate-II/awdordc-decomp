@@ -1,5 +1,6 @@
 /* 27 functions from 0x0216DBDC to 0x0216EB84 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { volatile s32 count; s32 index; } ScanCounters;
 
 #pragma thumb on
 
@@ -256,6 +257,8 @@ s32 func_ov001_0216e448(void) {
  return result;
 }
 
+#pragma opt_propagation off
+#pragma opt_common_subs on
 s32 func_ov001_0216e79c(void) {
     M2C_UNK func_02006030(s32);
     M2C_UNK func_02007190(void *);
@@ -273,25 +276,24 @@ s32 func_ov001_0216e79c(void) {
     M2C_UNK func_ov001_021711ac(u8 *, u8 *);
     M2C_UNK func_ov001_021713a8(void);
     extern M2C_UNK data_ov001_02192790, data_ov001_0218fde8, data_ov001_02192ca0, data_ov001_02192c40;
-    u8 str[32];
+    u32 str[8];
     u8 timer[44];
-    s32 sel; s32 n; s32 j; s32 i; s32 size;
+    s32 sel; volatile s32 n; ScanCounters counters; s32 size;
     u8 *buf1; u8 *buf2; u8 *q;
-    u8 *p; u8 *r; u8 *units;
+    u8 *p; u8 *r; u8 *units; void *state;
     s32 result; s32 event; s32 again; s32 m;
 
     buf2 = NULL;
     sel = 0;
-    result = -1;
+    result = ~sel;
     size = 0x30 * M2C_FIELD(&data_ov001_02192790, s32 *, 0x70);
     size += 0x34;
     buf1 = func_ov001_02171144(1, size);
     if (buf1 == NULL) goto ret;
     buf2 = func_ov001_02171144(1, size);
     if (buf2 == NULL) goto ret;
-    i = 0;
     for (n = 0; n < 30 && M2C_FIELD(&data_ov001_02192790, s32 *, 0x10) == 0; n++) {
-        if (func_ov001_02171128() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) break;
+        if (func_ov001_02171128() >= (u32) M2C_FIELD(&data_ov001_0218fde8, s32 *, 0xc)) goto process;
         if (func_ov001_0216df94(0, 0, 0, 0x30bffe) == 0) {
             result = -2;
             goto ret;
@@ -312,9 +314,9 @@ s32 func_ov001_0216e79c(void) {
                     break;
                 case 5:
                     m = func_ov001_0216df50(M2C_FIELD(&data_ov001_02192790, s32 *, 0x5c), M2C_FIELD(&data_ov001_02192790, s32 *, 0x70));
-                    if (m > result) result = m;
+                    if (m > result) { result = m;
                     func_02007338(timer);
-                    func_020072cc(timer, 0xffb10, 0, func_ov001_0216e340, 0x13);
+                    func_020072cc(timer, 0xffb10, 0, func_ov001_0216e340, 0x13); }
                     break;
                 case 10:
                     again = 0;
@@ -337,21 +339,26 @@ s32 func_ov001_0216e79c(void) {
         func_02007338(timer);
         while (func_ov001_0216e2d8() != 0) {}
         if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x10)) break;
-        i = 0;
-        if (result >= M2C_FIELD(&data_ov001_02192790, s32 *, 0x70)) {
-            result = i - 6;
+process:
+        state=&data_ov001_02192790;
+        counters.count = 0;
+        if (result >= M2C_FIELD(state, s32 *, 0x70)) {
+            result = counters.count - 6;
             goto ret;
         }
-        units = M2C_FIELD(&data_ov001_02192790, u8 **, 0x5c);
-        j = i;
+        units = M2C_FIELD(state, u8 **, 0x5c);
+        counters.index = counters.count;
         if (result > 0) {
+            if(result > 0) {
+            q = buf1;
+            q += 8;
             p = buf1;
-            q = buf1 + 8;
-            r = p + 0x2c;
+            r = p;
+            r += 0x2c;
             do {
                 func_020651a4(q, units + 0xc, 0x20);
                 M2C_FIELD(p, s32 *, 4) = M2C_FIELD(units, u16 *, 0xa);
-                q[M2C_FIELD(units, u16 *, 0xa)] = 0;
+                p[8+M2C_FIELD(units, u16 *, 0xa)] = 0;
                 M2C_FIELD(p, u16 *, 0x32) = (M2C_FIELD(units, u16 *, 0x2c) & 0x10) ? 1 : 0;
                 r[0] = M2C_FIELD(units, u8 *, 4);
                 r[1] = M2C_FIELD(units, u8 *, 5);
@@ -363,9 +370,10 @@ s32 func_ov001_0216e79c(void) {
                 p += 0x30;
                 q += 0x30;
                 r += 0x30;
-                i++;
-                j++;
-            } while (j < result);
+                counters.count++;
+                counters.index++;
+            } while(counters.index<result);
+            }
         }
         M2C_FIELD(buf1, s32 *, 0) = result;
         if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x38) != 1 && func_ov001_0216e5d0(buf1, buf2, &sel) != 0) {
@@ -379,7 +387,7 @@ s32 func_ov001_0216e79c(void) {
             M2C_FIELD(&data_ov001_02192c40, u8 *, 3) = q[3];
             M2C_FIELD(&data_ov001_02192c40, u8 *, 4) = q[4];
             M2C_FIELD(&data_ov001_02192c40, u8 *, 5) = q[5];
-            func_ov001_021711ac(str, &data_ov001_02192c40);
+            func_ov001_021711ac((u8 *)str, &data_ov001_02192c40);
             break;
         }
         func_020651a4(buf2, buf1, size);
@@ -394,8 +402,8 @@ ret:
     if (buf2 != NULL) func_ov001_02171168(buf2);
     return result;
 }
-
-#pragma thumb off
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
 
 #pragma thumb on
 s32 func_ov001_0216ea30(s32 a,s32 b,s32 unused,s32 c,s32 d) {

@@ -419,14 +419,19 @@ extern s32 *gCurrentMap;
 }
 
 s32 func_020a061c(void) {
- extern void *data_0211fb5c;
- void *p=data_0211fb5c; char *q; void *r; s8 i,j;
- i=M2C_FIELD(p,s8 *,0x5b); if(i>0) { q=p+i; do {
- for(j=i-1;j>=0;j--) {
- r=p+j; if(M2C_FIELD(q,volatile s8 *,0x36)==M2C_FIELD(r,s8 *,0x36)&&M2C_FIELD(q,s8 *,0x42)==M2C_FIELD(r,s8 *,0x42))return 0;
- }
- i--; q--; } while(i>0); }
- return 1;
+extern void *data_0211fb5c;
+void *p=data_0211fb5c; s8 i,j; s8 *q,*r; s32 x;
+i=M2C_FIELD(p,s8 *,0x5b);
+if(i>0) {q=p+i; do {
+j=i-1;
+if(j>=0) do {
+x=q[0x36]; r=p+j;
+if(x==r[0x36] && q[0x42]==r[0x42]) return 0;
+j--;
+}while(j>=0);
+i--;q--;
+}while(i>0);}
+return 1;
 }
 
 void func_020a06a0(s32 arg0) {

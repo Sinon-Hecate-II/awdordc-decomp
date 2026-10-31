@@ -31,7 +31,38 @@ M2C_FIELD(obj,s32 *,0x44)=c;
 func_ov005_02219e58(obj);
 }
 
-M2C_UNK func_ov005_0221a0c0(void *x) { return 0; }
+void func_ov005_0221a0c0(void *x) {
+extern s32 gCur3DSpriteEngine,data_027e00c4;
+extern M2C_UNK data_ov005_02221008,data_ov005_02220fec,data_02101f78;
+void func_01ffaacc(u16,u16,u16,void *,s32);void func_01ffad0c(u16,u16,u16,void *,s32);
+s32 saved;u16 px,py;u32 ycoord; s32 saved2;u16 px2,py2;
+if(M2C_FIELD(x,u8 *,0x44)){
+py=M2C_FIELD(x,u16 *,0x4a);px=M2C_FIELD(x,u16 *,0x48);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_01ffaacc((px&0xfe00)|((px+128)&511),(py&0xff00)|((py+96)&255),(((0x1d8>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xa000),&data_ov005_02221008,5);
+gCur3DSpriteEngine=saved;
+}
+if(M2C_FIELD(x,u8 *,0x45)){
+py2=M2C_FIELD(x,u16 *,0x4e);px2=M2C_FIELD(x,u16 *,0x4c);
+saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+ycoord=(py2&0xff00)|((py2+96)&255);
+func_01ffaacc((px2&0xfe00)|((px2+64)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
+func_01ffad0c((px2&0xfe00)|((192-px2)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
+gCur3DSpriteEngine=saved2;
+}
+if(M2C_FIELD(x,u8 *,0x46)){
+py=M2C_FIELD(x,u16 *,0x52);px=M2C_FIELD(x,u16 *,0x50);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_01ffaacc(px,py,(((0x388>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
+gCur3DSpriteEngine=saved;
+}
+if(M2C_FIELD(x,u8 *,0x47)){
+py=M2C_FIELD(x,u16 *,0x56);px=M2C_FIELD(x,u16 *,0x54);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_01ffaacc(px,(py&0xff00)|((py+156)&255),(((0x408>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
+gCur3DSpriteEngine=saved;
+}
+}
 
 void func_ov005_0221a38c(void **arg0) {
     M2C_UNK func_02090810(s32, M2C_UNK, s16);
@@ -194,7 +225,7 @@ M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
 
 #pragma opt_strength_reduction reset
 void func_ov005_0221ab38(void) {
-    M2C_UNK func_ov005_0221a0c0();
+    void func_ov005_0221a0c0();
     func_ov005_0221a0c0();
 }
 

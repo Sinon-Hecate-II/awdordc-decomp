@@ -1,13 +1,56 @@
 /* 20 functions from 0x0207A3B0 to 0x0207B2F0 (main), found by ds-decomp. */
 #include "common.h"
 
-int func_0207a3b0(int a, int b, unsigned short c, unsigned char d, int e, int f, int g, int h, int i, int j, int k) {
-    (void)a;(void)b;(void)c;(void)d;(void)e;(void)f;(void)g;(void)h;(void)i;(void)j;(void)k;
-    return 0;
+#pragma scheduling off
+void func_0207a3b0(u16 *a,s32 b,u16 c,u8 d,u8 e,s32 f,u16 g,u8 h,u8 i,u8 j,u8 k){
+extern void *gCurrentMap;
+extern const u16 data_020ebd98[];
+extern const s16 data_020ebda2[];
+s32 player,palette;
+s32 flag;
+u16 tile;
+u32 mark;
+u32 value;
+if(c==256){c=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a8);palette=0xb12e;}
+else palette=data_020ebd98[(c>>6)+1];
+player=(c>>6)+1;
+flag=d;
+if(flag)flag=1;
+tile=func_020a72b0(player,b);
+if(func_020d2850(b,M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4),(u16)player))mark=0x92;
+else if(flag)mark=0x86;
+else if((u8)e)mark=0x8a;
+else if((u16)g)mark=0x8e;
+else mark=0;
+if(i){if(mark!=0)mark=(u16)(mark+1);else mark=0x83;}
+if(j){if(mark!=0)mark=(u16)(mark+2);else mark=0x84;}
+if((u8)k)mark=0x96;
+if(c==0||c==128){
+a[0]=tile+1+0x400+palette;
+a[1]=tile+palette+0x400;
+if(mark==0)mark=tile+3+0x400;
+mark=palette+mark;
+a[32]=mark;
+if(!(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+player*140,u8 *,0x67c3)&2)){
+if((u8)h){a[33]=palette+0x82;return;}
 }
-
+if(data_020ebda2[f]<0){M2C_FIELD(a,u16 *,0x42)=tile+2+0x400+palette;return;}
+M2C_FIELD(a,u16 *,0x42)=f+0x78+palette;return;
+}
+value=mark?mark:tile+2;
+M2C_FIELD(a,u16 *,0)=tile+palette;
+M2C_FIELD(a,u16 *,2)=tile+1+palette;
+value=palette+value;
+M2C_FIELD(a,u16 *,0x40)=value;
+if(!(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+player*140,u8 *,0x67c3)&2)){
+if((u8)h){M2C_FIELD(a,u16 *,0x42)=palette+0x82;return;}
+}
+if(data_020ebda2[f]<0){M2C_FIELD(a,u16 *,0x42)=tile+3+palette;return;}
+M2C_FIELD(a,u16 *,0x42)=f+0x78+palette;
+}
+#pragma scheduling on
 void func_0207a61c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u8 arg5, u8 arg6) {
-    M2C_UNK func_0207a3b0(s32, M2C_UNK, u16, u8, s32, s32, s32, s32, s32, s32, s32);
+
     func_0207a3b0(arg0 + (arg1 * 2) + (arg2 << 6), arg3, arg4, arg5, (s32) arg6, 0, 0, 0, 0, 0, 0);
 }
 

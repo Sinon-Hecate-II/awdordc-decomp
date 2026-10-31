@@ -55,7 +55,7 @@ void func_ov010_02228d1c(M2C_UNK arg0) {
 #pragma opt_dead_code off
 #pragma opt_common_subs off
 #pragma opt_propagation off
-extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     void func_ov010_02226a88(void);
     void func_ov010_022282d4(s32);
     s32 func_ov010_02229450(s32);
@@ -92,9 +92,11 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     extern M2C_UNK data_ov010_0222c44c;
     extern M2C_UNK data_ov010_0222c488;
 
-    Ov010CallbackFn a, b, c, d;
+    Ov010CallbackFn c, a, b;
+volatile Ov010CallbackFn d;
+#pragma opt_dead_assignments off
     u8 *p;
-    u8 buf[0x80];
+    char buf[0x80];
 
     func_ov010_02226a88();
     func_020c4acc();
@@ -109,21 +111,21 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     for (p = (u8 *)&data_ov010_0222f02c; p != (u8 *)data_ov010_0222f1dc; p += 0x6c) {
         (((Ov010Callback *)p)->*c)();
     }
-    M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x107) = 0;
     d = c;
+    M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x107) = 0;
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x108) = (u8)arg0;
     func_ov000_0216a470();
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x104) = (u8)func_ov000_0216a564();
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x105) = (u8)func_ov000_0216a76c();
     M2C_FIELD(&data_ov010_0222eee0, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x100) = M2C_FIELD(func_020c4acc(), s32 *, 0x54);
-    M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) |= 2;
+    M2C_FIELD(&data_ov010_0222eee0, u8 *, 0xfa) = 2 | M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa);
     func_0203a850(&data_ov010_0222efc0, 0x6c);
 
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x30) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x107);
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x5c) = (s32)M2C_FIELD(&data_ov010_0222eee0, s8 *, 0x108);
     M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x48) = M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x100);
-    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x28) = arg5;
+    M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x28) = arg6;
 
     func_0203bf80(0, (u32)&data_ov010_0222c404, (s32)&data_ov010_0222c414);
 
@@ -138,6 +140,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
                    (M2C_UNK)M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x5c));
 
     func_02038838(arg1 & 0xff, (s32)buf, (s32)func_ov010_02227fac, arg3, (s32)func_ov010_02228050, arg5);
+#pragma opt_dead_assignments reset
 }
 #pragma cplusplus off
 

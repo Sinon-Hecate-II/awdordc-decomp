@@ -85,12 +85,19 @@ s32 func_02027224(void *a, s32 b) {
     case 4:
         func_02007530(s);
         return 5;
+    case 1:
+    case 2:
+    case 5:
+    case 6:
+        func_02028160(0xB);
+        func_02007530(s);
+        return 7;
     default:
         func_02028160(0xB);
         func_02007530(s);
         return 7;
     case 0: {
-        t = func_02011d58();
+        t = (s32)func_02011d58();
         if (t != 0) {
             t = func_020119dc((s32)func_0202830c);
             if (t != 0) {
@@ -355,7 +362,55 @@ s32 func_02027958(void) {
     return 3;
 }
 
-void func_02027a74(void){}
+s32 func_02027a74(void){
+u16 *func_02011910(void);
+M2C_UNK func_020067a8();
+s32 func_02011244(void);
+s32 func_02012158(void *);
+s32 func_020121d8(M2C_UNK);
+s32 func_02012274(void *);
+void func_02028384(void);
+void func_02028ef4(void);
+s32 s=func_0200751c();
+void *p=(void *)data_02138e4c;
+u16 *v;
+s32 r;
+if(!p){func_02007530(s);return 1;}
+switch(M2C_FIELD(p,s32 *,0x2260)){
+case 13:func_02007530(s);return 2;
+case 1:func_02007530(s);return 0;
+case 6:
+func_02028160(13);M2C_FIELD((void *)data_02138e4c,u16 *,0x2280)=9;
+func_02007530(s);return 3;
+case 3:case 9:case 12:break;
+default:func_02007530(s);return 1;
+}
+if(M2C_FIELD(p,u8 *,0x226b)==1){
+func_02028160(13);M2C_FIELD((void *)data_02138e4c,u16 *,0x2280)=9;
+}else{
+v=func_02011910();
+func_020067a8(v,2);
+switch(*v){
+case 0:
+if((r=func_02011244())==0){
+func_02028160(1);M2C_FIELD((void *)data_02138e4c,u16 *,0x2280)=0;
+func_02007530(s);return 0;
+}
+break;
+case 1:r=func_02012158(func_02028384);break;
+case 2:r=func_020121d8((M2C_UNK)func_02028384);break;
+default:M2C_FIELD((void *)data_02138e4c,u8 *,0x226b)=1;
+r=func_02012274(func_02028ef4);
+break;
+}
+switch(r){
+case 2:func_02028160(13);M2C_FIELD((void *)data_02138e4c,u16 *,0x2280)=9;break;
+case 8:func_02007530(s);return 4;
+case 3:default:func_02028160(11);func_02007530(s);return 7;
+}
+}
+func_02007530(s);return 3;
+}
 
 s32 func_02027c84(void){s32 s=func_0200751c();s32 r=0;void *p=(void *)data_02138e4c;if(p)r=M2C_FIELD(p,s32 *,0x2260);func_02007530(s);return r;}
 

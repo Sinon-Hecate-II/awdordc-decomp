@@ -403,9 +403,39 @@ s32 func_ov000_02196430(s16 *arg0) {
     return 1;
 }
 
+#pragma opt_strength_reduction off
 void func_ov000_021965dc(void) {
+extern void **gCurrentMap; extern u8 **data_ov000_021df580;
+s32 func_ov000_021a98e4(u32); s32 func_020a76d4(void *);
+void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
+s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
+s32 func_ov000_02179e48(s16 *); s32 func_ov000_0217e6bc(s16,s16); void func_ov000_0218a9ac(s16,s16);
+s32 limit; s32 flags; s32 best=0x7fff; s32 y,x; s16 cand[2];
+if(func_ov000_021a98e4(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind)==1)
+limit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
+else limit=0;
+func_ov000_02179be0(); func_ov000_02179d3c();
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]<0)continue;
+flags=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420);
+if(!(flags&0xe0))continue;
+if(func_020d27ec(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),(u8)flags)==1)continue;
+if(!func_ov000_0217d000(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind,flags))continue;
+if(best<=limit){
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>limit)continue;
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>=best)goto accept;
+continue;
+}else if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>best)continue;
+accept:
+cand[0]=x;cand[1]=y;
+best=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
+}}
+if(best==0x7fff)return;
+if(!func_ov000_02179e48(cand))return;
+if(!func_ov000_0217e6bc(cand[0],cand[1]))return;
+func_ov000_0218a9ac(cand[0],cand[1]);
 }
-
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
     s32 func_ov000_021a9934(u32, u32);

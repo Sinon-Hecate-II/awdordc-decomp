@@ -592,8 +592,6 @@ s32 func_0201d844(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     s32 var_r11;
     s32 var_r6;
     s32 var_r9;
-    u32 temp_ret_2;
-    u32 temp_ret_3;
     u32 temp_ret_4;
     u32 temp_ret_7;
     s32 var_r10;

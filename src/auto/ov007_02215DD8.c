@@ -126,7 +126,26 @@ s32 func_ov007_02216234() {
 }
 
 void func_ov007_022167b8(s32 a, s32 b, s32 c, s32 d, s32 e) {
-    return;
+s32 RandomIntRange(s32,s32);
+extern u8 data_ov007_02221a84[];
+s32 mid,i;
+if(e==0){
+if(a<c)mid=RandomIntRange(a,c);else mid=RandomIntRange(c,a);
+if(mid<a){for(i=mid;i<=a;i++)((u8 (*)[30])data_ov007_02221a84)[b][i]=2;}
+else{for(;a<=mid;a++)((u8 (*)[30])data_ov007_02221a84)[b][a]=2;}
+if(mid<c){for(i=mid;i<=c;i++)((u8 (*)[30])data_ov007_02221a84)[d][i]=2;}
+else{for(;c<=mid;c++)((u8 (*)[30])data_ov007_02221a84)[d][c]=2;}
+if(b<d){for(;b<=d;b++)((u8 (*)[30])data_ov007_02221a84)[b][mid]=2;}
+else{for(;d<=b;d++)((u8 (*)[30])data_ov007_02221a84)[d][mid]=2;}
+}else{
+if(b<d)mid=RandomIntRange(b,d);else mid=RandomIntRange(d,b);
+if(mid<b){for(i=mid;i<=b;i++)((u8 (*)[30])data_ov007_02221a84)[i][a]=2;}
+else{for(;b<=mid;b++)((u8 (*)[30])data_ov007_02221a84)[b][a]=2;}
+if(mid<d){for(i=mid;i<=d;i++)((u8 (*)[30])data_ov007_02221a84)[i][c]=2;}
+else{for(;d<=mid;d++)((u8 (*)[30])data_ov007_02221a84)[d][c]=2;}
+if(a<c){for(;a<=c;a++)((u8 (*)[30])data_ov007_02221a84)[mid][a]=2;}
+else{for(;c<=a;c++)((u8 (*)[30])data_ov007_02221a84)[mid][c]=2;}
+}
 }
 
 void func_ov007_02216a74(void) {

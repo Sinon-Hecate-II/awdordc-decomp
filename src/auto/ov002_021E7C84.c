@@ -18,75 +18,75 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
     s32 r5;
     s32 i19;
     u8 *ptr19;
+    u8 *ptr10;
     u8 r1;
     u8 r8;
     u8 r7;
     u8 r6;
     u8 lr;
     u8 flag;
-    s32 t;
+    u32 t;
     s32 rr;
     u8 v;
     p = (u8 *)arg0;
     r5 = arg1 * 24;
-    i19 = p[r5 + 0x19];
     ptr19 = p + 0x19;
+    i19 = ptr19[r5];
     i19 = i19 - 1;
     ptr19[r5] = (u8)i19;
+    ptr10 = p+0x10;
     r1 = data_ov002_021f2e54[arg2];
-    r8 = p[r5 + 0x18];
-    r7 = p[r5 + 0x13];
-    r6 = p[r5 + 0x14];
-    lr = p[r5 + 0x10];
+    r8 = M2C_FIELD(p+r5,u8 *,0x18);
+    r7 = M2C_FIELD(p+r5,u8 *,0x13);
+    r6 = M2C_FIELD(p+r5,u8 *,0x14);
+    lr = ptr10[r5];
     switch (arg2) {
-        case 2:
+        case 1:
             if (lr == 0x07) r1 = 0x01;
             break;
-        case 3:
-            if (r7 != 0) {
-                if (lr == 0x07) r1 = 0x01; else r1 = 0x00;
-            } else if (r8 != 0) {
-                if (lr == 0x07) r1 = 0x05; else r1 = 0x04;
-            } else {
-                if (lr == 0x07) r1 = 0x03; else r1 = 0x02;
-            }
+        case 2:
+            if (r7 == 0) {
+                if(r8 == 0) { if(lr==7) r1=3; else r1=2; }
+                else { if(lr==7)r1=5;else r1=4; }
+            } else { if(lr==7)r1=1;else r1=0; }
             break;
-        case 10:
+        case 9:
             if (r7 == 0) {
                 if (r8 == 0) r1 = 0x09; else r1 = 0x0A;
             } else {
                 r1 = 0x0B;
             }
             break;
-        case 16:
+        case 15:
             if (r6 == 0) r1 = 0x17;
             break;
-        case 18:
+        case 17:
             if (r8 == 0) r1 = 0x18; else r1 = 0x19;
             break;
-        case 21:
+        case 20:
             if (arg3 == 0x16) r1 = 0x1D;
             break;
-        case 22:
+        case 21:
             if (r8 == 0) {
                 if (arg3 == 0x16) r1 = 0x1F; else r1 = 0x1E;
             } else {
                 if (arg3 == 0x16) r1 = 0x21; else r1 = 0x20;
             }
             break;
-        case 23:
+        case 22:
             if ((u8)arg4 != 0) r1 = 0x26;
             break;
-        case 24:
+        case 23:
             if (r7 == 0) {
                 if (arg3 == 0x16) r1 = 0x23; else r1 = 0x22;
             } else {
                 r1 = 0x24;
             }
             break;
-        case 25:
+        case 24:
             if (arg3 == 0x16) r1 = 0x28;
             break;
+        case 25: if(arg3 == 0x16) r1=0x2a;break;
         default:
             break;
     }
@@ -94,33 +94,33 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
     flag = ((u8 *)*gCurrentMap)[0x5157];
     if (flag == 0x04 && lr == 0x04) {
         rr = RandomIntRange(0, 2);
-        p[r5 + 0x10] = data_ov002_021f2e44[rr];
+        ptr10[r5] = data_ov002_021f2e44[rr];
         return;
     }
     if (flag == 0x08) {
         t = (s32)lr - 1;
         if (t <= 1) {
             rr = RandomIntRange(0, 2);
-            p[r5 + 0x10] = data_ov002_021f2e48[rr];
+            ptr10[r5] = data_ov002_021f2e48[rr];
             return;
         }
     }
     if (lr == 0x13) {
         if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
             v = p[0x03];
-            p[r5 + 0x10] = data_ov002_021f2e50[v];
+            ptr10[r5] = data_ov002_021f2e50[v];
             return;
         }
     }
     if (lr == 0x15) {
         if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
             v = p[0x03];
-            p[r5 + 0x10] = data_ov002_021f2e70[v];
+            ptr10[r5] = data_ov002_021f2e4c[v];
             return;
         }
     }
     v = p[0x03];
-    p[r5 + 0x10] = data_ov002_021f2e70[v + (u32)lr * 4];
+    ptr10[r5] = data_ov002_021f2e70[v + (u32)lr * 4];
 }
 
 s32 func_ov002_021e7fec(s32 arg0,s32 arg1) { switch(M2C_FIELD(arg0+arg1*24,u8 *,12)) {case 0x25: case 0x26:return 1; default:return 0;} }
@@ -368,7 +368,7 @@ void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
 s32 func_020a7d38(void*);
-void func_ov002_021e7d34(void*,s32,u32,u32,s32);
+
 p[0]=a!=M2C_FIELD(*data_027e0058,u8**,0x52d0);
 p[1]=!p[0];
 switch(M2C_FIELD(*data_027e0058,u8*,0x5157)){

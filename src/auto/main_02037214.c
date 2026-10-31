@@ -247,13 +247,17 @@ M2C_UNK func_02037714(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 M2C_UNK func_02037728(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK size,s32 align){
- void func_02008048(void *,void *,u32);
- M2C_UNK sz=size;
- M2C_UNK p;
- u32 n;
- p=func_020376a4(a,sz,align);if(!p)return 0;
- if(b){n=func_02037670(b);if(n<=(u32)sz)sz=n;func_02008048(b,p,sz);func_020376d8(a,b,n);}
- return p;
+void func_02008048(void *,void *,u32);
+s32 p; u32 n;
+p=func_020376a4(a,size,align);
+if(!p)return 0;
+if(b){
+unused=func_02037670(b);
+if((u32)unused<=(u32)size)size=unused;
+func_02008048(b,p,size);
+func_020376d8(a,b,unused);
+}
+return p;
 }
 
 void func_02037794(M2C_UNK arg0) {

@@ -103,8 +103,31 @@ sum=func_0201a63c((u16)sum);M2C_FIELD(p,u16 *,6)=(sum>>8)|(sum<<8);
 func_0201b140(p,8,arg0,arg1,M2C_FIELD(arg2,u32 *,0x1c),17);
 }
 
-s32 func_0201b524(void *a, void *b, void *c, void *d) {
-    return 0;
+void func_0201b524(void *a,u32 b,void *c,u32 d){
+u32 func_0201a588(void *,u32,u32);s32 func_0201a63c(s32);
+extern M2C_UNK data_0212dca4,data_021374f8,data_021377a2,data_02137290;
+void *p;u32 n;s32 sum;u16 t,len,t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12;
+if(!M2C_FIELD(c,u8 *,8))return;
+if(M2C_FIELD(&data_0212dca4,void **,4)==&data_021374f8)p=&data_021377a2;else p=M2C_FIELD(c,void **,0x4c)+0x22;
+n=(d&2)?24:20;len=n+b;
+t0=M2C_FIELD(&data_02137290,u32 *,80)>>16;M2C_FIELD(p,u16 *,-12)=((s32)t0>>8)|(t0<<8);
+t1=M2C_FIELD(&data_02137290,u32 *,80);M2C_FIELD(p,u16 *,-10)=((s32)t1>>8)|(t1<<8);
+t2=M2C_FIELD(c,u32 *,28)>>16;M2C_FIELD(p,u16 *,-8)=((s32)t2>>8)|(t2<<8);
+t3=M2C_FIELD(c,u32 *,28);M2C_FIELD(p,u16 *,-6)=((s32)t3>>8)|(t3<<8);
+M2C_FIELD(p,u16 *,-4)=0x600;M2C_FIELD(p,u16 *,-2)=((s32)len>>8)|(len<<8);
+t4=M2C_FIELD(c,u16 *,10);M2C_FIELD(p,u16 *,0)=((s32)t4>>8)|(t4<<8);
+t5=M2C_FIELD(c,u16 *,24);M2C_FIELD(p,u16 *,2)=((s32)t5>>8)|(t5<<8);
+t6=M2C_FIELD(c,u32 *,40)>>16;M2C_FIELD(p,u16 *,4)=((s32)t6>>8)|(t6<<8);
+t7=M2C_FIELD(c,u32 *,40);M2C_FIELD(p,u16 *,6)=((s32)t7>>8)|(t7<<8);
+t8=M2C_FIELD(c,u32 *,36)>>16;M2C_FIELD(p,u16 *,8)=((s32)t8>>8)|(t8<<8);
+t9=M2C_FIELD(c,u32 *,36);M2C_FIELD(p,u16 *,10)=((s32)t9>>8)|(t9<<8);
+M2C_FIELD(p,u8 *,12)=(n>>2)<<4;M2C_FIELD(p,u8 *,13)=d;
+t10=M2C_FIELD(c,u32 *,60)-M2C_FIELD(c,u32 *,68);M2C_FIELD(p,u16 *,14)=((s32)t10>>8)|(t10<<8);
+M2C_FIELD(p,u16 *,16)=0;M2C_FIELD(p,u16 *,18)=0;
+if(d&2){t11=(M2C_FIELD(&data_02137290,u16 *,2)+0x2040000U)>>16;M2C_FIELD(p,u16 *,20)=((s32)t11>>8)|(t11<<8);t12=M2C_FIELD(&data_02137290,u16 *,2)+0x2040000;M2C_FIELD(p,u16 *,22)=((s32)t12>>8)|(t12<<8);}
+sum=func_0201a588(p-12,n+12,0);sum=func_0201a588(a,b,sum);sum=func_0201a63c((u16)sum);M2C_FIELD(p,u16 *,16)=(sum>>8)|(sum<<8);
+func_0201b140(p,n,a,b,M2C_FIELD(c,u32 *,28),6);
+M2C_FIELD(c,u32 *,40)+=b;if(d&3)M2C_FIELD(c,u32 *,40)+=1;
 }
 
 void func_0201b798(void *arg0) {

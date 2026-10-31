@@ -197,11 +197,9 @@ void func_0209106c(void *arg0) {
     fp(M2C_FIELD(arg0, s32 **, 0x58));
 }
 
-#pragma optimization_level 4
 #pragma scheduling off
-s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8) { M2C_UNK func_02091af8(void*,s32,s32); s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8); s32 r=func_02091af8(arg0,arg1,arg2); if(!r)return 0; func_0207d0f0(r,arg3,arg4,arg5,arg6,arg7,arg8);return 1; }
-#pragma scheduling reset
-#pragma optimization_level reset
+s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8){s32 func_02091af8(void*,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);s32 r=func_02091af8(arg0,arg1,arg2);s32 t6,t7,t4,t5;u8 t8;if(!r)return 0;t6=arg6;t7=arg7;t8=arg8;t4=arg4;t5=arg5;func_0207d0f0(r,arg3,t4,t5,t6,t7,t8);return 1;}
+#pragma scheduling on
 M2C_UNK func_020910d0(void *arg0) {
 void func_02091110(void *); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);

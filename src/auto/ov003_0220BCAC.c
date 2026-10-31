@@ -1,5 +1,15 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
+#pragma push
+#pragma opt_propagation off
+static inline void SetSliderPosition(void *p,s16 value) {
+M2C_FIELD(p,s16 *,18)=value;
+if(M2C_FIELD(p,s16 *,22)>=value) {
+s16 low=M2C_FIELD(p,s16 *,20);
+M2C_FIELD(p,s16 *,18)=value>=low?value:low;
+}
+}
+#pragma pop
 
 typedef struct {
     u8 mode : 4;
@@ -7,6 +17,7 @@ typedef struct {
 } Ov003ModeByte;
 
 void func_ov003_0220c414(void *, s32);
+#pragma opt_propagation off
 void func_ov003_0220bcac(void *arg0) {
     extern s32 func_0207c8ec(s32, s32);
     extern void func_020a979c(void *, s16, s16);
@@ -19,14 +30,7 @@ void func_ov003_0220bcac(void *arg0) {
     s32 val, q, sum;
 
     sub = M2C_FIELD(arg0, void **, 0x60);
-    M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
-    f14 = M2C_FIELD(sub, s16 *, 0x14);
-    if (M2C_FIELD(sub, s16 *, 0x16) >= 0x5F) {
-        if (0x5F >= f14)
-            M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
-        else
-            M2C_FIELD(sub, s16 *, 0x12) = f14;
-    }
+    SetSliderPosition(sub,95);
     p = M2C_FIELD(sub, void **, 0x1C);
     f12 = M2C_FIELD(sub, s16 *, 0x12);
     f14p = M2C_FIELD(p, s16 *, 0x14);
@@ -38,17 +42,11 @@ void func_ov003_0220bcac(void *arg0) {
     val = f12 * diff;
     q = func_0207c8ec(val, f16 - f14);
     sum = r6 + q;
+    p=M2C_FIELD(sub,void **,0x1c);
     func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
 
     sub = M2C_FIELD(arg0, void **, 0x64);
-    M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
-    f14 = M2C_FIELD(sub, s16 *, 0x14);
-    if (M2C_FIELD(sub, s16 *, 0x16) >= 0x5F) {
-        if (0x5F >= f14)
-            M2C_FIELD(sub, s16 *, 0x12) = 0x5F;
-        else
-            M2C_FIELD(sub, s16 *, 0x12) = f14;
-    }
+    SetSliderPosition(sub,95);
     p = M2C_FIELD(sub, void **, 0x1C);
     f12 = M2C_FIELD(sub, s16 *, 0x12);
     f14p = M2C_FIELD(p, s16 *, 0x14);
@@ -60,6 +58,7 @@ void func_ov003_0220bcac(void *arg0) {
     val = f12 * diff;
     q = func_0207c8ec(val, f16 - f14);
     sum = r6 + q;
+    p=M2C_FIELD(sub,void **,0x1c);
     func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
 
     func_ov003_0220c0e8(arg0);
@@ -71,23 +70,23 @@ void func_ov003_0220bcac(void *arg0) {
             M2C_FIELD(p, s32 *, 0x4) -= M2C_FIELD(p, s32 *, 0x8) - M2C_FIELD(p, s32 *, 0xC) + 1;
         while (M2C_FIELD(p, s32 *, 0x4) < M2C_FIELD(p, s32 *, 0xC))
             M2C_FIELD(p, s32 *, 0x4) += M2C_FIELD(p, s32 *, 0x8) - M2C_FIELD(p, s32 *, 0xC) + 1;
-    }
+    } else {val=M2C_FIELD(p,s32 *,0x4);q=M2C_FIELD(p,s32 *,0x8);if(val<=q){q=M2C_FIELD(p,s32 *,0xC);if(val>=q)q=val;}M2C_FIELD(p,s32 *,0x4)=q;}
     M2C_FIELD(p, s32 *, 0x1C) = 0;
     if (*(u8 *)((u8 *)p + 0x2C)) {
         while (M2C_FIELD(p, s32 *, 0x1C) > M2C_FIELD(p, s32 *, 0x20))
             M2C_FIELD(p, s32 *, 0x1C) -= M2C_FIELD(p, s32 *, 0x20) - M2C_FIELD(p, s32 *, 0x24) + 1;
         while (M2C_FIELD(p, s32 *, 0x1C) < M2C_FIELD(p, s32 *, 0x24))
             M2C_FIELD(p, s32 *, 0x1C) += M2C_FIELD(p, s32 *, 0x20) - M2C_FIELD(p, s32 *, 0x24) + 1;
-    }
-    M2C_FIELD(p, s32 *, 0x34) = 0;
+    } else {q=M2C_FIELD(p,s32 *,0x20);val=M2C_FIELD(p,s32 *,0x1C);if(val<=q){q=M2C_FIELD(p,s32 *,0x24);if(val>=q)q=val;}M2C_FIELD(p,s32 *,0x1C)=q;}
+    M2C_FIELD(p, s32 *, 0x34) = 1;
     if (*(u8 *)((u8 *)p + 0x44)) {
         while (M2C_FIELD(p, s32 *, 0x34) > M2C_FIELD(p, s32 *, 0x38))
             M2C_FIELD(p, s32 *, 0x34) -= M2C_FIELD(p, s32 *, 0x38) - M2C_FIELD(p, s32 *, 0x3C) + 1;
         while (M2C_FIELD(p, s32 *, 0x34) < M2C_FIELD(p, s32 *, 0x3C))
             M2C_FIELD(p, s32 *, 0x34) += M2C_FIELD(p, s32 *, 0x38) - M2C_FIELD(p, s32 *, 0x3C) + 1;
-    }
+    } else {q=M2C_FIELD(p,s32 *,0x38);val=M2C_FIELD(p,s32 *,0x34);if(val<=q){q=M2C_FIELD(p,s32 *,0x3C);if(val>=q)q=val;}M2C_FIELD(p,s32 *,0x34)=q;}
 }
-
+#pragma opt_propagation reset
 s8 func_ov003_0220bf68(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 0xB);
 }

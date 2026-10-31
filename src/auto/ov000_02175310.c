@@ -3,7 +3,61 @@
 
 /* Initializes a unit entry's nested battle state from a character template and stat table. */
 void func_ov000_02175310(void *arg0, void *arg1) {
-    (void)arg0; (void)arg1;
+    extern s32 *gCurrentMap;
+    void *self = arg0;
+    void *p = arg1;
+    void *st = M2C_FIELD(self, void **, 0x10);
+    u8 a0, a1, low6;
+    s32 c, c2, tmp;
+
+    M2C_FIELD(st, s32 *, 0x8) = func_020a735c(p);
+    M2C_FIELD(st, s32 *, 0x50) = func_020a7310(p);
+    c = func_020a7310(p);
+    M2C_FIELD(st, s32 *, 0x0) = (s32)M2C_FIELD((c * 0x8C) + *gCurrentMap, u8 *, 0x67CD);
+    if (!func_020a7cfc(p)) {
+        M2C_FIELD(st, s32 *, 0xC) = -1;
+    } else {
+        c2 = func_020a7310(p);
+        M2C_FIELD(st, s32 *, 0xC) = (s32)M2C_FIELD((c2 * 0x8C) + *gCurrentMap, u8 *, 0x6810);
+    }
+    a0 = M2C_FIELD(p, u8 *, 1);
+    a1 = M2C_FIELD(p, u8 *, 2);
+    tmp = M2C_FIELD(st, s32 *, 0x50);
+    M2C_FIELD(st, u8 *, 0x49) = (func_020d0468(tmp, a0, a1) != -1) ? 1 : 0;
+
+    M2C_FIELD(st, s32 *, 0x10) = func_020a789c(p);
+    M2C_FIELD(st, s32 *, 0x14) = func_020a78ac(p);
+    M2C_FIELD(st, s32 *, 0x18) = func_020a78c4(p);
+    M2C_FIELD(st, s32 *, 0x1C) = func_020a78d4(p);
+    M2C_FIELD(st, s32 *, 0x20) = func_020a25d8(p, (s32)a0, (s32)a1);
+    M2C_FIELD(st, s32 *, 0x24) = func_020a2608(p, (s32)a0, (s32)a1);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    M2C_FIELD(st, s32 *, 0x28) = func_020a7b24((s32)low6);
+    M2C_FIELD(st, s32 *, 0x2C) = func_020a2698(p, (s32)a0, (s32)a1);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    M2C_FIELD(st, s32 *, 0x30) = func_020a7bf8((s32)low6);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    M2C_FIELD(st, s32 *, 0x34) = func_020a7bec((s32)low6);
+    M2C_FIELD(st, s32 *, 0x38) = func_020a26c8(p, (s32)a0, (s32)a1);
+    M2C_FIELD(st, s32 *, 0x3C) = func_020a78ec(p);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    M2C_FIELD(st, s32 *, 0x40) = func_020a7b0c((s32)low6);
+    tmp = func_020a26f8(p, (s32)a0, (s32)a1);
+    c2 = func_020a7848(p, (s32)a0, (s32)a1);
+    M2C_FIELD(st, s32 *, 0x44) = tmp + c2;
+    M2C_FIELD(st, s32 *, 0x4C) = func_020a788c(p);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    M2C_FIELD(st, s32 *, 0x54) = func_020a7c98((s32)low6);
+
+    tmp = func_020a334c(func_020a7310(p));
+    M2C_FIELD(st, s8 *, 0x48) = (s8)tmp;
+    c = M2C_FIELD(st, s32 *, 0x50);
+    M2C_FIELD(st, s32 *, 0x60) = (s32)M2C_FIELD((c * 0x8C) + *gCurrentMap, u8 *, 0x67C1);
+    low6 = M2C_FIELD(p, u8 *, 0) & 0x3f;
+    func_ov000_02176af8(self, (s32)low6);
+    if (M2C_FIELD(self, s32 *, 4) == 0) {
+        M2C_FIELD(self, s32 *, 4) = 1;
+    }
 }
 
 void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {

@@ -312,27 +312,27 @@ s32 func_02047928(s32 *arg0) {
     return M2C_FIELD(&data_020fca58, s32 *, 0x60);
 }
 
-s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
     extern M2C_UNK data_020fca58;
     extern M2C_UNK data_020fcb1c;
     extern M2C_UNK data_020fcb24;
     extern unsigned char data_020fcac0[];
     extern M2C_UNK data_020fcb50;
-    extern M2C_UNK data_020fcb8c;
+    extern M2C_UNK data_020fcb58;
     extern M2C_UNK data_020fca68;
     extern M2C_UNK data_020fcb88;
     extern M2C_UNK data_020fcb6c;
     M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, ...);
 
-    s32 r5 = 0;
+    s32 r5;
     void *ptr;
-    M2C_UNK tmp;
+    u32 arr[5];
+    char tmp[16];
     s32 len_cb1c, len_cb24, len_cac0, len_after;
     s32 len_cb50, len_cb8c, len_data0, len_cb88;
     s32 accum;
     s32 len_ptr;
     s32 len_cb1c2, len_cb242;
-    u32 arr[5];
     s32 res;
     s32 len_cac0b;
 
@@ -343,55 +343,44 @@ s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     if (M2C_FIELD(&data_020fca58, s32 *, 0x54) != 0) {
         func_020376d8(0, M2C_FIELD(&data_020fca58, s32 *, 0x54), 0);
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
-        r5 = func_02047370((u32)((s32 *)arg4)[0] + 0x18);
     }
-
-    len_cb1c = func_02068c34(data_020fcb1c);
-    len_cb24 = func_02068c34(data_020fcb24);
+    r5 = func_02047370((u8 *)arg5+0x18);
+    len_cb1c = func_02068c34(&data_020fcb1c);
+    len_cb24 = func_02068c34(&data_020fcb24);
     len_cac0 = func_02068c34(data_020fcac0);
-
-    len_after = func_02068c34(func_0206f8b8((void *)arg2, &tmp, 10));
-
-    len_cb50 = func_02068c34(data_020fcb50);
-    len_cb8c = func_02068c34(data_020fcb8c);
-    len_data0 = func_02068c34(M2C_FIELD(&data_020fca58, M2C_UNK *, 0x00));
-    len_cb88 = func_02068c34(data_020fcb88);
-
-    accum = len_data0 + len_cb88;
-    accum = len_cb8c + accum;
-    accum = len_cb50 + accum;
-    accum = len_after + accum;
-    accum = len_cac0 + accum;
-    accum = len_cb24 + accum;
-    accum = len_cb1c + accum;
-    accum = r5 + accum;
-
+    len_after = func_02068c34(func_0206f8b8((void *)arg1,tmp,10));
+    len_cb50 = func_02068c34(&data_020fcb50);
+    len_cb8c = func_02068c34(&data_020fcb58);
+    len_data0 = func_02068c34(M2C_FIELD(&data_020fca58,void **,0));
+    len_cb88 = func_02068c34(&data_020fca68);
+    accum = r5 + (len_cb1c + (len_cb24 + (len_cac0 + (len_after + (len_cb50 + (len_cb8c + (len_data0 + len_cb88)))))));
     ptr = func_02037694(0, accum + 1);
     M2C_FIELD(&data_020fca58, void **, 0x54) = ptr;
     if (ptr == 0) {
         return 2;
     }
 
-    func_020675e4(ptr, data_020fcb6c,
+    func_020675e4(ptr, &data_020fcb6c,
                     M2C_FIELD(&data_020fca58, s32 *, 0x00),
-                    data_020fca68,
-                    data_020fcb8c, arg2, data_020fcb24, data_020fcb88);
+                    &data_020fca68,
+                    &data_020fcb58, arg1, &data_020fcb24, &data_020fcb88);
 
+    ptr=M2C_FIELD(&data_020fca58,void **,0x54);
     len_ptr = func_02068c34(ptr);
     M2C_FIELD(&data_020fca58, void **, 0x5c) = (void *)((u8 *)ptr + len_ptr);
 
-    len_cb1c2 = func_02068c34(data_020fcb1c);
-    len_cb242 = func_02068c34(data_020fcb24);
+    len_cb1c2 = func_02068c34(&data_020fcb1c);
+    len_cb242 = func_02068c34(&data_020fcb24);
     M2C_FIELD(&data_020fca58, s32 *, 0x58) =
         (s32)M2C_FIELD(&data_020fca58, void **, 0x5c) - len_cb1c2 - len_cb242;
 
-    arr[0] = (u32)arg2;
-    arr[1] = (u32)arg3;
-    arr[2] = (u32)arg1;
-    arr[3] = (u32)arg0;
-    arr[4] = (u32)*(u32 *)arg4;
+    arr[0] = (u32)arg1;
+    arr[1] = (u32)arg2;
+    arr[2] = (u32)arg0;
+    arr[3] = (u32)arg3;
+    arr[4] = (u32)arg5;
 
-    res = func_0204760c(M2C_FIELD(&data_020fca58, void **, 0x5c), arr, 0x14, (void *)((u8 *)arg4 + 4), *(s32 *)arg4);
+    res = func_0204760c(M2C_FIELD(&data_020fca58, void **, 0x5c), arr, 0x14, (void *)arg4, (s32)arg5);
     if (res == 2) {
         func_020376d8(0, M2C_FIELD(&data_020fca58, s32 *, 0x54), 0);
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;

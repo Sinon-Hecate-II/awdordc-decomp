@@ -34,6 +34,7 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 
 
 s32 func_020e352c(s32, s32);
+#pragma opt_common_subs off
 void func_020e34bc(s32 arg0) {
     volatile u32 saved;
     u16 old;
@@ -47,7 +48,7 @@ void func_020e34bc(s32 arg0) {
     (void)*(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = s;
 }
-
+#pragma opt_common_subs reset
 s32 func_020e352c(s32 arg0, s32 arg1) {
     M2C_UNK func_0202a468(s32, s32, s32);
     extern s32 data_02168fe4;
@@ -73,12 +74,9 @@ void func_020e3580(s32 arg0,s32 arg1) {
  *(volatile u16*)0x04000208=0;
  saved=temp;
  func_0202a468(data_02168fe4,arg0,-arg1);
- {
-  register volatile u16 *p=(volatile u16*)0x04000208;
-  register u32 s=saved;
-  (void)*p;
-  *p=s;
- }
+ temp=saved;
+ (void)*(volatile u16*)0x04000208;
+ *(volatile u16*)0x04000208=temp;
 }
 
 void func_020e35cc(s32 arg0) {

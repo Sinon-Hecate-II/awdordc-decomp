@@ -1,5 +1,6 @@
 /* 9 functions from 0x0217BCD4 to 0x0217C9F4 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ov000_unit_entry.h"
 
 #pragma scheduling off
 s32 func_ov000_0217bcd4(s8 a, s8 b, s8 c, s16 d) {
@@ -46,6 +47,9 @@ s32 func_ov000_0217bd44(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
+#pragma opt_propagation off
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
 s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     void func_01ffb554(void *);
     s32 func_01ffada0(s32, s32, s32, s32, s32);
@@ -64,11 +68,14 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     {
         u16 rowOff = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
-        u8 id = *((u8 *)base + x + rowOff);
+        s32 id = ((u8 *)base)[x + rowOff];
         if (id != 0) {
             if (func_ov000_021a8fc0((s16)id) == 1) {
-                u8 *entry = (u8 *)base + ((u32)id * 14) + 0x59A4;
-                u16 raw = M2C_FIELD(entry, u16 *, 0x6);
+                u8 *entry;
+                u16 raw;
+                base = *gCurrentMap;
+                entry = (u8 *)base + ((u32)id * 14) + 0x59A4;
+                raw = M2C_FIELD((u8 *)base + id * 14, u16 *, 0x59AA);
                 if (((u32)(raw << 16) >> 27) != 0U) {
                     func_01ffb554((u8 *)base + 0xE30 + 0x1000);
                     return 1;
@@ -84,10 +91,12 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
         s32 ymax;
         s32 right;
         s32 bottom;
-        s32 xx;
-        s32 yy;
-        s16 xs;
         s16 ys;
+        s16 xs;
+        UnkStruct_ov000_021A860C *entry;
+        s32 xx;
+        s32 dy;
+        s32 yy;
 
         xmin = x - 6;
         if (xmin < 0) {
@@ -113,11 +122,10 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
             for (xx = xmin; xx <= right; xx++) {
                 s32 dist;
                 s32 dxd;
-                u8 id2;
+                s32 id2;
                 u16 rowOff2;
-                u8 *entry;
                 u16 raw2;
-                s16 kind;
+                s32 kind;
 
                 xs = (s16)x;
                 ys = (s16)y;
@@ -126,11 +134,13 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
                 if (dxd <= 0) {
                     dxd = xx - x;
                 }
-                dist = dxd;
-                if (y - yy > 0) {
-                    dist += y - yy;
-                } else {
+                dist = 0;
+                dist += dxd;
+                dy = y - yy;
+                if (dy <= 0) {
                     dist += yy - y;
+                } else {
+                    dist += dy;
                 }
 
                 if (dist < 0) {
@@ -146,10 +156,10 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
                 }
 
                 rowOff2 = M2C_FIELD((u8 *)base + (yy << 1), u16 *, 0x3758);
-                id2 = *((u8 *)base + xx + rowOff2);
+                id2 = ((u8 *)base + xx)[rowOff2];
 
-                entry = (u8 *)base + ((u32)id2 * 14) + 0x59A4;
-                kind = (s16)(((u32)(entry[0] << 26) >> 26));
+                entry = (UnkStruct_ov000_021A860C *)((u8 *)base + 0x59A4) + (s16)id2;
+                kind = (s16)(entry->unk0);
 
                 if (kind == 0) {
                     continue;
@@ -159,21 +169,18 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
                     continue;
                 }
 
-                raw2 = M2C_FIELD(entry, u16 *, 0x8);
-                if (x != (s32)(((u32)(raw2 << 26)) >> 26)) {
-                    continue;
-                }
-                if (y != (s32)(((u32)(raw2 << 14)) >> 26)) {
+                raw2 = *(u16 *)((u8 *)entry + 8);
+                if (x != (s32)(((u32)(raw2 << 26)) >> 26) || y != (s32)(((u32)(raw2 << 20)) >> 26)) {
                     continue;
                 }
 
-                if (kind == 1) {
-                    if (ManhattanDistance(entry[1], entry[2], xs, ys) > 3) {
+                if (entry->unk0 == 1) {
+                    if (ManhattanDistance(((u8 *)entry)[1], ((u8 *)entry)[2], xs, ys) > 3) {
                         continue;
                     }
                 }
-                if (kind == 2) {
-                    if (ManhattanDistance(entry[1], entry[2], xs, ys) > 2) {
+                if (entry->unk0 == 2) {
+                    if (ManhattanDistance(((u8 *)entry)[1], ((u8 *)entry)[2], xs, ys) > 2) {
                         continue;
                     }
                 }
@@ -189,8 +196,7 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     func_01ffb554((u8 *)base + 0xE30 + 0x1000);
     return 0;
 }
-
-#pragma opt_common_subs off
+#pragma opt_propagation on
 s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
     s32 func_ov000_021a9860(s32, s32);
     s32 func_ov000_0217bdb4(s32, s32);

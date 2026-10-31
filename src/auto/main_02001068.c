@@ -2,6 +2,7 @@
 #include "common.h"
 
 typedef struct UnkVec3 { s32 x,y,z; } UnkVec3;
+typedef struct Matrix01148 { s32 m[12]; } Matrix01148;
 
 void func_02001068(s32 *arg0,s32 *arg1,s32 arg2,s32 arg3,s32 arg4) {
 void func_02007f4c(void *,void *);
@@ -46,9 +47,45 @@ void func_0200112c(s32 *arg0, s32 arg1, s32 arg2) {
     *p++ = 0;
 }
 #pragma thumb off
-void func_02001148(void *arg0, void *arg1, void *arg2) { (void)arg0; (void)arg1; (void)arg2; }
+void func_02001148(void *arg0,void *arg1,void *arg2){Matrix01148 tmp;s32 *a=arg0,*b=arg1,*out;s32 u,v,w;out=arg2==arg1?tmp.m:arg2;
+{ s32 x,y,z;
+x=a[0];y=a[1];z=a[2];
+u=b[0];v=b[3];w=b[6];
+out[0]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[1];v=b[4];w=b[7];
+out[1]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[2];v=b[5];w=b[8];
+out[2]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+}
+{ s64 x,y,z;
+x=a[3];y=a[4];z=a[5];
+out[5]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[1];v=b[4];w=b[7];
+out[4]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[0];v=b[3];w=b[6];
+out[3]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+}
+{ s32 x,y,z;
+x=a[6];y=a[7];z=a[8];
+out[6]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[1];v=b[4];w=b[7];
+out[7]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[2];v=b[5];w=b[8];
+out[8]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+}
+{ s64 x,y,z;
+x=a[9];y=a[10];z=a[11];
+out[11]=b[11]+(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[1];v=b[4];w=b[7];
+out[10]=b[10]+(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+u=b[0];v=b[3];w=b[6];
+out[9]=b[9]+(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
+}
+if(out==tmp.m)*(Matrix01148*)arg2=tmp;
+}
 
 void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
+#pragma opt_propagation on
     s32 sp18[3];
     s32 sp0c[3];
     s32 sp00[3];

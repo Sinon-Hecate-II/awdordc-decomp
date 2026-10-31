@@ -1,5 +1,6 @@
 /* 12 functions from 0x0217332C to 0x0217416C (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 v[5]; } SpriteGroupCounts;
 
 
 void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
@@ -18,9 +19,57 @@ void func_ov001_0217408c(int arg0);
 
 void func_ov001_0217332c(void) { return; }
 
-void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3) {
+#pragma scheduling off
+#pragma optimization_level 3
+#pragma opt_loop_invariants off
+#pragma opt_strength_reduction off
+void func_ov001_0217355c(u8 arg0,s32 arg1,s32 arg2,u32 arg3){
+extern u8 data_ov001_0218f328[];
+extern u16 data_ov001_0218f34c[],data_ov001_0218f344[];
+void func_ov001_0218b200(s32,u16,s32,s32,s32);
+s32 func_020020c4(s32,s32);
+void func_ov001_0218a260(void *,s32,s32,s32);
+M2C_UNK func_ov001_0218a384(s32,M2C_UNK,u16,u16);
+SpriteGroupCounts a,b,c;
+s32 index=arg1*12; s32 i,j;void *p;u16 tile;
+a=*(SpriteGroupCounts *)(data_ov001_0218f328+17);
+b=*(SpriteGroupCounts *)(data_ov001_0218f328+22);
+c=*(SpriteGroupCounts *)(data_ov001_0218f328+12);
+i=0;j=index;
+if(a.v[arg1]>0)do{
+tile=*(u16 *)(data_ov001_0218f36c+j*4);
+p=M2C_FIELD((u8 *)data_ov001_02193d1c+j*4,void **,0x30);
+M2C_FIELD(p,u32 *,0)=M2C_FIELD(p,u32 *,0)&~0x3e000300U;
+p=M2C_FIELD((u8 *)data_ov001_02193d1c+j*4,void **,0x30);
+M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|((tile&0x1ff)<<16)|(arg2&255);
+i++;j++;
+}while(i<a.v[arg1]);
+if(arg1<4)func_ov001_0218b200(M2C_FIELD((u8 *)data_ov001_02193d1c+arg0*16+arg1*4,s32 *,0),*(u16 *)(data_ov001_0218f36c+index*4),arg2,M2C_FIELD((u8 *)data_ov001_02193d1c+arg1*4,s32 *,0x104),2);
+j=func_020020c4(arg1+3,4);
+i=0;
+if(b.v[arg1]>0){
+j*=4;
+tile=*(u16 *)((u8 *)data_ov001_0218f34c+j);
+do{
+p=M2C_FIELD((u8 *)data_ov001_02193d1c+j,void **,0xec);
+M2C_FIELD(p,u32 *,0)&=0xc1fffcff;
+p=M2C_FIELD((u8 *)data_ov001_02193d1c+j,void **,0xec);
+M2C_FIELD(p,u32 *,0)=(M2C_FIELD(p,u32 *,0)&0xfe00ff00)|((tile&0x1ff)<<16)|(arg2&255);
+i++;
+}while(i<b.v[arg1]);
 }
-
+i=0;
+if(c.v[arg1]>0)do{
+func_ov001_0218a260(M2C_FIELD((u8 *)data_ov001_02193d1c+i*4,void **,0xfc),-1,0,0);
+func_ov001_0218a384(M2C_FIELD((u8 *)data_ov001_02193d1c+i*4,s32 *,0xfc),-1,data_ov001_0218f344[i*2],arg2);
+i++;
+}while(i<c.v[arg1]);
+}
+#pragma scheduling reset
+#pragma optimization_level reset
+#pragma opt_common_subs reset
+#pragma opt_loop_invariants reset
+#pragma opt_strength_reduction reset
 void func_ov001_021737d8(s8 arg0) {
     s32 var_r4;
     s32 var_r5;

@@ -3,146 +3,70 @@
 
 u8 func_02099ae8(u8 *arg0);
 u8 func_02099b00(u8 *arg0);
-s32 func_02099b18(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    register s32 r8 asm("r8") = arg0;
-    register s32 r7 asm("r7") = arg1;
-    register s32 r6 asm("r6") = arg2;
-    register s32 r4 asm("r4") = 0;
-    register s32 r5 asm("r5") = 0;
-    register s32 r0 asm("r0");
-    u8 var_r1;
-
-    if (r8 == 0) {
-        return 0;
-    }
-    r0 = *(u8 *)r8;
-    if (r0 == 0) {
-        return 0;
-    }
-    r4 = 0;
-    r5 = r4;
-loop:
-    switch (r0) {
-        case 3:
-        case 5:
-        case 6:
-        case 7:
-        case 11:
-        case 14:
-            if (r6 == 0) {
-                return 0;
-            }
-            r5 = r4 + 1;
-            break;
-        case 4:
-            r5 = r4 + 2;
-            break;
-        case 9:
-            r5 = r4 + 1;
-            if (r0 >= 0x80) {
-                if (r0 <= 0x99) {
-                    r5 = r4 + 2;
-                } else if (r0 >= 0x9A) {
-                    if (r0 <= 0xB3) {
-                        r5 = r5 + 1;
-                    }
-                }
-            }
-            break;
-        case 12:
-            var_r1 = ((u8 *)r8)[1];
-            r5 = r4 + 1;
-            if ((u8)(var_r1 + 0x80) <= 1) {
-                r5 = r4 + 2;
-            }
-            break;
-        case 17:
-            var_r1 = ((u8 *)r8)[2];
-            var_r1 = (u8)(var_r1 - 0x80);
-            switch (var_r1) {
-                case 0:
-                    r5 = r4 + 5;
-                    break;
-                case 6:
-                    r5 = r4 + 3;
-                    break;
-                case 8:
-                    r5 = r4 + 3;
-                    break;
-                case 9:
-                    r5 = r4 + 3;
-                    break;
-                case 10:
-                    r5 = r4 + 3;
-                    break;
-                case 11:
-                    r5 = r4 + 3;
-                    break;
-                case 12:
-                    r5 = r4 + 4;
-                    break;
-                case 13:
-                    r5 = r4 + 4;
-                    break;
-                case 14:
-                    r5 = r4 + 3;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case 18:
-            var_r1 = ((u8 *)r8)[1];
-            if (var_r1 == 0x80) {
-                r5 = r4 + 2;
-            } else {
-                r5 = r4 + 3;
-            }
-            break;
-        case 19:
-        case 27:
-            r5 = r4 + 3;
-            break;
-        case 20:
-            r5 = r4 + 2;
-            break;
-        case 21:
-            if (func_02099ae8((u8 *)r8)) {
-                r5 = r5 + 2;
-            } else if (func_02099b00((u8 *)r8)) {
-                r5 = r5 + 2;
-            } else {
-                r5 = r5 + 1;
-            }
-            goto advance;
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 28:
-        case 29:
-        case 30:
-            r5 = r4 + 3;
-            break;
-        default:
-            r5 = r4 + 2;
-            break;
-    }
-
-    if (r7 == r0) {
-        return (s32)r8;
-    }
-advance:
-    r8 = r8 + r5;
-    r0 = *(u8 *)r8;
-    if (r0 == 0) {
-        return 0;
-    }
-    r5 = r4;
-    goto loop;
+#pragma opt_propagation off
+s32 func_02099b18(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2){
+u8 *p=(u8 *)arg0;
+s32 want=arg1;
+s32 allow=arg2;
+s32 base;
+s32 step;
+u32 c;
+if(!p)return 0;
+while((c=*p)!=0){
+base=0;
+step=base;
+switch(c){
+case 2:case 4:case 5:case 6:case 10:case 13:
+step=base+1;if(!allow)return base;break;
+case 3:step=base+2;break;
+case 11:step=base+1;if((u8)(p[1]+0x80)<=1)step=base+2;break;
+case 8:step=base+1;
+if(c>=0x80 && c<=0x99)step=base+2;
+else if(c>=0x9a && c<=0xb3)step++;
+break;
+case 16:
+switch(p[2]){
+case 0x80:step=base+5;break;
+case 0x8d:step=base+4;break;
+case 0x8c:step=base+4;break;
+case 0x8a:step=base+3;break;
+case 0x8b:step=base+3;break;
+case 0x8e:step=base+3;break;
+case 0x86:step=base+3;break;
+case 0x88:step=base+3;break;
+case 0x89:step=base+3;break;
 }
-
+break;
+case 17:
+switch(p[2]){
+case 0x80:step=base+5;break;
+case 0x81:step=base+4;break;
+case 0x82:step=base+4;break;
+case 0x83:step=base+4;break;
+case 0x84:step=base+3;break;
+case 0x85:step=base+3;break;
+case 0x86:step=base+3;break;
+case 0x87:step=base+5;break;
+case 0x88:step=base+3;break;
+case 0x89:step=base+3;break;
+}
+break;
+case 18:case 26:case 30:step=base+1;break;
+case 19:if(p[1]==0x80)step=base+2;else step=base+3;break;
+case 20:step=base+3;break;
+case 21:case 22:case 23:case 24:case 25:case 27:case 28:case 29:step=base+2;break;
+default:
+if(func_02099ae8(p))step+=2;
+else if(func_02099b00(p))step+=2;
+else step++;
+goto advance;
+}
+if(want==c)return (s32)p;
+advance:p+=step;
+}
+return 0;
+}
+#pragma opt_propagation reset
 u8 func_02099dcc(M2C_UNK arg0) {
     s32 func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
     u8 var_r0;

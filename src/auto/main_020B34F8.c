@@ -23,10 +23,86 @@ if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;
 return result;
 }
 
-M2C_UNK func_020b35d4(M2C_UNK arg0) {
-    return 0;
-}
+#pragma opt_propagation off
+void func_020b35d4(void *p) {
+s32 func_0207c8ec(s32,s32);
+s32 func_0207c928(s32,s32);
+u8 func_020b3410(void *);
+M2C_UNK func_0208fe30(s32);
+extern u16 *data_02101e84;
 
+s32 held,pressed;
+s32 cols;
+s16 col,row,oldselected;
+s16 oldscroll,pages,total;
+s32 visible;
+s32 n,active,delta,factor;
+cols=M2C_FIELD(p,u8 *,5);
+total=M2C_FIELD(p,s16 *,10);
+visible=M2C_FIELD(p,u8 *,4);
+pages=func_0207c8ec(total+cols-1,cols);
+if(visible>=pages)visible=pages;
+visible=(s16)visible;
+col=func_0207c928(M2C_FIELD(p,s16 *,8),cols);
+row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
+held=data_02101e84[0];pressed=data_02101e84[1];
+oldscroll=M2C_FIELD(p,s16 *,12);
+oldselected=M2C_FIELD(p,s16 *,8);
+if(cols>1){
+n=total-row*cols;if(n>cols)n=cols;
+if(pressed&32){
+if(col>0)M2C_FIELD(p,s16 *,8)--;
+else if(pressed==held)M2C_FIELD(p,s16 *,8)+=n-1;
+}else if(pressed&16){
+if(col<n-1)M2C_FIELD(p,s16 *,8)++;
+else if(pressed==held)M2C_FIELD(p,s16 *,8)-=n-1;
+}
+}else{
+if(pressed&32){if(func_020b34f8(p))return;}
+else if(pressed&16){if(func_020b3410(p))return;}
+}
+active=M2C_FIELD(p,s16 *,18)!=0;
+if(!(active&255)){
+if(pressed&64){
+if(row==0){
+if(pressed==held){
+M2C_FIELD(p,s16 *,8)+=(pages-1)*cols;
+n=pages-visible;if(n<=0)n=0;
+M2C_FIELD(p,s16 *,12)=n;
+n=M2C_FIELD(p,s16 *,8);
+if(n>total-1)n=total-1;
+M2C_FIELD(p,s16 *,8)=n;
+}
+}else{
+M2C_FIELD(p,s16 *,8)-=cols;
+n=M2C_FIELD(p,s16 *,12);
+if((s16)func_0207c8ec(M2C_FIELD(p,s16 *,8),cols)-n<=0){
+if(n>0)M2C_FIELD(p,s16 *,12)--;
+delta=M2C_FIELD(p,s16 *,12);factor=M2C_FIELD(p,u8 *,7);delta-=oldscroll;
+M2C_FIELD(p,s16 *,18)=delta*factor;
+}
+}
+}else if(pressed&128){
+if(row==pages-1){
+if(pressed==held){M2C_FIELD(p,s16 *,8)-=(pages-1)*cols;M2C_FIELD(p,s16 *,12)=0;}
+}else{
+M2C_FIELD(p,s16 *,8)+=cols;
+n=M2C_FIELD(p,s16 *,8);
+if(n>total-1)n=total-1;
+M2C_FIELD(p,s16 *,8)=n;
+row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
+n=M2C_FIELD(p,s16 *,12);
+if(row-n>=visible-1){
+if(n<pages-visible)M2C_FIELD(p,s16 *,12)=n+1;
+delta=M2C_FIELD(p,s16 *,12);factor=M2C_FIELD(p,u8 *,7);delta-=oldscroll;
+M2C_FIELD(p,s16 *,18)=delta*factor;
+}
+}
+}
+}
+if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))func_0208fe30(0x10019);
+}
+#pragma opt_propagation reset
 M2C_UNK func_020b38d0(M2C_UNK arg0) {
     M2C_UNK func_020b3038(M2C_UNK);
     M2C_UNK func_0208fe30(M2C_UNK);
@@ -78,7 +154,6 @@ return scroll<=tile && tile<scroll+total;
 void func_020b3a58(M2C_UNK arg0) {
     M2C_UNK func_02088044(M2C_UNK);
     M2C_UNK func_020b316c();
-    M2C_UNK func_020b35d4(M2C_UNK);
     M2C_UNK func_020b38d0(M2C_UNK);
     func_020b316c();
     func_02088044(arg0 + 0x18);
@@ -88,7 +163,7 @@ void func_020b3a58(M2C_UNK arg0) {
 
 void func_020b3a80(void *arg0) {
 s32 func_0207c8ec();
-s32 func_0207c928(s16,u8);
+s32 func_0207c928(s32,s32);
 s16 a,b; s16 x,y,c,old; s16 delta; s32 d,e;
 a=M2C_FIELD(arg0,u8 *,6); b=M2C_FIELD(arg0,u8 *,7);
 x=func_0207c928(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5));

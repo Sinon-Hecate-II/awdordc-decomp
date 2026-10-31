@@ -156,9 +156,57 @@ off=M2C_FIELD(arg0,u8 *,140)*100;
 func_ov002_021e16dc(q,M2C_FIELD(data_ov002_021f3024,s32 *,off),M2C_FIELD(data_ov002_021f3036,u16 *,off),M2C_FIELD(data_ov002_021f3049+off,u8 *,M2C_FIELD(arg0,u8 *,141)*8),0);
 }
 
+#pragma opt_propagation off
+#pragma opt_common_subs off
 void func_ov002_021e9f80(void *a, s32 b, s32 c) {
+void *func_02082028(s32);
+void func_ov002_021e2a20(void *,u8,u8);
+void func_ov002_021e2d04(void *,s16,s16,s16);
+void func_ov002_021e17ac(void *,u32);
+void func_ov002_021e2d78(void *,s16,s16,s16,s32,s32,s32,s32);
+void func_ov002_021e2e18(void *,s16,s16,u16);
+void func_ov002_021e2a80(void *,s32,u16,u8,s32);
+extern u8 data_ov002_021f3020[],data_ov002_021f30f4[],data_ov002_021f3103[],data_ov002_021f304a[],data_ov002_021f3034[];
+void *p,*settings,*other,*t;
+s16 x,y;
+u32 scale;
+void *q;
+u8 index;
+s32 initial,inv1,inv2,inv3,inv4,inv5;
+initial = !M2C_FIELD(a,u8 *,0x8c);
+if(!M2C_FIELD(data_ov002_021f3020,s32 *,initial*100))return;
+if(M2C_FIELD(a,void **,0x5c)){
+p=func_02082028(8);
+if(p){M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
+M2C_FIELD(p,void **,0)=M2C_FIELD(a,void **,0x5c);
+M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,0x60);
+M2C_FIELD(a,void **,0x60)=p;
 }
-
+M2C_FIELD(a,void **,0x5c)=((p=func_02082028(0x88)) ? init_021ea71c(p):p);
+q=M2C_FIELD(a,void **,0x5c);
+index=M2C_FIELD(a,u8 *,0x8c);
+settings=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,index*24),void **,40);
+x=M2C_FIELD(settings,s16 *,0x78);y=M2C_FIELD(settings,s16 *,0x7a);
+if(c!=-1){t=settings+c*4;x+=M2C_FIELD(t,s16 *,0xb0);y+=M2C_FIELD(t,s16 *,0xb2);}
+settings=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,index*24),void **,40);
+scale=(u32)((M2C_FIELD(settings,u16 *,0x7e)*M2C_FIELD(settings,u16 *,0xcc))<<8)>>16;
+inv1 = !index;
+inv2 = !index;
+b+=M2C_FIELD(M2C_FIELD((u8 *)M2C_FIELD(data_ov002_021f30f4,void **,inv2*24)+data_ov002_021f3103[inv1*24]*4,void **,0x2c),u8 *,2);
+inv3 = !index;
+other=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,inv3*24),void **,40);
+func_ov002_021e2a20(q,index,M2C_FIELD(a,u8 *,0x8d));
+func_ov002_021e2d04(q,x,y,M2C_FIELD(M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,M2C_FIELD(a,u8 *,0x8c)*24),void **,40),s16 *,0x7c));
+func_ov002_021e17ac(q,scale);
+func_ov002_021e2d78(q,M2C_FIELD(other,s16 *,0x98),M2C_FIELD(other,s16 *,0x9a),M2C_FIELD(other,s16 *,0x9c),M2C_FIELD(other,s16 *,0x9e),b,M2C_FIELD(other,s16 *,0xa0),M2C_FIELD(other,s16 *,0xa2));
+func_ov002_021e2e18(q,M2C_FIELD(a,s16 *,0x6c),M2C_FIELD(a,s16 *,0x6e),M2C_FIELD(a,u16 *,0x72));
+index=M2C_FIELD(a,u8 *,0x8c);
+inv4 = !index;
+inv5 = !index;
+func_ov002_021e2a80(q,M2C_FIELD(data_ov002_021f3020,s32 *,inv5*100),M2C_FIELD(data_ov002_021f3034,u16 *,inv4*100),(data_ov002_021f304a+index*100)[M2C_FIELD(a,u8 *,0x8d)*8],1);
+}
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
 void func_ov002_021ea208(void *arg0,s32 arg1) {
 void *func_02082028(s32);void func_ov002_021e16bc(void *,u8,u8);void func_ov002_021e16dc(void *,s32,u16,u8,s32);void func_ov002_021e179c(void *,s16,s16,s16);void func_ov002_021e17ac(void *,u32);
 extern u8 data_ov002_021ea704[],data_ov002_021f3028[],data_ov002_021f3038[],data_ov002_021f304b[],data_ov002_021f30f4[];

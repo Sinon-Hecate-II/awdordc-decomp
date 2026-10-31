@@ -10,11 +10,11 @@ s32 func_ov000_021a947c(s32 x, s32 y, s32 a, s32 b) {
     u8 func_ov000_021a9164(s32, s32, s32);
     s32 func_ov000_021a93b0(s32, s32, s32);
 
-    register s32 rx asm("r8") = x;
-    register s32 ry asm("r7") = y;
-    register s32 ra asm("r6") = a;
-    register s32 rb asm("r5") = b;
-    register u16 racc asm("r4") = 0;
+    s32 rx = x;
+    s32 ry = y;
+    s32 ra = a;
+    s32 rb = b;
+    u16 racc = 0;
 
     if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) == 0) {
         if (M2C_FIELD(data_ov000_021df580, u8 *, 0xD) != 2) {
@@ -102,21 +102,21 @@ void func_ov000_021a97d0(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_ov000_021a97e0(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7b3c(M2C_UNK, u8, u16, s32, s32);
-    extern void **gCurrentMap;
+    extern void **data_027e0058;
     extern void *data_ov000_021df580;
-    func_020a7b3c(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, 0);
+    func_020a7b3c(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 void func_ov000_021a9820(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7c10(M2C_UNK, u8, u16, s32, s32);
-    extern void **gCurrentMap;
+    extern void **data_027e0058;
     extern void *data_ov000_021df580;
-    func_020a7c10(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, 0);
+    func_020a7c10(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 s32 func_ov000_021a9860(s32 a,s32 b) {
- extern void **gCurrentMap;s32 func_020ba924(s32,s32);
- s32 p=(s32)*gCurrentMap;
+ extern void **data_027e0058;s32 func_020ba924(s32,s32);
+ s32 p=(s32)*data_027e0058;
  if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)==24)return 1;
  return func_020ba924(a,b);
 }
@@ -130,9 +130,10 @@ s32 func_ov000_021a98c8(s32 a) {
 }
 
 s32 func_ov000_021a98e4(s32 arg0) {
-    s32 func_020a7bd4();
+    s32 func_020a7bd4(void);
     s32 temp_r0;
 
+    (void)arg0;
     temp_r0 = func_020a7bd4();
     if (temp_r0 > 1) {
         return 1;

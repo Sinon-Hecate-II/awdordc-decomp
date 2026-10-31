@@ -1,5 +1,21 @@
 /* 18 functions from 0x020DE264 to 0x020DF1D0 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct SetupSprite {
+ u8 pad[0x40];
+ unsigned field0:18;
+ unsigned frame:8;
+ unsigned field26:6;
+} SetupSprite;
+static inline s32 GetSetupCode(void *p) {
+    s32 result=-1;
+    switch(M2C_FIELD(p,s32 *,0x34)) {
+    case 0:
+        switch(M2C_FIELD(p,s32 *,0x38)) {case 1: result=2; break; default: result=4; break;}
+        break;
+    case 1: case 2: result=2; break;
+    }
+    return result;
+}
 
 #pragma opt_strength_reduction off
 M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
@@ -182,11 +198,103 @@ s32 func_020de884(M2C_UNK arg0) {
     return 0x7FFFFF;
 }
 
-M2C_UNK func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
-    (void)arg0; (void)arg1;
-    return 0;
-}
+#pragma opt_strength_reduction on
+void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
+    void func_01ff9ce8(u8);
+    void func_0200bc5c(void *);
+    void *func_020e3218(void *);
+    void func_020814e4(void *);
+    void func_02081590(void *, void *);
+    void func_02081528(void);
+    void func_02080944(void *, s32, s32, s32);
+    void func_0208e7ec(s32, s32);
+    void func_02088f1c(void *);
+    void func_02088da8(void *);
+    void func_0208b758(void *, u32);
+    s32 func_020a8ff4(void *);
+    void func_ov010_02228d48(s32, s32, s32, s32, s32, s32, s32);
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c8;
+    extern void *data_027e00c4;
+    extern M2C_UNK data_0212d498;
+    extern M2C_UNK data_0212d4a0;
+    extern M2C_UNK data_0212d4b0;
+    extern M2C_UNK data_0212d4c0;
+    s32 func_020de50c(s32, void *);
+    s32 func_020de5b0(M2C_UNK);
+    void func_020de610(void);
 
+    void func_ov010_02229190(s32,s32,s32,s32,s32,s32);
+    void func_ov010_022292e4(s32,s32,s32,s32,s32,s32);
+    void func_020deb44(s32,s32,s32,s32,s32,void *);
+    extern s32 data_02168f7c[];
+    void *old = gCur3DSpriteEngine;
+    s32 code;
+    s32 code2;
+    void *p;
+    s32 low;
+    u32 val;
+    s32 t;
+    s32 v3c;
+    s32 v34;
+    s32 v38;
+    s32 tmp;
+
+    gCur3DSpriteEngine = data_027e00c8;
+    func_01ff9ce8(1);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
+    func_0200bc5c(&data_0212d498);
+    func_020814e4(func_020e3218(&data_0212d4a0));
+
+    code=GetSetupCode((void *)arg0);
+    switch(code) {
+    case 4: func_02081590(func_020e3218(&data_0212d4b0), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 2: func_02081590(func_020e3218(&data_0212d4c0), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    }
+
+    func_02081528();
+    func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x20), 0x20, 0x18, 0x5);
+
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x1;
+
+    gCur3DSpriteEngine = old;
+
+    M2C_FIELD((void *)arg0, u16 *, 0x48) |= 0x20;
+
+    p = M2C_FIELD((void *)arg0, void **, 0x54);
+    low = M2C_FIELD(p, u8 *, 0x59);
+    low = (s32)((u32)(low << 28) >> 28);
+    val = M2C_FIELD(p, u32 *, 0x40);
+    val &= ~0x03FC0000u;
+    val |= ((u32)(u16)(low + 2) << 24) >> 6;
+    M2C_FIELD(p, u32 *, 0x40) = val;
+    M2C_FIELD(p, u8 *, 0x5a) = 0;
+
+    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x58));
+    func_02088da8(M2C_FIELD((void *)arg0, void **, 0x60));
+    func_0208b758(M2C_FIELD((void *)arg0, void **, 0x64), 0x44000011U);
+    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x64));
+
+    if (func_020a8ff4(M2C_FIELD((void *)arg0, void **, 0x68)) != 0) {
+        t = func_020a8ff4(M2C_FIELD((void *)arg0, void **, 0x68));
+        p = M2C_FIELD((void *)arg0, void **, 0x68);
+        M2C_FIELD(p, u16 *, 0xe) = (u16)t;
+        M2C_FIELD(p, u16 *, 0xc) = 0xc;
+        M2C_FIELD(p, u16 *, 0x10) = 0;
+        M2C_FIELD(p, u16 *, 0x2) = M2C_FIELD(p, u16 *, 0x4);
+    }
+    M2C_FIELD((void *)arg0, s16 *, 0x48) &= ~0x100;
+    M2C_FIELD((void *)arg0, s16 *, 0x48) &= ~0x200;
+
+    M2C_FIELD((void *)arg0, u8 *, 0x41) = 0;
+    if(M2C_FIELD((void *)arg0,u16 *,0x48)&1) {
+    code2=GetSetupCode((void *)arg0);
+    func_ov010_02229190(arg1,code2,(s32)func_020deb44,arg0,0,0);
+    } else {
+    func_ov010_022292e4(arg1,data_02168f7c[M2C_FIELD((void *)arg0,s8 *,0x43)],(s32)func_020deb44,arg0,0,0);
+    }
+}
+#pragma opt_strength_reduction off
 void func_020deb44(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
 
 void func_020deb74(M2C_UNK arg0) {
@@ -220,12 +328,12 @@ void func_020debc4(M2C_UNK arg0) {
 }
 
 void func_020debd4(M2C_UNK arg0) {
-    M2C_UNK func_020de8c4(M2C_UNK, M2C_UNK);
+    void func_020de8c4(M2C_UNK, M2C_UNK);
     func_020de8c4(arg0, 0);
 }
 
 void func_020debe4(M2C_UNK arg0) {
-    M2C_UNK func_020de8c4(M2C_UNK, M2C_UNK);
+    void func_020de8c4(M2C_UNK, M2C_UNK);
     func_020de8c4(arg0, 1);
 }
 

@@ -3,8 +3,95 @@
 typedef struct { u8 kind:6; u8 flags:2; } SelectionKind;
 typedef struct { SelectionKind kind; u8 pad[3]; u16 flags; u8 tail[8]; } SelectionUnit;
 
-void func_020d2470(void) { }
+#pragma optimization_level 3
+void func_020d2470(void) {
+    extern s32 *gCurrentMap;
+    s32 func_020a86c4(s32, s32);
+    u8 *p;
+    u8 *rec;
+    s32 i;
+    s32 off;
+    s32 y;
+    s32 x;
+    u8 byte;
+    s32 idx;
 
+    i = 0;
+    off = 0;
+    y = 0;
+    do {
+        i++;
+        *(s32 *)((u8 *)*gCurrentMap + off + 0x67ac) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b4) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b5) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b6) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b7) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b8) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67b9) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67ba) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67bb) = 0;
+        *(u8 *)((u8 *)*gCurrentMap + off + 0x67cf) |= 0x80;
+        off += 0x8c;
+    } while (i < 5);
+
+    p = (u8 *)*gCurrentMap;
+    if ((s32)M2C_FIELD(p, u16 *, 0x5146) <= 0) {
+        return;
+    }
+    do {
+        x = 0;
+        if ((s32)M2C_FIELD(p, u16 *, 0x5144) > 0) {
+            do {
+                byte = *(u8 *)(p + M2C_FIELD(p + y * 2, u16 *, 0x3758) + x + 0x1420);
+                if (byte & 0xe0) {
+                    idx = (byte & 0xe0) >> 5;
+                    rec = (u8 *)(p + 0x67a4 + idx * 0x8c);
+                    switch (byte & 0x1f) {
+                    case 15:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x2b] = x;
+                        rec[0x2c] = y;
+                        break;
+                    case 17:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x10]++;
+                        break;
+                    case 16:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x11]++;
+                        break;
+                    case 22:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x14]++;
+                        break;
+                    case 23:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x15]++;
+                        break;
+                    case 18:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x12]++;
+                        break;
+                    case 19:
+                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        rec[0x13]++;
+                        break;
+                    case 20:
+                        rec[0x16]++;
+                        break;
+                    case 21:
+                        rec[0x17]++;
+                        break;
+                    }
+                }
+                p = (u8 *)*gCurrentMap;
+                x++;
+            } while (x < (s32)M2C_FIELD(p, u16 *, 0x5144));
+        }
+        y++;
+    } while (y < (s32)M2C_FIELD(p, u16 *, 0x5146));
+}
+#pragma optimization_level reset
 u8 func_020d273c(s32 a, s32 b) {
     extern s32 *gCurrentMap;
     s32 base;
@@ -64,17 +151,16 @@ s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
     return func_020d273c(arg0, byte >> 5);
 }
 
-s32 func_020d2850(s32 arg0, s32 arg1, s32 arg2) {
-    extern s32 *data_027e0058;
-    extern u8 data_ov000_021b5c5c[];
-    s32 result = 0;
-
-    if (M2C_FIELD(*data_027e0058, u8 *, 0x5156) == 0 &&
-        M2C_FIELD(*data_027e0058, u8 *, 0x5158) == 2 &&
-        (M2C_FIELD(*data_027e0058, u8 *, arg2 * 0x8C + 0x67C3) & 2) == 0) {
-        result = (data_ov000_021b5c5c[arg0 * 0x70] != 0);
-    }
-    return result;
+s32 func_020d2850(s32 arg0,s32 arg1,s32 arg2) {
+extern s32 *gCurrentMap;
+extern u8 data_ov000_021b5c5c[];
+void *base=*gCurrentMap;
+if(M2C_FIELD(base,u8 *,0x5156)!=0 || M2C_FIELD(base,u8 *,0x5158)==2) {
+if(!(M2C_FIELD((u8 *)base+arg2*0x8c,u8 *,0x67c3)&2)) {
+if(data_ov000_021b5c5c[arg0*0x70]!=0) return 1;
+}
+}
+return 0;
 }
 
 void func_020d28bc(void) {

@@ -253,5 +253,127 @@ base=*gCurrentMap;
 }
 
 void func_01ffbb04(void) {
+    extern void **gCurrentMap;
+    void *base;
+    u16 height;
+    u16 width;
+    u8 y;
+    u8 x;
+
+    base = *gCurrentMap;
+    height = *(u16 *)((u8 *)base + 0x5146);
+    if (height <= 0) {
+        return;
+    }
+    width = *(u16 *)((u8 *)base + 0x5144);
+    if (width <= 0) {
+        return;
+    }
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            s8 *cellRow;
+            s8 cell;
+            u16 rowOff;
+            u8 terrain;
+            s8 *leftRow;
+            s8 left;
+            s8 *rightRow;
+            s8 right;
+            s8 *upRow;
+            s8 up;
+            s8 *downRow;
+            s8 down;
+            s8 v;
+
+            base = *gCurrentMap;
+            cellRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
+            cell = cellRow[x];
+            if (cell < 0) continue;
+            if (cell == 0x40) continue;
+            if (cell != 0) {
+                rowOff = *(u16 *)((u8 *)base + y * 2 + 0x3758);
+                terrain = *((u8 *)base + rowOff + x);
+                if (terrain != 0) continue;
+            }
+
+            if (x != 0) {
+                left = cellRow[x - 1];
+                if (left != 0x40) {
+                    cellRow[x - 1] = (s8)(left + 1);
+                    base = *gCurrentMap;
+                    leftRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
+                    v = leftRow[x - 1];
+                    leftRow[x - 1] = (s8)(v | 0x40);
+                }
+            }
+
+            base = *gCurrentMap;
+            width = *(u16 *)((u8 *)base + 0x5144);
+            if (x != (u8)(width - 1)) {
+                base = *gCurrentMap;
+                rightRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
+                right = rightRow[x + 1];
+                if (right != 0x40) {
+                    rightRow[x + 1] = (s8)(right + 1);
+                    base = *gCurrentMap;
+                    rightRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
+                    v = rightRow[x + 1];
+                    rightRow[x + 1] = (s8)(v | 0x40);
+                }
+            }
+
+            if (y != 0) {
+                base = *gCurrentMap;
+                upRow = *(s8 **)((u8 *)base + y * 4 + 0x52e4);
+                up = upRow[x];
+                if (up != 0x40) {
+                    upRow[x] = (s8)(up + 1);
+                    base = *gCurrentMap;
+                    upRow = *(s8 **)((u8 *)base + y * 4 + 0x52e4);
+                    v = upRow[x];
+                    upRow[x] = (s8)(v | 0x40);
+                }
+            }
+
+            base = *gCurrentMap;
+            height = *(u16 *)((u8 *)base + 0x5146);
+            if (y != (u8)(height - 1)) {
+                base = *gCurrentMap;
+                downRow = *(s8 **)((u8 *)base + y * 4 + 0x52ec);
+                down = downRow[x];
+                if (down != 0x40) {
+                    downRow[x] = (s8)(down + 1);
+                    base = *gCurrentMap;
+                    downRow = *(s8 **)((u8 *)base + y * 4 + 0x52ec);
+                    v = downRow[x];
+                    downRow[x] = (s8)(v | 0x40);
+                }
+            }
+        }
+    }
+
+    base = *gCurrentMap;
+    height = *(u16 *)((u8 *)base + 0x5146);
+    if (height <= 0) {
+        return;
+    }
+    width = *(u16 *)((u8 *)base + 0x5144);
+    if (width <= 0) {
+        return;
+    }
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            s8 *tailRow;
+            s8 tailCell;
+            base = *gCurrentMap;
+            tailRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
+            tailCell = tailRow[x];
+            if ((tailCell & 0x40) == 0) {
+                tailRow[x] = -1;
+            }
+        }
+    }
 }
 

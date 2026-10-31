@@ -107,6 +107,61 @@ void func_020a2c58(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
 
 void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s32 p=*gCurrentMap+0x67a4+M2C_FIELD(a,s32 *,0x5c)*0x8c;s32 i=func_020a3460(M2C_FIELD(a,s32 *,0x5c));u32 v=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;if(M2C_FIELD(data_021261c4+v*0x9c,s32 *,i*0x28)==0){func_01ffa574(a);}else{M2C_FIELD(a,u16 *,0x70)=1;M2C_FIELD(a,u16 *,0x6c)=0;}}
 
+void func_020a2ce8(void *a) {
+void func_020cfd28(void);
+extern s32 *gCurrentMap;
+extern u8 data_0212616c[], data_021261c8[];
+s32 player, i, index;
+u8 *unit;
+s32 map, off;
+u32 p;
+player=M2C_FIELD(a,s32 *,0x5c);
+if(func_0207b7c4())return;
+if(M2C_FIELD(a,s16 *,0x70)<51){
+off=player*0x8c;
+do {
+map=*gCurrentMap;
+unit=(u8 *)(map+0x59a4+(M2C_FIELD(map,u16 *,0x52a8)+M2C_FIELD(a,s16 *,0x70))*14);
+if(((u32)(unit[0]<<26)>>26)!=0){
+i=func_020a3460(player);
+index=(u32)(M2C_FIELD(map+off,s32 *,0x6810)<<24)>>24;
+if(((s32 (*)(u8 *))M2C_FIELD(data_0212616c+index*156+i*40,s32 *,0x58))(unit)){
+map=*gCurrentMap;
+p=unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758);
+if((u8)(M2C_FIELD(map+(p>>3),u8 *,0x5201)&(1<<(p&7)))) {
+if(!(M2C_FIELD(unit,u16 *,4)&8))goto visible;
+}
+if(!(M2C_FIELD(unit,u16 *,4)&8)){
+func_0207b764(unit[1],unit[2]);
+if(func_0207b7c4())return;
+}
+p=*gCurrentMap+0x67a4+off;
+i=func_020a3460(player);
+index=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;
+((void (*)(u8 *))M2C_FIELD(data_021261c8+index*156,s32 *,i*40))(unit);
+goto increment;
+visible:
+func_0207b764(unit[1],unit[2]);
+if(func_0207b7c4())return;
+p=*gCurrentMap+0x67a4+off;
+i=func_020a3460(player);
+index=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;
+((void (*)(u8 *))M2C_FIELD(data_021261c8+index*156,s32 *,i*40))(unit);
+done:
+func_020bcc78(unit[1],unit[2],M2C_FIELD(a,s16 *,0x6c),func_020a3460(player),a);
+increment:
+M2C_FIELD(a,s16 *,0x70)++;
+break;
+}
+}
+M2C_FIELD(a,s16 *,0x70)++;
+}while(M2C_FIELD(a,s16 *,0x70)<51);
+}
+if(M2C_FIELD(a,s16 *,0x70)==51)func_01ffa6fc(a);
+M2C_FIELD(a,s16 *,0x6c)++;
+func_020cfd28();
+}
+
 void func_020a2f28(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
 
 void func_020a2f38(s32 arg0) {

@@ -118,6 +118,7 @@ void func_02073c78(void) {
 }
 
 #pragma scheduling on
+#pragma peephole off
 void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
  M2C_UNK func_02073148(void *, s32 *, s32);
  M2C_UNK func_0207462c(void *, s32 *, s32);
@@ -131,7 +132,8 @@ void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
  M2C_FIELD(entry,s32 *,0x14)=value;
  func_0207462c(arg0,arg1,*arg1+M2C_FIELD(arg2,s32 *,4));
 }
-#pragma opt_common_subs off
+#pragma peephole reset
+#pragma scheduling reset
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);

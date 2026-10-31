@@ -3,7 +3,9 @@
 
 typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x500]; u32 count; } Queue02075;
 
-void func_020756a4(void *arg0) { (void)arg0; }
+void func_020756a4(void *arg0) {
+    (void)arg0;
+}
 
 void func_02075938(void *arg0,s32 arg1) {
 M2C_UNK func_02074aec(void*);

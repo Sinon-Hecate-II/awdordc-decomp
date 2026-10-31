@@ -22,16 +22,7 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020c8d0c(s32 a) {
-void func_02086844(s32,s32);
-void func_02086878(s32,s32);
-void func_020868ac(s32,s32);
-s32 func_020c8054(s32);
-void func_020bef44(s32);
-func_02086844(a,0); func_02086878(a,0); func_020868ac(a-0xe1,0);
-if (!func_020c8054(a)) return;
-func_020bef44(8);
-}
+s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void func_020868ac(s32,s32);s32 func_020c8054(s32);void func_020bef44(s32);func_02086844(a,0);func_02086878(a,0);func_020868ac(a-225,0);if(!func_020c8054(a))return;func_020bef44(8);}
 
 void func_020c8d50(M2C_UNK arg0) {
     s32 func_020c79ec();
@@ -104,16 +95,8 @@ void func_020c8ea0(void *arg0) {
 }
 
 #pragma optimization_level 2
-void func_020c8ed4(M2C_UNK arg0) {
-M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
-extern M2C_UNK data_0212b07c;
-func_01ffa3dc(&data_0212b07c,arg0);
-}
-s32 func_020c8eec(void) {
-s32 func_02007e98(s32,void *,s32);
-extern u8 data_02164d64[];
-return func_02007e98(0,data_02164d64,0x41a0);
-}
+void func_020c8ed4(M2C_UNK arg0) { M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; func_01ffa3dc(&data_0212b07c,arg0); }
+s32 func_020c8eec(void) { s32 func_02007e98(s32,void *,s32); extern u8 data_02164d64[]; return func_02007e98(0,data_02164d64,0x41a0); }
 
 s32 func_020c8f0c(s16 *dst,u8 *src) {
 s32 func_02019e64(s16 *,s32 *,u8 *,s32 *,s32); s32 func_02099ae8(u8 *); s32 func_02099b00(u8 *);
@@ -293,13 +276,7 @@ if(M2C_FIELD(p+x,u8 *,0x508)) d=5;
 return d;
 }
 
-s32 func_020c94ec(void) {
-extern M2C_UNK data_0212b1b8;
-s32 v=0;
-if(func_020c9430(0)) v|=M2C_FIELD(&data_0212b1b8,u8 *, (func_020c9430(0)-1)*4);
-if(func_020c9430(1)) v|=M2C_FIELD(&data_0212b1b8,u8 *, (func_020c9430(1)-1)*4);
-return v;
-}
+s32 func_020c94ec(void) { extern M2C_UNK data_0212b1b8;s32 v=0;if(func_020c9430(0))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(0)-1)*4);if(func_020c9430(1))v|=M2C_FIELD(&data_0212b1b8,u8 *,(func_020c9430(1)-1)*4);return v;}
 
 s32 func_020c9550(s32 a) {
 s32 v=0;
@@ -460,6 +437,9 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     extern M2C_UNK data_0212b7b0;
     extern M2C_UNK data_0212b7bc;
     extern M2C_UNK data_0212b7c8;
+    s32 savedMode = mode;
+    s32 savedY = y;
+    s32 savedX = x;
     u16 height;
     s32 xs;
     s32 ys;
@@ -473,6 +453,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     s32 px;
     s32 py;
 
+    mode=savedMode; y=savedY; x=savedX;
     height = M2C_FIELD(*gCurrentMap, u16 *, 0x52a4);
     xs = x << 4;
     ys = y << 4;
@@ -487,7 +468,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
         idx = x + row;
         occ = M2C_FIELD((s8 *)(*gCurrentMap) + ((u32)idx >> 3) + 0x5000, u8 *, 0x201);
         low = idx & 7;
-        if (occ & (1 << (u32)low)) pass = 1;
+        if ((u8)(occ & (1 << (u32)low))) pass = 1;
         else pass = 0;
     }
     if (!pass) return 0;
@@ -505,20 +486,18 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_FIELD(obj, s32 *, 0x3c) = x;
     M2C_FIELD(obj, s32 *, 0x40) = y;
     M2C_FIELD(obj, s32 *, 0x44) = mode;
-    if (mode == 0) M2C_FIELD(obj, s32 *, 0x48) = 0;
-    else if (mode == 1) M2C_FIELD(obj, s32 *, 0x48) = 2;
-    else if (mode == 2) M2C_FIELD(obj, s32 *, 0x48) = 4;
+    switch(mode) { case 0: M2C_FIELD(obj,s32 *,0x48)=0;break; case 1:M2C_FIELD(obj,s32 *,0x48)=2;break; case 2:M2C_FIELD(obj,s32 *,0x48)=4;break; }
     func_0207b764(x, y);
     return 1;
 
 second_path:
     switch (mode) {
-        case 3: break;
-        case 4: func_020b5134(&data_0212b79c, x, y, 8, 0, 0, 7); break;
-        case 5: func_020b5134(&data_0212b7a4, x, y, 8, 0, 0, 7); break;
-        case 6: func_020b5134(&data_0212b7b0, x, y, 8, 0, 0, 7); break;
-        case 7: func_020b5134(&data_0212b7bc, x, y, 8, 0, 0, 7); break;
-        default: func_020b5134(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
+        case 3: func_020b5134(&data_0212b79c, x, y, 8, 0, 0, 7); break;
+        case 4: func_020b5134(&data_0212b7a4, x, y, 8, 0, 0, 7); break;
+        case 5: func_020b5134(&data_0212b7b0, x, y, 8, 0, 0, 7); break;
+        case 6: func_020b5134(&data_0212b7bc, x, y, 8, 0, 0, 7); break;
+        case 7: func_020b5134(&data_0212b7c8, x, y, 8, 0, 0, 7); break;
+        default: break;
     }
     func_020c9654(x, y, mode);
     return 1;

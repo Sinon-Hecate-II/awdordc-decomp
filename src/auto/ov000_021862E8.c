@@ -12,12 +12,41 @@ for(i=1;i<5;i++){if(func_020d1938(i)!=0 && func_020d273c(M2C_FIELD(*gCurrentMap,
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=saved;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_ov000_0218639c(void) {
+extern s32 data_027e0a94;extern u8 *data_027e0a90,*data_027e0a98;extern void **gCurrentMap;extern s8 data_ov000_021e0f60[];
+s32 count,x0,y0,x1,y1,cx,cy,w; s32 x,y,dist,v,index; s16 nx,ny; u8 *node,*tail;void **map;void *base;
+if(data_027e0a94>=349)return;
+node=data_027e0a90;count=0;
+cx=node[0];x0=cx-1;if(x0<0)x0=0;
+cy=node[1];y0=cy-1;if(y0<0)y0=0;
+map=gCurrentMap;base=*map;w=M2C_FIELD(base,u16*,0x5144);
+x1=w-1;if(cx+1<x1)x1=cx+1;
+y1=M2C_FIELD(base,u16*,0x5146)-1;if(cy+1<y1)y1=cy+1;
+for(y=y0;y<=y1;y++){for(x=x0;x<=x1;x++){
+dist=0;v=node[0]-x;if(v<=0)v=x-node[0];dist+=v;v=cy-y;if(v>0)dist+=v;else dist+=y-cy;
+if(dist>=1 && dist<=1){
+v=M2C_FIELD((u8*)*map+M2C_FIELD((u8*)*map+y*2,u16*,0x3758)+x,s8*,0x2338);
+if(v>=0){if(!(v&64) || (v&63)<=node[3]){
+nx=x;ny=(s16)y;count++;}}
 }
-
-M2C_UNK func_ov000_02186624(u8 arg0, u8 arg1) {
-    (void)arg0; (void)arg1;
+}}
+if(count>1)return;
+index=cy*w+cx;
+data_ov000_021e0f60[index]&=~128;
+if(count==0)return;
+index=ny*M2C_FIELD(*map,u16*,0x5144)+nx;
+if(data_ov000_021e0f60[index]!=0)data_ov000_021e0f60[index]&=~64;
+else data_ov000_021e0f60[index]=(node[3]+1)|64;
+data_027e0a98[0]=nx;data_027e0a98[1]=ny;data_027e0a98[2]=1;data_027e0a98[3]=data_027e0a90[3]+1;
+tail=data_027e0a98;
+M2C_FIELD((u8*)*gCurrentMap+tail[0]+M2C_FIELD((u8*)*gCurrentMap+tail[1]*2,u16*,0x3758),u8*,0x2338)=tail[3]|64;
+data_027e0a98+=4;data_027e0a94++;
 }
+#pragma pop
+M2C_UNK func_ov000_02186624(u8 arg0, u8 arg1) { (void)arg0; (void)arg1; return 0; }
 
 void func_ov000_02186940(void *arg0) {
     void func_ov000_021862e8();

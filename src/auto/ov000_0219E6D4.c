@@ -198,6 +198,148 @@ s32 func_ov000_0219efa4(void) {
     return (*(s8 *)((u8 *)map + 0x5388) == 4) ? 1 : 0;
 }
 
+#pragma opt_common_subs off
+#pragma opt_propagation off
+s32 func_ov000_0219f0d8(void) {
+    s32 func_020d19b4(s32);
+    void func_020cf498(s32, s32);
+    void func_020babfc(s32, s32, void *);
+    void func_020ce630(s32, s32, void *);
+    void func_020cfd28(void);
+    void func_020bbc2c(s32);
+    void func_020bac24(void);
+    void func_ov000_0219f3fc(void);
+    void func_ov000_0219f448(void);
+    void func_ov000_0219f494(void);
+    u8 func_ov000_0219f518(void);
+    u8 func_ov000_0219f5fc(void);
+    void func_020bb458(void);
+    void func_ov000_0219fabc(s32);
+    void func_020bb768(void);
+    void func_020bbac8(void);
+    void func_ov000_0219fc64(void);
+    void func_ov000_0219fcdc(void);
+    void func_ov000_0219fd54(void);
+    void func_020cbffc(void);
+    void func_020cc028(void);
+    s32 func_ov000_0219f6d0(void);
+    s32 func_ov000_0219f6fc(void);
+    void func_020bbed4(void);
+    void func_020bc0e0(void);
+    void func_020bbe10(void);
+    void func_020bb028(void);
+    void func_020bb110(void);
+    extern u8 data_ov000_021df7d0[];
+    extern void **gCurrentMap;
+    extern s8 *data_ov000_021df580;
+
+    switch (data_ov000_021df7d0[0]) {
+    case 2: case 13: case 14: case 16: case 17:
+    case 18: case 19: case 21: case 23:
+        break;
+    default:
+        *(u16 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 4) |= 1;
+        *(s8 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 1) = *(s16 *)((u8 *)*gCurrentMap + 0x52dc);
+        *(s8 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 2) = *(s16 *)((u8 *)*gCurrentMap + 0x52de);
+        if (func_020d19b4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
+            func_020cf498(*(s16 *)((u8 *)*gCurrentMap + 0x52dc), *(s16 *)((u8 *)*gCurrentMap + 0x52de));
+            func_020babfc(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
+            func_020ce630(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
+        }
+        func_020cfd28();
+        break;
+    }
+
+    switch (data_ov000_021df7d0[0]) {
+    case 0:
+    case 1:
+    case 16:
+        break;
+    case 2:
+        func_ov000_0219f3fc();
+        break;
+    case 3:
+        func_ov000_0219f448();
+        break;
+    case 4:
+        func_ov000_0219f494();
+        break;
+    case 5:
+        func_020bbc2c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
+        func_020bac24();
+        break;
+    case 6:
+        func_020bac24();
+        break;
+    case 7:
+        func_020bb110();
+        func_020bac24();
+        break;
+    case 8:
+        return func_ov000_0219f518();
+    case 9:
+        return func_ov000_0219f5fc();
+    case 10:
+        func_020bb458();
+        func_020bac24();
+        break;
+    case 11:
+        func_ov000_0219fabc(1);
+        func_ov000_0219fabc(0);
+        data_ov000_021df580[1] = 8;
+        break;
+    case 12:
+        func_020bb768();
+        func_020bac24();
+        break;
+    case 13:
+        func_020bbac8();
+        break;
+    case 14:
+        func_ov000_0219fc64();
+        func_020bac24();
+        break;
+    case 15:
+        func_ov000_0219fcdc();
+        func_020bac24();
+        break;
+    case 17:
+        func_ov000_0219fd54();
+        break;
+    case 18:
+        func_020cbffc();
+        break;
+    case 19:
+        func_020cc028();
+        break;
+    case 20:
+        return func_ov000_0219f6d0();
+    case 21:
+        return func_ov000_0219f6fc();
+    case 22:
+        func_020bbed4();
+        func_020bac24();
+        break;
+    case 23:
+        func_020bc0e0();
+        func_020bac24();
+        break;
+    case 24: {
+        u8 *d = data_ov000_021df7d0;
+        *(u8 *)((u8 *)*gCurrentMap + d[6] * 0x8c + 0x67ce) = d[7];
+        break;
+    }
+    default: {
+        func_020bbe10();
+        func_020bb028();
+        data_ov000_021df580[0] = 2;
+        data_ov000_021df580[1] = 0;
+        break;
+    }
+    }
+}
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 void func_ov000_0219f3fc(void) {
     void func_0208fb0c(s32, u8, u8);
     void func_020a67fc(u8, u8, u8);
