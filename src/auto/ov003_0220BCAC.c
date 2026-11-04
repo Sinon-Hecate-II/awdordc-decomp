@@ -145,11 +145,11 @@ void func_ov003_0220c0e8(void *arg0) {
 
 void func_ov003_0220c10c(void *arg0) {
     void func_ov003_0220c0e8(void *);
-    u8 idx;
-    s32 v;
-    u8 k;
     void **p;
     void *q;
+    s32 v;
+    u8 k;
+    u8 idx;
 
     p = *(void ***) ((u8 *) arg0 + 0x5c);
     q = *p;

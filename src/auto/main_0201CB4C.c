@@ -1,6 +1,52 @@
 /* 30 functions from 0x0201CB4C to 0x0201DB20 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma scheduling off
+void *func_0201cb4c(void *packet,s32 *done){
+extern u8 data_021375b8[];extern s32 data_02137290;u64 func_02007004(void);void func_02008048(void *,void *,u32);
+u16 id;u32 head;u8 *freeSlot=0,*slot;u32 covered;u32 offset,end,ip,finalEnd;u32 flags,len,i,count;u16 a,b,t;u32 first;
+*done=0;t=M2C_FIELD(packet,u16 *,6);flags=(u16)(((s32)t>>8)|(t<<8));
+if(!(flags&0x3fff))return packet;
+a=M2C_FIELD(packet,u16 *,14);b=M2C_FIELD(packet,u16 *,12);first=M2C_FIELD(packet,u8 *,0);
+b=(u16)(((s32)b>>8)|(b<<8));a=(u16)(((s32)a>>8)|(a<<8));head=(first<<28)>>26;ip=(b<<16)|a;
+id=M2C_FIELD(packet,u16 *,4);
+slot=data_021375b8;
+for(i=0;i<8;i++,slot+=0x38){
+count=M2C_FIELD(slot,u16 *,4);
+if(count&&M2C_FIELD(slot,u32 *,0)==ip&&M2C_FIELD(slot,u16 *,6)==id)break;
+if(!count&&!freeSlot)freeSlot=slot;
+}
+t=M2C_FIELD(packet,u16 *,2);len=(u16)(((s32)t>>8)|(t<<8))-head;
+offset=flags&0x1fff;end=len+offset*8;
+if(i==8){
+if(!freeSlot||end>4096)return 0;
+slot=freeSlot;
+M2C_FIELD(freeSlot,void **,0x34)=M2C_FIELD(&data_02137290,void *(**)(u32),0x14)(head+0x100e);
+if(!M2C_FIELD(freeSlot,void **,0x34))return 0;
+M2C_FIELD(freeSlot,u32 *,0)=ip;M2C_FIELD(freeSlot,u16 *,6)=id;M2C_FIELD(freeSlot,u16 *,8)=0;
+M2C_FIELD(freeSlot,u32 *,0x2c)=(u32)(func_02007004()>>16);
+M2C_FIELD(freeSlot,void **,0x30)=(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14+head;
+func_02008048(packet,(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14,head);
+}
+if(M2C_FIELD(slot,u16 *,4)==8||end>4096){
+void (*release)(void *)=M2C_FIELD(&data_02137290,void (**)(void *),0x40);M2C_FIELD(slot,u16 *,4)=0;release(M2C_FIELD(slot,void **,0x34));return 0;
+}
+count=offset+((len+7)>>3);
+if(!(flags&0x2000)){M2C_FIELD(slot,u16 *,10)=end;M2C_FIELD(slot,u16 *,8)=count;}
+M2C_FIELD(slot+M2C_FIELD(slot,u16 *,4)*2,u16 *,12)=offset;
+M2C_FIELD(slot+M2C_FIELD(slot,u16 *,4)*2,u16 *,28)=count;
+M2C_FIELD(slot,u16 *,4)++;
+func_02008048((u8 *)packet+head,(u8 *)M2C_FIELD(slot,void **,0x30)+offset*8,len);
+id=M2C_FIELD(slot,u16 *,8);if(!id)return 0;
+count=M2C_FIELD(slot,u16 *,4);i=covered=0;
+while(i<count){u8 *p=slot+i*2;if(M2C_FIELD(p,u16 *,12)<=covered&&covered<M2C_FIELD(p,u16 *,28)){covered=M2C_FIELD(p,u16 *,28);i=0;}else i++;}
+if(covered<id)return 0;
+freeSlot=M2C_FIELD(slot,u8 **,0x34);
+t=M2C_FIELD(slot,u16 *,10)+(M2C_FIELD(freeSlot,u8 *,14)&15)*4;
+M2C_FIELD(freeSlot,u16 *,16)=((s32)t>>8)|(t<<8);
+M2C_FIELD(slot,u16 *,4)=0;*done=1;return freeSlot+14;
+}
+#pragma scheduling on
 void func_0201ce18(u8 *arg0, s32 arg1) {
     s32 func_0201a658(u8 *, u32);
     s32 func_0201a778(void);
@@ -369,26 +415,21 @@ void func_0201d4c0(void) {
     void *node = M2C_FIELD(inner, void **, 0xA4);
     u32 base_time = 0;
 
-    if (node == (void *)0) {
-        return;
-    }
+    if (node == (void *)0) return;
 
     if (M2C_FIELD(node, u8 *, 9)) {
         func_02025150(node);
         base_time = (u32)(func_02007004() >> 16);
-        goto time_check;
+    } else {
+        func_0201a238();
+        if (!M2C_FIELD(&data_02137290, s32 (**)(), 0x48)()) return;
+        if (M2C_FIELD(node, u8 *, 8) == 0) return;
     }
 
-    func_0201a238();
-    if (M2C_FIELD(&data_02137290, s32 (**)(), 0x48)() == 0) {
-        return;
-    }
-    if (M2C_FIELD(node, u8 *, 8) == 0) {
-        return;
-    }
-
-time_check:
-    if ((s32)((u32)(func_02007004() >> 16) - base_time) >= 0x27) {
+    {
+        u32 now = (u32)(func_02007004() >> 16);
+        s32 diff = (s32)(now - base_time);
+        if (diff < 0x27) return;
         M2C_FIELD(node, u8 *, 8) = 0;
     }
 }

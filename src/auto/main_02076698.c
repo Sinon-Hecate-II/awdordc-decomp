@@ -82,13 +82,17 @@ void func_0207688c(void) {
 void func_02076910(s32 x,s32 y) {
  extern void *gCurrentMap;
  extern M2C_UNK data_02142688;
- void *p; s32 b,a;
+ void *p;
+ s32 a,b;
  if(x<0 || y<0) return;
  p=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x5120;
  if(x>=M2C_FIELD(p,u16 *,0x24) || y>=M2C_FIELD(p,u16 *,0x26)) return;
- b=(s32)&data_02142688+(x+1)*42; a=(s32)&data_02142688+x*42;
- M2C_FIELD(y,u8 *,a)=7; M2C_FIELD(y,u8 *,b)=7;
- M2C_FIELD(y+1,u8 *,a)=7; M2C_FIELD(y+1,u8 *,b)=7;
+ a=(s32)&data_02142688+x*42;
+ b=(s32)&data_02142688+(x+1)*42;
+ M2C_FIELD(y,u8 *,a)=7;
+ M2C_FIELD(y,u8 *,b)=7;
+ M2C_FIELD(y+1,u8 *,a)=7;
+ M2C_FIELD(y+1,u8 *,b)=7;
 }
 
 void func_02076980(void) {}

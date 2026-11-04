@@ -118,12 +118,12 @@ void func_ov000_0216c200(void) {
     M2C_FIELD(temp_r0, s16 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x36) = 0;
     M2C_FIELD(temp_r0, s16 *, 0x38) = 0x100;
-    temp_ip = (u16)M2C_FIELD(*data_027e0058, u16 *, 0x52A4);
+    temp_ip = M2C_FIELD(*data_027e0058, u16 *, 0x52A4);
     M2C_FIELD(temp_r0, u8 *, 0x3A) = (u8)temp_ip;
     mapPtr = (void*)*data_027e0058;
-    M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8)M2C_FIELD((mapPtr + ((s32)(u8)temp_ip * 0x8C)), u8 *, 0x67CB);
+    M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8)M2C_FIELD((mapPtr + ((s32)temp_ip * 0x8C)), u8 *, 0x67CB);
     mapPtr = (void*)*data_027e0058;
-    M2C_FIELD(temp_r0, s8 *, 0x3C) = (s8)(M2C_FIELD((mapPtr + ((s32)M2C_FIELD(temp_r0, u8 *, 0x3A) * 0x8C)), u8 *, 0x67C1) - 1);
+    M2C_FIELD(temp_r0, s8 *, 0x3C) = (s8)(M2C_FIELD((mapPtr + ((s32)(u8)M2C_FIELD(temp_r0, u8 *, 0x3A) * 0x8C)), u8 *, 0x67C1) - 1);
     if (M2C_FIELD(&data_02168f14, u8 *, 3) != 0) {
         var_r0 = 1;
     }

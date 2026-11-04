@@ -6,10 +6,10 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088e84(void *, s16, M2C_UNK, s16, s32);
     s16 func_020a8ff4(void *);
-    u16 func_020aae10(void *);
-    u16 func_020aae44(void *);
-    s32 func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_ov003_022004a8(u8);
+    M2C_UNK func_020aae10(void *);
+    M2C_UNK func_020aae44(void *);
+    M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov003_022004a8(u8);
     extern M2C_UNK data_027e00b4;
     extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_0220f89e;
@@ -52,7 +52,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     spC = 0x3FF;
     sp10 = 0x3FF;
     do {
-        temp_r4 = func_020a8ff4(M2C_FIELD(arg0, void **, 0x50));
+        temp_r4 = func_020a8ff4(M2C_FIELD(arg0, s32 *, 0x50));
         temp_r9 = temp_r4 + func_ov003_022004a8(var_r8);
         temp_r7 = temp_r9 + 0xD;
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x28);
@@ -128,8 +128,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
         temp_r4_7 = temp_r9 - 4;
         if (func_ov003_021e6cc4(temp_r4_7, 0x80, 0x40, 0x10) != 0) {
             func_01ffaacc((u16) (temp_r4_7 & 0x1FF), 0x80,
-                          (u16) ((sp10 & ((s32) (u16) ((((u8) M2C_FIELD(((var_r8 * 0x18) + (s32) M2C_FIELD(arg0, void **, 0x6C)), s32 *, 0x18) - 1) * 0x10) + 0x620) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
-                                 0x6400),
+                          (u16) ((sp10 & ((s32) (u16) ((((u8) M2C_FIELD(((var_r8 * 0x18) + (s32) M2C_FIELD(arg0, void **, 0x6C)), s32 *, 0x18) - 1) * 0x10) + 0x620) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6400),
                           &data_ov003_0220f89e, 0xB);
         }
         var_r8 += 1;

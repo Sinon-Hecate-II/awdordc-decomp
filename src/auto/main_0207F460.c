@@ -182,29 +182,31 @@ s32 func_0207f99c(u8 *arg0) {
     return 0;
 }
 
+#pragma scheduling off
 void func_0207f9f4(void) {
     extern u8 *data_0210188c[];
     extern s32 data_0214c0c8[];
-    s32 i;
+    u8 **entries;
+    Unk0207F9F4 *table;
+    s32 i = 0;
+    s32 zero = i;
     u8 *entry;
     u8 *selected;
-    u8 **entries = data_0210188c;
-    Unk0207F9F4 *table = (Unk0207F9F4 *)data_0214c0c8;
-    i = 0;
-    do {
+    entries = data_0210188c;
+    table = (Unk0207F9F4 *)data_0214c0c8;
+    for (; i < 6; i++) {
         entry = entries[i];
-        if (entry == 0) {
-            table[i].unk0 = 0;
-            table[i].unk2 = 0;
-        } else {
+        if (entry != 0) {
             selected = entry + func_0207f99c(entry) * 3;
             table[i].unk0 = (s8)selected[1];
             table[i].unk2 = (s8)selected[2];
+        } else {
+            table[i].unk0 = zero;
+            table[i].unk2 = zero;
         }
-        i++;
-    } while (i < 6);
+    }
 }
-
+#pragma scheduling reset
 s32 func_0207fa64(s32 arg0) {
     extern s32 data_0214c0c8[];
     return data_0214c0c8[arg0];

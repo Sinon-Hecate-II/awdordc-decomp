@@ -109,7 +109,6 @@ block_13:
             func_02050744(arg0, 3, 1);
             return 3;
         }
-        /* Duplicate return node #28. Try simplifying control flow for better match */
         M2C_FIELD(arg1, s32 *, 0x14) = 1;
         M2C_FIELD(temp_r4, s32 *, 0x1D8) = 1;
         return 0;

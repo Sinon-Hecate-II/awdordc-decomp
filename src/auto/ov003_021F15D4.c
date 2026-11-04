@@ -330,7 +330,118 @@ M2C_UNK func_ov003_021f1c0c(void) {
     return (M2C_UNK)&gCur3DSpriteEngine;
 }
 
-void func_ov003_021f2008(void) { }
+void func_ov003_021f2008(void) {
+    extern M2C_UNK gCur3DSpriteEngine;
+    extern M2C_UNK data_027e00c8;
+    extern M2C_UNK data_027e00c4;
+    extern M2C_UNK data_ov003_0220fc78;
+    extern s32 data_ov003_0220fc88[2][4];
+
+    u32 savedEngine;
+    u32 i;
+    u8 *gl;
+
+    savedEngine = (u32)gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = data_027e00c8;
+    gl = (u8 *)&data_ov003_0220fc78 + 4;
+    for (i = 0; i < 5; i++) {
+        if (data_ov003_0220fc88[0][i] != 0) continue;
+        if (gl[0] == 0) continue;
+        if (gl[1] != (u8)i) continue;
+        switch (i) {
+            case 0: {
+                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                *vp = *vp | 0x10;
+                break;
+            }
+            case 1: {
+                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                *vp = *vp | 0x20;
+                break;
+            }
+            case 2: {
+                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                *vp = *vp | 0x40;
+                break;
+            }
+            case 3: {
+                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                *vp = *vp | 0x80;
+                break;
+            }
+            case 4: {
+                volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                *vp = *vp | 0x100;
+                break;
+            }
+        }
+    }
+
+    gCur3DSpriteEngine = data_027e00c4;
+    for (i = 0; i < 5; i++) {
+        if (!(data_ov003_0220fc88[1][i] == 0 && gl[3] != 0 && gl[4] == (u8)i)) {
+            switch (i) {
+                case 0: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp & ~0x10;
+                    break;
+                }
+                case 1: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp & ~0x20;
+                    break;
+                }
+                case 2: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp & ~0x40;
+                    break;
+                }
+                case 3: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp & ~0x80;
+                    break;
+                }
+                case 4: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp & ~0x100;
+                    break;
+                }
+            }
+        } else {
+            switch (i) {
+                case 0: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp | 0x10;
+                    break;
+                }
+                case 1: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp | 0x20;
+                    break;
+                }
+                case 2: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp | 0x40;
+                    break;
+                }
+                case 3: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp | 0x80;
+                    break;
+                }
+                case 4: {
+                    volatile u16 *vp = (volatile u16 *)(*(u32 *)gCur3DSpriteEngine);
+                    *vp = *vp | 0x100;
+                    break;
+                }
+            }
+        }
+    }
+
+    gCur3DSpriteEngine = (M2C_UNK)savedEngine;
+    return;
+}
 
 void func_ov003_021f242c(u16 *arg0) {
     u8 i, j;

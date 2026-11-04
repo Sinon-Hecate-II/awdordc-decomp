@@ -234,9 +234,97 @@ s32 func_02013200(void *arg0) {
     return 0;
 }
 
-s32 func_02013248(void *a, void *b, void *c) {
-    (void)a; (void)b; (void)c;
-    return 0;
+s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
+    s32 func_020114b4(s32, s32);
+    s32 func_02011934(void);
+    s32 func_02011994(void);
+    s32 func_02012c28(s32, s32, void *, u32, u16, u16, u16);
+    void func_02007e20(void *, void *, u32);
+    void func_02013888(void *, u32, void *);
+    void func_02013954(void *, s32);
+    void func_02013590(void *);
+    s32 r5;
+    s32 r4;
+    s32 r7;
+    s32 r6;
+    s32 r11;
+    s32 r10 = arg0;
+    s32 r9 = arg1;
+    s32 r8 = arg2;
+    s32 ret, state;
+    u16 *slot;
+
+    ret = ((s32 (*)(s32, s32, s32))func_020114b4)(2, 9, 10);
+    if (ret != 0) return ret;
+    if (r10 == 0) return 6;
+    if (r9 == 0) return 6;
+    if (r8 == 0) return 6;
+    r5 = func_02011934();
+    if (r5 == 0) r4 = func_02011994();
+    state = M2C_FIELD(r10, u16 *, 0x81c);
+    if (state == 5) return 1;
+    if (state != 1 && state != 4) return 3;
+    r7 = 5;
+    if (r5 == 0) {
+        r5 = 0;
+        r11 = 0;
+        if (state == 4) {
+            M2C_FIELD(r10, u16 *, 0x81c) = 1;
+            r6 = (M2C_FIELD(r10, u16 *, 0x808) + 3) & 3;
+            ret = func_02012c28((s32)func_02013590, r10, (void *)(r10 + (r6 << 9)), M2C_FIELD(r10, u16 *, 0x814), (u16)(M2C_FIELD(r10, u16 *, 0x80e) & r4), M2C_FIELD(r10, u16 *, 0x816), 1);
+            if (ret == 7) {
+                M2C_FIELD((void *)(r10 + (r6 << 1)), u16 *, 0x800) = 0xffff;
+                M2C_FIELD(r10, u16 *, 0x80a) = (u16)((M2C_FIELD(r10, u16 *, 0x80a) + 1) & 3);
+            } else if (ret != 0 && ret != 2) {
+                M2C_FIELD(r10, u16 *, 0x81c) = 5;
+                return 1;
+            }
+        }
+        if (M2C_FIELD(r10, u16 *, 0x80c) != M2C_FIELD(r10, u16 *, 0x80a)) {
+            r6 = M2C_FIELD(r10, u16 *, 0x80c);
+            M2C_FIELD((void *)(r10 + (r6 << 9)), u16 *, 0) = (u16)(M2C_FIELD((void *)(r10 + (r6 << 9)), u16 *, 0) | 1);
+            func_02007e20((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 9)), r8, 0x200);
+            M2C_FIELD(r10, u16 *, 0x81a) = M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 1)), u16 *, 0x800);
+            M2C_FIELD(r10, u16 *, 0x80c) = (u16)((M2C_FIELD(r10, u16 *, 0x80c) + 1) & 3);
+            r5 = 1;
+            r7 = 0;
+            if (M2C_FIELD(r10, u16 *, 0x818) == 0 && r4 != 0 && M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x808) << 9)), u16 *, 0) == 1)
+                r11 = r5;
+        }
+        func_02013954(r10, 0);
+        if (r5 != 0) {
+            func_02013888(r10, 0, r9);
+            if (M2C_FIELD(r10, u16 *, 0x818) == 0) func_02013954(r10, r11);
+        }
+    } else {
+        r6 = 0;
+        if (state == 4) {
+            M2C_FIELD(r10, u16 *, 0x81c) = 1;
+            r6 = 1;
+        } else if (M2C_FIELD(r10, u16 *, 0x80c) != M2C_FIELD(r10, u16 *, 0x808)) {
+            slot = (u16 *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 9));
+            if ((*slot & 1) == 0) {
+                *slot = (u16)(*slot | 1);
+            } else {
+                func_02007e20(slot, r8, 0x200);
+                M2C_FIELD(r10, u16 *, 0x81a) = M2C_FIELD((void *)(r10 + (M2C_FIELD(r10, u16 *, 0x80c) << 1)), u16 *, 0x800);
+                M2C_FIELD(r10, u16 *, 0x80c) = (u16)((M2C_FIELD(r10, u16 *, 0x80c) + 1) & 3);
+                r7 = 0;
+                r6 = 1;
+            }
+        }
+        if (r6 != 0) {
+            slot = (u16 *)(r10 + (M2C_FIELD(r10, u16 *, 0x80a) << 9));
+            func_02007e20(r9, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810));
+            ret = func_02012c28((s32)func_02013590, r10, (u8 *)slot + 0x20, M2C_FIELD(r10, u16 *, 0x810), M2C_FIELD(r10, u16 *, 0x80e), M2C_FIELD(r10, u16 *, 0x816), 1);
+            M2C_FIELD(r10, u16 *, 0x80a) = (u16)((M2C_FIELD(r10, u16 *, 0x80a) + 1) & 3);
+            if (ret != 0 && ret != 2) {
+                M2C_FIELD(r10, u16 *, 0x81c) = 5;
+                r7 = 1;
+            }
+        }
+    }
+    return r7;
 }
 
 void func_02013590(void *p) {

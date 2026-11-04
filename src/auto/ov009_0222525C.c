@@ -230,12 +230,13 @@ M2C_UNK func_ov009_022256a4(s32 arg0) {
 
 s32 func_ov009_022256d4(s32 arg0) {
     s32 func_ov009_02224174();
+    s32 func_ov009_02224194();
     extern M2C_UNK data_ov009_022268e0;
-    s32 mask, var_r4;
-    if (M2C_FIELD(&data_ov009_022268e0, u16 **, 0x20) != NULL &&
-        (var_r4 = func_ov009_02224174(), mask = func_ov009_02224174(), var_r4 != (M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, u16 **, 0x20), u16 *, 2) & mask))) var_r4 = 1;
+    s32 temp_r4, mask, var_r4;
+    if (M2C_FIELD(&data_ov009_022268e0, void * volatile *, 0x20) != NULL &&
+        (temp_r4 = func_ov009_02224174(), mask = func_ov009_02224174(), temp_r4 != (M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, void **, 0x20), u16 *, 2) & mask))) var_r4 = 1;
     else var_r4 = 0;
-    if (*M2C_FIELD(&data_ov009_022268e0, u8 **, 0x20) == 0) var_r4 = 0;
+    if (M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, void **, 0x20), u8 *, 0) == 0) var_r4 = 0;
     if (func_ov009_02224194() != 4 && func_ov009_02224194() != 5) var_r4 = 0;
     if (func_ov009_02224194() == 8 || func_ov009_02224194() == 9) var_r4 = 0;
     return var_r4;

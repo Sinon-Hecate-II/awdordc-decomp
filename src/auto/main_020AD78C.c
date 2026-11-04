@@ -457,7 +457,7 @@ void func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 void func_020ae480(u16 *p,s32 a,s32 b,s32 c) {
-s16 r,g,bl; s32 i=0;u16 v;;
+s16 r,g,bl; s32 i=0;u16 v;
 do {
 v=*p;i++;
 r=(v&31)+a;

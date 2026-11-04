@@ -225,10 +225,18 @@ s32 func_02049274(s32 arg0) {
 
 #pragma opt_cond_exec off
 s8 *func_020492a8(s8 *p) {
-extern M2C_UNK data_020eac40;
-s8 *q=p; s32 c=*p;
-if(c){do{if(c>=0 && c<128){c=((u8 *)&data_020eac40)[c];} *p=c;c=*++p;}while(c);}
-return q;
+    extern M2C_UNK data_020eac40;
+    s8 *q = p;
+    s32 c = *p;
+
+    if (c != 0) {
+        do {
+            c = (c >= 0 && c < 128) ? ((u8 *)&data_020eac40)[c] : c;
+            *p = (s8)c;
+            c = *++p;
+        } while (c != 0);
+    }
+    return q;
 }
 #pragma opt_cond_exec reset
 s32 func_020492ec(M2C_UNK arg0, s32 arg1) {

@@ -31,13 +31,12 @@ u16 func_02006f8c(void) {
 #pragma optimization_level 2
 void func_02006f9c(void) {
 void func_02005154(u32,void (*)(void),u32); extern u16 data_0212dfb4;
-s32 zero=0; u32 *base=(u32*)&data_0212dfb4;
-M2C_FIELD(base,u64 *,8)++;
-if (M2C_FIELD(base,s32 *,4)) {
+M2C_FIELD(&data_0212dfb4,u64 *,8)++;
+if (M2C_FIELD(&data_0212dfb4,s32 *,4)) {
 *(volatile u16 *)0x04000102=0;
 *(volatile u16 *)0x04000100=0;
 *(volatile u16 *)0x04000102=0xc1;
-M2C_FIELD(base,s32 *,4)=0;
+M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
 }
 func_02005154(0,func_02006f9c,0);
 }
@@ -72,8 +71,11 @@ void func_020070b4(void *arg0) {
  delta = M2C_FIELD(arg0, s64 *, 0xC) - now;
  func_02005154(1, (void (*)(void))func_020073c0, 0);
  timer = 0;
- if (delta < 0) timer = 0xFFFE;
- else if (delta < 0x10000) { timer = ~(u32)delta; timer &= 0xffff; }
+ if (delta < 0) {
+   timer = 0xFFFE;
+ } else if (delta < 0x10000) {
+   timer = (u16)~(u32)delta;
+ }
  *(volatile u16 *)0x04000104 = timer;
  *(volatile u16 *)0x04000106 = 0xC1;
  func_020051c8(0x10);

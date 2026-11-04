@@ -69,7 +69,66 @@ result= !(*(&data_ov000_021b5c0f+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))
 return result;
 }
 
-void func_ov000_02186a18(void) { }
+void func_ov000_02186a18(void) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c0f;
+    extern u8 data_ov000_021b5bfc[];
+    extern u16 data_ov000_021aeef4[];
+    extern u8 *data_ov000_021df644;
+    extern s8 data_ov000_021e0f60[];
+    s32 func_ov000_021a98e4(u32);
+    u8 func_ov000_0218695c(void *);
+    s32 func_ov000_02185fb8(void *, void *, s32);
+    void func_ov000_02186940(void *);
+    void func_01ffc328(void *);
+    u8 func_ov000_021a9d8c(u32, s32);
+    s32 func_020cf878(s32, s32);
+    void func_ov000_02199d74(s32, s32, s32, s32, s32);
+    s32 fy, i;
+    register s32 y, x;
+    s32 best, cell, fx, n;
+    u8 *unit;
+
+    if (func_ov000_021a98e4((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) == 1
+        && ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) != 0x1a)
+        return;
+    if ((&data_ov000_021b5c0f)[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 0x20)
+        return;
+    n = data_ov000_021aeef4[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)];
+    i = n + 1;
+    if (i >= n + 0x33) return;
+    for (; i < data_ov000_021aeef4[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)] + 0x33; i++) {
+        unit = (u8 *)*gCurrentMap + 0x59a4;
+        if (((u32)(unit[i * 0xe] << 26) >> 26) == 0) continue;
+        if (!func_ov000_0218695c(unit + i * 0xe)) continue;
+        if (!func_ov000_02185fb8(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), unit + i * 0xe, 0)) continue;
+        func_ov000_02186940(unit + i * 0xe);
+        func_01ffc328(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+        fy = -1;
+        fx = -1;
+        best = 0xff;
+        for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
+            for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
+                if (((s8 **)((u8 *)*gCurrentMap + 0x52e8))[y][x] < 0) continue;
+                cell = ((u8 *)data_ov000_021e0f60)[x + y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)];
+                if (cell == 0) continue;
+                if (cell >= best) continue;
+                if (func_ov000_021a9d8c((s16)x, (s16)y)) continue;
+                if (func_020cf878(x, y)) continue;
+                if ((data_ov000_021b5bfc[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
+                    if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= data_ov000_021df644[1]) continue;
+                }
+                if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
+                fx = x;
+                fy = y;
+                best = ((u8 *)data_ov000_021e0f60)[x + y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)];
+            }
+        }
+        if (fx == -1) continue;
+        func_ov000_02199d74((s16)fx, (s16)fy, 2, 0, 0);
+        return;
+    }
+}
 
 s32 func_ov000_02186d94(s32 a,s32 b,s32 c){
 extern void **gCurrentMap; u8 func_ov000_021a9d8c(u32,s32);
@@ -90,5 +149,64 @@ dataByte=data_ov000_021b5c0e[off];
 return ((table+(dataByte<<5))[idxByte&31]>=0)?1:0;
 }
 
-s32 func_ov000_02186e64(s32 x, s32 y) { return 0; }
+s32 func_ov000_02186e64(s32 x, s32 y) {
+  extern void **gCurrentMap;
+  extern u8 data_ov000_021b5c0e[];
+  extern M2C_UNK data_0212616c;
+  s32 func_ov000_02186d94(s32,s32,s32);
+  void *base; u8 *units; s8 *tbl;
+  s32 off, kind;
+  base=*gCurrentMap;
+  units=(u8*)base+0x59a4;
+  off=M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0xc)*0xe;
+  kind=(u32)(M2C_FIELD((u8*)base+M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0xd)*0xe,u8 *,0x59a4)<<26)>>26;
+  if(kind==0){
+    s32 res;
+    res=func_ov000_02186d94(x-1,y,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
+    res+=func_ov000_02186d94(x+1,y,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
+    res+=func_ov000_02186d94(x,y-1,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
+    res+=func_ov000_02186d94(x,y+1,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
+    return res;
+  }
+  tbl=M2C_FIELD(&data_0212616c,s8 **,0x64);
+  if(M2C_FIELD(tbl+data_ov000_021b5c0e[kind*0x70]*32,s8 *,4)<0){
+    s32 res;
+    if(M2C_FIELD(tbl+data_ov000_021b5c0e[((u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26)*0x70]*32,s8 *,4)<0){
+      res=func_ov000_02186d94(x-1,y,7);
+      res+=func_ov000_02186d94(x+1,y,7);
+      res+=func_ov000_02186d94(x,y-1,7);
+      res+=func_ov000_02186d94(x,y+1,7);
+      return res;
+    }
+    res=func_ov000_02186d94(x-1,y,7);
+    res+=func_ov000_02186d94(x+1,y,7);
+    res+=func_ov000_02186d94(x,y-1,7);
+    res+=func_ov000_02186d94(x,y+1,7);
+    if(res!=0)return res;
+    res=func_ov000_02186d94(x-1,y,1);
+    res+=func_ov000_02186d94(x+1,y,1);
+    res+=func_ov000_02186d94(x,y-1,1);
+    res+=func_ov000_02186d94(x,y+1,1);
+    return res!=0;
+  }else{
+    s32 res;
+    if(M2C_FIELD(tbl+data_ov000_021b5c0e[((u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26)*0x70]*32,s8 *,4)<0){
+      res=func_ov000_02186d94(x-1,y,7);
+      res+=func_ov000_02186d94(x+1,y,7);
+      res+=func_ov000_02186d94(x,y-1,7);
+      res+=func_ov000_02186d94(x,y+1,7);
+      if(res>=2)return res;
+      res=func_ov000_02186d94(x-1,y,1);
+      res+=func_ov000_02186d94(x+1,y,1);
+      res+=func_ov000_02186d94(x,y-1,1);
+      res+=func_ov000_02186d94(x,y+1,1);
+      return res!=0;
+    }
+    res=func_ov000_02186d94(x-1,y,1);
+    res+=func_ov000_02186d94(x+1,y,1);
+    res+=func_ov000_02186d94(x,y-1,1);
+    res+=func_ov000_02186d94(x,y+1,1);
+    return res;
+  }
+}
 

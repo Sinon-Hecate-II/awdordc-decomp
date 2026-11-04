@@ -273,19 +273,19 @@ s32 func_ov000_021a4944(s32 arg0) {
     extern u8 data_ov000_021dfd98[];
     extern u8 data_ov000_021dfd99[];
     extern u8 data_ov000_021dfd9a[];
-    s32 temp_r1;
-    s32 temp_r2;
-    s32 var_ip;
-    s32 temp_r3;
+    s32 alpha;
+    s32 beta;
+    s32 gamma;
+    s32 delta;
 
-    var_ip = data_ov000_021dfd99[arg0 * 8];
-    temp_r1 = data_ov000_021dfd9a[arg0 * 8];
-    temp_r2 = var_ip - temp_r1;
-    temp_r3 = data_ov000_021dfd98[arg0 * 8];
-    if (temp_r2 != 0) {
-        var_ip = temp_r2 + (temp_r1 >> 1);
+    gamma = data_ov000_021dfd99[arg0 * 8];
+    alpha = data_ov000_021dfd9a[arg0 * 8];
+    beta = gamma - alpha;
+    delta = data_ov000_021dfd98[arg0 * 8];
+    if (beta != 0) {
+        gamma = beta + (alpha >> 1);
     }
-    if (temp_r3 > (var_ip << 1)) {
+    if (delta > (gamma << 1)) {
         return 0;
     }
     return 1;

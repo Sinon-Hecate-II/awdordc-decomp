@@ -304,7 +304,8 @@ u8 func_ov000_021889ac(void) {
     entry = (u8 *)base + 0x59A4 + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xC) * 14;
     if (func_ov000_02187e50() == 1) return 0;
     value = M2C_FIELD(entry, u16 *, 8);
-    bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
+    base = *gCurrentMap;
+    bank = M2C_FIELD((u8 *)base + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
     return bank[(u32)(value << 26) >> 26] > 0;
 }
 

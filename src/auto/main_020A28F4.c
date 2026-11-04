@@ -333,7 +333,11 @@ void func_020a34f4(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-s32 func_020a3518(s32 a){extern s32 *data_027e0058;s32 v=M2C_FIELD(*data_027e0058+0x67a4+140*a,s32 *,108);if(((u32)(v<<24)>>24)==0)return 0;else return (u32)v>>21;}
+s32 func_020a3518(s32 a) {
+    extern s32 *data_027e0058;
+    s32 t = M2C_FIELD(*data_027e0058 + 0x67a4 + 140 * a, s32 *, 108);
+    return (((u32)(t << 24) >> 24) == 0) ? 0 : ((u32)t >> 21);
+}
 #pragma opt_common_subs reset
 void func_020a3550(s32 a,s32 b){
  extern s32 *gCurrentMap;
@@ -428,14 +432,16 @@ void func_020a379c(void *a){extern s32 *gCurrentMap;void (*cb)(u8,u8);M2C_FIELD(
 
 void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:func_0208fe30(0xd4);return;case 1:func_0208fe30(0xd6);return;case 2:func_0208fe30(0xd5);return;case 3:func_0208fe30(0xd7);return;default:return;}}
 
+#pragma opt_instruction_scheduling off
 s32 func_020a3864(void) {
-  extern s32 *data_027e0058;
+  extern s32 *gCurrentMap;
   s32 func_020d1938(s32);
   u16 idx;
-  s32 i;
   u8 *arr;
-  arr = (u8 *)(*data_027e0058 + 0x515c);
-  idx = M2C_FIELD(*data_027e0058, u16 *, 0x52a4);
+  s32 i;
+
+  arr = (u8 *)(*gCurrentMap + 0x515c);
+  idx = M2C_FIELD(*gCurrentMap, u16 *, 0x52a4);
   if (arr[idx - 1] > 0) {
     arr[idx - 1] -= 1;
     if (arr[idx - 1] > 0) {
@@ -444,11 +450,11 @@ s32 func_020a3864(void) {
   }
   for (i = 1; i < 5; i++) {
     if (func_020d1938(i) != 0) {
-      if (*((u8 *)(*data_027e0058 + 0x515b + i)) != 0) {
+      if (M2C_FIELD(*gCurrentMap + i, u8 *, 0x515b) != 0) {
         return 0;
       }
     }
   }
   return 1;
 }
-
+#pragma opt_instruction_scheduling reset

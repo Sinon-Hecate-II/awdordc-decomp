@@ -2,9 +2,133 @@
 #include "common.h"
 
 void func_020a0964(s32 a, s32 b, u16 *out) {
-    s32 dummy = a + b;
-    (void)dummy;
-    (void)out;
+    M2C_UNK func_020a76d4(M2C_UNK);
+    M2C_UNK func_020a85c8(M2C_UNK);
+    M2C_UNK func_01ffb554(M2C_UNK);
+    M2C_UNK func_020a0560(void);
+    M2C_UNK func_020a0360(void);
+    M2C_UNK func_020a061c(void);
+    M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
+    M2C_UNK func_0207c2f0(void);
+    M2C_UNK func_020a0750(M2C_UNK, M2C_UNK);
+
+    extern s32 *gCurrentMap;
+    extern s32 data_0211fb5c;
+    extern u8 data_ov000_021b5c08[];
+
+    u8 *base;
+    s8 *ctx;
+    s8 idx;
+    s8 f36, f42;
+    u8 *unit;
+    u8 kind;
+    s32 attr;
+    s32 cap;
+    s32 best;
+    s32 manX, manY, manhattan;
+    s32 terrain;
+    u16 width, height;
+    u8 *rowPtr;
+    s32 inner, outer;
+    s32 best2;
+    s32 score;
+
+    base = (u8 *)*gCurrentMap;
+    ctx = (s8 *)data_0211fb5c;
+    idx = ctx[0x5b];
+    ctx = ctx + idx;
+    f36 = ctx[0x36];
+    f42 = ctx[0x42];
+
+    unit = *(u8 **)(base + 0x52d0);
+    kind = unit[0] & 0x3F;
+    attr = data_ov000_021b5c08[kind * 112];
+    cap = func_020a76d4((M2C_UNK)unit);
+
+    if (cap > 1 && func_020a85c8(kind) == 0) {
+        out[0] = unit[1];
+        out[1] = unit[2];
+        return;
+    }
+
+    manX = f42 - b;
+    if (manX < 0) manX = -manX;
+    manY = f36 - a;
+    if (manY < 0) manY = -manY;
+    manhattan = manX + manY;
+    if (manhattan >= attr && manhattan <= cap) {
+        terrain = base[f36 + *(u16 *)(base + (f42 << 1) + 0x3758)];
+        if (terrain == 0) {
+            out[0] = f36;
+            out[1] = f42;
+            return;
+        }
+    }
+
+    func_01ffb554((M2C_UNK)(base + 0x2338));
+    func_020a0560();
+
+    best = 0;
+    height = *(u16 *)(base + 0x5146);
+    width = *(u16 *)(base + 0x5144);
+    for (outer = 0; outer < (s32)height; outer++) {
+        for (inner = 0; inner < (s32)width; inner++) {
+            rowPtr = *(u8 **)(base + outer * 4 + 0x52e8);
+            terrain = (s8)rowPtr[inner];
+            if (terrain < 0) continue;
+            manX = a - inner;
+            if (manX < 0) manX = -manX;
+            manY = b - outer;
+            if (manY < 0) manY = -manY;
+            manhattan = manX + manY;
+            if (manhattan < attr || manhattan > cap) continue;
+            score = func_020a0750(inner, outer);
+            if (score == 0) continue;
+            if (score > best) {
+                best = score;
+                out[0] = (u16)inner;
+                out[1] = (u16)outer;
+            } else if (score == best) {
+                if (func_0207c2f0() & 1) {
+                    out[0] = (u16)inner;
+                    out[1] = (u16)outer;
+                }
+            }
+        }
+    }
+
+    func_01ffb554((M2C_UNK)(base + 0x1e30));
+    if (best != 0) return;
+
+    best2 = 0;
+    height = *(u16 *)(base + 0x5146);
+    width = *(u16 *)(base + 0x5144);
+    for (outer = 0; outer < (s32)height; outer++) {
+        for (inner = 0; inner < (s32)width; inner++) {
+            rowPtr = *(u8 **)(base + outer * 4 + 0x52e8);
+            terrain = (s8)rowPtr[inner];
+            if (terrain < 0 || terrain > 110) continue;
+            manX = a - inner;
+            if (manX < 0) manX = -manX;
+            manY = b - outer;
+            if (manY < 0) manY = -manY;
+            manhattan = manX + manY;
+            if (manhattan < attr || manhattan > cap) continue;
+            score = func_020a0750(inner, outer);
+            if (score == 0) continue;
+            if (score > best2) {
+                best2 = score;
+                out[0] = (u16)inner;
+                out[1] = (u16)outer;
+            } else if (score == best2) {
+                if (func_0207c2f0() & 1) {
+                    out[0] = (u16)inner;
+                    out[1] = (u16)outer;
+                }
+            }
+        }
+    }
+    return;
 }
 
 M2C_UNK func_020a0d18(void) {

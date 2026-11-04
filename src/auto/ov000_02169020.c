@@ -350,28 +350,15 @@ s32 func_ov000_02169940(s8 *p) {
 }
 
 void func_ov000_02169998(u8 *p,s8 *q) {
-  for (;;) {
-    switch (*q++) {
-    case 9: q++; break;
-    case -1:
-    case 4:
-      return;
-    case 0:
-      p[1]--;
-      break;
-    case 1:
-      p[1]++;
-      break;
-    case 2:
-      p[2]++;
-      break;
-    case 3:
-      p[2]--;
-      break;
-    default:
-      break;
-    }
-  }
+ loop: switch(*q++) {
+ case 9: q++; goto loop;
+ case -1: case 4: return;
+ case 0: p[1]--;goto loop;
+ case 1: p[1]++;goto loop;
+ case 2: p[2]++;goto loop;
+ case 3: p[2]--;goto loop;
+ default: goto loop;
+ }
 }
 
 void func_ov000_02169a24(void) {

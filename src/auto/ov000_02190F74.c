@@ -161,7 +161,7 @@ void func_ov000_0219137c(void){
  if(!score)continue;
  if(((Map1911 *)*gCurrentMap)->selected->kind==1 && !func_ov000_021a98a8(unit->kind) && M2C_FIELD(*gCurrentMap,s16 *,0x6ee6)!=0 && M2C_FIELD(*gCurrentMap,s16 *,0x6ef2)<15)continue;
  if(score<best)continue;
- if(func_ov000_0217a0a8(unit)==1 && CountAdjacentTernary1913(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))<=1)continue;
+ if(func_ov000_0217a0a8(unit)==1 && CountAdjacentBounds1913(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))<=1)continue;
  best=score;destX=position[0];destY=position[1];
  map=*gCurrentMap;unitId=((u8 *)map)[x+map->rows[y]];
  }}

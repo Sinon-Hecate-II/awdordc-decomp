@@ -8,7 +8,6 @@ void func_020216cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg
     u16 temp_r4;
     u16 var_r5;
     u32 temp_r6;
-    s32 k = 0;
 
     if (arg4 == NULL) {
         var_r5 = 0;
@@ -19,7 +18,6 @@ void func_020216cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg
         var_r5 = (u8) ((s32) temp_r4 >> 8) | ((temp_r4 << 8) & 0xFF00);
         var_r4 = ((temp_r6 << 0x18) & 0xFF000000) | (((temp_r6 << 8) & 0xFF0000) | ((u8) (temp_r6 >> 0x18) | ((temp_r6 >> 8) & 0xFF00)));
     }
-    if (k) { (void)0; }
     func_02020478(arg0, arg1, arg2, var_r5, var_r4, arg3);
 }
 

@@ -28,8 +28,118 @@ void func_ov000_0216fc60(u8 *arg0) {
     func_ov000_0216f8c4(M2C_FIELD(p,s16 *,0x38));
 }
 
-void func_ov000_0216fcf8(void *arg0) {
-    return;
+void func_ov000_0216fcf8(u8 *arg0) {
+    void *func_ov000_021700fc(void);
+    M2C_UNK func_0208fe30(s32);
+    M2C_UNK func_ov000_0216ecc8(s16, s16);
+    M2C_UNK func_ov000_0216f8c4(s16);
+    M2C_UNK func_ov000_0216f9b4(void *);
+    s32 func_020b20e0(s32);
+    void *func_020b1c60(s32);
+    s32 func_ov000_0216facc(void *);
+    s16 func_ov000_0216fafc(void *);
+    s32 func_ov000_0216fb2c(void *);
+    s16 func_ov000_0216fb64(void *);
+    void func_ov000_0216fbe4(u8 *);
+    M2C_UNK func_ov000_0216fc34(s32);
+    extern u16 *data_02101e84;
+    void *p;
+    s16 count;
+    s32 n;
+    s32 max;
+    s16 pos;
+    s16 d;
+
+    p = func_ov000_021700fc();
+    count = M2C_FIELD(p, s16 *, 0x3C);
+    n = *arg0;
+    max = count - 6;
+    if (max < 0) max = 0;
+    if (count <= 1) goto done;
+    pos = M2C_FIELD(p, s16 *, 0x3A);
+    if (pos == 0 && n == 0) {
+        if (data_02101e84[0] & 0x40) {
+            func_0208fe30(0x10019);
+            M2C_FIELD(p, s16 *, 0x3A) = max;
+            if (M2C_FIELD(p, s16 *, 0x3A) == 0) n = M2C_FIELD(p, s16 *, 0x3C) - 1;
+            else n = 5;
+            goto done;
+        }
+    } else if (data_02101e84[1] & 0x40) {
+        if (n >= 2) n--;
+        else if (!func_ov000_0216facc(p)) {
+            if (n > 0) n--;
+        }
+        goto done;
+    }
+    if (pos == max && ((max > 0 && n == 5) || (max == 0 && n == count - 1))) {
+        if (data_02101e84[0] & 0x80) {
+            func_0208fe30(0x10019);
+            n = 0;
+            M2C_FIELD(p, s16 *, 0x3A) = n;
+            goto done;
+        }
+    } else if (data_02101e84[1] & 0x80) {
+        if (n < 4) {
+            if (func_020b20e0(n + 1)) n++;
+        } else {
+            if (!func_ov000_0216fb2c(p) && func_020b20e0(n + 1)) n++;
+        }
+        goto done;
+    }
+    if (data_02101e84[1] & 0x20) {
+        if (max > 0) {
+            d = func_ov000_0216fafc(p);
+            n -= d + 6;
+            if (n < 0) n = 0;
+            if (d != 0 && n == *arg0) func_0208fe30(0x10019);
+        } else {
+            n = 0;
+        }
+        goto done;
+    }
+    if (data_02101e84[1] & 0x10) {
+        if (max > 0) {
+            d = func_ov000_0216fb64(p);
+            n += 6 - d;
+            if (n >= 6) n = 5;
+            if (d != 0 && n == *arg0) func_0208fe30(0x10019);
+        } else {
+            n = count - 1;
+        }
+    }
+done:
+    if (n != *arg0) arg0 = (u8 *) func_020b1c60(n);
+    if (data_02101e84[1] & 0x200) {
+        if (M2C_FIELD(p, s16 *, 0x34) == 0) M2C_FIELD(p, s16 *, 0x34) = 3;
+        else M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x34) - 1;
+        func_0208fe30(0x10020);
+        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
+        func_ov000_0216f9b4(p);
+        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    }
+    if (data_02101e84[1] & 0x100) {
+        if (M2C_FIELD(p, s16 *, 0x34) == 3) M2C_FIELD(p, s16 *, 0x34) = 0;
+        else M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x34) + 1;
+        func_0208fe30(0x10020);
+        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
+        func_ov000_0216f9b4(p);
+        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    }
+    if (data_02101e84[0] & 0xC) {
+        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x36) + 1;
+        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x36) & 1;
+        func_0208fe30(0x10019);
+        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
+        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    }
+    if (data_02101e84[0] & 0x1) {
+        func_ov000_0216fbe4(arg0);
+        return;
+    }
+    if (data_02101e84[0] & 0x2) {
+        func_ov000_0216fc34(0);
+    }
 }
 
 void func_ov000_0217000c(void) {
@@ -269,6 +379,7 @@ void func_ov000_021703e8(void *arg0) {
     gCur3DSpriteEngine = old;
 }
 
+#pragma opt_common_subs off
 void func_ov000_0217074c(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_020cfd28();
@@ -276,13 +387,9 @@ void func_ov000_0217074c(void) {
     extern void *data_027e00c8;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021df5e4;
-    void *temp_r4;
-    void *next;
-    s32 value;
-    temp_r4 = gCur3DSpriteEngine;
-    next = data_027e00c8;
-    value = 0;
-    value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
+    void *saved = gCur3DSpriteEngine;
+    void *next = data_027e00c8;
+    s32 value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
     gCur3DSpriteEngine = next;
     func_020e35cc(value);
     func_01ff9ce8(1);
@@ -290,9 +397,9 @@ void func_ov000_0217074c(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     func_020cfd28();
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_common_subs reset
 void func_ov000_021707c0(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov000_021b8a78;

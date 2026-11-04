@@ -14,8 +14,11 @@ s32 ManhattanDistance(s32,s32,s16,s16);void func_01ffb554(void *);
 void func_01ffada0(u8,u8,s32,s32,s32);
 s32 func_ov000_021a99dc(void *);s32 func_ov000_021a98a8(s32);
 s32 func_ov000_021a8ff0(s32);s32 func_020d27ec(s16,s32);
-s32 x,y,i,id,d,xmin,xmax,ymin,ymax,r,dx,dy,cx,cy,w,h;
-u8 *map,*unit,*p;
+register u8 *p asm("r8");
+s32 y,i,id,d,xmin,xmax,ymin,ymax,r,dx,dy,cx,cy,w,h;
+s32 x;
+u8 *map,*unit;
+p=data_ov000_021e00ac;
 {s32 x;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
@@ -40,11 +43,11 @@ if(M2C_FIELD(p,s8 *,4)!=arg0)continue;
 func_01ffb554((u8 *)*gCurrentMap+0x2338);
 func_01ffada0(p[0],p[1],7,M2C_FIELD(data_ov000_021df57c,u8 *,16),0);
 func_01ffb554((u8 *)*gCurrentMap+0x1e30);
-map=*gCurrentMap;cx=p[0];r=M2C_FIELD(data_ov000_021df57c,u8 *,16);w=((Map16E8 *)map)->width;
+map=*gCurrentMap;cx=p[0];r=M2C_FIELD(data_ov000_021df57c,u8 *,16);w=M2C_FIELD(map,u16 *,0x5144);
 xmin=cx-r;
 xmax=w-1;
 if(xmin<0)xmin=0;
-cy=p[1];h=((Map16E8 *)map)->height;ymin=cy-r;
+cy=p[1];h=M2C_FIELD(map,u16 *,0x5146);ymin=cy-r;
 ymax=h-1;
 if(ymin<0)ymin=0;
 if(cx+r<xmax)xmax=cx+r;
@@ -83,7 +86,6 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[8]>d)p[8]=d;
 }
 }
 }
-#pragma opt_strength_reduction reset
 void func_ov000_021a16e8(void){
 extern void *data_ov000_021df578;extern u8 data_ov000_021e00ac[];extern void **gCurrentMap;
 void func_01ffada0(u8,u8,s32,s32,s32);

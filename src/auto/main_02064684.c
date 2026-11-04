@@ -174,10 +174,10 @@ return result;
 
 #pragma opt_propagation off
 void func_02064ffc(void *arg0) {
-s32 func_02064ed0(void *, s32, s32);
-M2C_FIELD(arg0,u8 *,13)=0;
-func_02064ed0(arg0,0,0);
-M2C_FIELD(arg0,u8 *,13)=0;
+    M2C_UNK func_02064ed0(void *, M2C_UNK, M2C_UNK);
+    M2C_FIELD(arg0, s8 *, 0xD) = 0;
+    func_02064ed0(arg0, 0, 0);
+    M2C_FIELD(arg0, s8 *, 0xD) = 0;
 }
 #pragma opt_propagation reset
 M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {

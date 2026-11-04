@@ -70,6 +70,7 @@ void func_0206e350(u8 *p,s32 n) {
  if(q==start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
  *q--=0;
  }
+ __builtin_unreachable();
 }
 #pragma opt_dead_code reset
 void func_0206e39c(void) {

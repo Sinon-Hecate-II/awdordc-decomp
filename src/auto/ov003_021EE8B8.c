@@ -46,11 +46,11 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     s16 temp_r5_3;
     s16 temp_r6;
     s16 temp_r6_2;
-    s16 temp_r6_3;
+    s16 temp_r9;
     s16 temp_r6_4;
     s16 temp_r7;
     s16 temp_r7_3;
-    s16 temp_r9;
+    s16 temp_r6_3;
     s32 temp_r0_2;
     s32 temp_r2_2;
     s32 var_r0;
@@ -66,7 +66,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     u32 temp_r7_4;
     u16 var_r2;
     u8 var_r1;
-    u8 var_r8;
+    register u8 var_r8;
     void *temp_r5;
     void *temp_r5_2;
 

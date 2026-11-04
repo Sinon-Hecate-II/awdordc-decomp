@@ -168,20 +168,24 @@ while(!func_02009e8c(6,1)) {}
 func_02009e40(6,&func_0200d2c4);
 }
 
-#pragma opt_lifetimes off
+#pragma opt_propagation off
 s32 func_0200d5bc(u16 *p) {
-s32 func_0200da04(void *,u16,u16,u8,s32,s32,s32,s32,s32);
-u16 a=M2C_FIELD((void *)0x027ffc80,u16 *,0x58);
-u16 b=M2C_FIELD((void *)0x027ffc80,u16 *,0x5a);
-u16 c=M2C_FIELD((void *)0x027ffc80,u16 *,0x5e);
-u16 d=M2C_FIELD((void *)0x027ffc80,u16 *,0x60);
-u8 e=M2C_FIELD((void *)0x027ffc80,u8 *,0x5c);
-u8 f=M2C_FIELD((void *)0x027ffc80,u8 *,0x5d);
-u8 g=M2C_FIELD((void *)0x027ffc80,u8 *,0x62);
-u8 h=M2C_FIELD((void *)0x027ffc80,u8 *,0x63);
-if((!a&&!c&&!b&&!d)||func_0200da04(p,a,b,e,f,c,d,g,h)) {p[0]=0;p[1]=0;p[2]=0;p[3]=0; return 1;} return 1;
+    s32 func_0200da04(void *,u16,u16,u8,s32,s32,s32,s32,s32);
+    volatile void *base = (volatile void *)0x027ffc80;
+    u16 a = M2C_FIELD(base, u16 *, 0x58);
+    u16 b = M2C_FIELD(base, u16 *, 0x5a);
+    u16 c = M2C_FIELD(base, u16 *, 0x5e);
+    u16 d = M2C_FIELD(base, u16 *, 0x60);
+    u8 e = M2C_FIELD(base, u8 *, 0x5c);
+    u8 f = M2C_FIELD(base, u8 *, 0x5d);
+    u8 g = M2C_FIELD(base, u8 *, 0x62);
+    u8 h = M2C_FIELD(base, u8 *, 0x63);
+    if ((!a && !c && !b && !d) || func_0200da04(p, a, b, e, f, c, d, g, h)) {
+        p[0] = 0; p[1] = 0; p[2] = 0; p[3] = 0; return 1;
+    }
+    return 1;
 }
-#pragma opt_lifetimes reset
+#pragma opt_propagation reset
 void func_0200d650(s16 *p){
 s32 func_0200751c(void);void func_02007530(s32);
 s32 t,n;
@@ -207,14 +211,15 @@ M2C_FIELD(&data_0212fc70,s32*,48)=*(volatile s32*)0x40002a0;
 }else{M2C_FIELD(&data_0212fc70,s32*,40)=0;M2C_FIELD(&data_0212fc70,s32*,44)=0;M2C_FIELD(&data_0212fc70,s32*,48)=0;}
 func_02007530(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
 
-#pragma opt_propagation off
-void func_0200d778(void){
-s32 func_0200751c(void);void func_02007530(s32);s32 func_02009eb0(s32,u32,s32);
-void (*callback)(s32,s32,s32);s32 t=func_0200751c();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
-if(!ok){TouchState *p;func_02007530(t);p=(TouchState*)&data_0212fc70;p->flags38 = 1 | (u32)p->flags38;callback=p->callback;if(callback)callback(0,4,0);}
-else{TouchState *p=(TouchState*)&data_0212fc70;p->flags3a = 1 | (u32)p->flags3a;p->flags38 = ~1 & (u32)p->flags38;func_02007530(t);}
+#pragma opt_instruction_scheduling off
+void func_0200d778(void) {
+s32 func_0200751c(void); void func_02007530(s32); s32 func_02009eb0(s32,u32,s32);
+s32 t=func_0200751c();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
+if(ok==0) {func_02007530(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1;
+if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(0,4,0);
+} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=1;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~1;func_02007530(t);}
 }
-#pragma opt_propagation on
+#pragma opt_instruction_scheduling reset
 s32 func_0200d80c(u16 *a) {
 void func_0200dd14(u32);
 func_0200dd14(1);if(M2C_FIELD(&data_0212fc70,u16 *,0x38)&1)return 1;

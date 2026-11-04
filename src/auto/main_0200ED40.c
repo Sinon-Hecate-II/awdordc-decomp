@@ -420,16 +420,15 @@ s32 func_0200f7c8(void *arg0) {
     return (((M2C_FIELD(arg0, s32 *, 0) * 0x3C) + M2C_FIELD(arg0, s32 *, 4)) * 0x3C) + M2C_FIELD(arg0, s32 *, 8);
 }
 
-#pragma opt_strength_reduction off
-long long func_0200f7e0(void *arg0, void *arg1) {
- s32 func_0200f7c8(void *);
- s32 days=func_0200f734(arg0); s32 seconds;
- if(days==-1) return -1;
- seconds=func_0200f7c8(arg1);
- if(seconds==-1) return -1;
- return (long long)days*86400LL+seconds;
+#pragma opt_propagation off
+s64 func_0200f7e0(void *arg0, void *arg1) {
+    s32 func_0200f7c8(void *);
+    s32 days=func_0200f734(arg0); s32 seconds;
+    if(days==-1) return -1;
+    seconds=func_0200f7c8(arg1);
+    if(seconds==-1) return -1;
+    return (s64)days*86400LL+seconds;
 }
-#pragma opt_strength_reduction reset
 void func_0200f844(void *arg0, s32 arg1) {
     extern s32 data_020f550c[];
     s32 d = arg1;
@@ -562,7 +561,9 @@ void *p=&data_0212fde0; s32 state; s32 temp; state=func_0200751c();
 if (M2C_FIELD(p,s32 *,8)!=arg0 || M2C_FIELD(p,s32 *,12)==0) {func_02007958(); goto done;}
 if(M2C_FIELD(p,s32 *,0x18)!=arg1) func_02007958();
 if(--M2C_FIELD(p,s32 *,12)==0) {
-{ s32 a=-3; s32 b=0; void *q=(u8 *)p+0x10; M2C_FIELD(p,s32 *,8)=a; M2C_FIELD(p,s32 *,0x18)=b; func_02005df4(q,b); }
+M2C_FIELD(p,s32 *,8)=-3;
+M2C_FIELD(p,s32 *,0x18)=0;
+func_02005df4((u8 *)p+0x10,0);
 }
 done:
 *M2C_FIELD(p,s32 **,0)=0;func_02007530(state);

@@ -14,8 +14,17 @@ u64 func_02001fd4(void);
 
 #pragma opt_common_subs reset
 
+#pragma opt_common_subs off
 s32 func_02002030(s32 arg0) {
-volatile s32 *p=(volatile s32 *)0x04000280;
-s32 v=1;*(volatile s16 *)p=v;
-v=0;p[4]=v;v=0x1000;p[5]=v;p[6]=arg0;v=0;p[7]=v;return v;
+    volatile u16 *p = (volatile u16 *)0x04000280;
+    p[0] = 1;
+    *(volatile s32 *)((u8 *)p + 0x10) = 0;
+    *(volatile s32 *)((u8 *)p + 0x14) = 0x1000;
+    *(volatile s32 *)((u8 *)p + 0x18) = arg0;
+    {
+        s32 z = 0 + 0;
+        *(volatile s32 *)((u8 *)p + 0x1c) = z;
+        return z;
+    }
 }
+#pragma opt_common_subs reset

@@ -73,8 +73,7 @@ void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK data_020ff
 void func_0205eb50(u8 *p, s32 a) {
     s32 n = M2C_FIELD(p, s32 *, 0x100);
     if (n >= 254) return;
-    if (a < 1) return;
-    if (a > 254) return;
+    if (a < 1 || a > 254) return;
     M2C_FIELD(p, s32 *, 0x100) = n + 1;
     p[n] = (u8)a;
 }
@@ -97,7 +96,9 @@ M2C_FIELD(a,s32 *,0x800)+=n;
 void func_0205ec0c(void) {
 void *func_02049584(void);
 void *p=func_02049584();
-s32 i;volatile u8 *s;u8 x,y;
+volatile u8 *s;
+u8 x,y;
+s32 i;
 if(!p)return;
 data_0213e358=0;
 for(i=0;i<5;) {

@@ -2,7 +2,157 @@
 #include "common.h"
 static inline s32 SpriteTile124(s32 tile) { extern s32 gCur3DSpriteEngine; return (tile >> ((u32)(*(u16 *)*(void **)gCur3DSpriteEngine <<17)>>30))&1023; }
 
-M2C_UNK func_ov004_022120c0(void) { return 0; }
+void func_ov004_022120c0(void *arg0) {
+    M2C_UNK func_020822b8();
+    M2C_UNK func_0200bc5c();
+    M2C_UNK func_02080cfc();
+    M2C_UNK func_020811b8();
+    M2C_UNK func_0208116c();
+    M2C_UNK func_02007ef4();
+    M2C_UNK func_020675e4();
+    M2C_UNK func_020814e4();
+    M2C_UNK func_020e3218();
+    M2C_UNK func_02081590();
+    M2C_UNK func_01ff85b8();
+    M2C_UNK func_02081528();
+    M2C_UNK func_020aca8c();
+    M2C_UNK func_0208ca14();
+    M2C_UNK func_0208c79c();
+    M2C_UNK func_0208c75c();
+    M2C_UNK func_0208c7b8();
+    M2C_UNK func_020a8a84();
+    M2C_UNK func_ov004_02212088();
+
+    extern u16 data_ov004_02218bb8[];
+    extern M2C_UNK data_ov004_02218df8;
+    extern M2C_UNK data_ov004_02218e04;
+    extern M2C_UNK data_ov004_02218e0c;
+    extern M2C_UNK data_ov004_02218e14;
+    extern M2C_UNK data_ov004_02218e1c;
+    extern M2C_UNK data_ov004_02218e24;
+    extern M2C_UNK data_ov004_02218e34;
+    extern M2C_UNK data_ov004_02218e44;
+    extern M2C_UNK data_ov004_02218e4c;
+    extern M2C_UNK data_ov004_02218e5c;
+    extern M2C_UNK data_ov004_02218e64;
+    extern M2C_UNK data_ov004_02218e70;
+    extern s32 gCurrentMap;
+    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e00c4;
+    extern s32 data_027e00c8;
+
+    u16 tmp[6];
+    u8 buf[0x20];
+    s32 r9;
+    s32 oldEngine;
+    s32 eng;
+    void *base0;
+    void *o1;
+    void *o2;
+    s32 map;
+    s32 inner;
+    u16 v;
+    u8 res;
+
+    tmp[0] = data_ov004_02218bb8[0];
+    tmp[1] = data_ov004_02218bb8[1];
+    tmp[2] = data_ov004_02218bb8[2];
+    tmp[3] = data_ov004_02218bb8[3];
+    tmp[4] = data_ov004_02218bb8[4];
+    tmp[5] = data_ov004_02218bb8[5];
+
+    map = gCurrentMap;
+    inner = *(s32 *)map;
+    inner = inner + 0x5100;
+    v = *(u16 *)(inner + 0x42);
+    res = (u8)func_020a8a84(v);
+    *((u8 *)arg0 + 0x3a) = res;
+
+    oldEngine = gCur3DSpriteEngine;
+
+    for (r9 = 0; r9 < 2; r9++) {
+        if (r9 == 0) {
+            gCur3DSpriteEngine = data_027e00c8;
+        } else {
+            gCur3DSpriteEngine = data_027e00c4;
+        }
+        eng = gCur3DSpriteEngine;
+        if (eng == data_027e00c4) {
+            func_020822b8(tmp);
+            func_0200bc5c(&data_ov004_02218df8);
+            func_02080cfc(&data_ov004_02218e04, *(s32 *)(eng + 0x18));
+            func_02080cfc(&data_ov004_02218e0c, *(s32 *)(eng + 0x2c));
+            func_020811b8(&data_ov004_02218e14, 3, 0, 0x200);
+            func_0208116c(&data_ov004_02218e1c, 0, 0x20);
+            func_02007ef4(*(s32 *)(eng + 0x30), *(s32 *)(eng + 0x30) + 0x20, 0x20);
+            func_020675e4(buf, &data_ov004_02218e24, *((u8 *)arg0 + 0x3a));
+            func_020814e4(buf);
+            func_020675e4(buf, &data_ov004_02218e34, *((u8 *)arg0 + 0x3a));
+            func_02081590(func_020e3218(buf), *(s32 *)(eng + 0x10) + 0x20);
+            func_02080cfc(&data_ov004_02218e44, *(s32 *)(eng + 0x24));
+            func_01ff85b8(*(s32 *)(eng + 0x24), 0x100, 1);
+            func_020675e4(buf, &data_ov004_02218e4c, *((u8 *)arg0 + 0x3a));
+            func_02081590(func_020e3218(buf), *(s32 *)(eng + 0x14) + 0x20);
+            func_02080cfc(&data_ov004_02218e5c, *(s32 *)(eng + 0x28));
+            func_01ff85b8(*(s32 *)(eng + 0x28), 0x100, 0x1001);
+            func_02081528();
+            func_02080cfc(func_020e3218(&data_ov004_02218e64), *(s32 *)(eng + 0x1c));
+            func_0208116c(&data_ov004_02218e70, 0x200, 0x20);
+
+            *((u8 *)eng + 0x46) |= 0x01;
+            *((u8 *)eng + 0x46) |= 0x02;
+            *((u8 *)eng + 0x46) |= 0x04;
+            *((u8 *)eng + 0x46) |= 0x08;
+
+            base0 = (void *)*(s32 *)eng;
+
+            *(u16 *)((u8 *)base0 + 0x38) = 0;
+            *(u16 *)((u8 *)base0 + 0x40) = 0;
+            *(u16 *)((u8 *)base0 + 0x3a) = 0;
+            *(u16 *)((u8 *)base0 + 0x42) = 0;
+            *(u16 *)((u8 *)base0 + 0x3c) = 0;
+            *(u16 *)((u8 *)base0 + 0x44) = 0;
+            *(u16 *)((u8 *)base0 + 0x3e) = 0;
+            *(u16 *)((u8 *)base0 + 0x46) = 0;
+
+            {
+                u16 *p0 = (u16 *)base0;
+                *p0 &= ~0x10;
+                *p0 &= ~0x20;
+                *p0 &= ~0x40;
+                *p0 |= 0x80;
+                *p0 &= ~0x100;
+            }
+
+            func_020aca8c();
+
+            o1 = func_0208ca14(arg0);
+            *(void **)((u8 *)arg0 + 0x40) = o1;
+            *((u8 *)o1 + 0x34) = 0;
+            func_0208c79c(o1, 0);
+            func_0208c75c(o1, 0);
+            func_0208c7b8(o1, 0);
+
+            o2 = func_0208ca14(arg0);
+            *(void **)((u8 *)arg0 + 0x44) = o2;
+            *((u8 *)o2 + 0x34) = 1;
+            func_0208c79c(o2, 0);
+            func_0208c75c(o2, 1);
+            func_0208c7b8(o2, 0);
+        }
+    }
+
+    gCur3DSpriteEngine = oldEngine;
+
+    *(u16 *)((u8 *)arg0 + 0x34) = 0;
+    *(u16 *)((u8 *)arg0 + 0x36) = 0;
+    *((u8 *)arg0 + 0x3b) = 0;
+    *((u8 *)arg0 + 0x3c) = 0;
+    *((u8 *)arg0 + 0x3d) = 0;
+    *(u16 *)((u8 *)arg0 + 0x38) = 0;
+
+    func_ov004_02212088(arg0);
+}
 
 void func_ov004_022124e0(s32 x,s32 y,s32 z,s32 number) {
 void func_01ffaacc(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK data_027e005c,data_027e006c;

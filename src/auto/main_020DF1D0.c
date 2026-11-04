@@ -3,13 +3,9 @@
 
 M2C_UNK func_020df1d0(void) { return 0; }
 
-M2C_UNK func_020df718(void) {
-    return 0;
-}
+M2C_UNK func_020df718(void) { return 0; }
 
-M2C_UNK func_020dfb58(void) {
-    return 0;
-}
+M2C_UNK func_020dfb58(void) { return 0; }
 
 void func_020e0134(void) {
     M2C_UNK func_020debf4();

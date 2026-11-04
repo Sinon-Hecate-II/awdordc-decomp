@@ -53,7 +53,11 @@ void func_ov000_0217f96c(void *arg0) {
     (void)arg0;
 }
 
-void func_ov000_0217fe68(void *arg0) { (void)arg0; }
+void func_ov000_0217fe68(void *arg0) {
+    extern void **gCurrentMap;
+    (void)arg0;
+    (void)gCurrentMap;
+}
 
 void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *data_ov000_021df580;extern u8 *data_ov000_021df658;

@@ -196,8 +196,8 @@ void func_020293a0(void *arg0, s32 arg1) {
     s32 func_020294f8(void);
     void func_020295e4(void *);
     void func_02007ef4(void *, void *, u32);
-    void *node;
     void *base;
+    void *node;
     u8 flag;
 
     base = func_02027d50();
@@ -697,17 +697,17 @@ s32 func_02029b9c(void) {
     return var_r1;
 }
 
+#pragma scheduling off
 void func_02029bd0(s32 arg0) {
 extern u8 data_02138e7c;
 extern u8 data_02138e80[16];
 s32 value=arg0>>2;
 if(!(arg0&2)) value+=25;
-value=(s8)value;
-data_02138e80[data_02138e7c%16] = value;
+data_02138e80[data_02138e7c%16]=(u8)value;
 if(data_02138e7c<16) data_02138e7c++;
 else data_02138e7c=(data_02138e7c+1)%16+16;
 }
-
+#pragma scheduling reset
 void func_02029c30(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 4) = 0;

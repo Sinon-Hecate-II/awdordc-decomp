@@ -79,7 +79,7 @@ void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&data_0212dc24, s32 *, offset) = arg2;
     M2C_FIELD(&data_0212dc20, s32 *, offset) = func_020051c8(1 << shift) & (1 << shift);
 }
-#pragma scheduling reset
+#pragma optimization_level 2
 void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_020051c8(s32);
     extern M2C_UNK data_0212dc4c;
@@ -90,7 +90,7 @@ void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
     func_020051c8(1U << (arg0 + 3));
     M2C_FIELD(&data_0212dc50, s32 *, arg0 * 12) = 1;
 }
-#pragma opt_lifetimes reset
+#pragma optimization_level reset
 s32 func_0200519c(s32 arg0) {
     s32 old;
     u16 ime;

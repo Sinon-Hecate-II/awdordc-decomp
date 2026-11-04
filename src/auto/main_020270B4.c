@@ -209,29 +209,28 @@ s32 func_020276b0(void) {
     void func_02007530(s32);
     void func_02028160(s32);
     extern M2C_UNK data_02138e4c;
-    void *ptr;
-    s32 st;
+
     s32 r = func_0200751c();
-    ptr = (void *)M2C_FIELD(&data_02138e4c, M2C_UNK *, 0);
-    if (ptr == 0) {
+
+    if (M2C_FIELD(&data_02138e4c, M2C_UNK *, 0) == 0) {
         func_02007530(r);
         return 1;
     }
-    st = M2C_FIELD(ptr, s32 *, 0x2260);
-    switch (st) {
+
+    switch (M2C_FIELD(M2C_FIELD(&data_02138e4c, M2C_UNK *, 0), s32 *, 0x2260)) {
     case 3:
         func_02028160(7);
-        M2C_FIELD(ptr, u16 *, 0x2280) = 4;
+        M2C_FIELD(M2C_FIELD(&data_02138e4c, M2C_UNK *, 0), u16 *, 0x2280) = 4;
         func_02007530(r);
         return 3;
     case 6:
-        func_02007530(0);
+        func_02007530(r);
         return 2;
     case 7:
-        func_02007530(0);
+        func_02007530(r);
         return 0;
     default:
-        func_02007530(0);
+        func_02007530(r);
         return 1;
     }
 }

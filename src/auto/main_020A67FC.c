@@ -33,6 +33,7 @@ s32 func_020a67fc(s32 a, s32 b, s32 c) {
     return r;
 }
 
+#pragma peephole off
 void func_020a68d4(void) {
     extern void **gCurrentMap;
     s32 i;
@@ -50,7 +51,7 @@ void func_020a68d4(void) {
     M2C_FIELD(*gCurrentMap, u8 *, 0x52D4) = 0;
     M2C_FIELD(*gCurrentMap, s32 *, 0x52D0) = 0;
 }
-
+#pragma peephole on
 void func_020a694c(void) {
 
 }
@@ -182,9 +183,9 @@ void func_020a6fcc(void) {
     func_01ffa3dc(&data_021206a0, 7);
 }
 
-#pragma opt_propagation off
+#pragma opt_instruction_scheduling off
 s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=data_ov000_021b5c5c[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
-#pragma opt_propagation reset
+#pragma opt_instruction_scheduling reset
 s32 func_020a7074(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
 s32 func_0207c8ec(s32,s32);s32 func_020a7cfc(void *);
 s32 x,y,h;
@@ -199,6 +200,7 @@ if(func_020a7cfc(a)&&func_020a7cfc(b))return 0;
 return 1;
 }
 
+#pragma opt_instruction_scheduling off
 void func_020a71a0(s32 x,s32 y,s32 amount) {
 s32 func_020a8560(u32);
 void *base;
@@ -216,7 +218,7 @@ n=((UnkStruct_ov000_021A860C *)p)->unk6;
 if(amount+1>n) ((UnkStruct_ov000_021A860C *)p)->unk6=1;
 else ((UnkStruct_ov000_021A860C *)p)->unk6=(u16)(n-amount);
 }
-
+#pragma opt_instruction_scheduling reset
 M2C_UNK *func_020a7278(void) {
     extern M2C_UNK data_02121e08;
     return &data_02121e08;

@@ -220,6 +220,7 @@ void func_ov001_02173f30(void *arg0) {
     func_ov001_0218c924(arg0, &func_ov001_02173fa4);
 }
 
+#pragma opt_strength_reduction off
 void func_ov001_02173fa4(void *arg0) {
     void func_ov001_0218c924(void *, void *);
     void func_ov001_0217355c(u8, s32, s32, u32);
@@ -233,7 +234,7 @@ void func_ov001_02173fa4(void *arg0) {
     B = M2C_FIELD(A, M2C_UNK *, 0x60);
     b = M2C_FIELD(A, u8 *, 0x11d);
     v = M2C_FIELD(B, u32 *, 0);
-    stk.sp0 = (s32)(v & 0xffU) + 0xc + 0;
+    stk.sp0 = (s32)(v & 0xffU) + 0xc;
     stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
     func_ov001_0217355c(b, 1, stk.sp0, stk.sp4);
     if (stk.sp0 < 0xc0) {
@@ -241,7 +242,7 @@ void func_ov001_02173fa4(void *arg0) {
     }
     func_ov001_0218c924(arg0, &func_ov001_02174018);
 }
-
+#pragma opt_strength_reduction reset
 void func_ov001_02174018(void *arg0) {
     void func_ov001_0218c924(void *, void *);
     void func_ov001_0217355c(u8, s32, s32, u32);

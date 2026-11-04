@@ -38,7 +38,12 @@ static inline void func_020dbe20(void *q) {
     }
 }
 
-M2C_UNK func_020db920() { return 0; }
+M2C_UNK func_020db920(arg0)
+void *arg0;
+{
+    (void)arg0;
+    return 0;
+}
 
 void func_020dbd00(void) {
     M2C_UNK func_020db1a0();

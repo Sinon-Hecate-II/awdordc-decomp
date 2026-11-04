@@ -213,25 +213,19 @@ void func_020316c4(void *arg0) {
     void func_020218f4(M2C_UNK *, M2C_UNK *);
     s32 func_0202f5ac(u8);
     s32 func_0203161c(void *);
-    s32 sp4;
-    s32 sp0;
     u8 *p;
     u8 c0;
     u32 sum;
+    s32 sp4;
+    s32 sp0;
 
     p = (u8 *) arg0;
-    if (M2C_FIELD(p, u8 *, 0xD0D) >= 6) {
-        return;
-    }
+    if (M2C_FIELD(p, u8 *, 0xD0D) >= 6) return;
     p += func_0202f5ac(M2C_FIELD(p, u8 *, 0xD0D)) << 8;
     c0 = M2C_FIELD(p, u8 *, 0xC0);
     sum = M2C_FIELD(p, u8 *, 0xC8) + M2C_FIELD(p, u8 *, 0xC9) + M2C_FIELD(p, u8 *, 0xCA) + M2C_FIELD(p, u8 *, 0xCB);
-    if (c0 != 0) {
-        return;
-    }
-    if (sum == 0) {
-        return;
-    }
+    if (c0) return;
+    if (!sum) return;
     sp4 = func_0203161c(p + 0xC8);
     sp0 = func_0203161c(p + 0xCC);
     func_020218f4(&sp4, &sp0);
@@ -659,19 +653,19 @@ void func_0203211c(void *arg0, u32 arg1, void *arg2) {
     void func_020320ac(s32, s32, s32, char *);
     M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
     extern M2C_UNK data_020fb2e8;
-    M2C_UNK sp29;
-    M2C_UNK sp14;
+    char sp29[0x40];
+    char sp14[0x20];
     u64 v;
 
     v = func_02031d90(arg0);
-    func_020320ac((s32)v, (s32)(v >> 32), 0x2B, (char *)&sp29);
-    func_020320ac(func_02031db0(arg0), 0, 0x20, (char *)&sp14);
-    func_0200567c((M2C_UNK)arg2, 0x15, &data_020fb2e8, &sp29,
- (s32)((arg1 >> 24) & 0xFF),
- (s32)((arg1 >> 16) & 0xFF),
- (s32)((arg1 >> 8) & 0xFF),
- (s32)(arg1 & 0xFF),
- (M2C_UNK)(void *)&sp14);
+    func_020320ac((s32)v, (s32)(v >> 32), 0x2B, sp29);
+    func_020320ac(func_02031db0(arg0), 0, 0x20, sp14);
+    func_0200567c((M2C_UNK)arg2, 0x15, &data_020fb2e8, sp29,
+                   (s32)((arg1 >> 24) & 0xFF),
+                   (s32)((arg1 >> 16) & 0xFF),
+                   (s32)((arg1 >> 8) & 0xFF),
+                   (s32)(arg1 & 0xFF),
+                   sp14);
 }
 
 void func_020321ac(void *arg0, s32 arg1) {

@@ -165,7 +165,7 @@ return 0;
 
 void func_020d28bc(void) {
  extern s32 *gCurrentMap; s32 func_020d1938(s32);
- s32 i,ioff,j,joff; unsigned char *base,*other,*self;
+ s32 j, joff, ioff, i; unsigned char *self, *other, *base;
  i=1;ioff=0x8c;
  do {
  if(func_020d1938(i)) {

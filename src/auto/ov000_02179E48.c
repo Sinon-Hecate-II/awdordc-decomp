@@ -159,151 +159,79 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_01ffb3d0(s32);
     u16 func_ov000_021a97e0(u16, s32);
     void func_01ffb454(s32);
-
-
     extern void **gCurrentMap;
-    extern u8 data_027e0a8c;
+    extern s8 data_027e0a8c;
     extern void *data_027e00cc;
     extern void *data_027e0a94;
     extern void *data_027e0a98;
     extern void *data_027e0a90;
-
-    void *map;
-    void *mapData;
-    void *base;
-    u8 *p;
     u8 *q;
-    s8 flag;
+    void *base;
 
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    func_01ffb554((u8 *)mapData + 0x2338);
+    func_01ffb554((u8 *)(*gCurrentMap) + 0x2338);
     func_01ffb3d0(-1);
-
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    func_01ffb554((u8 *)mapData + 0x1E30);
+    func_01ffb554((u8 *)(*gCurrentMap) + 0x1E30);
     func_01ffb3d0(-1);
 
     data_027e0a8c = 0;
     base = data_027e00cc;
-    data_027e0a94 = (void *)0;
+    data_027e0a94 = 0;
     data_027e0a98 = (u8 *)base + 0x28;
     data_027e0a90 = (u8 *)base + 0x5A0;
-
     *(u16 *)((u8 *)base + 0x20) = (u16)arg3;
 
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    {
-        u16 v = *(u16 *)((u8 *)mapData + 0x52A4);
-        u16 r = func_ov000_021a97e0(v, arg2);
-        base = data_027e00cc;
-        *(u16 *)((u8 *)base + 0x22) = r;
-    }
+    *(u16 *)((u8 *)data_027e00cc + 0x22) =
+        func_ov000_021a97e0(*(u16 *)((u8 *)(*gCurrentMap) + 0x52A4), arg2);
     func_01ffb454(arg2);
 
-    p = data_027e0a98;
-    p[0] = (u8)arg0;
-    p[1] = (u8)arg1;
-    p[2] = 1;
-    p[3] = 0;
+    M2C_FIELD(data_027e0a98, u8 *, 0) = (u8)arg0;
+    M2C_FIELD(data_027e0a98, u8 *, 1) = (u8)arg1;
+    M2C_FIELD(data_027e0a98, u8 *, 2) = 1;
+    M2C_FIELD(data_027e0a98, u8 *, 3) = 0;
 
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    {
-        u8 **arr = (u8 **)((u8 *)mapData + 0x52E8);
-        u8 *ptr = arr[arg1];
-        ptr[arg0] = 0;
-    }
+    M2C_FIELD(*(u8 **)((u8 *)(*gCurrentMap) + 0x52E8 + arg1 * 4), u8 *, arg0) = 0;
+    M2C_FIELD((u8 *)(*gCurrentMap) +
+              (arg0 + M2C_FIELD((u8 *)(*gCurrentMap) + arg1 * 2, u16 *, 0x3758)),
+              u8 *, 0x2338) = 0;
 
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    {
-        u16 rowOff = *(u16 *)((u8 *)mapData + 0x3758 + arg1 * 2);
-        u8 *cell = (u8 *)mapData + arg0 + rowOff;
-        cell[0x2338] = 0;
-    }
+    data_027e0a98 = (u8 *)data_027e0a98 + 4;
+    M2C_FIELD(data_027e0a98, u8 *, 2) = 0;
 
-    p = data_027e0a98;
-    p += 4;
-    data_027e0a98 = p;
-    p[2] = 0;
+    for (;;) {
+        if (data_027e0a8c == 0) {
+            base = data_027e00cc;
+            data_027e0a98 = (u8 *)base + 0x5A0;
+            data_027e0a90 = (u8 *)base + 0x28;
+            data_027e0a8c = 1;
+            data_027e0a94 = 0;
+        } else {
+            base = data_027e00cc;
+            data_027e0a98 = (u8 *)base + 0x28;
+            data_027e0a90 = (u8 *)base + 0x5A0;
+            data_027e0a8c = 0;
+            data_027e0a94 = 0;
+        }
 
-    flag = data_027e0a8c;
-    base = data_027e00cc;
-    if (flag == 0) {
-        data_027e0a98 = (u8 *)base + 0x5A0;
-        data_027e0a90 = (u8 *)base + 0x28;
-        data_027e0a8c = 1;
-    } else {
-        data_027e0a98 = (u8 *)base + 0x28;
-        data_027e0a90 = (u8 *)base + 0x5A0;
-        data_027e0a8c = 0;
-        data_027e0a94 = (void *)0;
-    }
-
-    while (1) {
-        u8 t;
-        u8 *p2;
-        u8 *p3;
-        u8 nt;
-        u8 subcase;
         q = data_027e0a90;
-        t = q[2];
-        if (t == 0) {
+        if (M2C_FIELD(q, u8 *, 2) == 0) {
             break;
         }
-        switch (t) {
-        case 1:
-            func_ov000_0217a378(2);
-            func_ov000_0217a378(3);
-            func_ov000_0217a378(4);
-            func_ov000_0217a378(5);
-            break;
-        case 2:
-            func_ov000_0217a378(2);
-            func_ov000_0217a378(4);
-            func_ov000_0217a378(5);
-            break;
-        case 3:
-            func_ov000_0217a378(3);
-            func_ov000_0217a378(4);
-            func_ov000_0217a378(5);
-            break;
-        case 4:
-            func_ov000_0217a378(2);
-            func_ov000_0217a378(3);
-            func_ov000_0217a378(4);
-            break;
-        case 5:
-            func_ov000_0217a378(2);
-            func_ov000_0217a378(3);
-            func_ov000_0217a378(5);
-            break;
-        default:
-            break;
+        while (M2C_FIELD(q, u8 *, 2) != 0) {
+            switch (M2C_FIELD(q, u8 *, 2)) {
+            case 1: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
+            case 2: func_ov000_0217a378(2); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
+            case 3: func_ov000_0217a378(3); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
+            case 4: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(4); break;
+            case 5: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(5); break;
+            }
+            M2C_FIELD(data_027e0a98, u8 *, 2) = 0;
+            data_027e0a90 = (u8 *)data_027e0a90 + 4;
+            q = data_027e0a90;
         }
-        p2 = data_027e0a98;
-        p2[2] = 0;
-        p3 = data_027e0a90;
-        p3 += 4;
-        data_027e0a90 = p3;
-        nt = p3[2];
-        if (nt != 0) {
-            continue;
-        }
-        break;
     }
 
-    p = data_027e0a90;
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    p[0x24] = (u8)*(u16 *)((u8 *)mapData + 0x5144);
-    base = data_027e00cc;
-    map = *gCurrentMap;
-    mapData = *(void **)map;
-    ((u8 *)base)[0x25] = (u8)*(u16 *)((u8 *)mapData + 0x5146);
+    M2C_FIELD(data_027e0a90, u8 *, 0x24) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5144);
+    M2C_FIELD(data_027e00cc, u8 *, 0x25) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5146);
 }
 
 #pragma opt_common_subs off

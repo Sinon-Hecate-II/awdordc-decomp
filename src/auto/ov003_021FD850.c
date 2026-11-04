@@ -10,7 +10,7 @@ void func_ov003_021fd850(M2C_UNK arg0) {
     extern M2C_UNK data_02102174;
     extern M2C_UNK data_02129870;
     extern M2C_UNK data_02156cdc;
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220f47c;
     extern M2C_UNK data_ov003_0220f48c;
     extern M2C_UNK data_ov003_0220ff2c;
@@ -44,7 +44,7 @@ void func_ov003_021fd850(M2C_UNK arg0) {
         temp_ip = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) & ~0x20;
         M2C_FIELD(temp_r0, u8 *, 0x3B) = temp_ip;
         M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((u8) (temp_ip & ~0x40) & ~0x80);
-        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         temp_r5 = ((u8) ((M2C_FIELD(temp_r0, u8 *, 0x3E) & ~7) | 2) & ~0x38) | 0x38;
         M2C_FIELD(temp_r0, u8 *, 0x3E) = temp_r5;
         M2C_FIELD(temp_r0, u8 *, 0x3E) = (u8) ((u8) (temp_r5 & ~0x40) & ~0x80);
@@ -308,7 +308,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
     extern M2C_UNK data_02102174;
     extern M2C_UNK data_02129870;
     extern M2C_UNK data_02156cdc;
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220f47c;
     extern M2C_UNK data_ov003_0220f48c;
     extern M2C_UNK data_ov003_0220ff2c;
@@ -342,7 +342,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         temp_ip = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) & ~0x20;
         M2C_FIELD(temp_r0, u8 *, 0x3B) = temp_ip;
         M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((u8) (temp_ip & ~0x40) & ~0x80);
-        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*data_027e0058, u16 *, 0x5142);
+        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         temp_r5 = ((u8) ((M2C_FIELD(temp_r0, u8 *, 0x3E) & ~7) | 2) & ~0x38) | 0x38;
         M2C_FIELD(temp_r0, u8 *, 0x3E) = temp_r5;
         M2C_FIELD(temp_r0, u8 *, 0x3E) = (u8) ((u8) (temp_r5 & ~0x40) & ~0x80);

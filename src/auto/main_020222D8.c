@@ -55,13 +55,14 @@ return p-start;
 
 s32 func_02022a78(s8 *p,s8 *q) {
 s32 a,b,c,d;
-do {
+again:
 while((d=*p++)==(c=*q++)) { if(d==0)return 0; }
 if(c!=0x2a)return 1;
 p--;a=func_02022a54(p);b=func_02022a54(q);
 if(b>a)return 1;
 p+=a-b;
-} while(1);
+goto again;
+for(;;);
 }
 
 void func_02022ae4(void *a, u8 *b) {

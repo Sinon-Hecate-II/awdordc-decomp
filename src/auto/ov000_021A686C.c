@@ -205,9 +205,9 @@ s32 func_ov000_021a7084(void *a, void *b) { (void)a; (void)b; return 0; }
 
 u8 func_ov000_021a72c0(u32 arg0) {
     s32 func_020b9e20(u16);
+    extern int *data_027e0058;
     extern s8 data_ov000_021aab78[];
     extern void *data_ov000_021df57c;
-    extern int *gCurrentMap;
 
     if (arg0 >= 0x1BU) {
         return 0U;
@@ -218,7 +218,7 @@ u8 func_ov000_021a72c0(u32 arg0) {
     if (((unsigned char *)data_ov000_021df57c + (arg0 - 1) * 0xC)[0x14] == 0U) {
         return 0U;
     }
-    if (func_020b9e20(*(u16 *)((unsigned char *)*gCurrentMap + 0x5200 + 0xA4)) != 0) {
+    if (func_020b9e20(*(u16 *)((unsigned char *)*data_027e0058 + 0x5200 + 0xA4)) != 0) {
         return 1U;
     }
     return 0U;

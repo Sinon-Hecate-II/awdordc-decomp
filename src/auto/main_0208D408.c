@@ -3,11 +3,10 @@
 
 void func_0208d408(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4;
+    return;
 }
 
-void func_0208d8e4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; (void)arg6;
-}
+void func_0208d8e4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) { int z=0; (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; (void)arg6; (void)z; }
 
 void func_0208dd7c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
     M2C_UNK func_0208cadc(s16, s16, s16, s32, s32);

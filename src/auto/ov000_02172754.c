@@ -301,13 +301,13 @@ void func_ov000_02173058(void *arg0) {
  s32 func_ov000_021724b8(s32,s32);
  s32 func_020e3438(s32);
  void func_02007ef4(s32,s32);
- s32 base; void *saved; s32 index; s32 product;
+ s32 base; void *saved; s32 index; s32 ofs;
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c4;
  index=func_ov000_021724b8(func_ov000_0217244c(),*M2C_FIELD(arg0,s32 **,0x18));
  base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2880;
  if(index!=-1){
-   product=(s16)index*0x4e0;
-   func_02007ef4(func_020e3438(2)+product,base);
+   ofs=func_020e3438(2);
+   func_02007ef4((s16)index*0x4e0+ofs,base);
  }
  gCur3DSpriteEngine=saved;
 }

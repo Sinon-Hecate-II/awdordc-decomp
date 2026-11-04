@@ -447,15 +447,15 @@ s32 func_0205ca48(void *p){
     return 0;
 }
 
-s32 func_0205caac(void *p,s32 arg1,s32 arg2){
+s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
 extern M2C_UNK data_020ff818;
 u8 buf[8]; s32 n=0;
-buf[n++]=M2C_FIELD(&data_020ff818,u8 *,0);
-buf[n++]=M2C_FIELD(&data_020ff818,u8 *,1);
-buf[n++]=0x65;
-func_0205b0ec(buf,n,arg1); n+=2;
-if(arg1!=arg2){func_0205b0ec(buf,n,arg2);n+=2;}
-if(func_0205a9ec(p,buf,n)==0)return 0;return 1;
+M2C_FIELD(buf,u8 *,0)=M2C_FIELD(&data_020ff818,u8 *,0);
+M2C_FIELD(buf,u8 *,1)=M2C_FIELD(&data_020ff818,u8 *,1);
+buf[2]=0x65;
+func_0205b0ec(buf, n+3, arg1); n+=5;
+if(arg1!=arg2){func_0205b0ec(buf,n,arg2); n+=2;}
+if(func_0205a9ec(p,buf,n)==0)return 0; return 1;
 }
 
 s32 func_0205cb38(s32 a,void *b,s32 c) { s32 func_0205a9ec(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return func_0205a9ec(a,b,c); }

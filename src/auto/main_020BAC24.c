@@ -52,6 +52,153 @@ void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_020bb110(void) {
+    extern void **gCurrentMap;
+    M2C_UNK func_020a7568(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_020baa64();
+    M2C_UNK func_020baaac();
+    M2C_UNK func_020d19b4(u16);
+    M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020cd5d8();
+    M2C_UNK func_020c2e4c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK func_020c32bc(M2C_UNK);
+    M2C_UNK func_0207ab24(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020ca484();
+
+    u8 *map;
+    u8 *sel;
+    s16 cx;
+    s16 cy;
+    u16 rowoff;
+    u8 terrain;
+    s32 r4;
+    s32 selIndex;
+    u8 r5;
+
+    map = (u8 *)*gCurrentMap;
+    sel = (u8 *)M2C_FIELD(map, u8 **, 0x52D0);
+    cx = M2C_FIELD(map, s16 *, 0x52DC);
+    cy = M2C_FIELD(map, s16 *, 0x52DE);
+    r4 = (s32)func_020a7568((M2C_UNK)sel, cx, cy);
+    selIndex = 0;
+    rowoff = M2C_FIELD(map, u16 *, 0x3758 + cy * 2);
+    terrain = map[0x1420 + cx + rowoff];
+    r5 = terrain;
+
+    if (sel != 0) {
+        u8 *unitBase;
+        u16 *sel6p;
+        u16 sel6;
+        u16 pl;
+        u16 t2;
+        unitBase = map + 0x59A4;
+        selIndex = (s32)(sel - unitBase) / 14;
+        func_020baa64();
+        func_020baaac();
+        sel6p = (u16 *)(sel + 6);
+        sel6 = *sel6p;
+        r4 = r4 + (s32)((sel6 << 16) >> 27);
+        if (r4 >= 20) r4 = 20;
+        t2 = (u16)((sel6 << 16) >> 27);
+        if (t2 == 0) {
+            pl = M2C_FIELD(map, u16 *, 0x52A4);
+            if (func_020d19b4(pl) != 0) {
+                func_02091c20(9, 1);
+            }
+        }
+        if (r4 == 20) {
+            pl = M2C_FIELD(map, u16 *, 0x52A4);
+            if (func_020d19b4(pl) != 0) {
+                func_02091c20(10, 1);
+            }
+        }
+    }
+
+    if (map[0x5156] != 0 || map[0x5158] == 2) {
+        u16 player;
+        u8 unitrec;
+        s16 cx2;
+        s16 cy2;
+        s32 r2flag;
+        M2C_UNK cdret;
+        u8 lr;
+        s32 r6v;
+        u16 sel6v;
+        u8 tr2;
+        u16 playerU;
+        u8 a;
+        u8 b;
+        s32 arg;
+        player = M2C_FIELD(map, u16 *, 0x52A4);
+        unitrec = map[player * 0x8C + 0x67C3];
+        cx2 = M2C_FIELD(map, s16 *, 0x52DC);
+        cy2 = M2C_FIELD(map, s16 *, 0x52DE);
+        r2flag = 1;
+        if ((unitrec & 0x2) == 0) {
+            u16 rowoff2;
+            u32 idx;
+            u8 byte;
+            u32 bit;
+            u8 val;
+            rowoff2 = M2C_FIELD(map, u16 *, 0x3758 + cy2 * 2);
+            idx = (cx2 + rowoff2) >> 3;
+            byte = map[idx + 0x5201];
+            bit = (cx2 + rowoff2) & 7;
+            val = (u8)(byte & (u8)(1u << bit));
+            if (val == 0) r2flag = 0;
+        }
+        if (r2flag != 0) {
+            cdret = func_020cd5d8();
+            if (cdret == 0) {
+                /* fallthrough */
+            }
+            if ((terrain & 0x1F) == 0x0F) {
+                lr = (terrain & 0xE0) >> 5;
+                r6v = (selIndex & 0xC0) >> 6;
+                r6v = r6v + 1;
+                sel6v = 0;
+                if (sel != 0) {
+                    sel6v = (u16)((M2C_FIELD(sel, u16 *, 6) << 16) >> 27);
+                }
+                tr2 = terrain & 0x1F;
+                playerU = (u16)(player & 0xFF);
+                a = map[lr * 0x8C + 0x67A4 + 0x1D];
+                b = map[r6v * 0x8C + 0x67A4 + 0x1D];
+                func_020c2e4c(playerU, tr2, a, b, sel6v, (M2C_UNK)(r4 & 0xFF));
+            } else if (r4 >= 20) {
+                arg = ((selIndex & 0xC0) >> 6) + 1;
+                func_020c32bc(arg);
+            }
+        }
+    }
+
+    {
+        u16 pl;
+        u16 *sel6p;
+        u16 sel6;
+        u16 t;
+        u8 lr;
+        u8 tmp2;
+        u16 *p22;
+        pl = M2C_FIELD(map, u16 *, 0x52A4);
+        sel6p = (u16 *)(sel + 6);
+        sel6 = *sel6p;
+        sel6 = (u16)((sel6 & ~0xF800u) | ((r4 & 0xFFFF) << 11));
+        *sel6p = sel6;
+        t = (u16)((sel6 << 16) >> 27);
+        if (t >= 20) {
+            *sel6p = (u16)(sel6 & ~0xF800u);
+            if ((terrain & 0x1F) == 0x0F) {
+                lr = (terrain & 0xE0) >> 5;
+                map[lr * 0x8C + 0x67D4] = 1;
+                tmp2 = map[lr * 0x8C + 0x67A4 + 0x31];
+                p22 = (u16 *)(map + pl * 0x8C + 0x67A4 + 0x22);
+                *p22 = (u16)(*p22 + tmp2);
+            }
+        }
+    }
+
+    func_0207ab24(cx, cy);
+    func_020ca484();
 }
 
 void func_020bb458(void) {

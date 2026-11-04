@@ -122,8 +122,39 @@ void func_0200fe6c(M2C_UNK arg0) {
  func_0200fbcc(arg0, 2);
 }
 
-void func_0200fe94(s32 arg0) { (void)arg0; }
-
+#pragma opt_common_subs off
+void func_0200fe94(s32 value){
+extern void *data_0212fde0;void func_02007f8c(void *,s32,s32);
+u8 *p=data_0212fde0;u32 bit; s32 kind;
+func_02007f8c(p+0x18,0,0x48);
+M2C_FIELD(p,s32 *,4)=value;M2C_FIELD(p,u32 *,0x4c)=0x3f;
+if(value==0)return;
+bit=1<<((value>>8)&255);kind=value&255;
+M2C_FIELD(p,u32 *,0x18)=bit;p[0x48]=255;
+if(kind==1){
+switch(bit){
+case 0x200:M2C_FIELD(p,s32 *,0x20)=16;M2C_FIELD(p,s32 *,0x24)=1;M2C_FIELD(p,s32 *,0x28)=5;p[0x48]=240;break;
+case 0x2000:M2C_FIELD(p,s32 *,0x20)=32;M2C_FIELD(p,s32 *,0x24)=2;M2C_FIELD(p,s32 *,0x28)=5;p[0x48]=0;break;
+case 0x10000:M2C_FIELD(p,s32 *,0x20)=128;M2C_FIELD(p,s32 *,0x24)=2;M2C_FIELD(p,s32 *,0x28)=10;p[0x48]=0;break;
+default:goto fail;}
+M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);M2C_FIELD(p,u32 *,0x4c)|=0x340;return;
+}else if(kind==2){
+switch(bit){
+case 0x40000:case 0x80000:case 0x100000:
+M2C_FIELD(p,s32 *,0x2c)=25;M2C_FIELD(p,s32 *,0x30)=300;M2C_FIELD(p,s32 *,0x44)=300;M2C_FIELD(p,s32 *,0x3c)=5000;M2C_FIELD(p,u32 *,0x4c)|=0x480;break;
+case 0x200000:
+M2C_FIELD(p,s32 *,0x2c)=23;M2C_FIELD(p,s32 *,0x3c)=(M2C_FIELD(p,s32 *,0x30)=300,500);M2C_FIELD(p,s32 *,0x34)=(M2C_FIELD(p,s32 *,0x40)=5000)*2;M2C_FIELD(p,s32 *,0x38)=60000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1480;break;
+case 0x400000:
+M2C_FIELD(p,s32 *,0x3c)=600;M2C_FIELD(p,s32 *,0x40)=3000;M2C_FIELD(p,s32 *,0x34)=23000;M2C_FIELD(p,s32 *,0x38)=800000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1000;break;
+case 0x800000:
+M2C_FIELD(p,s32 *,0x3c)=1000;M2C_FIELD(p,s32 *,0x40)=3000;M2C_FIELD(p,s32 *,0x34)=68000;M2C_FIELD(p,s32 *,0x38)=160000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1000;break;
+default:goto fail;
+}
+M2C_FIELD(p,s32 *,0x1c)=0x10000;M2C_FIELD(p,s32 *,0x20)=256;M2C_FIELD(p,s32 *,0x24)=3;M2C_FIELD(p,s32 *,0x28)=5;M2C_FIELD(p,u32 *,0x4c)|=0xb40;return;
+}else if(kind==3){if(bit==0x2000||bit==0x8000){M2C_FIELD(p,u32 *,0x20)=bit;M2C_FIELD(p,u32 *,0x1c)=bit;M2C_FIELD(p,s32 *,0x24)=2;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x340;return;}}
+fail:M2C_FIELD(p,s32 *,0x18)=M2C_FIELD(p,s32 *,4)=0;M2C_FIELD(data_0212fde0,s32 *,0)=3;
+}
+#pragma opt_common_subs on
 void func_02010164(void *arg0) {
     void func_02000b9c(s32);
     void func_02005df4(void *);
@@ -312,25 +343,20 @@ s32 func_02010590(void) {
 }
 
 s32 func_0201059c(void *arg0) {
-    extern void *data_0212fde0;
-    void func_02008048(void *, void *, u32);
-    void *p = &data_0212fde0;
-    u32 base = M2C_FIELD(p, volatile u32 *, 0x1c) & ~0x1ff;
-    if (base == M2C_FIELD(arg0, u32 *, 8)) {
-        u32 offset = M2C_FIELD(p, volatile u32 *, 0x1c) - base;
-        u32 size = 0x200 - offset;
-        if (size > M2C_FIELD(p, u32 *, 0x24)) size = M2C_FIELD(p, u32 *, 0x24);
-        func_02008048((u8 *)arg0 + 0x20 + offset, M2C_FIELD(p, void **, 0x20), size);
-        {
-            u32 new1c = M2C_FIELD(p, volatile u32 *, 0x1c) + size;
-            u32 new20 = M2C_FIELD(p, volatile u32 *, 0x20) + size;
-            u32 new24 = M2C_FIELD(p, volatile u32 *, 0x24) - size;
-            M2C_FIELD(p, volatile u32 *, 0x1c) = new1c;
-            M2C_FIELD(p, volatile u32 *, 0x20) = new20;
-            M2C_FIELD(p, volatile u32 *, 0x24) = new24;
-        }
-    }
-    return M2C_FIELD(p, u32 *, 0x24) != 0;
+ extern void *data_0212fde0;
+ void func_02008048(void *, void *, u32);
+ void *p = &data_0212fde0;
+ u32 base = M2C_FIELD(p, volatile u32 *, 0x1c) & ~0x1ff;
+ if (base == M2C_FIELD(arg0, u32 *, 8)) {
+  u32 offset = M2C_FIELD(p, volatile u32 *, 0x1c) - base;
+  u32 size = 0x200 - offset;
+  u32 a,b,c;
+  if (size > M2C_FIELD(p, u32 *, 0x24)) size = M2C_FIELD(p, u32 *, 0x24);
+  func_02008048((u8 *)arg0 + 0x20 + offset, M2C_FIELD(p, void **, 0x20), size);
+  a=M2C_FIELD(p,volatile u32 *,0x1c)+size; b=M2C_FIELD(p,volatile u32 *,0x20)+size; c=M2C_FIELD(p,volatile u32 *,0x24)-size;
+  M2C_FIELD(p,volatile u32 *,0x1c)=a; M2C_FIELD(p,volatile u32 *,0x20)=b; M2C_FIELD(p,volatile u32 *,0x24)=c;
+ }
+ return M2C_FIELD(p, u32 *, 0x24) != 0;
 }
 
 void func_02010628(u32 arg0,u32 arg1) {

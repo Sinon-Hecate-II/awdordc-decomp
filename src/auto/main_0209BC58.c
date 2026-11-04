@@ -533,9 +533,8 @@ void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 #pragma opt_propagation off
-#pragma opt_lifetimes off
 void func_0209c7fc(void) {
-s32 i; volatile s32 *p; s32 a,b,c,d;
+volatile s32 *p; s32 i,a,b,c,d;
 u32 mask1,mask2;
 p=data_0215d8a8; mask1=0xfffe007f; mask2=0xfc01ffff; i=0;
 do {
@@ -552,7 +551,7 @@ a=c&~0xe0000000;
 }while(i<64);
 *(s32 *)((u8 *)&data_0215d8a0+8)=(*(s32 *)((u8 *)&data_0215d8a0+8)&~7)|1;
 }
-#pragma opt_propagation off
+#pragma opt_propagation reset
 void func_0209c868(void) {
 s32 i;
 SpriteStateWord *p;

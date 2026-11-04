@@ -7,7 +7,7 @@ static inline void RestoreX(RestoredUnit *p,u16 v) {p->x=v;}
 static inline void RestoreY(RestoredUnit *p,u16 v) {p->y=v;}
 static inline void RestoreState(RestoredUnit *p,u8 v) {p->state=v;}
 typedef struct { u8 pad0[0xa10]; u16 tiles[0x508]; u8 cells[0x2338]; u16 rows[0xcf6]; u16 width,height; } Map8484;
-typedef union {u32 word; struct {u32 low:10;u32 kind:5;u32 gap:3;u32 mode:4;u32 high:10;} bits;} PackedEntry;
+typedef union {u32 word; struct {u32 low:10;u32 kind:5;u32 gap:3;u32 mode:4;u32 high:10;} bits; struct {u32 x:5,y:5,kind:5,owner:3,mode:4,state:2,unused:8;} fields;} PackedEntry;
 
 void func_020c7cd0(void *arg0, void *arg1) {
     void *func_020e34bc(s32);
@@ -342,95 +342,48 @@ void func_020c86a8(void *p) {
     M2C_FIELD(p, u32 *, 80) = 0;
 }
 
-void func_020c879c(void *arg0) {
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b56c0[];
-    void func_02007e98(s32, s32, s32);
-    void func_02068c50(void *, void *);
-    s32 func_020a23b4(s32);
-    s32 func_020a2360(s32);
-    void func_02007ef4(void *, void *, s32);
-    void func_020c86a8(void *);
-    void *func_020bfa74(void);
-
-    u8 *r4 = (u8 *)arg0;
-    u8 *r5;
-    s32 r6, r7, width, height, rowOffset;
-    u8 sp[8];
-    void *map;
-    void *base;
-    u8 *cursor;
-
-    r5 = r4 + 0x54;
-    func_02007e98(0, (s32)r4, 0x6f8);
-
-    *(s32 *)r4 = 0x20070731;
-    map = *gCurrentMap;
-    base = *(void **)map;
-    func_02068c50(r4 + 6, (u8 *)base + 0x5120);
-    r4[4] = (u8)*(u16 *)((u8 *)base + 0x5144);
-    r4[5] = (u8)*(u16 *)((u8 *)base + 0x5146);
-
-    r7 = 0;
-    r6 = 0;
-    while (r6 < 5) {
-        if (func_020a23b4(r6)) {
-            r7 = (r7 + 1) & 0xFFFF;
-        }
-        r6 = ((r6 + 1) << 16) >> 16;
-    }
-    if (r7 < 2) {
-        r4[0x27] = 0xff;
-    } else {
-        r4[0x27] = (u8)r7;
-    }
-
-    r6 = 0;
-    while (r6 < 5) {
-        s32 val = func_020a2360(r6);
-        r4[r6 + 0x28] = (u8)val;
-        r6 = ((r6 + 1) << 16) >> 16;
-    }
-
-    for (r6 = 0; r6 < 6; r6++) {
-        sp[r6] = 0;
-    }
-
-    width = *(s16 *)((u8 *)base + 0x5146);
-    if (width > 0) {
-        height = *(s16 *)((u8 *)base + 0x5144);
-        cursor = r5;
-        r7 = 0;
-        while (r7 < width) {
-            if (height > 0) {
-                rowOffset = *(u16 *)((u8 *)base + r7 * 2 + 0x3758);
-                r6 = 0;
-                while (r6 < height) {
-                    u8 v = *(u8 *)((u8 *)base + r6 + rowOffset + 0x1420);
-                    *cursor++ = v;
-                    if ((s32)(s8)data_ov000_021b56c0[v & 0x1f] != 0) {
-                        sp[5]++;
-                        sp[v >> 5]++;
-                    }
-                    r6++;
-                }
-            }
-            r7++;
-        }
-        r5 = cursor;
-    }
-
-    for (r6 = 1; r6 < 0x100; r6++) {
-    }
-    r4[0x2f] = 255;
-
-    func_020bfa74();
-    {
-        void *tmp = func_020bfa74();
-        func_02007ef4(tmp, r4 + 0x30, 0x10);
-    }
-    func_020c86a8(r4);
-    (void)r5; (void)sp; (void)map;
+void func_020c879c(void *arg0){
+extern void **gCurrentMap;extern s8 data_ov000_021b56c0[];
+void func_02007e98(s32,s32,s32);void func_02068c50(void *,void *);s32 func_020a23b4(s32);s32 func_020a2360(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
+u8 counts[6];u8 *out=arg0;u8 *cursor;u16 i;cursor=out+0x54;
+func_02007e98(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
+func_02068c50(out+6,(u8 *)*gCurrentMap+0x5120);
+out[4]=((Map8484 *)*gCurrentMap)->width;out[5]=((Map8484 *)*gCurrentMap)->height;
+{s32 y,x;
+y=0;x=0;do{if(func_020a23b4(x))y=(u16)(y+1);x=(u16)(x+1);}while((u32)x<5);
+if((u32)y<2)out[0x27]=255;else out[0x27]=y;
+x=0;do{out[0x28+x]=func_020a2360(x);x=(u16)(x+1);}while((u32)x<5);
+i=0;do{counts[i]=0;i++;}while(i<6);
+y=0;while(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)){
+x=0;while(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)){
+Map8484 *map=*gCurrentMap;
+s32 row=map->rows[y];
+s32 cell=M2C_FIELD((u8 *)map+x+row,u8 *,0x1420);
+*cursor++=cell;if(data_ov000_021b56c0[cell&31]){counts[5]++;counts[cell>>5]++;}
+x++;
+}y++;
+}
+}
+{s32 k;RestoredUnit *unit;u16 used;
+used=0;
+for(k=1;k<256;k++){
+unit=(RestoredUnit *)((u8 *)*gCurrentMap+0x59a4+k*14);
+if(unit->low){
+((PackedEntry *)(out+0x3d8))[used].fields.x=M2C_FIELD(unit,u8 *,1);
+((PackedEntry *)(out+0x3d8))[used].fields.y=M2C_FIELD(unit,u8 *,2);
+((PackedEntry *)(out+0x3d8))[used].fields.owner=unit ? (unit ? (((s32)((u8 *)unit-((u8 *)*gCurrentMap+0x59a4))/14)>>6):0)+1:0;
+((PackedEntry *)(out+0x3d8))[used].fields.kind=unit->low;
+((PackedEntry *)(out+0x3d8))[used].fields.mode=unit->kind;
+((PackedEntry *)(out+0x3d8))[used].fields.state=unit->state;
+((PackedEntry *)(out+0x3d8))[used].fields.unused=0;
+used++;
+}
+}
+out[0x2f]=used;
+}
+i=0;do{if(counts[0]<counts[i])counts[0]=counts[i];i++;}while(i<5);
+out[0x2d]=counts[5];out[0x2e]=counts[0]+1;
+func_02007ef4(func_020bfa74(),out+0x30,16);func_020c86a8(out);
 }
 
 /* Returns 1 if the two save/checkpoint record blobs compare equal field-by-field. */

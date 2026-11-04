@@ -343,6 +343,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     s16 val;
     s32 t;
     u8 f;
+    s32 mask;
     r4 = *(u16 *)data_02101e84;
     r5 = *(u16 *)((u8 *)data_02101e84 + 6);
     if (func_020d46e8()) {
@@ -415,21 +416,24 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         func_ov007_0221190c(arg0, r6, r7, r4);
         return;
     }
-    return;
 L_b4c:
     f = func_ov007_02211f00();
     if (f == 0) goto L_be4;
     if (f != 1) return;
     if (r5 & 1) { func_ov007_022114c4(arg0, r6, r7, r4 & 1); return; }
-    if (r4 & 2) { func_ov007_02211560(arg0, r6, r7, r4 & 2); return; }
+    mask = r4 & 2;
+    if (mask) { func_ov007_02211560(arg0, r6, r7, mask); return; }
     if (*(u16 *)((u8 *)data_02101e84 + 6) & 0x400) { func_ov007_022115fc(arg0, r6, r7, r4 & 0x400); return; }
-    if (r4 & 0x800) { func_ov007_022116a0(arg0, r6, r7, r4 & 0x800); return; }
+    mask = r4 & 0x800;
+    if (mask) { func_ov007_022116a0(arg0, r6, r7, mask); return; }
     return;
 L_be4:
     if (r5 & 1) { func_ov007_022116d4(arg0, r6, r7, r4 & 1); return; }
-    if (r4 & 2) { func_ov007_022117e0(arg0, r6, r7); return; }
+    mask = r4 & 2;
+    if (mask) { func_ov007_022117e0(arg0, r6, r7); return; }
     if (r5 & 0x400) { func_ov007_02211840(arg0, r6, r7, r4 & 0x400); return; }
-    if (r4 & 0x800) { func_ov007_0221190c(arg0, r6, r7, r4 & 0x800); return; }
+    mask = r4 & 0x800;
+    if (mask) { func_ov007_0221190c(arg0, r6, r7, mask); return; }
 }
 
 void func_ov007_02211e6c(M2C_UNK arg0) {

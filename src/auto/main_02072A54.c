@@ -38,11 +38,11 @@ s32 func_02072b04(void *buf) {
     return 0;
 }
 
+#pragma opt_common_subs off
 void *func_02072b20(void *arg0, s32 *arg1) {
     s8 temp_r2;
-    u8 temp_lr;
     u8 temp_r4;
-
+    u8 temp_lr;
     temp_r2 = M2C_FIELD(arg0, s8 *, 0);
     if (!(temp_r2 & 1)) {
         *arg1 = temp_r2 >> 1;
@@ -55,25 +55,26 @@ void *func_02072b20(void *arg0, s32 *arg1) {
     }
     temp_lr = M2C_FIELD(arg0, u8 *, 2);
     if (!(temp_r2 & 4)) {
-        *arg1 = temp_lr | ((temp_r4 << 8) | ((temp_r2 >> 3) << 0x10));
+        *arg1 = (temp_r2 >> 3) << 16 | temp_r4 << 8 | temp_lr;
         return arg0 + 3;
     }
-    *arg1 = M2C_FIELD(arg0, u8 *, 3) | ((temp_r4 << 0x10) | ((temp_r2 >> 3) << 0x18) | (temp_lr << 8));
+    *arg1 = (temp_r2 >> 3) << 24 | temp_r4 << 16 | temp_lr << 8 | M2C_FIELD(arg0, u8 *, 3);
     return arg0 + 4;
 }
-
+#pragma opt_common_subs off
 void *func_02072bac(u8 *p,u32 *out) {
-u32 a;
-u32 b,c;
-a=*(u8 *)p;
-if(!(a&1)) { *out=a>>1; return p+1; }
-b=p[1];
-if(!(a&2)) { *out=b|((a>>2)<<8); return p+2; }
-c=p[2];
-if(!(a&4)) { *out=c|((b<<8)|((a>>3)<<16)); return p+3; }
-*out=p[3]|((b<<16)|((a>>3)<<24)|(c<<8)); return p+4;
+    u32 a;
+    u8 temp_r4;
+    u8 temp_lr;
+    a=*(u8 *)p;
+    if(!(a&1)) { *out=a>>1; return p+1; }
+    temp_r4=p[1];
+    if(!(a&2)) { *out=temp_r4|((a>>2)<<8); return p+2; }
+    temp_lr=p[2];
+    if(!(a&4)) { *out=(a>>3)<<16 | temp_r4<<8 | temp_lr; return p+3; }
+    *out=(a>>3)<<24 | temp_r4<<16 | temp_lr<<8 | p[3]; return p+4;
 }
-
+#pragma opt_common_subs reset
 void *func_02072c38(u32 *p,s32 n,u32 addr) {
 s32 mid;
 u32 *q;

@@ -31,6 +31,7 @@ void func_0206f034(void *arg0, s32 arg1, s32 arg2, void *arg3) {
  void func_0206eeb4();
  s32 n = M2C_FIELD(arg0,s16 *,2);
  s32 i;
+ s32 unused = arg1 + arg2;
  func_0206eeb4(arg3);
  if (M2C_FIELD(arg3,u8 *,5)>9U) return;
  if(n>32)n=32;
@@ -40,6 +41,7 @@ void func_0206f034(void *arg0, s32 arg1, s32 arg2, void *arg3) {
  }
  M2C_FIELD(arg3,s16 *,2)-=M2C_FIELD(arg3,u8 *,4)-1;
  i=0; if ((s32)M2C_FIELD(arg3,u8 *,4)>0) do { void *p=(u8 *)arg3+i; u8 c=M2C_FIELD(p,u8 *,5); i++; M2C_FIELD(p,u8 *,5)=c+0x30; } while(i<M2C_FIELD(arg3,u8 *,4));
+ (void)unused;
 }
 
 void func_0206f0dc(s32 arg0) { (void)arg0; }
@@ -59,8 +61,8 @@ s32 func_0206f7a8(double x, ...) {
  u32 hi=((u32 *)&x)[1];
  u32 exp=hi&0x7ff00000;
  if(exp!=0) {
- if(exp==0x7ff00000) return ((hi&0xfffff)||((u32 *)&x)[0])?1:2;
- } else return ((hi&0xfffff)||((u32 *)&x)[0])?5:3;
+ if(exp==0x7ff00000) return ((hi&0x000fffff)||((u32 *)&x)[0])?1:2;
+ } else return ((hi&0x000fffff)||((u32 *)&x)[0])?5:3;
  return 4;
 }
 
@@ -68,9 +70,10 @@ double func_0206f818(double x, s32 n) {
  double func_0206dfd0(double, s32 *);
  double func_0206e08c(double, s32);
  s32 exponent;
- x=func_0206dfd0(x,&exponent);
+ s32 *pe = &exponent;
+ x=func_0206dfd0(x,pe);
  exponent+=n;
- return func_0206e08c(x,exponent);
+ return func_0206e08c(x,*pe);
 }
 
 #pragma scheduling off
@@ -101,11 +104,11 @@ void *func_0206f8c4(u32 *self,u32 value,u32 first,...) {
  s32 *func_0206f9d4(s32 *);
  u32 local[2];
 
- u32 *p;
+ void *p;
  self[0]=value;
  local[0]=value; local[1]=(u32)&first;
  p=func_02082028(16);
- if(p) {p[0]=(u32)data_02100734;p[1]=1;p[2]=1;p[0]=(u32)data_0210074c;p[3]=value;}
+ if(p) {((u32*)p)[0]=(u32)data_02100734;((u32*)p)[1]=1;((u32*)p)[2]=1;((u32*)p)[0]=(u32)data_0210074c;((u32*)p)[3]=value;}
  self[1]=(u32)p;
  local[0]=0;
  func_0206f9d4((s32 *)local);

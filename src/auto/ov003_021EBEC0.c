@@ -11,7 +11,7 @@ static inline s32 ov003_entries_differ(s32 arg0) {
 void func_ov003_021ec4e4(u8 *);
 #pragma inline off
 void func_ov003_021ebec0(void *p,u32 state){
-void func_0208fe30(u32);void func_ov003_021ebfcc(void *);s32 func_ov003_021ebc38(void *);void func_ov003_021e9cfc(void *,s32);void func_ov003_021ec4e4(u8 *);void func_ov003_021ec57c(void *,s32);
+void func_0208fe30(u32);u32 func_ov003_021ebfcc(void *);s32 func_ov003_021ebc38(void *);void func_ov003_021e9cfc(void *,s32);void func_ov003_021ec4e4(u8 *);void func_ov003_021ec57c(void *,s32);
 func_0208fe30(0x1000f);
 switch(state){
 case 25:case 3:case 2:case 1:case 0:func_ov003_021ebfcc(p);break;

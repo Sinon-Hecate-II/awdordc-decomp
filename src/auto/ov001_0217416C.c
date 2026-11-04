@@ -150,23 +150,20 @@ s32 func_ov001_0217452c(void) {
     return 0;
 }
 
+#pragma scheduling off
 void func_ov001_02174548(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_021745cc(s32);
 u32 v; s32 pos[2];
 v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,16),u32*,0);
-{
-    u32 masked = v & 0x01ff0000;
-    s32 low = (v & 0xFF) - 12;
-    ((volatile s32 *)pos)[1] = masked >> 16;
-    ((volatile s32 *)pos)[0] = low;
-}
+((volatile s32 *)pos)[1]=(v&0x01ff0000)>>16;
+((volatile s32 *)pos)[0]=(v&0xff)-12;
 if(pos[0]>76){func_ov001_02174f68(0,pos[0]);return;}
 func_ov001_02174f68(0,76);
 func_ov001_02174f68(1,192);
 func_ov001_0218c924(arg0,func_ov001_021745cc);
 }
-
+#pragma scheduling on
 void func_ov001_021745cc(s32 arg0){
 extern void *data_ov001_02193d20;
 void func_ov001_02174650(s32);

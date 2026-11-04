@@ -365,14 +365,10 @@ void func_020cd754(s32 arg0) {
 extern s32 *gCurrentMap;
 void func_02007f8c(s32,s32);
 s32 base=*gCurrentMap;
-s32 factor=0xA1;
-s32 address;
 if (M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) {
-address=base+0x5160;
-func_02007f8c(factor*arg0+address,255);
+func_02007f8c(((s32)0xA1)*arg0+(base+0x5160),255);
 } else {
-address=base+0x5160;
-func_02007f8c(factor*arg0+address,0);
+func_02007f8c(((s32)0xA1)*arg0+(base+0x5160),0);
 }
 }
 #pragma pop

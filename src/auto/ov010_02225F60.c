@@ -1,5 +1,23 @@
 /* 41 functions from 0x02225F60 to 0x02226D9C (ov010), found by ds-decomp. */
 #include "common.h"
+static inline u32 ov010DisableInterrupts(void) {
+    u32 previous = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = 0;
+    return previous;
+}
+static inline u32 ov010RestoreInterrupts(u32 saved) {
+    u32 previous = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = saved;
+    return previous;
+}
+#pragma cplusplus on
+class Ov010InterruptGuard {
+    u32 saved;
+public:
+    Ov010InterruptGuard() : saved(ov010DisableInterrupts()) {}
+    ~Ov010InterruptGuard() { ov010RestoreInterrupts(saved); }
+};
+#pragma cplusplus off
 typedef struct Ov010MemberCall { s32 function; s32 adjustment; } Ov010MemberCall;
 static inline void ov010CallMember(void *object, Ov010MemberCall *call) {
 s32 adj=call->adjustment;
@@ -542,25 +560,18 @@ ov010CallArray((u8 *)&data_ov010_0222ef58,48,data_ov010_0222c128[2]);
 ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
 }
 
-s32 func_ov010_02226be8(s32 a) {
+#pragma cplusplus on
+extern "C" s32 func_ov010_02226be8(s32 a) {
     extern M2C_UNK data_ov010_0222eee0;
-    u32 saved = *(volatile u16 *)0x4000208;
-    void *p;
-    *(volatile u16 *)0x4000208 = 0;
-    p = M2C_FIELD(&data_ov010_0222eee0, void **, 0x60);
-    while (p) {
-        if (a == M2C_FIELD(p, u8 *, 8)) {
-            (void)*(volatile u16 *)0x4000208;
-            *(volatile u16 *)0x4000208 = saved;
-            return 1;
-        }
+    Ov010InterruptGuard guard;
+    void *p = M2C_FIELD(&data_ov010_0222eee0, void **, 0x60);
+    while (p != NULL) {
+        if (a == M2C_FIELD(p, u8 *, 8)) return 1;
         p = M2C_FIELD(p, void **, 0);
     }
-    (void)*(volatile u16 *)0x4000208;
-    *(volatile u16 *)0x4000208 = saved;
     return 0;
 }
-
+#pragma cplusplus off
 void func_ov010_02226c68(void *arg0) {
 s32 func_02001fb4(s32,s32);s32 func_0207c8ec(s32,s32);s32 func_02038f34(u8);void func_02038438(void);
 s32 func_ov010_02226be8(s32);void func_ov010_02227bc8(u8);void func_ov010_0222972c(s32,void *,s32,u16);s32 func_ov010_02229a08(void);s32 func_ov010_02229a24(void);

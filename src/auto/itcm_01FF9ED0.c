@@ -252,7 +252,21 @@ void func_01ffa4e8(void *p) {
 }
 
 #pragma optimization_level 1
-void func_01ffa574(void *arg0) { void *p; if((p=arg0)==0)return; if(M2C_FIELD(p,s32 *,4)==0)return; if(M2C_FIELD(p,u8 *,0x30)&2)return; func_01ffa2cc(p);func_01ffa468(p);func_01ffa4e8(p);func_01ffa4a0(p); }
+void func_01ffa574(void *arg0) {
+    if (arg0 == (void *)0) {
+        return;
+    }
+    if (M2C_FIELD(arg0, s32 *, 4) == 0) {
+        return;
+    }
+    if (M2C_FIELD(arg0, u8 *, 0x30) & 2) {
+        return;
+    }
+    func_01ffa2cc(arg0);
+    func_01ffa468(arg0);
+    func_01ffa4e8(arg0);
+    func_01ffa4a0(arg0);
+}
 #pragma optimization_level reset
 void func_01ffa5b8(void *p) {
     extern u8 data_027e15b8, data_027e15b4;

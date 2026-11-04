@@ -13,9 +13,10 @@ void func_0209c024(s16,s16,void *,void *,s32,s32);
 s32 func_020e31e0(void);s32 func_0207cb88(s32);s32 func_020cfb94(void);
 s32 func_020d303c(s32);s32 func_020d30a8(s32);
 void *func_020a8bc0(void);void *func_020a8bcc(void);
+volatile s32 e;
 void *old;
 void *dst;
-s32 c,d;u8 *dummy; s32 y,color,a,b,x;volatile s32 e;
+s32 c,d;u8 *dummy; s32 y,color,a,b,x;
 u8 *p,*map;
 old=gCur3DSpriteEngine;dst=M2C_FIELD(old,void **,0x24);
 gCur3DSpriteEngine=data_027e00c8;
@@ -66,7 +67,6 @@ func_0209c048(16,17,dst,a,0,0);
 }else func_0209c024(16,17,dst,func_020a8bcc(),0,0);
 gCur3DSpriteEngine=old;
 }
-#pragma opt_strength_reduction reset
 void func_ov000_02170ca0(void) {
     M2C_UNK func_01ffa6fc(s32);
     s32 func_01ffa770(M2C_UNK *);

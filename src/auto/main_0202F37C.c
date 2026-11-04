@@ -212,9 +212,25 @@ loop_2:
     return var_r4;
 }
 
-#pragma opt_common_subs off
-void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) { M2C_UNK func_02007e70(void *, s32, M2C_UNK); s32 value;u16 code;void *p; p=(void *)(arg3+0x6c);M2C_FIELD(p,u8 *,0x401)=arg0;code=M2C_FIELD(arg1,u16 *,2);value=(s32)code>>2;if(!(code&2))value+=25;M2C_FIELD(p,u8 *,0x402)=(u8)value; M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);func_02007e70(arg1,arg3+0xbf0,0xc0);}
-#pragma opt_common_subs reset
+#pragma optimization_level 2
+void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
+    M2C_UNK func_02007e70(void *, s32, M2C_UNK);
+    s32 value;
+    u16 code;
+    void *p;
+    p = (void *)(arg3 + 0x6C);
+    M2C_FIELD(p, u8 *, 0x401) = arg0;
+    code = M2C_FIELD(arg1, u16 *, 2);
+    value = (s32) code >> 2;
+    if (!(code & 2)) {
+        value += 0x19;
+    }
+    value = value & 0xFF;
+    M2C_FIELD(p, u8 *, 0x402) = (u8) value;
+    M2C_FIELD(p, u8 *, 0x403) = (u8) ((M2C_FIELD(p, u8 *, 0x403) & ~0x7F) | (arg2 & 0x7F));
+    func_02007e70(arg1, arg3 + 0xBF0, 0xC0);
+}
+#pragma optimization_level reset
 void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  M2C_UNK func_02007e70(void *, s32, M2C_UNK);
  u16 n;
@@ -229,17 +245,16 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  p=(void *)arg0;
  if(v&2) n=(s32)v>>2;
  else n=((s32)v>>2)+25;
- 
  n=(u8)n;
  n=(u8)n;
  arg3=arg3+0x470;
- if((u32)(u8)n>M2C_FIELD(p,u8 *,2)) {
+ if((u8)n>(u8)M2C_FIELD(p,u8 *,2)) {
  M2C_FIELD(p,u8 *,2)=n;
  M2C_FIELD(p,u8 *,3)=(M2C_FIELD(p,u8 *,3)&~0x7F)|(arg2&0x7F);
  }
  func_02007e70(arg1,(s32)arg3+offset,0xC0);
 }
-
+#pragma opt_common_subs reset
 void func_0202fb20(s32 arg0, s32 arg1) {
     M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e70(void *, s32, s32);

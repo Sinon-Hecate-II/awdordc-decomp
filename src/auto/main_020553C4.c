@@ -264,34 +264,33 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
     M2C_UNK func_02058644(M2C_UNK, M2C_UNK *);
     M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_020fee8c;
-    s32 *p;
-    void *buf;
+    void *temp_r0;
+    void *temp_r0_2;
 
-    p = (s32*)func_02037794(0x144);
-    if (p == NULL) {
+    temp_r0 = func_02037794(0x144);
+    if (temp_r0 == NULL) {
         func_02058644(arg0, &data_020fee8c);
         return 1;
     }
-    func_02065210(p, 0, 0x144);
-    p[0] = arg2;
-    p[1] = -1;
-    p[2] = 0;
-    p[4] = 0;
-    p[5] = 0;
-    p[3] = 0;
-    p[8] = 0;
-    p[9] = 0;
-    p[7] = 0x1000;
-    buf = func_02037794(0x1001);
-    p[6] = (s32)buf;
-    if (buf == NULL) {
+    func_02065210(temp_r0, 0, 0x144);
+    M2C_FIELD(temp_r0, s32 *, 0) = arg2;
+    M2C_FIELD(temp_r0, s32 *, 4) = -1;
+    M2C_FIELD(temp_r0, s32 *, 8) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x10) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x14) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x20) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x24) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x1C) = 0x1000;
+    temp_r0_2 = func_02037794(0x1001);
+    M2C_FIELD(temp_r0, void **, 0x18) = temp_r0_2;
+    if (temp_r0_2 == NULL) {
         func_02058644(arg0, &data_020fee8c);
         return 1;
     }
-    p[79] = 0;
-    p[80] = 0;
-    p[6] = p[6];
-    *arg1 = (void*)p;
+    M2C_FIELD(temp_r0, s32 *, 0x13C) = 0;
+    M2C_FIELD(temp_r0, s32 *, 0x140) = 0;
+    *arg1 = temp_r0;
     return 0;
 }
 

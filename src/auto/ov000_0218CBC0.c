@@ -1,9 +1,7 @@
 /* 5 functions from 0x0218CBC0 to 0x0218D908 (ov000), found by ds-decomp. */
 #include "common.h"
 
-M2C_UNK func_ov000_0218cbc0(void) {
-    return 0;
-}
+M2C_UNK func_ov000_0218cbc0(void) { return 0; }
 
 void func_ov000_0218cfec(void) {
     M2C_UNK func_ov000_0218bbd0(M2C_UNK);
@@ -39,7 +37,5 @@ if(data_ov000_021b5c05[type*112]>=6U && ((u32)(M2C_FIELD(p,volatile u16 *,6)<<21
 return 0;
 }
 
-M2C_UNK func_ov000_0218d4b4(void) {
-    return 0;
-}
+M2C_UNK func_ov000_0218d4b4(void) { return 0; }
 

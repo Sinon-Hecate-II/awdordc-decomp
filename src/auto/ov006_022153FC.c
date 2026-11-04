@@ -565,6 +565,28 @@ done:
     }
 }
 
+M2C_UNK func_ov006_02215ee4(void *arg0){
+void func_01ffa8c4(void *,s32);void func_02008048(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 func_0208fe30(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
+extern u16 **gCur3DSpriteEngine;extern u16 **data_027e00c8;
+u32 buf[3];u64 b,a;void *p=M2C_FIELD(arg0,void **,0x10);void *q;u16 **old;
+if(M2C_FIELD(arg0,u8 *,0)==12){
+q=M2C_FIELD(p,void **,0x48);M2C_FIELD(q,s16 *,14)=0;M2C_FIELD(q,s16 *,16)=256;M2C_FIELD(q,s16 *,12)=12;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
+func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47f0();func_01ffa8c4(p,3);func_0208fe30(0x1000f);return;}
+a=func_020c53e4(0);b=func_020c54ac(data_ov006_02218e10);
+if((a==0||b==0||a!=b)&&func_020c5474(b)){
+func_020c5424(buf,b);if(!func_020c54e8(buf)){
+func_02008048(data_ov006_02218e10,M2C_FIELD(p,s32 *,0x34),13);
+q=M2C_FIELD(p,void **,0x48);M2C_FIELD(q,s16 *,14)=0;M2C_FIELD(q,s16 *,16)=256;M2C_FIELD(q,s16 *,12)=12;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
+func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47d0();func_01ffa8c4(p,3);func_0208fe30(0x1000e);return;}
+func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000003);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,5);func_0208fe30(0x1001d);return;
+}
+if(a!=0&&b!=0&&a==b){
+func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000002);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,4);
+}else{
+func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000004);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,6);}
+func_0208fe30(0x1001d);
+}
+
 void func_ov006_02216188(void)
 {
   M2C_UNK func_0208fe30(s32);

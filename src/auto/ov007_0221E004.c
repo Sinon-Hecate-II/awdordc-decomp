@@ -6,9 +6,7 @@ void func_ov007_0221e004(void) {
     func_ov007_0221c718();
 }
 
-M2C_UNK func_ov007_0221e010(void) {
-    return 0;
-}
+M2C_UNK func_ov007_0221e010(void) { return 0; }
 
 void func_ov007_0221e568(u8 *arg0) {
     M2C_UNK func_0207c8ec(u8, M2C_UNK);
@@ -127,9 +125,9 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 func_020ae22c(M2C_UNK);
+    M2C_UNK func_020ae22c(M2C_UNK);
     M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020e32e8(M2C_UNK *);
+    M2C_UNK func_020e32e8(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **data_027e00c8;
     extern M2C_UNK data_ov007_02220d40;

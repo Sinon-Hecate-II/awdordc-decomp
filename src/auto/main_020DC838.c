@@ -191,7 +191,6 @@ M2C_UNK func_020b1c44(s32,s32);
 M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
 s16 func_020a8ff4(void *);
 void func_ov009_02224560(s32,s32,s32);
-#pragma opt_strength_reduction off
 s32 i, x, i2, y, end, color, test;
 void **saved, **sp0;
 void *sp4, *p, *item;
@@ -279,7 +278,6 @@ func_020dcc00(p);
 M2C_FIELD(p, u8 *, 0x5a) = 0;
 M2C_FIELD(arg0, u16 *, 0x48) &= ~0x2;
 func_ov009_02224560(0, 0, 0);
-#pragma opt_strength_reduction on
 }
 
 void func_020dd004(void) {

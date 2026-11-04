@@ -157,7 +157,7 @@ else if(v<0)v=0;
 return v;
 }
 
-s32 func_020de5b0(register M2C_UNK arg0) {
+s32 func_020de5b0(s32 arg0) {
     M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
     void *func_ov010_02229b00();
     extern M2C_UNK data_0212c5e0;

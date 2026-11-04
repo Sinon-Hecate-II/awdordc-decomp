@@ -370,7 +370,6 @@ void func_020cc834(void) {
 void func_020cc840(void *a) {
     extern void **gCurrentMap;
     void *p;
-    void *q;
     s32 x, y;
     s32 device;
     func_01ffb554((u8 *)*gCurrentMap + 0x1e30);
@@ -379,13 +378,12 @@ void func_020cc840(void *a) {
     func_020cdfec(M2C_FIELD(p, s32 *, 0x52d0), M2C_FIELD(p, volatile s16 *, 0x52dc), M2C_FIELD(p, volatile s16 *, 0x52de));
     func_0207a748(0);
     p = *gCurrentMap;
-    q = (u8 *)p + 0x5000;
     x = M2C_FIELD(p, volatile s16 *, 0x52dc);
     y = M2C_FIELD(p, volatile s16 *, 0x52de);
-    device = M2C_FIELD(q, volatile s32 *, 0x2d0);
+    device = M2C_FIELD(p, volatile s32 *, 0x52d0);
     M2C_FIELD(a, s16 *, 0x6c) = func_020ba320(device, x, y);
     M2C_FIELD(a, s16 *, 0x6e) = 3;
-    M2C_FIELD(a, s16 *, 0x6e) = func_020cac1c(M2C_FIELD(a, s16 *, 0x6e), M2C_FIELD(a, s16 *, 0x6c));
+    M2C_FIELD(a, s16 *, 0x6e) = func_020cac1c(3, M2C_FIELD(a, s16 *, 0x6c));
 }
 #pragma opt_peephole reset
 void func_020cc8d8(void *arg0) {

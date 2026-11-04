@@ -174,8 +174,8 @@ void func_ov001_0218b818(void) {
 }
 
 void func_ov001_0218b850(void) {
+    void func_ov001_0218b860(void);
     void func_ov001_0218b964(void);
-    void func_ov001_0218b860();
     func_ov001_0218b860();
     func_ov001_0218b964();
 }
@@ -244,6 +244,7 @@ else if(M2C_FIELD(g,u8 *,1)==47){g->state->flags.released=1;M2C_FIELD(g,u8 *,1)=
 }
 }
 
+#pragma opt_peephole off
 s32 func_ov001_0218bb00(s32 arg0) {
     extern M2C_UNK data_ov001_02193e48;
     if (arg0 == (arg0 & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32))) {
@@ -251,13 +252,20 @@ s32 func_ov001_0218bb00(s32 arg0) {
     }
     return 0;
 }
-
+#pragma opt_peephole reset
 s32 func_ov001_0218bb24(s32 a) {
-extern M2C_UNK data_ov001_02193e48;
-return a==(a&M2C_FIELD(M2C_FIELD(&data_ov001_02193e48,void **,4),u16 *,0x34));
+    extern M2C_UNK data_ov001_02193e48;
+    s32 t;
+    t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34);
+    return a == t;
 }
 
-s32 func_ov001_0218bb48(s32 a){extern M2C_UNK data_ov001_02193e48;return a==(a&M2C_FIELD(M2C_FIELD(&data_ov001_02193e48,void **,4),u16 *,0x36));}
+s32 func_ov001_0218bb48(s32 a) {
+    extern M2C_UNK data_ov001_02193e48;
+    s32 t;
+    t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x36);
+    return a == t;
+}
 
 s32 func_ov001_0218bb6c(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);
 if(M2C_FIELD(p,TouchFlags *,0x38).active==0)return 0;

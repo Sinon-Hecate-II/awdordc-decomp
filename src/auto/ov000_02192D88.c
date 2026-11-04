@@ -51,9 +51,9 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
             if (kind == 0) continue;
             if (kind != 0xd) continue;
             flags = M2C_FIELD(rec, u16 *, 6);
-            if (((flags >> 11) & 0x1f) == 0) continue;
-            row = M2C_FIELD(base + (s32)arg1 * 2, u16 *, 0x3758);
-            t = M2C_FIELD(base, u8 *, 0x1420 + (s32)arg0 + row) & 0x1f;
+            if (!((flags >> 11) & 0x1f)) continue;
+            row = M2C_FIELD(base + arg1 * 2, u16 *, 0x3758);
+            t = M2C_FIELD(base, u8 *, 0x1420 + arg0 + row) & 0x1f;
             if (t == 1) {
                 if (arg2 == 0) continue;
             } else if (t == 9) {
@@ -73,9 +73,10 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
         u8 ry = rec[2];
         u16 row;
         u8 t;
-        row = M2C_FIELD(base + (s32)(ry) * 2? 0 : ry, u16 *, 0);
-        (void)row;
-        if (!func_ov000_021a8ff0(M2C_FIELD(base, u8 *, 0x1420 + rx + M2C_FIELD(base + ry * 2, u16 *, 0x3758)))) {
+        row = M2C_FIELD(base + ry * 2, u16 *, 0x3758);
+        t = M2C_FIELD(base, u8 *, 0x1420 + rx + row) & 0x1f;
+        (void)t;
+        if (!func_ov000_021a8ff0(M2C_FIELD(base, u8 *, 0x1420 + rx + row))) {
             s32 d;
             if (arg2 != 0) {
                 if (kind != 0x12 && kind != 0x14) {
@@ -94,23 +95,29 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
         rec += 6;
     }
     rec7 = rec;
-    if (best != 0x7fff) goto done_func;
-    if (func_ov000_021786a8(coords)) {
-        best = 0x7fff - ManhattanDistance(x, y, coords[0], coords[1]);
-    } else {
-        s32 player;
-        for (player = 1; player < 5; player++) {
-            if (!func_020d1938(player)) continue;
-            if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
-            {
-                u16 start2 = data_ov000_021aeef4[player];
-                for (i = start2 + 1; i < start2 + 0x33; i++) {
-                    u8 *rec2 = base + 0x59a4 + i * 14;
-                    u8 kind = rec2[0] & 0x3f;
-                    if (kind == 0) continue;
-                    {
-                        s32 d = ManhattanDistance(x, y, rec7[1], rec7[2]);
-                        if (d < best) best = d;
+    if (best != 0x7fff) {
+        goto done_func;
+    }
+    {
+        s16 c0, c1;
+        if (func_ov000_021786a8(coords)) {
+            best = 0x7fff - ManhattanDistance(x, y, coords[0], coords[1]);
+        } else {
+            s32 player;
+            for (player = 1; player < 5; player++) {
+                if (!func_020d1938(player)) continue;
+                if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
+                {
+                    u16 start2 = data_ov000_021aeef4[player];
+                    s32 i2;
+                    for (i2 = start2 + 1; i2 < start2 + 0x33; i2++) {
+                        u8 *rec2 = base + 0x59a4 + i2 * 14;
+                        u8 kind2 = rec2[0] & 0x3f;
+                        if (kind2 == 0) continue;
+                        {
+                            s32 d = ManhattanDistance(x, y, rec2[1], rec2[2]);
+                            if (d < best) best = d;
+                        }
                     }
                 }
             }

@@ -82,7 +82,7 @@ s32 func_0206ad4c(void *arg0, s32 arg1) {
         return 0;
     }
     temp_r2 = (u32) (temp_r3 << 0x14) >> 0x1E;
-    switch (temp_r2) {                              /* irregular */
+    switch (temp_r2) {
     case 2:
         var_r1 = 1;
         break;

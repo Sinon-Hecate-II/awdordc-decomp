@@ -167,6 +167,7 @@ void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK data_021577ad;
     void func_020e4b24(void);
     u8 *p = (u8 *)arg0;
+    u32 *g0 = (u32 *)&data_0215d890;
     M2C_FIELD(&data_0215d890, u32 *, 0x128) = *(u32 *)(p + 0x98);
     M2C_FIELD(&data_0215d890, u8 *, 0x12c) = p[0x9c];
     M2C_FIELD(&data_0215d890, u8 *, 0x12d) = p[0x9d];
@@ -174,75 +175,67 @@ void func_020beabc(M2C_UNK *arg0) {
     {
         u16 *s = (u16 *)(p + 0xa0);
         u16 *d = (u16 *)&data_0215d9c0;
-        s32 i = 3;
-        do {
+        s32 i;
+        for (i = 3; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
     }
     M2C_FIELD(&data_0215d9c0, u16 *, 0xc) = *(u16 *)(p + 0xac);
     {
         u32 *s = (u32 *)(p + 0xb0);
         u32 *d = (u32 *)&data_0215d9e0;
-        s32 i = 4;
-        do {
-            *d++ = *s++;
-        } while (--i);
+        s32 i;
+        for (i = 4; i; i--) *d++ = *s++;
     }
     {
         u32 *s = (u32 *)(p + 0xc0);
         u32 *d = (u32 *)&data_0215d9ec;
-        s32 i = 3;
-        do {
-            *d++ = *s++;
-        } while (--i);
+        s32 i;
+        for (i = 3; i; i--) *d++ = *s++;
     }
     {
         u32 *s = (u32 *)(p + 0xcc);
         u32 *d = (u32 *)&data_0215da0c;
-        s32 i = 8;
-        do {
-            *d++ = *s++;
-        } while (--i);
+        s32 i;
+        for (i = 8; i; i--) *d++ = *s++;
     }
     {
         u32 *s = (u32 *)(p + 0xec);
         u32 *d = (u32 *)&data_0215da1c;
-        s32 i = 4;
-        do {
-            *d++ = *s++;
-        } while (--i);
+        s32 i;
+        for (i = 4; i; i--) *d++ = *s++;
     }
     {
         u8 *s = p + 0xfc;
         u8 *d = (u8 *)&data_0215da2c;
-        s32 i = 7;
-        do {
+        s32 i;
+        for (i = 7; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
         *d = *s;
     }
     {
         u8 *s = p + 0x10c;
         u8 *d = (u8 *)&data_0215dba4;
-        s32 i = 0x17;
-        do {
-            s32 j = 4;
-            do {
+        s32 i;
+        for (i = 0x17; i; i--) {
+            s32 j;
+            for (j = 4; j; j--) {
                 *d++ = *s++;
                 *d++ = *s++;
                 *d++ = *s++;
                 *d++ = *s++;
-            } while (--j);
-        } while (--i);
+            }
+        }
         *d++ = *s++;
         *d++ = *s++;
         *d = *s;
     }
     {
-        s32 idx = 0;
-        do {
+        s32 idx;
+        for (idx = 0; idx < 3; idx++) {
             s32 off = idx * 0x118;
             u8 *sp = p + off;
             u8 *dp = (u8 *)&data_0215771c + off;
@@ -251,96 +244,93 @@ void func_020beabc(M2C_UNK *arg0) {
             {
                 u32 *ss = (u32 *)(sp + 0x28c);
                 u32 *dd = (u32 *)(dp + 0x8);
-                s32 i = 0x10;
-                do {
-                    *dd++ = *ss++;
-                } while (--i);
+                s32 i;
+                for (i = 0x10; i; i--) *dd++ = *ss++;
             }
             {
                 u8 *ss = sp + 0x38c;
                 u8 *dd = dp + 0x108;
-                s32 i = 4;
-                do {
+                s32 i;
+                for (i = 4; i; i--) {
                     *dd++ = *ss++;
                     *dd++ = *ss++;
-                } while (--i);
+                }
             }
             {
                 u8 *ss = sp + 0x394;
                 u8 *dd = dp + 0x110;
-                s32 i = 4;
-                do {
+                s32 i;
+                for (i = 4; i; i--) {
                     *dd++ = *ss++;
                     *dd++ = *ss++;
-                } while (--i);
+                }
             }
-            idx++;
-        } while (idx < 3);
+        }
     }
     {
         u8 *s = p;
         u8 *d = (u8 *)&data_02157724;
-        s32 i = 4;
-        do {
+        s32 i;
+        for (i = 4; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
     }
     {
         u8 *s = p + 0x8;
         u8 *d = (u8 *)&data_02157734;
-        s32 i = 8;
-        do {
+        s32 i;
+        for (i = 8; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
     }
     {
         u8 *s = p + 0x18;
         u8 *d = (u8 *)&data_0215773c;
-        s32 i = 4;
-        do {
+        s32 i;
+        for (i = 4; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
     }
     {
         u8 *s = p + 0x20;
         u8 *d = (u8 *)&data_02157744;
-        s32 i = 4;
-        do {
+        s32 i;
+        for (i = 4; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
     }
     {
         u8 *s = p + 0x28;
         u8 *d = (u8 *)&data_02157767;
-        s32 i = 0x11;
-        do {
+        s32 i;
+        for (i = 0x11; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
         *d = *s;
     }
     {
         u8 *s = p + 0x4b;
         u8 *d = (u8 *)&data_0215778a;
-        s32 i = 0x11;
-        do {
+        s32 i;
+        for (i = 0x11; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
         *d = *s;
     }
     {
         u8 *s = p + 0x6e;
         u8 *d = (u8 *)&data_021577ad;
-        s32 i = 0x11;
-        do {
+        s32 i;
+        for (i = 0x11; i; i--) {
             *d++ = *s++;
             *d++ = *s++;
-        } while (--i);
+        }
         *d = *s;
     }
     func_020e4b24();

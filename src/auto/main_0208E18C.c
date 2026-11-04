@@ -153,12 +153,13 @@ void *func_0208ed88(void *arg0) {
 }
 
 #pragma opt_propagation off
-void func_0208ee1c(UnkNode0208EE1C *s) {
-    if (s->p) {
-        *s->p = s->v;
+void func_0208ee1c(void *arg0) {
+    unsigned long long *dst = M2C_FIELD(arg0, unsigned long long **, 0x68);
+    if (dst != 0) {
+        *dst = M2C_FIELD(arg0, unsigned long long *, 0x60);
     }
 }
-
+#pragma opt_propagation reset
 void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); func_02082040(arg0); return arg0; }
 
 #pragma opt_propagation reset

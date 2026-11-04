@@ -30,6 +30,10 @@ u32 func_02015248(void *arg0) {
  return result;
 }
 
+s32 func_020152c8(void *arg0, void *arg1, s32 arg2) {
+    return 0;
+}
+
 void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
     M2C_UNK func_02008048(s32, s32, s32);

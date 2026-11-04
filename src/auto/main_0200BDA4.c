@@ -61,7 +61,7 @@ void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 #pragma opt_strength_reduction off
-u32 func_0200bf0c(void *arg0) {s32 x=M2C_FIELD(arg0,s32 *,28);if(!(((u32)x>>24)&1)) return M2C_FIELD(arg0,u32 *,8);return (u32)(x<<8)>>8;}
+u32 func_0200bf0c(void *arg0) {s32 x=M2C_FIELD(arg0,s32 *,28);if(((u32)x>>24)&1) return (u32)(x<<8)>>8;return M2C_FIELD(arg0,u32 *,8);}
 #pragma opt_strength_reduction reset
 void func_0200bf28(void *arg0) {
     M2C_UNK func_020067a8(s32, s32);
@@ -369,7 +369,7 @@ void func_0200c55c(M2C_UNK arg0, void *arg1) {
     func_02007f8c(arg1, 0, 0x58);
 }
 
-void func_0200c614(void *arg0) { }
+void func_0200c614(void *arg0) { (void)arg0; }
 
 void func_0200c9c8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;

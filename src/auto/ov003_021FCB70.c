@@ -39,11 +39,12 @@ void func_ov003_021fcd44(void *arg0) {
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02088f1c(void *);
-    u16 func_020aae10(void *);
-    u16 func_020aae44(void *);
+    s32 func_020aae10(void *);
+    s32 func_020aae44(void *);
     M2C_UNK func_ov003_021f2008();
     s32 func_ov003_021f400c();
     s32 func_ov003_021f4064();
+    void *temp_r4_4;
     s16 temp_r5;
     s16 temp_r6;
     s32 var_r0;
@@ -57,7 +58,8 @@ void func_ov003_021fcd44(void *arg0) {
     s32 var_r1_4;
     s32 var_r1_5;
     s32 var_r1_6;
-    u16 temp_r8;
+    s32 temp_r8;
+    s32 frame;
     u32 temp_r0_2;
     void *temp_r0;
     void *temp_r1;
@@ -65,11 +67,11 @@ void func_ov003_021fcd44(void *arg0) {
     void *temp_r4;
     void *temp_r4_2;
     void *temp_r4_3;
-    void *temp_r4_4;
     void *temp_r4_5;
 
+    frame=func_ov003_021f153c();
     temp_r4 = M2C_FIELD(arg0, void **, 0x58);
-    M2C_FIELD(temp_r4, s16 *, 0xE) = func_ov003_021f153c();
+    M2C_FIELD(temp_r4, s16 *, 0xE) = frame;
     M2C_FIELD(temp_r4, s16 *, 0x10) = 0;
     M2C_FIELD(temp_r4, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r4, u16 *, 2) = (u16) M2C_FIELD(temp_r4, u16 *, 4);
@@ -137,7 +139,7 @@ void func_ov003_021fcd44(void *arg0) {
             temp_r5 = M2C_FIELD(temp_r4_4, s16 *, 0x52);
             temp_r6 = M2C_FIELD(temp_r4_4, s16 *, 0x50);
             temp_r8 = func_020aae10(temp_r4_4);
-            func_02087d84(M2C_FIELD(temp_r4_4, void **, 0x64), 1, temp_r6, temp_r5, (s32) temp_r8, (s32) func_020aae44(temp_r4_4));
+            func_02087d84(M2C_FIELD(temp_r4_4, void **, 0x64), 1, temp_r6, temp_r5, (u16) temp_r8, (u16)func_020aae44(temp_r4_4));
         }
     }
     temp_r4_5 = M2C_FIELD(arg0, void **, 0x6C);
@@ -193,24 +195,19 @@ void func_ov003_021fcd44(void *arg0) {
                             if (!(var_r0_5 & 0xFF)) {
                                 return;
                             }
-                            func_ov003_021f2008();
-                            return;
+                            goto finish;
                         }
-                        func_ov003_021f2008();
-                        return;
+                        goto finish;
                     }
-                    func_ov003_021f2008();
-                    return;
+                    goto finish;
                 }
-                func_ov003_021f2008();
-                return;
+                goto finish;
             }
-            func_ov003_021f2008();
-            return;
+            goto finish;
         }
-        func_ov003_021f2008();
-        return;
+        goto finish;
     }
+finish:
     func_ov003_021f2008();
 }
 

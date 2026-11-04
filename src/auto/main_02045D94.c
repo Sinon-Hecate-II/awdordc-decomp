@@ -30,7 +30,15 @@ void func_02045ffc(M2C_UNK a) { M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK)
 u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
 
 #pragma opt_common_subs off
-M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) { u8 *dst=(u8*)arg1; u32 bits=~0U; s32 i=0; s32 shift=0; bits ^= bits >> arg0; do { dst[i]=bits>>(24-shift); ++i; shift+=8; } while(i<4); }
+M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) {
+    u8 *dst = (u8 *)arg1;
+    u32 bits = (~0U) ^ ((~0U) >> arg0);
+    s32 i;
+    s32 shift;
+    for (i = 0, shift = 0; i < 4; i++, shift += 8) {
+        dst[i] = (u8)(bits >> (24 - shift));
+    }
+}
 #pragma opt_common_subs reset
 s32 func_02046088(void *a) { u8 *p=a; s32 i=0;do {if(p[i])return 1;i++;}while(i<32);return 0; }
 
@@ -69,7 +77,7 @@ s32 func_0204612c(u8 *arg0) {
     return 0;
 }
 
-s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK func_020067a8(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; register u16 len; register s32 one; func_020067a8(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); len=arg1;one=1; loop: if(func_02046158(one,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}func_020067a8(arg2,arg1);return 1; }
+s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK func_020067a8(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; func_020067a8(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); loop: if(func_02046158(1,arg0,(u16)arg1,arg2)!=1) {WaitByLoop(0x40000);goto loop;}func_020067a8(arg2,arg1);return 1; }
 
 void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
@@ -150,7 +158,6 @@ s32 func_02046884(void *arg0) {
             }
         }
         r5++;
-        if (r5 >= 3) break;
         r6 += 0x100;
         r7 += 0x100;
     }

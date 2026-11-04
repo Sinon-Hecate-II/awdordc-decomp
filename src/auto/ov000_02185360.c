@@ -70,6 +70,8 @@ data_027e0a98+=4;data_027e0a94++;
 }
 
 M2C_UNK func_ov000_02185c20(M2C_UNK arg0, M2C_UNK arg1) {
+    (void)arg0;
+    (void)arg1;
     return 0;
 }
 

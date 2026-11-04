@@ -1,11 +1,144 @@
 /* 5 functions from 0x0206ADF8 to 0x0206BD7C (main), found by ds-decomp. */
 #include "common.h"
 
-typedef struct { u8 pad, sign, unused, alternate; u16 reserved, conversion; s32 width, precision; } FormatFlags;
+extern const u16 data_020eaf78[];
+static inline int FormatDigit(u16 ch) {
+    return (ch >= 128) ? 0 : data_020eaf78[ch] & 8;
+}
+
+typedef struct { u8 pad, sign, unused, alternate; u8 reserved; u8 _pad; u16 conversion; s32 width, precision; } FormatFlags;
 
 /* Rounds the decimal number held at `number` at digit position `digitPos`. */
-M2C_UNK func_0206adf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK *arg2) {
-    return arg0;
+u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
+    u16 *format;
+    FormatFlags f;
+    u16 ch;
+    int active;
+    int modifier;
+
+    f.pad = 1; f.sign = 0; f.unused = 0; f.alternate = 0; f.reserved = 0;
+    f.width = 0; f.precision = 0;
+
+    format = input + 1;
+    ch = *format;
+    if (ch == '%') {
+        f.conversion = ch;
+        *out = f;
+        return format + 1;
+    }
+
+    do {
+        active = 1;
+        switch (ch) {
+            case '-': f.pad = 0; break;
+            case '+': f.sign = 1; break;
+            case ' ': if (f.sign != 1) f.sign = 2; break;
+            case '#': f.alternate = 1; break;
+            case '0': if (f.pad) f.pad = 2; break;
+            default: active = 0; break;
+        }
+        if (!active) break;
+        ch = *++format;
+    } while (1);
+
+    if (ch == '*') {
+        *args += 1;
+        f.width = (*args)[-1];
+        if (f.width < 0) {
+            f.pad = 0;
+            f.width = -f.width;
+        }
+        ch = *++format;
+    } else {
+        while (FormatDigit(ch)) {
+            f.width = f.width * 10 + (ch - '0');
+            ch = *++format;
+        }
+    }
+    if (f.width > 509) {
+        f.conversion = 0xffff;
+        *out = f;
+        return format + 1;
+    }
+
+    if (ch == '.') {
+        ch = *++format;
+        f.unused = 1;
+        if (ch == '*') {
+            *args += 1;
+            f.precision = (*args)[-1];
+            ch = *++format;
+            if (f.precision < 0) f.unused = 0;
+        } else {
+            while (FormatDigit(ch)) {
+                f.precision = f.precision * 10 + (ch - '0');
+                ch = *++format;
+            }
+        }
+    }
+
+    modifier = 1;
+    switch (ch) {
+        case 'h': f.reserved = 2; if (format[1] == 'h') { f.reserved = 1; ch = *++format; } break;
+        case 'l': f.reserved = 3; if (format[1] == 'l') { f.reserved = 4; ch = *++format; } break;
+        case 'L': f.reserved = 9; break;
+        case 'j': f.reserved = 6; break;
+        case 't': f.reserved = 8; break;
+        case 'z': f.reserved = 7; break;
+        default: modifier = 0; break;
+    }
+    if (modifier) ch = *++format;
+    f.conversion = ch;
+
+    switch (ch) {
+        case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
+            if (f.reserved == 9) f.reserved = 4;
+            if (!f.unused) f.precision = 1;
+            else if (f.pad == 2) f.pad = 1;
+            break;
+        case 'f': case 'F':
+            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
+                f.reserved == 8 || f.reserved == 4) f.conversion = 0xffff;
+            else if (!f.unused) f.precision = 6;
+            break;
+        case 'a': case 'A':
+            if (!f.unused) f.precision = 13;
+            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
+                f.reserved == 8 || f.reserved == 4 || f.reserved == 1)
+                f.conversion = 0xffff;
+            break;
+        case 'g': case 'G':
+            if (f.precision == 0) f.precision = 1;
+        case 'e': case 'E':
+            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
+                f.reserved == 8 || f.reserved == 4 || f.reserved == 1)
+                f.conversion = 0xffff;
+            else if (!f.unused) f.precision = 6;
+            break;
+        case 'p':
+            f.reserved = 3;
+            f.alternate = 1;
+            f.conversion = 'x';
+            f.precision = 8;
+            break;
+        case 'c':
+            if (f.reserved == 3) f.reserved = 5;
+            else if (f.unused || f.reserved != 0) f.conversion = 0xffff;
+            break;
+        case 's':
+            if (f.reserved == 3) f.reserved = 5;
+            else if (f.reserved) f.conversion = 0xffff;
+            break;
+        case 'n':
+            if (f.reserved == 9) f.conversion = 0xffff;
+            break;
+        default:
+            f.conversion = 0xffff;
+            break;
+    }
+
+    *out = f;
+    return format + 1;
 }
 
 u16 *func_0206b370(s32 value, u16 *end, FormatFlags flags) {

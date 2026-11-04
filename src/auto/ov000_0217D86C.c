@@ -12,6 +12,7 @@ s32 func_ov000_0217d86c(void) {
     s32 func_ov000_021a98a8(s32);
     void func_01ffada0(u8,u8,u8,s32,s32);
 
+    volatile s32 rv = 0;
     u16 stflags;
     void *unit;
     s32 count;
@@ -36,13 +37,13 @@ s32 func_ov000_0217d86c(void) {
     s32 funcRes;
 
     stflags = M2C_FIELD(data_ov000_021df580, u16 *, 0xa);
-    if (!(( (u32)(stflags << 20) >> 29) & 1)) return 0;
-    if (!(( (u32)(stflags << 26) >> 29) & 4)) return 0;
+    if (!(( (u32)(stflags << 20) >> 29) & 1)) return rv;
+    if (!(( (u32)(stflags << 26) >> 29) & 4)) return rv;
 
     unit = M2C_FIELD(*gCurrentMap, void **, 0x52d0);
-    if (!(data_ov000_021b5c0f[((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26) * 0x70] & 7)) return 0;
-    if (func_ov000_021a98e4() != 0) return 0;
-    if (((M2C_FIELD(unit, u8 *, 0xb) << 24) >> 31)) return 0;
+    if (!(data_ov000_021b5c0f[((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26) * 0x70] & 7)) return rv;
+    if (func_ov000_021a98e4() != 0) return rv;
+    if (((u32)(M2C_FIELD(unit, u8 *, 0xb) << 24) >> 31)) return rv;
 
     func_01ffada0(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 7, 0x6e, 0);
 
@@ -84,7 +85,7 @@ s32 func_ov000_0217d86c(void) {
         }
     }
 
-    if (count == 0) return 0;
+    if (count == 0) return rv;
     if (var8 == 0) {
         skind = (u8)(((u32)(M2C_FIELD(unit, u8 *, 0) << 26)) >> 26);
         if (skind == 6) {
@@ -93,7 +94,7 @@ s32 func_ov000_0217d86c(void) {
         }
     }
     if (var4 == 0) return (M2C_FIELD(unit, u8 *, 0xb) >> 7) & 1;
-    if (varc < 3) return 0;
+    if (varc < 3) return rv;
     skind = (u8)(((u32)(M2C_FIELD(unit, u8 *, 0) << 26)) >> 26);
     funcRes = func_ov000_021a98a8(skind);
     if (funcRes != 0) {

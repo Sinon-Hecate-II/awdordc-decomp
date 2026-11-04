@@ -457,24 +457,19 @@ s32 func_02018b44(u8 *arg0, s32 arg1) {
     void func_02008048(M2C_UNK, M2C_UNK, s32);
     s32 func_02018bd0(s32);
 
-    u32 field4;
-    register u8 type;
-    s32 field12;
-    register s32 r4;
-    s32 field8;
-    register s32 r6 = arg1;
+    s32 r6 = arg1;
 
-    field4 = M2C_FIELD(&data_02136c84, u32 *, 0x4);
-    if (field4 == 0) return 0;
-    type = arg0[2];
-    field12 = M2C_FIELD(&data_02136c84, s32 *, 0xC);
-    if (type > (u8)field12) return 0;
-    r4 = arg1 - 1;
-    field8 = M2C_FIELD(&data_02136c84, s32 *, 0x8);
-    func_02008048((M2C_UNK)(arg0 + 3), (M2C_UNK)(field4 + r4 * 32 + type * field8), field8);
-    *((u32 *)((u8 *)field4 + 0x1E0 + r4 * 4)) |= (1U << type);
-    if (!func_02018bd0(r6)) return 0;
-    return (s32)(field4 + r4 * 32);
+    if (M2C_FIELD(&data_02136c84, u32 *, 0x4) == 0) return 0;
+    {
+        u8 type = arg0[2];
+        s32 r4;
+        if (type > M2C_FIELD(&data_02136c84, s32 *, 0xC)) return 0;
+        r4 = arg1 - 1;
+        func_02008048((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&data_02136c84, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&data_02136c84, s32 *, 0x8)), M2C_FIELD(&data_02136c84, s32 *, 0x8));
+        *((u32 *)((u8 *)M2C_FIELD(&data_02136c84, u32 *, 0x4) + 0x1E0 + r4 * 4)) |= (1U << type);
+        if (!func_02018bd0(r6)) return 0;
+        return (s32)(M2C_FIELD(&data_02136c84, M2C_UNK *, 0x4) + r4 * 32);
+    }
 }
 
 s32 func_02018bd0(s32 arg0) {

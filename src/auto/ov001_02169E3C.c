@@ -110,15 +110,16 @@ do{row=y<32?y:y+32;x=arg3;p=(u16*)(arg0+(row<<6));
 if(arg3<endX){do{col=x<32?x:x+0x3e0;p[col]=tile++|((u32)arg1>>16);x++;}while(x<endX);}y++;}while(y<endY);
 }
 
+#pragma scheduling off
 s32 func_ov001_0216a2e0(s32 base,s32 w,s32 h,s32 stride,s32 tile,s32 pal) {
 u16 v;s32 x,y;u16 *p;
-pal=(u32)pal<<28;y=0;
+y=0;
+pal=(u32)pal<<28;
 if(h<=0)return base;
 do{p=(u16 *)base;x=0;if(w>0){do{v=tile|((u32)pal>>16);x++;tile++;*p++=v;}while(x<w);}y++;base+=stride*2;}while(y<h);
 return base;
 }
-
-#pragma opt_propagation off
+#pragma scheduling reset
 s32 func_ov001_0216a33c(u32 a,u32 b) {
  u32 x,z,t,s,u,v;
  register u32 y;
@@ -135,8 +136,28 @@ s32 func_ov001_0216a33c(u32 a,u32 b) {
  return (t+(u>>2))*(s+(v>>2))+z;
 }
 #pragma opt_propagation reset
-void func_ov001_0216a398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; (void)arg6; (void)arg7;
+s32 func_ov001_0216a398(void *dst,s32 w,s32 h,s32 x,s32 y,s32 mode,s32 tile,s32 shift){
+#pragma intrinsic on
+extern u8 data_ov001_0218c9e4[];s32 func_ov001_02169494(void *);
+s32 wx,hy,sx,sy,nx,ny,step,area,count,i,j,n;u32 aw,ah;u8 *p;
+wx=w<8?31-__CLZ(w):3;hy=h<8?31-__CLZ(h):3;
+p=data_ov001_0218c9e4+hy*8+wx*2;sx=p[0];sy=p[1];
+aw=w&(-1U<<sx);ah=h&(-1U<<sy);step=mode==0?1:2;count=0;
+n=func_ov001_02169494(p);nx=w>>sx;ny=h>>sy;area=(step<<sx)<<sy;
+for(j=0;j<ny;j++){for(i=0;i<nx;i++){
+M2C_FIELD(dst,u32 *,0)=(M2C_FIELD(dst,u32 *,0)&0xfe00ff00)|((y+(j<<sy)*8)&255)|((u32)(x+(i<<sx)*8)<<23>>7);
+M2C_FIELD(dst,u32 *,0)=(M2C_FIELD(dst,u32 *,0)&0x3fff3fff)|n;
+M2C_FIELD(dst,u16 *,4)=(M2C_FIELD(dst,u16 *,4)&~0x3ff)|tile;
+tile+=area>>shift;
+M2C_FIELD(dst,u32 *,0)=(M2C_FIELD(dst,u32 *,0)&~0x2000)|(mode<<13);
+dst=(u8 *)dst+8;
+}}
+count+=nx*ny;
+if(aw<(u32)w){s32 rem=w-aw;n=func_ov001_0216a398(dst,rem,ah,x+aw*8,y,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*rem*ah))>>shift;count+=n;}
+if(ah<(u32)h){s32 rem=h-ah;n=func_ov001_0216a398(dst,aw,rem,x,y+ah*8,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*aw*rem))>>shift;count+=n;}
+if(aw<(u32)w&&ah<(u32)h){n=func_ov001_0216a398(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,tile,shift);count+=n;}
+return count;
+#pragma intrinsic off
 }
 
 void func_ov001_0216a690(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {

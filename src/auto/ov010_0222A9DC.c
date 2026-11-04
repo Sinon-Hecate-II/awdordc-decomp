@@ -1,13 +1,59 @@
 /* 30 functions from 0x0222A9DC to 0x0222B9DC (ov010), found by ds-decomp. */
 #include "common.h"
 
-void func_ov010_0222a9dc(void *arg0) {
-    M2C_UNK func_ov010_02228180(void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+void func_ov010_0222a9dc(void *arg0){
+M2C_UNK func_ov010_02228180(void *);M2C_UNK func_01ffa8c4(void *,s32);M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+extern s32 data_027e00c4,data_027e00c8,gCur3DSpriteEngine;
+s32 old;u32 current;s32 i;s8 mode;void *p;
+if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+s32 old;u32 current;s32 i;s8 mode;void *p;
+old=gCur3DSpriteEngine;i=0;do{
+if(i==0)current=data_027e00c8;else current=data_027e00c4;
+gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
+if(mode==0&&current!=data_027e00c8)continue;
+if(mode==1&&current!=data_027e00c4)continue;
+if(mode==3&&current!=old)continue;
+p=func_0208b564(arg0);func_020899cc(p,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000013);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
 
-    if (func_ov010_02228180(arg0) == 3) {
-        func_01ffa8c4(arg0, 8);
-    }
+}while(++i<2);gCur3DSpriteEngine=old;}func_01ffa8c4(arg0,8);return;}
+func_ov010_0222a20c((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
+if(!func_020c4ba4(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+s32 old;u32 current;s32 i;s8 mode;void *p;
+old=gCur3DSpriteEngine;i=0;do{
+if(i==0)current=data_027e00c8;else current=data_027e00c4;
+gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
+if(mode==0&&current!=data_027e00c8)continue;
+if(mode==1&&current!=data_027e00c4)continue;
+if(mode==3&&current!=old)continue;
+p=func_0208b564(arg0);func_020899cc(p,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
+func_0208ae88(p,1);
+}while(++i<2);gCur3DSpriteEngine=old;}func_01ffa8c4(arg0,10);return;}
+if(!func_020c4b88(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+s32 old;u32 current;s32 i;s8 mode;void *p;
+old=gCur3DSpriteEngine;i=0;do{
+if(i==0)current=data_027e00c8;else current=data_027e00c4;
+gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
+if(mode==0&&current!=data_027e00c8)continue;
+if(mode==1&&current!=data_027e00c4)continue;
+if(mode==3&&current!=old)continue;
+p=func_0208b564(arg0);func_020899cc(p,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000017);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
+
+}while(++i<2);gCur3DSpriteEngine=old;}func_01ffa8c4(arg0,12);return;}
+if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+s32 old;u32 current;s32 i;s8 mode;void *p;
+old=gCur3DSpriteEngine;i=0;do{
+if(i==0)current=data_027e00c8;else current=data_027e00c4;
+gCur3DSpriteEngine=current;mode=M2C_FIELD(arg0,s8 *,0x35);
+if(mode==0&&current!=data_027e00c8)continue;
+if(mode==1&&current!=data_027e00c4)continue;
+if(mode==3&&current!=old)continue;
+p=func_0208b564(arg0);func_020899cc(p,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
+func_0208ae88(p,0);
+}while(++i<2);gCur3DSpriteEngine=old;}func_01ffa8c4(arg0,9);
 }
 
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {

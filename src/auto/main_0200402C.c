@@ -473,11 +473,11 @@ void func_02004cf0(void) {
 }
 
 void func_02004d3c(void) {
-s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
-s32 state=func_020033cc();
-u32 base=((u16*)&data_020e9b30)[state>>4];
-*(volatile s32 *)((char*)&data_0212dbfc+12)=state;
-M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
+ s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
+ s32 state=func_020033cc();
+ u32 base=((u16*)&data_020e9b30)[state>>4];
+ M2C_FIELD(&data_0212dbfc,s32*,12)=state;
+ M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
 }
 
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -528,12 +528,13 @@ s32 func_0200751c(void);
 void func_02007530(s32);
 void func_02005da4(s32);
 extern M2C_UNK data_027e0000,data_027e00e0;
-s32 saved=func_0200751c();
+s32 ret=func_0200751c();
 if(arg0) M2C_FIELD(&data_027e0000,u32 *,0x3ff8)&=~mask;
-func_02007530(saved);
-while(!(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8))) {func_02005da4((s32)&data_027e00e0);}
+func_02007530(ret);
+if(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)) return;
+do {func_02005da4((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)));
 }
-#pragma opt_common_subs reset
+#pragma opt_propagation reset
 void func_02004ed4(void) {
 
 }

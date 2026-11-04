@@ -295,7 +295,7 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     func_0200e8f4((u8)arg0 | 0x03006500);
     return 0;
 }
-#pragma scheduling on
+#pragma scheduling reset
 s32 func_0200e5c4(M2C_UNK arg0, M2C_UNK arg1) {
     void func_0200e270(void);
     s32 func_0200e558(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);

@@ -59,6 +59,7 @@ void func_020e0f14(M2C_UNK arg0) {
     s32 var_r0_2;
     s32 var_r0_3;
     s32 var_r0_4;
+    register s16 c0 asm("r7");
 
     temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
@@ -185,10 +186,11 @@ void func_020e0f14(M2C_UNK arg0) {
     temp_r0_3 = func_0208931c(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x60) = temp_r0_3;
     M2C_FIELD(temp_r0_3, s16 *, 0x34) = 0x9C;
-    M2C_FIELD(temp_r0_3, s16 *, 0x36) = 0xC0;
+    c0 = 0xC0;
+    M2C_FIELD(temp_r0_3, s16 *, 0x36) = c0;
     ((SpriteE0F14 *)temp_r0_3)->tile=64;
     ((SpriteE0F14 *)temp_r0_3)->palette=32;
-    func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, 0xC0);
+    func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, c0);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3C) = 0;
     temp_r1_7 = M2C_FIELD(temp_r0, void **, 0x60);
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
@@ -404,8 +406,8 @@ void func_020e147c(M2C_UNK arg0) {
     gCur3DSpriteEngine = data_027e00c4;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
-    M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
+    M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     M2C_FIELD(temp_r2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     func_0208b698(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     func_02088da8(M2C_FIELD(temp_r0, void **, 0x64));

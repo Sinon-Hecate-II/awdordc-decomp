@@ -35,6 +35,95 @@ void func_0209ebe0(void *p){extern M2C_UNK data_02168f0c;extern void **gCurrentM
 void func_0209ec44(void *p){extern void **gCurrentMap;void *q=M2C_FIELD(p,void **,0x34);u32 v;u8 *row;u16 off;u8 *base;if(q){func_020b689c(q,p);v=M2C_FIELD(q,u8 *,4);}else{func_020b68f0(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c),p);base=*gCurrentMap;row=M2C_FIELD(p,s32 *,0x38)+base;off=M2C_FIELD(base+M2C_FIELD(p,s32 *,0x3c)*2,u16 *,0x3758);v=M2C_FIELD(row+off,u8 *,0x539c)&127;}if(v==0&&q==0){if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(31,1);}}
 
 void func_0209ecf0(s32 arg0, s32 arg1) {
+    void func_020d166c(u8, s32, void *);
+    s32 func_0207c8ec(s32, s32);
+    s32 func_020d0468(s32, s32, s32);
+    void func_020a2b98(s32, s32);
+    s16 func_020a3518(s32);
+    s32 func_020cd614(void);
+    void *func_01ffa3dc(void *, s32);
+    s32 func_020d468c(void);
+    void func_020bac24(void);
+    extern void **gCurrentMap;
+    extern M2C_UNK data_02156e50;
+    extern M2C_UNK data_0211f984;
+    extern M2C_UNK data_0211f8fc;
+
+    u8 *unitPtr;
+    s32 selectedBucket;
+    s32 unitBucket;
+    void *chosen;
+    void *p;
+
+    unitPtr = (u8 *)*gCurrentMap + 0x59a4 + arg0 * 14;
+
+    selectedBucket = 0;
+    if (M2C_FIELD(*gCurrentMap, void **, 0x52d0) != (void *)0)
+        selectedBucket = ((((s32)((u8 *)M2C_FIELD(*gCurrentMap, void **, 0x52d0) - ((u8 *)*gCurrentMap + 0x59a4))) / 14) >> 6) + 1;
+    selectedBucket &= 0xff;
+
+    unitBucket = 0;
+    if (unitPtr != (u8 *)0)
+        unitBucket = ((((s32)(unitPtr - ((u8 *)*gCurrentMap + 0x59a4))) / 14) >> 6) + 1;
+    unitBucket &= 0xff;
+
+    if (arg0 == 0) {
+        void *sel = M2C_FIELD(*gCurrentMap, void **, 0x52d0);
+        u16 h = M2C_FIELD(sel, u16 *, 0x6);
+        u32 t = (h << 21) >> 28;
+        u32 nibble = (t == 0) ? 15 : (t - 1);
+        M2C_FIELD(sel, u16 *, 0x6) = (u16)((h & ~0x780u) | (nibble << 7));
+        (void)func_020d468c();
+        func_020bac24();
+        return;
+    }
+
+    M2C_FIELD(&data_02156e50, s32 *, 0x8) = func_0207c2e0();
+    func_020d166c((u8)M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), arg0, (u8 *)*gCurrentMap + 0x52dc);
+
+    {
+        s16 d = M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xd4);
+        s32 f = M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x74) + d;
+        if (f < 0x0fffffff && (s32)M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) < 0x0fffffff) {
+            M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x74) = f;
+            M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) =
+                M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) + 1;
+        }
+    }
+    if (M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xe6) == 0)
+        M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x7c) += M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xd4);
+    M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x80) += 1;
+
+    {
+        s16 globalW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ec6);
+        s32 globalRng = (globalW == 0) ? 0 : func_0207c8ec(globalW - 1, 10) + 1;
+        u16 selFlags = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u16 *, 0x6);
+        s32 selLow7 = selFlags & 0x7f;
+        s32 selRng = (selLow7 == 0) ? 0 : func_0207c8ec(selLow7 - 1, 10) + 1;
+        s16 baseW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ee6);
+        s32 baseRng = (baseW == 0) ? 0 : func_0207c8ec(baseW - 1, 10) + 1;
+        u16 unitFlags = M2C_FIELD(unitPtr, u16 *, 0x6);
+        s32 unitLow7 = unitFlags & 0x7f;
+        s32 unitRng = (unitLow7 == 0) ? 0 : func_0207c8ec(unitLow7 - 1, 10) + 1;
+
+        s32 sdiff = selRng - globalRng;
+        s32 udiff = unitRng - baseRng;
+
+        s32 aa = M2C_FIELD((u8 *)*gCurrentMap + 0x5200, s16 *, 0xdc);
+        s32 bb = M2C_FIELD((u8 *)*gCurrentMap + 0x5200, s16 *, 0xde);
+        if (func_020d0468(selectedBucket, aa, bb) != -1) func_020a2b98(selectedBucket, udiff);
+        if (func_020d0468(unitBucket, aa, bb) != -1) func_020a2b98(unitBucket, sdiff);
+    }
+
+    M2C_FIELD((u8 *)*gCurrentMap + 0x2b8 + 0x6c00, s16 *, 0x12) = func_020a3518(selectedBucket);
+    M2C_FIELD((u8 *)*gCurrentMap + 0x2d8 + 0x6c00, s16 *, 0x12) = func_020a3518(unitBucket);
+
+    if (func_020cd614() == 0) chosen = &data_0211f984; else chosen = &data_0211f8fc;
+    p = func_01ffa3dc(chosen, 7);
+    M2C_FIELD(p, s32 *, 0x60) = arg1;
+    M2C_FIELD(p, void **, 0x34) = unitPtr;
+    M2C_FIELD(p, s32 *, 0x38) = (s32)M2C_FIELD(unitPtr, u8 *, 0x1);
+    M2C_FIELD(p, s32 *, 0x3c) = (s32)M2C_FIELD(unitPtr, u8 *, 0x2);
 }
 
 s32 func_0209f0a0(u8 *a,u8 *b){

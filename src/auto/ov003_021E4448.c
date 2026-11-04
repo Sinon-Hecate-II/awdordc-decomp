@@ -222,14 +222,16 @@ void func_ov003_021e4908(void *arg0) {
     void *p;
     s32 i;
 
+    func_ov003_021f13ec(&data_02102174);
     r4 = func_01ffa3dc(&data_02102174, arg0);
     if (r4 == 0) {
         return;
     }
-    func_ov003_021f13ec(&data_02102174);
 
     *(void **)r4 = &data_ov003_0220f48c;
     *(void **)((char *)r4 + 0x34) = &data_ov003_0220f4b4;
+    *(void **)r4 = &data_ov003_0220f4e0;
+    *(void **)((char *)r4 + 0x34) = &data_02102174;
 
     bp = (unsigned char *)r4;
     bp[0x38] = 0;
@@ -244,11 +246,17 @@ void func_ov003_021e4908(void *arg0) {
     *(s32 *)(bp + 0x54) = 0;
     *(s32 *)(bp + 0x58) = 0;
 
-    bp[0x60] = (unsigned char)(bp[0x60] & ~0x3);
-    bp[0x60] = (unsigned char)(bp[0x60] & ~0xc);
-    bp[0x60] = (unsigned char)(bp[0x60] & ~0x30);
-    bp[0x60] = (unsigned char)(bp[0x60] & ~0x40);
-    bp[0x60] = (unsigned char)(bp[0x60] & ~0x80);
+    {
+        unsigned char v = bp[0x60];
+        unsigned char a = (unsigned char)(v & ~0x3);
+        unsigned char b = (unsigned char)(a & ~0xc);
+        unsigned char c = (unsigned char)(b & ~0x30);
+        unsigned char d = (unsigned char)(c & ~0x40);
+        unsigned char e = (unsigned char)(d & ~0x80);
+        bp[0x60] = a;
+        bp[0x60] = c;
+        bp[0x60] = e;
+    }
     *(s32 *)(bp + 0x68) = 0;
     *(s32 *)(bp + 0x6c) = 0;
 

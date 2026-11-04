@@ -2,8 +2,7 @@
 #include "common.h"
 struct TileNeighbors_0221 { s16 values[24]; };
 
-void func_ov007_0221a59c(void) {
-}
+void func_ov007_0221a59c(void) { return; }
 
 void func_ov007_0221ab20(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);

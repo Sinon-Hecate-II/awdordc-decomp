@@ -1,6 +1,7 @@
 /* 28 functions from 0x02026164 to 0x020270B4 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma scheduling off
 void func_02026164(u8 *state,const u8 *key,s32 keylen) {
 s32 i; u8 *S; s32 jj; s32 ii; s32 k; u8 sk,keybyte,sj;
 state[0]=0;state[1]=0;S=state+2;
@@ -15,7 +16,7 @@ if(ii>=keylen)ii=0;
 S[k]=sj;S[jj]=sk;
 }
 }
-
+#pragma scheduling reset
 void func_020261d8(u8 *state, u8 *data, s32 len) {
     s32 n;
     u8 j;

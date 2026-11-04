@@ -177,6 +177,7 @@ s32 func_02020a80(s32 arg0, s32 arg1, void *arg2) {
     return var_r4 + var_r5;
 }
 
+#pragma opt_common_subs off
 s32 func_02020b18(void *arg0) {
     s32 func_02020bc4(void *);
     s32 func_0201f1d0(void *, s32, s32);
@@ -186,8 +187,8 @@ s32 func_02020b18(void *arg0) {
     s32 r1;
     void *temp_r5;
 
-    r1 = 0;
     r4 = arg0;
+    r1 = 0;
     if (func_020214a8() != 0) {
         return -0x1C;
     }
@@ -214,7 +215,7 @@ s32 func_02020b18(void *arg0) {
     }
     return 0;
 }
-
+#pragma opt_common_subs reset
 s32 func_02020bc4(void *arg0) {
     M2C_UNK func_0201d484();
     s32 var_r1;

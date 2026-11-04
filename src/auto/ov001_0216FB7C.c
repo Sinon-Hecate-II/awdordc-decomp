@@ -93,7 +93,7 @@ void func_ov001_0216ffc4(void *arg0, s32 arg1, void *arg2, void *arg3) {
     spC = (M2C_FIELD(arg2, u8 *, 0) << 0x18) ^ (M2C_FIELD(arg2, u8 *, 1) << 0x10) ^ (M2C_FIELD(arg2, u8 *, 2) << 8) ^ M2C_FIELD(arg2, u8 *, 3) ^ M2C_FIELD(var_r0, s32 *, 0);
     sp8 = (M2C_FIELD(arg2, u8 *, 4) << 0x18) ^ (M2C_FIELD(arg2, u8 *, 5) << 0x10) ^ (M2C_FIELD(arg2, u8 *, 6) << 8) ^ M2C_FIELD(arg2, u8 *, 7) ^ M2C_FIELD(var_r0, s32 *, 4);
     var_r5 = M2C_FIELD(var_r0, s32 *, 8) ^ ((M2C_FIELD(arg2, u8 *, 8) << 0x18) ^ (M2C_FIELD(arg2, u8 *, 9) << 0x10) ^ (M2C_FIELD(arg2, u8 *, 0xA) << 8) ^ M2C_FIELD(arg2, u8 *, 0xB));
-    var_r6 = M2C_FIELD(var_r0, s32 *, 0xC) ^ ((M2C_FIELD(arg2, u8 *, 0xD) << 0x10) ^ (M2C_FIELD(arg2, u8 *, 0xC) << 0x18) ^ (M2C_FIELD(arg2, u8 *, 0xE) << 8) ^ M2C_FIELD(arg2, u8 *, 0xF));
+    var_r6 = M2C_FIELD(var_r0, s32 *, 0xC) ^ ((M2C_FIELD(arg2, u8 *, 0xC) << 0x18) ^ (M2C_FIELD(arg2, u8 *, 0xD) << 0x10) ^ (M2C_FIELD(arg2, u8 *, 0xE) << 8) ^ M2C_FIELD(arg2, u8 *, 0xF));
     sp4 = arg1 >> 1;
 loop_1:
     temp_r1 = *(&data_ov001_0218de78 + ((u32) ((var_r5 >> 8) << 0x18) >> 0x16));

@@ -188,12 +188,10 @@ void func_020b6570(void *arg0) {
     M2C_UNK func_0208c0d0(void *, u8);
     u16 temp_r5;
     u16 temp_r7;
-    u32 temp_r1;
     s32 temp_r5_2;
     s32 temp_r6;
-    temp_r1 = M2C_FIELD(arg0, u32 *, 0x48);
-    temp_r5 = (u16)(temp_r1 >> 21);
-    temp_r7 = (u16)((temp_r1 << 11) >> 21);
+    temp_r5 = (u16)(M2C_FIELD(arg0, u32 *, 0x48) >> 21);
+    temp_r7 = (u16)((M2C_FIELD(arg0, u32 *, 0x48) << 11) >> 21);
     temp_r6 = func_0207ca38(4, 31, 0, temp_r5, temp_r7);
     temp_r5_2 = func_0207ca38(4, 0, 0x40000, temp_r5, temp_r7);
     func_0208c0d0(arg0, (u8)temp_r6);

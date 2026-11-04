@@ -14,12 +14,13 @@ void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_020ae728(arg1, arg2);
 }
 
-void func_020ae7a4(u32 a,u32 b,u16 c) {
-extern void *gCur3DSpriteEngine;
-u8 *e=(u8 *)gCur3DSpriteEngine;
-u8 *tiles=*(u8 **)(e+0x30);
-u16 *p=(u16 *)(tiles+((a<<5)&~1));
-p[b]=c;
+void func_020ae7a4(u32 a, u32 b, u16 c) {
+    extern void *gCur3DSpriteEngine;
+    u32 off = (a << 5) & ~1;
+    u8 *e = (u8 *) gCur3DSpriteEngine;
+    u8 *tiles = *(u8 **) (e + 0x30);
+    u16 *p = (u16 *) (tiles + off);
+    p[b] = c;
 }
 
 s32 func_020ae7cc(s32 arg0) {
@@ -32,9 +33,7 @@ void func_020ae7e0(void) {
     func_020ae7ec();
 }
 
-s32 func_020ae7ec(void) {
-    return 0;
-}
+s32 func_020ae7ec(void) { return 0; }
 
 #pragma opt_common_subs off
 void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
@@ -255,8 +254,84 @@ void func_020af230(void) {
     func_01ffa9f8(&data_02127e4c);
 }
 
-M2C_UNK func_020af244(void *arg0) {
-    (void)arg0;
+M2C_UNK func_020af244(void *p) {
+    M2C_UNK func_0207c928(M2C_UNK);
+    extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
+    extern M2C_UNK data_027e00bc;
+
+    s32 idx;
+    void *base;
+    void *dBase;
+    s16 *pp = (s16 *)p;
+    s16 v;
+    u16 w0, w1;
+    s32 dx, dy;
+    u32 c, value;
+    s32 t;
+
+    if (*(void **)gCur3DSpriteEngine == *(void **)data_027e00c8) {
+        if (pp[0x1D] != 0) {
+            if (!func_0207c928(pp[0x21])) {
+                idx = ((u8 *)p)[0x34];
+                base = *(void **)gCur3DSpriteEngine;
+                ((s16 *)base)[idx + 0x1C] = pp[0x1B];
+            }
+            pp[0x1B] = (s16)(pp[0x1B] + pp[0x1E]);
+            if (pp[0x1B] >= 0x100) pp[0x1B] = 0;
+        }
+        if (pp[0x1F] != 0) {
+            if (!func_0207c928(pp[0x21])) {
+                idx = ((u8 *)p)[0x34];
+                base = *(void **)gCur3DSpriteEngine;
+                ((s16 *)base)[idx + 0x20] = pp[0x1C];
+            }
+            pp[0x1C] = (s16)(pp[0x1C] + pp[0x20]);
+            if (pp[0x1C] >= 0x100) pp[0x1C] = 0;
+        }
+        idx = ((u8 *)p)[0x34];
+        base = *(void **)gCur3DSpriteEngine;
+        dBase = *(void **)data_027e00c8;
+        w0 = ((u16 *)base)[idx + 0x1C];
+        w1 = ((u16 *)base)[idx + 0x20];
+        dx = (s32)w0 - (s32)((s16 *)dBase)[0x1E];
+        dy = (s32)w1 - (s32)((s16 *)dBase)[0x1F];
+        c = (u32)data_027e00bc;
+        value = (c & (u32)dx) | ((c << 16) & (u32)(dy << 16));
+        if (idx <= 3) *(u32 *)(0x4000010 + idx * 4) = value;
+        pp[0x21] = (s16)(pp[0x21] + 1);
+        if (pp[0x21] >= 0x400) pp[0x21] = (s16)(pp[0x21] - 0x400);
+    } else {
+        if (pp[0x25] != 0) {
+            if (!func_0207c928(pp[0x29])) {
+                idx = ((u8 *)p)[0x44];
+                base = *(void **)gCur3DSpriteEngine;
+                ((s16 *)base)[idx + 0x1C] = pp[0x23];
+            }
+            pp[0x23] = (s16)(pp[0x23] + pp[0x26]);
+            if (pp[0x23] >= 0x100) pp[0x23] = 0;
+        }
+        if (pp[0x27] != 0) {
+            if (!func_0207c928(pp[0x29])) {
+                idx = ((u8 *)p)[0x44];
+                base = *(void **)gCur3DSpriteEngine;
+                ((s16 *)base)[idx + 0x20] = pp[0x24];
+            }
+            pp[0x24] = (s16)(pp[0x24] + pp[0x28]);
+            if (pp[0x24] >= 0x100) pp[0x24] = 0;
+        }
+        idx = ((u8 *)p)[0x44];
+        base = *(void **)gCur3DSpriteEngine;
+        dBase = *(void **)data_027e00c8;
+        w0 = ((u16 *)base)[idx + 0x1C];
+        w1 = ((u16 *)base)[idx + 0x20];
+        dx = (s32)w0 - (s32)((s16 *)dBase)[0x1E];
+        dy = (s32)w1 - (s32)((s16 *)dBase)[0x1F];
+        c = (u32)data_027e00c4;
+        value = (c & (u32)dx) | ((c << 16) & (u32)(dy << 16));
+        if (idx <= 3) *(u32 *)(0x4001010 + idx * 4) = value;
+        pp[0x29] = (s16)(pp[0x29] + 1);
+        if (pp[0x29] >= 0x400) pp[0x29] = (s16)(pp[0x29] - 0x400);
+    }
     return 0;
 }
 

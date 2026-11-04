@@ -191,8 +191,19 @@ next:
 
 void func_ov002_021e1844(void *arg0) {
     if (M2C_FIELD(arg0, void **, 4) == NULL) return;
-    M2C_FIELD(arg0, s16 *, 0x3c) += M2C_FIELD(arg0, s8 *, 0x44);
-    M2C_FIELD(arg0, s16 *, 0x3e) += M2C_FIELD(arg0, s8 *, 0x45);
+    M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x3c) + M2C_FIELD(arg0, s8 *, 0x44));
+    M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3e) + M2C_FIELD(arg0, s8 *, 0x45));
+    {
+        u8 t = M2C_FIELD(arg0, u8 *, 0x49);
+        if (t != 0) {
+            M2C_FIELD(arg0, u8 *, 0x49) = t - 1;
+        } else {
+            t = M2C_FIELD(arg0, u8 *, 0x48);
+            if (t != 0) M2C_FIELD(arg0, u8 *, 0x48) = t - 1;
+            t = M2C_FIELD(arg0, u8 *, 0x48);
+            if (t == 0) M2C_FIELD(arg0, u8 *, 0x49) = 2;
+        }
+    }
 }
 
 void func_ov002_021e1c34(void *a,s32 b) {
@@ -290,6 +301,166 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
             func_02004078(sn, cs);
         }
     }
+}
+
+void func_ov002_021e1ef8(void *arg0, s32 arg1) {
+    M2C_UNK func_02087048(s32, s32);
+    void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
+    void func_ov002_021e2204(void *);
+    void func_ov002_021e2364(void *);
+    s32 func_ov002_021e27c4(void *);
+    M2C_UNK var_r1;
+    M2C_UNK var_r4;
+    M2C_UNK var_r0;
+    M2C_UNK var_r0_2;
+    M2C_UNK var_r0_3;
+    M2C_UNK var_r0_4;
+    s8 temp_r2_2;
+    u8 temp_r0;
+    u8 temp_r0_2;
+    u8 temp_r0_3;
+    u8 temp_r0_4;
+    u8 temp_r0_5;
+    u8 temp_r2;
+    void **var_r7;
+
+    temp_r2 = M2C_FIELD(arg0, u8 *, 0x4D);
+    if (temp_r2 != 0) {
+        func_02087048((s32) (u8) (temp_r2 + ((M2C_FIELD(arg0, u8 *, 0x47) * 3) + 9)), (s32) M2C_FIELD(arg0, u8 *, 0x4E));
+    }
+    var_r4 = 0;
+    M2C_FIELD((void *)0x04000444, s32 *, 0) = 0;
+    temp_r0 = M2C_FIELD(arg0, u8 *, 0x53);
+    if (arg1 == 0) {
+        if (temp_r0 == 0) {
+            var_r4 = 1;
+        }
+    } else if (temp_r0 != 0) {
+        var_r4 = 1;
+    }
+    if (M2C_FIELD(arg0, s32 *, 0x2C) == 0) {
+        var_r0 = 0;
+    } else {
+        var_r0 = func_ov002_021e27c4(arg0);
+    }
+    func_ov002_021e1cac(arg0, var_r4, 0, M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, s32 *, 0x2C), (s32) M2C_FIELD(arg0, u8 *, 0x4C), M2C_FIELD(arg0, s32 *, 0x34), var_r0);
+    temp_r2_2 = M2C_FIELD(arg0, s8 *, 0x4F);
+    if (temp_r2_2 != 0) {
+        *(s32 *)0x04000470 = 0;
+        *(s32 *)0x04000470 = 0;
+        *(s32 *)0x04000470 = (s32) temp_r2_2;
+    }
+    temp_r0_2 = M2C_FIELD(arg0, u8 *, 0x53);
+    if (arg1 == 0) {
+        if (temp_r0_2 == 0) {
+            var_r1 = 1;
+        } else {
+            var_r1 = 0;
+        }
+    } else if (temp_r0_2 == 0) {
+        var_r1 = 0;
+    } else {
+        var_r1 = 1;
+    }
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(void *, M2C_UNK), 0xC)(arg0, var_r1);
+    temp_r0_3 = M2C_FIELD(arg0, u8 *, 0x53);
+    if (arg1 == 0) {
+        if (temp_r0_3 == 0) {
+            var_r0_2 = 1;
+        } else {
+            var_r0_2 = 0;
+        }
+    } else if (temp_r0_3 == 0) {
+        var_r0_2 = 0;
+    } else {
+        var_r0_2 = 1;
+    }
+    if (var_r0_2 != 0) {
+        func_ov002_021e2364(arg0);
+    } else {
+        func_ov002_021e2204(arg0);
+    }
+    if ((M2C_FIELD(arg0, u8 *, 0x50) != 0) && (M2C_FIELD(arg0, u8 *, 0x4D) == 0)) {
+        M2C_FIELD((void *)0x04000444, s32 *, 0) = 0;
+        if (M2C_FIELD(arg0, u8 *, 0x53) == 0) {
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 1;
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 0;
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
+        } else {
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 0;
+            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
+        }
+        func_02087048(0x1E, 0xB);
+        temp_r0_4 = M2C_FIELD(arg0, u8 *, 0x53);
+        if (arg1 == 0) {
+            if (temp_r0_4 == 0) {
+                var_r0_3 = 1;
+            } else {
+                var_r0_3 = 0;
+            }
+        } else if (temp_r0_4 == 0) {
+            var_r0_3 = 0;
+        } else {
+            var_r0_3 = 1;
+        }
+        if (var_r0_3 != 0) {
+            func_ov002_021e2364(arg0);
+        } else {
+            func_ov002_021e2204(arg0);
+        }
+        M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
+        M2C_FIELD((void *)0x04000448, s32 *, -4) = 0;
+        if (M2C_FIELD(arg0, u8 *, 0x53) == 0) {
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 0;
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
+        } else {
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 1;
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 0;
+            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
+        }
+        func_02087048(0x1D, 8);
+        temp_r0_5 = M2C_FIELD(arg0, u8 *, 0x53);
+        if (arg1 == 0) {
+            if (temp_r0_5 == 0) {
+                var_r0_4 = 1;
+            } else {
+                var_r0_4 = 0;
+            }
+        } else if (temp_r0_5 == 0) {
+            var_r0_4 = 0;
+        } else {
+            var_r0_4 = 1;
+        }
+        if (var_r0_4 != 0) {
+            func_ov002_021e2364(arg0);
+        } else {
+            func_ov002_021e2204(arg0);
+        }
+        func_02087048(0, 0x1F);
+        M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
+    }
+    var_r7 = 0;
+loop_65:
+    if (var_r7 == 0) {
+        if (M2C_FIELD(arg0, s32 *, 8) == 0) {
+            var_r7 = 0;
+        } else {
+            var_r7 = (void **) (arg0 + 8);
+        }
+    } else {
+        var_r7 = M2C_FIELD(var_r7, void ***, 4);
+    }
+    if (var_r7 != 0) {
+        func_ov002_021e1ef8(*var_r7, arg1);
+        goto loop_65;
+    }
+    M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
+    if (M2C_FIELD(arg0, u8 *, 0x4D) == 0) {
+        return;
+    }
+    func_02087048(0, 0x1F);
 }
 
 void func_ov002_021e2204(void *arg0) {

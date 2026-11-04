@@ -91,7 +91,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     func_020901b0(arg0, -1, arg1, var_r5);
 }
 
-void func_02078828(void) { }
+void func_02078828(void) { int __unused = 0; (void)__unused; }
 
 #pragma scheduling off
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
