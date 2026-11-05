@@ -1,6 +1,12 @@
 /* 9 functions from 0x0217BCD4 to 0x0217C9F4 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "ov000_unit_entry.h"
+static inline s32 DistanceUnitC4c8(u8 *p,s32 x,s32 y){s32 v=0;s32 a=p[1],b;s32 dx=a-x;if(dx<=0)dx=x-a;v+=dx;b=p[2];dx=b-y;if(dx<=0)dx=y-b;v+=dx;return v;}
+static inline s32 DistanceC4c8(s32 a,s32 b,s32 c,s32 d){s32 v=0;s32 dx=a-c;s32 dy;if(dx<=0)dx=c-a;v+=dx;dy=b-d;if(dy<=0)dy=d-b;v+=dy;return v;}
+extern void **gCurrentMap;
+extern u8 data_ov000_021b5bfc[];
+static inline s32 UnitIndexC4c8(u8 *p){if(p)return (p-((u8 *)*gCurrentMap+0x59a4))/14;return 0;}
+static inline s32 UnitOwnerC4c8(u8 *p){if(p)return (UnitIndexC4c8(p)>>6)+1;return 0;}
 
 #pragma scheduling off
 s32 func_ov000_0217bcd4(s8 a, s8 b, s8 c, s16 d) {
@@ -332,7 +338,27 @@ if(M2C_FIELD(&data_ov000_021b5c12,u8 *,kind*112)&M2C_FIELD(&data_ov000_021b5c11,
 return result;
 }}
 
-void func_ov000_0217c4c8(void *arg0) {
-    (void)arg0;
+#pragma opt_propagation off
+s32 func_ov000_0217c4c8(u8 *p){
+s32 func_ov000_021a9820(s32,u32);s32 func_020d27c0(s32);
+s32 count=0; s32 minX,minY,maxX,maxY; u8 *bounds; s32 dx,dy,x,dist,y;u8 *map;
+minX=p[1]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[1]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+minY=p[2]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[2]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+bounds=(u8 *)*gCurrentMap+0x5120;
+maxX=p[1]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,36)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1:p[1]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+bounds=(u8 *)*gCurrentMap+0x5120;
+maxY=p[2]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1:p[2]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
+dx=p[1]-x;
+if(dx<=0)dx=x-p[1];dist=0;dist+=dx;
+dy=p[2]-y;if(dy<=0)dy=y-p[2];dist+=dy;
+if(dist<(data_ov000_021b5bfc[((u32)(p[0]<<26)>>26)*112+12]<=2?2:data_ov000_021b5bfc[((u32)(p[0]<<26)>>26)*112+12]))continue;
+if(dist>func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26))continue;
+map=*gCurrentMap;
+{u16 row=M2C_FIELD(map+y*2,u16 *,0x3758);u8 id=map[x+row];if(!id)continue;if(!func_020d27c0(id))continue;}
+map=*gCurrentMap;
+if(func_ov000_0217c420(map+0x59a4+map[x+M2C_FIELD(map+y*2,u16 *,0x3758)]*14,p))count++;
 }
-
+return count*3;
+}
+#pragma opt_propagation on

@@ -186,23 +186,20 @@ s32 func_0207f99c(u8 *arg0) {
 void func_0207f9f4(void) {
     extern u8 *data_0210188c[];
     extern s32 data_0214c0c8[];
-    u8 **entries;
-    Unk0207F9F4 *table;
     s32 i = 0;
     s32 zero = i;
     u8 *entry;
     u8 *selected;
-    entries = data_0210188c;
-    table = (Unk0207F9F4 *)data_0214c0c8;
+
     for (; i < 6; i++) {
-        entry = entries[i];
+        entry = data_0210188c[i];
         if (entry != 0) {
             selected = entry + func_0207f99c(entry) * 3;
-            table[i].unk0 = (s8)selected[1];
-            table[i].unk2 = (s8)selected[2];
+            ((Unk0207F9F4 *)data_0214c0c8)[i].unk0 = (s8)selected[1];
+            ((Unk0207F9F4 *)data_0214c0c8)[i].unk2 = (s8)selected[2];
         } else {
-            table[i].unk0 = zero;
-            table[i].unk2 = zero;
+            ((Unk0207F9F4 *)data_0214c0c8)[i].unk0 = zero;
+            ((Unk0207F9F4 *)data_0214c0c8)[i].unk2 = zero;
         }
     }
 }

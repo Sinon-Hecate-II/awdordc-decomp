@@ -1,8 +1,69 @@
 /* 24 functions from 0x0221F4F8 to 0x02220018 (ov005), found by ds-decomp. */
 #include "common.h"
 
-void func_ov005_0221f4f8(void *arg0) {
-    (void)arg0;
+void func_ov005_0221f4f8(void *arg0){
+s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void func_0207c650(void *,s32,s32,s32,s32);void func_02088f1c(void *);
+extern u16 **gCur3DSpriteEngine,**data_027e00c8,**data_027e00c4;extern u8 data_02101f78[];
+u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;u16 *volatile p5;u16 *volatile p6;u16 *volatile p7;u16 *volatile p8;u16 *volatile p9;u16 *volatile p10;
+u8 alpha;u16 **saved;
+if(M2C_FIELD(arg0,s32 *,0x38)<=30){
+alpha=(u8)func_0207ca38(0,16,0,M2C_FIELD(arg0,s32 *,0x38),30);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+p0=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p0=*p0&~1;
+p1=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p1=*p1&~2;
+p2=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p2=*p2&~4;
+p3=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p3=*p3&~8;
+p4=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p4=*p4&~16;
+p5=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p5=*p5|256;
+p6=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p6=*p6|512;
+p7=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p7=*p7|1024;
+p8=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p8=*p8|2048;
+p9=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p9=*p9|4096;
+p10=(u16 *)((u8 *)*gCur3DSpriteEngine+18); *p10=(*p10&~0xc0)|0x40;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u8 *,0x51)=16-alpha;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u8 *,0x52)=alpha;
+gCur3DSpriteEngine=saved;
+func_01ffac9c(0,0x440,(u16)((0x3FF&(0x140>>((u32)(**gCur3DSpriteEngine<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
+}else func_01ffac9c(0,64,(u16)((0x3FF&(0x140>>((u32)(**gCur3DSpriteEngine<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
+if(M2C_FIELD(arg0,s32 *,0x38)>30 && M2C_FIELD(arg0,s32 *,0x38)<126 && M2C_FIELD(arg0,s32 *,0x38)%8==0){
+{
+u16 index=0,color; u8 red,green,blue; u8 *data;
+do{
+data=M2C_FIELD(arg0,u8 **,60);
+color=(u16)(data[index]|(data[index+1]<<8));
+red=color&31;green=(color>>5)&31;blue=(u8)(color>>10);
+if(red<green){if(red<blue)red++;else if(green<blue)green++;else blue++;}
+else {if(green<blue)green++;else blue++;}
+if(red>31)red=31;if(green>31)green=31;if(blue>31)blue=31;
+color=(u16)(red|(green<<5)|(blue<<10));
+data[index+1]=(color&0xff00)>>8;
+M2C_FIELD(arg0,u8 **,60)[index]=(u8)color;
+index+=2;
+}while(index<512);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+func_0207c650(M2C_FIELD(arg0,void **,60),3,0,512,0);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;gCur3DSpriteEngine=saved;
+}
+{
+u16 index=0,color; u8 red,green,blue; u8 *data;
+do{
+data=M2C_FIELD(arg0,u8 **,64);
+color=(u16)(data[index]|(data[index+1]<<8));
+red=color&31;green=(color>>5)&31;blue=(u8)(color>>10);
+if(red<green){if(red<blue)red++;else if(green<blue)green++;else blue++;}
+else {if(green<blue)green++;else blue++;}
+if(red>31)red=31;if(green>31)green=31;if(blue>31)blue=31;
+color=(u16)(red|(green<<5)|(blue<<10));
+data[index+1]=(color&0xff00)>>8;
+M2C_FIELD(arg0,u8 **,64)[index]=(u8)color;
+index+=2;
+}while(index<512);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_0207c650(M2C_FIELD(arg0,void **,64),3,0,512,0);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;gCur3DSpriteEngine=saved;
+}
+}
+if(M2C_FIELD(arg0,s32 *,0x38)==126)func_02088f1c(M2C_FIELD(arg0,void **,0x34));
 }
 
 void func_ov005_0221fa00(M2C_UNK arg0) {
@@ -14,9 +75,9 @@ void func_ov005_0221fa00(M2C_UNK arg0) {
 /* Enable five display-control bits (0x10/0x20/0x40/0x80/0x100) on each of the two screen contexts. */
 void func_ov005_0221fa18(void) {
     M2C_UNK func_02082cb4(); M2C_UNK func_0208232c();
-    extern s32 gCur3DSpriteEngine; extern s32 data_027e00c4; extern s32 data_027e00c8;
+    extern u16 **gCur3DSpriteEngine; extern u16 **data_027e00c4; extern u16 **data_027e00c8;
     u16 *volatile ctxPtr0; u16 *volatile ctxPtr1; u16 *volatile ctxPtr2; u16 *volatile ctxPtr3; u16 *volatile ctxPtr4;
-    s32 savedContext; s32 i;
+    u16 **savedContext; s32 i;
     func_02082cb4(); savedContext = gCur3DSpriteEngine; i = 0;
     do {
         gCur3DSpriteEngine = i == 0 ? data_027e00c8 : data_027e00c4;
@@ -73,9 +134,9 @@ void func_ov005_0221fbc8(M2C_UNK arg0) {
 
 void func_ov005_0221fc0c(void) {
 M2C_UNK func_02082cb4(); M2C_UNK func_0208232c(); M2C_UNK func_02086608(M2C_UNK);
-extern s32 gCur3DSpriteEngine; extern s32 data_027e00c4; extern s32 data_027e00c8;
+extern u16 **gCur3DSpriteEngine; extern u16 **data_027e00c4; extern u16 **data_027e00c8;
 u16 *volatile p0; u16 *volatile p1; u16 *volatile p2; u16 *volatile p3; u16 *volatile p4;
-s32 saved; s32 i;
+u16 **saved; s32 i;
 func_02082cb4(); saved=gCur3DSpriteEngine; i=0;
 do {
 gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
@@ -173,12 +234,12 @@ void func_ov005_0221fe54(void) {
 #pragma opt_strength_reduction off
 M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
     M2C_UNK func_01ffa574(s32);
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
-    extern s32 gCur3DSpriteEngine;
+    extern u16 **data_027e00c4;
+    extern u16 **data_027e00c8;
+    extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02220fa4;
-    s32 temp_r8;
-    s32 var_r0;
+    u16 **temp_r8;
+    u16 **var_r0;
     s32 var_r9;
     *arg0 = &data_ov005_02220fa4;
     temp_r8 = gCur3DSpriteEngine;
@@ -199,12 +260,12 @@ M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
 #pragma opt_strength_reduction off
 M2C_UNK **func_ov005_0221fecc(M2C_UNK **arg0) {
     M2C_UNK func_01ffa574(s32);
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
-    extern s32 gCur3DSpriteEngine;
+    extern u16 **data_027e00c4;
+    extern u16 **data_027e00c8;
+    extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02220fa4;
-    s32 temp_r8;
-    s32 var_r0;
+    u16 **temp_r8;
+    u16 **var_r0;
     s32 var_r9;
     *arg0 = &data_ov005_02220fa4;
     temp_r8 = gCur3DSpriteEngine;

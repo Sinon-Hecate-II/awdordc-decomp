@@ -3,6 +3,7 @@
 
 typedef struct UnkVec3 { s32 x,y,z; } UnkVec3;
 typedef struct Matrix01148 { s32 m[12]; } Matrix01148;
+typedef struct Matrix016 { s32 m[16]; } Matrix016;
 
 void func_02001068(s32 *arg0,s32 *arg1,s32 arg2,s32 arg3,s32 arg4) {
 void func_02007f4c(void *,void *);
@@ -145,7 +146,50 @@ arg1[11]=(s32)(((long long)arg4*arg0[11])>>12);
 if(arg0!=arg1) { s32 a=arg0[13], b=arg0[12]; arg1[12]=b; arg1[13]=a; a=arg0[15]; b=arg0[14]; arg1[14]=b; arg1[15]=a; }
 }
 
-void func_02001748(void *a, void *b, void *c) { (void)a;(void)b;(void)c; }
+void func_02001748(void *arg0,void *arg1,void *arg2){Matrix016 tmp;s32 *a=arg0,*b=arg1,*out;s32 u,v,w,t;out=arg2==arg1?tmp.m:arg2;
+{ s32 x,y,z,q;
+x=a[0];y=a[1];z=a[2];q=a[3];
+u=b[0];v=b[4];w=b[8];t=b[12];
+out[0]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[1];v=b[5];w=b[9];t=b[13];
+out[1]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[3];v=b[7];w=b[11];t=b[15];
+out[3]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[2];v=b[6];w=b[10];t=b[14];
+out[2]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+}
+{ s64 x,y,z,q;
+x=a[4];y=a[5];z=a[6];q=a[7];
+out[6]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[1];v=b[5];w=b[9];t=b[13];
+out[5]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[3];v=b[7];w=b[11];t=b[15];
+out[7]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[0];v=b[4];w=b[8];t=b[12];
+out[4]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+}
+{ s64 x,y,z,q;
+x=a[8];y=a[9];z=a[10];q=a[11];
+out[8]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[1];v=b[5];w=b[9];t=b[13];
+out[9]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[3];v=b[7];w=b[11];t=b[15];
+out[11]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[2];v=b[6];w=b[10];t=b[14];
+out[10]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+}
+{ s64 x,y,z,q;
+x=a[12];y=a[13];z=a[14];q=a[15];
+out[14]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[1];v=b[5];w=b[9];t=b[13];
+out[13]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[0];v=b[4];w=b[8];t=b[12];
+out[12]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+u=b[3];v=b[7];w=b[11];t=b[15];
+out[15]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
+}
+if(out==tmp.m)*(Matrix016*)arg2=tmp;
+}
 
 u64 func_02001fd4(void);
 #pragma opt_strength_reduction off

@@ -1,5 +1,7 @@
 /* 15 functions from 0x020222D8 to 0x020232B8 (main), found by ds-decomp. */
 #include "common.h"
+static inline u32 CertificateTag(u8 tag) { return tag & 31; }
+typedef struct CertificateTagBits { u8 number:5; u8 constructed:1; u8 category:2; } CertificateTagBits;
 
 s32 func_02022970(void *arg0) {
     void func_02025700(void *);
@@ -254,6 +256,85 @@ func_02025748(arg2+0x3fc,arg2,0x30);
 func_02025748(arg2+0x3fc,sp0,20);
 func_02025800(arg2+0x3fc,arg0);
 }
+#pragma opt_strength_reduction off
+s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
+s32 func_02008048(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
+u32 func_02022258(u8*); s32 func_0206527c(void*,void*,s32); s32 func_02068c34(void*);
+extern char *data_020fb004[6];
+u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 type;
+if(!(len>=0 && len<=2000))return 1;
+type=tag&31;
+switch(type){
+case 2:
+if(M2C_FIELD(ctx,u8*,0x5ad)){
+if(index==0){
+while(*p==0){p++;len--;}
+switch(mode){
+case 0:if(len<=256){func_02008048(p,(u8*)ctx+0x494,len);M2C_FIELD(ctx,s32*,0x594)=len;}break;
+case 2:M2C_FIELD(ctx,s32*,0x484)=len;M2C_FIELD(ctx,u8**,0x488)=p;break;
+}
+}else if(index==1){
+while(*p==0){p++;len--;}
+switch(mode){
+case 0:if(len<=8){func_02008048(p,(u8*)ctx+0x598,len);M2C_FIELD(ctx,s32*,0x5a0)=len;}break;
+case 2:M2C_FIELD(ctx,s32*,0x48c)=len;M2C_FIELD(ctx,u8**,0x490)=p;break;
+}
+}
+}
+p+=len;break;
+case 3:
+if(depth==1 && mode!=2){M2C_FIELD(ctx,u8**,0x5a4)=p+1;M2C_FIELD(ctx,s32*,0x5a8)=len-1;}
+if(M2C_FIELD(ctx,u8*,0x5ad)){
+p++;if(func_020222d8(ctx,&p,depth,0,mode))return 1;M2C_FIELD(ctx,u8*,0x5ad)=0;
+}else p+=len;
+break;
+case 6: {
+u8 *oid=p; char *name;
+for(i=0;i<6;i++){
+name=data_020fb004[i];
+if(func_0206527c(oid,name,func_02068c34(name))==0){
+switch(i){
+case 1:case 2:if(mode==0)M2C_FIELD(ctx,s32*,0x45c)=i;M2C_FIELD(ctx,u8*,0x5ad)=i;break;
+case 3:case 4:if(mode!=2)M2C_FIELD(ctx,s32*,0x458)=i;break;
+case 5:if(mode!=2)M2C_FIELD(ctx,u8*,0x5ae)=i;break;
+}
+break;
+}}
+p+=len;break;
+}
+case 12:case 19:case 20:case 22:
+if(mode!=2){
+if(M2C_FIELD(ctx,u8*,0x5ac)){
+func_020221ec((u8*)ctx+0x6b0,p,len);
+if(M2C_FIELD(ctx,u8*,0x5ae)==5 && len<=79){func_02008048(p,(u8*)ctx+0x7b0,len);M2C_FIELD((u8*)ctx+len,u8*,0x7b0)=0;}
+}else func_020221ec((u8*)ctx+0x5b0,p,len);
+}
+M2C_FIELD(ctx,u8*,0x5ae)=0;p+=len;break;
+case 23:case 24:
+if(mode!=2){
+date=func_02022258(p);
+if(index==0){if(M2C_FIELD(ctx,u32*,0x80c)>=date)M2C_FIELD(ctx,u8*,0x5af)=1;}
+else if(M2C_FIELD(ctx,u32*,0x80c)>date)M2C_FIELD(ctx,u8*,0x5af)=0;
+}
+p+=len;M2C_FIELD(ctx,u8*,0x5ac)=1;break;
+case 16:
+if(depth==0 && index==0 && mode!=2)M2C_FIELD(ctx,u8**,0x460)=p;
+end=p+len;i=0;
+while(p<end){s32 result=func_020222d8(ctx,&p,depth+1,i,mode);i++;if(result)return 1;}
+if(depth==1 && index==0 && mode!=2)M2C_FIELD(ctx,u8**,0x464)=p;
+break;
+case 17:
+end=p+len;
+while(p<end)if(func_020222d8(ctx,&p,depth+1,0,mode))return 1;
+break;
+default:
+if(tag==160){end=p+len;while(p<end)if(func_020222d8(ctx,&p,depth+1,0,mode))return 1;}
+else p+=len;
+break;
+}
+*input=p;return 0;
+}
+#pragma opt_strength_reduction reset
 s32 func_020227c8(void *arg0, void *arg1) {
     extern u32 data_021372a4[];
     extern u32 data_021372d0[];

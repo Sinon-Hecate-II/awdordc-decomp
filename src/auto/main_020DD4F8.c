@@ -1,5 +1,66 @@
 /* 25 functions from 0x020DD4F8 to 0x020DE264 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct {u8 pad[0x59];u8 base:4;u8 pressed:1;u8 rest:3;} SpriteInput;
+static inline u8 SpritePressed(void *p) {
+void *q=M2C_FIELD(p,void **,0x64);s32 result=1;
+if(M2C_FIELD(q,s8 *,11)!=1) {
+if(((SpriteInput *)p)->pressed && M2C_FIELD(q,s8 *,12)==1) {}else result=0;
+}
+return result;
+}
+static inline u16 SpriteFrame(void *p) {return (M2C_FIELD(p,u32 *,0x40)<<6)>>24;}
+static inline u32 SpriteBase(void *p) {return (u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28;}
+static inline u8 SpriteAvailable(void *p) {u8 r;if(SpriteBase(p)+2!=SpriteFrame(p))r=1;else r=0;return r;}
+static inline void SetSpriteFrame(void *p,u16 frame,s8 timer) {
+M2C_FIELD(p,s32 *,0x40)=(M2C_FIELD(p,s32 *,0x40)&~0x03fc0000)|((u32)(frame<<24)>>6);
+M2C_FIELD(p,s8 *,0x5a)=timer;
+}
+static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteFrame(p,SpriteBase(p)+1,12);}
+
+
+void func_020dd4f8(void *arg0) {
+void func_020aacf0(void *);void func_020d47f0(void);void func_01ffa8c4(void *,s32);void func_0208fe30(s32);void func_01ffa6fc(void *);
+s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
+extern u16 *data_02101e84;extern M2C_UNK data_02168f7c;
+u16 keys;void *p;
+if(M2C_FIELD(arg0,void **,0x50))func_020aacf0(M2C_FIELD(arg0,void **,0x50));
+if(M2C_FIELD(arg0,void **,0x54))func_020aacf0(M2C_FIELD(arg0,void **,0x54));
+if(M2C_FIELD(arg0,void **,0x58))func_020aacf0(M2C_FIELD(arg0,void **,0x58));
+keys=*data_02101e84;
+M2C_FIELD(arg0,u16 *,0x48)&=~32;
+if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
+func_ov009_02224688();
+PressSprite(M2C_FIELD(arg0,void **,0x58));
+func_020d47f0();func_01ffa8c4(arg0,1);func_0208fe30(0x1000f);return;
+}
+if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg0,s8 *,0x41)!=M2C_FIELD(arg0,s8 *,0x42)){
+func_0208fe30(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
+M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
+}
+if(func_020b212c()<4){
+s32 v=(&data_02168f7c)[M2C_FIELD(arg0,s8 *,0x43)];
+if(v<0)v=0;else v=func_ov009_022246ac(v);
+if(v){void *p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p),0);}
+else {void *p=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p)+2,0);}
+p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))return;
+if(!(SpritePressed(p) || (keys&1)))return;
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+PressSprite(p);
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+M2C_FIELD(arg0,u16 *,0x48)&=~1;
+M2C_FIELD(arg0,u16 *,0x48)|=2;
+func_0208fe30(0x1000d);func_01ffa6fc(arg0);return;
+}
+p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p),0);
+p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))return;
+if(!(SpritePressed(p) || (keys&1)))return;
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+PressSprite(M2C_FIELD(arg0,void **,0x5c));
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+M2C_FIELD(arg0,u16 *,0x48)|=1;
+M2C_FIELD(arg0,u16 *,0x48)|=2;
+func_0208fe30(0x1000d);func_01ffa6fc(arg0);
+}
 
 void func_020dd97c(void) {
 
@@ -203,12 +264,12 @@ void func_020dde30(void) {
 }
 
 void func_020dde3c(void) {
-    M2C_UNK func_020dd4f8();
+    void func_020dd4f8();
     func_020dd4f8();
 }
 
 void func_020dde48(void) {
-    M2C_UNK func_020dd4f8();
+    void func_020dd4f8();
     func_020dd4f8();
 }
 

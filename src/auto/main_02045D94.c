@@ -32,9 +32,10 @@ u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1
 #pragma opt_common_subs off
 M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) {
     u8 *dst = (u8 *)arg1;
-    u32 bits = (~0U) ^ ((~0U) >> arg0);
-    s32 i;
-    s32 shift;
+    s32 i, shift;
+    u32 bits;
+    bits = ~0U;
+    bits ^= bits >> arg0;
     for (i = 0, shift = 0; i < 4; i++, shift += 8) {
         dst[i] = (u8)(bits >> (24 - shift));
     }
@@ -77,6 +78,89 @@ s32 func_0204612c(u8 *arg0) {
     return 0;
 }
 
+#pragma opt_propagation off
+s32 func_02046158(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
+M2C_UNK func_020067a8(M2C_UNK,...);
+u64 func_02007004(void);
+u64 func_02072088(u64,u64);
+s32 func_02009eb0(s32,u32,s32);
+extern M2C_UNK data_0213db28;
+extern u8 data_0213db60[];
+u32 c2,c1,c0,b3,b2,b1,b0,a6,a5,a4,a3,a2,a1,a0;
+u64 start;
+u32 elapsedLo,elapsedHi;
+s32 state;
+u64 elapsed,scale;
+state=0;
+c0=0x2002200|((u32)data_0213db60>>24);
+c1=0x10000|(u16)((u32)data_0213db60>>8);
+c2=0x1020000|(((u32)data_0213db60<<8)&0xff00);
+a0=0x2002300|(((u32)arg1>>16)&255);
+a1=0x10000|(u16)arg1;
+a2=0x20000|((u32)arg2>>16);
+a3=0x30000|(u16)arg2;
+a4=0x40000|((u32)arg3>>16);
+a5=0x1050000|(u16)arg3;
+b0=0x2002500|(((u32)arg1>>16)&255);
+b1=0x20000|arg2;
+b2=0x30000|((u32)arg3>>16);
+b3=0x1040000|(u16)arg3;
+a6=0x3002000;
+for(;;){
+if(state==0){
+M2C_FIELD(&data_0213db28,s32*,4)=0;
+switch(arg0){
+case 1:
+if(func_02009eb0(4,a0,0)<0){state=0;break;}
+if(func_02009eb0(4,a1,0)<0){state=0;break;}
+if(func_02009eb0(4,a2,0)<0){state=0;break;}
+if(func_02009eb0(4,a3,0)<0){state=0;break;}
+if(func_02009eb0(4,a4,0)<0){state=0;break;}
+if(func_02009eb0(4,a5,0)<0)state=0;else state=1;break;
+case 2:if(func_02009eb0(4,a6,0)<0)state=0;else state=1;break;
+case 3:
+if(func_02009eb0(4,b0,0)<0){state=0;goto timer;}
+if(func_02009eb0(4,a1,0)<0){state=0;goto timer;}
+if(func_02009eb0(4,b1,0)<0){state=0;goto timer;}
+if(func_02009eb0(4,b2,0)<0){state=0;goto timer;}
+if(func_02009eb0(4,b3,0)<0)state=0;else state=1;
+timer:start=func_02007004();break;
+case 4:case 5:
+if(func_02009eb0(4,c0,0)<0){state=0;break;}
+if(func_02009eb0(4,c1,0)<0){state=0;break;}
+if(func_02009eb0(4,c2,0)<0)state=0;else state=1;break;
+case 6:if(func_02009eb0(4,0x3002d00,0)<0)state=0;else state=1;break;
+case 7:if(func_02009eb0(4,0x3002100,0)<0)state=0;else state=1;break;
+}
+}else if(M2C_FIELD(&data_0213db28,s32*,4)==1){
+state=0;
+if(M2C_FIELD(&data_0213db28,u16*,0))goto fail;
+switch(arg0){
+case 1:return 1;
+case 2:arg0=4;break;
+case 3:arg0=5;break;
+case 4:case 5:
+func_020067a8((s32)data_0213db60,1);
+if(arg0==4){
+if(data_0213db60[0]&2)arg0=3;else goto fail;
+}else{
+if(!(data_0213db60[0]&1))return 1;
+if(data_0213db60[0]&32)goto set6;
+elapsed=func_02007004()-start;
+scale=(u64)(u32)64;
+if(func_02072088(elapsed*scale,0x82ea)<=4000)goto delay;
+set6:arg0=6;break;
+delay:WaitByLoop(0x4000);
+}
+break;
+case 6:goto fail;
+case 7:return 1;
+}
+}
+}
+fail:return state;
+}
+#pragma opt_propagation reset
 s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK func_020067a8(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; func_020067a8(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); loop: if(func_02046158(1,arg0,(u16)arg1,arg2)!=1) {WaitByLoop(0x40000);goto loop;}func_020067a8(arg2,arg1);return 1; }
 
 void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }

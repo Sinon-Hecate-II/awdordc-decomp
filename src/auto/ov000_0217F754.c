@@ -1,5 +1,11 @@
 /* 16 functions from 0x0217F754 to 0x02180738 (ov000), found by ds-decomp. */
 #include "common.h"
+static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
+ s32 distance=0;
+ if(x0-x1>0)distance+=x0-x1;else distance+=x1-x0;
+ if(y0-y1>0)distance+=y0-y1;else distance+=y1-y0;
+ return distance;
+}
 
 void func_ov000_0217f754(s32 x, s32 y, u8 *out, u8 *value) {
     s32 func_ov000_021a9904(u32);
@@ -49,10 +55,74 @@ data_ov000_021df580[3]=func_0207c928(func_0207c2f0(),100);
 data_ov000_021df580[5]=func_ov000_021a89a4(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 }
 
+#pragma opt_strength_reduction off
 void func_ov000_0217f96c(void *arg0) {
-    (void)arg0;
+extern void **gCurrentMap;
+void func_01ffb554(void*); void func_01ffc2e8(void*); void func_01ffb9c4(s32);
+s32 func_020d27a4(s32,s32); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
+s32 func_ov000_02176e28(s32,s16*); s32 func_ov000_0217a0a8(void*);
+void func_ov000_02199d74(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
+s32 bestX=-1,bestY=-1,best=0,score,id=0;
+s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
+s32 minX,maxY,n,ux,uy,minY,maxX,xx,yy,index;
+func_01ffb554((u8*)*gCurrentMap+0x2338);
+func_01ffc2e8(arg0);
+func_01ffb554((u8*)*gCurrentMap+0x1e30);
+func_01ffc2e8(M2C_FIELD(*gCurrentMap,void**,0x52d0));
+{
+s32 ax,ay;
+for(ay=0;ay<M2C_FIELD(*gCurrentMap,u16*,0x5146);ay++)
+for(ax=0;ax<M2C_FIELD(*gCurrentMap,u16*,0x5144);ax++){
+map=*gCurrentMap;
+if(M2C_FIELD(map+ay*4,s8**,0x52e8)[ax]>=0 && M2C_FIELD(map+ax+M2C_FIELD(map+ay*2,u16*,0x3758),s8*,0x2338)<0)
+M2C_FIELD(map+ay*4,s8**,0x52e8)[ax]=-1;
 }
-
+}
+func_01ffb9c4(111);
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++)
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
+map=*gCurrentMap;
+if(M2C_FIELD(map+y*4,s8**,0x52e8)[x]<0)continue;
+unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
+if(((u32)(unit[0]<<26)>>26)==0)continue;
+index=unit?(unit-(map+0x59a4))/14:0;
+if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
+if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
+if(!func_ov000_02177f24(x,y,pos))continue;
+map=*gCurrentMap;
+score=func_ov000_02176e28(map[x+M2C_FIELD(map+y*2,u16*,0x3758)]|0x30000,pos);
+if(!score || score<best)continue;
+if(func_ov000_0217a0a8(unit)==1){
+u8 *nearMap;
+ux=unit[1];uy=unit[2];n=0;
+minX=ux-1;if(minX<0)minX=0;
+minY=uy-1;if(minY<0)minY=0;
+nearMap=*gCurrentMap;
+maxX=M2C_FIELD(nearMap,u16*,0x5144)-1;if(ux+1<maxX)maxX=ux+1;
+maxY=M2C_FIELD(nearMap,u16*,0x5146)-1;if(uy+1<maxY)maxY=uy+1;
+for(yy=minY;yy<=maxY;yy++)for(xx=minX;xx<=maxX;xx++){
+s32 dist=0;
+if(ux-xx>0)dist+=ux-xx;else dist+=xx-ux;
+if(uy-yy>0)dist+=uy-yy;else dist+=yy-uy;
+if(dist<1 || dist>1)continue;
+nearMap=*gCurrentMap;
+if(M2C_FIELD(nearMap+yy*4,s8**,0x52e8)[xx]<0)continue;
+other=nearMap+0x59a4+14*(nearMap+M2C_FIELD(nearMap+yy*2,u16*,0x3758))[xx];
+if(((u32)(other[0]<<26)>>26)!=0 && (M2C_FIELD(other,u16*,4)&1))continue;
+n++;
+}
+if(n<=1)continue;
+}
+best=score;bestX=pos[0];bestY=pos[1];
+map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
+}
+if(best)func_ov000_02199d74((s16)bestX,(s16)bestY,4,(u8)id,0);
+func_01ffb554((u8*)*gCurrentMap+0x2338);
+func_01ffc2e8(arg0);
+func_01ffb554((u8*)*gCurrentMap+0x1e30);
+func_ov000_0218d040(1);
+}
+#pragma opt_strength_reduction reset
 void func_ov000_0217fe68(void *arg0) {
     extern void **gCurrentMap;
     (void)arg0;

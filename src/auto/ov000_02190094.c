@@ -35,74 +35,169 @@ void func_ov000_02190b54(void);
 #pragma push
 #pragma opt_common_subs off
 #pragma scheduling off
-void func_ov000_02190094(void) {
-u8 *m,*u; s32 best,score,i,cost,y,x,sx,sy,a,b,index,kind,scan;u8 tile;
-if((((u32)*(u16 *)(data_ov000_021df580+10)<<26)>>29)&4) {
-u=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-if(((UnkStruct_ov000_021A860C *)u)->unkB_4==1) {
-func_01ffc2e8(u);m=*gCurrentMap;
-scan=data_ov000_021aeef4[*(u16 *)(m+0x52a4)]+1;
-if(scan<data_ov000_021aeef4[*(u16 *)(m+0x52a4)]+51){
-u=(u8 *)((UnkStruct_ov000_021A860C *)(m+0x59a4)+scan);
-do {
-kind=((UnkStruct_ov000_021A860C *)u)->unk0;
-if(kind){switch(kind){case 24:case 25:if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+u[2]*4))[u[1]]>=0){
-((UnkStruct_ov000_021A860C *)*(u8 **)(m+0x52d0))->unkB_4=0;goto scan_done;
-}break;default:break;}}scan++;u+=14;}while(scan<data_ov000_021aeef4[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+51);}}}
-scan_done:
-u=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-func_ov000_0217a59c(u[1],u[2],((UnkStruct_ov000_021A860C *)u)->unk0,func_ov000_02179be0());
-m=*gCurrentMap;u=*(u8 **)(m+0x52d0);
-a=((Position_021906a0 *)(u+8))->x;
-if(a!=63 && ((UnkStruct_ov000_021A860C *)u)->unk6>=61) {
-b=((Position_021906a0 *)(u+8))->y;
-if((*(s8 **)(m+0x52e8+b*4))[a]>=0 && func_ov000_021a9860(a,b)){
-m=*gCurrentMap;index=*(u16 *)(m+0x3758+b*2)+a;
-if(!((Supply_021906a0 *)(m+0x6c60))[*(s8 *)(m+0x1928+index)].count && (!m[index] || (((u32)data_ov000_021df580[7]<<28)>>31))){
-cost=func_020a7694(*(u8 **)(m+0x52d0));
-if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+b*4))[a]<cost){
-func_ov000_02199f38();m=*gCurrentMap;
-((Supply_021906a0 *)(m+0x6c60))[*(s8 *)(m+0x1928+(a+*(u16 *)(m+0x3758+b*2)))].count++;
-m=*gCurrentMap;
-cost=*(s8 *)(m+0x2338+(a+*(u16 *)(m+0x3758+b*2)));
-if(cost>2)func_ov000_021906a0(cost);
-func_ov000_0218a9ac(a,b);
-}}}}
-sx=-1;sy=-1;best=32767;score=32767;
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->x=63;
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->y=63;
-m=*gCurrentMap;
-for(y=0;y<*(u16 *)(m+0x5146);y++){
-for(x=0;x<*(u16 *)(m+0x5144);x++,m=*gCurrentMap){
-if((*(s8 **)(m+0x52e8+y*4))[x]<0 || !func_ov000_021a9860(x,y))continue;
-m=*gCurrentMap;
-if(((Supply_021906a0 *)(m+0x6c60))[*(s8 *)(*(u16 *)(m+0x3758+y*2)+(m+x)+0x1928)].count && !(*(u16 *)(data_ov000_021df580+8)&32))continue;
-tile=m[0x1420+x+*(u16 *)(m+0x3758+y*2)];cost=2*(*(s8 *)(m+0x2338+x+*(u16 *)(m+0x3758+y*2)));
-i=(*(s8 **)(m+0x52e8+y*4))[x];
-if(func_ov000_021a91d0(tile&31)==1)cost--;
-if(cost>score || (cost==score && best>i))continue;
-sx=x;sy=y;best=i;score=cost;
-}}
-if(best==32767)goto no_candidate;
+void func_ov000_02190094(void)
 {
-u=*(u8 **)(m+0x52d0);
-if(((UnkStruct_ov000_021A860C *)u)->unk6>=61)
-((Supply_021906a0 *)(m+0x6c60))[*(s8 *)(m+0x1928+(sx+*(u16 *)(m+0x3758+sy*2)))].count++;
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->x=(u16)sx;
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->y=(u16)sy;
-cost=score>>1;
-if(cost>2){
-u=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-if(((UnkStruct_ov000_021A860C *)u)->unk6>=61 && !(((u32)u[11]<<24)>>31))func_ov000_021906a0(cost);
-}
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->state=1;
-func_ov000_0218a9ac(sx,sy);
-return;}no_candidate:{
-u=*(u8 **)(m+0x52d0);
-if(((UnkStruct_ov000_021A860C *)u)->unk6<61 || (((u32)u[11]<<24)>>31))return;
-func_ov000_02190b54();
-((Position_021906a0 *)(*(u8 **)((u8 *)*gCurrentMap+0x52d0)+8))->state=2;
-}
+  u8 *new_var[2];
+  s32 best;
+  s32 score;
+  s32 i;
+  s32 cost;
+  s32 d;
+  s32 y;
+  s32 x;
+  s32 sx;
+  s32 sy;
+  s32 a;
+  s32 b;
+  s32 index;
+  s32 kind;
+  s32 scan;
+  u8 *u;
+  u8 tile;
+  if (((((u32) (*((u16 *) (data_ov000_021df580 + 10)))) << 26) >> 29) & 4)
+  {
+    new_var[0] = *((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0));
+    if (((UnkStruct_ov000_021A860C *) new_var[0])->unkB_4 == 1)
+    {
+      func_01ffc2e8(new_var[0]);
+      new_var[1] = *gCurrentMap;
+      scan = data_ov000_021aeef4[*((u16 *) (new_var[1] + 0x52a4))] + 1;
+      if (scan < (data_ov000_021aeef4[*((u16 *) (new_var[1] + 0x52a4))] + 51))
+      {
+        u = (u8 *) (((UnkStruct_ov000_021A860C *) (new_var[1] + 0x59a4)) + scan);
+        do
+        {
+          kind = ((UnkStruct_ov000_021A860C *) u)->unk0;
+          if (kind)
+          {
+            switch (kind)
+            {
+              case 24:
+
+              case 25:
+                if ((*((s8 **) ((((u8 *) (*gCurrentMap)) + 0x52e8) + (u[2] * 4))))[u[1]] >= 0)
+              {
+                ((UnkStruct_ov000_021A860C *) (*((u8 **) (new_var[1] + 0x52d0))))->unkB_4 = 0;
+                goto scan_done;
+              }
+                break;
+
+              default:
+                break;
+
+            }
+
+          }
+          scan++;
+          u += 14;
+        }
+        while (scan < (data_ov000_021aeef4[*((u16 *) (((u8 *) (*gCurrentMap)) + 0x52a4))] + 51));
+      }
+    }
+  }
+  scan_done:
+  new_var[0] = *((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0));
+
+  func_ov000_0217a59c(new_var[0][1], new_var[0][2], ((UnkStruct_ov000_021A860C *) new_var[0])->unk0, func_ov000_02179be0());
+  new_var[1] = *gCurrentMap;
+  new_var[0] = *((u8 **) (new_var[1] + 0x52d0));
+  a = ((Position_021906a0 *) (new_var[0] + 8))->x;
+  if ((a != 63) && (((UnkStruct_ov000_021A860C *) new_var[0])->unk6 >= 61))
+  {
+    b = ((Position_021906a0 *) (new_var[0] + 8))->y;
+    if (((*((s8 **) ((new_var[1] + 0x52e8) + (b * 4))))[a] >= 0) && func_ov000_021a9860(a, b))
+    {
+      new_var[1] = *gCurrentMap;
+      index = a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2))));
+      if ((!((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + index))].count) && ((!new_var[1][index]) || ((((u32) data_ov000_021df580[7]) << 28) >> 31)))
+      {
+        d = func_020a7694(*((u8 **) (new_var[1] + 0x52d0)));
+        if ((*((s8 **) ((((u8 *) (*gCurrentMap)) + 0x52e8) + (b * 4))))[a] < d)
+        {
+          func_ov000_02199f38();
+          new_var[1] = *gCurrentMap;
+          ((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + (a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2)))))))].count++;
+          new_var[1] = *gCurrentMap;
+          d = *((s8 *) ((new_var[1] + 0x2338) + (a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2)))))));
+          if (d > 2)
+          {
+            func_ov000_021906a0(d);
+          }
+          func_ov000_0218a9ac(a, b);
+        }
+      }
+    }
+  }
+  sx = -1;
+  sy = -1;
+  best = 32767;
+  score = 32767;
+  ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->x = 63;
+  ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->y = 63;
+  new_var[1] = *gCurrentMap;
+  for (y = 0; y < (*((u16 *) (new_var[1] + 0x5146))); y++)
+  {
+    for (x = 2 * 0; x < (*((u16 *) (new_var[1] + 0x5144))); x++, new_var[1] = *gCurrentMap)
+    {
+      if (((*((s8 **) ((new_var[1] + 0x52e8) + (y * 4))))[x] < 0) || (!func_ov000_021a9860(x, y)))
+      {
+        continue;
+      }
+      new_var[1] = *gCurrentMap;
+      if (((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) (((*((u16 *) ((new_var[1] + 0x3758) + (y * 2)))) + (new_var[1] + x)) + 0x1928))].count && (!((*((u16 *) (data_ov000_021df580 + 8))) & 32)))
+      {
+        continue;
+      }
+      tile = new_var[1][(0x1420 + x) + (*((u16 *) ((new_var[1] + 0x3758) + (y * 2))))];
+      cost = 2 * (*((s8 *) (((new_var[1] + 0x2338) + x) + (*((u16 *) ((new_var[1] + 0x3758) + (y * 2)))))));
+      i = (*((s8 **) ((new_var[1] + 0x52e8) + (y * 4))))[x];
+      if (func_ov000_021a91d0(tile & 31) == 1)
+      {
+        cost--;
+      }
+      if ((cost > score) || ((cost == score) && (best > i)))
+      {
+        continue;
+      }
+      sx = x;
+      sy = y;
+      best = i;
+      score = cost;
+    }
+
+  }
+
+  if (best != 32767)
+  {
+    new_var[0] = *((u8 **) (new_var[1] + 0x52d0));
+    if (((UnkStruct_ov000_021A860C *) new_var[0])->unk6 >= 61)
+    {
+      ((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + (sx + (*((u16 *) ((new_var[1] + 0x3758) + (sy * 2)))))))].count++;
+    }
+    ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->x = (u16) sx;
+    ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->y = (u16) sy;
+    cost = score >> 1;
+    if (cost > 2)
+    {
+      new_var[0] = *((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0));
+      if ((((UnkStruct_ov000_021A860C *) new_var[0])->unk6 >= 61) && (!((((u32) new_var[0][11]) << 24) >> 31)))
+      {
+        func_ov000_021906a0(cost);
+      }
+    }
+    ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->state = 1;
+    func_ov000_0218a9ac(sx, sy);
+  }
+  else
+  {
+    new_var[0] = *((u8 **) (new_var[1] + 0x52d0));
+    if ((((UnkStruct_ov000_021A860C *) new_var[0])->unk6 < 61) || ((((u32) new_var[0][11]) << 24) >> 31))
+    {
+      return;
+    }
+    func_ov000_02190b54();
+    ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->state = 2;
+  }
 }
 #pragma pop
 /* Scans map cells for valid target units and executes actions */

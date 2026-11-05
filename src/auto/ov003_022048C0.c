@@ -1,5 +1,7 @@
 /* 19 functions from 0x022048C0 to 0x022056BC (ov003), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 pad[28]; u32 a:12,b:1,c:3,d:1,e:4,f:7,g:4; u32 h:17,i:14,j:1; } Input048c0;
+static inline void Invoke048c0(void *self,s32 offset){ M2C_FIELD(M2C_FIELD(self,void **,0),void (**)(void *),offset)(self); }
 
 typedef struct {
     u8 pad[0x12c];
@@ -10,101 +12,9 @@ typedef struct {
 /* Packs state flags from an object's sub-fields into the packed state at obj+0x44 and initializes its trailing 0x24-byte block. */
 M2C_UNK func_02084e64();
 M2C_UNK func_0208fe30(s32);
-s32 func_ov003_022048c0(s32 r4) {
-    void *r6;
-    void *p;
-    s32 sp[8];
-    s8 i;
-    s32 curv, maxv, minv, srcVal;
-    r6 = (void *)func_02084e64();
-    if (r6 == (void *)0) return 0;
-    p = M2C_FIELD((void *)r4, void **, 0x44);
-    for (i = 0; i < 8; i++) sp[i] = M2C_FIELD((u8*)p + i*0x18, s32*, 0xc);
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x1c) << 19) >> 31;
-    M2C_FIELD(p, s32*, 0xc) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x1c) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x10); minv = M2C_FIELD(p, s32*, 0x14); curv = M2C_FIELD(p, s32*, 0xc);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0xc) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x1c) << 16) >> 29;
-    M2C_FIELD(p, s32*, 0x24) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x34) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x28); minv = M2C_FIELD(p, s32*, 0x2c); curv = M2C_FIELD(p, s32*, 0x24);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x24) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x1c) << 11) >> 28;
-    M2C_FIELD(p, s32*, 0x3c) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x4c) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x40); minv = M2C_FIELD(p, s32*, 0x44); curv = M2C_FIELD(p, s32*, 0x3c);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x3c) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x1c) << 4) >> 25;
-    M2C_FIELD(p, s32*, 0x54) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x64) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x58); minv = M2C_FIELD(p, s32*, 0x5c); curv = M2C_FIELD(p, s32*, 0x54);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x54) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x20)) >> 28;
-    M2C_FIELD(p, s32*, 0x9c) = srcVal;
-    if (M2C_FIELD(p, u8*, 0xac) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0xa0); minv = M2C_FIELD(p, s32*, 0xa4); curv = M2C_FIELD(p, s32*, 0x9c);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x9c) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x20) << 15) >> 15;
-    M2C_FIELD(p, s32*, 0x6c) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x7c) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x70); minv = M2C_FIELD(p, s32*, 0x74); curv = M2C_FIELD(p, s32*, 0x6c);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x6c) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x20) << 1) >> 18;
-    M2C_FIELD(p, s32*, 0x84) = srcVal;
-    if (M2C_FIELD(p, u8*, 0x94) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0x88); minv = M2C_FIELD(p, s32*, 0x8c); curv = M2C_FIELD(p, s32*, 0x84);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0x84) = curv;
-    }
-
-    srcVal = ((u32)M2C_FIELD(r6, s32*, 0x20)) >> 31;
-    M2C_FIELD(p, s32*, 0xb4) = srcVal;
-    if (M2C_FIELD(p, u8*, 0xc4) != 0) {
-        maxv = M2C_FIELD(p, s32*, 0xb8); minv = M2C_FIELD(p, s32*, 0xbc); curv = M2C_FIELD(p, s32*, 0xb4);
-        if (curv > maxv) { while (curv > maxv) curv -= (maxv - minv + 1); if (curv < minv) while (curv < minv) curv += (maxv - minv + 1); }
-        else if (curv < minv) curv = minv;
-        M2C_FIELD(p, s32*, 0xb4) = curv;
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (sp[i] != M2C_FIELD((u8*)p + i*0x18, s32*, 0xc)) func_0208fe30(0x10011);
-    }
-    if (M2C_FIELD(r6, s32*, 0x0) != 0) {
-        M2C_FIELD(M2C_FIELD((void *)r4, void **, 0), void (**)(void *), 0x1c)((void *)r4);
-    }
-    if (M2C_FIELD(r6, s32*, 0x4) != 0) {
-        M2C_FIELD(M2C_FIELD((void *)r4, void **, 0), void (**)(void *), 0x20)((void *)r4);
-    }
-    return 0;
-}
-
+#pragma opt_strength_reduction off
+void func_ov003_022048c0(s32 obj){void *input;void *p;s32 old[8];u8 i;input=(void *)func_02084e64();if(!input)return;p=M2C_FIELD((void *)obj,void **,68);for(i=0;i<8;i++)old[i]=M2C_FIELD((u8 *)p+i*24,s32*,12);p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,12)=((u32)M2C_FIELD(input,u32*,28)<<19)>>31;if(M2C_FIELD(p,u8*,28)){while(M2C_FIELD(p,s32*,12)>M2C_FIELD(p,s32*,16))M2C_FIELD(p,s32*,12)=M2C_FIELD(p,s32*,12)-(M2C_FIELD(p,s32*,16)-M2C_FIELD(p,s32*,20)+1);while(M2C_FIELD(p,s32*,12)<M2C_FIELD(p,s32*,20))M2C_FIELD(p,s32*,12)=M2C_FIELD(p,s32*,12)+(M2C_FIELD(p,s32*,16)-M2C_FIELD(p,s32*,20)+1);}else{M2C_FIELD(p,s32*,12)=M2C_FIELD(p,s32*,12)>M2C_FIELD(p,s32*,16)?M2C_FIELD(p,s32*,16):(M2C_FIELD(p,s32*,12)<M2C_FIELD(p,s32*,20)?M2C_FIELD(p,s32*,20):M2C_FIELD(p,s32*,12));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,36)=((u32)M2C_FIELD(input,u32*,28)<<16)>>29;if(M2C_FIELD(p,u8*,52)){while(M2C_FIELD(p,s32*,36)>M2C_FIELD(p,s32*,40))M2C_FIELD(p,s32*,36)=M2C_FIELD(p,s32*,36)-(M2C_FIELD(p,s32*,40)-M2C_FIELD(p,s32*,44)+1);while(M2C_FIELD(p,s32*,36)<M2C_FIELD(p,s32*,44))M2C_FIELD(p,s32*,36)=M2C_FIELD(p,s32*,36)+(M2C_FIELD(p,s32*,40)-M2C_FIELD(p,s32*,44)+1);}else{M2C_FIELD(p,s32*,36)=M2C_FIELD(p,s32*,36)>M2C_FIELD(p,s32*,40)?M2C_FIELD(p,s32*,40):(M2C_FIELD(p,s32*,36)<M2C_FIELD(p,s32*,44)?M2C_FIELD(p,s32*,44):M2C_FIELD(p,s32*,36));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,60)=((u32)M2C_FIELD(input,u32*,28)<<11)>>28;if(M2C_FIELD(p,u8*,76)){while(M2C_FIELD(p,s32*,60)>M2C_FIELD(p,s32*,64))M2C_FIELD(p,s32*,60)=M2C_FIELD(p,s32*,60)-(M2C_FIELD(p,s32*,64)-M2C_FIELD(p,s32*,68)+1);while(M2C_FIELD(p,s32*,60)<M2C_FIELD(p,s32*,68))M2C_FIELD(p,s32*,60)=M2C_FIELD(p,s32*,60)+(M2C_FIELD(p,s32*,64)-M2C_FIELD(p,s32*,68)+1);}else{M2C_FIELD(p,s32*,60)=M2C_FIELD(p,s32*,60)>M2C_FIELD(p,s32*,64)?M2C_FIELD(p,s32*,64):(M2C_FIELD(p,s32*,60)<M2C_FIELD(p,s32*,68)?M2C_FIELD(p,s32*,68):M2C_FIELD(p,s32*,60));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,84)=((u32)M2C_FIELD(input,u32*,28)<<4)>>25;if(M2C_FIELD(p,u8*,100)){while(M2C_FIELD(p,s32*,84)>M2C_FIELD(p,s32*,88))M2C_FIELD(p,s32*,84)=M2C_FIELD(p,s32*,84)-(M2C_FIELD(p,s32*,88)-M2C_FIELD(p,s32*,92)+1);while(M2C_FIELD(p,s32*,84)<M2C_FIELD(p,s32*,92))M2C_FIELD(p,s32*,84)=M2C_FIELD(p,s32*,84)+(M2C_FIELD(p,s32*,88)-M2C_FIELD(p,s32*,92)+1);}else{M2C_FIELD(p,s32*,84)=M2C_FIELD(p,s32*,84)>M2C_FIELD(p,s32*,88)?M2C_FIELD(p,s32*,88):(M2C_FIELD(p,s32*,84)<M2C_FIELD(p,s32*,92)?M2C_FIELD(p,s32*,92):M2C_FIELD(p,s32*,84));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,156)=((u32)M2C_FIELD(input,u32*,28))>>28;if(M2C_FIELD(p,u8*,172)){while(M2C_FIELD(p,s32*,156)>M2C_FIELD(p,s32*,160))M2C_FIELD(p,s32*,156)=M2C_FIELD(p,s32*,156)-(M2C_FIELD(p,s32*,160)-M2C_FIELD(p,s32*,164)+1);while(M2C_FIELD(p,s32*,156)<M2C_FIELD(p,s32*,164))M2C_FIELD(p,s32*,156)=M2C_FIELD(p,s32*,156)+(M2C_FIELD(p,s32*,160)-M2C_FIELD(p,s32*,164)+1);}else{M2C_FIELD(p,s32*,156)=M2C_FIELD(p,s32*,156)>M2C_FIELD(p,s32*,160)?M2C_FIELD(p,s32*,160):(M2C_FIELD(p,s32*,156)<M2C_FIELD(p,s32*,164)?M2C_FIELD(p,s32*,164):M2C_FIELD(p,s32*,156));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,108)=((Input048c0 *)input)->h;if(M2C_FIELD(p,u8*,124)){while(M2C_FIELD(p,s32*,108)>M2C_FIELD(p,s32*,112))M2C_FIELD(p,s32*,108)=M2C_FIELD(p,s32*,108)-(M2C_FIELD(p,s32*,112)-M2C_FIELD(p,s32*,116)+1);while(M2C_FIELD(p,s32*,108)<M2C_FIELD(p,s32*,116))M2C_FIELD(p,s32*,108)=M2C_FIELD(p,s32*,108)+(M2C_FIELD(p,s32*,112)-M2C_FIELD(p,s32*,116)+1);}else{M2C_FIELD(p,s32*,108)=M2C_FIELD(p,s32*,108)>M2C_FIELD(p,s32*,112)?M2C_FIELD(p,s32*,112):(M2C_FIELD(p,s32*,108)<M2C_FIELD(p,s32*,116)?M2C_FIELD(p,s32*,116):M2C_FIELD(p,s32*,108));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,132)=((u32)M2C_FIELD(input,u32*,32)<<1)>>18;if(M2C_FIELD(p,u8*,148)){while(M2C_FIELD(p,s32*,132)>M2C_FIELD(p,s32*,136))M2C_FIELD(p,s32*,132)=M2C_FIELD(p,s32*,132)-(M2C_FIELD(p,s32*,136)-M2C_FIELD(p,s32*,140)+1);while(M2C_FIELD(p,s32*,132)<M2C_FIELD(p,s32*,140))M2C_FIELD(p,s32*,132)=M2C_FIELD(p,s32*,132)+(M2C_FIELD(p,s32*,136)-M2C_FIELD(p,s32*,140)+1);}else{M2C_FIELD(p,s32*,132)=M2C_FIELD(p,s32*,132)>M2C_FIELD(p,s32*,136)?M2C_FIELD(p,s32*,136):(M2C_FIELD(p,s32*,132)<M2C_FIELD(p,s32*,140)?M2C_FIELD(p,s32*,140):M2C_FIELD(p,s32*,132));}p=M2C_FIELD((void *)obj,void **,68);M2C_FIELD(p,s32*,180)=((u32)M2C_FIELD(input,u32*,32))>>31;if(M2C_FIELD(p,u8*,196)){while(M2C_FIELD(p,s32*,180)>M2C_FIELD(p,s32*,184))M2C_FIELD(p,s32*,180)=M2C_FIELD(p,s32*,180)-(M2C_FIELD(p,s32*,184)-M2C_FIELD(p,s32*,188)+1);while(M2C_FIELD(p,s32*,180)<M2C_FIELD(p,s32*,188))M2C_FIELD(p,s32*,180)=M2C_FIELD(p,s32*,180)+(M2C_FIELD(p,s32*,184)-M2C_FIELD(p,s32*,188)+1);}else{M2C_FIELD(p,s32*,180)=M2C_FIELD(p,s32*,180)>M2C_FIELD(p,s32*,184)?M2C_FIELD(p,s32*,184):(M2C_FIELD(p,s32*,180)<M2C_FIELD(p,s32*,188)?M2C_FIELD(p,s32*,188):M2C_FIELD(p,s32*,180));}for(i=0;i<8;i++){if(old[i]!=M2C_FIELD((u8 *)M2C_FIELD((void *)obj,void **,68)+i*24,s32*,12))func_0208fe30(0x10011);}p=(void *)obj;if(M2C_FIELD(input,s32*,0))M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),28)(p);if(M2C_FIELD(input,s32*,4))M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),32)(p);}
+#pragma opt_strength_reduction reset
 void func_ov003_02204ec4(void *obj) {
     UnkOv003Packed *packed = M2C_FIELD(obj, UnkOv003Packed **, 0x44);
 
@@ -424,7 +334,7 @@ void func_ov003_022056a4(void) {
 }
 
 void func_ov003_022056b0(void) {
-    M2C_UNK func_ov003_022048c0();
+    void func_ov003_022048c0();
     func_ov003_022048c0();
 }
 

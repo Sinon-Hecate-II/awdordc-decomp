@@ -1,5 +1,13 @@
 /* 5 functions from 0x021A4A98 to 0x021A58C8 (ov000), found by ds-decomp. */
 #include "common.h"
+extern void **gCurrentMap;
+extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
+#define MAP (*gCurrentMap)
+#define KIND(p) ((u32)((p)[0]<<26)>>26)
+#define ROW(y) M2C_FIELD(MAP+(y)*2,u16*,0x3758)
+#define CELL(x,y,off) M2C_FIELD(MAP+(x)+ROW(y),u8*,off)
+static inline s32 UnitIndexA4e08(u8 *p){return p?((s32)(p-(u8*)(MAP+0x59a4)))/14:0;}
+static inline s32 UnitOwnerA4e08(u8 *p){return p?(UnitIndexA4e08(p)>>6)+1:0;}
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -121,10 +129,66 @@ s32 func_ov000_021a4dc4(void) {
     return func_ov000_021a4a98((&data_ov000_021e00ac)[offset], (&data_ov000_021e00ad)[offset]);
 }
 
-void func_ov000_021a4e08(void) {
-    return;
-}
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs on
+s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
+s32 func_ov000_021a97e0(s32,u32);void func_01ffada0(s32,s32,s32,s32,s32);
+void func_01ffb9c4(s8);s32 func_020d27c0(s32);
+s32 func_ov000_021a97d0(u32,s32);s32 func_0207c8ec(s32,s32);
+s32 func_ov000_021a9820(s32,u32);s32 func_020a85c8(u32);
+s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,minX,y,minY,maxX,maxY,distance,value;u32 range;
+u8 flags=data_ov000_021b5c0f[kind*112];
+u16 health;
+u8 *unit;
+sum=0;max=0;health=0;
+if(flags&16){
+func_01ffada0(cx,cy,14,func_ov000_021a97e0(M2C_FIELD(MAP,u16*,0x52a4),14),1);
+for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
+if(M2C_FIELD(MAP+y*4,s8**,0x52e8)[x]<0||!CELL(x,y,0x508)||!func_020d27c0(CELL(x,y,0)))continue;
+unit=(u8*)(MAP+0x59a4)+CELL(x,y,0x508)*14;
+if(KIND(unit)==14)health+=(u32)(M2C_FIELD(unit,u16*,6)<<25)>>25;
+}}
+minX=cx-9;if(minX<0)minX=0;
+minY=cy-9;if(minY<0)minY=0;
+maxX=M2C_FIELD(MAP,u16*,0x5144)-1;if(cx+9<maxX)maxX=cx+9;
+maxY=M2C_FIELD(MAP,u16*,0x5146)-1;if(cy+9<maxY)maxY=cy+9;
+for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
+distance=0;if(cx-x>0)distance+=cx-x;else distance+=x-cx;if(cy-y>0)distance+=cy-y;else distance+=y-cy;
+if(distance<1||distance>9||!CELL(x,y,0x508)||func_020d27c0(CELL(x,y,0))==1)continue;
+unit=(u8*)(MAP+0x59a4)+CELL(x,y,0x508)*14;
+if(kind==22&&KIND(unit)!=23)continue;
+if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(data_ov000_021b5bfc[kind*112+19]&16)){
 
+M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
+func_01ffada0(unit[1],unit[2],KIND(unit),func_ov000_021a97e0(UnitOwnerA4e08(unit),KIND(unit)),1);
+func_01ffb9c4(111);
+if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
+value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*func_ov000_021a97d0(KIND(unit),kind),100);
+if(kind!=14)sum+=value;else if(value>max)max=value;continue;
+}
+if((((data_ov000_021b5bfc[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)||
+((data_ov000_021b5bfc[kind*112+19]&16)&&KIND(unit)==6)||
+((u32)(kind-20)<=1&&(KIND(unit)==22||KIND(unit)==15||KIND(unit)==17))){
+
+M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
+func_01ffada0(unit[1],unit[2],KIND(unit),func_ov000_021a97e0(UnitOwnerA4e08(unit),KIND(unit)),1);
+func_01ffb9c4(111);
+if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
+value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*func_ov000_021a97d0(KIND(unit),kind),100);
+if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
+}
+range=func_ov000_021a9820(UnitOwnerA4e08(unit),KIND(unit));
+if(range<=1)continue;
+if(range<distance&&!func_020a85c8(KIND(unit)))continue;
+range=data_ov000_021b5bfc[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
+value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*func_ov000_021a97d0(KIND(unit),kind),100);
+sum+=value;
+}
+M2C_FIELD(MAP,u16*,0x52b6)=saved;
+return sum+max;
+}
+#pragma pop
 #pragma push
 #pragma opt_strength_reduction off
 void func_ov000_021a5564(u8 arg0){

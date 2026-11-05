@@ -203,27 +203,18 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
 
 s32 func_ov000_021a7084(void *a, void *b) { (void)a; (void)b; return 0; }
 
-u8 func_ov000_021a72c0(u32 arg0) {
-    s32 func_020b9e20(u16);
-    extern int *data_027e0058;
-    extern s8 data_ov000_021aab78[];
-    extern void *data_ov000_021df57c;
-
-    if (arg0 >= 0x1BU) {
-        return 0U;
-    }
-    if (data_ov000_021aab78[arg0] == -1) {
-        return 0U;
-    }
-    if (((unsigned char *)data_ov000_021df57c + (arg0 - 1) * 0xC)[0x14] == 0U) {
-        return 0U;
-    }
-    if (func_020b9e20(*(u16 *)((unsigned char *)*data_027e0058 + 0x5200 + 0xA4)) != 0) {
-        return 1U;
-    }
-    return 0U;
+#pragma opt_propagation off
+u8 func_ov000_021a72c0(u32 arg0){
+s32 func_020b9e20(u16);
+extern int *data_027e0058;extern s8 data_ov000_021aab78[];extern void *data_ov000_021df57c;
+u8 result=0;
+if(arg0>=27)return result;
+if(data_ov000_021aab78[arg0]==-1)return result;
+if(((u8*)data_ov000_021df57c+(arg0-1)*12)[20]==0)return result;
+result=func_020b9e20(*(u16*)((u8*)*data_027e0058+0x52a4))!=0;
+return result;
 }
-
+#pragma opt_propagation reset
 s32 func_ov000_021a7348(void) {
     s32 func_020d1938(s32);
     s32 func_020d273c(s32);

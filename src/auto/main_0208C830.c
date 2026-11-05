@@ -145,7 +145,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                           (u16)r7,
                           (void *)data_020f35ba,
                           r6);
-            { s16 tt = (s16)(r8 - 0x80); r8 = tt; r10 = (s16)(r10 + 0x80); }
+            r10=(s16)(r10+0x80); r8=(s16)(r8-0x80);
         }
         while (r8 >= 0x40) {
             func_01ffaacc((u16)((r10 & 0x1FF) | 0x3800),
@@ -153,7 +153,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                           (u16)r7,
                           (void *)data_027e007c,
                           r6);
-            { s16 tt = (s16)(r8 - 0x40); r8 = tt; r10 = (s16)(r10 + 0x40); }
+            r10=(s16)(r10+0x40); r8=(s16)(r8-0x40);
         }
     }
     while (r8 >= 0x20) {
@@ -162,7 +162,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)r7,
                       (void *)data_027e007c,
                       r6);
-        { s16 tt = (s16)(r8 - 0x20); r8 = tt; r10 = (s16)(r10 + 0x20); }
+        r10=(s16)(r10+0x20); r8=(s16)(r8-0x20);
     }
     while (r8 >= 0x10) {
         func_01ffaacc((u16)(r10 & 0x1FF),
@@ -170,7 +170,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)r7,
                       (void *)data_027e00a4,
                       r6);
-        { s16 tt = (s16)(r8 - 0x10); r8 = tt; r10 = (s16)(r10 + 0x10); }
+        r10=(s16)(r10+0x10); r8=(s16)(r8-0x10);
     }
     while (r8 >= 0x8) {
         func_01ffaacc((u16)(r10 & 0x1FF),
@@ -178,7 +178,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)r7,
                       (void *)data_027e0084,
                       r6);
-        { s16 tt = (s16)(r8 - 0x8); r8 = tt; r10 = (s16)(r10 + 0x8); }
+        r10=(s16)(r10+0x8); r8=(s16)(r8-0x8);
     }
     while (r8 >= 0x4) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
@@ -187,7 +187,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)(r7 + (0x3FF & (4 >> (s32)mode))),
                       (void *)data_027e0084,
                       r6);
-        { s16 tt = (s16)(r8 - 0x4); r8 = tt; r10 = (s16)(r10 + 0x4); }
+        r10=(s16)(r10+0x4); r8=(s16)(r8-0x4);
     }
     while (r8 >= 0x2) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
@@ -196,7 +196,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)(r7 + (0x3FF & (6 >> (s32)mode))),
                       (void *)data_027e0084,
                       r6);
-        { s16 tt = (s16)(r8 - 0x2); r8 = tt; r10 = (s16)(r10 + 0x2); }
+        r10=(s16)(r10+0x2); r8=(s16)(r8-0x2);
     }
     while (r8 >= 0x1) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
@@ -205,7 +205,7 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                       (u16)(r7 + (0x3FF & (8 >> (s32)mode))),
                       (void *)data_027e0084,
                       r6);
-        { s16 tt = (s16)(r8 - 0x1); r8 = tt; r10 = (s16)(r10 + 0x1); }
+        r10=(s16)(r10+0x1); r8=(s16)(r8-0x1);
     }
 }
 M2C_UNK func_0208cf94(s16 a, s16 b, s16 c, s32 d, s32 e) { return 0; }

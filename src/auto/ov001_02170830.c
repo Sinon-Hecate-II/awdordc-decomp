@@ -40,20 +40,16 @@ void func_ov001_02171128(void){u64 func_02007004(void);void func_02072088(u64,u6
 
 #pragma thumb on
 s32 func_ov001_02171178(s8 *a, s32 b) {
-    s32 i = 0;
+    s32 v, ch, i;
     u8 t = (u8)b;
-    s32 v = (t & 0xF0) >> 4;
-    s8 *p = a;
+    s8 *p;
+    v = (t & 0xF0) >> 4;
+    p = a;
+    i = 0;
     do {
-        s32 ch;
-        if (v <= 9) {
-            ch = v + 0x30;
-        } else {
-            ch = v + 0x37;
-        }
-        i = i + 1;
-        *p = (s8)ch;
-        p = p + 1;
+        if (v <= 9) ch = v + 0x30; else ch = v + 0x37;
+        i++;
+        *p++ = (s8)ch;
         v = t & 0x0F;
     } while (i < 2);
     *p = 0;

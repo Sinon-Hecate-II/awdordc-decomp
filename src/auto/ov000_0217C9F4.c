@@ -1,5 +1,8 @@
 /* 7 functions from 0x0217C9F4 to 0x0217D86C (ov000), found by ds-decomp. */
 #include "common.h"
+extern void **gCurrentMap;
+static inline s32 UnitIndexC9f4(void *p) { s32 n; if(p)n=((u8 *)p-((u8 *)*gCurrentMap+0x59a4))/14;else n=0;return n; }
+static inline s32 UnitOwnerC9f4(void *p) { if(p)return (UnitIndexC9f4(p)>>6)+1;return 0; }
 typedef struct {
 unsigned char kind:6, flags0:2;
 u8 x,y,pad3[5];
@@ -8,122 +11,70 @@ u8 pad10;
 unsigned char field11:5, active:1,field11hi:2;
 u8 pad12[2];
 } Unit0217d428;
+static inline s32 DistanceC9f4(Unit0217d428 *p,s32 x,s32 y) {s32 d=0,t; t=p->x-x;if(t<=0)t=x-p->x;d+=t;t=p->y-y;if(t<=0)t=y-p->y;return d+t;}
 typedef struct { u8 pad[3];u8 count;u8 pad4[2]; } Record0217d428;
 static inline void SetTarget0217d428(Unit0217d428 *unit,u16 x,u16 y) {
 unit->targetX=x;unit->targetY=y;
 }
 
-s32 func_ov000_0217c9f4(void *arg0) {
-    s32 func_ov000_021a98e4(u32);
-    s32 func_ov000_0217c4c8(void *);
-    s32 func_ov000_021a97e0(s32, u32);
-    s32 func_ov000_0217c420(void *, void *);
-    s32 func_020d27c0(s32);
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
-    extern u8 data_ov000_021b5c0f[];
-
-    u8 *unit;
-    u32 kind;
-    u8 selX, selY;
-    void *map;
-    void *base;
-    s32 n;
-    s32 radius;
-    s32 minX, minY, maxX, maxY;
-    s32 x, y;
-    s32 r7;
-    s32 width, height;
-    u8 *selectedUnit;
-    u16 hf;
-    s32 dx, dy, dist;
-    s32 terrainCost;
-    u16 rowOff;
-    u8 terrainKind;
-    u8 *record;
-    u32 k;
-
-    unit = (u8 *)arg0;
-
-    kind = ((u32)unit[0] << 26) >> 26;
-    if (func_ov000_021a98e4(kind) == 1) {
-        return func_ov000_0217c4c8(arg0);
-    }
-    if (func_ov000_021a98e4(kind) != 0) {
-        return 0;
-    }
-    if (kind == 0x19) {
-        hf = *(u16 *)(unit + 6);
-        if (((u32)(hf << 21) >> 28) == 0) {
-            return 0;
-        }
-    }
-
-    map = *gCurrentMap;
-    base = *(void **)map;
-    selX = unit[1];
-    selY = unit[2];
-
-    if (unit == 0) {
-        n = 0;
-    } else {
-        n = (((s32)unit - ((s32)base + 0x59a4)) / 14) >> 6;
-        n = n + 1;
-    }
-    radius = func_ov000_021a97e0(n, kind);
-
-    minX = (s32)selX - radius;
-    if (minX < 0) minX = 0;
-    minY = (s32)selY - radius;
-    if (minY < 0) minY = 0;
-
-    width = M2C_FIELD(map, u16 *, 0x5144);
-    maxX = (s32)selX + radius;
-    if (maxX > width - 1) maxX = width - 1;
-
-    height = M2C_FIELD(map, u16 *, 0x5146);
-    maxY = (s32)selY + radius;
-    if (maxY > height - 1) maxY = height - 1;
-
-    r7 = 0;
-
-    for (y = minY; y <= maxY; y++) {
-        for (x = minX; x <= maxX; x++) {
-            dx = (s32)selX - x;
-            if (dx <= 0) dx = x - (s32)selX;
-            dist = dx;
-            dy = (s32)selY - y;
-            if (dy <= 0) dy = y - (s32)selY;
-            dist += dy;
-            if (dist < 0) continue;
-            if (dist > radius) continue;
-
-            if ((((signed char **)((u8 *)base + 0x52E8))[y])[x] < 0) continue;
-
-            rowOff = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
-            terrainKind = *((u8 *)base + x + rowOff);
-            if (terrainKind == 0) continue;
-            if (func_020d27c0((s32)terrainKind) == 0) continue;
-
-            record = (u8 *)base + 0x59a4 + (s32)terrainKind * 14;
-            if (func_ov000_0217c420(record, (void *)unit) == 0) continue;
-
-            r7++;
-            k = ((u32)record[0] << 26) >> 26;
-            if (data_ov000_021b5bfc[k * 112 + 0x13] & 0x10) r7++;
-        }
-    }
-
-    selectedUnit = *(u8 **)((u8 *)base + 0x52D0);
-    if (func_ov000_0217c420(selectedUnit, (void *)unit) == 1) {
-        r7++;
-        k = ((u32)selectedUnit[0] << 26) >> 26;
-        if (data_ov000_021b5c0f[k * 112] & 0x10) r7++;
-    }
-
-    return r7;
+#pragma opt_strength_reduction off
+s32 func_ov000_0217c9f4(Unit0217d428 *unit) {
+s32 func_ov000_021a98e4(u32);
+s32 func_ov000_0217c4c8(void *);
+s32 func_ov000_021a97e0(s32,u32);
+s32 func_ov000_0217c420(void *,void *);
+s32 func_020d27c0(s32);
+extern u8 data_ov000_021b5bfc[],data_ov000_021b5c0f[];
+s32 count=0,maxY,minY,maxX,minX,x,y,dx,dy,dist;
+u8 *map,*record,*units; s32 id; void *dimensions;
+if(func_ov000_021a98e4(unit->kind)==1)return func_ov000_0217c4c8(unit);
+if(func_ov000_021a98e4(unit->kind)!=0)return count;
+if(unit->kind==25 && ((u32)(M2C_FIELD(unit,u16*,6)<<21)>>28)==0)return count;
+minX=unit->x-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+if(minX<0)minX=0;
+else minX=unit->x-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+minY=unit->y-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+if(minY<0)minY=0;
+else minY=unit->y-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+dimensions=(u8 *)*gCurrentMap+0x5120;
+if(unit->x+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x24)-1)
+maxX=M2C_FIELD(*gCurrentMap,u16*,0x5144)-1;
+else maxX=unit->x+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+dimensions=(u8 *)*gCurrentMap+0x5120;
+if(unit->y+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x26)-1)
+maxY=M2C_FIELD(*gCurrentMap,u16*,0x5146)-1;
+else maxY=unit->y+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+for(y=minY;y<=maxY;y++){
+for(x=minX;x<=maxX;x++){
+dx=unit->x-x;if(dx<=0)dx=x-unit->x;
+dist=0;
+dist=dx+dist;
+dy=unit->y-y;if(dy<=0)dy=y-unit->y;
+dist+=dy;
+if(dist>=0){ if(dist>func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind))continue;
+map=*gCurrentMap;
+id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
+if(id && func_020d27c0(id)){
+map=*gCurrentMap;
+units=map+0x59a4;
+id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
+record=units+id*14;
+if(func_ov000_0217c420(record,unit)){
+count++;
+if(data_ov000_021b5bfc[((Unit0217d428 *)record)->kind*112+19]&16)count++;
 }
-
+}
+}
+}
+}
+if(func_ov000_0217c420(M2C_FIELD(*gCurrentMap,void**,0x52d0),unit)==1){
+count++;
+if(data_ov000_021b5c0f[((Unit0217d428 *)M2C_FIELD(*gCurrentMap,void**,0x52d0))->kind*112]&16)count++;
+}
+return count;
+}
+#pragma opt_propagation on
+#pragma opt_strength_reduction on
 int func_ov000_0217d000(int r0, int r1) {
     r1 &= 0x1F;
     if (r1 == 0x11) {

@@ -242,22 +242,22 @@ void func_ov006_0221791c(void *arg0) {
 }
 
 void func_ov006_02217948(void *arg0) {
-    M2C_UNK func_020e3b54(s32, M2C_UNK, void *);
-    M2C_UNK func_020e3d6c(s32, void *, void *);
-    M2C_UNK func_020e3f88(void *, s32, void *);
+    M2C_UNK func_020e3b54(M2C_UNK, M2C_UNK, void *, void *);
+    M2C_UNK func_020e3d6c(M2C_UNK, void *, void *);
+    M2C_UNK func_020e3f88(void *, M2C_UNK, void *, void *);
     s32 temp_r0;
 
     M2C_FIELD(arg0, s32 *, 0x3C) = 10;
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x38);
-    switch (temp_r0) {                              /* irregular */
+    switch (temp_r0) {
     case 0:
-        func_020e3b54(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C);
+        func_020e3b54(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C, arg0);
         return;
     case 1:
         func_020e3d6c(M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
         return;
     case 2:
-        func_020e3f88(arg0 + 0x48, M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C);
+        func_020e3f88(arg0 + 0x48, M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
         return;
     }
 }

@@ -5,6 +5,8 @@ extern s32 *gCurrentMap;
 static inline s32 D068CIndex(void *p) { s32 n; if(p) n=((s32)p-(*gCurrentMap+0x59a4))/14; else n=0; return n; }
 static inline s32 D068COwner(void *p) { if(p) return (D068CIndex(p)>>6)+1; return 0; }
 typedef struct { unsigned char value:6; } D068CBits;
+typedef struct { u8 kind:6;u8 team:2; } D11F4Bits;
+static inline void D11F4Set(void *p,u8 team){((D11F4Bits *)p)->team=team;}
 void func_020d0bf8(M2C_UNK);
 static inline u32 D068CLow(void *p) { return M2C_FIELD(p,D068CBits*,0).value; }
 static inline u32 D068CFlag(void *p) { return M2C_FIELD(p,u16*,4)&32; }
@@ -65,7 +67,14 @@ M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
 
 #pragma opt_common_subs off
-s32 func_020d0a08(M2C_UNK arg0,void *arg1) { s32 func_020a8204(); s32 func_020a86f8(); u16 r,t; r=0; if(func_020a8204()!=0){ r=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1)); } t=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1)); return r!=0 || t!=0; }
+s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
+ s32 func_020a8204();
+ u16 var_r6,temp_r0;
+ var_r6=0;
+ if(func_020a8204()!=0)var_r6=D068CCall(arg0,arg1,0);
+ temp_r0=D068CCall(arg0,arg1,1);
+ return var_r6!=0 || temp_r0!=0;
+}
 #pragma opt_common_subs reset
 s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  s32 func_020a5ae0();
@@ -246,7 +255,41 @@ if(a[12])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[12]*14);
 if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
 }
 
-void func_020d11f4(void) { }
+void func_020d11f4(void){
+extern u8 data_02168f08[];
+void func_020d18fc(s32,s32);s32 func_020d19b4(s32);s32 func_020a3594(s32,s32);M2C_UNK func_0208fe30(s32);
+void *p,*r;
+if(M2C_FIELD(*gCurrentMap,s16*,28358)<=0){
+if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
+p=M2C_FIELD(*gCurrentMap,void**,28376);
+if(((D11F4Bits *)p)->team<3)D11F4Set(p,((D11F4Bits *)p)->team+1);
+}
+r=(void*)(*gCurrentMap+28344);
+func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,28376)),D068CLow(M2C_FIELD(r,void**,0)));
+if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,28376)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,28344));
+}
+if(M2C_FIELD(*gCurrentMap,s16*,28390)<=0){
+if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
+p=M2C_FIELD(*gCurrentMap,void**,28344);
+if(((D11F4Bits *)p)->team<3)D11F4Set(p,((D11F4Bits *)p)->team+1);
+}
+r=(void*)(*gCurrentMap+28376);
+func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,28344)),D068CLow(M2C_FIELD(r,void**,0)));
+if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,28344)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,28376));
+}
+((void (*)())func_020d1034)(*gCurrentMap+28344,*gCurrentMap+28376);
+((void (*)())func_020d1034)(*gCurrentMap+28376,*gCurrentMap+28344);
+((void (*)())func_020d1094)(*gCurrentMap+28344,*gCurrentMap+28376);
+((void (*)())func_020d1094)(*gCurrentMap+28376,*gCurrentMap+28344);
+if(M2C_FIELD(*gCurrentMap,s16*,0x6ec4)!=M2C_FIELD(*gCurrentMap,s16*,0x6eca)){
+r=(void*)(*gCurrentMap+0x6eb8);
+if(M2C_FIELD(r,s16*,18)==func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
+}
+if(M2C_FIELD(*gCurrentMap,s16*,0x6ee4)==M2C_FIELD(*gCurrentMap,s16*,0x6eea))return;
+r=(void*)(*gCurrentMap+0x6ed8);
+if(M2C_FIELD(r,s16*,18)!=func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
+sound:func_0208fe30(0x115);
+}
 
 void func_020d1644(void) {
 

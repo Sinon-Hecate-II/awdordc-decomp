@@ -1,5 +1,18 @@
 /* 14 functions from 0x0221BB70 to 0x0221CAA0 (ov005), found by ds-decomp. */
 #include "common.h"
+static inline void SetBlendAlpha(u8 a,u8 b) {
+extern void *gCur3DSpriteEngine;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=a;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=b;
+}
+static inline s32 MaxPairU8(u8 a,u8 b) {if(a>b)return a;return b;}
+static inline s32 MaxCount(s32 a,s32 b) {if(a>b)return a;return b;}
+static inline s32 MaxU8(u8 a, u8 b, u8 c) {
+    s32 m;
+    if (a > b) m = a; else m = b;
+    if (m <= c) m = c;
+    return m;
+}
 
 void func_ov005_0221bb70(M2C_UNK arg0) {
     M2C_UNK func_01ffa730(M2C_UNK);
@@ -51,10 +64,99 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
     func_01ffa6fc(arg0);
 }
 
-M2C_UNK func_ov005_0221bcb0() {
-    return 0;
-}
+#pragma scheduling on
+void func_ov005_0221bcb0(void *arg0) {
+    extern void *gCur3DSpriteEngine;
+    extern M2C_UNK data_0215c324;
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    void *func_01ffa770(M2C_UNK *);
+void func_01ffa8c4(void *,s32);
+void func_01ff9ce8(s32);
+void func_01ffa574(void *);
+extern M2C_UNK data_ov005_02220db8;void *object;
+    u16 *volatile sp38;
+    u16 *volatile sp34;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    s32 v;
+    s32 n;
+    s32 i;
 
+    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14))-1)*2){object=func_01ffa770(&data_ov005_02220db8);if(object)func_01ffa8c4(object,0);}
+M2C_FIELD(arg0, s32 *, 0x34) += 1;
+    if (M2C_FIELD(arg0, s32 *, 0x34) == 1) {
+        sp38 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp38 = (*sp38 & ~0xc0) | 0x40;
+        sp34 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp34 = *sp34 & ~1;
+        sp30 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp30 = *sp30 & ~2;
+        sp2C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp2C = *sp2C | 4;
+        sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp28 = *sp28 & ~8;
+        sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp24 = *sp24 & ~0x10;
+        sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp20 = *sp20 & ~0x20;
+        sp1C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp1C = *sp1C & ~0x100;
+        sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp18 = *sp18 & ~0x200;
+        sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp14 = *sp14 & ~0x400;
+        sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp10 = 0x800 | *sp10;
+        spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *spC = *spC & ~0x1000;
+        sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *sp8 = *sp8 & ~0x2000;
+*(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x51)=16;
+*(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x52)=0;
+    }
+
+    v = M2C_FIELD(arg0,s32 *,0x34);
+if(v>(MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14))-1)*2){
+v=M2C_FIELD(arg0,s32 *,0x34)-(MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14))-1)*2;
+n=func_0207ca38(0,0,16,v,32);
+*(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x51)=16-n;
+*(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine+0x52)=n;
+M2C_FIELD(arg0,u16 *,0x38)=func_0207ca38(1,0,-160,v,32);
+M2C_FIELD(arg0,s32 *,0x44)=func_0207ca38(1,0,64,v,32);
+}
+    for (i = 0; i < MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14)); i++) {
+        v = M2C_FIELD(arg0, s32 *, 0x34) - i * 2;
+        if (v > 0 && v <= 0x20)
+            ((u16 *)((u8 *)arg0+0x38))[MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14))-i]=(u16)func_0207ca38(1,0,160,v,32);
+    }
+
+    if (M2C_FIELD(arg0, s32 *, 0x34) != (MaxCount(MaxPairU8(M2C_FIELD(&data_0215c324,u8 *,12),M2C_FIELD(&data_0215c324,u8 *,13)),M2C_FIELD(&data_0215c324,u8 *,14)) - 1) * 2 + 0x20)
+        return;
+
+func_01ff9ce8(2);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+    sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+    *sp4 = *sp4 & ~0xc0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = 0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=0;
+func_01ff9ce8(1);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
+M2C_FIELD(arg0,s32 *,0x34)=0;
+func_01ffa574(arg0);
+}
+#pragma scheduling reset
 int func_ov005_0221c150(void *arg0) {
     return 0;
 }
@@ -116,9 +218,8 @@ void func_ov005_0221ca7c(void) {
     func_ov005_0221bc44();
 }
 
-void func_ov005_0221ca88(void) {
-    M2C_UNK func_ov005_0221bcb0();
-    func_ov005_0221bcb0();
+void func_ov005_0221ca88(void *arg0) {
+    func_ov005_0221bcb0(arg0);
 }
 
 void func_ov005_0221ca94(void) {

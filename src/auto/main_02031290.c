@@ -209,28 +209,17 @@ s32 func_02031670(s32 arg0) {
     return ((var_r3 << 0x18) & 0xFF000000) | (((var_r3 << 8) & 0xFF0000) | ((u8) (var_r3 >> 0x18) | ((var_r3 >> 8) & 0xFF00)));
 }
 
+#pragma opt_strength_reduction off
 void func_020316c4(void *arg0) {
-    void func_020218f4(M2C_UNK *, M2C_UNK *);
-    s32 func_0202f5ac(u8);
-    s32 func_0203161c(void *);
-    u8 *p;
-    u8 c0;
-    u32 sum;
-    s32 sp4;
-    s32 sp0;
-
-    p = (u8 *) arg0;
-    if (M2C_FIELD(p, u8 *, 0xD0D) >= 6) return;
-    p += func_0202f5ac(M2C_FIELD(p, u8 *, 0xD0D)) << 8;
-    c0 = M2C_FIELD(p, u8 *, 0xC0);
-    sum = M2C_FIELD(p, u8 *, 0xC8) + M2C_FIELD(p, u8 *, 0xC9) + M2C_FIELD(p, u8 *, 0xCA) + M2C_FIELD(p, u8 *, 0xCB);
-    if (c0) return;
-    if (!sum) return;
-    sp4 = func_0203161c(p + 0xC8);
-    sp0 = func_0203161c(p + 0xCC);
-    func_020218f4(&sp4, &sp0);
+void func_020218f4(M2C_UNK *,M2C_UNK *);s32 func_0202f5ac(u8);s32 func_0203161c(void *);
+s32 sp4,sp0;u8 *p=arg0;u8 c0;u32 sum;
+if(p[0xd0d]>=6)return;
+p+=func_0202f5ac(p[0xd0d])<<8;
+c0=p[0xc0];sum=p[0xcb]+(p[0xca]+(p[0xc8]+p[0xc9]));
+if(c0)return;if(!sum)return;
+sp4=func_0203161c(p+0xc8);sp0=func_0203161c(p+0xcc);func_020218f4(&sp4,&sp0);
 }
-
+#pragma opt_strength_reduction reset
 s32 func_0203174c(M2C_UNK arg0) {
     M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
     s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
@@ -611,27 +600,31 @@ void func_02032004(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     func_0200567c(arg0, 0xD, &data_020fb2bc, arg1, arg2);
 }
 
-u64 func_02032024(void *arg0) {
-    signed char *p;
-    s32 i;
-    u64 result;
-    u64 mult;
-    s32 c;
-
-    result = 0;
-    mult = 1;
-    p = (signed char *)arg0 + 0xB;
-    for (i = 0; i < 0xC; i++) {
-        c = *p--;
-        if (c < 0x30 || c > 0x39) {
-            return 0;
-        }
-        result += (u64)(c - 0x30) * mult;
-        mult *= 10;
+#pragma opt_strength_reduction off
+u64 func_02032024(void *arg0)
+{
+  s32 i;
+  u64 result = 0;
+  u64 mult = 1;
+  s32 c;
+  arg0 = (signed char *) arg0;
+  arg0 = arg0 + 11;
+  i = 0;
+  do
+  {
+    c = *(((signed char *) arg0) - i);
+    if (((c < 48) || (c > 57)) != 0)
+    {
+      return 0;
     }
-    return result;
+    result += ((u64) (c - 48)) * mult;
+    mult *= 10;
+    i++;
+  }
+  while (i < 12);
+  return result;
 }
-
+#pragma opt_strength_reduction reset
 void func_020320ac(s32 arg0, s32 arg1, s32 arg2, char *arg3) {
     extern u8 data_020fb2c4[];
     u32 lo = (u32)arg0;

@@ -6,22 +6,23 @@ typedef struct { u8 mode; u8 pad; u16 digits; } DecimalFormBD;
 extern u16 data_020eaf78[];
 extern u16 data_02100564[], data_02100570[], data_0210057c[], data_02100584[], data_0210058c[], data_02100598[], data_021005a4[], data_021005ac[];
 
-#pragma scheduling off
-u16 *func_0206bd7c(double value, u16 *end, FormatBD fmt) {
+#pragma scheduling on
+u16 *func_0206bd7c(double arg0, u16 *end, FormatBD fmt) {
 void func_0206f034(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_0206bc58(void *, int);
 u16 *func_0206cdac(u16 *, u16 *);
 int func_02068c34(char *);
 void func_020650a4(void *, void *, int);
+double value=arg0;
 DecimalFormBD form;
 DecimalBD dec;
 char buf[512];
 char *p,*q;
-int precision=fmt.precision;
 u16 conv=fmt.conv;
-u8 alt=fmt.alt;
-u8 sign=fmt.sign;
+int alt=fmt.alt;
+int precision=fmt.precision;
+int sign=fmt.sign;
 int exp,whole,n,i;
 char esign;
 u16 *result;
@@ -46,7 +47,7 @@ p=buf+sizeof(buf); *--p=0;
 switch(conv){
 case 'g': case 'G':
 if(dec.len>precision)func_0206bc58(&dec,precision);
-if(!(dec.exp>=-4 && dec.exp<precision)){
+if(dec.exp<-4 || dec.exp>=precision){
 if(alt)precision--;else precision=dec.len-1;
 if(conv=='g')conv='e';else conv='E';goto scientific;
 }
@@ -65,7 +66,7 @@ if(dec.len<precision+1){i=precision+2-dec.len;while(--i)*--p='0';}
 q=dec.digits+dec.len;i=dec.len;
 while(--i)*--p=*--q;
 if(precision || alt)*--p='.';
-*--p=(u8)dec.digits[0];
+*--p=*(volatile u8 *)&dec.digits[0];
 if(dec.sign)*--p='-';
 else if(sign==1)*--p='+';
 else if(sign==2)*--p=' ';
@@ -93,7 +94,7 @@ result=end-func_02068c34(p)-1;
 func_020650a4(result,p,func_02068c34(p));
 return result;
 }
-
+#pragma scheduling off
 s32 func_0206c3c8(void *a, void *b, void *c, void *d) { return 0; }
 
 s32 func_0206ccb8(void *arg0, M2C_UNK arg1, s32 arg2) {

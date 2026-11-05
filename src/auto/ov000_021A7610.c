@@ -1,5 +1,19 @@
 /* 6 functions from 0x021A7610 to 0x021A860C (ov000), found by ds-decomp. */
 #include "common.h"
+#pragma optimization_level 0
+static inline s32 AiWeightedCount(s32 value,s32 kind) { extern u16 data_ov000_021e14aa[]; return data_ov000_021e14aa[kind]*value; }
+#pragma optimization_level reset
+#pragma optimization_level 0
+static inline s32 AiProduct(s32 factor, s32 value) { return factor * value; }
+#pragma optimization_level reset
+#pragma optimization_level 0
+static inline s32 AiScale(s32 value,s32 kind) {
+ extern u16 data_ov000_021e14aa[];
+ s32 func_ov000_021a6f24(s32,s32,s32);
+ value=AiProduct(data_ov000_021e14aa[kind],value);
+ return func_ov000_021a6f24(value,kind,0);
+}
+#pragma optimization_level reset
 typedef struct { s32 money; s32 unk4; s32 income; u8 pad[128]; } AiPlayer;
 
 void func_ov000_021a7d08(void) {
@@ -122,6 +136,65 @@ s32 func_ov000_021a8438(s32 index) {
  }
 }
 void func_ov000_021a7610(void) {
+u8 func_ov000_021a7348(void); s32 func_ov000_021a6e5c(u8); s32 func_ov000_021a72c0(s32);
+s32 func_ov000_021a96f4(s32,s32,s32); s32 func_ov000_021a96a8(s32,s32,s32);
+s32 func_ov000_021a6f24(s32,s32,s32); s32 func_0207c8ec(s32,s32);
+s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 func_020d2d18(u16,s32);
+extern u8 *data_ov000_021df578; extern u32 data_ov000_021df8ac[27];
+extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *data_ov000_021df580;
+extern u8 data_ov000_021df598[]; extern u8 data_ov000_021b5bfc[]; extern void **gCurrentMap;
+s32 values[9]; s32 minimum;
+s32 b,a,i,j,k,t,v;
+s32 kind;
+data_ov000_021df578[6]=func_ov000_021a7348();
+for(a=0;a<27;a++)data_ov000_021df8ac[a]=0;
+for(b=0;b<9;b++)values[b]=0;
+for(i=1;i<27;i++){j=func_ov000_021a6e5c((u8)i);if(j!=10)values[j]+=data_ov000_021e1474[i];}
+t=(u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29;
+if((t&4) && !(t&2))values[7]*=2;
+for(kind=1;kind<27;kind++){
+if(!func_ov000_021a72c0((u8)kind))continue;
+for(j=0;j<9;j++){
+if(values[j]==0)continue;
+if(data_ov000_021df598[j]==22)v=func_ov000_021a96f4(kind,data_ov000_021df598[j],0);
+else v=func_ov000_021a96a8(kind,data_ov000_021df598[j],0);
+v=func_ov000_021a6f24(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
+if(data_ov000_021b5bfc[data_ov000_021df598[j]*112+19]&16){
+if(kind==6 && (data_ov000_021df578[6]==2 || data_ov000_021df578[6]==4))v>>=1;
+if(kind==23 && (data_ov000_021df578[6]==1 || data_ov000_021df578[6]==3))v>>=1;
+}
+values[j]-=func_0207c8ec(v,100);
+}
+}
+for(j=0;j<9;j++)if(values[j]>0)goto positive;
+goto nonpositive;
+positive: {
+for(i=1;i<27;i++){
+if(!func_ov000_021a72c0((u8)i))continue;
+if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
+for(j=0;j<9;j++)if(values[j]>0)data_ov000_021df8ac[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),values[j]);
+for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>3;
+}
+return;
+}
+nonpositive:
+minimum=0;for(j=0;j<9;j++)if(minimum>values[j])minimum=values[j];
+if(minimum!=0){
+for(i=1;i<27;i++){
+if(!func_ov000_021a72c0((u8)i))continue;
+if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
+for(j=0;j<9;j++)if(values[j]!=0)data_ov000_021df8ac[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),(values[j]-(minimum-1)));
+for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>2;
+}
+return;
+}
+for(i=1;i<27;i++){
+if(!func_ov000_021a72c0((u8)i))continue;
+if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
+if(!func_ov000_021a96a8(i,1,0))continue;
+data_ov000_021df8ac[i]=func_020d2d18(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
+for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>2;
+}
 }
 
 void func_ov000_021a7ac0(s32 index) {

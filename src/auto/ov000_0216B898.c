@@ -1,11 +1,74 @@
 /* 10 functions from 0x0216B898 to 0x0216C7F0 (ov000), found by ds-decomp. */
 #include "common.h"
+extern void *gCur3DSpriteEngine;
+extern u8 data_ov000_021b8384[],data_ov000_021b83a0[],data_ov000_021b837c[],data_ov000_021b83d8[],data_ov000_021b8392[];
+extern s16 data_020e5b30[];
+#define ENGINE M2C_FIELD(gCur3DSpriteEngine,void**,0)
+#define SIZE ((u32)(M2C_FIELD(ENGINE,u16*,0)<<17)>>30)
+#define ATTR(tile,pal) ((u16)(((tile)>>SIZE & 0x3ff)|(pal)))
+#define GET(off) func_020a8ff4(M2C_FIELD(M2C_FIELD(arg0,void**,off),void**,0))
 
-M2C_UNK func_ov000_0216b898(void *arg0) {
-    if (M2C_FIELD(arg0, u8 *, 0x36) == 0) return 0;
-    return 0;
+#pragma peephole off
+void func_ov000_0216b898(void *arg0){
+s32 func_020a8ff4(void*);s32 func_020e31e0(void);
+s32 func_ov000_0216b15c(s32,s32,s32,s32);s32 func_020a93e4(void*,u8);
+s32 func_0207c8ec(s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);
+void func_01ffaacc(u16,u16,u16,void*,s32);void func_0209b67c(u16,s32,s32,u16,s32);
+s32 x1,x2,y1,y2,anchor,xa,ya,i,tile;u16 *volatile control;
+if(!M2C_FIELD(arg0,u8*,0x36))return;
+switch(func_020e31e0()){
+case 0:xa=(s16)(GET(0x48)-4);ya=12;x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;break;
+case 2:case 3:
+xa=(s16)(GET(0x48)-4);ya=12;
+if(M2C_FIELD(arg0,u8*,0x3d)){x2=GET(0x4c);y2=34;x1=GET(0x48);y1=68;}
+else{x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;}break;
+case 1:case 4:case 5:default:xa=(s16)(GET(0x48)-4);ya=38;x1=GET(0x48);y1=12;
+if(M2C_FIELD(arg0,u8*,0x3d)){x2=GET(0x4c);y2=60;}else{x2=GET(0x4c);y2=42;}break;
 }
-
+anchor=GET(0x44);i=GET(0x44);
+control=(u16*)(ENGINE+0x12);*control=(*control&~0xc0)|0x40;
+M2C_FIELD(ENGINE,u8*,0x51)=i;M2C_FIELD(ENGINE,u8*,0x52)=16-anchor;
+anchor=GET(0x5c);
+if(func_ov000_0216b15c(anchor,134,128,32))func_01ffaacc((u16)(anchor&511),134,ATTR(0x43e,0xb000),data_ov000_021b8384,11);
+tile=M2C_FIELD(arg0,u8*,0x3d)?0x368:0x35c;
+if(func_ov000_0216b15c(x1,y1,48,16)){u16 x=x1&511;u16 attr=ATTR(tile,0xb000);func_01ffaacc(x,(u16)(y1&255),attr,data_ov000_021b83a0,11);}
+{
+void *p=M2C_FIELD(arg0,void**,0x40);
+if(M2C_FIELD(p,u8*,10)==3)M2C_FIELD(p,u8*,0x17)=28;
+else if(M2C_FIELD(p,u8*,10)==2)M2C_FIELD(p,u8*,0x17)=30;
+else M2C_FIELD(p,u8*,0x17)=26;
+}
+M2C_FIELD(M2C_FIELD(arg0,void**,0x40),s16*,6)=x2;
+for(i=0;i<M2C_FIELD(M2C_FIELD(arg0,void**,0x40),u8*,10);i++){
+s32 x=func_020a93e4(M2C_FIELD(arg0,void**,0x40),(u8)i);
+if(func_ov000_0216b15c(x,y2,32,32)){
+void *p=M2C_FIELD(arg0,void**,0x40);
+s32 offset=(u16)(M2C_FIELD(p,u16*,0x12)+M2C_FIELD(p,u8*,0x16)*M2C_FIELD(p+(i&255),u8*,11));
+func_01ffaacc((u16)(x&511),(u16)(y2&255),ATTR(offset+0x374,0xb000),data_ov000_021b837c,11);
+}
+}
+if(GET(0x58)>1){
+s32 a,b,c,d,scale1,scale2,sine,cosine;
+if((GET(0x58)<0 ? -GET(0x58):GET(0x58))>=2)scale1=GET(0x58);else if(GET(0x58)>2)scale1=2;else if(GET(0x58)<-2)scale1=-2;else scale1=GET(0x58);
+cosine=data_020e5b30[1];sine=data_020e5b30[0];
+if((GET(0x58)<0 ? -GET(0x58):GET(0x58))>=2)scale2=GET(0x58);else if(GET(0x58)>2)scale2=2;else if(GET(0x58)<-2)scale2=-2;else scale2=GET(0x58);
+a=func_0207c8ec(cosine<<4,256);
+b=func_0207c8ec((-sine)<<4,scale2);
+c=func_0207c8ec(sine<<4,256);
+d=func_0207c8ec(cosine<<4,scale1);
+func_01ff8ddc(0,a,b,c,d);
+x1=GET(0x54);
+func_01ffaacc((u16)(x1&511),104,ATTR(0x414,0xb000),data_ov000_021b83d8,11);
+if(GET(0x58)>20){x1=GET(0x54);func_0209b67c((u16)((M2C_FIELD(arg0,s16*,0x3e)+x1)&511),360,96,ATTR(0x47e,0x2000),10);}
+}
+if(M2C_FIELD(arg0,u8*,0x3d)&&func_ov000_0216b15c(xa,ya,48,16))
+{u16 x=xa&511;u16 attr=ATTR(0x432,0xb000);func_01ffaacc(x,(u16)(ya&255),attr,data_ov000_021b8392,11);}
+}
+#pragma scheduling reset
+#pragma opt_scheduling reset
+#pragma peephole reset
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
 void func_ov000_0216bfa4(void *arg0) {
 extern u16 *data_02101e84;
 extern u8 *data_02101e88;
@@ -64,7 +127,7 @@ void func_ov000_0216c1dc(void) {
 }
 
 void func_ov000_0216c1e8(void) {
-    M2C_UNK func_ov000_0216b898();
+    void func_ov000_0216b898();
     func_ov000_0216b898();
 }
 

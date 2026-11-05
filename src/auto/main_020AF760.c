@@ -1,6 +1,9 @@
 /* 28 functions from 0x020AF760 to 0x020B0658 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { s32 x,y,z; } VecAff;
+typedef struct { u8 pad[4]; s32 unk4; } Unk020af860_Sub;
+typedef struct { u8 pad[0x34]; Unk020af860_Sub *unk34; } Unk020af860_Unit;
+typedef struct { Unk020af860_Unit *unk0; u8 pad[0x14]; } Unk020af860_Rec;
 extern u8 data_02122d08[],data_021213e0[];
 extern s32 data_027e15bc;
 
@@ -17,9 +20,15 @@ void func_020af79c(void) {
 
 #pragma scheduling off
 void func_020af7ac(void) {
-extern u8 data_0215c430[]; extern u8 data_0215c42c[];
-s32 i=0; volatile u8 *p=data_0215c430; volatile u8 *q=data_0215c42c; u8 zero=i;
-do { *p++=zero; i++; *q++=zero; } while(i<2);
+    extern u8 data_0215c430[];
+    extern u8 data_0215c42c[];
+    volatile u8 *p = data_0215c430;
+    volatile u8 *q = data_0215c42c;
+    s32 i;
+    for (i = 0; i < 2; i++) {
+        *p++ = 0;
+        *q++ = 0;
+    }
 }
 #pragma scheduling reset
 void func_020af7dc(void) {
@@ -64,14 +73,24 @@ void func_020af828(s32 arg0, s32 arg1) {
 }
 
 void func_020af860(s32 arg0, s32 arg1) {
- M2C_UNK func_0208ffe4(s32, s32);
- M2C_UNK func_02090100(s32, s32);
- void func_020af8c8(s32, s32);
- extern M2C_UNK data_ov002_021f30f4;
- if (M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&data_ov002_021f30f4 + (u32)arg0 * 0x18), void **, 0x34), s32 *, 4) == 0) return;
- func_0208ffe4(arg0, -1);
- if (arg0 == 0) func_02090100(arg0, -128); else func_02090100(arg0, 127);
- func_020af8c8(arg0, arg1);
+    M2C_UNK func_0208ffe4(s32, s32);
+    M2C_UNK func_02090100(s32, s32);
+    void func_020af8c8(s32, s32);
+    extern M2C_UNK data_ov002_021f30f4;
+    s32 off = arg0 * 0x18;
+    u8 *p = (u8 *)&data_ov002_021f30f4 + off;
+    s32 v = M2C_FIELD(M2C_FIELD(*(void **)p, void **, 0x34), s32 *, 4);
+
+    if (v == 0) {
+        return;
+    }
+    func_0208ffe4(arg0, -1);
+    if (arg0 == 0) {
+        func_02090100(arg0, -0x80);
+    } else {
+        func_02090100(arg0, 0x7F);
+    }
+    func_020af8c8(arg0, arg1);
 }
 
 void func_020af8c8(s32 arg0, s32 arg1) {

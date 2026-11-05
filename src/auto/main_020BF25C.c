@@ -1,5 +1,13 @@
 /* 35 functions from 0x020BF25C to 0x020C0254 (main), found by ds-decomp. */
 #include "common.h"
+extern char data_0215e5e4[], data_0215dba4[];
+extern char data_021295c4[], data_021295d0[], data_021295d8[], data_021295dc[], data_021295e4[], data_021295ec[], data_021295f4[], data_021295f8[], data_021295fc[], data_02129604[];
+static inline int SaveRangeA(s32 n) { int b=0; if(n>=0xa1) b=(n<0xbb); return b!=0; }
+static inline int SaveRangeB(s32 n) { int b=0; if(n>=0xbb) b=(n<0xe1); return b!=0; }
+static inline int SaveRangeAU(u32 n) { int b=0; if(n>=0xa1) b=(n<0xbb); return b!=0; }
+static inline int SaveRangeBU(u32 n) { int b=0; if(n>=0xbb) b=(n<0xe1); return b!=0; }
+typedef struct { u32 state:3; u32 unused:26; u32 rank:3; } SaveRankEntry;
+typedef struct { u8 header[8]; SaveRankEntry entries[64]; u8 tail[16]; } SaveRankRecord;
 typedef struct { u16 a, b; } SavePair;
 typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
 typedef struct {
@@ -12,12 +20,56 @@ typedef struct { u8 enabled:1; u8 mode:3; u8 unused:4; } SaveFlags;
 typedef struct { u16 low:7; u16 mode:3; u16 high:6; } SaveMode;
 extern M2C_UNK data_0215d890, data_0215deec, data_0212616c;
 
-void *func_020bf25c(s32 arg0) {
-    (void)arg0;
-    return 0;
-}
-
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
 #pragma opt_propagation off
+void *func_020bf25c(s32 arg0,s32 arg1) {
+s32 func_020bf054(s32); void *func_020bfa60(s32);
+s32 func_020bee64(s32); s32 func_02086680(s32); void func_02068d68(char*,const char*); void func_020675e4(char*,const char*,...);
+s32 func_020a8a84(s32); s32 func_020cfbdc(s32); void func_020bf10c(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
+char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
+buf[0x100]=0; n=func_020bf054(a);
+p=func_020bfa60(n);
+switch(a) {
+case 0: case 5:
+if(func_020bee64(n)) {
+func_02068d68(buf+256,func_02086680(0x4800003f));
+if(SaveRangeAU((u32)p[0]))func_02068d68(buf+256,func_02086680(0x48000039));
+if(SaveRangeBU((u32)p[0]))func_02068d68(buf+256,func_02086680(0x4800003a));
+n=func_020a8a84(p[0]);func_020675e4(buf,data_021295c4,n,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
+func_02068d68(buf+256,func_02086680(0x4800003f));func_02068d68(buf+256,func_02086680(0x4800003e));
+func_020675e4(buf,data_021295d0,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_021295d8);
+func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+} else if(func_020e4b28(b)) {
+rec=(SaveRankRecord *)data_0215dba4+b;c1=0;c2=0;c3=0;
+i=0; goto check_entries;
+scan_entry: { if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].state>=3){s32 id=i+0xa1; if(SaveRangeA(id))c1++;if(SaveRangeB(id))c2++;if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].rank==4)c3++;} i++; }
+check_entries: if(i<64) goto scan_entry;
+if(c1==26)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
+func_020675e4(buf,data_021295dc,func_02086680(0x4800003b),c1);func_02068d68(buf+256,buf);
+if(c2==38)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
+func_020675e4(buf,data_021295e4,func_02086680(0x4800003c),c2);func_02068d68(buf+256,buf);
+if(c3==64)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
+func_020675e4(buf,data_021295ec,func_02086680(0x4800003d),c3);func_02068d68(buf+256,buf);
+func_02068d68(buf+256,data_021295f4);func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+}else if(a==5)func_02068d68(buf+256,func_02086680(0x48000041));else func_02068d68(buf+256,func_02086680(0x4800002d));
+break;
+case 1:
+if(!func_020bee64(n) || !b) goto unavailable;
+{
+func_020c8d7c(p[0]);func_02068d68(buf+256,func_02086680(0x4800003f));
+func_020675e4(buf,data_021295f8,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
+func_02068d68(buf+256,func_02086680(0x4800003f));func_02068d68(buf+256,func_02086680(0x4800003e));
+func_020675e4(buf,data_021295fc,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_02129604);
+func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+} goto done;
+unavailable: func_02068d68(buf+256,func_02086680(0x4800002e));
+break;
+}
+done: return buf+256;
+}
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 void func_020bf798(void) {
     M2C_UNK func_020be718(M2C_UNK *);
     M2C_UNK func_020be438(s32, M2C_UNK *, s32);

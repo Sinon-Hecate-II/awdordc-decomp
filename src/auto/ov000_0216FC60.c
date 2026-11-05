@@ -387,17 +387,21 @@ void func_ov000_0217074c(void) {
     extern void *data_027e00c8;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021df5e4;
-    void *saved = gCur3DSpriteEngine;
-    void *next = data_027e00c8;
-    s32 value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
-    gCur3DSpriteEngine = next;
+    void *temp_r4;
+    void *next2;
+    s32 value;
+
+    temp_r4 = gCur3DSpriteEngine;
+    next2 = *(void *volatile *)&data_027e00c8;
+    value = M2C_FIELD(&data_ov000_021df5e4, s32 *, 4);
+    gCur3DSpriteEngine = next2;
     func_020e35cc(value);
     func_01ff9ce8(1);
     func_01ff9ce8(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     func_020cfd28();
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = temp_r4;
 }
 #pragma opt_common_subs reset
 void func_ov000_021707c0(void) {

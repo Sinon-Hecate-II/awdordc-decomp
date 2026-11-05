@@ -92,6 +92,28 @@ void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
     func_0208c6fc();
 }
 
+void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
+    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
+    s32 func_020816f4(M2C_UNK);
+    void func_0208bf7c(void *, M2C_UNK, M2C_UNK, M2C_UNK *, u32, u16, u8);
+    void func_0208c69c(M2C_UNK);
+    void func_0208c6fc(void);
+    extern M2C_UNK data_02102854, data_02102858, data_02102860;
+    M2C_UNK sp4C[8], sp2C[8], spC[8];
+    s32 temp_r0;
+    temp_r0 = func_020816f4(arg1);
+    func_02068c50(sp4C, temp_r0);
+    func_02068d68(sp4C, &data_02102854);
+    func_02068c50(sp2C, temp_r0);
+    func_02068d68(sp2C, &data_02102858);
+    func_02068c50(spC, temp_r0);
+    func_02068d68(spC, &data_02102860);
+    func_0208c69c(arg1);
+    func_0208bf7c(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
+    func_0208c6fc();
+}
+
 /* Set up a display object's buffers from three prepared lists. */
 void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
     s32 func_02080e30(M2C_UNK, M2C_UNK);

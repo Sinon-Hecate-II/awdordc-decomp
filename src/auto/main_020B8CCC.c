@@ -1,7 +1,47 @@
 /* 21 functions from 0x020B8CCC to 0x020B9C8C (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 value; u8 flag; } Unk020BChoice;
+typedef struct UiB8ccc {u8 pad[0x40];u32 a:18;u32 tile:8;u32 b:6;u8 pad44[0x15];u8 mode:4;u8 active:1;u8 c:3;u8 reset;u8 pad5b[9];s8 *state;} UiB8ccc;
 
+static inline s32 MulUiB8ccc(s32 a,s32 b){return ((s64)a*b+0x800)>>12;}
+static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p->state[12]==1);}
+
+#pragma optimization_level 2
+void func_020b8ccc(void *a){
+s32 func_020b846c(s32);void func_020b8594(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK func_0208fe30(s32);void func_020b876c(void);void func_020b8778(void);void func_020aacf0(void *);void func_020b8694(void *);void func_020b86e4(void *);s32 func_02001fb4(s32,s32);void func_0208dd7c(s32,s16,s32,s16,u16,s32,s32);
+extern u16 *data_02101e84;extern void *gCur3DSpriteEngine,*data_027e00c8;
+s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
+if(M2C_FIELD(a,s16*,0x3c)==0){
+t=M2C_FIELD(a,s16*,0x40)*2;v=M2C_FIELD(a,s16*,0x3e);
+if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0x3e)-=step;else M2C_FIELD(a,s16*,0x3e)+=step;M2C_FIELD(a,s16*,0x3c)=1;func_020b8594(M2C_FIELD(a,s16*,0x3e));}
+}else M2C_FIELD(a,s16*,0x3c)=0;
+if(M2C_FIELD(a,s16*,0x46)==0){
+if(func_020b846c(M2C_FIELD(a,s16*,0x38))){
+if(func_020d8f4c()==2){
+if(M2C_FIELD(a,s16*,0x38)!=func_020ae0a8() && func_020ae1a4() && func_020b846c(M2C_FIELD(a,s16*,0x38)))func_020ae164(M2C_FIELD(a,s16*,0x38));
+}else func_020d8f1c(2,M2C_FIELD(a,s16*,0x38));
+}
+}else M2C_FIELD(a,s16*,0x46)--;
+M2C_FIELD(a,s16*,0x36)=M2C_FIELD(a,s16*,0x38);
+M2C_FIELD(a,s16*,0x38)=M2C_FIELD(a,s16*,0x40)+M2C_FIELD(a,s16*,0x3a);
+if(M2C_FIELD(a,s16*,0x36)!=M2C_FIELD(a,s16*,0x38)){M2C_FIELD(a,s16*,0x46)=4;func_0208fe30(0x10019);}
+p=M2C_FIELD(a,UiB8ccc**,0x48);if(M2C_FIELD(a,s16*,0x40)==0)p->tile=(u16)(p->mode+2);else p->tile=(u16)p->mode;p->reset=0;
+p=M2C_FIELD(a,UiB8ccc**,0x4c);if(M2C_FIELD(a,s16*,0x40)==M2C_FIELD(a,s16*,0x42)-6)p->tile=(u16)(p->mode+2);else p->tile=(u16)p->mode;p->reset=0;
+if(*data_02101e84&1){func_020b876c();return;}if(*data_02101e84&2){func_020b8778();return;}
+func_020aacf0(M2C_FIELD(a,void**,0x48));func_020aacf0(M2C_FIELD(a,void**,0x4c));func_020aacf0(M2C_FIELD(a,void**,0x50));
+if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x48)))func_020b8694(a);
+if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x4c)))func_020b86e4(a);
+if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x50))){func_020b876c();return;}
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+h=M2C_FIELD(a,s16*,0x42)<<12;pos=M2C_FIELD(a,s16*,0x40)<<12;
+size=((s64)func_02001fb4(0x62000,h)*0x6000+0x800)>>12;
+v=MulUiB8ccc(func_02001fb4(0x62000-size,h-0x6000),pos);
+t=size>>12;if(t>98)t=98;else if(t<1)t=1;
+pal=0x35c;
+func_0208dd7c(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0xb000,0,2);
+gCur3DSpriteEngine=old;
+}
+#pragma optimization_level 4
 void func_020b90d8(void) {M2C_UNK func_01ff9ce8(M2C_UNK,s32);void func_020cfd28();void func_020d472c();extern void *gCur3DSpriteEngine;extern void *data_027e00c8;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;((M2C_UNK (*)())func_01ff9ce8)(1);((M2C_UNK (*)())func_01ff9ce8)(2);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;func_020cfd28();func_020d472c();gCur3DSpriteEngine=old;}
 
 void func_020b9140(s32 arg0) {

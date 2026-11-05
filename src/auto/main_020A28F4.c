@@ -334,9 +334,14 @@ void func_020a34f4(M2C_UNK arg0) {
 
 #pragma opt_common_subs off
 s32 func_020a3518(s32 a) {
-    extern s32 *data_027e0058;
-    s32 t = M2C_FIELD(*data_027e0058 + 0x67a4 + 140 * a, s32 *, 108);
-    return (((u32)(t << 24) >> 24) == 0) ? 0 : ((u32)t >> 21);
+    extern s32 *gCurrentMap;
+    a = M2C_FIELD(*gCurrentMap + 0x67a4 + 140 * a, s32 *, 108);
+    if (((u32)(a << 24) >> 24) == 0) {
+        a = 0;
+    } else {
+        a = (u32)a >> 21;
+    }
+    return a;
 }
 #pragma opt_common_subs reset
 void func_020a3550(s32 a,s32 b){

@@ -28,11 +28,12 @@ void func_ov004_02213124(M2C_UNK arg0) {
 }
 
 s32 func_ov004_0221313c(void) {
- extern void **data_027e0058; extern u16 data_ov000_021aeef4[];
- u8 v; s32 i; s32 p; s32 end;
+ extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ struct Bits2e98 { u8 kind:6; u8 sub:2; };
+ s32 i; s32 p; s32 end; struct Bits2e98 *u;
  i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
- if(i<end) {p=(s32)*data_027e0058+0x59A4+i*14;
- do {v=*(u8*)p; if(((u32)(v<<26)>>26)!=0 && ((u32)(v<<24)>>30)!=0)return 1; i++; p+=14;}while(i<end);}
+ if(i<end) {p=(s32)*gCurrentMap+0x59A4+i*14;
+ do {u=(struct Bits2e98 *)p; if(u->kind&&u->sub)return 1; i++; p+=14;}while(i<end);}
  return 0;
 }
 

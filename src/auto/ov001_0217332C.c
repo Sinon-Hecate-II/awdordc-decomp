@@ -1,6 +1,7 @@
 /* 12 functions from 0x0217332C to 0x0217416C (ov001), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 v[5]; } SpriteGroupCounts;
+typedef struct { s32 x; u32 y; } Position;
 
 
 void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
@@ -65,37 +66,19 @@ func_ov001_0218a384(M2C_FIELD((u8 *)data_ov001_02193d1c+i*4,s32 *,0xfc),-1,data_
 i++;
 }while(i<c.v[arg1]);
 }
-#pragma scheduling reset
-#pragma optimization_level reset
-#pragma opt_common_subs reset
-#pragma opt_loop_invariants reset
-#pragma opt_strength_reduction reset
+#pragma opt_strength_reduction off
 void func_ov001_021737d8(s8 arg0) {
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-
-    var_r5 = 0;
-    var_r6 = 0;
-    var_r4 = 0;
-    var_r7 = 0;
-    M2C_FIELD(data_ov001_02193d1c, s8 *, 0x11D) = arg0;
-    do {
-        func_ov001_0217355c(arg0, var_r4, *(u16*)(data_ov001_0218f36c + var_r7 * 4 + 2), 0);
-        var_r4 += 1;
-        var_r7 += 0xC;
-    } while (var_r4 < 4);
-    if (arg0 == 2) {
-        var_r5 = 1;
-    } else if (arg0 == 1) {
-        var_r6 = 1;
-    }
-    func_ov001_0217385c(0x2F, var_r5);
-    func_ov001_0217385c(0x30, var_r6);
+s32 var_r4,var_r5,var_r6,var_r7;
+var_r5=0;var_r6=0;var_r4=0;var_r7=0;
+M2C_FIELD(data_ov001_02193d1c,s8*,0x11d)=arg0;
+do {
+((void(*)(s8,s32,u16))func_ov001_0217355c)(arg0,var_r4,M2C_FIELD(data_ov001_0218f36c+var_r7*4,u16*,2));
+var_r4++;var_r7+=12;
+}while(var_r4<4);
+if(arg0==2)var_r5=1;else if(arg0==1)var_r6=1;
+func_ov001_0217385c(47,var_r5);func_ov001_0217385c(48,var_r6);
 }
-
-#pragma scheduling off
+#pragma opt_strength_reduction reset
 void func_ov001_0217385c(s32 arg0, s32 arg1) {
     void func_ov001_0218a304(void *, s32, s32, u8);
     void *temp_r2;
@@ -161,9 +144,22 @@ void func_ov001_02173924(void) {
     func_ov001_0218a384(M2C_FIELD(data_ov001_02193d1c, s32 *, 0x114), -1, data_ov001_0218f428[temp_ip], data_ov001_0218f42a[temp_ip]);
 }
 
-M2C_UNK func_ov001_02173a00(M2C_UNK arg0) {
-    return 0;
-}
+void func_ov001_02173a00(s32 arg0) {
+extern s8 data_ov001_0218f4fc[];
+void func_ov001_02185024(s32);
+s32 old = M2C_FIELD(data_ov001_02193d1c,s8 *,0x121);
+void *p; s32 n;
+M2C_FIELD(data_ov001_02193d1c,s8 *,0x121)=*(data_ov001_0218f4fc+old*4+arg0);
+p=data_ov001_02193d1c;n=M2C_FIELD(p,s8 *,0x121);
+if(n==46 && arg0==3) M2C_FIELD(p,s8 *,0x120)=old;
+else if(n==51 && (arg0==1 || arg0==3)) M2C_FIELD(p,s8 *,0x120)=old;
+else if(n==52 && (arg0==1 || arg0==3)) {if(old!=46) M2C_FIELD(p,s8 *,0x120)=old;}
+else if(n==-1) {if(M2C_FIELD(p,s8 *,0x120)==35 || M2C_FIELD(p,s8 *,0x120)==50) M2C_FIELD(p,s8 *,0x121)=35;else M2C_FIELD(p,s8 *,0x121)=34;}
+else if(n==-2) {switch(M2C_FIELD(p,s8 *,0x120)) {case 0:case 49:M2C_FIELD(p,s8 *,0x121)=49;break;case 1:case 36:M2C_FIELD(p,s8 *,0x121)=36;break;case 3:case 38:M2C_FIELD(p,s8 *,0x121)=38;break;case 4:case 39:M2C_FIELD(p,s8 *,0x121)=39;break;case 5:case 40:M2C_FIELD(p,s8 *,0x121)=40;break;default:M2C_FIELD(p,s8 *,0x121)=37;break;}}
+else if(n==-3) {switch(M2C_FIELD(p,s8 *,0x120)) {case 6:case 41:M2C_FIELD(p,s8 *,0x121)=41;break;case 7:case 42:M2C_FIELD(p,s8 *,0x121)=42;break;case 9:case 44:M2C_FIELD(p,s8 *,0x121)=44;break;case 10:case 45:M2C_FIELD(p,s8 *,0x121)=45;break;case 11:case 34:case 35:case 50:M2C_FIELD(p,s8 *,0x121)=46;break;default:M2C_FIELD(p,s8 *,0x121)=43;break;}}
+else if(n==-4) {switch(M2C_FIELD(p,s8 *,0x120)) {case 0:case 49:M2C_FIELD(p,s8 *,0x121)=0;break;case 1:case 36:M2C_FIELD(p,s8 *,0x121)=1;break;case 3:case 38:M2C_FIELD(p,s8 *,0x121)=3;break;case 4:case 39:M2C_FIELD(p,s8 *,0x121)=4;break;case 5:case 40:M2C_FIELD(p,s8 *,0x121)=5;break;default:M2C_FIELD(p,s8 *,0x121)=2;break;}}
+else if(n==-5) {switch(M2C_FIELD(p,s8 *,0x120)) {case 6:case 41:M2C_FIELD(p,s8 *,0x121)=6;break;case 7:case 42:M2C_FIELD(p,s8 *,0x121)=7;break;case 9:case 44:M2C_FIELD(p,s8 *,0x121)=9;break;case 10:case 45:M2C_FIELD(p,s8 *,0x121)=10;break;case 11:case 34:M2C_FIELD(p,s8 *,0x121)=11;break;case 35:case 50:M2C_FIELD(p,s8 *,0x121)=50;break;default:M2C_FIELD(p,s8 *,0x121)=8;break;}}
+func_ov001_02173924();func_ov001_02185024(8);}
 
 void func_ov001_02173e38(void *arg0) {
     typedef struct { s32 x; u32 y; } Position;
@@ -182,25 +178,14 @@ void func_ov001_02173e38(void *arg0) {
 }
 
 void func_ov001_02173ebc(void *arg0) {
-    void func_ov001_0218c924(void *, void *);
-    void func_ov001_0217355c(u8, s32, s32, u32);
-    M2C_UNK A;
-    M2C_UNK B;
-    u8 b;
-    u32 v;
-    volatile struct { s32 sp0; u32 sp4; } stk;
-
-    A = (M2C_UNK)data_ov001_02193d1c;
-    B = M2C_FIELD(A, M2C_UNK *, 0xc0);
-    b = M2C_FIELD(A, u8 *, 0x11d);
-    v = M2C_FIELD(B, u32 *, 0);
-    stk.sp0 = (s32)(v & 0xffU) + 0xc;
-    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
-    func_ov001_0217355c(b, 3, stk.sp0, stk.sp4);
-    if (stk.sp0 < 0xc0) {
-        return;
-    }
-    func_ov001_0218c924(arg0, &func_ov001_02173f30);
+Position pos;
+void *a=data_ov001_02193d1c;
+u32 bits=*M2C_FIELD(a,u32**,0xc0);
+u8 b=M2C_FIELD(a,u8*,0x11d);
+pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
+func_ov001_0217355c(b,3,pos.x,pos.y);
+if(*(volatile s32 *)&pos.x<192)return;
+func_ov001_0218c924(arg0,func_ov001_02173f30);
 }
 
 void func_ov001_02173f30(void *arg0) {
@@ -222,25 +207,14 @@ void func_ov001_02173f30(void *arg0) {
 
 #pragma opt_strength_reduction off
 void func_ov001_02173fa4(void *arg0) {
-    void func_ov001_0218c924(void *, void *);
-    void func_ov001_0217355c(u8, s32, s32, u32);
-    M2C_UNK A;
-    M2C_UNK B;
-    u8 b;
-    u32 v;
-    volatile struct { s32 sp0; u32 sp4; } stk;
-
-    A = (M2C_UNK)data_ov001_02193d1c;
-    B = M2C_FIELD(A, M2C_UNK *, 0x60);
-    b = M2C_FIELD(A, u8 *, 0x11d);
-    v = M2C_FIELD(B, u32 *, 0);
-    stk.sp0 = (s32)(v & 0xffU) + 0xc;
-    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
-    func_ov001_0217355c(b, 1, stk.sp0, stk.sp4);
-    if (stk.sp0 < 0xc0) {
-        return;
-    }
-    func_ov001_0218c924(arg0, &func_ov001_02174018);
+Position pos;
+void *a=data_ov001_02193d1c;
+u32 bits=*M2C_FIELD(a,u32**,0x60);
+u8 b=M2C_FIELD(a,u8*,0x11d);
+pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
+func_ov001_0217355c(b,1,pos.x,pos.y);
+if(*(volatile s32 *)&pos.x<192)return;
+func_ov001_0218c924(arg0,func_ov001_02174018);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02174018(void *arg0) {

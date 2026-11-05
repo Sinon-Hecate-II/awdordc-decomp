@@ -473,11 +473,13 @@ void func_02004cf0(void) {
 }
 
 void func_02004d3c(void) {
- s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
- s32 state=func_020033cc();
- u32 base=((u16*)&data_020e9b30)[state>>4];
- M2C_FIELD(&data_0212dbfc,s32*,12)=state;
- M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
+    s32 func_020033cc();
+    extern u16 data_020e9b30[];
+    extern M2C_UNK data_0212dbfc;
+    s32 state = func_020033cc();
+    u32 base = ((volatile u16 *)data_020e9b30)[state >> 4];
+    ((volatile u32 *)&data_0212dbfc)[3] = (u32)state;
+    ((volatile u32 *)&data_0212dbfc)[2] = base << 12;
 }
 
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

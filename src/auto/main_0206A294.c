@@ -21,8 +21,33 @@ u32 func_0206a384(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, M2C_UNK *e, M2C_UN
     return 0;
 }
 
-M2C_UNK func_0206a76c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, M2C_UNK *arg4, M2C_UNK *arg5, M2C_UNK *arg6) {
-    return 0;
+u64 func_0206a76c(s32 base,s32 width,s32 (*get)(void *,s32,s32),void *ctx,s32 *count,s32 *negative,s32 *overflow) {
+extern u16 data_020ead40[]; extern u8 data_020eacc0[];
+s32 c,n,space,state,d; u64 limit,value;
+u64 func_02072088(u64,u64);
+*overflow=0;value=0;limit=0;*negative=0;state=1;n=0;space=0;
+if(base<0 || base==1 || base>36 || width<1)state=64;
+else {n++;c=get(ctx,0,0);if(base)limit=func_02072088(~(u64)0,(s64)base);}
+while(n<=width && c!=-1 && !(state&96)){
+switch(state){
+case 1:
+if(((c<0 || c>=128)?0:(data_020ead40[c]&256))){c=get(ctx,0,0);space++;break;}
+if(c=='+'){n++;c=get(ctx,0,0);}else if(c=='-'){n++;c=get(ctx,0,0);*negative=1;}state=2;break;
+case 2:
+if((base==0 || base==16)&&c=='0'){state=4;n++;c=get(ctx,0,0);}else state=8;break;
+case 4:
+if(c=='X'||c=='x'){base=16;state=8;n++;c=get(ctx,0,0);}else {if(!base)base=8;state=16;}break;
+case 8: case 16:
+if(!base)base=10;if(!limit)limit=func_02072088(~(u64)0,(s64)base);
+if(((c<0 || c>=128)?0:(data_020ead40[c]&8))){c-='0';if(c>=base){state=state==16?32:64;c+='0';break;}}
+else {
+if(!((c<0||c>=128)?0:(data_020ead40[c]&1)) || (c<0||c>=128?c:data_020eacc0[c])-55>=base){state=state==16?32:64;break;}
+if(c<0){}else if(c<128)c=data_020eacc0[c];c-=55;
+}
+if(value>limit)*overflow=1;value*=base;if((u64)(s64)c>~(u64)0-value)*overflow=1;value+=c;state=16;n++;c=get(ctx,0,0);break;
+}}
+if(!(state&52)){value=0;*count=0;}else *count=n-1+space;
+get(ctx,c,1);return value;
 }
 
 #pragma push

@@ -1,8 +1,22 @@
 /* 7 functions from 0x02185360 to 0x021862E8 (ov000), found by ds-decomp. */
 #include "common.h"
+static inline void ScanVisibilityRow(s32 ty,s32 player) {
+extern void **gCurrentMap; extern s8 data_ov000_021b56c0[];
+s32 func_020ce6f4(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
+s32 tx,t,kind;u8 *map;
+for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
+map=*gCurrentMap;t=M2C_FIELD(map+tx+M2C_FIELD(map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
+if(kind==26)func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+if(data_ov000_021b56c0[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+}
+}
+#pragma optimization_level 0
+static inline s32 TerrainMarkable(s32 kind) { extern s8 data_ov000_021b56c0[]; return data_ov000_021b56c0[kind]; }
+static inline void RevealTerrain(s32 x,s32 y,s32 terrain,s32 player) { s32 func_020ce6f4(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 value=func_020ce6f4(terrain,player); func_ov000_0218500c(x,y,terrain,value); }
+#pragma optimization_level reset
 extern void **gCurrentMap;
 extern u8 data_ov000_021e0550[];
-extern u8 data_ov000_021e0f60[];
+extern s8 data_ov000_021e0f60[];
 
 void func_ov000_02185360(s32 x,s32 y,s32 unit,s32 radius){
 s32 left,xx,yy,right,bottom,top,dist;
@@ -45,6 +59,56 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 }
 }
 
+#pragma optimization_level 3
+void func_ov000_021855e4(void) {
+extern u8 *data_ov000_021df580; extern s8 data_ov000_021b56c0[];
+void func_02007f8c(void*,s32,s32); s32 func_020ce6f4(s32,s32);
+void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
+s32 func_020d27c0(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
+void func_ov000_021851b8(s32,s32,s32,s32); s32 func_ov000_021a97e0(s32,u32);
+void func_01ffc294(u16,s32,s32,u32,s32,s32);
+s32 t;
+s32 player=data_ov000_021df580[13];
+s32 sx,sy,x,y;
+u8 *unit;
+s32 radius,n;
+s32 tx,ty,kind,i,offset;
+u8 *map;
+if(!M2C_FIELD(*gCurrentMap,u8*,0x5156) && player!=2){func_02007f8c(data_ov000_021e0550,255,1288);return;}
+func_02007f8c(data_ov000_021e0550,0,1288);
+{
+for(ty=0;ty<M2C_FIELD(*gCurrentMap,u16*,0x5146);ty++)for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
+map=*gCurrentMap;
+t=M2C_FIELD(map+tx+M2C_FIELD((short)map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
+if(kind==26)func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+if(data_ov000_021b56c0[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+}
+}
+for(i=1,offset=14;i<256;i++,offset+=14){
+unit=(u8*)*gCurrentMap+0x59a4+offset;
+if(!((u32)(unit[0]<<26)>>26))continue;
+if(func_020d27c0(i)==1)continue;
+if(M2C_FIELD(unit,u16*,4)&8){
+map=*gCurrentMap;
+if(!func_020a85dc((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758),u8*,0x508),u8*,0x59a4)<<26)>>26))continue;
+}
+if(unit){if(!unit)n=0;else n=(unit-((u8*)*gCurrentMap+(unsigned short)0x59a4))/14;n=(n>>6)+1;}else n=0;
+radius=func_020a7738(unit,unit[1],unit[2],player);
+func_ov000_021851b8(unit[1],unit[2],n,radius);
+func_02007f8c(data_ov000_021e0f60,0,1288);
+func_01ffc294((u16)n,unit[1],unit[2],(u32)(unit[0]<<26)>>26,func_ov000_021a97e0(n,(u32)(unit[0]<<26)>>26),4);
+M2C_FIELD((u8*)*gCurrentMap+unit[2]*4,s8**,0x52e8)[unit[1]]=-1;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
+if(M2C_FIELD((u8*)*gCurrentMap+(u32)y*4,s8**,0x52e8)[x]>=0)func_ov000_02185360(x,y,n,radius);
+}
+for(sy=0;sy<M2C_FIELD(*gCurrentMap,u16*,0x5146);sy++)for(sx=0;sx<M2C_FIELD(*gCurrentMap,u16*,0x5144);sx++){
+if((s8)data_ov000_021e0f60[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)] && (data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]&127)!=127)
+data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]++;
+}
+if(((u32)(unit[0]<<26)>>26)==5)func_ov000_021854e0(unit[1],unit[2],5,2);
+}
+}
+#pragma optimization_level reset
 void func_ov000_02185a74(u32 dir) {
 extern u8 *data_027e0a90; extern u8 *data_027e00cc; extern s32 data_027e0a94; extern u8 *data_027e0a98;
 u8 *p; void *map; s32 w,x,y,h,c,old;

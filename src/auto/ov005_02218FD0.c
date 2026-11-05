@@ -108,38 +108,21 @@ void func_ov005_02219e4c(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov005_02219e58(void *arg0) {
-    M2C_UNK func_02090810(s32, s32, s16);
-    extern s32 data_027e00c4, data_027e00c8, gCur3DSpriteEngine;
-
-    s32 temp_r7;
-    s32 var_r8;
-    s32 temp_r0;
-    s32 var_r1;
-    s32 var_r2;
-
-    temp_r7 = gCur3DSpriteEngine;
-    var_r8 = 0;
-    do {
-        if (var_r8 == 0) {
-            gCur3DSpriteEngine = data_027e00c8;
-        } else {
-            gCur3DSpriteEngine = data_027e00c4;
-        }
-        var_r1 = (s32)M2C_FIELD(arg0, s32 *, 0x3C);
-        var_r2 = (s32)M2C_FIELD(arg0, s32 *, 0x40);
-        var_r1 = (s32)((s32)var_r1 << 16);
-        temp_r0 = (s32)M2C_FIELD(M2C_FIELD(arg0 + var_r8 * 4, void **, 0x34), s32 *, 0x38);
-        if (var_r8 == 0) {
-            var_r2 -= 0xC0;
-        }
-        var_r1 = (s32)((s32)var_r1 >> 16);
-        if (temp_r0 != 0) {
-            func_02090810(temp_r0, var_r1, (s16)var_r2);
-        }
-        var_r8++;
-    } while (var_r8 < 2);
-    gCur3DSpriteEngine = temp_r7;
+void func_ov005_02219e58(void *arg0){
+M2C_UNK func_02090810(s32,s32,s16);
+extern s32 data_027e00c4,data_027e00c8,gCur3DSpriteEngine;
+s32 *second=&data_027e00c4,*first=&data_027e00c8,*eng=&gCur3DSpriteEngine;
+s32 saved; s32 i,a,x,y;
+saved=*eng;i=0;
+do{
+if(i==0)*eng=*first;else *eng=*second;
+x=M2C_FIELD(arg0,s32*,0x3c);y=M2C_FIELD(arg0,s32*,0x40);x=(s32)((s32)x<<16);
+a=M2C_FIELD(M2C_FIELD(arg0+i*4,void**,0x34),s32*,0x38);
+if(i==0)y-=192;
+x=(s32)((s32)x>>16);if(a)func_02090810(a,x,(s16)y);
+i++;
+}while(i<2);
+gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction on
 void func_ov005_02219ee0(void *arg0) {

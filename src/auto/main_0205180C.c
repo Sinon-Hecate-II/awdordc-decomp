@@ -1,6 +1,6 @@
 #include "common.h"
 typedef struct {s32 function,argument;} Callback518;
-typedef struct {Callback518 callback; char token[21], hash[33], name[82], buf[512];} Response518;
+typedef struct {char token[21], hash[33], name[82], buf[512];} Response518;
 extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020fe488,data_020fe5ac,data_020fe4bc,data_020fe5b4,data_020fe4c8,data_020fe5e4,data_020fe5ec,data_020fe4a0,data_020fe5f8,data_020fe434,data_020fe43c,data_020fe44c,data_020fe600,data_020fe608,data_020fe424;
 
 
@@ -28,11 +28,12 @@ s32 func_02050838(void **,Callback518,void *,void *,s32);
 M2C_UNK func_02058644(M2C_UNK,M2C_UNK *);
 M2C_UNK func_02054484();
 Response518 work;
-void *p=*a;
 void *q;
+void *p=*a;
 char *chosen;
 s32 *record;
 s32 result;
+Callback518 callback;
 if(func_0205817c(a,text,0)){
 if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
 func_02055bc0(a,M2C_FIELD(p,s32 *,0x1a0));
@@ -58,19 +59,19 @@ M2C_FIELD(b,s32 *,20)=2;
 break;
 case 3:
 if(func_02068eac(text,&data_020fe5ac,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
-if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x19c)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe5b4,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
 result=func_020511dc(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=2;break;
 case 2:
 if(func_02068eac(text,&data_020fe5e4,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
-if(!func_02058254(text,&data_020fe5ec,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe5ec,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x198)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x19c)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe5b4,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
 if(!func_02058254(text,&data_020fe4a0,work.token,21))work.token[0]=0;
 if(!func_02058254(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
@@ -79,18 +80,18 @@ else if(M2C_FIELD(p,s8 *,0x12f))chosen=(char *)p+0x12f;
 else {func_020675e4(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
 func_020675e4(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
 func_020491bc(work.buf,func_02068c34(work.buf),work.hash);
-if(!func_02058254(text,&data_020fe600,work.buf,512)){func_02058620(a,1,&data_020fe4c8);func_02050744(a,3,1);return 3;}
+if(!func_02058254(text,&data_020fe600,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 if(func_0206527c(work.hash,work.buf,32)){func_02058620(a,0x108,&data_020fe608);func_02050744(a,3,1);return 3;}
 if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
 M2C_FIELD(p,s32 *,0x1d8)=3;
-work.callback=*(Callback518 *)((char *)b+12);
-if(work.callback.function){
+callback=*(Callback518 *)((char *)b+12);
+if(callback.function){
 q=func_02037794(32);
 if(!q){func_02058644((M2C_UNK)a,&data_020fe424);return 1;}
 func_02065210(q,0,32);
 M2C_FIELD(q,s32 *,4)=M2C_FIELD(p,s32 *,0x1a0);M2C_FIELD(q,s32 *,0)=0;
 func_020580fc((char *)q+8,work.token,21);
-result=func_02050838(a,work.callback,q,b,0);
+result=func_02050838(a,callback,q,b,0);
 if(result)return result;
 }
 func_02054484(a,b);

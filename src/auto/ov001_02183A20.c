@@ -300,7 +300,7 @@ void func_ov001_02183f6c(void) {
 #pragma pool_constants off
 void func_ov001_02183fa0(void) {
  u16 func_02011d58(void); M2C_UNK func_ov001_0218b71c(M2C_UNK *); extern M2C_UNK data_ov001_02193e00;
- if(data_ov001_02193e00==0)return;
+ if(*(volatile M2C_UNK *)&data_ov001_02193e00==0)return;
  while(func_02011d58()!=0x8000){}
  func_ov001_0218b71c(&data_ov001_02193e00);
 }

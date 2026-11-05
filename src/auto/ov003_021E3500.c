@@ -1,5 +1,7 @@
 /* 7 functions from 0x021E3500 to 0x021E4448 (ov003), found by ds-decomp. */
 #include "common.h"
+typedef struct MenuBits3ff8 { u8 bank:2; u8 other:6; } MenuBits3ff8;
+typedef struct EngineBits3ff8 { u16 low:13; u16 shift:2; u16 high:1; } EngineBits3ff8;
 
 void func_ov003_021e3500(void *arg0) {
     M2C_UNK func_02088da8(s32);
@@ -208,7 +210,7 @@ void func_ov003_021e3714(void *arg0) {
 void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     s32 func_0207c8ec(s32, s32);
     s32 func_0207c928(s32, s32);
-    void func_020a92bc(void *, s16);
+    void func_020a92bc(void *, s32);
     void func_020a94fc(void *);
     s32 func_020c1980(void *, s32, s32);
     s32 func_ov003_02200ae8(u8);
@@ -258,7 +260,224 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     } while (i < 8);
 }
 
-void func_ov003_021e3aec(void *arg0) {
-    (void)arg0;
+void func_ov003_021e3aec(void *arg0, s32 arg1) {
+    u8 func_ov003_021e1500(s32, s32, s32);
+    void *func_020c7e6c(s32);
+    s32 func_ov003_02200968(s32);
+    void func_01ffaacc(u16, u8, u16, void *, s32);
+    s32 func_ov003_02200a18(s32, u16);
+    s32 func_0207c928(s32, s32);
+    void func_020a92bc(void *, s32);
+    void func_020a94fc(void *);
+    void func_0208dd7c(s16, s16, s16, s16, s32, s32, s32);
+    void *func_020c7e88(s32);
+    extern u16 **gCur3DSpriteEngine;
+    extern u16 **data_027e00c4;
+    extern u8 data_ov003_0220f34c[];
+    extern M2C_UNK data_027e0064;
+
+    u8 *p5c, *p;
+    u8 id;
+    u16 value, tile;
+    volatile s32 flag;
+    s32 bit, adj;
+    s16 w, h;
+    s32 x, shift, color;
+    u8 i, j;
+    u32 word;
+    s32 r6;
+    u16 *saved, *p54;
+    s32 id40;
+
+    flag = 0;
+    bit = 0;
+    adj = 0;
+    id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
+    p5c = M2C_FIELD(arg0, void **, 0x5c);
+
+    if (func_ov003_021e1500(id, 0, 4)) {
+        value = M2C_FIELD((u8 *)p5c + (id & 0xff) * 2, u16 *, 8);
+    } else if (func_ov003_021e1500(id, 5, 9)) {
+        value = (u16)(id + 0x10e);
+    }
+
+    p = func_020c7e6c(value);
+    if (M2C_FIELD(p, u8 *, 0x2f) != 0) flag = 1;
+    if ((u32)(M2C_FIELD(p, u32 *, 0x38) << 0x1f) >> 0x1f) bit = 1;
+
+    if (flag != 0) {
+        if (bit != 0) adj = -0x40;
+        tile = (u16)(func_ov003_02200968(7) * 16 + 0x140);
+        shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+        x = (arg1 + 0xc0 + adj) & 0x1ff;
+        color = (0x3ff & (tile >> shift)) | 0x6000;
+        func_01ffaacc((u16)x, 0x1c, (u16)color, data_ov003_0220f34c, 0xb);
+    }
+    if (bit != 0) {
+        tile = (u16)(func_ov003_02200968(0xc) * 16 + 0x140);
+        shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+        x = (arg1 + 0xc0) & 0x1ff;
+        color = (0x3ff & (tile >> shift)) | 0x6000;
+        func_01ffaacc((u16)x, 0x1c, (u16)color, data_ov003_0220f34c, 0xb);
+    }
+
+    w = M2C_FIELD(arg0, s16 *, 0x62);
+    h = M2C_FIELD(arg0, s16 *, 0x64);
+    M2C_FIELD(M2C_FIELD(*gCur3DSpriteEngine, void **, 0), s16 *, 0x38) = (s16)(-((0xa4 - (w / 2)) + arg1));
+    M2C_FIELD(M2C_FIELD(*gCur3DSpriteEngine, void **, 0), s16 *, 0x40) = (s16)(-(0x6c - (h / 2)));
+
+    shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+    color = (0x3ff & (0x288 >> shift)) | 0xa000;
+    func_0208dd7c((s16)(arg1 + 0xa3 - (w / 2)), (s16)(0x6b - (h / 2)), (s16)(w + 2), (s16)(h + 2), color, 0x11, 1);
+
+    id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
+    p5c = M2C_FIELD(arg0, void **, 0x5c);
+    if (func_ov003_021e1500(id, 0, 4)) {
+        value = M2C_FIELD((u8 *)p5c + (id & 0xff) * 2, u16 *, 8);
+    } else if (func_ov003_021e1500(id, 5, 9)) {
+        value = (u16)(id + 0x10e);
+    }
+
+    tile = (u16)(func_ov003_02200a18(7, value) * 4 + 0x328);
+    shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+    color = (0x3ff & (tile >> shift)) | 0x9800;
+    func_01ffaacc((u16)((arg1 + 3) & 0x1ff), 0x15, (u16)color, &data_027e0064, 0x11);
+
+    func_020a92bc(M2C_FIELD(arg0, void **, 0x50), (s16)(func_0207c928(id, 5) + 1));
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x28) &= ~0xe0;
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 6) = (s16)(arg1 + 0x24);
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 8) = 0x1c;
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 0x12) = 0x258;
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x21) = 9;
+    func_020a94fc(M2C_FIELD(arg0, void **, 0x50));
+
+    p = func_020c7e88(value);
+    id40 = arg1 + 0x40;
+    for (i = 0; i < 2; i = (u8)(i + 1)) {
+        switch (i) {
+        case 0:
+            saved = *gCur3DSpriteEngine;
+            gCur3DSpriteEngine = data_027e00c4;
+            word = M2C_FIELD(p, u32 *, 0xc);
+            r6 = (s32)((u32)(word << 4) >> 0x16);
+            func_020a92bc(M2C_FIELD(arg0, void **, 0x54), r6);
+            p54 = M2C_FIELD(arg0, void **, 0x54);
+            M2C_FIELD(p54, s16 *, 6) = (s16)id40;
+            M2C_FIELD(p54, s16 *, 8) = 0x3b;
+            func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
+            *gCur3DSpriteEngine = saved;
+            break;
+        case 1:
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), u8 *, 0x29) = 2;
+            saved = *gCur3DSpriteEngine;
+            for (j = 0; j < 3; j = (u8)(j + 1)) {
+                word = M2C_FIELD(p, u32 *, 8);
+                if (j == 0) {
+                    r6 = (s32)((u32)(word << 0x18) >> 0x18);
+                } else if (j == 1) {
+                    r6 = (s32)((u32)(word << 0x12) >> 0x1a);
+                } else {
+                    r6 = (s32)((u32)(word << 0xc) >> 0x1a);
+                }
+                gCur3DSpriteEngine = data_027e00c4;
+                func_020a92bc(M2C_FIELD(arg0, void **, 0x54), (s16)r6);
+                M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), s16 *, 6) = (s16)(arg1 + j * 0x16 + 0x14);
+                M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), s16 *, 8) = 0x45;
+                func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
+                *gCur3DSpriteEngine = saved;
+            }
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), u8 *, 0x29) = 0;
+            break;
+        }
+    }
 }
 
+#pragma opt_loop_invariants off
+#pragma opt_propagation off
+void func_ov003_021e3ff8(void *arg0,s32 arg1,s32 arg2){
+u32 func_ov003_021f2780(s32,s32);
+u32 func_ov003_021f2574(void);
+s32 func_ov003_02200a18(s32,u16);
+s32 func_0207c928(s32,s32);
+void func_020a92bc(void*,s32);
+extern u16 **gCur3DSpriteEngine;
+extern M2C_UNK data_027e0064;
+s32 px,layer,mask,py,headerX;
+u32 count0,count1,n,h;
+u32 count;
+u8 total,k,total2,k2;
+u8 j;
+u8 i;
+s32 sequence;
+s32 left;
+s32 top;
+s32 headerY;
+s32 hx1,hx2,hx3,hx0;
+s32 record;
+u16 id;
+u16 tile;
+s16 offset;
+void *p;
+count0=func_ov003_021f2780(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);
+count1=func_ov003_021f2574();
+p=M2C_FIELD(arg0,void**,0x6c);
+total=0;
+k=0;do{if(M2C_FIELD((u8*)p+k*0x6f8,u8*,0x27))total++;k++;}while(k<5);
+if(count1>=total)count1=total;
+M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x3e)=-(arg1-6);
+M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x46)=0;
+M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x38)=-(arg1+40);
+M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x40)=-arg2;
+func_01ff9ce8(0U);
+i=0;
+sequence=1;
+do{
+count=i==0?count0:count1;
+j=0;
+if(j<count){
+left=arg1+(i<<7);
+if(count>0){
+px=(s16)(left+34);py=(u16)((left+3)&511);layer=(s16)(i*16);mask=0x3ff;
+do{
+if(i==0)id=M2C_FIELD(M2C_FIELD(arg0,s32*,0x5c)+j*2,u16*,8);else id=j+0x113;
+top=(j*16)+arg2;
+offset=func_0207c928(j*2,32);
+func_020a92bc(M2C_FIELD(arg0,void**,0x50),(s16)(j+1));
+p=M2C_FIELD(arg0,void**,0x50);
+M2C_FIELD(p,u8*,0x28)=(M2C_FIELD(p,u8*,0x28)&~0xe0)|0x20;
+p=M2C_FIELD(arg0,void**,0x50);
+M2C_FIELD(p,s16*,6)=px;M2C_FIELD(p,s16*,8)=top+5;
+M2C_FIELD(M2C_FIELD(arg0,void**,0x50),s16*,0x12)=0x21c;
+M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x21)=8;
+func_020a94fc(M2C_FIELD(arg0,void**,0x50));
+tile=(u16)(func_ov003_02200a18(7,id)*4+0x234);
+func_01ffaacc(py,(u8)(top-2),(u16)((mask&((s32)tile>>((EngineBits3ff8*)*gCur3DSpriteEngine)->shift))|0x8800),&data_027e0064,17);
+if(i==0)record=M2C_FIELD(arg0,s32*,0x68);else record=M2C_FIELD(arg0,s32*,0x6c);
+func_0209b32c(layer,offset,0,record+j*0x6f8+6,0x7000,0,(u16)(sequence+M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank*320));
+sequence+=16;j++;
+}while(j<count);
+}
+}
+i++;
+}while(i<2);
+M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
+M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank=(u8)(M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank==0);
+hx0=arg1+17;hx1=arg1+33;hx2=arg1+217;hx3=arg1+233;
+headerY=arg2+-12;
+h=0;
+do {
+switch(h){
+case 0:headerX=(s16)hx0;n=func_ov003_021f2780(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);break;
+case 1:headerX=(s16)hx1;n=5;break;
+case 2:headerX=(s16)hx2;n=func_ov003_021f2574();p=M2C_FIELD(arg0,void**,0x6c);total2=0;k2=0;do{if(M2C_FIELD((u8*)p+k2*0x6f8,u8*,0x27))total2++;k2++;}while(k2<5);if(n>=total2)n=total2;break;
+case 3:headerX=(s16)hx3;n=5;break;
+}
+func_020a92bc(M2C_FIELD(arg0,void**,0x50),n);
+p=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(p,u8*,0x28)&=~0xe0;
+p=M2C_FIELD(arg0,void**,0x50);M2C_FIELD(p,s16*,6)=headerX;M2C_FIELD(p,s16*,8)=headerY;
+M2C_FIELD(M2C_FIELD(arg0,void**,0x50),s16*,0x12)=0x21c;
+M2C_FIELD(M2C_FIELD(arg0,void**,0x50),u8*,0x21)=8;
+func_020a94fc(M2C_FIELD(arg0,void**,0x50));
+h=(u8)(h+1);
+}while(h<4);
+}

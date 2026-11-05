@@ -405,33 +405,20 @@ void func_0201d434(void *arg0) {
 }
 
 void func_0201d4c0(void) {
-    extern M2C_UNK data_0212dca4;
-    extern M2C_UNK data_02137290;
-    void func_02025150(void *);
-    M2C_UNK func_0201a238();
-    u64 func_02007004(void);
-
-    void *inner = M2C_FIELD(&data_0212dca4, void **, 4);
-    void *node = M2C_FIELD(inner, void **, 0xA4);
-    u32 base_time = 0;
-
-    if (node == (void *)0) return;
-
-    if (M2C_FIELD(node, u8 *, 9)) {
-        func_02025150(node);
-        base_time = (u32)(func_02007004() >> 16);
-    } else {
-        func_0201a238();
-        if (!M2C_FIELD(&data_02137290, s32 (**)(), 0x48)()) return;
-        if (M2C_FIELD(node, u8 *, 8) == 0) return;
-    }
-
-    {
-        u32 now = (u32)(func_02007004() >> 16);
-        s32 diff = (s32)(now - base_time);
-        if (diff < 0x27) return;
-        M2C_FIELD(node, u8 *, 8) = 0;
-    }
+extern M2C_UNK data_0212dca4,data_02137290;
+void func_02025150(void *);M2C_UNK func_0201a238();u64 func_02007004(void);
+void *inner=M2C_FIELD(&data_0212dca4,void **,4);
+void *node=M2C_FIELD(inner,void **,0xa4);
+s32 start;
+if(!node)return;
+if(M2C_FIELD(node,u8 *,9)){func_02025150(node);}
+start=(u32)(func_02007004()>>16);
+goto check;
+loop:func_0201a238();
+check:
+if(!M2C_FIELD(&data_02137290,s32 (**)(void),0x48)() || !M2C_FIELD(node,u8 *,8))goto done;
+if((s32)((u32)(func_02007004()>>16)-start)<39)goto loop;
+done:M2C_FIELD(node,u8 *,8)=0;
 }
 
 s32 func_0201d548(s32 *arg0, void *arg1) {

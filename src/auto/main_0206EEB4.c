@@ -3,6 +3,7 @@
 typedef union { struct { u32 flag:1; u32 capacity:31; u32 length; u8 *data; } large; struct { u8 flag:1; u8 length:7; u8 data[11]; } small; } StringStorage;
 extern u8 data_02100894[],data_02100888[],data_02100874[],data_021008b8[];
 typedef union {double d;u64 u;} DoubleBits;
+typedef struct Decimal38 { s8 sign;u8 pad;s16 exponent;u8 length;u8 digits[33]; } Decimal38;
 extern u8 data_020eac40[128];
 extern u32 data_02100734[6];
 extern u32 data_0210074c[4];
@@ -44,7 +45,63 @@ void func_0206f034(void *arg0, s32 arg1, s32 arg2, void *arg3) {
  (void)unused;
 }
 
-void func_0206f0dc(s32 arg0) { (void)arg0; }
+double func_0206f0dc(Decimal38 *input){
+s32 func_0206f7a8(double,...);
+double func_0206df88(double,double);
+double func_0207191c(u32);
+double func_0206e2d8(double,double);
+double func_0206e08c(double,s32);
+void func_0206e630(void*,void*,s32);
+int func_0206eb30(void*,void*);
+int func_0206ea50(void*,void*);
+void func_0206ec10(void*,void*,void*);
+extern u32 data_021002e8;
+extern u8 data_021006d0[];
+extern double data_021005bc[];
+Decimal38 value,a,b,c,d,e;DoubleBits nan;double x,y,tmp,scaled;volatile u64 *yp;u8 *cursor,*end;s32 exp,n,i,digits;int above,below;
+if(input->length==0)return func_0206df88(0.0,input->sign==0?1.0:-1.0);
+switch(input->digits[0]){
+case '0':return func_0206df88(0.0,input->sign==0?1.0:-1.0);
+case 'I':return func_0206df88(func_0207191c(data_021002e8),input->sign==0?1.0:-1.0);
+case 'N':{DoubleBits *nanp;nanp=&nan;
+#pragma scheduling off
+nanp->u=0x7ff0000000000000ULL;if(input->sign)nanp->u|=0x8000000000000000ULL;nanp->u|=0x0008000000000000ULL;return nanp->d;
+#pragma scheduling reset
+}
+}
+value=*input;cursor=value.digits;end=cursor+value.length;
+if(cursor<end)do{*cursor=(u8)(*cursor-'0');cursor++;}while(cursor<end);
+value.exponent+=value.length-1;exp=value.exponent;
+func_0206e630(&a,data_021006d0,0x134);
+if(func_0206eb30(&a,&value))return func_0206df88(func_0207191c(data_021002e8),input->sign==0?1.0:-1.0);
+cursor=value.digits;x=*cursor++;
+while(cursor<end){
+n=(end-cursor)%8;if(n==0)n=8;
+digits=0;for(i=0;i<n;i++)digits=10*digits+*cursor++;
+scaled=x*data_021005bc[n-1];tmp=scaled+(double)digits;
+if(digits!=0 && scaled==tmp)break;
+x=tmp;exp-=n;
+}
+if(exp<0)x/=func_0206e2d8(5.0,(double)-exp);
+else x*=func_0206e2d8(5.0,(double)exp);
+x=func_0206e08c(x,exp);
+if(func_0206f7a8(x)==2){(*(u64*)&x)=0x7fefffffffffffffULL;}
+yp=(u64*)&y;func_0206eeb4((u8*)&b,x);
+above=0;if(!func_0206ea50(&b,&value)){
+above=0;if(func_0206eb30(&b,&value))above=1;
+for(;;){
+below=above==0;y=x;
+if(!below){(*(u64*)&y)++;if(func_0206f7a8(y)==2)break;}else (*yp)--;func_0206eeb4((u8*)&c,y);
+if(above){if(!func_0206eb30(&c,&value))break;}
+if(!above && !func_0206eb30(&value,&c)){d=b;b=c;c=d;tmp=x;x=y;y=tmp;break;}
+b=c;x=y;
+}
+func_0206ec10(&d,&value,&b);func_0206ec10(&e,&c,&value);
+if(func_0206ea50(&d,&e)){if((*(u64*)&x)&1)x=y;}
+else if(!func_0206eb30(&d,&e))x=y;
+}
+if(value.sign)x=-x;return x;
+}
 
 #pragma opt_strength_reduction reset
 s32 func_0206f700(unsigned long long x) {
@@ -70,10 +127,9 @@ double func_0206f818(double x, s32 n) {
  double func_0206dfd0(double, s32 *);
  double func_0206e08c(double, s32);
  s32 exponent;
- s32 *pe = &exponent;
- x=func_0206dfd0(x,pe);
+ x=func_0206dfd0(x,&exponent);
  exponent+=n;
- return func_0206e08c(x,*pe);
+ return func_0206e08c(x,exponent);
 }
 
 #pragma scheduling off

@@ -1,5 +1,20 @@
 /* 15 functions from 0x021E6E18 to 0x021E771C (ov003), found by ds-decomp. */
 #include "common.h"
+s32 func_ov003_021e6cfc(void);
+s32 func_ov003_021e6d28(void);
+s32 func_020848c4(void);
+s32 func_ov003_021e6eb8(s32);
+static inline u8 SlotOwner(void *p, s32 i) {return M2C_FIELD(p+i,u8 *,0x74);}
+static inline u8 SlotEmpty(void *p,s32 i) {u8 result;if(SlotOwner(p,i)==255)result=1;else result=0;return result;}
+static inline void SetSlotValue(void *p,u8 v) {
+u8 owner;
+if(func_ov003_021e6cfc()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=func_020848c4() && !SlotEmpty(p,M2C_FIELD(p,u8 *,7)))goto store;}
+if(func_ov003_021e6d28()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=func_020848c4())goto store;}
+if(!func_ov003_021e6eb8(v))return;
+store:
+M2C_FIELD(p+M2C_FIELD(p,u8 *,7),u8 *,10)=v;M2C_FIELD(p,u8 *,8)=v;
+}
+static inline void SelectSlot(void *p,u8 i) {M2C_FIELD(p,u8 *,7)=i;SetSlotValue(p,M2C_FIELD(p+i,u8 *,10));}
 
 u8 func_ov003_021e6e18(void) {
     void *func_ov003_021e6d6c();
@@ -50,7 +65,34 @@ s32 func_ov003_021e6eb8(s32 arg0) {
     return func_020bf894();
 }
 
-void func_ov003_021e6ef4(void *arg0, int arg1) {
+void func_ov003_021e6ef4(void *arg0,int arg1){
+s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 func_020848c4(void);s32 func_020846a4(void);
+s32 func_01ffa810(s32);
+u8 *p=arg0;
+switch((u32)arg1){
+case 0:case 1:case 2:case 3:SelectSlot(p,arg1);break;
+case 27:arg1=p[7];break;
+case 4:case 5:case 6:case 7:SelectSlot(p,arg1-4);break;
+case 28:arg1=(u16)(p[7]+4);break;
+case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:
+if(func_020846a4()){
+s32 allowed;u8 index=p[7];
+if(!func_020846a4())allowed=0;
+else {u8 *owners=p+0x74;u8 owner=owners[index];if(owner==func_020848c4())allowed=1;else if(func_ov003_021e6cfc() && ((u8)(owners[index]==255)))allowed=1;else allowed=0;}
+if(!allowed){
+s32 player=func_020848c4();u8 i; s32 found;
+for(i=0;i<p[4];i++){if(player==M2C_FIELD(p+i,u8 *,0x74)){found=(s8)i;goto foundplayer;}}
+found=-1;
+foundplayer:SelectSlot(p,found);
+}}
+SetSlotValue(p,arg1-8);
+break;
+case 29:arg1=(u16)(p[8]+8);break;
+case 21:case 22:case 23:case 24:SelectSlot(p,arg1-21);break;
+case 30:arg1=(u16)(p[7]+21);break;
+case 25:M2C_FIELD(M2C_FIELD(p,void **,0xdc),u16 *,0x68)=p[0xe4]+p[7];M2C_FIELD(M2C_FIELD(p,void **,0xdc),u16 *,0x6a)=p[0xe5]+p[7];break;
+}
+M2C_FIELD(p,s32 *,0xe0)=func_01ffa810(arg1);
 }
 
 u8 func_ov003_021e73bc(s32 arg0, s32 arg1) {

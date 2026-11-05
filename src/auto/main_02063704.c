@@ -375,34 +375,21 @@ s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
     return 0;
 }
 
-s32 func_020641a8(void *arg0, M2C_UNK *arg1) {
-    void func_020640e4(M2C_UNK, M2C_UNK *);
-    void func_020640ec(void *);
-
-    M2C_UNK temp_r0;
-    s32 temp_r2;
-    s32 sum;
-
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x24) - M2C_FIELD(arg0, s32 *, 0x1C);
-    if (temp_r2 != 0) {
-        M2C_FIELD(arg0, s32 *, 0x28) = temp_r2;
-        if ((((u32)M2C_FIELD(arg0, s32 *, 0x04) << 0x13) >> 0x1F) == 0) {
-            func_020640e4(M2C_FIELD(arg0, M2C_UNK *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28));
-        }
-        temp_r0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK), 0x40)(M2C_FIELD(arg0, M2C_UNK *, 0x00), M2C_FIELD(arg0, M2C_UNK *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, M2C_UNK *, 0x48));
-        if (arg1 != NULL) {
-            *arg1 = M2C_FIELD(arg0, s32 *, 0x28);
-        }
-        if (temp_r0 != 0) {
-            return temp_r0;
-        }
-    }
-    sum = M2C_FIELD(arg0, s32 *, 0x18) + M2C_FIELD(arg0, s32 *, 0x28);
-    M2C_FIELD(arg0, s32 *, 0x18) = sum;
-    func_020640ec(arg0);
-    return 0;
+#pragma opt_propagation off
+s32 func_020641a8(void *arg0,M2C_UNK *arg1){
+void func_020640e4(M2C_UNK,M2C_UNK*);void func_020640ec(void*);
+s32 n=M2C_FIELD(arg0,s32*,0x24)-M2C_FIELD(arg0,s32*,0x1c);s32 result;
+if(n){
+M2C_FIELD(arg0,s32*,0x28)=n;
+if((((u32)M2C_FIELD(arg0,s32*,4)<<19)>>31)==0)func_020640e4(M2C_FIELD(arg0,M2C_UNK*,0x1c),&M2C_FIELD(arg0,s32*,0x28));
+result=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK*,M2C_UNK),0x40)(M2C_FIELD(arg0,s32*,0),M2C_FIELD(arg0,s32*,0x1c),&M2C_FIELD(arg0,s32*,0x28),M2C_FIELD(arg0,s32*,0x48));
+if(arg1)*arg1=M2C_FIELD(arg0,s32*,0x28);
+if(result)return result;
+M2C_FIELD(arg0,s32*,0x18)+=M2C_FIELD(arg0,s32*,0x28);
+func_020640ec(arg0);
+}return 0;
 }
-
+#pragma opt_propagation reset
 s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_02006680(void *);
     M2C_UNK func_02006564();

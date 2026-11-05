@@ -5,7 +5,13 @@ typedef struct SetupSprite {
  unsigned field0:18;
  unsigned frame:8;
  unsigned field26:6;
+ u8 pad44[0x15];
+ u8 baseFrame:4;
+ u8 alternate:1;
+ u8 otherFlags:3;
 } SetupSprite;
+static inline u8 SetupIsActive(void *p) { return ((SetupSprite*)p)->baseFrame + 2 != (u16)((SetupSprite*)p)->frame; }
+static inline void SetupSetFrame(void *p,u16 frame,s8 timer) { ((SetupSprite*)p)->frame=frame; M2C_FIELD(p,s8 *,0x5a)=timer; }
 static inline s32 GetSetupCode(void *p) {
     s32 result=-1;
     switch(M2C_FIELD(p,s32 *,0x34)) {
@@ -337,7 +343,170 @@ void func_020debe4(M2C_UNK arg0) {
     func_020de8c4(arg0, 1);
 }
 
-void func_020debf4() {
-    return;
-}
+#pragma opt_strength_reduction off
+void func_020debf4(void *self){void func_020aacf0(void*);
+ int func_0208b5ec(void);
+ void func_0208af20(void);
+void *func_0208b564(void*);
+void func_020899cc(void*,int,int,u32);
+void func_020d47f0(void);
+void func_01ffa6fc(void*);
+void func_0208fe30(u32);
+u32 func_02084970(void);
+u32 func_02076614(void);
+u32 func_ov009_02225470(void);
+void func_02088f1c(void*);
+void func_02088ff4(void*);
+void func_0208b758(void*,u32);
+u32 func_020848f8(void);
+void func_ov009_02224064(void);
+void func_ov009_02224c34(int);
+void func_ov009_02223fbc(void);
+void func_020d47d0(void);
+void func_02084a40(void);
+int func_020890b8(void*);
+int func_02089064(void*);
+void *func_ov009_02224070(int);
+void func_ov009_022258a8(void*);
+extern void *data_02101e84;
+extern void *gCur3DSpriteEngine;
+extern void *data_027e00c4;
+extern void *data_027e00c8;
 
+void *old,*p;
+u16 keys;u32 v;
+s32 i;
+u8 can;
+u32 frame;
+
+if(M2C_FIELD(self,void * *,0x50))func_020aacf0(M2C_FIELD(self,void * *,0x50));
+
+if(M2C_FIELD(self,void * *,0x54))func_020aacf0(M2C_FIELD(self,void * *,0x54));
+
+if(M2C_FIELD(self,void * *,0x58))func_020aacf0(M2C_FIELD(self,void * *,0x58));
+
+keys=M2C_FIELD(data_02101e84,u16 *,0);
+M2C_FIELD(self,u16 *,0x48)=M2C_FIELD(self,u16 *,0x48)&~0x20U;
+
+if(!(M2C_FIELD(self,u16 *,0x48)&1)){
+if(M2C_FIELD(self,u16 *,0x48)&0x100){if(func_0208b5ec())func_0208af20();
+old=gCur3DSpriteEngine;
+for(i=0;
+i<2;
+i++){gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+
+if(M2C_FIELD(self,u8 *,0x44)==0 && gCur3DSpriteEngine!=data_027e00c8)continue;
+
+if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=data_027e00c4)continue;
+
+if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
+
+p=func_0208b564(self);
+func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000001);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
+
+}gCur3DSpriteEngine=old;
+func_020d47f0();
+func_01ffa6fc(self);
+return;
+}
+else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(func_0208b5ec())func_0208af20();
+old=gCur3DSpriteEngine;
+for(i=0;
+i<2;
+i++){gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+
+if(M2C_FIELD(self,u8 *,0x44)==0 && gCur3DSpriteEngine!=data_027e00c8)continue;
+
+if(M2C_FIELD(self,u8 *,0x44)==1 && gCur3DSpriteEngine!=data_027e00c4)continue;
+
+if(M2C_FIELD(self,u8 *,0x44)==3 && gCur3DSpriteEngine!=old)continue;
+
+p=func_0208b564(self);
+func_020899cc(p,2,M2C_FIELD(self,u16 *,0x46)<<5,0x44000002);
+M2C_FIELD(p,u32 *,0x58)|=0x1000;
+
+}gCur3DSpriteEngine=old;
+func_020d47f0();
+func_01ffa6fc(self);
+return;
+}}
+p=M2C_FIELD(self,void * *,0x58);
+frame=((SetupSprite*)p)->baseFrame;
+
+if(SetupIsActive(p)){can=(u8)(M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xb)==1 || ((((SetupSprite*)p)->alternate) && M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xc)==1));
+if(can||(keys&2)){
+if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,frame+1,12);
+}
+func_020d47f0();
+func_01ffa6fc(self);
+func_0208fe30(0x1000f);
+return;
+}}
+func_02084970();
+v=func_02076614();
+
+if((M2C_FIELD(self,s8 *,0x41)>1||v>1)&&M2C_FIELD(self,s8 *,0x41)!=v)func_0208fe30(M2C_FIELD(self,s8 *,0x41)<(s32)v?0x122:0x123);
+
+M2C_FIELD(self,u8 *,0x41)=v;
+
+if(M2C_FIELD(self,u16 *,0x48)&1){
+v=func_ov009_02225470();
+p=M2C_FIELD(self,void * *,0x54);
+
+if(v>=2){if(!SetupIsActive(p)){SetupSetFrame(p,((SetupSprite*)p)->baseFrame,0);
+func_02088f1c(M2C_FIELD(self,void * *,0x54));
+func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000012);
+}}
+else if(SetupIsActive(p)){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+2,0);
+func_02088ff4(M2C_FIELD(self,void * *,0x54));
+func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000011);
+}
+p=M2C_FIELD(self,void * *,0x54);
+if(!SetupIsActive(p))return;
+
+can=(u8)(M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xb)==1 || ((((SetupSprite*)p)->alternate) && M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xc)==1));
+if(!can && !(keys&1))return;
+
+v=func_020848f8();
+if(v!=func_02084970())return;
+
+func_ov009_02224064();
+p=M2C_FIELD(self,void * *,0x54);
+
+if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+1,12);
+}
+func_ov009_02224c34(0);
+func_ov009_02223fbc();
+func_020d47d0();
+func_02084a40();
+func_01ffa6fc(self);
+func_0208fe30(0x1000e);return;
+
+}else{
+v=func_ov009_02225470();
+p=M2C_FIELD(self,void * *,0x60);
+
+if(v>=2){if(!func_020890b8(p)&&!func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088f1c(M2C_FIELD(self,void * *,0x60));
+func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000012);
+}}
+else if(!func_020890b8(p)&&func_02089064(M2C_FIELD(self,void * *,0x60))){func_02088ff4(M2C_FIELD(self,void * *,0x60));
+func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000011);
+}
+p=func_ov009_02224070(0);
+if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;
+
+v=func_020848f8();
+if(v!=func_02084970())return;
+
+func_ov009_022258a8(self);
+
+}
+func_ov009_02223fbc();
+func_020d47d0();
+func_02084a40();
+func_01ffa6fc(self);
+func_0208fe30(0x1000e);
+
+}
+#pragma opt_strength_reduction reset

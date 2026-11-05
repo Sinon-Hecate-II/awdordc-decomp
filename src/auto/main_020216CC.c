@@ -2,25 +2,18 @@
 #include "common.h"
 extern M2C_UNK data_02138bbc, data_02138b34, data_02138b4c, data_02138b54;
 
-void func_020216cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg4) {
-    M2C_UNK func_02020478(M2C_UNK, M2C_UNK, M2C_UNK, u16, s32, s32);
-    s32 var_r4;
-    u16 temp_r4;
-    u16 var_r5;
-    u32 temp_r6;
-
-    if (arg4 == NULL) {
-        var_r5 = 0;
-        var_r4 = 0;
-    } else {
-        temp_r4 = M2C_FIELD(arg4, u16 *, 2);
-        temp_r6 = M2C_FIELD(arg4, u32 *, 4);
-        var_r5 = (u8) ((s32) temp_r4 >> 8) | ((temp_r4 << 8) & 0xFF00);
-        var_r4 = ((temp_r6 << 0x18) & 0xFF000000) | (((temp_r6 << 8) & 0xFF0000) | ((u8) (temp_r6 >> 0x18) | ((temp_r6 >> 8) & 0xFF00)));
-    }
-    func_02020478(arg0, arg1, arg2, var_r5, var_r4, arg3);
+#pragma opt_propagation off
+void func_020216cc(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,void *arg4) {
+M2C_UNK func_02020478(M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32);
+s32 var_r4;u16 temp_r4;u16 var_r5;u32 temp_r6;
+if(!arg4){var_r5=0;var_r4=0;}else {
+temp_r4=M2C_FIELD(arg4,u16*,2);temp_r6=M2C_FIELD(arg4,u32*,4);
+var_r5=(u8)((s32)temp_r4>>8)|((temp_r4<<8)&0xff00);
+var_r4=((temp_r6<<24)&0xff000000)|(((temp_r6<<8)&0xff0000)|((u8)(temp_r6>>24)|((temp_r6>>8)&0xff00)));
 }
-
+func_02020478(arg0,arg1,arg2,var_r5,var_r4,arg3);
+}
+#pragma opt_propagation reset
 void func_02021750(void) {
     M2C_UNK func_02020b18();
     func_02020b18();
