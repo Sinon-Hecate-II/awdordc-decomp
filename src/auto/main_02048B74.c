@@ -228,10 +228,12 @@ s8 *func_020492a8(s8 *p) {
     extern M2C_UNK data_020eac40;
     s8 *q = p;
     s32 c = *p;
-
     if (c != 0) {
         do {
-            c = (c >= 0 && c < 128) ? ((u8 *)&data_020eac40)[c] : c;
+            if (c < 0 || c >= 128) {
+            } else {
+                c = ((u8 *)&data_020eac40)[c];
+            }
             *p = (s8)c;
             c = *++p;
         } while (c != 0);

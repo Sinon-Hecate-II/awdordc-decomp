@@ -481,7 +481,15 @@ void func_020ab2c4(void *arg0) {
 }
 
 #pragma opt_propagation off
-s16 func_020ab30c(void *arg0) { s16 n; s32 limit=M2C_FIELD(arg0,s32 *,24); n=M2C_FIELD(arg0,s16 *,12)+(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8))-1; if(limit<n)n=limit; return n; }
+s16 func_020ab30c(void *arg0) {
+    s16 c = M2C_FIELD(arg0, s16 *, 0xc);
+    s16 a = M2C_FIELD(arg0, s16 *, 6);
+    s16 b = M2C_FIELD(arg0, s16 *, 8);
+    s32 limit = M2C_FIELD(arg0, s32 *, 0x18);
+    s16 n = c + (s16)(a * b) - 1;
+    if (limit < n) n = limit;
+    return n;
+}
 #pragma opt_propagation reset
 void func_020ab344(void *arg0,s16 arg1,s32 arg2){
  s32 func_0207c8ec(s16,s16);s32 func_020a8ff4(void *);

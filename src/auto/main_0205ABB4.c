@@ -300,10 +300,10 @@ s32 func_0205b758(void *arg0) {
     if (func_0205cb4c() == 0) {
         return 0;
     }
-    if (M2C_FIELD(arg0, s32 *, 0xC) == 6) {
-        var_r2 = 0;
-    } else {
+    if (M2C_FIELD(arg0, s32 *, 0xC) != 6) {
         var_r2 = 1;
+    } else {
+        var_r2 = 0;
     }
     if (func_0205b110(arg0, 2, var_r2) == 0) {
         return 0;

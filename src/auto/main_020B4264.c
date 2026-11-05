@@ -221,9 +221,9 @@ s32 func_020b4264(u8 *arg0) {
         unit += 0x8C;
     }
     for (y = 0; y < 4; y++) {
+        ps = arg0 + (y * 0x33) * 0xE;
         for (i = 0; i < 0x33; i++) {
             dst = MAPBASE + 0x59A4 + (i + y * 0x40) * 0xE;
-            ps = arg0 + (y * 0x33 + i) * 0xE;
             M2C_FIELD(dst, u8 *, 0) = M2C_FIELD(ps, u8 *, 0x3E0);
             M2C_FIELD(dst, u8 *, 1) = M2C_FIELD(ps, u8 *, 0x3E1);
             M2C_FIELD(dst, u8 *, 2) = M2C_FIELD(ps, u8 *, 0x3E2);
@@ -234,10 +234,13 @@ s32 func_020b4264(u8 *arg0) {
             M2C_FIELD(dst, u8 *, 0xB) = M2C_FIELD(ps, u8 *, 0x3EB);
             M2C_FIELD(dst, u8 *, 0xC) = M2C_FIELD(ps, u8 *, 0x3EC);
             M2C_FIELD(dst, u8 *, 0xD) = M2C_FIELD(ps, u8 *, 0x3ED);
+            ps += 0xE;
         }
     }
+    dst = arg0 + 0x1094;
     for (j = 0; j < 0x20; j++) {
-        func_020a44fc(arg0 + 0x1094 + j * 8, j);
+        func_020a44fc(dst, j);
+        dst += 8;
     }
     func_020a16a8(arg0 + 0x1194);
 }

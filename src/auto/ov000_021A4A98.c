@@ -131,13 +131,12 @@ s32 func_ov000_021a4dc4(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-#pragma opt_common_subs on
 s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
 s32 func_ov000_021a97e0(s32,u32);void func_01ffada0(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s8);s32 func_020d27c0(s32);
 s32 func_ov000_021a97d0(u32,s32);s32 func_0207c8ec(s32,s32);
 s32 func_ov000_021a9820(s32,u32);s32 func_020a85c8(u32);
-s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,minX,y,minY,maxX,maxY,distance,value;u32 range;
+s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
 u8 flags=data_ov000_021b5c0f[kind*112];
 u16 health;
 u8 *unit;
@@ -146,7 +145,7 @@ if(flags&16){
 func_01ffada0(cx,cy,14,func_ov000_021a97e0(M2C_FIELD(MAP,u16*,0x52a4),14),1);
 for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(M2C_FIELD(MAP+y*4,s8**,0x52e8)[x]<0||!CELL(x,y,0x508)||!func_020d27c0(CELL(x,y,0)))continue;
-unit=(u8*)(MAP+0x59a4)+CELL(x,y,0x508)*14;
+{ void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
 if(KIND(unit)==14)health+=(u32)(M2C_FIELD(unit,u16*,6)<<25)>>25;
 }}
 minX=cx-9;if(minX<0)minX=0;
@@ -156,7 +155,7 @@ maxY=M2C_FIELD(MAP,u16*,0x5146)-1;if(cy+9<maxY)maxY=cy+9;
 for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
 distance=0;if(cx-x>0)distance+=cx-x;else distance+=x-cx;if(cy-y>0)distance+=cy-y;else distance+=y-cy;
 if(distance<1||distance>9||!CELL(x,y,0x508)||func_020d27c0(CELL(x,y,0))==1)continue;
-unit=(u8*)(MAP+0x59a4)+CELL(x,y,0x508)*14;
+{ void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
 if(kind==22&&KIND(unit)!=23)continue;
 if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(data_ov000_021b5bfc[kind*112+19]&16)){
 

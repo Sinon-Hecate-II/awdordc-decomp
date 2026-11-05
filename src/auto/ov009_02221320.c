@@ -25,14 +25,36 @@ M2C_FIELD(data_ov009_022268e0,s32*,0x6c)--;
 SwapIME215a4(old);
 }
 
+extern u8 data_ov009_022263e0[];
+typedef struct Queue21ae8 {s32 head,tail,count;} Queue21ae8;
+typedef struct Node21ae8 {s32 next;u32 header[3];} Node21ae8;
+typedef struct Descriptor21ae8 {u32 word;u8 type;PacketBits215a4 flags;u16 mask;u32 length;} Descriptor21ae8;
+typedef struct Receive21ae8 {u8 pad[0x34];struct {u32 offset;s32 packet;} channels[4];} Receive21ae8;
+extern Queue21ae8 data_ov009_02226980[],data_ov009_022269b0[];
+s32 func_ov009_0222132c(s32,s32);
+s32 func_ov009_02224d30(s32,s32,u32,u32,s32,u32,u16);
+#pragma opt_propagation off
+#pragma opt_common_subs off
+static inline u32 Head21ae8(Queue21ae8 *q){u16 old=SwapIME215a4(0);u32 n=0;s32 p=q->head;if(!p){SwapIME215a4(old);return n;}n=M2C_FIELD(p,u32 *,12);SwapIME215a4(old);return n;}
+static inline u32 Size21ae8(u8 channel){u16 old=SwapIME215a4(0);u32 n=0;Queue21ae8 *q=&data_ov009_02226980[(s16)channel];if(!q->head){SwapIME215a4(old);return n;}n=Head21ae8(q)+12;SwapIME215a4(old);return n;}
+static inline void Pop21ae8(u8 channel,s32 packet){s32 p,next;u32 old=SwapIME215a4(0);Queue21ae8 *q=&data_ov009_02226980[(s16)channel];p=q->head;if(!p){SwapIME215a4(old);return;}
+func_ov009_02224d30(packet,M2C_FIELD(p,u8 *,8),M2C_FIELD(p,PacketBits215a4 *,9).low,M2C_FIELD(p,PacketBits215a4 *,9).high,p+16,M2C_FIELD(p,u32 *,12),M2C_FIELD(p,u16 *,10));
+next=M2C_FIELD(p,s32 *,0);q->head=next;if(!next)q->tail=0;
+func_ov009_02221338(p,M2C_FIELD(p,u32 *,12)+16);q->count--;SwapIME215a4(old);}
+static inline void Push21ae8(Queue21ae8 *queue,s32 channel,s32 packet){s32 p;u32 old=SwapIME215a4(0);p=func_ov009_0222132c(M2C_FIELD(packet,u32 *,8)+16,32);if(!p){SwapIME215a4(old);return;}func_02007f8c(p,0,16);
+func_ov009_02224d30(p+4,M2C_FIELD(packet,u8 *,4),M2C_FIELD(packet,PacketBits215a4 *,5).low,M2C_FIELD(packet,PacketBits215a4 *,5).high,packet+12,M2C_FIELD(packet,u32 *,8),M2C_FIELD(packet,u16 *,6));
+if(!queue[channel].head){queue[channel].tail=p;queue[channel].head=p;}else {M2C_FIELD(p,s32 *,0)=queue[channel].head;queue[channel].head=p;}queue[channel].count++;SwapIME215a4(old);}
+
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 void func_ov009_02221320(void) {
     M2C_UNK func_ov009_02224184();
     func_ov009_02224184();
 }
 
-void func_ov009_0222132c(void) {
+s32 func_ov009_0222132c(s32 size,s32 align) {
     M2C_UNK func_020e3580();
-    func_020e3580();
+    return func_020e3580();
 }
 
 void func_ov009_02221338(s32 arg0, s32 arg1) {
@@ -244,9 +266,76 @@ loop_1:
     goto loop_1;
 }
 
-void func_ov009_02221ae8(void) {
+#pragma opt_lifetimes off
+void func_ov009_02221ae8(Receive21ae8 *state){
+s32 func_ov009_02224194(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
+s32 func_ov009_022254a4(void);s32 func_ov009_02224d9c(s32,s32,s32,u16);s32 func_ov009_02223a30(s32,s32,s32,u8,s32);
+s32 func_ov009_02224164(u16);s32 func_ov009_02224174(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
+M2C_UNK func_02008048();void func_ov009_02222278(s32,M2C_UNK);
+s32 func_ov009_02225450(void);s32 func_ov009_022240ac(void);s32 func_020c4b60(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 func_ov009_022222d0(u8);
+u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
+s32 i,packet,channel,n,value,keep;u8 *p;u32 size;Descriptor21ae8 desc;s32 (*callback)(u8,s32);
+if(func_ov009_02224194()!=4 && func_ov009_02224194()!=5)return;
+for(i=0;i<4;i++){
+size=Size21ae8((u8)i);if(!size)continue;
+keep=1;packet=func_ov009_02224d0c(size);Pop21ae8((u8)i,packet);
+channel=M2C_FIELD(packet,PacketBits215a4 *,5).low;
+switch(M2C_FIELD(packet,u8 *,4)){
+case 2:
+value=func_ov009_022254a4();p=M2C_FIELD(data_ov009_022268e0,s32 *,0x48);
+if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))func_ov009_02224d9c(2,p,8,(u16)(1<<channel));}
+else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))func_ov009_02224d9c(3,p,8,(u16)(1<<channel));
+else func_ov009_02224d9c(2,packet+12,8,(u16)(1<<channel));break;
+case 3:
+value=func_ov009_022254a4();p=M2C_FIELD(data_ov009_022268e0,s32 *,0x48);
+if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,4)|=1<<channel;}
+else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,4)=0xffff;break;
+case 4:
+func_ov009_02223a30(M2C_FIELD(packet,s32 *,12),M2C_FIELD(packet,s32 *,16),M2C_FIELD(packet,s32 *,20),M2C_FIELD(packet,u8 *,24),0);break;
+case 5:
+func_ov009_02224d9c(6,(s32)data_ov009_022263e0,2,(u16)(1<<channel));break;
+case 6:
+func_ov009_02224164(M2C_FIELD(packet,u16 *,12));p=M2C_FIELD(data_ov009_022268e0,s32 *,0x24);
+if(p){M2C_FIELD(p,u8 *,0)=1;M2C_FIELD(M2C_FIELD(data_ov009_022268e0,s32 *,0x24),u16 *,2)=func_ov009_02224174();}break;
+case 7:func_ov009_02224164(M2C_FIELD(packet,u16 *,12));break;
+case 8:
+func_ov009_02224ca4();func_02008048(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
+func_ov009_02224d30(p,desc.type,desc.flags.low,desc.flags.high,0,desc.length,desc.mask);
+state->channels[channel].offset=0;state->channels[channel].packet=p;break;
+case 9:
+n=M2C_FIELD(packet,u32 *,8);p=state->channels[channel].packet;
+func_02008048(packet+12,p+12+state->channels[channel].offset,n);state->channels[channel].offset+=n;break;
+case 10:
+p=state->channels[channel].packet;
+if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae8(data_ov009_022269b0,channel,p);
+state->channels[channel].offset=0;p=state->channels[channel].packet;
+if(p){func_ov009_02224d1c(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
+case 11:
+func_ov009_02222278((u8)channel,packet+12);func_ov009_02225450();p=func_ov009_022240ac();func_ov009_02224d9c(12,p,96,(u16)(1<<channel));break;
+case 12:
+func_ov009_02222278((u8)channel,packet+12);p=M2C_FIELD(data_ov009_022268e0,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
+case 13:
+if(func_020c4b60()){value=func_020c5640(packet+12);if(value>=0)func_020c536c(value,packet+24);func_ov009_022222d0((u8)channel);}
+else func_ov009_02224d9c(14,0,0,0xffff);break;
+case 14:
+p=M2C_FIELD(data_ov009_022268e0,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
+case 15:
+if(func_020c4b60()){value=func_020c5640(packet+12);if(value>=0)func_020c536c(value,packet+24);}
+p=M2C_FIELD(data_ov009_022268e0,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
 }
-
+callback=M2C_FIELD(data_ov009_022268e0,s32 (**)(u8,s32),0x44);if(callback)keep=callback((u8)channel,packet);
+if(keep)func_ov009_02224d1c(packet);
+}
+if(M2C_FIELD(data_ov009_022268e0,s32 *,0x54)){
+for(i=0;i<4;i++){
+size=func_ov009_022250f8((u8)i);if(size){
+keep=1;packet=func_ov009_02224d0c(size);func_ov009_02225178((u8)i,packet);
+channel=M2C_FIELD(packet,PacketBits215a4 *,5).low;
+callback=M2C_FIELD(data_ov009_022268e0,s32 (**)(u8,s32),0x54);if(callback)keep=callback((u8)channel,packet);if(keep)func_ov009_02224d1c(packet);
+}}
+}
+}
+#pragma opt_lifetimes reset
 void func_ov009_02222278(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02008048(M2C_UNK, s32);
     extern M2C_UNK data_ov009_02226b40;

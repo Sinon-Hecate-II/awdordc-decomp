@@ -62,8 +62,8 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void func_020ab2c4(void *);
     s16 func_020a8ff4(void *);
     void func_02088e84(void *, s16, s16, s16, s32);
-    s16 func_020aae10(void *);
-    s16 func_020aae44(void *);
+    s32 func_020aae10(void *);
+    s32 func_020aae44(void *);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
     void func_01ffaacc(s32, s32, u16, void *, s32);
     s32 func_ov003_021f400c(void);
@@ -75,13 +75,13 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void func_ov003_021f9fe0(void *, s32, s32);
     void func_ov003_021f9e50(void *, s32, s32);
     void func_ov003_021fad10(void *, s32, s32);
+    s16 temp_r4;
     s32 temp_r5;
     s32 var_r0;
     s32 var_r0_2;
     s32 var_r0_3;
     s32 var_r0_4;
     s32 temp_var;
-    s16 temp_r4;
     s16 temp_r7;
     s16 temp_r8;
     s32 temp_r9;

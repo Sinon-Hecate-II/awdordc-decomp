@@ -74,18 +74,11 @@ u8 *func_ov000_0216b074(u8 *arg0) {
 void *func_ov000_0216b0c8(void) {
     void *func_020a8b0c(u16);
     s32 func_020cd6d4();
-    extern s32 *gCurrentMap;
-    void *result;
-
+    extern s32 *data_027e0058;
     switch (func_020cd6d4()) {
-    case 0:
-        result = 0;
-        break;
-    default:
-        result = func_020a8b0c(M2C_FIELD((*gCurrentMap + 0x5120), u16 *, 0x22));
-        break;
+    case 0: return NULL;
+    default: return func_020a8b0c(M2C_FIELD((*data_027e0058 + 0x5120), u16 *, 0x22));
     }
-    return result;
 }
 #pragma optimization_level 0
 s32 func_ov000_0216b104(void) {  void *p=func_ov000_0216b0c8(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return func_ov000_0216aba8(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
@@ -116,7 +109,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_0209b59c(s32, M2C_UNK);
     M2C_UNK func_0209b5e4(s32, s32);
-    s16 func_0209c268();
+    s32 func_0209c268();
     s8 func_020a8ff4(s32);
     M2C_UNK func_020a92bc(void *, s32);
     s32 func_020cfb78();
@@ -127,8 +120,8 @@ void func_ov000_0216b194(void *arg0) {
     extern s32 *gCurrentMap;
     extern void *data_027e00c8;
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov000_021b83b0;
-    extern M2C_UNK data_ov000_021b83c4;
+    extern void *data_ov000_021b83b0[];
+    extern void *data_ov000_021b83c4[];
     extern M2C_UNK data_ov000_021b869c;
     extern M2C_UNK data_ov000_021b86a8;
     extern M2C_UNK data_ov000_021b86b0;
@@ -148,10 +141,9 @@ void func_ov000_0216b194(void *arg0) {
     s32 var_r3_2;
     s32 temp_r0_18;
     s32 temp_r0_23;
-    s32 temp_r6_2;
-    s32 temp_r6_3;
-    s32 temp_r6_4;
     s32 temp_r6_5;
+    s32 off;
+    s32 res;
     s16 temp_r0_19;
     s32 var_r1;
     u8 temp_r0_20;
@@ -170,39 +162,44 @@ void func_ov000_0216b194(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) = (u8) ((M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) & ~0xE0) | 0x20);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c8;
-    M2C_FIELD(M2C_FIELD(data_027e00c8, void **, 0), u16 *, 0) |= 0x10;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) |= 0x20;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) &= ~0x40;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) |= 0x80;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) |= 0x100;
+    {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x10;}
+    {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x20;}
+    {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]&~0x40;}
+    {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x80;}
+    {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x100;}
     *(volatile u16 *)0x04000060 = (*(volatile u16 *)0x04000060 & ~0x3000) | 8;
     n0 = func_020a8ff4(*M2C_FIELD(arg0, s32 **, 0x44));
     n1 = func_020a8ff4(*M2C_FIELD(arg0, s32 **, 0x44));
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) = (u16) ((M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) & ~0xC0) | 0x40);
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=(p[0]&~0xC0)|0x40;}
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s8 *, 0x51) = n1;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s8 *, 0x52) = (s8) (0x10 - n0);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~1;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~2;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~4;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) |= 8;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~0x10;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~0x20;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) |= 0x100;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) |= 0x200;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~0x400;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) &= ~0x800;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) |= 0x1000;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x12) |= 0x2000;
-    func_02080cfc(&data_ov000_021b86a8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x6E80);
-    func_02080cfc(&data_ov000_021b86b0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8280);
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~1;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~2;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~4;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|8;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~0x10;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~0x20;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x100;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x200;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~0x400;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]&~0x800;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x1000;}
+    {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x2000;}
+    off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x6E80;
+    func_02080cfc(&data_ov000_021b86a8, off);
+    off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8280;
+    func_02080cfc(&data_ov000_021b86b0, off);
     func_020e3218(&data_ov000_021b86b8);
     func_020814e4();
-    temp_r6_2 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    func_02081590(func_020e3218(&data_ov000_021b86c4), temp_r6_2 + 0x6B80);
-    temp_r6_3 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    func_02081590(func_020e3218(&data_ov000_021b86cc), temp_r6_3 + 0x8640);
-    temp_r6_4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    func_02081590(func_020e3218(&data_ov000_021b86d4), temp_r6_4 + 0x87C0);
+    off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
+    res = func_020e3218(&data_ov000_021b86c4);
+    func_02081590(res, off + 0x6B80);
+    off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
+    res = func_020e3218(&data_ov000_021b86cc);
+    func_02081590(res, off + 0x8640);
+    off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
+    res = func_020e3218(&data_ov000_021b86d4);
+    func_02081590(res, off + 0x87C0);
     func_02081528();
     temp_r0_18 = func_02080e30(&data_ov000_021b86e0, 1);
     func_01ff9e44(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
@@ -220,9 +217,6 @@ void func_ov000_0216b194(void *arg0) {
     if (func_020e31e0() == 2) {
         temp_r0_20 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_20) {
-        default:
-            var_r0 = 0;
-            break;
         case 1:
             var_r0 = 0;
             break;
@@ -241,6 +235,9 @@ void func_ov000_0216b194(void *arg0) {
         case 0:
             var_r0 = 4;
             break;
+        default:
+            var_r0 = 0;
+            break;
         }
         if (var_r0 == 0) {
             func_02080cfc(&data_ov000_021b86e8, M2C_FIELD(data_027e00c8, s32 *, 0x18));
@@ -252,9 +249,6 @@ void func_ov000_0216b194(void *arg0) {
 block_24:
         temp_r0_21 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_21) {
-        default:
-            var_r3 = 0;
-            break;
         case 1:
             var_r3 = 0;
             break;
@@ -273,13 +267,13 @@ block_24:
         case 0:
             var_r3 = 4;
             break;
+        default:
+            var_r3 = 0;
+            break;
         }
-        func_02080cfc(*(&data_ov000_021b83b0 + (var_r3 * 4)), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
+        func_02080cfc(data_ov000_021b83b0[var_r3], M2C_FIELD(data_027e00c8, s32 *, 0x18));
         temp_r0_22 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_22) {
-        default:
-            var_r3_2 = 0;
-            break;
         case 1:
             var_r3_2 = 0;
             break;
@@ -298,10 +292,13 @@ block_24:
         case 0:
             var_r3_2 = 4;
             break;
+        default:
+            var_r3_2 = 0;
+            break;
         }
-        func_02080cfc(*(&data_ov000_021b83c4 + (var_r3_2 * 4)), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+        func_02080cfc(data_ov000_021b83c4[var_r3_2], M2C_FIELD(data_027e00c8, s32 *, 0x2C));
     }
-    func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 6);
+    func_020808dc(M2C_FIELD(data_027e00c8, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);
     func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
     func_020e35cc(temp_r0_23);

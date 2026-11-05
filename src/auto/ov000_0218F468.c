@@ -1,9 +1,91 @@
 /* 2 functions from 0x0218F468 to 0x02190094 (ov000), found by ds-decomp. */
 #include "common.h"
+extern void **gCurrentMap;
+extern s8 data_ov000_021b5500[];
+extern void *data_ov000_021df580;
+extern u16 data_ov000_021aeef4[];
+typedef struct UnitF468Data {u8 bytes[14];} UnitF468Data;
+typedef struct ByteF468 {u8 kind:6;u8 team:2;} ByteF468;
+typedef struct ActionF468 {u8 action:4;u8 rest:4;} ActionF468;
+typedef struct HealthF468 {u16 health:7;u16 pad:4;u16 flags:5;} HealthF468;
+typedef struct DestF468 {u16 x:6;u16 y:6;u16 pad:4;} DestF468;
+typedef struct FlagF468 {u8 pad:3;u8 flag:1;u8 rest:4;} FlagF468;
+static inline void *MapF468(void){return *gCurrentMap;}
+static inline void *SelectedF468(void){return M2C_FIELD(MapF468(),void **,0x52d0);}
+static inline u8 KindF468(void *u){return M2C_FIELD(u,ByteF468 *,0).kind;}
+static inline u8 ActionGetF468(void *u){return M2C_FIELD(u,ActionF468 *,11).action;}
+static inline void ClearF468(void){void *u=SelectedF468();M2C_FIELD(u,u8 *,11)&=~15;}
+static inline u8 *TileF468(s32 x,s32 y){u8 *m=MapF468();return m+(x+M2C_FIELD(m+y*2,u16 *,0x3758));}
+static inline s32 PassF468(s32 x,s32 y){return M2C_FIELD(M2C_FIELD((u8 *)MapF468()+y*4,s8 **,0x52e8),s8 *,x);}
+static inline s32 DistanceF468(s32 x,s32 y,s32 xx,s32 yy){s32 n=0; s32 d=x-xx;if(d>0)n+=d;else n+=xx-x;d=y-yy;if(d>0)n+=d;else n+=yy-y;return n;}
+static inline s32 MinF468(s32 a,s32 b){if(a<b)b=a;return b;}
+static inline s32 MaxF468(s32 a){if(a<0)a=0;return a;}
+static inline s32 IdF468(void *u){if(u==0)return 0;return ((u8 *)u-((u8 *)MapF468()+0x59a4))/14;}
+static inline void *UnitF468(s16 id){return (u8 *)MapF468()+0x59a4+id*14;}
+static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2C_FIELD(m+y*2,u16 *,0x3758);s16 id=M2C_FIELD(p+row,u8 *,0x508);return m+0x59a4+id*14;}
 
-void func_ov000_0218f468(void) {
+#pragma opt_strength_reduction off
+void func_ov000_0218f468(void){
+s32 func_0207c8ec(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a8fc0(s16);
+void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void func_01ffc328(void *);
+s32 func_020d27a4(s32,s32);s32 func_ov000_021a97d0(s32,s32);
+s32 func_ov000_021aa820(s16 *,u16,s32,s32);void func_ov000_02199d74(s16,s16,s32,u8,u8);
+s32 func_ov000_021a995c(void *,s32);void func_01ffada0(u8,u8,u8,s32,s32);void func_ov000_0218a9ac(s32,s32);
+u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
+u=SelectedF468();x=M2C_FIELD(u,DestF468 *,8).x;y=M2C_FIELD(u,DestF468 *,8).y;
+health=M2C_FIELD(u,HealthF468 *,6).health;
+if(health==0)health=0;else health=func_0207c8ec(health-1,10)+1;
+if(health>=7){
+u8 terrain=M2C_FIELD(TileF468(x,y),u8 *,0x1420);
+if((terrain&0xe0)==0 || (terrain&31)==15){
+if(func_ov000_021a9d8c((s16)x,(s16)y)==0 || func_ov000_021a8fc0(M2C_FIELD(TileF468(x,y),u8 *,0x508))!=0)goto prepared;
+}}
+ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
+prepared:
+func_01ffc328(SelectedF468());
+if(PassF468(x,y)<0){
+s32 left,top,right,bottom,xx,yy;
+left=MaxF468(x-2);top=MaxF468(y-2);m=MapF468();
+right=MinF468(x+2,M2C_FIELD(m,u16 *,0x5144)-1);bottom=MinF468(y+2,M2C_FIELD(m,u16 *,0x5146)-1);
+for(yy=top;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
+s32 dist=DistanceF468(x,y,xx,yy);if(dist<0)continue;if(dist>2)continue;
+v=UnitAtF468(xx,yy);
+if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && func_ov000_021a97d0(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
+}}
+if(PassF468(x,y)>=0){
+if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
+if(func_ov000_021a9d8c((s16)x,(s16)y)!=0){
+if(M2C_FIELD(data_ov000_021df580,FlagF468 *,7).flag)func_ov000_02199f38();return;
 }
-
+m=MapF468();tile=TileF468(x,y);
+if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
+pos[0]=x;pos[1]=y;
+if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
+ClearF468();func_ov000_0217c3a4();func_ov000_02199d74((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
+}
+m=MapF468();tile=TileF468(x,y);v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;
+M2C_FIELD(v,u8 *,3)++;func_ov000_02199d74((s16)x,(s16)y,2,0,0);return;
+}
+v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;M2C_FIELD(v,u8 *,3)++;
+ClearF468();func_ov000_0217c3a4();func_ov000_02199d74((s16)x,(s16)y,3,0,0);return;
+}
+if(ActionGetF468(SelectedF468())==2){
+s32 i;u32 offset;
+i=data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+1;
+if(i<data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51){offset=i*14;do {
+v=(u8 *)MapF468()+0x59a4+offset;
+if(KindF468(v)!=0 && (KindF468(v)==13 || KindF468(v)==19) && ActionGetF468(v)!=6 && PassF468(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2))>=0 && x==M2C_FIELD(v,DestF468 *,8).x && y==M2C_FIELD(v,DestF468 *,8).y && func_ov000_021a995c(v,KindF468(SelectedF468()))!=0 && M2C_FIELD(v,HealthF468 *,6).flags==0){
+func_ov000_02199d74(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2),7,0,0);
+}
+i++;offset+=14;
+}while(i<data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
+ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
+}
+u=SelectedF468();func_01ffada0(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
+if(PassF468(x,y)<0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
+func_ov000_0218a9ac(x,y);
+}
+#pragma opt_strength_reduction reset
 s32 func_ov000_0218fbd4(void) {
     return 0;
 }

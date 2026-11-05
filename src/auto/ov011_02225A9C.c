@@ -12,7 +12,7 @@ void func_ov011_02225a9c(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     (void)arg0; (void)arg1; (void)arg2; (void)arg3;
 }
 
-#pragma opt_propagation off
+#pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
 s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 func_01ff9ce8(u8);s32 func_0200bc5c(void *);s32 func_020814e4(void *);s32 func_02081590(void *,s32);s32 func_020815fc(void *,s32,s32);s32 func_02081528(void);s32 func_01ff9c34(u8,s32);s32 func_01ff85b8(s32,u16,s32);s32 func_02091d4c(s32);s32 func_02088774(s32);s32 func_020aeebc(s32,s32,s32);s32 func_020ae46c(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 func_020e3218(void *);s32 func_02080cfc(s32,s32);s32 func_0208116c(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 func_0208f780(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
@@ -53,7 +53,7 @@ Clear25d(18,1);Clear25d(18,2);Set25d(18,4);Clear25d(18,8);Clear25d(18,16);
 Set25d(18,256);Clear25d(18,512);Clear25d(18,1024);Set25d(18,2048);Clear25d(18,4096);
 gCur3DSpriteEngine=saved;func_0209cce4(&func_ov011_0222513c,4);func_0209cce4(&func_ov011_02225224,10);func_0208f780(0x10011);
 }
-#pragma opt_propagation reset
+#pragma opt_common_subs reset
 void func_ov011_022264e4(void) {
     M2C_UNK func_0209cd00(M2C_UNK *);
     M2C_UNK func_020af1e4();

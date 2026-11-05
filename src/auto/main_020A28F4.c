@@ -1,6 +1,8 @@
 /* 50 functions from 0x020A28F4 to 0x020A38F4 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
+
 s32 func_020a28f4(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
     extern M2C_UNK data_0211fbfd;
@@ -295,9 +297,10 @@ u8 *func_020a32f4(s32 a){extern s32 *gCurrentMap;s32 base=*gCurrentMap;s32 p=bas
 
 s32 func_020a334c(s32 a) {
     extern s32 *gCurrentMap;
-    s32 v = M2C_FIELD(*gCurrentMap + 0x67a4 + 140 * a, s32 *, 108);
-
-    return (((u32)(v << 24) >> 24) == 0) ? 0 : (u8)((u32)(v << 20) >> 30);
+    s32 p = *gCurrentMap + 0x67a4 + 140 * a;
+    Word020a334c *w = (Word020a334c *)(p + 108);
+    if (w->low == 0) return 0;
+    return (u8)w->hi;
 }
 
 void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
