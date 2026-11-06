@@ -78,8 +78,9 @@ if(var_r9+var_r7==0)return;
 func_0201b018(arg0,var_r9,var_r8,var_r7,arg4,var_r4);
 }
 
+#pragma opt_common_subs off
 void func_0201b338(void *a,u32 b,void *c){u32 func_0201a588(void *,u32,u32);s32 func_0201a63c(s32);void func_0201b140(void *,u32,void *,u32,u32,u8);extern M2C_UNK data_0212dca4,data_02137290;void *p;u16 id;s32 sum;p=(void *)M2C_FIELD(c,u32 *,0x4c);M2C_FIELD(p,u16 *,0x22)=8;id=M2C_FIELD(&data_02137290,u16 *,4);M2C_FIELD(p,u16 *,0x26)=M2C_FIELD(&data_0212dca4,u32 *,4);M2C_FIELD(p,u16 *,0x24)=0;M2C_FIELD(c,u16 *,10)=id;M2C_FIELD(&data_02137290,u16 *,4)=id+1;M2C_FIELD(p,u16 *,0x28)=id;sum=func_0201a588((u8 *)p+0x22,8,0);sum=func_0201a588(a,b,sum);sum=func_0201a63c((u16)sum);M2C_FIELD(p,u16 *,0x24)=(sum>>8)|(sum<<8);func_0201b140((u8 *)p+0x22,8,a,b,M2C_FIELD(c,u32 *,0x1c),1);}
-
+#pragma opt_common_subs reset
 void func_0201b3e8(void *arg0,s32 arg1,void *arg2) {
 u32 func_0201a588(void *,u32,u32);s32 func_0201a63c(s32);void func_0201b140(void *,u32,void *,u32,u32,u8);
 extern M2C_UNK data_02137290;

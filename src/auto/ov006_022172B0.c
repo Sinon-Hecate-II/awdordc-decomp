@@ -271,7 +271,7 @@ void func_ov006_022179b4(void *arg0) {
     s32 func_020c8cbc(s32);
     s32 func_02084cf8();
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
-    s32 sp0;
+    volatile s32 sp0;
     s32 temp_r1;
     s32 temp_r4;
     s32 temp_r7;

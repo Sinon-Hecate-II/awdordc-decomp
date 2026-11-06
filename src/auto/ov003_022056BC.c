@@ -548,35 +548,26 @@ M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
 }
 
 M2C_UNK **func_ov003_022060d4(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
-    M2C_UNK func_020741c4(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK data_ov003_02210764;
-    extern M2C_UNK func_ov003_021f05f8;
-    register u8 var_r5;
-    register M2C_UNK *temp_r0;
-
-    *arg0 = &data_ov003_02210764;
-    var_r5 = 0;
-    do {
-        temp_r0 = arg0[var_r5 + 0x32];
-        if (temp_r0 != 0) {
-            M2C_UNK **vt = (M2C_UNK **)M2C_FIELD(temp_r0, M2C_UNK *, 0);
-            M2C_UNK *fn = M2C_FIELD(vt, M2C_UNK *, 4);
-            ((void (*)(void))fn)();
-            (void)fn;
-            (void)vt;
-        }
-        var_r5 += 1;
-    } while (var_r5 < 8);
-    var_r5 = 0;
-    do {
-        if (arg0[var_r5 + 0x3A] != 0) {
-            func_01ffa574();
-        }
-        var_r5 += 1;
-    } while (var_r5 < 9);
-    func_020741c4((u8 *)arg0 + 8, 8, 0x18, &func_ov003_021f05f8);
-    return arg0;
+M2C_UNK func_01ffa574(void *);
+M2C_UNK func_020741c4(void *,M2C_UNK,M2C_UNK,M2C_UNK *);
+extern M2C_UNK data_ov003_02210764;
+extern M2C_UNK func_ov003_021f05f8;
+u8 i; M2C_UNK *p;
+*arg0=&data_ov003_02210764;
+i=0;
+do {
+p=arg0[i+0x32];
+if(p) M2C_FIELD(*p,void (**)(void *),4)(p);
+i++;
+}while(i<8);
+i=0;
+do {
+p=arg0[i+0x3a];
+if(p)func_01ffa574(p);
+i++;
+}while(i<9);
+func_020741c4((u8 *)arg0+8,8,0x18,&func_ov003_021f05f8);
+return arg0;
 }
 
 s32 func_ov003_02206160(s32 arg0) {

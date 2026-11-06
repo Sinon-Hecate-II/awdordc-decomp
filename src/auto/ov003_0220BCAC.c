@@ -145,31 +145,21 @@ void func_ov003_0220c0e8(void *arg0) {
 
 #pragma opt_propagation off
 void func_ov003_0220c10c(void *arg0) {
-    void func_ov003_0220c0e8(void *);
-    void **p;
-    void *q;
-    s32 v;
-    u8 k;
-    u8 idx;
+ void func_ov003_0220c0e8(void *);
+ void *q = **(void ***)((u8 *)arg0 + 0x5c);
+ s32 v;
+ u8 idx, b;
+ volatile u8 k;
+ if(q) v=*(u16 *)((u8 *)q+8); else v=-1;
+ k=*(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
+ idx=v-11;
+ b=0;
+ if ((u8)(k==8)) { if(idx==0) b=1; }
+ if(b==0) {
 
-    p = *(void ***) ((u8 *) arg0 + 0x5c);
-    q = *p;
-    if (q != 0) {
-        v = *(u16 *) ((u8 *) q + 8);
-    } else {
-        v = -1;
-    }
-    k = *(u8 *) (*(void **) ((u8 *) arg0 + 0x3c) + 0xf);
-    idx = (u8)(v - 0xb);
-    if (k == 8) {
-        if (idx == 0 || idx == 1) {
-            func_ov003_0220c0e8(arg0);
-        }
-    } else {
-        if (idx != 0) {
-            func_ov003_0220c0e8(arg0);
-        }
-    }
+ if ((u8)((u8)(k==8) && idx==1)) func_ov003_0220c0e8(arg0);
+}
+ end:;
 }
 #pragma opt_propagation reset
 

@@ -96,11 +96,45 @@ void func_ov007_02215254(s32 arg0, s32 arg1, s16 arg2) {
     M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = func_0207efb4(arg2);
 }
 
-s32 func_ov007_022152bc(M2C_UNK arg0, s32 arg1) {
-    (void) arg0;
-    (void) arg1;
-    return 0;
+s32 func_ov007_022152bc(s32 x,s32 y){
+s32 func_ov007_0221b754(s32,s32);
+s32 vertical=0,horizontal=0,n;
+Map14E24 *m;
+if(func_ov007_0221b754(x-1,y)) {
+if(func_ov007_0221b754(x,y-1) && !func_ov007_0221b754(x-1,y-1)) return -1;
+if(func_ov007_0221b754(x,y+1) && !func_ov007_0221b754(x-1,y+1)) return -1;
+horizontal++;
 }
+if(func_ov007_0221b754(x+1,y)) {
+if(func_ov007_0221b754(x,y-1) && !func_ov007_0221b754(x+1,y-1)) return -1;
+if(func_ov007_0221b754(x,y+1) && !func_ov007_0221b754(x+1,y+1)) return -1;
+horizontal++;
+}
+if(func_ov007_0221b754(x,y-1)) {
+if(func_ov007_0221b754(x-1,y) && !func_ov007_0221b754(x-1,y-1)) return -1;
+if(func_ov007_0221b754(x+1,y) && !func_ov007_0221b754(x+1,y-1)) return -1;
+vertical++;
+}
+if(func_ov007_0221b754(x,y+1)) {
+if(func_ov007_0221b754(x-1,y) && !func_ov007_0221b754(x-1,y+1)) return -1;
+if(func_ov007_0221b754(x+1,y) && !func_ov007_0221b754(x+1,y+1)) return -1;
+vertical++;
+}
+if(!horizontal || !vertical)return -1;
+switch(horizontal+vertical){
+case 0:case 1:case 4:return -1;
+case 2:m=(Map14E24 *)*gCurrentMap;n=0;
+if(m->cells[x-1+m->rows[y]]==34)n++;
+if(m->cells[x+1+m->rows[y]]==34)n++;
+if(m->cells[x+m->rows[y-1]]==34)n++;
+if(m->cells[x+m->rows[y+1]]==34)n++;
+return n;
+case 3:n=0;
+if(((Map14E24 *)*gCurrentMap)->cells[x-1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && func_ov007_0221b754(x+1,y)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+1+((Map14E24 *)*gCurrentMap)->rows[y]]==34 && func_ov007_0221b754(x-1,y)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y-1]]==34 && func_ov007_0221b754(x,y+1)==1)n++;
+if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y+1]]==34 && func_ov007_0221b754(x,y-1)==1)n++;
+return n;default:return -1;}}
 
 s32 func_ov007_022156a4(s32 x,s32 y) {
  s32 func_ov007_0221b754(s32,s32);

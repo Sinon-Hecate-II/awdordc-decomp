@@ -1,8 +1,82 @@
 /* 4 functions from 0x02192D88 to 0x02193D6C (ov000), found by ds-decomp. */
 #include "common.h"
 
-int func_ov000_02192d88(void) { return 0; }
-
+#pragma opt_strength_reduction off
+#pragma opt_if-conversion off
+int func_ov000_02192d88(void){
+extern void **gCurrentMap;
+extern u16 *data_ov000_021df580;
+extern s8 data_ov000_021b55a0[32];
+void func_01ffc328(void); void func_01ffb9c4(s32);
+s32 func_ov000_021a9d8c(s16,s16); u8 func_ov000_021a8ff0(s32);
+s32 func_ov000_021a9860(s32,s32); s32 func_ov000_02178518(s32,s32,s16 *);
+s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
+s32 func_ov000_02199d74(s16,s16,s32,s32,s32);
+s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 func_020d27ec(s32,s32);
+s32 x,y,bx,by,px,py,tx,ty,best,tie,score,value,id,kind;
+s32 sx,sy,ux,uy;
+s16 dest[2],pos[2];
+u8 *unit;
+id=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,12);
+unit=(u8 *)*gCurrentMap+0x59a4+id*14;
+bx=-1;by=bx;px=bx;py=bx;tx=bx;ty=bx;best=bx;tie=0x7fff;
+if(!id)return;
+func_01ffc328();func_01ffb9c4(0x6f);
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
+if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
+if(func_ov000_021a8ff0(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
+if(!func_ov000_021a9860(x,y))continue;
+if(!func_ov000_02178518(x,y,pos))continue;
+if(M2C_FIELD(*gCurrentMap,u8 *,0x6c63+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x1928)*6) && !(data_ov000_021df580[4]&0x20)){
+if(func_ov000_0217bdb4(x,y)==1)continue;
+}
+score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
+value=M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2840)+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2d48);
+switch(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31){case 15:score+=100;break;case 17:score+=80;break;case 24:score+=60;break;case 18:score+=40;break;case 19:score+=20;break;case 22:score+=20;break;}
+if(best>score)continue;
+if(best==score && tie<value)continue;
+best=score;tie=value;bx=x;by=y;px=pos[0];py=pos[1];
+}}
+if(best!=-1){M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)bx&63);
+M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)by<<26)>>20);
+{u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(bx+M2C_FIELD(*gCurrentMap+by*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
+value=func_ov000_0217bd44(px,py,bx,by);
+func_ov000_02199d74((s16)px,(s16)py,8,(u8)value,0);}
+sy=-1;sx=sy;uy=sy;ux=sy;best=sy;tie=best+0x8000;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+if(M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
+if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
+if(func_ov000_021a8ff0(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
+if(!func_ov000_02178518(x,y,pos))continue;
+kind=(u32)(unit[0]<<26)>>26;
+switch(kind){
+case 1:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x80))continue;
+if(!(data_ov000_021df580[4]&0x20)){if(!func_ov000_0217c08c(x,y,3,dest))continue;}
+else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
+case 2:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x40))continue;
+if(!(data_ov000_021df580[4]&0x20)){if(!func_ov000_0217c08c(x,y,2,dest))continue;}
+else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
+default:continue;}
+if(data_ov000_021b55a0[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
+else score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
+value=M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2840)+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2d48);
+switch(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31){case 15:score+=100;break;case 17:score+=80;break;case 24:score+=60;break;case 18:score+=40;break;case 19:score+=20;break;case 22:score+=20;break;}
+if(best>score)continue;
+if(best==score && tie<value)continue;
+best=score;tie=value;sx=x;sy=y;ux=pos[0];uy=pos[1];tx=dest[0];ty=dest[1];
+}}
+if(best==-1)return;
+M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)tx&63);
+M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)ty<<26)>>20);
+{u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(tx+M2C_FIELD(*gCurrentMap+ty*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
+value=func_ov000_0217bd44(ux,uy,sx,sy);
+func_ov000_02199d74((s16)ux,(s16)uy,8,(u8)value,0);
+}
+#pragma opt_if-conversion reset
+#pragma opt_strength_reduction reset
 void func_ov000_021935c4(void *arg0) {
 }
 

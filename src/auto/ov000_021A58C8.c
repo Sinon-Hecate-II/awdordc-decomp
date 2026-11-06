@@ -266,14 +266,15 @@ u8 *p; s32 i; s32 best; s32 result; s8 value;
 best=0; result=-1; p=(u8 *)&data_ov000_021e00ac;
 for(i=0;i<*data_ov000_021df578;i++,p+=12) { if((u32)p[3]<0xFCU ) { value=(s8)p[5]; if(best < (s32)value) {best=value;result=i;} } } return result; }
 
+#pragma opt_lifetimes off
 s32 func_ov000_021a6528(s32 arg0) {
 void func_ov000_021a01c0(void); s32 func_ov000_021a6440(s32,s32);
 extern u8 *data_ov000_021df578; extern M2C_UNK data_ov000_021dfd94;
-s32 best; s32 result; s32 i; s32 r; u8 *p;
+u8 *p; s32 result; s32 i; s32 r; s32 best;
 p=(u8 *)&data_ov000_021dfd94; best=0; func_ov000_021a01c0();
 for(;;) { result=-1; for(i=0;i<(s32)data_ov000_021df578[1];i++,p+=8) { if(p[1]!=255 && best<(s32)p[0]) { best=p[0];result=i; } } if(result==-1)return -1; r=func_ov000_021a6440(arg0,result); if(r!=-1)return r; p[1]=255; }
 }
-
+#pragma opt_lifetimes reset
 s32 func_ov000_021a65c4(s32 arg0, s32 arg1) {
     extern u8 *data_ov000_021df578;
     extern M2C_UNK data_ov000_021e00ac;

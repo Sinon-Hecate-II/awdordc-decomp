@@ -156,11 +156,71 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 M2C_FIELD(arg0,s32 *,0x34)=0;
 func_01ffa574(arg0);
 }
-#pragma scheduling reset
+#pragma opt_strength_reduction off
+#pragma opt_lifetimes off
 int func_ov005_0221c150(void *arg0) {
-    return 0;
+s32 func_020cd1e4(void);
+void func_02098cb8(s32,s16,s16,u16,s32,s32);
+void func_01ffaacc(u16,u8,u16,void *,s32);
+extern M2C_UNK data_0215c334,data_0215c340,data_0215c324,data_02101f4c,data_02101f1c;
+extern void *gCur3DSpriteEngine;
+extern void **gCurrentMap;
+s32 enabled,i,y,id,offset,x,x2,k;
+u8 *p;
+if(!func_020cd1e4())enabled=0;
+else if(M2C_FIELD(&data_0215c340,u16 *,M2C_FIELD(&data_0215c334,u8 *,4)*12)==0)enabled=0;
+else enabled=1;
+if(!enabled) return;
+x=M2C_FIELD(arg0,s16 *,0x38)&511;
+func_02098cb8(9,(s16)((x&0xfe00)|((x-1)&511)),0,(u16)(0x4800|((0x388 >> (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),1,5);
+p=(u8 *)&data_0215c324;
+y=0;
+for(i=0;i<M2C_FIELD(&data_0215c324,u8 *,12);i++,p++,y+=18){
+id=M2C_FIELD(p,s8 *,0)-1;
+offset=id*140;
+x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;
+func_01ffaacc((u16)x,(u8)((u8)(y+18)+1),(u16)(0x7000|(((M2C_FIELD(*gCurrentMap,u8 *,offset+0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
+if(M2C_FIELD(*gCurrentMap,u8 *,offset+0x684e)==2)id=4;
+func_01ffaacc((u16)((x&0xfe00)|((x-10)&511)),(u8)((u8)(y+18)+1),(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+id=M2C_FIELD(p,s8 *,0)-1;
+x2=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+183)&511;
+func_02098cb8(0,(s16)x2,(s16)(u8)(y+18),(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+func_01ffaacc((u16)((x2&0xfe00)|((x2+1)&511)),(u8)((u8)(y+18)+1),(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 }
-
+p=(u8 *)&data_0215c324;
+y=0;
+for(i=0;i<M2C_FIELD(&data_0215c324,u8 *,14);i++,p++,y+=18){
+id=M2C_FIELD(p,s8 *,8)-1;
+offset=id*140;
+x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;
+func_01ffaacc((u16)x,(u8)((u8)(y+18)+1),(u16)(0x7000|(((M2C_FIELD(*gCurrentMap,u8 *,offset+0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
+if(M2C_FIELD(*gCurrentMap,u8 *,offset+0x684e)==2)id=4;
+func_01ffaacc((u16)((x&0xfe00)|((x-10)&511)),(u8)((u8)(y+18)+1),(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+id=M2C_FIELD(p,s8 *,8)-1;
+x2=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+183)&511;
+func_02098cb8(0,(s16)x2,(s16)(u8)(y+18),(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+func_01ffaacc((u16)((x2&0xfe00)|((x2+1)&511)),(u8)((u8)(y+18)+1),(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
+}
+p=(u8 *)&data_0215c324;
+y=98;
+for(i=0;i<M2C_FIELD(&data_0215c324,u8 *,13);i++,p++,y+=18){
+id=M2C_FIELD(p,s8 *,4)-1;
+offset=id*140;
+x=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+143)&511;
+func_01ffaacc((u16)x,(u8)((u8)y+1),(u16)(0x7000|(((M2C_FIELD(*gCurrentMap,u8 *,offset+0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
+if(M2C_FIELD(*gCurrentMap,u8 *,offset+0x684e)==2)id=4;
+func_01ffaacc((u16)((x&0xfe00)|((x-10)&511)),(u8)((u8)y+1),(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+id=M2C_FIELD(p,s8 *,4)-1;
+x2=(M2C_FIELD(arg0+i*2,s16 *,0x3a)+183)&511;
+func_02098cb8(0,(s16)x2,(s16)(u8)y,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+func_01ffaacc((u16)((x2&0xfe00)|((x2+1)&511)),(u8)((u8)y+1),(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
+}
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=-M2C_FIELD(arg0,s32 *,0x44);
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x40)=-M2C_FIELD(arg0,s32 *,0x44);
+done: ;
+}
+#pragma opt_lifetimes reset
+#pragma opt_strength_reduction reset
 void func_ov005_0221c9c0(void) {
     M2C_UNK func_ov005_0221b4d8();
     func_ov005_0221b4d8();

@@ -19,7 +19,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
     void func_ov000_02199d74(s32, s32, s32, s32, s32);
     s16 position[2];
     s32 bestX = -1, bestY = -1, bestScore = 0, bestId = 0, bestX2 = -1, bestY2 = -1;
-    s32 savedX, savedY;
+    s16 savedX, savedY;
     s32 xmin, xmax, ymin, ymax;
     s32 bestHealth = 0xff;
     u8 *unit;
@@ -29,16 +29,17 @@ M2C_UNK func_ov000_0218cbc0(void) {
     position[0] = M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 1);
     position[1] = M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 2);
     {
-        u8 *sel = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
+        u8 *map = *gCurrentMap;
+        u8 *sel = M2C_FIELD(map, u8 **, 0x52d0);
         s32 sx = sel[1];
         s32 sy = sel[2];
         xmin = sx - 1;
         if (xmin < 0) xmin = 0;
-        xmax = M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1;
-        if (sx + 1 < xmax) xmax = sx + 1;
         ymin = sy - 1;
         if (ymin < 0) ymin = 0;
-        ymax = M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1;
+        xmax = M2C_FIELD(map, u16 *, 0x5144) - 1;
+        if (sx + 1 < xmax) xmax = sx + 1;
+        ymax = M2C_FIELD(map, u16 *, 0x5146) - 1;
         if (sy + 1 < ymax) ymax = sy + 1;
     }
 

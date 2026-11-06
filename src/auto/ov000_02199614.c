@@ -195,6 +195,7 @@ void func_ov000_0219997c(void) {
     return;
 }
 
+#pragma opt_lifetimes off
 void func_ov000_02199ce0(void) {
 void func_02085348(void *,s32);
 extern u8 data_ov000_021df7d0[];
@@ -210,7 +211,7 @@ d[6]=s[6]; d[7]=s[7]; d[0x12]=s[0x12];
 for(i=0;i<6;i++,s++,d++) d[12]=s[12];
 func_02085348(data_02156e50,0x14);
 }
-
+#pragma opt_lifetimes reset
 void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
     void func_ov000_0217d3b8(s32);

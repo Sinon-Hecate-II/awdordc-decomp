@@ -1,5 +1,10 @@
 /* 18 functions from 0x021E7C84 to 0x021E8984 (ov002), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 kind:6; u8 side:2; u8 x,y,pad[3]; u16 health:7; u16 flags:9; u8 tail[6]; } Unit80;
+#pragma opt_common_subs off
+static inline s32 UnitIndex80(void *unit) { extern void **gCurrentMap; if(unit) return (s32)((u8 *)unit-((u8 *)*gCurrentMap+0x59a4))/14; return 0; }
+static inline s32 UnitOwner80(void *unit) { if(unit) return (UnitIndex80(unit)>>6)+1; return 0; }
+#pragma opt_common_subs reset
 typedef struct { s32 pad[2]; s32 slots[5]; } ObjectSlots;
 
 void func_ov002_021e7c84(u8 *p) { extern s32 gPlayerSettings; p[0]=0;p[1]=0;((u8 *)&gPlayerSettings)[12]=8;((u8 *)&gPlayerSettings)[36]=12;((u8 *)&gPlayerSettings)[16]=0;((u8 *)&gPlayerSettings)[40]=1;((u8 *)&gPlayerSettings)[17]=3;((u8 *)&gPlayerSettings)[41]=3;((u8 *)&gPlayerSettings)[18]=0;((u8 *)&gPlayerSettings)[42]=0;((u8 *)&gPlayerSettings)[3]=0;p[13]=100;p[37]=100;p[14]=80;p[38]=20;p[15]=3;p[39]=3;p[21]=1;p[45]=2;p[22]=2;p[46]=2;p[23]=1;p[47]=1;((u8 *)&gPlayerSettings)[20]=1;((u8 *)&gPlayerSettings)[44]=1;((u8 *)&gPlayerSettings)[19]=0;((u8 *)&gPlayerSettings)[43]=0;((u8 *)&gPlayerSettings)[24]=0;((u8 *)&gPlayerSettings)[48]=1;((u8 *)&gPlayerSettings)[25]=0;((u8 *)&gPlayerSettings)[49]=1;}
@@ -180,6 +185,7 @@ u8 func_ov002_021e80a4(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
+#pragma opt_strength_reduction off
 void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     extern void **gCurrentMap;
     s32 func_ov000_0216ca8c(u8, u8);
@@ -251,109 +257,57 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     r7 = (u8 *)arg2;
     r6 = (void *)arg3;
     r5 = idx * 0x18;
-    low6 = (u8)(((unsigned)r7[0] << 26) >> 26);
-    a[r5 + 0xc] = low6;
+    low6 = ((Unit80 *)r7)->kind;
+    M2C_FIELD(a+r5,u8 *,0xc) = low6;
     t6 = *(s16 *)((u8 *)r6 + 0x1e);
-    a[r5 + 0x14] = (u8)(t6 != 0);
+    M2C_FIELD(a+r5,u8 *,0x14) = (u8)(t6 != 0);
     t6 = *(s16 *)((u8 *)r6 + 0x1e);
-    a[r5 + 0x13] = (u8)(t6 == 2);
-    w = *(u16 *)((u8 *)r7 + 6);
-    a[r5 + 0xd] = (u8)(((unsigned)w << 25) >> 25);
-    a[r5 + 0xe] = (u8)*(s16 *)((u8 *)r6 + 0xe);
-    a[r5 + 0xf] = (u8)(((unsigned)r7[0] << 24) >> 30);
-    a[0x10 + r5] = (u8)*(s16 *)((u8 *)r6 + 0x4);
+    M2C_FIELD(a+r5,u8 *,0x13) = (u8)(t6 == 2);
+    w = ((Unit80 *)r7)->health;
+    M2C_FIELD(a+r5,u8 *,0xd) = w;
+    M2C_FIELD(a+r5,u8 *,0xe) = (u8)*(s16 *)((u8 *)r6 + 0xe);
+    M2C_FIELD(a+r5,u8 *,0xf) = (u8)(((unsigned)r7[0] << 24) >> 30);
+    (a+0x10)[r5] = (u8)*(s16 *)((u8 *)r6 + 0x4);
     r0 = func_ov000_0216ca8c(r7[1], r7[2]);
-    if (r0 == 0x28) a[0x10 + r5] = 0x1b;
+    if (r0 == 0x28) (a+0x10)[r5] = 0x1b;
     r0 = func_ov000_0216ca8c(r7[1], r7[2]);
-    if (r0 == 0x29) a[0x10 + r5] = 0x1c;
+    if (r0 == 0x29) (a+0x10)[r5] = 0x1c;
     r2v = *(s16 *)((u8 *)r6 + 0x6);
-    r1s = (s32)((u32)r2v >> 31);
-    high = (s32)(((s64)0x66666667 * r2v) >> 32);
-    r4v = r1s + (high >> 2);
-    a[r5 + 0x11] = (u8)r4v;
+    r4v = r2v / 10;
+    M2C_FIELD(a+r5,u8 *,0x11) = (u8)r4v;
     map = *gCurrentMap;
     u1 = r7[2];
     u2 = r7[1];
     tbl = *(u16 *)((u8 *)map + 0x3758 + u1 * 2);
-    a[r5 + 0x12] = (u8)(((((*(u8 *)((u8 *)map + 0x1420 + u2 + tbl)) & 0xE0)) >> 5));
-    if (r7 == 0) idx2 = 0;
-    else {
-        base = (u8 *)map + 0x59a4;
-        diff = (s32)((u8 *)r7 - (u8 *)base);
-        prod = (s64)0x92492493 * diff;
-        high2 = (s32)(prod >> 32);
-        tmp = diff + high2;
-        sign = (s32)((u32)diff >> 31);
-        q = (sign + (tmp >> 3)) >> 6;
-        idx2 = q + 1;
-    }
+    M2C_FIELD(a+r5,u8 *,0x12) = (u8)(((((*(u8 *)((u8 *)map + 0x1420 + u2 + tbl)) & 0xE0)) >> 5));
+    idx2=UnitOwner80(r7);
     mapb = *gCurrentMap;
     vv = *(u32 *)((u8 *)mapb + idx2 * 0x8c + 0x6810);
-    a[r5 + 0x15] = (u8)((vv << 24) >> 24);
+    M2C_FIELD(a+r5,u8 *,0x15) = (u8)((vv << 24) >> 24);
     r0 = func_020a7cfc(r7);
     if (r0 != 0) {
-        a[r5 + 0x16] = 2;
+        M2C_FIELD(a+r5,u8 *,0x16) = 2;
         ptr = a + r5 + 0x16;
     } else {
-        if (r7 == 0) idx3 = 0;
-        else {
-            base = (u8 *)map + 0x59a4;
-            diff3 = (s32)((u8 *)r7 - (u8 *)base);
-            prod3 = (s64)0x92492493 * diff3;
-            high3 = (s32)(prod3 >> 32);
-            tmp3 = diff3 + high3;
-            sign3 = (s32)((u32)diff3 >> 31);
-            q3 = (sign3 + (tmp3 >> 3)) >> 6;
-            idx3 = q3 + 1;
-        }
+        idx3=UnitOwner80(r7);
         func_020d03ec(idx3, r7[1], r7[2]);
-        a[r5 + 0x16] = 1;
+        M2C_FIELD(a+r5,u8 *,0x16) = 1;
         ptr = a + r5 + 0x16;
     }
     if (ptr[0] != 0) {
-        if (r7 == 0) idx4 = 0;
-        else {
-            base = (u8 *)map + 0x59a4;
-            diff4 = (s32)((u8 *)r7 - (u8 *)base);
-            prod4 = (s64)0x92492493 * diff4;
-            high4 = (s32)(prod4 >> 32);
-            tmp4 = diff4 + high4;
-            sign4 = (s32)((u32)diff4 >> 31);
-            q4 = (sign4 + (tmp4 >> 3)) >> 6;
-            idx4 = q4 + 1;
-        }
-        low = (u8)(((unsigned)r7[0] << 26) >> 26);
+        idx4=UnitOwner80(r7);
+        low = ((Unit80 *)r7)->kind;
         res = (u8)func_020a27f8(idx4, (s32)low);
-        a[r5 + 0x17] = res;
+        M2C_FIELD(a+r5,u8 *,0x17) = res;
     } else {
-        a[r5 + 0x17] = 0;
+        M2C_FIELD(a+r5,u8 *,0x17) = 0;
     }
-    if (r7 == 0) idx5 = 0;
-    else {
-        base = (u8 *)map + 0x59a4;
-        diff5 = (s32)((u8 *)r7 - (u8 *)base);
-        prod5 = (s64)0x92492493 * diff5;
-        high5 = (s32)(prod5 >> 32);
-        tmp5 = diff5 + high5;
-        sign5 = (s32)((u32)diff5 >> 31);
-        q5 = (sign5 + (tmp5 >> 3)) >> 6;
-        idx5 = q5 + 1;
-    }
-    v2 = *(u8 *)((u8 *)map + idx5 * 0x8c + 0x67cd);
-    a[r5 + 0x18] = v2;
-    if (r7 == 0) idx6 = 0;
-    else {
-        base = (u8 *)map + 0x59a4;
-        diff6 = (s32)((u8 *)r7 - (u8 *)base);
-        prod6 = (s64)0x92492493 * diff6;
-        high6 = (s32)(prod6 >> 32);
-        tmp6 = diff6 + high6;
-        sign6 = (s32)((u32)diff6 >> 31);
-        q6 = (sign6 + (tmp6 >> 3)) >> 6;
-        idx6 = q6 + 1;
-    }
+    idx5=UnitOwner80(r7);
+    v2 = *(u8 *)((u8 *)*gCurrentMap + idx5 * 0x8c + 0x67cd);
+    M2C_FIELD(a+r5,u8 *,0x18) = v2;
+    idx6=UnitOwner80(r7);
     dest = a + 0x19;
-    v3 = *(u8 *)((u8 *)map + idx6 * 0x8c + 0x67c1);
+    v3 = *(u8 *)((u8 *)*gCurrentMap + idx6 * 0x8c + 0x67c1);
     dest[r5] = v3;
     if (v3 == 3) {
         dest[r5] = 4;
@@ -363,7 +317,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
         dest[r5] = 3;
     }
 }
-
+#pragma opt_strength_reduction reset
 void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);

@@ -351,6 +351,7 @@ s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
     return 0;
 }
 
+#pragma opt_peephole off
 s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     s32 func_02061ac8(M2C_UNK, s32, u16);
     M2C_UNK func_02061b6c(M2C_UNK);
@@ -361,21 +362,21 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
         return 4;
     }
     {
-        u8 a0 = arg1[0];
-        u8 a1 = arg1[1];
+        u8 a0 = ((volatile u8 *)arg1)[0];
+        u8 a1 = ((volatile u8 *)arg1)[1];
         u8 *lr = (u8 *)&sp4;
         u8 *rc = (u8 *)&sp0;
         lr[0] = a0;
         lr[1] = a1;
         {
-            u8 a2 = arg1[2];
-            u8 a3 = arg1[3];
+            u8 a2 = ((volatile u8 *)arg1)[2];
+            u8 a3 = ((volatile u8 *)arg1)[3];
             lr[2] = a2;
             lr[3] = a3;
         }
         {
-            u8 a4 = arg1[4];
-            u8 a5 = arg1[5];
+            u8 a4 = ((volatile u8 *)arg1)[4];
+            u8 a5 = ((volatile u8 *)arg1)[5];
             s32 saved = sp4;
             rc[0] = a4;
             rc[1] = a5;
@@ -387,4 +388,4 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     func_02061b6c(arg0);
     return 0;
 }
-
+#pragma opt_peephole reset

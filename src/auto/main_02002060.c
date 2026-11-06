@@ -252,21 +252,15 @@ void func_02002ab8(s32 mode) {
 }
 
 void func_02002bb8(u32 a) {
-    extern M2C_UNK data_0212dbc4;
-    M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,16))&~a;
-    M2C_FIELD(&data_0212dbc4,u16 *,16)=a;
-    if (a) {
-        if (a == 0x20) {
-            *(volatile u32 *)0x04000000 |= 0x80000000;
-            *(volatile u8 *)0x04000245 = (u8)0x85;
-        } else if (a == 0x40) {
-            *(volatile u32 *)0x04000000 |= 0x80000000;
-            *(volatile u8 *)0x04000246 = (u8)0x85;
-        }
-    } else {
-        *(volatile u32 *)0x04000000 &= ~0x80000000;
-    }
-    func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+extern M2C_UNK data_0212dbc4;
+M2C_FIELD(&data_0212dbc4,u16*,0)=(M2C_FIELD(&data_0212dbc4,u16*,0)|M2C_FIELD(&data_0212dbc4,u16*,16))&~a;
+M2C_FIELD(&data_0212dbc4,u16*,16)=a;
+switch(a){
+case 0x20: *(volatile u32*)0x04000000|=0x80000000;*(volatile u8*)0x04000245=0x85;break;
+case 0x40: *(volatile u32*)0x04000000|=0x80000000;*(volatile u8*)0x04000246=0x85;break;
+case 0: *(volatile u32*)0x04000000&=~0x80000000;break;
+}
+func_02002620(M2C_FIELD(&data_0212dbc4,u16*,0));
 }
 
 void func_02002c64(s32 arg0) {

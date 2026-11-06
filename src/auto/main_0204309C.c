@@ -342,43 +342,15 @@ void func_02043a24(s32 a, void *b) {
     s32 i;
     s32 idx;
 
-    if (a > 50) {
-        t = a - 51;
-        if ((u32)t <= 3) {
-            switch (t) {
-                case 0:
-                    p = func_02044268();
-                    func_0205eb7c(b, ((u8 *)p)[0x14]);
-                    return;
-                case 1:
-                    p = func_02044268();
-                    func_0205eb7c(b, ((u8 *)p)[0x16]);
-                    return;
-                case 2:
-                    p = func_02044268();
-                    func_0205eb7c(b, *(s32 *)((char *)p + 0x200));
-                    return;
-                case 3:
-                    p = func_02044268();
-                    func_0205eb7c(b, ((u8 *)p)[0x15]);
-                    return;
-            }
-        }
-    } else if (a == 50) {
-        p = func_02044268();
-        func_0205eb7c(b, *(s32 *)((char *)p + 0x20));
-        return;
-    } else if (a < 8 || a > 10) {
-    } else if (a == 8) {
-        p = func_02044268();
-        func_0205eb7c(b, ((u8 *)p)[0x14]);
-        return;
-    } else if (a == 10) {
-        p = func_02044268();
-        func_0205eb7c(b, ((u8 *)p)[0x16]);
-        return;
+    switch(a) {
+case 8: p=func_02044268(); func_0205eb7c(b,((u8 *)p)[0x14]); return;
+case 10: p=func_02044268(); func_0205eb7c(b,((u8 *)p)[0x16]); return;
+case 50: p=func_02044268(); func_0205eb7c(b,*(s32 *)((char *)p+0x200)); return;
+case 51: p=func_02044268(); func_0205eb7c(b,((u8 *)p)[0x15]); return;
+case 52: p=func_02044268(); func_0205eb7c(b,*(s32 *)((char *)p+0x20)); return;
+case 53:  func_0205eb7c(b,3); return;
+case 54:  func_0205eb7c(b,1); return;
     }
-
     i = a - 100;
     if (i < 0) return;
     if (i >= 154) return;

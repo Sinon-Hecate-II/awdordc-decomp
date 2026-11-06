@@ -1,173 +1,142 @@
 /* 11 functions from 0x02066BA8 to 0x020677B8 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 a,b,c,d,e,f,g,h; s32 width,precision; } HexFormat;
+typedef struct { char *q; u32 lo,hi; char space,pad; } FormatterScratch;
 static inline void heapSwap(s8 *a,s8 *b,u32 n) { s8 t; if(n) do { t=*a; *a++=*b; *b++=t; } while(--n); }
 
-u32 func_02066ba8(M2C_UNK arg0, M2C_UNK arg1, char *arg2, char *arg3) {
-    register M2C_UNK writer asm("r9") = arg0;
-    register M2C_UNK state asm("r8") = arg1;
-    register char *fmt asm("r11") = arg2;
-    register u32 count asm("r10") = 0;
+char *func_020658fc(s32,char *,HexFormat);
+char *func_02065b48(u64,char *,HexFormat);
+char *func_02066444(double,char *,HexFormat);
+char *func_02065e44(double,char *,HexFormat);
+extern u8 data_0210054c[],data_02100550[];
+#pragma opt_strength_reduction off
+u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, char *args) {
+    char buffer[512];
     HexFormat f;
-    char *argp = arg3;
-    char *p = fmt;
+    char pad=' ', space;
     char *q;
+    s32 total=0;
     s32 len;
-    char *buf;
-    s32 i;
-    char padbuf[4];
-    char frame[0x200];
-    (void)frame; (void)i;
-    if (*p == 0) {
-        /* ensure frame used */
-        frame[0] = 0;
-        return count;
-    }
-    while (*p != 0) {
-        q = (char *)func_02068ee0(p, 0x25);
-        if (!q) {
-            len = func_02068c34(p);
-            count += (u32)len;
-            if (len != 0) {
-                s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, p, len);
-                if (rc == 0) return (u32)-1;
+    char *text;
+    s32 width;
+    s32 value;
+    u64 wide;
+    double real;
+    while (*p) {
+        char *mark=(char *)func_02068ee0(p,37);
+        q=mark;
+        if (!mark) {
+            len=func_02068c34(p); total+=len;
+            if(len && !writer(state,p,len)) return -1;
+            break;
+        }
+        len=mark-p;total+=len;
+        if(len && !writer(state,p,len)) return -1;
+        p=(char *)func_0206536c(q,&args,&f);
+        switch(f.f) {
+        case 'd': case 'i':
+            if(f.e==3) {args+=4;value=*(long *)(args-4);}
+            else if(f.e==4) {args+=8;wide=*(u64 *)(args-8);}
+            else if(f.e==6) {args+=8;wide=*(u64 *)(args-8);}
+            else if(f.e==7) {args+=4;value=*(unsigned long *)(args-4);}
+            else if(f.e==8) {args+=4;value=(s32)*(char **)(args-4);}
+            else {args+=4;value=*(s32 *)(args-4);}
+            if(f.e==2)value=(s16)value;
+            if(f.e==1)value=(s8)value;
+            if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
+            else {text=func_020658fc(value,buffer+512,f);if(!text)goto invalid;}
+            len=buffer+511-text;break;
+        case 'o': case 'u': case 'x': case 'X':
+            if(f.e==3) {args+=4;value=*(long *)(args-4);}
+            else if(f.e==4) {args+=8;wide=*(u64 *)(args-8);}
+            else if(f.e==6) {args+=8;wide=*(u64 *)(args-8);}
+            else if(f.e==7) {args+=4;value=*(unsigned long *)(args-4);}
+            else if(f.e==8) {args+=4;value=(s32)*(char **)(args-4);}
+            else {args+=4;value=*(s32 *)(args-4);}
+            if(f.e==2)value=(u16)value;
+            if(f.e==1)value=(u8)value;
+            if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
+            else {text=func_020658fc(value,buffer+512,f);if(!text)goto invalid;}
+            len=buffer+511-text;break;
+        case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':
+            if(f.e==9){args+=8;real=*(double *)(args-8);}
+            else {args+=8;real=*(long double *)(args-8);}
+            text=func_02066444(real,buffer+512,f);
+            if(!text)goto invalid;
+            len=buffer+511-text;break;
+        case 'a':case 'A':
+            if(f.e==9){args+=8;real=*(double *)(args-8);}
+            else {args+=8;real=*(long double *)(args-8);}
+            text=func_02065e44(real,buffer+512,f);
+            if(!text)goto invalid;
+            len=buffer+511-text;break;
+        case 's':
+            if(f.e==5){
+                u16 *str;
+                args+=4;str=*(u16 **)(args-4);
+                if(!str)str=(u16 *)data_0210054c;
+                if((s32)func_0206512c(buffer,str,512)<0)goto invalid;
+                text=buffer;
+            } else {args+=4;text=*(char **)(args-4);}
+            if(!text)text=(char *)data_02100550;
+            if(f.d){
+                len=(u8)*text++;
+                if(f.c && len>f.precision)len=f.precision;
+            }else if(f.c){
+                char *end;
+                len=f.precision;
+                end=(char *)func_02065224(text,0,len);
+                if(end)len=end-text;
+            }else len=func_02068c34(text);
+            break;
+        case 'n':{
+            void *ptr;
+            args+=4;ptr=*(void **)(args-4);
+            switch(f.e){
+            case 0:*(s32 *)ptr=total;break;
+            case 2:*(s16 *)ptr=total;break;
+            case 3:*(s32 *)ptr=total;break;
+            case 6:*(s64 *)ptr=total;break;
+            case 7:*(s32 *)ptr=total;break;
+            case 8:*(s32 *)ptr=total;break;
+            case 4:*(s64 *)ptr=total;break;
             }
-            p += len;
-            break;
+            continue;
         }
-        len = (s32)(q - p);
-        count += (u32)len;
-        if (len != 0) {
-            s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, p, len);
-            if (rc == 0) return (u32)-1;
-        }
-        p = (char *)func_0206536c(q, &argp, &f);
-        buf = 0;
-        switch (f.f) {
-        case 'd': case 'i': {
-            s32 e = f.e;
-            if (e == 4 || e == 6) {
-                u64 value = *(u64 *)argp; argp += 8;
-                buf = (char *)func_02065b48((M2C_UNK)value, (M2C_UNK)(value >> 32), (M2C_UNK)(frame + 0x2c));
-            } else {
-                s32 v;
-                if (e == 1) { v = *(s8 *)argp; argp += 4; }
-                else if (e == 2) { v = *(s16 *)argp; argp += 4; }
-                else { v = *(s32 *)argp; argp += 4; }
-                buf = func_020658fc(v, frame + 0x2c, f);
-            }
-            break;
-        }
-        case 'o': case 'u': case 'x': case 'X': case 'p': {
-            s32 e = f.e;
-            if (e == 4 || e == 6) {
-                u64 value = *(u64 *)argp; argp += 8;
-                buf = (char *)func_02065b48((M2C_UNK)value, (M2C_UNK)(value >> 32), (M2C_UNK)(frame + 0x2c));
-            } else {
-                u32 v;
-                if (e == 1) { v = *(u8 *)argp; argp += 4; }
-                else if (e == 2) { v = *(u16 *)argp; argp += 4; }
-                else { v = *(u32 *)argp; argp += 4; }
-                buf = func_020658fc((s32)v, frame + 0x2c, f);
-            }
-            break;
-        }
-        case 'a': case 'A': {
-            double dv = *(double *)argp; argp += 8;
-            buf = (char *)func_02066444((M2C_UNK)&dv, (M2C_UNK)&dv, f);
-            break;
-        }
-        case 'e': case 'E': case 'f': case 'F': case 'g': case 'G': {
-            double dv = *(double *)argp; argp += 8;
-            buf = (char *)func_02065e44(dv, frame + 0x2c, f);
-            break;
-        }
-        case 'c': {
-            s32 ch = *(s32 *)argp; argp += 4;
-            padbuf[0] = (char)ch;
-            buf = padbuf;
-            break;
-        }
-        case 's': {
-            char *s = *(char **)argp; argp += 4;
-            if (!s) s = "";
-            buf = s;
-            break;
-        }
-        case '%': {
-            padbuf[0] = '%';
-            buf = padbuf;
-            break;
-        }
-        case 'n': {
-            s32 *ptr = *(s32 **)argp; argp += 4;
-            *ptr = (s32)count;
-            buf = 0;
-            break;
-        }
+        case 'c':args+=4;buffer[0]=*(s32 *)(args-4);text=buffer;len=1;break;
+        case '%':buffer[0]='%';text=buffer;len=1;break;
+        case 255:
         default:
-            buf = 0;
-            break;
+        invalid:
+            len=func_02068c34(q);
+            if(len && !writer(state,q,len))return -1;
+            return total+len;
         }
-        if (!buf && f.f != 'n') {
-            p = fmt;
-            continue;
+        width=len;
+        if(f.a){
+            pad=f.a==2?'0':' ';
+            if((*text=='+' || *text=='-' || *text==' ') && pad=='0'){
+                if(!writer(state,text,1))return -1;
+                text++;len--;
+            }
+            while(width<f.width){
+                if(!writer(state,&pad,1))return -1;
+                width++;
+            }
         }
-        if (f.f == 'n') {
-            p = fmt;
-            p = p;
-            continue;
+        if(len && !writer(state,text,len))return -1;
+        if(f.a==0){
+            while(width<f.width){
+                space=' ';
+                if(!writer(state,&space,1))return -1;
+                width++;
+            }
         }
-        {
-            s32 outlen = 0;
-            s32 width = f.width;
-            s32 saveR4;
-            s32 pad;
-            char padChar;
-            if (f.f == 's') outlen = func_02068c34(buf);
-            else if (buf == padbuf) outlen = 1;
-            else {
-                /* unknown length; formatted functions return pointer; we can't derive easily */
-                outlen = 0;
-            }
-            saveR4 = outlen;
-            /* leading */
-            padChar = (f.a == 2) ? '0' : ' ';
-            if (f.a != 0) {
-                if ((buf[0] == '+' || buf[0] == '-' || buf[0] == ' ') && padChar == '0') {
-                    s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, buf, 1);
-                    if (rc == 0) return (u32)-1;
-                    buf += 1;
-                    outlen -= 1;
-                }
-                while (saveR4 < width) {
-                    char tmp = padChar;
-                    s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, &tmp, 1);
-                    if (rc == 0) return (u32)-1;
-                    saveR4 += 1;
-                }
-            }
-            if (outlen > 0) {
-                s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, buf, outlen);
-                if (rc == 0) return (u32)-1;
-            }
-            /* trailing */
-            if (f.a == 0) {
-                while (saveR4 < width) {
-                    char tmp = ' ';
-                    s32 rc = ((s32(*)(M2C_UNK, void *, s32))writer)(state, &tmp, 1);
-                    if (rc == 0) return (u32)-1;
-                    saveR4 += 1;
-                }
-            }
-            count += (u32)saveR4;
-        }
-        /* avoid infinite loop */
-        p = p;
+        total+=width;
     }
-    return count;
+    return total;
 }
-
+#pragma opt_strength_reduction reset
 s32 func_020673cc(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_02064684(M2C_UNK, M2C_UNK, s32, s32);
     s32 var_r5;

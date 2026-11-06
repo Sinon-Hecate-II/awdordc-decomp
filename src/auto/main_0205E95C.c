@@ -283,11 +283,14 @@ void func_0205f64c(M2C_UNK arg0, void *arg1) {
     M2C_FIELD(arg1, s32 *, 0x800) = (s32) (M2C_FIELD(arg1, s32 *, 0x800) - 1);
 }
 
+#pragma opt_strength_reduction off
 void func_0205f6b0(void *arg0, void *arg1, s32 arg2) {
-    u8 buf[4];
-    u8 key[6];
-    s32 i;
+    volatile u8 key[6];
+    u32 buffer;
+    
+    volatile u8 *kp=key;
     s32 match;
+    s32 i;
     u32 val;
     u32 tmp;
     M2C_UNK (*cb0)(M2C_UNK, M2C_UNK);
@@ -301,32 +304,28 @@ void func_0205f6b0(void *arg0, void *arg1, s32 arg2) {
     key[5] = data_020eac30[5];
 
     match = 1;
-    if (arg2 < 10) {
-        match = 0;
-    } else {
-        for (i = 0; i < 6; i++) {
-            if (key[i] != ((u8 *)arg1)[i]) {
+    if (arg2 >= 10) {
+        for (i = 0; i < 6; i++,kp++) {
+            if (*kp != ((u8 *)arg1)[i]) {
                 match = 0;
                 break;
             }
         }
-    }
+    } else { match=0; }
 
     if (!match) goto no_match;
 
-    buf[0] = ((u8 *)arg1)[6];
-    buf[1] = ((u8 *)arg1)[7];
-    buf[2] = ((u8 *)arg1)[8];
-    buf[3] = ((u8 *)arg1)[9];
+    { u8 *bp=(u8 *)&buffer; u8 a=((u8 *)arg1)[6], b=((u8 *)arg1)[7]; bp[0]=a; bp[1]=b; a=((u8 *)arg1)[8]; b=((u8 *)arg1)[9]; bp[3]=b; bp[2]=a; }
 
-    tmp = *(u32 *)buf;
+    cb0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK), 0xa0);
+    if (cb0 == NULL) return;
+    {
+    tmp = buffer;
     val = ((tmp >> 24) & 0xFFU) |
           ((tmp >> 8) & 0xFF00U) |
           ((tmp << 8) & 0xFF0000U) |
           ((tmp << 24) & 0xFF000000U);
 
-    cb0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK), 0xa0);
-    if (cb0 != NULL) {
         cb0(val, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
     }
     return;
@@ -337,7 +336,7 @@ no_match:
         cb4(arg1, arg2, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
     }
 }
-
+#pragma opt_strength_reduction reset
 s32 func_0205f7d8(void *a,s32 b) {
  s32 i=0;
 loop:

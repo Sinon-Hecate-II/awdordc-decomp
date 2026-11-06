@@ -70,15 +70,12 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
     func_ov001_0216cde4(r5, 0, 0x104);
     r7 = r5 + 0x80;
     r4 = r6;
+    for (;;) {
     r2 = func_ov001_0216cef0(*(u16 *)((u8 *)r4 + 2));
     if (r2 <= 0) {
         return -1;
     }
-    for (;;) {
         t = *(u8 *)r4;
-        if (t > 6) {
-            return -1;
-        }
         switch (t) {
         case 0:
             func_ov001_0216cdd4(r5, (M2C_UNK)((u8 *)r4 + 6));
@@ -91,7 +88,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
             break;
         case 3:
             if (func_ov001_0216cef0(*(u8 *)((u8 *)r4 + 6)) <= 0) {
-                return -1;
+                return -2;
             }
             break;
         case 4:
@@ -116,8 +113,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-#pragma thumb on
-#pragma opt_strength_reduction off
+#pragma opt_lifetimes off
 s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
     s32 var_r3;
     s32 var_r4;
@@ -125,7 +121,7 @@ s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
     u8 temp_r0;
 
     var_r3 = 0;
-    var_r5 = (u8 *) (arg0 + (arg1 - 1));
+    var_r5 = arg0 + (arg1 - 1);
     var_r4 = 0;
     if (arg1 > 0) {
         do {
@@ -137,8 +133,7 @@ s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
     }
     return var_r3;
 }
-#pragma opt_strength_reduction reset
-#pragma thumb off
+#pragma opt_lifetimes reset
 
 #pragma thumb on
 s32 func_ov001_0216c1c4(void *arg0,s32 arg1) {
@@ -387,5 +382,8 @@ void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) 
  }
 }
 #pragma thumb on
-void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) { int i; int half=n/2; for(i=0;i<half;i++) { b[half] ^= a[i]; b++; } }
+void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
+ int i; int half=n/2;
+ for(i=0;i<half;i++) { b[half] ^= a[i]; b++; }
+}
 #pragma thumb off

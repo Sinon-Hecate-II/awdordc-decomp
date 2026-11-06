@@ -362,7 +362,7 @@ M2C_UNK func_020a0360(void) {
     }
 }
 
-s32 func_020a046c(void) {
+void func_020a046c(void) {
     extern void *data_0211fb5c;
     extern s32 *gCurrentMap;
 
@@ -371,15 +371,13 @@ s32 func_020a046c(void) {
     u8 *dest;
 
     i = 1;
-    if (((s8 *)((u8 *)data_0211fb5c))[0x5b] < 1) {
-        return 0;
-    }
+    if (((s8 *)data_0211fb5c)[0x5b] >= 1) {
     do {
         r = (u8 *)data_0211fb5c + i;
         if ((s8)r[0x36] < (s8)r[0x35]) {
             *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 0;
         } else if ((s8)r[0x36] > (s8)r[0x35]) {
-            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = (u8)i;
+            *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 1;
         } else {
             if ((s8)r[0x42] < (s8)r[0x41]) {
                 *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 3;
@@ -390,8 +388,9 @@ s32 func_020a046c(void) {
         i++;
     } while (i <= (s8)((u8 *)data_0211fb5c)[0x5b]);
 
+    }
     *((u8 *)((u8 *)*gCurrentMap + (i - 1) + 0x5388)) = 4;
-    return 0;
+    return;
 }
 
 M2C_UNK func_020a0560(void) {

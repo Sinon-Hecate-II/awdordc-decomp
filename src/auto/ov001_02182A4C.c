@@ -532,15 +532,9 @@ void func_ov001_0218362c(void) {
 
 void func_ov001_02183694(void *a){extern void *data_ov001_02193df0;void *func_ov001_0218b6f8(s32,s32);void func_02007ef4(void *,void *,s32);s32 func_ov001_0218c884(s32,void (*)(),s32,s32);void func_ov001_02183790(void);void *p=func_ov001_0218b6f8(0x608,4);data_ov001_02193df0=p;func_02007ef4(a,(u8 *)p+4,0x600);M2C_FIELD(data_ov001_02193df0,s32 *,0)=func_ov001_0218c884(1,func_ov001_02183790,0,120);}
 
-#pragma merge_duplicate_code off
-void func_ov001_021836f4(void) {
-    extern void *data_ov001_02193df0;
-    void func_ov001_0218c94c(s32, s32);
-    void func_ov001_0218b71c(void *);
-    func_ov001_0218c94c(1, *(s32 *)data_ov001_02193df0);
-    func_ov001_0218b71c(&data_ov001_02193df0);
-}
-#pragma merge_duplicate_code reset
+#pragma opt_propagation off
+void func_ov001_021836f4(void){extern void *data_ov001_02193df0;void func_ov001_0218c94c(s32,s32);void func_ov001_0218b71c(void *);func_ov001_0218c94c(1,M2C_FIELD(data_ov001_02193df0,s32 *,0));func_ov001_0218b71c(&data_ov001_02193df0);}
+#pragma opt_propagation reset
 void func_ov001_02183720(void) {
     extern void *data_ov001_02193df0;
     M2C_FIELD(data_ov001_02193df0, s8 *, 0x604) = 1;

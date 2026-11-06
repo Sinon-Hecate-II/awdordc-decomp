@@ -504,27 +504,19 @@ void func_0208fd94(void) {
 
 #pragma opt_strength_reduction off
 s32 func_0208fda0(s32 arg0) {
-    extern M2C_UNK data_02157830;
-    extern s32 data_027e15bc;
-    extern M2C_UNK data_02157860;
-    u32 i;
-    u32 count;
-
-    if (M2C_FIELD(&data_02157830, s32 *, 0x1C) != data_027e15bc) {
-        M2C_FIELD(&data_02157830, s32 *, 0x18) = 0;
-        M2C_FIELD(&data_02157830, s32 *, 0x1C) = data_027e15bc;
-    }
-    count = M2C_FIELD(&data_02157830, s32 *, 0x18);
-    for (i = 0; i < count; i++) {
-        if (arg0 == M2C_FIELD(&data_02157860, s32 *, i << 2)) {
-            return 0;
-        }
-    }
-    if (count < 8) {
-        M2C_FIELD(&data_02157860, s32 *, count << 2) = arg0;
-        M2C_FIELD(&data_02157830, s32 *, 0x18) = count + 1;
-    }
-    return 1;
+extern M2C_UNK data_02157830; extern s32 data_027e15bc; extern M2C_UNK data_02157860;
+u32 i,count;
+if(M2C_FIELD(&data_02157830,s32*,0x1c)!=data_027e15bc){
+M2C_FIELD(&data_02157830,s32*,0x18)=0;
+M2C_FIELD(&data_02157830,s32*,0x1c)=data_027e15bc;
+}
+count=M2C_FIELD(&data_02157830,s32*,0x18);
+for(i=0;i<count;i++){if(arg0==M2C_FIELD(&data_02157860,s32*,i<<2))return 0;}
+if(count<8){
+u32 next = M2C_FIELD(&data_02157830,volatile u32*,0x18)+1;
+M2C_FIELD(&data_02157860,s32*,count<<2)=arg0;
+M2C_FIELD(&data_02157830,u32*,0x18)=next;
+} return 1;
 }
 s32 func_0208fe30(s32 a){
  s32 func_0208fda0(s32);

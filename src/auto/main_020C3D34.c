@@ -1,5 +1,7 @@
 /* 28 functions from 0x020C3D34 to 0x020C4D28 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 bytes[6]; u16 half[6]; } SetupColors;
+typedef struct { u32 names[15]; } SetupNames;
 typedef struct { s32 v[4]; } SaveDate;
 typedef struct { s32 v[3]; } SaveTime;
 extern const SaveDate data_020f4e48;
@@ -7,8 +9,112 @@ static inline void SaveTime_Clear(SaveTime *p) { M2C_FIELD((u32)p,s32 *,0)=0; M2
 static inline s32 SaveTime_Get1(SaveTime *p) { return p->v[1]; }
 static inline s32 SaveTime_Get2(SaveTime *p) { return p->v[2]; }
 
-s32 func_020c3d34(void *a, void *b, void *c, void *d) { return 0; }
+#pragma opt_strength_reduction off
+void func_020c3d34(void) {
+extern void **gCurrentMap;
+extern void *data_02164094;
+extern u16 **gCur3DSpriteEngine;
+extern u16 **data_027e00c4;
+extern const SetupColors data_020f4df4;
+extern const SetupNames data_020f4e08;
+extern u8 data_0212a464[],data_0212a46c[],data_0212a478[],data_0212a484[],data_0212a490[],data_0212a49c[];
+extern u8 data_0212a4a8[],data_0212a4b4[],data_0212a4c0[],data_0212a4cc[],data_0212a4d8[],data_0212a4f0[];
+s32 func_020e3218(void *);
+void *func_020e34bc(s32);
+char buf[96]; SetupNames names; SetupColors colors;
+void *map=*gCurrentMap;
+void *unit=(u8*)map+0x67a4+M2C_FIELD(map,u16*,0x52a4)*140;
+u32 kindWord=M2C_FIELD(unit,u32*,0x6c); u8 kind;
+u8 b3=data_020f4df4.bytes[3],b4=data_020f4df4.bytes[4],b5=data_020f4df4.bytes[5];
+u16 **old; u8 alpha; s32 i,color; s16 x0,y0,x1,y1;
+names=data_020f4e08;
+colors.bytes[0]=data_020f4df4.bytes[0];colors.bytes[1]=data_020f4df4.bytes[1];colors.bytes[2]=data_020f4df4.bytes[2];colors.bytes[3]=b3;colors.bytes[4]=b4;colors.bytes[5]=b5;kind=kindWord;
+colors.half[0]=data_020f4df4.half[0];colors.half[1]=data_020f4df4.half[1];colors.half[2]=data_020f4df4.half[2];colors.half[3]=data_020f4df4.half[3];colors.half[4]=data_020f4df4.half[4];colors.half[5]=data_020f4df4.half[5];
 
+data_02164094=func_020e34bc(40);
+M2C_FIELD(data_02164094,s32*,0)=0;
+M2C_FIELD(data_02164094,u32*,0x10)=0xc3200000;
+M2C_FIELD(data_02164094,s16*,0x14)=0;
+M2C_FIELD(data_02164094,s16*,0x16)=0;
+M2C_FIELD(data_02164094,s16*,0x18)=255;
+M2C_FIELD(data_02164094,s16*,0x1a)=0;
+M2C_FIELD(data_02164094,s16*,8)=kind;
+M2C_FIELD(data_02164094,s16*,0x24)=16;
+M2C_FIELD(data_02164094,s16*,0x1e)=22;
+M2C_FIELD(data_02164094,s16*,0x22)=138;
+func_0200bc5c(data_0212a464);
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+func_020822b8(colors.half);
+{u16 * volatile p0=*gCur3DSpriteEngine+0;*p0=(*p0&~0)|16;}
+{u16 * volatile p1=*gCur3DSpriteEngine+0;*p1=(*p1&~0)|32;}
+{u16 * volatile p2=*gCur3DSpriteEngine+0;*p2=(*p2&~0)|64;}
+{u16 * volatile p3=*gCur3DSpriteEngine+0;*p3=(*p3&~0)|128;}
+{u16 * volatile p4=*gCur3DSpriteEngine+0;*p4=(*p4&~0)|256;}
+M2C_FIELD(*gCur3DSpriteEngine,u16*,6)=(M2C_FIELD(*gCur3DSpriteEngine,u16*,6)&~3)|2;
+M2C_FIELD(*gCur3DSpriteEngine,u16*,8)=(M2C_FIELD(*gCur3DSpriteEngine,u16*,8)&~3)|3;
+M2C_FIELD(*gCur3DSpriteEngine,u16*,10)=(M2C_FIELD(*gCur3DSpriteEngine,u16*,10)&~3)|1;
+M2C_FIELD(*gCur3DSpriteEngine,u16*,12)=(M2C_FIELD(*gCur3DSpriteEngine,u16*,12)&~3)|0;
+{u16 * volatile p5=*gCur3DSpriteEngine+0;*p5=(*p5&~0)|512;}
+{u16 * volatile p6=*gCur3DSpriteEngine+0;*p6=(*p6&~1024)|0;}
+{u16 * volatile p7=*gCur3DSpriteEngine+0;*p7=(*p7&~2048)|0;}
+{u16 * volatile p8=*gCur3DSpriteEngine+7;*p8=(*p8&~1)|1;}
+{u16 * volatile p9=*gCur3DSpriteEngine+7;*p9=(*p9&~0)|2;}
+{u16 * volatile p10=*gCur3DSpriteEngine+7;*p10=(*p10&~0)|4;}
+{u16 * volatile p11=*gCur3DSpriteEngine+7;*p11=(*p11&~0)|8;}
+{u16 * volatile p12=*gCur3DSpriteEngine+7;*p12=(*p12&~0)|16;}
+{u16 * volatile p13=*gCur3DSpriteEngine+8;*p13=(*p13&~1)|1;}
+{u16 * volatile p14=*gCur3DSpriteEngine+8;*p14=(*p14&~0)|2;}
+{u16 * volatile p15=*gCur3DSpriteEngine+8;*p15=(*p15&~0)|4;}
+{u16 * volatile p16=*gCur3DSpriteEngine+8;*p16=(*p16&~0)|8;}
+{u16 * volatile p17=*gCur3DSpriteEngine+8;*p17=(*p17&~0)|16;}
+{u16 * volatile p18=*gCur3DSpriteEngine+7;*p18=(*p18&~0)|32;}
+{u16 * volatile p19=*gCur3DSpriteEngine+8;*p19=(*p19&~0)|32;}
+x0=M2C_FIELD(data_02164094,s16*,20);y0=M2C_FIELD(data_02164094,s16*,22);x1=M2C_FIELD(data_02164094,s16*,24);y1=M2C_FIELD(data_02164094,s16*,26);
+M2C_FIELD(*gCur3DSpriteEngine,u8*,72)=x0;
+M2C_FIELD(*gCur3DSpriteEngine,u8*,74)=y0;
+M2C_FIELD(*gCur3DSpriteEngine,u8*,73)=x1;
+M2C_FIELD(*gCur3DSpriteEngine,u8*,75)=y1;
+{u16 * volatile p20=*gCur3DSpriteEngine+9;*p20=(*p20&~1)|1;}
+{u16 * volatile p21=*gCur3DSpriteEngine+9;*p21=(*p21&~2)|0;}
+{u16 * volatile p22=*gCur3DSpriteEngine+9;*p22=(*p22&~4)|0;}
+{u16 * volatile p23=*gCur3DSpriteEngine+9;*p23=(*p23&~8)|0;}
+{u16 * volatile p24=*gCur3DSpriteEngine+9;*p24=(*p24&~16)|0;}
+{u16 * volatile p25=*gCur3DSpriteEngine+9;*p25=(*p25&~256)|0;}
+{u16 * volatile p26=*gCur3DSpriteEngine+9;*p26=(*p26&~0)|512;}
+{u16 * volatile p27=*gCur3DSpriteEngine+9;*p27=(*p27&~1024)|0;}
+{u16 * volatile p28=*gCur3DSpriteEngine+9;*p28=(*p28&~2048)|0;}
+{u16 * volatile p29=*gCur3DSpriteEngine+9;*p29=(*p29&~4096)|0;}
+{u16 * volatile p30=*gCur3DSpriteEngine+9;*p30=(*p30&~192)|64;}
+alpha=M2C_FIELD(data_02164094,s16*,36);
+M2C_FIELD(*gCur3DSpriteEngine,u8*,81)=alpha;
+M2C_FIELD(*gCur3DSpriteEngine,u8*,82)=alpha;
+color=((u8*)&colors)[M2C_FIELD(unit,u8*,29)];
+func_0208116c(data_0212a46c,0,128);
+func_02080cfc(data_0212a478,M2C_FIELD(gCur3DSpriteEngine,void**,12));
+func_02080cfc(data_0212a484,M2C_FIELD(gCur3DSpriteEngine,void**,16));
+func_020814ac(data_0212a490,M2C_FIELD(gCur3DSpriteEngine,void**,32),0,color);
+func_020814ac(data_0212a49c,M2C_FIELD(gCur3DSpriteEngine,void**,36),0,color);
+M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=1;
+M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
+func_02080cfc(data_0212a4a8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,20)+32);
+func_020814ac(data_0212a4b4,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,40)+448,0,(u16)color);
+M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
+color=names.names[kind];
+func_020675e4(buf,data_0212a4c0,color);
+func_0208116c(buf,704,32);
+func_020675e4(buf,data_0212a4cc,color);
+func_020814e4(func_020e3218(data_0212a4d8));
+func_02081590(func_020e3218(buf),(u8*)M2C_FIELD(data_027e00c4,void**,28)+2048);
+func_02081528();
+func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
+func_020985b0(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
+func_02098a34(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
+func_020985b0(M2C_FIELD(data_02164094,s16*,8),11,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+0x7840);
+func_02098a34(M2C_FIELD(data_02164094,s16*,8),11,3,1,0);
+func_0200bc5c(data_0212a4f0);
+gCur3DSpriteEngine=old;
+}
+#pragma opt_strength_reduction reset
 void func_020c4604(M2C_UNK arg0){extern u16 *data_02101e84;extern void *data_02164094;
 M2C_FIELD(data_02164094,s32*,0)++;
 if((M2C_FIELD(data_02164094,s32*,0)<250)&&!(*data_02101e84&1))return;

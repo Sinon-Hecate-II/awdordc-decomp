@@ -503,8 +503,21 @@ while (n > 0) {
 *out = 255;
 }
 
-void func_020a83e4(u8 *p,s8 *dir){loop:switch(*dir++){case 9:dir++;goto loop;case -1:case 4:return;case 0:p[1]--;goto loop;case 1:p[1]++;goto loop;case 3:p[2]--;goto loop;case 2:p[2]++;goto loop;case 10:default:goto loop;}}
-
+#pragma opt_peephole off
+void func_020a83e4(u8 *p,s8 *dir) {
+loop: {
+switch(*dir++) {
+case 9:dir++;goto loop;
+case -1:case 4:return;
+case 0:p[1]--;goto loop;
+case 1:p[1]++;goto loop;
+case 3:p[2]--;goto loop;
+case 2:p[2]++;goto loop;
+case 10:default:goto loop;
+}
+}
+}
+#pragma opt_peephole reset
 void func_020a8474(void) {
 
 }

@@ -512,52 +512,26 @@ void func_02094860(void) {
  M2C_FIELD(func_02091da8()+((u32)i*4),s32 *,0x24)=0;
 }
 
+#pragma optimization_level 2
 void *func_020948c4(s32 arg0) {
-    s32 func_02094724(s32);
-    void func_020943a8(s8);
-    void func_020943bc(s8);
-    void func_020943e0(s8);
-    void func_02094410(s8);
-    M2C_UNK func_02095fd4(void);
-    void func_02094798(void);
-    void func_020d4704(void);
-    extern M2C_UNK data_02157fe8;
-    extern M2C_UNK data_02157fec;
-    extern M2C_UNK data_02157ff0;
-    extern M2C_UNK data_02157ff4;
-
-    s16 temp_r0;
-    s32 temp_ip;
-    u8 *r3;
-    u8 *r0;
-    u8 *r1;
-    s32 r2;
-
-    temp_r0 = func_02094724(0);
-    if (temp_r0 == -1) {
-        return NULL;
-    }
-    func_020943a8(-1);
-    func_020943bc(3);
-    func_020943e0(0);
-    func_02094410(0);
-    func_02095fd4();
-    func_02094798();
-    func_020d4704();
-    temp_ip = temp_r0 * 0x18;
-    r3 = (u8 *)&data_02157fe8;
-    r0 = (u8 *)&data_02157ff0;
-    r1 = (u8 *)&data_02157fec;
-    r2 = 0;
-    *(s32 *)(r3 + temp_ip) = arg0;
-    *(s32 *)(r0 + temp_ip) = r2;
-    *(s32 *)(r1 + temp_ip) = arg0;
-    r0 = (u8 *)&data_02157ff4;
-    *(u16 *)(r0 + temp_ip) = 0;
-    return (void *)(r3 + temp_ip);
+s32 func_02094724(s32);
+void func_020943a8(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
+M2C_UNK func_02095fd4(void);void func_02094798(void);void func_020d4704(void);
+extern M2C_UNK data_02157fe8,data_02157fec,data_02157ff0,data_02157ff4;
+s16 index; s32 offset; u8 *base;
+index=func_02094724(0);
+if(index==-1)return NULL;
+func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
+func_02095fd4();func_02094798();func_020d4704();
+offset=index*24;
+base=(u8 *)&data_02157fe8;
+*(s32 *)(base+offset)=arg0;
+*(s32 *)((u8 *)&data_02157ff0+offset)=0;
+*(s32 *)((u8 *)&data_02157fec+offset)=arg0;
+*(u16 *)((u8 *)&data_02157ff4+offset)=0;
+return base+offset;
 }
-
-#pragma scheduling off
+#pragma optimization_level reset
 void func_02094958(void *arg0) {
     s32 func_02096064(void);
     extern void *data_02102b50[];
@@ -565,7 +539,6 @@ void func_02094958(void *arg0) {
     s32 (*fn)(void *);
     s32 temp;
 
-#pragma opt_strength_reduction off
     if (M2C_FIELD(arg0, s32 *, 0) == 0) {
         return;
     }

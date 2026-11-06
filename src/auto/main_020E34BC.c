@@ -48,6 +48,20 @@ void func_020e34bc(s32 arg0) {
     (void)*(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = s;
 }
+
+s32 func_020e34f4(s32 arg0) {
+void func_020e3580(s32,s32);
+volatile u32 saved;
+u16 old;u32 s;
+old=*(volatile u16*)0x04000208;
+*(volatile u16*)0x04000208=0;
+saved=old;
+func_020e3580(arg0,8);
+s=saved;
+(void)*(volatile u16*)0x04000208;
+*(volatile u16*)0x04000208=s;
+}
+
 #pragma opt_common_subs reset
 s32 func_020e352c(s32 arg0, s32 arg1) {
     M2C_UNK func_0202a468(s32, s32, s32);

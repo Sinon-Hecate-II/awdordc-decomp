@@ -297,9 +297,9 @@ void func_02032be4(void *arg0) {
     void *p = M2C_FIELD(&data_0213d114, void **, 8);
     if (p == 0) {
         func_02007f8c(arg0, 0, 0x1C4);
+    }
         p = M2C_FIELD(&data_0213d114, void **, 8);
         func_02008048((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
-    }
     {
         s32 v = M2C_FIELD(arg0, s32 *, 0);
         if (v < 0x4E20 || v >= 0x7530) {

@@ -13,7 +13,7 @@ int func_02071284(s32,s32,s32,s32);
 void func_0206bc58(void *, int);
 u16 *func_0206cdac(u16 *, u16 *);
 int func_02068c34(char *);
-void func_020650a4(void *, void *, int);
+s32 func_020650a4(void *, void *, int);
 double value=arg0;
 DecimalFormBD form;
 DecimalBD dec;
@@ -95,7 +95,224 @@ func_020650a4(result,p,func_02068c34(p));
 return result;
 }
 #pragma scheduling off
-s32 func_0206c3c8(void *a, void *b, void *c, void *d) { return 0; }
+u16 *func_0206cdcc(u16 *,s32);
+s32 func_0206cd90(u16 *);
+u16 *func_0206adf8(u16 *,char **,FormatBD *);
+u16 *func_0206b370(s32,u16 *,FormatBD);
+u16 *func_0206b5c0(u64,u16 *,FormatBD);
+u16 *func_0206b8c0(double,u16 *,FormatBD);
+u16 *func_0206add0(u16 *,s32,s32);
+char *func_02065224(char *,s32,s32);
+s32 func_02068c34(char *);
+s32 func_020650a4(void *,void *,s32);
+s32 func_02065020(void *,void *,s32);
+extern u16 data_021005b4[];
+extern u8 data_021005b8[];
+s32 func_0206c3c8(s32 (*writer)(void *,const u16 *,s32), void *state, u16 *p, char *args, ...) {
+    u16 buffer[512];
+    FormatBD f;
+    u16 pad=' ', space;
+ char narrow;
+    u16 *q;
+    s32 total=0;
+    s32 len;
+    u16 *text;
+    s32 width;
+    s32 value;
+    u64 wide;
+    double real;
+    while (*p) {
+        u16 *mark=func_0206cdcc(p,37);
+        q=mark;
+        if (!mark) {
+            len=func_0206cd90(p);
+ total+=len;
+            if(len && !writer(state,p,len)) return -1;
+            break;
+        }
+        len=mark-p;
+total+=len;
+        if(len && !writer(state,p,len)) return -1;
+        p=func_0206adf8(q,&args,&f);
+        switch(f.conv) {
+        case 'd': case 'i':
+            if(((u8)f.c)==3) {args+=4;
+value=*(long *)(args-4);
+}
+            else if(((u8)f.c)==4) {args+=8;
+wide=*(u64 *)(args-8);
+}
+            else if(((u8)f.c)==6) {args+=8;
+wide=*(u64 *)(args-8);
+}
+            else if(((u8)f.c)==7) {args+=4;
+value=*(unsigned long *)(args-4);
+}
+            else if(((u8)f.c)==8) {args+=4;
+value=(s32)*(char **)(args-4);
+}
+            else {args+=4;
+value=*(s32 *)(args-4);
+}
+            if(((u8)f.c)==2)value=(s16)value;
+            if(((u8)f.c)==4 || ((u8)f.c)==6){text=func_0206b5c0(wide,buffer+512,f);
+if(!text)goto invalid;
+}
+            else {text=func_0206b370(value,buffer+512,f);
+if(!text)goto invalid;
+}
+            len=buffer+511-text;
+break;
+        case 'o': case 'u': case 'x': case 'X':
+            if(((u8)f.c)==3) {args+=4;
+value=*(long *)(args-4);
+}
+            else if(((u8)f.c)==4) {args+=8;
+wide=*(u64 *)(args-8);
+}
+            else if(((u8)f.c)==6) {args+=8;
+wide=*(u64 *)(args-8);
+}
+            else if(((u8)f.c)==7) {args+=4;
+value=*(unsigned long *)(args-4);
+}
+            else if(((u8)f.c)==8) {args+=4;
+value=(s32)*(char **)(args-4);
+}
+            else {args+=4;
+value=*(s32 *)(args-4);
+}
+            if(((u8)f.c)==2)value=(u16)value;
+            if(((u8)f.c)==4 || ((u8)f.c)==6){text=func_0206b5c0(wide,buffer+512,f);
+if(!text)goto invalid;
+}
+            else {text=func_0206b370(value,buffer+512,f);
+if(!text)goto invalid;
+}
+            len=buffer+511-text;
+break;
+        case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':
+            if(((u8)f.c)==9){args+=8;
+real=*(double *)(args-8);
+}
+            else {args+=8;
+real=*(long double *)(args-8);
+}
+            text=func_0206bd7c(real,buffer+512,f);
+            if(!text)goto invalid;
+            len=buffer+511-text;
+break;
+        case 'a':case 'A':
+            if(((u8)f.c)==9){args+=8;
+real=*(double *)(args-8);
+}
+            else {args+=8;
+real=*(long double *)(args-8);
+}
+            text=func_0206b8c0(real,buffer+512,f);
+            if(!text)goto invalid;
+            len=buffer+511-text;
+break;
+        case 's':
+if((u8)f.c==5){
+args+=4;
+text=*(u16 **)(args-4);
+if(!text)text=(u16 *)data_021005b4;
+if(f.alt){len=(u8)*text++;
+if(f.b && len>f.precision)len=f.precision;
+}
+else if(f.b){u16 *e;
+len=f.precision;
+e=func_0206add0(text,0,len);
+if(e)len=e-text;
+}
+else len=func_0206cd90(text);
+}else{
+char *str;
+ s32 n;
+ args+=4;
+str=*(char **)(args-4);
+if(!str)str=(char *)data_021005b8;
+if(f.alt){n=*text&255;
+if(f.b && n>f.precision)n=f.precision;
+}
+else if(f.b){char *e;
+n=f.precision;
+e=func_02065224(str,0,n);
+if(e)n=e-str;
+}
+else n=func_02068c34(str);
+len=func_020650a4(buffer,str,n);
+if(len<0)goto invalid;
+text=buffer;
+}
+break;
+      case 'n':{
+            void *ptr;
+            args+=4;
+ptr=*(void **)(args-4);
+            switch(((u8)f.c)){
+            case 0:*(s32 *)ptr=total;
+break;
+            case 2:*(s16 *)ptr=total;
+break;
+            case 3:*(s32 *)ptr=total;
+break;
+            case 6:*(s64 *)ptr=total;
+break;
+            case 7:*(s32 *)ptr=total;
+break;
+            case 8:*(s32 *)ptr=total;
+break;
+            case 4:*(s64 *)ptr=total;
+break;
+            }
+            continue;
+        }
+        case 'c':text=buffer;
+if((u8)f.c==5){args+=4;
+buffer[0]=*(s32 *)(args-4);
+len=1;
+}else{args+=4;
+narrow=*(s32 *)(args-4);
+len=func_02065020(text,&narrow,1);
+}break;
+        case '%':buffer[0]='%';
+text=buffer;
+len=1;
+break;
+        case 65535:
+        default:
+        invalid:
+            len=func_0206cd90(q);
+            if(len && !writer(state,q,len))return -1;
+            return total+len;
+        }
+        width=len;
+        if(f.a){
+            pad=f.a==2?'0':' ';
+            if((*text=='+' || *text=='-' || *text==' ') && pad=='0'){
+                if(!writer(state,text,1))return -1;
+                text++;
+len--;
+            }
+            while(width<f.d){
+                if(!writer(state,&pad,1))return -1;
+                width++;
+            }
+        }
+        if(len && !writer(state,text,len))return -1;
+        if(f.a==0){
+            while(width<f.d){
+                space=' ';
+                if(!writer(state,&space,1))return -1;
+                width++;
+            }
+        }
+        total+=width;
+    }
+    return total;
+}
 
 s32 func_0206ccb8(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_0206adc0(s32, M2C_UNK, s32);

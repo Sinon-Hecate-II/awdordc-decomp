@@ -14,19 +14,17 @@ void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_020ae728(arg1, arg2);
 }
 
+#pragma opt_lifetimes off
 void func_020ae7a4(u32 a,u32 b,u16 c) {
-    extern void *gCur3DSpriteEngine;
-    u32 temp;
-    u8 *e;
-    u8 *tiles;
-    u16 *p;
-    temp = (a << 5) & ~1;
-    e = (u8 *) gCur3DSpriteEngine;
-    tiles = *(u8 **) (e + 0x30);
-    p = (u16 *) (tiles + temp);
-    p[b] = c;
+extern void *gCur3DSpriteEngine;
+u32 offset=a<<5;
+u8 *tiles=M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30);
+offset &=~1;
+a=b<<1;
+b=(u32)(tiles+offset);
+M2C_FIELD((void *)b,u16 *,a)=c;
 }
-
+#pragma opt_lifetimes reset
 s32 func_020ae7cc(s32 arg0) {
     extern M2C_UNK data_020f4d30;
     return (0x14 * arg0) + (s32) &data_020f4d30;

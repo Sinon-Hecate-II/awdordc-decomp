@@ -1,7 +1,201 @@
 /* 5 functions from 0x02089D30 to 0x0208ABC4 (main), found by ds-decomp. */
 #include "common.h"
+static inline u32 PanelWidth(void *p) { return (u32)(M2C_FIELD(p,u32 *,0x40)<<23)>>23; }
+static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,u32 *,0x40)<<14)>>23; }
 
-void func_02089d30(void *arg0) { }
+void func_02089d30(void *arg0) {
+    void func_02089cec(void *);
+    void *func_0209c658(void *);
+    void *func_0209c5dc(void *,s32);
+    s32 func_0209b5e4(s32,void *);
+    s32 func_0209c690(void *);
+    void *func_020ab1c4(s32);
+    void func_020aab24(void *,s32,s32,s32,s32);
+    void func_02088e84(void *,s16,s32,s16,s32);
+    void func_02087d84(void *,s32,s16,s16,u16,u16);
+    s32 func_020aae10(void *);
+    s32 func_020aae44(void *);
+    void func_020ab150(void *,s32);
+    void func_020aad18(void *);
+    void func_020a9a30(s32,s32,s32,s32);
+    extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
+    s32 previousEngine,engineIndex;
+    s32 maxLength,offset,index,length,rows,width,height,state,mode;
+    u32 flags,packed;
+    s32 measuredKind;
+    void func_0208ae88(void *,s32);
+    void func_0208989c(void *);
+    void func_0208ad48(void *);
+    void func_02089784(void *);
+    void func_0208aebc(void *);
+    void *end,*entry;
+    void *sprite1,*sprite4;
+    s16 x1,y1,x2,y2,x3,y3,x4,y4;
+    s16 sx1,sy1,sx2,sy2,sx3,sy3,sx4,sy4,sx5,sy5,sx6,sy6,sx7,sy7,sx8,sy8;
+    s32 w1,w2,w3,w4,w5,w6,w7,w8;
+    s32 boolean1,boolean2,boolean3,boolean4,boolean5,boolean6,boolean7,boolean8;
+    func_02089cec(arg0);
+    previousEngine=gCur3DSpriteEngine;
+    for(engineIndex=0;engineIndex<2;engineIndex++){
+        gCur3DSpriteEngine=engineIndex==0?data_027e00c8:data_027e00c4;
+        mode=(u32)(M2C_FIELD(arg0,u8 *,0x48)<<28)>>29;
+        if(mode==0&&gCur3DSpriteEngine!=data_027e00c8)continue;
+        if(mode==1&&gCur3DSpriteEngine!=data_027e00c4)continue;
+        if(mode==3&&gCur3DSpriteEngine!=previousEngine)continue;
+        maxLength=0;offset=M2C_FIELD(arg0,u16 *,0x3e)<<5;
+        end=func_0209c658(M2C_FIELD(arg0,void **,0x70));
+        M2C_FIELD(arg0,u32 *,0x58)&=~0x3c0000;
+        index=0;
+        do{
+            entry=func_0209c5dc(M2C_FIELD(arg0,void **,0x70),index);
+            if(!entry||entry==end||index==8)break;
+            length=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+offset,entry);
+            measuredKind=func_0209c690(entry);
+            M2C_FIELD(arg0,u8 **,0x68)[index]=length;
+            M2C_FIELD(arg0,u8 **,0x6c)[index]=measuredKind;
+            rows=(length+7)>>3;
+            flags=M2C_FIELD(arg0,u32 *,0x58);
+            M2C_FIELD(arg0,u32 *,0x58)=(flags&~0x3c0000)|((u32)((((flags<<10)>>28)+1)<<28)>>10);
+            offset+=((rows+3)>>2)<<8;
+            if(maxLength<length)maxLength=length;
+            index++;
+        }while(index<=8);
+        flags=M2C_FIELD(arg0,u32 *,0x58);
+        height=(((flags<<10)>>28)+1)<<4;
+        state=(flags<<29)>>29;
+        if(state)height+=32;
+        width=(((maxLength+7)>>3)+2)<<3;
+        if(state==3){if(width<128)width=128;}else if(width<64)width=64;
+        width=(width+15)&~15;height=(height+15)&~15;
+        if(width>128&&width<192)width=(width+31)&~31;
+        if(width>256)width=256;
+        if(height>192)height=192;
+        packed=M2C_FIELD(arg0,u32 *,0x40)&~0x1ff;
+        packed|=width&0x1ff;packed&=0xfffc01ff;
+        M2C_FIELD(arg0,u32 *,0x40)=packed|((u32)(height<<23)>>14);
+        switch((u8)((M2C_FIELD(arg0,u32 *,0x58)<<22)>>30)){
+        case 0:
+            M2C_FIELD(arg0,s16 *,0x34)=(256-(s32)PanelWidth(arg0))/2;
+            M2C_FIELD(arg0,s16 *,0x36)=(192-(s32)PanelHeight(arg0))/2-4;break;
+        case 1:
+            M2C_FIELD(arg0,s16 *,0x34)=(256-(s32)PanelWidth(arg0))/2;
+            M2C_FIELD(arg0,s16 *,0x36)=4;break;
+        case 2:
+            M2C_FIELD(arg0,s16 *,0x34)=(256-(s32)PanelWidth(arg0))/2;
+            M2C_FIELD(arg0,s16 *,0x36)=188-PanelHeight(arg0);break;
+        }
+        sprite1=0;sprite4=0;
+        func_020a9a30(0,2,0x47,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x260);
+        switch((M2C_FIELD(arg0,u32 *,0x58)<<29)>>29){
+case 0:M2C_FIELD(arg0,u32 *,0x58)&=~0x38000;sprite1=0;sprite4=0;break;
+case 1:
+            sprite1=func_020ab1c4(6);
+            func_020aab24(sprite1,31,256,3,0);
+            y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-64)/2+0;
+            func_02088e84(sprite1,x1,y1,x1,y1);
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean1=1;else boolean1=0;
+            if(boolean1&255){
+                sy1=M2C_FIELD(sprite1,s16 *,0x52);sx1=M2C_FIELD(sprite1,s16 *,0x50);
+                w1=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx1,sy1,(u16)w1,(u16)func_020aae44(sprite1));
+            }
+            M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean2=1;else boolean2=0;
+            if(boolean2&255){
+                sy2=M2C_FIELD(sprite1,s16 *,0x52);sx2=M2C_FIELD(sprite1,s16 *,0x50);
+                w2=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)func_020aae44(sprite1));
+            }
+            func_020ab150(sprite1,3);
+            M2C_FIELD(sprite1,s8 *,0x49)=-100;
+            
+            func_020aad18(sprite1);
+M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;sprite4=0;break;
+case 2:
+            sprite1=func_020ab1c4(6);
+            func_020aab24(sprite1,32,256,3,0);
+            y2=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x2=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
+            func_02088e84(sprite1,x2,y2,x2,y2);
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean3=1;else boolean3=0;
+            if(boolean3&255){
+                sy3=M2C_FIELD(sprite1,s16 *,0x52);sx3=M2C_FIELD(sprite1,s16 *,0x50);
+                w3=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)func_020aae44(sprite1));
+            }
+            M2C_FIELD(sprite1,s16 *,0x34)=x2;M2C_FIELD(sprite1,s16 *,0x36)=y2;
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean4=1;else boolean4=0;
+            if(boolean4&255){
+                sy4=M2C_FIELD(sprite1,s16 *,0x52);sx4=M2C_FIELD(sprite1,s16 *,0x50);
+                w4=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)func_020aae44(sprite1));
+            }
+            func_020ab150(sprite1,3);
+            M2C_FIELD(sprite1,s8 *,0x49)=-100;
+            
+            func_020aad18(sprite1);
+M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;sprite4=0;break;
+case 3:
+            sprite1=func_020ab1c4(6);
+            func_020aab24(sprite1,33,256,3,0);
+            y3=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x3=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
+            func_02088e84(sprite1,x3,y3,x3,y3);
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean5=1;else boolean5=0;
+            if(boolean5&255){
+                sy5=M2C_FIELD(sprite1,s16 *,0x52);sx5=M2C_FIELD(sprite1,s16 *,0x50);
+                w5=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)func_020aae44(sprite1));
+            }
+            M2C_FIELD(sprite1,s16 *,0x34)=x3;M2C_FIELD(sprite1,s16 *,0x36)=y3;
+            if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean6=1;else boolean6=0;
+            if(boolean6&255){
+                sy6=M2C_FIELD(sprite1,s16 *,0x52);sx6=M2C_FIELD(sprite1,s16 *,0x50);
+                w6=func_020aae10(sprite1);
+                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)func_020aae44(sprite1));
+            }
+            func_020ab150(sprite1,1);
+            M2C_FIELD(sprite1,s8 *,0x49)=-100;
+            M2C_FIELD(sprite1,s8 *,0x5a)=0;
+            func_020aad18(sprite1);
+
+            sprite4=func_020ab1c4(6);
+            func_020aab24(sprite4,34,268,3,0);
+            y4=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x4=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
+            func_02088e84(sprite4,x4,y4,x4,y4);
+            if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean7=1;else boolean7=0;
+            if(boolean7&255){
+                sy7=M2C_FIELD(sprite4,s16 *,0x52);sx7=M2C_FIELD(sprite4,s16 *,0x50);
+                w7=func_020aae10(sprite4);
+                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)func_020aae44(sprite4));
+            }
+            M2C_FIELD(sprite4,s16 *,0x34)=x4;M2C_FIELD(sprite4,s16 *,0x36)=y4;
+            if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean8=1;else boolean8=0;
+            if(boolean8&255){
+                sy8=M2C_FIELD(sprite4,s16 *,0x52);sx8=M2C_FIELD(sprite4,s16 *,0x50);
+                w8=func_020aae10(sprite4);
+                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)func_020aae44(sprite4));
+            }
+            M2C_FIELD(sprite4,s8 *,0x49)=-100;
+            func_020ab150(sprite4,2);
+            M2C_FIELD(sprite4,s8 *,0x5a)=-1;
+            
+            func_020aad18(sprite4);
+flags=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x10000;
+M2C_FIELD(arg0,u32 *,0x58)=flags;
+if((s32)(flags<<24)>>30 < 0)func_0208ae88(arg0,1);
+
+break;
+}
+M2C_FIELD(arg0,void **,0x5c)=sprite1;
+M2C_FIELD(arg0,void **,0x60)=sprite4;
+}
+gCur3DSpriteEngine=previousEngine;
+if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))func_0208989c(arg0);
+func_0208ad48(arg0);func_02089784(arg0);func_0208aebc(arg0);
+}
 
 u32 func_0208a6b0(void *arg0) {
     u32 func_020846a4(void);

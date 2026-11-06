@@ -8,8 +8,40 @@ static inline void Set25d(s32 offset,u32 mask){u16 * volatile p=(u16 *)(M2C_FIEL
 static inline void Priority25d(s32 offset,s32 n){u16 *p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p=(*p&~3)|n;}
 typedef struct Mode25d {u16 mode:3;u16 rest:13;} Mode25d;
 
-void func_ov011_02225a9c(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    (void)arg0; (void)arg1; (void)arg2; (void)arg3;
+void func_ov011_02225a9c(void *arg0,s32 arg1,s32 arg2,s32 arg3){
+void func_020675e4(void *,void *,...);
+void func_ov011_02226550(s32,s32);
+s32 func_0207ca38(s32,s32,s32,s32,s32);
+extern u8 data_ov011_02228b48[];
+char buf[8];s32 start;u8 alpha;
+func_020675e4(buf,data_ov011_02228b48,arg3);
+switch(arg3){case 0:start=600;break;case 1:start=1600;break;case 2:start=2600;break;case 3:start=3600;break;case 4:start=4600;break;case 5:start=5600;break;case 6:start=6600;break;case 7:start=7600;break;case 8:start=8600;break;case 9:start=9600;break;}
+if(M2C_FIELD(arg0,u16 *,0x3a)==start){
+M2C_FIELD(arg0,u16 *,0x3c)=arg1;
+M2C_FIELD(arg0,u16 *,0x3e)=arg2;
+func_ov011_02226550((s32)buf,2);
+}
+if(M2C_FIELD(arg0,u16 *,0x3a)<start)return;
+if(M2C_FIELD(arg0,u16 *,0x3a)>start+620)return;
+Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Clear25d(0,256);
+M2C_FIELD(arg0,u16 *,0x3e)=func_0207ca38(0,0,64,M2C_FIELD(arg0,u16 *,0x3a)-start,740);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=M2C_FIELD(arg0,u16 *,0x3c);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=M2C_FIELD(arg0,u16 *,0x3e);
+if(M2C_FIELD(arg0,u16 *,0x3a)<=start+120){
+u16 *volatile p;
+M2C_FIELD(arg0,u8 *,0x36)=func_0207ca38(4,0,16,M2C_FIELD(arg0,u16 *,0x3a)-start,120);
+alpha=M2C_FIELD(arg0,u8 *,0x36);
+p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=alpha;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16-alpha;
+}else if(M2C_FIELD(arg0,u16 *,0x3a)>=start+500){
+u16 *volatile p;
+M2C_FIELD(arg0,u8 *,0x36)=func_0207ca38(1,0,16,M2C_FIELD(arg0,u16 *,0x3a)-(start+500),120);
+alpha=M2C_FIELD(arg0,u8 *,0x36);
+p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=16-alpha;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
+}
 }
 
 #pragma opt_common_subs off

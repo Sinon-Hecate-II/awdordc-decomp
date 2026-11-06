@@ -53,6 +53,7 @@ void func_ov003_021f6724(void *arg0) {
     func_ov003_021f8c20(arg0);
 }
 
+#pragma opt_instruction_scheduling off
 void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
     extern u8 data_027e00b4[8];
@@ -76,7 +77,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void func_ov003_021f9e50(void *, s32, s32);
     void func_ov003_021fad10(void *, s32, s32);
     s16 temp_r4;
-    s32 temp_r5;
+    s16 temp_r5;
     s32 var_r0;
     s32 var_r0_2;
     s32 var_r0_3;
@@ -479,4 +480,4 @@ L5:
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x46) = (s16) data_027e00c4;
     gCur3DSpriteEngine = old;
 }
-
+#pragma opt_instruction_scheduling reset

@@ -1,6 +1,9 @@
 /* 1 function from 0x02215814 to 0x02216290 (ov004), found by ds-decomp. */
 #include "common.h"
 
+#pragma opt_instruction_scheduling off
+#pragma opt_propagation off
+#pragma opt_strength_reduction off
 void func_ov004_02215814(void *arg0) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
     s16 func_0207c8ec(s32, s32);
@@ -11,6 +14,7 @@ void func_ov004_02215814(void *arg0) {
     M2C_UNK func_ov003_021ff36c();
     extern void *data_02101e84;
     extern void *data_02101e88;
+    s16 copy_y,copy_x;
     s32 sp4;
     s32 sp0;
     s16 temp_r3;
@@ -117,8 +121,8 @@ loop_1:
     temp_r0 = M2C_FIELD(data_02101e84, u16 *, 0);
     if (temp_r0 & 1) {
         if (var_r4 != NULL) {
-            M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-            M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+            copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+            M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
         func_01ffa8c4(arg0, 5);
         return;
@@ -140,8 +144,8 @@ loop_1:
     if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x20) {
         if (var_r4 != NULL) {
             temp_r3 = M2C_FIELD(var_r4, s16 *, 0);
-            temp_r8 = ((u32) M2C_FIELD(var_r4, s16 *, 2) >> 0x1F) + (M2C_FIELD(var_r4, s16 *, 2) / 38);
-            var_r7_2 = (s32) (temp_r3 + ((u32) (temp_r3 >> 5) >> 0x1A)) >> 6;
+            temp_r8 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
+            var_r7_2 = (temp_r3 / 64);
 loop_25:
             var_r7_2 -= 1;
             if (var_r7_2 < 0) {
@@ -183,19 +187,20 @@ block_44:
         if (var_r9 != NULL) {
             var_r4 = var_r9;
             if (var_r9 != NULL) {
-                M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r9, s16 *, 0);
-                M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r9, s16 *, 2);
+                copy_y=M2C_FIELD(var_r9,s16 *,2);copy_x=M2C_FIELD(var_r9,s16 *,0);
+                M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
             }
         } else if (var_r4 != NULL) {
-            M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-            M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+            copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+            M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
     if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x10) {
+        temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
             temp_r3_2 = M2C_FIELD(var_r4, s16 *, 0);
-            temp_r10_2 = ((u32) M2C_FIELD(var_r4, s16 *, 2) >> 0x1F) + (M2C_FIELD(var_r4, s16 *, 2) / 38);
-            var_r9_2 = (s32) (temp_r3_2 + ((u32) (temp_r3_2 >> 5) >> 0x1A)) >> 6;
+            temp_r10_2 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
+            var_r9_2 = (temp_r3_2 / 64);
 loop_53:
             var_r9_2 += 1;
             if (var_r9_2 < 0) {
@@ -213,7 +218,7 @@ loop_53:
                 } else if (temp_r0_3 >= 0x40) {
                     var_ip = NULL;
                 } else {
-                    var_ip = M2C_FIELD(arg0, void **, 0x5C) + (temp_r0_3 << 5);
+                    var_ip = temp_r10 + (temp_r0_3 << 5);
                 }
             }
             if (var_ip != NULL) {
@@ -237,20 +242,21 @@ block_72:
         if (var_ip != NULL) {
             var_r4 = var_ip;
             if (var_ip != NULL) {
-                M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_ip, s16 *, 0);
-                M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_ip, s16 *, 2);
+                copy_y=M2C_FIELD(var_ip,s16 *,2);copy_x=M2C_FIELD(var_ip,s16 *,0);
+                M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
             }
         } else if (var_r4 != NULL) {
-            M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-            M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+            copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+            M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
     if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x40) {
+        temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
-            var_r9_3 = ((u32) M2C_FIELD(var_r4, s16 *, 2) >> 0x1F) + (M2C_FIELD(var_r4, s16 *, 2) / 38);
+            var_r9_3 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
             temp_r3_3 = M2C_FIELD(var_r4, s16 *, 0);
             var_ip_2 = var_r9_3 * 8;
-            temp_r8_2 = (s32) (temp_r3_3 + ((u32) (temp_r3_3 >> 5) >> 0x1A)) >> 6;
+            temp_r8_2 = (temp_r3_3 / 64);
 loop_81:
             var_ip_2 -= 8;
             var_r9_3 -= 1;
@@ -269,7 +275,7 @@ loop_81:
                 } else if (temp_r0_4 >= 0x40) {
                     var_r11 = NULL;
                 } else {
-                    var_r11 = M2C_FIELD(arg0, void **, 0x5C) + (temp_r0_4 << 5);
+                    var_r11 = temp_r10 + (temp_r0_4 << 5);
                 }
             }
             if (var_r11 != NULL) {
@@ -293,20 +299,21 @@ block_100:
         if (var_r11 != NULL) {
             var_r4 = var_r11;
             if (var_r11 != NULL) {
-                M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r11, s16 *, 0);
-                M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r11, s16 *, 2);
+                copy_y=M2C_FIELD(var_r11,s16 *,2);copy_x=M2C_FIELD(var_r11,s16 *,0);
+                M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
             }
         } else if (var_r4 != NULL) {
-            M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-            M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+            copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+            M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
     if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x80) {
+        temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
-            var_r9_4 = ((u32) M2C_FIELD(var_r4, s16 *, 2) >> 0x1F) + (M2C_FIELD(var_r4, s16 *, 2) / 38);
+            var_r9_4 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
             temp_r3_4 = M2C_FIELD(var_r4, s16 *, 0);
             var_ip_3 = var_r9_4 * 8;
-            temp_r8_3 = (s32) (temp_r3_4 + ((u32) (temp_r3_4 >> 5) >> 0x1A)) >> 6;
+            temp_r8_3 = (temp_r3_4 / 64);
 loop_109:
             var_ip_3 += 8;
             var_r9_4 += 1;
@@ -325,7 +332,7 @@ loop_109:
                 } else if (temp_r0_5 >= 0x40) {
                     var_r11_2 = NULL;
                 } else {
-                    var_r11_2 = M2C_FIELD(arg0, void **, 0x5C) + (temp_r0_5 << 5);
+                    var_r11_2 = temp_r10 + (temp_r0_5 << 5);
                 }
             }
             if (var_r11_2 != NULL) {
@@ -349,12 +356,12 @@ block_128:
         if (var_r11_2 != NULL) {
             var_r4 = var_r11_2;
             if (var_r11_2 != NULL) {
-                M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r11_2, s16 *, 0);
-                M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r11_2, s16 *, 2);
+                copy_y=M2C_FIELD(var_r11_2,s16 *,2);copy_x=M2C_FIELD(var_r11_2,s16 *,0);
+                M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
             }
         } else if (var_r4 != NULL) {
-            M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-            M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+            copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+            M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
     var_r0_5 = M2C_FIELD(arg0, void **, 0x5C);
@@ -457,8 +464,8 @@ loop_163:
         }
         if (M2C_FIELD(data_02101e88, u8 *, 0x15) != 0) {
             temp_r3_5 = M2C_FIELD(arg0, s16 *, 0x48);
-            temp_r3_6 = (s32) (temp_r3_5 + ((u32) (temp_r3_5 >> 5) >> 0x1A)) >> 6;
-            temp_r2 = ((u32) M2C_FIELD(arg0, s16 *, 0x4A) >> 0x1F) + (M2C_FIELD(arg0, s16 *, 0x4A) / 38);
+            temp_r3_6 = (temp_r3_5 / 64);
+            temp_r2 = (M2C_FIELD(arg0, s16 *, 0x4A) / 38);
             var_r0_6 = M2C_FIELD(arg0, void **, 0x5C);
             if (temp_r3_6 < 0) {
                 var_r10_2 = NULL;
@@ -503,8 +510,8 @@ loop_195:
             }
             if (var_r10_2 == var_r9_7) {
                 if (var_r4 != NULL) {
-                    M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r4, s16 *, 0);
-                    M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r4, s16 *, 2);
+                    copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
+                    M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
                 }
                 func_01ffa8c4(arg0, 5);
                 return;
@@ -518,8 +525,8 @@ block_210:
     if (sp0 == temp_r6) {
         temp_r4 = M2C_FIELD(arg0, s16 *, 0x4A);
         if (sp4 == temp_r4) {
-            temp_r0_6 = (s32) (temp_r6 + ((u32) (temp_r6 >> 5) >> 0x1A)) >> 6;
-            temp_r3_7 = ((u32) temp_r4 >> 0x1F) + (M2C_FIELD(arg0, s16 *, 0x4A) / 38);
+            temp_r0_6 = (temp_r6 / 64);
+            temp_r3_7 = (M2C_FIELD(arg0, s16 *, 0x4A) / 38);
             var_r1_3 = M2C_FIELD(arg0, void **, 0x5C);
             if (temp_r0_6 < 0) {
                 var_r0_7 = NULL;
@@ -600,8 +607,8 @@ block_253:
                 return;
             }
             if (var_r0_7 != NULL) {
-                M2C_FIELD(arg0, s16 *, 0x48) = (s16) M2C_FIELD(var_r0_7, s16 *, 0);
-                M2C_FIELD(arg0, s16 *, 0x4A) = (s16) M2C_FIELD(var_r0_7, s16 *, 2);
+                copy_y=M2C_FIELD(var_r0_7,s16 *,2);copy_x=M2C_FIELD(var_r0_7,s16 *,0);
+                M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
             }
             var_r7_5 = 0;
             var_r8_6 = M2C_FIELD(arg0, void **, 0x5C);
@@ -639,3 +646,6 @@ loop_259:
         }
     }
 }
+#pragma opt_propagation reset
+#pragma opt_strength_reduction reset
+#pragma opt_instruction_scheduling reset

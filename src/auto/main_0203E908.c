@@ -410,34 +410,19 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     return result;
 }
 
-void func_0203f31c(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, u8 *arg3) {
-    M2C_UNK func_0200567c();
-    s32 func_02068c34(u8 *);
-    void func_02008048(u8 *, u8 *, u32);
-    void func_0204e634(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_020fca08;
-    extern M2C_UNK data_020fca10;
-    extern M2C_UNK data_020fca18;
-
-    char buf[0x200];
-    s32 len;
-    u8 *tail;
-
-    len = (s32)func_0200567c((M2C_UNK)buf, 0x200, (M2C_UNK)&data_020fca08, (M2C_UNK)&data_020fca10, 3, (M2C_UNK)&data_020fca18);
-
-    buf[len] = (u8)arg1;
-    buf[len + 1] = 0;
-    tail = (u8 *)buf + len + 1;
-
-    if (arg3 != 0) {
-        s32 alen = func_02068c34(arg3);
-        func_02008048(arg3, tail, (u32)alen);
-        tail[alen] = 0;
-    }
-
-    func_0204e634(arg0, arg2, (M2C_UNK)buf);
+#pragma opt_common_subs off
+#pragma opt_instruction_scheduling off
+void func_0203f31c(M2C_UNK arg0,s32 arg1,M2C_UNK arg2,u8 *arg3) {
+M2C_UNK func_0200567c(); s32 func_02068c34(u8*); void func_02008048(u8*,u8*,u32); void func_0204e634(M2C_UNK,M2C_UNK,M2C_UNK);
+extern M2C_UNK data_020fca08,data_020fca10,data_020fca18;
+char buf[512]; s32 len; u8 *tail;
+len=func_0200567c((M2C_UNK)buf,512,(M2C_UNK)&data_020fca08,(M2C_UNK)&data_020fca10,3,(M2C_UNK)&data_020fca18);
+buf[len]=arg1; (buf+1)[len]=0; tail=(u8*)(buf+1)+len;
+if(arg3){s32 alen=func_02068c34(arg3);func_02008048(arg3,tail,alen);tail[alen]=0;}
+func_0204e634(arg0,arg2,(M2C_UNK)buf);
 }
-
+#pragma opt_instruction_scheduling reset
+#pragma opt_common_subs reset
 s32 func_0203f3c0(u8 *arg0, u8 *arg1, s32 arg2) {
     s8 *func_02068ee0(s8 *, s32);
     void func_02008048(u8 *, u8 *, u32);

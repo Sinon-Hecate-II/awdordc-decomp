@@ -442,27 +442,14 @@ void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:func_020
 
 #pragma opt_instruction_scheduling off
 s32 func_020a3864(void) {
-  extern s32 *gCurrentMap;
-  s32 func_020d1938(s32);
-  u16 idx;
-  u8 *arr;
-  s32 i;
-
-  arr = (u8 *)(*gCurrentMap + 0x515c);
-  idx = M2C_FIELD(*gCurrentMap, u16 *, 0x52a4);
-  if (arr[idx - 1] > 0) {
-    arr[idx - 1] -= 1;
-    if (arr[idx - 1] > 0) {
-      return 0;
-    }
-  }
-  for (i = 1; i < 5; i++) {
-    if (func_020d1938(i) != 0) {
-      if (M2C_FIELD(*gCurrentMap + i, u8 *, 0x515b) != 0) {
-        return 0;
-      }
-    }
-  }
-  return 1;
+extern s32 *gCurrentMap; s32 func_020d1938(s32);
+u8 *arr; s32 idx,value,i;
+arr=(u8*)(*gCurrentMap+0x515c);
+idx=M2C_FIELD(*gCurrentMap,u16*,0x52a4)-1;
+value=arr[idx];
+if(value>0){value--;arr[idx]=value;}
+if(value>0)return 0;
+for(i=1;i<5;i++){if(func_020d1938(i)!=0){if(M2C_FIELD(*gCurrentMap+i,u8*,0x515b)!=0)return 0;}}
+return 1;
 }
 #pragma opt_instruction_scheduling reset

@@ -278,20 +278,21 @@ return v;
 
 s32 func_ov010_02224820(void *a){extern M2C_UNK data_ov010_0222d8b4;void *p=M2C_FIELD(&data_ov010_0222d8b4,void **,20);while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,s32 *,12)==2&&a!=p)return 0;p=M2C_FIELD(p,void **,20);}return 1;}
 
+#pragma opt_peephole off
 s32 func_ov010_0222486c(void *a,void *b){
 extern M2C_UNK data_ov010_0222edc0;
 extern s8 data_ov010_0222be9e[]; extern s8 data_ov010_0222bee0[];
-s32 i=M2C_FIELD(b,u8 *,6); s8 *t; s32 v;
-if(M2C_FIELD(b,u8 *,4)==0)i+=5;
-if(i<0 || i>=11)i=-1;
+s32 i=M2C_FIELD(b,u8*,6);s8 *t;s32 v;s32 row;
+if(M2C_FIELD(b,u8*,4)==0)i+=5;
+if(i<0||i>=11)i=-1;
 if(i<0)return -1;
-t=M2C_FIELD(&data_ov010_0222edc0,s32 *,16)==1?data_ov010_0222be9e:data_ov010_0222bee0;
-v=*(i+(t+M2C_FIELD(a,s32 *,12)*11));
+t=M2C_FIELD(&data_ov010_0222edc0,s32*,16)==1?data_ov010_0222be9e:data_ov010_0222bee0;
+row=M2C_FIELD(a,s32*,12); v=((s8 (*)[11])t)[row][i];
 if(v==-1)return 1;
 if(v==-2)return 0;
-M2C_FIELD(a,s32 *,12)=v;return 1;
+M2C_FIELD(a,s32*,12)=v;return 1;
 }
-
+#pragma opt_peephole reset
 s32 *func_ov010_022248f4(u8 a){
 extern M2C_UNK data_ov010_0222edc0;extern M2C_UNK data_ov010_0222d8b4;extern M2C_UNK data_ov010_0222d8f0;
 void *p=M2C_FIELD(&data_ov010_0222d8b4,void **,20);

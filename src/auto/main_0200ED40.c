@@ -553,7 +553,7 @@ M2C_FIELD(p,s32 *,8)=arg0; M2C_FIELD(p,s32 *,0x18)=arg1;
 { s32 count=M2C_FIELD(p,s32 *,12); volatile s32 *out=M2C_FIELD(p,s32 **,0); M2C_FIELD(p,s32 *,12)=count+1; *out=count-count; }
 func_02007530(state);
 }
-#pragma opt_common_subs reset
+#pragma opt_instruction_scheduling off
 void func_0200fbcc(s32 arg0, s32 arg1) {
 s32 func_0200751c(void); void func_02007530(s32); void func_02007958(void); void func_02005df4(void *,s32);
 extern M2C_UNK data_0212fde0;
@@ -568,4 +568,4 @@ func_02005df4((u8 *)p+0x10,0);
 done:
 *M2C_FIELD(p,s32 **,0)=0;func_02007530(state);
 }
-
+#pragma opt_instruction_scheduling reset
