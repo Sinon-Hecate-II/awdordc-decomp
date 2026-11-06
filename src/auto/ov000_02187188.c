@@ -466,13 +466,15 @@ func_ov000_02187c3c();
 
 #pragma optimization_level 2
 u8 func_ov000_02187e50(void) {
-    void *base = *gCurrentMap;
-    void *unit = M2C_FIELD(base, void **, 0x52d0);
-    u32 v = M2C_FIELD(unit, u16 *, 8);
-    u32 x = (u32)((s32)v << 26) >> 26;
-
-    if (x == 0x3f) return 0;
-    return (u8)(((s8 **)((u8 *)base + 0x52e8))[(u32)((s32)v << 20) >> 26][x] >= 0);
+void *base=*gCurrentMap;
+void *unit=M2C_FIELD(base,void **,0x52d0);
+u32 v=M2C_FIELD(unit,u16 *,8);
+s32 shift=v<<26; u32 x=(u32)shift>>26;
+u32 y; u8 result;
+if(x==63) return 0;
+y=(u32)(v<<20)>>26;
+if(((s8 **)((u8 *)base+0x52e8))[y][x]>=0) result=1; else result=0;
+return result;
 }
 #pragma optimization_level reset
 u8 func_ov000_021a9084(s32);

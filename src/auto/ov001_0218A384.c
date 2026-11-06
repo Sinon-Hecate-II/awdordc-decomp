@@ -48,10 +48,10 @@ void func_ov001_0218a504(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_ov001_0218a534(u8 arg0) {
-    void func_ov001_02189ebc(s32);
-    extern M2C_UNK data_ov001_02193e34;
-    func_ov001_02189ebc(((s32 *)&data_ov001_02193e34)[arg0]);
-    ((s32 *)&data_ov001_02193e34)[arg0] = 0;
+ void func_ov001_02189ebc(s32);
+ extern M2C_UNK data_ov001_02193e34;
+ func_ov001_02189ebc(((s32 *)&data_ov001_02193e34)[arg0]);
+ ((s32 *)&data_ov001_02193e34)[arg0] = 0;
 }
 
 void func_ov001_0218a55c(s32 arg0, s32 arg1, s32 arg2) {
@@ -92,7 +92,7 @@ s32 func_ov001_0218a5f0(M2C_UNK arg0, M2C_UNK arg1) {
 M2C_UNK func_ov001_0218a61c(s32 arg0,s32 arg1,s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 M2C_UNK func_ov001_0218a070(s32,s32,s32);
-s32 func_ov001_0218a24c(void *,s32);
+s32 func_ov001_0218a24c(s32,s32);
 void func_ov001_0218a55c(s32,s32,s32);
 void *base=((M2C_UNK **)&data_ov001_02193e34)[arg0];
 u16 count=*(u16 *)((u8 *)base+arg1*8);
@@ -538,7 +538,7 @@ void func_ov001_0218b12c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
         M2C_FIELD(&spD, u8 *, 0) = (u8)-1;
         break;
     }
-    func_ov001_0216a9d0(arg0 + 0x18, arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
+    func_ov001_0216a9d0((s32)(arg0 + 0x18), arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
 }
 
 void func_ov001_0218b1ec(void *arg0, s32 arg1) {
@@ -547,7 +547,7 @@ M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
 
 void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_ov001_0216a398(s32, u8, u8, M2C_UNK, s32, s32, s32, s32);
-          s32 func_ov001_0218a24c(void *, s32);
+          s32 func_ov001_0218a24c(s32, s32);
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a304(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0218a474(M2C_UNK, M2C_UNK, s32);

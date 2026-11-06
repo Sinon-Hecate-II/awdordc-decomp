@@ -69,10 +69,11 @@ M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 #pragma opt_common_subs off
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
  s32 func_020a8204();
- u16 var_r6,temp_r0;
+ s32 func_020a86f8();
+ u16 temp_r0,var_r6;
  var_r6=0;
- if(func_020a8204()!=0)var_r6=D068CCall(arg0,arg1,0);
- temp_r0=D068CCall(arg0,arg1,1);
+ if(func_020a8204()!=0)var_r6=func_020a86f8(arg0,D068CLow(arg1),0,D068CFlag(arg1));
+ temp_r0=func_020a86f8(arg0,D068CLow(arg1),1,D068CFlag(arg1));
  return var_r6!=0 || temp_r0!=0;
 }
 #pragma opt_common_subs reset

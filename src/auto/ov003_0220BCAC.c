@@ -143,6 +143,7 @@ void func_ov003_0220c0e8(void *arg0) {
     func_020bfa30(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s16 *, 0x12));
 }
 
+#pragma opt_propagation off
 void func_ov003_0220c10c(void *arg0) {
     void func_ov003_0220c0e8(void *);
     void **p;
@@ -170,6 +171,7 @@ void func_ov003_0220c10c(void *arg0) {
         }
     }
 }
+#pragma opt_propagation reset
 
 void func_ov003_0220c190(void *arg,s32 index){
 extern void *data_027e00c4;

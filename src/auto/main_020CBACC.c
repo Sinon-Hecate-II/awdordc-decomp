@@ -368,22 +368,17 @@ void func_020cc834(void) {
 
 #pragma opt_peephole off
 void func_020cc840(void *a) {
-    extern void **gCurrentMap;
-    void *p;
-    s32 x, y;
-    s32 device;
-    func_01ffb554((u8 *)*gCurrentMap + 0x1e30);
-    func_01ffb3d0(-1);
-    p = *gCurrentMap;
-    func_020cdfec(M2C_FIELD(p, s32 *, 0x52d0), M2C_FIELD(p, volatile s16 *, 0x52dc), M2C_FIELD(p, volatile s16 *, 0x52de));
-    func_0207a748(0);
-    p = *gCurrentMap;
-    x = M2C_FIELD(p, volatile s16 *, 0x52dc);
-    y = M2C_FIELD(p, volatile s16 *, 0x52de);
-    device = M2C_FIELD(p, volatile s32 *, 0x52d0);
-    M2C_FIELD(a, s16 *, 0x6c) = func_020ba320(device, x, y);
-    M2C_FIELD(a, s16 *, 0x6e) = 3;
-    M2C_FIELD(a, s16 *, 0x6e) = func_020cac1c(3, M2C_FIELD(a, s16 *, 0x6c));
+extern void **data_027e0058;
+void *p; s32 x,y;
+func_01ffb554((u8 *)*data_027e0058+0x1e30);func_01ffb3d0(-1);
+p=*data_027e0058;
+func_020cdfec(M2C_FIELD(p,s32 *,0x52d0),M2C_FIELD(p,volatile s16 *,0x52dc),M2C_FIELD(p,volatile s16 *,0x52de));
+func_0207a748(0);
+p=*data_027e0058;
+x=M2C_FIELD(p,volatile s16 *,0x52dc);y=M2C_FIELD(p,volatile s16 *,0x52de);
+M2C_FIELD(a,s16 *,0x6c)=func_020ba320(M2C_FIELD(p,volatile s32 *,0x52d0),x,y);
+M2C_FIELD(a,s16 *,0x6e)=3;
+M2C_FIELD(a,s16 *,0x6e)=func_020cac1c(3,M2C_FIELD(a,s16 *,0x6c));
 }
 #pragma opt_peephole reset
 void func_020cc8d8(void *arg0) {

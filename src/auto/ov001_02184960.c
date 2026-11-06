@@ -267,14 +267,14 @@ if(pos[1]<176 || pos[1]>256){func_ov001_0218a384(M2C_FIELD(M2C_FIELD(&data_ov001
 p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=176;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),-1,pos[1],33);func_ov001_0218c924(a,func_ov001_021855e4);
 }
 
-#pragma optimization_level 1
+#pragma opt_instruction_scheduling off
 void func_ov001_021855e4(s32 a) {
     s32 func_ov001_0218c92c(s32, s32);
     extern M2C_UNK data_ov001_02193e0c;
     func_ov001_0218c92c(0, a);
     *(s32 *)((u8 *)*(void **)((u8 *)&data_ov001_02193e0c + 4) + 0x14) = 0;
 }
-#pragma optimization_level reset
+#pragma opt_instruction_scheduling reset
 void func_ov001_0218560c(void){ s32 func_ov001_0218c884(s32,void (*)(),s32,s32); void func_ov001_02185734(s32); extern M2C_UNK data_ov001_02193e0c; s32 result; M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s8 *,24)=1; result=func_ov001_0218c884(0,func_ov001_02185734,0,120); M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,20)=result; }
 
 void func_ov001_0218564c(s32 arg0) {

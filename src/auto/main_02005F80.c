@@ -520,24 +520,24 @@ s32 func_02006b1c(s32 arg0) {
             goto Lzero;
         }
         if ((func_020062bc() & 0x3) != 1) {
-            goto Lone;
+            goto Lval;
         }
+Lzero:
         return 0;
+Lval:
+        return 0x023e0000;
     case 3:
-        return 0x027e15e0;
+        return 0x01ffc780;
     case 4:
-        return 0x027ff000;
+        return 0x027e15e0;
     case 5:
-        return 0x037f8000;
+        return 0x027ff000;
     case 6:
+        return 0x037f8000;
     case 1:
     default:
         return 0;
     }
-Lzero:
-    return 0x023e0000;
-Lone:
-    return 0x01ffc780;
 }
 
 void func_02006bc4(s32 arg0, s32 arg1) {

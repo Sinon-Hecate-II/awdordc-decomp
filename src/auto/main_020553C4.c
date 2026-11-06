@@ -266,21 +266,23 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
     extern M2C_UNK data_020fee8c;
     void *temp_r0;
     void *temp_r0_2;
+    s32 zero;
 
     temp_r0 = func_02037794(0x144);
     if (temp_r0 == NULL) {
         func_02058644(arg0, &data_020fee8c);
         return 1;
     }
-    func_02065210(temp_r0, 0, 0x144);
+    zero = 0;
+    func_02065210(temp_r0, zero, 0x144);
     M2C_FIELD(temp_r0, s32 *, 0) = arg2;
     M2C_FIELD(temp_r0, s32 *, 4) = -1;
-    M2C_FIELD(temp_r0, s32 *, 8) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x10) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x14) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x20) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x24) = 0;
+    M2C_FIELD(temp_r0, s32 *, 8) = zero;
+    M2C_FIELD(temp_r0, s32 *, 0x10) = zero;
+    M2C_FIELD(temp_r0, s32 *, 0x14) = zero;
+    M2C_FIELD(temp_r0, s32 *, 0xC) = zero;
+    M2C_FIELD(temp_r0, s32 *, 0x20) = zero;
+    M2C_FIELD(temp_r0, s32 *, 0x24) = zero;
     M2C_FIELD(temp_r0, s32 *, 0x1C) = 0x1000;
     temp_r0_2 = func_02037794(0x1001);
     M2C_FIELD(temp_r0, void **, 0x18) = temp_r0_2;

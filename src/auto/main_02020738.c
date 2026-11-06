@@ -183,30 +183,32 @@ s32 func_02020b18(void *arg0) {
     s32 func_0201f1d0(void *, s32, s32);
     s32 func_0201f328(s32, s32);
     s32 func_020214a8(void);
-    void *r4;
-    s32 r1;
     void *temp_r5;
+    s32 r1;
 
-    r4 = arg0;
-    r1 = 0;
     if (func_020214a8() != 0) {
         return -0x1C;
     }
-    if (r4 != NULL && (M2C_FIELD(r4, s16 *, 0x70) & 1)) {
-        r1 = 1;
+    if (arg0 == 0) {
+        r1 = 0;
+    } else {
+        r1 = 0;
+        if (*(volatile s16 *)((u8 *)arg0 + 0x70) & 1) {
+            r1 = 1;
+        }
     }
     if (r1 == 0) {
         return -0x27;
     }
-    if (!(M2C_FIELD(r4, s16 *, 0x70) & 4) || (M2C_FIELD(r4, s16 *, 0x70) & 8)) {
+    if (!(*(volatile s16 *)((u8 *)arg0 + 0x70) & 4) || (*(volatile s16 *)((u8 *)arg0 + 0x70) & 8)) {
         return -0x38;
     }
-    M2C_FIELD(r4, s16 *, 0x70) |= 8;
-    temp_r5 = M2C_FIELD(r4, void **, 0x68);
+    *(volatile s16 *)((u8 *)arg0 + 0x70) |= 8;
+    temp_r5 = M2C_FIELD(arg0, void **, 0x68);
     if (temp_r5 != NULL) {
         s32 temp_r1 = M2C_FIELD(temp_r5, s32 *, 0x10C);
         if (temp_r1 != 0) {
-            temp_r1 = func_0201f1d0(func_02020bc4, temp_r1, M2C_FIELD(r4, s8 *, 0x72));
+            temp_r1 = func_0201f1d0(func_02020bc4, temp_r1, M2C_FIELD(arg0, s8 *, 0x72));
             if (temp_r1 == 0) {
                 return -0x21;
             }

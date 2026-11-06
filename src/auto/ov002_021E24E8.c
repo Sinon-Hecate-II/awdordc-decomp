@@ -353,45 +353,27 @@ void func_ov002_021e3030(u8 *arg0, u8 *arg1) {
 
 #pragma opt_strength_reduction off
 void func_ov002_021e3044(s32 arg0, s32 arg1, s32 arg2) {
-    s32 temp_lr;
-    s32 temp_r2;
-    s32 var_r4;
-    u8 temp_r5_2;
-    u8 temp_r9;
-    void *temp_r5;
-    void *temp_r5_3;
-    void *temp_r9_2;
-
-    var_r4 = 0;
-    temp_lr = arg1 - 1;
-    temp_r2 = arg2 - 1;
-    do {
-        temp_r5 = arg0 + var_r4;
-        temp_r9 = M2C_FIELD(temp_r5, u8 *, 0x12);
-        if (temp_lr > (s32) (temp_r9 * 2)) {
-            M2C_FIELD((arg0 + (var_r4 * 2)), s8 *, 8) = 2;
+    s32 i;
+    for (i = 0; i < 5; i++) {
+        s32 x = *(u8 *)(arg0 + i + 0x12) * 2;
+        if (arg1 - 1 > x) {
+            *(s8 *)(arg0 + i * 2 + 8) = 2;
+        } else if (arg1 - 1 == x) {
+            *(s8 *)(arg0 + i * 2 + 8) = 1;
         } else {
-            temp_r9_2 = arg0 + (var_r4 * 2);
-            if (temp_lr == (temp_r9 * 2)) {
-                M2C_FIELD(temp_r9_2, s8 *, 8) = 1;
-            } else {
-                M2C_FIELD(temp_r9_2, s8 *, 8) = 0;
-            }
+            *(s8 *)(arg0 + i * 2 + 8) = 0;
         }
-        temp_r5_2 = M2C_FIELD(temp_r5, u8 *, 0x12);
-        if (temp_r2 > (s32) (temp_r5_2 * 2)) {
-            M2C_FIELD((arg0 + (var_r4 * 2)), s8 *, 9) = 2;
+        x = *(u8 *)(arg0 + i + 0x12) * 2;
+        if (arg2 - 1 > x) {
+            *(s8 *)(arg0 + i * 2 + 9) = 2;
+        } else if (arg2 - 1 == x) {
+            *(s8 *)(arg0 + i * 2 + 9) = 1;
         } else {
-            temp_r5_3 = arg0 + (var_r4 * 2);
-            if (temp_r2 == (temp_r5_2 * 2)) {
-                M2C_FIELD(temp_r5_3, s8 *, 9) = 1;
-            } else {
-                M2C_FIELD(temp_r5_3, s8 *, 9) = 0;
-            }
+            *(s8 *)(arg0 + i * 2 + 9) = 0;
         }
-        var_r4 += 1;
-    } while (var_r4 < 5);
+    }
 }
+#pragma opt_strength_reduction on
 s32 func_ov002_021e30d0(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
 
 void func_ov002_021e3100(void *a){

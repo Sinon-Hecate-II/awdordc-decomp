@@ -1,13 +1,144 @@
 /* 4 functions from 0x0218BBD0 to 0x0218CBC0 (ov000), found by ds-decomp. */
 #include "common.h"
 
-typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u16 value:5; u8 tail[6]; } Unit0218C4;
+typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u16 value:5; u8 bytes8[3]; u8 state:4; u8 stateFlags:4; u8 tail[2]; } Unit0218C4;
 
+#pragma opt_if-conversion reset
+#pragma opt_instruction_scheduling reset
+#pragma opt_lifetimes reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
+#pragma opt_peephole reset
+#pragma opt_strength_reduction off
+#pragma opt_if-conversion off
 int func_ov000_0218bbd0(void *arg0) {
+    extern void **gCurrentMap;
+    extern void *data_ov000_021df580;
+    extern u8 *data_ov000_021df644;
+    void func_01ffc328(void *);
+    void func_01ffb9c4(int);
+    s32 func_020a7cfc(void *);
+    s32 func_020a76d4(void *);
+    u8 *func_020a47e0(s32, s32);
+    s32 func_ov000_021a9bc0(void);
+    s32 func_ov000_021a9740(void *, s32);
+    s32 func_0207c8ec(s32, s32);
+    s32 func_ov000_02178268(s32, s32, s16 *);
+    s32 func_020d1690(s32, s32, s16 *);
+    s32 func_ov000_021a98a8(s32);
+    s32 func_ov000_021a9c90(s32, s32);
+    s32 func_ov000_02178e84(s32, s32);
+    s32 func_ov000_021a93ec(s16, s16);
+    s32 func_ov000_021a9904(s32);
+    s32 func_ov000_0217d150(s32, s32, void *);
+    s32 func_ov000_02176e28(s32, s16 *);
+    void func_ov000_0217c3a4(void);
+    void func_ov000_02199d74(s32, s32, s32, s32, s32);
+    s16 position[2];
+    s32 bestScore = 0, bestId = 0;
+    s32 bestHealth = 0xff;
+    s32 terrainFlags = 0, flags = 0;
+    volatile s32 maxX, maxY; s32 minX, minY;
+    extern s8 data_ov000_021b55a0[];
+    extern u8 data_ov000_021b5c0f[], data_ov000_021b5bfc[];
+    s32 savedX, savedY;
+    u8 *unit;
+    u8 *other;
+    s32 i, y, x, health, kind, damage, score, bonus;
+
+    if (func_020a7cfc(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
+    if (((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->state != 6) {
+        if (func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
+            terrainFlags |= 0x40000;
+        else if ((func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && data_ov000_021b55a0[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
+            ((data_ov000_021b5c0f[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && func_ov000_021a9318(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
+            terrainFlags |= 0x10000;
+    }
+    position[0] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1]; position[1] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
+    minX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    minY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) < 0 ? 0 : M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxX = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x24)-1; else maxX = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    if (M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1 <= M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) maxY = M2C_FIELD((u8 *)*gCurrentMap + 0x5120,u16 *,0x26)-1; else maxY = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] + func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    for (y=minY; y<=maxY; y++) {
+        for (x=minX; x<=maxX; x++) {
+            s32 dx = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] - x, dy;
+            if (dx <= 0) dx = x - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1];
+            i = dx;
+            dy = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - y;
+            if (dx <= 0) dx = x - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1];
+            if (dy <= 0) dy = y - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
+            if (i+dy < data_ov000_021b5bfc[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
+            unit = func_020a47e0(x, y);
+            if (unit != 0 && func_ov000_021a9bc0() != 0) {
+                health = unit[4];
+                kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
+            } else if ((((u32)M2C_FIELD(data_ov000_021df580, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
+                kind = 1;
+                health = M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x539c) & 0x7f;
+                if (health == 0) goto c20;
+                if (M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0) != 0) goto c20;
+            } else {
+                goto c20;
+            }
+
+            damage = func_0207c8ec(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            if (damage < health && damage < 10) continue;
+            func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
+            if (M2C_FIELD(*gCurrentMap, s16 *, 0x6ed6) == 0) continue;
+            if (damage >= bestHealth) {
+                if (damage < health) continue;
+                if (bestHealth > health) continue;
+            } else {
+                if (bestHealth < health) continue;
+            }
+
+            if (M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x52a4) * 0x8c + 0x67ce, u8 *, 0) == 3) {
+                if (damage < health) {
+                    {
+                        u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
+                        if (!(M2C_FIELD(tile, u8 *, 0x2840) < data_ov000_021df644[1] && M2C_FIELD(tile, u8 *, 0x2d48) < data_ov000_021df644[2])) continue;
+                    }
+                }
+            }
+            if (func_ov000_02178e84(position[0], position[1]) == 0) continue;
+            bestHealth = health;
+            savedX = (s16)x;
+            savedY = (s16)y;
+            continue;
+
+        c20:
+            {
+                u8 *base = (u8 *)*gCurrentMap + 0x59a4;
+                u8 *tile = (u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758);
+                s32 id = tile[0];
+                other = base + id * 14;
+                if (((Unit0218C4 *)other)->kind == 0) continue;
+                if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
+                if (func_ov000_021a93ec((s16)x, (s16)y) == 0) continue;
+                    {
+                    score = func_ov000_02176e28(flags | (terrainFlags | ((u8 *)*gCurrentMap)[other[1] + M2C_FIELD((u8 *)*gCurrentMap + other[2] * 2, u16 *, 0x3758)]), position);
+                    if (score == 0) continue;
+                    if (score < bestScore) continue;
+                    bestScore = score;
+                    bestId = ((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)];
+                }
+            }
+        }
+    }
+
+    if (bestScore != 0) {
+        if (arg0 != 0) return 1;
+        func_ov000_0217c3a4();
+        func_ov000_02199d74(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2], 4, (u8)bestId, 0);
+    }
+    if (bestHealth != 0xff) {
+        if (arg0 != 0) return 1;
+        func_ov000_0217c3a4();
+        func_ov000_02199d74(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2], 5, (u8)savedY, (u8)savedX);
+    }
     return 0;
 }
-
-#pragma opt_strength_reduction off
+#pragma opt_if-conversion reset
 s32 func_ov000_0218c400(s32 arg0) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;

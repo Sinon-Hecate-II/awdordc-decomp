@@ -190,7 +190,20 @@ void func_020e47f8(void) {
     } while (var_r4 < 3);
 }
 
-s32 func_020e4818(s32 a){extern u8 data_0215dba4[];u32 *p=(u32 *)(data_0215dba4+a*0x118);p[0]&=~15;p[0]&=~240;p[1]=(u16)(p[1]&0xffff0000);p[0]&=~0xff00;p[0]&=~0xff0000;p[0]&=~0xff000000;return p[0];}
+s32 func_020e4818(s32 a){
+extern u8 data_0215dba4[];
+u32 *p=(u32 *)(data_0215dba4+a*0x118);
+u32 t;
+p[0]&=~15;
+p[0]&=~240;
+p[1]&=0xffff0000;
+p[1]=(u16)p[1];
+t=p[0];
+p[0]=t&~0xff00;
+p[0]&=~0xff0000;
+p[0]&=~0xff000000;
+return p[0];
+}
 
 void func_020e4870(s32 arg0) {
     extern M2C_UNK data_0215d9b8;

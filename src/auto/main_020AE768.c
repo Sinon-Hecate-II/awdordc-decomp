@@ -14,12 +14,16 @@ void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_020ae728(arg1, arg2);
 }
 
-void func_020ae7a4(u32 a, u32 b, u16 c) {
+void func_020ae7a4(u32 a,u32 b,u16 c) {
     extern void *gCur3DSpriteEngine;
-    u32 off = (a << 5) & ~1;
-    u8 *e = (u8 *) gCur3DSpriteEngine;
-    u8 *tiles = *(u8 **) (e + 0x30);
-    u16 *p = (u16 *) (tiles + off);
+    u32 temp;
+    u8 *e;
+    u8 *tiles;
+    u16 *p;
+    temp = (a << 5) & ~1;
+    e = (u8 *) gCur3DSpriteEngine;
+    tiles = *(u8 **) (e + 0x30);
+    p = (u16 *) (tiles + temp);
     p[b] = c;
 }
 

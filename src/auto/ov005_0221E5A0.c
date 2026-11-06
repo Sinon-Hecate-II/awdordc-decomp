@@ -22,6 +22,7 @@ void func_ov005_0221e5a0(M2C_UNK arg0) {
     return;
 }
 
+#pragma opt_strength_reduction off
 void func_ov005_0221e88c(void *arg0) {
 void *func_01ffa42c(M2C_UNK *, M2C_UNK);
 void *func_02082028(s32);
@@ -41,8 +42,8 @@ s32 func_ov000_0216ce84(s32);
 s32 func_ov000_0216cdcc(s32);
 s32 func_ov000_0216cdec(s32,s32);
 extern void **gCur3DSpriteEngine, **data_027e00c8, **data_027e00c4, **gCurrentMap;
-void *p, *q; u8 *b; void **saved, **saved2;
-u8 *dst; s32 n; s32 i,j,k,v,t;
+void *p, *q; void **saved, **saved2;
+u8 *dst; s32 n; u8 *b; s32 i,j,k,v,t;
 p=func_01ffa42c(data_ov005_02220b70,arg0);
 if (!p) return;
 M2C_FIELD(p,void **,0)=data_ov005_02220f54;
@@ -91,19 +92,16 @@ func_02007ef4(func_ov000_0216ce10(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x6857)),d
 func_01ff9e44(func_ov000_0216ce84(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
 i++; j+=4; k+=0x8c;
 } while(i<func_020cfb94()); }
-{
-void **r = data_027e00c8;
-gCur3DSpriteEngine = r;
-}
+gCur3DSpriteEngine=*(void ***)&data_027e00c8;
 k=func_020a7290()<<5; saved=(void **) (M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+0x3580);
 func_02007ef4(func_020a7278(),(u8 *)saved+0x4000,k);
 func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
-gCur3DSpriteEngine=data_027e00c4; b=data_ov005_02220a1c;
-k=0; if(*b) { j=0x3ac; do {
-dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((volatile s32)j<<5);
+b=data_ov005_02220a1c; gCur3DSpriteEngine=data_027e00c4;
+k=0; if(*b) { saved=(void **)0x3ac; do {
+dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((s32)saved<<5);
 func_02007ef4(func_ov000_0216cdcc(*b),dst,256);
-b++; j+=8; k++; } while(*b); }
-func_01ff9e44(func_02016cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
+b++; saved=(void **)((s32)saved+8); k++; } while(*b); }
+func_01ff9e44(func_ov000_0216cdec(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 gCur3DSpriteEngine=data_027e00c4; func_02099450(0,0,0);
 v=func_020cfb78(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(func_020cd6d4()) {
@@ -123,7 +121,7 @@ func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(p,u8 *,0x58)=1;
 }
-
+#pragma opt_strength_reduction on
 s32 func_ov005_0221eef4(void *arg0) {
     s32 func_020ad3f0(void);
     s32 func_01ffa3dc(s32 *, void *);
