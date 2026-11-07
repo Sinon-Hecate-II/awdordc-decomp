@@ -1,6 +1,6 @@
 /* 1 function from 0x020677B8 to 0x02067CB0 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct ScanSpec677b8 { u8 suppress, hasWidth, length, conversion; s32 width; u8 set[32]; } ScanSpec677b8;
+#include "scan_spec.h"
 extern const ScanSpec677b8 data_020eae40;
 extern const u16 data_020ead40[];
 static inline s32 ScanDigit677b8(s32 c) { return (c<0 || c>=128)?0:data_020ead40[c]&8; }
