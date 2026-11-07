@@ -24,9 +24,9 @@ I'll post the token count from ChatGPT mainly once everything has finished
 
 Gemini 3.8 Flash 
 Gemini 3.5 Flash Lite
-ChatGPT Codex (GPT-6.1 Sol)
-ChatGPT 6 Asta
-ChatGPT 6
+ChatGPT Codex (GPT-6.1 Sol Light/Medium)
+ChatGPT 6 Luna High
+ChatGPT 6 (Instant)
 Deepseek 4.1 Flash
 Deepseek 4 Flash 0731-1
 Qwen 3.8 27B
