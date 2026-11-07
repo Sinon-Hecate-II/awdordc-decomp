@@ -1,10 +1,145 @@
 /* 5 functions from 0x02178E84 to 0x02179E48 (ov000), found by ds-decomp. */
 #include "common.h"
-
-s32 func_ov000_02178e84(s32 arg0, s32 arg1) {
-    return 1;
+extern void **gCurrentMap;
+extern s8 data_ov000_021b54c0[],data_ov000_021b5480[];
+extern u8 data_ov000_021b5c0f[];
+extern u32 data_ov000_021b5bfc[];
+extern void *data_ov000_021df580;
+static inline s32 ov000_visibility_radius(void){
+s32 func_020a33c4(u16);s32 func_020a7b3c(s32,u8,u16,s32,s32);
+s32 bonus=func_020a33c4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+return func_020a7b3c(24,M2C_FIELD(data_ov000_021df580,u8 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),bonus,0);
+}
+static inline s32 ov000_scan_distance(s32 x,s32 y,s32 cx,s32 cy){
+s32 d=0,dx=cx-x,dy=cy-y;
+if(dx>0)d+=dx;else d+=x-cx;
+if(dy>0)d+=dy;else d+=y-cy;
+return d;
 }
 
+
+#pragma opt_strength_reduction off
+s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
+s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 func_020d27c0(s32);s32 func_ov000_021a98a8(u32);s32 func_ov000_021a9318(s32,s32,s32);
+u8 *unit;void *map;u32 terrain,kind; s32 xmin,ymin,xmax,ymax,x,y,d,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
+map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
+if(((u32)(unit[11]<<28)>>28)==6)return 1;
+terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
+if(!data_ov000_021b54c0[terrain&31])return 1;
+if(!func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),terrain)){
+unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
+if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26))return 1;
+xmin=arg0-3;if(xmin<0)xmin=0;
+ymin=arg1-3;if(ymin<0)ymin=0;
+map=*gCurrentMap;
+xmax=M2C_FIELD(map,u16 *,0x5144)-1;if(arg0+3<xmax)xmax=arg0+3;
+ymax=M2C_FIELD(map,u16 *,0x5146)-1;if(arg1+3<ymax)ymax=arg1+3;
+for(y=ymin;y<=ymax;y++)for(x=xmin;x<=xmax;x++){
+d=ov000_scan_distance(x,y,arg0,arg1);
+if(d<1||d>3)continue;
+map=*gCurrentMap;
+kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+unit=map+0x59a4+(s16)kind*(s16)14;
+if(((u32)(unit[0]<<26)>>26)==0)continue;
+if(func_020d27c0(kind)!=1)continue;
+if(!func_ov000_021a98a8((u32)(unit[0]<<26)>>26))continue;
+if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
+}
+map=*gCurrentMap;
+terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420)&31;
+if(terrain==19||terrain==21){
+xmin=arg0-ov000_visibility_radius()<0?0:arg0-ov000_visibility_radius();
+ymin=arg1-ov000_visibility_radius()<0?0:arg1-ov000_visibility_radius();
+map=*gCurrentMap;
+if(arg0+ov000_visibility_radius()>=M2C_FIELD(map,u16 *,0x5144)-1)xmax=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
+else xmax=arg0+ov000_visibility_radius();
+map=*gCurrentMap;
+if(arg1+ov000_visibility_radius()>=M2C_FIELD(map,u16 *,0x5146)-1)ymax=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
+else ymax=arg1+ov000_visibility_radius();
+for(y=ymin;y<=ymax;y++)for(x=xmin;x<=xmax;x++){
+d=ov000_scan_distance(x,y,arg0,arg1);
+if(d<1||d>ov000_visibility_radius())continue;
+map=*gCurrentMap;kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+unit=map+0x59a4+(s16)kind*(s16)14;
+if(((u32)(unit[0]<<26)>>26)==0)continue;
+if(func_020d27c0(kind)!=1)continue;
+kind=(u32)(unit[0]<<26)>>26;
+if((u8)(kind+232)>1)continue;
+if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
+}
+}
+return 1;
+}
+map=*gCurrentMap;
+terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420)&31;
+if(!data_ov000_021b5480[terrain])return 1;
+unit=M2C_FIELD(map,u8 **,0x52d0);
+if(func_ov000_021a9318((u32)(unit[0]<<26)>>26,arg0,arg1)&&((u32)(M2C_FIELD(data_ov000_021df580,u8 *,7)<<30)>>31))return 1;
+map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);kind=(u32)(unit[0]<<26)>>26;
+if(data_ov000_021b5c0f[kind*112]&32){
+xmin=arg0-6;if(xmin<0)xmin=0;ymin=arg1-6;if(ymin<0)ymin=0;
+xmax=M2C_FIELD(map,u16 *,0x5144)-1;if(arg0+6<xmax)xmax=arg0+6;
+ymax=M2C_FIELD(map,u16 *,0x5146)-1;if(arg1+6<ymax)ymax=arg1+6;
+for(y=ymin;y<=ymax;y++)for(x=xmin;x<=xmax;x++){
+d=ov000_scan_distance(x,y,arg0,arg1);
+if(d<1||d>6)continue;
+map=*gCurrentMap;kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+unit=map+0x59a4+(s16)kind*(s16)14;
+if(((u32)(unit[0]<<26)>>26)==0)continue;
+if(func_020d27c0(kind)!=1)continue;
+kind=(u32)(unit[0]<<26)>>26;
+if(!(M2C_FIELD((u8 *)data_ov000_021b5bfc+kind*112,u8 *,19)&32))continue;
+if(!((u32)(M2C_FIELD(unit,u16 *,8)<<18)>>30))continue;
+if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
+}
+}
+map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
+if(((u32)(selected[0]<<26)>>26)==21&&selected[13]==0){
+if(selected[12]){
+unit=map+0x59a4+selected[12]*14;
+if(((u32)(unit[0]<<26)>>26)==17)goto checkCurrent;
+}
+player=M2C_FIELD(map,u16 *,0x52a4);
+if(func_020d2d18(player,17)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4)){
+map=*gCurrentMap;
+y=0;if(y<M2C_FIELD(map,u16 *,0x5146)){width=M2C_FIELD(map,u16 *,0x5144);
+do{for(x=0;x<width;x++){
+if(x==arg0&&y==arg1)continue;
+terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420);
+if((terrain&31)==19&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6))return 1;
+}y++;}while(y<M2C_FIELD(map,u16 *,0x5146));}
+}
+}
+checkCurrent:map=*gCurrentMap;
+terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
+if((terrain&31)==19){if((terrain&224)!=M2C_FIELD(map,u16 *,0x52a6))goto selectedRanges;
+player=M2C_FIELD(map,u16 *,0x52a4);
+if(func_020d2d18(player,20)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4))return 0;
+}
+selectedRanges:snapshot=*gCurrentMap;selected=M2C_FIELD(snapshot,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
+if(kind==24){
+xmin=arg0-6;if(xmin<0)xmin=0;ymin=arg1-6;if(ymin<0)ymin=0;
+xmax=M2C_FIELD(snapshot,u16 *,0x5144)-1;if(arg0+6<xmax)xmax=arg0+6;
+ymax=M2C_FIELD(snapshot,u16 *,0x5146)-1;if(arg1+6<ymax)ymax=arg1+6;
+for(y=ymin;y<=ymax;y++)for(x=xmin;x<=xmax;x++){
+d=ov000_scan_distance(x,y,arg0,arg1);if(d<1||d>6)continue;
+map=*gCurrentMap;terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420);
+if((terrain&31)==17&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6))return 1;
+}
+}
+if(kind==25){
+xmin=arg0-3;if(xmin<0)xmin=0;ymin=arg1-3;if(ymin<0)ymin=0;
+xmax=M2C_FIELD(snapshot,u16 *,0x5144)-1;if(arg0+3<xmax)xmax=arg0+3;
+ymax=M2C_FIELD(snapshot,u16 *,0x5146)-1;if(arg1+3<ymax)ymax=arg1+3;
+for(scanY=ymin;scanY<=ymax;scanY++)for(scanX=xmin;scanX<=xmax;scanX++){
+d=ov000_scan_distance(scanX,scanY,arg0,arg1);if(d<1||d>3)continue;
+map=*gCurrentMap;terrain=M2C_FIELD(map+scanX+M2C_FIELD(map+scanY*2,u16 *,0x3758),u8 *,0x1420);
+if((terrain&31)==17&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6))return 1;
+}
+}
+return 0;
+}
+#pragma opt_strength_reduction on
 s32 func_ov000_02179b08(void *arg0) {
 s32 func_ov000_021a89a4(void *);s32 func_ov000_021a98a8(u32);
 extern u8 data_ov000_021b5c0f[];extern void *data_ov000_021df57c;extern void *data_ov000_021df580;
