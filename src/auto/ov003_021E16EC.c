@@ -33,6 +33,7 @@ static inline u8 *MenuButton(void *menu,s32 index) {return M2C_FIELD(menu+index*
 static inline void SetupLayer(void *engine,s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
 u8 *base=M2C_FIELD(engine,u8**,field);func_020a9a30(layer,bank,slot,base+offset);
 }
+typedef struct {u32 width:9,height:9,tile:8,high:6;} SpriteGeometry;
 typedef struct {u8 low:2;u8 mode:2;u8 high:4;} MenuModeBits;
 
 #pragma opt_common_subs off
@@ -72,12 +73,12 @@ if((u8)(i-5)==0)left=10;if((u8)(i-5)==menu[11]-1)right=10;
 if(!n)down=up=i;else if((u8)(i-5)>=n)down=up=(u16)(n-1);break;
 case 10:down=up=10;if(n){left=(u16)(n-1);right=0;}else if(!menu[11]){left=right=10;}else{left=(u16)(menu[11]+4);right=5;}break;
 }
-M2C_FIELD(menu+i*4,void**,12)=func_020ab1c4(p);sprite=MenuButton(menu,i);M2C_FIELD(sprite,u16*,0x2e)=i;
-func_020aab24(sprite,71,0,0,0);sprite=MenuButton(menu,i);func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
+M2C_FIELD(menu+i*4,void**,12)=func_020ab1c4(p);sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x2e)=i;
+func_020aab24(sprite,71,0,0,0);sprite=M2C_FIELD(menu+i*4,u8**,12);func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 M2C_FIELD(sprite,s16*,0x34)=x;M2C_FIELD(sprite,s16*,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~511)|(w&511);
 M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&0xfffc01ff)|((u32)(h<<23)>>14);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
-sprite=MenuButton(menu,i);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
+sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
 }
 func_ov003_021e1530(menu,10);
 M2C_FIELD(p,void**,0x4c)=func_020896f0(p);func_020893f4(M2C_FIELD(p,void**,0x4c),0x4f00,1);sprite=M2C_FIELD(p,u8**,0x4c);
