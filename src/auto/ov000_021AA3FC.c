@@ -4,28 +4,37 @@
 
 s32 func_ov000_021aa3fc(void *arg0, s32 arg1, s32 arg2) {
     s32 func_ov000_021a9904(u32);
-    extern u8 data_ov000_021b5c00;
-    s32 result;
+    extern u16 data_ov000_021b5c00;
     u32 f0;
     u32 f6;
     u32 count;
     u16 entry;
-    if ((M2C_FIELD(arg0, u16 *, 6) & 0x7FU) <= 0xAU) return 2;
-    f0 = ((u8 *)arg0)[0] & 0x3FU;
-    if (func_ov000_021a9904(f0) == 2 && arg2 == 1) return 2;
-    f6 = M2C_FIELD(arg0, u16 *, 6) & 0x7FU;
-    if (arg1 < (s32)f6) count = (u32)arg1;
-    else count = f6 - 1U;
-    entry = M2C_FIELD(&data_ov000_021b5c00, u16 *, (s32)(f0 * 0x70U));
-    result = (s32)entry * (s32)count;
-    if (func_ov000_021a9904(f0) == 2 && arg2 == 0) result = result >> 1;
-    return result;
+
+    f6 = (M2C_FIELD(arg0, u16 *, 6) << 19) >> 19;
+    if (f6 <= 0xA) {
+        return 2;
+    }
+    f0 = (((u8 *)arg0)[0] << 26) >> 26;
+    if (func_ov000_021a9904(f0) == 2 && arg2 == 1) {
+        return 2;
+    }
+    f6 = (M2C_FIELD(arg0, u16 *, 6) << 19) >> 19;
+    if (arg1 < (s32)f6) {
+        count = (u32)arg1;
+    } else {
+        count = f6 - 1;
+    }
+    entry = M2C_FIELD(&data_ov000_021b5c00, u16 *, f0 * 0x70);
+    if (func_ov000_021a9904(f0) == 2 && arg2 == 0) {
+        return ((s32)entry * (s32)count) >> 1;
+    }
+    return (s32)entry * (s32)count;
 }
 
 u32 func_ov000_021aa4a4(void *arg0, s32 arg1, s32 arg2) {
     s32 func_ov000_021a9904(u32);
+    u32 var_r0;
     u32 temp_r0;
-            u32 var_r0;
     u32 var_r5;
 
     if ((u32) ((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19) <= 0xAU) {

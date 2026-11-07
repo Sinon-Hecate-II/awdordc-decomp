@@ -125,8 +125,8 @@ void func_ov002_021e45c0(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
 void func_ov002_021e4674(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  M2C_UNK func_02087064(s32,s32,s32,s32,s32);
  M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 pp, j, i, k;
- u32 xx;
+ s32 j,i,k,pp;
+ s32 xx;
  pp=pal;
  j=0;k=0;
  do {

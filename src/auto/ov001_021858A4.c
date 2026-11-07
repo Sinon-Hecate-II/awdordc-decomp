@@ -170,10 +170,10 @@ s32 func_ov001_02185dac(void) {
     if (func_020122ac((void (*)(void))func_ov001_02185ea8) != 2) {
         return 0;
     }
-    if (*(s32 *)((s8 *)data_ov001_02193e14 + 0x1b90) != 0) {
+    if (*((s32 *)((s8 *)data_ov001_02193e14 + 0x1b90)) != 0) {
         func_ov001_0218c94c(0);
     }
-    if (*(u8 *)((s8 *)data_ov001_02193e14 + 0x1b94) == 2) {
+    if (*((u8 *)((s8 *)data_ov001_02193e14 + 0x1b94)) == 2) {
         func_ov001_0218b71c((M2C_UNK)(void *)(&data_ov001_02193e14));
     }
     return 1;

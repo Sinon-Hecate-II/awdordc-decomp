@@ -297,8 +297,8 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
 }
 #pragma opt_common_subs reset
 s32 func_ov000_0217aa2c(s32 x,s32 y) {
-extern void **data_027e0058;
-void **state=data_027e0058;
+extern void **gCurrentMap;
+void **state=gCurrentMap;
 void *base=*state;
 register s32 left,top,right,bottom; s32 i,result,d,v;
 left=x-1;

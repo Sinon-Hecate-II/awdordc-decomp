@@ -287,7 +287,7 @@ loop_2:
             func_02007e70((void *)(temp_r8 + temp_r5_2), var_r10, 0xC0);
             func_02007e70(&sp4, temp_r8 + temp_r5_2, 0xC0);
             var_r4 = var_r6;
-            var_r9 -= 1;
+            var_r9 = (M2C_UNK *)((s32)var_r9 - 4);
             var_r10 -= 0xC0;
             var_r6 -= 1;
             if (var_r6 >= 0) {

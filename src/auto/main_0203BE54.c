@@ -416,8 +416,6 @@ void func_0203ca88(void *arg0) {
     case 1:
         temp_r0_2 = M2C_FIELD(func_02044268(), u32 *, 0x1A0);
         switch (temp_r0_2) {
-        default:
-            return;
         case 1:
         case 2:
         case 3:
@@ -425,15 +423,16 @@ void func_0203ca88(void *arg0) {
         case 6:
         case 11:
             func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
-            return;
+            break;
+        default:
+            break;
         }
+        break;
     case 2:
-        if (M2C_FIELD(func_02044268(), u32 *, 0x1A0) != 0xB) {
-            return;
+        if (M2C_FIELD(func_02044268(), u32 *, 0x1A0) == 0xB) {
+            func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
         }
-        func_0205ea70(M2C_FIELD(func_02044268(), s32 *, 0x10));
-        return;
+        break;
     }
-    return;
 }
 

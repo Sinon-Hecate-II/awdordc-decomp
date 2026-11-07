@@ -66,20 +66,27 @@ void func_020834c4(void) {
 #pragma push
 #pragma opt_strength_reduction off
 void func_0208352c(void *arg0) {
- M2C_UNK func_01ffa8c4(void *,M2C_UNK);
- s32 func_0207ca38(s32,s32,s32,s32,s32);
- s32 i,n,a;
- i=0; M2C_FIELD(arg0,u16 *,0x54)=0;
- if(M2C_FIELD(arg0,u8 *,0x62)==0) {func_01ffa8c4(arg0,0);return;}
- n=M2C_FIELD(arg0,u16 *,0x5a);
- if(n<=0) return;
- do {
- a=func_0207ca38(0,0,48,i,M2C_FIELD(arg0,volatile u16 *,0x5a)-1);
- a=(a+func_0207ca38(4,0,48,i,n-1))>>1;
- M2C_FIELD(arg0,s8 *,i+0x44)=a;
- n=M2C_FIELD(arg0,u16 *,0x5a);
- ++i;
- }while(i<n);
+    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 i, n, a;
+    s8 *p;
+
+    i = 0;
+    M2C_FIELD(arg0, u16 *, 0x54) = 0;
+    if (M2C_FIELD(arg0, u8 *, 0x62) == 0) {
+        func_01ffa8c4(arg0, 0);
+        return;
+    }
+    n = M2C_FIELD(arg0, u16 *, 0x5a);
+    if (n <= 0) return;
+    do {
+        a = func_0207ca38(0, 0, 48, i, (s32)M2C_FIELD(arg0, volatile u16 *, 0x5a) - 1);
+        a = (a + func_0207ca38(4, 0, 48, i, n - 1)) >> 1;
+        p = (s8 *)arg0 + i;
+        p[0x44] = (s8)a;
+        n = M2C_FIELD(arg0, u16 *, 0x5a);
+        ++i;
+    } while (i < n);
 }
 #pragma pop
 void func_020835d4(void *obj) {

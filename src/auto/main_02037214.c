@@ -498,7 +498,9 @@ t=func_0200f7e0(a,b);if(t==-1)return 0;
 if(t<data_0213d1b8)t+=0xbc191380LL;
 d=t-data_0213d1c0;
 if(d<0 || d>0xbc19137fLL)return 0;
-func_0200f9c4(a,b);return 1;
+func_0200f9c4(a,b);
+(void)t;
+return 1;
 }
 
 M2C_UNK func_02037d78(s32 a,s32 b,s32 c,s32 d){

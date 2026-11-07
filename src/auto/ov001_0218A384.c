@@ -1,5 +1,6 @@
 /* 39 functions from 0x0218A384 to 0x0218B368 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { s8 x, y; } TextDirection;
 static inline void get_obj_xy(void *base, s32 index, s32 *x, s32 *y) {
 *x=(M2C_FIELD(base,u32 *,index*8)&0x1ff0000)>>16;
 *y=M2C_FIELD(base,u32 *,index*8)&255;
@@ -440,16 +441,12 @@ void func_ov001_0218af70(s32 arg0) {
     func_ov001_0218af0c((0x30 * arg0) + (data_ov001_02193e40 + 0x610));
 }
 
-void func_ov001_0218af94(void *arg0, s32 arg4, s32 arg5) {
-    M2C_UNK func_ov001_0216a8ac(void *, s32, s32, u8, u8);
-    u8 spD;
-    u8 spC;
-    u8 temp_ip;
-
-    M2C_FIELD(&spC, u8 *, 0) = 0;
-    M2C_FIELD(&spC, s8 *, 1) = 0;
+void func_ov001_0218af94(void *arg0, s32 x, s32 y, s32 b, s32 arg4, s32 arg5) {
+    M2C_UNK func_ov001_0216a8ac(void *, s32, s32, s32, s32, s32, TextDirection);
+    char spC = 0;
+    char spD = 0;
+    unsigned char temp_ip;
     temp_ip = M2C_FIELD(M2C_FIELD(*M2C_FIELD(arg0, void ***, 0x1C), void **, 8), u8 *, 7);
-    (void)temp_ip;
     switch (temp_ip) {
     default:
         break;
@@ -463,14 +460,19 @@ void func_ov001_0218af94(void *arg0, s32 arg4, s32 arg5) {
         break;
     case 3:
     case 4:
-        spC = -1U;
+        spC = -1;
         break;
     case 5:
     case 6:
-        spD = -1U;
+        spD = -1;
         break;
     }
-    func_ov001_0216a8ac(arg0 + 0x18, arg4, arg5, spC, spD);
+    {
+        TextDirection dir;
+        dir.x = spC;
+        dir.y = spD;
+        func_ov001_0216a8ac(arg0 + 0x18, x, y, b, arg4, arg5, dir);
+    }
 }
 
 void func_ov001_0218b044(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {

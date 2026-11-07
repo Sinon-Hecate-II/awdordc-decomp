@@ -58,6 +58,7 @@ void func_0209be10(void *,s32,s32,s32,s32,s32,s32,u16,u16,u16);
 func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
 }
 
+#pragma scheduling off
 void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
     void (*func_02091fb4(u32))(void);
     extern s32 gCur3DSpriteEngine;
@@ -77,17 +78,11 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x49) = (u8)(arg2 & 0xFF);
     M2C_FIELD(arg0, u8 *, 0x4a) = (u8)(arg1 & 0xFF);
     M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(arg2 & 0xFF);
-    M2C_FIELD(arg0, u8 *, 0x54) = (u8)(0 - 1);
+    M2C_FIELD(arg0, u8 *, 0x54) = (u8)(-1);
     M2C_FIELD(arg0, u8 *, 0x55) = 2;
     M2C_FIELD(arg0, s32 *, 0x50) = (s32)func_02091fb4((u32)arg3);
     {
-        s32 temp_r0;
-
-        if (gCur3DSpriteEngine == data_027e00c8) {
-            temp_r0 = 1;
-        } else {
-            temp_r0 = 0;
-        }
+        s32 temp_r0 = (s32)(gCur3DSpriteEngine == data_027e00c8);
         temp_r0 = (s32)(u8)temp_r0;
         if (temp_r0 != 1) {
             temp_r0 = 1;
@@ -101,7 +96,7 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x59) = 0;
     M2C_FIELD(arg0, u8 *, 0x5c) = 0;
 }
-
+#pragma scheduling reset
 void func_0209bee0(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
 M2C_FIELD(a,u8 *,0x57)=d;
 M2C_FIELD(a,s32 *,0x3c)=e;

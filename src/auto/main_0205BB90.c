@@ -449,9 +449,9 @@ s32 func_0205ca48(void *p){
 
 s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
 extern M2C_UNK data_020ff818;
-u8 buf[8]; u8 *q=buf; s32 n=0;
-q[0]=M2C_FIELD(&data_020ff818,u8 *,0);
-q[1]=M2C_FIELD(&data_020ff818,u8 *,1);
+u8 buf[8]; s32 n=0;
+M2C_FIELD(buf,u8 *,0)=M2C_FIELD(&data_020ff818,u8 *,0);
+M2C_FIELD(buf,u8 *,1)=M2C_FIELD(&data_020ff818,u8 *,1);
 buf[2]=0x65;
 func_0205b0ec(buf, n+3, arg1); n+=5;
 if(arg1!=arg2){func_0205b0ec(buf,n,arg2); n+=2;}

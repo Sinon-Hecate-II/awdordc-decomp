@@ -7,7 +7,6 @@ void func_02039efc(M2C_UNK a,Record39 *b){
 extern M2C_UNK data_0213d380,data_020fc8a8,func_0203a4bc;
 s32 func_0203af50(s32,s32,void *);s32 func_02039e88(void);s32 func_02038f88(void);s32 func_0203c28c(s32);
 void func_02039db4(s32,s32);M2C_UNK func_0204ddd4(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
-register M2C_UNK r7 asm("r7") = a;
 void *p;
 M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,48)=0;
 if(b->words[0]==0){
@@ -24,7 +23,7 @@ if(func_02038f88())return;
 if(func_0203c28c(b->words[1]))return;
 }else func_02039db4(6,-60000);
 }else if(M2C_FIELD(p,s32 *,4)==3){
-func_0204ddd4(r7,b->words[1],0,0,&func_0203a4bc,0);
+func_0204ddd4(a,b->words[1],0,0,&func_0203a4bc,0);
 if(func_02039e88())return;
 }
 }else func_02039e88();

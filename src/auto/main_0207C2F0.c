@@ -384,6 +384,7 @@ void func_0207cbb0(void) {
     func_0207cc9c(&data_0214bfac, 0, 0, 0);
 }
 
+#pragma opt_if-conversion off
 Unk0207Color func_0207cbd0(s32 index) {
     Unk0207Color v = data_021017f4[(u8)data_02168f14.mode != 2 ? index : (index + 2)];
     u8 *base;
@@ -402,7 +403,7 @@ Unk0207Color func_0207cbd0(s32 index) {
     }
     return v;
 }
-
+#pragma opt_if-conversion reset
 M2C_UNK func_0207cc9c(M2C_UNK *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     struct Unk3 { s32 a; s32 b; s32 c; };
     extern struct Unk3 data_020ebdc4;

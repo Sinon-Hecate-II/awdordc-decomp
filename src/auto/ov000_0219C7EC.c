@@ -16,7 +16,7 @@ void func_ov000_0219c984(void){
 void func_ov000_0219c7ec(s32);extern s32 *gCurrentMap;extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;
 u8 *p; s8 *q; s32 *base; s32 n;u8 x;
 base=gCurrentMap;p=&data_ov000_021df824;q=&data_ov000_021df868;n=0;
-loop:x=*p;if(x!=0){p++;*q++=(u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25;n++;goto loop;}func_ov000_0219c7ec(n);(void)base;
+loop:x=*p;if(x!=0){p++;(*q)=(u8)((u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25);q++;n++;goto loop;}func_ov000_0219c7ec(n);
 }
 
 void func_ov000_0219c9e8(s32 arg0) {
@@ -30,6 +30,7 @@ void func_ov000_0219c9e8(s32 arg0) {
     u8 *var_r9;
     u8 var_r1;
     s8 *var_r10;
+    (void)var_r1;
 
     var_r9 = &data_ov000_021df824;
     var_r10 = &data_ov000_021df868;

@@ -54,16 +54,18 @@ s32 func_ov007_0221b704(s32 a,s32 b) {
 }
 
 s32 func_ov007_0221b754(s32 arg0, s32 arg1) {
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     s32 p;
     u16 t;
     if (arg0 < 0 || arg1 < 0) {
         goto ret0;
     }
-    p = *gCurrentMap;
-    if (arg0 >= M2C_FIELD(p, u16 *, 0x5144) || arg1 >= M2C_FIELD(p, u16 *, 0x5146)) {
-        return 1;
+    p = *data_027e0058;
+    if (arg0 < M2C_FIELD(p, u16 *, 0x5144) && arg1 < M2C_FIELD(p, u16 *, 0x5146)) {
+        goto in_bounds;
     }
+    return 1;
+in_bounds:
     t = M2C_FIELD(p + (arg0 + M2C_FIELD(p + arg1 * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
     switch (t) {
         case 0x3:

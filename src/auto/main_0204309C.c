@@ -407,6 +407,7 @@ void func_02043c4c(s32 arg0) {
     s32 func_02043184();
     M2C_UNK func_0203ecb0(M2C_UNK, s32);
     void *p;
+    s32 zero;
 
     p = func_02044268();
     if (M2C_FIELD(p, s32 *, 0x1A0) == 1) {
@@ -431,8 +432,9 @@ void func_02043c4c(s32 arg0) {
         M2C_FIELD(p, s32 *, 0x180) = arg0;
     }
     p = func_02044268();
-    M2C_FIELD(p, s32 *, 0x184) = 0;
-    M2C_FIELD(p, s32 *, 0x188) = 0;
+    zero = 0;
+    M2C_FIELD(p, s32 *, 0x184) = zero;
+    M2C_FIELD(p, s32 *, 0x188) = zero;
     func_0203ecb0(1, arg0);
     if (func_02043184() != 0) {
         return;

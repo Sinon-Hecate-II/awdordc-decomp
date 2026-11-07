@@ -37,11 +37,19 @@ void func_01ff82e4(u32 r0, void *r1, u32 r2) {
 s32 func_01ff8300(void) {
 s32 func_01ff83a8(u32, void *, s32);
 void func_0200673c(void); void func_02006748(void); void func_02006804(void); void func_02006810(void); s32 func_0200751c(void); void func_02007530(s32);
-u32 base, start; void *dst; s32 size, start2; void *dst2; s32 size2; s32 diff;
+s32 state;
+u32 start;
+void *dst;
+s32 size;
+u32 start2;
+void *dst2;
+s32 size2;
+s32 diff;
+u32 base;
 base=*(u32*)0x27ffc2c;
 if(base>=0x8000) func_01ff83a8(base,(void*)0x27ffe00,0x160);
 start=*(u32*)0x27ffe20; dst=*(void**)0x27ffe28; size=*(s32*)0x27ffe2c; start2=*(s32*)0x27ffe30; dst2=*(void**)0x27ffe38; size2=*(s32*)0x27ffe3c;
-{ s32 state=func_0200751c(); func_02006748(); func_0200673c(); func_02007530(state); func_02006810(); func_02006804(); }
+state=func_0200751c(); func_02006748(); func_0200673c(); func_02007530(state); func_02006810(); func_02006804();
 start+=base;
 if(start<0x8000) { diff=0x8000-start; dst=(u8*)dst+diff; size-=diff; start=0x8000; }
 func_01ff83a8(start,dst,size);

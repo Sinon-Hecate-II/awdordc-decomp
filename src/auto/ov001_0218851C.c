@@ -51,21 +51,22 @@ s32 func_ov001_0218868c(u16 bits) {
 
 #pragma peephole off
 s32 func_ov001_02188774(void) {
-extern M2C_UNK data_ov001_02193e20;
-s32 func_ov001_0218880c(void);
-s32 result;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,4772)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,4768)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,72)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,80)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,82)=1;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,84)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,0)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,4)=0;
-M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,76)=0;
-result=func_ov001_0218880c();
-if(result==0)result=0;else result=1;
-return result;
+    extern M2C_UNK data_ov001_02193e20;
+    s32 func_ov001_0218880c(void);
+    s32 r;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,4772)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,4768)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,72)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,80)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,82)=1;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,84)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,0)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),u16 *,4)=0;
+    M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4),s32 *,76)=0;
+    r = func_ov001_0218880c();
+    if (r) r = 1;
+    else r = 0;
+    return r;
 }
 #pragma peephole reset
 void func_ov001_021887ec(void *arg0) {

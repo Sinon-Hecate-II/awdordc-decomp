@@ -487,5 +487,6 @@ tick=func_0207c2e0();base=gCurrentMap;M2C_FIELD(&data_02156e50,s32 *,8)=tick;t=*
 func_020d1690(M2C_FIELD(t,u8 *,0x52d4),(u32)(M2C_FIELD(p,u16 *,2)<<22)>>28,(u8 *)t+0x52dc);
 a=M2C_FIELD(p,u8 *,4);b=M2C_FIELD(*gCurrentMap,s16 *,0x6ed4);if(a<b)M2C_FIELD(p,u8 *,4)=0;else M2C_FIELD(p,u8 *,4)=a-b;
 q=func_01ffa3dc(&data_0211f87c,7);M2C_FIELD(q,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);M2C_FIELD(q,s32 *,0x60)=arg2;M2C_FIELD(q,void **,0x34)=p;M2C_FIELD(q,s32 *,0x38)=arg0;M2C_FIELD(q,s32 *,0x3c)=arg1;
+(void)(p);
 }
 #pragma opt_propagation reset

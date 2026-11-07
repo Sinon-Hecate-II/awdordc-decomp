@@ -286,6 +286,7 @@ void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
         func_0201bf80(arg0, arg1, arg2, 0);
         break;
     }
+    return;
 }
 
 void func_0201c7e4(s32 a,s32 b) {

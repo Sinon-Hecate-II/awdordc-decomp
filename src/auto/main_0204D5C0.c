@@ -95,8 +95,14 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
  if(!p || !(q=*p))return 2;
  if(!cb){func_02058644(p,&data_020fda34);return 2;}
  if(M2C_FIELD(q,s32 *,0x108)){
- result=buf;
- *(volatile s32 *)(result+2)=0;result[0]=0;result[1]=0;result[3]=0;*(volatile s32 *)(result+2)=0x601;cb(p,result,h);return 0;
+ result=(s32 *)buf;
+ *(volatile s32 *)(result+2)=0;
+ result[0]=0;
+ result[1]=0;
+ result[3]=0;
+ buf[2]=0x601;
+ cb(p,result,h);
+ return 0;
  }
  return func_020560e4(p,a,b,c,d,e,f,0,g,cb,h);
 }

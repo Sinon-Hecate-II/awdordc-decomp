@@ -580,8 +580,8 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     void *func_ov001_0218b6f8(s32, s32);
     void func_ov001_0218b2bc(s32, s32, void *);
     M2C_UNK func_ov001_0218a61c(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_0218a384(void *, s32, s32, u8);
-    void func_ov001_0218a474(void *, s32, s32);
+    void func_ov001_0218a384(M2C_UNK, s32, s32, s32);
+    void func_ov001_0218a474(M2C_UNK, s32, s32);
     s32 func_ov001_0218c884(s32, void (*)(), s32, s32);
     void func_ov001_02183a20(void);
 
@@ -596,8 +596,8 @@ void func_ov001_021838a8(s32 a, s32 b, s32 c, s32 d, s32 e) {
     func_ov001_0218b2bc(c, d, (char *)data_ov001_02193dfc + 0x10);
     t = func_ov001_0218a61c(0, data_ov001_0218fb58[a], 1);
     *(M2C_UNK *)data_ov001_02193dfc = t;
-    func_ov001_0218a384(data_ov001_02193dfc, -1, c, (u8)(d + e));
-    func_ov001_0218a474(data_ov001_02193dfc, -1, 1);
+    func_ov001_0218a384(*(M2C_UNK *)data_ov001_02193dfc, -1, c, d + e);
+    func_ov001_0218a474(*(M2C_UNK *)data_ov001_02193dfc, -1, 1);
     *(M2C_UNK *)((char *)data_ov001_02193dfc + 0xc) = func_ov001_0218c884(0, func_ov001_02183a20, 0, 0x80);
 }
 

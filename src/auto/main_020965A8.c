@@ -39,8 +39,6 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
     outer_loop:
         if (row >= (s32)*(u16 *)((u8 *)base + 0x5146)) goto done;
         base = (void *)*data_027e0058;
-        inner_count = *(s32 *)((u8 *)base + 0x5144) & 0xffff;
-        /* ensure load as u16 below */
         inner_count = (s32)*(u16 *)((u8 *)base + 0x5144);
         col = 0;
         if (inner_count <= 0) goto outer_next;

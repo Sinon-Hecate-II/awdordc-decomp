@@ -22,8 +22,9 @@ s32 func_02044e68(void) {
     return 1;
 }
 
+#pragma opt_instruction_scheduling off
 s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);s32 flag;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);flag=M2C_FIELD(p,s32 *,12);if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}func_020452f0(p);return flag!=0;}
-
+#pragma opt_instruction_scheduling reset
 void func_02044f24(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
 void (*cb)(s32,s32,s32,s32,s32,s32)=M2C_FIELD(p,void (**)(s32,s32,s32,s32,s32,s32),8);
 if(!cb)return;cb(a,b,c,d,e,M2C_FIELD(p,s32 *,0));
@@ -413,34 +414,44 @@ void func_02045cbc(void *arg0) {
     extern M2C_UNK data_0213db3e;
     extern M2C_UNK data_0213db40;
     u32 *p = (u32 *)arg0;
-    u32 a, b;
-    s32 h;
-    u32 m;
+    u32 a, b, c, d, mask;
 
     func_02008048(&data_0213db34, arg0, 6);
+    mask = 0x7FF;
     a = p[0];
+    d = mask - 0x800;
     b = p[1];
-    p[0] = a & (0x7FF - 0x800);
-    p[1] = b & 0x7FF;
+    c = a & d;
+    p[0] = c;
+    mask = b & mask;
+    p[1] = mask;
 
-    func_02008048(&data_0213db39, arg0 + 8, 6);
+    func_02008048(&data_0213db39, (char *)arg0 + 8, 6);
     a = p[2];
     b = p[3];
-    p[2] = (a >> 3) | (b << 29);
-    p[3] = b >> 3;
+    a = a >> 3;
+    a = a | (b << 29);
+    p[2] = a;
+    d = b >> 3;
+    p[3] = d;
+
+    mask = 0x7FF;
     a = p[2];
-    b = p[3];
-    p[2] = a & (0x7FF - 0x800);
-    p[3] = b & 0x7FF;
+    c = mask - 0x800;
+    c = a & c;
+    p[2] = c;
+    mask = mask & d;
+    p[3] = mask;
 
-    func_02008048(&data_0213db3e, arg0 + 0x10, 2);
-    h = (s32)*(u16 *)(arg0 + 0x10);
-    h = h >> 6;
-    *(u16 *)(arg0 + 0x10) = (u16)h;
-    h = (s32)*(u16 *)(arg0 + 0x10);
-    h = h & 0x3FF;
-    *(u16 *)(arg0 + 0x10) = (u16)h;
+    func_02008048(&data_0213db3e, (char *)arg0 + 0x10, 2);
+    a = *(u16 *)((char *)arg0 + 0x10);
+    d = 0x3FF;
+    a = (s32)a >> 6;
+    *(u16 *)((char *)arg0 + 0x10) = (u16)a;
+    a = *(u16 *)((char *)arg0 + 0x10);
+    d = a & d;
+    *(u16 *)((char *)arg0 + 0x10) = (u16)d;
 
-    func_02008048(&data_0213db40, arg0 + 0x12, 2);
+    func_02008048(&data_0213db40, (char *)arg0 + 0x12, 2);
 }
 

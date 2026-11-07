@@ -428,9 +428,9 @@ s32 func_0201f338(s32 arg0, s32 arg1) {
 
 void func_0201f350(s32 arg0) {
 s32 p,old,v;
-loop:
+for(;;){
 func_020064d0(arg0,&p,1);
-if(p) {
+if(!p)return;
 v=M2C_FIELD(p,s32 (**)(s32),0)(p);
 old=func_0200751c();
 func_02006130();
@@ -438,7 +438,6 @@ func_02006390(arg0,0,0);
 if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
 func_0201f210(p);func_02006164();func_02007530(old);
-goto loop;
 }
 }
 

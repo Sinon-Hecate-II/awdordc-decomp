@@ -144,7 +144,7 @@ void func_ov005_0221a598(void *arg0) {
     s32 saved;
     s32 i;
 
-    M2C_FIELD(arg0, s32 *, 0x40) = M2C_FIELD(arg0, s32 *, 0x40) + 1;
+    M2C_FIELD(arg0, s32 *, 0x40) = (M2C_FIELD(arg0, s32 *, 0x40) + 1);
     M2C_FIELD(arg0, s32 *, 0x3C) = func_0207ca38(0, 0x58, 0x60, M2C_FIELD(arg0, s32 *, 0x40), 0x10);
     func_ov005_0221a38c(arg0);
     if (M2C_FIELD(arg0, s32 *, 0x40) == 1) {

@@ -150,6 +150,7 @@ for(;x<w;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
 }
 }
 
+#pragma common_subs off
 void func_01ffb734(int cx,int cy,int radius,s8 value) {
  extern void **data_027e0058;
  int x,d,right,bottom,left,top; void *base=*data_027e0058;
@@ -163,7 +164,7 @@ void func_01ffb734(int cx,int cy,int radius,s8 value) {
  if(d>=0 && d<=radius)((s8 **)*data_027e0058)[top+0x14ba][x]=value;
  }
 }
-
+#pragma common_subs reset
 void func_01ffb80c(s32 x, s32 y, s32 dir, s8 value) {
     extern void **gCurrentMap;
     switch (dir) {

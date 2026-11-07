@@ -31,6 +31,7 @@ void func_ov000_0216906c(void) {
 
 }
 
+#pragma peephole off
 void func_ov000_02169070(void *p) {
  extern s16 data_ov000_021ae960[];
  u16 t;
@@ -38,15 +39,13 @@ void func_ov000_02169070(void *p) {
  M2C_FIELD(p,s16 *,0x4c)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
  M2C_FIELD(p,s16 *,0x4e)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
  t=M2C_FIELD(p,u16 *,0x48);
- t=t;
- if (t<16) return;
+ if(t<16)return;
  M2C_FIELD(p,u16 *,0x48)=t-16;
  M2C_FIELD(p,s16 *,0x4c)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
  M2C_FIELD(p,s16 *,0x4e)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
  M2C_FIELD(p,u16 *,0x48)=0;
 }
-
-#pragma optimization_level 3
+#pragma peephole reset
 void func_ov000_02169138(void *p) {
 void func_020c98d8(s32,s32,s32);
 s32 func_020d19b4(u32);

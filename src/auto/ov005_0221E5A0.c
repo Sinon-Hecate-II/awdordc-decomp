@@ -131,7 +131,6 @@ s32 func_ov005_0221eef4(void *arg0) {
     extern s32 data_ov005_02220ad0[];
     void **saved;
     s32 i;
-    volatile u16 *volatile p;
     void **chosen;
     if (!(data_027e15bc & 3)) {
         saved = gCur3DSpriteEngine;
@@ -141,8 +140,7 @@ s32 func_ov005_0221eef4(void *arg0) {
             else chosen = data_027e00c4;
             i++;
             gCur3DSpriteEngine = chosen;
-            p = (u16 *)((u8 *)*chosen + 0x3E);
-            *p = *p + 1;
+            *(u16 *)((u8 *)*chosen + 0x3E) = *(u16 *)((u8 *)*chosen + 0x3E) + 1;
         } while (i < 2);
         gCur3DSpriteEngine = saved;
     }

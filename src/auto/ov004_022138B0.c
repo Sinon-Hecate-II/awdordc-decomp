@@ -239,10 +239,10 @@ extern void **data_027e0058;
 u8 *base=*data_027e0058; s32 y,x; u8 *p; s32 t; u8 v;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if(((base[x+M2C_FIELD(base+y*2,u16 *,0x3758)+0x1420]&0xE0)>>5)==1){
-p=base+M2C_FIELD(base+y*2,u16 *,0x3758)+x;
-t=p[0x1420]&0x1F;
-if(t==15||t==17){v=p[0x508];if(v!=0 && (v>>6)==0)return 1;}
+if((((M2C_FIELD(base,u8 *,M2C_FIELD(base+y*2,u16 *,0x3758)+0x1420))&0xE0)>>5)==1){
+p=(u8 *)base+M2C_FIELD(base+y*2,u16 *,0x3758)+x;
+t=((u8*)p)[0x1420]&0x1F;
+if(t==15||t==17){v=((u8*)p)[0x508];if(v!=0 && (v>>6)==0)return 1;}
 }
 }
 }

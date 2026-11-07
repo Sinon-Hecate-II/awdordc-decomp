@@ -245,9 +245,9 @@ void *func_0202942c(void) {
     base = func_02027d50();
     p2000 = (void *)((s8 *)base + 0x2000);
     hdr = M2C_FIELD(p2000, void **, 0x270);
-    if (hdr == (void *)0) {
-        return (void *)0;
-    }
+    if (hdr != 0) goto have_hdr;
+    return (void *)0;
+have_hdr:
     cap = M2C_FIELD(p2000, u32 *, 0x274);
     if (cap <= 0xCU) {
         return (void *)0;

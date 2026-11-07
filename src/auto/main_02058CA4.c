@@ -55,14 +55,15 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     s8 *base;
     s8 *p;
     s32 n;
-    M2C_UNK *g;
+    s32 t;
 
     src = data_020eab2f;
     dst = sp0;
     count = 0x80;
     do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-    g = &data_0213dce0;
-    M2C_FIELD(g, s32 *, 0x24) ^= 1;
+    t = M2C_FIELD(&data_0213dce0, s32 *, 0x24);
+    t ^= 1;
+    M2C_FIELD(&data_0213dce0, s32 *, 0x24) = t;
     func_02068d68(sp0, arg1);
     func_02068d68(sp0, data_020ff4ac);
     p = func_02068fdc((s8 *)arg0, sp0);
@@ -300,13 +301,23 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 #pragma opt_common_subs on
 void func_0205954c(void) {
- s32 func_02048688(s32); void func_0204861c(s32); void func_02058df4(s8 *,s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
- extern M2C_UNK data_0213dce0,data_020ff498,data_020ff43c; extern const u8 data_020ea9ac[];
- s32 i; ByteBlock16 buf1,buf0; s32 zero=0; s32 mask=15;
- if(!M2C_FIELD(&data_0213dce0,s32 *,4))return;
- i=func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
- if(i>=0){buf0=*(const ByteBlock16 *)data_020ea9ac; do{buf1=buf0; M2C_FIELD(&data_020ff43c,M2C_UNK **,8)=&data_020ff498;func_02058df4((s8 *)&buf1,mask);func_02059448(i,zero,zero,(s32)&buf1,zero);}while(--i>=0);}
- func_0204861c(M2C_FIELD(&data_0213dce0,s32 *,4)); M2C_FIELD(&data_0213dce0,s32 *,4)=0;
+    s32 func_02048688(s32); void func_0204861c(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
+    extern M2C_UNK data_0213dce0, data_020ff498, data_020ff43c;
+    extern const u8 data_020ea9ac[];
+    ByteBlock16 buf1, buf0; s32 i;
+    if (!M2C_FIELD(&data_0213dce0,s32 *,4)) return;
+    i = func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4)) - 1;
+    if (i >= 0) {
+        buf0 = *(const ByteBlock16 *)data_020ea9ac;
+        do {
+            buf1 = buf0;
+            M2C_FIELD(&data_020ff43c,M2C_UNK **,8) = &data_020ff498;
+            func_02058df4((s8 *)&buf1, 15);
+            func_02059448(i, (s32)0, (s32)0, (s32)&buf1, (s32)0);
+        } while (--i >= 0);
+    }
+    func_0204861c(M2C_FIELD(&data_0213dce0,s32 *,4));
+    M2C_FIELD(&data_0213dce0,s32 *,4) = 0;
 }
 #pragma opt_common_subs off
 s32 func_02059640(void *arg0, s32 arg1) {

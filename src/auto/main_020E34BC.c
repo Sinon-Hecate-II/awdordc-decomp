@@ -35,18 +35,20 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 
 s32 func_020e352c(s32, s32);
 #pragma opt_common_subs off
-void func_020e34bc(s32 arg0) {
+s32 func_020e34bc(s32 arg0) {
     volatile u32 saved;
     u16 old;
     u32 s;
+    s32 result;
 
-    old = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
+    old = *(volatile u16 *) 0x04000208;
+    *(volatile u16 *) 0x04000208 = 0;
     saved = old;
-    func_020e352c(arg0, 8);
+    result = func_020e352c(arg0, 8);
     s = saved;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = s;
+    (void) *(volatile u16 *) 0x04000208;
+    *(volatile u16 *) 0x04000208 = s;
+    return result;
 }
 
 s32 func_020e34f4(s32 arg0) {
@@ -458,7 +460,7 @@ void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
     extern s32 data_0212d9c8;
     extern s32 data_0212da10;
     void *temp_r0;
-    void *ptr;
+    u8 *ptr;
 
     temp_r0 = func_01ffa444(&data_0212d9c8, arg2);
     if (temp_r0 == NULL) {
@@ -472,7 +474,7 @@ void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
     M2C_FIELD(temp_r0, s32 *, 0x44) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
 
-    for (ptr = arg0; (u32)ptr < (u32)arg0 + (u32)M2C_FIELD(temp_r0, s32 *, 0x38) * (u32)0x310; ptr = (void *)((u8 *)ptr + (u32)0x310)) {
+    for (ptr = (u8 *)arg0; (u32)ptr < (u32)arg0 + M2C_FIELD(temp_r0, s32 *, 0x38) * 0x310; ptr += 0x310) {
         M2C_FIELD(ptr, s32 *, 0x4) = -1;
         M2C_FIELD(ptr, s32 *, 0x8) = 0;
         M2C_FIELD(ptr, s32 *, 0x30c) = 0;

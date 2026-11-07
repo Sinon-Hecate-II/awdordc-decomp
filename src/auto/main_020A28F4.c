@@ -355,26 +355,30 @@ void func_020a3550(s32 a,s32 b){
  M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&0x1fffff)|((u32)b<<21);
 }
 
-s32 func_020a3594(s32 a,s32 b){
- extern s32 *gCurrentMap;
- extern u8 data_02126184[];
- extern u8 data_02126188[];
- s32 func_020a2bd8(void);
- s32 r4;
- s32 idx;
- switch(b){
- case 0: r4=0; break;
- case 1:
-   idx=(s32)((u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<24)>>24);
-   r4=*(s32*)(data_02126184+idx*0x9c);
-   break;
- case 2:
-   idx=(s32)((u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<24)>>24);
-   r4=*(s32*)(data_02126188+idx*0x9c);
-   break;
- default: r4=0; break;
- }
- return r4*func_020a2bd8();
+s32 func_020a3594(s32 a, s32 b) {
+    extern s32 *data_027e0058;
+    extern u8 data_02126184[];
+    extern u8 data_02126188[];
+    s32 func_020a2bd8(void);
+    s32 r4;
+    s32 idx;
+    switch (b) {
+    case 0:
+        r4 = 0;
+        break;
+    case 1:
+        idx = (s32)((u32)(M2C_FIELD(*data_027e0058 + a * 0x8c, s32 *, 0x6810) << 24) >> 24);
+        r4 = *(s32 *)(data_02126184 + idx * 0x9c);
+        break;
+    case 2:
+        idx = (s32)((u32)(M2C_FIELD(*data_027e0058 + a * 0x8c, s32 *, 0x6810) << 24) >> 24);
+        r4 = *(s32 *)(data_02126188 + idx * 0x9c);
+        break;
+    default:
+        r4 = 0;
+        break;
+    }
+    return r4 * func_020a2bd8();
 }
 
 s32 func_020a363c(s32 a){

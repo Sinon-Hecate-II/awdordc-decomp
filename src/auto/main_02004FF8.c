@@ -150,12 +150,12 @@ void func_02005254(void) {
 void func_02005288(void) {
 extern s32 data_0212dc7c;
 void WaitByLoop(s32); void func_020053a0(s32,s32,s32);void func_02005424(s32,s32,s32);void func_02007e54(s32,void *,s32);
-volatile u8 *p=(volatile u8 *)0x027ffff0;
+volatile u8 *ipc=(volatile u8 *)0x027ffff0;
 if(data_0212dc7c)return;
-*(volatile s32 *)p=0;
+*(volatile s32 *)ipc=0;
 *(s32 *)&data_0212dc7c=1;
 func_020053a0(0x7e,0x027ffff0,0);
-while(*(volatile u16 *)(p+6))WaitByLoop(0x400);
+while(*(volatile u16 *)(ipc+6))WaitByLoop(0x400);
 *(volatile s32 *)0x027fffb0=-1;
 *(volatile s32 *)0x027fffb4=0xffff0000;
 func_02007e54(0,(void *)0x027fffc0,0x28);

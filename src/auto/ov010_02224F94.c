@@ -96,35 +96,33 @@ void func_ov010_02225174(void) {
  func_ov010_02224f28();
 }
 
-#pragma opt_strength_reduction off
+#pragma opt_instruction_scheduling off
 s32 func_ov010_0222519c(s16 *a,u32 bytes){
 extern s32 data_ov010_0222d930;
-s32 value,input,prev,square,st4,st16;u32 n,i;s64 sum;
+s32 input,v,acc,square;u32 n,i;s64 sum;
 input=a[0]*(s16)0xe9f;
-st4=M2C_FIELD(&data_ov010_0222d930,s32 *,4);
-st16=M2C_FIELD(&data_ov010_0222d930,s32 *,16);
-value=(input+st4+st16*0xd3e)>>12;
-square=value*value;n=bytes>>1;
-M2C_FIELD(&data_ov010_0222d930,s32 *,16)=value;
-prev=-input;M2C_FIELD(&data_ov010_0222d930,s32 *,4)=prev;
+v=(input+M2C_FIELD(&data_ov010_0222d930,s32 *,4)+M2C_FIELD(&data_ov010_0222d930,s32 *,16)*0xd3e)>>12;
+square=v*v;n=bytes>>1;
+M2C_FIELD(&data_ov010_0222d930,s32 *,16)=v;
+acc=-input;M2C_FIELD(&data_ov010_0222d930,s32 *,4)=acc;
 sum=square;
 for(i=1;i<n;i++){
 input=a[i]*(s16)0xe9f;
-prev=input+prev+value*0xd3e;
-a[i-1]=value;
-value=prev>>12;
-square=value*value;sum+=square;prev=-input;
+acc=input+acc+v*0xd3e;
+a[i-1]=v;
+v=acc>>12;
+square=v*v;sum+=square;acc=-input;
 }
-M2C_FIELD(&data_ov010_0222d930,s32 *,4)=prev;
-M2C_FIELD(&data_ov010_0222d930,s32 *,16)=value;
-*(s16 *)((char *)a+n*2-2)=value;
+M2C_FIELD(&data_ov010_0222d930,s32 *,4)=acc;
+M2C_FIELD(&data_ov010_0222d930,s32 *,16)=v;
+*(s16 *)((char *)a+n*2-2)=v;
 *(volatile u16 *)0x4000280=1;
 *(volatile s64 *)0x4000290=sum;
 *(volatile u64 *)0x4000298=n;
 while(*(volatile u16 *)0x4000280&0x8000){}
 return *(volatile s32 *)0x40002a0;
 }
-#pragma opt_strength_reduction on
+#pragma opt_instruction_scheduling reset
 void func_ov010_02225288(void) {
  extern s32 data_ov010_0222d930;
  s16 *src=data_ov010_0222c03c;
@@ -375,13 +373,13 @@ if(!M2C_FIELD(&data_ov010_0222edb4,s32*,28)||!M2C_FIELD(&data_ov010_0222edb4,s32
 out[0]=0;out[1]=0;
 now=func_02007004();
 kind=M2C_FIELD(b,u8*,4);
-if((kind & 0xF0) == 0x40) {
+if((kind&0xf0)==0x40) {
 state=&data_ov010_0222edb4;
-state[1]++;
+state[1]=state[1]+1;
 func_ov010_02222f28(a,b,c,now);
 return 0;
 }
-if(kind == 0 || kind == 0xFF) return func_ov010_02224334(a,b,c,out) != 0;
+if(kind==0||kind==255) return func_ov010_02224334(a,b,c,out)!=0;
 return 0;
 }
 

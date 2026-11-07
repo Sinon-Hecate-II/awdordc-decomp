@@ -792,18 +792,18 @@ void func_02090c7c(void *arg0) {
 
 s32 func_02090cbc(void *p) {
 void func_020908dc(void *);void func_02090d84(void *);void func_01ffa574(void *);void func_02090bd8(void *);
-void *q;
+void *q1;
 if(M2C_FIELD(p,void **,0x38))func_020908dc(M2C_FIELD(p,void **,0x38));
-q=M2C_FIELD(p,void **,0x3C);
-if(q) {
-(*(void (***)(void *))q)[0](q);q=M2C_FIELD(q,void **,0xC);
-if(q) {
-(*(void (***)(void *))q)[0](q);q=M2C_FIELD(q,void **,0xC);
-if(q) {
-(*(void (***)(void *))q)[0](q);q=M2C_FIELD(q,void **,0xC);
-if(q) {
-(*(void (***)(void *))q)[0](q);q=M2C_FIELD(q,void **,0xC);
-if(q)func_02090d84(q);
+q1=M2C_FIELD(p,void **,0x3C);
+if(q1) {
+(*(void (***)(void *))q1)[0](q1);q1=M2C_FIELD(q1,void **,0xC);
+if(q1) {
+(*(void (***)(void *))q1)[0](q1);q1=M2C_FIELD(q1,void **,0xC);
+if(q1) {
+(*(void (***)(void *))q1)[0](q1);q1=M2C_FIELD(q1,void **,0xC);
+if(q1) {
+(*(void (***)(void *))q1)[0](q1);q1=M2C_FIELD(q1,void **,0xC);
+if(q1)func_02090d84(q1);
 }}}}
 if(!M2C_FIELD(p,void **,0x38) && !M2C_FIELD(p,void **,0x3C))func_01ffa574(p);
 else if(M2C_FIELD(p,void **,0x38))func_02090bd8(M2C_FIELD(p,void **,0x38));

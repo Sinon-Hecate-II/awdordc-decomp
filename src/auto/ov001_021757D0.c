@@ -65,14 +65,12 @@ func_ov001_0218c7d4(0); func_ov001_0218bdb0(); func_ov001_0218c63c(); func_02007
 func_ov001_02175d04(); return 0;
 }
 
+#pragma opt_if_conversion off
 s32 func_ov001_02175928(s32 arg0, s32 arg1) {
     extern u8 data_ov001_02193d2c;
     M2C_FIELD(&data_ov001_02193d2c, u8 *, 0) = (u8)arg0;
     M2C_FIELD(&data_ov001_02193d2c, s32 *, 8) = arg1;
-    if (arg0 < 0) {
-        return 0;
-    }
-    if (arg0 > 6) {
+    if (arg0 < 0 || arg0 > 6) {
         return 0;
     }
     if (arg0 == 1) {
@@ -95,7 +93,7 @@ s32 func_ov001_02175928(s32 arg0, s32 arg1) {
     }
     return 1;
 }
-
+#pragma opt_if_conversion reset
 void func_ov001_021759c4(void) {
 extern u8 data_ov001_02193d2c;
 M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK func_02007958(); void func_0200245c(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK func_ov001_0218c678(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK func_ov001_0218a7a4(); M2C_UNK func_ov001_0218b6f8(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();

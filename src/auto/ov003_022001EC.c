@@ -163,9 +163,9 @@ void func_ov003_022006dc(s32 arg0) {
     s32 func_0208492c(void);
     void func_02084d88(void *, s32);
 
-    u8 sp[0x24];
     u8 r5;
     u8 *r6;
+    u8 sp[0x24];
 
     if (func_020846a4() == 0) {
         return;

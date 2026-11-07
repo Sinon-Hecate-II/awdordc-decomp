@@ -228,6 +228,7 @@ fail:
     return 0;
 }
 
+#pragma scheduling off
 s32 func_0205d164(s32 arg) {
     s32 func_02048688(s32);
     s32 *func_02048690(s32, s32);
@@ -236,7 +237,7 @@ s32 func_0205d164(s32 arg) {
     void *p = (void *)arg;
     s32 v = M2C_FIELD(p, s32 *, 0x14);
     if (v == 0) v = M2C_FIELD(p, s32 *, 0x24);
-    if (v != 0u) return v;
+    if (v) return v;
     if (M2C_FIELD(p, s32 *, 0x0C) == 7) {
         s32 *field8 = (s32 *)M2C_FIELD(p, s32 *, 0x08);
         s32 base = M2C_FIELD(field8, s32 *, 0x10);
@@ -258,7 +259,7 @@ s32 func_0205d164(s32 arg) {
         return 0;
     }
 }
-
+#pragma scheduling reset
 s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     void func_0205d70c(M2C_UNK **, s32 *);
     s32 func_0204955c(s32);
@@ -547,10 +548,12 @@ s32 func_0205d920(M2C_UNK arg0) {
 void func_0205d944(s32 a,s32 b,s32 c,s32 d,s32 e) {
 s32 func_02049824(s32,s32,s32,s32,void *,s32);
 struct Packet_0205 p;
-p.c=((c>>8)&255)|((c<<8)&0xff00);
-p.d=b;
-p.b=2;
-func_02049824(a,d,e,0,&p,8);
+struct Packet_0205 *pp;
+pp=&p;
+pp->d=b;
+pp->c=((c>>8)&255)|((c<<8)&0xff00);
+pp->b=2;
+func_02049824(a,d,e,0,pp,8);
 }
 
 s32 func_0205d998(s32 a) {

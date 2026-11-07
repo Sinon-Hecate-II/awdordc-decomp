@@ -364,23 +364,28 @@ return result;
 s32 func_020c5574(s32 arg0, M2C_UNK arg1) {
 M2C_UNK func_02007df8(M2C_UNK,s32,M2C_UNK);
 M2C_UNK func_02008048(M2C_UNK,s32);
-s32 p, offset, base; void *q;
+s32 func_020c54b8(void);
+s32 func_020c54e8(M2C_UNK);
+s32 func_020c4b60(void);
+void *p;
 if(func_020c54b8()==0)return -1;
 if(func_020c54e8(arg1)!=0)return -1;
-p=func_020c4b60();
+p=(void*)func_020c4b60();
 if(!p)return -1;
-base=p+4;
-base+=arg0*12;
-func_02008048(arg1,base);
-offset=arg0*40;
-func_02007df8(0,p+0x2d4+offset,26);
-q=p+offset;
+func_02008048(arg1,p+4+arg0*12);
+{
+s32 offset=arg0*0x28;
+func_02007df8(0,p+0x2d4+offset,0x1a);
+{
+void *q=p+offset;
 M2C_FIELD(q,s16 *,0x2ee)=0;
 M2C_FIELD(q,s16 *,0x2f0)=0;
 M2C_FIELD(q,s16 *,0x2f2)=0;
 M2C_FIELD(q,s8 *,0x2f4)=-1;
 M2C_FIELD(q,s8 *,0x2f5)=-2;
 M2C_FIELD(q,s8 *,0x2f6)=-2;
+}
+}
 return arg0;
 }
 
@@ -639,17 +644,14 @@ M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(&data_02164d5c,s16 *,4);
 M2C_UNK func_020c5b98(s32 a) {
  void func_020c08f8(s32,s32,s32,s32,s32);void func_0209bfa8(void);void func_020809c0(void*,s32,s32);void func_0209b26c(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK data_02164d5c;
- s32 zero;
- s32 tile;
- s16 index;
+ s32 tile; s16 index;
  func_020c08f8(7,18,18,6,1);
  func_0209bfa8();
  func_020809c0((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x24)+0x48e,18,6);
- zero=0;
- M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=zero;
- M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x42)=zero;
+ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=0;
+ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x42)=0;
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
- if(a) { index=M2C_FIELD(&data_02164d5c,u8*,0); tile=index*(s16)56+0x124; func_0209b26c(8,19,1,a,zero,tile); }
+ if(a) { index=M2C_FIELD(&data_02164d5c,u8*,0); tile=index*(s16)56+0x124; func_0209b26c(8,19,1,a,0,(u16)tile); }
  M2C_FIELD(&data_02164d5c,u8*,0)=(M2C_FIELD(&data_02164d5c,u8*,0)+1)&1;
 }
 

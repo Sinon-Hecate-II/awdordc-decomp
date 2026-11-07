@@ -4,7 +4,7 @@ extern M2C_UNK data_0215d890,data_0215d990,data_0215d9b8;
 typedef struct { s16 a,b,c,d; } EntryBE;
 
 static inline s32 IsNewerValue(u32 b, u32 a) {
-    register u32 result = a & 0xffff0000;
+    register u32 result asm("lr") = a & 0xffff0000;
     if (result == 0xffff0000 && !(b & 0xffff0000) && b != 0) result = 0;
     else if (!result && (b & 0xffff0000) == 0xffff0000 && a != 0) result = 1;
     else result = a > b;
@@ -246,12 +246,10 @@ u8 func_020be1a8(void) {
 void func_020be1dc(s32 arg0) {
 void *func_02076228(void);s32 func_02076234(void);
 M2C_UNK func_02076010(s32,s32);M2C_UNK func_02076180(u16);
-u8 *p,*best;s32 n,i,id;register s32 better;register u32 high;u32 b,a;
+u8 *p,*best;s32 n,i,id;
 switch(arg0){case 2:case 3:case 4:func_02076010(arg0,1);return;}
 p=func_02076228();best=0;n=func_02076234();i=0;
-if(n>0)do{if(arg0==p[2]){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));
-if(!better)goto next;
-}best=p;}next:i++;p+=40;}while(i<n);
+if(n>0)do{if(arg0==p[2]){if(best){if(!IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4))) goto next;}best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return;
 func_02076180((u16)id);

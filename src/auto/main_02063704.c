@@ -114,7 +114,7 @@ s32 func_020637fc(void *arg0) {
     }
     return result;
 }
-#pragma scheduling reset
+#pragma scheduling off
 s32 func_020639c0(void *arg0) {
     s32 func_02049534(s32);
     s32 func_020497cc(s32, s32, s32, M2C_UNK);
@@ -137,10 +137,9 @@ s32 func_020639c0(void *arg0) {
     }
     var_r4 = 0;
     M2C_FIELD(arg0, s32 *, 0x80) = M2C_FIELD(arg0, s32 *, 0x80) + temp_r0;
-    if (M2C_FIELD(arg0, s32 *, 0) == 2) goto skip_block;
-    if (M2C_FIELD(arg0, s32 *, 0x5C8) <= 0) goto skip_block;
-    func_0206006c((u8 *)arg0 + 0x4BC, M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, M2C_FIELD(arg0, s32 *, 0x80) - temp_r5);
-skip_block:
+    if (M2C_FIELD(arg0, s32 *, 0) != 2 && M2C_FIELD(arg0, s32 *, 0x5C8) > 0) {
+        func_0206006c((u8 *)arg0 + 0x4BC, M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, M2C_FIELD(arg0, s32 *, 0x80) - temp_r5);
+    }
     if (M2C_FIELD(arg0, s32 *, 0) == 3) {
         var_r4 = func_02062e30(arg0);
     }
@@ -152,8 +151,7 @@ skip_block:
     }
     return 0;
 }
-
-#pragma scheduling off
+#pragma scheduling reset
 s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
 s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 func_020623bc(void *,s32,s32,s32,s32);
 u8 packet[16]; u16 size; u16 temp; s32 result;
@@ -169,6 +167,7 @@ result=func_02062324(arg0,packet,9);if(result)return result;
 return func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
 
+#pragma scheduling on
 void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02063aa8(void *, u32, u32, void *, s32);
     u32 sp44;
@@ -193,7 +192,6 @@ void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_FIELD(&spA, u8 *, 3) = (u8) M2C_FIELD(&sp44, u8 *, 3);
     func_02063aa8((void *)arg0, (u32)arg1, (u32)arg2, (void *)&sp4, 0xA);
 }
-
 #pragma scheduling reset
 extern s32 data_0213e4b4[];
 s32 func_02063c88(void *arg0) {

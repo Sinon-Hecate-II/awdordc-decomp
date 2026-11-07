@@ -16,25 +16,46 @@ typedef struct {u8 a[2];} Bytes2B3C;
 typedef struct {u32 a[4];} Words4B3C;
 
 u8 func_020b34f8(void *arg0) {
-s32 func_0207c8ec();
-M2C_UNK func_0208fe30(s32);
-s32 active,i,factor,delta; s16 old,n; u8 step,result; s32 limit;
-if(M2C_FIELD(arg0,s16 *,18)!=0)active=1;else active=0;
-if(active&255)return 0;
-step=M2C_FIELD(arg0,u8 *,5);
-limit=M2C_FIELD(arg0,u8 *,4);
-n=func_0207c8ec(M2C_FIELD(arg0,s16 *,10)+step-1,step);
-n=limit>=n?n:limit;
-old=M2C_FIELD(arg0,s16 *,12);
-for(i=0;i<n;i++){
-if(M2C_FIELD(arg0,s16 *,12)!=0)M2C_FIELD(arg0,s16 *,12)-=1;
-if(M2C_FIELD(arg0,s16 *,8)-step>=0)M2C_FIELD(arg0,s16 *,8)-=step;
-}
-if(old!=M2C_FIELD(arg0,s16 *,12))func_0208fe30(0x10019);
-delta=M2C_FIELD(arg0,s16 *,12);factor=M2C_FIELD(arg0,u8 *,7);delta-=old;
-M2C_FIELD(arg0,s16 *,18)=delta*factor;
-if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;
-return result;
+    s32 func_0207c8ec();
+    M2C_UNK func_0208fe30(s32);
+    s32 active, i, factor, delta;
+    s16 old, n;
+    u8 step, result;
+    s32 limit;
+
+    if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
+        active = 1;
+    } else {
+        active = 0;
+    }
+    if (active & 0xFF) {
+        return 0U;
+    }
+    step = M2C_FIELD(arg0, u8 *, 0x5);
+    limit = M2C_FIELD(arg0, u8 *, 0x4);
+    n = func_0207c8ec(M2C_FIELD(arg0, s16 *, 0xA) + step - 1, step);
+    n = (old = M2C_FIELD(arg0, volatile s16 *, 0xC), limit >= n ? n : limit);
+    for (i = 0; i < n; i++) {
+        if (M2C_FIELD(arg0, s16 *, 0xC) != 0) {
+            M2C_FIELD(arg0, s16 *, 0xC) -= 1;
+        }
+        if (M2C_FIELD(arg0, s16 *, 0x8) - step >= 0) {
+            M2C_FIELD(arg0, s16 *, 0x8) -= step;
+        }
+    }
+    if (old != M2C_FIELD(arg0, s16 *, 0xC)) {
+        func_0208fe30(0x10019);
+    }
+    delta = M2C_FIELD(arg0, s16 *, 0xC);
+    factor = M2C_FIELD(arg0, u8 *, 0x7);
+    delta -= old;
+    M2C_FIELD(arg0, s16 *, 0x12) = (s16)(delta * factor);
+    if (M2C_FIELD(arg0, s16 *, 0x12) != 0) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+    return result;
 }
 
 #pragma opt_propagation off

@@ -275,14 +275,17 @@ void func_020d2b10(s32 arg0, s32 arg1) {
     s32 func_020d19b4(s32);
     void func_02091c54(s32, s32);
 
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    do {
+        if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
+            break;
+        }
         func_02091c54(0xB, arg1);
         *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C)) -= arg1;
         *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) += arg1;
         if (*((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) > 0x3B9AC9FF) {
             *((s32 *)((u8 *)*gCurrentMap + 0x67A4 + arg0 * 0x8C) + 1) = 0x3B9AC9FF;
         }
-    }
+    } while (0);
 }
 
 void func_020d2bc0(s32 arg0, s32 arg1) {

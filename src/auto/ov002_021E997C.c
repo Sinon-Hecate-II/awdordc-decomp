@@ -252,19 +252,13 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     void func_ov002_021e3e0c(void *, s16, s16, s16, u16, u16, u16, u16, u8, u8, u8, u8);
     extern u8 data_ov002_021f30f4[];
     extern u8 data_ov002_021f306e[];
-    u8 idx;
-    u8 idx2;
-    void *p;
-    u16 a;
-    u16 b;
-    u16 c;
-    u16 d;
-    u8 e;
-    s16 x;
-    s16 y;
-    s16 z;
+    void *tmp, *p, *base2;
+    u8 idx, idx2, e;
+    u16 a, b, c, d;
+    s16 x, y, z;
+
     if (M2C_FIELD(arg0, void **, 0x64) != 0) {
-        void *tmp = func_02082028(8);
+        tmp = func_02082028(8);
         if (tmp != 0) {
             M2C_FIELD(tmp, s32 *, 0) = 0;
             M2C_FIELD(tmp, s32 *, 4) = 0;
@@ -274,15 +268,17 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
         M2C_FIELD(arg0, void **, 0x68) = tmp;
         M2C_FIELD(arg0, void **, 0x64) = func_02082028(0x14);
     }
+
     idx = M2C_FIELD(arg0, u8 *, 0x8c);
-    idx2 = M2C_FIELD(arg0, u8 *, 0x8d);
     p = M2C_FIELD(data_ov002_021f30f4, void **, idx * 0x18);
+    idx2 = M2C_FIELD(arg0, u8 *, 0x8d);
     p = M2C_FIELD(p, void **, 0x28);
     a = M2C_FIELD(p, u16 *, 0xaa);
     b = M2C_FIELD(p, u16 *, 0xac);
-    c = M2C_FIELD(data_ov002_021f306e, u16 *, idx * 0x64 + idx2 * 0x2);
+    base2 = data_ov002_021f306e;
+    c = M2C_FIELD(base2, u16 *, idx * 0x64 + idx2 * 0x2);
     d = M2C_FIELD(p, u16 *, 0xae);
-    e = (idx2 + 1) & 0xff;
+    e = (u8)((s32)idx2 + 1);
     x = (s16)(arg1 + M2C_FIELD(p, s16 *, 0xa4));
     y = (s16)(arg2 + M2C_FIELD(p, s16 *, 0xa6));
     z = M2C_FIELD(p, s16 *, 0xa8);

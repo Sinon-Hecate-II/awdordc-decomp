@@ -179,7 +179,7 @@ void func_ov005_02214cdc(void) {
     s16 selected;
     s32 none;
     p = M2C_FIELD(&data_ov005_02221304, void **, 8);
-    gCur3DSpriteEngine = engine;
+    *(void *volatile *)&gCur3DSpriteEngine = engine;
     selected = M2C_FIELD(p, s16 *, 2);
     none = -1;
     if (selected == none) {

@@ -498,10 +498,10 @@ void func_020c1078(void) {
 }
 
 void *func_020c10a4(s32 x,s32 y,s32 flag){
-extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
+extern void *gCurrentMap;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
 MapC10 *p;u32 idx; s32 k,n,v;
 if(x>=0 && y>=0){
-p=*(void**)data_027e0058;
+p=*(void**)gCurrentMap;
 if(x<p->width&&y<p->height)goto valid;
 }
 return data_02163f9c;
@@ -509,7 +509,7 @@ valid:
 idx=x+p->rows[y];
 {u8 *tiles=p->tiles; v=tiles[idx];}
 n=v&31;k=((u8*)&data_0216408c)[v>>5];
-if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0;}
+if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0x0;}
 v=data_02129728[n];
 if(n==27 || (u32)n==28)k=0;
 return &data_0211e538[data_021296e8[v+k]];

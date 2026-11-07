@@ -337,31 +337,32 @@ s32 func_ov000_0219efa4(void) {
     s32 func_020d6544(s32, s32, s32, void *, s32);
     s32 func_020d1a1c(s32);
     void func_ov000_02199f50(s32, s32, s32, s32);
-    void func_020a64ec(void);
+    void func_020a64ec(void *);
     extern void **gCurrentMap;
     extern u8 data_ov000_021df7dc[];
     extern u8 data_ov000_021df7d0[];
 
-    void *map;
-    s32 x, y, masked, result;
+    s32 result;
+
     func_020d61f0();
-    map = *gCurrentMap;
-    func_ov000_0216939c(*(void **)((u8 *)map + 0x52d0));
+    func_ov000_0216939c(*(void **)((u8 *)*gCurrentMap + 0x52d0));
     func_020cfd28();
-    func_020844a0(data_ov000_021df7dc, (u8 *)map + 0x5388);
-    x = *(s16 *)((u8 *)map + 0x52d8);
-    y = *(s16 *)((u8 *)map + 0x52da);
-    masked = (s32)(((u32)*(u8 *)*(void **)((u8 *)map + 0x52d0) << 26) >> 26);
-    result = func_020d6544(x, y, masked, (u8 *)map + 0x5388, 4);
+    func_020844a0(data_ov000_021df7dc, (u8 *)*gCurrentMap + 0x5388);
+    result = func_020d6544(
+        *(s16 *)((u8 *)*gCurrentMap + 0x52d8),
+        *(s16 *)((u8 *)*gCurrentMap + 0x52da),
+        ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52d0))[0] & 0x3f,
+        (u8 *)*gCurrentMap + 0x5388,
+        4);
     if (result != 0) {
-        if (func_020d1a1c(*(u16 *)((u8 *)map + 0x52a4)) != 0) {
-            func_ov000_02199f50(0xf, *(u8 *)((u8 *)map + 0x52d4), 0, 0);
+        if (func_020d1a1c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
+            func_ov000_02199f50(0xf, *(u8 *)((u8 *)*gCurrentMap + 0x52d4), 0, 0);
         }
         data_ov000_021df7dc[0] = 2;
     }
-    func_020a64ec();
-    data_ov000_021df7d0[1] = 2;
-    return (*(s8 *)((u8 *)map + 0x5388) == 4) ? 1 : 0;
+    func_020a64ec((u8 *)*gCurrentMap + 0x5388);
+    *(u8 *)(*(void **)data_ov000_021df7d0 + 1) = 2;
+    return (*(s8 *)((u8 *)*gCurrentMap + 0x5388) == 4) ? 1 : 0;
 }
 
 #pragma opt_common_subs off

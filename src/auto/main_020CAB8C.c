@@ -96,7 +96,7 @@ s32 func_020cad1c(s32 *arg0, s32 arg1) {
 void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 data_0215be0c;
 M2C_UNK func_020d472c();M2C_UNK func_020c75cc();void func_01ffa574(void *);void func_01ffa6fc(void *);void func_020c93fc(u8,u8);
-s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s32 selector; s32 index;u8 *units;void *map;u8 *unit;
+s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=func_020cad1c(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
 if(flags&32){
@@ -105,12 +105,12 @@ map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c2)=M2C_FIELD(map,s16 *,0x52d8);
 map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c4)=M2C_FIELD(map,s16 *,0x52da);
 func_01ffa574(p);return;
 }
-if(!(flags&16))return;
+if((flags&16)==0)return;
 data_0215be0c=M2C_FIELD(p,s16 *,0x6e);
 map=*gCurrentMap;selector=M2C_FIELD(p,s16 *,0x70);
 unit=(u8*)M2C_FIELD(map,void **,0x52d0)+selector;
 units=(u8*)map+0x59a4;
-index=unit[12]*14;
+index=(s32)unit[12]*14;
 func_020c93fc((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
 map=*gCurrentMap;
 ((void(*)(s32,s32,s32))func_020cad00)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));

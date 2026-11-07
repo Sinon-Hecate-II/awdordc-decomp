@@ -114,9 +114,9 @@ s32 func_0205de10(void) {
  return 1;
 }
 
-#pragma opt_propagation off
+#pragma scheduling off
 s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_020496a4(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 func_020496a4(s32, s32, s32);
     void *func_0205d7f4();
     M2C_UNK func_0205d88c();
     void func_0205da30();
@@ -140,7 +140,7 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg4;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg5;
-    M2C_FIELD(temp_r0, s32 *, 0) = func_020496a4(arg4 - arg4 + 2, arg5 - arg5 + 2, 0);
+    M2C_FIELD(temp_r0, s32 *, 0) = func_020496a4(2, 2, 0);
     M2C_FIELD(temp_r0, s32 *, 0x20) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x32) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x33) = 0;
@@ -154,7 +154,7 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     func_0205da30();
     return 0;
 }
-#pragma opt_propagation on
+#pragma scheduling reset
 void func_0205df50(void) {
  void *func_0205d75c(void);
  void func_020496b8(s32);
@@ -239,6 +239,7 @@ M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
  packet.ip=((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00)));
  port=M2C_FIELD(arg1,u16 *,2);
  func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(arg1,s32 *,4),(u16)((u8)((s32)port>>8)|((port<<8)&0xff00)),&packet,21);
+ (void)packet;
 }
 
 void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
@@ -257,8 +258,7 @@ void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
     M2C_FIELD(arg0, s32 *, 0x2C) = M2C_FIELD(arg1, s32 *, 0x0C);
     temp_r2 = M2C_FIELD(arg1, u16 *, 0x10);
     M2C_FIELD(arg0, s16 *, 0x30) = (s16)(((u8)(temp_r2 >> 8)) | ((temp_r2 << 8) & 0xFF00));
-    M2C_FIELD(arg0, s32 *, 0x10) = 2;
-    M2C_FIELD(arg0, s32 *, 0x20) = 0;
+    M2C_FIELD(arg0, s32 *, 0x10) = 2; M2C_FIELD(arg0, s32 *, 0x20) = 0;
     M2C_FIELD(arg0, M2C_UNK (**)(s32, s32), 0x34)(2, M2C_FIELD(arg0, s32 *, 0x3C));
     func_0205dc78(arg0);
 }

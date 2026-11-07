@@ -513,18 +513,19 @@ func_0200f944(arg1,time%86400);
 func_0200f844(arg0,time/86400);
 }
 
+#pragma opt_instruction_scheduling off
 s32 func_0200fa50(void *arg0) {
-register s32 month=M2C_FIELD(arg0,s32 *,4)-(2);
-register s32 year=M2C_FIELD(arg0,s32 *,0)+2000;
-s32 century,yy,days,day=M2C_FIELD(arg0,s32 *,8);
-if(month<(1)) year--;
-century=year/100; yy=year%100;
-if(month<1) month+=12;
-days=day+(month*26-2)/10+yy;
-days=days+yy/4+century/4+century*5;
-return days%7;
+    s32 month = M2C_FIELD(arg0, s32 *, 4) - 2;
+    s32 year = M2C_FIELD(arg0, s32 *, 0) + 2000;
+    s32 century, yy, days, day = M2C_FIELD(arg0, s32 *, 8);
+    if (month < 1) year--;
+    century = year / 100; yy = year % 100;
+    if (month < 1) month += 12;
+    days = day + (month * 26 - 2) / 10 + yy;
+    days = days + yy / 4 + century / 4 + century * 5;
+    return days % 7;
 }
-
+#pragma opt_instruction_scheduling reset
 void func_0200fb0c(s32 arg0) {
 void func_02005f80(void *,s32); void func_02005e5c(void *); extern M2C_UNK data_0212fde0;
 void *p=&data_0212fde0; s32 flags; void *thread;
@@ -550,7 +551,7 @@ loop: func_02005da4((u8 *)p+0x10);
 check: if(M2C_FIELD(p,s32 *,8)!=-3) {goto loop;}
 M2C_FIELD(p,s32 *,8)=arg0; M2C_FIELD(p,s32 *,0x18)=arg1;
 }
-{ s32 count=M2C_FIELD(p,s32 *,12); volatile s32 *out=M2C_FIELD(p,s32 **,0); M2C_FIELD(p,s32 *,12)=count+1; *out=count-count; }
+{ s32 count=M2C_FIELD(p,s32 *,12); s32 *out=M2C_FIELD(p,s32 **,0); M2C_FIELD(p,s32 *,12)=count+1; *out=0; }
 func_02007530(state);
 }
 #pragma opt_instruction_scheduling off

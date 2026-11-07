@@ -168,17 +168,17 @@ return 0;
 #pragma thumb on
 int func_ov001_0216c318(void *p,int out) {
  int func_ov001_0216cef0(unsigned short); void func_ov001_0216cdd4();
- unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8; unsigned char *data=(unsigned char *)(out+48); unsigned int n; int kind;
- for(;;) {
- n=func_ov001_0216cef0(*(unsigned short *)(r+2)); kind=*r;
- switch(kind) {case 0x30:case 0x40:if(n>64)return -1;break;case 0x35:case 0x45:if(n>33)return -1;break;}
- switch(kind) {
- case 0x30:case 0x40:func_ov001_0216cdd4(data,r+6,n);*(int *)(out+4)=n;break;
- case 0x35:case 0x45:if(n && r[n+5]) return -1;func_ov001_0216cdd4(text,r+6,n);break;
- default:return -1;
- }
- if(!*(unsigned short *)(r+4))break;
- r=base+func_ov001_0216cef0(*(unsigned short *)(r+4));
+ unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8,*data=(unsigned char *)out+48; unsigned int n; int kind;
+ for (;;) {
+  n=func_ov001_0216cef0(*(unsigned short *)(r+2)); kind=*r;
+  switch(kind) { case 0x30: case 0x40: if(n>64) return -1; break; case 0x35: case 0x45: if(n>33) return -1; break; }
+  switch(kind) {
+   case 0x30: case 0x40: func_ov001_0216cdd4(data,r+6,n); *(int *)(out+4)=n; break;
+   case 0x35: case 0x45: if(n && r[n+5]) return -1; func_ov001_0216cdd4(text,r+6,n); break;
+   default: return -1;
+  }
+  if (!*(unsigned short *)(r+4)) break;
+  r=base+func_ov001_0216cef0(*(unsigned short *)(r+4));
  }
  return 0;
 }
@@ -384,6 +384,6 @@ void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) 
 #pragma thumb on
 void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
  int i; int half=n/2;
- for(i=0;i<half;i++) { b[half] ^= a[i]; b++; }
+ for(i=0;i<half;i++) { b[half+i] ^= a[i]; }
 }
 #pragma thumb off

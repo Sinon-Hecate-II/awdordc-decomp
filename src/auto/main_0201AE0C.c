@@ -30,7 +30,7 @@ M2C_FIELD(&data_0213731a,u16*,off)=now;
 }
 
 #pragma scheduling off
-void func_0201af48(void *a,s32 b,M2C_UNK c,M2C_UNK d,u32 ip,u16 type){M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);s32 func_0201a704(u32);s32 func_0201a764(u32);M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK *func_0201abd0(void);M2C_UNK *func_0201ad9c(s32);extern M2C_UNK data_02137778;M2C_UNK *p;s32 n;M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);if(!func_0201a764(ip)){n=func_0201a704(ip);if(!n)return;p=func_0201abd0();if(!p){p=func_0201ad9c(n);if(!p)return;}func_02008048(p,(u8 *)a-14,6);}else{M2C_FIELD(a,u8 *,-14)=1;M2C_FIELD(a,u8 *,-13)=0;M2C_FIELD(a,u8 *,-12)=0x5e;M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;M2C_FIELD(a,u8 *,-10)=ip>>8;M2C_FIELD(a,u8 *,-9)=ip;func_02008048(&data_02137778,(u8 *)a-8,6);}func_0201a824((u8 *)a-14,b+14,c,d);}
+void func_0201af48(void *a,s32 b,M2C_UNK c,M2C_UNK d,u32 ip,u16 type){M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);s32 func_0201a704(u32);s32 func_0201a764(u32);M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK *func_0201abd0(void);M2C_UNK *func_0201ad9c(s32);extern M2C_UNK data_02137778;M2C_UNK *p;s32 n;*(volatile u16 *)((u8*)a-2)=(type>>8)|(type<<8);if(!func_0201a764(ip)){n=func_0201a704(ip);if(!n)return;p=func_0201abd0();if(!p){p=func_0201ad9c(n);if(!p)return;}func_02008048(p,(u8 *)a-14,6);}else{*(volatile u8 *)((u8*)a-14)=1;*(volatile u8 *)((u8*)a-13)=0;*(volatile u8 *)((u8*)a-12)=0x5e;*(volatile u8 *)((u8*)a-11)=(ip>>16)&127;*(volatile u8 *)((u8*)a-10)=ip>>8;*(volatile u8 *)((u8*)a-9)=ip;func_02008048(&data_02137778,(u8 *)a-8,6);}func_0201a824((u8 *)a-14,b+14,c,d);}
 #pragma scheduling on
 void func_0201b018(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
 s32 func_0200751c(void);void func_02007530(s32);
@@ -222,41 +222,34 @@ void func_0201bb88(void *arg0, u8 *arg1, M2C_UNK arg2) {
     s32 func_0201a658(u8 *, M2C_UNK);
     M2C_UNK func_0201b984(void *, u8 *, M2C_UNK);
     M2C_UNK func_0201ba68(void *, u8 *, M2C_UNK);
-    u16 w0;
-    u16 w1;
-    u16 w2;
-    u16 w3;
-    u32 a;
-    u32 b;
-    u8 c;
+    u16 a;
+    u16 b;
+    u16 c;
+    u16 d;
+    u32 p0;
+    u32 p1;
 
     if (func_0201a658(arg1, arg2) != 0xFFFF) {
         return;
     }
-    w0 = M2C_FIELD(arg0, u16 *, 0x12);
-    w1 = M2C_FIELD(arg0, u16 *, 0x10);
-    w2 = M2C_FIELD(arg0, u16 *, 0xE);
-    w3 = M2C_FIELD(arg0, u16 *, 0xC);
-
-    w0 = (u16)((w0 << 8) | (w0 >> 8));
-    w1 = (u16)((w1 << 8) | (w1 >> 8));
-    w2 = (u16)((w2 << 8) | (w2 >> 8));
-    w3 = (u16)((w3 << 8) | (w3 >> 8));
-
-    a = ((u32)w3 << 16) | w2;
-    b = ((u32)w1 << 16) | w0;
-
-    if (func_0201bb68(a, b) == 0) {
+    a = M2C_FIELD(arg0, u16 *, 0x12);
+    b = M2C_FIELD(arg0, u16 *, 0x10);
+    c = M2C_FIELD(arg0, u16 *, 0xE);
+    d = M2C_FIELD(arg0, u16 *, 0xC);
+    p0 = ((u32)(u16)((d >> 8) | (d << 8)) << 16) | (u16)((c >> 8) | (c << 8));
+    p1 = ((u32)(u16)((b >> 8) | (b << 8)) << 16) | (u16)((a >> 8) | (a << 8));
+    if (func_0201bb68(p0, p1) == 0) {
         return;
     }
-    c = *arg1;
-    if (c == 0) {
-        func_0201ba68(arg0, arg1, arg2);
-        return;
-    }
-    if (c == 8) {
-        func_0201b984(arg0, arg1, arg2);
-        return;
+    switch (*arg1) {
+        case 0:
+            func_0201ba68(arg0, arg1, arg2);
+            return;
+        case 8:
+            func_0201b984(arg0, arg1, arg2);
+            return;
+        default:
+            return;
     }
 }
 

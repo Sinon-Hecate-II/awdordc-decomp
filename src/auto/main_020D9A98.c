@@ -63,10 +63,11 @@ func_0208fe30(0x1000D); func_01ffa6fc(temp_r4);}
 void func_020d9ee4(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
 
+#pragma scheduling off
 void func_020d9f40(void *arg0) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
     M2C_UNK func_0208fe30(s32);
-    extern void **gCur3DSpriteEngine;
+    extern void **data_027e01d8;
     extern void **data_027e00c8;
     void *temp_r7;
     void **saved;
@@ -74,32 +75,34 @@ void func_020d9f40(void *arg0) {
     s32 r9;
     s32 r10;
     s32 r8;
+    s32 first_byte;
 
     temp_r7 = M2C_FIELD(arg0, void **, 0x10);
-    saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    saved = data_027e01d8;
+    data_027e01d8 = data_027e00c8;
 
     r9 = 1;
     r10 = 5;
     r8 = 0;
     for (i = 0; i < 4; i++) {
-        func_020808dc((u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x20) + 2 + (r9 << 6)), 0x1e, (s32)(u16)(r10 - r9), 5);
-        r9 = r9 + 5;
-        r10 = r10 + 5;
+        func_020808dc((u16 *)((u8 *)M2C_FIELD(data_027e01d8, void **, 0x20) + 2 + (r9 << 6)), 0x1e, (s32)(u16)(r10 - r9), 5);
+        first_byte = r9 + 5;
+        r9 = (s16)(first_byte);
+        first_byte = r10 + 5;
+        r10 = (s16)(first_byte);
         r8 = r8 + 1;
-        r9 = (s16)(r9);
-        r10 = (s16)(r10);
     }
 
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-    gCur3DSpriteEngine = saved;
+    M2C_FIELD(data_027e01d8, u8 *, 0x46) |= 1;
+    data_027e01d8 = saved;
 
-    if ((s8)M2C_FIELD(temp_r7, s8 *, 0x43) != M2C_FIELD(arg0, u8 *, 0)) {
-        M2C_FIELD(temp_r7, s8 *, 0x43) = M2C_FIELD(arg0, u8 *, 0);
+    first_byte = M2C_FIELD(arg0, u8 *, 0x0);
+    if ((s8)M2C_FIELD(temp_r7, s8 *, 0x43) != (u8)first_byte) {
+        M2C_FIELD(temp_r7, s8 *, 0x43) = (u8)first_byte;
         func_0208fe30(0x10019);
     }
 }
-
+#pragma scheduling reset
 void func_020da008(void *arg0) {
     u16 temp_r0;
     u16 temp_r0_3;
@@ -415,27 +418,18 @@ void func_020da948(s32 arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
             return;
         }
     }
-    if (arg0 == 0) {
-        return;
-    }
+    if (arg0 == 0) { (void)0; return; }
     func_ov010_0222a808((s8) M2C_FIELD(arg3, u8 *, 0x44), M2C_FIELD(arg3, u16 *, 0x46), arg0, arg1, arg2, arg3);
     func_ov010_02228320();
     switch (arg2) {
-    case 0:
-    case 1:
-    case 2:
+    case 0: case 1: case 2:
         func_ov010_022282d4(6);
         return;
-    case 3:
-    case 4:
-    case 5:
-    case 6:
+    case 3: case 4: case 5: case 6:
         func_020d47f0();
         func_01ffa8c4(arg3, 1);
         return;
-    case 7:
-        return;
-    default:
+    case 7: default:
         return;
     }
 }

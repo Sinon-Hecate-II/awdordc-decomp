@@ -222,7 +222,7 @@ case 4: func_ov010_02221474((u8 *)arg0+4,arg1,arg2,arg3); return;
 s32 func_ov010_022224b4(void){
 s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void func_ov010_0222393c(void *,u32,s32);void func_ov010_022232e0(void);void func_ov010_02225288(void);
 extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,data_ov010_0222edc0;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 data_ov010_0222c998[];
-s32 i; s32 saved; s32 n; u8 y,x;
+s32 i; s32 saved; s32 n; u8 x,y; u8 *t;
 saved=func_020070a4();
 M2C_FIELD(&data_ov010_0222c960,u16 *,0)=saved; data_ov010_0222c000=1;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=0;
@@ -230,10 +230,11 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
 if(M2C_FIELD(&data_ov010_0222edc0,s32 *,16)==1)M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=0;
 else M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=4;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x24)=0x440;
-{ n=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
-x=M2C_FIELD(data_ov010_0222be2c+n*2,u8 *,1);y=data_ov010_0222be2c[n*2];
+n=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
+t=data_ov010_0222be2c+n*2;
+x=t[1];
+y=t[0];
 M2C_FIELD(&data_ov010_0222c960,s32 *,12)=x+y*68+12;
-}
 M2C_FIELD(&data_ov010_0222c960,s32 *,3840)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3844)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3852)=0;
@@ -296,11 +297,13 @@ void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010
 u32 i;
 for(i=0;i<3;i++) {
 if(data_ov010_0222c98c[i]==arg0) {
-{s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20); data_ov010_0222c98c[i]=0; M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;}
+s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20);
+data_ov010_0222c98c[i]=0;
+M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;
 func_ov010_022239c8(data_ov010_0222c998+i*0x94);
 func_ov010_0222369c(i);
 func_ov010_02223314(i);
-{void *state=&data_ov010_0222c960; u32 mask=M2C_FIELD(arg0,u32 *,8); M2C_FIELD(state,u32 *,4)=M2C_FIELD(state,u32 *,4)&~mask;}
+M2C_FIELD(&data_ov010_0222c960,u32 *,4)=M2C_FIELD(&data_ov010_0222c960,u32 *,4) & ~M2C_FIELD(arg0,u32 *,8);
 break;
 }
 }

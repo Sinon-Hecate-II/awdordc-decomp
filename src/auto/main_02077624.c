@@ -514,13 +514,11 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
         }
     }
 }
-#pragma opt_strength_reduction reset
-#pragma opt_common_subs reset
-#pragma optimization_level reset
+#pragma opt_strength_reduction off
 void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
-    extern s32 *data_027e0058;
-    extern u8 data_02141008[];
-    extern u8 data_02141788[];
+    extern s32 *gCurrentMap;
+    extern u8 data_02141008[1920];
+    extern u8 data_02141788[1920];
     extern u32 data_027e15bc;
     extern const u8 data_020eb1f0[32];
     u8 pal[32];
@@ -530,13 +528,12 @@ void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 h;
     s32 x;
     s32 y;
-    s32 i;
-    u8 c;
+    s32 c;
 
-    base = *(u8 **)data_027e0058;
+    base = *(u8 **)gCurrentMap;
     sub = base + 0x120;
-    w = M2C_FIELD(sub, u16 *, 0x5024);
-    h = M2C_FIELD(sub, u16 *, 0x5026);
+    w = *(u16 *)((u8 *)sub + 0x5024);
+    h = *(u16 *)((u8 *)sub + 0x5026);
     if (x0 < 0) {
         x0 = 0;
     }
@@ -549,32 +546,54 @@ void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (y1 > h - 1) {
         y1 = h - 1;
     }
-    for (y = y0; y <= y1; y++) {
-        for (x = x0; x <= x1; x++) {
-            c = 0;
-            if (M2C_FIELD(y, u8 *, (s32)&data_02141008 + x * 0x28) != 0) {
-                for (i = 0; i < 0x20; i += 2) {
-                    pal[i] = data_020eb1f0[i];
-                    pal[i + 1] = data_020eb1f0[i + 1];
-                }
-                c = pal[(data_027e15bc >> 2) & 0x1F];
-            }
-            M2C_FIELD(y, u8 *, (s32)&data_02141788 + x * 0x28) = c;
-        }
+    y = y0;
+    goto outer_test;
+outer:
+    x = x0;
+    goto inner_test;
+inner:
+    c = 0;
+    if (data_02141008[x * 0x28 + y] != 0) {
+        s32 i;
+        u8 *pp;
+        const u8 *qq;
+#pragma opt_strength_reduction on
+        pp = pal;
+        qq = data_020eb1f0;
+        i = 0x10;
+        do {
+            pp[0] = qq[0];
+            pp[1] = qq[1];
+            pp = pp + 2;
+            qq = qq + 2;
+            i = i - 1;
+        } while (i != 0);
+#pragma opt_strength_reduction off
+        c = pal[(data_027e15bc >> 2) & 0x1F];
+    }
+    data_02141788[x * 0x28 + y] = (u8)c;
+    x = x + 1;
+inner_test:
+    if (x <= x1) {
+        goto inner;
+    }
+    y = y + 1;
+outer_test:
+    if (y <= y1) {
+        goto outer;
     }
 }
-
-#pragma opt_strength_reduction off
+#pragma opt_strength_reduction on
 void func_0207843c(s32 x0,s32 y0,s32 x1,s32 y1){
 s32 func_0207e52c(s32,s32);s32 func_0207ef5c(s32,s32,u16);
 extern s32 *gCurrentMap;extern u8 data_02142ebc[3840],data_02143dbc[3840];
-u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off;u16 *p; s32 a,x,y,w,h,b;u16 *q;
+u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off; s32 a,x,y,w,h,b;
 w=M2C_FIELD(sub,u16*,0x5024);h=M2C_FIELD(sub,u16*,0x5026);
 if(x0<0)x0=0;if(y0<0)y0=0;if(x1>w-1)x1=w-1;if(y1>h-1)y1=h-1;
-p=(u16*)data_02142ebc;q=(u16*)data_02143dbc;y=y0;goto outercheck;outer: x=x0;off=y*2;goto innercheck;inner:
+y=y0;goto outercheck;outer: x=x0;off=y*2;goto innercheck;inner:
 a=func_0207e52c(x,y);b=func_0207ef5c(x,y,(u16)a);
-M2C_FIELD((u8*)p+x*80,u16*,off)=a;
-M2C_FIELD(data_02143dbc,u16*,x*80+y*2)=b;
+*(u16 *)((u8 *)data_02142ebc + x*0x50 + off)=a;
+*(u16 *)((u8 *)data_02143dbc + x*0x50 + off)=b;
 x++;innercheck:if(x<=x1)goto inner;
 y++;outercheck:if(y<=y1)goto outer;
 }

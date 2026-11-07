@@ -87,34 +87,25 @@ s32 func_0200dfa8(void) {
 }
 
 #pragma scheduling off
-void func_0200dfb8(s32 a, u32 b, s32 c) {
-    extern M2C_UNK data_0212fcac;
-    void (*cb)(s32, s32);
-    u16 cmd;
-    s32 result;
-    if (c) {
-        if (M2C_FIELD(&data_0212fcac, s32 *, 4)) M2C_FIELD(&data_0212fcac, s32 *, 4) = 0;
-        cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 8);
-        if (cb) { M2C_FIELD(&data_0212fcac, s32 *, 8) = 0; cb(6, M2C_FIELD(&data_0212fcac, s32 *, 12)); }
-    }
-    cmd = (b & 0x7F00) >> 8;
-    switch (b & 0xFF) {
-        case 0: result = 0; break;
-        case 1: result = 4; break;
-        case 2: result = 2; break;
-        case 3: result = 5; break;
-        case 4: result = 1; break;
-        default: result = 6; break;
-    }
-    if (cmd == 81) {
-        cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 20);
-        if (cb) cb(result, M2C_FIELD(&data_0212fcac, s32 *, 24));
-        return;
-    }
-    if (cmd == 64 && M2C_FIELD(&data_0212fcac, u16 **, 28)) *M2C_FIELD(&data_0212fcac, u16 **, 28) = *(volatile u16 *)0x027FFF94;
-    if (M2C_FIELD(&data_0212fcac, s32 *, 4)) M2C_FIELD(&data_0212fcac, s32 *, 4) = 0;
-    cb = M2C_FIELD(&data_0212fcac, void (**)(s32, s32), 8);
-    if (cb) { M2C_FIELD(&data_0212fcac, s32 *, 8) = 0; cb(result, M2C_FIELD(&data_0212fcac, s32 *, 12)); }
+void func_0200dfb8(s32 a,u32 b,s32 c){
+extern M2C_UNK data_0212fcac;
+void (*cb)(s32,s32);u32 cmd;u32 low;s32 result;
+if(c){
+if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
+cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
+if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(6,M2C_FIELD(&data_0212fcac,s32 *,12));}
+}
+low=b&0xff; cmd=(b&0x7f00)>>8;
+switch(low){case 0:result=0;break;case 1:result=4;break;case 2:result=2;break;case 3:result=5;break;case 4:result=1;break;default:result=6;break;}
+if(cmd==81){
+cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),20);
+if(cb)cb(result,M2C_FIELD(&data_0212fcac,s32 *,24));
+return;
+}
+if(cmd==64 && M2C_FIELD(&data_0212fcac,u16 **,28)) *M2C_FIELD(&data_0212fcac,u16 **,28)=*(volatile u16 *)0x027fff94;
+if(M2C_FIELD(&data_0212fcac,s32 *,4))M2C_FIELD(&data_0212fcac,s32 *,4)=0;
+cb=M2C_FIELD(&data_0212fcac,void (**)(s32,s32),8);
+if(cb){M2C_FIELD(&data_0212fcac,s32 *,8)=0;cb(result,M2C_FIELD(&data_0212fcac,s32 *,12));}
 }
 #pragma scheduling on
 s32 func_0200e0e0(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {

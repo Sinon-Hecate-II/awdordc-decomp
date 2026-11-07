@@ -12,21 +12,25 @@ void func_ov003_021e4448(void *arg0) {
     u32 count;
     u8 i;
     void *base;
+    u16 val;
     local.data = (void *)&data_ov003_0220f47c;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i != 5; i++) {
         local.buf1[i] = 0xFFFF;
         local.buf0[i] = local.buf1[i];
     }
     func_ov003_021f2860(&local);
     func_ov003_021f140c(1);
-    for (i = 0; i < 5; i++) {
-        count = func_ov003_021f2780((M2C_UNK)&local, local.buf0);
+    i = 0;
+    while (i < 5) {
+        count = (u32)func_ov003_021f2780((M2C_UNK)&local, local.buf0);
         base = M2C_FIELD(arg0, void **, 0x68);
-        if (i >= count) {
+        if ((u32)i >= count) {
             M2C_FIELD((s32)base + (s32)i * 0x6F8, u8 *, 0x27) = 0;
         } else {
-            func_020c85c4(local.buf0[i], base + (s32)i * 0x6F8);
+            val = local.buf0[i];
+            func_020c85c4(val, base + (s32)i * 0x6F8);
         }
+        i++;
     }
     func_ov006_0221734c(arg0, M2C_FIELD(arg0, void **, 0x68), M2C_FIELD(arg0, void **, 0x6C));
 }
@@ -157,8 +161,8 @@ void func_ov003_021e47b0(void) {
 u32 func_ov003_021e47bc(void *arg0) {
     extern M2C_UNK data_ov003_0220f47c;
     struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
-    u8 i;
     u8 count;
+    u8 i;
     M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) & ~0x80);
     local.data = (void *)&data_ov003_0220f47c;
     for (i = 0; i < 5; i++) {

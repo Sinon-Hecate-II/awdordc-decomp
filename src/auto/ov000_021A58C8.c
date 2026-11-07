@@ -309,8 +309,8 @@ for(;;) { result=-1; for(i=0;i<(s32)data_ov000_021df578[1];i++,p+=8) { if(p[1]!=
 #pragma optimization_level 3
 s32 func_ov000_021a66e8(void) {
 void func_ov000_021a01c0(void);
-extern M2C_UNK data_ov000_021dfd94,data_ov000_021e00ac;extern u8 *data_ov000_021df578;extern void **gCurrentMap;
-u8 *p=(u8 *)&data_ov000_021dfd94; s32 found,i,r;u8 *entry;void *map;void *cell;u32 x,y;
+extern M2C_UNK data_ov000_021dfd94,data_ov000_021e00ac;extern u8 *data_ov000_021df578;extern void **data_027e0058;
+u8 *p=(u8 *)&data_ov000_021dfd94; s32 found,i,r;u8 *entry;void *map;
 func_ov000_021a01c0();
 for(;;){
 found=-1;
@@ -321,9 +321,9 @@ if(found==-1)return -1;
 r=func_ov000_021a6440(1,found);
 if(r!=-1)r=func_ov000_021a63b8(1,found);
 if(r==-1)break;
-entry=(u8 *)&data_ov000_021e00ac+r*12;map=*gCurrentMap;
-y=entry[1];x=entry[0];cell=(map+x)+M2C_FIELD(map+y*2,u16 *,0x3758)+0x2000;
-if(M2C_FIELD(cell,u8 *,0x840)<50 && M2C_FIELD(cell,u8 *,0xd48)<50)return r;
+entry=(u8 *)&data_ov000_021e00ac+r*12;map=*data_027e0058;
+map=map+entry[0]+M2C_FIELD(map+entry[1]*2,u16 *,0x3758)+0x2000;
+if(M2C_FIELD(map,u8 *,0x840)<50 && M2C_FIELD(map,u8 *,0xd48)<50)return r;
 p[1]=255;
 }
 return r;

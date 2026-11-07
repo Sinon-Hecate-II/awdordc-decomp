@@ -21,20 +21,20 @@ void func_ov011_0222134c(void *arg0) {
     M2C_UNK func_020822b8(u16 *);
     extern s32 data_027e00c4;
     extern s32 data_027e00c8;
-    extern s32 gCur3DSpriteEngine;
+    extern s32 data_027e01d8;
     extern M2C_UNK data_ov011_02227f08;
     typedef struct { u16 a, b, c, d, e, f; } T;
     T first;
     T second;
-    register s32 saved;
+    s32 temp_r4;
     first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
-    saved = gCur3DSpriteEngine;
-    second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
-    gCur3DSpriteEngine = data_027e00c8;
+    second = M2C_FIELD(&data_ov011_02227f08, T *, 0x6);
+    temp_r4 = data_027e01d8;
+    data_027e01d8 = data_027e00c8;
     func_020822b8((u16 *)&first);
-    gCur3DSpriteEngine = data_027e00c4;
+    data_027e01d8 = data_027e00c4;
     func_020822b8((u16 *)&second);
-    gCur3DSpriteEngine = saved;
+    data_027e01d8 = temp_r4;
 }
 
 #pragma opt_common_subs off

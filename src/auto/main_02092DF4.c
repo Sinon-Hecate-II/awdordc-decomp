@@ -487,18 +487,21 @@ s32 func_02093b48(void *arg0) {
     s32 i = start + 1;
     s32 limit = start + 0x33;
     s32 found = 0;
-    u8 *base = (u8 *)*gCurrentMap + 0x59a4;
-    u8 *entry = base + i * 14;
-    for (; i < limit; i++) {
-        u32 bits = ((u32)(*entry) << 26) >> 26;
-        if (bits) {
-            s16 p10 = M2C_FIELD(p, s16 *, 10);
-            if (p10 == 0 || bits == (u32)p10) {
-                found = 1;
-                break;
+    u8 *entry;
+    if (i < limit) {
+        u8 *base = (u8 *)M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, 0) + 0x59a4;
+        entry = base + i * 14;
+        for (; i < limit; i++) {
+            u32 bits = ((u32)(*entry) << 26) >> 26;
+            if (bits != 0) {
+                s16 p10 = M2C_FIELD(p, s16 *, 10);
+                if (p10 == 0 || bits == (u32)p10) {
+                    found = 1;
+                    break;
+                }
             }
+            entry += 14;
         }
-        entry += 14;
     }
     if (M2C_FIELD(p, void **, 4) != 0) {
         M2C_FIELD(arg0, void **, 4) = (void *)((u8 *)M2C_FIELD(arg0, void **, 4) + 0x10);

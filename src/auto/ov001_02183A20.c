@@ -316,20 +316,15 @@ s32 func_ov001_02183fd4(void) {
     extern s32 data_ov001_02193e00;
     extern u32 data_ov001_0218fb6c[];
     typedef struct { u32 w[17]; } Blk;
-    s32 *gp = (s32 *)&data_ov001_02193e00;
+    s32 *ptr = (s32 *)&data_ov001_02193e00;
 
-    func_02007df8(0, (u8 *)(*gp) + 0x1300, 0x348);
-    if (func_02012218((void *)(*gp), (void (*)(void))func_ov001_021841cc, 3) != 2) {
-        return 0;
-    }
-    func_02011af8((void *)((u8 *)(*gp) + 0x168c));
+    func_02007df8(0, (u8 *)(*ptr) + 0x1300, 0x348);
+    if (func_02012218((void *)(*ptr), (void (*)(void))func_ov001_021841cc, 3) != 2) return 0;
+    func_02011af8((void *)((u8 *)(*ptr) + 0x168c));
     {
-        u8 *base = (u8 *)(*gp);
+        u8 *base = (u8 *)(*ptr);
         if (*(u16 *)(base + 0x168c) == 2) {
-            const u32 *srcp = (const u32 *)data_ov001_0218fb6c;
-            s32 n = 4;
-            (void)n;
-            *(Blk *)(base + 0x1648) = *(const Blk *)srcp;
+            *(Blk *)(base + 0x1648) = *(const Blk *)data_ov001_0218fb6c;
             *(u8 **)(base + 0x1648) = base + 0xf00;
             *(u16 *)((u8 *)(*(s32 *)&data_ov001_02193e00) + 0x1650) = func_02011e98();
         }
@@ -724,8 +719,8 @@ void func_ov001_02184880(s32 arg0) {
         u8 b = src[1];
         dst[0] = a;
         dst[1] = b;
-        src += 2;
-        dst += 2;
+        src = src + 2;
+        dst = dst + 2;
         count--;
     } while (count != 0);
     base[0x4f4] = (u8)arg0;
@@ -741,6 +736,6 @@ void func_ov001_02184880(s32 arg0) {
     } else {
         ((u8 *)data_ov001_02193e04)[0x4f6] = 0;
     }
-    func_02046058(page[0xd0], (M2C_UNK *)(data_ov001_02193e04 + 0x4f0));
+    func_02046058(base[page - base + 0xd0], (M2C_UNK *)(data_ov001_02193e04 + 0x4f0));
 }
 

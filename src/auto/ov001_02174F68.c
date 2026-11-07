@@ -77,17 +77,18 @@ void func_ov001_0217531c(s32 arg0) {
 
 #pragma scheduling off
 void func_ov001_021753c8(M2C_UNK arg0) {
-M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
-void func_ov001_02175440(M2C_UNK);
-extern void *data_ov001_02193d20;
-Position pos;
-s32 bits;
-bits = *(s32 *)func_ov001_0218a24c(M2C_FIELD(data_ov001_02193d20,s32 *,0x40),0);
-pos.y = (u32)(bits & 0x01ff0000) >> 16;
-pos.x = (u8)bits + 12;
-func_ov001_02174f68(4,pos);
-if(pos.x < 192) return;
-func_ov001_0218c924(arg0,func_ov001_02175440);
+    #pragma scheduling off
+    M2C_UNK func_ov001_0218c924(M2C_UNK, void (*)(M2C_UNK));
+    void func_ov001_02175440(M2C_UNK);
+    extern void *data_ov001_02193d20;
+    Position pos;
+    s32 bits;
+    bits = *(s32 *)func_ov001_0218a24c(M2C_FIELD(data_ov001_02193d20, s32 *, 0x40), 0);
+    pos.y = (u32)(bits & 0x01ff0000) >> 16;
+    pos.x = (u8)bits + 12;
+    ((void(*)(s32,s32,u32))func_ov001_02174f68)(4, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < 0xc0) return;
+    func_ov001_0218c924(arg0, func_ov001_02175440);
 }
 #pragma scheduling reset
 void func_ov001_02175440(M2C_UNK arg0) {

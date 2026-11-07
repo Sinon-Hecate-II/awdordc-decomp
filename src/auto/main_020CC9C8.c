@@ -253,16 +253,25 @@ return 0;
 
 void func_020cd544(s32);
 void func_020cd480(s32 a){
-extern u16 data_02168f14;extern s32 *gCurrentMap;extern M2C_UNK data_0212b804;extern u32 data_0215d8a0[];u32 v;
-func_02088634();if(func_020e4b28(a)){func_020cd544(a);return;}
-func_020e49ec();data_0215d8a0[0]=(data_0215d8a0[0]&~15)|(a&15);
-v=data_0215d8a0[0]&~240;*(volatile u32 *)data_0215d8a0=v;
-data_02168f14 &= ~7;
-v&=~0xff0000;
-v&=~0xff00;
-data_0215d8a0[1]=(u16)(data_0215d8a0[1]&0xffff0000);
-data_0215d8a0[0]=v&~0xff000000;
-M2C_FIELD(*gCurrentMap,u16 *,0x5142)=161;func_02086810(161,1);func_01ffa3dc(&data_0212b804,7);
+    extern u16 data_02168f14;
+    extern s32 *gCurrentMap;
+    extern M2C_UNK data_0212b804;
+    extern u32 data_0215d8a0[];
+    u32 v;
+    func_02088634();
+    if (func_020e4b28(a)) { func_020cd544(a); return; }
+    func_020e49ec();
+    data_0215d8a0[0] = (data_0215d8a0[0] & ~15) | (a & 15);
+    v = data_0215d8a0[0] & ~240;
+    *(volatile u32 *)data_0215d8a0 = v;
+    data_02168f14 &= ~7;
+    v &= ~0xff0000;
+    v &= ~0xff00;
+    data_0215d8a0[1] = (u16)(data_0215d8a0[1] & 0xffff0000);
+    data_0215d8a0[0] = v & ~0xff000000;
+    M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 161;
+    func_02086810(161, 1);
+    func_01ffa3dc(&data_0212b804, 7);
 }
 
 void func_020cd544(s32 arg0) {
@@ -362,14 +371,16 @@ u8 func_020cd728(void) {
 #pragma push
 #pragma opt_common_subs off
 void func_020cd754(s32 arg0) {
-extern s32 *gCurrentMap;
-void func_02007f8c(s32,s32);
-s32 base=*gCurrentMap;
-if (M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) {
-func_02007f8c(((s32)0xA1)*arg0+(base+0x5160),255);
-} else {
-func_02007f8c(((s32)0xA1)*arg0+(base+0x5160),0);
-}
+    extern s32 *gCurrentMap;
+    void func_02007f8c(s32, s32);
+    s32 base = *gCurrentMap;
+    s32 multiplier = 0xA1;
+    s32 offset = 0x5160;
+    if (M2C_FIELD(base, u8 *, 0x5156) == 0 && M2C_FIELD(base, u8 *, 0x5158) != 2) {
+        func_02007f8c(base + offset + multiplier * arg0, 255);
+    } else {
+        func_02007f8c(base + offset + multiplier * arg0, 0);
+    }
 }
 #pragma pop
 void func_020cd7bc(s32 arg0, s32 arg1) {

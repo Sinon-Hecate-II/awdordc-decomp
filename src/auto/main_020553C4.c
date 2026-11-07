@@ -162,6 +162,33 @@ if(pair.unk_0){p=func_02037794(8);if(!p){func_02058644((s32)a,(s32 *)&data_020fe
 func_02054484(a,b);return 0;
 }
 
+s32 func_02055aa0(void **arg0, s32 arg1) {
+    M2C_UNK func_02048eac(); M2C_UNK func_020640a8(); M2C_UNK func_02055b84();
+    extern M2C_UNK data_020fed8c;
+    extern M2C_UNK data_020fedf4;
+    extern M2C_UNK data_020fedfc;
+    s32 sp1C; s32 sp18; s32 sp14; s32 sp10; s32 sp8; s32 sp4; s32 sp0;
+    void *temp_r4; int z = 1;
+
+    temp_r4 = *arg0;
+    if (arg1 <= 0) func_020640a8(&data_020fedf4, &data_020fedfc, &data_020fed8c, 0x2B5);
+    if (arg1 <= 0) return 0;
+    if (func_02055b84(arg0, arg1, &sp0) != 0) return sp0;
+    M2C_FIELD(&sp4, s32 *, 0) = 0;
+    M2C_FIELD(&sp4, s32 *, 4) = 0;
+    M2C_FIELD(&sp4, s32 *, 0xC) = 0;
+    M2C_FIELD(&sp4, s32 *, 0x10) = 0;
+    M2C_FIELD(&sp4, s32 *, 0x14) = 0;
+    M2C_FIELD(&sp4, s32 *, 0x18) = 0;
+    sp4 = arg1;
+    M2C_FIELD(&sp4, s32 *, 8) = 0;
+    sp8 = 0; sp10 = 0; sp14 = 0; sp1C = 0; sp18 = 0;
+    func_02048eac(M2C_FIELD(temp_r4, s32 *, 0x428));
+    M2C_FIELD(temp_r4, s32 *, 0x42C) = M2C_FIELD(temp_r4, s32 *, 0x42C) + 1;
+    if (func_02055b84(arg0, arg1, &sp0) != 0) return sp0;
+    return z - 1;
+}
+
 s32 func_02055b84(void **arg0,s32 arg1,s32 *arg2) {
 s32 func_02048ff8(s32,void *);
 s32 key[7];s32 v;void *p=*arg0;

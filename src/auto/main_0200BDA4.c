@@ -99,58 +99,66 @@ void func_0200bf64(u32 *arg0,void *arg1) {
 }
 
 #pragma scheduling off
-s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7) {
-    void func_0200b774(void *);
-    s32 func_0200b99c(void *, s32, u32, u32, s32);
-    s32 func_0200bbe0(void *, void *, s32);
-    void func_0200ba9c(void *);
-    s32 func_0200b9e4(void *, Unk0200FilePair);
-    u32 work[18];
-    Unk0200FilePair pair;
-    u32 size;
-    u32 base;
-    u32 shifted;
-
-    if (arg1 == 0) {
-        size = arg5;
-        base = arg4;
-    } else {
-        size = arg7;
-        base = arg6;
-    }
-    shifted = arg2 << 5;
-    if (size <= shifted) {
-        return 0;
-    }
-    func_0200b774(work);
-    if (!func_0200b99c(work, arg3, base + shifted, base + size, -1)) {
-        return 0;
-    }
-    if (func_0200bbe0(work, arg0, 32) != 32) {
-        func_0200ba9c(work);
-        return 0;
-    }
+s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7)
+{
+  void func_0200b774(void *);
+  s32 func_0200b99c(void *, s32, u32, u32, s32);
+  s32 func_0200bbe0(void *, void *, s32);
+  void func_0200ba9c(void *);
+  s32 func_0200b9e4(void *, Unk0200FilePair);
+  u32 work[18];
+  Unk0200FilePair pair;
+  u32 size;
+  u32 base;
+  u32 shifted = arg2 << 5;
+  int new_var;
+  if (arg1 == 0)
+  {
+    size = arg5;
+    base = arg4;
+  }
+  else
+  {
+    size = arg7;
+    base = arg6;
+  }
+  if (size <= shifted)
+  {
+    return 0;
+  }
+  arg2++;
+  arg2--;
+  func_0200b774(work);
+  if (new_var = !func_0200b99c(work, arg3, base + shifted, base + size, -(shifted = 1)))
+  {
+    return 0;
+  }
+  if (func_0200bbe0(work, arg0, 32) != 32)
+  {
     func_0200ba9c(work);
-    arg0[8] = arg1;
-    func_0200bf64((u32 *)&pair, arg0);
-    if (!func_0200b9e4(work, pair)) {
-        return 0;
-    }
-    arg0[9] = work[9];
-    arg0[10] = work[10] - work[9];
-    func_0200ba9c(work);
-    return 1;
+    return 0;
+  }
+  func_0200ba9c(work);
+  arg0[8] = arg1;
+  func_0200bf64((u32 *) (&pair), arg0);
+  if (!func_0200b9e4(work, pair))
+  {
+    return 0;
+  }
+  arg0[9] = work[9];
+  arg0[10] = work[10] - work[9];
+  func_0200ba9c(work);
+  return 1;
 }
 #pragma scheduling reset
 s32 func_0200c084(u32 *arg0,s32 arg1,u32 arg2) {
 void func_0200b774(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200ba9c(void *);void func_02008048();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
-u32 work[18];Unk0200FilePair pair;u32 *p; register s32 offset;u32 base;
+u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
-base=p[0];if(base){
-offset=(s32)arg2*32;
+if(p[0]){
 if(p[1]<=(arg2<<5))return 0;
-func_02008048(base+offset,arg0,32);
+func_02008048(p[0]+(arg2<<5),arg0,32);
 arg0[8]=arg1;func_0200b774(work);func_0200bf64((u32 *)&pair,arg0);
 if(!func_0200b9e4(work,pair))return 0;
 arg0[9]=work[9];arg0[10]=work[10]-work[9];func_0200ba9c(work);return 1;
@@ -181,11 +189,11 @@ void func_0200c214(void *arg0) {
     extern s16 data_0212dbc0;
     void *r5;
     u32 r4;
-    u32 top;
-    u32 idx;
+    u32 top = 0;
+    u32 idx = 0;
     u8 *start;
     u8 *end;
-    s32 count;
+    s32 count = 0;
     void *p;
     u32 rr4;
     u32 rr5;
@@ -319,16 +327,17 @@ void func_0200c494(void *arg0, void *arg1, u32 arg2) {
     void func_02008048(void *, void *, u32);
     void func_0200c614(void *);
     u64 total = M2C_FIELD(arg0, u64 *, 0x10);
-    u32 space = 0x40 - ((u32)total & 0x3f);
+    u32 rem = (u32)total & 0x3f;
+    u32 space = 0x40 - rem;
     s32 n;
 
     M2C_FIELD(arg0, u64 *, 0x10) = total + arg2;
     if (space > arg2) {
         if (arg2 == 0) return;
-        func_02008048(arg1, (u8 *)arg0 + 0x18 + ((u32)total & 0x3f), arg2);
+        func_02008048(arg1, (u8 *)arg0 + 0x18 + rem, arg2);
         return;
     }
-    func_02008048(arg1, (u8 *)arg0 + 0x18 + ((u32)total & 0x3f), space);
+    func_02008048(arg1, (u8 *)arg0 + 0x18 + rem, space);
     func_0200c614(arg0);
     arg2 -= space;
     n = arg2 >> 6;
@@ -340,7 +349,7 @@ void func_0200c494(void *arg0, void *arg1, u32 arg2) {
         n = n - 1;
     }
     if (arg2 & 0x3f)
-        func_02008048(arg1, (u8 *)arg0 + 0x18, arg2 & 0x3f);
+        func_02008048(arg1, (u8 *)arg0 + 0x18, 0x3f & arg2);
 }
 
 void func_0200c55c(M2C_UNK arg0, void *arg1) {

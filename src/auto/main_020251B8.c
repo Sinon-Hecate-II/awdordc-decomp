@@ -5,12 +5,12 @@ void func_020258ac(void *, u32 *, u32);
 void func_020251b8(s32 now) {
 void func_0200751c(void);void func_02007530(void);void func_02005e5c(void *);
 extern M2C_UNK data_02138cc8;extern M2C_UNK data_0212dca4;
-void *q; u8 *p; s32 i; void *node;
+u8 *p; s32 i; void *node; void *q;
 func_0200751c();
 i=0;p=(u8 *)&data_02138cc8;
 do{
-if(p[0x5a]!=0 &&(now-M2C_FIELD(p,s32 *,0x50)>957))p[0x5a]=0;
-p+=0x5c;i++;
+if(p[0x5a]!=0 && now-M2C_FIELD(p,s32 *,0x50)>957)p[0x5a]=0;
+i++;p+=0x5c;
 }while(i<4);
 func_02007530();
 node=M2C_FIELD(&data_0212dca4,void **,8);
@@ -21,6 +21,7 @@ M2C_FIELD(q,u8 *,8)=0;M2C_FIELD(q,s32 *,4)=0;func_02005e5c(M2C_FIELD(q,void **,0
 }
 node=M2C_FIELD(node,void **,0x68);
 }
+(void)now;
 }
 
 void func_02025298(void) {
@@ -103,9 +104,10 @@ void func_02025748(void *arg0, s32 arg1, u32 arg2) {
 void func_02008048(s32,void *,u32); void func_020252e4(void *,s32);
 u32 index,low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x10);
+index=(old>>3)&63;
 low=old+(arg2<<3); M2C_FIELD(arg0,u32 *,0x10)=low;
 if(low<(arg2<<3))M2C_FIELD(arg0,u32 *,0x14)++;
-arg2=arg2; old >>= 3; index=old&63; count=64-index;
+count=64-index;
 M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
 if(arg2>=count){func_02008048(arg1,(u8 *)arg0+24+index,count);index=0;func_020252e4(arg0,(s32)arg0+24);
 while(count+63<arg2){func_020252e4(arg0,arg1+(s32)count);count+=64;}

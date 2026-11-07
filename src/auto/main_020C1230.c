@@ -71,7 +71,7 @@ void func_020c13a8(M2C_UNK arg0) {
 
 M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
  extern void **gCurrentMap;
- s32 index=0,y=index,x,row,width,height;
+ s32 index=0,y=0,x,row,width,height;
  void *base=*gCurrentMap;
  height = M2C_FIELD(base,volatile u16 *,0x5146);
  width = M2C_FIELD(base,volatile u16 *,0x5144);
@@ -129,7 +129,7 @@ M2C_UNK func_020c1768(M2C_UNK p){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 data_0216402c[],data_02163fdc[];
 s32 x,y,w,z,h;u16 *src,*dst;void *base;z=func_020d4dac();base=*gCurrentMap;
-h=M2C_FIELD(base,volatile u16 *,0x5146);w=M2C_FIELD(base,volatile u16 *,0x5144);
+h=M2C_FIELD(base,volatile u16 *,0x5146+0);w=M2C_FIELD(base,volatile u16 *,0x5144+0);
 h=(h+1)&~1;w=(w+1)&~1;
 for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+data_0216402c[x]+data_02163fdc[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
 }

@@ -396,6 +396,7 @@ void func_ov001_0217ba1c(void) {
     extern void func_ov001_02179ea8(void);
     extern void func_ov001_021828ac(void);
     s32 sp4, sp0;
+    void *p;
     func_ov001_02171cf8();
     func_ov001_0218c104(M2C_FIELD(data_ov001_02193da0, void **, 4));
     func_ov001_0218af70(0);
@@ -418,7 +419,8 @@ void func_ov001_0217ba1c(void) {
             func_ov001_02175d54((s32 *)func_ov001_021828ac);
         }
     }
-    func_ov001_0218b71c((M2C_UNK *)&data_ov001_02193da0);
+    p = sp0 ? (void *)&data_ov001_02193da0 : (void *)&data_ov001_02193da0;
+    func_ov001_0218b71c((M2C_UNK *)p);
 }
 #pragma peephole reset
 void func_ov001_0217bb20(void) {

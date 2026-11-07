@@ -247,13 +247,15 @@ extern M2C_UNK data_02138cc8;
 s32 state; u32 now; u8 *best; u32 maxage; s32 i; u8 *p; u32 age; u64 ticks; u8 valid;
 state=func_0200751c(); ticks=func_02007004();
 best=(u8 *)&data_02138cc8; maxage=0; now=(u32)(ticks>>16);
-for(i=0,p=(u8 *)&data_02138cc8;i<4;i++,p+=0x5C){
+i=0; p=(u8 *)&data_02138cc8;
+while (i<4) {
 valid=p[0x5A];
 if(valid && arg1 && arg1==M2C_FIELD(p,s32 *,0x54) && arg2 && arg2==M2C_FIELD(p,u16 *,0x58)){best=p;break;}
 if(maxage!=~0U){
 if(!valid){maxage=~0U;best=p;}
 else {age=now-M2C_FIELD(p,u32 *,0x50);if(age>maxage){maxage=age;best=p;}}
 }
+i++; p+=0x5C;
 }
 func_02008048(arg0+0x74,best,0x20);
 func_02008048(arg0,best+0x20,0x30);

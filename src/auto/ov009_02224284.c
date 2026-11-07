@@ -710,15 +710,33 @@ s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 a
 #pragma opt_propagation on
 #pragma opt_deadcode on
 s32 func_ov009_022250f8(s32 arg0) {
-extern M2C_UNK data_ov009_022269b0;
-s32 offset=arg0*12; u32 saved; s32 result=0; u32 nested; void *ptr;
-ov009SaveInterrupts(&saved);
-if(M2C_FIELD(&data_ov009_022269b0,void**,offset)==NULL){(void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=saved; return 0;}
-ov009SaveInterrupts(&nested);
-ptr=M2C_FIELD(&data_ov009_022269b0,void**,offset);
-if(ptr==NULL){(void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=nested;}
-else {(void)*(volatile u16*)0x04000208; result=M2C_FIELD(ptr,s32*,12); *(volatile u16*)0x04000208=nested;}
-result+=12; (void)*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=saved; return result;
+    extern M2C_UNK data_ov009_022269b0;
+    s32 offset = arg0 * 12;
+    u16 saved = *(volatile u16 *)0x04000208;
+    s32 result = 0;
+    u16 nested;
+    void *ptr;
+    *(volatile u16 *)0x04000208 = 0;
+    if (M2C_FIELD(&data_ov009_022269b0, void **, offset) == NULL) {
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = saved;
+        return 0;
+    }
+    nested = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    ptr = M2C_FIELD(&data_ov009_022269b0, void **, offset);
+    if (ptr == NULL) {
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = nested;
+    } else {
+        (void)*(volatile u16 *)0x04000208;
+        result = M2C_FIELD(ptr, s32 *, 12);
+        *(volatile u16 *)0x04000208 = nested;
+    }
+    result += 12;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = saved;
+    return result;
 }
 void *func_ov009_02225178(s32 arg0, void *arg1) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
@@ -726,8 +744,8 @@ void *func_ov009_02225178(s32 arg0, void *arg1) {
     extern M2C_UNK data_ov009_022269b0;
     extern M2C_UNK data_ov009_022269b4;
     extern M2C_UNK data_ov009_022269b8;
-    s32 off = arg0 * 0xc;
-    volatile u16 *ime = (volatile u16 *)0x04000208;
+    s32 off;
+    volatile u16 *ime;
     u16 saved;
     void *entry;
     void *next;
@@ -737,6 +755,8 @@ void *func_ov009_02225178(s32 arg0, void *arg1) {
     u8 b8;
     u8 b9;
 
+    off = arg0 * 0xc;
+    ime = (volatile u16 *)0x04000208;
     saved = *ime;
     *ime = 0;
     entry = M2C_FIELD(&data_ov009_022269b0, void **, off);

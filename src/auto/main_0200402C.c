@@ -252,18 +252,18 @@ void func_0200478c(void) {
     case 0x10:
         M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6880000;
         M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
-        return;
+        break;
     case 0x40:
         M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6894000;
         M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0x4000;
-        return;
+        break;
     case 0x20:
     case 0x60:
         M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6890000;
         M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
-        return;
+        break;
     default:
-        return;
+        break;
     }
 }
 

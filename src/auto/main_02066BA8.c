@@ -174,7 +174,7 @@ if(!func_02006680(data_0213e664)){
 M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c);
 M2C_FIELD(data_0213e5f8,s32 *,12)=1;
 }else if(M2C_FIELD(data_0213e5d4,s32 *,12)==M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c)){
-M2C_FIELD(data_0213e5f8,s32 *,12)++;
+M2C_FIELD(data_0213e5f8,s32 *,12)=M2C_FIELD(data_0213e5f8,s32 *,12)+1;
 }else{
 func_02006564(data_0213e664);
 M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c);

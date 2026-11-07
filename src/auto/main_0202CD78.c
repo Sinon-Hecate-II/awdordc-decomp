@@ -345,27 +345,27 @@ s32 func_0202d514(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) 
 
     void *handle;
     void *p;
-    s32 tmp4;
-    s32 tmp8;
+    s32 slot8;
+    s32 slot4;
 
     handle = func_0202b018((void *)arg0, arg1, arg3);
     if (handle == 0) {
         return 0;
     }
     p = func_0202b158(arg1, handle);
-    tmp4 = 0;
-    tmp8 = 0;
-    if (func_0202caa0((void *)arg2, 6, (s32)p, 0, &tmp4) != 0) {
+    slot4 = 0;
+    slot8 = 0;
+    if (func_0202caa0((void *)arg2, 6, (s32)p, 0, &slot4) != 0) {
         func_0202b0b0(handle);
         return 0;
     }
-    if (func_0202c9bc(arg5, 1, (s32)p, 0, &tmp8) != 0) {
+    if (func_0202c9bc(arg5, 1, (s32)p, 0, &slot8) != 0) {
         func_0202b0b0(handle);
         return 0;
     }
-    func_0202b0bc(handle, (void *)((u8 *)tmp8 + *(s32 *)((u8 *)tmp8 + 0x18)), 0);
-    func_0202acf0((void *)arg0, (s8)((u8 *)arg4)[6]);
-    func_0202ad30((void *)arg0, (s32)((u8 *)arg4)[7]);
+    func_0202b0bc(handle, (void *)((u8 *)slot8 + *(s32 *)((u8 *)slot8 + 0x18)), 0);
+    func_0202acf0((void *)arg0, (s8)*((u8 *)arg4 + 6));
+    func_0202ad30((void *)arg0, (s32)*((u8 *)arg4 + 7));
     func_0202adb0((void **)arg0, (s16)arg5);
     return 1;
 }
@@ -435,8 +435,7 @@ loop_7:
 
 s32 func_0202d7d8(s32 a){
 u8 *func_0202c294(s32);void *func_0202c5f0(s32*,s32,s32,s32,s32);void func_0202de74();extern u8 data_0213c92c[];extern M2C_UNK func_0202e158;
-s32 j,i,size,handle;u8 *p,*q;s32 callback=(s32)&func_0202e158;
-i=0;p=data_0213c92c;
+s32 i=0; s32 j=0; const s32 callback=(s32)&func_0202e158; u8 *p=data_0213c92c; u8 *q; s32 size; int handle;
 do {q=func_0202c294(i);if(q){j=0;p[0x124]=q[0];if((s32)q[0]>0){do{u8 v=q[j+1];u8 *dst=p+j;j++;dst[0x126]=v;}while(j<q[0]);}
 if(a){size=p[0x124]<<11;handle=(s32)func_0202c5f0((s32*)a,size,callback,(s32)p,0);if(!handle)return 0;func_0202de74(p);M2C_FIELD(p,s32*,0x12c)=handle;M2C_FIELD(p,s32*,0x130)=size;}}
 i++;p+=0x174;}while(i<4);return 1;

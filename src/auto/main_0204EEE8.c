@@ -156,12 +156,9 @@ s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
         func_02058644(arg0, &data_020fde60);
         return 2;
     }
-    {
-        void *p = sp0;
-        if (M2C_FIELD(p, s32 *, 0x10) == 0) {
-            func_02058644(arg0, &data_020fde60);
-            return 2;
-        }
+    if (M2C_FIELD(sp0, s32 *, 0x10) == 0) {
+        func_02058644(arg0, &data_020fde60);
+        return 2;
     }
     temp_r0 = func_0204ee40(arg0);
     if (temp_r0 != 0) {

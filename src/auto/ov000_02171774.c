@@ -129,7 +129,7 @@ M2C_FIELD(q,s32 *,0)=0; M2C_FIELD(q,s32 *,4)=0; M2C_FIELD(q,s32 *,8)=0; M2C_FIEL
 M2C_FIELD(q,s32 *,0x28)=1; M2C_FIELD(q,s32 *,0x2c)=0;
 M2C_FIELD(q,u8 *,0x30)=0; M2C_FIELD(q,u8 *,0x31)=0; M2C_FIELD(q,u8 *,0x33)=0;
 j=0; M2C_FIELD(q,u8 *,0x34)=0;
-inner: t=(u8*)q+(j<<2); j++; M2C_FIELD(t,s32 *,0x10)=i; if(j<6) goto inner;
+inner: t=(u8*)q+(j<<2); j++; M2C_FIELD(t,s32 *,0x10)=0; if(j<6) goto inner;
 q=(u8*)q+0x38;
 }while((u32)q<(u32)((u8*)p+0x11c));
 loop1:t=(u8*)p+(i<<2);i++;M2C_FIELD(t,s32 *,12)=9;if(i<4)goto loop1;

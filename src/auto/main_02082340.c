@@ -44,10 +44,10 @@ void func_020824cc(void) {
     ((u16 *)*gCur3DSpriteEngine)[6] = 0;
 
     sp4 = (u16 *)*gCur3DSpriteEngine + 1;
-    sp4[0] &= ~7;
+    *sp4 = *sp4 & ~7;
 
     sp0 = (u16 *)*gCur3DSpriteEngine + 1;
-    sp0[0] &= ~0x38;
+    *sp0 = *sp0 & ~0x38;
 
     func_02082a8c(data_02101fc0, (u8 *)*gCur3DSpriteEngine + 0x14);
     func_02082a8c(data_02101fc0, (u8 *)*gCur3DSpriteEngine + 0x24);
@@ -160,20 +160,19 @@ void func_02082a8c(void *arg0, void *arg1) {
 s32 func_0207c8ec(s32,s16);
 extern s16 data_020e5b30[];
 void *out=arg1; void *in=arg0;
-s32 x,y,dx,dy,index,sine,cosine,a,b,angle;
-angle=*(u16 *)((u8 *)in+0x10);
-index=((s32)(u16)(angle<<8)>>4)*2;
+s32 x,y,dx,dy,index,sine,cosine,a,b;
+index=((s32)(u16)(M2C_FIELD(in,u16 *,0x10)<<8)>>4)*2;
 cosine=data_020e5b30[index+1]<<8;
-x=*(s32 *)in; y=*(s32 *)((u8 *)in+4);
-dx=x-*(s16 *)((u8 *)in+8);dy=y-*(s16 *)((u8 *)in+10);
-*(s16 *)out=func_0207c8ec(cosine,*(s16 *)((u8 *)in+12))>>4;
+x=M2C_FIELD(in,s32 *,0); y=M2C_FIELD(in,s32 *,4);
+dx=x-M2C_FIELD(in,s16 *,8);dy=y-M2C_FIELD(in,s16 *,10);
+M2C_FIELD(out,s16 *,0)=func_0207c8ec(cosine,M2C_FIELD(in,s16 *,12))>>4;
 sine=data_020e5b30[index]<<8;
-*(s16 *)((u8 *)out+2)=func_0207c8ec(sine,*(s16 *)((u8 *)in+12))>>4;
-*(s16 *)((u8 *)out+4)=(-func_0207c8ec(sine,*(s16 *)((u8 *)in+14)))>>4;
-*(s16 *)((u8 *)out+6)=func_0207c8ec(cosine,*(s16 *)((u8 *)in+14))>>4;
+M2C_FIELD(out,s16 *,2)=func_0207c8ec(sine,M2C_FIELD(in,s16 *,12))>>4;
+M2C_FIELD(out,s16 *,4)=(-func_0207c8ec(sine,M2C_FIELD(in,s16 *,14)))>>4;
+M2C_FIELD(out,s16 *,6)=func_0207c8ec(cosine,M2C_FIELD(in,s16 *,14))>>4;
 b=dy-y;a=dx-x;
-*(s32 *)((u8 *)out+8)=*(s16 *)out*a+(*(s16 *)((u8 *)out+2))*b+(x<<8);
-*(s32 *)((u8 *)out+12)=(*(s16 *)((u8 *)out+4))*a+(*(s16 *)((u8 *)out+6))*b+(y<<8);
+M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
+M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
 }
 void func_02082b78(void){
 extern void *data_027e00bc;extern void *data_027e00c0;

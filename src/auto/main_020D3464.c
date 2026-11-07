@@ -494,8 +494,8 @@ void func_020d3d68(void) {
     r6 = rows >> 1;
     r7 = 0x8C;
     for (r4 = 1; r4 < 5; r4++) {
-        p = func_020a32f4(r4);
-        if (p != 0) {
+        if (func_020a32f4(r4) != 0) {
+            p = func_020a32f4(r4);
             r5 = M2C_FIELD(p, u8 *, 1);
             r6 = M2C_FIELD(p, u8 *, 2);
         } else {

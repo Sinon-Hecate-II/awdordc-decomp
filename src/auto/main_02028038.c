@@ -22,12 +22,14 @@ void func_020280c8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void func_0202810c(s16 a,s32 b,s32 c,s32 d,s32 e){
- extern void *data_02138e4c;
- CallbackArgs_0202810c args;
- State_02028038 *base=(State_02028038 *)((char *)data_02138e4c+0x2000);
- if(!base->callback)return;
- args.a=a;args.b=b;args.c=c;args.d=d;args.e=e;
- base->callback(&args);
+extern void *data_02138e4c;
+CallbackArgs_0202810c args;
+void *p=(u8 *)data_02138e4c+0x2000;
+void (**cb)(CallbackArgs_0202810c *) = (void (**) (CallbackArgs_0202810c *)) p;
+cb = (void (**) (CallbackArgs_0202810c *)) ((char *) cb + 0x27c);
+if(!*cb)return;
+args.a=a;args.b=b;args.c=c;args.d=d;args.e=e;
+(*cb)(&args);
 }
 
 #pragma opt_common_subs off

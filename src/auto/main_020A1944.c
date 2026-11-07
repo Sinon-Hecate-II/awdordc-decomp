@@ -33,6 +33,7 @@ void func_020a196c(void) {
  M2C_FIELD(&data_0215c324,s32 *,0x18)=bits;
 }
 
+#pragma peephole off
 void func_020a1a0c(void) {
     extern M2C_UNK data_0215c324;
     u8 *ctr;
@@ -78,7 +79,7 @@ void func_020a1a0c(void) {
         }
     }
 }
-
+#pragma peephole reset
 void func_020a1adc(void) {
     extern s32 *gCurrentMap;
     extern M2C_UNK data_0215c340;

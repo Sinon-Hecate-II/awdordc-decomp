@@ -178,33 +178,33 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_0202a050(void *, void *, s32, s32, s32);
-    s32 base, aligned;
-    s32 first;
-    void *node;
-    u32 size, best;
-    register void *chosen;
-    s32 address;
-    node = M2C_FIELD(arg0, void **, 0x28);
-    chosen = NULL;
-    if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
-    else first = 0;
-    address = 0;
-    best = -1U;
-    while (node != NULL) {
-        size = M2C_FIELD(node, u32 *, 4);
-        base = (s32)(node + 16);
-        aligned = ~(arg2 - 1) & (size + base - arg1);
-        if (aligned - base >= 0 && best > size) {
-            chosen = node;
-            best = size;
-            address = aligned;
-            if (first || size == arg1) break;
-        }
-        node = M2C_FIELD(node, void **, 8);
-    }
-    if (chosen == NULL) return 0;
-    return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
+ s32 func_0202a050(void *, void *, s32, s32, s32);
+ s32 base, aligned;
+ s32 first;
+ void *node;
+ u32 size, best;
+ register void *chosen;
+ s32 address;
+ node = M2C_FIELD(arg0, void **, 0x28);
+ chosen = NULL;
+ if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
+ else first = 0;
+ address = 0;
+ best = -1U;
+ while (node != NULL) {
+ size = M2C_FIELD(node, u32 *, 4);
+ base = (s32)(node + 16);
+ aligned = ~(arg2 - 1) & (size + base - arg1);
+ if (aligned - base >= 0 && best > size) {
+ chosen = node;
+ best = size;
+ address = aligned;
+ if (first || size == arg1) break;
+ }
+ node = M2C_FIELD(node, void **, 8);
+ }
+ if (chosen == NULL) return 0;
+ return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
 }
 
 s32 func_0202a334(void *arg0, HeapRange *arg1) {
@@ -576,13 +576,17 @@ void func_0202aa58(void) {
 }
 
 s32 func_0202aa64(s32 arg0) {
- M2C_UNK func_02008dbc(M2C_UNK,M2C_UNK);
- extern M2C_UNK data_0213b2a0;
- if(arg0==0)return 1;
- if(arg0 & M2C_FIELD(&data_0213b2a0,s32 *,8))return 0;
- func_02008dbc(arg0,0);
- { s32 *p=(s32 *)((char *)&data_0213b2a0+8); *p |= arg0; }
- return 1;
+    M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
+    extern M2C_UNK data_0213b2a0;
+    if (arg0 == 0) {
+        return 1;
+    }
+    if (arg0 & M2C_FIELD(&data_0213b2a0, s32 *, 8)) {
+        return 0;
+    }
+    func_02008dbc(arg0, 0);
+    M2C_FIELD(&data_0213b2a0, s32 *, 8) |= arg0;
+    return 1;
 }
 
 void func_0202aaac(s32 arg0) {
@@ -605,14 +609,16 @@ void func_0202aadc(s32 arg0) {
 #pragma push
 #pragma opt_common_subs off
 s32 func_0202aaf8(void) {
- extern M2C_UNK data_0213b2a0;
- s32 mask=1; s32 i;
- for(i=0;i<8;i++,mask<<=1) {
- if(!(M2C_FIELD(&data_0213b2a0,u32 *,4)&mask)) {
- u32 *p=(u32 *)&data_0213b2a0;
- p[1]|=mask; return i;
- }
- } return -1;
+    extern M2C_UNK data_0213b2a0;
+    u32 mask = 1;
+    s32 i;
+    for (i = 0; i < 8; i++, mask <<= 1) {
+        if (!(M2C_FIELD(&data_0213b2a0, u32 *, 4) & mask)) {
+            M2C_FIELD(&data_0213b2a0, u32 *, 4) |= mask;
+            return i;
+        }
+    }
+    return -1;
 }
 #pragma pop
 void func_0202ab40(s32 arg0) {

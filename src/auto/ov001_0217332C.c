@@ -78,34 +78,36 @@ var_r4++;var_r7+=12;
 if(arg0==2)var_r5=1;else if(arg0==1)var_r6=1;
 func_ov001_0217385c(47,var_r5);func_ov001_0217385c(48,var_r6);
 }
-#pragma opt_strength_reduction reset
+#pragma scheduling off
+#pragma opt_common_subs off
 void func_ov001_0217385c(s32 arg0, s32 arg1) {
     void func_ov001_0218a304(void *, s32, s32, u8);
-    void *temp_r2;
+    void *p;
 
     if (arg0 < 0) {
         return;
     }
     if (arg0 < 0x2f) {
+        p = M2C_FIELD((data_ov001_02193d1c + (arg0 * 4)), void **, 0x30);
         arg1 = data_ov001_0218f314[arg1];
-        temp_r2 = M2C_FIELD((data_ov001_02193d1c + (arg0 * 4)), void **, 0x30);
-        M2C_FIELD(temp_r2, s32 *, 0) = (s32)(M2C_FIELD(temp_r2, s32 *, 0) & ~0xc00);
-        M2C_FIELD(temp_r2, u16 *, 4) = (u16)((M2C_FIELD(temp_r2, u16 *, 4) & ~0xf000) | (arg1 << 0xc));
+        M2C_FIELD(p, s32 *, 0) = (s32)(M2C_FIELD(p, s32 *, 0) & ~0xc00);
+        M2C_FIELD(p, u16 *, 4) = (u16)((M2C_FIELD(p, u16 *, 4) & ~0xf000) | (arg1 << 0xc));
         return;
     }
     {
         s32 temp_ip = arg0 - 0x2f;
         if (temp_ip < 4) {
+            p = M2C_FIELD((data_ov001_02193d1c + (temp_ip * 4)), void **, 0xec);
             arg1 = data_ov001_0218f314[arg1];
-            temp_r2 = M2C_FIELD((data_ov001_02193d1c + (temp_ip * 4)), void **, 0xec);
-            M2C_FIELD(temp_r2, s32 *, 0) = (s32)(M2C_FIELD(temp_r2, s32 *, 0) & ~0xc00);
-            M2C_FIELD(temp_r2, u16 *, 4) = (u16)((M2C_FIELD(temp_r2, u16 *, 4) & ~0xf000) | (arg1 << 0xc));
+            M2C_FIELD(p, s32 *, 0) = (s32)(M2C_FIELD(p, s32 *, 0) & ~0xc00);
+            M2C_FIELD(p, u16 *, 4) = (u16)((M2C_FIELD(p, u16 *, 4) & ~0xf000) | (arg1 << 0xc));
             return;
         }
     }
     func_ov001_0218a304(M2C_FIELD((data_ov001_02193d1c + ((arg0 - 0x33) * 4)), s32 *, 0xfc), -1, 0, data_ov001_0218f318[arg1]);
 }
 #pragma scheduling reset
+#pragma opt_common_subs reset
 void func_ov001_02173924(void) {
     s32 *func_ov001_0218a24c(s32, s32);
     M2C_UNK func_ov001_0218a384(s32, M2C_UNK, u16, u16);
@@ -220,22 +222,14 @@ func_ov001_0218c924(arg0,func_ov001_02174018);
 void func_ov001_02174018(void *arg0) {
     void func_ov001_0218c924(void *, void *);
     void func_ov001_0217355c(u8, s32, s32, u32);
-    M2C_UNK A;
-    M2C_UNK B;
-    u8 b;
-    u32 v;
-    volatile struct { s32 sp0; u32 sp4; } stk;
-
-    A = (M2C_UNK)data_ov001_02193d1c;
-    B = M2C_FIELD(A, M2C_UNK *, 0x30);
-    b = M2C_FIELD(A, u8 *, 0x11d);
-    v = M2C_FIELD(B, u32 *, 0);
-    stk.sp0 = (s32)(v & 0xffU) + 0xc;
-    stk.sp4 = (s32)((v & 0x01ff0000U) >> 16);
-    func_ov001_0217355c(b, 0, stk.sp0, stk.sp4);
-    if (stk.sp0 < 0xc0) {
-        return;
-    }
+    Position pos;
+    void *a = data_ov001_02193d1c;
+    u32 bits = *M2C_FIELD(a, u32 **, 0x30);
+    u8 b = M2C_FIELD(a, u8 *, 0x11d);
+    pos.y = (bits & 0x01ff0000U) >> 16;
+    pos.x = (u8)bits + 12;
+    func_ov001_0217355c(b, 0, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < 0xc0) return;
     func_ov001_0218c924(arg0, &func_ov001_0217408c);
 }
 

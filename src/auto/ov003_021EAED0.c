@@ -118,19 +118,26 @@ void func_ov003_021ebca4(void *arg0,s32 arg1,s32 arg2) {
  void *p=(char*)arg0+offset;
  void *q;
  s32 temp;
+ s32 f18,f1c,f20;
  M2C_FIELD(base,s32 *,offset)=arg2;
  if(M2C_FIELD(p,u8 *,0x28)) {
   if(M2C_FIELD(base,s32 *,offset)>M2C_FIELD(p,s32 *,0x1c)) {
    do {
-    temp=M2C_FIELD(p,s32 *,0x18)-(M2C_FIELD(p,s32 *,0x1c)-M2C_FIELD(p,s32 *,0x20)+1);
+    f18=M2C_FIELD(p,s32 *,0x18);
+    f1c=M2C_FIELD(p,s32 *,0x1c);
+    f20=M2C_FIELD(p,s32 *,0x20);
+    temp=f18-(f1c-f20+1);
     M2C_FIELD(p,s32 *,0x18)=temp;
    } while(temp>M2C_FIELD(p,s32 *,0x1c));
   }
   q=(char*)arg0+offset;
   if(M2C_FIELD(base,s32 *,offset)>=M2C_FIELD(q,s32 *,0x20)) return;
   do {
-   temp=M2C_FIELD(q,s32 *,0x18)+(M2C_FIELD(q,s32 *,0x1c)-M2C_FIELD(q,s32 *,0x20)+1);
-   M2C_FIELD(q,s32 *,0x18)=temp;
+    f18=M2C_FIELD(q,s32 *,0x18);
+    f1c=M2C_FIELD(q,s32 *,0x1c);
+    f20=M2C_FIELD(q,s32 *,0x20);
+    temp=f18+(f1c-f20+1);
+    M2C_FIELD(q,s32 *,0x18)=temp;
   } while(temp<M2C_FIELD(q,s32 *,0x20));
   return;
  }

@@ -49,25 +49,41 @@ void func_ov003_021e1530(void *state, s32 id) {
 }
 
 void func_ov003_021e161c(void *arg0) {
-void func_020aacf0(void *);
-s32 flag,b; u8 i; void *p,*q,*r;
-i=0;
-M2C_FIELD(arg0,u8 *,4)=(signed char)-1;
-M2C_FIELD(arg0,u8 *,5)=(signed char)-1;
-do{
-p=M2C_FIELD(arg0+i*4,void **,0xc);
-if(p){
-func_020aacf0(p);
-r=M2C_FIELD((u32)arg0+i*4,void **,0xc);
-flag=1;
-q=M2C_FIELD(r,void **,0x64);
-if(M2C_FIELD(q,s8 *,0xb)!=1 && (((u32)(M2C_FIELD(r,u8 *,0x59)<<27)>>31)==0 || M2C_FIELD(q,s8 *,0xc)!=1))flag=0;
-if(flag&255)M2C_FIELD(arg0,u8 *,4)=i;
-p=M2C_FIELD((u32)arg0+(i<<2),void **,0xc);
-if((((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+1)==(u16)((u32)(M2C_FIELD(p,u32 *,0x40)<<6)>>24))b=1;else b=0;
-if(b&255)M2C_FIELD(arg0,u8 *,5)=i;
-}
-i++;
-}while(i<11);
+    M2C_UNK func_020aacf0(s32);
+    s32 var_r0;
+    s32 var_r0_2;
+    u8 var_r8;
+    void *temp_r0;
+    void *temp_r2;
+    void *temp_r3;
+
+    M2C_FIELD(arg0, s8 *, 4) = -1;
+    M2C_FIELD(arg0, s8 *, 5) = -1;
+    var_r8 = 0;
+    do {
+        temp_r0 = M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), void **, 0x0c);
+        if (temp_r0) {
+            func_020aacf0((s32) temp_r0);
+            temp_r3 = M2C_FIELD((arg0 + (var_r8 * 4)), void **, 0x0c);
+            var_r0 = 1;
+            temp_r2 = M2C_FIELD(temp_r3, void **, 0x64);
+            if ((M2C_FIELD(temp_r2, s8 *, 0x0b) != 1) && ((((u32) (M2C_FIELD(temp_r3, u8 *, 0x59) << 0x1B) >> 0x1F) == 0) || (M2C_FIELD(temp_r2, s8 *, 0x0c) != 1))) {
+                var_r0 = 0;
+            }
+            if (var_r0 & 0xFF) {
+                M2C_FIELD(arg0, u8 *, 4) = var_r8;
+            }
+            temp_r0 = M2C_FIELD(&((u8 *) arg0)[var_r8 * 4], void **, 0x0c);
+            if ((((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) == (u16) ((u32) (M2C_FIELD(temp_r0, s32 *, 0x40) << 6) >> 0x18)) {
+                var_r0_2 = 1;
+            } else {
+                var_r0_2 = 0;
+            }
+            if (var_r0_2 & 0xFF) {
+                M2C_FIELD(arg0, u8 *, 5) = var_r8;
+            }
+        }
+        var_r8++;
+    } while ((u32) var_r8 < 11U);
 }
 

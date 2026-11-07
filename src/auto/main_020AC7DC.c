@@ -9,9 +9,9 @@ s32 func_0207ca38(s32,s32,s32,s32,s32);
 s32 v; s8 pos,neg;s32 saved,bank,i;u8 mode;
 M2C_FIELD(arg0,u16 *,0x38)++;
 v=func_0207ca38(0,0,16,M2C_FIELD(arg0,u16 *,0x38),M2C_FIELD(arg0,u16 *,0x3a));
+i=0;
 pos=v;neg=-v;
 saved=gCur3DSpriteEngine;
-i=0;
 do {
 if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
 gCur3DSpriteEngine=bank;

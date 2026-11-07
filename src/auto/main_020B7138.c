@@ -246,7 +246,7 @@ extern "C" void func_020b7b54(void) {
 }
 #pragma cplusplus off
 void func_020b7bbc(void) {
-    s32 func_0208c528(s32);
+    void *func_0208c528(M2C_UNK);
     void func_020b78c4(void *);
     void func_020b7b54(void);
     extern M2C_UNK data_02128ffc, data_02129004;

@@ -259,7 +259,8 @@ s32 func_020a8ce4(s32 arg0, s32 arg1) {
 void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg6,u16 arg7,u16 arg8,volatile u16 arg9) {
  M2C_UNK func_02087064(s32,s32,s32,u16,s32);
  M2C_UNK func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 height; s32 flags; s32 scaleY; s32 scaleX; volatile s32 width; volatile s32 z; volatile s32 origin;
+ volatile s32 width; volatile s32 z; volatile s32 origin;
+ s32 height; s32 flags; s32 scaleY; s32 scaleX;
  s32 y; s32 dy; s32 tileH; u16 index; s32 remaining; s32 x; s32 tileW; s32 dx;
  width=arg3;z=arg2;origin=arg0;
  if(width && (height=arg4)!=0) {

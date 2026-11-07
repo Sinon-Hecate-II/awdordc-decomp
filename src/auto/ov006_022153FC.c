@@ -105,7 +105,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
 void *func_ov006_02215620(void *p){
 extern M2C_UNK data_ov006_02218610;
 M2C_UNK func_01ffa574(M2C_UNK);M2C_UNK func_02082040(M2C_UNK);M2C_UNK func_020e4ca0();
-s32 *arr;void *q;
+s32 *arr;void *q=0;
 M2C_FIELD(p,void **,0)=&data_ov006_02218610;
 arr=M2C_FIELD(p,s32 **,0x3c);
 if(arr){func_01ffa574(arr[0]);func_01ffa574(arr[1]);func_01ffa574(arr[2]);func_01ffa574(arr[3]);func_01ffa574(arr[4]);func_01ffa574(arr[5]);func_02082040((s32)arr);}
@@ -113,18 +113,19 @@ q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void
 q=M2C_FIELD(p,void **,0x44);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 q=M2C_FIELD(p,void **,0x48);if(q)func_02082040((s32)q);
 q=M2C_FIELD(p,void **,0x4c);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-func_020e4ca0();func_02082040((s32)p);return p;
+func_020e4ca0();func_02082040((s32)p);return (void*)p;
 }
 
+#pragma scheduling off
 void *func_ov006_022156e4(void *arg0) {
     M2C_UNK func_01ffa574(M2C_UNK);
     M2C_UNK func_02082040(M2C_UNK);
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov006_02218610;
-    void *p;
+    void *p = arg0;
 
-    M2C_FIELD(arg0, void **, 0) = &data_ov006_02218610;
-    p = M2C_FIELD(arg0, void **, 0x3C);
+    M2C_FIELD(p, void **, 0) = &data_ov006_02218610;
+    p = M2C_FIELD(p, void **, 0x3C);
     if (p != 0) {
         func_01ffa574(M2C_FIELD(p, void **, 0));
         func_01ffa574(M2C_FIELD(p, void **, 4));
@@ -133,6 +134,7 @@ void *func_ov006_022156e4(void *arg0) {
         func_01ffa574(M2C_FIELD(p, void **, 0x10));
         func_01ffa574(M2C_FIELD(p, void **, 0x14));
         func_02082040(p);
+        p = arg0;
     }
     p = M2C_FIELD(arg0, void **, 0x40);
     if (p != 0) {
@@ -151,9 +153,9 @@ void *func_ov006_022156e4(void *arg0) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
     func_020e4ca0();
-    return (void *)arg0;
+    return arg0;
 }
-
+#pragma scheduling reset
 M2C_UNK func_ov006_022157a0(void *arg0) {
     extern void *data_02101e84;
     extern u16 **gCur3DSpriteEngine;
@@ -385,61 +387,66 @@ void func_ov006_02215b84(u8 *arg0) {
     M2C_UNK func_020b1c60(u8);
     M2C_UNK func_ov006_02215c6c();
     extern void *data_02101e84;
-    u16 temp_r1;
-    u16 temp_r2;
-    u8 var_r3;
+    u16 key0;
+    u16 keys;
+    u8 ip;
+    u8 value;
 
-    var_r3 = *arg0;
-    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 0);
-    temp_r1 = M2C_FIELD(data_02101e84, u16 *, 2);
-    if (temp_r2 & 1) {
+    ip = *arg0;
+    key0 = M2C_FIELD(data_02101e84, u16 *, 0);
+    value = ip;
+    keys = M2C_FIELD(data_02101e84, u16 *, 2);
+    if (key0 & 1) {
         func_ov006_02215c6c();
         return;
     }
-    if (temp_r1 & 0x40) {
-        switch (*arg0) {
+    if (keys & 0x40) {
+        switch (ip) {
         case 10:
-            var_r3 = 8;
+            value = 8;
             break;
         case 11:
-            var_r3 = 0xA;
+            value = 0xA;
             break;
         }
-        if (var_r3 == 0xA || var_r3 == 0xB) {
+        if (value == 0xA || value == 0xB) {
             goto L;
         } else {
             goto done;
         }
-    } else if (temp_r1 & 0x80) {
-        switch (*arg0) {
+    } else if (keys & 0x80) {
+        switch (ip) {
         case 10:
-            var_r3 = 0xB;
+            value = 0xB;
             break;
         case 11:
-            var_r3 = 0xD;
+            value = 0xD;
             break;
         }
-        if (var_r3 != 0xA && var_r3 != 0xB) {
+        if (value != 0xA && value != 0xB) {
             goto done;
         }
     }
 L:
-    if (temp_r1 & 0x20) {
-        switch (var_r3) {
+    if (keys & 0x20) {
+        switch (value) {
         case 10:
-            var_r3 = 9;
+            value = 9;
             break;
         case 11:
             break;
         }
-        if (var_r3 != 0xA) {
+        switch (value) {
+        case 10:
+            break;
+        default:
             goto done;
         }
-    } else if (temp_r1 & 0x10) {
-        switch (var_r3) {
+    } else if (keys & 0x10) {
+        switch (value) {
         case 10:
-            if (temp_r1 == temp_r2) {
-                var_r3 = 9;
+            if (keys == key0) {
+                value = 9;
             }
             break;
         case 11:
@@ -447,8 +454,8 @@ L:
         }
     }
 done:
-    if (*arg0 != var_r3) {
-        func_020b1c60(var_r3);
+    if (*arg0 != value) {
+        func_020b1c60(value);
     }
 }
 

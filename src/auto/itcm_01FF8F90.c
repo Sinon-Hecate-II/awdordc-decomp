@@ -95,6 +95,7 @@ loop_3:
             var_ip += 1;
             var_r2 += 6;
             if (var_ip >= sp0) {
+                /* Duplicate return node #36. Try simplifying control flow for better match */
                 return 0;
             }
             goto loop_3;

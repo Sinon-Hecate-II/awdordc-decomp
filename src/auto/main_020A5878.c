@@ -273,12 +273,12 @@ s32 func_020a600c(s32 arg0) {
 #pragma scheduling off
 s32 func_020a61e8(void *arg0) {
     s32 func_020a5d8c(s32, u8, u8);
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     u8 *p;
-    u8 *base;
     u16 w;
     u8 b2;
     u8 b1;
+    u8 *base;
     u16 u;
     u32 idx;
     u8 byte;
@@ -292,9 +292,9 @@ s32 func_020a61e8(void *arg0) {
         return 0;
     }
     b2 = p[2];
-    base = (u8 *)*gCurrentMap;
-    b1 = p[1];
+    base = (u8 *)*data_027e0058;
     base = (u8 *)*(s32 *)base;
+    b1 = p[1];
     u = *(u16 *)(base + b2 * 2 + 0x3758);
     idx = b1 + u;
     byte = *(u8 *)(base + (idx >> 3) + 0x5201);
@@ -308,7 +308,7 @@ s32 func_020a61e8(void *arg0) {
     if (w & 0x80) {
         return 1;
     }
-    base = (u8 *)*gCurrentMap;
+    base = (u8 *)*data_027e0058;
     base = (u8 *)*(s32 *)base;
     r2 = *(u16 *)(base + 0x52a4);
     val = *(u8 *)(base + r2 * 0x8c + 0x67c3);

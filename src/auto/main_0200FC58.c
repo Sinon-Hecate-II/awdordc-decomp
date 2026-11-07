@@ -264,6 +264,9 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     void *p = &data_0212fde0;
     s32 state;
     u32 oldf;
+    u32 nf;
+    s32 a4;
+    s32 a6, a7, a8, a5;
 
     func_02000b9c(0x2000bc4);
     state = func_0200751c();
@@ -271,20 +274,23 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
         func_02005da4((u8 *)p + 0x10c);
     }
     oldf = M2C_FIELD(p, u32 *, 0x114);
-    {
-        s32 a4 = arg4;
-        M2C_FIELD(p, u32 *, 0x114) = oldf | 0x4;
-        M2C_FIELD(p, s32 *, 0x38) = arg3;
-        M2C_FIELD(p, s32 *, 0x3c) = a4;
-    }
+    a4 = arg4;
+    a6 = arg6;
+    a7 = arg7;
+    a8 = arg8;
+    a5 = arg5;
+    nf = oldf | 0x4;
+    M2C_FIELD(p, u32 *, 0x114) = nf;
+    M2C_FIELD(p, s32 *, 0x38) = arg3;
+    M2C_FIELD(p, s32 *, 0x3c) = a4;
     func_02007530(state);
     M2C_FIELD(p, s32 *, 0x1c) = arg0;
     M2C_FIELD(p, s32 *, 0x20) = arg1;
     M2C_FIELD(p, s32 *, 0x24) = arg2;
-    M2C_FIELD(p, s32 *, 0x2c) = arg6;
-    M2C_FIELD(p, s32 *, 0x30) = arg7;
-    M2C_FIELD(p, s32 *, 0x34) = arg8;
-    if (arg5 != 0) {
+    M2C_FIELD(p, s32 *, 0x2c) = a6;
+    M2C_FIELD(p, s32 *, 0x30) = a7;
+    M2C_FIELD(p, s32 *, 0x34) = a8;
+    if (a5 != 0) {
         func_0200fb0c((void *)func_02010164);
         return 1;
     }
@@ -470,21 +476,18 @@ void func_02010938(void *arg0) {
     extern void *data_0212fde0;
     void func_02010628(u32, u32);
     s32 func_0201059c(void *);
-
     void *p;
     u32 aligned_src;
-    void *dst_buf;
-    u32 counter;
-    u32 byte_counter;
+    register void *dst_buf;
+    register u32 counter;
+    register u32 byte_counter;
     u32 ctrl_val;
     u32 data;
 
     p = &data_0212fde0;
     aligned_src = M2C_FIELD(p, u32 *, 0x1c) & ~0x1FF;
     if (aligned_src != M2C_FIELD(p, u32 *, 0x1c)) goto fail;
-
     if (M2C_FIELD(p, u32 *, 0x20) & 3) goto fail;
-
     if (M2C_FIELD(p, u32 *, 0x24) >= 0x200) goto fail;
 
     M2C_FIELD(arg0, u32 *, 0x8) = aligned_src;
@@ -497,16 +500,21 @@ void func_02010938(void *arg0) {
     *(volatile u32 *)0x040001A4 = M2C_FIELD(arg0, u32 *, 0x4);
     ctrl_val = *(volatile u32 *)0x040001A4;
 
-    if ((ctrl_val & 0x800000) == 0) goto skip_copy;
-    data = *(volatile u32 *)0x04100010;
-    if (byte_counter < 0x200) {
-        *(u32 *)((u8 *)dst_buf + counter * 4) = data;
-        byte_counter += 4;
-        counter += 1;
+    if (ctrl_val & 0x00800000) {
+        do {
+            data = *(volatile u32 *)0x04100010;
+            if (byte_counter < 0x200) {
+                *(u32 *)((u8 *)dst_buf + counter * 4) = data;
+                byte_counter += 4;
+                counter += 1;
+            }
+            if (ctrl_val & 0x80000000) {
+                ctrl_val = *(volatile u32 *)0x040001A4;
+            } else {
+                break;
+            }
+        } while (ctrl_val & 0x00800000);
     }
-
-skip_copy:
-    if (ctrl_val & 0x80000000) goto fail;
 
     if (dst_buf != (void *)M2C_FIELD(p, u32 *, 0x20)) goto fail;
 
@@ -515,7 +523,7 @@ skip_copy:
     M2C_FIELD(p, u32 *, 0x20) = M2C_FIELD(p, u32 *, 0x20) + 0x200;
     M2C_FIELD(p, u32 *, 0x24) = M2C_FIELD(p, u32 *, 0x24) - 0x200;
 
-    if (M2C_FIELD(p, u32 *, 0x24) == 0) return;
+    if (M2C_FIELD(p, u32 *, 0x24) != 0) goto fail;
 
 fail:
     while (func_0201059c(arg0) != 0) { }
@@ -601,21 +609,23 @@ loop:
 test:
     if (M2C_FIELD(r5, volatile u32 *, 0x114) & 4) goto loop;
     {
-        u32 _f = M2C_FIELD(r5, u32 *, 0x114);
-        s32 _a4 = arg4;
-        void *_a5 = arg5;
-        M2C_FIELD(r5, u32 *, 0x114) = _f | 4;
-        M2C_FIELD(r5, s32 *, 0x38) = _a4;
-        M2C_FIELD(r5, void **, 0x3c) = _a5;
+        volatile u32 *_fp = (volatile u32 *)((u8 *)r5 + 0x114);
+        u32 _v = *_fp;
+        *_fp = _v | 4;
     }
+    M2C_FIELD(r5, s32 *, 0x38) = arg4;
+    M2C_FIELD(r5, void **, 0x3c) = arg5;
     func_02007530(state);
     {
-        u32 *_lit = data_02130400;
+        u32 *_dp = data_02130400;
         M2C_FIELD(r5, u32 *, 0x28) = r10;
-        M2C_FIELD(r5, u32 *, 0x20) = r8;
-        M2C_FIELD(r5, u32 *, 0x1c) = r9 + _lit[0];
-        M2C_FIELD(r5, u32 *, 0x24) = r7;
+        {
+            u32 _dv = _dp[0];
+            M2C_FIELD(r5, u32 *, 0x20) = r8;
+            M2C_FIELD(r5, u32 *, 0x1c) = r9 + _dv;
+        }
     }
+    M2C_FIELD(r5, u32 *, 0x24) = r7;
     if (r10 <= 3) {
         func_02007ca4(r10);
     }

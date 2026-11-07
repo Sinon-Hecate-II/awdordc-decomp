@@ -103,10 +103,10 @@ void func_020807d0(void) {
 #pragma opt_common_subs off
 void func_020807e4(u8 *a,u16 *b,s32 c,s32 d) {
  u16 v=(c&0x3ff)|((d&15)<<12);
- s32 w=a[0];
  s32 h=a[1];
- s32 x,y;
+ s32 w=a[0];
  u16 *p=(u16 *)(a+2);
+ s32 x,y;
  for(y=0;y<h;y++)for(x=0;x<w;x++)b[y*32+x]=*p+++v;
 }
 #pragma opt_common_subs on
@@ -137,37 +137,37 @@ void func_02080a14(u16 *p,s32 w,s32 h,u16 *q){
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=q[y*32+x];
 }
 
-void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, u16 bandH, u16 lowArg, u16 palArg) {
+void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, s32 bandH, u16 lowArg, u16 palArg) {
     u16 cur = (u16)((lowArg & 0x3ff) | ((palArg & 0xf) << 12));
-    s32 r5 = 0;
-    s32 stack = 0;
+    s32 y = 0;
     if (totalH <= 0) return;
-    if (totalW <= 0) return;
-    while (r5 < totalH) {
-        stack = 0;
-        do {
-            s32 r7 = 0;
-            if (bandH > 0) {
-                do {
-                    u16 *rowBase = p + stack + (r5 + r7) * 32;
-                    s32 r6 = 0;
-                    if (chunkW > 0) {
-                        do {
-                            rowBase[r6] = cur++;
-                            r6++;
-                        } while (r6 < chunkW);
-                    }
-                    r7++;
-                } while (r7 < bandH);
-            }
-            stack += chunkW;
-        } while (stack < totalW);
-        r5 += bandH;
+    while (y < totalH) {
+        s32 stack = 0;
+        if (totalW > 0) {
+            do {
+                s32 row = 0;
+                if (bandH > 0) {
+                    do {
+                        u16 *base = p + stack + (y + row) * 32;
+                        s32 x = 0;
+                        if (chunkW > 0) {
+                            do {
+                                base[x] = cur++;
+                                x++;
+                            } while (x < chunkW);
+                        }
+                        row++;
+                    } while (row < bandH);
+                }
+                stack += chunkW;
+            } while (stack < totalW);
+        }
+        y += bandH;
     }
 }
 
 void func_02080b38(u16 *p,u32 w,s32 h){
- s32 y,x;u16 *a,*b;u32 tmp;
+ s32 y,x;u16 tmp;u16 *b,*a;
  for(y=0;y<h;y++){
  for(x=0;x<(s32)(w>>1);x++){a=p+x;b=p+(w-1-x);tmp=a[y*32];a[y*32]=b[y*32];b[y*32]=tmp;}
  for(x=0;x<(s32)w;x++)p[y*32+x]^=0x400;

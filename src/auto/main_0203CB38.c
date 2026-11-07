@@ -28,10 +28,9 @@ s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
     } else if (!func_0206527c(arg3,data_020ff88c,6)) {
         func_0205e510(arg3,arg4,&packet);
     } else {
-        if(c==0xfe) return 0;
-        return 0;
+        return 0 * (c == 0xfe);
     }
-    return 1;
+    return (s32)1;
 }
 
 void func_0203d6c8(s32 unused, s32 connectionArg, s32 remoteAddressArg, s32 remotePortArg, s32 latency, u8 *requestMessage) {
