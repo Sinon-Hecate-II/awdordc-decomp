@@ -33,12 +33,14 @@ void func_ov007_0221d008(u8 *arg0) {
         s32 i;
         if (*phase > 0) {
             index = (s8)(*phase - 1);
-            if (index < 0 || index >= 17) goto no_move_67;
-            if (data_ov007_02221224[index] == 0 && (index <= 0 || data_ov007_02221224[index - 1] == 0)) goto no_move_67;
+            if (index < 0 || index >= 17) goto shift_67;
+            if (((s32 *)&data_ov007_02221e10)[index] == 0 &&
+                (index <= 0 || ((s32 *)&data_ov007_02221e10)[index - 1] == 0)) goto shift_67;
             *phase = (s8)index;
+        shift_67:
             i = *phase;
             while (i < 16) {
-                data_ov007_02221224[i] = data_ov007_02221224[i + 1];
+                ((s32 *)&data_ov007_02221e10)[i] = ((s32 *)&data_ov007_02221e10)[i + 1];
                 i++;
             }
             M2C_FIELD(&data_ov007_02221e0c, s32 *, 0x44) = 0;
@@ -46,9 +48,9 @@ void func_ov007_0221d008(u8 *arg0) {
             return;
         }
         index = *phase;
-        if (index != 0 || data_ov007_02221224[index] == 0) goto no_move_67;
+        if (index != 0 || ((s32 *)&data_ov007_02221e10)[index] == 0) goto no_move_67;
         for (i = index; i < 16; i++) {
-            data_ov007_02221224[i] = data_ov007_02221224[i + 1];
+            ((s32 *)&data_ov007_02221e10)[i] = ((s32 *)&data_ov007_02221e10)[i + 1];
         }
         M2C_FIELD(&data_ov007_02221e0c, s32 *, 0x44) = 0;
         func_0208fe30(0x1000d);
@@ -58,7 +60,7 @@ void func_ov007_0221d008(u8 *arg0) {
         return;
     }
     case 0x68: {
-        if (*(s32 *)((u8 *)ctx + 0x34) == (s32)&data_ov007_02221224[0]) {
+        if ((s32)&data_ov007_02221224[0] == *(s32 *)((u8 *)ctx + 0x34)) {
             s32 *items = *(s32 **)((u8 *)ctx + 0x34);
             if (func_020194e0(&data_ov007_02220960, &data_ov007_02220890) == 0) {
                 s32 phaseValue = *phase;
@@ -66,7 +68,7 @@ void func_ov007_0221d008(u8 *arg0) {
                 s32 i;
                 s32 *entry = 0;
                 if (phaseValue != 0) {
-                    entry = &data_ov007_02221224[(s8)(phaseValue - 1)];
+                    entry = &((s32 *)&data_ov007_02221e10)[(s8)(phaseValue - 1)];
                     for (i = 0; i < 0x4b; i++) {
                         if (func_020194e0(entry, (M2C_UNK *)items[i]) == 0) {
                             found = i;
@@ -79,19 +81,21 @@ void func_ov007_0221d008(u8 *arg0) {
                     s32 next = old;
                     if (next > 0) {
                         next = (s8)(next - 1);
-                        if (next >= 0 && next < 17 && (data_ov007_02221224[next] != 0 || (next > 0 && data_ov007_02221224[next - 1] != 0))) {
+                        if (next >= 0 && next < 17 && (((s32 *)&data_ov007_02221e10)[next] != 0 ||
+                            (next > 0 && ((s32 *)&data_ov007_02221e10)[next - 1] != 0))) {
                             void *field12c;
                             *phase = (s8)next;
                             field12c = (void *)*(s32 *)((u8 *)items[found] + 0x12c);
-                            if (func_020194e0(&data_ov007_02221224[*phase], (M2C_UNK *)field12c) == 0) {
-                                if (old >= 0 && old < 17 && (data_ov007_02221224[old] != 0 || (old > 0 && data_ov007_02221224[old - 1] != 0))) {
+                            if (func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase], (M2C_UNK *)field12c) == 0) {
+                                if (old >= 0 && old < 17 && (((s32 *)&data_ov007_02221e10)[old] != 0 ||
+                                    (old > 0 && ((s32 *)&data_ov007_02221e10)[old - 1] != 0))) {
                                     *phase = (s8)old;
                                     func_0208fe30(0x1001d);
                                 }
                             } else if (func_020194e0((s32 *)field12c, &data_ov007_02220d28) == 0) {
                                 found = -1;
                                 if (*phase != 0) {
-                                    entry = &data_ov007_02221224[(s8)(*phase - 1)];
+                                    entry = &((s32 *)&data_ov007_02221e10)[(s8)(*phase - 1)];
                                     for (i = 0; i < 0x4b; i++) {
                                         if (func_020194e0(entry, (M2C_UNK *)items[i]) == 0) {
                                             found = i;
@@ -100,11 +104,14 @@ void func_ov007_0221d008(u8 *arg0) {
                                     }
                                 }
                                 if (found >= 0) {
-                                    func_020194e0(&data_ov007_02221224[*phase], (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x12c));
+                                    func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],
+                                        (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x12c));
                                 }
                             }
-                            if (func_020194e0(&data_ov007_02221224[*phase], (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x258)) == 0) {
-                                if (old >= 0 && old < 17 && (data_ov007_02221224[old] != 0 || (old > 0 && data_ov007_02221224[old - 1] != 0))) {
+                            if (func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],
+                                (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x258)) == 0) {
+                                if (old >= 0 && old < 17 && (((s32 *)&data_ov007_02221e10)[old] != 0 ||
+                                    (old > 0 && ((s32 *)&data_ov007_02221e10)[old - 1] != 0))) {
                                     *phase = (s8)old;
                                     func_0208fe30(0x1001d);
                                 }
@@ -112,13 +119,13 @@ void func_ov007_0221d008(u8 *arg0) {
                         }
                     }
                 }
-                func_02007ef4(data_ov007_02221224, (s8 *)scratch, 0x44);
+                func_02007ef4(&data_ov007_02221e10, (s8 *)padding, 0x44);
             } else if (func_020194e0(&data_ov007_02220960, &data_ov007_02220d28) == 0) {
                 s32 phaseValue = *phase;
                 s32 found = -1;
                 s32 i;
                 if (phaseValue != 0) {
-                    s32 *entry = &data_ov007_02221224[(s8)(phaseValue - 1)];
+                    s32 *entry = &((s32 *)&data_ov007_02221e10)[(s8)(phaseValue - 1)];
                     for (i = 0; i < 0x4b; i++) {
                         if (func_020194e0(entry, (M2C_UNK *)items[i]) == 0) {
                             found = i;
@@ -131,10 +138,13 @@ void func_ov007_0221d008(u8 *arg0) {
                     s32 next = old;
                     if (next > 0) {
                         next = (s8)(next - 1);
-                        if (next >= 0 && next < 17 && (data_ov007_02221224[next] != 0 || (next > 0 && data_ov007_02221224[next - 1] != 0))) {
+                        if (next >= 0 && next < 17 && (((s32 *)&data_ov007_02221e10)[next] != 0 ||
+                            (next > 0 && ((s32 *)&data_ov007_02221e10)[next - 1] != 0))) {
                             *phase = (s8)next;
-                            if (func_020194e0(&data_ov007_02221224[*phase], (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x258)) == 0) {
-                                if (old >= 0 && old < 17 && (data_ov007_02221224[old] != 0 || (old > 0 && data_ov007_02221224[old - 1] != 0))) {
+                            if (func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],
+                                (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x258)) == 0) {
+                                if (old >= 0 && old < 17 && (((s32 *)&data_ov007_02221e10)[old] != 0 ||
+                                    (old > 0 && ((s32 *)&data_ov007_02221e10)[old - 1] != 0))) {
                                     *phase = (s8)old;
                                     func_0208fe30(0x1001d);
                                 }
@@ -142,14 +152,14 @@ void func_ov007_0221d008(u8 *arg0) {
                         }
                     }
                 }
-                func_02007ef4(data_ov007_02221224, (s8 *)padding, 0x44);
+                func_02007ef4(&data_ov007_02221e10, (s8 *)scratch, 0x44);
             }
-            func_02007ef4(data_ov007_02221224, (s8 *)scratch, 0x44);
-            scratch[*phase] = 0;
-            func_02019424(&scratch[*phase], &data_ov007_022205c0);
+            func_02007ef4(&data_ov007_02221e10, (s8 *)padding, 0x44);
+            padding[*phase] = 0;
+            func_02019424(&padding[*phase], &data_ov007_022205c0);
             {
                 s32 count = 0;
-                s32 *node = scratch;
+                s32 *node = padding;
                 if (*node != 0) {
                     do {
                         if (func_02099ae8(node) == 0 && count != 0) count++;
@@ -158,7 +168,8 @@ void func_ov007_0221d008(u8 *arg0) {
                 }
                 if (count > 0x40) {
                     s32 old = *phase;
-                    if (old >= 0 && old < 17 && (data_ov007_02221224[old] != 0 || (old > 0 && data_ov007_02221224[old - 1] != 0))) {
+                    if (old >= 0 && old < 17 && (((s32 *)&data_ov007_02221e10)[old] != 0 ||
+                        (old > 0 && ((s32 *)&data_ov007_02221e10)[old - 1] != 0))) {
                         *phase = (s8)old;
                         func_020b269c();
                         {
@@ -215,6 +226,10 @@ void func_ov007_0221d008(u8 *arg0) {
                     s32 next = (s8)(old - 1);
                     if (next >= 0 && next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) {
                         *phase = (s8)next;
+                        if (func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase], (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x12c)) == 0) {
+                            *phase = (s8)old;
+                            func_0208fe30(0x1001d);
+                        }
                         if (func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase], (M2C_UNK *)*(s32 *)((u8 *)items[found] + 0x258)) == 0) {
                             *phase = (s8)old;
                             func_0208fe30(0x1001d);
@@ -222,18 +237,44 @@ void func_ov007_0221d008(u8 *arg0) {
                     }
                 }
             }
-            if (*phase == 17) {
-                func_020b269c();
-                {
-                    s32 oldEngine = gCur3DSpriteEngine;
-                    void *sprite;
-                    gCur3DSpriteEngine = data_027e00c8;
-                    sprite = func_0208b564((s32)ctx);
-                    func_020899cc(sprite, 2, 0x2800, 0x46000013);
-                    M2C_FIELD(sprite, s32 *, 0x58) = M2C_FIELD(sprite, s32 *, 0x58) | 0x1000;
-                    gCur3DSpriteEngine = oldEngine;
-                    func_01ffa8c4((s32)ctx, 5);
-                    func_0208fe30(0x1001d);
+            func_02007ef4(&data_ov007_02221e10, (s8 *)scratch, 0x44);
+            scratch[*phase] = 0;
+            func_02019424(&scratch[*phase], &data_ov007_022205c0);
+            {
+                s32 count = 0;
+                s32 *node = scratch;
+                if (*node != 0) {
+                    do {
+                        if (func_02099ae8(node) == 0 && count != 0) count++;
+                        count += func_0209c268(node);
+                    } while (*++node != 0);
+                }
+                if (count > 0x40) {
+                    s32 old = *phase;
+                    if (old >= 0 && old < 17 && (((s32 *)&data_ov007_02221e10)[old] != 0 ||
+                        (old > 0 && ((s32 *)&data_ov007_02221e10)[old - 1] != 0))) {
+                        *phase = (s8)old;
+                        func_020b269c();
+                        {
+                            s32 oldEngine = gCur3DSpriteEngine;
+                            void *sprite;
+                            gCur3DSpriteEngine = data_027e00c8;
+                            sprite = func_0208b564((s32)ctx);
+                            func_020899cc(sprite, 2, 0x2800, 0x46000013);
+                            M2C_FIELD(sprite, s32 *, 0x58) = M2C_FIELD(sprite, s32 *, 0x58) | 0x1000;
+                            gCur3DSpriteEngine = oldEngine;
+                            func_01ffa8c4((s32)ctx, 5);
+                            func_0208fe30(0x1001d);
+                        }
+                    }
+                } else {
+                    s32 old = *phase;
+                    s32 next = (s8)(old + 1);
+                    s32 *table = &data_ov007_02221e10;
+                    if (next >= 0 && next < 17 && (table[next] != 0 || (next > 0 && table[next - 1] != 0))) {
+                        *phase = (s8)next;
+                        func_0208fe30(0x1000d);
+                    }
                 }
             }
         }

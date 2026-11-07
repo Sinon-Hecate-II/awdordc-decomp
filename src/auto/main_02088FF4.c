@@ -113,7 +113,7 @@ void func_020891fc(void *arg0)
 
     u8 a;
     u8 b;
-    s32 z = 0;
+    s32 z = 0; u8 flags;
 
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102610;
 
@@ -147,8 +147,7 @@ void func_020891fc(void *arg0)
     M2C_FIELD(arg0, s32 *, 0x44) = z;
 
     M2C_FIELD(arg0, u8 *, 0x48) =
-        (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30)
-        & ~0xC0;
+        (flags=(u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30)) & ~0xC0;
 
     M2C_FIELD(arg0, u8 *, 0x4D) = z;
     M2C_FIELD(arg0, u8 *, 0x4C) = z;
