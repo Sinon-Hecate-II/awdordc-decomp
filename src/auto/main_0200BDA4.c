@@ -61,7 +61,15 @@ void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 #pragma opt_strength_reduction off
-u32 func_0200bf0c(void *arg0) {s32 x=M2C_FIELD(arg0,s32 *,28);if(((u32)x>>24)&1) return (u32)(x<<8)>>8;return M2C_FIELD(arg0,u32 *,8);}
+u32 func_0200bf0c(void *arg0) {
+    typedef union {
+        struct { u32 value : 24; u32 enabled : 1; u32 rest : 7; } f;
+        u32 w;
+    } Bits;
+    Bits *b = (Bits *)((u8 *)arg0 + 0x1c);
+    if ((b->w >> 24) & 1) return b->f.value;
+    return M2C_FIELD(arg0, u32 *, 8);
+}
 #pragma opt_strength_reduction reset
 void func_0200bf28(void *arg0) {
     M2C_UNK func_020067a8(s32, s32);

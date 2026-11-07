@@ -105,6 +105,61 @@ M2C_FIELD(arg0,s16 *,0x38)=z;
 M2C_FIELD(arg0,s16 *,0x3A)=z;
 }
 
+void func_020891fc(void *arg0)
+{
+    extern M2C_UNK data_02102610;
+    extern void *gCur3DSpriteEngine;
+    extern s32 data_027e00c8;
+
+    u8 a;
+    u8 b;
+    s32 z = 0;
+
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102610;
+
+    M2C_FIELD(arg0, u8 *, 0x48) =
+        (M2C_FIELD(arg0, u8 *, 0x48) & ~1) | 1;
+
+    M2C_FIELD(arg0, s16 *, 0x34) = 0;
+    M2C_FIELD(arg0, s16 *, 0x36) = 0;
+
+    M2C_FIELD(arg0, s32 *, 0x40) &= ~0x1FF;
+    M2C_FIELD(arg0, s32 *, 0x40) &= 0xFFFC01FF;
+    M2C_FIELD(arg0, s32 *, 0x40) &= ~0x03FC0000;
+
+    M2C_FIELD(arg0, s16 *, 0x3E) = 0;
+    M2C_FIELD(arg0, s16 *, 0x3C) = 0xC00;
+
+    M2C_FIELD(arg0, s32 *, 0x40) =
+        (M2C_FIELD(arg0, s32 *, 0x40) & ~0xFC000000)
+        | 0x40000000;
+
+    a = ((s32)gCur3DSpriteEngine == data_027e00c8)
+        ? 1 : 0;
+
+    b = (a == 1) ? 0 : 1;
+
+    M2C_FIELD(arg0, u8 *, 0x48) =
+        (M2C_FIELD(arg0, u8 *, 0x48) & ~0xE)
+        | ((u32)(b << 0x1D) >> 0x1C);
+
+    M2C_FIELD(arg0, u8 *, 0x49) = 0x11;
+    M2C_FIELD(arg0, s32 *, 0x44) = z;
+
+    M2C_FIELD(arg0, u8 *, 0x48) =
+        (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30)
+        & ~0xC0;
+
+    M2C_FIELD(arg0, u8 *, 0x4D) = z;
+    M2C_FIELD(arg0, u8 *, 0x4C) = z;
+
+    M2C_FIELD(arg0, u8 *, 0x4E) = 8;
+    M2C_FIELD(arg0, u8 *, 0x4F) = 8;
+
+    M2C_FIELD(arg0, s16 *, 0x38) = z;
+    M2C_FIELD(arg0, s16 *, 0x3A) = z;
+}
+
 M2C_UNK func_020892f0(void *arg0, s32 arg1) {
  void func_02088964(void *,s32);
  M2C_UNK func_02088c78(M2C_UNK);
@@ -117,13 +172,22 @@ void func_02089310(void) {
     func_020892f0();
 }
 
-void func_0208931c(M2C_UNK arg0) {
- void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
- M2C_UNK func_020891fc();
- extern M2C_UNK data_02102658;
- if (func_01ffa3dc(&data_02102658, arg0) == NULL) return;
- func_020891fc();
+
+void func_0208931c(M2C_UNK arg0)
+{
+    void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK data_02102658;
+    void *ptr;
+
+    ptr = func_01ffa3dc(&data_02102658, arg0);
+
+    if (ptr == NULL) {
+        return;
+    }
+
+    func_020891fc(ptr);
 }
+
 
 void *func_02089340(void *arg0) {
     M2C_UNK func_02089108();

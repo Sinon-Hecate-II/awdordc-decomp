@@ -93,22 +93,31 @@ void func_02004264(M2C_UNK arg0, s32 arg1, u32 arg2) {
 #pragma push
 #pragma opt_propagation off
 void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
-M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32);
-M2C_UNK func_02007e70(M2C_UNK,s32,u32);
-extern s32 data_020f5204;
-const u32 base=0x06400000;
-if(data_020f5204!=-1 && arg2>0x30U) {
-func_02007a04(data_020f5204,arg0,base+(u32)arg1,arg2);return;
-}
-func_02007e70(arg0,base+(u32)arg1,arg2);
+    M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
+    M2C_UNK func_02007e70(M2C_UNK, s32, u32);
+    extern s32 data_020f5204;
+    register s32 base=0x06400000;
+    if (data_020f5204 != -1 && arg2 > 0x30U) {
+        func_02007a04(data_020f5204, arg0, base + arg1, arg2);
+        return;
+    }
+    func_02007e70(arg0, base + arg1, arg2);
 }
 #pragma pop
+#pragma push
+#pragma opt_propagation off
 void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
-M2C_UNK func_02007a04(s32,M2C_UNK,s32,u32); M2C_UNK func_02007e70(M2C_UNK,s32,u32); extern s32 data_020f5204;
-u8 *base=(u8 *)0x06600000;
-if(data_020f5204!=-1 && arg2>0x30U){func_02007a04(data_020f5204,arg0,(s32)(base+arg1),arg2);return;}
-func_02007e70(arg0,(s32)(base+arg1),arg2);
+    M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
+    M2C_UNK func_02007e70(M2C_UNK, s32, u32);
+    extern s32 data_020f5204;
+    register u32 base=0x06600000;
+    if (data_020f5204 != -1 && arg2 > 0x30U) {
+        func_02007a04(data_020f5204, arg0, base + arg1, arg2);
+        return;
+    }
+    func_02007e70(arg0, base + arg1, arg2);
 }
+#pragma pop
 
 void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036b8();
@@ -473,13 +482,11 @@ void func_02004cf0(void) {
 }
 
 void func_02004d3c(void) {
-    s32 func_020033cc();
-    extern u16 data_020e9b30[];
-    extern M2C_UNK data_0212dbfc;
-    s32 state = func_020033cc();
-    u32 base = ((volatile u16 *)data_020e9b30)[state >> 4];
-    ((volatile u32 *)&data_0212dbfc)[3] = (u32)state;
-    ((volatile u32 *)&data_0212dbfc)[2] = base << 12;
+ s32 func_020033cc(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
+ s32 state=func_020033cc();
+ u32 base=((u16*)&data_020e9b30)[state>>4];
+ M2C_FIELD(&data_0212dbfc,s32*,12)=state;
+ M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
 }
 
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

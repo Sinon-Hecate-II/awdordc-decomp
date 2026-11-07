@@ -175,13 +175,10 @@ u8 func_0208eb68(void *arg0) {
 void func_0208eb80(void *p) {
 extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
 void func_0208e864(s16,s32,u16,u8,s32);
-const s32 mask1023 = 0x3ff;
 s32 saved,bank,i,clamped;
-u32 mode,shift,palSrc;
+u32 mode,shift;
 u16 pal,base,tile,bankVal;
 void **bankPtr;
-s16 sx,sy;
-u8 byte;
 if(M2C_FIELD(p,s32 *,0x58)>0)M2C_FIELD(p,s32 *,0x58)--;
 if(M2C_FIELD(p,s32 *,0x58)<0)M2C_FIELD(p,s32 *,0x58)=0;
 saved=gCur3DSpriteEngine;
@@ -191,20 +188,16 @@ gCur3DSpriteEngine=bank;
 mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<28)>>29;
 if((mode!=0||bank==data_027e00c8)&&(mode!=1||bank==data_027e00c4)&&(mode!=3||bank==saved)){
 bankPtr=(void **)bank;
-palSrc=M2C_FIELD(p,u32 *,0x40);
 bankVal=M2C_FIELD(bankPtr,u16 *,0);
-pal=(u16)((u32)(palSrc<<6)>>24);
+shift=(((u32)bankVal)<<17)>>30;
+pal=(u16)((u32)(M2C_FIELD(p,u32 *,0x40)<<6)>>24);
 base=M2C_FIELD(p,u16 *,0x3c);
 tile=M2C_FIELD(p,u16 *,0x3e);
 clamped=M2C_FIELD(p,s32 *,0x58);
-shift=(((u32)bankVal)<<17)>>30;
-sx=M2C_FIELD(p,s16 *,0x34);
-sy=M2C_FIELD(p,s16 *,0x38);
-byte=M2C_FIELD(p,u8 *,0x49);
-func_0208e864((s16)(((s32)sx+(s32)sy)&(mask1023-0x200)),
+func_0208e864((s16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&511),
 (M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a))&255,
-(u16)(base|((u16)(pal<<12))|((((u32)tile>>shift))&mask1023)),
-byte,clamped);
+(u16)(base|((u16)(pal<<12))|(((u32)tile>>shift)&1023)),
+M2C_FIELD(p,u8 *,0x49),clamped);
 }}
 gCur3DSpriteEngine=saved;
 }
@@ -266,7 +259,13 @@ void *func_0208ed88(void *arg0) {
 }
 
 #pragma opt_propagation off
-void func_0208ee1c(void *arg0) { unsigned long long *dst = M2C_FIELD(arg0, unsigned long long **, 0x68); if(dst != 0) { *dst = M2C_FIELD(arg0, unsigned long long *, 0x60); } }
+void *func_0208ee1c(void *arg0) {
+    unsigned long long *p = M2C_FIELD(arg0, unsigned long long **, 0x68);
+    if (p != 0) {
+        *p = M2C_FIELD(arg0, unsigned long long *, 0x60);
+    }
+    return arg0;
+}
 #pragma opt_propagation reset
 void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); func_02082040(arg0); return arg0; }
 

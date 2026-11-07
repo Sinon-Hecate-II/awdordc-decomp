@@ -21,10 +21,8 @@ s32 func_02002030(s32 arg0) {
     *(volatile s32 *)((u8 *)p + 0x10) = 0;
     *(volatile s32 *)((u8 *)p + 0x14) = 0x1000;
     *(volatile s32 *)((u8 *)p + 0x18) = arg0;
-    {
-        s32 z = 0 + 0;
-        *(volatile s32 *)((u8 *)p + 0x1c) = z;
-        return z;
-    }
+    arg0 = 0;
+    *(volatile s32 *)((u8 *)p + 0x1c) = arg0;
+    return arg0;
 }
 #pragma opt_common_subs reset

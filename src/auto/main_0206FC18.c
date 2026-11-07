@@ -59,10 +59,11 @@ s32 func_020700b8(s32 arg0) {
 #pragma optimization_level 2
 void func_020700d8(void *a) {
     void func_02070108(void *);
-    void *self = a;
-    if (--M2C_FIELD(self, s32 *, 4) != 0) return;
-    (*(void (***)(void *))a)[3](a);
-    func_02070108(self);
+    void (*fn)(void *);
+    if (--M2C_FIELD(a, s32 *, 4) != 0) return;
+    fn = M2C_FIELD(M2C_FIELD(a, void **, 0), void (**)(void *), 0xc);
+    fn(a);
+    func_02070108(a);
 }
 #pragma optimization_level reset
 void func_02070108(void *a) {

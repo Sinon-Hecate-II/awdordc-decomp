@@ -8,7 +8,7 @@ static inline s32 tileDistance(s32 x,s32 y,s32 xx,s32 yy) { s32 sum=0; if(x-xx>0
 
 /* Ticks a unit state: handles 0x40 pending-swap, early-outs on 0x80/0x100 flags, dispatches cases 2/9. */
 void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg4) {
-    M2C_UNK func_ov000_0217e8c4(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
+    void func_ov000_0217e8c4(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
     M2C_UNK func_ov000_0217f754(M2C_UNK, M2C_UNK, u8 *, u8 *);
     M2C_UNK func_ov000_02180268(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
@@ -53,7 +53,189 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
     func_ov000_0217e8c4(arg0, arg1, arg2, arg3, arg4);
 }
 
-int func_ov000_0217e8c4(int arg0, int arg1, unsigned char *arg2, unsigned char *arg3, unsigned char *arg4) { return 0; }
+void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5bfc[];
+    extern u8 data_ov000_021b5c0a[];
+    extern u8 data_0212616c[];
+    s32 func_020ba510(s32, s32);
+    s32 func_020ba924(s32, s32);
+    s32 func_020d27a4(s32, s32);
+    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 func_ov000_021a93a8(void *, s32, s32);
+    s32 func_ov000_021a97d0(s32, s32);
+    s32 func_ov000_021a97e0(s32, s32);
+    s32 func_ov000_021a9820(s32, s32);
+    s32 func_ov000_021a9d8c(s16, s16);
+    void func_ov000_02198f60(void);
+    void func_01ffc2e8(void *);
+    void func_01ffb9c4(s32);
+    u8 *map;
+    u8 *sel;
+    u8 *p;
+    s32 kind;
+    s32 minX, minY, maxX, maxY;
+    register s32 xx, yy;
+    s32 dist;
+    s32 count = 0;
+    s32 n;
+    s32 id, off, owner;
+    s32 range;
+    s8 val;
+
+    if (*state != 2) return;
+    map = *gCurrentMap;
+    sel = M2C_FIELD(map, u8 **, 0x52d0);
+    kind = (s32)((u32)(sel[0] << 26) >> 26);
+    switch (kind) {
+    case 2:
+    case 3:
+        if (func_020ba924(x, y) == 1) {
+            *state = 3;
+        }
+        return;
+    case 22:
+        if (func_ov000_021a9214(sel, x, y) == 1
+            || func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), x, y) == 1) {
+            if (!(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20)) {
+                *state = 0xa;
+            }
+            return;
+        }
+        minX = x - 16; if (minX < 0) minX = 0;
+        minY = y - 16; if (minY < 0) minY = 0;
+        maxX = M2C_FIELD(*gCurrentMap, u16 *, 0x5144) - 1;
+        if (x + 16 < maxX) maxX = x + 16;
+        maxY = M2C_FIELD(*gCurrentMap, u16 *, 0x5146) - 1;
+        if (y + 16 < maxY) maxY = y + 16;
+        for (yy = minY; yy <= maxY; yy++) {
+            for (xx = minX; xx <= maxX; xx++) {
+                dist = tileDistance(x, y, xx, yy);
+                if (dist < 1 || dist > 0x10) continue;
+                map = *gCurrentMap;
+                id = M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0);
+                if (id == 0) continue;
+                if (func_020d27a4(M2C_FIELD(map, u8 *, 0x52d4), id) != 0) continue;
+                map = *gCurrentMap;
+                p = (u8 *)map + 0x59a4 + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0) * 14;
+                if (p) {
+                    if (!p) off = 0;
+                    else off = ((s32)p - (s32)((u8 *)*gCurrentMap + 0x59a4)) / 14;
+                    owner = (off >> 6) + 1;
+                } else {
+                    owner = 0;
+                }
+                range = func_ov000_021a9820(owner, (s32)((u32)(p[0] << 26) >> 26));
+                if (range > 1) {
+                    if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 0x20) range++;
+                    if (range + 6 < dist) continue;
+                } else {
+                    if (p) {
+                        if (!p) off = 0;
+                        else off = ((s32)p - (s32)((u8 *)*gCurrentMap + 0x59a4)) / 14;
+                        owner = (off >> 6) + 1;
+                    } else {
+                        owner = 0;
+                    }
+                    range = func_ov000_021a97e0(owner, (s32)((u32)(p[0] << 26) >> 26)) + 7;
+                    if (range < dist) continue;
+                    if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 7) {
+                        func_01ffc2e8(p);
+                        func_01ffb9c4(0x6f);
+                        if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8), s8 *, x) < 0) continue;
+                    }
+                }
+                if (func_ov000_021a97d0((s32)((u32)(p[0] << 26) >> 26), 0x16) >= 0xa) count++;
+            }
+        }
+        if (count != 0) {
+            if (!(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20)) *state = 0xa;
+        } else {
+            if (M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20) *state = 0xb;
+        }
+        return;
+    case 13:
+        if (x == sel[1] && y == sel[2]) return;
+        minX = x - 1; if (minX < 0) minX = 0;
+        n = 0;
+        minY = y - 1; if (minY < 0) minY = 0;
+        maxX = M2C_FIELD(map, u16 *, 0x5144) - 1;
+        if (x + 1 < maxX) maxX = x + 1;
+        maxY = M2C_FIELD(map, u16 *, 0x5146) - 1;
+        if (y + 1 < maxY) maxY = y + 1;
+        for (yy = minY; yy <= maxY; yy++) {
+            for (xx = minX; xx <= maxX; xx++) {
+                if (tileDistance(x, y, xx, yy) != 1) continue;
+                if (func_020ba510(xx, yy) != 0) n++;
+            }
+        }
+        if (n == 0) return;
+        *state = 6;
+        return;
+    case 23:
+        if (sel[0xc] == 0) return;
+        p = (u8 *)map + 0x59a4 + sel[0xc] * 14;
+        if (data_ov000_021b5c0a[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
+        func_ov000_02198f60();
+        map = *gCurrentMap;
+        minX = x - 1; if (minX < 0) minX = 0;
+        minY = y - 1; if (minY < 0) minY = 0;
+        maxX = M2C_FIELD(map, u16 *, 0x5144) - 1;
+        if (x + 1 < maxX) maxX = x + 1;
+        maxY = M2C_FIELD(map, u16 *, 0x5146) - 1;
+        if (y + 1 < maxY) maxY = y + 1;
+        for (yy = minY; yy <= maxY; yy++) {
+            for (xx = minX; xx <= maxX; xx++) {
+                if (tileDistance(x, y, xx, yy) != 1) continue;
+                map = *gCurrentMap;
+                val = M2C_FIELD(M2C_FIELD(data_0212616c, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                        M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
+                if (val == -1) continue;
+                if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;
+                map = *gCurrentMap;
+                if (M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2840)
+                    + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2d48) > 0x28) continue;
+                *state = 8;
+                if (xx != x) *dir1 = 3 - (xx - x);
+                if (yy != y) *dir1 = (yy - y) + 2;
+                goto phase2;
+            }
+        }
+    phase2:
+        map = *gCurrentMap;
+        sel = M2C_FIELD(map, u8 **, 0x52d0);
+        if (sel[0xd] == 0) return;
+        p = (u8 *)map + 0x59a4 + sel[0xd] * 14;
+        if (data_ov000_021b5c0a[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
+        minX = x - 1; if (minX < 0) minX = 0;
+        minY = y - 1; if (minY < 0) minY = 0;
+        maxX = M2C_FIELD(map, u16 *, 0x5144) - 1;
+        if (x + 1 < maxX) maxX = x + 1;
+        maxY = M2C_FIELD(map, u16 *, 0x5146) - 1;
+        if (y + 1 < maxY) maxY = y + 1;
+        for (yy = minY; yy <= maxY; yy++) {
+            for (xx = minX; xx <= maxX; xx++) {
+                if (tileDistance(x, y, xx, yy) != 1) continue;
+                map = *gCurrentMap;
+                val = M2C_FIELD(M2C_FIELD(data_0212616c, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                        M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
+                if (val == -1) continue;
+                if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;
+                map = *gCurrentMap;
+                if (M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2840)
+                    + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2d48) > 0x28) continue;
+                *state = 8;
+                if (xx != x) *dir2 = 3 - (xx - x);
+                if (yy != y) *dir2 = (yy - y) + 2;
+                if (*dir1 != *dir2) return;
+                *dir2 = 0;
+            }
+        }
+        return;
+    default:
+        return;
+    }
+}
 
 s32 func_ov000_0217f318(s16 x,s16 y) {
 extern void **data_027e0058;

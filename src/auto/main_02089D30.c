@@ -1,8 +1,10 @@
 /* 5 functions from 0x02089D30 to 0x0208ABC4 (main), found by ds-decomp. */
 #include "common.h"
-static inline u32 PanelWidth(void *p) { return (u32)(M2C_FIELD(p,u32 *,0x40)<<23)>>23; }
-static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,u32 *,0x40)<<14)>>23; }
+static inline u32 PanelWidth(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<23)>>23; }
+static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<14)>>23; }
 
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
 void func_02089d30(void *arg0) {
     void func_02089cec(void *);
     void *func_0209c658(void *);
@@ -29,10 +31,10 @@ void func_02089d30(void *arg0) {
     void func_02089784(void *);
     void func_0208aebc(void *);
     void *end,*entry;
-    void *sprite1,*sprite4;
-    s16 x1,y1,x2,y2,x3,y3,x4,y4;
-    s16 sx1,sy1,sx2,sy2,sx3,sy3,sx4,sy4,sx5,sy5,sx6,sy6,sx7,sy7,sx8,sy8;
     s32 w1,w2,w3,w4,w5,w6,w7,w8;
+    void *sprite4,*sprite1;
+    s16 x1,y1;
+    s16 sx1,sy1,sx2,sy2,sx3,sy3,sx4,sy4,sx5,sy5,sx6,sy6,sx7,sy7,sx8,sy8;
     s32 boolean1,boolean2,boolean3,boolean4,boolean5,boolean6,boolean7,boolean8;
     func_02089cec(arg0);
     previousEngine=gCur3DSpriteEngine;
@@ -54,17 +56,18 @@ void func_02089d30(void *arg0) {
             M2C_FIELD(arg0,u8 **,0x68)[index]=length;
             M2C_FIELD(arg0,u8 **,0x6c)[index]=measuredKind;
             rows=(length+7)>>3;
+            if(maxLength<length)maxLength=length;
             flags=M2C_FIELD(arg0,u32 *,0x58);
             M2C_FIELD(arg0,u32 *,0x58)=(flags&~0x3c0000)|((u32)((((flags<<10)>>28)+1)<<28)>>10);
             offset+=((rows+3)>>2)<<8;
-            if(maxLength<length)maxLength=length;
             index++;
         }while(index<=8);
         flags=M2C_FIELD(arg0,u32 *,0x58);
+        width=(maxLength+7)>>3;
         height=(((flags<<10)>>28)+1)<<4;
-        state=(flags<<29)>>29;
+        state=(u32)((s32)flags<<29)>>29;
         if(state)height+=32;
-        width=(((maxLength+7)>>3)+2)<<3;
+        width=(width+2)<<3;
         if(state==3){if(width<128)width=128;}else if(width<64)width=64;
         width=(width+15)&~15;height=(height+15)&~15;
         if(width>128&&width<192)width=(width+31)&~31;
@@ -84,10 +87,10 @@ void func_02089d30(void *arg0) {
             M2C_FIELD(arg0,s16 *,0x34)=(256-(s32)PanelWidth(arg0))/2;
             M2C_FIELD(arg0,s16 *,0x36)=188-PanelHeight(arg0);break;
         }
-        sprite1=0;sprite4=0;
+        sprite4=0;sprite1=0;
         func_020a9a30(0,2,0x47,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x260);
-        switch((M2C_FIELD(arg0,u32 *,0x58)<<29)>>29){
-case 0:M2C_FIELD(arg0,u32 *,0x58)&=~0x38000;sprite1=0;sprite4=0;break;
+        flags=M2C_FIELD(arg0,u32 *,0x58);
+        switch((u32)((s32)flags<<29)>>29){
 case 1:
             sprite1=func_020ab1c4(6);
             func_020aab24(sprite1,31,256,3,0);
@@ -111,20 +114,20 @@ case 1:
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
             
             func_020aad18(sprite1);
-M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;sprite4=0;break;
+M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 2:
             sprite1=func_020ab1c4(6);
             func_020aab24(sprite1,32,256,3,0);
-            y2=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
-            x2=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
-            func_02088e84(sprite1,x2,y2,x2,y2);
+            y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
+            func_02088e84(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean3=1;else boolean3=0;
             if(boolean3&255){
                 sy3=M2C_FIELD(sprite1,s16 *,0x52);sx3=M2C_FIELD(sprite1,s16 *,0x50);
                 w3=func_020aae10(sprite1);
                 func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)func_020aae44(sprite1));
             }
-            M2C_FIELD(sprite1,s16 *,0x34)=x2;M2C_FIELD(sprite1,s16 *,0x36)=y2;
+            M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean4=1;else boolean4=0;
             if(boolean4&255){
                 sy4=M2C_FIELD(sprite1,s16 *,0x52);sx4=M2C_FIELD(sprite1,s16 *,0x50);
@@ -135,20 +138,20 @@ case 2:
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
             
             func_020aad18(sprite1);
-M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;sprite4=0;break;
+M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 3:
             sprite1=func_020ab1c4(6);
             func_020aab24(sprite1,33,256,3,0);
-            y3=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
-            x3=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
-            func_02088e84(sprite1,x3,y3,x3,y3);
+            y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
+            func_02088e84(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean5=1;else boolean5=0;
             if(boolean5&255){
                 sy5=M2C_FIELD(sprite1,s16 *,0x52);sx5=M2C_FIELD(sprite1,s16 *,0x50);
                 w5=func_020aae10(sprite1);
                 func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)func_020aae44(sprite1));
             }
-            M2C_FIELD(sprite1,s16 *,0x34)=x3;M2C_FIELD(sprite1,s16 *,0x36)=y3;
+            M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean6=1;else boolean6=0;
             if(boolean6&255){
                 sy6=M2C_FIELD(sprite1,s16 *,0x52);sx6=M2C_FIELD(sprite1,s16 *,0x50);
@@ -162,16 +165,16 @@ case 3:
 
             sprite4=func_020ab1c4(6);
             func_020aab24(sprite4,34,268,3,0);
-            y4=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
-            x4=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
-            func_02088e84(sprite4,x4,y4,x4,y4);
+            y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
+            x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
+            func_02088e84(sprite4,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean7=1;else boolean7=0;
             if(boolean7&255){
                 sy7=M2C_FIELD(sprite4,s16 *,0x52);sx7=M2C_FIELD(sprite4,s16 *,0x50);
                 w7=func_020aae10(sprite4);
                 func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)func_020aae44(sprite4));
             }
-            M2C_FIELD(sprite4,s16 *,0x34)=x4;M2C_FIELD(sprite4,s16 *,0x36)=y4;
+            M2C_FIELD(sprite4,s16 *,0x34)=x1;M2C_FIELD(sprite4,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean8=1;else boolean8=0;
             if(boolean8&255){
                 sy8=M2C_FIELD(sprite4,s16 *,0x52);sx8=M2C_FIELD(sprite4,s16 *,0x50);
@@ -188,6 +191,7 @@ M2C_FIELD(arg0,u32 *,0x58)=flags;
 if((s32)(flags<<24)>>30 < 0)func_0208ae88(arg0,1);
 
 break;
+case 0:M2C_FIELD(arg0,u32 *,0x58)=flags&~0x38000;break;
 }
 M2C_FIELD(arg0,void **,0x5c)=sprite1;
 M2C_FIELD(arg0,void **,0x60)=sprite4;
@@ -196,7 +200,8 @@ gCur3DSpriteEngine=previousEngine;
 if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))func_0208989c(arg0);
 func_0208ad48(arg0);func_02089784(arg0);func_0208aebc(arg0);
 }
-
+#pragma opt_common_subs reset
+#pragma opt_strength_reduction reset
 u32 func_0208a6b0(void *arg0) {
     u32 func_020846a4(void);
     u32 func_0208fe30(M2C_UNK);

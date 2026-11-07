@@ -48,69 +48,71 @@ func_01ff83a8(start,dst,size);
 return func_01ff83a8(start2+base,dst2,size2);
 }
 
-int func_01ff83a8(u32 arg0, void *arg1, s32 arg2) {
-    u32 val1;
-    u32 mask;
-    u32 val3;
-    s32 r12;
-    volatile u8 *reg_base;
-    u32 r9;
-    u32 *fifo;
-    u32 r8;
-    u32 loaded;
+int func_01ff83a8(unsigned int addr, void *dst, int size)
+{
+    unsigned int control;
+    unsigned int status;
+    unsigned int addressHigh;
+    unsigned int value;
+    unsigned int command;
+    unsigned int zero;
+    int offset;
 
-    val1 = *(u32 *)0x027FFE60;
-    mask = arg0 & 0x1ff;
-    val3 = (val1 & ~0x7000000) | 0xa1000000;
-    r12 = -(s32)mask;
+    volatile unsigned char *regs;
+    volatile unsigned int *romdata;
 
-    if (*(volatile u32 *)0x040001A4 & 0x80000000) {
-        return arg0;
-    }
+    control = *(volatile unsigned int *)0x027FFE60;
+    offset = -(int)(addr & 0x1FF);
+    control = (control & ~0x07000000U) | 0xA1000000U;
 
-    reg_base = (volatile u8 *)0x040001A1;
-    reg_base[0] = 0x80;
+    if ((*(volatile unsigned int *)0x040001A4 & 0x80000000U) != 0)
+        return addr;
 
-    if (r12 >= arg2) {
-        return arg0 + r12;
-    }
+    regs = (volatile unsigned char *)0x040001A1;
+    regs[0] = 0x80;
 
-    arg0 += r12;
-    r9 = arg0 >> 8;
-    fifo = (u32 *)0x04100010;
-    reg_base[7] = 0xb7;
+    addr += offset;
+
+    if (offset >= size)
+        return addr;
+
+    romdata = (volatile unsigned int *)0x04100010;
+
+    addressHigh = addr >> 8;
+    command = 0xB7;
+    zero = 0;
 
     do {
-        reg_base[8] = (u8)(arg0 >> 24);
-        reg_base[9] = (u8)(arg0 >> 16);
-        reg_base[10] = (u8)r9;
-        reg_base[11] = (u8)arg0;
-        reg_base[12] = 0;
-        reg_base[13] = 0;
-        reg_base[14] = 0;
+        regs[7] = command;
+        regs[8] = addr >> 24;
+        regs[9] = addr >> 16;
+        regs[10] = addressHigh;
+        regs[11] = addr;
+        regs[12] = zero;
+        regs[13] = zero;
+        regs[14] = zero;
 
-        *(volatile u32 *)&reg_base[3] = val3;
-        r8 = *(volatile u32 *)&reg_base[3];
+        *(volatile unsigned int *)(regs + 3) = control;
 
-        if (r8 & 0x00800000) {
-            do {
-                loaded = *fifo;
-                if (r12 >= 0 && r12 < arg2) {
-                    *(u32 *)((char *)arg1 + r12) = loaded;
-                }
-                r12 += 4;
-                r8 = *(volatile u32 *)&reg_base[3];
-            } while (r8 & 0x80000000);
-        }
+        do {
+            status = *(volatile unsigned int *)(regs + 3);
 
-        if (r12 >= arg2) {
-            break;
-        }
-        r9 += 2;
-        arg0 += 0x200;
-    } while (1);
+            if (status & 0x00800000U) {
+                value = *romdata;
 
-    return arg0;
+                if (offset >= 0 && offset < size)
+                    *(unsigned int *)((unsigned char *)dst + offset) = value;
+
+                offset += 4;
+            }
+        } while (status & 0x80000000U);
+
+        addressHigh += 2;
+        addr += 0x200;
+
+    } while (offset < size);
+
+    return addr;
 }
 
 void func_01ff8480(s32 a,s32 b,s32 c,s32 d) {

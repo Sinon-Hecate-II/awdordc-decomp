@@ -18,7 +18,7 @@ void func_020af79c(void) {
     func_02090480(0);
 }
 
-#pragma scheduling off
+#pragma scheduling on
 void func_020af7ac(void) {
     extern u8 data_0215c430[];
     extern u8 data_0215c42c[];
@@ -30,7 +30,6 @@ void func_020af7ac(void) {
         *q++ = 0;
     }
 }
-#pragma scheduling reset
 void func_020af7dc(void) {
     extern u8 data_0215c42c[];
     extern u8 data_0215c430[];

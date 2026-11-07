@@ -38,7 +38,8 @@ void func_0200213c(s32 *arg0, s32 *arg1, s32 *arg2) {
 
 typedef volatile unsigned int vu32;
 void func_020021c0(s32 *a, s32 *b) {
- s64 sq=(s64)*(volatile s32*)a*a[0]; sq+=(s64)a[1]*a[1]; sq+=(s64)a[2]*a[2];
+ s64 sq=(s64)a[1]*a[1]+(s64)*(volatile s32*)a*a[0];
+ sq+=(s64)a[2]*a[2];
  *(volatile u16*)0x4000280=2; *(volatile s32*)0x4000290=0; *(volatile s32*)0x4000294=0x1000000;
  *(volatile u32*)0x4000298=(u32)sq; *(volatile u32*)0x400029c=(u32)(sq>>32);
  *(volatile u16*)0x40002b0=1;
