@@ -1,5 +1,8 @@
 /* 2 functions from 0x021F9FE0 to 0x021FAD10 (ov003), found by ds-decomp. */
 #include "common.h"
+static inline s16 Unk021F9FE0Selection(u8 *p) { return M2C_FIELD(p,s32 *,20); }
+static inline u8 Unk021F9FE0PageIndex(u8 *p) { return M2C_FIELD(p,u32 *,4); }
+static inline u8 *Unk021F9FE0Page(u8 *base,u8 page) { return base+page*512; }
 static inline u32 Unk021F9FE0Bit(u8 *p) { return (u32)(M2C_FIELD(p,s32 *,56)<<31)>>31; }
 static inline u8 Unk021F9FE0Eq(int a,int b) { return a==b; }
 extern u8 data_ov003_0220fdf2[];
@@ -29,11 +32,13 @@ void *func_020c7e88(int);
 u8 func_020e31e0(void);
 void func_ov003_021f9fe0(s32 a,s32 b,s32 c) {
 u8 *p=(u8 *)a,*q,*r;int mode,id;int flag2=0;int flag=0;int dx=0,icon,index;
-int x,y,tile,shift,n,v,kind,rowkind,palette,glyph;int width,height,drawX,drawY,drawW,drawH;u8 i,j;void *saved;
+int x,y,tile,shift,n,v,kind,rowkind,glyph;u32 palette;int width,height,drawX,drawY,drawW,drawH;u32 paletteBits;u8 i,j;void *saved;
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){
-v=(s16)M2C_FIELD(M2C_FIELD(p,void **,76),s32 *,20);
-n=M2C_FIELD(M2C_FIELD(p,void **,92),u32 *,4)&255;
+q=M2C_FIELD(p,u8 **,76);
+r=M2C_FIELD(p,u8 **,92);
+v=(s16)M2C_FIELD(q,s32 *,20);
+n=Unk021F9FE0PageIndex(r);
 q=M2C_FIELD(p,u8 **,68)+n*512;
 id=M2C_FIELD(q+(u16)v*2,u16 *,46);
 }else id=M2C_FIELD(p,u16 *,60);
@@ -68,7 +73,7 @@ func_0208dd7c(drawX,drawY,drawW,drawH,(u16)(((0x288>>shift)&1023)|0xa000),17,1);
 }
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){
-icon=(u16)((func_ov003_02200a18(M2C_FIELD(p,u8 **,68)[(M2C_FIELD(M2C_FIELD(p,void **,92),u32 *,4)&255)*512+556],id)<<2)+808);
+icon=(u16)((func_ov003_02200a18((M2C_FIELD(p,u8 **,68)+Unk021F9FE0PageIndex(M2C_FIELD(p,u8 **,92))*512)[556],id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,1)){
 v=(u8)(func_020a8958(M2C_FIELD(p,u16 *,60))==0);
 icon=(u16)((func_ov003_02200a18((u16)(v==1?1:3),id)<<2)+808);
@@ -93,7 +98,7 @@ func_020a94fc(M2C_FIELD(p,void **,80));
 
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,1)) {
-n=(u16)(M2C_FIELD(p,u16 *,60)-161);x=(s16)(b+64);
+n=(u16)(M2C_FIELD(p,u16 *,60)-161);x=b+64;
 for(i=0;i<3;i++) {
 switch(i) {
 case 0:
@@ -101,10 +106,12 @@ kind=(u8)(M2C_FIELD(data_0215d8a8,u32 *,n*4)>>29);
 if(kind) {
 r=data_ov003_0220f202+(((u32)(p[58]<<25)>>27)*2);
 switch(kind) {case 1:rowkind=3;break;case 2:rowkind=2;break;case 3:rowkind=1;break;case 4:rowkind=0;break;}
-tile=(u16)((s16)(rowkind*24+1036)+r[0]*4);
+drawW=(s16)(rowkind*24+1036);v=r[0];tile=(u16)(drawW+(v<<2));
 switch(kind) {case 1:case 2:palette=14;break;case 3:case 4:palette=13;break;default:palette=0;}
+paletteBits=(u32)(palette<<28);
+drawX=(u16)((r[1]?0x1000:0)|46);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ffaacc((u16)((r[1]?0x1000:0)|46),40,(u16)(((tile>>shift)&1023)|((palette<<28)>>16)|0x800),data_027e0064,17);
+func_01ffaacc(drawX,40,(u16)(((tile>>shift)&1023)|(paletteBits>>16)|0x800),data_027e0064,17);
 }break;
 case 1:
 v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<6)>>23;
@@ -131,9 +138,9 @@ for(i=0;i<3;i++){
 switch(i){
 case 0:break;
 case 1:
-v=((u32)M2C_FIELD(r,u32 *,12)<<4)>>22;
+glyph=((u32)M2C_FIELD(r,u32 *,12)<<4)>>22;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)data_027e00c4;
-func_020a92bc(M2C_FIELD(p,void **,84),v);
+func_020a92bc(M2C_FIELD(p,void **,84),glyph);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
 func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
