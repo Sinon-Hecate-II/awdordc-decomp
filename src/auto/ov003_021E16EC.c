@@ -15,7 +15,7 @@ u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;
 if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w=func_020aae10(sprite),h=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)w,(u16)h);}
 }
 static inline u8 CountEntries(void *object) {
-u8 i,n=0;for(i=0;i<5;i++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+i*0x6f8,u8*,0x27))n++;return n;
+u8 n=0;u8 i=0;for(;i<5;i++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+i*0x6f8,u8*,0x27))n++;return n;
 }
 static inline u32 VisibleEntries(void *object) { u32 n=func_ov003_021f2574();u8 m=CountEntries(object);return n<m?n:m; }
 static inline void ResetAnim(void *anim) {M2C_FIELD(anim,u16*,0xe)=0;M2C_FIELD(anim,u16*,0x10)=0;M2C_FIELD(anim,u16*,0xc)=12;M2C_FIELD(anim,u16*,2)=M2C_FIELD(anim,u16*,4);}
@@ -29,17 +29,18 @@ void func_020a9a30(s32,s32,s32,void*);void func_02091d4c(s32);void func_02091d6c
 void *func_02080e30(void*,s32);void func_0207c780(void*,void*);void func_020e35cc(void*);
 void func_020c1230(void*,void*,s32,s32);void *func_020ae22c(s32);void func_0208ca2c(s32,s32,void*,s32);
 u8 func_ov003_02200b5c(u8);void *func_ov000_0216cdcc(u8);void *func_ov000_0216cdec(s32,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
-static inline void SetupLayer(s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
-u8 *base=M2C_FIELD(gCur3DSpriteEngine,u8**,field);func_020a9a30(layer,bank,slot,base+offset);
+static inline u8 *MenuButton(void *menu,s32 index) {return M2C_FIELD(menu+index*4,u8**,12);}
+static inline void SetupLayer(void *engine,s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
+u8 *base=M2C_FIELD(engine,u8**,field);func_020a9a30(layer,bank,slot,base+offset);
 }
 typedef struct {u8 low:2;u8 mode:2;u8 high:4;} MenuModeBits;
 
-#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_ov003_021e16ec(void *a) {
 u8 *p=a,*q,*sprite,*menu;
 u8 i;u32 n;void **saved;void *data;
 s32 cw,ch;
-s16 x,y,w,h;u16 left,right,up,down;
+s16 x,y;s32 w,h;u16 left,right,up,down;
 func_ov003_021f1b38(0,&data_ov003_0220f34a);func_ov003_021f1b38(1,&data_ov003_0220f346);func_ov003_021f1b38(3,&data_ov003_0220f342);
 func_ov003_021f1b7c(0,&data_ov003_0220f344);func_ov003_021f1b7c(1,&data_ov003_0220f340);func_ov003_021f1b7c(3,&data_ov003_0220f348);
 func_ov003_021f2860(M2C_FIELD(p,u8**,0x5c)+4);
@@ -71,12 +72,12 @@ if((u8)(i-5)==0)left=10;if((u8)(i-5)==menu[11]-1)right=10;
 if(!n)down=up=i;else if((u8)(i-5)>=n)down=up=(u16)(n-1);break;
 case 10:down=up=10;if(n){left=(u16)(n-1);right=0;}else if(!menu[11]){left=right=10;}else{left=(u16)(menu[11]+4);right=5;}break;
 }
-M2C_FIELD(menu+i*4,void**,12)=func_020ab1c4(p);sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x2e)=i;
-func_020aab24(sprite,71,0,0,0);sprite=M2C_FIELD(menu+i*4,u8**,12);func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
+M2C_FIELD(menu+i*4,void**,12)=func_020ab1c4(p);sprite=MenuButton(menu,i);M2C_FIELD(sprite,u16*,0x2e)=i;
+func_020aab24(sprite,71,0,0,0);sprite=MenuButton(menu,i);func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 M2C_FIELD(sprite,s16*,0x34)=x;M2C_FIELD(sprite,s16*,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~511)|(w&511);
 M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&0xfffc01ff)|((u32)(h<<23)>>14);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=func_020aae10(sprite);s32 sh=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
-sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
+sprite=MenuButton(menu,i);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
 }
 func_ov003_021e1530(menu,10);
 M2C_FIELD(p,void**,0x4c)=func_020896f0(p);func_020893f4(M2C_FIELD(p,void**,0x4c),0x4f00,1);sprite=M2C_FIELD(p,u8**,0x4c);
@@ -132,7 +133,7 @@ func_01ff9e44(func_ov000_0216cdec(15,0),0x2e0,32);func_01ff9e44(func_ov000_0216c
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x300);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
 gCur3DSpriteEngine=saved;
 }
-#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 void func_ov003_021e2518(void *arg0) {
 M2C_UNK func_020a8f8c(s32); s32 func_020a8ff4(s32);
 M2C_UNK func_ov003_021e3960(void *,s32,M2C_UNK);
