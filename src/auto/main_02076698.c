@@ -97,9 +97,206 @@ void func_02076910(s32 x,s32 y) {
  M2C_FIELD(y+1,u8 *,a)=v;
  M2C_FIELD(y+1,u8 *,b)=v;
 }
+#pragma opt_strength_reduction off
+#pragma opt_propagation off
+void func_02076980(s32 x0, s32 y0, s32 x1, s32 y1) {
+    extern void *gCurrentMap;
+    extern M2C_UNK data_02142688;
+    u8 *p = (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x5120;
+    u8 **mapPtr;
+    s32 x, y, width, height, row, terrain, code;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    width = M2C_FIELD(p, u16 *, 0x24);
+    height = M2C_FIELD(p, u16 *, 0x26);
+    if (x1 > width - 1) x1 = width - 1;
+    if (y1 > height - 1) y1 = height - 1;
+    mapPtr = (u8 **)gCurrentMap;
+    for (y = y0; y <= y1 + 1; y++) {
+        for (x = x0; x <= x1 + 1; x++) {
+            u8 *map;
+            if (M2C_FIELD(y, u8 *, (s32)&data_02142688 + x * 42) == 7) continue;
+            code = 0;
+            if (x - 1 >= 0 && y - 1 >= 0 && x - 1 < width && y - 1 < height) {
+                map = *mapPtr;
+                row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x - 1);
+                if (terrain == 4) {
+                    if (x < width && y - 1 < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 4) code = 3;
+                    }
+                    if (code == 0 && x - 1 < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) != 4) code = 3;
+                    }
+                    if (code == 0 && x < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 4) code = 3;
+                    }
+                    if (code == 0) code = 1;
+                } else if (terrain == 29) {
+                    if (x < width && y - 1 < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 29) code = 3;
+                    }
+                    if (code == 0 && x - 1 < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) != 29) code = 3;
+                    }
+                    if (code == 0 && x < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 29) code = 3;
+                    }
+                    if (code == 0) code = 1;
+                } else if (terrain == 3) {
+                    if (x < width && y - 1 < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 8) code = 4;
+                    }
+                    if (code == 0 && x - 1 < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 8) code = 4;
+                    }
+                    if (code == 0 && x < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 8) code = 4;
+                    }
+                    if (code == 0) code = 2;
+                } else if (terrain == 8) {
+                    if (x < width && y - 1 < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) code = 4;
+                    }
+                    if (code == 0 && x - 1 < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 3) code = 4;
+                    }
+                    if (code == 0 && x < width && y < height) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) code = 4;
+                    }
+                    if (code == 0) code = 2;
+                }
+                if (x < width && y > 0) {
+                    map = *mapPtr;
+                    row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                    terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x);
+                    if (terrain == 3) {
+                        if (x > 0 && y < height) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 8) code = 2;
+                        }
+                        if (x < width && y < height) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 8) code = 2;
+                        }
+                    } else if (terrain == 8) {
+                        if (x > 0 && y < height) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 3) code = 4;
+                        }
+                        if (x < width && y < height) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) code = 4;
+                        }
+                    }
+                }
+                if (code == 0 && x > 0 && y < height) {
+                    map = *mapPtr;
+                    row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                    terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x - 1);
+                    if (terrain == 3) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) != 8) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 8) {
+                                map = *mapPtr;
+                                row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                                if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 8) code = 2;
+                            }
+                        }
+                    }
+                }
+                if (code == 0 && x < width && y < height) {
+                    map = *mapPtr;
+                    row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                    terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x);
+                    if (terrain == 3) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) != 8) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) != 8) {
+                                map = *mapPtr;
+                                row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                                if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) != 8) code = 2;
+                            }
+                        }
+                    }
+                }
+                if (code == 0 && x > 0 && y < height) {
+                    map = *mapPtr;
+                    row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                    terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x - 1);
+                    if (terrain == 8) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 3) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) {
+                                map = *mapPtr;
+                                row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                                if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) code = 4;
+                            }
+                        }
+                    }
+                }
+                if (code == 0 && x < width && y < height) {
+                    map = *mapPtr;
+                    row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                    terrain = M2C_FIELD(map, u8 *, 0x1420 + row + x);
+                    if (terrain == 8) {
+                        map = *mapPtr;
+                        row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                        if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 3) {
+                            map = *mapPtr;
+                            row = M2C_FIELD(map, u16 *, 0x3758 + (y - 1) * 2);
+                            if (M2C_FIELD(map, u8 *, 0x1420 + row + x) == 3) {
+                                map = *mapPtr;
+                                row = M2C_FIELD(map, u16 *, 0x3758 + y * 2);
+                                if (M2C_FIELD(map, u8 *, 0x1420 + row + x - 1) == 3) code = 4;
+                            }
+                        }
+                    }
+                }
+            }
+            M2C_FIELD(y, u8 *, (s32)&data_02142688 + x * 42) = code;
+        }
+    }
+}
 #pragma opt_propagation on
-void func_02076980(void) {}
-
+#pragma opt_strength_reduction on
 void func_02077480(void){extern M2C_UNK data_02140f70;
 if(M2C_FIELD(&data_02140f70,s32*,12)==0)M2C_FIELD(&data_02140f70,s32*,12)=1;
 }

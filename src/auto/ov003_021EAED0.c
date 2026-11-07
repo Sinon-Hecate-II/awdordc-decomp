@@ -1,7 +1,11 @@
 /* 16 functions from 0x021EAED0 to 0x021EBEC0 (ov003), found by ds-decomp. */
 #include "common.h"
 
-void func_ov003_021eaed0(void) {}
+void func_ov003_021eaed0(void *arg0) {
+    if (func_020846a4() == 0) {
+        return;
+    }
+}
 
 u8 func_ov003_021eba24(void *arg0) {
  s32 func_020848c4();

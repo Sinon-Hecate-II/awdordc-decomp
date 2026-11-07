@@ -2,7 +2,9 @@
 #include "common.h"
 
 int func_ov006_022144ac(void *arg0) {
-    (void)arg0;
+    if (func_020d4810() != 0) {
+        return 0;
+    }
     return 0;
 }
 
