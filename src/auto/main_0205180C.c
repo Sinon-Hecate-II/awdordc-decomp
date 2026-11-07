@@ -136,12 +136,12 @@ extern u32 data_020fe668;
 extern u32 data_020fe67c;
 extern s32 func_02051f74(void **, void *);
 void func_02052038(void **arg0, s32 arg1) {
+    s32 v;
     void *temp_r4;
     s32 temp_r2;
     s32 temp_r0;
     s32 temp_r0_2;
     void *var_r6;
-    void *temp_r1;
     u32 sp8;
 
     temp_r4 = *arg0;
@@ -182,18 +182,18 @@ void func_02052038(void **arg0, s32 arg1) {
     *(s32 *)((char *)temp_r4 + 0x440) = 0;
     func_020377c4(*(s32 *)((char *)temp_r4 + 0x450));
     *(s32 *)((char *)temp_r4 + 0x450) = 0;
-    if (*(s32 *)((char *)temp_r4 + 0x424) != 0) {
-        do {
-            func_02054484(arg0);
-        } while (*(s32 *)((char *)temp_r4 + 0x424) != 0);
+    v = *(s32 *)((char *)temp_r4 + 0x424);
+    while (v != 0) {
+        func_02054484(arg0);
+        v = *(s32 *)((char *)temp_r4 + 0x424);
     }
     *(s32 *)((char *)temp_r4 + 0x424) = 0;
     var_r6 = *(void **)((char *)temp_r4 + 0x434);
     if (var_r6 != NULL) {
         do {
-            temp_r1 = var_r6;
+            void *t = var_r6;
             var_r6 = *(void **)((char *)var_r6 + 0x3C);
-            func_02054fa8(arg0, temp_r1);
+            func_02054fa8(arg0, t);
         } while (var_r6 != NULL);
     }
     *(s32 *)((char *)temp_r4 + 0x434) = 0;

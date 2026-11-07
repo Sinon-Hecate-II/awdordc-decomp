@@ -112,7 +112,7 @@ if(wt<func_020a7bbc(chosen))continue;
 maxCount=buf[t];chosen=t;
 }
 if(chosen==-1)break;
-buf[(u8)chosen]=0;*dst++=chosen;primCount++;outCount++;
+buf[(u8)chosen]=0;primCount++;*dst++=chosen;outCount++;
 } while(primCount<3);
 if(maxCount!=0){u8 *end=out+outCount;for(i=0;i<27;i++){if(maxCount==buf[i]){*end++=i;outCount++;}}}
 if(outCount){i=RandomIntRange(0,outCount-1);func_02086930(0,out[i]);}

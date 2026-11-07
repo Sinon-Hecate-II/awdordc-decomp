@@ -215,14 +215,13 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_ov009_02226fe0;
 
     s32 stk[8];
+    u8 *end;
+    s32 *sp18;
+    u8 *cur;
     s32 x;
     s32 y;
-    s32 *p;
-    s32 *base;
-    s32 *limit;
     s32 val;
-    s32 **slot;
-    s32 *table;
+    u8 *slot;
 
     func_ov009_02221320(2);
     func_ov009_02224718(arg0);
@@ -240,8 +239,9 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
         func_02065210((s32)&data_ov009_02226968, value, count);
     }
 
-    x = M2C_FIELD(&data_ov009_022263e0, s32 *, 0x20);
     y = M2C_FIELD(&data_ov009_022263e0, s32 *, 0x24);
+    x = M2C_FIELD(&data_ov009_022263e0, s32 *, 0x20);
+
     stk[3] = y;
     stk[2] = x;
     stk[4] = x;
@@ -249,21 +249,21 @@ s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     stk[0] = x;
     stk[1] = y;
 
-    p = (s32 *)stk;
-    base = (s32 *)&data_ov009_02226cc0;
-    limit = (s32 *)&data_ov009_02226fe0;
-    do {
-        val = p[1];
-        slot = (s32 **)((u8 *)base + (val >> 1));
+    sp18 = &stk[0];
+    cur = (u8 *)&data_ov009_02226cc0;
+    end = (u8 *)&data_ov009_02226fe0;
+    while (cur != end) {
+        val = sp18[1];
+        slot = cur + (val >> 1);
         if (val & 1) {
-            table = *slot;
-            ((void (*)(void))(*(s32 *)((u8 *)table + p[0])))();
+            void **fnTable = *(void ***)slot;
+            void (*cb)(void) = (void (*)(void))*(void **)((u8 *)fnTable + sp18[0]);
+            cb();
         }
-        base = (s32 *)((u8 *)base + 0xc8);
-    } while (base != limit);
-
-    stk[6] = stk[0];
-    stk[7] = stk[1];
+        cur += 0xc8;
+    }
+    stk[6] = sp18[0];
+    stk[7] = sp18[1];
 
     if (func_ov009_02222f84() != 0) {
         return 1;

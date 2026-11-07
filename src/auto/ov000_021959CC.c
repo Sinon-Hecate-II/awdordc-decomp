@@ -440,7 +440,7 @@ func_ov000_0218a9ac(cand[0],cand[1]);
 void func_ov000_021967fc(void) {
 s32 func_ov000_021a9934(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void func_ov000_0218a9ac(s16,s16);
 extern void **gCurrentMap;extern u8 **data_ov000_021df580;
-s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y;u8 *base; s8 *grid,*p;
+s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<29)>>29)&4))return;
 if(!func_ov000_021a9934(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
 func_ov000_02179be0();func_ov000_02179d3c();
@@ -449,11 +449,11 @@ y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {
 cols=M2C_FIELD(base,u16 *,0x5144);
 if(cols<=0)goto rowend;
 grid=M2C_FIELD(base+y*4,s8 **,0x52e8);p=grid;
-x=0; do {
+row=y;x=0; do {
 if(*p<0)goto next;
 t=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+base+x,u8 *,0x1420);
 if((t&0xe0)==0 && (t&31)==19) {
-best=grid[x];sx=x;sy=y;
+best=grid[x];sx=x;sy=row;
 }
 next: x++;p++;
 }while(x<cols); rowend:y++; }while(y<(s32)M2C_FIELD(base,u16 *,0x5146));

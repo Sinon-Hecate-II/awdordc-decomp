@@ -26,12 +26,9 @@ struct Ov009Functor {
  Ov009Functor(const Ov009Functor& other):fn(other.fn) {}
  void operator()(u8 *p) const { (((Ov009Callback *)p)->*fn)(); }
 };
-#pragma push
-#pragma optimization_level 1
 static inline void ov009Apply(u8 *first,u8 *end,s32 size,Ov009Functor fn) {
  if(size) do { fn(first); first+=12; } while(first!=end);
 }
-#pragma pop
 #pragma push
 #pragma optimization_level 1
 static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {

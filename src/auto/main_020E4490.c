@@ -256,54 +256,45 @@ void func_020e4870(s32 arg0) {
     extern u8 data_0215dcb4[];
     extern M2C_UNK data_0215d9b0;
 
-    s32 i;
+    u16 a16;
     u16 t;
-    u32 d0;
-    u32 d1;
-    void **gmap;
-    void *gm;
-    u32 gm0;
-    u16 f1;
     u16 f2;
-    u32 b;
+    u32 d0, d1;
+    u8 *gm;
+    u32 gm0;
+    s32 b;
     u32 off;
-    u32 *dst;
-    u32 *src;
-    u8 *d2;
-    u8 *s2;
+    u32 *dst, *src;
+    u8 *d2, *s2;
+    s32 i;
 
+    a16 = (u16)arg0;
     t = ((u16 *)&data_0215d9b8)[3];
     d0 = ((u32 *)&data_0215d8a0)[0];
 
-    t = (u16)((t & ~0x70) | (((u16)arg0 << 4) & 0x70));
+    t = (u16)((t & ~0x70) | ((a16 << 4) & 0x70));
     ((u16 *)&data_0215d9b8)[3] = t;
 
     d0 = (d0 & ~0x0F) | ((u32)arg0 & 0x0F);
     ((u32 *)&data_0215d8a0)[0] = d0;
 
-    gmap = gCurrentMap;
-    gm = *gmap;
+    gm = (u8 *)*gCurrentMap;
     gm0 = *(u32 *)gm;
 
     d1 = ((u32 *)&data_0215d8a0)[1];
-    d1 = d1 & ~0x0000FFFFu;
-    f1 = (u16)((*(u16 *)((u8 *)gm0 + 0x5142)) - 0xA1);
-    d1 = d1 | f1;
+    d1 = (d1 & 0xFFFF0000u) | ((u32)(*(u16 *)((u8 *)gm0 + 0x5142) - 0xA1) & 0xFFFFu);
     ((u32 *)&data_0215d8a0)[1] = d1;
 
     f2 = *(u16 *)((u8 *)gm0 + 0x52A2);
     d1 = ((u32 *)&data_0215d8a0)[1];
-    ((u32 *)&data_0215d8a0)[1] = (f2 << 16) | (d1 & 0x0000FFFFu);
+    ((u32 *)&data_0215d8a0)[1] = (d1 & 0xFFFFu) | ((u32)f2 << 16);
 
-    b = (d0 >> 8) & 0xFFu;
-    if (b < 0xFFu) {
-        b++;
-    }
-    d0 = (((u32 *)&data_0215d8a0)[0] & ~0x0000FF00u) | (b << 8);
-    ((u32 *)&data_0215d8a0)[0] = d0;
+    b = (s32)((d0 >> 8) & 0xFF);
+    if (b < 0xFF) b++;
+    ((u32 *)&data_0215d8a0)[0] = (((u32 *)&data_0215d8a0)[0] & ~0xFF00u) | ((u32)b << 8);
 
     off = (u32)(arg0 * 0x118);
-    *(u32 *)(data_0215dba4 + off) = d0;
+    *(u32 *)(data_0215dba4 + off) = ((u32 *)&data_0215d8a0)[0];
     *(u32 *)(data_0215dba4 + off + 4) = ((u32 *)&data_0215d8a0)[1];
 
     dst = (u32 *)(data_0215dbac + off);

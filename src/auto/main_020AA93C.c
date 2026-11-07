@@ -144,7 +144,7 @@ void *func_020aa93c(u32 kind) {
     }
 }
 
-#pragma opt_common_subs off
+#pragma opt_common_subs reset
 void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
     void *func_02082028(M2C_UNK);
@@ -208,7 +208,6 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, void **, 0x64) = temp_r0;
     func_020aad18(arg0);
 }
-#pragma opt_common_subs reset
 void func_020aacf0(void *arg0) {
     M2C_UNK func_02088044(s32);
     s32 func_02089064();

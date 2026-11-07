@@ -230,10 +230,10 @@ s8 *func_020492a8(s8 *p) {
     s32 c = *p;
     if (c != 0) {
         do {
-            if (c < 0 || c >= 128) {
-            } else {
-                c = ((u8 *)&data_020eac40)[c];
-            }
+            if (c < 0) goto skip;
+            if (c >= 128) goto skip;
+            c = ((u8 *)&data_020eac40)[c];
+        skip:
             *p = (s8)c;
             c = *++p;
         } while (c != 0);

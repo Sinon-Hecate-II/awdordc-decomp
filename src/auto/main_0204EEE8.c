@@ -26,7 +26,7 @@ void *func_02055aa0(void *,s32);
 char *func_02068fdc(void *,void *);
 s32 func_02049274(char *);
 s32 func_0204f978(void **,s32,s32,void *);
-register s32 id; s32 kind,time,r,err; s32 *q,*b,*f; char *c; u32 x,w,v,y,value; u16 port; GpiCallbackPair cb,cb4,cb3,cb2; void *p=*(void **)arg0; char buf[4096],text[256],small[16];
+u32 w,x,v,y,value; register s32 id; s32 kind,time,r,err; s32 *q,*b,*f; char *c; u16 port; GpiCallbackPair cb,cb4,cb3,cb2; void *p=*(void **)arg0; char buf[4096],text[256],small[16];
 if(!func_02058254(arg1,&data_020fddcc,buf,4096)) {func_02058620(arg0,1,&data_020fddd4);func_02050744(arg0,3,1);return 3;}
 kind=func_0206ad38(buf);
 if(!func_02058254(arg1,&data_020fde04,buf,4096)) {func_02058620(arg0,1,&data_020fddd4);func_02050744(arg0,3,1);return 3;}
@@ -70,7 +70,7 @@ func_020377c4(f[3]);f[3]=0;
 if(!func_02058254(buf,&data_020fde40,text,256))text[0]=0;
 f[3]=func_02049274(text);if(!f[3]){func_02058644(arg0,&data_020fde10);return 1;}
 if(!func_02058254(buf,&data_020fde48,small,16))f[4]=0;
-else {v=func_0206ad38(small);x=func_0206ad38(small);w=func_0206ad38(small);y=func_0206ad38(small);
+else {v=func_0206ad38(small);w=func_0206ad38(small);x=func_0206ad38(small);y=func_0206ad38(small);
 f[4]=((w>>24)&255)|((y>>8)&0xff00)|((x<<8)&0xff0000)|((v<<24)&0xff000000);}
 
 if(!func_02058254(buf,&data_020fde50,small,16))v=0;

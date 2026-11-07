@@ -230,7 +230,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  void func_02007f8c(s32,u8);void func_02029220(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
- u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset; void *p;
+ u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset;u16 *rx; void *p;
  active=1;p=arg0;result=active-2;ready=0;
  if(M2C_FIELD(p,s32 *,0x24)==0)flags=0x80000;
  else if(M2C_FIELD(p,s32 *,0x24)==1)flags=0xc0000;
@@ -241,7 +241,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  else if(M2C_FIELD(p,s32 *,40)==16)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=3;
  else return -1;
  packet=(u8 *)&data_ov001_021926e0;
- offset=(ready*5)*4+2;
+ offset=ready*20+2;
  packet[1]=ready;
  func_02008048((s32)((u8 *)p+44),(s32)(packet+offset),M2C_FIELD(p,s32 *,40));
  func_02029220();
@@ -257,7 +257,8 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  func_02007338(timer);
  if(func_ov001_0216d8a0((s32)&data_ov001_02192620,1)!=1){active=0;break;}
  func_ov001_0216d02c(p,&data_ov001_02192620);
- i=0;bound=M2C_FIELD(&data_ov001_02192620,u16 *,10);for(;i<bound;i++){}
+ rx=(u16 *)&data_ov001_02192620;
+ i=0;bound=rx[5];for(;i<bound;i++){}
  if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
  ready=1;break;
  case 10:

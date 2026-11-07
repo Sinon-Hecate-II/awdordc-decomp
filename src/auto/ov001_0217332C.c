@@ -191,20 +191,14 @@ func_ov001_0218c924(arg0,func_ov001_02173f30);
 }
 
 void func_ov001_02173f30(void *arg0) {
-    void func_ov001_0217355c(u8, s32, s32, u32);
-    void func_ov001_0218c924(void *, void *);
-    u32 temp_ip;
-    volatile u32 sp4;
-    volatile s32 sp0;
-
-    temp_ip = *(u32 *)M2C_FIELD(data_ov001_02193d1c, u32 **, 0x90);
-    sp0 = (s32)(temp_ip & 0xff) + 0xC;
-    sp4 = (temp_ip & 0x01FF0000) >> 0x10;
-    func_ov001_0217355c(M2C_FIELD(data_ov001_02193d1c, u8 *, 0x11D), 2, sp0, sp4);
-    if (sp0 < 0xC0) {
-        return;
-    }
-    func_ov001_0218c924(arg0, &func_ov001_02173fa4);
+Position pos;
+void *a=data_ov001_02193d1c;
+u32 bits=*M2C_FIELD(a,u32**,0x90);
+u8 b=M2C_FIELD(a,u8*,0x11d);
+pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
+func_ov001_0217355c(b,2,pos.x,pos.y);
+if(*(volatile s32 *)&pos.x<192)return;
+func_ov001_0218c924(arg0,func_ov001_02173fa4);
 }
 
 #pragma opt_strength_reduction off

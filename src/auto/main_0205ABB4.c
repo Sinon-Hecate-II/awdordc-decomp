@@ -294,23 +294,17 @@ s32 func_0205b6a0(void *a) {s32 func_0205a0d0();s32 v;if(M2C_FIELD(a,s32 *,12)!=
 
 s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 func_0205cb4c();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(func_0205b1a4(a))v=1;else v=0;return v;}func_0205ac6c(a);if(!func_0205cb4c(a))return 0;if(func_0205a0d0(a,2,b,c))return 1;return 0;}
 
+#pragma scheduling off
 s32 func_0205b758(void *arg0) {
-    M2C_UNK var_r2;
-
     if (func_0205cb4c() == 0) {
         return 0;
     }
-    if (M2C_FIELD(arg0, s32 *, 0xC) != 6) {
-        var_r2 = 1;
-    } else {
-        var_r2 = 0;
-    }
-    if (func_0205b110(arg0, 2, var_r2) == 0) {
+    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) == 6 ? 0 : 1) == 0) {
         return 0;
     }
     return 1;
 }
-
+#pragma scheduling reset
 /* Increment the object's command counter and dispatch one of its commands (0-6). */
 s32 func_0205b79c(void *object, s32 command, s32 param_a, s32 param_b) {
     s32 func_0205b590(void *, s32, s32);

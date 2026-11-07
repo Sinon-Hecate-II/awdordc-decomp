@@ -7,9 +7,10 @@ extern struct MenuValues2 data_ov001_0218f6f4;
 
 #pragma opt_common_subs off
 void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    arg0 = (u8 *)M2C_FIELD(arg0, void **, 4) + M2C_FIELD(arg0, u32 **, 0)[(u16)arg1];
+    arg0 = (u8 *)(M2C_FIELD(arg0, u32 **, 0)[(u16)arg1] + (u32)M2C_FIELD(arg0, void **, 4));
     if (arg2 >= 0) {
-        ((u16 *)arg0)[arg2] = arg3 + 0x30;
+        arg3 += 0x30;
+        ((u16 *)arg0)[arg2] = arg3;
     }
 }
 #pragma opt_common_subs reset
@@ -80,7 +81,10 @@ void func_ov001_02176108(void) {
 
 void *func_ov001_02176114(void) {
     extern void *data_ov001_02193d50;
-    return (u8 *)data_ov001_02193d50 + 0x1E280;
+    u8 *p = (u8 *)data_ov001_02193d50;
+    p = p + 0x2280;
+    p = p + 0x1C000;
+    return p;
 }
 
 #pragma opt_propagation off
@@ -159,7 +163,8 @@ void func_ov001_021763cc(void) {
     void func_ov001_0217655c(s32);
     void func_ov001_0217656c(void);
     extern M2C_UNK data_ov001_02193d54;
-    data_ov001_02193d54 = func_ov001_0218b6f8(0xC, -4);
+    s32 v = 0xC;
+    data_ov001_02193d54 = func_ov001_0218b6f8(v, v - 0x10);
     if (func_ov001_021711e0(0xF, 0x40, func_ov001_02176544, func_ov001_0217655c, func_ov001_0217656c, 0x800) != 1) {
         func_02007958();
     }

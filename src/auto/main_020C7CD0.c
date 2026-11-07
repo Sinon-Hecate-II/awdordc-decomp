@@ -15,76 +15,59 @@ void func_020c7cd0(void *arg0, void *arg1) {
     void func_02007e98(s32, s32, s32);
     void func_020e35cc(void *);
     struct W4 { s32 a[4]; };
+    struct W5 { s32 a[5]; };
+    struct P2 { u8 a; u8 b; };
+    u32 n;
+    u8 *q;
+    u8 *p;
+    u8 *src;
+    u8 *dst;
+    s32 i;
 
-    register void *r6 asm("r6");
-    register void *r5 asm("r5");
-    register void *r4 asm("r4");
-    register u8 *r7 asm("r7");
-    register u8 *r3 asm("r3");
-    register struct W4 *r8 asm("r8");
-    register s32 r2 asm("r2");
-    register s32 r12v asm("r12");
-    register void *lr asm("lr");
-
-    r6 = arg0;
-    r5 = arg1;
-    r4 = r6;
-    if (r6 == r5) {
-        r4 = func_020e34bc(0x2AC);
-        func_02007ef4(r6, r4, 0x2AC);
+    src = arg0;
+    if (arg0 == arg1) {
+        src = func_020e34bc(0x2AC);
+        func_02007ef4(arg0, src, 0x2AC);
     }
-    func_02007e98(0, (s32)r5, 0x6F8);
-    *(s32 *)r5 = *(s32 *)r4;
-    r7 = (u8 *)r4 + 6;
-    r3 = (u8 *)r5 + 6;
-    ((u8 *)r5)[4] = ((u8 *)r4)[4];
-    ((u8 *)r5)[5] = ((u8 *)r4)[5];
-    r2 = 16;
+    dst = arg1;
+    func_02007e98(0, (s32)dst, 0x6F8);
+    *(s32 *)dst = *(s32 *)src;
+    dst[4] = src[4];
+    dst[5] = src[5];
+    p = src + 6;
+    q = dst + 6;
+    n = 16;
     do {
-        u8 t0 = r7[0];
-        u8 t1 = r7[1];
-        r7 = r7 + 2;
-        r2 = r2 - 1;
-        r3[0] = t0;
-        r3[1] = t1;
-        r3 = r3 + 2;
-    } while (r2 != 0);
-    r3[0] = r7[0];
-    r8 = (struct W4 *)((u8 *)r5 + 0x30);
-    r7 = (u8 *)r4 + 0x40;
-    lr = (u8 *)r5 + 0x40;
-    ((u8 *)r5)[0x27] = ((u8 *)r4)[0x27];
-    ((u8 *)r5)[0x28] = ((u8 *)r4)[0x28];
-    ((u8 *)r5)[0x29] = ((u8 *)r4)[0x29];
-    ((u8 *)r5)[0x2A] = ((u8 *)r4)[0x2A];
-    ((u8 *)r5)[0x2B] = ((u8 *)r4)[0x2B];
-    ((u8 *)r5)[0x2C] = ((u8 *)r4)[0x2C];
-    ((u8 *)r5)[0x2D] = ((u8 *)r4)[0x2D];
-    ((u8 *)r5)[0x2E] = ((u8 *)r4)[0x2E];
-    ((u8 *)r5)[0x2F] = ((u8 *)r4)[0x2F];
-    *r8 = *(struct W4 *)((u8 *)r4 + 0x30);
-    *(struct W4 *)lr = *(struct W4 *)r7;
-    r7 = (u8 *)r7 + 16;
-    lr = (u8 *)lr + 16;
-    *(s32 *)lr = *(s32 *)r7;
-    r12v = 0;
-    if ((s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]) > 0) {
-        do {
-            ((u8 *)r5)[0x54 + r12v] = ((u8 *)r4)[0x54 + r12v];
-            r12v = r12v + 1;
-        } while (r12v < (s32)(((u8 *)r4)[4] * ((u8 *)r4)[5]));
+        u8 c0 = p[0];
+        u8 c1 = p[1];
+        p += 2;
+        q[0] = c0;
+        q[1] = c1;
+        q += 2;
+    } while (--n);
+    q[0] = p[0];
+    dst[0x27] = src[0x27];
+    *(struct P2 *)(dst + 0x28) = *(struct P2 *)(src + 0x28);
+    *(struct P2 *)(dst + 0x2A) = *(struct P2 *)(src + 0x2A);
+    dst[0x2C] = src[0x2C];
+    dst[0x2D] = src[0x2D];
+    dst[0x2E] = src[0x2E];
+    dst[0x2F] = src[0x2F];
+    *(struct W4 *)(dst + 0x30) = *(struct W4 *)(src + 0x30);
+    p = src + 0x40;
+    {
+        struct W5 *sp = (struct W5 *)p;
+        struct W5 *dp = (struct W5 *)(dst + 0x40);
+        *dp = *sp;
     }
-    r2 = 0;
-    if ((s32)((u8 *)r4)[0x2F] > 0) {
-        do {
-            *(s32 *)((u8 *)r5 + r2 * 4 + 0x3D8) = *(s32 *)((u8 *)r4 + r2 * 4 + 0x1E4);
-            r2 = r2 + 1;
-        } while (r2 < (s32)((u8 *)r4)[0x2F]);
-    }
-    if (r6 != r5) {
-        return;
-    }
-    func_020e35cc(r4);
+    i = 0;
+    for (; i < (s32)src[4] * (s32)src[5]; i++)
+        dst[0x54 + i] = src[0x54 + i];
+    i = 0;
+    for (; i < src[0x2F]; i++)
+        ((s32 *)dst)[i + 0xF6] = ((s32 *)src)[i + 0x79];
+    if (arg0 == arg1)
+        func_020e35cc(src);
 }
 
 s32 func_020c7e58(s32 arg0) {

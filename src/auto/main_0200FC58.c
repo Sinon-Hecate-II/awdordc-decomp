@@ -316,8 +316,11 @@ if(arg0==0)func_02007958();
 func_0200fd78();
 state=func_0200751c();
 while(M2C_FIELD(p,u32 *,0x114)&4)func_02005da4(p+0x10c);
+{
+s32 zero=0;
 M2C_FIELD(p,u32 *,0x114)|=4;
-M2C_FIELD(p,s32 *,0x38)=0;M2C_FIELD(p,s32 *,0x3c)=0;
+M2C_FIELD(p,s32 *,0x38)=zero;M2C_FIELD(p,s32 *,0x3c)=zero;
+}
 func_02007530(state);
 func_0200fe94(arg0);
 M2C_FIELD(&data_0212fde0,s32 *,0x104)=M2C_FIELD(&data_0212dca4,s32 *,4);

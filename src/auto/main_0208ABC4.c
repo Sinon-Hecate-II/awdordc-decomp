@@ -19,33 +19,32 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     void func_020d47d0(void);
     void func_020d47f0(void);
     extern u16 *data_02101e84;
+    register u32 mode asm("r0");
 
     if (((u32)(M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) != 0) {
         return;
     }
     func_0208ad48(arg0);
-    if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 1) {
-        if (!((*(u16 *)data_02101e84) & 3)) {
-            return;
+    mode = (u8)((u32)(M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29);
+    switch (mode) {
+    case 1:
+        if ((*(u16 *)data_02101e84) & 3) {
+            func_0208fe30(0x1000d);
+            func_0208af20(arg0);
         }
-        func_0208fe30(0x1000d);
-        func_0208af20(arg0);
-    } else if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 2) {
-        if (!((*(u16 *)data_02101e84) & 3)) {
-            return;
+        return;
+    case 2:
+        if ((*(u16 *)data_02101e84) & 3) {
+            func_0208fe30(0x1000d);
+            func_0208af20(arg0);
         }
-        func_0208fe30(0x10010);
-        func_0208af20(arg0);
-    } else if ((u8)((M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29) == 3) {
-        if ((*(u16 *)data_02101e84) & 0x20) {
-            if (func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
-                func_0208fe30(0x10010);
-            }
+        return;
+    case 3:
+        if (((*(u16 *)data_02101e84) & 0x20) && func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
+            func_0208fe30(0x10010);
         }
-        if ((*(u16 *)data_02101e84) & 0x10) {
-            if (func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
-                func_0208fe30(0x10010);
-            }
+        if (((*(u16 *)data_02101e84) & 0x10) && func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
+            func_0208fe30(0x10010);
         }
         if ((*(u16 *)data_02101e84) & 1) {
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 0) {
@@ -55,16 +54,16 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 1) {
                 func_020d47f0();
                 func_0208fe30(0x1000f);
-                func_0208af20(arg0);
-                return;
             }
-            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) & 2) {
-                func_020d47f0();
-                func_0208fe30(0x1000f);
-                func_0208af20(arg0);
-                return;
-            }
+            func_0208af20(arg0);
+            return;
         }
+        if ((*(u16 *)data_02101e84) & 2) {
+            func_020d47f0();
+            func_0208fe30(0x1000f);
+            func_0208af20(arg0);
+        }
+        return;
     }
     return;
 }

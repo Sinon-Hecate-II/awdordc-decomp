@@ -251,7 +251,7 @@ void func_ov010_022225b0(s32 arg0) {
     M2C_FIELD(&data_ov010_0222c960, void **, 0x20) = NULL;
 }
 
-#pragma opt_common_subs off
+#pragma optimization_level 2
 s32 func_ov010_022225c4(void *p){
 void func_ov010_0222393c(void*,u32,s32);
 void func_ov010_02223654(u32);
@@ -273,7 +273,7 @@ test2:if((u32)i<3)goto loop2;
 found:
 M2C_FIELD(&data_ov010_0222c960,s32*,0x20)++;
 M2C_FIELD(&data_ov010_0222c960,u32*,4)|=M2C_FIELD(p,u32*,8);
-func_ov010_0222393c(data_ov010_0222c998+i*0x94,i,M2C_FIELD(p,u8*,5));
+func_ov010_0222393c((void *)((s32)data_ov010_0222c998+i*0x94),i,M2C_FIELD(p,u8*,5));
 func_ov010_02223654(i);
 if(M2C_FIELD(p,s32*,12)!=2)return 1;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==1){
@@ -291,6 +291,7 @@ M2C_FIELD(&data_ov010_0222c960,s32*,0xf14)=0;
 }
 return 1;
 }
+#pragma optimization_level reset
 void func_ov010_022226fc(void *arg0) {
 extern void *data_ov010_0222c98c[]; extern u8 data_ov010_0222c998[]; extern M2C_UNK data_ov010_0222c960;
 void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010_02223314(u32); void func_ov010_02224f28(void);

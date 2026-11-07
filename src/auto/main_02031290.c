@@ -404,7 +404,7 @@ s32 func_02031b28(u32 arg0) {
 
 #pragma opt_strength_reduction off
 s32 func_02031b98(s32 arg,u8 *dst,s32 n,s32 capacity){
-u8 *src=(u8 *)arg;u32 size=((u32)(n*3))>>2;s32 rem; s32 full; s32 pos; s32 block;s32 j;s32 val;u32 word;u32 tail;u8 *in;u8 *out;
+u8 *src=(u8 *)arg;s32 full;u32 size=((u32)(n*3))>>2;s32 rem; s32 val; s32 pos; s32 j;s32 block;u32 word;u32 tail;u8 *in;u8 *out;
 if((u32)capacity>=size){rem=n&3;full=n-rem;}else return -1;
 pos=0;
 if(full>0){block=0;do{

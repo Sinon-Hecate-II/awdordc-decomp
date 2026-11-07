@@ -115,6 +115,7 @@ return result;
 #pragma push
 #pragma optimization_level 2
 #pragma opt_strength_reduction off
+#pragma scheduling off
 s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0200751c();
     M2C_UNK func_02007530(s32);
@@ -136,6 +137,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
  s32 j;
  s32 saved;
+    u8 *buf;
     saved = func_0200751c();
     if (M2C_FIELD(&data_02130660, u16 *, 0) != 0) {
         func_02007530(saved);
@@ -175,10 +177,11 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         ((s32 *)((u8 *)M2C_FIELD(&data_02130660, void **, 4) + 0x10c))[i] = 0;
     }
     func_020062d4(&data_02130668, &data_02130688, 10);
+    buf = (u8 *)&data_02130700;
     for (j = 0; j < 10; j++) {
-        *(u16 *)((u8 *)&data_02130700 + j * 256) = 0x8000;
-        func_020067c4((u8 *)&data_02130700 + j * 256, 2);
-        func_020062fc(&data_02130668, (u8 *)&data_02130700 + j * 256, 1);
+        *(u16 *)(buf + j * 256) = 0x8000;
+        func_020067c4(buf + j * 256, 2);
+        func_020062fc(&data_02130668, buf + j * 256, 1);
     }
     func_02009e40(10, func_02011548);
     M2C_FIELD(&data_02130660, u16 *, 0) = 1;

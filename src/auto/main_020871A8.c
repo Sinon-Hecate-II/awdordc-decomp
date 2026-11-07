@@ -119,12 +119,16 @@ void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     *(volatile u32 *) 0x4000504 = 0;
 }
 
+#pragma push
+#pragma optimization_level 4
 void func_02087a08(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 z,s32 t0,s32 t1,s32 t2,s32 t3) {
-register u16 vA=(u16)((s32)(((t1<<12)+0x800)<<8)>>16);
-u16 v9=(u16)((s32)(((t0<<12)+0x800)<<8)>>16);
-register u16 vC=(u16)((s32)(((t3<<12)+0x800)<<8)>>16);
-u16 vB=(u16)((s32)(((t2<<12)+0x800)<<8)>>16);
+u16 vA,v9,vC,vB;
+s32 vt3=t3;
 s16 bb=(s16)b,aa=(s16)a,ff=(s16)f,ee=(s16)e,zz=(s16)z,hh=(s16)h,gg=(s16)g,dd=(s16)d,cc=(s16)c;
+vA=(u16)((s32)(((t1<<12)+0x800)<<8)>>16);
+v9=(u16)((s32)(((t0<<12)+0x800)<<8)>>16);
+vC=(u16)((s32)(((vt3<<12)+0x800)<<8)>>16);
+vB=(u16)((s32)(((t2<<12)+0x800)<<8)>>16);
 *(volatile u32*)0x4000500=1;
 *(volatile u32*)0x4000488=v9|((u32)vA<<16);
 *(volatile u32*)0x400048c=(u16)aa|((u32)(u16)bb<<16);
@@ -140,7 +144,7 @@ s16 bb=(s16)b,aa=(s16)a,ff=(s16)f,ee=(s16)e,zz=(s16)z,hh=(s16)h,gg=(s16)g,dd=(s1
 *(volatile u32*)0x400048c=(u16)zz;
 *(volatile u32*)0x4000504=0;
 }
-
+#pragma pop
 void func_020878c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);
 void func_02087b94(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 arg10) {
     if (arg9 != 0 && arg10 != 0) {

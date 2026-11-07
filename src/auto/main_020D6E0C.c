@@ -69,6 +69,7 @@ void func_020d7944(s32 x,s32 y,s32 index,s32 unit){
 s32 func_ov000_0216ccf0(s32);s32 func_ov000_0216cd00(s32);s32 func_ov000_0216cd78(s32,u8);
 void func_0207c3dc(s32,s32,s32,s32);void func_01ffaacc(u16,u16,u16,void *,s32);void func_020d694c(s32,u8,s32);
 extern void *gCur3DSpriteEngine;extern M2C_UNK data_027e0064;
+extern s32 *gCurrentMap;
 s32 kind=func_ov000_0216ccf0(unit);s32 slot,color,health,tile;s32 yy,xx;
 if(unit==0)slot=0;else slot=(unit-(*gCurrentMap+0x59a4))/14;
 color=M2C_FIELD(*gCurrentMap+((slot>>6)+1)*140,u8 *,0x67cd);
@@ -77,13 +78,7 @@ func_0207c3dc(func_ov000_0216cd78(kind,color),M2C_FIELD(gCur3DSpriteEngine,s32 *
 yy=y&255;xx=x&511;
 func_01ffaacc((u16)xx,(u16)yy,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&data_027e0064,9);
 yy+=0x400;
-{
-u32 a=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
-u32 b=M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0);
-s32 t=(0x150 >> ((a<<17)>>30))&1023;
-s32 t2=(0x60 >> ((b<<17)>>30))&1023;
-func_01ffaacc((u16)xx,(u16)yy,(u16)((t|0x9000)+t2),&data_027e0064,10);
-}
+func_01ffaacc((u16)xx,(u16)yy,(u16)((1023&(0x150>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))|0x9000)+(1023&(0x60>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),&data_027e0064,10);
 if(health==10)return;
 func_020d694c((x+8)&511,(y+8)&255,health);
 }

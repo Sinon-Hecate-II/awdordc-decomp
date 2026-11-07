@@ -14,15 +14,12 @@ u64 func_02001fd4(void);
 
 #pragma opt_common_subs reset
 
-#pragma opt_common_subs off
+#pragma opt_propagation off
 s32 func_02002030(s32 arg0) {
-    volatile u16 *p = (volatile u16 *)0x04000280;
-    p[0] = 1;
-    *(volatile s32 *)((u8 *)p + 0x10) = 0;
-    *(volatile s32 *)((u8 *)p + 0x14) = 0x1000;
-    *(volatile s32 *)((u8 *)p + 0x18) = arg0;
-    arg0 = 0;
-    *(volatile s32 *)((u8 *)p + 0x1c) = arg0;
-    return arg0;
+M2C_FIELD((void *)0x04000280,s16 *,0)=1;
+M2C_FIELD((void *)0x04000280,s32 *,0x10)=0;
+M2C_FIELD((void *)0x04000280,s32 *,0x14)=0x1000;
+M2C_FIELD((void *)0x04000280,s32 *,0x18)=arg0;
+M2C_FIELD((void *)0x04000280,s32 *,0x1c)=0;
+return 0;
 }
-#pragma opt_common_subs reset

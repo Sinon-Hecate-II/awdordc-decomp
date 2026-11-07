@@ -100,10 +100,12 @@ void func_ov005_022153fc(u8 *a) {
     extern M2C_UNK data_ov005_02221304;
     extern u16 *data_02101e84;
 
+    s32 max, pos, delta;
     void *p = M2C_FIELD(&data_ov005_02221304, void **, 8);
     s32 n = *a;
-    s32 pos = M2C_FIELD(p, s16 *, 0x98);
-    s32 max = M2C_FIELD(p, s16 *, 0x9a) - 6;
+    max = M2C_FIELD(p, s16 *, 0x9a);
+    pos = M2C_FIELD(p, s16 *, 0x98);
+    max -= 6;
     if (max < 0) max = 0;
 
     if (pos == 0 && n == 0) {
@@ -134,14 +136,14 @@ void func_ov005_022153fc(u8 *a) {
     }
 
     if (data_02101e84[1] & 0x20) {
-        s32 delta = func_ov005_02214184();
+        delta = func_ov005_02214184();
         n -= delta + 6;
         if (n < 0) n = 0;
         if (delta != 0) {
             if (n == *a) func_0208fe30(0x10019);
         }
     } else if (data_02101e84[1] & 0x10) {
-        s32 delta = func_ov005_02214210();
+        delta = func_ov005_02214210();
         n += 6 - delta;
         if (n >= 6) n = 5;
         if (delta != 0) {

@@ -2,16 +2,15 @@
 #include "common.h"
 
 extern u8 data_020f362c[];
+static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
+typedef struct SpriteLevels02091110 { u8 v[22]; } SpriteLevels02091110;
 
-void func_02091110(void *arg0) {
+void func_02091110(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
     void func_02091230(void);
     void func_02091248(s32);
     s32 func_0207c928(s32, s32);
     s32 func_0207d0f0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u8);
     void func_0209177c(M2C_UNK);
-    register M2C_UNK arg1 asm("r1");
-    register M2C_UNK arg2 asm("r2");
-    register M2C_UNK arg3 asm("r3");
     void *obj;
     M2C_UNK r6;
     M2C_UNK r5;
@@ -24,7 +23,7 @@ void func_02091110(void *arg0) {
     r5 = arg2;
     r4 = arg3;
     obj = arg0;
-    if (obj == NULL || M2C_FIELD(obj, s32 *, 0) == 0) {
+    if (!spriteValid02091110(obj)) {
         return;
     }
     b22 = M2C_FIELD(obj, u8 *, 0x22);
@@ -33,25 +32,13 @@ void func_02091110(void *arg0) {
     } else {
         if (b22 & 0x10) {
             b21 = M2C_FIELD(obj, u8 *, 0x21);
-            (void)b21;
-            func_02091230();
+            ((void (*)(s32))func_02091230)(b21);
         } else if (b22 & 0x20) {
-            u8 buf[0x24];
-            s32 i;
-            u8 *src = (u8 *)data_020f362c;
-            u8 *dst = buf + 0xc;
-            i = 0xb;
-            do {
-                dst[0] = src[0];
-                dst[1] = src[1];
-                src += 2;
-                dst += 2;
-                i -= 1;
-            } while (i != 0);
+            SpriteLevels02091110 buf = *(const SpriteLevels02091110 *)data_020f362c;
             {
                 s32 idx = (s32)(M2C_FIELD(obj, s16 *, 0x18) >> 2);
                 idx = func_0207c928(idx, 0x16);
-                func_02091248(buf[0xc + idx]);
+                func_02091248(buf.v[idx]);
             }
         } else {
             b21 = M2C_FIELD(obj, u8 *, 0x21);
@@ -201,13 +188,13 @@ void func_0209106c(void *arg0) {
 s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8){s32 func_02091af8(void*,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);s32 r=func_02091af8(arg0,arg1,arg2);s32 t6,t7,t4,t5;u8 t8;if(!r)return 0;t6=arg6;t7=arg7;t8=arg8;t4=arg4;t5=arg5;func_0207d0f0(r,arg3,t4,t5,t6,t7,t8);return 1;}
 #pragma scheduling on
 M2C_UNK func_020910d0(void *arg0) {
-void func_02091110(void *); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
+void func_02091110(); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
 if(ok==0) return 0;
-func_02091110(arg0); func_020913c4(arg0); return func_020913d4((M2C_UNK)arg0);
+((void (*)())func_02091110)(arg0); func_020913c4(arg0); return func_020913d4((M2C_UNK)arg0);
 }
 
-extern void func_02091110(void *);
+extern void func_02091110();
 
 void func_02091230(void) {
     *(s32 *)0x040004A4 = 0x081E4080;
@@ -494,10 +481,8 @@ void func_0209177c(M2C_UNK a) {
         return;
     }
 
-    r4 = (void **)&gCur3DSpriteEngine;
-    r5 = data_02102a10;
     r6 = 0;
-    r11 = 0;
+
 
     {
         u8 *base = (u8 *)M2C_FIELD(arg0, void **, 0x10);
@@ -510,52 +495,49 @@ void func_0209177c(M2C_UNK a) {
         }
     }
 
+r5=data_02102a10;r4=(void **)&gCur3DSpriteEngine;r11=0;
 loop:
     {
         void *engine = *r4;
 
-        if (((*(u16 *)engine) & 0x1000) != 0) {
-            u8 byte22 = *(u8 *)((char *)arg0 + 0x22);
-            u16 first = r7[0];
-            u16 second = r7[1];
-            s32 idx = ((second & 0xC000) >> 14) + ((first & 0xC000) >> 12);
+        if (((u32)(*(u16 *)*(void **)engine <<19)>>31) !=0) {
+            s32 byte22 = *(u8 *)((char *)arg0 + 0x22)&4;
+            s32 second = r7[1];
+            s32 first = r7[0];
+            s32 idx = ((first & 0xC000) >> 12) + ((second & 0xC000) >> 14);
             u8 m1 = r5[idx * 2];
             u8 m2 = r5[idx * 2 + 1];
-            s32 product = (s32)m1 * (s32)m2;
+            s32 product = ((s32)m1 * (s32)m2)<<5;
             s32 offsetVal = *(s32 *)((char *)arg0 + 0x30) + (r8[0] << 5);
-            s32 spirit = *(s32 *)((char *)arg0 + 0x28);
+            
 
-            if (byte22 & 0x04) {
-                func_0207c464(offsetVal, spirit + r6, product << 5, r11);
+            if(byte22) {
+                func_0207c464(offsetVal, *(s32 *)((char *)arg0+0x28) + r6, product, r11);
             } else {
-                s32 spiritShifted = ((u32)spirit << 22) >> 17;
-                s32 secondArg = *(s32 *)((char *)engine + 0x1C) + spiritShifted + r6;
-                func_0207c3dc(offsetVal, secondArg, product << 5, 0);
+                s32 spiritShifted = ((u32)*(s32 *)((char *)arg0+0x28) << 22) >> 17;
+                s32 secondArg = (*(s32 *)((char *)engine + 0x1C) + spiritShifted);secondArg+=r6;
+                func_0207c3dc(offsetVal, secondArg, product, 0);
             }
-        }
-    }
+        
 
     {
-        u16 first = r7[0];
-        u16 second = r7[1];
-        s32 idx = ((second & 0xC000) >> 14) + ((first & 0xC000) >> 12);
+        s32 second = r7[1];
+        s32 first = r7[0];
+        s32 idx = ((first & 0xC000) >> 12) + ((second & 0xC000) >> 14);
         u8 m1 = r5[idx * 2];
         u8 m2 = r5[idx * 2 + 1];
-        s32 product = (s32)m1 * (s32)m2;
-        r6 += product << 5;
+        s32 product = ((s32)m1 * (s32)m2)<<5;
+        r6 += product;
     }
+}
+}
 
-    if (r9 > 0) {
-        r7 += 3;
-        r8 += 1;
-        r9 -= 1;
-        goto loop;
-    }
+r7+=3;r8++;if(r9-- >0)goto loop;
 
 cleanup:
     {
         u8 b = *(u8 *)((char *)arg0 + 0x22);
-        b &= (u8)~0x01;
+        b = (s32)b & ~1;
         *(u8 *)((char *)arg0 + 0x22) = b;
     }
 }

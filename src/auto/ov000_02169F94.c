@@ -135,9 +135,9 @@ s32 func_ov000_0216a5ac(s32 arg0) {
     s32 *p;
     s32 i;
     u32 flag;
+    unsigned long long total2;
     unsigned long long total0;
     unsigned long long total1;
-    unsigned long long total2;
     unsigned long long best;
     u32 n;
     u8 byte;
@@ -175,7 +175,7 @@ s32 func_ov000_0216a5ac(s32 arg0) {
         }
         if ((unsigned long long)n > best) {
             best = n;
-            bestIndex = (s8)i;
+            bestIndex = i;
         }
         i = i + 1;
         p = (s32 *)((u8 *)p + 0x30);

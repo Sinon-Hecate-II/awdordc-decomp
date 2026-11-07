@@ -306,7 +306,15 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_020d2c18(s32 arg0){extern s32 *gCurrentMap;s32 func_020a27b8(s32,s32);s32 val,base,hi,lo;base=*gCurrentMap;val=M2C_FIELD(base+0x3a4+0x6400+arg0*0x8c,s32*,0x6c);hi=(u32)(val<<20)>>30;lo=(u32)(val<<24)>>24;return func_020a27b8(lo,hi);}
+s32 func_020d2c18(s32 arg0) {
+ extern s32 *data_027e0058;
+ s32 func_020a27b8(s32, s32);
+ s32 val;
+ s32 base;
+ base = *data_027e0058;
+ val = M2C_FIELD(base + 0x3A4 + 0x6400 + arg0 * 0x8C, s32 *, 0x6C);
+ return func_020a27b8((u32)(val << 24) >> 24, (u32)(val << 20) >> 30);
+}
 #pragma opt_strength_reduction on
 s32 func_020d2c58(s32 arg0) {
  extern M2C_UNK data_02168f08;

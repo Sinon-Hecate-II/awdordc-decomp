@@ -159,13 +159,15 @@ if(!((State09100*)&data_0212e020)->unk8){func_02007530(irq);return 1;}
 }
 func_020067e0((M2C_UNK)data_0212e300,0x1800);
 if(func_02009eb0(7,((State09100*)&data_0212e020)->unk8,0)<0){
+u8 *buf;
 if(!(flags&1)){func_02007530(irq);return 0;}
+buf=data_0212e300;
 goto retry;
 again: {
 func_02007530(irq);
 func_02009100(0);
 irq=func_0200751c();
-func_020067e0((M2C_UNK)data_0212e300,0x1800);
+func_020067e0((M2C_UNK)buf,0x1800);
 if(!((State09100*)&data_0212e020)->unk8){func_02007530(irq);return 1;}
 }
 retry:

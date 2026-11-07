@@ -43,11 +43,10 @@ s32 func_0200a0ac(void *a, s32 b) {
     extern s32 (*data_020ea674[])(void *);
     void func_0200a050(void *, s32);
 
-    u32 d = (u32)1 << b;
-    void *c = M2C_FIELD(a, void **, 0x8);
-    s32 flag = 1;
     s32 e;
-    s32 k;
+    void *c = M2C_FIELD(a, void **, 0x8);
+    u32 d = (u32)1 << b;
+    s32 flag = 1;
     s32 has200;
     s32 outer;
     s32 zero = 0;
@@ -74,48 +73,44 @@ s32 func_0200a0ac(void *a, s32 b) {
             M2C_FIELD(c, u32 *, 0x58) = M2C_FIELD(c, u32 *, 0x58) & ~d;
             e = 7;
             break;
-        default:
-            e = 7;
-            break;
         }
     } else {
         e = 7;
     }
     if (e == 7) {
         e = data_020ea674[b](a);
-        if (e == 6) {
-            outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
-            if (outer != 0) {
-                k = func_0200751c();
-                has200 = (M2C_FIELD(c, s32 *, 0x1c) & 0x200) ? 1 : 0;
-                if (has200 != 0) {
-                    do {
-                        func_02005da4((u8 *)c + 0xc);
-                        if (M2C_FIELD(c, s32 *, 0x1c) & 0x200) {
-                            has200 = one;
-                        } else {
-                            has200 = zero;
-                        }
-                    } while (has200 != 0);
-                    func_02007530(k);
-                    e = M2C_FIELD(a, s32 *, 0x14);
-                } else {
-                    outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
-                    if (outer != 0) {
-                        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x200;
-                        M2C_FIELD(a, s32 *, 0x14) = 6;
+    }
+    if (e == 6) {
+        outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
+        if (outer != 0) {
+            b = func_0200751c();
+            has200 = (M2C_FIELD(c, s32 *, 0x1c) & 0x200) ? 1 : 0;
+            if (has200 != 0) {
+                do {
+                    func_02005da4((u8 *)c + 0xc);
+                    if (M2C_FIELD(c, s32 *, 0x1c) & 0x200) {
+                        has200 = one;
                     } else {
-                        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x100;
-                        func_0200a050(a, 6);
+                        has200 = zero;
                     }
-                }
+                } while (has200 != 0);
+                e = M2C_FIELD(a, s32 *, 0x14);
+                func_02007530(b);
+                goto done;
             }
+        } else {
+            goto done;
         }
     }
-    if (e != 7) {
+    outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
+    if (outer == 0) {
+        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x100;
+        func_0200a050(a, e);
+    } else {
         M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x200;
         M2C_FIELD(a, s32 *, 0x14) = e;
     }
+done:
     return e;
 }
 

@@ -247,7 +247,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
 
 s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
     s32 func_ov000_02177ce0(s32, s32);
- s32 func_ov000_021a9a28(u32,s32,s32);
+    s32 func_ov000_021a9a28(u32, s32, s32);
     extern void **gCurrentMap;
     extern s32 data_027e15bc;
     s32 magic = 0x270F;
@@ -256,13 +256,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
     s16 *sp4 = arg2;
     s32 spC;
     s32 sp8;
-    s32 best = 0;
-    s32 outer;
-    s32 innerMax;
-    s32 inner;
-    s32 d0;
-    s32 d1;
-    s32 outerS16;
+    register s32 best = 0, inner, d0, d1, outer, innerMax, outerS16;
     void *base;
     s32 temp;
     s32 adx;
@@ -297,7 +291,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
                         if (temp >= best && (temp != best || !(data_027e15bc & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;
-                            sp4[1] = outerS16;
+                            sp4[1] = (s16) outerS16;
                         }
                     }
                     inner++;
@@ -306,7 +300,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
             outer++;
         } while (outer <= sp8);
     }
-    if (sp4[0] == magic) return 0;
+    if (sp4[0] == (s16) magic) return 0;
     return 1;
 }
 

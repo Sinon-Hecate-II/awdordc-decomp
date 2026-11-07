@@ -334,11 +334,11 @@ gCur3DSpriteEngine=saved;
 void func_ov011_0222588c(void *a) {
 extern s32 data_ov011_02228cec;
 s32 func_ov011_02225a18(void *); void *func_ov011_02227ea4(void *);
-s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y;
+s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y,c;
 data_ov011_02228cec=0; ((MenuCount011 *)a)->count=0;
 while(func_ov011_02225a18(a)==2 && (k=((MenuCount011 *)a)->count)<3) {
-p=M2C_FIELD(a,s32 **,0x4c); v=p[2];l=p[3]; M2C_FIELD(a,s32 **,0x4c)=p+4;
-values[k]=v;labels[k]=l; ((MenuCount011 *)a)->count=(u8)(((MenuCount011 *)a)->count+1);
+p=M2C_FIELD(a,s32 **,0x4c); v=p[2];l=p[3]; M2C_FIELD(a,s32 **,0x4c)+=4;
+values[k]=v;labels[k]=l; c=((MenuCount011 *)a)->count; ((MenuCount011 *)a)->count=(u8)(c+1);
 }
 for(i=0,n=((MenuCount011 *)a)->count;i<n;i++,n=((MenuCount011 *)a)->count) {
 ((void **)((u8 *)a+0x40))[i]=func_ov011_02227ea4(a);

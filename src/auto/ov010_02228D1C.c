@@ -235,8 +235,8 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
   (((Ov010Callback *)p)->*c)();
  }
  d = c;
- M2C_FIELD(&data_ov010_0222eee0,u8 *,0x107)=1;
- M2C_FIELD(&data_ov010_0222eee0,u8 *,0x108)=arg0;
+ *(volatile u8 *)((u8 *)&data_ov010_0222eee0 + 0x107) = 1;
+ *(volatile u8 *)((u8 *)&data_ov010_0222eee0 + 0x108) = (u8)arg0;
  func_ov000_0216a470();
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x104)=func_ov000_0216a564();
  M2C_FIELD(&data_ov010_0222eee0,u8 *,0x105)=func_ov000_0216a76c();
@@ -362,7 +362,8 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     extern u16 data_ov010_0222eee0;
     QueueNode *node;
     s32 mode;
-    volatile s32 saved;
+    s32 saved;
+    void *force;
     s32 ret;
 
     if (func_ov010_022282b4(3) == 0) return 0;
@@ -371,6 +372,7 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     mode = func_ov010_02229a08();
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
+    force = &saved;
     node = (QueueNode *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
     if (node == NULL) {
         (void)*(volatile u16 *)0x04000208;
@@ -391,46 +393,47 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
         *(volatile u16 *)0x04000208 = saved;
         ret = 1;
     }
+    (void)force;
     return ret != 0;
 }
 
-s32 func_ov010_0222972c(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
+s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 func_ov010_022282b4(s32);
     u16 func_ov010_02229a24();
     s32 func_ov010_02229a08();
-    M2C_UNK func_ov010_022268f4(M2C_UNK, s32, s32);
+    M2C_UNK func_ov010_022268f4(s32, s32, s32);
     void func_02007f8c(void *, s32, s32);
-    void *func_ov010_0222959c(void *, u8, s32, s32, s32, s32, u16);
     extern u16 data_ov010_0222eee0;
-    QueueNode *node;
+    u16 v;
+    void *node;
     s32 mode;
-    volatile s32 savedValue;
+    volatile s32 saved;
     s32 ret;
 
     if (func_ov010_022282b4(3) == 0) return 0;
     arg3 = arg3 & func_ov010_02229a24();
-    arg3 = (s32)(u16)(arg3 & (-1 ^ (1 << func_ov010_02229a08())));
+    v = (u16)(arg3 & (-1 ^ (1 << func_ov010_02229a08())));
     mode = func_ov010_02229a08();
-    savedValue = *(volatile u16 *)0x04000208;
+    saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
-    node = (QueueNode *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
+    node = (void *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
     if (node == NULL) {
         (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = savedValue;
+        *(volatile u16 *)0x04000208 = saved;
         ret = 0;
     } else {
         func_02007f8c(node, 0, 0x10);
-        func_ov010_0222959c((u8 *)node + 4, arg0, mode, 1, (s32)arg1, arg2, (u16)arg3);
-        if (M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64) == 0) {
-            M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64) = node;
-            M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x60) = node;
+        func_ov010_0222959c((u8 *)node + 4, arg0, mode, 1, (s32)arg1, arg2, v);
+        if (M2C_FIELD(&data_ov010_0222eee0, void **, 0x64) == 0) {
+            M2C_FIELD(&data_ov010_0222eee0, void **, 0x64) = node;
+            M2C_FIELD(&data_ov010_0222eee0, void **, 0x60) = node;
         } else {
-            M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64), QueueNode **, 0) = node;
-            M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64) = node;
+            M2C_FIELD(M2C_FIELD(&data_ov010_0222eee0, void **, 0x64), void **, 0) = node;
+            M2C_FIELD(&data_ov010_0222eee0, void **, 0x64) = node;
         }
         M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x68)++;
         (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = savedValue;
+        *(volatile u16 *)0x04000208 = saved;
         ret = 1;
     }
     return ret != 0;

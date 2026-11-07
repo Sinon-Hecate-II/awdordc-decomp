@@ -76,8 +76,6 @@ void func_ov001_0217bf40(void) {
     func_ov001_02175d54(&func_ov001_0217b688);
 }
 
-#pragma opt_common_subs off
-#pragma scheduling off
 void func_ov001_0217bf84(void) {
 void *func_ov001_0218b6f8(s32,s32);s32 func_ov001_02175db4(s32*,s32);
 void *func_ov001_0218ad0c(s32,s32);void *func_ov001_0218a5f0(s32,s32);
@@ -97,8 +95,6 @@ M2C_FIELD(data_ov001_02193da4,void**,4)=func_ov001_0218a5f0(0,63);
 M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da4,void**,4),u16*,4)&~0xc00)|0xc00;
 func_ov001_0217c8ac();func_ov001_0217c7e8();func_ov001_02175d54((s32*)func_ov001_0217c1b4);
 }
-#pragma scheduling reset
-#pragma opt_common_subs reset
 void func_ov001_0217c0f8(void) {
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190774;
@@ -374,11 +370,11 @@ extern void *data_ov001_02193da4;
 void func_ov001_02184ec4(void *,void *);
 s32 func_ov001_02175db4(s32 *,s32);
 s32 func_0204612c(void *);
-u8 limit[4]="255"; s32 mode; u8 buf[4]; s32 j,i,zero; u8 *base;
+u8 limit[4]="255"; s32 mode; u8 buf[4]; u8 *p; s32 j,i,zero; u8 *base;
 const u8 *src=(const u8 *)data_ov001_0218f848;
 
 for(i=0;i<4;i++){
-u8 *p=(u8 *)data_ov001_02193da4+8+i*3;
+p=(u8 *)data_ov001_02193da4+8+i*3;
 if(*p==32) continue;
 for(j=0;j<3;j++){if(p[j]>limit[j])return 0;if(p[j]<limit[j])break;}
 }

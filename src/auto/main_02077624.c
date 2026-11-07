@@ -138,10 +138,10 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  s32 x,y;
  u32 flags;
  s32 base;
- u32 index;
+ s32 index;
  u8 *bits;
  u8 *dims;
- u8 fog,terrain,a,b;
+ u8 fog; s32 terrain,a,b;
  *(volatile u32 *)0x04000444=0;
  *(volatile u32 *)0x04000470=0;
  *(volatile u32 *)0x04000470=0;
@@ -152,7 +152,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  base=*gCurrentMap;
  dims=(u8 *)base+0x5120;
  if(x<M2C_FIELD(dims,u16 *,0x24) && y<M2C_FIELD(dims,u16 *,0x26)) {
- flags=tileFlags020778cc(*(u16 *)(data_02142ebc+x*80+y*2));
+ flags=tileFlags020778cc(((u16 (*)[40])data_02142ebc)[x][y]);
  if(flags&0x20000) {
  bits=mapBits020778cc(dims);
  index=x+M2C_FIELD(base+y*2,u16 *,0x3758);

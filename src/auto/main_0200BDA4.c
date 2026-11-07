@@ -17,6 +17,7 @@ void func_0200bda4(s32 arg0) {
     extern M2C_UNK data_0212fbfc;
     extern M2C_UNK data_0212fc14;
     extern u32 data_020f5220;
+    register u32 *base asm("r4") = (u32 *)0x27ffc40;
 
     M2C_FIELD(&data_0212fbfc, s32 *, 4) = arg0;
     M2C_FIELD(&data_0212fbfc, s32 *, 0) = func_0200558c();
@@ -28,7 +29,7 @@ void func_0200bda4(s32 arg0) {
     func_0200b118(&data_0212fc14);
     func_0200b184(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
 
-    if (*(u16 *)0x27ffc40 == 2) {
+    if (M2C_FIELD(base, u16 *, 0) == 2) {
         M2C_FIELD(&data_0212fbfc, s32 *, 8) = -1;
         M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
         M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = -1;
@@ -42,12 +43,11 @@ void func_0200bda4(s32 arg0) {
     func_0200b6a8(&data_0212fc14, (s32)func_0200bd28, 0x602);
 
     {
-        u32 *r4 = (u32 *)0x27ffc40;
-        u32 v0 = r4[0x80];
+        u32 v0 = base[0x80];
         if (v0 != (u32)-1 && v0 != 0) {
-            u32 v2 = r4[0x82];
+            u32 v2 = base[0x82];
             if (v2 != (u32)-1 && v2 != 0) {
-                func_0200b2bc(&data_0212fc14, 0, (s32)v2, (s32)r4[0x83], (s32)v0, (s32)r4[0x81],
+                func_0200b2bc(&data_0212fc14, 0, (s32)v2, (s32)base[0x83], (s32)v0, (s32)base[0x81],
                               (void *)func_0200bcd8, (void *)func_0200bd20);
             }
         }

@@ -34,8 +34,7 @@ M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) {
     u8 *dst = (u8 *)arg1;
     s32 i, shift;
     u32 bits;
-    bits = ~0U;
-    bits = bits ^ (bits >> arg0);
+    bits = ~0U ^ (~0U >> arg0);
     for (i = 0, shift = 0; i < 4; i++, shift += 8) {
         dst[i] = (u8)(bits >> (24 - shift));
     }

@@ -145,7 +145,7 @@ d=radius-1;
 for(y=cy-1;y>=cy-radius;y--,d--){
 if(y<0)break;
 base=*gCurrentMap;w=d*2+1;x=cx-d;if(x<0){w+=x;x=0;}
-w=x+w;if(w>M2C_FIELD(base,u16 *,0x5144))w=M2C_FIELD(base,u16 *,0x5144);
+w=w+x;if(w>M2C_FIELD(base,u16 *,0x5144))w=M2C_FIELD(base,u16 *,0x5144);
 for(;x<w;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
 }
 }

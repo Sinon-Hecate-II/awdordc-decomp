@@ -364,18 +364,18 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = pixelY;
         *outIndex = idx;
-        if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
-            if (func_020bdf24(touchX, touchY)) {
-                (*outIndex)++;
-                if (*outIndex == count) {
-                    *outIndex = 0;
-                }
-            } else {
-                M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = pixelX;
-                M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = pixelY;
-                map = *gCurrentMap;
-                func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
+    }
+    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+        if (func_020bdf24(touchX, touchY)) {
+            (*outIndex)++;
+            if (*outIndex == count) {
+                *outIndex = 0;
             }
+        } else {
+            M2C_FIELD(*gCurrentMap, s16 *, 0x52CA) = pixelX;
+            M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = pixelY;
+            map = *gCurrentMap;
+            func_020bd0a8(M2C_FIELD(map, s16 *, 0x52CA), M2C_FIELD(map, s16 *, 0x52CC));
         }
     }
     map = *gCurrentMap;

@@ -151,23 +151,23 @@ s32 func_020639c0(void *arg0) {
     }
     return 0;
 }
-#pragma scheduling reset
+#pragma opt_strength_reduction off
 s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
 s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 func_020623bc(void *,s32,s32,s32,s32);
-u8 packet[16]; u16 size; u16 temp; s32 result;
+u8 packet[16]; u16 size; u16 temp; s32 result; u8 *d; u8 *s;
 if(M2C_FIELD(arg0,s32 *,0)==1) {
 func_020623bc(arg0,0,0,2,0);
 }
 if(M2C_FIELD(arg0,s32 *,0)==1)return 3;
 temp=arg4+9;size=(u8)(temp>>8)|((temp<<8)&0xff00);
-packet[0]=((u8 *)&size)[0]; packet[1]=((u8 *)&size)[1];
-packet[3]=((u8 *)&arg1)[0];packet[4]=((u8 *)&arg1)[1];packet[5]=((u8 *)&arg1)[2];packet[6]=((u8 *)&arg1)[3];packet[7]=((u8 *)&arg2)[0];packet[8]=((u8 *)&arg2)[1];
+d=packet;s=(u8 *)&size;Copy2(d,s);
+d=packet+3;s=(u8 *)&arg1;Copy4(d,s);
+d=packet+7;s=(u8 *)&arg2;Copy2(d,s);
 packet[2]=2;
 result=func_02062324(arg0,packet,9);if(result)return result;
 return func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
-
-#pragma scheduling on
+#pragma opt_strength_reduction reset
 void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02063aa8(void *, u32, u32, void *, s32);
     u32 sp44;

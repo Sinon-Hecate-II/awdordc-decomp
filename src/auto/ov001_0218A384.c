@@ -388,7 +388,7 @@ extern M2C_UNK data_ov001_02193e40; extern u8 data_ov001_0218fd18[],data_ov001_0
 void *base;
 void *p=(u8*)(void*)data_ov001_02193e40+0x610+arg0*0x30;
 u32 a=*(u16*)(data_ov001_0218fd1a+arg0*4);
-u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; s32 c;
+u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero;
 *(void**)((u8*)p+0x28)=func_ov001_0218b6f8((b*a)<<5,32);
 if(arg0==1) { *(volatile u16*)0x4001008 &= ~0x40; *(volatile u16*)0x4001008=(*(volatile u16*)0x4001008&0x43)|0xc00; }
 else { *(volatile u16*)0x4000008 &= ~0x40; *(volatile u16*)0x4000008=(*(volatile u16*)0x4000008&0x43)|0xc00; }
@@ -398,8 +398,9 @@ base=(void*)data_ov001_02193e40;
 *(void**)((u8*)p+0x1c)=(u8*)base+arg1*8;
 *(s32*)((u8*)p+0x20)=1; *(s32*)((u8*)p+0x24)=1;
 if(arg0==1) v=func_020036b8(); else v=func_02003684();
-c=*(const u16*)(data_ov001_0218fd14+arg0*2);
-func_ov001_0216a230(v,b,a,0,0,32,c,15);
+zero=0;
+c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
+func_ov001_0216a230(v,b,a,zero,zero,32,c,15);
 func_ov001_0218b1ec(p,0);
 *(void**)((u8*)p+0x2c)=func_ov001_0218c884(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)data_ov001_02193e40+0x67c+arg0,200);
 return p;

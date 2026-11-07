@@ -189,53 +189,35 @@ void func_020b578c(void *arg0) {
 void func_020b57ac(void *arg0) {
     s32 x = M2C_FIELD(arg0, s32 *, 0x38);
     s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + y * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + y * 2);
-        *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + y * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-        *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
-    }
-    {
-        void *q = (void *)gCurrentMap;
-        u32 yr = (u32)y - 2;
-        void *base = (void *)*(s32 *)q;
-        u16 row = *(u16 *)((char *)base + 0x3758 + yr * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
-        *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
-    }
-    {
-        void *base = (void *)*gCurrentMap;
-        u16 row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
-        *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
-    }
+    void *base;
+    u16 row;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + y * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + y * 2);
+    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + y * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 1) * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x - 1) + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)base + 0xA10 + (x + row) * 2) += 0x60;
+    base = (void *)*gCurrentMap;
+    row = *(u16 *)((char *)base + 0x3758 + (y - 2) * 2);
+    *(u16 *)((char *)base + 0xA10 + ((x + 1) + row) * 2) += 0x60;
     func_020cfd28();
 }
 #pragma scheduling reset

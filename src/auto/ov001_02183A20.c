@@ -681,10 +681,15 @@ void func_ov001_0218479c(s32 arg0) {
     func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c4], q[1], t0, t1);
 }
 #pragma opt_peephole reset
-void func_ov001_021847e0(s32 arg0){
-void func_0200563c(s32,s32,...);extern s32 data_ov001_02193e04;extern char data_ov001_02190b58[];
-u8 *p=(u8 *)data_ov001_02193e04;u8 *q=p+0xc8;
-func_0200563c(arg0,(s32)data_ov001_02190b58,p[0x4c8],q[0x401],q[0x402],q[0x403]);
+void func_ov001_021847e0(s32 arg0) {
+    void func_0200563c(s32, s32, ...);
+    extern s32 data_ov001_02193e04;
+    extern char data_ov001_02190b58[];
+    u8 *p = (u8 *)data_ov001_02193e04;
+    u8 *q = p + 0x4c8;
+    u8 t0 = q[2];
+    u8 t1 = q[3];
+    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c8], q[1], t0, t1);
 }
 
 #pragma opt_strength_reduction off

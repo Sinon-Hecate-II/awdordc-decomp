@@ -41,7 +41,7 @@ p=M2C_FIELD(&data_0213dcac,void ***,4)[i];
 func_02065210(p,0,0x184);
 M2C_FIELD(p,volatile s32 *,0)=1;
 M2C_FIELD(p,volatile s32 *,4)=i;
-M2C_FIELD(p,s32 *,8)=M2C_FIELD(&data_0213dcac,u32 *,8)++;
+{s32 old=M2C_FIELD(&data_0213dcac,s32 *,8); M2C_FIELD(&data_0213dcac,s32 *,8)=old+1; M2C_FIELD(p,s32 *,8)=old;}
 M2C_FIELD(p,s32 *,12)=0;
 M2C_FIELD(p,s32 *,16)=0;
 M2C_FIELD(p,s32 *,20)=0;
@@ -86,7 +86,7 @@ if(ok)ok=func_02049c7c(p,p+0x98,0x800,0x400);
 if(!ok){
 ((void (*)(void *))&func_0204ace8)(p);func_0204a614();return NULL;
 }
-M2C_FIELD(&data_0213dcac,u32 *,0)++;
+{s32 old=M2C_FIELD(&data_0213dcac,s32 *,0); M2C_FIELD(&data_0213dcac,s32 *,0)=old+1;}
 func_0204a614();return p;
 }
 #pragma pop

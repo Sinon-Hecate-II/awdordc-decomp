@@ -143,17 +143,18 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
     s32 cnt;
     s8 ch;
     s8 *dstB;
-    s8 *cursor2;
     s32 cnt2;
     s8 ch2;
-    s8 next;
+
+    dstA = (s8 *)arg3;
+    dstB = (s8 *)arg4;
     if (!arg1) {
         func_020640a8(&data_020ff3cc, &data_020ff2dc, &data_020ff2b8, 0x199);
     }
-    if (!arg3) {
+    if (!dstA) {
         func_020640a8(&data_020ff32c, &data_020ff2dc, &data_020ff2b8, 0x19a);
     }
-    if (!arg4) {
+    if (!dstB) {
         func_020640a8(&data_020ff338, &data_020ff2dc, &data_020ff2b8, 0x19b);
     }
     idx = *arg2;
@@ -163,7 +164,6 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
         func_02050744(arg0, 3, 1);
         return 3;
     }
-    dstA = (s8 *)arg3;
     cursor = p + 2;
     cnt = 0;
     ch = p[1];
@@ -173,7 +173,7 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
             func_02050744(arg0, 3, 1);
             return 3;
         }
-        while (1) {
+        do {
             if (cnt == 0x1ff) {
                 func_02058620(arg0, 1, (s32)&data_020ff3dc);
                 func_02050744(arg0, 3, 1);
@@ -182,24 +182,23 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
             *dstA++ = ch;
             ch = *cursor++;
             cnt++;
-            if (ch == 0x5c) break;
-        }
+        } while (ch != 0x5c);
     }
     *dstA = 0;
-    dstB = (s8 *)arg4;
-    cursor2 = cursor;
     cnt2 = 0;
-    ch2 = *cursor2++;
-    while (1) {
-        if (cnt2 == 0x1ff) break;
+    ch2 = *cursor++;
+    do {
+        if (cnt2 == 0x1ff) {
+            func_02058620(arg0, 1, (s32)&data_020ff3dc);
+            func_02050744(arg0, 3, 1);
+            return 3;
+        }
         *dstB++ = ch2;
         cnt2++;
-        next = *cursor2++;
-        if (next == 0x5c || next == 0) break;
-        ch2 = next;
-    }
+        ch2 = *cursor++;
+    } while (ch2 != 0x5c && ch2 != 0);
     *dstB = 0;
-    *arg2 = idx + (s32)(cursor2 - p - 1);
+    *arg2 = idx + (s32)(cursor - p - 1);
     return 0;
 }
 
