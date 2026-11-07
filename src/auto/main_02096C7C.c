@@ -517,47 +517,31 @@ void func_02097aac(s32 arg0, u8 arg1) {
     extern void *gCur3DSpriteEngine;
     extern void *data_027e00c8;
     extern void *data_027e00c4;
-    void *temp_r4;
-    void *var_r0;
-    s32 var_r5;
+    void *saved;
+    void *engine;
+    s32 engineIndex;
     u16 *base;
-    s32 r6;
-    s32 lr;
-    s32 r8;
-    s32 r12;
-    s32 r3;
-
-    temp_r4 = gCur3DSpriteEngine;
-    r6 = arg1 * 2 + 1;
-    base = (u16 *) arg0;
-    var_r5 = 0;
+    s32 rows;
+    s32 col;
+    s32 row;
+    saved=gCur3DSpriteEngine;
+    rows=arg1*2+1;
+    base=(u16 *)arg0;
+    engineIndex=0;
     do {
-        if (var_r5 == 0) {
-            var_r0 = data_027e00c8;
-        } else {
-            var_r0 = data_027e00c4;
-        }
-        gCur3DSpriteEngine = var_r0;
-        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == data_027e00c8)) &&
-            ((func_02091e24() != 1) || (gCur3DSpriteEngine == data_027e00c4)) &&
-            ((func_02091e24() != 3) || (gCur3DSpriteEngine == temp_r4))) {
-            if (r6 > 1) {
-                lr = 1;
-                r8 = 0x20;
-                r3 = 0;
-                r12 = r3;
-                do {
-                    for (r12 = 0; r12 < 0x20; r12++) {
-                        base[r8 + r12] = 0;
-                    }
-                    r8 += 0x20;
-                    lr += 1;
-                } while (lr < r6);
+        if(engineIndex==0)engine=data_027e00c8;
+        else engine=data_027e00c4;
+        gCur3DSpriteEngine=engine;
+        if(((func_02091e24()!=0)||(gCur3DSpriteEngine==data_027e00c8)) &&
+           ((func_02091e24()!=1)||(gCur3DSpriteEngine==data_027e00c4)) &&
+           ((func_02091e24()!=3)||(gCur3DSpriteEngine==saved))) {
+            for(row=1;row<rows;row++){
+                for(col=0;col<32;col++)base[row*32+col]=0;
             }
         }
-        var_r5 += 1;
-    } while (var_r5 < 2);
-    gCur3DSpriteEngine = temp_r4;
+        engineIndex++;
+    }while(engineIndex<2);
+    gCur3DSpriteEngine=saved;
 }
 
 void func_02097bac(M2C_UNK arg0) {

@@ -516,15 +516,14 @@ void func_0201d67c(u32 arg0, void *arg1) {
     M2C_UNK func_02007530(M2C_UNK);
     M2C_UNK func_020651c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_0201bf58(void *, M2C_UNK);
+    u8 kind;
     u32 var_r6;
     u32 left;
-    u8 kind;
     M2C_UNK irq;
 
     irq = func_0200751c();
     left = M2C_FIELD(arg1, u32 *, 0x44);
     var_r6 = 0;
-    (void)kind;
     if ((left == M2C_FIELD(arg1, u32 *, 0x3C)) && (arg0 != 0)) {
         var_r6 = 1;
     }

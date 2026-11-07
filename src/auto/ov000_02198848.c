@@ -92,7 +92,7 @@ void func_ov000_02198c60(void) {
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
     void func_ov000_02198848(u8);
-    extern s32 *gCurrentMap;
+    extern s32 *data_027e0058;
     extern void *data_ov000_021df580;
     extern M2C_UNK data_ov000_021e0a58;
     u8 state;
@@ -105,7 +105,7 @@ void func_ov000_02198c60(void) {
     u16 width;
 
     state = M2C_FIELD(data_ov000_021df580, u8 *, 7);
-    saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
+    saved = M2C_FIELD(*data_027e0058, u16 *, 0x52B6);
     if (state & 1) {
         return;
     }
@@ -116,24 +116,24 @@ void func_ov000_02198c60(void) {
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
         if (func_020d1938(i) != 0 &&
-            func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
+            func_020d273c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), i) == 0) {
             func_ov000_02198848((u8)i);
         }
     }
 
-    idx = M2C_FIELD(*gCurrentMap, u8 *, 0x52D6);
+    idx = M2C_FIELD(*data_027e0058, u8 *, 0x52D6);
     if (idx != 0) {
-        xi = M2C_FIELD(*gCurrentMap, u8 *, 0x59A4 + idx * 14 + 1);
-        yi = M2C_FIELD(*gCurrentMap, u8 *, 0x59A4 + idx * 14 + 2);
-        row = M2C_FIELD(*gCurrentMap, u16 *, 0x3758 + yi * 2);
-        M2C_FIELD(*gCurrentMap, u8 *, 0x2840 + xi + row) = 0;
-        row = M2C_FIELD(*gCurrentMap, u16 *, 0x3758 + yi * 2);
-        M2C_FIELD(*gCurrentMap, u8 *, 0x2D48 + xi + row) = 0;
-        width = M2C_FIELD(*gCurrentMap, u16 *, 0x5144);
+        xi = M2C_FIELD(*data_027e0058, u8 *, 0x59A4 + idx * 14 + 1);
+        yi = M2C_FIELD(*data_027e0058, u8 *, 0x59A4 + idx * 14 + 2);
+        row = M2C_FIELD(*data_027e0058, u16 *, 0x3758 + yi * 2);
+        M2C_FIELD(*data_027e0058, u8 *, 0x2840 + xi + row) = 0;
+        row = M2C_FIELD(*data_027e0058, u16 *, 0x3758 + yi * 2);
+        M2C_FIELD(*data_027e0058, u8 *, 0x2D48 + xi + row) = 0;
+        width = M2C_FIELD(*data_027e0058, u16 *, 0x5144);
         M2C_FIELD(data_ov000_021e0a58, u8 *, (s32)yi * (s32)width + (s32)xi) = 0;
     }
 
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*data_027e0058, u16 *, 0x52B6) = saved;
 }
 
 void func_ov000_02198da4(u8 player) {

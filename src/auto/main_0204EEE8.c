@@ -141,7 +141,7 @@ r=func_02055550(a,v,c,d);if(!r)return 0;return r;
 
 s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
     M2C_UNK func_020377c4(s32);
-    s32 func_0204ee40(void **);
+    s32 func_0204ee40(void **, void *);
     s32 func_02055b84(void **, M2C_UNK, void **);
     M2C_UNK func_02055bf4(void **, void *);
     s32 func_02055d6c(void *);
@@ -160,7 +160,7 @@ s32 func_0204fa60(void **arg0, M2C_UNK arg1) {
         func_02058644(arg0, &data_020fde60);
         return 2;
     }
-    temp_r0 = func_0204ee40(arg0);
+    temp_r0 = func_0204ee40(arg0,sp0);
     if (temp_r0 != 0) {
         return temp_r0;
     }

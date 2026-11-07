@@ -231,7 +231,8 @@ void func_0209b084(void *entity) {
     if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x8)) goto skip8;
     func_02095fc0();
     func_02097768();
-skip8:;
+skip8:
+    return;
 }
 
 void func_0209b190(M2C_UNK arg0) {

@@ -179,44 +179,49 @@ void func_02018584(void *r7) {
     s32 func_02006028(void *);
     void func_02005bbc(void);
 
+    s32 saved;
     void *r4;
     void (*r6)(void *);
-    s32 saved;
 
     while (1) {
         saved = func_0200751c();
-        if (M2C_FIELD(r7, void **, 0xc0) == (void *)0) {
+        if (*(void **)((u8 *)r7 + 0xc0) == (void *)0) {
             do {
                 r6 = (void (*)(void *))0;
                 r4 = (void *)0;
                 func_02005f80(r7, 0);
                 func_02005da4(0);
-            } while (M2C_FIELD(r7, void **, 0xc0) == (void *)0);
+            } while (*(void **)((u8 *)r7 + 0xc0) == (void *)0);
         }
-        r4 = M2C_FIELD(r7, void **, 0xc0);
-        M2C_FIELD(r7, void **, 0xc0) = M2C_FIELD(r4, void **, 0x0);
-        func_02005f80(r7, (s32)(M2C_FIELD(r4, u32 *, 0x4) >> 1));
+        r4 = *(void **)((u8 *)r7 + 0xc0);
+        *(void **)((u8 *)r7 + 0xc0) = *(void **)((u8 *)r4 + 0x0);
+        func_02005f80(r7, (s32)(*(unsigned int *)((u8 *)r4 + 0x4) >> 1));
         func_02007530(saved);
-        if (M2C_FIELD(r4, void **, 0x8) != (void *)0) {
-            ((void (*)(void *))M2C_FIELD(r4, void **, 0x8))(r4);
+        if (*(void **)((u8 *)r4 + 0x8) != (void *)0) {
+            ((void (*)(void *))(*(void **)((u8 *)r4 + 0x8)))(r4);
         }
         saved = func_0200751c();
-        r6 = (void (*)(void *))M2C_FIELD(r4, void **, 0xc);
+        r6 = (void (*)(void *))(*(void **)((u8 *)r4 + 0xc));
         {
             s32 val = func_02006028(r7);
             s32 adj;
-            if (M2C_FIELD(r7, void **, 0xc0) == (void *)0) {
+            void *p = *(void **)((u8 *)r7 + 0xc0);
+            if (p == (void *)0) {
                 adj = 0;
             } else {
-                u32 half = M2C_FIELD(M2C_FIELD(r7, void **, 0xc0), u32 *, 0x4) >> 1;
-                adj = (u32)val >= half ? val : (s32)half;
+                unsigned int half = *(unsigned int *)((u8 *)p + 0x4) >> 1;
+                if ((unsigned int)val < half) {
+                    adj = (s32)half;
+                } else {
+                    adj = val;
+                }
             }
             if (adj != val) {
                 func_02005f80(r7, adj);
             }
         }
-        M2C_FIELD(r4, void **, 0x0) = (void *)0;
-        M2C_FIELD(r4, u32 *, 0x4) = (u32)(M2C_FIELD(r4, u32 *, 0x4) & ~1u);
+        *(void **)((u8 *)r4 + 0x0) = (void *)0;
+        *(unsigned int *)((u8 *)r4 + 0x4) = *(unsigned int *)((u8 *)r4 + 0x4) & ~1u;
         if (r6 != (void (*)(void *))0) {
             r6(r4);
         }
@@ -284,16 +289,16 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     if (!func_0201871c()) {
         return;
     }
-    if (M2C_FIELD(p, u32 *, 4) & 1) {
+    if (((M2C_FIELD(p, u32 *, 4) << 31) >> 31) != 0) {
         return;
     }
     r6 = arg3;
-    if (r6 > 0x1f) {
+    if ((u32)r6 > 0x1fu) {
         s32 v = func_02006028(base);
         if (r6 == 0x20) {
-            r6 = (v == 0) ? 0 : v - 1;
+            r6 = (v != 0) ? v - 1 : 0;
         } else if (r6 == 0x21) {
-            r6 = (v < 0x1f) ? v + 1 : 0x1f;
+            r6 = ((u32)v < 0x1fU) ? v + 1 : 0x1f;
         } else if (r6 == 0x22) {
             r6 = v;
         } else {
@@ -301,10 +306,16 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
         }
     }
     saved = func_0200751c();
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~1u) | 1u;
-    M2C_FIELD(p, u32 *, 4) = (u32)(1u | ((u32)r6 << 1));
-    M2C_FIELD(p, void **, 8) = (void *)arg1;
-    M2C_FIELD(p, void **, 0xc) = (void *)arg2;
+    {
+        u32 f4 = M2C_FIELD(p, u32 *, 4);
+        u32 low = f4 & 1u;
+        f4 = (f4 & ~1u) | 1u;
+        M2C_FIELD(p, u32 *, 4) = f4;
+        f4 = low | ((u32)r6 << 1);
+        M2C_FIELD(p, u32 *, 4) = f4;
+        M2C_FIELD(p, void **, 8) = (void *)arg1;
+        M2C_FIELD(p, void **, 0xc) = (void *)arg2;
+    }
     if (M2C_FIELD(base, void **, 0xc0) == (void *)0) {
         if (p == (void *)((u8 *)base + 0xc4)) {
             data_02136c80 = 0;
@@ -525,15 +536,15 @@ s32 func_02018c9c(void) {
     s32 buf[4];
     s32 r4;
     volatile u8 *base;
-    u8 r2;
+    s32 r2;
 
     r4 = 1;
     base = (volatile u8 *)0x08000000;
 
-    if (M2C_FIELD(&data_027ffc30, u16 *, 0) == (u16)0xFFFF) {
+    if (M2C_FIELD(&data_027ffc30, u16 *, 0) == (u16)(0x10000 - r4)) {
         return 0;
     }
-    if (((M2C_FIELD(&data_027ffc30, u8 *, 5) << 30) >> 31) == 1) {
+    if ((((u32)M2C_FIELD(&data_027ffc30, u8 *, 5) << 30) >> 31) == 1) {
         return 0;
     }
     func_02018e24(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));

@@ -1,5 +1,6 @@
 /* 23 functions from 0x02064684 to 0x0206536C (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
 extern u8 data_021001cc[], data_02100218[], data_02100264[], data_0213e61c[];
 extern s32 data_0213e5d4[], data_0213e5f8[];
 extern M2C_UNK data_0212dca4;
@@ -28,25 +29,25 @@ s32 func_020649a8(void *arg0) {
     s32 temp_r0_2;
     s32 temp_r0_3;
 
-    if (arg0 == 0) {
+    if (arg0 == NULL) {
         return func_02064034();
     }
-    if ((M2C_FIELD(arg0, u8 *, 0xD) != 0) || (temp_r0 = M2C_FIELD(arg0, s32 *, 4), (((u32) (temp_r0 << 0x16) >> 0x1D) == 0))) {
+    if ((M2C_FIELD(arg0, u8 *, 0xD) != 0) || (((StreamFlags649 *)arg0)->access == 0)) {
         return -1;
     }
-    if (((u32) (temp_r0 << 0x1B) >> 0x1D) == 1) {
+    if (((StreamFlags649 *)arg0)->mode == 1) {
         return 0;
     }
     temp_r0_2 = M2C_FIELD(arg0, s32 *, 8);
-    if ((u32) ((u32) (temp_r0_2 << 0x1D) >> 0x1D) >= 3U) {
-        M2C_FIELD(arg0, s32 *, 8) = (s32) ((temp_r0_2 & ~7) | 2);
+    if (((StreamFlags649 *)arg0)->state >= 3U) {
+        ((StreamFlags649 *)arg0)->state=2;
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 8) << 0x1D) >> 0x1D) == 2) {
         M2C_FIELD(arg0, s32 *, 0x28) = 0;
     }
     temp_r0_3 = M2C_FIELD(arg0, s32 *, 8);
-    if (((u32) (temp_r0_3 << 0x1D) >> 0x1D) != 1) {
-        M2C_FIELD(arg0, s32 *, 8) = (s32) (temp_r0_3 & ~7);
+    if (((StreamFlags649 *)arg0)->state != 1) {
+        ((StreamFlags649 *)arg0)->state=0;
         return 0;
     }
     if (func_020641a8(arg0, 0) != 0) {

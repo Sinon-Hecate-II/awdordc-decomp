@@ -144,7 +144,7 @@ void func_ov001_02186d90(s32 a) {
     }
     func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
     func_ov001_0218c92c(1, a);
-    func_ov001_0218b71c((void*)35215896);
+    func_ov001_0218b71c((void*)0x02193e18);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02186e40(void *arg0) {

@@ -143,10 +143,10 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
     void func_02031eb8(void *);
     void func_0203b3fc(u8 *, u32, u32);
 
-    s32 i, j, x, y;
+    s32 x, i, y, j;
     s32 result = -1;
+    u8 *pj = a;
     u8 *pi = a;
-    u8 *pj = pi;
 
     for (i = 0; i < b; i++, pi += 12, pj = pi) {
         x = func_0203ae6c(i);

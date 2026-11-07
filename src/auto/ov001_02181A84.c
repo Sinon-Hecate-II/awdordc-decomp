@@ -276,23 +276,23 @@ void func_ov001_021820f0(M2C_UNK arg0) {
 
     s32 temp_r4;
     s32 temp_idx;
-    s32 toff;
+    s32 temp_offset;
     s8 temp_val;
     s32 row;
-    s32 r6, r5, r4b, r3;
+    s32 r6, r5, temp_r4b, r3;
     M2C_UNK a, b, c, d;
 
     temp_r4 = (s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 1);
     temp_idx = func_ov001_02175e04(1);
-    toff = (s32)&data_ov001_0218fa96 + temp_idx * 16 + temp_r4 * 4;
-    temp_val = M2C_FIELD(arg0, s8 *, toff);
+    temp_offset = (s32)&data_ov001_0218fa96 + temp_idx * 16 + temp_r4 * 4;
+    temp_val = M2C_FIELD(arg0, s8 *, temp_offset);
     if (temp_val == -1) {
         return;
     }
     if (temp_val == 0) {
         M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) = temp_r4;
     }
-    if (temp_val != (s8)-2) {
+    if (temp_val != -2) {
         M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = temp_val;
         return;
     }
@@ -301,13 +301,13 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     func_ov001_02185024(8);
     r6 = func_ov001_02175e04(1);
     r5 = func_ov001_02175e04(1);
-    r4b = func_ov001_02175e04(1);
+    temp_r4b = func_ov001_02175e04(1);
     r3 = func_ov001_02175e04(1);
     row = M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) * 8;
 
     a = *(u16 *)((u8 *)&data_ov001_0218faf6 + r6 * 32 + row);
     b = *(u16 *)((u8 *)&data_ov001_0218fafa + r5 * 32 + row);
-    c = *(u16 *)((u8 *)&data_ov001_0218faf8 + r4b * 32 + row);
+    c = *(u16 *)((u8 *)&data_ov001_0218faf8 + temp_r4b * 32 + row);
     d = *(u16 *)((u8 *)&data_ov001_0218fafc + r3 * 32 + row);
 
     func_ov001_02172094(a, b, c, d);

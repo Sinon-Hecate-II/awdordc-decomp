@@ -167,9 +167,9 @@ void func_ov007_02218d8c(void *arg0) {
     extern M2C_UNK data_027e0064;
     void *sp4;
     u32 var_r10;
-    s32 temp_r7;
     long var_r8;
     s32 var_r9;
+    s32 temp_r7;
 
     sp4 = arg0;
     temp_r7 = func_ov007_02217c50();
@@ -331,7 +331,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
 M2C_UNK func_ov007_02219230(void *arg) {
 void func_ov007_02217cd0(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void func_01ffa8c4(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK func_0208fe30(s32); void func_02088044(void *);
 extern u16 *data_02101e84;
-u32 keys; void *p; void *q; s32 v;
+u32 keys; void *p; void *q; s32 v; s32 selected;
 keys=*data_02101e84;
 if(keys&1) {func_ov007_02217cd0(arg);return;}
 if(keys&0x400) {func_ov007_02219bb4(arg,func_ov007_02217c80(arg));return;}
@@ -353,10 +353,8 @@ p=M2C_FIELD(arg,void **,0x5c);
 if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
 q=M2C_FIELD(p,void **,0);
 v=q?M2C_FIELD(q,u16 *,8):-1;
-{
- s32 selected=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38);
- if(v!=selected) func_ov007_02219bb4(arg,v);
-}
+selected=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38);
+if(v!=selected) func_ov007_02219bb4(arg,v);
 }
 }
 

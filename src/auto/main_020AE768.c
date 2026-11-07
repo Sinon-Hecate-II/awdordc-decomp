@@ -95,7 +95,6 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     void *func_01ffa3dc(M2C_UNK *, s32);
     M2C_UNK func_020ae7cc(s32);
     /* func_020aebb8 is defined above. */
-    s32 ee = e;
     void *saved = gCur3DSpriteEngine;
     void *p;
     void *saved2;
@@ -104,8 +103,8 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     p = func_01ffa3dc(&data_02127e4c, 1);
     if (p) {
         M2C_FIELD(p, void **, 0) = &data_02127e40;
-        M2C_FIELD(p, u8 *, 0x34) = ee;
-        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(ee);
+        M2C_FIELD(p, u8 *, 0x34) = e;
+        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(e);
         M2C_FIELD(p, u8 *, 0x3c) = a;
         M2C_FIELD(p, u8 *, 0x3d) = b;
         {
@@ -127,8 +126,8 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     p = func_01ffa3dc(&data_02127e4c, 1);
     if (p) {
         M2C_FIELD(p, void **, 0) = &data_02127e40;
-        M2C_FIELD(p, u8 *, 0x34) = ee;
-        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(ee);
+        M2C_FIELD(p, u8 *, 0x34) = e;
+        M2C_FIELD(p, s32 *, 0x38) = func_020ae7cc(e);
         M2C_FIELD(p, u8 *, 0x44) = c;
         M2C_FIELD(p, u8 *, 0x45) = d;
         {
@@ -145,7 +144,7 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
         gCur3DSpriteEngine = saved2;
         M2C_FIELD(p, s16 *, 0x4a) = 0;
     }
-
+    saved2 = (void *)saved2;
     gCur3DSpriteEngine = saved;
 }
 

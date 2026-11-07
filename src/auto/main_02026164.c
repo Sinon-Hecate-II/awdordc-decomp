@@ -325,6 +325,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     data_021372d0(temp_r4);
 }
 
+#pragma scheduling off
 void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02008048(s32, s32, s32);
     s32 func_0202626c(u16 *, s32);
@@ -368,11 +369,11 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
             func_02008048((s32)p3, (s32)p4, bytes);
             func_02008048((s32)p5, (s32)p3, bytes);
         } while (func_0202626c(base, n) > 0);
-        func_0202629c(p4, p4, arg2, n);
-        func_020267fc(0, p4, arg2, arg0, n, p6);
     }
+    func_0202629c(p4, p4, arg2, n);
+    func_020267fc(0, p4, arg2, arg0, n, p6);
 }
-
+#pragma scheduling reset
 void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
 {
   M2C_UNK func_02007f8c(u8 *, s32, u32);

@@ -195,7 +195,7 @@ void func_ov001_02172944(s32 arg0) {
 #pragma optimization_level 3
 void func_ov001_021729d8(s32 arg0) {
  extern void *data_ov001_02193d1c;
- void func_ov001_02172a6c();
+ void func_ov001_02172a6c(s32);
  struct { s32 x, y; } xy, *pos = &xy;
  u32 value = *M2C_FIELD(data_ov001_02193d1c, u32 **, 0x90);
  pos->y = (value & 0x1FF0000) >> 16;

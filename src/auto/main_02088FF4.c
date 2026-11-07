@@ -384,7 +384,8 @@ void func_020899cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
 M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
     extern void *gCur3DSpriteEngine;
-    extern s32 data_027e00c8, data_027e00c4;
+    extern s32 data_027e00c8;
+    extern s32 data_027e00c4;
     u8 func_0208ae88(M2C_UNK, s32);
     M2C_UNK func_020ae22c(s32);
     M2C_UNK func_0208e0f0(M2C_UNK, M2C_UNK, s32, s32);

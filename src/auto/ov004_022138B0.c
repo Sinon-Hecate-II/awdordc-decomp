@@ -234,21 +234,32 @@ s32 func_ov004_02214080(void) {
  if(count!=0)return 0; return 1;
 }
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 s32 func_ov004_022140f0(void) {
-extern void **data_027e0058;
-u8 *base=*data_027e0058; s32 y,x; u8 *p; s32 t; u8 v;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
-if((((M2C_FIELD(base,u8 *,M2C_FIELD(base+y*2,u16 *,0x3758)+0x1420))&0xE0)>>5)==1){
-p=(u8 *)base+M2C_FIELD(base+y*2,u16 *,0x3758)+x;
-t=((u8*)p)[0x1420]&0x1F;
-if(t==15||t==17){v=((u8*)p)[0x508];if(v!=0 && (v>>6)==0)return 1;}
+extern void **gCurrentMap;
+s32 x,y=0,t,width; u8 *p; u8 *scan; u8 v;
+u8 *base=*gCurrentMap;
+if(y<M2C_FIELD(base,u16 *,0x5146)) do {
+width=M2C_FIELD(base,u16 *,0x5144);
+x=0;
+if(x<width){
+scan=base+M2C_FIELD(base+(y<<1),u16 *,0x3758);
+do {
+if(((M2C_FIELD(scan,u8 *,0x1420)&0xE0)>>5)==1){
+p=base+M2C_FIELD(base+(y<<1),u16 *,0x3758)+x;
+t=M2C_FIELD(p,u8 *,0x1420)&31;
+if(t==15||t==17){v=M2C_FIELD(p,u8 *,0x508);if(v!=0 && (v>>6)==0)return 1;}
 }
+x++;scan++;
+}while(x<width);
 }
-}
+y++;
+}while(y<M2C_FIELD(base+0x5120,u16 *,0x26));
 return 0;
 }
-
+#pragma opt_common_subs reset
+#pragma opt_strength_reduction reset
 s32 func_ov004_022141bc(void) {
     s32 temp_r4;
 

@@ -212,7 +212,9 @@ search:
 q=p;
 if(q[0]!=data_ov001_0218fd40[sp0]){
 len=func_ov001_0216cef0(*(u16 *)(p+2))+4;
-rem-=len;p+=len;if(rem<=0)return -4;
+rem=rem-len;
+p=p+len;
+if(rem<=0)return -4;
 goto search;
 }
 remaining=func_ov001_0216cef0(*(u16 *)(q+2));
@@ -231,7 +233,7 @@ case 10:result=func_ov001_0216c3d0(q,(void *)(sp8+spC));break;
 default:result=-3;break;
 }
 if(result!=0)return result;
-len=func_ov001_0216cef0(*(u16 *)(q+2))+4;remaining-=len;q+=len;
+len=func_ov001_0216cef0(*(u16 *)(q+2))+4;remaining=remaining-len;q=q+len;
 }while(remaining>0);
 *(s32 *)(data_ov001_02191800+0x30)|=flags;
 return 0;

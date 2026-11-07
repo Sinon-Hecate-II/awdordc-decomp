@@ -276,10 +276,11 @@ M2C_FIELD(M2C_FIELD(&data_02101e84, void **, 0),u16 *,4) |= arg0;
 M2C_FIELD(M2C_FIELD(&data_02101e84, void **, 0),u16 *,6) |= arg0;
 }
 
+#pragma scheduling off
 void func_02081a48(void){
 extern M2C_UNK data_02101e84;
-void func_0200d544(void);s32 func_0200d5bc(u16 *);void func_0200d650(u16 *);
-u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=912;a[1]=1375;a[2]=3410;a[3]=4410;func_0200d650(a);}
+void func_0200d544(void);s32 func_0200d5bc(u16 *);void func_0200d650(s32);
+u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;func_0200d650((s32)a);}
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x12)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x13)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x14)=0;
@@ -288,7 +289,7 @@ M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x16)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x10)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x11)=16;
 }
-
+#pragma scheduling reset
 void func_02081ae4(void) {
     extern M2C_UNK data_02101e84;
     extern M2C_UNK data_0214c18c;

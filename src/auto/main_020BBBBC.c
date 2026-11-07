@@ -177,16 +177,16 @@ void func_020bc610(void *arg0) {
     raw = (s32)M2C_FIELD(data_02101e84, u16 *, 4);
     dir = (raw >> 4) & 15;
     p = (void *)*data_027e0058;
-    n = M2C_FIELD(p, s16 *, 0x52c2) + ((s16 (*)[2])&data_021292dc)[dir][0];
+    n = M2C_FIELD(p, s16 *, 0x52c2) + ((volatile s16 (*)[2])&data_021292dc)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5144)) {
         M2C_FIELD(p, s16 *, 0x52c2) = n;
-        if (((s16 (*)[2])&data_021292dc)[dir][0] != 0) func_0208fe30(arg0);
+        if (((volatile s16 (*)[2])&data_021292dc)[dir][0] != 0) func_0208fe30(arg0);
     }
     p = (void *)*data_027e0058;
-    n = M2C_FIELD(p, s16 *, 0x52c4) + ((s16 (*)[2])&data_021292de)[dir][0];
+    n = M2C_FIELD(p, s16 *, 0x52c4) + ((volatile s16 (*)[2])&data_021292de)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5146)) {
         M2C_FIELD(p, s16 *, 0x52c4) = n;
-        if (((s16 (*)[2])&data_021292de)[dir][0] != 0) func_0208fe30(arg0);
+        if (((volatile s16 (*)[2])&data_021292de)[dir][0] != 0) func_0208fe30(arg0);
     }
 }
 

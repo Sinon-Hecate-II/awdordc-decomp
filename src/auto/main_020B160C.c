@@ -118,27 +118,16 @@ void func_020b185c(void) {
 }
 
 void func_020b18ec(void) {
-    extern void *gCurrentMap, *gCur3DSpriteEngine;
-    u16 *sp4;
-    u16 *sp0;
-    void (*callback)(void);
-    func_020aca8c(0 + 3);
-    func_0207b940();
-    sp4 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *sp4 = *sp4 | 0x1000;
-    sp0 = (u16 *)*(void **)gCur3DSpriteEngine;
-    *sp0 = *sp0 & ~0x6000;
-    func_02082700();
-    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1C);
-    if (callback != NULL) callback();
-    func_01ff9b38();
-    func_02091cd0();
-    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x54);
-    if (callback != NULL) callback();
-    func_020b1770();
-    func_020b172c();
-    func_020b179c();
-    func_020b17dc();
+extern void *gCurrentMap,*gCur3DSpriteEngine;
+u16 *volatile sp4;u16 *volatile sp0;void (*callback)(void);
+func_020aca8c(3);func_0207b940();
+sp4=(u16 *)*(void **)gCur3DSpriteEngine;*sp4=*sp4|0x1000;
+sp0=(u16 *)*(void **)gCur3DSpriteEngine;*sp0=*sp0&~0x6000;
+func_02082700();
+callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
+func_01ff9b38();func_02091cd0();
+callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();
+func_020b1770();func_020b172c();func_020b179c();func_020b17dc();
 }
 
 void func_020b19a8(s32 arg0, s32 arg1) {

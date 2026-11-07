@@ -235,9 +235,9 @@ void func_020a54f4(void *a){
 M2C_UNK func_01ffa8c4(void *,s32);void *func_020a45f8(s16,s16);
 M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK func_020b7294(s16,s16,u32,s32,void *);
 extern Unk020APosition *data_0215be04;
-Unk020APosition *base=data_0215be04,*p,*q; s32 i=0,offset;s16 n,m;void *entry;
+Unk020APosition *base=data_0215be04,*p,*q; s32 i=0;s16 n,m;void *entry;
 while(base[i].a==0)i++;
-n=M2C_FIELD(a,s16 *,0x54);offset=n*8;if(M2C_FIELD((u8 *)base+offset,u16 *,0))return;p=(Unk020APosition *)((u8 *)base+i);
+n=M2C_FIELD(a,s16 *,0x54);if(base[n].a)return;p=(Unk020APosition *)((u8 *)base+i);
 switch(p->b){
 default:break;
 case 4:func_020b6f98((s16)p->c,(s16)p->d,n+1,a);break;

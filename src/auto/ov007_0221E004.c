@@ -15,14 +15,15 @@ void func_ov007_0221e568(u8 *arg0) {
     extern u16 *data_02101e84;
     M2C_UNK func_ov007_0221e010(void);
     extern u8 data_ov007_0221f5a4[];
-    register u8 *ptr = arg0;
-    register u8 var_r7;
-    register u16 temp_r5;
-    register u16 temp_r6;
+    u16 temp_r5;
+    u16 temp_r6;
+    u8 var_r7;
+    u8 *ptr;
 
-    var_r7 = *ptr;
     temp_r5 = data_02101e84[0];
     temp_r6 = data_02101e84[1];
+    var_r7 = *arg0;
+    ptr = arg0;
     if (temp_r5 & 1) {
         func_ov007_0221e010();
         return;
@@ -61,7 +62,7 @@ block_15:
             }
         } else if (temp_r6 & 0x10) {
             if (func_0207c928(var_r7, 0xF) == 0xE) {
-                if (temp_r6 == (int)temp_r5) {
+                if (temp_r6 == (int) temp_r5) {
                     var_r7 -= 0xE;
                 }
             } else {
@@ -280,9 +281,9 @@ void func_ov007_0221ec40(void *arg0) {
             temp_r5 = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
             func_0209b67c((u16) (var_r6 + ((u32) (8 - func_0209c268(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
             var_r8 = (s32) (u16) (var_r8 + (((u32) (((u32) (temp_r5 + 7) >> 3) + 3) >> 2) << 8));
-            var_r9 += 1;
-            var_r6 += 8;
-            var_r10 += 4;
+            var_r9 = var_r9 + 1;
+            var_r6 = var_r6 + 8;
+            var_r10 = &var_r10[1];
         } while (*(&data_ov007_02221e10 + (var_r9 * 4)) != 0);
     }
     gCur3DSpriteEngine = sp8;

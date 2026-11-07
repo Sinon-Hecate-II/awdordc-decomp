@@ -1,38 +1,26 @@
 /* 36 functions from 0x021E4448 to 0x021E5118 (ov003), found by ds-decomp. */
 #include "common.h"
 
-void func_ov003_021e4448(void *arg0) {
-    M2C_UNK func_ov003_021f2860(void *);
-    M2C_UNK func_ov003_021f140c(M2C_UNK);
-    M2C_UNK func_ov003_021f2780(M2C_UNK, M2C_UNK *);
-    M2C_UNK func_ov006_0221734c(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020c85c4(s32, s32);
-    extern M2C_UNK data_ov003_0220f47c;
-    struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
-    u32 count;
-    u8 i;
-    void *base;
-    u16 val;
-    local.data = (void *)&data_ov003_0220f47c;
-    for (i = 0; i != 5; i++) {
-        local.buf1[i] = 0xFFFF;
-        local.buf0[i] = local.buf1[i];
-    }
-    func_ov003_021f2860(&local);
-    func_ov003_021f140c(1);
-    i = 0;
-    while (i < 5) {
-        count = (u32)func_ov003_021f2780((M2C_UNK)&local, local.buf0);
-        base = M2C_FIELD(arg0, void **, 0x68);
-        if ((u32)i >= count) {
-            M2C_FIELD((s32)base + (s32)i * 0x6F8, u8 *, 0x27) = 0;
-        } else {
-            val = local.buf0[i];
-            func_020c85c4(val, base + (s32)i * 0x6F8);
-        }
-        i++;
-    }
-    func_ov006_0221734c(arg0, M2C_FIELD(arg0, void **, 0x68), M2C_FIELD(arg0, void **, 0x6C));
+void func_ov003_021e4448(void *arg0){
+M2C_UNK func_ov003_021f2860(void *);M2C_UNK func_ov003_021f140c(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 func_020c85c4(s32,s32);
+extern M2C_UNK data_ov003_0220f47c;
+struct {void *data;u16 buf0[5];u16 buf1[5];}local;
+u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
+local.data=&data_ov003_0220f47c;
+for(i=0;i<5;i++){local.buf1[i]=65535;local.buf0[i]=local.buf1[i];}
+func_ov003_021f2860(&local);func_ov003_021f140c(1);
+i=0;zero=i;block=&local;
+do{
+count=func_ov003_021f2780((M2C_UNK)block,local.buf0);
+base=M2C_FIELD(arg0,void **,0x68);
+if((u32)i>=count)M2C_FIELD((s32)base+i*0x6f8,u8 *,0x27)=zero;
+else{
+val=M2C_FIELD(block+i*2,u16 *,4);
+func_020c85c4(val,(s32)base+i*0x6f8);
+}
+i++;
+}while(i<5);
+func_ov006_0221734c(arg0,M2C_FIELD(arg0,void **,0x68),M2C_FIELD(arg0,void **,0x6c));
 }
 
 void func_ov003_021e450c(void) {

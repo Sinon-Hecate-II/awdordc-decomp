@@ -258,12 +258,11 @@ void func_ov001_02186090(u16 *arg0) {
     {
         s32 j;
         u8 *base;
-        u8 *slot;
         u8 *rec;
         s32 k;
         u16 count = arg0[7];
 
-        for (j = 0; j < count; j++) {
+        for (j = 0; j < count; j = j + 1) {
             rec = ((void **)arg0)[4 + j];
             if (func_0206527c(rec + 0x0C, data_ov001_0218fbf0, 8) != 0) {
                 continue;
@@ -272,8 +271,7 @@ void func_ov001_02186090(u16 *arg0) {
                 continue;
             }
             base = (u8 *)g + 0x1300;
-            slot = g;
-            for (k = 0; k < 16; k++) {
+            for (k = 0; k < 16; k = k + 1) {
                 if (func_0206527c(rec + 4, base, 6) == 0) {
                     if (*((u8 *)g + k * 7 + 0x1306) != 0) {
                         break;

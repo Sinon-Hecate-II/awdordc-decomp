@@ -248,6 +248,8 @@ func_02007530(t);
 return 1;
 }
 
+#pragma push
+#pragma peephole off
 s32 func_02017cd8(void) {
 s32 v; void *p;
 M2C_FIELD(M2C_FIELD(&data_02136c40,void **,8),u16 *,0x528)=0;
@@ -266,7 +268,7 @@ func_020119dc(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,0x508));
 M2C_FIELD(M2C_FIELD(p,void **,8),u8 *,0x50d)=1;
 func_020168a0(); return 0;
 }
-
+#pragma pop
 s32 func_02017dac(s32 arg0) {
     s32 func_0200751c(void);
     s32 func_02007530(s32);

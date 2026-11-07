@@ -30,7 +30,31 @@ M2C_FIELD(&data_0213731a,u16*,off)=now;
 }
 
 #pragma scheduling off
-void func_0201af48(void *a,s32 b,M2C_UNK c,M2C_UNK d,u32 ip,u16 type){M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);s32 func_0201a704(u32);s32 func_0201a764(u32);M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK *func_0201abd0(void);M2C_UNK *func_0201ad9c(s32);extern M2C_UNK data_02137778;M2C_UNK *p;s32 n;*(volatile u16 *)((u8*)a-2)=(type>>8)|(type<<8);if(!func_0201a764(ip)){n=func_0201a704(ip);if(!n)return;p=func_0201abd0();if(!p){p=func_0201ad9c(n);if(!p)return;}func_02008048(p,(u8 *)a-14,6);}else{*(volatile u8 *)((u8*)a-14)=1;*(volatile u8 *)((u8*)a-13)=0;*(volatile u8 *)((u8*)a-12)=0x5e;*(volatile u8 *)((u8*)a-11)=(ip>>16)&127;*(volatile u8 *)((u8*)a-10)=ip>>8;*(volatile u8 *)((u8*)a-9)=ip;func_02008048(&data_02137778,(u8 *)a-8,6);}func_0201a824((u8 *)a-14,b+14,c,d);}
+void func_0201af48(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
+M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);
+s32 func_0201a704(u32); s32 func_0201a764(u32);
+M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
+extern M2C_UNK data_02137778;
+M2C_UNK *p; s32 n;
+M2C_FIELD(a,u16 *,-2)=(type>>8)|(type<<8);
+if(!func_0201a764(ip)){
+n=func_0201a704(ip);if(!n)return;
+p=func_0201abd0();
+if(!p)p=func_0201ad9c(n);
+if(!p)return;
+func_02008048(p,(u8 *)a-14,6);
+}else{
+M2C_FIELD(a,u8 *,-14)=1;
+M2C_FIELD(a,u8 *,-13)=0;
+M2C_FIELD(a,u8 *,-12)=0x5e;
+M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;
+M2C_FIELD(a,u8 *,-10)=ip>>8;
+M2C_FIELD(a,u8 *,-9)=ip;
+}
+func_02008048(&data_02137778,(u8 *)a-8,6);
+func_0201a824((u8 *)a-14,b+14,c,d);
+}
 #pragma scheduling on
 void func_0201b018(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
 s32 func_0200751c(void);void func_02007530(s32);

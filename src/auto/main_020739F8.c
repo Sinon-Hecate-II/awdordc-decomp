@@ -20,6 +20,7 @@ typedef struct { s32 t0, t1, t2, t3, t4, t5; } CtxToken_020739f8;
 typedef struct { CtxToken_020739f8 token; CtxState_020739f8 state; } Ctx_020739f8;
 typedef struct { s32 a,b,c,d; } CtxOperands_020739f8;
 
+#pragma scheduling off
 s32 func_020739f8(void *arg0, void *arg1) {
     u8 func_02072da4(CtxToken_020739f8 *);
     void *func_02072b20(void *, s32 *);
@@ -83,7 +84,7 @@ s32 func_020739f8(void *arg0, void *arg1) {
         }
     }
 }
-
+#pragma scheduling reset
 s32 func_02073b4c(M2C_UNK arg0, void *arg1) {
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
     s32 values[2];

@@ -286,8 +286,7 @@ void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4
 
 void func_02044bf8(s32 a,s32 b,s32 c) {
 extern s32 data_0213db14;
-void *p; s32 v; u8 buf[8]; s32 dummy;
-dummy=c;
+void *p; s32 v; u8 buf[8];
 p=(u8 *)data_0213db14+a*0x30;
 M2C_FIELD(p,u8 *,0x1e)=func_02044a24(a);
 v=func_020446ac(b);
@@ -297,19 +296,16 @@ if(c!=8)return;
 func_02008048(b,buf,8);
 M2C_FIELD(p,s32 *,0x18)=*(s32 *)buf;
 M2C_FIELD(p,s32 *,0x10)=0;
-if(M2C_FIELD(p,s32 *,4)){
-if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,0x18)){
-M2C_FIELD(p,u8 *,0x1d)=2;
-goto done;
+if(!M2C_FIELD(p,s32 *,4))goto state3;
+if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,0x18)) M2C_FIELD(p,u8 *,0x1d)=2;
+else goto state4;
+break;
+state4: M2C_FIELD(p,u8 *,0x1d)=4;
+break;
+case 2:case 3:case 4:
+state3: M2C_FIELD(p,u8 *,0x1d)=3;break;
 }
-M2C_FIELD(p,u8 *,0x1d)=4;
-goto done;
-}
-case 2:case 3:case 4: M2C_FIELD(p,u8 *,0x1d)=3;break;
-}
-done:
 M2C_FIELD(p,u16 *,0x22)=v;
-(void)dummy;
 }
 
 void func_02044cc0(s32 a,void *b,s32 c){

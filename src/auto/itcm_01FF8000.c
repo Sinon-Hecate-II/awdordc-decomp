@@ -62,8 +62,6 @@ int func_01ff83a8(unsigned int addr, void *dst, int size)
     unsigned int status;
     unsigned int addressHigh;
     unsigned int value;
-    unsigned int command;
-    unsigned int zero;
     int offset;
 
     volatile unsigned char *regs;
@@ -87,18 +85,16 @@ int func_01ff83a8(unsigned int addr, void *dst, int size)
     romdata = (volatile unsigned int *)0x04100010;
 
     addressHigh = addr >> 8;
-    command = 0xB7;
-    zero = 0;
 
     do {
-        regs[7] = command;
-        regs[8] = addr >> 24;
-        regs[9] = addr >> 16;
-        regs[10] = addressHigh;
-        regs[11] = addr;
-        regs[12] = zero;
-        regs[13] = zero;
-        regs[14] = zero;
+        regs[7] = 0xB7;
+        regs[8] = (unsigned char)(addr >> 24);
+        regs[9] = (unsigned char)(addr >> 16);
+        regs[10] = (unsigned char)addressHigh;
+        regs[11] = (unsigned char)addr;
+        regs[12] = 0;
+        regs[13] = 0;
+        regs[14] = 0;
 
         *(volatile unsigned int *)(regs + 3) = control;
 

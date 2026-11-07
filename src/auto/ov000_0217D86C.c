@@ -260,9 +260,9 @@ return 1;
 #pragma opt_strength_reduction reset
 u8 func_ov000_0217e6bc(s32 arg0,s32 arg1){
 s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *data_ov000_021df580;
-void *base,*unit,*world,*entry;u8 result;
-base=(u8 *)*gCurrentMap+0x5000;
-if(!(M2C_FIELD(base,u8 *,0x2d6)!=0)){return 1;}
+u32 base;void **unit,*world,*entry;u8 result;
+base=(u32)*gCurrentMap+0x5000;
+if(M2C_FIELD(base,u8 *,0x2d6)!=0)goto active;return 1;active:;
 unit=M2C_FIELD(base,void **,0x2d0);
 if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)!=17)return 1;
 if(ManhattanDistance(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),(s16)arg0,(s16)arg1)<=(s32)(M2C_FIELD(data_ov000_021df580,u8 *,5)*2))return 1;

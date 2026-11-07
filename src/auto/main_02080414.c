@@ -137,22 +137,24 @@ void func_02080a14(u16 *p,s32 w,s32 h,u16 *q){
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=q[y*32+x];
 }
 
-void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, s32 bandH, u16 lowArg, u16 palArg) {
+#pragma opt_strength_reduction off
+void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, u16 bandH, u16 lowArg, u16 palArg) {
+    u16 *base;
+    s32 y, x, row, stack;
     u16 cur = (u16)((lowArg & 0x3ff) | ((palArg & 0xf) << 12));
-    s32 y = 0;
-    if (totalH <= 0) return;
-    while (y < totalH) {
-        s32 stack = 0;
+    y = 0;
+    for (;y < totalH;) {
+        stack = 0;
         if (totalW > 0) {
             do {
-                s32 row = 0;
-                if (bandH > 0) {
+                row = 0;
+                if ((s32)bandH > 0) {
                     do {
-                        u16 *base = p + stack + (y + row) * 32;
-                        s32 x = 0;
+                        base = p + stack;
+                        x = 0;
                         if (chunkW > 0) {
                             do {
-                                base[x] = cur++;
+                                base[(y+row)*32+x] = cur++;
                                 x++;
                             } while (x < chunkW);
                         }
@@ -165,11 +167,11 @@ void func_02080a6c(u16 *p, s32 totalW, s32 totalH, s32 chunkW, s32 bandH, u16 lo
         y += bandH;
     }
 }
-
+#pragma opt_strength_reduction reset
 void func_02080b38(u16 *p,u32 w,s32 h){
- s32 y,x;u16 tmp;u16 *b,*a;
+ s32 y,x;u16 tmp,other;u16 *a,*b;
  for(y=0;y<h;y++){
- for(x=0;x<(s32)(w>>1);x++){a=p+x;b=p+(w-1-x);tmp=a[y*32];a[y*32]=b[y*32];b[y*32]=tmp;}
+ for(x=0;x<(s32)(w>>1);x++){a=p+x;b=p+(w-1-x);tmp=a[y*32];other=b[y*32];a[y*32]=other;b[y*32]=tmp;}
  for(x=0;x<(s32)w;x++)p[y*32+x]^=0x400;
  }
 }

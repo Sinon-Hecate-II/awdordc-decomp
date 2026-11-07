@@ -317,12 +317,15 @@ void func_020bb608(s32 arg0) {
     if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
         func_02091c20(0x14, 1);
         {
-            u8 *sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-            u8 kind = sel[arg0 + 0xC];
-            u8 *u = (u8 *)*gCurrentMap + 0x59A4 + kind * 0xE;
+            u8 *sel;
+            u8 kind;
+            u8 *u;
             u16 f;
             s32 idx;
             u8 d;
+            sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
+            kind = sel[arg0 + 0xC];
+            u = (u8 *)*gCurrentMap + 0x59A4 + kind * 0xE;
             f = M2C_FIELD(u, u16 *, 0x4);
             f = (u16)(f & ~0x8);
             M2C_FIELD(u, u16 *, 0x4) = f;

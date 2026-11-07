@@ -254,20 +254,13 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  }
  func_02007e70(arg1,(s32)arg3+offset,0xC0);
 }
-#pragma opt_common_subs reset
+#pragma opt_common_subs off
 void func_0202fb20(s32 arg0, s32 arg1) {
     M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e70(void *, s32, s32);
     u8 sp4[0xc0];
     M2C_UNK sp0;
-    M2C_UNK *temp_r5;
-    M2C_UNK *var_r9;
-    s32 temp_r5_2;
-    s32 temp_r7;
-    s32 temp_r8;
-    s32 var_r10;
-    s32 var_r4;
-    s32 var_r6;
+    s32 var_r4; M2C_UNK *temp_r5; s32 var_r6,temp_r7,temp_r8; s32 var_r9; s32 var_r10,temp_r5_2;
 
     var_r4 = arg0;
     temp_r7 = arg1 + 0x444;
@@ -275,10 +268,10 @@ void func_0202fb20(s32 arg0, s32 arg1) {
     var_r6 = var_r4 - 1;
     if (var_r6 >= 0) {
         var_r10 = (var_r6 * 0xC0) + temp_r8;
-        var_r9 = (M2C_UNK *) (temp_r7 + (var_r6 * 4));
+        var_r9 = temp_r7 + var_r6*4;
 loop_2:
         if ((u32) M2C_FIELD((temp_r7 + (var_r4 * 4)), u8 *, 2) >= (u32) M2C_FIELD((temp_r7 + (var_r6 * 4)), u8 *, 2)) {
-            func_02007e70(var_r9, (s32)&sp0, 4);
+            func_02007e70((void *)var_r9, (s32)&sp0, 4);
             temp_r5 = (M2C_UNK *) (temp_r7 + (var_r4 * 4));
             func_02007e70(temp_r5, (s32)var_r9, 4);
             func_02007e70(&sp0, (s32)temp_r5, 4);
@@ -287,9 +280,9 @@ loop_2:
             func_02007e70((void *)(temp_r8 + temp_r5_2), var_r10, 0xC0);
             func_02007e70(&sp4, temp_r8 + temp_r5_2, 0xC0);
             var_r4 = var_r6;
-            var_r9 = (M2C_UNK *)((s32)var_r9 - 4);
+            var_r9=var_r9-4;
             var_r10 -= 0xC0;
-            var_r6 -= 1;
+            --var_r6;
             if (var_r6 >= 0) {
                 goto loop_2;
             }
@@ -298,7 +291,7 @@ loop_2:
     func_02007e54(0, temp_r7 + 0x28, 4);
     func_02007e54(0, temp_r8 + 0x780, 0xC0);
 }
-
+#pragma opt_common_subs reset
 void func_0202fc10(void *arg0) {
  void func_0202f694(s32);
  void *p=func_0202f48c(0x10);

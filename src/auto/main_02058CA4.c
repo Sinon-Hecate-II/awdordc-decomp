@@ -61,16 +61,16 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     dst = sp0;
     count = 0x80;
     do { u8 a = src[0]; u8 b = src[1]; src += 2; dst[0] = a; dst[1] = b; dst += 2; count -= 1; } while (count != 0);
-    t = M2C_FIELD(&data_0213dce0, s32 *, 0x24);
+    t = M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24);
     t ^= 1;
-    M2C_FIELD(&data_0213dce0, s32 *, 0x24) = t;
+    M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) = t;
     func_02068d68(sp0, arg1);
     func_02068d68(sp0, data_020ff4ac);
     p = func_02068fdc((s8 *)arg0, sp0);
     if (p == 0) return 0;
     n = func_02068c34(sp0);
     str = p + n;
-    base = (s8 *)data_0213dd10 + (M2C_FIELD(&data_0213dce0, s32 *, 0x24) << 8);
+    base = (s8 *)data_0213dd10 + (M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) << 8);
     dst = base;
     while (*str != 0 && *str != 0x5c) *dst++ = *str++;
     *dst = 0;
@@ -306,18 +306,18 @@ void func_0205954c(void) {
     extern const u8 data_020ea9ac[];
     ByteBlock16 buf1, buf0; s32 i;
     if (!M2C_FIELD(&data_0213dce0,s32 *,4)) return;
-    i = func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4)) - 1;
-    if (i >= 0) {
-        buf0 = *(const ByteBlock16 *)data_020ea9ac;
+    i=func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
+    if(i>=0) {
+        buf0=*(const ByteBlock16 *)data_020ea9ac;
         do {
-            buf1 = buf0;
-            M2C_FIELD(&data_020ff43c,M2C_UNK **,8) = &data_020ff498;
-            func_02058df4((s8 *)&buf1, 15);
-            func_02059448(i, (s32)0, (s32)0, (s32)&buf1, (s32)0);
-        } while (--i >= 0);
+            buf1=buf0;
+            M2C_FIELD(&data_020ff43c,M2C_UNK **,8)=&data_020ff498;
+            func_02058df4((s8 *)&buf1,15);
+            func_02059448(i,0,0,(s32)&buf1,0);
+        } while(--i>=0);
     }
     func_0204861c(M2C_FIELD(&data_0213dce0,s32 *,4));
-    M2C_FIELD(&data_0213dce0,s32 *,4) = 0;
+    M2C_FIELD(&data_0213dce0,s32 *,4)=0;
 }
 #pragma opt_common_subs off
 s32 func_02059640(void *arg0, s32 arg1) {
@@ -440,43 +440,17 @@ void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 s32 func_02059a04(u8 *arg0) {
-    s32 var_lr;
-    s32 var_r4;
-    s32 var_r8;
-    s32 var_r9;
-    u8 temp_r10;
-    u8 temp_r5;
-    void *temp_r7;
-
-    temp_r5 = *arg0;
-    var_lr = 0;
-    var_r4 = 1;
+s32 var_lr; s32 var_r4; s32 var_r8; s32 var_r9; u8 *temp_r7; u32 temp_r5; u32 firstBit; u8 temp_r10;
+temp_r5=*arg0; firstBit=temp_r5&1; var_lr=0; var_r4=1;
 loop_1:
-    temp_r7 = arg0 + var_r4;
-    temp_r10 = M2C_FIELD(temp_r7, u8 *, -1);
-    if ((u32) temp_r10 < (u32) temp_r5) {
-        var_r8 = 1;
-    } else {
-        var_r8 = 0;
-    }
-    if ((u32) temp_r5 < 0x4FU) {
-        var_r9 = 1;
-    } else {
-        var_r9 = 0;
-    }
-    var_lr = (temp_r5 & 1) ^ (var_lr ^ ((var_r4 ^ temp_r10) & 1)) ^ var_r9 ^ var_r8;
-    if ((var_lr == 0) || (M2C_FIELD(temp_r7, u8 *, 0) & 1)) {
-        if ((var_lr == 0) && ((M2C_FIELD(temp_r7, u8 *, 0) & 1) == 1)) {
-            /* Duplicate return node #13. Try simplifying control flow for better match */
-            return 0;
-        }
-        var_r4 += 1;
-        if (var_r4 >= 0x20) {
-            return 1;
-        }
-        goto loop_1;
-    }
-    return 0;
+temp_r7=arg0+var_r4; temp_r10=M2C_FIELD(temp_r7,u8 *,-1);
+if((u32)temp_r10<(u32)temp_r5) var_r8=1; else var_r8=0;
+if((u32)temp_r5<0x4FU) var_r9=1; else var_r9=0;
+var_lr=var_r8 ^ (var_r9 ^ (firstBit ^ (var_lr ^ ((var_r4 ^ temp_r10)&1))));
+if(var_lr!=0 && !(M2C_FIELD(temp_r7,u8 *,0)&1)) goto fail;
+if(var_lr==0 && (M2C_FIELD(temp_r7,u8 *,0)&1)==1) { fail: return 0; }
+var_r4++; if(var_r4<32) goto loop_1;
+return 1;
 }
 
 u8 *func_02059aa0(u8 *arg0) {

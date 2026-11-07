@@ -241,7 +241,7 @@ void func_020d61f0(void) {
 
 void func_020d6310(void);
 void func_020d6208(void) {
-    extern void *gCurrentMap;
+    extern void *data_027e0058;
     extern u8 data_02168f24;
 
     if (func_020d46cc() == 0) {
@@ -254,31 +254,31 @@ void func_020d6208(void) {
         func_020cfd28();
         if (data_02168f24 != 0) {
             func_ov000_021696d4();
-            M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52b4) = 0;
+            M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 0;
             return;
         }
         {
-            void *base = M2C_FIELD(gCurrentMap, void **, 0);
-            u8 r3v;
-            u8 *r1p;
-            r1p = (u8 *)base + 0x5000;
-            r3v = r1p[0x2d6];
-            if (r3v != 0) {
-                void *elem = (u8 *)base + 0x59a4 + (u32)r3v * 14;
-                u8 a = r1p[0x2d4];
+            void *base = M2C_FIELD(data_027e0058, void **, 0);
+            u8 idx;
+            u8 *region;
+            region = (u8 *)base + 0x5000;
+            idx = region[0x2d6];
+            if (idx != 0) {
+                void *elem = (u8 *)base + 0x59a4 + idx * 14;
+                u8 a = region[0x2d4];
                 u8 b = ((u8 *)elem)[0x0c];
                 u8 flag = (a != b) ? 1 : 0;
                 func_020d5d0c(elem, flag, 1);
                 return;
             }
             {
-                void *p2 = *(void **)(r1p + 0x2d0);
+                void *p2 = *(void **)(region + 0x2d0);
                 func_020d5aa0(((u8 *)p2)[1], ((u8 *)p2)[2], 1, 1, 1);
                 return;
             }
         }
     } else {
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52b4) = 6;
+        M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 6;
         func_ov000_0219c7c4(3);
         func_ov000_0219c7d8(0);
         func_020d6310();

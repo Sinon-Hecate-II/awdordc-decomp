@@ -263,12 +263,12 @@ void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
     if (p == NULL) return;
     v = M2C_FIELD(p, u8 *, 8);
     switch (v) {
-    case 4:
+    case 7:
         M2C_FIELD(p, s32 *, 0x24)++;
         func_0201bf58(p, 0);
         M2C_FIELD(p, u8 *, 8) = 9;
         break;
-    case 7:
+    case 8:
         M2C_FIELD(p, s32 *, 0x24)++;
         func_0201bf58(p, 0);
         M2C_FIELD(p, u8 *, 8) = 0;
@@ -277,7 +277,7 @@ void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
             func_02005e5c(M2C_FIELD(p, M2C_UNK *, 0));
         }
         break;
-    case 8:
+    case 4:
         M2C_FIELD(p, s32 *, 0x24)++;
         func_0201bf6c(p, 0);
         M2C_FIELD(p, u8 *, 8) = 6;
@@ -286,7 +286,6 @@ void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
         func_0201bf80(arg0, arg1, arg2, 0);
         break;
     }
-    return;
 }
 
 void func_0201c7e4(s32 a,s32 b) {

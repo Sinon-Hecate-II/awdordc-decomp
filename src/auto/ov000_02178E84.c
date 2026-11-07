@@ -139,7 +139,7 @@ if((terrain&31)==17&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6))return 1;
 }
 return 0;
 }
-#pragma opt_strength_reduction on
+#pragma opt_propagation off
 s32 func_ov000_02179b08(void *arg0) {
 s32 func_ov000_021a89a4(void *);s32 func_ov000_021a98a8(u32);
 extern u8 data_ov000_021b5c0f[];extern void *data_ov000_021df57c;extern void *data_ov000_021df580;
@@ -149,9 +149,9 @@ id=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;if(!(data_ov000_021b5c0f[id*0x70]&7))re
 if((u32)(M2C_FIELD(arg0,u8 *,11)<<24)>>31)return 110;
 if(func_ov000_021a98a8(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
 if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(data_ov000_021df57c,u8 *,15);else scale=M2C_FIELD(data_ov000_021df57c,u8 *,14);
-value*=scale;if(value>110)value=110;return value;
+value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }
-
+#pragma opt_propagation reset
 s32 func_ov000_02179be0(u8 *arg0,void *arg1,u32 arg2) {
 s32 func_ov000_021a98a8(u32);
 extern void **data_027e0058;

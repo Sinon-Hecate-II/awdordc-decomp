@@ -76,8 +76,8 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   s32 func_02037214(s32, s32, void *, s32);
   s32 func_02068c34(s32);
   int func_02034908(s32, void *, s32);
-  s32 ctr = *(s32 *)((u8 *)obj + 0x1000 + 0x9f4);
-  Buffer02034164 *buf = (Buffer02034164 *)((u8 *)obj + 0x1f8 + 0x1800);
+  s32 ctr = *(s32 *)((u8 *)obj + 0x19f4);
+  Buffer02034164 *buf = (Buffer02034164 *)obj->buffer;
   char *fmtstr;
   s32 first;
   s32 lenf;
@@ -86,12 +86,10 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   s32 room;
   s32 r;
 
-  if (ctr == 0)
-    fmtstr = (char *)&data_020fb680;
-  else
-    fmtstr = (char *)&data_020fb684;
+  if (ctr == 0) fmtstr = (char *)&data_020fb680;
+  else fmtstr = (char *)&data_020fb684;
 
-  *(s32 *)((u8 *)obj + 0x1000 + 0x9f4) = ctr + 1;
+  *(s32 *)((u8 *)obj + 0x19f4) = ctr + 1;
 
   first = func_02037214(a, b, (void *)0, 0);
 
@@ -99,7 +97,7 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 
   lenn = func_02068c34((s32)name);
 
-  total = first + (lenf - 2 + lenn);
+  total = first + ((lenf - 2) + lenn);
 
   room = buf->end - buf->current;
 

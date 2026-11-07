@@ -226,12 +226,12 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
 s32 func_02062010(void *p){
 s32 func_02061fb8(void*,s32);void func_02068c50(void*,void*);void func_020675e4(void*,void*,...);s32 func_020498e4(void*);void *func_02021768(void*);s32 func_020496a4(s32,s32,s32);s32 func_02049740(s32,void*,s32);s32 func_020496b8(s32);
 extern void *data_0213e4bc;extern u8 data_02100160[];
-u8 buf[128];u8 addr[8];s32 n,fd;void *host;
+u8 buf[128];Addr617BC addr;s32 n,fd;void *host;
 n=func_02061fb8((u8*)p+12,20);
 if(M2C_FIELD(&data_0213e4bc,void**,4))func_02068c50(buf,M2C_FIELD(&data_0213e4bc,void**,4));
 else func_020675e4(buf,data_02100160,(u8*)p+12,n);
-addr[1]=2;M2C_FIELD(addr,u16*,2)=0xee70;M2C_FIELD(addr,u32*,4)=func_020498e4(buf);
-if(M2C_FIELD(addr,u32*,4)==-1){host=func_02021768(buf);if(!host)return 2;Copy617BC((u8*)&M2C_FIELD(addr,u32*,4),*M2C_FIELD(host,u8***,12));}
+addr.family=2;addr.port=0xee70;addr.addr=func_020498e4(buf);
+if(addr.addr==-1){host=func_02021768(buf);if(!host)return 2;Copy617BC((u8*)&addr.addr,*M2C_FIELD(host,u8***,12));}
 fd=M2C_FIELD(p,s32*,0x4b0);
 if(fd==-1){fd=func_020496a4(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
 if(func_02049740(fd,&addr,8)==0)return 0;

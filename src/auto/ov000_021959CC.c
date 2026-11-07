@@ -438,84 +438,27 @@ func_ov000_0218a9ac(cand[0],cand[1]);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
-    s32 func_ov000_021a9934(u32, u32);
-    void func_ov000_02179be0(void);
-    void func_ov000_02179d3c(void);
-    s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
-    extern void **gCurrentMap;
-    extern u8 **data_ov000_021df580;
-
-    u8 *ptr;
-    u8 *base;
-    u8 *unit;
-    u32 kind;
-    s32 result;
-    s16 savedCol;
-    s16 savedRow;
-    s32 i;
-    s32 rows;
-    s32 cols;
-    s32 j;
-    s8 *grid;
-    s8 *p;
-    u16 rowTile;
-    u8 tileByte;
-
-    ptr = (u8 *)*data_ov000_021df580;
-    if (!(*(u16 *)(ptr + 0xa) & 0x04)) {
-        return;
-    }
-
-    base = (u8 *)*gCurrentMap;
-    unit = (u8 *)*(void **)(base + 0x52d0);
-    kind = (u32)(unit[0] << 26) >> 26;
-    if (func_ov000_021a9934(0x18, kind) == 0) {
-        return;
-    }
-
-    func_ov000_02179be0();
-    func_ov000_02179d3c();
-
-    result = 0x7fff;
-    base = (u8 *)*gCurrentMap;
-    rows = *(u16 *)(base + 0x5146);
-    if (rows > 0) {
-        cols = *(u16 *)(base + 0x5144);
-        for (i = 0; i < rows; i++) {
-            if (cols > 0) {
-                grid = (s8 *)*(void **)(base + 0x52e8 + i * 4);
-                rowTile = *(u16 *)(base + i * 2 + 0x3758);
-                p = grid;
-                j = i;
-                do {
-                    if (*p < 0) {
-                        break;
-                    }
-                    tileByte = base[rowTile + j + 0x1420];
-                    if (tileByte & 0xe0) {
-                        break;
-                    }
-                    tileByte &= 0x1f;
-                    if (tileByte != 0x13) {
-                        break;
-                    }
-                    result = grid[j];
-                    savedCol = (s16)j;
-                    savedRow = (s16)i;
-                    j = j + 1;
-                    p = p + 1;
-                } while (j < cols);
-            }
-        }
-    }
-
-    if (result == 0x7fff) {
-        return;
-    }
-    if (func_ov000_0217e6bc(savedCol, savedRow) == 0) {
-        return;
-    }
-    func_ov000_0218a9ac(savedCol, savedRow);
+s32 func_ov000_021a9934(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void func_ov000_0218a9ac(s16,s16);
+extern void **gCurrentMap;extern u8 **data_ov000_021df580;
+s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y;u8 *base; s8 *grid,*p;
+if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<29)>>29)&4))return;
+if(!func_ov000_021a9934(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
+func_ov000_02179be0();func_ov000_02179d3c();
+base=*gCurrentMap;
+y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {
+cols=M2C_FIELD(base,u16 *,0x5144);
+if(cols<=0)goto rowend;
+grid=M2C_FIELD(base+y*4,s8 **,0x52e8);p=grid;
+x=0; do {
+if(*p<0)goto next;
+t=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+base+x,u8 *,0x1420);
+if((t&0xe0)==0 && (t&31)==19) {
+best=grid[x];sx=x;sy=y;
+}
+next: x++;p++;
+}while(x<cols); rowend:y++; }while(y<(s32)M2C_FIELD(base,u16 *,0x5146));
+if(best==0x7fff)return;
+if(!func_ov000_0217e6bc(sx,sy))return;
+func_ov000_0218a9ac(sx,sy);
 }
 

@@ -452,7 +452,7 @@ u8 func_020b3290(void *arg0) {
     if ((s32) var_r7 >= (s32) temp_r0) {
         var_r7 = temp_r2;
     }
-    temp_r5 = M2C_FIELD(arg0, volatile s16 *, 0xC);
+    temp_r5 = M2C_FIELD(arg0, volatile s16 *, 0xC) + 0 * var_r7;
     temp_r1 = M2C_FIELD(arg0, volatile s16 *, 0xC);
     if (temp_r2 == (temp_r1 + (s16) var_r7)) {
         return 0U;

@@ -137,39 +137,26 @@ M2C_FIELD(p,s16 *,18)=delta*factor;
 }
 if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))func_0208fe30(0x10019);
 }
-#pragma opt_propagation reset
-M2C_UNK func_020b38d0(M2C_UNK arg0) {
-    M2C_UNK func_020b3038(M2C_UNK);
-    M2C_UNK func_0208fe30(M2C_UNK);
-    u8 var_r2;
-    u8 var_r0;
-    s8 var_r1;
-    s16 var_r4;
-    s16 var_r5;
-    s16 prod;
-    s16 newval;
-
-    if (M2C_FIELD(arg0, s16 *, 0x12) != 0)
-        return 1;
-    var_r2 = M2C_FIELD(arg0, u8 *, 0x5);
-    var_r0 = M2C_FIELD(arg0, u8 *, 0x4);
-    var_r1 = M2C_FIELD(arg0, s8 *, 0x24);
-    var_r4 = M2C_FIELD(arg0, s16 *, 0xc);
-    prod = (s16)(var_r0 * var_r2);
-    var_r5 = M2C_FIELD(arg0, s16 *, 0x8);
-    if (var_r1 < 0)
-        return prod;
-    if (prod <= var_r1)
-        return prod;
-    newval = (s16)(var_r2 * var_r4 + var_r1);
-    if (newval == var_r5)
-        return newval;
-    func_020b3038(arg0);
-    if (var_r4 == M2C_FIELD(arg0, s16 *, 0xc) && var_r5 == M2C_FIELD(arg0, s16 *, 0x8))
-        return M2C_FIELD(arg0, s16 *, 0x8);
-    return func_0208fe30(0x10019);
+#pragma opt_propagation off
+void func_020b38d0(s32 arg0) {
+M2C_UNK func_020b3038(s32,s16);
+M2C_UNK func_0208fe30(s32);
+u8 var_r2,var_r0; s8 var_r1; s16 var_r4,var_r5,prod,newval;
+if ((u8)(M2C_FIELD(arg0,s16 *,0x12)!=0)) return;
+var_r2=M2C_FIELD(arg0,u8 *,5);
+var_r0=M2C_FIELD(arg0,u8 *,4);
+var_r1=M2C_FIELD(arg0,s8 *,0x24);
+var_r4=M2C_FIELD(arg0,s16 *,0xc);
+prod=(s16)(var_r0*var_r2);
+var_r5=M2C_FIELD(arg0,s16 *,8);
+if(var_r1<0) return;
+if(prod<=var_r1) return;
+newval=(s16)(var_r2*var_r4+var_r1);
+if(newval!=var_r5)func_020b3038(arg0,newval);
+if(var_r4==M2C_FIELD(arg0,s16 *,0xc) && var_r5==M2C_FIELD(arg0,s16 *,8))return;
+func_0208fe30(0x10019);
 }
-
+#pragma opt_propagation reset
 /* Returns whether tile column x is currently visible in the camera viewport. */
 u8 func_020b3960(void *camera, int x) {
 int func_0207c8ec(int,int);
@@ -189,7 +176,7 @@ return scroll<=tile && tile<scroll+total;
 void func_020b3a58(M2C_UNK arg0) {
     M2C_UNK func_02088044(M2C_UNK);
     M2C_UNK func_020b316c();
-    M2C_UNK func_020b38d0(M2C_UNK);
+
     func_020b316c();
     func_02088044(arg0 + 0x18);
     func_020b35d4(arg0);

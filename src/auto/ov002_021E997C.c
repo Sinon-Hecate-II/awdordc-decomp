@@ -253,7 +253,7 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     extern u8 data_ov002_021f30f4[];
     extern u8 data_ov002_021f306e[];
     void *tmp, *p, *base2;
-    u8 idx, idx2, e;
+    s32 idx, idx2;u8 e;
     u16 a, b, c, d;
     s16 x, y, z;
 
@@ -276,7 +276,8 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     a = M2C_FIELD(p, u16 *, 0xaa);
     b = M2C_FIELD(p, u16 *, 0xac);
     base2 = data_ov002_021f306e;
-    c = M2C_FIELD(base2, u16 *, idx * 0x64 + idx2 * 0x2);
+    base2=(u8 *)base2+idx*0x64;
+    c=M2C_FIELD(base2,u16 *,idx2*2);
     d = M2C_FIELD(p, u16 *, 0xae);
     e = (u8)((s32)idx2 + 1);
     x = (s16)(arg1 + M2C_FIELD(p, s16 *, 0xa4));

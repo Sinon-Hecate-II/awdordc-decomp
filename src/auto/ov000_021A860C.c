@@ -166,7 +166,7 @@ return 0;
 #pragma opt_strength_reduction reset
 s32 func_ov000_021a8d7c(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;u8 func_ov000_021a8fc0(s32);
-s32 j,i,right,left,top,bottom,d;void *base;
+s32 i,j,right,left,top,bottom,d;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;

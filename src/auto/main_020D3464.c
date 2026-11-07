@@ -188,7 +188,8 @@ void func_020d3830(void) {
         case 2:
             func_ov010_022282d4(6);
             M2C_FIELD(&data_02168f08, u8 *, 5) = 0;
-            M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = M2C_FIELD(*gCurrentMap, u16 *, 0x52B2);
+            { u16 t = M2C_FIELD(*gCurrentMap, u16 *, 0x52B2);
+              M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = t; }
             break;
         case 3:
         case 4:

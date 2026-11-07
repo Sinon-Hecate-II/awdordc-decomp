@@ -1,6 +1,7 @@
 /* 31 functions from 0x020CC9C8 to 0x020CD8A8 (main), found by ds-decomp. */
 #include "common.h"
 
+
 void func_020cc9c8(void *obj) {
  extern s32 *gCurrentMap;s32 func_0207cfb8(s32);s32 func_0207cee0(s32);s32 func_0207cf48(s32);void func_0208fe30(s32);
  s32 oldH,oldW,newH,newW,x,y,width,height,map,dx,dy;
@@ -253,25 +254,16 @@ return 0;
 
 void func_020cd544(s32);
 void func_020cd480(s32 a){
-    extern u16 data_02168f14;
-    extern s32 *gCurrentMap;
-    extern M2C_UNK data_0212b804;
-    extern u32 data_0215d8a0[];
-    u32 v;
-    func_02088634();
-    if (func_020e4b28(a)) { func_020cd544(a); return; }
-    func_020e49ec();
-    data_0215d8a0[0] = (data_0215d8a0[0] & ~15) | (a & 15);
-    v = data_0215d8a0[0] & ~240;
-    *(volatile u32 *)data_0215d8a0 = v;
-    data_02168f14 &= ~7;
-    v &= ~0xff0000;
-    v &= ~0xff00;
-    data_0215d8a0[1] = (u16)(data_0215d8a0[1] & 0xffff0000);
-    data_0215d8a0[0] = v & ~0xff000000;
-    M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 161;
-    func_02086810(161, 1);
-    func_01ffa3dc(&data_0212b804, 7);
+extern u16 data_02168f14;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 data_0215d8a0[];u32 v;
+func_02088634();if(func_020e4b28(a)){func_020cd544(a);return;}
+func_020e49ec();data_0215d8a0[0]=(data_0215d8a0[0]&~15)|(a&15);
+v=data_0215d8a0[0]&~240;*(volatile u32 *)data_0215d8a0=v;
+data_02168f14 &= ~7;
+v&=~0xff0000;
+v&=~0xff00;
+data_0215d8a0[1]=(u16)(data_0215d8a0[1]&0xffff0000);
+data_0215d8a0[0]=v&~0xff000000;
+M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;func_02086810(161,1);func_01ffa3dc(&data_0212b804,7);
 }
 
 void func_020cd544(s32 arg0) {

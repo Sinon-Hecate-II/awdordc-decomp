@@ -322,9 +322,9 @@ void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
 s32 func_020a7d38(void*);
-
-p[0]=a!=M2C_FIELD(*data_027e0058,u8**,0x52d0);
-p[1]=!p[0];
+void func_ov002_021e7d34(void*,s32,u32,u32,s32);
+p[1]=(a==M2C_FIELD(*data_027e0058,u8**,0x52d0));
+p[0]=!p[1];
 switch(M2C_FIELD(*data_027e0058,u8*,0x5157)){
 case 3: case 4: case 6:p[3]=1;break;
 case 1:p[3]=2;break;
@@ -344,25 +344,25 @@ void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void func_ov002_021e85e8(void *p) {
-M2C_UNK func_ov002_021e3f2c(void *, u8);
-extern M2C_UNK data_ov002_021f3124;
-extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
-extern u8 *data_ov002_021f30f4[];
-s32 i;
-u8 flag;
-flag = (u8)(p != &data_ov002_021f3124);
-M2C_FIELD(p, u8 *, 0x27) = flag;
-for (i = 0; i < 5; i++) ((ObjectSlots *)p)->slots[i] = 0;
-M2C_FIELD(p, u8 *, 0x2A) = data_ov002_021f2fa9[M2C_FIELD(p, u8 *, 0x27) * 104];
-M2C_FIELD(p, u8 *, 0x2B) = (((data_ov002_021f30fd[M2C_FIELD(p, u8 *, 0x27) * 24] + 9) / 10 + 1) & ~1U) >> 1;
-if (M2C_FIELD(p, u8 *, 0x2A) && M2C_FIELD(p, u8 *, 0x2B)) M2C_FIELD(p, u8 *, 0x2B) = 1;
-M2C_FIELD(p, u16 *, 0x1C) = 256;
-M2C_FIELD(p, u16 *, 0x1E) = 0; M2C_FIELD(p, u16 *, 0x20) = 0; M2C_FIELD(p, u16 *, 0x22) = 0; M2C_FIELD(p, u16 *, 0x24) = 0;
-M2C_FIELD(p, s8 *, 0x26) = -1;
-if (M2C_FIELD(*(u8 **)((u8 *)data_ov002_021f30f4 + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
-M2C_FIELD(p, u8 *, 0x28) = 0; else M2C_FIELD(p, u8 *, 0x28) = 1;
-M2C_FIELD(p, u8 *, 0x29) = 0;
-func_ov002_021e3f2c(p, M2C_FIELD(p, u8 *, 0x27));
+    M2C_UNK func_ov002_021e3f2c(void *, u8);
+    extern M2C_UNK data_ov002_021f3124;
+    extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
+    extern u8 *data_ov002_021f30f4[];
+    s32 i;
+    u8 flag;
+    if (p != &data_ov002_021f3124) flag = 1; else flag = 0;
+    M2C_FIELD(p, u8 *, 0x27) = flag;
+    for (i = 0; i < 5; i++) ((ObjectSlots *)p)->slots[i] = 0;
+    M2C_FIELD(p, u8 *, 0x2A) = data_ov002_021f2fa9[M2C_FIELD(p, u8 *, 0x27) * 104];
+    M2C_FIELD(p, u8 *, 0x2B) = (((data_ov002_021f30fd[M2C_FIELD(p, u8 *, 0x27) * 24] + 9) / 10 + 1) & ~1U) >> 1;
+    if (M2C_FIELD(p, u8 *, 0x2A) && M2C_FIELD(p, u8 *, 0x2B)) M2C_FIELD(p, u8 *, 0x2B) = 1;
+    M2C_FIELD(p, u16 *, 0x1C) = 256;
+    M2C_FIELD(p, u16 *, 0x1E) = 0; M2C_FIELD(p, u16 *, 0x20) = 0; M2C_FIELD(p, u16 *, 0x22) = 0; M2C_FIELD(p, u16 *, 0x24) = 0;
+    M2C_FIELD(p, s8 *, 0x26) = -1;
+    if (M2C_FIELD(*(u8 **)((u8 *)data_ov002_021f30f4 + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
+    M2C_FIELD(p, u8 *, 0x28) = 0; else M2C_FIELD(p, u8 *, 0x28) = 1;
+    M2C_FIELD(p, u8 *, 0x29) = 0;
+    func_ov002_021e3f2c(p, M2C_FIELD(p, u8 *, 0x27));
 }
 
 #pragma opt_strength_reduction off
@@ -381,7 +381,7 @@ void func_ov002_021e8738(void *p) {
     extern u8 data_ov002_021f2f44[];
     extern u8 data_ov002_021ea704[];
     extern u8 data_ov002_021f2f1c[];
-    extern u8 *data_ov002_021f30f4[];
+    extern M2C_UNK gPlayerSettings;
     u8 *tableBase;
     void *alloc;
     s32 owner;
@@ -410,7 +410,7 @@ loop:
         M2C_FIELD(p, void **, 0x08 + idx * 4) = alloc;
         func_ov002_021e8d0c(alloc, (s8)owner, (s8)idx);
         func_ov002_021e997c(alloc);
-        tableBase = M2C_FIELD(M2C_FIELD((void *)((u8 *)data_ov002_021f30f4 + owner * 0x18), void **, 0x04), void **, 0x28);
+        tableBase = M2C_FIELD(M2C_FIELD((void *)((u8 *)&gPlayerSettings + owner * 0x18), void **, 0x04), void **, 0x28);
         func_ov002_021e8ff0(M2C_FIELD(p, void **, 0x08 + idx * 4),
             (s16)(M2C_FIELD(tableBase, s16 *, idx * 8 + 0) - 0x80),
             M2C_FIELD(tableBase, s16 *, idx * 8 + 2),

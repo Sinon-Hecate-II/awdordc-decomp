@@ -20,7 +20,8 @@ M2C_UNK func_02058170(M2C_UNK,M2C_UNK *,M2C_UNK *);
 M2C_UNK func_02058620(M2C_UNK,M2C_UNK,M2C_UNK *);
 extern M2C_UNK data_020fdfb4;
 extern M2C_UNK data_020fdfdc;
-s8 *buf = (s8*)arg6; s32 r; s32 e;
+s8 *buf; s32 r; s32 e;
+buf=(s8 *)arg6;
 r=func_02049810(arg1,arg2,arg3,0);
 if(r==-1) {
 e=func_02049900(arg1);
@@ -357,21 +358,16 @@ void func_02050744(void **arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_02050838(void *arg0,volatile Unk02050838Pair pair,s32 c,s32 arg4,u32 arg5) {
-void *func_02037794(s32);
-extern M2C_UNK data_020fe1ac;
-void *base=M2C_FIELD(arg0,void **,0);
-void *p=func_02037794(24);
-void *q;
-void *tmp;
-if(!p) {func_02058644(arg0,&data_020fe1ac);return 1;}
+void *func_02037794(s32);extern M2C_UNK data_020fe1ac;
+void *base=M2C_FIELD(arg0,void **,0);void *p=func_02037794(24);void *q;s32 tmp;
+if(!p){func_02058644(arg0,&data_020fe1ac);return 1;}
 M2C_FIELD(p,s32 *,0)=pair.unk_0;M2C_FIELD(p,s32 *,4)=pair.unk_4;M2C_FIELD(p,s32 *,8)=c;
-tmp=arg4?M2C_FIELD(arg4,void **,24):NULL;
+tmp=arg4?M2C_FIELD(arg4,s32 *,24):0;
 M2C_FIELD(p,s32 *,12)=arg5;
-M2C_FIELD(p,void **,16)=tmp;
+M2C_FIELD(p,s32 *,16)=tmp;
 M2C_FIELD(p,s32 *,20)=0;
 if(!M2C_FIELD(base,void **,0x438))M2C_FIELD(base,void **,0x438)=p;
-q=M2C_FIELD(base,void **,0x43c);
-if(q)M2C_FIELD(q,void **,20)=p;
+q=M2C_FIELD(base,void **,0x43c);if(q)M2C_FIELD(q,void **,20)=p;
 M2C_FIELD(base,void **,0x43c)=p;return 0;
 }
 

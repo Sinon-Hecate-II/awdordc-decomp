@@ -503,8 +503,8 @@ switch(arg0) {
 case 0:return 0x23e0000;
 case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((func_020062bc()&3)==1)return 0;else goto mainram;} else return 0x2700000;
 case 3:mainram:return 0x2000000;
-case 4:{s32 b; u32 c,e; s32 a; a=(s32)&data_027e0000; b=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
-if((void *)b==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(b<0)return 0x27e15e0-b;return c-b;}
+case 4:{s32 a=(s32)&data_027e0000; s32 c; s32 e; arg0=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
+if(arg0==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(arg0<0)return 0x27e15e0-arg0;return c-arg0;}
 case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
 }}
 

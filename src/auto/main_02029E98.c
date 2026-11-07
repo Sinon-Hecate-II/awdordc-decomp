@@ -102,53 +102,55 @@ void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
     return arg0;
 }
 
-s32 func_0202a050(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 func_0202a050(void *arg0, void *arg1, s32 arg2, s32 arg3, u16 arg4) {
     void func_02029f2c(void *, void *);
     void *func_02029fb0(void *, s16);
     void *func_02029f58(void *, void *);
     void *func_02029f80(void *, void *, void *);
     M2C_UNK func_02007e54(M2C_UNK, u32, s32);
-    s32 sp[6];
+    s32 a[2];
+    s32 b[2];
+    s32 c[2];
+    void *node;
+    void *p;
     s32 temp_r3;
     s32 temp_r5;
-    s32 var_r4;
-    void *temp_r0;
 
-    func_02029f2c(sp, arg1);
-    temp_r3 = sp[1];
+    func_02029f2c(a, arg1);
+    temp_r3 = a[1];
     temp_r5 = arg2 - 0x10;
-    sp[1] = temp_r5;
-    sp[2] = temp_r3;
-    sp[3] = arg3 + arg2;
-    var_r4 = func_02029f58(arg0, arg1);
-    if ((u32)(sp[1] - sp[0]) < 0x14U) {
-        sp[1] = sp[0];
+    a[1] = temp_r5;
+    b[1] = temp_r3;
+    b[0] = arg3 + arg2;
+    node = func_02029f58(arg0, arg1);
+    if ((u32)(a[1] - a[0]) < 0x14U) {
+        a[1] = a[0];
     } else {
-        var_r4 = func_02029f80(arg0, func_02029fb0(sp, 0x4652), var_r4);
+        node = func_02029f80(arg0, func_02029fb0(a, 0x4652), node);
     }
-    if ((u32)(sp[2] - sp[3]) < 0x14U) {
-        sp[3] = sp[2];
+    if ((u32)(b[1] - b[0]) < 0x14U) {
+        b[0] = b[1];
     } else {
-        func_02029f80(arg0, func_02029fb0(&sp[3], 0x4652), var_r4);
+        node = func_02029f80(arg0, func_02029fb0(b, 0x4652), node);
     }
     if ((u8)M2C_FIELD(arg0, s32 *, -4) & 1) {
-        func_02007e54(0, sp[1], sp[3] - sp[1]);
+        func_02007e54(0, a[1], b[0] - a[1]);
     }
-    sp[4] = temp_r5;
-    sp[5] = sp[3];
-    temp_r0 = func_02029fb0(&sp[4], 0x5544);
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) & ~0x8000);
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) | (u16)(arg4 << 15));
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) & ~0x7F00);
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) | (u16)(((u32)temp_r0 - sp[1]) << (8+1)));
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) & ~0xFF);
-    M2C_FIELD(temp_r0, u16 *, 2) = (u16)(M2C_FIELD(temp_r0, u16 *, 2) | (u8)M2C_FIELD(arg0, u16 *, 0x10));
-    func_02029f80((void *)((char *)arg0 + 8), temp_r0, M2C_FIELD(arg0, s32 *, 0xC));
+    c[0] = temp_r5;
+    c[1] = b[0];
+    p = func_02029fb0(c, 0x5544);
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0x8000);
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | ((arg4 << 15) & 0x8000));
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0x7F00);
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | (((u16)((u32)p - a[1]) << 8) & 0x7F00));
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) & ~0xFF);
+    M2C_FIELD(p, u16 *, 2) = (u16)(M2C_FIELD(p, u16 *, 2) | (u8)M2C_FIELD(arg0, u16 *, 0x10));
+    func_02029f80((void *)((char *)arg0 + 8), p, M2C_FIELD(arg0, s32 *, 0xC));
     return arg2;
 }
 
 s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_0202a050(void *, void *, s32, s32, s32);
+    s32 func_0202a050(void *, void *, s32, s32, u16);
     s32 base, aligned;
     s32 first;
     void *node;
@@ -178,7 +180,7 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
- s32 func_0202a050(void *, void *, s32, s32, s32);
+ s32 func_0202a050(void *, void *, s32, s32, u16);
  s32 base, aligned;
  s32 first;
  void *node;
@@ -450,14 +452,14 @@ s32 func_0202a7f8(void *arg0, M2C_UNK arg1, void *arg2) {
     M2C_UNK func_0200b118(void *);
     s32 func_0200b2bc(void *, void *, s32, s32, s32, s32, s32, s32);
     s32 func_02068c34(M2C_UNK);
-    s32 temp_r10;
-    s32 var_r0;
-    void *var_r8;
     void *var_r7;
+    void *var_r8;
+    void *var_r9;
     void *temp_r4;
+    s32 var_r0;
     void *var_r1;
     u16 temp_r2;
-    void *var_r9;
+    s32 temp_r10;
 
     var_r7 = NULL;
     var_r8 = NULL;
@@ -471,7 +473,7 @@ s32 func_0202a7f8(void *arg0, M2C_UNK arg1, void *arg2) {
     if ((s32) temp_r2 > 0) {
         do {
             temp_r10 = M2C_FIELD(var_r1, s32 *, 0);
-            switch (temp_r10) {                     /* irregular */
+            switch (temp_r10) {
             case 0x464E5442:
                 var_r8 = var_r1;
                 break;

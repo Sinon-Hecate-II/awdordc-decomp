@@ -14,13 +14,13 @@ s32 func_020a67fc(s32 a, s32 b, s32 c) {
     void func_02091c20(s32, s32);
     void func_020cfd28(void);
     extern void **gCurrentMap;
-    s32 r, cost, id;
+    s32 r, cost;u16 id;
     void *p;
 
     cost = func_020d2d18(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), c) * 10;
     p = *gCurrentMap;
     id = M2C_FIELD(p, u16 *, 0x52a4);
-    if (M2C_FIELD((u8 *) p + (u32) (id * 0x8C), s32 *, 0x67a4) < cost) {
+    if (M2C_FIELD((u8 *) p + 140u * id, s32 *, 0x67a4) < cost) {
         return 0;
     }
     r = func_020a6658(a, b, c);

@@ -220,15 +220,19 @@ void func_ov000_02175ed8(void *arg0) {
     extern s16 data_ov000_021deb46[];
     void *temp_r4;
     s16 temp_r6;
+    s32 source;
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
     temp_r6 = data_ov000_021deb46[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x4)];
     if (temp_r6 != -1) {
-        func_02007ef4(func_020e3438(3) + 0x4E0 * temp_r6, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2880);
+        source=func_020e3438(3);
+        func_02007ef4(source + temp_r6 * 0x4E0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2880);
     }
-    func_02007ef4(func_020e3438(4) + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x58), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2D60);
-    func_02007ef4(func_020e3438(4) + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
+    source=func_020e3438(4);
+    func_02007ef4(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x58), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2D60);
+    source=func_020e3438(4);
+    func_02007ef4(source + 0x1C0 * M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), volatile s32 *, 0x5C), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F20);
     gCur3DSpriteEngine = temp_r4;
 }
 #pragma opt_strength_reduction off

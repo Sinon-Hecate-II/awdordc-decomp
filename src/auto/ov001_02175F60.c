@@ -40,13 +40,10 @@ void func_ov001_02175f8c(void *arg0) {
     buf.b = func_ov001_02175f48(data_ov001_02193d58, 0);
     buf.c = func_ov001_02175f48(data_ov001_02193d58, 1);
     buf.g = (u8)func_ov001_02175e34();
-    func_ov001_02188c78(data_ov001_02193d50, &buf);
-    if (func_ov001_02188ec4() != 0) {
-        goto skip;
-    }
-    func_02007958();
+    func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
+    if (func_ov001_02188ec4() == 0) func_02007958();
     M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = func_ov001_0218c884(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
-skip:;
+
 }
 
 void func_ov001_02176078(void) {

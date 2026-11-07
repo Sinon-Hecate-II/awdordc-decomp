@@ -24,11 +24,10 @@ void func_ov011_0222134c(void *arg0) {
     extern s32 data_027e01d8;
     extern M2C_UNK data_ov011_02227f08;
     typedef struct { u16 a, b, c, d, e, f; } T;
-    T first;
+    T first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
     T second;
     s32 temp_r4;
-    first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
-    second = M2C_FIELD(&data_ov011_02227f08, T *, 0x6);
+    second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
     temp_r4 = data_027e01d8;
     data_027e01d8 = data_027e00c8;
     func_020822b8((u16 *)&first);

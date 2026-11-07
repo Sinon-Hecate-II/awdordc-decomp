@@ -5,6 +5,7 @@
 void func_0200fc58(void) {
     extern void *data_0212fde0;
     extern void *data_0212fd80;
+    extern u32 data_02130400[];
     void func_02007e98(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020067e0(void *, u32);
     void func_02008048(void *, void *, u32);
@@ -14,47 +15,44 @@ void func_0200fc58(void) {
     void func_0200fd90(s32);
     void func_02010cc4(void);
     void func_02010c90(s32, s32, s32);
-    extern u32 data_02130400[];
 
-    void *p = &data_0212fde0;
+    void *base = &data_0212fde0;
+    u16 v;
+    s32 n;
 
-    *(s32 *)((u8 *)p + 8) = -3;
-    *(s32 *)((u8 *)p + 0xC) = 0;
-    *(s32 *)((u8 *)p + 0x18) = 0;
-    *(void **)((u8 *)p) = &data_0212fd80;
+    *(s32 *)((u8 *)base + 8) = -3;
+    *(s32 *)((u8 *)base + 0xC) = 0;
+    *(s32 *)((u8 *)base + 0x18) = 0;
+    *(void **)((u8 *)base + 0x0) = &data_0212fd80;
 
     func_02007e98(0, &data_0212fd80, 0x60);
     func_020067e0(&data_0212fd80, 0x60);
 
-    *(s32 *)((u8 *)p + 0x118) = -1;
-    *(s32 *)((u8 *)p + 0x11C) = -1;
+    *(s32 *)((u8 *)base + 0x118) = -1;
+    *(s32 *)((u8 *)base + 0x11C) = -1;
 
-    {
-        u16 v = *(volatile u16 *)0x27ffc40;
-        s32 n = (v == 2) ? 1 : 0;
-        if (n == 0) {
-            func_02008048((void *)0x27ffe00, (void *)0x27ffa80, 0x160);
-            *(s32 *)((u8 *)p + 0x108) = 4;
-            *(s32 *)((u8 *)p + 0x14) = 0;
-            *(s32 *)((u8 *)p + 0x10) = 0;
-            *(s32 *)((u8 *)p + 0x110) = 0;
-            *(s32 *)((u8 *)p + 0x10C) = 0;
-            func_02005ac0((u8 *)p + 0x44, (void *)func_02010cc4, 0,
-                          (u8 *)data_02130400, 0x400, 4);
-            func_02005e5c((u8 *)p + 0x44);
-        }
+    v = *(volatile u16 *)0x27ffc40;
+    n = (v == 2) ? 1 : 0;
+    if (n == 0) {
+        func_02008048((void *)0x27ffe00, (void *)(0x27ffe00 - 0x380), 0x160);
+        *(s32 *)((u8 *)base + 0x108) = 4;
+        *(s32 *)((u8 *)base + 0x14) = 0;
+        *(s32 *)((u8 *)base + 0x10) = 0;
+        *(s32 *)((u8 *)base + 0x110) = 0;
+        *(s32 *)((u8 *)base + 0x10C) = 0;
+        func_02005ac0((u8 *)base + 0x44, (void *)func_02010cc4, 0,
+                      (u8 *)data_02130400, 0x400,
+                      *(s32 *)((u8 *)base + 0x108));
+        func_02005e5c((u8 *)base + 0x44);
     }
 
     func_02009e40(0xB, (void *)func_02010c90);
 
-    {
-        u16 v = *(volatile u16 *)0x27ffc40;
-        s32 n = (v == 2) ? 1 : 0;
-        if (n != 0) {
-            return;
-        }
+    v = *(volatile u16 *)0x27ffc40;
+    n = (v == 2) ? 1 : 0;
+    if (n == 0) {
+        func_0200fd90(1);
     }
-    func_0200fd90(1);
 }
 
 s32 func_0200fd68(void) {

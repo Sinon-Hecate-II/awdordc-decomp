@@ -363,11 +363,12 @@ if(func_020a8478(iter[4],iter[5])){
 map=*data_027e0058;
 idx=M2C_FIELD(M2C_FIELD(map+2*iter[5],u16 *,0x3758)+(map+iter[4]),u8 *,0x508);
 base=map+0x59a4;
-if(!func_020a80fc((s32)unit,(s32)(base+idx*14)))break;
+if(!func_020a80fc((s32)unit,(s32)(base+idx*14)))goto done;
 func_020a7f18(base+idx*14,1);
 if(func_020a8164((s32)unit,(s32)(base+idx*14)))func_020a7f18(unit,1);
 }
 }
+done:;
 }
 
 void func_020a8050(void *p, s16 *xy, s32 unused, s8 *dir) {
@@ -505,17 +506,20 @@ while (n > 0) {
 
 #pragma opt_peephole off
 void func_020a83e4(u8 *p,s8 *dir) {
-loop: {
-switch(*dir++) {
-case 9:dir++;goto loop;
-case -1:case 4:return;
-case 0:p[1]--;goto loop;
-case 1:p[1]++;goto loop;
-case 3:p[2]--;goto loop;
-case 2:p[2]++;goto loop;
-case 10:default:goto loop;
-}
-}
+    for(;;) {
+        switch(*dir++) {
+            case 9: dir++; break;
+            case -1:
+            case 4: return;
+            case 0: p[1]--; break;
+            case 1: p[1]++; break;
+            case 3: p[2]--; break;
+            case 2: p[2]++; break;
+            case 10:
+            default: break;
+        }
+    }
+    __builtin_unreachable();
 }
 #pragma opt_peephole reset
 void func_020a8474(void) {

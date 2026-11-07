@@ -353,7 +353,8 @@ void func_ov000_0219d220(void) {
             table = (u8 *)obj + 0x59A4;
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
-                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1) {
+                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1)
+                    && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1) {
                     u32 nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
                     if (nibble != 0 && func_ov000_021a8984((s32)nibble) != 0) {
                         out = data_ov000_021df658;

@@ -229,7 +229,7 @@ void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
     temp_r2 = (s32 *) *var_r4;
     if (((u8 *) arg1)[(s32) &data_ov001_0218f8ee + arg0 * 3] != 0) {
         func_ov001_0218a55c(0);
-        M2C_FIELD(*var_r4, s32 *, 0) = (s32) ((M2C_FIELD(*var_r4, s32 *, 0) & 0xFE00FF00) | ((u32) (sp[arg0] << 0x17) >> 7));
+        M2C_FIELD(*var_r4, s32 *, 0) = (s32) (((u32) (sp[arg0] << 0x17) >> 7) | (M2C_FIELD(*var_r4, s32 *, 0) & 0xFE00FF00));
         M2C_FIELD(*var_r4, u16 *, 4) = (u16) ((M2C_FIELD(*var_r4, u16 *, 4) & ~0xC00) | 0xC00);
         return;
     }

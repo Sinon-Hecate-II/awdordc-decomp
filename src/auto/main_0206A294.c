@@ -61,7 +61,6 @@ s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
     s32 overflow;
     M2C_UNK state[2];
     u32 value;
-    s32 ret;
     state[0] = arg0;
     state[1] = 0;
     value = func_0206a384(arg2, 0x7fffffff, func_02068a04, state, &count, &negative, &overflow);
@@ -69,14 +68,14 @@ s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
         *arg1 = arg0 + count;
     }
     if (overflow != 0) {
-        data_0213e9f4 = 34;
-        ret = -1;
-    } else if (negative != 0) {
-        ret = -value;
-    } else {
-        ret = value;
+        value = -1;
+        data_0213e9f4 = 0x22;
+        goto done;
     }
-    return ret;
+    if (negative != 0) {
+        return -value;
+    }
+    done: return value;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_instruction_scheduling reset

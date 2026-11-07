@@ -63,9 +63,9 @@ void func_0202aeb4(void) {
             s32 r10 = data_020e9ca0[fi];
             s32 r9v = data_020e9ca0[v40];
             s32 ef = func_0202ef00((u8 *)r6 + 0x1C);
-            s32 r98 = r9v + r8v;
-            s32 r10r = r10 + r98;
+            s32 r89 = r9v + r8v;
             s32 pef = data_020e9ca0[ef >> 8];
+            s32 r10r = r10 + r89;
             s32 r8final = pef + r10r;
             if (r8final < r4) {
                 r8final = r4;

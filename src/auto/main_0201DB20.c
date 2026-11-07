@@ -248,7 +248,9 @@ p+=12;
 }
 *p++=255;
 p=(u8 *)func_0201e204(0,300,(s32)p,(s32)p-base);
-func_0201db20(base,(s32)p-base);return result;
+func_0201db20(base,(s32)p-base);
+lo=0;
+return result;
 }
 
 s32 func_0201e404(s32 arg0, s32 arg1) {

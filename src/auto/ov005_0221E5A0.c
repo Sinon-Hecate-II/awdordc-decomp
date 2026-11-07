@@ -122,13 +122,14 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(p,u8 *,0x58)=1;
 }
 #pragma opt_strength_reduction on
-s32 func_ov005_0221eef4(void *arg0) {
+void func_ov005_0221eef4(void *arg0) {
     s32 func_020ad3f0(void);
     s32 func_01ffa3dc(s32 *, void *);
     extern u32 data_027e15bc;
     extern void **data_027e00c4, **data_027e00c8, **gCur3DSpriteEngine;
     extern u16 *data_02101e84;
     extern s32 data_ov005_02220ad0[];
+    volatile u16 *volatile p;
     void **saved;
     s32 i;
     void **chosen;
@@ -140,7 +141,8 @@ s32 func_ov005_0221eef4(void *arg0) {
             else chosen = data_027e00c4;
             i++;
             gCur3DSpriteEngine = chosen;
-            *(u16 *)((u8 *)*chosen + 0x3E) = *(u16 *)((u8 *)*chosen + 0x3E) + 1;
+            p = (u16 *)((u8 *)*chosen + 0x3E);
+            *p = *p + 1;
         } while (i < 2);
         gCur3DSpriteEngine = saved;
     }
@@ -150,7 +152,7 @@ s32 func_ov005_0221eef4(void *arg0) {
 }
 
 void func_ov005_0221efac(void) {
-    M2C_UNK func_ov005_0221eef4();
+    void func_ov005_0221eef4();
     func_ov005_0221eef4();
 }
 

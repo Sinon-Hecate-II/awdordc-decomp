@@ -43,6 +43,7 @@ s32 func_ov010_02223114(void) {
     return count;
 }
 
+#pragma intrinsic on
 s32 func_ov010_022231d4(void) {
 M2C_UNK func_020444cc(u8,s32,s32);
 s32 func_ov010_02222cac(void);
@@ -62,7 +63,7 @@ n=(data_ov010_0222be36+M2C_FIELD(&data_ov010_0222c960,s32*,0xF14)*3)[idx];
 i=0; goto test;
 loop: {
 u32 bits=M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C);
-k=__builtin_clz(bits);if(k==32)goto done;
+k=__CLZ(bits);if(k==32)goto done;
 M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C)=bits&~(0x80000000U>>k);
 func_020444cc((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
 if(!M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)){
@@ -73,7 +74,6 @@ goto done;
 }
 }i++; test: if(i<n)goto loop; done: return 1;
 }
-
 void func_ov010_022232e0(void) {
     extern s32 data_ov010_0222d878;
     extern s32 data_ov010_0222d880[];

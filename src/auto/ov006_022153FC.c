@@ -618,7 +618,7 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 func_0208df84((s16)(offset+(M2C_FIELD(arg0,s16 *,0x3a)+1)),(s16)(M2C_FIELD(arg0,s16 *,0x3c)+1),22,22,(u16)((0x3ff&(0x80>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x1000),0);
 i=0;x=60;y=12;
 if(data_ov006_02218e10[0]){reset=x;do{
-if(i==6){x=reset;y+=24;}
+if(i==6){y+=24;x=reset;}
 p=M2C_FIELD(arg0,void **,0x44);M2C_FIELD(p,u16 *,6)=offset+x;M2C_FIELD(p,u16 *,8)=y;
 func_020a92bc(M2C_FIELD(arg0,void **,0x44),data_ov006_02218e10[i]-48);
 func_020a94fc(M2C_FIELD(arg0,void **,0x44));i++;x+=24;

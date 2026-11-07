@@ -410,7 +410,7 @@ void func_ov003_02202bb0(void *p){
  s32 func_0207c8ec(u8,s32); s32 func_0207c928(u8,s32); void func_020808dc(s32,s32,s32,s32); s32 func_0208fe30(s32); extern void *gCur3DSpriteEngine;
  s32 flag; s8 a; u8 id; s32 x; u8 v=0;
  func_0208fe30(0x1000F);
- if(E1E88IsZero(M2C_FIELD(p,u8 *,0x39))) {{void *q=p; ((void (*)(void *, ...))(*(void *** )q)[8])(q);}return;}
+ if(E1E88IsZero(M2C_FIELD(p,u8 *,0x39))) {E1E88Virtual(p);return;}
  M2C_FIELD(p,u8 *,0x39)=0;
  if(M2C_FIELD(p,u8 *,0x39)==1)flag=1;else flag=0;
  if(flag&255) E1E88Set(M2C_FIELD(p,void **,0x4C),0); else E1E88Set(M2C_FIELD(p,void **,0x4C),1);
@@ -434,29 +434,27 @@ void func_ov003_02202cc4(void *arg0) {
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
     extern u16 data_02168f14;
-    void *obj;
     s32 temp_r6;
     s32 var_r0;
     u8 var_r7;
     void **temp_r0_2;
     void *temp_r0;
 
-    obj = arg0;
     func_0208fe30(0x1000F);
     func_020d47f0();
-    temp_r0 = *M2C_FIELD(obj, void ***, 0x40);
+    temp_r0 = *M2C_FIELD(arg0, void ***, 0x40);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
     }
     func_ov003_021f1be8();
-    if (((u32) (M2C_FIELD(obj, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
+    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
     if (var_r0 & 0xFF) {
-        temp_r6 = M2C_FIELD(obj, s32 *, 0x44);
+        temp_r6 = M2C_FIELD(arg0, s32 *, 0x44);
         var_r7 = 0;
         do {
             temp_r0_2 = M2C_FIELD((temp_r6 + (var_r7 * 4)), void ***, 0xC8);
@@ -465,13 +463,13 @@ void func_ov003_02202cc4(void *arg0) {
         } while ((u32) var_r7 < 8U);
         data_02168f14 |= 0x2000;
     }
-    func_02088da8(M2C_FIELD(obj, s32 *, 0x4C));
+    func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
     func_ov003_021f140c(2);
-    M2C_FIELD(obj, s8 *, 0x38) = 0;
-    func_01ffa6fc(obj);
+    M2C_FIELD(arg0, s8 *, 0x38) = 0;
+    func_01ffa6fc(arg0);
     if (func_ov003_02200c7c() == 0) {
         return;
     }
-    func_ov003_02204fd0(obj);
+    func_ov003_02204fd0(arg0);
 }
 

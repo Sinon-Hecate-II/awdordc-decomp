@@ -471,7 +471,7 @@ temp_r8=(u8*)M2C_FIELD(arg0,void**,0x68)+var_r7;
 if(M2C_FIELD(temp_r8,u8*,0x7c)){
 if(!temp_r2){if(arg1)func_0208fe30(0x1000f);M2C_FIELD(temp_r8,u8*,0x7c)=0;}
 }else if(temp_r2){if(arg1)func_0208fe30(0x1000d);M2C_FIELD(temp_r8,u8*,0x7c)=1;}
-var_r7++;
+var_r7=(var_r7+1)&255;
 }while(var_r7<M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4));
 }
 

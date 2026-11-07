@@ -153,7 +153,7 @@ s32 func_ov000_021a4704(void) {
     s32 i;
     s32 idx;
     void *base = *gCurrentMap;
-    u16 start = data_ov000_021aeef4[*(unsigned short *)((char *)base + 0x52A4)];
+    u16 start = data_ov000_021aeef4[M2C_FIELD(base, u16 *, 0x52A4)];
 
     i = start + 1;
     if (i < (s32)(start + 0x33)) {
@@ -183,9 +183,8 @@ s32 func_ov000_021a4704(void) {
                 }
             }
             i += 1;
-            base = *gCurrentMap;
             idx += 0xE;
-        } while (i < (s32)(data_ov000_021aeef4[*(unsigned short *)((char *)*gCurrentMap + 0x52A4)] + 0x33));
+        } while (i < (s32)(data_ov000_021aeef4[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33));
     }
     if (count7 <= (count8 << 1)) {
         return 1;

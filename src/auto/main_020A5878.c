@@ -271,55 +271,21 @@ s32 func_020a600c(s32 arg0) {
 }
 
 #pragma scheduling off
-s32 func_020a61e8(void *arg0) {
-    s32 func_020a5d8c(s32, u8, u8);
-    extern s32 *data_027e0058;
-    u8 *p;
-    u16 w;
-    u8 b2;
-    u8 b1;
-    u8 *base;
-    u16 u;
-    u32 idx;
-    u8 byte;
-    s32 r;
-    u16 r2;
-    u8 val;
-
-    p = (u8 *)arg0;
-    w = *(u16 *)(p + 4);
-    if (w & 0x4) {
-        return 0;
-    }
-    b2 = p[2];
-    base = (u8 *)*data_027e0058;
-    base = (u8 *)*(s32 *)base;
-    b1 = p[1];
-    u = *(u16 *)(base + b2 * 2 + 0x3758);
-    idx = b1 + u;
-    byte = *(u8 *)(base + (idx >> 3) + 0x5201);
-    if (byte & (1u << (idx & 7))) {
-        r = func_020a5d8c((s32)p, b1, b2);
-        if (r != 0) {
-            goto ret1;
-        }
-    }
-    w = *(u16 *)(p + 4);
-    if (w & 0x80) {
-        return 1;
-    }
-    base = (u8 *)*data_027e0058;
-    base = (u8 *)*(s32 *)base;
-    r2 = *(u16 *)(base + 0x52a4);
-    val = *(u8 *)(base + r2 * 0x8c + 0x67c3);
-    if (val == 3) {
-        if (w & 0x40) {
-            return 1;
-        }
-    }
-    return 0;
-ret1:
-    return 1;
+s32 func_020a61e8(void *arg0){
+s32 func_020a5d8c(s32,u8,u8);extern s32 *gCurrentMap;
+u8 *p=arg0;u16 w;u8 b2,b1;u8 *base;u32 idx;u8 byte;u16 r2;u8 val;
+w=*(u16 *)(p+4);if(w&4)return 0;
+b2=p[2];base=(u8 *)*gCurrentMap;b1=p[1];
+idx=b1+M2C_FIELD(base+b2*2,u16 *,0x3758);
+byte=M2C_FIELD(base+(idx>>3),u8 *,0x5201)&(1u<<(idx&7));
+if(byte){if(func_020a5d8c((s32)p,b1,b2)!=0)goto ret1;}
+w=*(u16 *)(p+4);if(w&128)return 1;
+base=*gCurrentMap;
+r2=M2C_FIELD(base,u16 *,0x52a4);
+val=M2C_FIELD(base+r2*140,u8 *,0x67c3);
+if(val==3){if(w&64)return 1;}
+return 0;
+ret1:return 1;
 }
 #pragma scheduling reset
 s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020a61e8(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return func_020a61e8(p+0x59a4+v*14);}

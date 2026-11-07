@@ -401,46 +401,16 @@ void func_02043c2c(s32 arg0, s16 arg1) {
     M2C_FIELD(func_02044268(), s16 *, 0x1A) = arg1;
 }
 
-void func_02043c4c(s32 arg0) {
-    void *func_02044268();
-    M2C_UNK func_02044278(M2C_UNK);
-    s32 func_02043184();
-    M2C_UNK func_0203ecb0(M2C_UNK, s32);
-    void *p;
-    s32 zero;
-
-    p = func_02044268();
-    if (M2C_FIELD(p, s32 *, 0x1A0) == 1) {
-        func_02044278(6);
-    } else {
-        p = func_02044268();
-        if (M2C_FIELD(p, s32 *, 0x1A0) != 6) {
-            p = func_02044268();
-            if (M2C_FIELD(p, s32 *, 0x1A0) != 0xB) {
-                return;
-            }
-        }
-    }
-    p = func_02044268();
-    if (arg0 == M2C_FIELD(p, s32 *, 0x180)) {
-        p = func_02044268();
-        M2C_FIELD(p, u8 *, 0x17C) = (u8)(M2C_FIELD(p, u8 *, 0x17C) + 1);
-    } else {
-        p = func_02044268();
-        M2C_FIELD(p, s8 *, 0x17C) = 0;
-        p = func_02044268();
-        M2C_FIELD(p, s32 *, 0x180) = arg0;
-    }
-    p = func_02044268();
-    zero = 0;
-    M2C_FIELD(p, s32 *, 0x184) = zero;
-    M2C_FIELD(p, s32 *, 0x188) = zero;
-    func_0203ecb0(1, arg0);
-    if (func_02043184() != 0) {
-        return;
-    }
-    p = func_02044268();
-    M2C_FIELD(p, u8 *, 0x3CC) = 0xFF;
+void func_02043c4c(s32 arg0){
+void *func_02044268();M2C_UNK func_02044278(M2C_UNK);s32 func_02043184();s32 func_0203ecb0();
+void *p; s32 zero;
+p=func_02044268();
+if(M2C_FIELD(p,s32 *,0x1a0)==1)func_02044278(6);else{p=func_02044268();if(M2C_FIELD(p,s32 *,0x1a0)!=6){p=func_02044268();if(M2C_FIELD(p,s32 *,0x1a0)!=11)return;}}
+p=func_02044268();if(arg0==M2C_FIELD(p,s32 *,0x180)){p=func_02044268();M2C_FIELD(p,u8 *,0x17c)=(u8)(M2C_FIELD(p,u8 *,0x17c)+1);}else{p=func_02044268();M2C_FIELD(p,s8 *,0x17c)=0;p=func_02044268();M2C_FIELD(p,s32 *,0x180)=arg0;}
+p=func_02044268();zero=0;
+M2C_FIELD(p,s32 *,0x184)=zero;M2C_FIELD(p,s32 *,0x188)=zero;
+func_0203ecb0(1,arg0,zero);
+if(func_02043184()!=0)return;p=func_02044268();M2C_FIELD(p,u8 *,0x3cc)=255;
 }
 
 void func_02043d00(s32 arg0, u32 arg1) {

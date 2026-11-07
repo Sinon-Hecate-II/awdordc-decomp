@@ -1,6 +1,14 @@
 /* 22 functions from 0x02171774 to 0x02172754 (ov000), found by ds-decomp. */
 #include "common.h"
+static inline void InitEntry724dc(void *q) {
+s32 j;void *t;
+M2C_FIELD(q,s32 *,0)=0; M2C_FIELD(q,s32 *,4)=0; M2C_FIELD(q,s32 *,8)=0; M2C_FIELD(q,s32 *,12)=0;
+M2C_FIELD(q,s32 *,0x28)=1; M2C_FIELD(q,s32 *,0x2c)=0;
+M2C_FIELD(q,u8 *,0x30)=0; M2C_FIELD(q,u8 *,0x31)=0; M2C_FIELD(q,u8 *,0x33)=0;
+j=0; M2C_FIELD(q,u8 *,0x34)=0;
+inner: t=(u8*)q+(j<<2); j++; M2C_FIELD(t,s32 *,0x10)=0; if(j<6) goto inner;
 
+}
 
 void func_ov000_02171774(s32 arg0) {
     (void)arg0;
@@ -122,14 +130,10 @@ M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0;
 M2C_FIELD(arg0,s32 *,12)=0; M2C_FIELD(arg0,s32 *,16)=0; M2C_FIELD(arg0,u8 *,20)=0;
 p=func_02082028(0x11c);
 if(p){
-M2C_FIELD(p,s32 *,0)=1; M2C_FIELD(p,s32 *,4)=0; i=0; M2C_FIELD(p,s32 *,8)=0;
+M2C_FIELD(p,s32 *,0)=1; M2C_FIELD(p,s32 *,4)=0; M2C_FIELD(p,s32 *,8)=0; i=0;
 q=(u8*)p+0x3c;
 do {
-M2C_FIELD(q,s32 *,0)=0; M2C_FIELD(q,s32 *,4)=0; M2C_FIELD(q,s32 *,8)=0; M2C_FIELD(q,s32 *,12)=0;
-M2C_FIELD(q,s32 *,0x28)=1; M2C_FIELD(q,s32 *,0x2c)=0;
-M2C_FIELD(q,u8 *,0x30)=0; M2C_FIELD(q,u8 *,0x31)=0; M2C_FIELD(q,u8 *,0x33)=0;
-j=0; M2C_FIELD(q,u8 *,0x34)=0;
-inner: t=(u8*)q+(j<<2); j++; M2C_FIELD(t,s32 *,0x10)=0; if(j<6) goto inner;
+InitEntry724dc(q);
 q=(u8*)q+0x38;
 }while((u32)q<(u32)((u8*)p+0x11c));
 loop1:t=(u8*)p+(i<<2);i++;M2C_FIELD(t,s32 *,12)=9;if(i<4)goto loop1;

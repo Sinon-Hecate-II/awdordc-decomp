@@ -163,8 +163,8 @@ void func_02090fdc(void *arg0) {
     volatile s32 sp4;
     volatile s32 sp0;
     s32 *temp_r0;
-    s32 var_r1;
     s32 var_r0;
+    s32 var_r1;
 
     sp0 = M2C_FIELD(arg0, s32 *, 0x5C) * 0x30;
     sp4 = M2C_FIELD(arg0, s32 *, 0x60) * 0x30;

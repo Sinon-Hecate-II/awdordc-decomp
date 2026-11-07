@@ -231,8 +231,8 @@ M2C_UNK func_ov001_0218c958();
 extern s32 data_ov001_02193ea4;
 void *node;
 s32 i;
-if(!M2C_FIELD(data_ov001_02193ea4+ (n << 6), u8 *, 0x38)) return;
-node = M2C_FIELD(data_ov001_02193ea4+(n<<6), void **, 0x10);
+if(!M2C_FIELD(data_ov001_02193ea4+(n<<6),u8 *,0x38)) return;
+node=M2C_FIELD(data_ov001_02193ea4+(n<<6),void **,0x10);
 while(node!=(void *)(data_ov001_02193ea4+(n<<6)+0x20)) {
 M2C_FIELD(node,void (**)(void *,s32),8)(node,M2C_FIELD(node,s32 *,12));
 node=M2C_FIELD(node,void **,4);

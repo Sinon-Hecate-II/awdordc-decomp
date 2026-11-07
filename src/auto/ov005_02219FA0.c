@@ -139,7 +139,7 @@ void func_ov005_0221a598(void *arg0) {
     void func_ov005_0221a38c(void **);
     M2C_UNK func_01ffa574(M2C_UNK);
     M2C_UNK func_01ffa6fc(void *);
-    extern s32 data_027e00c4, data_027e00c8, data_027e01d8;
+    extern s32 data_027e00c4, data_027e00c8, gCur3DSpriteEngine;
 
     s32 saved;
     s32 i;
@@ -154,13 +154,12 @@ void func_ov005_0221a598(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x40) != 0x10) {
         return;
     }
-    saved = data_027e01d8;
+    saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
-        if (i == 0) data_027e01d8 = data_027e00c8;
-        else data_027e01d8 = data_027e00c4;
+        gCur3DSpriteEngine = i == 0 ? data_027e00c8 : data_027e00c4;
         func_01ffa574(M2C_FIELD((char *)arg0 + i * 4, s32 *, 0x34));
     }
-    data_027e01d8 = saved;
+    gCur3DSpriteEngine = saved;
     M2C_FIELD(arg0, u8 *, 0x44) = 1;
     M2C_FIELD(arg0, s32 *, 0x40) = 0;
     func_01ffa6fc(arg0);

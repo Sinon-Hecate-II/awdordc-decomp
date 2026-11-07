@@ -190,8 +190,8 @@ void func_ov003_021fac2c(s32 a, s32 b, s32 c, s32 d, u16 tile) {
 
     x = func_0207c928(a, 2) * 15;
     y = func_0207c928(func_0207c8ec(a, 2) * 2, 32);
-    off = 0;
     pos = y * 32 + x;
+    off = 0;
     for (row = 0; row < 2; row++) {
         for (col = 0; col < 14; col++) {
             k = (func_0207c928(a, 2) == 0) ? 0 : 16;

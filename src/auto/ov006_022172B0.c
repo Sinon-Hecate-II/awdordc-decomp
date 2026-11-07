@@ -513,7 +513,7 @@ void func_ov006_02217f20(void *arg0) {
     for (j = 0; j < 50; j++) {
         if (func_02086980(j)) {
             i = j + 0xe1;
-            M2C_FIELD(arg0, s32 **, 0x44)[M2C_FIELD(arg0, u32 *, 0x34)] = M2C_FIELD(func_020c7e88(i), s32 *, 0x10);
+            M2C_FIELD(arg0, s32 **, 0x44)[M2C_FIELD(arg0, u32 *, 0x34)] = M2C_FIELD(func_020c7e88(i), volatile s32 *, 0x10);
             M2C_FIELD(arg0, u16 **, 0x48)[M2C_FIELD(arg0, u32 *, 0x34)] = (u16)i;
             M2C_FIELD(arg0, u32 *, 0x34)++;
             M2C_FIELD(arg0, u8 *, 0x38)++;

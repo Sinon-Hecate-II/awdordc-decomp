@@ -136,6 +136,8 @@ void func_0200826c(u32 *arg0, s16 *arg1) {
     }
 }
 
+#pragma push
+#pragma optimize_for_size on
 void func_0200836c(void *arg0, u32 *arg1) {
     s32 sp0;
     s32 temp_r2;
@@ -146,7 +148,7 @@ void func_0200836c(void *arg0, u32 *arg1) {
     s32 var_r8;
     u32 *var_r0;
     u32 *var_r1;
-    u32 var_ip;
+    s32 var_ip;
     u32 var_r3;
     u32 var_r5;
     u8 *temp_r7;
@@ -159,17 +161,17 @@ void func_0200836c(void *arg0, u32 *arg1) {
     var_r3 = 0;
     var_lr = 0;
     sp0 = (temp_r4 & 7) + 4;
-    var_ip = (u32) M2C_FIELD(arg0, u8 *, 0) >> 8;
+    var_ip = M2C_FIELD(arg0, u32 *, 0) >> 8;
     var_r0 = temp_r2 + ((M2C_FIELD(arg0, u8 *, 4) + 1) * 2);
     var_r2 = temp_r7;
 loop_1:
     if ((s32) var_ip > 0) {
         var_r8 = 0x20;
         var_r5 = *var_r0;
-        var_r0 += 4;
+        var_r0++;
 loop_3:
         var_r8 -= 1;
-        if ((s64) var_r8 >= 0) {
+        if ((s32) var_r8 >= 0) {
             temp_r9 = 1 & (var_r5 >> 0x1F);
             temp_r6 = *var_r2 << temp_r9;
             var_r2 = (((u32) var_r2 >> 1) * 2) + (((*var_r2 & 0x3F) + 1) * 2) + temp_r9;
@@ -179,7 +181,7 @@ loop_3:
                 var_lr += 1;
                 if (var_lr == sp0) {
                     *var_r1 = var_r3;
-                    var_r1 += 4;
+                    var_r1++;
                     var_ip -= 4;
                     var_lr = 0;
                 }
@@ -192,7 +194,7 @@ loop_3:
         goto loop_1;
     }
 }
-
+#pragma pop
 void func_02008464(u32 *arg0) {
     s32 temp_r2;
     s32 var_r2;
@@ -321,8 +323,8 @@ s32 func_0200864c(void *arg0,u8 *src,s32 size){
 done:M2C_FIELD(arg0,u8**,0)=dst;M2C_FIELD(arg0,s32*,4)=remaining;M2C_FIELD(arg0,u8*,11)=hdr;M2C_FIELD(arg0,u16*,12)=cnt;return remaining;
 }
 
-#pragma opt_common_subs off
-#pragma opt_instruction_scheduling off
+#pragma push
+#pragma opt_strength_reduction off
 s32 func_02008700(void *arg0,u8 *src,s32 size){
  struct S { u16 *out; s32 remain; u16 acc; u8 pos; u8 hdr; u16 cnt; };
  volatile struct S *s=arg0;
@@ -339,10 +341,9 @@ lit:
  else if(cnt>0){val=*src++;do{acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}}while(--cnt>0);if(--size==0)goto done;}
 next:
  hdr=*src++;cnt=hdr&127;if(hdr&128)cnt+=2;cnt++;if(--size!=0)goto loop;
-done:s->out=(u16*)out;s->remain=remaining;s->hdr=hdr;s->cnt=cnt;s->acc=acc;s->pos=(u8)pos;return remaining;
+done:s->out=(u16*)out;s->remain=remaining;s->hdr=hdr;s->cnt=cnt;s->acc=acc;s->pos=pos;return remaining;
 }
-#pragma opt_instruction_scheduling reset
-#pragma opt_common_subs reset
+#pragma pop
 s32 func_020087ec(void *arg0, u8 *src, s32 size) {
     struct S { u8 *out; s32 remain; u16 unk8; u8 unkA; u8 hdr; u8 cnt; u8 prev; u8 have; };
     volatile struct S *s = (volatile struct S *)arg0;

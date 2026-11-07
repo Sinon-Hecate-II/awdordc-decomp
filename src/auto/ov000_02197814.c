@@ -35,29 +35,24 @@ void func_ov000_02197990(void) {
     M2C_UNK func_020a5364(void *, M2C_UNK, M2C_UNK);
     s32 func_020d273c(u16, u32);
     s32 func_ov000_021973f8(u32);
-    extern void **gCurrentMap;
-    void *var_r6;
-    u8 temp_r0;
+    extern void **data_027e0058;
     u32 temp_r1;
+    u8 temp_r0;
+    void *var_r6;
 
-    if (func_ov000_021973f8((u32) (*M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) << 0x1A) >> 0x1A) == 0) {
+    if (func_ov000_021973f8((u32) (*M2C_FIELD(*data_027e0058, u8 **, 0x52D0) << 0x1A) >> 0x1A) == 0) {
         return;
     }
-    func_01ffb554(*gCurrentMap + 0x2D48);
-    var_r6 = *gCurrentMap + 0x58A4;
+    func_01ffb554(*data_027e0058 + 0x2D48);
+    var_r6 = *data_027e0058 + 0x58A4;
     if (((u32) (M2C_FIELD(var_r6, u16 *, 2) << 0x16) >> 0x1C) != 0) {
         do {
-            if (M2C_FIELD(var_r6, s8 *, 6) == 1) {
-                temp_r0 = M2C_FIELD(var_r6, u8 *, 5);
-                if ((((u32) (temp_r0 << 0x1C) >> 0x1F) != 0) ||
-                    (temp_r1 = (u32) (temp_r0 << 0x1D) >> 0x1D, temp_r1 == 0) ||
-                    (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), temp_r1) == 0)) {
-                    func_020a5364(var_r6, -1, 0);
-                }
+            if ((M2C_FIELD(var_r6, s8 *, 6) == 1) && ((temp_r0 = M2C_FIELD(var_r6, u8 *, 5), (((u32) (temp_r0 << 0x1C) >> 0x1F) != 0)) || (temp_r1 = (u32) (temp_r0 << 0x1D) >> 0x1D, (temp_r1 == 0)) || (func_020d273c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), temp_r1) == 0))) {
+                func_020a5364(var_r6, -1, 0);
             }
             var_r6 += 8;
         } while (((u32) (M2C_FIELD(var_r6, u16 *, 2) << 0x16) >> 0x1C) != 0);
     }
-    func_01ffb554(*gCurrentMap + 0x1E30);
+    func_01ffb554(*data_027e0058 + 0x1E30);
 }
 

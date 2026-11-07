@@ -219,13 +219,12 @@ else unit->mode=1;
 nextUnit: i++;off+=14;
 }while(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
 }
-#pragma pop
+#pragma opt_strength_reduction off
 void func_ov000_0217d6dc(void) {
-    extern void **data_027e0058;
     extern u16 data_ov000_021aeef4[];
     s32 func_ov000_021a98a8(u32);
 
-    void ***mapSlot = &data_027e0058;
+    void ***mapSlot = (void ***)&gCurrentMap;
     u16 *tblBase = data_ov000_021aeef4;
 
     void *map;

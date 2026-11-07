@@ -56,7 +56,8 @@ void func_020cfd28(void);
 void func_ov000_0216a040(void *);
 void func_02091700(s32,s32);
 extern s32 *gCurrentMap;
-s16 command; u32 idx;
+s8 ReadMovementCommand(void *);
+s16 command;
 command=ReadMovementCommand(p);
 switch(command){
 default: break;
