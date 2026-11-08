@@ -53,3 +53,4 @@ report.ps1
 objdiff.before-report.json
 compress.ps1
 build/yw2e/report.json
+.decomp.wtf.json

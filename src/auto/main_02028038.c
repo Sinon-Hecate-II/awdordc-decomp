@@ -117,7 +117,7 @@ case 2:case 3:case 4:default:func_02028160(11);func_020280c8(7,0,0,0x76d);return
 
 void func_02028924(u16 *p){switch(p[1]){case 0:func_02028160(3);func_020280c8(0,0,0,0x783);return;case 1:func_020282b0();return;case 2:case 3:case 4:default:func_02028160(11);func_020280c8(7,0,0,0x793);return;}}
 
-#pragma opt_common_subs on
+#pragma opt_strength_reduction off
 void func_0202899c(const u16 *p){
 extern void *data_02138e4c;
 void func_02028cc8(u16 *);s32 func_02012dd4(void (*)(u16 *),void *,s32);
@@ -127,14 +127,17 @@ case 0:
 switch(p[4]){
 case 6:goto done;
 case 26:goto done;
-case 8:case 9:
-switch(M2C_FIELD(data_02138e4c,s32 *,0x2260)){
-case 10:M2C_FIELD(data_02138e4c,u16 *,0x2282)=0;
+case 8:case 9: {
+void **g=&data_02138e4c;
+void *base=*g;
+switch(M2C_FIELD(base,s32 *,0x2260)){
+case 10:M2C_FIELD(base,u16 *,0x2282)=0;
 case 8:func_02028160(12);return;
-case 9:M2C_FIELD(data_02138e4c,u16 *,0x2282)=0;
+case 9:M2C_FIELD(base,u16 *,0x2282)=0;
 
-case 12:M2C_FIELD(data_02138e4c,u16 *,0x2280)=6;func_020282b0();return;
+case 12:M2C_FIELD(*g,u16 *,0x2280)=6;func_020282b0();return;
 default:goto done;}
+}
 case 7:
 if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==12){func_02028160(8);func_020282b0();return;}
 if(p[5]>=1&&p[5]<=0x7d7){
@@ -147,13 +150,14 @@ func_02028160(11);func_020280c8(7,(s32)((u8 *)data_02138e4c+0x2140),0,0x7f6);ret
 func_020282b0();return;
 default:func_02028160(11);func_020280c8(7,(s32)((u8 *)data_02138e4c+0x2140),p[4],0x804);return;
 }
-case 1:M2C_FIELD(data_02138e4c,u16 *,0x22f8)=p[7];func_02028160(8);func_020282b0();return;
+case 1:M2C_FIELD(data_02138e4c,u16 *,0x22f8)=p[7];func_02028160(8);
 case 6:case 11:case 12:func_020282b0();return;
 case 2:case 3:case 4:case 5:case 7:case 8:case 9:case 10:
 default:func_02028160(11);func_020280c8(7,(s32)((u8 *)data_02138e4c+0x2140),0,0x81b);return;
 }
 done:return;
 }
+#pragma opt_strength_reduction reset
 void func_02028c00(u16 *p) {
     extern void *data_02138e4c;
     switch (p[1]) {

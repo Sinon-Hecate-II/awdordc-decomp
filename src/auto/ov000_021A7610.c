@@ -14,6 +14,18 @@ static inline s32 AiScale(s32 value,s32 kind) {
  return func_ov000_021a6f24(value,kind,0);
 }
 #pragma optimization_level reset
+#pragma push
+#pragma optimization_level 0
+static inline s32 AiBoundMin(s32 a,s32 b) { if(a<b)return a;return b; }
+static inline s32 AiPointDistance(s32 x,s32 y,s32 x2,s32 y2) {
+s32 d=0;
+s32 dx=x2-x,dy=y2-y;
+if(dx<=0)dx=x-x2;
+if(dy<=0)dy=y-y2;
+d+=dx;d+=dy;
+return d;
+}
+#pragma pop
 typedef struct { s32 money; s32 unk4; s32 income; u8 pad[128]; } AiPlayer;
 
 void func_ov000_021a7d08(void) {
@@ -201,6 +213,8 @@ for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_0
 }
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_ov000_021a7ac0(s32 index) {
 extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
 extern u8 *data_ov000_021df57c;
@@ -211,16 +225,15 @@ s32 minx,maxy,r,cx,cy; s32 maxx,y,x,i,off,miny; u8 *unit,*map,*entry;
 for(i=0;i<27;i++) {data_ov000_021e1474[i]=0;data_ov000_021e14aa[i]=data_ov000_021e1474[i];}
 off=index*12;
 func_01ffada0(data_ov000_021e00ac[off],data_ov000_021e00ad[off],7,data_ov000_021df57c[16],0);
-cy=data_ov000_021e00ad[off]; r=data_ov000_021df57c[16]; cx=data_ov000_021e00ac[off];
+cx=data_ov000_021e00ac[off]; cy=data_ov000_021e00ad[off]; r=data_ov000_021df57c[16];
 minx=cx-r; if(minx<0)minx=0;
 miny=cy-r; if(miny<0)miny=0;
 map=*gCurrentMap;
-maxx=r+cx; if(maxx>*(u16 *)(map+0x5144)-1)maxx=*(u16 *)(map+0x5144)-1;
-maxy=r+cy; if(maxy>*(u16 *)(map+0x5146)-1)maxy=*(u16 *)(map+0x5146)-1;
+maxx=AiBoundMin(r+cx,*(u16 *)(map+0x5144)-1);
+maxy=AiBoundMin(r+cy,*(u16 *)(map+0x5146)-1);
 entry=data_ov000_021e00ac+off;
 for(y=miny;y<=maxy;y++)for(x=minx;x<=maxx;x++){
-s32 dx=entry[0]-x,dy=entry[1]-y,d;
-if(dx<=0)dx=x-entry[0];if(dy<=0)dy=y-entry[1];d=0+dx+dy;
+s32 d=AiPointDistance(x,y,entry[0],entry[1]);
 if(d<0||d>data_ov000_021df57c[16])continue;
 map=*gCurrentMap;
 i=map[*(u16 *)(map+0x3758+y*2)+x]; if(!i)continue;
@@ -231,4 +244,4 @@ else data_ov000_021e1474[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)
 }
 func_ov000_021a7610();
 }
-
+#pragma pop

@@ -36,8 +36,65 @@ extern void **gCurrentMap; s32 func_020a7714(void *);
 void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)+range;
 }
 
-s32 func_020c9b9c(void *arg0) { (void)arg0; return 0; }
+#pragma push
+#pragma opt_propagation off
+#pragma opt_strength_reduction off
+void func_020c9b9c(void *arg0) {
+extern void **gCurrentMap;
+extern u16 data_ov000_021aeee8[];
+extern s8 data_ov000_021b56c0[];
+void func_0207ab84(s32,s32,u8); void func_0207ac54(s32,s32,s32);
+void func_020cf2c8(void);void func_020cfd28(void);void func_020d2470(void);
+u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
+if(M2C_FIELD(arg0,s16 *,0x6e)!=2) player=0;
+else {
+map=(u8 *)*gCurrentMap;
+p=map+0x67a4+M2C_FIELD(arg0,s16 *,0x6c)*0x8c;
+tile=map+0x1420;
+rows=(u16 *)(map+0x3758);
+row=rows[p[0x2c]&127];
+unit=(p[0x2b]&127)+row;
+old=tile[unit];tile[unit]=data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]|15;
 
+map=(u8 *)*gCurrentMap;
+p=map+0x67a4+M2C_FIELD(arg0,s16 *,0x6c)*0x8c;
+player=(u32)((old&0xe0)<<11)>>16;
+func_0207ab84(p[0x2b]&127,p[0x2c]&127,(u8)data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]);
+func_020cf2c8();
+}
+for(i=0;i<99;i++){
+map=(u8 *)*gCurrentMap;
+rec=map+i*6;
+kind=M2C_FIELD(rec,u8 *,0x6c60);x=M2C_FIELD(rec,u8 *,0x6c61);y=M2C_FIELD(rec,u8 *,0x6c62);
+if(kind==255)break;
+kind&=31;
+if(data_ov000_021b56c0[kind]){
+p=map+x+M2C_FIELD(map+y*2,u16 *,0x3758);
+if(data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]==(M2C_FIELD(p,u8 *,0x1420)&0xe0)){
+if(player && (unit=*p)!=0){
+if(M2C_FIELD(map+(unit>>6)*0x8c,u8 *,0x6856)==M2C_FIELD(map+player*0x8c,u8 *,0x67ca)){
+p=map+0x59a4+unit*14;
+M2C_FIELD(p,u16 *,6)&=~0xf800;
+}
+}
+switch(kind){case 15:
+map=(u8 *)*gCurrentMap;
+M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)=data_ov000_021aeee8[player]|16;
+func_0207ac54(x,y,0);
+func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
+break;
+default:
+map=(u8 *)*gCurrentMap;
+M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)=kind|data_ov000_021aeee8[player];
+func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
+}
+}
+}
+}
+func_020cfd28();func_020cf2c8();func_020d2470();
+M2C_FIELD(arg0,s16 *,0x70)=1;
+}
+#pragma pop
 void func_020c9e14(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_020cbc88(void *, void *);

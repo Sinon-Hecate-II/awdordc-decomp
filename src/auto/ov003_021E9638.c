@@ -334,21 +334,25 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(arg0, s8 *, 0x12) = 1;
 }
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*data_027e00c8;
 s32 func_0207c928(s32,s32); s16 func_ov003_022004f0(s32); s32 func_ov003_022008b8(u8);
 void func_020809c0(void*,s32,s32); void func_02098844(u32,s32,s32,s32,u32,u16,u8); void func_02098a34(s32,s32,s32,s32,u8);
-u8 i; void *old,*saved; register s16 b; register u8 a; s8 c; 
+u8 i; void *old,*saved; s32 b; u8 a; s8 c; u16 v;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=data_027e00c8;
 a=(func_0207c928(i,2)!=0);
 if(i<2)b=0;
-else b=(u16)func_ov003_022004f0(2)>>3;
+else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
 c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(c==0){
 func_020809c0((void*)((u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+(b+1)*2),7,7);
 }else{
+v=(u16)(((((s8)(c-1))<<7)+2)<<15>>16);
 func_02098844(1,b,0,(s32)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+2,((u32)((((s8)(c-1))<<7)+2)<<15>>16),i,0);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<a;
@@ -372,7 +376,9 @@ gCur3DSpriteEngine=saved;
 M2C_FIELD(p,u8*,0x3a)&=~0x70;
 M2C_FIELD(p,u8*,0x3a)&=~0x8;
 }
-
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 void func_ov003_021ea134(s32 arg0) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << arg0));

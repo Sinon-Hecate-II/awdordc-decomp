@@ -1,5 +1,6 @@
 /* 8 functions from 0x02217C80 to 0x02218AD0 (ov007), found by ds-decomp. */
 #include "common.h"
+typedef struct MenuPosition { s8 kind; u8 x, y, unk3, unk4; } MenuPosition;
 
 s32 func_ov007_02217c80(void *arg0) {
     s32 func_ov007_02217c50(void *);
@@ -35,46 +36,52 @@ void func_ov007_02217cd0(void *arg0) {
     func_01ffa8c4(arg0, 2);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_propagation off
+#pragma opt_common_subs off
 s32 func_ov007_02217d30(void *arg0) {
     s8 *func_ov007_02217b64(u8);
     extern u32 *data_02101e84;
-    u8 mode;
-    u8 *table;
-    u8 *indices;
     u16 *g;
-    u8 idx;
-    u8 x;
-    u8 y;
-    u16 flags;
-    u8 candidate;
+    s32 idx;
+    u8 *indices;
+    s32 mode;
+    u8 *table;
+    s32 x;
+    s32 y;
+    s32 candidate;
+    s32 flags;
 
     mode = M2C_FIELD(arg0, u8 *, 0x37);
     table = (u8 *)func_ov007_02217b64(mode);
+    mode=M2C_FIELD(arg0,u8 *,0x37);
     indices = (u8 *)arg0 + 0x3A;
-    g = (u16 *)(*data_02101e84);
+    g = (u16 *)data_02101e84;
     idx = indices[mode];
-    x = table[idx * 5 + 1];
-    y = table[idx * 5 + 2];
-    flags = g[1];
-    candidate = idx;
+    flags=g[1];
+    candidate=idx;
+    x = ((MenuPosition *)table)[idx].x;
+    y = ((MenuPosition *)table)[idx].y;
+
 
     if (flags & 0xF0) {
         u8 *ptr = table;
         s32 i = 0;
-        u8 m40 = flags & 0x40;
-        u8 m80 = flags & 0x80;
-        u8 m20 = flags & 0x20;
-        u8 m10 = flags & 0x10;
-        s8 xm1 = (s8)(x - 1);
-        s8 xp1 = (s8)(x + 1);
-        u8 ym1 = y - 1;
-        u8 yp1 = y + 1;
         if ((s8)*ptr >= 0) {
+        s32 xm1 = x-1;
+        s32 xp1 = x+1;
+        s32 m40 = flags & 0x40;
+        s32 m80 = flags & 0x80;
+        s32 m20 = flags & 0x20;
+        s32 m10 = flags & 0x10;
+        s32 ym1 = y - 1;
+        s32 yp1 = y + 1;
             do {
-                if (m40 && ptr[1] == x && ptr[2] == ym1) candidate = (u8)i;
-                if (m80 && ptr[1] == x && ptr[2] == yp1) candidate = (u8)i;
-                if (m20 && ptr[2] == y && ptr[1] == (u8)xm1) candidate = (u8)i;
-                if (m10 && ptr[2] == y && ptr[1] == (u8)xp1) candidate = (u8)i;
+                if (m40 && ptr[1] == x && ptr[2] == ym1) candidate = i;
+                if (m80 && ptr[1] == x && ptr[2] == yp1) candidate = i;
+                if (m20 && ptr[2] == y && ptr[1] == xm1) candidate = i;
+                if (m10 && ptr[2] == y && ptr[1] == xp1) candidate = i;
                 i++;
                 ptr += 5;
             } while ((s8)*ptr >= 0);
@@ -86,34 +93,34 @@ s32 func_ov007_02217d30(void *arg0) {
         if ((flags2 & 0xF0) && candidate == idx) {
             u8 *ptr = table;
             s32 i = 0;
-            u8 m40 = flags2 & 0x40;
-            u8 m80 = flags2 & 0x80;
-            u8 m20 = flags2 & 0x20;
-            u8 m10 = flags2 & 0x10;
-            u8 cur = candidate;
             if ((s8)*ptr >= 0) {
+            s32 m40 = flags2 & 0x40;
+            s32 m80 = flags2 & 0x80;
+            s32 m20 = flags2 & 0x20;
+            s32 m10 = flags2 & 0x10;
+
                 do {
                     if (m40 && ptr[1] == x) {
-                        u8 cb2 = table[cur * 5 + 2];
-                        if (ptr[2] > cb2) cur = (u8)i;
+                        u8 cb2 = table[candidate * 5 + 2];
+                        if (ptr[2] > cb2) candidate = i;
                     }
                     if (m80 && ptr[1] == x) {
-                        u8 cb2 = table[cur * 5 + 2];
-                        if (ptr[2] < cb2) cur = (u8)i;
+                        u8 cb2 = table[candidate * 5 + 2];
+                        if (ptr[2] < cb2) candidate = i;
                     }
                     if (m20 && ptr[2] == y) {
-                        u8 cb1 = table[cur * 5 + 1];
-                        if (ptr[1] > cb1) cur = (u8)i;
+                        u8 cb1 = table[candidate * 5 + 1];
+                        if (ptr[1] > cb1) candidate = i;
                     }
                     if (m10 && ptr[2] == y) {
-                        u8 cb1 = table[cur * 5 + 1];
-                        if (ptr[1] < cb1) cur = (u8)i;
+                        u8 cb1 = table[candidate * 5 + 1];
+                        if (ptr[1] < cb1) candidate = i;
                     }
                     i++;
                     ptr += 5;
                 } while ((s8)*ptr >= 0);
             }
-            candidate = cur;
+            candidate = candidate;
         }
     }
 
@@ -121,7 +128,7 @@ s32 func_ov007_02217d30(void *arg0) {
     indices[mode] = candidate;
     return 1;
 }
-
+#pragma pop
 void func_ov007_02217f8c(void *arg0) {
     M2C_UNK func_0200bc5c(M2C_UNK *);
     M2C_UNK func_02080cfc(s32, s32);

@@ -34,12 +34,13 @@ s32 func_02068c34(M2C_UNK);
 void *func_0206f8b8(void *,void *,s32);
 
     s32 r5;
+ s32 lengths[5];
     void *ptr;
     u32 arr[5];
     char tmp[16];
-    s32 len_data0;
-    s32 len_cb1c, len_cb24, len_cac0, len_after;
-    s32 len_cb50, len_cb8c, len_cb88;
+    
+    s32 len_cb1c;
+    s32 len_data0, len_cb88;
     s32 accum;
     s32 len_ptr;
     s32 len_cb1c2, len_cb242;
@@ -56,14 +57,14 @@ void *func_0206f8b8(void *,void *,s32);
     }
     r5 = func_02047370((u8 *)*(void **)arg4+0x18);
     len_cb1c = func_02068c34(&data_020fcb1c);
-    len_cb24 = func_02068c34(&data_020fcb24);
-    len_cac0 = func_02068c34(&data_020fcac0);
-    len_after = func_02068c34(func_0206f8b8((void *)arg2,tmp,10));
-    len_cb50 = func_02068c34(&data_020fcb50);
-    len_cb8c = func_02068c34(&data_020fcb8c);
+    lengths[0] = func_02068c34(&data_020fcb24);
+    lengths[1] = func_02068c34(&data_020fcac0);
+    lengths[2] = func_02068c34(func_0206f8b8((void *)arg2,tmp,10));
+    lengths[3] = func_02068c34(&data_020fcb50);
+    lengths[4] = func_02068c34(&data_020fcb8c);
     len_data0 = func_02068c34(M2C_FIELD(&data_020fca58,void **,0));
     len_cb88 = func_02068c34(&data_020fca68);
-    accum = r5 + (len_cb1c + (len_cb24 + (len_cac0 + (len_after + (len_cb50 + (len_cb8c + (len_data0 + len_cb88)))))));
+    accum = r5 + (len_cb1c + (lengths[0] + (lengths[1] + (lengths[2] + (lengths[3] + (lengths[4] + (len_data0 + len_cb88)))))));
     ptr = func_02037694(0, accum + 1);
     M2C_FIELD(&data_020fca58, void **, 0x54) = ptr;
     if (ptr == 0) {

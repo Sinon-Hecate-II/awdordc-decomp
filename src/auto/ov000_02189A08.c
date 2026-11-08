@@ -1,5 +1,6 @@
 /* 12 functions from 0x02189A08 to 0x0218A9AC (ov000), found by ds-decomp. */
 #include "common.h"
+typedef struct { u16 low:14, high:2; } SelectedUnitFlagsA520;
 
 typedef struct {
     u8 unk0 : 6;
@@ -180,8 +181,7 @@ next:;
 return 0;
 }
 
-#pragma push
-#pragma opt_strength_reduction off
+#pragma opt_propagation off
 s32 func_ov000_0218a520(s32 x, s32 y) {
     s32 func_ov000_021a98e4(s32);
     s32 func_020a7cfc(void *);
@@ -196,80 +196,58 @@ s32 func_ov000_0218a520(s32 x, s32 y) {
     extern u8 data_ov000_021dfc4c[];
     extern u8 *data_ov000_021df644;
 
-    u8 unitKind = ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52D0))[0] & 0x3F;
-    if (func_ov000_021a98e4(unitKind) != 0) {
-        return 0;
-    }
-    if (func_020a7cfc(*(void **)((u8 *)*gCurrentMap + 0x52D0)) != 0) {
-        return 0;
-    }
+    if (!func_ov000_021a98e4(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !func_020a7cfc(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
+u8 attr=data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
+if(attr&7) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
+if((u8)((1<<(idx&7)) & data_ov000_021df9bc[idx>>3])) goto valid;
+}
+if(attr&0x10) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
+if((u8)((1<<(idx&7)) & data_ov000_021dfc4c[idx>>3])) goto valid;
+}
+}
     {
-        u8 attr = data_ov000_021b5c0f[unitKind * 0x70];
-        if (attr & 0x7) {
-            u16 width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
-            s32 idx = y * width + x;
-            if (data_ov000_021df9bc[idx >> 3] & (1 << (idx & 7))) {
-                return 1;
-            }
-            if (attr & 0x10) {
-                s32 idx2 = y * width + x;
-                if (data_ov000_021dfc4c[idx2 >> 3] & (1 << (idx2 & 7))) {
-                    return 1;
-                }
-            }
+        s32 cell; u8 *ptr; u8 *map;
+        u8 limit;
+        u16 rowOffset;
+        map=(u8 *)*gCurrentMap; ptr=data_ov000_021df644;
+        rowOffset=*(u16 *)(map+y*2+0x3758);
+        cell = (s32)(map + (x + rowOffset) + 0x2000);
+        limit=ptr[1];
+        if (M2C_FIELD(cell,u8 *,0x840) >= limit) {
+            return 0;
+        }
+        if (M2C_FIELD(cell,u8 *,0xd48) >= ptr[2]) {
             return 0;
         }
     }
-    {
-        u8 *ptr = data_ov000_021df644;
-        u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
-        u8 *cell = (u8 *)*gCurrentMap + x + rowOffset + 0x2000;
-        if (cell[0x840] >= ptr[1]) {
-            return 0;
-        }
-        if (cell[0xD48] >= ptr[2]) {
-            return 0;
-        }
-    }
+valid:
     if (!func_ov000_02178e84(x, y)) {
         return 0;
     }
     {
-        u8 unitKind2 = ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52D0))[0] & 0x3F;
-        u8 attr2 = data_ov000_021b5c0f[unitKind2 * 0x70];
-        if (attr2 == 0x20) {
-            return 0;
-        }
-        if (func_ov000_021a9904(unitKind2) == 2) {
-            return 0;
-        }
-    }
-    {
-        u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
-        u8 terrain = ((u8 *)*gCurrentMap + x + rowOffset + 0x1000)[0x420] & 0x1F;
-        if (terrain != 0x13 && terrain != 0x15) {
-            return 0;
-        }
-    }
-    {
-        u8 selByte = ((u8 *)*gCurrentMap)[0x52D4];
-        if (!func_ov000_021a90a8(selByte, x, y)) {
-            return 0;
-        }
-    }
+u32 unitKind2=((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0;
+if(data_ov000_021b5c0f[unitKind2*0x70]!=0x20 && func_ov000_021a9904(unitKind2)!=2) {
+u8 *m=(u8 *)*gCurrentMap;
+u16 rowOffset=*(u16 *)(m+y*2+0x3758);
+u8 terrain=(m+(x+rowOffset)+0x1000)[0x420]&0x1f;
+if(terrain==0x13 || terrain==0x15) {
+if(!func_ov000_021a90a8(m[0x52d4],x,y))return 0;
+}
+}
+}
     if (func_ov000_02178778(x, y) == 1) {
         return 0;
     }
-    {
+    if((((SelectedUnitFlagsA520 *)((u8 *)*(void **)((u8 *)*gCurrentMap+0x52d0)+8))->high)==2) {
         u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
-        u8 finalByte = ((u8 *)*gCurrentMap + x + rowOffset + 0x1000)[0x420];
+        u8 finalByte = ((u8 *)*gCurrentMap + (x + rowOffset) + 0x1000)[0x420];
         if (func_ov000_021a9084(finalByte) != 0) {
             return 0;
         }
     }
     return 1;
 }
-#pragma pop
+#pragma opt_propagation reset
 s32 func_ov000_0218a798(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov000_021a8a38(s32, s32, s32, s32);
     s32 ManhattanDistance(s32, s32, s32, s32);

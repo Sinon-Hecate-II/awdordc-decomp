@@ -186,8 +186,39 @@ void func_ov000_02171214(void) {
     func_01ffa3dc(&data_ov000_021b8c18, 7);
 }
 
-s32 func_ov000_0217122c(s32 arg0) { return 0; }
-
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_strength_reduction on
+s32 func_ov000_0217122c(s32 arg0) {
+extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern M2C_UNK data_ov000_021b8cdc;
+s32 func_020d1980(s32);s32 func_020d19e8(s32);s32 func_020d1938(s32);
+void *func_020e3218(void *);void func_02081590(void *,void *);
+s32 func_02084b08(s32);void func_ov000_0216a30c(s32,s32,s32);
+void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
+void func_02007ef4(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);
+s32 func_02084ac0(s32);void func_020e4cd8(s32,void *,void *,s32,s32,u16,s32);
+s32 func_02084b58(s32);s32 func_02084ba8(s32);s32 func_ov000_0216a77c(s32);s32 func_ov000_0216a7d4(s32);s32 func_02086680(s32);
+void func_0209b32c(s32,s16,s32,s32,s32,u16,u16);
+s32 i=arg0-1,off;u8 *p=(u8 *)*gCurrentMap+0x67a4+arg0*140;
+s32 n=i*5,a=p[0x27],b=p[0x1d],t,color;void *dst,*engine;
+if(!func_020d1980(arg0))return 0;
+if(func_020d19e8(arg0))return 0;
+func_02081590(func_020e3218(&data_ov000_021b8cdc),(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x28)+(n<<6));
+t=i*12;off=t+0x35c;
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+func_ov000_0216a30c(func_02084b08(i),off<<5,11);
+dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void * volatile *,0x1c)+((t+0x364)<<5);
+func_02007ef4(func_ov000_0216ce10(a),dst,128);
+off=(i+28)<<5;
+func_01ff9e44(func_ov000_0216ce84(b),off,32);
+if(!func_020d1938(arg0))func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
+color=func_020d1938(arg0)?0:3;off=(i<<7)+16;engine=*(void * volatile *)&gCur3DSpriteEngine;
+func_020e4cd8(func_02084ac0(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
+func_0209b32c(13,(s16)(n+3),1,func_02086680(func_ov000_0216a77c(func_02084b58(i))),0,(u16)color,(u16)(off+80));
+func_0209b32c(19,(s16)(n+3),1,func_02086680(func_ov000_0216a7d4(func_02084ba8(i))),0,(u16)color,(u16)(off+96));
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;
+}
+#pragma pop
 void func_ov000_02171468(u8 *p){
 extern void *gCur3DSpriteEngine,*data_027e00c8;
 extern M2C_UNK data_ov000_021b8ce8,data_ov000_021b8cf0,data_ov000_021b8d00,data_ov000_021b8d0c;

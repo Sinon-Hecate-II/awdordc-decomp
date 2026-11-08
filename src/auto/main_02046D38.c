@@ -1,6 +1,8 @@
 /* 18 functions from 0x02046D38 to 0x02047B84 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { char bytes[17]; } HexDigits;
+typedef struct { char bytes[20]; } HashPrefix;
 typedef struct { u32 lo, hi; } Unk046Pair;
 typedef struct { Unk046Pair a, b; s32 flag; } Unk046State;
 void func_02045cbc(void *);
@@ -134,6 +136,8 @@ void func_020473a8(void) {
 
 }
 
+#pragma push
+#pragma opt_propagation on
 void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
     void func_020651a4(void *, const void *, s32);
     void func_02076658(u8 *, u8 *, s32);
@@ -146,52 +150,42 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
     extern u8 data_020fcac0[];
     extern u8 data_020fcac8[];
 
-    s8 sp[0x48];
+    char input[32];
+    HashPrefix prefix;
+    HexDigits digits;
     s32 state;
     s32 i;
-    u8 *base;
     u8 *target;
+    u8 *base;
     s32 len;
 
     M2C_FIELD(&data_020fca58, s32 *, 0x8) = -1;
     state = M2C_FIELD(&data_020fca58, s32 *, 0x4);
     if (state == 1) return;
-    if (arg2 != 0) {
-        M2C_FIELD(&data_020fca58, s32 *, 0x4) = 1;
-        return;
-    }
-    if (state == 5) {
+    if(arg2) goto error;
+    switch(state) { case 5:
         if (arg1 == 0x20) {
-            for (i = 0; i < 8; i++) {
-                sp[i*2] = data_020ea95c[i*2];
-                sp[i*2+1] = data_020ea95c[i*2+1];
-            }
-            sp[16] = data_020ea95c[16];
-            for (i = 0; i < 10; i++) {
-                sp[0x11 + i*2] = data_020fca88[i*2];
-                sp[0x11 + i*2 + 1] = data_020fca88[i*2 + 1];
-            }
-            func_020651a4(sp + 0x25, arg0, 0x20);
-            target = M2C_FIELD(&data_020fca58, u8 *, 0x58) + 0x14;
-            func_02076658(target, sp + 0x11, 0x34);
-            base = M2C_FIELD(&data_020fca58, u8 *, 0x58);
+            target=M2C_FIELD(&data_020fca58,u8 **,0x58)+20;
+            digits=*(HexDigits *)data_020ea95c;
+            prefix=*(HashPrefix *)data_020fca88;
+            func_020651a4(input, arg0, 0x20);
+            func_02076658(target, prefix.bytes, 0x34);
             for (i = 0; i < 20; i++) {
-                u8 hi = target[i] >> 4;
-                u8 lo = target[i] & 0x0f;
-                base[i*2] = sp[hi];
-                base[i*2+1] = sp[lo];
+                M2C_FIELD(&data_020fca58,u8 **,0x58)[i*2] = digits.bytes[target[i] >>4];
+                M2C_FIELD(&data_020fca58,u8 **,0x58)[i*2+1] = digits.bytes[target[i]&15];
             }
             len = func_02068c34(data_020fcac0);
-            base[-len] = 0x26;
+            *(M2C_FIELD(&data_020fca58,u8 **,0x58)-len) = 0x26;
             M2C_FIELD(&data_020fca58, s32 *, 0x4) = 6;
-            return;
+            goto free_input;
         } else {
             M2C_FIELD(&data_020fca58, s32 *, 0x4) = 1;
+          free_input:
             func_020376d8(0, (s32)arg0, 0);
             return;
         }
-    }
-    if (state == 7) {
+    break;
+    case 7:
         len = func_02068c34(data_020fcac8);
         if (func_02068eac(arg0, data_020fcac8, len) == 0) {
             func_020376d8(0, (s32)arg0, 0);
@@ -206,9 +200,13 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
             M2C_FIELD(&data_020fca58, s32 *, 0x4) = 8;
             return;
         }
+    break;
     }
+    return;
+error:
+    M2C_FIELD(&data_020fca58,s32 *,4)=1;
 }
-
+#pragma pop
 void func_020475b8(s32 arg0) {
     extern s32 data_0213db80;
     data_0213db80 = arg0 | (arg0 << 0x10);

@@ -74,7 +74,7 @@ void func_02022ae4(void *a, u8 *b) {
 s32 func_020222d8(void *,u8 **,s32,s32,s32);
 void func_0200ef4c(s32 *);
 s32 func_020227c8(void *,void *);
-s32 date[4]; s32 low,result; u32 n,remaining; s32 i; u8 *next;
+s32 date[4]; u8 low; s32 result; u32 remaining; s32 i; u8 *next; u32 n;
 n=b[0]; remaining=b[1]; remaining=b[2]+(((n<<8)+remaining)<<8);b+=3;
 M2C_FIELD(a,s32 *,0x45c)=-1;
 func_0200ef4c(date);
@@ -82,12 +82,12 @@ M2C_FIELD(a,s32 *,0x80c)=date[2]+((date[0]+2000<<16)+(date[1]<<8));
 low=0;M2C_FIELD(a,u8 *,0x6b0)=low;
 M2C_FIELD(a,s32 *,0x5a0)=low;M2C_FIELD(a,s32 *,0x594)=low;i=low;
 do {
-{u32 x=b[0],y=b[1],z=b[2];n=z+(((x<<8)+y)<<8);}b+=3;
+n=b[0];n=(n<<8)+b[1];n=(n<<8)+b[2];b+=3;
 M2C_FIELD(a,s32 *,0x458)=-1;
 M2C_FIELD(a,u8 *,0x5ad)=0;M2C_FIELD(a,u8 *,0x5ac)=0;M2C_FIELD(a,u8 *,0x5af)=0;M2C_FIELD(a,u8 *,0x6b0)=0;M2C_FIELD(a,u8 *,0x5b0)=0;M2C_FIELD(a,u8 *,0x7b0)=0;
 M2C_FIELD(a,u8 **,0x804)=b;M2C_FIELD(a,u32 *,0x808)=n;
 remaining-=n+3;
-if(func_020222d8(a,&b,0,0,low)!=0 || M2C_FIELD(a,u32 *,0x594)<51 || M2C_FIELD(a,s32 *,0x5a0)==0){M2C_FIELD(a,u8 *,0x455)=9;return;}
+if(((s32 (*)(void *,u8 **,s32,s32,u8))func_020222d8)(a,&b,0,0,low)!=0 || M2C_FIELD(a,u32 *,0x594)<51 || M2C_FIELD(a,s32 *,0x5a0)==0){M2C_FIELD(a,u8 *,0x455)=9;return;}
 result=func_02022970(a);
 if(i==0 && M2C_FIELD(a,s8 **,0x800)!=0 && func_02022a78(M2C_FIELD(a,s8 **,0x800),(s8 *)a+0x7b0))result|=0x4000;
 low=(u8)result;

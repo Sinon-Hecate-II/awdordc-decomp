@@ -1,5 +1,6 @@
 /* 18 functions from 0x020543E8 to 0x020553C4 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct CallbackPair { s32 first, second; } CallbackPair;
 
 void func_020543e8(void **arg0, void *arg1) {
     M2C_UNK func_020496b8(s32);
@@ -91,6 +92,8 @@ M2C_UNK func_02054600(M2C_UNK arg0, void *arg1) {
     return 0;
 }
 
+#pragma push
+#pragma opt_common_subs off
 s32 func_0205495c(M2C_UNK a, void *b) {
     void *func_02037794(M2C_UNK);
     s32 func_020491bc(M2C_UNK, s32, M2C_UNK);
@@ -113,13 +116,13 @@ s32 func_0205495c(M2C_UNK a, void *b) {
 
     void **arg0 = (void **)a;
     void *base = *arg0;
-    s32 sp8;
     s32 spC;
-    char buf71[0x14];
-    char buf52[0x22];
-    char buf31[0x24];
-    char buf81[0x110];
-    char other[0x24];
+    s32 sp8;
+    char buf81[0x100];
+    char buf71[0x10];
+    char buf52[0x1f];
+    char buf31[0x21];
+    char other[0x21];
     void *p;
     void *q;
     s32 num;
@@ -128,23 +131,25 @@ s32 func_0205495c(M2C_UNK a, void *b) {
 
     if (M2C_FIELD(b, s32 *, 0) != 0x68) {
         func_020640a8(&data_020fec18, &data_020fec0c, &data_020feb24, 0xc1);
+    }
         ret = func_02050208(arg0, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &spC, &sp8, &data_020febb0);
         if (ret != 0) {
             return ret;
         }
-        if (sp8 == 0) {
+        if (sp8 != 0) {
             M2C_FIELD(b, s32 *, 0) = 0x6a;
             return 0;
         }
-    }
+ 
 
     p = M2C_FIELD(b, void **, 0x18);
     q = (void *)func_02068fdc((M2C_UNK)p, (M2C_UNK)&data_020feba8);
-    if (q == NULL) goto fail_end_0x794;
+    if (q == NULL) goto end;
 
     *((char *)q) = 0;
+    p = M2C_FIELD(b,void **,0x18);
 
-    if (func_02068eac((M2C_UNK)p, (M2C_UNK)&data_020feb88, 6) != 0) goto fail_end_0x778;
+    if (func_02068eac((M2C_UNK)p, (M2C_UNK)&data_020feb88, 6) != 0) goto fail_end_0x794;
 
     if (func_02058254((M2C_UNK)p, (M2C_UNK)&data_020feb90, (M2C_UNK)buf71, 0x10) == 0) {
         M2C_FIELD(b, s32 *, 0) = 0x6a;
@@ -168,28 +173,26 @@ s32 func_0205495c(M2C_UNK a, void *b) {
     len = func_02068c34((M2C_UNK)buf81);
     func_020491bc((M2C_UNK)buf81, len, (M2C_UNK)other);
 
-    if (func_02068d98((M2C_UNK)buf31, (M2C_UNK)other) != 0) goto fail_end_0x778;
-
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&data_020febe0);
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&data_020feba8);
-    M2C_FIELD(b, s32 *, 0) = 0x69;
-    M2C_FIELD(b, s32 *, 0xc) = num;
-
-  finish_0x78c:
-    M2C_FIELD(b, s32 *, 0x20) = 0;
+    if (func_02068d98((M2C_UNK)buf31, (M2C_UNK)other) != 0) {
+        func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febb4);
+        func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
+        M2C_FIELD(b,s32 *,0)=0x6a;
+        return 0;
+    }
+    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febe0);
+    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
+    M2C_FIELD(b,s32 *,0)=0x69;
+    M2C_FIELD(b,s32 *,12)=num;
+    goto finish;
+fail_end_0x794:
+    M2C_FIELD(b,s32 *,0)=0x6a;
     return 0;
-
-  fail_end_0x778:
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&data_020febb4);
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&data_020feba8);
-    M2C_FIELD(b, s32 *, 0) = 0x6a;
-    return 0;
-
-  fail_end_0x794:
-    M2C_FIELD(b, s32 *, 0) = 0x6a;
+finish:
+    M2C_FIELD(b,s32 *,0x20)=0;
+end:
     return 0;
 }
-
+#pragma pop
 s32 func_02054bb8(void **arg0,void *arg1){
 s32 func_02048688(s32); void *func_02048690(s32,s32);
 M2C_UNK func_0204890c(s32,s32);
@@ -216,7 +219,7 @@ s32 func_02054c8c(void **arg0, void *arg1) {
     s32 func_02050430(void **, s32, void *, s32 *, s32, M2C_UNK *);
     s32 func_020505b0(void **, void *, s32 *, s32 *, s32 *);
     M2C_UNK func_020506ec(void **, void *);
-    s32 func_02050838(void **, s32, s32, void *, s32, s32);
+    s32 func_02050838(void **, CallbackPair, void *, s32, s32);
     s32 func_02054bb8(void **, void *);
     M2C_UNK func_02057f74(void **, void *, s32, s32, s32, s32);
     M2C_UNK func_02058644(void **, M2C_UNK *);
@@ -225,8 +228,7 @@ s32 func_02054c8c(void **arg0, void *arg1) {
     extern M2C_UNK data_020fec50;
     s32 sp20;
     s32 sp1C;
-    s32 sp18;
-    s32 sp14;
+    CallbackPair pair;
     s32 sp10;
     s32 spC;
     s32 sp8;
@@ -273,14 +275,11 @@ loop_15:
         return temp_r0_2;
     }
     if (sp10 != 0) {
-        if (spC <= 0x66) {
-            if (spC < 0x66) {
-                if (spC != 1) {
-                    goto block_41;
-                }
+        switch (spC) {
+        case 1:
                 temp_r1 = M2C_FIELD(temp_r7, s32 *, 0x1BC);
-                sp14 = temp_r1;
-                sp18 = M2C_FIELD(temp_r7, s32 *, 0x1C0);
+                pair.first = temp_r1;
+                pair.second = M2C_FIELD(temp_r7, s32 *, 0x1C0);
                 if (temp_r1 != 0) {
                     temp_r0_5 = func_02037794(0xC);
                     if (temp_r0_5 == NULL) {
@@ -290,32 +289,20 @@ loop_15:
                     M2C_FIELD(temp_r0_5, s32 *, 0) = (s32) M2C_FIELD(arg1, s32 *, 0xC);
                     M2C_FIELD(temp_r0_5, s32 *, 8) = func_02049274(sp10);
                     M2C_FIELD(temp_r0_5, s32 *, 4) = func_02049910(0);
-                    temp_r0 = func_02050838(arg0, M2C_FIELD(&sp14, s32 *, 0), M2C_FIELD(&sp14, s32 *, 4), temp_r0_5, 0, 2);
+                    temp_r0 = func_02050838(arg0, pair, temp_r0_5, 0, 2);
                     if (temp_r0 != 0) {
                         return temp_r0;
                     }
-                    goto block_41;
-                }
-                goto block_41;
-            }
-            func_0204f978(arg0, M2C_FIELD(arg1, s32 *, 0xC), 0x67, &data_020fec50);
-            goto block_41;
-        }
-        temp_r0_6 = spC - 0xC8;
-        switch (temp_r0_6) {
-        default:
+                    }
+
             break;
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-            func_02057f74(arg0, arg1, spC, M2C_FIELD(arg1, s32 *, 0x18), sp10, sp8);
+        case 0x66:
+            func_0204f978(arg0, M2C_FIELD(arg1,s32 *,0xc),0x67,&data_020fec50);
             break;
+        case 200: case 201: case 202: case 203: case 204: case 205: case 206: case 207: case 208:
+            func_02057f74(arg0,arg1,spC,M2C_FIELD(arg1,s32 *,0x18),sp10,sp8);
+            break;
+        default: break;
         }
 block_41:
         func_020506ec(arg0, arg1 + 0x18);

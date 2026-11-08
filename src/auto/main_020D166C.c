@@ -1,5 +1,7 @@
 /* 23 functions from 0x020D166C to 0x020D2470 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 kind:6, flags:2; } UnitKindD1690;
+typedef struct { u16 hp:7, flags:9; } UnitHpD1690;
 static inline u8 PlayerStatusIndex(void *p) { return M2C_FIELD(p,s32 *,0x6810); }
 
 void func_020d166c(s32 a, s32 b) {
@@ -8,15 +10,16 @@ void func_020d166c(s32 a, s32 b) {
     func_020d0de4((s16)a, (s16)b);
 }
 
-void func_020d1690(u8 arg0, s32 arg1, void *arg2) {
+#pragma opt_strength_reduction off
+void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     extern void **gCurrentMap;
     s32 func_020a5ae0(s32);
-    u8 func_020a8204(void *);
+    s32 func_020a8204(void *);
     s32 func_020a796c(s32, s32, s32);
     s32 func_020a86f8(void *, s32, s32, s32);
     void func_020d068c(void *, s16);
     s32 func_0207c8ec(s32, s32);
-    s32 func_ov000_0216b154(void);
+    s32 func_ov000_0216b154(s32);
     void func_020d0afc(void *, s32, s32);
 
     s32 r4 = 0, r5 = 0, r6 = 0;
@@ -32,63 +35,58 @@ void func_020d1690(u8 arg0, s32 arg1, void *arg2) {
         unit[1] = (u8)*(s16 *)arg2;
         unit[2] = (u8)*((s16 *)arg2 + 1);
         func_020d068c((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
+    }
         if (func_020a8204(unit)) {
             r4 = func_020a86f8(unit, func_020a5ae0(arg1), 0, 0);
         } else {
-            r6 = func_020a796c(((u32)unit[0] << 26) >> 26, arg1, 1);
+            r6 = func_020a796c(((UnitKindD1690 *)unit)->kind, arg1, 1);
             if (r6) {
                 r5 = func_020a86f8(unit, func_020a5ae0(arg1), 1, 0);
             }
         }
-    } else {
-        r6 = func_020a796c(((u32)unit[0] << 26) >> 26, arg1, 1);
-        if (r6) {
-            r5 = func_020a86f8(unit, func_020a5ae0(arg1), 1, 0);
-        }
-    }
 
-    if (r4 > r5) {
-        m = (u8 *)*gCurrentMap + 0x6e00;
-        *(s16 *)(m + 0xd6) = 1;
-        *(s16 *)(m + 0xd0) = (s16)r4;
-        *(s16 *)((u8 *)*gCurrentMap + 0x6ec8) -= 1;
-    } else {
+    if (r4 <= r5) {
         if (r6) {
             m = (u8 *)*gCurrentMap + 0x6e00;
             *(s16 *)(m + 0xd6) = 2;
-            *(s16 *)(m + 0xd0) = (s16)r5;
+            *(s16 *)((u8 *)*gCurrentMap + 0x6ed0) = r5;
         }
+    } else {
+        m = (u8 *)*gCurrentMap + 0x6e00;
+        *(s16 *)(m + 0xd6) = 1;
+        *(s16 *)((u8 *)*gCurrentMap + 0x6ed0) = r4;
+        *(s16 *)((u8 *)*gCurrentMap + 0x6ec8) -= 1;
     }
 
     func_020d0afc((u8 *)*gCurrentMap + 0x6eb8, 0, 0);
 
-    m = (u8 *)*gCurrentMap;
     {
         void *o = *(void **)((u8 *)*gCurrentMap + 0x6eb8);
-        f6 = *(u16 *)((u8 *)o + 6);
+        f6 = ((UnitHpD1690 *)((u8 *)o+6))->hp;
     }
-    if ((f6 & 0x7F) == 0) {
+    if (f6 == 0) {
         low7 = 0;
     } else {
-        low7 = func_0207c8ec((f6 & 0x7F) - 1, 10) + 1;
+        low7 = func_0207c8ec(f6 - 1, 10) + 1;
     }
+    m = (u8 *)*gCurrentMap;
     d4 = *(s16 *)(m + 0x6ed4);
     prod = func_0207c8ec(d4 * low7, 10);
     *(s16 *)(m + 0x6ecc) = (s16)prod;
-    *(s16 *)(m + 0x6ed4) = *(s16 *)(m + 0x6ecc);
+    *(s16 *)((u8 *)*gCurrentMap + 0x6ed4) = *(s16 *)((u8 *)*gCurrentMap + 0x6ecc);
 
-    if (func_ov000_0216b154()) {
-        cc = *(s16 *)(m + 0x6ecc);
+    if (func_ov000_0216b154(arg1)) {
+        cc = *(s16 *)((u8 *)*gCurrentMap + 0x6ecc);
         if (cc > 0) {
-            *(s16 *)(m + 0x6ecc) = 1;
-            *(s16 *)(m + 0x6ed4) = *(s16 *)(m + 0x6ecc);
+            *(s16 *)((u8 *)*gCurrentMap + 0x6ecc) = 1;
+            *(s16 *)((u8 *)*gCurrentMap + 0x6ed4) = *(s16 *)((u8 *)*gCurrentMap + 0x6ecc);
         }
     }
 
     unit[1] = saved1;
     unit[2] = saved2;
 }
-
+#pragma opt_strength_reduction reset
 s32 func_020d18e8(s32 *arg0) {
     M2C_UNK func_020a7310(s32);
     func_020a7310(*arg0);

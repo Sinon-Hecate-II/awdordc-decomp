@@ -107,7 +107,7 @@ void func_ov002_021e2d04(void *,s16,s16,s16);
 void func_ov002_021e2d2c(void *,s16,s16,s16,s32,s32,s32,s32,s32);
 void func_ov002_021e2e18(void *,s16,s16,u16);
 extern u8 data_ov002_021ea704[],data_ov002_021ea71c[],data_ov002_021f3020[],data_ov002_021f3034[],data_ov002_021f3048[],data_ov002_021f30f4[],data_ov002_021f3103[],data_ov002_021f3108[],data_ov002_021f314e[];
-void *settings; s16 x,y,z; void *q; s32 pointScale; s32 offset,finalOff; u32 scale; u8 index;void *p,*extra,*point;
+void *settings; s16 x,y,z; void *q; u16 pointScale; s32 offset,finalOff; u32 scale; u8 index;void *p,*extra; u16 *point;
 if(M2C_FIELD(data_ov002_021f3020,s32 *,M2C_FIELD(arg0,u8 *,0x8C)*100)==0)return;
 if(M2C_FIELD(arg0,void **,0x5C)){
 p=func_02082028(8);
@@ -116,9 +116,9 @@ M2C_FIELD(p,void **,0)=M2C_FIELD(arg0,void **,0x5C);M2C_FIELD(p,void **,4)=M2C_F
 }
 M2C_FIELD(arg0,void **,0x5C)=((p=func_02082028(0x88)) ? init_021ea71c(p):p);
 q=M2C_FIELD(arg0,void **,0x5C);
-index=M2C_FIELD(arg0,u8 *,0x8C); offset=sizeof(u8[24])*index;
-if(data_ov002_021f314e[index*44])point=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,offset),void **,40)+arg1*8;
-else point=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,offset),void **,40)+data_ov002_021f3103[offset]*8;
+index=M2C_FIELD(arg0,u8 *,0x8C); offset=(u32)index*24U;
+if(data_ov002_021f314e[index*44])point=(u16 *)(M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,offset),void **,40)+arg1*8);
+else point=(u16 *)(M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,offset),void **,40)+data_ov002_021f3103[offset]*8);
 x=M2C_FIELD(point,s16 *,0x50);y=M2C_FIELD(point,s16 *,0x52);z=M2C_FIELD(point,s16 *,0x54);pointScale=M2C_FIELD(point,u16 *,0x56);
 if(data_ov002_021f3108[offset]){
 extra=M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,offset),void **,40)+data_ov002_021f3103[offset]*4;

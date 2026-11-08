@@ -521,8 +521,9 @@ void func_0205e8b0(void *arg0) {
  if(n!=-1){data_0213e3b0[n]=0;func_0205f83c(arg0,data_0213e3b0,n,spC);}
  }while(func_02049534(M2C_FIELD(arg0,s32 *,0))!=0);
 }
+#pragma push
 #pragma opt_propagation off
-#pragma scheduling off
+#pragma scheduling on
 void func_0205da30(void *arg0) {
 s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 func_02049208(void);
 void func_0205d944(s32,s32,u16,void *,s32);
@@ -566,5 +567,4 @@ M2C_FIELD(arg0,s32 *,40)=func_02049208()+500;
 M2C_FIELD(arg0,s32 *,36)=30;
 
 }
-#pragma opt_propagation reset
-#pragma scheduling reset
+#pragma pop

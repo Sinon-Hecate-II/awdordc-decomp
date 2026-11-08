@@ -15,6 +15,21 @@ static inline void DrawSpritePair(s32 xArg, s32 y, s32 tile, u16 *desc) {
 }
 #pragma opt_propagation reset
 
+#pragma push
+#pragma opt_propagation off
+static inline void EmitSpritePriority(u16 x,s32 yArg,u32 tile,void *desc,s32 priority) {
+void func_01ffaacc(s32,s32,s32,void *,s32);
+s32 y=(u16)yArg;
+((void (*)(u16,u16,u32,void *,s32))func_01ffaacc)(x,(u16)y,tile,desc,priority);
+}
+static inline void DrawSpritePairPriority(s32 xArg,s32 y,s32 tile,void *desc,s32 priority) {
+s32 x=(u16)xArg;
+void func_01ffaacc(s32,s32,s32,void *,s32);
+extern s32 gCur3DSpriteEngine;
+((void (*)(u16,u16,u16,void *,s32))func_01ffaacc)(x,(u16)y,(u16)tile,desc,priority);
+((void (*)(u16,u16,u16,void *,s32))func_01ffaacc)(x,(u16)((y&0xff00)|((y+8)&255)),(u16)(tile+(0x3ff&(4>>(s32)(((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30)))),desc,priority);
+}
+#pragma pop
 typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
 
@@ -364,60 +379,31 @@ s32 func_0209b5e4(M2C_UNK a,s32 b) {
  return n;
 }
 
-void func_0209b67c(u16 a0, s32 a1, u16 a2, u16 a3, s32 a4) {
-    void func_01ffaacc(s32, s32, s32, void *, s32);
-    extern u8 data_027e005c[];
-    extern u8 data_027e00a4[];
-    extern u8 data_027e0084[];
-    extern s32 gCur3DSpriteEngine;
-
-    s32 y = a1;
-    u16 param = a3;
-    s32 priority = a4;
-    s32 n = ((s32)a2 + 7) >> 3;
-    u16 x = a0;
-
-    if (n >= 4) {
-        do {
-            u32 _eng;
-            s32 mode;
-            func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e005c, priority);
-            n -= 4;
-            _eng = *(u16 *)(s32)gCur3DSpriteEngine;
-            mode = (s32)((_eng << 17) >> 30);
-            param = (u16)(param + (0x3ff & (8 >> mode)));
-            x = (u16)(((((x & 0x1ff) + 0x20) & 0x1ff) | (x & 0xfe00)));
-        } while (n >= 4);
-    }
-
-    if (n >= 2) {
-        u32 _eng;
-        s32 mode;
-        s32 y2;
-        func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e00a4, priority);
-        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
-        mode = (s32)((_eng << 17) >> 30);
-        y2 = (y & 0xff00) | ((y + 8) & 0xff);
-        func_01ffaacc((s32)x, y2, (s32)(u16)(param + (0x3ff & (4 >> mode))), (void *)data_027e0084, priority);
-        n -= 2;
-        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
-        mode = (s32)((_eng << 17) >> 30);
-        param = (u16)(param + (0x3ff & (2 >> mode)));
-        x = (u16)((((((x & 0x1ff) + 0x10) & 0x1ff) | (x & 0xfe00))));
-    }
-
-    if (n >= 1) {
-        u32 _eng;
-        s32 mode;
-        s32 y2;
-        func_01ffaacc((s32)x, (s32)(u16)y, (s32)param, (void *)data_027e0084, priority);
-        _eng = *(u16 *)(s32)gCur3DSpriteEngine;
-        mode = (s32)((_eng << 17) >> 30);
-        y2 = (y & 0xff00) | ((y + 8) & 0xff);
-        func_01ffaacc((s32)x, y2, (s32)(u16)(param + (0x3ff & (4 >> mode))), (void *)data_027e0084, priority);
-    }
+#pragma push
+#pragma scheduling off
+void func_0209b67c(s32 a0,s32 a1,s32 a2,u16 a3,s32 a4) {
+extern u8 data_027e005c[],data_027e00a4[],data_027e0084[];
+extern s32 gCur3DSpriteEngine;
+s32 n=(a2+7)>>3;u32 x=a0,y=a1;u16 param=a3;
+if(n>=4)do {
+u32 mode,nextParam,nextX;
+EmitSpritePriority((u16)x,y,param,data_027e005c,a4);
+mode=((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30;
+nextParam=param+(0x3ff&(8>>(s32)mode));
+nextX=(((x&0x1ff)+32)&0x1ff)|(x&0xfe00);
+param=(u16)nextParam;x=(u16)nextX;n-=4;
+}while(n>=4);
+if(n>=2){
+u32 mode;
+DrawSpritePairPriority(x,y,param,data_027e00a4,a4);
+mode=((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30;
+param=(u16)(param+(0x3ff&(2>>(s32)mode)));
+x=(u16)((((x&0x1ff)+16)&0x1ff)|(x&0xfe00));
+n-=2;
 }
-
+if(n>=1)DrawSpritePairPriority(x,y,param,data_027e0084,a4);
+}
+#pragma pop
 void func_0209b8c0(void *arg0) {
     void func_0209b4a8(s32, s32, u16);
     M2C_UNK func_020e35cc(s32);

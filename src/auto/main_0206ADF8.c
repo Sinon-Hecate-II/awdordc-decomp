@@ -142,7 +142,7 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
 }
 
 u16 *func_0206b370(s32 value, u16 *end, FormatFlags flags) {
-s32 width; s32 precision=flags.precision; s32 negative=0; u16 base; u16 *p=end; s32 count=0; s32 digit; s32 sign; u16 type; u8 alt;
+s32 width; s32 negative=0; u32 base; u16 *p=end; s32 count=0; s32 precision=flags.precision; s32 digit; s32 sign; u16 type; u8 alt;
 *--p=0;
 alt=flags.alternate; type=flags.conversion; width=flags.width; sign=flags.sign;
 if(value==0 && precision==0) { if(!alt || type!='o') return p; }

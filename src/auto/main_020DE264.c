@@ -182,7 +182,49 @@ void func_020de610(void) {
 
 }
 
-M2C_UNK func_020de614(M2C_UNK a0, M2C_UNK a1) { return 0; }
+M2C_UNK func_020de614(M2C_UNK a0, M2C_UNK a1) {
+void func_01ff9ce8(u8); void func_0200bc5c(void *); void *func_020e3218(void *); void func_020814e4(void *); void func_02081590(void *,void *); void func_02081528(void); void func_02080944(void *,s32,s32,s32);
+void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 func_020a8ff4(void *);
+void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
+extern void *gCur3DSpriteEngine,*data_027e00c8;
+extern M2C_UNK data_0212d460,data_0212d468,data_0212d478,data_0212d488;
+void func_020de868(s32,s32,void *); s32 func_020de884(s32);
+void *old=gCur3DSpriteEngine; void *p; s32 code,t;
+gCur3DSpriteEngine=data_027e00c8;
+func_01ff9ce8(1);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
+func_0200bc5c(&data_0212d460);
+func_020814e4(func_020e3218(&data_0212d468));
+code=GetSetupCode((void *)a0);
+switch(code) {
+case 4: func_02081590(func_020e3218(&data_0212d478),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 2: func_02081590(func_020e3218(&data_0212d488),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+}
+func_02081528();
+func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),32,24,5);
+M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
+gCur3DSpriteEngine=old;
+M2C_FIELD(a0,u16 *,0x48)|=0x20;
+p=M2C_FIELD(a0,void **,0x54);
+SetupSetFrame(p,(u16)(((SetupSprite *)p)->baseFrame+2),0);
+func_02088f1c(M2C_FIELD(a0,void **,0x58));
+func_02088da8(M2C_FIELD(a0,void **,0x60));
+func_0208b758(M2C_FIELD(a0,void **,0x64),0x44000011);
+func_02088f1c(M2C_FIELD(a0,void **,0x64));
+if(func_020a8ff4(M2C_FIELD(a0,void **,0x68))) {
+t=func_020a8ff4(M2C_FIELD(a0,void **,0x68));
+p=M2C_FIELD(a0,void **,0x68);
+M2C_FIELD(p,u16 *,0xe)=t;
+M2C_FIELD(p,u16 *,0x10)=0;
+M2C_FIELD(p,u16 *,0xc)=12;
+M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+}
+M2C_FIELD(a0,u16 *,0x48)&=~0x100;
+M2C_FIELD(a0,u16 *,0x48)&=~0x200;
+M2C_FIELD(a0,u8 *,0x41)=0;
+code=GetSetupCode((void *)a0);
+func_ov010_02228f80(a1,code,1,(void *)func_020de868,(void *)a0,(void *)func_020de884,(void *)a0,0);
+}
 
 void func_020de868(s32 arg0, s32 arg1, void *arg2) {
     if (arg0 != 0) {
@@ -285,12 +327,12 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
         t = func_020a8ff4(M2C_FIELD((void *)arg0, void **, 0x68));
         p = M2C_FIELD((void *)arg0, void **, 0x68);
         M2C_FIELD(p, u16 *, 0xe) = (u16)t;
-        M2C_FIELD(p, u16 *, 0xc) = 0xc;
         M2C_FIELD(p, u16 *, 0x10) = 0;
+        M2C_FIELD(p, u16 *, 0xc) = 0xc;
         M2C_FIELD(p, u16 *, 0x2) = M2C_FIELD(p, u16 *, 0x4);
     }
-    M2C_FIELD((void *)arg0, s16 *, 0x48) &= ~0x100;
-    M2C_FIELD((void *)arg0, s16 *, 0x48) &= ~0x200;
+    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x100;
+    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x200;
 
     M2C_FIELD((void *)arg0, u8 *, 0x41) = 0;
     if(M2C_FIELD((void *)arg0,u16 *,0x48)&1) {

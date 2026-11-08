@@ -338,7 +338,8 @@ loop_10:
     func_020c4cdc(sp0);
     func_020c4dd0(sp0);
 }
-#pragma pop
+#pragma push
+#pragma opt_scheduling off
 void func_020859b4(M2C_UNK arg0) {
     s32 func_02084644();
     M2C_UNK func_020c4cdc(M2C_UNK);
@@ -348,8 +349,7 @@ void func_020859b4(M2C_UNK arg0) {
     u32 func_020cd164(s32, s32);
     void *func_ov010_02229b00();
     extern M2C_UNK data_02157634;
-    s32 sp4;
-    s32 sp0;
+    s32 coords[2];
     s32 var_r2;
     s32 var_r2_2;
     s32 var_r2_3;
@@ -361,6 +361,7 @@ void func_020859b4(M2C_UNK arg0) {
     void *temp_r0;
     void *temp_r5;
     void *temp_r6;
+    u8 *values;
 
     if (func_02084644() != 2) {
         return;
@@ -376,16 +377,16 @@ void func_020859b4(M2C_UNK arg0) {
     switch (temp_r1) {                              /* switch 1; irregular */
     case 0:                                         /* switch 1 */
         temp_r6 = func_020c4acc();
-        sp4 = M2C_FIELD(&data_02157634, s32 *, 8);
-        sp0 = M2C_FIELD(&data_02157634, s32 *, 0xC);
-        temp_r0_2 = func_020cd164(M2C_FIELD(&data_02157634, u8 *, 1) + 1, M2C_FIELD(&data_02157634, u8 *, 4) + 1);
+        values=(u8 *)&data_02157634;
+        coords[0]=M2C_FIELD(values,s32 *,12);coords[1]=M2C_FIELD(values,s32 *,8);
+        temp_r0_2 = func_020cd164(values[1] + 1, values[4] + 1);
         switch (temp_r0_2) {                        /* switch 2 */
         case 2:                                     /* switch 2 */
             break;
         default:                                    /* switch 2 */
             break;
         case 0:                                     /* switch 2 */
-            var_r2 = sp4;
+            var_r2 = coords[1];
             if (var_r2 > 0x01388000) {
                 var_r2 = 0x01388000;
             } else if (var_r2 < -0x01388000) {
@@ -394,11 +395,11 @@ void func_020859b4(M2C_UNK arg0) {
             M2C_FIELD(temp_r6, s32 *, 0x50) = (s32) M2C_FIELD(temp_r6, s32 *, 0x54);
             M2C_FIELD(temp_r6, s32 *, 0x54) = var_r2;
             M2C_FIELD(temp_r6, s32 *, 0x44) = (s32) (M2C_FIELD(temp_r6, s32 *, 0x44) - 1);
-            M2C_FIELD(temp_r0, s32 *, 0x20) = sp4;
+            M2C_FIELD(temp_r0, s32 *, 0x20) = coords[1];
             break;
         case 1:                                     /* switch 2 */
-            func_020c5770(0, &sp4, &sp0);
-            var_r2_2 = sp4;
+            func_020c5770(0, &coords[1], &coords[0]);
+            var_r2_2 = coords[1];
             if (var_r2_2 > 0x01388000) {
                 var_r2_2 = 0x01388000;
             } else if (var_r2_2 < -0x01388000) {
@@ -407,11 +408,11 @@ void func_020859b4(M2C_UNK arg0) {
             M2C_FIELD(temp_r6, s32 *, 0x50) = (s32) M2C_FIELD(temp_r6, s32 *, 0x54);
             M2C_FIELD(temp_r6, s32 *, 0x54) = var_r2_2;
             M2C_FIELD(temp_r6, s32 *, 0x48) = (s32) (M2C_FIELD(temp_r6, s32 *, 0x48) + 1);
-            M2C_FIELD(temp_r0, s32 *, 0x20) = sp4;
+            M2C_FIELD(temp_r0, s32 *, 0x20) = coords[1];
             break;
         case 3:                                     /* switch 2 */
-            func_020c5770(2, &sp4, &sp0);
-            var_r2_3 = sp4;
+            func_020c5770(2, &coords[1], &coords[0]);
+            var_r2_3 = coords[1];
             if (var_r2_3 > 0x01388000) {
                 var_r2_3 = 0x01388000;
             } else if (var_r2_3 < -0x01388000) {
@@ -420,16 +421,15 @@ void func_020859b4(M2C_UNK arg0) {
             M2C_FIELD(temp_r6, s32 *, 0x50) = (s32) M2C_FIELD(temp_r6, s32 *, 0x54);
             M2C_FIELD(temp_r6, s32 *, 0x54) = var_r2_3;
             M2C_FIELD(temp_r6, s32 *, 0x4C) = (s32) (M2C_FIELD(temp_r6, s32 *, 0x4C) + 1);
-            M2C_FIELD(temp_r0, s32 *, 0x20) = sp4;
+            M2C_FIELD(temp_r0, s32 *, 0x20) = coords[1];
             break;
         }
         break;
     case 1:                                         /* switch 1 */
-        // add declaration for func_020c4acc? It was not declared but current best includes call
         temp_r7 = M2C_FIELD(&data_02157634, u8 *, 1);
         var_r8 = 0;
         do {
-            if ((s32) M2C_FIELD((&data_02157634 + var_r8), s8 *, 4) >= 0) {
+            if ((s32) M2C_FIELD(((u8 *)&data_02157634 + var_r8), s8 *, 4) >= 0) {
                 temp_r5 = func_020c5328();
                 temp_r0_3 = func_020cd164(temp_r7 + 1, var_r8 + 1);
                 switch (temp_r0_3) {                /* switch 3 */
@@ -456,7 +456,7 @@ void func_020859b4(M2C_UNK arg0) {
     func_020c4cdc(arg0);
     func_020c4dd0(arg0);
 }
-
+#pragma pop
 void func_02085c04(void) {
     M2C_UNK func_020c47e4(s32);
     func_020c47e4(func_020c4acc() + 0x58);

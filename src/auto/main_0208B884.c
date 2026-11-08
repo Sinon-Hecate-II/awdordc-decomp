@@ -216,8 +216,35 @@ s32 func_0208c214(void *arg0) {
     return func_02094758();
 }
 
-M2C_UNK func_0208c248(void) {
-    return 0;
+void func_0208c248(void *obj) {
+extern u16 *data_02101e84; extern u8 *data_02101e88;
+extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
+void func_01ffa574(void *); s32 func_020910d0(s32,void *,s32,s32); s32 func_020912bc(s32,u16,u16);
+Flags0208 *f=(Flags0208 *)((char *)obj+0x44);
+Flags0208B *g=(Flags0208B *)((char *)obj+0x48);
+void *saved,*current; s32 i; s32 xyz[3]; u16 x,y,flag; void (*callback)(void *);
+if(g->low) { --g->low; return; }
+if(g->high && f->b && ((*data_02101e84 & 0xc0b) || data_02101e88[0x14])) {func_01ffa574(obj);return;}
+if((u16)f->e) func_0208c0dc(obj);
+callback=M2C_FIELD(obj,void (**)(void *),0x6c); if(callback) callback(obj);
+saved=gCur3DSpriteEngine;
+for(i=0;i<2;i++){
+if(i==0) current=data_027e00c8; else current=data_027e00c4;
+gCur3DSpriteEngine=current;
+if(f->mode==0 && current!=data_027e00c8) continue;
+if(f->mode==1 && current!=data_027e00c4) continue;
+if(f->mode==3 && current!=saved) continue;
+switch((u16)f->d) {
+case 1:
+xyz[0]=M2C_FIELD(obj,s32 *,0x34); xyz[1]=M2C_FIELD(obj,s32 *,0x38);xyz[2]=M2C_FIELD(obj,s32 *,0x3c);
+if(!func_020910d0(M2C_FIELD(obj,s32 *,0x4c),xyz,M2C_FIELD(obj,s32 *,0x40),(M2C_FIELD(obj,u32 *,0x44)&0xffff))) {func_01ffa574(obj);return;} break;
+case 2:
+x=(u16)(M2C_FIELD(obj,s32 *,0x34)&0x1ff); y=M2C_FIELD(obj,s32 *,0x38)&0xff;flag=(u16)f->c;
+if(flag) y|=0x400;
+if(!func_020912bc(M2C_FIELD(obj,s32 *,0x4c),x,y)) {func_01ffa574(obj);return;} break;
+}
+}
+gCur3DSpriteEngine=saved; ++g->high;
 }
 
 s32 func_0208c49c(void *arg0) {
@@ -251,8 +278,7 @@ void func_0208c510(void) {
 }
 
 void func_0208c51c(void) {
-    M2C_UNK func_0208c248();
-    func_0208c248();
+    ((void (*)())func_0208c248)();
 }
 
 void func_0208c528(M2C_UNK arg0) {
