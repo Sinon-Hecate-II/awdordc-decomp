@@ -457,109 +457,89 @@ void func_ov007_02214a6c(s32 arg0, s32 arg1) {
     M2C_UNK func_020d216c(void);
     M2C_UNK func_020d1f2c(void);
     M2C_UNK func_020ceffc(void);
-    M2C_UNK func_0207f460(void);
-    void *func_020a660c(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 func_0207f460(u8);
+    void *func_020a660c(s16, s16, s16, s32);
     void func_ov007_0221b688(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cf2c8(void);
     extern s32 *gCurrentMap;
 
-    s32 width = arg0;
-    s32 height = arg1;
     void *r4v;
     void *r5;
     void *r6;
-    s32 y;
-    s32 x;
+    s32 x,z,y,n,y2;
     void *map;
-    M2C_UNK val;
-    s32 w2, h2;
-    u32 linear;
-    u16 rowOffset, idx;
-    M2C_UNK dword;
-    s32 maskA, maskB, maskC;
+    s32 val;
+    s32 rowOffset, idx;
+    s32 dword;
+    s32 maskA,maskB,maskC,kind;
     s32 bits;
     u8 old;
     void *ptr;
-    s32 u;
-
+    s32 u,v;
+    s32 width=arg0,height=arg1;
     r4v = func_020c79ec();
     r5 = (void *)func_020c79f8();
     r6 = (void *)func_020c7a08();
     func_020c879c(r4v);
 
-    map = (void *)*gCurrentMap;
-    *(u16 *)((u8 *)map + 0x5144) = (u16)width;
-    *(u16 *)((u8 *)map + 0x5146) = (u16)height;
-
+    M2C_FIELD(*gCurrentMap,u16 *,0x5144)=width;
+    M2C_FIELD(*gCurrentMap,u16 *,0x5146)=height;
     func_020a68d4();
     func_020d216c();
     func_020d1f2c();
     func_020ceffc();
-
-    map = (void *)*gCurrentMap;
-    for (y = 0; y < *(u16 *)((u8 *)map + 0x5146); y++) {
-        s32 xdim = *(u16 *)((u8 *)map + 0x5144);
-        for (x = 0; x < xdim; x++) {
-            map = (void *)*gCurrentMap;
-            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
-            idx = (u16)(x + rowOffset);
-            *(u16 *)((u8 *)map + idx * 2 + 0x0A10) = 3;
-            map = (void *)*gCurrentMap;
-            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
-            idx = (u16)(x + rowOffset);
-            *(u8 *)((u8 *)map + idx + 0x1420) = 8;
+    for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) {
+        for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++) {
+            M2C_FIELD(*gCurrentMap+2*(x+M2C_FIELD(*gCurrentMap+2*y,u16 *,0x3758)),u16 *,0xa10)=3;
+            M2C_FIELD(M2C_FIELD(*gCurrentMap+2*y,u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x1420)=8;
         }
     }
-
-    map = (void *)*gCurrentMap;
-    w2 = *(u8 *)((u8 *)r6 + 0x04);
-    h2 = *(u8 *)((u8 *)r6 + 0x05);
-    for (y = 0; y < *(u16 *)((u8 *)map + 0x5146); y++) {
-        s32 xdim = *(u16 *)((u8 *)map + 0x5144);
-        for (x = 0; x < xdim; x++) {
-            if (x >= w2 || y >= h2) continue;
-            map = (void *)*gCurrentMap;
-            linear = (u32)(y * w2 + x);
-            val = *(M2C_UNK *)((u8 *)r5 + linear);
-            rowOffset = *(u16 *)((u8 *)map + y * 2 + 0x3758);
-            idx = (u16)(x + rowOffset);
-            *(u8 *)((u8 *)map + idx + 0x1420) = (u8)val;
-            val = func_0207f460();
-            *(u16 *)((u8 *)map + idx * 2 + 0x0A10) = (u16)val;
+    for(y2=0;y2<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y2++) {
+        for(z=0;z<M2C_FIELD(*gCurrentMap,u16 *,0x5144);z++) {
+            if(z<M2C_FIELD(r6,u8 *,4)&&y2<M2C_FIELD(r6,u8 *,5)) {
+                val=M2C_FIELD(r5+z,u8 *,y2*M2C_FIELD(r6,u8 *,4));
+                M2C_FIELD(M2C_FIELD(*gCurrentMap+2*y2,u16 *,0x3758)+(*gCurrentMap+z),u8 *,0x1420)=val;
+                map=(void *)*gCurrentMap;
+                M2C_FIELD(map+2*(z+M2C_FIELD(map+2*y2,u16 *,0x3758)),u16 *,0xa10)=func_0207f460(val);
+            }
         }
     }
-
-    y = 0;
-    r5 = (void *)((u8 *)r6 + 0x384);
-    val = *(M2C_UNK *)((u8 *)r6 + 0x2F);
-    for (y = 0; y < (s32)val; y++) {
-        dword = *(M2C_UNK *)r5;
-        maskA = (s32)(((u32)dword << 27) >> 27);
-        maskB = (s32)(((u32)dword << 22) >> 27);
-        maskC = (s32)(((u32)dword << 17) >> 27);
-        if (width <= maskA) { r5 = (void *)((u8 *)r5 + 4); continue; }
-        if (maskB >= height) { r5 = (void *)((u8 *)r5 + 4); continue; }
-        ptr = func_020a660c(maskA, maskB, maskC);
-        if (ptr != 0) {
-            bits = (s32)(((u32)dword << 10) >> 28);
-            old = *(u8 *)((u8 *)ptr + 0x0B);
-            old = (u8)((old & ~0x0F) | (bits & 0x0F));
-            *(u8 *)((u8 *)ptr + 0x0B) = old;
+    n=0;
+    if((s32)M2C_FIELD(r6,u8 *,0x2f)>n) {
+    r5=(u8 *)r5+0x384;
+    do {
+        dword=M2C_FIELD(r5,u32 *,0);
+        maskA=(u32)(dword<<27)>>27;
+        maskB=(u32)(dword<<22)>>27;
+        maskC=(u32)(dword<<17)>>27;
+        kind=(u32)(dword<<14)>>29;
+        if(width>maskA&&maskB<height) {
+            ptr=func_020a660c(maskA,maskB,maskC,kind);
+            if(ptr) {
+                bits=(u8)((M2C_FIELD(r5,u32 *,0)<<10)>>28);
+                old=M2C_FIELD(ptr,u8 *,11);
+                M2C_FIELD(ptr,u8 *,11)=(old&~15)|(bits&15);
+            }
         }
-        r5 = (void *)((u8 *)r5 + 4);
+        n++;
+        r5=(u8 *)r5+4;
+    } while(n<M2C_FIELD(r6,u8 *,0x2f));
     }
-
+    x=0;
     if (width > 0) {
         u = height - 1;
-        for (x = 0; x < width; x++) {
+        do {
             func_ov007_0221b688(x, u);
-        }
+            x++;
+        } while(x<width);
     }
+    y=0;
     if (height > 0) {
-        u = width - 1;
-        for (y = 0; y < height; y++) {
-            func_ov007_0221b688(u, y);
-        }
+        v = width - 1;
+        do {
+            func_ov007_0221b688(v, y);
+            y++;
+        } while(y<height);
     }
 
     func_020cf2c8();

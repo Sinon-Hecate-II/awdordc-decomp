@@ -281,7 +281,7 @@ void func_020974d0(s32 arg0) {
     void *func_0209e9a4(s32);
     extern void *data_027e00c4;
     extern void *data_027e00c8;
-    extern void *data_027e01d8;
+    extern void *gCur3DSpriteEngine;
     void *spC;
     s32 sp8;
     s32 sp4;
@@ -290,23 +290,23 @@ void func_020974d0(s32 arg0) {
     s32 temp_r0;
     s32 temp_r0_2;
     s32 temp_r0_4;
+    void *temp_r0_6;
+    void *temp_r0_8;
+    u16 temp_r5;
+    s32 var_r6;
+    s32 var_r6_2;
+    void *temp_r7;
+    void *temp_r7_2;
     s32 var_r8;
     s32 var_r8_2;
     s32 var_r9;
     s32 var_r9_2;
-    u16 temp_r5;
-    u16 var_r6;
-    u16 var_r6_2;
     void *temp_r0_3;
     void *temp_r0_5;
-    void *temp_r0_6;
     void *temp_r0_7;
-    void *temp_r0_8;
-    void *temp_r7;
-    void *temp_r7_2;
 
     sp0 = arg0;
-    spC = (void *)data_027e01d8;
+    spC = (void *)gCur3DSpriteEngine;
     sp8 = 0;
     do {
         if (sp8 == 0) {
@@ -314,8 +314,8 @@ void func_020974d0(s32 arg0) {
         } else {
             var_r0 = &data_027e00c4;
         }
-        data_027e01d8 = *var_r0;
-        if (((func_02091e24() != 0) || (data_027e01d8 == data_027e00c8)) && ((func_02091e24() != 1) || (data_027e01d8 == data_027e00c4)) && ((func_02091e24() != 3) || (data_027e01d8 == (void *)spC))) {
+        gCur3DSpriteEngine = *var_r0;
+        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == data_027e00c8)) && ((func_02091e24() != 1) || (gCur3DSpriteEngine == data_027e00c4)) && ((func_02091e24() != 3) || (gCur3DSpriteEngine == (void *)spC))) {
             temp_r0_2 = func_02091db4();
             switch (temp_r0_2) {                    /* irregular */
             case 0:
@@ -377,7 +377,7 @@ loop_17:
         temp_r0 = sp8 + 1;
         sp8 = temp_r0;
     } while (temp_r0 < 2);
-    data_027e01d8 = spC;
+    gCur3DSpriteEngine = spC;
     func_020943a8(-1);
 }
 

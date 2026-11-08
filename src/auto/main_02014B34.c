@@ -48,8 +48,93 @@ void func_02014ccc(void *arg0) {
  M2C_FIELD(a,s32 *,0)=0; M2C_FIELD(a,s32 *,12)=2;
 }
 
-s32 func_02014d6c(void) { return 0; }
-
+#pragma push
+#pragma opt_common_subs off
+s32 func_02014d6c(void) {
+    extern void *data_02136c4c;
+    void func_02015188(s32);
+    s32 func_02015ce4(void *,void *,u16,void *);
+    s32 func_020189a4(s8 *,void *);
+    s32 func_020184ec(void *,u32,s32,u32);
+    s32 func_0201874c(void *);
+    void func_02007958(void);
+    void func_02018764(void *,void (*)(void *),s32,s32);
+    s32 func_02015f10(s32,u16,s32);
+    u8 packet[8];
+    u32 output[4];
+    u8 tries,candidate;
+    s32 i;
+    s32 offset;
+    void *buffer;
+    void *task;
+    u32 *best;
+    void *base;
+    void *entry;
+    void *loopEntry;
+    u32 (*records)[4];
+    s32 j;
+    s32 command;
+    u32 size;
+    u32 bank;
+    s32 *table;
+    void *interior;
+    u32 position;
+    u32 previous;
+    if (!M2C_FIELD(data_02136c4c,u8 *,0x1524)) return 21;
+    for (tries=0;tries<16;tries++) {
+        M2C_FIELD(data_02136c4c,u8 *,0x1525)=(M2C_FIELD(data_02136c4c,u8 *,0x1525)+1)%16;
+        base=data_02136c4c;
+        candidate=M2C_FIELD(base,u8 *,0x1525);
+        loopEntry=base+candidate*0x5d4;
+        if (M2C_FIELD(loopEntry,u8 *,0x1d52) && M2C_FIELD(loopEntry,u16 *,0x1d4c)) break;
+    }
+    if (tries==16) return 21;
+    func_02015188(candidate);
+    base=data_02136c4c;
+    i=M2C_FIELD(base,u8 *,0x1525);
+    if (!func_02015ce4(output,base+0x1d2c+i*0x5d4,M2C_FIELD(base+i*0x5d4,u16 *,0x1d48),base+0x1788+i*0x5d4)) return 21;
+    base=data_02136c4c;
+    packet[0]=4;
+    *(u16 *)(packet+2)=M2C_FIELD(base,u8 *,0x1525);
+    *(u16 *)(packet+4)=M2C_FIELD(base+M2C_FIELD(base,u8 *,0x1525)*0x5d4,u16 *,0x1d48);
+    command=func_020189a4((s8 *)packet,base);
+    base=data_02136c4c;
+    entry=base+M2C_FIELD(base,u8 *,0x1525)*0x5d4;
+    bank=((u8 *)output)[12];
+    position=output[2];
+    interior=entry+0x1000;
+    table=M2C_FIELD(interior,s32 **,0xd58);
+    previous=M2C_FIELD(entry+bank*4,u32 *,0x1d2c);
+    offset=table[bank]+(position-previous);
+    buffer=M2C_FIELD(interior,void **,0xd54);
+    size=output[1];
+    if (!func_020184ec(buffer,offset,command,size)) {
+        task=data_02136c4c+0x7ce0;
+        if (!func_0201874c(task)) {
+            if (M2C_FIELD(buffer,u32 *,0)) M2C_FIELD(buffer,u32 *,0)--;
+            else {
+                records=(u32 (*)[4])(buffer+0x30);
+                best=0;
+                for(j=0;j<4;j++) {
+                    if (records[j][3]==2) {
+                        if (!best || M2C_FIELD(best,u32 *,0)>records[j][0]) best=records[j];
+                    }
+                }
+                if (!best) func_02007958();
+                M2C_FIELD(buffer,u32 *,0)=2;
+                M2C_FIELD(best,s32 *,12)=1;
+                M2C_FIELD(best,u32 *,0)=offset&~31;
+                M2C_FIELD(task,void **,16)=best;
+                M2C_FIELD(task,void **,20)=buffer;
+                func_02018764(task,func_02014ccc,0,4);
+            }
+        }
+        return 21;
+    }
+    base=data_02136c4c;
+    return func_02015f10(output[1]+6,M2C_FIELD(base+M2C_FIELD(base,u8 *,0x1525)*0x5d4,u16 *,0x1d4c),(s32)base);
+}
+#pragma pop
 /* Select units by state into priority groups, then dispatch the matching network action. */
 void func_02015008(void) {
 extern void *data_02136c4c;

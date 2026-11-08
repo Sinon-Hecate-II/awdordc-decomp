@@ -119,8 +119,9 @@
   "src/auto/ov007_0221B56C.c": "2.0/base",
   "src/auto/ov009_02221320.c": "2.0/sp1p6",
   "src/auto/ov009_022222D0.c": "2.0/sp1p6",
+  "src/auto/ov009_02224284.c": "2.0/sp2p2",
   "src/auto/ov010_02221320.c": "2.0/sp1p6",
-  "src/auto/ov010_022221B8.c": "1.2/sp4",
-  "src/auto/ov010_02224F94.c": "dsi/1.1",
+  "src/auto/ov010_022221B8.c": "2.0/base",
+  "src/auto/ov010_02224F94.c": "2.0/sp2p2",
   "src/auto/ov011_02226658.c": "dsi/1.1"
 }

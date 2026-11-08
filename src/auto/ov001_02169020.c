@@ -123,37 +123,40 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
     } while (p < end);
 }
 
-M2C_UNK func_ov001_021695e8(s32 *a0) {
+#pragma push
+#pragma opt_instruction_scheduling on
+void func_ov001_021695e8(s32 *a0) {
     s32 func_ov001_0216ace0(void *, s32);
-    struct { u8 *p; s8 n; u8 byte; } br;
+    struct { u8 *p; s8 n; u8 byte; } br4, br8;
     s32 w, h, c, d, maxw0, endcol, maxh0, endrow, hh, bits, ww, r1;
-    s32 endcolbits, scale, r4v, r9v, rowStride, stack0, srcOffset, srcBase, dstBase;
-    s32 paletteBase, shift, hi, r2v, rot, r6, r9, r11;
+    u32 endcolbits;
+    s32 scale, r4v, r9v, rowStride, srcOffset, srcBase, dstBase;
+    u32 stack0;
+    s32 paletteBase, shift, hi, r2v, rot , r11;
+    u32 r6, r9;
     u32 uoff, color, value, mask, rr;
     u8 *cur, *end, *srcBase8;
     u32 dstWord, r6d, r7d;
 
     w = a0[2];
     h = a0[3];
-    c = a0[4];
-    d = a0[5];
-    maxw0 = w >= 0 ? w : 0;
-    endcol = w + c;
-    maxh0 = h >= 0 ? h : 0;
-    endrow = h + d;
+    if (w < 0) maxw0 = 0; else maxw0 = w;
+    endcol = w + a0[4];
+    if (h < 0) maxh0 = 0; else maxh0 = h;
+    endrow = h + a0[5];
     if (endcol >= 8) endcol = 8;
     if (endrow >= 8) endrow = 8;
-    hh = h > 0 ? 0 : h;
+    if (h > 0) h = 0;
     bits = a0[8];
-    ww = w > 0 ? 0 : w;
-    r1 = -hh;
+    if (w > 0) w = 0;
+    r1 = -h;
     endcolbits = endcol * bits;
     scale = a0[7];
-    r4v = -ww;
-    r9v = scale * r4v;
+    r4v = -w;
+    r9v = r4v * scale;
     rowStride = a0[6];
-    stack0 = maxw0 * bits;
-    srcOffset = r1 * rowStride + r9v;
+    stack0 = bits * maxw0;
+    srcOffset = r9v + r1 * rowStride;
     srcBase = a0[1];
     dstBase = a0[0];
 
@@ -163,24 +166,20 @@ M2C_UNK func_ov001_021695e8(s32 *a0) {
         cur = (u8 *)dstBase + maxh0 * 4;
         end = (u8 *)dstBase + endrow * 4;
         if (cur >= end) {
-            return 0;
+            return;
         }
-        while (cur < end) {
+        do {
             dstWord = *(u32 *)cur;
-            uoff = (u32)srcOffset;
-            hi = (s32)(uoff >> 31);
-            r2v = (s32)(uoff << 29) - hi;
-            rot = (s32)(((u32)r2v >> 29) | ((u32)r2v << 3));
-            shift = hi + rot;
+            shift = srcOffset % 8;
             srcBase8 = (u8 *)srcBase;
-            br.p = srcBase8 + (srcOffset >> 3);
-            br.n = 0;
-            br.byte = 0;
-            func_ov001_0216ace0(&br, shift);
+            br4.p = srcBase8 + ((u32)srcOffset >> 3);
+            br4.n = 0;
+            br4.byte = 0;
+            func_ov001_0216ace0(&br4, shift);
             r6 = stack0;
             if (r6 < endcolbits) {
                 do {
-                    color = (u32)func_ov001_0216ace0(&br, scale);
+                    color = (u32)func_ov001_0216ace0(&br4, scale);
                     if (color != 0) {
                         value = (u32)(paletteBase + (s32)color);
                         mask = ~(15u << r6);
@@ -192,42 +191,38 @@ M2C_UNK func_ov001_021695e8(s32 *a0) {
             *(u32 *)cur = dstWord;
             cur += 4;
             srcOffset += rowStride;
-        }
-        return 0;
+        } while(cur < end);
+        return;
     }
 
     paletteBase = a0[9];
     cur = (u8 *)dstBase + maxh0 * 8;
     end = (u8 *)dstBase + endrow * 8;
     if (cur >= end) {
-        return 0;
+        return;
     }
     while (cur < end) {
-        uoff = (u32)srcOffset;
-        hi = (s32)(uoff >> 31);
-        r2v = (s32)(uoff << 29) - hi;
-        rot = (s32)(((u32)r2v >> 29) | ((u32)r2v << 3));
-        shift = hi + rot;
+        shift = srcOffset % 8;
         r6d = ((u32 *)cur)[0];
         r7d = ((u32 *)cur)[1];
         srcBase8 = (u8 *)srcBase;
-        br.p = srcBase8 + (srcOffset >> 3);
-        br.n = 0;
-        br.byte = 0;
-        func_ov001_0216ace0(&br, shift);
+        br8.p = srcBase8 + ((u32)srcOffset >> 3);
+        br8.n = 0;
+        br8.byte = 0;
+        func_ov001_0216ace0(&br8, shift);
         r9 = stack0;
         if (r9 < endcolbits) {
             do {
-                color = (u32)func_ov001_0216ace0(&br, scale);
+                color = (u32)func_ov001_0216ace0(&br8, scale);
                 if (color != 0) {
                     value = (u32)(paletteBase + (s32)color);
-                    if (r9 >= 32) {
-                        rr = (u32)r9 - 32u;
-                        mask = ~(0xffu << rr);
-                        r7d = (r7d & mask) | (value << rr);
-                    } else {
+                    if (r9 < 32) {
                         mask = ~(0xffu << r9);
                         r6d = (r6d & mask) | (value << r9);
+                    } else {
+                        rr = r9 - 32;
+                        mask = ~(0xffu << rr);
+                        r7d = (r7d & mask) | (value << rr);
                     }
                 }
                 r9 += 8;
@@ -237,12 +232,12 @@ M2C_UNK func_ov001_021695e8(s32 *a0) {
         ((u32 *)cur)[1] = r7d;
         cur += 8;
         srcOffset += rowStride;
-    }
-    return 0;
+    } while(cur < end);
+    return;
 }
-
+#pragma pop
 void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
-    M2C_UNK func_ov001_021695e8(s32 *);
+    void func_ov001_021695e8(s32 *);
     s32 sp[11];
     s32 temp_r11_2;
     s32 temp_r11_3;
@@ -355,45 +350,39 @@ void func_ov001_02169828(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
     } while (var_r9 > temp_r11_3);
 }
 
+#pragma push
+#pragma opt_propagation off
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
 void func_ov001_021699c0(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) {
     u32 func_ov001_0216939c(u32, u32, s32, s32, s32, s32);
-    M2C_UNK func_ov001_021695e8(s32 *);
-    s32 sp48;
-    s32 sp44;
-    s32 sp40;
-    s32 sp3C;
-    s32 sp38;
-    s32 sp34;
-    s32 sp30;
-    s32 sp2C;
-    s32 sp28;
-    s32 sp24;
-    s32 sp20;
+    void func_ov001_021695e8(s32 *);
+    s32 state[11];
     s32 sp1C;
     u32 sp18;
     u32 sp14;
     u32 sp10;
     s32 spC;
     s32 sp8;
-    s32 temp_r11;
+    register s32 temp_r11;
     s32 temp_r1;
     s32 temp_r1_2;
     s32 temp_r3_4;
     s32 temp_r5_2;
-    s32 temp_r5_3;
+    register s32 temp_r5_3;
     s32 temp_r7;
     s32 temp_r7_3;
     s32 temp_r7_4;
     s32 temp_r8;
     s32 temp_r8_2;
-    s32 temp_r9;
-    s32 var_r4;
+    register s32 temp_r9;
+    register s32 var_r4;
     u32 temp_r3;
     u32 temp_r3_2;
     u32 temp_r5;
     u32 temp_r7_2;
-    u32 var_r10;
-    u32 var_r6;
+    register u32 var_r10;
+    register u32 var_r6;
     u32 var_r7;
     u32 var_r8;
     u8 temp_r2;
@@ -455,33 +444,33 @@ void func_ov001_021699c0(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
         spC &= 7;
     }
     temp_r5_3 = sp8 - (temp_r5_2 * 8);
-    sp48 = arg4 - 1;
+    state[10] = arg4 - 1;
     temp_r7_4 = spC - (temp_r7_3 * 8);
-    sp38 = (s32) temp_r2;
-    sp28 = M2C_FIELD(arg5, s32 *, 4);
-    sp34 = (s32) temp_r4;
+    state[6] = (s32) temp_r2;
+    state[2] = M2C_FIELD(arg5, s32 *, 4);
+    state[5] = (s32) temp_r4;
     sp1C = temp_r7_4;
     temp_r3_3 = M2C_FIELD(M2C_FIELD(*arg1, u8 **, 8), u8 *, 6);
-    sp40 = (s32) temp_r3_3;
-    sp44 = (s32) M2C_FIELD(arg0, u8 *, 0xC);
-    sp3C = temp_r3_3 * *M2C_FIELD(*arg1, u8 **, 8);
+    state[8] = (s32) temp_r3_3;
+    state[9] = (s32) M2C_FIELD(arg0, u8 *, 0xC);
+    state[7] = temp_r3_3 * *M2C_FIELD(*arg1, u8 **, 8);
     temp_r3_4 = M2C_FIELD(arg0, s32 *, 0x10);
     sp14 = M2C_FIELD(arg0, u32 *, 4);
-    sp20 = temp_r3_4;
+    state[0] = temp_r3_4;
     sp18 = M2C_FIELD(arg0, u32 *, 8);
     if (spC <= temp_r7_4) {
         return;
     }
     do {
         var_r6 = sp10;
-        sp30 = spC;
+        state[4] = spC;
         var_r4 = sp8;
         if (sp8 > temp_r5_3) {
             do {
                 temp_r1_2 = (func_ov001_0216939c(var_r6, var_r10, sp14, sp18, (s32) (u8) temp_r3_4, (u32) (temp_r3_4 << 0x10) >> 0x18) * temp_r9) + temp_r11;
-                sp2C = var_r4;
-                sp24 = temp_r1_2;
-                func_ov001_021695e8(&sp24);
+                state[3] = var_r4;
+                state[1] = temp_r1_2;
+                func_ov001_021695e8(&state[1]);
                 var_r4 -= 8;
                 var_r6 += 1;
             } while (var_r4 > temp_r5_3);
@@ -491,8 +480,7 @@ void func_ov001_021699c0(void *arg0, void **arg1, s32 arg2, s32 arg3, s32 arg4, 
         spC = temp_r1;
     } while (temp_r1 > sp1C);
 }
-
-#pragma optimization_level 3
+#pragma pop
 void func_ov001_02169bd0(void *a,s32 b) {
 M2C_UNK func_02007e98(s32,s32,s32);
 s32 bits=M2C_FIELD(a,u8 *,12);s32 v,w=M2C_FIELD(a,s32 *,4),h;

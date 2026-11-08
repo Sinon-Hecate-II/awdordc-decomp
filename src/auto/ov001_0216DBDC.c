@@ -285,9 +285,9 @@ s32 func_ov001_0216e79c(void) {
 
     buf2 = NULL;
     sel = 0;
-    result = ~sel;
     size = 0x30 * M2C_FIELD(&data_ov001_02192790, s32 *, 0x70);
     size += 0x34;
+    result = -1;
     buf1 = func_ov001_02171144(1, size);
     if (buf1 == NULL) goto ret;
     buf2 = func_ov001_02171144(1, size);
@@ -338,7 +338,8 @@ s32 func_ov001_0216e79c(void) {
         } while (again);
         func_02007338(timer);
         while (func_ov001_0216e2d8() != 0) {}
-        if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x10)) break;
+        state=&data_ov001_02192790;
+        if (M2C_FIELD(state, s32 *, 0x10)) break;
 process:
         state=&data_ov001_02192790;
         counters.count = 0;

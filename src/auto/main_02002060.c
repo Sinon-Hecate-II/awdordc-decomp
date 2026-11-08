@@ -201,7 +201,36 @@ void func_02002620(s32 arg0) {
     }
 }
 
-void func_020026d8(s32 arg0) {
+void func_020026d8(s32 a) {
+    extern M2C_UNK data_0212dbc4;
+    M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,2))&~a;
+    M2C_FIELD(&data_0212dbc4,u16 *,2)=a;
+    switch(a) {
+    case 8: *(volatile u8 *)0x04000243=0x81;break;
+    case 12: *(volatile u8 *)0x04000243=0x89;
+    case 4: *(volatile u8 *)0x04000242=0x81;break;
+    case 14: *(volatile u8 *)0x04000243=0x91;
+    case 6: *(volatile u8 *)0x04000242=0x89;
+    case 2: *(volatile u8 *)0x04000241=0x81;break;
+    case 15: *(volatile u8 *)0x04000243=0x99;
+    case 7: *(volatile u8 *)0x04000242=0x91;
+    case 3: *(volatile u8 *)0x04000241=0x89;
+    case 1: *(volatile u8 *)0x04000240=0x81;break;
+    case 11: *(volatile u8 *)0x04000240=0x81;*(volatile u8 *)0x04000241=0x89;*(volatile u8 *)0x04000243=0x91;break;
+    case 13: *(volatile u8 *)0x04000243=0x91;
+    case 5: *(volatile u8 *)0x04000240=0x81;*(volatile u8 *)0x04000242=0x89;break;
+    case 9: *(volatile u8 *)0x04000240=0x81;*(volatile u8 *)0x04000243=0x89;break;
+    case 10: *(volatile u8 *)0x04000241=0x81;*(volatile u8 *)0x04000243=0x89;break;
+    case 0x70: *(volatile u8 *)0x04000246=0x99;
+    case 0x30: *(volatile u8 *)0x04000245=0x91;
+    case 0x10: *(volatile u8 *)0x04000244=0x81;break;
+    case 0x50: *(volatile u8 *)0x04000246=0x91;*(volatile u8 *)0x04000244=0x81;break;
+    case 0x60: *(volatile u8 *)0x04000246=0x89;
+    case 0x20: *(volatile u8 *)0x04000245=0x81;break;
+    case 0x40: *(volatile u8 *)0x04000246=0x81;break;
+    default: break;
+    }
+    func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
 }
 
 void func_02002968(s32 a) {

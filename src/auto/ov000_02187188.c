@@ -329,9 +329,58 @@ void func_ov000_02187820(void) {
     func_ov000_02187664(bestX, bestY);
 }
 
-void func_ov000_021879f4(void) { }
-
+#pragma push
 #pragma opt_strength_reduction off
+#pragma opt_common_subs off
+void func_ov000_021879f4(void){
+ extern u8 *data_ov000_021df580;
+ s32 func_01ffada0();
+ s32 func_ov000_02186e64(s32,s32);
+ s32 func_0207c8ec(s32,s32);
+ s32 func_0207c928(s32,s32);
+ void func_ov000_0218a9ac(s32,s32);
+ u8 *unit;
+ s32 bestX,bestY,bestCost,bestFlag,y,x,flag,cost,mask;
+ void *base;
+ bestX=-1;bestY=-1;bestCost=32767;bestFlag=0;
+ unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
+ func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
+ base=*gCurrentMap;
+ for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
+ for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
+ s32 v=M2C_FIELD(base+y*4,s8 **,0x52e8)[x];
+ if(v<0 || v<=data_ov000_021df580[5])continue;
+ if(M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),s8 *,0x3250)==0)continue;
+ if(!func_ov000_02186e64(x,y))continue;
+ cost=func_0207c8ec(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])+1;
+ if(func_0207c928(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])==0)--cost;
+ base=*gCurrentMap;
+ flag=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),u8 *,0x3250);
+ if(bestCost<cost){
+ if(bestFlag&128)continue;
+ if(!(flag&128))continue;
+ if(bestCost+1<cost)continue;
+ }
+ mask=bestFlag&128;
+ if(!mask && (flag&128)){
+ if(bestCost+1>=cost)goto accept;
+ continue;
+ }
+ else if(mask && !(flag&128)){
+ if(bestCost-1>cost)goto accept;
+ continue;
+ }
+ {
+ if(bestCost<cost)continue;
+ if(bestCost==cost && bestFlag>flag)continue;
+ }
+ accept: bestX=x;bestY=y;bestCost=cost;bestFlag=flag;
+ }
+ }
+ if(bestX==-1)return;
+ func_ov000_0218a9ac(bestX,bestY);
+}
+#pragma pop
 void func_ov000_02187c3c(void) {
     extern void **gCurrentMap;
     extern u8 *data_ov000_021df580;

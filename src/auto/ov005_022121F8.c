@@ -196,7 +196,9 @@ func_0209c048(0x1e,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
-#pragma optimization_level reset
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_dead_code off
 void func_ov005_02212b40(void){
 extern void *gCur3DSpriteEngine,*data_027e00c4,*data_ov005_02221300;
 extern u8 data_ov005_0222028c[],data_ov005_0222029c[];
@@ -205,7 +207,6 @@ void *saved,*buffer;
 s32 i,j;
 void *tile;
 s32 offset,row;
-s32 flags;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=data_027e00c4;
 buffer=func_020e34bc(512);
@@ -238,10 +239,10 @@ func_0209b5c4((u8 *)M2C_FIELD(data_027e00c4,void **,0x1c)+0x1480,M2C_FIELD(data_
 func_0209b59c((u8 *)M2C_FIELD(data_027e00c4,void **,0x1c)+0x1780,0x60);
 func_0209b5c4((u8 *)M2C_FIELD(data_027e00c4,void **,0x1c)+0x1780,M2C_FIELD(data_ov005_02221300,s32 *,0x38));
 func_ov000_0216a30c(M2C_FIELD(data_ov005_02221300,s8 *,0x32),0x1a80,9);
-flags=M2C_FIELD(data_027e00c4,u8 *,0x46);
-M2C_FIELD(data_027e00c4,u8 *,0x46)=2|flags;
+M2C_FIELD(data_027e00c4,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
+#pragma pop
 void func_ov005_02212db8(void) {
  M2C_UNK func_0200bc5c(M2C_UNK *);
  M2C_UNK func_020814e4();

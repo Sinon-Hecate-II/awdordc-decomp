@@ -1,5 +1,16 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
+static inline void InitSoundSlot(s32 temp_r6,s32 arg1,s32 first,s32 second) {
+extern u8 data_02131184;extern void *data_02136c4c;s32 sequence;
+sequence=data_02131184;
+        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D1F) = sequence;
+        M2C_FIELD((data_02136c4c + temp_r6), s16 *, 0x1D4E) = 1;
+        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D44) = arg1;
+        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D54) = first;
+        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D58) = second;
+        data_02131184 = sequence+1;
+
+}
 
 /* Select units by state into priority groups, then dispatch the matching network action. */
 
@@ -68,6 +79,8 @@ void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
     func_02008048(M2C_FIELD(arg0, s32 *, 4) + var_lr, M2C_FIELD(arg0, s32 *, 8) + var_lr, var_r2 - var_lr);
 }
 
+#pragma push
+#pragma scheduling off
 s32 func_0201579c(s32 arg0, s32 arg1) {
     s32 func_0200751c();
     M2C_UNK func_02007530(s32);
@@ -86,7 +99,7 @@ s32 func_0201579c(s32 arg0, s32 arg1) {
     s32 temp_r2;
     s32 temp_r5;
     s32 temp_r6;
-    void *temp_r9;
+    void *temp_r9; s32 sequence;
 
     var_r4 = 0xFF;
     temp_r5 = func_0200751c();
@@ -128,12 +141,13 @@ block_10:
         func_02015f94(data_02136c4c + 0x186C + temp_r6, arg0, data_02136c4c + 0x1300);
         M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D21) = var_r4;
         func_020161bc(data_02136c4c + 0x186C + temp_r6);
-        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D1F) = (u8) data_02131184;
+        sequence=data_02131184;
+        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D1F) = sequence;
         M2C_FIELD((data_02136c4c + temp_r6), s16 *, 0x1D4E) = 1;
         M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D44) = arg1;
         M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D54) = (s32) (arg1 + 0x1E8);
         M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D58) = (s32) (arg1 + 0x258);
-        data_02131184 += 1;
+        data_02131184 = sequence+1;
         if ((M2C_FIELD(M2C_FIELD((data_02136c4c + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (func_0201871c() == 0)) {
             func_02018738(data_02136c4c + 0x7CE0);
             func_0201869c(data_02136c4c + 0x74E0, 0x800);
@@ -145,7 +159,7 @@ block_10:
     }
     goto loop_5;
 }
-
+#pragma pop
 void func_02015a2c(void *arg0, void *arg1) {
  M2C_UNK func_02008048(s32,s32,s32);
  void func_02015aa0(void *, void *, void *, s32 *);

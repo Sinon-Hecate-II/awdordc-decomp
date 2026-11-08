@@ -233,7 +233,9 @@ void func_ov002_021e1c34(void *a,s32 b) {
     *(volatile s32 *)0x400046c=0x1000;
 }
 
-void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2, u8 kind, s32 diff, s32 temp) {
+#pragma push
+#pragma scheduling off
+void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2, u8 kind, volatile s32 diff, volatile s32 temp) {
     s32 func_0207ca38(s32, s32, s32, s32, s32);
     M2C_UNK func_02004078(s16, s16);
     extern M2C_UNK data_020e5b30;
@@ -260,11 +262,13 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
             var_r7 = 4;
             break;
         }
-        var_r4 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 8), M2C_FIELD(ptr, s16 *, 8) + M2C_FIELD(ptr2, s16 *, 8), diff, temp);
-        var_r5 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 0xA), M2C_FIELD(ptr, s16 *, 0xA) + M2C_FIELD(ptr2, s16 *, 0xA), diff, temp);
-        var_r6 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 4), (s32) (M2C_FIELD(ptr, u16 *, 4) * M2C_FIELD(ptr2, u16 *, 4)) >> 8, diff, temp);
-        var_r8 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 6), (s32) (M2C_FIELD(ptr, u16 *, 6) * M2C_FIELD(ptr2, u16 *, 6)) >> 8, diff, temp);
-        var_r1 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 2), M2C_FIELD(ptr, u16 *, 2) + M2C_FIELD(ptr2, u16 *, 2), diff, temp);
+        { s32 duration=temp; s32 elapsed=diff;
+        var_r4 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 8), M2C_FIELD(ptr, s16 *, 8) + M2C_FIELD(ptr2, s16 *, 8), elapsed, duration);
+        var_r5 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 0xA), M2C_FIELD(ptr, s16 *, 0xA) + M2C_FIELD(ptr2, s16 *, 0xA), elapsed, duration);
+        var_r6 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 4), (s32) (M2C_FIELD(ptr, u16 *, 4) * M2C_FIELD(ptr2, u16 *, 4)) >> 8, elapsed, duration);
+        var_r8 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 6), (s32) (M2C_FIELD(ptr, u16 *, 6) * M2C_FIELD(ptr2, u16 *, 6)) >> 8, elapsed, duration);
+        var_r1 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 2), M2C_FIELD(ptr, u16 *, 2) + M2C_FIELD(ptr2, u16 *, 2), elapsed, duration);
+        }
     } else {
         var_r4 = M2C_FIELD(ptr, s16 *, 8);
         var_r5 = M2C_FIELD(ptr, s16 *, 0xA);
@@ -302,7 +306,7 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
         }
     }
 }
-
+#pragma pop
 void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     M2C_UNK func_02087048(s32, s32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);

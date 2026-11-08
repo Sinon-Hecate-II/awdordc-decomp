@@ -57,6 +57,8 @@ res=func_02048ff8(M2C_FIELD(p,s32 *,12),&ptr);
 if(res)return *res;return 0;
 }
 
+#pragma push
+#pragma scheduling off
 s32 func_0205ccd8(void **a, char *b, s32 c, s32 d, s32 e) {
 void func_0204926c(void);
 s32 func_0205d588(char *,s32 *,u16 *);
@@ -71,8 +73,8 @@ s32 func_020496a4(s32,s32,s32);
 s32 func_020496e0(s32,void *,s32);
 M2C_UNK func_020496b8(s32);
 s32 func_020498b8(s32,void *,s32 *);
-s32 addr;
 u16 port;
+s32 addr;
 s32 len;
 void *p;
 s32 swapped;
@@ -107,7 +109,7 @@ M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 *a=p;return 0;
 }
 }
-
+#pragma pop
 void func_0205cef8(void *arg0) {
 M2C_UNK func_020377c4(void *);M2C_UNK func_02048dc4(s32);M2C_UNK func_02049270();M2C_UNK func_020496b8(s32);
 if(M2C_FIELD(arg0,s32 *,0x1c)!=0){M2C_FIELD(arg0,s32 *,0x14)=1;return;}
@@ -195,6 +197,7 @@ s32 func_0205cf54(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
         return 0;
     }
 
+fail:
     if (alloc == 0) {
         goto done;
     }
@@ -224,8 +227,6 @@ s32 func_0205cf54(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
 done:
     return 1;
 
-fail:
-    return 0;
 }
 
 #pragma scheduling off

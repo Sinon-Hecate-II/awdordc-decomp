@@ -11,56 +11,53 @@ typedef struct Map972e0 { u8 pad[0x5144]; volatile u16 width; u16 height; } Map9
 u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021dfcf0[];
-    s32 func_020ce0ec(s32);
+    s32 func_020ce0ec(s32, s32);
 
-    u32 result;
-    s32 hasFlag;
+    s32 result = 0;
+    u8 hasFlag = 0;
     void *base;
     u16 width, height;
-    s32 xMin, xMax, yMin, yMax;
+    s32 yMin, xMax, xMin, yMax;
     s32 row, col;
-    s32 dx, dy, dist;
+    s32 dist, dy, dx;
     u16 rowOffset;
-    u16 vIndex;
+    s32 vIndex;
     s8 *rowPtr;
     s8 terrainVal;
     u8 prop;
     s32 funcRes;
-    u16 linear;
+    u32 linear;
     u16 rowOffsetOrig;
     u32 finalIdx;
     s8 *rowPtr0;
     s8 terrain0;
 
-    result = 0;
-    hasFlag = 0;
-
+    xMin = xOrig - 2;
+    xMin = xMin >= 0 ? xMin : 0;
+    yMin = yOrig - 2;
+    yMin = yMin >= 0 ? yMin : 0;
     base = *gCurrentMap;
     width = M2C_FIELD(base, u16 *, 0x5144);
     height = M2C_FIELD(base, u16 *, 0x5146);
-
-    xMin = xOrig - 2;
-    if (xMin < 0) xMin = 0;
-    xMax = xOrig + 2;
-    if (xMax > width - 1) xMax = width - 1;
-    yMin = yOrig - 2;
-    if (yMin < 0) yMin = 0;
-    yMax = yOrig + 2;
-    if (yMax > height - 1) yMax = height - 1;
+    xMax = width - 1;
+    if (xOrig + 2 < xMax) xMax = xOrig + 2;
+    yMax = height - 1;
+    if (yOrig + 2 < yMax) yMax = yOrig + 2;
 
     for (row = yMin; row <= yMax; row++) {
         for (col = xMin; col <= xMax; col++) {
             dx = xOrig - col;
-            if (dx < 0) dx = -dx;
+            if (dx <= 0) dx = col - xOrig;
+            dist = 0;
+            dist += dx;
             dy = yOrig - row;
-            if (dy < 0) dy = -dy;
-            dist = dx + dy;
-            if (dist > 2) continue;
+            if (dy > 0) dist += dy; else dist += row - yOrig;
+            if (dist < 0 || dist > 2) continue;
 
             rowOffset = M2C_FIELD((u8 *)*gCurrentMap + row * 2, u16 *, 0x3758);
             vIndex = rowOffset + col;
             base = *gCurrentMap;
-            if (M2C_FIELD(base, u8 *, (vIndex >> 3) + 0x5160) & (1 << (vIndex & 7))) continue;
+            if ((u8)(M2C_FIELD(base, u8 *, ((u32)vIndex >> 3) + 0x5160) & (1 << (vIndex & 7)))) continue;
 
             rowPtr = M2C_FIELD(base + row * 4, s8 **, 0x52e8);
             terrainVal = rowPtr[col];
@@ -68,33 +65,33 @@ u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
 
             if (terrainVal != 0) {
                 if (prop & 0xe0) hasFlag = 1;
-                funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff));
+                funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff), prop);
                 if (funcRes != 0) result += 0x1000000; else result += 0x100000;
-                linear = (u16)(row * width + col);
-                if (data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7))) result += 0x10000;
+                base = *gCurrentMap;
+                width = M2C_FIELD(base, u16 *, 0x5144);
+                linear = row * width + col;
+                if ((u8)(data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7)))) result += 0x10000;
             } else {
                 if (prop & 0xe0) result += 0x100; else result += 0x10;
                 linear = (u16)(row * width + col);
-                if (data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7))) result += 1;
+                if ((u8)(data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7)))) result += 1;
             }
         }
     }
 
-    base = *gCurrentMap;
     if (!hasFlag) return 0;
 
     rowOffsetOrig = M2C_FIELD((u8 *)base + yOrig * 2, u16 *, 0x3758);
     finalIdx = xOrig + rowOffsetOrig;
     result <<= 2;
-    if (!(M2C_FIELD(base, u8 *, (finalIdx >> 3) + 0x5160) & (1 << (finalIdx & 7)))) {
-        funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff));
-        if (funcRes == 0) {
-            result += 1;
-        } else {
-            rowPtr0 = M2C_FIELD((u8 *)base + yOrig * 4, s8 **, 0x52e8);
+    prop = M2C_FIELD((u8 *)base + finalIdx, u8 *, 0x1420);
+    if (!(u8)(M2C_FIELD(base, u8 *, (finalIdx >> 3) + 0x5160) & (1 << (finalIdx & 7)))) {
+        funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff), prop);
+        if (funcRes != 0) {
+            rowPtr0 = M2C_FIELD((u8 *)*gCurrentMap + yOrig * 4, s8 **, 0x52e8);
             terrain0 = rowPtr0[xOrig];
             if (terrain0 != 0) result += 3; else result += 2;
-        }
+        } else { result += 1; }
     }
     return result;
 }

@@ -1,5 +1,19 @@
 /* 10 functions from 0x020785B0 to 0x020793F0 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 x,y; u16 dx:3,dy:3,kind:4,unused:4,angle:2; u8 value; } MapRenderEntry;
+static inline u32 PackMapVertex(u16 x,u16 y) { return x | (y << 16); }
+static inline void DrawMapQuad(s16 ax,s16 by,s16 cx,s16 dy2,s32 color,u8 alpha) {
+*(volatile u32*)0x40004a8=0x2d00000;
+*(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);
+
+*(volatile u32*)0x4000500=1;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;
+
+}
 typedef struct { s32 x,y,z; } Vec3;
 typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } RenderUnit;
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
@@ -107,10 +121,40 @@ func_02004078(sn,cs);
 func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 }
 
+#pragma push
+#pragma scheduling on
+#pragma opt_common_subs on
 void func_02078d68(void *arg0) {
-    (void)arg0;
+s32 func_020ae22c(s32);s32 func_0207ca38(s32,s32,s32,s32,s32);s32 func_020a4ab0(s32);void func_020cf674(s16,s16,s32);
+MapRenderEntry *entry=arg0;u32 bits=M2C_FIELD(arg0,u16 *,2);s32 x=M2C_FIELD(arg0,u8 *,0),y=M2C_FIELD(arg0,u8 *,1);
+s32 dx=entry->dx,dy=entry->dy; s32 a,b,c,d,color; u32 alpha; s16 ax,by,cx,dy2;
+switch(entry->kind){
+case 3:
+a=(x<<4)*48;b=(y<<4)*48;c=a+dx*768;d=b+dy*768;
+color=func_020ae22c(M2C_FIELD(arg0,u8 *,4));
+if(((*(volatile u32 *)&data_027e15bc)&63)<32)alpha=func_0207ca38(4,2,12,(*(volatile u32 *)&data_027e15bc)&63,32);
+else alpha=func_0207ca38(1,12,2,((*(volatile u32 *)&data_027e15bc)&63)-32,32);
+if(!(alpha=(u8)alpha))return;
+*(volatile u32*)0x40004a8=0x2d00000;
+*(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);
+ax=a;by=b;cx=c;dy2=d;
+*(volatile u32*)0x4000500=1;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;return;
+case 6:func_02078c60(x,y,0,0x381);return;
+case 7:func_02078c60(x,y,(u16)func_020a4ab0(entry->angle),0x382);return;
+case 8:func_02078c60(x,y,M2C_FIELD(arg0,u8 *,4)<<8,0x382);return;
+case 9:
+*(volatile u32*)0x4000480=0x7fff;*(volatile u32*)0x4000444=0;
+*(volatile u32*)0x4000470=0;*(volatile u32*)0x4000470=0;*(volatile u32*)0x4000470=-16;
+func_020cf674((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
+*(volatile u32*)0x4000448=1;return;
 }
-
+}
+#pragma pop
 void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     s32 func_020a7d80(void *);
     s32 func_020a7dc4(void *);

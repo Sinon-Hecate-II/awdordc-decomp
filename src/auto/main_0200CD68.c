@@ -3,7 +3,7 @@
 typedef struct { u16 x,y; } TouchPair;
 typedef struct { u8 pad[0x58]; u16 a,b; u8 e,f; u16 c,d; u8 g,h; } TouchInput;
 typedef struct { u32 v[7]; } InputConfig;
-typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u8 pad[0x30]; u16 flags38, flags3a; } TouchState;
+typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u16 sample[4]; u16 index; u16 pad12; void *records; u16 capacity; u8 pad1a[0x1c]; u16 state; u16 flags38, flags3a; } TouchState;
 extern InputConfig data_020ea6d8;
 extern M2C_UNK data_0212fc70;
 extern M2C_UNK func_0200c9c8, func_0200ca18, func_0200cb6c;
@@ -92,51 +92,72 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
     }
 }
 #pragma scheduling reset
-void func_0200cfc8(u32 *state, const u8 *data, s32 len) {
-    u32 a, b, c, d, e;
-    u32 W[80];
-    s32 i;
-    while (len > 0) {
-        for (i = 0; i < 16; i++) {
-            u32 x = ((const u32 *)data)[i];
-            x = ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | (x << 24);
-            W[i] = x;
-        }
-        data += 64;
-        a = state[0]; b = state[1]; c = state[2]; d = state[3]; e = state[4];
-        for (i = 0; i < 80; i++) {
-            u32 f, k, temp;
-            if (i < 20) { f = (b & c) | (~b & d); k = 0x5A827999; }
-            else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
-            else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
-            else { f = b ^ c ^ d; k = 0xCA62C1D6; }
-            if (i >= 16) {
-                u32 t = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
-                W[i] = (t << 1) | (t >> 31);
-            }
-            temp = ((a << 5) | (a >> 27)) + f + e + k + W[i];
-            e = d; d = c; c = ((b << 30) | (b >> 2)); b = a; a = temp;
-        }
-        state[0] += a; state[1] += b; state[2] += c; state[3] += d; state[4] += e;
-        len -= 64;
-    }
+void func_0200cfc8(u32 *state,const u8 *data,s32 len){
+ u32 a,b,c,d,e,W[32],*p,t,x;
+ s32 i;
+ a=state[0];b=state[1];c=state[2];d=state[3];e=state[4];
+ do{
+ p=W;
+ for(i=0;i<64;i+=4){
+ x=*(const u32 *)data;data+=4;
+ x=((x&0xff00ff)>>8)|((x&0xff00ff)<<24)|(((x<<8)|(x>>24))&0xff00ff);
+ p[16]=x;*p++=x;
+ t=0x5a827999+e+((a<<5)|(a>>27))+x+(((c^d)&b)^d);
+ e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
+ }
+ p=W;
+ for(i=0;i<4;i++){
+ x=(p[0]^p[2])^(p[8]^p[13]);x=(x<<1)|(x>>31);
+ p[16]=x;*p++=x;
+ t=x+e+0x5a827999+((a<<5)|(a>>27))+(((c^d)&b)^d);
+ e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
+ }
+ for(i=0;i<20;i++){
+ x=(p[0]^p[2])^(p[8]^p[13]);x=(x<<1)|(x>>31);
+ p[16]=x;*p++=x;
+ t=x+e+0x6ed9eba1+((a<<5)|(a>>27))+(b^c^d);
+ e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
+ if(i==11)p=W;
+ }
+ for(i=0;i<20;i++){
+ x=(p[0]^p[2])^(p[8]^p[13]);x=(x<<1)|(x>>31);
+ p[16]=x;*p++=x;
+ t=x+e+0x8f1bbcdc+((a<<5)|(a>>27))+(((b|c)&d)|(b&c));
+ e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
+ if(i==7)p=W;
+ }
+ for(i=0;i<20;i++){
+ x=(p[0]^p[2])^(p[8]^p[13]);x=(x<<1)|(x>>31);
+ p[16]=x;*p++=x;
+ t=x+e+0xca62c1d6+((a<<5)|(a>>27))+(b^c^d);
+ e=d;d=c;c=(b>>2)|(b<<30);b=a;a=t;
+ if(i==3)p=W;
+ }
+ state[0]+=a;state[1]+=b;state[2]+=c;state[3]+=d;state[4]+=e;
+ len-=64;
+ }while(len>0);
 }
 
+#pragma push
+#pragma opt_global_reg off
 void func_0200d2c4(u32 unused,u32 value,u32 error){
 u16 code=(u16)value;u16 command=(u16)((code&0x7f00)>>8);s32 status;
 TouchSample sample1,sample2;TouchResult *out; u8 touch,valid;u16 y,x;
 if(error){
-M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1<<command;
-if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,4,0);return;
+value=(u32)&data_0212fc70;
+error=1<<command;
+((TouchState *)(void *)value)->flags38|=error;
+if(((TouchState *)(void *)value)->callback)((TouchState *)(void *)value)->callback(command,4,0);return;
 }
 if(command==16){
-M2C_FIELD(&data_0212fc70,u16 *,0x10)++;
-if(M2C_FIELD(&data_0212fc70,u16 *,0x10)>=M2C_FIELD(&data_0212fc70,u16 *,0x18))M2C_FIELD(&data_0212fc70,u16 *,0x10)=0;
+value=(u32)&data_0212fc70;
+M2C_FIELD((void *)value,u16 *,0x10)++;
+if(M2C_FIELD((void *)value,u16 *,0x10)>=M2C_FIELD((void *)value,u16 *,0x18))M2C_FIELD((void *)value,u16 *,0x10)=0;
 sample1.pair=*(volatile TouchPair *)0x27fffaa;
 x=sample1.bits.x;y=sample1.bits.y;touch=sample1.bits.touch;valid=sample1.bits.valid;
-out=M2C_FIELD(&data_0212fc70,TouchResult **,0x14)+M2C_FIELD(&data_0212fc70,u16 *,0x10);
+out=M2C_FIELD((void *)value,TouchResult **,0x14)+M2C_FIELD(&data_0212fc70,u16 *,0x10);
 out->x=x;out->y=y;out->touch=touch;out->valid=valid;
-if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,0,(u8)M2C_FIELD(&data_0212fc70,u16 *,0x10));return;
+if(((TouchState *)(void *)value)->callback)((TouchState *)(void *)value)->callback(command,0,(u8)M2C_FIELD((void *)value,u16 *,0x10));return;
 }
 if(!(value&0x1000000))return;
 switch((u8)code){
@@ -152,20 +173,20 @@ break;
 case 1:M2C_FIELD(&data_0212fc70,u16 *,0x36)=2;break;
 case 2:M2C_FIELD(&data_0212fc70,u16 *,0x36)=0;break;
 }
-M2C_FIELD(&data_0212fc70,u16 *,0x3a)&=~(1<<command);
-if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,0,0);return;
+((TouchState *)&data_0212fc70)->flags3a&=~(1<<command);
+if(((TouchState *)&data_0212fc70)->callback)((TouchState *)&data_0212fc70)->callback(command,0,0);return;
 case 4:status=3;goto report;
 case 2:status=1;goto report;
 case 3:status=2;
 report:
-M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1<<command;
-M2C_FIELD(&data_0212fc70,u16 *,0x3a)&=~(1<<command);
-if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(command,(u8)status,0);
+((TouchState *)&data_0212fc70)->flags38|=1<<command;
+((TouchState *)&data_0212fc70)->flags3a&=~(1<<command);
+if(((TouchState *)&data_0212fc70)->callback)((TouchState *)&data_0212fc70)->callback(command,(u8)status,0);
 return;
 default:func_02007958();return;
 }
 }
-
+#pragma pop
 void func_0200d544(void) {
 void func_02009d34(void); s32 func_02009e8c(s32,s32); void func_02009e40(s32,void *);
 if(M2C_FIELD(&data_0212fc70,u16 *,0)) return;
