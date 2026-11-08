@@ -3,6 +3,12 @@
 typedef struct Addr617BC { u8 len, family; u16 port; u32 addr; } Addr617BC;
 typedef struct Bytes617BC { u8 b[4]; } Bytes617BC;
 typedef struct Pair617BC { u8 b[2]; } Pair617BC;
+#pragma push
+#pragma opt_propagation off
+static inline void CopyHeaderBytes617BC(u8 *dst,u8 *src) {
+u8 hi=src[1],lo=src[0];dst[1]=hi;dst[0]=lo;
+}
+#pragma pop
 static inline void CopyPair617BC(u8 *d,u8 *s) { *(Pair617BC *)d=*(Pair617BC *)s; }
 static inline void Copy617BC(u8 *d,u8 *s) { *(Bytes617BC *)d=*(Bytes617BC *)s; }
 extern u8 data_02100120[];
@@ -313,11 +319,12 @@ block_6:
     return 0;
 }
 
-#pragma scheduling off
+#pragma push
+#pragma opt_propagation off
 s32 func_020623bc(void *a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
 extern u8 data_0210017c[],data_02100100[];extern M2C_UNK data_0210011c;
 void func_020640a8(void*,void*,void*,s32);s32 func_02068c34(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 func_02037794(s32);
-u8 buf[768];s32 n;u8 *p;u16 len;s32 r;
+u8 buf[768];s32 n;u8 *p;u16 len;u8 *src,*dst;s32 r;
 if(M2C_FIELD(a,s32*,0)!=1)func_020640a8(data_0210017c,data_0210012c,data_02100100,0x20a);
 if(!b)b=(s32)&data_0210011c;if(!c)c=(s32)&data_0210011c;
 if((u32)func_02068c34((M2C_UNK*)b)>256)return 6;if((u32)func_02068c34((M2C_UNK*)c)>256)return 6;
@@ -332,14 +339,15 @@ func_0206213c((s32*)&p,(M2C_UNK*)c,&n);func_0206213c((s32*)&p,(M2C_UNK*)b,&n);
 func_020621b0(&p,((u32)d<<24&0xff000000)|(((u32)d<<8&0xff0000)|(((u32)d>>24&255)|((u32)d>>8&0xff00))),&n);
 if(M2C_FIELD(a,s32*,0x5c4)&8)func_020621b0(&p,M2C_FIELD(a,s32*,0x4a4),&n);
 if(M2C_FIELD(a,s32*,0x5c4)&128)func_020621b0(&p,e,&n);
+src=(u8 *)&len;
 len=(((u16)n>>8)&255)|(((u16)n<<8)&0xff00);
-CopyPair617BC(buf,(u8*)&len);
-if(func_02049810(M2C_FIELD(a,s32*,0x4b0),(s32)buf,n,0)<=0){func_020626d4(a);return 3;}
+dst=buf;*((Pair617BC *)dst)=*((Pair617BC *)src);
+if(func_02049810(M2C_FIELD(a,s32*,0x4b0),(s32)dst,n,0)<=0){func_020626d4(a);return 3;}
 M2C_FIELD(a,s32*,0)=3;M2C_FIELD(a,s32*,0x5c8)=0;
 if(!M2C_FIELD(a,s32*,0x7c)){M2C_FIELD(a,s32*,0x7c)=func_02037794(4096);if(!M2C_FIELD(a,s32*,0x7c))return 5;M2C_FIELD(a,s32*,0x80)=0;}
 return 0;
 }
-#pragma scheduling reset
+#pragma pop
 void func_0206262c(void *a) {void func_02061d24(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)func_02061d24(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
 
 void func_02062670(void *a) {

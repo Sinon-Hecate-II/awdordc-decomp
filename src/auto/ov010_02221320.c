@@ -347,11 +347,11 @@ M2C_FIELD(state,s16*,0)=pred;M2C_FIELD(state,s8*,2)=index;
 c|=(u8)code;out[2]=c|(d<<6);}
 in+=8;out+=3;++i;}while(i<n);}
 
-#pragma scheduling on
+#pragma scheduling off
 void func_ov010_02221fa0(u8 *arg0,void *arg1,u32 arg2,void *arg3){extern s8 data_ov010_0222bd5c[];extern s16 data_ov010_0222bd78[];u32 i;s32 idx,pred,code,step; s16 sample;
 i=0;if(i>=arg2)return;do{
 code=((s32)*arg0>>0)&3;idx=M2C_FIELD(arg3,u8 *,2);pred=M2C_FIELD(arg3,s16 *,0);step=data_ov010_0222bd78[idx];if(!(code&1))step=0;if(code&2){pred-=step;if(pred< -32768)pred=-32768;}else{pred+=step;if(pred>32767)pred=32767;}idx+=data_ov010_0222bd5c[code];if(idx<0)idx=0;else if(idx>88)idx=88;sample=pred;M2C_FIELD(arg3,s16 *,0)=sample;M2C_FIELD(arg3,u8 *,2)=idx;M2C_FIELD(arg1,s16 *,0)=sample;
 code=((s32)*arg0>>2)&3;idx=M2C_FIELD(arg3,u8 *,2);pred=M2C_FIELD(arg3,s16 *,0);step=data_ov010_0222bd78[idx];if(!(code&1))step=0;if(code&2){pred-=step;if(pred< -32768)pred=-32768;}else{pred+=step;if(pred>32767)pred=32767;}idx+=data_ov010_0222bd5c[code];if(idx<0)idx=0;else if(idx>88)idx=88;sample=pred;M2C_FIELD(arg3,s16 *,0)=sample;M2C_FIELD(arg3,u8 *,2)=idx;M2C_FIELD(arg1,s16 *,2)=sample;
 code=((s32)*arg0>>4)&3;idx=M2C_FIELD(arg3,u8 *,2);pred=M2C_FIELD(arg3,s16 *,0);step=data_ov010_0222bd78[idx];if(!(code&1))step=0;if(code&2){pred-=step;if(pred< -32768)pred=-32768;}else{pred+=step;if(pred>32767)pred=32767;}idx+=data_ov010_0222bd5c[code];if(idx<0)idx=0;else if(idx>88)idx=88;sample=pred;M2C_FIELD(arg3,s16 *,0)=sample;M2C_FIELD(arg3,u8 *,2)=idx;M2C_FIELD(arg1,s16 *,4)=sample;
-code=((s32)*arg0>>6)&3;idx=M2C_FIELD(arg3,u8 *,2);pred=M2C_FIELD(arg3,s16 *,0);step=data_ov010_0222bd78[idx];if(!(code&1))step=0;if(code&2){pred-=step;if(pred< -32768)pred=-32768;}else{pred+=step;if(pred>32767)pred=32767;}idx+=data_ov010_0222bd5c[code];if(idx<0)idx=0;else if(idx>88)idx=88;sample=pred;M2C_FIELD(arg3,s16 *,0)=sample;M2C_FIELD(arg3,u8 *,2)=idx;i++;M2C_FIELD(arg1,s16 *,6)=sample;
-arg1+=8;arg0++;}while(i<arg2);}
+code=((s32)*arg0>>6)&3;idx=M2C_FIELD(arg3,u8 *,2);pred=M2C_FIELD(arg3,s16 *,0);step=data_ov010_0222bd78[idx];if(!(code&1))step=0;if(code&2){pred-=step;if(pred< -32768)pred=-32768;}else{pred+=step;if(pred>32767)pred=32767;}idx+=data_ov010_0222bd5c[code];if(idx<0)idx=0;else if(idx>88)idx=88;sample=pred;M2C_FIELD(arg3,s16 *,0)=sample;M2C_FIELD(arg3,u8 *,2)=idx;M2C_FIELD(arg1,s16 *,6)=sample;
+arg1=(s16 *)arg1+4;i+=1;arg0=arg0+1;}while(i<arg2);}

@@ -88,7 +88,36 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=8;
 func_0208fe30(0x1001c);return 1;
 }
 
-s32 func_020d5aa0(u8 arg0, u8 arg1, s32 arg2, s32 arg3, u8 arg4) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; return 0; }
+s32 func_020d5aa0(u8 x,u8 y,s32 check,s32 allow,u8 mode){
+extern void *gCurrentMap; extern M2C_UNK data_0211fbc4; extern u16 data_02168f14;
+s32 slot; M2C_UNK (*cb)(); void *unit;
+func_020c93cc();
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758));
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x59a4+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)*14;
+
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d6)=0;
+if(func_020cf878(x,y)) { if(check)func_020b97c4(x,y); return 1; }
+if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)) != 0 || ((u32)(data_02168f14<<22)>>31)) { if(!allow)return 0; func_020c752c();return 1; }
+func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
+func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
+cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
+func_020cfd28();
+func_020d5554(x,y);
+func_0209fb70();
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)>>6)+1;
+func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
+func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4);
+func_020d5868();
+func_0207a748(0);func_0207b028(7);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=2;
+func_020a06a0(mode);
+func_01ffa3dc(&data_0211fbc4,6);
+func_0208fe30(0x1001c);
+func_020d6778(2);
+if(func_020d19b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4)))func_02091c20(21,1);
+return 1;
+}
 
 void func_020d5d0c(u8 *p,s32 index,s32 arg2){
 extern void *gCurrentMap; extern M2C_UNK data_0211fbc4;

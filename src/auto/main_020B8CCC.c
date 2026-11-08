@@ -58,10 +58,10 @@ void func_020b9140(s32 arg0) {
 #pragma opt_common_subs off
 void func_020b916c(s32 x,s32 y,s32 a,s32 b,s32 c){
 void func_020809c0(void *,s32,s32);s32 func_0207cb88(s32);void func_0209c048(s32,s32,s32,s32,u16,u16);void func_0209c0bc(s16,s16,void *,s32,s32,u16);extern void *gCur3DSpriteEngine;
-s32 pos,base=x; s32 color=0; s32 len;
+s32 pos,base=x; s32 color=0;
 if(c<0)color=3;
 func_020809c0(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+x*2+y*64,32,2);
-pos=x+4;len=func_0207cb88(a)-1;func_0209c048((s16)(pos+len),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
+pos=x+4;func_0209c048((s16)(pos+(func_0207cb88(a)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),a,0,0);
 pos=base+11;if(b<0){func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),45,0,0);if(b<0)b=-b;}else{func_0209c0bc(pos,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),43,0,0);}
 a=base+14;func_0209c048((s16)(a+(func_0207cb88(b)-1)),(s16)y,M2C_FIELD(gCur3DSpriteEngine,s32 *,36),b,0,0);
 func_0209c0bc(base+20,y,M2C_FIELD(gCur3DSpriteEngine,void **,36),61,0,0);

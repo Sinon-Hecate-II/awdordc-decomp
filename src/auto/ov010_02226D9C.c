@@ -151,6 +151,8 @@ cb(a,b);
 
 #pragma opt_common_subs off
 
+#pragma push
+#pragma scheduling off
 void func_ov010_02227954(s32 a,void *b,s32 c) {
 void func_02008048(void *,void *,u32);
 void *func_01ffa770(void *);
@@ -159,17 +161,17 @@ void func_02007f8c(void *,s32,u32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
 extern u8 data_ov010_0222c160[], data_ov010_0222ef58[],data_ov010_0222ef88[];
 extern M2C_UNK data_ov010_0222eee0;
-Ov010Packet header; volatile Ov010Packet *h; u32 kind; void *state;
+u32 kind; void *state; Ov010Packet header; volatile Ov010Packet *h;
 void (*cb)(s32,void *,s32);
 func_02008048(b,&header,12);
 h=&header;
 if(header.magic==0x5f57464d) {
-u8 channel=h->channel;
+u32 channel=h->channel;
 state=func_01ffa770(data_ov010_0222c160);
 if(state) M2C_FIELD((u8 *)state+channel*4,u32 *,0x38)=0;
 kind=h->kind;
 if(kind!=0 && kind!=1) {if(kind<10) {
-u8 channel=h->channel;
+u32 channel=h->channel;
 u8 flags;
 u32 size=h->size;
 register u32 id=h->id;
@@ -190,7 +192,7 @@ M2C_FIELD(queue,u32 *,8)++;
 }
 {u32 unused=*(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=irq;}
 } else {
-u8 channel=h->channel;
+u32 channel=h->channel;
 u8 flags;
 u32 size=h->size;
 register u32 id=h->id;
@@ -216,7 +218,7 @@ callbacks:
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,void *,s32),0x2c); if(cb)cb(a,b,c);
 cb=M2C_FIELD(&data_ov010_0222eee0,void (**)(s32,void *,s32),0x4c); if(cb)cb(a,b,c);
 }
-#pragma opt_common_subs reset
+#pragma pop
 void func_ov010_02227bc8(void) {
     M2C_UNK func_ov010_02228cbc();
     func_ov010_02228cbc();

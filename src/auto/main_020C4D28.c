@@ -53,6 +53,8 @@ void func_020c4dd0(M2C_UNK arg0) {
     func_020c4d64(0, arg0);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_020c4de4(void *arg0) {
     M2C_UNK func_02007f8c(void *, s32, s32);
     void *func_02076228(void);
@@ -80,7 +82,12 @@ void func_020c4de4(void *arg0) {
         do {
             if (p[2] == 2) {
                 if (best) {
-                    if (!IsNewerValue(M2C_FIELD(best, u32 *, 4), M2C_FIELD(p, u32 *, 4))) goto skip_next;
+                    u32 bv=M2C_FIELD(best,u32 *,4), av=M2C_FIELD(p,u32 *,4);
+                    s32 result=av & 0xffff0000;
+                    if(result==0xffff0000 && !(bv&0xffff0000) && bv!=0)result=0;
+                    else if(!result && (bv&0xffff0000)==0xffff0000 && av!=0)result=1;
+                    else result=av>bv;
+                    if(!result)goto skip_next;
                 }
                 best = p;
             }
@@ -124,7 +131,7 @@ void func_020c4de4(void *arg0) {
     M2C_FIELD(base, s32 *, 0x88) = d.v[1];
     M2C_FIELD(base, s32 *, 0x8C) = d.v[2];
 }
-
+#pragma pop
 void func_020c4ff4(M2C_UNK arg0) {
     if (func_020761f8() != 0) {
         return;

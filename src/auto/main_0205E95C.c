@@ -242,12 +242,12 @@ void func_0205f05c(void *arg0,M2C_UNK arg1) {
 }
 
 #pragma push
-#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_0205f10c(M2C_UNK a0,M2C_UNK a1,M2C_UNK a2,s32 count,s32 listPtr) {
 void func_0205ebb0(void *,M2C_UNK *);
 extern M2C_UNK data_020ffa60,data_020ffa68;
 extern M2C_UNK *data_020ffc1c[];
-NetworkFieldList fields; u16 wire; s32 port; u8 *wireBytes; u8 lo,hi; u8 *out; s32 n=0; s32 reps,i,j,before; u8 *p=(u8 *)listPtr; M2C_UNK *name;
+NetworkFieldList fields; u16 wire; s32 port; u8 *wireBytes; u8 lo,hi; u8 *out; s32 n=0; s32 reps,j,before,i,k; u8 *p=(u8 *)listPtr; M2C_UNK *name;
 fields.count=0;
 if(!count)return;
 if((u32)(a2-1)<=1) {
@@ -255,9 +255,9 @@ if((u32)(2048-M2C_FIELD(a1,s32 *,2048))<2)return;
 reps=M2C_FIELD(a0,s32 (**)(s32,s32),0x98)(a2,M2C_FIELD(a0,s32 *,0x10c));
 port=(u16)reps; wire=((port>>8)&255)|((port<<8)&0xff00);
 wireBytes=(u8 *)&wire;
-lo=wireBytes[0];
-n=M2C_FIELD(a1,s32 *,2048);
 hi=wireBytes[1];
+n=M2C_FIELD(a1,s32 *,2048);
+lo=wireBytes[0];
 out=(u8 *)a1+n;
 out[0]=lo;out[1]=hi;
 M2C_FIELD(a1,s32 *,2048)+=2;
@@ -287,11 +287,11 @@ p=fields.bytes;
 if(a2==0)return;
 }
 for(j=0;j<reps;j++) {
-for(i=0;i<count;i++) {
+for(k=0;k<count;k++) {
 before=M2C_FIELD(a1,s32 *,2048);
-if(a2==0) M2C_FIELD(a0,void (**)(s32,s32,s32),0x88)(p[i],a1,M2C_FIELD(a0,s32 *,0x10c));
-else if(a2==1) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x8c)(p[i],j,a1,M2C_FIELD(a0,s32 *,0x10c));
-else if(a2==2) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x90)(p[i],j,a1,M2C_FIELD(a0,s32 *,0x10c));
+if(a2==0) M2C_FIELD(a0,void (**)(s32,s32,s32),0x88)(p[k],a1,M2C_FIELD(a0,s32 *,0x10c));
+else if(a2==1) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x8c)(p[k],j,a1,M2C_FIELD(a0,s32 *,0x10c));
+else if(a2==2) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x90)(p[k],j,a1,M2C_FIELD(a0,s32 *,0x10c));
 if(before==M2C_FIELD(a1,s32 *,2048))func_0205ebb0((void *)a1,&data_020ffa68);
 }
 }

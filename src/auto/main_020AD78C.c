@@ -1,7 +1,10 @@
 /* 29 functions from 0x020AD78C to 0x020AE768 (main), found by ds-decomp. */
 #include "common.h"
-static inline void DisplaySetBits(u16 *p,u16 bits) { u16 * volatile reg=p; *reg |= bits; }
-static inline void DisplayClearBits(u16 *p,u16 bits) { u16 * volatile reg=p; *reg &= ~bits; }
+#pragma push
+#pragma optimization_level 0
+static inline void DisplaySetBits(u16 *reg,u16 bits) { *reg |= bits; }
+static inline void DisplayClearBits(u16 *reg,u16 bits) { *reg &= ~bits; }
+#pragma pop
 
 #pragma opt_common_subs off
 void func_020ad78c(void) {
@@ -118,11 +121,11 @@ void func_020ad9b8(M2C_UNK a0) {
     gCur3DSpriteEngine = data_027e00c4;
     func_020ad968();
 
-    {u16 * volatile reg=*gCur3DSpriteEngine;*reg|=0x10;}
-    {u16 * volatile reg=*gCur3DSpriteEngine;*reg|=0x20;}
-    {u16 * volatile reg=*gCur3DSpriteEngine;*reg&=~0x40;}
-    {u16 * volatile reg=*gCur3DSpriteEngine;*reg&=~0x80;}
-    {u16 * volatile reg=*gCur3DSpriteEngine;*reg|=0x100;}
+    {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x10;}
+    {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x20;}
+    {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg&~0x40;}
+    {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg&~0x80;}
+    {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x100;}
 
     (*gCur3DSpriteEngine)[3] &= ~3;
     (*gCur3DSpriteEngine)[4] = ((*gCur3DSpriteEngine)[4] & ~3) | 1;
@@ -134,7 +137,7 @@ void func_020ad9b8(M2C_UNK a0) {
     (*gCur3DSpriteEngine)[29] = 0;
     (*gCur3DSpriteEngine)[33] = 0;
 
-    {u16 * volatile reg=*gCur3DSpriteEngine+9;*reg&=~0xc0;}
+    {u16 * volatile reg=*gCur3DSpriteEngine+9;*reg=*reg&~0xc0;}
 
     ((u8 *)*gCur3DSpriteEngine)[0x51] = 0;
     ((u8 *)*gCur3DSpriteEngine)[0x52] = 0;

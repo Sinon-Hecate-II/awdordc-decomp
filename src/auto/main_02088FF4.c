@@ -1,5 +1,14 @@
 /* 42 functions from 0x02088FF4 to 0x02089D30 (main), found by ds-decomp. */
 #include "common.h"
+#pragma push
+#pragma optimization_level 0
+static inline s32 SmoothSpritePosition(s32 next,s32 current) {
+s32 delta=next-current;
+s32 magnitude=delta<0?-delta:delta;
+if(magnitude>1)next=current+(delta>>1);
+return next;
+}
+#pragma pop
 void func_02089c34(void *, s32);
 extern M2C_UNK data_02102638;
 
@@ -240,10 +249,44 @@ void func_02089438(void *arg0) {
     *(volatile s16 *)((volatile s8 *)arg0 + 0x64) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0xE) >> 0x17);
 }
 
-M2C_UNK func_0208946c(void) { return 0; }
-
+#pragma push
+#pragma opt_strength_reduction off
+void func_0208946c(void *p) {
+extern void *gCur3DSpriteEngine;extern s32 data_027e00c4,data_027e00c8;
+s32 func_0208b5a8(void);
+void func_0208df84(s16,s16,s16,s16,u16,s32);
+void func_0208dd7c(s16,s16,s16,s16,u16,s32,s32);
+s32 d,a,b,screen;s32 attr;s32 *engineA,*engineB;u16 tile;void *old;s32 i,priority,drawMode;u32 target,delta;void *cur;
+if(func_02089080(p))return;
+if(M2C_FIELD(p,u8 *,0x5a)){func_02089438(p);M2C_FIELD(p,u8 *,0x5a)=0;}
+attr=(u16)((u32)(M2C_FIELD(p,s32 *,0x40)<<6)>>24);
+a=0x3ff&((u32)M2C_FIELD(p,u16 *,0x3e)>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30));
+tile=(u16)(a+(M2C_FIELD(p,u16 *,0x3c)+((u32)(attr<<28)>>16)));
+priority=M2C_FIELD(p,u8 *,0x49);
+{s32 diff,current,magnitude,next;next=M2C_FIELD(p,s16 *,0x34);current=M2C_FIELD(p,s16 *,0x5e);diff=next-current;magnitude=diff<0?-diff:diff;if(magnitude>1)next=current+(diff>>1);M2C_FIELD(p,s16 *,0x5e)=next;}
+{s32 diff,current,magnitude,next;next=M2C_FIELD(p,s16 *,0x36);current=M2C_FIELD(p,s16 *,0x60);diff=next-current;magnitude=diff<0?-diff:diff;if(magnitude>1)next=current+(diff>>1);M2C_FIELD(p,s16 *,0x60)=next;}
+target=(u32)(M2C_FIELD(p,s32 *,0x40)<<23)>>23;b=M2C_FIELD(p,s16 *,0x62);delta=target-b;
+if(delta>1)target=b+(delta>>1);M2C_FIELD(p,s16 *,0x62)=target;
+target=(u32)(M2C_FIELD(p,s32 *,0x40)<<14)>>23;b=M2C_FIELD(p,s16 *,0x64);delta=target-b;
+if(delta>1)target=b+(delta>>1);M2C_FIELD(p,s16 *,0x64)=target;
+if(!M2C_FIELD(p,u8 *,0x58))tile=(u16)(tile+(0x3ff&(32>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))));
+if(func_0208b5a8())return;
+old=gCur3DSpriteEngine;engineA=&data_027e00c4;engineB=&data_027e00c8;drawMode=2;
+for(i=0;i<2;i++){
+cur=(void *)(i==0?*engineB:*engineA);gCur3DSpriteEngine=cur;
+screen=(u32)(M2C_FIELD(p,u8 *,0x48)<<28)>>29;
+if(screen==0&&cur!=(void *)*engineB)continue;
+if(attr==1&&gCur3DSpriteEngine!=(void *)data_027e00c4)continue;
+if(attr==3&&gCur3DSpriteEngine!=old)continue;
+if(M2C_FIELD(p,u8 *,0x58)&&M2C_FIELD(p,u8 *,0x59))
+func_0208df84((s16)(M2C_FIELD(p,s16 *,0x5e)+M2C_FIELD(p,s16 *,0x38)),(s16)(M2C_FIELD(p,s16 *,0x60)+M2C_FIELD(p,s16 *,0x3a)),M2C_FIELD(p,s16 *,0x62),M2C_FIELD(p,s16 *,0x64),tile,priority);
+else func_0208dd7c((s16)(M2C_FIELD(p,s16 *,0x5e)+M2C_FIELD(p,s16 *,0x38)),(s16)(M2C_FIELD(p,s16 *,0x60)+M2C_FIELD(p,s16 *,0x3a)),M2C_FIELD(p,s16 *,0x62),M2C_FIELD(p,s16 *,0x64),tile,priority,drawMode);
+}
+gCur3DSpriteEngine=old;
+}
+#pragma pop
 void func_020896e4(void) {
-    M2C_UNK func_0208946c();
+    void func_0208946c();
     func_0208946c();
 }
 
