@@ -302,6 +302,9 @@ void func_0203b76c(s32 arg0, void *arg1, s32 arg2) {
  return;
 }
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_0203b9a8(void **conn, void *buf, s32 unused) {
     extern M2C_UNK data_0213d38c;
     extern M2C_UNK data_020fc8f0;
@@ -317,78 +320,61 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 func_0203b608(s32);
     s32 func_0204e0c4(void **, s32);
 
-    void *data = &data_0213d38c;
     u8 local[0x1c];
+    void *data;
     void *p;
-    void *q;
-    s32 i = 0;
-    s32 found = 0;
-    s32 offset = 0;
-    s32 t;
+    s32 i;
+    s32 found;
+    s32 offset;
     s32 t2;
-    s32 res;
+    s32 t;
     u32 v;
 
+    found = 0;
     if (M2C_FIELD(buf, s32 *, 0) != 0) {
         return;
     }
-
+    data = &data_0213d38c;
+    i = 0;
     p = M2C_FIELD(data, void **, 8);
     if (M2C_FIELD(p, s32 *, 0x14) <= 0) {
         goto after_loop;
     }
-
-    i = 0;
-    found = 0;
     offset = 0;
 
-    for (;;) {
-        p = M2C_FIELD(data, void **, 8);
-        if (M2C_FIELD(p, s32 *, 0x14) <= i) {
-            break;
-        }
-
-        q = (u8 *)M2C_FIELD(p, void **, 0x18) + offset;
-
-        t = func_02031e70(q);
-        if (t == 1) {
+    do {
+        if (func_02031e70((u8 *)M2C_FIELD(p, void **, 0x18) + offset) == 1) {
             t = func_02039d98();
-            func_020326f8(t, q, local + 0x11);
-            if (func_02068d98(local + 0x11, (u8 *)buf + 0x8e) == 0) {
+            func_020326f8(t, (u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, local + 5);
+            if (func_02068d98(local + 5, (u8 *)buf + 0x8e) == 0) {
                 func_0204e074(conn, M2C_FIELD(buf, s32 *, 4));
-                func_020326c4(q, M2C_FIELD(buf, s32 *, 4));
+                func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(buf, s32 *, 4));
                 found = 1;
             }
         } else {
-            t = func_02031e70(q);
-            if (t != 3) {
-                t = func_02031e70(q);
-                if (t != 2) {
-                    goto skip_handle;
+            if (func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 3 ||
+                func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 2) {
+                t = func_02039d98();
+                v = M2C_FIELD(t, u32 *, 0x24);
+                func_0200567c(local, 5, &data_020fc8f0,
+                              (v >> 24) & 0xff,
+                              (v >> 16) & 0xff,
+                              (v >> 8) & 0xff,
+                              v & 0xff);
+                t2 = M2C_FIELD(buf, s32 *, 4);
+                t = func_02039d98();
+                if (t2 == func_02032580(t, (s32)((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset))) {
+                    if (func_0206527c(local, (u8 *)buf + 0x97, 4) == 0) {
+                        func_0204e074(conn, t2);
+                        found = 1;
+                    }
                 }
             }
-            t = func_02039d98();
-            v = M2C_FIELD(t, u32 *, 0x24);
-            func_0200567c(local + 0xc, 5, &data_020fc8f0,
-                          (v >> 24) & 0xff,
-                          (v >> 16) & 0xff,
-                          (v >> 8) & 0xff,
-                          v & 0xff);
-            t2 = M2C_FIELD(buf, s32 *, 4);
-            t = func_02039d98();
-            res = func_02032580(t, (s32)q);
-            if (t2 == res) {
-                if (func_0206527c(local + 0xc, (u8 *)buf + 0x97, 4) == 0) {
-                    func_0204e074(conn, t2);
-                    found = 1;
-                }
-            }
-        skip_handle: ;
         }
-
+        p = M2C_FIELD(data, void **, 8);
         offset += 0xc;
         i++;
-    }
+    } while (i < M2C_FIELD(p, s32 *, 0x14));
 
 after_loop:
     if (found) {
@@ -397,6 +383,9 @@ after_loop:
         func_0204e0c4(conn, M2C_FIELD(buf, s32 *, 4));
     }
 }
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 
 void func_0203bb58(s32 unused, void *r10) {
     extern M2C_UNK data_0213d38c;
@@ -411,86 +400,72 @@ void func_0203bb58(s32 unused, void *r10) {
     s32 func_0203b500(u8 *, s32, s32);
     void func_0203b000(s32);
 
-    u8 buf[0x18];
-    void *data = &data_0213d38c;
-    void *p;
-    void *q;
-    s32 r6 = 0;
-    s32 r7 = 0;
-    s32 r8 = 0;
-    s32 r9 = 0;
-    s32 r11 = 1;
-    s32 t;
-    s32 res;
+    u8 bufstore[0x18];
+    void *data;
+    void *buf;
+    s32 i;
+    s32 moved;
+    s32 other;
+    s32 offset;
+    s32 one;
+    s32 t, res;
 
+    moved = 0;
+    other = 0;
     if (M2C_FIELD(r10, s32 *, 0) != 0) {
         return;
     }
-
-    p = M2C_FIELD(data, void **, 8);
-    if (M2C_FIELD(p, s32 *, 0x14) <= 0) {
+    data = &data_0213d38c;
+    i = 0;
+    if (M2C_FIELD(M2C_FIELD(data, void **, 8), s32 *, 0x14) <= 0) {
         goto after_loop;
     }
+    offset = 0;
+    one = 1;
 
-    r9 = 0;
-    r11 = 1;
-
-    for (;;) {
-        p = M2C_FIELD(data, void **, 8);
-        if (M2C_FIELD(p, s32 *, 0x14) <= r6) {
-            break;
-        }
-
-        q = (u8 *)M2C_FIELD(p, void **, 0x18) + r9;
-
-        t = func_02031e70(q);
+    do {
+        buf = bufstore;
+        t = func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset);
         if (t == 1) {
             t = func_02039d98();
-            func_020326f8(t, q, buf);
+            func_020326f8(t, (u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, buf);
             if (func_02068d98(buf, (u8 *)r10 + 0x8e) == 0) {
-                func_020326c4(q, M2C_FIELD(r10, s32 *, 4));
-                func_02031eb8(q);
-                r7 = r11;
+                func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(r10, s32 *, 4));
+                func_02031eb8((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset);
+                moved = one;
             }
         } else {
-            t = func_02031e70(q);
-            if (t != 3) {
-                t = func_02031e70(q);
-                if (t != 2) {
-                    goto skip_handle;
+            if (func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 3 ||
+                func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 2) {
+                t = func_02039d98();
+                res = func_02032580(t, (s32)((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset));
+                if (M2C_FIELD(r10, s32 *, 4) == res) {
+                    if (func_02031e38((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset) == 1) {
+                        other = 1;
+                    } else {
+                        func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(r10, s32 *, 4));
+                        func_02031eb8((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset);
+                        moved = 1;
+                    }
                 }
             }
-            t = func_02039d98();
-            res = func_02032580(t, (s32)q);
-            if (res == M2C_FIELD(r10, s32 *, 4)) {
-                if (func_02031e38(q) == 1) {
-                    r8 = 1;
-                } else {
-                    func_020326c4(q, M2C_FIELD(r10, s32 *, 4));
-                    func_02031eb8(q);
-                    r7 = 1;
-                }
-            }
-            skip_handle: ;
         }
-
-        p = M2C_FIELD(data, void **, 8);
-        r6++;
-        r9 += 0xc;
-    }
+        i++;
+        offset += 0xc;
+    } while (i < M2C_FIELD(M2C_FIELD(data, void **, 8), s32 *, 0x14));
 
 after_loop:
-    if (r7 == 0) {
+    if (moved == 0) {
         return;
     }
 
-    p = M2C_FIELD(data, void **, 8);
-    res = func_0203b500((u8 *)M2C_FIELD(p, void **, 0x18), M2C_FIELD(p, s32 *, 0x14), M2C_FIELD(r10, s32 *, 4));
-    if (r8 == 0) {
+    res = func_0203b500((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18),
+                        M2C_FIELD(M2C_FIELD(data, void **, 8), s32 *, 0x14),
+                        M2C_FIELD(r10, s32 *, 4));
+    if (other == 0) {
         func_0203b000(res);
     }
-
-    M2C_FIELD(M2C_FIELD(data, void **, 8), u8 *, 0x1d) = 1;
+    M2C_FIELD(M2C_FIELD(&data_0213d38c, void **, 8), u8 *, 0x1d) = 1;
 }
 
 s32 func_0203bcf8(void) {

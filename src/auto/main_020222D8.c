@@ -264,10 +264,9 @@ s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
 s32 func_02008048(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
 u32 func_02022258(u8*); s32 func_0206527c(void*,void*,s32); s32 func_02068c34(void*);
 extern char *data_020fb004[6];
-u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 type;
+u8 *start=*input; u8 *p=start+1; s32 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date;
 if(!(len>=0 && len<=2000))return 1;
-type=tag&31;
-switch(type){
+switch(tag&31){
 case 2:
 if(M2C_FIELD(ctx,u8*,0x5ad)){
 if(index==0){

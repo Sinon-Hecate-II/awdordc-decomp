@@ -272,7 +272,7 @@ void func_0203181c(s32 arg0, u8 *dst) {
 
 M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
     extern u8 data_020ea8ef[];
-    extern M2C_UNK data_020fb23c[];
+    extern signed char *data_020fb23c[];
     M2C_UNK func_02031b98(M2C_UNK, u8 *, s32, s32);
     u8 buf[0x18];
     u8 *p;
@@ -341,7 +341,7 @@ void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
 
 void func_0203197c(u8 *src, u8 *dst) {
     u8 tmp[0x10];
-    extern M2C_UNK data_020fb23c[];
+    extern signed char *data_020fb23c[];
     extern u8 data_020ea908[];
     extern u8 data_020ea918[];
     void func_02008048(void *, void *, u32);
@@ -354,14 +354,14 @@ void func_0203197c(u8 *src, u8 *dst) {
         dst[i + 0x3] = (u8)(dst[i + 0x3] ^ src[i + 0xD]);
     }
     for (i = 0; i < 0xD; i++) {
-        dst[i] = (u8)(dst[i] ^ ((signed char *)data_020fb23c[1])[i]);
+        dst[i] = (u8)(dst[i] ^ data_020fb23c[1][i]);
     }
     func_02008048(dst, tmp, 0xD);
     for (i = 0; i < 0xD; i++) {
         dst[data_020ea908[i]] = tmp[i];
     }
     for (i = 0; i < 0xD; i++) {
-        dst[i] = (u8)(dst[i] ^ ((signed char *)data_020fb23c[3])[i]);
+        dst[i] = (u8)(dst[i] ^ data_020fb23c[3][i]);
     }
     for (i = 0; i < 0xD; i++) {
         u8 b = dst[i];
@@ -422,32 +422,41 @@ j=0;if(rem>0){out=dst+(full*3)/4;do{*out++=((u8 *)&tail)[2-j];j++;}while(j<rem);
 return size;
 }
 #pragma opt_strength_reduction on
-s32 func_02031d00(M2C_UNK arg0) {
-    M2C_UNK func_02000b9c(s32);
-    s32 func_02046884(M2C_UNK);
-    M2C_UNK func_02047098(M2C_UNK);
-    s32 func_02047320();
-    s32 temp_r4;
-    s32 var_r5;
-
-    var_r5 = 0;
-    func_02000b9c(0x02000C34);
-    temp_r4 = func_02046884(arg0);
-    if (func_02047320() != 0) {
-        func_02047098(arg0);
-        var_r5 = 1;
+s32 func_02031d00(M2C_UNK arg0)
+{
+  M2C_UNK func_02000b9c(s32);
+  s32 func_02046884(M2C_UNK);
+  M2C_UNK func_02047098(M2C_UNK);
+  s32 func_02047320();
+  u32 temp_r4;
+  s32 var_r5;
+  var_r5 = 0;
+  func_02000b9c(0x02000C34);
+  temp_r4 = (u32) func_02046884(arg0);
+  if (func_02047320() != 0)
+  {
+    if (1)
+    {
+      func_02047098(arg0);
     }
-    if (temp_r4 < 0) {
-        if (var_r5 != 0) {
-            return 2;
-        } else {
-            return 3;
-        }
+    var_r5 = 1;
+  }
+  if ((s32) temp_r4 < 0)
+  {
+    if (var_r5 != 0)
+    {
+      return 2;
     }
-    if (var_r5 != 0) {
-        return 1;
+    else
+    {
+      return 3;
     }
-    return 0;
+  }
+  if (var_r5 != 0)
+  {
+    return 1;
+  }
+  return 0;
 }
 
 s32 func_02031d64(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {

@@ -400,8 +400,10 @@ void func_02074310(s32 arg0, s32 arg1, void *arg2) {
 
 #pragma opt_common_subs off
 s32 func_02074330(M2C_UNK arg0,s32 arg1,M2C_UNK *arg2){
-u8 *p=(u8 *)arg0;u8 *q=(u8 *)arg1;s32 num;u8 t,u;
-*(s32 *)arg2=0;if(!arg1)return 1;
+u8 *p=(u8 *)arg0;u8 *q;s32 num;u8 t,u;
+q=(u8 *)arg1;
+*(s32 *)arg2=0;
+if(!arg1)return 1;
 if(*(u8 *)arg1=='P'){
 if(*++q=='V')q++;
 if(*q=='K')q++;

@@ -261,15 +261,13 @@ void func_020913c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x18) = (s16) (M2C_FIELD(arg0, s16 *, 0x18) + 1);
 }
 
-#pragma opt_if-conversion off
+#pragma opt_if-conversion on
 M2C_UNK func_020913d4(M2C_UNK arg0raw) {
     void func_020912a4(s32 *);
     void *arg0 = (void *)arg0raw;
     M2C_UNK *cur;
     u16 word0;
     u16 cmd;
-    u8 flags;
-    u32 idx;
     void *base;
     void *p10;
     u16 first;
@@ -324,18 +322,12 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
             }
         }
 
-    flags = M2C_FIELD(arg0, u8 *, 0x22);
-    cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
-    if ((flags & 0x2) == 0) {
-        idx = *((u16 *)cur + 1);
+    if (M2C_FIELD(arg0, u8 *, 0x22) & 0x2) {
         base = M2C_FIELD(arg0, void **, 0x4);
-        M2C_FIELD(arg0, void **, 0x10) = (void *)(((void **)base)[idx]);
-    } else {
-        idx = *((u16 *)cur + 1);
-        base = (void *)M2C_FIELD(arg0, void **, 0x4);
-        masked = *(u16 *)((u8 *)base + idx * 2);
-        masked = masked & ~1U;
+        masked = *(u16 *)((u8 *)base + *((u16 *)M2C_FIELD(arg0, M2C_UNK *, 0xC) + 1) * 2) & ~1U;
         M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)base + masked);
+    } else {
+        M2C_FIELD(arg0, void **, 0x10) = (void *)(((void **)M2C_FIELD(arg0, void **, 0x4))[*((u16 *)M2C_FIELD(arg0, M2C_UNK *, 0xC) + 1)]);
     }
 
     p10 = M2C_FIELD(arg0, void **, 0x10);

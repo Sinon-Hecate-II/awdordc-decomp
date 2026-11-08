@@ -167,84 +167,67 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
     void func_020808dc(void *, M2C_UNK, M2C_UNK, M2C_UNK);
 
     u16 **saved;
+    u16 **cur;
     u16 buf[4];
-    s32 r8;
-    u8 mode;
-    u8 flag;
+    s32 screen;
     s32 bit;
-    void *d88;
-    s32 res;
-    s32 rr;
-    s32 val;
+    s32 mode;
+    void *base;
+    void *ptr;
 
     saved = gCur3DSpriteEngine;
-    mode = *(u8 *)((char *)arg0 + 2);
-    flag = *(u8 *)((char *)arg0 + 1);
-    bit = *((u16 *)((char *)data_02101e84 + 6)) & 1;
+    bit = *(u16 *)((char *)data_02101e84 + 6) & 1;
+    screen = 0;
 
-    for (r8 = 0; r8 < 2; r8++) {
-        if (r8 == 0) {
-            gCur3DSpriteEngine = data_027e00c8;
-        } else {
-            gCur3DSpriteEngine = data_027e00c4;
-        }
+    do {
+        cur = (screen == 0) ? data_027e00c8 : data_027e00c4;
+        gCur3DSpriteEngine = cur;
 
-        if (mode == 0) {
-            if (gCur3DSpriteEngine != data_027e00c8) goto mark;
-        } else if (mode == 1) {
-            if (gCur3DSpriteEngine != data_027e00c4) goto mark;
-        } else if (mode == 3) {
-            if (gCur3DSpriteEngine != saved) goto mark;
-        }
-        if (flag == 0) goto mark;
+        mode = *(u8 *)((char *)arg0 + 2);
+        if (mode == 0 && cur != data_027e00c8) goto mark;
+        if (mode == 1 && cur != data_027e00c4) goto mark;
+        if (mode == 3 && cur != saved) goto mark;
+        if (*(u8 *)((char *)arg0 + 1) == 0) goto mark;
 
         buf[0] = (u16)*(s16 *)((char *)arg0 + 0x14);
         buf[1] = (u16)*(s16 *)((char *)arg0 + 0x16);
         buf[2] = (u16)*(s16 *)((char *)arg0 + 0x18);
         buf[3] = (u16)*(s16 *)((char *)arg0 + 0x1A);
 
-        d88 = data_02101e88;
-        if (*(u8 *)((char *)d88 + 0x12) != 0) {
-            res = func_020b2e78(
-                (M2C_UNK)*(u16 *)d88,
-                (M2C_UNK)*((u16 *)d88 + 1),
-                buf);
-            if (res != 0) goto draw2;
-            rr = (s32)func_020b212c();
-            val = *(u8 *)arg0;
-            if (val != rr) goto draw0;
-            if (bit != 0) goto draw2;
+        if ((*(u8 *)((char *)data_02101e88 + 0x12) != 0 &&
+             func_020b2e78(
+                 (M2C_UNK)*(u16 *)data_02101e88,
+                 (M2C_UNK)*((u16 *)data_02101e88 + 1),
+                 buf) != 0) ||
+            (*(u8 *)arg0 == (s32)func_020b212c() && bit != 0)) {
+            goto draw2;
         }
         goto draw0;
 
 draw2:
-        {
-            void *base = *(void **)((char *)gCur3DSpriteEngine + 0x20);
-            void *ptr = (void *)((char *)base +
-                (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
-                (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
-            func_020808dc(ptr,
-                (M2C_UNK)(((u32)*(s16 *)((char *)arg0 + 0x18)) << 13) >> 16,
-                (M2C_UNK)(((u32)*(s16 *)((char *)arg0 + 0x1A)) << 13) >> 16,
-                2);
-            goto mark;
-        }
+        base = *(void **)((char *)gCur3DSpriteEngine + 0x20);
+        ptr = (void *)((char *)base +
+            (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
+            (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
+        func_020808dc(ptr,
+            (u16)(M2C_FIELD(arg0, s16 *, 0x18) >> 3),
+            (u16)(M2C_FIELD(arg0, s16 *, 0x1a) >> 3),
+            2);
+        goto mark;
 
 draw0:
-        {
-            void *base = *(void **)((char *)gCur3DSpriteEngine + 0x20);
-            void *ptr = (void *)((char *)base +
-                (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
-                (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
-            func_020808dc(ptr,
-                (M2C_UNK)(((u32)*(s16 *)((char *)arg0 + 0x18)) << 13) >> 16,
-                (M2C_UNK)(((u32)*(s16 *)((char *)arg0 + 0x1A)) << 13) >> 16,
-                0);
-        }
+        base = *(void **)((char *)gCur3DSpriteEngine + 0x20);
+        ptr = (void *)((char *)base +
+            (*(s16 *)((char *)arg0 + 0x14) >> 3) * 2 +
+            (*(s16 *)((char *)arg0 + 0x16) >> 3) * 64);
+        func_020808dc(ptr,
+            (u16)(M2C_FIELD(arg0, s16 *, 0x18) >> 3),
+            (u16)(M2C_FIELD(arg0, s16 *, 0x1a) >> 3),
+            0);
 
 mark:
         *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
-    }
+    } while (++screen < 2);
 
     gCur3DSpriteEngine = saved;
 }
@@ -254,63 +237,94 @@ void func_ov006_02215950(u8 *arg0) {
     M2C_UNK func_020b1c60(u8);
     void func_ov006_02215ae0(void *);
     extern void *data_02101e84;
-    u32 temp_r1,temp_r2,temp_r3;
-    u8 var_ip;u16 *keys;
+    u16 temp_r1;
+    u16 temp_r2;
+    u8 var_r3;
+    u8 temp_ip;
 
-    temp_r1 = *arg0;keys=data_02101e84;
-    temp_r3 = keys[0];
-    var_ip = temp_r1;
-    temp_r2 = keys[1];
-    if (temp_r3 & 1) {
+    temp_ip = *arg0;
+    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 0);
+    var_r3 = temp_ip;
+    temp_r1 = M2C_FIELD(data_02101e84, u16 *, 2);
+    if (temp_r2 & 1) {
         func_ov006_02215ae0(arg0);
         return;
     }
-    if (temp_r2 & 0x40) {
-switch(temp_r1){case 0:if(temp_r2==temp_r3)var_ip=12;break;case 1:case 2:if(temp_r2==temp_r3)var_ip=13;break;default:var_ip=(u8)(temp_r1-3);break;}
-if(var_ip>=10)goto done;
-goto middle;
-}else if(temp_r2&0x80){
-switch(temp_r1){case 9:var_ip=12;break;case 7:case 8:var_ip=10;break;default:var_ip=(u8)(temp_r1+3);break;}
-if(var_ip>=10)goto done;
-}
-
-middle:
-    if (temp_r2 & 0x20) {
-        switch (var_ip) {
-        case 9:
-            if (temp_r2 == temp_r3) {
-                var_ip = 0xA;
+    if (temp_r1 & 0x40) {
+        switch (temp_ip) {
+        case 0:
+            if (temp_r1 == temp_r2) {
+                var_r3 = 0xC;
             }
             break;
-        case 0:
-        case 3:
-        case 6:
-            if (temp_r2 == temp_r3) {
-                var_ip = (u8)(var_ip + 2);
+        case 1:
+        case 2:
+            if (temp_r1 == temp_r2) {
+                var_r3 = 0xD;
             }
             break;
         default:
-        case 1:
-        case 2:
-        case 4:
-        case 5:
-        case 7:
-        case 8:
-            var_ip = (u8)(var_ip - 1);
+            var_r3 = (u8)(temp_ip - 3);
             break;
         }
-    } else if (temp_r2 & 0x10) {
-        switch (var_ip) {
+        if (var_r3 < 10) {
+            goto middle;
+        }
+        goto done;
+    } else if (temp_r1 & 0x80) {
+        switch (temp_ip) {
         case 9:
-            if (temp_r2 == temp_r3) {
-                var_ip = 0xA;
+            var_r3 = 0xC;
+            break;
+        case 7:
+        case 8:
+            var_r3 = 0xA;
+            break;
+        default:
+            var_r3 = (u8)(temp_ip + 3);
+            break;
+        }
+        if (var_r3 >= 10) {
+            goto done;
+        }
+    }
+middle:
+    if (temp_r1 & 0x20) {
+        switch (var_r3) {
+        case 9:
+            if (temp_r1 == temp_r2) {
+                var_r3 = 0xA;
+            }
+            break;
+        case 0:
+        case 3:
+        case 6:
+            if (temp_r1 == temp_r2) {
+                var_r3 = (u8)(var_r3 + 2);
+            }
+            break;
+        default:
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+        case 7:
+        case 8:
+            var_r3 = (u8)(var_r3 - 1);
+            break;
+        }
+    } else if (temp_r1 & 0x10) {
+        switch (var_r3) {
+        case 9:
+            if (temp_r1 == temp_r2) {
+                var_r3 = 0xA;
             }
             break;
         case 2:
         case 5:
         case 8:
-            if (temp_r2 == temp_r3) {
-                var_ip = (u8)(var_ip - 2);
+            if (temp_r1 == temp_r2) {
+                var_r3 = (u8)(var_r3 - 2);
             }
             break;
         default:
@@ -320,13 +334,13 @@ middle:
         case 4:
         case 6:
         case 7:
-            var_ip = (u8)(var_ip + 1);
+            var_r3 = (u8)(var_r3 + 1);
             break;
         }
     }
 done:
-    if (temp_r1 != var_ip) {
-        func_020b1c60(var_ip);
+    if (temp_ip != var_r3) {
+        func_020b1c60(var_r3);
     }
 }
 #pragma opt_common_subs reset

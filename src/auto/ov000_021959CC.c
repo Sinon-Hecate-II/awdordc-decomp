@@ -13,7 +13,8 @@ base=*gCurrentMap;right=M2C_FIELD(base,u16 *,0x5144)-1;
 if(x+radius<right)right=x+radius;
 bottom=M2C_FIELD(base,u16 *,0x5146)-1;if(y+radius<bottom)bottom=y+radius;
 for(j=top;j<=bottom;j++)for(i=left;i<=right;i++){
-dy=y-j;ny=j-y;d=0;if(x-i>0)d+=x-i;else d+=i-x;if(dy>0)d+=dy;else d+=ny;
+d=0;if(x-i>0)d+=x-i;else d+=i-x;
+dy=y-j;ny=j-y;if(dy>0)d+=dy;else d+=ny;
 if(d>=0&&d<=radius){
 base=*gCurrentMap;
 if(func_ov000_021a93b0(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)j)!=0)continue;
@@ -28,6 +29,9 @@ if(func_ov000_021a96a8(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=
 }
 return 0;
 }
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 s32 func_ov000_02195b80(s16 *a) { return 0; }
 
 void func_ov000_02195ea4(void) {
@@ -313,6 +317,7 @@ s32 func_ov000_02196430(s16 *arg0) {
     s32 func_ov000_02196330(void);
     s32 func_ov000_02196398(s16 *);
     extern void **gCurrentMap;
+    struct Nib { unsigned char lo : 4; unsigned char hi : 4; };
 
     u8 *map;
     u8 *unit;
@@ -320,7 +325,7 @@ s32 func_ov000_02196430(s16 *arg0) {
 
     map = (u8 *)*gCurrentMap;
     unit = (u8 *)*(void **)(map + 0x52d0);
-    key = (u32)(unit[0x0b] << 28) >> 28;
+    key = ((struct Nib *)(unit + 0x0b))->lo;
 
     switch (key) {
     case 0:
@@ -363,11 +368,6 @@ s32 func_ov000_02196430(s16 *arg0) {
         }
         break;
     }
-    case 6:
-        if (func_ov000_02195788(arg0) == 0) {
-            return 0;
-        }
-        break;
     case 7:
     case 9:
         if (func_ov000_02196084(arg0) == 0) {
@@ -379,16 +379,11 @@ s32 func_ov000_02196430(s16 *arg0) {
             return 0;
         }
         break;
-    case 10: {
-        u8 u2 = unit[1];
-        arg0[0] = (s16)u2;
-        {
-            u8 *u3 = (u8 *)*(void **)(((u8 *)*gCurrentMap) + 0x52d0);
-            arg0[1] = (s16)u3[2];
-        }
+    case 6:
+        arg0[0] = (s16)unit[1];
+        arg0[1] = (s16)(((u8 *)*(void **)(((u8 *)*gCurrentMap) + 0x52d0))[2]);
         break;
-    }
-    default:
+    case 10:
         if (func_ov000_02196330() == 1) {
             if (func_ov000_02196398(arg0) == 0) {
                 return 0;
@@ -399,6 +394,8 @@ s32 func_ov000_02196430(s16 *arg0) {
             }
         }
         break;
+    default:
+        return 0;
     }
     return 1;
 }
