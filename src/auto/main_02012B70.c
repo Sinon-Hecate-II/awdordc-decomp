@@ -117,10 +117,10 @@ if(!buffer)return 6;if((u32)channel>=16)return 6;if(!flags)return 6;
 mode=func_02011934();if(!mode)mask=func_02011994();
 func_02007e98(0,(void *)buffer,0x820);
 p=(u16 *)(buffer+0x800);
-p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;((u16 *)(buffer+0x800))[7]=0;
+p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;p[7]=0;
 bits=flags|(1<<mode);
-opt=0;if(option)opt=1;((u16 *)(buffer+0x800))[12]=opt;
-bits=(u16)bits;p[7]=bits;
+opt=option?1:0;((u16 *)(buffer+0x800))[12]=opt;
+bits=(u16)bits;((u16 *)(buffer+0x800))[7]=bits;
 result=func_02076614(bits);p=(u16 *)(buffer+0x800);
 p[9]=result;p[10]=count*result;
 if((u32)p[10]>508){p[7]=0;return 6;}
@@ -133,7 +133,7 @@ block=(u8 *)buffer;
 for(i=0;i<(p[12]==1?2:1);i++){
 p[4]=(p[4]+1)&3;
 result=func_02012c28((s32)func_02013590,buffer,block,p[10],(u16)(p[7]&mask),p[11],1);
-if(result==7){*(u16 *)(buffer+0x800+i*2)=0xffff;p[5]=(p[5]+1)&3;}
+if(result==7){*(u16 *)(buffer+i*2+0x800)=0xffff;p[5]=(p[5]+1)&3;}
 else if(result!=0&&result!=2){((u16 *)(buffer+0x800))[14]=5;return 1;}
 block+=512;
 }

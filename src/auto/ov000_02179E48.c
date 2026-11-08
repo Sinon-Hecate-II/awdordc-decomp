@@ -17,7 +17,7 @@ s32 func_ov000_021a98e4(s32);
 u16 func_ov000_021a97e0(u16,s32);
 s32 func_ov000_021a9820(u16,u32);
 s32 bx,by,kind,min,range,best;
-s32 dist,dy,cx,y,x1,x,cy,x0,y1,negative;
+s32 x,dist,dy,cx,y,x1,cy,x0,y1,negative;
 void **slot;
 void *map;
 if(func_ov000_021a98e4((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26)!=1){
@@ -40,7 +40,7 @@ x0=cx-range;if(x0<0)x0=0;
 cy=M2C_FIELD(pos,s16 *,2);
 y=cy-range;if(y<0)y=0;
 slot=gCurrentMap;
-map=*gCurrentMap;
+map=*slot;
 x1=M2C_FIELD(map,u16 *,0x5144)-1;
 if(cx+range<x1)x1=cx+range;
 y1=M2C_FIELD(map,u16 *,0x5146)-1;
@@ -53,7 +53,7 @@ if(cx-x>0)dist+=cx-x;else dist+=x-cx;
 dy=cy-y;negative=y-cy;
 if(dy>0)dist+=dy;else dist+=negative;
 if(dist>=min && dist<=range && dist<=best){
-map=*gCurrentMap;
+map=*slot;
 kind=M2C_FIELD(M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8),s8 *,x);
 if(kind<0||kind>110)goto next;
 if(bx!=9999 && dist==best){
