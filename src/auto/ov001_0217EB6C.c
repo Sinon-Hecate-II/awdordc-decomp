@@ -4,7 +4,7 @@ typedef struct { u8 bytes[4]; } FourBytes;
 typedef struct { u8 bytes[14]; } FourteenBytes;
 typedef struct { u16 a,b,c,d; } FourShorts;
 
-#pragma opt_strength_reduction off
+#pragma scheduling on
 s32 func_ov001_0217eb6c(void){
  s32 func_ov001_0218bbd8(void *);s32 func_ov001_0218bd1c(FourShorts *);
  s32 func_02002088(u16,s32);
@@ -23,10 +23,10 @@ s32 func_ov001_0217eb6c(void){
  for(j=0;j<4;j++,value++){
  if(value==2){
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
- rect.b += j * 29;
+ rect.b+=j*29;
  if(func_ov001_0218bd1c(&rect))return 2;
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
- rect.b += j * 29;
+ rect.b+=j*29;
  if(func_ov001_0218bd1c(&rect))return 3;
  break;
  }
@@ -35,10 +35,10 @@ s32 func_ov001_0217eb6c(void){
  for(k=0;k<4;k++,value++){
  if(value==6){
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+20);
- rect.b += k * 29;
+ rect.b+=k*29;
  if(func_ov001_0218bd1c(&rect))return 7;
  rect=*(FourShorts *)((u8 *)&data_ov001_0218f8c4+12);
- rect.b += k * 29;
+ rect.b+=k*29;
  if(func_ov001_0218bd1c(&rect))return 8;
  break;
  }
@@ -47,7 +47,7 @@ s32 func_ov001_0217eb6c(void){
  for(i=0;i<3;i++,p+=8){if(func_ov001_0218bbd8(p))return i+11;}
  return 14;
 }
-#pragma opt_strength_reduction on
+#pragma scheduling reset
 s32 func_ov001_0217ede0(s32 arg0) {
     s32 func_02002088(u16, s32);
     extern M2C_UNK data_ov001_02193dac;

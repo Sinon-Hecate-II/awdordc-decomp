@@ -1,5 +1,6 @@
 /* 8 functions from 0x021EBEC0 to 0x021ECCD4 (ov003), found by ds-decomp. */
 #include "common.h"
+typedef struct { u32 x:9; u32 y:9; u32 rest:14; } SpritePosC57C;
 #pragma opt_propagation off
 static inline s32 ov003_entries_differ(s32 arg0) {
  s32 count; s32 entry; u8 i;
@@ -46,6 +47,8 @@ update:
 p[8]=v;
 }
 
+#pragma push
+#pragma opt_propagation on
 void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     M2C_UNK func_0208b758(s32, s32);
     void func_0208fe30(u32);
@@ -58,7 +61,7 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     s32 temp_r4_2;
     s32 var_r0;
     s32 var_r1;
-    u16 temp_r0;
+    u8 temp_r0;
     u32 temp_r0_2;
     u8 temp_r4;
     void *temp_r0_3;
@@ -67,18 +70,22 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     void *temp_r6;
 
     temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-    func_ov003_021e6ef4();
+    func_ov003_021e6ef4(M2C_FIELD(arg0,void **,0x6c),unused_arg1);
     if (temp_r4 == (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E)) {
         return;
     }
     func_0208fe30(0x10019);
     temp_r6 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
     temp_r4_2 = func_020aae44(temp_r6);
-    temp_r3 = func_020aae10(temp_r6) & (-0x200U >> 0x17);
+    temp_r3 = func_020aae10(temp_r6);
+
+    { s16 y=M2C_FIELD(temp_r6,s16 *,0x36), x=M2C_FIELD(temp_r6,s16 *,0x34);
     temp_r1 = M2C_FIELD(arg0, void **, 0x58);
-    M2C_FIELD(temp_r1, s16 *, 0x34) = (s16) M2C_FIELD(temp_r6, s16 *, 0x34);
-    M2C_FIELD(temp_r1, s16 *, 0x36) = (s16) M2C_FIELD(temp_r6, s16 *, 0x36);
-    M2C_FIELD(temp_r1, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r1, s32 *, 0x40) & ~0x1FF) | temp_r3) & 0xFFFC01FF) | ((u32) (temp_r4_2 << 0x17) >> 0xE));
+    M2C_FIELD(temp_r1, s16 *, 0x34) = x;
+    M2C_FIELD(temp_r1, s16 *, 0x36) = y;
+    }
+    ((SpritePosC57C *)((u8 *)temp_r1+0x40))->x=temp_r3;
+    ((SpritePosC57C *)((u8 *)temp_r1+0x40))->y=temp_r4_2;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
         temp_r0 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
@@ -111,13 +118,14 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
             }
         }
     }
-    temp_r0_3 = M2C_FIELD(arg0, void **, 0x6C);
-    temp_r1_2 = M2C_FIELD(arg0, void **, 0x40);
-    M2C_FIELD(temp_r1_2, u8 *, 0x10) = (u8) M2C_FIELD(temp_r0_3, u8 *, 7);
-    M2C_FIELD(temp_r1_2, u8 *, 0x11) = (u8) M2C_FIELD(temp_r0_3, u8 *, 8);
-    M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) | 8);
+    temp_r0_3 = M2C_FIELD(arg0,void **,0x6c);
+    { u8 y=M2C_FIELD(temp_r0_3,u8 *,8), x=M2C_FIELD(temp_r0_3,u8 *,7);
+    temp_r1_2=M2C_FIELD(arg0,void **,0x40);
+    M2C_FIELD(temp_r1_2,u8 *,0x10)=x;
+    M2C_FIELD(temp_r1_2,u8 *,0x11)=y; }
+    M2C_FIELD(arg0,u8 *,0x3a)|=8;
 }
-
+#pragma pop
 void func_ov003_021ec780(u8 *p,s32 i) {p+=14;p[i]=p[i]==1?2:1;}
 
 s32 func_ov003_021e6cac(u8,s32,s32);

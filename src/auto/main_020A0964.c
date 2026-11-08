@@ -300,6 +300,8 @@ void func_020a12d8(void) {
       func_0207749c();
   }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_020a1300(s32 arg0, s32 arg1) {
     M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     s32 func_020a125c(s32);
@@ -309,8 +311,9 @@ void func_020a1300(s32 arg0, s32 arg1) {
     extern u16 data_0211fb88[];
     extern M2C_UNK data_027e0064;
 
+    register void *map;
+    register s32 index;
     s8 *ctx;
-    void *map;
     void *selected;
     s32 pl;
     s8 i;
@@ -326,11 +329,11 @@ void func_020a1300(s32 arg0, s32 arg1) {
     }
     map = (void *)*gCurrentMap;
     selected = *(void **)((u8 *)map + 0x52d0);
-    if (selected == NULL) {
-        pl = 0;
+    if (selected != NULL) {
+        index = selected ? ((s8 *)selected - ((s8 *)map + 0x59a4)) / 14 : 0;
+        pl = (index >> 6) + 1;
     } else {
-        pl = (((s8 *)selected - ((s8 *)map + 0x59a4)) / 14) >> 6;
-        pl = pl + 1;
+        pl = 0;
     }
     if (*(u16 *)((u8 *)map + 0x52a4) != pl) {
         return;
@@ -339,22 +342,15 @@ void func_020a1300(s32 arg0, s32 arg1) {
     *(volatile s32 *)0x04000444 = 0;
     ctx = (s8 *)data_0211fb5c;
     i = ctx[0x5b];
-    if (i < 0) {
-        *(volatile s32 *)0x04000448 = 1;
-        return;
-    }
     for (; i >= 0; i--) {
         dir = func_020a125c((u8)i);
         s = func_020a11fc((u8)i);
-        val = data_0211fb88[dir * 5 + s];
-        pe = ctx + (s32)i;
+        val = ((u16 (*)[5])data_0211fb88)[dir][s];
+        pe = (s8 *)data_0211fb5c + (s32)i;
         vec[0] = (s32)pe[0x36] << 4;
         vec[1] = (s32)pe[0x42] << 4;
         vec[2] = 0x851;
         switch ((s32)val - 0xC0) {
-        case 0:
-            vec[1] += 4;
-            break;
         case 2:
             vec[0] -= 4;
             break;
@@ -363,6 +359,9 @@ void func_020a1300(s32 arg0, s32 arg1) {
             break;
         case 6:
             vec[0] += 4;
+            break;
+        case 0:
+            vec[1] += 4;
             break;
         default:
             break;
@@ -374,7 +373,7 @@ void func_020a1300(s32 arg0, s32 arg1) {
     *(volatile s32 *)0x04000448 = 1;
     return;
 }
-
+#pragma pop
 void func_020a1508(void) {
 
 }

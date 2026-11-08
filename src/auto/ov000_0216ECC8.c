@@ -101,128 +101,70 @@ break;
 func_020e35cc(tmp);
 }
 
-s32 func_ov000_0216f1b4(s32 arg0) {
-    extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
-    void *base;
-    u8 *arr;
-    u8 *fc;
-    u16 a8;
-    s32 a4;
-    s32 T;
-    s32 upper;
-    s32 T2;
-    s32 upper2;
-    s32 idx;
-    s32 j;
-    s32 r0v;
-    u8 *cell;
-    u8 *c2;
-
-    base = *gCurrentMap;
-    arr = (u8 *)base + 0x59A4;
-    a8 = *(u16 *)((u8 *)base + 0x52A8);
-    fc = arr + (arg0 + a8) * 14;
-    if (!(*(u16 *)(fc + 4) & 0x8)) {
-        return 0;
-    }
-
-    a4 = *(u16 *)((u8 *)base + 0x52A4);
-    T = data_ov000_021aeef4[a4];
-    upper = T + 0x33;
-
-    cell = arr + (T + 1) * 14;
-    for (idx = T + 1; idx < upper; idx++, cell += 14) {
-        if ((cell[0] & 0x3F) == 0) {
-            goto outer_continue;
-        }
-        a8 = *(u16 *)((u8 *)base + 0x52A8);
-        if (arg0 != (s32)(cell[0x0C] - a8)) {
-            if (arg0 != (s32)(cell[0x0D] - a8)) {
-                goto outer_continue;
-            }
-            if (!(*(u16 *)(cell + 4) & 0x8)) {
-                return 2;
-            }
-            a4 = *(u16 *)((u8 *)base + 0x52A4);
-            T2 = data_ov000_021aeef4[a4];
-            upper2 = T2 + 0x33;
-            r0v = idx - a8;
-            c2 = arr + (T2 + 1) * 14;
-            for (j = T2 + 1; j < upper2; j++, c2 += 14) {
-                if ((c2[0] & 0x3F) == 0) {
-                    continue;
-                }
-                if (r0v == (s32)(c2[0x0D] - a8)) {
-                    return 6;
-                }
-                if (r0v == (s32)(c2[0x0C] - a8)) {
-                    if (c2[0x0D] == 0) {
-                        return 6;
-                    } else {
-                        return 4;
-                    }
-                }
-            }
-        } else {
-            if (cell[0x0D] != 0) {
-                if (!(*(u16 *)(cell + 4) & 0x8)) {
-                    return 1;
-                }
-                a4 = *(u16 *)((u8 *)base + 0x52A4);
-                T2 = data_ov000_021aeef4[a4];
-                upper2 = T2 + 0x33;
-                r0v = idx - a8;
-                c2 = arr + (T2 + 1) * 14;
-                for (j = T2 + 1; j < upper2; j++, c2 += 14) {
-                    if ((c2[0] & 0x3F) == 0) {
-                        continue;
-                    }
-                    if (r0v == (s32)(c2[0x0D] - a8)) {
-                        return 5;
-                    }
-                    if (r0v == (s32)(c2[0x0C] - a8)) {
-                        if (c2[0x0D] == 0) {
-                            return 5;
-                        } else {
-                            return 3;
-                        }
-                    }
-                }
-            } else {
-                a4 = *(u16 *)((u8 *)base + 0x52A4);
-                T2 = data_ov000_021aeef4[a4];
-                upper2 = T2 + 0x33;
-                r0v = idx - a8;
-                c2 = arr + (T2 + 1) * 14;
-                for (j = T2 + 1; j < upper2; j++, c2 += 14) {
-                    if ((c2[0] & 0x3F) == 0) {
-                        continue;
-                    }
-                    if (r0v == (s32)(c2[0x0D] - a8)) {
-                        return 6;
-                    }
-                    if (r0v == (s32)(c2[0x0C] - a8)) {
-                        if (c2[0x0D] == 0) {
-                            return 6;
-                        } else {
-                            return 4;
-                        }
-                    }
-                }
-            }
-        }
-
-outer_continue:
-        a4 = *(u16 *)((u8 *)base + 0x52A4);
-        T = data_ov000_021aeef4[a4];
-        upper = T + 0x33;
-    }
-
-    return 0;
-}
-
+#pragma push
 #pragma opt_strength_reduction off
+s32 func_ov000_0216f1b4(s32 arg0) {
+extern void **gCurrentMap;
+extern u16 data_ov000_021aeef4[];
+register s32 offset;
+u8 *base,*arr;
+s32 limit,j;
+register u8 *c2;
+s32 i;
+u8 *cell;
+base=*gCurrentMap;
+arr=base+0x59a4;
+offset=*(u16 *)(base+0x52a8);
+if (!(*(u16 *)(arr+(offset+arg0)*14+4)&8)) return 0;
+i=data_ov000_021aeef4[*(u16 *)(base+0x52a4)]+1;
+if(i >= data_ov000_021aeef4[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33) goto done;
+cell=arr+i*14;
+do {
+if (((u32)(cell[0]<<26)>>26)==0) goto next;
+base=*gCurrentMap;
+offset=*(u16 *)(base+0x52a8);
+if(arg0==cell[12]-offset){
+if(cell[13]==0) goto second;
+if(!(*(u16 *)(cell+4)&8)) return 1;
+arg0=i-offset;
+limit=data_ov000_021aeef4[*(u16 *)(base+0x52a4)];
+j=limit+1;
+if(j<limit+0x33){
+c2=base+0x59a4+j*14;
+do {
+
+if(((u32)(c2[0]<<26)>>26)!=0){
+if(arg0==c2[13]-offset)return 5;
+if(arg0==c2[12]-offset)return c2[13]==0?5:3;
+}
+j++;c2+=14;
+}while(j<limit+0x33);
+}
+}else if(arg0==cell[13]-offset){
+if(!(*(u16 *)(cell+4)&8))return 2;
+second:
+arg0=i-offset;
+limit=data_ov000_021aeef4[*(u16 *)(base+0x52a4)];
+j=limit+1;
+if(j<limit+0x33){
+c2=base+0x59a4+j*14;
+do {
+
+if(((u32)(c2[0]<<26)>>26)!=0){
+if(arg0==c2[13]-offset)return 6;
+if(arg0==c2[12]-offset)return c2[13]==0?6:4;
+}
+j++;c2+=14;
+}while(j<limit+0x33);
+}
+}
+next:
+i++;cell+=14;
+}while(i<data_ov000_021aeef4[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33);
+done:
+return 0;
+}
+#pragma pop
 void func_ov000_0216f3d0(s32 row,s32 index){
  UnkStruct_ov000_021A860C *u;
  void *saved;

@@ -537,6 +537,9 @@ void func_020e4e8c(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x3C) = (u8) (M2C_FIELD(arg0, u8 *, 0x3C) | 2);
 }
 
+#pragma scheduling off
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_020e4eb0(void *arg0) {
     void func_020067a8(void *, s32);
     s32 func_0207c8ec(s32, s32);
@@ -548,7 +551,7 @@ void func_020e4eb0(void *arg0) {
 
     u8 cond;
     u8 idx;
-    u8 nidx;
+    s32 nidx;
     u8 *r3p;
     u8 *r2p;
     s32 saved;
@@ -561,9 +564,9 @@ void func_020e4eb0(void *arg0) {
     u32 sum;
     u8 *p;
     s32 divres;
-    s32 r10;
-    s32 r8v;
-    u32 r9v;
+    register s32 mask;
+    register s32 *enginePtr;
+    register s32 kind, scale, r8v, r9v, r10, fullmask;
     u16 a0;
     u16 **eng;
     u16 *base;
@@ -608,8 +611,7 @@ void func_020e4eb0(void *arg0) {
 
     idx = ((u8 *)arg0)[0x40];
     nidx = idx + 1;
-    ((u8 *)arg0)[0x40] = nidx;
-    if ((u8)(nidx & 0xff) >= 0x0a) {
+    if ((u8)(((u8 *)arg0)[0x40] = nidx) >= 0x0a) {
         ((u8 *)arg0)[0x40] = 0;
     }
 
@@ -633,20 +635,27 @@ void func_020e4eb0(void *arg0) {
     r8v = 0x50;
     r9v = 0;
     if (r10 > 0) {
+        fullmask = 0x3ff;
+        enginePtr = &gCur3DSpriteEngine;
+        scale = 0x140;
+        mask = fullmask - 0x200;
+        kind = 0x11;
         do {
-            a0 = (u16)(r8v & ((s32)data_027e00ac - 0x200));
-            eng = (u16 **)gCur3DSpriteEngine;
+            eng = (u16 **)*enginePtr;
+            a0 = (u16)(r8v & mask);
             base = eng[0];
             sh = ((u32)base[0] << 17) >> 30;
-            arg2 = (u16)(((s32)data_027e00ac & (0x140 >> sh)) | 0x6000);
-            func_01ffaacc(a0, 0x28, arg2, 0x3ff, 0x11);
+            arg2 = (u16)((fullmask & (scale >> sh)) | 0x6000);
+            func_01ffaacc(a0, 0x28, arg2, (s32)data_027e00ac, kind);
 
             r9v = (r9v + 1) & 0xff;
             r8v = (s16)(r8v + 0x20);
-        } while (r9v < (u32)r10);
+        } while (r9v < r10);
     }
 
 skip_all:
     gCur3DSpriteEngine = saved;
 }
-
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
+#pragma scheduling reset

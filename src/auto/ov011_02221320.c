@@ -36,7 +36,8 @@ void func_ov011_0222134c(void *arg0) {
     data_027e01d8 = temp_r4;
 }
 
-#pragma opt_common_subs off
+#pragma opt_common_subs on
+#pragma opt_strength_reduction off
 void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_02082c84(void);
     M2C_UNK func_020026d8(s32);
@@ -46,7 +47,7 @@ void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_02002ab8(s32);
     M2C_UNK func_0200323c(s32);
     M2C_UNK func_020032bc(s32);
-    M2C_UNK func_020aca8c(void);
+    M2C_UNK func_020aca8c(s32);
     M2C_UNK func_02082770(void);
     M2C_UNK func_01ff9b38(void);
     void func_ov011_0222134c(void *);
@@ -58,6 +59,7 @@ void func_ov011_0222140c(void *arg0) {
 
     s32 saved;
     s32 i;
+    s32 engine;
 
     func_02082c84();
     func_020026d8(3);
@@ -72,24 +74,24 @@ void func_ov011_0222140c(void *arg0) {
     saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            gCur3DSpriteEngine = data_027e00c8;
+            gCur3DSpriteEngine = engine = data_027e00c8;
         } else {
-            gCur3DSpriteEngine = data_027e00c4;
+            gCur3DSpriteEngine = engine = data_027e00c4;
         }
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x10;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x20;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x40;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x80;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine |= 0x100;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x200;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x400;
-        *(volatile u16 *)*(s32 *)gCur3DSpriteEngine &= (u16)~0x800;
-        *(volatile u16 *)((char *)*(s32 *)gCur3DSpriteEngine + 0x12) &= (u16)~0xC0;
+        { u16 * volatile p0=(u16 *)*(s32 *)engine; *p0=*p0 | 0x10; }
+        { u16 * volatile p1=(u16 *)*(s32 *)gCur3DSpriteEngine; *p1=*p1 | 0x20; }
+        { u16 * volatile p2=(u16 *)*(s32 *)gCur3DSpriteEngine; *p2=*p2 | 0x40; }
+        { u16 * volatile p3=(u16 *)*(s32 *)gCur3DSpriteEngine; *p3=*p3 | 0x80; }
+        { u16 * volatile p4=(u16 *)*(s32 *)gCur3DSpriteEngine; *p4=*p4 | 0x100; }
+        { u16 * volatile p5=(u16 *)*(s32 *)gCur3DSpriteEngine; *p5=*p5 & ~0x200; }
+        { u16 * volatile p6=(u16 *)*(s32 *)gCur3DSpriteEngine; *p6=*p6 & ~0x400; }
+        { u16 * volatile p7=(u16 *)*(s32 *)gCur3DSpriteEngine; *p7=*p7 & ~0x800; }
+        {u16 * volatile p8=(u16 *)(*(s32 *)gCur3DSpriteEngine+0x12);*p8=*p8&~0xC0;}
         ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x51] = 0;
         ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x52] = 0;
         ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x53] = 0;
         *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
-        func_020aca8c();
+        func_020aca8c(3);
         func_02082770();
         func_01ff9b38();
     }
@@ -97,6 +99,7 @@ void func_ov011_0222140c(void *arg0) {
     *((u8 *)arg0 + 0x38) = 0;
     func_ov011_0222161c(arg0);
 }
+#pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
 void func_ov011_0222161c(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {

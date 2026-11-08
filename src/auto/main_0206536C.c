@@ -107,10 +107,25 @@ char *func_0206536c(char *input, s32 **args, HexFormat *out) {
  return format+1;
 }
 
-char *func_020658fc(int value, char *out, HexFormat fmt) {
-    (void)value;
-    (void)fmt;
-    return out;
+char *func_020658fc(int value,char *out,HexFormat fmt) {
+s32 width; s32 negative=0; u32 base; char *p=out; s32 count=0; s32 precision=fmt.precision; s32 digit; s32 sign; u8 type; u8 alt;
+*--p=0;
+alt=fmt.d; type=fmt.f; width=fmt.width; sign=fmt.b;
+if(value==0 && precision==0) { if(!alt || type!='o') return p; }
+switch(type) {
+case 'd': case 'i': base=10; if(value<0) { if(value != (s32)0x80000000) value=-value; negative=1; } break;
+case 'o': base=8; sign=0; break;
+case 'u': base=10; sign=0; break;
+case 'x': case 'X': base=16; sign=0; break;
+}
+do { digit=(u32)value%base; value=(u32)value/base; if(digit<10) digit+='0'; else if(type=='x') digit+=87; else digit+=55; *--p=digit; ++count; } while(value!=0);
+if(base==8 && alt && *p!='0') { *--p='0'; ++count; }
+if(fmt.a==2) { precision=width; if(negative || sign) --precision; if(base==16 && alt) precision-=2; }
+if(precision+(out-p)>509) return 0;
+while(count<precision) { *--p='0'; ++count; }
+if(base==16 && alt) { *--p=type; *--p='0'; }
+if(negative) *--p='-'; else if(sign==1) *--p='+'; else if(sign==2) *--p=' ';
+return p;
 }
 
 #pragma opt_scheduling off

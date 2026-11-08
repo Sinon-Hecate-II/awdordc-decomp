@@ -349,9 +349,50 @@ func_done:
     func_ov000_02199d74((s16)bestY, (s16)bestX, (M2C_UNK)4, (u8)(temp & 0xFF), 0);
 }
 
-s32 func_ov000_0218e340(void) {
-    int dummy_unused = 0;
-    (void)dummy_unused;
-    return 0;
+#pragma push
+#pragma opt_propagation off
+void func_ov000_0218e340(void) {
+extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 func_020a7cfc(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK func_ov000_02199d74(s16,s16,s32,u8,s32);
+s32 x=-1,y=-1,best=0,i; u8 *unit; s32 offset; void *map; u8 *active; s32 hp,other,score;
+map=*gCurrentMap; active=M2C_FIELD(map,u8 **,0x52d0);
+if (((u32)(M2C_FIELD(active,u16 *,6)<<25)>>25)>50) return;
+if(active[12])return;
+func_01ffc328((s32)active);
+map=*gCurrentMap;
+i=data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+1;
+if(i<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51){
+offset=i*14;
+do {
+unit=(u8 *)((s32)map+0x59a4)+offset;
+if(!((u32)(unit[0]<<26)>>26))goto next;
+if(M2C_FIELD((u8 *)map+unit[2]*4,s8 **,0x52e8)[unit[1]]<0)goto next;
+active=M2C_FIELD(map,u8 **,0x52d0);
+if(active==unit)goto next;
+if(M2C_FIELD(unit,u16 *,4)&8)goto next;
+if(!func_020a7074(active,unit))goto next;
+if(func_ov000_021a93a8(unit,unit[1],unit[2])==1)goto next;
+if(func_020a7cfc(M2C_FIELD(*gCurrentMap,void **,0x52d0))){
+hp=(u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25;
+other=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25;
+score=other+hp; if(score<=130)goto evaluate;
+goto next;
+}else{
+hp=(u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25;
+other=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25;
+score=other+hp; if(score>110)goto next;
 }
-
+evaluate:
+if(score>100)score=300-other+hp;
+if(score>=best){x=unit[1];y=unit[2];best=score;}
+next:
+i++;offset+=14;map=*gCurrentMap;
+}while(i<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51);
+}
+if(x==-1)return;
+if(func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26))func_ov000_0218dda4();
+active=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
+M2C_FIELD(active,u16 *,8)&=~0x3000;
+func_ov000_02199d74((s16)x,(s16)y,9,0,0);
+}
+#pragma pop

@@ -13,7 +13,9 @@ static inline void func_020dcc00(void *q) {
     M2C_FIELD(q, u32 *, 0x40) = (M2C_FIELD(q, u32 *, 0x40) & ~0x3fc0000) | (((value >> 16) << 24) >> 6);
 }
 
-M2C_UNK func_020dc838(void *entity) {
+#pragma push
+#pragma opt_strength_reduction off
+void func_020dc838(void *entity) {
     void func_020aacf0(void *);
     void func_020d47f0(void);
     void func_01ffa8c4(void *, s32);
@@ -43,42 +45,44 @@ M2C_UNK func_020dc838(void *entity) {
 
     if ((u8)(allowed & 0xff) == 0) {
         if (!(keys & 0x2)) goto skip1;
-        if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) goto skip1;
     }
+    if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) goto skip1;
 
     if (M2C_FIELD(p, s8 *, 0x5a) >= 0) {
         M2C_FIELD(p, E0B04Bits *, 0x40).value = (u16)(M2C_FIELD(p, E0194Bits *, 0x59).value + 1);
         M2C_FIELD(p, u8 *, 0x5a) = 12;
     }
     func_020d47f0();
-    if (M2C_FIELD(entity, s32 *, 0x38) == 0)
-        M2C_FIELD(entity, u8 *, 0x40) = 0x1e;
-    else if (M2C_FIELD(entity, s32 *, 0x38) == 1)
-        M2C_FIELD(entity, u8 *, 0x40) = 0x1f;
+    switch(M2C_FIELD(entity,s32*,0x38)){
+    case 0: M2C_FIELD(entity,u8*,0x40)=0x1e; break;
+    case 1: M2C_FIELD(entity,u8*,0x40)=0x1f; break;
+    }
     M2C_FIELD(entity, u16 *, 0x48) |= 0x20;
     func_01ffa8c4(entity, 0x44);
     func_0208fe30(0x1000f);
     return;
 
 skip1:
-    p = M2C_FIELD(entity, void **, 0x50);
     {
-        u8 low = M2C_FIELD(p, E0194Bits *, 0x59).value;
-        u32 extracted = (M2C_FIELD(p, u32 *, 0x40) << 6) >> 24;
-        if (low + 2 != extracted) {
+        void *q = M2C_FIELD(entity, void **, 0x50);
+        u32 low = M2C_FIELD(q, E0194Bits *, 0x59).value;
+        u16 extracted = (M2C_FIELD(q, u32 *, 0x40) << 6) >> 24;
+        s32 changed;
+        if (low + 2 != extracted) changed=1; else changed=0;
+        if (changed & 0xff) {
             u8 allowed2 = 1;
-            void *rp = M2C_FIELD(p, void **, 0x64);
+            void *rp = M2C_FIELD(q, void **, 0x64);
             if (M2C_FIELD(rp, s8 *, 0xb) != 1) {
-                if (!((u32)(M2C_FIELD(p, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(rp, s8 *, 0xc) != 1)
+                if (!((u32)(M2C_FIELD(q, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(rp, s8 *, 0xc) != 1)
                     allowed2 = 0;
             }
             if ((u8)(allowed2 & 0xff) == 0) {
                 if (!(keys & 0x1)) return;
-                if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
             }
-            if (M2C_FIELD(p, s8 *, 0x5a) >= 0) {
-                M2C_FIELD(p, E0B04Bits *, 0x40).value = (u16)(low + 1);
-                M2C_FIELD(p, u8 *, 0x5a) = 12;
+            if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
+            if (M2C_FIELD(q, s8 *, 0x5a) >= 0) {
+                M2C_FIELD(q, E0B04Bits *, 0x40).value = (u16)(low + 1);
+                M2C_FIELD(q, u8 *, 0x5a) = 12;
             }
             if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
             func_0208fe30(0x1000e);
@@ -87,7 +91,7 @@ skip1:
         }
     }
 }
-
+#pragma pop
 void func_020dca5c(void) {
     M2C_UNK func_020dc614();
     func_020dc614();
@@ -99,12 +103,12 @@ void func_020dca68(void) {
 }
 
 void func_020dca74(void) {
-    M2C_UNK func_020dc838();
+    void func_020dc838();
     func_020dc838();
 }
 
 void func_020dca80(void) {
-    M2C_UNK func_020dc838();
+    void func_020dc838();
     func_020dc838();
 }
 

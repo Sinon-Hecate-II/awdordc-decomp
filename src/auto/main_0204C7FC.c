@@ -1,5 +1,6 @@
 /* 11 functions from 0x0204C7FC to 0x0204D5C0 (main), found by ds-decomp. */
 #include "common.h"
+static inline void clear_socket_address(void *p) { s32 *v = p; v[0] = 0; v[1] = 0; }
 static inline s32 char_outside(s32 c) { s32 bad=1; if(c>=0) { if(c<128)bad=0; } return bad; }
 static inline s32 char_space(s32 c) { extern u16 data_020ead40[]; return char_outside(c) ? 0 : (data_020ead40[c] & 256); }
 
@@ -39,8 +40,7 @@ void func_0204c7fc(void *arg0) {
         if (M2C_FIELD(arg0, s32 *, 0x134) != 0) {
             func_0204932c(M2C_FIELD(arg0, s32 *, 0x48), data_020fd010);
         }
-        M2C_FIELD(sp8, s32 *, 0) = 0;
-        M2C_FIELD(sp8, s32 *, 4) = 0;
+        clear_socket_address(sp8);
         sp8[1] = 2;
         if (M2C_FIELD(arg0, s32 *, 0x15C) != 0) {
             t2 = M2C_FIELD(arg0, u16 *, 0x160);
@@ -101,6 +101,8 @@ func_0204a2c8((u8 *)a+0x50);
 done:size=1024;func_0204a740(a,buf,&size);
 }
 
+#pragma push
+#pragma opt_common_subs off
 void func_0204cbac(void *arg0) {
   s32 func_02049ef4(void *, void *, s32);
   s32 func_0204a1b0(M2C_UNK, M2C_UNK *, M2C_UNK *);
@@ -134,10 +136,10 @@ void func_0204cbac(void *arg0) {
     else {
       func_02049ef4(buf, &data_020fd8d0, 0);
       func_02049ef4(buf, (void *)M2C_FIELD(arg0, s32 *, 0x18), 0);
-    }
     func_0204a230((s32)buf, 0x3a);
     func_0204a290((s32)buf, M2C_FIELD(arg0, u16 *, 0x20));
     func_02049ef4(buf, &data_020fd8d8, 2);
+    }
     if (!M2C_FIELD(arg0, s32 *, 0x28) ||
         !func_02068fdc(M2C_FIELD(arg0, s32 *, 0x28), &data_020fd8dc))
       func_0204a1b0((M2C_UNK)buf, &data_020fd8dc, &data_020fd8e8);
@@ -148,8 +150,8 @@ void func_0204cbac(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x13c)) {
       func_020675e4(tmp, &data_020fd918, M2C_FIELD(arg0, s32 *, 0x14c));
       func_0204a1b0((M2C_UNK)buf, &data_020fd91c, (M2C_UNK *)tmp);
-    }
     func_0204a1b0((M2C_UNK)buf, &data_020fd92c, (M2C_UNK *)func_0204b6ac(arg0));
+    }
     if (M2C_FIELD(arg0, s32 *, 0x28))
       func_02049ef4(buf, (void *)M2C_FIELD(arg0, s32 *, 0x28), 0);
     func_02049ef4(buf, &data_020fd8d8, 2);
@@ -159,10 +161,10 @@ void func_0204cbac(void *arg0) {
   if (func_0204a30c(arg0) == 0) return;
   if (M2C_FIELD(arg0, s32 *, 0x60) < M2C_FIELD(arg0, s32 *, 0x5c)) return;
   func_0204a2c8((u8 *)arg0 + 0x50);
-  M2C_FIELD(arg0, s32 *, 0x10) = M2C_FIELD(arg0, s32 *, 0x13c) ? 4 : 5;
+  if(M2C_FIELD(arg0, s32 *, 0x13c)) M2C_FIELD(arg0, s32 *, 0x10)=4; else M2C_FIELD(arg0, s32 *, 0x10)=5;
   func_0204a518(arg0, 0, 0);
 }
-
+#pragma pop
 void func_0204ce20(void *arg0) {
     M2C_UNK func_0204a594(void *);
     M2C_UNK func_0204bc64(void *);
@@ -321,7 +323,6 @@ s32 func_0204d39c(void *p, void *src, s32 n) {
     if (!src) func_020640a8(&data_020fd9a0, &data_020fd864, &data_020fd81c, 0x35e);
     if (n <= 0) func_020640a8(&data_020fd9b4, &data_020fd864, &data_020fd81c, 0x35f);
     if (!M2C_FIELD(p, s32 *, 0x110)) goto tail;
-    if (n <= 0) return 1;
 
     q = (u8 *)src;
     left = n;

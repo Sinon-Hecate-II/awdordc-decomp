@@ -466,61 +466,63 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern u8 data_ov010_0222be2d[];
     extern u8 data_ov010_0222be2c[];
 
-    u8 *slot;
     void *item;
-    s32 r6;
-    s32 i;
+    u8 *slot;
+    s32 id;
+    s32 a4;
+    s32 a2;
+    s32 a1;
+    s32 a0;
+    s32 a3;
+    u32 i;
+    u8 *p;
     s32 len;
     void *src;
 
-    if (M2C_FIELD(&data_ov010_0222c960, s32 *, 0x20) == 0)
-        return 0;
+    a4 = arg4;
+    a2 = arg2;
+    a1 = arg1;
+    a0 = arg0;
+    a3 = arg3;
 
-    slot = (u8 *)0;
+    slot = 0;
+    if (M2C_FIELD(&data_ov010_0222c960, s32 *, 0x20) == 0)
+        return (s32)slot;
+
+    p = data_ov010_0222c998;
     i = 0;
-    {
-        u8 *p = data_ov010_0222c998;
-        while (i < 3) {
-            if (M2C_FIELD(p, s32 *, 0x38) == arg0) {
-                slot = p;
-                break;
-            }
-            i++;
-            p += 0x94;
+    do {
+        if (a0 == M2C_FIELD(p, s32 *, 0x38)) {
+            slot = data_ov010_0222c998 + i * 0x94;
+            break;
         }
-    }
+        i++;
+        p += 0x94;
+    } while (i < 3);
     if (!slot)
         return 0;
 
-    if (M2C_FIELD(arg1, u8 *, 4) == 0x41) {
-        M2C_FIELD(slot, s32 *, 0x30) = M2C_FIELD(arg1, u16 *, 6);
+    if (M2C_FIELD(a1, u8 *, 4) == 0x41) {
+        M2C_FIELD(slot, s32 *, 0x30) = M2C_FIELD(a1, u16 *, 6);
         M2C_FIELD(slot, s32 *, 0x4c) = 0;
         M2C_FIELD(slot, s32 *, 0x6c) = 1;
         return 0;
     }
-    if (M2C_FIELD(arg1, u8 *, 4) != 0x40)
+    if (M2C_FIELD(a1, u8 *, 4) != 0x40)
         return 0;
 
-    r6 = (s32)(M2C_FIELD(arg1, u8 *, 5) & 0x7f);
-    if (r6 >= 5)
+    id = M2C_FIELD(a1, u8 *, 5) & 0x7f;
+    M2C_FIELD(slot, s32 *, 0x24) = id;
+    if (id >= 5)
         return 0;
-    M2C_FIELD(slot, s32 *, 0x24) = r6;
 
-    {
-        s32 needed = (s32)data_ov010_0222be2d[r6 * 2] + (s32)data_ov010_0222be2c[r6 * 2] * 0x44 + 0xc;
-        if (arg2 != needed)
-            return 0;
-    }
+    if (a2 != (s32)data_ov010_0222be2d[id * 2] +
+                (s32)data_ov010_0222be2c[id * 2] * 0x44 + 0xc)
+        return 0;
 
-    {
-        s32 mask;
-        if (arg0 != 0)
-            mask = 1 << arg0;
-        else
-            mask = 1;
-        if (!(M2C_FIELD(&data_ov010_0222c960, u32 *, 4) & (u32)mask))
-            return 0;
-    }
+    if (!(M2C_FIELD(&data_ov010_0222c960, u32 *, 4) &
+          (a0 ? (1u << a0) : 1u)))
+        return 0;
 
     item = func_ov010_02224eb8();
     if (!item) {
@@ -536,30 +538,26 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (!item)
         return 0;
 
-    len = arg2 - 0xc;
-    src = (void *)((u8 *)item + 0x468 - arg2);
-    func_02008048((u8 *)arg1 + 0xc, src, len);
+    len = a2 - 0xc;
+    src = (u8 *)item + 0x45c - len;
+    func_02008048((u8 *)a1 + 0xc, src, len);
 
     M2C_FIELD(item, u8 *, 0x11) = (u8)M2C_FIELD(slot, s32 *, 0x34);
-    M2C_FIELD(item, s32 *, 0xc) = r6;
-    M2C_FIELD(item, void **, 0x474) = (void *)src;
+    M2C_FIELD(item, s32 *, 0xc) = id;
+    M2C_FIELD(item, void **, 0x474) = src;
     M2C_FIELD(item, s32 *, 0x14) = len;
-    M2C_FIELD(item, s32 *, 0x464) = arg3;
-    M2C_FIELD(item, s32 *, 0x468) = arg4;
-    M2C_FIELD(item, u8 *, 0x10) = (u8)arg0;
+    M2C_FIELD(item, s32 *, 0x464) = a3;
+    M2C_FIELD(item, s32 *, 0x468) = a4;
+    M2C_FIELD(item, u8 *, 0x10) = (u8)a0;
+    M2C_FIELD(item, u32 *, 0x45c) = (u32)(M2C_FIELD(a1, u8 *, 5) & 0x80);
+    M2C_FIELD(item, u32 *, 0x460) = M2C_FIELD(a1, u32 *, 8);
+    M2C_FIELD(item, u32 *, 0x18) = M2C_FIELD(a1, u16 *, 6);
 
-    {
-        u8 b = (u8)(M2C_FIELD(arg1, u8 *, 5) & 0x80);
-        M2C_FIELD(item, u32 *, 0x45c) = (u32)b;
+    if (func_ov010_02223b18(slot, item) == 0) {
+        func_ov010_02224ef8(item);
+        return 0;
     }
-    M2C_FIELD(item, u32 *, 0x460) = M2C_FIELD(arg1, u32 *, 8);
-    M2C_FIELD(item, u32 *, 0x18) = M2C_FIELD(arg1, u16 *, 6);
-
-    if (func_ov010_02223b18(slot, item) != 0) {
-        func_ov010_022233ac(item);
-        return 1;
-    }
-    func_ov010_02224ef8(item);
-    return 0;
+    func_ov010_022233ac(item);
+    return 1;
 }
 

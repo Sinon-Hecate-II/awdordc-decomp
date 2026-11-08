@@ -129,9 +129,16 @@ void func_ov001_02175a8c(void) {
     func_020031cc(0x100);
     func_0200257c(0);
 
-    *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 & ~0x1f00);
-    *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 & ~0xe000);
-    func_02002598((void *)0x0400106C, 0);
+    {
+        volatile u32 *display = (volatile u32 *)0x04001000;
+        u32 value;
+        value = *display;
+        *display = value & ~0x1f00;
+        value = *display;
+        *display = value & ~0xe000;
+        func_02002598((u8 *)display + 0x6c, 0);
+    }
+
 
     *(volatile u32 *)0x04001000 =
         (*(volatile u32 *)0x04001000 & 0xffcfffef) | 0x10;

@@ -216,6 +216,9 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
     M2C_FIELD(p,u16 *,0x44)=1<<func_020848c4();
 }
 
+#pragma push
+#pragma opt_propagation off
+#pragma opt_strength_reduction off
 void func_02085788(s32 arg0) {
     M2C_UNK func_02065210(M2C_UNK *, u8, s32);
     s32 func_02084644();
@@ -235,7 +238,7 @@ void func_02085788(s32 arg0) {
     extern M2C_UNK data_02157638;
     s32 sp8;
     s32 sp4;
-    s32 sp0;
+    volatile s32 sp0;
     s32 temp_r0_5;
     s32 temp_r10;
     s32 temp_r4;
@@ -247,6 +250,7 @@ void func_02085788(s32 arg0) {
     s8 temp_r8;
     u8 var_r7;
     u8 var_r9;
+    u8 *out;
     void *temp_r0;
     void *temp_r0_3;
     void *temp_r0_4;
@@ -302,11 +306,13 @@ loop_10:
         }
         break;
     case 1:
-        var_r2_2 = 4;
-        if (4 < 0) {
+        var_r2_2 = 8;
+        var_r2_2 -= 4;
+        if (var_r2_2 < 0) {
             var_r2_2 = 0;
         }
         func_02065210(&data_02157638, (u8) (s8) data_021020b8, var_r2_2);
+        out=(u8 *)&data_02157634;
         temp_r8 = func_ov010_02229a08();
         var_r9 = 0;
         do {
@@ -317,7 +323,7 @@ loop_10:
                     if (temp_r0_4 != NULL) {
                         temp_r0_5 = func_020c5708(M2C_FIELD(temp_r0_4, s32 *, 0x1C));
                         if (temp_r0_5 >= 0) {
-                            M2C_FIELD((&data_02157634 + var_r9), s8 *, 4) = (s8) temp_r0_5;
+                            M2C_FIELD((out + var_r9), s8 *, 4) = (s8) temp_r0_5;
                             temp_r0_6 = func_020c5328();
                             M2C_FIELD(temp_r0_6, u16 *, 0x1A) = (u16) (M2C_FIELD(temp_r0_6, u16 *, 0x1A) + 1);
                             M2C_FIELD(&data_02157634, s8 *, 0) = 1;
@@ -332,7 +338,7 @@ loop_10:
     func_020c4cdc(sp0);
     func_020c4dd0(sp0);
 }
-
+#pragma pop
 void func_020859b4(M2C_UNK arg0) {
     s32 func_02084644();
     M2C_UNK func_020c4cdc(M2C_UNK);

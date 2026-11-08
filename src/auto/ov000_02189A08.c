@@ -277,17 +277,17 @@ s32 func_ov000_0218a798(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern u8 data_ov000_021b5c0f[];
     extern u16 data_ov000_021aeef4[];
     extern u8 data_ov000_021b5bfc[];
-    s32 savedAttr;
-    s32 bestVisible = 0x7FFFFFFF;
-    s32 bestOther = 0x7FFFFFFF;
-    s32 i;
-    s32 end;
-    u32 x;
-    s32 y;
-    UnkStruct_ov000_02189A08 *entry;
-    u32 type;
-    s32 d1;
     s32 val;
+    s32 d1;
+    u32 type;
+    UnkStruct_ov000_02189A08 *entry;
+    s32 y;
+    u32 x;
+    s32 end;
+    s32 i;
+    s32 bestOther = 0x7FFFFFFF;
+    s32 bestVisible = 0x7FFFFFFF;
+    s32 savedAttr;
     void *selected;
     void *map;
 

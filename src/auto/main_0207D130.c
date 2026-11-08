@@ -1,5 +1,7 @@
 /* 14 functions from 0x0207D130 to 0x0207DE50 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s16 coords[24]; } TerrainCoords48;
+typedef struct { s16 coords[12]; } TerrainCoords24;
 extern void **gCurrentMap;
 extern u8 data_02101884;
 extern const s16 data_020ebe8c[24];
@@ -208,38 +210,28 @@ u8 func_0207dbfc(void) {
     return data_02101884;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 u16 func_0207dc0c(s32 x, s32 y) {
-    s16 first[24];
-    s16 second[12];
-    s32 mask = 0;
-    int dummy_unused = 0;
+    TerrainCoords48 first;
+    TerrainCoords24 second;
+    s32 j;
+    u8 b, mask = 0;
+
+    first = *(const TerrainCoords48 *)data_020ebe8c;
     {
-        const u16 *src = (const u16 *)data_020ebe8c;
-        u16 *dst = (u16 *)first;
-        s32 count = 12;
-        do {
-            u16 a = src[0];
-            u16 bb = src[1];
-            src += 2;
-            dst[0] = a;
-            dst[1] = bb;
-            dst += 2;
-        } while (--count);
-    }
-    {
-        void *map = *gCurrentMap;
+        void **maps = gCurrentMap;
         const u16 *tileAttr = ((const u16 **)&data_02101884)[1];
-        const u32 (*attrs)[2] = (const u32 (*)[2])data_020edebc;
         {
             s32 i;
-            s16 *p = first;
+            s16 *p = first.coords;
             for (i = 0; i < 8; i++, p += 3) {
                 s32 nx = x + p[0];
                 s32 ny = y + p[1];
-                if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(map, u16 *, 0x5144) && ny < M2C_FIELD(map, u16 *, 0x5146)) {
-                    u16 off = M2C_FIELD((u8 *)map + ny * 2, u16 *, 0x3758);
-                    u16 tile = M2C_FIELD((u8 *)map + (nx + off) * 2, u16 *, 0xa10);
-                    if ((attrs[tileAttr[tile]][0] & 0x20000) == 0) {
+                if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
+                    u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
+                    u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
+                    if ((((const u32 (*)[2])data_020edebc)[tileAttr[tile]][0] & 0x20000) == 0) {
                         mask |= 1 << i;
                         mask &= 0xff;
                     }
@@ -250,46 +242,34 @@ u16 func_0207dc0c(s32 x, s32 y) {
             s32 sub = mask & 0x5a;
             switch (sub) {
             case 2:
-                if (mask & 0x94) goto skip_second;
-                break;
+                if (!(mask & 0xe0)) goto do_second;
+                goto skip_second;
             case 8:
-                if (mask & 0xe0) goto skip_second;
-                break;
+                if (!(mask & 0x94)) goto do_second;
+                goto skip_second;
             case 16:
-                if (mask & 0x29) goto skip_second;
-                break;
+                if (!(mask & 0x29)) goto do_second;
+                goto skip_second;
             case 64:
                 if (mask & 0x07) goto skip_second;
                 break;
             default:
                 goto skip_second;
             }
+do_second:
             {
-                s32 b = 0;
+                b = 0;
+                second = *(const TerrainCoords24 *)data_020ebe58;
                 {
-                    const u16 *src = (const u16 *)data_020ebe58;
-                    u16 *dst = (u16 *)second;
-                    s32 count = 6;
-                    do {
-                        u16 a = src[0];
-                        u16 bb = src[1];
-                        src += 2;
-                        dst[0] = a;
-                        dst[1] = bb;
-                        dst += 2;
-                    } while (--count);
-                }
-                {
-                    s32 i;
-                    s16 *p = second;
-                    for (i = 0; i < 4; i++, p += 3) {
+                    s16 *p = second.coords;
+                    for (j = 0; j < 4; j++, p += 3) {
                         s32 nx = x + p[0];
                         s32 ny = y + p[1];
-                        if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(map, u16 *, 0x5144) && ny < M2C_FIELD(map, u16 *, 0x5146)) {
-                            u16 off = M2C_FIELD((u8 *)map + ny * 2, u16 *, 0x3758);
-                            u16 tile = M2C_FIELD((u8 *)map + (nx + off) * 2, u16 *, 0xa10);
-                            if ((attrs[tileAttr[tile]][0] & 0x80000) != 0) {
-                                b |= 1 << i;
+                        if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
+                            u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
+                            u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
+                            if ((((const u32 (*)[2])data_020edebc)[tileAttr[tile]][0] & 0x80000) != 0) {
+                                b |= 1 << j;
                                 b &= 0xff;
                             }
                         }
@@ -297,7 +277,6 @@ u16 func_0207dc0c(s32 x, s32 y) {
                     {
                         u16 val = data_021018a4[b];
                         if (val != 0) {
-                            (void)dummy_unused;
                             return val;
                         }
                     }
@@ -305,8 +284,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
             }
         }
 skip_second:
-        (void)dummy_unused;
         return data_021018c4[mask];
     }
 }
-
+#pragma pop

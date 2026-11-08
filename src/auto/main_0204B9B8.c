@@ -234,8 +234,8 @@ s32 func_0204c0fc(void *state, void *context, s32 flag) {
             if (M2C_FIELD(M2C_FIELD(state, void **, 0), s32 *, 0) != 0) {
                 func_020640a8(&data_020fd598, &data_020fd334, &data_020fd24c, 0x3a9);
             }
-            func_020675e4(buf, flag ? &data_020fd5b8 : &data_020fd5bc,
-                          M2C_FIELD(M2C_FIELD(state, void **, 0), s32 *, 4));
+            if(flag) func_020675e4(buf,&data_020fd5b8,M2C_FIELD(M2C_FIELD(state,void **,0),s32 *,4));
+            else func_020675e4(buf,&data_020fd5bc,M2C_FIELD(M2C_FIELD(state,void **,0),s32 *,4));
         } else {
             void *d = M2C_FIELD(state, void **, 0);
             s32 type = M2C_FIELD(d, s32 *, 0);

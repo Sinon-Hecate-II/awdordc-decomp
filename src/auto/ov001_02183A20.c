@@ -431,74 +431,84 @@ void func_ov001_02184230(u16 *arg0) {
     typedef struct { u8 count; u8 pad[3]; ParsedItem items[16]; } ParsedItems;
     typedef struct { u8 *slots; ParsedItems parsed; } Work;
 
-    Work work;
-    register s32 i;
-    register s32 j;
-    register s32 k;
+    s32 i;
     register u8 *record;
-    register u8 *slot;
-    u8 parsedCount;
+    Work work;
 
     work.slots = (u8 *)data_ov001_02193e00 + 0x1300;
     func_020067a8((u8 *)data_ov001_02193e00 + 0xf00, 0x400);
 
     i = 0;
-    if (*(u16 *)((u8 *)arg0 + 0xe) <= 0) {
+    if ((s32)*(u16 *)((u8 *)arg0 + 0xe) <= 0) {
         return;
     }
     do {
         record = *(u8 **)((u8 *)arg0 + 0x10 + i * 4);
         if (record[0xc] != 0 && *(u16 *)(record + 0x3c) == 0) {
-            slot = work.slots;
+            register s32 j;
+            register u8 *searchSlot;
+
+            searchSlot = work.slots;
             j = 0;
             do {
-                if (func_0206527c((M2C_UNK)(record + 4), (M2C_UNK)(slot + 0x20), 6) == 0) {
+                if (func_0206527c((M2C_UNK)(record + 4), (M2C_UNK)(searchSlot + 0x20), 6) == 0) {
                     break;
                 }
                 j++;
-                slot += 0x2a;
+                searchSlot += 0x2a;
             } while (j < 20);
 
             if (j == 20) {
-                slot = work.slots;
+                register u8 *fallbackName;
+                register u8 *fallbackSlot;
+                fallbackName = data_ov001_0218fb64;
+                fallbackSlot = work.slots;
                 j = 0;
                 do {
-                    if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) == 0) {
+                    if (func_0206527c((M2C_UNK)(fallbackSlot + 0x20), (M2C_UNK)fallbackName, 6) == 0) {
                         break;
                     }
                     j++;
-                    slot += 0x2a;
+                    fallbackSlot += 0x2a;
                 } while (j < 20);
                 if (j == 20) {
                     return;
                 }
             }
 
-            slot = work.slots + j * 0x2a;
-            func_02008048((void *)(record + 4), (void *)(slot + 0x20), 6);
-            func_02008048((void *)(record + 0xc), (void *)slot, 0x20);
-            *(u16 *)(slot + 0x26) = *(u16 *)((u8 *)arg0 + 0x50 + i * 2);
+            {
+                register u8 *dest;
+                s32 parsedCount;
+                s32 k;
+                dest = work.slots + j * 0x2a;
+                func_02008048((void *)(record + 4), (void *)(dest + 0x20), 6);
+                func_02008048((void *)(record + 0xc), (void *)dest, 0x20);
+                *(u16 *)(dest + 0x26) = *(u16 *)((u8 *)arg0 + 0x50 + i * 2);
 
-            if ((*(u16 *)(record + 0x2c) & 0x10) == 0) {
-                slot[0x28] = 0;
-            } else {
-                slot[0x28] = 1;
-                func_02011f2c((M2C_UNK *)&work.parsed, (M2C_UNK *)record);
-                parsedCount = work.parsed.count;
-                if (parsedCount > 0) {
-                    for (k = 0; k < parsedCount; k++) {
+                if ((*(u16 *)(record + 0x2c) & 0x10) == 0) {
+                    dest[0x28] = 0;
+                } else {
+                    dest[0x28] = 1;
+                    func_02011f2c((M2C_UNK *)&work.parsed, (M2C_UNK *)record);
+                    parsedCount = work.parsed.count;
+                    k = 0;
+                    if (parsedCount <= 0) {
+                        continue;
+                    }
+                    do {
                         if (work.parsed.items[k].kind == 0x30) {
-                            slot[0x28] = 2;
+                            dest[0x28] = 2;
                             break;
                         }
                         if (work.parsed.items[k].kind == 0xdd &&
                             work.parsed.items[k].length >= 4 &&
                             func_0206527c((M2C_UNK)work.parsed.items[k].data,
                                           (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
-                            slot[0x28] = 2;
+                            dest[0x28] = 2;
                             break;
                         }
-                    }
+                        k++;
+                    } while (k < parsedCount);
                 }
             }
         }

@@ -1,14 +1,47 @@
 /* 35 functions from 0x02174F68 to 0x02175F60 (ov001), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 v[5]; } Counts4F68;
+extern u8 data_ov001_0218f5f0[];
+extern u16 data_ov001_0218f642[], data_ov001_0218f618[], data_ov001_0218f620[];
+extern void *data_ov001_02193d20;
 
 typedef struct { s32 x; u32 y; } Position;
 
 
-void func_ov001_02174f68(s32 arg0, Position arg1) {
-    (void)arg0;
-    (void)arg1;
+#pragma push
+#pragma opt_propagation off
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+void func_ov001_02174f68(s32 arg0, s32 arg1) {
+ void func_ov001_0218b200(s32,u16,s32,s32,s32);
+ void func_ov001_0218a260(s32,s32,s32,s32);
+ s32 func_ov001_0218a384(s32,s32,u16,u16);
+ volatile u8 a[5]={data_ov001_0218f5f0[21],data_ov001_0218f5f0[22],data_ov001_0218f5f0[23],data_ov001_0218f5f0[24],data_ov001_0218f5f0[25]};
+ volatile u8 b[5]={data_ov001_0218f5f0[26],data_ov001_0218f5f0[27],data_ov001_0218f5f0[28],data_ov001_0218f5f0[29],data_ov001_0218f5f0[30]};
+ volatile u8 c[5]={data_ov001_0218f5f0[16],data_ov001_0218f5f0[17],data_ov001_0218f5f0[18],data_ov001_0218f5f0[19],data_ov001_0218f5f0[20]};
+ s32 i,j=arg0*3; void *p; u16 y;
+ for(i=0;i<a[arg0];i++){
+ p=M2C_FIELD((u8 *)data_ov001_02193d20+j*4,void **,0x10);
+ y=data_ov001_0218f642[j*2];
+ *(u32 *)p &= 0xc1fffcff;
+ p=M2C_FIELD((u8 *)data_ov001_02193d20+j*4,void **,0x10);
+ *(u32 *)p=(*(u32 *)p&0xfe00ff00)|(arg1&255)|((y&511)<<16);
+ j++;
+ }
+ if(arg0<4) func_ov001_0218b200(M2C_FIELD((u8 *)data_ov001_02193d20+arg0*4,s32 *,0),data_ov001_0218f642[arg0*6],arg1,M2C_FIELD((u8 *)data_ov001_02193d20+arg0*4,s32 *,0x48),2);
+ for(i=0;i<b[arg0];i++){
+ p=M2C_FIELD((u8 *)data_ov001_02193d20+i*4,void **,0x38);
+ y=data_ov001_0218f618[i*2];
+ *(u32 *)p &= 0xc1fffcff;
+ p=M2C_FIELD((u8 *)data_ov001_02193d20+i*4,void **,0x38);
+ *(u32 *)p=(*(u32 *)p&0xfe00ff00)|(arg1&255)|((y&511)<<16);
+ }
+ for(i=0;i<c[arg0];i++){
+ func_ov001_0218a260(M2C_FIELD((u8 *)data_ov001_02193d20+i*4,s32 *,0x40),-1,0,0);
+ func_ov001_0218a384(M2C_FIELD((u8 *)data_ov001_02193d20+i*4,s32 *,0x40),-1,data_ov001_0218f620[i*2],arg1);
+ }
 }
-
+#pragma pop
 void func_ov001_021751c8(s32 arg0, s32 arg1) {
 void func_ov001_0218a304(s32,s32,s32,u8);
 extern void *data_ov001_02193d20;

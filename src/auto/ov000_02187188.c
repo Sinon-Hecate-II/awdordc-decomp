@@ -231,6 +231,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     return 2;
 }
 
+#pragma peephole off
 void func_ov000_02187664(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     s32 func_ov000_02187320(s32, s32, void *, void *);
@@ -241,65 +242,31 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
 
     s16 pos1[2];
     s16 pos2[2];
-    s32 r;
     s32 t;
-    void *base;
-    void *selected;
+    s32 r;
     u8 *unitC;
     u8 *unitD;
-    u8 idxC;
-    u8 idxD;
-    s32 kind;
 
     r = func_ov000_02187320(arg0, arg1, pos1, pos2);
-    if (r == 0) {
-        return;
-    }
+    if (r == 0) return;
     t = func_ov000_0217bd44(arg0, arg1, pos1[0], pos1[1]);
-    if (r < 2) {
-        return;
-    }
+    if (r < 2) return;
     if (func_ov000_02188b50(arg0, arg1) == 1) {
-        s32 t2 = func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]) & 0xff;
-        func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, t2);
+        func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]) & 0xff);
         return;
     }
-
-    base = *gCurrentMap;
-    selected = M2C_FIELD(base, void **, 0x52D0);
-    idxC = M2C_FIELD(selected, u8 *, 0xC);
-    unitC = (u8 *)base + 0x59A4 + idxC * 0xE;
-
-    kind = unitC[0] & 0x3F;
-    if (func_ov000_021a98a8((u32)kind) != 0) {
-        return;
-    }
-    if (kind == 0x0D) {
-        return;
-    }
-    if ((unitC[11] & 0x0F) >= 6) {
-        return;
-    }
-
-    idxD = M2C_FIELD(selected, u8 *, 0xD);
-    unitD = (u8 *)base + 0x59A4 + idxD * 0xE;
-
-    kind = unitD[0] & 0x3F;
-    if (func_ov000_021a98a8((u32)kind) != 0) {
-        return;
-    }
-    if (kind == 0x0D) {
-        return;
-    }
-    if ((unitD[11] & 0x0F) >= 6) {
-        return;
-    }
-
-    unitD[11] = (unitD[11] & 0xF0) | (unitC[11] & 0x0F);
+    unitC = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) * 0xE;
+    if (func_ov000_021a98a8((u32)(unitC[0] << 26) >> 26) != 0) return;
+    if (((u32)(unitC[0] << 26) >> 26) == 0x0D) return;
+    if (((u32)(unitC[11] << 28) >> 28) >= 6) return;
+    unitD = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xD) * 0xE;
+    if (func_ov000_021a98a8((u32)(unitD[0] << 26) >> 26) != 0) return;
+    if (((u32)(unitD[0] << 26) >> 26) == 0x0D) return;
+    if (((u32)(unitD[11] << 28) >> 28) >= 6) return;
+    unitD[11] = (unitD[11] & 0xF0) | ((u32)(unitC[11] << 28) >> 28);
     func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
-    return;
 }
-
+#pragma peephole reset
 void func_ov000_02187820(void) {
     extern void **gCurrentMap;
     extern u32 data_027e15bc;
@@ -364,6 +331,7 @@ void func_ov000_02187820(void) {
 
 void func_ov000_021879f4(void) { }
 
+#pragma opt_strength_reduction off
 void func_ov000_02187c3c(void) {
     extern void **gCurrentMap;
     extern u8 *data_ov000_021df580;
@@ -373,79 +341,41 @@ void func_ov000_02187c3c(void) {
     s32 func_0207c928(s32, s32);
     void func_ov000_0218a9ac(s32, s32);
 
-    void *selected;
-    void *map;
-    s32 kind;
     s32 bestX = -1;
     s32 bestY = -1;
     s32 bestSub = 0x7fff;
     s32 bestVal = 0;
-    s32 y;
-    s32 x;
-    s32 width;
-    s32 height;
-    s32 val;
-    s32 thr;
-    s32 ret;
-    s32 rowoff;
-    s32 byteScore;
+    s32 y, x, score;
 
-    selected = *(void **)((u8 *)*gCurrentMap + 0x52d0);
-    kind = ((u8 *)selected)[0] & 0x3f;
-    func_01ffada0(((u8 *)selected)[1], ((u8 *)selected)[2], kind, 0x6e, 1, -1);
+    func_01ffada0(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x1),
+                  M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x2),
+                  ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x0) << 26) >> 26),
+                  0x6e, 1, -1);
 
-    map = *gCurrentMap;
-    height = *(u16 *)((u8 *)map + 0x5146);
-    for (y = 0; y < height; y++) {
-        map = *gCurrentMap;
-        width = *(u16 *)((u8 *)map + 0x5144);
-        for (x = 0; x < width; x++) {
-            map = *gCurrentMap;
-            if (((s8 **)((u8 *)map + 0x52e8))[y][x] < 0) {
-                continue;
-            }
-            thr = data_ov000_021df580[5];
-            if (((s8 **)((u8 *)map + 0x52e8))[y][x] <= thr) {
-                continue;
-            }
-            rowoff = *(u16 *)((u8 *)map + 0x3758 + y * 2);
-            if (*(s8 *)((u8 *)map + 0x3250 + rowoff + x) == 0) {
-                continue;
-            }
-            ret = func_ov000_02186e64(x, y);
-            if (ret == 0) {
-                continue;
-            }
-
-            val = func_0207c8ec(((s8 **)((u8 *)map + 0x52e8))[y][x], thr) + 1;
-            if (func_0207c928(((s8 **)((u8 *)map + 0x52e8))[y][x], thr) == 0) {
-                val = val - 1;
-            }
-
-            if (bestSub < val) {
-                continue;
-            }
-            map = *gCurrentMap;
-            byteScore = *(u8 *)((u8 *)map + 0x3250 + rowoff + x);
-            if (bestSub != val) {
-                goto update;
-            }
-            if (bestVal > byteScore) {
-                continue;
-            }
+    for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
+        for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
+            s32 val;
+            if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] < 0) continue;
+            if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] <= data_ov000_021df580[5]) continue;
+            if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) continue;
+            if (func_ov000_02186e64(x, y) == 0) continue;
+            val = func_0207c8ec(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) + 1;
+            if (func_0207c928(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) == 0) val--;
+            if (bestSub < val) continue;
+            score = M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x3250);
+            if (bestSub != val) goto update;
+            if (bestVal > score) continue;
         update:
             bestX = x;
             bestY = y;
             bestSub = val;
-            bestVal = byteScore;
+            bestVal = score;
         }
     }
-    if (bestVal == 0) {
-        return;
-    }
+    if (bestVal == 0) return;
     func_ov000_0218a9ac(bestX, bestY);
 }
-
+#pragma opt_strength_reduction reset
 void func_ov000_02187e20(void) {
 func_ov000_02187820();
 if(data_ov000_021df648==func_ov000_02188338) func_ov000_021879f4();

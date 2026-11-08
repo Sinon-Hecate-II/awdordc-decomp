@@ -9,83 +9,52 @@ extern s32 data_ov010_0222d914;
 
 #pragma opt_strength_reduction off
 s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
-    extern s32 data_ov010_0222c02c;
-    volatile u16 *ctl = (volatile u16 *)0x40002b0;
-    volatile s32 *result = (volatile s32 *)0x40002b4;
-    volatile s32 *in = (volatile s32 *)0x40002b8;
-    u32 sum;
-    u32 h;
-    s32 cur;
-    u32 i;
-
-    M2C_FIELD(&data_ov010_0222c02c, s32 *, 4) = b >> 8;
-    if (c) {
-        *c = (u8)(b >> 8);
-    }
-
-    if (M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) == 0) {
-        sum = 0;
-        for (i = 0; i < 4; i++) {
-            sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
-        }
-        *ctl = 0;
-        *in = (s32)(sum >> 2);
-        while (*ctl & 0x8000) {
-        }
-        h = (u32)*result;
-        if (b != 0 && b >= (h << 1)) {
-            sum = 0;
-            for (i = 0; i < 4; i++) {
-                sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
-            }
-            *ctl = 0;
-            *in = (s32)(sum >> 2);
-            while (*ctl & 0x8000) {
-            }
-            h = (u32)*result;
-            M2C_FIELD(&data_ov010_0222d914, s32 *, 0) = (s32)(h * 3 / 2);
-            M2C_FIELD(&data_ov010_0222d914, s32 *, 4) = 0;
-            M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) = 1;
-        }
-        cur = M2C_FIELD(&data_ov010_0222d914, s32 *, 4);
-        M2C_FIELD(&data_ov010_0222d920, s32 *, cur * 4) = a;
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 4) = (cur + 1) & 3;
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 8) = 0;
-        return 2;
-    }
-
-    cur = M2C_FIELD(&data_ov010_0222d914, s32 *, 4);
-    M2C_FIELD(&data_ov010_0222d920, s32 *, cur * 4) = a;
-    M2C_FIELD(&data_ov010_0222d914, s32 *, 4) = (cur + 1) & 3;
-
-    sum = 0;
-    for (i = 0; i < 4; i++) {
-        sum += (u32)M2C_FIELD(&data_ov010_0222d920, s32 *, i * 4);
-    }
-    *ctl = 0;
-    *in = (s32)(sum >> 2);
-    while (*ctl & 0x8000) {
-    }
-    h = (u32)*result;
-
-    if (h > (u32)M2C_FIELD(&data_ov010_0222d914, s32 *, 0)) {
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 8) = 0;
-        return 2;
-    }
-
-    M2C_FIELD(&data_ov010_0222d914, s32 *, 8) =
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 8) + 1;
-    if (M2C_FIELD(&data_ov010_0222d914, s32 *, 8) > M2C_FIELD(&data_ov010_0222c02c, s32 *, 8)) {
-        M2C_FIELD(&data_ov010_0222c02c, s32 *, 0) = 0;
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 8) = 0;
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 4) = 0;
-        return 3;
-    } else {
-        M2C_FIELD(&data_ov010_0222d914, s32 *, 8) = 0;
-        return 2;
-    }
+ extern s32 data_ov010_0222c02c;
+ volatile u16 *ctl=(volatile u16 *)0x40002b0;
+ volatile u32 *result=(volatile u32 *)0x40002b4;
+ volatile u32 *in=(volatile u32 *)0x40002b8;
+ u32 sum,h; s32 cur,i,next; u32 j; s32 ret; s32 k;
+ M2C_FIELD(&data_ov010_0222c02c,s32 *,4)=b>>8;
+ if(c) *c=b>>8;
+ if(M2C_FIELD(&data_ov010_0222c02c,s32 *,0)==0) {
+ sum=0; for(i=0;i<4;i++) sum+=M2C_FIELD(&data_ov010_0222d920,u32 *,i*4);
+ *ctl=0; *in=sum>>2; while(*ctl&0x8000){}
+ h=*result;
+ if(b!=0 && b>=h*2) {
+ sum=0; for(j=0;j<4;j++) sum+=M2C_FIELD(&data_ov010_0222d920,u32 *,j*4);
+ *ctl=0; *in=sum>>2; while(*ctl&0x8000){}
+ h=*result;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,0)=h*3/2;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,4)=0;
+ ret=1; M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=ret;
+ } else ret=0;
+ cur=M2C_FIELD(&data_ov010_0222d914,s32 *,4);
+ next=(cur+1)&3;
+ M2C_FIELD(&data_ov010_0222d920,s32 *,cur*4)=a;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,4)=next;
+ } else {
+ sum=0; i=0;
+ cur=M2C_FIELD(&data_ov010_0222d914,s32 *,4);
+ next=(cur+1)&3;
+ M2C_FIELD(&data_ov010_0222d920,s32 *,cur*4)=a;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,4)=next;
+ for(k=0;k<4;k++) sum+=M2C_FIELD(&data_ov010_0222d920,u32 *,k*4);
+ *ctl=0; *in=sum>>2; while(*ctl&0x8000){}
+ h=*result;
+ if(h<=(u32)M2C_FIELD(&data_ov010_0222d914,s32 *,0)) {
+ M2C_FIELD(&data_ov010_0222d914,s32 *,8)++;
+ if(M2C_FIELD(&data_ov010_0222d914,s32 *,8)>M2C_FIELD(&data_ov010_0222c02c,s32 *,8)){
+ M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=0;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,8)=0;
+ M2C_FIELD(&data_ov010_0222d914,s32 *,4)=0;
+ return 3;
+ }
+ } else M2C_FIELD(&data_ov010_0222d914,s32 *,8)=0;
+ ret=2;
+ }
+ return ret;
 }
-#pragma opt_strength_reduction on
+#pragma opt_strength_reduction reset
 void func_ov010_02225174(void) {
  void func_ov010_02224f28(void);
  extern s32 data_ov010_0222c02c;

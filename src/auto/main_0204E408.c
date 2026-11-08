@@ -22,11 +22,7 @@ s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
     s8 *var_r2_2;
     void *temp_r4;
 
-    if (arg0 == NULL) {
-        return 2;
-    }
-    temp_r4 = *arg0;
-    if (temp_r4 == NULL) {
+    if (!arg0 || !(temp_r4 = *arg0)) {
         return 2;
     }
     if (M2C_FIELD(temp_r4, s32 *, 0x108) != 0) {

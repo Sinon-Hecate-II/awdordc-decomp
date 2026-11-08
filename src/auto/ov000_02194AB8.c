@@ -271,7 +271,7 @@ s32 func_ov000_02195788(s16 *out) {
     s8 **rows;
     s32 unitKind;
     u8 attr;
-    s32 resX, resY, best, y, x;
+    register s32 resX=-1, resY=-1, best=0x7fff, y, x;
     u16 height, width;
     s32 ok;
     up = *(UnitKind1955 **)((u8 *)*gCurrentMap + 0x52d0);
@@ -279,31 +279,29 @@ s32 func_ov000_02195788(s16 *out) {
     attr = data_ov000_021b5c0f[unitKind * 0x70];
     if (attr & 0x20) return 0;
     func_01ffada0(((u8 *)up)[1], ((u8 *)up)[2], unitKind, 110, 0);
-    resX = -1; resY = -1; best = 0x7fff;
-    rows = (s8 **)((u8 *)*gCurrentMap + 0x52e8);
-    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
-    if (height <= 0) goto finish;
-    width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
-    if (width <= 0) goto finish;
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
+    for (y=0;y<*(u16 *)((u8 *)*gCurrentMap+0x5146);y++) {
+        for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap+0x5144); x++) {
             u8 *map; u16 rowOff; u8 grid0; s8 cand; u8 grid1; u8 thr;
-            if (rows[y][x] < 0) continue;
+            if ((*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x] < 0) continue;
             map = (u8 *)*gCurrentMap;
             rowOff = *(u16 *)(map + 0x3758 + y * 2);
-            grid0 = *(u8 *)(map + rowOff + x + 0x1420);
+            grid0 = *(u8 *)(map + x + rowOff + 0x1420);
             if (func_ov000_021a8ff0(grid0 & 0x1f) == 0) continue;
+            map = (u8 *)*gCurrentMap;
+            rowOff = *(u16 *)(map + 0x3758+y*2);
+            grid0 = *(u8 *)(map+x+rowOff+0x1420);
             if (*(u16 *)(map + 0x52a6) != (grid0 & 0xe0)) continue;
-            cand = rows[y][x];
+            cand = (*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x];
             if (best < cand) continue;
             if (!func_ov000_0217bc34(x, y, 2, 5)) continue;
-            ok = func_ov000_021a98e4(unitKind);
+            ok = func_ov000_021a98e4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind);
             if (ok == 1) {
                 thr = ((u8 *)data_ov000_021df644)[2];
-                grid1 = *(u8 *)(map + rowOff + x + 0x2d48);
+                map=(u8 *)*gCurrentMap; rowOff=*(u16 *)(map+0x3758+y*2);
+                grid1 = *(u8 *)(map + x + rowOff + 0x2d48);
                 if (grid1 >= thr) continue;
             }
-            resX = x; resY = y; best = cand;
+            resX = x; resY = y; best = (*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x];
         }
     }
 finish:

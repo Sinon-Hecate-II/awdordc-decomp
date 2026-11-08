@@ -1,5 +1,8 @@
 /* 19 functions from 0x021F25CC to 0x021F35B0 (ov003), found by ds-decomp. */
 #include "common.h"
+static inline s32 IsTerrain2878(s32 v) { switch(v) { case 6: case 18: case 19: case 20: case 21: return 1; default: return 0; } }
+static inline s32 Active2878(void) { s32 func_ov003_021f14c8(void); return func_ov003_021f14c8()!=0; }
+static inline u8 Block2878(s32 entry) { void *p; if(Active2878()) return 1; p=M2C_FIELD(entry,void **,0x40); return IsTerrain2878(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)]) != 0; }
 static inline s32 IsSpecial2e98(s32 v) {
  switch(v-8) {case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9: return 1; default:return 0;}
 }
@@ -102,7 +105,9 @@ void func_ov003_021f2860(s32 arg0) {
     func_ov003_021f24ec(arg0 + 4, arg0 + 0xE);
 }
 
-s32 func_ov003_021f2878(s32 entry) {
+#pragma push
+#pragma optimization_level 2
+void func_ov003_021f2878(s32 entry) {
     s32 func_020846a4(void);
     s32 func_0208471c(void);
     s32 func_02084644(void);
@@ -119,106 +124,52 @@ s32 func_ov003_021f2878(s32 entry) {
     s32 var_sp0;
 
     if (M2C_FIELD(entry, u8 *, 0x47) != 0) {
-        goto tail;
+        goto ready;
     }
     if (func_020846a4() == 0) {
-        return 0;
+        return;
     }
     if (M2C_FIELD(entry, u8 *, 0x34) != 2) {
-        return 0;
+        return;
     }
-    {
-        void *p = *(void **)(entry + 0x40);
-        s8 idx = *(s8 *)((u8 *)p + 5);
-        u8 *arr = *(u8 **)((u8 *)p + 8);
-        s32 t = arr[idx] - 8;
-        switch (t) {
-        case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
-            return 1;
-        default:
-            break;
-        }
-    }
+    if (IsSpecial2e98(M2C_FIELD(M2C_FIELD(entry,void **,0x40),u8 **,8)[M2C_FIELD(M2C_FIELD(entry,void **,0x40),s8 *,5)])) return;
     {
         s32 t = func_ov003_021f17fc();
         if (t != 0) {
-            return t;
+            return;
         }
     }
-    {
-        u8 r0 = M2C_FIELD(entry, u8 *, 0x45);
-        if (r0 == 0) {
-            r0 = M2C_FIELD(entry, u8 *, 0x46);
-        }
-        if (r0 != 0) {
-            return r0;
-        }
-    }
+ready:
+    if (M2C_FIELD(entry,u8 *,0x45) || M2C_FIELD(entry,u8 *,0x46)) return;
     if (func_0208471c() != 0) {
         s32 sw = func_02084644();
-        if (sw == 1) {
+        switch (sw) { case 1:
             if (func_ov009_02224508(1) == 0) {
                 func_ov009_022244ec(1);
                 M2C_FIELD(entry, u8 *, 0x45) = 1;
             }
-        } else if (sw == 2) {
+        break; case 2:
             if (func_ov010_022282b4(6) == 0) {
                 func_ov010_02228298(6);
                 func_ov010_02228314(&var_sp4, &var_sp0);
                 switch (var_sp0) {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                     func_ov010_02228298(6);
-                    M2C_FIELD(entry, u8 *, 0x45) = 1;
                     break;
                 default:
                     break;
                 }
+                M2C_FIELD(entry,u8 *,0x45)=1;
             }
         }
     }
 
 tail:
-    for (;;) {
-        if (M2C_FIELD(entry, u8 *, 0x47) != 0) {
-            M2C_FIELD(entry, u8 *, 0x47) = 0;
-            return 0;
-        }
-        if (func_02084a6c() == 0) {
-            break;
-        }
-    }
-    {
-        s32 a = func_02084a0c();
-        if (a > 1) {
-            return a;
-        }
-    }
-    {
-        s32 r = func_ov003_021f14c8();
-        if (r != 0) {
-            M2C_FIELD(entry, u8 *, 0x46) = 1;
-        } else {
-            void *p = *(void **)(entry + 0x40);
-            s8 idx = *(s8 *)((u8 *)p + 5);
-            u8 *arr = *(u8 **)((u8 *)p + 8);
-            s32 terrain = arr[idx];
-            s32 flag = 0;
-            if (terrain == 6) {
-                flag = 1;
-            } else if (terrain > 6) {
-                s32 d = terrain - 18;
-                if (d >= 0 && d <= 3) {
-                    flag = 1;
-                }
-            }
-            if (flag == 0) {
-                M2C_FIELD(entry, u8 *, 0x46) = 1;
-            }
-        }
-    }
-    return 1;
+ if(M2C_FIELD(entry,u8 *,0x47)) { M2C_FIELD(entry,u8 *,0x47)=0; return; }
+ if(!func_02084a6c() && (u32)func_02084a0c()>1) return;
+ if(!Active2878() && !(u8)(IsTerrain2878(M2C_FIELD(M2C_FIELD(entry,void **,0x40),u8 **,8)[M2C_FIELD(M2C_FIELD(entry,void **,0x40),s8 *,5)]) != 0)) M2C_FIELD(entry,u8 *,0x46)=1;
 }
-
+#pragma pop
 /* Attempt to start a contextual action (overlay-dependent); returns 1 if one was started. */
 s32 func_ov003_021f2a9c(s32 entry) {
     s32 func_020846a4(void);
@@ -482,7 +433,7 @@ void func_ov003_021f34e4(void *a) {
 void func_ov003_021f3564(M2C_UNK arg0) {
     M2C_UNK func_01ffa8c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f17e0();
-    M2C_UNK func_ov003_021f2878();
+    void func_ov003_021f2878();
     s32 func_ov003_021f2a9c(M2C_UNK);
     s32 func_ov003_021f2b88(M2C_UNK);
     func_ov003_021f2878();

@@ -325,6 +325,8 @@ default:if(flags&4){func_0201c7e4((s32)a,(s32)b);return;}func_0201bf80(a,b,c,0);
 }
 }
 
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_0201c940(void *arg0, void *arg1, s32 arg2) {
     s32 func_0200751c();
     M2C_UNK func_02007530(s32);
@@ -363,7 +365,7 @@ loop_5:
                 if ((temp_r0 != 0) && (temp_r0 != -1)) {
                     temp_r9 = M2C_FIELD(arg0, u16 *, 0xE);
                     temp_lr = M2C_FIELD(arg0, u16 *, 0xC);
-                    if (temp_r0 == ((u16)(((s32)temp_r9 >> 8) | (temp_r9 << 8)) | ((u16)(((s32)temp_lr >> 8) | (temp_lr << 8)) << 0x10))) {
+                    if (temp_r0 == (((u16)(((s32)temp_lr >> 8) | (temp_lr << 8)) << 0x10) | (u16)(((s32)temp_r9 >> 8) | (temp_r9 << 8)))) {
                         goto block_18;
                     }
                     goto block_30;
@@ -371,11 +373,11 @@ loop_5:
 block_18:
                 temp_r3_3 = M2C_FIELD(arg0, u16 *, 0x12);
                 temp_r2_2 = M2C_FIELD(arg0, u16 *, 0x10);
-                M2C_FIELD(temp_r4, s32 *, 0x14) = (s32)((u16)(((s32)temp_r3_3 >> 8) | (temp_r3_3 << 8)) | ((u16)(((s32)temp_r2_2 >> 8) | (temp_r2_2 << 8)) << 0x10));
+                M2C_FIELD(temp_r4, s32 *, 0x14) = (s32)(((u16)(((s32)temp_r2_2 >> 8) | (temp_r2_2 << 8)) << 0x10) | (u16)(((s32)temp_r3_3 >> 8) | (temp_r3_3 << 8)));
                 if (M2C_FIELD(temp_r4, s32 *, 0x1C) == 0) {
                     temp_r3_4 = M2C_FIELD(arg0, u16 *, 0xE);
                     temp_r2_3 = M2C_FIELD(arg0, u16 *, 0xC);
-                    M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32)((u16)(((s32)temp_r3_4 >> 8) | (temp_r3_4 << 8)) | ((u16)(((s32)temp_r2_3 >> 8) | (temp_r2_3 << 8)) << 0x10));
+                    M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32)(((u16)(((s32)temp_r2_3 >> 8) | (temp_r2_3 << 8)) << 0x10) | (u16)(((s32)temp_r3_4 >> 8) | (temp_r3_4 << 8)));
                     temp_r1 = M2C_FIELD(arg1, u16 *, 0);
                     M2C_FIELD(temp_r4, u16 *, 0x18) = (u16)(((s32)temp_r1 >> 8) | (temp_r1 << 8));
                 }
@@ -414,4 +416,5 @@ block_30:
     func_02007530(temp_r5);
     /*v4*/
 }
-
+#pragma opt_propagation reset
+#pragma opt_common_subs reset

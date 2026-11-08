@@ -85,9 +85,11 @@ void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_0212dc4c;
     extern M2C_UNK data_0212dc50;
     extern M2C_UNK data_0212dc54;
+    s32 mask;
+    mask = 1 << (arg0 + 3);
     M2C_FIELD(&data_0212dc4c, s32 *, arg0 * 12) = arg1;
     M2C_FIELD(&data_0212dc54, s32 *, arg0 * 12) = arg2;
-    func_020051c8(1U << (arg0 + 3));
+    func_020051c8(mask);
     M2C_FIELD(&data_0212dc50, s32 *, arg0 * 12) = 1;
 }
 #pragma optimization_level reset

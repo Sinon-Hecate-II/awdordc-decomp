@@ -47,7 +47,7 @@ apply:
     return 0;
 }
 
-#pragma scheduling off
+#pragma scheduling reset
 s32 func_020637fc(void *arg0) {
     s32 func_02049810(s32, void *, s32, s32);
     M2C_UNK func_02061efc(void *);

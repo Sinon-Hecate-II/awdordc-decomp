@@ -338,13 +338,16 @@ M2C_FIELD(arg0,s32 *,0x38)=17;
 return 0;
 }
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_propagation off
 s32 func_0204a740(void *p,u8 *dst,s32 *len) {
 u32 func_02049208(void);
 s32 func_02049ef4(s32,s32 *,s32,...);
 s32 func_020497cc(s32,u8 *,s32,s32);
 
 extern s32 data_020fd00c[];
-s32 out; s32 r; s32 err; s32 got; s32 n; u32 now;
+s32 r; s32 err; s32 n; u32 now; register s32 got; register s32 out;
 n=*len-1;
 if(M2C_FIELD(p,s32 *,0x134)){
 now=func_02049208();
@@ -361,7 +364,7 @@ M2C_FIELD(p,s32 *,0x84)=M2C_FIELD(p,s32 *,0xf8);
 }
 got=func_020497cc(M2C_FIELD(p,s32 *,0x48),dst,n,0);
 r=got;
-if(got==-1){
+if((u32)got==0xffffffffU){
 err=func_02049900(M2C_FIELD(p,s32 *,0x48));
 if(err==-6||err==-26||err==-76)return 1;
 M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=5;
@@ -382,7 +385,9 @@ got=r;if(got<=0)return 1;
 }
 out=0;dst[got]=0;*len=r;if(r<=0)out=1;return out;
 }
-
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
 s32 func_0204a954(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02049900(s32);

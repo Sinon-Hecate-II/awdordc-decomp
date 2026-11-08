@@ -100,27 +100,25 @@ s32 func_ov007_0221b8c0(s32 x, s32 y) {
     s32 t;
     register s32 p;
     if (x < 0 || y < 0) {
-        goto fail;
+        goto bounds_fail;
     }
     p = *gCurrentMap;
     if (x < M2C_FIELD(p, u16 *, 0x5144) && y < M2C_FIELD(p, u16 *, 0x5146)) {
         goto in_bounds;
     }
+bounds_fail:
     return 0;
 in_bounds:
     t = M2C_FIELD(p + (x + M2C_FIELD(p + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
-    r = r - 0x100;
-    r = t;
-    r = r - 0x79;
-    switch (r) {
-        case 0: case 1: case 2: case 3: case 4:
-        case 30: case 31: case 32: case 33: case 34:
-        case 60: case 61: case 62: case 63: case 64:
-        case 68: case 69: case 70: case 71: case 72: case 73: case 74: case 75:
-        case 76: case 77: case 78: case 79: case 80: case 81: case 82: case 83:
-        case 84: case 85: case 86: case 87: case 88: case 89: case 90: case 91:
-        case 92: case 93: case 94: case 95: case 96: case 97: case 98: case 99:
-        case 100:
+    switch (t) {
+        case 377: case 378: case 379: case 380: case 381:
+        case 409: case 410: case 411: case 412: case 413:
+        case 441: case 442: case 443: case 444: case 445:
+        case 449: case 450: case 451: case 452: case 453: case 454: case 455: case 456:
+        case 457: case 458: case 459: case 460: case 461: case 462: case 463: case 464:
+        case 465: case 466: case 467: case 468: case 469: case 470: case 471: case 472:
+        case 473: case 474: case 475: case 476: case 477:
+       
             return 1;
         default:
             goto fail;

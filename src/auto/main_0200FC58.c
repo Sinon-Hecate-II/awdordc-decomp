@@ -152,7 +152,7 @@ M2C_FIELD(p,s32 *,0x1c)=0x10000;M2C_FIELD(p,s32 *,0x20)=256;M2C_FIELD(p,s32 *,0x
 }else if(kind==3){if(bit==0x2000||bit==0x8000){M2C_FIELD(p,u32 *,0x20)=bit;M2C_FIELD(p,u32 *,0x1c)=bit;M2C_FIELD(p,s32 *,0x24)=2;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x340;return;}}
 fail:M2C_FIELD(p,s32 *,0x18)=M2C_FIELD(p,s32 *,4)=0;M2C_FIELD(data_0212fde0,s32 *,0)=3;
 }
-#pragma opt_common_subs on
+#pragma opt_common_subs off
 void func_02010164(void *arg0) {
     void func_02000b9c(s32);
     void func_02005df4(void *);
@@ -164,16 +164,17 @@ void func_02010164(void *arg0) {
     void func_02007530(s32);
     void func_02008048(void *, void *, u32);
     void func_02010d14(void *, s32, s32);
-    M2C_UNK (*temp_r6_2)(s32);
-    s32 temp_r10;
-    unsigned temp_r4;
-    s32 temp_r5;
     register u32 temp_r4_2;
+    s32 temp_r5;
+    M2C_UNK (*temp_r6_2)(s32);
+    register u32 temp_r4, var_r5;
+    register void *temp_r6;
+    register s32 temp_r7;
+    register u32 var_r8;
+    register s32 temp_r10;
+
     u32 temp_r0;
-    s32 temp_r7;
-    u32 var_r5;
-    void *temp_r6;
-    u32 var_r8;
+
 
     temp_r7 = M2C_FIELD(arg0, s32 *, 0x2C);
     temp_r4 = M2C_FIELD(arg0, u32 *, 0x34);
@@ -190,7 +191,7 @@ loop_3:
         var_r8 = var_r5;
     }
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), u32 *, 0x14) = var_r8;
-    if (M2C_FIELD(arg0, s32 *, 0x114) & 0x40) {
+    if (M2C_FIELD(arg0, volatile s32 *, 0x114) & 0x40) {
         M2C_FIELD(arg0, s32 *, 0x114) = (s32) (M2C_FIELD(arg0, s32 *, 0x114) & ~0x40);
         M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, 0) = 7;
     } else {
@@ -249,7 +250,7 @@ block_23:
     }
     temp_r6_2(temp_r5);
 }
-
+#pragma opt_common_subs reset
 s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *data_0212fde0;
     extern M2C_UNK data_0212dca4;

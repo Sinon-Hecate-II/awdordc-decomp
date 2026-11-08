@@ -192,7 +192,7 @@ s32 func_020d0ddc(void) {
 
 void func_020d0de4(s16 index,s16 other,s16 *pos) {
  s32 func_020d0ddc();
- u8 oldy,oldx; s32 dist;
+ register u8 oldy,oldx; register s32 dist;
  oldy=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1);
  M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1)=pos[0];
  oldx=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,2);
@@ -200,8 +200,8 @@ void func_020d0de4(s16 index,s16 other,s16 *pos) {
  func_020d068c((void *)(*gCurrentMap+0x6eb8),index);
  func_020d068c((void *)(*gCurrentMap+0x6ed8),other);
  dist=ManhattanDistance(M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6eb8,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6eb8,void **,0),u8 *,2),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0),u8 *,2));
- func_020d0868((void *)(*gCurrentMap+0x6eb8),(void **)(*gCurrentMap+0x6ed8),(s16)dist,1);
- func_020d0868((void *)(*gCurrentMap+0x6ed8),(void **)(*gCurrentMap+0x6eb8),(s16)dist,0);
+ ((void (*)(void *,void **,s16,s32))func_020d0868)((void *)(*gCurrentMap+0x6eb8),(void **)(*gCurrentMap+0x6ed8),dist,1);
+ ((void (*)(void *,void **,s16,s32))func_020d0868)((void *)(*gCurrentMap+0x6ed8),(void **)(*gCurrentMap+0x6eb8),dist,0);
  func_020d0afc((void *)(*gCurrentMap+0x6eb8),0,1);
  func_020d0afc((void *)(*gCurrentMap+0x6ed8),1,1);
  if(func_020d0ddc((u8)D068COwner(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0)))==1)
@@ -209,8 +209,8 @@ void func_020d0de4(s16 index,s16 other,s16 *pos) {
  else
   func_020d0cdc((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
  func_020d0d7c((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
- M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a6)=oldx;
  M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a5)=oldy;
+ M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a6)=oldx;
 }
 
 void func_020d1034(void *arg0) {

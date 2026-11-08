@@ -38,8 +38,7 @@ s32 func_020420a0(void) {
  if(delta>6000ULL){
  M2C_FIELD(func_02044268(),u8 *,0x1ab)++;
  if(M2C_FIELD(func_02044268(),u8 *,0x1ab)>5){
- u8 mode=M2C_FIELD(func_02044268(),u8 *,0x15);
- if(mode==1){
+ if(M2C_FIELD(func_02044268(),u8 *,0x15)==0 || M2C_FIELD(func_02044268(),u8 *,0x15)==1){
  func_02041e44();
  func_02041be0(1);
  } else {
@@ -56,9 +55,6 @@ s32 func_020420a0(void) {
  p=func_02044268();
  if((M2C_FIELD(p,u32 *,0x1d4)&(1<<M2C_FIELD((u8 *)func_02044268()+i,u8 *,0x2d0)))==0){
  func_02041fb0(M2C_FIELD((u8 *)func_02044268()+i,u8 *,0x2d0),2);
- } else {
- func_020411dc(4);
- return 1;
  }
  }
  }
@@ -73,119 +69,50 @@ s32 func_020420a0(void) {
 #pragma opt_strength_reduction reset
 s32 func_02042310(s32 a,s32 b){void *func_02044268(void);u64 func_02007004(void);void func_0203f058(s32,s32,s32,s32,s32 *,s32);s32 func_0204084c(void);s32 v,k;if(b==13){v=M2C_FIELD(func_02044268(),s32 *,0x20c);k=1;}else k=0;func_0203f058(b,a,0,0,&v,k);if(func_0204084c())return 0;{void *p=func_02044268();M2C_FIELD(p,u64 *,0x1e8)=func_02007004();}return 1;}
 
-s32 func_02042390(s32 arg0, s32 arg1, s32 arg2) {
-    void *func_02044268(void);
-    s32 func_02038f6c(void);
-    void func_02044278(s32);
-    void func_02041dd4(s32);
-    s32 func_02042310(s32, s32);
-    u64 func_02007004(void);
-    u64 func_02072088(u64, u64);
-    u8 func_02042a08(s32, s32);
-    s32 func_02042a6c(s32);
-    void func_02041be0(s32);
-
-    s32 b = arg1;
-    s32 a = arg0;
-    s32 c = arg2;
-
-    void *P;
-    void *P0;
-    void *P2;
-    u64 now;
-    u64 base;
-    u64 delta;
-    u64 q;
-    u64 half;
-    u64 excess;
-    u16 thresh;
-    u8 idx;
-    u8 cnt;
-    u8 i;
-    u8 bit;
-    u32 mask;
-    s32 node;
-
-    if (func_02038f6c() != 6) {
-        return 1;
-    }
-
-    if (b == 0xd) {
-        P0 = func_02044268();
-        if (M2C_FIELD(P0, s32 *, 0x1a0) != 0x8) {
-            func_02044278(8);
-            func_02041dd4(c);
-            if (func_02042310(a, 0xe) == 0) {
-                return 0;
-            }
-            goto lbl_508;
-        }
-    } else if (b == 0xf) {
-        if (func_02042310(a, 0xf) == 0) {
-            return 0;
-        }
-        goto lbl_508;
-    } else if (b != 0xe) {
-        goto lbl_508;
-    }
-
-    /* L_e */
-    P = func_02044268();
-    if (M2C_FIELD(P, s32 *, 0x1a0) != 0xe) goto lbl_4d4;
-
-    now = func_02007004();
-    base = M2C_FIELD(P, u64 *, 0x1e8);
-    delta = now - base;
-    q = func_02072088(delta << 6, 0x82eaULL);
-    if (q <= 600ULL) goto lbl_434;
-
-    half = q >> 1;
-    excess = half - 300ULL;
-    thresh = M2C_FIELD((u8 *)P + 0x100, u16 *, 0xb2);
-    if (excess <= (u64)thresh) goto lbl_434;
-
-    M2C_FIELD((u8 *)P + 0x100, u16 *, 0xb2) = (u16)excess;
-    idx = func_02042a08(a, 0);
-    if (idx != 0xff) {
-        M2C_FIELD(P, s32 *, 0x1d8) |= (1 << idx);
-        if (func_02042a6c(1) != M2C_FIELD(P, s32 *, 0x1d8)) goto lbl_508;
-    }
-
-lbl_434:
-    P = func_02044268();
-    cnt = M2C_FIELD(P, u8 *, 0xd);
-    if (cnt >= 1) {
-        for (i = 1; i <= cnt; i++) {
-            P2 = func_02044268();
-            node = M2C_FIELD((u8 *)P2 + i * 4, s32 *, 0xf4);
-            bit = M2C_FIELD((u8 *)P2 + i, u8 *, 0x2d0);
-            mask = M2C_FIELD(func_02044268(), u32 *, 0x1d8);
-            if ((mask & (1U << bit)) == 0) {
-                if (func_02042310(node, 13) == 0) {
-                    return 0;
-                }
-            }
-        }
-        func_02044278(0xf);
-        goto lbl_508;
-    }
-
-lbl_4c8:
-    if (func_02042310(a, 0xf) == 0) {
-        return 0;
-    }
-    goto lbl_508;
-
-lbl_4d4:
-    P = func_02044268();
-    if (M2C_FIELD(P, s32 *, 0x1a0) == 0x8) {
-        func_02041be0(2);
-        return 1;
-    }
-    goto lbl_508;
-
-lbl_508:
-    return 1;
+s32 func_02042390(s32 arg0,s32 arg1,s32 arg2) {
+void *func_02044268(void);
+s32 func_02038f6c(void);
+void func_02044278(s32);
+void func_02041dd4(s32);
+s32 func_02042310(s32,s32);
+u64 func_02007004(void);
+u64 func_02072088(u64,u64);
+u8 func_02042a08(s32,s32);
+s32 func_02042a6c(s32);
+void func_02041be0(s32);
+u64 now,excess;
+s32 idx,mask,i;
+if(func_02038f6c()!=6)return 1;
+switch(arg1){
+case 13:
+if(M2C_FIELD(func_02044268(),s32*,0x1a0)!=8){func_02044278(8);func_02041dd4(arg2);}
+if(func_02042310(arg0,14)==0)return 0;
+break;
+case 14:
+if(M2C_FIELD(func_02044268(),s32*,0x1a0)==14){
+now=func_02007004();
+if((func_02072088((now-M2C_FIELD(func_02044268(),u64*,0x1e8))<<6,0x82eaULL)>>1)>300ULL){
+excess=(func_02072088((now-M2C_FIELD(func_02044268(),u64*,0x1e8))<<6,0x82eaULL)>>1)-300ULL;
+if(excess>M2C_FIELD(func_02044268(),u16*,0x1b2))M2C_FIELD(func_02044268(),u16*,0x1b2)=excess;
+}
+idx=func_02042a08(arg0,0);
+if(idx!=255)M2C_FIELD(func_02044268(),u32*,0x1d8)|=1U<<idx;
+mask=func_02042a6c(1);
+if(mask==M2C_FIELD(func_02044268(),s32*,0x1d8)){
+for(i=1;i<=M2C_FIELD(func_02044268(),u8*,13);i++){
+if(func_02042310(M2C_FIELD((u8*)func_02044268()+(u32)i*4,s32*,0xf4),15)==0)return 0;
+}
+func_02044278(15);
+}
+}else{
+if(func_02042310(arg0,15)==0)return 0;
+}
+break;
+case 15:
+if(M2C_FIELD(func_02044268(),s32*,0x1a0)==8)func_02041be0(2);
+break;
+}
+return 1;
 }
 
 #pragma opt_strength_reduction off

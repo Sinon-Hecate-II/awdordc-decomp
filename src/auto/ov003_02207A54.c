@@ -301,6 +301,8 @@ ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,24),0);
 ResetSlot(M2C_FIELD(M2C_FIELD(a,void **,0x4c),void **,28),0);
 }
 
+#pragma push
+#pragma scheduling off
 void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
     s32 a, b, c, d;
     s32 i;
@@ -319,8 +321,8 @@ void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
     case 10:
         a = 22;
         b = 27;
-        c = 22;
-        d = 27;
+        c = a;
+        d = b;
         break;
     }
     for (i = 0; i < (s32)*M2C_FIELD(arg0, u8 **, 0x44); i++) {
@@ -341,10 +343,17 @@ void func_ov003_0220828c(void *arg0, s32 arg1, s32 arg2) {
             M2C_FIELD(M2C_FIELD(base, void **, 0x20), u8 *, 0xE) = 1;
         }
     }
-    SetSlotAnim(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x18), (void *)(data_ov003_02210ac4 + a * 12));
-    SetSlotAnim(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x1C), (void *)(data_ov003_02210ac4 + b * 12));
+    {
+        s32 slot;
+        slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x18);
+        M2C_FIELD(slot, s32 *, 4) = (s32)(data_ov003_02210ac4 + a * 12);
+        ResetSlot(slot, 0);
+        slot = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), void **, 0x1C);
+        M2C_FIELD(slot, s32 *, 4) = (s32)(data_ov003_02210ac4 + b * 12);
+        ResetSlot(slot, 0);
+    }
 }
-
+#pragma pop
 void func_ov003_022084f0(void *arg0) {
     M2C_UNK func_020a91a8(s32);
     void func_ov003_02208034(void *);

@@ -586,6 +586,7 @@ void func_0202aa58(void) {
 s32 func_0202aa64(s32 arg0) {
     M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213b2a0;
+    s32 v;
     if (arg0 == 0) {
         return 1;
     }
@@ -593,7 +594,8 @@ s32 func_0202aa64(s32 arg0) {
         return 0;
     }
     func_02008dbc(arg0, 0);
-    M2C_FIELD(&data_0213b2a0, s32 *, 8) |= arg0;
+    v = M2C_FIELD(&data_0213b2a0, s32 *, 8);
+    M2C_FIELD(&data_0213b2a0, s32 *, 8) = v | arg0;
     return 1;
 }
 
@@ -618,8 +620,9 @@ void func_0202aadc(s32 arg0) {
 #pragma opt_common_subs off
 s32 func_0202aaf8(void) {
     extern M2C_UNK data_0213b2a0;
-    u32 mask = 1;
     s32 i;
+    u32 mask;
+    mask = 1;
     for (i = 0; i < 8; i++, mask <<= 1) {
         if (!(M2C_FIELD(&data_0213b2a0, u32 *, 4) & mask)) {
             M2C_FIELD(&data_0213b2a0, u32 *, 4) |= mask;

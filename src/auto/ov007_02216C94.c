@@ -94,9 +94,9 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
     }
 }
 
-M2C_UNK func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *arg3, M2C_UNK *arg4) {
+void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *arg3, M2C_UNK *arg4) {
     s32 func_ov007_02214e24(void);
-    s32 func_ov007_02216234(s16, s16, s16, s16, s32, M2C_UNK *, M2C_UNK *, M2C_UNK *);
+    s32 func_ov007_02216234(s32, s32, s32, s32, s32, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_022167b8(s16, s16, s16, s16, M2C_UNK);
     M2C_UNK func_ov007_0221b8c0(s32, s32);
     M2C_UNK func_ov007_02215704(s32, s32);
@@ -106,9 +106,8 @@ M2C_UNK func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK
     MapPoint sp18, sp14;
     s32 sp10;
     MapScan *map;
-    s8 *data;
-    s32 x;
-    s32 y;
+    register s32 x, y;
+    register s8 *data;
 
     func_ov007_02214e24();
     if (func_ov007_02216234(((MapPoint *)arg0)->x, ((MapPoint *)arg0)->y, ((MapPoint *)arg1)->x, ((MapPoint *)arg1)->y, 4, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
@@ -123,13 +122,13 @@ M2C_UNK func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK
         }
     }
 
+    y = 0;
     map = (MapScan *)*gCurrentMap;
     if ((s32)map->height <= 0) return;
     data = data_ov007_02221a84;
-    y = 0;
     do {
         map = (MapScan *)*gCurrentMap;
-        x = y;
+        x = 0;
         if ((s32)map->width > 0) {
             do {
                 if (data[x] == 2) {
@@ -178,7 +177,8 @@ s32 func_ov007_02217318(void *arg0, void *arg1, s16 *arg2) {
         if (ax < bx) { lx = ax; ax += 10; }
         else { lx = ax - 10; }
     }
-    by = pb->y, ay = pa->y;
+    by = ((volatile MapPoint *)pb)->y;
+    ay = ((volatile MapPoint *)pa)->y;
     d = ay - by;
     if (d < 0) d = -d;
     if ((u32) d < 5U) {
@@ -339,7 +339,7 @@ void func_ov007_02217a5c(void) {
     M2C_UNK func_ov007_02216a74();
     M2C_UNK func_ov007_02216bf4();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov007_02217110(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
+    void func_ov007_02217110(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217608(void);
     M2C_UNK func_ov007_02217680();

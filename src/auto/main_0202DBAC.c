@@ -62,12 +62,7 @@ s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s
     func_0202eed8((u8 *)p + 0xE8, 0x7F00, 1);
 
     c0 = M2C_FIELD(p, u8 *, 0xC0);
-    active = 0;
-    if (c0 != 0) {
-        if (c0 == 1 || c0 == 2) {
-            active = 1;
-        }
-    }
+    switch (c0) { case 0: active = 0; break; case 1: case 2: active = 1; break; }
 
     cap = M2C_FIELD(p, u8 *, 0xC2);
     if (*(u8 *)((u8 *)pb + 7) & 0x1) {
@@ -76,7 +71,7 @@ s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s
     if (cap > M2C_FIELD(p, u8 *, 0x124)) {
         cap = M2C_FIELD(p, u8 *, 0x124);
     }
-    M2C_FIELD(p, u32 *, 0x110) = (M2C_FIELD(p, u32 *, 0x110) & ~0x40) | ((cap == 1) ? 0x40 : 0);
+    M2C_FIELD(p, u32 *, 0x110) = (M2C_FIELD(p, u32 *, 0x110) & ~0x40) | ((u32)((cap == 1) << 31) >> 25);
 
     if (func_0202df70(p, cap, (s32)((u8 *)p + 0x126)) == 0) {
         M2C_FIELD(p, void (**)(void *), 0x168)(p);

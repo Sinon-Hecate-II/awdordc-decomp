@@ -26,10 +26,14 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
     u8 sp40[64];
     u8 sp0[64];
     s32 var_r2;
-    s32 var_r3;
     s32 var_r5;
+    u8 *var_r1;
+    u8 *var_r1_2;
+    u8 *var_r2_2;
     u8 *var_r6;
+    s32 var_r3_2;
     u8 temp_r0;
+    u8 temp_r0_2;
 
     var_r5 = arg4;
     var_r6 = arg3;
@@ -43,14 +47,19 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
         }
         var_r2 = 0;
         if (var_r5 > 0) {
+            var_r1 = &sp40[0];
             do {
-                sp40[var_r2] = var_r6[var_r2] ^ 0x36;
+                temp_r0 = var_r6[var_r2];
                 var_r2 += 1;
+                *var_r1 = temp_r0 ^ 0x36;
+                var_r1 += 1;
             } while (var_r2 < var_r5);
         }
         if (var_r2 < (s32) M2C_FIELD(arg5, s32 *, 4)) {
+            var_r1 = &sp40[var_r2];
             do {
-                sp40[var_r2] = 0x36;
+                *var_r1 = 0x36;
+                var_r1 += 1;
                 var_r2 += 1;
             } while (var_r2 < (s32) M2C_FIELD(arg5, s32 *, 4));
         }
@@ -58,18 +67,23 @@ void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5)
         M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), &sp40[0], M2C_FIELD(arg5, s32 *, 4));
         M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), arg1, arg2);
         M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *), 0x18)(M2C_FIELD(arg5, s32 *, 8), M2C_FIELD(arg5, u8 **, 0xC));
-        var_r3 = 0;
+        var_r3_2 = 0;
         if (var_r5 > 0) {
+            var_r1_2 = &sp0[0];
             do {
-                sp0[var_r3] = var_r6[var_r3] ^ 0x5C;
-                var_r3 += 1;
-            } while (var_r3 < var_r5);
+                temp_r0_2 = var_r6[var_r3_2];
+                var_r3_2 += 1;
+                *var_r1_2 = temp_r0_2 ^ 0x5C;
+                var_r1_2 += 1;
+            } while (var_r3_2 < var_r5);
         }
-        if (var_r3 < (s32) M2C_FIELD(arg5, s32 *, 4)) {
+        if (var_r3_2 < (s32) M2C_FIELD(arg5, s32 *, 4)) {
+            var_r2_2 = &sp0[var_r3_2];
             do {
-                sp0[var_r3] = 0x5C;
-                var_r3 += 1;
-            } while (var_r3 < (s32) M2C_FIELD(arg5, s32 *, 4));
+                *var_r2_2 = 0x5C;
+                var_r2_2 += 1;
+                var_r3_2 += 1;
+            } while (var_r3_2 < (s32) M2C_FIELD(arg5, s32 *, 4));
         }
         M2C_FIELD(arg5, M2C_UNK (**)(s32), 0x10)(M2C_FIELD(arg5, s32 *, 8));
         M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), &sp0[0], M2C_FIELD(arg5, s32 *, 4));
@@ -170,7 +184,7 @@ func_02009e40(6,&func_0200d2c4);
 
 #pragma opt_propagation off
 s32 func_0200d5bc(u16 *p) {
-    s32 func_0200da04(void *,u16,u16,u8,s32,s32,s32,s32,s32);
+    s32 func_0200da04(void *,u16,u16,u16,u16,u16,u16,u16,u16);
     volatile void *base = (volatile void *)0x027ffc80;
     u16 a = M2C_FIELD(base, u16 *, 0x58);
     u16 b = M2C_FIELD(base, u16 *, 0x5a);
@@ -281,73 +295,62 @@ u16 func_0200d9f4(void) {
     return M2C_FIELD(&data_0212fc70, u16 *, 0x10);
 }
 
-s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u8 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
+#pragma opt_instruction_scheduling off
+s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8) {
     s32 func_0200751c(void);
     void func_02007530(s32);
+    volatile s16 *p = (volatile s16 *)arg0;
     s32 saved;
+    s32 c;
+    s32 r;
+    s32 sy;
+    s32 dy;
 
-    if (arg1 >= 0x1000U || arg2 >= 0x1000U || arg5 >= 0x1000 || arg6 >= 0x1000) {
-        return 1;
-    }
-    if (arg3 >= 0x100U || arg7 >= 0x100 || arg4 >= 0xC0 || arg8 >= 0xC0) {
-        return 1;
-    }
-    if (!(arg3 != arg7 && arg4 != arg8 && arg1 != arg5 && arg2 != arg6)) {
-        return 1;
-    }
+    if (arg1 >= 0x1000 || arg2 >= 0x1000 || arg5 >= 0x1000 || arg6 >= 0x1000) return 1;
+    if (arg3 >= 0x100 || arg7 >= 0x100 || arg4 >= 0xC0 || arg8 >= 0xC0) return 1;
+    if (arg3 == arg7 || arg4 == arg8 || arg1 == arg5 || arg2 == arg6) return 1;
 
     saved = func_0200751c();
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = (s32)((arg1 - arg5) << 8);
-    *(volatile s32 *)0x04000298 = (s32)(arg3 - arg7);
-    *(volatile s32 *)0x0400029C = 0;
+    *(volatile s64 *)0x04000298 = (u32)(arg3 - arg7);
+    dy = (s32)(arg2 - arg6);
+    sy = (s32)(arg4 - arg8);
     while (*(volatile u16 *)0x04000280 & 0x8000) {
     }
-    {
-        s32 vert = (s32)((arg2 - arg6) << 8);
-        s32 old = *(volatile s32 *)0x040002A0;
-        *(volatile u16 *)0x04000280 = 0;
-        *(volatile s32 *)0x04000290 = vert;
-        *(volatile s32 *)0x04000298 = (s32)(arg4 - arg8);
-        *(volatile s32 *)0x0400029C = 0;
-        if (old >= 0x8000 || old < -0x8000) {
-            func_02007530(saved);
-            return 1;
-        }
-        *(volatile s16 *)((u8 *)arg0 + 4) = (s16)old;
-        {
-            s32 reload = *(volatile s16 *)((u8 *)arg0 + 4);
-            s32 comp = (s32)((arg1 + arg5) << 8) - reload * (arg3 + arg7);
-            comp = (comp << 9) >> 16;
-            if (comp >= 0x8000 || comp < -0x8000) {
-                func_02007530(saved);
-                return 1;
-            }
-            *(volatile s16 *)((u8 *)arg0 + 0) = (s16)comp;
-        }
-    }
-    while (*(volatile u16 *)0x04000280 & 0x8000) {
-    }
-    {
-        s32 old2 = *(volatile s32 *)0x040002A0;
+    r = *(volatile s32 *)0x040002A0;
+    *(volatile u16 *)0x04000280 = 0;
+    *(volatile s32 *)0x04000290 = dy << 8;
+    *(volatile s64 *)0x04000298 = (u32)sy;
+    if (r >= 0x8000 || r < -0x8000) {
         func_02007530(saved);
-        if (old2 >= 0x8000 || old2 < -0x8000) {
-            return 1;
-        }
-        *(s16 *)((u8 *)arg0 + 6) = (s16)old2;
-        {
-            s32 reload = *(s16 *)((u8 *)arg0 + 6);
-            s32 comp2 = (s32)((arg2 + arg6) << 8) - reload * (arg4 + arg8);
-            comp2 = (comp2 << 9) >> 16;
-            if (comp2 >= 0x8000 || comp2 < -0x8000) {
-                return 1;
-            }
-            *(s16 *)((u8 *)arg0 + 2) = (s16)comp2;
-        }
+        return 1;
     }
+    p[2] = (s16)r;
+    c = (s32)((arg1 + arg5) << 8) - p[2] * (s32)(arg3 + arg7);
+    c = (c << 9) >> 16;
+    if (c >= 0x8000 || c < -0x8000) {
+        func_02007530(saved);
+        return 1;
+    }
+    p[0] = (s16)c;
+    while (*(volatile u16 *)0x04000280 & 0x8000) {
+    }
+    r = *(volatile s32 *)0x040002A0;
+    func_02007530(saved);
+    if (r >= 0x8000 || r < -0x8000) {
+        return 1;
+    }
+    p[3] = (s16)r;
+    c = (s32)((arg2 + arg6) << 8) - p[3] * (s32)(arg4 + arg8);
+    c = (c << 9) >> 16;
+    if (c >= 0x8000 || c < -0x8000) {
+        return 1;
+    }
+    p[1] = (s16)c;
     return 0;
 }
-
+#pragma opt_instruction_scheduling reset
 extern s32 data_0212fc8c[];
 extern s32 p[];
 void func_0200dbf0(u16 *a,u16 *b) {

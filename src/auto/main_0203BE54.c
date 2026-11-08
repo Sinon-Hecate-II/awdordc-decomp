@@ -279,11 +279,14 @@ void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     p = func_02044268();
     M2C_FIELD(p, s32 *, 0x344) = b;
 
-    if (b != 0) {
+    if (b == 0) goto error;
+    {
         if (b < (s32)c && d == 0) {
             s32 *gp = M2C_FIELD(&data_0213d39c, s32 *, 0);
-            if (gp != 0 && *(u8 *)gp != 0) {
+            if (gp == 0 || *(u8 *)gp == 0) goto error;
+            {
                 if (b < (s32)(((u8 *)gp)[1]) - 1) {
+error:
                     func_0203dc38(10, 0);
                     goto done;
                 }
@@ -300,11 +303,13 @@ void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
             res = func_020613dc(M2C_FIELD(p2, s32 *, 0x2F4), M2C_FIELD(p3, s32 *, 0x2F4), M2C_FIELD(p4, s32 *, 0x2F8), 0,
                                  0x14, 1, 0, &func_020432d4, 0);
             M2C_FIELD(p1, s32 *, 0xE4) = res;
+        }
             p = func_02044268();
             if (M2C_FIELD(p, s32 *, 0xE4) == 0) {
                 if (func_02043008(5) != 0) {
                     goto done;
                 }
+            }
                 func_0200567c(sp34, 12, &data_020fc908, c);
                 func_02037d78(&data_020fc90c, sp34, sp14, 0x2F);
                 func_02037db0(&data_020fc918, (d != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
@@ -314,8 +319,6 @@ void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
                 if (func_02042f94() != 0) {
                     goto done;
                 }
-            }
-        }
     }
 
     p = func_02044268();

@@ -14,15 +14,14 @@ s32 func_02024260(void *arg0) {
     extern void (*data_021372d0[])(void *);
     extern s32 data_02138cc0[2];
 
-    register void *r9 asm("r9");
-    register void *q asm("r4");
-    register void *node asm("r7");
-    register s32 nodeSize asm("r8");
-    register void *buf asm("r5");
-    register u8 *cur asm("r6");
+    register void *q, *buf;
+    register u8 *cur;
+    register void *node;
+    register s32 nodeSize;
+    register void *r9;
     u32 rnd;
     s32 h;
-    s32 r3;
+    u32 r3;
     s32 t2, t1;
     s32 total, payload;
 
@@ -57,19 +56,20 @@ s32 func_02024260(void *arg0) {
     if (M2C_FIELD(q, u8 *, 0x30) != 0) {
         func_02008048((s32)((u8 *)q + 0x74), (void *)((u8 *)buf + 0x2C), 0x20);
         M2C_FIELD(q, u8 *, 0x31) = 1;
+        cur = (u8 *)buf + 0x4C;
     } else {
         func_020240c0((u8 *)buf + 0x2C, 0x1C);
+        cur = (u8 *)buf + 0x4C;
         r3 = data_02138cc0[1];
         M2C_FIELD(buf, u8 *, 0x48) = (u8)(r3 >> 24);
         M2C_FIELD(buf, u8 *, 0x49) = (u8)(r3 >> 16);
         M2C_FIELD(buf, u8 *, 0x4A) = (u8)(r3 >> 8);
-        func_02008048((s32)((u8 *)buf + 0x2C), (void *)((u8 *)q + 0x74), 0x20);
         M2C_FIELD(buf, u8 *, 0x4B) = (u8)r3;
-        data_02138cc0[1] = data_02138cc0[1] + 1;
+        func_02008048((s32)(cur - 0x20), (void *)((u8 *)q + 0x74), 0x20);
+        t2 = data_02138cc0[1];
         M2C_FIELD(q, u8 *, 0x31) = 0;
+        data_02138cc0[1] = t2 + 1;
     }
-
-    cur = (u8 *)buf + 0x4C;
 
     h = M2C_FIELD(q, u16 *, 0x32);
     M2C_FIELD(cur, u8 *, 0) = (u8)(h >> 8);
@@ -77,8 +77,8 @@ s32 func_02024260(void *arg0) {
     M2C_FIELD(cur, u8 *, 1) = (u8)h;
     M2C_FIELD(cur, u8 *, 2) = 0;
 
+    cur += 3;
     if (M2C_FIELD(q, u8 *, 0x31) == 0) {
-        cur += 3;
         if (nodeSize != 0) {
             t2 = nodeSize + 6;
             M2C_FIELD(cur, u8 *, 0) = 0x0B;
@@ -101,8 +101,6 @@ s32 func_02024260(void *arg0) {
         M2C_FIELD(cur, u8 *, 2) = 0;
         M2C_FIELD(cur, u8 *, 3) = 0;
         cur += 4;
-    } else {
-        cur += 3;
     }
 
     total = (s32)((u8 *)cur - (u8 *)buf);

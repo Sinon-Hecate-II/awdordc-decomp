@@ -78,6 +78,7 @@ M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),u64 *,40)=func_02007004();
 func_020328ac(buf,n);
 }
 
+#pragma opt_strength_reduction off
 void func_0203a2b4(void) {
     extern M2C_UNK data_0213d380;
     s32 func_02032b98(void);
@@ -99,6 +100,7 @@ void func_0203a2b4(void) {
 
     u8 buf[0x3D0];
     s32 n, r;
+    void *context;
     u64 now, stored, diff, q;
 
     r = func_02032b98();
@@ -110,9 +112,10 @@ void func_0203a2b4(void) {
         func_020376d8(0, M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), M2C_UNK *, 0x24), 0);
         M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), M2C_UNK *, 0x24) = 0;
         if (func_02032370(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), void **, 0x1C))) {
-            M2C_FIELD(&data_0213d380, void (**)(void *, void *), 8)(
+            M2C_FIELD(&data_0213d380, void (**)(void *, void *, s32), 8)(
                 (void *)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x48),
-                (void *)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x148));
+                (void *)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x148),
+                M2C_FIELD(&data_0213d380,s32 *,0));
         } else {
             func_0203a04c(
                 (M2C_UNK)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x48),
@@ -142,12 +145,13 @@ void func_0203a2b4(void) {
             func_02008048(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x10), buf, n * 2 + 2);
             func_02068c50(buf + 0x34, (M2C_UNK)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x251));
             *(M2C_UNK *)(buf + 0x40) = (M2C_UNK)func_02037694;
+            context = M2C_FIELD(&data_0213d380,void **,4);
             *(M2C_UNK *)(buf + 0x44) = (M2C_UNK)func_020376d8;
-            func_020328ac(buf, M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), M2C_UNK *, 0x24));
+            func_020328ac(buf, M2C_FIELD(context, M2C_UNK *, 0x24));
         }
     }
 }
-
+#pragma opt_strength_reduction reset
 void func_0203a4bc(s32 a,void *b) {
 extern M2C_UNK data_0213d380;
 void func_0203211c(void *,s32,void *); M2C_UNK func_0204ddd4(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32); void func_0204deb0(s32,s32,void *); s32 func_02039e88(void); void func_0204dcd8(s32); void func_0203a0e8(void *,s32); s32 func_02068d98(s32,M2C_UNK *); void func_0203248c(void *,void *,s32);

@@ -397,6 +397,8 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     func_ov003_02200dc8(arg0, 8);
 }
 
+#pragma push
+#pragma opt_propagation on
 void func_ov003_02201c78(void *arg0, s32 arg1) {
     void *func_02087d84(void *, s32, s16, s16, s32, s32);
     void func_02088da8(void *);
@@ -417,12 +419,12 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     u16 temp_r7_2;
     s32 temp_r0_2;
     s32 var_r0_2;
-    u8 var_r8;
-    s32 zero7;
-    s32 eight;
-    s32 val15c;
-    s32 three;
     s32 zero4;
+    s32 three;
+    s32 val15c;
+    s32 eight;
+    s32 zero7;
+    u8 var_r8;
     void *temp_r1;
     void *temp_r0ptr;
 
@@ -472,14 +474,14 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     do {
         temp_r0ptr = func_020ab1c4(arg1);
         temp_r1 = (void *)((u8 *)arg0 + (var_r8 * 4));
-        M2C_FIELD(temp_r1, void **, 8) = temp_r0ptr;
-        func_020aab24(M2C_FIELD(temp_r1, void **, 8), eight, val15c, three, zero7);
-        func_02088da8(M2C_FIELD(temp_r1, void **, 8));
+        M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8) = temp_r0ptr;
+        func_020aab24(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8), eight, val15c, three, zero7);
+        func_02088da8(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8));
         temp_r0ptr = func_020ab1c4(arg1);
-        M2C_FIELD(temp_r1, void **, 0x28) = temp_r0ptr;
-        func_020aab24(M2C_FIELD(temp_r1, void **, 0x28), 9, 0x164, 3, zero4);
-        func_02088da8(M2C_FIELD(temp_r1, void **, 0x28));
+        M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28) = temp_r0ptr;
+        func_020aab24(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28), 9, 0x164, 3, zero4);
+        func_02088da8(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28));
         var_r8 += 1;
     } while ((u32)var_r8 < 8U);
 }
-
+#pragma pop

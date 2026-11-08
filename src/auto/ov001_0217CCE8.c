@@ -217,9 +217,9 @@ void func_ov001_0217d46c(void) {
     extern u8 data_ov001_0218f93b[];
     extern u8 data_ov001_0218f910[];
     extern u8 data_ov001_0218f925[];
-    extern M2C_UNK data_ov001_02190804, data_ov001_02190818, data_ov001_02190830;
+    extern M2C_UNK data_ov001_02190804, data_ov001_02190818, data_ov001_02190830, data_ov001_02190848;
     extern M2C_UNK data_ov001_02193dac;
-    extern M2C_UNK func_02004160, func_0200472c, func_020046cc, func_020040b4;
+    extern M2C_UNK func_02004160, func_0200472c, func_020046cc, func_020040b4, func_020044ec;
     typedef struct { u8 bytes[23]; } Buf23;
     typedef struct { u8 bytes[21]; } Buf21;
     typedef struct { u8 bytes[22]; } Buf22;
@@ -227,14 +227,14 @@ void func_ov001_0217d46c(void) {
     Buf21 buf21 = *(Buf21 *)data_ov001_0218f910;
     Buf22 buf22 = *(Buf22 *)data_ov001_0218f925;
 
-    M2C_FIELD((void *)0x0400000C, u16 *, 0) =
-        (M2C_FIELD((void *)0x0400000C, u16 *, 0) & 0x43) | 0x218 | 0xC00;
+    M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) =
+        (M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) & 0x43) | 0x218 | 0xC00;
 
     func_ov001_02171d90(&data_ov001_02190804, &func_02004160);
     func_ov001_02171d90(&data_ov001_02190818, &func_0200472c);
     func_ov001_02171d90(&data_ov001_02190830, &func_020046cc);
     func_ov001_02171d90((void *)&buf21, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_02193dac, (void *)0x04001008);
+    func_ov001_02171d90(&data_ov001_02190848, &func_020044ec);
 
     M2C_FIELD(M2C_FIELD(&data_ov001_02193dac, void **, 8), M2C_UNK *, 8) =
         func_ov001_02189dc8(func_ov001_02171d30((void *)&buf23), 0, 4);
@@ -245,12 +245,12 @@ void func_ov001_0217d46c(void) {
     M2C_FIELD(M2C_FIELD(&data_ov001_02193dac, void **, 8), M2C_UNK *, 16) =
         func_ov001_02189dc8(func_ov001_02171d30((void *)&buf22), 0, 4);
 
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
-    M2C_FIELD((void *)0x04000008, u16 *, 0) = (M2C_FIELD((void *)0x04000008, u16 *, 0) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 2;
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 4) = (M2C_FIELD((void *)0x0400000A, u16 *, 4) & ~3) | 2;
+    M2C_FIELD((void *)0x04001008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x04001008, volatile u16 *, 2) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 2) & ~3) | 3;
+    M2C_FIELD((void *)0x04000008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04000008, volatile u16 *, 0) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000A, volatile u16 *, 0) = (M2C_FIELD((void *)0x0400000A, volatile u16 *, 0) & ~3) | 2;
+    M2C_FIELD((void *)0x0400000A, volatile u16 *, 2) = (M2C_FIELD((void *)0x0400000A, volatile u16 *, 2) & ~3) | 3;
+    M2C_FIELD((void *)0x0400000A, volatile u16 *, 4) = (M2C_FIELD((void *)0x0400000A, volatile u16 *, 4) & ~3) | 2;
 }
 
 void func_ov001_0217d680(void) {

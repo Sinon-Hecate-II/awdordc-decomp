@@ -202,62 +202,54 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     func_01ffb554((u8 *)base + 0xE30 + 0x1000);
     return 0;
 }
-#pragma opt_propagation on
+#pragma opt_propagation off
 s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
     s32 func_ov000_021a9860(s32, s32);
     s32 func_ov000_0217bdb4(s32, s32);
     extern void **gCurrentMap;
 
-    s32 r9 = a0;
-    s32 r10 = a2;
     s32 bestScore = -1;
+    s32 bestX;
     s32 bestY = -1;
-    s32 bestX = -1;
     s32 lowX;
-    s32 lowY;
+    register s32 lowY;
     void *map;
-    s32 highX;
+    register s32 highX;
     s32 highY;
     s32 x;
     s32 y;
 
     (void)a4;
 
-    lowX = r9 - r10;
+    bestX=-1;
+    lowX = a0 - a2;
     if (lowX < 0) lowX = 0;
-    lowY = a1 - r10;
+    lowY = a1 - a2;
     if (lowY < 0) lowY = 0;
 
     map = *gCurrentMap;
-    bestX = -1;
 
-    highX = r9 + r10;
-    {
-        s32 w = *((u16 *)((u8 *)map + 0x5144)) - 1;
-        if (highX > w) highX = w;
-    }
-    highY = a1 + r10;
-    {
-        s32 h = *((u16 *)((u8 *)map + 0x5146)) - 1;
-        if (highY > h) highY = h;
-    }
-
-    if (lowY > highY) goto done;
+    highX = *((u16 *)((u8 *)map + 0x5144)) - 1;
+    if (a0+a2 < highX) highX=a0+a2;
+    highY = *((u16 *)((u8 *)map + 0x5146)) - 1;
+    if (a1+a2 < highY) highY=a1+a2;
 
     for (y = lowY; y <= highY; y++) {
-        for (x = lowX; x <= highX; x++) {
-            s32 dx = r9 - x;
+        x=lowX;
+        if(x<=highX) do {
+            s32 dx = a0 - x;
             s32 dy;
             s32 dist;
 
-            if (dx <= 0) dx = x - r9;
+            if (dx <= 0) dx = x - a0;
             dy = a1 - y;
-            dist = dx;
+            dist = 0;
+            dist = dx + dist;
             if (dy > 0) dist += dy; else dist += y - a1;
-            if (dist < 0) continue;
-            if (dist > r10) continue;
+            if (dist < 0) goto next;
+            if (dist > a2) goto next;
 
-            if (!func_ov000_021a9860(x, y)) continue;
+            if (!func_ov000_021a9860(x, y)) goto next;
 
             map = *gCurrentMap;
             {
@@ -265,7 +257,7 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
                 s8 terrain = *((s8 *)((u8 *)map + x + rowOff + 0x1928));
                 u8 attr = *((u8 *)((u8 *)map + terrain * 6 + 0x6c63));
                 if (attr != 0) {
-                    if (func_ov000_0217bdb4(x, y) != 0) continue;
+                    if (func_ov000_0217bdb4(x, y) != 0) goto next;
                 }
             }
 
@@ -279,10 +271,10 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
                 switch (idx) {
                     case 0: score = 5; break;
                     case 2: score = 4; break;
+                    case 9: score = 3; break;
                     case 3: score = 2; break;
                     case 4: score = 1; break;
                     case 7: score = 1; break;
-                    case 9: score = 3; break;
                     default: score = 0; break;
                 }
 
@@ -292,7 +284,9 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
                     bestY = y;
                 }
             }
-        }
+        next:
+        x++;
+        }while(x<=highX);
     }
 
  done:
@@ -301,7 +295,7 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
     a3[1] = (s16)bestY;
     return 1;
 }
-#pragma opt_common_subs reset
+#pragma opt_propagation on
 s32 func_ov000_0217c2d4(u8 *arg0) {
 s32 func_01ffada0(s32,s32,s32,s32,s32); s32 func_ov000_021a9860(s32,s32); extern void **gCurrentMap;
 s32 x,y; void *base;

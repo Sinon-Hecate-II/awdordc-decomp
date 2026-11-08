@@ -164,14 +164,12 @@ void func_020258ac(void *arg0, u32 *arg1, u32 arg2) {
 
 #pragma opt_peephole off
 void func_020258f0(u32 *arg0,u8 *arg1,u32 arg2) {
-u32 i=0,value; u8 *p; u8 last;
+u32 i=0,value;
 if(i>=arg2)return;
 do {
-p=arg1+i;
-last=p[3];
-value=(p[1]<<16)|(arg1[i]<<24)|(p[2]<<8);
+value=(arg1[i+1]<<16)|(arg1[i]<<24)|(arg1[i+2]<<8)|arg1[i+3];
 i+=4;
-*arg0++=last|value;
+*arg0++=value;
 }while(i<arg2);
 }
 #pragma opt_peephole reset

@@ -84,8 +84,8 @@ if(n<=value)return 1;break;
 return 0;
 }
 
-void func_ov007_02215254(s32 arg0, s32 arg1, s16 arg2) {
-    s8 func_0207efb4(s16);
+void func_ov007_02215254(s32 arg0, s32 arg1, s32 arg2) {
+    s8 func_0207efb4(s32);
     extern s32 *gCurrentMap;
     s32 temp_ip;
     s32 temp_r6;
@@ -162,59 +162,58 @@ s32 func_ov007_02215704(s32 x, s32 y) {
     return 0;
 }
 
+#pragma push
+#pragma opt_common_subs on
 Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 RandomIntRange(s32, s32);
-    s32 scale;
-    s32 placed;
-    s32 tries;
-    s32 rx;
-    s32 ry;
+    register s32 rx, base, placed, tries;
+    s32 ry, scale;
     Map14E24 *m;
     u16 t;
 
     scale = arg2 * 5;
 
-    func_ov007_02215254(arg0, arg1, (s16)(scale + 0x1c0));
+    func_ov007_02215254(arg0, arg1, scale + 0x1c0);
 
-    placed = 0;
     tries = 0;
-    for (placed = 0; placed < arg3; placed++) {
-        s32 base;
-        base = scale + 0xc1;
+    placed = tries;
+    if (placed < arg3) {
+        base = scale;
+        do {
         rx = RandomIntRange(arg0 - 2, arg0 + 2);
         ry = RandomIntRange(arg1 - 2, arg1 + 2);
-        if (rx < 0) { placed--; continue; }
-        m = (Map14E24 *)*gCurrentMap;
-        if (rx >= m->width) { placed--; continue; }
-        if (ry < 0) { placed--; continue; }
-        if (ry >= m->height) { placed--; continue; }
+        if (rx < 0 || (m = (Map14E24 *)*gCurrentMap, rx >= m->width) || ry < 0 || ry >= m->height) { placed--; goto first_next; }
         t = m->cells[rx + m->rows[ry]];
-        if (t != 1 || ry < 0 || ry >= m->height || rx < 0 || rx >= m->width) {
+        if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
+            func_ov007_02215254(rx, ry, base + 0x1c1);
+        } else {
             tries++;
-            if (tries > 100) { placed--; break; }
             placed--;
-            continue;
+            if (tries > 100) break;
         }
-        func_ov007_02215254(rx, ry, (s16)(base + 0x100));
+first_next:
+        placed++;
+        } while (placed < arg3);
     }
 
-    placed = 0;
     tries = 0;
-    {
-        s32 base = scale + 0xc3;
-        for (placed = 0; placed < arg4; placed++) {
+    placed = tries;
+    if (placed < arg4) {
+        base = scale + 0x1c3;
+        do {
             rx = RandomIntRange(arg0 - 2, arg0 + 2);
             ry = RandomIntRange(arg1 - 2, arg1 + 2);
             m = (Map14E24 *)*gCurrentMap;
             t = m->cells[rx + m->rows[ry]];
-            if (t != 1 || ry < 0 || ry >= m->height || rx < 0 || rx >= m->width) {
+            if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
+                func_ov007_02215254(rx, ry, base);
+            } else {
                 tries++;
-                if (tries > 100) { placed--; break; }
                 placed--;
-                continue;
+                if (tries > 100) break;
             }
-            func_ov007_02215254(rx, ry, (s16)(base + 0x100));
-        }
+            placed++;
+        } while (placed < arg4);
     }
 
     {
@@ -224,8 +223,7 @@ Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
         return result;
     }
 }
-
-#pragma opt_common_subs on
+#pragma pop
 Point15A0C func_ov007_02215a0c(s32 a,s32 b,s32 c) {
 s32 RandomIntRange(s32,s32);Point15A0C func_ov007_022157fc(s32,s32,s32,s32,s32);
 s32 tries=0,i,j;s32 *map;s32 x,y,yy,xx;Point15A0C result;

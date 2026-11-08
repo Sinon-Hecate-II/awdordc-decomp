@@ -17,7 +17,7 @@ void func_0200bda4(s32 arg0) {
     extern M2C_UNK data_0212fbfc;
     extern M2C_UNK data_0212fc14;
     extern u32 data_020f5220;
-    register u32 *base asm("r4") = (u32 *)0x27ffc40;
+    register u32 *base = (u32 *)0x27ffc40;
 
     M2C_FIELD(&data_0212fbfc, s32 *, 4) = arg0;
     M2C_FIELD(&data_0212fbfc, s32 *, 0) = func_0200558c();
@@ -462,16 +462,16 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
     func_02008048(src, buf, size);
 }
 
-#pragma opt_strength_reduction off
+#pragma opt_propagation off
+#pragma opt_common_subs off
 void func_0200cb6c(void *arg0, void *arg1) {
     extern void (*data_020f53f4)(void *, void *, u32);
     void func_02007e54(u32, void *, s32);
-    u32 *w;
-    u8 *buf;
+    register u32 *w;
+    register u8 *buf;
     u8 *out;
+    register s32 i;
     s32 orig;
-    s32 count;
-    s32 i;
     u32 lo;
     u32 hi;
     u32 h0;
@@ -481,37 +481,33 @@ void func_0200cb6c(void *arg0, void *arg1) {
     u32 h4;
 
     w = (u32 *)((u8 *)arg0 + 0x20);
-    buf = (u8 *)arg0 + 0x20;
-    out = (u8 *)arg1;
+        out = (u8 *)arg1;
     orig = *(s32 *)((u8 *)arg0 + 0x1c);
+    i = orig >> 2;
 
     if ((orig & 3) == 0) {
-        w[orig >> 2] = 0;
+        w[i] = 0;
     }
-    count = orig;
-    buf[count] = 0x80;
-    count = count + 1;
-    while (count & 3) {
-        buf[count] = 0;
-        count = count + 1;
+    buf = (u8 *)arg0 + 0x20;
+    
+    buf[orig] = 0x80;
+    orig = orig + 1;
+    while (orig & 3) {
+        buf[orig] = 0;
+        orig = orig + 1;
     }
-    i = (orig >> 2) + 1;
-    if (orig >= 0x38) {
+    i++;
+    if (*(s32 *)((u8 *)arg0 + 0x1c) >= 0x38) {
         while (i < 16) {
             w[i] = 0;
             i = i + 1;
         }
-        data_020f53f4(arg0, buf, 0x40);
+        data_020f53f4(arg0, w, 0x40);
         i = 0;
-        while (i < 14) {
-            w[i] = 0;
-            i = i + 1;
-        }
-    } else {
-        while (i < 16) {
-            w[i] = 0;
-            i = i + 1;
-        }
+    }
+    while (i < 14) {
+        w[i] = 0;
+        i++;
     }
     lo = *(u32 *)((u8 *)arg0 + 0x14);
     buf[0x3f] = (u8)lo;
@@ -523,30 +519,30 @@ void func_0200cb6c(void *arg0, void *arg1) {
     buf[0x3a] = (u8)(hi >> 8);
     buf[0x39] = (u8)(hi >> 16);
     buf[0x38] = (u8)(hi >> 24);
-    data_020f53f4(arg0, buf, 0x40);
+    data_020f53f4(arg0, w, 0x40);
 
     h0 = *(u32 *)((u8 *)arg0 + 0x00);
-    h1 = *(u32 *)((u8 *)arg0 + 0x04);
-    h2 = *(u32 *)((u8 *)arg0 + 0x08);
-    h3 = *(u32 *)((u8 *)arg0 + 0x0c);
-    h4 = *(u32 *)((u8 *)arg0 + 0x10);
 
     out[0] = (u8)(h0 >> 24);
     out[1] = (u8)(h0 >> 16);
     out[2] = (u8)(h0 >> 8);
     out[3] = (u8)h0;
+    h1 = *(u32 *)((u8 *)arg0 + 0x04);
     out[4] = (u8)(h1 >> 24);
     out[5] = (u8)(h1 >> 16);
     out[6] = (u8)(h1 >> 8);
     out[7] = (u8)h1;
+    h2 = *(u32 *)((u8 *)arg0 + 0x08);
     out[8] = (u8)(h2 >> 24);
     out[9] = (u8)(h2 >> 16);
     out[10] = (u8)(h2 >> 8);
     out[11] = (u8)h2;
+    h3 = *(u32 *)((u8 *)arg0 + 0x0c);
     out[12] = (u8)(h3 >> 24);
     out[13] = (u8)(h3 >> 16);
     out[14] = (u8)(h3 >> 8);
     out[15] = (u8)h3;
+    h4 = *(u32 *)((u8 *)arg0 + 0x10);
     out[16] = (u8)(h4 >> 24);
     out[17] = (u8)(h4 >> 16);
     out[18] = (u8)(h4 >> 8);
@@ -555,4 +551,5 @@ void func_0200cb6c(void *arg0, void *arg1) {
     *(u32 *)((u8 *)arg0 + 0x1c) = 0;
     func_02007e54(0, (void *)&arg0, 4);
 }
-#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
+#pragma opt_propagation reset
