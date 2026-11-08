@@ -1,7 +1,7 @@
 /* 37 functions from 0x02183A20 to 0x02184960 (ov001), found by ds-decomp. */
 #include "common.h"
 
-#pragma opt_common_subs off
+#pragma optimization_level 2
 void func_ov001_02183a20(void) {
     s32 func_ov001_02183d80(void);
     void func_ov001_02183cec(s8);
@@ -22,7 +22,7 @@ void func_ov001_02183a20(void) {
                 return;
             }
             r = func_ov001_02183d80();
-            switch ((u32)r) {
+            switch (r) {
                 case 0:
                     break;
                 case 1: {
@@ -86,7 +86,7 @@ void func_ov001_02183a20(void) {
             return;
     }
 }
-#pragma opt_common_subs reset
+#pragma optimization_level 4
 void func_ov001_02183ba4(void) {
     s32 func_ov001_0218bb6c(M2C_UNK *);
     void func_ov001_0218bd64(M2C_UNK *);
@@ -429,82 +429,72 @@ void func_ov001_02184230(u16 *arg0) {
 
     typedef struct { u8 kind; u8 length; u8 pad[2]; void *data; } ParsedItem;
     typedef struct { u8 count; u8 pad[3]; ParsedItem items[16]; } ParsedItems;
+    typedef struct { u8 *slots; ParsedItems parsed; } Work;
 
-    u8 *base = (u8 *)arg0;
-    u8 *slots = (u8 *)data_ov001_02193e00 + 0x1300;
-    s32 cnt = *(s16 *)(base + 0xe);
-    s32 i;
+    Work work;
+    register s32 i;
+    register s32 j;
+    register s32 k;
+    register u8 *record;
+    register u8 *slot;
+    u8 parsedCount;
 
-    func_020067a8((void *)((u8 *)data_ov001_02193e00 + 0xf00), 0x400);
+    work.slots = (u8 *)data_ov001_02193e00 + 0x1300;
+    func_020067a8((u8 *)data_ov001_02193e00 + 0xf00, 0x400);
 
-    for (i = 0; i < cnt; i++) {
-        u8 *r4 = *(u8 **)(base + 0x10 + i * 4);
-        s32 j;
-        u8 *slot;
-        if (r4[0xc] == 0) continue;
-        if (*(u16 *)(r4 + 0x3c) != 0) continue;
-
-        slot = slots;
-        j = 0;
-        for (;;) {
-            if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)(r4 + 4), 6) == 0) {
-                break;
-            }
-            j++;
-            if (j >= 20) {
-                break;
-            }
-            slot += 0x2a;
-        }
-
-        if (j == 20) {
-            s32 jj;
-            slot = slots;
-            jj = 0;
-            for (;;) {
-                if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) == 0) {
+    i = 0;
+    if (*(u16 *)((u8 *)arg0 + 0xe) <= 0) {
+        return;
+    }
+    do {
+        record = *(u8 **)((u8 *)arg0 + 0x10 + i * 4);
+        if (record[0xc] != 0 && *(u16 *)(record + 0x3c) == 0) {
+            slot = work.slots;
+            j = 0;
+            do {
+                if (func_0206527c((M2C_UNK)(record + 4), (M2C_UNK)(slot + 0x20), 6) == 0) {
                     break;
                 }
-                jj++;
-                if (jj >= 20) {
-                    break;
-                }
+                j++;
                 slot += 0x2a;
-            }
-            if (jj == 20) {
-                return;
-            }
-            slot = slots + jj * 0x2a;
-        } else {
-            slot = slots + j * 0x2a;
-        }
+            } while (j < 20);
 
-        func_02008048((void *)(r4 + 4), (void *)(slot + 0x20), 6);
-        func_02008048((void *)(r4 + 0xc), (void *)slot, 0x20);
-        *(u16 *)(slot + 0x26) = *(u16 *)(base + 0x50 + i * 2);
-
-        if (((*(u16 *)(r4 + 0x2c)) & 0x10) == 0) {
-            slot[0x28] = 0;
-            continue;
-        }
-
-        slot[0x28] = 1;
-        {
-            ParsedItems parsed;
-            u8 pc;
-            s32 k;
-            func_02011f2c((M2C_UNK *)&parsed, (M2C_UNK *)r4);
-            pc = parsed.count;
-            if (pc > 0) {
-                for (k = 0; k < pc; k++) {
-                    if (parsed.items[k].kind == 0x30) {
-                        slot[0x28] = 2;
+            if (j == 20) {
+                slot = work.slots;
+                j = 0;
+                do {
+                    if (func_0206527c((M2C_UNK)(slot + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) == 0) {
                         break;
                     }
-                    if (parsed.items[k].kind == 0xdd &&
-                        parsed.items[k].length >= 4) {
-                        if (func_0206527c((M2C_UNK)parsed.items[k].data,
-                                            (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
+                    j++;
+                    slot += 0x2a;
+                } while (j < 20);
+                if (j == 20) {
+                    return;
+                }
+            }
+
+            slot = work.slots + j * 0x2a;
+            func_02008048((void *)(record + 4), (void *)(slot + 0x20), 6);
+            func_02008048((void *)(record + 0xc), (void *)slot, 0x20);
+            *(u16 *)(slot + 0x26) = *(u16 *)((u8 *)arg0 + 0x50 + i * 2);
+
+            if ((*(u16 *)(record + 0x2c) & 0x10) == 0) {
+                slot[0x28] = 0;
+            } else {
+                slot[0x28] = 1;
+                func_02011f2c((M2C_UNK *)&work.parsed, (M2C_UNK *)record);
+                parsedCount = work.parsed.count;
+                if (parsedCount > 0) {
+                    for (k = 0; k < parsedCount; k++) {
+                        if (work.parsed.items[k].kind == 0x30) {
+                            slot[0x28] = 2;
+                            break;
+                        }
+                        if (work.parsed.items[k].kind == 0xdd &&
+                            work.parsed.items[k].length >= 4 &&
+                            func_0206527c((M2C_UNK)work.parsed.items[k].data,
+                                          (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
                             slot[0x28] = 2;
                             break;
                         }
@@ -512,7 +502,8 @@ void func_ov001_02184230(u16 *arg0) {
                 }
             }
         }
-    }
+        i++;
+    } while (i < *(u16 *)((u8 *)arg0 + 0xe));
 }
 #pragma scheduling reset
 void func_ov001_02184404(void) {
@@ -554,61 +545,60 @@ void func_ov001_02184498(void *arg0) {
     *(u8 *)((s8 *)data_ov001_02193e04 + 0x4e7) = 0;
 }
 
-void func_ov001_021844c8(register u8 *r6) {
+void func_ov001_021844c8(u8 *arg0) {
     void func_02007f8c(void *, s32, u32);
     void func_02008048(void *, void *, u32);
     s32 func_ov001_0218c3e0(u8 *, s32);
     s32 func_ov001_02184f4c(u8);
     extern s32 data_ov001_02193e04;
 
-    u8 *base;
-    s32 r5;
-    base = (u8 *)data_ov001_02193e04;
+    register s32 i;
+    register s32 result;
+    register s32 hi;
+    register u8 *out;
+    s32 lo;
 
-    func_02007f8c(base + 0x480, 0, 0x10);
-    r5 = func_ov001_0218c3e0(r6, 0x20);
+    func_02007f8c((u8 *)data_ov001_02193e04 + 0x480, 0, 0x10);
+    result = func_ov001_0218c3e0(arg0, 0x20);
 
-    switch (r5) {
+    switch (result) {
         case 0:
         case 10:
         case 0x1a:
         case 0x20: {
-            s32 r4 = 0;
-            u8 *r8;
-            base[0x4e6] = (u8)(base[0x4e6] & 0x03);
-            r8 = base + 0x480;
-            if (r5 > 0) {
+            i = 0;
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)(((u8 *)data_ov001_02193e04)[0x4e6] & ~0xfc);
+            out = (u8 *)data_ov001_02193e04 + 0x480;
+            if (result > 0) {
                 do {
-                    u8 *r9 = r6 + r4;
-                    s32 hi = func_ov001_02184f4c(r9[0]);
-                    s32 lo = func_ov001_02184f4c(r9[1]);
-                    *r8++ = (u8)((hi << 4) | lo);
-                    r4 += 2;
-                } while (r4 < r5);
+                    hi = func_ov001_02184f4c(arg0[i]);
+                    lo = func_ov001_02184f4c(arg0[i + 1]);
+                    *out++ = (u8)((hi << 4) + lo);
+                    i += 2;
+                } while (i < result);
             }
             break;
         }
-        default: {
-            base[0x4e6] = (u8)((base[0x4e6] & 0x03) | 0x04);
-            func_02008048(r6, base + 0x480, 0x10);
+        default:
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0xfc) | 0x04);
+            func_02008048(arg0, (u8 *)data_ov001_02193e04 + 0x480, 0x10);
             break;
-        }
     }
 
-    switch (r5) {
+    switch (result) {
         case 0:
-            base[0x4e6] = (u8)(base[0x4e6] & 0xfc);
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)(((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03);
             break;
         case 5:
         case 10:
-            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x01);
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x01);
             break;
         case 13:
         case 0x1a:
-            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x02);
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x02);
             break;
         default:
-            base[0x4e6] = (u8)((base[0x4e6] & 0xfc) | 0x03);
+            ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0x03) | 0x03);
             break;
     }
 }

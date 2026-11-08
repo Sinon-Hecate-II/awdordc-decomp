@@ -31,7 +31,6 @@ void func_020ad78c(void) {
     char sp[0x40];
     s32 idx;
     M2C_UNK h;
-    u16 *eng;
 
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
@@ -68,13 +67,11 @@ void func_020ad78c(void) {
     if (func_020ad690() == 0) {
         h = func_020e3218((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 0);
-        eng = *gCur3DSpriteEngine;
-        *(volatile u8 *)((char *)eng + 0x46) |= 0x1;
+        *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
     } else {
         h = func_020e3218((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 8);
-        eng = *gCur3DSpriteEngine;
-        *(volatile u8 *)((char *)eng + 0x46) |= 0x2;
+        *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x2;
     }
 
     func_02081528();
@@ -221,14 +218,15 @@ void func_020adde0(void) {
     extern u16 **gCur3DSpriteEngine;
     extern u16 **data_027e00c4;
 
-    register s16 *p = (s16 *)data_0215c428;
-    register u16 **saved;
-    register s16 v;
-    register s32 idx;
-    register s16 sparg;
-    register s32 res;
+    s16 v;
+    u16 **saved;
+    u8 idx;
+    s32 res;
+    s16 *pp;
+    s16 hi;
+    s16 lo;
 
-    if (p[0] & 4) {
+    if (((s16 *)data_0215c428)[0] & 4) {
         if (func_0207b7c4() != 0) {
             return;
         }
@@ -239,9 +237,11 @@ void func_020adde0(void) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
 
-    if (p[3] == 0) {
+    switch (((s16 *)data_0215c428)[3]) {
+    case 0:
         func_020ad74c();
-    } else if (p[3] == 1) {
+        break;
+    case 1:
         if (func_020ad690() == 0) {
             (*gCur3DSpriteEngine)[3] &= ~3;
             (*gCur3DSpriteEngine)[4] = ((*gCur3DSpriteEngine)[4] & ~3) | 1;
@@ -253,25 +253,28 @@ void func_020adde0(void) {
             (*gCur3DSpriteEngine)[5] = ((*gCur3DSpriteEngine)[5] & ~3) | 2;
             (*gCur3DSpriteEngine)[6] = ((*gCur3DSpriteEngine)[6] & ~3) | 3;
         }
-    } else {
-        if (p[3] == p[4]) {
+        break;
+    default:
+        if (((s16 *)data_0215c428)[3] == ((s16 *)data_0215c428)[4]) {
             func_020ad6f0();
         }
+        break;
     }
 
-    v = p[5];
-    idx = func_020ad690();
-    (*gCur3DSpriteEngine)[28 + idx] = v;
-
+    v = ((s16 *)data_0215c428)[5];
+    idx = (u8)func_020ad690();
+    *((u16 *)((char *)*gCur3DSpriteEngine + 0x38 + (idx << 1))) = v;
     *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (idx << 1))) = 0;
 
-    sparg = p[4];
-    res = func_0207ca38(4, 0x100, 0, p[3], sparg);
+    pp = (s16 *)data_0215c428;
+    res = func_0207ca38(4, 0x100, 0, pp[3], pp[4]);
 
-    p[5] = res;
-    p[3] = p[3] + 1;
-    if (p[3] >= p[4]) {
-        p[3] = p[4];
+    ((s16 *)data_0215c428)[5] = res;
+    ((s16 *)data_0215c428)[3] = ((s16 *)data_0215c428)[3] + 1;
+    hi = ((s16 *)data_0215c428)[4];
+    lo = ((s16 *)data_0215c428)[3];
+    if (lo >= hi) {
+        ((s16 *)data_0215c428)[3] = hi;
     }
 
     gCur3DSpriteEngine = saved;

@@ -157,6 +157,7 @@ void func_ov005_02212944(s32 arg0,s32 arg1) {
  }
 }
 
+#pragma optimization_level 2
 void func_ov005_0221298c(s16 arg0) {
 s16 *func_ov005_02211a38(s8);
 void func_ov005_02212944(s32,s32);
@@ -190,15 +191,12 @@ func_020809c0((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0xf4,6,2);
 }
 func_0209c048(0x1b,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,6),0x1000,0);
 value=func_020a8b78();
-#pragma opt_common_subs off
 func_0209c024(0x1c,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),value,0x1000,0);
 func_0209c048(0x1e,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,8),0x1000,0);
-#pragma opt_common_subs reset
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
-
-#pragma opt_strength_reduction off
+#pragma optimization_level reset
 void func_ov005_02212b40(void){
 extern void *gCur3DSpriteEngine,*data_027e00c4,*data_ov005_02221300;
 extern u8 data_ov005_0222028c[],data_ov005_0222029c[];

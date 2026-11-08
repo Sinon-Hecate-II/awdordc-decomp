@@ -164,7 +164,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     ctx.state.f6 = ((CtxState_020739f8 *)arg0)->f6;
     ctx.state.tail = ((CtxState_020739f8 *)arg0)->tail;
 
-    code = func_02072da4((CtxToken_020739f8 *)(&ctx + 0));
+    code = func_02072da4(&ctx.token);
     for (;;) {
         switch (code) {
         case 12: {
@@ -216,7 +216,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
             goto done;
         }
         func_02072dc0(&ctx);
-        code = func_02072da4((CtxToken_020739f8 *)(&ctx + 0));
+        code = func_02072da4(&ctx.token);
     }
 done:
     return (u8 *)ctx.token.t2;

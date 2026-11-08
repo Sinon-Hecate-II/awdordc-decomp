@@ -241,11 +241,12 @@ u64 func_020267e0(void *arg0) {
     return (u64)M2C_FIELD(arg0, u16 *, -2) << 32 | (u32)(M2C_FIELD(arg0, u16 *, -6) | (M2C_FIELD(arg0, u16 *, -4) << 16));
 }
 
+#pragma scheduling off
 void func_020267fc(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
 M2C_UNK func_02008048(s32,s32,s32);
 M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
 u64 func_02072088(u64,u64);
-s32 i;u32 digit;u16 *r,*q;s32 nb,na,bytes;u64 divisor;
+s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
 q=work+n;r=q+n;
 func_02007f8c((u8 *)q,0,n*4);
 na=func_02026244(a,n);nb=func_02026244(b,n);
@@ -255,7 +256,7 @@ if(i>=n){func_02008048((s32)a,(s32)r,n*2);}
 else {
 func_02008048((s32)a,(s32)(q+i),na*2);
 if(nb>2){bytes=nb*2;divisor=func_020267cc(b+nb-1);}
-else if(nb>1){bytes=nb*2;divisor=func_020267bc(b+nb-1);}
+else if(nb>1){bytes=nb*2;divisor=((u64(*)(volatile u16 *))func_020267bc)(b+nb-1);}
 else {bytes=nb*2;divisor=func_020267b0(b+nb-1);}
 if(i<n) do {
 func_020651c4((s32)(q+1),(s32)q,(n*2-1)*2);
@@ -271,8 +272,7 @@ func_020263dc(r,r,work,n);*q=digit;
 if(out)func_02008048((s32)q,(s32)out,n*2);
 if(rem)func_02008048((s32)r,(s32)rem,n*2);
 }
-
-#pragma scheduling off
+#pragma scheduling reset
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     M2C_UNK func_02008048(s32, s32, s32);

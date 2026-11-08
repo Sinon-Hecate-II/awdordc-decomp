@@ -476,9 +476,9 @@ void func_ov009_02223078(void *arg0) {
     extern M2C_UNK data_ov009_02226a80;
     extern M2C_UNK data_ov009_022268e0;
 
-    u32 buf[8];
+    s32 buf[8];
     u8 *r5;
-    u32 *r6 = buf;
+    s32 *r6 = buf;
     s32 x;
     u8 *r7;
     void *elem;

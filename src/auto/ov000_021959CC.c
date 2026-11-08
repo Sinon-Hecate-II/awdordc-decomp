@@ -2,35 +2,39 @@
 #include "common.h"
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind959;
 
-#pragma opt_common_subs reset
+#pragma opt_propagation off
 s32 func_ov000_021959cc(s32 x,s32 y,s32 data,s32 radius){
-extern void **gCurrentMap;
 s32 func_ov000_021a93b0(s32,s32,s32);s32 func_020d27c0(s32);s32 func_ov000_021a96a8(M2C_UNK,M2C_UNK,s32);
-s32 i,dy,ny,j,right,left,top,bottom,d;void *base;
+extern void **gCurrentMap;
+s32 sy;
+s32 left;
+s32 bottom;
+s32 i,dy,top,right,ny;
+void *base;
+s32 d;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;right=M2C_FIELD(base,u16 *,0x5144)-1;
 if(x+radius<right)right=x+radius;
 bottom=M2C_FIELD(base,u16 *,0x5146)-1;if(y+radius<bottom)bottom=y+radius;
-for(j=top;j<=bottom;j++)for(i=left;i<=right;i++){
+for(;top<=bottom;top++)for(i=left;i<=right;i++){
+dy=y-top;ny=top-y;sy=top;
 d=0;if(x-i>0)d+=x-i;else d+=i-x;
-dy=y-j;ny=j-y;if(dy>0)d+=dy;else d+=ny;
+if(dy>0)d+=dy;else d+=ny;
 if(d>=0&&d<=radius){
 base=*gCurrentMap;
-if(func_ov000_021a93b0(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)j)!=0)continue;
+if(func_ov000_021a93b0(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)sy)!=0)continue;
 base=*gCurrentMap;
-d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
+d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)top<<1),u16 *,0x3758));
 if(!d)continue;
 if(func_020d27c0(d)!=0)continue;
 base=*gCurrentMap;
-d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
+d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)top<<1),u16 *,0x3758));
 if(func_ov000_021a96a8(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=30)return 1;
 }
 }
 return 0;
 }
-#pragma opt_strength_reduction reset
-#pragma opt_common_subs reset
 #pragma opt_propagation reset
 s32 func_ov000_02195b80(s16 *a) { return 0; }
 

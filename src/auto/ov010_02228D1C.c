@@ -454,6 +454,45 @@ s32 func_ov010_02229850(void) {
     return result;
 }
 
+extern struct QueueNode *data_ov010_0222ef88;
+unsigned int func_ov010_022298a0(unsigned int index)
+{
+    volatile unsigned short *ime = (volatile unsigned short *)0x04000208;
+    unsigned int *entry;
+    unsigned short oldIme;
+    unsigned short tempIme;
+    unsigned int result = 0;
+
+    oldIme = *ime;
+    *ime = 0;
+
+    entry = (unsigned int *)((unsigned char *)&data_ov010_0222ef88 + index * 12);
+
+    if (entry[0] == 0) {
+        tempIme = *ime;
+        *ime = oldIme;
+        return 0;
+    }
+
+    tempIme = *ime;
+    *ime = 0;
+
+    if (entry[0] == 0) {
+        tempIme = *ime;
+        *ime = tempIme;
+    } else {
+        result = *(unsigned int *)(entry[0] + 12);
+        *ime = tempIme;
+    }
+
+    result += 12;
+
+    tempIme = *ime;
+    *ime = oldIme;
+
+    return result;
+}
+
 s32 func_ov010_02229920(s32 a, void *b) {
 extern QueueNode *data_ov010_0222ef88;
 extern s32 data_ov010_0222ef8c, data_ov010_0222ef90;

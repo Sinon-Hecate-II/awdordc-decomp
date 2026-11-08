@@ -273,7 +273,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
 
     struct Packet_0205 *pp;
     s32 res;
-    s32 combined;
+    s32 swapped;
 
     func_0205d70c((M2C_UNK **)&arg3, &arg4);
 
@@ -281,13 +281,11 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
         return 1;
     }
 
+    swapped = ((arg2 >> 8) & 0xff) | ((arg2 << 8) & 0xff00);
     {
     struct Packet_0205 pkt={0};
     pp = &pkt;
-    combined = ((arg2 >> 8) & 0xff) | ((arg2 << 8) & 0xff00);
-
-
-    pp->c = (u16)combined;
+    pp->c = (u16)swapped;
     pp->b = 2;
     pp->d = arg1;
 

@@ -1,5 +1,5 @@
 {
-  "src/auto/itcm_01FF8000.c": "dsi/1.1",
+  "src/auto/itcm_01FF8000.c": "2.0/sp1p7",
   "src/auto/itcm_01FF8F90.c": "2.0/sp1p7",
   "src/auto/itcm_01FF9E44.c": "2.0/sp2p4",
   "src/auto/itcm_01FF9ED0.c": "2.0/sp1p6",
@@ -17,7 +17,7 @@
   "src/auto/main_0201CB4C.c": "2.0/sp2p4",
   "src/auto/main_020222D8.c": "2.0/sp2p2",
   "src/auto/main_02024260.c": "2.0/sp1",
-  "src/auto/main_02026164.c": "2.0/sp1p2",
+  "src/auto/main_02026164.c": "2.0/sp1",
   "src/auto/main_02028038.c": "2.0/sp1p2",
   "src/auto/main_02028EF4.c": "2.0/sp2p3",
   "src/auto/main_0202AE00.c": "2.0/sp2",
@@ -108,6 +108,7 @@
   "src/auto/ov003_02207A54.c": "2.0/sp2p4",
   "src/auto/ov004_022138B0.c": "2.0/sp1p6",
   "src/auto/ov004_02217F5C.c": "2.0/sp1",
+  "src/auto/ov005_022121F8.c": "2.0/sp1",
   "src/auto/ov005_0221CAA0.c": "2.0/base",
   "src/auto/ov005_0221E5A0.c": "2.0/sp1p7",
   "src/auto/ov005_0221F4F8.c": "2.0/sp1p6",

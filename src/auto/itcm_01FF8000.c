@@ -143,8 +143,22 @@ void func_01ff8530(s32 a,s32 b,s32 c,s32 d) {
  p[0]=b;p[1]=c;p[2]=d;
 }
 
-void func_01ff8554(s32 a,s32 b,s32 c,s32 d){volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);p[0]=b;p[1]=c;p[2]=d;(void)*(volatile u32 *)0x40000b0;(void)*(volatile u32 *)0x40000b0;if(!a){p[0]=0;p[1]=0;p[2]=0x81400001;}(void)*(volatile u32 *)0x40000b0;(void)*(volatile u32 *)0x40000b0;}
-
+#pragma optimization_level 2
+void func_01ff8554(s32 a, s32 b, s32 c, s32 d) {
+    volatile u32 *p = (volatile u32 *)(0x40000b0 + a * 12);
+    p[0] = b;
+    p[1] = c;
+    p[2] = d;
+    (void)*(volatile u32 *)0x40000b0;
+    (void)*(volatile u32 *)0x40000b0;
+    if (a == 0) {
+        p[0] = 0;
+        p[1] = 0;
+        p[2] = 0x81400001;
+    }
+    (void)*(volatile u32 *)0x40000b0;
+    (void)*(volatile u32 *)0x40000b0;
+}
 void func_01ff85b8(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
 
 void func_01ff85ec(void) {
@@ -192,17 +206,33 @@ void func_01ff8624(s32 start, s32 end) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a) = 0;
 }
 
-void func_01ff873c(void){
-extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
-void func_02007ef4(void *,void *,s32);void func_01ff8624(s32,s32);
-void *saved=gCur3DSpriteEngine,*p,*dest; s32 i=0;u8 same;
-do{
-p=i==0?data_027e00c8:data_027e00c4;
-same=p==data_027e00c8;gCur3DSpriteEngine=p;
-if(same==1)dest=(void *)0x7000000;else dest=(void *)0x7000400;
-func_02007ef4(M2C_FIELD(p,void **,52),dest,1024);
-func_01ff8624(M2C_FIELD(gCur3DSpriteEngine,u8 *,72),0);func_01ff85ec();i++;
-}while(i<2);gCur3DSpriteEngine=saved;
+void func_01ff873c(void) {
+    extern void *gCur3DSpriteEngine;
+    extern void *data_027e00c4;
+    extern void *data_027e00c8;
+    void func_02007ef4(void *, void *, s32);
+    void func_01ff8624(s32, s32);
+    void func_01ff85ec(void);
+    void *saved = gCur3DSpriteEngine;
+    void *p;
+    void *dest;
+    s32 i = 0;
+    u8 same;
+    do {
+        p = i == 0 ? data_027e00c8 : data_027e00c4;
+        same = p == data_027e00c8;
+        gCur3DSpriteEngine = p;
+        if (same == 1) {
+            dest = (void *)0x7000000;
+        } else {
+            dest = (void *)0x7000400;
+        }
+        func_02007ef4(M2C_FIELD(p, void **, 0x34), dest, 0x400);
+        func_01ff8624(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48), 0);
+        func_01ff85ec();
+        i++;
+    } while (i < 2);
+    gCur3DSpriteEngine = saved;
 }
 
 void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?data_027e00c8:data_027e00c4;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
@@ -378,104 +408,64 @@ orient1=(src[0]>>14)&255;
 void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
     extern void *gCur3DSpriteEngine;
     extern u8 data_02101f94[];
-    void *engine;
-    u16 *src;
-    u16 count;
+    u16 *dst;
+    s32 count;
+    s32 lo, hi, mask = 0x3ff;
     u16 *base;
-    u8 idx;
-    u16 *rec;
-    s32 stack8;
-    u16 flags;
-    s32 stack4;
-    s32 stack0;
-    s32 first;
-    s16 e3e;
-    u8 firstHi;
-    u16 u;
-    u8 uhi;
-    s32 m;
-    u8 dv;
-    u16 w;
-    u16 *field0ptr;
-    u16 e0val;
-    u32 shift;
-    s32 part;
-    s32 tmp;
+    u8 n;
+    s32 ypos;
+    s32 limit = -64;
 
-    engine = gCur3DSpriteEngine;
-    src = p5;
-    count = *src++;
-    base = *(u16 **)((u8 *)engine + 0x34);
-    idx = *((u8 *)engine + 0x48);
-    rec = base + (s32)idx * 4;
-    if (count == 0) {
-        return;
-    }
-    stack8 = p1 + ((p3 << 24) >> 24);
-    flags = p4;
-    stack4 = (s32)(flags & 0x3ff);
-    stack0 = (s32)(flags & 0xfc00);
-
-    engine = gCur3DSpriteEngine;
-    if (*((u8 *)engine + 0x48) >= 0x80) {
-        return;
-    }
-
-    while (count != 0) {
-        first = (s32)(u16)src[0];
-        {
-            s32 r7 = stack8 + ((first << 24) >> 24);
-            if (r7 > -64 && r7 <= 0xc0) {
-                engine = gCur3DSpriteEngine;
-                e3e = *(s16 *)((u8 *)engine + 0x3e);
-                firstHi = (u8)((first >> 14) & 0xff);
-                rec[0] = (u16)(((first | p3) & 0xff00) + (u8)(e3e + p1 + first + p3));
-
-                u = src[1];
-                uhi = (u8)((u >> 14) & 0xff);
-                m = (s32)(u & 0x1ff);
-                if (m & 0x100) {
-                    m |= 0xfe00;
-                }
-                dv = data_02101f94[(uhi + firstHi * 4) << 1];
-
-                m = -m - dv;
-                m = (s16)m;
-                m = p2 + m;
-                m = p0 + m;
-                m = *(s16 *)((u8 *)engine + 0x3c) + m;
-                m = m & 0x1ff;
-                rec[1] = (u16)(((u | (u16)p2) & 0xfe00) + m);
-
-                {
-                    u16 tsrc = src[1];
-                    u16 rv = rec[1];
-                    if (tsrc & 0x1000) {
-                        rv = (u16)(rv & ~0x1000);
-                    } else {
-                        rv = (u16)(rv | 0x1000);
-                    }
-                    rec[1] = rv;
-                }
-
-                w = src[2];
-                field0ptr = *(u16 **)((u8 *)engine + 0x00);
-                e0val = field0ptr[0];
-                shift = ((u32)e0val << 17) >> 30;
-                part = 0x3ff & (((s32)(w & dv)) >> (s32)shift);
-                tmp = stack4 + part;
-                tmp = tmp & 0x3ff;
-                tmp = (s32)(w & 0xfc00) + tmp;
-                rec[2] = (u16)(stack0 + tmp);
-
-                engine = gCur3DSpriteEngine;
-                rec += 4;
-                *((u8 *)engine + 0x48) = (u8)(*((u8 *)engine + 0x48) + 1);
-            }
+    count = *p5++;
+    base = M2C_FIELD(gCur3DSpriteEngine, u16 * volatile *, 0x34);
+    n = M2C_FIELD(gCur3DSpriteEngine, volatile u8 *, 0x48);
+    dst = base + n * 4;
+    if (!count) return;
+    ypos = p1 + (s8)p3;
+    hi = p4 & 0xfc00;
+    lo = p4 & mask;
+    if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48) >= 0x80) return;
+    do {
+        u16 a;
+        s32 b, c;
+        u8 orient0, orient1;
+        s32 index;
+        s32 field3e;
+        s16 part;
+        s32 shift, val;
+        a = p5[0];
+        if (ypos + (s8)a <= limit || ypos + (s8)a > 0xc0) {
+            p5 += 3;
+            count--;
+            continue;
         }
-        src += 3;
+        orient1 = (a >> 14) & 255;
+        field3e = M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e);
+        dst[0] = ((a | p3) & 0xff00) + ((field3e + (p1 + (a + p3))) & 0xff);
+        b = p5[1];
+        orient0 = (b >> 14) & 255;
+        index = orient0 + (orient1 << 2);
+        part = b & 0x1ff;
+        if (part & 0x100) part |= 0xfe00;
+        part = -part;
+        part = part - data_02101f94[index * 2];
+        val = M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (p0 + (p2 + part));
+        dst[1] = ((b | p2) & 0xfe00) + (val & 0x1ff);
+        if (p5[1] & 0x1000) dst[1] = dst[1] & ~0x1000;
+        else dst[1] = dst[1] | 0x1000;
+        c = p5[2];
+        p5 += 3;
+        shift = ((u32)(*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0)) << 17) >> 30;
+        {
+            s32 loval = (c & mask) >> shift;
+            loval = loval & mask;
+            loval = (lo + loval) & mask;
+            dst[2] = (c & 0xfc00) + loval + hi;
+        }
+        dst += 4;
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48)++;
         count--;
-    }
+    } while (count);
 }
 
 void func_01ff8ddc(s32 a,s16 b,s16 c,s16 d,s16 e) {

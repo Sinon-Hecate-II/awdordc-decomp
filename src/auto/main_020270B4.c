@@ -484,17 +484,14 @@ void func_02027e80(s32 a, void *b, s32 c) {
         func_02008048((void *)data_020ea760, (void *)((u8 *)data_02138e4c + 0x229c), 0x20);
         M2C_FIELD((void *)data_02138e4c, u16 *, 0x229a) = 0;
     } else {
-        u32 i;
+        s32 i;
         func_02008048((void *)b, (void *)((u8 *)data_02138e4c + 0x229c), 0x20);
         i = 0;
-        if (r4[0] != 0) {
-            for (;;) {
-                i++;
-                if (i >= 0x20) break;
-                r4++;
-                if (r4[0] == 0) break;
-            }
-        }
+        do {
+            if (*r4 == 0) break;
+            i++;
+            r4++;
+        } while (i < 0x20);
         M2C_FIELD((void *)data_02138e4c, u16 *, 0x229a) = (u16)i;
     }
     M2C_FIELD((void *)data_02138e4c, u32 *, 0x2284) = 0;
