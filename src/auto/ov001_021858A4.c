@@ -116,11 +116,10 @@ state=&data_ov001_02193e14;
 p=*state;
 M2C_FIELD(p,u32 *,0x1b88)=(u32)ts;M2C_FIELD(p,u32 *,0x1b8c)=(u32)(ts>>32);
 if(func_02012218((M2C_UNK)*state,(M2C_UNK)func_ov001_02185ea8,3)==2){
-for(;;){
+do {
 func_02011af8((u8 *)*state+0x13b8);
 p=*state;
-if(M2C_FIELD(p,u16 *,0x13b8)==2)break;
-}
+} while(M2C_FIELD(p,u16 *,0x13b8)!=2);
 {
 *(InitBlock68 *)((u8 *)p+0x1374)=*(const InitBlock68 *)data_ov001_0218fbfc;
 {void *base=(u8 *)p+0xf00;p=(u8 *)p+0x1000;M2C_FIELD(p,void **,0x374)=base;}

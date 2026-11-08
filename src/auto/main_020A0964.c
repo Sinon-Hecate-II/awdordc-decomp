@@ -487,7 +487,8 @@ void func_020a17c0(s32 arg0, s32 arg1) {
     M2C_UNK func_01ffb554(M2C_UNK);
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
-    s32 y, x;
+    s32 y;
+    s32 x;
     u8 *base;
 
     base = (u8 *)*gCurrentMap;
@@ -498,28 +499,24 @@ void func_020a17c0(s32 arg0, s32 arg1) {
     for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {
         base = (u8 *)*gCurrentMap;
         for (x = 0; x < M2C_FIELD(base, u16 *, 0x5144); x++) {
-            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, 0x52E8), s8 *, x) < 0) {
-                base = (u8 *)*gCurrentMap;
-                continue;
-            }
-            {
+            if (M2C_FIELD(M2C_FIELD(base + (y << 2), s8 **, 0x52E8), s8 *, x) >= 0) {
                 u16 off = M2C_FIELD(base + (y << 1), u16 *, 0x3758);
-                u8 cell = M2C_FIELD(base + off + x, u8 *, 0x1420);
+                u8 cell = M2C_FIELD(off + (base + x), u8 *, 0x1420);
                 if (((cell & 0xE0) >> 5) != 0) {
-                    M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 3;
+                    M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 3;
                     base = (u8 *)*gCurrentMap;
-                    M2C_FIELD(base + off + x, u8 *, 0x1420) = 8;
+                    M2C_FIELD(M2C_FIELD(base + (y << 1),u16 *,0x3758) + (base + x), u8 *, 0x1420) = 8;
                 } else {
                     if (cell == 0x1C) {
-                        M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 5;
+                        M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 5;
                     } else {
-                        M2C_FIELD(base + (off + x) * 2 + 0xA00, u16 *, 0x10) = 4;
+                        M2C_FIELD(base + (x + off) * 2 + 0xA00, u16 *, 0x10) = 4;
                     }
                     base = (u8 *)*gCurrentMap;
-                    M2C_FIELD(base + off + x, u8 *, 0x1420) = 1;
+                    M2C_FIELD(M2C_FIELD(base + (y << 1),u16 *,0x3758) + (base + x), u8 *, 0x1420) = 1;
                 }
-                base = (u8 *)*gCurrentMap;
             }
+            base = (u8 *)*gCurrentMap;
         }
     }
 }

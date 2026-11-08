@@ -290,19 +290,21 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
         M2C_FIELD(arg0, s16 *, 0x1A) = 0;
         M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
 
+    }
+
         cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
         word0 = *(u16 *)cur;
         if (word0 == 0) {
             cmd = *((u16 *)cur + 1);
             switch (cmd) {
+            case 0xFF:
+                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0x8);
+                return func_020913d4(arg0raw);
             case 0:
                 func_020912a4((s32 *)arg0);
                 return 0;
             case 1:
                 return 1;
-            case 0xFF:
-                M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0x8);
-                return func_020913d4(arg0raw);
             default:
                 M2C_FIELD(arg0, u16 *, 0x24) = cmd;
                 M2C_FIELD(arg0, M2C_UNK **, 0xC) = M2C_FIELD(arg0, M2C_UNK **, 0xC) + 1;
@@ -318,10 +320,9 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
                 M2C_FIELD(arg0, u16 *, 0x1E) = (u16)(M2C_FIELD(arg0, u16 *, 0x1E) & 0xFF);
             } else {
                 M2C_FIELD(arg0, s16 *, 0x1A) = 1;
+                return func_020913d4(arg0raw);
             }
-            return func_020913d4(arg0raw);
         }
-    }
 
     flags = M2C_FIELD(arg0, u8 *, 0x22);
     cur = M2C_FIELD(arg0, M2C_UNK *, 0xC);
@@ -343,11 +344,10 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
         M2C_FIELD(arg0, void **, 0x14) = (void *)0;
     } else {
         M2C_FIELD(arg0, void **, 0x14) = p10;
-        masked = first & 0x7FFF;
-        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)p10 + (masked * 3 + 1) * 2);
-        flags = (u8)(flags | 0x1);
-        M2C_FIELD(arg0, u8 *, 0x22) = flags;
+        masked = *(u16 *)M2C_FIELD(arg0,void **,0x14) & 0x7FFF;
+        M2C_FIELD(arg0, void **, 0x10) = (void *)((u8 *)M2C_FIELD(arg0,void **,0x10) + (masked * 3 + 1) * 2);
     }
+    M2C_FIELD(arg0, u8 *, 0x22) |= 1;
     return 0xFFFF;
 }
 #pragma opt_if-conversion reset
@@ -358,10 +358,17 @@ void func_02091570(M2C_UNK a) {
     void *arg0 = (void *)a;
     s32 *sp4 = (s32 *)arg0;
 
-    s32 res2,r4,res1,r5,r6,r7;
-    u16 *r8p;
+    s32 r11;
+    s32 r10;
+    s32 res3;
     s16 r9s;
-    s32 res3,r10,r11;
+    u16 *r8p;
+    s32 r7;
+    s32 r6;
+    s32 res1;
+    s32 r5;
+    s32 res2;
+    s32 r4;
     s16 r3s,res4;
     s32 r1,count,r9i,r3i;
 

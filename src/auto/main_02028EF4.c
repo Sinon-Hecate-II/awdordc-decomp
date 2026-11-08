@@ -508,8 +508,6 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 base2;
     s32 res;
     s32 val;
-    s32 fieldval;
-    u8 byteval;
 
     r6 = arg3;
     state = func_0200751c();
@@ -524,17 +522,12 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         func_02007530(state);
         return -1;
     }
-    #pragma optimization_level 2
-    fieldval = M2C_FIELD((void *)(base2 + 0x2000), s32 *, 0x260);
-    if (fieldval == 9) {
-        byteval = M2C_FIELD((void *)(base2 + 0x2000), u8 *, 0x26b);
-        if (byteval == 1) {
-            func_020065e8(&data_02138e5c);
-            func_02007530(state);
-            return -4;
-        }
+    if (M2C_FIELD((void *)base2, s32 *, 0x2260) != 9 ||
+        M2C_FIELD((void *)base2, u8 *, 0x226b) == 1) {
+        func_020065e8(&data_02138e5c);
+        func_02007530(state);
+        return -4;
     }
-    #pragma optimization_level reset
     func_02008048(arg1, (void *)(base2 + 0xf00), arg2);
     if (arg4 > 0) {
         func_02008048(r6, (void *)(base2 + 0xf00 + arg2), arg4);
@@ -542,11 +535,11 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     r6 = arg2 + arg4;
     res = func_02012e74((s32)func_020299d0, arg0, (void *)(base2 + 0xf00), (u32)(u16)r6);
     switch (res) {
-        case 3:
+        case 2:
             break;
         case 0:
         case 1:
-        case 2:
+        case 3:
         case 4:
         case 5:
         case 6:
@@ -559,7 +552,10 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
     func_02005da4(&data_02138e54);
     val = M2C_FIELD(&data_02138e50, s32 *, 0x24);
-    if (val != 0) {
+    switch(val) {
+    case 0: break;
+    case 1:
+    default:
         func_020065e8(&data_02138e5c);
         func_02007530(state);
         return -5;

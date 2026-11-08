@@ -28,25 +28,13 @@ void func_ov001_021893e4(void) {
             M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90) = 5;
             return;
         }
-        r = func_ov001_021878dc(3);
-        if (r != 0) {
-            M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90) = 6;
+        if(func_ov001_021878dc(3) || func_ov001_021878dc(4)) {
+            M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)=6;
             return;
         }
-        r = func_ov001_021878dc(4);
-        if (r == 0) {
-            u8 st = M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90);
-            if (st != 5) {
-                return;
-            }
-            r = func_ov001_021878dc(2);
-            if (r != 0) {
-                return;
-            }
-            M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90) = 0xd;
-            return;
-        }
-        M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90) = 6;
+        if(M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)!=5)return;
+        if(func_ov001_021878dc(2))return;
+        M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)=0xd;
         return;
     }
     case 3: {
@@ -78,16 +66,16 @@ void func_ov001_021893e4(void) {
         return;
     }
     case 0: {
-        s32 r = func_ov001_02188394();
-        if (r == 3) {
+        switch(func_ov001_02188394()){
+        case 1:func_ov001_02188c28();return;
+        case 0:
+            M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)=0x1f;
+            return;
+        case 3:return;
+        default:
+            M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)=0x1f;
             return;
         }
-        if (r == 1) {
-            func_ov001_02188c28();
-            return;
-        }
-        M2C_FIELD(data_ov001_02193e28, u8 *, 0xA90) = 0x1f;
-        return;
     }
     case 4:
     case 6:

@@ -263,11 +263,35 @@ void func_0205f3bc(M2C_UNK a,M2C_UNK b,u8 *p,s32 n) {
  func_0205f364(a,b,x,q,y,r,z,s);
 }
 
-void func_0205f474(M2C_UNK arg0, void *arg1, M2C_UNK arg2) {
-    u8 x = data_020eac30[4];
-    (void)x;
-    (void)arg0; (void)arg1; (void)arg2;
-    return;
+void func_0205f474(M2C_UNK arg0,void *arg1,M2C_UNK mode) {
+void func_020675e4(void *,void *,M2C_UNK,...);
+extern M2C_UNK *data_020ffc1c[];extern M2C_UNK data_020ffa60,data_020ffa68,data_020ffa6c;
+u8 text[128];u8 keys[260];s32 outer; s32 inner,before;u8 *key;M2C_UNK *name;s32 count;void *ctx=(void*)arg0;u8 *dst=arg1;
+M2C_FIELD(keys,s32*,256)=0;
+if((u32)(mode-1)<=1)count=M2C_FIELD(ctx,s32 (**)(s32,s32),0x98)(mode,M2C_FIELD(ctx,s32*,0x10c));else count=1;
+M2C_FIELD(ctx,void (**)(s32,void*,s32),0x94)(mode,keys,M2C_FIELD(ctx,s32*,0x10c));
+outer=0;if(M2C_FIELD(keys,s32*,256)<=0)return;
+do{
+key=keys+outer;
+name=data_020ffc1c[*key];if(!name)name=&data_020ffa60;
+if(!mode){
+func_0205ebb0(dst,name);dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
+before=M2C_FIELD(dst,s32*,0x800);
+M2C_FIELD(ctx,void (**)(s32,void*,s32),0x88)(*key,dst,M2C_FIELD(ctx,s32*,0x10c));
+if(before==M2C_FIELD(dst,s32*,0x800))func_0205ebb0(dst,&data_020ffa68);
+dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
+}else{
+for(inner=0;inner<count;inner++){
+func_020675e4(text,&data_020ffa6c,(s32)name,inner);
+func_0205ebb0(dst,(M2C_UNK*)text);dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
+before=M2C_FIELD(dst,s32*,0x800);
+if(mode==1)M2C_FIELD(ctx,void (**)(s32,s32,void*,s32),0x8c)(*key,inner,dst,M2C_FIELD(ctx,s32*,0x10c));
+else if(mode==2)M2C_FIELD(ctx,void (**)(s32,s32,void*,s32),0x90)(*key,inner,dst,M2C_FIELD(ctx,s32*,0x10c));
+if(before==M2C_FIELD(dst,s32*,0x800))func_0205ebb0(dst,&data_020ffa68);
+dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
+}}
+outer++;
+}while(outer<M2C_FIELD(keys,s32*,256));
 }
 
 void func_0205f64c(M2C_UNK arg0, void *arg1) {

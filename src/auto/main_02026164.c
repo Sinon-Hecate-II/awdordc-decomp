@@ -272,6 +272,7 @@ if(out)func_02008048((s32)q,(s32)out,n*2);
 if(rem)func_02008048((s32)r,(s32)rem,n*2);
 }
 
+#pragma scheduling off
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     M2C_UNK func_02008048(s32, s32, s32);
@@ -282,7 +283,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     extern u16 *(*data_021372a4)(s32);
     extern void (*data_021372d0)(void *);
 
-    u32 var_r6;
+    s32 var_r6;
     u16 *temp_r4;
     u16 *temp_r5;
     u32 sp8;
@@ -297,14 +298,14 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     func_02007f8c((u8 *)(arg0 + 1), 0, (u32)((arg3 - 1) * 2));
     *arg0 = 1;
     var_r6 = (u32)((arg3 - func_02026244(arg2, arg3)) * 16);
-    for (; var_r6 < (u32)(arg3 * 16); var_r6++) {
+    for (; (u32)var_r6 < (u32)(arg3 * 16); var_r6++) {
         if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
             func_02008048(sp8, (s32)arg0, arg3 * 2);
             var_r6++;
             break;
         }
     }
-    if (var_r6 < (u32)(arg3 * 16)) {
+    if ((u32)var_r6 < (u32)(arg3 * 16)) {
         temp_r11 = arg3 * 2;
         do {
             func_0202667c(temp_r4, arg0, arg3);
@@ -320,12 +321,11 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
                 }
             }
             var_r6 += 1;
-        } while (var_r6 < (u32)(arg3 * 16));
+        } while ((u32)var_r6 < (u32)(arg3 * 16));
     }
     data_021372d0(temp_r4);
 }
-
-#pragma scheduling off
+#pragma scheduling reset
 void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02008048(s32, s32, s32);
     s32 func_0202626c(u16 *, s32);

@@ -208,6 +208,8 @@ void func_0202b544(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x48) = 0;
 }
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     extern M2C_UNK data_0213bb88;
     void func_0202b760(void *);
@@ -224,10 +226,12 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     s32 local;
     s32 idx;
     s32 key;
-    s32 r6 = 0;
+    register s32 *r5;
+    register s32 r6;
 
     if ((M2C_FIELD(a, s32 *, 0x24) << 31) >> 31) {
         func_0202b760(a);
+    }
         {
             s32 r2 = M2C_FIELD(a, s32 *, 0x48);
             s32 q = func_020722fc(d, r2 * (f << 5));
@@ -245,10 +249,9 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
         if (idx < 0) {
             return 0;
         }
-    }
 
+    r6 = 0;
     if (M2C_FIELD(a, s32 *, 0x48) > 0) {
-        s32 *r5;
         s32 r7;
         s32 r4;
         u8 *cell;
@@ -256,13 +259,14 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
         r7 = e << 5;
         r4 = r6;
         cell = (u8 *)a + 0x4C;
-        for (; r6 < M2C_FIELD(a, s32 *, 0x48); r6++) {
-            u8 ch = cell[r6];
+        do {
+            u8 ch = *((u8 *)a + r6 + 0x4C);
             s32 val = M2C_FIELD(a, s32 *, 0x28) * r6 + c;
-            r5[ch * 2] = val;
-            r5[ch * 2 + 1] = r4;
-            func_02008e44(ch, b, val, 1, r4, (u32)M2C_FIELD(a, s32 *, 0x28) >> 2, 0x7F, r4, r7, 0x40);
-        }
+            ((s32 (*)[2])r5)[ch][0] = val;
+            ((s32 (*)[2])r5)[ch][1] = r4;
+            func_02008e44(ch, b, ((s32 (*)[2])r5)[ch][0], 1, r4, (u32)M2C_FIELD(a, s32 *, 0x28) >> 2, 0x7F, r4, r7, 0x40);
+            r6++;
+        } while (r6 < M2C_FIELD(a, s32 *, 0x48));
     }
 
     func_02008d54(M2C_FIELD(a, s32 *, 0x40), local, local, (M2C_UNK)func_0202b910, (s32)a);
@@ -283,7 +287,8 @@ s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
 
     return 1;
 }
-
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 s32 func_0202b70c(void *arg0) {
     M2C_UNK func_02008cc8(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_0200ee10(void *);

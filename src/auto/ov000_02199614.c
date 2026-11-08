@@ -229,6 +229,8 @@ void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     extern u8 data_02168f0c[];
 
     u8 *unit;
+    s32 result;
+    u8 *state;
 
     func_ov000_0217e798(arg0, arg1, &arg2, &arg3, &arg4);
 
@@ -242,6 +244,7 @@ void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         unit[0xA] |= 0x80;
         func_02072b10(&data_ov000_021df604, 1);
         func_01ffc328(unit);
+    }
         func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
         func_02084464(((u8 *)*gCurrentMap) + 0x5388, data_ov000_021df7dc);
 
@@ -257,16 +260,16 @@ void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         data_ov000_021df7d0[6] = arg3;
         data_ov000_021df7d0[7] = arg4;
 
-        data_ov000_021df7d0[0x12] = (u8)((((u32)unit[0xA] << 25) >> 25) -
-                                          func_020a641c((s32)unit,
-                                                        (s32)(((u8 *)*gCurrentMap)[0x52D5])));
-        data_ov000_021df7d0[0x13] = 1;
-    }
+        result=func_020a641c((s32)*(u8 **)((u8 *)*gCurrentMap+0x52d0),((u8 *)*gCurrentMap)[0x52d5]);
+        state=data_ov000_021df7d0;
+        unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
+        ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
+        ((volatile u8 *)state)[0x13] = 1;
 
-    if (data_02168f0c[0] != 0) {
+    if (*(volatile u8 *)data_02168f0c != 0) {
         func_ov000_02199ce0();
-        func_02072b10(&data_ov000_021df604, 1);
     }
+    func_02072b10(&data_ov000_021df604, 1);
 }
 
 void func_ov000_02199f38(void) {

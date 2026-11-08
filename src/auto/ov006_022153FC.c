@@ -249,54 +249,31 @@ mark:
     gCur3DSpriteEngine = saved;
 }
 
+#pragma opt_common_subs off
 void func_ov006_02215950(u8 *arg0) {
     M2C_UNK func_020b1c60(u8);
     void func_ov006_02215ae0(void *);
     extern void *data_02101e84;
-    u8 temp_r1;
-    u16 temp_r3;
-    u16 temp_r2;
-    u8 var_ip;
+    u32 temp_r1,temp_r2,temp_r3;
+    u8 var_ip;u16 *keys;
 
-    temp_r1 = *arg0;
-    temp_r3 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r1 = *arg0;keys=data_02101e84;
+    temp_r3 = keys[0];
     var_ip = temp_r1;
-    temp_r2 = M2C_FIELD(data_02101e84, u16 *, 2);
+    temp_r2 = keys[1];
     if (temp_r3 & 1) {
         func_ov006_02215ae0(arg0);
         return;
     }
     if (temp_r2 & 0x40) {
-        if (temp_r1 == 0) {
-            if (temp_r2 == temp_r3) {
-                var_ip = 0xC;
-            }
-        } else if (temp_r1 == 1) {
-            if (temp_r2 == temp_r3) {
-                var_ip = 0xD;
-            }
-        } else if (temp_r1 == 2) {
-            if (temp_r2 == temp_r3) {
-                var_ip = 0xD;
-            }
-        } else {
-            var_ip = (u8)(temp_r1 - 3);
-        }
-        if ((u8)var_ip >= 0xA) goto done;
-        goto middle;
-    } else if (temp_r2 & 0x80) {
-        if (temp_r1 == 7) {
-            var_ip = 0xA;
-        } else if (temp_r1 == 8) {
-            var_ip = 0xA;
-        } else if (temp_r1 == 9) {
-            var_ip = 0xC;
-        } else {
-            var_ip = (u8)(temp_r1 + 3);
-        }
-        if ((u8)var_ip >= 0xA) goto done;
-        goto middle;
-    }
+switch(temp_r1){case 0:if(temp_r2==temp_r3)var_ip=12;break;case 1:case 2:if(temp_r2==temp_r3)var_ip=13;break;default:var_ip=(u8)(temp_r1-3);break;}
+if(var_ip>=10)goto done;
+goto middle;
+}else if(temp_r2&0x80){
+switch(temp_r1){case 9:var_ip=12;break;case 7:case 8:var_ip=10;break;default:var_ip=(u8)(temp_r1+3);break;}
+if(var_ip>=10)goto done;
+}
+
 middle:
     if (temp_r2 & 0x20) {
         switch (var_ip) {
@@ -352,7 +329,7 @@ done:
         func_020b1c60(var_ip);
     }
 }
-
+#pragma opt_common_subs reset
 void func_ov006_02215ae0(void *arg0) {
     s8 *temp_r0;
     M2C_UNK func_0208fe30(s32);

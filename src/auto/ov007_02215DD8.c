@@ -28,39 +28,39 @@ s32 func_ov007_02215e94(s32 *x, s32 *y, s32 value, void *arg3, s32 radius) {
 }
 
 s32 func_ov007_02215f6c(s32 *arg0, s32 *arg1, s32 arg2, void *arg3, void *arg4, s32 arg5) {
-    s32 func_0207c330(s32, s32);
-    s32 func_ov000_021a8a04(s16, s16, s16, s16);
+    s32 RandomIntRange(s32, s32);
+    s32 ManhattanDistance(s16, s16, s16, s16);
     extern void **gCurrentMap;
     void ***gp = &gCurrentMap;
     s32 sp0 = arg2;
-    s32 counter = 0;
+    register s32 counter = 0, temp_r0, ry, rx, distA, distB, t;
 
 loop:
     counter += 1;
     if (counter > 0x64) {
         return 0;
     }
-    *arg0 = func_0207c330(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5144) - 1);
+    *arg0 = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5144) - 1);
     {
-        s32 temp_r0 = func_0207c330(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5146) - 1);
-        *arg1 = temp_r0;
+        *arg1 = RandomIntRange(0, M2C_FIELD(M2C_FIELD(*gp, void **, 0), u16 *, 0x5146) - 1);
+        
         {
             void **b = M2C_FIELD(*gp, void **, 0);
-            s32 rx = *arg0;
-            s32 ry = temp_r0;
+            rx = *arg0;
+            ry = *arg1;
             if (sp0 != M2C_FIELD(((u8 *)b + ((rx + M2C_FIELD(((u8 *)b + (ry * 2)), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
                 goto loop;
             }
             {
-                s32 distA = func_ov000_021a8a04(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)rx, (s16)ry);
-                s32 distB = func_ov000_021a8a04(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)rx, (s16)ry);
-                s32 t;
+                distA = ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)rx, (s16)ry);
+                distB = ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)rx, (s16)ry);
+                
                 if (distA - distB < 0) {
-                    t = 0 - (func_ov000_021a8a04(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
-                           - func_ov000_021a8a04(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1));
+                    t = 0 - (ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
+                           - ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1));
                 } else {
-                    t = func_ov000_021a8a04(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
-                      - func_ov000_021a8a04(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1);
+                    t = ManhattanDistance(M2C_FIELD(arg3, s16 *, 0), M2C_FIELD(arg3, s16 *, 2), (s16)*arg0, (s16)*arg1)
+                      - ManhattanDistance(M2C_FIELD(arg4, s16 *, 0), M2C_FIELD(arg4, s16 *, 2), (s16)*arg0, (s16)*arg1);
                 }
                 if (t <= arg5) {
                     return 1;

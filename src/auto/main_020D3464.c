@@ -322,8 +322,7 @@ void func_020d3b24(void) {
     func_020d3400();
 
     {
-        void *map = *gCurrentMap;
-        void *ctl = M2C_FIELD(map, void **, 4);
+        void *ctl = M2C_FIELD(gCurrentMap, void **, 4);
         void (*cb)(void) = M2C_FIELD(ctl, void (**)(void), 0x30);
         if (cb != 0) {
             cb();
@@ -337,14 +336,11 @@ void func_020d3b24(void) {
     if (func_020d4774() != 0) return;
 
     {
-        void *map = *gCurrentMap;
-        void *mainBase = M2C_FIELD(map, void **, 0);
-        u16 *sp = (u16 *)((u8 *)mainBase + 0x5200 + 0xb0);
+        void *mainBase = *gCurrentMap;
         u8 *p = (u8 *)mainBase + 0x5200;
-        if (*sp > 0x1a) return;
-        switch (*sp) {
-        case 0:
-            return;
+        
+        
+        switch (*(u16 *)(p + 0xb0)) {
         case 1:
             func_020d4144();
             return;
@@ -385,50 +381,19 @@ void func_020d3b24(void) {
             func_020d4dfc();
             return;
         case 14:
-            return;
-        case 15: {
-            u16 x = *(u16 *)(p + 0xa4);
-            if (func_020d1a1c(x) != 0) {
-                func_ov000_0219c6e0();
-                return;
-            }
-            func_02084304();
-            return;
-        }
-        case 16:
-            return;
-        case 17:
-            func_02084304();
-            return;
-        case 18:
-            func_02084304();
-            return;
-        case 19:
-            func_020d45d8();
-            return;
-        case 20:
-            func_020d4614();
-            return;
-        case 21:
-            func_020d466c();
-            return;
-        case 22:
-            func_020d35d8();
-            return;
-        case 23:
-            func_020d3628();
-            return;
-        case 24:
-            func_020d3830();
-            return;
-        case 25:
-            func_020d3a3c();
-            return;
-        case 26:
-            func_020d3ae4();
-            return;
-        default:
-            return;
+            if (func_020d1a1c(*(u16 *)(p+0xa4))) { func_ov000_0219c6e0(); return; }
+            func_02084304(); return;
+        case 19: func_02084304(); return;
+        case 16: func_020d45d8(); return;
+        case 18: func_020d4614(); return;
+        case 20: func_020d466c(); return;
+        case 21: func_020d35d8(); return;
+        case 22: func_020d3628(); return;
+        case 23: func_020d3830(); return;
+        case 24: func_020d3a3c(); return;
+        case 25: func_020d3ae4(); return;
+        case 26: func_020d3b18(); return;
+        default: return;
         }
     }
 }

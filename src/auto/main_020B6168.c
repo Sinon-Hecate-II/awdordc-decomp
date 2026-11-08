@@ -1,36 +1,38 @@
 /* 32 functions from 0x020B6168 to 0x020B7138 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
+    M2C_UNK func_0208fb0c(M2C_UNK, s32, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 func_0208c080(void *, s32);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
-    M2C_UNK func_0208fb0c(M2C_UNK, u8, u8);
     M2C_UNK func_020cc6a4(void);
     void func_020b6124(void *);
 
     u8 *core;
-    s32 xc, yc, range;
-    s32 minX, minY, maxX, maxY;
+    register s32 xc,yc,range;
+    s32 minX, minY, maxY;
+    register s32 maxX;
     s32 t;
-    s32 x, y;
-    s32 dx, dy, dist, adx, ady;
-    void *p;
+    register void *p;
+    register s32 x,y,dy,dx;
+    s32 dist, adx, ady;
     u32 bits;
 
-    core = (u8 *)*gCurrentMap;
 
+    range = M2C_FIELD(arg0, s16 *, 0x4C);
     xc = M2C_FIELD(arg0, s16 *, 0x44);
     yc = M2C_FIELD(arg0, s16 *, 0x46);
-    range = M2C_FIELD(arg0, s16 *, 0x4C);
 
     minX = xc - range;
     if (minX < 0) minX = 0;
     minY = yc - range;
     if (minY < 0) minY = 0;
 
+    core = (u8 *)*gCurrentMap;
     maxX = (s32)M2C_FIELD(core, u16 *, 0x5144) - 1;
     t = xc + range;
     if (t < maxX) maxX = t;
@@ -42,25 +44,22 @@ void func_020b6168(void *arg0) {
     if (minY <= maxY) {
         for (y = minY; y <= maxY; y++) {
             for (x = minX; x <= maxX; x++) {
-                dx = xc - x;
-                if (dx > 0) dist = dx;
-                else dist = x - xc;
-                dy = yc - y;
+                dx = M2C_FIELD(arg0,s16 *,0x44) - x;
+                dist=0;
+                if (dx > 0) dist += dx;
+                else dist += x - M2C_FIELD(arg0,s16 *,0x44);
+                dy = M2C_FIELD(arg0,s16 *,0x46) - y;
                 if (dy > 0) dist += dy;
-                else dist += y - yc;
+                else dist += y - M2C_FIELD(arg0,s16 *,0x46);
                 if (dist < 0) continue;
-                if (dist > range) continue;
+                if (dist > M2C_FIELD(arg0,s16 *,0x4c)) continue;
 
-                adx = dx;
-                if (adx < 0) adx = -adx;
-                ady = dy;
-                if (ady < 0) ady = -ady;
+                if (dy < 0) dy=-dy;
+                if (dx < 0) dx=-dx;
 
                 p = func_020b5188((M2C_UNK *)((u8 *)arg0 + 0x34), x, y, 0x10, 0, 0, arg0);
                 func_0208c080(p, 2);
-                bits = M2C_FIELD(p, u32 *, 0x48);
-                bits = (bits & 0xFFFFFC00u) | (u32)(((adx + ady) * 8) & 0xFF);
-                M2C_FIELD(p, u32 *, 0x48) = bits;
+                ((RangeEffect *)p)->distance=(u8)((dx+dy)*8);
                 M2C_FIELD(p, s32 *, 0x58) = x;
                 M2C_FIELD(p, s32 *, 0x5C) = y;
                 M2C_FIELD(p, s32 *, 0x60) = M2C_FIELD(arg0, s16 *, 0x4E);
@@ -71,7 +70,7 @@ void func_020b6168(void *arg0) {
 
     func_02080750(2, 0x3C, 0);
     func_02080358(4, 0, 2, 0);
-    func_0208fb0c(0x93, (u8)M2C_FIELD(arg0, s16 *, 0x44), (u8)M2C_FIELD(arg0, s16 *, 0x46));
+    func_0208fb0c(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
     func_020cc6a4();
 }
 
@@ -140,7 +139,7 @@ void func_020b6444(void *arg0) {
     void func_020b5200(M2C_UNK *, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 func_0208c080(void *, s32);
-    M2C_UNK func_0208fb0c(M2C_UNK, u8, u8);
+    M2C_UNK func_0208fb0c(M2C_UNK, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_02128ebc;
     extern M2C_UNK data_02128ec4;
@@ -371,87 +370,16 @@ M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
 
 #pragma opt_common_subs off
 void func_020b6c6c(void *arg0) {
-    M2C_UNK func_0208c1ec(void *);
-    M2C_UNK func_0208c200(void *);
-    M2C_UNK func_0208fb0c(s32, s32, s32);
-    s32 func_020b6b80(void *);
-    u32 func_0207c2f0(void);
-    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
-    extern M2C_UNK data_02128f08;
-    M2C_UNK temp_r4;
-    M2C_UNK temp_r5;
-    s32 temp_r6;
-    u16 temp_r8;
-
-    temp_r6 = M2C_FIELD(arg0, s32 *, 0x60);
-    temp_r8 = (u16)((M2C_FIELD(arg0, u32 *, 0x48) >> 21) & 0xffff);
-    temp_r4 = func_0208c1ec(arg0);
-    temp_r5 = func_0208c200(arg0) - 1;
-
-    switch (temp_r8) {
-    case 0:
-        func_0208fb0c(0xFD, (s32)temp_r4, (s32)temp_r5);
-        break;
-    case 0x14:
-        func_0208fb0c(0xFE, (s32)temp_r4, (s32)temp_r5);
-        break;
-    case 0x20:
-        func_0208fb0c(0x100, (s32)temp_r4, (s32)temp_r5);
-        break;
-    case 0x5A:
-        func_0208fb0c(0xFF, (s32)temp_r4, (s32)temp_r5);
-        break;
-    case 0x68:
-        func_0208fb0c(0x102, (s32)temp_r4, (s32)temp_r5);
-        break;
-    default:
-        break;
-    }
-    if (temp_r8 == 0x3C) {
-        (void)func_020b6b80(arg0);
-    }
-    if ((s32)temp_r8 < 0x20) {
-        return;
-    }
-    if ((s32)temp_r8 > 0x5A) {
-        return;
-    }
-    {
-        u32 r1 = temp_r8 >> 31;
-        u32 x = (temp_r8 << 29) - r1;
-        u32 rot = r1 + ((x >> 29) | (x << 3));
-        if (rot != 0) {
-            return;
-        }
-    }
-    if (func_0207c2f0() & 1) {
-        u32 t = func_0207c2f0();
-        u32 r1 = t >> 31;
-        u32 x = (t << 31) - r1;
-        u32 rot = r1 + ((x >> 31) | (x << 1));
-        temp_r4 = (M2C_UNK)((s32)temp_r4 + (s32)(rot + 2));
-    } else {
-        u32 t = func_0207c2f0();
-        u32 r1 = t >> 31;
-        u32 x = (t << 31) - r1;
-        u32 rot = r1 + ((x >> 31) | (x << 1));
-        temp_r4 = (M2C_UNK)((s32)temp_r4 - (s32)(rot + 2));
-    }
-    if (func_0207c2f0() & 1) {
-        u32 t = func_0207c2f0();
-        u32 r1 = t >> 31;
-        u32 x = (t << 31) - r1;
-        u32 rot = r1 + ((x >> 31) | (x << 1));
-        temp_r5 = (M2C_UNK)((s32)temp_r5 + (s32)(rot + 2));
-    } else {
-        u32 t = func_0207c2f0();
-        u32 r1 = t >> 31;
-        u32 x = (t << 31) - r1;
-        u32 rot = r1 + ((x >> 31) | (x << 1));
-        temp_r5 = (M2C_UNK)((s32)temp_r5 - (s32)(rot + 2));
-    }
-    func_0208fb0c(0x101, (s32)temp_r4, (s32)temp_r5);
-    func_020b5134(&data_02128f08, (s32)temp_r4, (s32)temp_r5, 0x10, (s32)temp_r6, 1, arg0);
+M2C_UNK func_0208c1ec(void *);M2C_UNK func_0208c200(void *);M2C_UNK func_0208fb0c(s32,s32,s32);s32 func_020b6b80(void *);u32 func_0207c2f0(void);M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,void*);extern M2C_UNK data_02128f08;
+s32 x,y,v;u16 frame;
+v=M2C_FIELD(arg0,s32*,0x60);frame=(u16)(M2C_FIELD(arg0,u32*,0x48)>>21);
+x=func_0208c1ec(arg0);y=func_0208c200(arg0)-1;
+switch(frame){case 0:func_0208fb0c(253,x,y);break;case 20:func_0208fb0c(254,x,y);break;case 32:func_0208fb0c(256,x,y);break;case 90:func_0208fb0c(255,x,y);break;case 104:func_0208fb0c(258,x,y);break;}
+if(frame==60)func_020b6b80(arg0);
+if((s32)frame<32)return;if((s32)frame>90)return;if((s32)frame%8)return;
+if(func_0207c2f0()&1)x+=(s32)func_0207c2f0()%2+2;else x-=(s32)func_0207c2f0()%2+2;
+if(func_0207c2f0()&1)y+=(s32)func_0207c2f0()%2+2;else y-=(s32)func_0207c2f0()%2+2;
+func_0208fb0c(257,x,y);func_020b5134(&data_02128f08,x,y,16,v,1,arg0);
 }
 #pragma opt_common_subs reset
 void func_020b6e4c(void) {

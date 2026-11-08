@@ -477,13 +477,30 @@ s32 func_02033038(void) {
 
     {
         s32 state = *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8);
-        if (state >= 0x4e84) {
-            if (state == 0x4e88) {
+        if (state < 0x4e84) {
+        if (state == 0x4e22) {
+            void *p = alloc((void*)&data_020fb37c, 0x71f);
+            if (p == 0) {
+                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+                return 2;
+            }
+            if (func_020470dc(&data_0213d120, (void*)(((u32)p + 0x1f) & ~0x1fu)) != 1) {
+                freefn((void*)&data_020fb38c, p, 0);
+                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+                return 15;
+            }
+            freefn((void*)&data_020fb38c, p, 0);
+        }
+        return 21;
+        }
+        else {
+            switch (state) {
+            case 0x4e88: {
                 func_0204712c(&data_0213d120);
                 *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e88;
                 return 16;
             }
-            if (state == 0x4e8c) {
+            case 0x4e8c: {
                 void *p = alloc((void*)&data_020fb37c, 0x700);
                 if (p == 0) {
                     *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
@@ -494,21 +511,7 @@ s32 func_02033038(void) {
                 *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
                 return 17;
             }
-            return 18;
-        }
-        if (state == 0x4e22) {
-            void *p = alloc((void*)&data_020fb37c, 0x71f);
-            if (p == 0) {
-                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
-                return 2;
             }
-            if (func_020470dc(&data_0213d120, (void*)(((u32)p + 0x1f) & ~0x1fu)) == 1) {
-                freefn((void*)&data_020fb38c, p, 0);
-                return 21;
-            }
-            freefn((void*)&data_020fb38c, p, 0);
-            *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
-            return 15;
         }
         return 18;
     }

@@ -1,52 +1,40 @@
 /* 37 functions from 0x020180C8 to 0x02018FF0 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma optimization_level 2
 void func_020180c8(s32 arg0) {
-    extern M2C_UNK data_02136c40;
-    register s32 a asm("r5") = arg0;
-    void func_02016934(void *);
-    void func_02018960(s32);
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_0201280c(void (*)(void *), s32);
-
-    func_0201280c(func_02016934, a);
-    if (a == 0 || (u32)a >= 0x10U) {
-        return;
-    }
-    {
-        register s32 i asm("r4") = a - 1;
-        M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + i * 2 + 0x1400, u16 *, 0x8a) = 0;
-        func_02007f8c((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0xa8 + 0x1400 + i * 4, 0, 4);
-        func_02007f8c((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1340 + i * 0x16, 0, 0x16);
-        func_02018960(a);
-        M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + i * 2 + 0x1700, u16 *, 0x54) = 0;
-        {
-            s32 temp = (s8)M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + i + 0x1500, s8 *, 0x26);
-            if (temp != -1) {
-                u16 v;
-                void *q;
-                q = (u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + (u8)temp * 0x5d4 + 0x1d00;
-                v = M2C_FIELD(q, u16 *, 0x4e);
-                M2C_FIELD(q, u16 *, 0x4e) = v & ~(1 << a);
-                v = M2C_FIELD(q, u16 *, 0x50);
-                M2C_FIELD(q, u16 *, 0x50) = v | (1 << a);
-                M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + i + 0x1000, s8 *, 0x526) = -1;
-                v = M2C_FIELD(q, u16 *, 0x4c);
-                M2C_FIELD(q, u16 *, 0x4c) = v & ~(1 << a);
-            }
-        }
-        if (M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1500, u16 *, 0x36) & (1 << a)) {
-            u8 v8 = M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1000, u8 *, 0x535);
-            M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1000, u8 *, 0x535) = v8 - 1;
-            {
-                u16 v = M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1500, u16 *, 0x36);
-                M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1500, u16 *, 0x36) = v & ~(1 << a);
-            }
-        }
-        M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + i * 4 + 0x1000, u32 *, 0x4e8) = 0;
-    }
+extern M2C_UNK data_02136c40;
+void func_02016934(void *);
+void func_02018960(s32);
+M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);
+s32 func_0201280c(void (*)(void *),s32);
+s32 i,temp,off;u16 v1,v2;u8 *q;
+func_0201280c(func_02016934,arg0);
+if(arg0==0||(u32)arg0>=16)return;
+i=arg0-1;
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+i*2+0x1400,u16*,0x8a)=0;
+func_02007f8c((u8*)M2C_FIELD(&data_02136c40,void**,12)+0xa8+0x1400+i*4,0,4);
+func_02007f8c((u8*)M2C_FIELD(&data_02136c40,void**,12)+0x1340+i*22,0,22);
+func_02018960(arg0);
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+i*2+0x1700,u16*,0x54)=0;
+temp=M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+i+0x1500,s8*,0x26);
+if(temp!=-1){
+off=(u8)temp*0x5d4;
+q=(u8*)M2C_FIELD(&data_02136c40,void**,12)+off+0x1d00;
+v1=M2C_FIELD(q,u16*,0x4e);M2C_FIELD(q,u16*,0x4e)=v1&~(1<<arg0);
+q=(u8*)M2C_FIELD(&data_02136c40,void**,12)+off+0x1d00;
+v2=M2C_FIELD(q,u16*,0x50);M2C_FIELD(q,u16*,0x50)=v2|(1<<arg0);
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+i+0x1000,s8*,0x526)=-1;
+q=(u8*)M2C_FIELD(&data_02136c40,void**,12)+off+0x1d00;
+M2C_FIELD(q,u16*,0x4c)&=~(1<<arg0);
 }
-
+if(M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+0x1500,u16*,0x36)&(1<<arg0)){
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+0x1000,u8*,0x535)--;
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+0x1500,u16*,0x36)&=~(1<<arg0);
+}
+M2C_FIELD((u8*)M2C_FIELD(&data_02136c40,void**,12)+i*4+0x1000,u32*,0x4e8)=0;
+}
+#pragma optimization_level reset
 void func_02018254(s16 arg0) {
     extern M2C_UNK data_02136c40;
     M2C_FIELD(&data_02136c40, s16 *, 0x26) = arg0;

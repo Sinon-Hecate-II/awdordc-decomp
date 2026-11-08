@@ -243,18 +243,18 @@ M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK func_020d2d38(M2C_UNK,M2C_UNK);
 extern u8 data_0215d858[],data_ov000_021b5bfc[];
 extern void *gCur3DSpriteEngine; extern void **gCurrentMap;
-s32 left; s32 right;
+s32 left; s32 right; s32 x;
 s32 y=arg1+1;
 u8 *ptr=data_0215d858+arg2*2;
 u16 mode, color; s32 row; u16 i;
 
 s32 value; u32 kind;
-right=(s16)(arg0+14); left=(u16)(arg0+1); arg0=(s16)(arg0+3);
+right=(s16)(arg0+14); left=(u16)(arg0+1); x=(s16)(arg0+3);
 i=0; do {
 kind=ptr[i*2]; if(!kind)break;
-if(ptr[i*2+1]){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*,0x52a8);}
+if(*(i*2+ptr+1)){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*,0x52a8);}
 row=y+i*2;
-func_0209bfdc(arg0,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(data_ov000_021b5bfc,s32*,kind*112),0,mode);
+func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(data_ov000_021b5bfc,s32*,kind*112),0,mode);
 value=func_020d2d38(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
 func_0209c048(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
 func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);

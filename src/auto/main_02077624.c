@@ -1,5 +1,6 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
+
 static inline s32 cellIndex02078170(s32 x,s32 y) { extern s32 *gCurrentMap; return x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758); }
 static inline u8 initialCell02078170(s8 elev) { return elev>=0 ? 2:0; }
 static inline u8 mapByte020778cc(s32 map,u32 index) { return M2C_FIELD(map+index,u8 *,0x1420); }
@@ -65,69 +66,30 @@ void func_02077700(void) {
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
 
-void func_02077740(void) {
-    extern s32 *gCurrentMap;
-    s32 *base;
-    u16 width;
-    u16 height;
-    s32 mode;
-    u16 px;
-    u16 py;
-    u16 tx;
-    u16 ty;
-
-    base = *gCurrentMap;
-    width = *(u16 *)((u8 *)base + 0x5144);
-    height = *(u16 *)((u8 *)base + 0x5146);
-    mode = func_0207cfb8((void *)((u8 *)base + 0x6EF8));
-
-    if (mode <= 0) mode = 0x10;
-    else mode = 0x18;
-
-    switch (mode) {
-    case 0x10:
-        *(volatile u32 *)0x40004a8 = 0x6c9364a4;
-        px = width << 8;
-        py = height << 8;
-        break;
-    case 0x18:
-        *(volatile u32 *)0x40004a8 = 0x6d2364b4;
-        px = width << 9;
-        py = height << 9;
-        break;
-    }
-
-    tx = width * 3;
-    tx = tx << 8;
-    ty = height * 3;
-    ty = ty << 8;
-
-    *(volatile u32 *)0x40004ac = 0x152;
-    *(volatile u32 *)0x40004a4 = 0x3080080;
-    *(volatile u32 *)0x4000480 = 0x7fff;
-    *(volatile u32 *)0x4000500 = 1;
-
-    *(volatile u32 *)0x4000488 = 0;
-    *(volatile u32 *)0x400048c = 0;
-    *(volatile u32 *)0x400048c = 0x420;
-
-    *(volatile u32 *)0x4000488 = (u32)py << 16;
-    *(volatile u32 *)0x400048c = (u32)ty << 16;
-    *(volatile u32 *)0x400048c = 0x420;
-
-    *(volatile u32 *)0x4000488 = (u32)px | ((u32)py << 16);
-    *(volatile u32 *)0x400048c = (u32)tx | ((u32)ty << 16);
-    *(volatile u32 *)0x400048c = 0x420;
-
-    *(volatile u32 *)0x4000488 = (u32)px;
-    *(volatile u32 *)0x400048c = (u32)tx;
-    *(volatile u32 *)0x400048c = 0x420;
-
-    *(volatile u32 *)0x4000504 = (u32)width << 24;
+#pragma opt_propagation off
+#pragma opt_cond_exec off
+#pragma opt_common_subs off
+void func_02077740(void){
+extern s32 *gCurrentMap;
+s32 *base;u16 w,h;s32 mode,tx,ty,z=0,x=0,y=0;
+u16 a,b,c,d,e;
+base=(s32*)*gCurrentMap;h=M2C_FIELD(base,u16*,0x5146);w=M2C_FIELD(base,u16*,0x5144);
+ty=h*3;tx=w*3;tx<<=8;ty<<=8;
+mode=func_0207cfb8((u8*)base+0x6ef8);if(mode<=0)mode=16;else mode=24;
+switch(mode){case 16:*(volatile u32*)0x40004a8=0x6c9364a4;x=w<<16;y=h<<16;z=0;break;
+case 24:*(volatile u32*)0x40004a8=0x6d2364b4;x=w<<17;y=h<<17;z=0;break;}
+a=(u16)(s16)(z>>8);b=(u16)(s16)(y>>8);c=(u16)(s16)ty;d=(u16)(s16)(x>>8);e=(u16)(s16)tx;
+*(volatile u32*)0x40004ac=0x152;*(volatile u32*)0x40004a4=0x3080080;*(volatile u32*)0x4000480=0x7fff;*(volatile u32*)0x4000500=1;
+*(volatile u32*)0x4000488=a|((u32)a<<16);*(volatile u32*)0x400048c=0;*(volatile u32*)0x400048c=0x420;
+*(volatile u32*)0x4000488=a|((u32)b<<16);*(volatile u32*)0x400048c=(u32)c<<16;*(volatile u32*)0x400048c=0x420;
+*(volatile u32*)0x4000488=d|((u32)b<<16);*(volatile u32*)0x400048c=e|((u32)c<<16);*(volatile u32*)0x400048c=0x420;
+*(volatile u32*)0x4000488=d|((u32)a<<16);*(volatile u32*)0x400048c=e;*(volatile u32*)0x400048c=0x420;
+*(volatile u32*)0x4000504=0;
 }
-
+#pragma opt_propagation reset
+#pragma opt_cond_exec reset
+#pragma opt_common_subs reset
 #pragma push
-#pragma optimization_level 2
 void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  void func_02079310(s32,s32,s32,s32,u8,u8,u8,u8);
  extern s32 *gCurrentMap;

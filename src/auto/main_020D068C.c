@@ -25,8 +25,8 @@ void func_020d0bac(void *,s32);
 
 void func_020d068c(void *p,s16 index) {
 s32 func_020d05f4(); s32 func_020a3518();
-void *q,*m;
-q=(void *)*gCurrentMap+0x59a4+index*14;
+void *q,*m; register s32 stride=14;
+q=(void *)*gCurrentMap+0x59a4+index*stride;
 M2C_FIELD(p,void **,0)=q;
 m=(void *)*gCurrentMap;
 M2C_FIELD(p,s16 *,4)=M2C_FIELD(m+(M2C_FIELD(q,u8 *,1)+M2C_FIELD(m+M2C_FIELD(q,u8 *,2)*2,u16 *,0x3758)),u8 *,0x1420)&31;
@@ -40,15 +40,16 @@ M2C_FIELD(p,s16 *,18)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));
 M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 }
 
+#pragma opt_propagation off
 void func_020d0868(void *a,void **b,s32 c,s32 d) {
 s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
 extern u8 data_ov000_021b5bfc[];
-u16 x=0; u16 y; s16 z; u8 *p=data_ov000_021b5bfc+D068CLow(M2C_FIELD(a,void **,0))*112;
+register u16 x=0; register u16 y; register s16 z; register u8 *p=data_ov000_021b5bfc+((D068CBits *)M2C_FIELD(a,void **,0))->value*112;
 y=0; z=0;
 M2C_FIELD(a,s16 *,22)=func_020a875c(M2C_FIELD(a,void **,0));
 if(c==1) {
-void *q=*b; u32 flag=D068CFlag(q);
-z=func_020a792c(D068CLow(M2C_FIELD(a,void **,0)),D068CLow(q),1,flag);
+void *q=*b; u32 lowA,lowB,flag;lowA=D068CLow(M2C_FIELD(a,void **,0));lowB=D068CLow(q); flag=D068CFlag(q);
+z=func_020a792c(lowA,lowB,1,flag);
 if(z) {
 void *q=*b;
 u8 kind_byte=M2C_FIELD(q,u8 *,0);
@@ -65,8 +66,7 @@ if(((u32)(M2C_FIELD(q,u16 *,6)<<21)>>28) && d==1){void *r=*b; u8 rb=M2C_FIELD(r,
 if(x<=y){if(!z)return;M2C_FIELD(a,s16 *,30)=2;M2C_FIELD(a,u16 *,24)=y;return;}
 M2C_FIELD(a,s16 *,30)=1;M2C_FIELD(a,u16 *,24)=x;M2C_FIELD(a,s16 *,16)-=1;
 }
-
-#pragma opt_common_subs off
+#pragma opt_propagation reset
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
  s32 func_020a8204();
  s32 func_020a86f8();

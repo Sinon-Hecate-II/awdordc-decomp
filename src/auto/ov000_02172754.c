@@ -212,16 +212,18 @@ if(24<=M2C_FIELD(p,s32*,12))M2C_FIELD(p,s32*,12)=0;
 }
 
 #pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_ov000_02172e90(void *arg0) {
     M2C_UNK func_020ae354(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern u8 data_ov000_021ae25c[12];
 
     void *saved;
     u8 buf[6];
-    u8 *p;
-    s32 i;
-    s32 off;
-    s32 stride=0x8c;
+    register u8 *p;
+    register u8 *bufptr;
+    register s32 i;
+    register s32 off;
+    register s32 stride;
     void *rec;
     u8 mapByte;
     s32 rcd;
@@ -231,12 +233,7 @@ void func_ov000_02172e90(void *arg0) {
     u16 h;
     u8 *tab;
  
-    buf[1] = data_ov000_021ae25c[7];
-    buf[0] = data_ov000_021ae25c[6];
-    buf[2] = data_ov000_021ae25c[8];
-    buf[3] = data_ov000_021ae25c[9];
-    buf[4] = data_ov000_021ae25c[10];
-    buf[5] = data_ov000_021ae25c[11];
+    *(PaletteIndices *)buf = *(PaletteIndices *)(data_ov000_021ae25c+6);
 
     *(s32 *)((s8 *)arg0 + 0x10) = *(s32 *)((s8 *)arg0 + 0x10) + 1;
     if (*(s32 *)((s8 *)arg0 + 0x10) > 0x80) {
@@ -246,16 +243,18 @@ void func_ov000_02172e90(void *arg0) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c4;
 
+    bufptr=buf;
+    stride=0x8c;
     i = 0;
     off = 0;
     do {
         rec = (void *)((i + 1) * stride + (s32)*gCurrentMap + 0x6000);
         rcd = *(s32 *)((s8 *)arg0 + 0x18) + 0x3c + off;
         mapByte = *(u8 *)((s8 *)rec + 0x7c1);
-        tab = *(u8 **)((s8 *)gCur3DSpriteEngine + 0x30);
-        p = tab + ((buf[mapByte] << 5)&~1);
-        tab = *(u8 **)((s8 *)gCur3DSpriteEngine + 0x30);
-        tab += ((buf[mapByte] << 5)&~1);
+        tab = *(u8 * volatile *)((s8 *)gCur3DSpriteEngine + 0x30);
+        p = tab + ((bufptr[mapByte] << 5)&~1);
+        tab = *(u8 * volatile *)((s8 *)gCur3DSpriteEngine + 0x30);
+        tab += ((bufptr[mapByte] << 5)&~1);
 
         if (*(u8 *)((s8 *)rcd + 0x34) != 0) {
             *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(*(u16*)(tab+0x1e), 0, 8, 8);
@@ -282,7 +281,7 @@ void func_ov000_02172e90(void *arg0) {
             } else {
                 r3v = 0;
             }
-            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(h, 0xffff, (16 - r3v) & 0xff, r3v);
+            *(u16 *)((s8 *)p + 0x06) = (u16)func_020ae354(*(u16 *)(tab+0x1e), 0xffff, (16 - r3v) & 0xff, r3v);
         }
 
         i = i + 1;
@@ -293,6 +292,7 @@ void func_ov000_02172e90(void *arg0) {
         (u8)(*(u8 *)((s8 *)gCur3DSpriteEngine + 0x46) | 0x10);
     gCur3DSpriteEngine = saved;
 }
+#pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 void func_ov000_02173058(void *arg0) {
  s32 func_ov000_0217244c();

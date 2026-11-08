@@ -219,15 +219,15 @@ void func_ov001_0218b860(void) {
 void func_ov001_0218b964(void) {
 extern M2C_UNK data_ov001_02193e48;
 s32 func_020020c4(s32,s32); s32 func_0200d9f4(void);void func_0200dbf0(void *);void func_ov001_0218b2bc(u16,u16,void *);
-register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; TouchSample *sample;
+register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; u8 *sp;
 old=((InputGlobal *)&data_ov001_02193e48)->state->flags.active?1:0;
 active=0;index=func_0200d9f4();
 p=((InputGlobal *)&data_ov001_02193e48)->state;
 *(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
 for(i=active;i<4;) {
-sample=((InputGlobal *)&data_ov001_02193e48)->state->samples;
-sample+=index;
-if(sample->active==1) if(sample->status==0) {
+sp=(u8 *)((InputGlobal *)&data_ov001_02193e48)->state->samples;
+sp+=index*8;
+if(M2C_FIELD(sp,u16 *,4)==1) if(M2C_FIELD(sp,u16 *,6)==0) {
 active=1;func_0200dbf0(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
 }
 i++;index=func_020020c4(index+4,5);

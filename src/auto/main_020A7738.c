@@ -475,33 +475,23 @@ u8 func_020a8204(void *arg0) {
 
 void func_020a8240(u8 *unit, s32 dx, s32 dy, u8 *out) {
 extern void **gCurrentMap;
-s32 x;
-s32 y;
-s32 n;
-s32 step;
-x = unit[1];
-y = unit[2];
-n = dx < 0 ? -dx : dx;
-step = dx > 0 ? 1 : -(dx < 0);
-while (n > 0) {
-    x += step;
-    if (!A8240InBounds(x, y)) break;
-    if (M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x508) != 0) break;
-    n--;
-    if (step > 0) *out++ = 1;
-    if (step < 0) *out++ = 0;
+s32 y; s32 x; s32 step; s32 n;
+x=unit[1];y=unit[2];
+n=dx<0?-dx:dx; step=dx>0?1:-(dx<0);
+while(n>0){
+x+=step;
+if(!A8240InBounds(x,y))break;
+if(M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,0x3758),u8 *,0x508)!=0)break;
+n--; if(step>0)*out++=1; if(step<0)*out++=0;
 }
-n = dy < 0 ? -dy : dy;
-step = dy > 0 ? 1 : -(dy < 0);
-while (n > 0) {
-    y += step;
-    if (!A8240InBounds(x, y)) break;
-    if (M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x508) != 0) break;
-    n--;
-    if (step > 0) *out++ = 2;
-    if (step < 0) *out++ = 3;
+n=dy<0?-dy:dy; step=dy>0?1:-(dy<0);
+while(n>0){
+y+=step;
+if(!A8240InBounds(x,y))break;
+if(M2C_FIELD((u8 *)(x+(u32)*gCurrentMap)+M2C_FIELD((u8 *)*gCurrentMap+((u32)y<<1),u16 *,0x3758),u8 *,0x508)!=0)break;
+n--; if(step>0)*out++=2; if(step<0)*out++=3;
 }
-*out = 255;
+*(s8 *)out=-1;
 }
 
 #pragma opt_peephole off

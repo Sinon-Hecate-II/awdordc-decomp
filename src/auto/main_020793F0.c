@@ -158,8 +158,9 @@ void func_0207971c(void *arg0, void *arg1) {
 void func_020799dc(void *arg0, void *arg1, void *arg2, u32 arg3) {
 #pragma opt_propagation on
 extern M2C_UNK data_02140f70;
-s32 x=((s16*)arg1)[0], y=((s16*)arg1)[1];
-s32 h=((s16*)arg2)[1], px=((s32*)arg0)[0], w=((s16*)arg2)[0], py=((s32*)arg0)[1];
+s16 x=((s16*)arg1)[0], y=((s16*)arg1)[1];
+s16 h=((s16*)arg2)[1], w=((s16*)arg2)[0];
+s32 px=((s32*)arg0)[0], py=((s32*)arg0)[1];
 s32 vx=(s16)(px-192), vy=(s16)(py-384);
 s32 tx=(s32)(((x<<12)+2048)<<8)>>16, ty=(s32)(((y<<12)+2048)<<8)>>16;
 s32 by=(s32)((((y+h)<<12)+2048)<<8)>>16, rx=(s32)((((x+w)<<12)+2048)<<8)>>16;

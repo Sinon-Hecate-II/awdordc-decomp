@@ -24,7 +24,7 @@ s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  s8 *dst;
  s32 n,bits;
  u8 buf[3];
- s8 *table; s32 c,b,a;
+ s32 a,b,c;
  extra=arg1%3 ? 4:0;
  total=extra+(arg1/3)*4;
  if(!arg2)return total;
@@ -39,12 +39,10 @@ s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  func_02007f8c(buf,0,3);
  func_02008048(src,buf,n);
  dst[0]=data_020fba88[buf[0]>>2];
- if(count<2)c=42;else {a=buf[0];b=buf[1];table=data_020fba88;a=(a<<4)&63;b=a|(b>>4);c=table[b];}dst[1]=c;
+ if(count<2)c=42;else {a=buf[0];b=buf[1];c=data_020fba88[((a<<4)&63)|(b>>4)];}dst[1]=c;
  if(count<3)c=42;else {a=buf[1];b=buf[2];c=data_020fba88[((a<<2)&63)|(b>>6)];}dst[2]=c;
  if(count<4)c=42;else {a=buf[2];c=data_020fba88[a&63];}
- src=src+n;
- * (dst+3)=c;
- dst=dst+4;
+ src+=n;dst[3]=c;dst+=4;
  }
  return dst-arg2;
 }

@@ -226,12 +226,12 @@ func_ov000_02179d3c();
 for(y=0;y<*(u16 *)((u8 *)*gCurrentMap+0x5146);y++){
 for(x=0;x<*(u16 *)((u8 *)*gCurrentMap+0x5144);x++){
 u8 *map;
-s32 cell;
+register s32 cell;
 if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x]<0)continue;
 if(!func_020ba924(x,y))continue;
 map=(u8 *)*gCurrentMap;
 cell=*(s8 *)(*(u16 *)(map+0x3758+y*2)+(map+x)+0x1928);
-map += cell*6;
+map = (u8 *)((u32)map + cell*6);
 if((map+kind)[0x6c63]>=((u8 *)data_ov000_021df57c)[13])continue;
 if(best<(*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x])continue;
 if(!func_ov000_0217bc34(x,y,2,5))continue;

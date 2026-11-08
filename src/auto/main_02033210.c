@@ -51,8 +51,11 @@ if(!func_02033988(p,buffer,data_0213d13c))return 8;
 if(M2C_FIELD(&data_0213d114,s32 *,4)==1){
 if(func_020346d0(p,data_020fb414,data_020fb410,func_02068c34((s32)data_020fb410)))return 8;
 }
-if(func_0206cd90(b)){
-if(func_020346d0(p,data_020fb41c,b,func_0206cd90(b)*2))return 8;
+{
+void *bb=b;
+if(func_0206cd90(bb)){
+if(func_020346d0(p,data_020fb41c,bb,func_0206cd90(bb)*2))return 8;
+}
 }
 return 0;
 }

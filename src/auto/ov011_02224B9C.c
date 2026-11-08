@@ -292,6 +292,50 @@ void func_ov011_02225420(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x54) = arg1;
 }
 
+void func_ov011_02225428(void *arg0) {
+    s32 func_020720f0(s32, s32);
+    s32 func_02086680(s32);
+    s32 func_0209b5e4(s32, s32);
+    void func_0209b67c(u16, s32, u16, s32, s32);
+    extern void *data_027e00c8;
+    extern void *gCur3DSpriteEngine;
+    void *temp_r7;
+    s16 temp_r2;
+    s16 temp_r4;
+    s16 temp_r8;
+    s32 temp_r1;
+    s32 temp_r6;
+    s32 temp_r6_2;
+    s32 temp_r8_3;
+    s32 temp_r9;
+    u8 temp_r10;
+    u8 temp_r8_2;
+    s16 temp_r0;
+
+    temp_r7 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = data_027e00c8;
+    M2C_FIELD(arg0, s16 *, 0x58) = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((M2C_FIELD(arg0, u8 *, 0x35) + 1) << 6) + 0x40) << 5), func_02086680(M2C_FIELD(arg0, s32 *, 0x50)));
+    temp_r2 = M2C_FIELD(arg0, s16 *, 0x58);
+    temp_r0 = 0x80 - ((s32) (temp_r2 + ((u32) temp_r2 >> 0x1F)) >> 1);
+    temp_r1 = M2C_FIELD(arg0, s16 *, 0x38) - temp_r0;
+    if (temp_r1 < temp_r2) {
+        M2C_FIELD(arg0, s16 *, 0x58) = (s16) temp_r1;
+    }
+    temp_r8 = M2C_FIELD(arg0, s16 *, 0x58);
+    temp_r4 = temp_r0;
+    if ((s32) temp_r8 > 0) {
+        temp_r10 = M2C_FIELD(arg0, u8 *, 0x34);
+        temp_r9 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
+        temp_r6 = func_020720f0(0x80, temp_r10);
+        func_0209b67c((u16) (temp_r4 & 0x1FF), (u16) ((u8) (((temp_r6 * temp_r9) + 0x28) - func_020720f0(0x80, temp_r10 * 2)) | 0x400), (u16) temp_r8, (u16) ((0x3FF & ((s32) ((temp_r9 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        temp_r8_2 = M2C_FIELD(arg0, u8 *, 0x34);
+        temp_r6_2 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
+        temp_r8_3 = func_020720f0(0x80, temp_r8_2);
+        func_0209b67c((u16) ((temp_r4 + 2) & 0x1FF), (u16) ((u8) (((temp_r8_3 * temp_r6_2) + 0x2A) - func_020720f0(0x80, temp_r8_2 * 2)) | 0x400), (u16) M2C_FIELD(arg0, s16 *, 0x58), (u16) ((0x3FF & ((s32) ((temp_r6_2 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+    }
+    gCur3DSpriteEngine = temp_r7;
+}
+
 void func_ov011_02225600(void) {
 
 }

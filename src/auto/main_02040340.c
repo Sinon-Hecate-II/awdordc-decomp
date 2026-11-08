@@ -72,7 +72,7 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     loc[0] = arg0;
     p = func_02044268();
     loc[1] = M2C_FIELD((u8 *)p + (M2C_FIELD(func_02044268(), u8 *, 0x14) + 1), u8 *, 0x2d0);
-    for (i = 1; i <= (s32)M2C_FIELD(func_02044268(), u8 *, 0x14); i++) {
+    for (i = loc[1] - loc[1] + 1; i <= (s32)M2C_FIELD(func_02044268(), u8 *, 0x14); i++) {
         p = func_02044268();
         q = func_02044268();
         r = func_0203f058(7, M2C_FIELD((u8 *)p + (i << 2), s32 *, 0xf4), M2C_FIELD((u8 *)q + (i << 2), s32 *, 0x24), M2C_FIELD((u8 *)func_02044268() + (i << 1), u16 *, 0xa4), (s32)loc, 2);

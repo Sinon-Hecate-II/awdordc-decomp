@@ -335,15 +335,12 @@ void func_020ca59c(void *dialog) {
     s32 flags = 0;
     s16 r6 = M2C_FIELD(dialog, s16 *, 0x6E);
     s32 merged;
+    s32 oldval;
+    void *p;
 
-    if (r6 <= 1) {
-        func_020cf828(0x10019);
-        func_0207a7a4(1, 4);
-        func_020cf69c(2, 10);
-        return;
-    }
-
+    if (r6 > 1) {
     func_020be010();
+    }
     if (func_0207b7c4() != 0) return;
     if (func_020cccb8() != 0) return;
 
@@ -374,14 +371,14 @@ void func_020ca59c(void *dialog) {
         return;
     }
     if (merged & 0x40) {
-        s32 oldval;
-        void *p;
         func_020d8fa0();
+    }
         oldval = saved;
         func_020bcb34(&saved, r6);
         func_020bd7a4(&saved, r6);
         if (oldval != saved) {
             func_0208fe30(0x10019);
+        }
             M2C_FIELD(dialog, s16 *, 0x6C) = (s16)saved;
             p = func_0209f8e4(M2C_FIELD(dialog, s16 *, 0x6C));
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(p, s16 *, 0x4);
@@ -390,8 +387,6 @@ void func_020ca59c(void *dialog) {
             if (func_0207b7c4() != 0) return;
             func_020cf5ec(2);
             func_020d6778(1);
-        }
-    }
 }
 
 void func_020ca77c(M2C_UNK arg0) {

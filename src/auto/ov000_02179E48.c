@@ -242,7 +242,6 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     extern s32 func_020a86f0(s32);
     extern s32 func_020a86bc(s32, s32);
     void *base;
-    void **map;
     u8 *sel;
     u8 attr;
     s8 *row;
@@ -271,9 +270,9 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     attr = data_ov000_021b5c0f[kind * 0x70];
 
     if (attr & 0x10) goto special;
-    if (kind == 0x16) {
-        map = *(void **volatile *)&gCurrentMap;
-        base = *(void *volatile *)map;
+    if (kind != 0x16) goto normal;
+    {
+        base = **(void **volatile *)&gCurrentMap;
     special:
         A = func_020a86f0(*(u16 *)(base + 0x52A4));
         B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
@@ -283,7 +282,9 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
         lhs = (((u32)(unitByte << 25)) >> 25) - cell2 * A;
         rhs = t * (B + 5);
         if (lhs < rhs) return 0;
-    } else {
+    } 
+    goto done;
+    normal: {
         A = func_020a86f0(*(u16 *)(base + 0x52A4));
         B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
         row = ((s8 **)(base + 0x52E8))[y];
@@ -293,6 +294,7 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
         rhs = t * (B + 1);
         if (lhs < rhs) return 0;
     }
+    done:
     return 1;
 }
 #pragma opt_common_subs reset

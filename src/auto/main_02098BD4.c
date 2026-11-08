@@ -398,7 +398,9 @@ void func_020994f8(u16 *a, s32 b, s32 c) {
     }
 }
 
-s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     extern void *gCur3DSpriteEngine;
     s32 func_02068d98(void *, void *);
     s32 func_02068c34(M2C_UNK);
@@ -407,35 +409,34 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u16 arg5
     void func_020994f8(u16 *, s32, s32);
     s32 func_0209c268(M2C_UNK);
 
-    void *engine;
-    void *obj;
-    s32 cursor;
-    s32 idx;
+    register void *obj;
+    register s32 cursor;
+    register s32 idx;
+    register void *engine;
     u16 u;
     u8 byte2;
     u8 byte302;
     s32 engineEntry;
     s32 funcResult;
-    s32 width;
-    u16 cur300;
+    register s32 width;
+    register s32 cur300;
     s32 len;
-
-    if (arg3 == 0) return -1;
-    if (*(u8 *)arg3 == 0) return -1;
+    s32 end;
 
     engine = gCur3DSpriteEngine;
     obj = M2C_FIELD(engine, void **, 0x50);
 
+    if (arg3 == 0 || *(u8 *)arg3 == 0) return -1;
     cursor = 0;
     idx = 0;
     if (*(u8 *)obj != 1) {
         for (;;) {
-            if (*((u8 *)obj + idx * 4 + 0x203) == (u8)arg5) {
+            if (*((u8 *)obj + idx * 4 + 0x203) == arg5) {
                 if (func_02068d98((void *)((u8 *)obj + cursor), (void *)arg3) == 0) {
                     u = *(u16 *)((u8 *)obj + idx * 4 + 0x200);
                     byte2 = *((u8 *)obj + idx * 4 + 0x202);
                     func_020994f8((u16 *)(arg2 + arg0 * 2 + arg1 * 64),
-                                 (s32)(arg4 + u), byte2);
+                                 (u16)(arg4 + u), byte2);
                     return idx;
                 }
             }
@@ -449,29 +450,30 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u16 arg5
     byte302 = *((u8 *)obj + 0x302);
     engineEntry = *(s32 *)((u8 *)engine + (byte302 * 4) + 0x0C);
 
-    cur300 = *(u16 *)((u8 *)obj + 0x300);
     func_0209b370((s32)(s16)arg0, (s32)(s16)arg1, 4, engineEntry,
-                   arg2, (s32)arg3, (s32)arg4, (s32)arg5, (s32)cur300);
+                   arg2, (s32)arg3, (u16)arg4, (u16)arg5, *(u16 *)((u8 *)obj + 0x300));
 
     funcResult = func_0209c268(arg3);
     width = (funcResult + 7) >> 3;
+    arg0 = *(u16 *)((u8 *)obj + 0x300);
 
-    cur300 = *(u16 *)((u8 *)obj + 0x300);
+    cur300 = arg0;
     *(u16 *)((u8 *)obj + idx * 4 + 0x200) = cur300;
     *((u8 *)obj + idx * 4 + 0x202) = (u8)width;
     *((u8 *)obj + idx * 4 + 0x203) = (u8)arg5;
 
-    *(u16 *)((u8 *)obj + 0x300) = (u16)(cur300 + width * 2);
+    *(u16 *)((u8 *)obj + 0x300) = (u16)(*(u16 *)((u8 *)obj + 0x300) + width * 2);
 
     func_02068c50((M2C_UNK)((u8 *)obj + cursor), (M2C_UNK)arg3);
 
     len = func_02068c34((M2C_UNK)arg3);
-    *((u8 *)obj + cursor + len + 1) = 1;
+    end = cursor + len + 1;
+    *((u8 *)obj + end) = 1;
 
     return idx;
 }
-
-#pragma scheduling off
+#pragma opt_strength_reduction reset
+#pragma opt_common_subs reset
 s32 func_020996d0(s32 a,u8 width,M2C_UNK d,M2C_UNK shift,s32 pal) {
 u8 *src=(u8 *)a;u16 *dst=(u16 *)d;
 Unk996Row buf[2];u16 *out; s32 clear1,clear2,offset; s32 left,right,i,j,n;u32 b;u8 byte;u8 *p;

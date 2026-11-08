@@ -1,5 +1,6 @@
 /* 7 functions from 0x021E3500 to 0x021E4448 (ov003), found by ds-decomp. */
 #include "common.h"
+
 typedef struct MenuBits3ff8 { u8 bank:2; u8 other:6; } MenuBits3ff8;
 typedef struct EngineBits3ff8 { u16 low:13; u16 shift:2; u16 high:1; } EngineBits3ff8;
 
@@ -19,13 +20,14 @@ void func_ov003_021e3500(void *arg0) {
 
     register void *r5 asm("r5");
     register s32 r6 asm("r6");
-    register u8 r4 asm("r4");
+    u8 r4;
 
     u32 x;
     u8 cnt;
-    u8 i;
+    u8 count2;
+    register u8 i;
     u8 j;
-    unsigned long base;
+    register unsigned long base;
     void *temp_r6;
     u8 temp_r1;
 
@@ -34,10 +36,9 @@ void func_ov003_021e3500(void *arg0) {
     cnt = 0;
     i = 0;
     base = M2C_FIELD(r5, s32 *, 0x6C);
-    r6 = base;
     r4 = 0;
     do {
-        if (M2C_FIELD(r6 + ((s32)r4 * 0x6F8), u8 *, 0x27) != 0) {
+        if (M2C_FIELD(base + ((s32)r4 * 0x6F8), u8 *, 0x27) != 0) {
             cnt = (u8)(cnt + 1);
         }
         r4 = (u8)(r4 + 1);
@@ -48,6 +49,7 @@ void func_ov003_021e3500(void *arg0) {
     if (x != 0) {
         func_020c9100(r5);
         i = 0;
+        goto loop_test;
         do {
             func_020c9120(
                 M2C_FIELD(M2C_FIELD(r5, s32 *, 0x5C) + ((s32)i * 2), u16 *, 0x12),
@@ -69,22 +71,22 @@ void func_ov003_021e3500(void *arg0) {
                 break;
             }
             i = (u8)(i + 1);
+        loop_test:
             x = func_ov003_021f2574();
-            cnt = 0;
+            count2 = 0;
             j = 0;
             base = M2C_FIELD(r5, s32 *, 0x6C);
-            r6 = base;
-            r4 = 0;
+            j = 0;
             do {
-                if (M2C_FIELD(r6 + ((s32)r4 * 0x6F8), u8 *, 0x27) != 0) {
-                    cnt = (u8)(cnt + 1);
+                if (M2C_FIELD(base + ((s32)j * 0x6F8), u8 *, 0x27) != 0) {
+                    count2 = (u8)(count2 + 1);
                 }
-                r4 = (u8)(r4 + 1);
-            } while (r4 < 5);
-            if (x >= (u32)cnt) {
-                x = (u32)cnt;
+                j = (u8)(j + 1);
+            } while (j < 5);
+            if (x >= (u32)count2) {
+                x = (u32)count2;
             }
-        } while (i < (u8)x);
+        } while (i < x);
         return;
     }
     func_0208fe30(0x1000E);

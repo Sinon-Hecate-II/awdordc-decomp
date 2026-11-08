@@ -205,31 +205,32 @@ void func_020601a4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
+#pragma opt_propagation off
 void func_020601b8(void *a,void *b,s32 unused){
 s32 func_02049208(void);
 M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
-u8 buf[256]; u8 addr[8]; s32 n,i;
+u8 buf[256]; u8 addr[8]; s32 n,i,j; u8 *dst;
 func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=func_02049208();
 addr[1]=2;
 if(M2C_FIELD(b,u8 *,20)&32)return;
 if(M2C_FIELD(a,s32 *,0)==1){
-i=0;buf[0]=254;buf[1]=253;buf[2]=i;
-*(PacketBytes4 *)(buf+3)=*(PacketBytes4 *)(b+28);
+buf[0]=254;buf[1]=253;i=0;buf[2]=i;
+dst=buf+3;*(PacketBytes4 *)dst=*(PacketBytes4 *)(b+28);
 if(M2C_FIELD(b,u8 *,20)&4){
 buf[7]=M2C_FIELD(a,s32 *,64);
-for(;i<M2C_FIELD((unsigned)a,s32 *,64);i++)buf[8+i]=M2C_FIELD(a+i,u8 *,44);
-buf[M2C_FIELD(a,s32 *,64)+8]=0;buf[M2C_FIELD(a,s32 *,64)+9]=0;
+j=M2C_FIELD(a,s32 *,64);
+if(j>0){dst=buf;do{u8 value=M2C_FIELD(a+i,u8 *,44);i++;dst[8]=value;j=M2C_FIELD(a,s32 *,64);dst++;}while(j>i);}
+buf[j+8]=0;buf[M2C_FIELD(a,s32 *,64)+9]=0;
 n=M2C_FIELD(a,s32 *,64)+10;
 }else{buf[7]=255;buf[8]=255;buf[9]=255;n=10;}
-}else if(M2C_FIELD(b,u8 *,20)&4){*(PacketBytes13 *)buf=data_02100014;n=13;}
-else{*(PacketBytes8 *)buf=data_02100024;n=8;}
+}else { dst=buf; if(M2C_FIELD(b,u8 *,20)&4){*(PacketBytes13 *)dst=data_02100014;n=13;}
+else{*(PacketBytes8 *)dst=data_02100024;n=8;} }
 if(M2C_FIELD(b,s32 *,0)==M2C_FIELD(a,s32 *,40)&&(M2C_FIELD(b,u8 *,21)&2)){
 *(s32 *)(addr+4)=M2C_FIELD(b,s32 *,8);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,12);
 }else{*(s32 *)(addr+4)=M2C_FIELD(b,s32 *,0);*(u16 *)(addr+2)=M2C_FIELD(b,u16 *,4);}
 func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 }
-
-#pragma opt_common_subs off
+#pragma opt_propagation reset
 void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_UNK func_0204926c();
     s32 func_020496a4(M2C_UNK, M2C_UNK);
@@ -340,10 +341,9 @@ s32 func_02060670(void *a,void *b,void *c,s32 d) {
     return 1;
 }
 
-#pragma opt_strength_reduction off
+#pragma peephole off
 void func_02060678(void *p,s32 mode){
 s32 func_02049534(s32);s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
-
 s8 buf[2048];u8 addr[8];s32 alen=8;s32 n;void *q; s32 sock;u32 peer,ip;
 sock=mode?M2C_FIELD(p,s32 *,0x24):M2C_FIELD(p,s32 *,0x20);
 while(func_02049534(sock)){
@@ -351,15 +351,14 @@ n=func_020497e0(sock,buf,2047,0,addr,&alen);if(n==-1)return;buf[n]=0;
 for(q=M2C_FIELD(p,void **,8);q;q=M2C_FIELD(q,void **,0x20)){
 if(mode&&(M2C_FIELD(q,u8 *,0x15)&8)&&M2C_FIELD(q,u32 *,0x10)==M2C_FIELD(addr,u32 *,4))goto found;
 ip=M2C_FIELD(addr,u32 *,4);peer=M2C_FIELD(q,u32 *,0);
-if(peer==ip){if(M2C_FIELD(q,u16 *,4)==M2C_FIELD(addr,u16 *,2))goto found;}
-if(mode)goto found;
+if(peer==ip){if(M2C_FIELD(q,u16 *,4)==M2C_FIELD(addr,u16 *,2))goto found;else goto check_mode;}else goto check_mode;
+check_mode: if(mode)goto found;
 if(peer==M2C_FIELD(p,u32 *,0x28)&&(M2C_FIELD(q,u8 *,0x15)&2)&&M2C_FIELD(q,u32 *,8)==ip&&M2C_FIELD(q,u16 *,12)==M2C_FIELD(addr,u16 *,2))goto found;
 continue;
 found:
 if(mode){if(!func_02060670(p,q,buf,n))continue;break;}
 else{if(M2C_FIELD(p,s32 *,0)==1)func_020604d8(p,q,buf,n);else func_020605d8(p,q,buf,n);break;}
 }
-next_packet:;
 }
 }
-#pragma opt_strength_reduction reset
+#pragma peephole reset

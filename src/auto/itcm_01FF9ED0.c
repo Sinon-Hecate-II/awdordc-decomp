@@ -5,7 +5,7 @@
 void func_01ff9ed0(void){
 s32 func_01ff9c34(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;extern s32 data_027e00c8,data_027e00c4;extern u16 *data_027e00bc;
-s32 saved=gCur3DSpriteEngine,j=0,i=0,base,size,dest;void *p;u8 same,flag;
+s32 saved=gCur3DSpriteEngine,j=0,i=0,base,size;void *p;u8 same,flag;
 do{
 p=(void*)(i==0?data_027e00c8:data_027e00c4);
 same=(s32)p==data_027e00c8;gCur3DSpriteEngine=(s32)p;
@@ -15,11 +15,15 @@ p=(void*)gCur3DSpriteEngine;
 if((M2C_FIELD(p,u8*,0x46)&(1<<j)) && !(M2C_FIELD(p,u8*,0x47)&(1<<j))){
 flag=(s32)p==data_027e00c8;
 size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
+{
+s32 dest;
 if(flag)dest=((u32)(data_027e00bc[1]<<29)>>29)<<16;else dest=0;
 p=(void*)gCur3DSpriteEngine;
 {
 u8 *tp=((u8**)p)[j];
-func_02007ef4(((void**)((u8*)p+0x20))[j],base+dest+(((u32)(M2C_FIELD(tp+j*2,u16*,6)<<19)>>27)<<11),size);
+void *dp=((void**)((u8*)p+0x20))[j];
+func_02007ef4(dp,base+dest+(((u32)(M2C_FIELD(tp+j*2,u16*,6)<<19)>>27)<<11),size);
+}
 }
 }}
 p=(void*)gCur3DSpriteEngine;

@@ -110,17 +110,16 @@ u32 func_ov000_0216a3a8(M2C_UNK,M2C_UNK);
 s32 func_ov000_0216a414(M2C_UNK,M2C_UNK);
 s32 func_ov005_02211a54(M2C_UNK,M2C_UNK);
 extern void *data_027e00c8,*gCur3DSpriteEngine;
-void *p;u32 money;s32 t,y;void *saved;
-M2C_UNK arg7=arg1;
-p=func_ov000_0216a38c(1);money=func_ov000_0216a3a8(1,arg7);t=func_ov000_0216a414(1,arg7);
-y=(arg0+1)*46+0x144;saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
-if(func_ov005_02211a54(1,arg7)==0){
+void *p;u32 money;s32 t,last;u32 saved;
+p=func_ov000_0216a38c(1);money=func_ov000_0216a3a8(1,arg1);t=func_ov000_0216a414(1,arg1);
+last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+if(func_ov005_02211a54(1,last)==0){
 func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
-func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)y);
+func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
-func_0209b3e8(22,(s16)(arg0+5),1,money,0x1000,(u16)(y+30));
-}else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)y);
-func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=saved;
+func_0209b3e8(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
+}else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)arg1);
+func_ov005_02212244(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
 }
 
 #pragma opt_common_subs on
@@ -133,18 +132,19 @@ s32 func_020a7298(u16,s32);
 void *func_ov000_0216a38c(s32);
 u32 func_ov000_0216a3a8(s32,s32);s32 func_ov000_0216a414(s32,s32);s32 func_ov005_02211a54(s32,s32);
 extern void *gCur3DSpriteEngine,*data_027e00c8;
-void *p;u32 value;s32 status;s32 position;void *saved;void **engine;
+void *p;u32 value;register s32 status,position;void *saved;
 p=func_ov000_0216a38c(2);value=func_ov000_0216a3a8(2,arg1);status=func_ov000_0216a414(2,arg1);
+{ s32 index=arg1;
 position=(arg0+1)*46+0x144;
-engine=&gCur3DSpriteEngine;saved=*engine;*engine=data_027e00c8;
-if(!func_ov005_02211a54(2,arg1)){
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+if(!func_ov005_02211a54(2,index)){
 func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
 func_0209b3e8(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
 }else func_0209b2dc(2,(s16)(arg0+5),1,0x45000000,4096,3,(u16)position);
 func_ov005_02212244(arg0+5,status);gCur3DSpriteEngine=saved;
-}
+}}
 void func_ov005_02212944(s32 arg0,s32 arg1) {
  M2C_UNK func_ov005_022122e0(s32,s32);
  void func_ov005_02212624(s32,s32);

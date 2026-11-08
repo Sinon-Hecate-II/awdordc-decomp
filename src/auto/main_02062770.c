@@ -269,19 +269,20 @@ s32 func_02063338(void *arg0, u8 *arg1, s32 arg2) {
 
 s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
     s32 func_02061ac8(M2C_UNK, s32, u16);
-    s32 func_02061bc8(void *);
+    s32 func_02061bc8(void *,s32);
     s32 func_02061da0(s8 *, s32);
 
-    s32 hdr0;
-    u16 hdr1;
+    u8 *h0,*hx; register u8 *h1;
     u32 sp10;
+    u16 hdr1;
+    s32 hdr0;
     void *sp14[16];
     s32 found;
     s32 val;
-    s32 remaining;
-    s32 count;
+
     s32 max;
-    u8 *pp;
+    s32 count;
+
     s32 userdata;
     void (*fp)(void *, s32, u32, s32, void *, s32);
 
@@ -289,57 +290,35 @@ s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
         return 4;
     }
 
-    *(volatile u8 *)((u8 *)&hdr0 + 0) = arg1[0];
-    *(volatile u8 *)((u8 *)&hdr0 + 1) = arg1[1];
-    *(volatile u8 *)((u8 *)&hdr0 + 2) = arg1[2];
-    *(volatile u8 *)((u8 *)&hdr0 + 3) = arg1[3];
-    *(volatile u8 *)((u8 *)&hdr1 + 0) = arg1[4];
-    *(volatile u8 *)((u8 *)&hdr1 + 1) = arg1[5];
+    h0=(u8 *)&hdr0; h1=(u8 *)&hdr1;
+    *(volatile PairBytes *)h0=*(PairBytes *)arg1;
+    { u8 lo=arg1[2],hi=arg1[3]; h0[3]=hi; h0[2]=lo; }
+    { u8 hi=arg1[5],lo=arg1[4]; h1[1]=hi; h1[0]=lo; }
 
     found = func_02061ac8(arg0, (s32)hdr0, (s32)hdr1);
     if (found == -1) {
         return 0;
     }
 
-    val = func_02061bc8(arg0);
+    val = func_02061bc8(arg0,found);
 
-    *(volatile u8 *)((u8 *)&sp10 + 0) = arg1[6];
-    *(volatile u8 *)((u8 *)&sp10 + 1) = arg1[7];
-    *(volatile u8 *)((u8 *)&sp10 + 2) = arg1[8];
-    *(volatile u8 *)((u8 *)&sp10 + 3) = arg1[9];
-
-    sp10 = ((sp10 & 0xffu) << 24) |
-           ((sp10 & 0xff00u) << 8) |
-           ((sp10 & 0xff0000u) >> 8) |
-           ((sp10 & 0xff000000u) >> 24);
+    hx=(u8 *)&sp10;
+    *(volatile PairBytes *)hx=*(PairBytes *)(arg1+6);
+    *((volatile PairBytes *)hx+1)=*(PairBytes *)(arg1+8);
+    { u32 a=(sp10<<24)&0xff000000u; u32 b=(sp10<<8)&0xff0000u; u32 c=(sp10>>24)&255; u32 d=(sp10>>8)&0xff00u; sp10=a|(b|(c|d)); }
 
     max = arg1[10];
-    pp = arg1 + 0xb;
-    remaining = arg2 - 0xb;
+    arg1 += 0xb;
+    arg2 -= 0xb;
     count = 0;
 
-    if (sp14 == 0) {
-        while (remaining >= 1 && count < max && count < 0x10) {
-            s32 k = func_02061da0((s8 *)pp, remaining);
-            if (k == -1) {
-                return 4;
-            }
-            sp14[count] = pp;
-            pp += k;
-            remaining -= k;
-            count++;
-        }
-    } else {
-        while (remaining >= 1 && count < max && count < 0x10) {
-            s32 k = func_02061da0((s8 *)pp, remaining);
-            if (k == -1) {
-                return 4;
-            }
-            sp14[count] = pp;
-            pp += k;
-            remaining -= k;
-            count++;
-        }
+    while(count < max && count < 16) {
+        s32 k;
+        if(arg2 < 1) break;
+        k=func_02061da0((s8 *)arg1,arg2);
+        if(k == -1)return 4;
+        sp14[count]=arg1;
+        arg1+=k; arg2-=k; count++;
     }
 
     fp = *(void (**)(void *, s32, u32, s32, void *, s32))((u8 *)arg0 + 0x48c);

@@ -105,15 +105,16 @@ void func_0206e3e0(u8 *p, u64 value) {
     *((s16 *)(p + 2)) = (s16)(p[4] - 1);
 }
 
+#pragma scheduling off
 void func_0206e4ac(u8 *arg0, u8 *arg1, u8 *arg2) {
-u8 buf[64]; s32 total; register u32 acc; register u8 *cursor; register u8 *endmark;
-s32 n; u8 *base1,*base2; register s32 cnt,idx,t; u8 *p1,*p2; s32 lim; u8 tt;
+u8 buf[64]; register s32 total; register u32 acc; register u8 *cursor; register u8 *endmark;
+s32 n; u8 *base1,*base2; register s32 cnt,t,idx; u8 *p1,*p2; s32 lim; u8 tt;
 acc=0;total=arg1[4]+arg2[4]-1;cursor=buf+total+1;endmark=cursor;
 arg0[0]=0;
 if(total>0) { base1=arg1+5; base2=arg2+5; do {
 t=arg2[4]-1; idx=total-t-1;
 if(idx<0){idx=0;t=total-1;}
-cnt=t+1; lim=arg1[4]-idx; if(cnt>lim)cnt=lim;
+lim=arg1[4]-idx;cnt=t+1; cnt=cnt<=lim?cnt:lim;
 t=(s32)(base2+t);idx=(s32)(base1+idx);
 while(cnt>0){acc+=(u32)*(u8*)idx * *(u8*)t;idx++;t--;cnt--;}
 total--;*--cursor=acc%10;acc/=10;
@@ -126,7 +127,7 @@ tt=*cursor;if(tt<5)return;
 if(tt==5){for(p2=cursor+1;p2<endmark;++p2){if(*p2)goto call;}if(!(cursor[-1]&1))return;}
 call:func_0206e350(arg0,arg0[4]);
 }
-
+#pragma scheduling reset
 void func_0206e630(u8 *p,s8 *s,s16 e) {
  s32 n=0;
  M2C_FIELD(p,s16 *,2)=e; p[0]=0;

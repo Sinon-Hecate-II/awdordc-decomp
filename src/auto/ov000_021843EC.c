@@ -158,14 +158,14 @@ map=*gCurrentMap;width=((Map851B8 *)map)->width;
 void func_ov000_0218500c(s32 x,s32 y,s32 type,s32 radius){
 extern void **gCurrentMap;extern u8 data_ov000_021e0550[];
 s32 func_020ce0ec(u8,s32);
-s32 left; s32 xx;u8 *dst;s32 dy; s32 top,yy,right,bottom,d;u8 *base;
+s32 left; s32 xx;u8 *dst;s32 dy; s32 top,yy,right,bottom,d,t;u8 *base;
 left=x-radius;if(left<0)left=0;top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;right=((Map851B8 *)base)->width-1;if(x+radius<right)right=x+radius;
 bottom=((Map851B8 *)base)->height-1;if(y+radius<bottom)bottom=(unsigned)y+radius;
 for(yy=top;yy<=(s32)bottom;yy++){
-xx=left;if(xx<=right){dy=y-yy;dst=data_ov000_021e0550+xx;do{
+xx=left;if(xx<=right){dy=y-yy;dst=data_ov000_021e0550+xx;t=yy-y;do{
 d=0;if(x-xx>0)d+=x-xx;else d+=xx-x;
-if(dy>0)d+=dy;else d+=yy-y;
+if(dy>0)d+=dy;else d+=t;
 if(d>=0&&d<=radius){
 if(d!=0&&func_020ce0ec((u8)(type>>5),M2C_FIELD((u8 *)*gCurrentMap+xx+((Map851B8 *)*gCurrentMap)->rows[yy],u8 *,0x1420))){
 dst[yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]|=0x80;
@@ -179,7 +179,7 @@ dst++;xx++;
 void func_ov000_021851b8(s32 x,s32 y,s32 type,s32 radius){
 extern void **gCurrentMap;extern u8 data_ov000_021e0550[];
 s32 func_020ce0ec(u8,s32);
-s32 left; s32 xx;u8 *dst;s32 dy; s32 top,yy,right,bottom,d;u8 *base;
+s32 xx;u8 *dst;s32 dy; s32 top,yy,right,bottom,left,d;u8 *base;
 left=x-radius;if(left<0)left=0;top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;right=((Map851B8 *)base)->width-1;if(x+radius<right)right=x+radius;
 bottom=((Map851B8 *)base)->height-1;if(y+radius<bottom)bottom=(unsigned)y+radius;

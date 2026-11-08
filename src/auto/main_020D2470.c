@@ -416,6 +416,7 @@ void *func_020d2e3c(u16 arg0) {
 extern s32 *gCurrentMap;
 extern u16 data_ov000_021aeef4[];
 register s32 start;
+u32 teamOffset;
 s32 *map;
 u32 offset;
 u8 *base;
@@ -430,11 +431,12 @@ start=*(s16 *)(base+0x52c0)+1;
 current=(s16 *)(base+0x52c0);
 x=start;
 if(x<51) {
+teamOffset=team*14;
 units=(SelectionUnit *)(base+0x59a4);
 do {
 offset=(x+team)*14;
 if (((SelectionKind *)((u8 *)units+offset))->kind &&
-!(M2C_FIELD(base+team*14+x*14,u16 *,0x59a8)&1)) {
+!(M2C_FIELD((u8 *)((u32)base+teamOffset)+x*14,u16 *,0x59a8)&1)) {
 *current=x;
 base=(u8 *)*gCurrentMap;
 current=(s16 *)(base+0x52c0);

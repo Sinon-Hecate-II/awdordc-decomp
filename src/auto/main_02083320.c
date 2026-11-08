@@ -88,13 +88,13 @@ void func_0208352c(void *arg0) {
         ++i;
     } while (i < n);
 }
-#pragma pop
+#pragma opt_strength_reduction off
 void func_020835d4(void *obj) {
  extern s16 data_020e5b30[];
  s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
- s32 c;u16 x,y; s32 s,b,a,d,e,i,offset,pos,glyph;
+ s32 i,e,d,a,b,s; u16 y,x; s32 c,offset,pos,glyph;
  x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
- c=data_020e5b30[1]<<4;s=data_020e5b30[0];
+ c=data_020e5b30[1]<<4;s=*(volatile s16 *)data_020e5b30;
  M2C_FIELD(obj,u16 *,0x54)++;
  a=func_0207c8ec(c,256);b=func_0207c8ec((-s)<<4,64);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,64);
  func_01ff8ddc(31,(s16)a,(s16)b,(s16)d,(s16)e);
@@ -109,7 +109,6 @@ void func_020835d4(void *obj) {
  }
  if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
 }
-
 void func_020837b4(void *obj) {
 extern s16 data_020e5b30[]; extern u8 data_027e008c[];
 s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);

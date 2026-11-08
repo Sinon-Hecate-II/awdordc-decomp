@@ -263,16 +263,16 @@ s32 func_020a1f88(s32 player) {
     extern s8 data_ov000_021b5580[];
     s32 func_020d1938(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);
     s32 func_0207c8ec(s32,s32);
-    u32 own,enemy,buildings,extra,other,delta;
-    s32 i,offset,playerOffset,x,y,clear,result;
-    void *base,*q;
+    u32 own,enemy,other,buildings,extra,delta;
+    s32 i,offset,playerOffset,clear,x,y,result;
+    void *q; register void *base;
     if(!func_020d1938(player))return 0;
     playerOffset=player*140;
     own=0;enemy=0;extra=0;other=0;buildings=0;
     for(i=1,offset=140;i<5;i++,offset+=140) {
         base=(void *)*gCurrentMap;q=(u8 *)base+offset;
         if(M2C_FIELD(q,u8 *,0x67c2)) {
-            if(M2C_FIELD(playerOffset+(u8 *)base,u8 *,0x67ca)==M2C_FIELD(q,u8 *,0x67ca)) {
+            if(M2C_FIELD((u8 *)(playerOffset+(u32)base),u8 *,0x67ca)==M2C_FIELD(q,u8 *,0x67ca)) {
                 own+=func_020d303c(i);
                 extra+=func_020d30a8(i);
                 q=(u8 *)*gCurrentMap+offset;
@@ -284,8 +284,9 @@ s32 func_020a1f88(s32 player) {
     base=(void *)*gCurrentMap;
     clear=1;
     for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-        u8 *row=(u8 *)base+M2C_FIELD(base,u16 *,0x3758+y*2);
-        for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,row++){
+        register u8 *row;
+        for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
+            row=(u8 *)base+M2C_FIELD(base,u16 *,0x3758+y*2)+x;
             if(data_ov000_021b5580[M2C_FIELD(row,u8 *,0x1420)&31]!=0)clear=0;
         }
     }
@@ -448,6 +449,7 @@ void func_020a23c4(void) {
     func_020d2470();
 }
 
+#pragma opt_propagation off
 s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 func_020a7310(void *);
     u8 *func_020a32f4(s32);
@@ -456,7 +458,7 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 func_020a7bd4(s32);
     extern u8 data_0211fbec[];
     s32 idx;
-    s32 kind;
+    u32 kind;
     s32 ret;
 
     M2C_FIELD(arg0, s8 *, 0x0) = 0;
@@ -469,12 +471,7 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(arg0, s16 *, 0x8) = 0;
     M2C_FIELD(arg0, s16 *, 0xA) = 0;
 
-    if (arg2 < 0) {
-        return 0;
-    }
-    if (0 > arg3) {
-        return 0;
-    }
+    if (arg2 < 0 || arg3 < 0) { return 0; }
 
     idx = func_020a7310(arg1);
     if (func_020a32f4(idx) == (u8 *)arg1) {
@@ -483,10 +480,9 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
         ret = func_020d0468(idx, arg2, arg3);
     }
 
-    kind = (M2C_FIELD(arg1, u8 *, 0x0) << 26) >> 26;
-    if (ret == -1) {
-        return 1;
-    }
+    kind = M2C_FIELD(arg1, u8 *, 0x0) << 26;
+kind = kind >> 26;
+    if (ret != -1) {
 
     M2C_FIELD(arg0, s16 *, 0x8) = M2C_FIELD(arg0, s16 *, 0x8) + 10;
     M2C_FIELD(arg0, s16 *, 0xA) = M2C_FIELD(arg0, s16 *, 0xA) + 10;
@@ -513,9 +509,10 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     if (func_020a7bd4(kind) < 2) {
         M2C_FIELD(arg0, s8 *, 0x6) = 0;
     }
+    }
     return 1;
 }
-
+#pragma opt_propagation reset
 s32 func_020a25bc(s32 arg0, s32 arg1) {
  extern M2C_UNK data_0211fbf8;
  return arg1 + M2C_FIELD(&data_0211fbf8, s8 *, arg0 * 0x48);

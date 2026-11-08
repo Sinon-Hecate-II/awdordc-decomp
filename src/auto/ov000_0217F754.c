@@ -133,7 +133,7 @@ void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *data_ov000_021df580;extern u8 *data_ov000_021df658;
 s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void func_ov000_02199d74(s32,s32,s32,s32,s32);
 u8 *base=*gCurrentMap;u8 *p,*q;u32 index,selected;
-index=base[x+M2C_FIELD(base+(unsigned)y*2,u16 *,0x3758)];selected=M2C_FIELD(base,u8 *,0x52d4);p=base+0x59a4+index*14;q=M2C_FIELD(base,u8 **,0x52d0);
+index=base[x+M2C_FIELD(base+(unsigned)y*2,u16 *,0x3758)];selected=M2C_FIELD(base,u8 *,0x52d4);p=(u8 *)((u32)(base+0x59a4)+index*14);q=M2C_FIELD(base,u8 **,0x52d0);
 if(M2C_FIELD(p,u16 *,4)&1)return;
 if((u32)(p[11]<<28)>>28==6)return;
 M2C_FIELD(data_ov000_021df580,u16 *,8)|=1;

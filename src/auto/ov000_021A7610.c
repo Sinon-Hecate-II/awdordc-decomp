@@ -35,8 +35,8 @@ void func_ov000_021a7d08(void) {
     for (r5 = 1; r5 < 5; r5++) {
         u16 field;
         s32 start;
-        s32 limit;
-        register s32 inner asm("r2");
+        register s32 limit;
+        register s32 inner;
         u8 *p;
         void *map;
 
@@ -44,33 +44,37 @@ void func_ov000_021a7d08(void) {
             continue;
         }
         map = *gCurrentMap;
-        field = *(u16 *)((u8 *)map + 0x52A4);
+        field = *(u16 *)((u8 *)*gCurrentMap + 0x52A4);
         if (func_020d273c(field, r5) == 1) {
             start = data_ov000_021aeef4[r5] + 1;
             limit = data_ov000_021aeef4[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
-                u8 kind;
-                p = *(u8 **)map + 0x59A4 + inner * 0xE;
-                kind = (u8)(((unsigned int)p[0] << 26) >> 26);
+                u32 kind, value;
+                p = (u8 *)*gCurrentMap + 0x59A4 + inner * 0xE;
+                kind = (u32)p[0] << 26;
+kind >>= 26;
                 if (kind == 0) {
                     continue;
                 }
                 if ((((unsigned int)p[0x0B]) << 24) >> 31) {
                     continue;
                 }
-                data_ov000_021e14aa[kind] += (u16)(((unsigned int)*(u16 *)(p + 6) << 19) >> 19);
+                value = (u32)*(u16 *)(p + 6) << 25;
+data_ov000_021e14aa[kind] += value >> 25;
             }
         } else {
             start = data_ov000_021aeef4[r5] + 1;
             limit = data_ov000_021aeef4[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
-                u8 kind;
-                p = *(u8 **)map + 0x59A4 + inner * 0xE;
-                kind = (u8)(((unsigned int)p[0] << 26) >> 26);
+                u32 kind, value;
+                p = (u8 *)*gCurrentMap + 0x59A4 + inner * 0xE;
+                kind = (u32)p[0] << 26;
+kind >>= 26;
                 if (kind == 0) {
                     continue;
                 }
-                data_ov000_021e1474[kind] += (u16)(((unsigned int)*(u16 *)(p + 6) << 19) >> 19);
+                value = (u32)*(u16 *)(p + 6) << 25;
+data_ov000_021e1474[kind] += value >> 25;
             }
         }
     }

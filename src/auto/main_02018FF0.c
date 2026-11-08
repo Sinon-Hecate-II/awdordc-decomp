@@ -75,7 +75,7 @@ void func_02018ff0(void) {
 
     func_02007e70((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
     func_02006774();
-    func_02018ea4((((s32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
+    func_02018ea4((((u32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
 
     delay = 1;
     while (*(u16 *)((u8 *)&data_02136c9c + 0) != 1) {

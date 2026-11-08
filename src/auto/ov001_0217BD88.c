@@ -9,44 +9,28 @@ extern void *data_ov001_02193da4;
 extern u32 data_ov001_02190770;
 
 s32 func_ov001_0217bd88(void) {
-    s32 a, b;
-    register u8 *p asm("r3") = 0;
-    s32 len;
-    s32 i;
+    s32 a,b,len,i;
+    u8 *p;
     extern void *data_ov001_02193da0;
-
-    func_ov001_02175db4(&a, &b);
-    if (b == 1) {
-        func_ov001_02171c24(0x35, -1, 0);
-        func_ov001_02175db4(&a, &b);
-        if (a == 0) {
-            p = (u8 *)*(void **)data_ov001_02193da0;
-            return p[8] != 0;
-        }
-    }
-    if (b != 1) {
-        return 0;
-    }
-    p = (u8 *)*(void **)data_ov001_02193da0;
-    if (p[8] == 0) {
-        return 0;
-    }
-    p = p + 8;
-    len = func_ov001_0218c3e0(p, 0x20);
-    switch (len) {
-        case 10: case 26: case 32: return 1;
-        case 0: case 5: case 13: case 16: return 0;
-    }
-    if (len <= 0) return 0;
-    for (i = 0; i < len; i++) {
-        u8 c = p[i];
-        if (!((c >= '0' && c <= '9') ||
-              (c >= 'A' && c <= 'F') ||
-              (c >= 'a' && c <= 'f'))) {
+    func_ov001_02175db4(&a,&b);
+    if(b==1) func_ov001_02171c24(0x35,-1,0);
+    func_ov001_02175db4(&a,&b);
+    if(a==0) return M2C_FIELD(data_ov001_02193da0,u8 *,8)!=0;
+    if(b==1 && M2C_FIELD(data_ov001_02193da0,u8 *,8)==0) return 0;
+    len=func_ov001_0218c3e0((u8 *)data_ov001_02193da0+8,32);
+    switch(len){
+    case 0:case 5:case 13:case 16:return 1;
+    case 10:case 26:case 32:
+        for(i=0;i<len;i++){
+            u8 c;
+            p=(u8 *)data_ov001_02193da0;
+            c=p[i+8];
+            if((c>='0'&&c<='9')||(c>='A'&&c<='F')||(c>='a'&&c<='f'))continue;
             return 0;
         }
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 void func_ov001_0217bf14(void) {
