@@ -34,7 +34,7 @@ static inline void func_020dbe20(void *q) {
     if (next != (u16) ((u32) (M2C_FIELD(q, s32 *, 0x40) << 6) >> 24)) test = 1; else test = 0;
     if (!(test & 255)) {
         M2C_FIELD(q, u32 *, 0x40) = (M2C_FIELD(q, u32 *, 0x40) & ~0x3fc0000) | ((u32) ((u16) base << 24) >> 6);
-        M2C_FIELD(q, u8 *, 0x5a) = 0;
+                  *(volatile u8 *)((u8 *)q + 0x5a) = 0;
     }
 }
 

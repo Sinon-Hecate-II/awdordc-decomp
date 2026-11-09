@@ -112,11 +112,11 @@ if((terrain&31)==19&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6))return 1;
 }
 checkCurrent:map=*gCurrentMap;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
-if((terrain&31)==19){if((terrain&224)!=M2C_FIELD(map,u16 *,0x52a6))goto selectedRanges;
+if((terrain&31)==19&&(terrain&224)==M2C_FIELD(map,u16 *,0x52a6)){
 player=M2C_FIELD(map,u16 *,0x52a4);
 if(func_020d2d18(player,20)*10<=M2C_FIELD(map+player*140,s32 *,0x67a4))return 0;
 }
-selectedRanges:snapshot=*gCurrentMap;selected=M2C_FIELD(snapshot,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
+snapshot=*gCurrentMap;selected=M2C_FIELD(snapshot,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
 if(kind==24){
 xmin=arg0-6;if(xmin<0)xmin=0;ymin=arg1-6;if(ymin<0)ymin=0;
 xmax=M2C_FIELD(snapshot,u16 *,0x5144)-1;if(arg0+6<xmax)xmax=arg0+6;

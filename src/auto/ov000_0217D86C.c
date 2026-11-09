@@ -178,9 +178,9 @@ if(func_ov000_021a8d7c(entry[1],entry[2],5))continue;
 for(p=1;p<5;p++){
 if(!func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)||!func_020d1938(p)||M2C_FIELD((u8 *)*gCurrentMap+p*140,u8 *,0x67c2)!=2)continue;
 for(i=data_ov000_021aeef4[p]+1;i<data_ov000_021aeef4[p]+51;i++){
-unit=(Unit7DE *)((u8 *)*gCurrentMap+0x59a4+i*14);
+unit=(Unit7DE *)((u8*)*gCurrentMap+0x59a4+i*14);
 if(!unit->kind||!func_ov000_021a98a8(unit->kind))continue;
-if(unit->x==entry[1]&&unit->y==entry[2]) {if(unit->cargo)goto next;}
+if(unit->x==entry[1]&&unit->y==entry[2]){if(unit->cargo)goto next;}
 if(unit->hp>60&&unit->tx==entry[1]&&unit->ty==entry[2])goto next;
 if(!unit->ammo||unit->tx==63)continue;
 func_01ffb554(data_ov000_021e0f60);
@@ -190,7 +190,7 @@ if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=
 }}
 out->x=entry[1];out->y=entry[2];out->type=data_ov000_021b5500[entry[0]];out->z=0;out->other=255;out->cost=255;
 func_ov000_0217a59c(entry[1],entry[2],kind,110);
-score=M2C_FIELD((u8 *)*gCurrentMap+(x)+M2C_FIELD((u8 *)*gCurrentMap+(rowY*2),u16 *,0x3758),s8 *,0x2338);
+score=M2C_FIELD((u8 *)*gCurrentMap+(x)+M2C_FIELD((u8*)*gCurrentMap+(rowY*2),u16 *,0x3758),s8 *,0x2338);
 if(score<0)goto next;
 out->cost=score;
 if(kind==19)out->cost++;
@@ -257,7 +257,6 @@ return 1;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_lifetimes reset
-#pragma opt_strength_reduction reset
 u8 func_ov000_0217e6bc(s32 arg0,s32 arg1){
 s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *data_ov000_021df580;
 u32 base;void **unit,*world,*entry;u8 result;

@@ -21,7 +21,6 @@ M2C_FIELD(q,u8 *,8)=0;M2C_FIELD(q,s32 *,4)=0;func_02005e5c(M2C_FIELD(q,void **,0
 }
 node=M2C_FIELD(node,void **,0x68);
 }
-(void)now;
 }
 
 void func_02025298(void) {

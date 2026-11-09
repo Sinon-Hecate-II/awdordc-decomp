@@ -1,5 +1,7 @@
 /* 10 functions from 0x02202DC8 to 0x02203710 (ov003), found by ds-decomp. */
 #include "common.h"
+static inline void SetVisible3368(u8 flag,void *p) { M2C_FIELD(p,u8 *,0x59)=flag?0:1; }
+typedef struct { u8 pad[0x34]; s16 x,y; u8 pad38[8]; u32 width:9; u32 height:9; u32 flags:14; } SpriteFields3368;
 
 typedef struct {
     s32 field_00;
@@ -238,7 +240,10 @@ void func_ov003_02203280(void *arg0) {
     func_ov003_02204fac(self);
 }
 
-void func_ov003_02203368(void *arg0) {
+#pragma push
+#pragma opt_propagation off
+#pragma opt_common_subs off
+void func_ov003_02203368(void *arg0,u32 arg1) {
 s32 func_0207c8ec(u8, M2C_UNK);
 s32 func_0207c928(u8, M2C_UNK);
 M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -247,11 +252,11 @@ M2C_UNK func_0208fe30(s32);
 s32 func_020aae10(void *);
 s32 func_020aae44(void *);
 s32 func_ov003_02200d80(u8, u8);
-M2C_UNK func_ov003_02200dc8();
+M2C_UNK func_ov003_02200dc8(void *,u32);
 extern void *gCur3DSpriteEngine;
 void *r5 = arg0;
 u8 temp_r4;
-u8 temp_r4_2;
+s32 temp_r4_2;
 s32 temp_r3;
 void *temp_r6;
 void *temp_r1;
@@ -263,24 +268,20 @@ s32 var_r0_2;
 s32 var_r0_3;
 s8 var_r1;
 u16 temp_r0_2;
-u8 temp_r4_3;
+s32 temp_r4_3;
 temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-func_ov003_02200dc8();
+func_ov003_02200dc8(M2C_FIELD(r5,void **,0x44),arg1);
 if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
 func_0208fe30(0x10019);
 temp_r6 = M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C);
 temp_r4_2 = func_020aae44(temp_r6);
-temp_r3 = func_020aae10(temp_r6) & ((u32)-0x200 >> 0x17);
-temp_r1 = M2C_FIELD(r5, void **, 0x4C);
+temp_r3=func_020aae10(temp_r6);
+temp_r1=M2C_FIELD(r5,void **,0x4c);
 {
-u32 t = M2C_FIELD(temp_r1, u32 *, 0x40);
-u32 a = t & (u32)-0x200;
-a = a | temp_r3;
-a = a & 0xFFFC01FF;
-a = a | (((u32)(temp_r4_2 << 0x17)) >> 0xE);
-M2C_FIELD(temp_r1, s16 *, 0x34) = (s16) M2C_FIELD(temp_r6, s16 *, 0x34);
-M2C_FIELD(temp_r1, s16 *, 0x36) = (s16) M2C_FIELD(temp_r6, s16 *, 0x36);
-M2C_FIELD(temp_r1, s32 *, 0x40) = (s32) a;
+s16 y=M2C_FIELD(temp_r6,s16 *,0x36);s16 x=M2C_FIELD(temp_r6,s16 *,0x34);
+((SpriteFields3368 *)temp_r1)->x=x;((SpriteFields3368 *)temp_r1)->y=y;
+((SpriteFields3368 *)temp_r1)->width=temp_r3;
+((SpriteFields3368 *)temp_r1)->height=temp_r4_2;
 }
 if (((u32)(M2C_FIELD(r5, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
 var_r0 = 1;
@@ -307,19 +308,22 @@ case 8: func_0208b758(M2C_FIELD(r5, s32 *, 0x58), 0x47000018); break;
 }
 var_r0_2 = 0;
 M2C_FIELD(r5, u8 *, 0x39) = 0U;
-if (0 == 1) var_r0_2 = 1;
-if (var_r0_2 & 0xFF) var_r1 = 0; else var_r1 = 1;
-M2C_FIELD(M2C_FIELD(r5, void **, 0x4C), s8 *, 0x59) = var_r1;
+if (M2C_FIELD(r5,u8 *,0x39) == 1) var_r0_2 = 1;
+temp_r1=M2C_FIELD(r5,void **,0x4c);
+var_r1=1;if(var_r0_2&0xff)var_r1=0;
+M2C_FIELD(temp_r1,s8 *,0x59)=var_r1;
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
 if (M2C_FIELD(r5, u8 *, 0x39) == 1) var_r0_3 = 1; else var_r0_3 = 0;
 if (var_r0_3 & 0xFF) {
 temp_r0_2 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
 temp_r4_3 = func_0207c928(temp_r0_2, 4);
-func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C) + (((func_0207c8ec(temp_r0_2, 4) * 0x120 + (temp_r4_3 * 8 + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
+temp_r2_2=func_0207c8ec(temp_r0_2,4);
+temp_r4_3=temp_r4_3*8+0x60;
+func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);
 }
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
 }
-
+#pragma pop
 void func_ov003_022035fc(void *arg0, s32 arg1) {
  s32 value,limit; void *p=(char *)arg0+(s32)arg1*24;
 #define F(o,t) (*(t *)((char *)arg0+(o)+arg1*24))

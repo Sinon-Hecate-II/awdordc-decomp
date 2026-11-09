@@ -59,10 +59,8 @@ if(func_020bf894(i+1))func_02098cb8(0,x,y,(u16)(((i<<12)&0xffff)|0x400|((tile)>>
 gCur3DSpriteEngine=saved;
 }
 }
-{s32 delta; i=0;delta=14;
+{s32 delta; s16 px; void *p; i=0;delta=14;
 for(;i<4;i++,delta+=60){
-s16 px;
-void *p;
 px=M2C_FIELD(STATE,s16*,10)+delta;
 p=M2C_FIELD(STATE+i*4,void**,0x2c);
 func_02088e84(p,px,90,px,90);

@@ -323,8 +323,8 @@ void func_0206ec10(void *arg0, void *arg1, void *arg2) {
     s32 temp_lr;
     s32 temp_r4_2;
     s32 temp_r6;
-    u32 var_r5;
-    s32 var_r7;
+    int var_r5;
+    u8 temp_r3_2;
     void *var_r1;
     void *var_r6;
     u16 temp_r3;
@@ -333,23 +333,23 @@ void func_0206ec10(void *arg0, void *arg1, void *arg2) {
     u8 *var_lr;
     u8 *var_r2;
     u8 *var_r3;
-    u8 *var_r3_2;
+    u8 *var_ip;
     u8 *var_r4;
     u8 *var_r5_2;
     u8 *var_r5_3;
     u8 temp_r1_2;
     u8 temp_r1_3;
     u8 temp_r2_3;
-    s32 temp_r3_2;
+    s32 var_r7;
     u8 temp_r5;
-    s32 temp_r7;
+    u8 temp_r7;
     s32 var_r1_2;
     u8 *temp_r1;
     u8 *temp_r2;
     u8 *temp_r2_2;
     u8 *temp_r2_4;
     u8 *temp_r2_5;
-    register u8 *var_ip;
+    u8 *var_r3_2;
 
     var_r1 = arg1;
     var_r6 = arg0;
@@ -358,7 +358,7 @@ void func_0206ec10(void *arg0, void *arg1, void *arg2) {
         temp_r4 = M2C_FIELD(var_r1, u16 *, 0);
         temp_r3 = M2C_FIELD(var_r1, u16 *, 2);
         var_r1 += 4;
-        var_r5 -= 1;
+        var_r5--;
         M2C_FIELD(var_r6, u16 *, 0) = temp_r4;
         M2C_FIELD(var_r6, u16 *, 2) = temp_r3;
         var_r6 += 4;
@@ -403,13 +403,13 @@ loop_20:
             var_r5_2 = var_ip - 1;
             if (M2C_FIELD(var_ip, u8 *, -1) == 0) {
                 do {
-                    var_r5_2 -= 1;
+                    var_r5_2--;
                 } while (*var_r5_2 == 0);
             }
             if (var_r5_2 != var_ip) {
                 do {
                     *var_r5_2 -= 1;
-                    var_r5_2 += 1;
+                    ++var_r5_2;
                     *var_r5_2 += 0xA;
                 } while (var_r5_2 != var_ip);
             }
@@ -484,8 +484,8 @@ block_32:
             do {
                 temp_r1_3 = *var_r5_3;
                 var_r5_3 += 1;
-                *var_r3 = temp_r1_3;
                 var_r3 += 1;
+                *var_r3 = temp_r1_3;
             } while ((u32) var_r5_3 < (u32) temp_r2_4);
         }
         M2C_FIELD(arg0, u8 *, 4) = (u8) (M2C_FIELD(arg0, u8 *, 4) - temp_r2_3);

@@ -1,5 +1,8 @@
 /* 3 functions from 0x02193D6C to 0x02194AB8 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ov000_unit_entry.h"
+typedef struct { u16 x:6; u16 y:6; u16 unk:2; u16 state:2; } Position_02194090;
+#include "ov000_unit_entry.h"
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
 extern u16 data_ov000_021aeef4[];
@@ -18,98 +21,42 @@ void func_ov000_02193d6c(void *arg0) {
 }
 
 void func_ov000_02194090(void) {
-    extern void **gCurrentMap;
-    extern M2C_UNK data_ov000_021b5bfc;
-    void *map;
-    void *base;
-    void *unit;
-    s32 height, width;
-    s32 xx, yy;
-    s32 rx = -1, ry = -1, state = 0;
-
-    map = *gCurrentMap;
-    base = *(void **)map;
-    unit = *(void **)((u8 *)base + 0x5000 + 0x2D0);
-    func_01ffc328(unit);
-
-    map = *gCurrentMap;
-    base = *(void **)map;
-    height = *(u16 *)((u8 *)base + 0x5146);
-    if (height > 0) {
-        width = *(u16 *)((u8 *)base + 0x5144);
-        if (width > 0) {
-            for (yy = 0; yy < height; yy++) {
-                for (xx = 0; xx < width; xx++) {
-                    void *path;
-                    signed char pval;
-                    u16 rowOff;
-                    u8 terrain;
-                    void *cell;
-                    u8 *attr;
-                    u8 owner;
-                    u8 low4;
-                    u8 tableVal;
-                    u8 selOwner;
-
-                    path = *(void **)((u8 *)base + yy * 4 + 0x52E8);
-                    pval = *((signed char *)path + xx);
-                    if (pval < 0) continue;
-                    rowOff = *(u16 *)((u8 *)base + yy * 2 + 0x3758);
-                    terrain = *((u8 *)base + xx + rowOff);
-                    cell = (u8 *)base + xx + rowOff;
-                    if (terrain == 0) continue;
-                    if (!func_ov000_021a8fc0(((u8 *)cell)[0x508])) continue;
-
-                    rowOff = *(u16 *)((u8 *)base + yy * 2 + 0x3758);
-                    terrain = *((u8 *)base + xx + rowOff);
-                    attr = (u8 *)base + 0x59A4 + terrain * 0x0E;
-                    owner = attr[0] & 0x3F;
-                    low4 = attr[0x0B] & 0x0F;
-                    tableVal = ((u8 *)&data_ov000_021b5bfc)[owner * 0x70 + 0x13];
-                    if (!(tableVal & 0x20)) continue;
-                    if (func_ov000_021a8984(low4)) continue;
-                    selOwner = (*((u8 *)unit)) & 0x3F;
-                    if (!func_ov000_021a995c(attr, selOwner)) continue;
-
-                    if (state != 0 && state != 0x18) {
-                        if (state != 0x19) continue;
-                        if (owner == 0x18) continue;
-                    }
-                    rx = xx;
-                    ry = yy;
-                    state = owner;
-                }
-            }
-        }
-    }
-
-    if (rx == -1) return;
-
-    {
-        void **m = *gCurrentMap;
-        void *b = *m;
-        void *selUnit = *(void **)((u8 *)b + 0x5000 + 0x2D0);
-        u16 v;
-
-        v = *(u16 *)((u8 *)selUnit + 0x08);
-        v &= ~0xC000;
-        *(u16 *)((u8 *)selUnit + 0x08) = v;
-
-        if ((((u8 *)selUnit)[0x0B] & 0x0F) == 2 || ((((u8 *)selUnit)[0x0B] & 0x0F) == 5)) {
-            ((u8 *)selUnit)[0x0B] &= 0xF0;
-        }
-
-        v = *(u16 *)((u8 *)selUnit + 0x08);
-        v = (v & ~0x003F) | 0x003F;
-        *(u16 *)((u8 *)selUnit + 0x08) = v;
-
-        v = *(u16 *)((u8 *)selUnit + 0x08);
-        v = (v & ~0x0FC0) | 0x0FC0;
-        *(u16 *)((u8 *)selUnit + 0x08) = v;
-    }
-
-    func_ov000_0217c3a4();
-    func_ov000_02199d74(rx, ry, 7, 0);
+#pragma opt_strength_reduction off
+ u8 *unit;
+ s32 sx=-1, sy=-1, kind=0, x,y;
+ u8 *m;
+ func_01ffc328(SEL);
+ for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++){
+  for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
+   m=MAP;
+   if((*(s8 **)(m+0x52e8+y*4))[x]<0)continue;
+   if(!m[x+*(u16*)(m+0x3758+y*2)])continue;
+   if(!func_ov000_021a8fc0(m[x+*(u16*)(m+0x3758+y*2)+0x508]))continue;
+   m=MAP;
+   unit=m+0x59a4+14*(s16)m[x+*(u16*)(m+0x3758+y*2)];
+   if(!(INFO[((UnkStruct_ov000_021A860C*)unit)->unk0*0x70+0x13]&0x20))continue;
+   if(func_ov000_021a8984(((UnkStruct_ov000_021A860C*)unit)->unkB))continue;
+   if(!func_ov000_021a995c(unit,((UnkStruct_ov000_021A860C*)SEL)->unk0))continue;
+   if(kind!=0 && kind!=24){
+    if(kind!=25)continue;
+    if(((UnkStruct_ov000_021A860C*)unit)->unk0==24)continue;
+   }
+   sx=x;sy=y;kind=((UnkStruct_ov000_021A860C*)unit)->unk0;
+  }
+ }
+ if(sx==-1)return;
+ ((Position_02194090 *)(SEL+8))->state=0;
+ if(((UnkStruct_ov000_021A860C*)SEL)->unkB==2 || ((UnkStruct_ov000_021A860C*)SEL)->unkB==5){
+  ((UnkStruct_ov000_021A860C*)SEL)->unkB=0;
+  ((Position_02194090 *)(SEL+8))->x=63;
+  ((Position_02194090 *)(SEL+8))->y=63;
+ }
+ m=MAP;
+ unit=m+0x59a4+14*m[sx+*(u16*)(m+0x3758+sy*2)];
+ ((Position_02194090 *)(unit+8))->x=(u16)sx;
+ ((Position_02194090 *)(unit+8))->y=(u16)sy;
+ func_ov000_0217c3a4();
+ func_ov000_02199d74((s16)sx,(s16)sy,7,0,0);
 }
 
 #pragma push
@@ -175,7 +122,7 @@ if(bestX==-1)return;func_ov000_0218a9ac(bestX,bestY);return;
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(PATH(x,y)<0||!func_ov000_021a9084(CELL(x,y,0x1420)))continue;
 distance=COST(x,y,0x2338);if(distance==127)continue;
-distance=PATH(x,y)+distance;if(best>=distance){bestX=x;bestY=y;best=distance;}
+distance+=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}
 if(bestX==-1)return;func_ov000_0218a9ac(bestX,bestY);
 }

@@ -2,15 +2,20 @@
 #include "common.h"
 typedef struct DnsPacket0201e944 { u16 header[6]; u8 name[48]; } DnsPacket0201e944;
 
-s32 func_0201e944(M2C_UNK a,s32 b,M2C_UNK c,s32 d,s32 e) {
+#pragma push
+#pragma opt_strength_reduction off
+s32 func_0201e944(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
 void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 func_02007004(void); void func_02008048(void*,void*,u32);
 extern M2C_UNK data_02137290;
-u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; u8 *label,*p,*end; s32 n=0; u8 ch; s32 result; s32 start; s32 questions; u16 len,type,v1,v2;
-packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;packet[4]=0;packet[5]=0;
-size=0; label=qname;p=label+1;
-while((ch=*name++)!=0){
-if(ch!='.'){if(p-(u8*)packet>=60)return -1;size=++n;*p++=ch;}
-else{*label=n;label=p++;n=0;size=0;}
+u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
+packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;label=qname;packet[4]=0;packet[5]=0;
+size=0;p=label+1;
+ch=*name++;if(ch){n=size;
+do{
+if(ch!='.'){if(p-(u8*)packet>=60)return -1;n=++size;*p++=ch;}
+else{*label=n;label=p++;size=0;n=0;}
+ch=*name++;
+}while(ch);
 }
 *label=size;p[0]=0;p[1]=(u32)b>>8;p[2]=b;p[3]=0;p[4]=1;
 func_0201db20(packet,p+5-(u8*)packet);
@@ -23,12 +28,12 @@ type=p[3]&15;
 if(type==3)result=-1;
 else if(type==0){
 end=p+size;questions=(u16)((p[4]<<8)|p[5]);p+=12;
-questions--;if(questions!=-1){do{p=func_0201e914(p)+4;}while(questions--!=0);}
+while(questions--!=0){p=func_0201e914(p)+4;}
 while(p<end){
 p=func_0201e914(p);len=(u16)((p[8]<<8)|p[9]);type=(u16)((p[0]<<8)|p[1]);
 if(b==type){
 if(b!=12){label=p+8;p+=6;v1=(u16)((p[len]<<8)|p[len+1]);v2=(u16)((label[len]<<8)|label[len+1]);result=(v1<<16)|v2;}
-else if(len>(u32)e)result=2;
+else if(len>e)result=2;
 else{func_02008048(p+10,(void*)d,len);result=1;}
 break;
 }
@@ -40,7 +45,7 @@ func_0201d70c(size);
 }
 return result;
 }
-
+#pragma pop
 s32 func_0201ebec(u8 *arg0, u8 **arg1) {
 #pragma opt_propagation on
 #pragma opt_common_subs on
@@ -83,7 +88,7 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_0201d1f0();
     M2C_UNK func_0201d224();
-    s32 func_0201e944(M2C_UNK, s32, M2C_UNK, s32, s32);
+    s32 func_0201e944();
     s32 result;
     if (arg1 == 0) return -1;
     func_0201d1f0();

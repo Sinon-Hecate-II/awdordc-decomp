@@ -91,12 +91,12 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     }
 
     {
+        s32 bottom;
+        s32 right;
         s32 xmin;
         s32 ymin;
         s32 xmax;
         s32 ymax;
-        s32 right;
-        s32 bottom;
         s16 ys;
         s16 xs;
         UnkStruct_ov000_021A860C *entry;
@@ -141,18 +141,18 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
                     dxd = xx - x;
                 }
                 dist = 0;
-                dist += dxd;
+                dxd += dist;
                 dy = y - yy;
-                if (dy <= 0) {
-                    dist += yy - y;
+                if (dy > 0) {
+                    dxd += dy;
                 } else {
-                    dist += dy;
+                    dxd += yy-y;
                 }
 
-                if (dist < 0) {
+                if (dxd < 0) {
                     continue;
                 }
-                if (dist > 6) {
+                if (dxd > 6) {
                     continue;
                 }
 

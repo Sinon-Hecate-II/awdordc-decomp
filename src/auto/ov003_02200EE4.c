@@ -231,11 +231,11 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     extern u32 data_ov003_022107ec[];
     extern u32 data_ov003_0221079c[];
     extern u16 data_ov003_022104fa[];
+    s32 tmp1, tmp2;
+    s32 r6, r5, r11, r10;
+    u8 *cell;
     void *obj;
     void *vt;
-    s32 tmp1, tmp2;
-    u8 *cell;
-    s32 r6, r5, r11, r10;
     u8 i;
 
     i = 0;

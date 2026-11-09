@@ -31,7 +31,7 @@ int func_020846a4(void);
 void *func_020c7e88(int);
 u8 func_020e31e0(void);
 void func_ov003_021f9fe0(s32 a,s32 b,s32 c) {
-u8 *p=(u8 *)a,*q,*r;int mode,id;int flag2=0;int flag=0;int dx=0,icon,index;
+u8 *p=(u8 *)a,*q,*r;int mode,id;int flag=0;int flag2=0;int dx=0,icon,index;
 int x,y,tile,shift,n,v,kind,rowkind,palette,glyph;int width,height,drawX,drawY,drawW,drawH;u32 paletteBits;u8 i,j;void *saved;
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){

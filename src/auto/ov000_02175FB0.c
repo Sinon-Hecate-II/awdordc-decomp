@@ -27,7 +27,7 @@ n=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28),10);d=M2C_FIELD(M2C_
 func_01ffaacc(187,53,(u16)(((d+128)&1023)|36864),data_027e0084,0);
 
 if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)>0){
-if(!(data_ov000_021df600&1)){M2C_FIELD(data_ov000_021deb10,volatile u16 *,12)=0x4400;data_ov000_021df600|=1;}
+if(!(data_ov000_021df600&1)){M2C_FIELD(data_ov000_021deb10,u16 *,12)=0x4400;data_ov000_021df600|=1;}
 ratio=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)*312,M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28));x=126+(ratio>>4);cs=data_020e5b30[1];
 if((ratio<0?-ratio:ratio)>=2)den=ratio;else if(ratio>2)den=2;else{den=-2;if(ratio>=den)den=ratio;}
 sn=data_020e5b30[0];

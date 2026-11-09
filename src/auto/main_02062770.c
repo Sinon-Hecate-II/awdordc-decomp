@@ -84,9 +84,35 @@ if(n-5<2)return;
 }else *out=M2C_FIELD(a,u16 *,0x4a8);
 }
 
-s32 func_02062a2c(M2C_UNK arg0, s32 arg1, u8 *arg2, s32 arg3, s32 arg4) {
-    (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4;
-    return 0;
+s32 func_02062a2c(M2C_UNK a,s32 h,u8 *p,s32 n,s32 mode) {
+void func_0206113c(s32,s32);void func_02061144(s32,s32,u16);void func_02061150(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void func_02060ac4(s32,s32,s32);void func_02060a84(s32,s32,void *);s32 func_02068c34(void *);u8 func_02061160(s32);void func_02061158(s32,u8);
+s32 value;u16 swap,half; s32 original=n; s32 flags=*p;s32 count,i,k; s32 *entry;u8 *key;
+p+=5;func_0206113c(h,flags);n-=5;
+if(flags&16){p+=2;n-=2;}
+if(flags&2){{PairBytes *dst=(PairBytes *)&value; *dst=*(PairBytes *)p;dst[1]=((PairBytes *)p)[1];}p+=4;n-=4;}else value=0;
+if(flags&32){{u8 *dst=(u8 *)&half;u8 x=((volatile u8 *)p)[0],y=((volatile u8 *)p)[1];*dst++=x;*dst=y;}p+=2;n-=2;}else half=M2C_FIELD(a,u16 *,0x4a8);
+func_02061144(h,value,half);
+if(flags&8){{PairBytes *dst=(PairBytes *)&value; *dst=*(PairBytes *)p;dst[1]=((PairBytes *)p)[1];}p+=4;n-=4;func_02061150(h,value);}
+if(flags&64){
+count=func_02048688(M2C_FIELD(a,s32 *,8));
+for(i=0;i<count;i++){
+entry=func_02048690(M2C_FIELD(a,s32 *,8),i);
+switch(entry[1]){
+case 1:func_02060ac4(h,entry[0],*p++);n--;break;
+case 2:{u8 *dst=(u8 *)&swap;u8 x=((volatile u8 *)p)[0],y=((volatile u8 *)p)[1];*dst++=x;*dst=y;}func_02060ac4(h,entry[0],(u16)(((swap>>8)&255)|((swap<<8)&0xff00)));p+=2;n-=2;break;
+case 0:
+if(mode){k=*p++;n--;}else k=255;
+if(k==255){func_02060a84(h,entry[0],p);k=func_02068c34(p)+1;p+=k;n-=k;}else func_02060a84(h,entry[0],M2C_FIELD((u8 *)a+k*4,void **,0x84));
+break;
+}
+}
+func_02061158(h,func_02061160(h)|1);
+}
+if(flags&128){
+while(*(s8 *)p && n>0){key=p;k=func_02068c34(p)+1;p+=k;n-=k;func_02060a84(h,(s32)key,p);k=func_02068c34(p)+1;p+=k;n-=k;}
+n--;func_02061158(h,func_02061160(h)|2);
+}
+return original-n;
 }
 
 /* Validates an encoded data block and, if valid, decodes it. */

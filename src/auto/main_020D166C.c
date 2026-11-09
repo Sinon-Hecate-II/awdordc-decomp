@@ -396,10 +396,10 @@ M2C_FIELD((*gCurrentMap+0x67a4)+offset,u32*,0x6c)&=~255;
 func_020a338c(player,0);func_020a3428(player,0);func_020a33f0(player,0);
 M2C_FIELD((*gCurrentMap+0x67a4)+offset,u32*,0x6c)&=~0x3c000;
 func_020a3550(player,0);func_020a3184(player,0);
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67ca)=1;M2C_FIELD((*gCurrentMap+offset),u8*,0x67cb)=0;
+M2C_FIELD((*gCurrentMap+offset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+offset),u8*,0x67cb)=0;
 func_020d31f0(player,0);func_020d327c(player,0);
 M2C_FIELD((*gCurrentMap+offset),u8*,0x67d5)=0;
-for(i=0;i<27;i++){M2C_FIELD(i+(offset+*gCurrentMap),u8*,0x67d7)=0;M2C_FIELD(i+(offset+*gCurrentMap),u8*,0x67f2)=0;}
+i=0;do{M2C_FIELD((void *)(i+((s32)offset+(s32)*gCurrentMap)),u8*,0x67d7)=0;M2C_FIELD((void *)(i+((s32)offset+(s32)*gCurrentMap)),u8*,0x67f2)=0;i++;}while(i<27);
 func_020d2d60(player);
 M2C_FIELD((*gCurrentMap+offset),s32*,0x6828)=0;M2C_FIELD((*gCurrentMap+offset),s32*,0x682c)=0;
 player++;offset+=140;

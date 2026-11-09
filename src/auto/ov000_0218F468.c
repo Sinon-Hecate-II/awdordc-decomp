@@ -70,7 +70,7 @@ v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;M2C_FIELD(v,u8 *,3)++;
 ClearF468();func_ov000_0217c3a4();func_ov000_02199d74((s16)x,(s16)y,3,0,0);return;
 }
 if(ActionGetF468(SelectedF468())==2){
-s32 i;u32 offset;
+s32 i,offset;
 i=data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+1;
 if(i<data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51){offset=i*14;do {
 v=(u8 *)MapF468()+0x59a4+offset;

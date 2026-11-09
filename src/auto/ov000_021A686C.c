@@ -245,8 +245,8 @@ return result;
 #pragma opt_propagation reset
 s32 func_ov000_021a7348(void) {
     s32 func_020d1938(s32);
-    s32 func_020d273c(s32);
-    s32 func_ov000_021a911c(s32);
+    s32 func_020d273c(s32,s32);
+    s32 func_ov000_021a911c(s16);
     extern s32 *gCurrentMap;
     extern void *data_ov000_021df580;
     extern u16 data_ov000_021aeef4[];
@@ -256,17 +256,17 @@ s32 func_ov000_021a7348(void) {
     s32 r5 = 0;
     s32 r6 = 0;
     s32 r7 = 0;
+    s32 idx;
     s32 player;
     void *mapBase;
     u16 start;
-    s32 idx;
     u8 *unit;
     u32 kind;
     u8 attr;
     u16 hp;
-    u8 owner;
+    u32 owner;
     u8 *map;
-    u16 row;
+    u32 row;
     u8 terrain;
     u8 kindAttr;
     u8 x, y;
@@ -292,18 +292,22 @@ s32 func_ov000_021a7348(void) {
         if (func_020d1938(player) == 0) {
             continue;
         }
-        mapBase = (void *)*gCurrentMap;
-        tmpUnit = *(u16 *)((u8 *)mapBase + 0x52a4);
-        if (func_020d273c(tmpUnit) == 1) {
+        if (func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player) == 1) {
+            s32 limit;
+            s32 firstIdx;
+            u8 *firstUnit;
             start = data_ov000_021aeef4[player];
-            for (idx = start + 1; idx < start + 0x33; idx++) {
-                unit = (u8 *)mapBase + 0x59a4 + idx * 14;
-                kind = unit[0] & 0x3f;
+            firstIdx=start+1;
+            limit=start+0x33;
+            if(firstIdx < limit) {
+            firstUnit=(u8 *)*gCurrentMap+0x59a4+firstIdx*14;
+            do {
+                kind = (u32)(firstUnit[0] << 26) >> 26;
                 if (kind == 0) {
                     continue;
                 }
                 if (kind == 6) {
-                    owner = unit[11] & 0x0f;
+                    owner = (u32)(firstUnit[11] << 28) >> 28;
                     if (owner != 5) {
                         r5--;
                     }
@@ -313,15 +317,16 @@ s32 func_ov000_021a7348(void) {
                     r6--;
                 }
                 if (attr & 1) {
-                    hp = *(u16 *)(unit + 6);
-                    r7 -= (hp & 0x7f);
+                    hp = *(u16 *)(firstUnit + 6);
+                    r7 -= ((u32)(hp << 25) >> 25);
                 }
+            } while(firstUnit+=14,++firstIdx < limit);
             }
         } else {
             start = data_ov000_021aeef4[player];
-            for (idx = start + 1; idx < start + 0x33; idx++) {
-                unit = (u8 *)mapBase + 0x59a4 + idx * 14;
-                kind = unit[0] & 0x3f;
+            for (idx = start + 1; idx < data_ov000_021aeef4[player] + 0x33; idx++) {
+                unit = (u8 *)*gCurrentMap + 0x59a4 + idx * 14;
+                kind = (u32)(unit[0] << 26) >> 26;
                 if (kind == 0) {
                     continue;
                 }
@@ -334,13 +339,11 @@ s32 func_ov000_021a7348(void) {
                 map = (u8 *)*gCurrentMap;
                 row = *(u16 *)(map + y * 2 + 0x3758);
                 terrain = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
-                doCost = 1;
-                if (terrain == 0x12) {
-                    if (func_ov000_021a911c(idx) == 1) {
-                        doCost = 0;
-                    }
-                }
-                if (doCost) {
+                if (terrain == 0x12 && func_ov000_021a911c(idx) == 1) continue;
+                {
+                    map=(u8 *)*gCurrentMap;
+                    x=unit[1]; y=unit[2];
+                    row=*(u16 *)(map+y*2+0x3758);
                     ownerAttr = data_ov000_021b5bfc[0xa22];
                     costBase = *(s8 **)(data_0212616c + 0x64);
                     costTable = costBase + ownerAttr * 32;
@@ -351,12 +354,12 @@ s32 func_ov000_021a7348(void) {
                     } else {
                         r5++;
                     }
-                    kind = unit[0] & 0x3f;
+                    kind = (u32)(unit[0] << 26) >> 26;
                     if (kind != 0x13) {
                         attr2 = data_ov000_021b5bfc[kind * 0x70 + 0x16];
                         if (attr2 & 3) {
                             hp = *(u16 *)(unit + 6);
-                            r7 += (hp & 0x7f);
+                            r7 += ((u32)(hp << 25) >> 25);
                         }
                     }
                 }

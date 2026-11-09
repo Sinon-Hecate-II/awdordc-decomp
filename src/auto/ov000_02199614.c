@@ -17,10 +17,11 @@ s32 func_ov000_021a98e4(s32);
 s32 func_ov000_021a97e0(s32,s32);
 s32 func_01ffada0(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s32);
+s32 xx,yy;
 s32 i,value;
 UnkStruct_ov000_021A860C *unit;
-s32 owner,id,xx,yy,amount;
 u8 *base,*cell;
+s32 owner,id,amount;
 if(!func_ov000_021973f8(21))return;
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
 for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
@@ -42,17 +43,15 @@ if(unit){if(!unit)id=0;else id=unit-(UnkStruct_ov000_021A860C *)((u8 *)*gCurrent
 owner=func_ov000_021a97e0(owner,unit->unk0);
 func_01ffada0(((u8 *)unit)[1],((u8 *)unit)[2],unit->unk0,owner,1);
 func_01ffb9c4(111);
-unit=(void *)*gCurrentMap;
-for(yy=0;yy<M2C_FIELD(unit,u16 *,0x5146);yy++){
-for(xx=0;xx<M2C_FIELD(unit,u16 *,0x5144);xx++){
-
-if(((s8 **)(((u8 *)unit)+0x52e8))[yy][xx]>=0){
-cell=((u8 *)unit)+xx+M2C_FIELD(((u8 *)unit)+yy*2,u16 *,0x3758);
-amount=value+M2C_FIELD(cell,u8 *,0x2840);
+for(yy=0;yy<M2C_FIELD(*gCurrentMap,u16 *,0x5146);yy++){
+for(xx=0;xx<M2C_FIELD(*gCurrentMap,u16 *,0x5144);xx++){
+base=(u8 *)*gCurrentMap;
+if(((s8 **)(base+0x52e8))[yy][xx]>=0){
+cell=base+xx+((u16 *)base)[yy+0x1bac];
+amount=value+((u8 *)(cell+0x2000))[0x840];
 if(amount>=255)amount=255;
 M2C_FIELD(cell,u8 *,0x2840)=amount;
 }
-unit=(void *)*gCurrentMap;
 }
 }
 }else func_ov000_02197a8c(unit,value,21,100,0,1,0);

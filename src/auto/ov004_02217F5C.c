@@ -104,6 +104,7 @@ void func_ov004_02217f5c(void *arg0) {
     s32 temp_r9;
     s32 temp_r9_2;
     s32 temp_r9_3;
+    void *temp_r0_3;
     void *temp_r0_4;
     void *temp_r0_5;
     void **temp_r5;
@@ -186,24 +187,24 @@ void func_ov004_02217f5c(void *arg0) {
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) func_01ff9c34((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_020a9a30(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
-    temp_r0_5 = func_020ab1c4(arg0);
-    func_020aab24(temp_r0_5, 2, 0x140, 3, 0);
-    func_020ab150(temp_r0_5, 2);
-    M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x800;
-    func_02088e84(temp_r0_5, 0xE0, 0x9C, 0xE0, 0xBC);
-    if (M2C_FIELD(M2C_FIELD(temp_r0_5, void **, 0x64), u8 *, 0x12) != 0) {
+    temp_r0_3 = func_020ab1c4(arg0);
+    func_020aab24(temp_r0_3, 2, 0x140, 3, 0);
+    func_020ab150(temp_r0_3, 2);
+    M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x800;
+    func_02088e84(temp_r0_3, 0xE0, 0x9C, 0xE0, 0xBC);
+    if (M2C_FIELD(M2C_FIELD(temp_r0_3, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
     if (var_r0 & 0xFF) {
-        temp_r7 = M2C_FIELD(temp_r0_5, s16 *, 0x52);
-        temp_r8 = M2C_FIELD(temp_r0_5, s16 *, 0x50);
-        temp_r9 = func_020aae10(temp_r0_5);
-        func_02087d84(M2C_FIELD(temp_r0_5, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r0_5));
+        temp_r7 = M2C_FIELD(temp_r0_3, s16 *, 0x52);
+        temp_r8 = M2C_FIELD(temp_r0_3, s16 *, 0x50);
+        temp_r9 = func_020aae10(temp_r0_3);
+        func_02087d84(M2C_FIELD(temp_r0_3, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) func_020aae44(temp_r0_3));
     }
-    func_02088f1c(temp_r0_5);
-    func_020aad18(temp_r0_5);
+    func_02088f1c(temp_r0_3);
+    func_020aad18(temp_r0_3);
     temp_r0_4 = func_020ab1c4(arg0);
     func_020aab24(temp_r0_4, 6, 0x150, 3, 0);
     func_020ab150(temp_r0_4, 0x100);

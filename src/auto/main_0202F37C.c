@@ -212,7 +212,7 @@ loop_2:
     return var_r4;
 }
 
-#pragma optimization_level 2
+#pragma optimization_level 4
 void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_02007e70(void *, s32, M2C_UNK);
     s32 value;
@@ -230,7 +230,7 @@ void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(p, u8 *, 0x403) = (u8) ((M2C_FIELD(p, u8 *, 0x403) & ~0x7F) | (arg2 & 0x7F));
     func_02007e70(arg1, arg3 + 0xBF0, 0xC0);
 }
-#pragma optimization_level reset
+#pragma optimization_level 2
 void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  M2C_UNK func_02007e70(void *, s32, M2C_UNK);
  u16 n;

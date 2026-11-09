@@ -123,7 +123,8 @@ if(n>0){map=*gCurrentMap;row=M2C_FIELD(map+y*2,u16 *,0x3758);id=M2C_FIELD(row+(m
 do{if(*scan==id)break;scan++;i++;}while(i<n);}
 if(i!=n)continue;
 map=*gCurrentMap;
-id=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+row=M2C_FIELD(map+y*2,u16 *,0x3758);
+id=M2C_FIELD(row+(map+x),u8 *,0);
 unit=(u8 *)(map+0x59a4+id*14);
 if(M2C_FIELD(unit,u16 *,4)&32)continue;
 if(!func_020a600c(id))continue;

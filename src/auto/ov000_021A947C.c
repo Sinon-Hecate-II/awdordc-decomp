@@ -250,7 +250,7 @@ loop:
 
 s32 func_ov000_021a9c90(s32 x,s32 y) {
  extern void **data_027e0058; extern void *data_ov000_021df580;
- s32 cnt=0,i,xmin=x-1,d,v,ymin,xmax,ymax;
+ s32 count=0,i,xmin=x-1,d,v; register s32 ymin,xmax,ymax;
  if(xmin<0)xmin=0;
  ymin=y-1;
  if(ymin<0)ymin=0;
@@ -262,9 +262,9 @@ s32 func_ov000_021a9c90(s32 x,s32 y) {
  d=0; if(x-i>0)d+=x-i;else d+=i-x; if(y-ymin>0)d+=y-ymin;else d+=ymin-y;
  if(d<1||d>1)continue;
  v=M2C_FIELD(((s8 **)((u8 *)*data_027e0058+0x52e8))[ymin],s8 *,i);
- if(v>=0 && v<=M2C_FIELD(data_ov000_021df580,u8 *,5))cnt++;
+ if(v>=0 && v<=M2C_FIELD(data_ov000_021df580,u8 *,5))count++;
  }
- return cnt;
+ return count;
 }
 
 u8 func_ov000_021a9d8c(u32 arg0,s32 arg1) {

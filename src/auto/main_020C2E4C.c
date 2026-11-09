@@ -420,7 +420,7 @@ void func_020c33ec(void) {
             M2C_FIELD(data_02164094, s16 *, 0x24) = 0x10;
         }
         temp_r4 = data_02164094;
-        
+
         if ((s32) M2C_FIELD(temp_r4, s32 *, 0) < 0x19) {
             var_r0 = func_02070f24(M2C_FIELD(temp_r4, s32 *, 0x10), 0x40C00000);
         } else {
@@ -551,9 +551,9 @@ d=M2C_FIELD(p,s16 *,0x1A); c=M2C_FIELD(p,s16 *,0x18); b=M2C_FIELD(p,s16 *,0x16);
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x42) = 0;
     temp_r0_13 = func_020719a0(M2C_FIELD(data_02164094, s32 *, 0x10));
     sp14 = 0;
-    var_r7 = 0;
+    var_r7 = sp14;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3E) = temp_r0_13;
-    var_r8 = 0;
+    var_r8 = var_r7;
     M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x46) = (s16) var_r7;
     temp_r0_14 = M2C_FIELD(data_027e01d8, u16 **, 0);
     temp_r4_12 = M2C_FIELD(data_02164094, s16 *, 0x24);

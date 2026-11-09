@@ -11,11 +11,11 @@ static inline s32 ov007_item_id(void *p) {
 #pragma opt_common_subs off
 #pragma opt_propagation off
 void func_ov007_02218ad0(void *arg0) {
-    M2C_UNK func_01ff8ddc(M2C_UNK, s16, s16, s16, s32);
+    M2C_UNK func_01ff8ddc(M2C_UNK, s32, s32, s32, s32);
     s32 func_0207c8ec(s32, s32);
     extern M2C_UNK data_020e5b30;
-    volatile s32 sp8;
     s32 sp4;
+    volatile s32 sp8;
     s16 temp_r4; s16 sine;
     s32 temp_r0;
     s32 temp_r11;
@@ -25,10 +25,10 @@ void func_ov007_02218ad0(void *arg0) {
     s32 temp_r5_2;
     s32 temp_r6;
     s32 temp_r6_2;
-    s32 temp_r7;
     s32 temp_r7_2;
     s32 temp_r7_3;
     s32 temp_r8;
+    s32 temp_r7;
     s32 temp_r8_2;
     s32 var_r1;
     s32 var_r1_2;

@@ -9,7 +9,9 @@ typedef struct { s32 pad[2]; s32 slots[5]; } ObjectSlots;
 
 void func_ov002_021e7c84(u8 *p) { extern s32 gPlayerSettings; p[0]=0;p[1]=0;((u8 *)&gPlayerSettings)[12]=8;((u8 *)&gPlayerSettings)[36]=12;((u8 *)&gPlayerSettings)[16]=0;((u8 *)&gPlayerSettings)[40]=1;((u8 *)&gPlayerSettings)[17]=3;((u8 *)&gPlayerSettings)[41]=3;((u8 *)&gPlayerSettings)[18]=0;((u8 *)&gPlayerSettings)[42]=0;((u8 *)&gPlayerSettings)[3]=0;p[13]=100;p[37]=100;p[14]=80;p[38]=20;p[15]=3;p[39]=3;p[21]=1;p[45]=2;p[22]=2;p[46]=2;p[23]=1;p[47]=1;((u8 *)&gPlayerSettings)[20]=1;((u8 *)&gPlayerSettings)[44]=1;((u8 *)&gPlayerSettings)[19]=0;((u8 *)&gPlayerSettings)[43]=0;((u8 *)&gPlayerSettings)[24]=0;((u8 *)&gPlayerSettings)[48]=1;((u8 *)&gPlayerSettings)[25]=0;((u8 *)&gPlayerSettings)[49]=1;}
 
-void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
+#pragma push
+#pragma opt_common_subs off
+void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, u8 arg4) {
     extern u8 data_ov002_021f2e54[];
     extern u8 data_ov002_021f2e44[];
     extern u8 data_ov002_021f2e48[];
@@ -20,10 +22,10 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
     extern void **gCurrentMap;
     s32 RandomIntRange(s32, s32);
     u8 *p;
-    s32 r5;
     s32 i19;
     u8 *ptr19;
     u8 *ptr10;
+    unsigned long r5;
     u8 r1;
     u8 r8;
     u8 r7;
@@ -39,11 +41,11 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
     i19 = ptr19[r5];
     i19 = i19 - 1;
     ptr19[r5] = (u8)i19;
-    ptr10 = p+0x10;
     r1 = data_ov002_021f2e54[arg2];
     r8 = M2C_FIELD(p+r5,u8 *,0x18);
     r7 = M2C_FIELD(p+r5,u8 *,0x13);
     r6 = M2C_FIELD(p+r5,u8 *,0x14);
+    ptr10 = p+0x10;
     lr = ptr10[r5];
     switch (arg2) {
         case 1:
@@ -51,7 +53,7 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
             break;
         case 2:
             if (r7 == 0) {
-                if(r8 == 0) { if(lr==7) r1=3; else r1=2; }
+                if(!r8) { if(lr==7) r1=3; else r1=2; }
                 else { if(lr==7)r1=5;else r1=4; }
             } else { if(lr==7)r1=1;else r1=0; }
             break;
@@ -82,7 +84,7 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
             if ((u8)arg4 != 0) r1 = 0x26;
             break;
         case 23:
-            if (r7 == 0) {
+            if (!r7) {
                 if (arg3 == 0x16) r1 = 0x23; else r1 = 0x22;
             } else {
                 r1 = 0x24;
@@ -95,7 +97,8 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
         default:
             break;
     }
-    p[r5 + 0x0C] = r1;
+    M2C_FIELD(p+r5,u8 *,0x0c)=r1;
+    lr=ptr10[r5];
     flag = ((u8 *)*gCurrentMap)[0x5157];
     if (flag == 0x04 && lr == 0x04) {
         rr = RandomIntRange(0, 2);
@@ -127,7 +130,7 @@ void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, s32 arg4) {
     v = p[0x03];
     ptr10[r5] = data_ov002_021f2e70[v + (u32)lr * 4];
 }
-
+#pragma pop
 s32 func_ov002_021e7fec(s32 arg0,s32 arg1) { switch(M2C_FIELD(arg0+arg1*24,u8 *,12)) {case 0x25: case 0x26:return 1; default:return 0;} }
 
 u8 func_ov002_021e8014(s32 arg0, s32 arg1) {
@@ -322,7 +325,7 @@ void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
 s32 func_020a7d38(void*);
-void func_ov002_021e7d34(void*,s32,u32,u32,s32);
+
 p[1]=(a==M2C_FIELD(*data_027e0058,u8**,0x52d0));
 p[0]=!p[1];
 switch(M2C_FIELD(*data_027e0058,u8*,0x5157)){

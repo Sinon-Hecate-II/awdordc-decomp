@@ -296,10 +296,17 @@ s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 func_0205cb4c();
 
 #pragma scheduling off
 s32 func_0205b758(void *arg0) {
+    M2C_UNK var_r2;
+
     if (func_0205cb4c() == 0) {
         return 0;
     }
-    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) == 6 ? 0 : 1) == 0) {
+    if (M2C_FIELD(arg0, s32 *, 0xC) == 6) {
+        var_r2 = 0 + 0;
+    } else {
+        var_r2 = 1 + 0;
+    }
+    if (func_0205b110(arg0, 2, var_r2) == 0) {
         return 0;
     }
     return 1;

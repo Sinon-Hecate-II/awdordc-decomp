@@ -18,115 +18,115 @@ void func_01ffac9c(int,int,int,void *,int);
 extern u16 data_ov011_02228ce0[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
-void func_ov011_02223cb8(void *arg0){
+void func_ov011_02223cb8(void *entry){
 void func_ov011_02222010(void *,s32,s32);void func_ov011_02224f00(void *);void func_0208f7d0(s32);
 extern s32 gCur3DSpriteEngine,data_027e00c8,data_027e00c4;
 u8 color[2]={0};
-s32 saved,i,chosen;
-M2C_FIELD(arg0,u16 *,0x34)=0;
-switch(M2C_FIELD(arg0,u8 *,0x39)){
+s32 savedEngine,bufIndex,screenEngine;
+M2C_FIELD(entry,u16 *,0x34)=0;
+switch(M2C_FIELD(entry,u8 *,0x39)){
 case 0:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-G3_SubmitSpriteQuad(arg0,2,2,0x80,0x60);
-func_ov011_02222010(arg0,3,0);
-func_ov011_022231f8(arg0,0,0,0,color);
-saved=gCur3DSpriteEngine;i=0;
+G3_SubmitSpriteQuad(entry,2,2,0x80,0x60);
+func_ov011_02222010(entry,3,0);
+func_ov011_022231f8(entry,0,0,0,color);
+savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(i==0)chosen=data_027e00c8;else chosen=data_027e00c4;
-gCur3DSpriteEngine=chosen;
+if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
 p2=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p2=*p2&~0x40;
 p3=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p3=*p3&~0x80;
 p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4|0x100;
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+bufIndex++;
+}while(bufIndex<2);
+gCur3DSpriteEngine=savedEngine;
 func_0208f7d0(0x1000E);
 }
 break;
 case 2:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-func_ov011_02224aac(arg0,0);
-func_ov011_022231f8(arg0,0,0,0,color);
-func_ov011_02223764(arg0,0,0,0);
-saved=gCur3DSpriteEngine;i=0;
+func_ov011_02224aac(entry,0);
+func_ov011_022231f8(entry,0,0,0,color);
+func_ov011_02223764(entry,0,0,0);
+savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(i==0)chosen=data_027e00c8;else chosen=data_027e00c4;
-gCur3DSpriteEngine=chosen;
+if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
 p2=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p2=*p2|0x40;
 p3=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p3=*p3|0x80;
 p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4&~0x100;
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+bufIndex++;
+}while(bufIndex<2);
+gCur3DSpriteEngine=savedEngine;
 }
 break;
 case 4:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-func_ov011_02224aac(arg0,5);
-G3_SubmitSpriteQuad(arg0,2,3,0x80,0x60);
-func_ov011_022231f8(arg0,0,0,0,color);
-func_ov011_02224f00(arg0);
-saved=gCur3DSpriteEngine;i=0;
+func_ov011_02224aac(entry,5);
+G3_SubmitSpriteQuad(entry,2,3,0x80,0x60);
+func_ov011_022231f8(entry,0,0,0,color);
+func_ov011_02224f00(entry);
+savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(i==0)chosen=data_027e00c8;else chosen=data_027e00c4;
-gCur3DSpriteEngine=chosen;
+if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
 p2=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p2=*p2&~0x40;
 p3=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p3=*p3|0x80;
 p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4|0x100;
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+bufIndex++;
+}while(bufIndex<2);
+gCur3DSpriteEngine=savedEngine;
 }
 break;
 case 6:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-G3_SubmitSpriteQuad(arg0,2,2,0x80,0x60);
-G3_SubmitSpriteQuad(arg0,2,3,0x80,0x60);
-func_ov011_02224b9c(arg0,1);
-func_ov011_022231f8(arg0,0,0,0,color);
-func_ov011_02223764(arg0,0,0,0);
-saved=gCur3DSpriteEngine;i=0;
+G3_SubmitSpriteQuad(entry,2,2,0x80,0x60);
+G3_SubmitSpriteQuad(entry,2,3,0x80,0x60);
+func_ov011_02224b9c(entry,1);
+func_ov011_022231f8(entry,0,0,0,color);
+func_ov011_02223764(entry,0,0,0);
+savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(i==0)chosen=data_027e00c8;else chosen=data_027e00c4;
-gCur3DSpriteEngine=chosen;
+if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
 p2=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p2=*p2|0x40;
 p3=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p3=*p3|0x80;
 p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4|0x100;
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+bufIndex++;
+}while(bufIndex<2);
+gCur3DSpriteEngine=savedEngine;
 }
 break;
 case 8:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
-func_ov011_02223764(arg0,0,0,0);
-func_ov011_02222010(arg0,6,0);
-func_ov011_022231f8(arg0,0,0,0,color);
-saved=gCur3DSpriteEngine;i=0;
+func_ov011_02223764(entry,0,0,0);
+func_ov011_02222010(entry,6,0);
+func_ov011_022231f8(entry,0,0,0,color);
+savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(i==0)chosen=data_027e00c8;else chosen=data_027e00c4;
-gCur3DSpriteEngine=chosen;
+if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
 p2=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p2=*p2&~0x40;
 p3=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p3=*p3&~0x80;
 p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4|0x100;
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
+bufIndex++;
+}while(bufIndex<2);
+gCur3DSpriteEngine=savedEngine;
 }
 break;
 case 9:

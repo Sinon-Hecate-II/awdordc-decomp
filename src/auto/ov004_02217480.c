@@ -43,7 +43,7 @@ M2C_UNK func_0208fe30(s32);
 u8 func_0207ca38(M2C_UNK,s16,s16,u8,s32);
 void func_020ceb48(void);void func_020cf278(s32);void func_020cf0a8(s32);void func_ov003_021ff36c(void);
 s32 func_020a8958(s32);void func_01ffa8c4(void *,s32);M2C_UNK func_01ffa6fc(void *);
-void *entry,*sprite,*q,*base; s32 i,value,id,ok;u32 old;u8 selected;s16 x,y;u8 *cursor;
+s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
 case 0:

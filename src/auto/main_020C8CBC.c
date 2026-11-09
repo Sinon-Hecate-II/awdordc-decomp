@@ -432,9 +432,8 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     extern M2C_UNK data_0212b7b0;
     extern M2C_UNK data_0212b7bc;
     extern M2C_UNK data_0212b7c8;
-    s32 savedMode = mode;
-    s32 savedY = y;
-    s32 savedX = x;
+    s32 px;
+    s32 py;
     u16 height;
     s32 xs;
     s32 ys;
@@ -445,10 +444,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     s32 idx;
     u8 occ;
     s32 low;
-    s32 px;
-    s32 py;
 
-    mode=savedMode; y=savedY; x=savedX;
     height = M2C_FIELD(*gCurrentMap, u16 *, 0x52a4);
     xs = x << 4;
     ys = y << 4;
@@ -461,9 +457,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     } else {
         row = M2C_FIELD((s8 *)(*gCurrentMap) + y * 2 + 0x3700, u16 *, 0x58);
         idx = x + row;
-        occ = M2C_FIELD((s8 *)(*gCurrentMap) + ((u32)idx >> 3) + 0x5000, u8 *, 0x201);
-        low = idx & 7;
-        if ((u8)(occ & (1 << (u32)low))) pass = 1;
+        if ((u8)(M2C_FIELD((s8 *)(*gCurrentMap) + ((u32)idx >> 3) + 0x5000, u8 *, 0x201) & (1 << (idx & 7)))) pass = 1;
         else pass = 0;
     }
     if (!pass) return 0;

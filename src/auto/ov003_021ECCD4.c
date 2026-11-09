@@ -388,7 +388,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         } else {
             var_r1_2 = 0;
         }
-        if (!((u8)var_r1_2)) {
+        if (!(var_r1_2 & 0xFF)) {
             if (temp_r0_5 == 3) {
                 var_r0_4 = 1;
             } else {
@@ -449,7 +449,7 @@ block_79:
         } else {
             var_r1_3 = 0;
         }
-        if (!((u8)var_r1_3)) {
+        if (!(var_r1_3 & 0xFF)) {
             if (temp_r0_6 == 3) {
                 var_r0_7 = 1;
             } else {
@@ -501,7 +501,7 @@ block_100:
         } else {
             var_r1_4 = 0;
         }
-        if (!((u8)var_r1_4)) {
+        if (!(var_r1_4 & 0xFF)) {
             if (temp_r0_7 == 3) {
                 var_r0_10 = 1;
             } else {

@@ -43,7 +43,7 @@ void func_ov003_021ea57c(void *arg0) {
     s32 temp_r2;
     s16 temp_r2_2;
     s16 temp_r3;
-    s16 temp_r6_2;
+    s32 temp_r6_2;
     s32 temp_r8_2;
     s32 temp_r1_3;
     s32 temp_r3_3;

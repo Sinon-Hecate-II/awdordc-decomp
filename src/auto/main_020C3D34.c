@@ -26,7 +26,7 @@ void *map=*gCurrentMap;
 void *unit=(u8*)map+0x67a4+M2C_FIELD(map,u16*,0x52a4)*140;
 u32 kindWord=M2C_FIELD(unit,u32*,0x6c); u8 kind;
 u8 b3=data_020f4df4.bytes[3],b4=data_020f4df4.bytes[4],b5=data_020f4df4.bytes[5];
-u16 **old; u8 alpha; s32 i,color; s16 x0,y0,x1,y1;
+u16 **old; u8 alpha; s32 color; s16 x0,y0,x1,y1;
 names=data_020f4e08;
 colors.bytes[0]=data_020f4df4.bytes[0];colors.bytes[1]=data_020f4df4.bytes[1];colors.bytes[2]=data_020f4df4.bytes[2];colors.bytes[3]=b3;colors.bytes[4]=b4;colors.bytes[5]=b5;kind=kindWord;
 colors.half[0]=data_020f4df4.half[0];colors.half[1]=data_020f4df4.half[1];colors.half[2]=data_020f4df4.half[2];colors.half[3]=data_020f4df4.half[3];colors.half[4]=data_020f4df4.half[4];colors.half[5]=data_020f4df4.half[5];

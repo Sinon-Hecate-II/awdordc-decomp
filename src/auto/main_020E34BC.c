@@ -48,7 +48,7 @@ s32 func_020e34bc(s32 arg0) {
     s = saved;
     (void) *(volatile u16 *) 0x04000208;
     *(volatile u16 *) 0x04000208 = s;
-    return result;
+    return (s32)result;
 }
 
 s32 func_020e34f4(s32 arg0) {

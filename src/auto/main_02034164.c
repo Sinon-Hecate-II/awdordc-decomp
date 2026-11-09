@@ -222,24 +222,24 @@ return 0;
 s32 func_02034c58(Unk02034164 *arg0,s32 arg1) {
 char *func_02068fdc(s32,void*); s32 func_02068eac(s32,void*,s32); s32 func_02068c34(s32); M2C_UNK func_02007f8c(void*,s32,s32);
 extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,data_020fb5cc,data_020fb770,data_020fb774,data_020fb778;
-s32 buf[3]; char *base,*end,*header,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
+s32 buf[3]; char *base,*end,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
 buf[0]=(s32)((u8*)arg0+0x1a38);buf[1]=32;buf[2]=0;
 func_02007f8c((void*)buf[0],0,256);
 input=M2C_FIELD(arg0,s32*,0x1a08);
 base=func_02068fdc(input,&data_020fb59c);
 if(!base)return 0;
 end=base+4+func_02068c34((s32)(base+4));
-header=func_02068fdc(input,&data_020fb75c);
-if(!header)return 0;
-save=header[4];header[4]=0;
-result=func_02034b04(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(header+1));
-header[4]=save;
+colon=func_02068fdc(input,&data_020fb75c);
+if(!colon)return 0;
+save=colon[4];colon[4]='\0';
+result=func_02034b04(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(colon+1));
+colon[4]=save;
 if(result!=1)return 0;
-if(arg1==1 || func_02068eac((s32)(header+1),&data_020fb76c,3)!=0)return 1;
-p=func_02068fdc((s32)(header+5),&data_020fb5cc);
+if(arg1==1 || func_02068eac((s32)(colon+1),&data_020fb76c,3)!=0)return 1;
+p=func_02068fdc((s32)(colon+5),&data_020fb5cc);
 if(!p)return 0;
 p+=2;
-while(p[0]!=13 && p[1]!=10){
+while(!(p[0]==13 || p[1]==10)){
 colon=func_02068fdc((s32)p,&data_020fb770);if(!colon)break;
 save=*colon;*colon=0;value=colon+2;
 term=func_02068fdc((s32)value,&data_020fb5cc);

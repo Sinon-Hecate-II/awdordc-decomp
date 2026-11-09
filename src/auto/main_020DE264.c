@@ -384,9 +384,9 @@ extern void *gCur3DSpriteEngine;
 extern void *data_027e00c4;
 extern void *data_027e00c8;
 
+s32 i, i2;
 void *old,*p;
 u16 keys;u32 v;
-s32 i;
 u8 can;
 u32 frame;
 
@@ -423,9 +423,9 @@ return;
 }
 else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(func_0208b5ec())func_0208af20();
 old=gCur3DSpriteEngine;
-for(i=0;
-i<2;
-i++){gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+for(i2=0;
+i2<2;
+i2++){gCur3DSpriteEngine=i2==0?data_027e00c8:data_027e00c4;
 
 if(M2C_FIELD(self,u8 *,0x44)==0 && gCur3DSpriteEngine!=data_027e00c8)continue;
 

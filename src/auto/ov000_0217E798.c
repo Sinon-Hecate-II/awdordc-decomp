@@ -75,7 +75,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     u8 *p;
     s32 kind;
     s32 minX, minY, maxX, maxY;
-    register s32 xx, yy;
+    s32 xx, yy;
     s32 dist;
     s32 count = 0;
     s32 n;
@@ -261,14 +261,13 @@ if(best<score){result=unit;best=score;}
 return result;
 }
 
-#pragma push
 #pragma opt_common_subs off
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 s32 func_ov000_0217f494(s16 x,s16 y){
 extern void **gCurrentMap;extern u8 data_ov000_021b5bfc[];
 s32 func_020a76d4(u8 *);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s32,s32);s32 func_ov000_02176e28(u32,void *);
-s32 result=0,best=result,minx,maxy,outer,maxx,inner,dist,dy,rev,ret,score,cand; s16 pos[2];u8 *up;void *map;
+s32 result=0,best=result,minx,maxy,maxx,inner,dist,dy,rev,ret,score,cand; register s32 outer; s16 pos[2];u8 *up;void *map;
 ret=func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
 if(x-ret<0)minx=0;else minx=x-func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
 ret=func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
@@ -294,4 +293,3 @@ if(best<score){result=cand;best=score;}
 }}
 return result;
 }
-#pragma pop

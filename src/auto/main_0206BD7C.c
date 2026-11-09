@@ -1,7 +1,7 @@
 /* 4 functions from 0x0206BD7C to 0x0206CD20 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { s8 sign; s8 pad; s16 exp; u8 len; char digits[33]; } DecimalBD;
-typedef struct { u8 a,sign,b,alt; u16 c,conv; s32 d,precision; } FormatBD;
+typedef struct { u8 a,sign,b,alt; u8 c; u16 conv; s32 d,precision; } FormatBD;
 typedef struct { u8 mode; u8 pad; u16 digits; } DecimalFormBD;
 extern u16 data_020eaf78[];
 extern u16 data_02100564[], data_02100570[], data_0210057c[], data_02100584[], data_0210058c[], data_02100598[], data_021005a4[], data_021005ac[];
@@ -19,10 +19,10 @@ DecimalFormBD form;
 DecimalBD dec;
 char buf[512];
 char *p,*q;
-u16 conv=fmt.conv;
 int alt=fmt.alt;
-int precision=fmt.precision;
 int sign=fmt.sign;
+u16 conv=fmt.conv;
+int precision=fmt.precision;
 int exp,whole,n,i;
 char esign;
 u16 *result;
@@ -214,7 +214,7 @@ real=*(long double *)(args-8);
             len=buffer+511-text;
 break;
         case 's':
-if((u8)f.c==5){
+if(((u8)f.c)==5){
 args+=4;
 text=*(u16 **)(args-4);
 if(!text)text=(u16 *)data_021005b4;
@@ -270,7 +270,7 @@ break;
             continue;
         }
         case 'c':text=buffer;
-if((u8)f.c==5){args+=4;
+if(((u8)f.c)==5){args+=4;
 buffer[0]=*(s32 *)(args-4);
 len=1;
 }else{args+=4;

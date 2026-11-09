@@ -91,7 +91,6 @@ void func_ov003_021ee8b8(void *arg0) {
     void *temp_r6;
     void *temp_r6_2;
 
-
     void *func_02084e64(void);
     void *func_02084e24(int);
     int func_020848c4(void);
@@ -136,7 +135,6 @@ void func_ov003_021ee8b8(void *arg0) {
         for(j=0;j<playerCount;j++)if(player==M2C_FIELD(p+j,u8 *,0x74)){player=(s8)j;goto foundPlayer;}
         player=-1;
 foundPlayer:
-
         M2C_FIELD(sp0,u8 *,0xd)=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+(u8)player,u8 *,0xa);
         if(func_ov003_021e6cfc()){
             for(i=0;i<count;i=(u8)(i+1)){p=M2C_FIELD(arg0,void **,0x6c)+i;if((u8)(M2C_FIELD(p,u8 *,0x74)==255))M2C_FIELD((u8 *)sp0+i,u8 *,0x12)=M2C_FIELD(p,u8 *,0xa);}
@@ -265,7 +263,6 @@ foundPlayer:
                     }
                 }
             }
-
             func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
             M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0x59)=1;
             if(func_ov003_021e6d28())func_02088d94(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));

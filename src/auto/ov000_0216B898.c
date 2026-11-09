@@ -17,12 +17,12 @@ void func_01ffaacc(u16,u16,u16,void*,s32);void func_0209b67c(u16,s32,s32,u16,s32
 s32 x1,x2,y1,y2,anchor,xa,ya,i,tile;u16 *volatile control;
 if(!M2C_FIELD(arg0,u8*,0x36))return;
 switch(func_020e31e0()){
-case 0:xa=(s16)(GET(0x48)-4);ya=12;x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;break;
+case 0:{ void *tmp=M2C_FIELD(M2C_FIELD(arg0,void**,0x48),void**,0); xa=(s16)(func_020a8ff4(tmp)-4); }ya=12;x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;break;
 case 2:case 3:
-xa=(s16)(GET(0x48)-4);ya=12;
+{ void *tmp=M2C_FIELD(M2C_FIELD(arg0,void**,0x48),void**,0); xa=(s16)(func_020a8ff4(tmp)-4); }ya=12;
 if(M2C_FIELD(arg0,u8*,0x3d)){x2=GET(0x4c);y2=34;x1=GET(0x48);y1=68;}
 else{x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;}break;
-case 1:case 4:case 5:default:xa=(s16)(GET(0x48)-4);ya=38;x1=GET(0x48);y1=12;
+case 1:case 4:case 5:default:{ void *tmp=M2C_FIELD(M2C_FIELD(arg0,void**,0x48),void**,0); xa=(s16)(func_020a8ff4(tmp)-4); }ya=38;x1=GET(0x48);y1=12;
 if(M2C_FIELD(arg0,u8*,0x3d)){x2=GET(0x4c);y2=60;}else{x2=GET(0x4c);y2=42;}break;
 }
 anchor=GET(0x44);i=GET(0x44);

@@ -344,7 +344,8 @@ void func_ov003_021f2bf0(s32 arg0) {
     *(u8 *)((u8 *)arg0 + 0x34) = 3;
 }
 
-void func_ov003_021f2e98(s32 a) {
+/* Advance the cursor/movement state machine for the current entry. */
+void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK func_01ffa8c4(M2C_UNK,M2C_UNK);
  void func_01ffa6fc(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
  s32 func_ov003_021f1bfc(void); void func_020d47d0(void); void func_020d47f0(void);
@@ -353,52 +354,52 @@ void func_ov003_021f2e98(s32 a) {
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
  s32 func_ov003_021f142c(void); void func_ov003_021f163c(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
- func_ov003_021f2878(a);
- if(func_ov003_021f2a9c(a)||func_ov003_021f2b88(a)) {
- func_ov003_021f17e0(); func_01ffa8c4(a,5); return;
+ func_ov003_021f2878(entry);
+ if(func_ov003_021f2a9c(entry)||func_ov003_021f2b88(entry)) {
+ func_ov003_021f17e0(); func_01ffa8c4(entry,5); return;
  }
- if(M2C_FIELD(a,u8 *,0x45)||M2C_FIELD(a,u8 *,0x46)) return;
- switch(M2C_FIELD(a,u8 *,0x34)) {
+ if(M2C_FIELD(entry,u8 *,0x45)||M2C_FIELD(entry,u8 *,0x46)) return;
+ switch(M2C_FIELD(entry,u8 *,0x34)) {
  case 0: break;
  case 4: break;
  case 5: break;
  default: break;
  case 1:
- if(M2C_FIELD(a,u8 *,0x44)) {M2C_FIELD(a,u8 *,0x34)=2;return;}
- if(M2C_FIELD(a,u8 *,0x44)) return;
+ if(M2C_FIELD(entry,u8 *,0x44)) {M2C_FIELD(entry,u8 *,0x34)=2;return;}
+ if(M2C_FIELD(entry,u8 *,0x44)) return;
  if(!func_ov003_021f1448()) return;
- func_ov003_021f182c(); M2C_FIELD(a,u8 *,0x44)=1; M2C_FIELD(a,u8 *,0x34)=2;
+ func_ov003_021f182c(); M2C_FIELD(entry,u8 *,0x44)=1; M2C_FIELD(entry,u8 *,0x34)=2;
  return;
  case 2:
  switch(func_ov003_021f1bfc()) {
  case 0: default: return;
  case 1:
- if(AtEnd2e98(M2C_FIELD(a,void **,0x40))) {func_020d47d0();func_01ffa6fc(a);return;}
- M2C_FIELD(a,u8 *,0x34)=3;
- p=M2C_FIELD(a,void **,0x40);
+ if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47d0();func_01ffa6fc(entry);return;}
+ M2C_FIELD(entry,u8 *,0x34)=3;
+ p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) func_ov003_021f140c(4);
- else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(a,u8 *,0x44)=0;}func_ov003_021f18a4();}
- p=M2C_FIELD(a,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
+ else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
- if(AtStart2e98(M2C_FIELD(a,void **,0x40))) {func_020d47f0();func_02086330();func_02085054(0,0x6e0,a);func_01ffa6fc(a);return;}
- M2C_FIELD(a,u8 *,0x34)=3;
- p=M2C_FIELD(a,void **,0x40);
+ if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {func_020d47f0();func_02086330();func_02085054(0,0x6e0,entry);func_01ffa6fc(entry);return;}
+ M2C_FIELD(entry,u8 *,0x34)=3;
+ p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) func_ov003_021f140c(4);
- else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(a,u8 *,0x44)=0;}func_ov003_021f18a4();}
- p=M2C_FIELD(a,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
+ else {if(!func_ov003_021f1608()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
  }
  case 3:
  if(!func_ov003_021f142c()) return;
- p=M2C_FIELD(a,void **,0x40);
- if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){func_01ffa8c4(a,3);return;}
- M2C_FIELD(a,u8 *,0x34)=1;
+ p=M2C_FIELD(entry,void **,0x40);
+ if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){func_01ffa8c4(entry,3);return;}
+ M2C_FIELD(entry,u8 *,0x34)=1;
  switch(func_ov003_021f1bfc()) {
- case 2: p=M2C_FIELD(a,void **,0x40);direction=BlockNext2e98(p)?0:2;break;
- case 1: p=M2C_FIELD(a,void **,0x40);if(BlockPrev2e98(p)) direction=0; else direction=1;break;
+ case 2: p=M2C_FIELD(entry,void **,0x40);direction=BlockNext2e98(p)?0:2;break;
+ case 1: p=M2C_FIELD(entry,void **,0x40);if(BlockPrev2e98(p)) direction=0; else direction=1;break;
  }
- p=M2C_FIELD(a,void **,0x40);
+ p=M2C_FIELD(entry,void **,0x40);
  next=(u8)!BlockNext2e98(p); prev=BlockPrev2e98(p)?0:2;
- func_ov003_021f163c(a,M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)],direction,
+ func_ov003_021f163c(entry,M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)],direction,
  next,prev);
  return;
  }

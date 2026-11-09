@@ -104,7 +104,7 @@ int func_020b2e78(u16,u16,void*);
 M2C_UNK func_020808dc(s32,s32,s32,s32);
 void *old,*state;u32 pressed; s16 rect[4];u32 copy[17];s32 screen,kind,index,i,width,oldIndex;u32 text,*table,*cursor;u8 ok;
 pressed=M2C_FIELD(data_02101e84,u16 *,6)&1;old=gCur3DSpriteEngine;state=M2C_FIELD(self,void * *,0x10);
-screen=0;do{
+for(screen=0;screen<2;screen++){
 gCur3DSpriteEngine=screen==0?data_027e00c8:data_027e00c4;
 if(M2C_FIELD(self,u8 *,2)==0&&gCur3DSpriteEngine!=data_027e00c8)continue;
 if(M2C_FIELD(self,u8 *,2)==1&&gCur3DSpriteEngine!=data_027e00c4)continue;
@@ -135,7 +135,7 @@ if(!ok){func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2
 if((M2C_FIELD(data_02101e88,u8 *,0x12)&&func_020b2e78(M2C_FIELD(data_02101e88,u16 *,0),M2C_FIELD(data_02101e88,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{func_020808dc((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-}while(++screen<2);
+}
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction reset
