@@ -208,5 +208,118 @@ void func_0208cadc(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
         r10=(s16)(r10+0x1); r8=(s16)(r8-0x1);
     }
 }
-M2C_UNK func_0208cf94(s16 a, s16 b, s16 c, s32 d, s32 e) { return 0; }
+void func_0208cf94(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
+    extern s16 data_020e5b30[];
+    extern u8 data_020f359e[];
+    extern u8 data_027e009c[];
+    extern u8 data_027e006c[];
+    extern u8 data_027e0084[];
+    extern void *gCur3DSpriteEngine;
+    s32 func_0207c8ec(s32, s32);
+    void func_01ff8ddc(s32, s16, s16, s16, s16);
+    void func_01ffaacc(u16, u16, u16, void *, s32);
+#define AACC ((void (*)(u16, u16, s32, void *, s32))func_01ffaacc)
+
+    s16 r9 = arg1;
+    s16 r10 = arg0;
+    s16 r8 = arg2;
+    s32 r7 = arg3;
+    s32 r6 = arg4;
+
+    if (r10 < 0) return;
+    if (r10 > 0x100) return;
+    if (r9 < 0) {
+        r8 = (s16)(r8 + r9);
+        r9 = 0;
+    }
+    if (r9 > 0xc0) {
+        r8 = (s16)(r8 + (r9 - 0xc0));
+        r9 = 0xc0;
+    }
+    {
+        s32 sum = r9 + r8;
+        if (sum > 0xc0) r8 = (s16)(0xc0 - r9);
+        sum = r9 + r8;
+        if (sum < 0) r8 = (s16)(0 - r9);
+    }
+    if (r8 >= 0x40) {
+        {
+            s16 t0 = data_020e5b30[0];
+            s16 t1 = data_020e5b30[1];
+            func_01ff8ddc(0x1b,
+                (s16)func_0207c8ec((s32)t1 << 4, 0x100),
+                (s16)func_0207c8ec((-(s32)t0) << 4, 0x200),
+                (s16)func_0207c8ec((s32)t0 << 4, 0x100),
+                (s16)func_0207c8ec((s32)t1 << 4, 0x200));
+        }
+        while (r8 >= 0x80) {
+            AACC((u16)((((r10 - 4) & 0x1FF)) | 0x3600),
+                          (u16)((r9 & 0xFF) | 0x300),
+                          r7,
+                          (void *)data_020f359e,
+                          r6);
+            r9=(s16)(r9+0x80); r8=(s16)(r8-0x80);
+        }
+        while (r8 >= 0x40) {
+            AACC((u16)((((r10 - 4) & 0x1FF)) | 0x3600),
+                          (u16)((r9 & 0xFF) | 0x300),
+                          r7,
+                          (void *)data_027e009c,
+                          r6);
+            r9=(s16)(r9+0x40); r8=(s16)(r8-0x40);
+        }
+    }
+    while (r8 >= 0x20) {
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      r7,
+                      (void *)data_027e009c,
+                      r6);
+        r9=(s16)(r9+0x20); r8=(s16)(r8-0x20);
+    }
+    while (r8 >= 0x10) {
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      r7,
+                      (void *)data_027e006c,
+                      r6);
+        r9=(s16)(r9+0x10); r8=(s16)(r8-0x10);
+    }
+    while (r8 >= 0x8) {
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      r7,
+                      (void *)data_027e0084,
+                      r6);
+        r9=(s16)(r9+0x8); r8=(s16)(r8-0x8);
+    }
+    while (r8 >= 0x4) {
+        u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      (u16)(r7 + (0x3FF & (4 >> (s32)mode))),
+                      (void *)data_027e0084,
+                      r6);
+        r9=(s16)(r9+0x4); r8=(s16)(r8-0x4);
+    }
+    while (r8 >= 0x2) {
+        u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      (u16)(r7 + (0x3FF & (6 >> (s32)mode))),
+                      (void *)data_027e0084,
+                      r6);
+        r9=(s16)(r9+0x2); r8=(s16)(r8-0x2);
+    }
+    while (r8 >= 0x1) {
+        u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
+        AACC((u16)(r10 & 0x1FF),
+                      (u16)(r9 & 0xFF),
+                      (u16)(r7 + (0x3FF & (8 >> (s32)mode))),
+                      (void *)data_027e0084,
+                      r6);
+        r9=(s16)(r9+0x1); r8=(s16)(r8-0x1);
+    }
+#undef AACC
+}
 

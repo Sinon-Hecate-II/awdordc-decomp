@@ -151,7 +151,6 @@ void func_020dbeb0(void *arg0) {
 }
 
 #pragma push
-#pragma opt_foldconstants off
 #pragma opt_lifetimes off
 M2C_UNK func_020dbebc(void *arg0) {
 extern void **gCur3DSpriteEngine, **data_027e00c8;
@@ -171,7 +170,7 @@ void **sp0;
 s32 i, x, test;
 s32 i2;
 void *item;
-s32 y, end;
+register s32 y, end;
 s32 color;
 u8 selected;
 void *p;

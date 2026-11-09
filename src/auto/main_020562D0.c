@@ -1,5 +1,367 @@
 /* 1 function from 0x020562D0 to 0x02057D80 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s32 function; s32 argument; } ProtocolCallback;
+extern s32 data_020fef90;
+extern char data_020fef94[];
+extern char data_020fefc0[];
+extern char data_020fefcc[];
+extern char data_020fefd8[];
+extern char data_020fefe4[];
+extern char data_020feff4[];
+extern char data_020feffc[];
+extern char data_020ff00c[];
+extern char data_020ff014[];
+extern char data_020ff020[];
+extern char data_020ff02c[];
+extern char data_020ff038[];
+extern char data_020ff040[];
+extern char data_020ff048[];
+extern char data_020ff050[];
+extern char data_020ff058[];
+extern char data_020ff064[];
+extern char data_020ff070[];
+extern char data_020ff078[];
+extern char data_020ff084[];
+extern char data_020ff090[];
+extern char data_020ff098[];
+extern char data_020ff0a4[];
+extern char data_020ff0b4[];
+extern char data_020ff0c4[];
+extern char data_020fef48[];
+extern char data_020fee0c[];
+extern char data_020ff0c8[];
+extern char gServiceNameBuffer[];
+extern char data_020ff0d4[];
+extern char data_020ff0dc[];
+extern char data_020ff108[];
+extern char data_020ff110[];
+extern char data_020ff118[];
+extern char data_020fee8c[];
+extern char data_020ff11c[];
+extern char data_020ff124[];
+extern char data_020ff130[];
+extern char data_020ff13c[];
+extern char data_020ff148[];
+extern char data_020ff150[];
+extern char data_020ff178[];
+extern char data_020ff17c[];
+extern char data_020ff180[];
+extern char data_020ff188[];
+extern char data_020ff190[];
+extern char data_020ff194[];
+extern char data_020ff19c[];
+extern char data_020ff1a8[];
+extern char data_020ff1ac[];
+extern char data_020ff1b4[];
+extern char data_020ff1b8[];
+extern char data_020ff1c0[];
+extern char data_020ff1c8[];
+extern char data_020ff1cc[];
+extern char data_020ff1d4[];
+extern char data_020ff1dc[];
+extern char data_020ff1e0[];
+extern char data_020ff1e8[];
 
-void func_020562d0(void *a, void *b) {
+#pragma push
+#pragma opt_lifetimes off
+s32 func_020562d0(void *a,void *b) {
+s32 func_02050430(void*,s32,void*,void*,s32,void*);
+s32 func_0205835c(void*,s32,s32*);
+void func_0204fea0(void*,void*,void*);
+void func_0204fed0(void*,void*,s32);
+s32 func_02050208(void*,s32,void*,s32*,s32*,void*);
+s32 func_02058450(void*,s32,s32*,char*,char*);
+s32 func_02068d98(void*,void*);
+void *func_020377a8(void*,s32);
+void *func_02037794(s32);
+s32 func_02050838(void*,ProtocolCallback,void*,void*,s32);
+s32 func_020560e4(void*,void*,void*,void*,void*,void*,s32,s32,s32,s32,s32);
+s32 result,status,token,loop,done,inner,previous,kind,i;
+void *ctx=M2C_FIELD(a,void**,0),*request=M2C_FIELD(b,void**,4);
+ProtocolCallback callback1,callback2,callback3,callback4,callback5,callback6,callback7,callback8;
+char name[512],value[512];s32 response[4];void *entry,*item,*array;u32 count; s32 code,extra;
+loop=M2C_FIELD(b,s32*,8)!=0;
+again:
+result=func_02050430(a,M2C_FIELD(request,s32*,4),request+24,&status,1,&data_020fef90);
+if(result)return result;
+if(M2C_FIELD(b,s32*,20)==1){
+result=func_0205835c(a,M2C_FIELD(request,s32*,4),&kind);if(result)return result;
+if(kind==4){func_02058620(a,0xd01,data_020fef94);func_02050744(a,4,0);return 4;}
+if(kind==3){
+i=M2C_FIELD(request,s32*,0);
+if(i==1){
+func_0204fea0(a,request+24,data_020fefc0);
+func_0204fea0(a,request+24,data_020fefcc);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
+func_0204fea0(a,request+24,data_020fefd8);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
+func_0204fea0(a,request+24,data_020fefe4);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+if(M2C_FIELD(request,s8*,40)){func_0204fea0(a,request+24,data_020feff4);
+func_0204fea0(a,request+24,request+40);
 }
+if(M2C_FIELD(request,s8*,71)){func_0204fea0(a,request+24,data_020feffc);
+func_0204fea0(a,request+24,request+71);
+}
+if(M2C_FIELD(request,s8*,92)){func_0204fea0(a,request+24,data_020ff00c);
+func_0204fea0(a,request+24,request+92);
+}
+if(M2C_FIELD(request,s8*,143)){func_0204fea0(a,request+24,data_020ff014);
+func_0204fea0(a,request+24,request+143);
+}
+if(M2C_FIELD(request,s8*,174)){func_0204fea0(a,request+24,data_020ff020);
+func_0204fea0(a,request+24,request+174);
+}
+if(M2C_FIELD(request,s32*,304)!=0){func_0204fea0(a,request+24,data_020ff02c);
+func_0204fed0(a,request+24,M2C_FIELD(request,s32*,304));}
+if(M2C_FIELD(request,s32*,308)>0){func_0204fea0(a,request+24,data_020ff038);
+func_0204fed0(a,request+24,M2C_FIELD(request,s32*,308));}
+}else if(i==2){func_0204fea0(a,request+24,data_020ff040);
+func_0204fea0(a,request+24,data_020ff00c);
+func_0204fea0(a,request+24,request+92);
+}else if(i==3){func_0204fea0(a,request+24,data_020ff048);
+func_0204fea0(a,request+24,data_020ff00c);
+func_0204fea0(a,request+24,request+92);
+func_0204fea0(a,request+24,data_020ff050);
+func_0204fea0(a,request+24,request+205);
+func_0204fea0(a,request+24,data_020fefe4);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+}else if(i==4){func_0204fea0(a,request+24,data_020ff058);
+func_0204fea0(a,request+24,data_020fefcc);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
+func_0204fea0(a,request+24,data_020fefd8);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
+func_0204fea0(a,request+24,data_020ff064);
+func_0204fed0(a,request+24,M2C_FIELD(request,s32*,0x138));
+}else if(i==5){func_0204fea0(a,request+24,data_020ff070);
+func_0204fea0(a,request+24,data_020feff4);
+func_0204fea0(a,request+24,request+40);
+func_0204fea0(a,request+24,data_020ff00c);
+func_0204fea0(a,request+24,request+92);
+func_0204fea0(a,request+24,data_020ff050);
+func_0204fea0(a,request+24,request+205);
+}else if(i==6){
+func_0204fea0(a,request+24,data_020ff078);
+func_0204fea0(a,request+24,data_020feff4);
+func_0204fea0(a,request+24,request+40);
+func_0204fea0(a,request+24,data_020ff00c);
+func_0204fea0(a,request+24,request+92);
+func_0204fea0(a,request+24,data_020ff050);
+func_0204fea0(a,request+24,request+205);
+func_0204fea0(a,request+24,data_020ff084);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1132));
+func_0204fea0(a,request+24,data_020fefe4);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+func_0204fea0(a,request+24,data_020feffc);
+func_0204fea0(a,request+24,request+71);
+if(M2C_FIELD(request,s8*,0xec)){func_0204fea0(a,request+24,data_020ff090);
+func_0204fea0(a,request+24,request+236);
+}}else if(i==7){func_0204fea0(a,request+24,data_020ff098);
+func_0204fea0(a,request+24,data_020fefcc);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
+func_0204fea0(a,request+24,data_020fefd8);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
+func_0204fea0(a,request+24,data_020fefe4);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+}else if(i==8){func_0204fea0(a,request+24,data_020ff0a4);
+func_0204fea0(a,request+24,data_020ff0b4);
+func_0204fea0(a,request+24,request+71);
+func_0204fea0(a,request+24,data_020fefe4);
+func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+}else{func_020640a8(data_020ff0c4,data_020fef48,data_020fee0c,0x275);}
+func_0204fea0(a,request+24,data_020ff0c8);
+func_0204fea0(a,request+24,gServiceNameBuffer);
+func_0204fea0(a,request+24,data_020ff0d4);
+M2C_FIELD(b,s32*,20)=4;
+}
+}else if(M2C_FIELD(b,s32*,20)==4){
+result=func_02050208(a,M2C_FIELD(request,s32*,4),request+8,&token,&status,&data_020fef90);
+if(result){if(result!=3)return result;func_02058620(a,0xd01,data_020ff0dc);func_02050744(a,3,0);return 3;}
+if(func_02068fdc(M2C_FIELD(request,void**,8),data_020ff0d4)!=0){
+previous=0;M2C_FIELD(b,s32*,20)=5;
+if(func_0205817c(a,M2C_FIELD(request,s32*,8),1)){M2C_FIELD(request,s32*,0x140)=1;return 4;}
+if(M2C_FIELD(request,s32*,0)==1){
+done=0;response[0]=0;response[1]=0;response[2]=0x601;response[3]=0;
+do{
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(!func_02068d98(name,data_020ff108)){
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(!func_02068d98(name,data_020ff110)){
+if(func_02068d98(value,data_020ff0c4))response[2]=0x600;done=1;
+}
+}else if(!func_02068d98(name,data_020ff118)){
+response[1]++;
+response[3]=(s32)func_020377a8((void*)response[3],response[1]*172);
+if(!response[3]){func_02058644(a,data_020fee8c);return 1;}
+entry=(void*)(response[3]+(response[1]-1)*172);
+func_02065210(entry,0,172);M2C_FIELD(entry,s32*,0)=func_0206ad38(value);
+inner=0;token=previous;
+do{
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(!func_02068d98(name,data_020ff11c)){func_020580fc(entry+4,value,31);}
+else if(!func_02068d98(name,data_020ff124)){func_020580fc(entry+35,value,21);}
+else if(!func_02068d98(name,data_020ff130)){func_020580fc(entry+56,value,31);}
+else if(!func_02068d98(name,data_020ff13c)){func_020580fc(entry+87,value,31);}
+else if(!func_02068d98(name,data_020ff148)){func_020580fc(entry+118,value,51);}
+else if(!func_02068d98(name,data_020ff118)||!func_02068d98(name,data_020ff108)){previous=token;inner=1;}
+}while(!inner);
+}else{func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+}while(!done);
+code=response[2];
+if(M2C_FIELD(b,void**,12))((void(*)(void*,s32*,s32))M2C_FIELD(b,void**,12))(a,response,M2C_FIELD(b,s32*,16));
+if(code==0x600 && response[2]==0x600){result=func_020560e4(a,request+0x28,request+0x47,request+0x5c,request+0x8f,request+0xae,M2C_FIELD(request,s32*,0x130),response[1]+M2C_FIELD(request,s32*,0x134),M2C_FIELD(b,s32*,8),M2C_FIELD(b,s32*,12),M2C_FIELD(b,s32*,16));if(result)return result;func_020377c4(response[3]);response[3]=0;}
+}else if(M2C_FIELD(request,s32*,0)==2){
+callback2.function=M2C_FIELD(b,s32*,12);callback2.argument=M2C_FIELD(b,s32*,16);
+if(callback2.function){
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(func_02068d98(name,data_020ff178)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+entry=func_02037794(60);if(!entry){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,s32*,0)=0;func_020580fc(entry+4,request+0x5c,51);
+M2C_FIELD(entry,s32*,56)=value[0]=='0'?0:1;
+result=func_02050838(a,callback2,entry,b,0);if(result)return result;
+}
+}else if(M2C_FIELD(request,s32*,0)==3){
+callback3.function=M2C_FIELD(b,s32*,12);callback3.argument=M2C_FIELD(b,s32*,16);
+if(callback3.function){
+entry=func_02037794(68);if(!entry){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,s32*,0)=0;func_02068c50(entry+4,request+0x5c);
+M2C_FIELD(entry,s32*,56)=0;M2C_FIELD(entry,s32*,60)=0;M2C_FIELD(entry,s32*,64)=0;
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(func_02068d98(name,data_020ff17c)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+done=0;
+do{
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+if(!func_02068d98(name,data_020ff11c)){
+void *array=func_020377a8(M2C_FIELD(entry,void**,60),(M2C_FIELD(entry,s32*,56)+1)*4);if(!array){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,60)=array;
+array=func_02037794(31);if(!array){func_02058644(a,data_020fee8c);return 1;}
+((void**)M2C_FIELD(entry,void**,60))[M2C_FIELD(entry,s32*,56)]=array;
+func_020580fc(array,value,31);M2C_FIELD(entry,s32*,56)++;
+}else if(!func_02068d98(name,data_020ff124)){
+if(M2C_FIELD(entry,s32*,56)>0){
+void *array=func_020377a8(M2C_FIELD(entry,void**,64),M2C_FIELD(entry,s32*,56)*4);if(!array){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,64)=array;
+array=func_02037794(21);if(!array){func_02058644(a,data_020fee8c);return 1;}
+((void**)M2C_FIELD(entry,void**,64))[M2C_FIELD(entry,s32*,56)-1]=array;
+func_020580fc(array,value,21);
+}
+}else if(!func_02068d98(name,data_020ff180))done=1;
+else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+}while(!done);
+result=func_02050838(a,callback3,entry,b,3);if(result)return result;
+}
+}
+else if(M2C_FIELD(request,s32*,0)==4){
+callback4.function=M2C_FIELD(b,s32*,12);callback4.argument=M2C_FIELD(b,s32*,16);
+if(callback4.function){
+entry=func_02037794(16);if(!entry){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=M2C_FIELD(request,s32*,0x138);M2C_FIELD(entry,s32*,8)=0;M2C_FIELD(entry,s32*,12)=0;
+done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(!func_02068d98(name,data_020ff188))done=1;
+else if(!func_02068d98(name,data_020ff190)){
+count=M2C_FIELD(entry,s32*,8)+1;M2C_FIELD(entry,s32*,8)=count;
+array=func_020377a8(M2C_FIELD(entry,void**,12),count*296);if(!array){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,12)=array;item=array+(count-1)*296;func_02065210(item,0,296);M2C_FIELD(item,s32*,36)=1;M2C_FIELD(item,s32*,0)=func_0206ad38(value);
+inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(!func_02068d98(name,data_020ff194))func_020580fc(item+40,value,256);
+else if(!func_02068d98(name,data_020ff11c))func_020580fc(item+4,value,31);
+if(!func_02068d98(name,data_020ff19c))M2C_FIELD(item,s32*,36)=func_0206ad38(value);
+else if(!func_02068d98(name,data_020ff190)||!func_02068d98(name,data_020ff188)){previous=token;inner=1;}
+}while(!inner);
+}else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+}while(!done);result=func_02050838(a,callback4,entry,b,4);if(result)return result;
+
+}}
+else if(M2C_FIELD(request,s32*,0)==5){
+callback5.function=M2C_FIELD(b,s32*,12);callback5.argument=M2C_FIELD(b,s32*,16);
+if(callback5.function){
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(func_02068d98(name,data_020ff1a8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+code=func_0206ad38(value);
+if(code)M2C_FIELD(ctx,s32*,0x418)=code;
+extra=0;
+if(!code){
+if(!func_02058254(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
+else extra=func_0206ad38(value);
+}
+entry=func_02037794(8);if(!entry){func_02058644(a,data_020fee8c);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;
+result=func_02050838(a,callback5,entry,b,0);if(result)return result;
+
+}}
+else if(M2C_FIELD(request,s32*,0)==6){
+callback6.function=M2C_FIELD(b,s32*,12);callback6.argument=M2C_FIELD(b,s32*,16);
+if(callback6.function){
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(func_02068d98(name,data_020ff1b4)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+code=func_0206ad38(value);
+if(code)M2C_FIELD(ctx,s32*,0x418)=code;
+extra=0;
+if(1){
+if(!func_02058254(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
+else extra=func_0206ad38(value);
+}
+entry=func_02037794(8);if(!entry){func_02058644(a,data_020fee8c);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;
+result=func_02050838(a,callback6,entry,b,0);if(result)return result;
+
+}}
+else if(M2C_FIELD(request,s32*,0)==7){
+callback7.function=M2C_FIELD(b,s32*,12);callback7.argument=M2C_FIELD(b,s32*,16);
+if(callback7.function){
+entry=func_02037794(12);if(!entry){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=0;M2C_FIELD(entry,s32*,8)=0;
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(func_02068d98(name,data_020ff1b8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(!func_02068d98(name,data_020ff1c0))done=1;
+else if(!func_02068d98(name,data_020ff1c8)){
+count=M2C_FIELD(entry,s32*,4);
+array=func_020377a8(M2C_FIELD(entry,void**,8),(count+1)*172);if(!array){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,8)=array;item=array+count*172;func_02065210(item,0,172);M2C_FIELD(entry,s32*,4)=count+1;M2C_FIELD(item,s32*,0)=func_0206ad38(value);
+inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(!func_02068d98(name,data_020ff11c))func_020580fc(item+4,value,31);
+else if(!func_02068d98(name,data_020ff124))func_020580fc(item+35,value,21);
+else if(!func_02068d98(name,data_020ff1cc))func_020580fc(item+56,value,31);
+else if(!func_02068d98(name,data_020ff1d4))func_020580fc(item+87,value,31);
+else if(!func_02068d98(name,data_020ff148))func_020580fc(item+118,value,51);
+else if(!func_02068d98(name,data_020ff1c8)||!func_02068d98(name,data_020ff1c0)){previous=token;inner=1;}
+}while(!inner);
+}else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+}while(!done);result=func_02050838(a,callback7,entry,b,8);if(result)return result;
+
+}}
+else if(M2C_FIELD(request,s32*,0)==8){
+callback8.function=M2C_FIELD(b,s32*,12);callback8.argument=M2C_FIELD(b,s32*,16);
+if(callback8.function){
+count=0;entry=func_02037794(12);if(!entry){func_02058644(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=0;M2C_FIELD(entry,s32*,8)=0;
+result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(func_02068d98(name,data_020ff1dc)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+M2C_FIELD(entry,s32*,4)=func_0206ad38(value);
+array=func_02037794(M2C_FIELD(entry,s32*,4)*4);M2C_FIELD(entry,void**,8)=array;if(!array){func_02058644(a,data_020fee8c);return 1;}
+done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
+
+if(!func_02068d98(name,data_020ff11c)){
+item=func_02037794(21);((void**)M2C_FIELD(entry,void**,8))[count]=item;if(!item){func_02058644(a,data_020fee8c);return 1;}func_020580fc(item,value,21);count++;
+}else if(!func_02068d98(name,data_020ff1e0)){
+if(count!=M2C_FIELD(entry,s32*,4))func_020640a8(data_020ff1e8,data_020fef48,data_020fee0c,0x515);
+M2C_FIELD(entry,s32*,4)=count;done=1;
+}else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+}while(!done);result=func_02050838(a,callback8,entry,b,9);if(result)return result;
+
+}}
+else func_020640a8(data_020ff0c4,data_020fef48,data_020fee0c,0x52a);
+
+M2C_FIELD(request,s32*,0x140)=1;loop=0;
+}
+}
+if(loop){func_02049260(10);goto again;}return 0;
+}
+#pragma pop

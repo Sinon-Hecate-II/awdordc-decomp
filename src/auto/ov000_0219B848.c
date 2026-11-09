@@ -11,8 +11,8 @@ s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 func_020d273c(u16,s32); s32 func_020d1938(s32);
 s32 func_ov000_021a98a8(s32); s32 func_ov000_021a8984(s32);
 void func_01ffb554(void *); void func_01ffada0(s32,s32,s32,s32,s32);
-u8 *out; s32 mode;
-s32 enemyIndex,enemyPlayer; u8 *enemyUnit; u8 *unit; u8 *entry; u8 *candidate,*scan,*best; void *map; s32 player,index,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
+u8 *out;
+u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
 s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_ov000_021a9a28(s32,s32,s32); s32 func_ov000_0219b648(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void func_ov000_021a07c0(s32);
 count=0;out=&data_ov000_021e00ac;
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
@@ -39,8 +39,7 @@ if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
 func_01ffb554(data_ov000_021e0f60);
-mode=3;
-func_01ffada0(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,mode,0);
+func_01ffada0(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,3,0);
 func_01ffb554((u8 *)*gCurrentMap+0x1e30);
 if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
 }

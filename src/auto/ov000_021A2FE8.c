@@ -187,8 +187,86 @@ if(type!=0 && func_ov000_021a98c8(type)==0 && ((UnkState_021a36e4 *)entry)->stat
 return count;
 }
 
-s32 func_ov000_021a3854(void) { return 0; }
-
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_lifetimes off
+s32 func_ov000_021a3854(void) {
+extern void **gCurrentMap;
+extern u8 data_ov000_021e00ac[];
+extern M2C_UNK data_ov000_021b5bfc;
+extern M2C_UNK data_ov000_021df7d0;
+s32 func_ov000_021a6150(s32);
+s32 func_ov000_021a8fc0(s16);
+void func_ov000_021a07c0(s32);
+UnkStruct_ov000_021A860C *unit;
+u32 uid;
+s32 c7,c8,y,x,c18,c14,initial,flag,id,i;
+s8 c11;
+void *base;
+u8 *record;
+initial=(u8)(func_ov000_021a88c8(24)+func_ov000_021a88c8(25));
+retry:
+id=func_ov000_021a6150(3);
+if(id==-1){func_ov000_021a0204();return 0;}
+record=data_ov000_021e00ac+12*id;
+func_01ffada0(record[0],record[1],2,110,0);
+for(i=0;i<func_ov000_021a97e0(M2C_FIELD(*gCurrentMap,u16*,0x52a4),24);i++)
+func_ov000_021a34bc((u8)(i+111));
+c7=0;c8=0;c11=0;c18=0;y=0;c14=0;flag=0;
+base=*gCurrentMap;
+{ s32 h=M2C_FIELD(base,u16*,0x5146); }
+for(;y<M2C_FIELD(base,u16*,0x5146);y++){
+for(x=0;x<M2C_FIELD(base,u16*,0x5144);){
+if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<0)goto next;
+if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<=110){
+if(func_020ba924(x,y)==1)goto mark;
+{
+base=*gCurrentMap;
+i=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x1420);
+if((i&31)!=18 || M2C_FIELD(base,u16*,0x52a6)!=(i&224))goto no_mark;
+mark: flag=1;
+}}
+no_mark:
+base=*gCurrentMap;
+uid=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0);
+if(!uid)goto next;
+unit=(UnkStruct_ov000_021A860C *)(base+0x59a4)+uid;
+if(!func_020d27c0(uid)){
+if(!func_ov000_021a98a8(unit->unk0))goto next;
+if(!(M2C_FIELD((u8*)&data_ov000_021b5bfc+unit->unk0*112,u8*,19)&7))goto next;
+base=*gCurrentMap;
+if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]>110)goto next;
+goto reject;
+}else if(func_ov000_021a8fc0((s16)uid)==1){
+base=*gCurrentMap;
+if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<=110){
+if(((UnkState_021a36e4*)unit)->state==2){
+if(func_ov000_021a98c8(unit->unk0))c8=(s8)(c8+1);
+else c7=(s8)(c7+1);
+}else if(func_ov000_021a98c8(unit->unk0))c18=(s8)(c18+1);
+}
+if(unit->unk0==24 && unit->unkC[0]==0)c11=(s8)(c11+1);
+if(unit->unk0==25 && unit->unkC[0]==0)c14=(s8)(c14+1);
+}
+next:
+x++;
+base=*gCurrentMap;
+}}
+if(!flag)c8=(s8)(c8+c18);
+c11=(s8)(c11-(c7>>2));
+if(c11<0)c11=0;
+if(c8>=((c14+1+c11)<<2)){
+M2C_FIELD(&data_ov000_021df7d0,u8*,6)=25;
+func_ov000_021a07c0(id);return 1;
+}
+if(c8 && !initial){
+M2C_FIELD(&data_ov000_021df7d0,u8*,6)=25;
+func_ov000_021a07c0(id);func_ov000_021a0204();return 1;
+}
+reject:
+record[3]=253;goto retry;
+}
+#pragma pop
 s32 func_ov000_021a3c84(void){
 s32 func_020d2d18(u16,s32);s32 func_ov000_021a43a0(s32);s32 func_ov000_021a3854(void);
 s32 func_ov000_021a6150(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);void func_ov000_021a07c0(s32);

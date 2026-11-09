@@ -176,6 +176,7 @@ void func_020a4154(void) {
     s32 end;
     u32 j;
     s16 next;
+    u8 x;
     i = 0;
     offset = 0;
     do {
@@ -193,9 +194,9 @@ void func_020a4154(void) {
     do {
         p = (u8 *)M2C_FIELD(data_027e0058, void **, 0xC) + drawOffset;
         q = M2C_FIELD(data_027e0058, void **, 0);
-        func_01ff90e4((u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148)),
-                     (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A)), 0,
-                     data_021204a4 + M2C_FIELD(p, u16 *, 8) * 8);
+        x = (u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148));
+        func_01ff90e4(x, (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A)), 0,
+                      data_021204a4 + M2C_FIELD(p, u16 *, 8) * 8);
         next = j + 1;
         drawOffset += 12;
         j = next;

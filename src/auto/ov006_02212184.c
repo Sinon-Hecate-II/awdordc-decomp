@@ -45,8 +45,8 @@ u64 func_020c53e4(int);
 extern u8 data_ov006_022186ec[],data_ov006_022186f8[],data_ov006_02218704[],data_ov006_02218710[],data_ov006_02218718[],data_ov006_02218720[];
 void func_ov006_02212184(void *arg0) {
 u8 *p=arg0,*save,*engine,*item;
-int x,y,offset,tile,i,j,col,row,ty,xx,yy;s16 top;
-int a,b,c,d,e,f,g,h; int art=0x212; int ytop,chartop,left,right; u32 width,height;
+int x,y,offset,tile,i,j,col,row,ty,xx,yy;int top;
+int h,g,f,e,d,c,b,a; int art=0x212; int ytop,chartop,left,right; u32 width,height;
 u8 *widget,*record; s64 product; s16 pos;
 char name[13];u16 text[13];char digits[13];u64 id;
 func_020b3a80(M2C_FIELD(p,void **,0x4c));
@@ -90,11 +90,11 @@ else func_02008048(data_ov006_022186b4,text,26);
 }
 } else func_02008048(data_ov006_022186d0,text,26);
 func_020e4cd8(text,M2C_FIELD(gCur3DSpriteEngine,void **,16),M2C_FIELD(gCur3DSpriteEngine,void **,36),6,5,(u16)ty,tile);
-tile+=48;col=0;row=0;
-for(j=0;j<64;j++) {if(j==32) {row++;col=0;}
+tile+=48;row=0;col=0;
+j=0;do {if(j==32) {row++;col=0;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,u8 **,44)+col*2,u16 *,(ty+row)<<6)=(data_ov006_022183e0[j]&0x3ff)|0x7000;
-col++;
-}
+j++;col++;
+}while(j<64);
 top=(s16)(top+16);ytop+=16;chartop+=16;
 }
 }

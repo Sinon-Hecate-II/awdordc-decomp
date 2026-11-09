@@ -68,7 +68,7 @@ void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
 void func_0208b758(void *,s32);
 void func_02088ff4(void *);void func_02088f1c(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
 void func_020c9190(u16,void *);void func_020c9288(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void func_ov003_021fbcf8(void *,s32,u8);s32 func_020a8ff4(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void func_ov003_021f91a4(void *);
-u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;u32 repeat;u8 active,enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
+u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;register u32 repeat;s32 active;u8 enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
 if(ov003_menu_kind(p,1))return;
 if(ov003_menu_kind(p,5))return;
 func_ov003_021fca84(p);

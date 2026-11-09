@@ -37,8 +37,8 @@ return (index>>6)+1;
 
 #pragma scheduling off
 void func_ov000_02197a8c(u8 *unit, s32 b, s32 c, s32 d, u8 e, u8 f, u8 g) {
-u8 *map=*gCurrentMap;
 u8 flags=data_ov000_021b5c0f[c*112];
+u8 *map=*gCurrentMap;
 s32 x,y,idx,kind,loX,hiX,loY,hiY,dist,value;
 u8 *dimensions;
 s32 filter;

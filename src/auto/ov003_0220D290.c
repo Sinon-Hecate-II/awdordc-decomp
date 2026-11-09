@@ -221,13 +221,13 @@ M2C_FIELD(q,void **,24)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,
 M2C_FIELD(q,void **,48)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;
 M2C_FIELD(q,s32 *,4)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<18)>>30;
 if(q[20]) { while(M2C_FIELD(q,s32 *,4)>M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)-=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; while(M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)) M2C_FIELD(q,s32 *,4)+=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; }
-else { if(M2C_FIELD(q,s32 *,4)<=M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)=M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)?M2C_FIELD(q,s32 *,12):M2C_FIELD(q,s32 *,4); }
+else { if(M2C_FIELD(q,s32 *,8)>=M2C_FIELD(q,s32 *,4)) M2C_FIELD(q,s32 *,4)=M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)?M2C_FIELD(q,s32 *,12):M2C_FIELD(q,s32 *,4); }
 M2C_FIELD(q,s32 *,28)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<20)>>30;
 if(q[44]) { while(M2C_FIELD(q,s32 *,28)>M2C_FIELD(q,s32 *,32)) M2C_FIELD(q,s32 *,28)-=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; while(M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)) M2C_FIELD(q,s32 *,28)+=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; }
-else { if(M2C_FIELD(q,s32 *,28)<=M2C_FIELD(q,s32 *,32)) M2C_FIELD(q,s32 *,28)=M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)?M2C_FIELD(q,s32 *,36):M2C_FIELD(q,s32 *,28); }
+else { if(M2C_FIELD(q,s32 *,32)>=M2C_FIELD(q,s32 *,28)) M2C_FIELD(q,s32 *,28)=M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)?M2C_FIELD(q,s32 *,36):M2C_FIELD(q,s32 *,28); }
 M2C_FIELD(q,s32 *,52)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<17)>>31;
 if(q[68]) { while(M2C_FIELD(q,s32 *,52)>M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *,52)-=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; while(M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)) M2C_FIELD(q,s32 *,52)+=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; }
-else { if(M2C_FIELD(q,s32 *,52)<=M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *,52)=M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)?M2C_FIELD(q,s32 *,60):M2C_FIELD(q,s32 *,52); }
+else { if(M2C_FIELD(q,s32 *,56)>=M2C_FIELD(q,s32 *,52)) M2C_FIELD(q,s32 *,52)=M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)?M2C_FIELD(q,s32 *,60):M2C_FIELD(q,s32 *,52); }
 }
 M2C_FIELD(p,u8 **,0x40)=q;
 ((Unk0220C6C8Nibbles *)(p+0x36))->high=1;

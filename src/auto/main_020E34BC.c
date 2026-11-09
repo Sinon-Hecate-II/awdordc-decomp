@@ -35,20 +35,18 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 
 s32 func_020e352c(s32, s32);
 #pragma opt_common_subs off
-s32 func_020e34bc(s32 arg0) {
+void func_020e34bc(s32 arg0) {
     volatile u32 saved;
     u16 old;
     u32 s;
-    s32 r;
 
     old = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     saved = old;
-    r = func_020e352c(arg0, 8);
+    func_020e352c(arg0, 8);
     s = saved;
     (void)*(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = s;
-    return r;
 }
 
 s32 func_020e34f4(s32 arg0) {

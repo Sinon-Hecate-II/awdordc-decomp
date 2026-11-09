@@ -30,10 +30,10 @@ void func_02045ffc(M2C_UNK a) { M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK)
 u8 func_02046014(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
 
 #pragma opt_common_subs off
-M2C_UNK func_02046058(u8 arg0, M2C_UNK *arg1) {
+void func_02046058(u8 arg0, M2C_UNK *arg1) {
     u8 *dst = (u8 *)arg1;
-    s32 i, shift;
     u32 bits;
+    s32 i, shift;
     bits = ~0U ^ (~0U >> arg0);
     for (i = 0, shift = 0; i < 4; i++, shift += 8) {
         dst[i] = (u8)(bits >> (24 - shift));
@@ -338,7 +338,6 @@ s32 func_02046884(void *arg0) {
 
 /* Validate an object's slots and resource references; returns 0 on failure. */
 s32 func_02046b8c(void *obj) {
-    M2C_UNK func_02046058(u8, M2C_UNK *);
     s32 func_02046088(void *);
     extern M2C_UNK data_020ea940;
     M2C_UNK sp0;

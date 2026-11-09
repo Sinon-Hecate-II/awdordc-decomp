@@ -250,82 +250,53 @@ M2C_UNK func_ov003_021f1c0c(void) {
     extern M2C_UNK data_027e00c8;
     extern M2C_UNK data_ov003_0220fc78;
     extern M2C_UNK data_027e00c4;
+    u8 *info;
+    s32 saved;
+    u8 i;
 
-    M2C_UNK saved = gCur3DSpriteEngine;
-    u8 * volatile info;
-
+    saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = data_027e00c8;
-    info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
-    if (info[0] != 0 && info[1] == 0) {
-        s32 i;
-        for (i = 0; i <= 4; i++) {
+    for (i = 0; i < 4; i++) {
+        info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
+        if (info[0] != 0 && info[1] == i) {
             switch (i) {
-                case 0: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] |= 0x10;
-                    break;
-                }
-                case 1: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] |= 0x20;
-                    break;
-                }
-                case 2: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] |= 0x40;
-                    break;
-                }
-                case 3: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] |= 0x80;
-                    break;
-                }
-                case 4: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] |= 0x100;
-                    break;
-                }
-                default: break;
+            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x10; break; }
+            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x20; break; }
+            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x40; break; }
+            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x80; break; }
+            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x100; break; }
+            }
+        } else {
+            switch (i) {
+            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x10; break; }
+            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x20; break; }
+            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x40; break; }
+            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x80; break; }
+            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x100; break; }
             }
         }
     }
-
     gCur3DSpriteEngine = data_027e00c4;
-    info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
-    if (info[3] != 0 && info[4] == 0) {
-        s32 i;
-        for (i = 0; i <= 4; i++) {
+    for (i = 0; i < 4; i++) {
+        info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
+        if (info[3] != 0 && info[4] == i) {
             switch (i) {
-                case 0: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] &= ~0x10;
-                    break;
-                }
-                case 1: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] &= ~0x20;
-                    break;
-                }
-                case 2: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] &= ~0x40;
-                    break;
-                }
-                case 3: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] &= ~0x80;
-                    break;
-                }
-                case 4: {
-                    u16 * volatile eng = *(u16 **)gCur3DSpriteEngine;
-                    eng[0] &= ~0x100;
-                    break;
-                }
-                default: break;
+            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x10; break; }
+            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x20; break; }
+            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x40; break; }
+            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x80; break; }
+            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x100; break; }
+            }
+        } else {
+            switch (i) {
+            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x10; break; }
+            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x20; break; }
+            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x40; break; }
+            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x80; break; }
+            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x100; break; }
             }
         }
     }
-
     gCur3DSpriteEngine = saved;
     return (M2C_UNK)&gCur3DSpriteEngine;
 }

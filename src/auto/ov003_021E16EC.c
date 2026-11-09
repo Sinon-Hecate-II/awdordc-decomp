@@ -17,7 +17,8 @@ if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w
 static inline u8 CountEntries(void *object) {
 u8 n=0;u8 i=0;for(;i<5;i++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+i*0x6f8,u8*,0x27))n++;return n;
 }
-static inline u32 VisibleEntries(void *object) { u32 n=func_ov003_021f2574();u8 m=CountEntries(object);return n<m?n:m; }
+  static inline u32 VisibleEntries(void *object) { u32 n=func_ov003_021f2574();u8 m=CountEntries(object);return n<m?n:m; }
+  static inline u32 VisibleEntries2(void *object,u8 *cnt,u8 *idx) { u32 n=func_ov003_021f2574();*cnt=0;for(*idx=0;*idx<5;(*idx)++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+(*idx)*0x6f8,u8*,0x27))(*cnt)++;return n<*cnt?n:*cnt; }
 static inline void ResetAnim(void *anim) {M2C_FIELD(anim,u16*,0xe)=0;M2C_FIELD(anim,u16*,0x10)=0;M2C_FIELD(anim,u16*,0xc)=12;M2C_FIELD(anim,u16*,2)=M2C_FIELD(anim,u16*,4);}
 
 

@@ -1,5 +1,11 @@
 /* 10 functions from 0x020785B0 to 0x020793F0 (main), found by ds-decomp. */
 #include "common.h"
+static inline s32 ClampRenderCoord(s32 v, u16 *dims, s32 axis) {
+ s32 max=dims[axis]-1;
+ if(v>max)return max;
+ if(v<0)v=0;
+ return v;
+}
 typedef struct { u8 x,y; u16 dx:3,dy:3,kind:4,unused:4,angle:2; u8 value; } MapRenderEntry;
 
 typedef struct { s32 x,y,z; } Vec3;
@@ -93,9 +99,74 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     func_020901b0(arg0, -1, arg1, var_r5);
 }
 
-void func_02078828(void) { int __unused = 0; (void)__unused; }
-
+#pragma push
+#pragma opt_strength_reduction off
+void func_02078d68(void*);
+void func_02078ff4(s32,s32,s32,u8);
+void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_lifetimes off
 #pragma scheduling off
+void func_02078828(void) {
+extern s32 *gCurrentMap;
+extern u16 data_02142ebc[],data_02143dbc[];
+void func_02079d0c(s32,s32,Vec3*);
+s32 func_0207c8ec(s32,s32);
+s32 rawx,rawy,rawx1,rawy1;
+s32 i,y,x,x1,mode,x0,y0,y1;
+u32 counts[32];
+Vec3 pos;
+s32 base,tile,visible,v1,v2;
+u16 a,b;
+u32 index;
+mode=M2C_FIELD(*gCurrentMap,u16*,0x52b4)==10?1:0;
+func_02077624();func_02077a4c();func_0207866c();
+*(volatile u32*)0x4000444=0;
+*(volatile u32*)0x4000440=3;
+*(volatile u32*)0x4000454=0;
+*(volatile u32*)0x4000440=2;
+*(volatile u32*)0x4000454=0;
+func_02079d0c(0,0,&pos);
+rawx=func_0207c8ec(pos.x,768); rawy=func_0207c8ec(pos.y,768);
+func_02079d0c(256,192,&pos);
+rawx1=func_0207c8ec(pos.x,768);rawy1=func_0207c8ec(pos.y,768);
+x0=ClampRenderCoord(rawx,(u16*)(*gCurrentMap+0x5120),18);
+y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
+x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
+y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
+func_0207750c();func_02078170(x0,y0,x1,y1);func_02078340(x0,y0,x1,y1);
+func_02078528();func_020785b0();func_0207863c();func_0207f9f4();
+for(i=0;i<32;i++)counts[i]=0;
+*(volatile u32*)0x40004a8=0x6f600000;
+for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
+if(x<0 || y<0)continue;
+base=*gCurrentMap;
+{ u16 *dims=(u16*)(base+0x5120);if(x>=dims[18] || y>=dims[19])continue; }
+index=x+M2C_FIELD(base+y*2,u16*,0x3758);
+a=((u16*)((u8*)data_02142ebc+x*80))[y];b=((u16*)((u8*)data_02143dbc+x*80))[y];
+tile=M2C_FIELD(base+index,u8*,0x1420);
+visible=((u8*)(base+0x5120+0xe1))[index>>3]&(1<<(index&7));
+visible=(u8)visible;
+if(!tile)continue;
+v1=(data_02141f08+x*40)[y];v2=(data_02141788+x*40)[y];
+counts[tile&31]++;
+func_02079310(x,y,a,b,tile,visible,v1,v2);
+}
+func_020778cc(x0,y0,x1,y1);
+for(i=0;i<32;i++){
+void *p=(void*)(*gCurrentMap+0x58a4+i*8);
+if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)func_02078d68(p);
+}
+if(func_020cd6b0())func_02077740();
+for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
+if(func_020a62ac(x,y))func_02078ff4(x,y,data_02141f08[x*40+y],mode);
+}
+*(volatile u32*)0x4000448=1;
+func_0207877c(1,0x108,counts[26]);func_0207877c(2,0x109,counts[27]);
+}
+#pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
 void func_02004078(s32,s32); void func_02079db0(s32,s32,s32,s32,s32,s32);
 s32 a,b,c,d,sn,cs; a=(data_02141f08+x*40)[y];b=(data_02141788+x*40)[y];

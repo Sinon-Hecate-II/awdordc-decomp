@@ -21,7 +21,7 @@ return d;
 #pragma opt_strength_reduction off
 s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
 s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 func_020d27c0(s32);s32 func_ov000_021a98a8(u32);s32 func_ov000_021a9318(s32,s32,s32);
-u8 *unit;void *map;u32 terrain,kind; s32 xmin,ymin,xmax,ymax,x,y,d,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
+u8 *unit;void *map;u32 terrain,kind;u16 player;u8 *selected;void *snapshot;s32 x,y,d,width,scanX,scanY,radius,xmin,ymin,xmax,ymax;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
