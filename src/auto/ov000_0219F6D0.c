@@ -246,10 +246,10 @@ void func_ov000_0219fdc8(void) {
     extern u8 data_ov000_021df7d0[];
     extern void **gCurrentMap;
 
-    register u8 **addr578 = &data_ov000_021df578;
-    register void ***addrMap = (void ***)&gCurrentMap;
-    register s32 reg6 = 0;
-    register s32 reg7 = 1;
+    void ***addrMap = (void ***)&gCurrentMap;
+    u8 **addr578 = &data_ov000_021df578;
+    register s32 zero = 0;
+    register s32 one = 1;
 
     if (addr578[0][2] != 0 && addr578[0][7] >= 0x32) {
         M2C_FIELD(data_ov000_021df580, u8 *, 0) = 6;
@@ -299,7 +299,7 @@ void func_ov000_0219fdc8(void) {
                 addr578[0][0xc] = 0;
                 return;
             }
-            if (func_ov000_021a21f8(reg7) != 0) return;
+            if (func_ov000_021a21f8(one) != 0) return;
             addr578[0][2]++;
             func_ov000_021a029c();
             break;
@@ -315,7 +315,7 @@ void func_ov000_0219fdc8(void) {
                 addr578[0][0xc] = 0;
                 return;
             }
-            if (func_ov000_021a21f8(reg6) != 0) return;
+            if (func_ov000_021a21f8(zero) != 0) return;
             addr578[0][2]++;
             func_ov000_021a029c();
             break;

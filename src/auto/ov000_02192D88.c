@@ -77,8 +77,7 @@ func_ov000_02199d74((s16)ux,(s16)uy,8,(u8)value,0);
 }
 #pragma opt_if-conversion reset
 #pragma opt_strength_reduction reset
-void func_ov000_021935c4(void *arg0) {
-}
+void func_ov000_021935c4(void *arg0) { (void)arg0; }
 
 u32 func_ov000_02193998(void) {
 extern void **data_027e0058;

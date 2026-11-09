@@ -59,7 +59,7 @@ void func_020e0f14(M2C_UNK arg0) {
     s32 var_r0_2;
     s32 var_r0_3;
     s32 var_r0_4;
-    register s16 c0 asm("r7");
+    s16 c0;
 
     temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {

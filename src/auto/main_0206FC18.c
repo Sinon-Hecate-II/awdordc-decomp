@@ -3,7 +3,7 @@
 
 typedef struct { u8 value; } Flag;
 
-void func_0206fc18(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, Flag arg5) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; }
+void func_0206fc18(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, Flag arg5) { return; }
 
 void func_0206ffc4(void *a, s32 b, s32 c) {
     void func_0207000c(void *, s32, u32, s32, s32, s32);
@@ -58,11 +58,10 @@ s32 func_020700b8(s32 arg0) {
 
 #pragma optimization_level 2
 void func_020700d8(void *a) {
-void func_02070108(void *);
-int unused = 0;
-if (--M2C_FIELD(a,s32 *,4)!=0) return;
-M2C_FIELD(*(void **)a,void (**)(void *),12)(a);
-func_02070108(a);
+    void func_02070108(void *);
+    if (--M2C_FIELD(a, s32 *, 4) != 0) return;
+    M2C_FIELD(*(void **)a, void (**)(void *), 12)(a);
+    func_02070108(a);
 }
 #pragma optimization_level reset
 void func_02070108(void *a) {

@@ -369,7 +369,7 @@ void func_02027d60(void *a, s32 b) {
         M2C_FIELD((void *)data_02138e4c, s32 *, 0x2270) = 0;
         M2C_FIELD((void *)data_02138e4c, s32 *, 0x2274) = 0;
         M2C_FIELD((void *)data_02138e4c, s32 *, 0x2278) = 0;
-        goto done;
+        return;
     }
     M2C_FIELD((void *)data_02138e4c, u32 *, 0x226c) = M2C_FIELD(a, u32 *, 0) & 3;
     if (((4 - (M2C_FIELD(a, u32 *, 4) & 3)) & 3) + 12 > M2C_FIELD(a, u32 *, 8)) {
@@ -382,7 +382,6 @@ void func_02027d60(void *a, s32 b) {
     func_02007f8c((void *)M2C_FIELD((void *)data_02138e4c, u32 *, 0x2270), 0, M2C_FIELD((void *)data_02138e4c, u32 *, 0x2274));
     M2C_FIELD((void *)data_02138e4c, u32 *, 0x2278) = M2C_FIELD(a, u32 *, 12);
     M2C_FIELD((void *)data_02138e4c, u32 *, 0x227c) = b;
-done:;
 }
 
 void func_02027e80(s32 a, void *b, s32 c) {

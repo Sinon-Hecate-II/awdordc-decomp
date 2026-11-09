@@ -13,6 +13,157 @@ typedef struct {
 } UnkStruct_ov000_02189A08;
 
 void func_ov000_02189a08(void) {
+    s32 func_020a33c4(s32);
+    s32 func_020a7b3c(s32, s32, s32, s32, s32);
+    void func_01ffada0(s32, s32, u8, s32, s32);
+    void func_01ffb554(void *);
+    s32 func_ov000_021a8eb0(s32, s32, s32);
+    s32 func_ov000_021a9084(s32);
+    void func_ov000_0218a9ac(s32, s32);
+
+    extern void **gCurrentMap;
+    extern void *data_ov000_021df580;
+    extern u8 data_ov000_021b5bfc[];
+
+    register s32 bestX asm("r4") = -1;
+    register s32 bestY asm("r5") = -1;
+    register s32 bestCost asm("r6") = 0x7fff;
+    register s32 score asm("r7");
+    register s32 candScore asm("r10") = 0x7fff;
+    s32 x, y;
+    s32 candCost2, finalCost;
+    s8 *costRow;
+    s32 moveCost;
+    u16 rowOff;
+    u8 terrainByte;
+    u8 terrain;
+    u8 *cell;
+    s8 age;
+    u8 unitId;
+    u8 *sel;
+    u8 *sel2;
+    s32 bonus;
+    s32 bonus2;
+    s32 visResult;
+    u8 selType;
+    u8 *info;
+    u8 infoVal;
+    u8 moveLimit;
+
+    score = (s32)*gCurrentMap;
+    bonus = func_020a33c4(*(u16 *)((u8 *)score + 0x52a4));
+    score = func_020a7b3c((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
+    sel = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+    func_01ffada0(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
+
+    if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
+        y = 0;
+        do {
+            x = 0;
+            if (*(u16 *)((u8 *)*gCurrentMap + 0x5144) > 0) {
+                do {
+                    costRow = *(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8);
+                    moveCost = costRow[x];
+                    if (moveCost >= 0) {
+                        rowOff = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
+                        terrainByte = *(u8 *)((u8 *)*gCurrentMap + x + rowOff + 0x1420);
+                        terrain = terrainByte & 0x1f;
+                        if (terrain == 0x13 || terrain == 0x15) {
+                            if (*(u16 *)((u8 *)*gCurrentMap + 0x52a6) == (terrainByte & 0xe0)) {
+                                visResult = func_ov000_021a8eb0(x, y, 5);
+                                candScore = moveCost;
+                                if (visResult == 0) candScore += 0x100;
+                                if (bestCost >= candScore) {
+                                    bestX = x;
+                                    bestY = y;
+                                    bestCost = candScore;
+                                }
+                            }
+                        }
+                    }
+                    x++;
+                } while (x < *(u16 *)((u8 *)*gCurrentMap + 0x5144));
+            }
+            y++;
+        } while (y < *(u16 *)((u8 *)*gCurrentMap + 0x5146));
+    }
+
+    if (bestX == -1) {
+        return;
+    }
+
+    candScore = 0x7fff;
+    func_01ffb554((u8 *)*gCurrentMap + 0x2338);
+    bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
+    bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
+    func_01ffada0(bestX, bestY, 7, 0x6e, 0);
+    func_01ffb554((u8 *)*gCurrentMap + 0x1e30);
+
+    if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
+        y = 0;
+        do {
+            x = 0;
+            if (*(u16 *)((u8 *)*gCurrentMap + 0x5144) > 0) {
+                do {
+                    costRow = *(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8);
+                    moveCost = costRow[x];
+                    if (moveCost >= 0) {
+                        rowOff = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
+                        cell = (u8 *)*gCurrentMap + x + rowOff;
+                        age = *(s8 *)(cell + 0x2338);
+                        if (age >= 0) {
+                            unitId = *cell;
+                            if (unitId == 0) {
+                                terrainByte = *(u8 *)(cell + 0x1420);
+                                terrain = terrainByte & 0x1f;
+                                if (terrain == 0x13) {
+                                    sel2 = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
+                                    selType = (u32)(sel2[0] << 26) >> 26;
+                                    info = data_ov000_021b5bfc + selType * 0x70;
+                                    infoVal = info[0x0e];
+                                    moveLimit = sel2[0x0a] + 0x14;
+                                    if (infoVal > moveLimit) {
+                                        if (candScore >= moveCost) {
+                                            bestX = x;
+                                            bestY = y;
+                                            candScore = moveCost;
+                                        }
+                                    } else {
+                                        if (func_ov000_021a9084(terrainByte) != 0) {
+                                            candCost2 = score + moveCost;
+                                            if (candScore >= candCost2) {
+                                                bestX = x;
+                                                bestY = y;
+                                                candScore = candCost2;
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (func_ov000_021a9084(terrainByte) != 0) {
+                                        candCost2 = score + moveCost;
+                                        if (candScore >= candCost2) {
+                                            bestX = x;
+                                            bestY = y;
+                                            candScore = candCost2;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    x++;
+                } while (x < *(u16 *)((u8 *)*gCurrentMap + 0x5144));
+            }
+            y++;
+        } while (y < *(u16 *)((u8 *)*gCurrentMap + 0x5146));
+    }
+
+    costRow = *(s8 **)((u8 *)*gCurrentMap + bestY * 4 + 0x52e8);
+    finalCost = costRow[bestX];
+    if (finalCost <= *(u8 *)((u8 *)data_ov000_021df580 + 0x05)) {
+        return;
+    }
+    func_ov000_0218a9ac(bestX, bestY);
 }
 
 void func_ov000_02189df4(void) {

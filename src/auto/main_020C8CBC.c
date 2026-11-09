@@ -40,8 +40,8 @@ s32 func_020c8d7c(s32 a){
 s32 func_020c79ec();void *func_020c7a08();s32 func_020c8018(s32);
 s32 func_020be324(u8,s32);s32 func_0207c368(void *,s32);
 extern u8 data_02164d64[];
-s32 n=func_020c79ec(),v,b;u8 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
-if(a>=225 && a<425)b=1;if(b)c=1;else c=0;if(!c)return 0;
+s32 n=func_020c79ec(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
+if(a>=225) b=(a<425);c=(b==0)?0:1;if(!c)return 0;
 v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
 if(!func_0207c368(p+6,33))return 0;
 func_02007ef4(p,data_02164d64+v*84,84,M2C_FIELD(p,u32 *,56)&=0xfffff001);
@@ -202,17 +202,12 @@ void func_020c9190(s32 arg0) {
 
 #pragma opt_instruction_scheduling off
 u64 func_020c91ac(s32 a) {
-s32 func_020c7eb8(s32);
-void *func_020c7e88(s32);
-void *x; s32 v;
+s32 func_020c7eb8(s32); void *func_020c7e88(s32);
+void *p; s32 v;
 if (!func_020c7eb8(a)) return 0;
-x=func_020c7e88(a);
-v=M2C_FIELD(x,s32 *,0x10);
+p=func_020c7e88(a); v=M2C_FIELD(p,s32 *,0x10);
 if (!v) return 0;
-return ((u64)(s32)M2C_FIELD(x,u16 *,6)<<20) |
-((u64)(u16)~v<<36) |
-((u64)(s32)(u16)(~v>>16)<<4) |
-((M2C_FIELD(x,u32 *,0xc)<<14>>20)&15);
+return ((u64)(u16)~v<<36) | ((u64)(s32)M2C_FIELD(p,u16 *,6)<<20) | ((u64)(s32)(u16)(~v>>16)<<4) | ((M2C_FIELD(p,u32 *,0xc)<<14>>20)&15);
 }
 #pragma opt_instruction_scheduling reset
 s32 func_020c9244(u64 a) {
@@ -329,27 +324,23 @@ case 6:func_0208fb0c(273,arg0,arg1);return;
 case 7:func_0208fb0c(273,arg0,arg1);return;
 }}
 
+#pragma push
+#pragma scheduling off
 void func_020c9730(void *arg0) {
-    void *func_02091270(M2C_UNK *,s32,s32);
-    void func_020c9654(s32,s32,s32);
-    extern M2C_UNK data_02120920;
-    void *p=func_02091270(&data_02120920,14,6);
-    M2C_FIELD(arg0,void **,0x54)=p;
-    M2C_FIELD(p,s32 *,0x28)=0x329a0;
-    M2C_FIELD(M2C_FIELD(arg0,void **,0x54),s32 *,0x2c)=0x1560;
-    {
-        s32 a = M2C_FIELD(arg0,s32 *,0x34) / 16;
-        s32 b = M2C_FIELD(arg0,s32 *,0x38) / 16;
-        s32 c = M2C_FIELD(arg0,s32 *,0x48);
-        void *d = M2C_FIELD(arg0,void **,0x54);
-        func_020c960c(a, b, c, d);
-    }
-    M2C_FIELD(arg0,s32 *,0x50)=0x200;
-    M2C_FIELD(arg0,s32 *,0x4c)=-1;
-    func_020c9654(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
-    func_020cc6a4();
+void *func_02091270(M2C_UNK *,s32,s32);
+void func_020c9654(s32,s32,s32);
+extern M2C_UNK data_02120920;
+void *p=func_02091270(&data_02120920,14,6);
+M2C_FIELD(arg0,void **,0x54)=p;
+M2C_FIELD(p,s32 *,0x28)=0x329a0;
+M2C_FIELD(M2C_FIELD(arg0,void **,0x54),s32 *,0x2c)=0x1560;
+func_020c960c(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FIELD(arg0,s32 *,0x48),M2C_FIELD(arg0,void **,0x54));
+M2C_FIELD(arg0,s32 *,0x50)=0x200;
+M2C_FIELD(arg0,s32 *,0x4c)=-1;
+func_020c9654(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
+func_020cc6a4();
 }
-
+#pragma pop
 void func_020c97c0(void *arg0) {
     s32 func_02077700(void);
     s32 func_0207c8ec(s32, s32);

@@ -489,7 +489,6 @@ void func_020c5770(s32 arg0, void *arg1, void *arg2) {
     s32 r7 = func_02001fb4(r9 - r8, 0x190000);
     r8 = func_02001fb4(r8 - r9, 0x190000);
 
-    /* process r7 */
     {
         s32 t;
         double d, e;
@@ -526,7 +525,6 @@ void func_020c5770(s32 arg0, void *arg1, void *arg2) {
         }
     }
 
-    /* process r8 */
     {
         s32 t;
         double d, e;

@@ -274,5 +274,4 @@ void func_ov000_021906a0(int arg0) {
  }
  func_ov000_02199d74((s16)sx, (s16)sy, 7, 0, 0);
 }
-void func_ov000_02190b54(void) {
-}
+void func_ov000_02190b54(void) { }

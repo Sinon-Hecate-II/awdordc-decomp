@@ -293,9 +293,16 @@ s32 func_ov010_02225640(void *arg) {
         s32 r = func_ov010_0222415c(arg);
         if (!r) { func_ov010_02224ea0(); return 0; }
     }
-    return func_ov010_022224b4()
-        ? (M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1)
-        : (func_ov010_02224270(), func_ov010_02224ea0(), 0);
+    {
+        s32 r = func_ov010_022224b4();
+        if (r) {
+            M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1;
+            return 1;
+        }
+    }
+    func_ov010_02224270();
+    func_ov010_02224ea0();
+    return 0;
 }
 
 void func_ov010_02225778(void) {

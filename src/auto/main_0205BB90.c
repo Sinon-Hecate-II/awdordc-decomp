@@ -95,8 +95,8 @@ s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 func_02049208(); s32 fun
 
 #pragma opt_peephole on
 s32 func_0205bea4(void *arg0) {
-    s32 func_0205b110(void *, s32, s32);
-    s32 var_r2;
+    s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK var_r2;
     s32 temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, s32 *, 0xC);

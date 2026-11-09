@@ -302,6 +302,7 @@ void func_ov010_0222a2b4(void *arg0) {
 }
 
 #pragma opt_common_subs off
+#pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
 void *func_ov010_0222832c(void *,void *);void *func_02086680(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void func_ov010_0222a750(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 func_0208b5ec(void);void func_0208af20(void);void *func_0208b564(void *);void func_020899fc(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
@@ -316,9 +317,9 @@ if(!M2C_FIELD(a,s32 *,0x38))return;
 switch(M2C_FIELD(a,s32 *,0x40)){
 case 0:case 1:func_ov010_0222a238();return;
 case 2:{
-void *text;s32 old;s32 i;u32 current;s8 mode;void *p;
+s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
 if(func_0208b5ec())func_0208af20();
-text=((UnkA750Bits *)((u8 *)a+0x44))->flag?M2C_FIELD(a,void **,0x4c):(u8 *)a+0x45;
+if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=data_027e00c8;else current=data_027e00c4;
 gCur3DSpriteEngine=current;mode=M2C_FIELD(a,s8 *,0x35);
@@ -330,9 +331,9 @@ p=func_0208b564(a);func_020899fc(p,2,M2C_FIELD(a,u16 *,0x36)<<5,text);M2C_FIELD(
 gCur3DSpriteEngine=old;func_ov010_0222a238();return;
 }
 case 3:case 4:case 5:case 6:{
-void *text;s32 old;s32 i;u32 current;s8 mode;void *p;
+s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
 if(func_0208b5ec())func_0208af20();
-text=((UnkA750Bits *)((u8 *)a+0x44))->flag?M2C_FIELD(a,void **,0x4c):(u8 *)a+0x45;
+if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=data_027e00c8;else current=data_027e00c4;
 gCur3DSpriteEngine=current;mode=M2C_FIELD(a,s8 *,0x35);
@@ -344,9 +345,9 @@ p=func_0208b564(a);func_020899fc(p,2,M2C_FIELD(a,u16 *,0x36)<<5,text);M2C_FIELD(
 gCur3DSpriteEngine=old;func_ov010_0222a278();return;
 }
 case 7:{
-void *text;s32 old;s32 i;u32 current;s8 mode;void *p;
+s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
 if(func_0208b5ec())func_0208af20();
-text=((UnkA750Bits *)((u8 *)a+0x44))->flag?M2C_FIELD(a,void **,0x4c):(u8 *)a+0x45;
+if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=data_027e00c8;else current=data_027e00c4;
 gCur3DSpriteEngine=current;mode=M2C_FIELD(a,s8 *,0x35);
@@ -359,6 +360,7 @@ gCur3DSpriteEngine=old;func_ov010_0222a278();return;
 }
 default:func_ov010_0222a238();return;}}
 #pragma opt_common_subs reset
+#pragma scheduling reset
 void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return;v=M2C_FIELD(arg0,u32 *,0x40);switch(v){case 0:case 1:case 2:func_ov010_0222a258();return;default:func_ov010_0222a258();return;case 3:case 4:case 5:case 6:case 7:return;}}
 
 void func_ov010_0222a6e4(void *arg0) {

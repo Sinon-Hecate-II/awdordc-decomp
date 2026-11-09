@@ -134,9 +134,7 @@ void func_ov000_0218cfec(void) {
     }
 }
 
-void func_ov000_0218d040(void *arg0) {
-    /* placeholder to enable release */
-}
+void func_ov000_0218d040(void *arg0) { (void)arg0; }
 
 s32 func_ov000_0218d40c(void){
 extern void **gCurrentMap; extern u8 data_ov000_021b5c0a[],data_ov000_021b5c05[];

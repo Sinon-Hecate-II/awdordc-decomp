@@ -16,9 +16,7 @@ extern M2C_UNK data_ov000_021b5bfc;
 #define COST(x,y,off) M2C_FIELD(MAP+(x)+ROW(y),s8*,off)
 #define PATH(x,y) M2C_FIELD(MAP+(y)*4,s8**,0x52e8)[x]
 
-void func_ov000_02193d6c(void *arg0) {
-    (void)arg0;
-}
+void func_ov000_02193d6c(void *arg0) { (void)arg0; }
 
 void func_ov000_02194090(void) {
 #pragma opt_strength_reduction off

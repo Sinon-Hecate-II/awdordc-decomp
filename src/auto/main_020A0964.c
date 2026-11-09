@@ -110,7 +110,6 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
             if (terrain < 0 || terrain > 110) continue;
             manX = a - inner;
             if (manX < 0) manX = -manX;
-            manY = b - outer;
             if (manY < 0) manY = -manY;
             manhattan = manX + manY;
             if (manhattan < attr || manhattan > cap) continue;

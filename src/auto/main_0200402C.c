@@ -243,28 +243,16 @@ void func_0200472c(M2C_UNK arg0,s32 arg1,u32 arg2) {
 }
 
 void func_0200478c(void) {
-    s32 func_02003370(void);
-    extern M2C_UNK data_0212dbe0;
-    s32 r = func_02003370();
-
-    M2C_FIELD(&data_0212dbe0, s32 *, 0x14) = r;
-    switch (r) {
-    case 0x10:
-        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6880000;
-        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
-        break;
-    case 0x40:
-        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6894000;
-        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0x4000;
-        break;
-    case 0x20:
-    case 0x60:
-        M2C_FIELD(&data_0212dbe0, M2C_UNK *, 0x10) = (M2C_UNK)0x6890000;
-        M2C_FIELD(&data_0212dbe0, s32 *, 0xc) = 0;
-        break;
-    default:
-        break;
-    }
+s32 func_02003370(void); extern M2C_UNK data_0212dbe0;
+s32 r=func_02003370();
+M2C_FIELD(&data_0212dbe0,s32 *,0x14)=r;
+switch(r) {
+case 0: break;
+case 0x10: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6880000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0;break;
+case 0x40: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6894000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0x4000;break;
+case 0x20: case 0x60: M2C_FIELD(&data_0212dbe0,M2C_UNK *,0x10)=(M2C_UNK)0x6890000; M2C_FIELD(&data_0212dbe0,s32 *,0xc)=0;break;
+default: break;
+}
 }
 
 void func_0200482c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

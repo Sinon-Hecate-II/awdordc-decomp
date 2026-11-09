@@ -328,7 +328,9 @@ void func_020c86a8(void *p) {
 void func_020c879c(void *arg0){
 extern void **gCurrentMap;extern s8 data_ov000_021b56c0[];
 void func_02007e98(s32,s32,s32);void func_02068c50(void *,void *);s32 func_020a23b4(s32);s32 func_020a2360(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
-u8 counts[6];u8 *out=arg0;u8 *cursor;u16 i;cursor=out+0x54;
+u8 counts[6];u8 *out=arg0;
+u8 *cursor=out+0x54;
+u16 i;
 func_02007e98(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
 func_02068c50(out+6,(u8 *)*gCurrentMap+0x5120);
 out[4]=((Map8484 *)*gCurrentMap)->width;out[5]=((Map8484 *)*gCurrentMap)->height;

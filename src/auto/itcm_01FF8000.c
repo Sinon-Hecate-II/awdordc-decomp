@@ -282,13 +282,11 @@ void func_01ff8930(s32 x, s32 y, s32 xoffs, s32 yoffs, u16 attr, u16 *src) {
     u16 *dst;
     s32 count;
     s32 lo, hi;
-    s32 mask = 0x3ff;
-    u16 a, b, c; s32 shift;
+    s32 a, b, c, shift;
     s32 ypos;
     u16 *base;
     void *engine;
     u8 n;
-    s32 limit = -64;
 
     count = *src++;
     engine = gCur3DSpriteEngine;
@@ -299,12 +297,12 @@ void func_01ff8930(s32 x, s32 y, s32 xoffs, s32 yoffs, u16 attr, u16 *src) {
         return;
     }
     ypos = y + (s8)yoffs;
-    lo = attr & mask;
+    lo = attr & 0x3ff;
     hi = attr & 0xfc00;
     do {
         if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48) >= 0x80) return;
         a = src[0];
-        if (ypos + (s8)a <= limit || ypos + (s8)a > 0xc0) {
+        if (ypos + (s8)a <= -64 || ypos + (s8)a > 0xc0) {
             src += 3;
             count--;
             continue;
@@ -312,11 +310,11 @@ void func_01ff8930(s32 x, s32 y, s32 xoffs, s32 yoffs, u16 attr, u16 *src) {
         dst[0] = ((a | yoffs) & 0xff00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e) + (y + (a + yoffs))) & 255);
         b = src[1];
         count--;
-        dst[1] = ((b | xoffs) & 0xfe00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (x + (b + xoffs))) & ((u32)limit >> 23));
+        dst[1] = ((b | xoffs) & 0xfe00) + ((M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (x + (b + xoffs))) & ((u32)-64 >> 23));
         c = src[2];
         src += 3;
         shift = (u32)(*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30;
-        dst[2] = (c & 0xfc00) + ((lo + (((c & mask) >> shift) & mask)) & mask) + hi;
+        dst[2] = (c & 0xfc00) + ((lo + (((c & 0x3ff) >> shift) & 0x3ff)) & 0x3ff) + hi;
         dst += 4;
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48)++;
     } while (count);

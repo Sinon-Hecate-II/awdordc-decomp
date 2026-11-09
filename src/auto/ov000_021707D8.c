@@ -29,7 +29,6 @@ else x=30-(3-func_0207cb88(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
 func_0209c048((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 {s32 i=0;
 if(func_020cfb94()>0){y=6;do{
-s32 x;
 x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
 if(p[0x1e] && !p[0x19]){
 a=func_020d303c(x);if(a>999)a=999;

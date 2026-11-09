@@ -154,10 +154,10 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         if (data_02144cdc != 0) {
             u8 v = M2C_FIELD(r8p, u8 *, 0x12);
             if (v != 0) {
-                if (r2v < 0xc) r12f = 1;
-                if (r3v < 0xc) r6f = 1;
-                if (r2v >= 0xf4) lr = 1;
-                if (r3v >= 0xb4) r7f = 1;
+                if ((s32)r2v < 0xc) r12f = 1;
+                if ((s32)r3v < 0xc) r6f = 1;
+                if ((s32)r2v >= 0xf4) lr = 1;
+                if ((s32)r3v >= 0xb4) r7f = 1;
             }
         } else {
             s16 a4a, a48;

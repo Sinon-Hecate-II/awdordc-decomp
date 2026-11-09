@@ -289,13 +289,13 @@ void func_02039844(s32 arg0, s32 arg1) {
     void func_02039204(s32);
 
     s32 r5 = 0;
-    s32 arg0v = arg0;
-    s32 arg1v = arg1;
     s32 r10 = 0;
     s32 r8 = 0;
     s32 r6 = 0;
-    s32 r7 = 0;
     u8 r4 = 0;
+    s32 r7 = 0;
+    s32 arg0v = arg0;
+    s32 arg1v = arg1;
     void *p = NULL;
 
     if (func_0203e558() != 0) return;

@@ -198,12 +198,12 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     void *temp_r0;
     M2C_UNK **temp_r0_2;
     M2C_UNK **temp_r0_3;
-    M2C_UNK **temp_r0_4;
-    s32 var_r3;
+    u8 var_r1;
     M2C_UNK **temp_r0_5;
     M2C_UNK **temp_r0_6;
     M2C_UNK **temp_r0_7;
-    u8 var_r1;
+    s32 var_r3;
+    M2C_UNK **temp_r0_4;
     u8 var_r2;
     u8 var_r3_2;
 

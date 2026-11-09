@@ -124,9 +124,7 @@ func_ov000_0218d040(1);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0217fe68(void *arg0) {
-    extern void **gCurrentMap;
     (void)arg0;
-    (void)gCurrentMap;
 }
 
 void func_ov000_02180268(s32 x,s32 y){

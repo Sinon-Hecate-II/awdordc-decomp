@@ -28,27 +28,27 @@ void func_02028ef4(void *arg0) {
         M2C_FIELD(data_02138e4c, s8 *, 0x226B) = 0;
         M2C_FIELD(data_02138e4c, s16 *, 0x2282) = 0;
         temp_r1 = M2C_FIELD(data_02138e4c, u32 *, 0x2260);
-        switch (temp_r1) {                          /* switch 1 */
-        default:                                    /* switch 1 */
-        case 0:                                     /* switch 1 */
-        case 1:                                     /* switch 1 */
-        case 2:                                     /* switch 1 */
-        case 3:                                     /* switch 1 */
-        case 4:                                     /* switch 1 */
-        case 11:                                    /* switch 1 */
+        switch (temp_r1) {
+        default:
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 11:
             func_02028160(0xB);
             func_020280c8(7, NULL, (u16) M2C_FIELD(data_02138e4c, u32 *, 0x2260), 0x959);
             return;
-        case 5:                                     /* switch 1 */
-        case 6:                                     /* switch 1 */
+        case 5:
+        case 6:
             func_02028160(3);
             func_020280c8(1, NULL, 0U, 0x8F5);
             return;
-        case 7:                                     /* switch 1 */
+        case 7:
             func_02028160(3);
             func_020280c8(0, NULL, 0U, 0x8FB);
             return;
-        case 8:                                     /* switch 1 */
+        case 8:
             temp_r4 = M2C_FIELD(data_02138e4c, u16 *, 0x22F8);
             M2C_FIELD(data_02138e4c, u16 *, 0x22F8) = 0U;
             if ((temp_r4 == 0x12) && (temp_r3 = M2C_FIELD(data_02138e4c, u16 *, 0x2170), ((temp_r3 & 0x24) != 0x24))) {
@@ -63,15 +63,15 @@ void func_02028ef4(void *arg0) {
                     var_r3 = 0;
                 }
                 temp_r0 = func_02012740(&func_0202899c, data_02138e4c + 0x2140, 0, var_r3, (s32) var_r0);
-                switch (temp_r0) {                  /* switch 2; irregular */
-                case 2:                             /* switch 2 */
+                switch (temp_r0) {
+                case 2:
                     return;
-                case 8:                             /* switch 2 */
+                case 8:
                     func_02028160(0xC);
                     func_020280c8(1, data_02138e4c + 0x2140, temp_r4, 0x91C);
                     return;
-                default:                            /* switch 2 */
-                case 3:                             /* switch 2 */
+                default:
+                case 3:
                     func_02028160(0xB);
                     func_020280c8(7, data_02138e4c + 0x2140, temp_r4, 0x925);
                     return;
@@ -82,26 +82,26 @@ void func_02028ef4(void *arg0) {
                 return;
             }
             break;
-        case 9:                                     /* switch 1 */
-        case 12:                                    /* switch 1 */
+        case 9:
+        case 12:
             func_02028160(3);
             func_020280c8(0, data_02138e4c + 0x2140, 1U, 0x935);
             return;
-        case 10:                                    /* switch 1 */
+        case 10:
             func_02028160(3);
             func_020280c8(0, data_02138e4c + 0x2140, 0U, 0x93C);
             return;
-        case 13:                                    /* switch 1 */
+        case 13:
             temp_r0_2 = func_020121d8(&func_02028384);
-            switch (temp_r0_2) {                    /* switch 3; irregular */
-            case 2:                                 /* switch 3 */
+            switch (temp_r0_2) {
+            case 2:
                 return;
-            case 8:                                 /* switch 3 */
+            case 8:
                 func_02028160(0xC);
                 func_020280c8(1, NULL, 0U, 0x94A);
                 return;
-            default:                                /* switch 3 */
-            case 3:                                 /* switch 3 */
+            default:
+            case 3:
                 func_02028160(0xB);
                 func_020280c8(7, NULL, 0U, 0x953);
                 return;

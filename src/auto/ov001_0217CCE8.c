@@ -9,9 +9,8 @@ void func_ov001_0217dc44(s32);
 
 void *func_ov001_0218445c();
 
-void func_ov001_0217cce8(void) {
-    extern void **gCurrentMap;
-    (void)gCurrentMap;
+M2C_UNK func_ov001_0217cce8(void) {
+    return 0;
 }
 
 void func_ov001_0217d044(void) {

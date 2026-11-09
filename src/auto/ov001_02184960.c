@@ -264,7 +264,7 @@ void func_ov001_02185544(s32 a){
 void func_ov001_0218a4d4();void func_ov001_0218a384();void func_ov001_0218c924();void func_ov001_021855e4(s32);extern M2C_UNK data_ov001_02193e0c;s32 pos[2];void *p;
 func_ov001_0218a4d4(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),0,&pos[1],&pos[0]);pos[1]+=8;
 if(pos[1]<176 || pos[1]>256){func_ov001_0218a384(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),-1,pos[1],33);return;}
-p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=176;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),-1,pos[1],33);func_ov001_0218c924(a,func_ov001_021855e4);
+p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=176;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),~0u,pos[1],33);func_ov001_0218c924(a,func_ov001_021855e4);
 }
 
 #pragma opt_instruction_scheduling off
@@ -299,13 +299,15 @@ s32 func_ov001_02185714(void) {
     return 0;
 }
 
+#pragma push
+#pragma scheduling off
 void func_ov001_02185734(s32 a){
-void func_ov001_0218a4d4();void func_ov001_0218a384();void func_ov001_0218c924();void func_ov001_021857c8();extern M2C_UNK data_ov001_02193e0c;s32 pos[2];void *p;
+void func_ov001_0218a4d4();void func_ov001_0218a384();void func_ov001_0218c924();void func_ov001_021857c8();extern M2C_UNK data_ov001_02193e0c;s32 pos[2];void *p; s32 neg;
 func_ov001_0218a4d4(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),0,&pos[1],&pos[0]);pos[1]-=8;
-if(pos[1]>0x98){func_ov001_0218a384(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),-1,pos[1],33);return;}
-p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=152;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),-1,pos[1],33);func_ov001_0218c924(a,func_ov001_021857c8);
+if(pos[1]>152){func_ov001_0218a384(M2C_FIELD(M2C_FIELD(&data_ov001_02193e0c,void **,4),s32 *,16),-1,pos[1],33);return;}
+neg=-1; p=M2C_FIELD(&data_ov001_02193e0c,void **,4);pos[1]=152;func_ov001_0218a384(M2C_FIELD(p,s32 *,16),neg,pos[1],33);func_ov001_0218c924(a,func_ov001_021857c8);
 }
-
+#pragma pop
 void func_ov001_021857c8(s32 arg0) {
 extern M2C_UNK data_ov001_02193e0c; extern const u16 data_ov001_0218fbd2[];
 void func_ov001_0218a4d4(); void func_ov001_0218a384(); void func_ov001_0218c924(); void func_ov001_021858a4();

@@ -80,6 +80,24 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
     u8 currentIsPrimary;
     u8 screen;
     s32 mode;
+    u16 *volatile sp44;
+    u16 *volatile sp40;
+    u16 *volatile sp3c;
+    u16 *volatile sp38;
+    u16 *volatile sp34;
+    u16 *volatile sp30;
+    u16 *volatile sp2c;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1c;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    u16 *volatile sp0;
 
     if (gCur3DSpriteEngine == data_027e00c8) {
         currentIsPrimary = 1;
@@ -97,7 +115,7 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
         func_020ac144(screen, 1, mode);
         switch (mode) {
         case 0:
-            *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
+            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
             break;
         case 1:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
@@ -106,25 +124,6 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
             break;
         }
     } else {
-        u16 *volatile sp44;
-        u16 *volatile sp40;
-        u16 *volatile sp3c;
-        u16 *volatile sp38;
-        u16 *volatile sp34;
-        u16 *volatile sp30;
-        u16 *volatile sp2c;
-        u16 *volatile sp28;
-        u16 *volatile sp24;
-        u16 *volatile sp20;
-        u16 *volatile sp1c;
-        u16 *volatile sp18;
-        u16 *volatile sp14;
-        u16 *volatile sp10;
-        u16 *volatile spC;
-        u16 *volatile sp8;
-        u16 *volatile sp4;
-        u16 *volatile sp0;
-
         sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
         *sp44 = *sp44 | 0x200;
 

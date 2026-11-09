@@ -708,7 +708,6 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u32 saved;
     u16 masked;
     s32 r5;
-    s32 first;
     void *ptr;
 
     if (func_ov009_02224194() != 4) {
@@ -720,8 +719,7 @@ s32 func_ov009_02224d9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
     arg3 = arg3 & func_ov009_02224174();
-    first = func_ov009_02225450();
-    masked = (u16)(arg3 & (-1 ^ (1 << first)));
+    masked = (u16)(arg3 & (-1 ^ (1 << func_ov009_02225450())));
     r5 = func_ov009_02225450();
 
     saved = *(volatile u16 *)0x04000208;

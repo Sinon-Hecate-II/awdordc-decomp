@@ -129,7 +129,8 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
  callback(arg0,arg1,arg2);
 }
 
-#pragma opt_strength_reduction off
+#pragma opt_scheduling off
+#pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 data_02136c4c;
 void func_02014a48(s32); void func_02007f8c(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void func_02007e98();
@@ -179,10 +180,11 @@ switch(*(u16*)b){case 0:case 7:case 8:case 13:case 14:case 15:case 17:case 18:ca
 }
 if(a==17){void (*cb)(s32,s32,s32)=M2C_FIELD(data_02136c4c,void (**)(s32,s32,s32),0x14e4);func_02007e98(0,data_02136c4c,0x7d00);data_02136c4c=0;if(cb)cb(0,12,0);}
 }
-#pragma opt_strength_reduction off
+#pragma opt_scheduling on
+#pragma opt_common_subs on
 void func_02014564(void *arg0,u16 n) {
 void *func_02018a28(); void func_02008048(); u16 func_02015204(); extern s32 data_02136c4c; extern s32 data_02131180;
-u8 header[20]; u8 packet[32]; s32 state; u8 *p; u32 group; u8 count,i;
+s32 state; u8 *p; u32 group; u8 count,i; u8 header[20]; u8 packet[32];
 if(!n)return; if(n>15)return;
 p=func_02018a28((u8 *)arg0+10,header,n);
 state=M2C_FIELD(data_02136c4c+((u32)n-1)*4,s32 *,0x14e8);

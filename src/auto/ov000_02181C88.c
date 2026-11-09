@@ -612,7 +612,7 @@ void func_ov000_02181c88(void) {
                     sp1C = (var_r1 + func_ov000_021a9820(var_r0_14, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
                 }
                 if (var_r10_3 <= sp1C) {
-                    for (;;) {
+                    do {
                         var_r1 = (u32) sp24;
                         var_r6_7 = var_r1;
                         if ((s32) var_r1 <= sp20) {
@@ -661,9 +661,7 @@ void func_ov000_02181c88(void) {
                             } while ((s32) var_r6_7 <= sp20);
                         }
                         var_r10_3 += 1;
-                    
-if(!(var_r10_3 <= sp1C)) break;
-}
+                    } while (var_r10_3 <= sp1C);
                 }
             } else {
                 if (temp_r8 != 0) {

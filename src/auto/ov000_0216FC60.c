@@ -333,7 +333,7 @@ void func_ov000_021703e8(void *arg0) {
     M2C_FIELD(spr, u8 *, 0x5a) = 0;
 
     spr = M2C_FIELD(arg0, void **, 0x48);
-    if (M2C_FIELD(arg0, s16 *, 0x3c) - 6 <= M2C_FIELD(arg0, s16 *, 0x3a)) {
+    if (M2C_FIELD(arg0, s16 *, 0x3a) >= (M2C_FIELD(arg0, s16 *, 0x3c) - 6)) {
         M2C_FIELD(spr, u32 *, 0x40) = (M2C_FIELD(spr, u32 *, 0x40) & ~0x03fc0000)
             | (((((u32) (M2C_FIELD(spr, u8 *, 0x59) << 28) >> 28) + 2) << 24) >> 6);
     } else {

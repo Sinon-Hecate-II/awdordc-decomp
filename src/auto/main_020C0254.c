@@ -497,11 +497,13 @@ void func_020c1078(void) {
     } while (var_r4 < 5);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void *func_020c10a4(s32 x,s32 y,s32 flag){
-extern void *gCurrentMap;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
+extern void *data_027e0058;extern u8 data_02163f9c[];extern s8 data_0216408c;extern u16 data_02129728[],data_021296e8[],data_0211e538[];
 MapC10 *p;u32 idx; s32 k,n,v;
 if(x>=0 && y>=0){
-p=*(void**)gCurrentMap;
+p=*(void**)data_027e0058;
 if(x<p->width&&y<p->height)goto valid;
 }
 return data_02163f9c;
@@ -509,12 +511,12 @@ valid:
 idx=x+p->rows[y];
 {u8 *tiles=p->tiles; v=tiles[idx];}
 n=v&31;k=((u8*)&data_0216408c)[v>>5];
-if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0x0;}
+if(flag && (u8)(p->visible[(u32)idx>>3]&(1<<(idx&7)))==0){if(n!=15)k=0;}
 v=data_02129728[n];
 if(n==27 || (u32)n==28)k=0;
 return &data_0211e538[data_021296e8[v+k]];
 }
-
+#pragma pop
 void func_020c1184(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x6C) = 0;
 }

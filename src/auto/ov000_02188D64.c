@@ -105,7 +105,7 @@ s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
 void func_01ffb554(void *); void func_01ffc328(void *);
 s32 func_ov000_021a9084(s32); s32 func_ov000_021a9d8c(s16,s16);
 s32 func_ov000_021a8fc0(s16); s32 func_ov000_021a98e4(s32);
-s32 sy,bestScore,score,bestCost,y,x;
+register s32 sy,bestScore,score,y,x,bestCost;
 s32 bestX,bestY,kind,terrain,attr;
 volatile s32 id;
 s8 *costRow;

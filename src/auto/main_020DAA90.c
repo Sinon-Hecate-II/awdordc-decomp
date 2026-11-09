@@ -132,6 +132,7 @@ DAACC_RET func_020daacc(void *arg0) {
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     gCur3DSpriteEngine = saved;
+    return;
 }
 M2C_UNK func_020a8f8c(s32);
 M2C_UNK func_020dae28(void *arg0) {

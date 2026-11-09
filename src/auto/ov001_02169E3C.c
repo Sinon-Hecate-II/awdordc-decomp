@@ -157,10 +157,9 @@ s32 func_ov001_0216a33c(u32 a,u32 b) {
 }
 #pragma opt_propagation reset
 s32 func_ov001_0216a398(void *dst,s32 w,s32 h,s32 x,s32 y,s32 mode,s32 tile,s32 shift){
-#pragma intrinsic on
 extern u8 data_ov001_0218c9e4[];s32 func_ov001_02169494(void *);
 s32 wx,hy,sx,sy,nx,ny,step,area,count,i,j,n;u32 aw,ah;u8 *p;
-wx=w<8?31-__CLZ(w):3;hy=h<8?31-__CLZ(h):3;
+wx=w<8?31-__builtin_clz(w):3;hy=h<8?31-__builtin_clz(h):3;
 p=data_ov001_0218c9e4+hy*8+wx*2;sx=p[0];sy=p[1];
 aw=w&(-1U<<sx);ah=h&(-1U<<sy);step=mode==0?1:2;count=0;
 n=func_ov001_02169494(p);nx=w>>sx;ny=h>>sy;area=(step<<sx)<<sy;
@@ -177,7 +176,6 @@ if(aw<(u32)w){s32 rem=w-aw;n=func_ov001_0216a398(dst,rem,ah,x+aw*8,y,mode,tile,s
 if(ah<(u32)h){s32 rem=h-ah;n=func_ov001_0216a398(dst,aw,rem,x,y+ah*8,mode,tile,shift);dst=(u8 *)dst+n*8;tile+=((u32)(step*aw*rem))>>shift;count+=n;}
 if(aw<(u32)w&&ah<(u32)h){n=func_ov001_0216a398(dst,w-aw,h-ah,x+aw*8,y+ah*8,mode,tile,shift);count+=n;}
 return count;
-#pragma intrinsic off
 }
 
 void func_ov001_0216a690(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 *arg5,TextDirection dir) {

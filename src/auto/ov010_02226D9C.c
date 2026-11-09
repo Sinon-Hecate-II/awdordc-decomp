@@ -105,8 +105,7 @@ func_ov010_02227954((u8)self,M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));
 M2C_FIELD(a,u16 *,0x44)&=~0U ^ (one<<self);
 }
 if(M2C_FIELD(a,u16 *,0x44)){
-u32 flags=((Ov010Packet *)M2C_FIELD(a,void **,0x3c))->flags;
-switch(flags){
+switch(((Ov010Packet *)M2C_FIELD(a,void **,0x3c))->flags){
 case 0:func_0204445c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_01ffa6fc(a);return;
 case 1:func_0204455c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
 default:return;

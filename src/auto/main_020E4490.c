@@ -513,8 +513,6 @@ s8 func_020e4d80(void *arg0) {
 s32 func_020e4e44(void *arg0) {
     s16 temp_r1;
     s32 var_r1;
-    u8 v;
-    u8 cleared;
 
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x3E);
     if ((s32) temp_r1 > 0) {
@@ -528,9 +526,7 @@ s32 func_020e4e44(void *arg0) {
     if (!(var_r1 & 0xFF)) {
         return 0;
     }
-    v = M2C_FIELD(arg0, u8 *, 0x3C);
-    cleared = v & ~2;
-    M2C_FIELD(arg0, u8 *, 0x3C) = cleared | 1;
+    M2C_FIELD(arg0, u8 *, 0x3C) = (u8) ((u8) (M2C_FIELD(arg0, u8 *, 0x3C) & ~2) | 1);
     return 1;
 }
 #pragma scheduling reset

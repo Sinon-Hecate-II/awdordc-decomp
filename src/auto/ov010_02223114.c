@@ -169,7 +169,7 @@ return data_ov010_0222d880[M2C_FIELD(a,u8 *,0x11)];
 
 void func_ov010_022234f8(u8 *out,s16 *in,u32 n) {
 extern s32 data_ov010_0222c004[];
-s32 seg,mask; register u32 i; s32 sample,value; register s32 x; register s32 *table;
+s32 seg,mask; u32 i; s32 sample,x,value; s32 *table;
 for(i=0;i<n;i++) {
 sample=in[i]; table=data_ov010_0222c004; x=sample>>2;
 if(x<0) {mask=0x7f; x=-x;} else mask=0xff;

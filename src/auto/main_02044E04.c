@@ -23,7 +23,7 @@ s32 func_02044e68(void) {
 }
 
 #pragma opt_instruction_scheduling off
-s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);s32 flag;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);flag=M2C_FIELD(p,s32 *,12);if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}func_020452f0(p);return flag!=0;}
+s32 func_02044e88(s32 unused,s32 a,s32 b,s32 c,void *arg){void func_020376d8(s32,s32,s32);s32 func_02045138(s32);void func_020452f0(void *);s32 flag;void (*cb)(s32,s32,s32,s32);void *p=arg;s32 x;cb=M2C_FIELD(p,void (**)(s32,s32,s32,s32),4);flag=M2C_FIELD(p,volatile s32 *,12);if(cb){if(a==0)cb(b,c,a,M2C_FIELD(p,s32 *,0));else{func_02045138(a);cb(0,0,a,M2C_FIELD(p,s32 *,0));}}if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else func_020376d8(4,x,0);}func_020452f0(p);return flag!=0;}
 #pragma opt_instruction_scheduling reset
 void func_02044f24(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
 void (*cb)(s32,s32,s32,s32,s32,s32)=M2C_FIELD(p,void (**)(s32,s32,s32,s32,s32,s32),8);

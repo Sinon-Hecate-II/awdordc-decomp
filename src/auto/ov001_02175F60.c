@@ -7,9 +7,9 @@ extern struct MenuValues2 data_ov001_0218f6f4;
 
 #pragma opt_common_subs off
 void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    arg0 = (u8 *)M2C_FIELD(arg0, void **, 4) + M2C_FIELD(arg0, u32 **, 0)[(u16)arg1];
+    arg0 = (char *)M2C_FIELD(arg0, void **, 4) + M2C_FIELD(arg0, u32 **, 0)[(u16)arg1];
     if (arg2 >= 0) {
-        ((u16 *)arg0)[arg2] = arg3 + 0x30;
+        ((u16 *)arg0)[arg2] = (u16)(arg3 + 0x30);
     }
 }
 #pragma opt_common_subs reset

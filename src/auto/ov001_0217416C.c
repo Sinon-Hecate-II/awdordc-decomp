@@ -97,7 +97,6 @@ void func_ov001_0217416c(void) {
         sp4 = 2;
         sp8 = 0x480;
         spc = (void*)&sp14;
-        // stack args are illustrative; call
         func_ov001_0218ac04(0, 0xc, 0x4, 0, 0, 0);
         sp1c = sp1c + 0x20;
         r8i++;

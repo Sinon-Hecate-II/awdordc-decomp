@@ -190,6 +190,19 @@ next:
 }
 
 void func_ov002_021e1844(void *arg0) {
+    void func_ov002_021e1780(void *);
+    M2C_UNK func_ov002_021e299c(void *, M2C_UNK);
+    M2C_UNK func_ov002_021e29d8(void *);
+    M2C_UNK func_ov002_021e29f8(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov002_021e26d4(void *);
+    M2C_UNK func_ov002_021e2724(void *);
+    M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
+    M2C_UNK func_ov002_021e2848(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_ov002_021e2928(void *, M2C_UNK);
+    M2C_UNK func_020afa00(M2C_UNK);
+    M2C_UNK func_020afa98(M2C_UNK);
+    M2C_UNK func_020afb34(M2C_UNK);
+    M2C_UNK func_020afb94(M2C_UNK);
     if (M2C_FIELD(arg0, void **, 4) == NULL) return;
     M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x3c) + M2C_FIELD(arg0, s8 *, 0x44));
     M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3e) + M2C_FIELD(arg0, s8 *, 0x45));
@@ -204,6 +217,174 @@ void func_ov002_021e1844(void *arg0) {
             if (t == 0) M2C_FIELD(arg0, u8 *, 0x49) = 2;
         }
     }
+    if (M2C_FIELD(arg0, s32 *, 0x30) == 0) {
+        void *current;
+        M2C_FIELD(arg0, s32 *, 0x24) = 0;
+    dispatch:
+        current = (void *)M2C_FIELD(arg0, void **, 0x1c);
+        if (M2C_FIELD(current, u8 *, 0) != 0) goto countdown;
+        switch (M2C_FIELD(current, u8 *, 1)) {
+        case 0:
+            goto recurse;
+        case 1: {
+            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
+            ((void (*)(void *))vt[0])(arg0);
+            func_ov002_021e1780(arg0);
+            goto recurse;
+        }
+        case 2: {
+            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
+            ((void (*)(void *))vt[1])(arg0);
+            break;
+        }
+        case 3: {
+            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
+            if (((s32 (*)(void *))vt[2])(arg0) == 1) goto recurse;
+            break;
+        }
+        case 4: {
+            void *r2 = (void *)M2C_FIELD(arg0, void **, 0x18);
+            for (;;) {
+                u8 o = M2C_FIELD(r2, u8 *, 1);
+                if (o == 0xff) break;
+                if (o == 0x05) {
+                    s16 a = M2C_FIELD(current, s16 *, 0x8);
+                    s16 b = M2C_FIELD(r2, s16 *, 0x8);
+                    if (a == b) {
+                        M2C_FIELD(arg0, void **, 0x1c) = (void **)r2;
+                        break;
+                    }
+                }
+                r2 = (void *)((char *)r2 + 0xc);
+            }
+            break;
+        }
+        case 5:
+            break;
+        case 6:
+            func_ov002_021e299c(arg0, 4);
+            break;
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+            break;
+        case 17:
+            func_ov002_021e299c(arg0, 6);
+            break;
+        case 18:
+            func_ov002_021e29d8(arg0);
+            break;
+        case 19:
+            M2C_FIELD(arg0, u8 *, 0x4a) = 1;
+            break;
+        case 20:
+            M2C_FIELD(arg0, u8 *, 0x4a) = 0;
+            break;
+        case 21:
+            M2C_FIELD(arg0, u8 *, 0x4d) = (u8)M2C_FIELD(current, s16 *, 0x8);
+            M2C_FIELD(arg0, u8 *, 0x4e) = (u8)M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x1c), s16 *, 0xa);
+            break;
+        case 22:
+            M2C_FIELD(arg0, u8 *, 0x4f) = (u8)M2C_FIELD(current, s16 *, 0x8);
+            break;
+        case 23:
+            M2C_FIELD(arg0, void **, 0x24) = (void **)current;
+            M2C_FIELD(arg0, u8 *, 0x4b) = (u8)M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x1c), u8 *, 1);
+            break;
+        case 24:
+        case 25:
+        case 26:
+            func_ov002_021e29f8(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8), (M2C_UNK)M2C_FIELD(current, s16 *, 0xa));
+            break;
+        case 27:
+            func_ov002_021e26d4(arg0);
+            break;
+        case 28:
+            func_ov002_021e2724(arg0);
+            break;
+        case 29:
+            func_ov002_021e2770(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8));
+            break;
+        case 30:
+            M2C_FIELD(arg0, u8 *, 0x52) = 1;
+            break;
+        case 31:
+            func_ov002_021e2928(arg0, (M2C_UNK)((s32)M2C_FIELD(current, s16 *, 0x8) & 0xff));
+            break;
+        case 32:
+            func_020afa00(M2C_FIELD(arg0, u8 *, 0x53));
+            break;
+        case 33:
+            func_020afa98(M2C_FIELD(arg0, u8 *, 0x53));
+            break;
+        case 34:
+            func_020afb34(M2C_FIELD(arg0, u8 *, 0x53));
+            break;
+        case 35:
+            break;
+        case 36:
+            func_020afb94(M2C_FIELD(arg0, u8 *, 0x53));
+            break;
+        case 37:
+            M2C_FIELD(arg0, void **, 0x1c) = M2C_FIELD(arg0, void **, 0x18);
+            current = (void *)M2C_FIELD(arg0, void **, 0x1c);
+            if (M2C_FIELD(current, u8 *, 0) == 0) goto dispatch;
+            goto countdown;
+        }
+        {
+            u8 op2 = M2C_FIELD(current, u8 *, 1);
+            if (op2 >= 0x41 && op2 <= 0x4f) {
+                func_ov002_021e2848(arg0, (M2C_UNK)(op2 - 0x41), (M2C_UNK)(-1));
+                M2C_FIELD(arg0, s32 *, 0x24) = 0;
+            }
+            if (op2 >= 0x51 && op2 <= 0x5f) {
+                func_ov002_021e2848(arg0, (M2C_UNK)(op2 - 0x51), (M2C_UNK)1);
+                M2C_FIELD(arg0, s32 *, 0x24) = 0;
+            }
+            if (M2C_FIELD(current, u8 *, 1) == 0xff) {
+                func_ov002_021e1780(arg0);
+                goto recurse;
+            }
+            M2C_FIELD(arg0, void **, 0x1c) = (void **)((char *)current + 0xc);
+            current = (void *)M2C_FIELD(arg0, void **, 0x1c);
+            if (M2C_FIELD(current, u8 *, 0) == 0) goto dispatch;
+            goto countdown;
+        }
+    countdown:
+        M2C_FIELD(arg0, s32 *, 0x30) = M2C_FIELD(current, u8 *, 0);
+        {
+            s32 idx = M2C_FIELD(current, u8 *, 1);
+            char *base = (char *)(s32)M2C_FIELD(arg0, s32 *, 4);
+            s32 *table = (s32 *)M2C_FIELD(arg0, s32 *, 0x10);
+            M2C_FIELD(arg0, s32 *, 0x14) = (s32)(base + table[idx]);
+        }
+        M2C_FIELD(arg0, void **, 0x20) = (void **)current;
+        M2C_FIELD(arg0, void **, 0x1c) = (void **)((char *)current + 0xc);
+        M2C_FIELD(arg0, s32 *, 0x30) = M2C_FIELD(arg0, s32 *, 0x30) - 1;
+        M2C_FIELD(arg0, s32 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34) + 1;
+    }
+recurse:
+    {
+        void **node = 0;
+        for (;;) {
+            if (node == 0) {
+                if (!M2C_FIELD(arg0, void **, 8)) node = 0;
+                else node = (void **)((char *)arg0 + 8);
+            } else {
+                node = (void **)M2C_FIELD(node, void **, 4);
+            }
+            if (node == 0) break;
+            func_ov002_021e1844((void *)M2C_FIELD(node, void **, 0));
+        }
+    }
+    return;
 }
 
 void func_ov002_021e1c34(void *a,s32 b) {
@@ -315,10 +496,10 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     s32 func_ov002_021e27c4(void *);
     M2C_UNK var_r1;
     M2C_UNK var_r4;
-    M2C_UNK var_r0;
-    M2C_UNK var_r0_2;
-    M2C_UNK var_r0_3;
-    M2C_UNK var_r0_4;
+    s32 var_r0;
+    s32 var_r0_2;
+    s32 var_r0_3;
+    s32 var_r0_4;
     s8 temp_r2_2;
     u8 temp_r0;
     u8 temp_r0_2;
@@ -445,18 +626,18 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
         func_02087048(0, 0x1F);
         M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
     }
-    var_r7 = 0;
+    var_r7 = NULL;
 loop_65:
-    if (var_r7 == 0) {
+    if (var_r7 == NULL) {
         if (M2C_FIELD(arg0, s32 *, 8) == 0) {
-            var_r7 = 0;
+            var_r7 = NULL;
         } else {
             var_r7 = (void **) (arg0 + 8);
         }
     } else {
         var_r7 = M2C_FIELD(var_r7, void ***, 4);
     }
-    if (var_r7 != 0) {
+    if (var_r7 != NULL) {
         func_ov002_021e1ef8(*var_r7, arg1);
         goto loop_65;
     }

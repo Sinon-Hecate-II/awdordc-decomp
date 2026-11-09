@@ -330,7 +330,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void func_ov007_022114c4(M2C_UNK, s32, s32, s32);
     void func_ov007_022116d4(M2C_UNK, s32, s32, s32);
     void func_ov007_02211560(M2C_UNK, s32, s32, s32);
-    void func_ov007_022117e0(M2C_UNK, s32, s32);
+    void func_ov007_022117e0(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov007_022115fc(M2C_UNK, s32, s32, s32);
     void func_ov007_02211840(M2C_UNK, s32, s32, s32);
     void func_ov007_022116a0(M2C_UNK, s32, s32, s32);
@@ -392,7 +392,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         func_ov007_02211560(arg0, r6, r7, r4);
         return;
     L_c1:
-        func_ov007_022117e0(arg0, r6, r7);
+        ((void (*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))func_ov007_022117e0)(arg0, r6, r7, r4);
         return;
     case 2:
         if (!(r5 & 1)) return;

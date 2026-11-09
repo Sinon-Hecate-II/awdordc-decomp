@@ -81,8 +81,8 @@ M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
  width>>=1;
  row=0;
  do {
- for(x=0;x<width;x++) { ((u16 *)arg0)[row+x]=arg1+index++; }
- y+=16; row+=32;
+ for(x=0;width>x;x++) { ((u16 *)arg0)[row+x]=arg1+index++; }
+ row+=32; y+=16;
  } while(y<height);
 }
 

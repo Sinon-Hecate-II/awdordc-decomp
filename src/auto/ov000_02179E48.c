@@ -155,18 +155,18 @@ data_027e0a98+=4;data_027e0a94=(void *)((s32)data_027e0a94+1);
 }
 
 void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void func_01ffb554(void *);
     void func_01ffb3d0(s32);
+    void func_01ffb554(void *);
     u16 func_ov000_021a97e0(u16, s32);
-    void func_01ffb454(s32);
     extern void **gCurrentMap;
+    void func_01ffb454(s32);
     extern s8 data_027e0a8c;
     extern void *data_027e00cc;
     extern void *data_027e0a94;
     extern void *data_027e0a98;
     extern void *data_027e0a90;
-    u8 *q;
     void *base;
+    u8 *q;
 
     func_01ffb554((u8 *)(*gCurrentMap) + 0x2338);
     func_01ffb3d0(-1);
@@ -198,7 +198,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(data_027e0a98, u8 *, 2) = 0;
 
     for (;;) {
-        if (data_027e0a8c == 0) {
+        if (!data_027e0a8c) {
             base = data_027e00cc;
             data_027e0a98 = (u8 *)base + 0x5A0;
             data_027e0a90 = (u8 *)base + 0x28;
@@ -230,8 +230,8 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
     }
 
-    M2C_FIELD(data_027e0a90, u8 *, 0x24) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5144);
     M2C_FIELD(data_027e00cc, u8 *, 0x25) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5146);
+    M2C_FIELD(data_027e0a90, u8 *, 0x24) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5144);
 }
 
 #pragma opt_common_subs off
@@ -300,17 +300,18 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
 #pragma opt_common_subs reset
 s32 func_ov000_0217aa2c(s32 x,s32 y) {
 extern void **gCurrentMap;
-void **state=gCurrentMap;
+register void **state=gCurrentMap;
+register s32 left,top,bottom,right;
 void *base=*state;
-register s32 left,top,right,bottom; s32 i,result,d,v;
+s32 result,i,d,v;
 left=x-1;
-if(left<0)left=0;
+left=left<0?0:left;
 top=y-1;
-if(top<0)top=0;
+top=top<0?0:top;
 right=M2C_FIELD(base,u16 *,0x5144)-1;
-right=right>x+1?x+1:right;
+right=(right>x+1)?x+1:right;
 bottom=M2C_FIELD(base,u16 *,0x5146)-1;
-bottom=bottom>y+1?y+1:bottom;
+bottom=(bottom>y+1)?y+1:bottom;
 result=111;
 for(;top<=bottom;top++){
 for(i=left;i<=right;i++){

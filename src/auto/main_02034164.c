@@ -21,9 +21,7 @@ u8 pad19d4[0x24];
 s32 buffer[4];
 } Unk02034164;
 
-void func_02034164(void) {
-    return;
-}
+void func_02034164(void) { return; }
 
 void func_02034480(Unk02034164 *arg0) {
 M2C_UNK func_02007f8c(void *,s32,s32);

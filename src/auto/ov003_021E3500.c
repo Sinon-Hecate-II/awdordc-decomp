@@ -398,6 +398,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     }
 }
 
+#pragma push
 #pragma opt_loop_invariants off
 #pragma opt_propagation off
 void func_ov003_021e3ff8(void *arg0,s32 arg1,s32 arg2){
@@ -434,7 +435,7 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x3e)=-(arg1-6);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x46)=0;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x38)=-(arg1+40);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,s16*,0x40)=-arg2;
-func_01ff9ce8(0U);
+func_01ff9ce8(0);
 i=0;
 sequence=1;
 do{
@@ -446,7 +447,7 @@ if(count>0){
 px=(s16)(left+34);py=(u16)((left+3)&511);layer=(s16)(i*16);mask=0x3ff;
 do{
 if(i==0)id=M2C_FIELD(M2C_FIELD(arg0,s32*,0x5c)+j*2,u16*,8);else id=j+0x113;
-top=(j*16)+arg2;
+top=arg2+(j<<4);
 offset=func_0207c928(j*2,32);
 func_020a92bc(M2C_FIELD(arg0,void**,0x50),(s16)(j+1));
 p=M2C_FIELD(arg0,void**,0x50);
@@ -469,7 +470,7 @@ i++;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
 M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank=(u8)(M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank==0);
 hx0=arg1+17;hx1=arg1+33;hx2=arg1+217;hx3=arg1+233;
-headerY=arg2+-12;
+headerY=arg2-12;
 h=0;
 do {
 switch(h){
@@ -487,3 +488,4 @@ func_020a94fc(M2C_FIELD(arg0,void**,0x50));
 h=(u8)(h+1);
 }while(h<4);
 }
+#pragma pop

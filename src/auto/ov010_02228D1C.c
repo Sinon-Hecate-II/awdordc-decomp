@@ -483,10 +483,10 @@ s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_ov010_022268f4(s32, s32, s32);
     void func_02007f8c(void *, s32, s32);
     extern u16 data_ov010_0222eee0;
-    u16 v;
     void *node;
     s32 mode;
     volatile s32 saved;
+    u16 v;
     s32 ret;
 
     if (func_ov010_022282b4(3) == 0) return 0;

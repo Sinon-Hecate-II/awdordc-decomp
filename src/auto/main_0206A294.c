@@ -23,9 +23,9 @@ u32 func_0206a384(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, M2C_UNK *e, M2C_UN
 
 u64 func_0206a76c(s32 base,s32 width,s32 (*get)(void *,s32,s32),void *ctx,s32 *count,s32 *negative,s32 *overflow) {
 extern u16 data_020ead40[]; extern u8 data_020eacc0[];
-s32 c,n,space,state,d; u64 limit,value;
+s32 state,c,n,space,d; u64 limit,value;
 u64 func_02072088(u64,u64);
-*overflow=0;value=0;limit=0;*negative=0;state=1;n=0;space=0;
+*overflow=0;value=0;limit=0;*negative=0;state=1;space=0;n=0;
 if(base<0 || base==1 || base>36 || width<1)state=64;
 else {n++;c=get(ctx,0,0);if(base)limit=func_02072088(~(u64)0,(s64)base);}
 while(n<=width && c!=-1 && !(state&96)){

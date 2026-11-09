@@ -36,7 +36,130 @@ if(func_ov000_021a96a8(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=
 return 0;
 }
 #pragma opt_propagation reset
-s32 func_ov000_02195b80(s16 *a) { return 0; }
+s32 func_ov000_02195b80(s16 *out) {
+    s32 func_ov000_021a8ff0(s32);
+    s32 func_ov000_021a98e4(u32);
+    s32 func_ov000_0217bc34(s32, s32, s32, s32);
+    s32 func_01ffada0(u8, u8, u32, s32, s32);
+    void func_01ffb554(void *);
+    void func_01ffc328(void *);
+    s32 func_ov000_021a9d8c(s16, s16);
+    s32 func_ov000_0218a520(s16, s16);
+    s32 func_ov000_021959cc(s32, s32, s32, s32);
+    s32 func_020a76d4(void *);
+
+    extern void **gCurrentMap;
+    extern u8 data_ov000_021b5c0f[];
+    extern void *data_ov000_021df644;
+    extern u8 data_ov000_021b55a0[];
+
+    void *up;
+    s32 unitKind;
+    u8 attr;
+    void *map;
+    s32 resX = -1;
+    s32 resY = -1;
+    s32 best = 0x7fff;
+    s32 flag = 0;
+    s32 y, x;
+    s32 height, width;
+
+    up = *(void **)((u8 *)*gCurrentMap + 0x52d0);
+    unitKind = ((u8 *)up)[0] & 0x3f;
+    attr = data_ov000_021b5c0f[unitKind * 0x70];
+    if (attr & 0x20) {
+        return 0;
+    }
+    func_01ffada0(((u8 *)up)[1], ((u8 *)up)[2], (u32)unitKind, 110, 0);
+
+    map = *gCurrentMap;
+    func_01ffb554((u8 *)map + 0x2338);
+    func_01ffc328((u8 *)map + 0x52d0);
+    func_01ffb554((u8 *)map + 0x1e30);
+
+    height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
+    for (y = 0; y < height; y++) {
+        width = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
+        for (x = 0; x < width; x++) {
+            s8 cand;
+            void *rows;
+            u8 *m;
+            u16 rowOff;
+            u8 grid0;
+
+            rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
+            cand = ((s8 *)rows)[x];
+            if (cand < 0) continue;
+
+            m = (u8 *)*gCurrentMap;
+            rowOff = *(u16 *)(m + 0x3758 + y * 2);
+            grid0 = *(u8 *)(m + x + rowOff + 0x1420);
+            if (func_ov000_021a8ff0(grid0 & 0x1f) == 0) continue;
+
+            m = (u8 *)*gCurrentMap;
+            rowOff = *(u16 *)(m + 0x3758 + y * 2);
+            grid0 = *(u8 *)(m + x + rowOff + 0x1420);
+            if (*(u16 *)(m + 0x52a6) != (grid0 & 0xe0)) continue;
+
+            rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
+            cand = ((s8 *)rows)[x];
+            if (best < cand) continue;
+
+            {
+                u8 thr;
+                u8 grid1;
+                m = (u8 *)*gCurrentMap;
+                rowOff = *(u16 *)(m + 0x3758 + y * 2);
+                grid1 = *(u8 *)(m + x + rowOff + 0x2d48);
+                thr = ((u8 *)data_ov000_021df644)[2];
+                if (grid1 >= thr) continue;
+
+                if (data_ov000_021b55a0[grid0 & 0x1f] != 0) continue;
+
+                {
+                    s32 mask;
+                    mask = func_020a76d4(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+                    if (func_ov000_021959cc(x, y, unitKind, mask & 0xff) == 0) continue;
+                }
+
+                {
+                    u8 *m2 = (u8 *)*gCurrentMap;
+                    u16 r2off = *(u16 *)(m2 + 0x3758 + y * 2);
+                    u8 g1 = *(u8 *)(m2 + x + r2off + 0x2d48);
+                    u8 thr2 = ((u8 *)data_ov000_021df644)[2];
+                    if (g1 >= thr2) continue;
+                }
+
+                {
+                    u8 *m2 = (u8 *)*gCurrentMap;
+                    u16 r2off = *(u16 *)(m2 + 0x3758 + y * 2);
+                    s8 *p = (s8 *)(m2 + x + r2off + 0x2338);
+                    if (*p < 0) continue;
+                }
+
+                if (func_ov000_021a9d8c((s16)x, (s16)y) != 0) continue;
+                if (func_ov000_0218a520((s16)x, (s16)y) == 0) continue;
+
+                if (flag != 0) {
+                    rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
+                    cand = ((s8 *)rows)[x];
+                    if (best < cand) continue;
+                    flag = 1;
+                } else {
+                    resX = x;
+                    resY = y;
+                    rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
+                    best = ((s8 *)rows)[x];
+                }
+            }
+        }
+    }
+
+    if (best == 0x7fff) return 0;
+    out[0] = (s16)resX;
+    out[1] = (s16)resY;
+    return 1;
+}
 
 void func_ov000_02195ea4(void) {
     s32 func_ov000_021a98e4(u32);

@@ -18,50 +18,105 @@ void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
     s8 *terrain = data_027e00cc;
     u8 q0 = q[0];
     u8 q1 = q[1];
-    u8 r5 = (u8)(arg1 + q0);
-    u8 r4 = (u8)(arg2 + q1);
-    s16 score;
-    u8 terrainType;
+    u8 x = (u8)(arg1 + q0);
+    u8 y = (u8)(arg2 + q1);
     void *m;
+    s16 field22;
     u16 row;
-    s8 costVal;
-    u8 terrainAttr;
     void **tablePtr;
     s8 *signedTable;
-    s16 field22;
-    u8 *cursor;
+    s8 costVal;
+    u8 terrainType;
+    u8 terrainAttr;
+    s16 score;
+    u16 mapField;
+    u8 *unitRec;
+    u32 idx;
+    u8 cellType;
+    s32 group;
+    u8 occ, bit, chk, rec26, terrain26, val;
+    u16 flags, mf, mf2, mfB, flagsx;
 
-    if (r5 >= (u8)terrain[0x24]) return;
-    if (r4 >= (u8)terrain[0x25]) return;
+    if (x >= (u8)terrain[0x24]) return;
+    if (y >= (u8)terrain[0x25]) return;
 
     m = *gCurrentMap;
     field22 = *(s16 *)(terrain + 0x22);
-    row = *(u16 *)((u8 *)m + r4 * 2 + 0x3758);
+    row = *(u16 *)((u8 *)m + y * 2 + 0x3758);
     tablePtr = (void **)((u8 *)m + q1 * 4 + 0x52e8);
     signedTable = (s8 *)tablePtr[0];
     costVal = signedTable[q0];
-    terrainType = ((u8 *)m)[r5 + row + 0x1000 + 0x420] & 0x1f;
+    terrainType = ((u8 *)m)[x + row + 0x1000 + 0x420] & 0x1f;
     terrainAttr = (u8)terrain[terrainType];
     score = (s16)(costVal + terrainAttr);
 
     if (field22 & 0x10) {
         if (data_ov000_021b55c0[terrainType] != 0) {
-            s32 mapField = *(u16 *)((u8 *)m + 0x52b6);
-            if (func_020d280c(mapField, r5, r4) == 0) {
+            mapField = *(u16 *)((u8 *)m + 0x52b6);
+            if (func_020d280c(mapField, x, y) == 0) {
                 score = 0x00ff;
             }
             m = *gCurrentMap;
-            tablePtr = (void **)((u8 *)m + r4 * 4 + 0x52e8);
-            if (score >= (s16)((u8 *)tablePtr[0])[r5]) {
+            tablePtr = (void **)((u8 *)m + y * 4 + 0x52e8);
+            if (score >= (s16)((u8 *)tablePtr[0])[x]) {
                 return;
             }
         }
     }
 
     if (field22 & 0x0d) {
-        s8 cellType = ((s8 *)m)[r5 + row];
-        if (cellType == 0) {
-            goto enqueue;
+        idx = x + row;
+        cellType = ((u8 *)m)[idx];
+        if (cellType != 0) {
+            if (field22 & 0x02) {
+                occ = ((u8 *)m)[(idx >> 3) + 0x5160];
+                bit = (u8)(occ >> (idx & 7)) & 1;
+                if (!bit) {
+                    chk = ((u8 *)m)[cellType * 14 + 0x59af];
+                    if (!(chk & 0x40)) {
+                        goto enqueue;
+                    }
+                }
+            }
+            group = (s32)cellType >> 6;
+            terrain26 = (u8)terrain[0x26];
+            rec26 = ((u8 *)m)[0x67a4 + (group + 1) * 140 + 0x26];
+            if (terrain26 == rec26) {
+                goto enqueue;
+            }
+            unitRec = (u8 *)m + 0x59a4 + cellType * 14;
+            flags = *(u16 *)(unitRec + 0x04);
+            if (flags & 0x20) {
+                if (flags & 0x80) {
+                    mf = *(u16 *)((u8 *)m + 0x52b6);
+                    val = ((u8 *)m)[0x67a4 + mf * 140 + 0x1f];
+                    if (!(val & 0x02)) {
+                        if (!(flags & 0x40)) goto enqueue;
+                        {
+                            u8 val2 = ((u8 *)m)[0x67a4 + mf * 140 + 0x1f];
+                            if (!(val2 & 0x01)) goto enqueue;
+                        }
+                    }
+                } else {
+                    if (!(flags & 0x40)) goto enqueue;
+                    mf2 = *(u16 *)((u8 *)m + 0x52b6);
+                    val = ((u8 *)m)[0x67a4 + mf2 * 140 + 0x1f];
+                    if (!(val & 0x01)) goto enqueue;
+                }
+            }
+            if (!(field22 & 0x01)) {
+                mfB = *(u16 *)((u8 *)m + 0x52a4);
+                if (mfB != (u16)(group + 1)) {
+                    return;
+                }
+            }
+            if (field22 & 0x04) {
+                flagsx = *(u16 *)(unitRec + 0x04);
+                if (flagsx & 0x01) return;
+            }
+            if (field22 & 0x08) {
+                if ((unitRec[0x0a] >> 7) & 1) return;
+            }
         }
     }
 
@@ -69,15 +124,16 @@ enqueue:
     if (score > *(s16 *)(terrain + 0x20)) return;
     if (data_027e0a94 >= 0x15d) return;
     data_027e0a94++;
-    cursor = (u8 *)data_027e0a98;
-    cursor[0] = r5;
-    cursor[1] = r4;
-    cursor[2] = (u8)arg0;
-    cursor[3] = (u8)score;
-    data_027e0a98 = cursor + 4;
-    m = *gCurrentMap;
-    tablePtr = (void **)((u8 *)m + r4 * 4 + 0x52e8);
-    ((u8 *)tablePtr[0])[r5] = (u8)score;
+    {
+        u8 *cursor = (u8 *)data_027e0a98;
+        cursor[0] = x;
+        cursor[1] = y;
+        cursor[2] = (u8)arg0;
+        cursor[3] = (u8)score;
+        data_027e0a98 = cursor + 4;
+        tablePtr = (void **)((u8 *)m + y * 4 + 0x52e8);
+        ((u8 *)tablePtr[0])[x] = (u8)score;
+    }
 }
 
 void func_01ffb3d0(s8 arg0) {
@@ -145,7 +201,7 @@ d=radius-1;
 for(y=cy-1;y>=cy-radius;y--,d--){
 if(y<0)break;
 base=*gCurrentMap;w=d*2+1;x=cx-d;if(x<0){w+=x;x=0;}
-w=w+x;if(w>M2C_FIELD(base,u16 *,0x5144))w=M2C_FIELD(base,u16 *,0x5144);
+w=x+w;if(w>M2C_FIELD(base,u16 *,0x5144))w=M2C_FIELD(base,u16 *,0x5144);
 for(;x<w;x++)((s8 **)*gCurrentMap)[y+0x14ba][x]=value;
 }
 }

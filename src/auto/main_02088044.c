@@ -13,8 +13,8 @@ void func_02088044(void *arg0) {
     u16 temp_r0;
     u16 temp_r1;
     u16 temp_r2;
-    u16 var_r0;
-    u16 var_r0_2;
+    u32 var_r0;
+    u32 var_r0_2;
     u8 temp_r0_5;
     void *temp_r0_2;
     void *temp_r0_3;

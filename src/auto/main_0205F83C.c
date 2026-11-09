@@ -8,7 +8,6 @@ extern PacketBytes13 data_02100014;
 extern PacketBytes8 data_02100024;
 
 void func_0205f83c(void *a, void *b, s32 c, void *d) {
-    (void)a; (void)b; (void)c; (void)d;
 }
 
 void func_0205fb50(void *arg0){

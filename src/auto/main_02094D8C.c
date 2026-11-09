@@ -75,7 +75,7 @@ func_020ae768((u8)func_02091e04(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)func_01ff9c34((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((amount&15)<<12));
 break;
 case 0x200:
-M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+arg1),u16*,0)|=0x80;
+M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+(u32)arg1),u16*,0)|=0x80;
 buffer=func_020815bc(func_020ad520(arg2),0x200);
 func_020ae768((u8)func_02091e04(),buffer,0x200);
 func_0207c650(buffer,arg1,bank<<9,0x200,1);
@@ -215,11 +215,11 @@ void func_02095490(void *arg0) {
     u8 func_02091dc4(s32);
     s32 func_02091ddc(s32);
     extern s32 data_027e00c4, data_027e00c8, gCur3DSpriteEngine;
-    s32 saved;
-    s32 engine;
-    u8 mode;
-    u8 type;
+    unsigned int saved;
+    register u8 mode;
     s32 i;
+    long engine;
+    u8 type;
     u16 *volatile sp4C;
     u16 *volatile sp48;
     u16 *volatile sp44;
@@ -249,7 +249,7 @@ void func_02095490(void *arg0) {
         if (i == 0) engine = data_027e00c8; else engine = data_027e00c4;
         gCur3DSpriteEngine = engine;
         {
-            s32 screen = M2C_FIELD(arg0, s32 *, 0x5C);
+            unsigned screen = M2C_FIELD(arg0, s32 *, 0x5C);
             if (screen == 0 && engine != data_027e00c8) goto end;
             if (screen == 1 && engine != data_027e00c4) goto end;
             if (screen == 3 && engine != saved) goto end;
@@ -318,7 +318,7 @@ void func_02095490(void *arg0) {
         *sp4 = (u16)(*sp4 | 0x800);
         sp0 = (u16 *)(*(s32 *)gCur3DSpriteEngine + 0x12);
         *sp0 = (u16)(*sp0 & ~0x1000);
-        i++;
+        ++i;
     } while (i < 2);
 
 end:

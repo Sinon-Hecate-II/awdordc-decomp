@@ -226,9 +226,9 @@ s32 func_02094214(void *arg0) {
  M2C_UNK func_0207843c(s32,s32,s32,s32);
  s16 func_0207f460(s32);
  extern s32 *data_027e0058;
+ s32 x,value,base;
+ register s32 y;
  s16 packed;
- s32 base;
- s32 x,y,value;
  void *cmd;
  cmd=M2C_FIELD(arg0,void **,4);
  packed=M2C_FIELD(cmd,s16 *,8);

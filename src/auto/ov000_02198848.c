@@ -68,9 +68,9 @@ void func_ov000_02198848(u8 player) {
         value = func_ov000_021974bc(value, M2C_FIELD(*gCurrentMap, s32 *, 0x52d0), (void *)unit);
         value = func_ov000_0219763c(value, (void *)unit, (s32)unit->health);
         {
-            u8 b = (u8)(func_020a7cfc(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0)) != 0);
+            register s32 b asm("r3") = func_020a7cfc(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0)) != 0;
             func_ov000_02197a8c((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind,
-                                (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->health, b, flag, bonus);
+                                (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->health, (u8)b, flag, bonus);
         }
     }
 }

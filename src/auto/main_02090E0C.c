@@ -500,7 +500,7 @@ loop:
         void *engine = *r4;
 
         if (((u32)(*(u16 *)*(void **)engine <<19)>>31) !=0) {
-            s32 byte22 = *(u8 *)((char *)arg0 + 0x22)&4;
+            u8 byte22 = *(u8 *)((char *)arg0 + 0x22);
             s32 second = r7[1];
             s32 first = r7[0];
             s32 idx = ((first & 0xC000) >> 12) + ((second & 0xC000) >> 14);
@@ -510,7 +510,7 @@ loop:
             s32 offsetVal = *(s32 *)((char *)arg0 + 0x30) + (r8[0] << 5);
             
 
-            if(byte22) {
+            if (byte22 & 0x04) {
                 func_0207c464(offsetVal, *(s32 *)((char *)arg0+0x28) + r6, product, r11);
             } else {
                 s32 spiritShifted = ((u32)*(s32 *)((char *)arg0+0x28) << 22) >> 17;

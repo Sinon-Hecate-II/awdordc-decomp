@@ -81,7 +81,12 @@ for(ty=0;ty<M2C_FIELD(*gCurrentMap,u16*,0x5146);ty++)for(tx=0;tx<M2C_FIELD(*gCur
 map=*gCurrentMap;
 t=M2C_FIELD(map+tx+M2C_FIELD((short)map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
 if(kind==26)func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
-if(data_ov000_021b56c0[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+if(data_ov000_021b56c0[kind]){
+if(func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty)){
+s32 r=func_020ce6f4(t,player);
+func_ov000_0218500c(tx,ty,t,r);
+}
+}
 }
 }
 for(i=1,offset=14;i<256;i++,offset+=14){

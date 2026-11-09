@@ -271,26 +271,26 @@ void func_ov006_022179b4(void *arg0) {
     s32 func_020c8cbc(s32);
     s32 func_02084cf8();
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
-    volatile s32 sp0;
-    s32 temp_r1;
+    s32 var_r6;   /* hit mask */
+    s32 var_r5;   /* loop index */
+    volatile s32 sp0;  /* match count on stack */
+    s32 var_r8;   /* entry offset */
+    s32 var_r9;   /* tile offset */
     s32 temp_r4;
+    void *temp_r11;
     s32 temp_r7;
     s32 var_r0;
-    s32 var_r3;
-    s32 var_r6;
-    s32 var_r8;
-    s32 var_r9;
+    s32 temp_r1;
     u32 temp_r2;
+    s32 var_r3;
     u32 var_r4;
-    u32 var_r5;
-    void *temp_r11;
 
     var_r6 = 0;
-    sp0 = 0;
-    var_r5 = 0;
+    sp0 = var_r6;
+    var_r5 = var_r6;
     if ((u32) M2C_FIELD(arg0, u32 *, 0x3C) > 0U) {
-        var_r8 = 0;
-        var_r9 = 0;
+        var_r8 = var_r6;
+        var_r9 = var_r6;
         do {
             temp_r4 = M2C_FIELD(arg0, s32 *, 0x50);
             temp_r11 = M2C_FIELD(arg0, s32 *, 0x4C) + var_r8;

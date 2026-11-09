@@ -498,23 +498,21 @@ return result;
 }
 
 u8 func_020b3410(void *arg0){
-M2C_UNK func_0207c8ec(); M2C_UNK func_0208fe30(s32);
-s32 step,total,n,i,old,active,delta,factor;s16 limit,count;u8 result;
-if(M2C_FIELD(arg0,s16*,0x12)!=0)active=1;else active=0;
+s32 func_0207c8ec(); M2C_UNK func_0208fe30(s32);
+s32 active,i,factor,delta; s16 total,count,limit; u8 step,result; s32 n,old;
+if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
-step=M2C_FIELD(arg0,u8*,5);total=M2C_FIELD(arg0,s16*,0xa);n=M2C_FIELD(arg0,u8*,4);
-limit=(s16)func_0207c8ec(total+step-1,step);
-if(n>=limit)n=limit;
-count=(s16)n;
-old=M2C_FIELD(arg0,s16*,0xc);
+step=M2C_FIELD(arg0,u8 *,5);total=M2C_FIELD(arg0,s16 *,10);n=M2C_FIELD(arg0,u8 *,4);
+limit=func_0207c8ec(total+step-1,step);
+count=(old=M2C_FIELD(arg0,volatile s16 *,12),n>=limit?limit:n);
 for(i=0;i<count;i++){
-if(limit!=M2C_FIELD(arg0,volatile s16*,0xc)+count)M2C_FIELD(arg0,s16*,0xc)=M2C_FIELD(arg0,volatile s16*,0xc)+1;
-if(M2C_FIELD(arg0,volatile s16*,8)+step<total)M2C_FIELD(arg0,s16*,8)=M2C_FIELD(arg0,volatile s16*,8)+step;
+if(limit!=M2C_FIELD(arg0,volatile s16 *,12)+count)M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(arg0,volatile s16 *,12)+1;
+if(M2C_FIELD(arg0,volatile s16 *,8)+step<total)M2C_FIELD(arg0,s16 *,8)=M2C_FIELD(arg0,volatile s16 *,8)+step;
 }
-if(old!=M2C_FIELD(arg0,s16*,0xc))func_0208fe30(0x10019);
-delta=M2C_FIELD(arg0,s16*,0xc);factor=M2C_FIELD(arg0,volatile u8*,7);delta-=old;
-M2C_FIELD(arg0,s16*,0x12)=delta*factor;
-if(M2C_FIELD(arg0,s16*,0x12)!=0)result=1;else result=0;
-return (unsigned char)result;
+if(old!=M2C_FIELD(arg0,s16 *,12))func_0208fe30(0x10019);
+delta=M2C_FIELD(arg0,s16 *,12);factor=M2C_FIELD(arg0,u8 *,7);delta-=old;
+M2C_FIELD(arg0,s16 *,18)=delta*factor;
+if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;
+return result;
 }
 

@@ -233,10 +233,11 @@ void func_020b59a0(void *arg0) {
 }
 
 void func_020b59c0(void *arg0) {
-    void *u = (void *) M2C_FIELD(arg0, s32 *, 0x34);
-    u32 mode = (((u32) *(u16 *) ((char *) u + 2)) << 22) >> 28;
     s32 x = M2C_FIELD(arg0, s32 *, 0x38);
     s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
+    void *u = (void *) M2C_FIELD(arg0, s32 *, 0x34);
+    u32 hi = (u32) *(u16 *) ((char *) u + 2);
+    u32 mode = (hi << 22) >> 28;
 
     switch (mode) {
     case 6:

@@ -9,7 +9,7 @@ void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void)
 extern M2C_UNK data_02137290;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;label=qname;packet[4]=0;packet[5]=0;
-size=0;p=label+1;
+size=0;p=qname+1;
 ch=*name++;if(ch){n=size;
 do{
 if(ch!='.'){if(p-(u8*)packet>=60)return -1;n=++size;*p++=ch;}

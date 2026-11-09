@@ -142,7 +142,8 @@ case 4:q=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020c98d8(M2C_FIELD(q,u8 *,1
 }
 }
 
-void func_020bc0e0(void) { }
+void func_020bc0e0(void) {
+}
 
 #pragma push
 #pragma opt_strength_reduction off

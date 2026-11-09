@@ -24,7 +24,7 @@ func_ov000_0218df00();
 
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 func_01ffada0(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
-bestY=-1;bestX=-1;best=32767;
+bestY=-1;bestX=bestY;best=bestY+0x8000;
 
 for(y=0;y<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5144);x++){
@@ -37,7 +37,8 @@ if(M2C_FIELD(((u8*)*gCurrentMap),u16*,0x52a8)!=(id&0xc0))goto next;
 unit=((u8*)*gCurrentMap)+0x59a4+id*14;
 if((((UnitKind18e584*)unit)->kind)!=0x15)goto next;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-if((((UnitKind18e584*)selected)->kind)==0x11 && cost<=best){bestX=x;bestY=y;best=score;}
+if((((UnitKind18e584*)selected)->kind)==0x11)
+if(cost<=best){bestX=x;bestY=y;best=score;}
 if(cost>((u8*)data_ov000_021df580)[5])goto next;
 if(!func_ov000_021a995c(unit))goto next;
 func_ov000_02199d74((s16)x,(s16)y,7,0,0);
@@ -144,7 +145,7 @@ if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>=((u8*)data_ov000_021df644)[2
 cost=M2C_FIELD(((u8*)*gCurrentMap)+y*4,s8**,0x52e8)[x];
 score=cost;
 if(data_ov000_021b55a0[M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x1420)&31])score=cost+((u8*)data_ov000_021df580)[5];
-if(func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)==1)score=0;
+if(func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,(short)y)==1)score=0;
 if(score<=best){bestX=x;bestY=y;best=score;}
 }
 next:

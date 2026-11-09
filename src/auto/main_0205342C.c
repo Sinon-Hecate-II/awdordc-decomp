@@ -433,7 +433,6 @@ s32 func_02053fe4(void **arg0, void *arg1) {
     RequestPair534 pair;
     s32 result;
     void *buffer;
-    register s32 i;
 
     if (arg0 == NULL) {
         func_020640a8((M2C_UNK)&data_020fe9ec, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x22);
@@ -490,7 +489,7 @@ s32 func_02053fe4(void **arg0, void *arg1) {
                     return 1;
                 }
                 func_02065210(buffer, 0, 0x204);
-                M2C_FIELD(buffer, s32 *, 0x00) = M2C_FIELD(operation, s32 *, (int)0x1C);
+                M2C_FIELD(buffer, s32 *, 0x00) = M2C_FIELD(operation, s32 *, 0x1C);
                 result = func_02050838(arg0, pair, buffer, operation, 0);
                 if (result != 0) {
                     return result;
@@ -503,9 +502,9 @@ s32 func_02053fe4(void **arg0, void *arg1) {
                     return 1;
                 }
                 {
-                    register unsigned long count = 4;
-                    register u8 *ptr = buffer;
-                    register s32 zero = 0;
+                    s32 zero = 0;
+                    unsigned long count = 4;
+                    u8 *ptr = buffer;
                     do {
                         ptr[0] = zero;
                         ptr[1] = zero;

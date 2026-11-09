@@ -55,18 +55,16 @@ func_02068d68(buf+256,data_021295f4);func_02068d68(buf+256,func_02086680(0x48000
 }else if(a==5)func_02068d68(buf+256,func_02086680(0x48000041));else func_02068d68(buf+256,func_02086680(0x4800002d));
 break;
 case 1:
-if(!func_020bee64(n) || !b) goto unavailable;
-{
+if(func_020bee64(n)&&b) {
 func_020c8d7c(p[0]);func_02068d68(buf+256,func_02086680(0x4800003f));
 func_020675e4(buf,data_021295f8,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
 func_02068d68(buf+256,func_02086680(0x4800003f));func_02068d68(buf+256,func_02086680(0x4800003e));
 func_020675e4(buf,data_021295fc,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_02129604);
 func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
-} goto done;
-unavailable: func_02068d68(buf+256,func_02086680(0x4800002e));
+}else func_02068d68(buf+256,func_02086680(0x4800002e));
 break;
 }
-done: return buf+256;
+return buf+256;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset

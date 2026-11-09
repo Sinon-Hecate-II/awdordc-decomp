@@ -26,13 +26,13 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     extern void *data_ov000_021df580;
     extern u8 data_ov000_021b5bfc[];
 
-    register s32 count asm("r6") = 0;
-    register s32 flag asm("r7") = 0;
-    register s32 outer asm("r8") = 0;
-    register s32 idx asm("r9") = 0;
-    register s32 unit asm("r10") = 0;
-    register s32 special asm("r11") = 0;
-    register void *inner asm("r1") = (void *)0;
+    s32 count = 0;
+    s32 flag = 0;
+    s32 outer = 0;
+    s32 idx = 0;
+    s32 unit = 0;
+    s32 special = 0;
+    void *inner = (void *)0;
 
     u16 rowOff;
     u8 terrain;

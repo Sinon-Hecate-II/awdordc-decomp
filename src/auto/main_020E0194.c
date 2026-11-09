@@ -232,6 +232,10 @@ gCur3DSpriteEngine=saved;func_020d47f0();break;
 if(func_020d4810() && func_0208b5ec())func_0208af20();
 }
 
+M2C_UNK func_020e06fc() {
+    return 0;
+}
+
 void func_020e0aa4(void) {
     M2C_UNK func_020e06fc();
     func_020e06fc();

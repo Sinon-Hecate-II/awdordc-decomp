@@ -39,29 +39,32 @@ s32 func_020e34bc(s32 arg0) {
     volatile u32 saved;
     u16 old;
     u32 s;
-    s32 result;
+    s32 r;
 
-    old = *(volatile u16 *) 0x04000208;
-    *(volatile u16 *) 0x04000208 = 0;
+    old = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
     saved = old;
-    result = func_020e352c(arg0, 8);
+    r = func_020e352c(arg0, 8);
     s = saved;
-    (void) *(volatile u16 *) 0x04000208;
-    *(volatile u16 *) 0x04000208 = s;
-    return (s32)result;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = s;
+    return r;
 }
 
 s32 func_020e34f4(s32 arg0) {
-void func_020e3580(s32,s32);
-volatile u32 saved;
-u16 old;u32 s;
-old=*(volatile u16*)0x04000208;
-*(volatile u16*)0x04000208=0;
-saved=old;
-func_020e3580(arg0,8);
-s=saved;
-(void)*(volatile u16*)0x04000208;
-*(volatile u16*)0x04000208=s;
+    void func_020e3580(s32, s32);
+    volatile u32 saved;
+    u16 old;
+    u32 s;
+
+    old = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    saved = old;
+    func_020e3580(arg0, 8);
+    s = saved;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = s;
+    return s;
 }
 
 #pragma opt_common_subs reset
@@ -730,15 +733,45 @@ void *func_020e434c(void *arg0) {
 
 /* Initialize graphics: clear VRAM, OAM and palettes, then enable the caches. */
 void func_020e4378(void) {
-M2C_UNK func_020022d8(); M2C_UNK func_020022dc(); M2C_UNK func_02002490(); M2C_UNK func_02003104(s32); M2C_UNK func_020035f8(); M2C_UNK func_02006858(); M2C_UNK func_02006c58(); M2C_UNK func_02006c6c(); M2C_UNK func_02006c7c(); M2C_UNK func_02006f14(); M2C_UNK func_02007140(); M2C_UNK func_02007e98(M2C_UNK,s32,M2C_UNK); M2C_UNK func_0200e2f8();
-extern s32 data_020f5204;
-volatile u16 *p=(volatile u16 *)0x04000204;
-func_02006c58(); func_02006858(); func_02006f14(); func_02007140(); func_020022d8(); data_020f5204=-1; func_020022dc(); func_02002490();
-*(s32 *)0x04001000 &= ~0x10000;
-func_0200e2f8(); func_02003104(0x1FF); func_02007e98(0,0x6800000,0xA4000); func_020035f8();
-func_02007e98(0xC0,0x7000000,0x400); func_02007e98(0,0x5000000,0x400); func_02007e98(0xC0,0x7000400,0x400); func_02007e98(0,0x5000400,0x400);
-{ register u32 v; register volatile u16 *q; v=p[0]; q=p+0x80; p[0]=v|0x8000; v=q[0]; q[0]=v&~0x8000; }
-func_02006c6c(); func_02006c7c();
+    M2C_UNK func_020022d8();
+    M2C_UNK func_020022dc();
+    M2C_UNK func_02002490();
+    M2C_UNK func_02003104(s32);
+    M2C_UNK func_020035f8();
+    M2C_UNK func_02006858();
+    M2C_UNK func_02006c58();
+    M2C_UNK func_02006c6c();
+    M2C_UNK func_02006c7c();
+    M2C_UNK func_02006f14();
+    M2C_UNK func_02007140();
+    M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK func_0200e2f8();
+    extern s32 data_020f5204;
+    u16 *p;
+    u16 *q;
+    func_02006c58();
+    func_02006858();
+    func_02006f14();
+    func_02007140();
+    func_020022d8();
+    data_020f5204 = -1;
+    func_020022dc();
+    func_02002490();
+    *(s32 *)0x04001000 &= ~0x10000;
+    func_0200e2f8();
+    func_02003104(0x1FF);
+    func_02007e98(0, 0x6800000, 0xA4000);
+    func_020035f8();
+    func_02007e98(0xC0, 0x7000000, 0x400);
+    func_02007e98(0, 0x5000000, 0x400);
+    func_02007e98(0xC0, 0x7000400, 0x400);
+    func_02007e98(0, 0x5000400, 0x400);
+    p = (u16 *)0x04000204;
+    q = p + 0x80;
+    p[0] |= 0x8000;
+    q[0] &= ~0x8000;
+    func_02006c6c();
+    func_02006c7c();
 }
 
 void func_020e4458(void) {

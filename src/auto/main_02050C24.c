@@ -213,8 +213,6 @@ void func_020511dc(void *a, void *b) {
     int otherByte;
     char buf1[0x52];
     char digest[64];
-    char buf2[0x201];
-    char pad[0x1f0];
     void *sp10 = 0;
     int slen;
     func_02050bbc((M2C_UNK)(r5 + 0x80), 0x20);
@@ -284,7 +282,6 @@ void func_020511dc(void *a, void *b) {
     func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x470));
     func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe51c);
     func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe524);
-    (void)buf2; (void)pad;
 }
 
 #pragma push

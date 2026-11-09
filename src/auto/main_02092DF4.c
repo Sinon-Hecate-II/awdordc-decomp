@@ -364,15 +364,14 @@ s32 func_0209375c(void *arg0){
 extern void **data_027e0058;
 extern u16 data_ov000_021aeef4[];
 void *p=M2C_FIELD(arg0,void **,4);
-s32 start=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)];
 void *found=0;
 s32 i;
-
-for(i=start+1;i<start+51;i++){
-void *base=(u8 *)*data_027e0058+0x59a4;
-void *entry=(u8 *)base+i*14;
-u32 kind=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
-if(kind && (!M2C_FIELD(p,s16 *,10)||kind==M2C_FIELD(p,s16 *,10))){found=(u8 *)base+i*14;break;}
+void *entry; u8 (*entries)[14]; u32 kind;
+for(i=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+1;i<data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+0x33;i++){
+entries=(void *)((u8 *)*data_027e0058+0x59a4);
+entry=entries[i];
+kind=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
+if(kind && (!M2C_FIELD(p,s16 *,10)||kind==M2C_FIELD(p,s16 *,10))){found=entry;break;}
 }
 if(found)func_020935ec(found,M2C_FIELD(p,s32 *,4));
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;

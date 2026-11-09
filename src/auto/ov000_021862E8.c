@@ -110,7 +110,7 @@ void func_ov000_02186a18(void) {
         for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
             for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
                 if (((s8 **)((u8 *)*gCurrentMap + 0x52e8))[y][x] < 0) continue;
-                cell = ((u8 *)data_ov000_021e0f60)[x + y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)];
+                cell = ((u8 *)data_ov000_021e0f60)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
                 if (cell == 0) continue;
                 if (cell >= best) continue;
                 if (func_ov000_021a9d8c((s16)x, (s16)y)) continue;
@@ -121,7 +121,7 @@ void func_ov000_02186a18(void) {
                 if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
                 fx = x;
                 fy = y;
-                best = ((u8 *)data_ov000_021e0f60)[x + y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)];
+                best = ((u8 *)data_ov000_021e0f60)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
             }
         }
         if (fx == -1) continue;

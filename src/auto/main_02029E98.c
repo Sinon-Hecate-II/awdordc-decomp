@@ -167,8 +167,8 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
     chosen = NULL;
     if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
     else first = 0;
+    best = (u32)chosen - 1;
     address = 0;
-    best = -1U;
     while (node != NULL) {
         base = (s32)(node + 16);
         aligned = ~(arg2 - 1) & (arg2 - 1 + base);
@@ -186,33 +186,23 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
- s32 func_0202a050(void *, void *, s32, s32, u16);
- s32 base, aligned;
- s32 first;
- void *node;
- u32 size, best;
- register void *chosen;
- s32 address;
- node = M2C_FIELD(arg0, void **, 0x28);
- chosen = NULL;
- if ((u16)(M2C_FIELD(arg0, u16 *, 0x36) & 1) == 0) first = 1;
- else first = 0;
- address = 0;
- best = -1U;
- while (node != NULL) {
- size = M2C_FIELD(node, u32 *, 4);
- base = (s32)(node + 16);
- aligned = ~(arg2 - 1) & (size + base - arg1);
- if (aligned - base >= 0 && best > size) {
- chosen = node;
- best = size;
- address = aligned;
- if (first || size == arg1) break;
- }
- node = M2C_FIELD(node, void **, 8);
- }
- if (chosen == NULL) return 0;
- return func_0202a050(arg0 + 0x24, chosen, address, arg1, 1);
+s32 func_0202a050(void *, void *, s32, s32, u16);
+s32 base,aligned,first; void *node; s32 size;u32 best; void *chosen; s32 address;
+node=M2C_FIELD(arg0,void **,0x28);
+if((u16)(M2C_FIELD(arg0,u16 *,0x36)&1)==0) first=1;else first=0;
+chosen=NULL; address=0;best=-1U;
+while(node!=NULL) {
+size=M2C_FIELD(node,u32 *,4);
+base=(s32)(node+16);
+aligned=(size+base-arg1)&~(arg2-1);
+if(aligned-base>=0 && best>(u32)size) {
+chosen=node;best=size;address=aligned;
+if(first || size==arg1)break;
+}
+node=M2C_FIELD(node,void **,8);
+}
+if(chosen==NULL)return 0;
+return func_0202a050(arg0+0x24,chosen,address,arg1,1);
 }
 
 s32 func_0202a334(void *arg0, HeapRange *arg1) {

@@ -141,7 +141,7 @@ switch(bit){
 case 0x40000:case 0x80000:case 0x100000:
 M2C_FIELD(p,s32 *,0x2c)=25;M2C_FIELD(p,s32 *,0x30)=300;M2C_FIELD(p,s32 *,0x44)=300;M2C_FIELD(p,s32 *,0x3c)=5000;M2C_FIELD(p,u32 *,0x4c)|=0x480;break;
 case 0x200000:
-M2C_FIELD(p,s32 *,0x2c)=23;M2C_FIELD(p,s32 *,0x3c)=(M2C_FIELD(p,s32 *,0x30)=300,500);M2C_FIELD(p,s32 *,0x34)=(M2C_FIELD(p,s32 *,0x40)=5000)*2;M2C_FIELD(p,s32 *,0x38)=60000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1480;break;
+M2C_FIELD(p,s32 *,0x2c)=23;M2C_FIELD(p,s32 *,0x30)=300;{s32 delay=500;M2C_FIELD(p,s32 *,0x3c)=delay;}M2C_FIELD(p,s32 *,0x34)=(M2C_FIELD(p,s32 *,0x40)=5000)*2;M2C_FIELD(p,s32 *,0x38)=60000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1480;break;
 case 0x400000:
 M2C_FIELD(p,s32 *,0x3c)=600;M2C_FIELD(p,s32 *,0x40)=3000;M2C_FIELD(p,s32 *,0x34)=23000;M2C_FIELD(p,s32 *,0x38)=800000;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x1000;break;
 case 0x800000:

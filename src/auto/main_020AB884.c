@@ -434,19 +434,19 @@ void func_020ac65c(void *arg0) {
     extern s32 gCur3DSpriteEngine;
     extern s32 data_027e00c4, data_027e00c8;
 
-    s32 temp;
-    s32 saved;
     s8 val;
     s8 neg;
-    register s32 i;
+    s32 saved;
+    s32 temp;
+    s32 i;
     void *bank;
     u8 mode;
 
     M2C_FIELD(arg0, u16 *, 0x38)++;
     temp = func_0207ca38(0, 0x10, 0, M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
+    saved = gCur3DSpriteEngine;
     val = (s8)temp;
     neg = (s8)(-temp);
-    saved = gCur3DSpriteEngine;
 
     i = 0;
     do {

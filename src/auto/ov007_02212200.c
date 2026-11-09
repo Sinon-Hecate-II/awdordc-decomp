@@ -95,34 +95,45 @@ M2C_UNK func_ov007_02212dcc(void) {
             *(u32 *)((u8 *)p + 0x40) = f;
         }
 
-        {
-            M2C_UNK c = func_ov007_02211f20();
-            void *p;
-            u8 b8;
-            u16 b;
-            u32 f;
-            switch (c) {
-                case 0:
-                    p = (void *)data_ov007_02221a50[3];
-                    break;
-                case 1:
-                    p = (void *)data_ov007_02221a50[4];
-                    break;
-                case 2:
-                    p = (void *)data_ov007_02221a50[5];
-                    break;
-                case 3:
-                    p = (void *)data_ov007_02221a50[6];
-                    break;
-                default:
-                    goto func_ov007_02212dcc_done;
-            }
-            b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
-            b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
-            f = *(u32 *)((u8 *)p + 0x40);
+        switch (func_ov007_02211f20()) {
+        case 0: {
+            void *p = (void *)data_ov007_02221a50[3];
+            u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+            u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+            u32 f = *(u32 *)((u8 *)p + 0x40);
             f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
             *(u32 *)((u8 *)p + 0x40) = f;
-            goto func_ov007_02212dcc_done;
+            return;
+        }
+        case 1: {
+            void *p = (void *)data_ov007_02221a50[4];
+            u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+            u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+            u32 f = *(u32 *)((u8 *)p + 0x40);
+            f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+            *(u32 *)((u8 *)p + 0x40) = f;
+            return;
+        }
+        case 2: {
+            void *p = (void *)data_ov007_02221a50[5];
+            u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+            u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+            u32 f = *(u32 *)((u8 *)p + 0x40);
+            f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+            *(u32 *)((u8 *)p + 0x40) = f;
+            return;
+        }
+        case 3: {
+            void *p = (void *)data_ov007_02221a50[6];
+            u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+            u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+            u32 f = *(u32 *)((u8 *)p + 0x40);
+            f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+            *(u32 *)((u8 *)p + 0x40) = f;
+            return;
+        }
+        default:
+            return;
         }
     }
 
@@ -155,36 +166,47 @@ M2C_UNK func_ov007_02212dcc(void) {
         *(u32 *)((u8 *)p + 0x40) = f;
     }
 
-    {
-        M2C_UNK c = func_ov007_02211f20();
-        void *p;
-        u8 b8;
-        u16 b;
-        u32 f;
-        switch (c) {
-            case 0:
-                p = (void *)data_ov007_02221a50[8];
-                break;
-            case 1:
-                p = (void *)data_ov007_02221a50[9];
-                break;
-            case 2:
-                p = (void *)data_ov007_02221a50[10];
-                break;
-            case 3:
-                p = (void *)data_ov007_02221a50[11];
-                break;
-            default:
-                goto func_ov007_02212dcc_done;
-        }
-        b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
-        b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
-        f = *(u32 *)((u8 *)p + 0x40);
+    switch (func_ov007_02211f20()) {
+    case 0: {
+        void *p = (void *)data_ov007_02221a50[8];
+        u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+        u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+        u32 f = *(u32 *)((u8 *)p + 0x40);
         f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
         *(u32 *)((u8 *)p + 0x40) = f;
+        return;
+    }
+    case 1: {
+        void *p = (void *)data_ov007_02221a50[9];
+        u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+        u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+        u32 f = *(u32 *)((u8 *)p + 0x40);
+        f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+        *(u32 *)((u8 *)p + 0x40) = f;
+        return;
+    }
+    case 2: {
+        void *p = (void *)data_ov007_02221a50[10];
+        u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+        u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+        u32 f = *(u32 *)((u8 *)p + 0x40);
+        f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+        *(u32 *)((u8 *)p + 0x40) = f;
+        return;
+    }
+    case 3: {
+        void *p = (void *)data_ov007_02221a50[11];
+        u8 b8 = M2C_FIELD(p, LowBits8 *, 0x59).value;
+        u16 b = (u16)(((unsigned int)(b8 + 1) << 16) >> 16);
+        u32 f = *(u32 *)((u8 *)p + 0x40);
+        f = (f & ~0x3fc0000U) | (((u32)b << 24) >> 6);
+        *(u32 *)((u8 *)p + 0x40) = f;
+        return;
+    }
+    default:
+        return;
     }
 
-func_ov007_02212dcc_done:
     return;
 }
 
