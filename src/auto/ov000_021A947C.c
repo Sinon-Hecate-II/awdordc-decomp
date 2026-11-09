@@ -305,7 +305,39 @@ return result;
 }
 
 s32 func_ov000_021a9f30(void) {
-    return 0;
+ extern void **gCurrentMap; extern u16 data_02168f14; extern u16 data_ov000_021aeef4[]; extern s32 (**data_ov000_021df57c)(s32,s32);
+ s32 func_020d2c18(u16); s32 func_020a3150(u16); void *func_020a32f4(u16); s32 func_020a7cfc(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 func_020d2d50(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
+ s32 kind; u8 *best; s32 i; u8 *p; s32 offset;
+ func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+ best=0;
+ if(((u32)(data_02168f14<<18)>>31)==0)return 0;
+ if(((u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*140,s32 *,0x6810)<<24)>>24)==0)return 0;
+ if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
+ if(func_020a32f4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
+ kind=func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+ i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
+ if(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){
+ offset=i*14; do {
+ p=(u8 *)*gCurrentMap+0x59a4+offset;
+ if(((u32)(p[0]<<26)>>26)==0)goto next;
+ if(M2C_FIELD(p,u16 *,4)&9)continue;
+ if(((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)!=100)continue;
+ if(func_020a7cfc(p))continue;
+ if(((u32)(p[11]<<28)>>28)==5 || ((u32)(p[11]<<28)>>28)==6 || ((u32)(p[11]<<28)>>28)==8)continue;
+ if(!func_020cf908(p[1],p[2],M2C_FIELD(*gCurrentMap,u16 *,0x52a4),(u32)(p[0]<<26)>>26))continue;
+ if(!func_020a2788(kind,(u32)(p[0]<<26)>>26))continue;
+ {u8 *map=*gCurrentMap; s32 player=M2C_FIELD(map,u16 *,0x52a4);
+ if(func_020d2d50(player,(u32)(p[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
+ if(*data_ov000_021df57c==0){if(func_ov000_021aa2c4(kind,(u32)(p[0]<<26)>>26)){goto select;}goto next;}
+ else {if((*data_ov000_021df57c)(kind,(u32)(p[0]<<26)>>26))goto select;goto next;}
+ select:
+ if(best && func_020a7bbc((u32)(best[0]<<26)>>26)>=func_020a7bbc((u32)(p[0]<<26)>>26))continue;
+ best=p;
+ next:;
+ }while((++i,offset+=14,i)<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
+ }
+ if(best){if(!best)return 0;return ((s32)best-(s32)((u8 *)*gCurrentMap+0x59a4))/14;}
+ return 0;
 }
 
 s32 func_ov000_021aa214(void) {

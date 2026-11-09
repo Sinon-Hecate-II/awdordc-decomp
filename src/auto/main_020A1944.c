@@ -79,131 +79,44 @@ void func_020a1a0c(void) {
         }
     }
 }
-#pragma peephole reset
-void func_020a1adc(void) {
-    extern s32 *gCurrentMap;
-    extern M2C_UNK data_0215c340;
-    extern M2C_UNK data_0215c334;
-
-    s32 j, r2;
-    u8 *r4;
-    u8 *map;
-    s32 map0;
-    s32 i;
-    s32 height, width;
-    s32 y, x;
-    s32 rowoff;
-    u8 cell;
-    u8 *rec;
-    u8 *attr;
-    u8 terrain;
-    s32 caseIdx;
-    u8 t, t2;
-
-    map = (u8 *)*gCurrentMap;
-    r4 = (u8 *)&data_0215c340;
-    j = 1;
-    r2 = 0x8c;
-    while (j < 5) {
-        map0 = *(s32 *)map;
-        t = (u8)(*(s32 *)((u8 *)map0 + r2 + 0x6000 + 0x810));
-        t2 = *(u8 *)((u8 *)map0 + r2 + 0x6000 + 0x7c1);
-        *(u16 *)(r4 + 0xc) = t;
-        r4[0x17] = t2;
-        for (i = 0; i < 8; i++) {
-            r4[0xe + i] = 0;
-        }
-        r4[0x16] = 0;
-        r2 += 0x8c;
-        r4 += 0xc;
-        j++;
-    }
-
-    height = *(s16 *)(map + 0x5146);
-    if (height <= 0) {
-        return;
-    }
-    width = *(s16 *)(map + 0x5144);
-    if (width <= 0) {
-        return;
-    }
-    for (y = 0; y < height; y++) {
-        width = *(s16 *)(map + 0x5144);
-        for (x = 0; x < width; x++) {
-            rowoff = *(u16 *)(map + y * 2 + 0x3758);
-            cell = map[rowoff + x + 0x508];
-            if (cell == 0) {
-                goto next_cell;
-            }
-            rec = (u8 *)&data_0215c334 + ((cell >> 6) * 12);
-            rec[0x22]++;
-            attr = map + 0x59a4 + (cell * 14);
-            if (attr[0x0c] != 0) {
-                rec[0x22]++;
-            }
-            if (attr[0x0d] != 0) {
-                rec[0x22]++;
-            }
-            terrain = map[rowoff + x + 0x1420];
-            caseIdx = (terrain & 0x1f) - 0x10;
-            if ((u32)caseIdx <= 7) {
-                switch (caseIdx) {
-                case 0: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x0e]++;
-                    break;
-                }
-                case 1: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x0f]++;
-                    break;
-                }
-                case 2: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x10]++;
-                    break;
-                }
-                case 3: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x11]++;
-                    break;
-                }
-                case 4: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x12]++;
-                    break;
-                }
-                case 5: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x13]++;
-                    break;
-                }
-                case 6: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x14]++;
-                    break;
-                }
-                case 7: {
-                    u8 idx = terrain >> 5;
-                    u8 *rec2 = (u8 *)&data_0215c334 + idx * 12;
-                    rec2[0x15]++;
-                    break;
-                }
-                }
-            }
-        next_cell:
-            ;
-        }
-    }
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+void func_020a1adc(void){
+extern s32 *gCurrentMap;extern u8 data_0215c340[],data_0215c334[];
+s32 i,j,offset;register s32 y=0;u8 *out;u8 *base;s32 x;void **map2;u8 *rec,*attr; s32 cell,terrain;void **map;
+out=data_0215c340;map=(void **)gCurrentMap;
+for(j=1,offset=0x8c;j<5;j++,offset+=0x8c,out+=12){
+M2C_FIELD(out,u16 *,12)=(u32)(M2C_FIELD((u8 *)*map+offset,s32 *,0x6810)<<24)>>24;
+out[23]=M2C_FIELD((u8 *)*map+offset,u8 *,0x67c1);
+for(i=0;i<8;i++)out[14+i]=0;
+out[22]=0;
 }
-
+{map2=(void **)gCurrentMap;
+for(y=0;y<M2C_FIELD(*map2,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD((base=*map2),u16 *,0x5144);x++){
+cell=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)+0x508];
+if(cell){
+rec=data_0215c334+(cell>>6)*12;
+rec[34]++;
+attr=(u8 *)*map2+0x59a4+cell*14;
+if(attr[12])rec[34]++;
+if(attr[13])rec[34]++;
+}
+base=*map2;
+terrain=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)+0x1420];
+switch(terrain&31){case 16:{u8 *p=data_0215c334+(terrain>>5)*12;p[14]++;break;}
+case 17:{u8 *p=data_0215c334+(terrain>>5)*12;p[15]++;break;}
+case 18:{u8 *p=data_0215c334+(terrain>>5)*12;p[16]++;break;}
+case 19:{u8 *p=data_0215c334+(terrain>>5)*12;p[17]++;break;}
+case 20:{u8 *p=data_0215c334+(terrain>>5)*12;p[20]++;break;}
+case 21:{u8 *p=data_0215c334+(terrain>>5)*12;p[21]++;break;}
+case 22:{u8 *p=data_0215c334+(terrain>>5)*12;p[18]++;break;}
+case 23:{u8 *p=data_0215c334+(terrain>>5)*12;p[19]++;break;}}
+}
+}}
+}
+#pragma pop
 s32 func_020a1d74(s32 arg0) {
     extern M2C_UNK data_0215c324;
     s32 var_r0;

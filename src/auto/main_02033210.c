@@ -10,10 +10,10 @@ s32 func_02033210(void){
 extern M2C_UNK data_0213d114;extern s32 data_0213e9f4;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
 void *func_02034ef8(void*,void*);s32 func_02036860(void*);s32 func_0206ad38(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 func_02068c34(s32);
-void *end; s32 status; void *p;void *response;
-p=M2C_FIELD(&data_0213d114,void **,8);end=0;
-end=func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb398);if(end)func_02036860(end);
-p=M2C_FIELD(&data_0213d114,void **,8);end=0;data_0213e9f4=0;response=M2C_FIELD(p,void **,0x1314);response=func_02034ef8(response,data_020fb3a0);status=func_0206ad38(response);
+void *end; s32 status; void *response;void *p;
+p=M2C_FIELD(&data_0213d114,void **,8);status=0;end=(void*)status;
+response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)func_02036860(end);
+p=M2C_FIELD(&data_0213d114,void **,8);end=0;data_0213e9f4=0;status=func_0206ad38(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
 if(data_0213e9f4==34){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=0x4e85;return 12;}
 if(status!=200){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=status+23000;return 18;}
 if(func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&data_0213d114,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=0x4e85;return 14;}
@@ -77,6 +77,8 @@ void func_020336c0(s32 arg0) {
     func_020336e8(arg0, sp0);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 s32 func_020336e8(s32 arg0, void *arg1) {
     M2C_UNK func_0200567c();
     void func_02007f8c(void *, s32, s32);
@@ -100,17 +102,17 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     u8 sp_16[6];
     u8 sp_38[0x54];
     u16 sp_14;
-    u32 sp_vals[6];
-    s32 i;
+    u32 sp_vals[7];
+    s32 i;u8 *src,*dst;
 
     func_02007f8c((void *)arg0, 0, 0x94);
     {
         u32 *p = (u32 *)arg1;
         u32 low0 = p[0], high0 = p[1];
-        u32 low1 = p[2], high1 = p[3];
-        if (low0 == 0 && high0 == 0) {
-            func_0200567c((void *)arg0, 0xe, data_020fb428, low1, high1);
+        if (high0 != 0 || low0 != 0) {
+            func_0200567c((void *)arg0, 0xe, data_020fb428, low0, high0);
         } else {
+            u64 value=*((u64*)arg1+1);low0=value;high0=value>>32;
             func_0200567c((void *)arg0, 0xe, data_020fb428, low0, high0);
         }
     }
@@ -128,9 +130,8 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     func_02008048((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
     *((u8 *)arg0 + 0x1d) = 0x30;
     func_02007724(sp_16);
-    for (i = 0; i < 6; i++) {
-        func_0200563c((void *)((u8 *)arg0 + 0x1f + i * 2), data_020fb438, sp_16[i]);
-    }
+    dst=(u8*)arg0+0x1f;src=sp_16;
+    for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,data_020fb438,*src);
     func_02007740(sp_38);
     if (sp_38[0] >= 8) {
         sp_38[0] = 1;
@@ -145,14 +146,13 @@ s32 func_020336e8(s32 arg0, void *arg1) {
         sp_vals[3], sp_vals[4], sp_vals[5], sp_vals[0], sp_vals[1], sp_vals[2]);
     var_r6 = func_0200751c();
     var_r7 = func_02029784();
+    func_020067a8(var_r7, 6);
     if (var_r7 == NULL) {
         func_02007530(var_r6);
         return 0;
     }
-    func_020067a8(var_r7, 6);
-    for (i = 0; i < 6; i++) {
-        func_0200563c((void *)((u8 *)arg0 + 0x41 + i * 2), data_020fb438, ((u8 *)var_r7)[i]);
-    }
+    dst=(u8*)arg0+0x41;
+    for(i=0;i<6;i++,dst+=2) func_0200563c(dst,data_020fb438,((u8*)var_r7)[i]);
     {
         u8 b = func_0202f248();
         func_0200567c((void *)((u8 *)arg0 + 0x6f), 0xe, data_020fb468, b);
@@ -168,7 +168,7 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     func_02007530(var_r6);
     return 1;
 }
-
+#pragma pop
 s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     s32 func_0200567c(void *, s32, void *, s32, s32);
     s32 func_020345f4(void *, void *, void *);

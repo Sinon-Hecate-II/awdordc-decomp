@@ -2,7 +2,8 @@
 #include "common.h"
 #pragma thumb on
 
-#pragma opt_strength_reduction off
+#pragma push
+#pragma opt_expr_simplify off
 s32 func_ov001_0216fb7c(void *arg0, void *arg1, s32 arg2) {
 extern s32 data_ov001_0218ca50; extern M2C_UNK data_ov001_0218e678;
 u32 *rk=arg0; u8 *key=arg1; s32 i=0; u32 t; s32 *rc;
@@ -11,7 +12,7 @@ rk[1]=(key[4]<<24)^(key[5]<<16)^(key[6]<<8)^key[7];
 rk[2]=(key[8]<<24)^(key[9]<<16)^(key[10]<<8)^key[11];
 rk[3]=(key[12]<<24)^(key[13]<<16)^(key[14]<<8)^key[15];
 if(arg2==128){rc=&data_ov001_0218ca50;for(;;){t=rk[3];
-rk[4]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^*rc++;
+rk[4]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
 rk[5]=rk[4]^rk[1];
 rk[6]=rk[5]^rk[2];
 rk[7]=rk[6]^rk[3];
@@ -20,7 +21,7 @@ rk+=4;}}
 rk[4]=(key[16]<<24)^(key[17]<<16)^(key[18]<<8)^key[19];
 rk[5]=(key[20]<<24)^(key[21]<<16)^(key[22]<<8)^key[23];
 if(arg2==192){rc=&data_ov001_0218ca50;for(;;){t=rk[5];
-rk[6]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^*rc++;
+rk[6]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
 rk[7]=rk[6]^rk[1];
 rk[8]=rk[7]^rk[2];
 rk[9]=rk[8]^rk[3];
@@ -30,7 +31,7 @@ rk+=6;}}
 rk[6]=(key[24]<<24)^(key[25]<<16)^(key[26]<<8)^key[27];
 rk[7]=(key[28]<<24)^(key[29]<<16)^(key[30]<<8)^key[31];
 if(arg2==256){rc=&data_ov001_0218ca50;for(;;){t=rk[7];
-rk[8]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^*rc++;
+rk[8]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
 rk[9]=rk[8]^rk[1];
 rk[10]=rk[9]^rk[2];
 rk[11]=rk[10]^rk[3];
@@ -39,6 +40,7 @@ t=rk[11];rk[12]=rk[4]^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)&0xff00000
 rk+=8;}}
 return 0;
 }
+#pragma pop
 void func_ov001_0216ffc4(void *arg0, s32 arg1, void *arg2, void *arg3) {
     extern M2C_UNK data_ov001_0218d678;
     extern M2C_UNK data_ov001_0218da78;

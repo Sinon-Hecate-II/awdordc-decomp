@@ -29,7 +29,7 @@ for(y=y0;y<=y1;y++){for(x=x0;x<=x1;x++){
 dist=0;v=node[0]-x;if(v<=0)v=x-node[0];dist+=v;v=cy-y;if(v>0)dist+=v;else dist+=y-cy;
 if(dist>=1 && dist<=1){
 v=M2C_FIELD((u8*)*map+M2C_FIELD((u8*)*map+y*2,u16*,0x3758)+x,s8*,0x2338);
-if(v>=0){if(!(v&64) || (v&63)<=node[3]){
+if(v>=0){if(!(v&64) || (v&63)>node[3]){
 nx=x;ny=(s16)y;count++;}}
 }
 }}

@@ -4,6 +4,8 @@
 u8 func_0207b7c4(void);
 void func_0207b754(M2C_UNK, M2C_UNK);
 
+#pragma push
+#pragma optimization_level 2
 s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
     s32 func_0207d0b8(void);
     s32 func_0207d0d4(void);
@@ -55,7 +57,7 @@ s32 func_0207b2f0(s32 *px, s32 *py, s32 third) {
 done_one:
     return 1;
 }
-
+#pragma pop
 s32 func_0207b5ac(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207b2f0(s32 *, s32 *, s32);
     void *func_01ffa3dc(M2C_UNK *, s32);

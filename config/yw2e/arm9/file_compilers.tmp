@@ -41,6 +41,7 @@
   "src/auto/main_0206EEB4.c": "2.0/sp2p4",
   "src/auto/main_02071A64.c": "2.0/sp2p2",
   "src/auto/main_02072A54.c": "2.0/sp1p2",
+  "src/auto/main_0207B2F0.c": "2.0/sp2p4",
   "src/auto/main_0207D130.c": "2.0/sp2p2",
   "src/auto/main_02081400.c": "2.0/sp2p4",
   "src/auto/main_02084304.c": "2.0/sp2p4",
@@ -98,7 +99,6 @@
   "src/auto/ov002_021E3210.c": "2.0/sp2p3",
   "src/auto/ov002_021E7C84.c": "2.0/sp1p2",
   "src/auto/ov003_021E2628.c": "2.0/sp2p3",
-  "src/auto/ov003_021E771C.c": "dsi/1.3p1",
   "src/auto/ov003_021E8654.c": "2.0/sp1p6",
   "src/auto/ov003_021EE8B8.c": "2.0/sp2",
   "src/auto/ov003_021FBCF8.c": "2.0/sp2p4",
@@ -119,8 +119,9 @@
   "src/auto/ov007_0221B56C.c": "2.0/base",
   "src/auto/ov009_02221320.c": "2.0/sp1p6",
   "src/auto/ov009_022222D0.c": "2.0/sp1p6",
-  "src/auto/ov010_02221320.c": "1.2/sp4",
-  "src/auto/ov010_022221B8.c": "1.2/sp4",
-  "src/auto/ov010_02224F94.c": "dsi/1.1",
+  "src/auto/ov009_02224284.c": "2.0/sp2p2",
+  "src/auto/ov010_02221320.c": "2.0/sp1p6",
+  "src/auto/ov010_022221B8.c": "2.0/base",
+  "src/auto/ov010_02224F94.c": "2.0/sp2p2",
   "src/auto/ov011_02226658.c": "dsi/1.1"
 }

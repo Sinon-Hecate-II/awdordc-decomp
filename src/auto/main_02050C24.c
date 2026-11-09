@@ -287,11 +287,13 @@ void func_020511dc(void *a, void *b) {
     (void)buf2; (void)pad;
 }
 
+#pragma push
+#pragma opt_propagation off
 s32 func_02051580(void **arg0, void *arg1) {
     M2C_UNK func_020499e0(s32);
     s8 func_020499fc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02049ab8(s8 *, M2C_UNK *, u32, M2C_UNK);
     M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
+    M2C_UNK func_02049ab8(s8 *, M2C_UNK *, u32, M2C_UNK);
     M2C_UNK func_0204fed0(void **, void *, s32);
     u32 func_02068c34(void *);
 
@@ -306,32 +308,32 @@ s32 func_02051580(void **arg0, void *arg1) {
     extern M2C_UNK data_020fe540;
     extern M2C_UNK data_020fe548;
     extern M2C_UNK data_020fe558;
-    extern M2C_UNK data_0213dc20;
+    extern M2C_UNK gServiceNameBuffer;
 
-    s8 sp0[0x2D];
     s8 sp2D[0x1F];
-    s8 sp4C[0x5A];
+    s8 sp0[0x2D];
     s8 spA6[0x42];
+    s8 sp4C[0x5A];
 
     void *temp_r5;
-    u32 temp_r7;
+    register void *temp_r1_2;
+    u32 idx;
     u32 temp_r6;
     s8 *var_r7;
+    u32 temp_r7;
     s8 *var_r8;
-    u32 idx;
     u32 var_r8_2;
     s8 *addr;
-    void *temp_r1_2;
     s8 temp_val;
 
     temp_r5 = *arg0;
     temp_r7 = func_02068c34(temp_r5 + 0x177);
     func_020499e0(0x79707367);
     idx = 0;
-    if (temp_r7 > 0U) {
+    if (temp_r7 > idx) {
         var_r8 = sp2D;
         do {
-            temp_val = (s8)(((s8)func_020499fc(0, 0xFF) << 24) >> 24);
+            temp_val = (s8)((s32 (*)(s32,s32))func_020499fc)(0,0xFF);
             addr = (s8 *)(temp_r5 + idx + 0x100);
             idx += 1;
             *var_r8 = (s8)((s8)M2C_FIELD(addr, s8 *, 0x77) ^ temp_val);
@@ -350,7 +352,7 @@ s32 func_02051580(void **arg0, void *arg1) {
     func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe4f4);
     func_0204fed0(arg0, temp_r5 + 0x1F4, M2C_FIELD(temp_r5, s32 *, 0x46C));
     func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe500);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_0213dc20);
+    func_0204fea0(arg0, temp_r5 + 0x1F4, &gServiceNameBuffer);
     func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe50c);
     func_0204fed0(arg0, temp_r5 + 0x1F4, M2C_FIELD(temp_r5, s32 *, 0x470));
     func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe4a0);
@@ -359,10 +361,10 @@ s32 func_02051580(void **arg0, void *arg1) {
         temp_r6 = func_02068c34(arg1 + 0x2C2);
         func_020499e0(0x79707367);
         var_r8_2 = 0;
-        if (temp_r6 > 0U) {
+        if (temp_r6 > var_r8_2) {
             var_r7 = spA6;
             do {
-                temp_val = (s8)(((s8)func_020499fc(0, 0xFF) << 24) >> 24);
+                temp_val = (s8)((s32 (*)(s32,s32))func_020499fc)(0,0xFF);
                 temp_r1_2 = arg1 + var_r8_2 + 0x200;
                 var_r8_2 += 1;
                 *var_r7 = (s8)((s8)M2C_FIELD(temp_r1_2, s8 *, 0xC2) ^ temp_val);
@@ -378,4 +380,4 @@ s32 func_02051580(void **arg0, void *arg1) {
     func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe524);
     return 0;
 }
-
+#pragma pop

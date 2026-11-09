@@ -35,7 +35,7 @@ void func_ov005_0221a0c0(void *x) {
 extern s32 gCur3DSpriteEngine,data_027e00c4;
 extern M2C_UNK data_ov005_02221008,data_ov005_02220fec,data_02101f78;
 void func_01ffaacc(u16,u16,u16,void *,s32);void func_01ffad0c(u16,u16,u16,void *,s32);
-s32 saved;u16 px,py;u32 ycoord; s32 saved2;u16 px2,py2;
+s32 saved;u16 px,py;u32 px2; s32 saved2;u32 ycoord;u16 py2;
 if(M2C_FIELD(x,u8 *,0x44)){
 py=M2C_FIELD(x,u16 *,0x4a);px=M2C_FIELD(x,u16 *,0x48);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;

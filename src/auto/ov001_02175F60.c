@@ -87,6 +87,7 @@ void *func_ov001_02176114(void) {
     return p;
 }
 
+#pragma push
 #pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
 void func_ov001_02188f40(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
@@ -100,8 +101,8 @@ func_ov001_021892c4(&sp1,&sp0);
 {s32 v=(s32)(u32)sp1;
 if(v>26)goto high26;
 if(v>=26)goto block26;
-if(v>20)goto high20;
-switch(v+0){
+if(v>=21)goto high20;
+switch((s32)v){
 case 0:goto done;
 case 1:goto done;
 case 2:goto done;
@@ -155,7 +156,7 @@ if(sp0==0)return;
 fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
 if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
 tail:func_ov001_0218c92c(0,(M2C_UNK)arg0);func_ov001_0218b71c((M2C_UNK*)&data_ov001_02193d50);done:return;}
-#pragma opt_propagation reset
+#pragma pop
 void func_ov001_021763cc(void) {
     s32 func_ov001_0218b6f8(s32, s32);
     s32 func_ov001_021711e0(s32, s32, void *, void *, void *, s32);

@@ -178,6 +178,9 @@ void *func_ov000_021700fc(void) {
     return func_01ffa770(&data_ov000_021b8a78);
 }
 
+#pragma push
+#pragma opt_propagation off
+#pragma opt_scheduling off
 void func_ov000_02170110(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
@@ -219,14 +222,17 @@ void func_ov000_02170110(void *arg0) {
     void *q;
     void *r;
     s32 s;
+    s32 index;
+    s32 zero;
     M2C_UNK (*t)();
 
     p = gCurrentMap;
     q = M2C_FIELD(p, void **, 0);
     r = gCur3DSpriteEngine;
+    index = M2C_FIELD(q, u16 *, 0x52A4);
     gCur3DSpriteEngine = data_027e00c8;
+    s = (index * 0x8C) + (s32) (q + 0x67A4);
     t = M2C_FIELD(M2C_FIELD(p, void **, 4), M2C_UNK (**)(), 0x54);
-    s = (M2C_FIELD(q, u16 *, 0x52A4) * 0x8C) + (s32) (q + 0x67A4);
     if (t != NULL) {
         t();
     }
@@ -242,7 +248,8 @@ void func_ov000_02170110(void *arg0) {
     func_ov000_0216ecc8(M2C_FIELD(arg0, s16 *, 0x34), M2C_FIELD(arg0, s16 *, 0x36));
     func_01ff9ce8(1);
     func_01ff9ce8(2);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = 0;
+    zero=0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = zero;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 1;
     func_0200bc5c(&data_ov000_021b8b2c);
     func_020e3218(&data_ov000_021b8b3c);
@@ -252,7 +259,7 @@ void func_ov000_02170110(void *arg0) {
     func_0208116c(&data_ov000_021b8b58, 0xC0, 0x20);
     func_ov000_0216f9b4(arg0);
     func_020e3058(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
-    func_020e3058(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, 0);
+    func_020e3058(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
     func_020c0fac(arg0);
     func_02080c50(&data_ov000_021b8b64, M2C_FIELD(data_027e00c8, s32 *, 0x1C) + 0x7780);
     func_0208116c(&data_ov000_021b8b78, 0x380, 0x20);
@@ -268,7 +275,7 @@ void func_ov000_02170110(void *arg0) {
     func_ov000_02170020();
     gCur3DSpriteEngine = r;
 }
-
+#pragma pop
 void func_ov000_021703e8(void *arg0) {
     void func_01ffaacc(s32, s32, u16, void *, s32);
     M2C_UNK func_020aacf0(void *);

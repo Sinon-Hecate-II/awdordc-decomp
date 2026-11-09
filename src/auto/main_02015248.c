@@ -1,16 +1,6 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
-static inline void InitSoundSlot(s32 temp_r6,s32 arg1,s32 first,s32 second) {
-extern u8 data_02131184;extern void *data_02136c4c;s32 sequence;
-sequence=data_02131184;
-        M2C_FIELD((data_02136c4c + temp_r6), u8 *, 0x1D1F) = sequence;
-        M2C_FIELD((data_02136c4c + temp_r6), s16 *, 0x1D4E) = 1;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D44) = arg1;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D54) = first;
-        M2C_FIELD((data_02136c4c + temp_r6), s32 *, 0x1D58) = second;
-        data_02131184 = sequence+1;
 
-}
 
 /* Select units by state into priority groups, then dispatch the matching network action. */
 

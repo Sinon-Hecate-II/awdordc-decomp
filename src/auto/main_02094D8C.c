@@ -326,6 +326,40 @@ end:
     M2C_FIELD(arg0, s32 *, 0x64) = 0;
 }
 
+#pragma push
+void func_0209583c(void *arg0){
+u8 func_02091dc4(s32);s32 func_02091ddc(s32);
+M2C_UNK func_020943f4(s32);
+extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
+s32 old,newv;s32 saved,engine;s32 i;
+old=func_02091dc4(M2C_FIELD(arg0,s32 *,0x5c));
+newv=func_02091ddc(M2C_FIELD(arg0,s32 *,0x5c));
+saved=gCur3DSpriteEngine;old=(u8)old;newv=(u8)newv;
+for(i=0;i<2;i++){
+if(i==0)engine=data_027e00c8;else engine=data_027e00c4;
+gCur3DSpriteEngine=engine;
+if(M2C_FIELD(arg0,s32 *,0x5c)==0 && engine!=data_027e00c8)continue;
+if(M2C_FIELD(arg0,s32 *,0x5c)==1 && engine!=data_027e00c4)continue;
+if(M2C_FIELD(arg0,s32 *,0x5c)==3 && engine!=saved)continue;
+switch((u8)old){case 0:{u16 *volatile p=*(u16 **)engine;*p=*p&~16;break;}
+case 1:{u16 *volatile p=*(u16 **)engine;*p=*p&~32;break;}
+case 2:{u16 *volatile p=*(u16 **)engine;*p=*p&~64;break;}
+case 3:{u16 *volatile p=*(u16 **)engine;*p=*p&~128;break;}
+case 4:{u16 *volatile p=*(u16 **)engine;*p=*p&~256;break;}}
+switch((u8)newv){case 0:{u16 *volatile p=*(u16 **)gCur3DSpriteEngine;*p=*p|16;break;}
+case 1:{u16 *volatile p=*(u16 **)gCur3DSpriteEngine;*p=*p|32;break;}
+case 2:{u16 *volatile p=*(u16 **)gCur3DSpriteEngine;*p=*p|64;break;}
+case 3:{u16 *volatile p=*(u16 **)gCur3DSpriteEngine;*p=*p|128;break;}
+case 4:{u16 *volatile p=*(u16 **)gCur3DSpriteEngine;*p=*p|256;break;}}
+{u16 *volatile p=(u16 *)((u8 *)*(void **)gCur3DSpriteEngine+0x12);*p=*p&~0xc0;}
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
+}
+gCur3DSpriteEngine=saved;
+func_020943f4(M2C_FIELD(arg0,s32 *,0x5c));
+}
+#pragma pop
 void func_02095ad0(u8 *p){
 u8 func_02091dc4(s32);
 s32 func_02091ddc(s32);

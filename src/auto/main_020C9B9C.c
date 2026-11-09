@@ -223,85 +223,17 @@ s32 func_020ca190(void) {
 }
 
 s32 func_020ca1ec(void) {
-    extern void **gCurrentMap;
-    s32 i, j;
-    u8 buf[5];
-    u8 *p;
-    u8 *base;
-    s32 mism;
-
-    p = buf + 1;
-    for (i = 1; i < 5; i++, p++) {
-        *p = 0;
-        if (func_020d1938(i) && !func_020d3248(i) && func_020d336c(i)
-            && func_020d332c(i) && func_020d32d4(i)) {
-            *p = 1;
-        }
-    }
-
-    base = *(u8 **)*gCurrentMap;
-    if (base[0x5155] & 0x04) {
-        i = 1;
-        while (i < 5) {
-            u8 *curPtr = (buf + 1) + (i - 1);
-            if (*curPtr) {
-                u8 *innerPtr = buf + 1;
-                j = 1;
-                while (j < 5) {
-                    if (i != j && func_020d1938(j) && func_020d273c(i, j) && innerPtr[0] == 0) {
-                        *curPtr = 0;
-                        func_020d31f0(i, 1);
-                    }
-                    j++;
-                    innerPtr++;
-                }
-            }
-            i++;
-        }
-    }
-
-    if (base[0x5155] & 0x10) {
-        i = 1;
-        while (i < 5) {
-            u8 *curPtr = (buf + 1) + (i - 1);
-            if (*curPtr) {
-                u8 *innerPtr = buf + 1;
-                j = 1;
-                while (j < 5) {
-                    if (i != j && func_020d19b4(j) && func_020d273c(i, j) && innerPtr[0] == 0) {
-                        *curPtr = 0;
-                        func_020d31f0(i, 1);
-                    }
-                    j++;
-                    innerPtr++;
-                }
-            }
-            i++;
-        }
-    }
-
-    for (i = 1; i < 5; i++) {
-        u8 *bufi = (buf + 1) + (i - 1);
-        if (bufi[0] == 0) {
-            continue;
-        }
-        mism = 0;
-        for (j = 1; j < 5; j++) {
-            if (i == j) {
-                continue;
-            }
-            if (((buf + 1) + (j - 1))[0] == 0) {
-                continue;
-            }
-            if (base[i * 0x8C + 0x67CA] != base[j * 0x8C + 0x67CA]) {
-                mism++;
-            }
-        }
-        if (mism == 0) {
-            return 1;
-        }
-    }
-    return 0;
+extern void **gCurrentMap;
+s32 i,j,mism; u8 buf[5]; u8 *cur; s32 offset; void **maps; s32 inner;
+for(i=1;i<5;i++){buf[i]=0;if(func_020d1938(i)&&!func_020d3248(i)&&func_020d336c(i)&&func_020d332c(i)&&func_020d32d4(i))buf[i]=1;}
+if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&4){
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&func_020d1938(j)&&func_020d273c(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+}
+if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&16){
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&func_020d19b4(j)&&func_020d273c(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+}
+maps=gCurrentMap; cur=buf+1; i=1; offset=140; do {if(*cur){mism=0;for(j=1,inner=140;j<5;j++,inner+=140){if(i==j)continue; if(!buf[j])continue; if(M2C_FIELD((u8 *)*maps+offset,u8 *,0x67ca)!=M2C_FIELD((u8 *)*maps+inner,u8 *,0x67ca))mism++;}if(mism==0)return 1;}cur++;offset+=140;}while(++i<5);
+return 0;
 }
 
 void func_020ca484(void) {
@@ -459,18 +391,22 @@ void func_020ca77c(M2C_UNK arg0) {
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
 void func_0209f8c0(void);void func_01ffb3d0(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void func_0208fe30(s32);
-s32 y1,x0,y0,x1,dist,v,x,y;void *p;
+s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
 func_0209f8c0();func_01ffb3d0(-1);
-x0=RangeLeft()<0?0:RangeLeft();
-y0=RangeTop()<0?0:RangeTop();
+p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+if(M2C_FIELD(p,s16 *,0x52dc)-range<0)x0=0;
+else {p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));x0=M2C_FIELD(p,s16 *,0x52dc)-range;}
+centre=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+if(M2C_FIELD(centre,s16 *,0x52de)-range<0)y=0;
+else {p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));y=M2C_FIELD(p,s16 *,0x52de)-range;}
 x1=RangeRightLimit();
 y1=RangeBottomLimit();
-for(y=y0;y<=y1;y++){for(x=x0;x<=x1;x++){
-dist=0;p=*gCurrentMap;
-v=M2C_FIELD(p,s16*,0x52dc)-x;if(v<=0)v=x-M2C_FIELD(p,s16*,0x52dc);dist+=v;
-v=M2C_FIELD(p,s16*,0x52de)-y;if(v<=0)v=y-M2C_FIELD(p,s16*,0x52de);dist+=v;
-if(dist>=0 && dist<=func_020a7714(M2C_FIELD(p,void **,0x52d0))){
+for(;y<=y1;y++){for(x=x0;x<=x1;x++){
+p=*gCurrentMap;
+v=M2C_FIELD(p,s16*,0x52dc)-x;if(v<=0)v=x-M2C_FIELD(p,s16*,0x52dc);dist=0;dist+=v;
+v=M2C_FIELD(p,s16*,0x52de)-y;if(v<=0)v=y-M2C_FIELD(p,s16*,0x52de);dist=dist+v;
+if(dist<0)continue; if(dist<=func_020a7714(M2C_FIELD(p,void **,0x52d0))){
 func_0209f8f8(x,y,0,0);
 M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }

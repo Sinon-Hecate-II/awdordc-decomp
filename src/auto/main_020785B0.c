@@ -1,19 +1,7 @@
 /* 10 functions from 0x020785B0 to 0x020793F0 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 x,y; u16 dx:3,dy:3,kind:4,unused:4,angle:2; u8 value; } MapRenderEntry;
-static inline u32 PackMapVertex(u16 x,u16 y) { return x | (y << 16); }
-static inline void DrawMapQuad(s16 ax,s16 by,s16 cx,s16 dy2,s32 color,u8 alpha) {
-*(volatile u32*)0x40004a8=0x2d00000;
-*(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);
 
-*(volatile u32*)0x4000500=1;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;
-
-}
 typedef struct { s32 x,y,z; } Vec3;
 typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } RenderUnit;
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;

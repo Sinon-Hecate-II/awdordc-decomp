@@ -346,7 +346,7 @@ M2C_UNK r8 = 0;
 M2C_UNK flag = 0;
 u64 t0;
 u64 diff;
-M2C_UNK conv;
+u64 conv;
 void *p;
 void *base;
 void *h;
@@ -373,6 +373,7 @@ for (;;) {
     if (*(M2C_UNK *)((u8 *)h + 0x1000 + 0x20) != 8) {
         p2 = M2C_FIELD(&data_0213d114, void **, 8);
         *(M2C_UNK *)((u8 *)p2 + 0x1008) = 0x4e84;
+        p2 = M2C_FIELD(&data_0213d114, void **, 8);
         bb = *(void **)((u8 *)p2 + 0x1000 + 0x314);
         bb = (u8 *)bb + 0x1000;
         val = *(M2C_UNK *)((u8 *)bb + 0x20);
@@ -390,26 +391,15 @@ for (;;) {
         flag = 1;
     } else {
         ret = func_02033038();
-        if (ret == 0x10) {
-            if (r8 > 2) {
-                func_0203367c(0x10);
-                return;
-            }
-            r8 = r8 + 1;
-            flag = 0;
-        } else if (ret == 0x11) {
-            func_0203367c(0x11);
-            return;
-        } else if (ret == 0x15) {
-            func_0203367c(0x15);
-            return;
-        } else {
-            if (r8 >= 2) {
-                func_0203367c(ret);
-                return;
-            }
-            r8 = r8 + 1;
-            flag = 1;
+        switch(ret) {
+        case 0x15: func_0203367c(0x15); return;
+        case 0x10:
+            if(r8>2){func_0203367c(0x10);return;}
+            r8++;flag=0;break;
+        case 0x11:func_0203367c(ret);return;
+        default:
+            if(r8>=2){func_0203367c(ret);return;}
+            r8++;flag=1;break;
         }
     }
 
@@ -421,8 +411,10 @@ for (;;) {
         for (;;) {
             p = M2C_FIELD(&data_0213d114, void **, 8);
             func_02006564((u8 *)p + 0x13d8);
+            p = M2C_FIELD(&data_0213d114, void **, 8);
             if (*(M2C_UNK *)((u8 *)p + 0x13f0) == 1) {
                 *(M2C_UNK *)((u8 *)p + 0x1008) = 0x4e84;
+                p = M2C_FIELD(&data_0213d114, void **, 8);
                 func_020065e8((u8 *)p + 0x13d8);
                 func_0203367c(0x14);
                 return;
@@ -446,8 +438,10 @@ for (;;) {
     res = func_02032c74(flag);
     p2 = M2C_FIELD(&data_0213d114, void **, 8);
     *(M2C_UNK *)((u8 *)p2 + 0x1000 + 4) = res;
+    p2 = M2C_FIELD(&data_0213d114, void **, 8);
     if (*(M2C_UNK *)((u8 *)p2 + 0x1000 + 4) != 0) {
         *(M2C_UNK *)((u8 *)p2 + 0x1008) = 0x4e84;
+        p2 = M2C_FIELD(&data_0213d114, void **, 8);
         func_020065e8((u8 *)p2 + 0x13d8);
         return;
     }

@@ -261,115 +261,37 @@ if(best<score){result=unit;best=score;}
 return result;
 }
 
-s32 func_ov000_0217f494(s32 x, s32 y) {
-    extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
-    s32 func_020a76d4(u8 *);
-    s32 func_020d27a4(s32, s32);
-    s32 func_ov000_021a93ec(s32, s32);
-    s32 func_ov000_02176e28(u32, void *);
-
-    void *base;
-    u8 *sel;
-    s32 minx;
-    s32 miny;
-    s32 maxx;
-    s32 maxy;
-    s32 inner;
-    s32 outer;
-    s32 dx;
-    s32 dy;
-    s32 dist;
-    s32 tableVal;
-    u8 kind;
-    s32 cap;
-    u16 rowOff;
-    u8 cand;
-    u8 prop;
-    s32 score;
-    s32 bestScore;
-    s32 result;
-    s32 outerS16;
-    s16 pos[2];
-    s32 temp;
-    s32 ret;
-
-    base = *gCurrentMap;
-    sel = (u8 *)M2C_FIELD(base, u8 **, 0x52d0);
-
-    result = 0;
-    bestScore = 0;
-
-    temp = func_020a76d4(sel);
-    minx = x - temp;
-    if (minx < 0) minx = 0;
-
-    temp = func_020a76d4(sel);
-    miny = y - temp;
-    if (miny < 0) miny = 0;
-
-    temp = func_020a76d4(sel);
-    if (x + temp < M2C_FIELD(base, u16 *, 0x5144) - 1) {
-        ret = func_020a76d4(sel);
-        maxx = x + ret;
-    } else {
-        maxx = M2C_FIELD(base, u16 *, 0x5144) - 1;
-    }
-
-    temp = func_020a76d4(sel);
-    if (y + temp < M2C_FIELD(base, u16 *, 0x5146) - 1) {
-        ret = func_020a76d4(sel);
-        maxy = y + ret;
-    } else {
-        maxy = M2C_FIELD(base, u16 *, 0x5146) - 1;
-    }
-
-    kind = (u8)(((u32)(sel[0] << 26)) >> 26);
-    tableVal = data_ov000_021b5bfc[kind * 0x70 + 0x0c];
-
-    pos[0] = (s16)x;
-    pos[1] = (s16)y;
-
-    outer = miny;
-    if (outer <= maxy) {
-        do {
-            inner = minx;
-            if (inner <= maxx) {
-                do {
-                    dx = x - inner;
-                    if (dx <= 0) dx = inner - x;
-
-                    dy = y - outer;
-                    dist = dx;
-                    if (dy > 0) dist = dist + dy; else dist = dist + (outer - y);
-
-                    if (dist >= tableVal) {
-                        cap = func_020a76d4(sel);
-                        if (dist <= cap) {
-                            rowOff = *((u16 *)((u8 *)base + outer * 2 + 0x3758));
-                            cand = *((u8 *)base + inner + rowOff);
-                            if (cand != 0) {
-                                prop = *((u8 *)base + 0x52D4);
-                                if (func_020d27a4(prop, cand) != 1) {
-                                    if (func_ov000_021a93ec(inner, outer) != 0) {
-                                        outerS16 = (s16)outer;
-                                        score = func_ov000_02176e28((u32)cand | 0x20000, pos);
-                                        if (score > bestScore) {
-                                            result = cand;
-                                            bestScore = score;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    inner++;
-                } while (inner <= maxx);
-            }
-            outer++;
-        } while (outer <= maxy);
-    }
-
-    return result;
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_propagation off
+#pragma opt_strength_reduction off
+s32 func_ov000_0217f494(s16 x,s16 y){
+extern void **gCurrentMap;extern u8 data_ov000_021b5bfc[];
+s32 func_020a76d4(u8 *);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s32,s32);s32 func_ov000_02176e28(u32,void *);
+s32 result=0,best=result,minx,maxy,outer,maxx,inner,dist,dy,rev,ret,score,cand; s16 pos[2];u8 *up;void *map;
+ret=func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+if(x-ret<0)minx=0;else minx=x-func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+ret=func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+if(y-ret<0)outer=0;else outer=y-func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+map=*gCurrentMap;ret=func_020a76d4(M2C_FIELD(map,u8 **,0x52d0));
+if(x+ret>=M2C_FIELD(map,u16 *,0x5144)-1)maxx=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
+else maxx=x+func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+map=*gCurrentMap;ret=func_020a76d4(M2C_FIELD(map,u8 **,0x52d0));
+if(y+ret>=M2C_FIELD(map,u16 *,0x5146)-1)maxy=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
+else maxy=y+func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
+for(;outer<=maxy;outer++){for(inner=minx;inner<=maxx;inner++){
+dist=tileDistance(x,y,inner,outer);
+up=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
+if(dist<data_ov000_021b5bfc[((u32)(up[0]<<26)>>26)*112+12])continue;
+if(dist>func_020a76d4(up))continue;
+map=*gCurrentMap;cand=M2C_FIELD((u8 *)map+inner+M2C_FIELD((u8 *)map+outer*2,u16 *,0x3758),u8 *,0);
+if(!cand)continue;
+if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),cand)==1)continue;
+if(!func_ov000_021a93ec((s16)inner,(s16)outer))continue;
+pos[0]=x;pos[1]=y;
+score=func_ov000_02176e28(cand|0x20000,pos);
+if(best<score){result=cand;best=score;}
+}}
+return result;
 }
-
+#pragma pop

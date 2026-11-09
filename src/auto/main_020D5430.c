@@ -149,7 +149,7 @@ func_0208fe30(0x1001c);
 
 void func_020d5ef8(s32 r6, s32 r5) {
     M2C_UNK func_0208fe30();
-    M2C_UNK func_020d6398();
+    M2C_UNK func_020d6398(s32, s32);
     M2C_UNK func_0207a768();
     M2C_UNK func_020a0964();
     M2C_UNK func_020d468c();
@@ -177,7 +177,7 @@ void func_020d5ef8(s32 r6, s32 r5) {
         if (val > 0x6e) {
             r4 = 1;
         } else {
-            if (func_020d6398() == 0) {
+            if (func_020d6398(r6, r5) == 0) {
                 func_0208fe30(0x1001d);
                 return;
             }
@@ -206,18 +206,11 @@ void func_020d5ef8(s32 r6, s32 r5) {
         func_020a0d18();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52b4) = 4;
     }
-    {
-        s16 d8 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52d8);
-        s16 dc = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc);
-        if (d8 == dc) {
-            s16 da = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52da);
-            s16 de = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de);
-            if (da == de) {
-                M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5388) = 4;
-                goto skip046c;
-            }
-        }
+    if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52d8) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc) ||
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52da) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de)) {
         func_020a046c();
+    } else {
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5388) = 4;
     }
 skip046c:
     if (r4 != 0) {
@@ -247,8 +240,8 @@ skip046c:
             s16 dc = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc);
             rows[de][dc] = 1;
         }
-        data_02168f24 = 0;
     }
+    data_02168f24 = 0;
     return;
 }
 

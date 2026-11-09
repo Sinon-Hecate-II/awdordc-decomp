@@ -29,8 +29,8 @@ u8 i;for(i=0;i<M2C_FIELD(p,u8*,4);i++)if(M2C_FIELD(p+i,u8*,0x74)==id)return (s8)
 
 
 static inline s32 ov003_entries_differ(void *arg0) {
- s32 count; s32 entry; u8 i;
- count=M2C_FIELD(arg0,s8*,4)-1; i=0;
+ u8 i; s32 entry; s32 count;
+ i=0; count=M2C_FIELD(arg0,s8*,4)-1;
  for(;i<count;i++){entry=arg0+i*24; if(M2C_FIELD(entry,s32*,0x18)!=M2C_FIELD(entry,s32*,0x30))return 1;}
  return 0;
 }
@@ -141,10 +141,10 @@ sprite=M2C_FIELD(p+i*4,void **,0x78);
 M2C_FIELD(sprite,u16 *,0x2e)=i;
 func_020aab24(sprite,71,384,0,0);
 sprite=M2C_FIELD(p+i*4,void **,0x78);
-func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);s32 width=func_020aae10(sprite);s32 height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
-M2C_FIELD(sprite,s16 *,0x34)=x;M2C_FIELD(sprite,s16 *,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);s32 width=func_020aae10(sprite);s32 height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
+func_02088e84(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;s32 width,height;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
+M2C_FIELD(sprite,s16 *,0x34)=x;M2C_FIELD(sprite,s16 *,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;s32 width,height;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
 M2C_FIELD(sprite,u32 *,0x40)=(((M2C_FIELD(sprite,u32 *,0x40)&~511)|(w&511))&0xfffc01ff)|((u32)(h<<23)>>14);
-{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);s32 width=func_020aae10(sprite);s32 height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
+{u8 active=M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0;if(active){s16 sy,sx;s32 width,height;sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=func_020aae10(sprite);height=func_020aae44(sprite);func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)height);}}
 func_02008048(data_ov003_0220f12c+i*8,bounds,8);
 if(func_020846a4()){
 first=bounds[0];if(func_ov003_021e6cac((s16)first,4,7))bounds[0]=func_ov003_021e6e28((u8)first);
@@ -178,8 +178,9 @@ s32 func_ov003_021e8308(void *arg0) {
 
 s32 func_ov003_021e6cac(s16,s16,s16);
 void func_ov003_021e8654(s32,s32,s32);
+#pragma push
 #pragma opt_propagation off
-void func_ov003_021e8354(s32 arg0,s32 arg1,s32 arg2){s32 n=M2C_FIELD(arg0+0x18,s32*,arg1*24)+1;
+void func_ov003_021e8354(s32 arg0,s32 arg1,s32 arg2){register s32 n=M2C_FIELD(arg0+0x18,s32*,arg1*24)+1;
 if(func_ov003_021e6cac((s16)n,(s16)M2C_FIELD(arg0+0x20,s32*,arg1*24),(s16)M2C_FIELD(arg0+0x1c,s32*,arg1*24))||arg2){M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
 if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
 if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
@@ -198,3 +199,4 @@ if(ov003_entries_differ(arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,1,arg
 if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,1,arg2);
 if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,1,arg2);
 if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8354(arg0,arg1,arg2);}
+#pragma pop

@@ -2,6 +2,8 @@
 #include "common.h"
 #define ROTATE_RIGHT(x,n) (((x)>>(n)) | ((x)<<(32-(n))))
 
+#pragma push
+#pragma opt_propagation off
 void func_ov011_02222204(M2C_UNK arg0) {
     M2C_UNK func_01ff9e00();
     M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
@@ -13,12 +15,12 @@ void func_ov011_02222204(M2C_UNK arg0) {
     extern u16 **data_027e00c4;
     extern u16 **data_027e00c8;
     extern u16 **data_027e01d8;
-    u16 *sp18;
-    u16 *sp14;
-    u16 *sp10;
-    u16 *spC;
-    u16 *sp8;
-    u16 *sp4;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
     s32 var_r9;
     u16 **temp_r11;
     u16 **var_r0;
@@ -40,22 +42,22 @@ void func_ov011_02222204(M2C_UNK arg0) {
         data_027e01d8 = var_r0;
         temp_r0 = *var_r0;
         sp18 = temp_r0;
-        *temp_r0 = *sp18 | 0x10;
+        *sp18 = *sp18 | 0x10;
         temp_r0_2 = *data_027e01d8;
         sp14 = temp_r0_2;
-        *temp_r0_2 = *sp14 | 0x20;
+        *sp14 = *sp14 | 0x20;
         temp_r0_3 = *data_027e01d8;
         sp10 = temp_r0_3;
-        *temp_r0_3 = *sp10 | 0x40;
+        *sp10 = *sp10 | 0x40;
         temp_r0_4 = *data_027e01d8;
         spC = temp_r0_4;
-        *temp_r0_4 = *spC | 0x80;
+        *spC = *spC | 0x80;
         temp_r0_5 = *data_027e01d8;
         sp8 = temp_r0_5;
-        *temp_r0_5 = *sp8 | 0x100;
+        *sp8 = *sp8 | 0x100;
         temp_r0_6 = *data_027e01d8;
-        sp4 = temp_r0_6 + 0x12;
-        M2C_FIELD(temp_r0_6, s16 *, 0x12) = (s16) (*sp4 & ~0xC0);
+        sp4 = (u16 *)((u8 *)temp_r0_6 + 0x12);
+        *sp4 = (s16) (*sp4 & ~0xC0);
         M2C_FIELD(*data_027e01d8, s8 *, 0x51) = 0;
         M2C_FIELD(*data_027e01d8, s8 *, 0x52) = 0;
         M2C_FIELD(*data_027e01d8, s8 *, 0x53) = 0;
@@ -68,8 +70,7 @@ void func_ov011_02222204(M2C_UNK arg0) {
         M2C_FIELD(*data_027e01d8, s16 *, 0x44) = 0;
         M2C_FIELD(*data_027e01d8, s16 *, 0x3E) = 0;
         M2C_FIELD(*data_027e01d8, s16 *, 0x46) = 0;
-        var_r9 += 1;
-    } while (var_r9 < 2);
+    } while (++var_r9 < 2);
     data_027e01d8 = temp_r11;
     func_ov011_02224e04(arg0, 2, 2, 0x80, 0x60);
     func_ov011_02224e04(arg0, 2, 3, 0x80, 0x60);
@@ -83,8 +84,7 @@ void func_ov011_02222204(M2C_UNK arg0) {
     func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
     func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
 }
-
-#pragma opt_common_subs off
+#pragma pop
 void func_ov011_02222830(void *arg0,u32 mode,u32 first,u32 second,u32 amount) {
 extern u16 **gCur3DSpriteEngine,**data_027e00c4,**data_027e00c8;
 u8 b,a;
