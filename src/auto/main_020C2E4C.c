@@ -3,117 +3,118 @@
 
 #pragma push
 #pragma opt_propagation off
-void func_020c2e4c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5) {
+/* Allocate and initialise a battle sprite effect object, leaving it inactive
+ * (flag byte +0x36 stays 0) until the caller starts it: store its parameters,
+ * build its heap sub-object, its two sprite blocks and its scratch buffer, and
+ * derive the effect's size from the two value arguments. */
+void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
     void *func_01ffa3dc(M2C_UNK *, s32);
     void *MemAlloc(u32);
     void *func_020e34bc(u32);
-    extern M2C_UNK data_02129794;
+    extern M2C_UNK gBattleEffectPool;
     extern M2C_UNK data_02129890;
-    extern M2C_UNK data_02129870;
-    typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
-    void *obj;
-    void *p;
-    volatile u8 *qp;
-    u8 tmp;
-    u32 r3v;
-    s32 diff;
+    extern M2C_UNK gHeapObjectVTable;
+    typedef struct { u8 active:1; u8 mode:4; u8 type:3; } EffectFlags;
+    void *effect;
+    void *block;
+    s32 extent;
 
-    obj = func_01ffa3dc(&data_02129794, 7);
-    if (obj != 0) {
-        M2C_FIELD(obj, void **, 0) = &data_02129890;
-        M2C_FIELD(obj, u8 *, 0x34) = 0;
-        M2C_FIELD(obj, u8 *, 0x35) = 0;
-        M2C_FIELD(obj, u8 *, 0x36) = 0;
-        M2C_FIELD(obj, u8 *, 0x39) = arg4;
-        M2C_FIELD(obj, u32 *, 0x3c) = 0;
-        M2C_FIELD(obj, u32 *, 0x40) = 0;
-        M2C_FIELD(obj, u32 *, 0x44) = 0;
-        M2C_FIELD(obj, u32 *, 0x48) = 0;
-        M2C_FIELD(obj, u32 *, 0x4c) = 0;
-        M2C_FIELD(obj, Ov006C24Flags *, 0x50).active = 0;
-        M2C_FIELD(obj, u8 *, 0x50) = (u8)(M2C_FIELD(obj, u8 *, 0x50) & ~2);
-        M2C_FIELD(obj, u8 *, 0x50) = (u8)(M2C_FIELD(obj, u8 *, 0x50) & ~0xfc);
-        p = MemAlloc(6);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = (u8)arg0;
-            M2C_FIELD(p, u8 *, 1) = (u8)arg1;
-            M2C_FIELD(p, u8 *, 2) = (u8)arg2;
-            M2C_FIELD(p, u8 *, 3) = (u8)arg3;
-            M2C_FIELD(p, u8 *, 4) = arg4;
-            M2C_FIELD(p, u8 *, 5) = arg5;
+    effect = func_01ffa3dc(&gBattleEffectPool, 7);
+    if (effect != 0) {
+        M2C_FIELD(effect, void **, 0) = &data_02129890;
+        M2C_FIELD(effect, u8 *, 0x34) = 0;
+        M2C_FIELD(effect, u8 *, 0x35) = 0;
+        M2C_FIELD(effect, u8 *, 0x36) = 0;
+        M2C_FIELD(effect, u8 *, 0x39) = value0;
+        M2C_FIELD(effect, u32 *, 0x3c) = 0;
+        M2C_FIELD(effect, u32 *, 0x40) = 0;
+        M2C_FIELD(effect, u32 *, 0x44) = 0;
+        M2C_FIELD(effect, u32 *, 0x48) = 0;
+        M2C_FIELD(effect, u32 *, 0x4c) = 0;
+        M2C_FIELD(effect, EffectFlags *, 0x50).active = 0;
+        M2C_FIELD(effect, u8 *, 0x50) = (u8)(M2C_FIELD(effect, u8 *, 0x50) & ~2);
+        M2C_FIELD(effect, u8 *, 0x50) = (u8)(M2C_FIELD(effect, u8 *, 0x50) & ~0xfc);
+        block = MemAlloc(6);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = (u8)player;
+            M2C_FIELD(block, u8 *, 1) = (u8)terrainKind;
+            M2C_FIELD(block, u8 *, 2) = (u8)tileArmy;
+            M2C_FIELD(block, u8 *, 3) = (u8)unitArmy;
+            M2C_FIELD(block, u8 *, 4) = value0;
+            M2C_FIELD(block, u8 *, 5) = value1;
         }
-        M2C_FIELD(obj, void **, 0x40) = p;
-        p = MemAlloc(0x2C);
-        if (p != 0) {
-            M2C_FIELD(p, M2C_UNK **, 0) = &data_02129870;
-            M2C_FIELD(p, u8 *, 4) = 0;
-            M2C_FIELD(p, u16 *, 0x12) = 0;
-            M2C_FIELD(p, u8 *, 0x14) = 8;
-            M2C_FIELD(p, u8 *, 0x15) = 8;
-            M2C_FIELD(p, u8 *, 0x16) = 1;
-            M2C_FIELD(p, u8 *, 0x17) = 8;
-            M2C_FIELD(p, u8 *, 0x18) = 8;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).active = 0;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).mode = 0;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).kind = 2;
-            M2C_FIELD(p, u8 *, 0x21) = 0;
-            M2C_FIELD(p, u32 *, 0x24) = 0;
-            M2C_FIELD(p, u8 *, 0x28) = (u8)(M2C_FIELD(p, u8 *, 0x28) & ~0xE0);
-            M2C_FIELD(p, u8 *, 0x29) = 0;
+        M2C_FIELD(effect, void **, 0x40) = block;
+        block = MemAlloc(0x2C);
+        if (block != 0) {
+            M2C_FIELD(block, M2C_UNK **, 0) = &gHeapObjectVTable;
+            M2C_FIELD(block, u8 *, 4) = 0;
+            M2C_FIELD(block, u16 *, 0x12) = 0;
+            M2C_FIELD(block, u8 *, 0x14) = 8;
+            M2C_FIELD(block, u8 *, 0x15) = 8;
+            M2C_FIELD(block, u8 *, 0x16) = 1;
+            M2C_FIELD(block, u8 *, 0x17) = 8;
+            M2C_FIELD(block, u8 *, 0x18) = 8;
+            M2C_FIELD(block, EffectFlags *, 0x20).active = 0;
+            M2C_FIELD(block, EffectFlags *, 0x20).mode = 0;
+            M2C_FIELD(block, EffectFlags *, 0x20).type = 2;
+            M2C_FIELD(block, u8 *, 0x21) = 0;
+            M2C_FIELD(block, u32 *, 0x24) = 0;
+            M2C_FIELD(block, u8 *, 0x28) = (u8)(M2C_FIELD(block, u8 *, 0x28) & ~0xE0);
+            M2C_FIELD(block, u8 *, 0x29) = 0;
         }
-        M2C_FIELD(obj, void **, 0x3c) = p;
-        diff = (s32)(unsigned char)arg5 - (s32)(unsigned char)arg4;
-        if (diff < 3) {
-            M2C_FIELD(obj, u8 *, 0x37) = 6;
+        M2C_FIELD(effect, void **, 0x3c) = block;
+        extent = (s32)(unsigned char)value1 - (s32)(unsigned char)value0;
+        if (extent < 3) {
+            M2C_FIELD(effect, u8 *, 0x37) = 6;
         } else {
-            diff = diff - 3;
-            diff = diff + diff * 2;
-            diff = diff + 6;
-            M2C_FIELD(obj, u8 *, 0x37) = (u8)diff;
+            extent = extent - 3;
+            extent = extent + extent * 2;
+            extent = extent + 6;
+            M2C_FIELD(effect, u8 *, 0x37) = (u8)extent;
         }
-        M2C_FIELD(obj, u8 *, 0x38) = (u8)(M2C_FIELD(obj, u8 *, 0x37) + 0x2D);
-        p = MemAlloc(0x12);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = 4;
-            M2C_FIELD(p, u8 *, 1) = 0;
-            M2C_FIELD(p, u16 *, 2) = 0;
-            M2C_FIELD(p, u16 *, 4) = 0;
-            M2C_FIELD(p, s16 *, 6) = 1;
-            M2C_FIELD(p, s16 *, 8) = 0;
-            M2C_FIELD(p, s16 *, 0xA) = 1;
-            M2C_FIELD(p, s16 *, 0xC) = 1;
-            M2C_FIELD(p, s16 *, 0xE) = 0;
-            M2C_FIELD(p, s16 *, 0x10) = 0;
-            M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+        M2C_FIELD(effect, u8 *, 0x38) = (u8)(M2C_FIELD(effect, u8 *, 0x37) + 0x2D);
+        block = MemAlloc(0x12);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = 4;
+            M2C_FIELD(block, u8 *, 1) = 0;
+            M2C_FIELD(block, u16 *, 2) = 0;
+            M2C_FIELD(block, u16 *, 4) = 0;
+            M2C_FIELD(block, s16 *, 6) = 1;
+            M2C_FIELD(block, s16 *, 8) = 0;
+            M2C_FIELD(block, s16 *, 0xA) = 1;
+            M2C_FIELD(block, s16 *, 0xC) = 1;
+            M2C_FIELD(block, s16 *, 0xE) = 0;
+            M2C_FIELD(block, s16 *, 0x10) = 0;
+            M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
-        M2C_FIELD(obj, void **, 0x44) = p;
-        p = MemAlloc(0x12);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = 4;
-            M2C_FIELD(p, u8 *, 1) = 0;
-            M2C_FIELD(p, u16 *, 2) = 0;
-            M2C_FIELD(p, u16 *, 4) = 0;
-            M2C_FIELD(p, s16 *, 6) = 1;
-            M2C_FIELD(p, s16 *, 8) = 0;
-            M2C_FIELD(p, s16 *, 0xA) = 1;
-            M2C_FIELD(p, s16 *, 0xC) = 1;
-            M2C_FIELD(p, s16 *, 0xE) = 0;
-            M2C_FIELD(p, s16 *, 0x10) = 0;
-            M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+        M2C_FIELD(effect, void **, 0x44) = block;
+        block = MemAlloc(0x12);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = 4;
+            M2C_FIELD(block, u8 *, 1) = 0;
+            M2C_FIELD(block, u16 *, 2) = 0;
+            M2C_FIELD(block, u16 *, 4) = 0;
+            M2C_FIELD(block, s16 *, 6) = 1;
+            M2C_FIELD(block, s16 *, 8) = 0;
+            M2C_FIELD(block, s16 *, 0xA) = 1;
+            M2C_FIELD(block, s16 *, 0xC) = 1;
+            M2C_FIELD(block, s16 *, 0xE) = 0;
+            M2C_FIELD(block, s16 *, 0x10) = 0;
+            M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
-        M2C_FIELD(obj, void **, 0x48) = p;
-        p = func_020e34bc(0x100);
-        M2C_FIELD(obj, void **, 0x4c) = p;
+        M2C_FIELD(effect, void **, 0x48) = block;
+        block = func_020e34bc(0x100);
+        M2C_FIELD(effect, void **, 0x4c) = block;
     }
-    M2C_FIELD(obj, u8 *, 0x36) = 0;
+    M2C_FIELD(effect, u8 *, 0x36) = 0;
 }
 #pragma pop
 u8 func_020c306c(void) {
     s32 func_01ffa770(M2C_UNK *);
-    extern M2C_UNK data_02129794;
+    extern M2C_UNK gBattleEffectPool;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02129794) != 0) {
+    if (func_01ffa770(&gBattleEffectPool) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -123,109 +124,109 @@ u8 func_020c306c(void) {
 
 #pragma push
 #pragma opt_propagation off
-void func_020c3090(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u8 arg5) {
+/* Allocate and initialise a battle sprite effect object: store its parameters,
+ * build its heap sub-object, its two sprite blocks and its scratch buffer, and
+ * derive the effect's size from the two value arguments. */
+void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy, u8 value0, u8 value1) {
     void *func_01ffa3dc(M2C_UNK *, s32);
     void *MemAlloc(u32);
     void *func_020e34bc(u32);
-    extern M2C_UNK data_02129794;
+    extern M2C_UNK gBattleEffectPool;
     extern M2C_UNK data_02129890;
-    extern M2C_UNK data_02129870;
-    typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
-    void *obj;
-    void *p;
-    volatile u8 *qp;
-    u8 tmp;
-    u32 r3v;
-    s32 diff;
+    extern M2C_UNK gHeapObjectVTable;
+    typedef struct { u8 active:1; u8 mode:4; u8 type:3; } EffectFlags;
+    void *effect;
+    void *block;
+    s32 extent;
 
-    obj = func_01ffa3dc(&data_02129794, 7);
-    if (obj != 0) {
-        M2C_FIELD(obj, void **, 0) = &data_02129890;
-        M2C_FIELD(obj, u8 *, 0x34) = 0;
-        M2C_FIELD(obj, u8 *, 0x35) = 0;
-        M2C_FIELD(obj, u8 *, 0x36) = 0;
-        M2C_FIELD(obj, u8 *, 0x39) = arg4;
-        M2C_FIELD(obj, u32 *, 0x3c) = 0;
-        M2C_FIELD(obj, u32 *, 0x40) = 0;
-        M2C_FIELD(obj, u32 *, 0x44) = 0;
-        M2C_FIELD(obj, u32 *, 0x48) = 0;
-        M2C_FIELD(obj, u32 *, 0x4c) = 0;
-        M2C_FIELD(obj, Ov006C24Flags *, 0x50).active = 0;
-        M2C_FIELD(obj, u8 *, 0x50) = (u8)(M2C_FIELD(obj, u8 *, 0x50) & ~2);
-        M2C_FIELD(obj, u8 *, 0x50) = (u8)(M2C_FIELD(obj, u8 *, 0x50) & ~0xfc);
-        p = MemAlloc(6);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = (u8)arg0;
-            M2C_FIELD(p, u8 *, 1) = (u8)arg1;
-            M2C_FIELD(p, u8 *, 2) = (u8)arg2;
-            M2C_FIELD(p, u8 *, 3) = (u8)arg3;
-            M2C_FIELD(p, u8 *, 4) = arg4;
-            M2C_FIELD(p, u8 *, 5) = arg5;
+    effect = func_01ffa3dc(&gBattleEffectPool, 7);
+    if (effect != 0) {
+        M2C_FIELD(effect, void **, 0) = &data_02129890;
+        M2C_FIELD(effect, u8 *, 0x34) = 0;
+        M2C_FIELD(effect, u8 *, 0x35) = 0;
+        M2C_FIELD(effect, u8 *, 0x36) = 0;
+        M2C_FIELD(effect, u8 *, 0x39) = value0;
+        M2C_FIELD(effect, u32 *, 0x3c) = 0;
+        M2C_FIELD(effect, u32 *, 0x40) = 0;
+        M2C_FIELD(effect, u32 *, 0x44) = 0;
+        M2C_FIELD(effect, u32 *, 0x48) = 0;
+        M2C_FIELD(effect, u32 *, 0x4c) = 0;
+        M2C_FIELD(effect, EffectFlags *, 0x50).active = 0;
+        M2C_FIELD(effect, u8 *, 0x50) = (u8)(M2C_FIELD(effect, u8 *, 0x50) & ~2);
+        M2C_FIELD(effect, u8 *, 0x50) = (u8)(M2C_FIELD(effect, u8 *, 0x50) & ~0xfc);
+        block = MemAlloc(6);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = (u8)player;
+            M2C_FIELD(block, u8 *, 1) = (u8)terrainKind;
+            M2C_FIELD(block, u8 *, 2) = (u8)tileArmy;
+            M2C_FIELD(block, u8 *, 3) = (u8)unitArmy;
+            M2C_FIELD(block, u8 *, 4) = value0;
+            M2C_FIELD(block, u8 *, 5) = value1;
         }
-        M2C_FIELD(obj, void **, 0x40) = p;
-        p = MemAlloc(0x2C);
-        if (p != 0) {
-            M2C_FIELD(p, M2C_UNK **, 0) = &data_02129870;
-            M2C_FIELD(p, u8 *, 4) = 0;
-            M2C_FIELD(p, u16 *, 0x12) = 0;
-            M2C_FIELD(p, u8 *, 0x14) = 8;
-            M2C_FIELD(p, u8 *, 0x15) = 8;
-            M2C_FIELD(p, u8 *, 0x16) = 1;
-            M2C_FIELD(p, u8 *, 0x17) = 8;
-            M2C_FIELD(p, u8 *, 0x18) = 8;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).active = 0;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).mode = 0;
-            M2C_FIELD(p, Ov006C24Flags *, 0x20).kind = 2;
-            M2C_FIELD(p, u8 *, 0x21) = 0;
-            M2C_FIELD(p, u32 *, 0x24) = 0;
-            M2C_FIELD(p, u8 *, 0x28) = (u8)(M2C_FIELD(p, u8 *, 0x28) & ~0xE0);
-            M2C_FIELD(p, u8 *, 0x29) = 0;
+        M2C_FIELD(effect, void **, 0x40) = block;
+        block = MemAlloc(0x2C);
+        if (block != 0) {
+            M2C_FIELD(block, M2C_UNK **, 0) = &gHeapObjectVTable;
+            M2C_FIELD(block, u8 *, 4) = 0;
+            M2C_FIELD(block, u16 *, 0x12) = 0;
+            M2C_FIELD(block, u8 *, 0x14) = 8;
+            M2C_FIELD(block, u8 *, 0x15) = 8;
+            M2C_FIELD(block, u8 *, 0x16) = 1;
+            M2C_FIELD(block, u8 *, 0x17) = 8;
+            M2C_FIELD(block, u8 *, 0x18) = 8;
+            M2C_FIELD(block, EffectFlags *, 0x20).active = 0;
+            M2C_FIELD(block, EffectFlags *, 0x20).mode = 0;
+            M2C_FIELD(block, EffectFlags *, 0x20).type = 2;
+            M2C_FIELD(block, u8 *, 0x21) = 0;
+            M2C_FIELD(block, u32 *, 0x24) = 0;
+            M2C_FIELD(block, u8 *, 0x28) = (u8)(M2C_FIELD(block, u8 *, 0x28) & ~0xE0);
+            M2C_FIELD(block, u8 *, 0x29) = 0;
         }
-        M2C_FIELD(obj, void **, 0x3c) = p;
-        diff = (s32)(unsigned char)arg5 - (s32)(unsigned char)arg4;
-        if (diff < 3) {
-            M2C_FIELD(obj, u8 *, 0x37) = 6;
+        M2C_FIELD(effect, void **, 0x3c) = block;
+        extent = (s32)(unsigned char)value1 - (s32)(unsigned char)value0;
+        if (extent < 3) {
+            M2C_FIELD(effect, u8 *, 0x37) = 6;
         } else {
-            diff = diff - 3;
-            diff = diff + diff * 2;
-            diff = diff + 6;
-            M2C_FIELD(obj, u8 *, 0x37) = (u8)diff;
+            extent = extent - 3;
+            extent = extent + extent * 2;
+            extent = extent + 6;
+            M2C_FIELD(effect, u8 *, 0x37) = (u8)extent;
         }
-        M2C_FIELD(obj, u8 *, 0x38) = (u8)(M2C_FIELD(obj, u8 *, 0x37) + 0x2D);
-        p = MemAlloc(0x12);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = 4;
-            M2C_FIELD(p, u8 *, 1) = 0;
-            M2C_FIELD(p, u16 *, 2) = 0;
-            M2C_FIELD(p, u16 *, 4) = 0;
-            M2C_FIELD(p, s16 *, 6) = 1;
-            M2C_FIELD(p, s16 *, 8) = 0;
-            M2C_FIELD(p, s16 *, 0xA) = 1;
-            M2C_FIELD(p, s16 *, 0xC) = 1;
-            M2C_FIELD(p, s16 *, 0xE) = 0;
-            M2C_FIELD(p, s16 *, 0x10) = 0;
-            M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+        M2C_FIELD(effect, u8 *, 0x38) = (u8)(M2C_FIELD(effect, u8 *, 0x37) + 0x2D);
+        block = MemAlloc(0x12);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = 4;
+            M2C_FIELD(block, u8 *, 1) = 0;
+            M2C_FIELD(block, u16 *, 2) = 0;
+            M2C_FIELD(block, u16 *, 4) = 0;
+            M2C_FIELD(block, s16 *, 6) = 1;
+            M2C_FIELD(block, s16 *, 8) = 0;
+            M2C_FIELD(block, s16 *, 0xA) = 1;
+            M2C_FIELD(block, s16 *, 0xC) = 1;
+            M2C_FIELD(block, s16 *, 0xE) = 0;
+            M2C_FIELD(block, s16 *, 0x10) = 0;
+            M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
-        M2C_FIELD(obj, void **, 0x44) = p;
-        p = MemAlloc(0x12);
-        if (p != 0) {
-            M2C_FIELD(p, u8 *, 0) = 4;
-            M2C_FIELD(p, u8 *, 1) = 0;
-            M2C_FIELD(p, u16 *, 2) = 0;
-            M2C_FIELD(p, u16 *, 4) = 0;
-            M2C_FIELD(p, s16 *, 6) = 1;
-            M2C_FIELD(p, s16 *, 8) = 0;
-            M2C_FIELD(p, s16 *, 0xA) = 1;
-            M2C_FIELD(p, s16 *, 0xC) = 1;
-            M2C_FIELD(p, s16 *, 0xE) = 0;
-            M2C_FIELD(p, s16 *, 0x10) = 0;
-            M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+        M2C_FIELD(effect, void **, 0x44) = block;
+        block = MemAlloc(0x12);
+        if (block != 0) {
+            M2C_FIELD(block, u8 *, 0) = 4;
+            M2C_FIELD(block, u8 *, 1) = 0;
+            M2C_FIELD(block, u16 *, 2) = 0;
+            M2C_FIELD(block, u16 *, 4) = 0;
+            M2C_FIELD(block, s16 *, 6) = 1;
+            M2C_FIELD(block, s16 *, 8) = 0;
+            M2C_FIELD(block, s16 *, 0xA) = 1;
+            M2C_FIELD(block, s16 *, 0xC) = 1;
+            M2C_FIELD(block, s16 *, 0xE) = 0;
+            M2C_FIELD(block, s16 *, 0x10) = 0;
+            M2C_FIELD(block, u16 *, 2) = M2C_FIELD(block, u16 *, 4);
         }
-        M2C_FIELD(obj, void **, 0x48) = p;
-        p = func_020e34bc(0x100);
-        M2C_FIELD(obj, void **, 0x4c) = p;
+        M2C_FIELD(effect, void **, 0x48) = block;
+        block = func_020e34bc(0x100);
+        M2C_FIELD(effect, void **, 0x4c) = block;
     }
-    M2C_FIELD(obj, u8 *, 0x36) = 1;
+    M2C_FIELD(effect, u8 *, 0x36) = 1;
 }
 #pragma pop
 void func_020c32b0(void) {
@@ -246,9 +247,9 @@ void func_020c32bc(void) {
 void *func_020c32e4(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_020e35cc();
-    extern M2C_UNK data_02129890;
+    extern M2C_UNK gOccupationEffectVTable;
     void *p;
-    M2C_FIELD(arg0, void **, 0) = &data_02129890;
+    M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
     p = M2C_FIELD(arg0, void **, 0x40);
     if (p != NULL) MemFree(p);
     p = M2C_FIELD(arg0, void **, 0x3C);
@@ -274,9 +275,9 @@ s32 func_020c3360(s32 arg0) {
 void *func_020c3374(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK func_020e35cc();
-    extern M2C_UNK data_02129890;
+    extern M2C_UNK gOccupationEffectVTable;
     void *p;
-    M2C_FIELD(arg0, void **, 0) = &data_02129890;
+    M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
     p = M2C_FIELD(arg0, void **, 0x40);
     if (p != NULL) MemFree(p);
     p = M2C_FIELD(arg0, void **, 0x3C);

@@ -328,11 +328,11 @@ s32 func_0202fc9c(void) {
 /* Polls/refreshes the current entry for state 'p': clears the D0D slot, zeroes a temp buffer,
    calls func_020300e8 to (re)validate, then updates the D0B flags and reports 9 or 8. */
 s32 func_0202fce0(void *p) {
-void func_02007f8c(void *,s32,s32); u8 func_0202ff14(void *);
+void MI_CpuFill8(void *,s32,s32); u8 func_0202ff14(void *);
 void *q=p+0x470+M2C_FIELD(p,u8 *,0xD13)*0xC0;
 s32 ok;
 M2C_FIELD(p,u8 *,0xD0D)=func_0202ff14(p);
-func_02007f8c(p+0xCB8,0,0x52);
+MI_CpuFill8(p+0xCB8,0,0x52);
 ok=func_020300e8(p,M2C_FIELD(p,u8 *,0xD0D),p+0xCB8);
 if(ok) {
 M2C_FIELD(p,u8 *,0xD0B)=(M2C_FIELD(p,u8 *,0xD0B)&~12)|4;
@@ -349,7 +349,7 @@ M2C_FIELD(p,u8 *,0xD15)=0;M2C_FIELD(p,u8 *,0xD14)=0;return 8;
 s32 func_020300b0(void *);
 s32 func_0202fdd8(u8 *p) {
 u32 func_02027c84(); s32 func_020300b0(void *); s32 func_020300cc(void *);
-void func_02027754(void *,void *,s32); unsigned long long func_02007004(void);
+void WFC_StartConnection(void *,void *,s32); unsigned long long GetSystemTick(void);
 s32 state=func_02027c84(p); s32 off; u8 *base; s32 flags; base=p+0x470; off=(s16)p[0xd13]*(s16)192;
 if(state==3) {
 { s32 (*getFlags)(void *)=func_020300b0; flags=getFlags(p); }
@@ -361,8 +361,8 @@ else if(p[0xd14]==2){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=3;return 9;}
 else if(p[0xd14]==3){p[0xd15]=0;M2C_FIELD(p+p[0xd13]*4,u8 *,0x444)=4;return 9;}
 else if(p[0xd15]==3)p[0xd0b]&=~12;
 }
-func_02027754(base+off,p+0xcb8,flags|func_020300cc(p));
-} else if(state==9) {p[0xd15]=0;M2C_FIELD(p,unsigned long long *,0xcb0)=func_02007004();return 10;}
+WFC_StartConnection(base+off,p+0xcb8,flags|func_020300cc(p));
+} else if(state==9) {p[0xd15]=0;M2C_FIELD(p,unsigned long long *,0xcb0)=GetSystemTick();return 10;}
 return 8;
 }
 
@@ -504,7 +504,7 @@ s32 func_02030264(void) {
  void func_02027428(void);
  void func_020276b0(void);
  void func_02027958(void);
- void func_02027a74(void);
+ void WFC_ProcessLinkState(void);
  u32 func_02027c84(void);
  switch(func_02027c84()) {
  case 0:return 1;
@@ -512,7 +512,7 @@ s32 func_02030264(void) {
  case 3:func_02027428();break;
  case 6:func_020276b0();break;
  case 9:func_02027958();break;
- case 12:func_02027a74();break;
+ case 12:WFC_ProcessLinkState();break;
  case 11:func_0202f558(0);return -1;
  }
  return 0;

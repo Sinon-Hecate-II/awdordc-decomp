@@ -6,7 +6,7 @@ void func_ov000_02175fb0(void *a) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 void AddSprite(u16,u16,u16,void *,s32);
 s32 func_0207c8ec(s32,s32);
-extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],data_027e0064[],data_02101f0c[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
+extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],gSpriteDesc16x16[],data_02101f0c[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
 s32 func_020a72b0(s32,s32);u8 func_ov000_02176dcc(void *);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 s32 level,n,d,i,ratio,den,sn,cs,aa,bb,cc,dd,x; void *old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -73,11 +73,11 @@ for(index1=0,position1=39;index1<6;index1++,position1+=13){AddSprite(240,(u16)po
 }
 }
 {s32 index2,position2;
-for(index2=0,position2=145;index2<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,252);index2++,position2+=15){n=M2C_FIELD(M2C_FIELD(a,void **,16)+index2*4,s32 *,124);if(n){n=func_020a72b0(0,n);AddSprite((u16)position2,121,(u16)(((n+391)&1023)|0xf000),data_027e0064,index2);
+for(index2=0,position2=145;index2<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,252);index2++,position2+=15){n=M2C_FIELD(M2C_FIELD(a,void **,16)+index2*4,s32 *,124);if(n){n=func_020a72b0(0,n);AddSprite((u16)position2,121,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index2);
 }}
 }
 {s32 index3,position3;
-for(index3=0,position3=145;index3<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,256);index3++,position3+=15){if(index3>=7)break;n=M2C_FIELD(M2C_FIELD(a,void **,16)+index3*4,s32 *,156);if(n){n=func_020a72b0(0,n);AddSprite((u16)position3,140,(u16)(((n+391)&1023)|0xf000),data_027e0064,index3);
+for(index3=0,position3=145;index3<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,256);index3++,position3+=15){if(index3>=7)break;n=M2C_FIELD(M2C_FIELD(a,void **,16)+index3*4,s32 *,156);if(n){n=func_020a72b0(0,n);AddSprite((u16)position3,140,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index3);
 }}}
 
 if(func_ov000_02176dcc(a)){
@@ -85,7 +85,7 @@ AddSprite(128,176,0x6120,data_02101f0c,1);
 AddSprite(192,176,0x6128,data_02101f0c,1);
 AddSprite(128,184,0x6130,data_02101f0c,1);
 AddSprite(192,184,0x6138,data_02101f0c,1);
-AddSprite(114,178,0xb140,data_027e0064,1);
+AddSprite(114,178,0xb140,gSpriteDesc16x16,1);
 
 func_ov000_02174da4(0,182);
 }

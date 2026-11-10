@@ -36,7 +36,7 @@ void func_ov005_02218fd0(void *arg0) {
     s32 func_ov005_02218e54();
     s32 func_ov005_02218edc();
     extern M2C_UNK data_0215c334;
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void **data_027e0058;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -340,7 +340,7 @@ void func_ov005_02218fd0(void *arg0) {
         func_0208116c(&data_ov005_02221150, 0x40, 0x20);
         func_02080cfc(&data_ov005_02221160, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F00);
         func_0208116c(&data_ov005_02221168, 0x3E0, 0x20);
-        if (((u32) (data_02168f14 << 0x1D) >> 0x1D) != 1) {
+        if (((u32) (gMapConfig << 0x1D) >> 0x1D) != 1) {
             var_r0_7 = 1;
         } else {
             var_r0_7 = 0;

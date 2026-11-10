@@ -27,7 +27,7 @@ void func_ov000_0218d908(void) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 *data_ov000_021df644;
-    extern u8 data_ov000_021b5bfc[], data_ov000_021dfcf0[];
+    extern u8 gUnitKindStats[], data_ov000_021dfcf0[];
     s32 func_ov000_0218d40c(void);
     M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
@@ -84,7 +84,7 @@ void func_ov000_0218d908(void) {
                 if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
                 map = *gCurrentMap;
                 if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= data_ov000_021df644[2]) goto nextTile;
-                if (data_ov000_021b5bfc[((u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 112 + 19] & 7) {
+                if (gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 112 + 19] & 7) {
                     u32 tileIndex = y * M2C_FIELD(map, u16 *, 0x5144) + x;
                     u32 bit = tileIndex & 7;
                     if (!(u8)((1 << bit) & data_ov000_021dfcf0[tileIndex >> 3])) goto nextTile;

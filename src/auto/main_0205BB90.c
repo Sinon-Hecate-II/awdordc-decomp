@@ -3,7 +3,7 @@
 typedef struct { u8 a,b; } Unk05Bytes;
 typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
-Unk05Pair *func_02048690(s32,s32);
+Unk05Pair *Vector_GetItem(s32,s32);
 
 s32 func_0205bb90(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_0205b100(u16, s32);
@@ -57,7 +57,7 @@ s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
-    s32 func_02048688(s32);
+    s32 Vector_GetCount(s32);
     s32 func_0205b100(u16, s32);
     s32 func_0205cbb4(void *, void *);
     s32 lo;
@@ -74,9 +74,9 @@ s32 func_0205bd28(void *arg0, void *arg1, s32 arg2) {
     } else {
         return func_0205b1a4(arg0) != 0;
     }
-    n = func_02048688(M2C_FIELD(arg0, s32 *, 0x60));
+    n = Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x60));
     for (i = 0; i < n; i++) {
-        p = func_02048690(M2C_FIELD(arg0, s32 *, 0x60), i);
+        p = Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x60), i);
         if ((func_0205b100(M2C_FIELD(p, u16 *, 8), lo) >= 0) &&
             (func_0205b100(M2C_FIELD(p, u16 *, 8), hi) <= 0) &&
             (func_0205cbb4(arg0, p) == 0)) {
@@ -91,7 +91,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
     return func_0205cb38(a,b,c);
 }
 
-s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 func_02049208(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,func_02049208()-sp0)!=0; }
+s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,GetTickCountMs()-sp0)!=0; }
 
 #pragma push
 #pragma scheduling off
@@ -169,7 +169,7 @@ return func_0205bedc(connection2,msgType,buf,len)!=0;
 
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
 s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02049208();
+    s32 GetTickCountMs();
     s32 func_0205a614(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
     void *func_0205cca0();
@@ -185,7 +185,7 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     }
     if (M2C_FIELD(entry, s32 *, 0xC) == 0) {
         if ((M2C_FIELD(entry, u32 *, 0x20) == 0) ||
-            ((u32)(func_02049208() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
+            ((u32)(GetTickCountMs() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
             return 1;
         }
         if (func_0205b110(entry, 6, 1) == 0) {
@@ -248,7 +248,7 @@ s32 func_0205c344(void *conn) {
     }
 }
 
-s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=func_02049208();n=func_02048688(M2C_FIELD(p,s32 *,0x60));func_020486f8(M2C_FIELD(p,s32 *,0x60),&s);return n+1==func_02048688(M2C_FIELD(p,s32 *,0x60));}
+s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));func_020486f8(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
 
 s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     extern M2C_UNK gGt2Magic;
@@ -290,7 +290,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 #pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;

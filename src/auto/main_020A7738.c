@@ -590,7 +590,7 @@ s32 func_020a86bc(void) {
     return 0;
 }
 
-s32 func_020a86c4(s32 a,s32 b){extern s8 data_ov000_021b5520[];extern u8 data_02168f14[];s32 v=0;if(data_ov000_021b5520[b&31])v+=M2C_FIELD(data_02168f14,u16 *,6);return v;}
+s32 func_020a86c4(s32 a,s32 b){extern s8 data_ov000_021b5520[];extern u8 gMapConfig[];s32 v=0;if(data_ov000_021b5520[b&31])v+=M2C_FIELD(gMapConfig,u16 *,6);return v;}
 
 s32 func_020a86f0(void) {
     return 1;

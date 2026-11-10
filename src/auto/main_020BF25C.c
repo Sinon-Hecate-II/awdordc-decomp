@@ -148,8 +148,8 @@ void func_020bf930(M2C_UNK arg0) {
 
 #pragma opt_common_subs off
 void func_020bf97c(void) {
-s32 func_0207cfb8(void);extern M2C_UNK data_0215d990;
-switch(func_0207cfb8()){
+s32 GetViewZoom(void);extern M2C_UNK data_0215d990;
+switch(GetViewZoom()){
 case 0:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380);return;
 case 128:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
 default:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
@@ -298,23 +298,23 @@ void func_020bfda8(void *arg0) {
 }
 
 void func_020bfebc(void *p) {
- extern void **gCurrentMap; extern u8 data_02168f14[];
+ extern void **gCurrentMap; extern u8 gMapConfig[];
  if(!p)p=func_020bfa74();
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294963201U)|((u32)(M2C_FIELD(*gCurrentMap,u16 *,20802)<<21)>>20);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294963199U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20822)<<31)>>19);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294909951U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20827)<<29)>>16);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4294901759U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20825)<<31)>>15);
 M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&4293001215U)|((u32)(M2C_FIELD(*gCurrentMap,u8 *,20823)<<28)>>11);
-M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~0xFE00000)|((u32)(data_02168f14[3]<<25)>>4);
-M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~0xF0000000)|(((u32)(M2C_FIELD(data_02168f14,u16 *,0)<<26)>>29)<<28);
-M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&~0x1FFFF)|(M2C_FIELD(data_02168f14,u32 *,8)&0x1FFFF);
-M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&0x8001FFFF)|((u32)(M2C_FIELD(data_02168f14,u16 *,6)<<18)>>1);
-M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&~0x80000000)|((((u32)(M2C_FIELD(data_02168f14,u16 *,0)<<23)>>31)&1)<<31);
-M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~1)|(((u32)(M2C_FIELD(data_02168f14,u16 *,0)<<25)>>31)&1);
+M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~0xFE00000)|((u32)(gMapConfig[3]<<25)>>4);
+M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~0xF0000000)|(((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<26)>>29)<<28);
+M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&~0x1FFFF)|(M2C_FIELD(gMapConfig,u32 *,8)&0x1FFFF);
+M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&0x8001FFFF)|((u32)(M2C_FIELD(gMapConfig,u16 *,6)<<18)>>1);
+M2C_FIELD(p,u32 *,12)=(M2C_FIELD(p,u32 *,12)&~0x80000000)|((((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<23)>>31)&1)<<31);
+M2C_FIELD(p,u32 *,8)=(M2C_FIELD(p,u32 *,8)&~1)|(((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<25)>>31)&1);
 }
 
 void func_020c002c(void *arg0) {
-M2C_UNK *func_020bfa74(void); extern void **gCurrentMap; extern u8 data_02168f14[];
+M2C_UNK *func_020bfa74(void); extern void **gCurrentMap; extern u8 gMapConfig[];
 u32 count;
 if(!arg0)arg0=func_020bfa74();
 count=(M2C_FIELD(arg0,u32*,8)<<20)>>21;
@@ -325,30 +325,30 @@ M2C_FIELD(*gCurrentMap,u8*,0x515a)=(M2C_FIELD(arg0,u32*,8)<<16)>>29;
 M2C_FIELD(*gCurrentMap,u8*,0x515b)=(M2C_FIELD(arg0,u32*,8)<<16)>>29;
 M2C_FIELD(*gCurrentMap,u8*,0x5159)=(M2C_FIELD(arg0,u32*,8)<<15)>>31;
 M2C_FIELD(*gCurrentMap,u8*,0x5157)=(M2C_FIELD(arg0,u32*,8)<<11)>>28;
-data_02168f14[3]=(M2C_FIELD(arg0,u32*,8)<<4)>>25;
-M2C_FIELD(data_02168f14,u16*,0)=(M2C_FIELD(data_02168f14,u16*,0)&~0x38)|((u32)((u16)(M2C_FIELD(arg0,u32*,8)>>28)<<29)>>26);
-M2C_FIELD(data_02168f14,u32*,8)=(u32)(M2C_FIELD(arg0,s32*,12)<<15)>>15;
-M2C_FIELD(data_02168f14,u16*,6)=(M2C_FIELD(arg0,u32*,12)<<1)>>18;
-M2C_FIELD(data_02168f14,u16*,0)=(M2C_FIELD(data_02168f14,u16*,0)&~0x100)|((u32)((u16)(M2C_FIELD(arg0,u32*,12)>>31)<<31)>>23);
-M2C_FIELD(data_02168f14,u16*,0)=(M2C_FIELD(data_02168f14,u16*,0)&~0x40)|((u32)((u16)((u32)(M2C_FIELD(arg0,s32*,8)<<31)>>31)<<31)>>25);
+gMapConfig[3]=(M2C_FIELD(arg0,u32*,8)<<4)>>25;
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x38)|((u32)((u16)(M2C_FIELD(arg0,u32*,8)>>28)<<29)>>26);
+M2C_FIELD(gMapConfig,u32*,8)=(u32)(M2C_FIELD(arg0,s32*,12)<<15)>>15;
+M2C_FIELD(gMapConfig,u16*,6)=(M2C_FIELD(arg0,u32*,12)<<1)>>18;
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x100)|((u32)((u16)(M2C_FIELD(arg0,u32*,12)>>31)<<31)>>23);
+M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x40)|((u32)((u16)((u32)(M2C_FIELD(arg0,s32*,8)<<31)>>31)<<31)>>25);
 }
 
 void func_020c01bc(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212945c;
-    func_01ffa42c(&data_0212945c, arg0);
+    CreateSpriteObject(&data_0212945c, arg0);
 }
 
 void func_020c01d4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212942c;
-    func_01ffa42c(&data_0212942c, arg0);
+    CreateSpriteObject(&data_0212942c, arg0);
 }
 
 void func_020c01ec(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02129514;
-    func_01ffa42c(&data_02129514, arg0);
+    CreateSpriteObject(&data_02129514, arg0);
 }
 
 void func_020c0204(void) {

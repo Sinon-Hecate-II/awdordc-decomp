@@ -8,14 +8,14 @@ static inline volatile Point15A0C *PointZero15A0C(volatile Point15A0C *p) { ((vo
 #pragma opt_propagation reset
 typedef struct Map14E24 { u8 pad[0xa10]; u16 cells[(0x3758-0xa10)/2]; u16 rows[32]; u8 pad3798[0x5144-0x3798];u16 width,height; } Map14E24;
 extern s32 *gCurrentMap;
-extern u8 data_ov007_02221a84[800];
+extern u8 gMapMarkerGrid[800];
 
-void func_ov007_02214e24(void) {
+void Map_InitMarkerGrid(void) {
 s32 x,y; s32 *p; u8 *row;
 p=gCurrentMap;
 y=0;
 if(M2C_FIELD(*p,u16 *,0x5146)<=y)return;
-row=data_ov007_02221a84;
+row=gMapMarkerGrid;
 do {
 
 for(x=0;x<M2C_FIELD(*p,u16 *,0x5144);x++){
@@ -30,13 +30,13 @@ y++; row+=30;
 }
 
 /* Mark each unit standing on a tile of the tactical map (value 2 in the
-   30-wide unit grid data_ov007_02221a84) as "moved" (1) and clear value 2
+   30-wide unit grid gMapMarkerGrid) as "moved" (1) and clear value 2
    from its four orthogonal neighbours; returns 1 if any unit was found. */
 s32 Map_MarkUnitsMoved(void){
 s32 x,y,found=0; s32 *p=gCurrentMap; s8 *row;
 y=0;
 if(y<M2C_FIELD(*p,u16 *,0x5146)){
-row=(s8*)data_ov007_02221a84;
+row=(s8*)gMapMarkerGrid;
 do{
 for(x=0;x<M2C_FIELD(*p,u16 *,0x5144);x++){
 if(row[x]==2){
@@ -54,7 +54,7 @@ y++;row+=30;
 
 s32 func_ov007_02214ff8(s32 x,s32 y,s32 value){
 s32 count;
-if(((s8*)data_ov007_02221a84+y*30)[x])return 0;
+if(((s8*)gMapMarkerGrid+y*30)[x])return 0;
 count=0;
 if(x-1<0 || value==((Map14E24*)*gCurrentMap)->cells[x-1+((Map14E24*)*gCurrentMap)->rows[y]])count++;
 if(y-1<0 || value==((Map14E24*)*gCurrentMap)->cells[x+((Map14E24*)*gCurrentMap)->rows[y-1]])count++;
@@ -147,15 +147,15 @@ s32 func_ov007_022156a4(s32 x,s32 y) {
 
 /* Places value 36 at (x,y) if it sits in an open straight corridor
    (left+right or up+down tiles passable with no unit in between). */
-s32 func_ov007_02215704(s32 x, s32 y) {
+s32 Map_PlaceStraightCorridor(s32 x, s32 y) {
     s32 func_ov007_0221b754(s32, s32);
-    if (func_ov007_0221b754(x - 1, y) == 1 && ((s8 *)data_ov007_02221a84 + y * 30)[x - 1] != 2 &&
-        func_ov007_0221b754(x + 1, y) == 1 && ((s8 *)data_ov007_02221a84 + y * 30)[x + 1] != 2) {
+    if (func_ov007_0221b754(x - 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x - 1] != 2 &&
+        func_ov007_0221b754(x + 1, y) == 1 && ((s8 *)gMapMarkerGrid + y * 30)[x + 1] != 2) {
         Map_SetCellTile(x, y, 36);
         return 1;
     }
-    if (func_ov007_0221b754(x, y - 1) == 1 && ((s8 *)data_ov007_02221a84 + (y - 1) * 30)[x] != 2 &&
-        func_ov007_0221b754(x, y + 1) == 1 && ((s8 *)data_ov007_02221a84 + (y + 1) * 30)[x] != 2) {
+    if (func_ov007_0221b754(x, y - 1) == 1 && ((s8 *)gMapMarkerGrid + (y - 1) * 30)[x] != 2 &&
+        func_ov007_0221b754(x, y + 1) == 1 && ((s8 *)gMapMarkerGrid + (y + 1) * 30)[x] != 2) {
         Map_SetCellTile(x, y, 36);
         return 1;
     }
@@ -164,28 +164,30 @@ s32 func_ov007_02215704(s32 x, s32 y) {
 
 #pragma push
 #pragma opt_common_subs on
-Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Marks (x,y) with the base tile of a side and scatters its radius and distance
+ * decoration tiles on random plain tiles within two cells of it. */
+Point15A0C Map_PlaceSideBase(s32 x, s32 y, s32 side, s32 radius, s32 distance) {
     s32 RandomIntRange(s32, s32);
-    register s32 rx, base, placed, tries;
+    register s32 rx, baseTile, placed, tries;
     s32 ry, scale;
-    Map14E24 *m;
-    u16 t;
+    Map14E24 *map;
+    u16 tile;
 
-    scale = arg2 * 5;
+    scale = side * 5;
 
-    Map_SetCellTile(arg0, arg1, scale + 0x1c0);
+    Map_SetCellTile(x, y, scale + 0x1c0);
 
     tries = 0;
     placed = tries;
-    if (placed < arg3) {
-        base = scale;
+    if (placed < radius) {
+        baseTile = scale;
         do {
-        rx = RandomIntRange(arg0 - 2, arg0 + 2);
-        ry = RandomIntRange(arg1 - 2, arg1 + 2);
-        if (rx < 0 || (m = (Map14E24 *)*gCurrentMap, rx >= m->width) || ry < 0 || ry >= m->height) { placed--; goto first_next; }
-        t = m->cells[rx + m->rows[ry]];
-        if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
-            Map_SetCellTile(rx, ry, base + 0x1c1);
+        rx = RandomIntRange(x - 2, x + 2);
+        ry = RandomIntRange(y - 2, y + 2);
+        if (rx < 0 || (map = (Map14E24 *)*gCurrentMap, rx >= map->width) || ry < 0 || ry >= map->height) { placed--; goto first_next; }
+        tile = map->cells[rx + map->rows[ry]];
+        if (tile == 1 && ry >= 0 && ry < map->height && rx >= 0 && rx < map->width) {
+            Map_SetCellTile(rx, ry, baseTile + 0x1c1);
         } else {
             tries++;
             placed--;
@@ -193,39 +195,39 @@ Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
         }
 first_next:
         placed++;
-        } while (placed < arg3);
+        } while (placed < radius);
     }
 
     tries = 0;
     placed = tries;
-    if (placed < arg4) {
-        base = scale + 0x1c3;
+    if (placed < distance) {
+        baseTile = scale + 0x1c3;
         do {
-            rx = RandomIntRange(arg0 - 2, arg0 + 2);
-            ry = RandomIntRange(arg1 - 2, arg1 + 2);
-            m = (Map14E24 *)*gCurrentMap;
-            t = m->cells[rx + m->rows[ry]];
-            if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
-                Map_SetCellTile(rx, ry, base);
+            rx = RandomIntRange(x - 2, x + 2);
+            ry = RandomIntRange(y - 2, y + 2);
+            map = (Map14E24 *)*gCurrentMap;
+            tile = map->cells[rx + map->rows[ry]];
+            if (tile == 1 && ry >= 0 && ry < map->height && rx >= 0 && rx < map->width) {
+                Map_SetCellTile(rx, ry, baseTile);
             } else {
                 tries++;
                 placed--;
                 if (tries > 100) break;
             }
             placed++;
-        } while (placed < arg4);
+        } while (placed < distance);
     }
 
     {
         Point15A0C result;
-        result.x = (u16)arg0;
-        result.y = (u16)arg1;
+        result.x = (u16)x;
+        result.y = (u16)y;
         return result;
     }
 }
 #pragma pop
 Point15A0C func_ov007_02215a0c(s32 a,s32 b,s32 c) {
-s32 RandomIntRange(s32,s32);Point15A0C func_ov007_022157fc(s32,s32,s32,s32,s32);
+s32 RandomIntRange(s32,s32);Point15A0C Map_PlaceSideBase(s32,s32,s32,s32,s32);
 s32 tries=0,i,j;s32 *map;s32 x,y,yy,xx;Point15A0C result;
 retry:
 if(++tries>100){volatile Point15A0C empty;volatile u16 *p=(volatile u16 *)&empty;*p++=0;*p=0;return empty;}
@@ -238,7 +240,7 @@ if(i<0||i>=((Map14E24 *)*map)->width)goto retry;
 if(M2C_FIELD((u8 *)*map+((Map14E24 *)*map)->rows[j]+i,u8 *,0x1420)&0xe0)goto retry;
 }}
 for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)Map_SetCellTile(xx,yy,1);
-return func_ov007_022157fc(x,y,a,b,c);
+return Map_PlaceSideBase(x,y,a,b,c);
 }
 #pragma opt_common_subs reset
 s32 func_ov007_02215bc4(s32 *x,s32 *y,s32 value) {

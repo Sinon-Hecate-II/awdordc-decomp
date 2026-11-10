@@ -59,7 +59,7 @@ done:
 
 void func_ov000_0219caac(void) {
 u8 func_020a7b24(s32);void func_ov000_0219c874(s32);
-extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;extern s32 *gCurrentMap;extern u8 data_ov000_021b5bfc[];
+extern u8 data_ov000_021df824;extern s8 data_ov000_021df868;extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
 s32 n;u8 *entry;u8 *p;u8 *q;u8 unit;u32 code;
 p=&data_ov000_021df824;q=(u8 *)&data_ov000_021df868;n=0;
 while(1){
@@ -70,7 +70,7 @@ if(code==17)*q=func_020a7b24(14)+1;
 else if(code==15)*q=func_020a7b24(14)+2;
 else *q=func_020a7b24(code);
 code=(u32)(*entry<<26)>>26;
-if(data_ov000_021b5bfc[code*112+19]&16)
+if(gUnitKindStats[code*112+19]&16)
 if(!(*(u16 *)(entry+4)&8))*q=*(volatile u8 *)q+10;
 p++;q++;n++;
 }
@@ -191,7 +191,7 @@ loop_8:
 void func_ov000_0219ce90(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -215,7 +215,7 @@ void func_ov000_0219ce90(void) {
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1)
-                    && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1
+                    && gUnitKindStats[type * 0x70 + 0x14] == 1
                     && ((u32)(M2C_FIELD((u8 *)table + stride, u16 *, 6) << 0x10) >> 0x1B) != 0
                     && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C) == 0) {
                     out = data_ov000_021df658;
@@ -237,7 +237,7 @@ void func_ov000_0219ce90(void) {
 void func_ov000_0219cfc8(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -261,7 +261,7 @@ void func_ov000_0219cfc8(void) {
             table = (u8 *)obj + 0x59A4;
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
-                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1 && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C) != 0) {
+                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 1 && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C) != 0) {
                     out = data_ov000_021df658;
                     data_ov000_021df658 = out + 1;
                     *out = index;
@@ -282,7 +282,7 @@ void func_ov000_0219cfc8(void) {
 void func_ov000_0219d0f4(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -306,7 +306,7 @@ void func_ov000_0219d0f4(void) {
             table = (u8 *)obj + 0x59A4;
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
-                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1 && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C) == 0) {
+                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 1 && ((u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C) == 0) {
                     out = data_ov000_021df658;
                     data_ov000_021df658 = out + 1;
                     *out = index;
@@ -328,7 +328,7 @@ void func_ov000_0219d0f4(void) {
 void func_ov000_0219d220(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -354,7 +354,7 @@ void func_ov000_0219d220(void) {
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
                 if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1)
-                    && data_ov000_021b5bfc[type * 0x70 + 0x14] == 1) {
+                    && gUnitKindStats[type * 0x70 + 0x14] == 1) {
                     u32 nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
                     if (nibble != 0 && func_ov000_021a8984((s32)nibble) != 0) {
                         out = data_ov000_021df658;
@@ -378,7 +378,7 @@ void func_ov000_0219d220(void) {
 void func_ov000_0219d358(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
@@ -399,7 +399,7 @@ do {
 table = (u8 *)obj + 0x59A4;
 type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
 if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 4) {
+if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 4) {
 out = data_ov000_021df658;
 data_ov000_021df658 = out + 1;
 *out = index;
@@ -426,7 +426,7 @@ data_ov000_021df654 = &func_ov000_021811e8;
 void func_ov000_0219d4b4(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
@@ -446,7 +446,7 @@ do {
 table = (u8 *)obj + 0x59A4;
 type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
 if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 4) {
+if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 4) {
 out = data_ov000_021df658;
 data_ov000_021df658 = out + 1;
 *out = index;
@@ -474,7 +474,7 @@ data_ov000_021df654 = &func_ov000_021812a8;
 void func_ov000_0219d604(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
@@ -493,7 +493,7 @@ do {
 table = (u8 *)obj + 0x59A4;
 type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
 if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && data_ov000_021b5bfc[type * 0x70 + 0x14] == 3) {
+if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 3) {
 out = data_ov000_021df658;
 data_ov000_021df658 = out + 1;
 *out = index;

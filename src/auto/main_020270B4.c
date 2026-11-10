@@ -1,5 +1,6 @@
 /* 16 functions from 0x020270B4 to 0x02028038 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 extern s32 gSession;
 void func_02027e80(s32, void *, s32);
 s32 OS_DisableInterrupts(void);
@@ -30,45 +31,93 @@ OS_RestoreInterrupts(s);return 0;
 
 s32 func_020271cc(void){s32 s=OS_DisableInterrupts(); void *p=(void *)gSession; if(!p){OS_RestoreInterrupts(s);return 1;} if(M2C_FIELD(p,s32 *,0x2260)!=1){OS_RestoreInterrupts(s);return 1;} gSession=0;OS_RestoreInterrupts(s);return 0;}
 
-s32 func_02027224(void *a,s32 b){
- s32 OS_DisableInterrupts(void);
- void OS_RestoreInterrupts(s32);
- void func_02027d60(void *,s32);
- void WFC_SetState(s32);
- s32 func_02011034(s32,s32);
- s32 func_020119dc(s32);
- s32 func_020120f8(void *);
- u16 func_02011d58(void);
- s32 func_02011244(void);
- void func_0202830c(void);
- void WFC_OperationCallback(void);
- extern s32 gSession;
- s32 s=OS_DisableInterrupts();
- void *p=(void *)gSession;
- if(!p){OS_RestoreInterrupts(s);return 1;}
- switch(M2C_FIELD(p,s32 *,0x2260)){
- case 1:func_02027d60(a,b);break;
- case 2:OS_RestoreInterrupts(s);return 2;
- case 3:OS_RestoreInterrupts(s);return 0;
- default:OS_RestoreInterrupts(s);return 1;
- }
- switch(func_02011034(gSession,(u16)M2C_FIELD((void *)gSession,u32 *,0x226c))){
- case 3:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
- case 4:OS_RestoreInterrupts(s);return 5;
- case 1:case 2:case 5:case 6:default:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
- case 0:break;
- }
- if(func_02011d58()==0){
- if(func_02011244()!=0){WFC_SetState(11);OS_RestoreInterrupts(s);return 7;}
- OS_RestoreInterrupts(s);return 5;
- }
- if(func_020119dc((s32)func_0202830c)!=0){WFC_SetState(11);OS_RestoreInterrupts(s);return 7;}
- switch(func_020120f8((void *)WFC_OperationCallback)){
- case 2:WFC_SetState(2);M2C_FIELD((void *)gSession,u16 *,0x2280)=1;break;
- case 8:WFC_SetState(12);OS_RestoreInterrupts(s);return 1;
- case 3:default:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
- }
- OS_RestoreInterrupts(s);return 3;
+/* One step of the WFC session's connection startup: queues the send request,
+ * verifies the wireless link and starts hosting/joining with the operation
+ * callback installed. Returns the shared step status (3 = still running). */
+s32 WFC_ConnectStep(void *request, s32 callback) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void WFC_SetRequest(void *, s32);
+    void WFC_SetState(s32);
+    s32 func_02011034(s32, s32);
+    s32 func_020119dc(s32);
+    s32 func_020120f8(void *);
+    u16 func_02011d58(void);
+    s32 func_02011244(void);
+    void func_0202830c(void);
+    void WFC_OperationCallback(void);
+    extern s32 gSession;
+    s32 irq = OS_DisableInterrupts();
+    void *session = (void *)gSession;
+
+    if (!session) {
+        OS_RestoreInterrupts(irq);
+        return 1;
+    }
+    switch (M2C_FIELD(session, s32 *, WFC_SESSION_STATE)) {
+    case 1:
+        WFC_SetRequest(request, callback);
+        break;
+    case 2:
+        OS_RestoreInterrupts(irq);
+        return 2;
+    case 3:
+        OS_RestoreInterrupts(irq);
+        return 0;
+    default:
+        OS_RestoreInterrupts(irq);
+        return 1;
+    }
+    switch (func_02011034(gSession, (u16)M2C_FIELD((void *)gSession, u32 *, WFC_SESSION_REQUEST))) {
+    case 3:
+        WFC_SetState(11);
+        OS_RestoreInterrupts(irq);
+        return 7;
+    case 4:
+        OS_RestoreInterrupts(irq);
+        return 5;
+    case 1:
+    case 2:
+    case 5:
+    case 6:
+    default:
+        WFC_SetState(11);
+        OS_RestoreInterrupts(irq);
+        return 7;
+    case 0:
+        break;
+    }
+    if (func_02011d58() == 0) {
+        if (func_02011244() != 0) {
+            WFC_SetState(11);
+            OS_RestoreInterrupts(irq);
+            return 7;
+        }
+        OS_RestoreInterrupts(irq);
+        return 5;
+    }
+    if (func_020119dc((s32)func_0202830c) != 0) {
+        WFC_SetState(11);
+        OS_RestoreInterrupts(irq);
+        return 7;
+    }
+    switch (func_020120f8((void *)WFC_OperationCallback)) {
+    case 2:
+        WFC_SetState(2);
+        M2C_FIELD((void *)gSession, u16 *, WFC_SESSION_SUBSTATE) = 1;
+        break;
+    case 8:
+        WFC_SetState(12);
+        OS_RestoreInterrupts(irq);
+        return 1;
+    case 3:
+    default:
+        WFC_SetState(11);
+        OS_RestoreInterrupts(irq);
+        return 7;
+    }
+    OS_RestoreInterrupts(irq);
+    return 3;
 }
 
 void WFC_OperationCallback(void);
@@ -126,7 +175,7 @@ default:OS_RestoreInterrupts(s);return 1;
 case 3:break;
 }
 func_02027e80(a,b,c);
-func_020067a8(M2C_FIELD((void *)gSession,s32 *,0x2288),M2C_FIELD((void *)gSession,u16 *,0x228c));
+DC_InvalidateRange(M2C_FIELD((void *)gSession,s32 *,0x2288),M2C_FIELD((void *)gSession,u16 *,0x228c));
 M2C_FIELD((void *)gSession,s32 *,0x2284)++;
 switch(func_020125b0((M2C_UNK)WFC_ProcessCallback,gSession+0x2288)){
 case 2:WFC_SetState(5);M2C_FIELD((void *)gSession,u16 *,0x2280)=3;break;
@@ -167,83 +216,87 @@ s32 func_020276b0(void) {
     }
 }
 
-s32 func_02027754(void *a, void *b, s32 c) {
+/* Starts the WFC connection: while the session is in the ready state, checks
+ * the local player's connection data and match settings, copies them into the
+ * session and sends the connection request (operation 0x1D); advances the
+ * session state and returns its progress code. */
+s32 WFC_StartConnection(void *connData, void *settings, s32 flags) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02007f8c(void *, u32, u32);
+    void MI_CpuFill8(void *, u32, u32);
     void MI_CpuCopy8(void *, void *, u32);
-    u32 func_02027cb4(u32);
+    u32 WFC_SetStatusBits(u32);
     void WFC_SetState(s32);
     void WFC_OperationCallback(void);
     s32 func_02013d4c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16);
-    s32 s = OS_DisableInterrupts();
-    void *p = (void *)gSession;
+    s32 irq = OS_DisableInterrupts();
+    void *session = (void *)gSession;
     s32 state;
-    if (p == 0) {
-        OS_RestoreInterrupts(s);
+    if (session == 0) {
+        OS_RestoreInterrupts(irq);
         return 1;
     }
-    state = M2C_FIELD(p, s32 *, 0x2260);
+    state = M2C_FIELD(session, s32 *, WFC_SESSION_STATE);
     switch (state) {
     case 3:
-        if (a == 0) {
-            OS_RestoreInterrupts(s);
+        if (connData == 0) {
+            OS_RestoreInterrupts(irq);
             return 1;
         }
-        if (M2C_FIELD(a, u16 *, 0x3c) != 0) {
-            OS_RestoreInterrupts(s);
+        if (M2C_FIELD(connData, u16 *, 0x3c) != 0) {
+            OS_RestoreInterrupts(irq);
             return 1;
         }
-        if (b != 0) {
-            if (M2C_FIELD(b, u8 *, 0) >= 4 || M2C_FIELD(b, u8 *, 1) >= 4) {
-                OS_RestoreInterrupts(s);
+        if (settings != 0) {
+            if (M2C_FIELD(settings, u8 *, 0) >= 4 || M2C_FIELD(settings, u8 *, 1) >= 4) {
+                OS_RestoreInterrupts(irq);
                 return 1;
             }
-            M2C_FIELD((void *)gSession, u8 *, 0x2250) = M2C_FIELD(b, u8 *, 0);
-            M2C_FIELD((void *)gSession, u8 *, 0x2251) = M2C_FIELD(b, u8 *, 1);
-            if (M2C_FIELD((void *)gSession, u8 *, 0x2250) == 0) {
-                func_02007f8c((void *)((char *)gSession + 0x2200), 0, 0x50);
+            M2C_FIELD((void *)gSession, u8 *, WFC_SESSION_MODE) = M2C_FIELD(settings, u8 *, 0);
+            M2C_FIELD((void *)gSession, u8 *, WFC_SESSION_SUBMODE) = M2C_FIELD(settings, u8 *, 1);
+            if (M2C_FIELD((void *)gSession, u8 *, WFC_SESSION_MODE) == 0) {
+                MI_CpuFill8((void *)((char *)gSession + WFC_SESSION_NAME), 0, WFC_SESSION_NAME_LEN);
             } else {
-                MI_CpuCopy8((void *)((char *)b + 2), (void *)((char *)gSession + 0x2200), 0x50);
+                MI_CpuCopy8((void *)((char *)settings + 2), (void *)((char *)gSession + WFC_SESSION_NAME), WFC_SESSION_NAME_LEN);
             }
         } else {
-            func_02007f8c((void *)((char *)gSession + 0x2200), 0, 0x52);
+            MI_CpuFill8((void *)((char *)gSession + WFC_SESSION_NAME), 0, 0x52);
         }
-        MI_CpuCopy8(a, (void *)((char *)gSession + 0x2140), 0xc0);
+        MI_CpuCopy8(connData, (void *)((char *)gSession + WFC_SESSION_CONN_DATA), 0xc0);
         {
-            u16 r2 = M2C_FIELD((void *)gSession, u16 *, 0x216e);
-            r2 |= 3;
-            M2C_FIELD((void *)gSession, u16 *, 0x2170) = r2;
+            u16 status = M2C_FIELD((void *)gSession, u16 *, WFC_SESSION_CONN_FLAGS);
+            status |= 3;
+            M2C_FIELD((void *)gSession, u16 *, WFC_SESSION_CONN_STATUS) = status;
         }
-        func_02027cb4((u32)c);
+        WFC_SetStatusBits((u32)flags);
         break;
     case 8:
-        OS_RestoreInterrupts(s);
+        OS_RestoreInterrupts(irq);
         return 2;
     case 9:
-        OS_RestoreInterrupts(s);
+        OS_RestoreInterrupts(irq);
         return 0;
     default:
-        OS_RestoreInterrupts(s);
+        OS_RestoreInterrupts(irq);
         return 1;
     }        {
-            s32 r = func_02013d4c((M2C_UNK)WFC_OperationCallback, (M2C_UNK)0xffff, 0x50, 0xffff, (u16)0xffff);
-            switch (r) {
+            s32 result = func_02013d4c((M2C_UNK)WFC_OperationCallback, (M2C_UNK)0xffff, 0x50, 0xffff, (u16)0xffff);
+            switch (result) {
             case 2:
                 WFC_SetState(8);
-                M2C_FIELD((void *)gSession, u16 *, 0x2280) = 5;
+                M2C_FIELD((void *)gSession, u16 *, WFC_SESSION_SUBSTATE) = 5;
                 break;
             case 8:
-                OS_RestoreInterrupts(s);
+                OS_RestoreInterrupts(irq);
                 return 4;
             case 3:
             default:
                 WFC_SetState(0xb);
-                OS_RestoreInterrupts(s);
+                OS_RestoreInterrupts(irq);
                 return 7;
             }
         }
-        OS_RestoreInterrupts(s);
+        OS_RestoreInterrupts(irq);
         return 3;
 
 }
@@ -302,68 +355,71 @@ s32 func_02027958(void) {
     return 3;
 }
 
-s32 func_02027a74(void){
+/* One step of the WFC session while it waits for the DWC link: reads the link
+ * state, starts hosting or joining, and moves the session to the next state
+ * (or to the error/finished state on failure). */
+s32 WFC_ProcessLinkState(void){
 u16 *func_02011910(void);
-M2C_UNK func_020067a8();
+M2C_UNK DC_InvalidateRange();
 s32 func_02011244(void);
 s32 func_02012158(void *);
 s32 func_020121d8(M2C_UNK);
 s32 func_02012274(void *);
 void WFC_OperationCallback(void);
 void func_02028ef4(void);
-s32 s=OS_DisableInterrupts();
-void *p=(void *)gSession;
-u16 *v;
-s32 r;
-if(!p){OS_RestoreInterrupts(s);return 1;}
-switch(M2C_FIELD(p,s32 *,0x2260)){
-case 13:OS_RestoreInterrupts(s);return 2;
-case 1:OS_RestoreInterrupts(s);return 0;
+s32 irq=OS_DisableInterrupts();
+void *session=(void *)gSession;
+u16 *linkState;
+s32 result;
+if(!session){OS_RestoreInterrupts(irq);return 1;}
+switch(M2C_FIELD(session,s32 *,WFC_SESSION_STATE)){
+case 13:OS_RestoreInterrupts(irq);return 2;
+case 1:OS_RestoreInterrupts(irq);return 0;
 case 6:
-WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,0x2280)=9;
-OS_RestoreInterrupts(s);return 3;
+WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_SUBSTATE)=9;
+OS_RestoreInterrupts(irq);return 3;
 case 3:case 9:case 12:break;
-default:OS_RestoreInterrupts(s);return 1;
+default:OS_RestoreInterrupts(irq);return 1;
 }
-if(M2C_FIELD(p,u8 *,0x226b)==1){
-WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,0x2280)=9;
+if(M2C_FIELD(session,u8 *,WFC_SESSION_ABORT)==1){
+WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_SUBSTATE)=9;
 }else{
-v=func_02011910();
-func_020067a8(v,2);
-switch(*v){
+linkState=func_02011910();
+DC_InvalidateRange(linkState,2);
+switch(*linkState){
 case 0:
-if((r=func_02011244())==0){
-WFC_SetState(1);M2C_FIELD((void *)gSession,u16 *,0x2280)=0;
-OS_RestoreInterrupts(s);return 0;
+if((result=func_02011244())==0){
+WFC_SetState(1);M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_SUBSTATE)=0;
+OS_RestoreInterrupts(irq);return 0;
 }
 break;
-case 1:r=func_02012158(WFC_OperationCallback);break;
-case 2:r=func_020121d8((M2C_UNK)WFC_OperationCallback);break;
-default:M2C_FIELD((void *)gSession,u8 *,0x226b)=1;
-r=func_02012274(func_02028ef4);
+case 1:result=func_02012158(WFC_OperationCallback);break;
+case 2:result=func_020121d8((M2C_UNK)WFC_OperationCallback);break;
+default:M2C_FIELD((void *)gSession,u8 *,WFC_SESSION_ABORT)=1;
+result=func_02012274(func_02028ef4);
 break;
 }
-switch(r){
-case 2:WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,0x2280)=9;break;
-case 8:OS_RestoreInterrupts(s);return 4;
-case 3:default:WFC_SetState(11);OS_RestoreInterrupts(s);return 7;
+switch(result){
+case 2:WFC_SetState(13);M2C_FIELD((void *)gSession,u16 *,WFC_SESSION_SUBSTATE)=9;break;
+case 8:OS_RestoreInterrupts(irq);return 4;
+case 3:default:WFC_SetState(11);OS_RestoreInterrupts(irq);return 7;
 }
 }
-OS_RestoreInterrupts(s);return 3;
+OS_RestoreInterrupts(irq);return 3;
 }
 
 s32 func_02027c84(void){s32 s=OS_DisableInterrupts();s32 r=0;void *p=(void *)gSession;if(p)r=M2C_FIELD(p,s32 *,0x2260);OS_RestoreInterrupts(s);return r;}
 
-u32 func_02027cb4(u32 arg){u32 old;u32 v=arg;s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gSession;old=M2C_FIELD(p+0x2000,u32 *,0x264);if(!p){OS_RestoreInterrupts(s);return 0;}if(v&0x8000){mask|=0x3ffe;if(!(v&0x3ffe))v|=0xa082;}if(v&0x20000)mask|=0x10000;if(v&0x80000)mask|=0x40000;if(v&0x200000)mask|=0x100000;if(v&0x800000)mask|=0x400000;M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);OS_RestoreInterrupts(s);return old;}
+u32 WFC_SetStatusBits(u32 arg){u32 old;u32 v=arg;s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gSession;old=M2C_FIELD(p+0x2000,u32 *,0x264);if(!p){OS_RestoreInterrupts(s);return 0;}if(v&0x8000){mask|=0x3ffe;if(!(v&0x3ffe))v|=0xa082;}if(v&0x20000)mask|=0x10000;if(v&0x80000)mask|=0x40000;if(v&0x200000)mask|=0x100000;if(v&0x800000)mask|=0x400000;M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);OS_RestoreInterrupts(s);return old;}
 
 s32 func_02027d50(void) {
     extern s32 gSession;
     return gSession;
 }
 
-void func_02007f8c(void *, u32, u32);
-void func_02027d60(void *a, s32 b) {
-    void func_02007f8c(void *, u32, u32);
+void MI_CpuFill8(void *, u32, u32);
+void WFC_SetRequest(void *a, s32 b) {
+    void MI_CpuFill8(void *, u32, u32);
     if (a == 0) {
         M2C_FIELD((void *)gSession, s32 *, 0x226c) = 3;
         M2C_FIELD((void *)gSession, s32 *, 0x2270) = 0;
@@ -379,13 +435,13 @@ void func_02027d60(void *a, s32 b) {
         M2C_FIELD((void *)gSession, u32 *, 0x2270) = (M2C_FIELD(a, u32 *, 4) + 3) & ~3;
         M2C_FIELD((void *)gSession, u32 *, 0x2274) = M2C_FIELD(a, u32 *, 8) - ((4 - (M2C_FIELD(a, u32 *, 4) & 3)) & 3);
     }
-    func_02007f8c((void *)M2C_FIELD((void *)gSession, u32 *, 0x2270), 0, M2C_FIELD((void *)gSession, u32 *, 0x2274));
+    MI_CpuFill8((void *)M2C_FIELD((void *)gSession, u32 *, 0x2270), 0, M2C_FIELD((void *)gSession, u32 *, 0x2274));
     M2C_FIELD((void *)gSession, u32 *, 0x2278) = M2C_FIELD(a, u32 *, 12);
     M2C_FIELD((void *)gSession, u32 *, 0x227c) = b;
 }
 
 void func_02027e80(s32 a, void *b, s32 c) {
-    u32 func_02027cb4(u32);
+    u32 WFC_SetStatusBits(u32);
     u16 func_02028038(s32);
     u16 func_02011e98(void);
     void MI_CpuCopy8(void *, void *, u32);
@@ -394,7 +450,7 @@ void func_02027e80(s32 a, void *b, s32 c) {
     extern u8 data_020ea760[];
     u8 *r4 = (u8 *)b;
     u16 tmp;
-    func_02027cb4((u32)c);
+    WFC_SetStatusBits((u32)c);
     M2C_FIELD((void *)gSession, void **, 0x2288) = (void *)((s32)gSession + 0x1500);
     M2C_FIELD((void *)gSession, u16 *, 0x228c) = 0x400;
     tmp = func_02028038(0);

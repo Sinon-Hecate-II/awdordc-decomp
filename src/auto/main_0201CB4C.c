@@ -1,9 +1,10 @@
 /* 30 functions from 0x0201CB4C to 0x0201DB20 (main), found by ds-decomp. */
 #include "common.h"
+#include "tcp_socket.h"
 
 #pragma scheduling off
 void *func_0201cb4c(void *packet,s32 *done){
-extern u8 data_021375b8[];extern s32 data_02137290;u64 func_02007004(void);void MI_CpuCopy8(void *,void *,u32);
+extern u8 data_021375b8[];extern s32 gNetStack;u64 GetSystemTick(void);void MI_CpuCopy8(void *,void *,u32);
 u16 id;u32 head;u8 *freeSlot=0,*slot;u32 covered;u32 offset,end,ip,finalEnd;u32 flags,len,i,count;u16 a,b,t;u32 first;
 *done=0;t=M2C_FIELD(packet,u16 *,6);flags=(u16)(((s32)t>>8)|(t<<8));
 if(!(flags&0x3fff))return packet;
@@ -21,15 +22,15 @@ offset=flags&0x1fff;end=len+offset*8;
 if(i==8){
 if(!freeSlot||end>4096)return 0;
 slot=freeSlot;
-M2C_FIELD(freeSlot,void **,0x34)=M2C_FIELD(&data_02137290,void *(**)(u32),0x14)(head+0x100e);
+M2C_FIELD(freeSlot,void **,0x34)=M2C_FIELD(&gNetStack,void *(**)(u32),0x14)(head+0x100e);
 if(!M2C_FIELD(freeSlot,void **,0x34))return 0;
 M2C_FIELD(freeSlot,u32 *,0)=ip;M2C_FIELD(freeSlot,u16 *,6)=id;M2C_FIELD(freeSlot,u16 *,8)=0;
-M2C_FIELD(freeSlot,u32 *,0x2c)=(u32)(func_02007004()>>16);
+M2C_FIELD(freeSlot,u32 *,0x2c)=(u32)(GetSystemTick()>>16);
 M2C_FIELD(freeSlot,void **,0x30)=(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14+head;
 MI_CpuCopy8(packet,(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14,head);
 }
 if(M2C_FIELD(slot,u16 *,4)==8||end>4096){
-void (*release)(void *)=M2C_FIELD(&data_02137290,void (**)(void *),0x40);M2C_FIELD(slot,u16 *,4)=0;release(M2C_FIELD(slot,void **,0x34));return 0;
+void (*release)(void *)=M2C_FIELD(&gNetStack,void (**)(void *),0x40);M2C_FIELD(slot,u16 *,4)=0;release(M2C_FIELD(slot,void **,0x34));return 0;
 }
 count=offset+((len+7)>>3);
 if(!(flags&0x2000)){M2C_FIELD(slot,u16 *,10)=end;M2C_FIELD(slot,u16 *,8)=count;}
@@ -53,9 +54,9 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
     M2C_UNK func_0201ae0c(void *, M2C_UNK, s32);
     M2C_UNK func_0201bb88(void *, u8 *, M2C_UNK);
     M2C_UNK func_0201c820(void *, void *, s32);
-    M2C_UNK func_0201c940(void *, void *, s32);
+    M2C_UNK UdpReceiveDatagram(void *, void *, s32);
     void *func_0201cb4c(void *, s32 *);
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gNetStack;
 
     u32 left;
     u32 right;
@@ -83,7 +84,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         }
         dataA = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0x10) >> 8) | (M2C_FIELD(arg0, u16 *, 0x10) << 8)) << 16) |
                 (u16)((M2C_FIELD(arg0, u16 *, 0x12) >> 8) | (M2C_FIELD(arg0, u16 *, 0x12) << 8));
-        if (M2C_FIELD(&data_02137290, s32 *, 0x50) == (s32)dataA) {
+        if (M2C_FIELD(&gNetStack, s32 *, 0x50) == (s32)dataA) {
             dataB = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0xC) >> 8) | (M2C_FIELD(arg0, u16 *, 0xC) << 8)) << 16) |
                     (u16)((M2C_FIELD(arg0, u16 *, 0xE) >> 8) | (M2C_FIELD(arg0, u16 *, 0xE) << 8));
             func_0201ae0c(arg0 - 8, dataB, 1);
@@ -112,8 +113,8 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         val = (s32)(u16)((t2b >> 8) | (t2b << 8)) - off;
 
         if (type == 0x11) {
-            func_0201c940(rp, ptr, val);
-        } else if (M2C_FIELD(&data_02137290, s32 *, 0x50) != 0) {
+            UdpReceiveDatagram(rp, ptr, val);
+        } else if (M2C_FIELD(&gNetStack, s32 *, 0x50) != 0) {
             if (type == 1) {
                 func_0201bb88(rp, (u8 *)ptr, val);
             } else if (type == 6) {
@@ -122,7 +123,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         }
 
         if (sp0 != 0) {
-            M2C_FIELD(&data_02137290, M2C_UNK (**)(M2C_UNK), 0x40)((M2C_UNK)(rp - 0xE));
+            M2C_FIELD(&gNetStack, M2C_UNK (**)(M2C_UNK), 0x40)((M2C_UNK)(rp - 0xE));
         }
     }
 }
@@ -155,8 +156,8 @@ void func_0201cfdc(void) {
 }
 
 u16 func_0201d04c(void) {
-    extern M2C_UNK data_0212dca4;
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gSocketManager;
+    extern M2C_UNK gNetStack;
 
     u16 counter;
     u8 *node;
@@ -164,16 +165,16 @@ u16 func_0201d04c(void) {
     s32 found;
 
     for (;;) {
-        counter = M2C_FIELD(&data_02137290, u16 *, 8);
+        counter = M2C_FIELD(&gNetStack, u16 *, 8);
         counter = counter + 1;
         if (counter >= 0x400) {
             if (counter >= 0x1388) {
                 counter = 0x400;
             }
         }
-        M2C_FIELD(&data_02137290, u16 *, 8) = counter;
+        M2C_FIELD(&gNetStack, u16 *, 8) = counter;
 
-        node = M2C_FIELD(&data_0212dca4, u8 *, 8);
+        node = M2C_FIELD(&gSocketManager, u8 *, 8);
         found = 0;
         if (node != 0) {
             do {
@@ -193,39 +194,39 @@ u16 func_0201d04c(void) {
             break;
         }
     }
-    return M2C_FIELD(&data_02137290, u16 *, 8);
+    return M2C_FIELD(&gNetStack, u16 *, 8);
 }
 
 s32 func_0201d0f4(void) {
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gNetStack;
     u64 mult;
     u64 val;
     u64 add;
     u64 res;
 
-    mult = M2C_FIELD(&data_02137290, u64 *, 0x70);
-    val = M2C_FIELD(&data_02137290, u64 *, 0x68);
-    add = M2C_FIELD(&data_02137290, u64 *, 0x78);
+    mult = M2C_FIELD(&gNetStack, u64 *, 0x70);
+    val = M2C_FIELD(&gNetStack, u64 *, 0x68);
+    add = M2C_FIELD(&gNetStack, u64 *, 0x78);
     res = mult * val + add;
-    M2C_FIELD(&data_02137290, u64 *, 0x68) = res;
+    M2C_FIELD(&gNetStack, u64 *, 0x68) = res;
     return (s32)(res >> 32);
 }
 
 void func_0201d138(s32 arg0) {
-    extern M2C_UNK data_0212dca4;
-    M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), s32 *, 0xA4) = arg0;
+    extern M2C_UNK gSocketManager;
+    M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = arg0;
 }
 
 void func_0201d14c(void) {
-    extern M2C_UNK data_0212dca4;
-    M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), s32 *, 0xA4) = 0;
+    extern M2C_UNK gSocketManager;
+    M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = 0;
 }
 
 void func_0201d164(void) {
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     M2C_UNK *inner;
     M2C_UNK *q;
-    inner = (M2C_UNK *)M2C_FIELD(&data_0212dca4, void **, 4);
+    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
     q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
     if (q == 0) {
         return;
@@ -235,19 +236,19 @@ void func_0201d164(void) {
 }
 
 void func_0201d190(s32 arg0, s32 arg1, s32 arg2) {
-    extern M2C_UNK data_0212dca4;
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gSocketManager;
+    extern M2C_UNK gNetStack;
     u16 func_0201d04c(void);
     M2C_UNK *inner;
     M2C_UNK *q;
     s32 temp;
-    inner = (M2C_UNK *)M2C_FIELD(&data_0212dca4, void **, 4);
+    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
     q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
     if (q == 0) {
         return;
     }
     if (arg2 == 0x7F000001) {
-        temp = M2C_FIELD(&data_02137290, s32 *, 0x50);
+        temp = M2C_FIELD(&gNetStack, s32 *, 0x50);
     } else {
         temp = arg2;
     }
@@ -263,10 +264,10 @@ void func_0201d190(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_0201d1f0(void) {
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     M2C_UNK *inner;
     M2C_UNK *q;
-    inner = (M2C_UNK *)M2C_FIELD(&data_0212dca4, void **, 4);
+    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
     q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
     if (q == 0) {
         return;
@@ -279,8 +280,8 @@ void func_0201d1f0(void) {
 }
 
 void func_0201d224(void) {
-    extern M2C_UNK data_0212dca4;
-    void *x = M2C_FIELD(&data_0212dca4, void **, 4);
+    extern M2C_UNK gSocketManager;
+    void *x = M2C_FIELD(&gSocketManager, void **, 4);
     s32 *q = M2C_FIELD(x, s32 **, 0xa4);
     if (q != 0) {
         *q = 0;
@@ -288,12 +289,12 @@ void func_0201d224(void) {
 }
 
 void func_0201d244(void *arg0) {
-    extern M2C_UNK data_0212dca4;
-    M2C_FIELD(arg0, void **, 0xA4) = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
+    extern M2C_UNK gSocketManager;
+    M2C_FIELD(arg0, void **, 0xA4) = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
 }
 
 void func_0201d25c(void *arg0) {
-    M2C_UNK func_02005da4(M2C_UNK);
+    M2C_UNK OS_SleepThread(M2C_UNK);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 func_0201d0f4();
@@ -306,13 +307,13 @@ void func_0201d25c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 8) = 1;
     temp_r4 = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 4) = 1;
-    func_02005da4(0);
+    OS_SleepThread(0);
     OS_RestoreInterrupts(temp_r4);
 }
 
 void func_0201d29c(s32 arg0) {
-    extern M2C_UNK data_0212dca4;
-    void *x = M2C_FIELD(&data_0212dca4, void **, 4);
+    extern M2C_UNK gSocketManager;
+    void *x = M2C_FIELD(&gSocketManager, void **, 4);
     s32 *q = M2C_FIELD(x, s32 **, 0xa4);
     if (q != 0) {
         M2C_FIELD(q, s32 *, 0x38) = arg0;
@@ -322,8 +323,8 @@ void func_0201d29c(s32 arg0) {
 void func_0201d2b8(void) {
     void func_02024b24(void);
     void func_0201d25c(void *);
-    extern M2C_UNK data_0212dca4;
-    void *p = (void *) M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
+    extern M2C_UNK gSocketManager;
+    void *p = (void *) M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     if (p == 0) {
         return;
     }
@@ -335,9 +336,9 @@ void func_0201d2b8(void) {
 }
 
 s32 func_0201d2f0(void *arg0) {
-    u64 func_02007004();
+    u64 GetSystemTick();
     M2C_UNK func_0201bee4(void *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gNetStack;
     u32 var_r7;
     s32 temp_r8;
     s32 temp_r9;
@@ -347,28 +348,28 @@ s32 func_0201d2f0(void *arg0) {
 loop_1:
     M2C_FIELD(arg0, s32 *, 0x28) = temp_r8;
     M2C_FIELD(arg0, u8 *, 8) = 2U;
-    M2C_FIELD(arg0, s32 *, 0x10) = (s32)(func_02007004() >> 16);
+    M2C_FIELD(arg0, s32 *, 0x10) = (s32)(GetSystemTick() >> 16);
     func_0201bee4(arg0, 2, 0x18);
     temp_r9 = OS_DisableInterrupts();
-    if ((M2C_FIELD(arg0, u8 *, 8) == 2) && (M2C_FIELD(&data_02137290, s32 *, 0x50) != 0)) {
+    if ((M2C_FIELD(arg0, u8 *, 8) == 2) && (M2C_FIELD(&gNetStack, s32 *, 0x50) != 0)) {
         M2C_FIELD(arg0, s32 *, 4) = 1;
-        func_02005da4(0);
+        OS_SleepThread(0);
     }
     OS_RestoreInterrupts(temp_r9);
     if (M2C_FIELD(arg0, u8 *, 8) == 4) {
         return 0;
     }
-    if ((M2C_FIELD(&data_02137290, s32 *, 0x50) == 0) || (++var_r7 >= 3U)) {
+    if ((M2C_FIELD(&gNetStack, s32 *, 0x50) == 0) || (++var_r7 >= 3U)) {
         return 1;
     }
     goto loop_1;
 }
 
-s32 func_0201d3a4(void){extern M2C_UNK data_0212dca4;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return func_0201d2f0(p);}return 1;}
+s32 func_0201d3a4(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return func_0201d2f0(p);}return 1;}
 
 s32 func_0201d3e4(u16 *arg0,u32 *arg1) {
-extern M2C_UNK data_0212dca4;
-void *p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),void**,0xa4);
+extern M2C_UNK gSocketManager;
+void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p!=0&&(M2C_FIELD(p,u8*,8)==4||M2C_FIELD(p,u8*,8)==10)){
 if(arg0!=0)*arg0=M2C_FIELD(p,u16*,0x18);
 if(arg1!=0)*arg1=M2C_FIELD(p,u32*,0x14);
@@ -399,33 +400,33 @@ void func_0201d434(void *arg0) {
 void func_0201d484(void) {
 void func_020250d0(void *);
 void func_0201d434(void *);
-extern M2C_UNK data_0212dca4;
-void *p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),void**,0xa4);
+extern M2C_UNK gSocketManager;
+void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
 if(M2C_FIELD(p,u8*,9)!=0)func_020250d0(p);
 func_0201d434(p);
 }
 
 void func_0201d4c0(void) {
-extern M2C_UNK data_0212dca4,data_02137290;
-void func_02025150(void *);M2C_UNK func_0201a238();u64 func_02007004(void);
-void *inner=M2C_FIELD(&data_0212dca4,void **,4);
+extern M2C_UNK gSocketManager,gNetStack;
+void func_02025150(void *);M2C_UNK func_0201a238();u64 GetSystemTick(void);
+void *inner=M2C_FIELD(&gSocketManager,void **,4);
 void *node=M2C_FIELD(inner,void **,0xa4);
 s32 start;
 if(!node)return;
 if(M2C_FIELD(node,u8 *,9)){func_02025150(node);}
-start=(u32)(func_02007004()>>16);
+start=(u32)(GetSystemTick()>>16);
 goto check;
 loop:func_0201a238();
 check:
-if(!M2C_FIELD(&data_02137290,s32 (**)(void),0x48)() || !M2C_FIELD(node,u8 *,8))goto done;
-if((s32)((u32)(func_02007004()>>16)-start)<39)goto loop;
+if(!M2C_FIELD(&gNetStack,s32 (**)(void),0x48)() || !M2C_FIELD(node,u8 *,8))goto done;
+if((s32)((u32)(GetSystemTick()>>16)-start)<39)goto loop;
 done:M2C_FIELD(node,u8 *,8)=0;
 }
 
 s32 func_0201d548(s32 *arg0, void *arg1) {
     s32 OS_DisableInterrupts();
-    M2C_UNK func_02005da4(M2C_UNK);
+    M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 var_r6;
     s32 temp_r7;
@@ -434,7 +435,7 @@ s32 func_0201d548(s32 *arg0, void *arg1) {
     var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
     while (var_r6 == 0) {
         M2C_FIELD(arg1, s32 *, 4) = 3;
-        func_02005da4(0);
+        OS_SleepThread(0);
         var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
     }
     OS_RestoreInterrupts(temp_r7);
@@ -444,7 +445,7 @@ s32 func_0201d548(s32 *arg0, void *arg1) {
 
 s32 func_0201d59c(u32 *arg0, M2C_UNK arg1) {
     s32 OS_DisableInterrupts(void);
-    M2C_UNK func_02005da4(M2C_UNK);
+    M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK TaskYield(void);
     s32 temp_r8;
@@ -454,7 +455,7 @@ s32 func_0201d59c(u32 *arg0, M2C_UNK arg1) {
         temp_r8 = OS_DisableInterrupts();
         while (M2C_FIELD((void *)arg1, s32 *, 0x44) == 0 && M2C_FIELD((void *)arg1, u8 *, 0x8) == 4) {
             M2C_FIELD((void *)arg1, s32 *, 0x4) = 2;
-            func_02005da4(0);
+            OS_SleepThread(0);
         }
         OS_RestoreInterrupts(temp_r8);
     } else {
@@ -472,12 +473,12 @@ s32 func_0201d618(s32 *arg0) {
     s32 func_0201d548(s32 *, void *);
     s32 func_0201d59c(u32 *, M2C_UNK);
     s32 func_02024cb4(s32 *, void *);
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     void *inner;
     void *q;
     u8 v;
 
-    inner = M2C_FIELD(&data_0212dca4, void **, 0x4);
+    inner = M2C_FIELD(&gSocketManager, void **, 0x4);
     q = M2C_FIELD(inner, void **, 0xA4);
     if (q == 0) goto fail;
     v = (u8)(((u8 *)q)[8] + 0xF6);
@@ -532,15 +533,15 @@ void func_0201d67c(u32 arg0, void *arg1) {
 void func_0201d70c(u32 arg0) {
 void func_02024d8c(u32,void *);
 void func_0201d67c(u32,void *);
-extern M2C_UNK data_0212dca4;
-void *p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),void**,0xa4);
+extern M2C_UNK gSocketManager;
+void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
 if(M2C_FIELD(p,u8*,9)!=0)func_02024d8c(arg0,p);
 else func_0201d67c(arg0,p);
 }
 
 s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gNetStack;
     M2C_UNK TcpSendSegment(M2C_UNK, s32, M2C_UNK, s32, s32);
     M2C_UNK TaskYield(void);
 
@@ -571,7 +572,7 @@ s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
 
     for (;;) {
         v4 = M2C_FIELD(v8, u16 *, 0x2E);
-        global = M2C_FIELD(&data_02137290, u16 *, 0x2);
+        global = M2C_FIELD(&gNetStack, u16 *, 0x2);
         v1 = M2C_FIELD(v8, s32 *, 0x34);
         if ((u32)v4 >= (u32)v5) {
             v4 = v5;
@@ -621,117 +622,119 @@ void func_0201d808(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_propagation off
-s32 TcpSendData(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
-    u64 func_02007004();
+/* Sends up to two buffers through the TCP socket until the link stops accepting
+ * data or 0x9F ticks pass without progress; returns the number of bytes sent. */
+s32 TcpSendData(s32 src1, s32 len1, s32 src2, s32 len2, void *sock) {
+    u64 GetSystemTick();
     M2C_UNK func_0201a238();
-    extern M2C_UNK data_02137290;
-    s32 sp10;
-    u32 spC;
-    s32 sp8;
-    s32 temp_r1;
-    s32 temp_r7;
-    s32 temp_r7_2;
-    s32 var_r11;
-    u32 var_r5;
-    s32 var_r6;
-    u32 r5v;
-    s32 var_r9;
-    u32 temp_ret_4;
-    u32 temp_ret_7;
-    s32 var_r10;
+    extern M2C_UNK gNetStack;
+    s32 total;
+    u32 lastSend;
+    s32 left2;
+    s32 split;
+    s32 sendStart;
+    s32 waitStart;
+    s32 ptr1;
+    u32 progress;
+    s32 waited;
+    u32 pollStart;
+    s32 ptr2;
+    u32 now1;
+    u32 now2;
+    s32 left1;
 
-    var_r11 = arg0;
-    sp10 = 0;
-    var_r10 = arg1;
-    var_r9 = arg2;
-    sp8 = arg3;
-    var_r6 = 0;
-    M2C_FIELD(arg4, s32 *, 0x34) = 0;
-    spC = (u32)(func_02007004() >> 16);
+    ptr1 = src1;
+    total = 0;
+    left1 = len1;
+    ptr2 = src2;
+    left2 = len2;
+    waited = 0;
+    M2C_FIELD(sock, s32 *, TCP_SOCK_RESULT) = 0;
+    lastSend = (u32)(GetSystemTick() >> 16);
     goto gate;
 body:
-    temp_r7 = M2C_FIELD(arg4, s32 *, 0x28);
-    func_0201d808(var_r11, var_r10, var_r9, sp8, arg4, var_r6);
-    r5v = (u32)(func_02007004() >> 16);
+    sendStart = M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS);
+    func_0201d808(ptr1, left1, ptr2, left2, sock, waited);
+    pollStart = (u32)(GetSystemTick() >> 16);
 loop_2:
     func_0201a238();
-    if ((M2C_FIELD(&data_02137290, s32 (**)(), 0x48)() != 0) && (M2C_FIELD(arg4, u8 *, 8) == 4) && (M2C_FIELD(arg4, s32 *, 0x28) != M2C_FIELD(arg4, s32 *, 0x30))) {
-        temp_ret_4 = (u32)(func_02007004() >> 16);
-        if ((s32)(temp_ret_4 - r5v) < 0xF) {
-            if (!((var_r6 != 0) && (M2C_FIELD(arg4, u16 *, 0x2C) != 0))) {
+    if ((M2C_FIELD(&gNetStack, s32 (**)(), NETSTACK_POLL)() != 0) && (M2C_FIELD(sock, u8 *, TCP_SOCK_STATE) == 4) && (M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS) != M2C_FIELD(sock, s32 *, TCP_SOCK_SENTPOS))) {
+        now1 = (u32)(GetSystemTick() >> 16);
+        if ((s32)(now1 - pollStart) < 0xF) {
+            if (!((waited != 0) && (M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG) != 0))) {
                 goto loop_2;
             }
         }
     }
-    var_r5 = M2C_FIELD(arg4, s32 *, 0x30) - temp_r7;
-    if (var_r5 > (u32)(M2C_FIELD(arg4, s32 *, 0x28) - temp_r7)) {
-        var_r5 = 0;
+    progress = M2C_FIELD(sock, s32 *, TCP_SOCK_SENTPOS) - sendStart;
+    if (progress > (u32)(M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS) - sendStart)) {
+        progress = 0;
     }
-    sp10 += var_r5;
-    if (var_r5 != 0) {
-        spC = (u32)(func_02007004() >> 16);
+    total += progress;
+    if (progress != 0) {
+        lastSend = (u32)(GetSystemTick() >> 16);
     }
-    M2C_FIELD(arg4, s32 *, 0x28) = (s32)M2C_FIELD(arg4, s32 *, 0x30);
-    if ((M2C_FIELD(arg4, u8 *, 8) == 4) && (M2C_FIELD(arg4, u16 *, 0x2C) == 0) && (var_r5 == 0)) {
-        if (var_r6 == 0) {
-            temp_r7_2 = (s32)(u32)(func_02007004() >> 16);
+    M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS) = (s32)M2C_FIELD(sock, s32 *, TCP_SOCK_SENTPOS);
+    if ((M2C_FIELD(sock, u8 *, TCP_SOCK_STATE) == 4) && (M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG) == 0) && (progress == 0)) {
+        if (waited == 0) {
+            waitStart = (s32)(u32)(GetSystemTick() >> 16);
             goto check_22;
 loop_22:
             func_0201a238();
-            if (M2C_FIELD(arg4,u16 *,0x2C)!=0)goto done_22;
+            if (M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG) != 0) goto done_22;
 check_22:
-            if (M2C_FIELD(&data_02137290, s32 (**)(), 0x48)() != 0) {
-                temp_ret_7 = (u32)(func_02007004() >> 16);
-                if ((s32)(temp_ret_7 - temp_r7_2) < 0xF) {
+            if (M2C_FIELD(&gNetStack, s32 (**)(), NETSTACK_POLL)() != 0) {
+                now2 = (u32)(GetSystemTick() >> 16);
+                if ((s32)(now2 - waitStart) < 0xF) {
                     goto loop_22;
                 }
             }
 done_22:
-            if (M2C_FIELD(arg4, u16 *, 0x2C) == 0) {
-                var_r6 = 1;
+            if (M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG) == 0) {
+                waited = 1;
             }
         }
     } else {
-        var_r6 = 0;
+        waited = 0;
     }
-    if (var_r5 < (u32)var_r10) {
-        var_r11 += (s32)var_r5;
-        var_r10 -= (s32)var_r5;
+    if (progress < (u32)left1) {
+        ptr1 += (s32)progress;
+        left1 -= (s32)progress;
     } else {
-        temp_r1 = (s32)var_r5 - var_r10;
-        var_r11 = var_r9 + temp_r1;
-        var_r9 = 0;
-        var_r10 = sp8 - temp_r1;
-        sp8 = 0;
+        split = (s32)progress - left1;
+        ptr1 = ptr2 + split;
+        ptr2 = 0;
+        left1 = left2 - split;
+        left2 = 0;
     }
     goto gate;
 gate:
-    if ((M2C_FIELD(&data_02137290, s32 (**)(), 0x48)() == 0) || (var_r10 == 0)) {
+    if ((M2C_FIELD(&gNetStack, s32 (**)(), NETSTACK_POLL)() == 0) || (left1 == 0)) {
         goto ret;
     }
-    if (M2C_FIELD(arg4, u8 *, 8) != 4) {
+    if (M2C_FIELD(sock, u8 *, TCP_SOCK_STATE) != 4) {
         goto ret;
     }
-    var_r5 = (u32)(func_02007004() >> 16);
-    if ((s32)(var_r5 - spC) >= 0x9F) {
+    progress = (u32)(GetSystemTick() >> 16);
+    if ((s32)(progress - lastSend) >= 0x9F) {
         goto ret;
     }
     goto body;
 ret:
-    return sp10;
+    return total;
 }
 #pragma pop
 s32 func_0201da4c(s32 a,s32 b,s32 c,s32 d){
-extern M2C_UNK data_0212dca4;extern M2C_UNK data_02137290;
+extern M2C_UNK gSocketManager;extern M2C_UNK gNetStack;
 void func_0201b3e8(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 func_02024f9c(s32,s32,s32,s32,void *);s32 TcpSendData(s32,s32,s32,s32,void *);
 void *p; s32 result;
-p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),void **,0xa4);
+p=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),void **,0xa4);
 if(p!=0){
 if(M2C_FIELD(p,u8 *,8)==10){if(b)func_0201b3e8(a,b,p);if(d)func_0201b3e8(c,d,p);result=b+d;}
 else if(M2C_FIELD(p,u8 *,8)==11){if(b)func_0201b338(a,b,p);if(d)func_0201b338(c,d,p);result=b+d;}
 else if(M2C_FIELD(p,u8 *,9))result=func_02024f9c(a,b,c,d,p);
 else result=TcpSendData(a,b,c,d,p);
-if(M2C_FIELD(&data_02137290,u8 *,0)==0)return result;
+if(M2C_FIELD(&gNetStack,u8 *,0)==0)return result;
 }return 0;
 }
 

@@ -209,7 +209,7 @@ void func_0209f38c(void) {
    config, then set the map's battle/tileset flags. */
 void InitBattleMapConfig(void) {
     extern void **gCurrentMap;
-    extern MapConfigRecord data_02168f14;
+    extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
     s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
     void func_020a230c(s32,s32); void func_020a232c(s32,s32); void func_020a231c(s32,s32); void func_020a23a4(s32,s32);
@@ -239,17 +239,17 @@ void InitBattleMapConfig(void) {
     }
     if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
     setting = func_020a8994(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    data_02168f14.unk_3 = setting;
+    gMapConfig.unk_3 = setting;
     setting = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    data_02168f14.unk_4 = setting;
+    gMapConfig.unk_4 = setting;
     setting = func_020a89c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    data_02168f14.unk_8 = setting;
+    gMapConfig.unk_8 = setting;
     setting = func_020a89e4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    data_02168f14.unk_6 = setting;
+    gMapConfig.unk_6 = setting;
     setting = func_020a8a04(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    data_02168f14.unk_2 = setting;
-    data_02168f14.flags |= 0x4000;
-    data_02168f14.flags |= 0x8000;
+    gMapConfig.unk_2 = setting;
+    gMapConfig.flags |= 0x4000;
+    gMapConfig.flags |= 0x8000;
     func_020a88c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     func_020a4100();
     base = (u8 *)*gCurrentMap;
@@ -259,7 +259,7 @@ void InitBattleMapConfig(void) {
 
 /* Battle start-up: fill the per-player setup tables for players 1-4 (id/team
  * slots via the func_020a23xx byte setters), clear the map's edge counters,
- * and initialize the player config record at data_02168f14 (flags word plus
+ * and initialize the player config record at gMapConfig (flags word plus
  * default values 0/1000/0/0), setting its default flag bits. */
 void ResetPlayerSetupTables(void) {
     void func_020a230c(s32, s32);
@@ -269,13 +269,13 @@ void ResetPlayerSetupTables(void) {
     void func_020a234c(s32, s32);
     void func_020a23a4(s32, s32);
     extern void **gCurrentMap;
-    extern MapConfigRecord data_02168f14;
+    extern MapConfigRecord gMapConfig;
     u8 *p;
     u8 *q;
     u16 *cfg;
     u32 bits;
 
-    cfg = &data_02168f14.flags;
+    cfg = &gMapConfig.flags;
 
     p = (u8 *)*gCurrentMap;
     p += 0x5000;
@@ -382,7 +382,7 @@ void func_0209f858(void) {
     M2C_FIELD(&data_02168f0c, s8 *, 3) = 1;
 }
 
-void func_0209f87c(void){extern MapConfigRecord data_02168f14;extern void **gCurrentMap;data_02168f14.flags=(data_02168f14.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}
+void func_0209f87c(void){extern MapConfigRecord gMapConfig;extern void **gCurrentMap;gMapConfig.flags=(gMapConfig.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}
 
 void func_0209f8c0(void) {
     extern M2C_UNK data_0215be00;

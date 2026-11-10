@@ -159,11 +159,11 @@ void func_020cb018(s16 arg0) {
 
 s32 func_020cb038(void *arg0,s32 arg1){
 s32 func_0207c8ec(s32,s32); M2C_UNK func_020d2b10(s32,u16);
-extern void **gCurrentMap; extern u16 data_ov000_021b5c02[];extern M2C_UNK data_ov000_021b5bfc;
+extern void **gCurrentMap; extern u16 data_ov000_021b5c02[];extern M2C_UNK gUnitKindStats;
 u8 *tab;s32 sum=0;u16 cost;u32 n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25);u16 h,idx;void *map;
 if(arg1){n >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112)*(n?func_0207c8ec(n-1,10)+1:sum);
 }else {n >>=25;cost=n?func_0207c8ec(n-1,10)+1:sum;}
-tab=(u8 *)&data_ov000_021b5bfc;
+tab=(u8 *)&gUnitKindStats;
 loop:
 if(((u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28)!=tab[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112+9]){
 if(arg1){map=*gCurrentMap;idx=M2C_FIELD(map,u16 *,0x52a4);if(M2C_FIELD((u8*)map+idx*140,s32 *,0x67a4)>=(s32)cost){func_020d2b10(idx,cost);goto update;}}
@@ -174,7 +174,7 @@ s32 func_020cb170(void *arg0, s32 arg1) {
     s32 func_0207c8ec(s32, M2C_UNK);
     M2C_UNK func_020d2b10(s32, u16);
     extern void **gCurrentMap;
-    extern M2C_UNK data_ov000_021b5bfc;
+    extern M2C_UNK gUnitKindStats;
     u8 *tab;
     s32 var_r7;
     u32 temp_r0;
@@ -186,7 +186,7 @@ s32 func_020cb170(void *arg0, s32 arg1) {
     var_r7 = 0;
     temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
     temp_r8 = temp_r0 ? (func_0207c8ec(temp_r0 - 1, 0xA) + 1) : var_r7;
-    tab = (u8 *) &data_ov000_021b5bfc;
+    tab = (u8 *) &gUnitKindStats;
 loop_4:
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xA) << 0x19) >> 0x19) != tab[((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70 + 0xE]) {
         if (arg1 != 0) {
@@ -252,14 +252,14 @@ return 0;
 #pragma opt_propagation off
 s32 func_020cb550(u8 *p){
 u8 func_020c98d8(u8,u8,s32);s32 func_020a7558(void *);s32 func_020cb254(void *,s32,s32);
-extern void **gCurrentMap;extern M2C_UNK data_ov000_021b5bfc;extern u8 data_ov000_021b5c5c[];
+extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;extern u8 data_ov000_021b5c5c[];
 u8 j;u8 *base;u8 i;u8 *q;u8 n;s32 sum; s32 other;sum=0;other=0;i=0;
 if((u32)i<(u32)data_ov000_021b5c5c[((u32)(p[0]<<26)>>26)*112]){
 do{q=p+i;n=q[12];if(n){
 sum+=func_020cb038((u8 *)*gCurrentMap+0x59a4+n*14,0);
 sum+=func_020cb170((u8 *)*gCurrentMap+0x59a4+q[12]*14,0);
 if(((u32)(p[0]<<26)>>26)==21){j=q[12];base=(u8 *)*gCurrentMap+0x59a4;other+=func_020cb254(base+j*14,func_020a7558(p),1);}
-}i++;}while(i<((u8 *)&data_ov000_021b5bfc)[((u32)(p[0]<<26)>>26)*112+0x60]);}
+}i++;}while(i<((u8 *)&gUnitKindStats)[((u32)(p[0]<<26)>>26)*112+0x60]);}
 if(other)return func_020c98d8(p[1],p[2],1);
 if(!sum)return 0;
 return func_020c98d8(p[1],p[2],2);
@@ -315,7 +315,7 @@ void func_020cb8f8(void *arg0) {
 }
 
 void func_020cb904(void *state){
-extern void **gCurrentMap;extern M2C_UNK data_ov000_021b5bfc;
+extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;
 u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;
 if(func_020c98b4(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
@@ -327,7 +327,7 @@ if(func_020d280c(M2C_FIELD(map,u16 *,0x52a4),unit->x,unit->y)){
 s32 kind=unit->kind; s32 x; s32 y; s32 terrain; s8 *table;
 map=*gCurrentMap; x=unit->x;y=unit->y;
 terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
-table=M2C_FIELD((u8 *)&data_ov000_021b5bfc+kind*112,s8 **,0x58);
+table=M2C_FIELD((u8 *)&gUnitKindStats+kind*112,s8 **,0x58);
 if(table[terrain]){
 if(!func_020a8604(kind)){
 a+=func_020cb038(unit,0);

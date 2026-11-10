@@ -100,13 +100,13 @@ func_02042f94(arg0);
 
 s32 func_02040878(s32 arg0, s32 arg1) {
     s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     void *GetConnection(void);
     s32 func_02061784(s32, M2C_UNK);
     s32 func_02060c44(s32 *);
     s32 func_02060b68(s32, M2C_UNK, s32);
     u16 func_02060c4c(void *);
-    extern M2C_UNK data_020fc958;
+    extern M2C_UNK sDwcKeyPid;
     s32 loc[3];
     void *p, *q;
     s32 u, slot, begin;
@@ -114,14 +114,14 @@ s32 func_02040878(s32 arg0, s32 arg1) {
     if (arg1 != 0 || (M2C_FIELD(GetConnection(), s32 *, 0x1c) == 0 && M2C_FIELD(GetConnection(), u16 *, 0x1a) == 0)) {
         M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 1;
         p = GetConnection();
-        M2C_FIELD(p, u64 *, 0x1c0) = func_02007004();
+        M2C_FIELD(p, u64 *, 0x1c0) = GetSystemTick();
         M2C_FIELD(GetConnection(), s32 *, 0xf4) = arg0;
         return 0;
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) {
         u = func_02061784(M2C_FIELD(GetConnection(), s32 *, 0xe4), 0);
         p = GetConnection();
-        M2C_FIELD(p, s32 *, 0xf4) = func_02060b68(u, (s32) &data_020fc958, 0);
+        M2C_FIELD(p, s32 *, 0xf4) = func_02060b68(u, (s32) &sDwcKeyPid, 0);
         p = GetConnection();
         M2C_FIELD(p, s32 *, 0x24) = func_02060c44((s32 *) u);
         p = GetConnection();
@@ -141,7 +141,7 @@ s32 func_02040878(s32 arg0, s32 arg1) {
     }
     M2C_FIELD(GetConnection(), s32 *, 0x1c8) = 0x1770;
     p = GetConnection();
-    M2C_FIELD(p, u64 *, 0x1cc) = func_02007004();
+    M2C_FIELD(p, u64 *, 0x1cc) = GetSystemTick();
     M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 0;
     begin = M2C_FIELD(GetConnection(), s32 *, 0x208) != 0 ? 11 : 1;
     loc[0] = M2C_FIELD(GetConnection(), u8 *, 0x15);
@@ -162,7 +162,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 func_0206abd8(void *, s32, s32);
     s32 func_02039d98(void);
     s32 func_02032398(void *);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     s32 func_02040878(s32, s32);
     extern M2C_UNK gKeyFME;
     extern M2C_UNK gKeyMDF;
@@ -202,7 +202,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
         }
         if (found && nextIndex == M2C_FIELD(GetConnection(), u8 *, 0x1a5)) {
             M2C_FIELD(GetConnection(), s32 *, 0x1c8) = 3000;
-            M2C_FIELD(GetConnection(), u64 *, 0x1cc) = func_02007004();
+            M2C_FIELD(GetConnection(), u64 *, 0x1cc) = GetSystemTick();
             M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 0;
             return 0;
         }
@@ -251,15 +251,15 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
 }
 
 s32 func_02040cf0(M2C_UNK arg0) {
- void *GetConnection(); unsigned long long func_02007004(); s32 func_0203ea4c(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
+ void *GetConnection(); unsigned long long GetSystemTick(); s32 SendMatchmakingParameter(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
  void func_02043008(s32); void *p;
  M2C_FIELD(GetConnection(),s32*,0x208)=0;
  M2C_FIELD(GetConnection(),s32*,0x204)=0;
  M2C_FIELD(GetConnection(),u8*,0x1a7)=0;
  p=GetConnection();
- M2C_FIELD(p,unsigned long long*,0x1cc)=func_02007004();
+ M2C_FIELD(p,unsigned long long*,0x1cc)=GetSystemTick();
  if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
- SetConnectionState(3); func_0203ea4c(0); if(((s32 (*)())func_02043008)())return 0;
+ SetConnectionState(3); SendMatchmakingParameter(0); if(((s32 (*)())func_02043008)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1) {
  TryConnectToPeer(0,0,arg0); if(((s32 (*)())func_0204084c)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,0x15)==3) {
@@ -282,12 +282,12 @@ s32 func_02040dc8(M2C_UNK arg0) {
 
 #pragma opt_strength_reduction off
 s32 func_02040e1c(M2C_UNK arg0) {
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02041be0(M2C_UNK);
     M2C_UNK func_02041ce0(void);
     M2C_UNK func_02041dd4(M2C_UNK);
-    s32 func_02042310(s32, M2C_UNK);
+    s32 SendPeerSyncNotice(s32, M2C_UNK);
     void func_0205ea70(s32);
     M2C_UNK func_0205df50(s32);
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -330,7 +330,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
         SetConnectionState(3);
         M2C_FIELD(GetConnection(), s32 *, 0xE8) = 2;
         temp_r4_2 = GetConnection();
-        M2C_FIELD(temp_r4_2, u64 *, 0xEC) = func_02007004();
+        M2C_FIELD(temp_r4_2, u64 *, 0xEC) = GetSystemTick();
         goto done;
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1) {
@@ -347,7 +347,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
         var_r4 = 0xD;
         if ((s32) M2C_FIELD(GetConnection(), u8 *, 0xD) >= 1) {
             for (;;) {
-                if (func_02042310(M2C_FIELD((GetConnection() + (var_r5 << 2)), s32 *, 0xF4), var_r4) == 0) {
+                if (SendPeerSyncNotice(M2C_FIELD((GetConnection() + (var_r5 << 2)), s32 *, 0xF4), var_r4) == 0) {
                     return 0;
                 }
                 var_r5 += 1;

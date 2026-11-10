@@ -1,9 +1,9 @@
 func_ov011_02221320 kind:function(arm,size=0x14) addr:0x02221320
 func_ov011_02221334 kind:function(arm,size=0x4) addr:0x02221334
 func_ov011_02221338 kind:function(arm,size=0x14) addr:0x02221338
-func_ov011_0222134c kind:function(arm,size=0xc0) addr:0x0222134c
-func_ov011_0222140c kind:function(arm,size=0x210) addr:0x0222140c
-func_ov011_0222161c kind:function(arm,size=0x50) addr:0x0222161c
+ConfigureIntroScreens kind:function(arm,size=0xc0) addr:0x0222134c
+InitIntroScene kind:function(arm,size=0x210) addr:0x0222140c
+InitIntroLogo kind:function(arm,size=0x50) addr:0x0222161c
 func_ov011_0222166c kind:function(arm,size=0x6c) addr:0x0222166c
 func_ov011_022216d8 kind:function(arm,size=0x938) addr:0x022216d8
 func_ov011_02222010 kind:function(arm,size=0x1f4) addr:0x02222010

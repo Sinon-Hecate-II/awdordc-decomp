@@ -73,7 +73,7 @@ if(M2C_FIELD(arg0,u8*,0x3d)&&func_ov000_0216b15c(xa,ya,48,16))
 #pragma opt_common_subs reset
 void func_ov000_0216bfa4(void *arg0) {
 extern u16 *gKeyState;
-extern u8 *data_02101e88;
+extern u8 *gTouchState;
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x44));
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x48));
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x4c));
@@ -85,7 +85,7 @@ switch(M2C_FIELD(arg0,u16 *,0x34)){
 case 8:PlaySoundEffect(0x1003e);
 case 0x68:PlaySoundEffect(0x1003f);
 }
-if((*gKeyState &9)||data_02101e88[0x14]||M2C_FIELD(arg0,u16 *,0x34)==0x83)func_01ffa6fc(arg0);
+if((*gKeyState &9)||gTouchState[0x14]||M2C_FIELD(arg0,u16 *,0x34)==0x83)func_01ffa6fc(arg0);
 M2C_FIELD(arg0,u16 *,0x34)++;
 }
 
@@ -145,8 +145,8 @@ void BuildArmyInfoWindow(void) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_020a9218(void *);
-    extern M2C_UNK data_02129870;
-    extern M2C_UNK data_02168f14;
+    extern M2C_UNK gHeapObjectVTable;
+    extern M2C_UNK gMapConfig;
     extern void *gCurrentMap;
     extern M2C_UNK data_ov000_021b83f8;
     extern M2C_UNK data_ov000_021b841c;
@@ -193,14 +193,14 @@ void BuildArmyInfoWindow(void) {
     M2C_FIELD(window, u8 *, 0x3B) = (u8)M2C_FIELD((mapPtr + ((s32)currentPlayer * MAP_PLAYER_STRIDE)), u8 *, PLAYER_ARMY_STATE_OFF);
     mapPtr = (void*)*(void **)gCurrentMap;
     M2C_FIELD(window, s8 *, 0x3C) = (s8)(M2C_FIELD((mapPtr + ((s32)(u8)M2C_FIELD(window, u8 *, 0x3A) * MAP_PLAYER_STRIDE)), u8 *, PLAYER_ARMY_INDEX_OFF) - 1);
-    if (M2C_FIELD(&data_02168f14, u8 *, 3) != 0) {
+    if (M2C_FIELD(&gMapConfig, u8 *, 3) != 0) {
         detailed = 1;
     }
     M2C_FIELD(window, s8 *, 0x3D) = detailed;
     M2C_FIELD(window, s16 *, 0x3E) = 0;
     panel = MemAlloc(0x2C);
     if (panel != NULL) {
-        M2C_FIELD(panel, M2C_UNK **, 0) = &data_02129870;
+        M2C_FIELD(panel, M2C_UNK **, 0) = &gHeapObjectVTable;
         M2C_FIELD(panel, s8 *, 4) = 0;
         M2C_FIELD(panel, s16 *, 0x12) = 0;
         M2C_FIELD(panel, s8 *, 0x14) = 8;

@@ -15,12 +15,12 @@ extern const u16 data_ov001_0218fc70[];
 extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
 s32 TouchRectPressed(void *);
 s32 KeyPressed(s32);
-void func_ov001_0218b2e0(const void *, const void *, void *);
+void BuildTouchRect(const void *, const void *, void *);
 void func_ov001_02186ba8(s32);
 s32 i;
 u32 rect[2];
 for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
-    func_ov001_0218b2e0(&((const u32 (*)[2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)], rect);
+    BuildTouchRect(&((const u32 (*)[2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)], rect);
     if (TouchRectPressed(rect)) {
         M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = i;
         break;
@@ -205,7 +205,7 @@ void *p;
 s32 result=0;
 if(M2C_FIELD(arg0,s32 *,0)==0) p=0;
 else {
-func_0200b774(file);
+InitFileRequest(file);
 if(!func_0200ba54(file,M2C_FIELD(arg0,s32 *,0))) return 0;
 p=file;
 }

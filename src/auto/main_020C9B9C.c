@@ -210,13 +210,13 @@ void func_020ca0e0(void) {
 }
 
 s32 func_020ca190(void) {
-    extern u8 data_02168f14[];
+    extern u8 gMapConfig[];
     extern void **gCurrentMap;
     u8 var_r0;
-    if (data_02168f14[2] == 0) return 0;
+    if (gMapConfig[2] == 0) return 0;
     var_r0 = 1;
     do {
-        if ((u32)M2C_FIELD((u8 *)*gCurrentMap + var_r0 * 0x8C, u8 *, 0x67BC) >= (u32)data_02168f14[2]) return var_r0;
+        if ((u32)M2C_FIELD((u8 *)*gCurrentMap + var_r0 * 0x8C, u8 *, 0x67BC) >= (u32)gMapConfig[2]) return var_r0;
         var_r0 += 1;
     } while (var_r0 < 5U);
     return 0;
@@ -379,9 +379,9 @@ void func_020ca59c(void *dialog) {
 }
 
 void func_020ca77c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b1fc;
-    func_01ffa42c(&data_0212b1fc, arg0);
+    CreateSpriteObject(&data_0212b1fc, arg0);
 }
 
 #pragma push

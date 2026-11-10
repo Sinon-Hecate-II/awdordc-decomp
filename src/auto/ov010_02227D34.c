@@ -209,7 +209,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
     s32 func_02031d00(M2C_UNK);
     void func_02037680(s32, s32);
-    M2C_UNK func_020067a8(M2C_UNK, s32);
+    M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
     M2C_UNK func_ov010_02226a88();
     s32 func_02044658(u16);
     M2C_UNK func_ov010_02229a50();
@@ -229,7 +229,7 @@ s32 func_ov010_02228180(void) {
         func_02037680((s32)func_ov010_022268f4, (s32)func_ov010_02226908);
         q = func_ov010_022268f4(0, 0x10e0, 0x20);
         M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x3c) = q;
-        func_020067a8(q, 0x10e0);
+        DC_InvalidateRange(q, 0x10e0);
         func_ov010_02226a88();
         func_02044658(0x5b9);
         M2C_FIELD(&data_ov010_0222eee0, s32 *, 0x40) = 0;
@@ -444,9 +444,9 @@ s32 func_ov010_02228720(void) {
 }
 
 void func_ov010_02228748(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov010_0222c1b8;
-    func_01ffa42c(&data_ov010_0222c1b8, arg0);
+    CreateSpriteObject(&data_ov010_0222c1b8, arg0);
 }
 
 #pragma push
@@ -486,7 +486,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     s32 func_ov000_0216a76c(void);
     s32 func_ov000_0216a7c4(void);
     void *func_01ffa3dc(void *, s32);
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
     void func_02038688(void *, s32, void *, s32);
     void func_02074114(void *, s32, s32, void *, void *);
@@ -523,7 +523,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     state=&data_ov010_0222eee0;
     M2C_FIELD(state,s32 *,0x18)=0;
     M2C_FIELD(state,s32 *,0x24)=0;
-    func_02007f8c(&data_ov010_0222efc0,0,0x1a);
+    MI_CpuFill8(&data_ov010_0222efc0,0,0x1a);
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfa)=0;
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0xfb)=-1;
     M2C_FIELD(&data_ov010_0222eee0,s32 *,0xfc)=-1;
@@ -533,7 +533,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0x106)=-2;
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0x107)=-1;
     M2C_FIELD(&data_ov010_0222eee0,s8 *,0x108)=-1;
-    func_02007f8c(&data_ov010_0222efec,0,0x40);
+    MI_CpuFill8(&data_ov010_0222efec,0,0x40);
     aa=*(Ov010CallbackFn *)&data_ov010_0222c128;
     bb=aa;
     cc=bb;
@@ -734,7 +734,7 @@ void func_ov010_02228c88(M2C_UNK arg0) {
     M2C_UNK func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222c140;
     func_ov010_02229608(9, 0, 0, 0xFFFF);
-    func_01ffa42c(&data_ov010_0222c140, arg0);
+    CreateSpriteObject(&data_ov010_0222c140, arg0);
 }
 
 void func_ov010_02228cbc(void) {

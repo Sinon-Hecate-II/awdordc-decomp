@@ -585,7 +585,7 @@ void func_ov001_0218b2c8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, void *arg4) {
     M2C_FIELD(arg4, s16 *, 6) = arg3;
 }
 
-void func_ov001_0218b2e0(void *arg0, void *arg1, void *arg2) {
+void BuildTouchRect(void *arg0, void *arg1, void *arg2) {
     M2C_FIELD(arg2, u16 *, 0) = (u16) M2C_FIELD(arg0, u16 *, 0);
     M2C_FIELD(arg2, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 2);
     M2C_FIELD(arg2, s16 *, 4) = (s16) (M2C_FIELD(arg0, u16 *, 0) + M2C_FIELD(arg1, u16 *, 0));

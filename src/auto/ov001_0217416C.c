@@ -234,7 +234,7 @@ void func_ov001_021747cc(void) {
 void func_ov001_021747e4(void) {
     extern void *data_ov001_02193d20;
     s32 TouchRectPressed(void *);
-    void func_ov001_0218b2e0(void *, void *, void *);
+    void BuildTouchRect(void *, void *, void *);
     void Ov001_PlaySound(s32);
     extern u8 gTouchScreenRect[];
     extern u8 data_ov001_0218f642[];
@@ -255,7 +255,7 @@ void func_ov001_021747e4(void) {
 
     p = data_ov001_0218f642;
     for (i = 0; i < 10; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f0, buf);
+        BuildTouchRect(p, data_ov001_0218f5f0, buf);
         if (TouchRectPressed(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x67) == 0) {
                 Ov001_PlaySound(9);
@@ -270,7 +270,7 @@ void func_ov001_021747e4(void) {
 
     p = data_ov001_0218f618;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f8, buf);
+        BuildTouchRect(p, data_ov001_0218f5f8, buf);
         if (TouchRectPressed(buf) != 0) {
             if (i != 0) goto mid_770;
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) goto mid_78c;
@@ -290,7 +290,7 @@ mid_79c:
 
     p = data_ov001_0218f620;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5fc, buf);
+        BuildTouchRect(p, data_ov001_0218f5fc, buf);
         if (TouchRectPressed(buf) != 0) {
             Ov001_PlaySound(0);
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)(i + 12);
@@ -313,7 +313,7 @@ void func_ov001_021749c0(void) {
     extern u8 data_ov001_0218f5e8[];
     extern u8 gTouchScreenRect[];
     int TouchRectHeld(void *);
-    void func_ov001_0218b2e0(void *, void *, void *);
+    void BuildTouchRect(void *, void *, void *);
     int func_ov001_02175290(void);
 
     u8 buf[8];
@@ -327,7 +327,7 @@ void func_ov001_021749c0(void) {
 
     p = data_ov001_0218f642;
     for (i = 0; i < 10; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f0, buf);
+        BuildTouchRect(p, data_ov001_0218f5f0, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i) {
                 return;
@@ -342,7 +342,7 @@ void func_ov001_021749c0(void) {
 
     p = data_ov001_0218f618;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f8, buf);
+        BuildTouchRect(p, data_ov001_0218f5f8, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 10) {
                 return;
@@ -357,7 +357,7 @@ void func_ov001_021749c0(void) {
 
     p = data_ov001_0218f620;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5fc, buf);
+        BuildTouchRect(p, data_ov001_0218f5fc, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 12) {
                 return;
@@ -380,8 +380,8 @@ void func_ov001_02174b90(void) {
     extern u8 data_ov001_0218f5f8[];
     extern u8 data_ov001_0218f620[];
     extern u8 data_ov001_0218f5fc[];
-    void func_ov001_0218b2e0(void *, void *, void *);
-    s32 func_ov001_0218bb6c(void *);
+    void BuildTouchRect(void *, void *, void *);
+    s32 TouchRectReleased(void *);
     void func_ov001_02174d80(s32);
     void Ov001_PlaySound(s32);
 
@@ -389,14 +389,14 @@ void func_ov001_02174b90(void) {
     u8 buf[8];
     u8 *p;
 
-    if (func_ov001_0218bb6c(gTouchScreenRect) == 0) {
+    if (TouchRectReleased(gTouchScreenRect) == 0) {
         goto fail;
     }
 
     p = data_ov001_0218f642;
     for (i = 0; i < 10; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f0, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
+        BuildTouchRect(p, data_ov001_0218f5f0, buf);
+        if (TouchRectReleased(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i) {
                 goto fail;
             }
@@ -408,8 +408,8 @@ void func_ov001_02174b90(void) {
 
     p = data_ov001_0218f618;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5f8, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
+        BuildTouchRect(p, data_ov001_0218f5f8, buf);
+        if (TouchRectReleased(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 10) {
                 goto fail;
             }
@@ -441,8 +441,8 @@ void func_ov001_02174b90(void) {
 
     p = data_ov001_0218f620;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f5fc, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
+        BuildTouchRect(p, data_ov001_0218f5fc, buf);
+        if (TouchRectReleased(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 12) {
                 goto fail;
             }

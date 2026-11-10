@@ -100,7 +100,7 @@ void func_ov001_02185ba8(s32 arg0) {
 }
 
 s32 func_ov001_02185bf4(s32 arg0){
-void *func_ov001_0218b6f8(s32,s32);u64 func_02007004(void);
+void *func_ov001_0218b6f8(s32,s32);u64 GetSystemTick(void);
 s32 func_02012218(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02011af8(void *);u16 func_02011e98(void);void func_02007740(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 func_ov001_02185d78(void);
@@ -111,7 +111,7 @@ extern void *data_ov001_02193e14;extern const u8 data_ov001_0218fbfc[],data_ov00
 u8 buf[0x54];void *p;u64 ts;void **state;
 data_ov001_02193e14=func_ov001_0218b6f8(0x1ba0,0x20);
 M2C_FIELD(data_ov001_02193e14,s32 *,0x1370)=arg0;
-ts=func_02007004();
+ts=GetSystemTick();
 state=&data_ov001_02193e14;
 p=*state;
 M2C_FIELD(p,u32 *,0x1b88)=(u32)ts;M2C_FIELD(p,u32 *,0x1b8c)=(u32)(ts>>32);
@@ -194,7 +194,7 @@ case 4:func_ov001_02185d78();break;default:func_02007958(p);break;}
 }
 
 void func_ov001_02185f38(u16 *arg0) {
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     s32 func_0206527c(void *, const void *, s32);
     void MI_CpuCopy8(void *, void *, s32);
     extern void *data_ov001_02193e14;
@@ -208,7 +208,7 @@ void func_ov001_02185f38(u16 *arg0) {
 
     for (j = 0; j < arg0[7]; j++) {
         rec = ((void **)arg0)[4 + j];
-        func_020067a8(rec, 0xC0);
+        DC_InvalidateRange(rec, 0xC0);
         if (func_0206527c(rec + 0xC, data_ov001_0218fbf0, 8) != 0) continue;
         base = data_ov001_02193e14;
         slot = base + 0x1300;
@@ -237,7 +237,7 @@ void func_ov001_02185f38(u16 *arg0) {
 }
 
 void func_ov001_02186090(u16 *arg0) {
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     s32 func_0206527c(void *, const void *, s32);
     extern void *data_ov001_02193e14;
     extern const u8 data_ov001_0218fbf0[];
@@ -252,7 +252,7 @@ void func_ov001_02186090(u16 *arg0) {
         return;
     }
 
-    func_020067a8((u8 *)g + 0x0F00, 0x400);
+    DC_InvalidateRange((u8 *)g + 0x0F00, 0x400);
 
     {
         s32 j;
@@ -292,7 +292,7 @@ void func_ov001_02186090(u16 *arg0) {
 }
 
 void func_ov001_0218619c(s32 arg0) {
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     s32 func_0206527c(void *, const void *, s32);
     M2C_UNK func_ov001_0218c92c(M2C_UNK, M2C_UNK);
     extern void *data_ov001_02193e14;
@@ -305,7 +305,7 @@ void func_ov001_0218619c(s32 arg0) {
     u8 *flag;
     u8 *base;
 
-    now = func_02007004();
+    now = GetSystemTick();
     base = data_ov001_02193e14;
     if (now < M2C_FIELD(base, u64 *, 0x1B88) + 0x17F898) {
         return;

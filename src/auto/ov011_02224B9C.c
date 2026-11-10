@@ -100,8 +100,8 @@ void func_ov011_02224f00(M2C_UNK arg0) {
 }
 
 void func_ov011_02224f64(void) {
-    M2C_UNK func_ov011_0222140c();
-    func_ov011_0222140c();
+    M2C_UNK InitIntroScene();
+    InitIntroScene();
 }
 
 void func_ov011_02224f70(void) {
@@ -122,9 +122,9 @@ void func_ov011_02224fe0(M2C_UNK arg0) {
 
 void func_ov011_02225010(M2C_UNK arg0) {
     M2C_UNK func_0208f780(s32);
-    M2C_UNK func_ov011_0222161c();
+    M2C_UNK InitIntroLogo();
     M2C_UNK func_ov011_02222204(M2C_UNK);
-    func_ov011_0222161c();
+    InitIntroLogo();
     func_ov011_02222204(arg0);
     func_0208f780(0x1001D);
 }
@@ -177,21 +177,21 @@ void func_ov011_022250ac(M2C_UNK arg0) {
 }
 
 void func_ov011_022250c4(M2C_UNK arg0) {
-    s32 func_01ffa42c(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_ov011_02221320(s32, M2C_UNK);
     extern M2C_UNK data_ov011_02227fa4;
     s32 temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov011_02227fa4, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov011_02227fa4, arg0);
     if (temp_r0 == 0) {
         return;
     }
     func_ov011_02221320(temp_r0, 0);
 }
 
-void func_ov011_022250ec(M2C_UNK arg0) { s32 func_01ffa42c(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=func_01ffa42c(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,1); }
+void func_ov011_022250ec(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,1); }
 
-void func_ov011_02225114(M2C_UNK arg0) { s32 func_01ffa42c(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=func_01ffa42c(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,2); }
+void func_ov011_02225114(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,2); }
 
 /* Initialize the DS 3D graphics hardware: reset the geometry engine, configure the LCD display control mode,
    program the viewport/projection matrix blocks, and set up the 3D command and capture registers. */

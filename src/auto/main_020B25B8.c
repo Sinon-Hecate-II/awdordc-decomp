@@ -70,13 +70,13 @@ s32 func_020b2754(void *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_020b27d0(void *p) {
-extern void *data_02101e88,*data_02128690;
+extern void *gTouchState,*data_02128690;
 s32 func_020946d0(void);s32 func_020b1b1c(void *,M2C_UNK);
 void func_020b1c90(void *);
-u16 x=M2C_FIELD(data_02101e88,u16 *,0);
-u16 y=M2C_FIELD(data_02101e88,u16 *,2);
+u16 x=M2C_FIELD(gTouchState,u16 *,0);
+u16 y=M2C_FIELD(gTouchState,u16 *,2);
 if(func_020946d0())return 0;
-if(!M2C_FIELD(data_02101e88,u8 *,0x12))return 0;
+if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
 if(!func_020b1b1c(p,1))return 0;
 if(!func_020b2754(p,x,y))return 0;
 if(M2C_FIELD(data_02128690,void **,0xc)==p)return 0;
@@ -86,24 +86,24 @@ return 1;
 }
 
 s32 func_020b288c(void *arg0) {
-extern void *data_02101e88;
+extern void *gTouchState;
 s32 func_020946d0(void);s32 func_020b1b1c(void *,M2C_UNK);
 void func_020b1b2c(void *,M2C_UNK);void func_020b1c90(void *);
 s32 func_020b1b34(void *);s32 func_020b2754(void *,s32,s32);
-s32 x=M2C_FIELD(data_02101e88,u16 *,0),y=M2C_FIELD(data_02101e88,u16 *,2);
-s32 w=M2C_FIELD(data_02101e88,u16 *,4),h=M2C_FIELD(data_02101e88,u16 *,6);
+s32 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
+s32 w=M2C_FIELD(gTouchState,u16 *,4),h=M2C_FIELD(gTouchState,u16 *,6);
 s32 d;void (*cb)(void *);
 switch(func_020b1b34(arg0)){
 case 2:
 if(!func_020b2754(arg0,x,y)){func_020b1b2c(arg0,0);break;}
-if(M2C_FIELD(data_02101e88,u8 *,0x16))func_020b1b2c(arg0,0);
+if(M2C_FIELD(gTouchState,u8 *,0x16))func_020b1b2c(arg0,0);
 break;
 case 0:
-if(M2C_FIELD(data_02101e88,u8 *,0x14)&&func_020b2754(arg0,x,y)==1)func_020b1b2c(arg0,1);
+if(M2C_FIELD(gTouchState,u8 *,0x14)&&func_020b2754(arg0,x,y)==1)func_020b1b2c(arg0,1);
 break;
 case 1:
 if(!func_020b2754(arg0,x,y)){func_020b1b2c(arg0,0);break;}
-if(M2C_FIELD(data_02101e88,u8 *,0x16)){
+if(M2C_FIELD(gTouchState,u8 *,0x16)){
 func_020b1b2c(arg0,0);
 if(func_020b1b1c(arg0,0x400))return 0;
 if(func_020946d0())return 0;
@@ -113,7 +113,7 @@ cb=M2C_FIELD(arg0,void (**)(void *),0x2c);
 if(cb)cb(arg0);
 return 1;
 }
-if(M2C_FIELD(data_02101e88,u8 *,0x12)&&M2C_FIELD(data_02101e88,u8 *,0x10)==0x14)func_020b1b2c(arg0,2);
+if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==0x14)func_020b1b2c(arg0,2);
 break;
 }
 return 0;
@@ -268,8 +268,8 @@ if(a+M2C_FIELD(p,s16 *,4)>=x && b+M2C_FIELD(p,s16 *,6)>=y)return 1;
 return 0;
 }
 
-void *func_020b2eb8(void *arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, u8 arg6) {
-void func_02007f8c(void *,s32,u32);
+void *CreateSpriteGrid(void *arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, u8 arg6) {
+void MI_CpuFill8(void *,s32,u32);
 void func_02087d18(void *,s16,s16,u32,u32,u32,u32);
 void *func_020e34bc(u32);
 extern u32 data_021286a4[];
@@ -302,7 +302,7 @@ M2C_FIELD(arg0,s8 *,36)=-1;
 M2C_FIELD(arg0,u8 *,38)=0;
 M2C_FIELD(arg0,u8 *,39)=255;
 p=func_020e34bc(size);M2C_FIELD(arg0,void **,44)=p;
-func_02007f8c(M2C_FIELD(arg0,void **,44),0,size);
+MI_CpuFill8(M2C_FIELD(arg0,void **,44),0,size);
 for(y=0;y<a;y=(u8)(y+1))for(x=0;x<arg2;x++)func_02087d18((u8*)arg0+24,(s16)(x*arg3+b),(s16)(y*arg4+c),arg3,arg4,(u16)(x+y*arg2),14);
 return arg0;
 }

@@ -88,7 +88,7 @@ void func_ov001_02183a20(void) {
 }
 #pragma optimization_level 4
 void func_ov001_02183ba4(void) {
-    s32 func_ov001_0218bb6c(M2C_UNK *);
+    s32 TouchRectReleased(M2C_UNK *);
     void func_ov001_0218bd64(M2C_UNK *);
     void func_ov001_02183c74(s32);
     void func_ov001_02183f30(s32);
@@ -103,7 +103,7 @@ void func_ov001_02183ba4(void) {
     u16 spf2;
     s32 thr;
 
-    if (func_ov001_0218bb6c((M2C_UNK *)gTouchScreenRect) != 0) {
+    if (TouchRectReleased((M2C_UNK *)gTouchScreenRect) != 0) {
         func_ov001_0218bd64(&sp0);
         spf0 = M2C_FIELD(&sp0, u16 *, 0x0);
         base = data_ov001_02193dfc;
@@ -218,14 +218,14 @@ loop_3:
 
 s32 func_ov001_02183e0c(void) {
     void func_ov001_02183e58(s32, M2C_UNK *);
-    s32 func_ov001_0218bb6c(M2C_UNK *);
+    s32 TouchRectReleased(M2C_UNK *);
     s32 sp0[2];
     s32 var_r5;
 
     var_r5 = 2;
 loop_1:
     func_ov001_02183e58(var_r5, sp0);
-    if (func_ov001_0218bb6c(sp0) != 0) {
+    if (TouchRectReleased(sp0) != 0) {
         return var_r5;
     }
     var_r5 += 1;
@@ -419,7 +419,7 @@ void func_ov001_021841cc(u16 *p) {
 
 #pragma scheduling off
 void func_ov001_02184230(u16 *arg0) {
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     void MI_CpuCopy8(void *, void *, u32);
     s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
     void func_02011f2c(M2C_UNK *, M2C_UNK *);
@@ -436,7 +436,7 @@ void func_ov001_02184230(u16 *arg0) {
     Work work;
 
     work.slots = (u8 *)data_ov001_02193e00 + 0x1300;
-    func_020067a8((u8 *)data_ov001_02193e00 + 0xf00, 0x400);
+    DC_InvalidateRange((u8 *)data_ov001_02193e00 + 0xf00, 0x400);
 
     i = 0;
     if ((s32)*(u16 *)((u8 *)arg0 + 0xe) <= 0) {
@@ -556,7 +556,7 @@ void func_ov001_02184498(void *arg0) {
 }
 
 void func_ov001_021844c8(u8 *arg0) {
-    void func_02007f8c(void *, s32, u32);
+    void MI_CpuFill8(void *, s32, u32);
     void MI_CpuCopy8(void *, void *, u32);
     s32 func_ov001_0218c3e0(u8 *, s32);
     s32 func_ov001_02184f4c(u8);
@@ -568,7 +568,7 @@ void func_ov001_021844c8(u8 *arg0) {
     register u8 *out;
     s32 lo;
 
-    func_02007f8c((u8 *)data_ov001_02193e04 + 0x480, 0, 0x10);
+    MI_CpuFill8((u8 *)data_ov001_02193e04 + 0x480, 0, 0x10);
     result = func_ov001_0218c3e0(arg0, 0x20);
 
     switch (result) {

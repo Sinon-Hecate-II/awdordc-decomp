@@ -82,11 +82,11 @@ void func_ov000_021a5b28(void) {
 #pragma opt_strength_reduction off
 void func_ov000_021a5bd4(u8 arg0) {
     void FloodFillUnitRange(s32,s32,s32,s32,s32);
-    void func_02007f8c(void*,s32,s32);
+    void MI_CpuFill8(void*,s32,s32);
     s32 IsUnitOnCurrentTeam(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021e0f60[];
+    extern u8 gAiRangeLayer[];
     void *base;
     u8 *unit, *tile;
     s8 *p;
@@ -105,7 +105,7 @@ void func_ov000_021a5bd4(u8 arg0) {
         if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)<=20)goto next;
         FloodFillUnitRange(unit[1],unit[2],22,110,32);
         count=0;
-        func_02007f8c(data_ov000_021e0f60,0x7F,0x508);
+        MI_CpuFill8(gAiRangeLayer,0x7F,0x508);
         for(y=0,base=*gCurrentMap;y<M2C_FIELD(base,u16 *,0x5146);y++){
             for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
                 if(M2C_FIELD(base+y*4,s8 **,0x52E8)[x]<0)continue;
@@ -117,7 +117,7 @@ void func_ov000_021a5bd4(u8 arg0) {
                     count++;
                     base=*gCurrentMap;
                     for(y2=0;y2<M2C_FIELD(base,u16 *,0x5146);y2++){
-                        p=(s8 *)data_ov000_021e0f60;
+                        p=(s8 *)gAiRangeLayer;
                         for(x2=0;x2<M2C_FIELD(base,u16 *,0x5144);x2++,base=*gCurrentMap,p++){
                             v=M2C_FIELD(base+y2*4,s8 **,0x52E8)[x2];
                             if(v<0)continue;
@@ -133,7 +133,7 @@ void func_ov000_021a5bd4(u8 arg0) {
         }
         if(count<1)goto next;
         for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-            p=(s8 *)data_ov000_021e0f60;
+            p=(s8 *)gAiRangeLayer;
             for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap,p++){
                 v=M2C_FIELD(p,s8 *,y*M2C_FIELD(base,u16 *,0x5144));
                 tile=(u8 *)(base+x+M2C_FIELD(base+y*2,u16 *,0x3758));

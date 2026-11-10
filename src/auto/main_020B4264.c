@@ -13,7 +13,7 @@ s32 func_020b4264(u8 *arg0) {
     s32 func_020cfbdc(s32);
     void StringCopy(u8 *, s32);
     void func_020cfa58(s32);
-    void func_020ceffc(void);
+    void BuildMapRowOffsets(void);
     void func_020cfb54(void);
     void func_020a17c0(s32, s32);
     void func_020a23a4(s32, s32);
@@ -24,7 +24,7 @@ s32 func_020b4264(u8 *arg0) {
     void func_020a16a8(u8 *);
     extern void *gCurrentMap;
     extern M2C_UNK data_0215d9b8;
-    extern M2C_UNK data_02168f14;
+    extern M2C_UNK gMapConfig;
     extern M2C_UNK data_02168f08;
     u8 *src;
     u8 *dst;
@@ -96,20 +96,20 @@ s32 func_020b4264(u8 *arg0) {
         pd += 2;
         n -= 1;
     } while (n != 0);
-    M2C_FIELD(&data_02168f14, u16 *, 0) = M2C_FIELD(arg0, u16 *, 0x1C);
-    M2C_FIELD(&data_02168f14, u8 *, 2) = M2C_FIELD(arg0, u8 *, 0x1E);
-    M2C_FIELD(&data_02168f14, u8 *, 3) = M2C_FIELD(arg0, u8 *, 0x1F);
-    M2C_FIELD(&data_02168f14, u16 *, 4) = M2C_FIELD(arg0, u16 *, 0x20);
-    M2C_FIELD(&data_02168f14, u16 *, 6) = M2C_FIELD(arg0, u16 *, 0x22);
-    M2C_FIELD(&data_02168f14, u32 *, 8) = M2C_FIELD(arg0, u32 *, 0x24);
-    M2C_FIELD(&data_02168f14, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0x28);
+    M2C_FIELD(&gMapConfig, u16 *, 0) = M2C_FIELD(arg0, u16 *, 0x1C);
+    M2C_FIELD(&gMapConfig, u8 *, 2) = M2C_FIELD(arg0, u8 *, 0x1E);
+    M2C_FIELD(&gMapConfig, u8 *, 3) = M2C_FIELD(arg0, u8 *, 0x1F);
+    M2C_FIELD(&gMapConfig, u16 *, 4) = M2C_FIELD(arg0, u16 *, 0x20);
+    M2C_FIELD(&gMapConfig, u16 *, 6) = M2C_FIELD(arg0, u16 *, 0x22);
+    M2C_FIELD(&gMapConfig, u32 *, 8) = M2C_FIELD(arg0, u32 *, 0x24);
+    M2C_FIELD(&gMapConfig, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0x28);
     func_020ceec8();
     dst = MAPBASE;
     M2C_FIELD(dst, u8 *, 0x5141) = func_020cfbb0(M2C_FIELD(dst, u16 *, 0x5142));
     dst = MAPBASE;
     StringCopy(dst + 0x5120, func_020cfbdc(M2C_FIELD(dst, u16 *, 0x5142)));
     func_020cfa58(M2C_FIELD(MAPBASE, u16 *, 0x5142));
-    func_020ceffc();
+    BuildMapRowOffsets();
     for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(MAPBASE, u16 *, 0x5144); x++) {
             M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10) =

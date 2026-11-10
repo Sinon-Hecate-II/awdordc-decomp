@@ -115,12 +115,12 @@ void func_02028ef4(void *arg0) {
 }
 
 void func_02029220(void) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void); void func_02007f8c(void *,s32,s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void); void MI_CpuFill8(void *,s32,s32);
 s32 state; void *base; void *p; void *ptr; s32 val;
 state=OS_DisableInterrupts(); base=func_02027d50();
 if (!base) { OS_RestoreInterrupts(state); return; }
 p=(s8*)base+0x2000; ptr=M2C_FIELD(p,void**,0x270);
-if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) func_02007f8c(ptr,0,val); }
+if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) MI_CpuFill8(ptr,0,val); }
 OS_RestoreInterrupts(state);
 }
 
@@ -497,7 +497,7 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void func_020065e8(void *);
     void MI_CpuCopy8(void *, void *, s32);
     s32 func_02012e74(s32, void *, void *, u32);
-    void func_02005da4(void *);
+    void OS_SleepThread(void *);
     void func_020299d0(void *);
     extern M2C_UNK data_02138e5c;
     extern M2C_UNK data_02138e54;
@@ -550,7 +550,7 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
             OS_RestoreInterrupts(state);
             return -5;
     }
-    func_02005da4(&data_02138e54);
+    OS_SleepThread(&data_02138e54);
     val = M2C_FIELD(&data_02138e50, s32 *, 0x24);
     switch(val) {
     case 0: break;
@@ -566,12 +566,12 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 #pragma opt_if-conversion reset
 void func_020299d0(void *arg0) {
-void func_020281f8(void); void func_02005df4(void *);
+void func_020281f8(void); void OS_WakeupThread(void *);
 extern M2C_UNK data_02138e50; extern M2C_UNK data_02138e54;
 if(M2C_FIELD(arg0,u16 *,0)!=0x12) return;
 M2C_FIELD(&data_02138e50,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
 if(M2C_FIELD(arg0,u16 *,2)==0) func_020281f8();
-func_02005df4(&data_02138e54);
+OS_WakeupThread(&data_02138e54);
 }
 
 void func_02029a10(void) {
@@ -598,7 +598,7 @@ s32 func_02029a24(void *arg0) {
 }
 
 s32 func_02029a74(M2C_UNK *arg0) {
-    void func_02005df4(void *);
+    void OS_WakeupThread(void *);
     extern M2C_UNK func_01ff8000;
 
     if (M2C_FIELD(arg0, M2C_UNK **, 8) != &func_01ff8000) {
@@ -609,7 +609,7 @@ s32 func_02029a74(M2C_UNK *arg0) {
         return;
     }
     M2C_FIELD(arg0, M2C_UNK **, 8) = NULL;
-    func_02005df4(arg0);
+    OS_WakeupThread(arg0);
     return;
 }
 

@@ -349,7 +349,7 @@ void InitMapSelectScreen(s32 arg0) {
 
 /* Advance the cursor/movement state machine for the current entry. */
 void func_ov003_021f2e98(s32 entry) {
- M2C_UNK func_ov003_021f17e0(); M2C_UNK func_01ffa8c4(M2C_UNK,M2C_UNK);
+ M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
  void func_01ffa6fc(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
  s32 func_ov003_021f1bfc(void); void func_020d47d0(void); void func_020d47f0(void);
  void func_02086330(void); void func_02085054(s32,s32,s32);
@@ -359,7 +359,7 @@ void func_ov003_021f2e98(s32 entry) {
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
  if(func_ov003_021f2a9c(entry)||func_ov003_021f2b88(entry)) {
- func_ov003_021f17e0(); func_01ffa8c4(entry,5); return;
+ func_ov003_021f17e0(); SetSpriteAnimation(entry,5); return;
  }
  if(M2C_FIELD(entry,u8 *,0x45)||M2C_FIELD(entry,u8 *,0x46)) return;
  switch(M2C_FIELD(entry,u8 *,0x34)) {
@@ -394,7 +394,7 @@ void func_ov003_021f2e98(s32 entry) {
  case 3:
  if(!func_ov003_021f142c()) return;
  p=M2C_FIELD(entry,void **,0x40);
- if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){func_01ffa8c4(entry,3);return;}
+ if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){SetSpriteAnimation(entry,3);return;}
  M2C_FIELD(entry,u8 *,0x34)=1;
  switch(func_ov003_021f1bfc()) {
  case 2: p=M2C_FIELD(entry,void **,0x40);direction=BlockNext2e98(p)?0:2;break;
@@ -435,7 +435,7 @@ void func_ov003_021f34e4(void *a) {
 }
 
 void func_ov003_021f3564(M2C_UNK arg0) {
-    M2C_UNK func_01ffa8c4(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f17e0();
     void func_ov003_021f2878();
     s32 func_ov003_021f2a9c(M2C_UNK);
@@ -445,7 +445,7 @@ void func_ov003_021f3564(M2C_UNK arg0) {
         return;
     }
     func_ov003_021f17e0();
-    func_01ffa8c4(arg0, 5);
+    SetSpriteAnimation(arg0, 5);
 }
 
 void func_ov003_021f35a4(void) {

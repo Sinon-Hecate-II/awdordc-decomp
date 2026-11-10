@@ -56,7 +56,7 @@ void func_ov002_021e6d04(void *arg0) {
  * panels, initialises each side's battle unit view and its character effects,
  * then configures the background/3D-sprite control registers. */
 void InitBattleScene(void *state) {
-    void func_ov002_021e7a64(void *);
+    void SetupPlayerSettings(void *);
     void func_ov002_021e3890(void *);
     void PlayerPanels_Init(void *);
     void func_ov002_021e85e8(void *);
@@ -73,7 +73,7 @@ void InitBattleScene(void *state) {
     extern M2C_UNK data_ov002_021f3018;
     extern void *g3DSpriteBankMain;
 
-    func_ov002_021e7a64(&gPlayerSettings);
+    SetupPlayerSettings(&gPlayerSettings);
     func_ov002_021e3890(data_ov002_021f2f44);
     PlayerPanels_Init(data_ov002_021f2f44);
 
@@ -156,7 +156,7 @@ void func_ov002_021e70a0(void *);
 extern u8 data_ov002_021f2f40;
 extern void *gKeyState;
 extern u32 gFrameCounter;
-extern void *data_02101e88;
+extern void *gTouchState;
 if(data_ov002_021f2f40) return;
 if(M2C_FIELD(gKeyState,u16 *,6)&0x200) {
 if(gFrameCounter&1) func_ov002_021e70a0(arg0);
@@ -164,7 +164,7 @@ if(gFrameCounter&1) func_ov002_021e70a0(arg0);
 func_ov002_021e70a0(arg0); func_ov002_021e70a0(arg0);
 } else func_ov002_021e70a0(arg0);
 if(!M2C_FIELD(arg0,u8 *,9)) return;
-if((M2C_FIELD(gKeyState,u16 *,0)&0xB)||M2C_FIELD(data_02101e88,u8 *,0x14)) func_ov002_021e795c(arg0);
+if((M2C_FIELD(gKeyState,u16 *,0)&0xB)||M2C_FIELD(gTouchState,u8 *,0x14)) func_ov002_021e795c(arg0);
 }
 
 void func_ov002_021e70a0(void *arg0) {
@@ -384,7 +384,10 @@ s32 func_ov002_021e7a14(M2C_UNK arg0, M2C_UNK arg1) {
 
 #pragma scheduling off
 #pragma scheduling reset
-void func_ov002_021e7a64(void *arg0) {
+/* Set up both players' battle settings for the scene: point each side at its
+ * army and unit-set definitions, choose the animation variant for certain CO
+ * types, then fix up the active player, stat pairs and cursor slots. */
+void SetupPlayerSettings(void *settings) {
     extern M2C_UNK gPlayerSettings;
     extern u8 data_ov002_021f1134[];
 extern u8 data_ov002_021f2f40;
@@ -394,90 +397,90 @@ extern u8 data_ov002_021f2f40;
     u8 func_ov002_021e8038(s32, s32);
     s32 func_ov002_021e7a14(M2C_UNK, M2C_UNK);
 
-    M2C_FIELD(arg0, void **, 0x4) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0xc) * 64);
-    M2C_FIELD(arg0, void **, 0x1c) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0x24) * 64);
-    M2C_FIELD(arg0, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
-    M2C_FIELD(arg0, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
+    M2C_FIELD(settings, void **, 0x4) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0xc) * 64);
+    M2C_FIELD(settings, void **, 0x1c) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0x24) * 64);
+    M2C_FIELD(settings, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
+    M2C_FIELD(settings, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
 
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x4), u8 *, 0x3d) == 2) {
-        if (func_ov002_021e8014((s32)arg0, 0) == 0) {
-            u8 r = func_ov002_021e79c4((M2C_UNK)arg0, 0);
-            M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = r;
+    if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 2) {
+        if (func_ov002_021e8014((s32)settings, 0) == 0) {
+            u8 variant = func_ov002_021e79c4((M2C_UNK)settings, 0);
+            M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x1c), u8 *, 0x3d) == 2) {
-        if (func_ov002_021e8014((s32)arg0, 1) == 0) {
-            u8 r = func_ov002_021e79c4((M2C_UNK)arg0, 1);
-            M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = r;
+    if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 2) {
+        if (func_ov002_021e8014((s32)settings, 1) == 0) {
+            u8 variant = func_ov002_021e79c4((M2C_UNK)settings, 1);
+            M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }
     }
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x4), u8 *, 0x3d) == 3) {
-        if (func_ov002_021e8038((s32)arg0, 0) == 0) {
-            u8 r = func_ov002_021e7a14((M2C_UNK)arg0, 0);
-            M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = r;
+    if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 3) {
+        if (func_ov002_021e8038((s32)settings, 0) == 0) {
+            u8 variant = func_ov002_021e7a14((M2C_UNK)settings, 0);
+            M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x1c), u8 *, 0x3d) == 3) {
-        if (func_ov002_021e8038((s32)arg0, 1) == 0) {
-            u8 r = func_ov002_021e7a14((M2C_UNK)arg0, 1);
-            M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = r;
+    if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 3) {
+        if (func_ov002_021e8038((s32)settings, 1) == 0) {
+            u8 variant = func_ov002_021e7a14((M2C_UNK)settings, 1);
+            M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }
     }
 
-    M2C_FIELD(arg0, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
-    M2C_FIELD(arg0, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
+    M2C_FIELD(settings, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
+    M2C_FIELD(settings, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
 
     if (data_ov002_021f2f40 == 0) {
-        u8 idx = M2C_FIELD(arg0, u8 *, 0x0);
-        s32 flag = (idx == 0) ? 1 : 0;
-        u8 v = M2C_FIELD(M2C_FIELD((u8 *)arg0 + flag * 0x18, void **, 0x4), u8 *, 0x3d);
-        if (v != 2) {
-            u8 *q = (u8 *)arg0 + idx * 0x18;
-            if (v != 3) {
-                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), volatile u8 *, 0x3d);
-                if (v2 == 2) {
-                    M2C_FIELD(arg0, u8 *, 0x1) = idx;
+        u8 side = M2C_FIELD(settings, u8 *, 0x0);
+        s32 otherSide = (side == 0) ? 1 : 0;
+        u8 otherType = M2C_FIELD(M2C_FIELD((u8 *)settings + otherSide * 0x18, void **, 0x4), u8 *, 0x3d);
+        if (otherType != 2) {
+            u8 *sideSettings = (u8 *)settings + side * 0x18;
+            if (otherType != 3) {
+                u8 ownType = M2C_FIELD(M2C_FIELD(sideSettings, void **, 0x4), volatile u8 *, 0x3d);
+                if (ownType == 2) {
+                    M2C_FIELD(settings, u8 *, 0x1) = side;
                 }
             } else {
-                u8 v2 = M2C_FIELD(M2C_FIELD(q, void **, 0x4), volatile u8 *, 0x3d);
-                if (v2 != 3) {
-                    M2C_FIELD(arg0, u8 *, 0x1) = idx;
+                u8 ownType = M2C_FIELD(M2C_FIELD(sideSettings, void **, 0x4), volatile u8 *, 0x3d);
+                if (ownType != 3) {
+                    M2C_FIELD(settings, u8 *, 0x1) = side;
                 }
             }
         }
     }
 
     {
-        u8 a = M2C_FIELD(arg0, u8 *, 0xd);
-        u8 b = M2C_FIELD(arg0, u8 *, 0xe);
-        if (a < b) {
-            M2C_FIELD(arg0, u8 *, 0xe) = a;
+        u8 statA = M2C_FIELD(settings, u8 *, 0xd);
+        u8 statB = M2C_FIELD(settings, u8 *, 0xe);
+        if (statA < statB) {
+            M2C_FIELD(settings, u8 *, 0xe) = statA;
         }
     }
     {
-        u8 a = M2C_FIELD(arg0, u8 *, 0x25);
-        u8 b = M2C_FIELD(arg0, u8 *, 0x26);
-        if (a < b) {
-            M2C_FIELD(arg0, u8 *, 0x26) = a;
+        u8 statA = M2C_FIELD(settings, u8 *, 0x25);
+        u8 statB = M2C_FIELD(settings, u8 *, 0x26);
+        if (statA < statB) {
+            M2C_FIELD(settings, u8 *, 0x26) = statA;
         }
     }
 
     {
-        u8 idx1 = M2C_FIELD(arg0, u8 *, 0x13);
-        void *p = M2C_FIELD(arg0, void **, 0x4);
-        s32 *loc = (s32 *)((u8 *)p + idx1 * 4 + 0x2c);
-        if (*loc == 0) {
-            u8 r = (idx1 + 1) & 1;
-            M2C_FIELD(arg0, u8 *, 0x13) = r;
+        u8 slot = M2C_FIELD(settings, u8 *, 0x13);
+        void *armyDef = M2C_FIELD(settings, void **, 0x4);
+        s32 *slotEntry = (s32 *)((u8 *)armyDef + slot * 4 + 0x2c);
+        if (*slotEntry == 0) {
+            u8 next = (slot + 1) & 1;
+            M2C_FIELD(settings, u8 *, 0x13) = next;
         }
     }
     {
-        u8 idx1 = M2C_FIELD(arg0, u8 *, 0x2b);
-        void *p = M2C_FIELD(arg0, void **, 0x1c);
-        s32 *loc = (s32 *)((u8 *)p + idx1 * 4 + 0x2c);
-        if (*loc == 0) {
-            u8 r = (idx1 + 1) & 1;
-            M2C_FIELD(arg0, u8 *, 0x2b) = r;
+        u8 slot = M2C_FIELD(settings, u8 *, 0x2b);
+        void *armyDef = M2C_FIELD(settings, void **, 0x1c);
+        s32 *slotEntry = (s32 *)((u8 *)armyDef + slot * 4 + 0x2c);
+        if (*slotEntry == 0) {
+            u8 next = (slot + 1) & 1;
+            M2C_FIELD(settings, u8 *, 0x2b) = next;
         }
     }
 }

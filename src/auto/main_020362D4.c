@@ -1,74 +1,80 @@
 /* 11 functions from 0x020362D4 to 0x02037214 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 extern void *gWfcMatchSession;
 extern s32 data_020fb2f8;
 extern s32 data_0213d13c[];
-extern s32 data_0212dca4[];
+extern s32 gSocketManager[];
 extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncoding[], sWfcEncodingUtf16[], sWfcParamType[], sWfcTypeQuery[], sWfcParamWords[];
 
-s32 func_020362d4(s32 arg0){
-M2C_UNK func_02037694();void func_02007f8c(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK func_020376d8();u64 func_02007004(void);extern M2C_UNK data_0213d138;
+/* Open the HTTP connection to the WFC server whose address is at gWfcNet+8:
+ * allocate and clear the connection object, create a non-blocking TCP socket,
+ * fill in the server address and port, and start the connect. arg0 is the
+ * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
+ * could not be set up, 1 once the connection attempt is under way. */
+s32 OpenWfcHttpConnection(s32 timeout){
+M2C_UNK func_02037694();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK func_020376d8();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
-if(M2C_FIELD(&data_0213d138,void **,16)||!M2C_FIELD(&data_0213d138,u32 *,8))return 0;
-M2C_FIELD(&data_0213d138,void **,16)=func_02037694(0,72);
-if(!M2C_FIELD(&data_0213d138,void **,16))return 0;
-func_02007f8c(M2C_FIELD(&data_0213d138,void **,16),0,72);
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0)=-1;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0)=func_02021500(2,1,0);
-if(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0)<0){func_020376d8(0,M2C_FIELD(&data_0213d138,void **,16),0);M2C_FIELD(&data_0213d138,void **,16)=0;return 0;}
-r=func_020219e8(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),3,0);
-func_020219e8(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),4,r|4);
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u8 *,4)=8;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u8 *,5)=2;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u16 *,6)=0x5000;
-ip=M2C_FIELD(&data_0213d138,u32 *,8);
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u32 *,8)=((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000);
-r=func_02021558(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),M2C_FIELD(&data_0213d138,void **,16)+4);
+if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
+M2C_FIELD(&gWfcNet,void **,16)=func_02037694(0,72);
+if(!M2C_FIELD(&gWfcNet,void **,16))return 0;
+MI_CpuFill8(M2C_FIELD(&gWfcNet,void **,16),0,72);
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=-1;
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=func_02021500(2,1,0);
+if(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket<0){func_020376d8(0,M2C_FIELD(&gWfcNet,void **,16),0);M2C_FIELD(&gWfcNet,void **,16)=0;return 0;}
+r=func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,3,0);
+func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|4);
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addrLen=8;
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addrFamily=2;
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->port=0x5000;
+ip=M2C_FIELD(&gWfcNet,u32 *,8);
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addr=((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000);
+r=func_02021558(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,M2C_FIELD(&gWfcNet,void **,16)+4);
 if(r<0&&r!=-26){
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,60)=3;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=3;
-func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),2);func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));return 1;}
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=1;
-if(arg0>0)M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u64 *,64)=func_02007004()+((u64)((s64)arg0*0x82ea)>>6);
-else M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),u64 *,64)=func_02007004()+0x17f898;
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->result=3;
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->state=3;
+func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,2);func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket);return 1;}
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->state=1;
+if(timeout>0)((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=GetSystemTick()+((u64)((s64)timeout*0x82ea)>>6);
+else ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=GetSystemTick()+0x17f898;
 return 1;}
 
 s32 func_020364f4(void) {
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     s32 func_02021558(M2C_UNK, void *);
     M2C_UNK func_02021750(s32, s32);
     M2C_UNK func_0202175c(s32);
     void func_0203667c(void);
     void func_02036718(void);
     M2C_UNK func_020376d8(s32, M2C_UNK *, s32);
-    extern M2C_UNK data_0213d138;
+    extern M2C_UNK gWfcNet;
 
     void *p;
     s32 r;
 
-    p = M2C_FIELD(&data_0213d138, void **, 0x10);
+    p = M2C_FIELD(&gWfcNet, void **, 0x10);
     if (p == 0 || M2C_FIELD(p, s32 *, 0x38) == 0) {
         return 4;
     }
 
     if (M2C_FIELD(p, s32 *, 0x3c) == 0) {
-        if (M2C_FIELD(p, u64 *, 0x40) != 0 && M2C_FIELD(p, u64 *, 0x40) < func_02007004()) {
+        if (M2C_FIELD(p, u64 *, 0x40) != 0 && M2C_FIELD(p, u64 *, 0x40) < GetSystemTick()) {
             M2C_FIELD(p, s32 *, 0x3c) = 2;
-            M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38) = 3;
-            func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0), 2);
-            func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0));
+            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
+            func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
+            func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
         }
     }
 
-    switch (M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38)) {
+    switch (M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38)) {
     case 1:
-        r = func_02021558(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0),
-                          (char *)M2C_FIELD(&data_0213d138, void **, 0x10) + 4);
+        r = func_02021558(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0),
+                          (char *)M2C_FIELD(&gWfcNet, void **, 0x10) + 4);
         if (r < 0 && r != -26) {
-            M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x3c) = 3;
-            M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38) = 3;
-            func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0), 2);
-            func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0));
+            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c) = 3;
+            M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
+            func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
+            func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
             return 0;
         }
         func_0203667c();
@@ -77,82 +83,84 @@ s32 func_020364f4(void) {
         func_02036718();
         return 0;
     case 3:
-        r = M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x3c);
-        func_020376d8(0, M2C_FIELD(&data_0213d138, void **, 0x10), 0);
-        M2C_FIELD(&data_0213d138, void **, 0x10) = 0;
+        r = M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c);
+        func_020376d8(0, M2C_FIELD(&gWfcNet, void **, 0x10), 0);
+        M2C_FIELD(&gWfcNet, void **, 0x10) = 0;
         return r;
     default:
-        M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x3c) = 3;
-        M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0x38) = 3;
-        func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0), 2);
-        func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138, void **, 0x10), s32 *, 0));
+        M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x3c) = 3;
+        M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0x38) = 3;
+        func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0), 2);
+        func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, void **, 0x10), s32 *, 0));
         return 0;
     }
 }
 
 void func_0203667c(void) {
  s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 StringLength(M2C_UNK *);
- extern M2C_UNK data_020fb968; extern M2C_UNK data_0213d138;
+ extern M2C_UNK data_020fb968; extern M2C_UNK gWfcNet;
  s32 x;
  x=StringLength(&data_020fb968);
- x=func_02021688(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),&data_020fb968,x);
+ x=func_02021688(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),&data_020fb968,x);
  if(x==-56) return;
  if(x<=0) {
- M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,60)=2;
- M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=3;
- func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),2);
- func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0)); return;
+ M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,60)=2;
+ M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
+ func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
+ func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0)); return;
  }
- M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=2;
- M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,52)=0;
+ M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=2;
+ M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)=0;
 }
 
 void func_02036718(void) {
 s32 func_020215b4(s32,void *,s32);M2C_UNK func_02021750(s32,s32);M2C_UNK func_0202175c(s32);s32 StringCompareN(void *,void *,s32);
-extern M2C_UNK data_0213d138,data_020fb99c;
+extern M2C_UNK gWfcNet,data_020fb99c;
 s32 r,i;void *p; s8 *scan;
-p=M2C_FIELD(&data_0213d138,void **,16);
+p=M2C_FIELD(&gWfcNet,void **,16);
 r=func_020215b4(M2C_FIELD(p,s32 *,0),p+20+M2C_FIELD(p,s32 *,52),32-M2C_FIELD(p,s32 *,52));
 if(r==-6)return;
 if(r>=0) {
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,52)+=r;
-if(r==0||M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,52)>=32){
-p=M2C_FIELD(&data_0213d138,void **,16);
+M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)+=r;
+if(r==0||M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,52)>=32){
+p=M2C_FIELD(&gWfcNet,void **,16);
 for(i=0,scan=p;scan[20]!=32&&i<32;scan++,i++);
 i++;
 if(i>=32)M2C_FIELD(p,s32 *,60)=2;
 else if(StringCompareN(p+20+i,&data_020fb99c,3)!=0)M2C_FIELD(p,s32 *,60)=2;
 else M2C_FIELD(p,s32 *,60)=1;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=3;
-func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),2);
-func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));
+M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
+func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
+func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0));
 }
 }else{
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,60)=2;
-M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=3;
-func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),2);
-func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));
+M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,60)=2;
+M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,56)=3;
+func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0),2);
+func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet,void **,16),s32 *,0));
 }
 }
 
-s32 func_02036860(const char *arg0){
-s32 StringLength(M2C_UNK *);s32 func_0200f0ac(void *,void *);s64 func_0200f7e0(void *,void *);void StringCopy(void *,const char *);s32 ParseInt();s32 StringCompare(void *,void *);
-extern M2C_UNK data_020fba00,data_0213d1b4;extern s32 data_0213e9f4;extern char *data_020fb9d0[];
-s32 date[4],time[3];char buf[32];s64 now,t;s32 i,n;
-n=StringLength((M2C_UNK *)arg0);
-if(n!=StringLength(&data_020fba00)||arg0[7]!=32||arg0[11]!=32||arg0[16]!=32||arg0[19]!=58||arg0[22]!=58||arg0[25]!=32)goto fail;
-if(func_0200f0ac(date,time))goto fail;
-now=func_0200f7e0(date,time);if(now==-1)goto fail;
-StringCopy(buf,arg0);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;
-data_0213e9f4=0;date[0]=ParseInt(buf+12);if(data_0213e9f4==34)goto fail;date[0]-=2000;
-date[1]=13;for(i=0;i<12;i++){if(!StringCompare(data_020fb9d0[i],buf+8)){date[1]=i+1;break;}}
+/* Parses the server's RFC-1123 Date header and records the local clock, the
+ * server time and their difference in the server-time sync record. */
+s32 ParseHttpDate(const char *text){
+s32 StringLength(M2C_UNK *);s32 GetLocalTime(void *,void *);s64 MakeTime(void *,void *);void StringCopy(void *,const char *);s32 ParseInt();s32 StringCompare(void *,void *);
+extern M2C_UNK gHttpDateTemplate,gServerTimeSync;extern s32 gErrno;extern char *gMonthNames[];
+s32 date[4],time[3];char buf[32];s64 now,serverTime;s32 i,n;
+n=StringLength((M2C_UNK *)text);
+if(n!=StringLength(&gHttpDateTemplate)||text[HTTP_DATE_DAY_SPACE]!=32||text[HTTP_DATE_MONTH_SPACE]!=32||text[HTTP_DATE_YEAR_SPACE]!=32||text[HTTP_DATE_HOUR_COLON]!=58||text[HTTP_DATE_MIN_COLON]!=58||text[HTTP_DATE_TZ_SPACE]!=32)goto fail;
+if(GetLocalTime(date,time))goto fail;
+now=MakeTime(date,time);if(now==-1)goto fail;
+StringCopy(buf,text);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;
+gErrno=0;date[0]=ParseInt(buf+12);if(gErrno==34)goto fail;date[0]-=2000;
+date[1]=13;for(i=0;i<12;i++){if(!StringCompare(gMonthNames[i],buf+8)){date[1]=i+1;break;}}
 if((u32)date[1]>12)goto fail;
-data_0213e9f4=0;date[2]=ParseInt(buf+5);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[0]=ParseInt(buf+17);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[1]=ParseInt(buf+20);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[2]=ParseInt(buf+23);if(data_0213e9f4==34)goto fail;
-t=func_0200f7e0(date,time);if(t==-1)goto fail;
-M2C_FIELD(&data_0213d1b4,s64 *,12)=now-t;M2C_FIELD(&data_0213d1b4,s64 *,4)=now;M2C_FIELD(&data_0213d1b4,s32 *,0)=1;return 1;
+gErrno=0;date[2]=ParseInt(buf+5);if(gErrno==34)goto fail;
+gErrno=0;time[0]=ParseInt(buf+17);if(gErrno==34)goto fail;
+gErrno=0;time[1]=ParseInt(buf+20);if(gErrno==34)goto fail;
+gErrno=0;time[2]=ParseInt(buf+23);if(gErrno==34)goto fail;
+serverTime=MakeTime(date,time);if(serverTime==-1)goto fail;
+M2C_FIELD(&gServerTimeSync,s64 *,SERVER_TIME_OFFSET)=now-serverTime;M2C_FIELD(&gServerTimeSync,s64 *,SERVER_TIME_NOW)=now;M2C_FIELD(&gServerTimeSync,s32 *,SERVER_TIME_VALID)=1;return 1;
 fail:return 0;
 }
 
@@ -160,18 +168,18 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void func_02007f8c();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
  if(totalLen-1<=0||totalLen-1>500)return 0;
  if(gWfcMatchSession)return 0;
- func_02007f8c(flagsOut,0,count);
+ MI_CpuFill8(flagsOut,0,count);
  gWfcMatchSession=(void *)func_02037694(0,0x1d28);
  if(!gWfcMatchSession)goto fail;
- func_02007f8c(gWfcMatchSession,0,0x1d28);
+ MI_CpuFill8(gWfcMatchSession,0,0x1d28);
  M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)=0;
- func_02007f8c(work,0,0x94);
+ MI_CpuFill8(work,0,0x94);
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d1c)=flagsOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d20)=countOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d24)=count;
@@ -196,7 +204,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(func_020346d0(gWfcMatchSession,sWfcParamWords,namesBuf,(totalLen-1)*2))goto fail;
  func_020376d8(0,namesBuf,0);namesBuf=0;
  if(func_02033de8(gWfcMatchSession))goto fail;
- n=func_02006028(data_0212dca4[1]);
+ n=func_02006028(gSocketManager[1]);
  func_02033e80(gWfcMatchSession,n-1);
  if(M2C_FIELD(gWfcMatchSession,s32 *,0x1ba4))return 1;
 fail:
@@ -268,17 +276,17 @@ s32 func_02036f14(void) {
 }
 
 s32 func_0203703c(void) {
-s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 func_02036860(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
-extern void *gWfcMatchSession; extern s32 data_0213e9f4;
+s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 ParseHttpDate(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
+extern void *gWfcMatchSession; extern s32 gErrno;
 extern u8 data_020fba60[],data_020fba68[],data_020fba74[],data_020fba80[];
 s32 value; s8 buf[51]; void *p=gWfcMatchSession; s32 r,i;
 if(func_02034c58(p,0)) {
-if(func_02034ef8(p,data_020fba60))func_02036860();
+if(func_02034ef8(p,data_020fba60))ParseHttpDate();
 if(func_02034ef8(p,data_020fba68)){
 r=ParseInt();
-if(data_0213e9f4!=34 && r==200 && func_02034f50(p,data_020fba74,&value,4)>0){
+if(gErrno!=34 && r==200 && func_02034f50(p,data_020fba74,&value,4)>0){
 r=ParseInt(&value);
-if(data_0213e9f4!=34){
+if(gErrno!=34){
 if(r==1)goto error;
 if(r<100)goto readbuf;
 if(r==100)goto readbuf;

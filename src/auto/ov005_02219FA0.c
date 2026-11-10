@@ -171,16 +171,16 @@ void func_ov005_0221a598(void *arg0) {
 /* Create two sprite objects for a hit effect and play the appropriate sound. */
 void func_ov005_0221a688(void *arg) {
     M2C_UNK PlaySoundEffect(s32);
-    void *func_01ffa42c(void *, void *);
+    void *CreateSpriteObject(void *, void *);
     void func_02007ef4(void *, void *, s32);
-    extern Ov005ModeBits data_02168f14;
+    extern Ov005ModeBits gMapConfig;
     extern u8 data_0215c334[];
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc;
     s32 sound = 0xe9;
     s32 saved;
     void *obj;
-    if ((u8)(data_02168f14.mode != 1)) {
+    if ((u8)(gMapConfig.mode != 1)) {
         switch (data_0215c334[3]) {
         case 4: sound = 0xea; break;
         case 3: sound = 0xeb; break;
@@ -191,7 +191,7 @@ void func_ov005_0221a688(void *arg) {
     PlaySoundEffect(sound);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    obj = func_01ffa42c(&data_ov005_02220aa8, arg);
+    obj = CreateSpriteObject(&data_ov005_02220aa8, arg);
     if (obj) {
         M2C_FIELD(obj, void **, 0) = &data_ov005_02220fcc;
         M2C_FIELD(obj, s32 *, 0x58) = 0x7fff;
@@ -201,7 +201,7 @@ void func_ov005_0221a688(void *arg) {
         func_02007ef4(M2C_FIELD(obj, void **, 0x54), (char *)obj + 0x34, 32);
         M2C_FIELD(obj, s32 *, 0x5c) = 0;
     }
-    obj = func_01ffa42c(&data_ov005_02220aa8, arg);
+    obj = CreateSpriteObject(&data_ov005_02220aa8, arg);
     if (obj) {
         M2C_FIELD(obj, void **, 0) = &data_ov005_02220fcc;
         M2C_FIELD(obj, s32 *, 0x58) = 0x7fff;

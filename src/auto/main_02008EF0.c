@@ -257,12 +257,12 @@ if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
 }
 
-s32 func_02009800(void){M2C_UNK func_020067a8(s32 *,M2C_UNK);extern s32 *data_0212fb60;func_020067a8(data_0212fb60+1,4);return data_0212fb60[1];}
+s32 func_02009800(void){M2C_UNK DC_InvalidateRange(s32 *,M2C_UNK);extern s32 *data_0212fb60;DC_InvalidateRange(data_0212fb60+1,4);return data_0212fb60[1];}
 
 s32 func_0200982c(void) {
-    M2C_UNK func_020067a8(s32 *, M2C_UNK);
+    M2C_UNK DC_InvalidateRange(s32 *, M2C_UNK);
     extern s32 *data_0212fb60;
-    func_020067a8(data_0212fb60, 4);
+    DC_InvalidateRange(data_0212fb60, 4);
     return *data_0212fb60;
 }
 

@@ -426,9 +426,9 @@ void func_020e4b24(void) {
 u8 func_020e4b28(s32 a){extern u8 data_0215dba4[];return ((u32)(M2C_FIELD(data_0215dba4,u32 *,a*0x118)<<16)>>24)!=0;}
 
 s32 func_020e4b54(void) {
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void **gCurrentMap;
-    if (!(((u32) (data_02168f14 << 0x1D) >> 0x1D) & 0xFF) && (M2C_FIELD(*gCurrentMap, u16 *, 0x5142) == 0xBA)) {
+    if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF) && (M2C_FIELD(*gCurrentMap, u16 *, 0x5142) == 0xBA)) {
         return 1;
     }
     return 0;
@@ -541,7 +541,7 @@ void func_020e4e8c(void *arg0) {
 #pragma opt_common_subs off
 #pragma opt_propagation off
 void func_020e4eb0(void *arg0) {
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     s32 func_0207c8ec(s32, s32);
     void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
@@ -580,7 +580,7 @@ void func_020e4eb0(void *arg0) {
     if (!cond) goto skip_all;
 
     arr = (u8 *)data_02168ff4;
-    func_020067a8(arr, 0x20);
+    DC_InvalidateRange(arr, 0x20);
 
     maxv = 0;
     i = 0;

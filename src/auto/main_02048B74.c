@@ -4,11 +4,11 @@
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
 void func_02048b74(M2C_UNK arg0) {
-    s32 func_02048688();
+    s32 Vector_GetCount();
     M2C_UNK func_0204890c(M2C_UNK, s32);
     s32 var_r4;
 
-    var_r4 = func_02048688() - 1;
+    var_r4 = Vector_GetCount() - 1;
     if (var_r4 < 0) {
         return;
     }
@@ -70,7 +70,7 @@ void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4)
 M2C_UNK func_02048c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, M2C_UNK arg5) {
     extern M2C_UNK data_020fcd7c, data_020fcd84, data_020fcd14, data_020fcd90, data_020fcd98, data_020fcda4, data_020fcdb0, data_020fcdb8;
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02037794(s32);
+    M2C_UNK gpiMalloc(s32);
     M2C_UNK func_02048558(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK var_r4;
     s32 i;
@@ -78,9 +78,9 @@ M2C_UNK func_02048c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s3
     if (arg4 == 0) AssertFailed(&data_020fcd90, &data_020fcd84, &data_020fcd14, 0x39);
     if (arg0 == 0) AssertFailed(&data_020fcd98, &data_020fcd84, &data_020fcd14, 0x3a);
     if (arg1 == 0) AssertFailed(&data_020fcda4, &data_020fcd84, &data_020fcd14, 0x3b);
-    var_r4 = func_02037794(0x14);
+    var_r4 = gpiMalloc(0x14);
     if (var_r4 == 0) AssertFailed(&data_020fcdb0, &data_020fcd84, &data_020fcd14, 0x3e);
-    M2C_FIELD(var_r4, M2C_UNK **, 0) = (M2C_UNK *)func_02037794((s32)arg1 * 4);
+    M2C_FIELD(var_r4, M2C_UNK **, 0) = (M2C_UNK *)gpiMalloc((s32)arg1 * 4);
     if (M2C_FIELD(var_r4, M2C_UNK **, 0) == 0) AssertFailed(&data_020fcdb8, &data_020fcd84, &data_020fcd14, 0x41);
     i = 0;
     if ((s32)arg1 <= 0) goto done;
@@ -99,7 +99,7 @@ done:
 void func_02048dc4(s32 **arg0) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK func_0204861c(s32);
-    M2C_UNK func_020377c4(M2C_UNK);
+    M2C_UNK gpiFree(M2C_UNK);
     extern M2C_UNK data_020fcd20;
     extern M2C_UNK data_020fcd84;
     extern M2C_UNK data_020fcdb0;
@@ -118,17 +118,17 @@ void func_02048dc4(s32 **arg0) {
             var_r4 += 1;
         } while (var_r4 < M2C_FIELD(arg0, s32 *, 4));
     }
-    func_020377c4(M2C_FIELD(arg0, s32 **, 0));
-    func_020377c4(arg0);
+    gpiFree(M2C_FIELD(arg0, s32 **, 0));
+    gpiFree(arg0);
 }
 
 s32 func_02048e38(void *p) {
 extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd38;
-s32 func_02048688(s32);
+s32 Vector_GetCount(s32);
 s32 i, sum=0;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd38,0x61);
 if(!p)return 0;
-for(i=0;i<M2C_FIELD(p,s32 *,4);i++)sum+=func_02048688(M2C_FIELD(p,s32 **,0)[i]);
+for(i=0;i<M2C_FIELD(p,s32 *,4);i++)sum+=Vector_GetCount(M2C_FIELD(p,s32 **,0)[i]);
 return sum;
 }
 
@@ -161,14 +161,14 @@ return 1;
 
 s32 func_02048ff8(void *p,s32 a) {
 extern M2C_UNK data_020fcdb0,data_020fcd84,data_020fcd50;
-s32 func_02048690(s32,s32);
+s32 Vector_GetItem(s32,s32);
 s32 i,n;
 if(!p)AssertFailed(&data_020fcdb0,&data_020fcd84,&data_020fcd50,0x94);
 if(!p)return 0;
 i=M2C_FIELD(p,s32 (**)(s32,s32),12)(a,M2C_FIELD(p,s32 *,4));
 n=func_020489e4(M2C_FIELD(p,s32 **,0)[i],a,M2C_FIELD(p,s32 *,16),0,0);
 if(n==-1)return 0;
-return func_02048690(M2C_FIELD(p,s32 **,0)[i],n);
+return Vector_GetItem(M2C_FIELD(p,s32 **,0)[i],n);
 }
 
 void func_02049098(void *p,s32 a,s32 b) {
@@ -192,7 +192,7 @@ void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;i
 
 void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
 
-unsigned long long func_02049208(void){int func_02006f8c(void);unsigned long long func_02007004(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (func_02007004()<<6)/0x82ea;}
+unsigned long long GetTickCountMs(void){int func_02006f8c(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
 
 void func_02049260(void) {
     M2C_UNK func_02006030();
@@ -208,7 +208,7 @@ void func_02049270(void) {
 }
 
 s32 gpiStringDup(s32 arg0) {
-    s32 func_02037794(s32);
+    s32 gpiMalloc(s32);
     s32 StringLength();
     M2C_UNK StringCopy(s32, s32);
     s32 temp_r0;
@@ -216,7 +216,7 @@ s32 gpiStringDup(s32 arg0) {
     if (arg0 == 0) {
         return 0;
     }
-    temp_r0 = func_02037794(StringLength() + 1);
+    temp_r0 = gpiMalloc(StringLength() + 1);
     if (temp_r0 != 0) {
         StringCopy(temp_r0, arg0);
     }
@@ -390,8 +390,8 @@ return func_0204968c(func_020216cc(a,b,c,d,(UnkSocketAddress *)&addr),-1);
 }
 
 s32 func_0204987c(s32 a,s32 b,s32 c,s32 d,s32 *e) {
-M2C_UNK func_02007f8c(s32,s32,s32);
-func_02007f8c(d,0,*e);return func_0204968c(0,-1);
+M2C_UNK MI_CpuFill8(s32,s32,s32);
+MI_CpuFill8(d,0,*e);return func_0204968c(0,-1);
 }
 
 void func_020498a4(void) {
@@ -425,12 +425,12 @@ s32 ghiGetLastSocketError(void) {
 }
 
 void gpiGetTime(int *out) {
-int func_02006f8c(void); unsigned long long func_02007004(void);
+int func_02006f8c(void); unsigned long long GetSystemTick(void);
 unsigned long long func_02072088(unsigned long long, unsigned long long);
 extern char data_020fcdf0[],data_020fce10[],data_020fcdd8[];
 unsigned int v;
 if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcdd8,0x667);
-v=func_02072088(func_02007004()<<6,0x1ff6210);
+v=func_02072088(GetSystemTick()<<6,0x1ff6210);
 if(out)*out=v;
 }
 

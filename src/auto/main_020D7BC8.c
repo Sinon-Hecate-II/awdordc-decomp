@@ -9,7 +9,7 @@
 void DrawUnitStatus(s32 x,s32 y,s32 side,void *unit) {
 extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine;
-extern u8 gSpriteDesc8x8[],gSpriteDesc32x16[],data_027e0064[];
+extern u8 gSpriteDesc8x8[],gSpriteDesc32x16[],gSpriteDesc16x16[];
 s32 GetUnitKind(void *);
 s32 GetUnitHealthBarCount(void *);
 s32 func_ov000_0216cd2c(void *);
@@ -49,7 +49,7 @@ func_0207c3dc(func_ov000_0216cd4c(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0
 AddSprite((u16)((x+20)&511),(u16)((y+2)&255),(u16)((0x3ff & (0x224 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x9000),gSpriteDesc32x16,8);
 func_01ff9e44(func_ov000_0216cd90(colorIndex),0x300,32);
 func_0207c3dc(func_ov000_0216cd78(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
-AddSprite((u16)((x+4)&511),(u16)((y+4)&255),(u16)((0x3ff & (0x218 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),data_027e0064,9);
+AddSprite((u16)((x+4)&511),(u16)((y+4)&255),(u16)((0x3ff & (0x218 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),gSpriteDesc16x16,9);
 }
 #pragma pop
 void func_020d8084(void *arg0, s32 arg1, s32 arg2, s32 arg3) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; }
@@ -189,8 +189,8 @@ void func_020d88ac(void) {
 
 M2C_UNK func_020d88c4(void) {
  M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
- extern u16 data_02168f14; extern M2C_UNK data_0212bfb8;
- data_02168f14=(data_02168f14&~7)|4;
+ extern u16 gMapConfig; extern M2C_UNK data_0212bfb8;
+ gMapConfig=(gMapConfig&~7)|4;
  func_01ffa3dc(&data_0212bfb8,7);
 }
 
@@ -229,8 +229,8 @@ void func_020d8928(void) {
 
 M2C_UNK func_020d895c(void) {
  M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
- extern u16 data_02168f14; extern M2C_UNK data_0212c1a0;
- data_02168f14=(data_02168f14&~7)|1;
+ extern u16 gMapConfig; extern M2C_UNK data_0212c1a0;
+ gMapConfig=(gMapConfig&~7)|1;
  func_01ffa3dc(&data_0212c1a0,7);
 }
 
@@ -246,8 +246,8 @@ void func_020d898c(void) {
 
 M2C_UNK func_020d89b8(void) {
  M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
- extern u16 data_02168f14; extern M2C_UNK data_0212c098;
- data_02168f14=(data_02168f14&~7)|2;
+ extern u16 gMapConfig; extern M2C_UNK data_0212c098;
+ gMapConfig=(gMapConfig&~7)|2;
  func_01ffa3dc(&data_0212c098,7);
 }
 
@@ -283,10 +283,10 @@ void func_020d8a48(void) {
 }
 
 u8 func_020d8a60(void) {
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     u8 var_r0;
 
-    if ((u8) ((u32) (data_02168f14 << 0x1D) >> 0x1D) == 7) {
+    if ((u8) ((u32) (gMapConfig << 0x1D) >> 0x1D) == 7) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -296,8 +296,8 @@ u8 func_020d8a60(void) {
 
 M2C_UNK func_020d8a8c(void) {
  M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
- extern u16 data_02168f14; extern M2C_UNK data_0212c0d8;
- data_02168f14=(data_02168f14&~7)|6;
+ extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
+ gMapConfig=(gMapConfig&~7)|6;
  func_01ffa3dc(&data_0212c0d8,7);
 }
 
@@ -314,8 +314,8 @@ void func_020d8ac8(void) {
 
 M2C_UNK func_020d8ae0(void) {
  M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
- extern u16 data_02168f14; extern M2C_UNK data_0212c0d8;
- data_02168f14=(data_02168f14&~7)|7;
+ extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
+ gMapConfig=(gMapConfig&~7)|7;
  func_01ffa3dc(&data_0212c0d8,7);
 }
 

@@ -205,9 +205,9 @@ void func_ov001_02188c78(void *p, void *a) {
     M2C_FIELD(data_ov001_02193e28, s32 *, 2760) = M2C_FIELD(a, s32 *, 20);
     M2C_FIELD(data_ov001_02193e28, u8 *, 0xa92) = M2C_FIELD(a, u8 *, 24);
     M2C_FIELD(data_ov001_02193e28, u8 *, 0xacc) = 2;
-    func_02007004();
+    GetSystemTick();
     func_02045eb4((u8 *)data_ov001_02193e28 + 0x64c);
-    func_02007004();
+    GetSystemTick();
     M2C_FIELD(data_ov001_02193e28, void **, 0xaa4) = func_ov001_02184c60();
 }
 

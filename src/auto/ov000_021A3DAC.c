@@ -11,7 +11,7 @@ s32 func_ov000_021a3dac(void) {
  void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void func_ov000_021a34bc(u8);
  s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
  s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void CommitAiAction(s32);
- extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 data_ov000_021b5bfc[];extern M2C_UNK gAiCommand;
+ extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 gUnitKindStats[];extern M2C_UNK gAiCommand;
  s32 other,armed,transport,flag,index,i;
  u8 *candidate;
  u8 *unit;
@@ -46,7 +46,7 @@ s32 func_ov000_021a3dac(void) {
  unit=(u8 *)map+0x59a4+id*14;
  if(!IsUnitOnCurrentTeam(id)){
  if(!IsFootUnitKind(((UnkStruct_ov000_021A860C *)unit)->unk0))goto nextCell;
- if(!(M2C_FIELD(data_ov000_021b5bfc+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7))goto nextCell;
+ if(!(M2C_FIELD(gUnitKindStats+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7))goto nextCell;
  goto discard;
  }
  if(IsCurrentPlayerUnit((s16)id)!=1)goto nextCell;
@@ -55,7 +55,7 @@ s32 func_ov000_021a3dac(void) {
  if(IsCaptureKind(((UnkStruct_ov000_021A860C *)unit)->unk0))capture=(s8)(capture+1);else combat=(s8)(combat+1);
  } else {
  if(IsCaptureKind(((UnkStruct_ov000_021A860C *)unit)->unk0))other=(s8)(other+1);
- else if(M2C_FIELD(data_ov000_021b5bfc+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7)armed=(s8)(armed+1);
+ else if(M2C_FIELD(gUnitKindStats+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7)armed=(s8)(armed+1);
  }
  }
  if((((UnkStruct_ov000_021A860C *)unit)->unk0)==24&&!unit[12]&&!func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB))transport=(s8)(transport+1);
@@ -124,10 +124,10 @@ u8 func_ov000_021a4320(void) {
 }
 
 u8 func_ov000_021a43a0(s32 arg0) {
-    extern void *data_ov000_021df57c;
+    extern void *gAiSettings;
     u8 var_r0;
 
-    if (M2C_FIELD(data_ov000_021df57c, u8 *, 0x11) & arg0) {
+    if (M2C_FIELD(gAiSettings, u8 *, 0x11) & arg0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -136,10 +136,10 @@ u8 func_ov000_021a43a0(s32 arg0) {
 }
 
 u8 func_ov000_021a43c4(void) {
-    extern void *data_ov000_021df57c;
+    extern void *gAiSettings;
     u8 var_r0;
 
-    if (M2C_FIELD(data_ov000_021df57c, u8 *, 0x11) & 3) {
+    if (M2C_FIELD(gAiSettings, u8 *, 0x11) & 3) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -157,7 +157,7 @@ s32 func_ov000_021a43e8(s32 arg0) {
 
 s32 func_ov000_021a4414(void) {
 s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 u8 *entries;s32 count7=0,count8=0,i,idx;void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16*,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(base,u16*,0x52a4)]+0x33;i++){
@@ -165,7 +165,7 @@ entries=(u8 *)base+0x59a4;
 idx=i*14;
 if((u32)(entries[idx]<<26)>>26){
 if(!func_ov000_021a43e8((u32)(entries[idx]<<26)>>26)){
-if(data_ov000_021b5bfc[((u32)(entries[idx]<<26)>>26)*112+19]&7){
+if(gUnitKindStats[((u32)(entries[idx]<<26)>>26)*112+19]&7){
 if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==0)count7++;
 if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==1)count8++;
 }}}
@@ -177,14 +177,14 @@ return 1;
 
 s32 func_ov000_021a4510(void) {
 s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 a=0,b=0,i;
 void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
 u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
 if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
-if(data_ov000_021b5bfc[((u32)(entry[0]<<26)>>26)*112+19]&7){
+if(gUnitKindStats[((u32)(entry[0]<<26)>>26)*112+19]&7){
 if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
 if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
 }}
@@ -194,14 +194,14 @@ if(a>b)return 0;return 1;
 
 s32 func_ov000_021a4608(void) {
 s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 a=0,b=0,i;
 void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
 u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
 if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
-if(data_ov000_021b5bfc[((u32)(entry[0]<<26)>>26)*112+19]&7 && ((u32)(entry[0]<<26)>>26)!=26){
+if(gUnitKindStats[((u32)(entry[0]<<26)>>26)*112+19]&7 && ((u32)(entry[0]<<26)>>26)!=26){
 if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
 if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
 }}
@@ -214,7 +214,7 @@ s32 func_ov000_021a4704(void) {
     s32 GetUnitAttackClass(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     u8 *entries;
     s32 count5 = 0;
     s32 count6 = 0;
@@ -233,7 +233,7 @@ s32 func_ov000_021a4704(void) {
         do {
             if (((u32)((entries[idx]) << 0x1A) >> 0x1A) != 0) {
                 if (func_ov000_021a43e8(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 0) {
-                    if (data_ov000_021b5bfc[((u32)((entries[idx]) << 0x1A) >> 0x1A) * 0x70 + 0x13] & 7) {
+                    if (gUnitKindStats[((u32)((entries[idx]) << 0x1A) >> 0x1A) * 0x70 + 0x13] & 7) {
                         if (((u32)((entries[idx]) << 0x1A) >> 0x1A) == 0x1A) {
                             count11 += 1;
                         } else {

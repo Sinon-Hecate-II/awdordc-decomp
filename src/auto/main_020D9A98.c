@@ -41,12 +41,12 @@ func_020b1c44(0,0);
 }
 
 void func_020d9d5c(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, u8);
+    M2C_UNK SetSpriteAnimation(void *, u8);
     s32 func_020d4810();
     if (func_020d4810() != 0) {
         return;
     }
-    func_01ffa8c4(arg0, M2C_FIELD(arg0, u8 *, 0x40));
+    SetSpriteAnimation(arg0, M2C_FIELD(arg0, u8 *, 0x40));
 }
 
 /* Draw four 5-wide progress bars (level rows 1/6/11/16) onto the UI screen,
@@ -378,22 +378,22 @@ void func_020da7e8(void *entity) {
     case 0:
         func_ov009_02225d88(func_020da8e4, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: func_01ffa8c4(entity, 6); break;
-        case 1: func_01ffa8c4(entity, 7); break;
+        case 0: SetSpriteAnimation(entity, 6); break;
+        case 1: SetSpriteAnimation(entity, 7); break;
         }
         break;
     case 1:
         func_ov010_0222a20c(func_020da948, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: func_01ffa8c4(entity, 2); break;
-        case 1: func_01ffa8c4(entity, 17); break;
+        case 0: SetSpriteAnimation(entity, 2); break;
+        case 1: SetSpriteAnimation(entity, 17); break;
         }
         break;
     case 2:
         func_ov010_0222a20c(func_020da948, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: func_01ffa8c4(entity, 12); break;
-        case 1: func_01ffa8c4(entity, 13); break;
+        case 0: SetSpriteAnimation(entity, 12); break;
+        case 1: SetSpriteAnimation(entity, 13); break;
         }
         break;
     }
@@ -414,14 +414,14 @@ void func_020da8e4(s32 arg0, void *arg1) {
     }
     func_ov009_02225fb4((s8) M2C_FIELD(arg1, u8 *, 0x44), M2C_FIELD(arg1, u16 *, 0x46), arg0, arg1);
     func_020d47f0();
-    func_01ffa8c4(arg1, 1);
+    SetSpriteAnimation(arg1, 1);
 }
 
 void func_020da948(s32 arg0,M2C_UNK arg1,u32 arg2,void *arg3){
 s32 func_020abe90(u8); s32 func_020ad3f0(void);
 M2C_UNK func_ov009_02224528(M2C_UNK); void func_ov010_02228320(void);
 M2C_UNK func_ov010_0222a808(s8,u16,s32,M2C_UNK,u32,void *);
-M2C_UNK func_ov010_022282d4(M2C_UNK); M2C_UNK func_020d47f0(void); M2C_UNK func_01ffa8c4(void *,M2C_UNK);
+M2C_UNK func_ov010_022282d4(M2C_UNK); M2C_UNK func_020d47f0(void); M2C_UNK SetSpriteAnimation(void *,M2C_UNK);
 if(func_020abe90(M2C_FIELD(arg3,u8 *,0x44))==1 || func_020ad3f0()!=0){
 func_ov009_02224528(1); return;
 }
@@ -430,7 +430,7 @@ func_ov010_0222a808(M2C_FIELD(arg3,s8 *,0x44),M2C_FIELD(arg3,u16 *,0x46),arg0,ar
 func_ov010_02228320();
 switch(arg2){
 case 0:case 1:case 2:func_ov010_022282d4(6);return;
-case 3:case 4:case 5:case 6:func_020d47f0();func_01ffa8c4(arg3,1);return;
+case 3:case 4:case 5:case 6:func_020d47f0();SetSpriteAnimation(arg3,1);return;
 case 7:default:return;
 }
 }

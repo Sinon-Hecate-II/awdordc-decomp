@@ -288,7 +288,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
 
 void func_020affac(s32 x,s32 y){
 s32 func_0207b9f4(s32,s32);
-s32 func_0207cfb8(s32);
+s32 GetViewZoom(s32);
 void func_02091248(s32);
 void func_020afc44(s32,s32,s32,void *,s32,s32,s32);
 void func_0209107c(void *,s32,s32,VecAff *,s32,s32,s32,s32,s32);
@@ -296,7 +296,7 @@ extern s32 *gCurrentMap;
 VecAff v;
 s32 c;void *b;s32 a; s32 n; s32 mode;
 n=func_0207b9f4(x+8,y+8);
-mode=func_0207cfb8(*gCurrentMap+0x6ef8)<=0?16:24;
+mode=GetViewZoom(*gCurrentMap+0x6ef8)<=0?16:24;
 if(mode==16){a=0x21000;b=data_021213e0;c=0x30000;}
 else {a=0x21980;b=data_02122d08;c=0x20000;}
 func_02091248(31);

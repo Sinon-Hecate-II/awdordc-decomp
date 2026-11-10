@@ -5,13 +5,13 @@
    in the map occupancy grid with value. */
 void func_01ffbd90(u8 *arg0) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     s32 func_020a76d4(u8 *);
 
     void *map = *gCurrentMap;
     s32 r = func_020a76d4(arg0);
     (void)map;
-    (void)data_ov000_021b5bfc;
+    (void)gUnitKindStats;
     (void)r;
     (void)arg0;
 }

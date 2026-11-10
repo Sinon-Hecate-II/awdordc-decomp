@@ -10,11 +10,11 @@ void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
     void func_0203e570(s32);
     void *GetConnection(void);
     void func_0205fdbc(s32, s8 *);
-    extern M2C_UNK data_020fc958;
-    extern M2C_UNK data_020fc960;
-    extern M2C_UNK data_020fc96c;
-    extern M2C_UNK data_020fc978;
-    extern M2C_UNK data_020fc984;
+    extern M2C_UNK sDwcKeyPid;
+    extern M2C_UNK sDwcKeyMType;
+    extern M2C_UNK sDwcKeyMResv;
+    extern M2C_UNK sDwcKeyMVer;
+    extern M2C_UNK sDwcKeyEval;
     func_0203e570(0);
     M2C_FIELD(GetConnection(), u8 *, 0x15) = arg0;
     M2C_FIELD(GetConnection(), u8 *, 0x16) = arg1;
@@ -22,11 +22,11 @@ void func_0203e908(u8 arg0, u8 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(GetConnection(), s32 *, 0x468) = arg3;
     M2C_FIELD(GetConnection(), u8 *, 0x17D) = 0;
     M2C_FIELD(GetConnection(), u8 *, 0x2D0) = 0;
-    func_0205fdbc(0x32, (s8 *)&data_020fc958);
-    func_0205fdbc(0x33, (s8 *)&data_020fc960);
-    func_0205fdbc(0x34, (s8 *)&data_020fc96c);
-    func_0205fdbc(0x35, (s8 *)&data_020fc978);
-    func_0205fdbc(0x36, (s8 *)&data_020fc984);
+    func_0205fdbc(0x32, (s8 *)&sDwcKeyPid);
+    func_0205fdbc(0x33, (s8 *)&sDwcKeyMType);
+    func_0205fdbc(0x34, (s8 *)&sDwcKeyMResv);
+    func_0205fdbc(0x35, (s8 *)&sDwcKeyMVer);
+    func_0205fdbc(0x36, (s8 *)&sDwcKeyEval);
 }
 
 void func_0203e9b0(void) {
@@ -58,25 +58,30 @@ void func_0203e9b0(void) {
     M2C_FIELD(GetConnection(), s8 *, 0x18) = 1;
 }
 
-s32 func_0203ea4c(s32 value) {
-    void func_0203ec48(M2C_UNK,s32,s32,s32);
+/* Announces a match-making parameter (a "key = value" text built from the
+ * connection state) to the match-making server and the session's players: the
+ * recipients are the fixed system connection ids plus every occupied session
+ * player slot. Retries the send up to five times; when it cannot be sent it
+ * arms the connection's retry deadline. */
+s32 SendMatchmakingParameter(s32 value) {
+    void FormatMatchmakingMessage(M2C_UNK,s32,s32,s32);
     M2C_UNK func_0200567c();
-    void func_02061738(s32);
-    s32 func_02061604(s32,s32,s32,void *,s32,void *,s32);
-    u64 func_02007004(void);
-    extern M2C_UNK data_0213d3bc,gConnectionMgr,data_020fc990,data_020fc99c,data_020fc958;
-    char text[256];
-    u8 ids[161];
+    void ResetSessionList(s32);
+    s32 SendToPlayerList(s32,s32,s32,void *,s32,void *,s32);
+    u64 GetSystemTick(void);
+    extern M2C_UNK gSessionPlayers,gConnectionMgr,sDwcFormatAnd,sDwcFormatParam,sDwcKeyPid;
+    char message[256];
+    u8 playerIds[161];
     s32 count=7,i,result;
-    u8 *src,*dst;
+    u8 *player,*out;
     void *p,*q,*r;
     s32 a,b,c;
-    ids[0]=8;ids[1]=10;ids[2]=50;ids[3]=51;ids[4]=52;ids[5]=53;ids[6]=54;
+    playerIds[0]=8;playerIds[1]=10;playerIds[2]=50;playerIds[3]=51;playerIds[4]=52;playerIds[5]=53;playerIds[6]=54;
     if(M2C_FIELD(GetConnection(),u8 *,0x15)==0 || M2C_FIELD(GetConnection(),u8 *,0x15)==1) {
-        src=(u8 *)&data_0213d3bc;dst=ids+7;
-        for(i=0;i<154;i++,src+=12) {
-            u8 v=*src;
-            if(v!=0){*dst++=v;count++;}
+        player=(u8 *)&gSessionPlayers;out=playerIds+7;
+        for(i=0;i<154;i++,player+=12) {
+            u8 v=*player;
+            if(v!=0){*out++=v;count++;}
         }
     }
     switch(M2C_FIELD(GetConnection(),u32 *,0x1a0)) {
@@ -85,39 +90,39 @@ s32 func_0203ea4c(s32 value) {
             p=GetConnection();q=GetConnection();
             r=GetConnection();
             a=M2C_FIELD(p,volatile s32 *,0x200);b=M2C_FIELD(q,volatile u8 *,0x16);c=M2C_FIELD(r,volatile u8 *,0x15);
-            func_0203ec48((s32)text,a,b,c);
+            FormatMatchmakingMessage((s32)message,a,b,c);
             value=M2C_FIELD(&gConnectionMgr,s32 *,8);
-            if(value!=0)func_0200567c(text,256,&data_020fc990,text,value);
+            if(value!=0)func_0200567c(message,256,&sDwcFormatAnd,message,value);
             break;
         }
         value=M2C_FIELD(GetConnection(),s32 *,0x208);
     case 2:case 4:case 5:
-        func_0200567c(text,256,&data_020fc99c,&data_020fc958,value);
+        func_0200567c(message,256,&sDwcFormatParam,&sDwcKeyPid,value);
         M2C_FIELD(GetConnection(),s32 *,0x204)=value;
         break;
     default:break;
     }
-    func_02061738(M2C_FIELD(GetConnection(),s32 *,0xe4));
+    ResetSessionList(M2C_FIELD(GetConnection(),s32 *,0xe4));
     for(i=0;i<5;i++){
-        result=func_02061604(M2C_FIELD(GetConnection(),s32 *,0xe4),1,0,ids,count,text,6);
+        result=SendToPlayerList(M2C_FIELD(GetConnection(),s32 *,0xe4),1,0,playerIds,count,message,6);
         if(result==0)break;
         if(result!=2)break;
     }
     if(result==0){
         p=GetConnection();
-        M2C_FIELD(p,u64 *,0x174)=func_02007004()+0xefb5f7;
+        M2C_FIELD(p,u64 *,0x174)=GetSystemTick()+0xefb5f7;
     }
     return result;
 }
 
-void func_0203ec48(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
+void FormatMatchmakingMessage(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK func_0200567c(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *, s32, M2C_UNK *, s32, s32, s32, M2C_UNK *, s32, M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_020fc958;
-    extern M2C_UNK data_020fc960;
-    extern M2C_UNK data_020fc96c;
-    extern M2C_UNK data_020fc978;
-    extern M2C_UNK data_020fc9a4;
-    func_0200567c(arg0, 0x100, &data_020fc9a4, &data_020fc978, 3, &data_020fc958, arg1, arg2, arg2, &data_020fc960, arg3, &data_020fc96c, &data_020fc958);
+    extern M2C_UNK sDwcKeyPid;
+    extern M2C_UNK sDwcKeyMType;
+    extern M2C_UNK sDwcKeyMResv;
+    extern M2C_UNK sDwcKeyMVer;
+    extern M2C_UNK sDwcFormatMismatch;
+    func_0200567c(arg0, 0x100, &sDwcFormatMismatch, &sDwcKeyMVer, 3, &sDwcKeyPid, arg1, arg2, arg2, &sDwcKeyMType, arg3, &sDwcKeyMResv, &sDwcKeyPid);
 }
 
 s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
@@ -259,7 +264,7 @@ s32 func_0203f058(u8 command, s32 arg1, s32 arg2, u16 arg3, s32 *values, s32 cou
     void func_02007e70(s32,void *,s32);
     M2C_UNK func_0200567c();
     void MI_CpuCopy8(u8 *,u8 *,u32);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     extern M2C_UNK data_020fc908, data_020fc9fc;
     u8 buffer[0x200];
     u8 temp[0x10];
@@ -288,7 +293,7 @@ s32 func_0203f058(u8 command, s32 arg1, s32 arg2, u16 arg3, s32 *values, s32 cou
         M2C_FIELD(GetConnection(),s32 *,0x454)=arg1;
         M2C_FIELD(GetConnection(),s32 *,0x458)=count;
         p=GetConnection();
-        M2C_FIELD(p,u64 *,0x45c)=func_02007004();
+        M2C_FIELD(p,u64 *,0x45c)=GetSystemTick();
         if(values!=0 && count!=0)func_02007e70((s32)values,(u8 *)GetConnection()+0x3d4,count*4);
     }
     return result;
@@ -355,15 +360,15 @@ func_0204e634(arg0,arg2,(M2C_UNK)buf);
 #pragma opt_instruction_scheduling reset
 #pragma opt_common_subs reset
 s32 func_0203f3c0(u8 *arg0, u8 *arg1, s32 arg2) {
-    s8 *func_02068ee0(s8 *, s32);
+    s8 *StringFindChar(s8 *, s32);
     void MI_CpuCopy8(u8 *, u8 *, u32);
     u8 *p = arg1;
-    u8 *end = (u8 *)func_02068ee0((s8 *)arg1, 0);
+    u8 *end = (u8 *)StringFindChar((s8 *)arg1, 0);
     s32 count = 0;
     if (arg2 > 0) {
         s8 *f;
         do {
-            f = func_02068ee0((s8 *)p, '/');
+            f = StringFindChar((s8 *)p, '/');
             if (f == 0) {
                 return -1;
             }
@@ -372,7 +377,7 @@ s32 func_0203f3c0(u8 *arg0, u8 *arg1, s32 arg2) {
         } while (count < arg2);
     }
     {
-        u8 *f2 = (u8 *)func_02068ee0((s8 *)p, '/');
+        u8 *f2 = (u8 *)StringFindChar((s8 *)p, '/');
         if (f2 == 0) {
             f2 = end;
         }

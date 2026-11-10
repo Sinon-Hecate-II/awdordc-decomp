@@ -22,7 +22,7 @@ void func_ov003_021f35d8(void *arg0) {
 }
 
 void func_ov003_021f35f8(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 func_0208471c();
     s32 func_0208477c();
     s32 func_020d4810();
@@ -36,7 +36,7 @@ void func_ov003_021f35f8(void *arg0) {
     if ((func_0208471c() == 0) && (func_0208477c() == 0)) {
         return;
     }
-    func_01ffa8c4(arg0, 5);
+    SetSpriteAnimation(arg0, 5);
 }
 
 void func_ov003_021f3648(void *arg0) {
@@ -57,7 +57,7 @@ void func_ov003_021f3648(void *arg0) {
 }
 
 void func_ov003_021f3688(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK func_020886d4();
     M2C_UNK func_020886fc();
@@ -109,7 +109,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     u8 temp_r0_9;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov003_0220fcdc, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov003_0220fcdc, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_0220fdac;
         M2C_FIELD(temp_r0, s8 *, 0x34) = 5;

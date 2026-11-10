@@ -96,29 +96,29 @@ void func_0209dd34(void *arg0) {
 }
 
 s32 func_0209dd54(void) {
-    extern void *data_02101e88;
+    extern void *gTouchState;
     s16 rect[4];
     u16 x;
     u16 y;
-    x = M2C_FIELD(data_02101e88, u16 *, 0);
-    y = M2C_FIELD(data_02101e88, u16 *, 2);
+    x = M2C_FIELD(gTouchState, u16 *, 0);
+    y = M2C_FIELD(gTouchState, u16 *, 2);
     func_0209dd34(rect);
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) return 0;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return 0;
     if (rect[0] < x && x < rect[0] + rect[2] && rect[1] < y && y < rect[1] + rect[3]) return 0x10;
     return 0;
 }
 
 s32 func_0209dde0(void) {
-    extern void *data_02101e88;
+    extern void *gTouchState;
     s16 rect[4];
     u16 x;
     u16 y;
-    x = M2C_FIELD(data_02101e88, u16 *, 0);
-    y = M2C_FIELD(data_02101e88, u16 *, 2);
+    x = M2C_FIELD(gTouchState, u16 *, 0);
+    y = M2C_FIELD(gTouchState, u16 *, 2);
     func_0209dd34(rect);
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) return 0;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return 0;
     if (rect[0] < x && x < rect[0] + rect[2] && rect[1] < y && y < rect[1] + rect[3]) return 0x10;
     return 0;
 }
@@ -145,16 +145,16 @@ s32 func_0209deb0(M2C_UNK arg0, M2C_UNK arg1) {
 
 /* Returns the action code for the current stylus interaction, based on which of two touch regions the point lies in. */
 s32 func_0209def8(void) {
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern s32 data_0215bde0;
     s32 region;
 
-    region = func_0209deb0(M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2));
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) != 0) {
-        if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    region = func_0209deb0(M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
+        if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
             data_0215bde0 = region;
         } else {
-            if (M2C_FIELD(data_02101e88, u8 *, 0x10) == 0x14) {
+            if (M2C_FIELD(gTouchState, u8 *, 0x10) == 0x14) {
                 data_0215bde0 = 0;
             }
             if (data_0215bde0 != region) {
@@ -169,7 +169,7 @@ s32 func_0209def8(void) {
         default:                                    /* switch 1 */
             return 0;
         }
-    } else if ((M2C_FIELD(data_02101e88, u8 *, 0x16) != 0) && (data_0215bde0 == region)) {
+    } else if ((M2C_FIELD(gTouchState, u8 *, 0x16) != 0) && (data_0215bde0 == region)) {
         switch (data_0215bde0) {                    /* switch 2; irregular */
         case 1:                                     /* switch 2 */
             return 0x10;

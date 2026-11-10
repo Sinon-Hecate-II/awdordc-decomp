@@ -58,12 +58,12 @@ void func_ov002_021e15e0(void) {
 
 void func_ov002_021e15f4(s32 a) {
     void func_ov002_021e152c(void);
-    void func_01ffa42c(void *,s32);
+    void CreateSpriteObject(void *,s32);
     extern u8 data_ov002_021f2f40;
     extern M2C_UNK data_ov002_021ea68c;
     data_ov002_021f2f40=0;
     func_ov002_021e152c();
-    func_01ffa42c(&data_ov002_021ea68c,a);
+    CreateSpriteObject(&data_ov002_021ea68c,a);
 }
 
 void func_ov002_021e1624(void) {

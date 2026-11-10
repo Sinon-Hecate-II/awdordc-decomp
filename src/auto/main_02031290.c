@@ -82,7 +82,7 @@ s32 func_0203138c(M2C_UNK arg0) {
 s32 func_020313f0(void *arg0) {
     s32 func_020218bc();
     void func_020316c4(void *);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     u64 func_02072088(u64, u64);
     u32 temp_r0;
 
@@ -91,7 +91,7 @@ s32 func_020313f0(void *arg0) {
         temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0xD0C) << 0x1A) >> 0x1E;
         return (temp_r0 == 1) ? 0xF : 0xD;
     }
-    if (func_02072088((func_02007004() - M2C_FIELD(arg0, u64 *, 0xCB0)) << 6, 0x1FF6210ULL) < 0xAULL) {
+    if (func_02072088((GetSystemTick() - M2C_FIELD(arg0, u64 *, 0xCB0)) << 6, 0x1FF6210ULL) < 0xAULL) {
         return 0xC;
     }
     *((u8 *)arg0 + (M2C_FIELD(arg0, u8 *, 0xD13) * 4) + 0x444) = 1;
@@ -671,14 +671,14 @@ void func_0203211c(void *arg0, u32 arg1, void *arg2) {
 }
 
 void func_020321ac(void *arg0, s32 arg1) {
-    void func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    void MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02032228(void *);
     void func_02031e94(M2C_UNK, M2C_UNK);
     void func_02076794(M2C_UNK *, s32);
     s32 func_02076860(M2C_UNK *, void *, M2C_UNK);
     u32 table[256];
 
-    func_02007f8c((M2C_UNK)arg0, 0, 0x40);
+    MI_CpuFill8((M2C_UNK)arg0, 0, 0x40);
     M2C_FIELD(arg0, s32 *, 0) = 0x40;
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
     M2C_FIELD(arg0, s32 *, 0x24) = arg1;

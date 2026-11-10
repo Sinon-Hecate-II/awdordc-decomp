@@ -402,18 +402,18 @@ s32 func_02092590(void *arg0) {
 }
 
 s32 func_020925bc(void *arg0) {
-    extern M2C_UNK data_02168f14;
+    extern M2C_UNK gMapConfig;
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
-    M2C_FIELD(&data_02168f14, s16 *, 4) = (s16) M2C_FIELD(temp_r1, s32 *, 0xC);
+    M2C_FIELD(&gMapConfig, s16 *, 4) = (s16) M2C_FIELD(temp_r1, s32 *, 0xC);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
 
 s32 func_020925e4(void *arg0) {
-    extern M2C_UNK data_02168f14;
-    M2C_FIELD(&data_02168f14, s16 *, 4) = 0;
+    extern M2C_UNK gMapConfig;
+    M2C_FIELD(&gMapConfig, s16 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -480,9 +480,9 @@ abort: return 1;
 }
 
 void func_02092888(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102a58;
-    func_01ffa42c(&data_02102a58, arg0);
+    CreateSpriteObject(&data_02102a58, arg0);
 }
 
 void func_020928a0(void *arg0) {
@@ -544,14 +544,14 @@ PlaySoundEffect(0x121);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_02092a54(void *arg0) {
-extern M2C_UNK data_02168f14;
-M2C_FIELD(&data_02168f14,s16 *,0)=(s16)(M2C_FIELD(&data_02168f14,u16 *,0)|0x400);
+extern M2C_UNK gMapConfig;
+M2C_FIELD(&gMapConfig,s16 *,0)=(s16)(M2C_FIELD(&gMapConfig,u16 *,0)|0x400);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
 s32 func_02092a7c(void *arg0) {
-extern M2C_UNK data_02168f14;
-M2C_FIELD(&data_02168f14,s16 *,0)=(s16)(M2C_FIELD(&data_02168f14,u16 *,0)&~0x400);
+extern M2C_UNK gMapConfig;
+M2C_FIELD(&gMapConfig,s16 *,0)=(s16)(M2C_FIELD(&gMapConfig,u16 *,0)&~0x400);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 

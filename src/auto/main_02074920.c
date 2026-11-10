@@ -177,7 +177,7 @@ func_0200fe6c(low); func_020055f4(low); return result;
 void func_02074dec(s32 arg0){
 void *func_020e34bc(u32);void func_020e35cc(void *);s32 func_0200558c(void);void func_020055f4(u8);void func_0200fe5c(u16);void func_0200fe6c(u8);
 s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 func_020747ec(void *,u16);
-void func_02007ef4(void *,void *,u32);void func_02007e98(s32,void *,u32);void func_02007f8c(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
+void func_02007ef4(void *,void *,u32);void func_02007e98(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
 buf=func_020e34bc(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
 id=func_0200558c();low=id;i=0;p=a;off=0;off20=20;off256=256;
@@ -204,7 +204,7 @@ if(!ok2)a[0x2052]=1;
 }continue;
 empty:func_02007e98(0,p,12);
 }
-if(selected==-1){a[0x2051]=1;M2C_FIELD((unsigned short)a,s32*,0xc00)=-1;M2C_FIELD(a,s32*,0xc04)=-1;M2C_FIELD(a,s32*,0xc08)=0;func_02007f8c(a+0xc0c,0,64);goto fail;}
+if(selected==-1){a[0x2051]=1;M2C_FIELD((unsigned short)a,s32*,0xc00)=-1;M2C_FIELD(a,s32*,0xc04)=-1;M2C_FIELD(a,s32*,0xc08)=0;MI_CpuFill8(a+0xc0c,0,64);goto fail;}
 goto found;
 fail:func_020055f4(low);func_020e35cc(buf);return;
 found:a[0x2051]=0;func_0200fe5c(low);ok=func_0201033c((selected<<10)+(page<<8),(s32 *)buf,256,0,0,0,6,1,0)!=0;func_0200fe6c(low);

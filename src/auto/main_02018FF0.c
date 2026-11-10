@@ -16,7 +16,7 @@ void func_02018ff0(void) {
     void func_02018e80(M2C_UNK, void *);
     M2C_UNK func_02018ea4(M2C_UNK);
     s32 func_0200519c(s32);
-    void func_020067a8(M2C_UNK, M2C_UNK);
+    void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02007a74(s32, M2C_UNK, M2C_UNK, u32);
     void func_02007e70(void *, void *, s32);
     void func_02006774(void);
@@ -51,7 +51,7 @@ void func_02018ff0(void) {
 
     hw = *(volatile u16 *)0x4000204;
     *(volatile u16 *)0x4000204 = hw & ~0x8000;
-    func_020067a8((M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
+    DC_InvalidateRange((M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
     func_02007a74(1, (M2C_UNK)0x8000080, (M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
 
     hw = *(volatile u16 *)0x4000204;
@@ -123,7 +123,7 @@ void func_02019280(void) {
 void func_02019294(M2C_UNK a) {
 void func_02019320(M2C_UNK);
 extern s32 data_02136e68;
-extern M2C_UNK data_02136e6c,data_02137290;
+extern M2C_UNK data_02136e6c,gNetStack;
 void func_02019334();
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
@@ -134,26 +134,26 @@ data_02136e68=a;
 func_02019320(a+0xc4);
 func_02019320((s32)&data_02136e6c);
 M2C_FIELD(a,s32 *,0xc0)=0;
-func_02005ac0(a,func_02019334,a,&data_02137290,0x400,20);
+func_02005ac0(a,func_02019334,a,&gNetStack,0x400,20);
 TaskWake(a);
 }
 OS_RestoreInterrupts(saved);
 }
 
 void func_02019320(M2C_UNK arg0) {
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02007f8c(arg0, 0, 0x24);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(arg0, 0, 0x24);
 }
 
 void func_02019334(void *arg0) {
 extern s32 data_02136e68;
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
-void func_02005da4(s32); void func_02005bbc(void);
+void OS_SleepThread(s32); void func_02005bbc(void);
 s32 saved; Work19334 w; void (*second)(Work19334 *);
 for(;;) {
-func_02007f8c((s32)&w,0,0x24);
+MI_CpuFill8((s32)&w,0,0x24);
 saved=OS_DisableInterrupts();
-while(!M2C_FIELD(arg0,Work19334 * volatile *,0xc0)) func_02005da4(0);
+while(!M2C_FIELD(arg0,Work19334 * volatile *,0xc0)) OS_SleepThread(0);
 w=*M2C_FIELD((short)arg0,Work19334 **,0xc0);
 OS_RestoreInterrupts(saved);
 if(w.first) w.result=w.first(&w);

@@ -7,7 +7,7 @@ typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsign
 extern unsigned char data_ov001_02191ec0[];
 extern unsigned char data_ov001_02191840[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
-extern unsigned char data_ov001_02191800[];
+extern unsigned char gRoomState[];
 extern signed char data_ov001_02191820[];
 extern short data_ov001_02192568;
 extern unsigned char data_ov001_0219256a[118];
@@ -15,7 +15,7 @@ extern unsigned char data_ov001_0219256a[118];
 #pragma thumb on
 int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
  int func_ov001_0216c098(); int func_ov001_0216cef0(unsigned short); int func_ov001_0216cec8(int);
- void func_ov001_0216b918(int); void func_ov001_0216cde4(); int func_ov001_0216c400();
+ void func_ov001_0216b918(int); void Ov001MemClear(); int func_ov001_0216c400();
  unsigned char *r,*t;
  if(a!=1) {++*n;return a;}
  r=p+12;t=p+36;
@@ -27,9 +27,9 @@ int func_ov001_0216bde4(int a,unsigned char *p,int *n,unsigned char *q) {
  else func_ov001_0216b918(24);
  return -1;
  }
- func_ov001_0216cde4(data_ov001_02191ec0,0,0x6a0);
+ Ov001MemClear(data_ov001_02191ec0,0,0x6a0);
  if(func_ov001_0216c400(0,t,func_ov001_0216cef0(*(unsigned short *)(r+10)),data_ov001_02191ec0,data_ov001_02191840)<0) {++*n;return a;}
- if(!(*(int *)(data_ov001_02191800+48)&*(int *)(data_ov001_02191800+44))) return a;
+ if(!(*(int *)(gRoomState+48)&*(int *)(gRoomState+44))) return a;
  *n=0;return 2;
 }
 
@@ -49,12 +49,12 @@ int func_ov001_0216bebc(int a,unsigned char *p,int *n,unsigned char *q) {
 }
 
 s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_ov001_0216cde4();
+    void Ov001MemClear();
     int func_ov001_0216cef0(u16);
-    void func_ov001_0216cdd4();
+    void Ov001MemCopy();
     int func_ov001_0216c1a0();
     int func_ov001_0216cec8();
-    extern unsigned char data_ov001_02191800[];
+    extern unsigned char gRoomState[];
 
     M2C_UNK r4;
     M2C_UNK r5;
@@ -67,7 +67,7 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
 
     r5 = arg1;
     r6 = arg0;
-    func_ov001_0216cde4(r5, 0, 0x104);
+    Ov001MemClear(r5, 0, 0x104);
     r7 = r5 + 0x80;
     r4 = r6;
     for (;;) {
@@ -78,13 +78,13 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
         t = *(u8 *)r4;
         switch (t) {
         case 0:
-            func_ov001_0216cdd4(r5, (M2C_UNK)((u8 *)r4 + 6));
+            Ov001MemCopy(r5, (M2C_UNK)((u8 *)r4 + 6));
             break;
         case 1:
-            func_ov001_0216cdd4(r7, (M2C_UNK)((u8 *)r4 + 6));
+            Ov001MemCopy(r7, (M2C_UNK)((u8 *)r4 + 6));
             break;
         case 2:
-            func_ov001_0216cdd4(r5 + 0x100, (M2C_UNK)((u8 *)r4 + 6));
+            Ov001MemCopy(r5 + 0x100, (M2C_UNK)((u8 *)r4 + 6));
             break;
         case 3:
             if (func_ov001_0216cef0(*(u8 *)((u8 *)r4 + 6)) <= 0) {
@@ -94,12 +94,12 @@ s32 func_ov001_0216c0e4(M2C_UNK arg0, M2C_UNK arg1) {
         case 4:
             v = func_ov001_0216c1a0((M2C_UNK)((u8 *)r4 + 6), r2);
             v = func_ov001_0216cec8(v);
-            *(s32 *)(data_ov001_02191800 + 0x34) = v;
+            *(s32 *)(gRoomState + 0x34) = v;
             break;
         case 5:
             v = func_ov001_0216c1a0((M2C_UNK)((u8 *)r4 + 6), r2);
             v = func_ov001_0216cec8(v);
-            *(s32 *)(data_ov001_02191800 + 0x38) = v;
+            *(s32 *)(gRoomState + 0x38) = v;
             break;
         case 6:
         default:
@@ -138,7 +138,7 @@ s32 func_ov001_0216c1a0(s32 arg0, s32 arg1) {
 #pragma thumb on
 s32 func_ov001_0216c1c4(void *arg0,s32 arg1) {
 s32 func_ov001_0216cef0(u16);
-void func_ov001_0216cdd4();
+void Ov001MemCopy();
 u8 *p=(u8 *)arg0+6;
 u8 *out=(u8 *)arg1;
 u8 *base,*e,*d,*c,*b,*a;
@@ -152,11 +152,11 @@ case 0x20:case 0x21:case 0x22:case 0x23:if(n>13)return -1;break;
 case 0x15:case 0x25:if(n>33)return -1;break;
 }
 switch(*p){
-case 0x10:case 0x20:func_ov001_0216cdd4(a,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x11:case 0x21:func_ov001_0216cdd4(b,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x12:case 0x22:func_ov001_0216cdd4(c,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x13:case 0x23:func_ov001_0216cdd4(d,p+6,n);*(u32 *)(out+4)=n;break;
-case 0x15:case 0x25:if(n && p[n+5])return -1;func_ov001_0216cdd4(e,p+6,n);break;
+case 0x10:case 0x20:Ov001MemCopy(a,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x11:case 0x21:Ov001MemCopy(b,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x12:case 0x22:Ov001MemCopy(c,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x13:case 0x23:Ov001MemCopy(d,p+6,n);*(u32 *)(out+4)=n;break;
+case 0x15:case 0x25:if(n && p[n+5])return -1;Ov001MemCopy(e,p+6,n);break;
 default:return -1;
 }
 if(*(u16 *)(p+4)==0)break;
@@ -167,14 +167,14 @@ return 0;
 
 #pragma thumb on
 int func_ov001_0216c318(void *p,int out) {
- int func_ov001_0216cef0(unsigned short); void func_ov001_0216cdd4();
+ int func_ov001_0216cef0(unsigned short); void Ov001MemCopy();
  unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8,*data=(unsigned char *)out+48; unsigned int n; int kind;
  for (;;) {
   n=func_ov001_0216cef0(*(unsigned short *)(r+2)); kind=*r;
   switch(kind) { case 0x30: case 0x40: if(n>64) return -1; break; case 0x35: case 0x45: if(n>33) return -1; break; }
   switch(kind) {
-   case 0x30: case 0x40: func_ov001_0216cdd4(data,r+6,n); *(int *)(out+4)=n; break;
-   case 0x35: case 0x45: if(n && r[n+5]) return -1; func_ov001_0216cdd4(text,r+6,n); break;
+   case 0x30: case 0x40: Ov001MemCopy(data,r+6,n); *(int *)(out+4)=n; break;
+   case 0x35: case 0x45: if(n && r[n+5]) return -1; Ov001MemCopy(text,r+6,n); break;
    default: return -1;
   }
   if (!*(unsigned short *)(r+4)) break;
@@ -184,12 +184,12 @@ int func_ov001_0216c318(void *p,int out) {
 }
 int func_ov001_0216c3d0(unsigned char *p, void *out) {
  int func_ov001_0216cef0(unsigned short);
- void func_ov001_0216cdd4();
+ void Ov001MemCopy();
  unsigned char *q = p + 6;
  int n = func_ov001_0216cef0(*(unsigned short *)(q+2));
  if (n <= 0) return -1;
  if (*q != 0x70) return -1;
- func_ov001_0216cdd4(out,q+6,n);
+ Ov001MemCopy(out,q+6,n);
  return 0;
 }
 
@@ -235,7 +235,7 @@ default:result=-3;break;
 if(result!=0)return result;
 len=func_ov001_0216cef0(*(u16 *)(q+2))+4;remaining=remaining-len;q=q+len;
 }while(remaining>0);
-*(s32 *)(data_ov001_02191800+0x30)|=flags;
+*(s32 *)(gRoomState+0x30)|=flags;
 return 0;
 }
 unsigned int func_ov001_0216c510(unsigned int x) { unsigned int result = 0; if (x & 0x10) result = 1; return result; }
@@ -255,7 +255,7 @@ int func_ov001_0216c520(int mode, int a, int b, int c) {
 
 void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out, int b) {
  int func_ov001_0216c9a0();
- void func_ov001_0216cdd4();
+ void Ov001MemCopy();
  short func_ov001_0216ceb0(unsigned short);
  extern unsigned char data_ov001_02192560[8];
  if(mode == 1) {
@@ -265,30 +265,30 @@ void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out
  *n += 4;
  return;
  }
- func_ov001_0216cdd4(p,a,*n);
+ Ov001MemCopy(p,a,*n);
 }
 
 void func_ov001_0216c8e0(unsigned short *p,int a,int b,int c,signed char d,signed char e,void *f) {
  short func_ov001_0216ceb0(unsigned short);
- void func_ov001_0216cdd4();
+ void Ov001MemCopy();
  p[0]=func_ov001_0216ceb0(1); p[1]=0; p[2]=0;
  p[3]=func_ov001_0216ceb0((unsigned short)a); p[4]=0;
  p[5]=func_ov001_0216ceb0((unsigned short)b);
  p[6]=func_ov001_0216ceb0((unsigned short)c);
  ((signed char *)p)[14]=d; ((signed char *)p)[15]=e;
- func_ov001_0216cdd4(p+8,f,8);
+ Ov001MemCopy(p+8,f,8);
 }
 
 void func_ov001_0216c938(int a,int b,int c,int d) {
- void func_ov001_0216cde4();
+ void Ov001MemClear();
  void func_ov001_0216ce58();
  int func_ov001_0216ce88(int);
  short func_ov001_0216ceb0(unsigned short);
  int packet[2];
- func_ov001_0216cde4(packet,0,8);
+ Ov001MemClear(packet,0,8);
  ((char *)packet)[1]=2;
  ((short *)packet)[1]=func_ov001_0216ceb0(0x5790);
- packet[1]=func_ov001_0216ce88(*(int *)(data_ov001_02191800+0x34));
+ packet[1]=func_ov001_0216ce88(*(int *)(gRoomState+0x34));
  if(c==255 || data_ov001_02191820[0x1c]==0) packet[1]=-1;
  func_ov001_0216ce58(d,a,b,0,packet,8);
 }
@@ -297,13 +297,13 @@ void func_ov001_0216c938(int a,int b,int c,int d) {
 int func_ov001_0216c9a0(int a,int b,int c,signed char *d,void *e,void *f,int g) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int);
  void func_ov001_0216caa4(); void func_ov001_0216cb08();
- int func_ov001_0216cb74(int,int); short func_ov001_0216cf1c(void); void func_ov001_0216cdd4();
+ int func_ov001_0216cb74(int,int); short func_ov001_0216cf1c(void); void Ov001MemCopy();
  int handle; int packet[4]; short seed;
  *d=func_ov001_0216cb74(a,c); handle=func_ov001_0216ad54(c); packet[2]=handle;
  if(!handle) return -1;
- seed=func_ov001_0216cf1c(); func_ov001_0216cdd4(e,&seed,2);
- func_ov001_0216cdd4(&data_ov001_02192568,e,2);
- func_ov001_0216cdd4(data_ov001_0219256a,f,g);
+ seed=func_ov001_0216cf1c(); Ov001MemCopy(e,&seed,2);
+ Ov001MemCopy(&data_ov001_02192568,e,2);
+ Ov001MemCopy(data_ov001_0219256a,f,g);
  func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
  func_ov001_0216cb08(packet,b,a,c); func_ov001_0216ad64(packet[2]); return 0;
 }
@@ -311,11 +311,11 @@ int func_ov001_0216c9a0(int a,int b,int c,signed char *d,void *e,void *f,int g) 
 #pragma thumb on
 int func_ov001_0216ca1c(int a,int b,int c,unsigned int d,void *e,void *f,int g) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int); void func_ov001_0216b918(int);
- void func_ov001_0216caa4(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void func_ov001_0216cdd4();
+ void func_ov001_0216caa4(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void Ov001MemCopy();
  int packet[4]; int h=func_ov001_0216ad54(c); packet[2]=h;
  if(!h) {func_ov001_0216b918(2); return -1;}
- func_ov001_0216cdd4(&data_ov001_02192568,e,2);
- func_ov001_0216cdd4(data_ov001_0219256a,f,g);
+ Ov001MemCopy(&data_ov001_02192568,e,2);
+ Ov001MemCopy(data_ov001_0219256a,f,g);
  func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
  func_ov001_0216cb08(packet,b,a,c);
  if((int *)func_ov001_0216cb74(b,c)!=(int *)d) {

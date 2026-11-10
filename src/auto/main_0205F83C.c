@@ -1,5 +1,6 @@
 /* 24 functions from 0x0205F83C to 0x0206080C (main), found by ds-decomp. */
 #include "common.h"
+#include "qr2.h"
 typedef struct { u8 v[4]; } PacketBytes4;
 typedef struct { u8 header[3]; PacketBytes4 id; u8 rest[249]; } Packet256;
 typedef struct { u8 v[13]; } PacketBytes13;
@@ -11,90 +12,93 @@ void func_0205f83c(void *a, void *b, s32 c, void *d) {
 }
 
 void func_0205fb50(void *arg0){
- s32 func_02049208(void);
+ s32 GetTickCountMs(void);
  M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
- M2C_UNK func_0205ef8c(void *,s32,void *);
+ M2C_UNK Qr2InitQuery(void *,s32,void *);
  u8 sp8[0x804];
  *(s32 *)(sp8+0x800)=0;
- func_0205ef8c(sp8,8,(u8 *)arg0+0x84);
+ Qr2InitQuery(sp8,8,(u8 *)arg0+0x84);
  func_02049824(M2C_FIELD(arg0,s32 *,0),sp8,*(s32 *)(sp8+0x800),0,(u8 *)arg0+0xcc,8);
- M2C_FIELD(arg0,s32 *,0xb0)=func_02049208();
+ M2C_FIELD(arg0,s32 *,0xb0)=GetTickCountMs();
 }
 
-void func_0205fbb0(void *arg0, s32 arg1) {
-    s32 func_02021c10(s32);
-    s32 func_02049208(void);
+/* Builds and sends the GameSpy QR2 state query: the local addresses and port,
+ * the NAT-negotiation flag, the new state (when it changed), the game name and,
+ * once known, the public address and port. Restamps the keep-alive times. */
+void Qr2_SendState(void *qr2, s32 state) {
+    s32 IpToString(s32);
+    s32 GetTickCountMs(void);
     M2C_UNK func_02049824(s32, void *, s32, s32, void *, s32);
-    M2C_UNK func_0205eb7c(void *, s32);
-    M2C_UNK func_0205ebb0(void *, void *);
-    M2C_UNK func_0205ef8c(void *, s32, void *);
+    M2C_UNK Qr2AppendInt(void *, s32);
+    M2C_UNK Qr2AppendString(void *, void *);
+    M2C_UNK Qr2InitQuery(void *, s32, void *);
     M2C_UNK func_0205f364(void *, void *, s32, s32, s32, s32, s32, s32);
     M2C_UNK StringFormat(void *, void *, s32, ...);
-    extern s32 data_0213e358;
-    extern s32 data_0213e35c[];
-    extern M2C_UNK data_020ffa88;
-    extern M2C_UNK data_020ffa94;
-    extern M2C_UNK data_020ffaa0;
-    extern M2C_UNK data_020ffaa8;
-    extern M2C_UNK data_020ffaac;
-    extern M2C_UNK data_020ffab0;
-    extern M2C_UNK data_020ffac0;
-    extern M2C_UNK data_020ffacc;
-    extern M2C_UNK data_020ffad8;
-    char sp10[0x14];
-    char sp24[0x804];
-    M2C_UNK *var_r1;
-    s32 temp_r0;
-    s32 temp_r2;
-    s32 var_r8;
+    extern s32 gLocalIpCount;
+    extern s32 gLocalIps[];
+    extern M2C_UNK gQr2KeyLocalIpFmt;
+    extern M2C_UNK gQr2KeyLocalPort;
+    extern M2C_UNK gQr2KeyNatNeg;
+    extern M2C_UNK gQr2NatNegOn;
+    extern M2C_UNK gQr2NatNegOff;
+    extern M2C_UNK gQr2KeyStateChanged;
+    extern M2C_UNK gQr2KeyGameName;
+    extern M2C_UNK gQr2KeyPublicIp;
+    extern M2C_UNK gQr2KeyPublicPort;
+    char tempKey[0x14];
+    char query[0x804];
+    M2C_UNK *natNegValue;
+    s32 tick;
+    s32 used;
+    s32 index;
 
-    *(s32 *)(sp24 + 0x800) = 0;
-    func_0205ef8c(sp24, 3, (char *)arg0 + 0x84);
-    var_r8 = 0;
-    if (data_0213e358 > 0) {
+    M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) = 0;
+    Qr2InitQuery(query, 3, (char *)qr2 + QR2_LOCAL_IP);
+    index = 0;
+    if (gLocalIpCount > 0) {
         do {
-            StringFormat(sp10, &data_020ffa88, var_r8);
-            func_0205ebb0(sp24, sp10);
-            func_0205ebb0(sp24, (M2C_UNK *)func_02021c10(data_0213e35c[var_r8]));
-            var_r8 += 1;
-        } while (var_r8 < data_0213e358);
+            StringFormat(tempKey, &gQr2KeyLocalIpFmt, index);
+            Qr2AppendString(query, tempKey);
+            Qr2AppendString(query, (M2C_UNK *)IpToString(gLocalIps[index]));
+            index += 1;
+        } while (index < gLocalIpCount);
     }
-    func_0205ebb0(sp24, &data_020ffa94);
-    func_0205eb7c(sp24, *(s32 *)((char *)arg0 + 0xC0));
-    func_0205ebb0(sp24, &data_020ffaa0);
-    if (*(s32 *)((char *)arg0 + 0xC8) != 0) {
-        var_r1 = &data_020ffaa8;
+    Qr2AppendString(query, &gQr2KeyLocalPort);
+    Qr2AppendInt(query, M2C_FIELD(qr2, s32 *, QR2_LOCAL_PORT));
+    Qr2AppendString(query, &gQr2KeyNatNeg);
+    if (M2C_FIELD(qr2, s32 *, QR2_NATNEG) != 0) {
+        natNegValue = &gQr2NatNegOn;
     } else {
-        var_r1 = &data_020ffaac;
+        natNegValue = &gQr2NatNegOff;
     }
-    func_0205ebb0(sp24, var_r1);
-    if (arg1 != 0) {
-        func_0205ebb0(sp24, &data_020ffab0);
-        func_0205eb7c(sp24, arg1);
+    Qr2AppendString(query, natNegValue);
+    if (state != 0) {
+        Qr2AppendString(query, &gQr2KeyStateChanged);
+        Qr2AppendInt(query, state);
     }
-    func_0205ebb0(sp24, &data_020ffac0);
-    func_0205ebb0(sp24, (char *)arg0 + 4);
-    if (*(s32 *)((char *)arg0 + 0xA8) != 0) {
-        func_0205ebb0(sp24, &data_020ffacc);
-        func_0205eb7c(sp24, *(s32 *)((char *)arg0 + 0x104));
-        func_0205ebb0(sp24, &data_020ffad8);
-        func_0205eb7c(sp24, (s32)*(u16 *)((char *)arg0 + 0x108));
+    Qr2AppendString(query, &gQr2KeyGameName);
+    Qr2AppendString(query, (char *)qr2 + QR2_GAMENAME);
+    if (M2C_FIELD(qr2, s32 *, QR2_PUBLIC_VALID) != 0) {
+        Qr2AppendString(query, &gQr2KeyPublicIp);
+        Qr2AppendInt(query, M2C_FIELD(qr2, s32 *, QR2_PUBLIC_IP));
+        Qr2AppendString(query, &gQr2KeyPublicPort);
+        Qr2AppendInt(query, (s32)M2C_FIELD(qr2, u16 *, QR2_PUBLIC_PORT));
     }
-    if (arg1 != 2) {
-        func_0205f364(arg0, sp24, 0xFF, 0, 0xFF, 0, 0xFF, 0);
+    if (state != QR2_STATE_FINAL) {
+        func_0205f364(qr2, query, 0xFF, 0, 0xFF, 0, 0xFF, 0);
     } else {
-        temp_r2 = *(s32 *)(sp24 + 0x800);
-        if ((0x800 - temp_r2) >= 1) {
-            *(s32 *)(sp24 + 0x800) = temp_r2 + 1;
-            sp24[temp_r2] = 0;
+        used = M2C_FIELD(query, s32 *, QR2_QUERY_COUNT);
+        if ((QR2_QUERY_SIZE - used) >= 1) {
+            M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) = used + 1;
+            query[used] = 0;
         }
     }
-    func_02049824(*(s32 *)arg0, sp24, *(s32 *)(sp24 + 0x800), 0, (char *)arg0 + 0xCC, 8);
-    temp_r0 = func_02049208();
-    *(s32 *)((char *)arg0 + 0xAC) = temp_r0;
-    *(s32 *)((char *)arg0 + 0xB0) = temp_r0;
-    if (arg1 != 0) {
-        *(s32 *)((char *)arg0 + 0xB4) = 0;
+    func_02049824(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query, M2C_FIELD(query, s32 *, QR2_QUERY_COUNT), 0, (char *)qr2 + QR2_REQUEST_ID, 8);
+    tick = GetTickCountMs();
+    M2C_FIELD(qr2, s32 *, QR2_LAST_SENT) = tick;
+    M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = tick;
+    if (state != 0) {
+        M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 0;
     }
 }
 
@@ -206,10 +210,10 @@ void func_020601a4(void *arg0) {
 
 #pragma opt_propagation off
 void func_020601b8(void *a,void *b,s32 unused){
-s32 func_02049208(void);
+s32 GetTickCountMs(void);
 M2C_UNK func_02049824(s32,void *,s32,s32,void *,s32);
 u8 buf[256]; u8 addr[8]; s32 n,i,j; u8 *dst;
-func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=func_02049208();
+func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=GetTickCountMs();
 addr[1]=2;
 if(M2C_FIELD(b,u8 *,20)&32)return;
 if(M2C_FIELD(a,s32 *,0)==1){
@@ -270,7 +274,7 @@ void func_0206045c(void *a,void *b,s32 c,s32 d){void func_020601b8(void *,void *
 
 /* Dispatch each chunk of a typed message to its handlers found via a table, or fall back to a direct handler. */
 void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
-    s32 func_02049208(void);
+    s32 GetTickCountMs(void);
     void gpiPlayerSetString(void *, s32, void *);
     void func_02060e10(void *, void *, s32);
     s32 func_02061da0(void *, s32);
@@ -301,13 +305,13 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
         M2C_FIELD(entry, u8 *, 0x14) |= 0x43;
     }
     M2C_FIELD(entry, u8 *, 0x14) &= 0xF3;
-    M2C_FIELD(entry, s32 *, 0x1C) = func_02049208() - M2C_FIELD(entry, s32 *, 0x1C);
+    M2C_FIELD(entry, s32 *, 0x1C) = GetTickCountMs() - M2C_FIELD(entry, s32 *, 0x1C);
     func_02060138((u8 *)owner + 8, entry);
     M2C_FIELD(owner, void (**)(void *, s32, void *, s32), 0x44)(owner, 0, entry, M2C_FIELD(owner, s32 *, 0x48));
 }
 
 void func_020605d8(void *arg0, void *arg1, void *arg2, s32 unused) {
-    s32 func_02049208();
+    s32 GetTickCountMs();
     M2C_UNK func_02060138(void *, void *);
     M2C_UNK func_02060d90(void *, M2C_UNK);
     s32 StringFind(M2C_UNK, M2C_UNK *);
@@ -331,7 +335,7 @@ void func_020605d8(void *arg0, void *arg1, void *arg2, s32 unused) {
         M2C_FIELD(arg1, u8 *, 0x14) = temp_r0 | 0x42;
     }
     M2C_FIELD(arg1, u8 *, 0x14) = (u8)(M2C_FIELD(arg1, u8 *, 0x14) & 0xF3);
-    M2C_FIELD(arg1, s32 *, 0x1C) = (s32) (func_02049208() - M2C_FIELD(arg1, s32 *, 0x1C));
+    M2C_FIELD(arg1, s32 *, 0x1C) = (s32) (GetTickCountMs() - M2C_FIELD(arg1, s32 *, 0x1C));
     func_02060138(arg0 + 8, arg1);
     M2C_FIELD(arg0, M2C_UNK (**)(void *, M2C_UNK, void *, s32), 0x44)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x48));
 }

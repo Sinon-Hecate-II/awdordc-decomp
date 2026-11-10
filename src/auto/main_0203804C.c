@@ -229,7 +229,7 @@ s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7
 
 s32 func_02038a84(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_0203761c(void);void func_02039100(void);void func_02039204(s32);void func_0203c878(s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(func_0203761c() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;func_02039100();M2C_FIELD(gNetSession,s32 *,136)=b;M2C_FIELD(gNetSession,s32 *,140)=c;M2C_FIELD(gNetSession,u8 *,44)=0;func_02039204(5);func_0203c878((u8)(a-1),&func_02039520,0,d,e);return 1;}
 
-s32 func_02038b1c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 StartMatch(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 func_0203761c(void);
     void func_02039100(void);
     void func_02039204(s32);
@@ -243,8 +243,8 @@ s32 func_02038b1c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     void func_02037638(s32, s32);
     void func_0203af50(s32, void *, s32);
     extern void *gNetSession;
-    extern M2C_UNK data_020fc890;
-    extern M2C_UNK data_020fc894;
+    extern M2C_UNK sMatchKeySCM;
+    extern M2C_UNK sMatchKeySCN;
     extern M2C_UNK data_020fc898;
     extern M2C_UNK func_02039520;
 
@@ -279,10 +279,10 @@ s32 func_02038b1c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 
     firstc = 0x30;
-    func_02037df0(&data_020fc890, (s8 *)&firstc, (s8 *)payload, 0x2F);
+    func_02037df0(&sMatchKeySCM, (s8 *)&firstc, (s8 *)payload, 0x2F);
     firstval = (u8)func_0206abd8((s8 *)&firstc, 0, 10);
 
-    func_02037df0(&data_020fc894, (s8 *)&firstc, (s8 *)payload, 0x2F);
+    func_02037df0(&sMatchKeySCN, (s8 *)&firstc, (s8 *)payload, 0x2F);
     secondval = (u8)func_0206abd8((s8 *)&firstc, 0, 10);
     if (secondval == firstval) {
         mode = 0x0D;

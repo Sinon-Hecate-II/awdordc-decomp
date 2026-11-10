@@ -32,7 +32,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- func_020ceec8();func_02086608(4);func_020cbdbc();func_020a68d4();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
+ func_020ceec8();func_02086608(4);func_020cbdbc();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
  func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -317,7 +317,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
 
 void func_ov007_02211ae8(M2C_UNK arg0) {
     extern void *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     s32 func_020d46e8(void);
     s32 func_020ab240(void);
@@ -354,7 +354,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         ((u8 *)arg0)[0x34] = 1;
         return;
     }
-    q = data_02101e88;
+    q = gTouchState;
     if (((u8 *)q)[0x12]) r5 |= 1;
     if (((u8 *)q)[0x14]) r4 |= 1;
     if (((u8 *)arg0)[0x34]) {
@@ -373,7 +373,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     if (r4 & 0x200) { func_ov007_02219418(); return; }
     if (r4 & 0x8) { func_ov007_022144ec(); return; }
     if (r4 & 0x4) { func_ov007_0221330c(); return; }
-    if (!((u8 *)data_02101e88)[0x12]) goto L_b4c;
+    if (!((u8 *)gTouchState)[0x12]) goto L_b4c;
     if (func_020ab240()) return;
     t = func_ov007_02211f20();
     switch (t) {
@@ -441,9 +441,9 @@ L_be4:
 }
 
 void func_ov007_02211e6c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f5f8;
-    func_01ffa42c(&data_ov007_0221f5f8, arg0);
+    CreateSpriteObject(&data_ov007_0221f5f8, arg0);
 }
 
 void func_ov007_02211e84(void) {

@@ -256,7 +256,7 @@ void func_0208946c(void *p) {
 extern void *gCur3DSpriteEngine;extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 func_0208b5a8(void);
 void func_0208df84(s16,s16,s16,s16,u16,s32);
-void func_0208dd7c(s16,s16,s16,s16,u16,s32,s32);
+void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
 s32 d,a,b,screen;s32 attr;s32 *engineA,*engineB;u16 tile;void *old;s32 i,priority,drawMode;u32 target,delta;void *cur;
 if(func_02089080(p))return;
 if(M2C_FIELD(p,u8 *,0x5a)){func_02089438(p);M2C_FIELD(p,u8 *,0x5a)=0;}
@@ -281,7 +281,7 @@ if(attr==1&&gCur3DSpriteEngine!=(void *)g3DSpriteEngineSub)continue;
 if(attr==3&&gCur3DSpriteEngine!=old)continue;
 if(M2C_FIELD(p,u8 *,0x58)&&M2C_FIELD(p,u8 *,0x59))
 func_0208df84((s16)(M2C_FIELD(p,s16 *,0x5e)+M2C_FIELD(p,s16 *,0x38)),(s16)(M2C_FIELD(p,s16 *,0x60)+M2C_FIELD(p,s16 *,0x3a)),M2C_FIELD(p,s16 *,0x62),M2C_FIELD(p,s16 *,0x64),tile,priority);
-else func_0208dd7c((s16)(M2C_FIELD(p,s16 *,0x5e)+M2C_FIELD(p,s16 *,0x38)),(s16)(M2C_FIELD(p,s16 *,0x60)+M2C_FIELD(p,s16 *,0x3a)),M2C_FIELD(p,s16 *,0x62),M2C_FIELD(p,s16 *,0x64),tile,priority,drawMode);
+else DrawFrameBorder((s16)(M2C_FIELD(p,s16 *,0x5e)+M2C_FIELD(p,s16 *,0x38)),(s16)(M2C_FIELD(p,s16 *,0x60)+M2C_FIELD(p,s16 *,0x3a)),M2C_FIELD(p,s16 *,0x62),M2C_FIELD(p,s16 *,0x64),tile,priority,drawMode);
 }
 gCur3DSpriteEngine=old;
 }
@@ -552,10 +552,10 @@ void func_02089c34(void *arg0, s32 arg1) {
 #pragma peephole reset
 void func_02089c80(void *arg0) {
  s32 func_0209c658(s32);
- M2C_UNK func_01ffa8c4(void *,s32);
+ M2C_UNK SetSpriteAnimation(void *,s32);
  M2C_UNK DeleteSpriteObject(void *);
  s32 p=func_0209c658(M2C_FIELD(arg0,s32 *,0x70));
- if(p){func_02089c34(arg0,p);func_01ffa8c4(arg0,0);return;}
+ if(p){func_02089c34(arg0,p);SetSpriteAnimation(arg0,0);return;}
  DeleteSpriteObject(arg0);
 }
 

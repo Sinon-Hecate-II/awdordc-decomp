@@ -8,7 +8,7 @@ typedef struct SpriteLevels02091110 { u8 v[22]; } SpriteLevels02091110;
 void func_02091110(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
     void func_02091230(void);
     void func_02091248(s32);
-    s32 func_0207c928(s32, s32);
+    s32 Modulo(s32, s32);
     s32 func_0207d0f0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u8);
     void func_0209177c(M2C_UNK);
     void *obj;
@@ -37,7 +37,7 @@ void func_02091110(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
             SpriteLevels02091110 buf = *(const SpriteLevels02091110 *)data_020f362c;
             {
                 s32 idx = (s32)(M2C_FIELD(obj, s16 *, 0x18) >> 2);
-                idx = func_0207c928(idx, 0x16);
+                idx = Modulo(idx, 0x16);
                 func_02091248(buf.v[idx]);
             }
         } else {
@@ -695,7 +695,7 @@ void func_02091af4(void) {
 
 s32 func_02091af8(void *arg,s32 b,s32 c){
 u16 *a=arg;
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 u16 *table,*seq,*p; s32 sum;
 table=(u16 *)((u8 *)a+(a[0]&~1));
 p=(u16 *)((u8 *)a+(a[1]&~1));
@@ -703,7 +703,7 @@ seq=(u16 *)((u8 *)p+(p[b]&~1));
 p=seq;sum=0;
 while(p[0]){sum+=p[0];p+=2;}
 switch(p[1]){
-case 255:c=func_0207c928(c,sum);break;
+case 255:c=Modulo(c,sum);break;
 case 1:if(c>sum)c=sum;break;
 case 0:return 0;
 }

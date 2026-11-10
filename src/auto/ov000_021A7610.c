@@ -123,7 +123,7 @@ s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8
 s32 func_ov000_021a484c(s32,s32);s32 func_ov000_021a67f0(u8);s32 func_ov000_021a4980(s8,s32);
 void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 func_020d2d18(u16,s32);
 s32 func_ov000_021a49e0(s32);s32 func_ov000_021a881c(s32,s32);
-extern u8 data_ov000_021b5c6c[],data_ov000_021b5bfc[],data_ov000_021b5be0[],gAiTargetCandidates[],gAiCommand[];
+extern u8 data_ov000_021b5c6c[],gUnitKindStats[],data_ov000_021b5be0[],gAiTargetCandidates[],gAiCommand[];
 extern u32 data_ov000_021df8ac[];extern void **gCurrentMap;extern u8 *gAiState;
 s32 mode,flag,low,best,i,index,other,cost,limit;u8 chosen;u32 score,v; s32 shortfall;u8 *attr,*entry,*map,*state;u16 price,player;
 if(func_ov000_021a5ffc(4)==-1)return -1;
@@ -148,7 +148,7 @@ score=data_ov000_021df8ac[i];best=i;
 next:;
 }
 if(!best)return -1;
-attr=data_ov000_021b5bfc+best*112;chosen=best;
+attr=gUnitKindStats+best*112;chosen=best;
 again:
 index=func_ov000_021a67f0(data_ov000_021b5be0[best]);
 if(index==-1)goto reject;
@@ -203,7 +203,7 @@ data_ov000_021df8ac[best]=0;func_ov000_021a0250();goto retry;
 }
 
 s32 func_ov000_021a8438(s32 index) {
- extern u8 gAiTargetCandidates[],data_ov000_021b5c6c[],data_ov000_021b5be0[],data_ov000_021b5bfc[],gAiCommand[];
+ extern u8 gAiTargetCandidates[],data_ov000_021b5c6c[],data_ov000_021b5be0[],gUnitKindStats[],gAiCommand[];
  extern u8 *data_ov000_021df580; extern u32 data_ov000_021df8ac[];extern void **gCurrentMap;
  s32 GetUnitAttackClass(u8);s32 func_020d2d18(u16,s32);s32 func_ov000_021a4e08(u32,u32,s32);
  u8 *entry=gAiTargetCandidates+index*12;
@@ -222,9 +222,9 @@ s32 func_ov000_021a8438(s32 index) {
  price=(u16)cost;map=*gCurrentMap;player=(AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4);
  money=player->money;
  if(money<price)goto reject;
- if(!retry || (flag=data_ov000_021b5bfc[best*112+19]&16)!=0) {
+ if(!retry || (flag=gUnitKindStats[best*112+19]&16)!=0) {
  if(func_ov000_021a4e08(entry[0],entry[1],best)<70)goto accept;
- if(data_ov000_021b5bfc[best*112+19]&16)goto reject;
+ if(gUnitKindStats[best*112+19]&16)goto reject;
  if(best==22)goto reject;
  retry=1;continue;
  } else {
@@ -242,7 +242,7 @@ s32 func_ov000_021a6f24(s32,s32,s32); s32 func_0207c8ec(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 func_020d2d18(u16,s32);
 extern u8 *gAiState; extern u32 data_ov000_021df8ac[27];
 extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *data_ov000_021df580;
-extern u8 data_ov000_021df598[]; extern u8 data_ov000_021b5bfc[]; extern void **gCurrentMap;
+extern u8 data_ov000_021df598[]; extern u8 gUnitKindStats[]; extern void **gCurrentMap;
 s32 values[9]; s32 minimum;
 s32 b,a,i,j,k,t,v;
 s32 kind;
@@ -259,7 +259,7 @@ if(values[j]==0)continue;
 if(data_ov000_021df598[j]==22)v=func_ov000_021a96f4(kind,data_ov000_021df598[j],0);
 else v=GetAttackDamage(kind,data_ov000_021df598[j],0);
 v=func_ov000_021a6f24(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
-if(data_ov000_021b5bfc[data_ov000_021df598[j]*112+19]&16){
+if(gUnitKindStats[data_ov000_021df598[j]*112+19]&16){
 if(kind==6 && (gAiState[6]==2 || gAiState[6]==4))v>>=1;
 if(kind==23 && (gAiState[6]==1 || gAiState[6]==3))v>>=1;
 }
@@ -301,15 +301,15 @@ for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_0
 #pragma opt_strength_reduction off
 void func_ov000_021a7ac0(s32 index) {
 extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
-extern u8 *data_ov000_021df57c;
-extern u8 gAiTargetCandidates[],data_ov000_021e00ad[],data_ov000_021b5bfc[];
+extern u8 *gAiSettings;
+extern u8 gAiTargetCandidates[],data_ov000_021e00ad[],gUnitKindStats[];
 extern void **gCurrentMap;
 void FloodFillUnitRange(s32,s32,s32,s32,s32); s32 IsUnitOnCurrentTeam(s32); void func_ov000_021a7610(void);
 s32 minx,maxy,r,cx,cy; s32 maxx,y,x,i,off,miny; u8 *unit,*map,*entry;
 for(i=0;i<27;i++) {data_ov000_021e1474[i]=0;data_ov000_021e14aa[i]=data_ov000_021e1474[i];}
 off=index*12;
-FloodFillUnitRange(gAiTargetCandidates[off],data_ov000_021e00ad[off],7,data_ov000_021df57c[16],0);
-cx=gAiTargetCandidates[off]; cy=data_ov000_021e00ad[off]; r=data_ov000_021df57c[16];
+FloodFillUnitRange(gAiTargetCandidates[off],data_ov000_021e00ad[off],7,gAiSettings[16],0);
+cx=gAiTargetCandidates[off]; cy=data_ov000_021e00ad[off]; r=gAiSettings[16];
 minx=cx-r; if(minx<0)minx=0;
 miny=cy-r; if(miny<0)miny=0;
 map=*gCurrentMap;
@@ -318,11 +318,11 @@ maxy=AiBoundMin(r+cy,*(u16 *)(map+0x5146)-1);
 entry=gAiTargetCandidates+off;
 for(y=miny;y<=maxy;y++)for(x=minx;x<=maxx;x++){
 s32 d=AiPointDistance(x,y,entry[0],entry[1]);
-if(d<0||d>data_ov000_021df57c[16])continue;
+if(d<0||d>gAiSettings[16])continue;
 map=*gCurrentMap;
 i=map[*(u16 *)(map+0x3758+y*2)+x]; if(!i)continue;
 unit=map+0x59a4+i*14;
-if((data_ov000_021b5bfc[(((u32)(unit[0]<<26)>>26))*112+19]&7)&&((s8 **)(map+0x52e8))[y][x]<0)continue;
+if((gUnitKindStats[(((u32)(unit[0]<<26)>>26))*112+19]&7)&&((s8 **)(map+0x52e8))[y][x]<0)continue;
 if(IsUnitOnCurrentTeam(i)==1)data_ov000_021e14aa[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
 else data_ov000_021e1474[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
 }

@@ -6,7 +6,7 @@ typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 /* Attaches a shared argument to a block of 3D sprite entries in three tables, then draws a 6x2 grid of 24x24 sprites from a sprite list. */
 void func_ov006_022162f4(void *arg0) {
     s32 func_0207c8ec(s32, M2C_UNK);
-    s32 func_0207c928(u8, M2C_UNK);
+    s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK UpdateSpriteAnimation(void *);
@@ -101,7 +101,7 @@ void func_ov006_022162f4(void *arg0) {
             M2C_FIELD(p, s8 *, 0x38) = temp_r2_4;
         }
     }
-    temp_r5 = (func_0207c928(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 0x38;
+    temp_r5 = (Modulo(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 0x38;
     temp_r3 = M2C_FIELD(p, s16 *, 0x3A);
     temp_r2_5 = (func_0207c8ec(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 8;
     if ((temp_r3 == -0x8000) && (M2C_FIELD(p, s16 *, 0x3C) == -0x8000)) {
@@ -211,14 +211,14 @@ void func_ov006_02216c10(void) {
 /* Creates and fully initializes a map/UI cursor object from the overlay's object pool,
    attaching its sprite, panel and tile-selection children. */
 void func_ov006_02216c24(s32 selectedUnit) {
-    void *func_01ffa42c(void *, s32);
-    void func_02007f8c(void *, s32, u32);
+    void *CreateSpriteObject(void *, s32);
+    void MI_CpuFill8(void *, s32, u32);
     void *MemAlloc(u32);
     void *func_020e34bc(u32);
-    extern M2C_UNK data_02129870, data_ov006_022187f0, data_ov006_022188f8;
+    extern M2C_UNK gHeapObjectVTable, data_ov006_022187f0, data_ov006_022188f8;
     void *obj, *child;
 
-    obj = ((void *(*)(void *)) func_01ffa42c)(&data_ov006_022187f0);
+    obj = ((void *(*)(void *)) CreateSpriteObject)(&data_ov006_022187f0);
     if (obj == NULL) {
         return;
     }
@@ -242,12 +242,12 @@ void func_ov006_02216c24(s32 selectedUnit) {
         M2C_FIELD(child, u8 *, 0xe) = 0;
         M2C_FIELD(child, u8 *, 0xf) = 0xff;
         M2C_FIELD(child, void **, 0x14) = func_020e34bc(0x90);
-        func_02007f8c(M2C_FIELD(child, void **, 0x14), 0, 0x90);
+        MI_CpuFill8(M2C_FIELD(child, void **, 0x14), 0, 0x90);
     }
     M2C_FIELD(obj, void **, 0x40) = child;
     child = MemAlloc(0x2c);
     if (child != NULL) {
-        M2C_FIELD(child, void **, 0) = &data_02129870;
+        M2C_FIELD(child, void **, 0) = &gHeapObjectVTable;
         M2C_FIELD(child, u8 *, 4) = 0;
         M2C_FIELD(child, u16 *, 0x12) = 0;
         M2C_FIELD(child, u8 *, 0x14) = 8;
@@ -448,9 +448,9 @@ void *func_ov006_02217164(void) {
 }
 
 void func_ov006_02217178(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
-void *func_01ffa42c(void *,M2C_UNK);
+void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
-u8 i; void *p=func_01ffa42c(&data_ov006_02218918,arg0);
+u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
 if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=1;
@@ -468,9 +468,9 @@ i++;
 }
 
 void func_ov006_02217214(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
-void *func_01ffa42c(void *,M2C_UNK);
+void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
-u8 i; void *p=func_01ffa42c(&data_ov006_02218918,arg0);
+u8 i; void *p=CreateSpriteObject(&data_ov006_02218918,arg0);
 if(p) {
 M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=2;

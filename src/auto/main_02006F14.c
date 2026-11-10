@@ -41,7 +41,7 @@ M2C_FIELD(&data_0212dfb4,s32 *,4)=0;
 func_02005154(0,func_02006f9c,0);
 }
 #pragma optimization_level reset
-u64 func_02007004(void) {
+u64 GetSystemTick(void) {
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
     extern u16 data_0212dfb4;
@@ -64,7 +64,7 @@ void func_020070b4(void *arg0) {
  void func_02005154(u32, void (*)(void), u32);
  s32 func_020073c0(s32);
  void func_020051c8(u32);
- u64 now = func_02007004();
+ u64 now = GetSystemTick();
  s64 delta;
  u32 timer;
  *(volatile u16 *)0x04000106 = 0;
@@ -104,7 +104,7 @@ void func_02007190(void *arg0) {
 
 #pragma opt_if-conversion off
 void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     void func_020070b4(void *);
     u64 func_02072088(u64, u64);
     extern u16 data_0212dfc4;
@@ -119,7 +119,7 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     pb = M2C_FIELD(arg0, u32 *, 0x1c);
     stored = ((u64)arg2 << 32) | arg1;
     if (pa == 0 && pb == 0) return;
-    now = func_02007004();
+    now = GetSystemTick();
     stored = M2C_FIELD(arg0, u64 *, 0x24);
     if (stored >= now) return;
     period = M2C_FIELD(arg0, u64 *, 0x1c);
@@ -166,7 +166,7 @@ void func_020072cc(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
  M2C_FIELD(arg0,s32 *,0x20)=0;
  M2C_FIELD(arg0,volatile s32 *,0)=arg3;
  M2C_FIELD(arg0,s32 *,4)=arg4;
- time=delay+func_02007004();
+ time=delay+GetSystemTick();
  func_020071a0(arg0,(u32)time,(u32)(time>>32)); OS_RestoreInterrupts(state);
 }
 #pragma opt_common_subs reset
@@ -208,7 +208,7 @@ s32 func_020073c0(s32 arg0) {
 }
 void func_020073d0(void) {
     M2C_UNK func_020051f8(M2C_UNK);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     void func_020070b4(void *);
     void func_020071a0(void *, u32, u32);
     extern u16 data_0212dfc4;
@@ -227,7 +227,7 @@ void func_020073d0(void) {
     func_020051f8(0x10);
     *(u32 *)((u8 *)&data_027e0000 + 0x3FF8) |= 0x10;
 
-    now = func_02007004();
+    now = GetSystemTick();
 
     node = *(void **)((u8 *)&data_0212dfc4 + 0x4);
     if (node == 0) return;

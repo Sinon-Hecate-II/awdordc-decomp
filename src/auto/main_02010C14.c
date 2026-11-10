@@ -15,13 +15,13 @@ M2C_UNK *func_02010c84(void) {
 
 void func_02010c90(s32 a,s32 b,s32 c){extern u8 data_0212fde0[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(data_0212fde0,s32 *,260);M2C_FIELD(data_0212fde0,s32 *,276)&=~32;TaskWake(v);}
 
-void func_02010cc4(void){extern u8 data_0212fde0[];s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);void func_02005da4(s32);s32 zero=0;u8 *p=data_0212fde0;s32 a;for(;;){a=OS_DisableInterrupts();while(!(M2C_FIELD(p,s32 *,276)&8))func_02005da4(zero);OS_RestoreInterrupts(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
+void func_02010cc4(void){extern u8 data_0212fde0[];s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);void OS_SleepThread(s32);s32 zero=0;u8 *p=data_0212fde0;s32 a;for(;;){a=OS_DisableInterrupts();while(!(M2C_FIELD(p,s32 *,276)&8))OS_SleepThread(zero);OS_RestoreInterrupts(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
 
 /* Sends a packet over the device, retrying while the device reports "busy/again" (status 4). */
 s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
-void func_02005da4(s32);
+void OS_SleepThread(s32);
 void func_020067e0(s32 *, s32);
-void func_020067a8(s32 *, s32);
+void DC_InvalidateRange(s32 *, s32);
 void func_02006804(void);
 void func_0200758c(s32);
 s32 func_02009e8c(s32, s32);
@@ -51,9 +51,9 @@ pkt = M2C_FIELD(dev, s32 **, 0);
 do { } while (func_02009eb0(11, (s32)pkt, 1) < 0);
 }
 savedIrq = OS_DisableInterrupts();
-while (M2C_FIELD(dev, volatile s32 *, 0x114) & 32) func_02005da4(0);
+while (M2C_FIELD(dev, volatile s32 *, 0x114) & 32) OS_SleepThread(0);
 OS_RestoreInterrupts(savedIrq);
-func_020067a8(M2C_FIELD(dev, s32 **, 0), 96);
+DC_InvalidateRange(M2C_FIELD(dev, s32 **, 0), 96);
 status = *M2C_FIELD(dev, s32 **, 0);
 if (status == 4 && --count > 0) goto again;
 if (status == 0) return 1;
@@ -121,7 +121,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK OS_RestoreInterrupts(s32);
     void func_02009d34();
     s32 func_02009e8c(s32, s32);
-    void func_020067a8();
+    void DC_InvalidateRange();
     void func_02007984();
     void func_020118f4(void);
     void func_020062d4();
@@ -160,7 +160,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         OS_RestoreInterrupts(saved);
         return 4;
     }
-    func_020067a8(arg0, arg2);
+    DC_InvalidateRange(arg0, arg2);
     func_02007984(arg1, arg0, 0, arg2);
     p = (void *)arg0;
     M2C_FIELD(&data_02130660, void **, 4) = p;
@@ -210,7 +210,7 @@ u16 *func_020112cc(void) {
     if (func_02006390(&data_02130668, &sp0, 0) == 0) {
         return NULL;
     }
-    func_020067a8(sp0, 2);
+    DC_InvalidateRange(sp0, 2);
     if (*sp0 & 0x8000) {
         return sp0;
     }
@@ -237,13 +237,13 @@ s32 func_02011450(void) { extern M2C_UNK data_02130660; if(M2C_FIELD(&data_02130
 
 s32 func_0201146c(void) {
 extern M2C_UNK data_02130660;s32 r=func_02011450();if(r)return r;
-func_020067a8(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
+DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
 return M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0)<=1U?3:0;
 }
 
 s32 func_020114b4(s32 count,...) { extern M2C_UNK data_02130660; s32 result=func_02011450();s32 *args;u16 value;
 if(result)return result;
-func_020067a8(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
+DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),2);
 value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&data_02130660,void **,4),void **,4),u16 *,0);
 args=(s32 *)((u32)&count&~3)+1;result=3;while(count){args++;if(args[-1]==value)result=0;count--;}return result;
 }
@@ -273,7 +273,7 @@ extern M2C_UNK data_02130660;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIEL
 
 u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32); extern M2C_UNK data_02130660;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&data_02130660,void **,4);if(p)r=M2C_FIELD(p,s32 *,0x14c);else r=0;OS_RestoreInterrupts(s);return r;}
 
-s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK func_020067a8();extern M2C_UNK data_02130660;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&data_02130660,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);func_020067a8(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
+s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK DC_InvalidateRange();extern M2C_UNK data_02130660;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&data_02130660,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);DC_InvalidateRange(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
 
 s32 func_020119dc(s32 arg0) {
     s32 OS_DisableInterrupts();
@@ -301,7 +301,7 @@ s32 func_02011a20(s32 arg0, void (*callback)(void *), s32 arg2) {
     void *p;
 
     if (callback) {
-        func_02007f8c(buf, 0, 0x44);
+        MI_CpuFill8(buf, 0, 0x44);
         M2C_FIELD(buf, u16 *, 0) = 0x82;
         M2C_FIELD(buf, u16 *, 2) = 0;
         M2C_FIELD(buf, u16 *, 4) = 0x19;
@@ -333,7 +333,7 @@ s32 func_02011a20(s32 arg0, void (*callback)(void *), s32 arg2) {
 }
 
 s32 func_02011af8(s32 arg0) {
-    M2C_UNK func_020067a8(s32, M2C_UNK);
+    M2C_UNK DC_InvalidateRange(s32, M2C_UNK);
     M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
     s32 temp_r0;
     void *temp_r4;
@@ -346,7 +346,7 @@ s32 func_02011af8(s32 arg0) {
     if (arg0 == 0) {
         return 6;
     }
-    func_020067a8(M2C_FIELD(temp_r4, s32 *, 4), 0x7D0);
+    DC_InvalidateRange(M2C_FIELD(temp_r4, s32 *, 4), 0x7D0);
     func_02007ef4(M2C_FIELD(temp_r4, s32 *, 4), arg0, 0x7D0);
     return 0;
 }
@@ -360,12 +360,12 @@ s32 func_02011b44(void) {
     if (func_020114b4(2, 7, 8) != 0) {
         return 0;
     }
-    func_020067a8(M2C_FIELD(temp_r4, void **, 4) + 0xC, 4);
+    DC_InvalidateRange(M2C_FIELD(temp_r4, void **, 4) + 0xC, 4);
     temp_r1 = M2C_FIELD(temp_r4, void **, 4);
     if (M2C_FIELD(temp_r1, s32 *, 0xC) == 1) {
         return 0;
     }
-    func_020067a8(temp_r1 + 0x3C, 4);
+    DC_InvalidateRange(temp_r1 + 0x3C, 4);
     return (M2C_FIELD(M2C_FIELD(temp_r4, void **, 4), u16 *, 0x3C) + 0x1F) & ~0x1F;
 }
 

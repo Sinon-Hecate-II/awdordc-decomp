@@ -221,14 +221,14 @@ s32 func_0208c214(void *arg0) {
  * it on each screen its flags select; frees it when drawing fails or the object
  * is flagged to close on an input. */
 void UpdateSpriteObject(void *obj) {
-extern u16 *gKeyState; extern u8 *data_02101e88;
+extern u16 *gKeyState; extern u8 *gTouchState;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 void DeleteSpriteObject(void *); s32 DrawSprite3D(s32,void *,s32,s32); s32 DrawSprite2D(s32,u16,u16);
 SpriteFlags *f=(SpriteFlags *)((char *)obj+0x44);
 SpriteTimer *g=(SpriteTimer *)((char *)obj+0x48);
 void *savedEngine,*engine; s32 pass; s32 xyz[3]; u16 spriteX,spriteY,extraY; void (*callback)(void *);
 if(g->delay) { --g->delay; return; }
-if(g->elapsed && f->closeOnInput && ((*gKeyState & (KEY_A|KEY_B|KEY_START|KEY_X|KEY_Y)) || data_02101e88[0x14])) {DeleteSpriteObject(obj);return;}
+if(g->elapsed && f->closeOnInput && ((*gKeyState & (KEY_A|KEY_B|KEY_START|KEY_X|KEY_Y)) || gTouchState[0x14])) {DeleteSpriteObject(obj);return;}
 if((u16)f->easing) func_0208c0dc(obj);
 callback=M2C_FIELD(obj,void (**)(void *),0x6c); if(callback) callback(obj);
 savedEngine=gCur3DSpriteEngine;
@@ -296,10 +296,10 @@ void func_0208c528(M2C_UNK arg0) {
 }
 
 void func_0208c54c(M2C_UNK arg0) {
-    s32 func_01ffa42c(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0208bc58();
     extern M2C_UNK data_02102790;
-    if (func_01ffa42c(&data_02102790, arg0) == 0) {
+    if (CreateSpriteObject(&data_02102790, arg0) == 0) {
         return;
     }
     func_0208bc58();

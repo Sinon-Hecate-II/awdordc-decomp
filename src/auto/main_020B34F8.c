@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u16 data_0215d9b8[];
-extern u8 data_02168f14[];
+extern u8 gMapConfig[];
 extern u8 *data_02168f08;
 typedef struct { u8 a[33],b;u16 c,d,e; s16 f,g,h,i;u16 j,k;u8 l,m,n,o,p,q,r,s;u8 t[2],u[2];u8 v[322]; } SettingsB3C;
 typedef struct {u16 a;u8 b,c;u16 d,e;u32 f,g;} HeaderB3C;
@@ -61,7 +61,7 @@ u8 func_020b34f8(void *arg0) {
 #pragma opt_propagation off
 void func_020b35d4(void *p) {
 s32 func_0207c8ec(s32,s32);
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 u8 func_020b3410(void *);
 M2C_UNK PlaySoundEffect(s32);
 extern u16 *gKeyState;
@@ -78,7 +78,7 @@ visible=M2C_FIELD(p,u8 *,4);
 pages=func_0207c8ec(total+cols-1,cols);
 if(visible>=pages)visible=pages;
 visible=(s16)visible;
-col=func_0207c928(M2C_FIELD(p,s16 *,8),cols);
+col=Modulo(M2C_FIELD(p,s16 *,8),cols);
 row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
 held=gKeyState[0];pressed=gKeyState[1];
 oldscroll=M2C_FIELD(p,s16 *,12);
@@ -185,10 +185,10 @@ void func_020b3a58(M2C_UNK arg0) {
 
 void func_020b3a80(void *arg0) {
 s32 func_0207c8ec();
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 s16 a,b; s16 x,y,c,old; s16 delta; s32 d,e;
 a=M2C_FIELD(arg0,u8 *,6); b=M2C_FIELD(arg0,u8 *,7);
-x=func_0207c928(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5));
+x=Modulo(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5));
 c=M2C_FIELD(arg0,s16 *,12);
 delta=func_0207c8ec(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5))-c;
 x=(s16)(M2C_FIELD(arg0,s16 *,20)+x*a);
@@ -253,9 +253,9 @@ void func_020b3b84(void) {
 }
 
 void func_020b3c2c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021286ac;
-    func_01ffa42c(&data_021286ac, arg0);
+    CreateSpriteObject(&data_021286ac, arg0);
 }
 
 void func_020b3c44(void) {
@@ -296,7 +296,7 @@ M2C_FIELD(dst,Bytes2B3C*,60)=M2C_FIELD(src,Bytes2B3C*,60);
 M2C_FIELD(dst,Bytes2B3C*,62)=M2C_FIELD(src,Bytes2B3C*,62);
 M2C_FIELD(dst,Bytes322B3C*,64)=M2C_FIELD(src,Bytes322B3C*,64);
 
-src=data_02168f14;dst=(u8 *)p+0x1c;
+src=gMapConfig;dst=(u8 *)p+0x1c;
 M2C_FIELD(dst,u16*,0)=M2C_FIELD(src,u16*,0);
 M2C_FIELD(dst,u8*,2)=M2C_FIELD(src,u8*,2);
 M2C_FIELD(dst,u8*,3)=M2C_FIELD(src,u8*,3);

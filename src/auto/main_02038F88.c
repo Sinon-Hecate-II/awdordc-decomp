@@ -243,13 +243,13 @@ void func_02039698(s32 unused, void *arg1) {
 
 void func_020396d0(s32 a,void *b,s32 c){
 extern char data_020fc89c[],data_020fc8a4[];extern void *gNetSession;
-s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 func_0206527c(const void *,const void *,u32);char *func_02068ee0(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
+s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 func_0206527c(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
 char buf[12]={0};char *p=M2C_FIELD(b,char **,8);u32 n;
 if(func_0203ad70(a,b,c))return;
 if(func_0206527c(p,data_020fc89c,StringLength(data_020fc89c)))return;
 p+=StringLength(data_020fc89c);
-n=func_02068ee0(p,'v')-p;
+n=StringFindChar(p,'v')-p;
 func_02068d18(buf,p,n);
 if(n>10)return;
 if(func_0206abd8(buf,0,10)!=3)return;
@@ -472,9 +472,9 @@ void func_02039ba8(s32 *arg0) {
 
 void func_02039be4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     extern M2C_UNK data_0213d380;
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_FIELD(&data_0213d380, s32 *, 4) = arg0;
-    func_02007f8c(arg0, 0, 0x280);
+    MI_CpuFill8(arg0, 0, 0x280);
     M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0) = arg2;
     M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 4) = 0;
     M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 8) = arg3;
@@ -502,7 +502,7 @@ void func_02039ca0(void) {
     s32 func_0203761c(void);
     void func_0203a2b4(void);
     void func_0204db50(void *);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     u64 func_02072088(u64, u64);
     void *p;
 
@@ -519,7 +519,7 @@ void func_02039ca0(void) {
         if (p && M2C_FIELD(p, s32 *, 0)) func_0204db50(p);
         p = M2C_FIELD(&data_0213d380, void **, 4);
         if (!M2C_FIELD(p, s32 *, 0x30)) return;
-        if (func_02072088((func_02007004() - M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
+        if (func_02072088((GetSystemTick() - M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {
             func_02039db4(6, -61070);
             M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x30) = 0;
         }

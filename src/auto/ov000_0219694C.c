@@ -100,7 +100,7 @@ u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
 void func_ov000_02196bd8(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern KindScan96 data_ov000_021b5bfc[];
+extern KindScan96 gUnitKindStats[];
 extern u8 *data_ov000_021df580;
 s32 func_ov000_02178e84(s32,s32);
 void FillMapLayer(s32);
@@ -125,7 +125,7 @@ bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds-
 bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b=u[2]+func_020a76d4(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+func_020a76d4(u);
 z=0;for(y=t;y<=b;y++)for(x=l;x<=r;x++){
 d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<data_ov000_021b5bfc[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
+if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
 m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 
@@ -137,7 +137,7 @@ bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds-
 bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b2=u[2]+func_020a76d4(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+func_020a76d4(u);
 z=0;for(y=t;y<=b2;y++)for(x=l2;x<=r;x++){
 d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<data_ov000_021b5bfc[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
+if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>func_020a76d4(u))continue;
 m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 if((M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&31)!=18||!(M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&224))continue;

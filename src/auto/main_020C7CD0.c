@@ -203,17 +203,17 @@ s32 func_020c818c(s32 a,s32 b) {
  return func_020c8624(a,p);
 }
 
-s32 func_020c8214(void *p){extern M2C_UNK data_ov000_021b5bfc;s32 i;PackedEntry *q;for(i=0;i<M2C_FIELD(p,u8 *,0x2f);i++){q=(PackedEntry *)((u8 *)p+0x3d8)+i;if(M2C_FIELD((u8 *)&data_ov000_021b5bfc+q->bits.kind*112,u8 *,108)){switch(q->bits.mode){case 0:case 1:q->bits.mode=0;break;case 6:q->bits.mode=6;break;case 8:q->bits.mode=8;break;}}}}
+s32 func_020c8214(void *p){extern M2C_UNK gUnitKindStats;s32 i;PackedEntry *q;for(i=0;i<M2C_FIELD(p,u8 *,0x2f);i++){q=(PackedEntry *)((u8 *)p+0x3d8)+i;if(M2C_FIELD((u8 *)&gUnitKindStats+q->bits.kind*112,u8 *,108)){switch(q->bits.mode){case 0:case 1:q->bits.mode=0;break;case 6:q->bits.mode=6;break;case 8:q->bits.mode=8;break;}}}}
 
 void func_020c82cc(s32 a) {
-void func_020a68d4(void);
+void ResetMapUnits(void);
 void *func_020a660c(s32,s32,s32,s32);
 void SetPlayerSelectedUnit(s32,void *);
 extern void **gCurrentMap;
 s32 i,x,y,player,kind,state,z;
 u32 *src;
 RestoredUnit *unit;
-func_020a68d4();
+ResetMapUnits();
 i=0;
 if(i>=M2C_FIELD(a,u8 *,0x2f))return;
 src=(u32 *)(a+0x3d8);
@@ -244,9 +244,9 @@ void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void 
 
 s32 func_020c8484(s32 arg) {
 extern void **gCurrentMap;
-void func_020ceffc(void); u16 func_0207f460(u32);
+void BuildMapRowOffsets(void); u16 func_0207f460(u32);
 s32 x,y; Map8484 *base; u8 *a=(u8 *)arg;
-func_020ceffc();
+BuildMapRowOffsets();
 base=*gCurrentMap;
 for(y=0;y<base->height;y++) {
 for(x=0;x<base->width;x++) {
@@ -305,11 +305,11 @@ u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 func_020c8b0c(u8 *,u8 *)
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
-    s32 func_020c7a24(); s32 func_0200f0ac(); void func_02007724(void *);
+    s32 func_020c7a24(); s32 GetLocalTime(); void func_02007724(void *);
     extern u32 gFrameCounter;
     s32 date[4], time[3];
     s32 v = func_020c7a24(p);
-    func_0200f0ac(date, time);
+    GetLocalTime(date, time);
     func_02007724((u8 *)p + 64);
     M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((gFrameCounter << 20) >> 14);
     M2C_FIELD(p, u16 *, 70) = v;

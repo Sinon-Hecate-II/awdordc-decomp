@@ -25,13 +25,13 @@ void func_ov010_02229d44(s32 arg0) {
 }
 
 M2C_UNK **func_ov010_02229d54(s32 arg0, M2C_UNK arg1) {
-M2C_UNK **func_01ffa42c(M2C_UNK *, M2C_UNK);
+M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
 s32 func_ov010_022282b4(M2C_UNK);
 extern M2C_UNK data_ov010_0222c250;
 extern M2C_UNK data_ov010_0222c394;
 M2C_UNK **temp_r0;
 if (func_ov010_022282b4(3) == 0) return NULL;
-temp_r0 = func_01ffa42c(&data_ov010_0222c250, arg1);
+temp_r0 = CreateSpriteObject(&data_ov010_0222c250, arg1);
 if (temp_r0 != NULL) {
 *temp_r0 = &data_ov010_0222c394;
 M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
@@ -76,7 +76,7 @@ void func_ov010_02229ea4(s32 arg0) {
 }
 
 M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
-    M2C_UNK **func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 func_ov010_022282b4(M2C_UNK);
     extern M2C_UNK data_ov010_0222c288;
     extern M2C_UNK data_ov010_0222c380;
@@ -85,14 +85,14 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
     if (func_ov010_022282b4(3) == 0) {
         return NULL;
     }
-    temp_r0 = func_01ffa42c(&data_ov010_0222c288, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov010_0222c288, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov010_0222c380;
     }
     return temp_r0;
 }
 
-s32 func_ov010_02229ef4(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!func_ov010_022282b4(1))return 0;func_02007f8c(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
+s32 func_ov010_02229ef4(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!func_ov010_022282b4(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
 
 s32 func_ov010_02229f64(void) {
     u32 func_02036f14();
@@ -137,7 +137,7 @@ void *func_ov010_02229fd0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 
     if (func_ov010_022282b4(1) == 0) {
         return NULL;
     }
-    temp_r0 = func_01ffa42c(&data_ov010_0222c2c0, arg5);
+    temp_r0 = CreateSpriteObject(&data_ov010_0222c2c0, arg5);
     if (temp_r0 == NULL) {
         return temp_r0;
     }

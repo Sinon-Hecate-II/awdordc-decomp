@@ -116,9 +116,9 @@ void func_ov007_02213378(void *arg0) {
     M2C_UNK func_020cfd28();
     M2C_UNK func_ov007_022121b0();
     M2C_UNK func_ov007_022121d4(M2C_UNK);
-    M2C_UNK func_ov007_02214864(s32);
+    M2C_UNK FillMapTerrain(s32);
     M2C_UNK func_ov007_0221ab68();
-    func_ov007_02214864(M2C_FIELD(arg0, s32 *, 0x5C));
+    FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
     func_020cfd28();
     func_ov007_022121b0();
     func_ov007_0221ab68();
@@ -261,7 +261,7 @@ void func_ov007_02213cf4(void) {
 /* Configures the 3D sprite engine for the requested unit selection mode (arg0->0x3c, 0 or 1), then draws a tile-selection panel sprite via func_020a94fc. */
 void func_ov007_02213d1c(void *obj) {
     void *func_02089714(void);
-    extern u8 data_02129870[];
+    extern u8 gHeapObjectVTable[];
     u32 sp[11];
     void *engine = func_02089714();
     switch (M2C_FIELD(obj, s32 *, 0x3c)) {
@@ -278,7 +278,7 @@ void func_ov007_02213d1c(void *obj) {
         M2C_FIELD(engine, s32 *, 0x40) = (M2C_FIELD(engine, s32 *, 0x40) & 0xfffc01ff) | 0x2000;
         break;
     }
-    M2C_FIELD(sp, void **, 0) = data_02129870;
+    M2C_FIELD(sp, void **, 0) = gHeapObjectVTable;
     M2C_FIELD(sp, u8 *, 4) = 0;
     M2C_FIELD(sp, u8 *, 0x14) = 8;
     M2C_FIELD(sp, u8 *, 0x15) = 8;

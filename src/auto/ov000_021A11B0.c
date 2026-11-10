@@ -7,8 +7,8 @@ typedef struct { u8 pad[3];u8 used:1;u8 rest:7; } Candidate1F14;
 #pragma opt_strength_reduction off
 void func_ov000_021a11b0(s32 arg0){
 extern void **gCurrentMap;
-extern void *gAiState,*data_ov000_021df57c;
-extern u8 gAiTargetCandidates[],data_ov000_021b5bfc[];
+extern void *gAiState,*gAiSettings;
+extern u8 gAiTargetCandidates[],gUnitKindStats[];
 s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a10e4(s32,void *);
 s32 ManhattanDistance(s32,s32,s16,s16);void SelectMapLayer(void *);
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
@@ -41,9 +41,9 @@ p=gAiTargetCandidates;
 for(i=0;i<M2C_FIELD(gAiState,u8 *,0);i++,p+=12){
 if(M2C_FIELD(p,s8 *,4)!=arg0)continue;
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-FloodFillUnitRange(p[0],p[1],7,M2C_FIELD(data_ov000_021df57c,u8 *,16),0);
+FloodFillUnitRange(p[0],p[1],7,M2C_FIELD(gAiSettings,u8 *,16),0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-map=*gCurrentMap;cx=p[0];r=M2C_FIELD(data_ov000_021df57c,u8 *,16);w=M2C_FIELD(map,u16 *,0x5144);
+map=*gCurrentMap;cx=p[0];r=M2C_FIELD(gAiSettings,u8 *,16);w=M2C_FIELD(map,u16 *,0x5144);
 xmin=cx-r;
 xmax=w-1;
 if(xmin<0)xmin=0;
@@ -56,13 +56,13 @@ if(cy+r<ymax)ymax=cy+r;
 for(y=ymin;y<=ymax;y++)for(x=xmin;x<=xmax;x++){
 dx=p[0]-x;if(dx<=0)dx=x-p[0];
 d=0;d+=dx;dy=p[1]-y;if(dy<=0)dy=y-p[1];d+=dy;
-if(d<0 || d>M2C_FIELD(data_ov000_021df57c,u8 *,16))continue;
+if(d<0 || d>M2C_FIELD(gAiSettings,u8 *,16))continue;
 map=*gCurrentMap;id=map[((Map16E8 *)map)->rows[y]+x];
 if(!id)continue;
 unit=map+0x59a4+id*14;
 if(!func_ov000_021a10e4(i,unit))continue;
 if(func_ov000_021a99dc(unit)==1)continue;
-if(data_ov000_021b5bfc[((u32)(unit[0]<<26)>>26)*112+19]&7){
+if(gUnitKindStats[((u32)(unit[0]<<26)>>26)*112+19]&7){
 map=*gCurrentMap;if(M2C_FIELD(map+((Map16E8 *)map)->rows[y]+x,s8 *,0x2338)<0)continue;
 }
 if(IsUnitOnCurrentTeam(id)==1)M2C_FIELD(p,s8 *,5)--;
@@ -133,10 +133,10 @@ return n;
 
 s32 func_ov000_021a19a8(void) {
 s32 func_020b9e20(u16,M2C_UNK);s32 func_020d2d18(u16,M2C_UNK);s32 func_ov000_021a66e8();M2C_UNK CommitAiAction();
-extern void **gCurrentMap;extern void *data_ov000_021df57c,*data_ov000_021df580;extern M2C_UNK gAiCommand,gAiTargetGroups,data_ov000_021e00b0;
+extern void **gCurrentMap;extern void *gAiSettings,*data_ov000_021df580;extern M2C_UNK gAiCommand,gAiTargetGroups,data_ov000_021e00b0;
 void *base,*entry;u16 id;s32 result;u8 flags;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,0xa)<<26)>>29)&4))return 0;
-if(M2C_FIELD(data_ov000_021df57c,u8 *,0x50)==0)return 0;
+if(M2C_FIELD(gAiSettings,u8 *,0x50)==0)return 0;
 if(func_020b9e20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),6)==0)return 0;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if((s32)(func_020d2d18(id,6)*10)>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;
@@ -161,10 +161,10 @@ s32 func_ov000_021a1ab8(void) {
 
 s32 func_ov000_021a1b1c(void){
 s32 func_020b9e20(u16,M2C_UNK);s32 func_020d2d18(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 func_ov000_021a686c();s32 func_ov000_021a86dc();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
-extern void **gCurrentMap;extern void *data_ov000_021df57c,*data_ov000_021df580;extern M2C_UNK gAiCommand;
+extern void **gCurrentMap;extern void *gAiSettings,*data_ov000_021df580;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,0xa)<<20)>>29)&2))return 0;
-if(M2C_FIELD(data_ov000_021df57c,u8 *,0xb0)==0)return 0;
+if(M2C_FIELD(gAiSettings,u8 *,0xb0)==0)return 0;
 if(func_020b9e20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),14)==0)return 0;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if(func_020d2d18(id,14)*10>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;
@@ -183,14 +183,14 @@ s32 func_ov000_021a1c24(void) {
     s32 func_ov000_021a6940();
     M2C_UNK CommitAiAction();
     extern void **gCurrentMap;
-    extern void *data_ov000_021df57c;
+    extern void *gAiSettings;
     extern void *data_ov000_021df580;
     extern M2C_UNK gAiCommand;
     void *base;
     u16 id;
     s32 result;
     if (!(((u32) (M2C_FIELD(data_ov000_021df580, u16 *, 0xA) << 0x14) >> 0x1D) & 4)) return 0;
-    if (M2C_FIELD(data_ov000_021df57c, u8 *, 0x11C) == 0) return 0;
+    if (M2C_FIELD(gAiSettings, u8 *, 0x11C) == 0) return 0;
     if (func_020b9e20(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0x17) == 0) return 0;
     base = *gCurrentMap;
     id = M2C_FIELD(base, u16 *, 0x52A4);
@@ -209,14 +209,14 @@ s32 func_ov000_021a1d08(void) {
     s32 func_ov000_021a6a00();
     M2C_UNK CommitAiAction();
     extern void **gCurrentMap;
-    extern void *data_ov000_021df57c;
+    extern void *gAiSettings;
     extern void *data_ov000_021df580;
     extern M2C_UNK gAiCommand;
     void *base;
     u16 id;
     s32 result;
     if (!(((u32) (M2C_FIELD(data_ov000_021df580, u16 *, 0xA) << 0x14) >> 0x1D) & 4)) return 0;
-    if (M2C_FIELD(data_ov000_021df57c, u8 *, 0x11C) == 0) return 0;
+    if (M2C_FIELD(gAiSettings, u8 *, 0x11C) == 0) return 0;
     if (func_020b9e20(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0x17) == 0) return 0;
     base = *gCurrentMap;
     id = M2C_FIELD(base, u16 *, 0x52A4);
@@ -230,10 +230,10 @@ s32 func_ov000_021a1d08(void) {
 
 s32 func_ov000_021a1dec(void) {
 s32 func_020b9e20(u16,M2C_UNK);s32 func_020d2d18(u16,M2C_UNK);s32 func_ov000_021a6ac0();M2C_UNK CommitAiAction();
-extern void **gCurrentMap;extern void *data_ov000_021df57c,*data_ov000_021df580;extern M2C_UNK gAiCommand;
+extern void **gCurrentMap;extern void *gAiSettings,*data_ov000_021df580;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,0xa)<<20)>>29)&4))return 0;
-if(M2C_FIELD(data_ov000_021df57c,u8 *,0x110)==0)return 0;
+if(M2C_FIELD(gAiSettings,u8 *,0x110)==0)return 0;
 if(func_020b9e20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0x16)==0)return 0;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if((s32)(func_020d2d18(id,0x16)*10)>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;
@@ -243,18 +243,18 @@ CommitAiAction(result);return 1;
 }
 
 s32 func_ov000_021a1ed0(void) {
- extern void **gCurrentMap; extern void *data_ov000_021df57c;
+ extern void **gCurrentMap; extern void *gAiSettings;
  s32 r=0; u16 x;
  x=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
- if((s32)x>3) {r=M2C_FIELD(data_ov000_021df57c,u8 *,10)*x; if(r>80) r=80;}
+ if((s32)x>3) {r=M2C_FIELD(gAiSettings,u8 *,10)*x; if(r>80) r=80;}
  return r;
 }
 
 s32 func_ov000_021a1f14(void){
-s32 func_0207c2f0(void);s32 func_0207c928(s32,s32);s32 func_020d2d18(u16,M2C_UNK);
+s32 func_0207c2f0(void);s32 Modulo(s32,s32);s32 func_020d2d18(u16,M2C_UNK);
 s32 func_ov000_021a664c(void);s32 func_ov000_021a60d4(s32);s32 func_ov000_021a5ffc(s32);
 u8 func_ov000_021a88c8(s32);M2C_UNK CommitAiAction(s32);
-extern void **gCurrentMap;extern void *gAiState,*data_ov000_021df57c;
+extern void **gCurrentMap;extern void *gAiState,*gAiSettings;
 extern M2C_UNK gAiCommand,gAiTargetGroups,data_ov000_021e00b0;
 void *base,*entry;u16 id;s32 result,r,cost;u8 flags,t;
 base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
@@ -269,9 +269,9 @@ else {
 M2C_FIELD(gAiState,u8 *,8)=func_ov000_021a88c8(1);
 t=func_ov000_021a88c8(2);
 M2C_FIELD(gAiState,u8 *,8)+=t;
-if(M2C_FIELD(gAiState,u8 *,8)>=M2C_FIELD(data_ov000_021df57c,u8 *,8)+M2C_FIELD(data_ov000_021df57c,u8 *,9))return 0;
+if(M2C_FIELD(gAiState,u8 *,8)>=M2C_FIELD(gAiSettings,u8 *,8)+M2C_FIELD(gAiSettings,u8 *,9))return 0;
 }
-r=func_0207c928(func_0207c2f0(),100);
+r=Modulo(func_0207c2f0(),100);
 if(r<func_ov000_021a1ed0() && (base=*gCurrentMap,id=M2C_FIELD(base,u16 *,0x52a4),M2C_FIELD(id*140+(s32)base,s32 *,0x67a4)>=func_020d2d18(id,2)*20))M2C_FIELD(&gAiCommand,u8 *,6)=2;
 else M2C_FIELD(&gAiCommand,u8 *,6)=1;
 CommitAiAction(result);return 1;

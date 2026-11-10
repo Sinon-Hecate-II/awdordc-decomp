@@ -6,7 +6,7 @@ typedef struct { u8 pad[7]; u8 low:2; u8 enabled:1; u8 high:5; } AiFlagsB0;
 #include "ov000_unit_entry.h"
 extern u8 **gCurrentMap;
 extern u8 data_ov000_021b5c0f[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 extern u8 data_ov000_021dfcf0[], data_ov000_021dfba8[];
 extern u8 *data_ov000_021df580, *data_ov000_021df644;
 
@@ -38,7 +38,7 @@ int func_ov000_0218b0d8(void *arg0) {
  for(x=0;x<M2C_FIELD(map,u16 *,0x5144);x++,cost++){
  if(*cost>=0) {
  u32 n=x+y*M2C_FIELD(map,u16 *,0x5144);
- int attr=data_ov000_021b5bfc[M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0*112+19];
+ int attr=gUnitKindStats[M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0*112+19];
  if((attr&7)&&(u8)(data_ov000_021dfcf0[n>>3]&(1<<(n&7)))) hits++;
  if((attr&16)&&(u8)(data_ov000_021dfba8[n>>3]&(1<<(n&7)))) hits++;
  total++;
@@ -98,7 +98,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if((map[n+0x2d48]>=data_ov000_021df644[2] || map[n+0x2840]>=data_ov000_021df644[1]) && !p[12] && func_ov000_021a9904(((UnkStruct_ov000_021A860C *)p)->unk0)==2) continue;
  if(!CanAttackUnitFrom(pos[0],pos[1],p)) extra=0x80000;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
- if(map[n+0x2840]>=data_ov000_021df644[1] && M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0==16 && (data_ov000_021b5bfc[((UnkStruct_ov000_021A860C *)p)->unk0*112+19]&7)) extra=0x80000;
+ if(map[n+0x2840]>=data_ov000_021df644[1] && M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0==16 && (gUnitKindStats[((UnkStruct_ov000_021A860C *)p)->unk0*112+19]&7)) extra=0x80000;
  n=((u16 *)(map+0x3758))[y]+x;
  score=func_ov000_02176e28(flags | extra | map[n],pos);
  if(!score || score<best) continue;

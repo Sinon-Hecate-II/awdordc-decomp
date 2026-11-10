@@ -3,7 +3,7 @@
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
 extern u8 data_021001cc[], data_02100218[], data_02100264[], data_0213e61c[];
 extern s32 data_0213e5d4[], data_0213e5f8[];
-extern M2C_UNK data_0212dca4;
+extern M2C_UNK gSocketManager;
 typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
 #pragma push
@@ -207,12 +207,12 @@ char *func_02064ad4(s32 value, char *buffer, s32 radix) {
 }
 #pragma opt_strength_reduction reset
 s32 func_02064b50(void *arg0) {
-    extern s32 data_0213e9f4;
+    extern s32 gErrno;
     s32 var_r0;
     u32 temp_ip;
 
     if (((u32) (u8) ((u8) ((u32) (M2C_FIELD(arg0, s32 *, 4) << 0x16) >> 0x1D) + 0xFF) > 1U) || (M2C_FIELD(arg0, u8 *, 0xD) != 0)) {
-        data_0213e9f4 = 0x28;
+        gErrno = 0x28;
         return -1;
     }
     temp_ip = (u32) (M2C_FIELD(arg0, s32 *, 8) << 0x1D) >> 0x1D;
@@ -229,15 +229,15 @@ s32 func_02064b50(void *arg0) {
 s32 func_02064bcc(void *p){
 extern u8 data_021001cc[],data_02100218[],data_02100264[],data_0213e61c[];
 extern s32 data_0213e5d4[],data_0213e5f8[];
-extern M2C_UNK data_0212dca4;
+extern M2C_UNK gSocketManager;
 s32 func_02006680(void *);s32 func_02064b50(void *);
 s32 n,result,owner; void *thread;
 if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
 if(!func_02006680(data_0213e61c+24*n)){
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;
-}else if((thread=M2C_FIELD(&data_0212dca4,void **,4), owner=data_0213e5d4[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;
+}else if((thread=M2C_FIELD(&gSocketManager,void **,4), owner=data_0213e5d4[n], owner==M2C_FIELD(thread,s32 *,0x6c))){
 data_0213e5f8[n]++;
-}else{func_02006564(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
+}else{func_02006564(data_0213e61c+24*n);data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,0x6c);data_0213e5f8[n]=1;}
 result=func_02064b50(p);
 if(--data_0213e5f8[n]==0)func_020065e8(data_0213e61c+24*n);
 return result;
@@ -247,9 +247,9 @@ return result;
 s32 func_02064ce8(void *stream, u32 position, s32 mode, ...) {
 s32 func_020641a8(void *, s32);
 s32 func_02064b50(void *);
-extern s32 data_0213e9f4;
-if ((u8)((M2C_FIELD(stream,u32 *,4)<<22)>>29)!=1 || M2C_FIELD(stream,u8 *,13)!=0) { data_0213e9f4=40; return -1; }
-if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && func_020641a8(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; data_0213e9f4=40; return -1; }
+extern s32 gErrno;
+if ((u8)((M2C_FIELD(stream,u32 *,4)<<22)>>29)!=1 || M2C_FIELD(stream,u8 *,13)!=0) { gErrno=40; return -1; }
+if (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==1 && func_020641a8(stream,0)!=0) { M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; gErrno=40; return -1; }
 if(mode==1){mode=0;position+=func_02064b50(stream);}
 if(mode!=2 && (M2C_FIELD(stream,u32 *,4)<<27)>>29 !=3 && (((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29))-2<=1) {
 u32 current=position; u32 base;
@@ -265,7 +265,7 @@ done:
 if(((u32)(M2C_FIELD(stream,s32 *,8)<<29)>>29) ==0){
 s32 (*callback)(s32,u32 *,s32,s32)=M2C_FIELD(stream,s32 (**)(s32,u32 *,s32,s32),56);
 if(callback && callback(M2C_FIELD(stream,s32 *,0),&position,mode,M2C_FIELD(stream,s32 *,72))!=0){
-M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; data_0213e9f4=40;return -1;
+M2C_FIELD(stream,u8 *,13)=1; M2C_FIELD(stream,u32 *,40)=0; gErrno=40;return -1;
 }
 M2C_FIELD(stream,u8 *,12)=0;M2C_FIELD(stream,u32 *,24)=position;M2C_FIELD(stream,u32 *,40)=0;
 }
@@ -277,11 +277,11 @@ s32 func_02006680(void *); M2C_UNK func_02006564(); M2C_UNK func_020065e8();
 s32 n, result, owner; void *thread;
 if(p==data_021001cc)n=2;else if(p==data_02100218)n=3;else if(p==data_02100264)n=4;else n=5;
 if(func_02006680(data_0213e61c+n*24)==0) {
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,108);
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
 data_0213e5f8[n]=1;
-}else if((thread=M2C_FIELD(&data_0212dca4,void **,4),owner=data_0213e5d4[n],owner==M2C_FIELD(thread,s32 *,108))) {data_0213e5f8[n]++;}
+}else if((thread=M2C_FIELD(&gSocketManager,void **,4),owner=data_0213e5d4[n],owner==M2C_FIELD(thread,s32 *,108))) {data_0213e5f8[n]++;}
 else{func_02006564(data_0213e61c+n*24);
-data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),s32 *,108);
+data_0213e5d4[n]=M2C_FIELD(M2C_FIELD(&gSocketManager,void **,4),s32 *,108);
 data_0213e5f8[n]=1;
 }
 result=func_02064ce8(p,pos,mode);

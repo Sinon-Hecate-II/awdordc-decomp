@@ -1,8 +1,9 @@
 /* 54 functions from 0x020D4430 to 0x020D5430 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 void func_020d4f4c(void);
 void func_020d5304(void);
-void func_020d50bc(void);
+void UpdateAimingCursor(void);
 
 void func_020d4430(void){extern void **gCurrentMap;if((s32)M2C_FIELD(*gCurrentMap,u16*,0x52a2)>1)func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_ov000_0216a86c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=6;}
 
@@ -73,14 +74,14 @@ u8 func_020d4810(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u
    entry there when it falls in the arena range [225,425). */
 void func_020d482c(void) {
     extern void **gCurrentMap;
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     void *func_020c7e6c(s32);
     s32 func_020a89a4(s32);
     void *dst;
     u32 mapId;
     s32 inRange;
 
-    if ((u8)((u32)(data_02168f14 << 29) >> 29) == 0)
+    if ((u8)((u32)(gMapConfig << 29) >> 29) == 0)
         InitBattleMapConfig();
     if (func_020846a4()) {
         mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
@@ -93,7 +94,7 @@ void func_020d482c(void) {
             M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 225;
         }
         if (func_02084830())
-            M2C_FIELD(&data_02168f14, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
+            M2C_FIELD(&gMapConfig, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     }
     func_020945f8();
     func_020a2148(0);
@@ -135,10 +136,10 @@ void func_020d4984(void) {
     s32 func_020e4b54();
     extern s32 data_0215d8a0;
     extern M2C_UNK data_02168f0c;
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     u32 temp_r0;
 
-    temp_r0 = (u32) (data_02168f14 << 0x1D) >> 0x1D;
+    temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;
     switch ((u8) temp_r0) {                         /* irregular */
     case 0:
         if ((func_020cd1e4() != 0) && (func_020e4b54() != 0) && (((u32) (data_0215d8a0 << 8) >> 0x18) == 1)) {
@@ -294,7 +295,7 @@ u8 func_020d4dac(void) {
 u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
 
 void func_020d5068(void);
-void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:func_020d50bc();break;case 3:func_020d5304();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
+void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:func_020d5304();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
 
 int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(func_020946d0())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 
@@ -344,51 +345,56 @@ u8 func_020d5088(void *arg0) {
     return var_r0;
 }
 
-void func_020d50bc(void) {
+/* Update the battle-map aiming cursor each frame: choose the cursor graphic for
+ * the aimed tile (a unit that can act, a reachable tile, or an empty/locked one),
+ * then act on the keys - confirm moves the cursor to the aimed tile, dismiss
+ * selects the unit under it and closes the target cursor, and R/X open the
+ * related menus. */
+void UpdateAimingCursor(void) {
  extern void **gCurrentMap;
  extern u8 data_0211fbc4[];
  u32 func_020bca68(void);
  u32 func_020bd684(void);
- void *m;
+ void *map;
  u32 keys;
  func_020cf850(0x1001a);
  func_0207a7a4(1,4);
- m=*gCurrentMap;
- if (M2C_FIELD(M2C_FIELD((u8*)m+M2C_FIELD(m,s16*,0x52c4)*4, s8 **,0x52e8)+M2C_FIELD(m,s16*,0x52c2),s8*,0)>110) {
+ map=*gCurrentMap;
+ if (M2C_FIELD(M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*4, s8 **,MAP_GRID)+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),s8*,0)>110) {
  func_020cf5ec(2);
- } else if(func_020d5088(M2C_FIELD(m,void**,0x52d0))) {
- m=*gCurrentMap;
- if(M2C_FIELD((u8*)m+(M2C_FIELD(m,s16*,0x52c2)+M2C_FIELD((u8*)m+M2C_FIELD(m,s16*,0x52c4)*2,u16*,0x3758)),s8*,0x1e30)>=0) {
- func_020cf754(1,func_020a76d4(M2C_FIELD(m,void**,0x52d0)));
+ } else if(func_020d5088(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
+ map=*gCurrentMap;
+ if(M2C_FIELD((u8*)map+(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*2,u16*,MAP_ROW_OFFSETS)),s8*,MAP_CELL_ORDER)>=0) {
+ func_020cf754(1,func_020a76d4(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
  } else func_020cf5ec(1);
  } else {
- m=*gCurrentMap;
- if(func_020ba790(M2C_FIELD(m,s16*,0x52c2),M2C_FIELD(m,s16*,0x52c4)))func_020cf5ec(2);
+ map=*gCurrentMap;
+ if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))func_020cf5ec(2);
  else func_020cf5ec(1);
  }
  if(func_020d4dd0()){
  keys=0;
  keys|=func_020bca68();
  keys|=func_020bd684();
- if(keys&0x10){
- m=*gCurrentMap;
- MoveCursorTo(M2C_FIELD(m,s16*,0x52c2),M2C_FIELD(m,s16*,0x52c4));
+ if(keys&0x10){ /* confirm the aimed tile */
+ map=*gCurrentMap;
+ MoveCursorTo(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y));
  func_0207b040();
- } else if(keys&0x20) {
- m=M2C_FIELD(*gCurrentMap,void**,0x52d0);
- func_0207b764(M2C_FIELD(m,u8*,1),M2C_FIELD(m,u8*,2));
+ } else if(keys&0x20) { /* select the unit under the cursor */
+ map=M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT);
+ func_0207b764(M2C_FIELD(map,u8*,MAP_UNIT_X),M2C_FIELD(map,u8*,MAP_UNIT_Y));
  func_ov000_021696d4();
- m=*gCurrentMap;
- if(M2C_FIELD(m,u8*,0x52d6)) {
- m=M2C_FIELD(m,void**,0x52d0);
- M2C_FIELD(m,u16*,4)|=0xa;
+ map=*gCurrentMap;
+ if(M2C_FIELD(map,u8*,MAP_CURSOR_CARRIER)) {
+ map=M2C_FIELD(map,void**,MAP_CURSOR_UNIT);
+ M2C_FIELD(map,u16*,MAP_UNIT_FLAGS)|=0xa;
  }
  func_020cfd28();func_0207a768();func_0207b040();
- M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;
+ M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)=0;
  func_01ffa9e4(data_0211fbc4);
  PlaySoundEffect(0x1000f);
- } else if(keys&0x100)func_020ccca0();
- else if(keys&0x40)func_020d8fa0();
+ } else if(keys&0x100)func_020ccca0(); /* R menu */
+ else if(keys&0x40)func_020d8fa0(); /* X close */
  }
  func_020d6778(2);
 }

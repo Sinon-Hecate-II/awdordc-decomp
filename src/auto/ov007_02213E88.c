@@ -5,7 +5,7 @@ typedef struct { u8 kind:6; u8 flags:2; u8 pad[13]; } MapUnit145F8;
 typedef struct { u8 pad[11]; u8 kind : 4; u8 flags : 4; } MapEntry14718;
 
 void func_ov007_02213e88(void *cursor) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     extern void *gKeyState;
     s32 new_dir;
@@ -36,12 +36,12 @@ void func_ov007_02213e88(void *cursor) {
     prev_dir = M2C_FIELD(cursor, s32 *, 0x3C);
     if (state_flags & 1) {
         PlaySoundEffect(0x1000D);
-        func_01ffa8c4(cursor, 1);
+        SetSpriteAnimation(cursor, 1);
         return;
     }
     if (state_flags & 2) {
         PlaySoundEffect(0x1000F);
-        func_01ffa8c4(cursor, 2);
+        SetSpriteAnimation(cursor, 2);
         return;
     }
     right_obj = M2C_FIELD(cursor, void **, 0x40);
@@ -221,9 +221,9 @@ void func_ov007_022143a8(void) {
 void func_ov007_022143bc(void) {
     M2C_UNK func_020bfebc(M2C_UNK);
     M2C_UNK func_02088624();
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     if (func_020d4810() != 0) {
-        data_02168f14 = (u16) (data_02168f14 | 0x40);
+        gMapConfig = (u16) (gMapConfig | 0x40);
         func_020bfebc(0);
     }
     func_02088624();
@@ -251,10 +251,10 @@ void func_ov007_0221442c(void) {
 }
 
 u8 func_ov007_02214448(void) {
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     u8 var_r0;
 
-    if (((u32) (data_02168f14 << 0x19) >> 0x1F) == 0) {
+    if (((u32) (gMapConfig << 0x19) >> 0x1F) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -380,65 +380,68 @@ s32 func_ov007_02214718(s32 x, s32 y) {
     return 1;
 }
 
-void func_ov007_02214814(s32 arg0, s32 arg1) {
-    M2C_UNK func_020a68d4();
+void ResizeMap(s32 arg0, s32 arg1) {
+    M2C_UNK ResetMapUnits();
     M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
-    M2C_UNK func_020ceffc();
+    M2C_UNK BuildMapRowOffsets();
     M2C_UNK func_ov007_02217a5c();
     M2C_UNK func_020cf2c8();
     extern s32 *gCurrentMap;
-    func_020a68d4();
+    ResetMapUnits();
     InitPlayerStates();
     func_020d1f2c();
     M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5144) = (u16) arg0;
     M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5146) = (u16) arg1;
-    func_020ceffc();
+    BuildMapRowOffsets();
     func_ov007_02217a5c();
     func_020cf2c8();
 }
 
 #pragma optimization_level 4
 #pragma opt_strength_reduction off
-void func_ov007_02214864(s32 arg0) {
-    M2C_UNK func_020a68d4();
+/* Paints every map cell with a map-editor terrain preset (8, 1, 4 or 3) after
+ * resetting the map's units, players and row offsets; a negative preset just
+ * rebuilds the map at its current size and leaves the terrain as it is. */
+void FillMapTerrain(s32 preset) {
+    M2C_UNK ResetMapUnits();
     M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
-    M2C_UNK func_020ceffc();
+    M2C_UNK BuildMapRowOffsets();
     M2C_UNK func_020cf2c8();
-    void func_ov007_02214814(s32, s32);
+    void ResizeMap(s32, s32);
     extern s32 *gCurrentMap;
 
-    if (arg0 < 0) {
-        func_ov007_02214814(*(u16 *) ((u8 *) *gCurrentMap + 0x5144), *(u16 *) ((u8 *) *gCurrentMap + 0x5146));
+    if (preset < 0) {
+        ResizeMap(M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH), M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT));
         return;
     }
-    func_020a68d4();
+    ResetMapUnits();
     InitPlayerStates();
     func_020d1f2c();
-    func_020ceffc();
+    BuildMapRowOffsets();
     {
         s32 x;
         s32 y;
-        for (y = 0; y < *(u16 *) ((u8 *) *gCurrentMap + 0x5146); y++) {
+        for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
 
-            for (x = 0; x < *(u16 *) ((u8 *) *gCurrentMap + 0x5144); x++) {
-                switch (arg0) {
+            for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+                switch (preset) {
                 case 8:
-                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 3;
-                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 8;
+                    M2C_FIELD(*gCurrentMap + (M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + x) * 2, u16 *, MAP_CELL_TILE_ID) = 3;
+                    M2C_FIELD(M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + (*gCurrentMap + x), u8 *, MAP_CELL_TERRAIN) = 8;
                     break;
                 case 1:
-                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 1;
-                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 1;
+                    M2C_FIELD(*gCurrentMap + (M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + x) * 2, u16 *, MAP_CELL_TILE_ID) = 1;
+                    M2C_FIELD(M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + (*gCurrentMap + x), u8 *, MAP_CELL_TERRAIN) = 1;
                     break;
                 case 4:
-                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 0x20;
-                    *(u8 *) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 4;
+                    M2C_FIELD(*gCurrentMap + (M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + x) * 2, u16 *, MAP_CELL_TILE_ID) = 0x20;
+                    M2C_FIELD(M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + (*gCurrentMap + x), u8 *, MAP_CELL_TERRAIN) = 4;
                     break;
                 case 3:
-                    *(u16 *) ((u8 *) *gCurrentMap + (*(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + x) * 2 + 0xa10) = 0x21;
-                    *(u8*) ((u8 *) *gCurrentMap + x + *(u16 *) ((u8 *) *gCurrentMap + y * 2 + 0x3758) + 0x1420) = 3;
+                    M2C_FIELD(*gCurrentMap + (M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + x) * 2, u16 *, MAP_CELL_TILE_ID) = 0x21;
+                    M2C_FIELD(M2C_FIELD(*gCurrentMap + y * 2, u16 *, MAP_ROW_OFFSETS) + (*gCurrentMap + x), u8 *, MAP_CELL_TERRAIN) = 3;
                     break;
                 default:
                     break;
@@ -448,7 +451,6 @@ void func_ov007_02214864(s32 arg0) {
     }
     func_020cf2c8();
 }
-
 /* Rebuilds the map at the requested size from the map editor's serialized
  * export: fills the default terrain, copies the exported terrain grid and the
  * packed unit entries back onto the map, then fills the bottom row and right
@@ -458,10 +460,10 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK func_020c79f8(void);
     M2C_UNK func_020c7a08(void);
     M2C_UNK func_020c879c(M2C_UNK);
-    M2C_UNK func_020a68d4(void);
+    M2C_UNK ResetMapUnits(void);
     M2C_UNK InitPlayerStates(void);
     M2C_UNK func_020d1f2c(void);
-    M2C_UNK func_020ceffc(void);
+    M2C_UNK BuildMapRowOffsets(void);
     s32 func_0207f460(u8);
     void *func_020a660c(s16, s16, s16, s32);
     void func_ov007_0221b688(M2C_UNK, M2C_UNK);
@@ -488,10 +490,10 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
 
     M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)=width;
     M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)=height;
-    func_020a68d4();
+    ResetMapUnits();
     InitPlayerStates();
     func_020d1f2c();
-    func_020ceffc();
+    BuildMapRowOffsets();
     for(mapY=0;mapY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);mapY++) {
         for(mapX=0;mapX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);mapX++) {
             M2C_FIELD(*gCurrentMap+2*(mapX+M2C_FIELD(*gCurrentMap+2*mapY,u16 *,MAP_ROW_OFFSETS)),u16 *,MAP_CELL_TILE_ID)=3;

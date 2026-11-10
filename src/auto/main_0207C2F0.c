@@ -6,7 +6,7 @@ extern Vec0207 data_020ebdb8;
 typedef struct Unk0207Color { u32 words[4]; } Unk0207Color;
 Unk0207Color func_0207cbd0(s32);
 typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
-extern Mode0207 data_02168f14;
+extern Mode0207 gMapConfig;
 extern Unk0207Color data_021017f4[4];
 extern void **gCurrentMap;
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
@@ -22,7 +22,7 @@ s32 func_0207c2f0(void) {
 }
 
 s32 RandomIntRange(s32 arg0, s32 arg1) {
-    s32 func_0207c928(s32, s32);
+    s32 Modulo(s32, s32);
     s32 temp;
     if (arg0 == arg1) return arg0;
     if (arg0 > arg1) {
@@ -30,7 +30,7 @@ s32 RandomIntRange(s32 arg0, s32 arg1) {
         arg0 = arg1;
         arg1 = temp;
     }
-    return arg0 + func_0207c928(func_0207c2f0() & 0x7fffffff, arg1 - arg0 + 1);
+    return arg0 + Modulo(func_0207c2f0() & 0x7fffffff, arg1 - arg0 + 1);
 }
 
 s32 func_0207c368(u8 *arg0, s32 arg1) {
@@ -306,7 +306,7 @@ s32 func_0207c8ec(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A0;
 }
 
-s32 func_0207c928(s32 arg0, s32 arg1) {
+s32 Modulo(s32 arg0, s32 arg1) {
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = arg0;
     *(volatile s64 *)0x04000298 = (u32)arg1;
@@ -386,7 +386,7 @@ void func_0207cbb0(void) {
 
 #pragma opt_if-conversion off
 Unk0207Color func_0207cbd0(s32 index) {
-    Unk0207Color v = data_021017f4[(u8)data_02168f14.mode != 2 ? index : (index + 2)];
+    Unk0207Color v = data_021017f4[(u8)gMapConfig.mode != 2 ? index : (index + 2)];
     u8 *base;
     s32 limit;
 
@@ -472,7 +472,7 @@ M2C_UNK func_0207ce60(void *arg0) {
  M2C_FIELD(arg0,s32 *,0x18) = M2C_FIELD(arg0,s32 *,8);
 }
 
-void func_0207cec0(void *arg0, s16 arg1) {
+void SetViewZoom(void *arg0, s16 arg1) {
     void func_0207cfb0(void *, s16);
     M2C_UNK func_0207cfc0(M2C_UNK);
     void func_020bf97c(void *);
@@ -481,13 +481,13 @@ void func_0207cec0(void *arg0, s16 arg1) {
     func_020bf97c(arg0);
 }
 
-void func_0207cee0(s32 arg0) {
+void GetViewHeightForZoom(s32 arg0) {
  Unk0207Color a = func_0207cbd0(0);
  Unk0207Color b = func_0207cbd0(1);
  EaseInterpolate(0,((u8 *)&a)[13],((u8 *)&b)[13],arg0,0x80);
 }
 
-void func_0207cf48(s32 arg0) {
+void GetViewWidthForZoom(s32 arg0) {
  Unk0207Color a = func_0207cbd0(0);
  Unk0207Color b = func_0207cbd0(1);
  EaseInterpolate(0,((u8 *)&a)[12],((u8 *)&b)[12],arg0,0x80);
@@ -497,7 +497,7 @@ void func_0207cfb0(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0xE) = arg1;
 }
 
-s16 func_0207cfb8(void *arg0) {
+s16 GetViewZoom(void *arg0) {
     return M2C_FIELD(arg0, s16 *, 0xE);
 }
 
@@ -506,7 +506,7 @@ M2C_UNK func_0207cfc0(M2C_UNK arg) {
     void *p = (void *)arg;
     Unk0207Color colorA = func_0207cbd0(0);
     Unk0207Color colorB = func_0207cbd0(1);
-    s32 t = func_0207cfb8(p);
+    s32 t = GetViewZoom(p);
 
     M2C_FIELD(p, s32 *, 0) = EaseInterpolate(0, colorA.words[0], colorB.words[0], t, 128);
     M2C_FIELD(p, s32 *, 4) = EaseInterpolate(0, colorA.words[1], colorB.words[1], t, 128);

@@ -110,13 +110,13 @@ void func_020bcee4(void *arg0) {
 
 void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 func_0207c2f0(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=func_0207c2f0()%6;}
 
-void func_020bcf6c(void){extern void *data_02101e88;extern void **gCurrentMap;s32 func_020947c0(void);void func_0207bb3c(u16,u16,s32 *);s32 func_0207c8ec(s32,s32);void func_020cfc5c(void);
-s32 pos[3];u16 x=M2C_FIELD(data_02101e88,u16 *,0),y=M2C_FIELD(data_02101e88,u16 *,2);
-if(func_020947c0())return;if(!M2C_FIELD(data_02101e88,u8 *,0x12))return;
+void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 func_020947c0(void);void func_0207bb3c(u16,u16,s32 *);s32 func_0207c8ec(s32,s32);void func_020cfc5c(void);
+s32 pos[3];u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
+if(func_020947c0())return;if(!M2C_FIELD(gTouchState,u8 *,0x12))return;
 func_0207bb3c(x,y,pos);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=func_0207c8ec(pos[0],768);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=func_0207c8ec(pos[1],768);
-func_020cfc5c();if(!M2C_FIELD(data_02101e88,u8 *,0x14))return;
+func_020cfc5c();if(!M2C_FIELD(gTouchState,u8 *,0x14))return;
 M2C_FIELD(*gCurrentMap,s16 *,0x52ca)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
 M2C_FIELD(*gCurrentMap,s16 *,0x52cc)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 }
@@ -176,12 +176,12 @@ u8 func_020bd118(void) {
     return var_r0;
 }
 
-s32 func_020bd13c(s32 a){extern void *data_02101e88;s32 func_020947c0(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
-u16 x=M2C_FIELD(data_02101e88,u16 *,0),y=M2C_FIELD(data_02101e88,u16 *,2);
-if(func_020947c0())return 0;if(!M2C_FIELD(data_02101e88,u8 *,0x12))return 0;
-if(func_020bdecc(x,y)){if(M2C_FIELD(data_02101e88,u8 *,0x14))return 16;return 4096;}
-if(func_020bdf7c(x,y)){if(M2C_FIELD(data_02101e88,u8 *,0x14))return 256;return 4096;}
-if(a&&func_020bdf50(x,y)){if(M2C_FIELD(data_02101e88,u8 *,0x14))return 64;return 32;}return 4096;
+s32 func_020bd13c(s32 a){extern void *gTouchState;s32 func_020947c0(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
+u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
+if(func_020947c0())return 0;if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
+if(func_020bdecc(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 16;return 4096;}
+if(func_020bdf7c(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 256;return 4096;}
+if(a&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 64;return 32;}return 4096;
 }
 
 /* Updates the map cursor target from the current stylus position. */
@@ -192,26 +192,26 @@ void func_020bd220(void *arg0) {
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
     void func_020bd0e0(void);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
     u16 touchX, touchY;
     s16 oldX, oldY;
     void *map;
-    touchX = M2C_FIELD(data_02101e88, u16 *, 0);
-    touchY = M2C_FIELD(data_02101e88, u16 *, 2);
+    touchX = M2C_FIELD(gTouchState, u16 *, 0);
+    touchY = M2C_FIELD(gTouchState, u16 *, 2);
     map = *gCurrentMap;
     oldX = M2C_FIELD(map, s16 *, 0x52C2);
     oldY = M2C_FIELD(map, s16 *, 0x52C4);
     if (func_020947c0() != 0) return;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) {
         func_020bd0e0();
         return;
     }
     func_0207bb3c(touchX, touchY, coords);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = func_0207c8ec(coords[0], 0x300);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = func_0207c8ec(coords[1], 0x300);
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CA) = M2C_FIELD(map, s16 *, 0x52C2);
         map = *gCurrentMap;
@@ -239,26 +239,26 @@ void func_020bd3c0(void *arg0) {
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
     void func_020bd0e0(void);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
     u16 touchX, touchY;
     s16 oldX, oldY;
     void *map;
-    touchX = M2C_FIELD(data_02101e88, u16 *, 0);
-    touchY = M2C_FIELD(data_02101e88, u16 *, 2);
+    touchX = M2C_FIELD(gTouchState, u16 *, 0);
+    touchY = M2C_FIELD(gTouchState, u16 *, 2);
     map = *gCurrentMap;
     oldX = M2C_FIELD(map, s16 *, 0x52C2);
     oldY = M2C_FIELD(map, s16 *, 0x52C4);
     if (func_020947c0() != 0) return;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) {
         func_020bd0e0();
         return;
     }
     func_0207bb3c(touchX, touchY, coords);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = func_0207c8ec(coords[0], 0x300);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = func_0207c8ec(coords[1], 0x300);
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CA) = M2C_FIELD(map, s16 *, 0x52C2);
         map = *gCurrentMap;
@@ -278,19 +278,19 @@ void func_020bd3c0(void *arg0) {
     PlaySoundEffect(arg0);
 }
 
-s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *data_02101e88;extern void **gCurrentMap;
+s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
 if(func_020947c0())return 0;
-if(M2C_FIELD(data_02101e88,u8 *,0x12)&&M2C_FIELD(data_02101e88,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020d58c4(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
-if(M2C_FIELD(data_02101e88,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
+if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020d58c4(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
+if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
 }
 
 s32 func_020bd650(void) {
     s32 func_020947c0();
-    extern void *data_02101e88;
+    extern void *gTouchState;
     if (func_020947c0() != 0) {
         return 0x20;
     }
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
         return 0;
     }
     return 0x20;
@@ -301,7 +301,7 @@ s32 func_020bd684(void) {
     void func_020bd104(void);
     s32 func_020d6398(s16, s16);
     void func_0207bb3c(u16, u16, s32 *);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     extern u8 data_02164d5d[];
     s32 pos[3];
@@ -309,10 +309,10 @@ s32 func_020bd684(void) {
     void *base;
     s8 *row;
 
-    x = M2C_FIELD(data_02101e88, u16 *, 0);
-    y = M2C_FIELD(data_02101e88, u16 *, 2);
+    x = M2C_FIELD(gTouchState, u16 *, 0);
+    y = M2C_FIELD(gTouchState, u16 *, 2);
     if (func_020947c0() != 0) return 0;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x16) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, 0x16) == 0) return 0;
     base = *gCurrentMap;
     if (M2C_FIELD(base, s16 *, 0x52C2) == M2C_FIELD(base, s16 *, 0x52CA) &&
         M2C_FIELD(base, s16 *, 0x52C4) == M2C_FIELD(base, s16 *, 0x52CC)) {
@@ -343,7 +343,7 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
     void func_020bd0a8(s16, s16);
     void func_020bd0e0(void);
     s32 func_020bdf24(s32, s32);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
     u16 touchX;
@@ -352,10 +352,10 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
     s32 pixelY;
     void *map;
     s32 idx;
-    touchX = M2C_FIELD(data_02101e88, u16 *, 0);
-    touchY = M2C_FIELD(data_02101e88, u16 *, 2);
+    touchX = M2C_FIELD(gTouchState, u16 *, 0);
+    touchY = M2C_FIELD(gTouchState, u16 *, 2);
     if (func_020947c0() != 0) return;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) == 0) return;
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return;
     func_0207bb3c(touchX, touchY, coords);
     pixelX = func_0207c8ec(coords[0], 0x300);
     pixelY = func_0207c8ec(coords[1], 0x300);
@@ -365,7 +365,7 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = pixelY;
         *outIndex = idx;
     }
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         if (func_020bdf24(touchX, touchY)) {
             (*outIndex)++;
             if (*outIndex == count) {
@@ -395,21 +395,21 @@ s32 func_020bd990(s32 unitIndex) {
     s32 func_020bdf24(s32, s32);
     void func_020bd104(void);
     s32 func_020bd940(s32, s32, s32);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void **gCurrentMap;
     s32 coords[3];
     u16 cursorX, cursorY;
     s32 tileX, tileY;
     s32 result;
-    cursorX = M2C_FIELD(data_02101e88, u16 *, 0);
-    cursorY = M2C_FIELD(data_02101e88, u16 *, 2);
+    cursorX = M2C_FIELD(gTouchState, u16 *, 0);
+    cursorY = M2C_FIELD(gTouchState, u16 *, 2);
     if (func_020947c0() != 0) {
         return 0;
     }
     func_0207bb3c(cursorX, cursorY, coords);
     tileX = func_0207c8ec(coords[0], 0x300);
     tileY = func_0207c8ec(coords[1], 0x300);
-    if (M2C_FIELD(data_02101e88, u8 *, 0x16) == 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x16) == 0) {
         return 0;
     }
     if (func_020bdf24((s32) cursorX, (s32) cursorY) != 0) {

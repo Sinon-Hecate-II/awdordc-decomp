@@ -54,12 +54,12 @@ void MapListHandleState(void) {
 
 void func_ov001_0217ded8(void) {
     M2C_UNK func_ov001_02183a08();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_0217def8;
     func_ov001_02183a08();
     func_ov001_0218aa24(8);
-    func_ov001_02175d54(&func_ov001_0217def8);
+    Ov001_SetStepCallback(&func_ov001_0217def8);
 }
 
 void func_ov001_0217def8(void) {
@@ -71,7 +71,7 @@ void func_ov001_0217def8(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x1D, 8);
-    func_ov001_02175d54(&func_ov001_0217df44);
+    Ov001_SetStepCallback(&func_ov001_0217df44);
 }
 
 #pragma push
@@ -99,18 +99,18 @@ func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
 *(volatile u32*)0x04000010=0;*(volatile u32*)0x04000018=0;
 *(volatile u16*)0x0400000c=(*(volatile u16*)0x0400000c&0x43)|0xe10;
 switch((u32)M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)){
-case 0:case 1:func_ov001_02175da0();func_ov001_02175d64(2,0);func_ov001_02175d54(&func_ov001_0217b444);break;
+case 0:case 1:func_ov001_02175da0();func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_0217b444);break;
 case 4:case 5:case 6:case 9:case 10:
 n=M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)-4;
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)>=9)n-=2;
-func_ov001_02175d64(2,0);func_ov001_02175da0(n,0);func_ov001_02175d54(&func_ov001_0217bf84);break;
+func_ov001_02175d64(2,0);func_ov001_02175da0(n,0);Ov001_SetStepCallback(&func_ov001_0217bf84);break;
 case 11:p=func_ov001_0218445c();p[0xd0]=func_02046014(p+0xf0);
-if(p[0xf5]){func_02007f8c(p+0xc0,0,4);func_02007f8c(p+0xc4,0,4);func_02007f8c(p+0xf0,0,4);p[0xd0]=0;}
-if(p[0xf6])func_02007f8c(p+0xc8,0,8);
-func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);func_ov001_02175d54(&func_ov001_0218223c);break;
-case 12:func_ov001_02175d64(0,0);func_ov001_02175d54(&func_ov001_0217f73c);break;
-case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){func_ov001_02175d64(2,1);func_ov001_02175d54(&func_ov001_02180d44);}
-else{p=func_ov001_0218445c();func_ov001_02184880(p[0xf4]);func_ov001_02175d64(0,1);func_ov001_02175d54(&func_ov001_02181a84);}break;
+if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0,4);p[0xd0]=0;}
+if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
+func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
+case 12:func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
+case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02180d44);}
+else{p=func_ov001_0218445c();func_ov001_02184880(p[0xf4]);func_ov001_02175d64(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
 }
 func_ov001_0218b71c(&data_ov001_02193db4);
 }
@@ -161,7 +161,7 @@ case 0:func_ov001_0217e780(p+0x40,arg1);break;
 case 1:
 switch((u32)(p[0xe6]<<30)>>30){case 0:return;case 1:n=10;break;case 2:n=26;break;case 3:n=32;break;}
 if(((u32)(p[0xe6]<<24)>>26)==1)n/=2;
-func_02007f8c(text,0,33);func_02065210(text,42,n);func_ov001_0217e780(text,arg1);break;
+MI_CpuFill8(text,0,33);func_02065210(text,42,n);func_ov001_0217e780(text,arg1);break;
 case 3:if(p[0xf5])return;func_ov001_0217e8d4(p+0xc0,arg1);break;
 case 4:if(p[0xf5])return;func_ov001_0217e8d4(p+0xf0,arg1);break;
 case 5:if(p[0xf5])return;func_ov001_0217e8d4(p+0xc4,arg1);break;
@@ -325,10 +325,10 @@ void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
 void func_ov001_0217e780(u8 *arg0,s32 arg1){
 extern M2C_UNK gMapListState;
 s32 func_ov001_0218c3e0(u8 *,s32);
-M2C_UNK func_02007f8c(void *,s32,s32);
+M2C_UNK MI_CpuFill8(void *,s32,s32);
 M2C_UNK func_ov001_0218b080(s32,s32,s32,s32,s32,M2C_UNK *,s32);
 u16 buf[17];s32 len,n,i,y;
-func_02007f8c(buf,0,0x22);
+MI_CpuFill8(buf,0,0x22);
 len=func_ov001_0218c3e0(arg0,32);
 n=len<=16?len:16;
 for(i=0;i<n;i++){if(arg0[i]==32)buf[i]=0xe01d;else buf[i]=arg0[i];}
@@ -336,7 +336,7 @@ y=arg1*29+2;
 if(len<=16)y+=5;
 func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y,2,8,(M2C_UNK *)buf,1);
 if(len<=16)return;
-func_02007f8c(buf,0,0x22);
+MI_CpuFill8(buf,0,0x22);
 len-=16;
 for(i=0;i<len;i++){if(arg0[i+16]==32)buf[i]=0xe01d;else buf[i]=arg0[i+16];}
 func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y+12,2,8,(M2C_UNK *)buf,1);

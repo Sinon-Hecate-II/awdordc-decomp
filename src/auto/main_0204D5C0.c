@@ -5,9 +5,9 @@ void gpiSetErrorString(void **,void *);
 void func_0204d5c0(void *arg0) { }
 
 void func_0204da30(void *p){
-s32 func_02037794(s32);void func_020377c4(s32);s32 func_02049208();s32 func_0204a740(void*,s32,s32*);s32 func_0204d39c(void*,s32,s32);
+s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 func_0204a740(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
 s32 size,buffer,status,n,start;u32 elapsed;
-start=func_02049208();elapsed=0;buffer=func_02037794(0x2000);
+start=GetTickCountMs();elapsed=0;buffer=gpiMalloc(0x2000);
 if(!buffer){M2C_FIELD(p,s32*,0xfc)=1;M2C_FIELD(p,s32*,0x38)=1;return;}
 while(!M2C_FIELD(p,s32*,0xfc) && elapsed<M2C_FIELD(p,u32*,0x158)){
 size=0x2000;status=func_0204a740(p,buffer,&size);
@@ -17,10 +17,10 @@ M2C_FIELD(p,s32*,0xfc)=1;n=M2C_FIELD(p,s32*,0x104);
 if(n>0 && M2C_FIELD(p,s32*,0x100)<n)M2C_FIELD(p,s32*,0x38)=15;
 break;
 }
-if(!func_0204d39c(p,buffer,size))break;
-elapsed=func_02049208()-start;
+if(!ghiProcessIncomingFileData(p,buffer,size))break;
+elapsed=GetTickCountMs()-start;
 }
-func_020377c4(buffer);
+gpiFree(buffer);
 }
 
 s32 func_0204db04(s32 arg0,s32 arg1,s32 arg2) {
@@ -178,7 +178,7 @@ s32 func_0204e074(void **arg0,s32 arg1) {
 }
 
 s32 func_0204e0c4(void **arg0,s32 arg1) {
- void func_020377c4(s32);
+ void gpiFree(s32);
  s32 func_02055b84(void **,s32,void **);
  void func_02055bf4(void **,void *);
  s32 func_02055d6c(void *);
@@ -191,7 +191,7 @@ s32 func_0204e0c4(void **arg0,s32 arg1) {
  if(func_02055b84(arg0,arg1,&sp0)==0) return 0;
  M2C_FIELD(sp0,s32 *,0x14)--;
  if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
- func_020377c4(M2C_FIELD(sp0,s32 *,0x10));
+ gpiFree(M2C_FIELD(sp0,s32 *,0x10));
  M2C_FIELD(sp0,s32 *,0x10)=0;
  if(func_02055d6c(sp0)!=0) func_02055bf4(arg0,sp0);
  }

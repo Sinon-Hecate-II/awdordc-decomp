@@ -147,16 +147,16 @@ return r;
 
 void func_02032634(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02031e04(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02007f8c(arg0, 0, 0xC);
+    MI_CpuFill8(arg0, 0, 0xC);
     func_02031e04(arg0, arg1, arg2);
     func_02031e94(arg0, 2);
 }
 
 void func_02032670(void *a,Unk032Record *b) {
-M2C_UNK func_02007f8c();
+M2C_UNK MI_CpuFill8();
 M2C_UNK func_02031e0c(s32,s32);
 M2C_UNK func_02031e94();
-func_02007f8c(b,0,12);
+MI_CpuFill8(b,0,12);
 if(func_02032370((s32)a)!=0) {
 func_02031e0c((s32)b,M2C_FIELD(a,s32 *,0x1c));
 func_02031e94(b,3);
@@ -164,10 +164,10 @@ func_02031e94(b,3);
 }
 
 void func_020326c4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02031e0c(M2C_UNK, M2C_UNK);
     M2C_UNK func_02031e94(M2C_UNK, M2C_UNK);
-    func_02007f8c(arg0, 0, 0xC);
+    MI_CpuFill8(arg0, 0, 0xC);
     func_02031e0c(arg0, arg1);
     func_02031e94(arg0, 3);
 }
@@ -210,7 +210,7 @@ void func_0203289c(s32 arg0) {
 }
 
 s32 func_020328ac(Unk032Callbacks *arg,s32 value){
-M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);
+M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02032c74(s32);
 void func_020329d0(void);
 extern M2C_UNK gNasConnection,data_020fb33c;
@@ -220,10 +220,10 @@ alloc=M2C_FIELD(arg,void *(**)(void *,s32),0x40);
 if(M2C_FIELD(&gNasConnection,void **,8))return 2;
 M2C_FIELD(&gNasConnection,void **,8)=alloc(&data_020fb33c,0x13f4);
 if(!M2C_FIELD(&gNasConnection,void **,8))return 2;
-func_02007f8c((s32)M2C_FIELD(&gNasConnection,void **,8),0,0x13f4);
+MI_CpuFill8((s32)M2C_FIELD(&gNasConnection,void **,8),0,0x13f4);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314)=value;
 M2C_FIELD(&gNasConnection,s32 *,0)=0;
-func_02007f8c((s32)(M2C_FIELD(&gNasConnection,void **,8)+0x1008),0,0x1c4);
+MI_CpuFill8((s32)(M2C_FIELD(&gNasConnection,void **,8)+0x1008),0,0x1c4);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1008)=0x4e84;
 p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(p,Unk032Callbacks *,0x11cc)=*arg;
@@ -290,13 +290,13 @@ return result;
 }
 
 void func_02032be4(void *arg0) {
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNasConnection;
 
     void *p = M2C_FIELD(&gNasConnection, void **, 8);
     if (p == 0) {
-        func_02007f8c(arg0, 0, 0x1C4);
+        MI_CpuFill8(arg0, 0, 0x1C4);
     }
         p = M2C_FIELD(&gNasConnection, void **, 8);
         MI_CpuCopy8((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
@@ -313,7 +313,7 @@ void func_02032be4(void *arg0) {
 }
 
 s32 func_02032c74(s32 arg0){
-extern M2C_UNK data_020fb2f8,data_020fb35c,gNasConnection,data_0213d120,data_0212dca4;
+extern M2C_UNK data_020fb2f8,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
 s32 StringCompare(void *,void *);s32 func_02033ccc(void *,void *);void func_02045cbc(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
 if(StringCompare(M2C_FIELD(&data_020fb2f8,void **,0),&data_020fb35c))M2C_FIELD(&data_020fb2f8,s32 *,20)=1;
 { void *p=M2C_FIELD(&gNasConnection,void **,8);
@@ -325,7 +325,7 @@ if(arg0==1)func_02045cbc(&data_0213d120);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return 4;
 if(func_02033de8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
-func_02033e80(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&data_0212dca4,s32 *,4))-1);
+func_02033e80(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&gSocketManager,s32 *,4))-1);
 return 0;
 }
 
@@ -337,7 +337,7 @@ extern M2C_UNK gNasConnection;
 M2C_UNK func_02005d60(void *);
 M2C_UNK func_02006564(void *);
 M2C_UNK func_020065e8(void *);
-u64 func_02007004(void);
+u64 GetSystemTick(void);
 M2C_UNK func_02006030(M2C_UNK);
 u64 func_02072088(u64,u64);
 M2C_UNK func_0203367c(M2C_UNK);
@@ -406,8 +406,8 @@ for (;;) {
         }
     }
 
-    startTick = func_02007004();
-    nowTick = func_02007004();
+    startTick = GetSystemTick();
+    nowTick = GetSystemTick();
     elapsedTicks = nowTick - startTick;
     elapsedMs = func_02072088(elapsedTicks << 6, (u64)0x82ea);
     if (elapsedMs < 0x1388ULL) {
@@ -424,7 +424,7 @@ for (;;) {
             }
             func_020065e8((u8 *)conn + 0x13d8);
             func_02006030(0x1388);
-            nowTick2 = func_02007004();
+            nowTick2 = GetSystemTick();
             elapsedTicks = nowTick2 - startTick;
             elapsedMs2 = func_02072088(elapsedTicks << 6, (u64)0x82ea);
             if (elapsedMs2 >= 0x1388ULL) break;

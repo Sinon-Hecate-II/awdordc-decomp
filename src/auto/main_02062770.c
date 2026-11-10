@@ -49,11 +49,11 @@ return *p==0;
 
 /* Walks a list of opcodes, advancing data/n as commands require; returns 1 on success. */
 s32 func_020628c0(M2C_UNK context, void *data, s32 n) {
- s32 func_02048688(s32); void *func_02048690(s32,s32); s32 func_02061da0(s8*,s32); void AssertFailed(void*,void*,void*,s32);
+ s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32); s32 func_02061da0(s8*,s32); void AssertFailed(void*,void*,void*,s32);
  s32 count, i, k; u8 *p = data;
- count = func_02048688(M2C_FIELD(context, s32 *, 8));
+ count = Vector_GetCount(M2C_FIELD(context, s32 *, 8));
  for (i = 0; i < count; i++) {
- switch (M2C_FIELD(func_02048690(M2C_FIELD(context, s32 *, 8), i), s32 *, 4)) {
+ switch (M2C_FIELD(Vector_GetItem(M2C_FIELD(context, s32 *, 8), i), s32 *, 4)) {
  case 1: p++; n--; break;
  case 2: p += 2; n -= 2; break;
  case 0:
@@ -88,7 +88,7 @@ if(n-5<2)return;
  * and then the typed field list and raw key/value list into the player. Returns the
  * number of bytes consumed. */
 s32 gpiProcessPlayerRecord(M2C_UNK ctx,s32 player,u8 *data,s32 size,s32 readLength) {
-void gpiPlayerSetFlags(s32,s32);void gpiPlayerSetAddress(s32,s32,u16);void gpiPlayerSetValue(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void gpiPlayerSetInt(s32,s32,s32);void gpiPlayerSetString(s32,s32,void *);s32 StringLength(void *);u8 gpiPlayerGetState(s32);void gpiPlayerSetState(s32,u8);
+void gpiPlayerSetFlags(s32,s32);void gpiPlayerSetAddress(s32,s32,u16);void gpiPlayerSetValue(s32,s32);s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);void gpiPlayerSetInt(s32,s32,s32);void gpiPlayerSetString(s32,s32,void *);s32 StringLength(void *);u8 gpiPlayerGetState(s32);void gpiPlayerSetState(s32,u8);
 s32 id;u16 rawPort,port; s32 totalSize=size; s32 flags=*data;s32 count,index,length; s32 *field;u8 *key;
 data+=5;gpiPlayerSetFlags(player,flags);size-=5;
 if(flags&GPI_REC_FLAG_SKIP){data+=2;size-=2;}
@@ -97,9 +97,9 @@ if(flags&GPI_REC_FLAG_PORT){{u8 *dst=(u8 *)&port;u8 x=((volatile u8 *)data)[0],y
 gpiPlayerSetAddress(player,id,port);
 if(flags&GPI_REC_FLAG_VALUE){{PairBytes *dst=(PairBytes *)&id; *dst=*(PairBytes *)data;dst[1]=((PairBytes *)data)[1];}data+=4;size-=4;gpiPlayerSetValue(player,id);}
 if(flags&GPI_REC_FLAG_FIELDS){
-count=func_02048688(M2C_FIELD(ctx,s32 *,8));
+count=Vector_GetCount(M2C_FIELD(ctx,s32 *,8));
 for(index=0;index<count;index++){
-field=func_02048690(M2C_FIELD(ctx,s32 *,8),index);
+field=Vector_GetItem(M2C_FIELD(ctx,s32 *,8),index);
 switch(field[1]){
 case GPI_FIELD_BYTE:gpiPlayerSetInt(player,field[0],*data++);size--;break;
 case GPI_FIELD_PORT:{u8 *dst=(u8 *)&rawPort;u8 x=((volatile u8 *)data)[0],y=((volatile u8 *)data)[1];*dst++=x;*dst=y;}gpiPlayerSetInt(player,field[0],(u16)(((rawPort>>8)&255)|((rawPort<<8)&0xff00)));data+=2;size-=2;break;
@@ -169,7 +169,7 @@ void func_02062e28(void *arg0, s32 arg1) {
 }
 
 s32 func_02062e30(void *a){
-s32 func_02048558(s32,s32,s32);s32 func_02048688(s32);void func_020486f8(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 func_02061da0(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
+s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void func_020486f8(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 func_02061da0(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
 extern s32 data_0213e4b4;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
@@ -191,10 +191,10 @@ if((M2C_FIELD(a,s32 *,0x5c4)&2)||M2C_FIELD(a,u16 *,0x4a8)==0xffff){M2C_FIELD(a,s
 M2C_FIELD(a,s32 *,0x5c8)=2;M2C_FIELD(a,s32 *,0x484)=-1;
 case 2:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=func_02048558(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
-while(M2C_FIELD(a,s32 *,0x484)>func_02048688(M2C_FIELD(a,s32 *,8))){
+while(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8))){
 if(n<2)break;len=func_02061da0(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);func_020486f8(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
 }
-if(M2C_FIELD(a,s32 *,0x484)>func_02048688(M2C_FIELD(a,s32 *,8)))break;
+if(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8)))break;
 M2C_FIELD(a,s32 *,0x5c8)=3;M2C_FIELD(a,s32 *,0x484)=-1;
 case 3:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;M2C_FIELD(a,s32 *,0x484)=*p++;n--;M2C_FIELD(a,s32 *,0x480)=0;}

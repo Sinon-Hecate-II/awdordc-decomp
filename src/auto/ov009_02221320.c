@@ -41,7 +41,7 @@ static inline void Pop21ae8(u8 channel,s32 packet){s32 p,next;u32 old=SwapIME215
 func_ov009_02224d30(packet,M2C_FIELD(p,u8 *,8),M2C_FIELD(p,PacketBits215a4 *,9).low,M2C_FIELD(p,PacketBits215a4 *,9).high,p+16,M2C_FIELD(p,u32 *,12),M2C_FIELD(p,u16 *,10));
 next=M2C_FIELD(p,s32 *,0);q->head=next;if(!next)q->tail=0;
 func_ov009_02221338(p,M2C_FIELD(p,u32 *,12)+16);q->count--;SwapIME215a4(old);}
-static inline void Push21ae8(Queue21ae8 *queue,s32 channel,s32 packet){s32 p;u32 old=SwapIME215a4(0);p=func_ov009_0222132c(M2C_FIELD(packet,u32 *,8)+16,32);if(!p){SwapIME215a4(old);return;}func_02007f8c(p,0,16);
+static inline void Push21ae8(Queue21ae8 *queue,s32 channel,s32 packet){s32 p;u32 old=SwapIME215a4(0);p=func_ov009_0222132c(M2C_FIELD(packet,u32 *,8)+16,32);if(!p){SwapIME215a4(old);return;}MI_CpuFill8(p,0,16);
 func_ov009_02224d30(p+4,M2C_FIELD(packet,u8 *,4),M2C_FIELD(packet,PacketBits215a4 *,5).low,M2C_FIELD(packet,PacketBits215a4 *,5).high,packet+12,M2C_FIELD(packet,u32 *,8),M2C_FIELD(packet,u16 *,6));
 if(!queue[channel].head){queue[channel].tail=p;queue[channel].head=p;}else {M2C_FIELD(p,s32 *,0)=queue[channel].head;queue[channel].head=p;}queue[channel].count++;SwapIME215a4(old);}
 
@@ -66,8 +66,8 @@ void func_ov009_02221338(s32 arg0, s32 arg1) {
 }
 
 void func_ov009_0222134c(void *arg0) {
-    M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
-    func_02007f8c(arg0, 0, 0x16);
+    M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(arg0, 0, 0x16);
     M2C_FIELD(arg0, s8 *, 0x16) = 0;
     M2C_FIELD(arg0, s8 *, 0x17) = -1;
     M2C_FIELD(arg0, s8 *, 0x18) = -1;
@@ -76,7 +76,7 @@ void func_ov009_0222134c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x1B) = 0;
     M2C_FIELD(arg0, s8 *, 0x1C) = 0;
     M2C_FIELD(arg0, s8 *, 0x1D) = -1;
-    func_02007f8c(arg0 + 0x20, 0, 0x40);
+    MI_CpuFill8(arg0 + 0x20, 0, 0x40);
 }
 
 void *func_ov009_0222139c(void *arg0) {
@@ -88,8 +88,8 @@ void *func_ov009_0222139c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x1B) = 0;
     M2C_FIELD(arg0, s8 *, 0x1C) = 0;
     M2C_FIELD(arg0, s8 *, 0x1D) = -1;
-    func_02007f8c(arg0, 0, 0x16);
-    func_02007f8c(arg0 + 0x20, 0, 0x40);
+    MI_CpuFill8(arg0, 0, 0x16);
+    MI_CpuFill8(arg0 + 0x20, 0, 0x40);
     return arg0;
 }
 

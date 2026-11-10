@@ -94,7 +94,7 @@ PlaySoundEffect(0x1001c);return 1;
    holds a spent unit or a global lock is set, reject it (consumeInvalid decides whether
    the press is swallowed); otherwise select the unit there and open its action menu. */
 s32 ConfirmCursorTile(u8 x,u8 y,s32 playMoveEffect,s32 consumeInvalid,u8 menuMode){
-extern void *gCurrentMap; extern M2C_UNK data_0211fbc4; extern u16 data_02168f14;
+extern void *gCurrentMap; extern M2C_UNK data_0211fbc4; extern u16 gMapConfig;
 M2C_UNK (*cb)();
 func_020c93cc();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS));
@@ -102,7 +102,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FI
 
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
 if(func_020cf878(x,y)) { if(playMoveEffect)func_020b97c4(x,y); return 1; }
-if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(data_02168f14<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
+if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
 func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();

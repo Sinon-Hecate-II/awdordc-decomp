@@ -75,11 +75,11 @@ void func_0200fd90(s32 arg0) {
 
 s32 func_0200fda0(void) {
  extern void *data_0212fde0;
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02005da4(void *);
+ s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void OS_SleepThread(void *);
  void *p = &data_0212fde0;
  s32 state = OS_DisableInterrupts();
  goto test;
- loop: func_02005da4((u8 *)p + 0x10c);
+ loop: OS_SleepThread((u8 *)p + 0x10c);
  test: if (M2C_FIELD(p, u32 *, 0x114) & 4) goto loop;
  OS_RestoreInterrupts(state);
  return *M2C_FIELD(p, s32 **, 0) == 0;
@@ -122,9 +122,9 @@ void func_0200fe6c(M2C_UNK arg0) {
 
 #pragma opt_common_subs off
 void func_0200fe94(s32 value){
-extern void *data_0212fde0;void func_02007f8c(void *,s32,s32);
+extern void *data_0212fde0;void MI_CpuFill8(void *,s32,s32);
 u8 *p=data_0212fde0;u32 bit; s32 kind;
-func_02007f8c(p+0x18,0,0x48);
+MI_CpuFill8(p+0x18,0,0x48);
 M2C_FIELD(p,s32 *,4)=value;M2C_FIELD(p,u32 *,0x4c)=0x3f;
 if(value==0)return;
 bit=1<<((value>>8)&255);kind=value&255;
@@ -155,8 +155,8 @@ fail:M2C_FIELD(p,s32 *,0x18)=M2C_FIELD(p,s32 *,4)=0;M2C_FIELD(data_0212fde0,s32 
 #pragma opt_common_subs off
 void func_02010164(void *arg0) {
     void func_02000b9c(s32);
-    void func_02005df4(void *);
-    void func_020067a8(void *, s32);
+    void OS_WakeupThread(void *);
+    void DC_InvalidateRange(void *, s32);
     void TaskWake(void *);
     void func_020067e0(void *, u32);
     void func_02006804();
@@ -199,7 +199,7 @@ loop_3:
         default:
             break;
         case 0:
-            func_020067a8(temp_r6, var_r8);
+            DC_InvalidateRange(temp_r6, var_r8);
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = (void *) M2C_FIELD((u32)arg0, void **, 0x1C);
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = temp_r6;
             break;
@@ -240,7 +240,7 @@ block_23:
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x3C);
     temp_r4_2 = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 0x114) = (s32) (M2C_FIELD(arg0, s32 *, 0x114) & ~0x4C);
-    func_02005df4(arg0 + 0x10C);
+    OS_WakeupThread(arg0 + 0x10C);
     if (M2C_FIELD(arg0, s32 *, 0x114) & 0x10) {
         TaskWake(arg0 + 0x44);
     }
@@ -253,11 +253,11 @@ block_23:
 #pragma opt_common_subs reset
 s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *data_0212fde0;
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     void func_02000b9c(s32);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02005da4(void *);
+    void OS_SleepThread(void *);
     void func_0200fb0c(void *);
     void func_02010164(void *);
     void *p = &data_0212fde0;
@@ -270,7 +270,7 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     func_02000b9c(0x2000bc4);
     state = OS_DisableInterrupts();
     while (M2C_FIELD(p, u32 *, 0x114) & 0x4) {
-        func_02005da4((u8 *)p + 0x10c);
+        OS_SleepThread((u8 *)p + 0x10c);
     }
     oldf = M2C_FIELD(p, u32 *, 0x114);
     a4 = arg4;
@@ -293,7 +293,7 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
         func_0200fb0c((void *)func_02010164);
         return 1;
     }
-    M2C_FIELD(&data_0212fde0, u32 *, 0x104) = M2C_FIELD(&data_0212dca4, u32 *, 0x4);
+    M2C_FIELD(&data_0212fde0, u32 *, 0x104) = M2C_FIELD(&gSocketManager, u32 *, 0x4);
     func_02010164(p);
     return *M2C_FIELD(p, s32 **, 0) == 0;
 }
@@ -309,14 +309,14 @@ s32 func_02010438(void) {
 }
 
 s32 func_0201044c(s32 arg0) {
-extern void *data_0212fde0;extern M2C_UNK data_0212dca4;
-void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02005da4(void *);void func_02005df4(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
+extern void *data_0212fde0;extern M2C_UNK gSocketManager;
+void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(void *);void OS_WakeupThread(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK func_02007958();
 void *p=&data_0212fde0; s32 state,state2;s32 value;void (*callback)(s32);
 func_02000b9c(0x2000bc4);
 if(arg0==0)func_02007958();
 func_0200fd78();
 state=OS_DisableInterrupts();
-while(M2C_FIELD(p,u32 *,0x114)&4)func_02005da4(p+0x10c);
+while(M2C_FIELD(p,u32 *,0x114)&4)OS_SleepThread(p+0x10c);
 {
 s32 zero=0;
 M2C_FIELD(p,u32 *,0x114)|=4;
@@ -324,7 +324,7 @@ M2C_FIELD(p,s32 *,0x38)=zero;M2C_FIELD(p,s32 *,0x3c)=zero;
 }
 OS_RestoreInterrupts(state);
 func_0200fe94(arg0);
-M2C_FIELD(&data_0212fde0,s32 *,0x104)=M2C_FIELD(&data_0212dca4,s32 *,4);
+M2C_FIELD(&data_0212fde0,s32 *,0x104)=M2C_FIELD(&gSocketManager,s32 *,4);
 func_02010d14(p,2,1);
 M2C_FIELD(*(void **)p,s32 *,0xc)=0;
 M2C_FIELD(*(void **)p,void **,0x10)=p+0x120;
@@ -333,7 +333,7 @@ func_02010d14(p,6,1);
 callback=M2C_FIELD(p,void (**)(s32),0x38);value=M2C_FIELD(p,s32 *,0x3c);
 state2=OS_DisableInterrupts();
 M2C_FIELD(p,u32 *,0x114)&=~0x4c;
-func_02005df4(p+0x10c);
+OS_WakeupThread(p+0x10c);
 if(M2C_FIELD(p,u32 *,0x114)&0x10)TaskWake(p+0x44);
 OS_RestoreInterrupts(state2);
 if(callback)callback(value);
@@ -394,7 +394,7 @@ void func_020106dc(void) {
     void func_02010f84(s32);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02005df4(void *);
+    void OS_WakeupThread(void *);
     void TaskWake(void *);
     void func_02010688(void);
     extern void *data_0212fde0;
@@ -434,7 +434,7 @@ void func_020106dc(void) {
     r6 = M2C_FIELD(p, s32 *, 0x3c);
     state = OS_DisableInterrupts();
     M2C_FIELD(p, u32 *, 0x114) = M2C_FIELD(p, u32 *, 0x114) & ~0x4c;
-    func_02005df4((u8 *)p + 0x10c);
+    OS_WakeupThread((u8 *)p + 0x10c);
     if (M2C_FIELD(p, u32 *, 0x114) & 0x10) {
         TaskWake((u8 *)p + 0x44);
     }
@@ -545,7 +545,7 @@ void func_02010a84(void) {
     void func_02010f84(s32);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02005df4(void *);
+    void OS_WakeupThread(void *);
     void TaskWake(void *);
     extern u32 data_02130420[];
     extern void *data_0212fde0;
@@ -569,7 +569,7 @@ void func_02010a84(void) {
     r6 = M2C_FIELD(p1, s32 *, 0x3c);
     state = OS_DisableInterrupts();
     M2C_FIELD(p1, u32 *, 0x114) = M2C_FIELD(p1, u32 *, 0x114) & ~0x4c;
-    func_02005df4((u8 *)p1 + 0x10c);
+    OS_WakeupThread((u8 *)p1 + 0x10c);
     if (M2C_FIELD(p1, u32 *, 0x114) & 0x10) {
         TaskWake((u8 *)p1 + 0x44);
     }
@@ -583,11 +583,11 @@ void func_02010b1c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5,
     extern u32 data_02130420[];
     extern void *data_0212fde0;
     extern u32 data_02130400[];
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     void func_0200fd78(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02005da4(void *);
+    void OS_SleepThread(void *);
     s32 func_02007ca4(s32);
     s32 func_020107ac(void *);
     void func_02010c78(void);
@@ -607,7 +607,7 @@ void func_02010b1c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5,
     state = OS_DisableInterrupts();
     goto test;
 loop:
-    func_02005da4((u8 *)r5 + 0x10c);
+    OS_SleepThread((u8 *)r5 + 0x10c);
 test:
     if (M2C_FIELD(r5, volatile u32 *, 0x114) & 4) goto loop;
     {
@@ -643,7 +643,7 @@ test:
         func_0200fb0c((void *)func_02010a84);
         return;
     }
-    M2C_FIELD(r5, u32 *, 0x104) = M2C_FIELD(&data_0212dca4, u32 *, 4);
+    M2C_FIELD(r5, u32 *, 0x104) = M2C_FIELD(&gSocketManager, u32 *, 4);
     func_02010a84();
 }
 

@@ -222,9 +222,9 @@ void func_020b57ac(void *arg0) {
 }
 #pragma scheduling reset
 void func_020b5964(s32 a,s32 b) {
-void func_020a488c(s32,s16 *); void *func_01ffa42c(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
+void func_020a488c(s32,s16 *); void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
 s16 xy[2]; void *p;
-func_020a488c(a,xy); p=func_01ffa42c(&data_02128c34,b);
+func_020a488c(a,xy); p=CreateSpriteObject(&data_02128c34,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0]; M2C_FIELD(p,s32 *,0x3c)=xy[1];
 }
 
@@ -350,8 +350,8 @@ void func_020b59c0(void *arg0) {
 }
 
 void func_020b5d94(u8 *arg0,s32 arg1) {
-void *func_01ffa42c(M2C_UNK *,s32); extern M2C_UNK data_02128bc4;
-void *p=func_01ffa42c(&data_02128bc4,arg1);
+void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128bc4;
+void *p=CreateSpriteObject(&data_02128bc4,arg1);
 M2C_FIELD(p,s32 *,0x38)=arg0[0]; M2C_FIELD(p,s32 *,0x3c)=arg0[1]; M2C_FIELD(p,void **,0x34)=arg0;
 }
 
@@ -369,11 +369,11 @@ void func_020b5de0(void *arg0) {
 }
 
 void func_020b5e00(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02128bfc;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_02128bfc, arg2);
+    temp_r0 = CreateSpriteObject(&data_02128bfc, arg2);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
 }
@@ -415,7 +415,7 @@ void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_02128e8c;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_02128b04, arg2);
+    temp_r0 = CreateSpriteObject(&data_02128b04, arg2);
     M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
     StringCopy(temp_r0 + 0x34, &data_02128e8c);

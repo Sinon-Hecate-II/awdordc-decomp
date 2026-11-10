@@ -3,7 +3,7 @@
 typedef struct { u16 unk0, unk2, unk4, unk6; } Unk0209Rect;
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
-extern u16 data_02168f14[];
+extern u16 gMapConfig[];
 
 s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
     M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);

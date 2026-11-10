@@ -13,12 +13,12 @@ extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_
 
 #pragma opt_propagation off
 void func_020e24c0(s32 arg0) {
-void *func_01ffa42c(void*,s32); void *MemAlloc(s32);
+void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
 void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 func_02088da8(void*); void func_020e4c64(void);
-void *obj=func_01ffa42c(&data_0212c6a8,arg0); void *saved; void *p; void *q;
+void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
 M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=0;M2C_FIELD(obj,s32*,0x3c)=0;
@@ -86,12 +86,12 @@ gCur3DSpriteEngine=saved;func_020e4c64();
 }
 #pragma opt_propagation reset
 void func_020e2a2c(s32 arg0) {
-void *func_01ffa42c(void*,s32); void *MemAlloc(s32);
+void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
 void *func_0208931c(void*); void *func_0208bc24(void*); s32 func_0208b698(void*,void*); s32 func_02088da8(void*); void func_020e4c64(void);
-void *obj=func_01ffa42c(&data_0212c6a8,arg0); void *p; void *q; void *saved;
+void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
 M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=1;M2C_FIELD(obj,s32*,0x3c)=0;

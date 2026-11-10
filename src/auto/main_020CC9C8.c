@@ -1,49 +1,54 @@
 /* 31 functions from 0x020CC9C8 to 0x020CD8A8 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 
-void func_020cc9c8(void *obj) {
- extern s32 *gCurrentMap;s32 func_0207cfb8(s32);s32 func_0207cee0(s32);s32 func_0207cf48(s32);void PlaySoundEffect(s32);
- s32 oldH,oldW,newH,newW,x,y,width,height,map,dx,dy;
- if(func_0207cfb8(*gCurrentMap+0x6ef8)==0) {M2C_FIELD(obj,s32 *,0x5c)=0;M2C_FIELD(obj,s32 *,0x60)=128;PlaySoundEffect(0x1001e);}
- else {M2C_FIELD(obj,s32 *,0x5c)=128;M2C_FIELD(obj,s32 *,0x60)=0;PlaySoundEffect(0x1001f);}
- oldH=func_0207cee0(M2C_FIELD(obj,s32 *,0x5c));oldW=func_0207cf48(M2C_FIELD(obj,s32 *,0x5c));
- newH=func_0207cee0(M2C_FIELD(obj,s32 *,0x60));newW=func_0207cf48(M2C_FIELD(obj,s32 *,0x60));
- map=*gCurrentMap;x=M2C_FIELD(map,s16 *,0x5148);y=M2C_FIELD(map,s16 *,0x514a);
- dx=M2C_FIELD(map,s16 *,0x52c2)-(x>>4);dy=M2C_FIELD(map,s16 *,0x52c4)-(y>>4);
- M2C_FIELD(obj,s16 *,0x6c)=M2C_FIELD(*gCurrentMap,s16 *,0x5148);
- M2C_FIELD(obj,s16 *,0x6e)=M2C_FIELD(*gCurrentMap,s16 *,0x5148);
- M2C_FIELD(obj,s16 *,0x70)=M2C_FIELD(*gCurrentMap,s16 *,0x514a);
- M2C_FIELD(obj,s16 *,0x72)=M2C_FIELD(*gCurrentMap,s16 *,0x514a);
- if(dx>=newW-2) {
- map=*gCurrentMap;width=M2C_FIELD(map,u16 *,0x5144);
- x=M2C_FIELD(map,s16 *,0x52c2);if(x<width-3)width=x+3;
- M2C_FIELD(obj,s16 *,0x6e)=(width-newW)<<4;
+/* Starts a zoom-in or zoom-out of the map view: picks the new zoom level and
+ * the view size it gives, clamps the view scroll so the cursor stays visible,
+ * and initialises the transition object (start/end zoom and scroll, 16-frame
+ * timer) that Func_020ccbc0 then animates. */
+void BeginMapZoom(void *transition) {
+ extern s32 *gCurrentMap;s32 GetViewZoom(s32);s32 GetViewHeightForZoom(s32);s32 GetViewWidthForZoom(s32);void PlaySoundEffect(s32);
+ s32 oldHeight,oldWidth,newHeight,newWidth,x,y,width,height,map,dx,dy;
+ if(GetViewZoom(*gCurrentMap+MAP_VIEW_ZOOM)==0) {M2C_FIELD(transition,s32 *,0x5c)=0;M2C_FIELD(transition,s32 *,0x60)=128;PlaySoundEffect(0x1001e);}
+ else {M2C_FIELD(transition,s32 *,0x5c)=128;M2C_FIELD(transition,s32 *,0x60)=0;PlaySoundEffect(0x1001f);}
+ oldHeight=GetViewHeightForZoom(M2C_FIELD(transition,s32 *,0x5c));oldWidth=GetViewWidthForZoom(M2C_FIELD(transition,s32 *,0x5c));
+ newHeight=GetViewHeightForZoom(M2C_FIELD(transition,s32 *,0x60));newWidth=GetViewWidthForZoom(M2C_FIELD(transition,s32 *,0x60));
+ map=*gCurrentMap;x=M2C_FIELD(map,s16 *,MAP_VIEW_X);y=M2C_FIELD(map,s16 *,MAP_VIEW_Y);
+ dx=M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_X)-(x>>4);dy=M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_Y)-(y>>4);
+ M2C_FIELD(transition,s16 *,0x6c)=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X);
+ M2C_FIELD(transition,s16 *,0x6e)=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X);
+ M2C_FIELD(transition,s16 *,0x70)=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y);
+ M2C_FIELD(transition,s16 *,0x72)=M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y);
+ if(dx>=newWidth-2) {
+ map=*gCurrentMap;width=M2C_FIELD(map,u16 *,MAP_WIDTH);
+ x=M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_X);if(x<width-3)width=x+3;
+ M2C_FIELD(transition,s16 *,0x6e)=(width-newWidth)<<4;
  }
- if(dy>=newH-2) {
- map=*gCurrentMap;height=M2C_FIELD(map,u16 *,0x5146);
- y=M2C_FIELD(map,s16 *,0x52c4);if(y<height-3)height=y+3;
- M2C_FIELD(obj,s16 *,0x72)=(height-newH)<<4;
+ if(dy>=newHeight-2) {
+ map=*gCurrentMap;height=M2C_FIELD(map,u16 *,MAP_HEIGHT);
+ y=M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_Y);if(y<height-3)height=y+3;
+ M2C_FIELD(transition,s16 *,0x72)=(height-newHeight)<<4;
  }
- if(oldW<newW) {
- width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
- if(width<newW+(M2C_FIELD(obj,s16 *,0x6e)>>4))M2C_FIELD(obj,s16 *,0x6e)=(width-newW)<<4;
+ if(oldWidth<newWidth) {
+ width=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);
+ if(width<newWidth+(M2C_FIELD(transition,s16 *,0x6e)>>4))M2C_FIELD(transition,s16 *,0x6e)=(width-newWidth)<<4;
  }
- if(oldH<newH) {
- height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
- if(height<newH+(M2C_FIELD(obj,s16 *,0x72)>>4))M2C_FIELD(obj,s16 *,0x72)=(height-newH)<<4;
+ if(oldHeight<newHeight) {
+ height=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
+ if(height<newHeight+(M2C_FIELD(transition,s16 *,0x72)>>4))M2C_FIELD(transition,s16 *,0x72)=(height-newHeight)<<4;
  }
- M2C_FIELD(obj,s32 *,0x64)=0;M2C_FIELD(obj,s32 *,0x68)=15;
+ M2C_FIELD(transition,s32 *,0x64)=0;M2C_FIELD(transition,s32 *,0x68)=15;
 }
 
 void func_020ccbc0(void *arg0) {
 extern s32 *gCurrentMap;
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void func_0207cec0(s32,s32);
+void SetViewZoom(s32,s32);
 void func_01ffa6fc(void *);
 s32 base;
 M2C_FIELD(arg0,s32 *,0x64)++;
-func_0207cec0(*gCurrentMap+0x6ef8,EaseInterpolate(4,M2C_FIELD(arg0,s32 *,0x5c),M2C_FIELD(arg0,s32 *,0x60),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68)));
+SetViewZoom(*gCurrentMap+0x6ef8,EaseInterpolate(4,M2C_FIELD(arg0,s32 *,0x5c),M2C_FIELD(arg0,s32 *,0x60),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68)));
 base=*gCurrentMap+0x5120;
 M2C_FIELD(base,s16 *,0x28)=EaseInterpolate(4,M2C_FIELD(arg0,s16 *,0x6c),M2C_FIELD(arg0,s16 *,0x6e),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
 base=*gCurrentMap+0x5120;
@@ -95,25 +100,25 @@ void func_020ccdc0(M2C_UNK arg0) {
 }
 
 void func_020ccdd8(s32 arg0) {
-    void func_01ffa42c(void *, s32);
+    void CreateSpriteObject(void *, s32);
     extern u8 data_02168f0c;
     extern M2C_UNK data_0212b7ec;
     if (data_02168f0c == 0) return;
-    func_01ffa42c(&data_0212b7ec, arg0);
+    CreateSpriteObject(&data_0212b7ec, arg0);
 }
 
 void func_020cce04(s32 arg0) {
     void func_020a196c(void);
     void func_0209c8d4(void);
-    void func_01ffa8c4(s32, s32);
+    void SetSpriteAnimation(s32, s32);
     u8 func_020cd6d4(void);
     u8 func_020cd28c(void);
     func_020a196c();
     func_0209c8d4();
     if (func_020cd6d4() && func_020cd28c()) {
-        func_01ffa8c4(arg0, 1);
+        SetSpriteAnimation(arg0, 1);
     } else {
-        func_01ffa8c4(arg0, 0);
+        SetSpriteAnimation(arg0, 0);
     }
 }
 
@@ -254,11 +259,11 @@ return 0;
 
 void func_020cd544(s32);
 void func_020cd480(s32 a){
-extern u16 data_02168f14;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 data_0215d8a0[];u32 v;
+extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 data_0215d8a0[];u32 v;
 func_02088634();if(func_020e4b28(a)){func_020cd544(a);return;}
 func_020e49ec();data_0215d8a0[0]=(data_0215d8a0[0]&~15)|(a&15);
 v=data_0215d8a0[0]&~240;*(volatile u32 *)data_0215d8a0=v;
-data_02168f14 &= ~7;
+gMapConfig &= ~7;
 v&=~0xff0000;
 v&=~0xff00;
 data_0215d8a0[1]=(u16)(data_0215d8a0[1]&0xffff0000);
@@ -267,14 +272,14 @@ M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;func_02086810(161,1);func_01ffa3dc(&d
 }
 
 void func_020cd544(s32 arg0) {
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern M2C_UNK data_0212b844;
     s32 func_020bf054(s32, s32);
     s32 func_020bee64(s32);
     u8 value;
     func_02088634();
     value = func_020bf054(0, arg0);
-    data_02168f14 &= ~7;
+    gMapConfig &= ~7;
     func_020e4a18(arg0);
     if (func_020bee64(value)) {
         func_020d4ac8(value);
@@ -285,8 +290,8 @@ void func_020cd544(s32 arg0) {
 
 void func_020cd5ac(void) {
     extern M2C_UNK data_0212b844;
-    extern u16 data_02168f14;
-    data_02168f14 &= ~7;
+    extern u16 gMapConfig;
+    gMapConfig &= ~7;
     func_01ffa3dc(&data_0212b844, 7);
 }
 
@@ -364,14 +369,14 @@ u8 func_020cd728(void) {
 #pragma opt_common_subs off
 void func_020cd754(s32 arg0) {
     extern s32 *gCurrentMap;
-    void func_02007f8c(s32, s32);
+    void MI_CpuFill8(s32, s32);
     s32 base = *gCurrentMap;
     s32 multiplier = 0xA1;
     s32 offset = 0x5160;
     if (M2C_FIELD(base, u8 *, 0x5156) == 0 && M2C_FIELD(base, u8 *, 0x5158) != 2) {
-        func_02007f8c(base + offset + multiplier * arg0, 255);
+        MI_CpuFill8(base + offset + multiplier * arg0, 255);
     } else {
-        func_02007f8c(base + offset + multiplier * arg0, 0);
+        MI_CpuFill8(base + offset + multiplier * arg0, 0);
     }
 }
 #pragma pop

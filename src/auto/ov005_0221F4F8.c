@@ -67,9 +67,9 @@ if(M2C_FIELD(arg0,s32 *,0x38)==126)func_02088f1c(M2C_FIELD(arg0,void **,0x34));
 }
 
 void func_ov005_0221fa00(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220c38;
-    func_01ffa42c(&data_ov005_02220c38, arg0);
+    CreateSpriteObject(&data_ov005_02220c38, arg0);
 }
 
 /* Enable five display-control bits (0x10/0x20/0x40/0x80/0x100) on each of the two screen contexts. */
@@ -120,13 +120,13 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
 }
 
 void func_ov005_0221fbc8(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0215c334;
     extern M2C_UNK data_ov005_02220b38;
     s32 i;
     for (i = 0; i < 15; i++) {
         if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << i)) {
-            func_01ffa42c(&data_ov005_02220b38, arg0);
+            CreateSpriteObject(&data_ov005_02220b38, arg0);
             return;
         }
     }
@@ -182,7 +182,7 @@ void func_ov005_0221fd20(M2C_UNK arg0) {
         return;
     }
     func_020868e0(temp_r5, 1);
-    func_01ffa42c(&data_ov005_02220bb0, arg0);
+    CreateSpriteObject(&data_ov005_02220bb0, arg0);
 }
 
 void *func_ov005_0221fdb0(void *arg0) {

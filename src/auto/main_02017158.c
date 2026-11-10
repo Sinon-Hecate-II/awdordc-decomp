@@ -24,7 +24,7 @@ void func_02017158(void *arg0) {
     s32 func_020167d0(void *);
     s32 func_02016840(void);
     void func_020168f0(void *);
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     void func_02007a74(u16, void *, void *, s32);
     void func_02007e20(void *, void *, s32);
     u8 *base;
@@ -70,7 +70,7 @@ void func_02017158(void *arg0) {
                 if(e) {
                     M2C_FIELD(records+i*0x180,u16 *,0xf6)=M2C_FIELD(event,u16 *,0x36);
                     M2C_FIELD(records+i*0x180,DispatchBlock171 *,0xf8)=M2C_FIELD(event,DispatchBlock171 *,0x38);
-                    func_020067a8(base+0x600+i*0x180,0xc0);
+                    DC_InvalidateRange(base+0x600+i*0x180,0xc0);
                     func_02007a74(M2C_FIELD(&data_02136c40,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
                     M2C_FIELD(base,s32 *,0x5ec)=i;
                     goto found;
@@ -79,7 +79,7 @@ void func_02017158(void *arg0) {
             if(i<16) {
                 M2C_FIELD(base+0x500,u16 *,0xe0)=i+1;
                 func_02007e20(event,records+i*0x180+0xc0,0xb8);
-                func_020067a8(base+0x600+i*0x180,0xc0);
+                DC_InvalidateRange(base+0x600+i*0x180,0xc0);
                 func_02007a74(M2C_FIELD(&data_02136c40,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
                 M2C_FIELD(base,s32 *,0x5ec)=i;
             }
@@ -281,7 +281,7 @@ s32 func_02017dac(s32 arg0) {
     s32 func_02009e8c(s32, s32);
     void func_020140c4(void);
     void func_02016934(void);
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
 
     s32 state;
     s32 i;
@@ -322,7 +322,7 @@ s32 func_02017dac(s32 arg0) {
 
     func_02007df8(0, (u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1788, 0x5D40);
 
-    func_02007f8c((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1754, 0, 0x1E);
+    MI_CpuFill8((u8 *)M2C_FIELD(&data_02136c40, void **, 0xc) + 0x1754, 0, 0x1E);
 
     M2C_FIELD((u8 *)M2C_FIELD(&data_02136c40, void **, 0x8) + 0x500, u16 *, 0x24) = 1;
 

@@ -1,5 +1,6 @@
 /* 16 functions from 0x020A0964 to 0x020A1944 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct { u8 kind : 6; u8 owner : 2; } MapUnitBits;
 typedef struct { u16 unk0 : 13; u16 enabled : 1; u16 unk14 : 2; } MapRuleBits;
@@ -22,7 +23,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     M2C_UNK func_020a0750(M2C_UNK, M2C_UNK);
 
     extern s32 *gCurrentMap;
-    extern s32 data_0211fb5c;
+    extern s32 gUnitMovePath;
     extern u8 gUnitMinAttackRange[];
 
     u8 *base;
@@ -43,7 +44,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     s32 score;
 
     base = (u8 *)*gCurrentMap;
-    ctx = (s8 *)data_0211fb5c;
+    ctx = (s8 *)gUnitMovePath;
     idx = ctx[0x5b];
     ctx = ctx + idx;
     f36 = ctx[0x36];
@@ -155,9 +156,9 @@ void func_020a0d18(void) {
     void func_020a01c0(s8, s8);
     s32 func_020a33c4(s32);
     extern s32 *gCurrentMap;
-    extern s32 data_0211fb5c;
+    extern s32 gUnitMovePath;
     extern u8 data_ov000_021b5c09[];
-    extern u16 data_02168f14[];
+    extern u16 gMapConfig[];
     extern u8 data_021261d0[];
     extern u8 gMovementTypeTable[];
     s32 cx, cy, dx, dy;
@@ -178,7 +179,7 @@ void func_020a0d18(void) {
     s16 sx, sy;
     initialBase = (u8 *)*gCurrentMap;
     if (*(u16 *)(initialBase + 0x52b4) != 2) return;
-    ctx = (s8 *)data_0211fb5c;
+    ctx = (s8 *)gUnitMovePath;
     startX = *(s16 *)(initialBase + 0x52c2);
     if (ctx[0x34] == startX && ctx[0x35] == *(s16 *)(initialBase + 0x52c4)) return;
     func_020a004c((u16)startX, *(u16 *)(initialBase + 0x52c4));
@@ -188,7 +189,7 @@ void func_020a0d18(void) {
     if ((*(s8 **)(base + y * 4 + 0x52e8))[x] > 110) {
         kind = (*(MapUnitBits **)(base + 0x52d0))->kind;
         if (data_ov000_021b5c09[kind * 112] > 1) return;
-        ctx = (s8 *)data_0211fb5c;
+        ctx = (s8 *)gUnitMovePath;
         index = ctx[0x5b];
         cy = ctx[0x42 + index];
         cx = ctx[0x36 + index];
@@ -220,16 +221,16 @@ void func_020a0d18(void) {
     result = func_020a0300((s8)x, (s8)y);
     if (result != -1) {
         func_020a0068((s8)(result + 1));
-        ctx = (s8 *)data_0211fb5c;
+        ctx = (s8 *)gUnitMovePath;
         ((u8 *)*gCurrentMap)[0x52d5] = ctx[0x5a] - (ctx + ctx[0x5b])[0x4e];
         return;
     }
     base = (u8 *)*gCurrentMap;
     owner = (base[0x52d4] >> 6) + 1;
     player = base + 0x67a4 + owner * 0x8c;
-    if (((MapRuleBits *)data_02168f14)->enabled == 0) mode = 0;
+    if (((MapRuleBits *)gMapConfig)->enabled == 0) mode = 0;
     else mode = ((MapPlayerBits *)(player + 0x6c))->value;
-    ctx = (s8 *)data_0211fb5c;
+    ctx = (s8 *)gUnitMovePath;
     idx = ctx[0x5b];
     fuel = (ctx + idx)[0x4e];
     result = func_020a33c4(owner);
@@ -239,12 +240,12 @@ void func_020a0d18(void) {
     moveType = gMovementTypeTable[kind * 112];
     costTable = *(s8 **)(data_021261d0 + mode * 0x9c + result * 0x28 + player[0x25] * 4);
     if (fuel >= (costTable + moveType * 32)[terrain & 31]) {
-        ctx = (s8 *)data_0211fb5c;
+        ctx = (s8 *)gUnitMovePath;
         dy = (ctx + idx)[0x42] - y; if (dy < 0) dy = -dy;
         dx = (ctx + idx)[0x36] - x; if (dx < 0) dx = -dx;
         if (dx + dy == 1) {
             func_020a01c0((s8)x, (s8)y);
-            ctx = (s8 *)data_0211fb5c;
+            ctx = (s8 *)gUnitMovePath;
             ((u8 *)*gCurrentMap)[0x52d5] = ctx[0x5a] - (ctx + ctx[0x5b])[0x4e];
             return;
         }
@@ -263,8 +264,8 @@ void func_020a0d18(void) {
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 }
 #pragma pop
-s32 func_020a11fc(s32 arg0) {
-    extern s32 data_0211fb5c;
+s32 UnitPath_GetIncomingDir(s32 arg0) {
+    extern s32 gUnitMovePath;
     s8 temp_r0;
     s8 temp_r0_2;
     s8 temp_r1;
@@ -275,8 +276,8 @@ s32 func_020a11fc(s32 arg0) {
     if (arg0 == 0) {
         return 0;
     }
-    temp_r3 = data_0211fb5c + arg0;
-    temp_r2 = data_0211fb5c + (arg0 - 1);
+    temp_r3 = gUnitMovePath + arg0;
+    temp_r2 = gUnitMovePath + (arg0 - 1);
     temp_r1 = M2C_FIELD(temp_r3, s8 *, 0x36);
     temp_r0 = M2C_FIELD(temp_r2, s8 *, 0x36);
     if ((s32) temp_r0 < (s32) temp_r1) {
@@ -296,12 +297,12 @@ s32 func_020a11fc(s32 arg0) {
     return 0;
 }
 
-s32 func_020a125c(s32 arg0) {
-    extern s32 data_0211fb5c;
+s32 UnitPath_GetOutgoingDir(s32 arg0) {
+    extern s32 gUnitMovePath;
     void *temp_r2;
     void *temp_r3;
     s8 a, b;
-    temp_r2 = data_0211fb5c;
+    temp_r2 = gUnitMovePath;
     if (arg0 == M2C_FIELD(temp_r2, s8 *, 0x5B)) return 0;
     temp_r3 = (s32)temp_r2 + (arg0 + 1);
     temp_r2 = (s32)temp_r2 + arg0;
@@ -324,10 +325,10 @@ void func_020a12c0(void *arg0) {
 
 void func_020a12d8(void) {
     M2C_UNK func_020774b0();
-    void func_020a1300(M2C_UNK, M2C_UNK);
+    void DrawUnitMovePath(M2C_UNK, M2C_UNK);
       func_020774b0();
       func_020a0d18();
-      func_020a1300(0, 0);
+      DrawUnitMovePath(0, 0);
   }
 
   void func_020a12f4(void) {
@@ -337,73 +338,80 @@ void func_020a12d8(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_020a1300(s32 arg0, s32 arg1) {
+/* Draws the pending move path of the unit under the cursor: for every path
+ * step it picks the arrow tile from gPathArrowTiles by the directions of the
+ * segments entering and leaving the step and draws it as a 16x16 sprite at
+ * the cell's world position. Nothing is drawn for an empty path or when the
+ * path belongs to a unit of another player. */
+void DrawUnitMovePath(s32 arg0, s32 arg1) {
     M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
-    s32 func_020a125c(s32);
-    s32 func_020a11fc(s32);
+    s32 UnitPath_GetOutgoingDir(s32);
+    s32 UnitPath_GetIncomingDir(s32);
     extern s32 *gCurrentMap;
-    extern s32 data_0211fb5c;
-    extern u16 data_0211fb88[];
-    extern M2C_UNK data_027e0064;
+    extern s32 gUnitMovePath;
+    extern u16 gPathArrowTiles[];
+    extern M2C_UNK gSpriteDesc16x16;
 
     register void *map;
     register s32 index;
-    s8 *ctx;
-    void *selected;
-    s32 pl;
-    s8 i;
-    s32 dir;
-    s32 s;
-    u16 val;
-    s8 *pe;
-    s32 vec[3];
+    s8 *path;
+    u8 *unit;
+    s32 owner;
+    s8 step;
+    s32 outDir;
+    s32 inDir;
+    u16 arrow;
+    s8 *stepPtr;
+    s32 pos[3];
 
-    ctx = (s8 *)data_0211fb5c;
-    if (ctx[0x5b] == 0) {
+    path = (s8 *)gUnitMovePath;
+    if (path[UNIT_PATH_LENGTH] == 0) {
         return;
     }
     map = (void *)*gCurrentMap;
-    selected = *(void **)((u8 *)map + 0x52d0);
-    if (selected != NULL) {
-        index = selected ? ((s8 *)selected - ((s8 *)map + 0x59a4)) / 14 : 0;
-        pl = (index >> 6) + 1;
+    unit = *(u8 **)((u8 *)map + MAP_CURSOR_UNIT);
+    if (unit != NULL) {
+        index = unit ? ((s8 *)unit - ((s8 *)map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+        owner = (index >> 6) + 1;
     } else {
-        pl = 0;
+        owner = 0;
     }
-    if (*(u16 *)((u8 *)map + 0x52a4) != pl) {
+    if (*(u16 *)((u8 *)map + MAP_CURRENT_PLAYER) != owner) {
         return;
     }
+    /* polygon attribute, then save the 3D matrix stack around the arrows */
     *(volatile s32 *)0x040004A4 = 0x1F0080;
     *(volatile s32 *)0x04000444 = 0;
-    ctx = (s8 *)data_0211fb5c;
-    i = ctx[0x5b];
-    for (; i >= 0; i--) {
-        dir = func_020a125c((u8)i);
-        s = func_020a11fc((u8)i);
-        val = ((u16 (*)[5])data_0211fb88)[dir][s];
-        pe = (s8 *)data_0211fb5c + (s32)i;
-        vec[0] = (s32)pe[0x36] << 4;
-        vec[1] = (s32)pe[0x42] << 4;
-        vec[2] = 0x851;
-        switch ((s32)val - 0xC0) {
+    path = (s8 *)gUnitMovePath;
+    step = path[UNIT_PATH_LENGTH];
+    for (; step >= 0; step--) {
+        outDir = UnitPath_GetOutgoingDir((u8)step);
+        inDir = UnitPath_GetIncomingDir((u8)step);
+        arrow = ((u16 (*)[5])gPathArrowTiles)[outDir][inDir];
+        stepPtr = (s8 *)gUnitMovePath + (s32)step;
+        pos[0] = (s32)stepPtr[UNIT_PATH_X] << 4;
+        pos[1] = (s32)stepPtr[UNIT_PATH_Y] << 4;
+        pos[2] = 0x851;
+        /* nudge an arrowhead half an arrow width toward the direction it shows */
+        switch ((s32)arrow - 0xC0) {
         case 2:
-            vec[0] -= 4;
+            pos[0] -= 4;
             break;
         case 4:
-            vec[1] -= 4;
+            pos[1] -= 4;
             break;
         case 6:
-            vec[0] += 4;
+            pos[0] += 4;
             break;
         case 0:
-            vec[1] += 4;
+            pos[1] += 4;
             break;
         default:
             break;
         }
-        vec[0] = vec[0] * 0x30;
-        vec[1] = vec[1] * 0x30;
-        func_0207d130(&data_027e0064, vec, 0x22F20, 0x1460, 0x30000, 0, 0, 0x80, 0x80, 0x1800, val);
+        pos[0] = pos[0] * 0x30;
+        pos[1] = pos[1] * 0x30;
+        func_0207d130(&gSpriteDesc16x16, pos, 0x22F20, 0x1460, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrow);
     }
     *(volatile s32 *)0x04000448 = 1;
     return;
@@ -415,14 +423,14 @@ void func_020a1508(void) {
 
 void func_020a150c(void *arg0) {
     M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
-    extern M2C_UNK data_027e0064;
+    extern M2C_UNK gSpriteDesc16x16;
     s32 vec[3];
     s32 temp = M2C_FIELD(arg0, s16 *, 0x6C) * 2;
     *(volatile s32 *)0x040004A4 = 0x1F0080;
     vec[0] = (M2C_FIELD(arg0, s32 *, 0x34) << 4) * 0x30;
     vec[1] = (M2C_FIELD(arg0, s32 *, 0x38) << 4) * 0x30;
     vec[2] = 0x891;
-    func_0207d130(&data_027e0064, vec, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, temp + 0x100);
+    func_0207d130(&gSpriteDesc16x16, vec, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, temp + 0x100);
 }
 
 void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {

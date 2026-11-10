@@ -273,12 +273,12 @@ if(changed) func_020b2e60(M2C_FIELD(data_02128690,void **,12));
 return (M2C_UNK)M2C_FIELD(data_02128690,void **,12);
 }
 
-void func_020b1d14(void){extern void *data_02128690,*gKeyState,*data_02101e88;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(data_02128690,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(gKeyState,u16 *,2))return;if(M2C_FIELD(data_02101e88,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
+void func_020b1d14(void){extern void *data_02128690,*gKeyState,*gTouchState;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(data_02128690,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(gKeyState,u16 *,2))return;if(M2C_FIELD(gTouchState,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
 
 #pragma push
 #pragma opt_common_subs on
 void func_020b1d84(void *arg0, s32 arg1, void *arg2) {
-extern void *data_02128690, *data_02101e88, *gCur3DSpriteEngine;
+extern void *data_02128690, *gTouchState, *gCur3DSpriteEngine;
 s32 func_020b20e0();
 void func_0208df84(s16,s16,s16,s16,u16,s32);
 void *p,*q; s32 x,y,r,b,d,v,n,out; s32 force; u16 flags;
@@ -287,7 +287,7 @@ if (!func_020b1bb0()) return;
 p=data_02128690; q=M2C_FIELD(p,void **,12);
 x=M2C_FIELD(q,s16 *,20);y=M2C_FIELD(q,s16 *,22);
 b=y+M2C_FIELD(q,s16 *,26); r=x+M2C_FIELD(q,s16 *,24);
-force=M2C_FIELD(data_02101e88,u8 *,18); if(force==0){
+force=M2C_FIELD(gTouchState,u8 *,18); if(force==0){
 p=data_02128690; v=M2C_FIELD(p,s16 *,16);d=x-v;n=d<0?-d:d; if(n<=1)v=x; else v=M2C_FIELD(p,s16 *,16)+(d>>1); M2C_FIELD(p,s16 *,16)=v;
 p=data_02128690; v=M2C_FIELD(p,s16 *,18);d=y-v;n=d<0?-d:d; if(n<=1)out=y; else out=v+(d>>1); M2C_FIELD(p,s16 *,18)=out;
 p=data_02128690; v=M2C_FIELD(p,s16 *,20);d=r-v;n=d<0?-d:d; if(n<=1)out=r; else out=v+(d>>1); M2C_FIELD(p,s16 *,20)=out;

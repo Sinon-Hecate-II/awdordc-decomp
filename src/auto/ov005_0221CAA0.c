@@ -130,7 +130,7 @@ boxBounds(boxX(p)-1,boxY(p)-1,boxWidth(p)+2,boxHeight(p)+2,sprite);
 func_02089438(M2C_FIELD(arg0,void**,0x38));
 }
 
-extern u8 *data_02101e88;
+extern u8 *gTouchState;
 extern u16 *gKeyState;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
@@ -159,7 +159,7 @@ void func_ov005_0221d160(void *arg0){
     s32 sound = 0;
     s32 selection;
     s32 mode;
-    if (data_02101e88[0x12] || data_02101e88[0x16]) {
+    if (gTouchState[0x12] || gTouchState[0x16]) {
         s32 value;
         func_02088044(M2C_FIELD(arg0, void **, 0x34));
         value = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), s8 *, 9);

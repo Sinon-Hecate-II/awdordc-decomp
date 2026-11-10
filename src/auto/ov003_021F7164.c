@@ -1,6 +1,6 @@
 /* 1 function from 0x021F7164 to 0x021F8C20 (ov003), found by ds-decomp. */
 #include "common.h"
-extern u8 *data_02101e88;
+extern u8 *gTouchState;
 extern u16 *gKeyState;
 extern void *gCur3DSpriteEngine;
 static inline u8 ov003_menu_kind(void *p,u32 kind){
@@ -74,7 +74,7 @@ if(ov003_menu_kind(p,5))return;
 func_ov003_021fca84(p);
 if((u32)(p[0x3e]<<25)>>31)return;
 mode=(u32)(p[0x3b]<<28)>>28;
-inputFlag=data_02101e88[0x12];held=gKeyState[0];down=gKeyState[1];repeat=gKeyState[3];
+inputFlag=gTouchState[0x12];held=gKeyState[0];down=gKeyState[1];repeat=gKeyState[3];
 if(ov003_menu_kind(p,0)||ov003_menu_kind(p,2)||ov003_menu_kind(p,3)||ov003_menu_kind(p,4)||ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8)){
 context=M2C_FIELD(p,void **,0x44);list=M2C_FIELD(p,void **,0x4c);
 selection=M2C_FIELD(context+((M2C_FIELD(M2C_FIELD(p,void **,0x5c),u32 *,4)&255)*512)+(u16)(s16)M2C_FIELD(list,s32 *,0x14)*2,u16 *,0x2e);

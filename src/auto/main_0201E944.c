@@ -5,8 +5,8 @@ typedef struct DnsPacket0201e944 { u16 header[6]; u8 name[48]; } DnsPacket0201e9
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_0201e944(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 func_02007004(void); void MI_CpuCopy8(void*,void*,u32);
-extern M2C_UNK data_02137290;
+void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;label=qname;packet[4]=0;packet[5]=0;
 size=0;p=qname+1;
@@ -19,8 +19,8 @@ ch=*name++;
 }
 *label=size;p[0]=0;p[1]=(u32)b>>8;p[2]=b;p[3]=0;p[4]=1;
 func_0201db20(packet,p+5-(u8*)packet);
-result=0;start=(u32)(func_02007004()>>16);
-while(M2C_FIELD(&data_02137290,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(func_02007004()>>16)-start)<15){
+result=0;start=(u32)(GetSystemTick()>>16);
+while(M2C_FIELD(&gNetStack,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(GetSystemTick()>>16)-start)<15){
 if(!func_0201dbb8()){func_0201a238();continue;}
 p=func_0201d618(&size);
 if(size>12 && c==(u16)((M2C_FIELD(p,u16*,0)>>8)|(M2C_FIELD(p,u16*,0)<<8))){
@@ -102,7 +102,7 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
 s32 func_0201ed20(s32 arg0) {
     s32 func_0201ec20(u8 *, s32 *);
     s32 func_0201ecbc(M2C_UNK, s32, M2C_UNK);
-    extern M2C_UNK data_02137290;
+    extern M2C_UNK gNetStack;
     extern M2C_UNK data_021372f0;
     s32 out = 0;
     u8 flag0 = 1;
@@ -119,33 +119,33 @@ s32 func_0201ed20(s32 arg0) {
     u32 r10h;
     s32 i, r8i;
 
-    r5 = M2C_FIELD(&data_02137290, u32 *, 0x70);
-    r3 = M2C_FIELD(&data_02137290, u32 *, 0x68);
-    r1 = M2C_FIELD(&data_02137290, u32 *, 0x6C);
+    r5 = M2C_FIELD(&gNetStack, u32 *, 0x70);
+    r3 = M2C_FIELD(&gNetStack, u32 *, 0x68);
+    r1 = M2C_FIELD(&gNetStack, u32 *, 0x6C);
     p = (u64)r5 * r3;
     r8 = (u32)p;
     r7 = (u32)(p >> 32);
-    r9 = M2C_FIELD(&data_02137290, u32 *, 0x78);
+    r9 = M2C_FIELD(&gNetStack, u32 *, 0x78);
     r7 = r7 + (r5 * r1);
-    r4 = M2C_FIELD(&data_02137290, u32 *, 0x74);
+    r4 = M2C_FIELD(&gNetStack, u32 *, 0x74);
     r11 = r9 + r8;
     carry = (r11 < r9) ? 1 : 0;
     r7 = r7 + (r4 * r3);
-    r8b = M2C_FIELD(&data_02137290, u32 *, 0x7C);
+    r8b = M2C_FIELD(&gNetStack, u32 *, 0x7C);
     p2 = (u64)r5 * r11;
     r3 = (u32)p2;
     r10h = r8b + r7 + carry;
-    M2C_FIELD(&data_02137290, u32 *, 0x68) = r11;
+    M2C_FIELD(&gNetStack, u32 *, 0x68) = r11;
     r7 = (r10h >> 16);
     carry = (r9 + r3 < r9) ? 1 : 0;
     r5 = r9 + r3;
     r1 = (r4 * r11) + (u32)(p2 >> 32);
-    M2C_FIELD(&data_02137290, u32 *, 0x6C) = r10h;
+    M2C_FIELD(&gNetStack, u32 *, 0x6C) = r10h;
     rand0 = r7;
     r4 = r8b + r1 + carry;
     rand1 = (r4 >> 16);
-    M2C_FIELD(&data_02137290, u32 *, 0x68) = r5;
-    M2C_FIELD(&data_02137290, u32 *, 0x6C) = r4;
+    M2C_FIELD(&gNetStack, u32 *, 0x68) = r5;
+    M2C_FIELD(&gNetStack, u32 *, 0x6C) = r4;
 
     if (func_0201ec20((u8 *)r10, &out) != 0) {
         return out;
@@ -198,7 +198,7 @@ s32 func_0201ee94(void) {
 }
 
 void func_0201eed4(void) {
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     void func_0201a4f8(s32);
     void func_0201a550(s32);
     void func_0201f030(void);
@@ -218,7 +218,7 @@ void func_0201eed4(void) {
     s32 tmp;
     base = (void *)&data_02138ad0;
     ctx = (void *)data_020faf98;
-    func_02007f8c(base, 0, 0x30);
+    MI_CpuFill8(base, 0, 0x30);
     M2C_FIELD(&data_02138ac0, s32 *, 0x14) = M2C_FIELD(ctx, s32 *, 0x18);
     M2C_FIELD(&data_02138ac0, s32 *, 0x18) = M2C_FIELD(ctx, s32 *, 0x1C);
     M2C_FIELD(&data_02138ac0, s32 *, 0x20) = (s32)func_0201f0b4;
@@ -488,7 +488,7 @@ s32 p,old,size;
 size=func_0201f518(arg0);
 old=OS_DisableInterrupts();
 p=M2C_FIELD(data_020faf98,s32 (**)(s32),0x18)(size);
-if(p){func_02007f8c(p,0,size);func_0201f5c0(p,arg0);func_020213f0(p);}
+if(p){MI_CpuFill8(p,0,size);func_0201f5c0(p,arg0);func_020213f0(p);}
 OS_RestoreInterrupts(old);return p;
 }
 

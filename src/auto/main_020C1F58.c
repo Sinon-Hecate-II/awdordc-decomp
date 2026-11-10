@@ -156,43 +156,46 @@ if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)g
 }
 }
 
-void func_020c2aa4(u8 *p){
+/* Advances the CO occupation cut-in by one frame: lets A/Start or a touch
+ * skip it, plays the per-row voice sounds, arms the sprite effects when the
+ * portrait starts, plays the closing voice and bumps the frame counter. */
+void UpdateOccupationScreen(OccupationEffect *effect){
 void func_01ffa6fc(void *);
 void func_020c32bc(s32,s32);
 void PlaySoundEffect(s32);
-u32 func_0207c928(u32,u32);
+u32 Modulo(u32,u32);
 s32 IsPlayerHuman(s32);
 extern u16 *gKeyState;
-extern u8 *data_02101e88;
-u8 *q;
-u16 *a;
-if(p[0x34]==p[0x38]){func_01ffa6fc(p);return;}
-if((*gKeyState&9)||data_02101e88[20]){
-q=*(u8 **)(p+64);
-if(q[5]==20 && p[0x34]<p[0x37]+7)func_020c32bc(q[0],0);
-func_01ffa6fc(p);return;
+extern u8 *gTouchState;
+u8 *co;
+u16 *sprite;
+if(effect->frame==effect->endFrame){func_01ffa6fc(effect);return;}
+if((*gKeyState&(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]){
+co=effect->co;
+if(co[5]==20 && effect->frame<effect->startFrame+7)func_020c32bc(co[0],0);
+func_01ffa6fc(effect);return;
 }
-if(p[0x34]==6){
-PlaySoundEffect((p[0x39]+42)|0x10000);p[0x39]++;
-}else if(p[0x34]>6 && p[0x39]<(*(u8 **)(p+64))[5] && func_0207c928(p[0x34]-6,3)==0){
-PlaySoundEffect((p[0x39]+42)|0x10000);p[0x39]++;
+if(effect->frame==6){
+PlaySoundEffect((effect->progress+42)|0x10000);effect->progress++;
+}else if(effect->frame>6 && effect->progress<effect->co[5] && Modulo(effect->frame-6,3)==0){
+PlaySoundEffect((effect->progress+42)|0x10000);effect->progress++;
 }
-if(p[0x34]==p[0x37]){
-if((*(u8 **)(p+64))[5]==20){
-p[80]=(p[80]&~0xfc)|4;
-a=*(u16 **)(p+68);a[7]=0;a[8]=5;a[6]=8;a[1]=a[2];
+if(effect->frame==effect->startFrame){
+if(effect->co[5]==20){
+effect->flags=(effect->flags&~0xfc)|4;
+sprite=effect->spriteA;sprite[7]=0;sprite[8]=5;sprite[6]=8;sprite[1]=sprite[2];
 }else{
-p[80]=(p[80]&~1)|1;p[80]|=2;
+effect->flags=(effect->flags&~1)|1;effect->flags|=2;
 }
-a=*(u16 **)(p+72);a[7]=0x1c0;a[8]=0x100;a[6]=5;a[1]=a[2];
+sprite=effect->spriteB;sprite[7]=0x1c0;sprite[8]=0x100;sprite[6]=5;sprite[1]=sprite[2];
 }
-q=*(u8 **)(p+64);
-if(q[5]==20){
-if(p[0x34]==p[0x37]+8)func_020c32bc(q[0],0);
-}else if(p[0x34]==p[0x37]+5){
-if(IsPlayerHuman(q[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
+co=effect->co;
+if(co[5]==20){
+if(effect->frame==effect->startFrame+8)func_020c32bc(co[0],0);
+}else if(effect->frame==effect->startFrame+5){
+if(IsPlayerHuman(co[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
 }
-p[0x34]++;
+effect->frame++;
 }
 
 void func_020c2ca0(void *arg0) {
@@ -241,7 +244,7 @@ void func_020c2e34(void) {
 }
 
 void func_020c2e40(void) {
-    void func_020c2aa4();
-    func_020c2aa4();
+    void UpdateOccupationScreen();
+    UpdateOccupationScreen();
 }
 

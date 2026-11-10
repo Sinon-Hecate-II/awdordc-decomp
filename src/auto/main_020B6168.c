@@ -88,11 +88,11 @@ void func_020b6320(void) {
 /* Spawn a path-marker task at tile (x, y) with the given range and tile index,
  * copy its label string into the task, then move the view onto the marker. */
 void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128e98;
     void *task;
-    task = func_01ffa42c(&data_02128cec, parent);
+    task = CreateSpriteObject(&data_02128cec, parent);
     M2C_FIELD(task, s16 *, 0x44) = x;
     M2C_FIELD(task, s16 *, 0x46) = y;
     M2C_FIELD(task, s16 *, 0x4C) = range;
@@ -103,12 +103,12 @@ void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
 }
 
 void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128ea4;
     M2C_UNK *g = &data_02128cec;
     void *p;
-    p = func_01ffa42c(g, arg4);
+    p = CreateSpriteObject(g, arg4);
     M2C_FIELD(p, s16 *, 0x44) = arg0;
     M2C_FIELD(p, s16 *, 0x46) = arg1;
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
@@ -119,12 +119,12 @@ void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
 }
 
 void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128eb0;
     M2C_UNK *g = &data_02128cec;
     void *p;
-    p = func_01ffa42c(g, arg4);
+    p = CreateSpriteObject(g, arg4);
     M2C_FIELD(p, s16 *, 0x44) = arg0;
     M2C_FIELD(p, s16 *, 0x46) = arg1;
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
@@ -175,10 +175,10 @@ void func_020b6444(void *arg0) {
 }
 
 void func_020b654c(s32 arg0) {
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     M2C_UNK func_0207b7a4(s32);
     extern M2C_UNK data_02128adc;
-    M2C_FIELD(func_01ffa42c(&data_02128adc), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02128adc), s32 *, 0x5C) = arg0;
     func_0207b7a4(arg0);
 }
 
@@ -272,8 +272,8 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_02128b8c;
     void *temp_r0;
 
-    void *func_01ffa42c();
- temp_r0 = func_01ffa42c(&data_02128b8c, arg2);
+    void *CreateSpriteObject();
+ temp_r0 = CreateSpriteObject(&data_02128b8c, arg2);
     M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
     func_0207b774(arg0, arg1);
@@ -290,9 +290,9 @@ case 2:break;case 3:break;case 4:func_020b5964(a,p);break;case 5:break;case 6:ca
 }}
 #pragma opt_propagation reset
 s32 func_020b689c(s32 a,s32 b) {
-void func_020a488c(s32,s16 *);void *func_01ffa42c();extern M2C_UNK data_02128abc;
+void func_020a488c(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK data_02128abc;
 s16 xy[2];s32 p;
-func_020a488c(a,xy);p=func_01ffa42c(&data_02128abc,b);
+func_020a488c(a,xy);p=CreateSpriteObject(&data_02128abc,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0];M2C_FIELD(p,s32 *,0x3c)=xy[1];
 M2C_FIELD(p,s16 *,0x6c)=(u32)(M2C_FIELD(a,u16 *,2)<<22)>>28;
 M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(a,u8 *,4);
@@ -300,8 +300,8 @@ M2C_FIELD(p,s32 *,0x34)=a;return p;
 }
 
 s32 func_020b68f0(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_02128abc;extern void **data_027e0058;void *func_01ffa42c();
-s32 p=func_01ffa42c(&data_02128abc,c);
+extern M2C_UNK data_02128abc;extern void **data_027e0058;void *CreateSpriteObject();
+s32 p=CreateSpriteObject(&data_02128abc,c);
 void *base;
 M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
 M2C_FIELD(p,s16 *,0x6c)=1;base=*data_027e0058;
@@ -400,8 +400,8 @@ void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
     extern M2C_UNK data_02128cac;
     void *temp_r0;
 
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-temp_r0 = func_01ffa42c(&data_02128cac, arg3);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
+temp_r0 = CreateSpriteObject(&data_02128cac, arg3);
     M2C_FIELD(temp_r0, s32 *, 0x38) = (s32) (arg0 + 1);
     M2C_FIELD(temp_r0, s32 *, 0x3C) = (s32) (arg1 + 1);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;

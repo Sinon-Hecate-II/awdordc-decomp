@@ -6,7 +6,7 @@ typedef struct {u8 fuel:7;u8 flag:1;} DisplayFuel;
 extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern s32 data_ov000_021df5e4;
-extern u32 data_ov000_021b5bfc[];
+extern u32 gUnitKindStats[];
 extern u8 data_ov000_021b5c0a[],data_ov000_021b5c05[],data_ov000_021b5c0b[];
 int func_020a8b9c(void);int func_020a8b90(void);int func_020a8bb4(void);int func_020a8ba8(void);int func_020a8b78(void);int func_020a8b84(void);
 void func_0209c048(s16,s16,void *,int,int,int);
@@ -22,7 +22,7 @@ extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern s8 data_ov000_021aab79[];
 extern M2C_UNK data_ov000_021df5e4;
-extern u32 data_ov000_021b5bfc[];
+extern u32 gUnitKindStats[];
 void *func_020e34bc(s32);void func_020e35cc(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 func_0207c8ec(s32,s32);
 s32 n=0,i,j,k,l,out,t,v,h,idx,z;
@@ -53,7 +53,7 @@ if(h==((u32)(map[0x59ae + idx*14]<<25)>>25))tmp[out++]=z;
 case 3:
 for(h=10;h>=-1;h--)for(i=0;i<n;i++){
 map=*gCurrentMap;z=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i];idx=M2C_FIELD(map,u16 *,0x52a8)+z;p=map+0x59a4+idx*14;
-attr=(u8 *)data_ov000_021b5bfc+((u32)(p[0]<<26)>>26)*112;
+attr=(u8 *)gUnitKindStats+((u32)(p[0]<<26)>>26)*112;
 if(attr[9])v=(u32)(M2C_FIELD(p,u16 *,6)<<21)>>28;
 else {v=-1;if(attr[15])v=10;}
 if(v==h)tmp[out++]=z;
@@ -192,7 +192,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  func_0209c048(3,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),index+1,0,0);
  if(icon)func_0209c024((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
  func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
- func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)data_ov000_021b5bfc+u->unk0*112),0,0,(u16)data_ov000_021df5e4);
+ func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)data_ov000_021df5e4);
  health=u->unk6;if(health==0)health=0;else health=func_0207c8ec(health-1,10)+1;
  func_0209c048(18,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),health,0,0);
  func_0209c048(21,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayFuel *)((u8 *)u+10))->fuel,0,0);

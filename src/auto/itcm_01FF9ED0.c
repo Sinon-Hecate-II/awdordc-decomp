@@ -210,7 +210,7 @@ s32 func_01ffa3f4(s32 a,s32 b,s32 c) {
  return (s32)p;
 }
 
-void func_01ffa42c(M2C_UNK arg0, M2C_UNK arg1) {
+void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_01ffa3f4(M2C_UNK, M2C_UNK, s32);
     extern s32 gCur3DSpriteEngine;
     func_01ffa3f4(arg0, arg1, gCur3DSpriteEngine);
@@ -218,7 +218,7 @@ void func_01ffa42c(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_01ffa444(s32 a,s32 b) {
  if(b==0)b=7;
- if(b<12)func_01ffa3dc(a,b);else func_01ffa42c(a,b);
+ if(b<12)func_01ffa3dc(a,b);else CreateSpriteObject(a,b);
 }
 
 void func_01ffa468(void *p) {
@@ -380,7 +380,7 @@ void func_01ffa8bc(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x2E) = arg1;
 }
 
-void func_01ffa8c4(void *p,s32 value) {
+void SetSpriteAnimation(void *p,s32 value) {
  s16 *q=M2C_FIELD(p,s16 **,4);
  s16 v=*q;
  if(v==0)return;

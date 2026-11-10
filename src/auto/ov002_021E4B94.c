@@ -1,7 +1,7 @@
 /* 3 functions from 0x021E4B94 to 0x021E59E4 (ov002), found by ds-decomp. */
 #include "common.h"
 extern u16 **gCur3DSpriteEngine;
-extern u8 data_027e00ac[],data_027e007c[],gSpriteDesc16x8[],data_027e0064[],data_ov002_021f30ff[],data_ov002_021f3101[],gPlayerSettings[];
+extern u8 data_027e00ac[],data_027e007c[],gSpriteDesc16x8[],gSpriteDesc16x16[],data_ov002_021f30ff[],data_ov002_021f3101[],gPlayerSettings[];
 void func_02087064(s32,s32,s32,s32,s32);
 void func_020878c4(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_ov002_021e482c(s32,s32,s32,s32);
@@ -100,11 +100,11 @@ AddSprite((u16)((x)&511),(u16)((yy)&255),(u16)((0x3ff&((0x112)>>((u32)(**gCur3DS
 
 x=(s16)(x+20);
 for(i=0,xx=x;i<gPlayerSettings[((u32)(p[3]<<28)>>28)*24+17];i++,xx+=10){
-AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x116)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),data_027e0064,0);
+AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x116)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
 
 }
 for(xx=x+i*10;i<4;i++,xx+=10){
-AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x11a)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),data_027e0064,0);
+AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x11a)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
 
 }}
 if(func_ov002_021e4b68() && (s8)p[4]!=-1){

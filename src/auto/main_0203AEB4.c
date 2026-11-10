@@ -11,11 +11,11 @@ s32 func_0203aeb4(s32 a) {
 }
 
 void func_0203af18(void) {
- extern M2C_UNK data_0213d38c; u64 func_02007004(void);
+ extern M2C_UNK data_0213d38c; u64 GetSystemTick(void);
  u64 t; void *p=M2C_FIELD(&data_0213d38c,void **,8);
  if(!p)return;
  M2C_FIELD(p,s32 *,8)=0;
- t=func_02007004();
+ t=GetSystemTick();
  M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u64 *,0xC)=t;
 }
 
@@ -47,14 +47,14 @@ void func_0203b088(void) {
 }
 
 s32 func_0203b09c(void) {
- extern M2C_UNK data_0213d38c; u64 func_02007004(void);
+ extern M2C_UNK data_0213d38c; u64 GetSystemTick(void);
  u64 func_02072088(u64,u64);
  s32 func_0204db50(void *);
  s32 r=0; void *p=M2C_FIELD(&data_0213d38c,void **,8);
- if(func_02072088((func_02007004()-M2C_FIELD(p,u64 *,0xC))<<6,0x82EA) >=300) {
+ if(func_02072088((GetSystemTick()-M2C_FIELD(p,u64 *,0xC))<<6,0x82EA) >=300) {
  M2C_FIELD(p,s32 *,8)++;
  r=func_0204db50(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4));
- M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u64 *,0xC)=func_02007004();
+ M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u64 *,0xC)=GetSystemTick();
  }
  return r;
 }
@@ -123,7 +123,7 @@ void func_0203b3c4(void) {
 }
 
 #pragma opt_propagation off
-void func_0203b3fc(u8 *a,u32 b,u32 c){extern M2C_UNK data_0213d38c;void func_02007f8c(void*,s32);void *p=M2C_FIELD(&data_0213d38c,void **,8);if(!p)return;func_02007f8c(a+b*12,0);p=M2C_FIELD(&data_0213d38c,void **,8);if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));}
+void func_0203b3fc(u8 *a,u32 b,u32 c){extern M2C_UNK data_0213d38c;void MI_CpuFill8(void*,s32);void *p=M2C_FIELD(&data_0213d38c,void **,8);if(!p)return;MI_CpuFill8(a+b*12,0);p=M2C_FIELD(&data_0213d38c,void **,8);if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));}
 #pragma opt_propagation reset
 s32 func_0203b454(u8 *a,s32 b,s32 c) {
  extern M2C_UNK data_0213d38c; s32 GetSessionPlayerId(s32); s32 func_02031e38(void *);

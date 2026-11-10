@@ -3,7 +3,7 @@
 
 void func_ov003_021f9b30(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK ScrollListTo(void *, u8, M2C_UNK);
     M2C_UNK func_020ab3b0(void *, u8, M2C_UNK);
     u32 func_020d886c();
@@ -21,7 +21,7 @@ void func_ov003_021f9b30(void *arg0) {
     u32 temp_r0_3;
     void *temp_r0;
 
-    func_02007f8c(M2C_FIELD(arg0, s32 *, 0x44) + 0x186C, 0, 0xD);
+    MI_CpuFill8(M2C_FIELD(arg0, s32 *, 0x44) + 0x186C, 0, 0xD);
     func_01ff9ce8(0);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
     temp_r0 = M2C_FIELD(arg0, void **, 0x4C);
@@ -93,7 +93,7 @@ void func_ov003_021f9b30(void *arg0) {
 }
 
 void func_ov003_021f9e50(void *arg0,s16 arg1,s16 arg2){
-void AddSprite(u16,u8,u16,void *,s32);s32 func_0207c8ec(s32,s32);s32 func_0207c928(s32,s32);
+void AddSprite(u16,u8,u16,void *,s32);s32 func_0207c8ec(s32,s32);s32 Modulo(s32,s32);
 void func_020a92bc(void *,s16);void func_020a94fc(void *);s32 func_020c1980(void *,s32,s32);s32 func_ov003_02200ae8(u8);
 extern u8 data_027e0074[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
 s32 sp14,sp10,spC,sp8,sp4; s16 x,y,value;void *p; s32 i,palette,tile;u16 **old;
@@ -103,7 +103,7 @@ i=0;tile=0x210;sp8=arg2;
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
 spC=-1;sp14=0x1ff;sp10=0x3ff;
 do{
-x=func_0207c928(i,3)*22+sp4;
+x=Modulo(i,3)*22+sp4;
 y=func_0207c8ec(i,3)*28+sp8;
 p=M2C_FIELD(arg0,void **,0x44);
 value=func_020c1980((u8 *)p+0x1830,func_ov003_02200ae8(i),spC);

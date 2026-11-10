@@ -8,7 +8,7 @@ typedef struct MapScan { u8 pad0[0xa10]; u16 cells[0x16a4]; u16 rows[0xcf6]; u16
 void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
     s32 func_ov007_02214d88(s32 low, s32 high);
     s32 Map_PickRandomInteriorTile(s32 *x, s32 *y, s32 tileValue, void *avoidPoint);
-    MapPoint func_ov007_022157fc(s32 x, s32 y, s32 side, s32 radius, s32 distance);
+    MapPoint Map_PlaceSideBase(s32 x, s32 y, s32 side, s32 radius, s32 distance);
     MapPoint func_ov007_02215a0c(s32 side, s32 radius, s32 distance);
 
     s32 x, y;
@@ -16,14 +16,14 @@ void func_ov007_02216c94(M2C_UNK *first, M2C_UNK *second) {
     s32 distance = func_ov007_02214d88(1, 3);
 
     if (Map_PickRandomInteriorTile(&x, &y, 1, 0) == 1) {
-        MapPoint placed = func_ov007_022157fc(x, y, 1, radius, distance);
+        MapPoint placed = Map_PlaceSideBase(x, y, 1, radius, distance);
         ((MapPoint *)first)->x = placed.x; ((MapPoint *)first)->y = placed.y;
     } else {
         MapPoint placed = func_ov007_02215a0c(1, radius, distance);
         ((MapPoint *)first)->x = placed.x; ((MapPoint *)first)->y = placed.y;
     }
     if (Map_PickRandomInteriorTile(&x, &y, 1, first) == 1) {
-        MapPoint placed = func_ov007_022157fc(x, y, 2, radius, distance);
+        MapPoint placed = Map_PlaceSideBase(x, y, 2, radius, distance);
         ((MapPoint *)second)->x = placed.x; ((MapPoint *)second)->y = placed.y;
     } else {
         MapPoint placed = func_ov007_02215a0c(2, radius, distance);
@@ -94,46 +94,50 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
     }
 }
 
-void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *arg3, M2C_UNK *arg4) {
-    s32 func_ov007_02214e24(void);
+/* Generates the map's paths: one between the two main base points and, when the
+ * three branch points are set, one from each of the first two to the junction.
+ * Finally every cell the paths cross that is neither a property nor a straight
+ * corridor is turned into plain ground. */
+void Map_GeneratePaths(M2C_UNK *baseA, M2C_UNK *baseB, M2C_UNK *branchA, M2C_UNK *branchB, M2C_UNK *junction) {
+    s32 Map_InitMarkerGrid(void);
     s32 PickPathEndpoints(s32, s32, s32, s32, s32, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK DrawOrthogonalPath(s16, s16, s16, s16, M2C_UNK);
-    M2C_UNK func_ov007_0221b8c0(s32, s32);
-    M2C_UNK func_ov007_02215704(s32, s32);
+    M2C_UNK Map_IsPropertyTile(s32, s32);
+    M2C_UNK Map_PlaceStraightCorridor(s32, s32);
     M2C_UNK Map_SetCellTile(s32, s32, s32);
     extern void **gCurrentMap;
-    extern s8 data_ov007_02221a84[];
-    MapPoint sp18, sp14;
-    s32 sp10;
+    extern s8 gMapMarkerGrid[];
+    MapPoint pathStart, pathEnd;
+    s32 orientation;
     MapScan *map;
     register s32 x, y;
-    register s8 *data;
+    register s8 *markers;
 
-    func_ov007_02214e24();
-    if (PickPathEndpoints(((MapPoint *)arg0)->x, ((MapPoint *)arg0)->y, ((MapPoint *)arg1)->x, ((MapPoint *)arg1)->y, 4, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-        DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+    Map_InitMarkerGrid();
+    if (PickPathEndpoints(((MapPoint *)baseA)->x, ((MapPoint *)baseA)->y, ((MapPoint *)baseB)->x, ((MapPoint *)baseB)->y, 4, (M2C_UNK *)&pathStart, (M2C_UNK *)&pathEnd, (M2C_UNK *)&orientation)) {
+        DrawOrthogonalPath(pathStart.x, pathStart.y, pathEnd.x, pathEnd.y, (M2C_UNK)orientation);
     }
-    if (((MapPoint *)arg2)->x != 0xFF && ((MapPoint *)arg3)->x != 0xFF && ((MapPoint *)arg4)->x != 0xFF) {
-        if (PickPathEndpoints(((MapPoint *)arg2)->x, ((MapPoint *)arg2)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-            DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+    if (((MapPoint *)branchA)->x != MAP_POINT_NONE && ((MapPoint *)branchB)->x != MAP_POINT_NONE && ((MapPoint *)junction)->x != MAP_POINT_NONE) {
+        if (PickPathEndpoints(((MapPoint *)branchA)->x, ((MapPoint *)branchA)->y, ((MapPoint *)junction)->x, ((MapPoint *)junction)->y, 2, (M2C_UNK *)&pathStart, (M2C_UNK *)&pathEnd, (M2C_UNK *)&orientation)) {
+            DrawOrthogonalPath(pathStart.x, pathStart.y, pathEnd.x, pathEnd.y, (M2C_UNK)orientation);
         }
-        if (PickPathEndpoints(((MapPoint *)arg3)->x, ((MapPoint *)arg3)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-            DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+        if (PickPathEndpoints(((MapPoint *)branchB)->x, ((MapPoint *)branchB)->y, ((MapPoint *)junction)->x, ((MapPoint *)junction)->y, 2, (M2C_UNK *)&pathStart, (M2C_UNK *)&pathEnd, (M2C_UNK *)&orientation)) {
+            DrawOrthogonalPath(pathStart.x, pathStart.y, pathEnd.x, pathEnd.y, (M2C_UNK)orientation);
         }
     }
 
     y = 0;
     map = (MapScan *)*gCurrentMap;
     if ((s32)map->height <= 0) return;
-    data = data_ov007_02221a84;
+    markers = gMapMarkerGrid;
     do {
         map = (MapScan *)*gCurrentMap;
         x = 0;
         if ((s32)map->width > 0) {
             do {
-                if (data[x] == 2) {
-                    if (func_ov007_0221b8c0(x, y) != 1) {
-                        if (func_ov007_02215704(x, y) != 1) {
+                if (markers[x] == MAP_MARKER_PATH) {
+                    if (Map_IsPropertyTile(x, y) != 1) {
+                        if (Map_PlaceStraightCorridor(x, y) != 1) {
                             Map_SetCellTile(x, y, 6);
                         }
                     }
@@ -143,7 +147,7 @@ void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *a
             } while (x < (s32)map->width);
         }
         y += 1;
-        data += 0x1E;
+        markers += MAP_MARKER_STRIDE;
         map = (MapScan *)*gCurrentMap;
     } while (y < (s32)map->height);
 
@@ -343,7 +347,7 @@ void func_ov007_02217a5c(void) {
     M2C_UNK func_ov007_02216a74();
     M2C_UNK func_ov007_02216bf4();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
-    void func_ov007_02217110(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
+    void Map_GeneratePaths(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217608(void);
     M2C_UNK func_ov007_02217680();
@@ -381,7 +385,7 @@ void func_ov007_02217a5c(void) {
     func_ov007_02216bf4();
     func_ov007_02216c94(&sp14, &sp10);
     func_ov007_02216e08(&sp14, &sp10, &spC, &sp8, &sp4);
-    func_ov007_02217110(&sp14, &sp10, &spC, &sp8, &sp4);
+    Map_GeneratePaths(&sp14, &sp10, &spC, &sp8, &sp4);
     func_ov007_02217598(&sp14, &sp10);
     func_ov007_02217608();
     func_ov007_02217680();

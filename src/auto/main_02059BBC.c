@@ -60,10 +60,10 @@ u8 *func_02059bbc(void *out_, void *in_)
 s32 func_02059cc4(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}
 
 s32 func_02059cf8(void *arg0, s32 arg1) {
-    s32 func_02037794(s32);
+    s32 gpiMalloc(s32);
     s32 temp_r0;
 
-    temp_r0 = func_02037794(arg1);
+    temp_r0 = gpiMalloc(arg1);
     M2C_FIELD(arg0, s32 *, 0) = temp_r0;
     if (temp_r0 == 0) {
         return 0;
@@ -266,12 +266,12 @@ s32 func_0205a360(void *arg0, void *arg1) {
 
 /* Invoke the send-filter callback entry, with nesting/refcount bookkeeping and release when idle. */
 s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
-    void *func_02048690(int, int);
+    void *Vector_GetItem(int, int);
     void *callback;
     extern int data_020ff7a4, data_020ff77c, data_020ff6ec;
     if (!connection) AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff6ec, 0x101);
     if (!connection) return 1;
-    callback = func_02048690(M2C_FIELD(connection, void **, 0x98), callbackIndex);
+    callback = Vector_GetItem(M2C_FIELD(connection, void **, 0x98), callbackIndex);
     if (!callback) return 1;
     if (!c || !b) { b = 0; c = 0; }
     M2C_FIELD(connection, int *, 0x24)++;
@@ -288,11 +288,11 @@ s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
 
 /* Invoke receive-filter callback entry 0 (or a), with nesting/refcount bookkeeping; release the filter table when idle. */
 s32 gti2ReceiveFilterCallback(void *p,void *a,s32 b,s32 c,s32 d){
-void *func_02048690(int,int);void *entry;
+void *Vector_GetItem(int,int);void *entry;
 extern int data_020ff7a4,data_020ff77c,data_020ff71c;
 if(!p)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff71c,0x12d);
 if(!p)return 1;
-entry=func_02048690(M2C_FIELD(p,void **,0x9c),a);if(!entry)return 1;
+entry=Vector_GetItem(M2C_FIELD(p,void **,0x9c),a);if(!entry)return 1;
 if(!c||!b){b=0;c=0;}
 M2C_FIELD(p,int *,0x24)++;
 M2C_FIELD(M2C_FIELD(p,void **,8),int *,0x1c)++;
@@ -336,15 +336,15 @@ if(M2C_FIELD(p,int *,0x14)&&!M2C_FIELD(p,int *,0x1c)){func_0205cef8(p);return 0;
 return 1;
 }
 
-s32 func_0205a830(s32 a,void **p) {s32 func_0205cf54(s32);s32 r=func_0205cf54(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=0;M2C_FIELD(*p,s32 *,16)=1;return 0;}
+s32 func_0205a830(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=0;M2C_FIELD(*p,s32 *,16)=1;return 0;}
 
-s32 func_0205a860(s32 a,void **p) {s32 func_0205cf54(s32);s32 r=func_0205cf54(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
+s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
 
 s32 func_0205a890(void *p,s32 a,s32 b,Unk0205Copy *q,...) {
 s32 func_0205d70c(s32 *,s32 *);void func_02059aa0(void *);u8 *func_02059bbc(void *,void *);void func_0205c694(void *,void *);
 s32 local[8];s32 r;
 func_0205d70c(&a,&b);
-if(b>0){r=func_02037794(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;MemCopy(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
+if(b>0){r=gpiMalloc(b);M2C_FIELD(p,s32 *,0x38)=r;if(!r)return 1;MemCopy(r,a,b);M2C_FIELD(p,s32 *,0x3c)=b;}
 if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q;
 func_02059aa0(local);func_02059bbc((u8 *)p+0x68,local);func_0205c694(p,local);M2C_FIELD(p,s32 *,12)=0;return 0;
 }
@@ -363,12 +363,12 @@ func_0205d70c(&a,&b);func_0205c854(p,a,b);M2C_FIELD(p,s32 *,12)=6;
 }
 
 s32 func_0205a9ec(void *arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_02049208();
+    s32 GetTickCountMs();
     s32 func_0205d228(s32, s32, u16, M2C_UNK, s32);
     if (func_0205d228(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4), arg1, arg2) == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x88) = func_02049208();
+    M2C_FIELD(arg0, s32 *, 0x88) = GetTickCountMs();
     return 1;
 }
 
@@ -383,9 +383,9 @@ return 1;
 }
 
 s32 func_0205aad8(void *p,u32 t) {
-s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_0205cbb4(void *,void *);
-s32 i,n;n=func_02048688(M2C_FIELD(p,s32 *,96));
-for(i=0;i<n;i++){void *q=func_02048690(M2C_FIELD(p,s32 *,96),i);if(t-M2C_FIELD(q,u32 *,12)>1000){if(!func_0205cbb4(p,q))return 0;}}return 1;
+s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 func_0205cbb4(void *,void *);
+s32 i,n;n=Vector_GetCount(M2C_FIELD(p,s32 *,96));
+for(i=0;i<n;i++){void *q=Vector_GetItem(M2C_FIELD(p,s32 *,96),i);if(t-M2C_FIELD(q,u32 *,12)>1000){if(!func_0205cbb4(p,q))return 0;}}return 1;
 }
 
 s32 func_0205ab44(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}

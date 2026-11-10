@@ -1,5 +1,6 @@
 /* 42 functions from 0x020C6CF8 to 0x020C7CD0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 
 void func_020c6cf8(void) {
@@ -49,32 +50,36 @@ void func_020c6dec(void) {
     func_020c0784();
 }
 
-s32 func_020c6dfc(void) {
-extern void **gCurrentMap; extern u16 data_02168f14;
+/* Returns 0 when the current player may select the unit under the cursor: the
+ * cursor must have just moved onto it, its tile, the map rules, the player's
+ * army and commander must all allow it, and the player must be able to afford
+ * it; otherwise returns 2. Human counterpart of FindBestSelectableUnit. */
+s32 CanSelectCursorUnit(void) {
+extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
 s32 func_020a8a14(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
 s32 func_020a88e8(s32);s32 GetPlayerCommanderId(s32);s32 func_020a735c(void *);
 s32 func_020a2788(s32,s32);s32 func_020d2d50(s32,s32);
-u8 *p; s32 a; s32 b; s32 player;
-if(((u32)(data_02168f14<<18)>>31)==0)return 2;
-p=*gCurrentMap;
-if(M2C_FIELD(p,s16 *,0x52dc)!=M2C_FIELD(p,s16 *,0x52d8) || M2C_FIELD(p,s16 *,0x52de)!=M2C_FIELD(p,s16 *,0x52da))return 2;
-if(IsUnitSelected(M2C_FIELD(p,void **,0x52d0)))return 2;
-p=*gCurrentMap;
-if(!func_020cf908(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD(p,u16 *,0x52a4),(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26))return 2;
-p=*gCurrentMap;
-if(func_020a8a14(M2C_FIELD(p,u16 *,0x5142),M2C_FIELD(p,u16 *,0x52a4))&64)return 2;
-p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
-if(M2C_FIELD(p+player*140,Bits020a8c10 *,0x6810).value==0)return 2;
+u8 *map; s32 value; s32 unitKind; s32 player;
+if(((u32)(gMapConfig<<18)>>31)==0)return 2;
+map=*gCurrentMap;
+if(M2C_FIELD(map,s16 *,MAP_CURSOR_X)!=M2C_FIELD(map,s16 *,MAP_CURSOR_OLD_X) || M2C_FIELD(map,s16 *,MAP_CURSOR_Y)!=M2C_FIELD(map,s16 *,MAP_CURSOR_OLD_Y))return 2;
+if(IsUnitSelected(M2C_FIELD(map,void **,MAP_CURSOR_UNIT)))return 2;
+map=*gCurrentMap;
+if(!func_020cf908(M2C_FIELD(map,s16 *,MAP_CURSOR_X),M2C_FIELD(map,s16 *,MAP_CURSOR_Y),M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26))return 2;
+map=*gCurrentMap;
+if(func_020a8a14(M2C_FIELD(map,u16 *,MAP_ID),M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))&64)return 2;
+map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,Bits020a8c10 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE).value==0)return 2;
 if(GetPlayerSelectedUnit(player))return 2;
-if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 2;
-if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))return 2;
-a=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-b=func_020a735c(M2C_FIELD(*gCurrentMap,void **,0x52d0));
-if(!func_020a2788(a,b))return 2;
-p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
-a=func_020d2d50(player,(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26);
-return a>M2C_FIELD(p+player*140,s32 *,0x67a4)?2:0;
+if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 2;
+if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))return 2;
+value=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
+unitKind=func_020a735c(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));
+if(!func_020a2788(value,unitKind))return 2;
+map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+value=func_020d2d50(player,(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26);
+return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0;
 }
 
 void func_020c6ffc(void) {
@@ -205,10 +210,10 @@ s32 func_020c7454(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_020c7470(s32 arg0,s32 arg1,s32 *arg2) {
- s32 func_0207cfb8(void *); void func_02079c6c(s32,s32,s32 *);
+ s32 GetViewZoom(void *); void func_02079c6c(s32,s32,s32 *);
  extern void **gCurrentMap; extern u8 data_02164d5c[];
  s32 n;
- if(func_0207cfb8((u8 *)*gCurrentMap+0x6ef8)<=0) n=16; else n=24;
+ if(GetViewZoom((u8 *)*gCurrentMap+0x6ef8)<=0) n=16; else n=24;
  func_02079c6c(arg0,arg1,arg2);
  if(data_02164d5c[1]) { arg2[0]-=24; arg2[0]=func_020c7454(arg2[0],0,128); return; }
  if(arg2[0]<160) arg2[0]+=n/2; else arg2[0]-=n/2+48;
@@ -284,7 +289,7 @@ if(flags&32){
 M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=M2C_FIELD(*gCurrentMap,s16 *,0x52dc);
 M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=M2C_FIELD(*gCurrentMap,s16 *,0x52de);
 func_0207b764(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
-func_01ffa8c4(a,0);func_01ffa6fc(a);return;}
+SetSpriteAnimation(a,0);func_01ffa6fc(a);return;}
 if(flags&256){func_020ccca0();return;}
 if(flags&64){func_020d8fa0();return;}
 }

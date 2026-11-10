@@ -2,7 +2,7 @@ data_027e0000 kind:data(any) addr:0x027e0000
 data_027e0021 kind:data(any) addr:0x027e0021
 gCurrentMap kind:data(any) addr:0x027e0058
 gSpriteDesc32x16 kind:data(any) addr:0x027e005c
-data_027e0064 kind:data(any) addr:0x027e0064
+gSpriteDesc16x16 kind:data(any) addr:0x027e0064
 data_027e006c kind:data(any) addr:0x027e006c
 data_027e0074 kind:data(any) addr:0x027e0074
 data_027e007c kind:data(any) addr:0x027e007c

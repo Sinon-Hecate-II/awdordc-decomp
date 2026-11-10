@@ -269,8 +269,8 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
     void func_0202e12c(M2C_UNK);
     M2C_UNK func_0202e0ec(void);
     M2C_UNK func_02029c74(M2C_UNK *, M2C_UNK);
-    void func_02005df4(void *);
-    void func_02007f8c(void *, M2C_UNK, M2C_UNK);
+    void OS_WakeupThread(void *);
+    void MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213c920;
     extern M2C_UNK data_0213c440;
     extern M2C_UNK data_0213c290;
@@ -292,7 +292,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
             if (n > 0) {
                 i = 0;
                 while (i < n) {
-                    func_02007f8c(*(void **)((u8 *)node + 0x14 + i * 4), (M2C_UNK)i, *(M2C_UNK *)((u8 *)node + 0x2c));
+                    MI_CpuFill8(*(void **)((u8 *)node + 0x14 + i * 4), (M2C_UNK)i, *(M2C_UNK *)((u8 *)node + 0x2c));
                     i++;
                 }
             }
@@ -327,7 +327,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
     }
     *(s32 *)((u8 *)arg4 + 0x11c) = *(s32 *)((u8 *)arg4 + 0x11c) + 1;
     func_02029c74((M2C_UNK *)((u8 *)base + 0x4e0), node);
-    func_02005df4((void *)((u8 *)base + 0x4c0));
+    OS_WakeupThread((void *)((u8 *)base + 0x4c0));
 }
 
 void func_0202e32c(void *arg0) {

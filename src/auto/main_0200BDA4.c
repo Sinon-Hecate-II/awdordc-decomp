@@ -72,9 +72,9 @@ u32 func_0200bf0c(void *arg0) {
 }
 #pragma opt_strength_reduction reset
 void func_0200bf28(void *arg0) {
-    M2C_UNK func_020067a8(s32, s32);
+    M2C_UNK DC_InvalidateRange(s32, s32);
     M2C_UNK func_0200681c(s32, s32);
-    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
@@ -83,8 +83,8 @@ void func_0200bf28(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, s32 *, 8);
     temp_r6 = temp_r5 + M2C_FIELD(arg0, s32 *, 0xC);
     func_0200681c(temp_r4, temp_r6);
-    func_020067a8(temp_r4, temp_r6);
-    func_02007f8c(temp_r4 + temp_r5, 0, temp_r6 - temp_r5);
+    DC_InvalidateRange(temp_r4, temp_r6);
+    MI_CpuFill8(temp_r4 + temp_r5, 0, temp_r6 - temp_r5);
 }
 
 void func_0200bf64(u32 *arg0,void *arg1) {
@@ -101,7 +101,7 @@ void func_0200bf64(u32 *arg0,void *arg1) {
 #pragma scheduling off
 s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7)
 {
-  void func_0200b774(void *);
+  void InitFileRequest(void *);
   s32 func_0200b99c(void *, s32, u32, u32, s32);
   s32 func_0200bbe0(void *, void *, s32);
   void func_0200ba9c(void *);
@@ -128,7 +128,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   }
   arg2++;
   arg2--;
-  func_0200b774(work);
+  InitFileRequest(work);
   if (new_var = !func_0200b99c(work, arg3, base + shifted, base + size, -(shifted = 1)))
   {
     return 0;
@@ -152,14 +152,14 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
 }
 #pragma scheduling reset
 s32 func_0200c084(u32 *arg0,s32 arg1,u32 arg2) {
-void func_0200b774(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200ba9c(void *);void MI_CpuCopy8();
+void InitFileRequest(void *);s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200ba9c(void *);void MI_CpuCopy8();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
 u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
 if(p[0]){
 if(p[1]<=(arg2<<5))return 0;
 MI_CpuCopy8(p[0]+(arg2<<5),arg0,32);
-arg0[8]=arg1;func_0200b774(work);func_0200bf64((u32 *)&pair,arg0);
+arg0[8]=arg1;InitFileRequest(work);func_0200bf64((u32 *)&pair,arg0);
 if(!func_0200b9e4(work,pair))return 0;
 arg0[9]=work[9];arg0[10]=work[10]-work[9];func_0200ba9c(work);return 1;
 }
@@ -167,11 +167,11 @@ return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 
 }
 #pragma optimization_level 4
 s32 func_0200c180(u32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK func_02007f8c(s32,M2C_UNK,s32);
+M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32);
 void MI_CpuCopy8();void func_0200cd68();
 extern u32 data_020f5224[2];
 u32 out[5];u8 work[64];u32 i;u32 *p;
-func_02007f8c((s32)out,0,20);
+MI_CpuFill8((s32)out,0,20);
 MI_CpuCopy8(data_020f5224[0],work,data_020f5224[1]);
 func_0200cd68(out,arg1,arg2,work,data_020f5224[1]);
 p=out;for(i=0;i<20;i+=4,p++) if(*p!=*(u32 *)(arg0+i)) break;
@@ -181,7 +181,7 @@ return i==20;
 void func_0200c214(void *arg0) {
     u32 func_0200bf0c(void *);
     s32 func_0200c180(u32, s32, s32);
-    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     void func_02007958(void);
     void func_02000970(s32);
     M2C_UNK func_020067e0(M2C_UNK, M2C_UNK);
@@ -213,7 +213,7 @@ void func_0200c214(void *arg0) {
             if (idx < (u32)count) {
                 p = start + idx * 20;
                 if (func_0200c180((u32)p, M2C_FIELD(r5, s32 *, 4), r4) == 0) {
-                    func_02007f8c(M2C_FIELD(r5, s32 *, 4), 0, r4);
+                    MI_CpuFill8(M2C_FIELD(r5, s32 *, 4), 0, r4);
                     func_02007958();
                     return;
                 }
@@ -355,7 +355,7 @@ void func_0200c494(void *arg0, void *arg1, u32 arg2) {
 void func_0200c55c(M2C_UNK arg0, void *arg1) {
     void func_0200c494(void *, void *, u32);
     void func_0200c614(void *);
-    s32 func_02007f8c();
+    s32 MI_CpuFill8();
     void MI_CpuCopy8();
     extern M2C_UNK data_020f522c;
     s32 temp_r6;
@@ -371,19 +371,19 @@ void func_0200c55c(M2C_UNK arg0, void *arg1) {
     var_r3 = M2C_FIELD(arg1, u32 *, 0x10) & 0x3F;
     var_r2 = 0x40 - var_r3;
     if (var_r2 < 8U) {
-        func_02007f8c(arg1 + 0x18 + var_r3);
+        MI_CpuFill8(arg1 + 0x18 + var_r3);
         func_0200c614(arg1);
         var_r3 = 0;
         var_r2 = 0x40;
     }
     if (var_r2 > 8U) {
-        func_02007f8c(arg1 + 0x18 + var_r3, 0, var_r2 - 8);
+        MI_CpuFill8(arg1 + 0x18 + var_r3, 0, var_r2 - 8);
     }
     M2C_FIELD(arg1, s32 *, 0x50) = temp_r7;
     M2C_FIELD(arg1, s32 *, 0x54) = temp_r6;
     func_0200c614(arg1);
     MI_CpuCopy8(arg1, arg0, 0x10);
-    func_02007f8c(arg1, 0, 0x58);
+    MI_CpuFill8(arg1, 0, 0x58);
 }
 
 void func_0200c614(void *arg0) { (void)arg0; }
@@ -401,7 +401,7 @@ void func_0200c9c8(void *arg0) {
 
 void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
     void MI_CpuCopy8(void *, void *, u32);
-    extern void (*data_020f53f4)(void *, void *, u32);
+    extern void (*gSha1Transform)(void *, void *, u32);
     u8 *buf;
     u32 size;
     void *src;
@@ -431,7 +431,7 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
             MI_CpuCopy8(src, buf + pending, take);
             size = size - take;
             src = (u8 *)src + take;
-            data_020f53f4(arg0, buf, 0x40);
+            gSha1Transform(arg0, buf, 0x40);
             M2C_FIELD(arg0, u32 *, 0x1C) = 0;
         } else {
             MI_CpuCopy8(src, buf + pending, size);
@@ -443,14 +443,14 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
         full = size & ~0x3fU;
         size = size - full;
         if (((u32)src & 3U) == 0U) {
-            data_020f53f4(arg0, src, full);
+            gSha1Transform(arg0, src, full);
             src = (u8 *)src + full;
         } else {
             remaining = full;
             do {
                 MI_CpuCopy8(src, buf, 0x40);
                 src = (u8 *)src + 0x40;
-                data_020f53f4(arg0, buf, 0x40);
+                gSha1Transform(arg0, buf, 0x40);
                 remaining = remaining - 0x40;
             } while (remaining > 0);
         }
@@ -464,92 +464,97 @@ void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
 
 #pragma opt_propagation off
 #pragma opt_common_subs off
-void func_0200cb6c(void *arg0, void *arg1) {
-    extern void (*data_020f53f4)(void *, void *, u32);
+/* Finalizes a SHA1 context of the game's hash module: the context holds the
+ * five-word state (+0x00), the low and high words of the bit count (+0x14,
+ * +0x18), the buffered byte count (+0x1c) and the 64-byte block (+0x20).
+ * Pads the message, compresses the final block and writes the 20-byte
+ * big-endian digest to digest. */
+void SHA1_Finalize(void *ctx, void *digest) {
+    extern void (*gSha1Transform)(void *, void *, u32);
     void func_02007e54(u32, void *, s32);
-    register u32 *w;
-    register u8 *buf;
-    u8 *out;
-    register s32 i;
-    s32 orig;
-    u32 lo;
-    u32 hi;
-    u32 h0;
-    u32 h1;
-    u32 h2;
-    u32 h3;
-    u32 h4;
+    register u32 *words;
+    register u8 *block;
+    u8 *digestOut;
+    register s32 wordIndex;
+    s32 used;
+    u32 lengthLo;
+    u32 lengthHi;
+    u32 state0;
+    u32 state1;
+    u32 state2;
+    u32 state3;
+    u32 state4;
 
-    w = (u32 *)((u8 *)arg0 + 0x20);
-        out = (u8 *)arg1;
-    orig = *(s32 *)((u8 *)arg0 + 0x1c);
-    i = orig >> 2;
+    words = (u32 *)((u8 *)ctx + 0x20);
+        digestOut = (u8 *)digest;
+    used = *(s32 *)((u8 *)ctx + 0x1c);
+    wordIndex = used >> 2;
 
-    if ((orig & 3) == 0) {
-        w[i] = 0;
+    if ((used & 3) == 0) {
+        words[wordIndex] = 0;
     }
-    buf = (u8 *)arg0 + 0x20;
+    block = (u8 *)ctx + 0x20;
     
-    buf[orig] = 0x80;
-    orig = orig + 1;
-    while (orig & 3) {
-        buf[orig] = 0;
-        orig = orig + 1;
+    block[used] = 0x80;
+    used = used + 1;
+    while (used & 3) {
+        block[used] = 0;
+        used = used + 1;
     }
-    i++;
-    if (*(s32 *)((u8 *)arg0 + 0x1c) >= 0x38) {
-        while (i < 16) {
-            w[i] = 0;
-            i = i + 1;
+    wordIndex++;
+    if (*(s32 *)((u8 *)ctx + 0x1c) >= 0x38) {
+        while (wordIndex < 16) {
+            words[wordIndex] = 0;
+            wordIndex = wordIndex + 1;
         }
-        data_020f53f4(arg0, w, 0x40);
-        i = 0;
+        gSha1Transform(ctx, words, 0x40);
+        wordIndex = 0;
     }
-    while (i < 14) {
-        w[i] = 0;
-        i++;
+    while (wordIndex < 14) {
+        words[wordIndex] = 0;
+        wordIndex++;
     }
-    lo = *(u32 *)((u8 *)arg0 + 0x14);
-    buf[0x3f] = (u8)lo;
-    buf[0x3e] = (u8)(lo >> 8);
-    buf[0x3d] = (u8)(lo >> 16);
-    buf[0x3c] = (u8)(lo >> 24);
-    hi = *(u32 *)((u8 *)arg0 + 0x18);
-    buf[0x3b] = (u8)hi;
-    buf[0x3a] = (u8)(hi >> 8);
-    buf[0x39] = (u8)(hi >> 16);
-    buf[0x38] = (u8)(hi >> 24);
-    data_020f53f4(arg0, w, 0x40);
+    lengthLo = *(u32 *)((u8 *)ctx + 0x14);
+    block[0x3f] = (u8)lengthLo;
+    block[0x3e] = (u8)(lengthLo >> 8);
+    block[0x3d] = (u8)(lengthLo >> 16);
+    block[0x3c] = (u8)(lengthLo >> 24);
+    lengthHi = *(u32 *)((u8 *)ctx + 0x18);
+    block[0x3b] = (u8)lengthHi;
+    block[0x3a] = (u8)(lengthHi >> 8);
+    block[0x39] = (u8)(lengthHi >> 16);
+    block[0x38] = (u8)(lengthHi >> 24);
+    gSha1Transform(ctx, words, 0x40);
 
-    h0 = *(u32 *)((u8 *)arg0 + 0x00);
+    state0 = *(u32 *)((u8 *)ctx + 0x00);
 
-    out[0] = (u8)(h0 >> 24);
-    out[1] = (u8)(h0 >> 16);
-    out[2] = (u8)(h0 >> 8);
-    out[3] = (u8)h0;
-    h1 = *(u32 *)((u8 *)arg0 + 0x04);
-    out[4] = (u8)(h1 >> 24);
-    out[5] = (u8)(h1 >> 16);
-    out[6] = (u8)(h1 >> 8);
-    out[7] = (u8)h1;
-    h2 = *(u32 *)((u8 *)arg0 + 0x08);
-    out[8] = (u8)(h2 >> 24);
-    out[9] = (u8)(h2 >> 16);
-    out[10] = (u8)(h2 >> 8);
-    out[11] = (u8)h2;
-    h3 = *(u32 *)((u8 *)arg0 + 0x0c);
-    out[12] = (u8)(h3 >> 24);
-    out[13] = (u8)(h3 >> 16);
-    out[14] = (u8)(h3 >> 8);
-    out[15] = (u8)h3;
-    h4 = *(u32 *)((u8 *)arg0 + 0x10);
-    out[16] = (u8)(h4 >> 24);
-    out[17] = (u8)(h4 >> 16);
-    out[18] = (u8)(h4 >> 8);
-    out[19] = (u8)h4;
+    digestOut[0] = (u8)(state0 >> 24);
+    digestOut[1] = (u8)(state0 >> 16);
+    digestOut[2] = (u8)(state0 >> 8);
+    digestOut[3] = (u8)state0;
+    state1 = *(u32 *)((u8 *)ctx + 0x04);
+    digestOut[4] = (u8)(state1 >> 24);
+    digestOut[5] = (u8)(state1 >> 16);
+    digestOut[6] = (u8)(state1 >> 8);
+    digestOut[7] = (u8)state1;
+    state2 = *(u32 *)((u8 *)ctx + 0x08);
+    digestOut[8] = (u8)(state2 >> 24);
+    digestOut[9] = (u8)(state2 >> 16);
+    digestOut[10] = (u8)(state2 >> 8);
+    digestOut[11] = (u8)state2;
+    state3 = *(u32 *)((u8 *)ctx + 0x0c);
+    digestOut[12] = (u8)(state3 >> 24);
+    digestOut[13] = (u8)(state3 >> 16);
+    digestOut[14] = (u8)(state3 >> 8);
+    digestOut[15] = (u8)state3;
+    state4 = *(u32 *)((u8 *)ctx + 0x10);
+    digestOut[16] = (u8)(state4 >> 24);
+    digestOut[17] = (u8)(state4 >> 16);
+    digestOut[18] = (u8)(state4 >> 8);
+    digestOut[19] = (u8)state4;
 
-    *(u32 *)((u8 *)arg0 + 0x1c) = 0;
-    func_02007e54(0, (void *)&arg0, 4);
+    *(u32 *)((u8 *)ctx + 0x1c) = 0;
+    func_02007e54(0, (void *)&ctx, 4);
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset

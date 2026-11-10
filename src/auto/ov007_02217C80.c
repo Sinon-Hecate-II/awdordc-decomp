@@ -5,11 +5,11 @@ typedef struct MenuList007 { s32 first, second; s8 a,b,c,d,e; u8 alpha, flag, al
 #pragma push
 #pragma opt_propagation on
 static inline MenuList007 *InitMenuList007(MenuList007 *p, s32 count) {
- void *func_020e34bc(s32); void func_02007f8c(void *,s32,s32);
+ void *func_020e34bc(s32); void MI_CpuFill8(void *,s32,s32);
  s32 size=count*12;
  p->count=count;p->flag2=0;p->first=0;p->second=0;
  p->a=-1;p->b=-1;p->c=-1;p->d=-1;p->alpha=255;p->e=-1;p->flag=0;p->alpha2=255;
- p->buffer=func_020e34bc(size);func_02007f8c(p->buffer,0,size);
+ p->buffer=func_020e34bc(size);MI_CpuFill8(p->buffer,0,size);
  return p;
 }
 #pragma pop
@@ -31,7 +31,7 @@ s32 func_ov007_02217ca8(void *arg0) {
 
 void func_ov007_02217cd0(void *arg0) {
     s8 *func_ov007_02217b64(u8);
-    void func_01ffa8c4(void *, s32);
+    void SetSpriteAnimation(void *, s32);
     u8 index;
     s8 *table;
     u8 mode;
@@ -46,7 +46,7 @@ void func_ov007_02217cd0(void *arg0) {
         break;
     }
     M2C_FIELD(arg0, u8 *, 0x36) = 1;
-    func_01ffa8c4(arg0, 2);
+    SetSpriteAnimation(arg0, 2);
 }
 
 #pragma push
@@ -406,7 +406,7 @@ void func_ov007_0221863c(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_02087d18(M2C_UNK, s16, s16, s32, s32, s32, s32);
     void *func_020e34bc(s32);
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     void func_02007ef4(void *, void *, s32);
     void func_01ff9e44(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020e35cc(s32);

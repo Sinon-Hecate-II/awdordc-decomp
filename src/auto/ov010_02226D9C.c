@@ -156,7 +156,7 @@ void func_ov010_02227954(s32 a,void *b,s32 c) {
 void MI_CpuCopy8(void *,void *,u32);
 void *func_01ffa770(void *);
 void *func_ov010_022268f4(s32,u32,u32);
-void func_02007f8c(void *,s32,u32);
+void MI_CpuFill8(void *,s32,u32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
 extern u8 data_ov010_0222c160[], data_ov010_0222ef58[],data_ov010_0222ef88[];
 extern M2C_UNK data_ov010_0222eee0;
@@ -183,7 +183,7 @@ flags=h->flags;
 node=func_ov010_022268f4(0,size+16,32);
 if(!node) { u32 unused=*(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=irq; goto callbacks; }
 {
-func_02007f8c(node,0,16);
+MI_CpuFill8(node,0,16);
 func_ov010_0222959c(node+4,kind,channel,flags,payload,size,id);
 if(!M2C_FIELD(queue,void **,4)) { M2C_FIELD(queue,void **,4)=node; M2C_FIELD(queue,void **,0)=node; }
 else { M2C_FIELD(M2C_FIELD(queue,void **,4),void **,0)=node; M2C_FIELD(queue,void **,4)=node; }
@@ -204,7 +204,7 @@ flags=h->flags;
 node=func_ov010_022268f4(0,size+16,32);
 if(!node) { u32 unused=*(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=irq; goto callbacks; }
 {
-func_02007f8c(node,0,16);
+MI_CpuFill8(node,0,16);
 func_ov010_0222959c(node+4,kind,channel,flags,payload,size,id);
 if(!M2C_FIELD(queue,void **,4)) { M2C_FIELD(queue,void **,4)=node; M2C_FIELD(queue,void **,0)=node; }
 else { M2C_FIELD(M2C_FIELD(queue,void **,4),void **,0)=node; M2C_FIELD(queue,void **,4)=node; }

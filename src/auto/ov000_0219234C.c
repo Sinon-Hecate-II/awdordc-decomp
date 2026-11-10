@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 gMovementCostTable[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 extern s8 data_ov000_021b55a0[];
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,void **,0x52d0)
@@ -63,7 +63,7 @@ score=0;d=sx-nx;if(d<=0)d=nx-sx;score+=d;d=sy-ny;if(d>0)score+=d;else score+=ny-
 if(score<1||score>1)continue;
 m=MAP;cost=M2C_FIELD(m+ny*4,s8 **,0x52e8);
 if(cost[nx]<0){
-p=data_ov000_021b5bfc+KIND(unit)*112;
+p=gUnitKindStats+KIND(unit)*112;
 if(table[M2C_FIELD(p,u8 *,18)*32+(TILE(nx,ny)&31)]!=invalid)cost[nx]=(s8)range;
 }
 }

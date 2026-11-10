@@ -16,7 +16,7 @@ M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=saved;
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_ov000_0218639c(void) {
-extern s32 gMoveSearchCount;extern u8 *gMoveSearchCurrent,*gMoveSearchWrite;extern void **gCurrentMap;extern s8 data_ov000_021e0f60[];
+extern s32 gMoveSearchCount;extern u8 *gMoveSearchCurrent,*gMoveSearchWrite;extern void **gCurrentMap;extern s8 gAiRangeLayer[];
 s32 count,x0,y0,x1,y1,cx,cy,w; s32 x,y,dist,v,index; s16 nx,ny; u8 *node,*tail;void **map;void *base;
 if(gMoveSearchCount>=349)return;
 node=gMoveSearchCurrent;count=0;
@@ -35,11 +35,11 @@ nx=x;ny=(s16)y;count++;}}
 }}
 if(count>1)return;
 index=cy*w+cx;
-data_ov000_021e0f60[index]&=~128;
+gAiRangeLayer[index]&=~128;
 if(count==0)return;
 index=ny*M2C_FIELD(*map,u16*,0x5144)+nx;
-if(data_ov000_021e0f60[index]!=0)data_ov000_021e0f60[index]&=~64;
-else data_ov000_021e0f60[index]=(node[3]+1)|64;
+if(gAiRangeLayer[index]!=0)gAiRangeLayer[index]&=~64;
+else gAiRangeLayer[index]=(node[3]+1)|64;
 gMoveSearchWrite[0]=nx;gMoveSearchWrite[1]=ny;gMoveSearchWrite[2]=1;gMoveSearchWrite[3]=gMoveSearchCurrent[3]+1;
 tail=gMoveSearchWrite;
 M2C_FIELD((u8*)*gCurrentMap+tail[0]+M2C_FIELD((u8*)*gCurrentMap+tail[1]*2,u16*,0x3758),u8*,0x2338)=tail[3]|64;
@@ -72,10 +72,10 @@ return result;
 void func_ov000_02186a18(void) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c0f;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern u16 gPlayerUnitIdBase[];
     extern u8 *data_ov000_021df644;
-    extern s8 data_ov000_021e0f60[];
+    extern s8 gAiRangeLayer[];
     s32 GetUnitAttackClass(u32);
     u8 func_ov000_0218695c(void *);
     s32 IsWithinAttackRange(void *, void *, s32);
@@ -110,18 +110,18 @@ void func_ov000_02186a18(void) {
         for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
             for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
                 if (((s8 **)((u8 *)*gCurrentMap + 0x52e8))[y][x] < 0) continue;
-                cell = ((u8 *)data_ov000_021e0f60)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
+                cell = ((u8 *)gAiRangeLayer)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
                 if (cell == 0) continue;
                 if (cell >= best) continue;
                 if (func_ov000_021a9d8c((s16)x, (s16)y)) continue;
                 if (func_020cf878(x, y)) continue;
-                if ((data_ov000_021b5bfc[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
+                if ((gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
                     if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= data_ov000_021df644[1]) continue;
                 }
                 if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
                 fx = x;
                 fy = y;
-                best = ((u8 *)data_ov000_021e0f60)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
+                best = ((u8 *)gAiRangeLayer)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
             }
         }
         if (fx == -1) continue;

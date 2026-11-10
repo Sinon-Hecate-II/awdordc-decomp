@@ -168,89 +168,92 @@ func_02086658(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov005_02211768(void *arg0) {
+/* Input/update handler of a five-tab menu: move the selection with left/right,
+   animate the five tab sprites and highlight the selected one, move the cursor
+   sprite, and play the move sound plus the confirm or back animation. */
+void UpdateTabMenu(void *menu) {
     void MenuSpriteUpdate(void *);
     void PlaySoundEffect(s32);
-    void func_01ffa8c4(void *, s32);
-    extern u16 *gKeyState;
-    s32 any;
-    s32 back;
-    s32 old;
+    void SetSpriteAnimation(void *, s32);
+    extern KeyState *gKeyState;
+    s32 confirm;
+    s32 cancel;
+    s32 previous;
     s32 i;
     s32 j;
-    s32 cur;
-    void *p;
-    void *f;
-    u8 ok;
-    u8 isCur;
+    s32 selection;
+    void *sprite;
+    void *owner;
+    u8 enabled;
+    u8 isSelected;
     u16 keys;
 
-    old = M2C_FIELD(arg0, s32 *, 0x34);
-    any = 0;
-    back = 0;
-    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x20) {
-        if (old > 0) {
-            M2C_FIELD(arg0, s32 *, 0x34) = old - 1;
-        } else if (M2C_FIELD(gKeyState, u16 *, 0) & 0x20) {
-            M2C_FIELD(arg0, s32 *, 0x34) = 4;
+    previous = M2C_FIELD(menu, s32 *, 0x34);
+    confirm = 0;
+    cancel = 0;
+    if (gKeyState->repeat & KEY_LEFT) {
+        if (previous > 0) {
+            M2C_FIELD(menu, s32 *, 0x34) = previous - 1;
+        } else if (gKeyState->pressed & KEY_LEFT) {
+            M2C_FIELD(menu, s32 *, 0x34) = 4;
         }
     }
-    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x10) {
-        cur = M2C_FIELD(arg0, s32 *, 0x34);
-        if (cur < 4) {
-            M2C_FIELD(arg0, s32 *, 0x34) = cur + 1;
-        } else if (M2C_FIELD(gKeyState, u16 *, 0) & 0x10) {
-            M2C_FIELD(arg0, s32 *, 0x34) = 0;
+    if (gKeyState->repeat & KEY_RIGHT) {
+        selection = M2C_FIELD(menu, s32 *, 0x34);
+        if (selection < 4) {
+            M2C_FIELD(menu, s32 *, 0x34) = selection + 1;
+        } else if (gKeyState->pressed & KEY_RIGHT) {
+            M2C_FIELD(menu, s32 *, 0x34) = 0;
         }
     }
-    keys = M2C_FIELD(gKeyState, u16 *, 0);
-    if (keys & 1) {
-        any = 1;
+    keys = gKeyState->pressed;
+    if (keys & KEY_A) {
+        confirm = 1;
     }
-    if (keys & 2) {
-        back = 1;
+    if (keys & KEY_B) {
+        cancel = 1;
     }
     for (i = 0; i < 5; i++) {
-        MenuSpriteUpdate(M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38));
-        p = M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38);
-        isCur = (M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xC) == 1);
-        if (isCur) {
-            M2C_FIELD(arg0, s32 *, 0x34) = i;
+        MenuSpriteUpdate(M2C_FIELD((u8 *) menu + i * 4, void **, 0x38));
+        sprite = M2C_FIELD((u8 *) menu + i * 4, void **, 0x38);
+        isSelected = (M2C_FIELD(M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER), s8 *, 0xC) == 1);
+        if (isSelected) {
+            M2C_FIELD(menu, s32 *, 0x34) = i;
         }
-        ok = 1;
-        p = M2C_FIELD((u8 *) arg0 + i * 4, void **, 0x38);
-        f = M2C_FIELD(p, void **, 0x64);
-        if (M2C_FIELD(f, s8 *, 0xB) != 1
-            && !((((u32) (M2C_FIELD(p, u8 *, 0x59) << 0x1B) >> 0x1F) != 0) && M2C_FIELD(f, s8 *, 0xC) == 1)) {
-            ok = 0;
+        enabled = 1;
+        sprite = M2C_FIELD((u8 *) menu + i * 4, void **, 0x38);
+        owner = M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER);
+        if (M2C_FIELD(owner, s8 *, 0xB) != 1
+            && !((((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1B) >> 0x1F) != 0) && M2C_FIELD(owner, s8 *, 0xC) == 1)) {
+            enabled = 0;
         }
-        if (ok & 0xFF) {
-            any = 1;
+        if (enabled & 0xFF) {
+            confirm = 1;
         }
     }
     for (j = 0; j < 5; j++) {
-        if (M2C_FIELD(arg0, s32 *, 0x34) == j) {
-            p = M2C_FIELD((u8 *) arg0 + j * 4, void **, 0x38);
-            M2C_FIELD(p, s32 *, 0x40) = (s32) ((M2C_FIELD(p, s32 *, 0x40) & ~0x03FC0000)
-                | ((u32) ((u16) (((u32) (*(volatile u8 *) ((u8 *) p + 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+        if (M2C_FIELD(menu, s32 *, 0x34) == j) {
+            sprite = M2C_FIELD((u8 *) menu + j * 4, void **, 0x38);
+            M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) & ~0x03FC0000)
+                | ((u32) ((u16) (((u32) (*(volatile u8 *) ((u8 *) sprite + MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         } else {
-            p = M2C_FIELD((u8 *) arg0 + j * 4, void **, 0x38);
-            M2C_FIELD(p, s32 *, 0x40) = (s32) ((M2C_FIELD(p, s32 *, 0x40) & ~0x03FC0000)
-                | ((u32) ((u16) ((u32) (*(volatile u8 *) ((u8 *) p + 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
+            sprite = M2C_FIELD((u8 *) menu + j * 4, void **, 0x38);
+            M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) & ~0x03FC0000)
+                | ((u32) ((u16) ((u32) (*(volatile u8 *) ((u8 *) sprite + MENU_SPRITE_BASE) << 0x1C) >> 0x1C) << 0x18) >> 6));
         }
     }
-    if (M2C_FIELD(arg0, s32 *, 0x34) != old) {
+    if (M2C_FIELD(menu, s32 *, 0x34) != previous) {
         PlaySoundEffect(0x10019);
-        p = M2C_FIELD(arg0, void **, 0x4C);
-        M2C_FIELD(p, u16 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34) * 0x28 + 0x20;
-        M2C_FIELD(p, u16 *, 0x36) = 0x58;
+        sprite = M2C_FIELD(menu, void **, 0x4C);
+        M2C_FIELD(sprite, u16 *, 0x34) = M2C_FIELD(menu, s32 *, 0x34) * 0x28 + 0x20;
+        M2C_FIELD(sprite, u16 *, 0x36) = 0x58;
     }
-    if (any) {
+    if (confirm) {
         PlaySoundEffect(0x1000D);
-        func_01ffa8c4(arg0, 1);
-    } else if (back) {
+        SetSpriteAnimation(menu, 1);
+    } else if (cancel) {
         PlaySoundEffect(0x1000F);
-        func_01ffa8c4(arg0, 2);
+        SetSpriteAnimation(menu, 2);
     }
 }
 #pragma opt_common_subs reset
@@ -272,7 +275,7 @@ void func_ov005_022119c0(void) {
 }
 
 void func_ov005_022119cc(void *arg0) {
-    func_ov005_02211768(arg0);
+    UpdateTabMenu(arg0);
 }
 
 void func_ov005_022119d8(void) {
@@ -281,7 +284,7 @@ void func_ov005_022119d8(void) {
 }
 
 void func_ov005_022119e4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 func_020c80ec(u16);
     extern u8 data_02168f0c;
     extern void **gCurrentMap;
@@ -292,7 +295,7 @@ void func_ov005_022119e4(M2C_UNK arg0) {
     if (func_020c80ec(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) == 0) {
         return;
     }
-    func_01ffa42c(&data_ov005_022200a0, arg0);
+    CreateSpriteObject(&data_ov005_022200a0, arg0);
 }
 
 s32 HistoryTabAt(s32 arg0) {

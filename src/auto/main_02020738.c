@@ -72,7 +72,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
 }
 
 s32 func_020208ac(void *arg0) {
- void func_02005df4(s32);
+ void OS_WakeupThread(s32);
  M2C_UNK func_0201d190(u16,u16,s32);
  s32 func_0201db20(s32,s32);
  s32 func_0201d4c0();
@@ -109,13 +109,13 @@ s32 func_020208ac(void *arg0) {
  }
  }else total=-76;
  M2C_FIELD(context,u16 *,0x102)=M2C_FIELD(arg0,u16 *,0x20);
- func_02005df4((s32)context+0x104);
+ OS_WakeupThread((s32)context+0x104);
  return total;
 }
 
 s32 func_020209dc(s32 arg0) {
     s32 func_020720f0(s32, s32);
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     extern M2C_UNK data_02138ad0;
     s32 temp_r0;
     s32 lock;
@@ -124,7 +124,7 @@ s32 func_020209dc(s32 arg0) {
     s32 temp_r2;
     s32 var_r3;
     void *temp_r5;
-    temp_r5 = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
+    temp_r5 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     lock = OS_DisableInterrupts();
     if (temp_r5 != NULL) {
         var_r3 = M2C_FIELD(temp_r5, u16 *, 0x2E);
@@ -308,7 +308,7 @@ extern void *data_020faf98;
 void func_02020e90(s32);
 void func_02021430(M2C_UNK);
 void func_02021490(M2C_UNK);
-void func_02005df4(s32);
+void OS_WakeupThread(s32);
 s32 child,next,lock,active;
 s8 state;
 if(!obj)return;
@@ -323,7 +323,7 @@ while(child){next=M2C_FIELD(child,s32*,0); M2C_FIELD(data_020faf98,void (**)(s32
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s16*,0x108)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x100)=0;
 M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104)=0;
-func_02005df4(M2C_FIELD(obj,s32*,0x64)+0x10c);
+OS_WakeupThread(M2C_FIELD(obj,s32*,0x64)+0x10c);
 func_02020e90(M2C_FIELD(obj,s32*,0x64));
 }else if(state==2)func_02020e90(M2C_FIELD(obj,s32*,0x68));
 lock=OS_DisableInterrupts();
@@ -457,7 +457,7 @@ s32 func_020210b8(void) {
 }
 
 s32 func_02021134(s32 arg0) {
-    M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d138(void *);
     M2C_UNK func_0201d14c();
     s32 func_0201ed20(s32);
@@ -468,7 +468,7 @@ s32 func_02021134(s32 arg0) {
     if (arg0 == 0) { return 0; }
     temp_r4 = M2C_FIELD(data_020faf98, s32 (**)(M2C_UNK), 0x18)(0xFD0);
     if (temp_r4 == 0) { return 0; }
-    func_02007f8c(sp0, 0, 0x64);
+    MI_CpuFill8(sp0, 0, 0x64);
     M2C_FIELD(sp0, s32 *, 0x40) = temp_r4;
     M2C_FIELD(sp0, s32 *, 0x3C) = 0xB68;
     M2C_FIELD(sp0, s32 *, 0x4C) = temp_r4 + 0xB68;

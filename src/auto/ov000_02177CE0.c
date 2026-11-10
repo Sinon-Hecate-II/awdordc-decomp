@@ -134,7 +134,7 @@ return result;
  * position in out[0..1] if found, returns 0 if no valid destination. */
 s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern s32 gFrameCounter;
     s32 func_020a76d4(u8 *);
     s32 func_ov000_02178080(s32, s32);
@@ -211,7 +211,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
 
                     up = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0);
                     kind = (((u32)(up[0] << 26)) >> 26);
-                    tableVal = data_ov000_021b5bfc[kind * 0x70 + 0x0c];
+                    tableVal = gUnitKindStats[kind * 0x70 + 0x0c];
 
                     if (dist >= tableVal) {
                         cap = func_020a76d4(up);

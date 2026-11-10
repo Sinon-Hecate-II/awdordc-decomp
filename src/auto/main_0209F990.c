@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct PathPlayerId { u32 id:8; u32 rest:24; } PathPlayerId;
 typedef struct UnkCellBits { u8 pad[5]; u8 bits:3; u8 rest:5; } UnkCellBits;
-extern u16 data_02168f14;
+extern u16 gMapConfig;
 extern u8 data_021261d0[];
 extern u8 gMovementTypeTable[];
 
@@ -263,41 +263,41 @@ s32 func_0209ff34(void) {
 }
 
 void func_020a004c(u16 arg0, u16 arg1) {
-    extern void *data_0211fb5c;
-    M2C_FIELD(data_0211fb5c, s8 *, 0x34) = arg0;
-    M2C_FIELD(data_0211fb5c, s8 *, 0x35) = arg1;
+    extern void *gUnitMovePath;
+    M2C_FIELD(gUnitMovePath, s8 *, 0x34) = arg0;
+    M2C_FIELD(gUnitMovePath, s8 *, 0x35) = arg1;
 }
 
 M2C_UNK func_020a0068(s32 arg0) {
-extern void *data_0211fb5c;extern s32 *gCurrentMap;
-extern u16 data_02168f14;extern u8 gMovementCostTable[];extern u8 data_ov000_021b5bfc[];
+extern void *gUnitMovePath;extern s32 *gCurrentMap;
+extern u16 gMapConfig;extern u8 gMovementCostTable[];extern u8 gUnitKindStats[];
 void *map,*player,*path; s8 i;u32 id; s32 weather,kind,terrain; s8 *cost;
-if(M2C_FIELD(data_0211fb5c,s8 *,0x5b)<arg0)return;
-M2C_FIELD(data_0211fb5c,s8 *,0x5b)=arg0-1;
-M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x4e)=M2C_FIELD(data_0211fb5c,s8 *,0x5a);
-for(i=1;i<=M2C_FIELD(data_0211fb5c,s8 *,0x5b);i++){
+if(M2C_FIELD(gUnitMovePath,s8 *,0x5b)<arg0)return;
+M2C_FIELD(gUnitMovePath,s8 *,0x5b)=arg0-1;
+M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x4e)=M2C_FIELD(gUnitMovePath,s8 *,0x5a);
+for(i=1;i<=M2C_FIELD(gUnitMovePath,s8 *,0x5b);i++){
 map=(void *)*gCurrentMap;
 player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
-id=((u32)(data_02168f14<<18)>>31)?(u8)M2C_FIELD(player,u32 *,0x6c):0;
-path=data_0211fb5c+i;
+id=((u32)(gMapConfig<<18)>>31)?(u8)M2C_FIELD(player,u32 *,0x6c):0;
+path=gUnitMovePath+i;
 weather=func_020a33c4();
 cost=M2C_FIELD(gMovementCostTable+id*156+weather*40+M2C_FIELD(player,u8 *,0x25)*4,s8 **,0x64);
 kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
 terrain=M2C_FIELD(map+M2C_FIELD(path,s8 *,0x36)+M2C_FIELD(map+M2C_FIELD(path,s8 *,0x42)*2,u16 *,0x3758),u8 *,0x1420)&31;
-M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[M2C_FIELD(data_ov000_021b5bfc+kind*112,u8 *,0x12)*32+terrain];
+M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[M2C_FIELD(gUnitKindStats+kind*112,u8 *,0x12)*32+terrain];
 }
 }
 
 void func_020a01c0(s32 x,s32 y){
-extern void *data_0211fb5c;extern s32 *gCurrentMap;
+extern void *gUnitMovePath;extern s32 *gCurrentMap;
 void *map; void *player;void *path;s32 i;s32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;
-M2C_FIELD(data_0211fb5c,s8 *,0x5b)++;
-M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x36)=x;
-M2C_FIELD(data_0211fb5c+M2C_FIELD(data_0211fb5c,s8 *,0x5b),s8 *,0x42)=y;
+M2C_FIELD(gUnitMovePath,s8 *,0x5b)++;
+M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x36)=x;
+M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x42)=y;
 map=(void *)*gCurrentMap;
 player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
-id=((u32)(data_02168f14<<18)>>31)?((PathPlayerId *)(player+0x6c))->id:0;
-path=data_0211fb5c;i=M2C_FIELD(path,s8 *,0x5b);
+id=((u32)(gMapConfig<<18)>>31)?((PathPlayerId *)(player+0x6c))->id:0;
+path=gUnitMovePath;i=M2C_FIELD(path,s8 *,0x5b);
 weather=func_020a33c4();
 kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
 terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
@@ -306,8 +306,8 @@ M2C_FIELD(path+i,s8 *,0x4e)=M2C_FIELD(path+i-1,s8 *,0x4e)-cost[gMovementTypeTabl
 }
 
 s32 func_020a0300(s32 x,s32 y) {
- extern void *data_0211fb5c;
- s8 i; void *p=data_0211fb5c; char *q;
+ extern void *gUnitMovePath;
+ s8 i; void *p=gUnitMovePath; char *q;
  i=0; if(i<=M2C_FIELD(p,volatile s8 *,0x5b)) { q=p; do {
  if(x==M2C_FIELD(q,s8 *,0x36)&&y==M2C_FIELD(q,s8 *,0x42)) return i;
  q++; i++; } while(i<=M2C_FIELD(p,volatile s8 *,0x5b)); }
@@ -317,7 +317,7 @@ s32 func_020a0300(s32 x,s32 y) {
 M2C_UNK func_020a0360(void) {
     void func_020a01c0(s32, s32);
     extern s32 *gCurrentMap;
-    extern void *data_0211fb5c;
+    extern void *gUnitMovePath;
     M2C_UNK *map;
     volatile s8 *stream;
     s8 cmd;
@@ -327,7 +327,7 @@ M2C_UNK func_020a0360(void) {
     map = (M2C_UNK *)*gCurrentMap;
     stream = (volatile s8 *)*((s32 *)map) + 0x388 + 0x5000;
     cmd = *stream++;
-    base = (s8 *)data_0211fb5c;
+    base = (s8 *)gUnitMovePath;
 
     switch (cmd + 1) {
         case 0:
@@ -360,7 +360,7 @@ M2C_UNK func_020a0360(void) {
 }
 
 void func_020a046c(void) {
-    extern void *data_0211fb5c;
+    extern void *gUnitMovePath;
     extern s32 *gCurrentMap;
 
     s8 i;
@@ -368,9 +368,9 @@ void func_020a046c(void) {
     u8 *dest;
 
     i = 1;
-    if (((s8 *)data_0211fb5c)[0x5b] >= 1) {
+    if (((s8 *)gUnitMovePath)[0x5b] >= 1) {
     do {
-        r = (u8 *)data_0211fb5c + i;
+        r = (u8 *)gUnitMovePath + i;
         if ((s8)r[0x36] < (s8)r[0x35]) {
             *((u8 *)((u8 *)*gCurrentMap + i + 0x5387)) = 0;
         } else if ((s8)r[0x36] > (s8)r[0x35]) {
@@ -383,7 +383,7 @@ void func_020a046c(void) {
             }
         }
         i++;
-    } while (i <= (s8)((u8 *)data_0211fb5c)[0x5b]);
+    } while (i <= (s8)((u8 *)gUnitMovePath)[0x5b]);
 
     }
     *((u8 *)((u8 *)*gCurrentMap + (i - 1) + 0x5388)) = 4;
@@ -391,13 +391,13 @@ void func_020a046c(void) {
 }
 
 M2C_UNK func_020a0560(void) {
-    extern void *data_0211fb5c; extern s32 *gCurrentMap;
+    extern void *gUnitMovePath; extern s32 *gCurrentMap;
     void func_01ffc294(u16, s32, s32, u32, s32, s32);
     s8 *p;
     s8 *q;
     u8 *map;
 
-    p = data_0211fb5c;
+    p = gUnitMovePath;
     q = p + p[0x5b];
     map = (u8 *)*gCurrentMap;
     func_01ffc294((u16)((map[0x52d4] >> 6) + 1), q[0x36], q[0x42], (u32)(M2C_FIELD(M2C_FIELD(map, u8 **, 0x52d0), u8 *, 0) << 26) >> 26, q[0x4e], 1);
@@ -415,8 +415,8 @@ extern s32 *gCurrentMap;
 }
 
 s32 func_020a061c(void) {
-extern void *data_0211fb5c;
-void *p=data_0211fb5c; s8 i,j; s8 *q,*r; s32 x;
+extern void *gUnitMovePath;
+void *p=gUnitMovePath; s8 i,j; s8 *q,*r; s32 x;
 i=M2C_FIELD(p,s8 *,0x5b);
 if(i>0) {q=p+i; do {
 j=i-1;
@@ -431,15 +431,15 @@ return 1;
 }
 
 void func_020a06a0(s32 arg0) {
- extern void *data_0211fb5c; extern s32 *gCurrentMap;
+ extern void *gUnitMovePath; extern s32 *gCurrentMap;
  s32 func_020a7694(s32); M2C_UNK func_020a0068(s32); void func_020a01c0(s32,s32); M2C_UNK func_020a0360(void); M2C_UNK func_020a0d18(); void func_020a004c(u16,u16);
  void *p;
- M2C_FIELD(data_0211fb5c,s8 *,0x5a)=func_020a7694(M2C_FIELD((void *)*gCurrentMap,s32 *,0x52d0));
- M2C_FIELD(data_0211fb5c,s8 *,0x5b)=0;
+ M2C_FIELD(gUnitMovePath,s8 *,0x5a)=func_020a7694(M2C_FIELD((void *)*gCurrentMap,s32 *,0x52d0));
+ M2C_FIELD(gUnitMovePath,s8 *,0x5b)=0;
  func_020a0068(0);
  p=M2C_FIELD((void *)*gCurrentMap,void **,0x52d0);
  func_020a01c0(M2C_FIELD(p,s8 *,1),M2C_FIELD(p,s8 *,2));
- M2C_FIELD(data_0211fb5c,s8 *,0x4e)=M2C_FIELD(data_0211fb5c,s8 *,0x5a);
+ M2C_FIELD(gUnitMovePath,s8 *,0x4e)=M2C_FIELD(gUnitMovePath,s8 *,0x5a);
  if(arg0!=0)func_020a0360();
  M2C_FIELD((void *)*gCurrentMap,u8 *,0x5388)=4;
  func_020a004c(0xffff,0xffff);func_020a0d18();

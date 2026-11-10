@@ -86,13 +86,13 @@ void func_ov000_021998f0(void) {
 
 void func_ov000_0219997c(void) {
 s32 func_0207c2f0(void);
-s32 func_0207c928(s32, s32);
+s32 Modulo(s32, s32);
 s32 func_02072b04(void *);
 s32 func_ov000_021a89a4(void *);
 extern s32 *gCurrentMap;
 extern u8 *data_ov000_021df658;
 extern u8 *data_ov000_021df580;
-extern u8 *data_ov000_021df57c;
+extern u8 *gAiSettings;
 extern u8 *data_ov000_021df644;
 extern u8 gAiCommand[];
 extern M2C_UNK data_ov000_021df604;
@@ -123,7 +123,7 @@ if (state == 0x40) {
     base[0x52d4] = state;
     up = base + 0x59a4 + base[0x52d4] * 14;
     *(u8 **)(base + 0x52d0) = up;
-    data_ov000_021df644 = data_ov000_021df57c + 0x14 + 0xc * (((u8)up[0] & 0x3f) - 1);
+    data_ov000_021df644 = gAiSettings + 0x14 + 0xc * (((u8)up[0] & 0x3f) - 1);
     base[0x52d6] = 0;
 
     if (!(*(u16 *)(up + 4) & 0x1)) {
@@ -164,7 +164,7 @@ if (state == 0x40) {
         base[uux + rrow] = 0;
     }
     tmp = func_0207c2f0();
-    tmp = func_0207c928(tmp, 0x64);
+    tmp = Modulo(tmp, 0x64);
     data_ov000_021df580[3] = (u8)tmp;
     up = *(u8 **)(base + 0x52d0);
     data_ov000_021df580[5] = (u8)func_ov000_021a89a4(up);
@@ -345,7 +345,7 @@ base=(u8 *)*gCurrentMap;
 }
 void func_ov000_0219a1f4(void) {
     void func_020c93cc(void);
-    void func_ov000_0219b1ac(u16);
+    void SetupAiUnitParameters(u16);
     void func_ov000_0219a9b0(void);
     void func_ov000_0219a370(void);
     void func_ov000_0219a418(void);
@@ -377,7 +377,7 @@ void func_ov000_0219a1f4(void) {
     } else {
         data_ov000_021df580[0xd] = (*(u8 **)gCurrentMap)[0x5158];
     }
-    func_ov000_0219b1ac(*(u16 *)(*(u8 **)gCurrentMap + 0x52a4));
+    SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + 0x52a4));
     func_ov000_0219a9b0();
     func_ov000_0219a370();
     func_ov000_0219a418();

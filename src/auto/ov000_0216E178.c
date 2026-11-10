@@ -98,12 +98,12 @@ void func_ov000_0216ebac(void) {
 }
 
 void func_ov000_0216ebd8(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern void **gCurrentMap;
     extern M2C_UNK data_ov000_021b87f0;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov000_021b87f0, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov000_021b87f0, arg0);
     if (temp_r0 == NULL) {
         return;
     }

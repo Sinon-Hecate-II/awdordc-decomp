@@ -1,5 +1,6 @@
 /* 24 functions from 0x0221B56C to 0x0221C534 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct { u8 pad[11]; u8 low : 4; u8 high : 4; } Unk_0221BC18;
 
@@ -94,31 +95,38 @@ ret0:
     return 0;
 }
 
-s32 func_ov007_0221b8c0(s32 x, s32 y) {
+/* Returns 1 if the map cell (x, y) holds a property tile -- a capturable
+ * building (terrain kinds 0x0f..0x17, of any owner) -- and 0 otherwise. */
+s32 Map_IsPropertyTile(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 r;
-    s32 t;
-    register s32 p;
+    s32 tile;
+    register s32 map;
     if (x < 0 || y < 0) {
         goto bounds_fail;
     }
-    p = *gCurrentMap;
-    if (x < M2C_FIELD(p, u16 *, 0x5144) && y < M2C_FIELD(p, u16 *, 0x5146)) {
+    map = *gCurrentMap;
+    if (x < M2C_FIELD(map, u16 *, MAP_WIDTH) && y < M2C_FIELD(map, u16 *, MAP_HEIGHT)) {
         goto in_bounds;
     }
 bounds_fail:
     return 0;
 in_bounds:
-    t = M2C_FIELD(p + (x + M2C_FIELD(p + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
-    switch (t) {
-        case 377: case 378: case 379: case 380: case 381:
-        case 409: case 410: case 411: case 412: case 413:
-        case 441: case 442: case 443: case 444: case 445:
-        case 449: case 450: case 451: case 452: case 453: case 454: case 455: case 456:
-        case 457: case 458: case 459: case 460: case 461: case 462: case 463: case 464:
-        case 465: case 466: case 467: case 468: case 469: case 470: case 471: case 472:
-        case 473: case 474: case 475: case 476: case 477:
-       
+    tile = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)) * 2, u16 *, MAP_CELL_TILE_ID);
+    switch (tile) {
+        /* property of kind 0x14, owners 0..4 */
+        case 0x179: case 0x17A: case 0x17B: case 0x17C: case 0x17D:
+        /* property of kind 0x15, owners 0..4 */
+        case 0x199: case 0x19A: case 0x19B: case 0x19C: case 0x19D:
+        /* property of kind 0x16, owners 0..4 */
+        case 0x1B9: case 0x1BA: case 0x1BB: case 0x1BC: case 0x1BD:
+        /* the remaining property kinds (0x0f..0x13) for owners 1..4, plus
+         * the neutral kinds 0x10..0x13; 0x1C0 (kind 0x0f, owner 0) is unused */
+        case 0x1C1: case 0x1C2: case 0x1C3: case 0x1C4:
+        case 0x1C5: case 0x1C6: case 0x1C7: case 0x1C8: case 0x1C9:
+        case 0x1CA: case 0x1CB: case 0x1CC: case 0x1CD: case 0x1CE:
+        case 0x1CF: case 0x1D0: case 0x1D1: case 0x1D2: case 0x1D3:
+        case 0x1D4: case 0x1D5: case 0x1D6: case 0x1D7: case 0x1D8:
+        case 0x1D9: case 0x1DA: case 0x1DB: case 0x1DC: case 0x1DD:
             return 1;
         default:
             goto fail;

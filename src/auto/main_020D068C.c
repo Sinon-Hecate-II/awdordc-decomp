@@ -44,8 +44,8 @@ M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 #pragma opt_propagation off
 void ResolveUnitAttack(void *a,void **b,s32 c,s32 d) {
 s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
-extern u8 data_ov000_021b5bfc[];
-register u16 x=0; register u16 y; register s16 z; register u8 *p=data_ov000_021b5bfc+((D068CBits *)M2C_FIELD(a,void **,0))->value*112;
+extern u8 gUnitKindStats[];
+register u16 x=0; register u16 y; register s16 z; register u8 *p=gUnitKindStats+((D068CBits *)M2C_FIELD(a,void **,0))->value*112;
 y=0; z=0;
 M2C_FIELD(a,s16 *,22)=func_020a875c(M2C_FIELD(a,void **,0));
 if(c==1) {

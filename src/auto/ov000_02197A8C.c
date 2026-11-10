@@ -1,7 +1,7 @@
 /* 1 function from 0x02197A8C to 0x02198848 (ov000), found by ds-decomp. */
 #include "common.h"
 extern u8 **gCurrentMap;
-extern u8 data_ov000_021b5c0f[], data_ov000_021b5bfc[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
+extern u8 data_ov000_021b5c0f[], gUnitKindStats[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
 s32 GetUnitAttackClass(s32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitMoveRange(s32,s32);
@@ -57,8 +57,8 @@ kind=(*InfluenceCell(data_ov000_021e0550,directX,directY))&127;
 if(kind<=1 && (!(flags&16)||!((*InfluenceCell(data_ov000_021e0550,directX,directY))&128)))continue;
 if(kind!=127&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16*,0x52b6),c,(s16)directX,(s16)directY))continue;
 if(filter){
-if((data_ov000_021b5bfc[c*112+19]&7)&&(data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfb04[(u32)(directY*MapWidth()+directX)>>3]))continue;
-if((data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfa60[(u32)(directY*MapWidth()+directX)>>3]))continue;
+if((gUnitKindStats[c*112+19]&7)&&(gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfb04[(u32)(directY*MapWidth()+directX)>>3]))continue;
+if((gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfa60[(u32)(directY*MapWidth()+directX)>>3]))continue;
 }
 map=*gCurrentMap;
 
@@ -100,14 +100,14 @@ for(y=loY;y<=hiY;y++)for(x=loX;x<=hiX;x++){
 dist=0;
 if(unit[1]-x>0)dist+=unit[1]-x;else dist+=x-unit[1];
 if(unit[2]-y>0)dist+=unit[2]-y;else dist+=y-unit[2];
-if(dist<data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+12]||dist>GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind))continue;
+if(dist<gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+12]||dist>GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind))continue;
 map=*gCurrentMap;
 kind=(*InfluenceCell(data_ov000_021e0550,x,y))&127;
 if(!kind && (!(flags&16)||!((*InfluenceCell(data_ov000_021e0550,x,y))&128)))continue;
 if(kind!=127&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16*,0x52b6),c,(s16)x,(s16)y))continue;
 if(dist==1){{
-if((data_ov000_021b5bfc[c*112+19]&7)&&(data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfb04[(u32)(y*MapWidth()+x)>>3]))continue;
-if((data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfa60[(u32)(y*MapWidth()+x)>>3]))continue;
+if((gUnitKindStats[c*112+19]&7)&&(gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfb04[(u32)(y*MapWidth()+x)>>3]))continue;
+if((gUnitKindStats[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfa60[(u32)(y*MapWidth()+x)>>3]))continue;
 }
 map=*gCurrentMap;
 

@@ -55,7 +55,7 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
 
 void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern u8 data_ov000_021b5c0a[];
     extern u8 gMovementCostTable[];
     s32 func_020ba510(s32, s32);
@@ -127,7 +127,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 }
                 range = GetUnitMaxAttackRange(owner, (s32)((u32)(p[0] << 26) >> 26));
                 if (range > 1) {
-                    if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 0x20) range++;
+                    if (gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 0x20) range++;
                     if (range + 6 < dist) continue;
                 } else {
                     if (p) {
@@ -139,7 +139,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                     }
                     range = GetUnitMoveRange(owner, (s32)((u32)(p[0] << 26) >> 26)) + 7;
                     if (range < dist) continue;
-                    if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 7) {
+                    if (gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 7) {
                         func_01ffc2e8(p);
                         func_01ffb9c4(0x6f);
                         if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8), s8 *, x) < 0) continue;
@@ -188,7 +188,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
             for (xx = minX; xx <= maxX; xx++) {
                 if (tileDistance(x, y, xx, yy) != 1) continue;
                 map = *gCurrentMap;
-                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
                 if (val == -1) continue;
                 if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;
@@ -217,7 +217,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
             for (xx = minX; xx <= maxX; xx++) {
                 if (tileDistance(x, y, xx, yy) != 1) continue;
                 map = *gCurrentMap;
-                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
                 if (val == -1) continue;
                 if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;
@@ -265,7 +265,7 @@ return result;
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 s32 func_ov000_0217f494(s16 x,s16 y){
-extern void **gCurrentMap;extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u8 gUnitKindStats[];
 s32 func_020a76d4(u8 *);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s32,s32);s32 func_ov000_02176e28(u32,void *);
 s32 result=0,best=result,minx,maxy,maxx,inner,dist,dy,rev,ret,score,cand; register s32 outer; s16 pos[2];u8 *up;void *map;
 ret=func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
@@ -281,7 +281,7 @@ else maxy=y+func_020a76d4(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
 for(;outer<=maxy;outer++){for(inner=minx;inner<=maxx;inner++){
 dist=tileDistance(x,y,inner,outer);
 up=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-if(dist<data_ov000_021b5bfc[((u32)(up[0]<<26)>>26)*112+12])continue;
+if(dist<gUnitKindStats[((u32)(up[0]<<26)>>26)*112+12])continue;
 if(dist>func_020a76d4(up))continue;
 map=*gCurrentMap;cand=M2C_FIELD((u8 *)map+inner+M2C_FIELD((u8 *)map+outer*2,u16 *,0x3758),u8 *,0);
 if(!cand)continue;

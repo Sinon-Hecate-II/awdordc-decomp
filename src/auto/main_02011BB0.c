@@ -6,7 +6,7 @@ typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
 
 s32 func_02011bb0(void) {
     void *func_02011440();
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     void *p;
     void *q;
     s32 flag;
@@ -16,23 +16,23 @@ s32 func_02011bb0(void) {
     if (func_020114b4(2, 7, 8) != 0) {
         return 0;
     }
-    func_020067a8(M2C_FIELD(p, void **, 4) + 0xC, 4);
+    DC_InvalidateRange(M2C_FIELD(p, void **, 4) + 0xC, 4);
     q = M2C_FIELD(p, void **, 4);
     if (M2C_FIELD(q, s32 *, 0xC) == 1) {
         return 0;
     }
-    func_020067a8((u8 *)q + 0x188, 2);
+    DC_InvalidateRange((u8 *)q + 0x188, 2);
     q = M2C_FIELD(p, void **, 4);
     if (M2C_FIELD(q, u16 *, 0x188) == 0) {
         flag = 1;
     } else {
         flag = 0;
     }
-    func_020067a8((u8 *)q + 0x3E, 2);
+    DC_InvalidateRange((u8 *)q + 0x3E, 2);
     q = M2C_FIELD(p, void **, 4);
     v = M2C_FIELD(q, u16 *, 0x3E);
     if (flag == 1) {
-        func_020067a8((u8 *)q + 0xF8, 2);
+        DC_InvalidateRange((u8 *)q + 0xF8, 2);
         q = M2C_FIELD(p, void **, 4);
         w = M2C_FIELD(q, u16 *, 0xF8);
         return (((v + 0xC) * w + 0x29) & ~0x1F) << 1;
@@ -42,11 +42,11 @@ s32 func_02011bb0(void) {
 }
 
 void *func_02011c74(void *arg0,u32 arg1){
-void *func_02011440(void);s32 func_02011450(void);void func_020067a8(void *,s32);
+void *func_02011440(void);s32 func_02011450(void);void DC_InvalidateRange(void *,s32);
 s32 entries[15];void *p=func_02011440();s32 i;
 if(func_02011450())return 0;
 if(arg1<1||arg1>15)return 0;
-func_020067a8((u8 *)M2C_FIELD(p,void **,4)+0x182,2);
+DC_InvalidateRange((u8 *)M2C_FIELD(p,void **,4)+0x182,2);
 if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<arg1)))return 0;
 if(!M2C_FIELD(arg0,volatile u16 *,4))return 0;
 entries[0]=(s32)arg0+10;i=0;
@@ -66,7 +66,7 @@ u16 func_02011d58(void) {
     return *(u16 *)0x027FFCFA;
 }
 
-u16 func_02011d78(void){void *func_02011440();s32 func_02011450();void func_020067a8(void *,s32);void *p=func_02011440();void *q;u16 n;if(func_02011450())return 0;func_020067a8(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:func_020067a8((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:func_020067a8((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
+u16 func_02011d78(void){void *func_02011440();s32 func_02011450();void DC_InvalidateRange(void *,s32);void *p=func_02011440();void *q;u16 n;if(func_02011450())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
 
 u16 func_02011e08(void){void func_02007724(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;func_02007724(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
 
@@ -336,23 +336,23 @@ s32 func_02012700(M2C_UNK arg0) {
 
 s32 func_02012740(s32 a,u16 *b,void *c,s32 d,u16 e){
 void *func_02011440(void);
-void func_020067c4(void *,s32);void MI_CpuCopy8(void *,void *,s32);void func_02007f8c(void *,s32,s32);s32 func_020113d0(void *,s32);
+void func_020067c4(void *,s32);void MI_CpuCopy8(void *,void *,s32);void MI_CpuFill8(void *,s32,s32);s32 func_020113d0(void *,s32);
 u32 packet[10];s32 r;void *p;
 r=func_020114b4(1,2);if(r)return r;if(!b)return 6;
 func_020067c4(b,*b*2);p=func_02011440();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(12,a);
 M2C_FIELD(packet,u16 *,0)=12;M2C_FIELD(packet,u16 **,4)=b;
-if(c)MI_CpuCopy8(c,&packet[2],24);else func_02007f8c(&packet[2],0,24);
+if(c)MI_CpuCopy8(c,&packet[2],24);else MI_CpuFill8(&packet[2],0,24);
 M2C_FIELD(packet,s32 *,32)=d;M2C_FIELD(packet,u16 *,38)=e;
 r=func_020113d0(packet,40);if(!r)r=2;return r;
 }
 
-s32 func_0201280c(s32 a,u32 b){s32 func_020114b4();void *func_02011440();void func_020067a8(void *,s32);void *p=func_02011440();void *q;s32 r=func_020114b4(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;func_020067a8((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;func_020112b4(13,a);r=func_02011324(13,1,1<<b);if(!r)r=2;return r;}
+s32 func_0201280c(s32 a,u32 b){s32 func_020114b4();void *func_02011440();void DC_InvalidateRange(void *,s32);void *p=func_02011440();void *q;s32 r=func_020114b4(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;func_020112b4(13,a);r=func_02011324(13,1,1<<b);if(!r)r=2;return r;}
 
 s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void *data) {
     /* Register a pending uplink packet: validates camera/module state, builds packet header in a 64-byte buffer, returns status. */
     s32 func_020114b4();
     void *func_02011440();
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     void func_02007e54(s32, void *, s32);
     void func_02007e70(void *, void *, s32);
     s32 func_020113d0(void *, s32);
@@ -363,14 +363,14 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     ctx = M2C_FIELD(func_02011440(), void **, 4);
     rc = func_020114b4(2, 7, 8);
     if (rc) return rc;
-    func_020067a8(ctx + 0x188, 2);
-    func_020067a8(ctx + 0xC6, 2);
+    DC_InvalidateRange(ctx + 0x188, 2);
+    DC_InvalidateRange(ctx + 0xC6, 2);
     if (M2C_FIELD(ctx, u16 *, 0x188) && M2C_FIELD(ctx, u16 *, 0xC6) != 1) return 3;
-    func_020067a8(ctx + 12, 4);
+    DC_InvalidateRange(ctx + 12, 4);
     if (M2C_FIELD(ctx, s32 *, 12) == 1) return 3;
     if (payloadSize & 63) return 6;
     if (tag & 31) return 6;
-    func_020067a8(ctx + 0x9C, 2);
+    DC_InvalidateRange(ctx + 0x9C, 2);
     if (!M2C_FIELD(ctx, u16 *, 0x9C)) {
         if (payloadSize < func_02011bb0()) return 6;
         if ((s32)tag < func_02011b44()) return 6;

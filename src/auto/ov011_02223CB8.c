@@ -216,18 +216,18 @@ case 2:
 M2C_FIELD(p,u16 *,0x34)++;
 if(M2C_FIELD(p,u8 *,0x36)){
 if(++M2C_FIELD(p,u8 *,0x36)>=1){
-M2C_FIELD(p,u8 *,0x36)=0;func_01ffa8c4(p,4);
+M2C_FIELD(p,u8 *,0x36)=0;SetSpriteAnimation(p,4);
 }return;
 }
 if(M2C_FIELD(p,u16 *,0x34)>=0x528){
 M2C_FIELD(p,u8 *,0x38)=3;
-M2C_FIELD(p,u8 *,0x39)=0;func_01ffa8c4(p,3);
+M2C_FIELD(p,u8 *,0x39)=0;SetSpriteAnimation(p,3);
 }break;
 case 3:
 if(M2C_FIELD(p,u16 *,0x34)>gIntroStateDurations[M2C_FIELD(p,u8 *,0x39)]){
 if(M2C_FIELD(p,u8 *,0x39)>10){
-if(M2C_FIELD(p,s32 *,0x3c)==2)func_01ffa8c4(p,4);
-else func_01ffa8c4(p,2);
+if(M2C_FIELD(p,s32 *,0x3c)==2)SetSpriteAnimation(p,4);
+else SetSpriteAnimation(p,2);
 return;
 }
 func_01ffa6fc(p);return;
@@ -237,13 +237,13 @@ func_ov011_0222491c(p);
 }
 
 void func_ov011_0222491c(void *entry) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
     M2C_UNK func_020ac998(s32);
     M2C_UNK func_020aca8c(s32);
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -257,10 +257,10 @@ void func_ov011_0222491c(void *entry) {
     u8 state;
 
     keys = *gKeyState;
-    if (!(keys & 1) && !(keys & 8) && (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0)) {
+    if (!(keys & 1) && !(keys & 8) && (M2C_FIELD(gTouchState, u8 *, 0x14) == 0)) {
         return;
     }
-    if ((M2C_FIELD(entry, s32 *, 0x3C) == 2) && !(keys & 8) && (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0)) {
+    if ((M2C_FIELD(entry, s32 *, 0x3C) == 2) && !(keys & 8) && (M2C_FIELD(gTouchState, u8 *, 0x14) == 0)) {
         return;
     }
     state = M2C_FIELD(entry, u8 *, 0x38);
@@ -306,10 +306,10 @@ void func_ov011_0222491c(void *entry) {
             func_02090034(0, 3);
         }
         if (M2C_FIELD(entry, s32 *, 0x3C) == 2) {
-            func_01ffa8c4(entry, 4);
+            SetSpriteAnimation(entry, 4);
             return;
         }
-        func_01ffa8c4(entry, 2);
+        SetSpriteAnimation(entry, 2);
         return;
     }
 }

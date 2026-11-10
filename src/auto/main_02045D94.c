@@ -79,8 +79,8 @@ s32 func_0204612c(u8 *arg0) {
 
 #pragma opt_propagation off
 s32 func_02046158(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
-M2C_UNK func_020067a8(M2C_UNK,...);
-u64 func_02007004(void);
+M2C_UNK DC_InvalidateRange(M2C_UNK,...);
+u64 GetSystemTick(void);
 u64 func_02072088(u64,u64);
 s32 func_02009eb0(s32,u32,s32);
 extern M2C_UNK data_0213db28;
@@ -123,7 +123,7 @@ if(func_02009eb0(4,a1,0)<0){state=0;goto timer;}
 if(func_02009eb0(4,b1,0)<0){state=0;goto timer;}
 if(func_02009eb0(4,b2,0)<0){state=0;goto timer;}
 if(func_02009eb0(4,b3,0)<0)state=0;else state=1;
-timer:start=func_02007004();break;
+timer:start=GetSystemTick();break;
 case 4:case 5:
 if(func_02009eb0(4,c0,0)<0){state=0;break;}
 if(func_02009eb0(4,c1,0)<0){state=0;break;}
@@ -139,13 +139,13 @@ case 1:return 1;
 case 2:arg0=4;break;
 case 3:arg0=5;break;
 case 4:case 5:
-func_020067a8((s32)data_0213db60,1);
+DC_InvalidateRange((s32)data_0213db60,1);
 if(arg0==4){
 if(data_0213db60[0]&2)arg0=3;else goto fail;
 }else{
 if(!(data_0213db60[0]&1))return 1;
 if(data_0213db60[0]&32)goto set6;
-elapsed=func_02007004()-start;
+elapsed=GetSystemTick()-start;
 scale=(u64)(u32)64;
 if(func_02072088(elapsed*scale,0x82ea)<=4000)goto delay;
 set6:arg0=6;break;
@@ -160,7 +160,7 @@ case 7:return 1;
 fail:return state;
 }
 #pragma opt_propagation reset
-s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK func_020067a8(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; func_020067a8(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); loop: if(func_02046158(1,arg0,(u16)arg1,arg2)!=1) {WaitByLoop(0x40000);goto loop;}func_020067a8(arg2,arg1);return 1; }
+s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) { M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; DC_InvalidateRange(arg2); do {}while(!func_02009e8c(4,1));func_02009e40(4,&func_02046788); loop: if(func_02046158(1,arg0,(u16)arg1,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
 void func_02046654(s32 a,s32 b,s32 c) { s32 func_02009e8c(s32,s32); M2C_UNK func_02009e40(s32,M2C_UNK *); M2C_UNK func_020067c4(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!func_02009e8c(4,1));func_02009e40(4,(M2C_UNK *)&func_02046788);func_020067c4(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
@@ -216,7 +216,7 @@ s32 func_02046884(void *arg0) {
     s32 r10 = 1;
     s32 tmp;
 
-    func_02007f8c(r8, 0, 0x700);
+    MI_CpuFill8(r8, 0, 0x700);
     if (func_02045e70(r8) == 0) {
         return 0xffffd8ef;
     }
@@ -225,7 +225,7 @@ s32 func_02046884(void *arg0) {
         return 0xffffd8ef;
     }
 
-    func_02007f8c(stk, 0, 16);
+    MI_CpuFill8(stk, 0, 16);
 
     r6 = (u8 *)r8;
     r7 = (u8 *)r8;

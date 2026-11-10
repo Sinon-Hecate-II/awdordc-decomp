@@ -307,8 +307,8 @@ s32 Link_GetQueueCount(s32 arg0) {
 }
 
 void func_ov010_0222393c(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
-    func_02007f8c(arg0, 0, 0x28);
+    M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(arg0, 0, 0x28);
     M2C_FIELD(arg0, s32 *, 4) = 0x134DF;
     M2C_FIELD(arg0, s32 *, 0x28) = 0;
     M2C_FIELD(arg0, s32 *, 0x2C) = 0;

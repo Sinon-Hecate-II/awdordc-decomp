@@ -4,9 +4,9 @@
 s32 func_02014b34(u16 arg0) {
  s32 func_020189a4(s8 *,void *);s32 func_02015f10(s32,u16,s32);
  extern u8 data_020f5544;extern void *data_02136c4c;
- M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,M2C_UNK);
+ M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,M2C_UNK);
  void *base;u8 packet[6];u8 counts[16];s32 ptr;s8 selected=-1;u16 idx,idx2,mask=0;u8 tries,candidate;s8 owner;
- func_02007f8c((s32)counts,0,16);base=data_02136c4c;
+ MI_CpuFill8((s32)counts,0,16);base=data_02136c4c;
  for(idx=1;idx<=15;idx++){
  if(M2C_FIELD(base+idx*4,s32 *,0x14e4)==5){
  owner=M2C_FIELD(base+idx,s8 *,0x1525);counts[owner]++;
@@ -30,7 +30,7 @@ s32 func_02014b34(u16 arg0) {
 
 void func_02014ccc(void *arg0) {
  s32 func_0200b144(void *,s32);
- void func_0200b774(void *);
+ void InitFileRequest(void *);
  s32 func_0200b99c(void *,s32,s32,s32,s32);
  void func_0200ba9c(void *);
  s32 func_0200bbe0(void *,s32,s32);
@@ -38,7 +38,7 @@ void func_02014ccc(void *arg0) {
  s32 val;
  void *a,*b;
  b=M2C_FIELD(arg0,void **,0x14); a=M2C_FIELD(arg0,void **,0x10);
- func_0200b774(sp4);
+ InitFileRequest(sp4);
  val=M2C_FIELD(a,s32 *,0);
  if(func_0200b99c(sp4,func_0200b144(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
  if(M2C_FIELD(a,s32 *,4)==func_0200bbe0(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;

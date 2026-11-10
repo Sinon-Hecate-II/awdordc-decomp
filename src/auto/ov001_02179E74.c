@@ -7,7 +7,7 @@ void func_ov001_02179e74(void) {
     void func_ov001_02179dc8(void);
     M2C_FIELD(&data_ov001_02193d94,u8 *,0) = M2C_FIELD(&data_ov001_02193d94,u8 *,0) + 1;
     if ((u32)M2C_FIELD(&data_ov001_02193d94,u8 *,0) < 120U) return;
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02179dc8);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179dc8);
 }
 
 void func_ov001_02179ea8(void) {
@@ -25,7 +25,7 @@ void func_ov001_02179ea8(void) {
     M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0217ac18(void);
     void func_ov001_0217b130(void);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0217b0d4(void);
     void func_ov001_0217a2f0(void);
     s32 temp;
@@ -49,7 +49,7 @@ void func_ov001_02179ea8(void) {
         (s32)func_ov001_0218c884((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
     func_ov001_0217ac18();
     func_ov001_0217b130();
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217a2f0);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a2f0);
 }
 
 void func_ov001_02179f80(void) {
@@ -146,13 +146,13 @@ p = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9 + i] + 4)
 void func_ov001_0217a2f0(void) {
     M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0217a344(void);
     func_ov001_0218a824(2, 1, 1, 8);
     func_ov001_0218a824(2, 0, 0x1D, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x1D);
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217a344);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a344);
 }
 
 void func_ov001_0217a344(void) {
@@ -166,7 +166,7 @@ void func_ov001_0217a344(void) {
         return;
     }
     func_ov001_02171e20(0);
-    func_ov001_02175d54(&func_ov001_0217a380);
+    Ov001_SetStepCallback(&func_ov001_0217a380);
 }
 
 void func_ov001_0217a380(void) {
@@ -177,7 +177,7 @@ void func_ov001_0217a380(void) {
         return;
     }
     func_ov001_02171738();
-    func_ov001_02175d54(&func_ov001_0217a3a8);
+    Ov001_SetStepCallback(&func_ov001_0217a3a8);
 }
 
 void func_ov001_0217a3a8(void) {
@@ -296,7 +296,7 @@ void func_ov001_0217a880(void) {
     s32 func_02002088(s32, u16);
     void func_ov001_02183a08(void);
     M2C_UNK func_ov001_021862d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0217b3f0(void);
     void func_ov001_0217a98c(void);
     extern M2C_UNK gMapSelectState;
@@ -326,7 +326,7 @@ void func_ov001_0217a880(void) {
                 func_ov001_02183a08();
                 func_ov001_02171750();
                 func_ov001_021862d8(0xe, 1, 1, -1, 0);
-                func_ov001_02175d54((M2C_UNK *)&func_ov001_0217b3f0);
+                Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217b3f0);
                 goto done;
             } else {
                 void *map2 = M2C_FIELD(&gMapSelectState, void **, 4);
@@ -334,7 +334,7 @@ void func_ov001_0217a880(void) {
                 map = M2C_FIELD(&gMapSelectState, void **, 4);
                 M2C_FIELD(map, u8 *, 0x52) = (u8)idx;
                 Ov001_PlaySound(6);
-                func_ov001_02175d54((M2C_UNK *)&func_ov001_0217a98c);
+                Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a98c);
                 goto done;
             }
         }
@@ -347,19 +347,19 @@ done:
 
 void func_ov001_0217a98c(void) {
     M2C_UNK func_ov001_02171750();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_0217a9ac;
     func_ov001_02171750();
     func_ov001_0218aa24(8);
-    func_ov001_02175d54(&func_ov001_0217a9ac);
+    Ov001_SetStepCallback(&func_ov001_0217a9ac);
 }
 
 void func_ov001_0217a9ac(void) {
     M2C_UNK func_ov001_02171694();
     M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gMapSelectState;
-    extern M2C_UNK func_ov001_0217aa1c;
+    extern M2C_UNK MapSelectList_Leave;
     if (func_ov001_0218a800(1) != 0) {
         return;
     }
@@ -370,23 +370,26 @@ void func_ov001_0217a9ac(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x1D, 8);
-    func_ov001_02175d54(&func_ov001_0217aa1c);
+    Ov001_SetStepCallback(&MapSelectList_Leave);
 }
 
 #pragma optimization_level 4
 #pragma opt_strength_reduction off
-void func_ov001_0217aa1c(void) {
+/* Leaves the map-select list: once the fades have finished, frees the list's
+ * row sprites and loaded backgrounds and starts the selected map's preview,
+ * the match, or the cancel path. */
+void MapSelectList_Leave(void) {
 extern s32 gMapSelectState,data_ov001_02193d9c;
 extern s32 func_ov001_02181a84,func_ov001_02180860,func_ov001_0217b444,func_ov001_021828ac;
 s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);void *func_ov001_0218445c(void);
-s32 i; void *p;
+s32 i; void *obj;
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
 if(!func_ov001_0217170c())return;
 func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x3c));
-for(i=0;i<5;i++){
-p=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,16);if(p)func_ov001_0218c104(p);
-p=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,36);if(p)func_ov001_0218c104(p);
+for(i=0;i<MAPSELECT_ROWS;i++){
+obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_A);if(obj)func_ov001_0218c104(obj);
+obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_B);if(obj)func_ov001_0218c104(obj);
 }
 func_ov001_0218af0c(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
 func_ov001_02183980();func_ov001_02172184();func_ov001_02171cf8();func_ov001_021836f4();
@@ -394,19 +397,19 @@ func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
 func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
 *(u32 *)0x04000010=0;*(u32 *)0x04000018=0;
-if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x54)==0){
-func_ov001_02183fa0();func_ov001_02184880(M2C_FIELD(func_ov001_0218445c(),u8 *,0xf4));func_ov001_02175d64(2,0);func_ov001_02175d54(&func_ov001_02181a84);
+if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,MAPSELECT_CHOSEN)==0){
+func_ov001_02183fa0();func_ov001_02184880(M2C_FIELD(func_ov001_0218445c(),u8 *,0xf4));func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
 }else if(M2C_FIELD(&gMapSelectState,u8 *,0)==4){
-func_ov001_02183fa0();func_ov001_02175d64(0,1);func_ov001_02175d54(&func_ov001_02180860);
+func_ov001_02183fa0();func_ov001_02175d64(0,1);Ov001_SetStepCallback(&func_ov001_02180860);
 }else{
-p=M2C_FIELD(&gMapSelectState,void **,4);
-func_ov001_02184498(M2C_FIELD(p,void **,0)+M2C_FIELD(p,u8 *,0x52)*42);
+obj=M2C_FIELD(&gMapSelectState,void **,4);
+func_ov001_02184498(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE);
 func_ov001_02175d64(0,0);
-p=M2C_FIELD(&gMapSelectState,void **,4);
-if(M2C_FIELD(M2C_FIELD(p,void **,0)+M2C_FIELD(p,u8 *,0x52)*42,u8 *,40)){
-func_ov001_02175d64(0,1);func_ov001_02175da0(1,1);func_ov001_02175d54(&func_ov001_0217b444);
+obj=M2C_FIELD(&gMapSelectState,void **,4);
+if(M2C_FIELD(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE,u8 *,MAPSELECT_ENTRY_FLAG)){
+func_ov001_02175d64(0,1);func_ov001_02175da0(1,1);Ov001_SetStepCallback(&func_ov001_0217b444);
 }else{
-func_ov001_02175d64(0,1);func_ov001_02175da0(0,1);func_ov001_02175d54(&func_ov001_021828ac);
+func_ov001_02175d64(0,1);func_ov001_02175da0(0,1);Ov001_SetStepCallback(&func_ov001_021828ac);
 }
 }
 func_ov001_0218b71c(&data_ov001_02193d9c);
@@ -454,7 +457,7 @@ void func_ov001_0217ac18(void) {
 void func_ov001_0217acc0(s32 arg0, s32 arg1) {
 extern M2C_UNK gMapSelectState;
 s32 func_ov001_0218c3e0(u8 *,s32);
-M2C_UNK func_02007f8c(void *,s32,s32);
+M2C_UNK MI_CpuFill8(void *,s32,s32);
 M2C_UNK func_ov001_0218b080(void *,s32,s32,s32,s32,u16 *,s32);
 u16 buf[17];
 s32 offset=arg0*42;
@@ -464,7 +467,7 @@ s32 n,i;
 void *ctx;
 if(arg0>=M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),u8 *,0x51))return;
 if(len<=16)y+=6;
-func_02007f8c(buf,0,34);
+MI_CpuFill8(buf,0,34);
 n=len<=16?len:16;
 i=0;
 if(n>0){ctx=M2C_FIELD(&gMapSelectState, void **, 4);
@@ -472,7 +475,7 @@ do {buf[i]=M2C_FIELD(ctx,u8 **,0)[offset+i];}while(++i<n);
 }
 func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4),void **,12),10,y,2,10,buf,1);
 if(len<=16)return;
-func_02007f8c(buf,0,34);
+MI_CpuFill8(buf,0,34);
 len-=16;
 arg0=0;
 if(len>0){ctx=M2C_FIELD(&gMapSelectState, void **, 4);

@@ -1,7 +1,7 @@
 /* 5 functions from 0x021A4A98 to 0x021A58C8 (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
+extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
 #define MAP (*gCurrentMap)
 #define KIND(p) ((u32)((p)[0]<<26)>>26)
 #define ROW(y) M2C_FIELD(MAP+(y)*2,u16*,0x3758)
@@ -24,7 +24,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     u8 IsFootUnitKind(s32);
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
 
     s32 count = 0;
     s32 flag = 0;
@@ -94,7 +94,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
             if (IsUnitOnCurrentTeam(unit) == 0) {
                 kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
                 {
-                    u8 *info = data_ov000_021b5bfc + kind * 0x70;
+                    u8 *info = gUnitKindStats + kind * 0x70;
                     if ((info[0x13] & 7) != 0 && IsFootUnitKind(kind) != 0) return 0;
                 }
             } else {
@@ -157,7 +157,7 @@ distance=0;if(cx-x>0)distance+=cx-x;else distance+=x-cx;if(cy-y>0)distance+=cy-y
 if(distance<1||distance>9||!CELL(x,y,0x508)||IsUnitOnCurrentTeam(CELL(x,y,0))==1)continue;
 { void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
 if(kind==22&&KIND(unit)!=23)continue;
-if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(data_ov000_021b5bfc[kind*112+19]&16)){
+if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(gUnitKindStats[kind*112+19]&16)){
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
@@ -166,8 +166,8 @@ if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
 value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind!=14)sum+=value;else if(value>max)max=value;continue;
 }
-if((((data_ov000_021b5bfc[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)||
-((data_ov000_021b5bfc[kind*112+19]&16)&&KIND(unit)==6)||
+if((((gUnitKindStats[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)||
+((gUnitKindStats[kind*112+19]&16)&&KIND(unit)==6)||
 ((u32)(kind-20)<=1&&(KIND(unit)==22||KIND(unit)==15||KIND(unit)==17))){
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
@@ -180,7 +180,7 @@ if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
 range=GetUnitMaxAttackRange(UnitOwnerA4e08(unit),KIND(unit));
 if(range<=1)continue;
 if(range<distance&&!func_020a85c8(KIND(unit)))continue;
-range=data_ov000_021b5bfc[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
+range=gUnitKindStats[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
 value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 sum+=value;
 }

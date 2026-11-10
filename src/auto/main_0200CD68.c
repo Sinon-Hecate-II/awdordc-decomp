@@ -6,7 +6,7 @@ typedef struct { u32 v[7]; } InputConfig;
 typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u16 sample[4]; u16 index; u16 pad12; void *records; u16 capacity; u8 pad1a[0x1c]; u16 state; u16 flags38, flags3a; } TouchState;
 extern InputConfig data_020ea6d8;
 extern M2C_UNK data_0212fc70;
-extern M2C_UNK func_0200c9c8, func_0200ca18, func_0200cb6c;
+extern M2C_UNK func_0200c9c8, func_0200ca18, SHA1_Finalize;
 void func_0200d2c4(u32,u32,u32);
 typedef struct { u32 x:12; u32 y:12; u32 touch:1; u32 valid:2; u32 unused:5; } TouchPacket;
 typedef union { TouchPair pair; TouchPacket bits; } TouchSample;
@@ -16,7 +16,7 @@ void func_0200cd68(u32 a,u32 b,u32 c,u32 d,u32 e) {
 void func_0200cdfc(u8 *,u8 *,s32,u8 *,s32,void *);
 u8 buf[0x68]; u8 small[0x14]; InputConfig cfg = data_020ea6d8;
 cfg.v[2]=(u32)buf; cfg.v[3]=(u32)small;
-cfg.v[4]=(u32)&func_0200c9c8; cfg.v[5]=(u32)&func_0200ca18; cfg.v[6]=(u32)&func_0200cb6c;
+cfg.v[4]=(u32)&func_0200c9c8; cfg.v[5]=(u32)&func_0200ca18; cfg.v[6]=(u32)&SHA1_Finalize;
 func_0200cdfc(a,b,c,d,e,&cfg);
 }
 

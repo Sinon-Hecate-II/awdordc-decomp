@@ -42,7 +42,7 @@ void func_0202e470(void *arg0) {
     void func_02006564(void *);
     void func_020065e8(void *);
     M2C_UNK func_020067e0(s32, u32);
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     M2C_UNK func_0202e32c(void *);
     u32 func_020722fc(s32, u32);
     extern s8 data_020ea780[16];
@@ -136,7 +136,7 @@ loop_4:
             var_r4 = 0;
             if ((s32) M2C_FIELD(sp8, s32 *, 0x10) > 0) {
                 do {
-                    func_02007f8c(M2C_FIELD((sp8 + (var_r4 * 4)), s32 *, 0x14) + sp34, 0, sp30);
+                    MI_CpuFill8(M2C_FIELD((sp8 + (var_r4 * 4)), s32 *, 0x14) + sp34, 0, sp30);
                     var_r4 += 1;
                 } while (var_r4 < (s32) M2C_FIELD(sp8, s32 *, 0x10));
             }
@@ -261,7 +261,7 @@ loop_35:
                     }
                 } else {
                     if (((s32) (M2C_FIELD(sp3C, s32 *, 0x110) << 0x19) >> 0x1F) != 0) {
-                        func_02007f8c(var_r1_3, 0, sp1C);
+                        MI_CpuFill8(var_r1_3, 0, sp1C);
                     } else {
                         MI_CpuCopy8(M2C_FIELD(sp8, s32 *, 0x14) + sp34, var_r1_3, sp1C);
                     }
@@ -385,7 +385,7 @@ void func_0202ee2c(void) {
 
 #pragma opt_common_subs off
 void func_0202ee30(void *arg0) {
- void func_02005da4(void *);
+ void OS_SleepThread(void *);
  void func_02006564(void *);
  void func_020065e8(void *);
  void *func_0202e09c(void *);
@@ -393,7 +393,7 @@ void func_0202ee30(void *arg0) {
  void func_0202e12c(void *);
  volatile void *p;
  void *base=arg0+0xC8;
- func_02005da4(arg0+0x4C0);
+ OS_SleepThread(arg0+0x4C0);
  for(;;) {
  func_02006564(base+0x400);
  p=func_0202e09c(arg0+0x4E0);

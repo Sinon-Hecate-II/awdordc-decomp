@@ -19,7 +19,7 @@ void func_ov001_0217d044(void) {
     extern M2C_UNK func_ov001_0217d078;
     func_ov001_0218a824(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
-    func_ov001_02175d54(&func_ov001_0217d078);
+    Ov001_SetStepCallback(&func_ov001_0217d078);
 }
 
 void func_ov001_0217d078(void) {
@@ -27,7 +27,7 @@ void func_ov001_0217d078(void) {
     if (func_ov001_0218a800(1) != 0) return;
     if (func_ov001_0218a800(0) != 0) return;
     func_ov001_02171e20(4);
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217d0b4);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d0b4);
 }
 
 void func_ov001_0217d0b4(void) {
@@ -38,7 +38,7 @@ void func_ov001_0217d0b4(void) {
         return;
     }
     func_ov001_02171738();
-    func_ov001_02175d54(&func_ov001_0217d0dc);
+    Ov001_SetStepCallback(&func_ov001_0217d0dc);
 }
 
 void func_ov001_0217d0dc(void) {
@@ -69,17 +69,17 @@ void func_ov001_0217d114(void) {
     void func_ov001_0217d13c(void);
     if (func_ov001_021716c4() != 0) return;
     Ov001_PlaySound(6);
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217d13c);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d13c);
 }
 
 void func_ov001_0217d13c(void) {
     M2C_UNK func_ov001_02171750();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_0217d15c;
     func_ov001_02171750();
     func_ov001_0218aa24(8);
-    func_ov001_02175d54(&func_ov001_0217d15c);
+    Ov001_SetStepCallback(&func_ov001_0217d15c);
 }
 
 void func_ov001_0217d15c(void) {
@@ -91,7 +91,7 @@ void func_ov001_0217d15c(void) {
     func_ov001_02171694();
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x15, 8);
-    func_ov001_02175d54(&func_ov001_0217d1ac);
+    Ov001_SetStepCallback(&func_ov001_0217d1ac);
 }
 
 void func_ov001_0217d1ac(void) {
@@ -102,7 +102,7 @@ void func_ov001_0217d1ac(void) {
     M2C_UNK func_ov001_0217f72c(M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217d270;
+    extern M2C_UNK InitMapListScreen;
     extern M2C_UNK func_ov001_02180d44;
     s32 sp0;
 
@@ -122,13 +122,13 @@ void func_ov001_0217d1ac(void) {
     func_ov001_02175db4(0, &sp0);
     if (sp0 != 0) {
         func_ov001_02175d64(2, 1);
-        func_ov001_02175d54(&func_ov001_02180d44);
+        Ov001_SetStepCallback(&func_ov001_02180d44);
         return;
     }
     func_ov001_02175d64(2, 0);
     func_ov001_02175da0(0, 0);
     func_ov001_0217f72c(0);
-    func_ov001_02175d54(&func_ov001_0217d270);
+    Ov001_SetStepCallback(&InitMapListScreen);
 }
 
 void func_ov001_0217d260(s32 arg0) {
@@ -136,12 +136,15 @@ void func_ov001_0217d260(s32 arg0) {
     data_ov001_02193da8 = arg0;
 }
 
-void func_ov001_0217d270(void) {
+/* Build the map-list screen: allocate its list object, load its backgrounds and
+ * text, size the scrollbar from the scroll position, create the seven entry
+ * sprites and the two scroll callbacks, then start the input step. */
+void InitMapListScreen(void) {
     void *func_ov001_0218445c(void);
     void *func_ov001_0218b6f8(s32, s32);
     extern M2C_UNK gMapListState;
     void func_ov001_0217d680(void);
-    void func_ov001_0217d46c(void);
+    void InitMapListGraphics(void);
     u8 func_ov001_02175ddc(void);
     M2C_UNK func_ov001_02171c24(s32, s32, s32);
     void func_ov001_02171dd0(M2C_UNK);
@@ -152,26 +155,26 @@ void func_ov001_0217d270(void) {
     void *func_ov001_0218c884(s32, void (*)(void), s32, s32);
     M2C_UNK func_ov001_0217e238(void);
     void func_ov001_0217f038(void);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern s8 data_ov001_0218f99c[];
     void func_ov001_0217efb4(void);
     void func_ov001_0217f514(void);
     void func_ov001_0217d6bc(void);
 
-    void *r4;
+    void *profile;
     s32 i;
-    u8 t;
-    void *q;
+    u8 value;
+    void *sprite;
 
-    r4 = func_ov001_0218445c();
+    profile = func_ov001_0218445c();
     M2C_FIELD(&gMapListState, void **, 8) = func_ov001_0218b6f8(0x48, 4);
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(r4, u8 *, 0xf6);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(profile, u8 *, 0xf6);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x42) = 0xc;
     func_ov001_0217d680();
-    func_ov001_0217d46c();
+    InitMapListGraphics();
     if (M2C_FIELD(&gMapListState, u8 *, 1) == 0) {
-        t = func_ov001_02175ddc();
-        func_ov001_02171c24(0x30, (s32)data_ov001_0218f99c[t], M2C_FIELD(r4, u8 *, 0xf4) + 1);
+        value = func_ov001_02175ddc();
+        func_ov001_02171c24(0x30, (s32)data_ov001_0218f99c[value], M2C_FIELD(profile, u8 *, 0xf4) + 1);
     } else {
         func_ov001_02171c24(0x45, -1, 0);
     }
@@ -183,18 +186,18 @@ void func_ov001_0217d270(void) {
     for (i = 0; i < 7; i++) {
         ((void **)M2C_FIELD(&gMapListState, void **, 8))[i + 6] = func_ov001_0218a5f0(0, 0x29);
     }
-    t = M2C_FIELD(r4, u8 *, 0xe7);
-    switch (t) {
+    value = M2C_FIELD(profile, u8 *, 0xe7);
+    switch (value) {
         case 1: {
-            q = func_ov001_0218a5f0(0, 0x50);
-            M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = q;
+            sprite = func_ov001_0218a5f0(0, 0x50);
+            M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = sprite;
             M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) =
                 (M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) & ~0xc00) | 0xc00;
             break;
         }
         case 2: {
-            q = func_ov001_0218a5f0(0, 0x51);
-            M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = q;
+            sprite = func_ov001_0218a5f0(0, 0x51);
+            M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34) = sprite;
             M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) =
                 (M2C_FIELD(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x34), u16 *, 4) & ~0xc00) | 0xc00;
             break;
@@ -204,46 +207,51 @@ void func_ov001_0217d270(void) {
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = func_ov001_0218c884(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
     func_ov001_0217e238();
     func_ov001_0217f038();
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217d6bc);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d6bc);
 }
 
-void func_ov001_0217d46c(void) {
+/* Set up the map-list screen's graphics: load the two background tile/palette
+ * sets and the list-background tilemaps into VRAM, create the background list
+ * objects and point the layered background control registers at them. */
+void InitMapListGraphics(void) {
     M2C_UNK func_ov001_02171d30(void *);
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov001_02189dc8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
-    extern u8 data_ov001_0218f93b[];
-    extern u8 data_ov001_0218f910[];
-    extern u8 data_ov001_0218f925[];
-    extern M2C_UNK data_ov001_02190804, data_ov001_02190818, data_ov001_02190830, data_ov001_02190848;
+    extern u8 sJb3ListBackPath[];
+    extern u8 sYbBgStep2NclPath[];
+    extern u8 sYbBgStep21NclPath[];
+    extern M2C_UNK sYbObjKbPath, sJbBgStep2NcgPath, sJbBgStep21NcgPath, sJb3ListNscPath;
     extern M2C_UNK gMapListState;
     extern M2C_UNK func_02004160, func_0200472c, func_020046cc, func_020040b4, func_020044ec;
-    typedef struct { u8 bytes[23]; } Buf23;
-    typedef struct { u8 bytes[21]; } Buf21;
-    typedef struct { u8 bytes[22]; } Buf22;
-    Buf23 buf23 = *(Buf23 *)data_ov001_0218f93b;
-    Buf21 buf21 = *(Buf21 *)data_ov001_0218f910;
-    Buf22 buf22 = *(Buf22 *)data_ov001_0218f925;
+    typedef struct { u8 bytes[23]; } ListBackPath;
+    typedef struct { u8 bytes[21]; } BgStep2Path;
+    typedef struct { u8 bytes[22]; } BgStep21Path;
+    ListBackPath listBackPath = *(ListBackPath *)sJb3ListBackPath;
+    BgStep2Path bgStep2Path = *(BgStep2Path *)sYbBgStep2NclPath;
+    BgStep21Path bgStep21Path = *(BgStep21Path *)sYbBgStep21NclPath;
 
+    /* main BG2: 256-colour tiles, 512x256 map */
     M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) =
         (M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) & 0x43) | 0x218 | 0xC00;
 
-    func_ov001_02171d90(&data_ov001_02190804, &func_02004160);
-    func_ov001_02171d90(&data_ov001_02190818, &func_0200472c);
-    func_ov001_02171d90(&data_ov001_02190830, &func_020046cc);
-    func_ov001_02171d90((void *)&buf21, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_02190848, &func_020044ec);
+    func_ov001_02171d90(&sYbObjKbPath, &func_02004160);      /* UI palette */
+    func_ov001_02171d90(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
+    func_ov001_02171d90(&sJbBgStep21NcgPath, &func_020046cc);/* background tiles, step 21 */
+    func_ov001_02171d90((void *)&bgStep2Path, &func_020040b4);   /* background palette, step 2 */
+    func_ov001_02171d90(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&buf23), 0, 4);
+        func_ov001_02189dc8(func_ov001_02171d30((void *)&listBackPath), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 12) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&buf21), 0, 4);
+        func_ov001_02189dc8(func_ov001_02171d30((void *)&bgStep2Path), 0, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 16) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&buf22), 0, 4);
+        func_ov001_02189dc8(func_ov001_02171d30((void *)&bgStep21Path), 0, 4);
 
+    /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, volatile u16 *, 2) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x04000008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04000008, volatile u16 *, 0) & ~3) | 3;
@@ -271,13 +279,13 @@ void func_ov001_0217d680(void) {
 void func_ov001_0217d6bc(void) {
     M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_0217d710(void);
     func_ov001_0218a824(2, 1, 1, 8);
     func_ov001_0218a824(2, 0, 0x1D, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x1D);
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_0217d710);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d710);
 }
 
 void func_ov001_0217d710(void) {
@@ -288,7 +296,7 @@ void func_ov001_0217d710(void) {
     if (func_ov001_0218a800(0) != 0) {
         return;
     }
-    func_ov001_02175d54(&func_ov001_0217d744);
+    Ov001_SetStepCallback(&func_ov001_0217d744);
 }
 
 void func_ov001_0217d744(void) {
@@ -308,7 +316,7 @@ void func_ov001_0217d754(void) {
     s32 KeyReleased(s32);
     M2C_UNK func_ov001_0217da58(u32);
     M2C_UNK Ov001_PlaySound(s32);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void *func_ov001_0218c884(s32, void (*)(void), s32, s32);
     M2C_UNK func_ov001_0217f1f0(s32);
     void *obj;
@@ -327,7 +335,7 @@ void func_ov001_0217d754(void) {
     if (KeyPressed(2) != 0) {
         Ov001_PlaySound(7);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x40) = 0xd;
-        func_ov001_02175d54((M2C_UNK *)&func_ov001_0217ded8);
+        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ded8);
         return;
     }
     if (KeyHeld(0x200) != 0) {
@@ -435,12 +443,12 @@ M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)=a;
 if(a-11<=1){
 func_ov001_0217f4e0();
 if(func_ov001_0217f62c()==0){
-Ov001_PlaySound(9);func_ov001_021862d8(6,1,1,-1,0);func_ov001_02175d54((M2C_UNK *)func_ov001_0217f6cc);return;
+Ov001_PlaySound(9);func_ov001_021862d8(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217f6cc);return;
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
 }else if(a==13){func_ov001_0217f4e0();Ov001_PlaySound(7);}
 else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_0218f9bc[a]));func_ov001_0217e95c();}
-func_ov001_02183a08();func_ov001_02175d54((M2C_UNK *)func_ov001_0217ded8);
+func_ov001_02183a08();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
 }
 
 void func_ov001_0217dbd8(s32 arg0) {

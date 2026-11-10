@@ -99,7 +99,7 @@ u16 row;
 u8 id;
 s32 func_ov000_02177f24(s32,s32,s16 *);
 void func_01ffb9c4(s8);
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 
 bestX=-1;bestY=bestX;best=bestX+0x8000;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
@@ -118,7 +118,7 @@ unit=((u8*)*gCurrentMap)+0x59a4+id*14;
 switch(((UnitKind18e584*)unit)->kind){
 case 13:
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-if(!data_ov000_021b5bfc[((UnitKind18e584*)selected)->kind*112+0x6a])goto next;
+if(!gUnitKindStats[((UnitKind18e584*)selected)->kind*112+0x6a])goto next;
 if(!(M2C_FIELD(unit,u16*,4)&1))goto next;
 if(!func_ov000_02177f24(x,y,buf))goto next;
 if(M2C_FIELD(((u8*)*gCurrentMap)+buf[0]+M2C_FIELD(((u8*)*gCurrentMap)+buf[1]*2,u16*,0x3758),u8*,0x2d48)>=((u8*)data_ov000_021df644)[2])goto next;

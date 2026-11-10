@@ -38,7 +38,7 @@ void func_ov000_0217f754(s32 x, s32 y, u8 *out, u8 *value) {
 
 void func_ov000_0217f84c(s32 a,s32 b){
 extern void **gCurrentMap;extern u8 *data_ov000_021df580;
-s32 func_0207c2f0(void);s32 func_0207c928(s32,s32);u8 func_ov000_021a89a4(void *);
+s32 func_0207c2f0(void);s32 Modulo(s32,s32);u8 func_ov000_021a89a4(void *);
 u8 *base,*p,*q;
 base=*gCurrentMap;
 p=base+0x59a4+14*a;q=base+0x59a4+14*b;
@@ -51,7 +51,7 @@ M2C_FIELD(*gCurrentMap,s16 *,0x52e0)=q[1];
 M2C_FIELD(*gCurrentMap,s16 *,0x52d8)=M2C_FIELD(*gCurrentMap,s16 *,0x52e0);
 M2C_FIELD(*gCurrentMap,s16 *,0x52e2)=q[2];
 M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(*gCurrentMap,s16 *,0x52e2);
-data_ov000_021df580[3]=func_0207c928(func_0207c2f0(),100);
+data_ov000_021df580[3]=Modulo(func_0207c2f0(),100);
 data_ov000_021df580[5]=func_ov000_021a89a4(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 }
 
@@ -148,10 +148,10 @@ switch(func_ov000_021a9904((u32)(p[0]<<26)>>26)){case 0:func_ov000_0217f96c(p);b
 }
 
 s32 func_ov000_02180410(void) {
- extern u16 data_02168f14;
+ extern u16 gMapConfig;
  extern void **gCurrentMap;
  void *p;
- if (((u32)(data_02168f14<<29)>>29)&0xFF) return 0;
+ if (((u32)(gMapConfig<<29)>>29)&0xFF) return 0;
  p=*gCurrentMap;
  switch(M2C_FIELD(p,u16 *,0x5142)) { case 0xAF: if(M2C_FIELD(p,u16 *,0x52A4)==2)return 1; break; }
  return 0;
@@ -200,7 +200,7 @@ void func_ov000_021804d4(void) {
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
-    M2C_UNK func_ov000_021965dc();
+    M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_0219553c();
     M2C_UNK func_ov000_021967fc();
     M2C_UNK func_ov000_0218b02c();
@@ -218,7 +218,7 @@ void func_ov000_021804d4(void) {
     func_ov000_021954a4();
     func_ov000_02194370();
     func_ov000_0218ae58();
-    func_ov000_021965dc();
+    SelectPropertyAttackDestination();
     func_ov000_0219553c();
     func_ov000_021967fc();
     func_ov000_0218b02c();
@@ -231,7 +231,7 @@ void func_ov000_0218053c(void) {
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
-    M2C_UNK func_ov000_021965dc();
+    M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_0219553c();
     M2C_UNK func_ov000_021967fc();
     M2C_UNK func_ov000_0218b02c();
@@ -248,7 +248,7 @@ void func_ov000_0218053c(void) {
     func_ov000_021954a4();
     func_ov000_02194370();
     func_ov000_0218ae58();
-    func_ov000_021965dc();
+    SelectPropertyAttackDestination();
     func_ov000_0219553c();
     func_ov000_021967fc();
     func_ov000_0218b02c();
@@ -262,7 +262,7 @@ void func_ov000_021805a0(void) {
     M2C_UNK func_ov000_0219553c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
-    M2C_UNK func_ov000_021965dc();
+    M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_021967fc();
     M2C_UNK func_ov000_0218b02c();
@@ -280,7 +280,7 @@ void func_ov000_021805a0(void) {
     func_ov000_0219553c();
     func_ov000_02194370();
     func_ov000_0218ae58();
-    func_ov000_021965dc();
+    SelectPropertyAttackDestination();
     func_ov000_021954a4();
     func_ov000_021967fc();
     func_ov000_0218b02c();
@@ -294,7 +294,7 @@ void func_ov000_02180608(void) {
     M2C_UNK func_ov000_02195750();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
-    M2C_UNK func_ov000_021965dc();
+    M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_021967fc();
     M2C_UNK func_ov000_0218b02c();
@@ -312,7 +312,7 @@ void func_ov000_02180608(void) {
     func_ov000_02195750();
     func_ov000_02194370();
     func_ov000_0218ae58();
-    func_ov000_021965dc();
+    SelectPropertyAttackDestination();
     func_ov000_021954a4();
     func_ov000_021967fc();
     func_ov000_0218b02c();
@@ -327,7 +327,7 @@ void func_ov000_02180670(void) {
     M2C_UNK func_ov000_0218ae58();
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_02194370();
-    M2C_UNK func_ov000_021965dc();
+    M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK func_ov000_021967fc();
     M2C_UNK func_ov000_0218b02c();
     M2C_UNK func_ov000_02186a18();
@@ -345,7 +345,7 @@ void func_ov000_02180670(void) {
     func_ov000_0218ae58();
     func_ov000_021954a4();
     func_ov000_02194370();
-    func_ov000_021965dc();
+    SelectPropertyAttackDestination();
     func_ov000_021967fc();
     func_ov000_0218b02c();
 }

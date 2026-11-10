@@ -1,8 +1,8 @@
 /* 3 functions from 0x021843EC to 0x02185360 (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
-extern u8 data_ov000_021dfcf0[],data_ov000_021dfba8[],data_ov000_021e0f60[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
+extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
+extern u8 data_ov000_021dfcf0[],data_ov000_021dfba8[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
 extern u8 *data_ov000_021df580;
 static inline s32 Unk21843Index(u8 *unit) { if(unit==0)return 0;return (s32)(unit-((u8 *)*gCurrentMap+0x59a4))/14; }
 static inline s32 Unk21843Owner(u8 *unit) {if(unit!=0)return (Unk21843Index(unit)>>6)+1;return 0;}
@@ -20,7 +20,7 @@ int GetUnitMaxAttackRange(int,int);
 int GetUnitAttackClass(int);
 int func_0207c8ec(int,int);
 void FloodFillUnitRange(int,int,int,int,int);
-void func_02007f8c(void *,int,int);
+void MI_CpuFill8(void *,int,int);
 int func_020d27a4(int,int);
 int GetUnitMoveRange(int,int);
 void SelectMapLayer(void *);
@@ -52,11 +52,11 @@ map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
 if(!((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7)))))return;
 }
 FloodFillUnitRange(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,data_ov000_021df580[5]*2,0);
-func_02007f8c(data_ov000_021e0f60,0,1288);
+MI_CpuFill8(gAiRangeLayer,0,1288);
 ally=0;enemy=0;
 map=*gCurrentMap;y=0;
 if(((Map851B8 *)map)->height>0) {
-attrs=data_ov000_021b5bfc+field;
+attrs=gUnitKindStats+field;
 do {
 width=((Map851B8 *)map)->width;
 x=0;if((s32)width>0)do{
@@ -70,12 +70,12 @@ if(IsFootUnitKind((u32)(unit[0]<<26)>>26))goto next_unit;
 if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
 if(attrs[19]&7){
 kind=(u32)(unit[0]<<26)>>26;
-if(!(data_ov000_021b5bfc[kind*112+19]&7))goto next_unit;
+if(!(gUnitKindStats[kind*112+19]&7))goto next_unit;
 if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)goto next_unit;
 }
 if(attrs[19]&16){
 kind=(u32)(unit[0]<<26)>>26;
-if(!(data_ov000_021b5bfc[kind*112+19]&16))goto next_unit;
+if(!(gUnitKindStats[kind*112+19]&16))goto next_unit;
 if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)goto next_unit;
 }
 ally++;goto next_unit;
@@ -93,11 +93,11 @@ bounds=(u8 *)*gCurrentMap+0x5120;
 if(y+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1)bottom=((Map851B8 *)*gCurrentMap)->height-1;
 else bottom=y+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
 for(yy=top;yy<=bottom;yy++){
-xx=left;dst=(s8 *)data_ov000_021e0f60+xx;
+xx=left;dst=(s8 *)gAiRangeLayer+xx;
 for(;xx<=right;xx++,dst++){
 dist=Distance851B8(x,y,xx,yy);
 kind=(u32)(unit[0]<<26)>>26;
-if(dist>=data_ov000_021b5bfc[kind*112+12]){
+if(dist>=gUnitKindStats[kind*112+12]){
 if(dist<=GetUnitMaxAttackRange(Unk21843Owner(unit),kind)){
 if(dist==1)dst[yy*((Map851B8 *)*gCurrentMap)->width]++;
 else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
@@ -112,7 +112,7 @@ FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(Unk21
 func_01ffb9c4(111);
 map=*gCurrentMap;
 for(sy=0;sy<((Map851B8 *)map)->height;sy++){
-dst=(s8 *)data_ov000_021e0f60;width=((Map851B8 *)map)->width;
+dst=(s8 *)gAiRangeLayer;width=((Map851B8 *)map)->width;
 for(sx=0;sx<width;sx++,dst++){
 if(M2C_FIELD(((Map843EC *)map)->costs[sy],s8 *,sx)>=0)dst[sy*width]++;
 map=*gCurrentMap;width=((Map851B8 *)map)->width;
@@ -121,7 +121,7 @@ map=*gCurrentMap;width=((Map851B8 *)map)->width;
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 }else{
 if(attrs[19]&7){
-if(!(data_ov000_021b5bfc[((u32)(unit[0]<<26)>>26)*112+19]&7))goto next_unit;
+if(!(gUnitKindStats[((u32)(unit[0]<<26)>>26)*112+19]&7))goto next_unit;
 }
 enemy++;
 }
@@ -133,9 +133,9 @@ y++;
 }while(y<((Map851B8 *)map)->height);
 }
 leader=data_ov000_021df580;
-postattrs=data_ov000_021b5bfc+field;
+postattrs=gUnitKindStats+field;
 for(y=0;y<((Map851B8 *)map)->height;y++){
-dst=(s8 *)data_ov000_021e0f60;
+dst=(s8 *)gAiRangeLayer;
 width=((Map851B8 *)map)->width;
 for(x=0;x<width;x++,dst++){
 

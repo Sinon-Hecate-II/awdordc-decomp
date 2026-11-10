@@ -22,101 +22,103 @@ static inline void func_020dcc00(void *q) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_020dc838(void *entity) {
+/* Input handler of the matching/link menu: updates its sprites and turns the A/B
+ * presses into the confirm and back animations of the highlighted option. */
+void MatchingMenuConfirmInput(void *menu) {
     void MenuSpriteUpdate(void *);
     void func_020d47f0(void);
-    void func_01ffa8c4(void *, s32);
+    void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32);
     void func_01ffa6fc(void *);
     extern u16 *gKeyState;
-    typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
-    typedef struct { unsigned char value:4; } E0194Bits;
+    typedef struct { u32 low:18; u32 frame:8; u32 high:6; } SpriteFrameBits;
+    typedef struct { unsigned char base:4; } SpriteBaseBits;
 
     u32 keys;
-    void *p;
-    u8 allowed;
+    void *backSprite;
+    u8 optionEnabled;
 
-    if (M2C_FIELD(entity, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x50));
-    if (M2C_FIELD(entity, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x54));
-    if (M2C_FIELD(entity, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x58));
+    if (M2C_FIELD(menu, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(menu, void **, 0x50));
+    if (M2C_FIELD(menu, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(menu, void **, 0x54));
+    if (M2C_FIELD(menu, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(menu, void **, 0x58));
 
     keys = *gKeyState;
-    M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
+    M2C_FIELD(menu, u16 *, 0x48) &= ~0x20;
 
-    p = M2C_FIELD(entity, void **, 0x58);
-    allowed = 1;
-    if (M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xb) != 1) {
-        if (!((u32)(M2C_FIELD(p, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(M2C_FIELD(p, void **, 0x64), s8 *, 0xc) != 1)
-            allowed = 0;
+    backSprite = M2C_FIELD(menu, void **, 0x58);
+    optionEnabled = 1;
+    if (M2C_FIELD(M2C_FIELD(backSprite, void **, MENU_SPRITE_OWNER), s8 *, 0xb) != 1) {
+        if (!((u32)(M2C_FIELD(backSprite, u8 *, MENU_SPRITE_BASE) << 27) >> 31) || M2C_FIELD(M2C_FIELD(backSprite, void **, MENU_SPRITE_OWNER), s8 *, 0xc) != 1)
+            optionEnabled = 0;
     }
 
-    if ((u8)(allowed & 0xff) == 0) {
+    if ((u8)(optionEnabled & 0xff) == 0) {
         if (!(keys & 0x2)) goto skip1;
     }
-    if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) goto skip1;
+    if (M2C_FIELD(menu, u16 *, 0x48) & 0x4) goto skip1;
 
-    if (M2C_FIELD(p, s8 *, 0x5a) >= 0) {
-        M2C_FIELD(p, E0B04Bits *, 0x40).value = (u16)(M2C_FIELD(p, E0194Bits *, 0x59).value + 1);
-        M2C_FIELD(p, u8 *, 0x5a) = 12;
+    if (M2C_FIELD(backSprite, s8 *, MENU_SPRITE_TIMER) >= 0) {
+        M2C_FIELD(backSprite, SpriteFrameBits *, MENU_SPRITE_FRAME).frame = (u16)(M2C_FIELD(backSprite, SpriteBaseBits *, MENU_SPRITE_BASE).base + 1);
+        M2C_FIELD(backSprite, u8 *, MENU_SPRITE_TIMER) = 12;
     }
     func_020d47f0();
-    switch(M2C_FIELD(entity,s32*,0x38)){
-    case 0: M2C_FIELD(entity,u8*,0x40)=0x1e; break;
-    case 1: M2C_FIELD(entity,u8*,0x40)=0x1f; break;
+    switch(M2C_FIELD(menu,s32*,0x38)){
+    case 0: M2C_FIELD(menu,u8*,0x40)=0x1e; break;
+    case 1: M2C_FIELD(menu,u8*,0x40)=0x1f; break;
     }
-    M2C_FIELD(entity, u16 *, 0x48) |= 0x20;
-    func_01ffa8c4(entity, 0x44);
+    M2C_FIELD(menu, u16 *, 0x48) |= 0x20;
+    SetSpriteAnimation(menu, 0x44);
     PlaySoundEffect(0x1000f);
     return;
 
 skip1:
     {
-        void *q = M2C_FIELD(entity, void **, 0x50);
-        u32 low = M2C_FIELD(q, E0194Bits *, 0x59).value;
-        u16 extracted = (M2C_FIELD(q, u32 *, 0x40) << 6) >> 24;
+        void *optionSprite = M2C_FIELD(menu, void **, 0x50);
+        u32 baseFrame = M2C_FIELD(optionSprite, SpriteBaseBits *, MENU_SPRITE_BASE).base;
+        u16 frame = (M2C_FIELD(optionSprite, u32 *, MENU_SPRITE_FRAME) << 6) >> 24;
         s32 changed;
-        if (low + 2 != extracted) changed=1; else changed=0;
+        if (baseFrame + 2 != frame) changed=1; else changed=0;
         if (changed & 0xff) {
-            u8 allowed2 = 1;
-            void *rp = M2C_FIELD(q, void **, 0x64);
-            if (M2C_FIELD(rp, s8 *, 0xb) != 1) {
-                if (!((u32)(M2C_FIELD(q, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(rp, s8 *, 0xc) != 1)
-                    allowed2 = 0;
+            u8 optionEnabled2 = 1;
+            void *owner = M2C_FIELD(optionSprite, void **, MENU_SPRITE_OWNER);
+            if (M2C_FIELD(owner, s8 *, 0xb) != 1) {
+                if (!((u32)(M2C_FIELD(optionSprite, u8 *, MENU_SPRITE_BASE) << 27) >> 31) || M2C_FIELD(owner, s8 *, 0xc) != 1)
+                    optionEnabled2 = 0;
             }
-            if ((u8)(allowed2 & 0xff) == 0) {
+            if ((u8)(optionEnabled2 & 0xff) == 0) {
                 if (!(keys & 0x1)) return;
             }
-            if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
-            if (M2C_FIELD(q, s8 *, 0x5a) >= 0) {
-                M2C_FIELD(q, E0B04Bits *, 0x40).value = (u16)(low + 1);
-                M2C_FIELD(q, u8 *, 0x5a) = 12;
+            if (M2C_FIELD(menu, u16 *, 0x48) & 0x4) return;
+            if (M2C_FIELD(optionSprite, s8 *, MENU_SPRITE_TIMER) >= 0) {
+                M2C_FIELD(optionSprite, SpriteFrameBits *, MENU_SPRITE_FRAME).frame = (u16)(baseFrame + 1);
+                M2C_FIELD(optionSprite, u8 *, MENU_SPRITE_TIMER) = 12;
             }
-            if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
+            if (M2C_FIELD(menu, u16 *, 0x48) & 0x4) return;
             PlaySoundEffect(0x1000e);
-            M2C_FIELD(entity, u16 *, 0x48) |= 0x4;
-            func_01ffa6fc(entity);
+            M2C_FIELD(menu, u16 *, 0x48) |= 0x4;
+            func_01ffa6fc(menu);
         }
     }
 }
 #pragma pop
 void func_020dca5c(void) {
-    M2C_UNK func_020dc614();
-    func_020dc614();
+    M2C_UNK MenuConfirmInput();
+    MenuConfirmInput();
 }
 
 void func_020dca68(void) {
-    M2C_UNK func_020dc614();
-    func_020dc614();
+    M2C_UNK MenuConfirmInput();
+    MenuConfirmInput();
 }
 
 void func_020dca74(void) {
-    void func_020dc838();
-    func_020dc838();
+    void MatchingMenuConfirmInput();
+    MatchingMenuConfirmInput();
 }
 
 void func_020dca80(void) {
-    void func_020dc838();
-    func_020dc838();
+    void MatchingMenuConfirmInput();
+    MatchingMenuConfirmInput();
 }
 
 M2C_UNK func_020dca8c(void *arg0) {

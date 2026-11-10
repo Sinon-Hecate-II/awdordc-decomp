@@ -1,5 +1,6 @@
 /* 2 functions from 0x0219B3C8 to 0x0219B848 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 #pragma opt_loop_invariants off
 #pragma opt_strength_reduction off
@@ -93,28 +94,33 @@ void func_ov000_0219b3c8(void) {
 }
 #pragma opt_loop_invariants reset
 #pragma opt_strength_reduction reset
-s32 func_ov000_0219b648(s32 arg0,s32 arg1) {
+/* Chooses the unit a transport (unit kind 19) at (x, y) should pick up: the
+ * farthest idle unit it can carry that stands in the area flooded on the AI
+ * range layer (a mech, kind 2, is only taken within two tiles). Returns the
+ * unit id, or 0 when there is no candidate. */
+s32 SelectTransportTarget(s32 actX, s32 actY) {
  void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);void func_01ffb9c4(s32);
  s32 CanKindAttack(s32,s32); s32 ManhattanDistance(s16,s16,s16,s16);
- extern u8 data_ov000_021e0f60[],data_ov000_021b5bfc[],gMovementCostTable[];
+ extern u8 gAiRangeLayer[],gUnitKindStats[],gMovementCostTable[];
  extern u16 gPlayerUnitIdBase[];
  extern void **gCurrentMap;
- s32 x=arg0,y=arg1; u16 best=0; s16 result=0; s32 i; void *map; s8 *costs;
- SelectMapLayer(data_ov000_021e0f60);
+ s32 x=actX,y=actY; u16 best=0; s16 result=0; s32 i; void *map; s8 *costs;
+ SelectMapLayer(gAiRangeLayer);
  map=*gCurrentMap;
- costs=M2C_FIELD(gMovementCostTable,s8 **,0x64)+data_ov000_021b5bfc[0x82]*32;
- FloodFillUnitRange(x,y,1,3-costs[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31],1);
+ /* kind 1's movement type selects the infantry cost row */
+ costs=M2C_FIELD(gMovementCostTable,s8 **,0x64)+gUnitKindStats[0x82]*32;
+ FloodFillUnitRange(x,y,1,3-costs[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&31],1);
  func_01ffb9c4(0x6f);
- SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
- for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
- u8 *unit=(u8 *)*gCurrentMap+0x59a4+i*14;
- u32 kind=(u32)(unit[0]<<26)>>26;
+ SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_ORDER);
+ for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+0x33;i++) {
+ u8 *unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
+ u32 kind=(u32)(unit[MAP_UNIT_KIND]<<26)>>26;
  if(kind==0)continue;
  if(!CanKindAttack(19,kind))continue;
- if(((u32)(unit[11]<<28)>>28)!=0)continue;
- if(((s8 *)data_ov000_021e0f60)[unit[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)+unit[1]]<0)continue;
- if(((u32)(unit[0]<<26)>>26)==2 && ManhattanDistance(x,y,unit[1],unit[2])>2)continue;
- if(best>ManhattanDistance(x,y,unit[1],unit[2]))continue;
- best=ManhattanDistance(x,y,unit[1],unit[2]);result=i;
+ if(((u32)(unit[MAP_UNIT_AI_STATE]<<28)>>28)!=0)continue;
+ if(((s8 *)gAiRangeLayer)[unit[MAP_UNIT_Y]*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)+unit[MAP_UNIT_X]]<0)continue;
+ if(((u32)(unit[MAP_UNIT_KIND]<<26)>>26)==2 && ManhattanDistance(x,y,unit[MAP_UNIT_X],unit[MAP_UNIT_Y])>2)continue;
+ if(best>ManhattanDistance(x,y,unit[MAP_UNIT_X],unit[MAP_UNIT_Y]))continue;
+ best=ManhattanDistance(x,y,unit[MAP_UNIT_X],unit[MAP_UNIT_Y]);result=i;
  }return result;
 }

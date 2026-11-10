@@ -120,7 +120,7 @@ void func_ov000_0216b194(void *arg0) {
     s32 func_020e31e0();
     s32 func_020e3218(M2C_UNK *);
     M2C_UNK func_020e35cc(s32);
-    extern M2C_UNK data_02168f14;
+    extern M2C_UNK gMapConfig;
     extern s32 *gCurrentMap;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -158,7 +158,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0x16) = 0x10;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0x14) = 0x1A;
     if (M2C_FIELD(arg0, u8 *, 0x3D) != 0) {
-        var_r1 = (M2C_FIELD(&data_02168f14, u8 *, 3) - M2C_FIELD(*gCurrentMap, u16 *, 0x52A2)) + 1;
+        var_r1 = (M2C_FIELD(&gMapConfig, u8 *, 3) - M2C_FIELD(*gCurrentMap, u16 *, 0x52A2)) + 1;
     } else {
         var_r1 = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
     }

@@ -404,7 +404,7 @@ s32 func_020201e4(s32 p) {
 }
 
 s32 func_02020220(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK func_02005da4(void *); s32 func_020214a8(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 data_020faf98;
+s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32); M2C_UNK OS_SleepThread(void *); s32 func_020214a8(); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,s32); extern s32 data_020faf98;
 void *ctx=M2C_FIELD(arg0,void **,0x64);
 s32 irq=OS_DisableInterrupts(M2C_FIELD(ctx,void **,0x104));
 void *node=M2C_FIELD(ctx,void **,0x104);
@@ -414,7 +414,7 @@ s32 flag=arg5&1;
 do {
 if(!flag) {result=-6; break;}
 
-func_02005da4((char *)ctx+0x10c);
+OS_SleepThread((char *)ctx+0x10c);
 if(func_020214a8(arg0) == 0) {
 s32 ok=0;
 if(arg0) ok=(M2C_FIELD(arg0,s16 *,0x70)&1)!=0;
@@ -445,7 +445,7 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
-    void func_02005df4(void *);
+    void OS_WakeupThread(void *);
     extern s32 data_020faf98;
     extern M2C_UNK data_02138b24;
     void *temp_r4;
@@ -481,7 +481,7 @@ s32 func_02020364(void *arg0, s16 arg1, void *arg2) {
     }
     M2C_FIELD(arg2, u16 *, 0x18) = (u16) M2C_FIELD(arg2, u16 *, 0x1A);
     M2C_FIELD(arg2, s32 *, 0x1C) = M2C_FIELD(arg2, s32 *, 0x20);
-    func_02005df4((char *) temp_r4 + 0x10C);
+    OS_WakeupThread((char *) temp_r4 + 0x10C);
     OS_RestoreInterrupts(temp_r6);
     return 1;
 }
@@ -584,7 +584,7 @@ s32 func_0202058c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
 #pragma dont_inline reset
 
 s32 func_02020690(void *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 arg4) {
-    M2C_UNK func_02005da4(void *);
+    M2C_UNK OS_SleepThread(void *);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 func_02020714(void *);
@@ -609,7 +609,7 @@ loop_3:
     } else if (!(arg4 & 1)) {
         var_r5 = 0;
     } else {
-        func_02005da4(temp_r4 + 0x104);
+        OS_SleepThread(temp_r4 + 0x104);
         goto loop_3;
     }
     OS_RestoreInterrupts(temp_r11);

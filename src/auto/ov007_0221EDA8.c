@@ -3,7 +3,7 @@
 #include "mapedit.h"
 typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 static inline void *InitOv007Text(void *child) {
- s32 func_020e34bc(M2C_UNK); M2C_UNK func_02007f8c(s32,M2C_UNK,M2C_UNK);
+ s32 func_020e34bc(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
     if (child != NULL) {
         M2C_FIELD(child, s16 *, 0x10) = 0x11;
         M2C_FIELD(child, s8 *, 0x12) = 0;
@@ -18,7 +18,7 @@ static inline void *InitOv007Text(void *child) {
         M2C_FIELD(child, s8 *, 0xE) = 0;
         M2C_FIELD(child, u8 *, 0xF) = 0xFF;
         M2C_FIELD(child, s32 *, 0x14) = func_020e34bc(0xCC);
-        func_02007f8c(M2C_FIELD(child, void **, 0x14), 0, 0xCC);
+        MI_CpuFill8(M2C_FIELD(child, void **, 0x14), 0, 0xCC);
     }
 
 return child;
@@ -251,16 +251,16 @@ void func_ov007_0221f264(void) {
 }
 
 void func_ov007_0221f270(u8 *arg0) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     M2C_UNK func_02007e98(M2C_UNK, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(u8 *, M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     s32 func_02099ae8(u8 *);
     s32 func_02099b00(u8 *);
     s32 func_020e31e0();
     s32 func_020e34bc(M2C_UNK);
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_ov007_02220df8;
     extern M2C_UNK gSoftKeyLayoutUs;
     extern M2C_UNK gSoftKeyLayoutJp;
@@ -277,7 +277,7 @@ void func_ov007_0221f270(u8 *arg0) {
     void *temp_r0_4;
 
     var_r5 = arg0;
-    temp_r0 = func_01ffa42c(&data_ov007_02220df8);
+    temp_r0 = CreateSpriteObject(&data_ov007_02220df8);
     if (temp_r0 == NULL) {
         return;
     }
@@ -313,7 +313,7 @@ void func_ov007_0221f270(u8 *arg0) {
     M2C_FIELD(temp_r0, void **, 0x38) = temp_r0_2;
     temp_r0_4 = MemAlloc(0x2C);
     if (temp_r0_4 != NULL) {
-        M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
+        M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
         M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
         M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
         M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;

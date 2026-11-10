@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[],data_ov000_021b55a0[],data_ov000_021b5500[],data_ov000_021e0f60[];
+extern s8 data_ov000_021b5580[],data_ov000_021b55a0[],data_ov000_021b5500[],gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
@@ -13,7 +13,7 @@ s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_ov000_021a9a28(s32,s32,s32); s32 func_ov000_0219b648(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_ov000_021a9a28(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 count=0;out=&gAiTargetCandidates;
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 
@@ -38,10 +38,10 @@ if(!kind||!IsFootUnitKind(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))co
 if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27))goto nextEntry;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
-SelectMapLayer(data_ov000_021e0f60);
+SelectMapLayer(gAiRangeLayer);
 FloodFillUnitRange(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,3,0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
+if(gAiRangeLayer[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
 }
 }
 }
@@ -93,7 +93,7 @@ if(data_ov000_021b5500[kind])goto nextOwn;
 }
 if(data_ov000_021df41c[pass]==13||((u32)(unit[0]<<26)>>26)==19){
 if(!unit[12]&&func_ov000_021a9a28(19,unit[1],unit[2]))goto nextOwn;
-out[7]=func_ov000_0219b648(unit[1],unit[2]);
+out[7]=SelectTransportTarget(unit[1],unit[2]);
 if((s8)out[7]==0)goto nextOwn;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(out[4]<cost)goto nextOwn;
@@ -164,7 +164,7 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|((u32)(best[1]<<26)>>20
 return 1;
 }
 extern u8 *data_ov000_021df580;
-extern u16 data_02168f14;
+extern u16 gMapConfig;
 extern void **gCurrentMap;
 
 extern u8 *data_ov000_021df580;
@@ -187,7 +187,7 @@ for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
 SelectMapLayer((void *)*gCurrentMap + 0x1e30);
 }
 
-void func_ov000_0219c5d4(void){for(;;){switch(*data_ov000_021df580){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)data_02168f14<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
+void func_ov000_0219c5d4(void){for(;;){switch(*data_ov000_021df580){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
 
 s32 func_ov000_0219c680(void){switch(*data_ov000_021df580){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 

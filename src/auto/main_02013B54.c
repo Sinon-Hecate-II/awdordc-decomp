@@ -133,7 +133,7 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 data_02136c4c;
-void func_02014a48(s32); void func_02007f8c(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void func_02007e98();
+void func_02014a48(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void func_02007e98();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -142,8 +142,8 @@ case 0: if(*(u16*)((u8*)b+16)!=0 && *(u16*)((u8*)b+16)<16) func_02014050(*(u16*)
 case 1:
 if(*(u16*)((u8*)b+16)==0 || *(u16*)((u8*)b+16)>=16) break;
 M2C_FIELD(data_02136c4c+(*(u16*)((u8*)b+16)-1)*2,u16*,0x148a)=0;
-func_02007f8c(data_02136c4c+0x14a8+(*(u16*)((u8*)b+16)-1)*4,0,4);
-func_02007f8c(data_02136c4c+0x1340+(*(u16*)((u8*)b+16)-1)*22,0,22);
+MI_CpuFill8(data_02136c4c+0x14a8+(*(u16*)((u8*)b+16)-1)*4,0,4);
+MI_CpuFill8(data_02136c4c+0x1340+(*(u16*)((u8*)b+16)-1)*22,0,22);
 func_02018960(*(u16*)((u8*)b+16));
 M2C_FIELD(data_02136c4c+(*(u16*)((u8*)b+16)-1)*2,u16*,0x1754)=0;
 id=*(u16*)((u8*)b+16); idx=id-1;

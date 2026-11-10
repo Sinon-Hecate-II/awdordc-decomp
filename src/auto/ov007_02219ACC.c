@@ -43,9 +43,9 @@ void func_ov007_02219b64(void *arg0) {
 }
 
 void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221fe48;
-    M2C_FIELD(func_01ffa42c(&data_ov007_0221fe48, arg0), s32 *, 0x5C) = arg1;
+    M2C_FIELD(CreateSpriteObject(&data_ov007_0221fe48, arg0), s32 *, 0x5C) = arg1;
 }
 
 void func_ov007_02219bd8(void) {

@@ -113,7 +113,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
 }
 
 void func_ov003_022020e0(void *p,u8 v){
-s32 func_0207c8ec(u8,s32); s32 func_0207c928(u8,s32); void func_020808dc(s32,s32,s32,s32); extern void *data_027e01d8;
+s32 func_0207c8ec(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); extern void *data_027e01d8;
 s32 flag; s8 a; u8 id; s32 x;
 if((u8)v==1)flag=1;else flag=0;
 M2C_FIELD(p,u8*,0x39)=v;
@@ -123,7 +123,7 @@ func_020808dc(M2C_FIELD(data_027e01d8,s32*,0x2c),32,32,0);
 flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
 if(flag){
 id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
-x=func_0207c928(id,4);
+x=Modulo(id,4);
 { s32 y=func_0207c8ec(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(data_027e01d8,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
 }
 M2C_FIELD(data_027e01d8,u8*,0x46)|=8;
@@ -254,9 +254,9 @@ void func_ov003_0220277c(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
 
     extern void *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
 
-    u8 sp0 = M2C_FIELD(data_02101e88, u8 *, 0x12);
+    u8 sp0 = M2C_FIELD(gTouchState, u8 *, 0x12);
     u16 r6 = M2C_FIELD(gKeyState, u16 *, 0);
     u8 r8;
     s32 r7 = 1;
@@ -384,7 +384,7 @@ void func_ov003_02202b68(void *p) {
 }
 
 void func_ov003_02202bb0(void *p){
- s32 func_0207c8ec(u8,s32); s32 func_0207c928(u8,s32); void func_020808dc(s32,s32,s32,s32); s32 PlaySoundEffect(s32); extern void *gCur3DSpriteEngine;
+ s32 func_0207c8ec(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); s32 PlaySoundEffect(s32); extern void *gCur3DSpriteEngine;
  s32 flag; s8 a; u8 id; s32 x; u8 v=0;
  PlaySoundEffect(0x1000F);
  if(E1E88IsZero(M2C_FIELD(p,u8 *,0x39))) {E1E88Virtual(p);return;}
@@ -395,7 +395,7 @@ void func_ov003_02202bb0(void *p){
  flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
  if(flag){
  id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
- x=func_0207c928(id,4);
+ x=Modulo(id,4);
  { s32 y=func_0207c8ec(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
  }
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
@@ -410,7 +410,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_ov003_021f1be8();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     s32 temp_r6;
     s32 var_r0;
     u8 var_r7;
@@ -438,7 +438,7 @@ void func_ov003_02202cc4(void *arg0) {
             M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, M2C_FIELD(((var_r7 * 0x18) + temp_r6), s32 *, 0xC));
             var_r7 += 1;
         } while ((u32) var_r7 < 8U);
-        data_02168f14 |= 0x2000;
+        gMapConfig |= 0x2000;
     }
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
     func_ov003_021f140c(2);

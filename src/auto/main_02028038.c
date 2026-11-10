@@ -93,7 +93,7 @@ case 2:case 3:case 4:default:WFC_SetState(11);{u8 *session=gSession;WFC_Dispatch
 /* Handle a message from the WFC socket: advance the connection state machine and report the result. */
 void WFC_ProcessCallback(u16 *msg){
 extern void *gSession;
-void func_020067a8(s32,s32); void func_020293a0(s32,u16); u64 func_020722fc(s32,s32); s32 func_020125b0(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
+void DC_InvalidateRange(s32,s32); void func_020293a0(s32,u16); u64 func_020722fc(s32,s32); s32 func_020125b0(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
 s32 result=20,i,n;u32 bits;
 switch(msg[1]){
 case 0:
@@ -101,12 +101,12 @@ if(M2C_FIELD(gSession,s32 *,0x2260)==5){WFC_SetState(6);WFC_DispatchEvent(0,0,0,
 switch(M2C_FIELD(gSession,s32 *,0x2260)){
 case 6:
 M2C_FIELD(gSession,u16 *,0x2280)=7;
-if(msg[4]==5){func_020067a8(M2C_FIELD(gSession,s32 *,0x2288),M2C_FIELD(gSession,u16 *,0x228c));
+if(msg[4]==5){DC_InvalidateRange(M2C_FIELD(gSession,s32 *,0x2288),M2C_FIELD(gSession,u16 *,0x228c));
 for(i=0;i<msg[7];i++){func_020293a0(((s32 *)msg)[i+4],msg[i+40]);WFC_CallEventHandler(7,0,((s32 *)msg)[i+4],(s32)msg,0x71a);}}
 bits=M2C_FIELD(gSession,u32 *,0x2264);
 if((bits&0xc00000)==0xc00000){n=func_0202827c(bits&0x3ffe);if(n){s32 v=M2C_FIELD(gSession,s32 *,0x2284);if((u32)(func_020722fc(v,n)>>32)==0)WFC_CallEventHandler(8,0,v,0,0x728);}}
 M2C_FIELD(gSession,u16 *,0x228e)=(1<<func_02028038((u16)(32-func_020282a8(msg[5]))))>>1;
-func_020067a8(M2C_FIELD(gSession,s32 *,0x2288),M2C_FIELD(gSession,u16 *,0x228c));
+DC_InvalidateRange(M2C_FIELD(gSession,s32 *,0x2288),M2C_FIELD(gSession,u16 *,0x228c));
 M2C_FIELD(gSession,s32 *,0x2284)++;
 result=func_020125b0(WFC_ProcessCallback,(u8 *)gSession+0x2288);break;
 case 7:result=func_02012700(WFC_ProcessSendCallback);break;
@@ -195,7 +195,7 @@ void func_02028cc8(u16 *p) {
     void WFC_DispatchEvent(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void WFC_Finish(void);
     void func_02029bd0(M2C_UNK);
-    void func_020067a8(M2C_UNK, M2C_UNK);
+    void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     void func_020296e0(M2C_UNK);
 
     switch (p[1]) {
@@ -212,7 +212,7 @@ void func_02028cc8(u16 *p) {
             return;
         case 0xf:
             func_02029bd0((*(u16 *)((u8 *)*(void **)((u8 *)p + 8) + 0xe) >> 8) & 0xff);
-            func_020067a8(*(void **)((u8 *)p + 8), 0x620);
+            DC_InvalidateRange(*(void **)((u8 *)p + 8), 0x620);
             func_020296e0(*(void **)((u8 *)p + 8));
             return;
         default:

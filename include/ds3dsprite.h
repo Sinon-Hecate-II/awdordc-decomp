@@ -14,6 +14,9 @@
 #ifndef DS3DSPRITE_H
 #define DS3DSPRITE_H
 
+/* Byte of the bank copied to the display blend register (0..31). */
+#define DS3D_BANK_BLEND 0x53
+
 typedef struct DS3DSpriteBank {
     u16 flags;         /* +0x00 */
     u8  filler_02[0x10];
@@ -24,7 +27,7 @@ typedef struct DS3DSpriteBank {
     u8  filler_50;
     u8  rowsAbove;     /* +0x51 rows of the cell grid above the split */
     u8  rowsBelow;     /* +0x52 rows of the cell grid below the split */
-    u8  filler_53;
+    u8  filler_53;     /* +0x53 display blend level (0..31) */
 } DS3DSpriteBank;
 
 typedef struct DS3DSpriteEngine {

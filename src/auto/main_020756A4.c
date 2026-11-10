@@ -428,6 +428,6 @@ u8 CountBits(u32 arg0) {
 
 void func_02076658(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2){
 M2C_UNK sp0[26];
-func_0200c9c8(sp0);func_0200ca18(sp0,arg1,arg2);func_0200cb6c(sp0,arg0);
+func_0200c9c8(sp0);func_0200ca18(sp0,arg1,arg2);SHA1_Finalize(sp0,arg0);
 }
 

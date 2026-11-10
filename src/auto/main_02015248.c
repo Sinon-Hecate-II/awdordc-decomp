@@ -37,7 +37,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
- s32 func_0200bbe0(void *,s32,s32);void func_0200bbf0(void *,s32,s32);void func_0200b774();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
+ s32 func_0200bbe0(void *,s32,s32);void func_0200bbf0(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -49,7 +49,7 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  base=M2C_FIELD(arg1,u32 *,0x80);if(!base)base=0x1000000;
  }else{
  base=((RomHeader_020152c8 *)0x027ffe00)->offset;if(!base)base=0x1000000;owned=1;
- func_0200b774(file);
+ InitFileRequest(file);
  n=func_0200b144(data_020f554c,3);
  func_0200b99c(file,n,0,base+0x88,-1);
  arg0=file;origin=M2C_FIELD(arg0,u32 *,0x2c)-M2C_FIELD(arg0,u32 *,0x24);
@@ -107,7 +107,7 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  return result;
 }
 void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
-    M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     u32 temp_ip;
     u32 temp_r1;
@@ -134,7 +134,7 @@ void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
         return;
     }
     if (arg3 != 0) {
-        func_02007f8c(M2C_FIELD(arg0, s32 *, 8) + var_lr, 0, var_r2 - var_lr);
+        MI_CpuFill8(M2C_FIELD(arg0, s32 *, 8) + var_lr, 0, var_r2 - var_lr);
         return;
     }
     MI_CpuCopy8(M2C_FIELD(arg0, s32 *, 4) + var_lr, M2C_FIELD(arg0, s32 *, 8) + var_lr, var_r2 - var_lr);

@@ -523,13 +523,13 @@ void func_02004e44(void *arg0, void *arg1) {
 void func_02004e60(s32 arg0,u32 mask) {
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
-void func_02005da4(s32);
+void OS_SleepThread(s32);
 extern M2C_UNK data_027e0000,data_027e00e0;
 s32 ret=OS_DisableInterrupts();
 if(arg0) M2C_FIELD(&data_027e0000,u32 *,0x3ff8)&=~mask;
 OS_RestoreInterrupts(ret);
 if(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)) return;
-do {func_02005da4((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)));
+do {OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,u32 *,0x3ff8)));
 }
 #pragma opt_propagation reset
 void func_02004ed4(void) {

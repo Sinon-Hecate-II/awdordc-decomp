@@ -6,7 +6,7 @@ typedef struct Bits787 {u8 low:6;u8 rest:2;} Bits787;
 typedef struct Bit2787 {u8 low:2;u8 bit:1;u8 rest:5;} Bit2787;
 typedef struct Bit7787 {u8 low:7;u8 bit:1;} Bit7787;
 typedef struct Mode787 {u16 low:3;u16 mode:3;u16 rest:10;} Mode787;
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 static inline s32 Distance787(s32 x,s32 xx,s32 y,s32 yy){s32 v; s32 n=0; v=x-xx; if(v>0)n+=v;else n+=xx-x;v=y-yy;if(v>0)n+=v;else n+=yy-y;return n;}
 static inline s32 Min787(s32 a,s32 b){if(a<b)b=a;return b;}
 static inline s32 Max787(s32 a,s32 b){if(a<b)a=b;return a;}
@@ -53,9 +53,9 @@ u=Unit787(id);if((M2C_FIELD(u,u16 *,4)&1)==0){
 sel=Selected787();
 if((x==M2C_FIELD(sel,u8 *,1) && y==M2C_FIELD(sel,u8 *,2)) || (M2C_FIELD(u,Bit7787 *,10).bit==0)){
 if(GetUnitAttackClass(Kind787(u))==0){
-attr=data_ov000_021b5bfc[Kind787(Selected787())*112+19];
-if(attr&7){if(data_ov000_021b5bfc[Kind787(u)*112+19]&7)goto compatible;else goto next_tile;}
-else {if(!(attr&32) || !(data_ov000_021b5bfc[Kind787(u)*112+19]&32))continue;}
+attr=gUnitKindStats[Kind787(Selected787())*112+19];
+if(attr&7){if(gUnitKindStats[Kind787(u)*112+19]&7)goto compatible;else goto next_tile;}
+else {if(!(attr&32) || !(gUnitKindStats[Kind787(u)*112+19]&32))continue;}
 compatible:if(IsFootUnitKind(Kind787(u))==0){found=1;goto done;}
 }}}}}}next_tile:;}
 done:return (u8)(found!=0);

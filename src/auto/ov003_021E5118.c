@@ -216,7 +216,7 @@ void func_ov003_021e5118(void *arg0) {
 void func_ov003_021e5c98(void *,s16,s16);
 void func_ov003_021e583c(void *a) {
 void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void func_020a94fc(void *);void func_ov000_0216a374(u16,s32,u16,s32);s32 func_ov003_021e50e0(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
-extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 data_027e0064[],data_027e00ac[],data_ov003_0220f61c[];
+extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 gSpriteDesc16x16[],data_027e00ac[],data_ov003_0220f61c[];
 u16 **old; s32 i; s16 pos; s32 x,scroll; s16 scroll2;u16 neg;
 if(!M2C_FIELD(a,u8 *,0x39))return;
 UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x3c));UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x40));UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x44));
@@ -228,7 +228,7 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;M2C_FIELD(*gCur3DSpriteEngine,u16 
 M2C_FIELD(M2C_FIELD(a,void **,0x58),s16 *,6)=scroll+0xab;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),s32 *,0x1c))func_020a94fc(M2C_FIELD(a,void **,0x58));
 else {x=0xab;do {pos=x;if(func_ov003_021e50e0(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),data_027e00ac,11);x+=0x22;i++;}while(i<2);}
-AddSprite((scroll+0xc5)&0x1ff,0x8e,(u16)((0x3ff&(0x288>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x6000),data_027e0064,11);
+AddSprite((scroll+0xc5)&0x1ff,0x8e,(u16)((0x3ff&(0x288>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x6000),gSpriteDesc16x16,11);
 AddSprite(0,(u8)(u32)GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x44)),(u16)((0x3ff&(0x28c>>((**gCur3DSpriteEngine>>13)&3)))|0x8c00),data_ov003_0220f61c,11);
 func_ov000_0216a374((scroll+0x30)&0x1ff,0x38,(u16)((0x3ff&(0x2fc>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x9000),11);
 gCur3DSpriteEngine=g3DSpriteEngineSub;scroll2=GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x3c));
@@ -240,7 +240,7 @@ void func_ov003_021e5b18(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     register u8 temp_r4;
     s32 var_r0;
     u16 temp_r5;
@@ -250,7 +250,7 @@ void func_ov003_021e5b18(void *arg0) {
     void *temp_r1;
     void *temp_r2;
 
-    temp_r4 = M2C_FIELD(data_02101e88, u8 *, 0x12);
+    temp_r4 = M2C_FIELD(gTouchState, u8 *, 0x12);
     temp_r5 = *gKeyState;
     MenuSpriteUpdate(*M2C_FIELD(arg0, void ***, 0x48));
     var_r3 = 1;
@@ -297,7 +297,7 @@ void func_ov003_021e5c8c(void) {
 }
 
 void func_ov003_021e5c98(void *arg0,s16 arg1,s16 arg2){
-void AddSprite(u16,u8,u16,void *,s32);s32 func_0207c8ec(s32,s32);s32 func_0207c928(s32,s32);
+void AddSprite(u16,u8,u16,void *,s32);s32 func_0207c8ec(s32,s32);s32 Modulo(s32,s32);
 void func_020a92bc(void *,s16);void func_020a94fc(void *);s32 func_020c1980(void *,s32,s32);s32 func_ov003_02200ae8(u8);
 extern u8 data_027e0074[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
 s32 sp14,sp10,spC,sp8,sp4; s16 x,y,value;void *p; s32 i,palette,tile;u16 **old;
@@ -307,7 +307,7 @@ i=0;tile=0x210;sp8=arg2;
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
 spC=-1;sp14=0x1ff;sp10=0x3ff;
 do{
-x=func_0207c928(i,3)*22+sp4;
+x=Modulo(i,3)*22+sp4;
 y=func_0207c8ec(i,3)*28+sp8;
 p=M2C_FIELD(arg0,void **,0x68);
 value=func_020c1980((u8 *)p+4,func_ov003_02200ae8(i),spC);

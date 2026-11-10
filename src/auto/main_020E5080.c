@@ -102,7 +102,7 @@ void func_020e5678(void) {
 
 void func_020e569c(M2C_UNK arg0) {
  void *func_01ffa444(M2C_UNK *, M2C_UNK);
- M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
+ M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
  s16 func_0207c8ec(s32, M2C_UNK);
  s32 func_020e3580(M2C_UNK, M2C_UNK);
  extern M2C_UNK data_0212da88;
@@ -121,14 +121,14 @@ void func_020e569c(M2C_UNK arg0) {
  M2C_FIELD(obj, s16 *, 0x3E) = func_0207c8ec(0x2BF20, 0x3E8);
  M2C_FIELD(obj, u8 *, 0x40) = 0;
  data_02168ff4 = func_020e3580(0x20, 0x20);
- func_02007f8c((u8 *)obj + 0x41, 0, 0xA);
+ MI_CpuFill8((u8 *)obj + 0x41, 0, 0xA);
  }
  gCur3DSpriteEngine = saved;
 }
 
 void func_020e5740(void) {
  void *func_01ffa770(M2C_UNK *);
- M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+ M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
  s16 func_0207c8ec(s32, M2C_UNK);
  extern M2C_UNK data_0212da88;
  u8 flags;
@@ -142,7 +142,7 @@ void func_020e5740(void) {
  M2C_FIELD(obj, s16 *, 0x3E) = func_0207c8ec(0x2BF20, 0x3E8);
  if ((M2C_FIELD(obj, u8 *, 0x3C) &= ~1) & 2) return;
  M2C_FIELD(obj, u8 *, 0x3C) |= 2;
- func_01ffa8c4(obj, 1);
+ SetSpriteAnimation(obj, 1);
 }
 
 M2C_UNK **func_020e57b4(M2C_UNK **arg0) {

@@ -23,7 +23,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
     u64 wide;
     double real;
     while (*p) {
-        char *mark=(char *)func_02068ee0(p,37);
+        char *mark=(char *)StringFindChar(p,37);
         q=mark;
         if (!mark) {
             len=StringLength(p); total+=len;
@@ -166,18 +166,18 @@ s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0206743c(s32 format, ...) {
-extern u8 data_02100218[],data_0213e664[],data_0213e5d4[],data_0213e5f8[],data_0212dca4[];
+extern u8 data_02100218[],data_0213e664[],data_0213e5d4[],data_0213e5f8[],gSocketManager[];
 s32 func_0206ad4c(void *,s32);s32 func_02006680(void *);u32 func_02066ba8();
 s32 result;char *args;
 if(func_0206ad4c(data_02100218,-1)>=0)return -1;
 if(!func_02006680(data_0213e664)){
-M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c);
+M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
 M2C_FIELD(data_0213e5f8,s32 *,12)=1;
-}else if(M2C_FIELD(data_0213e5d4,s32 *,12)==M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c)){
+}else if(M2C_FIELD(data_0213e5d4,s32 *,12)==M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c)){
 M2C_FIELD(data_0213e5f8,s32 *,12)=M2C_FIELD(data_0213e5f8,s32 *,12)+1;
 }else{
 func_02006564(data_0213e664);
-M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(data_0212dca4,void **,4),s32 *,0x6c);
+M2C_FIELD(data_0213e5d4,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
 M2C_FIELD(data_0213e5f8,s32 *,12)=1;
 }
 args=(char *)(((u32)&format&~3U)+4);

@@ -29,15 +29,15 @@ func_02007e54(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1;
 }
 
 s32 func_02012c28(s32 a,s32 b,void *buf,u32 len,u16 c,u16 d,u16 e) {
-void *func_02011440(void);s32 func_020114b4(s32,s32);s32 func_020067a8(s32,s32);void func_020067c4(void *,u32);s32 func_02011324(s32,s32);
+void *func_02011440(void);s32 func_020114b4(s32,s32);s32 DC_InvalidateRange(s32,s32);void func_020067c4(void *,u32);s32 func_02011324(s32,s32);
 u16 ready=1;void *p=M2C_FIELD(func_02011440(),void **,4);s32 r;
 r=((s32 (*)(s32,s32,s32))func_020114b4)(2,9,10);if(r)return r;
-func_020067a8((s32)p+0x3c,2);func_020067a8((s32)p+0x188,2);
+DC_InvalidateRange((s32)p+0x3c,2);DC_InvalidateRange((s32)p+0x188,2);
 if(M2C_FIELD(p,u16 *,0x188)==0){
-func_020067a8((s32)p+0x182,2);ready=M2C_FIELD(p,u16 *,0x182);func_020067a8((s32)p+0x86,2);
+DC_InvalidateRange((s32)p+0x182,2);ready=M2C_FIELD(p,u16 *,0x182);DC_InvalidateRange((s32)p+0x86,2);
 }
 if(!buf)return 6;if(!ready)return 7;
-func_020067a8((s32)p+0x7c,2);if(buf==M2C_FIELD(p,void **,0x7c))return 6;
+DC_InvalidateRange((s32)p+0x7c,2);if(buf==M2C_FIELD(p,void **,0x7c))return 6;
 if(len>512)return 6;if(len==0)return 6;
 func_020067c4(buf,len);
 r=((s32 (*)(s32,s32,void *,u32,u16,u16,u16,s32,s32))func_02011324)(15,7,buf,len,c,d,e,a,b);
@@ -45,29 +45,29 @@ if(!r)r=2;return r;
 }
 
 s32 func_02012d64(s32 arg0) {
-void *func_02011440(); s32 func_020114b4(s32,s32); s32 func_020067a8(s32,s32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32);
+void *func_02011440(); s32 func_020114b4(s32,s32); s32 DC_InvalidateRange(s32,s32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32);
 void *p; s32 r;
 p=func_02011440(); r=((s32 (*)(s32,s32,s32))func_020114b4)(2,9,10); if(r) return r;
-func_020067a8(M2C_FIELD(p,void **,4)+12,4);
+DC_InvalidateRange(M2C_FIELD(p,void **,4)+12,4);
 if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,12)==0) return 3;
 func_020112b4(16,arg0); r=func_02011324(16,0); if(!r) r=2; return r;
 }
 
 s32 func_02012dd4(s32 arg0, void *arg1, u32 arg2) {
-void *func_02011440(); s32 func_020114b4(s32,s32); s32 func_020067a8(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32);
+void *func_02011440(); s32 func_020114b4(s32,s32); s32 DC_InvalidateRange(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32);
 void *p; s32 r;
 p=func_02011440(); r=func_020114b4(1,8); if(r) return r;
-func_020067a8(M2C_FIELD(p,void **,4)+16,4);
+DC_InvalidateRange(M2C_FIELD(p,void **,4)+16,4);
 if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,16)==1) return 3;
 if(arg2<16) return 6; if(!arg1) return 6;
 func_020067c4(arg1,arg2); func_020112b4(17,arg0); r=((s32 (*)(s32,s32,void *,u32))func_02011324)(17,2,arg1,arg2); if(!r) r=2; return r;
 }
 
 s32 func_02012e74(s32 arg0,void *arg1,void *arg2,u32 arg3) {
- void *func_02011440(); s32 func_020114b4(s32,s32); s32 func_020067a8(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32); void MI_CpuCopy8(void *,void *,u32);
+ void *func_02011440(); s32 func_020114b4(s32,s32); s32 DC_InvalidateRange(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32); void MI_CpuCopy8(void *,void *,u32);
  u32 buf[2]; void *p; s32 r;
  p=func_02011440();r=func_020114b4(1,11);if(r)return r;
- func_020067a8(M2C_FIELD(p,void **,4)+16,4);
+ DC_InvalidateRange(M2C_FIELD(p,void **,4)+16,4);
  if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,16)==0)return 3;
  if(arg3>1508)return 6;
  func_020067c4(arg2,arg3);
@@ -78,7 +78,7 @@ s32 func_02012e74(s32 arg0,void *arg1,void *arg2,u32 arg3) {
 }
 
 s32 func_02012f40(M2C_UNK arg0) {
-    M2C_UNK func_020067a8(s32, M2C_UNK);
+    M2C_UNK DC_InvalidateRange(s32, M2C_UNK);
     M2C_UNK func_020112b4(M2C_UNK, M2C_UNK);
     s32 func_02011324(M2C_UNK, M2C_UNK);
     void *func_02011440();
@@ -92,7 +92,7 @@ s32 func_02012f40(M2C_UNK arg0) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_020067a8(M2C_FIELD(temp_r4, void **, 4) + 0x10, 4);
+    DC_InvalidateRange(M2C_FIELD(temp_r4, void **, 4) + 0x10, 4);
     if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 4), s32 *, 0x10) == 0) {
         return 3;
     }

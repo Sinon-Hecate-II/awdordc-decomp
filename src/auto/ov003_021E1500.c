@@ -23,7 +23,7 @@ void func_ov003_021e1530(void *state, s32 id) {
     void *entry;
     M2C_FIELD(state, s32 *, 0x38) = func_01ffa810(id);
     if (id != 10) {
-        M2C_FIELD(state, u8 *, 7) = func_0207c928(id, 5);
+        M2C_FIELD(state, u8 *, 7) = Modulo(id, 5);
         M2C_FIELD(state, u8 *, 8) = func_0207c8ec(id, 5);
         id16 = id;
         M2C_FIELD(state, u8 *, 6) = id;

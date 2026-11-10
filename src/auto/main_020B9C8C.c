@@ -59,9 +59,9 @@ void func_020b9dcc(void) {
 
 s32 func_020b9e20(s32 arg0, s32 arg1) {
  s32 func_020b9e70(s32,s32); s32 func_020b9ec0(s32,s32);
- extern M2C_UNK data_02168f14;
- if(M2C_FIELD(&data_02168f14,u32 *,12)&(1<<(u8)arg1)) return 0;
- switch((u8)((u32)(M2C_FIELD(&data_02168f14,u16 *,0)<<29)>>29)) {
+ extern M2C_UNK gMapConfig;
+ if(M2C_FIELD(&gMapConfig,u32 *,12)&(1<<(u8)arg1)) return 0;
+ switch((u8)((u32)(M2C_FIELD(&gMapConfig,u16 *,0)<<29)>>29)) {
  case 0: return func_020b9ec0(arg0,arg1);
  case 1: default: return func_020b9e70(arg0,arg1);
  }

@@ -193,7 +193,7 @@ s32 func_ov000_021a99dc(u8 *arg0) {
 /* Returns 1 if the unit's terrain unit table permits passing through the given map cell. */
 u8 func_ov000_021a9a28(s32 unitKind, s32 mapX, s32 mapY) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern u8 gMovementTypeTable[];
     extern s8 data_ov000_021b54a0[];
     extern u8 gMovementCostTable[];
@@ -202,13 +202,13 @@ u8 func_ov000_021a9a28(s32 unitKind, s32 mapX, s32 mapY) {
     switch (unitKind) {
     case 13:
     case 19:
-        return M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[0x82] * 32, s8 *, terrain) != -1;
+        return M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[0x82] * 32, s8 *, terrain) != -1;
     case 24:
     case 25:
         if (data_ov000_021b54a0[terrain] == 0) {
             return 0;
         }
-        if (M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[0x82] * 32, s8 *, terrain) == -1) {
+        if (M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[0x82] * 32, s8 *, terrain) == -1) {
             return 0;
         }
         return M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gMovementTypeTable[unitKind * 112] * 32, s8 *, terrain) != -1;
@@ -314,12 +314,12 @@ return result;
  * the unit already selected, and passes the terrain, commander and cost checks.
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
- extern void **gCurrentMap; extern u16 data_02168f14; extern u16 gPlayerUnitIdBase[]; extern s32 (**data_ov000_021df57c)(s32,s32);
+ extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
  s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 func_020d2d50(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
- if(((u32)(data_02168f14<<18)>>31)==0)return 0;
+ if(((u32)(gMapConfig<<18)>>31)==0)return 0;
  if(((u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*140,s32 *,0x6810)<<24)>>24)==0)return 0;
  if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
  if(GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
@@ -337,8 +337,8 @@ s32 FindBestSelectableUnit(void) {
  if(!func_020a2788(commander,(u32)(unit[0]<<26)>>26))continue;
  {u8 *map=*gCurrentMap; s32 player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
  if(func_020d2d50(player,(u32)(unit[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
- if(*data_ov000_021df57c==0){if(func_ov000_021aa2c4(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
- else {if((*data_ov000_021df57c)(commander,(u32)(unit[0]<<26)>>26))goto select;goto next;}
+ if(*gAiSettings==0){if(func_ov000_021aa2c4(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
+ else {if((*gAiSettings)(commander,(u32)(unit[0]<<26)>>26))goto select;goto next;}
  select:
  if(best && func_020a7bbc((u32)(best[0]<<26)>>26)>=func_020a7bbc((u32)(unit[0]<<26)>>26))continue;
  best=unit;
@@ -350,11 +350,11 @@ s32 FindBestSelectableUnit(void) {
 }
 
 s32 func_ov000_021aa214(void) {
- extern u16 data_02168f14;
+ extern u16 gMapConfig;
  extern void **gCurrentMap;
  s32 func_020a2be0(u16); void *GetPlayerSelectedUnit(u16);
  void *p;
- if(((u32)(data_02168f14<<18)>>31)==0)return 0;
+ if(((u32)(gMapConfig<<18)>>31)==0)return 0;
  if(!func_020a2be0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  p=GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
  if(M2C_FIELD(p,u16 *,4)&9)return 0;

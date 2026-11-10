@@ -22,7 +22,7 @@ func_ov006_022150ec kind:function(arm,size=0xc) addr:0x022150ec
 func_ov006_022150f8 kind:function(arm,size=0xc) addr:0x022150f8
 func_ov006_02215104 kind:function(arm,size=0x2f0) addr:0x02215104
 func_ov006_022153f4 kind:function(arm,size=0x8) addr:0x022153f4
-func_ov006_022153fc kind:function(arm,size=0x224) addr:0x022153fc
+FriendCodeEntry_Create kind:function(arm,size=0x224) addr:0x022153fc
 func_ov006_02215620 kind:function(arm,size=0xc4) addr:0x02215620
 func_ov006_022156e4 kind:function(arm,size=0xbc) addr:0x022156e4
 func_ov006_022157a0 kind:function(arm,size=0x1b0) addr:0x022157a0
@@ -126,8 +126,8 @@ data_ov006_022183cc kind:data(any) addr:0x022183cc
 data_ov006_022183ce kind:data(any) addr:0x022183ce
 data_ov006_022183d4 kind:data(any) addr:0x022183d4
 data_ov006_022183e0 kind:data(any) addr:0x022183e0
-data_ov006_02218460 kind:data(any) addr:0x02218460
-data_ov006_02218610 kind:data(any) addr:0x02218610
+gFriendCodeEntryDef kind:data(any) addr:0x02218460
+gFriendCodeEntryVTable kind:data(any) addr:0x02218610
 data_ov006_0221861c kind:data(any) addr:0x0221861c
 data_ov006_02218624 kind:data(any) addr:0x02218624
 data_ov006_02218634 kind:data(any) addr:0x02218634

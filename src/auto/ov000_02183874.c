@@ -3,5 +3,5 @@
 
 extern void *gCurrentMap;
 void func_ov000_02183874(void) {
-    func_02007f8c(gCurrentMap, 0, 0xa1);
+    MI_CpuFill8(gCurrentMap, 0, 0xa1);
 }

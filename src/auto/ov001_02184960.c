@@ -4,23 +4,23 @@ typedef struct { u8 bytes[240]; } UnkOv001SaveBlock;
 typedef struct { u8 pad[0xe6]; u8 mode:2; u8 flags:6; u8 active; } SaveFlags84;
 
 void func_ov001_02184960(void) {
-M2C_UNK func_02007f8c(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32);
+M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32);
 s32 func_02046014(void *);void func_ov001_02184d5c(s32);extern s32 data_ov001_02193e04;
 u8 *src,*dst;
 src=(u8 *)data_ov001_02193e04+0x400;
 dst=(u8 *)(data_ov001_02193e04+(src[244]<<8));
 *(UnkOv001SaveBlock *)dst=*(UnkOv001SaveBlock *)src;
 if(src[245]){
-func_02007f8c(dst+192,0,4);func_02007f8c(dst+196,0,4);dst[208]=0;
+MI_CpuFill8(dst+192,0,4);MI_CpuFill8(dst+196,0,4);dst[208]=0;
 }else{
 MI_CpuCopy8(src+192,dst+192,4);MI_CpuCopy8(src+196,dst+196,4);dst[208]=func_02046014(src+240);
 }
-if(src[246])func_02007f8c(dst+200,0,8);else MI_CpuCopy8(src+200,dst+200,8);
+if(src[246])MI_CpuFill8(dst+200,0,8);else MI_CpuCopy8(src+200,dst+200,8);
 func_ov001_02184d5c(src[244]);
 }
 
 void func_ov001_02184a3c(void *arg0) {
-    M2C_UNK func_02007f8c(void *, s32, s32);
+    M2C_UNK MI_CpuFill8(void *, s32, s32);
     M2C_UNK MI_CpuCopy8(void *, void *, s32);
     void func_ov001_02184960(void);
     extern s32 data_ov001_02193e04;
@@ -30,7 +30,7 @@ void func_ov001_02184a3c(void *arg0) {
     u8 *dst;
     u8 *src;
 
-    func_02007f8c((void *)(base + 0x400), 0, 0xef);
+    MI_CpuFill8((void *)(base + 0x400), 0, 0xef);
     MI_CpuCopy8(arg0, (void *)(base + 0x440), 0x20);
     switch (*(s32 *)((u8 *)arg0 + 0x20)) {
         case 1:
@@ -64,7 +64,7 @@ void func_ov001_02184a3c(void *arg0) {
         src += 0x20;
     }
     base[0x4e7] = 2;
-    func_02007f8c((void *)(base + 0x4f0), 0, 4);
+    MI_CpuFill8((void *)(base + 0x4f0), 0, 4);
     base[0x4f5] = 1;
     base[0x4f6] = 1;
     func_ov001_02184960();
@@ -72,9 +72,9 @@ void func_ov001_02184a3c(void *arg0) {
 
 void func_ov001_02184b50(u8 *src){
 extern s32 data_ov001_02193e04;
-M2C_UNK func_02007f8c(void*,s32,s32);M2C_UNK MI_CpuCopy8(void*,void*,s32);
+M2C_UNK MI_CpuFill8(void*,s32,s32);M2C_UNK MI_CpuCopy8(void*,void*,s32);
 u8 flags; u8 *p=(u8*)data_ov001_02193e04+0x400;
-func_02007f8c(p,0,0xef);
+MI_CpuFill8(p,0,0xef);
 MI_CpuCopy8(src+0,p+209,5);
 MI_CpuCopy8(src+6,p+214,5);
 MI_CpuCopy8(src+12,p+219,5);
@@ -89,7 +89,7 @@ flags=p[0xe6];
 p[0xe7]=1;
 p[0xe6]=(flags&~3)|2;
 p[0xe6]&=~0xfc;
-func_02007f8c(p+0xf0,0,4);
+MI_CpuFill8(p+0xf0,0,4);
 p[0xf5]=1;p[0xf6]=1;
 func_ov001_02184960();
 }
@@ -99,7 +99,7 @@ s32 func_ov001_02184c60(void) {
     return data_ov001_02193e04;
 }
 
-void func_ov001_02184c70(s32 a) {void func_ov001_02184d5c(s32);M2C_UNK func_02007f8c(void *,s32,s32);extern s32 data_ov001_02193e04;u8 *p=(u8 *)(data_ov001_02193e04+(a<<8));func_02007f8c(p,0,0xef);p[0xe7]=255;func_ov001_02184d5c(a);}
+void func_ov001_02184c70(s32 a) {void func_ov001_02184d5c(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 data_ov001_02193e04;u8 *p=(u8 *)(data_ov001_02193e04+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;func_ov001_02184d5c(a);}
 
 void func_ov001_02184cac(void) {
 void func_02007df8(s32,s32,s32);void func_02046ebc(void *);void *func_020467b8(void *);M2C_UNK MI_CpuCopy8(void *,void *,s32);void func_ov001_02184d5c(s32);extern s32 data_ov001_02193e04;
@@ -115,7 +115,7 @@ for(i=0;i<4;i++)func_ov001_02184d5c(i);
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 void func_ov001_02184d5c(s32 a) {
- M2C_UNK func_02007f8c(void *, s32, s32);
+ M2C_UNK MI_CpuFill8(void *, s32, s32);
  u16 func_02076838(void *, void *, s32);
  s32 func_02045ee0(s32, s32 *, s32);
  s32 func_ov001_0218b6f8(s32, s32);
@@ -123,7 +123,7 @@ void func_ov001_02184d5c(s32 a) {
  extern s32 data_ov001_02193e04;
  s32 arr[4], ptr, one=1, value, flag=0, idx, off, v;
  value=((u8 *)data_ov001_02193e04+(a<<8))[0xe7];
- func_02007f8c(arr,0,16);
+ MI_CpuFill8(arr,0,16);
  v=one & 1; arr[a]=v;
  if(a<=2){
  if(((u8 *)data_ov001_02193e04)[0xef] & (one<<a)) flag=v;
@@ -147,9 +147,9 @@ void func_ov001_02184d5c(s32 a) {
 }
 #pragma pop
 void func_ov001_02184ec4(u8 *a,u8 *b) {
-M2C_UNK func_02007f8c(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32); s32 ParseInt(void *);
+M2C_UNK MI_CpuFill8(void *,s32,s32); M2C_UNK MI_CpuCopy8(void *,void *,s32); s32 ParseInt(void *);
 u8 buf[4]; s32 i,j,offset; u8 *p;
-func_02007f8c(buf,0,4);
+MI_CpuFill8(buf,0,4);
 for(i=0,offset=0;i<4;i++,offset+=3) {
 MI_CpuCopy8(a+offset,buf,3);
 for(j=0,p=buf;j<3;j++) { if(*p) break; *p++=32; }

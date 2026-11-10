@@ -42,14 +42,14 @@ void func_ov001_021718b8(void){
 extern void *data_ov001_02193cc8;
 extern const u8 data_ov001_0218f2a8[],data_ov001_0218f29a[][2],data_ov001_0218f280[],data_ov001_0218f28c[][2];
 extern const u16 data_ov001_0218f284[],data_ov001_0218f286[];
-void func_ov001_0218b2e0(const void *,const void *,void *);s32 TouchRectPressed(void *);
+void BuildTouchRect(const void *,const void *,void *);s32 TouchRectPressed(void *);
 void func_ov001_0218a384(s32,s32,s32,s32);s32 func_ov001_0218a24c(s32,s32);void func_ov001_0218a55c(s32,s32,s32);void func_ov001_0218a474(s32,s32,s32);void func_ov001_02171b20(s32);
 s32 n,i,t;u8 point[8];
 n=data_ov001_0218f2a8[M2C_FIELD(data_ov001_02193cc8,u8 *,23)];
 if(M2C_FIELD(data_ov001_02193cc8,u8 *,24)==0){
 if(M2C_FIELD(data_ov001_02193cc8,s8 *,22)!=-1)return;
 for(i=0;i<n;i++){
-func_ov001_0218b2e0((const u8 *)data_ov001_0218f284+data_ov001_0218f29a[M2C_FIELD(data_ov001_02193cc8,u8 *,23)][i]*4,data_ov001_0218f280,point);
+BuildTouchRect((const u8 *)data_ov001_0218f284+data_ov001_0218f29a[M2C_FIELD(data_ov001_02193cc8,u8 *,23)][i]*4,data_ov001_0218f280,point);
 if(TouchRectPressed(point)){
 if(M2C_FIELD(data_ov001_02193cc8,s32 *,16))break;
 t=data_ov001_0218f28c[M2C_FIELD(data_ov001_02193cc8,u8 *,23)][i];

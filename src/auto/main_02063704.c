@@ -197,7 +197,7 @@ extern s32 data_0213e4b4[];
 s32 func_02063c88(void *arg0) {
 s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
 s32 func_02061ac8(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
-void gpiPlayerSetFlags(s32,s32); s32 func_02061a38(void *,s32); u32 func_02049208(void); void func_020496b8(s32);
+void gpiPlayerSetFlags(s32,s32); s32 func_02061a38(void *,s32); u32 GetTickCountMs(void); void func_020496b8(s32);
 u8 buf[0x5dc]; u16 addr[4]; s32 len=8; s32 entry;
 while(func_02049534(M2C_FIELD(arg0,s32 *,0x4b0))) {
 if(func_020497e0(M2C_FIELD(arg0,s32 *,0x4b0),buf,0x5db,0,addr,&len)!=-1 &&
@@ -205,7 +205,7 @@ func_02061ac8(arg0,*(s32 *)(addr+2),addr[1])==-1) {
 entry=func_02061090(arg0,*(s32 *)(addr+2),addr[1]); if(func_02061168())return 5;
 gpiPlayerSetFlags(entry,17);func_02061a38(arg0,entry);
 }}
-if(func_02049208()-M2C_FIELD(arg0,u32 *,0x4b4)>2000) {
+if(GetTickCountMs()-M2C_FIELD(arg0,u32 *,0x4b4)>2000) {
 func_020496b8(M2C_FIELD(arg0,s32 *,0x4b0));M2C_FIELD(arg0,s32 *,0x4b0)=-1;M2C_FIELD(arg0,s32 *,0)=1;
 M2C_FIELD(arg0,void (**)(void *,s32,s32,s32),0x488)(arg0,3,data_0213e4b4[0],M2C_FIELD(arg0,s32 *,0x494));
 }return 0; }
@@ -257,16 +257,16 @@ void func_02063e1c(M2C_UNK arg0) {
 M2C_UNK func_02063e68(M2C_UNK arg0){
 s32 func_02006680(void*);M2C_UNK func_02006564();M2C_UNK func_020065e8();
 M2C_UNK func_020649a8(s32);M2C_UNK func_020746f0(void);
-extern u8 data_0213e61c[];extern M2C_UNK data_0212dca4,data_0213e4c4,data_0213e4d4;
+extern u8 data_0213e61c[];extern M2C_UNK gSocketManager,data_0213e4c4,data_0213e4d4;
 extern s32 data_0213e5d4[],data_0213e5f8[];
 s32 n;M2C_UNK (*cb)(void);void *thread;s32 owner;
 if(!func_02006680(data_0213e61c)){
-data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),s32*,108);data_0213e5f8[0]=1;
-}else if((thread=M2C_FIELD(&data_0212dca4,void**,4),owner=data_0213e5d4[0],owner==M2C_FIELD(thread,s32*,108))){
+data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_0213e5f8[0]=1;
+}else if((thread=M2C_FIELD(&gSocketManager,void**,4),owner=data_0213e5d4[0],owner==M2C_FIELD(thread,s32*,108))){
 data_0213e5f8[0]++;
 }else{
 func_02006564(data_0213e61c);
-data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&data_0212dca4,void**,4),s32*,108);data_0213e5f8[0]=1;
+data_0213e5d4[0]=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),s32*,108);data_0213e5f8[0]=1;
 }
 while(M2C_FIELD(&data_0213e4c4,s32*,8)>0){
 n=M2C_FIELD(&data_0213e4c4,s32*,8)-1;
@@ -395,7 +395,7 @@ s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 func_0206433c(u16 *, s32, s32, void *);
     extern u8 data_021001cc[];
     extern u8 data_0213e61c[];
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     extern s32 data_0213e5d4[];
     extern s32 data_0213e5f8[];
 
@@ -411,15 +411,15 @@ s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     }
 
     if (func_02006680(data_0213e61c + n * 24) == 0) {
-        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), s32 *, 0x6C);
+        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
         data_0213e5f8[n] = 1;
-    } else if ((thread = M2C_FIELD(&data_0212dca4, void **, 4),
+    } else if ((thread = M2C_FIELD(&gSocketManager, void **, 4),
                owner = data_0213e5d4[n],
                owner == M2C_FIELD(thread, s32 *, 0x6C))) {
         data_0213e5f8[n]++;
     } else {
         func_02006564(data_0213e61c + n * 24);
-        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), s32 *, 0x6C);
+        data_0213e5d4[n] = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0x6C);
         data_0213e5f8[n] = 1;
     }
 

@@ -6,13 +6,13 @@
 M2C_UNK func_ov005_0221d818(M2C_UNK arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
-extern u8 gSpriteDesc32x16[],data_02101f4c[],data_027e0064[],gSpriteDesc8x8[],data_027e0074[];
+extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[],data_027e0074[];
 extern u8 data_0215c34a[],data_0215c334[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 s32 func_020cfb94(void);
 void DivMod(s32,s32,s32 *,s32 *);
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 void *func_020a866c(s32);
 s32 func_020d3014(s32,void *);
 s32 func_020d3080(s32,void *);
@@ -32,7 +32,7 @@ y=(169-M2C_FIELD(arg0,s32 *,0x44))&255;
 func_02098cb8(0,7,y,RESULT_ATTR(i*24+0x270,(u32)(i<<28)>>16),1,5);
 AddSprite(5,(u16)((y&0xff00)|((y+1)&255)),RESULT_ATTR(0x1d8,0x7000),data_02101f4c,6);
 for(loop=0;loop<func_020cfb94();loop++){
-AddSprite((u16)((79+20*loop)&511),(170-M2C_FIELD(arg0,s32 *,0x44))&255,RESULT_ATTR(0x388+4*loop,(u32)((loop+8)<<28)>>16),data_027e0064,8);
+AddSprite((u16)((79+20*loop)&511),(170-M2C_FIELD(arg0,s32 *,0x44))&255,RESULT_ATTR(0x388+4*loop,(u32)((loop+8)<<28)>>16),gSpriteDesc16x16,8);
 }
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=M2C_FIELD(arg0,s32 *,0x44);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -70,7 +70,7 @@ p=data_ov005_02220a1c;
 x=0;i=0;oy=96;
 if(*p){q=data_ov005_02220a24;tile=0x3ac;
 do{
-if(!func_0207c928(i,3)){oy+=32;x=51;}
+if(!Modulo(i,3)){oy+=32;x=51;}
 map=data_0215c334+M2C_FIELD(arg0,s32 *,0x50)*12;
 count=M2C_FIELD((u8 *)map+*q,u8 *,26);
 y=oy+M2C_FIELD(arg0,s32 *,0x48);
@@ -91,7 +91,7 @@ x+=56;q++;tile+=8;i++;
 }while(*++p);}
 ox=0;oy=-2;mode=M2C_FIELD(arg0,u8 *,0x58)?0x400:0;
 for(i=0;func_020a866c(i);i++,ox+=64){
-if(!func_0207c928(i,4)){oy+=20;ox=8;}
+if(!Modulo(i,4)){oy+=20;ox=8;}
 if(M2C_FIELD(arg0,s32 *,0x54)==0)score=func_020d3014(M2C_FIELD(arg0,s32 *,0x50)+1,func_020a866c(i));
 else score=func_020d3080(M2C_FIELD(arg0,s32 *,0x50)+1,func_020a866c(i));
 if(score){
@@ -101,8 +101,8 @@ map=func_020a866c(i);
 ay=mode|(oy&255);x=ox&511;
 py=(ay&0xff00)|(ay&255);
 tile=func_020a72b0(n+1,map)+0x3ac;
-AddSprite((u16)x,py,RESULT_ATTR(tile,0xe000),data_027e0064,5);
-AddSprite((u16)((x+19)&511),(u16)(((ay|(ay&255))&0xff00)|(py&255)),RESULT_ATTR(0x3a8,0xc000),data_027e0064,5);
+AddSprite((u16)x,py,RESULT_ATTR(tile,0xe000),gSpriteDesc16x16,5);
+AddSprite((u16)((x+19)&511),(u16)(((ay|(ay&255))&0xff00)|(py&255)),RESULT_ATTR(0x3a8,0xc000),gSpriteDesc16x16,5);
 { s32 digit,number; number=score;dx=0;
 do{DivMod(number,10,&number,&digit);
 AddSprite((u16)((x+42-dx)&511),(u16)((ay&0xff00)|((ay+5)&255)),(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),gSpriteDesc8x8,0);dx+=8;}while(number);}
@@ -157,7 +157,7 @@ void func_ov005_0221e214(void) {
 /* Creates the results medal sprites on both screens and seeds the surrounding effects. */
 void func_ov005_0221e22c(M2C_UNK parent) {
     s32 func_020cd1e4(void);
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
     void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
     void func_ov005_0221a38c(void *);
@@ -165,13 +165,13 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     void func_ov005_02219fa0(s32, s32, s32);
     extern M2C_UNK data_ov005_02220db8, data_ov005_02220f90, data_ov005_02220a4c, data_ov005_02220a78;
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern u8 data_0215c334[];
     void *medalDisplay, *savedEngine;
     s32 i, x, y, isOtherMode;
 
     if (!func_020cd1e4()) return;
-    medalDisplay = func_01ffa42c(&data_ov005_02220db8, parent);
+    medalDisplay = CreateSpriteObject(&data_ov005_02220db8, parent);
     if (medalDisplay) {
         M2C_FIELD(medalDisplay, void **, 0) = &data_ov005_02220f90;
         M2C_FIELD(medalDisplay, u8 *, 0x44) = 0;
@@ -197,7 +197,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
         gCur3DSpriteEngine = savedEngine;
         func_ov005_0221a38c(medalDisplay);
     }
-    if (((u32)(data_02168f14 << 29) >> 29) != 1) isOtherMode = 1;
+    if (((u32)(gMapConfig << 29) >> 29) != 1) isOtherMode = 1;
     else isOtherMode = 0;
     if ((isOtherMode & 255) && data_0215c334[3] != 4) return;
     for (i = 0; i < 8; i++) {
@@ -215,7 +215,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
 void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
@@ -223,7 +223,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK func_02082134(M2C_UNK, M2C_UNK);
     s32 func_020cd1e4();
     s32 func_020e3218(M2C_UNK *);
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02220a2c;
@@ -239,7 +239,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     if (func_020cd1e4() == 0) {
         return;
     }
-    if (((u32) (data_02168f14 << 0x1D) >> 0x1D) != 1) {
+    if (((u32) (gMapConfig << 0x1D) >> 0x1D) != 1) {
         flag = 1;
     } else {
         flag = 0;
@@ -247,7 +247,7 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     if (!(flag & 0xFF)) {
         return;
     }
-    result = func_01ffa42c(&data_ov005_02220bf0, arg0);
+    result = CreateSpriteObject(&data_ov005_02220bf0, arg0);
     if (result == NULL) {
         return;
     }

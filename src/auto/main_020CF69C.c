@@ -350,8 +350,8 @@ s32 func_020cfe2c(void) {
 }
 
 void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, s32);
-    func_02007f8c(arg0, arg1, 0x508);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, s32);
+    MI_CpuFill8(arg0, arg1, 0x508);
 }
 
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
@@ -386,12 +386,12 @@ void func_020d0288(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
 }
 
 s32 func_020d02b4(void *p){
-s32 func_0207c928(s32,s32);s32 func_0207c8ec(s32,s32);
+s32 Modulo(s32,s32);s32 func_0207c8ec(s32,s32);
 extern s16 *data_0212b97c[];
 s16 *table;
 if(M2C_FIELD(p,s32 *,24)>=6){
 if(M2C_FIELD(p,s32 *,28)>=M2C_FIELD(p,s32 *,0)*M2C_FIELD(p,s32 *,4))return 0;
-M2C_FIELD(p,s32 *,16)=func_0207c928(M2C_FIELD(p,s32 *,28),M2C_FIELD(p,s32 *,0));
+M2C_FIELD(p,s32 *,16)=Modulo(M2C_FIELD(p,s32 *,28),M2C_FIELD(p,s32 *,0));
 M2C_FIELD(p,s32 *,20)=func_0207c8ec(M2C_FIELD(p,s32 *,28),M2C_FIELD(p,s32 *,0));
 M2C_FIELD(p,s32 *,28)++;return 1;
 }

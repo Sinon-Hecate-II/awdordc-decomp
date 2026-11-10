@@ -12,7 +12,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
-    extern u8 data_0213d3bc[];
+    extern u8 gSessionPlayers[];
     extern u8 data_0213d3bd[];
     extern u8 data_0213d3be[];
     extern u8 data_0213d3c0[];
@@ -26,7 +26,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     if (var_r6 == 0 || var_r5 == 0) {
         return 0;
     }
-    if ((u32) var_r7 >= 0x64U && data_0213d3bc[(var_r7 - 0x64) * 0xC] != 0) {
+    if ((u32) var_r7 >= 0x64U && gSessionPlayers[(var_r7 - 0x64) * 0xC] != 0) {
         s32 off = (var_r7 - 0x64) * 0xC;
         if (*((volatile s32 *)(data_0213d3c0 + off)) != 0 && StringCompare() != 0) {
             return 0;
@@ -38,7 +38,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
         }
     }
     temp_r4 = (var_r7 - 0x64) * 0xC;
-    data_0213d3bc[temp_r4] = var_r7;
+    gSessionPlayers[temp_r4] = var_r7;
     data_0213d3bd[temp_r4] = 0;
     *((u16 *)(data_0213d3be + temp_r4)) = 0;
     if (*((volatile s32 *)(data_0213d3c0 + temp_r4)) != 0) {
@@ -65,7 +65,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
-    extern u8 data_0213d3bc[];
+    extern u8 gSessionPlayers[];
     extern u8 data_0213d3bd[];
     extern u8 data_0213d3be[];
     extern u8 data_0213d3c0[];
@@ -84,7 +84,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     if (var_r6 != 0 && var_r5 != 0) {
         if (var_r7 >= 0x64U) {
             temp_r3 = (var_r7 - 0x64) * 0xC;
-            if (data_0213d3bc[temp_r3] != 0) {
+            if (gSessionPlayers[temp_r3] != 0) {
                 if (*((s32 *)(data_0213d3c0 + temp_r3)) != 0 && StringCompare() != 0) {
                     return 0;
                 }
@@ -97,7 +97,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
         }
     block_11:
         temp_r4 = (var_r7 - 0x64) * 0xC;
-        data_0213d3bc[temp_r4] = (s8) var_r7;
+        gSessionPlayers[temp_r4] = (s8) var_r7;
         data_0213d3bd[temp_r4] = 1;
         *((u16 *)(data_0213d3be + temp_r4)) = 0;
         if (*((s32 *)(data_0213d3c0 + temp_r4)) != 0) {
@@ -140,7 +140,7 @@ s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 void func_0203c110(s32 arg0,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
 void *GetConnection(void);s32 SetConnectionState(s32);
 void func_02044258(s32);void func_020427f4(void);void func_0203e570(s32);
-void func_02007f8c(void *,s32,s32);
+void MI_CpuFill8(void *,s32,s32);
 extern M2C_UNK gConnectionMgr;
 void *p;
 func_02044258(arg0);
@@ -162,7 +162,7 @@ M2C_FIELD(GetConnection(),s32 *,756)=d;
 M2C_FIELD(GetConnection(),s32 *,760)=e;
 M2C_FIELD(GetConnection(),s32 *,764)=f;
 M2C_FIELD(GetConnection(),s32 *,768)=g;
-func_02007f8c((u8 *)GetConnection()+0x304,0,64);
+MI_CpuFill8((u8 *)GetConnection()+0x304,0,64);
 M2C_FIELD(GetConnection(),s32 *,836)=0;
 M2C_FIELD(GetConnection(),s32 *,1124)=0;
 M2C_FIELD(GetConnection(),s32 *,1128)=0;
@@ -210,7 +210,7 @@ return result;
 void func_0203c428(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5){
 void *GetConnection(void);s32 SetConnectionState(s32);
 s32 func_0203e908(s32,s32,M2C_UNK,M2C_UNK);
-s32 func_0203ec48(void*,s32,s32,s32);
+s32 FormatMatchmakingMessage(void*,s32,s32,s32);
 s32 StringLength(s32);s32 func_02037694(s32,s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK*,s32);
 s32 func_02043008(s32);
@@ -219,7 +219,7 @@ u8 text[256]; s32 len;void *p,*q,*r,*t; s32 value; void *state=&gConnectionMgr;
 value=M2C_FIELD(state,s32*,8);
 if(value){func_020376d8(4,value,0);M2C_FIELD(&gConnectionMgr,s32*,8)=0;}
 if(arg1){
-len=func_0203ec48(text,-1,32,3);
+len=FormatMatchmakingMessage(text,-1,32,3);
 len=256-len-StringLength((s32)&data_020fc8fc);
 value=func_02037694(4,len);
 M2C_FIELD(&gConnectionMgr,s32*,8)=value;
@@ -237,7 +237,7 @@ M2C_FIELD(t,s32*,0xe4)=func_020613dc(M2C_FIELD(q,s32*,0x2f4),M2C_FIELD(r,s32*,0x
 }
 if(!M2C_FIELD(GetConnection(),s32*,0xe4)&&func_02043008(5))return;
 func_0203af50(3,&data_020fc904,0);
-if(func_02043008(func_0203ea4c(M2C_FIELD(GetConnection(),s32*,0x200))))return;
+if(func_02043008(SendMatchmakingParameter(M2C_FIELD(GetConnection(),s32*,0x200))))return;
 if(!M2C_FIELD(GetConnection(),s32*,16))func_0203c28c(M2C_FIELD(GetConnection(),s32*,512));
 ResetConnectionSync(0);
 }

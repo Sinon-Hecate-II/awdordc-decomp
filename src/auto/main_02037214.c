@@ -16,7 +16,7 @@ return data_0213d1e0[0]>>32;
 #pragma opt_propagation off
 s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  extern s8 *data_020fba88;
- void func_02007f8c(void *,s32,s32);
+ void MI_CpuFill8(void *,s32,s32);
  void MI_CpuCopy8(void *,void *,u32);
  u32 extra,total;
  s32 count;
@@ -36,7 +36,7 @@ s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  bits=n*8;
  count=bits/6+(bits%6!=0);
  if(n>=3)n=3;
- func_02007f8c(buf,0,3);
+ MI_CpuFill8(buf,0,3);
  MI_CpuCopy8(src,buf,n);
  dst[0]=data_020fba88[buf[0]>>2];
  if(count<2)c=42;else {a=buf[0];b=buf[1];c=data_020fba88[((a<<4)&63)|(b>>4)];}dst[1]=c;
@@ -258,7 +258,7 @@ func_020376d8(a,b,unused);
 return p;
 }
 
-void func_02037794(M2C_UNK arg0) {
+void gpiMalloc(M2C_UNK arg0) {
     func_02037694(5, arg0);
 }
 
@@ -267,7 +267,7 @@ void gpiRealloc(M2C_UNK arg0, M2C_UNK arg1) {
     func_02037714(5, arg0, arg1, arg1);
 }
 
-void func_020377c4(M2C_UNK arg0) {
+void gpiFree(M2C_UNK arg0) {
     void func_020376d8(M2C_UNK, M2C_UNK, M2C_UNK);
     func_020376d8(5, arg0, 0);
 }
@@ -275,9 +275,9 @@ void func_020377c4(M2C_UNK arg0) {
 M2C_UNK func_020377dc(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK d){
  extern void *data_0213d1dc;
  void func_02037854(s32);
- void func_02007f8c(void *,s32,s32);void func_020220a8(s32);
+ void MI_CpuFill8(void *,s32,s32);void func_020220a8(s32);
  if(data_0213d1dc)return;
- func_02007f8c(a,0,12);
+ MI_CpuFill8(a,0,12);
  M2C_FIELD(a,u16 *,8)=b;M2C_FIELD(a,u16 *,10)=1;M2C_FIELD(a,u16 *,4)=1;M2C_FIELD(a,u16 *,6)=0;
  data_0213d1dc=(void *)a;func_02037854(0);func_020220a8(d);
 }
@@ -307,13 +307,13 @@ void func_02037854(s32 arg0) {
 
 void func_020378a4(void) {
     extern void *data_0213d1dc;
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     s32 func_0202ef64(void *);
     void func_02037638(s32, s32);
     s32 args[3];
     if (data_0213d1dc) {
         if (M2C_FIELD(data_0213d1dc, u16 *, 4) != 1) return;
-        func_02007f8c((s32)args, 0, 12);
+        MI_CpuFill8((s32)args, 0, 12);
         M2C_FIELD(args, u8 *, 8) = M2C_FIELD(data_0213d1dc, u16 *, 8);
         M2C_FIELD(args, u8 *, 9) = M2C_FIELD(data_0213d1dc, u16 *, 10);
         args[0] = (s32)func_02037694;
@@ -453,8 +453,8 @@ s32 func_02037bc4(void) {
 }
 
 void func_02037c10(void) {
-    M2C_UNK func_020362d4();
-    func_020362d4();
+    M2C_UNK OpenWfcHttpConnection();
+    OpenWfcHttpConnection();
 }
 
 s32 func_02037c1c(void) {
@@ -487,14 +487,14 @@ s32 func_02037c90(void) {
 }
 
 s32 func_02037ca0(s32 a,s32 b){
-extern s32 data_0213d1b4;extern s64 data_0213d1b8,data_0213d1c0;
-s32 func_0200f0ac(s32,s32);s64 func_0200f7e0(s32,s32);void func_0200f9c4(s32,s32);
+extern s32 gServerTimeSync;extern s64 gServerTimeNow,gServerTimeOffset;
+s32 GetLocalTime(s32,s32);s64 MakeTime(s32,s32);void func_0200f9c4(s32,s32);
 s64 t,d;
-if(!data_0213d1b4)return 0;
-if(func_0200f0ac(a,b))return 0;
-t=func_0200f7e0(a,b);if(t==-1)return 0;
-if(t<data_0213d1b8)t+=0xbc191380LL;
-d=t-data_0213d1c0;
+if(!gServerTimeSync)return 0;
+if(GetLocalTime(a,b))return 0;
+t=MakeTime(a,b);if(t==-1)return 0;
+if(t<gServerTimeNow)t+=0xbc191380LL;
+d=t-gServerTimeOffset;
 if(d<0 || d>0xbc19137fLL)return 0;
 func_0200f9c4(a,b);
 (void)t;
@@ -509,11 +509,11 @@ M2C_UNK func_02037d78(s32 a,s32 b,s32 c,s32 d){
 void func_02037db0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02037d78(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK StringLength(M2C_UNK);
-    s32 func_02068ee0(M2C_UNK, M2C_UNK);
+    s32 StringFindChar(M2C_UNK, M2C_UNK);
     s32 temp_r0;
     s32 dummy = 0;
     (void)dummy;
-    temp_r0 = func_02068ee0(arg2, 0);
+    temp_r0 = StringFindChar(arg2, 0);
     func_02037d78(arg0, arg1, temp_r0, arg3);
     StringLength(arg2);
 }
@@ -522,29 +522,29 @@ s32 func_02037df0(s8 *arg0, s8 *arg1, s8 *arg2, s32 arg3) {
 
 s8 *p; s8 *q; s32 len;
 if (!arg1) return -1;
-p=func_02068ee0(arg2,arg3); if(!p)return -1;
+p=StringFindChar(arg2,arg3); if(!p)return -1;
 for (;;) {
 len=StringLength(arg0);
 if(StringCompareN((u8*)(p+1),(u8*)arg0,len)!=0)goto next;
 len=StringLength(arg0); if(arg3==*(s8 *)(len+(s32)p+1))goto extract;
 next:
-q=func_02068ee0(p+1,arg3);if(!q)return -1;
-p=func_02068ee0(q+1,arg3);if(!p)return -1;
+q=StringFindChar(p+1,arg3);if(!q)return -1;
+p=StringFindChar(q+1,arg3);if(!p)return -1;
 }
 extract:
-p=func_02068ee0(p+1,arg3);if(!p)return -1;
-q=func_02068ee0(p+1,arg3);
+p=StringFindChar(p+1,arg3);if(!p)return -1;
+q=StringFindChar(p+1,arg3);
 if(q)len=q-(p+1);else len=StringLength(p+1);
 func_02068d18(arg1,p+1,len);arg1[len]=0;return len;
 }
 
 u32 func_02037eec(u32 max) {
 extern u64 data_0213d1e0[];
-void func_02007724(void *); u64 func_02007004(void);
+void func_02007724(void *); u64 GetSystemTick(void);
 u64 seed,v;
 if(data_0213d1e0[0]==0&&data_0213d1e0[1]==0&&data_0213d1e0[2]==0){
 func_02007724(&seed);
-seed=((seed>>24)&0xffffffULL)|(func_02007004()<<24);
+seed=((seed>>24)&0xffffffULL)|(GetSystemTick()<<24);
 data_0213d1e0[0]=seed;
 data_0213d1e0[1]=0x5d588b656c078965ULL;
 data_0213d1e0[2]=0x269ec3;

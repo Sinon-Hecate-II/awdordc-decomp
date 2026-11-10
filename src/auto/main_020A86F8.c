@@ -97,7 +97,7 @@ s32 func_020a8924(void) {
     return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 0x10;
 }
 
-u8 func_020a8938(void) {
+u8 GetMapAiCategory(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 8);
 }
 
@@ -403,12 +403,12 @@ break;
 }
 
 void func_020a92bc(void *arg0,s32 arg1) {
- M2C_UNK func_02007f8c(s32,s32,s32);
- s32 func_0207c928(s32,s32);
+ M2C_UNK MI_CpuFill8(s32,s32,s32);
+ s32 Modulo(s32,s32);
  s32 func_0207cb5c(s32,s32);
  s32 func_0207c8ec();
  s32 clamped, n, value, digit; u32 i;
- func_02007f8c((s32)arg0+11,0,6);
+ MI_CpuFill8((s32)arg0+11,0,6);
  clamped=0xf423f;
  if(arg1<=clamped) {if(arg1 < -clamped)clamped=-clamped;else clamped=arg1;}
  M2C_FIELD(arg0,s32 *,28)=clamped;
@@ -420,9 +420,9 @@ void func_020a92bc(void *arg0,s32 arg1) {
  if(!arg1)return;
  for(i=0;(s32)i<M2C_FIELD(arg0,u8 *,10);i++) {
  switch(i){
- case 0:M2C_FIELD(arg0+i,u8 *,11)=func_0207c928(M2C_FIELD(arg0,s32 *,28),10);break;
+ case 0:M2C_FIELD(arg0+i,u8 *,11)=Modulo(M2C_FIELD(arg0,s32 *,28),10);break;
  case 1:case 2:case 3:case 4:case 5:
- digit=func_0207c928(M2C_FIELD(arg0,s32 *,28),func_0207cb5c(10,i+1));
+ digit=Modulo(M2C_FIELD(arg0,s32 *,28),func_0207cb5c(10,i+1));
  M2C_FIELD(arg0+i,u8 *,11)=func_0207c8ec(digit,func_0207cb5c(10,i));break;
  }
  }
@@ -452,7 +452,7 @@ return result;
 }
 
 void func_020a947c(void *arg0,u32 arg1) {
-extern M2C_UNK gSpriteDesc8x8,data_027e0064;
+extern M2C_UNK gSpriteDesc8x8,gSpriteDesc16x16;
 switch(arg1){
 case 0:case 1:case 2:
 M2C_FIELD(arg0,u8 *,20)=8;
@@ -468,7 +468,7 @@ M2C_FIELD(arg0,u8 *,21)=16;
 M2C_FIELD(arg0,u8 *,23)=10;
 M2C_FIELD(arg0,u8 *,24)=16;
 M2C_FIELD(arg0,u8 *,22)=4;
-M2C_FIELD(arg0,void **,36)=&data_027e0064;
+M2C_FIELD(arg0,void **,36)=&gSpriteDesc16x16;
 break;
 }
 }

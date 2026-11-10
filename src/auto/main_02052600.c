@@ -20,20 +20,20 @@ do { *p++=z; *p++=z; } while(--i); *p=z;
 #pragma push
 #pragma opt_common_subs off
 s32 func_02052600(void **arg0, void *arg1, char *arg2) {
-    void *func_02037794(M2C_UNK);
-    M2C_UNK func_020377c4(s32);
+    void *gpiMalloc(M2C_UNK);
+    M2C_UNK gpiFree(s32);
     s32 gpiStringDup(s8 *);
-    M2C_UNK func_02050744(void **, M2C_UNK, M2C_UNK);
+    M2C_UNK gpiCallErrorCallback(void **, M2C_UNK, M2C_UNK);
     s32 gpiAddCallback(void **, Callback526, void *, void *, s32);
     s32 func_02052360(void **, s32, s32 *, s32 *, s32 *);
-    M2C_UNK func_02052408(s8 **, void *);
+    M2C_UNK gpiCopyInfo(s8 **, void *);
     M2C_UNK func_02053e40(void **, void *, s8 **);
     M2C_UNK func_02054484(void **, void *);
     void *func_02055aa0(void **, s32);
     M2C_UNK func_02055b84(void **, s32, void **);
     s32 func_0205817c(void **, char *, s32);
     s32 GetStringField(char *, M2C_UNK *, void *, s32);
-    M2C_UNK func_02058620(void **, M2C_UNK, M2C_UNK *);
+    M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     s32 StringCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
@@ -93,13 +93,13 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         return 4;
     }
     if (StringCompareN(arg2, &data_020fe6d8, 4) != 0) {
-        func_02058620(arg0, 1, &data_020fe6e0);
-        func_02050744(arg0, 3, 1);
+        gpiSetError(arg0, 1, &data_020fe6e0);
+        gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
     if (GetStringField(arg2, &data_020fe710, parse, 0x40) == 0) {
-        func_02058620(arg0, 1, &data_020fe6e0);
-        func_02050744(arg0, 3, 1);
+        gpiSetError(arg0, 1, &data_020fe6e0);
+        gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
     temp_r0_3 = ParseInt(parse);
@@ -235,8 +235,8 @@ block_41:
         response.nEC = ParseInt(&buffers.bufEC[0]);
     }
     if (GetStringField(arg2, &data_020fe81c, &buffers.bufEC[0], 0x40) == 0) {
-        func_02058620(arg0, 1, &data_020fe6e0);
-        func_02050744(arg0, 3, 1);
+        gpiSetError(arg0, 1, &data_020fe6e0);
+        gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
     var_r7_2 = M2C_FIELD(temp_r6, void **, 0x434);
@@ -257,7 +257,7 @@ block_41:
         sp10 = func_02055aa0(arg0, temp_r0_3);
     }
     if (var_r8 != 0) {
-        func_020377c4(M2C_FIELD(sp10, s32 *, 0x18));
+        gpiFree(M2C_FIELD(sp10, s32 *, 0x18));
         M2C_FIELD(sp10, s32 *, 0x18) = 0;
         M2C_FIELD(sp10, s32 *, 0x18) = gpiStringDup(&buffers.bufEC[0]);
     }
@@ -267,12 +267,12 @@ block_41:
     callback=*(Callback526*)((u8*)arg1+12);
     temp_r1=callback.a;
     if (temp_r1 != 0) {
-        temp_r0_4 = func_02037794(0x204);
+        temp_r0_4 = gpiMalloc(0x204);
         if (temp_r0_4 == NULL) {
             gpiSetErrorString(arg0, &data_020fe824);
             return 1;
         }
-        func_02052408(&response.p0, temp_r0_4);
+        gpiCopyInfo(&response.p0, temp_r0_4);
         M2C_FIELD(temp_r0_4, s32 *, 0) = 0;
         M2C_FIELD(temp_r0_4, s32 *, 4) = temp_r0_3;
         temp_r0 = gpiAddCallback(arg0, callback, temp_r0_4, arg1, 0);

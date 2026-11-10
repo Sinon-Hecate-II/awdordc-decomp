@@ -3,9 +3,12 @@
 typedef struct { u16 unk0, unk2, unk4, unk6; } Unk0209Rect;
 typedef struct { u8 kind:6; u8 owner:2; u8 rest[13]; } Unit964;
 extern u8 data_02102ee4[];
-extern u16 data_02168f14[];
+extern u16 gMapConfig[];
 
-void func_02095c90(void *arg0) {
+/* Set up the telop (caption) window on the sub 3D sprite engine: mount its
+ * window and telop graphics, measure the message at telop+0x36, centre it and
+ * queue the text for drawing, then hand the engine back to the caller. */
+void InitTelopWindow(void *telop) {
     M2C_UNK func_0209c268(M2C_UNK);
     void func_02091d4c(M2C_UNK);
     void func_02096d0c(void);
@@ -20,50 +23,50 @@ void func_02095c90(void *arg0) {
     M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
-    extern M2C_UNK data_02102d14;
-    extern M2C_UNK data_02102d1c;
-    extern M2C_UNK data_02102d28;
-    extern M2C_UNK data_02102d34;
-    extern M2C_UNK data_02102d40;
-    void *saved;
-    u16 *volatile v0;
-    u16 *volatile v1;
-    u16 *volatile v2;
-    u16 *volatile v3;
-    u16 *volatile v4;
-    s32 temp_r0;
+    extern M2C_UNK sTelopWindowPath;
+    extern M2C_UNK sTelopNarcFile;
+    extern M2C_UNK sTelopCgFile;
+    extern M2C_UNK sTelopScFile;
+    extern M2C_UNK sTelopClFile;
+    void *savedEngine;
+    u16 *volatile statReg0;
+    u16 *volatile statReg1;
+    u16 *volatile statReg2;
+    u16 *volatile statReg3;
+    u16 *volatile statReg4;
+    s32 centerDelta;
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02096d0c();
-    v0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *v0 = *v0 | 0x10;
-    v1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *v1 = *v1 | 0x20;
-    v2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *v2 = *v2 | 0x40;
-    v3 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *v3 = *v3 | 0x80;
-    v4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    *v4 = *v4 | 0x100;
-    M2C_FIELD(arg0, u8 *, 0x35) = func_0209c268(arg0 + 0x36);
+    statReg0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    *statReg0 = *statReg0 | 0x10;
+    statReg1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    *statReg1 = *statReg1 | 0x20;
+    statReg2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    *statReg2 = *statReg2 | 0x40;
+    statReg3 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    *statReg3 = *statReg3 | 0x80;
+    statReg4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    *statReg4 = *statReg4 | 0x100;
+    M2C_FIELD(telop, u8 *, 0x35) = func_0209c268(telop + 0x36);
     func_02091d4c(0);
-    temp_r0 = 0 - (0x100 - M2C_FIELD(arg0, u8 *, 0x35));
+    centerDelta = 0 - (0x100 - M2C_FIELD(telop, u8 *, 0x35));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) =
-        (s16)(((s32)(temp_r0 + (s32)((u32)temp_r0 >> 31))) >> 1);
+        (s16)(((s32)(centerDelta + (s32)((u32)centerDelta >> 31))) >> 1);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u16 *, 0x42) = (u16)0xFFA8;
     {
-        s32 zero = 0;
-        s32 twenty = 0x20;
-        func_0209b2b4(0, 0, 1, arg0 + 0x36, zero, twenty);
+        s32 firstChar = 0;
+        s32 charCount = 0x20;
+        func_0209b2b4(0, 0, 1, telop + 0x36, firstChar, charCount);
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2;
-    func_0200bc5c(&data_02102d14);
-    func_020814e4(&data_02102d1c);
-    func_02081590(&data_02102d28, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
-    func_02081590(&data_02102d34, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
-    func_020815fc(&data_02102d40, 0x20, 0x20);
+    func_0200bc5c(&sTelopWindowPath);
+    func_020814e4(&sTelopNarcFile);
+    func_02081590(&sTelopCgFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
+    func_02081590(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+    func_020815fc(&sTelopClFile, 0x20, 0x20);
     func_02081528();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
                   (u16)func_01ff9c34((u8)((u32)(*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 0),
@@ -71,8 +74,8 @@ void func_02095c90(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1;
     func_020af1c0(2, 0xF);
-    M2C_FIELD(arg0, s8 *, 0x34) = 0;
-    gCur3DSpriteEngine = saved;
+    M2C_FIELD(telop, s8 *, 0x34) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_02095eb4(void) {
@@ -343,7 +346,7 @@ p=func_02080e30(func_020a8b2c(id),1);
 func_0209670c(p,0);
 func_020e35cc(p);
 }
-if(!((u32)(data_02168f14[0]<<23)>>31)){
+if(!((u32)(gMapConfig[0]<<23)>>31)){
 i=1;off=14;
 do{
 unit=(Unit964 *)((u8 *)*gCurrentMap+0x59a4+off);

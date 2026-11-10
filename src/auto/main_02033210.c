@@ -7,14 +7,14 @@ extern u8 data_020fb558[], data_020fb570[];
 #pragma push
 #pragma opt_common_subs on
 s32 func_02033210(void){
-extern M2C_UNK gNasConnection;extern s32 data_0213e9f4;
+extern M2C_UNK gNasConnection;extern s32 gErrno;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
-void *func_02034ef8(void*,void*);s32 func_02036860(void*);s32 ParseInt(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
+void *func_02034ef8(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
 void *end; s32 status; void *response;void *p;
 p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
-response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)func_02036860(end);
-p=M2C_FIELD(&gNasConnection,void **,8);end=0;data_0213e9f4=0;status=ParseInt(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
-if(data_0213e9f4==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 12;}
+response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)ParseHttpDate(end);
+p=M2C_FIELD(&gNasConnection,void **,8);end=0;gErrno=0;status=ParseInt(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
+if(gErrno==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 12;}
 if(status!=200){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=status+23000;return 18;}
 if(func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
 status=func_0206ac70(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
@@ -83,16 +83,16 @@ void func_020336c0(s32 arg0) {
  * firmware ids, region, date and session code, then the connection-data block. */
 s32 BuildFriendProfile(s32 arg0, void *arg1) {
     M2C_UNK func_0200567c();
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     void func_0200563c(void *, void *, ...);
     void func_02007724(void *);
     void func_02007740(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_0200f0ac(s32, s32);
+    s32 GetLocalTime(s32, s32);
     void func_02007958(void);
     void *func_02029784(void);
     void *func_020297c8(void *);
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     u8 func_0202f248(void);
     void func_020317ac(void *, void *);
     s32 OS_DisableInterrupts(void);
@@ -107,7 +107,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     u32 dateVals[7];
     s32 i;u8 *src,*dst;
 
-    func_02007f8c((void *)arg0, 0, 0x94);
+    MI_CpuFill8((void *)arg0, 0, 0x94);
     {
         u32 *raw = (u32 *)arg1;
         u32 low = raw[0], high = raw[1];
@@ -141,14 +141,14 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     func_0200567c((void *)((u8 *)arg0 + 0x2c), 3, gFmtHex02, userSettings[0]);
     MI_CpuCopy8(userSettings + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
     func_0200567c((void *)((u8 *)arg0 + 0x2f), 5, gFmtHex02Pair, userSettings[2], userSettings[3]);
-    if (func_0200f0ac((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
+    if (GetLocalTime((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
         return 0;
     }
     func_0200567c((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
         dateVals[3], dateVals[4], dateVals[5], dateVals[0], dateVals[1], dateVals[2]);
     intrState = OS_DisableInterrupts();
     connInfo = func_02029784();
-    func_020067a8(connInfo, 6);
+    DC_InvalidateRange(connInfo, 6);
     if (connInfo == NULL) {
         OS_RestoreInterrupts(intrState);
         return 0;
@@ -160,7 +160,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         func_0200567c((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
     }
     connData = func_020297c8(&connType);
-    func_020067a8(connData, 0x20);
+    DC_InvalidateRange(connData, 0x20);
     if (connData == NULL) {
         OS_RestoreInterrupts(intrState);
         return 0;
@@ -208,7 +208,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
 s32 func_02033ccc(void *p, InitConfig *cfg) {
 s32 func_02034534(void *); s32 func_02034870(void *,void *,s32); s32 func_020349b0(void *,s32);
 s32 (*alloc)(void *,s32)=(s32 (*)(void *,s32))cfg->words[3];
-func_02007f8c(p,0,0x1c14);
+MI_CpuFill8(p,0,0x1c14);
 M2C_FIELD(p,s32 *,0x1a30)=-1;M2C_FIELD(p,s32 *,0x1a34)=-1;
 *(InitConfig *)(p+0x1004)=*cfg;
 M2C_FIELD(p,s32 *,0x19cc)=alloc(data_020fb558,0xb68);
@@ -288,9 +288,9 @@ s32 func_02033f98(void *arg0) {
 }
 
 void func_02034010(void *arg0) {
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d138(void *);
-    func_02007f8c(arg0 + 0x1138, 0, 0x64);
+    MI_CpuFill8(arg0 + 0x1138, 0, 0x64);
     M2C_FIELD(arg0, s32 *, 0x1174) = 0xB68;
     M2C_FIELD(arg0, s32 *, 0x1178) = (s32) M2C_FIELD(arg0, s32 *, 0x19CC);
     M2C_FIELD(arg0, s32 *, 0x1180) = 0x5EA;

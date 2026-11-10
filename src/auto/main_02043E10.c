@@ -180,7 +180,7 @@ u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 func_0206527c
 
 s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 
-void func_02044708(s32 a){extern s32 data_0213db14;void func_02007f8c(s32,s32,s32);data_0213db14=a;func_02007f8c(a,0,0x614);M2C_FIELD(data_0213db14,u16 *,0x610)=0x5b9;}
+void func_02044708(s32 a){extern s32 data_0213db14;void MI_CpuFill8(s32,s32,s32);data_0213db14=a;MI_CpuFill8(a,0,0x614);M2C_FIELD(data_0213db14,u16 *,0x610)=0x5b9;}
 
 void func_02044744(s32 a,s32 b,s32 c,s32 d){extern s32 data_0213db14;void func_02044a68(s32,s32,s32);void func_02044b5c(s32,s32,s32);if(!data_0213db14)return;if(!b||!c)return;if(d)func_02044a68(a,b,c);else func_02044b5c(a,b,c);}
 
@@ -189,7 +189,7 @@ void func_02044780(s32 a,s32 b){extern s32 data_0213db14;s32 func_020390b4(s32);
 void func_020447c0(void) {
 extern s32 data_0213db14;
 s32 func_02038eb0(u8 **);s32 func_02038f34(s32);void *func_020449f0(s32);
-u64 func_02007004(void);u64 func_02072088(u64,u64);
+u64 GetSystemTick(void);u64 func_02072088(u64,u64);
 s32 func_02038e94(void);s32 func_02044a08(s32);s32 func_02044de0();
 void func_02044a40(s32,s32,s32,s32);
 u8 *list; s32 count,i,id; void *p; void *q; s32 n; s32 total; u64 now;
@@ -200,7 +200,7 @@ id=list[i];
 if(func_02038f34(id)){
 p=func_020449f0(id);
 if(M2C_FIELD(data_0213db14,void (**)(s32),0x608) && M2C_FIELD(p,u32 *,0x2c)){
-now=func_02007004();
+now=GetSystemTick();
 if((u32)func_02072088((now-M2C_FIELD(p,u64 *,0x24))<<6,0x82ea)>M2C_FIELD(p,u32 *,0x2c)){
 M2C_FIELD(data_0213db14,void (**)(s32),0x608)(id);
 M2C_FIELD(p,u64 *,0x24)=now;
@@ -282,7 +282,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
     }
 }
 
-void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4(s32);void MI_CpuCopy8(void *,void *,s32);u64 func_02007004(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(data_0213db14+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;MI_CpuCopy8((void *)b,q,c);cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=func_02007004();}
+void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4(s32);void MI_CpuCopy8(void *,void *,s32);u64 GetSystemTick(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(data_0213db14+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;MI_CpuCopy8((void *)b,q,c);cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=GetSystemTick();}
 
 void func_02044bf8(s32 a,s32 b,s32 c) {
 extern s32 data_0213db14;
@@ -309,7 +309,7 @@ M2C_FIELD(p,u16 *,0x22)=v;
 }
 
 void func_02044cc0(s32 a,void *b,s32 c){
-extern s32 data_0213db14; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void func_02037638(s32,s32);u64 func_02007004(void);
+extern s32 data_0213db14; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void func_02037638(s32,s32);u64 GetSystemTick(void);
 void *p;void (*cb)(s32,void *,s32);s32 pos,len;
 p=(void *)(data_0213db14+a*0x30);
 if(func_02044a24(a)==2){
@@ -325,7 +325,7 @@ cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);
 if(cb)cb(a,M2C_FIELD(p,void **,4),len);
 }
 if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;
-M2C_FIELD(p,u64 *,0x24)=func_02007004();
+M2C_FIELD(p,u64 *,0x24)=GetSystemTick();
 }
 
 void func_02044da4(M2C_UNK arg0, M2C_UNK arg1) {

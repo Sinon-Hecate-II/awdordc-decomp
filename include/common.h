@@ -48,6 +48,37 @@ typedef struct TcpSegment {
     u16 urgent;     /* +0x12 */
 } TcpSegment;
 
+/* UDP datagram header on the wire (all multi-byte fields big-endian). */
+typedef struct UdpDatagram {
+    u16 srcPort;    /* +0x00 */
+    u16 dstPort;    /* +0x02 */
+    u16 length;     /* +0x04 */
+    u16 checksum;   /* +0x06 */
+} UdpDatagram;
+
+/* IP header fields used by the transport layer (two u16 each, big-endian). */
+#define IP_HEADER_SRC_ADDR 0x0C /* source address */
+#define IP_HEADER_DST_ADDR 0x10 /* destination address */
+
+/* Socket control block, the object at a socket-list node's +0xA4. */
+#define SOCKET_OWNER      0x00 /* s32 nonzero while the socket is in use */
+#define SOCKET_TASK_STATE 0x04 /* s32 state of the task waiting on the socket */
+#define SOCKET_STATE      0x08 /* u8 socket state, TCP_STATE_* or SOCKET_STATE_* */
+#define SOCKET_LOCAL_PORT 0x0A /* u16 local port, host order */
+#define SOCKET_LOCAL_ADDR 0x14 /* u32 local address */
+#define SOCKET_PEER_PORT  0x18 /* u16 peer port, 0 until a peer is bound */
+#define SOCKET_PEER_ADDR  0x1C /* u32 peer address, 0 or -1 until a peer is bound */
+#define SOCKET_DATA_CB    0x38 /* s32 (*)(void *, u32, void *) receive callback */
+#define SOCKET_RX_CAP     0x3C /* u32 receive buffer capacity */
+#define SOCKET_RX_BUFFER  0x40 /* void *receive buffer */
+#define SOCKET_RX_LENGTH  0x44 /* u32 bytes currently in the receive buffer */
+
+/* Socket states that are not TCP states (SOCKET_STATE). */
+enum {
+    SOCKET_STATE_UDP_LISTEN = 10,   /* unbound UDP socket waiting for a peer */
+    SOCKET_STATE_UDP_CONNECTED = 11 /* UDP socket with its peer address set */
+};
+
 /* TCP control flags (TcpSegment.flags, also used as the event kind). */
 enum {
     TCP_FLAG_FIN = 0x01,
@@ -69,6 +100,29 @@ enum TcpState {
     TCP_STATE_FIN_WAIT2 = 8,
     TCP_STATE_TIME_WAIT = 9
 };
+
+/* TLS connection (the channel object the TLS record code passes around).  The
+ * hash and RC4 states are embedded; the key fields point into the channel's key
+ * block, and each direction's sequence number is an 8-byte big-endian counter. */
+enum {
+    TLS_HASH_MD5  = 4, /* TLS_HASH_ALGORITHM: 16-byte MAC */
+    TLS_HASH_SHA1 = 5  /* TLS_HASH_ALGORITHM: 20-byte MAC */
+};
+
+#define TLS_HASH_ALGORITHM 0x32  /* u16, TLS_HASH_MD5 or TLS_HASH_SHA1 */
+#define TLS_MAC_KEY_OUT    0xbc  /* void * key of the outgoing record MAC */
+#define TLS_RC4_KEY_OUT    0xc0  /* void * key of the outgoing RC4 state */
+#define TLS_RC4_OUT        0xc8  /* RC4 state of outgoing records */
+#define TLS_SEQ_OUT        0x1cc /* u8[8] outgoing sequence number, hashed in the MAC */
+#define TLS_MAC_KEY_IN     0x1d4 /* void * key of the incoming record MAC */
+#define TLS_RC4_KEY_IN     0x1d8 /* void * key of the incoming RC4 state */
+#define TLS_RC4_IN         0x1e0 /* RC4 state of incoming records */
+#define TLS_SEQ_IN         0x2e4 /* u8[8] incoming sequence number, hashed in the MAC */
+#define TLS_SHA1_CTX       0x348 /* SHA1 context of the record being handled */
+#define TLS_MD5_CTX        0x3fc /* MD5 context of the record being handled */
+#define TLS_STATE          0x455 /* u8 TLS record/handshake state */
+#define TLS_HMAC_IPAD      0x36  /* inner HMAC pad byte */
+#define TLS_HMAC_OPAD      0x5c  /* outer HMAC pad byte */
 
 /* ov003 map-select screen: six preview rows of three animations each. */
 typedef struct MapSelectRow {
@@ -102,6 +156,18 @@ typedef struct MapSelectScreen {
     void *obj64;           /* +0x64: polymorphic, vtable[1] is its destructor */
     void **buffers68;      /* +0x68: 6 buffers */
 } MapSelectScreen;
+
+/* ov001 map-select list screen: the object pointed at by gMapSelectState+4.
+ * It holds two rows of label sprites and a table of 42-byte map entries. */
+#define MAPSELECT_ENTRIES       0x00 /* void *: map entry table */
+#define MAPSELECT_ENTRY_SIZE    42   /* bytes per map entry */
+#define MAPSELECT_ENTRY_FLAG    0x28 /* u8 per entry: selects the preview path */
+#define MAPSELECT_ROW_OBJS_A    0x10 /* void *[MAPSELECT_ROWS] row labels */
+#define MAPSELECT_ROW_OBJS_B    0x24 /* void *[MAPSELECT_ROWS] map names */
+#define MAPSELECT_ROWS          5    /* rows shown at once */
+#define MAPSELECT_COUNT         0x51 /* u8 number of maps in the list */
+#define MAPSELECT_INDEX         0x52 /* u8 selected row */
+#define MAPSELECT_CHOSEN        0x54 /* u8 a map has been chosen */
 
 /* ov005 record/history menu: one scrolling list per tab (global gHistoryMenu). */
 typedef struct HistoryMenuTab {
@@ -207,6 +273,26 @@ typedef struct KeyState {
 #define TOUCH_TAP          0x15 /* u8 touch was a short tap */
 #define TOUCH_RELEASED     0x16 /* u8 touch ended this frame */
 
+/* The CO "occupation" cut-in effect object used by main_020C1F58.  It shares
+ * the battle-effect header layout (vtable at +0, timers at +0x34) but its
+ * pointers at +0x40/+0x4C hold CO data and a palette instead. */
+typedef struct OccupationEffect {
+    u8   pad00[0x34];
+    u8   frame;      /* +0x34: animation frame counter */
+    u8   active;     /* +0x35: cut-in is running */
+    u8   variant;    /* +0x36: portrait variant */
+    u8   startFrame; /* +0x37: frame at which the portrait starts */
+    u8   endFrame;   /* +0x38: frame at which the cut-in ends */
+    u8   progress;   /* +0x39: portrait rows revealed / voices played */
+    u8   pad3A[2];
+    void *sprite;    /* +0x3C: panel sprite object */
+    u8   *co;        /* +0x40: CO data: [0] id, [1] asset, [3] face, [5] rows */
+    u16  *spriteA;   /* +0x44: sprite effect object (special variant) */
+    u16  *spriteB;   /* +0x48: sprite effect object (normal) */
+    void *palette;   /* +0x4C: palette object */
+    u8   flags;      /* +0x50: bit0/bit1 toggles, bits 2..7 selected state */
+} OccupationEffect;
+
 /* DS key bits, as stored in the KeyState masks. */
 enum {
     KEY_A = 0x0001, KEY_B = 0x0002, KEY_SELECT = 0x0004, KEY_START = 0x0008,
@@ -269,13 +355,42 @@ enum {
     GPI_MSG_GAME_DATA_LAST  = 208
 };
 
+/* GameSpy gpi receive buffer (the connection field at +0x1DC): storage, the
+ * allocated size and the number of bytes currently held. */
+typedef struct GPIBuffer {
+    void *data; /* +0x00 storage */
+    s32   size; /* +0x04 allocated bytes */
+    s32   len;  /* +0x08 bytes used */
+} GPIBuffer;
+
 /* Connection session states (the state at GetConnection()->0x1A0) used while
  * the peers agree on their player slots and synchronise. */
 enum {
+    CONN_STATE_SYNC_PREPARE  = 8,  /* preparing the session with a peer */
     CONN_STATE_WAIT_SLOT     = 9,  /* own player slot is being accepted */
+    CONN_STATE_SYNC_MEASURE  = 14, /* peers report in; the round trip is being measured */
+    CONN_STATE_SYNC_DONE     = 15, /* every connected peer has acknowledged the sync */
     CONN_STATE_WAIT_SYNC_ACK = 16, /* waiting for every peer to acknowledge the sync */
     CONN_STATE_WAIT_SYNC_RTT = 17  /* waiting out the measured latency before completing */
 };
+
+/* Peer synchronization notices carried in a connection packet's type field. */
+enum {
+    PEER_SYNC_PREPARE = 13, /* peer asks us to prepare the session */
+    PEER_SYNC_ACK     = 14, /* peer is ready; measure the round trip */
+    PEER_SYNC_DONE    = 15  /* the peer's synchronization is complete */
+};
+
+/* Connection session fields (in the context returned by GetConnection()) used
+ * by the synchronization handshake. */
+#define CONN_SESSION_STATE        0x1A0 /* s32 state, one of CONN_STATE_* */
+#define CONN_SESSION_PLAYER_COUNT 0x0D  /* u8  number of connected peers */
+#define CONN_SESSION_PEER_IDS     0xF4  /* s32 peer ids, 4 bytes per slot */
+#define CONN_SESSION_SYNC_ACKS    0x1D8 /* u32 bitmask of peers that answered */
+#define CONN_SESSION_SYNC_SENT    0x1E8 /* u64 time the last sync notice was sent */
+#define CONN_SESSION_SYNC_EXCESS  0x1B2 /* u16 worst overrun of the sync deadline */
+#define CONN_SESSION_SYNC_RETRY   0x1AC /* u8 retry counter for the sync-measure notices */
+#define CONN_SESSION_PEER_SLOTS   0x2D0 /* u8 slot id per connected peer, indexed from 1 */
 
 /* Fields of the online-match session context (the pointer held at
  * data_0213d38c + 8). */
@@ -416,6 +531,196 @@ enum {
     KBD_KEY_CANCEL = 0x82,
     KBD_KEY_OK     = 0x83
 };
+
+/* On-screen keyboard key layout: 47 character keys, then space and delete,
+ * then the two bottom action keys. */
+#define KBD_CHAR_KEY_COUNT 0x2F /* character keys on a page */
+#define KBD_DELETE_INDEX   0x32 /* index of the delete key */
+#define KBD_ACTION_KEY_BASE 0x33 /* index of the first bottom action key */
+
+/* Delete-key auto-repeat: repeat after this many frames, dropping the counter
+ * by this much per repeat. */
+#define KBD_DELETE_REPEAT_DELAY 0x28
+#define KBD_DELETE_REPEAT_STEP  7
+
+/* A menu sprite object, as animated by MenuSpriteUpdate.  The current frame is
+ * held in bits 18..25 of the word at +0x40, the base frame in the low nibble at
+ * +0x59 and +0x5a is the press timer (negative while the press animation is
+ * done). +0x64 points at the object that owns the sprite. */
+#define MENU_SPRITE_FRAME 0x40 /* u32 frame bits */
+#define MENU_SPRITE_BASE  0x59 /* u8 low nibble: base frame */
+#define MENU_SPRITE_TIMER 0x5a /* s8 press timer, -1 = idle */
+#define MENU_SPRITE_OWNER 0x64 /* owner/controller object */
+
+/* Work area of the movement flood fill (gMoveSearchState).  It starts with a
+ * 32-entry terrain cost table, then the search limits, then two ping-pong
+ * queues of 4-byte nodes (x, y, direction, accumulated cost). */
+typedef struct MoveSearchNode {
+    u8 x;      /* +0x00 */
+    u8 y;      /* +0x01 */
+    u8 dir;    /* +0x02 direction taken to reach the tile, 1 = start */
+    u8 cost;   /* +0x03 accumulated movement cost */
+} MoveSearchNode; /* 4 bytes */
+
+#define MOVE_SEARCH_TERRAIN_COST 0x00 /* s8[32] movement cost per terrain kind */
+#define MOVE_SEARCH_COST_LIMIT   0x20 /* s16 accumulated-cost limit */
+#define MOVE_SEARCH_MOVE_RANGE   0x22 /* s16 unit move range (movement points) */
+#define MOVE_SEARCH_WIDTH        0x24 /* u8 map width, filled by SelectMapLayer */
+#define MOVE_SEARCH_HEIGHT       0x25 /* u8 map height, filled by SelectMapLayer */
+#define MOVE_SEARCH_QUEUE_A      0x28 /* MoveSearchNode[349] */
+#define MOVE_SEARCH_QUEUE_B      0x5A0 /* MoveSearchNode[349] */
+#define MOVE_SEARCH_QUEUE_MAX    349
+
+/* The pending move path of the unit under the cursor (gUnitMovePath): up to 12
+ * steps on the cell grid, step 0 being the unit's own tile.  An s8 length of 0
+ * means the path is empty; the entries are indexed together. */
+#define UNIT_PATH_CURSOR_X  0x34 /* s8 cell x the path was last drawn from */
+#define UNIT_PATH_CURSOR_Y  0x35 /* s8 cell y */
+#define UNIT_PATH_X         0x36 /* s8[12] tile x of each step */
+#define UNIT_PATH_Y         0x42 /* s8[12] tile y of each step */
+#define UNIT_PATH_STEP_COST 0x4e /* s8[12] movement cost left at each step */
+#define UNIT_PATH_START_COST 0x5a /* s8 movement cost at the unit's tile */
+#define UNIT_PATH_LENGTH    0x5b /* s8 index of the last step, 0 = empty */
+#define UNIT_PATH_MAX_STEPS 12
+
+/* Flag byte at +0x20 of the friend-code entry's sub-panels. */
+typedef struct FriendCodeFlags {
+    u8 active:1;
+    u8 mode:4;
+    u8 kind:3;
+} FriendCodeFlags;
+
+/* One of the two 0x2C-byte sub-panels of the friend-code entry screen. It is a
+ * bare heap object whose only method is the MemFree destructor of
+ * gHeapObjectVTable; the fields are the ones its drawing code reads. */
+typedef struct FriendCodeSubPanel {
+    void *vtable;        /* +0x00 gHeapObjectVTable */
+    u8 unk04;            /* +0x04 */
+    u8 pad05[0x0D];
+    s16 unk12;           /* +0x12 */
+    u8 unk14;            /* +0x14 */
+    u8 unk15;            /* +0x15 */
+    u8 unk16;            /* +0x16 */
+    u8 unk17;            /* +0x17 */
+    u8 unk18;            /* +0x18 */
+    u8 pad19[7];
+    FriendCodeFlags flags; /* +0x20 */
+    u8 unk21;            /* +0x21 */
+    u8 pad22[2];
+    s32 unk24;           /* +0x24 */
+    u8 unk28;            /* +0x28 */
+    u8 unk29;            /* +0x29 */
+    u8 pad2A[2];
+} FriendCodeSubPanel;    /* 0x2C bytes */
+
+/* The friend-code entry screen node built by FriendCodeEntry_Create: a scene
+ * node with six sprite objects, two sub-panels, a 0x12-byte animation frame
+ * table (laid out like MapInfoIconFrames) and a sprite-grid widget. */
+typedef struct FriendCodeEntry {
+    void *vtable;        /* +0x00 gFriendCodeEntryVTable */
+    u8 pad04[0x30];
+    u8 unk34;            /* +0x34 */
+    u8 pad35[7];
+    void *sprites;       /* +0x3C block of six sprite objects */
+    void *panelTop;      /* +0x40 FriendCodeSubPanel */
+    void *panelBottom;   /* +0x44 FriendCodeSubPanel */
+    void *anim;          /* +0x48 animation frame table (0x12 bytes) */
+    void *grid;          /* +0x4C sprite-grid widget */
+} FriendCodeEntry;
+
+/* ov007 map generator's 30-column scratch marker grid (gMapMarkerGrid). */
+#define MAP_MARKER_STRIDE 30
+#define MAP_MARKER_RESERVED 1 /* cell reserved by the map border or a structure */
+#define MAP_MARKER_PATH 2     /* cell covered by a generated path */
+#define MAP_POINT_NONE 0xFF   /* MapPoint x value meaning the point is unset */
+
+/* Styles for DrawFrameBorder. */
+enum {
+    FRAME_BORDER_INSIDE = 1,  /* frame drawn on the rectangle's own edge */
+    FRAME_BORDER_OUTSIDE = 2  /* frame drawn one pixel outside the rectangle */
+};
+
+/* Display mode of a 3D sprite engine: bits 2..3 of its first halfword. */
+#define SPRITE_ENGINE_MODE(engine) (((u32)(*(u16 *)M2C_FIELD((engine), void **, 0)) << 17) >> 30)
+
+/* Parsed GameSpy GPI profile-info reply, built by gpiProcessGetInfo (gpiInfo.c)
+ * from the \nick\, \email\, \firstname\ ... fields of the server response. */
+typedef struct GpiInfoResponse {
+    char *nick;           /* +0x00: \nick\ */
+    char *uniqueNick;     /* +0x04: \uniquenick\ */
+    char *email;          /* +0x08: \email\ */
+    char *firstName;      /* +0x0C: \firstname\ */
+    char *lastName;       /* +0x10: \lastname\ */
+    char *homepage;       /* +0x14: \homepage\ */
+    s32   icqUin;         /* +0x18: \icquin\ */
+    char  zipCode[11];    /* +0x1C: \zipcode\ */
+    char  countryCode[3]; /* +0x27: \countrycode\ */
+    u8    pad2A[2];
+    s32   longitude;      /* +0x2C: \lon\ */
+    s32   latitude;       /* +0x30: \lat\ */
+    char  location[128];  /* +0x34: \loc\ */
+    s32   birthYear;      /* +0xB4: \birthday\ */
+    s32   birthMonth;     /* +0xB8 */
+    s32   birthDay;       /* +0xBC */
+    s32   sex;            /* +0xC0: \sex\ */
+    s32   pmask;          /* +0xC4: \pmask\ */
+    char *aim;            /* +0xC8: \aim\ */
+    s32   pic;            /* +0xCC: \pic\ */
+    s32   occupation;     /* +0xD0: \occ\ */
+    s32   industry;       /* +0xD4: \ind\ */
+    s32   income;         /* +0xD8: \inc\ */
+    s32   marital;        /* +0xDC: \mar\ */
+    s32   children;       /* +0xE0: \chc\ */
+    s32   i1;             /* +0xE4: \i1\ */
+    s32   o1;             /* +0xE8: \o1\ */
+    s32   conn;           /* +0xEC: \conn\ */
+} GpiInfoResponse;
+
+/* Flat info record handed to the game's gpiInfo callback (gpiInfo.c).  The
+ * first two words are the result code and profile id, filled in by the caller. */
+typedef struct GpiInfoRecord {
+    s32  result;          /* +0x000 set by the caller */
+    s32  profileId;       /* +0x004 */
+    char nick[31];        /* +0x008 */
+    char uniqueNick[21];  /* +0x027 */
+    char email[51];       /* +0x03C */
+    char firstName[31];   /* +0x06F */
+    char lastName[31];    /* +0x08E */
+    char homepage[76];    /* +0x0AD */
+    u8   padF9[3];
+    s32  icqUin;          /* +0x0FC */
+    char zipCode[11];     /* +0x100 */
+    char countryCode[3];  /* +0x10B */
+    u8   pad10E[2];
+    s32  longitude;       /* +0x110 */
+    s32  latitude;        /* +0x114 */
+    char location[128];   /* +0x118 */
+    s32  birthYear;       /* +0x198 */
+    s32  birthMonth;      /* +0x19C */
+    s32  birthDay;        /* +0x1A0 */
+    s32  sex;             /* +0x1A4 */
+    s32  pmask;           /* +0x1A8 */
+    char aim[51];         /* +0x1AC */
+    u8   pad1DF;
+    s32  pic;             /* +0x1E0 */
+    s32  occupation;      /* +0x1E4 */
+    s32  industry;        /* +0x1E8 */
+    s32  income;          /* +0x1EC */
+    s32  marital;         /* +0x1F0 */
+    s32  children;        /* +0x1F4 */
+    s32  i1;              /* +0x1F8 */
+    s32  o1;              /* +0x1FC */
+    s32  conn;            /* +0x200 */
+} GpiInfoRecord;          /* 0x204 bytes */
+
+/* One decoded multiplayer room-setup record in ov001 (gRoomTeamA/B and
+ * gRoomRecord5/6), filled by the packet decoders in ov001_0216BD08.c. */
+typedef struct Ov001PlayerRecord {
+    u32  unk00;       /* +0x00 */
+    s32  length;      /* +0x04: bytes used by each name/text */
+    char text[40];    /* +0x08: team name or extra text */
+    char name[4][64]; /* +0x30: up to four player names */
+} Ov001PlayerRecord;  /* 0x130 bytes */
 
 #endif
 

@@ -82,7 +82,7 @@ void func_ov007_02216118(s32 arg0, s32 arg1) {
     s32 Map_SetCellTile(s32, s32, s32);
     s32 Map_MarkUnitsMoved(void);
     extern void **gCurrentMap;
-    extern u8 data_ov007_02221a84[];
+    extern u8 gMapMarkerGrid[];
 
     s32 sp0 = 0;
     s8 *row;
@@ -94,7 +94,7 @@ loop_outer:
     r7 = 0;
     r0 = *gCurrentMap;
     if (M2C_FIELD(r0, u16 *, 0x5146) > 0) {
-        row = (s8*)data_ov007_02221a84;
+        row = (s8*)gMapMarkerGrid;
         do {
             r6 = 0;
             if (M2C_FIELD(r0, u16 *, 0x5144) > 0) {
@@ -181,60 +181,60 @@ return 1;
  * keeps the horizontal segments at the ends; nonzero keeps the vertical ones. */
 void DrawOrthogonalPath(s32 x0, s32 y0, s32 x1, s32 y1, s32 orientation) {
 s32 RandomIntRange(s32,s32);
-extern u8 data_ov007_02221a84[];
+extern u8 gMapMarkerGrid[];
 s32 bend,i;
 if(orientation==0){
 if(x0<x1)bend=RandomIntRange(x0,x1);else bend=RandomIntRange(x1,x0);
-if(bend<x0){for(i=bend;i<=x0;i++)((u8 (*)[30])data_ov007_02221a84)[y0][i]=2;}
-else{for(;x0<=bend;x0++)((u8 (*)[30])data_ov007_02221a84)[y0][x0]=2;}
-if(bend<x1){for(i=bend;i<=x1;i++)((u8 (*)[30])data_ov007_02221a84)[y1][i]=2;}
-else{for(;x1<=bend;x1++)((u8 (*)[30])data_ov007_02221a84)[y1][x1]=2;}
-if(y0<y1){for(;y0<=y1;y0++)((u8 (*)[30])data_ov007_02221a84)[y0][bend]=2;}
-else{for(;y1<=y0;y1++)((u8 (*)[30])data_ov007_02221a84)[y1][bend]=2;}
+if(bend<x0){for(i=bend;i<=x0;i++)((u8 (*)[30])gMapMarkerGrid)[y0][i]=2;}
+else{for(;x0<=bend;x0++)((u8 (*)[30])gMapMarkerGrid)[y0][x0]=2;}
+if(bend<x1){for(i=bend;i<=x1;i++)((u8 (*)[30])gMapMarkerGrid)[y1][i]=2;}
+else{for(;x1<=bend;x1++)((u8 (*)[30])gMapMarkerGrid)[y1][x1]=2;}
+if(y0<y1){for(;y0<=y1;y0++)((u8 (*)[30])gMapMarkerGrid)[y0][bend]=2;}
+else{for(;y1<=y0;y1++)((u8 (*)[30])gMapMarkerGrid)[y1][bend]=2;}
 }else{
 if(y0<y1)bend=RandomIntRange(y0,y1);else bend=RandomIntRange(y1,y0);
-if(bend<y0){for(i=bend;i<=y0;i++)((u8 (*)[30])data_ov007_02221a84)[i][x0]=2;}
-else{for(;y0<=bend;y0++)((u8 (*)[30])data_ov007_02221a84)[y0][x0]=2;}
-if(bend<y1){for(i=bend;i<=y1;i++)((u8 (*)[30])data_ov007_02221a84)[i][x1]=2;}
-else{for(;y1<=bend;y1++)((u8 (*)[30])data_ov007_02221a84)[y1][x1]=2;}
-if(x0<x1){for(;x0<=x1;x0++)((u8 (*)[30])data_ov007_02221a84)[bend][x0]=2;}
-else{for(;x1<=x0;x1++)((u8 (*)[30])data_ov007_02221a84)[bend][x1]=2;}
+if(bend<y0){for(i=bend;i<=y0;i++)((u8 (*)[30])gMapMarkerGrid)[i][x0]=2;}
+else{for(;y0<=bend;y0++)((u8 (*)[30])gMapMarkerGrid)[y0][x0]=2;}
+if(bend<y1){for(i=bend;i<=y1;i++)((u8 (*)[30])gMapMarkerGrid)[i][x1]=2;}
+else{for(;y1<=bend;y1++)((u8 (*)[30])gMapMarkerGrid)[y1][x1]=2;}
+if(x0<x1){for(;x0<=x1;x0++)((u8 (*)[30])gMapMarkerGrid)[bend][x0]=2;}
+else{for(;x1<=x0;x1++)((u8 (*)[30])gMapMarkerGrid)[bend][x1]=2;}
 }
 }
 
 void func_ov007_02216a74(void) {
-s32 func_ov007_02214e24(void);
+s32 Map_InitMarkerGrid(void);
 s32 func_ov007_02214d88(s32,s32);
 s32 func_ov007_02215bc4(s32*,s32*,s32);
 s32 Map_SetCellTile(s32,s32,s32);
 s32 Map_MarkUnitsMoved(void);
 extern void **gCurrentMap;
-extern u8 data_ov007_02221a84[];
+extern u8 gMapMarkerGrid[];
 s32 x,y,i,n;
-func_ov007_02214e24();
+Map_InitMarkerGrid();
 n=func_ov007_02214d88(2,8);
 for(i=0;i<n;i++){
 if(!func_ov007_02215bc4(&x,&y,1)) break;
 Map_SetCellTile(x,y,3);
-(data_ov007_02221a84 + y*30)[x]=2;
-if(x-1>=0){Map_SetCellTile(x-1,y,3);(data_ov007_02221a84 + y*30)[x-1]=2;}
-if(y-1>=0){Map_SetCellTile(x,y-1,3);(data_ov007_02221a84 + y*30)[x-30]=2;}
-if(x+1<M2C_FIELD(*gCurrentMap,u16*,0x5144)){Map_SetCellTile(x+1,y,3);(data_ov007_02221a84 + y*30)[x+1]=2;}
-if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){Map_SetCellTile(x,y+1,3);(data_ov007_02221a84 + y*30)[x+30]=2;}
+(gMapMarkerGrid + y*30)[x]=2;
+if(x-1>=0){Map_SetCellTile(x-1,y,3);(gMapMarkerGrid + y*30)[x-1]=2;}
+if(y-1>=0){Map_SetCellTile(x,y-1,3);(gMapMarkerGrid + y*30)[x-30]=2;}
+if(x+1<M2C_FIELD(*gCurrentMap,u16*,0x5144)){Map_SetCellTile(x+1,y,3);(gMapMarkerGrid + y*30)[x+1]=2;}
+if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){Map_SetCellTile(x,y+1,3);(gMapMarkerGrid + y*30)[x+30]=2;}
 }
 Map_MarkUnitsMoved();func_ov007_02216118(3,1);
 }
 
 void func_ov007_02216bf4(void) {
-s32 func_ov007_02214e24(void);s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215bc4(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void func_ov007_02216118(s32,s32);
-extern u8 data_ov007_02221a84[];
+s32 Map_InitMarkerGrid(void);s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215bc4(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void func_ov007_02216118(s32,s32);
+extern u8 gMapMarkerGrid[];
 s32 x,y,i,n;
-func_ov007_02214e24();n=func_ov007_02214d88(8,12);
+Map_InitMarkerGrid();n=func_ov007_02214d88(8,12);
 i=0;
 if(n>0){do{
 if(!func_ov007_02215bc4(&x,&y,1))break;
 Map_SetCellTile(x,y,32);
-*(data_ov007_02221a84+y*30+x)=2;
+*(gMapMarkerGrid+y*30+x)=2;
 i++;
 }while(i<n);}
 Map_MarkUnitsMoved();func_ov007_02216118(32,1);

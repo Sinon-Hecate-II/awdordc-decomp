@@ -157,23 +157,23 @@ void func_020e36f4(void) {
 }
 
 void func_020e370c(void *arg0) {
-   M2C_UNK func_01ffa8c4(void *, s32);
+   M2C_UNK SetSpriteAnimation(void *, s32);
    s32 func_ov010_02226738(void);
    if (func_ov010_02226738() == 5) {
      *M2C_FIELD(arg0, s32 **, 0x40) = 1;
    } else {
-     func_01ffa8c4(arg0, 1);
+     SetSpriteAnimation(arg0, 1);
    }
 }
 
 void func_020e3738(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 func_ov010_02226334(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, void *);
     *M2C_FIELD(arg0, s32 **, 0x40) = 0;
     if (func_ov010_02226334(0, 2, 0, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -194,14 +194,14 @@ void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void func_020e37dc(void *arg0) {
     s32 func_ov010_02226738(void);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 func_ov010_022267b0(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
     s32 sp[7];
     void *temp_r4;
 
     if (func_ov010_02226738() != 5) {
-        func_01ffa8c4(arg0, 1);
+        SetSpriteAnimation(arg0, 1);
         return;
     }
 
@@ -224,7 +224,7 @@ void func_020e37dc(void *arg0) {
 void func_020e3870(void *arg0) {
     void func_02007e70(s32, void *, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 sp[68];
     s32 val;
 
@@ -238,7 +238,7 @@ void func_020e3870(void *arg0) {
     if (func_ov010_02226538(3, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
@@ -280,7 +280,7 @@ void *func_020e38f0(void *arg0, s32 arg1, s32 arg2) {
 /* Populates the list's node array from the ov010 source (mode 5 only), skipping entries whose id matches a sentinel value. */
 void func_020e39d8(void *list) {
     s32 func_ov010_02226738(void);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 func_ov010_0222681c(void);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
@@ -294,7 +294,7 @@ void func_020e39d8(void *list) {
     u8 *node;
 
     if (func_ov010_02226738() != 5) {
-        func_01ffa8c4(list, 1);
+        SetSpriteAnimation(list, 1);
         return;
     }
 
@@ -324,7 +324,7 @@ void func_020e39d8(void *list) {
 void func_020e3ab4(void *arg0) {
     s32 RandomIntRange(s32, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 data_0212d744;
     s32 sp[68];
     u32 r1;
@@ -349,7 +349,7 @@ void func_020e3ab4(void *arg0) {
     if (func_ov010_02226538(6, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_020e3b54(void *arg0, s32 arg1, s32 *arg2, s32 arg3) {
@@ -382,7 +382,7 @@ void func_020e3b54(void *arg0, s32 arg1, s32 *arg2, s32 arg3) {
 /* Builds the filtered list of entries from the overlay's state, skipping the excluded one. */
 void func_020e3bf0(void *list) {
     s32 func_ov010_02226738(void);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 func_ov010_0222681c(void);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
@@ -396,7 +396,7 @@ void func_020e3bf0(void *list) {
     u8 *node;
 
     if (func_ov010_02226738() != 5) {
-        func_01ffa8c4(list, 1);
+        SetSpriteAnimation(list, 1);
         return;
     }
 
@@ -427,7 +427,7 @@ void func_020e3ccc(void *arg0) {
     s32 func_0207c2f0(void);
     s32 RandomIntRange(s32, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 data_0212d744;
     s32 sp[68];
     s32 temp5;
@@ -447,7 +447,7 @@ void func_020e3ccc(void *arg0) {
     if (func_ov010_02226538(6, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
@@ -478,7 +478,7 @@ void func_020e3d6c(void *arg0, s32 *arg1, s32 arg2) {
 
 void func_020e3e04(void *arg0) {
     s32 func_ov010_02226738(void);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
@@ -489,7 +489,7 @@ void func_020e3e04(void *arg0) {
     u8 *node_ptr;
 
     if (func_ov010_02226738() != 5) {
-        func_01ffa8c4(arg0, 1);
+        SetSpriteAnimation(arg0, 1);
         return;
     }
 
@@ -517,7 +517,7 @@ void func_020e3e04(void *arg0) {
 void func_020e3f08(void *arg0) {
     void func_02007e70(s32, void *, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 sp[68];
     s32 val;
 
@@ -531,7 +531,7 @@ void func_020e3f08(void *arg0) {
     if (func_ov010_02226538(3, 0, 0xFF, sp, arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
@@ -567,12 +567,12 @@ void *func_020e3f88(s32 arg0, void *arg1, s32 *arg2, s32 arg3) {
 }
 
 void func_020e4064(void *arg0) {
- M2C_UNK func_01ffa8c4(void *, s32);
+ M2C_UNK SetSpriteAnimation(void *, s32);
  s32 func_ov010_02226738(void);
  if (func_ov010_02226738() == 5) {
   *M2C_FIELD(arg0, s32 **, 0x40) = 1;
  } else {
-  func_01ffa8c4(arg0, 1);
+  SetSpriteAnimation(arg0, 1);
  }
 }
 
@@ -582,7 +582,7 @@ void func_020e4090(void *arg0) {
     if (func_ov010_022266c4(8, *M2C_FIELD(arg0, s32 **, 0x44), 0, M2C_FIELD(arg0, s32 *, 0x48), arg0) != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void *func_020e40e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -642,11 +642,11 @@ void *func_020e4174(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void func_020e4208(void *arg0) {
     s32 func_ov010_02226738(void);
     s32 func_ov010_0222681c(void);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 data_0212d744;
 
     if (func_ov010_02226738() != 5) {
-        func_01ffa8c4(arg0, 1);
+        SetSpriteAnimation(arg0, 1);
         return;
     }
     data_0212d744 = func_ov010_0222681c();
@@ -654,12 +654,12 @@ void func_020e4208(void *arg0) {
 
 void func_020e4240(void *arg0) {
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 data_0212d744;
     s32 sp[68];
 
     if (data_0212d744 >= 0) {
-        func_01ffa8c4(arg0, 1);
+        SetSpriteAnimation(arg0, 1);
         return;
     }
 
@@ -672,7 +672,7 @@ void func_020e4240(void *arg0) {
         return;
     }
 
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_020e42bc(s32 arg0) {

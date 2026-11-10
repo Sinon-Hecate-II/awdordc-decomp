@@ -229,7 +229,7 @@ s32 func_020d39b4(void) {
 
 void func_020d39f4(s32 arg0) {
     M2C_UNK func_02084644();
-    M2C_UNK func_01ffa42c(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_02168f08;
     extern M2C_UNK data_0212b9d4;
     switch (func_02084644()) {                      /* irregular */
@@ -237,7 +237,7 @@ void func_020d39f4(s32 arg0) {
         M2C_FIELD(&data_02168f08, u8 *, 7) = 0;
         return;
     case 2:
-        func_01ffa42c(&data_0212b9d4, arg0);
+        CreateSpriteObject(&data_0212b9d4, arg0);
         return;
     }
 }

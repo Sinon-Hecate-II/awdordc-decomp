@@ -6,11 +6,11 @@ typedef struct { u16 x:6; u16 y:6; u16 unk:2; u16 state:2; } Position_02194090;
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
 extern u16 gPlayerUnitIdBase[];
-extern M2C_UNK data_ov000_021b5bfc;
+extern M2C_UNK gUnitKindStats;
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,u8**,0x52d0)
 #define KIND(p) ((u32)((p)[0]<<26)>>26)
-#define INFO ((u8*)&data_ov000_021b5bfc)
+#define INFO ((u8*)&gUnitKindStats)
 #define ROW(y) M2C_FIELD(MAP+(y)*2,u16*,0x3758)
 #define CELL(x,y,off) M2C_FIELD(MAP+(x)+ROW(y),u8*,off)
 #define COST(x,y,off) M2C_FIELD(MAP+(x)+ROW(y),s8*,off)

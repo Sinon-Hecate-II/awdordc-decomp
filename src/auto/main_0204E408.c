@@ -94,20 +94,20 @@ if(arg2==0){gpiSetErrorString(arg0,&data_020fdb50);return 2;}
 return gpiSendMessageToPlayer(arg0,arg1,1,arg2);
 }
 
-s32 func_0204e6a8(void **a,s32 b,s32 c){void *func_02037794(s32);s32 func_020558e8(void **);s32 gpiResetConnection(void **);void func_0204e7f0(void **);void func_02065210(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 data_020fdb70[];InitState4E *p;s32 i,r;*a=0;p=func_02037794(0x490);if(!p)return 1;func_02065210(p,0,0x490);M2C_FIELD(p,u8 *,0)=0;M2C_FIELD(p,s32 *,0x418)=0;M2C_FIELD(p,s32 *,0x100)=1;M2C_FIELD(p,s32 *,0x104)=0;M2C_FIELD(p,s32 *,0x108)=0;M2C_FIELD(p,s32 *,0x10c)=0;M2C_FIELD(p,s32 *,0x46c)=b;M2C_FIELD(p,s32 *,0x470)=c;if(!func_020558e8((void **)&p)){func_020377c4(p);p=0;return 1;}M2C_FIELD(p,s32 *,0x420)=0;for(i=0;i<6;i++){p->pairs[i].first=0;p->pairs[i].second=0;}M2C_FIELD(p,s32 *,0x460)=0;gpiLogMessage((void **)&p,data_020fdb70);r=gpiResetConnection((void **)&p);if(r){func_0204e7f0((void **)&p);return r;}func_0204926c();func_02049208();func_020677a8();*a=p;return 0;}
+s32 func_0204e6a8(void **a,s32 b,s32 c){void *gpiMalloc(s32);s32 func_020558e8(void **);s32 gpiResetConnection(void **);void func_0204e7f0(void **);void func_02065210(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 data_020fdb70[];InitState4E *p;s32 i,r;*a=0;p=gpiMalloc(0x490);if(!p)return 1;func_02065210(p,0,0x490);M2C_FIELD(p,u8 *,0)=0;M2C_FIELD(p,s32 *,0x418)=0;M2C_FIELD(p,s32 *,0x100)=1;M2C_FIELD(p,s32 *,0x104)=0;M2C_FIELD(p,s32 *,0x108)=0;M2C_FIELD(p,s32 *,0x10c)=0;M2C_FIELD(p,s32 *,0x46c)=b;M2C_FIELD(p,s32 *,0x470)=c;if(!func_020558e8((void **)&p)){gpiFree(p);p=0;return 1;}M2C_FIELD(p,s32 *,0x420)=0;for(i=0;i<6;i++){p->pairs[i].first=0;p->pairs[i].second=0;}M2C_FIELD(p,s32 *,0x460)=0;gpiLogMessage((void **)&p,data_020fdb70);r=gpiResetConnection((void **)&p);if(r){func_0204e7f0((void **)&p);return r;}func_0204926c();GetTickCountMs();func_020677a8();*a=p;return 0;}
 
 void func_0204e7f0(void **arg0) {
-    M2C_UNK func_020377c4(void *);
+    M2C_UNK gpiFree(void *);
     M2C_UNK func_02048dc4(s32);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
     void *temp_r4;
 
     temp_r4 = *arg0;
     gpiDisconnect(arg0, 1);
-    func_020377c4(M2C_FIELD(temp_r4, void **, 0x460));
+    gpiFree(M2C_FIELD(temp_r4, void **, 0x460));
     M2C_FIELD(temp_r4, void **, 0x460) = NULL;
     func_02048dc4(M2C_FIELD(temp_r4, s32 *, 0x428));
-    func_020377c4(temp_r4);
+    gpiFree(temp_r4);
     *arg0 = NULL;
 }
 
@@ -119,7 +119,7 @@ s32 func_0204e830(void *arg0, void *arg1) {
     return 1;
 }
 
-s32 gpiResetConnection(void **a){void func_02054484(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);void *p=*a;M2C_FIELD(p,s8 *,272)=0;M2C_FIELD(p,s8 *,303)=0;M2C_FIELD(p,s8 *,324)=0;M2C_FIELD(p,s32 *,468)=-1;M2C_FIELD(p,s32 *,472)=0;M2C_FIELD(p,s32 *,484)=0;M2C_FIELD(p,s32 *,488)=0;M2C_FIELD(p,s32 *,480)=0;func_020377c4(M2C_FIELD(p,s32 *,476));M2C_FIELD(p,s32 *,476)=0;M2C_FIELD(p,s32 *,496)=0;func_020377c4(M2C_FIELD(p,s32 *,492));M2C_FIELD(p,s32 *,492)=0;M2C_FIELD(p,s32 *,508)=0;M2C_FIELD(p,s32 *,512)=0;M2C_FIELD(p,s32 *,504)=0;func_020377c4(M2C_FIELD(p,s32 *,500));M2C_FIELD(p,s32 *,500)=0;M2C_FIELD(p,s32 *,1096)=0;M2C_FIELD(p,s32 *,1100)=0;M2C_FIELD(p,s32 *,1092)=0;func_020377c4(M2C_FIELD(p,s32 *,1088));M2C_FIELD(p,s32 *,1088)=0;M2C_FIELD(p,s32 *,1112)=0;M2C_FIELD(p,s32 *,1116)=0;M2C_FIELD(p,s32 *,1108)=0;func_020377c4(M2C_FIELD(p,s32 *,1104));M2C_FIELD(p,s32 *,1104)=0;M2C_FIELD(p,s32 *,0x204)=-1;M2C_FIELD(p,s32 *,0x20c)=2;while(M2C_FIELD(p,s32 *,0x424))func_02054484(a,M2C_FIELD(p,s32 *,0x424));M2C_FIELD(p,s32 *,0x424)=0;M2C_FIELD(p,s32 *,0x430)=0;func_02055cd0(a,&func_0204e830);M2C_FIELD(p,s32 *,412)=0;M2C_FIELD(p,s32 *,416)=0;M2C_FIELD(p,s32 *,408)=0;M2C_FIELD(p,s32 *,528)=0;M2C_FIELD(p,s32 *,1052)=0;M2C_FIELD(p,s32 *,1076)=0;M2C_FIELD(p,s32 *,0x214)=-1;M2C_FIELD(p,s8 *,0x218)=0;M2C_FIELD(p,s8 *,0x318)=0;return 0;}
+s32 gpiResetConnection(void **a){void func_02054484(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);void *p=*a;M2C_FIELD(p,s8 *,272)=0;M2C_FIELD(p,s8 *,303)=0;M2C_FIELD(p,s8 *,324)=0;M2C_FIELD(p,s32 *,468)=-1;M2C_FIELD(p,s32 *,472)=0;M2C_FIELD(p,s32 *,484)=0;M2C_FIELD(p,s32 *,488)=0;M2C_FIELD(p,s32 *,480)=0;gpiFree(M2C_FIELD(p,s32 *,476));M2C_FIELD(p,s32 *,476)=0;M2C_FIELD(p,s32 *,496)=0;gpiFree(M2C_FIELD(p,s32 *,492));M2C_FIELD(p,s32 *,492)=0;M2C_FIELD(p,s32 *,508)=0;M2C_FIELD(p,s32 *,512)=0;M2C_FIELD(p,s32 *,504)=0;gpiFree(M2C_FIELD(p,s32 *,500));M2C_FIELD(p,s32 *,500)=0;M2C_FIELD(p,s32 *,1096)=0;M2C_FIELD(p,s32 *,1100)=0;M2C_FIELD(p,s32 *,1092)=0;gpiFree(M2C_FIELD(p,s32 *,1088));M2C_FIELD(p,s32 *,1088)=0;M2C_FIELD(p,s32 *,1112)=0;M2C_FIELD(p,s32 *,1116)=0;M2C_FIELD(p,s32 *,1108)=0;gpiFree(M2C_FIELD(p,s32 *,1104));M2C_FIELD(p,s32 *,1104)=0;M2C_FIELD(p,s32 *,0x204)=-1;M2C_FIELD(p,s32 *,0x20c)=2;while(M2C_FIELD(p,s32 *,0x424))func_02054484(a,M2C_FIELD(p,s32 *,0x424));M2C_FIELD(p,s32 *,0x424)=0;M2C_FIELD(p,s32 *,0x430)=0;func_02055cd0(a,&func_0204e830);M2C_FIELD(p,s32 *,412)=0;M2C_FIELD(p,s32 *,416)=0;M2C_FIELD(p,s32 *,408)=0;M2C_FIELD(p,s32 *,528)=0;M2C_FIELD(p,s32 *,1052)=0;M2C_FIELD(p,s32 *,1076)=0;M2C_FIELD(p,s32 *,0x214)=-1;M2C_FIELD(p,s8 *,0x218)=0;M2C_FIELD(p,s8 *,0x318)=0;return 0;}
 
 /* Reads whatever the server has sent, cuts the receive buffer at each "\final\"
  * terminator and dispatches every message: a message carrying "\id\" runs the
@@ -131,8 +131,8 @@ s32 gpiHandleServerData(void *ctx) {
     void func_02052e18(void *, void *);
     s32 gpiSendBufferedData(void *, s32, void *, s32 *, s32, void *);
     s32 gpiReceiveData(void *, s32, void *, s32 *, s32 *, void *);
-    void func_02058620(void *, s32, void *);
-    void func_02050744(void *, s32, s32);
+    void gpiSetError(void *, s32, void *);
+    void gpiCallErrorCallback(void *, s32, s32);
     u8 *StringFind(void *, void *);
     void gpiLogMessage(void **, void *, ...);
     void *gpiRealloc(void *, s32);
@@ -160,8 +160,8 @@ s32 gpiHandleServerData(void *ctx) {
         result = gpiReceiveData(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1dc, &lineLen, &connectionClosed, gGpiConnTag);
         if (result) {
             if (result != 3) return result;
-            func_02058620(ctx, 5, gGpiMsgRecvError);
-            func_02050744(ctx, 3, 1);
+            gpiSetError(ctx, 5, gGpiMsgRecvError);
+            gpiCallErrorCallback(ctx, 3, 1);
             return 3;
         }
         messageEnd = StringFind(M2C_FIELD(conn, void **, 0x1dc), gGpiKeyFinal);
@@ -205,8 +205,8 @@ s32 gpiHandleServerData(void *ctx) {
             messageEnd = StringFind(M2C_FIELD(conn, void **, 0x1dc), gGpiKeyFinal);
         }
         if (connectionClosed) {
-            func_02058620(ctx, 7, gGpiMsgServerClosed);
-            func_02050744(ctx, 3, 1);
+            gpiSetError(ctx, 7, gGpiMsgServerClosed);
+            gpiCallErrorCallback(ctx, 3, 1);
             return 0;
         }
         again = func_02054520(ctx);

@@ -24,7 +24,7 @@ void func_ov005_0221e5a0(M2C_UNK arg0) {
 
 #pragma opt_strength_reduction off
 void func_ov005_0221e88c(void *arg0) {
-void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
 void *MemAlloc(s32);
 void *func_020e34bc(s32);
 s32 func_020e3218(M2C_UNK *);
@@ -44,7 +44,7 @@ s32 func_ov000_0216cdec(s32,s32);
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain, **g3DSpriteEngineSub, **gCurrentMap;
 void *p, *q; void **saved, **saved2;
 u8 *dst; s32 n; u8 *b; s32 i,j,k,v,t;
-p=func_01ffa42c(data_ov005_02220b70,arg0);
+p=CreateSpriteObject(data_ov005_02220b70,arg0);
 if (!p) return;
 M2C_FIELD(p,void **,0)=data_ov005_02220f54;
 func_0200bc5c(data_ov005_02220a34);
@@ -79,7 +79,7 @@ M2C_FIELD(q,s8 *,10)=-1; M2C_FIELD(q,s8 *,11)=-1;
 M2C_FIELD(q,u8 *,13)=255; M2C_FIELD(q,s8 *,12)=-1;
 M2C_FIELD(q,u8 *,14)=0; M2C_FIELD(q,u8 *,15)=255;
 M2C_FIELD(q,void **,20)=func_020e34bc(0x60);
-func_02007f8c(M2C_FIELD(q,void **,20),0,0x60);
+MI_CpuFill8(M2C_FIELD(q,void **,20),0,0x60);
 }
 M2C_FIELD(p,void **,0x34)=q;
 M2C_FIELD(p,s32 *,0x40)=192; M2C_FIELD(p,s32 *,0x48)=192;
@@ -158,13 +158,13 @@ void func_ov005_0221efac(void) {
 
 void func_ov005_0221efb8(void) {
     M2C_UNK func_0208f780(s32);
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void **gCurrentMap;
     s32 var_r0;
     u16 temp_r1;
 
     var_r0 = 0x10017;
-    if (!(((u32) (data_02168f14 << 0x1D) >> 0x1D) & 0xFF)) {
+    if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
         temp_r1 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         if ((s32) temp_r1 <= 0xB0) {
             if (((s32) temp_r1 < 0xB0) && (temp_r1 != 0xAA)) {
@@ -187,7 +187,7 @@ block_9:
 }
 
 void func_ov005_0221f038(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
     s32 func_02081070(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220a44;
@@ -196,7 +196,7 @@ void func_ov005_0221f038(M2C_UNK arg0) {
     extern M2C_UNK data_ov005_02220fe0;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov005_02220d50, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov005_02220d50, arg0);
     if (temp_r0 == NULL) {
         return;
     }
@@ -338,14 +338,14 @@ void func_ov005_0221f084(void *arg0) {
 void func_ov005_0221f3e8(void *arg0) {
     M2C_UNK func_01ffa6fc();
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     s32 temp_r1;
 
     if (*gKeyState & 0xC0B) {
         func_01ffa6fc();
         return;
     }
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         func_01ffa6fc();
         return;
     }

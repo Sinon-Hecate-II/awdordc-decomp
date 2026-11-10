@@ -281,13 +281,13 @@ void func_ov000_021703e8(void *arg0) {
     void AddSprite(s32, s32, u16, void *, s32);
     M2C_UNK MenuSpriteUpdate(void *);
     s32 func_02001fb4(s32, s32);
-    void func_0208dd7c(s32, s32, s32, s32, u16, s32, s32);
+    void DrawFrameBorder(s32, s32, s32, s32, u16, s32, s32);
     M2C_UNK ScrollListDrawRows(s16);
     M2C_UNK ScrollListScrollUp(void *);
     M2C_UNK ScrollListScrollDown(void *);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
-    extern M2C_UNK data_027e0064;
+    extern M2C_UNK gSpriteDesc16x16;
     extern M2C_UNK gSpriteDesc32x16;
     void *spr;
     void *p;
@@ -375,12 +375,12 @@ void func_ov000_021703e8(void *arg0) {
     t3 = t1 >> 12;
     if (t3 > 0x62) t3 = 0x62;
     else if (t3 < 1) t3 = 1;
-    func_0208dd7c(0xf8, (s16) ((t2 >> 12) + 0x28), 2, (s16) t3,
+    DrawFrameBorder(0xf8, (s16) ((t2 >> 12) + 0x28), 2, (s16) t3,
                   (u16) (0xb000 | ((0x35c >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 0x3ff)),
                   0, 2);
     AddSprite(0x16, 7,
                   (u16) (0xd000 | ((0x3c4 >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 0x3ff)),
-                  &data_027e0064, 0);
+                  &gSpriteDesc16x16, 0);
     AddSprite(0xaa, 0x8b,
                   (u16) (0xc000 | ((0x3bc >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 0x3ff)),
                   &gSpriteDesc32x16, 0);

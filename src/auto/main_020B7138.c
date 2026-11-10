@@ -5,11 +5,11 @@ typedef struct { u8 pad[0x48]; u32 mode:10; u32 duration:11; u32 frame:11; } Fad
 typedef struct { u8 pad[0x44]; u32 tile:16; u32 flags:16; } SpriteTile;
 
 void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    void *func_01ffa42c(M2C_UNK *, s32);
+    void *CreateSpriteObject(M2C_UNK *, s32);
     extern M2C_UNK data_02128da4;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_02128da4, arg5);
+    temp_r0 = CreateSpriteObject(&data_02128da4, arg5);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
@@ -127,11 +127,11 @@ p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=
 void func_020b7724(void *obj) {
 void DrawTileRow(u16,s32,u16,u16,s32);
 void AddSprite(s32,s32,u16,void *,s32);
-extern void *gCur3DSpriteEngine; extern u8 data_027e0064[];
+extern void *gCur3DSpriteEngine; extern u8 gSpriteDesc16x16[];
 s32 size=M2C_FIELD(obj,s32 *,0x34);
 DrawTileRow((u16)((256-size)/2),0x58,(u16)size,(u16)(0xd000|((0x39c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),11);
-AddSprite(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
-AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
+AddSprite(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),gSpriteDesc16x16,11);
+AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),gSpriteDesc16x16,11);
 }
 
 void func_020b7824(void *arg0) {
@@ -147,12 +147,12 @@ void func_020b7824(void *arg0) {
 void func_020b7860(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     if (*gKeyState & 0xC0B) {
         func_01ffa6fc(arg0);
         return;
     }
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return;
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
     func_01ffa6fc(arg0);
 }
 

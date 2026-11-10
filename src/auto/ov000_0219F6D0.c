@@ -23,7 +23,7 @@ s32 func_ov000_0219f728(void) {
     s32 IsPlayerHuman(u16);
     void func_020cf5ec(s32);
     s32 func_020cd674(void);
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void **gCurrentMap;
     extern u8 gAiCommand[];
     extern void *data_ov000_021df580;
@@ -39,7 +39,7 @@ s32 func_ov000_0219f728(void) {
     s32 visible;
     s32 limit = 0x1e;
 
-    if ((((u32)(data_02168f14 << 22)) >> 31) == 0) {
+    if ((((u32)(gMapConfig << 22)) >> 31) == 0) {
         if (IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a4)) != 0) {
             if ((u8)(gAiCommand[0] + 0xfc) <= 1) {
                 M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;

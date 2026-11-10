@@ -183,9 +183,9 @@ s32 func_ov001_021897ec(s32 arg0) {
 }
 
 M2C_UNK func_ov001_02189828(void) {
- extern void *data_ov001_02193e28; void func_02007f8c(void*,s32,s32); void *p;
- func_02007f8c((u8*)data_ov001_02193e28+0x100,0,0x100);
- func_02007f8c(data_ov001_02193e28,0,0x100);
+ extern void *data_ov001_02193e28; void MI_CpuFill8(void*,s32,s32); void *p;
+ MI_CpuFill8((u8*)data_ov001_02193e28+0x100,0,0x100);
+ MI_CpuFill8(data_ov001_02193e28,0,0x100);
  p=data_ov001_02193e28;
  M2C_FIELD(p,void**,0xAB0)=p;
  return (s32)p;
@@ -275,7 +275,7 @@ u16 func_ov001_02189ab8(void) {
 
 void func_ov001_02189ad0(void) {
     s32 func_ov001_0218b6f8(s32, s32);
-    void func_0200b774(void *);
+    void InitFileRequest(void *);
     s32 func_0200ba54(void *, void *);
     void func_02007958(void);
     s32 func_0200558c(void);
@@ -305,7 +305,7 @@ void func_ov001_02189ad0(void) {
     s32 size;
 
     data_ov001_02193e2c = (void *)func_ov001_0218b6f8(0xE8, 4);
-    func_0200b774(file);
+    InitFileRequest(file);
     if (!func_0200ba54(file, data_ov001_02191794)) {
         func_02007958();
     }
@@ -388,11 +388,11 @@ s32 func_ov001_02189dc0(void) {
 }
 
 void *func_ov001_02189dc8(void *arg0,u32 *arg1,s32 arg2){
-s32 func_ov001_0218a74c(s32);void func_0200b774(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void func_0200bbe0(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
+s32 func_ov001_0218a74c(s32);void InitFileRequest(void *);s32 func_0200ba54(void *,void *);void func_02007958(void);void func_0200bbe0(void *,void *,s32);void func_0200ba9c(void *);void func_020081d0(void *,void *);void func_ov001_0218b71c(void *);s32 func_ov001_0218b6f8(s32,s32);
 extern void *data_ov001_02193e2c;extern s32 data_ov001_021917bc;
 void *buf;u32 work[18];u32 size;s32 align;void *out;
 func_ov001_0218a74c(M2C_FIELD(data_ov001_02193e2c,s32*,0x84));
-func_0200b774(work);if(!func_0200ba54(work,arg0))func_02007958();
+InitFileRequest(work);if(!func_0200ba54(work,arg0))func_02007958();
 size=work[10]-work[9];if(arg1)*arg1=size;
 if(func_ov001_02189ef0(arg0,(s32)&data_ov001_021917bc,2))align=-4;else align=arg2;
 buf=(void *)func_ov001_0218b6f8(size,align);

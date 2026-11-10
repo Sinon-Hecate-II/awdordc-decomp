@@ -60,7 +60,7 @@ void SelectCarriedUnitAction(void) {
  * returns 0 when no such tile exists. */
 s32 FindAdjacentPassableTile(s32 x,s32 y,s16 *out) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 s32 func_ov000_021a9084(s32); s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
 s32 row; s32 negDy,minX,maxY;
 register s32 unitId,dy,col,rowIndex,maxX;
@@ -97,7 +97,7 @@ if(!IsCurrentPlayerUnit((s16)unitId))goto next;
 
 base=*gCurrentMap;
 kind=(u32)(M2C_FIELD(base+unitId*MAP_UNIT_STRIDE,u8*,MAP_UNIT_RECORDS)<<26)>>26;
-if((data_ov000_021b5bfc[kind*112+19]&7)||GetUnitAttackClass(kind)==1)goto next;
+if((gUnitKindStats[kind*112+19]&7)||GetUnitAttackClass(kind)==1)goto next;
 }
 {
 if(out[0]==0x270f||M2C_FIELD(M2C_FIELD(*gCurrentMap+rowIndex*4,s8**,MAP_GRID),s8*,col)<=M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8**,MAP_GRID),s8*,out[0])){
@@ -119,7 +119,7 @@ if(out[0]==0x270f)return 0;return 1;
 s32 func_ov000_02189248(u8 *arg0,s16 *out) {
 extern void **gCurrentMap;
 extern u8 *data_ov000_021df580;
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
 s32 func_ov000_021a9084(s32); s32 func_ov000_021a9d8c(s16,s16);
@@ -155,7 +155,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
     if(IsCurrentPlayerUnit(id)){
      map=*gCurrentMap;
      kind=(u32)(M2C_FIELD((u8*)map+id*14,u8*,0x59a4)<<26)>>26;
-     if((data_ov000_021b5bfc[kind*112+19]&7)==0&&GetUnitAttackClass(kind)!=1){
+     if((gUnitKindStats[kind*112+19]&7)==0&&GetUnitAttackClass(kind)!=1){
       if(M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x]<=bestCost){
        bestY=sy;bestX=x;
        bestCost=M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x];
@@ -168,7 +168,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
     if(terrain==0x13||terrain==0x15){
      selp=M2C_FIELD(map,u8**,0x52d0);
      kind=(u32)(selp[0]<<26)>>26;
-     if((s32)M2C_FIELD(data_ov000_021b5bfc+kind*112,u8*,0xe)>(s32)(((u32)(M2C_FIELD(selp,u8*,0xa)<<25)>>25))+0x14){
+     if((s32)M2C_FIELD(gUnitKindStats+kind*112,u8*,0xe)>(s32)(((u32)(M2C_FIELD(selp,u8*,0xa)<<25)>>25))+0x14){
       if(M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x]<=bestScore){
        out[0]=(s16)x;out[1]=sy;
        bestScore=M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x];

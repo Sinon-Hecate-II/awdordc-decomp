@@ -376,10 +376,10 @@ s32 func_ov004_02214580(void) {
 
 s32 func_ov004_022145f0(s8 *a) {
 extern void **gCurrentMap;
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 s32 n=0;
 while(a[n]>=0)n++;
-return a[func_0207c928(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)-1,n)];
+return a[Modulo(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)-1,n)];
 }
 
 void func_ov004_02214640(void) {

@@ -23,7 +23,7 @@ void func_ov000_02189a08(void) {
 
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
 
     register s32 bestX asm("r4") = -1;
     register s32 bestY asm("r5") = -1;
@@ -119,7 +119,7 @@ void func_ov000_02189a08(void) {
                                 if (terrain == 0x13) {
                                     sel2 = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
                                     selType = (u32)(sel2[0] << 26) >> 26;
-                                    info = data_ov000_021b5bfc + selType * 0x70;
+                                    info = gUnitKindStats + selType * 0x70;
                                     infoVal = info[0x0e];
                                     moveLimit = sel2[0x0a] + 0x14;
                                     if (infoVal > moveLimit) {
@@ -240,7 +240,7 @@ s32 func_ov000_0218a140(u8 arg0) {
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     s32 count = 0;
     s32 i;
     u16 start = gPlayerUnitIdBase[arg0];
@@ -249,7 +249,7 @@ s32 func_ov000_0218a140(u8 arg0) {
         UnkStruct_ov000_02189A08 *entry = &((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap + 0x59A4))[i];
         u32 type = entry->unk0;
         if (type != 0 && !(entry->unk4 & 8) && IsFootUnitKind(type) == 0) {
-            u8 *info = data_ov000_021b5bfc + entry->unk0 * 0x70;
+            u8 *info = gUnitKindStats + entry->unk0 * 0x70;
             if ((info[0x13] & 7) && info[0xc] != 0 && ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[entry->unk2][entry->unk1] != -1) {
                 count++;
             }
@@ -296,7 +296,7 @@ s32 func_ov000_0218a294(void) {
 
 s32 func_ov000_0218a2f8(void){
 s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 count=0,p,end,i;
 for(p=1;p<5;p++){
 if(IsPlayerActive(p)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)!=1){
@@ -305,19 +305,19 @@ i=start+1;end=start+0x33;
 for(;i<end;i++){
 UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+0x59a4))[i];
 u32 type=entry->unk0;
-if(type!=0 && !(entry->unk4&8) && (data_ov000_021b5bfc[type*0x70+0x13]&7) && ((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1)count++;
+if(type!=0 && !(entry->unk4&8) && (gUnitKindStats[type*0x70+0x13]&7) && ((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1)count++;
 }}}return count;}
 
 s32 func_ov000_0218a3fc(void){
 s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);s32 IsFootUnitKind(u32);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 p,i;
 for(p=1;p<5;p++){
 if(IsPlayerActive(p)!=0){
 for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+0x33;i++){
 UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+0x59a4))[i];
 u32 type=entry->unk0;
-if(type!=0&&(data_ov000_021b5bfc[type*112+0x13]&7)&&((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1){
+if(type!=0&&(gUnitKindStats[type*112+0x13]&7)&&((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1){
 if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)==0){
 if(IsFootUnitKind(entry->unk0)==0)goto success;
 goto next;
@@ -405,7 +405,7 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c0f[];
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     s32 val;
     s32 d1;
     u32 type;
@@ -435,7 +435,7 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             entry = &((UnkStruct_ov000_02189A08 *)((u8 *)map + 0x59A4))[i];
             type = entry->unk0;
             if (type != 0 && entry != (UnkStruct_ov000_02189A08 *)M2C_FIELD(map, void **, 0x52D0) && !(entry->unk4 & 0x8)) {
-                u8 *info = data_ov000_021b5bfc + type * 0x70;
+                u8 *info = gUnitKindStats + type * 0x70;
                 u8 attr = info[0x13];
                 if ((savedAttr & attr) && !(entry->unk4 & 0x1)) {
                     d1 = ManhattanDistance(x, y, entry->unk1, entry->unk2);

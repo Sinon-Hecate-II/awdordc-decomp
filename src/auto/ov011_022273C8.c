@@ -206,11 +206,11 @@ void func_ov011_022273c8(void *arg0) {
 }
 #pragma opt_instruction_scheduling reset
 void func_ov011_02227e88(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) <= 0x2A80U) {
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_ov011_02227ea4(M2C_UNK arg0) {
@@ -225,10 +225,10 @@ void func_ov011_02227ea4(M2C_UNK arg0) {
 }
 
 void func_ov011_02227ecc(M2C_UNK arg0) {
-    s32 func_01ffa42c(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_ov011_02225684();
     extern M2C_UNK data_ov011_02228a78;
-    if (func_01ffa42c(&data_ov011_02228a78, arg0) == 0) {
+    if (CreateSpriteObject(&data_ov011_02228a78, arg0) == 0) {
         return;
     }
     func_ov011_02225684();

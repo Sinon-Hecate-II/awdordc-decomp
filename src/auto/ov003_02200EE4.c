@@ -42,7 +42,7 @@ s32 func_ov003_021ea294();
 s32 func_ov003_022005e4();
 s32 func_ov003_022023fc();
 s32 func_01ff9dd8();
-s32 func_0207c928();
+s32 Modulo();
 s32 func_ov003_02202408();
 s32 func_ov003_022004f0();
 s32 func_020a22fc();
@@ -55,7 +55,7 @@ u8 func_ov003_02201500(void *);
 u8 func_ov003_0220151c(void *);
 void func_ov003_0220153c(s32,s32,s32,s32,u8);
 void func_ov003_02201620(void *,s32);
-void func_ov003_02201c78(void *,s32);
+void CreatePanelSprites(void *,s32);
 void func_02088da8(void *);
 extern u8 data_ov003_02210456[];
 extern u8 data_ov003_02210454[];
@@ -105,7 +105,7 @@ func_ov003_0220153c(0,0,1,1,1);
 func_01ff9b38();func_ov003_021ea2ac();
 func_ov003_021e9830(M2C_FIELD(p,void**,0x48),-32);
 func_ov003_02201620(M2C_FIELD(p,void**,0x44),p);
-func_ov003_02201c78(M2C_FIELD(p,void**,0x40),p);
+CreatePanelSprites(M2C_FIELD(p,void**,0x40),p);
 if(func_ov003_02201500(p))func_ov003_02201e88(M2C_FIELD(p,void**,0x50),p);
 M2C_FIELD(p,void**,0x4c)=func_020896f0(p);
 func_020893f4(M2C_FIELD(p,void**,0x4c),0x2d80,1);
@@ -153,7 +153,7 @@ func_ov003_022005e4(3,2,func_ov003_022023fc(p));
 func_ov003_021ea134(3);
 func_01ff9dd8(0);func_01ff9dd8(1);func_01ff9ce8(0);func_01ff9ce8(1);
 for(i=0;i<(u32)func_ov003_022023fc(p);i++){
-if(func_0207c928(i,2)==0)side=0;else side=1;
+if(Modulo(i,2)==0)side=0;else side=1;
 side2=(u8)side;
 if(i<2)offset=0;else offset=func_ov003_02202408((u16)func_ov003_022004f0(2));
 character=func_020a22fc(i+1);
@@ -213,7 +213,7 @@ reg4 = *gCur3DSpriteEngine; *reg4 = (*reg4 & ~256) | ((u32)(flag4 << 31) >> 23);
 
 void func_ov003_02201620(void *arg0, s32 arg1) {
     void *MemAlloc(s32);
-    s32 func_0207c928(s32, s32);
+    s32 Modulo(s32, s32);
     s32 func_0207c8ec(s32, s32);
     void *func_020ab1c4(s32);
     void func_020aab24(void *, s32, s32, s32, s32);
@@ -325,7 +325,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
             } else {
                 M2C_FIELD(cell, s32 *, 0xc) = M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10) ? M2C_FIELD(cell, s32 *, 0x10) : (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14) ? M2C_FIELD(cell, s32 *, 0x14) : M2C_FIELD(cell, s32 *, 0xc));
             }
-            r6 = (s16)(func_0207c928(i, 4) * 64 + 4);
+            r6 = (s16)(Modulo(i, 4) * 64 + 4);
             r5 = (s16)(func_0207c8ec(i, 4) * 0x48 + 0x38);
             r11 = 0x38;
             r10 = 0x10;
@@ -399,7 +399,9 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
 
 #pragma push
 #pragma opt_propagation on
-void func_ov003_02201c78(void *arg0, s32 arg1) {
+/* Creates the versus-setup panel's two backdrop sprites and the eight pairs of
+ * slot sprites (selection frame and icon) on the screen's sprite list. */
+void CreatePanelSprites(void *panel, s32 screen) {
     void *func_02087d84(void *, s32, s16, s16, s32, s32);
     void func_02088da8(void *);
     void func_02088e84(void *, s32, s32, s32, s32);
@@ -407,81 +409,81 @@ void func_ov003_02201c78(void *arg0, s32 arg1) {
     u16 func_020aae10(void *);
     u16 func_020aae44(void *);
     void *func_020ab1c4(s32);
-    void *temp_r4;
-    s16 temp_r5;
-    s16 temp_r6;
-    u16 temp_r7;
-    s32 temp_r0;
-    s32 var_r0;
-    void *temp_r4_2;
-    s16 temp_r5_2;
-    s16 temp_r6_2;
-    u16 temp_r7_2;
-    s32 temp_r0_2;
-    s32 var_r0_2;
-    s32 zero4;
-    s32 three;
-    s32 val15c;
-    s32 eight;
-    s32 zero7;
-    u8 var_r8;
-    void *temp_r1;
-    void *temp_r0ptr;
+    void *sprite;
+    s16 spriteY;
+    s16 spriteX;
+    u16 width;
+    s32 height;
+    s32 hasFrame;
+    void *sprite2;
+    s16 spriteY2;
+    s16 spriteX2;
+    u16 width2;
+    s32 height2;
+    s32 hasFrame2;
+    s32 constZeroA;
+    s32 constLayer;
+    s32 constTile;
+    s32 constStyle;
+    s32 constZeroB;
+    u8 slot;
+    void *slotBase;
+    void *newSprite;
 
-    M2C_FIELD(arg0, void **, 0) = func_020ab1c4(arg1);
-    func_020aab24(M2C_FIELD(arg0, void **, 0), 2, 0x14C, 3, 1);
-    temp_r4 = M2C_FIELD(arg0, void **, 0);
-    func_02088e84(temp_r4, 0xE0, 0xA0, 0xE0, 0xC0);
-    if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x64), u8 *, 0x12) != 0) {
-        var_r0 = 1;
+    M2C_FIELD(panel, void **, 0) = func_020ab1c4(screen);
+    func_020aab24(M2C_FIELD(panel, void **, 0), 2, 0x14C, 3, 1);
+    sprite = M2C_FIELD(panel, void **, 0);
+    func_02088e84(sprite, 0xE0, 0xA0, 0xE0, 0xC0);
+    if (M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12) != 0) {
+        hasFrame = 1;
     } else {
-        var_r0 = 0;
+        hasFrame = 0;
     }
-    if (var_r0 & 0xFF) {
-        temp_r5 = M2C_FIELD(temp_r4, s16 *, 0x52);
-        temp_r6 = M2C_FIELD(temp_r4, s16 *, 0x50);
-        temp_r7 = func_020aae10(temp_r4);
-        temp_r0 = func_020aae44(temp_r4);
-        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5,
-                      (s32)((u32)temp_r7 << 16 >> 16), (s32)((u32)temp_r0 << 16 >> 16));
+    if (hasFrame & 0xFF) {
+        spriteY = M2C_FIELD(sprite, s16 *, 0x52);
+        spriteX = M2C_FIELD(sprite, s16 *, 0x50);
+        width = func_020aae10(sprite);
+        height = func_020aae44(sprite);
+        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, spriteX, spriteY,
+                      (s32)((u32)width << 16 >> 16), (s32)((u32)height << 16 >> 16));
     }
-    func_02088da8(M2C_FIELD(arg0, void **, 0));
-    M2C_FIELD(arg0, void **, 4) = func_020ab1c4(arg1);
-    func_020aab24(M2C_FIELD(arg0, void **, 4), 0x20, 0x140, 3, 0);
-    temp_r4_2 = M2C_FIELD(arg0, void **, 4);
-    func_02088e84(temp_r4_2, 0x70, 0xA4, 0x70, 0xC0);
-    if (M2C_FIELD(M2C_FIELD(temp_r4_2, void **, 0x64), u8 *, 0x12) != 0) {
-        var_r0_2 = 1;
+    func_02088da8(M2C_FIELD(panel, void **, 0));
+    M2C_FIELD(panel, void **, 4) = func_020ab1c4(screen);
+    func_020aab24(M2C_FIELD(panel, void **, 4), 0x20, 0x140, 3, 0);
+    sprite2 = M2C_FIELD(panel, void **, 4);
+    func_02088e84(sprite2, 0x70, 0xA4, 0x70, 0xC0);
+    if (M2C_FIELD(M2C_FIELD(sprite2, void **, 0x64), u8 *, 0x12) != 0) {
+        hasFrame2 = 1;
     } else {
-        var_r0_2 = 0;
+        hasFrame2 = 0;
     }
-    if (var_r0_2 & 0xFF) {
-        temp_r5_2 = M2C_FIELD(temp_r4_2, s16 *, 0x52);
-        temp_r6_2 = M2C_FIELD(temp_r4_2, s16 *, 0x50);
-        temp_r7_2 = func_020aae10(temp_r4_2);
-        temp_r0_2 = func_020aae44(temp_r4_2);
-        func_02087d84(M2C_FIELD(temp_r4_2, void **, 0x64), 1, temp_r6_2, temp_r5_2,
-                      (s32)((u32)temp_r7_2 << 16 >> 16), (s32)((u32)temp_r0_2 << 16 >> 16));
+    if (hasFrame2 & 0xFF) {
+        spriteY2 = M2C_FIELD(sprite2, s16 *, 0x52);
+        spriteX2 = M2C_FIELD(sprite2, s16 *, 0x50);
+        width2 = func_020aae10(sprite2);
+        height2 = func_020aae44(sprite2);
+        func_02087d84(M2C_FIELD(sprite2, void **, 0x64), 1, spriteX2, spriteY2,
+                      (s32)((u32)width2 << 16 >> 16), (s32)((u32)height2 << 16 >> 16));
     }
-    func_02088da8(M2C_FIELD(arg0, void **, 4));
+    func_02088da8(M2C_FIELD(panel, void **, 4));
 
-    var_r8 = 0;
-    zero7 = var_r8;
-    eight = 8;
-    val15c = 0x15C;
-    three = 3;
-    zero4 = var_r8;
+    slot = 0;
+    constZeroB = slot;
+    constStyle = 8;
+    constTile = 0x15C;
+    constLayer = 3;
+    constZeroA = slot;
     do {
-        temp_r0ptr = func_020ab1c4(arg1);
-        temp_r1 = (void *)((u8 *)arg0 + (var_r8 * 4));
-        M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8) = temp_r0ptr;
-        func_020aab24(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8), eight, val15c, three, zero7);
-        func_02088da8(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 8));
-        temp_r0ptr = func_020ab1c4(arg1);
-        M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28) = temp_r0ptr;
-        func_020aab24(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28), 9, 0x164, 3, zero4);
-        func_02088da8(M2C_FIELD((u8 *)arg0 + var_r8 * 4, void **, 0x28));
-        var_r8 += 1;
-    } while ((u32)var_r8 < 8U);
+        newSprite = func_020ab1c4(screen);
+        slotBase = (void *)((u8 *)panel + (slot * 4));
+        M2C_FIELD((u8 *)panel + slot * 4, void **, 8) = newSprite;
+        func_020aab24(M2C_FIELD((u8 *)panel + slot * 4, void **, 8), constStyle, constTile, constLayer, constZeroB);
+        func_02088da8(M2C_FIELD((u8 *)panel + slot * 4, void **, 8));
+        newSprite = func_020ab1c4(screen);
+        M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28) = newSprite;
+        func_020aab24(M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28), 9, 0x164, 3, constZeroA);
+        func_02088da8(M2C_FIELD((u8 *)panel + slot * 4, void **, 0x28));
+        slot += 1;
+    } while ((u32)slot < 8U);
 }
 #pragma pop

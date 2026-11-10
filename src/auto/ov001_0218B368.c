@@ -98,9 +98,9 @@ void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
 }
 
 void func_ov001_0218b648(s32 a){
-M2C_UNK func_02007f8c(s32,M2C_UNK,M2C_UNK);
+M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
 s32 func_0202a424(s32,s32,s32);void func_02007958(void);extern s32 data_ov001_02193e44;
-func_02007f8c(a,0,0x40000);data_ov001_02193e44=func_0202a424(a,0x40000,0);
+MI_CpuFill8(a,0,0x40000);data_ov001_02193e44=func_0202a424(a,0x40000,0);
 if(data_ov001_02193e44==0)func_02007958();
 }
 
@@ -118,12 +118,12 @@ if(!result)func_02007958();func_020051c8(saved);return result;
 }
 
 s32 func_ov001_0218b6f8(M2C_UNK arg0) {
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     s32 func_ov001_0218b6ac();
     s32 temp_r0;
 
     temp_r0 = func_ov001_0218b6ac();
-    func_02007f8c(temp_r0, 0, arg0);
+    MI_CpuFill8(temp_r0, 0, arg0);
     return temp_r0;
 }
 
@@ -267,7 +267,7 @@ s32 KeyReleased(s32 a) {
     return a == t;
 }
 
-s32 func_ov001_0218bb6c(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);
+s32 TouchRectReleased(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);
 if(M2C_FIELD(p,TouchFlags *,0x38).active==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;

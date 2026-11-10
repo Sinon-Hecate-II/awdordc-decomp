@@ -47,13 +47,13 @@ s32 func_ov010_02224138(s32 arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 s32 func_ov010_0222415c(void *p){
 extern M2C_UNK data_ov010_0222d8b4,data_ov010_0222d8f0,data_ov010_0222d8d8,gLinkConfig;
-void func_02007f8c(void*,s32,u32);u64 func_02007004(void);
+void MI_CpuFill8(void*,s32,u32);u64 GetSystemTick(void);
 u32 i,offset;void *pool=M2C_FIELD(p,void**,0);
 if(!pool||!M2C_FIELD(p,u32*,4)||M2C_FIELD(p,u32*,4)>8)return 0;
 M2C_FIELD(&data_ov010_0222d8b4,void**,16)=M2C_FIELD(p,void**,0);
-func_02007f8c(pool,0,M2C_FIELD(p,u32*,4)*24);
-func_02007f8c(&data_ov010_0222d8f0,0,24);
-func_02007f8c(&data_ov010_0222d8d8,0,24);
+MI_CpuFill8(pool,0,M2C_FIELD(p,u32*,4)*24);
+MI_CpuFill8(&data_ov010_0222d8f0,0,24);
+MI_CpuFill8(&data_ov010_0222d8d8,0,24);
 i=0;
 if(M2C_FIELD(p,u32*,4)-1){offset=0;do{
 M2C_FIELD(M2C_FIELD(&data_ov010_0222d8b4,u8**,16)+offset,void**,20)=M2C_FIELD(&data_ov010_0222d8b4,u8**,16)+ (++i)*24;
@@ -64,7 +64,7 @@ M2C_FIELD(&data_ov010_0222d8b4,s32*,20)=0;
 M2C_FIELD(&data_ov010_0222d8b4,s32*,4)=0;
 M2C_FIELD(&data_ov010_0222d8b4,s32*,0)=0;
 M2C_FIELD(&gLinkConfig,s32*,20)=0;
-M2C_FIELD(&data_ov010_0222d8b4,u64(**)(void),24)=func_02007004;
+M2C_FIELD(&data_ov010_0222d8b4,u64(**)(void),24)=GetSystemTick;
 M2C_FIELD(&data_ov010_0222d8b4,u32*,28)=0x5d588b65;
 M2C_FIELD(&data_ov010_0222d8b4,u32*,32)=0x269ec3;
 return 1;
@@ -77,7 +77,7 @@ void func_ov010_02224270(void) {
 }
 
 void func_ov010_02224288(void) {
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     M2C_UNK func_ov010_0222458c(s32);
     extern M2C_UNK gLinkConfig;
     extern M2C_UNK data_ov010_0222d8b4;
@@ -86,7 +86,7 @@ void func_ov010_02224288(void) {
     u64 now;
     u64 last;
 
-    now = func_02007004();
+    now = GetSystemTick();
     if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) != 2) {
         return;
     }
@@ -329,7 +329,7 @@ return M2C_FIELD(b,s32*,0)!=0;
 
 s32 func_ov010_02224ab0(void *arg0,M2C_UNK out) {
 extern s32 data_ov010_0222d8b4,data_ov010_0222d8f0;
-u64 func_02007004(void);
+u64 GetSystemTick(void);
 s32 n;u32 mask; u8 *p=arg0;
 if(M2C_FIELD(&data_ov010_0222d8b4,s32 *,0x3c)==2){
 if(M2C_FIELD(&data_ov010_0222d8b4,u8 *,0x40)==p[8]){
@@ -351,7 +351,7 @@ M2C_FIELD(out,s32 *,0)=func_ov010_02224654(p,(u8 *)&data_ov010_0222d8f0);
 M2C_FIELD(out,void **,4)=&data_ov010_0222d8f0;
 M2C_FIELD(&data_ov010_0222d8f0,s32 *,12)=n;
 }
-if(M2C_FIELD(out,s32 *,0)==10){func_ov010_0222458c(1);M2C_FIELD(&data_ov010_0222d8b4,u64 *,8)=func_02007004();}
+if(M2C_FIELD(out,s32 *,0)==10){func_ov010_0222458c(1);M2C_FIELD(&data_ov010_0222d8b4,u64 *,8)=GetSystemTick();}
 else{func_ov010_0222458c(0);M2C_FIELD(&data_ov010_0222d8b4,u64 *,8)=0;}
 return 1;
 }

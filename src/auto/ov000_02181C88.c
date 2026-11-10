@@ -4,7 +4,7 @@
 s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
 void FillMapLayer(s8);
 s32 func_01ffb9c4(s8);
-void func_02007f8c(void *, s32, s32);
+void MI_CpuFill8(void *, s32, s32);
 s32 func_0207c8ec(s32, s32);
 s32 func_020a85c8(u32);
 s32 func_020a85dc(u32);
@@ -27,7 +27,7 @@ extern u8 data_ov000_021dfb04;
 extern u8 data_ov000_021dfba8;
 extern u8 data_ov000_021dfc4c;
 extern u8 data_ov000_021dfcf0;
-extern u8 data_ov000_021e0f60;
+extern u8 gAiRangeLayer;
 typedef struct { u8 kind:6; u8 flags:2; } Unk02181C88Kind;
 static inline s32 Unk02181C88Index(s8 *unit) { if(unit==0)return 0; return (s32)(unit-(*gCurrentMap+0x59A4))/14; }
 static inline s32 Unk02181C88Owner(s8 *unit) { if(unit!=0)return (Unk02181C88Index(unit)>>6)+1;return 0; }
@@ -273,14 +273,14 @@ void func_ov000_02181c88(void) {
     s8 *temp_r8;
     s8 *var_r9_4;
     
-    func_02007f8c(&data_ov000_021dfcf0, 0, 0xA1);
-    func_02007f8c(&data_ov000_021dfba8, 0, 0xA1);
-    func_02007f8c(&data_ov000_021df918, 0, 0xA1);
-    func_02007f8c(&data_ov000_021dfb04, 0, 0xA1);
-    func_02007f8c(&data_ov000_021dfa60, 0, 0xA1);
-    func_02007f8c(&data_ov000_021df9bc, 0, 0xA1);
-    func_02007f8c(&data_ov000_021dfc4c, 0, 0xA1);
-    func_02007f8c(&data_ov000_021e0f60, 0, 0x508);
+    MI_CpuFill8(&data_ov000_021dfcf0, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021dfba8, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021df918, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021dfb04, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021dfa60, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021df9bc, 0, 0xA1);
+    MI_CpuFill8(&data_ov000_021dfc4c, 0, 0xA1);
+    MI_CpuFill8(&gAiRangeLayer, 0, 0x508);
     func_020d0164(*gCurrentMap + 0x2338, 0);
     func_ov000_0219c508(*gCurrentMap + 0x2840, 0);
     func_ov000_0219c508(*gCurrentMap + 0x2D48, 0);
@@ -333,12 +333,12 @@ void func_ov000_02181c88(void) {
                     var_r7 = *gCurrentMap;
                     var_r1 = (u32) M2C_FIELD(var_r7, u16 *, 0x5146);
                     if ((s32) var_r1 > 0) {
-                        var_r1 = (u32) &data_ov000_021e0f60;
+                        var_r1 = (u32) &gAiRangeLayer;
                         do {
                             var_r8 = M2C_FIELD(var_r7, u16 *, 0x5144);
                             var_r9 = 0;
                             if ((s32) var_r8 > 0) {
-                                var_r6_3 = (s8 *)&data_ov000_021e0f60;
+                                var_r6_3 = (s8 *)&gAiRangeLayer;
                                 do {
                                     if ((s32) M2C_FIELD((M2C_FIELD((var_r7 + (var_r3_2 * 4)), s32 *, 0x52E8) + var_r9), s8 *, 0) >= 0) {
                                         if (temp_r4 >= 0x28) {
@@ -442,12 +442,12 @@ void func_ov000_02181c88(void) {
                     var_r7_2 = *gCurrentMap;
                     var_r1 = (u32) M2C_FIELD(var_r7_2, u16 *, 0x5146);
                     if ((s32) var_r1 > 0) {
-                        var_r1 = (u32) &data_ov000_021e0f60;
+                        var_r1 = (u32) &gAiRangeLayer;
                         do {
                             var_r8_2 = M2C_FIELD(var_r7_2, u16 *, 0x5144);
                             var_r9_3 = 0;
                             if ((s32) var_r8_2 > 0) {
-                                var_r6_5 = (u32) &data_ov000_021e0f60;
+                                var_r6_5 = (u32) &gAiRangeLayer;
                                 do {
                                     if ((s32) M2C_FIELD((M2C_FIELD((var_r7_2 + (var_r3_6 * 4)), s32 *, 0x52E8) + var_r9_3), s8 *, 0) >= 0) {
                                         if (temp_r4 >= 0x28) {
@@ -618,7 +618,7 @@ void func_ov000_02181c88(void) {
                         var_r1 = (u32) sp24;
                         var_r6_7 = var_r1;
                         if ((s32) var_r1 <= sp20) {
-                            var_r9_4 = &data_ov000_021e0f60 + var_r6_7;
+                            var_r9_4 = &gAiRangeLayer + var_r6_7;
                             do {
                                 temp_r0_4 = M2C_FIELD(temp_r8, u8 *, 0x1);
                                 var_r1_2 = temp_r0_4 - var_r6_7;
@@ -853,7 +853,7 @@ void func_ov000_02181c88(void) {
                                 var_r0_27 = 0;
                                 var_r9_5 = M2C_FIELD((*gCurrentMap), u16 *, 0x5144);
                                 if ((s32) var_r9_5 > 0) {
-                                    var_r2_5 = &data_ov000_021e0f60;
+                                    var_r2_5 = &gAiRangeLayer;
                                     do {
                                         if ((s32) M2C_FIELD((M2C_FIELD((*gCurrentMap + (var_r1_4 * 4)), s32 *, 0x52E8) + var_r0_27), s8 *, 0) >= 0) {
                                             temp_r8_8 = var_r1_4 * var_r9_5;
@@ -1045,7 +1045,7 @@ void func_ov000_02181c88(void) {
         var_r0_33 = *sp28;
         var_r5_3 = M2C_FIELD(var_r0_33, u16 *, 0x5144);
         if ((s32) var_r5_3 > 0) {
-            sp30 = &data_ov000_021e0f60;
+            sp30 = &gAiRangeLayer;
             do {
                 var_r9_8 = 0;
                 sp50 = var_r0_33 + var_r2_9;

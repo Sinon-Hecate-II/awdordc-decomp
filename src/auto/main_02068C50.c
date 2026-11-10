@@ -65,7 +65,7 @@ if(x==0) break;
 return 0;
 }
 
-s8 *func_02068ee0(s8 *a,s32 b) {
+s8 *StringFindChar(s8 *a,s32 b) {
 s8 c=*a++;
 b=(s8)b;
 while(c!=0) {

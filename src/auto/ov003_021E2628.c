@@ -1,6 +1,6 @@
 /* 1 function from 0x021E2628 to 0x021E3500 (ov003), found by ds-decomp. */
 #include "common.h"
-extern u8 *data_02101e88;extern u16 *gKeyState;
+extern u8 *gTouchState;extern u16 *gKeyState;
 s32 func_020d4810(void);void func_02088da8(void*);void func_ov003_021f140c(s32);void func_01ffa6fc(void*);void func_ov003_021f1bd4(void);
 void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
 void *func_0208b564(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
@@ -46,7 +46,7 @@ case 2:if(p[0x39])func_02088da8(M2C_FIELD(p,void**,0x4c));func_ov003_021f140c(2)
 }
 }
 func_ov003_021f1bd4();if(((HandlerFlags*)(p+0x60))->pending)return;
-busy=data_02101e88[0x12];keys=gKeyState[0];repeat=gKeyState[1];
+busy=gTouchState[0x12];keys=gKeyState[0];repeat=gKeyState[1];
 menu=M2C_FIELD(p,void**,0x44);allowed=1;MenuSpriteUpdate(M2C_FIELD(menu,void**,0));MenuSpriteUpdate(M2C_FIELD(menu,void**,4));
 sprite=M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0);
 clicked=Clicked(sprite);if(clicked){PressButton(sprite);if(Available(p)){PlaySoundEffect(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}

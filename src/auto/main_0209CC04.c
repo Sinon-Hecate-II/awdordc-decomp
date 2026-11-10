@@ -214,8 +214,8 @@ s32 func_0209cf60(void *arg0) {
 }
 
 s32 func_0209cf8c(void *arg0) {
-    M2C_UNK func_01ffa42c(s32, void *);
-    func_01ffa42c(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
+    M2C_UNK CreateSpriteObject(s32, void *);
+    CreateSpriteObject(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 0;
 }
@@ -260,8 +260,8 @@ s32 func_0209d020(void *arg0) {
 }
 
 s32 func_0209d05c(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, s16);
-    func_01ffa8c4(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+    M2C_UNK SetSpriteAnimation(void *, s16);
+    SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     return 1;
 }
 
@@ -269,7 +269,7 @@ s32 func_0209d074(void *arg0) {
     s32 (*func)(void *);
     func = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 (**)(void *), 4);
     if (func == NULL || func(arg0) != 0) {
-        func_01ffa8c4(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+        SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     } else {
         M2C_FIELD(arg0, void **, 8) += 8;
     }
@@ -280,7 +280,7 @@ s32 func_0209d0c0(void *arg0) {
     s32 (*func)(void *);
     func = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 (**)(void *), 4);
     if (func == NULL || func(arg0) == 0) {
-        func_01ffa8c4(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+        SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     } else {
         M2C_FIELD(arg0, void **, 8) += 8;
     }
@@ -316,13 +316,13 @@ s32 func_0209d148(void *arg0) {
 void func_0209d178(void *arg0) {
     void func_01ffa6fc(void *);
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     M2C_FIELD(arg0, s16 *, 0x2C)--;
     if (M2C_FIELD(arg0, s16 *, 0x2C) <= 0) {
         func_01ffa6fc(arg0);
         return;
     }
-    if (*gKeyState == 0 && M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return;
+    if (*gKeyState == 0 && M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
     func_01ffa6fc(arg0);
 }
 

@@ -7,11 +7,11 @@ typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
 s32 func_ov000_021a860c(void){
-s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
 s32 p=1,i,end;
 while(p<5){
 if(IsPlayerActive(p) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
-u16 start=gPlayerUnitIdBase[p];i=start+1;end=start+0x33;while(i<end){UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];u32 kind=(u32)(entry->unk0 & 0x3f);if(kind && (data_ov000_021b5bfc[kind*112+0x13]&16))return 1;i++;}} p=p+1;}
+u16 start=gPlayerUnitIdBase[p];i=start+1;end=start+0x33;while(i<end){UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];u32 kind=(u32)(entry->unk0 & 0x3f);if(kind && (gUnitKindStats[kind*112+0x13]&16))return 1;i++;}} p=p+1;}
 return 0;}
 #pragma pool_constants reset
 s32 func_ov000_021a86dc(void) {

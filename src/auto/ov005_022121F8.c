@@ -323,13 +323,13 @@ void func_ov005_02212ef0(void) {
 #pragma opt_common_subs off
 void func_ov005_02212f54(void) {
 s16 *HistoryTabAt(s8);s32 func_02001fb4(s32,s32);
-void func_0208dd7c(s16,s16,s16,s16,s32,s32,s32);
+void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 void *GetLocalizedText(s32);s32 func_0209c268(void *);
 void DrawTileRow(u16,s16,s32,u16,s32);
 void func_ov000_0216a374(u16,u16,u16,s32);
 extern void *gHistoryMenu,*gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-extern u8 data_027e0064[];
+extern u8 gSpriteDesc16x16[];
 s16 *p;void *saved;s32 total,amount,ratio,left,height,width;u16 attr; s32 text;
 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -340,9 +340,9 @@ height=func_02001fb4(0x73000-left,total-0x7000);
 height=(s32)(((s64)height*amount+0x800)>>12);
 width=left>>12;if(width>115)width=115;else if(width<1)width=1;
 attr=(u16)(((0x140 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x6000);
-func_0208dd7c(248,(s16)((height>>12)+40),2,(s16)width,attr,0,2);
+DrawFrameBorder(248,(s16)((height>>12)+40),2,(s16)width,attr,0,2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite(174,9,(u16)(((0xa0 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x8000),data_027e0064,0);
+AddSprite(174,9,(u16)(((0xa0 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x8000),gSpriteDesc16x16,0);
 text=func_0209c268(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x34)));
 DrawTileRow((u16)((252-text)&511),30,96,(u16)(((0xa4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
 text=func_0209c268(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x38)));

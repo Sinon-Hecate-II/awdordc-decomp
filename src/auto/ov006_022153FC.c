@@ -3,110 +3,110 @@
 
 extern s8 data_ov006_02218345[];
 extern s8 gFriendCodeInput[];
-void func_ov006_022153fc(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+/* Creates the friend-code entry screen node from its descriptor and attaches
+ * its two sub-panels, the cursor animation frame table and a 7-cell sprite grid. */
+void FriendCodeEntry_Create(M2C_UNK parent) {
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    void *func_020b2eb8(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    void *CreateSpriteGrid(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK func_020e4c64();
-    typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
-    extern M2C_UNK data_02129870;
-    extern M2C_UNK data_ov006_02218460;
-    extern M2C_UNK data_ov006_02218610;
+    extern M2C_UNK gHeapObjectVTable;
+    extern M2C_UNK gFriendCodeEntryDef;
+    extern M2C_UNK gFriendCodeEntryVTable;
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    s32 temp_r4;
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r0_3;
-    void *temp_r0_4;
-    void *temp_r0_5;
-    void *var_r0;
+    s32 savedEngine;
+    FriendCodeEntry *entry;
+    u32 *spriteSlots;
+    FriendCodeSubPanel *panel;
+    MapInfoIconFrames *anim;
+    void *grid;
 
-    temp_r4 = (s32)gCur3DSpriteEngine;
+    savedEngine = (s32)gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    temp_r0 = func_01ffa42c(&data_ov006_02218460, arg0);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov006_02218610;
-        M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
-        temp_r0_2 = MemAlloc(0x18);
-        if (temp_r0_2 != NULL) {
-            M2C_FIELD(temp_r0_2, s32 *, 0) = 0;
-            M2C_FIELD(temp_r0_2, s32 *, 4) = 0;
-            M2C_FIELD(temp_r0_2, s32 *, 8) = 0;
-            M2C_FIELD(temp_r0_2, s32 *, 0xC) = 0;
-            M2C_FIELD(temp_r0_2, s32 *, 0x10) = 0;
-            M2C_FIELD(temp_r0_2, s32 *, 0x14) = 0;
+    entry = CreateSpriteObject(&gFriendCodeEntryDef, parent);
+    if (entry != NULL) {
+        entry->vtable = &gFriendCodeEntryVTable;
+        entry->unk34 = 0;
+        spriteSlots = MemAlloc(0x18);
+        if (spriteSlots != NULL) {
+            spriteSlots[0] = 0;
+            spriteSlots[1] = 0;
+            spriteSlots[2] = 0;
+            spriteSlots[3] = 0;
+            spriteSlots[4] = 0;
+            spriteSlots[5] = 0;
         }
-        M2C_FIELD(temp_r0, void **, 0x3C) = temp_r0_2;
-        temp_r0_3 = MemAlloc(0x2C);
-        if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
-            M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
-            M2C_FIELD(temp_r0_3, s16 *, 0x12) = 0;
-            M2C_FIELD(temp_r0_3, s8 *, 0x14) = 8;
-            M2C_FIELD(temp_r0_3, s8 *, 0x15) = 8;
-            M2C_FIELD(temp_r0_3, s8 *, 0x16) = 1;
-            M2C_FIELD(temp_r0_3, s8 *, 0x17) = 8;
-            M2C_FIELD(temp_r0_3, s8 *, 0x18) = 8;
-            M2C_FIELD(temp_r0_3, Ov006C24Flags *, 0x20).active = 0;
-            M2C_FIELD(temp_r0_3, Ov006C24Flags *, 0x20).mode = 0;
-            M2C_FIELD(temp_r0_3, Ov006C24Flags *, 0x20).kind = 2;
-            M2C_FIELD(temp_r0_3, s8 *, 0x21) = 0;
-            M2C_FIELD(temp_r0_3, s32 *, 0x24) = 0;
-            M2C_FIELD(temp_r0_3, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_3, u8 *, 0x28) & ~0xE0);
-            M2C_FIELD(temp_r0_3, s8 *, 0x29) = 0;
+        entry->sprites = spriteSlots;
+        panel = MemAlloc(0x2C);
+        if (panel != NULL) {
+            panel->vtable = &gHeapObjectVTable;
+            panel->unk04 = 0;
+            panel->unk12 = 0;
+            panel->unk14 = 8;
+            panel->unk15 = 8;
+            panel->unk16 = 1;
+            panel->unk17 = 8;
+            panel->unk18 = 8;
+            panel->flags.active = 0;
+            panel->flags.mode = 0;
+            panel->flags.kind = 2;
+            panel->unk21 = 0;
+            panel->unk24 = 0;
+            panel->unk28 = (u8) (panel->unk28 & ~0xE0);
+            panel->unk29 = 0;
         }
-        M2C_FIELD(temp_r0, void **, 0x40) = temp_r0_3;
-        temp_r0_4 = MemAlloc(0x2C);
-        if (temp_r0_4 != NULL) {
-            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
-            M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
-            M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
-            M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;
-            M2C_FIELD(temp_r0_4, s8 *, 0x15) = 8;
-            M2C_FIELD(temp_r0_4, s8 *, 0x16) = 1;
-            M2C_FIELD(temp_r0_4, s8 *, 0x17) = 8;
-            M2C_FIELD(temp_r0_4, s8 *, 0x18) = 8;
-            M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).active = 0;
-            M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).mode = 0;
-            M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).kind = 2;
-            M2C_FIELD(temp_r0_4, s8 *, 0x21) = 0;
-            M2C_FIELD(temp_r0_4, s32 *, 0x24) = 0;
-            M2C_FIELD(temp_r0_4, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_4, u8 *, 0x28) & ~0xE0);
-            M2C_FIELD(temp_r0_4, s8 *, 0x29) = 0;
+        entry->panelTop = panel;
+        panel = MemAlloc(0x2C);
+        if (panel != NULL) {
+            panel->vtable = &gHeapObjectVTable;
+            panel->unk04 = 0;
+            panel->unk12 = 0;
+            panel->unk14 = 8;
+            panel->unk15 = 8;
+            panel->unk16 = 1;
+            panel->unk17 = 8;
+            panel->unk18 = 8;
+            panel->flags.active = 0;
+            panel->flags.mode = 0;
+            panel->flags.kind = 2;
+            panel->unk21 = 0;
+            panel->unk24 = 0;
+            panel->unk28 = (u8) (panel->unk28 & ~0xE0);
+            panel->unk29 = 0;
         }
-        M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_4;
-        temp_r0_5 = MemAlloc(0x12);
-        if (temp_r0_5 != NULL) {
-            M2C_FIELD(temp_r0_5, s8 *, 0) = 4;
-            M2C_FIELD(temp_r0_5, s8 *, 1) = 0;
-            M2C_FIELD(temp_r0_5, u16 *, 2) = 0;
-            M2C_FIELD(temp_r0_5, u16 *, 4) = 0;
-            M2C_FIELD(temp_r0_5, s16 *, 6) = 1;
-            M2C_FIELD(temp_r0_5, s16 *, 8) = 0;
-            M2C_FIELD(temp_r0_5, s16 *, 0xA) = 1;
-            M2C_FIELD(temp_r0_5, s16 *, 0xC) = 1;
-            M2C_FIELD(temp_r0_5, s16 *, 0xE) = 0;
-            M2C_FIELD(temp_r0_5, s16 *, 0x10) = 0;
-            M2C_FIELD(temp_r0_5, u16 *, 2) = (u16) M2C_FIELD(temp_r0_5, u16 *, 4);
+        entry->panelBottom = panel;
+        anim = MemAlloc(0x12);
+        if (anim != NULL) {
+            anim->first = 4;
+            anim->unk01 = 0;
+            anim->start = 0;
+            anim->end = 0;
+            anim->unk06 = 1;
+            anim->unk08 = 0;
+            anim->unk0A = 1;
+            anim->unk0C = 1;
+            anim->unk0E = 0;
+            anim->unk10 = 0;
+            anim->start = anim->end;
         }
-        M2C_FIELD(temp_r0, void **, 0x48) = temp_r0_5;
-        var_r0 = MemAlloc(0x3C);
-        if (var_r0 != NULL) {
-            var_r0 = func_020b2eb8(var_r0, 7, 1, 0xEF, 0x10, 6, 0x18);
+        entry->anim = anim;
+        grid = MemAlloc(0x3C);
+        if (grid != NULL) {
+            grid = CreateSpriteGrid(grid, 7, 1, 0xEF, 0x10, 6, 0x18);
         }
-        M2C_FIELD(temp_r0, void **, 0x4C) = var_r0;
-        M2C_FIELD(var_r0, s16 *, 0xA) = 0x3C;
+        entry->grid = grid;
+        M2C_FIELD(grid, s16 *, 0xA) = 0x3C;
         func_020e4c64();
     }
-    gCur3DSpriteEngine = (u16 **)temp_r4;
+    gCur3DSpriteEngine = (u16 **)savedEngine;
 }
 
 void *func_ov006_02215620(void *p){
-extern M2C_UNK data_ov006_02218610;
+extern M2C_UNK gFriendCodeEntryVTable;
 M2C_UNK DeleteSpriteObject(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK func_020e4ca0();
 s32 *arr;void *q=0;
-M2C_FIELD(p,void **,0)=&data_ov006_02218610;
+M2C_FIELD(p,void **,0)=&gFriendCodeEntryVTable;
 arr=M2C_FIELD(p,s32 **,0x3c);
 if(arr){DeleteSpriteObject(arr[0]);DeleteSpriteObject(arr[1]);DeleteSpriteObject(arr[2]);DeleteSpriteObject(arr[3]);DeleteSpriteObject(arr[4]);DeleteSpriteObject(arr[5]);MemFree((s32)arr);}
 q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
@@ -121,10 +121,10 @@ void *func_ov006_022156e4(void *arg0) {
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK MemFree(M2C_UNK);
     M2C_UNK func_020e4ca0();
-    extern M2C_UNK data_ov006_02218610;
+    extern M2C_UNK gFriendCodeEntryVTable;
     void *p = arg0;
 
-    M2C_FIELD(p, void **, 0) = &data_ov006_02218610;
+    M2C_FIELD(p, void **, 0) = &gFriendCodeEntryVTable;
     p = M2C_FIELD(p, void **, 0x3C);
     if (p != 0) {
         DeleteSpriteObject(M2C_FIELD(p, void **, 0));
@@ -161,7 +161,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     M2C_UNK func_020b2e78(M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_020b212c(void);
     void func_020808dc(void *, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -194,10 +194,10 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
         buf[2] = (u16)*(s16 *)((char *)arg0 + 0x18);
         buf[3] = (u16)*(s16 *)((char *)arg0 + 0x1A);
 
-        if ((*(u8 *)((char *)data_02101e88 + 0x12) != 0 &&
+        if ((*(u8 *)((char *)gTouchState + 0x12) != 0 &&
              func_020b2e78(
-                 (M2C_UNK)*(u16 *)data_02101e88,
-                 (M2C_UNK)*((u16 *)data_02101e88 + 1),
+                 (M2C_UNK)*(u16 *)gTouchState,
+                 (M2C_UNK)*((u16 *)gTouchState + 1),
                  buf) != 0) ||
             (*(u8 *)arg0 == (s32)func_020b212c() && bit != 0)) {
             goto draw2;
@@ -452,10 +452,10 @@ done:
 
 #pragma opt_common_subs off
 M2C_UNK func_ov006_02215c6c(void *arg0) {
-void func_02007f8c(void *,s32,s32);s32 PlaySoundEffect(s32);
+void MI_CpuFill8(void *,s32,s32);s32 PlaySoundEffect(s32);
 u8 event=M2C_FIELD(arg0,u8 *,0);void *p=M2C_FIELD(arg0,void **,16);s32 i,j;s8 prev;s8 *q;
 switch(event) {
-case 10:func_02007f8c(gFriendCodeInput,0,13);M2C_FIELD(p,s8 *,56)=0;PlaySoundEffect(0x1000d);return;
+case 10:MI_CpuFill8(gFriendCodeInput,0,13);M2C_FIELD(p,s8 *,56)=0;PlaySoundEffect(0x1000d);return;
 case 11:
 i=M2C_FIELD(p,s8 *,56);
 if(i>0) {
@@ -568,24 +568,24 @@ done:
  * unreadable code picks the matching error state; then updates the panel sprite
  * and plays the result sound. */
 M2C_UNK ConfirmFriendCode(void *entry){
-void func_01ffa8c4(void *,s32);void MI_CpuCopy8(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
+void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
 if(M2C_FIELD(entry,u8 *,0)==12){
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47f0();func_01ffa8c4(panel,3);PlaySoundEffect(0x1000f);return;}
+func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47f0();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000f);return;}
 ownCode=func_020c53e4(0);enteredCode=func_020c54ac(gFriendCodeInput);
 if((ownCode==0||enteredCode==0||ownCode!=enteredCode)&&func_020c5474(enteredCode)){
 func_020c5424(codeWords,enteredCode);if(!func_020c54e8(codeWords)){
 MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47d0();func_01ffa8c4(panel,3);PlaySoundEffect(0x1000e);return;}
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,5);PlaySoundEffect(0x1001d);return;
+func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47d0();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,5);PlaySoundEffect(0x1001d);return;
 }
 if(ownCode!=0&&enteredCode!=0&&ownCode==enteredCode){
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,4);
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,4);
 }else{
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,6);}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,6);}
 PlaySoundEffect(0x1001d);
 }
 

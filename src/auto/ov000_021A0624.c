@@ -22,10 +22,10 @@ return count;
 
 s32 func_ov000_021a06e4(M2C_UNK arg0) {
 s32 IsFootUnitKind(); s32 GetUnitAttackClass(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
-extern u16 data_02168f14; extern void **gCurrentMap; extern void *gAiState;
+extern u16 gMapConfig; extern void **gCurrentMap; extern void *gAiState;
 void *p;
 if(IsFootUnitKind()!=0 || func_ov000_021a9904(arg0)==2)return 0;
-if(!(((u32)(data_02168f14<<29)>>29)&255)) {
+if(!(((u32)(gMapConfig<<29)>>29)&255)) {
 p=*gCurrentMap;
 switch(M2C_FIELD(p,u16*,0x5142)) {case 0xae: if(M2C_FIELD(p,u16*,0x52a4)==3)return 10; break;default:break;}
 }
@@ -129,7 +129,7 @@ s32 BuildAiTargetGroups(void) {
     s32 func_ov000_021a4a98(s32,s32);
     void func_ov000_021a11b0(s32);
     extern void *gAiState;
-    extern u8 gAiTargetCandidates[], gAiTargetGroups[], data_ov000_021b5bfc[];
+    extern u8 gAiTargetCandidates[], gAiTargetGroups[], gUnitKindStats[];
     u8 *group;
     UnkStruct_ov000_021A860C *unit;
     s32 unitId;
@@ -167,15 +167,15 @@ s32 BuildAiTargetGroups(void) {
                             if ((unit->unk0==6 && unit->unkB!=5) || unit->unk0==14) {
                                 if(unit->unk6>=61) typeFlags|=1;
                             }
-                            if(IsCurrentPlayerUnit((s16)unitId) && (data_ov000_021b5bfc[unit->unk0*112+0x13]&7) && !func_ov000_021a43e8(unit->unk0)) {
+                            if(IsCurrentPlayerUnit((s16)unitId) && (gUnitKindStats[unit->unk0*112+0x13]&7) && !func_ov000_021a43e8(unit->unk0)) {
                                 if(GetUnitAttackClass(unit->unk0)==0) group[4]++;
                                 if(GetUnitAttackClass(unit->unk0)==1) group[5]++;
                                 if(unit->unk0==26) group[6]++;
                             }
                         } else if(!func_ov000_021a99dc(unit)) {
                             group[0]+=2;
-                            if ((data_ov000_021b5bfc[unit->unk0*112+0x13]&7) && !IsFootUnitKind(unit->unk0)) statusFlags|=1;
-                            if ((data_ov000_021b5bfc[unit->unk0*112+0x13]&16) && unit->unk0!=19) typeFlags|=2;
+                            if ((gUnitKindStats[unit->unk0*112+0x13]&7) && !IsFootUnitKind(unit->unk0)) statusFlags|=1;
+                            if ((gUnitKindStats[unit->unk0*112+0x13]&16) && unit->unk0!=19) typeFlags|=2;
                         }
                     }
                     base=*gCurrentMap;

@@ -76,19 +76,19 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_020436dc();
     s32 func_020438b4();
     s32 func_02060b68();
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     void func_020410f8();
     s32 func_0204084c();
     void func_02040878();
     void func_02040dc8();
     void TryConnectToPeer();
     s32 func_0203ecb0();
-    void func_0203ea4c();
+    void SendMatchmakingParameter();
     void func_02043008();
     s32 func_02043184();
 
     extern M2C_UNK gConnectionMgr;
-    extern char data_020fc958[];
+    extern char sDwcKeyPid[];
 
     void *ctx;
     s32 i;
@@ -105,7 +105,7 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     case 0:
         func_020436d8(arg2);
         ctx = GetConnection();
-        M2C_FIELD(ctx, u64 *, 0x174) = func_02007004() + 0xefb5f7;
+        M2C_FIELD(ctx, u64 *, 0x174) = GetSystemTick() + 0xefb5f7;
         break;
     case 4:
         ctx = GetConnection();
@@ -152,20 +152,20 @@ status2_done:
                 ctx = GetConnection();
                 M2C_FIELD(ctx, s32 *, 0x204) = 0;
                 ctx = GetConnection();
-                func_0203ea4c(M2C_FIELD(ctx, u32 *, 0x204));
+                SendMatchmakingParameter(M2C_FIELD(ctx, u32 *, 0x204));
                 func_02043008();
             } else {
                 ctx = GetConnection();
                 M2C_FIELD(ctx, s32 *, 0xe8) = 2;
                 ctx = GetConnection();
-                M2C_FIELD(ctx, u64 *, 0xec) = func_02007004();
+                M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
             }
             break;
         case 3:
             ctx = GetConnection();
             M2C_FIELD(ctx, s32 *, 0xe8) = 2;
             ctx = GetConnection();
-            M2C_FIELD(ctx, u64 *, 0xec) = func_02007004();
+            M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
             break;
         case 5:
             func_020436dc(1);
@@ -194,10 +194,10 @@ status2_done:
                 ctx = GetConnection();
                 M2C_FIELD(ctx, s32 *, 0xe8) = 2;
                 ctx = GetConnection();
-                M2C_FIELD(ctx, u64 *, 0xec) = func_02007004();
+                M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
             } else {
                 unit = (void *)func_02061784(arg0, 0);
-                key = func_02060b68(unit, data_020fc958, 0);
+                key = func_02060b68(unit, sDwcKeyPid, 0);
                 if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1 && key == M2C_FIELD(GetConnection(), s32 *, 0xf4)) {
                     if (func_020436dc(0) != 0) {
                         ctx = GetConnection();
@@ -225,7 +225,7 @@ status2_done:
             break;
         default:
             ctx = GetConnection();
-            M2C_FIELD(ctx, u64 *, 0x174) = func_02007004() + 0xefb5f7;
+            M2C_FIELD(ctx, u64 *, 0x174) = GetSystemTick() + 0xefb5f7;
             break;
         }
         break;
@@ -245,12 +245,12 @@ void func_020436d8(void) {
 #pragma opt_strength_reduction off
 s32 func_020436dc(s32 sort) {
  void *GetConnection(void);s32 func_02061794(s32);s32 func_02061784(s32,s32);s32 func_02060b68(void *,void *,s32);s32 gpiPlayerSetInt(void *,void *,s32);s32 func_020617a4(s32,s32,void *,s32);s32 func_02037eec(s32);void func_020616d8(s32,void *);
- extern char data_020fc958[],data_020fc984[];
+ extern char sDwcKeyPid[],sDwcKeyEval[];
  s32 removed=0; s32 found,weight;void *ctx; s32 key; s32 i=0; s32 j;void *item;
  for(;i<func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4));i++) {
  item=(void *)func_02061784(M2C_FIELD(GetConnection(),s32 *,0xe4),i);
  if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) {
- key=func_02060b68(item,data_020fc958,0);found=0;
+ key=func_02060b68(item,sDwcKeyPid,0);found=0;
  for(j=1;j<=M2C_FIELD(GetConnection(),u8 *,0xd);j++) {
  if(key==M2C_FIELD((u8 *)GetConnection()+j*4,s32 *,0xf4)) {
  func_020616d8(M2C_FIELD(GetConnection(),s32 *,0xe4),item);i--;found=1;break;
@@ -260,11 +260,11 @@ s32 func_020436dc(s32 sort) {
  if(M2C_FIELD(GetConnection(),s32 *,0x474)) {
  ctx=GetConnection();
  weight=M2C_FIELD(ctx,s32 (**)(s32,s32),0x474)(i,M2C_FIELD(GetConnection(),s32 *,0x478));
- if(weight>0) {if(weight>0x7fffff)weight=0x7fffff;gpiPlayerSetInt(item,data_020fc984,func_02037eec(256)|(weight<<8));}
+ if(weight>0) {if(weight>0x7fffff)weight=0x7fffff;gpiPlayerSetInt(item,sDwcKeyEval,func_02037eec(256)|(weight<<8));}
  else {func_020616d8(M2C_FIELD(GetConnection(),s32 *,0xe4),item);i--;removed=1;}
- }else gpiPlayerSetInt(item,data_020fc984,func_02037eec(128));
+ }else gpiPlayerSetInt(item,sDwcKeyEval,func_02037eec(128));
  }
- if(sort && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))!=0)func_020617a4(M2C_FIELD(GetConnection(),s32 *,0xe4),0,data_020fc984,0);
+ if(sort && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))!=0)func_020617a4(M2C_FIELD(GetConnection(),s32 *,0xe4),0,sDwcKeyEval,0);
  if(removed && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))==0)return 0;
  return 1;
 }
@@ -278,7 +278,7 @@ s32 func_020438b4(void) {
     s32 func_02037eec(s32);
     s32 func_020720f0(s32, s32);
     extern s32 data_020ea928[];
-    extern char data_020fc984[];
+    extern char sDwcKeyEval[];
     u32 rnd;
     s32 best = 0;
     s32 total = 0;
@@ -293,7 +293,7 @@ s32 func_020438b4(void) {
     if (n <= 1) return n;
     i = 0;
     while (i < func_02061794(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
-        v = func_02060b68((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), data_020fc984, -1);
+        v = func_02060b68((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, -1);
         if (v > best) best = v;
         total += data_020ea928[i];
         i++;
@@ -309,15 +309,15 @@ s32 func_020438b4(void) {
         i++;
     }
     if (best < 0x7FFFFFFF) best++;
-    gpiPlayerSetInt((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), data_020fc984, best);
-    return func_020617a4(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, data_020fc984, 0);
+    gpiPlayerSetInt((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, best);
+    return func_020617a4(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, sDwcKeyEval, 0);
 }
 
 void func_02043a24(s32 a, void *b) {
     void *GetConnection(void);
-    void func_0205eb7c(void *, s32);
-    void func_0205ebb0(void *, void *);
-    extern u8 data_0213d3bc[];
+    void Qr2AppendInt(void *, s32);
+    void Qr2AppendString(void *, void *);
+    extern u8 gSessionPlayers[];
     extern u8 data_0213d3bd[];
     extern void *data_0213d3c4[];
     void *p;
@@ -326,23 +326,23 @@ void func_02043a24(s32 a, void *b) {
     s32 idx;
 
     switch(a) {
-case 8: p=GetConnection(); func_0205eb7c(b,((u8 *)p)[0x14]); return;
-case 10: p=GetConnection(); func_0205eb7c(b,((u8 *)p)[0x16]); return;
-case 50: p=GetConnection(); func_0205eb7c(b,*(s32 *)((char *)p+0x200)); return;
-case 51: p=GetConnection(); func_0205eb7c(b,((u8 *)p)[0x15]); return;
-case 52: p=GetConnection(); func_0205eb7c(b,*(s32 *)((char *)p+0x20)); return;
-case 53:  func_0205eb7c(b,3); return;
-case 54:  func_0205eb7c(b,1); return;
+case 8: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x14]); return;
+case 10: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x16]); return;
+case 50: p=GetConnection(); Qr2AppendInt(b,*(s32 *)((char *)p+0x200)); return;
+case 51: p=GetConnection(); Qr2AppendInt(b,((u8 *)p)[0x15]); return;
+case 52: p=GetConnection(); Qr2AppendInt(b,*(s32 *)((char *)p+0x20)); return;
+case 53:  Qr2AppendInt(b,3); return;
+case 54:  Qr2AppendInt(b,1); return;
     }
     i = a - 100;
     if (i < 0) return;
     if (i >= 154) return;
     idx = i * 12;
-    if (data_0213d3bc[idx] == 0) return;
+    if (gSessionPlayers[idx] == 0) return;
     if (data_0213d3bd[idx] != 0) {
-        func_0205ebb0(b, *(void **)((char *)data_0213d3c4 + idx));
+        Qr2AppendString(b, *(void **)((char *)data_0213d3c4 + idx));
     } else {
-        func_0205eb7c(b, **(s32 **)((char *)data_0213d3c4 + idx));
+        Qr2AppendInt(b, **(s32 **)((char *)data_0213d3c4 + idx));
     }
 }
 
@@ -355,7 +355,7 @@ void func_02043b70(void) {
 }
 
 void func_02043b74(s32 a,s32 b) {
-extern u8 data_0213d3bc[];
+extern u8 gSessionPlayers[];
 s32 i;u8 *p;
 switch(a){case 0:break;case 1:case 2:default:return;}
 func_0205eb50(b,8);
@@ -365,7 +365,7 @@ func_0205eb50(b,51);
 func_0205eb50(b,52);
 func_0205eb50(b,53);
 func_0205eb50(b,54);
-p=data_0213d3bc;
+p=gSessionPlayers;
 for(i=0;i<154;i++,p+=12)if(*p)func_0205eb50(b,*p);
 }
 

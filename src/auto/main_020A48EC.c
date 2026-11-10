@@ -92,7 +92,7 @@ s32 GetOrderCenterOffsetY(void) {
 /* Queues up to four enemy units inside the radius-5 diamond around an order's
    centre, highest value-and-health score first, as map selections. */
 void SelectAreaOrderTargets(Unk020AEntry *order) {
-extern s32 *gCurrentMap;extern u8 data_ov000_021b5bfc[];
+extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
 void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb734(s32,s32,s32,s8);
 s32 IsSameTeam(s32,s32);s32 IsUnitVisibleAtCell(s32,s32,s32);s32 func_020a600c(s32);
 s32 centerX,centerY;
@@ -130,7 +130,7 @@ unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
 unit=(u8 *)(map+0x59a4+unitId*14);
 if(M2C_FIELD(unit,u16 *,4)&32)continue;
 if(!func_020a600c(unitId))continue;
-score=M2C_FIELD(data_ov000_021b5bfc+((u32)(unit[0]<<26)>>26)*112,u16 *,4)*((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25);
+score=M2C_FIELD(gUnitKindStats+((u32)(unit[0]<<26)>>26)*112,u16 *,4)*((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25);
 if(bestScore>score)continue;
 bestX=(u16)x;bestY=(u16)y;bestScore=score;
 map=*gCurrentMap;
@@ -207,7 +207,7 @@ void func_020a54c4(void *arg0) {
 void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;DeleteSpriteObject(a);}
 
 void func_020a54f4(void *a){
-M2C_UNK func_01ffa8c4(void *,s32);void *func_020a45f8(s16,s16);
+M2C_UNK SetSpriteAnimation(void *,s32);void *func_020a45f8(s16,s16);
 M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK func_020b7294(s16,s16,u32,s32,void *);
 extern Unk020APosition *gSelectionQueue;
 Unk020APosition *base=gSelectionQueue,*p,*q; s32 i=0;s16 n,m;void *entry;
@@ -223,7 +223,7 @@ func_020b7294((s16)q->c,(s16)q->d,(u32)(M2C_FIELD(entry,u16 *,2)<<16)>>30,m+1,a)
 case 5:q=&base[n+1];func_020b7138((s16)p->c,(s16)p->d,(s16)q->c,(s16)q->d,n+2,a);
 M2C_FIELD(a,s16 *,0x54)++;break;
 }
-M2C_FIELD(a,s16 *,0x54)++;func_01ffa8c4(a,0);
+M2C_FIELD(a,s16 *,0x54)++;SetSpriteAnimation(a,0);
 }
 
 void func_020a561c(void *arg0) {
@@ -243,7 +243,7 @@ switch(p->type){case 4:case 5:case 6:case 7: M2C_FIELD(p,s8 *,6)-=1;break;}
 
 void func_020a5700(void *arg0) {
 extern s32 *gCurrentMap;
-void ClearSelectionQueue(void);s32 func_01ffa8c4(void *,s32);
+void ClearSelectionQueue(void);s32 SetSpriteAnimation(void *,s32);
 ClearSelectionQueue();
 while(M2C_FIELD(arg0,Unk020AEntry **,0x34)->type) {
 if(IsActionEntryActive(M2C_FIELD(arg0,Unk020AEntry **,0x34))) {
@@ -272,6 +272,6 @@ return;
 }}
 M2C_FIELD(arg0,Unk020AEntry **,0x34)++;
 }
-func_01ffa8c4(arg0,1);
+SetSpriteAnimation(arg0,1);
 }
 

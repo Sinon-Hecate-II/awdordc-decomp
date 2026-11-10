@@ -143,7 +143,7 @@ SelectMapLayer((u8 *)*gCurrentMap+0x1e30);return 0;
 s32 func_ov000_0217de64(s32 x,s32 y,s32 kind,s32 extra,s16 *result) {
 extern void **gCurrentMap;
 extern Candidate7DE gAiTargetCandidates[];
-extern s8 data_ov000_021b5500[],data_ov000_021e0f60[],data_ov000_021b55a0[];
+extern s8 data_ov000_021b5500[],gAiRangeLayer[],data_ov000_021b55a0[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021dee00[],data_ov000_021dee04[];
 void SelectMapLayer(void *);
@@ -180,10 +180,10 @@ if(!unit->kind||!IsFootUnitKind(unit->kind))continue;
 if(unit->x==entry[1]&&unit->y==entry[2]){if(unit->cargo)goto next;}
 if(unit->hp>60&&unit->tx==entry[1]&&unit->ty==entry[2])goto next;
 if(!unit->ammo||unit->tx==63)continue;
-SelectMapLayer(data_ov000_021e0f60);
+SelectMapLayer(gAiRangeLayer);
 FloodFillUnitRange(unit->tx,unit->ty,1,3,0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto next;
+if(gAiRangeLayer[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto next;
 }}
 out->x=entry[1];out->y=entry[2];out->type=data_ov000_021b5500[entry[0]];out->z=0;out->other=255;out->cost=255;
 func_ov000_0217a59c(entry[1],entry[2],kind,110);

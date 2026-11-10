@@ -9,7 +9,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK AddSprite(M2C_UNK, u8, u16, M2C_UNK *, s32);
     s32 func_0207c8ec(u32, M2C_UNK);
-    s32 func_0207c928(u32, M2C_UNK);
+    s32 Modulo(u32, M2C_UNK);
     M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
     s32 func_020846a4();
     s32 GetLocalizedText();
@@ -113,7 +113,7 @@ void func_ov003_021ea57c(void *arg0) {
             do {
                 temp_r8 = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                if (func_0207c928(var_r9, 2) != 0) {
+                if (Modulo(var_r9, 2) != 0) {
                     var_r0_2 = 1;
                 } else {
                     var_r0_2 = 0;
@@ -139,7 +139,7 @@ void func_ov003_021ea57c(void *arg0) {
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         if ((s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4) > 0) {
             do {
-                if (func_0207c928(var_r9, 2) != 0) {
+                if (Modulo(var_r9, 2) != 0) {
                     var_r0_3 = 1;
                 } else {
                     var_r0_3 = 0;
@@ -171,7 +171,7 @@ after_37:
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         if ((s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4) > 0) {
             do {
-                if (func_0207c928(var_r8, 2) != 0) {
+                if (Modulo(var_r8, 2) != 0) {
                     var_r0_4 = 1;
                 } else {
                     var_r0_4 = 0;
@@ -219,7 +219,7 @@ after_56:
     temp_r5_3 = M2C_FIELD(arg0, void **, 0x68);
     var_r7_2 = 0;
     do {
-        temp_r6_2 = (s16)(temp_r8_2 + ((func_0207c928(var_r7_2, 4) * 0x31) + 0x1D));
+        temp_r6_2 = (s16)(temp_r8_2 + ((Modulo(var_r7_2, 4) * 0x31) + 0x1D));
         temp_r2 = temp_r6_2;
         temp_r1 = (s16)((func_0207c8ec(var_r7_2, 4) * 0x12) + 0x59);
         temp_r3_2 = temp_r5_3 + (var_r7_2 * 4);

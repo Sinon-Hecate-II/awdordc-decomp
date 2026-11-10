@@ -184,7 +184,7 @@ u16 func_ov009_02224174(void);
 s8 func_ov009_02225450(void);
 void func_ov009_02224fec(s32,s32,s32,s32,u32,s32);
 void *func_ov009_0222132c(u32,s32);
-M2C_UNK func_02007f8c(void *,s32,s32);
+M2C_UNK MI_CpuFill8(void *,s32,s32);
 void func_ov009_02224d30(void *,u8,u8,u8,s32,u32,u16);
 extern M2C_UNK data_ov009_022264b8,data_ov009_022268e0,data_ov009_02226980,data_ov009_022269b0;
 u8 buffer[12]; void *task; u8 *p;s32 mask;u8 type;u32 size;u16 all;
@@ -212,7 +212,7 @@ list=(u8 *)&data_ov009_02226980+low*12;
 node=func_ov009_0222132c(size+16,32);
 if(node==0){u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=irq;}
 else{
-func_02007f8c(node,0,16);
+MI_CpuFill8(node,0,16);
 func_ov009_02224d30(node+4,type,low,high,payload,size,all);
 if(M2C_FIELD(list,void **,4)==0){M2C_FIELD(list,void **,4)=node;M2C_FIELD(list,void **,0)=node;}
 else{M2C_FIELD(M2C_FIELD(list,void **,4),void **,0)=node;M2C_FIELD(list,void **,4)=node;}
@@ -225,7 +225,7 @@ list=(u8 *)&data_ov009_022269b0+low*12;
 node=func_ov009_0222132c(size+16,32);
 if(node==0){u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=irq;}
 else{
-func_02007f8c(node,0,16);
+MI_CpuFill8(node,0,16);
 func_ov009_02224d30(node+4,type,low,high,payload,size,all);
 if(M2C_FIELD(list,void **,4)==0){M2C_FIELD(list,void **,4)=node;M2C_FIELD(list,void **,0)=node;}
 else{M2C_FIELD(M2C_FIELD(list,void **,4),void **,0)=node;M2C_FIELD(list,void **,4)=node;}
@@ -465,11 +465,11 @@ void func_ov009_02223f34(s32 a) { extern M2C_UNK data_ov009_022268e0; M2C_FIELD(
 
 void func_ov009_02223f44(s32 src,u32 size){
  M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
- M2C_UNK func_02007f8c(void*,M2C_UNK,s32);
+ M2C_UNK MI_CpuFill8(void*,M2C_UNK,s32);
  extern M2C_UNK data_ov009_02226fe0;
  if(size>24)size=24;
  MI_CpuCopy8(src,(s32)&data_ov009_02226fe0,size);
- func_02007f8c((u8*)&data_ov009_02226fe0+size,0,24-size);
+ MI_CpuFill8((u8*)&data_ov009_02226fe0+size,0,24-size);
 }
 
 void func_ov009_02223f7c(s32 a,s32 b){

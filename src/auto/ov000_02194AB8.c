@@ -28,7 +28,7 @@ s32 RandomIntRange(s32,s32);
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 s32 high=0x7fff,mid=0x7fff,low=0x7fff;
 s16 posHigh[2];
 s32 a;
@@ -64,7 +64,7 @@ map=*gCurrentMap;
 cost=M2C_FIELD(map+(unit[2])*4,s8 **,0x52e8)[unit[1]];
 kind=(*(UnitKind1955 **)(map+0x52d0))->kind;
 if(kind==23&&((UnitKind1955 *)unit)->kind==22)cost>>=2;
-if(kind==16){if(data_ov000_021b5bfc[((UnitKind1955 *)unit)->kind*112+19]&16)value<<=1;else value>>=1;}
+if(kind==16){if(gUnitKindStats[((UnitKind1955 *)unit)->kind*112+19]&16)value<<=1;else value>>=1;}
 if(value<20){
 if(!IsFootUnitKind(kind))continue;
 if(low<=threshold){if(cost>threshold||cost<low)continue;}else if(cost>low)continue;
@@ -217,7 +217,7 @@ s32 GetTerrainPropertyFlagsAt(s32,s32);
 s32 func_ov000_0217bc34(s32,s32,s32,s32);
 s32 FindAttackPosition(s16 *);
 extern void **gCurrentMap;
-extern void *data_ov000_021df57c;
+extern void *gAiSettings;
 s32 best=0x7fff;
 s16 cand[2];
 s32 x,y,kind;
@@ -233,7 +233,7 @@ if(!GetTerrainPropertyFlagsAt(x,y))continue;
 map=(u8 *)*gCurrentMap;
 cell=*(s8 *)(*(u16 *)(map+0x3758+y*2)+(map+x)+0x1928);
 map = (u8 *)((u32)map + cell*6);
-if((map+kind)[0x6c63]>=((u8 *)data_ov000_021df57c)[13])continue;
+if((map+kind)[0x6c63]>=((u8 *)gAiSettings)[13])continue;
 if(best<(*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x])continue;
 if(!func_ov000_0217bc34(x,y,2,5))continue;
 cand[0]=x;cand[1]=y;

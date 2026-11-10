@@ -40,7 +40,7 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 terrainFlags = 0, flags = 0;
     volatile s32 maxX, maxY; s32 minX, minY;
     extern s8 data_ov000_021b55a0[];
-    extern u8 data_ov000_021b5c0f[], data_ov000_021b5bfc[];
+    extern u8 data_ov000_021b5c0f[], gUnitKindStats[];
     s32 savedX, savedY;
     u8 *unit;
     u8 *other;
@@ -67,7 +67,7 @@ int func_ov000_0218bbd0(void *arg0) {
             dy = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] - y;
             if (dx <= 0) dx = x - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1];
             if (dy <= 0) dy = y - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
-            if (i+dy < data_ov000_021b5bfc[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
+            if (i+dy < gUnitKindStats[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
             unit = func_020a47e0(x, y);
             if (unit != 0 && func_ov000_021a9bc0() != 0) {
                 health = unit[4];

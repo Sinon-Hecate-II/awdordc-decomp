@@ -323,7 +323,7 @@ void func_ov003_021f92f4(void *obj) {
             value=0;
             if(IsMapKind92(obj)) value=id;
             if(!func_ov003_021f400c() && func_ov003_021f2654() && func_020a8ef8(id)) value=func_020a8f4c(id);
-            if(value) { func_020c85c4(value,func_020c79ec()); func_020a68d4(); }
+            if(value) { func_020c85c4(value,func_020c79ec()); ResetMapUnits(); }
         }
         func_020cf278(id);
         if((u32)id>=225 && (u32)id<425 && func_ov003_021f2654() && !func_ov003_021f400c() && !func_020a8ef8(id)) {
@@ -355,7 +355,7 @@ void func_ov003_021f92f4(void *obj) {
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
     gCur3DSpriteEngine=saved;
     if((!func_020846a4() && (u8)IsUnavailable92(id)) || (func_020846a4() && !func_ov003_021f400c() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)))
-        func_02007f8c((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830,0,60);
+        MI_CpuFill8((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830,0,60);
     else func_020c1878((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830);
     kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;
     if((u8)(kind==2)) return;

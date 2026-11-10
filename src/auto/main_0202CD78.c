@@ -74,7 +74,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     void *func_0202c5f0(s32 *, s32, s32, s32, s32);
     s32 func_0202c3ac(s32, void *, s32, s32);
     M2C_UNK func_020067c4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_0202c02c();
     M2C_UNK func_0202c46c(M2C_UNK, M2C_UNK);
@@ -118,7 +118,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     }
     temp_r0 = r5 + 0x3C; /* cast ignored? */
     MI_CpuCopy8((M2C_UNK)((u8 *)r5 + 0x3C), (M2C_UNK)((u8 *)r5 + 0x3C + (M2C_FIELD(r5, s32 *, 0x38) * 4)), r6);
-    func_02007f8c((M2C_UNK)((u8 *)r5 + 0x3C), 0, r6);
+    MI_CpuFill8((M2C_UNK)((u8 *)r5 + 0x3C), 0, r6);
     func_020067c4(r5, r4 + 0x3C);
     if (r7 != 0) {
         func_0202c46c(r9, r5);
@@ -382,7 +382,7 @@ func_0202b0bc(v,f+M2C_FIELD(f,s32*,0x18),M2C_FIELD(entry,s32*,0),local);
 
 void func_0202d6d4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0200654c(M2C_UNK *);
-    M2C_UNK func_0200b774(s32);
+    M2C_UNK InitFileRequest(s32);
     M2C_UNK func_02029c30(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02029c74(M2C_UNK *, s32);
     M2C_UNK func_0202b46c(s32);
@@ -419,7 +419,7 @@ loop_7:
     if (var_r5 < 4) {
         temp_r6 = (var_r5 * 0x174) + (s32) data_0213c92c;
         M2C_FIELD(temp_r6, s32 *, 0x110) = (s32) (M2C_FIELD(temp_r6, s32 *, 0x110) & ~1);
-        func_0200b774(temp_r6 + 0x5C);
+        InitFileRequest(temp_r6 + 0x5C);
         func_0202b46c(temp_r6);
         M2C_FIELD(temp_r6, s32 *, 0x148) = var_r5;
         M2C_FIELD(temp_r6, s8 *, 0x124) = 0;

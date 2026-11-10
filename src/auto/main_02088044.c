@@ -7,7 +7,7 @@ void func_02088044(void *arg0) {
     M2C_UNK func_02087ea0(void *, void *);
     s32 func_02087f20(void *, void *, u16, u16);
     s32 func_02087f70(void *, u16, u16);
-    extern void *data_02101e88;
+    extern void *gTouchState;
     void *temp_r1_3;
     s8 temp_r1_2;
     u16 temp_r0;
@@ -28,12 +28,12 @@ void func_02088044(void *arg0) {
     var_r5 = 0;
     M2C_FIELD(arg0, s8 *, 0xD) = 0;
     M2C_FIELD(arg0, s8 *, 0xC) = -1;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x12) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
         var_r4 = M2C_FIELD(arg0, void **, 0x14);
         if ((s32) M2C_FIELD(arg0, u16 *, 0x10) > 0) {
 loop_2:
-            if ((M2C_FIELD(var_r4, u16 *, 0xA) != 0) && (func_02087f20(arg0, var_r4, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2)) != 0)) {
-                if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+            if ((M2C_FIELD(var_r4, u16 *, 0xA) != 0) && (func_02087f20(arg0, var_r4, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
+                if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
                     M2C_FIELD(arg0, s8 *, 8) = (s8) M2C_FIELD(var_r4, u16 *, 8);
                     M2C_FIELD(arg0, u8 *, 0xE) = 0U;
                     temp_r0 = M2C_FIELD(var_r4, u16 *, 0xA);
@@ -55,13 +55,13 @@ loop_2:
                 } else {
                     temp_r2 = M2C_FIELD(var_r4, u16 *, 8);
                     if (temp_r2 == M2C_FIELD(arg0, s8 *, 8)) {
-                        if ((M2C_FIELD(data_02101e88, u8 *, 0x13) != 0) && (M2C_FIELD(var_r4, u16 *, 0xA) & 0x10)) {
+                        if ((M2C_FIELD(gTouchState, u8 *, 0x13) != 0) && (M2C_FIELD(var_r4, u16 *, 0xA) & 0x10)) {
                             M2C_FIELD(arg0, s8 *, 0xB) = (s8) temp_r2;
                             M2C_FIELD(arg0, u8 *, 0xE) = 1U;
                         }
                     } else {
                         M2C_FIELD(arg0, s8 *, 8) = -1;
-                        if (M2C_FIELD(data_02101e88, u8 *, 0x13) != 0) {
+                        if (M2C_FIELD(gTouchState, u8 *, 0x13) != 0) {
                             M2C_FIELD(arg0, u8 *, 0xE) = 1U;
                             if (M2C_FIELD(var_r4, u16 *, 0xA) & 0x10) {
                                 M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(var_r4, u16 *, 8);
@@ -84,8 +84,8 @@ loop_2:
             }
         }
         if (var_r5 == M2C_FIELD(arg0, u16 *, 0x10)) {
-            if ((M2C_FIELD(arg0, u16 *, 0x22) != 0) && (func_02087f70(arg0, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2)) != 0)) {
-                if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+            if ((M2C_FIELD(arg0, u16 *, 0x22) != 0) && (func_02087f70(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
+                if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
                     M2C_FIELD(arg0, s8 *, 8) = -2;
                     M2C_FIELD(arg0, u8 *, 0xE) = 0U;
                     if (M2C_FIELD(arg0, u16 *, 0x22) & 1) {
@@ -102,17 +102,17 @@ loop_2:
                 M2C_FIELD(arg0, u8 *, 0xE) = 0U;
             }
         }
-    } else if (M2C_FIELD(data_02101e88, u8 *, 0x16) != 0) {
+    } else if (M2C_FIELD(gTouchState, u8 *, 0x16) != 0) {
         temp_r1_2 = M2C_FIELD(arg0, s8 *, 8);
-        if ((temp_r1_2 != -1) && ((u32) M2C_FIELD(data_02101e88, u8 *, 0x10) < 0x1EU)) {
+        if ((temp_r1_2 != -1) && ((u32) M2C_FIELD(gTouchState, u8 *, 0x10) < 0x1EU)) {
             if (temp_r1_2 != -2) {
                 temp_r0_3 = func_02087e68();
-                if ((func_02087f20(arg0, temp_r0_3, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2)) != 0) && (M2C_FIELD(temp_r0_3, u16 *, 0xA) & 2)) {
+                if ((func_02087f20(arg0, temp_r0_3, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(temp_r0_3, u16 *, 0xA) & 2)) {
                     if (M2C_FIELD(arg0, u8 *, 0xE) == 0) {
                         M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(arg0, s8 *, 8);
                     }
                 }
-            } else if ((func_02087f70(arg0, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2)) != 0) && (M2C_FIELD(arg0, u16 *, 0x22) & 2)) {
+            } else if ((func_02087f70(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(arg0, u16 *, 0x22) & 2)) {
                 M2C_FIELD(arg0, s8 *, 0xD) = 1;
             }
         }
@@ -163,12 +163,12 @@ void func_020883bc(void) {
 
 M2C_UNK func_020883f0(M2C_UNK a) {
 extern M2C_UNK data_021577b4,data_0210259c;
-s32 func_0200c084(void *,s32,s32);void func_0200b774(void *);void func_0200bf64(void *,void *);
+s32 func_0200c084(void *,s32,s32);void InitFileRequest(void *);void func_0200bf64(void *,void *);
 s32 func_0200b9e4(void *,Unk0200FilePair);void func_0200bf28(void *);s32 func_0200bbe0(void *,void *,s32);void func_0200ba9c(void *);void func_0200c214(void *);M2C_UNK func_020e349c(void);
 Unk0200FilePair pair;u32 info[11];u32 file[18];s32 size;u8 *dest; s32 offset,n; u32 flag;
 flag=((u8 *)&data_021577b4)[a]; if(flag==1)return flag;
 if(!func_0200c084(info,0,((s32 *)&data_0210259c)[a]))return;
-func_0200b774(file);func_0200bf64(&pair,info);
+InitFileRequest(file);func_0200bf64(&pair,info);
 if(!func_0200b9e4(file,pair))return;
 func_0200bf28(info);size=file[10]-file[9];dest=(u8 *)info[1];
 for(offset=0;offset<size;offset+=0x2800){n=size-offset;if(n>=0x2800)n=0x2800;if(n!=func_0200bbe0(file,dest+offset,n)){func_0200ba9c(file);return;}}

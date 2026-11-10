@@ -138,7 +138,7 @@ void func_020244c0(void *arg0) {
     M2C_FIELD(temp_r4, u8 *, 3) = 0;
     M2C_FIELD(temp_r4, u8 *, 4) = 1;
     M2C_FIELD(temp_r4, u8 *, 5) = 1;
-    func_02007f8c(temp_r5 + 0x1CC, 0, 8);
+    MI_CpuFill8(temp_r5 + 0x1CC, 0, 8);
     M2C_FIELD(temp_r4, u8 *, 6) = 0x16;
     M2C_FIELD(temp_r4, u8 *, 7) = 3;
     M2C_FIELD(temp_r4, u8 *, 8) = 0;
@@ -155,7 +155,7 @@ void func_020244c0(void *arg0) {
     func_020235fc(temp_r5, temp_r4 + 0x1F, 0);
     MI_CpuCopy8(temp_r5 + 0x348, temp_r5 + 0x2EC, 0x5C);
     TlsUpdateHandshakeHash(temp_r5, temp_r4 + 0xB, 0x28);
-    TcpSendData(temp_r4, func_02023a04(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
+    TcpSendData(temp_r4, TlsAppendRecordMac(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
     gFree[0](temp_r4);
 }
 
@@ -165,12 +165,12 @@ s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 TlsSendServerHello(void
 
 #pragma scheduling off
 void func_02024b24(void *p) {
-void func_0201d25c(void *); void func_0201d434(void *); void func_02025fc0(void *); void func_02025700(void *);
+void func_0201d25c(void *); void func_0201d434(void *); void SHA1_Init(void *); void MD5_Init(void *);
 void *q = M2C_FIELD(p, void **, 12);
 while (1) {
 func_0201d25c(p);
 M2C_FIELD(q,u8 *,0x455)=0; M2C_FIELD(q,s32 *,0x1d4)=0; M2C_FIELD(q,u8 *,0x454)=1;
-func_02025fc0((u8 *)q+0x2ec);func_02025700((u8 *)q+0x3a4);
+SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);
 if (!func_02024a9c(p)) {M2C_FIELD(q,u8 *,0x455)=8; return;}
 func_0201d434(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);
 }
@@ -198,7 +198,7 @@ s32 func_02024b94(void *arg0) {
  return 0;
 }
 
-s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 func_02024b94(void *);void func_02025fc0(void *);void func_02025700(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;func_02025fc0((u8 *)q+0x2ec);func_02025700((u8 *)q+0x3a4);return func_02024b94(p);}
+s32 func_02024c60(void *p){s32 func_0201d2f0(void *);s32 func_02024b94(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&func_0201d2f0(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return func_02024b94(p);}
 
 s32 func_02024cb4(s32 *arg0, void *arg1) {
     s32 func_02023c08(s32, u32, M2C_UNK);
@@ -334,7 +334,7 @@ s32 func_02024f20(void *arg0) {
 s32 func_02024f9c(s32 arg0, u32 arg1, s32 arg2, s32 arg3, void *arg4) {
     M2C_UNK MI_CpuCopy8(s32, void *, u32);
     M2C_UNK TcpSendData(s8 *, s32, M2C_UNK, M2C_UNK, void *);
-    s32 func_02023a04(void *, s8 *);
+    s32 TlsAppendRecordMac(void *, s8 *);
     extern void *(*gAlloc)(s32);
     extern void (*gFree[])(void *);
     void *temp_r0;
@@ -379,7 +379,7 @@ loop_1:
         M2C_FIELD(temp_r0, s8 *, 3) = (s8) (var_r6 >> 8);
         var_r8 += temp_r11;
         M2C_FIELD(temp_r0, s8 *, 4) = (s8) var_r6;
-        temp_r0_2 = func_02023a04(sp8, (s8 *)temp_r0);
+        temp_r0_2 = TlsAppendRecordMac(sp8, (s8 *)temp_r0);
         if ((u32)TcpSendData((s8 *)temp_r0, temp_r0_2, 0, 0, arg4) < (u32)temp_r0_2) {
             var_r6 = 0;
         }
@@ -393,17 +393,17 @@ loop_1:
     return sp4;
 }
 
-void func_020250d0(void *arg0) { M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *); s32 func_02023a04(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; TcpSendData(a,func_02023a04(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }
+void func_020250d0(void *arg0) { M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *); s32 TlsAppendRecordMac(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; TcpSendData(a,TlsAppendRecordMac(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }
 
 void func_02025150(void *arg0) { extern void (*gFree[])(void *); void *p=M2C_FIELD(arg0,void **,12); void *q; M2C_FIELD(p,u8 *,0x455)=0; q=M2C_FIELD(p,void **,0x824); if(q)gFree[0](q); M2C_FIELD(p,void **,0x824)=0; }
 
 void func_02025188(s8 arg0) {
     M2C_UNK func_02000b9c(s32);
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     void *temp_r0;
 
     func_02000b9c(0x02000C1C);
-    temp_r0 = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
+    temp_r0 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s8 *, 9) = arg0;
     }

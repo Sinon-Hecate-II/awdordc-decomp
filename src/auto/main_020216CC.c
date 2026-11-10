@@ -24,13 +24,13 @@ void func_0202175c(void) {
     func_02020c28();
 }
 
-void *func_02021768(void *p) {
+void *ghiResolveHostname(void *p) {
 u32 func_02021134(void *);
-void func_02007f8c(void *,s32,s32);
+void MI_CpuFill8(void *,s32,s32);
 void func_02019458(void *,void *,s32);
 u32 v=func_02021134(p);
 if(!v)return 0;
-func_02007f8c(&data_02138bbc,0,0x101);
+MI_CpuFill8(&data_02138bbc,0,0x101);
 func_02019458(&data_02138bbc,p,0x101);
 M2C_FIELD(&data_02138b34,void **,0x20)=&data_02138bbc;
 M2C_FIELD(&data_02138b34,u32 *,0x24)=0;
@@ -161,7 +161,7 @@ void func_02021c04(void) {
     func_02020f6c();
 }
 
-M2C_UNK *func_02021c10(s32 a,...){
+M2C_UNK *IpToString(s32 a,...){
 M2C_UNK func_02021c90(M2C_UNK,void *,void *,M2C_UNK);
 extern M2C_UNK data_02138bac;
 func_02021c90(2,&a,&data_02138bac,16);
@@ -226,14 +226,14 @@ OS_RestoreInterrupts(old);
 
 void func_02021e7c(void *p,s32 a,s32 b) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
-void MI_CpuCopy8(void *,void *,u32);u64 func_02007004(void);
+void MI_CpuCopy8(void *,void *,u32);u64 GetSystemTick(void);
 extern M2C_UNK data_02138cc8;
 s32 old=OS_DisableInterrupts();s32 i=0;void *q=&data_02138cc8;
 M2C_FIELD(p,u8 *,0x30)=0;
 do{
 if(M2C_FIELD(q,u8 *,0x5a)&&M2C_FIELD(q,s32 *,0x54)==a&&M2C_FIELD(q,u16 *,0x58)==b){
 MI_CpuCopy8(q,p+0x74,32);MI_CpuCopy8(q+32,p,48);
-M2C_FIELD(q,u32 *,0x50)=func_02007004()>>16;
+M2C_FIELD(q,u32 *,0x50)=GetSystemTick()>>16;
 M2C_FIELD(p,u8 *,0x30)=1;break;
 }
 i++;q+=92;
@@ -242,11 +242,11 @@ OS_RestoreInterrupts(old);
 }
 
 void func_02021f1c(u8 *arg0, s32 arg1, u16 arg2) {
-u64 func_02007004(void); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void MI_CpuCopy8(void *,void *,u32);
+u64 GetSystemTick(void); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void MI_CpuCopy8(void *,void *,u32);
 extern M2C_UNK data_02138cc8;
 s32 state; u32 now; u8 *best; s32 i; u32 maxage; u8 *p; u32 age; u64 ticks; u8 valid;
 u16 port; s32 addr; u8 *buffer;
-state=OS_DisableInterrupts(); ticks=func_02007004();
+state=OS_DisableInterrupts(); ticks=GetSystemTick();
 port=arg2; addr=arg1; buffer=arg0;
 best=(u8 *)&data_02138cc8; maxage=0; now=(u32)(ticks>>16);
 for(i=0,p=best;i<4;i++,p+=0x5C){
@@ -275,9 +275,9 @@ OS_RestoreInterrupts(old);
 }
 
 s32 GetUnixTime(void){
-void func_0200ef4c(void *);void func_0200eff8(void *);s32 func_0200f7e0(void *,void *);
+void func_0200ef4c(void *);void func_0200eff8(void *);s32 MakeTime(void *,void *);
 s32 a[4],b[3];
-func_0200ef4c(a);func_0200eff8(b);return func_0200f7e0(a,b)+0x386d4380;
+func_0200ef4c(a);func_0200eff8(b);return MakeTime(a,b)+0x386d4380;
 }
 
 void func_020220a8(s32 arg0) {
@@ -287,10 +287,10 @@ void func_020220a8(s32 arg0) {
 
 s32 BoostThreadPriority(void) {
 s32 func_02006028(void *); void func_02005f80(s32,u32);
-extern M2C_UNK data_020faffc, data_0212dca4;
+extern M2C_UNK data_020faffc, gSocketManager;
 void *p; s32 x;
 if(M2C_FIELD(&data_020faffc,u32 *,4)>=32)return -1;
-p=M2C_FIELD(&data_0212dca4,void **,4);
+p=M2C_FIELD(&gSocketManager,void **,4);
 x=func_02006028(p);
 func_02005f80((s32)p,M2C_FIELD(&data_020faffc,u32 *,4));
 return x;
@@ -298,17 +298,17 @@ return x;
 
 void RestoreThreadPriority(u32 a){
 void func_02005f80(s32,u32);
-extern M2C_UNK data_0212dca4;
+extern M2C_UNK gSocketManager;
 if(a>=32)return;
-func_02005f80(M2C_FIELD(&data_0212dca4,s32 *,4),a);
+func_02005f80(M2C_FIELD(&gSocketManager,s32 *,4),a);
 }
 
 void func_02022128(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_0212dca4;
+    extern M2C_UNK gSocketManager;
     void *temp_r2;
     void *temp_r2_2;
 
-    temp_r2 = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
+    temp_r2 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     if (temp_r2 != NULL) {
         temp_r2_2 = M2C_FIELD(temp_r2, void **, 0xC);
         if (temp_r2_2 != NULL) {

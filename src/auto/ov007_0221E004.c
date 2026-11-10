@@ -37,7 +37,7 @@ int func_02099ae8(void*); int func_0209c268(s32*);
 void func_020b269c(void);
 void *func_0208b564(void*);
 void func_020899cc(void*,s32,s32,u32);
-void func_01ffa8c4(void*,s32);
+void SetSpriteAnimation(void*,s32);
 M2C_UNK PlaySoundEffect(s32);
 void *editor; s32 oldIndex; u32 glyph,line[17],*glyphPtr; s32 found; u32 width; void *savedEngine,*dialog;
 editor=M2C_FIELD(arg0,void **,0x10);
@@ -63,7 +63,7 @@ SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000012);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
-gCur3DSpriteEngine=savedEngine;func_01ffa8c4(editor,5);return PlaySoundEffect(0x1001d);
+gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
 func_02007ef4(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
@@ -75,7 +75,7 @@ SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000013);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
-gCur3DSpriteEngine=savedEngine;func_01ffa8c4(editor,5);return PlaySoundEffect(0x1001d);
+gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
 }
 func_02007ef4(line,&gMapEditObjectList,0x44);
 SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)+1);
@@ -84,7 +84,7 @@ return PlaySoundEffect(0x1000d);
 
 void func_ov007_0221e568(u8 *arg0) {
     M2C_UNK func_0207c8ec(u8, M2C_UNK);
-    M2C_UNK func_0207c928(u8, M2C_UNK);
+    M2C_UNK Modulo(u8, M2C_UNK);
     M2C_UNK func_020b1c60(u8);
     extern u16 *gKeyState;
     M2C_UNK MapEditorTypeCharacter(void *arg0);
@@ -105,7 +105,7 @@ void func_ov007_0221e568(u8 *arg0) {
     if (temp_r6 & 0x40) {
         if (func_0207c8ec(var_r7, 0xF) == 0) {
             if (temp_r6 == temp_r5) {
-                var_r7 = data_ov007_0221f5a4[func_0207c928(var_r7, 0xF)];
+                var_r7 = data_ov007_0221f5a4[Modulo(var_r7, 0xF)];
             }
         } else {
             var_r7 -= 0xF;
@@ -116,7 +116,7 @@ void func_ov007_0221e568(u8 *arg0) {
     } else if (temp_r6 & 0x80) {
         if (func_0207c8ec(var_r7, 0xF) == 4) {
             if (temp_r6 == temp_r5) {
-                var_r7 = data_ov007_0221f5a4[func_0207c928(var_r7, 0xF)];
+                var_r7 = data_ov007_0221f5a4[Modulo(var_r7, 0xF)];
             }
         } else {
             var_r7 += 0xF;
@@ -127,7 +127,7 @@ void func_ov007_0221e568(u8 *arg0) {
     } else {
 block_15:
         if (temp_r6 & 0x20) {
-            if (func_0207c928(var_r7, 0xF) == 0) {
+            if (Modulo(var_r7, 0xF) == 0) {
                 if (temp_r6 == temp_r5) {
                     var_r7 += 0xE;
                 }
@@ -135,7 +135,7 @@ block_15:
                 var_r7 -= 1;
             }
         } else if (temp_r6 & 0x10) {
-            if (func_0207c928(var_r7, 0xF) == 0xE) {
+            if (Modulo(var_r7, 0xF) == 0xE) {
                 if (temp_r6 == (int) temp_r5) {
                     var_r7 -= 0xE;
                 }

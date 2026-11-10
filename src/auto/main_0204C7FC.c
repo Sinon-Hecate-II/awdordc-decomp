@@ -85,7 +85,7 @@ void ghiDoConnect(GHIConnection *connection) {
 void func_0204ca4c(void *a){
 s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-extern M2C_UNK data_020fd88c,data_020fd8a0,data_020fd864,data_020fd804;
+extern M2C_UNK data_020fd88c,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
 if(!M2C_FIELD(a,s32 *,0x168)){
 if(!StringCompareN(M2C_FIELD(a,void **,0x14),&data_020fd88c,8)){
@@ -95,7 +95,7 @@ M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;
 }
 if(M2C_FIELD(a,s32 *,0x170)){M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;}
 if(!M2C_FIELD(a,s32 *,0x16c)&& M2C_FIELD(a,s32 (**)(void *,void *),0x174)(a,(u8 *)a+0x164)==3){
-AssertFailed(&data_020fd8a0,&data_020fd864,&data_020fd804,0x146);return;
+AssertFailed(&gGhttpAssertZero,&gGhttpProcessFileName,&data_020fd804,0x146);return;
 }
 if(M2C_FIELD(a,s32 *,0x60)>=M2C_FIELD(a,s32 *,0x5c))goto done;
 if(!SendBufferedData(a))return;
@@ -174,8 +174,8 @@ void ghiSendRequest(void *request) {
 void func_0204ce20(void *arg0) {
     M2C_UNK func_0204a594(void *);
     M2C_UNK func_0204bc64(void *);
-    s32 func_0204c300(void *);
- extern M2C_UNK data_020fd864;
+    s32 ghiPostDoPosting(void *);
+ extern M2C_UNK gGhttpProcessFileName;
  M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
     extern M2C_UNK data_020fd7d0;
     extern M2C_UNK data_020fd93c;
@@ -183,12 +183,12 @@ void func_0204ce20(void *arg0) {
     s32 temp_r5;
 
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x148);
-    temp_r0 = func_0204c300(arg0);
+    temp_r0 = ghiPostDoPosting(arg0);
     if (temp_r0 == 0) {
         if ((M2C_FIELD(arg0, s32 *, 0xFC) != 0) && (M2C_FIELD(arg0, s32 *, 0x38) != 0)) {
 
         } else {
-            AssertFailed(&data_020fd93c, &data_020fd864, &data_020fd7d0, 0x200);
+            AssertFailed(&data_020fd93c, &gGhttpProcessFileName, &data_020fd7d0, 0x200);
         }
         func_0204bc64(arg0);
         return;
@@ -224,14 +224,14 @@ void func_0204ceb8(void *arg0) {
 }
 
 s32 func_0204cf38(void *a){
-extern M2C_UNK data_020fd858,data_020fd864,data_020fd7e0,data_020fd968,data_020fd988;
+extern M2C_UNK gGhttpAssertConnection,gGhttpProcessFileName,data_020fd7e0,data_020fd968,data_020fd988;
 extern u16 gCharClassTable[];
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-s32 func_02068adc(void *,M2C_UNK *,...);
+s32 StringScanf(void *,M2C_UNK *,...);
 s32 major,minor,status,pos,n,ch;
-if(!a)AssertFailed(&data_020fd858,&data_020fd864,&data_020fd7e0,590);
-if(M2C_FIELD(a,s32 *,128)<=0)AssertFailed(&data_020fd968,&data_020fd864,&data_020fd7e0,591);
-n=func_02068adc(M2C_FIELD(a,void **,120),&data_020fd988,&major,&minor,&status,&pos);
+if(!a)AssertFailed(&gGhttpAssertConnection,&gGhttpProcessFileName,&data_020fd7e0,590);
+if(M2C_FIELD(a,s32 *,128)<=0)AssertFailed(&data_020fd968,&gGhttpProcessFileName,&data_020fd7e0,591);
+n=StringScanf(M2C_FIELD(a,void **,120),&data_020fd988,&major,&minor,&status,&pos);
 while((ch=M2C_FIELD(M2C_FIELD(a,void **,120),s8 *,pos))!=0 && char_space(ch))pos++;
 if(n!=3 || major<1 || status<100 || status>=600){
 M2C_FIELD(a,s32 *,252)=1;M2C_FIELD(a,s32 *,56)=7;return 0;
@@ -263,7 +263,7 @@ M2C_FIELD(a,s32 *,56)=7;
 M2C_FIELD(a,s32 *,76)=ghiGetLastSocketError(M2C_FIELD(a,s32 *,72));
 }
 
-s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
+s32 ghiDeliverFileData(void *arg0,s32 arg1,s32 arg2) {
  s32 ghiAppendDataToBuffer();
  M2C_UNK InvokeRequestCallback(void *,s32,s32);
  s32 a=0,b=0;
@@ -280,30 +280,30 @@ s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
  InvokeRequestCallback(arg0,a,b); return 1;
 }
 
-s32 func_0204d26c(void *arg0) {
+s32 ghiParseChunkSize(void *arg0) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    s32 func_02068adc(void *, M2C_UNK *, ...);
-    extern M2C_UNK data_020fd7f0;
-    extern M2C_UNK data_020fd864;
-    extern M2C_UNK data_020fd998;
-    extern M2C_UNK data_020fd99c;
+    s32 StringScanf(void *, M2C_UNK *, ...);
+    extern M2C_UNK gGhiParseChunkSizeName;
+    extern M2C_UNK gGhttpProcessFileName;
+    extern M2C_UNK gGhttpAssertLen;
+    extern M2C_UNK gGhttpFormatHex;
     s32 sp0;
 
     if (M2C_FIELD(arg0, s32 *, 0x120) == 0) {
-        AssertFailed(&data_020fd998, &data_020fd864, &data_020fd7f0, 0x321);
+        AssertFailed(&gGhttpAssertLen, &gGhttpProcessFileName, &gGhiParseChunkSizeName, 0x321);
     }
-    if (func_02068adc(arg0 + 0x114, &data_020fd99c, &sp0) != 1) {
+    if (StringScanf(arg0 + 0x114, &gGhttpFormatHex, &sp0) != 1) {
         return -1;
     }
     return sp0;
 }
 
-void func_0204d2d0(void *p,void *src,s32 n) {
-extern M2C_UNK data_020fd858,data_020fd864,data_020fd838,data_020fd9a0,data_020fd9a8;
+void ghiAppendToChunkHeaderBuffer(void *p,void *src,s32 n) {
+extern M2C_UNK gGhttpAssertConnection,gGhttpProcessFileName,gGhiAppendToChunkHeaderBufferName,gGhttpAssertData,data_020fd9a8;
 s32 left;
-if(!p)AssertFailed(&data_020fd858,&data_020fd864,&data_020fd838,0x333);
-if(!src)AssertFailed(&data_020fd9a0,&data_020fd864,&data_020fd838,0x334);
-if(n<0)AssertFailed(&data_020fd9a8,&data_020fd864,&data_020fd838,0x335);
+if(!p)AssertFailed(&gGhttpAssertConnection,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x333);
+if(!src)AssertFailed(&gGhttpAssertData,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x334);
+if(n<0)AssertFailed(&data_020fd9a8,&gGhttpProcessFileName,&gGhiAppendToChunkHeaderBufferName,0x335);
 if(!n)return;
 if(M2C_FIELD(p,s32 *,0x120)>=10)return;
 left=10-M2C_FIELD(p,s32 *,0x120);
@@ -313,80 +313,85 @@ M2C_FIELD(p,s32 *,0x120)+=left;
 *((u8 *)p+M2C_FIELD(p,s32 *,0x120)+0x114)=0;
 }
 
-s32 func_0204d39c(void *p, void *src, s32 n) {
-    s8 *func_02068ee0(s8 *, s32);
-    void func_0204d2d0(void *, void *, s32);
-    s32 func_0204d26c(void *);
-    s32 func_0204d1ac(void *, s32, s32);
+/* Decode the body of a chunked HTTP response: accumulate each chunk-size line,
+   deliver that many body bytes through the request's data callback, skip the
+   line after each chunk, and complete the request on the zero-size chunk.  A
+   request without chunked encoding passes its bytes straight through. */
+s32 ghiProcessIncomingFileData(void *p, void *src, s32 n) {
+    s8 *StringFindChar(s8 *, s32);
+    void ghiAppendToChunkHeaderBuffer(void *, void *, s32);
+    s32 ghiParseChunkSize(void *);
+    s32 ghiDeliverFileData(void *, s32, s32);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_020fd858, data_020fd864, data_020fd81c, data_020fd9a0, data_020fd9b4, data_020fd8a0;
+    extern M2C_UNK gGhttpAssertConnection, gGhttpProcessFileName, gGhiProcessIncomingFileDataName,
+        gGhttpAssertData, gGhttpAssertLenPositive, gGhttpAssertZero;
 
     u8 *q;
     s32 left;
     s32 state;
 
-    if (!p) AssertFailed(&data_020fd858, &data_020fd864, &data_020fd81c, 0x35d);
-    if (!src) AssertFailed(&data_020fd9a0, &data_020fd864, &data_020fd81c, 0x35e);
-    if (n <= 0) AssertFailed(&data_020fd9b4, &data_020fd864, &data_020fd81c, 0x35f);
-    if (!M2C_FIELD(p, s32 *, 0x110)) goto tail;
+    if (!p) AssertFailed(&gGhttpAssertConnection, &gGhttpProcessFileName, &gGhiProcessIncomingFileDataName, 0x35d);
+    if (!src) AssertFailed(&gGhttpAssertData, &gGhttpProcessFileName, &gGhiProcessIncomingFileDataName, 0x35e);
+    if (n <= 0) AssertFailed(&gGhttpAssertLenPositive, &gGhttpProcessFileName, &gGhiProcessIncomingFileDataName, 0x35f);
+    if (!((GHIConnection *)p)->chunked) goto tail;
 
     q = (u8 *)src;
     left = n;
 
     while (left > 0) {
-        state = M2C_FIELD(p, s32 *, 0x128);
-        if (state == 0) {
-            s8 *found = func_02068ee0((s8 *)q, 10);
+        state = ((GHIConnection *)p)->chunkState;
+        if (state == GHI_CHUNK_SIZE) {
+            s8 *found = StringFindChar((s8 *)q, 10);
             if (found) {
-                func_0204d2d0(p, q, (s32)(found - (s8 *)q));
+                ghiAppendToChunkHeaderBuffer(p, q, (s32)(found - (s8 *)q));
                 left -= (s32)((u8 *)(found + 1) - q);
                 q = (u8 *)(found + 1);
                 {
-                    s32 val = func_0204d26c(p);
-                    M2C_FIELD(p, s32 *, 0x124) = val;
+                    s32 val = ghiParseChunkSize(p);
+                    ((GHIConnection *)p)->chunkBytesLeft = val;
                     if (val == -1) {
-                        M2C_FIELD(p, s32 *, 0xFC) = 1;
-                        M2C_FIELD(p, s32 *, 0x38) = 7;
+                        ((GHIConnection *)p)->completed = 1;
+                        ((GHIConnection *)p)->result = 7;
                         return 0;
                     }
-                    if (val == 0) M2C_FIELD(p, s32 *, 0x128) = 3;
-                    else M2C_FIELD(p, s32 *, 0x128) = 1;
+                    if (val == 0) ((GHIConnection *)p)->chunkState = GHI_CHUNK_DONE;
+                    else ((GHIConnection *)p)->chunkState = GHI_CHUNK_DATA;
                 }
             } else {
-                func_0204d2d0(p, q, left);
+                ghiAppendToChunkHeaderBuffer(p, q, left);
                 return 1;
             }
-        } else if (state == 1) {
-            s32 t = M2C_FIELD(p, s32 *, 0x124);
+        } else if (state == GHI_CHUNK_DATA) {
+            s32 t = ((GHIConnection *)p)->chunkBytesLeft;
             if (t >= left) t = left;
-            if (!func_0204d1ac(p, (s32)q, t)) return 0;
+            if (!ghiDeliverFileData(p, (s32)q, t)) return 0;
             q += t;
-            M2C_FIELD(p, s32 *, 0x124) = M2C_FIELD(p, s32 *, 0x124) - t;
+            ((GHIConnection *)p)->chunkBytesLeft = ((GHIConnection *)p)->chunkBytesLeft - t;
             left -= t;
-            if (M2C_FIELD(p, s32 *, 0x124) == 0) M2C_FIELD(p, s32 *, 0x128) = 2;
-        } else if (state == 2) {
-            s8 *found = func_02068ee0((s8 *)q, 10);
+            if (((GHIConnection *)p)->chunkBytesLeft == 0) ((GHIConnection *)p)->chunkState = GHI_CHUNK_TRAILER;
+        } else if (state == GHI_CHUNK_TRAILER) {
+            s8 *found = StringFindChar((s8 *)q, 10);
             if (!found) return 1;
-            *((u8 *)p + 0x114) = 0;
-            M2C_FIELD(p, s32 *, 0x120) = 0;
+            ((GHIConnection *)p)->chunkHeader[0] = 0;
+            ((GHIConnection *)p)->chunkHeaderLen = 0;
             {
                 s32 seg = (s32)((u8 *)(found + 1) - q);
-                M2C_FIELD(p, s32 *, 0x124) = 0;
+                ((GHIConnection *)p)->chunkBytesLeft = 0;
                 q = (u8 *)(found + 1);
-                M2C_FIELD(p, s32 *, 0x128) = 0;
+                ((GHIConnection *)p)->chunkState = GHI_CHUNK_SIZE;
                 left -= seg;
             }
-        } else if (state == 3) {
-            M2C_FIELD(p, s32 *, 0xFC) = 1;
+        } else if (state == GHI_CHUNK_DONE) {
+            ((GHIConnection *)p)->completed = 1;
             return 1;
         } else {
-            AssertFailed(&data_020fd8a0, &data_020fd864, &data_020fd81c, 0x3e3);
+            AssertFailed(&gGhttpAssertZero, &gGhttpProcessFileName, &gGhiProcessIncomingFileDataName, 0x3e3);
             return 0;
         }
     }
     return 1;
 
 tail:
-    return func_0204d1ac(p, (s32)src, n);
+    return ghiDeliverFileData(p, (s32)src, n);
 }
 

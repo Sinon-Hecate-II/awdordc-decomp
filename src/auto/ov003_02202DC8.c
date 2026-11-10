@@ -39,7 +39,7 @@ u8 func_ov003_02202e94(s32 arg0, s32 arg1) {
 #pragma opt_common_subs reset
 void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 func_0207c8ec(u8, M2C_UNK);
-    s32 func_0207c928(u8, M2C_UNK);
+    s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208b758(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -152,7 +152,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
             }
             if (var_r0_3 & 0xFF) {
                 temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-                temp_r4_3 = func_0207c928((u8) temp_r0_3, 4);
+                temp_r4_3 = Modulo((u8) temp_r0_3, 4);
                 func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((func_0207c8ec((u8) temp_r0_3, 4) * 0x120) + ((temp_r4_3 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
             }
             M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
@@ -185,7 +185,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
         }
         if (var_r0_6 & 0xFF) {
             temp_r0_4 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-            temp_r4_4 = func_0207c928((u8) temp_r0_4, 4);
+            temp_r4_4 = Modulo((u8) temp_r0_4, 4);
             func_020808dc(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((func_0207c8ec((u8) temp_r0_4, 4) * 0x120) + ((temp_r4_4 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
         }
         M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
@@ -206,7 +206,7 @@ void func_ov003_02203280(void *arg0) {
     M2C_UNK func_ov003_021f1bd4();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fac(void *);
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     void *self;
     void *temp_r0;
     void **temp_r0_2;
@@ -229,7 +229,7 @@ void func_ov003_02203280(void *arg0) {
         M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, M2C_FIELD(((var_r7 * 0x18) + base), s32 *, 0xC));
         var_r7 += 1;
     } while ((u32) var_r7 < 8U);
-    data_02168f14 |= 0x2000;
+    gMapConfig |= 0x2000;
     func_02088da8(M2C_FIELD(self, s32 *, 0x4C));
     func_ov003_021f140c(2);
     M2C_FIELD(self, s8 *, 0x38) = 0;
@@ -245,7 +245,7 @@ void func_ov003_02203280(void *arg0) {
 #pragma opt_common_subs off
 void func_ov003_02203368(void *arg0,u32 arg1) {
 s32 func_0207c8ec(u8, M2C_UNK);
-s32 func_0207c928(u8, M2C_UNK);
+s32 Modulo(u8, M2C_UNK);
 M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
 M2C_UNK func_0208b758(s32, s32);
 M2C_UNK PlaySoundEffect(s32);
@@ -316,7 +316,7 @@ func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
 if (M2C_FIELD(r5, u8 *, 0x39) == 1) var_r0_3 = 1; else var_r0_3 = 0;
 if (var_r0_3 & 0xFF) {
 temp_r0_2 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-temp_r4_3 = func_0207c928(temp_r0_2, 4);
+temp_r4_3 = Modulo(temp_r0_2, 4);
 temp_r2_2=func_0207c8ec(temp_r0_2,4);
 temp_r4_3=temp_r4_3*8+0x60;
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);

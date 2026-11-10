@@ -33,7 +33,7 @@ void func_02007f68(CopyV3 *src, CopyV3 *dst) {
     *dst++ = *src++;
 }
 
-void func_02007f8c(u8 *dst, u32 val, u32 size) {
+void MI_CpuFill8(u8 *dst, u32 val, u32 size) {
     u32 v16;
     u32 v32;
     u32 n;

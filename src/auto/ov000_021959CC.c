@@ -1,5 +1,6 @@
 /* 15 functions from 0x021959CC to 0x0219694C (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 flags:2; } UnitKind959;
 
 #pragma opt_propagation off
@@ -528,37 +529,39 @@ s32 func_ov000_02196430(s16 *arg0) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov000_021965dc(void) {
+/* AI: pick the cheapest enemy-owned property the selected unit can attack, find
+ * a firing position next to it and plan the move there. */
+void SelectPropertyAttackDestination(void) {
 extern void **gCurrentMap; extern u8 **data_ov000_021df580;
 s32 GetUnitAttackClass(u32); s32 func_020a76d4(void *);
 void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
 s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
 s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
-s32 limit; s32 flags; s32 best=0x7fff; s32 y,x; s16 cand[2];
-if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind)==1)
-limit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
-else limit=0;
+s32 attackLimit; s32 terrain; s32 bestCost=0x7fff; s32 y,x; s16 target[2];
+if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind)==1)
+attackLimit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(data_ov000_021df580,u8 *,5);
+else attackLimit=0;
 func_ov000_02179be0(); func_ov000_02179d3c();
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
-if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]<0)continue;
-flags=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420);
-if(!(flags&0xe0))continue;
-if(func_020d27ec(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),(u8)flags)==1)continue;
-if(!func_ov000_0217d000(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind,flags))continue;
-if(best<=limit){
-if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>limit)continue;
-if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>=best)goto accept;
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]<0)continue;
+terrain=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN);
+if(!(terrain&MAP_TERRAIN_OWNER_MASK))continue;
+if(func_020d27ec(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_OWNER),(u8)terrain)==1)continue;
+if(!func_ov000_0217d000(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind,terrain))continue;
+if(bestCost<=attackLimit){
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]>attackLimit)continue;
+if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]>=bestCost)goto accept;
 continue;
-}else if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x]>best)continue;
+}else if(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x]>bestCost)continue;
 accept:
-cand[0]=x;cand[1]=y;
-best=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
+target[0]=x;target[1]=y;
+bestCost=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x];
 }}
-if(best==0x7fff)return;
-if(!FindAttackPosition(cand))return;
-if(!func_ov000_0217e6bc(cand[0],cand[1]))return;
-PlanMoveDestination(cand[0],cand[1]);
+if(bestCost==0x7fff)return;
+if(!FindAttackPosition(target))return;
+if(!func_ov000_0217e6bc(target[0],target[1]))return;
+PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {

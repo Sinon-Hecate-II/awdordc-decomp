@@ -18,11 +18,11 @@ void func_ov004_0221120c(M2C_UNK arg0) {
 }
 
 void func_ov004_0221122c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
-    extern u16 data_02168f14;
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
     extern M2C_UNK data_ov004_02218c00;
-    if ((u8)((u32)(data_02168f14 << 29) >> 29)) return;
-    func_01ffa42c(&data_ov004_02218c00, arg0);
+    if ((u8)((u32)(gMapConfig << 29) >> 29)) return;
+    CreateSpriteObject(&data_ov004_02218c00, arg0);
 }
 
 void func_ov004_02211260(void) {
@@ -48,11 +48,11 @@ void func_ov004_0221126c(M2C_UNK arg0) {
 }
 
 void func_ov004_022112b4(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
-    extern u16 data_02168f14;
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
     extern M2C_UNK data_ov004_02218be0;
-    if ((u8)((u32)(data_02168f14 << 29) >> 29)) return;
-    func_01ffa42c(&data_ov004_02218be0, arg0);
+    if ((u8)((u32)(gMapConfig << 29) >> 29)) return;
+    CreateSpriteObject(&data_ov004_02218be0, arg0);
 }
 
 void func_ov004_022112e8(void *arg0) {

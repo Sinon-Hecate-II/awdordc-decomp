@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u8 *gAiState;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[], data_ov000_021b55a0[], data_ov000_021e0f60[];
+extern s8 data_ov000_021b5580[], data_ov000_021b55a0[], gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df590[], data_ov000_021df594[];
 extern u8 gAiCommand[];
@@ -15,7 +15,7 @@ s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
     extern void **gCurrentMap;
     extern u8 *gAiState;
     extern u8 gAiTargetCandidates;
-    extern s8 data_ov000_021e0f60[];
+    extern s8 gAiRangeLayer[];
     u8 *entry;
     s32 i;
     s32 bestScore;
@@ -25,12 +25,12 @@ s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
     bestScore = 0;
     bestIndex = -1;
     entry = &gAiTargetCandidates;
-    SelectMapLayer(data_ov000_021e0f60);
+    SelectMapLayer(gAiRangeLayer);
     FloodFillUnitRange(areaX, areaY, 1, 3, 0);
     SelectMapLayer((u8 *)*gCurrentMap + 0x1E30);
     for (i = 0; i < *gAiState; i++, entry += 12) {
         if (entry[3] < 252U && entry[2] == 1 &&
-            data_ov000_021e0f60[entry[0] + entry[1] * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)] >= 0) {
+            gAiRangeLayer[entry[0] + entry[1] * M2C_FIELD(*gCurrentMap, u16 *, 0x5144)] >= 0) {
             score = entry[8];
             if (bestScore <= score) {
                 bestScore = score;
@@ -79,10 +79,10 @@ if(!kind||!IsFootUnitKind(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))co
 if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27))goto nextEntry;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
-SelectMapLayer(data_ov000_021e0f60);
+SelectMapLayer(gAiRangeLayer);
 FloodFillUnitRange(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,arg0?3:6,0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
+if(gAiRangeLayer[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
 }
 }
 }

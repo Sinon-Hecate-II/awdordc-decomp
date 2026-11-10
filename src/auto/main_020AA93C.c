@@ -6,7 +6,7 @@ static inline u32 aaeb0State(void *p) {
     return (q != 0) ? M2C_FIELD((void *) q, u16 *, 8) : 0xFFFFFFFF;
 }
 static inline void *allocAAB(void) {
-void *MemAlloc(s32); s32 func_020e34bc(s32); s32 func_02007f8c(s32,s32,s32);
+void *MemAlloc(s32); s32 func_020e34bc(s32); s32 MI_CpuFill8(s32,s32,s32);
     void *temp_r0;
     s32 temp_r0_2;
     temp_r0 = MemAlloc(0x24);
@@ -25,7 +25,7 @@ void *MemAlloc(s32); s32 func_020e34bc(s32); s32 func_02007f8c(s32,s32,s32);
         M2C_FIELD(temp_r0, u8 *, 0xF) = 0xFF;
         temp_r0_2 = func_020e34bc(0xC);
         M2C_FIELD(temp_r0, s32 *, 0x14) = temp_r0_2;
-        func_02007f8c(temp_r0_2, 0, 0xC);
+        MI_CpuFill8(temp_r0_2, 0, 0xC);
     }
     return temp_r0;
 }
@@ -146,7 +146,7 @@ void *func_020aa93c(u32 kind) {
 
 #pragma opt_common_subs reset
 void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_02088e68(void *, M2C_UNK);
     M2C_UNK func_02088e7c(void *, M2C_UNK);
@@ -203,7 +203,7 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
         M2C_FIELD(temp_r0, u8 *, 0xF) = 0xFF;
         temp_r0_2 = func_020e34bc(0xC);
         M2C_FIELD(temp_r0, s32 *, 0x14) = temp_r0_2;
-        func_02007f8c(temp_r0_2, 0, 0xC);
+        MI_CpuFill8(temp_r0_2, 0, 0xC);
     }
     M2C_FIELD(arg0, void **, 0x64) = temp_r0;
     func_020aad18(arg0);
@@ -505,7 +505,7 @@ void ScrollListTo(void *arg0,s16 arg1,s32 arg2){
 
 #pragma opt_common_subs off
 void func_020ab3b0(void *p,s32 value,s32 flag){
-s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);void UpdateListScroll(void *);
+s32 func_0207c8ec(s16,s16);s32 Modulo(s16,s16);void UpdateListScroll(void *);
 s32 limit,v,y; s16 a,b;
 *(volatile s32 *)((s8 *)p+0x14)=value;
 if(*(u8 *)((s8 *)p+0x24)){
@@ -515,7 +515,7 @@ limit=*(volatile s32 *)((s8 *)p+0x1c);
 while(v<limit){v=*(volatile s32 *)((s8 *)p+0x18);value=*(volatile s32 *)((s8 *)p+0x14);v=value+(v-limit+1);*(volatile s32 *)((s8 *)p+0x14)=v;limit=*(volatile s32 *)((s8 *)p+0x1c);}
 }else{limit=*(volatile s32 *)((s8 *)p+0x18);v=*(volatile s32 *)((s8 *)p+0x14);if(v<=limit){limit=*(volatile s32 *)((s8 *)p+0x1c);if(v>=limit)limit=v;}*(volatile s32 *)((s8 *)p+0x14)=limit;}
 y=*(volatile u8 *)((s8 *)p+0xa)*(s16)func_0207c8ec((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
-*(volatile s16 *)((s8 *)p+0x2c)=*(volatile u8 *)((s8 *)p+0xb)*(s16)func_0207c928((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
+*(volatile s16 *)((s8 *)p+0x2c)=*(volatile u8 *)((s8 *)p+0xb)*(s16)Modulo((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
 *(volatile s16 *)((s8 *)p+0x2e)=y;UpdateListScroll(p);if(flag!=1)return;
 a=*(s16 *)((s8 *)p+0x2c);*(s16 *)((s8 *)p+0x52)=a;*(s16 *)((s8 *)p+0x50)=a;
 b=*(s16 *)((s8 *)p+0x2e);*(s16 *)((s8 *)p+0x64)=b;*(s16 *)((s8 *)p+0x62)=b;}

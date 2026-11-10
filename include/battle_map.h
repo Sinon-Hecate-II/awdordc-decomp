@@ -42,6 +42,9 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_CELL_BITMAP     0x5201 /* bitmap of the occupied cells */
 #define MAP_WIDTH           0x5144 /* u16 map width in cells */
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
+#define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
+#define MAP_VIEW_Y          0x514a /* s16 view scroll y, in 1/16-cell units */
+#define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
 #define MAP_ID              0x5142 /* u16 map id, key into the per-map data records */
 #define MAP_PLAYER_COUNT    0x5141 /* u8 number of players the map has (1..4) */
@@ -62,6 +65,15 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_UNIT_FLAGS      0x04 /* u16 per-unit flags */
 #define MAP_UNIT_HEALTH     0x06 /* u16 health in the low seven bits */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
+#define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
+#define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
+#define MAP_UNIT_TARGET_NONE 0x3F /* a target coordinate of 0x3f means "no target" */
+#define MAP_UNIT_TARGET_X_MASK 0x003F /* low six bits of MAP_UNIT_TARGET: target x */
+#define MAP_UNIT_TARGET_Y_MASK 0x0FC0 /* bits 6..11 of MAP_UNIT_TARGET: target y */
+#define MAP_UNIT_TARGET_Y_NONE 0x0FC0 /* all six target-y bits set: no target */
+#define MAP_UNIT_AI_STATE   0x0B /* u8 low nibble AI step; bit 5 held while a move target is assigned */
+#define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
+#define MAP_UNIT_KIND_MASK  0x3F /* low six bits of MAP_UNIT_KIND: the kind, the owner is above */
 
 /* The two battle-participant scratch records, 0x20 bytes each: the side that
  * starts the fight at MAP_BATTLE_ATTACKER, its opponent at MAP_BATTLE_DEFENDER.

@@ -112,7 +112,7 @@ void func_0207a77c(s32 arg0) {
 
 void func_0207a7a4(s32 arg0, s32 arg1) {
     extern void *gCurrentMap;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern void *gKeyState;
     extern u8 data_02144cdc;
     extern u8 data_02100bac;
@@ -123,7 +123,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
     s32 r5 = func_0207d0b8();
     s32 r0v = func_0207d0d4();
     void *r9 = M2C_FIELD(gCurrentMap, void **, 0);
-    void *r8p = M2C_FIELD(data_02101e88, void **, 0);
+    void *r8p = M2C_FIELD(gTouchState, void **, 0);
     s32 r12f = 0;
     u32 lr = 0;
     s32 r6f = 0;

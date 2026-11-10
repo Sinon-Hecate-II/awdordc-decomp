@@ -25,7 +25,7 @@ s32 func_ov000_0217c4c8(void *);
 s32 GetUnitMoveRange(s32,u32);
 s32 func_ov000_0217c420(void *,void *);
 s32 IsUnitOnCurrentTeam(s32);
-extern u8 data_ov000_021b5bfc[],data_ov000_021b5c0f[];
+extern u8 gUnitKindStats[],data_ov000_021b5c0f[];
 s32 count=0,maxY,minY,maxX,minX,x,y,dx,dy; u32 dist;
 u8 *map,*record,*units; s32 id; void *dimensions;
 if(GetUnitAttackClass(unit->kind)==1)return func_ov000_0217c4c8(unit);
@@ -62,7 +62,7 @@ id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 record=units+id*14;
 if(func_ov000_0217c420(record,unit)){
 count++;
-if(data_ov000_021b5bfc[((Unit0217d428 *)record)->kind*112+19]&16)count++;
+if(gUnitKindStats[((Unit0217d428 *)record)->kind*112+19]&16)count++;
 }
 }
 }

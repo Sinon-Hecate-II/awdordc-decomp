@@ -407,14 +407,14 @@ DeleteSpriteObject(p);
 }
 
 void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102ae8;
     void *temp_r0;
 
     if (func_0209600c() != 0) {
         return;
     }
-    temp_r0 = func_01ffa42c(&data_02102ae8, arg2);
+    temp_r0 = CreateSpriteObject(&data_02102ae8, arg2);
     M2C_FIELD(temp_r0, s32 *, 0x5C) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x60) = arg1;
 }

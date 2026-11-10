@@ -40,7 +40,7 @@ s32 func_020cfb94(void); s32 func_020a22fc(s32); s32 func_ov003_02200808(u8);
 s32 func_020846a4(void);u8 *func_02084e64(void);s32 GetReadyPlayerMask(void);
 u8 *func_02084e24(s32); u8 func_020848c4(void);s32 func_020a23b4(s32);s32 func_020a2370(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
-void *func_020ab1c4(s32);s16 func_ov003_022004a8(u8);s32 func_0207c928(s32,s32);s32 func_0207c8ec(s32,s32);
+void *func_020ab1c4(s32);s16 func_ov003_022004a8(u8);s32 Modulo(s32,s32);s32 func_0207c8ec(s32,s32);
 void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void func_ov003_021e8354(s32,s32,s32);
 s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);
 u8 *p=arg0,*remote,*q;void *sprite;u16 bounds[4];u16 first;s16 x,y,w,h;s32 next;u8 i,j,k,tmp,n; s8 id; s32 mask;
@@ -96,7 +96,7 @@ switch(i){
 case 0:case 1:case 2:case 3:x=func_ov003_022004a8(i);y=16;w=56;h=56;break;
 case 4:case 5:case 6:case 7:x=func_ov003_022004a8(i-4);y=72;w=56;h=16;break;
 case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:
-next=i-8;x=func_0207c928(next,4)*49+31;y=func_0207c8ec(next,4)*18+90;w=47;h=16;break;
+next=i-8;x=Modulo(next,4)*49+31;y=func_0207c8ec(next,4)*18+90;w=47;h=16;break;
 case 20:x=178;y=144;w=47;h=16;break;
 case 21:case 22:case 23:case 24:x=func_ov003_022004a8(i-21)-1;y=128;w=58;h=16;break;
 case 25:x=96;y=164;w=64;h=24;break;

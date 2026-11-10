@@ -4,7 +4,7 @@ void func_020258ac(void *, u32 *, u32);
 
 void func_020251b8(s32 now) {
 void OS_DisableInterrupts(void);void OS_RestoreInterrupts(void);void TaskWake(void *);
-extern M2C_UNK data_02138cc8;extern M2C_UNK data_0212dca4;
+extern M2C_UNK data_02138cc8;extern M2C_UNK gSocketManager;
 u8 *p; s32 i; void *node; void *q;
 OS_DisableInterrupts();
 i=0;p=(u8 *)&data_02138cc8;
@@ -13,7 +13,7 @@ if(p[0x5a]!=0 && now-M2C_FIELD(p,s32 *,0x50)>957)p[0x5a]=0;
 i++;p+=0x5c;
 }while(i<4);
 OS_RestoreInterrupts();
-node=M2C_FIELD(&data_0212dca4,void **,8);
+node=M2C_FIELD(&gSocketManager,void **,8);
 while(node!=NULL){
 q=M2C_FIELD(node,void **,0xa4);
 if(q!=NULL && M2C_FIELD(q,void **,0)!=NULL && M2C_FIELD(q,u8 *,9)!=0 && M2C_FIELD(q,u8 *,8)==4 && M2C_FIELD(M2C_FIELD(q,void **,12),u8 *,0x455)<8 && now-M2C_FIELD(q,s32 *,16)>239 && M2C_FIELD(q,s32 *,4)==2){
@@ -24,9 +24,9 @@ node=M2C_FIELD(node,void **,0x68);
 }
 
 void func_02025298(void) {
-    M2C_UNK func_02007f8c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_02138cc8;
-    func_02007f8c(&data_02138cc8, 0, 0x170);
+    MI_CpuFill8(&data_02138cc8, 0, 0x170);
 }
 
 void func_020252b4(M2C_UNK *arg0, void *arg1, u32 arg2) {
@@ -93,8 +93,8 @@ offset+=4;
 M2C_FIELD(state,u32*,0)+=a;M2C_FIELD(state,u32*,4)+=b;M2C_FIELD(state,u32*,8)+=c;M2C_FIELD(state,u32*,12)+=d;
 }
 
-void func_02025700(void *arg0) {
-    func_02007f8c(arg0, 0, 0x58);
+void MD5_Init(void *arg0) {
+    MI_CpuFill8(arg0, 0, 0x58);
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
     M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
     M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
@@ -117,7 +117,7 @@ MI_CpuCopy8(arg1+count,(u8 *)arg0+24+index,arg2-count);
 }
 
 
-void func_02025800(void *arg0, M2C_UNK *arg1) {
+void MD5_Final(void *arg0, M2C_UNK *arg1) {
     void func_020252b4(M2C_UNK *, void *, u32);
     void func_02025748(void *, s32, u32);
     extern M2C_UNK data_020fb0a4;
@@ -174,7 +174,7 @@ i+=4;
 }while(i<arg2);
 }
 #pragma opt_peephole reset
-void func_02025938(void *state,s32 block){
+void SHA1_Transform(void *state,s32 block){
 u32 a,b,c,d,e; s32 n,i;u32 w[16];
 a=((u32 *)state)[0];b=((u32 *)state)[1];c=((u32 *)state)[2];d=((u32 *)state)[3];e=((u32 *)state)[4];
 func_020258f0(w,(u8 *)block,64);n=0;
@@ -247,8 +247,8 @@ n+=1;
 ((u32 *)state)[0]+=a;((u32 *)state)[1]+=b;((u32 *)state)[2]+=c;((u32 *)state)[3]+=d;((u32 *)state)[4]+=e;
 }
 
-void func_02025fc0(void *arg0) {
-    func_02007f8c(arg0, 0, 0x5C);
+void SHA1_Init(void *arg0) {
+    MI_CpuFill8(arg0, 0, 0x5C);
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
     M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
     M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
@@ -257,8 +257,8 @@ void func_02025fc0(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK func_02026014(void *arg0,s32 arg1,u32 arg2) {
-void MI_CpuCopy8(s32,void *,u32); void func_02025938(void *,s32);
+M2C_UNK SHA1_Update(void *arg0,s32 arg1,u32 arg2) {
+void MI_CpuCopy8(s32,void *,u32); void SHA1_Transform(void *,s32);
 s32 index; u32 low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x18);
 index=(old>>3)&63;
@@ -268,13 +268,13 @@ count=64-index;
 M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
 if(arg2>=count) {
 MI_CpuCopy8(arg1,(u8 *)arg0+0x1c+index,count);
-index=0;func_02025938(arg0,(s32)arg0+0x1c);
-while(count+63<arg2){func_02025938(arg0,arg1+count);count+=64;}
+index=0;SHA1_Transform(arg0,(s32)arg0+0x1c);
+while(count+63<arg2){SHA1_Transform(arg0,arg1+count);count+=64;}
 }else count=0;
 MI_CpuCopy8(arg1+count,(u8 *)arg0+0x1c+index,arg2-count);
 }
 #pragma opt_strength_reduction reset
-void func_020260cc(void *arg0, M2C_UNK *arg1) {
+void SHA1_Final(void *arg0, M2C_UNK *arg1) {
     extern M2C_UNK data_020fb1e4;
     s32 temp_r0;
     s32 var_r2;
@@ -286,16 +286,16 @@ void func_020260cc(void *arg0, M2C_UNK *arg1) {
     } else {
         var_r2 = 0x78 - temp_r0;
     }
-    func_02026014(arg0, &data_020fb1e4, var_r2);
-    func_02026014(arg0, arg1, 8);
+    SHA1_Update(arg0, &data_020fb1e4, var_r2);
+    SHA1_Update(arg0, arg1, 8);
     func_020258ac(arg1, arg0, 0x14);
 }
 
 void func_02026134(M2C_UNK arg0, M2C_UNK arg1) {
     void func_020258ac(void *, u32 *, u32);
-    M2C_UNK func_02026014();
+    M2C_UNK SHA1_Update();
     extern M2C_UNK data_020fb1e5;
-    func_02026014(arg0, &data_020fb1e5, 0x2C);
+    SHA1_Update(arg0, &data_020fb1e5, 0x2C);
     func_020258ac(arg1, arg0, 0x14);
 }
 

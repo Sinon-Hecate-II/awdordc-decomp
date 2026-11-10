@@ -570,7 +570,7 @@ void func_0209c8d4(void) {
     extern M2C_UNK data_0215c340;
     extern s32 data_0215d8a0[2];
     extern s32 data_0215d8a8[58];
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     extern void **data_027e0058;
     s32 temp_r0;
     s32 temp_r0_2;
@@ -615,7 +615,7 @@ void func_0209c8d4(void) {
                 func_02091c20(0x1E, 1);
                 break;
             }
-            if (!(((u32) (data_02168f14 << 0x1D) >> 0x1D) & 0xFF)) {
+            if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
                 temp_r5 = data_0215d8a8[temp_r9];
                 if ((u32) M2C_FIELD(&data_0215c334, u16 *, 6) >= (u32) ((u32) (temp_r5 << 6) >> 0x17)) {
                     temp_r3 = (((temp_r5 & ~0x78) | ((u32) (*(s32 *)((u8 *)&data_0215c340 + (temp_r11 * 0xC)) << 0x1C) >> 0x19)) & 0xFC01FFFF) | ((u32) (M2C_FIELD(&data_0215c334, u16 *, 6) << 0x17) >> 6);

@@ -39,7 +39,7 @@ static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {
 
 
 void func_ov009_022222d0(s32 arg0) {
-    M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32, void *, s32);
     s32 func_0208206c();
     s32 func_02082088();
@@ -49,7 +49,7 @@ void func_ov009_022222d0(s32 arg0) {
     u8 sp0[0xC];
     s32 temp_r4;
     if (func_020c5400(sp0) == 0) return;
-    func_02007f8c(spC,0,0x1A);
+    MI_CpuFill8(spC,0,0x1A);
     temp_r4=func_0208206c();
     MI_CpuCopy8(temp_r4,spC,func_02082088()*2);
     func_ov009_02224d9c(0xF,sp0,0x28,(u16)(1<<arg0));
@@ -468,7 +468,7 @@ void func_ov009_02223078(void *arg0) {
     M2C_UNK func_ov009_02221320(M2C_UNK);
     s32 func_ov009_02224194(void);
     s32 func_ov009_02223244(void);
-    void func_020067a8(void *, s32);
+    void DC_InvalidateRange(void *, s32);
     s32 func_0201a09c(void *);
     s32 func_ov009_02222f84(void);
     s32 func_ov009_02222348(s32);
@@ -544,7 +544,7 @@ test:
     t8 = M2C_FIELD(arg0, u16 *, 8);
     if(t8==3 || t8==4) goto done;
     if (t8 == 5) {
-        func_020067a8(&data_ov009_02226a80, 0xc0);
+        DC_InvalidateRange(&data_ov009_02226a80, 0xc0);
         if (M2C_FIELD(&data_ov009_022268e0, s32 *, 0x30) != 0 &&
             func_0201a09c(&data_ov009_02226a80) != 0) {
             cb = M2C_FIELD(&data_ov009_022268e0, void (**)(void *), 0x4c);

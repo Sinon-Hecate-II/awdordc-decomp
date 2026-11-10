@@ -23,14 +23,14 @@ void func_020543e8(void **arg0, void *arg1) {
         }
         func_020496cc(M2C_FIELD(temp_r5, s32 *, 4), 2);
         func_020496b8(M2C_FIELD(temp_r5, s32 *, 4));
-        func_020377c4(M2C_FIELD(temp_r5, void **, 0x18));
+        gpiFree(M2C_FIELD(temp_r5, void **, 0x18));
         M2C_FIELD(temp_r5, void **, 0x18) = NULL;
-        func_020377c4(M2C_FIELD(temp_r5, void **, 8));
+        gpiFree(M2C_FIELD(temp_r5, void **, 8));
         M2C_FIELD(temp_r5, void **, 8) = NULL;
     }
-    func_020377c4(M2C_FIELD(arg1, void **, 4));
+    gpiFree(M2C_FIELD(arg1, void **, 4));
     M2C_FIELD(arg1, void **, 4) = NULL;
-    func_020377c4(arg1);
+    gpiFree(arg1);
 }
 
 void func_02054484(void **a,void *b) {
@@ -98,7 +98,7 @@ M2C_UNK func_02054600(M2C_UNK arg0, void *arg1) {
  * the peer, checks its \sig\ signature against the MD5 of the session text, sends
  * \aack\ or \anack\, then marks the peer connected with the reply's player id. */
 s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
-    void *func_02037794(M2C_UNK);
+    void *gpiMalloc(M2C_UNK);
     s32 Md5Hex(M2C_UNK, s32, M2C_UNK);
     s32 gpiStringDup(s32);
     s32 gpiGetTime(M2C_UNK);
@@ -197,14 +197,14 @@ end:
 }
 #pragma pop
 s32 gpiSendQueuedMessages(void **arg0,void *arg1){
-s32 func_02048688(s32); void *func_02048690(s32,s32);
+s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32);
 M2C_UNK func_0204890c(s32,s32);
 s32 gpiSendBufferedData(void **,s32,void *,s32 *,s32,M2C_UNK *);
 extern M2C_UNK data_020febb0;
 s32 sp8; void *p; s32 result;
 if(M2C_FIELD(arg1,s32 *,0x30))return 0;
-while(func_02048688(M2C_FIELD(arg1,s32 *,0x38))){
-p=func_02048690(M2C_FIELD(arg1,s32 *,0x38),0);
+while(Vector_GetCount(M2C_FIELD(arg1,s32 *,0x38))){
+p=Vector_GetItem(M2C_FIELD(arg1,s32 *,0x38),0);
 result=gpiSendBufferedData(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
 if(sp8 || result){M2C_FIELD(arg1,s32 *,0)=0x6a;return 0;}
 if(M2C_FIELD(p,s32 *,12)!=M2C_FIELD(p,s32 *,8))break;
@@ -217,7 +217,7 @@ return 0;
  * socket, then parse each incoming message and queue the player events it
  * carries (player announcement, challenge reply, game data). */
 s32 gpiProcessPeer(void **gpi, void *peer) {
-    void *func_02037794(M2C_UNK);
+    void *gpiMalloc(M2C_UNK);
     s32 gpiStringDup(s32);
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK gpiSendMessageToPlayer(void **, s32, M2C_UNK, M2C_UNK *);
@@ -286,7 +286,7 @@ loop_15:
                 playerCallback.first = callbackFn;
                 playerCallback.second = M2C_FIELD(conn, s32 *, 0x1C0);
                 if (callbackFn != 0) {
-                    eventData = func_02037794(0xC);
+                    eventData = gpiMalloc(0xC);
                     if (eventData == NULL) {
                         gpiSetErrorString(gpi, &gpiErrorOutOfMemory);
                         return 1;
@@ -341,16 +341,16 @@ M2C_UNK func_02054fa8(void **a,void *b) {
  M2C_UNK func_0204861c(s32);
  func_020496cc(M2C_FIELD(b,s32 *,8),2);
  func_020496b8(M2C_FIELD(b,s32 *,8));
- func_020377c4(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=NULL;
- func_020377c4(M2C_FIELD(b,void **,40));M2C_FIELD(b,void **,40)=NULL;
+ gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=NULL;
+ gpiFree(M2C_FIELD(b,void **,40));M2C_FIELD(b,void **,40)=NULL;
  if(M2C_FIELD(b,s32 *,56)) {func_0204861c(M2C_FIELD(b,s32 *,56));M2C_FIELD(b,s32 *,56)=0;}
- func_020377c4(b);
+ gpiFree(b);
 }
 
 /* Unlinks an entry from a manager's 0x434 singly-linked list and releases its children. */
 void func_02055008(void **manager, void *entry) {
-    s32 func_02048688(s32);
-    void *func_02048690(s32, M2C_UNK);
+    s32 Vector_GetCount(s32);
+    void *Vector_GetItem(s32, M2C_UNK);
     M2C_UNK func_0204890c(s32, M2C_UNK);
     M2C_UNK func_0204f89c(void **, s32, s32, s32);
     M2C_UNK func_02054fa8(void **, void *);
@@ -393,15 +393,15 @@ loop_5:
 block_8:
     M2C_FIELD(previous, void **, 0x3C) = (void *) M2C_FIELD(entry, void **, 0x3C);
 block_9:
-    if (func_02048688(M2C_FIELD(entry, s32 *, 0x38)) != 0) {
+    if (Vector_GetCount(M2C_FIELD(entry, s32 *, 0x38)) != 0) {
         do {
-            item = func_02048690(M2C_FIELD(entry, s32 *, 0x38), 0);
+            item = Vector_GetItem(M2C_FIELD(entry, s32 *, 0x38), 0);
             count = M2C_FIELD(item, s32 *, 0x10);
             if (count < 0x64) {
                 func_0204f89c(manager, M2C_FIELD(entry, s32 *, 0xC), count, M2C_FIELD(item, s32 *, 0) + M2C_FIELD(item, s32 *, 0x14));
             }
             func_0204890c(M2C_FIELD(entry, s32 *, 0x38), 0);
-        } while (func_02048688(M2C_FIELD(entry, s32 *, 0x38)) != 0);
+        } while (Vector_GetCount(M2C_FIELD(entry, s32 *, 0x38)) != 0);
     }
     func_02054fa8(manager, entry);
 }
@@ -476,17 +476,17 @@ void *func_0205528c(void **a,s32 b) {
 }
 
 void func_020552c4(s32 *arg0) {
-    M2C_UNK func_020377c4(s32);
-    func_020377c4(*arg0);
+    M2C_UNK gpiFree(s32);
+    gpiFree(*arg0);
     *arg0 = 0;
 }
 
 void *func_020552e0(void **a,s32 b,s32 c) {
- void *func_02037794(s32);
+ void *gpiMalloc(s32);
  s32 gpiGetTime(s32);
  s32 func_02048558(s32,s32,void *);
  void *base=*a;
- void *p=func_02037794(64);
+ void *p=gpiMalloc(64);
  if(!p)return NULL;
  func_02065210(p,0,64);
  M2C_FIELD(p,s32 *,0)=100;

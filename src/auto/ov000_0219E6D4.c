@@ -391,7 +391,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_020cc028(void);
     s32 func_ov000_0219f6d0(void);
     s32 func_ov000_0219f6fc(void);
-    void func_020bbed4(void);
+    void AiProduceCargoUnit(void);
     void func_020bc0e0(void);
     void func_020bbe10(void);
     void func_020bb028(void);
@@ -484,7 +484,7 @@ s32 func_ov000_0219f0d8(void) {
     case 21:
         return func_ov000_0219f6fc();
     case 22:
-        func_020bbed4();
+        AiProduceCargoUnit();
         BattleUpdateUnitCursor();
         break;
     case 23:
@@ -509,20 +509,20 @@ s32 func_ov000_0219f0d8(void) {
 #pragma opt_propagation reset
 void func_ov000_0219f3fc(void) {
     void PlaySoundAtTile(s32, u8, u8);
-    void func_020a67fc(u8, u8, u8);
+    void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
     extern s8 *data_ov000_021df580;
-    func_020a67fc(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
+    ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
     PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
     M2C_FIELD(data_ov000_021df580, s8 *, 1) = 9;
 }
 
 void func_ov000_0219f448(void) {
     void PlaySoundAtTile(s32, u8, u8);
-    void func_020a67fc(u8, u8, u8);
+    void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
     extern s8 *data_ov000_021df580;
-    func_020a67fc(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
+    ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
     PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
     M2C_FIELD(data_ov000_021df580, s8 *, 1) = 9;
 }

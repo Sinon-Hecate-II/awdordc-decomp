@@ -6,7 +6,7 @@ static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 func_0207c8e
 extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],data_ov000_021b5c5c[],data_ov000_021b5c5d[];
 extern void **gCurrentMap;
 
-s32 func_020a67fc(s32 a, s32 b, s32 c) {
+s32 ProduceUnit(s32 a, s32 b, s32 c) {
     s32 func_020d2d18(u16, s32);
     s32 func_020a6658(s32, s32, s32);
     void func_020d2b10(u16, s32);
@@ -34,7 +34,7 @@ s32 func_020a67fc(s32 a, s32 b, s32 c) {
 }
 
 #pragma peephole off
-void func_020a68d4(void) {
+void ResetMapUnits(void) {
     extern void **gCurrentMap;
     s32 i;
     s32 offset;
@@ -123,9 +123,9 @@ void func_020a6b90(void *arg0) {
 }
 
 void func_020a6be4(s32 arg0, void *unused) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02120670;
-    M2C_FIELD(func_01ffa42c(&data_02120670), s32 *, 0x54) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02120670), s32 *, 0x54) = arg0;
 }
 
 void func_020a6c00(void *p){u8 *func_020e34bc(s32);u8 *bits;s32 x; s32 y; s32 base; u32 pos;M2C_FIELD(p,s32 *,0x5c)=1;M2C_FIELD(p,s32 *,0x60)=1;bits=func_020e34bc(0xa1);M2C_FIELD(p,u8 **,0x54)=bits;base=*gCurrentMap;for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){pos=x+M2C_FIELD((base+((u32)y<<1)),u16 *,0x3758);bits[pos>>3]&=((1<<(pos&7)) ^ -1);base=*gCurrentMap;}}}

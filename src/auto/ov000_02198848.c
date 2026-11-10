@@ -80,13 +80,13 @@ void AddPlayerThreatInfluence(u8 player) {
 }
 
 void func_ov000_02198c08(void) {
-    M2C_UNK func_02007f8c(M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_ov000_0219c508(s32, M2C_UNK);
     extern s32 *gCurrentMap;
     extern M2C_UNK data_ov000_021e0a58;
     func_ov000_0219c508(*gCurrentMap + 0x2840, 0);
     func_ov000_0219c508(*gCurrentMap + 0x2D48, 0);
-    func_02007f8c(&data_ov000_021e0a58, 0, 0x508);
+    MI_CpuFill8(&data_ov000_021e0a58, 0, 0x508);
 }
 
 void func_ov000_02198c60(void) {
@@ -143,7 +143,7 @@ void func_ov000_02198c60(void) {
 void func_ov000_02198da4(u8 player) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 s32 i, value; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(14))return;
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
@@ -155,7 +155,7 @@ s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(m
 if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
 }
 kind=unit->kind;
-if(data_ov000_021b5bfc[kind*112+19]&16)continue;
+if(gUnitKindStats[kind*112+19]&16)continue;
 value=func_ov000_02197434(kind,14);
 if(value<25)continue;
 if(!func_ov000_02197814(M2C_FIELD(*gCurrentMap,s32 *,0x52d0),unit,1))continue;
@@ -192,7 +192,7 @@ void func_ov000_02198f60(void) {
 void func_ov000_02198fec(u8 player) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
 
     s32 *map;
     Unit98 *unit;
@@ -238,7 +238,7 @@ void func_ov000_02198fec(u8 player) {
             }
         }
         kind = unit->kind & 0x3f;
-        if (data_ov000_021b5bfc[kind * 112 + 0x13] & 0x10) {
+        if (gUnitKindStats[kind * 112 + 0x13] & 0x10) {
             continue;
         }
         value = func_ov000_02197434(kind, 14);
@@ -314,7 +314,7 @@ void func_ov000_02199330(void) {
 void func_ov000_021993bc(u8 player) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021b5bfc[];
+extern u8 gUnitKindStats[];
 s32 value, bonus, i; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(6))return;
 bonus=GetDamageBonus((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));

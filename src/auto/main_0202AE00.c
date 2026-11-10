@@ -425,9 +425,9 @@ channel=p->channel;
 func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
 #pragma scheduling on
-void func_0202bd00(void *a,s32 b,s32 c,s32 d){M2C_UNK func_0200b774(void *);s32 func_0200b95c(void *,s32);s32 func_0200b9e4(void *,Unk02BDFileRange);s32 func_0202bd7c(void *,s32,s32);extern void *data_0213c250;
+void func_0202bd00(void *a,s32 b,s32 c,s32 d){M2C_UNK InitFileRequest(void *);s32 func_0200b95c(void *,s32);s32 func_0200b9e4(void *,Unk02BDFileRange);s32 func_0202bd7c(void *,s32,s32);extern void *data_0213c250;
 M2C_FIELD(a,s32 *,140)=0;M2C_FIELD(a,s32 *,132)=0;M2C_FIELD(a,s32 *,136)=0;
-if(!func_0200b95c(a+124,b))return;func_0200b774(a+52);
+if(!func_0200b95c(a+124,b))return;InitFileRequest(a+52);
 if(!func_0200b9e4(a+52,M2C_FIELD(a,Unk02BDFileRange *,124)))return;M2C_FIELD(a,s32 *,48)=1;
 if(func_0202bd7c(a,c,d))data_0213c250=a;
 }

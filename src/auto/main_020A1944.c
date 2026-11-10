@@ -147,11 +147,11 @@ s32 func_020a1da0(s32 arg0) {
 }
 
 s32 func_020a1e44(s32 player) {
-extern s32 *gCurrentMap;extern u16 data_02168f14;
+extern s32 *gCurrentMap;extern u16 gMapConfig;
 s32 IsPlayerActive(s32);s32 func_0207c9c8(s32,s32);
 s32 a,b,c,i,result;void *p,*q;
 if(!IsPlayerActive(player))return 0;
-if((u32)(data_02168f14<<29)>>29==0){
+if((u32)(gMapConfig<<29)>>29==0){
 a=0;b=0;c=0;
 for(i=1,p=(u8 *)*gCurrentMap+140;i<5;p=(u8 *)p+140,i++){
 if(!M2C_FIELD(p,u8 *,0x67c2))continue;
@@ -505,10 +505,10 @@ s8 func_020a27a0(s32 arg0, s32 arg1) {
 }
 
 s32 func_020a27b8(s32 arg0, s32 arg1) {
-    extern u16 data_02168f14;
+    extern u16 gMapConfig;
     s32 var_r1;
 
-    if (((u32) (data_02168f14 << 0x12) >> 0x1F) == 0) {
+    if (((u32) (gMapConfig << 0x12) >> 0x1F) == 0) {
         return -1;
     }
     if (arg0 == 0) {

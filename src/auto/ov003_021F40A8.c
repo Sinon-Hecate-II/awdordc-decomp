@@ -31,8 +31,8 @@ void func_ov003_021f40a8(void *arg0) {
     extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_022100f4[16];
     void *func_020e34bc(s32);
-    void func_02007f8c(void *,s32,s32);
-    s32 func_0207c928(s32,s32);
+    void MI_CpuFill8(void *,s32,s32);
+    s32 Modulo(s32,s32);
     s32 func_0207c8ec(s32,s32);
     void func_02087d18(void *,s16,s16,s32,s32,u16,s32);
     void *func_020ab1c4(void *);
@@ -278,12 +278,12 @@ M2C_FIELD(o, u8 *, 13) = 255;
 M2C_FIELD(o, u8 *, 12) = -1;
 M2C_FIELD(o, u8 *, 14) = 0;
 M2C_FIELD(o, u8 *, 15) = 255;
-n=(s16)n*12; M2C_FIELD(o,void **,20)=func_020e34bc(n); func_02007f8c(M2C_FIELD(o,void **,20),0,n);
+n=(s16)n*12; M2C_FIELD(o,void **,20)=func_020e34bc(n); MI_CpuFill8(M2C_FIELD(o,void **,20),0,n);
 }
 M2C_FIELD(arg0,void **,0x70)=o;
 for(i=0; i<(s16)(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,6)*M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8));i++){
  n=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8);
- x=func_0207c928(i,n); y=func_0207c8ec(i,n);
+ x=Modulo(i,n); y=func_0207c8ec(i,n);
  func_02087d18(M2C_FIELD(arg0,void **,0x70),(s16)(x*120+6),(s16)(y*16+40),120,16,(u16)(i+10),14);
 }
 p=M2C_FIELD(arg0,void **,0x68);

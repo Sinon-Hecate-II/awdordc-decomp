@@ -146,13 +146,13 @@ SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
 void func_ov000_02181c10(void) {
 s32 func_ov000_0218cb20(void);
 s32 func_ov000_021aa3bc(void);
-extern void *data_ov000_021df57c;
+extern void *gAiSettings;
 extern void *data_ov000_021df580;
 s32 (*callback)(void);
 if(func_ov000_02180410()!=0)return;
 func_ov000_02198c60();
 if(func_ov000_0218cb20()!=0)return;
-callback=M2C_FIELD(data_ov000_021df57c,s32 (**)(void),4);
+callback=M2C_FIELD(gAiSettings,s32 (**)(void),4);
 if(callback==NULL) {if(!func_ov000_021aa3bc())return;} else {if(!callback())return;}
 M2C_FIELD(data_ov000_021df580,u16 *,8)|=0x100;
 func_ov000_0218d040(0);

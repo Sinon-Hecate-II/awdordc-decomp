@@ -5,7 +5,7 @@ typedef struct { u8 pad[0x40]; u32 tile:9; u32 palette:9; u32 priority:8; u32 ot
 
 #pragma opt_common_subs on
 void func_020e0f14(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
@@ -61,7 +61,7 @@ void func_020e0f14(M2C_UNK arg0) {
     s32 var_r0_4;
     s16 c0;
 
-    temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
+    temp_r0 = CreateSpriteObject(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
         return;
     }
@@ -209,7 +209,7 @@ void func_020e0f14(M2C_UNK arg0) {
 }
 #pragma opt_common_subs reset
 void func_020e147c(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
@@ -266,7 +266,7 @@ void func_020e147c(M2C_UNK arg0) {
     s16 c0;
     u16 tile;
 
-    temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
+    temp_r0 = CreateSpriteObject(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
         return;
     }

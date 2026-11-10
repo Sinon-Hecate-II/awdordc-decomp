@@ -94,7 +94,7 @@ s32 func_020ab664(void *arg0, s16 arg1, s32 flag, s32 arg3) {
 
     maxRow = M2C_FIELD(arg0, s32 *, 0x18);
 
-    if (func_0207c928((s16)maxRow, M2C_FIELD(arg0, s16 *, 0x8))
+    if (Modulo((s16)maxRow, M2C_FIELD(arg0, s16 *, 0x8))
         != M2C_FIELD(arg0, s16 *, 0x8) - 1) {
         if (row < 0) {
             s16 newRow = (s16)(row + maxRow + 1);

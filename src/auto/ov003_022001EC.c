@@ -336,12 +336,12 @@ s32 func_ov003_02200d80(s32 a, s32 b) {
 }
 
 void func_ov003_02200dc8(void *a,u32 b) {
-s32 func_0207c928(u8,s32);
+s32 Modulo(u8,s32);
 s32 func_01ffa810(u32);
 u8 v;s32 n;
 if(b<8)M2C_FIELD(a,u8 *,6)=b;
 else if(b==8){
-v=func_0207c928(M2C_FIELD(a,u8 *,6),4);
+v=Modulo(M2C_FIELD(a,u8 *,6),4);
 n=v+4;
 M2C_FIELD(M2C_FIELD(&((u8 *)a)[b*4],void **,0xe8),s16 *,0x68)=n;
 M2C_FIELD(M2C_FIELD(&((u8 *)a)[b*4],void **,0xe8),s16 *,0x6a)=v;

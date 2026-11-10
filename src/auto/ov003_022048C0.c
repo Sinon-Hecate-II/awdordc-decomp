@@ -52,7 +52,7 @@ void func_ov003_02204ff4(void *arg0) {
 void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK AddSprite(u16, u8, u16, M2C_UNK *, s32);
     s32 func_0207c8ec(u8, M2C_UNK);
-    s32 func_0207c928(u8, M2C_UNK);
+    s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
     M2C_UNK func_020a92bc(void *, s32);
@@ -101,7 +101,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     var_r4 = 0;
     sp24 = 0x3FF;
     do {
-        temp_r6 = spC + (func_0207c928(var_r4, 4) << 6);
+        temp_r6 = spC + (Modulo(var_r4, 4) << 6);
         temp_r5 = (func_0207c8ec(var_r4, 4) * 0x48) + sp8;
         temp_r10 = temp_r5 - 0x10;
         temp_r9 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x40) + (var_r4 * 4)), void **, 8);

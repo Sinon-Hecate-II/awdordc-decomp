@@ -36,7 +36,7 @@ void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
  M2C_UNK p[22];func_ov001_0217073c(p);func_ov001_02170764(p,b,c);func_ov001_021707dc(a,p);
 }
 
-void func_ov001_02171128(void){u64 func_02007004(void);void func_02072088(u64,u64);func_02072088(func_02007004()<<6,0x82ea);}
+void func_ov001_02171128(void){u64 GetSystemTick(void);void func_02072088(u64,u64);func_02072088(GetSystemTick()<<6,0x82ea);}
 
 #pragma thumb on
 s32 func_ov001_02171178(s8 *a, s32 b) {

@@ -14,7 +14,7 @@ static inline u16 Ov003DrawItem(void *object, s32 index) {
 extern void **gCur3DSpriteEngine;
 extern u16 data_ov003_0220feac[];
 s32 GetSpriteAnimValue(void *);
-s32 func_0207c928(s32,s32);
+s32 Modulo(s32,s32);
 s32 func_0207c8ec(s32,s32);
 void func_01ff9ce8(s32);
 s32 func_ov003_021f3f5c(s16,s16,s32,s32,s32,s32,s32,s32);
@@ -33,7 +33,7 @@ s32 func_020c7ef4(u16);
 s32 func_02086960(u16);
 void *func_020cfbdc(u16);
 void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
-extern u8 data_027e0064[];
+extern u8 gSpriteDesc16x16[];
 s32 func_020abb24(void *);
 void func_0208e0b8(s16,s16,s16,u16,s32);
 s16 func_ov003_021f2780(void *,void *);
@@ -60,10 +60,10 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  for(;i<=end;i++){
  p=M2C_FIELD(arg0,void **,0x44);
  item=Ov003DrawItem(arg0,i);
- px=x+func_0207c928(i,n)*120;
+ px=x+Modulo(i,n)*120;
  py=y+func_0207c8ec(i,n)*16;
- tx=func_0207c928(i,n)*15;
- ty=func_0207c928(func_0207c8ec(i,n)*2,32);
+ tx=Modulo(i,n)*15;
+ ty=Modulo(func_0207c8ec(i,n)*2,32);
  if(!func_ov003_021f3f5c((s16)px,(s16)py,240,16,6,40,240,112)){
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))==0){
@@ -72,7 +72,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  }
  continue;
  }
- if(func_0207c928(i,M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8))==0){
+ if(Modulo(i,M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8))==0){
  for(j=0;j<64;j++){
  M2C_FIELD((u8*)gCur3DSpriteEngine[11]+(tx+ty*32)*2+j*2,u16 *,0)=(data_ov003_0220feac[j]&0x3ff)|0x9000;
  if(i==M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18)&&j<32)
@@ -98,7 +98,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  func_020a94fc(M2C_FIELD(arg0,void **,0x50));
  p=(u8*)M2C_FIELD(arg0,void **,0x44)+((u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4)<<9);
  {u16 tile=(u16)(func_ov003_02200a18(M2C_FIELD(p,u8 *,0x22c),Ov003DrawItem(arg0,i))*4+0x418);
- AddSprite((u16)((px+3)&0x1ff),(u8)(py-2),(u16)(((tile>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0x8800),data_027e0064,17);}
+ AddSprite((u16)((px+3)&0x1ff),(u8)(py-2),(u16)(((tile>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0x8800),gSpriteDesc16x16,17);}
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))){
  func_020809c0((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
@@ -113,7 +113,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  } else if((u8)(mode==2))shade=(u8)(func_020c7ef4(item)?0:3);
  else shade=(u8)(func_02086960(item)?0:3);
  }
- {u8 a=(u8)func_0207c928(i,20);void *b=func_020cfbdc(item);
+ {u8 a=(u8)Modulo(i,20);void *b=func_020cfbdc(item);
  func_0209b32c((s16)tx,(s16)ty,0,b,0xa000,shade,(u16)(a*16+1));}
  p=(u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3);
  M2C_FIELD(p,u8 *,0x186c)=(M2C_FIELD(p,u8 *,0x186c)&~(1<<(idx&7)))|(1<<(idx&7));

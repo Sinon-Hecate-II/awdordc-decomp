@@ -3,9 +3,9 @@
 
 void *TcpFindConnection(s32 a,s32 b) {
  s32 func_0201bd2c(s32,s32,void *);
- extern M2C_UNK data_0212dca4;
+ extern M2C_UNK gSocketManager;
  void *q;
- void *p=M2C_FIELD(&data_0212dca4,void **,8);
+ void *p=M2C_FIELD(&gSocketManager,void **,8);
  while(p) {
  q=M2C_FIELD(p,void **,0xa4);
  if(q && M2C_FIELD(q,s32 *,0) && func_0201bd2c(a,b,q))return q;
@@ -40,8 +40,8 @@ s32 func_0201bec8(s32 arg0) {
 }
 
 M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
- extern M2C_UNK data_0212dca4,data_021374f8;
- if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&data_0212dca4,void **,4)!=&data_021374f8) {
+ extern M2C_UNK gSocketManager,data_021374f8;
+ if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&gSocketManager,void **,4)!=&data_021374f8) {
  TcpSendSegment(0,0,a,b,c);return;
  }
  func_0201aca0(func_0201a704(M2C_FIELD(a,s32 *,28)));
@@ -58,14 +58,14 @@ void TcpSendFinAck(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 M2C_UNK TcpSendReset(M2C_UNK a,M2C_UNK b,s32 c,M2C_UNK d){
-extern M2C_UNK data_021373d4,data_02137390,data_02137290;
-void func_02007f8c(void *,s32,s32);
+extern M2C_UNK data_021373d4,data_02137390,gNetStack;
+void MI_CpuFill8(void *,s32,s32);
 u16 e,f,g,h,i,j,k,l; s32 n;void *p=&data_021373d4;
-func_02007f8c(p,0,100);
+MI_CpuFill8(p,0,100);
 e=M2C_FIELD(b,u16 *,2);M2C_FIELD(&data_02137390,u16 *,78)=((s32)e>>8)|(e<<8);
 f=M2C_FIELD(b,u16 *,0);M2C_FIELD(&data_02137390,u16 *,92)=((s32)f>>8)|(f<<8);
 g=M2C_FIELD(a,u16 *,14);h=M2C_FIELD(a,u16 *,12);
-M2C_FIELD(&data_02137290,u32 *,352)=((u16)(((s32)h>>8)|(h<<8))<<16)|(u16)(((s32)g>>8)|(g<<8));
+M2C_FIELD(&gNetStack,u32 *,352)=((u16)(((s32)h>>8)|(h<<8))<<16)|(u16)(((s32)g>>8)|(g<<8));
 if(M2C_FIELD(b,u8 *,13)&16){
 i=M2C_FIELD(b,u16 *,10);j=M2C_FIELD(b,u16 *,8);
 M2C_FIELD(p,u32 *,40)=((u16)(((s32)j>>8)|(j<<8))<<16)|(u16)(((s32)i>>8)|(i<<8));
@@ -79,8 +79,8 @@ if(M2C_FIELD(b,u8 *,13)&3)M2C_FIELD(p,s32 *,36)=n+1;
 func_0201bee4((s32)p,20,d);
 }
 
-M2C_UNK func_0201c0bc(void *arg0,void *arg1,void *arg2){u64 func_02007004(void);u16 a,b,c,d,e,f,g;u64 t;
-M2C_FIELD(arg2,u8 *,8)=3;t=func_02007004();M2C_FIELD(arg2,u32 *,16)=t>>16;
+M2C_UNK func_0201c0bc(void *arg0,void *arg1,void *arg2){u64 GetSystemTick(void);u16 a,b,c,d,e,f,g;u64 t;
+M2C_FIELD(arg2,u8 *,8)=3;t=GetSystemTick();M2C_FIELD(arg2,u32 *,16)=t>>16;
 a=M2C_FIELD(arg0,u16 *,18);b=M2C_FIELD(arg0,u16 *,16);
 M2C_FIELD(arg2,u32 *,20)=((u16)(((s32)b>>8)|(b<<8))<<16)|(u16)(((s32)a>>8)|(a<<8));
 c=M2C_FIELD(arg1,u16 *,0);M2C_FIELD(arg2,u16 *,24)=((s32)c>>8)|(c<<8);
@@ -311,10 +311,10 @@ void func_0201c7e4(s32 a,s32 b) {
 }
 
 void func_0201c820(void *a,void *b,s32 c){
-s32 func_0201a674(void *,s32,void *,s32);
+s32 IsTransportChecksumBad(void *,s32,void *,s32);
 void TcpProcessAck(void *,void *,s32);
 s32 t,kind;u8 flags;
-if(func_0201a674(b,c,a,6))return;
+if(IsTransportChecksumBad(b,c,a,6))return;
 t=M2C_FIELD(b,u8 *,12)&240;
 flags=M2C_FIELD(b,u8 *,13);
 kind=flags&23;
@@ -330,77 +330,80 @@ default:if(flags&4){func_0201c7e4((s32)a,(s32)b);return;}TcpSendReset(a,b,c,0);r
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
-void func_0201c940(void *arg0, void *arg1, s32 arg2) {
+/* Receives one UDP datagram: finds the listening socket with the matching local
+ * and peer port, binds its peer address on first contact, copies the payload into
+ * its receive buffer and wakes the waiting task or calls its data callback. */
+void UdpReceiveDatagram(void *ipHeader, void *datagram, s32 length) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(void *, s32, u32);
-    s32 func_0201a674(void *, s32, void *, M2C_UNK);
-    extern M2C_UNK data_0212dca4;
-    s32 (*temp_r3_5)(s32, u32, void *);
-    void *temp_r4;
-    s32 temp_r0;
-    s32 temp_r5;
-    u16 temp_lr;
-    u16 temp_r1;
-    u16 temp_r2;
-    u16 temp_r2_2;
-    u16 temp_r2_3;
-    u16 temp_r3;
-    u16 temp_r3_2;
-    u16 temp_r3_3;
-    u16 temp_r3_4;
-    u16 temp_r9;
-    u32 temp_r0_2;
-    u32 temp_r1_2;
-    void *var_r1;
+    s32 IsTransportChecksumBad(void *, s32, void *, M2C_UNK);
+    extern M2C_UNK gSocketManager;
+    s32 (*dataCallback)(s32, u32, void *);
+    void *socket;
+    s32 socketPeerAddr;
+    s32 irq;
+    u16 ipSrcLo;
+    u16 udpSrcPort2;
+    u16 udpSrcPort;
+    u16 ipDstLo;
+    u16 ipSrcHi2;
+    u16 udpDstPort;
+    u16 socketPeerPort;
+    u16 ipDstHi;
+    u16 ipSrcLo2;
+    u16 ipSrcHi;
+    u32 payloadLength;
+    u32 rxCapacity;
+    void *node;
 
-    if ((M2C_FIELD(arg1, u16 *, 6) != 0) && (func_0201a674(arg1, arg2, arg0, 0x11) != 0)) {
+    if ((M2C_FIELD(datagram, u16 *, 6) != 0) && (IsTransportChecksumBad(datagram, length, ipHeader, 0x11) != 0)) {
         return;
     }
-    temp_r5 = OS_DisableInterrupts();
-    var_r1 = M2C_FIELD(&data_0212dca4, void **, 8);
-    if (var_r1 != NULL) {
+    irq = OS_DisableInterrupts();
+    node = M2C_FIELD(&gSocketManager, void **, 8);
+    if (node != NULL) {
 loop_5:
-        temp_r4 = M2C_FIELD(var_r1, void **, 0xA4);
-        if ((temp_r4 != NULL) && (M2C_FIELD(temp_r4, s32 *, 0) != 0)) {
-            if ((M2C_FIELD(temp_r4, u8 *, 8) == 0xA) && (temp_r3 = M2C_FIELD(arg1, u16 *, 2), (M2C_FIELD(temp_r4, u16 *, 0xA) == (u16) (((s32)temp_r3 >> 8) | (temp_r3 << 8)))) && ((temp_r3_2 = M2C_FIELD(temp_r4, u16 *, 0x18), (temp_r3_2 == 0)) || (temp_r2 = M2C_FIELD(arg1, u16 *, 0), (temp_r3_2 == (u16) (((s32)temp_r2 >> 8) | (temp_r2 << 8)))))) {
-                temp_r0 = M2C_FIELD(temp_r4, s32 *, 0x1C);
-                if ((temp_r0 != 0) && (temp_r0 != -1)) {
-                    temp_r9 = M2C_FIELD(arg0, u16 *, 0xE);
-                    temp_lr = M2C_FIELD(arg0, u16 *, 0xC);
-                    if (temp_r0 == (((u16)(((s32)temp_lr >> 8) | (temp_lr << 8)) << 0x10) | (u16)(((s32)temp_r9 >> 8) | (temp_r9 << 8)))) {
+        socket = M2C_FIELD(node, void **, 0xA4);
+        if ((socket != NULL) && (M2C_FIELD(socket, s32 *, SOCKET_OWNER) != 0)) {
+            if ((M2C_FIELD(socket, u8 *, SOCKET_STATE) == SOCKET_STATE_UDP_LISTEN) && (udpDstPort = M2C_FIELD(datagram, u16 *, 2), (M2C_FIELD(socket, u16 *, SOCKET_LOCAL_PORT) == (u16) (((s32)udpDstPort >> 8) | (udpDstPort << 8)))) && ((socketPeerPort = M2C_FIELD(socket, u16 *, SOCKET_PEER_PORT), (socketPeerPort == 0)) || (udpSrcPort = M2C_FIELD(datagram, u16 *, 0), (socketPeerPort == (u16) (((s32)udpSrcPort >> 8) | (udpSrcPort << 8)))))) {
+                socketPeerAddr = M2C_FIELD(socket, s32 *, SOCKET_PEER_ADDR);
+                if ((socketPeerAddr != 0) && (socketPeerAddr != -1)) {
+                    ipSrcLo = M2C_FIELD(ipHeader, u16 *, 0xE);
+                    ipSrcHi = M2C_FIELD(ipHeader, u16 *, 0xC);
+                    if (socketPeerAddr == (((u16)(((s32)ipSrcHi >> 8) | (ipSrcHi << 8)) << 0x10) | (u16)(((s32)ipSrcLo >> 8) | (ipSrcLo << 8)))) {
                         goto block_18;
                     }
                     goto block_30;
                 }
 block_18:
-                temp_r3_3 = M2C_FIELD(arg0, u16 *, 0x12);
-                temp_r2_2 = M2C_FIELD(arg0, u16 *, 0x10);
-                M2C_FIELD(temp_r4, s32 *, 0x14) = (s32)(((u16)(((s32)temp_r2_2 >> 8) | (temp_r2_2 << 8)) << 0x10) | (u16)(((s32)temp_r3_3 >> 8) | (temp_r3_3 << 8)));
-                if (M2C_FIELD(temp_r4, s32 *, 0x1C) == 0) {
-                    temp_r3_4 = M2C_FIELD(arg0, u16 *, 0xE);
-                    temp_r2_3 = M2C_FIELD(arg0, u16 *, 0xC);
-                    M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32)(((u16)(((s32)temp_r2_3 >> 8) | (temp_r2_3 << 8)) << 0x10) | (u16)(((s32)temp_r3_4 >> 8) | (temp_r3_4 << 8)));
-                    temp_r1 = M2C_FIELD(arg1, u16 *, 0);
-                    M2C_FIELD(temp_r4, u16 *, 0x18) = (u16)(((s32)temp_r1 >> 8) | (temp_r1 << 8));
+                ipDstHi = M2C_FIELD(ipHeader, u16 *, 0x12);
+                ipDstLo = M2C_FIELD(ipHeader, u16 *, 0x10);
+                M2C_FIELD(socket, s32 *, SOCKET_LOCAL_ADDR) = (s32)(((u16)(((s32)ipDstLo >> 8) | (ipDstLo << 8)) << 0x10) | (u16)(((s32)ipDstHi >> 8) | (ipDstHi << 8)));
+                if (M2C_FIELD(socket, s32 *, SOCKET_PEER_ADDR) == 0) {
+                    ipSrcLo2 = M2C_FIELD(ipHeader, u16 *, 0xE);
+                    ipSrcHi2 = M2C_FIELD(ipHeader, u16 *, 0xC);
+                    M2C_FIELD(socket, s32 *, SOCKET_PEER_ADDR) = (s32)(((u16)(((s32)ipSrcHi2 >> 8) | (ipSrcHi2 << 8)) << 0x10) | (u16)(((s32)ipSrcLo2 >> 8) | (ipSrcLo2 << 8)));
+                    udpSrcPort2 = M2C_FIELD(datagram, u16 *, 0);
+                    M2C_FIELD(socket, u16 *, SOCKET_PEER_PORT) = (u16)(((s32)udpSrcPort2 >> 8) | (udpSrcPort2 << 8));
                 }
-                if (M2C_FIELD(temp_r4, u32 *, 0x44) == 0) {
-                    temp_r1_2 = M2C_FIELD(temp_r4, u32 *, 0x3C);
-                    temp_r0_2 = arg2 - 8;
-                    if (temp_r0_2 > temp_r1_2) {
-                        M2C_FIELD(temp_r4, u32 *, 0x44) = temp_r1_2;
+                if (M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH) == 0) {
+                    rxCapacity = M2C_FIELD(socket, u32 *, SOCKET_RX_CAP);
+                    payloadLength = length - 8;
+                    if (payloadLength > rxCapacity) {
+                        M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH) = rxCapacity;
                     } else {
-                        M2C_FIELD(temp_r4, u32 *, 0x44) = temp_r0_2;
+                        M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH) = payloadLength;
                     }
-                    MI_CpuCopy8(arg1 + 8, M2C_FIELD(temp_r4, s32 *, 0x40), M2C_FIELD(temp_r4, u32 *, 0x44));
-                    if (M2C_FIELD(temp_r4, s32 *, 4) == 3) {
-                        M2C_FIELD(temp_r4, s32 *, 4) = 0;
-                        TaskWake(M2C_FIELD(temp_r4, s32 *, 0));
+                    MI_CpuCopy8(datagram + 8, M2C_FIELD(socket, s32 *, SOCKET_RX_BUFFER), M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH));
+                    if (M2C_FIELD(socket, s32 *, SOCKET_TASK_STATE) == 3) {
+                        M2C_FIELD(socket, s32 *, SOCKET_TASK_STATE) = 0;
+                        TaskWake(M2C_FIELD(socket, s32 *, SOCKET_OWNER));
                     } else {
-                        temp_r3_5 = M2C_FIELD(temp_r4, s32 (**)(s32, u32, void *), 0x38);
-                        if (temp_r3_5 != NULL) {
-                            if (temp_r3_5(M2C_FIELD(temp_r4, s32 *, 0x40), M2C_FIELD(temp_r4, u32 *, 0x44), temp_r4) != 0) {
-                                M2C_FIELD(temp_r4, u32 *, 0x44) = 0U;
+                        dataCallback = M2C_FIELD(socket, s32 (**)(s32, u32, void *), SOCKET_DATA_CB);
+                        if (dataCallback != NULL) {
+                            if (dataCallback(M2C_FIELD(socket, s32 *, SOCKET_RX_BUFFER), M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH), socket) != 0) {
+                                M2C_FIELD(socket, u32 *, SOCKET_RX_LENGTH) = 0U;
                             }
                         }
                     }
@@ -410,14 +413,13 @@ block_18:
             }
         } else {
 block_30:
-            var_r1 = M2C_FIELD(var_r1, void **, 0x68);
-            if (var_r1 != NULL) {
+            node = M2C_FIELD(node, void **, 0x68);
+            if (node != NULL) {
                 goto loop_5;
             }
         }
     }
-    OS_RestoreInterrupts(temp_r5);
-    /*v4*/
+    OS_RestoreInterrupts(irq);
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset

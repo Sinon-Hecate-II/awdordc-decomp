@@ -8,7 +8,7 @@ void func_ov003_021fd850(M2C_UNK arg0) {
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_02156cdc;
     extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220f47c;
@@ -89,7 +89,7 @@ void func_ov003_021fd850(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_2;
         temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_3, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_3, s8 *, 0x14) = 8;
@@ -114,7 +114,7 @@ void func_ov003_021fd850(M2C_UNK arg0) {
         M2C_FIELD(temp_r2_3, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_3, u8 *, 0x28) & ~0xE0) | 0x20);
         temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
-            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;
@@ -157,7 +157,7 @@ void func_ov003_021fdc1c(M2C_UNK arg0) {
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_02156cdc;
     extern void **data_027e0058;
     extern M2C_UNK data_ov003_0220f47c;
@@ -238,7 +238,7 @@ void func_ov003_021fdc1c(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_2;
         temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_3, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_3, s8 *, 0x14) = 8;
@@ -263,7 +263,7 @@ void func_ov003_021fdc1c(M2C_UNK arg0) {
         M2C_FIELD(temp_r2_3, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_3, u8 *, 0x28) & ~0xE0) | 0x20);
         temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
-            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;
@@ -306,7 +306,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_02156cdc;
     extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220f47c;
@@ -387,7 +387,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_2;
         temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_3, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_3, s8 *, 0x14) = 8;
@@ -412,7 +412,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         M2C_FIELD(temp_r2_3, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_3, u8 *, 0x28) & ~0xE0) | 0x20);
         temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
-            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;
@@ -455,7 +455,7 @@ void func_ov003_021fe3b4(M2C_UNK arg0) {
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     M2C_UNK func_ov003_021f13ec(M2C_UNK *);
     extern M2C_UNK data_02102174;
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_02156cdc;
     extern void **gCurrentMap;
     extern M2C_UNK data_ov003_0220f47c;
@@ -536,7 +536,7 @@ void func_ov003_021fe3b4(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_2;
         temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_3, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_3, s8 *, 0x14) = 8;
@@ -561,7 +561,7 @@ void func_ov003_021fe3b4(M2C_UNK arg0) {
         M2C_FIELD(temp_r2_3, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_3, u8 *, 0x28) & ~0xE0) | 0x20);
         temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
-            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
+            M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
             M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
             M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;

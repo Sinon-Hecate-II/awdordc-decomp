@@ -4,11 +4,11 @@ extern M2C_UNK data_ov001_02192740;
 
 #pragma thumb on
 void func_ov001_0216cce0(s32 arg0, s32 arg1, s32 arg2) {
-    void func_ov001_0216cdd4(s32, s32, s32);
+    void Ov001MemCopy(s32, s32, s32);
     s32 half = arg1 / 2;
-    func_ov001_0216cdd4(arg2, arg0 + half, half);
-    func_ov001_0216cdd4(arg2 + half, arg0, half);
-    func_ov001_0216cdd4(arg0, arg2, arg1);
+    Ov001MemCopy(arg2, arg0 + half, half);
+    Ov001MemCopy(arg2 + half, arg0, half);
+    Ov001MemCopy(arg0, arg2, arg1);
 }
 s32 func_ov001_0216cd10(s32 arg0, s32 arg1) {
     extern s32 (*data_ov001_021925e0)(s32);
@@ -52,14 +52,14 @@ s32 func_ov001_0216cdb4(u8 *arg0, u8 *arg1, s32 arg2) {
     return result;
 }
 
-void func_ov001_0216cdd4(s32 arg0, s32 arg1, s32 arg2) {
+void Ov001MemCopy(s32 arg0, s32 arg1, s32 arg2) {
  void MI_CpuCopy8(s32, s32, s32);
  MI_CpuCopy8(arg1, arg0, arg2);
 }
 
-void func_ov001_0216cde4(s32 arg0, s32 arg1) {
- void func_02007f8c(s32, u8);
- func_02007f8c(arg0, (u8)arg1);
+void Ov001MemClear(s32 arg0, s32 arg1) {
+ void MI_CpuFill8(s32, u8);
+ MI_CpuFill8(arg0, (u8)arg1);
 }
 
 void func_ov001_0216cdf0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 *arg4, s32 *arg5) {
@@ -127,7 +127,7 @@ u16 func_ov001_0216cef0(s32 arg0) {
     return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
 }
 
-s32 func_ov001_0216cf08(s8 *arg0) {
+s32 Ov001StringLength(s8 *arg0) {
     s32 var_r2;
 
     var_r2 = 0;
@@ -142,25 +142,25 @@ s32 func_ov001_0216cf08(s8 *arg0) {
 #pragma thumb on
 u16 func_ov001_0216cf1c(void) {
     s32 func_0200eff8(void *);
-    extern s32 data_ov001_02191800;
+    extern s32 gRoomState;
     u32 t[3];
     u32 seed;
     u32 next;
-    if (M2C_FIELD(&data_ov001_02191800, s32 *, 8) == 0) {
+    if (M2C_FIELD(&gRoomState, s32 *, 8) == 0) {
         seed = 0;
-        ((void (*)(void *, s32, s32))func_ov001_0216cde4)(t, 0, 12);
+        ((void (*)(void *, s32, s32))Ov001MemClear)(t, 0, 12);
         if (func_0200eff8(t) == 0) {
             seed += t[0] << 10;
             seed += t[1] << 3;
             seed += t[2];
         }
-        M2C_FIELD(&data_ov001_02191800, u32 *, 0x18) = seed;
-        M2C_FIELD(&data_ov001_02191800, u32 *, 0x1C) = 0x5D588B65;
-        M2C_FIELD(&data_ov001_02191800, u32 *, 0x20) = 0x269EC3;
-        M2C_FIELD(&data_ov001_02191800, s32 *, 8) = 1;
+        M2C_FIELD(&gRoomState, u32 *, 0x18) = seed;
+        M2C_FIELD(&gRoomState, u32 *, 0x1C) = 0x5D588B65;
+        M2C_FIELD(&gRoomState, u32 *, 0x20) = 0x269EC3;
+        M2C_FIELD(&gRoomState, s32 *, 8) = 1;
     }
-    next = M2C_FIELD(&data_ov001_02191800, u32 *, 0x1C) * M2C_FIELD(&data_ov001_02191800, u32 *, 0x18) + M2C_FIELD(&data_ov001_02191800, u32 *, 0x20);
-    M2C_FIELD(&data_ov001_02191800, u32 *, 0x18) = next;
+    next = M2C_FIELD(&gRoomState, u32 *, 0x1C) * M2C_FIELD(&gRoomState, u32 *, 0x18) + M2C_FIELD(&gRoomState, u32 *, 0x20);
+    M2C_FIELD(&gRoomState, u32 *, 0x18) = next;
     return ((next >> 16) * 0x7FFF) >> 16;
 }
 void func_ov001_0216cf8c(void *arg0) {
@@ -227,7 +227,7 @@ s32 func_ov001_0216d1e4(void) {
 #pragma thumb on
 s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  s32 func_02006390(void *,s32 *,s32);void func_02007190(void *);void func_020072cc(void *,s32,s32,void *,s32);void func_02007338(void *);
- void func_02007f8c(s32,u8);void func_02029220(void);
+ void MI_CpuFill8(s32,u8);void func_02029220(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
  u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset;u16 *rx; void *p;
@@ -235,7 +235,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  if(M2C_FIELD(p,s32 *,0x24)==0)flags=0x80000;
  else if(M2C_FIELD(p,s32 *,0x24)==1)flags=0xc0000;
  flags|=0x30000;
- ((void (*)(s32,s32,s32))func_02007f8c)((s32)&data_ov001_021926e0,0,96);
+ ((void (*)(s32,s32,s32))MI_CpuFill8)((s32)&data_ov001_021926e0,0,96);
  if(M2C_FIELD(p,s32 *,40)==5)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=1;
  else if(M2C_FIELD(p,s32 *,40)==13)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=2;
  else if(M2C_FIELD(p,s32 *,40)==16)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=3;
@@ -337,5 +337,5 @@ s32 func_ov001_0216da10(void) {
 
 s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov001_02192740,s32 *,0x18)==3){if(func_02027428()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 
-s32 func_ov001_0216daa0(s32 a,s32 b,s32 c){s32 t=OS_DisableInterrupts();M2C_FIELD(&data_ov001_02192740,s32 *,12)=c;if(b)MI_CpuCopy8(b,M2C_FIELD(&data_ov001_02192740,s32 *,36),80);else func_02007f8c(M2C_FIELD(&data_ov001_02192740,s32 *,36),0,80);func_02007e70(a,M2C_FIELD(&data_ov001_02192740,s32 *,32),192);if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}if(M2C_FIELD(&data_ov001_02192740,s32 *,24)==3 && func_02027754(M2C_FIELD(&data_ov001_02192740,s32 *,32),M2C_FIELD(&data_ov001_02192740,s32 *,36),M2C_FIELD(&data_ov001_02192740,s32 *,12))==3){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+s32 func_ov001_0216daa0(s32 a,s32 b,s32 c){s32 t=OS_DisableInterrupts();M2C_FIELD(&data_ov001_02192740,s32 *,12)=c;if(b)MI_CpuCopy8(b,M2C_FIELD(&data_ov001_02192740,s32 *,36),80);else MI_CpuFill8(M2C_FIELD(&data_ov001_02192740,s32 *,36),0,80);func_02007e70(a,M2C_FIELD(&data_ov001_02192740,s32 *,32),192);if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}if(M2C_FIELD(&data_ov001_02192740,s32 *,24)==3 && WFC_StartConnection(M2C_FIELD(&data_ov001_02192740,s32 *,32),M2C_FIELD(&data_ov001_02192740,s32 *,36),M2C_FIELD(&data_ov001_02192740,s32 *,12))==3){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 

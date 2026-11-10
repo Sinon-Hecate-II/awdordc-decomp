@@ -271,7 +271,7 @@ void func_0203dd30(u8 arg0, s32 arg1, void *arg2) {
 
 /* Handles deferred battle/action state transitions after the active phase check. */
 s32 func_0203dee8(s32 command, s32 parameter) {
-u64 func_02007004(void); s32 func_02038f6c(void);
+u64 GetSystemTick(void); s32 func_02038f6c(void);
 M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void func_02041d14(void); void func_0205afec(s32); void func_0205df50(s32);
 void *state;
 if(func_02038f6c()!=5)return 0;
@@ -285,7 +285,7 @@ if(M2C_FIELD(GetConnection(),u8 *,13)){
 if(!M2C_FIELD(GetConnection(),u8 *,0x1a8)){M2C_FIELD(GetConnection(),u8 *,0x1a8)=3;func_0205afec(*M2C_FIELD(GetConnection(),s32 **,4));}
 }else if(M2C_FIELD(GetConnection(),u8 *,21)==3)func_0203dc38(6,0xfffec5d2);
 else if(M2C_FIELD(GetConnection(),s32 *,0x208))func_02041d14();
-else if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==1){SetConnectionState(18);state=(void *)GetConnection();M2C_FIELD(state,u64 *,0x1f0)=func_02007004();}
+else if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==1){SetConnectionState(18);state=(void *)GetConnection();M2C_FIELD(state,u64 *,0x1f0)=GetSystemTick();}
 else func_02041be0(1);
 return 1;
 }
@@ -383,7 +383,7 @@ s32 func_0203e338(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnecti
 
 s32 func_0203e36c(u8 **a){extern u8 data_0213daf4[];s32 GetConnection(void);s32 i;u8 *p;void *q;
 if(!GetConnection())return 0;
-func_02007f8c(data_0213daf4,0,32);
+MI_CpuFill8(data_0213daf4,0,32);
 i=0;if(i<=M2C_FIELD(GetConnection(),u8 *,14)){p=data_0213daf4;do{
 q=(void *)GetConnection();
 if(!(M2C_FIELD(q,u32 *,0x2f0)&(1<<M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0))))break;
@@ -439,7 +439,7 @@ s32 func_0203e558(void) {
 void func_0203e570(s32 resetMode) {
     M2C_UNK func_02007df8(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     s16 func_02037eec(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
     void *temp_r0;
@@ -519,7 +519,7 @@ void func_0203e570(s32 resetMode) {
     func_02007e54(0, GetConnection() + 0x194, 0xC);
     func_02007e54(0, GetConnection() + 0x210, 0x80);
     func_02007df8(0, GetConnection() + 0x290, 0x40);
-    func_02007f8c(GetConnection() + 0x2D0, 0, 0x20);
+    MI_CpuFill8(GetConnection() + 0x2D0, 0, 0x20);
     func_02007e54(0, GetConnection() + 0x348, 0x84);
     if (resetMode == 1) {
         if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) {

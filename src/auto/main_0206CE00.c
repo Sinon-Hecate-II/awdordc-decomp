@@ -2,7 +2,7 @@
 #include "common.h"
 extern double data_020eb178[],data_020eb188[],data_020eb198[];
 extern float data_021002ec;
-extern s32 data_0213e9f4;
+extern s32 gErrno;
 #define POW_HI(x) (((s32 *)&(x))[1])
 #define POW_LO(x) (((u32 *)&(x))[0])
 
@@ -45,7 +45,7 @@ else if(yisint==1)z=func_02070b70(0.0,z);
 return z;
 }
 signFlag=(hx>>31)+1;
-if((signFlag|yisint)==0){data_0213e9f4=33;return func_0207191c(data_021002ec);}
+if((signFlag|yisint)==0){gErrno=33;return func_0207191c(data_021002ec);}
 if(iy>0x41e00000){
 if(iy>0x43f00000){
 if(ix<=0x3fefffff){return hy<0?(1.0/0.0):0.0;}

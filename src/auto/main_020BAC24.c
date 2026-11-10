@@ -106,7 +106,7 @@ void func_020bb110(void) {
     M2C_UNK IsPlayerHuman(u16);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cd5d8();
-    M2C_UNK func_020c2e4c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateBattleEffectPending(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020c32bc(M2C_UNK);
     M2C_UNK func_0207ab24(M2C_UNK, M2C_UNK);
     M2C_UNK func_020ca484();
@@ -210,7 +210,7 @@ void func_020bb110(void) {
                 playerU = (u16)(player & 0xFF);
                 a = map[lr * 0x8C + 0x67A4 + 0x1D];
                 b = map[r6v * 0x8C + 0x67A4 + 0x1D];
-                func_020c2e4c(playerU, tr2, a, b, sel6v, (M2C_UNK)(r4 & 0xFF));
+                CreateBattleEffectPending(playerU, tr2, a, b, sel6v, (M2C_UNK)(r4 & 0xFF));
             } else if (r4 >= 20) {
                 arg = ((selIndex & 0xC0) >> 6) + 1;
                 func_020c32bc(arg);

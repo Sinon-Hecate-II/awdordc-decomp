@@ -17,7 +17,7 @@ static inline void Unk0220C6C8Reset(Unk0220C6C8Anim *p) { p->unkE=0; p->unkF=0; 
 
 
 
-void *func_01ffa42c(void *, void *);
+void *CreateSpriteObject(void *, void *);
 int func_ov003_022066a8(int);
 void *MemAlloc(int);
 extern u8 data_ov003_022109ec[];
@@ -25,7 +25,7 @@ extern u8 gMapSelectVTable[];
 extern u32 data_02101fd8;
 void *MemAllocArray(int);
 void *func_020e34bc(int);
-void func_02007f8c(void *, int, int);
+void MI_CpuFill8(void *, int, int);
 void func_020a9218(void *);
 void func_020a9188(void *, int);
 void func_020a9a1c(void *, int, int);
@@ -69,7 +69,7 @@ u8 *t, *q;
 Unk0220C6C8Anim *anim;
 Unk0220C6C8Sprite *sprite, *resetSprite;
 int i, base;
-u8 *p = func_01ffa42c(data_ov003_022109ec, a);
+u8 *p = CreateSpriteObject(data_ov003_022109ec, a);
 if (p) {
 *(void **)p = gMapSelectVTable;
 p[0x34]=0; p[0x35]=0;
@@ -193,7 +193,7 @@ M2C_FIELD(q,u16 *,0x10)=30; q[0x12]=0;
 M2C_FIELD(q,u32 *,0)=0; M2C_FIELD(q,u32 *,4)=0;
 M2C_FIELD(q,s8 *,8)=-1;M2C_FIELD(q,s8 *,9)=-1;M2C_FIELD(q,s8 *,10)=-1;M2C_FIELD(q,s8 *,11)=-1;q[13]=255;M2C_FIELD(q,s8 *,12)=-1;q[14]=0;q[15]=255;
 M2C_FIELD(q,void **,0x14)=func_020e34bc(0x168);
-func_02007f8c(M2C_FIELD(q,void **,0x14),0,0x168);
+MI_CpuFill8(M2C_FIELD(q,void **,0x14),0,0x168);
 }
 M2C_FIELD(p,u8 **,0x5c)=q;
 q=MemAlloc(0x20);

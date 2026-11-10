@@ -30,14 +30,14 @@ return packed.value;
 
 #pragma opt_common_subs on
 s32 func_02046ebc(void *arg0) {
-void func_02045cbc(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long func_0200f7e0(void *,void *);u16 func_02006f8c(void);void func_02007724(void *);u64 func_02007004(void);
+void func_02045cbc(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void func_02007724(void *);u64 GetSystemTick(void);
 u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;u32 state;u8 flag;u32 mac;
 func_02045cbc(p);func_0200ee70();
 if(func_0200ef4c(sp+0x14))return 0;
 if(func_0200eff8(sp+8))return 0;
-diff=func_0200f7e0(sp+0x14,sp+8);if(diff<0)return 0;
+diff=MakeTime(sp+0x14,sp+8);if(diff<0)return 0;
 seed=diff;
-if(func_02006f8c()!=0)seed+=(u32)func_02007004;
+if(func_02006f8c()!=0)seed+=(u32)GetSystemTick;
 func_02007724(sp);
 state=(u32)seed*0x5d588b65+0x269ec3;
 flag=(((sp[0]<<16)|(sp[1]<<8)|sp[2])!=0x9bf);
@@ -71,10 +71,10 @@ s32 func_0204712c(void *arg0) {
     void func_0200ee70(void);
     s32 func_0200ef4c(void *);
     s32 func_0200eff8(void *);
-    long long func_0200f7e0(void *, void *);
+    long long MakeTime(void *, void *);
     u16 func_02006f8c(void);
     void func_02007724(void *);
-    u64 func_02007004(void);
+    u64 GetSystemTick(void);
     u64 func_02046d38(u32, u32, u32, u32);
 
     u8 *p;
@@ -99,9 +99,9 @@ register u32 tmp4, tmp3;
     if (func_0200ef4c(&sp[0x14]) != 0) return 0;
     if (func_0200eff8(&sp[0x8]) != 0) return 0;
 
-    diff = func_0200f7e0(&sp[0x14], &sp[0x8]);
+    diff = MakeTime(&sp[0x14], &sp[0x8]);
     if (diff < 0) return 0;
-    if (func_02006f8c() != 0) diff += (u32)func_02007004;
+    if (func_02006f8c() != 0) diff += (u32)GetSystemTick;
 
     seed = (u32)diff;
     func_02007724(sp);

@@ -6,12 +6,12 @@ static inline void CopyPair60E(u8 *d,const u8 *s) { *(Pair60E *)d=*(const Pair60
 static inline u16 SwapPair60E(u16 v) { return (u8)(v>>8)|((v<<8)&0xff00); }
 
 void func_0206080c(void *arg0) {
-    u32 func_02049208();
+    u32 GetTickCountMs();
     M2C_UNK func_02060104(void *);
     u32 temp_r5;
     void *temp_r3;
 
-    temp_r5 = func_02049208();
+    temp_r5 = GetTickCountMs();
     if (M2C_FIELD(arg0, void **, 8) == NULL) {
         return;
     }
@@ -89,8 +89,8 @@ void func_02060998(s32 *arg0, s32 *arg1) {
 }
 
 void func_020609ac(s32 *arg0) {
-    M2C_UNK func_020377c4(s32);
-    func_020377c4(*arg0);
+    M2C_UNK gpiFree(s32);
+    gpiFree(*arg0);
 }
 
 s32 func_020609bc(void) {
@@ -119,7 +119,7 @@ void func_02060a60(void **arg0) {
     temp_r4 = *arg0;
     func_02048dc4(M2C_FIELD(temp_r4, s32 *, 0x18));
     M2C_FIELD(temp_r4, s32 *, 0x18) = 0;
-    func_020377c4(temp_r4);
+    gpiFree(temp_r4);
 }
 
 M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
@@ -308,12 +308,12 @@ s32 func_02061088(void *arg0) {
 }
 
 void *func_02061090(s32 arg0,s32 arg1,s32 arg2){
- void *func_02037794(s32);M2C_UNK func_020377c4(s32);
+ void *gpiMalloc(s32);M2C_UNK gpiFree(s32);
  s32 func_02048c84(s32,s32,s32,void *,void *,void *);
- void *temp_r0=func_02037794(0x24);
+ void *temp_r0=gpiMalloc(0x24);
  if(!temp_r0)return 0;
  M2C_FIELD(temp_r0,s32 *,0x18)=func_02048c84(8,8,4,func_02061064,func_02061074,func_02061040);
- if(!M2C_FIELD(temp_r0,s32 *,0x18)){func_020377c4((s32)temp_r0);return 0;}
+ if(!M2C_FIELD(temp_r0,s32 *,0x18)){gpiFree((s32)temp_r0);return 0;}
  M2C_FIELD(temp_r0,u8 *,0x14)=0;M2C_FIELD(temp_r0,u8 *,0x15)=0;
  M2C_FIELD(temp_r0,s32 *,0x20)=0;M2C_FIELD(temp_r0,s32 *,0x1c)=0;
  M2C_FIELD(temp_r0,s32 *,0x10)=0;M2C_FIELD(temp_r0,s32 *,0)=arg1;
@@ -353,7 +353,7 @@ s32 func_02061168(s32 arg0) {
 void func_02061184(void *a,u32 event,void *p,void *q){
 void func_0206045c(void *,void *,s32,s32);
 void func_0206040c(void *,s32);
-s32 func_02048688(s32);
+s32 Vector_GetCount(s32);
 M2C_UNK SBServerListDisconnect(void *);
 s32 flag;
 switch(event){
@@ -373,7 +373,7 @@ if(M2C_FIELD(p,u8 *,0x14)&0x2c)func_0206095c(q,p);
 M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,3,p,M2C_FIELD(q,s32 *,0x634));break;
 case 3:
 if(M2C_FIELD(q,s32 *,0x620))SBServerListDisconnect(a);
-if(!func_02048688(M2C_FIELD(a,s32 *,4))||!M2C_FIELD(q,s32 *,0x10))
+if(!Vector_GetCount(M2C_FIELD(a,s32 *,4))||!M2C_FIELD(q,s32 *,0x10))
 M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,4,0,M2C_FIELD(q,s32 *,0x634));break;
 case 5:
 M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,5,0,M2C_FIELD(q,s32 *,0x634));break;
@@ -396,7 +396,7 @@ void func_0206133c(s32 arg0,s32 arg1,void *arg2,void *arg3){
 }
 
 void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
-    void *func_02037794(s32);
+    void *gpiMalloc(s32);
     M2C_UNK func_02060398(void *, s32, s32, s32, M2C_UNK *, void *);
     M2C_UNK func_02061dd0(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, M2C_UNK *, void *);
     extern s32 gDnsQueryState;
@@ -407,7 +407,7 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     if ((arg6 == 0) && (gDnsQueryState != 1)) {
         return NULL;
     }
-    obj = func_02037794(0x638);
+    obj = gpiMalloc(0x638);
     if (obj == NULL) {
         return NULL;
     }
@@ -424,7 +424,7 @@ void func_020614b0(s32 arg0) {
     M2C_UNK func_02062738(s32);
     func_02062738(arg0 + 0x4C);
     func_02060430(arg0);
-    func_020377c4(arg0);
+    gpiFree(arg0);
 }
 
 s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
@@ -455,7 +455,7 @@ s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
  return result;
 }
 
-void func_02061604(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
+void SendToPlayerList(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
 
  func_020614d4(a,b,c,d,e,f,128,g);
 }
@@ -490,7 +490,7 @@ M2C_UNK func_0206171c(void *p){
  SBServerListDisconnect((u8 *)p+0x4c);func_02060414(p);
 }
 
-void func_02061738(s32 arg0) {
+void ResetSessionList(s32 arg0) {
     M2C_UNK func_0206171c();
     M2C_UNK func_02061c34(s32);
     func_0206171c();

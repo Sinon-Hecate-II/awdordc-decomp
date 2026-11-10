@@ -1,6 +1,6 @@
 func_ov005_02211200 kind:function(arm,size=0x54c) addr:0x02211200
 func_ov005_0221174c kind:function(arm,size=0x1c) addr:0x0221174c
-func_ov005_02211768 kind:function(arm,size=0x220) addr:0x02211768
+UpdateTabMenu kind:function(arm,size=0x220) addr:0x02211768
 func_ov005_02211988 kind:function(arm,size=0x2c) addr:0x02211988
 func_ov005_022119b4 kind:function(arm,size=0xc) addr:0x022119b4
 func_ov005_022119c0 kind:function(arm,size=0xc) addr:0x022119c0

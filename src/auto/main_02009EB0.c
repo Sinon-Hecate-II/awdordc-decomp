@@ -1,5 +1,6 @@
 /* 21 functions from 0x02009EB0 to 0x0200AE9C (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 static inline u32 LowerChar(u32 c) { c-=0x41; if(c<=25) return c+0x61;return c+0x41; }
 typedef struct { u32 a,b,c; } UnkA3Block;
 typedef struct { UnkA3Block block; u32 kind, length; u8 name[128]; } PathEntry;
@@ -34,14 +35,14 @@ OS_RestoreInterrupts(key);
 }
 }
 
-void func_0200a050(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 func_02005df4(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;func_02005df4((u8 *)p+24);OS_RestoreInterrupts(k);}
+void CompleteFileRequest(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 OS_WakeupThread(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;OS_WakeupThread((u8 *)p+24);OS_RestoreInterrupts(k);}
 
 s32 func_0200a0ac(void *a, s32 b) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
-    M2C_UNK func_02005da4(void *);
+    M2C_UNK OS_SleepThread(void *);
     extern s32 (*data_020ea674[])(void *);
-    void func_0200a050(void *, s32);
+    void CompleteFileRequest(void *, s32);
 
     s32 e;
     void *c = M2C_FIELD(a, void **, 0x8);
@@ -87,7 +88,7 @@ s32 func_0200a0ac(void *a, s32 b) {
             has200 = (M2C_FIELD(c, s32 *, 0x1c) & 0x200) ? 1 : 0;
             if (has200 != 0) {
                 do {
-                    func_02005da4((u8 *)c + 0xc);
+                    OS_SleepThread((u8 *)c + 0xc);
                     if (M2C_FIELD(c, s32 *, 0x1c) & 0x200) {
                         has200 = one;
                     } else {
@@ -105,7 +106,7 @@ s32 func_0200a0ac(void *a, s32 b) {
     outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
     if (outer == 0) {
         M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x100;
-        func_0200a050(a, e);
+        CompleteFileRequest(a, e);
     } else {
         M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x200;
         M2C_FIELD(a, s32 *, 0x14) = e;
@@ -118,7 +119,7 @@ s32 func_0200a23c(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b
 
 s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 OS_DisableInterrupts();
-    M2C_UNK func_02005da4(void *);
+    M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_RestoreInterrupts(s32);
     void *temp_r4;
     s32 var_r0;
@@ -143,7 +144,7 @@ s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
         }
         if (var_r0_2 != 0) {
             do {
-                func_02005da4(temp_r4 + 0xC);
+                OS_SleepThread(temp_r4 + 0xC);
                 if (M2C_FIELD(temp_r4, s32 *, 0x1C) & 0x200) {
                     var_r0_3 = 1;
                 } else {
@@ -322,131 +323,135 @@ s32 func_0200ac50(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
 s32 func_0200ac70(s32 a,s32 b,s32 c,s32 d){MI_CpuCopy8(c,b,d);return 0;}
 
 #pragma opt_common_subs off
-M2C_UNK *func_0200ac88(void *arg0) {
-    M2C_UNK func_02005df4(void *);
+/* Picks the next pending request of a file after an operation finishes: drops
+ * the queue when the file is being cancelled, otherwise arms the idle callback,
+ * notifies the caller's callback and returns the request that has to run (or
+ * wakes the request that is already waiting and returns NULL). */
+M2C_UNK *GetNextFileRequest(void *file) {
+    M2C_UNK OS_WakeupThread(void *);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    void func_0200a050(void *, s32);
-    M2C_UNK func_0200b774(M2C_UNK *);
-    s32 temp_r4;
-    s32 temp_r4_2;
-    M2C_UNK *temp_r5;
-    M2C_UNK *var_r0_2;
-    M2C_UNK *var_r5;
-    s32 var_r0;
-    s32 var_r0_3;
-    s32 var_r0_4;
-    s32 var_r0_5;
-    s32 var_r0_6;
-    s32 var_r0_7;
-    s32 var_r0_8;
-    s32 var_r1;
-    s32 var_r7;
-    u8 sp0[0x48];
+    void CompleteFileRequest(void *, s32);
+    M2C_UNK InitFileRequest(M2C_UNK *);
+    s32 irq;
+    s32 irq2;
+    M2C_UNK *request;
+    M2C_UNK *pending;
+    M2C_UNK *next;
+    s32 cancelling;
+    s32 aborting;
+    s32 busy;
+    s32 notifyPending;
+    s32 completed;
+    s32 notifyPending2;
+    s32 aborting2;
+    s32 queued;
+    s32 notifyNow;
+    u8 idleRequest[0x48];
 
-    temp_r4 = OS_DisableInterrupts();
-    if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x20) {
-        var_r0 = 1;
+    irq = OS_DisableInterrupts();
+    if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_CANCELLING) {
+        cancelling = 1;
     } else {
-        var_r0 = 0;
+        cancelling = 0;
     }
-    if (var_r0 != 0) {
-        M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) & ~0x20);
-        var_r0_2 = M2C_FIELD(arg0, M2C_UNK **, 0x24);
-        if (var_r0_2 != NULL) {
+    if (cancelling != 0) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) (M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_FILE_CANCELLING);
+        pending = M2C_FIELD(file, M2C_UNK **, FS_FILE_REQUESTS);
+        if (pending != NULL) {
             do {
-                var_r5 = M2C_FIELD(var_r0_2, M2C_UNK **, 4);
-                if (M2C_FIELD(var_r0_2, s32 *, 0xC) & 2) {
-                    var_r1 = 1;
+                next = M2C_FIELD(pending, M2C_UNK **, 4);
+                if (M2C_FIELD(pending, s32 *, FS_REQ_FLAGS) & FS_REQ_QUEUED) {
+                    queued = 1;
                 } else {
-                    var_r1 = 0;
+                    queued = 0;
                 }
-                if (var_r1 != 0) {
-                    if (M2C_FIELD(arg0, M2C_UNK **, 0x24) == var_r0_2) {
-                        M2C_FIELD(arg0, M2C_UNK **, 0x24) = var_r5;
+                if (queued != 0) {
+                    if (M2C_FIELD(file, M2C_UNK **, FS_FILE_REQUESTS) == pending) {
+                        M2C_FIELD(file, M2C_UNK **, FS_FILE_REQUESTS) = next;
                     }
-                    func_0200a050(var_r0_2, 3);
-                    if (var_r5 == NULL) {
-                        var_r5 = M2C_FIELD(arg0, M2C_UNK **, 0x24);
+                    CompleteFileRequest(pending, 3);
+                    if (next == NULL) {
+                        next = M2C_FIELD(file, M2C_UNK **, FS_FILE_REQUESTS);
                     }
                 }
-                var_r0_2 = var_r5;
-            } while (var_r5 != NULL);
+                pending = next;
+            } while (next != NULL);
         }
     }
-    if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x40) {
-        var_r0_3 = 1;
+    if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_ABORTING) {
+        aborting = 1;
     } else {
-        var_r0_3 = 0;
+        aborting = 0;
     }
-    if (var_r0_3 == 0) {
-        if (M2C_FIELD(arg0, s32 *, 0x1C) & 8) {
-            var_r0_4 = 1;
+    if (aborting == 0) {
+        if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_BUSY) {
+            busy = 1;
         } else {
-            var_r0_4 = 0;
+            busy = 0;
         }
-        if (var_r0_4 == 0) {
-            temp_r5 = M2C_FIELD(arg0, M2C_UNK **, 0x24);
-            if (temp_r5 != NULL) {
-                if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x10) {
-                    var_r0_5 = 1;
+        if (busy == 0) {
+            request = M2C_FIELD(file, M2C_UNK **, FS_FILE_REQUESTS);
+            if (request != NULL) {
+                if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_NOTIFY_PENDING) {
+                    notifyPending = 1;
                 } else {
-                    var_r0_5 = 0;
+                    notifyPending = 0;
                 }
-                if (var_r0_5 == 0) {
-                    var_r7 = 1;
+                if (notifyPending == 0) {
+                    notifyNow = 1;
                 } else {
-                    var_r7 = 0;
+                    notifyNow = 0;
                 }
-                if (var_r7 != 0) {
-                    M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) | 0x10);
+                if (notifyNow != 0) {
+                    M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) (M2C_FIELD(file, s32 *, FS_FILE_STATE) | FS_FILE_NOTIFY_PENDING);
                 }
-                OS_RestoreInterrupts(temp_r4);
-                if ((var_r7 != 0) && (M2C_FIELD(arg0, s32 *, 0x58) & 0x200)) {
-                    M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK *, M2C_UNK), 0x54)(temp_r5, 9);
+                OS_RestoreInterrupts(irq);
+                if ((notifyNow != 0) && (M2C_FIELD(file, s32 *, FS_FILE_EVENTS) & FS_EVENT_REQUEST_MASK)) {
+                    M2C_FIELD(file, M2C_UNK (**)(M2C_UNK *, M2C_UNK), FS_FILE_CALLBACK)(request, FS_EVENT_REQUEST);
                 }
-                temp_r4_2 = OS_DisableInterrupts();
-                M2C_FIELD(temp_r5, s32 *, 0xC) = (s32) (M2C_FIELD(temp_r5, s32 *, 0xC) | 0x40);
-                if (*(volatile s32 *)((s8 *)temp_r5 + 0xC) & 4) {
-                    var_r0_6 = 1;
+                irq2 = OS_DisableInterrupts();
+                M2C_FIELD(request, s32 *, FS_REQ_FLAGS) = (s32) (M2C_FIELD(request, s32 *, FS_REQ_FLAGS) | FS_REQ_NOTIFIED);
+                if (*(volatile s32 *)((s8 *)request + FS_REQ_FLAGS) & FS_REQ_COMPLETED) {
+                    completed = 1;
                 } else {
-                    var_r0_6 = 0;
+                    completed = 0;
                 }
-                if (var_r0_6 != 0) {
-                    func_02005df4((u8 *)temp_r5 + 0x18);
-                    OS_RestoreInterrupts(temp_r4_2);
+                if (completed != 0) {
+                    OS_WakeupThread((u8 *)request + FS_REQ_QUEUE);
+                    OS_RestoreInterrupts(irq2);
                     return NULL;
                 }
-                OS_RestoreInterrupts(temp_r4_2);
-                return temp_r5;
+                OS_RestoreInterrupts(irq2);
+                return request;
             }
         }
         goto block_41;
     }
 block_41:
-    if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x10) {
-        var_r0_7 = 1;
+    if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_NOTIFY_PENDING) {
+        notifyPending2 = 1;
     } else {
-        var_r0_7 = 0;
+        notifyPending2 = 0;
     }
-    if (var_r0_7 != 0) {
-        M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) & ~0x10);
-        if (M2C_FIELD(arg0, s32 *, 0x58) & 0x400) {
-            func_0200b774(sp0);
-            M2C_FIELD(sp0, void **, 8) = arg0;
-            M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK *, M2C_UNK), 0x54)(sp0, 0xA);
+    if (notifyPending2 != 0) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) (M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_FILE_NOTIFY_PENDING);
+        if (M2C_FIELD(file, s32 *, FS_FILE_EVENTS) & FS_EVENT_IDLE_MASK) {
+            InitFileRequest(idleRequest);
+            M2C_FIELD(idleRequest, void **, FS_REQ_FILE) = file;
+            M2C_FIELD(file, M2C_UNK (**)(M2C_UNK *, M2C_UNK), FS_FILE_CALLBACK)(idleRequest, FS_EVENT_IDLE);
         }
     }
-    if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x40) {
-        var_r0_8 = 1;
+    if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_ABORTING) {
+        aborting2 = 1;
     } else {
-        var_r0_8 = 0;
+        aborting2 = 0;
     }
-    if (var_r0_8 != 0) {
-        M2C_FIELD(arg0, s32 *, 0x1C) = (s32) ((M2C_FIELD(arg0, s32 *, 0x1C) & ~0x40) | 8);
-        func_02005df4(arg0 + 0x14);
+    if (aborting2 != 0) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = (s32) ((M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_FILE_ABORTING) | FS_FILE_BUSY);
+        OS_WakeupThread(file + FS_FILE_WAIT_QUEUE);
     }
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(irq);
     return NULL;
 }
 #pragma opt_common_subs reset

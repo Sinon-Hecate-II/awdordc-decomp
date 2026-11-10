@@ -209,15 +209,15 @@ s32 func_02094130(void *arg0) {
 }
 
 s32 func_0209419c(void *arg0) {
-    extern M2C_UNK data_02168f14;
-    M2C_FIELD(&data_02168f14, s32 *, 0xC) = (s32) (M2C_FIELD(&data_02168f14, s32 *, 0xC) | (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC)));
+    extern M2C_UNK gMapConfig;
+    M2C_FIELD(&gMapConfig, s32 *, 0xC) = (s32) (M2C_FIELD(&gMapConfig, s32 *, 0xC) | (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC)));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
 
 s32 func_020941d4(void *arg0) {
-    extern M2C_UNK data_02168f14;
-    M2C_FIELD(&data_02168f14, s32 *, 0xC) = (s32) (M2C_FIELD(&data_02168f14, s32 *, 0xC) & (-1 ^ (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC))));
+    extern M2C_UNK gMapConfig;
+    M2C_FIELD(&gMapConfig, s32 *, 0xC) = (s32) (M2C_FIELD(&gMapConfig, s32 *, 0xC) & (-1 ^ (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC))));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }

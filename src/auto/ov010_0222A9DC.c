@@ -5,7 +5,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK func_01ffa8c4(void *,s32);M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -19,7 +19,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=func_0208b564(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000013);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
-}while(++i<2);gCur3DSpriteEngine=savedBank;}func_01ffa8c4(arg0,8);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,8);return;}
 func_ov010_0222a20c((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
 if(!func_020c4ba4(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
@@ -32,7 +32,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=func_0208b564(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 func_0208ae88(created,1);
-}while(++i<2);gCur3DSpriteEngine=savedBank;}func_01ffa8c4(arg0,10);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,10);return;}
 if(!func_020c4b88(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -44,7 +44,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=func_0208b564(arg0);func_020899cc(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000017);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
-}while(++i<2);gCur3DSpriteEngine=savedBank;}func_01ffa8c4(arg0,12);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,12);return;}
 if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -56,7 +56,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=func_0208b564(arg0);func_020899cc(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 func_0208ae88(created,0);
-}while(++i<2);gCur3DSpriteEngine=savedBank;}func_01ffa8c4(arg0,9);
+}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,9);
 }
 
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
@@ -65,7 +65,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     M2C_UNK func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228320(void);
     M2C_UNK func_ov010_022282d4(M2C_UNK);
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     if (func_020abe90(M2C_FIELD(arg3, u8 *, 0x35)) == 1) {
         return;
     }
@@ -88,7 +88,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     case 5:
     case 6:
     case 7:
-        func_01ffa8c4(arg3, 1);
+        SetSpriteAnimation(arg3, 1);
         break;
     default:
         break;
@@ -159,10 +159,10 @@ void func_ov010_0222af9c(void *arg0) {
         func_0208af20();
     }
     if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
-        func_01ffa8c4(arg0, 0xB);
+        SetSpriteAnimation(arg0, 0xB);
         return;
     }
-    func_01ffa8c4(arg0, 0x10);
+    SetSpriteAnimation(arg0, 0x10);
 }
 
 void func_ov010_0222b01c(void *arg0) {
@@ -176,10 +176,10 @@ void func_ov010_0222b01c(void *arg0) {
         func_0208af20();
     }
     if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
-        func_01ffa8c4(arg0, 0xB);
+        SetSpriteAnimation(arg0, 0xB);
         return;
     }
-    func_01ffa8c4(arg0, 0x10);
+    SetSpriteAnimation(arg0, 0x10);
 }
 
 void func_ov010_0222b074(void) {
@@ -197,7 +197,7 @@ void func_ov010_0222b08c(M2C_UNK arg0) {
     if (func_ov010_02228720() != 0) {
         return;
     }
-    func_01ffa8c4(arg0, 0x12);
+    SetSpriteAnimation(arg0, 0x12);
 }
 
 void func_ov010_0222b0b0(void *arg0) {
@@ -220,7 +220,7 @@ void func_ov010_0222b11c(M2C_UNK arg0) {
     M2C_UNK func_020c4dd0(M2C_UNK);
     func_020c4cdc();
     func_020c4dd0(arg0);
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 /* Refresh the entity's sprite on the selected display banks, then queue command 19. */
@@ -243,11 +243,11 @@ M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
-func_01ffa8c4((s32)entity,19);
+SetSpriteAnimation((s32)entity,19);
 }
 
 void func_ov010_0222b234(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b520(void *);M2C_UNK func_01ffa8c4(s32,s32);
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b520(void *);M2C_UNK SetSpriteAnimation(s32,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 old;u32 current;s32 i;s8 mode;void *p;
 if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -264,7 +264,7 @@ M2C_FIELD(p,s32 *,0x58)=((M2C_FIELD(p,s32 *,0x58)|0x1000)&~0x400)|0x800;
 }while(++i<2);
 gCur3DSpriteEngine=old;
 }
-func_01ffa8c4((s32)arg0,7);
+SetSpriteAnimation((s32)arg0,7);
 }
 
 /* Creates a draw entry in both active banks when the entity's bank selector allows. */
@@ -272,7 +272,7 @@ void func_ov010_0222b314(void *entity) {
     s32 func_02037c90();
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     void *func_0208b564(void *);
-    M2C_UNK func_01ffa8c4(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -308,10 +308,10 @@ void func_ov010_0222b314(void *entity) {
             }
             gCur3DSpriteEngine = savedBank;
         }
-        func_01ffa8c4(entity, 0x11);
+        SetSpriteAnimation(entity, 0x11);
         return;
     }
-    func_01ffa8c4(entity, 2);
+    SetSpriteAnimation(entity, 2);
 }
 
 void func_ov010_0222b414(void) {
@@ -331,7 +331,7 @@ void func_ov010_0222b418(void *arg0) {
     if (func_020d4810() != 0) {
         func_020c4a74(0);
         M2C_FIELD(arg0, u8 *, 0x34) = (u8)(M2C_FIELD(arg0, u8 *, 0x34) | 1u);
-        func_01ffa8c4(arg0, 3);
+        SetSpriteAnimation(arg0, 3);
         return;
     }
 
@@ -353,11 +353,11 @@ void func_ov010_0222b418(void *arg0) {
         gCur3DSpriteEngine = temp_r9;
     }
 
-    func_01ffa8c4(arg0, 0xC);
+    SetSpriteAnimation(arg0, 0xC);
 }
 
 void func_ov010_0222b520(void *arg0) {
-M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK func_01ffa8c4(s32,s32);M2C_UNK func_0208ae88(void *,s32);
+M2C_UNK func_020899cc(void *,M2C_UNK,s32,s32);void *func_0208b564(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK func_0208ae88(void *,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 old;u32 current;s32 i;s8 mode;void *p;
 if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -375,7 +375,7 @@ func_0208ae88(p,1);
 }while(++i<2);
 gCur3DSpriteEngine=old;
 }
-func_01ffa8c4((s32)arg0,14);
+SetSpriteAnimation((s32)arg0,14);
 }
 
 void func_ov010_0222b604(void *arg0) {
@@ -397,7 +397,7 @@ M2C_FIELD(p,s32 *,0x58)|=0x1000;
 }while(++i<2);
 gCur3DSpriteEngine=old;return;
 }
-func_01ffa8c4((s32)arg0,1);
+SetSpriteAnimation((s32)arg0,1);
 }
 
 void func_ov010_0222b6ec(void *arg0) {
@@ -419,11 +419,11 @@ func_0208ae88(p,1);
 }while(++i<2);
 gCur3DSpriteEngine=old;
 }
-func_01ffa8c4((s32)arg0,13);
+SetSpriteAnimation((s32)arg0,13);
 }
 
 void func_ov010_0222b7d0(M2C_UNK arg0) {
-    func_01ffa8c4(arg0, 0x10);
+    SetSpriteAnimation(arg0, 0x10);
 }
 
 void func_ov010_0222b7e0(void *arg0) {
@@ -448,24 +448,24 @@ gCur3DSpriteEngine=old;
 void func_ov010_0222b8ac(void *arg0) {
     if (func_020d4810() != 0) {
         M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
-        func_01ffa8c4(arg0, 3);
+        SetSpriteAnimation(arg0, 3);
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_ov010_0222b8ec(M2C_UNK arg0) {
     s32 func_020d4810();
     if (func_020d4810() != 0) {
-        func_01ffa8c4(arg0, 3);
+        SetSpriteAnimation(arg0, 3);
         return;
     }
-    func_01ffa8c4(arg0, 1);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_ov010_0222b91c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa8c4(M2C_UNK, M2C_UNK);
-    func_01ffa8c4(arg0, 1);
+    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
+    SetSpriteAnimation(arg0, 1);
 }
 
 void func_ov010_0222b92c(void *arg0) {

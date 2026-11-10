@@ -187,12 +187,12 @@ void func_02015f94(void *dest, void *src, s32 extra) {
 }
 
 s32 func_02016084(s32 arg0,void *arg1,s32 arg2) {
-void func_0200b774(void *);s32 func_0200ba54(void *,s32);
+void InitFileRequest(void *);s32 func_0200ba54(void *,s32);
 void func_0200ba9c(void *);void func_0200bbe0(void *,void *,s32);
 u32 file[18];s32 size=arg2?0x200:0x20;
 if(arg2)arg1+=0x20;
 if(!arg0)return 0;
-func_0200b774(file);
+InitFileRequest(file);
 if(!func_0200ba54(file,arg0))return 0;
 if(size!=file[10]-file[9]) {func_0200ba9c(file);return 0;}
 func_0200bbe0(file,arg1,size);func_0200ba9c(file);return 1;

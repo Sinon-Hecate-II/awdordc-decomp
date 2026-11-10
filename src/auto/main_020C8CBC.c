@@ -127,10 +127,10 @@ dst++;n++;
 
 #pragma optimization_level reset
 void func_020c9040(void *a) {
-void func_01ffa8c4(void *,s32);
+void SetSpriteAnimation(void *,s32);
 M2C_FIELD(a,volatile u8 *,0x35)=0;
 if(M2C_FIELD(a,volatile u8 *,0x34)) return;
-func_01ffa8c4(a,0);
+SetSpriteAnimation(a,0);
 }
 
 void func_020c9060(void *arg0) {

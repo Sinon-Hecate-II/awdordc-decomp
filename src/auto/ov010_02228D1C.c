@@ -41,13 +41,13 @@ typedef struct Ov010Member { s32 function; s32 delta; } Ov010Member;
 typedef struct QueueNode { struct QueueNode *next; u32 unk4; u8 kind; u8 low:4; u8 high:4; u16 value; s32 size; } QueueNode;
 
 void func_ov010_02228d1c(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 func_ov010_022282b4(M2C_UNK);
     extern M2C_UNK data_ov010_0222c218;
     if (func_ov010_022282b4(0) == 0) {
         return;
     }
-    func_01ffa42c(&data_ov010_0222c218, arg0);
+    CreateSpriteObject(&data_ov010_0222c218, arg0);
 }
 
 #pragma cplusplus on
@@ -291,7 +291,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov000_0216a7c4(void);
  void *func_020c4acc(void);
  M2C_UNK func_0203a850(M2C_UNK *,s32);
- void func_02038b1c(s32,void *,s32,void *,s32);
+ void StartMatch(s32,void *,s32,void *,s32);
  void func_ov010_0222807c(void);
  void func_ov010_0222815c(void);
  extern Ov010Member data_ov010_0222c128;
@@ -323,7 +323,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_FIELD(&data_ov010_0222eee0,s32 *,0x100)=M2C_FIELD(func_020c4acc(),s32 *,0x54);
 M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa)=2|M2C_FIELD(&data_ov010_0222eee0,u8 *,0xfa);
 func_0203a850(&data_ov010_0222efc0,0x6c);
-func_02038b1c(arg1,(void *)func_ov010_0222807c,arg3,(void *)func_ov010_0222815c,arg5);
+StartMatch(arg1,(void *)func_ov010_0222807c,arg3,(void *)func_ov010_0222815c,arg5);
 }
 #pragma cplusplus off
 
@@ -437,7 +437,7 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     u16 func_ov010_02229a24();
     s32 func_ov010_02229a08();
     M2C_UNK func_ov010_022268f4(M2C_UNK, s32, s32);
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     extern u16 data_ov010_0222eee0;
     QueueNode *node;
     s32 mode;
@@ -458,7 +458,7 @@ s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
         *(volatile u16 *)0x04000208 = saved;
         ret = 0;
     } else {
-        func_02007f8c(node, 0, 0x10);
+        MI_CpuFill8(node, 0, 0x10);
         func_ov010_0222959c((u8 *)node + 4, arg0, mode, 0, (s32)arg1, arg2, arg3);
         if (M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64) == NULL) {
             M2C_FIELD(&data_ov010_0222eee0, QueueNode **, 0x64) = node;
@@ -481,7 +481,7 @@ s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     u16 func_ov010_02229a24();
     s32 func_ov010_02229a08();
     M2C_UNK func_ov010_022268f4(s32, s32, s32);
-    void func_02007f8c(void *, s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
     extern u16 data_ov010_0222eee0;
     void *node;
     s32 mode;
@@ -501,7 +501,7 @@ s32 func_ov010_0222972c(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
         *(volatile u16 *)0x04000208 = saved;
         ret = 0;
     } else {
-        func_02007f8c(node, 0, 0x10);
+        MI_CpuFill8(node, 0, 0x10);
         func_ov010_0222959c((u8 *)node + 4, arg0, mode, 1, (s32)arg1, arg2, v);
         if (M2C_FIELD(&data_ov010_0222eee0, void **, 0x64) == 0) {
             M2C_FIELD(&data_ov010_0222eee0, void **, 0x64) = node;

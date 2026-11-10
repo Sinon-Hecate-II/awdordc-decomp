@@ -241,11 +241,11 @@ void func_ov001_02172b00(s32 arg0) {
 }
 
 void func_ov001_02172b8c(void) {
-    void func_ov001_021730d4(void);
+    void Ov001_HandleKeyboardKeyRelease(void);
     M2C_UNK Ov001_KeyboardInput();
     func_ov001_02172ba4();
     func_ov001_02172d8c();
-    func_ov001_021730d4();
+    Ov001_HandleKeyboardKeyRelease();
     Ov001_KeyboardInput();
 }
 
@@ -260,7 +260,7 @@ void func_ov001_02172ba4(void) {
     extern u16 data_ov001_0218f32c[];
     extern s32 data_ov001_02190110[];
     s32 TouchRectPressed(void *);
-    void func_ov001_0218b2e0(void *, void *, void *);
+    void BuildTouchRect(void *, void *, void *);
     void Ov001_PlaySound(s32);
     u16 buf[4];
     s32 i;
@@ -269,7 +269,7 @@ void func_ov001_02172ba4(void) {
     {
         u16 *a = data_ov001_0218f36c;
         for (i = 0; i < 0x2f; i++) {
-            func_ov001_0218b2e0(a, data_ov001_0218f330, buf);
+            BuildTouchRect(a, data_ov001_0218f330, buf);
             if (TouchRectPressed(buf)) {
                 if (M2C_FIELD(gOv001MenuState, u8 *, 0x124) == 0) {
                     Ov001_PlaySound(9);
@@ -286,7 +286,7 @@ void func_ov001_02172ba4(void) {
         u16 *c = data_ov001_0218f35c;
         u16 *b = data_ov001_0218f34c;
         for (i = 0; i < 4; i++) {
-            func_ov001_0218b2e0(b, c, buf);
+            BuildTouchRect(b, c, buf);
             if (TouchRectPressed(buf)) {
                 if ((i == 3 && M2C_FIELD(gOv001MenuState, u8 *, 0x123) == 0) ||
                     (i == 2 && M2C_FIELD(gOv001MenuState, u8 *, 0x124) == 0)) {
@@ -307,7 +307,7 @@ void func_ov001_02172ba4(void) {
         d = data_ov001_0218f344;
         e = data_ov001_0218f32c;
         for (i = 0; i < 2; i++) {
-            func_ov001_0218b2e0(d, e, buf);
+            BuildTouchRect(d, e, buf);
             if (TouchRectPressed(buf)) {
                 Ov001_PlaySound(0);
                 M2C_FIELD(gOv001MenuState, u8 *, 0x11e) = (u8)(i + 0x33);
@@ -335,7 +335,7 @@ s32 func_ov001_02172d8c(void) {
     extern u16 data_ov001_0218f35c[];
     extern u16 data_ov001_0218f350[];
     extern u16 data_ov001_0218f360[];
-    void func_ov001_0218b2e0(void *, void *, void *);
+    void BuildTouchRect(void *, void *, void *);
     s32 TouchRectHeld(void *);
     void Ov001_SetKeyboardPage(s32);
     s32 func_ov001_02173924(void);
@@ -356,7 +356,7 @@ s32 func_ov001_02172d8c(void) {
     p = (u8 *)data_ov001_0218f36c;
     q = (u8 *)data_ov001_0218f330;
     for (i = 0; i < 0x2f; i++) {
-        func_ov001_0218b2e0(p, q, buf);
+        BuildTouchRect(p, q, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i) {
                 return 0;
@@ -376,7 +376,7 @@ s32 func_ov001_02172d8c(void) {
     p = (u8 *)data_ov001_0218f354;
     q = (u8 *)data_ov001_0218f364;
     for (i = 2; i < 4; i++) {
-        func_ov001_0218b2e0(p, q, buf);
+        BuildTouchRect(p, q, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x2f) {
                 return 0;
@@ -396,7 +396,7 @@ s32 func_ov001_02172d8c(void) {
     p = (u8 *)gKeyboardSpecialChars;
     q = (u8 *)data_ov001_0218f344;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, q, buf);
+        BuildTouchRect(p, q, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x33) {
                 return 0;
@@ -409,7 +409,7 @@ s32 func_ov001_02172d8c(void) {
         p += 4;
     }
 
-    func_ov001_0218b2e0(gKeyboardActionChars, data_ov001_0218f350, buf);
+    BuildTouchRect(gKeyboardActionChars, data_ov001_0218f350, buf);
     if (TouchRectHeld(buf) != 0) {
         if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != 0x2f) {
             return 0;
@@ -420,7 +420,7 @@ s32 func_ov001_02172d8c(void) {
         return 0;
     }
 
-    func_ov001_0218b2e0(data_ov001_0218f34c, data_ov001_0218f360, buf);
+    BuildTouchRect(data_ov001_0218f34c, data_ov001_0218f360, buf);
     if (TouchRectHeld(buf) != 0) {
         if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != 0x30) {
             return 0;
@@ -446,7 +446,10 @@ void Ov001_ToggleKeyboardSymbols(void) {
  Ov001_PlaySound(1);
 }
 
-void func_ov001_021730d4(void) {
+/* Handles the stylus being released over the on-screen keyboard: selects the key
+ * under the release, and while the delete key is held repeats the deletion after
+ * a delay until the text can no longer be deleted. */
+void Ov001_HandleKeyboardKeyRelease(void) {
     extern u16 gTouchScreenRect[];
     extern u16 data_ov001_0218f36c[];
     extern u16 data_ov001_0218f330[];
@@ -455,90 +458,90 @@ void func_ov001_021730d4(void) {
     extern u16 data_ov001_0218f344[];
     extern u16 data_ov001_0218f32c[];
     extern void *gOv001MenuState;
-    void func_ov001_0218b2e0(void *, void *, void *);
-    s32 func_ov001_0218bb6c(void *);
-    void func_ov001_021732d8(s32);
+    void BuildTouchRect(void *, void *, void *);
+    s32 TouchRectReleased(void *);
+    void Ov001_SetSelectedKeyboardKey(s32);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
 
     s32 i;
     u8 buf[8];
-    u8 *q;
-    u8 *p;
+    u8 *keySize;
+    u8 *keyPos;
 
-    if (func_ov001_0218bb6c(gTouchScreenRect) == 0) {
+    if (TouchRectReleased(gTouchScreenRect) == 0) {
         goto fail;
     }
 
-    p = (u8 *)data_ov001_0218f36c;
-    for (i = 0; i < 0x2f; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f330, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
-            if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i) {
+    keyPos = (u8 *)data_ov001_0218f36c;
+    for (i = 0; i < KBD_CHAR_KEY_COUNT; i++) {
+        BuildTouchRect(keyPos, data_ov001_0218f330, buf);
+        if (TouchRectReleased(buf) != 0) {
+            if (((Ov001KeyboardState *)gOv001MenuState)->touchKey != i) {
                 goto fail;
             }
-            func_ov001_021732d8(i);
+            Ov001_SetSelectedKeyboardKey(i);
             goto tail;
         }
-        p += 4;
+        keyPos += 4;
     }
 
-    q = (u8 *)data_ov001_0218f364;
-    p = (u8 *)data_ov001_0218f354;
+    keySize = (u8 *)data_ov001_0218f364;
+    keyPos = (u8 *)data_ov001_0218f354;
     for (i = 2; i < 4; i++) {
-        func_ov001_0218b2e0(p, q, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
-            if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x2f) {
+        BuildTouchRect(keyPos, keySize, buf);
+        if (TouchRectReleased(buf) != 0) {
+            if (((Ov001KeyboardState *)gOv001MenuState)->touchKey != i + KBD_CHAR_KEY_COUNT) {
                 goto fail;
             }
-            func_ov001_021732d8(i + 0x2f);
+            Ov001_SetSelectedKeyboardKey(i + KBD_CHAR_KEY_COUNT);
             if (i != 3) {
                 return;
             }
-            M2C_FIELD(gOv001MenuState, u8 *, 0x122) =
-                (u8)(M2C_FIELD(gOv001MenuState, u8 *, 0x122) + 1);
+            ((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat =
+                (u8)(((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat + 1);
             {
-                u8 __v = M2C_FIELD(gOv001MenuState, u8 *, 0x122);
-                if (__v < 0x28) {
+                u8 repeat = ((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat;
+                if (repeat < KBD_DELETE_REPEAT_DELAY) {
                     return;
                 }
             }
-            if (M2C_FIELD(gOv001MenuState, u8 *, 0x123) == 0) {
+            if (((Ov001KeyboardState *)gOv001MenuState)->canDelete == 0) {
                 Ov001_PlaySound(9);
-                M2C_FIELD(gOv001MenuState, s8 *, 0x11e) = -1;
+                ((Ov001KeyboardState *)gOv001MenuState)->touchKey = -1;
                 return;
             } else {
-                M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = 0x80;
-                M2C_FIELD(gOv001MenuState, u8 *, 0x122) =
-                    (u8)(M2C_FIELD(gOv001MenuState, u8 *, 0x122) - 7);
+                ((Ov001KeyboardState *)gOv001MenuState)->key = KBD_KEY_DELETE;
+                ((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat =
+                    (u8)(((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat - KBD_DELETE_REPEAT_STEP);
                 return;
             }
         }
-        q += 4;
-        p += 4;
+        keySize += 4;
+        keyPos += 4;
     }
 
-    p = (u8 *)data_ov001_0218f344;
+    keyPos = (u8 *)data_ov001_0218f344;
     for (i = 0; i < 2; i++) {
-        func_ov001_0218b2e0(p, data_ov001_0218f32c, buf);
-        if (func_ov001_0218bb6c(buf) != 0) {
-            if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x33) {
+        BuildTouchRect(keyPos, data_ov001_0218f32c, buf);
+        if (TouchRectReleased(buf) != 0) {
+            if (((Ov001KeyboardState *)gOv001MenuState)->touchKey != i + KBD_ACTION_KEY_BASE) {
                 goto fail;
             }
-            func_ov001_021732d8(i + 0x33);
+            Ov001_SetSelectedKeyboardKey(i + KBD_ACTION_KEY_BASE);
             goto tail;
         }
-        p += 4;
+        keyPos += 4;
     }
 
 fail:
-    func_ov001_021732d8(-1);
+    Ov001_SetSelectedKeyboardKey(-1);
 
 tail:
-    M2C_FIELD(gOv001MenuState, u8 *, 0x122) = 0;
+    ((Ov001KeyboardState *)gOv001MenuState)->deleteRepeat = 0;
     return;
 }
 
-void func_ov001_021732d8(s32 arg0) {
+void Ov001_SetSelectedKeyboardKey(s32 arg0) {
  extern void *gOv001MenuState;
  if(arg0==M2C_FIELD(gOv001MenuState,s8 *,0x11f)) return;
  func_ov001_0217385c(arg0,1);

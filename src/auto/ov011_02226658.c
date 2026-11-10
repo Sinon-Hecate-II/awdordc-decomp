@@ -15,7 +15,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_ov011_02225a24(void *, u16, u16);
     M2C_UNK func_ov011_02225a9c(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     extern u16 *gKeyState;
-    extern void *data_02101e88;
+    extern void *gTouchState;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
@@ -234,9 +234,9 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     gCur3DSpriteEngine = temp_r4;
-    if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_ov011_02225a24(arg0, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2));
+        func_ov011_02225a24(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
         gCur3DSpriteEngine = temp_r4;
     }
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) >= 0x28FAU) {

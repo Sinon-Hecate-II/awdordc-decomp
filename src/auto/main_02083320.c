@@ -66,7 +66,7 @@ void func_020834c4(void) {
 #pragma push
 #pragma opt_strength_reduction off
 void func_0208352c(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, M2C_UNK);
+    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 i, n, a;
     s8 *p;
@@ -74,7 +74,7 @@ void func_0208352c(void *arg0) {
     i = 0;
     M2C_FIELD(arg0, u16 *, 0x54) = 0;
     if (M2C_FIELD(arg0, u8 *, 0x62) == 0) {
-        func_01ffa8c4(arg0, 0);
+        SetSpriteAnimation(arg0, 0);
         return;
     }
     n = M2C_FIELD(arg0, u16 *, 0x5a);

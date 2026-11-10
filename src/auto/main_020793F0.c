@@ -76,7 +76,7 @@ void func_020796b0(M2C_UNK arg0, void *arg1) {
    a 3D quad at the unit's position. */
 void DrawUnitStatusIcon(Vec3 *pos, UnitRenderContext *ctx) {
     void func_020799dc(void *, void *, void *, u32);
-    extern Mode0207 data_02168f14;
+    extern Mode0207 gMapConfig;
     extern M2C_UNK gFrameCounter;
     extern M2C_UNK data_020eb4ec;
     extern M2C_UNK data_020eb4e0;
@@ -98,7 +98,7 @@ void DrawUnitStatusIcon(Vec3 *pos, UnitRenderContext *ctx) {
     s32 flip;
 
     if (ctx->mode == 1) return;
-    icon = (u8)data_02168f14.mode;
+    icon = (u8)gMapConfig.mode;
     if (icon == 2) {
         icon = 0;
         unit = ctx->unit;
@@ -211,10 +211,10 @@ void func_02079bb0(M2C_UNK arg0) {
 
 M2C_UNK func_02079bc4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK PlaySoundEffect(s32);
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     extern M2C_UNK data_02100ab0;
     PlaySoundEffect(0x82);
-    M2C_FIELD(func_01ffa42c(&data_02100ab0, arg1), s16 *, 0x6E) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02100ab0, arg1), s16 *, 0x6E) = arg0;
 }
 
 void func_02079bf0(void *arg0) {
@@ -237,9 +237,9 @@ void func_02079c3c(M2C_UNK arg0) {
 }
 
 M2C_UNK func_02079c50(M2C_UNK arg0, M2C_UNK arg1) {
-    void *func_01ffa42c();
+    void *CreateSpriteObject();
     extern M2C_UNK data_02100a88;
-    M2C_FIELD(func_01ffa42c(&data_02100a88, arg1), s16 *, 0x6E) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02100a88, arg1), s16 *, 0x6E) = arg0;
 }
 
 void func_02079c6c(s32 arg0, s32 arg1) {

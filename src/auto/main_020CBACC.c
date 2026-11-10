@@ -1,5 +1,6 @@
 /* 39 functions from 0x020CBACC to 0x020CC9C8 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline s32 visibleCB(void *p,s32 x,s32 y) {
 u32 n;
 if (M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3)&2)return 1;
@@ -42,11 +43,11 @@ void func_020cbc08(void) {
 void func_020cbc20(void *arg0) { extern void **gCurrentMap; void *p=*(void * volatile *)((u8 *)arg0+0x34); s32 n; func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5); if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14; func_020a6728(n);func_020cfd28();}
 #pragma opt_common_subs reset
 void func_020cbc88(void *arg0) {
- void *func_01ffa42c(M2C_UNK *);
+ void *CreateSpriteObject(M2C_UNK *);
  extern M2C_UNK data_0212b22c;
  if (((Unk020cbc88 *)arg0)->unk_0==0) return;
  if (M2C_FIELD(arg0,u16 *,4)&8) return;
- M2C_FIELD(func_01ffa42c(&data_0212b22c),void **,0x34)=arg0;
+ M2C_FIELD(CreateSpriteObject(&data_0212b22c),void **,0x34)=arg0;
 }
 
 void func_020cbcc0(void *arg0) {
@@ -60,9 +61,9 @@ void func_020cbcd0(void *arg0) {
 }
 
 void func_020cbce0(s32 arg0) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_0212b33c;
-    M2C_FIELD(func_01ffa42c(&data_0212b33c), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_0212b33c), s32 *, 0x34) = arg0;
 }
 
 void func_020cbcfc(void *arg0) {
@@ -201,41 +202,56 @@ func_0209b2b4(1,0,2,func_020cfbdc(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
 *(s16 *)((u8 *)*gCurrentMap+0x52b4)=9;
 }
 
-void func_020cc234(u8 *p){
-extern void *gCur3DSpriteEngine;
-M2C_UNK func_01ffa6fc(void *);
-u16 *volatile p0;
-u16 *volatile p1;
-u16 *volatile p2;
-u16 *volatile p3;
-u16 *volatile p4;
-u16 *volatile p5;
-u16 *volatile p6;
-u16 *volatile p7;
-u16 *volatile p8;
-u16 *volatile p9;
-u16 *volatile p10;
-s32 value;
-u8 brightness;
-(*(s16 *)(p+52))++;
-value=*(s16 *)(p+52);
-brightness=value>>1;
-p0=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p0=(*p0&~0xc0)|0xc0;
-(*(u8 **)gCur3DSpriteEngine)[81]=0;
-(*(u8 **)gCur3DSpriteEngine)[82]=0;
-(*(u8 **)gCur3DSpriteEngine)[83]=brightness;
-p1=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p1=(*p1&~1)|1;
-p2=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p2=*p2&~2;
-p3=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p3=*p3&~4;
-p4=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p4=*p4&~8;
-p5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p5=*p5|16;
-p6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p6=*p6&~256;
-p7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p7=*p7&~512;
-p8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p8=*p8&~1024;
-p9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p9=*p9&~2048;
-p10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*p10=*p10&~4096;
-if(*(s16 *)(p+52)<12)return;
-func_01ffa6fc(p);
+/* Advance the map fade-in one frame: bump the fade timer at +0x34, copy half
+ * its value into the 3D sprite bank's blend byte, clear every layer bit and set
+ * the map view's, then finish the task once the timer reaches 12. */
+void MapFadeInStep(u8 *fade) {
+    M2C_UNK func_01ffa6fc(void *);
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile oamC0;
+    u16 *volatile oam1;
+    u16 *volatile oam2;
+    u16 *volatile oam4;
+    u16 *volatile oam8;
+    u16 *volatile oam10;
+    u16 *volatile oam100;
+    u16 *volatile oam200;
+    u16 *volatile oam400;
+    u16 *volatile oam800;
+    u16 *volatile oam1000;
+    s32 value;
+    u8 brightness;
+
+    (*(s16 *)(fade + 0x34))++;
+    value = *(s16 *)(fade + 0x34);
+    brightness = value >> 1;
+    oamC0 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oamC0 = (*oamC0 & ~0xc0) | 0xc0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsAbove = 0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsBelow = 0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->filler_53 = brightness;
+    oam1 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam1 = (*oam1 & ~1) | 1;
+    oam2 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam2 = *oam2 & ~2;
+    oam4 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam4 = *oam4 & ~4;
+    oam8 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam8 = *oam8 & ~8;
+    oam10 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam10 = *oam10 | 0x10;
+    oam100 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam100 = *oam100 & ~0x100;
+    oam200 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam200 = *oam200 & ~0x200;
+    oam400 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam400 = *oam400 & ~0x400;
+    oam800 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam800 = *oam800 & ~0x800;
+    oam1000 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam1000 = *oam1000 & ~0x1000;
+    if (*(s16 *)(fade + 0x34) < 12) return;
+    func_01ffa6fc(fade);
 }
 
 void func_020cc430(void *arg0) {

@@ -12,7 +12,7 @@ static inline void *Selected175(void *base) { void *q;u8 *cursor=base;s32 i;for(
 /* Updates the zoom state: toggles between 1.0 (0x1000) and 0.5 (0x800) scale,
    recomputes the clipped target position, and clamps the source rectangle. */
 void func_ov004_02217480(void *state) {
-void func_01ffa8c4(void *, s32);
+void SetSpriteAnimation(void *, s32);
 void *entry; s32 i, offset; void *base; u32 flags; s16 x,y;
 i=0;
 M2C_FIELD(state,u8 *,0x36)=0;
@@ -31,7 +31,7 @@ return;
 }
 i++;offset+=32;
 }while(i<64);
-func_01ffa8c4(state,1);
+SetSpriteAnimation(state,1);
 }
 
 #pragma opt_strength_reduction off
@@ -42,7 +42,7 @@ s32 func_02001fb4(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void func_020ceb48(void);void func_020cf278(s32);void func_020cf0a8(s32);void func_ov003_021ff36c(void);
-s32 func_020a8958(s32);void func_01ffa8c4(void *,s32);M2C_UNK func_01ffa6fc(void *);
+s32 func_020a8958(s32);void SetSpriteAnimation(void *,s32);M2C_UNK func_01ffa6fc(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
@@ -109,7 +109,7 @@ M2C_FIELD(q,u8 *,5)=(data_0215d8a8[id]<<3)>>29;
 id=M2C_FIELD(entry,u8 *,7);
 ((Flags175 *)data_0215d8a8)[id].previous=((Flags175 *)data_0215d8a8)[id].current;
 if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)PlaySoundEffect(286);
-func_01ffa8c4(state,3);return;
+SetSpriteAnimation(state,3);return;
 default:func_01ffa6fc(state);return;
 }
 }

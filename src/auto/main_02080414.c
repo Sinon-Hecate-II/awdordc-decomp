@@ -84,10 +84,10 @@ void func_02080750(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 M2C_UNK func_02080774(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,s32 e) {
- void *func_01ffa3dc(M2C_UNK *,M2C_UNK);void *func_01ffa42c(M2C_UNK *,s32);
+ void *func_01ffa3dc(M2C_UNK *,M2C_UNK);void *CreateSpriteObject(M2C_UNK *,s32);
  extern M2C_UNK data_02101cf8;extern void *data_02101cc4[];
  void *p;
- if(e)p=func_01ffa42c(&data_02101cf8,e);else p=func_01ffa3dc(&data_02101cf8,6);
+ if(e)p=CreateSpriteObject(&data_02101cf8,e);else p=func_01ffa3dc(&data_02101cf8,6);
  M2C_FIELD(p,void **,0x54)=data_02101cc4[b];
  M2C_FIELD(p,s16 *,0x4c)=c;
  M2C_FIELD(p,s16 *,0x50)=a;
@@ -188,9 +188,9 @@ void func_02080bd4(void) {
 }
 
 s32 func_02080c00(void *a) {
- void func_0200b774(void *);s32 func_0200ba54(void *,void *);void func_0200ba9c(void *);
+ void InitFileRequest(void *);s32 func_0200ba54(void *,void *);void func_0200ba9c(void *);
  s32 buf[18];s32 n;
- func_0200b774(buf);
+ InitFileRequest(buf);
  if(!func_0200ba54(buf,a))return 0;
  n=buf[10]-buf[9];func_0200ba9c(buf);return n;
 }
@@ -201,7 +201,7 @@ int func_02080c50(int arg0, int arg1) {
     int var_8;
     int var_9;
 
-    func_0200b774(sp0);
+    InitFileRequest(sp0);
     if (func_0200ba54(sp0, arg0) == 0) {
         func_02007958();
         return 0;
@@ -226,7 +226,7 @@ int func_02080c50(int arg0, int arg1) {
 }
 
 s32 func_02080cfc(void *arg0, s32 arg1) {
-    int func_0200b774(void *);
+    int InitFileRequest(void *);
     int func_0200ba54(void *, void *);
     int func_0200bbe0(void *, void *, s32);
     int func_0200ba9c(void *);
@@ -249,7 +249,7 @@ s32 func_02080cfc(void *arg0, s32 arg1) {
 
     r8 = (void *)func_020e34f4(0x2000);
 
-    func_0200b774(file);
+    InitFileRequest(file);
     if (func_0200ba54(file, arg0) == 0) {
         func_02007958();
         return r7;
@@ -300,7 +300,7 @@ void *func_02080e30(void *arg0, int arg1) {
     int a;
     int b;
 
-    func_0200b774(sp0);
+    InitFileRequest(sp0);
     if (func_0200ba54(sp0, arg0) == 0) {
         func_02007958();
         return 0;
@@ -333,11 +333,11 @@ void *func_02080e30(void *arg0, int arg1) {
 
 s32 func_02080efc(s32 path,s32 mode,s32 sizeOut) {
 s32 func_020e34f4(s32);s32 func_020e34bc();s32 func_020e35cc(s32);
-s32 func_0200b774(void *);s32 func_0200ba54(void *,void *);s32 func_0200bbe0(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
+s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 func_0200bbe0(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
 s32 func_0207c7cc(void *);u32 func_0207c7d8(void *, void *, u32);s32 func_0207c860(void *,void *,s32);
 u32 file[18];u8 ctx[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
 if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)func_020e34bc(0x2000);
-func_0200b774(file);
+InitFileRequest(file);
 if(!func_0200ba54(file,(void *)path)){func_02007958();return 0;}
 total=file[10]-file[9];chunk=total<0x2000?total:0x2000;
 if(func_0200bbe0(file,buf,chunk)!=chunk){func_02007958();return 0;}
@@ -362,7 +362,7 @@ void func_02081070(M2C_UNK arg0, M2C_UNK arg1) {
 int func_02081080(int arg0, int arg1, int arg2, int arg3) {
     void *sp0[18];
 
-    func_0200b774(sp0);
+    InitFileRequest(sp0);
     if (func_0200ba54(sp0, arg0) == 0) {
         func_02007958();
         return 0;

@@ -2,7 +2,7 @@
 #include "common.h"
 
 #pragma scheduling off
-void func_02026164(u8 *state,const u8 *key,s32 keylen) {
+void RC4_Init(u8 *state,const u8 *key,s32 keylen) {
 s32 i; u8 *S; s32 jj; s32 ii; s32 k; u8 sk,keybyte,sj;
 state[0]=0;state[1]=0;S=state+2;
 for(i=0;i<256;i++)S[i]=(u8)i;
@@ -17,7 +17,7 @@ S[k]=sj;S[jj]=sk;
 }
 }
 #pragma scheduling reset
-void func_020261d8(u8 *state, u8 *data, s32 len) {
+void RC4_Crypt(u8 *state, u8 *data, s32 len) {
     s32 n;
     u8 j;
     u8 i;
@@ -83,7 +83,7 @@ void BigNumAdd(u16 *dst, u16 *src1, u16 *src2, s32 len) {
         k++;
     }
     if (dst != src1 && dst != src2) {
-        func_02007f8c((u8 *)(dst + k), 0, (u32)((len - k) * 2));
+        MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
     }
 }
 
@@ -113,7 +113,7 @@ void BigNumNeg(u16 *arr, s32 n) {
 
 void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     s32 BigNumLen(u16 *, s32);
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s32 a;
     s32 b;
     s32 m;
@@ -138,7 +138,7 @@ void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
         k++;
     }
     if (dst != src1 && dst != src2) {
-        func_02007f8c((u8 *)(dst + k), 0, (u32)((len - k) * 2));
+        MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
     }
 }
 
@@ -178,9 +178,9 @@ void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
 }
 
 void BigNumMul(u16 *dst,u16 *src1,u16 *src2,s32 len){
-M2C_UNK func_02007f8c(u8 *,s32,u32);s32 BigNumLen(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
+M2C_UNK MI_CpuFill8(u8 *,s32,u32);s32 BigNumLen(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
 s32 a,b,i,j;
-func_02007f8c((u8 *)dst,0,(u32)(len*2));
+MI_CpuFill8((u8 *)dst,0,(u32)(len*2));
 a=BigNumLen(src1,len);b=BigNumLen(src2,len);
 for(i=0;i<b;i++){
 j=0;while(j<a && j<len-i){
@@ -190,7 +190,7 @@ func_02026524(dst,(u32)src1[j]*(u32)src2[i],i+j,len);j++;
 }
 
 void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s32 BigNumLen(u16 *, s32);
     s32 n;
     u32 carry;
@@ -209,12 +209,12 @@ void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
         dst[k] = (u16)carry;
         k++;
     }
-    func_02007f8c((u8 *)(dst + k), 0, (u32)((len - k) * 2));
+    MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
 }
 
 void func_0202667c(u16 *dst,u16 *src,s32 n){
 s32 m=BigNumLen(src,n); s32 i,k,j; u32 p;
-if(n>m*2)func_02007f8c((u8*)(dst+m*2),0,(n-m*2)*2);
+if(n>m*2)MI_CpuFill8((u8*)(dst+m*2),0,(n-m*2)*2);
 i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
 for(k=0;k<m;k++){i=k+1;goto test;
 body:p=(u32)src[i]*src[k];if(p<=0x7fff8000U)func_02026524(dst,p<<1,j,n);else{func_02026524(dst,p,j,n);func_02026524(dst,p,j,n);}i++;
@@ -248,7 +248,7 @@ M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
 u64 func_02072088(u64,u64);
 s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
 q=work+n;r=q+n;
-func_02007f8c((u8 *)q,0,n*4);
+MI_CpuFill8((u8 *)q,0,n*4);
 na=BigNumLen(a,n);nb=BigNumLen(b,n);
 if(na>0 && nb>0){
 i=nb+(n-na)-1;
@@ -274,7 +274,7 @@ if(rem)MI_CpuCopy8((s32)r,(s32)rem,n*2);
 }
 #pragma scheduling reset
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 BigNumLen(u16 *, s32);
     void BigNumMul(u16 *, u16 *, u16 *, s32);
@@ -295,7 +295,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
         return;
     }
     temp_r5 = temp_r4 + arg3;
-    func_02007f8c((u8 *)(arg0 + 1), 0, (u32)((arg3 - 1) * 2));
+    MI_CpuFill8((u8 *)(arg0 + 1), 0, (u32)((arg3 - 1) * 2));
     *arg0 = 1;
     var_r6 = (u32)((arg3 - BigNumLen(arg2, arg3)) * 16);
     for (; (u32)var_r6 < (u32)(arg3 * 16); var_r6++) {
@@ -376,7 +376,7 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
 #pragma scheduling reset
 void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
 {
-  M2C_UNK func_02007f8c(u8 *, s32, u32);
+  M2C_UNK MI_CpuFill8(u8 *, s32, u32);
   M2C_UNK MI_CpuCopy8(s32, s32, s32);
   void BigNumAdd(u16 *, u16 *, u16 *, s32);
   void BigNumSub(u16 *, u16 *, u16 *, s32);
@@ -396,15 +396,15 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
   }
   BigNumMul(arg7, arg0, arg6, arg4);
   arg2 = (arg3 - arg4) * 2;
-  func_02007f8c((u8 *) (arg7 + arg4), 0, (u32) arg2);
+  MI_CpuFill8((u8 *) (arg7 + arg4), 0, (u32) arg2);
   BigNumMul(arg8, arg7, arg5, arg3);
   BigNumAdd(arg0, arg0, arg8, arg3);
   func_020651c4((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
-  func_02007f8c((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
+  MI_CpuFill8((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
   switch (func_020264ec(arg0, arg5, arg3))
   {
     case 0:
-      func_02007f8c((u8 *) arg0, 0, (u32) (arg3 * 2));
+      MI_CpuFill8((u8 *) arg0, 0, (u32) (arg3 * 2));
       return;
 
     case 1:
@@ -418,7 +418,7 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
 #pragma push
 #pragma opt_strength_reduction off
 void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s32 BigNumLen(u16 *, s32);
     void func_02026484(u16 *, u16 *, u32, s32);
     void BigNumMul(u16 *, u16 *, u16 *, s32);
@@ -443,7 +443,7 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     if (buf == 0) {
         return;
     }
-    func_02007f8c((u8 *)buf, 0, (u32)(n * 0x16));
+    MI_CpuFill8((u8 *)buf, 0, (u32)(n * 0x16));
 
     r6 = buf + n;
     r5 = r6 + n;
@@ -484,7 +484,7 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
 }
 #pragma pop
 void BigNumFromBytes(s16 *dst, u8 *src, s32 count, s32 size) {
-    M2C_UNK func_02007f8c(u8 *, s32, u32);
+    M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s16 *var_r4;
     s32 var_r5;
     u8 *var_r6;
@@ -492,7 +492,7 @@ void BigNumFromBytes(s16 *dst, u8 *src, s32 count, s32 size) {
     var_r4 = dst;
     var_r5 = count;
     var_r6 = src;
-    func_02007f8c((u8 *)var_r4, 0, (u32)(size * 2));
+    MI_CpuFill8((u8 *)var_r4, 0, (u32)(size * 2));
     var_r6 = var_r6 + (var_r5 - 1);
     if (var_r5 > 1) {
         do {

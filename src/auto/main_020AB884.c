@@ -6,7 +6,7 @@
  * scroll position at either end, then rebuilds the pixel offsets of the two
  * sub-lists whose animation timers are being restarted. */
 void UpdateListScroll(void *arg0) {
-s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 GetScrollLimit(void *);void ScrollListTo(void *,s16,s32);s32 GetSpriteAnimValue(void *);
+s32 func_0207c8ec(s16,s16);s32 Modulo(s16,s16);s16 GetScrollLimit(void *);void ScrollListTo(void *,s16,s32);s32 GetSpriteAnimValue(void *);
 s16 rowIdx,unusedB,curOffset,savedTimer; s32 pixOffset; s32 endPos; s32 rowPos; s16 rowStep; s32 visibleRows; s16 finalPos;
 if(M2C_FIELD(arg0,s32 *,0x18)>=(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8)) && M2C_FIELD(arg0,u8 *,4)){
 rowIdx=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
@@ -30,7 +30,7 @@ M2C_FIELD(arg0,u8 *,4)=0;
 }
 }
 pixOffset=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
-M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)func_0207c928((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)Modulo((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
 M2C_FIELD(arg0,s16 *,46)=pixOffset;
 curOffset=M2C_FIELD(arg0,s16 *,44);savedTimer=M2C_FIELD(arg0,s16 *,78);
 M2C_FIELD(arg0,s16 *,80)=GetSpriteAnimValue((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=curOffset;M2C_FIELD(arg0,s16 *,78)=savedTimer;

@@ -242,43 +242,46 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
 #undef AACC
 }
 #pragma pop
-void func_0208dd7c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Draws a rectangular window frame: a horizontal bar along the top and bottom
+ * and a vertical bar down each side, either on the rectangle's edge (inside) or
+ * one pixel outside it. */
+void DrawFrameBorder(s16 x, s16 y, s16 width, s16 height, s32 tile, s32 priority, s32 style) {
     M2C_UNK DrawHorizontalBar(s16, s16, s16, s32, s32);
     M2C_UNK DrawVerticalBar(s16, s16, s16, s32, s32);
     extern void *gCur3DSpriteEngine;
 
-    switch (arg6) {
-        case 1:
-            DrawHorizontalBar(arg0, arg1, arg2, arg4, arg5);
-            DrawHorizontalBar(arg0, (s16)(arg1 + arg3 - 1), arg2, arg4, arg5);
-            DrawVerticalBar(arg0, arg1, (s16)(arg3 - 1),
-                (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
-                arg5);
-            DrawVerticalBar((s16)(arg0 + arg2 - 1), arg1, (s16)(arg3 - 1),
-                (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
-                arg5);
+    switch (style) {
+        case FRAME_BORDER_INSIDE:
+            DrawHorizontalBar(x, y, width, tile, priority);
+            DrawHorizontalBar(x, (s16)(y + height - 1), width, tile, priority);
+            DrawVerticalBar(x, y, (s16)(height - 1),
+                (s32)(u16)(tile + (0x3FF & (10 >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine)))),
+                priority);
+            DrawVerticalBar((s16)(x + width - 1), y, (s16)(height - 1),
+                (s32)(u16)(tile + (0x3FF & (10 >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine)))),
+                priority);
             break;
-        case 2:
-            DrawHorizontalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg4, arg5);
-            DrawHorizontalBar((s16)(arg0 - 1), (s16)(arg1 + arg3 - 1), (s16)(arg2 + 2), arg4, arg5);
-            DrawVerticalBar((s16)(arg0 - 1), arg1, arg3,
-                (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
-                arg5);
-            DrawVerticalBar((s16)(arg0 + arg2 - 1), arg1, arg3,
-                (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
-                arg5);
+        case FRAME_BORDER_OUTSIDE:
+            DrawHorizontalBar((s16)(x - 1), (s16)(y - 1), (s16)(width + 2), tile, priority);
+            DrawHorizontalBar((s16)(x - 1), (s16)(y + height - 1), (s16)(width + 2), tile, priority);
+            DrawVerticalBar((s16)(x - 1), y, height,
+                (s32)(u16)(tile + (0x3FF & (10 >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine)))),
+                priority);
+            DrawVerticalBar((s16)(x + width - 1), y, height,
+                (s32)(u16)(tile + (0x3FF & (10 >> SPRITE_ENGINE_MODE(gCur3DSpriteEngine)))),
+                priority);
             break;
     }
 }
 
 void func_0208df84(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5) {
  s32 EaseInterpolate(s32,s32,s32,s32,s32);
- void func_0208dd7c(s16,s16,s16,s16,s32,s32,s32);
+ void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
  extern volatile u32 gFrameCounter;
  s32 n;
  n=((gFrameCounter>>1)&15)<8U ? EaseInterpolate(4,0,2,(gFrameCounter>>1)&15,8):EaseInterpolate(1,2,0,((gFrameCounter>>1)&15)-8,8);
  n--;
- func_0208dd7c((s16)(arg0-n),(s16)(arg1-n),(s16)(arg2+n*2),(s16)(arg3+n*2),arg4,arg5,2);
+ DrawFrameBorder((s16)(arg0-n),(s16)(arg1-n),(s16)(arg2+n*2),(s16)(arg3+n*2),arg4,arg5,2);
 }
 
 void func_0208e054(s32 arg0, s32 arg1, s16 arg2) {

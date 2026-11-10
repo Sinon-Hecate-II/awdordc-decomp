@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct { s32 v[4]; } MenuBounds;
 extern const MenuBounds data_020f4e88;
-extern u8 data_02168f14[16];
+extern u8 gMapConfig[16];
 
 s32 func_020d6398(s32 x,s32 y){
 extern void **gCurrentMap;
@@ -31,7 +31,7 @@ return 0;
 }
 
 s32 func_020d6544(s32 ax,s32 ay,s32 kind,s8 *path,s32 end){
-extern void **gCurrentMap;extern u8 gMovementCostTable[],data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u8 gMovementCostTable[],gUnitKindStats[];
 s32 func_020a85b8(s32);
 s16 oldx=ax,oldy=ay,x=oldx,y=oldy;
 s32 cost=0,dir,owner,terrain;
@@ -51,7 +51,7 @@ path[0]=10;path[1]=end;
 return 1;
 }
 terrain=cell[0x1420];
-cost+=(costs+data_ov000_021b5bfc[((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)*112+0x12]*32)[terrain&31];
+cost+=(costs+gUnitKindStats[((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)*112+0x12]*32)[terrain&31];
 oldx=x;oldy=y;path++;
 }
 return 0;
@@ -86,7 +86,7 @@ void func_020d6778(s32 mode) {
  void func_020d6a20(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
  void func_020d7b04(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
  void func_020d8084(s32,s32,u32,u32,s32,void *);void func_020d6e0c(s32,s32,s32,s32);
- u32 enabled=(u32)(*(u16 *)data_02168f14<<21)>>31;
+ u32 enabled=(u32)(*(u16 *)gMapConfig<<21)>>31;
  MenuBounds bounds=data_020f4e88;
  u8 *unit=0; u8 *map; s16 b; s32 side; u32 y; s16 a,kind; u32 x,id;
  if(!enabled)return;
@@ -99,7 +99,7 @@ void func_020d6778(s32 mode) {
  kind=func_020d849c(unit);
  map=*gCurrentMap;a=*(s16 *)(map+0x52e4);
  if(a<=bounds.v[0]) {b=bounds.v[1];side=0;}else {b=bounds.v[3];side=1;}
- switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),data_02168f14[3]);break;case 1:func_020d759c(a,b,side);break;case 2:break;}
+ switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(a,b,side);break;case 2:break;}
  switch(kind) {case 2:func_020d7b04(a,b,side,unit);case 1:DrawUnitStatus(a,b,side,unit);case 0:func_020d8084(a,b,x,y,side,unit);break;}
  func_020d6e0c(a,b,side,kind);
 }

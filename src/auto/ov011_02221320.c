@@ -1,5 +1,6 @@
 /* 9 functions from 0x02221320 to 0x02222204 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void func_ov011_02221320(void *arg0, s32 arg1) {
     extern M2C_UNK data_ov011_02228294;
@@ -17,7 +18,7 @@ s32 func_ov011_02221338(s32 arg0) {
     return arg0;
 }
 
-void func_ov011_0222134c(void *arg0) {
+void ConfigureIntroScreens(void *arg0) {
     M2C_UNK func_020822b8(u16 *);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -38,7 +39,10 @@ void func_ov011_0222134c(void *arg0) {
 
 #pragma opt_common_subs on
 #pragma opt_strength_reduction off
-void func_ov011_0222140c(void *arg0) {
+/* Initialise the intro overlay's display: configure the VRAM banks, both 3D
+   sprite engines and the intro screen configurations, then start the logo
+   animation in its initial state. */
+void InitIntroScene(void *logo) {
     M2C_UNK func_02082c84(void);
     M2C_UNK GX_SetBankForBG(s32);
     M2C_UNK func_02003124(s32);
@@ -50,15 +54,15 @@ void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_020aca8c(s32);
     M2C_UNK Reset3DSpriteBankState(void);
     M2C_UNK func_01ff9b38(void);
-    void func_ov011_0222134c(void *);
-    void func_ov011_0222161c(void *);
+    void ConfigureIntroScreens(void *);
+    void InitIntroLogo(void *);
 
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
 
-    s32 saved;
-    s32 i;
+    s32 savedEngine;
+    s32 engineIndex;
     s32 engine;
 
     func_02082c84();
@@ -69,39 +73,39 @@ void func_ov011_0222140c(void *arg0) {
     func_02002ab8(0x60);
     func_0200323c(0x80);
     func_020032bc(0x100);
-    func_ov011_0222134c(arg0);
+    ConfigureIntroScreens(logo);
 
-    saved = gCur3DSpriteEngine;
-    for (i = 0; i < 2; i++) {
-        if (i == 0) {
+    savedEngine = gCur3DSpriteEngine;
+    for (engineIndex = 0; engineIndex < 2; engineIndex++) {
+        if (engineIndex == 0) {
             gCur3DSpriteEngine = engine = g3DSpriteEngineMain;
         } else {
             gCur3DSpriteEngine = engine = g3DSpriteEngineSub;
         }
-        { u16 * volatile p0=(u16 *)*(s32 *)engine; *p0=*p0 | 0x10; }
-        { u16 * volatile p1=(u16 *)*(s32 *)gCur3DSpriteEngine; *p1=*p1 | 0x20; }
-        { u16 * volatile p2=(u16 *)*(s32 *)gCur3DSpriteEngine; *p2=*p2 | 0x40; }
-        { u16 * volatile p3=(u16 *)*(s32 *)gCur3DSpriteEngine; *p3=*p3 | 0x80; }
-        { u16 * volatile p4=(u16 *)*(s32 *)gCur3DSpriteEngine; *p4=*p4 | 0x100; }
-        { u16 * volatile p5=(u16 *)*(s32 *)gCur3DSpriteEngine; *p5=*p5 & ~0x200; }
-        { u16 * volatile p6=(u16 *)*(s32 *)gCur3DSpriteEngine; *p6=*p6 & ~0x400; }
-        { u16 * volatile p7=(u16 *)*(s32 *)gCur3DSpriteEngine; *p7=*p7 & ~0x800; }
-        {u16 * volatile p8=(u16 *)(*(s32 *)gCur3DSpriteEngine+0x12);*p8=*p8&~0xC0;}
-        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x51] = 0;
-        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x52] = 0;
-        ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x53] = 0;
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)engine; *bankFlags=*bankFlags | 0x10; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags | 0x20; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags | 0x40; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags | 0x80; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags | 0x100; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags & ~0x200; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags & ~0x400; }
+        { u16 *volatile bankFlags=(u16 *)*(s32 *)gCur3DSpriteEngine; *bankFlags=*bankFlags & ~0x800; }
+        { u16 *volatile oamAttr=(u16 *)(*(s32 *)gCur3DSpriteEngine+0x12); *oamAttr=*oamAttr&~0xC0; }
+        ((DS3DSpriteBank *)*(s32 *)gCur3DSpriteEngine)->rowsAbove = 0;
+        ((DS3DSpriteBank *)*(s32 *)gCur3DSpriteEngine)->rowsBelow = 0;
+        ((DS3DSpriteBank *)*(s32 *)gCur3DSpriteEngine)->filler_53 = 0;
         *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
         func_020aca8c(3);
         Reset3DSpriteBankState();
         func_01ff9b38();
     }
-    gCur3DSpriteEngine = saved;
-    *((u8 *)arg0 + 0x38) = 0;
-    func_ov011_0222161c(arg0);
+    gCur3DSpriteEngine = savedEngine;
+    *((u8 *)logo + 0x38) = 0;
+    InitIntroLogo(logo);
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-void func_ov011_0222161c(void *arg0) {
+void InitIntroLogo(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {
         M2C_FIELD(arg0, s16 *, 0x34) = 0;
         M2C_FIELD(arg0, s8 *, 0x39) = 0;
@@ -118,14 +122,14 @@ void func_ov011_0222161c(void *arg0) {
 }
 
 void func_ov011_0222166c(void *arg0) {
-    M2C_UNK func_01ffa8c4(void *, s32);
+    M2C_UNK SetSpriteAnimation(void *, s32);
     s32 temp_r1;
     if (M2C_FIELD(arg0, u8 *, 0x39) == 0) {
         temp_r1 = M2C_FIELD(arg0, s32 *, 0x3C);
         if (temp_r1 == 1) {
             M2C_FIELD(arg0, u8 *, 0x38) = 2;
             M2C_FIELD(arg0, s16 *, 0x34) = 0x10;
-            func_01ffa8c4(arg0, 2);
+            SetSpriteAnimation(arg0, 2);
             return;
         }
         if (temp_r1 != 2) {
@@ -133,11 +137,11 @@ void func_ov011_0222166c(void *arg0) {
             return;
         }
         M2C_FIELD(arg0, u8 *, 0x38) = 3;
-        func_01ffa8c4(arg0, 6);
+        SetSpriteAnimation(arg0, 6);
         return;
     }
     if (M2C_FIELD(arg0, s32 *, 0x3C) != 2) return;
-    func_01ffa8c4(arg0, 4);
+    SetSpriteAnimation(arg0, 4);
 }
 
 void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) {

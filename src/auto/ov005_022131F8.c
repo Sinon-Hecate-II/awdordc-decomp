@@ -324,9 +324,9 @@ void func_ov005_02214094(void) {
 }
 
 void func_ov005_022140cc(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220208;
-    func_01ffa42c(&data_ov005_02220208, arg0);
+    CreateSpriteObject(&data_ov005_02220208, arg0);
 }
 
 void func_ov005_022140e4(void) {

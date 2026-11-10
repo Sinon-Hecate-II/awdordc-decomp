@@ -274,7 +274,7 @@ void func_020e0b04(void *entity) {
     s32 func_020846a4(void); s32 func_0208477c(void); s32 func_02084a6c(void);
     s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
-    void func_020d47f0(void); void func_01ffa8c4(void *, s32);
+    void func_020d47f0(void); void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32); void func_01ffa6fc(void *);
     void MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
@@ -289,7 +289,7 @@ void func_020e0b04(void *entity) {
     M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
     if (E0B04Process(entity)) {
         func_020d47f0();
-        func_01ffa8c4(entity, 0x40);
+        SetSpriteAnimation(entity, 0x40);
         return;
     }
     primaryChild = M2C_FIELD(entity, void **, 0x50);

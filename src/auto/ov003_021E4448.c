@@ -207,7 +207,7 @@ void func_ov003_021e4908(void *arg0) {
     extern M2C_UNK data_ov003_0220f46c;
     extern M2C_UNK data_ov003_0220f45c;
     extern M2C_UNK data_ov003_0220f47c;
-    extern M2C_UNK data_02129870;
+    extern M2C_UNK gHeapObjectVTable;
 
     void *r4;
     unsigned char *bp;
@@ -395,8 +395,8 @@ void func_ov003_021e4908(void *arg0) {
         q[0x21] = 0x9;
     }
 
-    *(void **)(bp + 0x68) = func_020e34bc((s32)&data_02129870);
-    *(void **)(bp + 0x6c) = func_020e34bc((s32)&data_02129870);
+    *(void **)(bp + 0x68) = func_020e34bc((s32)&gHeapObjectVTable);
+    *(void **)(bp + 0x6c) = func_020e34bc((s32)&gHeapObjectVTable);
     func_02091c20(0x22, 0x1);
 }
 

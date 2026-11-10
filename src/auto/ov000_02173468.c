@@ -21,8 +21,8 @@ void func_0208df84(s16,s16,s32,s32,u16,s32);
 void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
-extern u8 data_02168f14[];
-extern u8 data_ov000_021b8dfc[],data_027e007c[],gSpriteDesc8x8[],data_02101f0c[],data_027e0064[],data_02101f3c[],gSpriteDesc16x8[];
+extern u8 gMapConfig[];
+extern u8 data_ov000_021b8dfc[],data_027e007c[],gSpriteDesc8x8[],data_02101f0c[],gSpriteDesc16x16[],data_02101f3c[],gSpriteDesc16x8[];
 extern s8 data_ov000_021b56a0[],data_ov000_021b5600[],data_ov000_021b5680[],data_ov000_021b56e0[];
 
 StatsOrder1734 order;
@@ -62,7 +62,7 @@ AddSprite(128,176,0x6100,data_02101f0c,1);
 AddSprite(192,176,0x6108,data_02101f0c,1);
 AddSprite(128,184,0x6110,data_02101f0c,1);
 AddSprite(192,184,0x6118,data_02101f0c,1);
-AddSprite(114,178,0xb140,data_027e0064,1);
+AddSprite(114,178,0xb140,gSpriteDesc16x16,1);
 }}
 counter=0;recordOffset=0;mapOffset=0;
 y1=17;y2=25;y3=19;y4=35;y5=44;y6=34;y7=16;
@@ -83,7 +83,7 @@ if(tens)AddSprite(193,(u16)y3,(u16)(((tens+140)&1023)|0x8000),gSpriteDesc8x8,1);
 AddSprite(201,(u16)y3,(u16)(((ones+140)&1023)|0x8000),gSpriteDesc8x8,1);
 map=*gCurrentMap;show=1;
 if(map[0x5156]==0&&map[0x5158]!=2)show=1;
-else if(!(M2C_FIELD(map+mapOffset,u8 *,0x684f)&2)&&!data_02168f14[2])show=0;
+else if(!(M2C_FIELD(map+mapOffset,u8 *,0x684f)&2)&&!gMapConfig[2])show=0;
 if(show){
 tens=hidden?10:func_0207c8ec(r.ammo,10);ones=hidden?10:r.ammo-tens*10;
 if(tens)AddSprite(193,(u16)y4,(u16)(((tens+140)&1023)|0x8000),gSpriteDesc8x8,1);

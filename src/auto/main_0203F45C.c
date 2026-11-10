@@ -2,7 +2,7 @@
 #include "common.h"
 u64 func_02072088(u64,u64);
 extern u8 *gConnectionMgr;
-void *GetConnection(void);u64 func_02007004(void);
+void *GetConnection(void);u64 GetSystemTick(void);
 
 int func_0203f45c(int type,int peer,int a,int b,s32 *payload,int count){
 int n=0,i,j;u32 packet0;u32 packet[65];u8 raw[8];void *p,*q;s64 ticks;
@@ -31,19 +31,19 @@ else{func_02040dc8(peer);if(func_0204084c())return 0;TryConnectToPeer(0,0,peer);
 if(!M2C_FIELD(GetConnection(),u8 *,21)){
 if(M2C_FIELD(GetConnection(),u8 *,13)){func_020407fc(peer,payload);func_020410f8();if(func_0204084c())return 0;}
 SetConnectionState(6);func_0203ecb0(0,0,func_02061784(M2C_FIELD(GetConnection(),s32 *,228),0));if(func_02043184())return 0;
-}else{SetConnectionState(5);if(func_02043008(func_0203ea4c(peer)))return 0;}break;
+}else{SetConnectionState(5);if(func_02043008(SendMatchmakingParameter(peer)))return 0;}break;
 case 3:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
 if(count>0&&payload[0]==16){func_0203dc38(13,0);return 0;}
 return func_02040cf0(M2C_FIELD(GetConnection(),s32 *,516));
 case 4:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;
-p=GetConnection();M2C_FIELD(p,u64 *,460)=func_02007004();
+p=GetConnection();M2C_FIELD(p,u64 *,460)=GetSystemTick();
 if((M2C_FIELD(GetConnection(),s32 *,520)&&M2C_FIELD(GetConnection(),u8 *,423)<16)||M2C_FIELD(GetConnection(),u8 *,21)==3){
-M2C_FIELD(GetConnection(),s32 *,444)=1;p=GetConnection();M2C_FIELD(p,u64 *,448)=func_02007004();
+M2C_FIELD(GetConnection(),s32 *,444)=1;p=GetConnection();M2C_FIELD(p,u64 *,448)=GetSystemTick();
 if(M2C_FIELD(GetConnection(),u8 *,21)!=3){p=GetConnection();M2C_FIELD(p,u8 *,423)++;}
 }else{M2C_FIELD(GetConnection(),s32 *,520)=0;M2C_FIELD(GetConnection(),u8 *,423)=0;
-if(!M2C_FIELD(GetConnection(),u8 *,21)){SetConnectionState(3);M2C_FIELD(GetConnection(),s32 *,232)=1;p=GetConnection();M2C_FIELD(p,u64 *,236)=func_02007004();}
+if(!M2C_FIELD(GetConnection(),u8 *,21)){SetConnectionState(3);M2C_FIELD(GetConnection(),s32 *,232)=1;p=GetConnection();M2C_FIELD(p,u64 *,236)=GetSystemTick();}
 else if(M2C_FIELD(GetConnection(),u8 *,21)==1)TryConnectToPeer(1,0,0);
 }break;
 case 5:
@@ -84,7 +84,7 @@ M2C_FIELD((void *)(count+(u32)GetConnection()),u8 *,720)=n;
 M2C_FIELD((u8 *)GetConnection()+count*4,s32 *,36)=payload[3];
 M2C_FIELD((u8 *)GetConnection()+count*2,u16 *,164)=payload[4];
 M2C_FIELD(GetConnection(),s32 *,440)=payload[3];M2C_FIELD((u8 *)GetConnection()+256,u16 *,180)=payload[4];
-SetConnectionState(5);if(func_02043008(func_0203ea4c(packet0)))return 0;M2C_FIELD(GetConnection(),s32 *,456)=0;M2C_FIELD(GetConnection(),s32 *,444)=0;
+SetConnectionState(5);if(func_02043008(SendMatchmakingParameter(packet0)))return 0;M2C_FIELD(GetConnection(),s32 *,456)=0;M2C_FIELD(GetConnection(),s32 *,444)=0;
 }}
 break;
 case 9:
@@ -101,12 +101,12 @@ if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
 if(!M2C_FIELD(GetConnection(),u8 *,21)||M2C_FIELD(GetConnection(),u8 *,21)==1){if(!func_02041038(peer))return 0;}
 else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;func_02041e44();func_02041be0(0);}
 break;
-case 13:case 14:case 15:if(!func_02042390(peer,type,payload[0]))return 0;break;
+case 13:case 14:case 15:if(!HandlePeerSyncNotice(peer,type,payload[0]))return 0;break;
 case 16:
 if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)return 1;
 for(a=0;a<count;a++){i=func_02042a08(payload[a],0);if(i!=255)func_02038de4(i);}break;
 case 17:p=gConnectionMgr;
-if(p&&M2C_FIELD(p,u8 *,0)){ticks=func_02007004()-M2C_FIELD(p,u64 *,16);if(func_02072088((u64)ticks<<6,0x82ea)>=M2C_FIELD(p,u32 *,4)){packet[0]=1;goto timer_ready;}}
+if(p&&M2C_FIELD(p,u8 *,0)){ticks=GetSystemTick()-M2C_FIELD(p,u64 *,16);if(func_02072088((u64)ticks<<6,0x82ea)>=M2C_FIELD(p,u32 *,4)){packet[0]=1;goto timer_ready;}}
 packet[0]=0;
 timer_ready:func_0203f058(18,peer,a,b,packet,1);if(func_0204084c())return 0;break;
 case 18:

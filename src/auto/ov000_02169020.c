@@ -368,11 +368,11 @@ void func_ov000_02169a24(void) {
 }
 
 void func_ov000_02169a28(void *p) {
- s32 func_0207cfb8(void *);
+ s32 GetViewZoom(void *);
  void func_02091248(s32);
  void DrawSprite3D(void *,s32 *,s32,s32);
  s32 v[3]; void *q; s32 n;
- u8 mode=func_0207cfb8((void *)(*gCurrentMap+0x6EF8))<=0?0x10:0x18;
+ u8 mode=GetViewZoom((void *)(*gCurrentMap+0x6EF8))<=0?0x10:0x18;
  if(mode==0x10){q=M2C_FIELD(p,void **,0x34);n=0x30000;}
  else{q=M2C_FIELD(p,void **,0x38);n=0x20000;}
  if(M2C_FIELD(p,u8 *,0x47)!=mode){M2C_FIELD(q,u8 *,0x22)|=1;M2C_FIELD(p,u8 *,0x47)=mode;}

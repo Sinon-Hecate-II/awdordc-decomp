@@ -76,10 +76,10 @@ void func_0208f3a4(void) {
 }
 
 void func_0208f3b0(M2C_UNK arg0) {
-    s32 func_01ffa42c(M2C_UNK *, M2C_UNK);
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0208ed88();
     extern M2C_UNK data_021026f8;
-    if (func_01ffa42c(&data_021026f8, arg0) == 0) {
+    if (CreateSpriteObject(&data_021026f8, arg0) == 0) {
         return;
     }
     func_0208ed88();
@@ -173,16 +173,16 @@ s32 func_0208f4c4(s32 arg0) {
 }
 
 void func_0208f4d8(void) {
-    s32 func_02007004();
+    s32 GetSystemTick();
     extern M2C_UNK data_021577e4;
-    M2C_FIELD(&data_021577e4, s32 *, 4) = func_02007004();
+    M2C_FIELD(&data_021577e4, s32 *, 4) = GetSystemTick();
 }
 
 void func_0208f4f0(void) {
-s32 func_02007004(void);
+s32 GetSystemTick(void);
 u64 func_02072088(u64,u64);
 s32 i; u32 t;
-t=func_02007004()-M2C_FIELD(&data_021577e4,u32 *,4);
+t=GetSystemTick()-M2C_FIELD(&data_021577e4,u32 *,4);
 M2C_FIELD(&data_021577e4,u32 *,4)=t;
 M2C_FIELD(&data_021577e4,u32 *,0x28)=func_02072088((u64)t*64000,33514);
 for(i=0;i<3;i++) {
@@ -271,7 +271,7 @@ void func_0208f730(M2C_UNK arg0) {
     extern M2C_UNK data_021028d0;
     M2C_UNK **temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_021028d0, arg0);
+    temp_r0 = CreateSpriteObject(&data_021028d0, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_021028c4;
     }
@@ -445,11 +445,11 @@ void func_0208fa28(void) {
 }
 
 s32 func_0208fa3c(void) {
-    s32 func_0207cfb8(s32);
+    s32 GetViewZoom(s32);
     extern s32 *gCurrentMap;
     s32 var_r0;
 
-    if (func_0207cfb8(*gCurrentMap + 0x6EF8) <= 0) {
+    if (GetViewZoom(*gCurrentMap + 0x6EF8) <= 0) {
         var_r0 = 0x10;
     } else {
         var_r0 = 0x18;

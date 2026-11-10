@@ -338,7 +338,7 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_02053c9c(void **a,s32 b,s32 c,s32 d,s32 e,s32 f) {
-s32 func_02055b84(void **,s32,void **);void *func_02037794(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void func_02052408(void *,void *);
+s32 func_02055b84(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
 s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
 register void *buffer; register s32 id; register s32 finish=d; register s32 value=b;
@@ -346,9 +346,9 @@ void *found,*req; void *base=*a; s32 enabled,result;RequestPair534 pair;
 req=0;enabled=0;if(c==1)enabled=1;
 if(M2C_FIELD(base,s32 *,256)==0)enabled=0;
 if(e && enabled && func_02055b84(a,b,&found) && M2C_FIELD(found,void **,12)) {
-buffer=func_02037794(516);
+buffer=gpiMalloc(516);
 if(!buffer){gpiSetErrorString(a,&data_020fe824);return 1;}
-func_02052408(M2C_FIELD(found,void **,12),buffer);
+gpiCopyInfo(M2C_FIELD(found,void **,12),buffer);
 M2C_FIELD(buffer,s32 *,0)=0;M2C_FIELD(buffer,s32 *,4)=b;
 pair.a=e;pair.b=f;
 result=gpiAddOperation(a,2,0,&req,1,e,f);if(result)return result;
@@ -366,7 +366,7 @@ return 0;
 /* Allocates and initializes an object structure. */
 s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
     void func_02053f18(void *);
-    void *func_02037794(s32);
+    void *gpiMalloc(s32);
     u32 gpiStringDup(u32);
     Unk02053e40 *p;
 
@@ -374,7 +374,7 @@ s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
         return 1;
     }
     func_02053f18(arg1);
-    p = M2C_FIELD(arg1, Unk02053e40 **, 12) = func_02037794(0xf0);
+    p = M2C_FIELD(arg1, Unk02053e40 **, 12) = gpiMalloc(0xf0);
     if (p) {
         *p = *arg2;
         M2C_FIELD(M2C_FIELD(arg1, void **, 12), u32 *, 0) = gpiStringDup(M2C_FIELD(arg2, u32 *, 0));
@@ -389,33 +389,33 @@ s32 func_02053e40(void **arg0, void *arg1, Unk02053e40 *arg2) {
 }
 
 void func_02053f18(void *arg0) {
-    M2C_UNK func_020377c4(void *);
+    M2C_UNK gpiFree(void *);
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 0xC);
     if (temp_r0 == NULL) {
         return;
     }
-    func_020377c4(M2C_FIELD(temp_r0, void **, 0));
+    gpiFree(M2C_FIELD(temp_r0, void **, 0));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 4));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 4));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 4) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 8));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 8));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 8) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x10));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x10));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x10) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x14));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x14));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0x14) = NULL;
-    func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC8));
+    gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC8));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0xC), void **, 0xC8) = NULL;
-    func_020377c4(M2C_FIELD(arg0, void **, 0xC));
+    gpiFree(M2C_FIELD(arg0, void **, 0xC));
     M2C_FIELD(arg0, void **, 0xC) = NULL;
 }
 
 s32 gpiFinishOperation(void **arg0, void *arg1) {
-    void *func_02037794(s32);
+    void *gpiMalloc(s32);
     void func_02065210(void *, s32, s32);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
@@ -449,7 +449,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
     if (pair.a != 0) {
         switch (M2C_FIELD(operation, s32 *, 0x00)) {
             case 0:
-                buffer = func_02037794(0x20);
+                buffer = gpiMalloc(0x20);
                 if (buffer == NULL) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
@@ -466,7 +466,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                 }
                 break;
             case 1:
-                buffer = func_02037794(8);
+                buffer = gpiMalloc(8);
                 if (buffer == NULL) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
@@ -483,7 +483,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                 }
                 break;
             case 2:
-                buffer = func_02037794(0x204);
+                buffer = gpiMalloc(0x204);
                 if (buffer == NULL) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
@@ -496,7 +496,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                 }
                 break;
             case 3:
-                buffer = func_02037794(0x10);
+                buffer = gpiMalloc(0x10);
                 if (buffer == NULL) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
@@ -521,7 +521,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                 }
                 break;
             case 4:
-                buffer = func_02037794(4);
+                buffer = gpiMalloc(4);
                 if (buffer == NULL) {
                     gpiSetErrorString(arg0, &data_020fea38);
                     return 1;
@@ -545,7 +545,7 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
 }
 
 s32 gpiAddOperation(void **arg0, s32 arg1, s32 arg2, void **arg3, s32 arg4, s32 arg5, s32 arg6) {
-    void *func_02037794(M2C_UNK);
+    void *gpiMalloc(M2C_UNK);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020fea38;
     s32 temp_r2;
@@ -553,7 +553,7 @@ s32 gpiAddOperation(void **arg0, s32 arg1, s32 arg2, void **arg3, s32 arg4, s32 
     void *temp_r4;
 
     temp_r4 = *arg0;
-    temp_r0 = func_02037794(0x24);
+    temp_r0 = gpiMalloc(0x24);
     if (temp_r0 == NULL) {
         gpiSetErrorString(arg0, &data_020fea38);
         return 1;

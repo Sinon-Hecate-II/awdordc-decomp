@@ -8,7 +8,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void func_020b8594(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void func_020b8694(void *);void func_020b86e4(void *);s32 func_02001fb4(s32,s32);void func_0208dd7c(s32,s16,s32,s16,u16,s32,s32);
+s32 func_020b846c(s32);void func_020b8594(s32);s32 func_020d8f4c(void);s32 func_020ae0a8(void);s32 func_020ae1a4(void);void func_020ae164(s32);void func_020d8f1c(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void func_020b8694(void *);void func_020b86e4(void *);s32 func_02001fb4(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -38,7 +38,7 @@ size=((s64)func_02001fb4(0x62000,h)*0x6000+0x800)>>12;
 v=MulUiB8ccc(func_02001fb4(0x62000-size,h-0x6000),pos);
 t=size>>12;if(t>98)t=98;else if(t<1)t=1;
 pal=0x35c;
-func_0208dd7c(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0xb000,0,2);
+DrawFrameBorder(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30)))|0xb000,0,2);
 gCur3DSpriteEngine=old;
 }
 #pragma optimization_level 4
@@ -98,17 +98,17 @@ func_020b916c(0,1,EaseInterpolate(0,total,delta,n,limit),-base,delta);
 if((n&3)==1)PlaySoundEffect(0x10023);if(n<limit)return;func_01ffa6fc(a);
 }
 
-void func_020b94a4(void *a) {s32 func_020a67fc(s32,s32,s32);void func_ov000_02199f50(s32,u8,s32,s32);void func_ov000_0216aa44(s32,s32);extern void **gCurrentMap;s32 v=M2C_FIELD(a,s32 *,92);s32 result;void *g=*gCurrentMap;
-result=func_020a67fc(M2C_FIELD(g,s16 *,0x52c2),M2C_FIELD(g,s16 *,0x52c4),v);
+void func_020b94a4(void *a) {s32 ProduceUnit(s32,s32,s32);void func_ov000_02199f50(s32,u8,s32,s32);void func_ov000_0216aa44(s32,s32);extern void **gCurrentMap;s32 v=M2C_FIELD(a,s32 *,92);s32 result;void *g=*gCurrentMap;
+result=ProduceUnit(M2C_FIELD(g,s16 *,0x52c2),M2C_FIELD(g,s16 *,0x52c4),v);
 M2C_FIELD(*gCurrentMap,s16 *,0x52dc)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
 M2C_FIELD(*gCurrentMap,s16 *,0x52de)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 func_ov000_02199f50(1,v,0,0);func_ov000_0216aa44(14,result);M2C_FIELD(*gCurrentMap,s16 *,0x52b4)=0;
 }
 
 void func_020b953c(s32 arg0, s32 arg1) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02129178;
-    M2C_FIELD(func_01ffa42c(&data_02129178), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
 }
 
 void func_020b9558(u8 a) {s32 func_020d2d38(s32,s32);void func_020b916c(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=func_020d2d38(idx,a);func_020b916c(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
@@ -194,14 +194,14 @@ void func_020b9874(s8 mask) {
     s32 func_020b9e20(s32, s32);
     s32 func_020d2d38(s32, s32);
     extern s8 data_ov000_021aab94[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern u8 data_0215d858[];
     extern M2C_UNK data_0215d850;
     extern void **gCurrentMap;
 
     u8 *buf = data_0215d858;
     s8 *table = data_ov000_021aab94;
-    u8 *attrs = data_ov000_021b5bfc;
+    u8 *attrs = gUnitKindStats;
     u8 count = 0;
     u8 i = 0;
     if (table[0] != -1) {
@@ -241,7 +241,7 @@ M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void func_0209c048(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK func_020d2d38(M2C_UNK,M2C_UNK);
-extern u8 data_0215d858[],data_ov000_021b5bfc[];
+extern u8 data_0215d858[],gUnitKindStats[];
 extern void *gCur3DSpriteEngine; extern void **gCurrentMap;
 s32 left; s32 right; s32 x;
 s32 y=arg1+1;
@@ -254,7 +254,7 @@ i=0; do {
 kind=ptr[i*2]; if(!kind)break;
 if(*(i*2+ptr+1)){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*,0x52a8);}
 row=y+i*2;
-func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(data_ov000_021b5bfc,s32*,kind*112),0,mode);
+func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
 value=func_020d2d38(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
 func_0209c048(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
 func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);

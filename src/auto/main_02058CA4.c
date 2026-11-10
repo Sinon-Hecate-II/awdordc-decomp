@@ -105,14 +105,14 @@ s8 *func_02058f34(s8 *arg0, s32 arg1) {
 }
 
 s32 func_02058f9c(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_02048688(s32);
-    s32 *func_02048690();
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem();
     extern M2C_UNK data_0213dce0;
     s32 i;
     s32 *p;
     if (M2C_FIELD(&data_0213dce0, s32 *, 4) == 0) return -1;
-    for (i = 0; i < func_02048688(M2C_FIELD(&data_0213dce0, s32 *, 4)); i++) {
-        p = func_02048690(M2C_FIELD(&data_0213dce0, s32 *, 4), i);
+    for (i = 0; i < Vector_GetCount(M2C_FIELD(&data_0213dce0, s32 *, 4)); i++) {
+        p = Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), i);
         if (p[0] == arg0 && p[1] == arg1 && p[2] == arg2) return i;
     }
     return -1;
@@ -120,7 +120,7 @@ s32 func_02058f9c(s32 arg0, s32 arg1, s32 arg2) {
 
 void func_02059020(void *arg0) {
     s32 ParseInt(M2C_UNK);
-    s32 *func_02048690(s32, s32);
+    s32 *Vector_GetItem(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4b0;
     extern M2C_UNK data_020ff4b8;
@@ -139,7 +139,7 @@ void func_02059020(void *arg0) {
     if (temp_r0 == -1) {
         return;
     }
-    M2C_FIELD(func_02048690(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r5;
+    M2C_FIELD(Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r5;
     if (temp_r5 > 0) {
         var_r1 = 1;
     } else {
@@ -150,7 +150,7 @@ void func_02059020(void *arg0) {
 
 void func_020590d0(void *arg0) {
     s32 ParseInt(M2C_UNK);
-    s32 *func_02048690(s32, s32);
+    s32 *Vector_GetItem(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4c4;
     extern M2C_UNK data_020ff4b8;
@@ -164,7 +164,7 @@ void func_020590d0(void *arg0) {
     if (temp_r0 == -1) {
         return;
     }
-    M2C_FIELD(func_02048690(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r4;
+    M2C_FIELD(Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), temp_r0), s32 *, 8) = temp_r4;
     if (temp_r4 > 0) {
         var_r1 = 1;
     } else {
@@ -254,8 +254,8 @@ s32 func_020593c0(s8 *arg0, s32 arg1) {
 }
 
 s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 func_02048688(s32);
-    s32 *func_02048690(s32, s32);
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem(s32, s32);
     void func_0204890c(s32 *, s32);
     extern M2C_UNK data_0213dce0;
     s32 *p;
@@ -263,8 +263,8 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     if (arg0 < 0) {
     }
-    else if (arg0 < func_02048688(M2C_FIELD(&data_0213dce0, s32 *, 4))) {
-        p = func_02048690(M2C_FIELD(&data_0213dce0, s32 *, 4), arg0);
+    else if (arg0 < Vector_GetCount(M2C_FIELD(&data_0213dce0, s32 *, 4))) {
+        p = Vector_GetItem(M2C_FIELD(&data_0213dce0, s32 *, 4), arg0);
         cb = M2C_FIELD(p, s32 *, 0x18);
         if (cb != NULL) {
             s32 type = M2C_FIELD(p, s32 *, 0);
@@ -301,12 +301,12 @@ s32 func_02059448(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 #pragma opt_common_subs on
 void func_0205954c(void) {
-    s32 func_02048688(s32); void func_0204861c(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
+    s32 Vector_GetCount(s32); void func_0204861c(s32); void func_02058df4(s8 *, s32); M2C_UNK func_02059448(s32,s32,s32,s32,s32);
     extern M2C_UNK data_0213dce0, data_020ff498, data_020ff43c;
     extern const u8 data_020ea9ac[];
     ByteBlock16 buf1, buf0; s32 i;
     if (!M2C_FIELD(&data_0213dce0,s32 *,4)) return;
-    i=func_02048688(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
+    i=Vector_GetCount(M2C_FIELD(&data_0213dce0,s32 *,4))-1;
     if(i>=0) {
         buf0=*(const ByteBlock16 *)data_020ea9ac;
         do {
@@ -321,7 +321,7 @@ void func_0205954c(void) {
 }
 #pragma opt_common_subs off
 s32 func_02059640(void *arg0, s32 arg1) {
-    s32 *func_02048690(s32, s32);
+    s32 *Vector_GetItem(s32, s32);
     extern M2C_UNK data_0213dce0;
     void *var_r0;
 
@@ -332,17 +332,17 @@ s32 func_02059640(void *arg0, s32 arg1) {
     if (var_r0 == NULL) {
         return arg1;
     }
-    return *func_02048690(M2C_FIELD(var_r0, s32 *, 0x20), arg1);
+    return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x20), arg1);
 }
 
 s32 func_02059670(void *arg0, s32 arg1) {
- s32 *func_02048690(s32, s32);
+ s32 *Vector_GetItem(s32, s32);
  extern M2C_UNK data_0213dce0;
  void *var_r0;
  var_r0 = arg0;
  if (var_r0 == NULL) var_r0 = M2C_FIELD(&data_0213dce0, void **, 0x28);
  if (var_r0 == NULL) return arg1;
- return *func_02048690(M2C_FIELD(var_r0, s32 *, 0x1c), arg1);
+ return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x1c), arg1);
 }
 
 M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
@@ -456,14 +456,14 @@ return 1;
 u8 *func_02059aa0(u8 *arg0) {
  M2C_UNK AssertFailed();
  s32 func_02067774(void);
- void func_02049208(void);
+ void GetTickCountMs(void);
  void func_020677a8(void);
  extern M2C_UNK data_020ff534;
  extern M2C_UNK data_020ff56c;
  extern M2C_UNK data_020ff574;
  s32 i; u32 parity; u8 *p; u32 a,b;
  if (arg0 == NULL) AssertFailed(&data_020ff56c, &data_020ff574, &data_020ff534, 0x2b);
- func_02049208();
+ GetTickCountMs();
  func_020677a8();
  arg0[0] = func_02067774() % 93 + 33;
  parity = 0;

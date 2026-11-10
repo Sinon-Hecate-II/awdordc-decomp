@@ -339,13 +339,13 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
 #pragma opt_propagation off
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 func_0207c928(s32,s32); s16 func_ov003_022004f0(s32); s32 func_ov003_022008b8(u8);
+s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 func_ov003_022008b8(u8);
 void func_020809c0(void*,s32,s32); void func_02098844(u32,s32,s32,s32,u32,u16,u8); void func_02098a34(s32,s32,s32,s32,u8);
 u8 i; void *old,*saved; s32 b; u8 a; s8 c; u16 v;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-a=(func_0207c928(i,2)!=0);
+a=(Modulo(i,2)!=0);
 if(i<2)b=0;
 else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
 c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
@@ -361,7 +361,7 @@ gCur3DSpriteEngine=old;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
-a=(func_0207c928(i,2)!=0);
+a=(Modulo(i,2)!=0);
 if(i>=2)func_ov003_022004f0(2);
 c=(s8)func_ov003_022008b8(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2)){

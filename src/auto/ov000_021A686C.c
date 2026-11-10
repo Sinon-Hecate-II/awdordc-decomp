@@ -85,7 +85,7 @@ s32 func_ov000_021a6ac0(void) {
   extern s32 *gCurrentMap;
   extern u8 *gAiState;
   extern M2C_UNK gAiTargetCandidates;
-  extern u8 data_ov000_021b5bfc[];
+  extern u8 gUnitKindStats[];
   u8 *p;
   s32 base;
   u8 *unit;
@@ -106,7 +106,7 @@ s32 func_ov000_021a6ac0(void) {
   y=p[0];base=*gCurrentMap;x=p[1];
   v=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),s8 *,0x2338);
   if(best>=v) {
-  FloodFillUnitRange(y,x,23,data_ov000_021b5bfc[0xa18]+1,0x20);
+  FloodFillUnitRange(y,x,23,gUnitKindStats[0xa18]+1,0x20);
   base=*gCurrentMap;
   for(x=0;x<M2C_FIELD(base,u16 *,0x5146);x++) {
   for(y=0;y<M2C_FIELD(base,u16 *,0x5144);y++,base=*gCurrentMap) {
@@ -207,7 +207,7 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
 #pragma opt_strength_reduction off
 s32 func_ov000_021a7084(s32 a,s32 b) {
  extern u8 data_ov000_021b5c0f[];
- extern void *data_ov000_021df57c;
+ extern void *gAiSettings;
  s32 v,t; s32 func_0207c8ec(s32,s32);
  if(a==3 && IsFootUnitKind(b))a=1;
  if(a==6 && IsFootUnitKind(b))a=7;
@@ -229,16 +229,16 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  if((gAiState[6]==1 || gAiState[6]==3) && func_ov000_021a8784(23))v>>=1;
  if(gAiState[6]==4)v<<=1;
  }
- v=func_ov000_021a6f24(v,a,1); t=M2C_FIELD((s32)data_ov000_021df57c+(a-1)*12,u8 *,20); t*=v; return func_0207c8ec(t,100);
+ v=func_ov000_021a6f24(v,a,1); t=M2C_FIELD((s32)gAiSettings+(a-1)*12,u8 *,20); t*=v; return func_0207c8ec(t,100);
 }
 #pragma pop
 u8 func_ov000_021a72c0(u32 arg0){
 s32 func_020b9e20(u16);
-extern int *data_027e0058;extern s8 data_ov000_021aab78[];extern void *data_ov000_021df57c;
+extern int *data_027e0058;extern s8 data_ov000_021aab78[];extern void *gAiSettings;
 u8 result=0;
 if(arg0>=27)return result;
 if(data_ov000_021aab78[arg0]==-1)return result;
-if(((u8*)data_ov000_021df57c+(arg0-1)*12)[20]==0)return result;
+if(((u8*)gAiSettings+(arg0-1)*12)[20]==0)return result;
 result=func_020b9e20(*(u16*)((u8*)*data_027e0058+0x52a4))!=0;
 return result;
 }
@@ -250,7 +250,7 @@ s32 func_ov000_021a7348(void) {
     extern s32 *gCurrentMap;
     extern void *data_ov000_021df580;
     extern u16 gPlayerUnitIdBase[];
-    extern u8 data_ov000_021b5bfc[];
+    extern u8 gUnitKindStats[];
     extern u8 gMovementCostTable[];
 
     s32 r5 = 0;
@@ -312,7 +312,7 @@ s32 func_ov000_021a7348(void) {
                         r5--;
                     }
                 }
-                attr = data_ov000_021b5bfc[kind * 0x70 + 0x15];
+                attr = gUnitKindStats[kind * 0x70 + 0x15];
                 if (kind == 0x17) {
                     r6--;
                 }
@@ -330,7 +330,7 @@ s32 func_ov000_021a7348(void) {
                 if (kind == 0) {
                     continue;
                 }
-                kindAttr = data_ov000_021b5bfc[kind * 0x70 + 0x13];
+                kindAttr = gUnitKindStats[kind * 0x70 + 0x13];
                 if (!(kindAttr & 0x10)) {
                     continue;
                 }
@@ -344,7 +344,7 @@ s32 func_ov000_021a7348(void) {
                     map=(u8 *)*gCurrentMap;
                     x=unit[1]; y=unit[2];
                     row=*(u16 *)(map+y*2+0x3758);
-                    ownerAttr = data_ov000_021b5bfc[0xa22];
+                    ownerAttr = gUnitKindStats[0xa22];
                     costBase = *(s8 **)(gMovementCostTable + 0x64);
                     costTable = costBase + ownerAttr * 32;
                     t2 = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
@@ -356,7 +356,7 @@ s32 func_ov000_021a7348(void) {
                     }
                     kind = (u32)(unit[0] << 26) >> 26;
                     if (kind != 0x13) {
-                        attr2 = data_ov000_021b5bfc[kind * 0x70 + 0x16];
+                        attr2 = gUnitKindStats[kind * 0x70 + 0x16];
                         if (attr2 & 3) {
                             hp = *(u16 *)(unit + 6);
                             r7 += ((u32)(hp << 25) >> 25);

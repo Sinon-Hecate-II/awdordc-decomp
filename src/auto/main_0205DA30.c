@@ -12,7 +12,7 @@ extern NetworkAddress6 data_020ff88c;
 #pragma opt_propagation off
 void func_0205dc78(void *arg0) {
     void func_0205d944(s32, s32, u16, void *, s32);
-    s32 func_02049208(void);
+    s32 GetTickCountMs(void);
     extern NetworkAddress6 data_020ff88c;
     u8 sp04[0x14];
 
@@ -69,7 +69,7 @@ void func_0205dc78(void *arg0) {
         }
         func_0205d944(val, M2C_FIELD(vr4, s32 *, 0x2C), M2C_FIELD(vr4, u16 *, 0x30), sp04, 0x14);
     }
-    M2C_FIELD(vr4, s32 *, 0x28) = func_02049208() + 0x2BC;
+    M2C_FIELD(vr4, s32 *, 0x28) = GetTickCountMs() + 0x2BC;
     M2C_FIELD(vr4, s32 *, 0x24) = 0xC;
     if (M2C_FIELD(vr4, u8 *, 0x32) != 0) {
         M2C_FIELD(vr4, s8 *, 0x33) = 1;
@@ -77,7 +77,7 @@ void func_0205dc78(void *arg0) {
 }
 #pragma opt_propagation reset
 s32 func_0205dd98(M2C_UNK arg0) {
-    void *func_02021768(M2C_UNK);
+    void *ghiResolveHostname(M2C_UNK);
     s32 func_020498e4();
     s32 temp_r0_2;
     void *temp_r0;
@@ -86,7 +86,7 @@ s32 func_0205dd98(M2C_UNK arg0) {
     if (temp_r0_2 != -1) {
         return temp_r0_2;
     }
-    temp_r0 = func_02021768(arg0);
+    temp_r0 = ghiResolveHostname(arg0);
     if (temp_r0 == NULL) {
         return 0;
     }
@@ -166,7 +166,7 @@ void func_0205df50(void) {
 }
 
 void func_0205df88(void *p) {
-s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void func_0205e510(u8 *,s32,M2C_UNK); s32 func_02049208(void); void func_0205da30(); void func_0205dc78(void *);
+s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void func_0205e510(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void func_0205dc78(void *);
 extern u8 data_0213e158[];
 u8 address[8]; s32 size=8; u8 packet[8]; s32 n;
 if(M2C_FIELD(p,s32 *,16)==4){func_0205d88c(p);return;}
@@ -178,7 +178,7 @@ if(n==-1)break;
 func_0205e510(data_0213e158,n,(M2C_UNK)address);
 } while(M2C_FIELD(p,s32 *,16)!=4 && M2C_FIELD(p,s32 *,0)!=-1);
 }
-if((M2C_FIELD(p,s32 *,16)==0 || M2C_FIELD(p,s32 *,16)==2) && (u32)func_02049208()>M2C_FIELD(p,u32 *,40)){
+if((M2C_FIELD(p,s32 *,16)==0 || M2C_FIELD(p,s32 *,16)==2) && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
 if(M2C_FIELD(p,s32 *,32)>M2C_FIELD(p,s32 *,36)){
 M2C_FIELD(p,M2C_UNK (**)(s32,s32,void *,s32),56)(2,-1,0,M2C_FIELD(p,s32 *,60));
 ((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
@@ -187,7 +187,7 @@ M2C_FIELD(p,s32 *,32)++;
 if(M2C_FIELD(p,s32 *,16)==0)((void (*)(void *))func_0205da30)(p);else func_0205dc78(p);
 }
 }
-if(M2C_FIELD(p,s32 *,16)==3 && (u32)func_02049208()>M2C_FIELD(p,u32 *,40)){
+if(M2C_FIELD(p,s32 *,16)==3 && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
 if(M2C_FIELD(p,s32 *,4)==-1){
 u16 port;
 packet[1]=2;
@@ -199,15 +199,15 @@ M2C_FIELD(p,s32 *,0)=-1;
 }
 ((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
 }
-if(M2C_FIELD(p,s32 *,16)==1 && (u32)func_02049208()>M2C_FIELD(p,u32 *,40)){
+if(M2C_FIELD(p,s32 *,16)==1 && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
 M2C_FIELD(p,M2C_UNK (**)(s32,s32,void *,s32),56)(1,-1,0,M2C_FIELD(p,s32 *,60));
 ((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
 }
 }
 
 void func_0205e178(void) {
-    s32 func_02048688();
-    M2C_UNK func_02048690(s32, s32);
+    s32 Vector_GetCount();
+    M2C_UNK Vector_GetItem(s32, s32);
     void func_0205df88();
     extern M2C_UNK data_0213e144;
     s32 var_r5;
@@ -215,12 +215,12 @@ void func_0205e178(void) {
     if (M2C_FIELD(&data_0213e144, s32 *, 0x10) == 0) {
         return;
     }
-    var_r5 = func_02048688() - 1;
+    var_r5 = Vector_GetCount() - 1;
     if (var_r5 < 0) {
         return;
     }
     do {
-        func_02048690(M2C_FIELD(&data_0213e144, s32 *, 0x10), var_r5);
+        Vector_GetItem(M2C_FIELD(&data_0213e144, s32 *, 0x10), var_r5);
         func_0205df88();
         var_r5 -= 1;
     } while (var_r5 >= 0);
@@ -264,7 +264,7 @@ void func_0205e288(void *arg0, void *arg1, M2C_UNK arg2) {
 }
 
 void func_0205e344(void *arg0, void *arg1, void *arg2) {
-    s32 func_02049208();
+    s32 GetTickCountMs();
     void func_0205dc78(void *);
     s32 temp_r1;
     u16 temp_r3;
@@ -285,7 +285,7 @@ void func_0205e344(void *arg0, void *arg1, void *arg2) {
             func_0205dc78(arg0);
         }
         M2C_FIELD(arg0, s32 *, 0x10) = 3;
-        M2C_FIELD(arg0, s32 *, 0x28) = (s32) (func_02049208() + 0x1388);
+        M2C_FIELD(arg0, s32 *, 0x28) = (s32) (GetTickCountMs() + 0x1388);
         temp_r1 = M2C_FIELD(arg0, s32 *, 4);
         if (temp_r1 == -1) {
             return;
@@ -300,7 +300,7 @@ void func_0205e344(void *arg0, void *arg1, void *arg2) {
 }
 
 void func_0205e40c(void *arg0, void *arg1, void *arg2) {
-    M2C_UNK func_02049208(void);
+    M2C_UNK GetTickCountMs(void);
     void func_0205d944(s32, s32, u16, void *, s32);
     u8 temp_r1;
 
@@ -327,7 +327,7 @@ void func_0205e40c(void *arg0, void *arg1, void *arg2) {
                 }
             }
             M2C_FIELD(arg0, s32 *, 0x10) = 1;
-            M2C_FIELD(arg0, s32 *, 0x28) = func_02049208() + 0x2710;
+            M2C_FIELD(arg0, s32 *, 0x28) = GetTickCountMs() + 0x2710;
             M2C_FIELD(arg0, void (**)(s32, s32), 0x34)(
                 M2C_FIELD(arg0, s32 *, 0x10), M2C_FIELD(arg0, s32 *, 0x3C));
             break;
@@ -379,8 +379,8 @@ func_0205e40c(p,&b,arg2);
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC, s32 argD) {
-    u8 *func_02037794(M2C_UNK);
-    M2C_UNK func_02049208();
+    u8 *gpiMalloc(M2C_UNK);
+    M2C_UNK GetTickCountMs();
     M2C_UNK func_0205ec0c();
     s32 func_0205ec80(s8 *, s32, void *, M2C_UNK);
     M2C_UNK StringFormat(s8 *, M2C_UNK *, s32);
@@ -389,7 +389,7 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     M2C_UNK StringCopy(void *, s32);
     extern M2C_UNK data_020ff8d8;
     extern M2C_UNK data_020ff9e8;
-    extern s32 data_0213e358;
+    extern s32 gLocalIpCount;
     extern s8 data_0213e370;
     s8 sp0[64];
     u8 *temp_r0;
@@ -407,9 +407,9 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     if (arg0 == NULL) {
         var_r6 = (u8 *)&data_020ff8d8;
     } else {
-        var_r6 = *arg0 = func_02037794(0x110);
+        var_r6 = *arg0 = gpiMalloc(0x110);
     }
-    func_02049208();
+    GetTickCountMs();
     func_020677a8();
     StringCopy(var_r6 + 4, arg3);
     StringCopy(var_r6 + 0x44, arg4);
@@ -448,7 +448,7 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
         var_r2 += 1;
     } while (var_r2 < 0xA);
     M2C_FIELD(var_r6, s32 *, 0x100) = 0;
-    if (data_0213e358 == 0) {
+    if (gLocalIpCount == 0) {
         func_0205ec0c();
     }
     if (arg5 != 0) {
@@ -525,7 +525,7 @@ void func_0205e8b0(void *arg0) {
 #pragma opt_propagation off
 #pragma scheduling on
 void func_0205da30(void *arg0) {
-s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 func_02049208(void);
+s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,data_0213e144;
@@ -563,7 +563,7 @@ packet.bytes[20]=port;packet.bytes[19]=port>>8;
 if(M2C_FIELD(arg0,s32 *,28)==0){
 buf[12]=2;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&data_0213e144,s32 *,8),0x6cfd,buf,len);
 }
-M2C_FIELD(arg0,s32 *,40)=func_02049208()+500;
+M2C_FIELD(arg0,s32 *,40)=GetTickCountMs()+500;
 M2C_FIELD(arg0,s32 *,36)=30;
 
 }

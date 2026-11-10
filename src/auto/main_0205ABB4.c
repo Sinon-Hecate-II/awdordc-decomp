@@ -39,15 +39,15 @@ func_020486f8(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
 }
 
 void func_0205acc8(void *p) {
-void func_020377c4(void *);void func_0204861c(void *);void *q;
-q=M2C_FIELD(p,void **,56);if(q)func_020377c4(q);
-q=M2C_FIELD(p,void **,68);if(q)func_020377c4(q);
-q=M2C_FIELD(p,void **,80);if(q)func_020377c4(q);
+void gpiFree(void *);void func_0204861c(void *);void *q;
+q=M2C_FIELD(p,void **,56);if(q)gpiFree(q);
+q=M2C_FIELD(p,void **,68);if(q)gpiFree(q);
+q=M2C_FIELD(p,void **,80);if(q)gpiFree(q);
 q=M2C_FIELD(p,void **,92);if(q)func_0204861c(q);
 q=M2C_FIELD(p,void **,96);if(q)func_0204861c(q);
 q=M2C_FIELD(p,void **,152);if(q)func_0204861c(q);
 q=M2C_FIELD(p,void **,156);if(q)func_0204861c(q);
-func_020377c4(p);
+gpiFree(p);
 }
 
 void func_0205ad4c(s32 a,s32 b,s32 c,s32 d,s32 e) {
@@ -107,13 +107,13 @@ return M2C_FIELD(p,s32 *,24);
 }
 
 void func_0205af48(void *a,s32 b,s32 c,s32 d) {
-s32 func_02048688(s32);
+s32 Vector_GetCount(s32);
 void func_0205d70c(s32 *,s32 *);
 void func_0205a424(void *,s32,s32,s32,s32);
 void func_0205cc20(void *,s32,s32,s32);
 if(M2C_FIELD(a,s32 *,12)!=5)return;
 func_0205d70c(&b,&c);
-if(func_02048688(M2C_FIELD(a,s32 *,0x98))) {func_0205a424(a,0,b,c,d);return;}
+if(Vector_GetCount(M2C_FIELD(a,s32 *,0x98))) {func_0205a424(a,0,b,c,d);return;}
 func_0205cc20(a,b,c,d);
 }
 
@@ -205,19 +205,19 @@ s32 func_0205b1b8(M2C_UNK arg0) {
    then rebase every remaining entry's index by the first entry's value and
    delete that many leading items from the object's backing store at a+0x50. */
 s32 func_0205b1e4(void *a,s32 b){
-void *func_02048690(s32,s32);
+void *Vector_GetItem(s32,s32);
 s32 n,i,removed; s32 *p;
-n=func_02048688(M2C_FIELD(a,s32 *,0x60));if(!n)return 1;
-for(i=0;i<n;i++){if(func_0205b100(M2C_FIELD(func_02048690(M2C_FIELD(a,s32 *,0x60),i),u16 *,8),b)>=0)break;}
+n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n)return 1;
+for(i=0;i<n;i++){if(func_0205b100(M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i),u16 *,8),b)>=0)break;}
 if(!i)return 1;
 while(i--){func_0204890c(M2C_FIELD(a,s32 *,0x60),i);}
-n=func_02048688(M2C_FIELD(a,s32 *,0x60));if(!n){M2C_FIELD(a,s32 *,0x58)=0;return 1;}
-removed=*(s32 *)func_02048690(M2C_FIELD(a,s32 *,0x60),0);
-for(i=0;i<n;i++){p=func_02048690(M2C_FIELD(a,s32 *,0x60),i);*p-=removed;}
+n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n){M2C_FIELD(a,s32 *,0x58)=0;return 1;}
+removed=*(s32 *)Vector_GetItem(M2C_FIELD(a,s32 *,0x60),0);
+for(i=0;i<n;i++){p=Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i);*p-=removed;}
 func_02059e78((u8 *)a+0x50,0,removed);return 1;}
 
 s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02048688(s32);
+    s32 Vector_GetCount(s32);
     s32 func_0205a1b8(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 gti2ReceiveFilterCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
@@ -227,7 +227,7 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if ((temp_r0 != 5) && (temp_r0 != 6)) {
         return 1;
     }
-    if (func_02048688(M2C_FIELD(arg0, s32 *, 0x9C)) != 0) {
+    if (Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x9C)) != 0) {
         if (gti2ReceiveFilterCallback(arg0, 0, arg1, arg2, 0) != 0) {
             var_r0 = 1;
         } else {
@@ -242,13 +242,13 @@ s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_0205b370(void *a,s32 b,s32 c) {
-s32 func_02048688(s32);
+s32 Vector_GetCount(s32);
 s32 func_0205a1b8(void *,s32,s32,s32);
 s32 gti2ReceiveFilterCallback(void *,s32,s32,s32,s32);
 s32 n=M2C_FIELD(a,s32 *,12),r;
 if(n!=5&&n!=6){if(!func_0205b1a4((s32)a))return 0;}
 else {
-if(func_02048688(M2C_FIELD(a,s32 *,0x9c))){if(gti2ReceiveFilterCallback(a,0,b,c,1))r=1;else r=0;return r;}
+if(Vector_GetCount(M2C_FIELD(a,s32 *,0x9c))){if(gti2ReceiveFilterCallback(a,0,b,c,1))r=1;else r=0;return r;}
 if(!func_0205a1b8(a,b,c,1))return 0;
 }
 return 1;
@@ -273,12 +273,12 @@ if(c<64)return func_0205b1a4((s32)a)!=0;
 if(!func_02059cc4(b,(u8 *)a+0x68))return func_0205b1a4((s32)a)!=0;
 func_02059bbc(x,(u8 *)b+32);
 if(!func_0205c780(a,x,M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c)))return 0;
-if(M2C_FIELD(a,void **,0x38)){func_020377c4(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
+if(M2C_FIELD(a,void **,0x38)){gpiFree(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
 M2C_FIELD(a,s32 *,12)=1;return 1;
 }
 
 s32 func_0205b590(void *a,s32 b,s32 c){
-s32 func_02059cc4(void *,void *);s32 func_0205cb4c(void *);s32 func_02049208(void);s32 func_02059fb4(void *,void *,s32,u16,s32,s32,s32);
+s32 func_02059cc4(void *,void *);s32 func_0205cb4c(void *);s32 GetTickCountMs(void);s32 func_02059fb4(void *,void *,s32,u16,s32,s32,s32);
 if(M2C_FIELD(a,s32 *,12)!=3)return func_0205b1a4((s32)a)!=0;
 if(c<32)return func_0205b1a4((s32)a)!=0;
 if(!func_02059cc4((void *)b,a+0x68))return func_0205b1a4((s32)a)!=0;
@@ -287,7 +287,7 @@ if(!func_0205cb4c(a))return 0;
 func_0205ac6c(a);return 1;
 }
 M2C_FIELD(a,s32 *,12)=4;
-return func_02059fb4(M2C_FIELD(a,void **,8),a,M2C_FIELD(a,s32 *,0),M2C_FIELD(a,u16 *,4),func_02049208()-M2C_FIELD(a,s32 *,0x8c),b+32,c-32)!=0;
+return func_02059fb4(M2C_FIELD(a,void **,8),a,M2C_FIELD(a,s32 *,0),M2C_FIELD(a,u16 *,4),GetTickCountMs()-M2C_FIELD(a,s32 *,0x8c),b+32,c-32)!=0;
 }
 
 s32 func_0205b6a0(void *a) {s32 func_0205a0d0();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(func_0205b1a4(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(func_0205a0d0(a,0,0,0))return 1;return 0;}
@@ -326,33 +326,33 @@ void func_0205b89c(void *arg0, void *arg1) {
 }
 
 s32 func_0205b8b0(void *a,s32 command,u16 sequence,void *data,s32 size,s32 *error){
-s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_02059d24(void *);void func_020487fc(s32,void *,void *);void func_02059df0(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
-s32 count=func_02048688(M2C_FIELD(a,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 seq2;
-for(i=0;i<count;i++){u16 seq=M2C_FIELD(func_02048690(M2C_FIELD(a,s32 *,0x5c),i),u16 *,12);if(seq==sequence){*error=0;return 1;}if(func_0205b100(seq,sequence)>0)break;}
+s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 func_02059d24(void *);void func_020487fc(s32,void *,void *);void func_02059df0(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
+s32 count=Vector_GetCount(M2C_FIELD(a,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 seq2;
+for(i=0;i<count;i++){u16 seq=M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),i),u16 *,12);if(seq==sequence){*error=0;return 1;}if(func_0205b100(seq,sequence)>0)break;}
 if(func_02059d24(a+0x44)<size){*error=1;return 1;}
 record.offset=M2C_FIELD(a,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
 func_020487fc(M2C_FIELD(a,s32 *,0x5c),&record,func_0205b89c);
-if(count+1!=func_02048688(M2C_FIELD(a,s32 *,0x5c))){*error=1;return 1;}
+if(count+1!=Vector_GetCount(M2C_FIELD(a,s32 *,0x5c))){*error=1;return 1;}
 func_02059df0(a+0x44,data,size);
 if(count==0){if(!func_0205caac(a,M2C_FIELD(a,u16 *,0x66),(u16)(sequence-1)))return 0;}
-else {seq2=M2C_FIELD(func_02048690(M2C_FIELD(a,s32 *,0x5c),count),u16 *,12);if(seq2==sequence){
-prev=func_02048690(M2C_FIELD(a,s32 *,0x5c),count-1);
+else {seq2=M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),count),u16 *,12);if(seq2==sequence){
+prev=Vector_GetItem(M2C_FIELD(a,s32 *,0x5c),count-1);
 if((u16)func_0205b100(sequence,M2C_FIELD(prev,u16 *,12))>1){
 if(!func_0205caac(a,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))return 0;
 }}}
 *error=0;return 1;
 }
 
-void func_0205ba64(void *a,void *b,s32 c) {void *func_02048690(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;func_0204890c(M2C_FIELD(a,s32 *,92),c);n=func_02048688(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=func_02048690(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);func_02059e78((char*)a+68,x,y);}
+void func_0205ba64(void *a,void *b,s32 c) {void *Vector_GetItem(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;func_0204890c(M2C_FIELD(a,s32 *,92),c);n=Vector_GetCount(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);func_02059e78((char*)a+68,x,y);}
 
-s32 func_0205bae8(void *a){s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_0205b79c(void *,s32,s32,s32);s32 i;void *p;restart:for(i=func_02048688(M2C_FIELD(a,s32 *,92))-1;i>=0;i--){p=func_02048690(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,u16 *,12)==M2C_FIELD(a,u16 *,102)){if(func_0205b79c(a,M2C_FIELD(p,s32 *,8),M2C_FIELD(a,s32 *,68)+M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4))==0)return 0;func_0205ba64(a,p,i);goto restart;}}return 1;}
+s32 func_0205bae8(void *a){s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 func_0205b79c(void *,s32,s32,s32);s32 i;void *p;restart:for(i=Vector_GetCount(M2C_FIELD(a,s32 *,92))-1;i>=0;i--){p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,u16 *,12)==M2C_FIELD(a,u16 *,102)){if(func_0205b79c(a,M2C_FIELD(p,s32 *,8),M2C_FIELD(a,s32 *,68)+M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4))==0)return 0;func_0205ba64(a,p,i);goto restart;}}return 1;}
 
 void func_0205bb68(void *arg0) {
-    s32 func_02049208();
+    s32 GetTickCountMs();
     if (M2C_FIELD(arg0, s32 *, 0x90) != 0) {
         return;
     }
     M2C_FIELD(arg0, s32 *, 0x90) = 1;
-    M2C_FIELD(arg0, s32 *, 0x94) = func_02049208();
+    M2C_FIELD(arg0, s32 *, 0x94) = GetTickCountMs();
 }
 

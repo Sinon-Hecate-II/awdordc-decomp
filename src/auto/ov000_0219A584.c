@@ -6,7 +6,7 @@ extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5c05[];
 extern u8 data_ov000_021b5c0a[];
-extern void *data_ov000_021df57c;
+extern void *gAiSettings;
 extern void *data_ov000_021df644;
 
 void func_ov000_0219a584(void) {
@@ -91,7 +91,7 @@ void func_ov000_0219a8c4(void) {
         e = (u8 *)*gCurrentMap + 0x59a4 + i * 14;
         type = (u32)(e[0] << 26) >> 26;
         if (type == 0) continue;
-        data_ov000_021df644 = (void *)((u8 *)data_ov000_021df57c + 0x14 + (type - 1) * 12);
+        data_ov000_021df644 = (void *)((u8 *)gAiSettings + 0x14 + (type - 1) * 12);
         state = (u32)(M2C_FIELD(e, u16 *, 8) << 18) >> 30;
         switch (state) {
             case 1: func_ov000_0219a818(e); break;
@@ -120,7 +120,7 @@ s32 func_ov000_0219afa8(s32 arg0, s32 arg1, s32 arg2) {
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov000_0219afdc(void *arg0,s32 arg1,s32 arg2){
+void BuildAiUnitParameters(void *arg0,s32 arg1,s32 arg2){
 s32 RandomIntRange(s32,s32);s32 func_0207c8ec(s32,s32);s32 func_ov000_0219afa8(s32,s32,s32);extern void **gCurrentMap;extern u8 data_ov000_021dee5c[],data_ov000_021df05c[];
 u8 *out=arg0,*src;s32 rnd;u8 *in; s32 i;u8 *rec,*dst;s32 half;void *map;
 src=data_ov000_021dee5c+arg1*64;in=data_ov000_021df05c+arg2*192;rnd=RandomIntRange(0,100);map=*gCurrentMap;
@@ -130,15 +130,18 @@ out[8]=src[0];out[9]=src[1];out[10]=src[2];out[11]=src[3];out[12]=src[4];out[13]
 do{s32 a=M2C_FIELD((u16*)src+i,u8*,10);s32 b=rec[1];dst[8]=func_0207c8ec(a*b,100);dst[13]=M2C_FIELD((u16*)src+i,u8*,11);map=*gCurrentMap;if((s32)M2C_FIELD(map,u16*,0x52a2)<10&&((u8*)map+M2C_FIELD(map,u16*,0x52a4)*140)[0x67ce]==2){dst[9]=func_ov000_0219afa8(rec[2],rec[3],half);dst[10]=func_ov000_0219afa8(rec[4],rec[5],half);}else{dst[9]=func_ov000_0219afa8(rec[2],rec[3],rnd);dst[10]=func_ov000_0219afa8(rec[4],rec[5],rnd);}i++;dst[11]=rec[6];dst[12]=rec[7];rec+=7;dst+=12;}while(i<27);
 }
 #pragma opt_common_subs off
-void func_ov000_0219b1ac(s32 arg0) {
-s32 func_020a8938(u16);s32 IsPlayerHuman(u16);extern u16 data_02168f14;extern void **gCurrentMap;extern u8 data_ov000_021dee18[],data_ov000_021dee19[],data_ov000_021dee2c[],data_ov000_021dee3b[];extern void *data_ov000_021df57c;
-void *map; s32 a,b;
-if(func_020a8938(M2C_FIELD(*gCurrentMap,u16*,0x5142))){
-if((u32)(data_02168f14<<18)>>31){map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));b=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],(data_ov000_021dee2c+data_ov000_021dee19[b*2]*15)[(u32)(M2C_FIELD(arg0*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
-if(!(((u32)(data_02168f14<<29)>>29)&255)&&IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4))==1){map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],data_ov000_021dee3b[(u32)(M2C_FIELD(arg0*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
-map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));b=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],data_ov000_021dee2c[data_ov000_021dee19[b*2]*15]);return;
+/* Pick and build the AI's per-unit parameter table for this battle: the map's
+ * AI category and the player's army choose a unit-set template and parameter
+ * block, with separate variants for story battles and human-controlled players. */
+void SetupAiUnitParameters(s32 player) {
+s32 GetMapAiCategory(u16);s32 IsPlayerHuman(u16);extern u16 gMapConfig;extern void **gCurrentMap;extern u8 gAiUnitSetIndex[],gAiUnitSetVariant[],gAiUnitSetTable[],gAiUnitSetTableHuman[];extern void *gAiSettings;
+void *map; s32 setCategory,variantCategory;
+if(GetMapAiCategory(M2C_FIELD(*gCurrentMap,u16*,0x5142))){
+if((u32)(gMapConfig<<18)>>31){map=*gCurrentMap;setCategory=GetMapAiCategory(M2C_FIELD(map,u16*,0x5142));variantCategory=GetMapAiCategory(M2C_FIELD(map,u16*,0x5142));BuildAiUnitParameters(gAiSettings,gAiUnitSetIndex[setCategory*2],(gAiUnitSetTable+gAiUnitSetVariant[variantCategory*2]*15)[(u32)(M2C_FIELD(player*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
+if(!(((u32)(gMapConfig<<29)>>29)&255)&&IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4))==1){map=*gCurrentMap;setCategory=GetMapAiCategory(M2C_FIELD(map,u16*,0x5142));BuildAiUnitParameters(gAiSettings,gAiUnitSetIndex[setCategory*2],gAiUnitSetTableHuman[(u32)(M2C_FIELD(player*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
+map=*gCurrentMap;setCategory=GetMapAiCategory(M2C_FIELD(map,u16*,0x5142));variantCategory=GetMapAiCategory(M2C_FIELD(map,u16*,0x5142));BuildAiUnitParameters(gAiSettings,gAiUnitSetIndex[setCategory*2],gAiUnitSetTable[gAiUnitSetVariant[variantCategory*2]*15]);return;
 }
-if((u32)(data_02168f14<<18)>>31){func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[2],(data_ov000_021dee2c+data_ov000_021dee18[3]*15)[(u32)(M2C_FIELD(arg0*140+(s32)*gCurrentMap,s32*,0x6810)<<24)>>24]);return;}
-func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[2],data_ov000_021dee2c[data_ov000_021dee18[3]*15]);
+if((u32)(gMapConfig<<18)>>31){BuildAiUnitParameters(gAiSettings,gAiUnitSetIndex[2],(gAiUnitSetTable+gAiUnitSetIndex[3]*15)[(u32)(M2C_FIELD(player*140+(s32)*gCurrentMap,s32*,0x6810)<<24)>>24]);return;}
+BuildAiUnitParameters(gAiSettings,gAiUnitSetIndex[2],gAiUnitSetTable[gAiUnitSetIndex[3]*15]);
 }
 #pragma opt_common_subs reset

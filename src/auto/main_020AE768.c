@@ -201,8 +201,8 @@ if((u8)(gCur3DSpriteEngine==g3DSpriteEngineSub))func_020aef7c(a,b,c);
 }
 
 s32 func_020af0d4(void) {
-extern u16 data_02168f14;
-switch((u32)(data_02168f14<<29)>>29) {
+extern u16 gMapConfig;
+switch((u32)(gMapConfig<<29)>>29) {
 case 0:return 0;
 case 1:return 4;
 case 2:return 6;
@@ -256,7 +256,7 @@ void func_020af230(void) {
 }
 
 M2C_UNK func_020af244(void *p) {
-    M2C_UNK func_0207c928(M2C_UNK);
+    M2C_UNK Modulo(M2C_UNK);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     extern M2C_UNK g3DSpriteBankMain;
 
@@ -272,7 +272,7 @@ M2C_UNK func_020af244(void *p) {
 
     if (*(void **)gCur3DSpriteEngine == *(void **)g3DSpriteEngineMain) {
         if (pp[0x1D] != 0) {
-            if (!func_0207c928(pp[0x21])) {
+            if (!Modulo(pp[0x21])) {
                 idx = ((u8 *)p)[0x34];
                 base = *(void **)gCur3DSpriteEngine;
                 ((s16 *)base)[idx + 0x1C] = pp[0x1B];
@@ -281,7 +281,7 @@ M2C_UNK func_020af244(void *p) {
             if (pp[0x1B] >= 0x100) pp[0x1B] = 0;
         }
         if (pp[0x1F] != 0) {
-            if (!func_0207c928(pp[0x21])) {
+            if (!Modulo(pp[0x21])) {
                 idx = ((u8 *)p)[0x34];
                 base = *(void **)gCur3DSpriteEngine;
                 ((s16 *)base)[idx + 0x20] = pp[0x1C];
@@ -303,7 +303,7 @@ M2C_UNK func_020af244(void *p) {
         if (pp[0x21] >= 0x400) pp[0x21] = (s16)(pp[0x21] - 0x400);
     } else {
         if (pp[0x25] != 0) {
-            if (!func_0207c928(pp[0x29])) {
+            if (!Modulo(pp[0x29])) {
                 idx = ((u8 *)p)[0x44];
                 base = *(void **)gCur3DSpriteEngine;
                 ((s16 *)base)[idx + 0x1C] = pp[0x23];
@@ -312,7 +312,7 @@ M2C_UNK func_020af244(void *p) {
             if (pp[0x23] >= 0x100) pp[0x23] = 0;
         }
         if (pp[0x27] != 0) {
-            if (!func_0207c928(pp[0x29])) {
+            if (!Modulo(pp[0x29])) {
                 idx = ((u8 *)p)[0x44];
                 base = *(void **)gCur3DSpriteEngine;
                 ((s16 *)base)[idx + 0x20] = pp[0x24];

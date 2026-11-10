@@ -207,7 +207,7 @@ s32 func_02070658(s32 a, s32 b, s32 c, s32 d) {
 }
 
 double func_020709bc(double x) {
-    extern u32 data_0213e9f4;
+    extern u32 gErrno;
     u32 r0, r1, r2, r3, r4, r5, r6, r12, lr;
     r0 = ((u32 *)&x)[0];
     r1 = ((u32 *)&x)[1];
@@ -375,7 +375,7 @@ double func_020709bc(double x) {
     }
   Lf18:
     r1 |= 0x7FF80000u;
-    data_0213e9f4 = 0x21u;
+    gErrno = 0x21u;
     ((u32 *)&x)[0] = r0;
     ((u32 *)&x)[1] = r1;
     return x;

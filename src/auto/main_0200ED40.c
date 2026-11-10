@@ -208,7 +208,7 @@ s32 func_0200f030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 3;
 }
 #pragma opt_common_subs reset
-s32 func_0200f0ac(s32 arg0, s32 arg1) {
+s32 GetLocalTime(s32 arg0, s32 arg1) {
 void func_0200f6a4(s32); s32 func_0200f6b4(void); extern M2C_UNK data_0212fd34;
 s32 result = func_0200f030(arg0,arg1,(s32)func_0200f6a4,0);
 M2C_FIELD(&data_0212fd34,s32 *,0x24)=result;
@@ -421,7 +421,7 @@ s32 func_0200f7c8(void *arg0) {
 }
 
 #pragma opt_propagation off
-s64 func_0200f7e0(void *arg0, void *arg1) {
+s64 MakeTime(void *arg0, void *arg1) {
     s32 func_0200f7c8(void *);
     s32 days=func_0200f734(arg0); s32 seconds;
     if(days==-1) return -1;
@@ -540,14 +540,14 @@ func_02005e5c(thread);
 
 #pragma opt_common_subs off
 void func_0200fb48(s32 arg0,s32 arg1) {
-void func_02005da4(void *); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void);
+void OS_SleepThread(void *); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void);
 extern M2C_UNK data_0212fde0;
 void *p=&data_0212fde0; s32 state=OS_DisableInterrupts();
 if(M2C_FIELD(p,s32 *,8)==arg0) {
 if(M2C_FIELD(p,s32 *,0x18)!=arg1) func_02007958();
 } else {
 goto check;
-loop: func_02005da4((u8 *)p+0x10);
+loop: OS_SleepThread((u8 *)p+0x10);
 check: if(M2C_FIELD(p,s32 *,8)!=-3) {goto loop;}
 M2C_FIELD(p,s32 *,8)=arg0; M2C_FIELD(p,s32 *,0x18)=arg1;
 }
@@ -556,7 +556,7 @@ OS_RestoreInterrupts(state);
 }
 #pragma opt_instruction_scheduling off
 void func_0200fbcc(s32 arg0, s32 arg1) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void); void func_02005df4(void *,s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void func_02007958(void); void OS_WakeupThread(void *,s32);
 extern M2C_UNK data_0212fde0;
 void *p=&data_0212fde0; s32 state; s32 temp; state=OS_DisableInterrupts();
 if (M2C_FIELD(p,s32 *,8)!=arg0 || M2C_FIELD(p,s32 *,12)==0) {func_02007958(); goto done;}
@@ -564,7 +564,7 @@ if(M2C_FIELD(p,s32 *,0x18)!=arg1) func_02007958();
 if(--M2C_FIELD(p,s32 *,12)==0) {
 M2C_FIELD(p,s32 *,8)=-3;
 M2C_FIELD(p,s32 *,0x18)=0;
-func_02005df4((u8 *)p+0x10,0);
+OS_WakeupThread((u8 *)p+0x10,0);
 }
 done:
 *M2C_FIELD(p,s32 **,0)=0;OS_RestoreInterrupts(state);

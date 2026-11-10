@@ -1,5 +1,6 @@
 /* 26 functions from 0x02187F7C to 0x02188D64 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 void func_ov000_02188688(void);
 u8 func_ov000_021889ac(void);
 
@@ -58,7 +59,7 @@ void func_ov000_02188370(void) {
     if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
-u8 func_ov000_021883c0(s32 arg0, s32 arg1) {
+u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
     s32 current, offset;
@@ -137,7 +138,7 @@ void func_ov000_021884e4(void) {
     func_ov000_02188688();
 }
 
-u8 func_ov000_02188538(s32 arg0, s32 arg1) {
+u8 CanDoAiAction01(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
     s32 current, offset;
@@ -188,7 +189,7 @@ void func_ov000_02188688(void) {
     if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
-void func_ov000_021886d8(s32 arg0, s32 arg1) {
+void CanDoAiAction2(s32 arg0, s32 arg1) {
     s32 func_ov000_021885c8(void);
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
@@ -240,7 +241,7 @@ void func_ov000_02188790(void) {
     func_ov000_021884e4();
 }
 
-void func_ov000_021887e4(s32 arg0, s32 arg1) {
+void CanDoAiAction34(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
     s32 current, offset;
@@ -282,7 +283,7 @@ void func_ov000_021888ec(void) {
     func_ov000_021884e4();
 }
 
-void func_ov000_02188940(s32 arg0, s32 arg1) {
+void CanDoAiAction5(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
     s32 current, offset;
@@ -327,7 +328,7 @@ void func_ov000_02188a38(void) {
     func_ov000_021884e4();
 }
 
-u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
+u8 CanDoAiAction789(s32 arg0, s32 arg1) {
     s32 func_ov000_02179ce4(void *);
     extern void **gCurrentMap;
     s32 offset;
@@ -352,74 +353,76 @@ u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
 #pragma push
 #pragma opt_condition off
 #pragma opt_strength_reduction off
-s32 func_ov000_02188b50(s32 arg0, s32 arg1) {
+/* Runs the AI action check for the unit's current state; if that action is not
+ * possible, tries the fallback actions and records the state that can act. */
+s32 TryUnitAiActions(s32 x, s32 y) {
     s32 IsFootUnitKind(s32);
-    u8 func_ov000_021883c0(s32, s32);
-    u8 func_ov000_02188538(s32, s32);
-    u8 func_ov000_02188a8c(s32, s32);
+    u8 CanDoFootAiAction(s32, s32);
+    u8 CanDoAiAction01(s32, s32);
+    u8 CanDoAiAction789(s32, s32);
     extern void **gCurrentMap;
-    void *base, *table;
-    u8 *entry;
-    s32 (*fp)(s32, s32);
-    s32 ln;
-    s32 rc;
+    void *map, *unitBase;
+    u8 *unit;
+    s32 (*check)(s32, s32);
+    s32 state;
+    s32 result;
 
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    entry = (u8 *)table + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
+    map = *gCurrentMap;
+    unitBase = (u8 *)map + MAP_UNIT_RECORDS;
+    unit = (u8 *)unitBase + M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED) * MAP_UNIT_STRIDE;
 
-    if (IsFootUnitKind(((u32)(entry[0] << 26) >> 26)) != 0 || ((u32)(entry[0] << 26) >> 26) == 0x0D) {
-        fp = (s32 (*)(s32, s32))func_ov000_021883c0;
+    if (IsFootUnitKind(((u32)(unit[MAP_UNIT_KIND] << 26) >> 26)) != 0 || ((u32)(unit[MAP_UNIT_KIND] << 26) >> 26) == 0x0D) {
+        check = (s32 (*)(s32, s32))CanDoFootAiAction;
     } else {
-        ln = ((u32)(entry[0x0B] << 28) >> 28);
-        switch (ln) {
+        state = ((u32)(unit[MAP_UNIT_AI_STATE] << 28) >> 28);
+        switch (state) {
             case 0:
             case 1:
-                fp = (s32 (*)(s32, s32))func_ov000_02188538;
+                check = (s32 (*)(s32, s32))CanDoAiAction01;
                 break;
             case 2:
-                fp = (s32 (*)(s32, s32))func_ov000_021886d8;
+                check = (s32 (*)(s32, s32))CanDoAiAction2;
                 break;
             case 3:
             case 4:
-                fp = (s32 (*)(s32, s32))func_ov000_021887e4;
+                check = (s32 (*)(s32, s32))CanDoAiAction34;
                 break;
             case 5:
-                fp = (s32 (*)(s32, s32))func_ov000_02188940;
+                check = (s32 (*)(s32, s32))CanDoAiAction5;
                 break;
             case 7:
             case 8:
             case 9:
-                fp = (s32 (*)(s32, s32))func_ov000_02188a8c;
+                check = (s32 (*)(s32, s32))CanDoAiAction789;
                 break;
             default:
-                fp = 0;
+                check = 0;
                 break;
         }
     }
 
-    rc = fp(arg0, arg1);
-    if (rc == 1) return 1;
+    result = check(x, y);
+    if (result == 1) return 1;
 
-    ln = ((u32)(entry[0x0B] << 28) >> 28);
-    switch (ln) { case 7: case 8: case 9: return 0; default: break; }
+    state = ((u32)(unit[MAP_UNIT_AI_STATE] << 28) >> 28);
+    switch (state) { case 7: case 8: case 9: return 0; default: break; }
 
-    if (func_ov000_02188538(arg0, arg1) == 1) {
-        entry[0x0B] = (u8)(entry[0x0B] & ~0xF);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+    if (CanDoAiAction01(x, y) == 1) {
+        unit[MAP_UNIT_AI_STATE] = (u8)(unit[MAP_UNIT_AI_STATE] & ~MAP_UNIT_AI_STATE_MASK);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_X_MASK) | MAP_UNIT_TARGET_NONE);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_Y_MASK) | MAP_UNIT_TARGET_Y_NONE);
         return 1;
     }
-    if (((s32 (*)(s32, s32))func_ov000_021887e4)(arg0, arg1) == 1) {
-        entry[0x0B] = (u8)((entry[0x0B] & ~0xF) | 0x03);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+    if (((s32 (*)(s32, s32))CanDoAiAction34)(x, y) == 1) {
+        unit[MAP_UNIT_AI_STATE] = (u8)((unit[MAP_UNIT_AI_STATE] & ~MAP_UNIT_AI_STATE_MASK) | 0x03);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_X_MASK) | MAP_UNIT_TARGET_NONE);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_Y_MASK) | MAP_UNIT_TARGET_Y_NONE);
         return 1;
     }
-    if (((s32 (*)(s32, s32))func_ov000_021886d8)(arg0, arg1) == 1) {
-        entry[0x0B] = (u8)((entry[0x0B] & ~0xF) | 0x02);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0x3F) | 0x3F);
-        *(u16 *)(entry + 8) = (u16)((*(u16 *)(entry + 8) & ~0xFC0) | 0xFC0);
+    if (((s32 (*)(s32, s32))CanDoAiAction2)(x, y) == 1) {
+        unit[MAP_UNIT_AI_STATE] = (u8)((unit[MAP_UNIT_AI_STATE] & ~MAP_UNIT_AI_STATE_MASK) | 0x02);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_X_MASK) | MAP_UNIT_TARGET_NONE);
+        *(u16 *)(unit + MAP_UNIT_TARGET) = (u16)((*(u16 *)(unit + MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_Y_MASK) | MAP_UNIT_TARGET_Y_NONE);
         return 1;
     }
     return 0;

@@ -17,7 +17,7 @@ static inline void RevealTerrain(s32 x,s32 y,s32 terrain,s32 player) { s32 GetTe
 #pragma optimization_level reset
 extern void **gCurrentMap;
 extern u8 data_ov000_021e0550[];
-extern s8 data_ov000_021e0f60[];
+extern s8 gAiRangeLayer[];
 
 void func_ov000_02185360(s32 x,s32 y,s32 unit,s32 radius){
 s32 left,xx,yy,right,bottom,top,dist;
@@ -32,7 +32,7 @@ dist=0;
 if(x-xx>0)dist+=x-xx;else dist+=xx-x;
 if(y-yy>0)dist+=y-yy;else dist+=yy-y;
 if(dist>=0 && dist<=radius){
-if(dist<=1 || !func_020ce0ec(unit,M2C_FIELD((u8 *)*gCurrentMap+xx+((u16 *)*gCurrentMap)[yy+0x1bac],u8 *,0x1420)))data_ov000_021e0f60[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=1;
+if(dist<=1 || !func_020ce0ec(unit,M2C_FIELD((u8 *)*gCurrentMap+xx+((u16 *)*gCurrentMap)[yy+0x1bac],u8 *,0x1420)))gAiRangeLayer[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=1;
 }
 xx++;
 }
@@ -63,7 +63,7 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 #pragma optimization_level 3
 void func_ov000_021855e4(void) {
 extern u8 *data_ov000_021df580; extern s8 gTerrainPropertyFlags[];
-void func_02007f8c(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
+void MI_CpuFill8(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
 s32 IsUnitOnCurrentTeam(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 GetUnitMoveRange(s32,u32);
@@ -75,8 +75,8 @@ u8 *unit;
 s32 radius,n;
 s32 tx,ty,kind,i,offset;
 u8 *map;
-if(!M2C_FIELD(*gCurrentMap,u8*,0x5156) && player!=2){func_02007f8c(data_ov000_021e0550,255,1288);return;}
-func_02007f8c(data_ov000_021e0550,0,1288);
+if(!M2C_FIELD(*gCurrentMap,u8*,0x5156) && player!=2){MI_CpuFill8(data_ov000_021e0550,255,1288);return;}
+MI_CpuFill8(data_ov000_021e0550,0,1288);
 {
 for(ty=0;ty<M2C_FIELD(*gCurrentMap,u16*,0x5146);ty++)for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
 map=*gCurrentMap;
@@ -101,14 +101,14 @@ if(!func_020a85dc((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+uni
 if(unit){if(!unit)n=0;else n=(unit-((u8*)*gCurrentMap+(unsigned short)0x59a4))/14;n=(n>>6)+1;}else n=0;
 radius=func_020a7738(unit,unit[1],unit[2],player);
 func_ov000_021851b8(unit[1],unit[2],n,radius);
-func_02007f8c(data_ov000_021e0f60,0,1288);
+MI_CpuFill8(gAiRangeLayer,0,1288);
 func_01ffc294((u16)n,unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(n,(u32)(unit[0]<<26)>>26),4);
 M2C_FIELD((u8*)*gCurrentMap+unit[2]*4,s8**,0x52e8)[unit[1]]=-1;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
 if(M2C_FIELD((u8*)*gCurrentMap+(u32)y*4,s8**,0x52e8)[x]>=0)func_ov000_02185360(x,y,n,radius);
 }
 for(sy=0;sy<M2C_FIELD(*gCurrentMap,u16*,0x5146);sy++)for(sx=0;sx<M2C_FIELD(*gCurrentMap,u16*,0x5144);sx++){
-if((s8)data_ov000_021e0f60[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)] && (data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]&127)!=127)
+if((s8)gAiRangeLayer[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)] && (data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]&127)!=127)
 data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]++;
 }
 if(((u32)(unit[0]<<26)>>26)==5)func_ov000_021854e0(unit[1],unit[2],5,2);
@@ -129,10 +129,10 @@ y=p[37];h=M2C_FIELD(map,u16 *,0x5146);
 if(y>=h)return;
 c=M2C_FIELD(((s8 **)((u8 *)map+0x52e8))[y],s8 *,x);
 if(c<0)return;if(c>110)return;
-if((s8)data_ov000_021e0f60[gMoveSearchCurrent[0]+gMoveSearchCurrent[1]*w]<=c)return;
-old=(s8)data_ov000_021e0f60[x+y*w];
+if((s8)gAiRangeLayer[gMoveSearchCurrent[0]+gMoveSearchCurrent[1]*w]<=c)return;
+old=(s8)gAiRangeLayer[x+y*w];
 if(old<=c && old>=0)return;
-data_ov000_021e0f60[x+y*w]=c;
+gAiRangeLayer[x+y*w]=c;
 gMoveSearchWrite[0]=p[36];
 gMoveSearchWrite[1]=gMoveSearchState[37];
 gMoveSearchWrite[2]=dir;
@@ -184,7 +184,7 @@ void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  func_ov000_02185c20(q[1],q[2]);
  for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
  for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
- value=(s8)data_ov000_021e0f60[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)];
+ value=(s8)gAiRangeLayer[x+y*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)];
  if(value>=0){
  unit=(u8 *)*gCurrentMap+x+((u16 *)*gCurrentMap)[y+0x1bac];
  existing=M2C_FIELD(unit,s8 *,MAP_CELL_SCORE);

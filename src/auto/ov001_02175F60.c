@@ -231,7 +231,7 @@ void func_ov001_02176578(void) {
     extern M2C_UNK func_ov001_021765b4;
     func_ov001_0218a824(3, 1, 0x3F, 0x14);
     func_ov001_0218a824(3, 0, 0x3F, 0x14);
-    func_ov001_02175d54(&func_ov001_021765b4);
+    Ov001_SetStepCallback(&func_ov001_021765b4);
 }
 
 void func_ov001_021765b4(void) {
@@ -271,7 +271,7 @@ void func_ov001_02176628(void) {
     u8 func_ov001_02175ddc(void);
     s32 func_ov001_02175e04(s32);
     s32 func_ov001_02175dec(void);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_02175ec4(M2C_UNK);
     s32 func_ov001_02171d30(void *);
     M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
@@ -336,14 +336,14 @@ void func_ov001_02176628(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
     func_ov001_0218b314(1, 2);
     func_ov001_0218b314(0, 2);
-    func_ov001_02175d54(&func_ov001_02176808);
+    Ov001_SetStepCallback(&func_ov001_02176808);
 }
 
 void func_ov001_02176808(void) {
     extern M2C_UNK func_ov001_02176844;
     func_ov001_0218a824(2, 1, 2, 0x14);
     func_ov001_0218a824(2, 0, 2, 0x14);
-    func_ov001_02175d54(&func_ov001_02176844);
+    Ov001_SetStepCallback(&func_ov001_02176844);
 }
 
 void func_ov001_02176844(void) {
@@ -363,11 +363,11 @@ void func_ov001_02176844(void) {
     switch (temp_r0) {                              /* irregular */
     case 0:
         func_ov001_02175d64(0, 1);
-        func_ov001_02175d54(&func_ov001_021768b8);
+        Ov001_SetStepCallback(&func_ov001_021768b8);
         return;
     case 1:
         func_ov001_02175d64(1, 1);
-        func_ov001_02175d54(&func_ov001_02180d44);
+        Ov001_SetStepCallback(&func_ov001_02180d44);
         return;
     }
 }
@@ -388,7 +388,7 @@ void func_ov001_021768b8(void) {
  func_ov001_02185b60(4);
  offset = data_ov001_02193d5c * 8;
  func_ov001_02172094(M2C_FIELD(&data_ov001_0218f706,u16 *,offset),M2C_FIELD(&data_ov001_0218f70a,u16 *,offset),M2C_FIELD(&data_ov001_0218f708,u16 *,offset),M2C_FIELD(&data_ov001_0218f70c,u16 *,offset));
- func_ov001_02175d54((M2C_UNK *)&func_ov001_02176a20);
+ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176a20);
 }
 
 /* Loads the step-screen background NCL file and registers its rendering callbacks, then selects VRAM banks 3 for the displays. */
@@ -422,7 +422,7 @@ void func_ov001_02176a20(void) {
     func_ov001_0218a824(2, 0, 0x14, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x14);
-    func_ov001_02175d54(&func_ov001_02176a74);
+    Ov001_SetStepCallback(&func_ov001_02176a74);
 }
 
 void func_ov001_02176a74(void) {
@@ -436,7 +436,7 @@ void func_ov001_02176a74(void) {
         return;
     }
     func_ov001_02171e20(0);
-    func_ov001_02175d54(&func_ov001_02176ab0);
+    Ov001_SetStepCallback(&func_ov001_02176ab0);
 }
 
 void func_ov001_02176ab0(void) {
@@ -447,7 +447,7 @@ void func_ov001_02176ab0(void) {
         return;
     }
     func_ov001_02171738();
-    func_ov001_02175d54(&func_ov001_02176ad8);
+    Ov001_SetStepCallback(&func_ov001_02176ad8);
 }
 
 void func_ov001_02176ad8(void) {
@@ -497,7 +497,7 @@ void func_ov001_02176c18(void) {
 
 void func_ov001_02176c1c(void) {
     s32 func_ov001_021716c4();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void func_ov001_02176df0(void);
     void func_ov001_02176c6c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
@@ -507,24 +507,24 @@ void func_ov001_02176c1c(void) {
     switch (temp_r0) {                              /* irregular */
     case 0:
         Ov001_PlaySound(7);
-        func_ov001_02175d54((M2C_UNK *)&func_ov001_02176578);
+        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176578);
         return;
     case 1:
         Ov001_PlaySound(6);
         func_ov001_02176df0();
-        func_ov001_02175d54((M2C_UNK *)&func_ov001_02176c6c);
+        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176c6c);
         return;
     }
 }
 
 void func_ov001_02176c6c(void) {
     M2C_UNK func_ov001_02171750();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_02176c8c;
     func_ov001_02171750();
     func_ov001_0218aa24(8);
-    func_ov001_02175d54(&func_ov001_02176c8c);
+    Ov001_SetStepCallback(&func_ov001_02176c8c);
 }
 
 void func_ov001_02176c8c(void) {
@@ -534,7 +534,7 @@ void func_ov001_02176c8c(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x16, 8);
-    func_ov001_02175d54(&func_ov001_02176cd8);
+    Ov001_SetStepCallback(&func_ov001_02176cd8);
 }
 
 void func_ov001_02176cd8(void) {
@@ -544,7 +544,7 @@ void func_ov001_02176cd8(void) {
     M2C_UNK func_ov001_02189ebc(s32);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 data_ov001_02193d5c;
     extern M2C_UNK func_ov001_02180d44;
     extern M2C_UNK func_ov001_021778c0;
@@ -563,11 +563,11 @@ void func_ov001_02176cd8(void) {
     switch (data_ov001_02193d5c) {                  /* irregular */
     case 0:
         func_ov001_02175d64(1, 0);
-        func_ov001_02175d54((M2C_UNK *)&func_ov001_02180d44);
+        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180d44);
         return;
     case 1:
         func_ov001_02175d64(0, 0);
-        func_ov001_02175d54((M2C_UNK *)&func_ov001_021778c0);
+        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021778c0);
         return;
     }
 }
@@ -607,7 +607,7 @@ void func_ov001_02176e30(void) {
     func_ov001_02172250(0x12);
     func_ov001_02171c24(0x3B, -1, 0);
     func_ov001_02171e58(0x17);
-    func_ov001_02175d54(&func_ov001_02176ef8);
+    Ov001_SetStepCallback(&func_ov001_02176ef8);
 }
 
 void func_ov001_02176e78(void) {
@@ -628,6 +628,6 @@ void func_ov001_02176ef8(void) {
     func_ov001_0218a824(2, 0, 0x15, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x15);
-    func_ov001_02175d54(&func_ov001_02176f4c);
+    Ov001_SetStepCallback(&func_ov001_02176f4c);
 }
 

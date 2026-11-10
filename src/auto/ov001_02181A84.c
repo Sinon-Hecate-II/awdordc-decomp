@@ -11,7 +11,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK func_ov001_02171dd0(M2C_UNK);
     M2C_UNK func_ov001_02175e04(M2C_UNK);
     M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02175d54(M2C_UNK);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK);
     extern M2C_UNK data_ov001_02193dd4;
     extern M2C_UNK data_ov001_0218fb38;
     extern M2C_UNK data_ov001_0218faf6;
@@ -72,7 +72,7 @@ void func_ov001_02181a84(void) {
         *(u16 *)((u8 *)r3p + r5)
     );
 
-    func_ov001_02175d54((M2C_UNK)&func_ov001_02181c94);
+    Ov001_SetStepCallback((M2C_UNK)&func_ov001_02181c94);
 }
 
 void func_ov001_02181ba8(void) {
@@ -105,7 +105,7 @@ void func_ov001_02181c94(void) {
     func_ov001_0218a824(2, 0, 0x14, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x14);
-    func_ov001_02175d54(&func_ov001_02181ce8);
+    Ov001_SetStepCallback(&func_ov001_02181ce8);
 }
 
 void func_ov001_02181ce8(void) {
@@ -119,7 +119,7 @@ void func_ov001_02181ce8(void) {
         return;
     }
     func_ov001_02171e20(0);
-    func_ov001_02175d54(&func_ov001_02181d24);
+    Ov001_SetStepCallback(&func_ov001_02181d24);
 }
 
 void func_ov001_02181d24(void) {
@@ -130,7 +130,7 @@ void func_ov001_02181d24(void) {
         return;
     }
     func_ov001_02171738();
-    func_ov001_02175d54(&func_ov001_02181d4c);
+    Ov001_SetStepCallback(&func_ov001_02181d4c);
 }
 
 extern void func_ov001_02181d60(void);
@@ -218,17 +218,17 @@ void func_ov001_02181ee8(void) {
         break;
     default: return;
     }
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02181f3c);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181f3c);
 }
 
 void func_ov001_02181f3c(void) {
     M2C_UNK func_ov001_02171750();
-    M2C_UNK func_ov001_02175d54(M2C_UNK *);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern M2C_UNK func_ov001_02181f5c;
     func_ov001_02171750();
     func_ov001_0218aa24(8);
-    func_ov001_02175d54(&func_ov001_02181f5c);
+    Ov001_SetStepCallback(&func_ov001_02181f5c);
 }
 
 void func_ov001_02181f5c(void) {
@@ -243,24 +243,24 @@ void func_ov001_02181f5c(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x14, 8);
-    func_ov001_02175d54(&func_ov001_02181fc0);
+    Ov001_SetStepCallback(&func_ov001_02181fc0);
 }
 
 void func_ov001_02181fc0(void){
 extern M2C_UNK data_ov001_02193dd4;
-extern M2C_UNK func_ov001_02180d44,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,func_ov001_0217d270;
+extern M2C_UNK func_ov001_02180d44,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
 s32 func_ov001_0218a800(s32);s32 func_ov001_0217170c(void);
 if(func_ov001_0218a800(1))return;
 if(func_ov001_0218a800(0))return;
 if(!func_ov001_0217170c())return;
 func_ov001_02172184();func_ov001_02171cf8();func_ov001_02189ebc(M2C_FIELD(&data_ov001_02193dd4,void **,4));
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
-if(!M2C_FIELD(&data_ov001_02193dd4,u8 *,2)){func_ov001_02175d64(2,0);func_ov001_02175d54(&func_ov001_02180d44);return;}
+if(!M2C_FIELD(&data_ov001_02193dd4,u8 *,2)){func_ov001_02175d64(2,0);Ov001_SetStepCallback(&func_ov001_02180d44);return;}
 switch(M2C_FIELD(&data_ov001_02193dd4,s8 *,1)){
-case 0:func_ov001_02175d64(2,1);func_ov001_02175d54(&func_ov001_02180860);return;
-case 1:func_ov001_02175d64(2,1);func_ov001_02175d54(&func_ov001_02179718);return;
-case 2:func_ov001_02175d64(2,1);func_ov001_02175d54(&func_ov001_021803ec);return;
-case 3:func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);func_ov001_0217f72c(1);func_ov001_02175d54(&func_ov001_0217d270);return;
+case 0:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02180860);return;
+case 1:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_02179718);return;
+case 2:func_ov001_02175d64(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
+case 3:func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);func_ov001_0217f72c(1);Ov001_SetStepCallback(&InitMapListScreen);return;
 }
 }
 
@@ -352,7 +352,7 @@ void func_ov001_0218223c(void) {
     func_ov001_02182370();
     func_ov001_0217231c(0);
     Ov001_PlaySound(0xC);
-    func_ov001_02175d54(&func_ov001_02182408);
+    Ov001_SetStepCallback(&func_ov001_02182408);
 }
 
 void func_ov001_021822c8(void) {
@@ -404,7 +404,7 @@ void func_ov001_02182408(void) {
         func_ov001_0218a824(2, 1, 1, 8);
         func_ov001_0218b314(1, 1);
     }
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02182474);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182474);
 }
 
 void func_ov001_02182474(void) {
@@ -415,7 +415,7 @@ void func_ov001_02182474(void) {
     if (func_ov001_0218a800(0) != 0) {
         return;
     }
-    func_ov001_02175d54(&func_ov001_021824a8);
+    Ov001_SetStepCallback(&func_ov001_021824a8);
 }
 
 void func_ov001_021824a8(void) {
@@ -443,7 +443,7 @@ void func_ov001_021824c8(void) {
     M2C_UNK func_ov001_0218a824(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021824f0;
     func_ov001_0218a824(3, 0, 0x15, 8);
-    func_ov001_02175d54(&func_ov001_021824f0);
+    Ov001_SetStepCallback(&func_ov001_021824f0);
 }
 
 void func_ov001_021824f0(void) {
@@ -452,7 +452,7 @@ void func_ov001_021824f0(void) {
     if (func_ov001_0218a800(0) != 0) {
         return;
     }
-    func_ov001_02175d54(&func_ov001_02182514);
+    Ov001_SetStepCallback(&func_ov001_02182514);
 }
 
 void func_ov001_02182514(void) {
@@ -477,11 +477,11 @@ void func_ov001_02182514(void) {
     func_ov001_0218b368(0, 0x15);
     if ((u8)data_ov001_02193ddc == 0) {
         func_ov001_02175d64(0, 1);
-        func_ov001_02175d54(&func_ov001_0217cc4c);
+        Ov001_SetStepCallback(&func_ov001_0217cc4c);
         return;
     }
     func_ov001_02175d64(0, 1);
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02182638);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182638);
 }
 
 void func_ov001_021825a8(s32 arg0) {
@@ -499,7 +499,7 @@ void func_ov001_021825a8(s32 arg0) {
         func_ov001_0217d260();
         Ov001_PlaySound(0x12);
     }
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_021824c8);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021824c8);
     func_ov001_0218c92c(0, arg0);
 }
 
@@ -521,7 +521,7 @@ void func_ov001_02182638(void) {
     data_ov001_02193de0 = 0;
     func_ov001_02182668();
     func_ov001_02171e58(0x2D);
-    func_ov001_02175d54(&func_ov001_021826d4);
+    Ov001_SetStepCallback(&func_ov001_021826d4);
 }
 
 void func_ov001_02182668(void) {
@@ -541,7 +541,7 @@ void func_ov001_021826d4(void) {
     extern M2C_UNK func_ov001_02182708;
     func_ov001_0218a824(2, 0, 0x15, 8);
     func_ov001_0218b314(0, 0x15);
-    func_ov001_02175d54(&func_ov001_02182708);
+    Ov001_SetStepCallback(&func_ov001_02182708);
 }
 
 void func_ov001_02182708(void) {
@@ -549,7 +549,7 @@ void func_ov001_02182708(void) {
     if (func_ov001_0218a800(0) != 0) {
         return;
     }
-    func_ov001_02175d54(&func_ov001_0218272c);
+    Ov001_SetStepCallback(&func_ov001_0218272c);
 }
 
 void func_ov001_0218272c(void) {
@@ -575,7 +575,7 @@ void func_ov001_02182740(void) {
     }
     func_ov001_0218a824(3, 1, 1, 8);
     func_ov001_0218a824(3, 0, 0x15, 8);
-    func_ov001_02175d54(&func_ov001_02182798);
+    Ov001_SetStepCallback(&func_ov001_02182798);
 }
 
 void func_ov001_02182798(void) {
@@ -586,7 +586,7 @@ void func_ov001_02182798(void) {
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     M2C_UNK func_ov001_0218b368(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021768b8;
-    extern M2C_UNK func_ov001_0217d270;
+    extern M2C_UNK InitMapListScreen;
     s32 sp0;
 
     if (func_ov001_0218a800(1) != 0) {
@@ -606,10 +606,10 @@ void func_ov001_02182798(void) {
     func_ov001_02175db4(0, &sp0);
     if (sp0 == 0) {
         func_ov001_02175da0(0, 0);
-        func_ov001_02175d54(&func_ov001_0217d270);
+        Ov001_SetStepCallback(&InitMapListScreen);
         return;
     }
-    func_ov001_02175d54(&func_ov001_021768b8);
+    Ov001_SetStepCallback(&func_ov001_021768b8);
 }
 
 void func_ov001_0218283c(void) {
@@ -622,10 +622,10 @@ void func_ov001_0218283c(void) {
     func_ov001_02175db4(0, &sp0);
     temp_r0 = func_ov001_02175dec();
     if ((temp_r0 != 0) && (temp_r0 == 1) && (sp0 != 0)) {
-        func_ov001_02175d54(&func_ov001_02176578);
+        Ov001_SetStepCallback(&func_ov001_02176578);
         return;
     }
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02182740);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182740);
 }
 
 void func_ov001_021828ac(void) {
@@ -642,7 +642,7 @@ void func_ov001_021828ac(void) {
     func_ov001_02171c24(0x31, -1, 0);
     if (sp0 != 2) func_ov001_021722ac();
     if (sp0 == 1) func_ov001_02184960();
-    func_ov001_02175d54((M2C_UNK *)&func_ov001_02182970);
+    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);
 }
 
 void func_ov001_02182904(void) {
@@ -662,7 +662,7 @@ void func_ov001_02182970(void) {
     func_ov001_0218a824(2, 0, 0x14, 8);
     func_ov001_0218b314(1, 1);
     func_ov001_0218b314(0, 0x14);
-    func_ov001_02175d54(&func_ov001_021829c4);
+    Ov001_SetStepCallback(&func_ov001_021829c4);
 }
 
 void func_ov001_021829c4(void) {
@@ -676,6 +676,6 @@ void func_ov001_021829c4(void) {
     if (func_ov001_0218a800(0) != 0) return;
     func_ov001_02175db4(0, &index);
     func_ov001_021862d8(table.values[index], 1, 1, -1, 0);
-    func_ov001_02175d54(&func_ov001_02182a4c);
+    Ov001_SetStepCallback(&func_ov001_02182a4c);
 }
 

@@ -1,5 +1,6 @@
 /* 19 functions from 0x020BBBBC to 0x020BCB94 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s16 BC454Direction(s16 *p,s32 dir) { return p[dir*2]; }
 
 void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -106,40 +107,58 @@ func_020d2b10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),func_020d2d50(M2C_FIELD(*gCur
 if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(27,1);
 }
 
-void func_020bbed4(void) {
-void *func_020a67fc(u8,u8,s32);
-void func_020c98d8(u8,u8,s32);
-extern s32 *gCurrentMap;
-void *p,*q;
-s32 idx;
-u16 v; u32 n;
-q=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-p=func_020a67fc(M2C_FIELD(q,u8 *,1),M2C_FIELD(q,u8 *,2),17);
-M2C_FIELD(p,u16 *,4)|=10;
-q=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-if(M2C_FIELD(q,u8 *,12)==0) {
-idx=p?((s32)p-(*gCurrentMap+0x59a4))/14:0;
-M2C_FIELD(q,u8 *,12)=idx;
-}else{
-idx=p?((s32)p-(*gCurrentMap+0x59a4))/14:0;
-M2C_FIELD(q,u8 *,13)=idx;
-}
-q=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-M2C_FIELD(q,u16 *,4)|=16;
-q=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-v=M2C_FIELD(q,u16 *,6);
-n=(u32)(v<<21)>>28;
-if(n) {
-n=(u16)(n+65535);
-M2C_FIELD(q,u16 *,6)=(v&~0x780)|((n&15)<<7);
-}
-idx=p?((s32)p-(*gCurrentMap+0x59a4))/14:0;
-switch(M2C_FIELD(*gCurrentMap+((idx>>6)+1)*140,u8 *,0x67c1)){
-case 1:q=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020c98d8(M2C_FIELD(q,u8 *,1),M2C_FIELD(q,u8 *,2),4);break;
-case 2:q=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020c98d8(M2C_FIELD(q,u8 *,1),M2C_FIELD(q,u8 *,2),5);break;
-case 3:q=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020c98d8(M2C_FIELD(q,u8 *,1),M2C_FIELD(q,u8 *,2),6);break;
-case 4:q=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020c98d8(M2C_FIELD(q,u8 *,1),M2C_FIELD(q,u8 *,2),7);break;
-}
+/* AI command 22: produce a kind-17 unit on the cursor unit's tile, chain it as
+   that unit's cargo, spend one ammo and update the cursor style for the army of
+   the unit's owner. */
+void AiProduceCargoUnit(void) {
+    void *ProduceUnit(u8,u8,s32);
+    void func_020c98d8(u8,u8,s32);
+    extern s32 *gCurrentMap;
+    BattleMapUnit *produced;
+    BattleMapUnit *cursor;
+    s32 cargoIndex;
+    u16 hpWord;
+    u32 ammo;
+
+    cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    produced = (BattleMapUnit *)ProduceUnit(cursor->x, cursor->y, 17);
+    produced->flags |= 10;
+    cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    if (cursor->firstCarried == 0) {
+        cargoIndex = produced ? ((s32)produced - (*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+        cursor->firstCarried = cargoIndex;
+    } else {
+        cargoIndex = produced ? ((s32)produced - (*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+        cursor->nextCarried = cargoIndex;
+    }
+    cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    cursor->flags |= 16;
+    cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    hpWord = M2C_FIELD(cursor, u16 *, MAP_UNIT_HEALTH);
+    ammo = (u32)(hpWord << 21) >> 28;
+    if (ammo) {
+        ammo = (u16)(ammo + 65535);
+        M2C_FIELD(cursor, u16 *, MAP_UNIT_HEALTH) = (hpWord & ~0x780) | ((ammo & 15) << 7);
+    }
+    cargoIndex = produced ? ((s32)produced - (*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+    switch (M2C_FIELD(*gCurrentMap + ((cargoIndex >> 6) + 1) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_ARMY_INDEX)) {
+    case 1:
+        cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+        func_020c98d8(cursor->x, cursor->y, 4);
+        break;
+    case 2:
+        cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+        func_020c98d8(cursor->x, cursor->y, 5);
+        break;
+    case 3:
+        cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+        func_020c98d8(cursor->x, cursor->y, 6);
+        break;
+    case 4:
+        cursor = (BattleMapUnit *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+        func_020c98d8(cursor->x, cursor->y, 7);
+        break;
+    }
 }
 
 void func_020bc0e0(void) {

@@ -79,7 +79,7 @@ return 1;
 /* True when a friendly unit within 4 tiles of the target would damage it better than the selected unit. */
 s32 HasBetterAttackerNearby(void *target) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
+extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
 s32 GetUnitAttackClass(s32);s32 IsCurrentPlayerUnit(s32);s32 GetAttackDamage(s32,s32,s32);
 u8 *p=target,*map=*gCurrentMap,*sel,*unit;
 s32 kind,tileX,tileY,minX,minY,maxX,maxY,cellX;
@@ -110,7 +110,7 @@ if(cellX==sel[1]&&cellY==sel[2])continue;
 unit=map+0x59a4+kind*14;
 if(GetUnitAttackClass((u32)(unit[0]<<26)>>26)==1)continue;
 ck=(u32)(unit[0]<<26)>>26;
-if(data_ov000_021b5bfc[ck*112+19]&16)continue;
+if(gUnitKindStats[ck*112+19]&16)continue;
 if(M2C_FIELD(unit,u16 *,4)&1)continue;
 if(ck==0)continue;
 if((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)continue;
@@ -123,7 +123,10 @@ if((s32)((u32)(M2C_FIELD(sel,u16 *,6)<<25)>>25)*selectedDamage+2000 < (s32)((u32
 done:return 0;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_0217a378(s32 dir) {
+/* Expand one neighbour (in direction dir) of the current node of the movement
+ * flood fill: enqueue the tile when it is on the map, within the cost limit and
+ * cheaper than the tile was reached before. */
+void ExpandMoveSearchNode(s32 dir) {
 extern void *gMoveSearchCurrent,*gMoveSearchState,*gMoveSearchWrite;
 extern void *gMoveSearchCount;
 extern void **gCurrentMap;
@@ -132,28 +135,28 @@ s32 c,x,y;
 void *map;
 s32 w,h,limit,cost,steps,total;
 s8 *row;
-M2C_FIELD(gMoveSearchState,u8 *,36)=M2C_FIELD(gMoveSearchCurrent,u8 *,0);
-M2C_FIELD(gMoveSearchState,u8 *,37)=M2C_FIELD(gMoveSearchCurrent,u8 *,1);
-switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(gMoveSearchState,u8 *,37)--;break;case 3:M2C_FIELD(gMoveSearchState,u8 *,37)++;break;case 4:M2C_FIELD(gMoveSearchState,u8 *,36)--;break;case 5:M2C_FIELD(gMoveSearchState,u8 *,36)++;break;default:break;}
-if((s32)gMoveSearchCount>=349)return;
+M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_WIDTH)=M2C_FIELD(gMoveSearchCurrent,u8 *,0);
+M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_HEIGHT)=M2C_FIELD(gMoveSearchCurrent,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_HEIGHT)--;break;case 3:M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_HEIGHT)++;break;case 4:M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_WIDTH)--;break;case 5:M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_WIDTH)++;break;default:break;}
+if((s32)gMoveSearchCount>=MOVE_SEARCH_QUEUE_MAX)return;
 map=*gCurrentMap;p=gMoveSearchState;
-x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return;valid:;
-limit=M2C_FIELD(p,s16 *,32);
-cost=p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31];
+x=p[MOVE_SEARCH_WIDTH];w=M2C_FIELD(map,u16 *,MAP_WIDTH);if(x<w){y=p[MOVE_SEARCH_HEIGHT];h=M2C_FIELD(map,u16 *,MAP_HEIGHT);if(y<h)goto valid;}return;valid:;
+limit=M2C_FIELD(p,s16 *,MOVE_SEARCH_COST_LIMIT);
+cost=p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&31];
 prev=gMoveSearchCurrent;
 c=prev[3]+cost;
 if(c>limit)return;
-limit=M2C_FIELD(p,s16 *,34);
-steps=M2C_FIELD((u8 *)map+(prev[0]+M2C_FIELD((u8 *)map+prev[1]*2,u16 *,0x3758)),s8 *,0x2338);
+limit=M2C_FIELD(p,s16 *,MOVE_SEARCH_MOVE_RANGE);
+steps=M2C_FIELD((u8 *)map+(prev[0]+M2C_FIELD((u8 *)map+prev[1]*2,u16 *,MAP_ROW_OFFSETS)),s8 *,MAP_CELL_SCORE);
 total=(s16)limit*(s16)steps;
 if(total<c){c=total+cost;steps++;}
-row=M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8);
+row=M2C_FIELD((u8 *)map+y*4,s8 **,MAP_GRID);
 if(row[x]<=c && row[x]>=0)return;
 row[x]=c;
 map=*gCurrentMap;p=gMoveSearchState;
-M2C_FIELD((u8 *)map+(p[36]+M2C_FIELD((u8 *)map+p[37]*2,u16 *,0x3758)),u8 *,0x2338)=steps;
-M2C_FIELD(gMoveSearchWrite,u8 *,0)=M2C_FIELD(gMoveSearchState,u8 *,36);
-M2C_FIELD(gMoveSearchWrite,u8 *,1)=M2C_FIELD(gMoveSearchState,u8 *,37);
+M2C_FIELD((u8 *)map+(p[MOVE_SEARCH_WIDTH]+M2C_FIELD((u8 *)map+p[MOVE_SEARCH_HEIGHT]*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_SCORE)=steps;
+M2C_FIELD(gMoveSearchWrite,u8 *,0)=M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_WIDTH);
+M2C_FIELD(gMoveSearchWrite,u8 *,1)=M2C_FIELD(gMoveSearchState,u8 *,MOVE_SEARCH_HEIGHT);
 M2C_FIELD(gMoveSearchWrite,u8 *,2)=dir;
 M2C_FIELD(gMoveSearchWrite,u8 *,3)=c;
 gMoveSearchWrite+=4;gMoveSearchCount=(void *)((s32)gMoveSearchCount+1);
@@ -223,11 +226,11 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
         while (M2C_FIELD(q, u8 *, 2) != 0) {
             switch (M2C_FIELD(q, u8 *, 2)) {
-            case 1: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
-            case 2: func_ov000_0217a378(2); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
-            case 3: func_ov000_0217a378(3); func_ov000_0217a378(4); func_ov000_0217a378(5); break;
-            case 4: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(4); break;
-            case 5: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(5); break;
+            case 1: ExpandMoveSearchNode(2); ExpandMoveSearchNode(3); ExpandMoveSearchNode(4); ExpandMoveSearchNode(5); break;
+            case 2: ExpandMoveSearchNode(2); ExpandMoveSearchNode(4); ExpandMoveSearchNode(5); break;
+            case 3: ExpandMoveSearchNode(3); ExpandMoveSearchNode(4); ExpandMoveSearchNode(5); break;
+            case 4: ExpandMoveSearchNode(2); ExpandMoveSearchNode(3); ExpandMoveSearchNode(4); break;
+            case 5: ExpandMoveSearchNode(2); ExpandMoveSearchNode(3); ExpandMoveSearchNode(5); break;
             }
             M2C_FIELD(gMoveSearchWrite, u8 *, 2) = 0;
             gMoveSearchCurrent = (u8 *)gMoveSearchCurrent + 4;

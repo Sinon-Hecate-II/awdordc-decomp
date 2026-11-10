@@ -11,9 +11,9 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     s32 ghiSocket(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 ghiConnect(s32, UnkSocketAddress *, u8);
     s32 ghiGetLastSocketError(s32);
-    void func_02050744(void *, s32, s32);
+    void gpiCallErrorCallback(void *, s32, s32);
     M2C_UNK func_02055124(s32);
-    void func_02058620(void **, s32, M2C_UNK);
+    void gpiSetError(void **, s32, M2C_UNK);
     s32 gpiSetErrorString(M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_020feb6c;
     extern M2C_UNK data_020fecb0;
@@ -28,13 +28,13 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     }
     M2C_FIELD(arg1, s32 *, 0x8) = ghiSocket(2, 1, 0);
     if (M2C_FIELD(arg1, s32 *, 0x8) == -1) {
-        func_02058620(arg0, 5, &data_020fecb0);
-        func_02050744(arg0, 3, 0);
+        gpiSetError(arg0, 5, &data_020fecb0);
+        gpiCallErrorCallback(arg0, 3, 0);
         return 3;
     }
     if (ghiSetNonBlocking(M2C_FIELD(arg1, s32 *, 0x8), 0) == 0) {
-        func_02058620(arg0, 5, &data_020fecd8);
-        func_02050744(arg0, 3, 0);
+        gpiSetError(arg0, 5, &data_020fecd8);
+        gpiCallErrorCallback(arg0, 3, 0);
         return 3;
     }
     func_02055124(M2C_FIELD(arg1, s32 *, 0x8));
@@ -46,8 +46,8 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     if (ghiConnect(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)addr, 8) == -1) {
         s32 r = ghiGetLastSocketError(M2C_FIELD(arg1, s32 *, 0x8));
         if ((r != -6) && (r != -0x1a) && (r != -0x4c)) {
-            func_02058620(arg0, 5, &data_020fed0c);
-            func_02050744(arg0, 3, 1);
+            gpiSetError(arg0, 5, &data_020fed0c);
+            gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
     }
@@ -119,23 +119,23 @@ s32 func_0205585c(s32 *arg0, s32 *arg1) {
 }
 
 void func_0205586c(void *arg0) {
-    M2C_UNK func_020377c4(void *);
+    M2C_UNK gpiFree(void *);
     M2C_UNK func_02053f18(void *);
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 8);
     if (temp_r0 != NULL) {
-        func_020377c4(M2C_FIELD(temp_r0, void **, 8));
+        gpiFree(M2C_FIELD(temp_r0, void **, 8));
         M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 8) = NULL;
-        func_020377c4(M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 0xC));
+        gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 0xC));
         M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 0xC) = NULL;
-        func_020377c4(M2C_FIELD(arg0, void **, 8));
+        gpiFree(M2C_FIELD(arg0, void **, 8));
         M2C_FIELD(arg0, void **, 8) = NULL;
     }
     func_02053f18(arg0);
-    func_020377c4(M2C_FIELD(arg0, void **, 0x10));
+    gpiFree(M2C_FIELD(arg0, void **, 0x10));
     M2C_FIELD(arg0, void **, 0x10) = NULL;
-    func_020377c4(M2C_FIELD(arg0, void **, 0x18));
+    gpiFree(M2C_FIELD(arg0, void **, 0x18));
     M2C_FIELD(arg0, void **, 0x18) = NULL;
 }
 
@@ -148,17 +148,17 @@ return p->handle!=0;
 }
 
 s32 func_02055940(void **a,void *b,s32 c) {
-s32 func_0205817c(void **,s32,s32);void func_02058620(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
-s32 StringCompareN(s32,void *,s32);void func_02050744(void *,s32,s32);void *func_02037794(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+s32 func_0205817c(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
+s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
 s32 GetStringField(s32,void *,void *,s32);s32 ParseInt(void *);
 extern M2C_UNK data_020feda0,data_020feda8,data_020fedd8,data_020fede4;
 char buffer[16];Unk02050838Pair pair;s32 *p;s32 r;s32 value;
 if(func_0205817c(a,c,1))return 4;
-if(StringCompareN(c,&data_020feda0,5)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
-if(!GetStringField(c,&data_020fedd8,buffer,16)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
+if(StringCompareN(c,&data_020feda0,5)){gpiSetError(a,1,(s32)&data_020feda8);gpiCallErrorCallback(a,3,1);return 3;}
+if(!GetStringField(c,&data_020fedd8,buffer,16)){gpiSetError(a,1,(s32)&data_020feda8);gpiCallErrorCallback(a,3,1);return 3;}
 value=ParseInt(buffer);
 pair=*(Unk02050838Pair *)((u8 *)b+12);
-if(pair.unk_0){p=func_02037794(8);if(!p){gpiSetErrorString((s32)a,(s32 *)&data_020fede4);return 1;}p[1]=value;p[0]=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
+if(pair.unk_0){p=gpiMalloc(8);if(!p){gpiSetErrorString((s32)a,(s32 *)&data_020fede4);return 1;}p[1]=value;p[0]=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
 func_02054484(a,b);return 0;
 }
 
@@ -276,42 +276,58 @@ s32 func_02055d6c(void *arg0) {
     return 0;
 }
 
-s32 func_02055da4(void **ctx,void *entry){
-void *func_02037794(s32);s32 ghiSocket(s32,s32,s32);s32 ghiSetNonBlocking(s32,s32);void *func_02021768(void *);
-s32 ghiConnect(s32,UnkSocketAddress *,u8);s32 ghiGetLastSocketError(s32);
-s32 gpiSetErrorString(M2C_UNK,M2C_UNK *);void func_02058620(void **,s32,M2C_UNK);void func_02050744(void *,s32,s32);
-M2C_UNK AssertFailed(void *,void *,void *,s32);
-extern M2C_UNK data_020fee8c,data_020fee9c,data_020feec4,data_020fee4c,data_020feef8,data_020fef28,data_020fef48,data_020fee34,data_020fef54;
-void *p=M2C_FIELD(entry,void **,4),*host;s32 addr[2];s32 r;
-M2C_FIELD(p,s32 *,12)=4096;M2C_FIELD(p,void **,8)=func_02037794(4097);
-if(!M2C_FIELD(p,void **,8)){gpiSetErrorString(ctx,&data_020fee8c);return 1;}
-M2C_FIELD(p,s32 *,4)=ghiSocket(2,1,0);
-if(M2C_FIELD(p,s32 *,4)==-1){func_02058620(ctx,5,&data_020fee9c);func_02050744(ctx,3,1);return 3;}
-if(!ghiSetNonBlocking(M2C_FIELD(p,s32 *,4),0)){func_02058620(ctx,5,&data_020feec4);func_02050744(ctx,3,1);return 3;}
-host=func_02021768(&data_020fee4c);
-if(!host){func_02058620(ctx,5,&data_020feef8);func_02050744(ctx,3,1);return 3;}
-InitSocketAddress(addr);((u8 *)addr)[1]=2;
-addr[1]=**M2C_FIELD(host,s32 ***,12);
-if(!addr[1])AssertFailed(&data_020fef28,&data_020fef48,&data_020fee34,89);
-((u16 *)addr)[1]=0xcd74;
-if(ghiConnect(M2C_FIELD(p,s32 *,4),(UnkSocketAddress *)addr,8)==-1){
-r=ghiGetLastSocketError(M2C_FIELD(p,s32 *,4));
-if(r!=-6&&r!=-26&&r!=-76){func_02058620(ctx,5,&data_020fef54);func_02050744(ctx,3,1);return 3;}}
-M2C_FIELD(entry,s32 *,20)=1;return 0;
+/* Connects to the GameSpy profile search manager: allocates the search's
+ * receive buffer, opens a TCP socket, resolves gpsp.gs.nintendowifi.net and
+ * starts a non-blocking connect to it on port 0x74CD (0xcd74 in network byte
+ * order). */
+s32 gpiStartProfileSearch(void **connection, void *search) {
+    void *gpiMalloc(s32);
+    s32 ghiSocket(s32, s32, s32);
+    s32 ghiSetNonBlocking(s32, s32);
+    void *ghiResolveHostname(void *);
+    s32 ghiConnect(s32, UnkSocketAddress *, u8);
+    s32 ghiGetLastSocketError(s32);
+    s32 gpiSetErrorString(M2C_UNK, M2C_UNK *);
+    void gpiSetError(void **, s32, M2C_UNK);
+    void gpiCallErrorCallback(void *, s32, s32);
+    M2C_UNK AssertFailed(void *, void *, void *, s32);
+    extern M2C_UNK gGpiSearchMsgOutOfMemory, gGpiSearchMsgCreateSocket, gGpiSearchMsgSetNonBlocking, gGpiSearchManagerHostname, gGpiSearchMsgResolveManager, gGpiSearchAssertSinAddr, gGpiSearchSourceFile, gGpiStartProfileSearchName, gGpiSearchMsgConnect;
+    void *searchData = M2C_FIELD(search, void **, 4), *resolved;
+    s32 addr[2];
+    s32 error;
+    M2C_FIELD(searchData, s32 *, 12) = 4096;
+    M2C_FIELD(searchData, void **, 8) = gpiMalloc(4097);
+    if (!M2C_FIELD(searchData, void **, 8)) { gpiSetErrorString(connection, &gGpiSearchMsgOutOfMemory); return 1; }
+    M2C_FIELD(searchData, s32 *, 4) = ghiSocket(2, 1, 0);
+    if (M2C_FIELD(searchData, s32 *, 4) == -1) { gpiSetError(connection, 5, &gGpiSearchMsgCreateSocket); gpiCallErrorCallback(connection, 3, 1); return 3; }
+    if (!ghiSetNonBlocking(M2C_FIELD(searchData, s32 *, 4), 0)) { gpiSetError(connection, 5, &gGpiSearchMsgSetNonBlocking); gpiCallErrorCallback(connection, 3, 1); return 3; }
+    resolved = ghiResolveHostname(&gGpiSearchManagerHostname);
+    if (!resolved) { gpiSetError(connection, 5, &gGpiSearchMsgResolveManager); gpiCallErrorCallback(connection, 3, 1); return 3; }
+    InitSocketAddress(addr);
+    ((u8 *)addr)[1] = 2;
+    addr[1] = **M2C_FIELD(resolved, s32 ***, 12);
+    if (!addr[1]) AssertFailed(&gGpiSearchAssertSinAddr, &gGpiSearchSourceFile, &gGpiStartProfileSearchName, 89);
+    ((u16 *)addr)[1] = 0xcd74;
+    if (ghiConnect(M2C_FIELD(searchData, s32 *, 4), (UnkSocketAddress *)addr, 8) == -1) {
+        error = ghiGetLastSocketError(M2C_FIELD(searchData, s32 *, 4));
+        if (error != -6 && error != -26 && error != -76) { gpiSetError(connection, 5, &gGpiSearchMsgConnect); gpiCallErrorCallback(connection, 3, 1); return 3; }
+    }
+    M2C_FIELD(search, s32 *, 20) = 1;
+    return 0;
 }
 
 s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
-    void *func_02037794(M2C_UNK);
+    void *gpiMalloc(M2C_UNK);
     M2C_UNK gpiSetErrorString(M2C_UNK, M2C_UNK *);
     M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_020fee8c;
+    extern M2C_UNK gGpiSearchMsgOutOfMemory;
     void *temp_r0;
     void *temp_r0_2;
     s32 zero;
 
-    temp_r0 = func_02037794(0x144);
+    temp_r0 = gpiMalloc(0x144);
     if (temp_r0 == NULL) {
-        gpiSetErrorString(arg0, &data_020fee8c);
+        gpiSetErrorString(arg0, &gGpiSearchMsgOutOfMemory);
         return 1;
     }
     zero = 0;
@@ -325,10 +341,10 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
     M2C_FIELD(temp_r0, s32 *, 0x20) = zero;
     M2C_FIELD(temp_r0, s32 *, 0x24) = zero;
     M2C_FIELD(temp_r0, s32 *, 0x1C) = 0x1000;
-    temp_r0_2 = func_02037794(0x1001);
+    temp_r0_2 = gpiMalloc(0x1001);
     M2C_FIELD(temp_r0, void **, 0x18) = temp_r0_2;
     if (temp_r0_2 == NULL) {
-        gpiSetErrorString(arg0, &data_020fee8c);
+        gpiSetErrorString(arg0, &gGpiSearchMsgOutOfMemory);
         return 1;
     }
     M2C_FIELD(temp_r0, s32 *, 0x13C) = 0;
@@ -340,7 +356,7 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
 s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 gpiThink(void **, s32);
     s32 gpiAddOperation(void **, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
-    s32 func_02055da4(void **, void *);
+    s32 gpiStartProfileSearch(void **, void *);
     void *spC;
     s32 temp_r0;
     s32 temp_r0_2;
@@ -353,7 +369,7 @@ s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (temp_r0_3 != 0) {
         return temp_r0_3;
     }
-    temp_r0_2 = func_02055da4(arg0, spC);
+    temp_r0_2 = gpiStartProfileSearch(arg0, spC);
     if (temp_r0_2 != 0) {
         return temp_r0_2;
     }

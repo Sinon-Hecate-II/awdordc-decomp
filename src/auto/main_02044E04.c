@@ -1,5 +1,6 @@
 /* 24 functions from 0x02044E04 to 0x02045D94 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 typedef struct { u32 words[4]; } CallbackRecord;
 
 s32 func_02044e04(void) {
@@ -155,10 +156,10 @@ void func_02045374(void) {
 }
 
 s32 func_020453e4(s32 *a) {
- s32 func_0203761c();s32 *func_02047928(s32 *);extern s32 data_0213db20;
+ s32 func_0203761c();s32 *func_02047928(s32 *);extern s32 gWebTransaction;
  s32 x; s32 *p;
  if(func_0203761c())return 1;
- if(data_0213db20!=5)return 16;
+ if(gWebTransaction!=5)return 16;
  p=func_02047928(&x);if(!x)return 17;
  a[0]=x;a[1]=*p++;a[2]=(s32)p;return 0;
 }
@@ -173,7 +174,7 @@ s32 func_02045458(s32 a, s32 b) {
     s32 func_0204800c(void *, void *, s32, s32, s32, s32);
     s32 StringCompare(void *, void *);
     void func_02047750(s32);
-    extern M2C_UNK data_0213db20;
+    extern M2C_UNK gWebTransaction;
     extern void *data_020fb2f8;
     extern M2C_UNK data_020fca38;
 
@@ -184,7 +185,7 @@ s32 func_02045458(s32 a, s32 b) {
     if (func_0203761c() != 0) {
         return 1;
     }
-    if (M2C_FIELD(&data_0213db20, s32 *, 0) != 0) {
+    if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 0) {
         return 3;
     }
     if (func_020323b0((void *)b) == 0 || func_020323f4((void *)b) == 0) {
@@ -202,27 +203,27 @@ s32 func_02045458(s32 a, s32 b) {
     if (func_0204800c((void *)(a + 0x34), text, r8, r7, r6, parsed4) == 0) {
         return 5;
     }
-    M2C_FIELD(&data_0213db20, s32 *, 4) = M2C_FIELD((void *)b, s32 *, 0x1c);
+    M2C_FIELD(&gWebTransaction, s32 *, 4) = M2C_FIELD((void *)b, s32 *, 0x1c);
     if (StringCompare(data_020fb2f8, (void *)&data_020fca38) == 0) {
         func_02047750(1);
     } else {
         func_02047750(0);
     }
-    M2C_FIELD(&data_0213db20, s32 *, 0) = 1;
+    M2C_FIELD(&gWebTransaction, s32 *, 0) = 1;
     return 0;
 }
 
-s32 func_02045620(void){void func_020478b8(void);extern s32 data_0213db20;func_020478b8();return data_0213db20=0;}
+s32 func_02045620(void){void func_020478b8(void);extern s32 gWebTransaction;func_020478b8();return gWebTransaction=0;}
 
 s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
     s32 func_0203761c();
     s32 BuildWebPutRequest(s32, s32, s32, s32, s32, s32);
-    extern s32 data_0213db20;
+    extern s32 gWebTransaction;
     s32 r;
     if (func_0203761c() != 0) {
         return 1;
     }
-    if (data_0213db20 != 1 && data_0213db20 != 5) {
+    if (gWebTransaction != 1 && gWebTransaction != 5) {
         return 7;
     }
     if (arg0 > 0x3e8u || arg4 > 0x2fcu) {
@@ -231,7 +232,7 @@ s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
     if (arg3 == 0 && arg4 != 0) {
         return 2;
     }
-    r = BuildWebPutRequest((s32)arg0, M2C_FIELD(&data_0213db20, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
+    r = BuildWebPutRequest((s32)arg0, M2C_FIELD(&gWebTransaction, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
     if (r == 2) goto L8;
     if (r != 3) goto Ldata;
     goto L9;
@@ -240,29 +241,68 @@ L8:
 L9:
     return 9;
 Ldata:
-    data_0213db20 = 2;
+    gWebTransaction = 2;
     return 0;
 }
 
-s32 func_0204571c(s32 a,u32 b,s32 c,void *d){
-s32 func_0203761c(void);s32 func_02047b84(s32,u32,s32,s32,void *);extern M2C_UNK data_0213db20;s32 r;
-if(func_0203761c())return 1;
-if(M2C_FIELD(&data_0213db20,s32 *,0)!=1&&M2C_FIELD(&data_0213db20,s32 *,0)!=5)return 10;
-if(b>1000||!d)return 2;
-switch(a){
-case 0:if(M2C_FIELD(d,s32 *,0)!=8)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;break;
-case 1:if(M2C_FIELD(d,s32 *,0)!=12)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=0)return 2;break;
-case 2:case 4:case 5:if(M2C_FIELD(d,s32 *,0)!=12)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=1)return 2;break;
-case 3:if(M2C_FIELD(d,s32 *,0)!=268)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>65||M2C_FIELD(d,u32 *,8)<=1)return 2;break;
-case 6:if(M2C_FIELD(d,s32 *,0)!=16)return 2;if(M2C_FIELD(d,s32 *,4)!=0&&M2C_FIELD(d,s32 *,4)!=1)return 2;if(M2C_FIELD(d,u32 *,8)>30||M2C_FIELD(d,u32 *,8)<=0)return 2;if(M2C_FIELD(d,u32 *,16)>0x7fffffff||M2C_FIELD(d,u32 *,16)==0)return 2;break;
-}r=func_02047b84(a,b,M2C_FIELD(&data_0213db20,s32 *,4),c,d);switch(r){case 3:return 11;case 2:return 12;default:M2C_FIELD(&data_0213db20,s32 *,0)=3;return 0;}}
+/* Validate and send a get.asp web request: the payload's size, flag and count
+   must be in range for the request kind, then build and enqueue the request. */
+s32 SendWebGetRequest(s32 kind, u32 playerId, s32 field2, void *payload) {
+    s32 func_0203761c(void);
+    s32 BuildWebGetRequest(s32, u32, s32, s32, void *);
+    extern M2C_UNK gWebTransaction;
+    s32 result;
+
+    if (func_0203761c()) return 1;
+    if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 1 && M2C_FIELD(&gWebTransaction, s32 *, 0) != 5) return 10;
+    if (playerId > 1000 || !payload) return 2;
+    switch (kind) {
+    case 0:
+        if (M2C_FIELD(payload, s32 *, 0) != 8) return 2;
+        if (M2C_FIELD(payload, s32 *, 4) != 0 && M2C_FIELD(payload, s32 *, 4) != 1) return 2;
+        break;
+    case 1:
+        if (M2C_FIELD(payload, s32 *, 0) != 12) return 2;
+        if (M2C_FIELD(payload, s32 *, 4) != 0 && M2C_FIELD(payload, s32 *, 4) != 1) return 2;
+        if (M2C_FIELD(payload, u32 *, 8) > 30 || M2C_FIELD(payload, u32 *, 8) <= 0) return 2;
+        break;
+    case 2:
+    case 4:
+    case 5:
+        if (M2C_FIELD(payload, s32 *, 0) != 12) return 2;
+        if (M2C_FIELD(payload, s32 *, 4) != 0 && M2C_FIELD(payload, s32 *, 4) != 1) return 2;
+        if (M2C_FIELD(payload, u32 *, 8) > 30 || M2C_FIELD(payload, u32 *, 8) <= 1) return 2;
+        break;
+    case 3:
+        if (M2C_FIELD(payload, s32 *, 0) != 268) return 2;
+        if (M2C_FIELD(payload, s32 *, 4) != 0 && M2C_FIELD(payload, s32 *, 4) != 1) return 2;
+        if (M2C_FIELD(payload, u32 *, 8) > 65 || M2C_FIELD(payload, u32 *, 8) <= 1) return 2;
+        break;
+    case 6:
+        if (M2C_FIELD(payload, s32 *, 0) != 16) return 2;
+        if (M2C_FIELD(payload, s32 *, 4) != 0 && M2C_FIELD(payload, s32 *, 4) != 1) return 2;
+        if (M2C_FIELD(payload, u32 *, 8) > 30 || M2C_FIELD(payload, u32 *, 8) <= 0) return 2;
+        if (M2C_FIELD(payload, u32 *, 16) > 0x7fffffff || M2C_FIELD(payload, u32 *, 16) == 0) return 2;
+        break;
+    }
+    result = BuildWebGetRequest(kind, playerId, M2C_FIELD(&gWebTransaction, s32 *, 4), field2, payload);
+    switch (result) {
+    case 3:
+        return 11;
+    case 2:
+        return 12;
+    default:
+        M2C_FIELD(&gWebTransaction, s32 *, 0) = 3;
+        return 0;
+    }
+}
 
 s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
     s32 func_0203761c();
     s32 func_02047dd4(s32, u32, s32, s32);
-    extern s32 data_0213db20;
+    extern s32 gWebTransaction;
     if (func_0203761c() != 0) return 1;
-    if (data_0213db20 != 1 && data_0213db20 != 5) return 10;
+    if (gWebTransaction != 1 && gWebTransaction != 5) return 10;
     if (c > 1000) return 2;
     if (a < 0 || a >= 9) return 2;
     if (b < 0) return 2;
@@ -274,7 +314,7 @@ s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
             case 2:
                 return 12;
             default:
-                data_0213db20 = 4;
+                gWebTransaction = 4;
                 return 0;
         }
     }
@@ -283,15 +323,15 @@ s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
 s32 func_020459ec(void) {
     s32 func_0203761c();
     s32 func_020477ac();
-    extern s32 data_0213db20;
+    extern s32 gWebTransaction;
     if (func_0203761c()) return 1;
-    if (data_0213db20 != 2 && data_0213db20 != 3 && data_0213db20 != 4) return 14;
+    if (gWebTransaction != 2 && gWebTransaction != 3 && gWebTransaction != 4) return 14;
     switch (func_020477ac()) {
         case 1:
-            data_0213db20 = 6;
+            gWebTransaction = 6;
             break;
         case 0:
-            data_0213db20 = 6;
+            gWebTransaction = 6;
             break;
         case 2:
         case 3:
@@ -301,15 +341,15 @@ s32 func_020459ec(void) {
         case 7:
             break;
         case 8:
-            data_0213db20 = 5;
+            gWebTransaction = 5;
             break;
     }
     return 0;
 }
 
 s32 func_02045a88(void) {
-    extern s32 data_0213db20;
-    return data_0213db20;
+    extern s32 gWebTransaction;
+    return gWebTransaction;
 }
 
 s32 func_0203761c(void);

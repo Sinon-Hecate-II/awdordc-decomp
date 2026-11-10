@@ -54,9 +54,9 @@ void func_ov009_0222529c(void) {
 }
 
 void func_ov009_02225348(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov009_02226440;
-    func_01ffa42c(&data_ov009_02226440, arg0);
+    CreateSpriteObject(&data_ov009_02226440, arg0);
 }
 
 s32 func_ov009_02225360(void) {
@@ -94,15 +94,15 @@ s32 func_ov009_02225360(void) {
 }
 
 void func_ov009_02225420(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov009_02226468;
-    func_01ffa42c(&data_ov009_02226468, arg0);
+    CreateSpriteObject(&data_ov009_02226468, arg0);
 }
 
 void func_ov009_02225438(M2C_UNK arg0) {
-    M2C_UNK func_01ffa42c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov009_02226490;
-    func_01ffa42c(&data_ov009_02226490, arg0);
+    CreateSpriteObject(&data_ov009_02226490, arg0);
 }
 
 s32 func_ov009_02225450(void) {
@@ -212,7 +212,7 @@ void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
     if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
         return NULL;
     }
-    temp_r0 = func_01ffa42c(&data_ov009_02226550, arg1);
+    temp_r0 = CreateSpriteObject(&data_ov009_02226550, arg1);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov009_02226700;
         M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
@@ -267,7 +267,7 @@ void func_ov009_022257ac(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_02226588;
     M2C_UNK **temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov009_02226588, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov009_02226588, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov009_022266ec;
     }
@@ -318,15 +318,15 @@ void func_ov009_022258a8(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_022265c0;
     M2C_UNK **temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov009_022265c0, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov009_022265c0, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov009_022266d8;
     }
 }
 
 s32 func_ov009_022258d0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02007f8c(arg3, 0, arg1);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(arg3, 0, arg1);
     *(s32 *)arg4 = 0;
     return 1;
 }
@@ -354,7 +354,7 @@ void func_ov009_02225938(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     extern M2C_UNK data_ov009_022266c4;
     void *temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov009_02226518, arg5);
+    temp_r0 = CreateSpriteObject(&data_ov009_02226518, arg5);
     if (temp_r0 == NULL) {
         return;
     }
@@ -368,7 +368,7 @@ void func_ov009_02225938(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
 void func_ov009_0222598c(s32 arg0) {
  s32 func_020c5400(void *);
- s32 func_02007f8c(s32, s32, s32);
+ s32 MI_CpuFill8(s32, s32, s32);
  s32 func_0208206c();
  s32 func_02082088(void);
  void MI_CpuCopy8(void *, void *, s32);
@@ -388,7 +388,7 @@ void func_ov009_0222598c(s32 arg0) {
  mask=0xFFFF;
  mask &= (-1 ^ (1U<<func_ov009_02225450()));
  if(!mask) return;
- func_02007f8c((s32)(buffer+12),0,26);
+ MI_CpuFill8((s32)(buffer+12),0,26);
  p=(void *)func_0208206c();
  MI_CpuCopy8(p,buffer+12,func_02082088()*2);
  func_ov009_02224d9c(13,buffer,40,mask);
@@ -443,7 +443,7 @@ void func_ov009_02225b54(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_022265f8;
     M2C_UNK **temp_r0;
 
-    temp_r0 = func_01ffa42c(&data_ov009_022265f8, arg0);
+    temp_r0 = CreateSpriteObject(&data_ov009_022265f8, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov009_0222669c;
     }

@@ -7,7 +7,7 @@ static inline void SetSpriteSizeE19(void *p,u16 x,u16 y){ M2C_FIELD(p,u32 *,0x40
 
 #pragma opt_propagation off
 void func_020e19e8(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *func_02082028(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
@@ -62,7 +62,7 @@ void func_020e19e8(M2C_UNK arg0) {
     void *temp_r1_7;
     void *temp_r2;
 
-    temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
+    temp_r0 = CreateSpriteObject(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
         return;
     }
@@ -209,7 +209,7 @@ void func_020e19e8(M2C_UNK arg0) {
 }
 #pragma optimization_level 2
 void func_020e1f54(M2C_UNK arg0) {
-    void *func_01ffa42c(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *func_02082028(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
@@ -264,7 +264,7 @@ void func_020e1f54(M2C_UNK arg0) {
     void *temp_r1_7;
     void *temp_r2;
 
-    temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
+    temp_r0 = CreateSpriteObject(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
         return;
     }

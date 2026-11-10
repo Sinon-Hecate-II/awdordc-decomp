@@ -94,8 +94,8 @@ void func_020a2b84(s32 arg0) {
 
 void func_020a2b98(s32 a,s32 b){
 s32 func_020a334c(s32);
-extern u16 data_02168f14;
-if(((u32)(data_02168f14<<19)>>31)==0)return;
+extern u16 gMapConfig;
+if(((u32)(gMapConfig<<19)>>31)==0)return;
 if(func_020a334c(a)!=0)return;
 func_020a3684(a,b);
 }
@@ -104,7 +104,7 @@ s32 func_020a2bd8(void) {
     return 0xA;
 }
 
-u8 func_020a2be0(s32 a){extern u16 data_02168f14;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(data_02168f14<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
+u8 func_020a2be0(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 func_020a3594(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!func_020a3594(a,2))return 0;t=func_020a3518(a);if(t>=func_020a3594(a,2))r=1;else r=0;return r;}
 
 void func_020a2c58(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
 
@@ -172,9 +172,9 @@ func_020cfd28();
 void func_020a2f28(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
 
 void func_020a2f38(s32 arg0) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02120404;
-    M2C_FIELD(func_01ffa42c(&data_02120404), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02120404), s32 *, 0x5C) = arg0;
 }
 
 void func_020a2f54(s32 arg0) {
@@ -406,7 +406,7 @@ s32 func_020a3684(s32 a, s32 b) {
   }
 }
 
-void func_020a36ec(void *a){s16 xy[2];s32 func_ov000_021aa820(s16 *,s32,s32,s32);if(!func_ov000_021aa820(xy,M2C_FIELD(a,s16 *,0x6c),0,1)){func_01ffa8c4(a,0);return;}M2C_FIELD(a,s32 *,0x34)=xy[0];M2C_FIELD(a,s32 *,0x38)=xy[1];}
+void func_020a36ec(void *a){s16 xy[2];s32 func_ov000_021aa820(s16 *,s32,s32,s32);if(!func_ov000_021aa820(xy,M2C_FIELD(a,s16 *,0x6c),0,1)){SetSpriteAnimation(a,0);return;}M2C_FIELD(a,s32 *,0x34)=xy[0];M2C_FIELD(a,s32 *,0x38)=xy[1];}
 
 void func_020a3740(void *arg0) {
     M2C_UNK func_020c7874(s32, s32, M2C_UNK, M2C_UNK, void *);
@@ -418,9 +418,9 @@ void func_020a3764(void *arg0) {
 }
 
 void func_020a3774(s16 arg0) {
-    void *func_01ffa42c(M2C_UNK *);
+    void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02120444;
-    M2C_FIELD(func_01ffa42c(&data_02120444), s16 *, 0x6C) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02120444), s16 *, 0x6C) = arg0;
 }
 
 s32 func_020a3790(s32 arg0) {

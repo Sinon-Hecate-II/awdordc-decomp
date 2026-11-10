@@ -15,7 +15,7 @@ typedef struct Unk0207Color3 { u32 words[3]; } Unk0207Color3;
 extern const Unk0207Color3 data_020eb1b4;
 extern const Unk0207Color3 data_020eb1a8;
 extern void *gCur3DSpriteEngine;
-s16 func_0207cfb8(void *);
+s16 GetViewZoom(void *);
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
 void func_0207d990(s32, void *, void *);
 
@@ -75,7 +75,7 @@ s32 *base;u16 w,h;s32 mode,tx,ty,z=0,x=0,y=0;
 u16 a,b,c,d,e;
 base=(s32*)*gCurrentMap;h=M2C_FIELD(base,u16*,0x5146);w=M2C_FIELD(base,u16*,0x5144);
 ty=h*3;tx=w*3;tx<<=8;ty<<=8;
-mode=func_0207cfb8((u8*)base+0x6ef8);if(mode<=0)mode=16;else mode=24;
+mode=GetViewZoom((u8*)base+0x6ef8);if(mode<=0)mode=16;else mode=24;
 switch(mode){case 16:*(volatile u32*)0x40004a8=0x6c9364a4;x=w<<16;y=h<<16;z=0;break;
 case 24:*(volatile u32*)0x40004a8=0x6d2364b4;x=w<<17;y=h<<17;z=0;break;}
 a=(u16)(s16)(z>>8);b=(u16)(s16)(y>>8);c=(u16)(s16)ty;d=(u16)(s16)(x>>8);e=(u16)(s16)tx;
@@ -146,7 +146,7 @@ M2C_UNK func_02077ab8(s32 arg0) {
     extern M2C_UNK data_02140f88;
     Unk0207Color3 colorTop = data_020eb1b4;
     Unk0207Color3 colorBottom = data_020eb1a8;
-    s32 t = func_0207cfb8((void *)arg0);
+    s32 t = GetViewZoom((void *)arg0);
     s32 colors[3];
     s32 dims[3];
     void *engine;

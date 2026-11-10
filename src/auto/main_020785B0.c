@@ -19,7 +19,7 @@ extern u32 gFrameCounter;
 extern u8 data_02140f70[24];
 
 void func_020785b0(void) {
-    s32 func_0207cfb8(s32);
+    s32 GetViewZoom(s32);
     extern s32 *gCurrentMap;
     s32 var_r0;
     if ((s32)(gFrameCounter % 140) < 60) {
@@ -27,7 +27,7 @@ void func_020785b0(void) {
     } else {
         data_02140f70[1] = 1;
     }
-    if (func_0207cfb8(*gCurrentMap + 0x6EF8) <= 0) {
+    if (GetViewZoom(*gCurrentMap + 0x6EF8) <= 0) {
         var_r0 = 0x10;
     } else {
         var_r0 = 0x18;
@@ -68,7 +68,7 @@ func_02077bb4(*gCurrentMap+0x6ef8);
 
 void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_0207cfb8(s32);
+    s32 GetViewZoom(s32);
     s32 func_02090158(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern s32 *gCurrentMap;
@@ -77,7 +77,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 var_r6;
 
     var_r6 = arg2;
-    temp_r0 = func_0207cfb8(*gCurrentMap + 0x6EF8);
+    temp_r0 = GetViewZoom(*gCurrentMap + 0x6EF8);
     var_r5 = 0;
     if (var_r6 != 0) {
         if (var_r6 < 8) {
@@ -279,7 +279,7 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
 
 #pragma scheduling on
 void func_020791ac(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
-s32 func_020a7298(s32,u8);s32 func_0207cfb8(s32);s32 func_0207c8ec(s32,s32);
+s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 func_0207c8ec(s32,s32);
 void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
 Vec3 pos;UnitRenderContext ctx; s32 variant;
@@ -289,7 +289,7 @@ if(flags&0x200)variant+=4;
 if(flags&0x400)variant+=8;
 ctx.pos=pos;ctx.unit=unit;
 ctx.kind=func_020a7298(unit->kind,M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cd));
-ctx.frame=func_0207cfb8(*gCurrentMap+0x6ef8)<=0?16:24;
+ctx.frame=GetViewZoom(*gCurrentMap+0x6ef8)<=0?16:24;
 ctx.variant=variant;ctx.flags=flags;
 ctx.side=unit->side;
 ctx.color=M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cc);

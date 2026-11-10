@@ -87,7 +87,7 @@ void func_020ceb48(void) {
     void func_0207ce28(void *);
     void func_020d4754(void);
     void func_020d47b0(void);
-    void func_020a68d4(void);
+    void ResetMapUnits(void);
     void func_020a45cc(void);
     void func_02007e98(s32, void *, s32);
     void func_0207688c(void);
@@ -125,7 +125,7 @@ void func_020ceb48(void) {
     *(u16 *)((u8 *)*gCurrentMap + 0x52a4) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52a2) = 1;
 
-    func_020a68d4();
+    ResetMapUnits();
     func_020a45cc();
 
     func_02007e98(0, *gCurrentMap, 0x5120);
@@ -240,7 +240,7 @@ func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
 }
 
 #pragma opt_strength_reduction off
-void func_020ceffc(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
+void BuildMapRowOffsets(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
 #pragma opt_strength_reduction reset
 void func_020cf058(M2C_UNK arg0) {
     M2C_UNK func_020a231c(s32, s32);
@@ -269,7 +269,7 @@ void func_020cf0a8(s32 id)
   u32 func_020cfbb0(u16);
   void *func_020cfbdc(u16);
   void *StringCopy(void *, const void *);
-  void func_020ceffc(void);
+  void BuildMapRowOffsets(void);
   void func_020cf058(s32);
   void func_020cfb54(void);
   extern void **gCurrentMap;
@@ -303,7 +303,7 @@ void func_020cf0a8(s32 id)
   dest = ((u8 *) (*gCurrentMap)) + 0x120;
   new_var = dest + 0x5000;
   StringCopy(new_var, func_020cfbdc(id));
-  func_020ceffc();
+  BuildMapRowOffsets();
   func_020cf058(id);
   for (y = 0; y < (*((u16 *) (((u8 *) (*gCurrentMap)) + 0x5146))); y++)
   {

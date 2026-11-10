@@ -480,7 +480,7 @@ void *func_01ff8e44(s32 a, s32 b) {
     extern u8 data_027e006c[8];
     extern u8 data_027e009c[8];
     extern u8 gSpriteDesc16x8[8];
-    extern u8 data_027e0064[8];
+    extern u8 gSpriteDesc16x16[8];
     extern u8 data_027e0074[8];
     extern u8 data_027e007c[8];
     extern u8 gSpriteDesc32x16[8];
@@ -500,7 +500,7 @@ void *func_01ff8e44(s32 a, s32 b) {
     case 0x10:
         switch (b) {
         case 0x08: return gSpriteDesc16x8;
-        case 0x10: return data_027e0064;
+        case 0x10: return gSpriteDesc16x16;
         case 0x20: return data_027e0074;
         }
         break;
