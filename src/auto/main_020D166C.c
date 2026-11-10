@@ -5,9 +5,9 @@ typedef struct { u16 hp:7, flags:9; } UnitHpD1690;
 static inline u8 PlayerStatusIndex(void *p) { return M2C_FIELD(p,s32 *,0x6810); }
 
 void func_020d166c(s32 a, s32 b) {
-    void func_020d0de4(s16, s16);
+    void RunBattle(s16, s16);
     if (!b) return;
-    func_020d0de4((s16)a, (s16)b);
+    RunBattle((s16)a, (s16)b);
 }
 
 #pragma opt_strength_reduction off
@@ -17,10 +17,10 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     s32 func_020a8204(void *);
     s32 func_020a796c(s32, s32, s32);
     s32 func_020a86f8(void *, s32, s32, s32);
-    void func_020d068c(void *, s16);
+    void InitBattleUnit(void *, s16);
     s32 func_0207c8ec(s32, s32);
     s32 func_ov000_0216b154(s32);
-    void func_020d0afc(void *, s32, s32);
+    void ApplyBattleDamage(void *, s32, s32);
 
     s32 r4 = 0, r5 = 0, r6 = 0;
     u8 *unit = (u8 *)*gCurrentMap + 0x59a4 + arg0 * 14;
@@ -34,7 +34,7 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     if (arg2 != NULL) {
         unit[1] = (u8)*(s16 *)arg2;
         unit[2] = (u8)*((s16 *)arg2 + 1);
-        func_020d068c((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
+        InitBattleUnit((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
     }
         if (func_020a8204(unit)) {
             r4 = func_020a86f8(unit, func_020a5ae0(arg1), 0, 0);
@@ -58,7 +58,7 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
         *(s16 *)((u8 *)*gCurrentMap + 0x6ec8) -= 1;
     }
 
-    func_020d0afc((u8 *)*gCurrentMap + 0x6eb8, 0, 0);
+    ApplyBattleDamage((u8 *)*gCurrentMap + 0x6eb8, 0, 0);
 
     {
         void *o = *(void **)((u8 *)*gCurrentMap + 0x6eb8);

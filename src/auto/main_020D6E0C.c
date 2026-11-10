@@ -25,9 +25,9 @@ extern M2C_UNK data_02101f1c;
 extern M2C_UNK data_027e0064;
 extern M2C_UNK data_027e006c;
 extern M2C_UNK data_027e0074;
-extern M2C_UNK data_027e0084;
+extern M2C_UNK gSpriteDesc8x8;
 extern M2C_UNK data_027e009c;
-extern M2C_UNK data_027e00a4;
+extern M2C_UNK gSpriteDesc16x8;
 extern M2C_UNK data_027e00b4;
 s32 y0,x0,x1,x2,y1;
 if(mode==0) {
@@ -36,8 +36,8 @@ AddSprite((u16)x0,(u16)y0,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpr
 x1=(x+64)&511;AddSprite((u16)x1,(u16)y0,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_027e0064,10);
 x2=(x+80)&511;AddSprite((u16)x2,(u16)y0,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_027e006c,10);
 y1=((y+40)&255)+0x400;AddSprite((u16)x0,(u16)y1,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_02101f0c,10);
-AddSprite((u16)x1,(u16)y1,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_027e00a4,10);
-AddSprite((u16)x2,(u16)y1,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_027e0084,10);
+AddSprite((u16)x1,(u16)y1,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&gSpriteDesc16x8,10);
+AddSprite((u16)x2,(u16)y1,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&gSpriteDesc8x8,10);
 } else {
 y0=(y&255)+0x400;x0=x&511;
 AddSprite((u16)x0,(u16)y0,(u16)((((0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((0x60 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)),&data_027e00b4,10);

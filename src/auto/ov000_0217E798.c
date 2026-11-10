@@ -59,13 +59,13 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     extern u8 data_ov000_021b5c0a[];
     extern u8 gMovementCostTable[];
     s32 func_020ba510(s32, s32);
-    s32 func_020ba924(s32, s32);
+    s32 GetTerrainPropertyFlagsAt(s32, s32);
     s32 func_020d27a4(s32, s32);
     s32 func_ov000_021a9214(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 GetUnitDamagePercent(s32, s32);
     s32 GetUnitMoveRange(s32, s32);
-    s32 func_ov000_021a9820(s32, s32);
+    s32 GetUnitMaxAttackRange(s32, s32);
     s32 func_ov000_021a9d8c(s16, s16);
     void func_ov000_02198f60(void);
     void func_01ffc2e8(void *);
@@ -90,7 +90,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     switch (kind) {
     case 2:
     case 3:
-        if (func_020ba924(x, y) == 1) {
+        if (GetTerrainPropertyFlagsAt(x, y) == 1) {
             *state = 3;
         }
         return;
@@ -125,7 +125,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 } else {
                     owner = 0;
                 }
-                range = func_ov000_021a9820(owner, (s32)((u32)(p[0] << 26) >> 26));
+                range = GetUnitMaxAttackRange(owner, (s32)((u32)(p[0] << 26) >> 26));
                 if (range > 1) {
                     if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 0x20) range++;
                     if (range + 6 < dist) continue;

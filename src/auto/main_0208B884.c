@@ -1,5 +1,6 @@
 /* 33 functions from 0x0208B884 to 0x0208C830 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 
 typedef struct { u32 low:16, mode:3, a:1, b:1, c:1, d:2, e:2, high:6; } Flags0208;
@@ -71,7 +72,7 @@ M2C_FIELD(p,s32 *,0x70)=0;
 }
 
 void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
-    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     s32 func_020816f4(M2C_UNK);
     void func_0208be8c(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u8);
@@ -81,11 +82,11 @@ void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
     M2C_UNK sp4C[8], sp2C[8], spC[8];
     s32 temp_r0;
     temp_r0 = func_020816f4(arg1);
-    func_02068c50(sp4C, temp_r0);
+    StringCopy(sp4C, temp_r0);
     func_02068d68(sp4C, &data_02102840);
-    func_02068c50(sp2C, temp_r0);
+    StringCopy(sp2C, temp_r0);
     func_02068d68(sp2C, &data_02102848);
-    func_02068c50(spC, temp_r0);
+    StringCopy(spC, temp_r0);
     func_02068d68(spC, &data_02102850);
     func_0208c69c(arg1);
     func_0208be8c(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
@@ -93,7 +94,7 @@ void func_0208bd2c(void *arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
 }
 
 void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
-    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     s32 func_020816f4(M2C_UNK);
     void func_0208bf7c(void *, M2C_UNK, M2C_UNK, M2C_UNK *, u32, u16, u8);
@@ -103,11 +104,11 @@ void func_0208bddc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, u16 arg3, u8 arg4) {
     M2C_UNK sp4C[8], sp2C[8], spC[8];
     s32 temp_r0;
     temp_r0 = func_020816f4(arg1);
-    func_02068c50(sp4C, temp_r0);
+    StringCopy(sp4C, temp_r0);
     func_02068d68(sp4C, &data_02102854);
-    func_02068c50(sp2C, temp_r0);
+    StringCopy(sp2C, temp_r0);
     func_02068d68(sp2C, &data_02102858);
-    func_02068c50(spC, temp_r0);
+    StringCopy(spC, temp_r0);
     func_02068d68(spC, &data_02102860);
     func_0208c69c(arg1);
     func_0208bf7c(arg0, (M2C_UNK)sp4C, (M2C_UNK)sp2C, (M2C_UNK)spC, arg2, arg3, arg4);
@@ -216,35 +217,38 @@ s32 func_0208c214(void *arg0) {
     return func_02094758();
 }
 
-void func_0208c248(void *obj) {
+/* Updates one 3D sprite object: runs its fade and per-frame callback, then draws
+ * it on each screen its flags select; frees it when drawing fails or the object
+ * is flagged to close on an input. */
+void UpdateSpriteObject(void *obj) {
 extern u16 *gKeyState; extern u8 *data_02101e88;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
-void func_01ffa574(void *); s32 func_020910d0(s32,void *,s32,s32); s32 func_020912bc(s32,u16,u16);
-Flags0208 *f=(Flags0208 *)((char *)obj+0x44);
-Flags0208B *g=(Flags0208B *)((char *)obj+0x48);
-void *saved,*current; s32 i; s32 xyz[3]; u16 x,y,flag; void (*callback)(void *);
-if(g->low) { --g->low; return; }
-if(g->high && f->b && ((*gKeyState & 0xc0b) || data_02101e88[0x14])) {func_01ffa574(obj);return;}
-if((u16)f->e) func_0208c0dc(obj);
+void DeleteSpriteObject(void *); s32 DrawSprite3D(s32,void *,s32,s32); s32 DrawSprite2D(s32,u16,u16);
+SpriteFlags *f=(SpriteFlags *)((char *)obj+0x44);
+SpriteTimer *g=(SpriteTimer *)((char *)obj+0x48);
+void *savedEngine,*engine; s32 pass; s32 xyz[3]; u16 spriteX,spriteY,extraY; void (*callback)(void *);
+if(g->delay) { --g->delay; return; }
+if(g->elapsed && f->closeOnInput && ((*gKeyState & (KEY_A|KEY_B|KEY_START|KEY_X|KEY_Y)) || data_02101e88[0x14])) {DeleteSpriteObject(obj);return;}
+if((u16)f->easing) func_0208c0dc(obj);
 callback=M2C_FIELD(obj,void (**)(void *),0x6c); if(callback) callback(obj);
-saved=gCur3DSpriteEngine;
-for(i=0;i<2;i++){
-if(i==0) current=g3DSpriteEngineMain; else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;
-if(f->mode==0 && current!=g3DSpriteEngineMain) continue;
-if(f->mode==1 && current!=g3DSpriteEngineSub) continue;
-if(f->mode==3 && current!=saved) continue;
-switch((u16)f->d) {
+savedEngine=gCur3DSpriteEngine;
+for(pass=0;pass<2;pass++){
+if(pass==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
+gCur3DSpriteEngine=engine;
+if(f->screen==0 && engine!=g3DSpriteEngineMain) continue;
+if(f->screen==1 && engine!=g3DSpriteEngineSub) continue;
+if(f->screen==3 && engine!=savedEngine) continue;
+switch((u16)f->drawMode) {
 case 1:
 xyz[0]=M2C_FIELD(obj,s32 *,0x34); xyz[1]=M2C_FIELD(obj,s32 *,0x38);xyz[2]=M2C_FIELD(obj,s32 *,0x3c);
-if(!func_020910d0(M2C_FIELD(obj,s32 *,0x4c),xyz,M2C_FIELD(obj,s32 *,0x40),(M2C_FIELD(obj,u32 *,0x44)&0xffff))) {func_01ffa574(obj);return;} break;
+if(!DrawSprite3D(M2C_FIELD(obj,s32 *,0x4c),xyz,M2C_FIELD(obj,s32 *,0x40),(M2C_FIELD(obj,u32 *,0x44)&0xffff))) {DeleteSpriteObject(obj);return;} break;
 case 2:
-x=(u16)(M2C_FIELD(obj,s32 *,0x34)&0x1ff); y=M2C_FIELD(obj,s32 *,0x38)&0xff;flag=(u16)f->c;
-if(flag) y|=0x400;
-if(!func_020912bc(M2C_FIELD(obj,s32 *,0x4c),x,y)) {func_01ffa574(obj);return;} break;
+spriteX=(u16)(M2C_FIELD(obj,s32 *,0x34)&0x1ff); spriteY=M2C_FIELD(obj,s32 *,0x38)&0xff;extraY=(u16)f->yAttr;
+if(extraY) spriteY|=0x400;
+if(!DrawSprite2D(M2C_FIELD(obj,s32 *,0x4c),spriteX,spriteY)) {DeleteSpriteObject(obj);return;} break;
 }
 }
-gCur3DSpriteEngine=saved; ++g->high;
+gCur3DSpriteEngine=savedEngine; ++g->elapsed;
 }
 
 s32 func_0208c49c(void *arg0) {
@@ -278,7 +282,7 @@ void func_0208c510(void) {
 }
 
 void func_0208c51c(void) {
-    ((void (*)())func_0208c248)();
+    ((void (*)())UpdateSpriteObject)();
 }
 
 void func_0208c528(M2C_UNK arg0) {
@@ -302,7 +306,7 @@ void func_0208c54c(M2C_UNK arg0) {
 }
 
 s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     s32 func_020813c4(M2C_UNK *, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
@@ -313,9 +317,9 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK sp20[8], sp0[8];
     s32 temp_r0, temp_r4;
     temp_r0 = func_020816f4();
-    func_02068c50(sp20, temp_r0);
+    StringCopy(sp20, temp_r0);
     func_02068d68(sp20, &data_02102864);
-    func_02068c50(sp0, temp_r0);
+    StringCopy(sp0, temp_r0);
     func_02068d68(sp0, &data_0210286c);
     func_0208c69c(arg0);
     temp_r4 = func_020813c4(sp20, arg1);
@@ -325,7 +329,7 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     s32 func_02080cfc(M2C_UNK *, s32);
     M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
@@ -340,9 +344,9 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 temp_r4;
 
     temp_r0 = func_020816f4();
-    func_02068c50(sp20, temp_r0);
+    StringCopy(sp20, temp_r0);
     func_02068d68(sp20, &data_02102870);
-    func_02068c50(sp0, temp_r0);
+    StringCopy(sp0, temp_r0);
     func_02068d68(sp0, &data_02102874);
     func_0208c69c(arg0);
     temp_r4 = func_02080cfc(sp20, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
@@ -353,7 +357,7 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
 
 void func_0208c69c(M2C_UNK arg0) {
     M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_02068c50(M2C_UNK *, s32);
+    M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_020814e4(M2C_UNK *);
     extern M2C_UNK data_02102878;
@@ -367,7 +371,7 @@ void func_0208c69c(M2C_UNK arg0) {
     if (temp_r3 != 0) {
         return;
     }
-    func_02068c50(sp0, arg0);
+    StringCopy(sp0, arg0);
     func_02068d68(sp0, &data_02102878);
     func_0200bc5c(&data_02102880);
     func_020814e4(sp0);

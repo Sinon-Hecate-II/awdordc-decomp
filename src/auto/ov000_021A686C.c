@@ -79,7 +79,7 @@ s32 func_ov000_021a6a00(void) {
 
 #pragma opt_strength_reduction off
 s32 func_ov000_021a6ac0(void) {
-  void func_01ffada0(s32,s32,s32,s32,s32);
+  void FloodFillUnitRange(s32,s32,s32,s32,s32);
   void func_ov000_021a5f50(void);
   s32 IsUnitOnCurrentTeam(s32);
   extern s32 *gCurrentMap;
@@ -106,7 +106,7 @@ s32 func_ov000_021a6ac0(void) {
   y=p[0];base=*gCurrentMap;x=p[1];
   v=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),s8 *,0x2338);
   if(best>=v) {
-  func_01ffada0(y,x,23,data_ov000_021b5bfc[0xa18]+1,0x20);
+  FloodFillUnitRange(y,x,23,data_ov000_021b5bfc[0xa18]+1,0x20);
   base=*gCurrentMap;
   for(x=0;x<M2C_FIELD(base,u16 *,0x5146);x++) {
   for(y=0;y<M2C_FIELD(base,u16 *,0x5144);y++,base=*gCurrentMap) {
@@ -157,7 +157,7 @@ int value=(*(signed char **)((unsigned char *)gCurrentMap[0]+0x5000+entry[1]*4+0
 if(min>value){min=value;result=i;}
 }}return result;}
 
-s32 func_ov000_021a6e08(s32 a) {
+s32 HasAiTargetOfType(s32 a) {
  extern u8 *gAiState;
  extern M2C_UNK gAiTargetCandidates;
  u8 *p=(u8 *)&gAiTargetCandidates;
@@ -185,14 +185,14 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
  s32 func_020a7b3c(s32,u8,u16,s32,s32);
  s32 func_020a7c10(s32,u8,u16,s32,s32);
  s32 func_020a85c8(s32);
- s32 func_ov000_021a98e4(u8);
+ s32 GetUnitAttackClass(u8);
  extern s32 *gCurrentMap;
- extern u8 data_ov000_021b5c08[];
+ extern u8 gUnitMinAttackRange[];
  extern void *data_ov000_021df580;
  if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,0x5156)==0 && M2C_FIELD(data_ov000_021df580,u8 *,13)!=2) return 0;
- if(func_ov000_021a98e4((u8)kind)==1) {
+ if(GetUnitAttackClass((u8)kind)==1) {
  if(func_020a85c8(kind))value<<=1;
- value=(value*(func_020a7c10(kind,M2C_FIELD(data_ov000_021df580,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1)+4-data_ov000_021b5c08[kind*112]))>>3;
+ value=(value*(func_020a7c10(kind,M2C_FIELD(data_ov000_021df580,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1)+4-gUnitMinAttackRange[kind*112]))>>3;
  if(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<23)>>29)==1 && kind==11)value=(value*3)>>1;
  } else {
  if((u32)(kind-8)<=1)kind=7;

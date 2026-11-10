@@ -621,7 +621,7 @@ void func_0201d808(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_propagation off
-s32 func_0201d844(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
+s32 TcpSendData(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     u64 func_02007004();
     M2C_UNK func_0201a238();
     extern M2C_UNK data_02137290;
@@ -723,14 +723,14 @@ ret:
 #pragma pop
 s32 func_0201da4c(s32 a,s32 b,s32 c,s32 d){
 extern M2C_UNK data_0212dca4;extern M2C_UNK data_02137290;
-void func_0201b3e8(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 func_02024f9c(s32,s32,s32,s32,void *);s32 func_0201d844(s32,s32,s32,s32,void *);
+void func_0201b3e8(s32,s32,void *);void func_0201b338(s32,s32,void *);s32 func_02024f9c(s32,s32,s32,s32,void *);s32 TcpSendData(s32,s32,s32,s32,void *);
 void *p; s32 result;
 p=M2C_FIELD(M2C_FIELD(&data_0212dca4,void **,4),void **,0xa4);
 if(p!=0){
 if(M2C_FIELD(p,u8 *,8)==10){if(b)func_0201b3e8(a,b,p);if(d)func_0201b3e8(c,d,p);result=b+d;}
 else if(M2C_FIELD(p,u8 *,8)==11){if(b)func_0201b338(a,b,p);if(d)func_0201b338(c,d,p);result=b+d;}
 else if(M2C_FIELD(p,u8 *,9))result=func_02024f9c(a,b,c,d,p);
-else result=func_0201d844(a,b,c,d,p);
+else result=TcpSendData(a,b,c,d,p);
 if(M2C_FIELD(&data_02137290,u8 *,0)==0)return result;
 }return 0;
 }

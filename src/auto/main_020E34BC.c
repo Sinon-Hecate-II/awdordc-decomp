@@ -1,6 +1,7 @@
 /* 37 functions from 0x020E34BC to 0x020E4490 (main), found by ds-decomp. */
 #include "common.h"
 
+
 static inline void irq_save(s32 *state) {
     *state = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
@@ -99,8 +100,7 @@ void func_020e35cc(s32 arg0) {
  saved = temp;
  func_0202a498(data_02168fe4, arg0);
  temp = saved;
- (void)*(volatile u16 *)0x04000208;
- *(volatile u16 *)0x04000208 = temp;
+ SetInterruptMaster(temp);
 }
 
 void func_020e3610(M2C_UNK arg0) {

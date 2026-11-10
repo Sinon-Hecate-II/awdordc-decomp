@@ -37,12 +37,12 @@ return 0;
 }
 #pragma opt_propagation reset
 s32 func_ov000_02195b80(s16 *out) {
-    s32 func_ov000_021a8ff0(s32);
-    s32 func_ov000_021a98e4(u32);
+    s32 IsPropertyTerrain(s32);
+    s32 GetUnitAttackClass(u32);
     s32 func_ov000_0217bc34(s32, s32, s32, s32);
-    s32 func_01ffada0(u8, u8, u32, s32, s32);
+    s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     void SelectMapLayer(void *);
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     s32 func_ov000_021a9d8c(s16, s16);
     s32 IsValidMoveCell(s16, s16);
     s32 func_ov000_021959cc(s32, s32, s32, s32);
@@ -70,11 +70,11 @@ s32 func_ov000_02195b80(s16 *out) {
     if (attr & 0x20) {
         return 0;
     }
-    func_01ffada0(((u8 *)up)[1], ((u8 *)up)[2], (u32)unitKind, 110, 0);
+    FloodFillUnitRange(((u8 *)up)[1], ((u8 *)up)[2], (u32)unitKind, 110, 0);
 
     map = *gCurrentMap;
     SelectMapLayer((u8 *)map + 0x2338);
-    func_01ffc328((u8 *)map + 0x52d0);
+    BuildUnitMoveRange((u8 *)map + 0x52d0);
     SelectMapLayer((u8 *)map + 0x1e30);
 
     height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
@@ -94,7 +94,7 @@ s32 func_ov000_02195b80(s16 *out) {
             m = (u8 *)*gCurrentMap;
             rowOff = *(u16 *)(m + 0x3758 + y * 2);
             grid0 = *(u8 *)(m + x + rowOff + 0x1420);
-            if (func_ov000_021a8ff0(grid0 & 0x1f) == 0) continue;
+            if (IsPropertyTerrain(grid0 & 0x1f) == 0) continue;
 
             m = (u8 *)*gCurrentMap;
             rowOff = *(u16 *)(m + 0x3758 + y * 2);
@@ -162,17 +162,17 @@ s32 func_ov000_02195b80(s16 *out) {
 }
 
 void func_ov000_02195ea4(void) {
-    s32 func_ov000_021a98e4(u32);
+    s32 GetUnitAttackClass(u32);
     s32 func_ov000_02195b80(s16 *);
-    s32 func_ov000_02195788(s16 *);
+    s32 SelectPropertyDestination(s16 *);
     s32 func_ov000_0217e6bc(s16,s16);
     void PlanMoveDestination(s16,s16);
     extern void **gCurrentMap;
     s16 sp0[2];
-    if (func_ov000_021a98e4((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)==1) {
+    if (GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)==1) {
         if (func_ov000_02195b80(sp0)==0) return;
     } else {
-        if (func_ov000_02195788(sp0)==0) return;
+        if (SelectPropertyDestination(sp0)==0) return;
     }
     if (func_ov000_0217e6bc(sp0[0],sp0[1])==0) return;
     PlanMoveDestination(sp0[0],sp0[1]);
@@ -180,7 +180,7 @@ void func_ov000_02195ea4(void) {
 
 s32 func_ov000_02195f1c(s16 *arg0) {
     s32 func_020d243c(u16);
-    s32 func_01ffada0(u8, u8, u32, s32, s32);
+    s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5c0f[];
 
@@ -202,7 +202,7 @@ s32 func_ov000_02195f1c(s16 *arg0) {
 
     map = (u8 *)*gCurrentMap;
     unit8 = (u8 *)*(void **)(map + 0x52d0);
-    func_01ffada0(unit8[1], unit8[2], (u32)(unit8[0] << 26) >> 26, 0x6e, 0);
+    FloodFillUnitRange(unit8[1], unit8[2], (u32)(unit8[0] << 26) >> 26, 0x6e, 0);
 
     map = (u8 *)*gCurrentMap;
     player = *(u16 *)(map + 0x52a4);
@@ -240,7 +240,7 @@ void func_ov000_0219604c(void) {
 s32 func_ov000_02196084(s16 *arg0) {
     void func_ov000_02179be0(void);
     void func_ov000_02179d3c(void);
-    s32 func_ov000_02179e48(s16 *);
+    s32 FindAttackPosition(s16 *);
     extern void **gCurrentMap;
 
     u8 *map;
@@ -284,7 +284,7 @@ s32 func_ov000_02196084(s16 *arg0) {
     f8 = *(u16 *)((u8 *)unit + 0x08);
     sp0[1] = (s16)(((u32)(f8 << 20) >> 26));
 
-    if (func_ov000_02179e48(sp0) == 0) {
+    if (FindAttackPosition(sp0) == 0) {
         return 0;
     }
     arg0[0] = sp0[0];
@@ -308,7 +308,7 @@ void func_ov000_0219619c(void) {
 }
 
 s32 func_ov000_021961d4(s16 *arg0) {
-    s32 func_01ffada0(u8, u8, u32, s32, s32);
+    s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     extern void **gCurrentMap;
 
     u8 *map;
@@ -320,7 +320,7 @@ s32 func_ov000_021961d4(s16 *arg0) {
 
     map = (u8 *)*gCurrentMap;
     unit = *(void **)(map + 0x52d0);
-    func_01ffada0(*(u8 *)((u8 *)unit + 1), *(u8 *)((u8 *)unit + 2),
+    FloodFillUnitRange(*(u8 *)((u8 *)unit + 1), *(u8 *)((u8 *)unit + 2),
                    (u32)(*(u8 *)((u8 *)unit) << 26) >> 26, 0x6e, 0);
 
     map = (u8 *)*gCurrentMap;
@@ -399,7 +399,7 @@ s32 func_ov000_02196398(s16 *arg0) {
     void func_ov000_02179be0();
     void func_ov000_02179d3c();
     s32 func_ov000_021786a8(s16 *);
-    s32 func_ov000_02179e48(s16 *);
+    s32 FindAttackPosition(s16 *);
     s16 sp0[2];
 
     func_ov000_02179be0();
@@ -407,7 +407,7 @@ s32 func_ov000_02196398(s16 *arg0) {
     if (func_ov000_021786a8(sp0) == 0) {
         return 0;
     }
-    if (func_ov000_02179e48(sp0) == 0) {
+    if (FindAttackPosition(sp0) == 0) {
         return 0;
     }
     arg0[0] = sp0[0];
@@ -436,7 +436,7 @@ s32 func_ov000_02196430(s16 *arg0) {
     s32 HasEnemyPlayer(void);
     s32 func_ov000_021954dc(s16 *);
     s32 func_ov000_02195574(s16 *);
-    s32 func_ov000_02195788(s16 *);
+    s32 SelectPropertyDestination(s16 *);
     s32 func_020d243c(u16);
     s32 func_ov000_02195f1c(s16 *);
     s32 func_ov000_02196084(s16 *);
@@ -478,7 +478,7 @@ s32 func_ov000_02196430(s16 *arg0) {
         }
         break;
     case 4:
-        if (func_ov000_02195788(arg0) == 0) {
+        if (SelectPropertyDestination(arg0) == 0) {
             return 0;
         }
         break;
@@ -489,7 +489,7 @@ s32 func_ov000_02196430(s16 *arg0) {
                 return 0;
             }
         } else {
-            if (func_ov000_02195788(arg0) == 0) {
+            if (SelectPropertyDestination(arg0) == 0) {
                 return 0;
             }
         }
@@ -530,12 +530,12 @@ s32 func_ov000_02196430(s16 *arg0) {
 #pragma opt_strength_reduction off
 void func_ov000_021965dc(void) {
 extern void **gCurrentMap; extern u8 **data_ov000_021df580;
-s32 func_ov000_021a98e4(u32); s32 func_020a76d4(void *);
+s32 GetUnitAttackClass(u32); s32 func_020a76d4(void *);
 void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
 s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
-s32 func_ov000_02179e48(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
+s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
 s32 limit; s32 flags; s32 best=0x7fff; s32 y,x; s16 cand[2];
-if(func_ov000_021a98e4(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind)==1)
+if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind)==1)
 limit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
 else limit=0;
 func_ov000_02179be0(); func_ov000_02179d3c();
@@ -556,7 +556,7 @@ cand[0]=x;cand[1]=y;
 best=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
 }}
 if(best==0x7fff)return;
-if(!func_ov000_02179e48(cand))return;
+if(!FindAttackPosition(cand))return;
 if(!func_ov000_0217e6bc(cand[0],cand[1]))return;
 PlanMoveDestination(cand[0],cand[1]);
 }

@@ -181,40 +181,43 @@ void func_ov001_0217a380(void) {
 }
 
 void func_ov001_0217a3a8(void) {
-void func_ov001_0217a3bc();void MapSelectList_HandleInput(void);
-func_ov001_0217a3bc();MapSelectList_HandleInput();(func_ov001_0217a880)();
+void MapSelectList_PollInput();void MapSelectList_HandleInput(void);
+MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
 }
 
-void func_ov001_0217a3bc(void) {
-extern M2C_UNK gMapSelectState; extern u8 data_ov001_0218fd20[],data_ov001_0218f7c4[];
-s32 func_ov001_0218bbd8(void *);s32 func_ov001_0218bcb0(void *);s32 func_ov001_0218bb00(s32);s32 func_ov001_0218bb24(s32);s32 func_ov001_0218bb48(s32);
-void func_ov001_021716d8(s32);void func_ov001_0217b130(void);M2C_UNK func_ov001_02185024(s32);void func_ov001_02183a08(void);void func_ov001_0217b33c(void);void func_ov001_0217b2c8(void);void func_ov001_0217b17c(s32);
-u8 *r; s32 j; s32 i; u8 *q;
+/* Polls the map-select list's touch rows and keys: a tapped/held row becomes the
+ * selected map, A confirms, B cancels, and L/R or the D-pad scroll or switch the
+ * list panel. */
+void MapSelectList_PollInput(void) {
+extern M2C_UNK gMapSelectState; extern u8 gTouchScreenRect[],gMapSelectRowRects[];
+s32 TouchRectPressed(void *);s32 TouchRectHeld(void *);s32 KeyPressed(s32);s32 KeyHeld(s32);s32 KeyReleased(s32);
+void func_ov001_021716d8(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void func_ov001_02183a08(void);void func_ov001_0217b33c(void);void func_ov001_0217b2c8(void);void func_ov001_0217b17c(s32);
+u8 *heldRect; s32 row; s32 index; u8 *pressedRect;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)||M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57))return;
-if(func_ov001_0218bbd8(data_ov001_0218fd20)){
+if(TouchRectPressed(gTouchScreenRect)){
 M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)=-1;
-for(i=0,q=data_ov001_0218f7c4;(u32)i<5;i++,q+=8){
-if(func_ov001_0218bbd8(q)){
-if(i<4){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)=i;break;}
-func_ov001_021716d8(1);M2C_FIELD(&gMapSelectState,u8 *,0)=i;func_ov001_0217b130();return;
+for(index=0,pressedRect=gMapSelectRowRects;(u32)index<5;index++,pressedRect+=8){
+if(TouchRectPressed(pressedRect)){
+if(index<4){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)=index;break;}
+func_ov001_021716d8(1);M2C_FIELD(&gMapSelectState,u8 *,0)=index;func_ov001_0217b130();return;
 }}}
-if(func_ov001_0218bcb0(data_ov001_0218fd20)){
-for(r=data_ov001_0218f7c4,j=0;j<4;j++,r+=8){
-if(func_ov001_0218bcb0(r)){
-if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)!=j)break;
-if(j>=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51)){func_ov001_02185024(9);break;}
-func_ov001_021716d8(1);M2C_FIELD(&gMapSelectState,u8 *,0)=j;func_ov001_0217b130();return;
+if(TouchRectHeld(gTouchScreenRect)){
+for(heldRect=gMapSelectRowRects,row=0;row<4;row++,heldRect+=8){
+if(TouchRectHeld(heldRect)){
+if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)!=row)break;
+if(row>=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51)){Ov001_PlaySound(9);break;}
+func_ov001_021716d8(1);M2C_FIELD(&gMapSelectState,u8 *,0)=row;func_ov001_0217b130();return;
 }}}
-if(func_ov001_0218bb00(1)){func_ov001_021716d8(1);func_ov001_02183a08();return;}
-if(func_ov001_0218bb00(2)){func_ov001_021716d8(0);return;}
-if(func_ov001_0218bb24(512)){func_ov001_0217b33c();return;}
-if(func_ov001_0218bb48(512)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
-if(func_ov001_0218bb24(256)){func_ov001_0217b2c8();return;}
-if(func_ov001_0218bb48(256)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
-if(func_ov001_0218bb24(64)){func_ov001_0217b17c(1);return;}
-if(func_ov001_0218bb48(64)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
-if(func_ov001_0218bb24(128)){func_ov001_0217b17c(3);return;}
-if(func_ov001_0218bb48(128)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0; }
+if(KeyPressed(KEY_A)){func_ov001_021716d8(1);func_ov001_02183a08();return;}
+if(KeyPressed(KEY_B)){func_ov001_021716d8(0);return;}
+if(KeyHeld(KEY_L)){func_ov001_0217b33c();return;}
+if(KeyReleased(KEY_L)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
+if(KeyHeld(KEY_R)){func_ov001_0217b2c8();return;}
+if(KeyReleased(KEY_R)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
+if(KeyHeld(KEY_UP)){func_ov001_0217b17c(1);return;}
+if(KeyReleased(KEY_UP)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
+if(KeyHeld(KEY_DOWN)){func_ov001_0217b17c(3);return;}
+if(KeyReleased(KEY_DOWN)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0; }
 }
 
 /* Per-frame input handler for the map-select list: handles page jumps and
@@ -223,14 +226,14 @@ if(func_ov001_0218bb48(128)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 
 void MapSelectList_HandleInput(void) {
  extern M2C_UNK gMapSelectState;
  extern M2C_UNK func_ov001_0217af80,func_ov001_0217b03c;
- s32 func_ov001_021839d0(void);
- s32 func_ov001_021839bc(void);
+ s32 GetMenuState(void);
+ s32 GetMenuRow(void);
  s32 func_02002088(s32,u16);
  s32 func_020020c4(s32,s32);
  M2C_UNK func_ov001_02171750();
  void func_ov001_02172184(void);
  M2C_UNK func_ov001_02171738();
- M2C_UNK func_ov001_02185024(s32);
+ M2C_UNK Ov001_PlaySound(s32);
  void func_ov001_0217ac18(void);
  void func_ov001_0217b130(void);
  s32 func_ov001_0218c884(s32,s32,s32,s32);
@@ -238,21 +241,21 @@ void MapSelectList_HandleInput(void) {
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)) return;
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55))
  --M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55);
- switch(func_ov001_021839d0()) {
+ switch(GetMenuState()) {
  case 1:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57)=1;
  func_ov001_02171750();return;
  case 2:
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55)) return;
  func_ov001_02172184();
- M2C_FIELD(&gMapSelectState,u16 *,2)=func_02002088(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*func_ov001_021839bc(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
+ M2C_FIELD(&gMapSelectState,u16 *,2)=func_02002088(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*GetMenuRow(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
  func_ov001_0217ac18();
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55)=4;return;
  case 3:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57)=0;
  func_ov001_02171738();
- M2C_FIELD(&gMapSelectState,u16 *,2)=func_02002088(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*func_ov001_021839bc(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
- func_ov001_02185024(0x13);
+ M2C_FIELD(&gMapSelectState,u16 *,2)=func_02002088(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*GetMenuRow(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
+ Ov001_PlaySound(0x13);
  func_ov001_0217ac18();
  remainder=func_020020c4(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
  if(remainder==0) {func_ov001_0217b130();return;}
@@ -266,18 +269,18 @@ void MapSelectList_HandleInput(void) {
  case 4:
  if(M2C_FIELD(&gMapSelectState,u16 *,2)==0) {
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58))return;
- func_ov001_02185024(9);
+ Ov001_PlaySound(9);
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=1;return;
  }
- func_ov001_02185024(0x13);
+ Ov001_PlaySound(0x13);
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217af80,0,120);return;
  case 6:
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51)<=4 || M2C_FIELD(&gMapSelectState,u16 *,2)==M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)) {
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58))return;
- func_ov001_02185024(9);
+ Ov001_PlaySound(9);
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=1;return;
  }
- func_ov001_02185024(0x13);
+ Ov001_PlaySound(0x13);
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=func_ov001_0218c884(0,(s32)&func_ov001_0217b03c,0,120);return;
  case 5:case 7:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x58)=0;return;
@@ -288,7 +291,7 @@ void MapSelectList_HandleInput(void) {
 void func_ov001_0217a880(void) {
     s32 func_ov001_021716c4();
     M2C_UNK func_ov001_02171750();
-    M2C_UNK func_ov001_02185024(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_0217b3c0(void);
     s32 func_02002088(s32, u16);
     void func_ov001_02183a08(void);
@@ -305,13 +308,13 @@ void func_ov001_0217a880(void) {
     r = func_ov001_021716c4();
     switch (r) {
     case 0:
-        func_ov001_02185024(7);
+        Ov001_PlaySound(7);
         goto done;
     case 1:
         if (M2C_FIELD(&gMapSelectState, u8 *, 0) == 4) {
             map = M2C_FIELD(&gMapSelectState, void **, 4);
             M2C_FIELD(map, u8 *, 0x54) = 1;
-            func_ov001_02185024(6);
+            Ov001_PlaySound(6);
             func_ov001_0217b3c0();
             goto done;
         } else {
@@ -319,7 +322,7 @@ void func_ov001_0217a880(void) {
             s32 idx = (u8)M2C_FIELD(&gMapSelectState, u8 *, 0) + func_02002088(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1c);
             field28 = M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), void **, 0) + idx * 42, u8 *, 0x28);
             if (field28 == 2) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 func_ov001_02183a08();
                 func_ov001_02171750();
                 func_ov001_021862d8(0xe, 1, 1, -1, 0);
@@ -330,7 +333,7 @@ void func_ov001_0217a880(void) {
                 M2C_FIELD(map2, u8 *, 0x54) = 1;
                 map = M2C_FIELD(&gMapSelectState, void **, 4);
                 M2C_FIELD(map, u8 *, 0x52) = (u8)idx;
-                func_ov001_02185024(6);
+                Ov001_PlaySound(6);
                 func_ov001_02175d54((M2C_UNK *)&func_ov001_0217a98c);
                 goto done;
             }

@@ -288,14 +288,14 @@ if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+kind*32,s8 *,tile
 return M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;
 }
 
-s32 func_020ba924(s32 a,s32 b) {
+s32 GetTerrainPropertyFlagsAt(s32 a,s32 b) {
  extern void **gCurrentMap;
- extern u8 data_ov000_021b56c0[];
+ extern u8 gTerrainPropertyFlags[];
  s32 func_020d27ec(s32,s32);
  s32 p=(s32)*gCurrentMap;
  u8 t=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
  if(func_020d27ec(M2C_FIELD(p,u8 *,0x52d4),t))return 0;
- return data_ov000_021b56c0[t&31];
+ return gTerrainPropertyFlags[t&31];
 }
 
 u8 func_020ba980(s32 a,s32 b) {

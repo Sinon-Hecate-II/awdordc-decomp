@@ -494,7 +494,7 @@ gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction on
 void func_ov005_02219ee0(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     void func_ov005_02219e58(void *);
     extern s32 gFrameCounter;
     s32 temp_r0;
@@ -522,6 +522,6 @@ void func_ov005_02219ee0(void *arg0) {
     if (((s32) M2C_FIELD(arg0, s32 *, 0x3C) < 0x108) && ((s32) M2C_FIELD(arg0, s32 *, 0x40) >= -8)) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 

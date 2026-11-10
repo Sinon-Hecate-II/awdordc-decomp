@@ -108,7 +108,7 @@ void func_0203667c(void) {
 }
 
 void func_02036718(void) {
-s32 func_020215b4(s32,void *,s32);M2C_UNK func_02021750(s32,s32);M2C_UNK func_0202175c(s32);s32 func_02068eac(void *,void *,s32);
+s32 func_020215b4(s32,void *,s32);M2C_UNK func_02021750(s32,s32);M2C_UNK func_0202175c(s32);s32 StringCompareN(void *,void *,s32);
 extern M2C_UNK data_0213d138,data_020fb99c;
 s32 r,i;void *p; s8 *scan;
 p=M2C_FIELD(&data_0213d138,void **,16);
@@ -121,7 +121,7 @@ p=M2C_FIELD(&data_0213d138,void **,16);
 for(i=0,scan=p;scan[20]!=32&&i<32;scan++,i++);
 i++;
 if(i>=32)M2C_FIELD(p,s32 *,60)=2;
-else if(func_02068eac(p+20+i,&data_020fb99c,3)!=0)M2C_FIELD(p,s32 *,60)=2;
+else if(StringCompareN(p+20+i,&data_020fb99c,3)!=0)M2C_FIELD(p,s32 *,60)=2;
 else M2C_FIELD(p,s32 *,60)=1;
 M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,56)=3;
 func_02021750(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),2);
@@ -136,21 +136,21 @@ func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));
 }
 
 s32 func_02036860(const char *arg0){
-s32 StringLength(M2C_UNK *);s32 func_0200f0ac(void *,void *);s64 func_0200f7e0(void *,void *);void func_02068c50(void *,const char *);s32 func_0206ad38();s32 func_02068d98(void *,void *);
+s32 StringLength(M2C_UNK *);s32 func_0200f0ac(void *,void *);s64 func_0200f7e0(void *,void *);void StringCopy(void *,const char *);s32 ParseInt();s32 StringCompare(void *,void *);
 extern M2C_UNK data_020fba00,data_0213d1b4;extern s32 data_0213e9f4;extern char *data_020fb9d0[];
 s32 date[4],time[3];char buf[32];s64 now,t;s32 i,n;
 n=StringLength((M2C_UNK *)arg0);
 if(n!=StringLength(&data_020fba00)||arg0[7]!=32||arg0[11]!=32||arg0[16]!=32||arg0[19]!=58||arg0[22]!=58||arg0[25]!=32)goto fail;
 if(func_0200f0ac(date,time))goto fail;
 now=func_0200f7e0(date,time);if(now==-1)goto fail;
-func_02068c50(buf,arg0);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;
-data_0213e9f4=0;date[0]=func_0206ad38(buf+12);if(data_0213e9f4==34)goto fail;date[0]-=2000;
-date[1]=13;for(i=0;i<12;i++){if(!func_02068d98(data_020fb9d0[i],buf+8)){date[1]=i+1;break;}}
+StringCopy(buf,arg0);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;
+data_0213e9f4=0;date[0]=ParseInt(buf+12);if(data_0213e9f4==34)goto fail;date[0]-=2000;
+date[1]=13;for(i=0;i<12;i++){if(!StringCompare(data_020fb9d0[i],buf+8)){date[1]=i+1;break;}}
 if((u32)date[1]>12)goto fail;
-data_0213e9f4=0;date[2]=func_0206ad38(buf+5);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[0]=func_0206ad38(buf+17);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[1]=func_0206ad38(buf+20);if(data_0213e9f4==34)goto fail;
-data_0213e9f4=0;time[2]=func_0206ad38(buf+23);if(data_0213e9f4==34)goto fail;
+data_0213e9f4=0;date[2]=ParseInt(buf+5);if(data_0213e9f4==34)goto fail;
+data_0213e9f4=0;time[0]=ParseInt(buf+17);if(data_0213e9f4==34)goto fail;
+data_0213e9f4=0;time[1]=ParseInt(buf+20);if(data_0213e9f4==34)goto fail;
+data_0213e9f4=0;time[2]=ParseInt(buf+23);if(data_0213e9f4==34)goto fail;
 t=func_0200f7e0(date,time);if(t==-1)goto fail;
 M2C_FIELD(&data_0213d1b4,s64 *,12)=now-t;M2C_FIELD(&data_0213d1b4,s64 *,4)=now;M2C_FIELD(&data_0213d1b4,s32 *,0)=1;return 1;
 fail:return 0;
@@ -160,7 +160,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void func_02007f8c();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *func_02068fdc();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 func_0206cd90();void func_0206cdac();void func_02007f8c();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *StringFind();void MI_CpuCopy8();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
@@ -177,7 +177,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d24)=count;
  func_02068d18(gWfcMatchSession+0x1c18,data_020fb2f8,256);
  M2C_FIELD(gWfcMatchSession,u8 *,0x1d18)=0;
- p=func_02068fdc(gWfcMatchSession+0x1c18,sWfcMatchPath);
+ p=StringFind(gWfcMatchSession+0x1c18,sWfcMatchPath);
  if(!p)goto fail;
  MI_CpuCopy8(sWfcProfilePath,p,4);
  p=gWfcMatchSession+0x1c18;
@@ -268,16 +268,16 @@ s32 func_02036f14(void) {
 }
 
 s32 func_0203703c(void) {
-s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 func_02036860(); s32 func_0206ad38(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
+s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 func_02036860(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
 extern void *gWfcMatchSession; extern s32 data_0213e9f4;
 extern u8 data_020fba60[],data_020fba68[],data_020fba74[],data_020fba80[];
 s32 value; s8 buf[51]; void *p=gWfcMatchSession; s32 r,i;
 if(func_02034c58(p,0)) {
 if(func_02034ef8(p,data_020fba60))func_02036860();
 if(func_02034ef8(p,data_020fba68)){
-r=func_0206ad38();
+r=ParseInt();
 if(data_0213e9f4!=34 && r==200 && func_02034f50(p,data_020fba74,&value,4)>0){
-r=func_0206ad38(&value);
+r=ParseInt(&value);
 if(data_0213e9f4!=34){
 if(r==1)goto error;
 if(r<100)goto readbuf;

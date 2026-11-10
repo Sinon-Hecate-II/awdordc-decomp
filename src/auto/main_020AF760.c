@@ -1,5 +1,7 @@
 /* 28 functions from 0x020AF760 to 0x020B0658 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ds3dsprite.h"
 typedef struct { s32 x,y,z; } VecAff;
 typedef struct { u8 pad[4]; s32 unk4; } Unk020af860_Sub;
 typedef struct { u8 pad[0x34]; Unk020af860_Sub *unk34; } Unk020af860_Unit;
@@ -317,89 +319,92 @@ void func_020b00e8(void) {
 
 }
 
-void func_020b00ec(void) { extern void *gCur3DSpriteEngine;
+void Set3DSpriteLayerModesAlt(void) { extern void *gCur3DSpriteEngine;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)&~3)|3;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)&~3)|0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|1;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|2;
 }
 
-void func_020b0154(void) { extern void *gCur3DSpriteEngine;
+void Set3DSpriteLayerModes(void) { extern void *gCur3DSpriteEngine;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)&~3)|1;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)&~3)|0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|2;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
 }
 
-void func_020b01bc(void) {
-    void func_020b0154(void);
+/* Configure the current 3D sprite engine for a map view: set the four layer
+   modes, pick the bank's split rows from the map's tileset setting, then force
+   the OAM attribute bits and restart the engine. */
+void Configure3DSpriteMapView(void) {
+    void Set3DSpriteLayerModes(void);
     void Reset3DSpriteEngineState(void);
     extern s32 *gCurrentMap;
     extern void *gCur3DSpriteEngine;
-    u16 *volatile sp30;
-    u16 *volatile sp2C;
-    u16 *volatile sp28;
-    u16 *volatile sp24;
-    u16 *volatile sp20;
-    u16 *volatile sp1C;
-    u16 *volatile sp18;
-    u16 *volatile sp14;
-    u16 *volatile sp10;
-    u16 *volatile spC;
-    u16 *volatile sp8;
-    u16 *volatile sp4;
-    u16 *volatile sp0;
-    u8 v51;
-    u8 v52;
-    u8 v0 = 0;
+    u16 *volatile oamC0;
+    u16 *volatile oam1;
+    u16 *volatile oam2;
+    u16 *volatile oam4;
+    u16 *volatile oam8;
+    u16 *volatile oam10;
+    u16 *volatile oam20;
+    u16 *volatile oam100;
+    u16 *volatile oam200;
+    u16 *volatile oam400;
+    u16 *volatile oam800;
+    u16 *volatile oam1000;
+    u16 *volatile oam2000;
+    u8 splitAbove;
+    u8 splitBelow;
+    u8 zero = 0;
 
-    func_020b0154();
-    if (*(u8 *)((s32)*gCurrentMap + 0x5157) == 1) {
-        v51 = 0xa;
-        v52 = 0x8;
+    Set3DSpriteLayerModes();
+    if (M2C_FIELD(*gCurrentMap, u8 *, MAP_TILESET) == 1) {
+        splitAbove = 0xa;
+        splitBelow = 0x8;
     } else {
-        v51 = 0xc;
-        v52 = 0x8;
+        splitAbove = 0xc;
+        splitBelow = 0x8;
     }
-    sp30 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp30 = (*sp30 & ~0xc0) | 0x40;
-    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = v51;
-    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = v52;
-    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = v0;
-    sp2C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp2C = (*sp2C & ~1) | 1;
-    sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp28 = *sp28 & ~2;
-    sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp24 = *sp24 & ~4;
-    sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp20 = *sp20 & ~8;
-    sp1C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp1C = *sp1C & ~0x10;
-    sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp18 = *sp18 & ~0x20;
-    sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp14 = *sp14 & ~0x100;
-    sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp10 = *sp10 & ~0x200;
-    spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *spC = *spC | 0x400;
-    sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp8 = *sp8 | 0x800;
-    sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp4 = *sp4 | 0x1000;
-    sp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-    *sp0 = *sp0 | 0x2000;
+    oamC0 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oamC0 = (*oamC0 & ~0xc0) | 0x40;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsAbove = splitAbove;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsBelow = splitBelow;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->filler_53 = zero;
+    oam1 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam1 = (*oam1 & ~1) | 1;
+    oam2 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam2 = *oam2 & ~2;
+    oam4 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam4 = *oam4 & ~4;
+    oam8 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam8 = *oam8 & ~8;
+    oam10 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam10 = *oam10 & ~0x10;
+    oam20 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam20 = *oam20 & ~0x20;
+    oam100 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam100 = *oam100 & ~0x100;
+    oam200 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam200 = *oam200 & ~0x200;
+    oam400 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam400 = *oam400 | 0x400;
+    oam800 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam800 = *oam800 | 0x800;
+    oam1000 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam1000 = *oam1000 | 0x1000;
+    oam2000 = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *oam2000 = *oam2000 | 0x2000;
     Reset3DSpriteEngineState();
 }
 
 /* Configure the 3D sprite engine for a map view: set the per-layer 2-bit
- * rotation modes (layers 0-3 to 1/0/2/3 via func_020b0154), pick the two
+ * rotation modes (layers 0-3 to 1/0/2/3 via Set3DSpriteLayerModes), pick the two
  * layer-scope bytes by the map's 0x5157 mode flag, then update the engine's
  * flag word at +0x12 (layer 3 enabled, all layer-select/enable bits cleared,
  * the high mode bits 0x400-0x2000 set) before resetting the engine state. */
 void func_020b0408(void) {
-    void func_020b0154(void);
+    void Set3DSpriteLayerModes(void);
     void Reset3DSpriteEngineState(void);
     extern s32 *gCurrentMap;
     extern void *gCur3DSpriteEngine;
@@ -420,7 +425,7 @@ void func_020b0408(void) {
     u8 v52;
     u8 v0 = 0;
 
-    func_020b0154();
+    Set3DSpriteLayerModes();
     if (*(u8 *)((s32)*gCurrentMap + 0x5157) == 1) {
         v51 = 0xa;
         v52 = 0x8;

@@ -1,5 +1,6 @@
 /* 27 functions from 0x0209EAF4 to 0x0209F990 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct MapConfigRecord {
     u16 flags;
     u8 unk_2;
@@ -203,49 +204,64 @@ void func_0209f38c(void) {
 
 }
 
-void func_0209f390(void) {
-extern void **gCurrentMap; extern MapConfigRecord data_02168f14;
-void func_0209f5dc(void);
-s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
-void func_020a230c(s32,s32); void func_020a232c(s32,s32); void func_020a231c(s32,s32); void func_020a23a4(s32,s32);
-s32 func_020a88d4(s32); s32 func_020a8994(s32); s32 func_020a89a4(s32); s32 func_020a89c4(s32); s32 func_020a89e4(s32); s32 func_020a8a04(s32);
-void func_020a88c4(s32); void func_020a4100(void); s32 func_020a8898(s32);
-s32 i,v,a,b,c,p; u8 *base; s32 t; void **map;
-func_0209f5dc();
-for(i=1;i<5;i++){
-v=func_020a8a30(M2C_FIELD(*gCurrentMap,u16 *,0x5142),i);
-a=func_020a8a68(M2C_FIELD(*gCurrentMap,u16 *,0x5142),i);
-b=func_020a8a4c(M2C_FIELD(*gCurrentMap,u16 *,0x5142),i);
-c=func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),i);
-switch(v){case 0:func_020a230c(i,0);break;case 15:break;default:func_020a230c(i,v);break;}
-func_020a232c(i,a);func_020a231c(i,b);
-if(c&0x80)p=1;else p=(i!=1)?2:1;func_020a23a4(i,p);
-}
-if(func_020a88d4(M2C_FIELD(*gCurrentMap,u16 *,0x5142))!=0) M2C_FIELD(*gCurrentMap,u8 *,0x5156)=1;
-t=func_020a8994(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-data_02168f14.unk_3=t;
-t=func_020a89a4(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-data_02168f14.unk_4=t;
-t=func_020a89c4(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-data_02168f14.unk_8=t;
-t=func_020a89e4(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-data_02168f14.unk_6=t;
-t=func_020a8a04(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-data_02168f14.unk_2=t;
-data_02168f14.flags|=0x4000;
-data_02168f14.flags|=0x8000;
-func_020a88c4(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-func_020a4100();
-base=(u8 *)*gCurrentMap;
-base[0x5157]=func_020a8898(M2C_FIELD(base,u16 *,0x5142));
-M2C_FIELD(*gCurrentMap,u8 *,0x5155)=0x13;
+/* Battle start-up: copy players 1-4 out of the map's data record into the
+   per-player setup tables, copy the record's rule values into the battle
+   config, then set the map's battle/tileset flags. */
+void InitBattleMapConfig(void) {
+    extern void **gCurrentMap;
+    extern MapConfigRecord data_02168f14;
+    void ResetPlayerSetupTables(void);
+    s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
+    void func_020a230c(s32,s32); void func_020a232c(s32,s32); void func_020a231c(s32,s32); void func_020a23a4(s32,s32);
+    s32 func_020a88d4(s32); s32 func_020a8994(s32); s32 func_020a89a4(s32); s32 func_020a89c4(s32); s32 func_020a89e4(s32); s32 func_020a8a04(s32);
+    void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
+    s32 player, value, fieldA, fieldB, playerFlags, team;
+    u8 *base;
+    s32 setting;
+    void **map;
+
+    ResetPlayerSetupTables();
+    for (player = 1; player < 5; player++) {
+        value = func_020a8a30(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        fieldA = func_020a8a68(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        fieldB = func_020a8a4c(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        playerFlags = func_020a8a14(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        switch (value) {
+        case 0: func_020a230c(player, 0); break;
+        case 15: break;
+        default: func_020a230c(player, value); break;
+        }
+        func_020a232c(player, fieldA);
+        func_020a231c(player, fieldB);
+        if (playerFlags & 0x80) team = 1;
+        else team = (player != 1) ? 2 : 1;
+        func_020a23a4(player, team);
+    }
+    if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
+    setting = func_020a8994(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    data_02168f14.unk_3 = setting;
+    setting = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    data_02168f14.unk_4 = setting;
+    setting = func_020a89c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    data_02168f14.unk_8 = setting;
+    setting = func_020a89e4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    data_02168f14.unk_6 = setting;
+    setting = func_020a8a04(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    data_02168f14.unk_2 = setting;
+    data_02168f14.flags |= 0x4000;
+    data_02168f14.flags |= 0x8000;
+    func_020a88c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    func_020a4100();
+    base = (u8 *)*gCurrentMap;
+    base[MAP_TILESET] = MapData_GetTileset(M2C_FIELD(base, u16 *, MAP_ID));
+    M2C_FIELD(*gCurrentMap, u8 *, 0x5155) = 0x13;
 }
 
 /* Battle start-up: fill the per-player setup tables for players 1-4 (id/team
  * slots via the func_020a23xx byte setters), clear the map's edge counters,
  * and initialize the player config record at data_02168f14 (flags word plus
  * default values 0/1000/0/0), setting its default flag bits. */
-void func_0209f5dc(void) {
+void ResetPlayerSetupTables(void) {
     void func_020a230c(s32, s32);
     void func_020a231c(s32, s32);
     void func_020a232c(s32, s32);
@@ -366,7 +382,7 @@ void func_0209f858(void) {
     M2C_FIELD(&data_02168f0c, s8 *, 3) = 1;
 }
 
-void func_0209f87c(void){extern MapConfigRecord data_02168f14;extern void **gCurrentMap;data_02168f14.flags=(data_02168f14.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;func_0209f5dc();func_0209f858();}
+void func_0209f87c(void){extern MapConfigRecord data_02168f14;extern void **gCurrentMap;data_02168f14.flags=(data_02168f14.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}
 
 void func_0209f8c0(void) {
     extern M2C_UNK data_0215be00;

@@ -254,7 +254,7 @@ void func_020bb458(void) {
     M2C_UNK func_020baa64(void);
     M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020ce630(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208fb0c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK PlaySoundAtTile(M2C_UNK, M2C_UNK, M2C_UNK);
     extern void **data_027e0058;
 
     u8 *unit;
@@ -296,7 +296,7 @@ void func_020bb458(void) {
         k = (k << 26) >> 26;
         if (k != 1 && k != 2) return;
     }
-    func_0208fb0c(
+    PlaySoundAtTile(
         0x7B,
         M2C_FIELD(*data_027e0058, s16 *, 0x52DC),
         M2C_FIELD(*data_027e0058, s16 *, 0x52DE));

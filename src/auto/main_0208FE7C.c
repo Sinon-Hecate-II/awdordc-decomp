@@ -788,7 +788,7 @@ void func_02090c7c(void *arg0) {
 }
 
 s32 func_02090cbc(void *p) {
-void func_020908dc(void *);void func_02090d84(void *);void func_01ffa574(void *);void func_02090bd8(void *);
+void func_020908dc(void *);void func_02090d84(void *);void DeleteSpriteObject(void *);void func_02090bd8(void *);
 void *q;
 if(M2C_FIELD(p,void **,0x38))func_020908dc(M2C_FIELD(p,void **,0x38));
 q=M2C_FIELD(p,void **,0x3C);
@@ -802,7 +802,7 @@ if(q) {
 Call02090Node(q);q=M2C_FIELD(q,void **,0xC);
 if(q)func_02090d84(q);
 }}}}
-if(!M2C_FIELD(p,void **,0x38) && !M2C_FIELD(p,void **,0x3C))func_01ffa574(p);
+if(!M2C_FIELD(p,void **,0x38) && !M2C_FIELD(p,void **,0x3C))DeleteSpriteObject(p);
 else if(M2C_FIELD(p,void **,0x38))func_02090bd8(M2C_FIELD(p,void **,0x38));
 }
 

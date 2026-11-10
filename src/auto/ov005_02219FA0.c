@@ -140,7 +140,7 @@ func_01ffa6fc(arg0);
 void func_ov005_0221a598(void *arg0) {
     M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     void func_ov005_0221a38c(void **);
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK func_01ffa6fc(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
 
@@ -160,7 +160,7 @@ void func_ov005_0221a598(void *arg0) {
     saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
         gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        func_01ffa574(M2C_FIELD((char *)arg0 + i * 4, s32 *, 0x34));
+        DeleteSpriteObject(M2C_FIELD((char *)arg0 + i * 4, s32 *, 0x34));
     }
     gCur3DSpriteEngine = saved;
     M2C_FIELD(arg0, u8 *, 0x44) = 1;
@@ -216,7 +216,7 @@ void func_ov005_0221a688(void *arg) {
 
 M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
     M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     extern s32 g3DSpriteEngineSub, gCur3DSpriteEngine;
     u16 *volatile sp38;
     u16 *volatile sp34;
@@ -289,7 +289,7 @@ M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
         *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = 0;
         gCur3DSpriteEngine = old;
         M2C_FIELD(self, s32 *, 0x40) = 0;
-        func_01ffa574(self);
+        DeleteSpriteObject(self);
     }
     return 0;
 }

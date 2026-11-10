@@ -25,35 +25,35 @@ void func_ov003_021f8c20(void *arg0) {
     u32 func_020d886c();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
+    s32 temp_r7;
+    void *temp_r0;
+    void *temp_r5;
+    u8 temp_r3;
+    s16 var_r7;
+    s32 var_r8;
+    u8 temp_r10;
     s16 temp_r1_3;
     s16 temp_r1_4;
     s16 temp_r3_2;
-    s16 var_r7;
     s32 temp_r0_3;
     s32 temp_r0_4;
     s32 temp_r0_5;
     s32 temp_r0_6;
     s32 temp_r1;
     s32 temp_r1_2;
-    s32 temp_r3;
-    s32 temp_r7;
     s32 var_r0;
-    s32 var_r0_2;
+    s16 var_r0_2;
     s32 var_r1;
     s32 var_r1_2;
-    s32 var_r1_3;
+    s16 var_r1_3;
     s32 var_r2;
     s32 var_r2_2;
     s32 var_r3;
-    s8 var_r8;
     u32 temp_r0_7;
     u32 temp_r0_8;
-    u8 temp_r10;
     u8 temp_r5_2;
     u8 temp_r5_3;
-    void *temp_r0;
     void *temp_r0_2;
-    void *temp_r5;
 
     temp_r0 = func_02084e64();
     if (temp_r0 == NULL) {
@@ -61,8 +61,8 @@ void func_ov003_021f8c20(void *arg0) {
     }
     temp_r0_2 = M2C_FIELD(arg0, void **, 0x5C);
     temp_r3 = M2C_FIELD(temp_r0_2, s32 *, 4);
-    M2C_FIELD(temp_r0_2, s32 *, 4) = (s32) M2C_FIELD(temp_r0, u8 *, 9);
     temp_r10 = (u8) (u16) (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14);
+    M2C_FIELD(temp_r0_2, s32 *, 4) = (s32) M2C_FIELD(temp_r0, u8 *, 9);
     if (M2C_FIELD(temp_r0_2, u8 *, 0x14) != 0) {
         var_r1 = M2C_FIELD(temp_r0_2, s32 *, 4);
         if (var_r1 > (s32) M2C_FIELD(temp_r0_2, s32 *, 8)) {
@@ -115,58 +115,42 @@ void func_ov003_021f8c20(void *arg0) {
         }
         M2C_FIELD(temp_r5, s32 *, 0xC) = var_r1_2;
     }
-    temp_r0_5 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
+    temp_r0_5 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
     temp_r3_2 = M2C_FIELD(temp_r5, s16 *, 4);
-    temp_r7 = M2C_FIELD(temp_r5, s32 *, 0x10);
-    temp_r1_3 = M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r3_2;
+    temp_r1_3 = (s16)M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r3_2;
     if (temp_r0_5 <= (s32) temp_r1_3) {
-        var_r0_2 = (temp_r1_3 - temp_r0_5) << 0x10;
-        var_r1_3 = (temp_r0_5 + ((s16) ((s16) ((s16) temp_r7 + 1) * temp_r3_2) - temp_r1_3)) << 0x10;
+        temp_r7=M2C_FIELD(temp_r5,s32 *,0x10);
+        var_r0_2 = (temp_r1_3 - temp_r0_5);
+        var_r1_3 = (temp_r0_5 + ((s16) ((s16) ((s16) temp_r7 + 1) * temp_r3_2) - temp_r1_3));
     } else {
-        var_r0_2 = (((s16) ((s16) ((s16) temp_r7 + 1) * temp_r3_2) - temp_r0_5) + temp_r1_3) << 0x10;
-        var_r1_3 = (temp_r0_5 - temp_r1_3) << 0x10;
+        temp_r7=M2C_FIELD(temp_r5,s32 *,0x10);
+        var_r0_2 = (((s16) ((s16) ((s16) temp_r7 + 1) * temp_r3_2) - temp_r0_5) + temp_r1_3);
+        var_r1_3 = (temp_r0_5 - temp_r1_3);
     }
-    if ((s32) (var_r0_2 >> 0x10) <= (s32) (var_r1_3 >> 0x10)) {
+    if ((s32) (var_r0_2) <= (s32) (var_r1_3)) {
         var_r8 = 0;
     } else {
         var_r8 = 1;
     }
+    temp_r0_6 = GetSpriteAnimValue(temp_r5 + 0x20);
     temp_r1_4 = M2C_FIELD(temp_r5, s16 *, 4);
-    var_r7 = M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r1_4;
-    temp_r0_6 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
-    if (var_r8 == 0) {
+    var_r7 = (s16)M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r1_4;
+    temp_r0_6 = func_ov003_021f3fe4(temp_r0_6, 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
+    if ((s8)var_r8 == 0) {
         if (temp_r0_6 > (s32) var_r7) {
-            var_r7 += (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));
+            var_r7 += (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));
         }
     } else if (temp_r0_6 < (s32) var_r7) {
-        var_r7 -= (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));
+        var_r7 -= (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));
     }
+    temp_r1_4=M2C_FIELD(temp_r5,s16 *,0x2c);
     M2C_FIELD(temp_r5, s16 *, 0x2E) = (s16) temp_r0_6;
     M2C_FIELD(temp_r5, s16 *, 0x30) = var_r7;
-    M2C_FIELD(temp_r5, s16 *, 0x2C) = (s16) M2C_FIELD(temp_r5, s16 *, 0x2C);
+    M2C_FIELD(temp_r5, s16 *, 0x2C) = temp_r1_4;
     M2C_FIELD(temp_r5, u16 *, 0x22) = (u16) M2C_FIELD(temp_r5, u16 *, 0x24);
     temp_r5_2 = M2C_FIELD(temp_r0, u8 *, 0xA);
     temp_r0_7 = func_020d886c();
     switch (temp_r0_7) {                            /* switch 1 */
-    default:                                        /* switch 1 */
-    case 0:                                         /* switch 1 */
-    case 1:                                         /* switch 1 */
-    case 2:                                         /* switch 1 */
-    case 3:                                         /* switch 1 */
-    case 4:                                         /* switch 1 */
-    case 9:                                         /* switch 1 */
-    case 10:                                        /* switch 1 */
-    case 11:                                        /* switch 1 */
-    case 13:                                        /* switch 1 */
-    case 18:                                        /* switch 1 */
-    case 19:                                        /* switch 1 */
-    case 20:                                        /* switch 1 */
-    case 21:                                        /* switch 1 */
-    case 25:                                        /* switch 1 */
-    case 26:                                        /* switch 1 */
-    case 27:                                        /* switch 1 */
-        var_r2_2 = 4;
-        break;
     case 28:                                        /* switch 1 */
         var_r2_2 = 7;
         break;
@@ -202,30 +186,30 @@ void func_ov003_021f8c20(void *arg0) {
     case 17:                                        /* switch 1 */
         var_r2_2 = 0xC;
         break;
+    default:                                        /* switch 1 */
+    case 0:                                         /* switch 1 */
+    case 1:                                         /* switch 1 */
+    case 2:                                         /* switch 1 */
+    case 3:                                         /* switch 1 */
+    case 4:                                         /* switch 1 */
+    case 9:                                         /* switch 1 */
+    case 10:                                        /* switch 1 */
+    case 11:                                        /* switch 1 */
+    case 13:                                        /* switch 1 */
+    case 18:                                        /* switch 1 */
+    case 19:                                        /* switch 1 */
+    case 20:                                        /* switch 1 */
+    case 21:                                        /* switch 1 */
+    case 25:                                        /* switch 1 */
+    case 26:                                        /* switch 1 */
+    case 27:                                        /* switch 1 */
+        var_r2_2 = 4;
+        break;
     }
     M2C_FIELD(((var_r2_2 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4)), u8 *, 0xD) = temp_r5_2;
     temp_r5_3 = M2C_FIELD(temp_r0, u8 *, 0xB);
     temp_r0_8 = func_020d886c();
     switch (temp_r0_8) {                            /* switch 2 */
-    default:                                        /* switch 2 */
-    case 0:                                         /* switch 2 */
-    case 1:                                         /* switch 2 */
-    case 2:                                         /* switch 2 */
-    case 3:                                         /* switch 2 */
-    case 4:                                         /* switch 2 */
-    case 9:                                         /* switch 2 */
-    case 10:                                        /* switch 2 */
-    case 11:                                        /* switch 2 */
-    case 13:                                        /* switch 2 */
-    case 18:                                        /* switch 2 */
-    case 19:                                        /* switch 2 */
-    case 20:                                        /* switch 2 */
-    case 21:                                        /* switch 2 */
-    case 25:                                        /* switch 2 */
-    case 26:                                        /* switch 2 */
-    case 27:                                        /* switch 2 */
-        var_r3 = 4;
-        break;
     case 28:                                        /* switch 2 */
         var_r3 = 7;
         break;
@@ -261,6 +245,25 @@ void func_ov003_021f8c20(void *arg0) {
     case 17:                                        /* switch 2 */
         var_r3 = 0xC;
         break;
+    default:                                        /* switch 2 */
+    case 0:                                         /* switch 2 */
+    case 1:                                         /* switch 2 */
+    case 2:                                         /* switch 2 */
+    case 3:                                         /* switch 2 */
+    case 4:                                         /* switch 2 */
+    case 9:                                         /* switch 2 */
+    case 10:                                        /* switch 2 */
+    case 11:                                        /* switch 2 */
+    case 13:                                        /* switch 2 */
+    case 18:                                        /* switch 2 */
+    case 19:                                        /* switch 2 */
+    case 20:                                        /* switch 2 */
+    case 21:                                        /* switch 2 */
+    case 25:                                        /* switch 2 */
+    case 26:                                        /* switch 2 */
+    case 27:                                        /* switch 2 */
+        var_r3 = 4;
+        break;
     }
     M2C_FIELD(((var_r3 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4)), u8 *, 0xA9) = temp_r5_3;
     func_ov003_021f9b30(arg0);
@@ -270,13 +273,13 @@ void func_ov003_021f8c20(void *arg0) {
         PlaySoundEffect(0x10019);
     }
     if (M2C_FIELD(temp_r0, s32 *, 0) != 0) {
-        M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(), 0x1C)();
+        M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(void *), 0x1C)(arg0);
         return;
     }
     if (M2C_FIELD(temp_r0, s32 *, 4) == 0) {
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(), 0x20)();
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(void *), 0x20)(arg0);
 }
 
 void func_ov003_021f91a4(void *arg0) {

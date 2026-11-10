@@ -144,8 +144,8 @@ void *func_02090f78(void *arg0) {
 }
 
 void func_02090fdc(void *arg0) {
-    M2C_UNK func_020910d0(void *);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DrawSprite3D(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     volatile s32 sp8;
     volatile s32 sp4;
     volatile s32 sp0;
@@ -157,7 +157,7 @@ void func_02090fdc(void *arg0) {
     sp4 = M2C_FIELD(arg0, s32 *, 0x60) * 0x30;
     sp8 = M2C_FIELD(arg0, s32 *, 0x64);
     {
-        M2C_UNK (*fp)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK) = (M2C_UNK(*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))func_020910d0;
+        M2C_UNK (*fp)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK) = (M2C_UNK(*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))DrawSprite3D;
         if (fp((M2C_UNK)M2C_FIELD(arg0, s32 **, 0x58), (M2C_UNK)&sp0, 0x30000, 0) != 0) {
             return;
         }
@@ -175,7 +175,7 @@ void func_02090fdc(void *arg0) {
     if (var_r0 != 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_0209106c(void *arg0) {
@@ -187,7 +187,7 @@ void func_0209106c(void *arg0) {
 #pragma scheduling off
 s32 func_0209107c(void *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,s32 arg7,u8 arg8){s32 func_02091af8(void*,s32,s32);s32 func_0207d0f0(s32,s32,s32,s32,s32,s32,u8);s32 r=func_02091af8(arg0,arg1,arg2);s32 t6,t7,t4,t5;u8 t8;if(!r)return 0;t6=arg6;t7=arg7;t8=arg8;t4=arg4;t5=arg5;func_0207d0f0(r,arg3,t4,t5,t6,t7,t8);return 1;}
 #pragma scheduling on
-M2C_UNK func_020910d0(void *arg0) {
+M2C_UNK DrawSprite3D(void *arg0) {
 void func_02091110(); void func_020913c4(void *); M2C_UNK func_020913d4(M2C_UNK);
 s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
 if(ok==0) return 0;
@@ -227,7 +227,7 @@ void func_020912a4(s32 *arg0) {
     }
 }
 
-s32 func_020912bc(s32 *arg0, s32 arg1, s32 arg2) {
+s32 DrawSprite2D(s32 *arg0, s32 arg1, s32 arg2) {
     void func_020912ec(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020913c4(void *);
     M2C_UNK func_020913d4(M2C_UNK);
@@ -606,12 +606,12 @@ p=(s32*)((u8*)p+0x34); ++i;
 }
 
 void func_020919f4(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
-    s32 func_020912bc(s32 *, s32, s32);
+    M2C_UNK DeleteSpriteObject(void *);
+    s32 DrawSprite2D(s32 *, s32, s32);
     s32 *temp_r0;
     s32 var_r1;
 
-    if (func_020912bc(M2C_FIELD(arg0, s32 **, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
+    if (DrawSprite2D(M2C_FIELD(arg0, s32 **, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
         return;
     }
     temp_r0 = M2C_FIELD(arg0, s32 **, 0x58);
@@ -622,7 +622,7 @@ void func_020919f4(void *arg0) {
     if (var_r1 == 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_02091a40(void *arg0) {

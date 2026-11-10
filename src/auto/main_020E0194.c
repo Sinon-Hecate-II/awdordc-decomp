@@ -195,10 +195,10 @@ void func_020e048c(void *entity) {
 }
 
 M2C_UNK func_020e0580(s32 arg0) {
- s32 func_020848c4(); s16 func_020848f8(); M2C_UNK func_02085724();
+ s32 func_020848c4(); s16 GetReadyPlayerMask(); M2C_UNK func_02085724();
  extern u16 *data_0212c5f8[];
  s32 i=func_020848c4();
- *data_0212c5f8[i]=func_020848f8();
+ *data_0212c5f8[i]=GetReadyPlayerMask();
  return func_02085724(data_0212c5f8,data_0212c5f8[func_020848c4()],2,arg0);
 }
 

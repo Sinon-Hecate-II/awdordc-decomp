@@ -85,7 +85,7 @@ void func_ov001_02175290(void) {
 }
 
 void func_ov001_0217531c(s32 arg0) {
-    void func_ov001_02185024(s32);
+    void Ov001_PlaySound(s32);
     extern s8 data_ov001_0218f6a2[][4];
     extern void *data_ov001_02193d20;
     s8 old;
@@ -105,7 +105,7 @@ void func_ov001_0217531c(s32 arg0) {
         else M2C_FIELD(data_ov001_02193d20, s8 *, 0x63) = 2;
     }
     func_ov001_02175290();
-    func_ov001_02185024(8);
+    Ov001_PlaySound(8);
 }
 
 #pragma scheduling off

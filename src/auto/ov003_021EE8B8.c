@@ -5,13 +5,13 @@ static inline s8 Ov003PanelCount(void *p) { return M2C_FIELD(p,s8 *,4); }
 static inline void Ov003PanelUpdate(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),0x1c)(p); }
 static inline int Ov003PlayersReady(void) {
     int func_020846a4(void);
-    u32 func_020848f8(void);
+    u32 GetReadyPlayerMask(void);
     void *func_02084e24(int);
     u32 mask;
     s8 i;
     void *p;
     if (!func_020846a4()) return 0;
-    mask=func_020848f8();
+    mask=GetReadyPlayerMask();
     for(i=0;i<4;i++) {
         if(mask & (1<<i)) {
             p=func_02084e24(i);
@@ -94,7 +94,7 @@ void func_ov003_021ee8b8(void *arg0) {
     void *func_02084e64(void);
     void *func_02084e24(int);
     int func_020848c4(void);
-    u32 func_020848f8(void);
+    u32 GetReadyPlayerMask(void);
     void *packet;
     int local, enabled, ready, offset;
     void *range;

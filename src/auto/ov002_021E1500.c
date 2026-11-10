@@ -17,14 +17,14 @@ void func_ov002_021e1500(void) {
 void func_ov002_021e152c(void) {
     void func_020822b8(void *);
     void func_ov002_021e7c84(void *);
-    void func_ov002_021e6db4(void *);
+    void InitBattleScene(void *);
     void func_ov002_021e3c98(void *);
     extern M2C_UNK data_ov002_021ea680,gPlayerSettings,data_ov002_021f30e4,data_ov002_021f3014;
     extern u8 data_ov002_021f2f40;
     func_ov002_021e1500();
     func_020822b8(&data_ov002_021ea680);
     if(data_ov002_021f2f40) func_ov002_021e7c84(&gPlayerSettings);
-    func_ov002_021e6db4(&data_ov002_021f30e4);
+    InitBattleScene(&data_ov002_021f30e4);
     func_ov002_021e3c98(&data_ov002_021f3014);
 }
 

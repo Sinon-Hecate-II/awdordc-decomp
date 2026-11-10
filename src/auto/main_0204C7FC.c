@@ -1,98 +1,101 @@
 /* 11 functions from 0x0204C7FC to 0x0204D5C0 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 static inline void clear_socket_address(void *p) { s32 *v = p; v[0] = 0; v[1] = 0; }
 static inline s32 char_outside(s32 c) { s32 bad=1; if(c>=0) { if(c<128)bad=0; } return bad; }
 static inline s32 char_space(s32 c) { extern u16 gCharClassTable[]; return char_outside(c) ? 0 : (gCharClassTable[c] & 256); }
 
-void func_0204c7fc(void *arg0) {
-    s32 func_020492ec(s32, s32);
-    M2C_UNK func_0204932c(s32, s32);
-    s32 func_020496a4(s32, s32, s32);
-    s32 func_02049740(s32, void *, s32);
-    s32 func_02049900(s32);
+/* Open the request's socket, make it non-blocking, connect to the resolved
+   server address and poll until the connection completes (or fails). */
+void ghiDoConnect(GHIConnection *connection) {
+    s32 ghiSetNonBlocking(s32, s32);
+    M2C_UNK ghiSetRecvBufferSize(s32, s32);
+    s32 ghiSocket(s32, s32, s32);
+    s32 ghiConnect(s32, void *, s32);
+    s32 ghiGetLastSocketError(s32);
     s32 PollOneFd(s32, s32 *, s32, s32);
     M2C_UNK InvokeRequestCallback(void *, s32, s32);
     extern s32 data_020fd010;
-    extern s32 data_0213dca8;
-    extern u16 data_0213dca4;
-    u8 sp8[8];
-    s32 sp4;
-    s32 sp0;
+    extern s32 gHttpServerOverride;
+    extern u16 gHttpPortOverride;
+    GhiSocketAddress addr;
+    s32 ready;
+    s32 error;
     s32 temp_r0;
-    s32 var_r1;
+    s32 connected;
     u16 t2, t3;
 
-    if (M2C_FIELD(arg0, s32 *, 0x48) == -1) {
-        temp_r0 = func_020496a4(2, 1, 0);
-        M2C_FIELD(arg0, s32 *, 0x48) = temp_r0;
+    if (connection->socket == -1) {
+        temp_r0 = ghiSocket(2, 1, 0);
+        connection->socket = temp_r0;
         if (temp_r0 == -1) {
-            M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-            M2C_FIELD(arg0, s32 *, 0x38) = 5;
-            M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+            connection->completed = 1;
+            connection->result = 5;
+            connection->lastSocketError = ghiGetLastSocketError(connection->socket);
             return;
         }
-        if (func_020492ec(temp_r0, 0) == 0) {
-            M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-            M2C_FIELD(arg0, s32 *, 0x38) = 5;
-            M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        if (ghiSetNonBlocking(temp_r0, 0) == 0) {
+            connection->completed = 1;
+            connection->result = 5;
+            connection->lastSocketError = ghiGetLastSocketError(connection->socket);
             return;
         }
-        if (M2C_FIELD(arg0, s32 *, 0x134) != 0) {
-            func_0204932c(M2C_FIELD(arg0, s32 *, 0x48), data_020fd010);
+        if (connection->throttle != 0) {
+            ghiSetRecvBufferSize(connection->socket, data_020fd010);
         }
-        clear_socket_address(sp8);
-        sp8[1] = 2;
-        if (M2C_FIELD(arg0, s32 *, 0x15C) != 0) {
-            t2 = M2C_FIELD(arg0, u16 *, 0x160);
-            M2C_FIELD(sp8, u16 *, 2) = (u8)((s32)t2 >> 8) | ((t2 << 8) & 0xFF00);
-        } else if (data_0213dca8 != 0) {
-            M2C_FIELD(sp8, u16 *, 2) = (u8)((s32)data_0213dca4 >> 8) | ((data_0213dca4 << 8) & 0xFF00);
+        clear_socket_address(&addr);
+        addr.family = 2;
+        if (connection->serverOverride != 0) {
+            t2 = connection->portOverride;
+            addr.port = (u8)((s32)t2 >> 8) | ((t2 << 8) & 0xFF00);
+        } else if (gHttpServerOverride != 0) {
+            addr.port = (u8)((s32)gHttpPortOverride >> 8) | ((gHttpPortOverride << 8) & 0xFF00);
         } else {
-            t3 = M2C_FIELD(arg0, u16 *, 0x20);
-            M2C_FIELD(sp8, u16 *, 2) = (u8)((s32)t3 >> 8) | ((t3 << 8) & 0xFF00);
+            t3 = connection->port;
+            addr.port = (u8)((s32)t3 >> 8) | ((t3 << 8) & 0xFF00);
         }
-        M2C_FIELD(sp8, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0x1C);
-        if (func_02049740(M2C_FIELD(arg0, s32 *, 0x48), sp8, 8) == -1) {
-            temp_r0 = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        addr.addr = connection->addr;
+        if (ghiConnect(connection->socket, &addr, 8) == -1) {
+            temp_r0 = ghiGetLastSocketError(connection->socket);
             if (temp_r0 != -6 && temp_r0 != -26 && temp_r0 != -76) {
-                M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-                M2C_FIELD(arg0, s32 *, 0x38) = 6;
-                M2C_FIELD(arg0, s32 *, 0x4C) = temp_r0;
+                connection->completed = 1;
+                connection->result = 6;
+                connection->lastSocketError = temp_r0;
                 return;
             }
         }
     }
-    var_r1 = (PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), (s32 *)0, &sp4, &sp0) > 0) ? 1 : 0;
-    if (var_r1 == -1 || sp0 != 0) {
-        M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-        M2C_FIELD(arg0, s32 *, 0x38) = 6;
-        if (var_r1 != 0) {
+    connected = (PollOneFd(connection->socket, (s32 *)0, &ready, &error) > 0) ? 1 : 0;
+    if (connected == -1 || error != 0) {
+        connection->completed = 1;
+        connection->result = 6;
+        if (connected != 0) {
             return;
         }
-        M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        connection->lastSocketError = ghiGetLastSocketError(connection->socket);
         return;
     }
-    if (sp4 == 0) {
+    if (ready == 0) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x10) = 2;
-    InvokeRequestCallback(arg0, 0, 0);
+    connection->state = 2;
+    InvokeRequestCallback(connection, 0, 0);
 }
 
 void func_0204ca4c(void *a){
-s32 func_02068eac(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fd88c,data_020fd8a0,data_020fd864,data_020fd804;
 u8 buf[1024];s32 size;
 if(!M2C_FIELD(a,s32 *,0x168)){
-if(!func_02068eac(M2C_FIELD(a,void **,0x14),&data_020fd88c,8)){
+if(!StringCompareN(M2C_FIELD(a,void **,0x14),&data_020fd88c,8)){
 M2C_FIELD(a,s32 *,0xfc)=1;M2C_FIELD(a,s32 *,0x38)=17;return;
 }
 M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;
 }
 if(M2C_FIELD(a,s32 *,0x170)){M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;}
 if(!M2C_FIELD(a,s32 *,0x16c)&& M2C_FIELD(a,s32 (**)(void *,void *),0x174)(a,(u8 *)a+0x164)==3){
-func_020640a8(&data_020fd8a0,&data_020fd864,&data_020fd804,0x146);return;
+AssertFailed(&data_020fd8a0,&data_020fd864,&data_020fd804,0x146);return;
 }
 if(M2C_FIELD(a,s32 *,0x60)>=M2C_FIELD(a,s32 *,0x5c))goto done;
 if(!SendBufferedData(a))return;
@@ -115,13 +118,13 @@ void ghiSendRequest(void *request) {
   void ResetBuffer(void *);
   M2C_UNK *GetContentType(void *);
   M2C_UNK InvokeRequestCallback(void *, s32, s32);
-  u8 *func_02068fdc(s32, M2C_UNK *);
-  M2C_UNK func_020675e4(void *, void *, s32);
+  u8 *StringFind(s32, M2C_UNK *);
+  M2C_UNK StringFormat(void *, void *, s32);
   extern M2C_UNK sHttpMethodPost, sHttpMethodHead, sHttpMethodGet, sHttpVersion;
   extern M2C_UNK sHeaderHost, sHeaderHostColon, sHeaderUserAgent, sHttpCrlf;
   extern M2C_UNK sGameSpyUserAgent, sHeaderConnection, sConnectionKeepAlive, sConnectionClose;
   extern M2C_UNK sFormatInt, sHeaderContentLength, sHeaderContentType;
-  extern s32 data_0213dca8;
+  extern s32 gHttpServerOverride;
   u8 *sendBuf;
   u8 lenText[16];
   if (M2C_FIELD(request, s32 *, 0x5c) == 0) {
@@ -129,7 +132,7 @@ void ghiSendRequest(void *request) {
     ghiAppendDataToBuffer(sendBuf,
       M2C_FIELD(request, s32 *, 0x13c) ? (void *)&sHttpMethodPost :
         (M2C_FIELD(request, s32 *, 0xc) == 3 ? (void *)&sHttpMethodHead : (void *)&sHttpMethodGet), 0);
-    if (M2C_FIELD(request, s32 *, 0x15c) || data_0213dca8)
+    if (M2C_FIELD(request, s32 *, 0x15c) || gHttpServerOverride)
       ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x14), 0);
     else
       ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x24), 0);
@@ -144,14 +147,14 @@ void ghiSendRequest(void *request) {
     ghiAppendDataToBuffer(sendBuf, &sHttpCrlf, 2);
     }
     if (!M2C_FIELD(request, s32 *, 0x28) ||
-        !func_02068fdc(M2C_FIELD(request, s32 *, 0x28), &sHeaderUserAgent))
+        !StringFind(M2C_FIELD(request, s32 *, 0x28), &sHeaderUserAgent))
       AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderUserAgent, &sGameSpyUserAgent);
     if (M2C_FIELD(request, s32 *, 0x34))
       AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderConnection, &sConnectionKeepAlive);
     else
       AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderConnection, &sConnectionClose);
     if (M2C_FIELD(request, s32 *, 0x13c)) {
-      func_020675e4(lenText, &sFormatInt, M2C_FIELD(request, s32 *, 0x14c));
+      StringFormat(lenText, &sFormatInt, M2C_FIELD(request, s32 *, 0x14c));
       AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderContentLength, (M2C_UNK *)lenText);
     AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderContentType, (M2C_UNK *)GetContentType(request));
     }
@@ -173,7 +176,7 @@ void func_0204ce20(void *arg0) {
     M2C_UNK func_0204bc64(void *);
     s32 func_0204c300(void *);
  extern M2C_UNK data_020fd864;
- M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+ M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
     extern M2C_UNK data_020fd7d0;
     extern M2C_UNK data_020fd93c;
     s32 temp_r0;
@@ -185,7 +188,7 @@ void func_0204ce20(void *arg0) {
         if ((M2C_FIELD(arg0, s32 *, 0xFC) != 0) && (M2C_FIELD(arg0, s32 *, 0x38) != 0)) {
 
         } else {
-            func_020640a8(&data_020fd93c, &data_020fd864, &data_020fd7d0, 0x200);
+            AssertFailed(&data_020fd93c, &data_020fd864, &data_020fd7d0, 0x200);
         }
         func_0204bc64(arg0);
         return;
@@ -203,14 +206,14 @@ void func_0204ce20(void *arg0) {
 
 void func_0204ceb8(void *arg0) {
     s32 PollOneFd(s32, s32 *, M2C_UNK, M2C_UNK);
-    s32 func_02049900(s32);
+    s32 ghiGetLastSocketError(s32);
     M2C_UNK InvokeRequestCallback(void *, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     if (PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), &sp0, 0, 0) == -1) {
         M2C_FIELD(arg0, s32 *, 0xFC) = 1;
         M2C_FIELD(arg0, s32 *, 0x38) = 5;
-        M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        M2C_FIELD(arg0, s32 *, 0x4C) = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
         return;
     }
     if (sp0 == 0) {
@@ -223,11 +226,11 @@ void func_0204ceb8(void *arg0) {
 s32 func_0204cf38(void *a){
 extern M2C_UNK data_020fd858,data_020fd864,data_020fd7e0,data_020fd968,data_020fd988;
 extern u16 gCharClassTable[];
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 s32 func_02068adc(void *,M2C_UNK *,...);
 s32 major,minor,status,pos,n,ch;
-if(!a)func_020640a8(&data_020fd858,&data_020fd864,&data_020fd7e0,590);
-if(M2C_FIELD(a,s32 *,128)<=0)func_020640a8(&data_020fd968,&data_020fd864,&data_020fd7e0,591);
+if(!a)AssertFailed(&data_020fd858,&data_020fd864,&data_020fd7e0,590);
+if(M2C_FIELD(a,s32 *,128)<=0)AssertFailed(&data_020fd968,&data_020fd864,&data_020fd7e0,591);
 n=func_02068adc(M2C_FIELD(a,void **,120),&data_020fd988,&major,&minor,&status,&pos);
 while((ch=M2C_FIELD(M2C_FIELD(a,void **,120),s8 *,pos))!=0 && char_space(ch))pos++;
 if(n!=3 || major<1 || status<100 || status>=600){
@@ -238,14 +241,14 @@ M2C_FIELD(a,s32 *,228)=major;M2C_FIELD(a,s32 *,232)=minor;M2C_FIELD(a,s32 *,236)
 
 void func_0204d084(void *a){
 s32 func_0204a740(void *,void *,s32 *);s32 ghiAppendDataToBuffer();s32 func_0204cf38(void *);
-s32 func_02049900(s32);u8 *func_02068fdc(s32,M2C_UNK *);
+s32 ghiGetLastSocketError(s32);u8 *StringFind(s32,M2C_UNK *);
 extern M2C_UNK sHttpCrlf;
 u8 buf[1024];s32 len=1024; s32 n,off;u8 *p;
 n=func_0204a740(a,buf,&len);
 if(n==3)return;
 if(n==1 && M2C_FIELD(a,s32 *,132)==M2C_FIELD(a,s32 *,128))return;
 if(n==0 && !ghiAppendDataToBuffer((u8 *)a+116,buf,len))return;
-p=func_02068fdc(M2C_FIELD(a,s32 *,120),&sHttpCrlf);
+p=StringFind(M2C_FIELD(a,s32 *,120),&sHttpCrlf);
 if(p){
 *p=0;off=p-M2C_FIELD(a,u8 **,120);
 M2C_FIELD(a,s32 *,248)=off+1;
@@ -257,7 +260,7 @@ InvokeRequestCallback(a,0,0);return;
 if(n!=2)return;
 M2C_FIELD(a,s32 *,252)=1;
 M2C_FIELD(a,s32 *,56)=7;
-M2C_FIELD(a,s32 *,76)=func_02049900(M2C_FIELD(a,s32 *,72));
+M2C_FIELD(a,s32 *,76)=ghiGetLastSocketError(M2C_FIELD(a,s32 *,72));
 }
 
 s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
@@ -278,7 +281,7 @@ s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
 }
 
 s32 func_0204d26c(void *arg0) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     s32 func_02068adc(void *, M2C_UNK *, ...);
     extern M2C_UNK data_020fd7f0;
     extern M2C_UNK data_020fd864;
@@ -287,7 +290,7 @@ s32 func_0204d26c(void *arg0) {
     s32 sp0;
 
     if (M2C_FIELD(arg0, s32 *, 0x120) == 0) {
-        func_020640a8(&data_020fd998, &data_020fd864, &data_020fd7f0, 0x321);
+        AssertFailed(&data_020fd998, &data_020fd864, &data_020fd7f0, 0x321);
     }
     if (func_02068adc(arg0 + 0x114, &data_020fd99c, &sp0) != 1) {
         return -1;
@@ -298,9 +301,9 @@ s32 func_0204d26c(void *arg0) {
 void func_0204d2d0(void *p,void *src,s32 n) {
 extern M2C_UNK data_020fd858,data_020fd864,data_020fd838,data_020fd9a0,data_020fd9a8;
 s32 left;
-if(!p)func_020640a8(&data_020fd858,&data_020fd864,&data_020fd838,0x333);
-if(!src)func_020640a8(&data_020fd9a0,&data_020fd864,&data_020fd838,0x334);
-if(n<0)func_020640a8(&data_020fd9a8,&data_020fd864,&data_020fd838,0x335);
+if(!p)AssertFailed(&data_020fd858,&data_020fd864,&data_020fd838,0x333);
+if(!src)AssertFailed(&data_020fd9a0,&data_020fd864,&data_020fd838,0x334);
+if(n<0)AssertFailed(&data_020fd9a8,&data_020fd864,&data_020fd838,0x335);
 if(!n)return;
 if(M2C_FIELD(p,s32 *,0x120)>=10)return;
 left=10-M2C_FIELD(p,s32 *,0x120);
@@ -315,16 +318,16 @@ s32 func_0204d39c(void *p, void *src, s32 n) {
     void func_0204d2d0(void *, void *, s32);
     s32 func_0204d26c(void *);
     s32 func_0204d1ac(void *, s32, s32);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020fd858, data_020fd864, data_020fd81c, data_020fd9a0, data_020fd9b4, data_020fd8a0;
 
     u8 *q;
     s32 left;
     s32 state;
 
-    if (!p) func_020640a8(&data_020fd858, &data_020fd864, &data_020fd81c, 0x35d);
-    if (!src) func_020640a8(&data_020fd9a0, &data_020fd864, &data_020fd81c, 0x35e);
-    if (n <= 0) func_020640a8(&data_020fd9b4, &data_020fd864, &data_020fd81c, 0x35f);
+    if (!p) AssertFailed(&data_020fd858, &data_020fd864, &data_020fd81c, 0x35d);
+    if (!src) AssertFailed(&data_020fd9a0, &data_020fd864, &data_020fd81c, 0x35e);
+    if (n <= 0) AssertFailed(&data_020fd9b4, &data_020fd864, &data_020fd81c, 0x35f);
     if (!M2C_FIELD(p, s32 *, 0x110)) goto tail;
 
     q = (u8 *)src;
@@ -377,7 +380,7 @@ s32 func_0204d39c(void *p, void *src, s32 n) {
             M2C_FIELD(p, s32 *, 0xFC) = 1;
             return 1;
         } else {
-            func_020640a8(&data_020fd8a0, &data_020fd864, &data_020fd81c, 0x3e3);
+            AssertFailed(&data_020fd8a0, &data_020fd864, &data_020fd81c, 0x3e3);
             return 0;
         }
     }

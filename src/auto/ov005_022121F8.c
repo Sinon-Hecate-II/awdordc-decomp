@@ -49,7 +49,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     M2C_UNK func_0209b3e8(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
     M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov005_02212244(s32, s32);
-    void func_020675e4(M2C_UNK, M2C_UNK, M2C_UNK);
+    void StringFormat(M2C_UNK, M2C_UNK, M2C_UNK);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern void *data_ov005_02220274;
@@ -75,7 +75,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
         if (M2C_FIELD(p, u16 *, 0x4) == 0) {
             func_0209b3e8(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(data_ov005_02220274, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
             func_0209b2b4(0x11, (s16)(arg0 + 5), 1, (M2C_UNK)data_ov005_02220278, 0x1000, (u16)(y + 0x24));
-            func_020675e4((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
+            StringFormat((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
             lo[0] = buf[0];
             lo[1] = buf[1];
             lo[2] = 0;
@@ -83,7 +83,7 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
             func_0209b2b4(0x12, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[2], 0x1000, (u16)(y + 0x26));
             func_0209b2b4(0x13, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[0], 0x1000, (u16)(y + 0x28));
             func_0209b2b4(0x14, (s16)(arg0 + 5), 1, (M2C_UNK)data_ov005_02220280, 0x1000, (u16)(y + 0x2A));
-            func_020675e4((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
+            StringFormat((M2C_UNK)buf, (M2C_UNK)data_ov005_02220284, M2C_FIELD(data_ov005_02220274, s32 *, 0xC));
             func_0209b2b4(0x15, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[2], 0x1000, (u16)(y + 0x2C));
             func_0209b2b4(0x16, (s16)(arg0 + 5), 1, (M2C_UNK)&lo[0], 0x1000, (u16)(y + 0x2E));
         } else {
@@ -325,8 +325,8 @@ void func_ov005_02212f54(void) {
 s16 *HistoryTabAt(s8);s32 func_02001fb4(s32,s32);
 void func_0208dd7c(s16,s16,s16,s16,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
-void *func_02086680(s32);s32 func_0209c268(void *);
-void func_0209b67c(u16,s16,s32,u16,s32);
+void *GetLocalizedText(s32);s32 func_0209c268(void *);
+void DrawTileRow(u16,s16,s32,u16,s32);
 void func_ov000_0216a374(u16,u16,u16,s32);
 extern void *gHistoryMenu,*gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern u8 data_027e0064[];
@@ -343,10 +343,10 @@ attr=(u16)(((0x140 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17
 func_0208dd7c(248,(s16)((height>>12)+40),2,(s16)width,attr,0,2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 AddSprite(174,9,(u16)(((0xa0 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x8000),data_027e0064,0);
-text=func_0209c268(func_02086680(M2C_FIELD(gHistoryMenu,s32 *,0x34)));
-func_0209b67c((u16)((252-text)&511),30,96,(u16)(((0xa4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
-text=func_0209c268(func_02086680(M2C_FIELD(gHistoryMenu,s32 *,0x38)));
-func_0209b67c((u16)((252-text)&511),54,96,(u16)(((0xbc >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
+text=func_0209c268(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x34)));
+DrawTileRow((u16)((252-text)&511),30,96,(u16)(((0xa4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
+text=func_0209c268(GetLocalizedText(M2C_FIELD(gHistoryMenu,s32 *,0x38)));
+DrawTileRow((u16)((252-text)&511),54,96,(u16)(((0xbc >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
 func_ov000_0216a374(220,78,(u16)(((0xd4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x9000),0);
 gCur3DSpriteEngine=saved;
 }

@@ -119,11 +119,11 @@ M2C_UNK func_ov000_0218cbc0(void) {
 void func_ov000_0218cfec(void) {
     M2C_UNK func_ov000_0218bbd0(M2C_UNK);
     M2C_UNK func_ov000_0218cbc0();
-    s32 func_ov000_021a98e4(u32);
+    s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
     s32 temp_r0;
 
-    temp_r0 = func_ov000_021a98e4((u32) (*M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) << 0x1A) >> 0x1A);
+    temp_r0 = GetUnitAttackClass((u32) (*M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) << 0x1A) >> 0x1A);
     switch (temp_r0) {                              /* irregular */
     case 0:
         func_ov000_0218cbc0();
@@ -156,7 +156,7 @@ void FindBestMoveTarget(void) {
     extern void **gCurrentMap;
     extern u8 *data_ov000_021df644;
     s32 func_ov000_0218d40c(void);
-    M2C_UNK func_01ffc328(s32);
+    M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 CanUnitAttackKind(void *, s32);
@@ -168,7 +168,7 @@ void FindBestMoveTarget(void) {
     s32 CellMoveScore(s32, s32, s32, s32);
     void func_ov000_0217c3a4(void);
     void SetMapCursor(s32,s32,s32,s32,s32);
-    s32 func_ov000_02196430(s16 *);void SelectMapLayer(void *);void func_01ffada0(s16,s16,s32,s32,s32);
+    s32 func_ov000_02196430(s16 *);void SelectMapLayer(void *);void FloodFillUnitRange(s16,s16,s32,s32,s32);
     s16 unitPos[2];
     s32 bestX = -1, bestY = -1, bestScore = 0x7fffffff, bestCost = 0x7fff, useTransport = 0;
     u8 *unit;
@@ -182,9 +182,9 @@ void FindBestMoveTarget(void) {
         unitPos[1]=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,2);
     }
     SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-    func_01ffada0(unitPos[0],unitPos[1],(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26,110,0);
+    FloodFillUnitRange(unitPos[0],unitPos[1],(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26,110,0);
     SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
     y = 0;
     map = *gCurrentMap;
     while (y < M2C_FIELD(map, u16 *, 0x5146)) {

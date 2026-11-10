@@ -8,86 +8,90 @@ typedef struct {
     u8 tail[4];
 } UnkState_021a36e4;
 #include "ov000_unit_entry.h"
+#include "battle_map.h"
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_ov000_021a2fe8(void) {
+/* Plan a transport (unit kind 19) action: pick a target, reject the map when an
+ * enemy threatens it, and commit once enough capture units are waiting for the
+ * empty transports. */
+s32 PlanTransportAction(void) {
  extern void **gCurrentMap;
  extern u8 gAiTargetCandidates[];
- extern M2C_UNK data_ov000_021df7d0;
- void func_ov000_021a07c0(s32);
- s32 func_ov000_021a6150(s32);
+ extern M2C_UNK gAiCommand;
+ void CommitAiAction(s32);
+ s32 FindAiTargetByCost(s32);
  s32 IsCurrentPlayerUnit(s16);
- s32 id;
+ s32 candidateIndex;
  u32 unitId;
  UnkStruct_ov000_021A860C *unit;
- u8 transports, count;
+ u8 emptyTransports, captureUnits;
  s32 x,y;
- u8 *record;
- void *base;
- if(func_ov000_021a6e08(3)==1)return 0;
+ u8 *candidate;
+ void *map;
+ if(HasAiTargetOfType(3)==1)return 0;
 retry:
- id=func_ov000_021a6150(2);
- if(id==-1){func_ov000_021a0204();return 0;}
- record=gAiTargetCandidates+id*12;
+ candidateIndex=FindAiTargetByCost(2);
+ if(candidateIndex==-1){ResetAiTargetCandidates();return 0;}
+ candidate=gAiTargetCandidates+candidateIndex*12;
  {
  s32 unused=0;
- func_01ffada0(record[0],record[1],2,110,0);
+ FloodFillUnitRange(candidate[0],candidate[1],2,110,0);
  }
- count=0;transports=0;
- base=*gCurrentMap;
- for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
- for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++){
- if(M2C_FIELD((u8*)base+y*4,s8**,0x52e8)[x]>=0){
- unitId=M2C_FIELD((u8*)base+x+M2C_FIELD((u8*)base+y*2,u16*,0x3758),u8*,0);
+ captureUnits=0;emptyTransports=0;
+ map=*gCurrentMap;
+ for(y=0;y<M2C_FIELD(map,u16*,MAP_HEIGHT);y++){
+ for(x=0;x<M2C_FIELD(map,u16*,MAP_WIDTH);x++){
+ if(M2C_FIELD((u8*)map+y*4,s8**,MAP_GRID)[x]>=0){
+ unitId=M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,MAP_ROW_OFFSETS),u8*,0);
  if(unitId){
- if(func_020ba924(x,y)==1)goto reject;
- unit=(UnkStruct_ov000_021A860C *)((u8*)*gCurrentMap+0x59a4)+unitId;
+ if(GetTerrainPropertyFlagsAt(x,y)==1)goto reject;
+ unit=(UnkStruct_ov000_021A860C *)((u8*)*gCurrentMap+MAP_UNIT_RECORDS)+unitId;
  if(!IsUnitOnCurrentTeam(unitId)){
  if(!IsFootUnitKind(unit->unk0)){
  if(!func_020a7bd4(unit->unk0))goto next;
  goto reject;
  }
  }else if(IsCurrentPlayerUnit((s16)unitId)==1){
- if(unit->unk0==19 && unit->unkC[0]==0)transports++;
- if(func_ov000_021a98c8(unit->unk0))count++;
+ if(unit->unk0==19 && unit->unkC[0]==0)emptyTransports++;
+ if(IsCaptureKind(unit->unk0))captureUnits++;
  }
  }
  }
 next:
- base=*gCurrentMap;
+ map=*gCurrentMap;
  }
  }
- if((transports+1)*3>count)goto reject;
- M2C_FIELD(&data_ov000_021df7d0,u8*,6)=19;
- func_ov000_021a07c0(id);
- func_ov000_021a0204();return 1;
+ if((emptyTransports+1)*3>captureUnits)goto reject;
+ M2C_FIELD(&gAiCommand,u8*,6)=19;
+ CommitAiAction(candidateIndex);
+ ResetAiTargetCandidates();return 1;
 reject:
- record[3]=253;
+ candidate[3]=253;
  goto retry;
 }
 #pragma pop
 
 s32 func_ov000_021a3210(void){
 s32 func_0207c8ec(s32,s32);s32 func_020d2d18(u16,s32);
-void func_ov000_021a07c0(s32);s32 func_ov000_021a2fe8(void);s32 func_ov000_021a6150(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);
-extern void **gCurrentMap;extern void *data_ov000_021df580;extern void *gAiState;extern void *data_ov000_021df57c;extern M2C_UNK data_ov000_021df7d0;
+void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);
+extern void **gCurrentMap;extern void *data_ov000_021df580;extern void *gAiState;extern void *data_ov000_021df57c;extern M2C_UNK gAiCommand;
 void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
 if(func_020d2d18(id,19)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 if(M2C_FIELD(data_ov000_021df580,u8 *,6)==1){n=M2C_FIELD(data_ov000_021df57c,u8 *,19);if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;}
-if(func_ov000_021a2fe8()==1)return 1;r=func_ov000_021a6150(2);if(r==-1){r=func_ov000_021a5ffc(2);if(r==-1)return 0;}
+if(PlanTransportAction()==1)return 1;r=FindAiTargetByCost(2);if(r==-1){r=func_ov000_021a5ffc(2);if(r==-1)return 0;}
 v=func_ov000_021a88c8(19);
 n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
 if(func_0207c8ec(v*100,n)<M2C_FIELD(data_ov000_021df57c,u8 *,11)){
-M2C_FIELD(&data_ov000_021df7d0,u8 *,6)=19;
+M2C_FIELD(&gAiCommand,u8 *,6)=19;
 }else{return 0;}
-func_ov000_021a07c0(r);return 1;
+CommitAiAction(r);return 1;
 }
 
 s32 func_ov000_021a3364(void){
 s32 func_0207c8ec(s32,s32);s32 func_020d2d18(u16,s32);
-void func_ov000_021a07c0(s32);s32 func_ov000_021a61cc(s32);s32 func_ov000_021a88c8(s32);
-extern void **gCurrentMap;extern void *gAiState;extern void *data_ov000_021df57c;extern M2C_UNK data_ov000_021df7d0;
+void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 func_ov000_021a88c8(s32);
+extern void **gCurrentMap;extern void *gAiState;extern void *data_ov000_021df57c;extern M2C_UNK gAiCommand;
 void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
 if(func_020d2d18(id,13)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 n=M2C_FIELD(data_ov000_021df57c,u8 *,18);
@@ -96,9 +100,9 @@ r=func_ov000_021a61cc(1);if(r==-1)return 0;
 t=func_ov000_021a88c8(13);v=t+func_ov000_021a88c8(19);
 n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
 if(func_0207c8ec(v*100,n)<M2C_FIELD(data_ov000_021df57c,u8 *,12)){
-M2C_FIELD(&data_ov000_021df7d0,u8 *,6)=13;
+M2C_FIELD(&gAiCommand,u8 *,6)=13;
 }else{return 0;}
-func_ov000_021a07c0(r);return 1;
+CommitAiAction(r);return 1;
 }
 
 u8 func_ov000_021a3484(s32 a) {
@@ -158,7 +162,7 @@ return count;
 s32 func_ov000_021a36e4(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021a98c8(s32);
+s32 IsCaptureKind(s32);
 s32 count=0;
 s32 i;
 void *base=*gCurrentMap;
@@ -166,7 +170,7 @@ u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
 UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 u32 type=entry->unk0;
-if(type!=0 && func_ov000_021a98c8(type)!=0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
+if(type!=0 && IsCaptureKind(type)!=0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
 }
 return count;
 }
@@ -174,7 +178,7 @@ return count;
 s32 func_ov000_021a379c(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021a98c8(s32);
+s32 IsCaptureKind(s32);
 s32 count=0;
 s32 i;
 void *base=*gCurrentMap;
@@ -182,7 +186,7 @@ u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
 UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 u32 type=entry->unk0;
-if(type!=0 && func_ov000_021a98c8(type)==0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
+if(type!=0 && IsCaptureKind(type)==0 && ((UnkState_021a36e4 *)entry)->state==2) count++;
 }
 return count;
 }
@@ -194,10 +198,10 @@ s32 func_ov000_021a3854(void) {
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates[];
 extern M2C_UNK data_ov000_021b5bfc;
-extern M2C_UNK data_ov000_021df7d0;
-s32 func_ov000_021a6150(s32);
+extern M2C_UNK gAiCommand;
+s32 FindAiTargetByCost(s32);
 s32 IsCurrentPlayerUnit(s16);
-void func_ov000_021a07c0(s32);
+void CommitAiAction(s32);
 UnkStruct_ov000_021A860C *unit;
 u32 uid;
 s32 c7,c8,y,x,c18,c14,initial,flag,id,i;
@@ -206,10 +210,10 @@ void *base;
 u8 *record;
 initial=(u8)(func_ov000_021a88c8(24)+func_ov000_021a88c8(25));
 retry:
-id=func_ov000_021a6150(3);
-if(id==-1){func_ov000_021a0204();return 0;}
+id=FindAiTargetByCost(3);
+if(id==-1){ResetAiTargetCandidates();return 0;}
 record=gAiTargetCandidates+12*id;
-func_01ffada0(record[0],record[1],2,110,0);
+FloodFillUnitRange(record[0],record[1],2,110,0);
 for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16*,0x52a4),24);i++)
 func_ov000_021a34bc((u8)(i+111));
 c7=0;c8=0;c11=0;c18=0;y=0;c14=0;flag=0;
@@ -219,7 +223,7 @@ for(;y<M2C_FIELD(base,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16*,0x5144);){
 if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<0)goto next;
 if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<=110){
-if(func_020ba924(x,y)==1)goto mark;
+if(GetTerrainPropertyFlagsAt(x,y)==1)goto mark;
 {
 base=*gCurrentMap;
 i=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x1420);
@@ -241,9 +245,9 @@ goto reject;
 base=*gCurrentMap;
 if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<=110){
 if(((UnkState_021a36e4*)unit)->state==2){
-if(func_ov000_021a98c8(unit->unk0))c8=(s8)(c8+1);
+if(IsCaptureKind(unit->unk0))c8=(s8)(c8+1);
 else c7=(s8)(c7+1);
-}else if(func_ov000_021a98c8(unit->unk0))c18=(s8)(c18+1);
+}else if(IsCaptureKind(unit->unk0))c18=(s8)(c18+1);
 }
 if(unit->unk0==24 && unit->unkC[0]==0)c11=(s8)(c11+1);
 if(unit->unk0==25 && unit->unkC[0]==0)c14=(s8)(c14+1);
@@ -256,12 +260,12 @@ if(!flag)c8=(s8)(c8+c18);
 c11=(s8)(c11-(c7>>2));
 if(c11<0)c11=0;
 if(c8>=((c14+1+c11)<<2)){
-M2C_FIELD(&data_ov000_021df7d0,u8*,6)=25;
-func_ov000_021a07c0(id);return 1;
+M2C_FIELD(&gAiCommand,u8*,6)=25;
+CommitAiAction(id);return 1;
 }
 if(c8 && !initial){
-M2C_FIELD(&data_ov000_021df7d0,u8*,6)=25;
-func_ov000_021a07c0(id);func_ov000_021a0204();return 1;
+M2C_FIELD(&gAiCommand,u8*,6)=25;
+CommitAiAction(id);ResetAiTargetCandidates();return 1;
 }
 reject:
 record[3]=253;goto retry;
@@ -269,17 +273,17 @@ record[3]=253;goto retry;
 #pragma pop
 s32 func_ov000_021a3c84(void){
 s32 func_020d2d18(u16,s32);s32 func_ov000_021a43a0(s32);s32 func_ov000_021a3854(void);
-s32 func_ov000_021a6150(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);void func_ov000_021a07c0(s32);
-extern void **gCurrentMap;extern M2C_UNK data_ov000_021df7d0;
+s32 FindAiTargetByCost(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);void CommitAiAction(s32);
+extern void **gCurrentMap;extern M2C_UNK gAiCommand;
 void *p;u16 id;s32 r,a,b,n,x,y,z;
 if(!func_ov000_021a43a0(1))return 0;
 p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
 if(func_020d2d18(id,25)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 if(func_ov000_021a3854()==1)return 1;
-r=func_ov000_021a6150(3);if(r==-1){r=func_ov000_021a5ffc(3);if(r==-1)return 0;}
+r=FindAiTargetByCost(3);if(r==-1){r=func_ov000_021a5ffc(3);if(r==-1)return 0;}
 a=func_ov000_021a88c8(24);b=func_ov000_021a88c8(25);
 n=func_ov000_021a36e4();if(!n)return 0;
 if(a+b){x=func_ov000_021a3644(24);y=func_ov000_021a3644(25)+1;z=x-(func_ov000_021a379c()>>2);if(z<0)z=0;if(n<(y+z)*4)return 0;}
-M2C_FIELD(&data_ov000_021df7d0,u8 *,6)=25;func_ov000_021a07c0(r);return 1;
+M2C_FIELD(&gAiCommand,u8 *,6)=25;CommitAiAction(r);return 1;
 }
 

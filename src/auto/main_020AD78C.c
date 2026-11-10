@@ -7,13 +7,13 @@ static inline void DisplayClearBits(u16 *reg,u16 bits) { *reg &= ~bits; }
 #pragma pop
 
 #pragma opt_common_subs off
-void func_020ad78c(void) {
+void DrawScreenTransition(void) {
     void func_020ad67c(void);
     s32 func_020ad690(void);
     s32 func_020ad6b0(void);
     s32 func_020ad6d0(void);
     void func_01ff9ce8(u8);
-    void func_02068c50(void *, void *);
+    void StringCopy(void *, void *);
     void func_02068d68(void *, void *);
     M2C_UNK func_020e3218(M2C_UNK);
     u8 func_020814e4(M2C_UNK);
@@ -22,7 +22,7 @@ void func_020ad78c(void) {
     void func_020816cc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02081528(void);
 
-    extern s32 data_0215c428;
+    extern s32 gScreenTransition;
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
     typedef struct { void *p; s32 pad; } E8;
@@ -42,14 +42,14 @@ void func_020ad78c(void) {
     func_020ad67c();
     func_01ff9ce8((u8)func_020ad690());
 
-    idx = ((s16 *)data_0215c428)[1];
-    func_02068c50((void *)sp, data_02127c08[idx].p);
+    idx = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d8c);
 
     func_020814e4(func_020e3218((M2C_UNK)sp));
 
-    idx = ((s16 *)data_0215c428)[1];
-    func_02068c50((void *)sp, data_02127c08[idx].p);
+    idx = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d94);
 
     if (func_020ad690() == 0) {
@@ -58,15 +58,15 @@ void func_020ad78c(void) {
         func_020815fc(func_020e3218((M2C_UNK)sp), 0x100, 0x100);
     }
 
-    idx = ((s16 *)data_0215c428)[1];
-    func_02068c50((void *)sp, data_02127c08[idx].p);
+    idx = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d98);
 
     h = func_020e3218((M2C_UNK)sp);
     func_02081590(h, (void *)((char *)0 + func_020ad6b0() + 0x20));
 
-    idx = ((s16 *)data_0215c428)[1];
-    func_02068c50((void *)sp, data_02127c08[idx].p);
+    idx = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d9c);
 
     if (func_020ad690() == 0) {
@@ -95,25 +95,28 @@ void func_020ad968(void) {
 
 #pragma push
 #pragma opt_common_subs on
-void func_020ad9b8(M2C_UNK a0) {
+/* Initialise the screen-change transition: configure the sub 3D sprite
+ * engine's layers and corner sprites, load the x_change textures, and start
+ * the 12-byte animation state from the variant in screenInfo+0x5C. */
+void InitScreenTransition(M2C_UNK a0) {
     void func_020ad968(void);
     void func_020ad67c(void);
     s32 func_020ad690(void);
     void func_01ff9ce8(u8);
-    void func_020ad78c(void);
+    void DrawScreenTransition(void);
     M2C_UNK func_020e3218(M2C_UNK);
     M2C_UNK func_02080cfc(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208116c(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020ad6f0(void);
-    void func_020ae028(s32);
+    void SetScreenTransitionEnabled(s32);
     M2C_UNK func_020e34bc(M2C_UNK);
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
 
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
-    extern s32 data_0215c428;
-    extern char data_02127da0[];
-    extern char data_02127dac[];
+    extern s32 gScreenTransition;
+    extern char sScreenChangeCgFile[];
+    extern char sScreenChangeClFile[];
 
     u16 **saved;
 
@@ -143,35 +146,35 @@ void func_020ad9b8(M2C_UNK a0) {
     ((u8 *)*gCur3DSpriteEngine)[0x52] = 0;
     ((u8 *)*gCur3DSpriteEngine)[0x53] = 0;
 
-    data_0215c428 = (s32)func_020e34bc(0xc);
-    func_02007f8c((M2C_UNK)data_0215c428, 0, 0xc);
+    gScreenTransition = (s32)func_020e34bc(0xc);
+    func_02007f8c((M2C_UNK)gScreenTransition, 0, 0xc);
 
-    *(s16 *)((char *)data_0215c428 + 2) = (s16)M2C_FIELD(a0, s32 *, 0x5c);
-    *(s16 *)((char *)data_0215c428 + 4) = 0;
-    *(s16 *)((char *)data_0215c428 + 10) = 0;
-    *(s16 *)((char *)data_0215c428 + 8) = 20;
-    *(s16 *)((char *)data_0215c428 + 6) = *(s16 *)((char *)data_0215c428 + 8);
+    *(s16 *)((char *)gScreenTransition + 2) = (s16)M2C_FIELD(a0, s32 *, 0x5c);
+    *(s16 *)((char *)gScreenTransition + 4) = 0;
+    *(s16 *)((char *)gScreenTransition + 10) = 0;
+    *(s16 *)((char *)gScreenTransition + 8) = 20;
+    *(s16 *)((char *)gScreenTransition + 6) = *(s16 *)((char *)gScreenTransition + 8);
 
     func_020ad67c();
     func_01ff9ce8((u8)func_020ad690());
-    func_020ad78c();
+    DrawScreenTransition();
 
-    func_02080cfc(func_020e3218((M2C_UNK)data_02127da0),
+    func_02080cfc(func_020e3218((M2C_UNK)sScreenChangeCgFile),
         (M2C_UNK)(*(u32 *)((u8 *)g3DSpriteEngineSub + 0x1c) + 0x2800));
-    func_0208116c((M2C_UNK)data_02127dac, 0x2c0, 0x20);
+    func_0208116c((M2C_UNK)sScreenChangeClFile, 0x2c0, 0x20);
 
     func_020ad6f0();
-    func_020ae028(1);
+    SetScreenTransitionEnabled(1);
 
     gCur3DSpriteEngine = saved;
 }
 #pragma pop
 void func_020adc20(void) {
  void func_020e35cc(s32);
- extern s32 data_0215c428;
- if(data_0215c428!=0) {
- func_020e35cc(data_0215c428);
- data_0215c428=0;
+ extern s32 gScreenTransition;
+ if(gScreenTransition!=0) {
+ func_020e35cc(gScreenTransition);
+ gScreenTransition=0;
  }
 }
 #pragma opt_common_subs reset
@@ -220,7 +223,7 @@ void func_020adde0(void) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void func_020ad6f0(void);
 
-    extern s32 data_0215c428;
+    extern s32 gScreenTransition;
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
 
@@ -232,7 +235,7 @@ void func_020adde0(void) {
     s16 hi;
     s16 lo;
 
-    if (((s16 *)data_0215c428)[0] & 4) {
+    if (((s16 *)gScreenTransition)[0] & 4) {
         if (func_0207b7c4() != 0) {
             return;
         }
@@ -243,7 +246,7 @@ void func_020adde0(void) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
-    switch (((s16 *)data_0215c428)[3]) {
+    switch (((s16 *)gScreenTransition)[3]) {
     case 0:
         func_020ad74c();
         break;
@@ -261,26 +264,26 @@ void func_020adde0(void) {
         }
         break;
     default:
-        if (((s16 *)data_0215c428)[3] == ((s16 *)data_0215c428)[4]) {
+        if (((s16 *)gScreenTransition)[3] == ((s16 *)gScreenTransition)[4]) {
             func_020ad6f0();
         }
         break;
     }
 
-    v = ((s16 *)data_0215c428)[5];
+    v = ((s16 *)gScreenTransition)[5];
     idx = (u8)func_020ad690();
     *((u16 *)((char *)*gCur3DSpriteEngine + 0x38 + (idx << 1))) = v;
     *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (idx << 1))) = 0;
 
-    pp = (s16 *)data_0215c428;
+    pp = (s16 *)gScreenTransition;
     res = EaseInterpolate(4, 0x100, 0, pp[3], pp[4]);
 
-    ((s16 *)data_0215c428)[5] = res;
-    ((s16 *)data_0215c428)[3] = ((s16 *)data_0215c428)[3] + 1;
-    hi = ((s16 *)data_0215c428)[4];
-    lo = ((s16 *)data_0215c428)[3];
+    ((s16 *)gScreenTransition)[5] = res;
+    ((s16 *)gScreenTransition)[3] = ((s16 *)gScreenTransition)[3] + 1;
+    hi = ((s16 *)gScreenTransition)[4];
+    lo = ((s16 *)gScreenTransition)[3];
     if (lo >= hi) {
-        ((s16 *)data_0215c428)[3] = hi;
+        ((s16 *)gScreenTransition)[3] = hi;
     }
 
     gCur3DSpriteEngine = saved;
@@ -295,51 +298,51 @@ s32 func_020adfd0(void) {
 }
 
 s32 func_020adff4(void) {
- extern s32 data_0215c428;
+ extern s32 gScreenTransition;
  if(func_020adfd0()==0) return 0;
- if(data_0215c428==0) return 0;
- return *(s16 *)data_0215c428 & 2;
+ if(gScreenTransition==0) return 0;
+ return *(s16 *)gScreenTransition & 2;
 }
 
-void func_020ae028(s32 arg0) {
- extern s32 data_0215c428;
+void SetScreenTransitionEnabled(s32 arg0) {
+ extern s32 gScreenTransition;
  s16 temp_r0;
- if(func_020adfd0()!=0 && data_0215c428!=0) {
- temp_r0=*(s16 *)data_0215c428;
- if(arg0!=0) { *(s16 *)data_0215c428=temp_r0|2; return; }
- *(s16 *)data_0215c428=temp_r0 & ~2;
+ if(func_020adfd0()!=0 && gScreenTransition!=0) {
+ temp_r0=*(s16 *)gScreenTransition;
+ if(arg0!=0) { *(s16 *)gScreenTransition=temp_r0|2; return; }
+ *(s16 *)gScreenTransition=temp_r0 & ~2;
  }
 }
 
 s32 func_020ae068(void) {
     s32 func_020adfd0(void);
-    extern s32 data_0215c428;
+    extern s32 gScreenTransition;
     if (func_020adfd0() == 0) {
         return 0;
     }
-    if (data_0215c428 != 0) {
-        *(s16 *)data_0215c428 |= 4;
+    if (gScreenTransition != 0) {
+        *(s16 *)gScreenTransition |= 4;
         return 1;
     }
     return 0;
 }
 
 s32 func_020ae0a8(void) {
-    extern s32 data_0215c428;
+    extern s32 gScreenTransition;
     if (func_020adfd0() == 0) return -1;
-    if (data_0215c428 == 0) return -1;
-    return *(s16 *)(data_0215c428 + 2);
+    if (gScreenTransition == 0) return -1;
+    return *(s16 *)(gScreenTransition + 2);
 }
 
 void func_020ae0d8(s32 arg0, s32 arg1) {
     M2C_UNK func_020ad70c();
     M2C_UNK func_020d8ce8(s32);
     M2C_UNK PlaySoundEffect(s32);
-    extern s32 data_0215c428;
+    extern s32 gScreenTransition;
     func_020ad70c();
-    *(s16 *)(data_0215c428 + 6) = 0;
-    *(s16 *)(data_0215c428 + 8) = arg1;
-    *(s16 *)(data_0215c428 + 2) = arg0;
+    *(s16 *)(gScreenTransition + 6) = 0;
+    *(s16 *)(gScreenTransition + 8) = arg1;
+    *(s16 *)(gScreenTransition + 2) = arg0;
     func_020d8ce8(arg0);
     PlaySoundEffect(0x10021);
 }
@@ -347,8 +350,8 @@ void func_020ae0d8(s32 arg0, s32 arg1) {
 void func_020ae124(s32 arg0) {
     s32 func_020ad728();
     void func_020ae0d8(s32, s32);
-    extern s32 data_0215c428;
-    if (func_020adfd0() != 0 && data_0215c428 != 0) {
+    extern s32 gScreenTransition;
+    if (func_020adfd0() != 0 && gScreenTransition != 0) {
         if (func_020ad728() == 0) return;
         func_020ae0d8(arg0, 0x14);
     }
@@ -356,8 +359,8 @@ void func_020ae124(s32 arg0) {
 
 void func_020ae164(s32 arg0) {
 s32 func_020ad728();
-extern s32 data_0215c428;
-if(func_020adfd0()!=0 && data_0215c428!=0) {
+extern s32 gScreenTransition;
+if(func_020adfd0()!=0 && gScreenTransition!=0) {
 if(func_020ad728()==0)return;
 func_020ae0d8(arg0,14);
 }
@@ -365,10 +368,10 @@ func_020ae0d8(arg0,14);
 
 u8 func_020ae1a4(void) {
 s32 func_020ad728();
-extern s32 data_0215c428;
+extern s32 gScreenTransition;
 u8 result;
 if(!func_020adfd0())return 0;
-if(!data_0215c428)return 0;
+if(!gScreenTransition)return 0;
 if(func_020ad728()!=0)result=1;else result=0;
 return result;
 }

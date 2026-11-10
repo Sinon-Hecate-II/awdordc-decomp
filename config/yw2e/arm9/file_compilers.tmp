@@ -1,5 +1,5 @@
 {
-  "src/auto/itcm_01FF8000.c": "2.0/sp1p6",
+  "src/auto/itcm_01FF8000.c": "2.0/sp2p4",
   "src/auto/itcm_01FF8F90.c": "2.0/sp1p7",
   "src/auto/itcm_01FF9E44.c": "2.0/sp2p4",
   "src/auto/itcm_01FF9ED0.c": "2.0/sp1p6",
@@ -73,6 +73,7 @@
   "src/auto/main_020D9A98.c": "2.0/sp2p2",
   "src/auto/ov000_0216ABA8.c": "2.0/sp2p4",
   "src/auto/ov000_02172754.c": "2.0/base",
+  "src/auto/ov000_02173468.c": "2.0/sp1p2",
   "src/auto/ov000_0217BCD4.c": "2.0/sp1",
   "src/auto/ov000_0217D86C.c": "2.0/sp2",
   "src/auto/ov000_021843EC.c": "2.0/base",

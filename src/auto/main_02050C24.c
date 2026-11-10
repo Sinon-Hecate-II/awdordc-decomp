@@ -3,16 +3,16 @@
 
 s32 func_02050c24(void **arg0, void *arg1) {
     void *func_02021768(M2C_UNK *);
-    s32 func_020492ec(s32, M2C_UNK);
-    s32 func_020496a4(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 ghiSetNonBlocking(s32, M2C_UNK);
+    s32 ghiSocket(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020496e0(s32, M2C_UNK *, M2C_UNK);
-    s32 func_02049740(s32, M2C_UNK *, M2C_UNK);
+    s32 ghiConnect(s32, M2C_UNK *, M2C_UNK);
     s32 func_0204978c(s32);
     s32 func_020498b8(s32, M2C_UNK *, s32 *);
-    s32 func_02049900(s32);
+    s32 ghiGetLastSocketError(s32);
     M2C_UNK func_02050744(void **, M2C_UNK, M2C_UNK);
     M2C_UNK func_02058620(void **, M2C_UNK, M2C_UNK *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe1f0;
     extern M2C_UNK data_020fe210;
     extern M2C_UNK data_020fe290;
@@ -38,14 +38,14 @@ s32 func_02050c24(void **arg0, void *arg1) {
 
     temp_r4 = *arg0;
     if (M2C_FIELD(temp_r4, s32 *, 0x10C) == 0) {
-        temp_r0 = func_020496a4(2, 1, 0);
+        temp_r0 = ghiSocket(2, 1, 0);
         M2C_FIELD(temp_r4, s32 *, 0x204) = temp_r0;
         if (temp_r0 == -1) {
             func_02058620(arg0, 5, &data_020fe290);
             func_02050744(arg0, 3, 1);
             return 3;
         }
-        if (func_020492ec(temp_r0, 0) == 0) {
+        if (ghiSetNonBlocking(temp_r0, 0) == 0) {
             func_02058620(arg0, 5, &data_020fe2b8);
             func_02050744(arg0, 3, 1);
             return 3;
@@ -75,14 +75,14 @@ s32 func_02050c24(void **arg0, void *arg1) {
     M2C_FIELD(temp_r4, s32 *, 0x204) = -1;
     M2C_FIELD(temp_r4, s32 *, 0x208) = 0;
 block_13:
-    temp_r0_2 = func_020496a4(2, 1, 0);
+    temp_r0_2 = ghiSocket(2, 1, 0);
     M2C_FIELD(temp_r4, s32 *, 0x1D4) = temp_r0_2;
     if (temp_r0_2 == -1) {
         func_02058620(arg0, 5, &data_020fe290);
         func_02050744(arg0, 3, 1);
         return 3;
     }
-    if (func_020492ec(temp_r0_2, 0) == 0) {
+    if (ghiSetNonBlocking(temp_r0_2, 0) == 0) {
         func_02058620(arg0, 5, &data_020fe2b8);
         func_02050744(arg0, 3, 1);
         return 3;
@@ -99,11 +99,11 @@ block_13:
     temp_r0_4 = **M2C_FIELD(temp_r0_3, s32 ***, 0xC);
     sp8 = temp_r0_4;
     if (temp_r0_4 == 0) {
-        func_020640a8(&data_020fe3a4, &data_020fe3c4, &data_020fe1f0, 0x90);
+        AssertFailed(&data_020fe3a4, &data_020fe3c4, &data_020fe1f0, 0x90);
     }
     sp6 = 0xCC74;
-    if (func_02049740(M2C_FIELD(temp_r4, s32 *, 0x1D4), &sp4, 8) == -1) {
-        temp_r0_5 = func_02049900(M2C_FIELD(temp_r4, s32 *, 0x1D4));
+    if (ghiConnect(M2C_FIELD(temp_r4, s32 *, 0x1D4), &sp4, 8) == -1) {
+        temp_r0_5 = ghiGetLastSocketError(M2C_FIELD(temp_r4, s32 *, 0x1D4));
         if ((temp_r0_5 != -6) && (temp_r0_5 != -0x1A) && (temp_r0_5 != -0x4C)) {
             func_02058620(arg0, 5, &data_020fe3d4);
             func_02050744(arg0, 3, 1);
@@ -118,80 +118,83 @@ block_13:
     return 0;
 }
 
-s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5, s8 *arg6, s8 *arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC) {
+/* Prepare a GPI connection: store the login profile strings (nick, unique nick,
+   email, lowercased, password) and an optional peer name/token/CD key in a new
+   connection object, then create its operation and open the sockets. */
+s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *password, s8 *peerNick, s8 *peerUniqNick, s8 *cdKey, s32 firewall, s32 newUser, s32 completionFlag, s32 callback, s32 callbackParam) {
     void *func_02037794(M2C_UNK);
-    M2C_UNK func_020492a8(void *);
-    s32 func_0204e84c(void **);
-    s32 func_0204ec8c(void **, s32);
+    M2C_UNK StringToLower(void *);
+    s32 gpiResetConnection(void **);
+    s32 gpiThink(void **, s32);
     s32 func_02050c24(void **, void *);
-    M2C_UNK func_02052038(void **, M2C_UNK);
-    M2C_UNK func_02053fe4(void **, void *);
-    s32 func_02054330(void **, M2C_UNK, void *, void **, s32, s32, s32);
-    M2C_UNK func_020580fc(void *, s8 *, M2C_UNK);
+    M2C_UNK gpiDisconnect(void **, M2C_UNK);
+    M2C_UNK gpiFinishOperation(void **, void *);
+    s32 gpiAddOperation(void **, M2C_UNK, void *, void **, s32, s32, s32);
+    M2C_UNK StringCopyN(void *, s8 *, M2C_UNK);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_020fe3fc;
     extern M2C_UNK data_020fe410;
     extern M2C_UNK data_020fe424;
-    void *spC;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r0_4;
-    void *temp_r0_5;
-    void *temp_r4;
+    void *newSession;
+    s32 result;
+    s32 status;
+    s32 opResult;
+    s32 checkResult;
+    void *peer;
+    void *session;
 
-    temp_r4 = *arg0;
-    if (M2C_FIELD(temp_r4, s32 *, 0x1D8) == 4) {
-        temp_r0_4 = func_0204e84c(arg0);
-        if (temp_r0_4 != 0) {
-            return temp_r0_4;
+    session = *conn;
+    if (M2C_FIELD(session, s32 *, 0x1D8) == 4) {
+        checkResult = gpiResetConnection(conn);
+        if (checkResult != 0) {
+            return checkResult;
         }
     }
-    if (M2C_FIELD(temp_r4, s32 *, 0x1D8) != 0) {
-        gpiSetErrorString(arg0, &data_020fe3fc);
+    if (M2C_FIELD(session, s32 *, 0x1D8) != 0) {
+        gpiSetErrorString(conn, &data_020fe3fc);
         return 2;
     }
-    switch(arg8) {
-    case 1: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 1; break;
-    case 0: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 0; break;
-    default: gpiSetErrorString(arg0, &data_020fe410); return 2;
+    switch (firewall) {
+    case 1: M2C_FIELD(session, volatile s32 *, 0x10C) = 1; break;
+    case 0: M2C_FIELD(session, volatile s32 *, 0x10C) = 0; break;
+    default: gpiSetErrorString(conn, &data_020fe410); return 2;
     }
-    M2C_FIELD(temp_r4, s32 *, 0x10C) = 1;
-    func_020580fc(temp_r4 + 0x110, arg1, 0x1F);
-    func_020580fc(temp_r4 + 0x12F, arg2, 0x15);
-    func_020580fc(temp_r4 + 0x144, arg3, 0x33);
-    func_020580fc(temp_r4 + 0x177, arg4, 0x1F);
-    func_020492a8(temp_r4 + 0x144);
-    temp_r0_5 = func_02037794(0x308);
-    if (temp_r0_5 == NULL) {
-        gpiSetErrorString(arg0, &data_020fe424);
+    M2C_FIELD(session, s32 *, 0x10C) = 1;
+    StringCopyN(session + 0x110, nick, 0x1F);
+    StringCopyN(session + 0x12F, uniqnick, 0x15);
+    StringCopyN(session + 0x144, email, 0x33);
+    StringCopyN(session + 0x177, password, 0x1F);
+    StringToLower(session + 0x144);
+    peer = func_02037794(0x308);
+    if (peer == NULL) {
+        gpiSetErrorString(conn, &data_020fe424);
         return 1;
     }
-    func_02065210(temp_r0_5, 0, 0x308);
-    M2C_FIELD(temp_r0_5, s32 *, 0x304) = arg9;
-    if ((*arg5 != 0) && (*arg6 != 0)) {
-        func_020580fc(temp_r0_5 + 0xC2, arg5, 0x100);
-        func_020580fc(temp_r0_5 + 0x1C2, arg6, 0x100);
+    func_02065210(peer, 0, 0x308);
+    M2C_FIELD(peer, s32 *, 0x304) = newUser;
+    if ((*peerNick != 0) && (*peerUniqNick != 0)) {
+        StringCopyN(peer + 0xC2, peerNick, 0x100);
+        StringCopyN(peer + 0x1C2, peerUniqNick, 0x100);
     }
-    if (arg7 != NULL) {
-        func_020580fc(temp_r0_5 + 0x2C2, arg7, 0x41);
+    if (cdKey != NULL) {
+        StringCopyN(peer + 0x2C2, cdKey, 0x41);
     }
-    temp_r0_3 = func_02054330(arg0, 0, temp_r0_5, &spC, argA, argB, argC);
-    if (temp_r0_3 != 0) {
-        return temp_r0_3;
+    opResult = gpiAddOperation(conn, 0, peer, &newSession, completionFlag, callback, callbackParam);
+    if (opResult != 0) {
+        return opResult;
     }
-    temp_r0_2 = func_02050c24(arg0, spC);
-    if (temp_r0_2 != 0) {
-        M2C_FIELD(spC, s32 *, 0x1C) = temp_r0_2;
-        func_02053fe4(arg0, spC);
-        func_02052038(arg0, 0);
-        return temp_r0_2;
+    status = func_02050c24(conn, newSession);
+    if (status != 0) {
+        M2C_FIELD(newSession, s32 *, 0x1C) = status;
+        gpiFinishOperation(conn, newSession);
+        gpiDisconnect(conn, 0);
+        return status;
     }
-    if (M2C_FIELD(spC, s32 *, 8) != 0) {
-        temp_r0 = func_0204ec8c(arg0, M2C_FIELD(spC, s32 *, 0x18));
-        if (temp_r0 != 0) {
-            return temp_r0;
+    if (M2C_FIELD(newSession, s32 *, 8) != 0) {
+        result = gpiThink(conn, M2C_FIELD(newSession, s32 *, 0x18));
+        if (result != 0) {
+            return result;
         }
     }
     return 0;
@@ -199,8 +202,8 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
 
 void func_020511dc(void *a, void *b) {
     M2C_UNK func_02050bbc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020491bc(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, ...);
+    M2C_UNK Md5Hex(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK StringFormat(M2C_UNK, M2C_UNK, ...);
     M2C_UNK func_02055c68(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, M2C_UNK);
@@ -224,13 +227,13 @@ void func_020511dc(void *a, void *b) {
         if (otherByte != 0) {
             r7 = (char *)session + 0x2f + 0x100;
         } else {
-            func_020675e4((M2C_UNK)buf1, (M2C_UNK)&data_020fe434, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144));
+            StringFormat((M2C_UNK)buf1, (M2C_UNK)&data_020fe434, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144));
             r7 = buf1;
         }
     }
     r7 = r7 + 0x100;
     slen = 0; while (r7[slen] != 0) slen++;
-    func_020491bc((M2C_UNK)r7, slen, (M2C_UNK)digest);
+    Md5Hex((M2C_UNK)r7, slen, (M2C_UNK)digest);
     if (*((M2C_UNK *)((char *)session + 0x100)) != 0) {
         func_02055c68(pa, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144), (M2C_UNK *)&sp10);
         if (sp10 != 0) {

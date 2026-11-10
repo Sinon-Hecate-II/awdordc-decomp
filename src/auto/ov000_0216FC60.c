@@ -288,7 +288,7 @@ void func_ov000_021703e8(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern M2C_UNK data_027e0064;
-    extern M2C_UNK data_027e005c;
+    extern M2C_UNK gSpriteDesc32x16;
     void *spr;
     void *p;
     void *old;
@@ -383,7 +383,7 @@ void func_ov000_021703e8(void *arg0) {
                   &data_027e0064, 0);
     AddSprite(0xaa, 0x8b,
                   (u16) (0xc000 | ((0x3bc >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 0x3ff)),
-                  &data_027e005c, 0);
+                  &gSpriteDesc32x16, 0);
     gCur3DSpriteEngine = old;
 }
 

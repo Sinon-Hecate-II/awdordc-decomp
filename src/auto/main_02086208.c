@@ -202,11 +202,11 @@ void func_020865a0(void) {
 
 void func_02086608(u8 arg0) {
  s32 func_020e3218(s32);
- void func_020675e4(void *, void *, s32);
+ void StringFormat(void *, void *, s32);
  s32 func_02081070(void *, s32);
  extern M2C_UNK data_0210244c, data_02102250, data_02157678[];
  u8 sp0[0x20];
- func_020675e4(sp0, &data_02102250, func_020e3218(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
+ StringFormat(sp0, &data_02102250, func_020e3218(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
  ((s32 *)&data_02157678)[arg0] = func_02081070(sp0, 1);
 }
 
@@ -217,7 +217,7 @@ void func_02086658(u8 arg0) {
  ((s32 *)&data_02157678)[arg0] = 0;
 }
 
-s32 func_02086680(u32 arg0) {
+s32 GetLocalizedText(u32 arg0) {
  extern u32 data_02102448;
  extern M2C_UNK data_02157678[];
  u32 *p = &data_02102448;
@@ -481,11 +481,11 @@ void func_02086b9c(void) {
 }
 
 void func_02086d18(void) {
-    M2C_UNK func_02003dfc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK GX_SetClearColor(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     M2C_FIELD((void *)0x04000060, u16 *, 0) = (u16) (M2C_FIELD((void *)0x04000060, u16 *, 0) & 0xCFEF);
     M2C_FIELD((void *)0x04000060, s32 *, 0x4E0) = 1;
-    func_02003dfc(0x2BEA, 0, 0x7FFF, 0x3F, 0);
+    GX_SetClearColor(0x2BEA, 0, 0x7FFF, 0x3F, 0);
     *(s32 *)0x04000580 = 0xBFFF0000;
     func_02003fc8(0, -0xC0, 0, 0x100, 1, 0x2000, 0x1000, 1, 0);
     M2C_FIELD((void *)0x0400044C, s32 *, 0) = 0;

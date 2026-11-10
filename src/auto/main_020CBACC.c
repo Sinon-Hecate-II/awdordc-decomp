@@ -110,11 +110,11 @@ switch(mode){
 case 0:
 q=func_020b5134(data_0212b7d4,x,y,0,0,0,7);
 M2C_FIELD(q,u32 *,0x44)=(M2C_FIELD(q,u32 *,0x44)&~0x3000000)|0x2000000;
-func_0208fb0c(0x84,x,y);break;
+PlaySoundAtTile(0x84,x,y);break;
 case 1:
 q=func_020b5134(data_0212b7e0,x,y,0,0,0,7);
 M2C_FIELD(q,u32 *,0x44)=(M2C_FIELD(q,u32 *,0x44)&~0x3000000)|0x2000000;
-func_0208fb0c(0x85,x,y);break;
+PlaySoundAtTile(0x85,x,y);break;
 }
 }
 
@@ -175,7 +175,7 @@ s32 func_020cfd28(void);
 void func_020c1230(s32,s32,s32,s32);
 void func_020c1d28(s32,s32,s32,s32);
 void Reset3DSpriteEngineState(void);
-void func_02082770(void);
+void Reset3DSpriteBankState(void);
 void func_02091d4c(s32);
 s32 func_020cfbdc(s32);
 void func_0209b2b4(s32,s32,s32,s32,s32,s32);
@@ -193,7 +193,7 @@ x=-((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1);
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+66)=y;
 func_020c1d28((256-(*(u16 *)((u8 *)*gCurrentMap+0x5144)<<2))>>1,(192-(*(u16 *)((u8 *)*gCurrentMap+0x5146)<<2))>>1,0x35c,11);
 Reset3DSpriteEngineState();
-func_02082770();
+Reset3DSpriteBankState();
 func_02091d4c(0);
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+60)=0;
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+68)=0;
@@ -296,7 +296,7 @@ p=(u8 *)*gCurrentMap+0x5120;
 M2C_FIELD(*gCurrentMap,u16 *,0x52c4)=(func_0207d0d4()>>1)+(M2C_FIELD(p,s16 *,0x2a)>>4);
 func_020cbdbc();
 }
-func_02082770();func_020c0a88();
+Reset3DSpriteBankState();func_020c0a88();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;
 }
 
@@ -383,7 +383,7 @@ M2C_FIELD(a,s16 *,0x6e)=func_020cac1c(3,M2C_FIELD(a,s16 *,0x6c));
 #pragma opt_peephole reset
 void func_020cc8d8(void *arg0) {
     M2C_UNK func_020cad1c(s32 *, M2C_UNK);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     void func_020d472c(void);
     void func_020c75cc(void);
     M2C_UNK func_020bbcec(s32);
@@ -398,7 +398,7 @@ void func_020cc8d8(void *arg0) {
     ret = func_020cad1c(&sp0, tmp);
     M2C_FIELD(arg0, s16 *, 0x6e) = (s16)sp0;
     if (ret & 0x20) {
-        func_01ffa574(arg0);
+        DeleteSpriteObject(arg0);
         func_020d472c();
         func_020c75cc();
         M2C_FIELD(*gCurrentMap, s16 *, 0x52c2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52d8);

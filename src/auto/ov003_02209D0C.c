@@ -47,7 +47,7 @@ void func_ov003_0220a5fc(void *,s32);void func_ov003_0220a658(void *,s32);
 u8 func_ov003_022066c8(u8);void *func_ov003_022066a8(u8);
 s16 func_020bfa20(void);s16 func_020bf9e0(void);
 void func_ov003_0220accc(void *,u8);void func_01ff9ce8(s32);
-s32 func_020e31e0(void);s32 func_02086680(void *);s32 func_0209c2a8(s32);
+s32 func_020e31e0(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
 void func_0209b26c(u8,s32,s32,void *,s32,u16);
 void func_ov003_0220a864(M2C_UNK);void func_02088f1c(void *);void func_02088ff4(void *);s32 func_02089080(void *);
 void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK func_ov003_0220828c(void *,s32,s32);
@@ -87,13 +87,13 @@ x=0;tile=1;
 if(mode) {
 void *text;u16 width;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,12),void **,0);
-width=func_0209c2a8(func_02086680(text));
+width=func_0209c2a8(GetLocalizedText(text));
 func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>1) {
 x+=width;
 func_0209b26c(x,0,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,16),void **,0);
-width=func_0209c2a8(func_02086680(text));
+width=func_0209c2a8(GetLocalizedText(text));
 func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>2) {
 {s32 next=x+width;u16 position=tile;
@@ -102,7 +102,7 @@ func_0209b26c((u8)next,0,1,(void *)0x4800000f,0x2000,position);}tile+=2;
 x=0;
 for(k=2;k<M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8);k++) {
 text=M2C_FIELD(M2C_FIELD((u8 *)M2C_FIELD(a,void **,0x58)+k*4,void **,12),void **,0);
-width=func_0209c2a8(func_02086680(text));
+width=func_0209c2a8(GetLocalizedText(text));
 func_0209b26c(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
 if(k!=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)-1) {
 func_0209b26c(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
@@ -111,7 +111,7 @@ func_0209b26c(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
 } else {
 void *text;u16 width;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,12),void **,0);
-width=func_0209c2a8(func_02086680(text));
+width=func_0209c2a8(GetLocalizedText(text));
 func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>1) {
 {s32 next=x+width;u16 position=tile;
@@ -119,7 +119,7 @@ func_0209b26c((u8)next,x,1,(void *)0x4800000f,0x2000,position);}tile+=2;
 }
 for(k=1;k<M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8);k++) {
 text=M2C_FIELD(M2C_FIELD((u8 *)M2C_FIELD(a,void **,0x58)+k*4,void **,12),void **,0);
-width=func_0209c2a8(func_02086680(text));
+width=func_0209c2a8(GetLocalizedText(text));
 func_0209b26c(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
 if(k!=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)-1) {
 func_0209b26c(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
@@ -189,7 +189,7 @@ void func_ov003_0220a698(void *arg0, s8 arg1) {
 }
 
 u32 func_ov003_0220a6bc(void *a) {
-M2C_UNK func_020c01ec(void *);M2C_UNK func_ov003_02207e80(void *);u32 func_ov003_02208034(void *);M2C_UNK func_ov003_0220c414(void *,M2C_UNK);
+M2C_UNK func_020c01ec(void *);M2C_UNK func_ov003_02207e80(void *);u32 func_ov003_02208034(void *);M2C_UNK RequestMenuMode(void *,M2C_UNK);
 extern M2C_UNK data_0215d9b8;
 u8 count;u32 yes,bit; s32 test,other,remaining;void *p;
 count=M2C_FIELD(a,u8 *,0x34);yes=count!=0?1:0;if(!(yes&255))return yes;
@@ -204,7 +204,7 @@ p=M2C_FIELD(a,void **,0x40);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x3000)|((u32)((u16)M2C_FIELD(p,s32 *,4)<<30)>>18);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0xc00)|((u32)((u16)M2C_FIELD(p,s32 *,28)<<30)>>20);
 M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x4000)|((u32)((u16)M2C_FIELD(p,s32 *,52)<<31)>>17);
-func_ov003_0220c414(a,0);func_020c01ec(a);M2C_FIELD(a,u8 *,0x38)&=~128;
+RequestMenuMode(a,0);func_020c01ec(a);M2C_FIELD(a,u8 *,0x38)&=~128;
 }}}
 if(M2C_FIELD(a,u8 *,0x34)==10){M2C_FIELD(a,u8 *,0x38)=(M2C_FIELD(a,u8 *,0x38)&~1)|1;func_ov003_02209d0c(a,M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,17));M2C_FIELD(M2C_FIELD(a,void **,0x50),u8 *,1)=0;}
 remaining=M2C_FIELD(a,u8 *,0x34)-1;M2C_FIELD(a,u8 *,0x34)=remaining;yes=(remaining&255)?1:0;if(yes&255)return yes;

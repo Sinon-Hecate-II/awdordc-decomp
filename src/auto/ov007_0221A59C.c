@@ -1,8 +1,67 @@
 /* 12 functions from 0x0221A59C to 0x0221B56C (ov007), found by ds-decomp. */
 #include "common.h"
+extern u8 data_02129870[];
+static inline void InitTextDescriptor(u8 *sp) {
+sp[32]=(u8)((u8)(sp[32]&~1)&~30);sp[32]=(sp[32]&~224)|64;
+sp[40]&=~224;
+M2C_FIELD(sp,void **,0)=data_02129870;sp[4]=0;
+M2C_FIELD(sp,u16 *,18)=0x140;sp[20]=8;sp[21]=8;sp[22]=1;sp[23]=8;sp[24]=8;
+sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[41]=0;
+
+}
 struct TileNeighbors_0221 { s16 values[24]; };
 
-void func_ov007_0221a59c(void) { return; }
+void func_ov007_0221a59c(void) {
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
+extern u8 data_02129870[],data_027e0064[],data_027e0074[],gSpriteDesc32x16[],data_027e00b4[];
+extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
+void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
+s32 func_ov007_02211ffc(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
+void func_020c1acc(s32,s32,s32,s32);void func_020a92bc(void*,s32);void func_020a94fc(void*);
+void DrawTileRow(u16,u8,u16,u16,s32);s32 func_ov007_0221216c(s32);
+u8 sp[44];void *saved;s32 i,x,tile,mode,width,height;
+saved=gCur3DSpriteEngine;
+M2C_FIELD(sp,void **,0)=data_02129870;sp[4]=0;
+M2C_FIELD(sp,u16 *,18)=0x140;sp[20]=8;sp[21]=8;sp[22]=1;sp[23]=8;sp[24]=8;
+sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[41]=0;
+sp[32]=(u8)((u8)(sp[32]&~1)&~30);sp[32]=(sp[32]&~224)|64;
+
+sp[40]&=~224;
+gCur3DSpriteEngine=g3DSpriteEngineSub;
+for(i=0,x=0x85,tile=0x158;i<4;x+=0x1d,tile+=4,i++){
+AddSprite((u16)(x&0x1ff),0x9e,(u16)(((u16)((i+5)<<12)|0x400)|(tile&0x3ff)),data_027e0064,0);
+func_020a9774(sp,x+0x18,0xa6,3,func_ov007_02211ffc(i+1));
+}
+width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+func_020c1acc(64-((width*4)>>1),80-((height*4)>>1),0x80,1);
+AddSprite(8,157,(u16)((0x3ff&(360>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(9<<12)),data_027e0064,15);
+AddSprite(72,141,(u16)((0x3ff&(364>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(10<<12)),data_027e0074,15);
+mode=func_ov007_02211f00();
+switch(mode){
+case 0:
+AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
+AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
+func_020a9774(sp,0x38,0x92,4,50-func_ov007_02211ffc(func_ov007_02211f40()));
+func_020a9774(sp,0x78,0x92,3,99-func_ov007_0221204c());
+break;
+case 1:
+AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
+AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
+func_020a9774(sp,0x38,0x92,3,50-func_ov007_02211ffc(func_ov007_02211f40()));
+func_020a9774(sp,0x78,0x92,4,99-func_ov007_0221204c());
+break;
+}
+M2C_FIELD(sp,u16 *,18)=0x14c;sp[33]=3;
+func_020a92bc(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c2));
+M2C_FIELD(sp,s16 *,6)=0x1e;M2C_FIELD(sp,s16 *,8)=0xb5;func_020a94fc(sp);
+func_020a92bc(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
+M2C_FIELD(sp,s16 *,6)=0x47;M2C_FIELD(sp,s16 *,8)=0xb5;func_020a94fc(sp);
+DrawTileRow((u16)((((0x70-data_ov007_02221e08)>>1)+6)&0x1ff),0xff,(u16)data_ov007_02221e08,(u16)((0x3ff&(0x1cc>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xe000),15);
+if(func_ov007_0221216c(-1)!=0){
+if((gFrameCounter&63)<48){AddSprite(192,180,(u16)((0x3ff&(396>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(13<<12)),data_027e00b4,15);}
+}else{AddSprite(192,180,(u16)((0x3ff&(428>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(13<<12)),data_027e00b4,15);}
+gCur3DSpriteEngine=saved;
+}
 
 void func_ov007_0221ab20(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);

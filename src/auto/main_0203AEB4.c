@@ -2,11 +2,11 @@
 #include "common.h"
 
 s32 func_0203aeb4(s32 a) {
- extern M2C_UNK data_0213d38c; s32 func_0203ae6c(s32);
+ extern M2C_UNK data_0213d38c; s32 GetSessionPlayerId(s32);
  s32 i;
  if(!M2C_FIELD(&data_0213d38c,void **,8)||!a)return -1;
  for(i=0;i<M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),s32 *,0x14);i++) {
- if(a==func_0203ae6c(i))return i;
+ if(a==GetSessionPlayerId(i))return i;
  }return -1;
 }
 
@@ -21,12 +21,12 @@ void func_0203af18(void) {
 
 s32 func_0203af50(s32 a,void *b,void *c) {
  extern M2C_UNK data_0213d38c;
- s32 func_0203a660(void); s32 func_0204e408(void *,s32,void *,void *);
+ s32 func_0203a660(void); s32 gpiSetStatusInfo(void *,s32,void *,void *);
  if(!M2C_FIELD(&data_0213d38c,void **,8)||!func_0203a660())return 0;
  if(a==-1)a=M2C_FIELD(*M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void ***,4),s32 *,0x214);
  if(!b)b=(u8 *)*M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void ***,4)+0x218;
  if(!c)c=(u8 *)*M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void ***,4)+0x318;
- return func_0204e408(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),a,b,c);
+ return gpiSetStatusInfo(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),a,b,c);
 }
 
 void func_0203b000(s32 a) {
@@ -68,43 +68,47 @@ void func_0203b128(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_0203b158(M2C_UNK *arg0,s32 arg1){
+/* Match the session's local player table against the GameSpy buddy list:
+ * confirm entries that are already buddies, drop stale buddies, and request
+ * a buddy connection for each player whose address is still unknown. Runs as
+ * one step of the session update and stops early when a request is pending. */
+void SyncSessionPlayerConnections(M2C_UNK *arg0,s32 playerCount){
 extern M2C_UNK data_0213d38c;
 s32 func_0204e184(void *,s32 *);s32 func_0204e1b4(void *,s32,s32);s32 func_0204e3b0(void *,s32);
-u32 func_0203b6f8();s32 func_0203ae6c(s32);s32 func_02031e38(void *);void func_020326c4(void *,s32);void func_02031eb8(void *);
-s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 func_0203b608(s32);
+u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 func_02031e38(void *);void func_020326c4(void *,s32);void func_02031eb8(void *);
+s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
 s32 func_02039d98(void);s32 func_02032580(s32,s32);void func_020326f8(s32,void *,void *);
-void func_0203b76c(s32,void *,s32);s32 func_0204dd0c(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
-s32 i,n,index;u32 info[132];u32 extra[6];s32 j,id;u8 *a=(u8 *)arg0;
+void HandlePeerConnectResult(s32,void *,s32);s32 func_0204dd0c(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
+s32 i,remoteCount,remoteIndex;u32 buddyInfo[132];u32 peerAddress[6];s32 slot,profileId;u8 *a=(u8 *)arg0;
 if(!M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)){
-func_0203b6f8(func_0204e184(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),&n));
+ReportNetError(func_0204e184(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),&remoteCount));
 #pragma opt_loop_invariants off
-for(index=0;index<n;index++){
-func_0203b6f8(func_0204e1b4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),index,(s32)info));
-for(j=0;j<arg1;j++){
-if((s32)info[0]==func_0203ae6c(j)){
-if(!func_02031e38(a+j*12)){
-func_020326c4(a+j*12,info[0]);func_02031eb8(a+j*12);
+for(remoteIndex=0;remoteIndex<remoteCount;remoteIndex++){
+ReportNetError(func_0204e1b4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),remoteIndex,(s32)buddyInfo));
+for(slot=0;slot<playerCount;slot++){
+if((s32)buddyInfo[0]==GetSessionPlayerId(slot)){
+if(!func_02031e38(a+slot*12)){
+func_020326c4(a+slot*12,buddyInfo[0]);func_02031eb8(a+slot*12);
 M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1d)=1;
 }break;
 }}
-if(j==arg1){
-func_0203b6f8(func_0204e3b0(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),info[0]));
-n--;index--;
+if(slot==playerCount){
+ReportNetError(func_0204e3b0(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),buddyInfo[0]));
+remoteCount--;remoteIndex--;
 }}
 M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=1;
 }
-while(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)<arg1){
-id=func_0203ae6c(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c));
-if(id){
-if(!func_0203b454(a,M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c),id)){
-func_0203b6f8(func_0204e2f4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),id,&index));
-if(index==-1)func_0203b608(id);
+while(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)<playerCount){
+profileId=GetSessionPlayerId(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c));
+if(profileId){
+if(!func_0203b454(a,M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c),profileId)){
+ReportNetError(func_0204e2f4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),profileId,&remoteIndex));
+if(remoteIndex==-1)DropSessionPlayer(profileId);
 }
 }else{
 if(func_02032580(func_02039d98(),(s32)(a+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)*12))==-1){
-func_020326f8(func_02039d98(),a+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)*12,extra);
-func_0204dd0c(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),0,0,0,0,extra,0,0,func_0203b76c,M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c));
+func_020326f8(func_02039d98(),a+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)*12,peerAddress);
+func_0204dd0c(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),0,0,0,0,peerAddress,0,0,HandlePeerConnectResult,M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c));
 M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=2;return;
 }}
 M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)++;
@@ -122,10 +126,10 @@ void func_0203b3c4(void) {
 void func_0203b3fc(u8 *a,u32 b,u32 c){extern M2C_UNK data_0213d38c;void func_02007f8c(void*,s32);void *p=M2C_FIELD(&data_0213d38c,void **,8);if(!p)return;func_02007f8c(a+b*12,0);p=M2C_FIELD(&data_0213d38c,void **,8);if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));}
 #pragma opt_propagation reset
 s32 func_0203b454(u8 *a,s32 b,s32 c) {
- extern M2C_UNK data_0213d38c; s32 func_0203ae6c(s32); s32 func_02031e38(void *);
+ extern M2C_UNK data_0213d38c; s32 GetSessionPlayerId(s32); s32 func_02031e38(void *);
  s32 i,x;
  for(i=0;i<b;i++) {
- x=func_0203ae6c(i);
+ x=GetSessionPlayerId(i);
  if(x&&x==c) {
  if(func_02031e38(a+b*12)&&!func_02031e38(a+i*12))func_0203b3fc(a,i,b);
  else func_0203b3fc(a,b,i);
@@ -136,7 +140,7 @@ s32 func_0203b454(u8 *a,s32 b,s32 c) {
 
 s32 func_0203b500(u8 *a, s32 b, s32 c) {
     extern M2C_UNK data_0213d38c;
-    s32 func_0203ae6c(s32);
+    s32 GetSessionPlayerId(s32);
     s32 func_02031e70(void *);
     s32 func_02031e38(void *);
     void func_020326c4(void *, s32);
@@ -149,7 +153,7 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
     u8 *pi = a;
 
     for (i = 0; i < b; i++, pi += 12, pj = pi) {
-        x = func_0203ae6c(i);
+        x = GetSessionPlayerId(i);
         if (x == 0) {
             continue;
         }
@@ -160,7 +164,7 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
 
         for (j = i + 1; j < b; j++) {
             pj = a + j * 12;
-            y = func_0203ae6c(j);
+            y = GetSessionPlayerId(j);
             if (x != y) {
                 continue;
             }
@@ -189,11 +193,11 @@ s32 func_0203b500(u8 *a, s32 b, s32 c) {
     return result;
 }
 
-s32 func_0203b608(s32 a) {
+s32 DropSessionPlayer(s32 a) {
  extern M2C_UNK data_0213d38c; extern M2C_UNK data_020fc8ec;
- s32 func_0204df00(void *,s32,void *); u32 func_0203b6f8();
+ s32 func_0204df00(void *,s32,void *); u32 ReportNetError();
  s32 r=func_0204df00(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),a,&data_020fc8ec);
- func_0203b6f8(r); return r;
+ ReportNetError(r); return r;
 }
 
 s32 func_0203b63c(s32 arg0,s32 arg1) {
@@ -209,50 +213,53 @@ if(a<=0||out==-1)return 0;
 return (u32)func_0204e1b4(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,4),out,b) <= 0;
 }
 
-u32 func_0203b6f8(u32 a,u32 unused,u32 off){void func_0203accc(u32,u32);u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}func_0203accc(code,off+0xfffeeaa8);return ret;}
+u32 ReportNetError(u32 a,u32 unused,u32 off){void func_0203accc(u32,u32);u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}func_0203accc(code,off+0xfffeeaa8);return ret;}
 
-void func_0203b76c(s32 context, void *record, s32 index) {
+/* Callback for a pending GPI peer connection: matches the returned profile ids
+ * to slots in the online-match session's player table, drops peers that are no
+ * longer known, and marks the session ready for the next setup step. */
+void HandlePeerConnectResult(s32 connection, void *result, s32 index) {
 extern M2C_UNK data_0213d38c;
 s32 func_02031e70(void *); void func_02031eb8(void *); void func_020326c4(void *,s32);
-s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 func_0203b608(s32);void func_0203b000(s32);
-s32 i,off,offset,j;
-if(M2C_FIELD(record,s32 *,0)==0 && M2C_FIELD(record,s32 *,4)!=0) {
-offset=index*12;
-if(func_02031e70(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,0x18)+offset))!=0) {
-if(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),s32 *,0)!=1)return;
-i=0;if(M2C_FIELD(record,s32 *,4)>0){off=0;do {
-if(func_0203b454(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,0x18),index,M2C_FIELD((u8 *)M2C_FIELD(record,void **,0xc)+off,s32 *,0))) {
-M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)++;
-M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=1;
-M2C_FIELD(record,s32 *,8)=0x601;
+s32 func_0203b454(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);void func_0203b000(s32);
+s32 peerIndex,entryOffset,slotOffset,entryBase;
+if(M2C_FIELD(result,s32 *,0)==0 && M2C_FIELD(result,s32 *,4)!=0) {
+slotOffset=index*MATCH_SESSION_PLAYER_SIZE;
+if(func_02031e70(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset))!=0) {
+if(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),s32 *,MATCH_SESSION_STATUS)!=1)return;
+peerIndex=0;if(M2C_FIELD(result,s32 *,4)>0){entryOffset=0;do {
+if(func_0203b454(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,MATCH_SESSION_PLAYERS),index,M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryOffset,s32 *,0))) {
+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_CURSOR)++;
+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_STATE)=1;
+M2C_FIELD(result,s32 *,8)=0x601;
 return;
 }
 
-i++;off+=0xac;
-}while(i<M2C_FIELD(record,s32 *,4));}
-off=0;if(M2C_FIELD(record,s32 *,4)>0){j=off;do {
-s32 out;
-((u32 (*)(u32))func_0203b6f8)(func_0204e2f4((void *)context,M2C_FIELD((u8 *)M2C_FIELD(record,void **,0xc)+j,s32 *,0),&out));
-if(out==-1)func_0203b608(M2C_FIELD((u8 *)M2C_FIELD(record,void **,0xc)+j,s32 *,0));
+peerIndex++;entryOffset+=0xac;
+}while(peerIndex<M2C_FIELD(result,s32 *,4));}
+entryOffset=0;if(M2C_FIELD(result,s32 *,4)>0){entryBase=entryOffset;do {
+s32 profileId;
+((u32 (*)(u32))ReportNetError)(func_0204e2f4((void *)connection,M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryBase,s32 *,0),&profileId));
+if(profileId==-1)DropSessionPlayer(M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryBase,s32 *,0));
 else {
-func_020326c4(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,0x18)+offset),M2C_FIELD(M2C_FIELD(record,void **,0xc),s32 *,0));
-func_02031eb8(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,0x18)+offset));func_0203b000(index);
-M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=1;
-M2C_FIELD(record,s32 *,8)=0x601;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1d)=1;return;
+func_020326c4(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset),M2C_FIELD(M2C_FIELD(result,void **,0xc),s32 *,0));
+func_02031eb8(((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset));func_0203b000(index);
+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_CURSOR)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_STATE)=1;
+M2C_FIELD(result,s32 *,8)=0x601;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_DIRTY)=1;return;
 }
 
-off++;j+=0xac;
-}while(off<M2C_FIELD(record,s32 *,4));}
-if(M2C_FIELD(record,s32 *,8)!=0x600) {M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=1;}
+entryOffset++;entryBase+=0xac;
+}while(entryOffset<M2C_FIELD(result,s32 *,4));}
+if(M2C_FIELD(result,s32 *,8)!=0x600) {M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_CURSOR)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_STATE)=1;}
 return;
 }
 }
-if(M2C_FIELD(record,s32 *,0)!=0) {
-if(((u32 (*)(u32))func_0203b6f8)(M2C_FIELD(record,s32 *,0)))return;
+if(M2C_FIELD(result,s32 *,0)!=0) {
+if(((u32 (*)(u32))ReportNetError)(M2C_FIELD(result,s32 *,0)))return;
 return;
 }
-if(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),s32 *,0)==1 || !func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,0x18)+index*12)){
-M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1c)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,0x1e)=1;
+if(M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),s32 *,MATCH_SESSION_STATUS)==1 || !func_02031e70((u8 *)M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),void **,MATCH_SESSION_PLAYERS)+index*MATCH_SESSION_PLAYER_SIZE)){
+M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_CURSOR)++;M2C_FIELD(M2C_FIELD(&data_0213d38c,void **,8),u8 *,MATCH_SESSION_STATE)=1;
 }
 }
 
@@ -265,13 +272,13 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
     s32 func_02031e70(void *);
     s32 func_02039d98(void);
     void func_020326f8(s32, void *, void *);
-    s32 func_02068d98(void *, void *);
+    s32 StringCompare(void *, void *);
     s32 func_0204e074(void **, s32);
     void func_020326c4(void *, s32);
     s32 func_02032580(s32, s32);
     s32 func_0200567c(void *, s32, void *, ...);
     s32 func_0206527c(void *, void *, s32);
-    s32 func_0203b608(s32);
+    s32 DropSessionPlayer(s32);
     s32 func_0204e0c4(void **, s32);
 
     u8 local[0x1c];
@@ -300,7 +307,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
         if (func_02031e70((u8 *)M2C_FIELD(p, void **, 0x18) + offset) == 1) {
             t = func_02039d98();
             func_020326f8(t, (u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, local + 5);
-            if (func_02068d98(local + 5, (u8 *)buf + 0x8e) == 0) {
+            if (StringCompare(local + 5, (u8 *)buf + 0x8e) == 0) {
                 func_0204e074(conn, M2C_FIELD(buf, s32 *, 4));
                 func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(buf, s32 *, 4));
                 found = 1;
@@ -332,7 +339,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
 
 after_loop:
     if (found) {
-        func_0203b608(M2C_FIELD(buf, s32 *, 4));
+        DropSessionPlayer(M2C_FIELD(buf, s32 *, 4));
     } else {
         func_0204e0c4(conn, M2C_FIELD(buf, s32 *, 4));
     }
@@ -346,7 +353,7 @@ void func_0203bb58(s32 unused, void *r10) {
     s32 func_02031e70(void *);
     s32 func_02039d98(void);
     void func_020326f8(s32, void *, void *);
-    s32 func_02068d98(void *, void *);
+    s32 StringCompare(void *, void *);
     void func_020326c4(void *, s32);
     void func_02031eb8(void *);
     s32 func_02032580(s32, s32);
@@ -383,7 +390,7 @@ void func_0203bb58(s32 unused, void *r10) {
         if (t == 1) {
             t = func_02039d98();
             func_020326f8(t, (u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, buf);
-            if (func_02068d98(buf, (u8 *)r10 + 0x8e) == 0) {
+            if (StringCompare(buf, (u8 *)r10 + 0x8e) == 0) {
                 func_020326c4((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset, M2C_FIELD(r10, s32 *, 4));
                 func_02031eb8((u8 *)M2C_FIELD(M2C_FIELD(data, void **, 8), void **, 0x18) + offset);
                 moved = one;

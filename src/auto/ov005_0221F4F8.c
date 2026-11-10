@@ -92,9 +92,9 @@ void func_ov005_0221fa18(void) {
 }
 
 void func_ov005_0221fb14(M2C_UNK arg0) {
-    M2C_UNK func_020675e4(void *, void *, s32);
+    M2C_UNK StringFormat(void *, void *, s32);
     M2C_UNK func_02068d68(void *, void *);
-    s32 func_02086680(s32);
+    s32 GetLocalizedText(s32);
     M2C_UNK func_020899fc(s32, M2C_UNK, s32, void *);
     s32 func_0208b564(M2C_UNK);
     extern s32 gMovementCostTable;
@@ -105,12 +105,12 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     char sp0[32];
     s32 var_r9;
     char *var_r10;
-    func_020675e4(sp20, &data_ov005_022212f4, func_02086680(0xF000000F));
+    StringFormat(sp20, &data_ov005_022212f4, GetLocalizedText(0xF000000F));
     var_r10 = (char *)&gMovementCostTable;
     var_r9 = 0;
     do {
         if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r9)) {
-            func_020675e4(sp0, &data_ov005_022212f8, func_02086680(*(s32 *)var_r10));
+            StringFormat(sp0, &data_ov005_022212f8, GetLocalizedText(*(s32 *)var_r10));
             func_02068d68(sp20, sp0);
         }
         var_r9 += 1;
@@ -233,7 +233,7 @@ void func_ov005_0221fe54(void) {
 
 #pragma opt_strength_reduction off
 M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574(s32);
+    M2C_UNK DeleteSpriteObject(s32);
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
@@ -248,7 +248,7 @@ M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
         if (var_r9 == 0) var_r0 = g3DSpriteEngineMain;
         else var_r0 = g3DSpriteEngineSub;
         gCur3DSpriteEngine = var_r0;
-        func_01ffa574(M2C_FIELD((arg0 + var_r9), s32 *, 0x34));
+        DeleteSpriteObject(M2C_FIELD((arg0 + var_r9), s32 *, 0x34));
         var_r9 += 1;
     } while (var_r9 < 2);
     gCur3DSpriteEngine = temp_r8;
@@ -259,7 +259,7 @@ M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
 
 #pragma opt_strength_reduction off
 M2C_UNK **func_ov005_0221fecc(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574(s32);
+    M2C_UNK DeleteSpriteObject(s32);
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
@@ -274,7 +274,7 @@ M2C_UNK **func_ov005_0221fecc(M2C_UNK **arg0) {
         if (var_r9 == 0) var_r0 = g3DSpriteEngineMain;
         else var_r0 = g3DSpriteEngineSub;
         gCur3DSpriteEngine = var_r0;
-        func_01ffa574(M2C_FIELD((arg0 + var_r9), s32 *, 0x34));
+        DeleteSpriteObject(M2C_FIELD((arg0 + var_r9), s32 *, 0x34));
         var_r9 += 1;
     } while (var_r9 < 2);
     gCur3DSpriteEngine = temp_r8;

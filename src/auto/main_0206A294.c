@@ -91,7 +91,7 @@ value=negative?0x80000000:0x7fffffff;data_0213e9f4=34;return value;
 return negative?-value:value;
 }
 
-void func_0206ad38(M2C_UNK arg0) {
+void ParseInt(M2C_UNK arg0) {
     M2C_UNK func_0206ac70(M2C_UNK, M2C_UNK, M2C_UNK);
     func_0206ac70(arg0, 0, 0xA);
 }

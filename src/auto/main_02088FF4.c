@@ -417,13 +417,13 @@ M2C_UNK **func_0208996c(M2C_UNK **arg0) {
 }
 
 void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02086680(M2C_UNK);
+    s32 GetLocalizedText(M2C_UNK);
     M2C_UNK func_020899fc(M2C_UNK, M2C_UNK, s32, s32);
-    func_020899fc(arg0, arg1, 0x4B80, func_02086680(arg2));
+    func_020899fc(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
 }
 
 void func_020899cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    func_020899fc(arg0, arg1, arg2, func_02086680(arg3));
+    func_020899fc(arg0, arg1, arg2, GetLocalizedText(arg3));
 }
 
 M2C_UNK func_020899fc(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
@@ -492,18 +492,18 @@ void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
 M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  s32 StringLength(s32);
  s32 func_020e34bc(s32);
- void func_02068c50(s32,s32);
+ void StringCopy(s32,s32);
  void func_02068d68(s32,s32);
  void func_02089c34(void *,s32);
  register s32 p; register s32 len;
  if(!arg1)return;
  if(!M2C_FIELD(arg0,s32 *,0x64)) {
  M2C_FIELD(arg0,s32 *,0x64)=func_020e34bc(StringLength(arg1)+1);
- func_02068c50(M2C_FIELD(arg0,s32 *,0x64),arg1);
+ StringCopy(M2C_FIELD(arg0,s32 *,0x64),arg1);
  } else {
  len=StringLength(M2C_FIELD(arg0,s32 *,0x64));
  p=func_020e34bc(len+StringLength(arg1)+1);
- func_02068c50(p,M2C_FIELD(arg0,s32 *,0x64));func_02068d68(p,arg1);
+ StringCopy(p,M2C_FIELD(arg0,s32 *,0x64));func_02068d68(p,arg1);
  func_02089bdc(arg0);M2C_FIELD(arg0,s32 *,0x64)=p;
  }
  M2C_FIELD(arg0,s32 *,0x68)=func_020e34bc(8);
@@ -553,10 +553,10 @@ void func_02089c34(void *arg0, s32 arg1) {
 void func_02089c80(void *arg0) {
  s32 func_0209c658(s32);
  M2C_UNK func_01ffa8c4(void *,s32);
- M2C_UNK func_01ffa574(void *);
+ M2C_UNK DeleteSpriteObject(void *);
  s32 p=func_0209c658(M2C_FIELD(arg0,s32 *,0x70));
  if(p){func_02089c34(arg0,p);func_01ffa8c4(arg0,0);return;}
- func_01ffa574(arg0);
+ DeleteSpriteObject(arg0);
 }
 
 s32 func_02089cb8(void *arg0) {
@@ -573,10 +573,10 @@ s32 func_02089cb8(void *arg0) {
 }
 
 M2C_UNK func_02089cec(M2C_UNK **arg0) {
- M2C_UNK func_01ffa574(void *);
+ M2C_UNK DeleteSpriteObject(void *);
  void *p;
- p=M2C_FIELD(arg0,void **,0x5C); if(p){func_01ffa574(p);M2C_FIELD(arg0,s32 *,0x5C)=0;}
- p=M2C_FIELD(arg0,void **,0x60); if(p){func_01ffa574(p);M2C_FIELD(arg0,s32 *,0x60)=0;}
+ p=M2C_FIELD(arg0,void **,0x5C); if(p){DeleteSpriteObject(p);M2C_FIELD(arg0,s32 *,0x5C)=0;}
+ p=M2C_FIELD(arg0,void **,0x60); if(p){DeleteSpriteObject(p);M2C_FIELD(arg0,s32 *,0x60)=0;}
  func_020897a4();func_020898bc();
 }
 

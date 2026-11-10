@@ -176,72 +176,75 @@ M2C_FIELD(arg0,u16 *,0x32)=value;
 if(value)M2C_FIELD(arg0,u8 *,0x455)=1;
 }
 
-void func_02022fdc(s32 arg0, s32 arg1, void *arg2) {
-    s32 func_020220b8(void);
-    void func_02022104(s32);
-    s32 func_0202626c(u16 *, s32);
-    void func_0202629c(u16 *, u16 *, u16 *, s32);
-    void func_0202639c(u16 *, s32);
-    void func_020263dc(u16 *, u16 *, u16 *, s32);
-    void func_02026558(u16 *, u16 *, u16 *, s32);
-    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
-    void func_02026de4(void *, void *, void *, s32, void *);
-    void func_02026ff0(void *, void *, void *, s32);
-    void func_0202704c(void *, void *, s32, s32);
+/* Decrypt one RSA block (the TLS premaster secret) with the CRT private key: exponentiate the
+ * input modulo each prime, combine the two results with the Chinese Remainder Theorem and write
+ * the 48-byte plaintext to out. */
+void RsaCrtDecrypt(s32 out, s32 in, void *arg2) {
+    s32 BoostThreadPriority(void);
+    void RestoreThreadPriority(s32);
+    s32 BigNumSign(u16 *, s32);
+    void BigNumAdd(u16 *, u16 *, u16 *, s32);
+    void BigNumNeg(u16 *, s32);
+    void BigNumSub(u16 *, u16 *, u16 *, s32);
+    void BigNumMul(u16 *, u16 *, u16 *, s32);
+    void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+    void BigNumModPow(void *, void *, void *, s32, void *);
+    void BigNumFromBytes(void *, void *, void *, s32);
+    void BigNumToBytes(void *, void *, s32, s32);
     extern u32 gAlloc[];
     extern u32 gFree[];
 
-    s32 r4;
-    u16 *r5, *r6, *r7, *sp10, *spC, *r8, *r9, *r11;
-    s32 *ip;
-    s32 tmp, n, t;
+    s32 limbs;
+    u16 *base, *exp, *q, *m1, *m2, *mod, *result, *work;
+    RsaCrtKey *key;
+    s32 savedPriority, n, twiceN;
 
     if (arg2 == 0) return;
-    ip = (s32 *)arg2;
-    if (ip[0] == 0) return;
-    n = ip[0];
-    t = n * 2;
+    key = (RsaCrtKey *)arg2;
+    if (key->modulus.length == 0) return;
+    n = key->modulus.length;
+    twiceN = n * 2;
     {
         u32 ut;
         s32 sum;
-        ut = (u32)t;
-        sum = t + (s32)(ut >> 31);
-        r4 = (sum >> 1) + 1;
+        ut = (u32)twiceN;
+        sum = twiceN + (s32)(ut >> 31);
+        limbs = (sum >> 1) + 1;
     }
-    r5 = (u16 *)((void *(*)(u32))gAlloc[0])((u32)(r4 * 0x14));
-    if (r5 == 0) return;
-    r6 = r5 + r4;
-    r7 = r6 + r4;
-    sp10 = r7 + r4;
-    spC = sp10 + r4;
-    r8 = spC + r4;
-    r9 = r8 + r4;
-    r11 = r9 + r4;
-    func_02026ff0(r5, (void *)arg1, (void *)(s32)ip[0], r4);
-    func_02026ff0(r6, (void *)ip[7], (void *)ip[6], r4);
-    func_02026ff0(r8, (void *)ip[3], (void *)ip[2], r4);
-    tmp = func_020220b8();
-    func_02026de4(sp10, r5, r6, r4, r8);
-    func_02026ff0(r6, (void *)ip[9], (void *)ip[8], r4);
-    func_02026ff0(r8, (void *)ip[5], (void *)ip[4], r4);
-    func_02026de4(spC, r5, r6, r4, r8);
-    func_02022104(tmp);
-    func_020263dc(r5, sp10, spC, r4);
-    func_02026ff0(r6, (void *)ip[11], (void *)ip[10], r4);
-    func_02026558(r7, r5, r6, r4);
-    func_02026ff0(r6, (void *)ip[5], (void *)ip[4], r4);
-    func_02026558(r5, r7, r6, r4);
-    func_0202629c(r7, r5, spC, r4);
-    func_02026ff0(r6, (void *)ip[1], (void *)ip[0], r4);
-    if (func_0202626c(r7, r4) < 0) {
-        func_0202639c(r7, r4);
-        func_020267fc((u16 *)0, r7, r6, r9, r4, r11);
-        func_020263dc(r9, r6, r9, r4);
+    base = (u16 *)((void *(*)(u32))gAlloc[0])((u32)(limbs * 0x14));
+    if (base == 0) return;
+    exp = base + limbs;
+    q = exp + limbs;
+    m1 = q + limbs;
+    m2 = m1 + limbs;
+    mod = m2 + limbs;
+    result = mod + limbs;
+    work = result + limbs;
+    BigNumFromBytes(base, (void *)in, (void *)(s32)key->modulus.length, limbs);
+    BigNumFromBytes(exp, (void *)key->dP.bytes, (void *)key->dP.length, limbs);
+    BigNumFromBytes(mod, (void *)key->p.bytes, (void *)key->p.length, limbs);
+    savedPriority = BoostThreadPriority();
+    BigNumModPow(m1, base, exp, limbs, mod);
+    BigNumFromBytes(exp, (void *)key->dQ.bytes, (void *)key->dQ.length, limbs);
+    BigNumFromBytes(mod, (void *)key->q.bytes, (void *)key->q.length, limbs);
+    BigNumModPow(m2, base, exp, limbs, mod);
+    RestoreThreadPriority(savedPriority);
+    BigNumSub(base, m1, m2, limbs);
+    BigNumFromBytes(exp, (void *)key->qInv.bytes, (void *)key->qInv.length, limbs);
+    BigNumMul(q, base, exp, limbs);
+    BigNumFromBytes(exp, (void *)key->q.bytes, (void *)key->q.length, limbs);
+    BigNumMul(base, q, exp, limbs);
+    BigNumAdd(q, base, m2, limbs);
+    BigNumFromBytes(exp, (void *)key->modulus.bytes, (void *)key->modulus.length, limbs);
+    if (BigNumSign(q, limbs) < 0) {
+        BigNumNeg(q, limbs);
+        BigNumDivMod((u16 *)0, q, exp, result, limbs, work);
+        BigNumSub(result, exp, result, limbs);
     } else {
-        func_020267fc((u16 *)0, r7, r6, r9, r4, r11);
+        BigNumDivMod((u16 *)0, q, exp, result, limbs, work);
     }
-    func_0202704c((void *)arg0, r9, 0x30, r4);
-    ((void (*)(void *))gFree[0])((void *)r5);
+    BigNumToBytes((void *)out, result, 0x30, limbs);
+    ((void (*)(void *))gFree[0])((void *)base);
 }
 
 void func_0202321c(s32 arg0,u8 *arg1,u8 *arg2) {
@@ -341,11 +344,11 @@ break;
 s32 func_020227c8(void *arg0, void *arg1) {
     extern u32 gAlloc[];
     extern u32 gFree[];
-    void func_02026ff0(void *, void *, void *, s32);
-    s32 func_020220b8(void);
+    void BigNumFromBytes(void *, void *, void *, s32);
+    s32 BoostThreadPriority(void);
     void func_020269dc(void *, void *, s32, s32, void *);
-    void func_02022104(s32);
-    void func_0202704c(void *, void *, s32, s32);
+    void RestoreThreadPriority(s32);
+    void BigNumToBytes(void *, void *, s32, s32);
     s32 func_0206527c(void *, void *, s32);
     u8 *base;
     s32 cnt;
@@ -372,13 +375,13 @@ s32 func_020227c8(void *arg0, void *arg1) {
     r6 = base + cnt * 2;
     r9 = r6 + cnt * 2;
     r10 = r9 + cnt * 2;
-    func_02026ff0(r6, *(void **)((u8 *)arg0 + 0x5a4), *(void **)((u8 *)arg0 + 0x5a8), cnt);
-    func_02026ff0(r9, *(void **)((u8 *)arg1 + 0x10), *(void **)((u8 *)arg1 + 0xc), cnt);
-    func_02026ff0(r10, *(void **)((u8 *)arg1 + 0x8), *(void **)((u8 *)arg1 + 0x4), cnt);
-    t = func_020220b8();
+    BigNumFromBytes(r6, *(void **)((u8 *)arg0 + 0x5a4), *(void **)((u8 *)arg0 + 0x5a8), cnt);
+    BigNumFromBytes(r9, *(void **)((u8 *)arg1 + 0x10), *(void **)((u8 *)arg1 + 0xc), cnt);
+    BigNumFromBytes(r10, *(void **)((u8 *)arg1 + 0x8), *(void **)((u8 *)arg1 + 0x4), cnt);
+    t = BoostThreadPriority();
     func_020269dc(base, r6, (s32)r9, cnt, r10);
-    func_02022104(t);
-    func_0202704c(r6, base, *(s32 *)((u8 *)arg1 + 0x4), cnt);
+    RestoreThreadPriority(t);
+    BigNumToBytes(r6, base, *(s32 *)((u8 *)arg1 + 0x4), cnt);
     t = base[cnt * 2];
     cnt = 0;
     if (t != 0 || r6[1] != 1) {

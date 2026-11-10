@@ -463,9 +463,9 @@ void func_02039ba8(s32 *arg0) {
     extern void *gNetSession;
     void func_02037638(s32, s32);
     s32 func_0205b048(s32 *);
-    s32 func_02049900(void);
+    s32 ghiGetLastSocketError(void);
     func_0205b048(arg0);
-    M2C_FIELD(&gNetSession, s32 *, 4) = func_02049900();
+    M2C_FIELD(&gNetSession, s32 *, 4) = ghiGetLastSocketError();
     func_02037638(9, 0xfffe8515);
     M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, 0) = 0;
 }

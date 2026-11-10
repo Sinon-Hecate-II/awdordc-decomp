@@ -41,7 +41,7 @@ s32 func_020ae7ec(void) { return 0; }
 void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020e31e0(void);
     M2C_UNK *func_020e3218(M2C_UNK *);
-    void func_020675e4(void *, void *, ...);
+    void StringFormat(void *, void *, ...);
     void func_0200bc5c(void *);
     void func_02082134(s32, s32);
     void func_020814e4(void *);
@@ -60,19 +60,19 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     char sp0[0x100];
 
     if (func_020e31e0() == 2 && *(u8 *)((char *)r6 + 0x34) == 0) {
-        func_020675e4(sp100, func_020e3218(*(void **)(*(void **)((char *)r6 + 0x38))));
+        StringFormat(sp100, func_020e3218(*(void **)(*(void **)((char *)r6 + 0x38))));
     } else {
-        func_020675e4(sp100, *(void **)(*(void **)((char *)r6 + 0x38)));
+        StringFormat(sp100, *(void **)(*(void **)((char *)r6 + 0x38)));
     }
     func_02082134(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
     func_0200bc5c(data_02127eac);
-    func_020675e4(sp0, data_02127eb8, sp100);
+    StringFormat(sp0, data_02127eb8, sp100);
     func_020814e4(sp0);
-    func_020675e4(sp0, data_02127ec0, sp100);
+    StringFormat(sp0, data_02127ec0, sp100);
     func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0xc));
-    func_020675e4(sp0, data_02127ec8, sp100);
+    StringFormat(sp0, data_02127ec8, sp100);
     func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20));
-    func_020675e4(sp0, data_02127ed0, sp100);
+    StringFormat(sp0, data_02127ed0, sp100);
     func_02081578(sp0, (void *)((char *)*(void **)((char *)gCur3DSpriteEngine + 0x30) + (r4 << 5)));
     {
         void *e0 = *(void **)gCur3DSpriteEngine;

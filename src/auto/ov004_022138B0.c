@@ -3,7 +3,7 @@
 
 s32 func_ov004_022138b0(void) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021df7d0;
+    extern u8 gAiCommand;
     u8 value;
     u8 *p;
     u8 *base;
@@ -11,7 +11,7 @@ s32 func_ov004_022138b0(void) {
     base = *gCurrentMap;
     p = M2C_FIELD(base, u8 **, 0x52D0);
     x = p[1]; y = p[2];
-    if (data_ov000_021df7d0 == 3) {
+    if (gAiCommand == 3) {
         p = base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758));
         value = p[0x1420];
         if (((s32)(value & 0xE0) >> 5) == 1 && (u32)((value & 0x1F) - 0x10) <= 1) return 1;
@@ -33,14 +33,14 @@ u8 func_ov004_0221392c(void) {
 
 s32 func_ov004_0221395c(void) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021df7d0;
-    if (data_ov000_021df7d0 == 0x18 && ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u8 *, 0) << 26) >> 26) == 0xD) return 1;
+    extern u8 gAiCommand;
+    if (gAiCommand == 0x18 && ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u8 *, 0) << 26) >> 26) == 0xD) return 1;
     return 0;
 }
 
 s32 func_ov004_022139a8(void) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021df7d0;
+    extern u8 gAiCommand;
     u8 value;
     u8 *p;
     u8 *base;
@@ -48,7 +48,7 @@ s32 func_ov004_022139a8(void) {
     base = *gCurrentMap;
     p = M2C_FIELD(base, u8 **, 0x52D0);
     x = p[1]; y = p[2];
-    if (data_ov000_021df7d0 == 24) {
+    if (gAiCommand == 24) {
         p = base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758));
         value = p[0x1420];
         if (((s32)(value & 0xE0) >> 5) == 1 && (value & 0x1F) == 0x14) return 1;
@@ -407,11 +407,11 @@ void func_ov004_022146f8(void) {
 
 u8 func_ov004_02214718(void) {
     M2C_UNK func_020a45f8(M2C_UNK, M2C_UNK);
-    s32 func_020a4c7c();
+    s32 IsActionEntryActive();
     u8 var_r0;
 
     func_020a45f8(6, 6);
-    if (func_020a4c7c() == 0) {
+    if (IsActionEntryActive() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -423,7 +423,7 @@ u8 func_ov004_02214740(void) {
     u8 var_r0;
 
     func_020a45f8(0xB, 5);
-    if (func_020a4c7c() == 0) {
+    if (IsActionEntryActive() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -435,7 +435,7 @@ u8 func_ov004_02214768(void) {
     u8 var_r0;
 
     func_020a45f8(0xC, 5);
-    if (func_020a4c7c() == 0) {
+    if (IsActionEntryActive() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -447,7 +447,7 @@ u8 func_ov004_02214790(void) {
     u8 var_r0;
 
     func_020a45f8(0xD, 5);
-    if (func_020a4c7c() == 0) {
+    if (IsActionEntryActive() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -459,7 +459,7 @@ u8 func_ov004_022147b8(void) {
     u8 var_r0;
 
     func_020a45f8(0x12, 6);
-    if (func_020a4c7c() == 0) {
+    if (IsActionEntryActive() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

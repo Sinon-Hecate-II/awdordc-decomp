@@ -2,13 +2,13 @@
 #include "common.h"
 extern u8 **gCurrentMap;
 extern u8 data_ov000_021b5c0f[], data_ov000_021b5bfc[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
-s32 func_ov000_021a98e4(s32);
+s32 GetUnitAttackClass(s32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitMoveRange(s32,s32);
-s32 func_ov000_021a9820(s32,s32);
-s32 func_ov000_021a947c(s32,s32,s16,s16);
+s32 GetUnitMaxAttackRange(s32,s32);
+s32 IsUnitVisibleAtCell(s32,s32,s16,s16);
 s32 func_020a85c8(s32);
-void func_01ffada0(s32,s32,s32,s32,s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s8);
 static inline s8 MapCost(s32 x,s32 y) { return M2C_FIELD(*gCurrentMap+y*4,s8**,0x52e8)[x]; }
 static inline u8 *MapCell(s32 x,s32 y) { return *gCurrentMap + x + M2C_FIELD(*gCurrentMap+y*2,u16*,0x3758); }
@@ -42,20 +42,20 @@ u8 *map=*gCurrentMap;
 s32 x,y,idx,kind,loX,hiX,loY,hiY,dist,value;
 u8 *dimensions;
 s32 filter;
-if(M2C_FIELD(map+M2C_FIELD(map,u16*,0x52a4)*140,u8*,0x67ce)!=3 && func_ov000_021a98e4(c)!=1 && !e && c!=21)filter=1;else filter=0;
-if (!func_ov000_021a98e4(((UnitKindBits*)unit)->kind)) {
+if(M2C_FIELD(map+M2C_FIELD(map,u16*,0x52a4)*140,u8*,0x67ce)!=3 && GetUnitAttackClass(c)!=1 && !e && c!=21)filter=1;else filter=0;
+if (!GetUnitAttackClass(((UnitKindBits*)unit)->kind)) {
 s32 directX,directY;
 if(f==1)return;
 if(g==1 && d*GetUnitDamagePercent(c,((UnitKindBits*)unit)->kind)>=4500)return;
 if ((((UnitKindBits*)unit)->kind)==25 && !(((UnitAmmoBits*)(unit+6))->ammo)) return;
-func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
+FloodFillUnitRange(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
 func_01ffb9c4(111);
 for(directY=0;directY<MapHeight();directY++) for(directX=0;directX<MapWidth();directX++){
 map=*gCurrentMap;
 if(M2C_FIELD(map+directY*4,s8**,0x52e8)[directX]<0)continue;
 kind=(*InfluenceCell(data_ov000_021e0550,directX,directY))&127;
 if(kind<=1 && (!(flags&16)||!((*InfluenceCell(data_ov000_021e0550,directX,directY))&128)))continue;
-if(kind!=127&&!func_ov000_021a947c(M2C_FIELD(map,u16*,0x52b6),c,(s16)directX,(s16)directY))continue;
+if(kind!=127&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16*,0x52b6),c,(s16)directX,(s16)directY))continue;
 if(filter){
 if((data_ov000_021b5bfc[c*112+19]&7)&&(data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfb04[(u32)(directY*MapWidth()+directX)>>3]))continue;
 if((data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((directY*MapWidth()+directX)&7))&data_ov000_021dfa60[(u32)(directY*MapWidth()+directX)>>3]))continue;
@@ -76,35 +76,35 @@ if(!(u8)(M2C_FIELD(map+((u32)idx>>3),u8*,0x5160)&(1<<(idx&7))) && (flags&7))retu
 }
 if(func_020a85c8(((UnitKindBits*)unit)->kind)){
 s32 specialX,specialY;
-func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
-for(specialX=0;specialX<func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);specialX++)func_01ffb9c4((s8)(specialX+111));
+FloodFillUnitRange(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
+for(specialX=0;specialX<GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);specialX++)func_01ffb9c4((s8)(specialX+111));
 for(specialY=0;specialY<MapHeight();specialY++) for(specialX=0;specialX<MapWidth();specialX++){
 map=*gCurrentMap;
 if(M2C_FIELD(map+specialY*4,s8**,0x52e8)[specialX]<0)continue;
 kind=(*InfluenceCell(data_ov000_021e0550,specialX,specialY))&127;
 if(!kind && (!(flags&16)||!((*InfluenceCell(data_ov000_021e0550,specialX,specialY))&128)))continue;
-if(kind!=127&&!func_ov000_021a947c(M2C_FIELD(map,u16*,0x52b6),c,(s16)specialX,(s16)specialY))continue;
+if(kind!=127&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16*,0x52b6),c,(s16)specialX,(s16)specialY))continue;
 map=*gCurrentMap;
 if(M2C_FIELD(map+specialY*4,s8**,0x52e8)[specialX]>=110){map=MapCell(specialX,specialY);value=map[0x2d48]+(b>>2);}else{map=MapCell(specialX,specialY);value=map[0x2d48]+(b>>1);}
 if(value>255)value=255;
 map[0x2d48]=value;
 }return;
 }
-if(unit[1]-func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind)<0)loX=0;else loX=unit[1]-func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);
-if(unit[2]-func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind)<0)loY=0;else loY=unit[2]-func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);
+if(unit[1]-GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind)<0)loX=0;else loX=unit[1]-GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);
+if(unit[2]-GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind)<0)loY=0;else loY=unit[2]-GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);
 dimensions=*gCurrentMap+0x5120;
-if(unit[1]+func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind)>=M2C_FIELD(dimensions,u16*,0x24)-1)hiX=MapWidth()-1;else hiX=unit[1]+func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);
+if(unit[1]+GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind)>=M2C_FIELD(dimensions,u16*,0x24)-1)hiX=MapWidth()-1;else hiX=unit[1]+GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);
 dimensions=*gCurrentMap+0x5120;
-if(unit[2]+func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind)>=M2C_FIELD(dimensions,u16*,0x26)-1)hiY=MapHeight()-1;else hiY=unit[2]+func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);
+if(unit[2]+GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind)>=M2C_FIELD(dimensions,u16*,0x26)-1)hiY=MapHeight()-1;else hiY=unit[2]+GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind);
 for(y=loY;y<=hiY;y++)for(x=loX;x<=hiX;x++){
 dist=0;
 if(unit[1]-x>0)dist+=unit[1]-x;else dist+=x-unit[1];
 if(unit[2]-y>0)dist+=unit[2]-y;else dist+=y-unit[2];
-if(dist<data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+12]||dist>func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind))continue;
+if(dist<data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+12]||dist>GetUnitMaxAttackRange(UnitSide(unit),((UnitKindBits*)unit)->kind))continue;
 map=*gCurrentMap;
 kind=(*InfluenceCell(data_ov000_021e0550,x,y))&127;
 if(!kind && (!(flags&16)||!((*InfluenceCell(data_ov000_021e0550,x,y))&128)))continue;
-if(kind!=127&&!func_ov000_021a947c(M2C_FIELD(map,u16*,0x52b6),c,(s16)x,(s16)y))continue;
+if(kind!=127&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16*,0x52b6),c,(s16)x,(s16)y))continue;
 if(dist==1){{
 if((data_ov000_021b5bfc[c*112+19]&7)&&(data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&7)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfb04[(u32)(y*MapWidth()+x)>>3]))continue;
 if((data_ov000_021b5bfc[(((UnitKindBits*)unit)->kind)*112+19]&16)&&(u8)((1<<((y*MapWidth()+x)&7))&data_ov000_021dfa60[(u32)(y*MapWidth()+x)>>3]))continue;

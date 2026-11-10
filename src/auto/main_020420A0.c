@@ -2,40 +2,44 @@
 #include "common.h"
 
 #pragma opt_strength_reduction off
-s32 func_020420a0(void) {
+/* Per-frame handler for the connection states that wait on the other peers:
+ * state 9 (own player slot being accepted), 16 (sync acknowledgements) and 17
+ * (measured latency). It repeats the notices every 6 s and advances or tears
+ * down the session once everyone has answered; returns 0 when a send fails. */
+s32 UpdateConnectionSyncWait(void) {
  void *GetConnection(void);
  u64 func_02007004(void);
  u64 func_02072088(u64,u64);
  s32 func_02038f6c(void);
  s32 func_02041038(s32);
- void func_02041fb0(s32,s32);
+ void SendConnectionPacket(s32,s32);
  s32 func_02041e74(s32);
  void func_02041e44(void);
  void func_02041be0(s32);
  void func_020411dc(s32);
  s32 func_02040e1c(s32);
- u64 now,delta;
+ u64 now,elapsed;
  s32 i;
- void *p;
- if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==9 ||
- M2C_FIELD(GetConnection(),s32 *,0x1a0)==16 ||
- M2C_FIELD(GetConnection(),s32 *,0x1a0)==17) {
+ void *conn;
+ if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==CONN_STATE_WAIT_SLOT ||
+ M2C_FIELD(GetConnection(),s32 *,0x1a0)==CONN_STATE_WAIT_SYNC_ACK ||
+ M2C_FIELD(GetConnection(),s32 *,0x1a0)==CONN_STATE_WAIT_SYNC_RTT) {
  now=func_02007004();
- delta=func_02072088((now-M2C_FIELD(GetConnection(),u64 *,0x1e0))<<6,0x82eaULL);
+ elapsed=func_02072088((now-M2C_FIELD(GetConnection(),u64 *,0x1e0))<<6,0x82eaULL);
  } else return 1;
  switch(M2C_FIELD(GetConnection(),s32 *,0x1a0)){
- case 9:
- if(delta>6000ULL){
+ case CONN_STATE_WAIT_SLOT:
+ if(elapsed>6000ULL){
  if(func_02038f6c()==5 && M2C_FIELD(GetConnection(),u8 *,0x1ad)>=5){
  if(func_02041038(M2C_FIELD(GetConnection(),s32 *,0xf4))==0) return 0;
  } else {
  M2C_FIELD(GetConnection(),u8 *,0x1ad)++;
- func_02041fb0(M2C_FIELD(GetConnection(),u8 *,0x2d0),3);
+ SendConnectionPacket(M2C_FIELD(GetConnection(),u8 *,0x2d0),CONN_NOTICE_SYNC_STATUS);
  }
  }
  break;
- case 16:
- if(delta>6000ULL){
+ case CONN_STATE_WAIT_SYNC_ACK:
+ if(elapsed>6000ULL){
  M2C_FIELD(GetConnection(),u8 *,0x1ab)++;
  if(M2C_FIELD(GetConnection(),u8 *,0x1ab)>5){
  if(M2C_FIELD(GetConnection(),u8 *,0x15)==0 || M2C_FIELD(GetConnection(),u8 *,0x15)==1){
@@ -52,16 +56,16 @@ s32 func_020420a0(void) {
  }
  } else {
  for(i=1;i<=M2C_FIELD(GetConnection(),u8 *,0xd);i++){
- p=GetConnection();
- if((M2C_FIELD(p,u32 *,0x1d4)&(1<<M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0)))==0){
- func_02041fb0(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0),2);
+ conn=GetConnection();
+ if((M2C_FIELD(conn,u32 *,0x1d4)&(1<<M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0)))==0){
+ SendConnectionPacket(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0),CONN_NOTICE_PLAYER_SLOT);
  }
  }
  }
  }
  break;
- case 17:
- if(delta>(u64)(s32)M2C_FIELD((u8 *)GetConnection()+0x100,u16 *,0xb0)) func_020411dc(4);
+ case CONN_STATE_WAIT_SYNC_RTT:
+ if(elapsed>(u64)(s32)M2C_FIELD((u8 *)GetConnection()+0x100,u16 *,0xb0)) func_020411dc(4);
  break;
  }
  return 1;
@@ -168,7 +172,7 @@ void func_020427f4(void){extern u8 data_0213d3bc[];void func_020376d8(s32,s32,s3
 
 u8 func_0204284c(void){void *GetConnection(void);u8 i=0;s32 j;do{for(j=0;j<=M2C_FIELD(GetConnection(),u8 *,20);j++){if(i==M2C_FIELD((u8 *)GetConnection()+j,u8 *,0x2d0))break;}if(j>M2C_FIELD(GetConnection(),u8 *,20))break;i++;}while(i<32);return i;}
 
-s32 IsConnectionMember(s32 a){void *GetConnection(void);s32 func_0203ae6c(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=func_0203ae6c(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
+s32 IsConnectionMember(s32 a){void *GetConnection(void);s32 GetSessionPlayerId(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=GetSessionPlayerId(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
 
 s32 func_0204292c(void *arg0) {
     s32 func_02060b68(void *, void *, s32);

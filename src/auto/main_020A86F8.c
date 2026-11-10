@@ -59,120 +59,120 @@ s32 func_020a886c(void) {
     return 0;
 }
 
-s32 *func_020a8874(a) s32 a; {extern u8 data_ov000_021afe90[];return (s32 *)(80*a+(s32)data_ov000_021afe90);}
+s32 *MapData_GetRecord(a) s32 a; {extern u8 data_ov000_021afe90[];return (s32 *)(80*a+(s32)data_ov000_021afe90);}
 
 s32 func_020a8888(void) {
-    s32 *func_020a8874();
-    return *func_020a8874();
+    s32 *MapData_GetRecord();
+    return *MapData_GetRecord();
 }
 
-u8 func_020a8898(s32 arg0) {
+u8 MapData_GetTileset(s32 arg0) {
     if ((arg0 >= 0xE1) && (arg0 < 0x1A9)) {
         return 0U;
     }
-    return M2C_FIELD(func_020a8874(), u8 *, 6);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 6);
 }
 
 u8 func_020a88c4(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 7);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 7);
 }
 
 s32 func_020a88d4(void) {
-    return M2C_FIELD(func_020a8874(), u16 *, 4) & 1;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 1;
 }
 
 s32 func_020a88e8(void) {
-    return M2C_FIELD(func_020a8874(), u16 *, 4) & 2;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 2;
 }
 
 s32 func_020a88fc(void) {
-    return M2C_FIELD(func_020a8874(), u16 *, 4) & 4;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 4;
 }
 
 s32 func_020a8910(void) {
-    return M2C_FIELD(func_020a8874(), u16 *, 4) & 8;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 8;
 }
 
 s32 func_020a8924(void) {
-    return M2C_FIELD(func_020a8874(), u16 *, 4) & 0x10;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 0x10;
 }
 
 u8 func_020a8938(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 8);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 8);
 }
 
 u8 func_020a8948(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 9);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 9);
 }
 
 u8 func_020a8958(s32 arg0) {
     if ((arg0 >= 0xE1) && (arg0 < 0x1A9)) {
         return 6U;
     }
-    return M2C_FIELD(func_020a8874(), u8 *, 0xA);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 0xA);
 }
 
 u8 func_020a8984(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 0xB);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 0xB);
 }
 
 u8 func_020a8994(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 0xC);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 0xC);
 }
 
 u16 func_020a89a4(void) {
-    return (u16) (M2C_FIELD(func_020a8874(), u8 *, 0xD) * 0xE10);
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xD) * 0xE10);
 }
 
 u16 func_020a89c4(void) {
-    return (u16) (M2C_FIELD(func_020a8874(), u8 *, 0xE) * 0x64);
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xE) * 0x64);
 }
 
 u16 func_020a89e4(void) {
-    return (u16) (M2C_FIELD(func_020a8874(), u8 *, 0xF) * 0x64);
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xF) * 0x64);
 }
 
 u8 func_020a8a04(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 0x10);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 0x10);
 }
 
-u8 func_020a8a14(s32 a,s32 b){u8 *p=(u8*)func_020a8874(a);return M2C_FIELD(p+(b-1),u8 *,60);}
+u8 func_020a8a14(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,60);}
 
-u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)func_020a8874(a);return M2C_FIELD(p+(b-1),u8 *,28);}
+u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,28);}
 
-u8 func_020a8a4c(s32 a,s32 b){u8 *p=(u8*)func_020a8874(a);return M2C_FIELD(p+(b-1),u8 *,32);}
+u8 func_020a8a4c(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,32);}
 
-u8 func_020a8a68(s32 a,s32 b){u8 *p=(u8*)func_020a8874(a);return M2C_FIELD(p+(b-1),u8 *,36);}
+u8 func_020a8a68(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,36);}
 
 u8 func_020a8a84(void) {
-    return M2C_FIELD(func_020a8874(), u8 *, 0x11);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, 0x11);
 }
 
-s32 func_020a8a94(s32 a){u8 *p=(u8*)func_020a8874(a);return (p[19]<<8)|p[18];}
+s32 func_020a8a94(s32 a){u8 *p=(u8*)MapData_GetRecord(a);return (p[19]<<8)|p[18];}
 
-u16 func_020a8aac(s32 a,s32 b){u16 *p=(u16*)func_020a8874(a);return M2C_FIELD(p+b,u16 *,20);}
+u16 func_020a8aac(s32 a,s32 b){u16 *p=(u16*)MapData_GetRecord(a);return M2C_FIELD(p+b,u16 *,20);}
 
-s32 func_020a8ac4(s32 a,s32 b){s32 *p=func_020a8874(a);return M2C_FIELD(p+(b-1),s32 *,40);}
+s32 func_020a8ac4(s32 a,s32 b){s32 *p=MapData_GetRecord(a);return M2C_FIELD(p+(b-1),s32 *,40);}
 
-u8 func_020a8ae0(s32 a,s32 b){u8 *p=(u8*)func_020a8874(a);return M2C_FIELD(p+(b-1),u8 *,56);}
+u8 func_020a8ae0(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,56);}
 
 s32 func_020a8afc(void) {
-    return M2C_FIELD(func_020a8874(), s32 *, 0x40);
+    return M2C_FIELD(MapData_GetRecord(), s32 *, 0x40);
 }
 
 s32 func_020a8b0c(void) {
-    return M2C_FIELD(func_020a8874(), s32 *, 0x44);
+    return M2C_FIELD(MapData_GetRecord(), s32 *, 0x44);
 }
 
 s32 func_020a8b1c(void) {
-    return M2C_FIELD(func_020a8874(), s32 *, 0x48);
+    return M2C_FIELD(MapData_GetRecord(), s32 *, 0x48);
 }
 
 s32 func_020a8b2c(void) {
-    return M2C_FIELD(func_020a8874(), s32 *, 0x4C);
+    return M2C_FIELD(MapData_GetRecord(), s32 *, 0x4C);
 }
 
-s32 func_020a8b3c(s32 a){s32 func_02086680(s32);Table020a8b3c t=data_020f49e0;return func_02086680(t.values[a]);}
+s32 func_020a8b3c(s32 a){s32 GetLocalizedText(s32);Table020a8b3c t=data_020f49e0;return GetLocalizedText(t.values[a]);}
 
 M2C_UNK *func_020a8b78(void) {
     extern M2C_UNK data_02126148;
@@ -452,7 +452,7 @@ return result;
 }
 
 void func_020a947c(void *arg0,u32 arg1) {
-extern M2C_UNK data_027e0084,data_027e0064;
+extern M2C_UNK gSpriteDesc8x8,data_027e0064;
 switch(arg1){
 case 0:case 1:case 2:
 M2C_FIELD(arg0,u8 *,20)=8;
@@ -460,7 +460,7 @@ M2C_FIELD(arg0,u8 *,21)=8;
 M2C_FIELD(arg0,u8 *,23)=8;
 M2C_FIELD(arg0,u8 *,24)=8;
 M2C_FIELD(arg0,u8 *,22)=1;
-M2C_FIELD(arg0,void **,36)=&data_027e0084;
+M2C_FIELD(arg0,void **,36)=&gSpriteDesc8x8;
 break;
 case 3:case 4:case 5:
 M2C_FIELD(arg0,u8 *,20)=16;

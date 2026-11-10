@@ -27,10 +27,10 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 #pragma opt_strength_reduction off
 void func_ov000_0218f468(void){
 s32 func_0207c8ec(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);
-void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void func_01ffc328(void *);
+void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
 s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
-s32 CanUnitAttackKind(void *,s32);void func_01ffada0(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
+s32 CanUnitAttackKind(void *,s32);void FloodFillUnitRange(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
 u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
 u=SelectedF468();x=M2C_FIELD(u,DestF468 *,8).x;y=M2C_FIELD(u,DestF468 *,8).y;
 health=M2C_FIELD(u,HealthF468 *,6).health;
@@ -42,7 +42,7 @@ if(func_ov000_021a9d8c((s16)x,(s16)y)==0 || IsCurrentPlayerUnit(M2C_FIELD(TileF4
 }}
 ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
 prepared:
-func_01ffc328(SelectedF468());
+BuildUnitMoveRange(SelectedF468());
 if(PassF468(x,y)<0){
 s32 left,top,right,bottom,xx,yy;
 left=MaxF468(x-2);top=MaxF468(y-2);m=MapF468();
@@ -81,7 +81,7 @@ i++;offset+=14;
 }while(i<gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
 ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
 }
-u=SelectedF468();func_01ffada0(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
+u=SelectedF468();FloodFillUnitRange(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
 if(PassF468(x,y)<0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
 PlanMoveDestination(x,y);
 }
@@ -93,7 +93,7 @@ PlanMoveDestination(x,y);
  * cell on ties, and places the cursor on the chosen tile. */
 void SelectAIDestination(void) {
 s32 IsFootUnitKind(s32);
-void func_01ffc328(void *);
+void BuildUnitMoveRange(void *);
 s32 func_ov000_021a8b78(void *);
 s32 func_ov000_021a9d8c(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
@@ -109,7 +109,7 @@ s32 bestScore,bestTransportScore,bestThreat;
 s32 terrainKind,cellY,cellX,cellScore,threatValue;
 u8 *map,*cellPtr,*record;
 if(!IsFootUnitKind(KindF468(SelectedF468())))return;
-func_01ffc328(SelectedF468());
+BuildUnitMoveRange(SelectedF468());
 bestY=9999;bestX=bestY;transportY=bestY;transportX=bestY;bestScore=-1;bestTransportScore=-1;bestThreat=32767;
 healthyUnit=(u8)(func_ov000_021a8b78(SelectedF468())>=5);
 for(cellY=0;cellY<M2C_FIELD(MapF468(),u16 *,0x5146);cellY++){

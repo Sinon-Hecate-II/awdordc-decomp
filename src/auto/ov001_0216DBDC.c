@@ -265,7 +265,7 @@ s32 func_ov001_0216e79c(void) {
     M2C_UNK func_020072cc(void *, s32, s32, void *, s32);
     M2C_UNK func_02007338(void *);
     M2C_UNK MemCopy(void *, void *, s32);
-    M2C_UNK func_02068c50(void *, void *);
+    M2C_UNK StringCopy(void *, void *);
     s32 func_ov001_0216df50(s32, s32);
     s32 func_ov001_0216df94(s32, s32, s32, s32);
     s32 func_ov001_0216e2d8(void);
@@ -380,7 +380,7 @@ process:
         if (M2C_FIELD(&data_ov001_02192790, s32 *, 0x38) != 1 && func_ov001_0216e5d0(buf1, buf2, &sel) != 0) {
             p = buf1 + 4 + sel * 0x30;
             M2C_FIELD(&data_ov001_02192790, s32 *, 0x18) = sel;
-            func_02068c50(&data_ov001_02192ca0, p + 4);
+            StringCopy(&data_ov001_02192ca0, p + 4);
             q = p + 0x28;
             M2C_FIELD(&data_ov001_02192c40, u8 *, 0) = q[0];
             M2C_FIELD(&data_ov001_02192c40, u8 *, 1) = q[1];

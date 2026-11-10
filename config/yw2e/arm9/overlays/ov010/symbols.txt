@@ -11,7 +11,7 @@ func_ov010_022225b0 kind:function(arm,size=0x14) addr:0x022225b0
 func_ov010_022225c4 kind:function(arm,size=0x138) addr:0x022225c4
 func_ov010_022226fc kind:function(arm,size=0xb4) addr:0x022226fc
 func_ov010_022227b0 kind:function(arm,size=0x110) addr:0x022227b0
-func_ov010_022228c0 kind:function(arm,size=0x24c) addr:0x022228c0
+Link_PullChannelPacket kind:function(arm,size=0x24c) addr:0x022228c0
 func_ov010_02222b0c kind:function(arm,size=0x11c) addr:0x02222b0c
 func_ov010_02222c28 kind:function(arm,size=0x74) addr:0x02222c28
 func_ov010_02222c9c kind:function(arm,size=0x10) addr:0x02222c9c
@@ -35,12 +35,12 @@ func_ov010_02223654 kind:function(arm,size=0x48) addr:0x02223654
 func_ov010_0222369c kind:function(arm,size=0x48) addr:0x0222369c
 func_ov010_022236e4 kind:function(arm,size=0x80) addr:0x022236e4
 func_ov010_02223764 kind:function(arm,size=0x114) addr:0x02223764
-func_ov010_02223878 kind:function(arm,size=0x48) addr:0x02223878
-func_ov010_022238c0 kind:function(arm,size=0x6c) addr:0x022238c0
-func_ov010_0222392c kind:function(arm,size=0x10) addr:0x0222392c
+Link_PeekPacket kind:function(arm,size=0x48) addr:0x02223878
+Link_PopPacket kind:function(arm,size=0x6c) addr:0x022238c0
+Link_GetQueueCount kind:function(arm,size=0x10) addr:0x0222392c
 func_ov010_0222393c kind:function(arm,size=0x8c) addr:0x0222393c
 func_ov010_022239c8 kind:function(arm,size=0x2c) addr:0x022239c8
-func_ov010_022239f4 kind:function(arm,size=0x2c) addr:0x022239f4
+Link_AdvancePacket kind:function(arm,size=0x2c) addr:0x022239f4
 func_ov010_02223a20 kind:function(arm,size=0x20) addr:0x02223a20
 func_ov010_02223a40 kind:function(arm,size=0xd8) addr:0x02223a40
 func_ov010_02223b18 kind:function(arm,size=0x3b0) addr:0x02223b18
@@ -75,7 +75,7 @@ func_ov010_02224cb8 kind:function(arm,size=0x120) addr:0x02224cb8
 func_ov010_02224dd8 kind:function(arm,size=0xc8) addr:0x02224dd8
 func_ov010_02224ea0 kind:function(arm,size=0x18) addr:0x02224ea0
 func_ov010_02224eb8 kind:function(arm,size=0x40) addr:0x02224eb8
-func_ov010_02224ef8 kind:function(arm,size=0x30) addr:0x02224ef8
+Link_FreePacket kind:function(arm,size=0x30) addr:0x02224ef8
 func_ov010_02224f28 kind:function(arm,size=0x4c) addr:0x02224f28
 func_ov010_02224f74 kind:function(arm,size=0x20) addr:0x02224f74
 func_ov010_02224f94 kind:function(arm,size=0x1e0) addr:0x02224f94
@@ -94,7 +94,7 @@ func_ov010_02225858 kind:function(arm,size=0xdc) addr:0x02225858
 func_ov010_02225934 kind:function(arm,size=0x14) addr:0x02225934
 func_ov010_02225948 kind:function(arm,size=0x1c) addr:0x02225948
 func_ov010_02225964 kind:function(arm,size=0x140) addr:0x02225964
-func_ov010_02225aa4 kind:function(arm,size=0x234) addr:0x02225aa4
+StartStreamedVoice kind:function(arm,size=0x234) addr:0x02225aa4
 func_ov010_02225cd8 kind:function(arm,size=0x18) addr:0x02225cd8
 func_ov010_02225cf0 kind:function(arm,size=0x10) addr:0x02225cf0
 func_ov010_02225d00 kind:function(arm,size=0x38) addr:0x02225d00
@@ -111,8 +111,8 @@ func_ov010_02225f60 kind:function(arm,size=0xf4) addr:0x02225f60
 func_ov010_02226054 kind:function(arm,size=0xc) addr:0x02226054
 func_ov010_02226060 kind:function(arm,size=0x58) addr:0x02226060
 func_ov010_022260b8 kind:function(arm,size=0x3c) addr:0x022260b8
-func_ov010_022260f4 kind:function(arm,size=0xc) addr:0x022260f4
-func_ov010_02226100 kind:function(arm,size=0x14) addr:0x02226100
+AllocAlignedBuffer kind:function(arm,size=0xc) addr:0x022260f4
+FreeBuffer kind:function(arm,size=0x14) addr:0x02226100
 func_ov010_02226114 kind:function(arm,size=0x1c) addr:0x02226114
 func_ov010_02226130 kind:function(arm,size=0xc) addr:0x02226130
 func_ov010_0222613c kind:function(arm,size=0xb8) addr:0x0222613c
@@ -356,7 +356,7 @@ data_ov010_0222be5c kind:data(any) addr:0x0222be5c
 data_ov010_0222be9e kind:data(any) addr:0x0222be9e
 data_ov010_0222bee0 kind:data(any) addr:0x0222bee0
 data_ov010_0222bf22 kind:data(any) addr:0x0222bf22
-data_ov010_0222bf64 kind:data(any) addr:0x0222bf64
+gStreamChannels kind:data(any) addr:0x0222bf64
 __sinit_ov010_0222bf68 kind:function(arm,size=0x8c) addr:0x0222bf68
 .p__sinit_ov010_0222bf68 kind:data(word) addr:0x0222bff4
 data_ov010_0222c000 kind:data(any) addr:0x0222c000
@@ -416,7 +416,7 @@ data_ov010_0222c93c kind:data(any) addr:0x0222c93c
 data_ov010_0222c960 kind:bss addr:0x0222c960
 gLinkCodecState kind:bss addr:0x0222c970
 data_ov010_0222c98c kind:bss addr:0x0222c98c
-data_ov010_0222c998 kind:bss addr:0x0222c998
+gLinkChannelStates kind:bss addr:0x0222c998
 data_ov010_0222cb54 kind:bss addr:0x0222cb54
 gLinkPacketBuffers kind:bss addr:0x0222cfa0
 data_ov010_0222d6b8 kind:bss addr:0x0222d6b8 ambiguous
@@ -440,9 +440,9 @@ data_ov010_0222ddb4 kind:bss addr:0x0222ddb4
 data_ov010_0222e544 kind:bss addr:0x0222e544 ambiguous
 data_ov010_0222edb4 kind:bss addr:0x0222edb4
 gLinkConfig kind:bss addr:0x0222edc0
-data_ov010_0222edd8 kind:bss addr:0x0222edd8
+gStreamVoiceState kind:bss addr:0x0222edd8
 data_ov010_0222edf8 kind:bss addr:0x0222edf8
-data_ov010_0222ee14 kind:bss addr:0x0222ee14
+gStreamSoundPlayer kind:bss addr:0x0222ee14
 data_ov010_0222ee70 kind:bss addr:0x0222ee70
 data_ov010_0222ee78 kind:bss addr:0x0222ee78
 data_ov010_0222ee98 kind:bss addr:0x0222ee98

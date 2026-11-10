@@ -319,11 +319,11 @@ void func_ov009_02222a00(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s16 func_ov009_02222a20(s32 arg0) {
-    u32 func_02076614();
+    u32 CountBits();
     u32 func_ov009_02222440();
     s32 __builtin_clz(u32);
     s16 result = 0;
-    u32 temp = func_02076614();
+    u32 temp = CountBits();
     s32 n;
     u16 count;
     s32 i;

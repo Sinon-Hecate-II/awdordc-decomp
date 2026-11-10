@@ -20,7 +20,7 @@ s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIEL
 
 s32 func_02030554(s32 a){void *func_0202f48c(s32);void func_02007e54(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 func_02030694(void *);u8 *p=func_0202f48c(16);switch(a){case 0:func_02007e54(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:func_02007e54(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=func_02030694(p);break;}return p[0xd10];}
 
-s32 func_020305e8(u8 *a){void *func_0202f48c(s32);s32 func_02068eac(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(func_0202f48c(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!func_02068eac(a+12,&data_020ea84c,8))return 8;}return 0;}
+s32 func_020305e8(u8 *a){void *func_0202f48c(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(func_0202f48c(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
 s32 func_02030634(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 

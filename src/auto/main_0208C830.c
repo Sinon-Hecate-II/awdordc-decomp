@@ -29,7 +29,7 @@ void func_0208c8c0(void *arg0) {
 extern void *gCur3DSpriteEngine;
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 func_020ae3e0(s32,s32,u8,u8);
-void func_01ffa574(void *);
+void DeleteSpriteObject(void *);
 u16 *dest;
 s32 i;
 u8 a;
@@ -45,7 +45,7 @@ if(M2C_FIELD(arg0,u8 *,0x36)<M2C_FIELD(arg0,u8 *,0x37)) return;
 M2C_FIELD(arg0,u8 *,0x36)=0;
 if(M2C_FIELD(arg0,u8 *,0x35)&4) M2C_FIELD(arg0,u8 *,0x35)^=2;
 else M2C_FIELD(arg0,u8 *,0x35)=0;
-if(M2C_FIELD(arg0,u8 *,0x35)&8) func_01ffa574(arg0);
+if(M2C_FIELD(arg0,u8 *,0x35)&8) DeleteSpriteObject(arg0);
 }
 
 void func_0208c9ec(void) {
@@ -103,8 +103,8 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern s16 gSinCosTable[];
     extern u8 data_020f35ba[];
     extern u8 data_027e007c[];
-    extern u8 data_027e00a4[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc16x8[];
+    extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
     s32 func_0207c8ec(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
@@ -171,7 +171,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)t,
-                      (void *)data_027e00a4,
+                      (void *)gSpriteDesc16x8,
                       pri);
         px=(s16)(px+0x10); len=(s16)(len-0x10);
     }
@@ -179,7 +179,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)t,
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         px=(s16)(px+0x8); len=(s16)(len-0x8);
     }
@@ -188,7 +188,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (4 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         px=(s16)(px+0x4); len=(s16)(len-0x4);
     }
@@ -197,7 +197,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (6 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         px=(s16)(px+0x2); len=(s16)(len-0x2);
     }
@@ -206,7 +206,7 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AddSprite((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (8 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         px=(s16)(px+0x1); len=(s16)(len-0x1);
     }
@@ -219,7 +219,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern u8 data_020f359e[];
     extern u8 data_027e009c[];
     extern u8 data_027e006c[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
     s32 func_0207c8ec(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
@@ -295,7 +295,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       t,
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         y0=(s16)(y0+0x8); len=(s16)(len-0x8);
     }
@@ -304,7 +304,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (4 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         y0=(s16)(y0+0x4); len=(s16)(len-0x4);
     }
@@ -313,7 +313,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (6 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         y0=(s16)(y0+0x2); len=(s16)(len-0x2);
     }
@@ -322,7 +322,7 @@ void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)(px & 0x1FF),
                       (u16)(y0 & 0xFF),
                       (u16)(t + (0x3FF & (8 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       pri);
         y0=(s16)(y0+0x1); len=(s16)(len-0x1);
     }

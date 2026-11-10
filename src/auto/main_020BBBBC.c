@@ -239,7 +239,7 @@ s32 func_020bc910(void) {
     void *func_020d2e3c(u16);
     void PlaySoundEffect(void *);
     s32 func_0207b764(u8, u8);
-    s32 func_020d5aa0(s16, s16, s32, s32, u8);
+    s32 ConfirmCursorTile(s16, s16, s32, s32, u8);
     void func_020d58c4(s32, s32);
 
     extern s32 *gCurrentMap;
@@ -278,7 +278,7 @@ s32 func_020bc910(void) {
     {
         u16 infoFlags = M2C_FIELD(gKeyState, u16 *, 0);
         if (infoFlags & 0x1) {
-            s32 res = func_020d5aa0(x, y, 1, 1, 0);
+            s32 res = ConfirmCursorTile(x, y, 1, 1, 0);
             if (res != 0) {
                 return 1;
             }

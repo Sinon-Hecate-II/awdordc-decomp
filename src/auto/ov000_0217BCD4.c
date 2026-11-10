@@ -58,7 +58,7 @@ s32 func_ov000_0217bd44(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 #pragma opt_strength_reduction off
 s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     void SelectMapLayer(void *);
-    s32 func_01ffada0(s32, s32, s32, s32, s32);
+    s32 FloodFillUnitRange(s32, s32, s32, s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 IsFootUnitKind(void);
     s32 ManhattanDistance(s32, s32, s32, s32);
@@ -70,7 +70,7 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
 
     base = *gCurrentMap;
     SelectMapLayer((u8 *)base + 0x338 + 0x2000);
-    func_01ffada0(x, y, 3, 6, 1);
+    FloodFillUnitRange(x, y, 3, 6, 1);
     base = *gCurrentMap;
     {
         u16 rowOff = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
@@ -297,9 +297,9 @@ s32 func_ov000_0217c08c(s32 a0, s32 a1, s32 a2, s16 *a3, s32 a4) {
 }
 #pragma opt_propagation on
 s32 func_ov000_0217c2d4(u8 *arg0) {
-s32 func_01ffada0(s32,s32,s32,s32,s32); s32 func_ov000_021a9860(s32,s32); extern void **gCurrentMap;
+s32 FloodFillUnitRange(s32,s32,s32,s32,s32); s32 func_ov000_021a9860(s32,s32); extern void **gCurrentMap;
 s32 x,y; void *base;
-func_01ffada0(arg0[1],arg0[2],(u32)(arg0[0]<<26)>>26,0x6e,0);
+FloodFillUnitRange(arg0[1],arg0[2],(u32)(arg0[0]<<26)>>26,0x6e,0);
 base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
@@ -334,20 +334,20 @@ return result;
 
 #pragma opt_propagation off
 s32 func_ov000_0217c4c8(u8 *p){
-s32 func_ov000_021a9820(s32,u32);s32 IsUnitOnCurrentTeam(s32);
+s32 GetUnitMaxAttackRange(s32,u32);s32 IsUnitOnCurrentTeam(s32);
 s32 count=0; s32 minX,minY,maxX,maxY; u8 *bounds; s32 dx,dy,x,dist,y;u8 *map;
-minX=p[1]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[1]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
-minY=p[2]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[2]-func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+minX=p[1]-GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[1]-GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+minY=p[2]-GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)<0?0:p[2]-GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
 bounds=(u8 *)*gCurrentMap+0x5120;
-maxX=p[1]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,36)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1:p[1]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+maxX=p[1]+GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,36)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1:p[1]+GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
 bounds=(u8 *)*gCurrentMap+0x5120;
-maxY=p[2]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1:p[2]+func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
+maxY=p[2]+GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1?M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1:p[2]+GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26);
 for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
 dx=p[1]-x;
 if(dx<=0)dx=x-p[1];dist=0;dist+=dx;
 dy=p[2]-y;if(dy<=0)dy=y-p[2];dist+=dy;
 if(dist<(data_ov000_021b5bfc[((u32)(p[0]<<26)>>26)*112+12]<=2?2:data_ov000_021b5bfc[((u32)(p[0]<<26)>>26)*112+12]))continue;
-if(dist>func_ov000_021a9820(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26))continue;
+if(dist>GetUnitMaxAttackRange(UnitOwnerC4c8(p),(u32)(p[0]<<26)>>26))continue;
 map=*gCurrentMap;
 {u16 row=M2C_FIELD(map+y*2,u16 *,0x3758);u8 id=map[x+row];if(!id)continue;if(!IsUnitOnCurrentTeam(id))continue;}
 map=*gCurrentMap;

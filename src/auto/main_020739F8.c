@@ -334,8 +334,8 @@ void func_02074220(void) {
 }
 
 s32 func_02074224(void *arg0, void *arg1) {
-    s32 func_02068d98(s32, s32);
-    if ((arg0 == arg1) || (func_02068d98(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg1, s32 *, 4)) == 0)) {
+    s32 StringCompare(s32, s32);
+    if ((arg0 == arg1) || (StringCompare(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg1, s32 *, 4)) == 0)) {
         return 1;
     }
     return 0;

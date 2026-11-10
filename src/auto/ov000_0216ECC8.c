@@ -13,7 +13,7 @@ void func_0209c048(s16,s16,void *,int,int,int);
 void func_0209c024(s16,s16,void *,int,int,int);
 void func_0207a61c(void *,u16,u16,int,u16,u8,u8);
 void func_0209b2dc(s16,s16,int,u32,int,int,u16);
-int func_0207c8ec(int,int);int func_02086680(u32);int func_0209c268(int);
+int func_0207c8ec(int,int);int GetLocalizedText(u32);int func_0209c268(int);
 void func_0209bfdc(s16,s16,void *,u32,int,int);
 
 /* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
@@ -200,7 +200,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  func_0209c048(24,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),data_ov000_021b5c0a[u->unk0*112],0,0);
  if(!data_ov000_021b5c05[u->unk0*112]){
  if(data_ov000_021b5c0b[u->unk0*112])func_0209c024(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b84(),0,0);
- else func_0209bfdc((s16)(28-(func_0209c268(func_02086680(0xc000007f))>>4)),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),0xc000007f,0,0);
+ else func_0209bfdc((s16)(28-(func_0209c268(GetLocalizedText(0xc000007f))>>4)),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),0xc000007f,0,0);
  }else{
  func_0209c048(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayHealth *)((u8 *)u+6))->ammo,0,0);
  func_0209c024(28,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);

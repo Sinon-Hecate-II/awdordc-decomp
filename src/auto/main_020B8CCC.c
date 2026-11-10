@@ -73,8 +73,8 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 #pragma opt_common_subs reset
 #pragma optimization_level 4
 void func_020b939c(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
-    M2C_UNK func_0208fb0c(s32, s16, s16);
+    M2C_UNK DeleteSpriteObject(void *);
+    M2C_UNK PlaySoundAtTile(s32, s16, s16);
     s32 func_020cd674();
     extern void **gCurrentMap;
     void *temp_r1;
@@ -82,11 +82,11 @@ void func_020b939c(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x6C) = 0;
     M2C_FIELD(arg0, s16 *, 0x6E) = 8;
     temp_r1 = *gCurrentMap;
-    func_0208fb0c(0x111, M2C_FIELD(temp_r1, s16 *, 0x52C2), M2C_FIELD(temp_r1, s16 *, 0x52C4));
+    PlaySoundAtTile(0x111, M2C_FIELD(temp_r1, s16 *, 0x52C2), M2C_FIELD(temp_r1, s16 *, 0x52C4));
     if (func_020cd674() == 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_020b93f4(void *a) {s32 func_020d2d38(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_020b916c(s32,s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);void func_01ffa6fc(void *);extern void **gCurrentMap;

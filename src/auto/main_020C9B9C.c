@@ -42,7 +42,7 @@ void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); retu
 void func_020c9b9c(void *arg0) {
 extern void **gCurrentMap;
 extern u16 data_ov000_021aeee8[];
-extern s8 data_ov000_021b56c0[];
+extern s8 gTerrainPropertyFlags[];
 void func_0207ab84(s32,s32,u8); void func_0207ac54(s32,s32,s32);
 void func_020cf2c8(void);void func_020cfd28(void);void func_020d2470(void);
 u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
@@ -68,7 +68,7 @@ rec=map+i*6;
 kind=M2C_FIELD(rec,u8 *,0x6c60);x=M2C_FIELD(rec,u8 *,0x6c61);y=M2C_FIELD(rec,u8 *,0x6c62);
 if(kind==255)break;
 kind&=31;
-if(data_ov000_021b56c0[kind]){
+if(gTerrainPropertyFlags[kind]){
 p=map+x+M2C_FIELD(map+y*2,u16 *,0x3758);
 if(data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]==(M2C_FIELD(p,u8 *,0x1420)&0xe0)){
 if(player && (unit=*p)!=0){
@@ -303,7 +303,7 @@ void func_020ca59c(void *dialog) {
     s32 func_020bcb94(void);
     s32 func_020bd990(s16);
     s32 func_020d46cc(void);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK func_0207b764(s16, s16);
     void *func_0209f8e4(s16);
     M2C_UNK func_020cc66c(s16, s16);
@@ -342,7 +342,7 @@ void func_020ca59c(void *dialog) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
         }
         data_0215be0c = -1;
-        func_01ffa574(dialog);
+        DeleteSpriteObject(dialog);
         func_0207b764(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                       M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
         return;
@@ -352,7 +352,7 @@ void func_020ca59c(void *dialog) {
         data_0215be0c = M2C_FIELD(dialog, s16 *, 0x6C);
         p = func_0209f8e4(M2C_FIELD(dialog, s16 *, 0x6C));
         func_020cc66c(M2C_FIELD(p, s16 *, 0x4), M2C_FIELD(p, s16 *, 0x6));
-        func_01ffa574(dialog);
+        DeleteSpriteObject(dialog);
         return;
     }
     if (merged & 0x100) {
@@ -429,7 +429,7 @@ void func_020caa34(void *dialog) {
     M2C_UNK func_020d468c(void);
     M2C_UNK func_020cc66c(s16, s16);
     M2C_UNK func_ov000_02199f50(s32, u8, u8, u8);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK func_020ccca0(void);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
@@ -462,7 +462,7 @@ void func_020caa34(void *dialog) {
                     M2C_FIELD(*gCurrentMap, u8 *, 0x52D4),
                     (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                     (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
-                func_01ffa574(dialog);
+                DeleteSpriteObject(dialog);
                 return;
             }
         }

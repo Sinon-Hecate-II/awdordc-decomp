@@ -1,5 +1,6 @@
 /* 10 functions from 0x02179E48 to 0x0217ACD4 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 distance = 0;
     if (x0 - x1 > 0) distance += x0 - x1;
@@ -10,65 +11,68 @@ static inline s32 MapSearchDistance(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov000_02179e48(void *pos){
+/* Moves `pos` to the nearest free tile inside the selected unit's attack ring
+ * (closer tiles win, then cheaper terrain); returns 0 when no tile is found.
+ * Direct-only and non-attacking units leave the position unchanged. */
+s32 FindAttackPosition(void *pos){
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c08;
-s32 func_ov000_021a98e4(s32);
+extern u8 gUnitMinAttackRange;
+s32 GetUnitAttackClass(s32);
 u16 GetUnitMoveRange(u16,s32);
-s32 func_ov000_021a9820(u16,u32);
-s32 bx,by,kind,min,range,best;
-s32 x,dist,dy,cx,y,x1,cy,x0,y1,negative;
-void **slot;
+s32 GetUnitMaxAttackRange(u16,u32);
+s32 bestX,bestY,scanValue,minRange,maxRange,bestDist;
+s32 x,dist,dy,targetX,y,maxX,targetY,minX,maxY,negDy;
+void **mapSlot;
 void *map;
-if(func_ov000_021a98e4((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26)!=1){
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26)!=21)return 1;
+if(GetUnitAttackClass((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26)!=UNIT_ATTACK_INDIRECT){
+if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26)!=21)return 1;
 }
 dist=0;
-by=9999;bx=by;
+bestY=9999;bestX=bestY;
 map=*gCurrentMap;
-kind=(u32)(M2C_FIELD(M2C_FIELD(map,u8 **,0x52d0),u8 *,0)<<26)>>26;
-if(kind==21){
-min=0;
-range=GetUnitMoveRange(M2C_FIELD(map,u16 *,0x52a4),17)+1;
+scanValue=(u32)(M2C_FIELD(M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26;
+if(scanValue==21){
+minRange=0;
+maxRange=GetUnitMoveRange(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),17)+1;
 }else{
-min=M2C_FIELD(&data_ov000_021b5c08,u8 *,kind*112);
-range=func_ov000_021a9820(M2C_FIELD(map,u16 *,0x52a4),kind);
+minRange=M2C_FIELD(&gUnitMinAttackRange,u8 *,scanValue*112);
+maxRange=GetUnitMaxAttackRange(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),scanValue);
 }
-best=range+1;
-cx=M2C_FIELD(pos,s16 *,0);
-x0=cx-range;if(x0<0)x0=0;
-cy=M2C_FIELD(pos,s16 *,2);
-y=cy-range;if(y<0)y=0;
-slot=gCurrentMap;
-map=*slot;
-x1=M2C_FIELD(map,u16 *,0x5144)-1;
-if(cx+range<x1)x1=cx+range;
-y1=M2C_FIELD(map,u16 *,0x5146)-1;
-if(cy+range<y1)y1=cy+range;
-if(y<=y1)do {
-x=x0;
-if(x<=x1)do {
+bestDist=maxRange+1;
+targetX=M2C_FIELD(pos,s16 *,0);
+minX=targetX-maxRange;if(minX<0)minX=0;
+targetY=M2C_FIELD(pos,s16 *,2);
+y=targetY-maxRange;if(y<0)y=0;
+mapSlot=gCurrentMap;
+map=*mapSlot;
+maxX=M2C_FIELD(map,u16 *,MAP_WIDTH)-1;
+if(targetX+maxRange<maxX)maxX=targetX+maxRange;
+maxY=M2C_FIELD(map,u16 *,MAP_HEIGHT)-1;
+if(targetY+maxRange<maxY)maxY=targetY+maxRange;
+if(y<=maxY)do {
+x=minX;
+if(x<=maxX)do {
 dist=0;
-if(cx-x>0)dist+=cx-x;else dist+=x-cx;
-dy=cy-y;negative=y-cy;
-if(dy>0)dist+=dy;else dist+=negative;
-if(dist>=min && dist<=range && dist<=best){
-map=*slot;
-kind=M2C_FIELD(M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8),s8 *,x);
-if(kind<0||kind>110)goto next;
-if(bx!=9999 && dist==best){
-if(kind>M2C_FIELD(M2C_FIELD((u8 *)map+by*4,s8 **,0x52e8),s8 *,bx))goto next;
+if(targetX-x>0)dist+=targetX-x;else dist+=x-targetX;
+dy=targetY-y;negDy=y-targetY;
+if(dy>0)dist+=dy;else dist+=negDy;
+if(dist>=minRange && dist<=maxRange && dist<=bestDist){
+map=*mapSlot;
+scanValue=M2C_FIELD(M2C_FIELD((u8 *)map+y*4,s8 **,MAP_GRID),s8 *,x);
+if(scanValue<0||scanValue>110)goto next;
+if(bestX!=9999 && dist==bestDist){
+if(scanValue>M2C_FIELD(M2C_FIELD((u8 *)map+bestY*4,s8 **,MAP_GRID),s8 *,bestX))goto next;
 }
-best=dist;bx=x;by=y;
+bestDist=dist;bestX=x;bestY=y;
 }
 next:
 x++;
-}while(x<=x1);
+}while(x<=maxX);
 y++;
-}while(y<=y1);
-if(bx==9999)return 0;
-M2C_FIELD(pos,s16 *,0)=bx;
-M2C_FIELD(pos,s16 *,2)=by;
+}while(y<=maxY);
+if(bestX==9999)return 0;
+M2C_FIELD(pos,s16 *,0)=bestX;
+M2C_FIELD(pos,s16 *,2)=bestY;
 return 1;
 }
 #pragma opt_strength_reduction off
@@ -76,7 +80,7 @@ return 1;
 s32 HasBetterAttackerNearby(void *target) {
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
-s32 func_ov000_021a98e4(s32);s32 IsCurrentPlayerUnit(s32);s32 GetAttackDamage(s32,s32,s32);
+s32 GetUnitAttackClass(s32);s32 IsCurrentPlayerUnit(s32);s32 GetAttackDamage(s32,s32,s32);
 u8 *p=target,*map=*gCurrentMap,*sel,*unit;
 s32 kind,tileX,tileY,minX,minY,maxX,maxY,cellX;
 u32 ck;
@@ -84,7 +88,7 @@ s32 cellY,distance,selectedDamage,candidateDamage;
 sel=M2C_FIELD(map,u8 **,0x52d0);
 kind=(u32)(sel[0]<<26)>>26;
 if(!(data_ov000_021b5c0f[kind*112]&0x27))return 0;
-if(func_ov000_021a98e4(kind))return 0;
+if(GetUnitAttackClass(kind))return 0;
 map=*gCurrentMap;
 if(!M2C_FIELD(map,s16 *,0x6ee6))return 0;
 if(M2C_FIELD(map,s16 *,0x6ef2)>=30)goto done;
@@ -104,7 +108,7 @@ if(!IsCurrentPlayerUnit(kind))continue;
 map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
 if(cellX==sel[1]&&cellY==sel[2])continue;
 unit=map+0x59a4+kind*14;
-if(func_ov000_021a98e4((u32)(unit[0]<<26)>>26)==1)continue;
+if(GetUnitAttackClass((u32)(unit[0]<<26)>>26)==1)continue;
 ck=(u32)(unit[0]<<26)>>26;
 if(data_ov000_021b5bfc[ck*112+19]&16)continue;
 if(M2C_FIELD(unit,u16 *,4)&1)continue;
@@ -120,23 +124,23 @@ done:return 0;
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0217a378(s32 dir) {
-extern void *data_027e0a90,*data_027e00cc,*data_027e0a98;
-extern void *data_027e0a94;
+extern void *gMoveSearchCurrent,*gMoveSearchState,*gMoveSearchWrite;
+extern void *gMoveSearchCount;
 extern void **gCurrentMap;
 u8 *p,*prev;
 s32 c,x,y;
 void *map;
 s32 w,h,limit,cost,steps,total;
 s8 *row;
-M2C_FIELD(data_027e00cc,u8 *,36)=M2C_FIELD(data_027e0a90,u8 *,0);
-M2C_FIELD(data_027e00cc,u8 *,37)=M2C_FIELD(data_027e0a90,u8 *,1);
-switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(data_027e00cc,u8 *,37)--;break;case 3:M2C_FIELD(data_027e00cc,u8 *,37)++;break;case 4:M2C_FIELD(data_027e00cc,u8 *,36)--;break;case 5:M2C_FIELD(data_027e00cc,u8 *,36)++;break;default:break;}
-if((s32)data_027e0a94>=349)return;
-map=*gCurrentMap;p=data_027e00cc;
+M2C_FIELD(gMoveSearchState,u8 *,36)=M2C_FIELD(gMoveSearchCurrent,u8 *,0);
+M2C_FIELD(gMoveSearchState,u8 *,37)=M2C_FIELD(gMoveSearchCurrent,u8 *,1);
+switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(gMoveSearchState,u8 *,37)--;break;case 3:M2C_FIELD(gMoveSearchState,u8 *,37)++;break;case 4:M2C_FIELD(gMoveSearchState,u8 *,36)--;break;case 5:M2C_FIELD(gMoveSearchState,u8 *,36)++;break;default:break;}
+if((s32)gMoveSearchCount>=349)return;
+map=*gCurrentMap;p=gMoveSearchState;
 x=p[36];w=M2C_FIELD(map,u16 *,0x5144);if(x<w){y=p[37];h=M2C_FIELD(map,u16 *,0x5146);if(y<h)goto valid;}return;valid:;
 limit=M2C_FIELD(p,s16 *,32);
 cost=p[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31];
-prev=data_027e0a90;
+prev=gMoveSearchCurrent;
 c=prev[3]+cost;
 if(c>limit)return;
 limit=M2C_FIELD(p,s16 *,34);
@@ -146,13 +150,13 @@ if(total<c){c=total+cost;steps++;}
 row=M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8);
 if(row[x]<=c && row[x]>=0)return;
 row[x]=c;
-map=*gCurrentMap;p=data_027e00cc;
+map=*gCurrentMap;p=gMoveSearchState;
 M2C_FIELD((u8 *)map+(p[36]+M2C_FIELD((u8 *)map+p[37]*2,u16 *,0x3758)),u8 *,0x2338)=steps;
-M2C_FIELD(data_027e0a98,u8 *,0)=M2C_FIELD(data_027e00cc,u8 *,36);
-M2C_FIELD(data_027e0a98,u8 *,1)=M2C_FIELD(data_027e00cc,u8 *,37);
-M2C_FIELD(data_027e0a98,u8 *,2)=dir;
-M2C_FIELD(data_027e0a98,u8 *,3)=c;
-data_027e0a98+=4;data_027e0a94=(void *)((s32)data_027e0a94+1);
+M2C_FIELD(gMoveSearchWrite,u8 *,0)=M2C_FIELD(gMoveSearchState,u8 *,36);
+M2C_FIELD(gMoveSearchWrite,u8 *,1)=M2C_FIELD(gMoveSearchState,u8 *,37);
+M2C_FIELD(gMoveSearchWrite,u8 *,2)=dir;
+M2C_FIELD(gMoveSearchWrite,u8 *,3)=c;
+gMoveSearchWrite+=4;gMoveSearchCount=(void *)((s32)gMoveSearchCount+1);
 }
 
 void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -161,11 +165,11 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u16 GetUnitMoveRange(u16, s32);
     extern void **gCurrentMap;
     void func_01ffb454(s32);
-    extern s8 data_027e0a8c;
-    extern void *data_027e00cc;
-    extern void *data_027e0a94;
-    extern void *data_027e0a98;
-    extern void *data_027e0a90;
+    extern s8 gMoveSearchBuffer;
+    extern void *gMoveSearchState;
+    extern void *gMoveSearchCount;
+    extern void *gMoveSearchWrite;
+    extern void *gMoveSearchCurrent;
     void *base;
     u8 *q;
 
@@ -174,46 +178,46 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     SelectMapLayer((u8 *)(*gCurrentMap) + 0x1E30);
     FillMapLayer(-1);
 
-    data_027e0a8c = 0;
-    base = data_027e00cc;
-    data_027e0a94 = 0;
-    data_027e0a98 = (u8 *)base + 0x28;
-    data_027e0a90 = (u8 *)base + 0x5A0;
+    gMoveSearchBuffer = 0;
+    base = gMoveSearchState;
+    gMoveSearchCount = 0;
+    gMoveSearchWrite = (u8 *)base + 0x28;
+    gMoveSearchCurrent = (u8 *)base + 0x5A0;
     *(u16 *)((u8 *)base + 0x20) = (u16)arg3;
 
-    *(u16 *)((u8 *)data_027e00cc + 0x22) =
+    *(u16 *)((u8 *)gMoveSearchState + 0x22) =
         GetUnitMoveRange(*(u16 *)((u8 *)(*gCurrentMap) + 0x52A4), arg2);
     func_01ffb454(arg2);
 
-    M2C_FIELD(data_027e0a98, u8 *, 0) = (u8)arg0;
-    M2C_FIELD(data_027e0a98, u8 *, 1) = (u8)arg1;
-    M2C_FIELD(data_027e0a98, u8 *, 2) = 1;
-    M2C_FIELD(data_027e0a98, u8 *, 3) = 0;
+    M2C_FIELD(gMoveSearchWrite, u8 *, 0) = (u8)arg0;
+    M2C_FIELD(gMoveSearchWrite, u8 *, 1) = (u8)arg1;
+    M2C_FIELD(gMoveSearchWrite, u8 *, 2) = 1;
+    M2C_FIELD(gMoveSearchWrite, u8 *, 3) = 0;
 
     M2C_FIELD(*(u8 **)((u8 *)(*gCurrentMap) + 0x52E8 + arg1 * 4), u8 *, arg0) = 0;
     M2C_FIELD((u8 *)(*gCurrentMap) +
               (arg0 + M2C_FIELD((u8 *)(*gCurrentMap) + arg1 * 2, u16 *, 0x3758)),
               u8 *, 0x2338) = 0;
 
-    data_027e0a98 = (u8 *)data_027e0a98 + 4;
-    M2C_FIELD(data_027e0a98, u8 *, 2) = 0;
+    gMoveSearchWrite = (u8 *)gMoveSearchWrite + 4;
+    M2C_FIELD(gMoveSearchWrite, u8 *, 2) = 0;
 
     for (;;) {
-        if (!data_027e0a8c) {
-            base = data_027e00cc;
-            data_027e0a98 = (u8 *)base + 0x5A0;
-            data_027e0a90 = (u8 *)base + 0x28;
-            data_027e0a8c = 1;
-            data_027e0a94 = 0;
+        if (!gMoveSearchBuffer) {
+            base = gMoveSearchState;
+            gMoveSearchWrite = (u8 *)base + 0x5A0;
+            gMoveSearchCurrent = (u8 *)base + 0x28;
+            gMoveSearchBuffer = 1;
+            gMoveSearchCount = 0;
         } else {
-            base = data_027e00cc;
-            data_027e0a98 = (u8 *)base + 0x28;
-            data_027e0a90 = (u8 *)base + 0x5A0;
-            data_027e0a8c = 0;
-            data_027e0a94 = 0;
+            base = gMoveSearchState;
+            gMoveSearchWrite = (u8 *)base + 0x28;
+            gMoveSearchCurrent = (u8 *)base + 0x5A0;
+            gMoveSearchBuffer = 0;
+            gMoveSearchCount = 0;
         }
 
-        q = data_027e0a90;
+        q = gMoveSearchCurrent;
         if (M2C_FIELD(q, u8 *, 2) == 0) {
             break;
         }
@@ -225,14 +229,14 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             case 4: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(4); break;
             case 5: func_ov000_0217a378(2); func_ov000_0217a378(3); func_ov000_0217a378(5); break;
             }
-            M2C_FIELD(data_027e0a98, u8 *, 2) = 0;
-            data_027e0a90 = (u8 *)data_027e0a90 + 4;
-            q = data_027e0a90;
+            M2C_FIELD(gMoveSearchWrite, u8 *, 2) = 0;
+            gMoveSearchCurrent = (u8 *)gMoveSearchCurrent + 4;
+            q = gMoveSearchCurrent;
         }
     }
 
-    M2C_FIELD(data_027e00cc, u8 *, 0x25) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5146);
-    M2C_FIELD(data_027e0a90, u8 *, 0x24) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5144);
+    M2C_FIELD(gMoveSearchState, u8 *, 0x25) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5146);
+    M2C_FIELD(gMoveSearchCurrent, u8 *, 0x24) = (u8)*(u16 *)((u8 *)(*gCurrentMap) + 0x5144);
 }
 
 #pragma opt_common_subs off

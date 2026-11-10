@@ -1,7 +1,7 @@
 /* 1 function from 0x02181C88 to 0x02183874 (ov000), found by ds-decomp. */
 #include "common.h"
 
-s32 func_01ffada0(u8, u8, u32, s32, s32);
+s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
 void FillMapLayer(s8);
 s32 func_01ffb9c4(s8);
 void func_02007f8c(void *, s32, s32);
@@ -15,8 +15,8 @@ s32 func_020d2d18(u16, s32);
 s32 func_ov000_0219c508(s32, s32);
 s32 GetUnitDamagePercent(u32, s32);
 s32 GetUnitMoveRange(s32, u32);
-s32 func_ov000_021a9820(s32, u32);
-s32 func_ov000_021a98e4(u32);
+s32 GetUnitMaxAttackRange(s32, u32);
+s32 GetUnitAttackClass(u32);
 extern s32 *gCurrentMap;
 extern s8 data_ov000_021dee08;
 extern s8 data_ov000_021dee10;
@@ -298,7 +298,7 @@ void func_ov000_02181c88(void) {
             
             if ((temp_r4 < 0x28) && (temp_r0_3 < 0x28)) {
                 
-            } else if (func_ov000_021a98e4((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) == 0) {
+            } else if (GetUnitAttackClass((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) == 0) {
                 if (IsUnitOnCurrentTeam(sp3C) != 0) {
                     temp_r3_2 = (s8 *)*gCurrentMap;
                     if (M2C_FIELD(((M2C_FIELD(temp_r3_2, u16 *, 0x52A4) * 0x8C) + temp_r3_2), u8 *, 0x67CE) == 3) {
@@ -328,7 +328,7 @@ void func_ov000_02181c88(void) {
                         }
                         var_r3 = (s32) (GetUnitMoveRange(var_r0_2, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) * 3) >> 1;
                     }
-                    func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, var_r3, 0);
+                    FloodFillUnitRange(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, var_r3, 0);
                     var_r3_2 = 0;
                     var_r7 = *gCurrentMap;
                     var_r1 = (u32) M2C_FIELD(var_r7, u16 *, 0x5146);
@@ -381,7 +381,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_3 = 0;
                     }
-                    func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_3, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 0);
+                    FloodFillUnitRange(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_3, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 0);
                     func_01ffb9c4(0x6F);
                     var_r2 = 0;
                     var_r6_4 = *gCurrentMap;
@@ -433,10 +433,10 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_4 = 0;
                 }
-                func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
+                FloodFillUnitRange(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
                 var_r9_2 = 0;
                 if (IsUnitOnCurrentTeam(sp3C) != 0) {
-                    for(var_r9_2=0;var_r9_2<func_ov000_021a9820(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
+                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
 
                     var_r3_6 = 0;
                     var_r7_2 = *gCurrentMap;
@@ -470,7 +470,7 @@ void func_ov000_02181c88(void) {
                         } while (var_r3_6 < (s32) M2C_FIELD(var_r7_2, u16 *, 0x5146));
                     }
                 } else {
-                    for(var_r9_2=0;var_r9_2<func_ov000_021a9820(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26);var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
+                    for(var_r9_2=0;var_r9_2<GetUnitMaxAttackRange(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26);var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
 
                     var_r2_4 = 0;
                     var_r6_6 = *gCurrentMap;
@@ -512,7 +512,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_7 = 0;
                 }
-                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x1) - func_ov000_021a9820(var_r0_7, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) < 0) {
+                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x1) - GetUnitMaxAttackRange(var_r0_7, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) < 0) {
                     sp24 = 0;
                 } else {
                     if (temp_r8 != 0) {
@@ -526,7 +526,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_8 = 0;
                     }
-                    sp24 = (M2C_FIELD(temp_r8, u8 *, 0x1) - func_ov000_021a9820(var_r0_8, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
+                    sp24 = (M2C_FIELD(temp_r8, u8 *, 0x1) - GetUnitMaxAttackRange(var_r0_8, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
                 }
                 if (temp_r8 != 0) {
                     if (temp_r8 == 0) {
@@ -539,7 +539,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_9 = 0;
                 }
-                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x2) - func_ov000_021a9820(var_r0_9, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) < 0) {
+                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x2) - GetUnitMaxAttackRange(var_r0_9, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) < 0) {
                     var_r10_3 = 0;
                 } else {
                     if (temp_r8 != 0) {
@@ -553,7 +553,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_10 = 0;
                     }
-                    var_r10_3 = (M2C_FIELD(temp_r8, u8 *, 0x2) - func_ov000_021a9820(var_r0_10, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
+                    var_r10_3 = (M2C_FIELD(temp_r8, u8 *, 0x2) - GetUnitMaxAttackRange(var_r0_10, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
                 }
                 temp_r1_3 = *gCurrentMap;
                 if (temp_r8 != 0) {
@@ -567,7 +567,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_11 = 0;
                 }
-                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x1) + func_ov000_021a9820(var_r0_11, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) >= (s32) (M2C_FIELD((temp_r1_3 + 0x5120), u16 *, 0x24) - 1)) {
+                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x1) + GetUnitMaxAttackRange(var_r0_11, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) >= (s32) (M2C_FIELD((temp_r1_3 + 0x5120), u16 *, 0x24) - 1)) {
                     sp20 = M2C_FIELD((*gCurrentMap), u16 *, 0x5144) - 1;
                 } else {
                     if (temp_r8 != 0) {
@@ -581,7 +581,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_12 = 0;
                     }
-                    sp20 = (M2C_FIELD(temp_r8, u8 *, 0x1) + func_ov000_021a9820(var_r0_12, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
+                    sp20 = (M2C_FIELD(temp_r8, u8 *, 0x1) + GetUnitMaxAttackRange(var_r0_12, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
                 }
                 temp_r1_4 = *gCurrentMap;
                 if (temp_r8 != 0) {
@@ -596,7 +596,7 @@ void func_ov000_02181c88(void) {
                     var_r0_13 = 0;
                 }
                 var_r1 = (u32) M2C_FIELD((temp_r1_4 + 0x5120), u16 *, 0x26);
-                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x2) + func_ov000_021a9820(var_r0_13, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) >= (s32) (var_r1 - 1)) {
+                if ((s32) ((M2C_FIELD(temp_r8, u8 *, 0x2) + GetUnitMaxAttackRange(var_r0_13, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1) >= (s32) (var_r1 - 1)) {
                     sp1C = M2C_FIELD((*gCurrentMap), u16 *, 0x5146) - 1;
                 } else {
                     if (temp_r8 != 0) {
@@ -611,7 +611,7 @@ void func_ov000_02181c88(void) {
                         var_r0_14 = 0;
                     }
                     var_r1 = (u32) M2C_FIELD(temp_r8, u8 *, 0x2);
-                    sp1C = (var_r1 + func_ov000_021a9820(var_r0_14, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
+                    sp1C = (var_r1 + GetUnitMaxAttackRange(var_r0_14, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) - 1;
                 }
                 if (var_r10_3 <= sp1C) {
                     do {
@@ -643,7 +643,7 @@ void func_ov000_02181c88(void) {
                                     } else {
                                         var_r0_16 = 0;
                                     }
-                                    temp_ret_3 = func_ov000_021a9820(var_r0_16, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                                    temp_ret_3 = GetUnitMaxAttackRange(var_r0_16, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                                     
                                     if (temp_r7_5 <= (s32) (temp_ret_3 - 1)) {
                                         if (temp_r4 >= 0x28) {
@@ -677,7 +677,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_17 = 0;
                 }
-                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x1) - func_ov000_021a9820(var_r0_17, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) < 0) {
+                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x1) - GetUnitMaxAttackRange(var_r0_17, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) < 0) {
                     sp18 = 0;
                 } else {
                     if (temp_r8 != 0) {
@@ -691,7 +691,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_18 = 0;
                     }
-                    sp18 = M2C_FIELD(temp_r8, u8 *, 0x1) - func_ov000_021a9820(var_r0_18, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                    sp18 = M2C_FIELD(temp_r8, u8 *, 0x1) - GetUnitMaxAttackRange(var_r0_18, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                 }
                 if (temp_r8 != 0) {
                     if (temp_r8 == 0) {
@@ -704,7 +704,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_19 = 0;
                 }
-                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x2) - func_ov000_021a9820(var_r0_19, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) < 0) {
+                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x2) - GetUnitMaxAttackRange(var_r0_19, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) < 0) {
                     var_r10_4 = 0;
                 } else {
                     if (temp_r8 != 0) {
@@ -718,7 +718,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_20 = 0;
                     }
-                    var_r10_4 = M2C_FIELD(temp_r8, u8 *, 0x2) - func_ov000_021a9820(var_r0_20, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                    var_r10_4 = M2C_FIELD(temp_r8, u8 *, 0x2) - GetUnitMaxAttackRange(var_r0_20, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                 }
                 temp_r1_5 = *gCurrentMap;
                 if (temp_r8 != 0) {
@@ -732,7 +732,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_21 = 0;
                 }
-                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x1) + func_ov000_021a9820(var_r0_21, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) >= (s32) (M2C_FIELD((temp_r1_5 + 0x5120), u16 *, 0x24) - 1)) {
+                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x1) + GetUnitMaxAttackRange(var_r0_21, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) >= (s32) (M2C_FIELD((temp_r1_5 + 0x5120), u16 *, 0x24) - 1)) {
                     var_r11 = M2C_FIELD((*gCurrentMap), u16 *, 0x5144) - 1;
                 } else {
                     if (temp_r8 != 0) {
@@ -746,7 +746,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_22 = 0;
                     }
-                    var_r11 = M2C_FIELD(temp_r8, u8 *, 0x1) + func_ov000_021a9820(var_r0_22, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                    var_r11 = M2C_FIELD(temp_r8, u8 *, 0x1) + GetUnitMaxAttackRange(var_r0_22, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                 }
                 temp_r1_6 = *gCurrentMap;
                 if (temp_r8 != 0) {
@@ -761,7 +761,7 @@ void func_ov000_02181c88(void) {
                     var_r0_23 = 0;
                 }
                 var_r1 = (u32) M2C_FIELD((temp_r1_6 + 0x5120), u16 *, 0x26);
-                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x2) + func_ov000_021a9820(var_r0_23, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) >= (s32) (var_r1 - 1)) {
+                if ((s32) (M2C_FIELD(temp_r8, u8 *, 0x2) + GetUnitMaxAttackRange(var_r0_23, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A)) >= (s32) (var_r1 - 1)) {
                     sp14 = M2C_FIELD((*gCurrentMap), u16 *, 0x5146) - 1;
                 } else {
                     if (temp_r8 != 0) {
@@ -776,7 +776,7 @@ void func_ov000_02181c88(void) {
                         var_r0_24 = 0;
                     }
                     var_r1 = (u32) M2C_FIELD(temp_r8, u8 *, 0x2);
-                    sp14 = var_r1 + func_ov000_021a9820(var_r0_24, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                    sp14 = var_r1 + GetUnitMaxAttackRange(var_r0_24, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                 }
                 if (var_r10_4 <= sp14) {
                     do {
@@ -806,7 +806,7 @@ void func_ov000_02181c88(void) {
                                     } else {
                                         var_r0_26 = 0;
                                     }
-                                    temp_ret_4 = func_ov000_021a9820(var_r0_26, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                                    temp_ret_4 = GetUnitMaxAttackRange(var_r0_26, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                                     
                                     if (temp_r9 <= temp_ret_4) {
                                         if (temp_r4 >= 0x28) {
@@ -846,7 +846,7 @@ void func_ov000_02181c88(void) {
                 sp44 = sp38 + 5;
                 do {
                     if (((M2C_FIELD((M2C_FIELD((var_r7_8 + (sp38 * 2)), u16 *, 0x3758) + (var_r7_8 + var_r4)), u8 *, 0x1420) & 0x1F) == 0x11) && (func_020d280c(M2C_FIELD(var_r7_8, u16 *, 0x52A4), var_r4, sp38) != 0)) {
-                        func_01ffada0(var_r4, (u8) sp38, 7U, GetUnitMoveRange(M2C_FIELD((*gCurrentMap), u16 *, 0x52A4), 7U), 0);
+                        FloodFillUnitRange(var_r4, (u8) sp38, 7U, GetUnitMoveRange(M2C_FIELD((*gCurrentMap), u16 *, 0x52A4), 7U), 0);
                         var_r1_4 = 0;
                         if ((s32) M2C_FIELD((*gCurrentMap), u16 *, 0x5146) > 0) {
                             do {

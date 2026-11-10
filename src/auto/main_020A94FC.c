@@ -5,7 +5,7 @@
 #pragma opt_propagation off
 void func_020a94fc(void *arg0) {
     extern void *gCur3DSpriteEngine;
-    extern u8 data_027e0064[], data_027e0084[];
+    extern u8 data_027e0064[], gSpriteDesc8x8[];
     s16 func_020a93e4(void *, s32);
     s32 func_020a8c54(s32, s32, s32, s32);
     M2C_UNK func_020a92bc(void *, s32);
@@ -44,7 +44,7 @@ void func_020a94fc(void *arg0) {
                 AddSprite((u16)(x & 0x1ff), y & 0xff,
                     (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[0xb+(u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
                     ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
-                    (s32)data_027e0084, (u32)(p[0x28]<<27)>>27);
+                    (s32)gSpriteDesc8x8, (u32)(p[0x28]<<27)>>27);
             }
         }
     }

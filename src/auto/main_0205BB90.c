@@ -202,7 +202,7 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
 s32 func_0205c344(void *conn) {
     s32 func_02049534(void *);
     s32 func_020497e0(void *, void *, s32, s32, void *, s32 *);
-    s32 func_02049900(void);
+    s32 ghiGetLastSocketError(void);
     s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
     void func_0205d49c(void *);
     s32 gti2HandleMessage(void *, void *, s32, M2C_UNK, M2C_UNK);
@@ -233,7 +233,7 @@ s32 func_0205c344(void *conn) {
                 return 1;
             }
         } else {
-            x = func_02049900();
+            x = ghiGetLastSocketError();
             if (x == -15) {
                 u16 hv = *(u16 *)((char *)&val_c + 2);
                 u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
@@ -290,7 +290,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)func_020640a8(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=func_02048688(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=func_02048690(M2C_FIELD(p,s32 *,0x60),n-1);if(func_0205a9ec(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 #pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;

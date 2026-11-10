@@ -81,7 +81,7 @@ void func_0205eb50(u8 *p, s32 a) {
 }
 #pragma opt_cond_exec reset
 #pragma optimization_level reset
-void func_0205eb7c(void *a,M2C_UNK b){void func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
+void func_0205eb7c(void *a,M2C_UNK b){void func_0205ebb0(void *,M2C_UNK *);void StringFormat(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];StringFormat(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
 void func_0205ebb0(void *a,M2C_UNK *b){
 s32 StringLength(void *);void MemCopy(void *,void *,s32);
@@ -111,7 +111,7 @@ data_0213e358=++i;
 }
 }
 #pragma opt_common_subs reset
-s32 func_0205ec80(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 func_02068d98(s32,void *);void *func_02021768(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&func_02068d98(a,data_020ffa44)){p=func_02021768(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
+s32 func_0205ec80(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *func_02021768(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=func_02021768(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
 
 void func_0205ed28(u8 *arg0, u8 *arg1) {
     u8 temp_r3;
@@ -211,7 +211,7 @@ void func_0205ee48(void *arg0, s32 arg1, void *arg2, s32 arg3) {
 void func_0205ef8c(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
 
 void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
- void func_02068c50(void *,void *);
+ void StringCopy(void *,void *);
  s32 StringLength(void *);
  void func_0205ee48(void *,s32,void *,s32);
  void func_0205ed84(void *,s32,void *);
@@ -219,7 +219,7 @@ void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
  if(n<1)return;
  if(n>65)return;
  if(p[n-1])return;
- func_02068c50(buf,p);
+ StringCopy(buf,p);
  func_0205ee48((u8 *)a+68,StringLength((u8 *)a+68),buf,n-1);
  func_0205ed84(buf,n-1,(u8 *)b+M2C_FIELD(b,s32 *,0x800));
  M2C_FIELD(b,s32 *,0x800)+=StringLength((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
@@ -320,7 +320,7 @@ void func_0205f3bc(M2C_UNK a,M2C_UNK b,u8 *p,s32 n) {
 }
 
 void func_0205f474(M2C_UNK arg0,void *arg1,M2C_UNK mode) {
-void func_020675e4(void *,void *,M2C_UNK,...);
+void StringFormat(void *,void *,M2C_UNK,...);
 extern M2C_UNK *data_020ffc1c[];extern M2C_UNK data_020ffa60,data_020ffa68,data_020ffa6c;
 u8 text[128];u8 keys[260];s32 outer; s32 inner,before;u8 *key;M2C_UNK *name;s32 count;void *ctx=(void*)arg0;u8 *dst=arg1;
 M2C_FIELD(keys,s32*,256)=0;
@@ -338,7 +338,7 @@ if(before==M2C_FIELD(dst,s32*,0x800))func_0205ebb0(dst,&data_020ffa68);
 dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
 }else{
 for(inner=0;inner<count;inner++){
-func_020675e4(text,&data_020ffa6c,(s32)name,inner);
+StringFormat(text,&data_020ffa6c,(s32)name,inner);
 func_0205ebb0(dst,(M2C_UNK*)text);dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
 before=M2C_FIELD(dst,s32*,0x800);
 if(mode==1)M2C_FIELD(ctx,void (**)(s32,s32,void*,s32),0x8c)(*key,inner,dst,M2C_FIELD(ctx,s32*,0x10c));

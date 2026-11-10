@@ -67,7 +67,7 @@ u8 func_ov000_021883c0(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
     current = func_ov000_0218a230();
     if (current < func_ov000_02189e2c() + 2) result = 1;
     else result = 0;
@@ -146,7 +146,7 @@ u8 func_ov000_02188538(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
 
     current = func_ov000_0218a2f8();
     if (current == 0) return 0;
@@ -198,7 +198,7 @@ void func_ov000_021886d8(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
 
     func_ov000_021885c8();
 }
@@ -249,7 +249,7 @@ void func_ov000_021887e4(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
     func_ov000_02188744();
 }
 
@@ -291,7 +291,7 @@ void func_ov000_02188940(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
     func_ov000_02188850();
 }
 
@@ -338,7 +338,7 @@ u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
     base = *gCurrentMap;
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    func_01ffada0(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
+    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, func_ov000_02179ce4((u8 *)table + offset), 0);
 
     value = M2C_FIELD((u8 *)table + offset, u16 *, 8);
     if (((u32)(value << 26) >> 26) == 0x3F) return 0;

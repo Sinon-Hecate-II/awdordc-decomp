@@ -16,7 +16,7 @@ typedef struct {
     u8 unk_4 : 4;
 } Ov003ModeByte;
 
-void func_ov003_0220c414(void *, s32);
+void RequestMenuMode(void *, s32);
 #pragma opt_propagation off
 void func_ov003_0220bcac(void *arg0) {
     extern s32 func_0207c8ec(s32, s32);
@@ -180,7 +180,7 @@ if((u8)(n-11)==1 && !func_020bee64(8)){type=2;value=5;}
 switch(type){
 case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
 case 2:func_020d47d0();func_020d885c(value);func_ov003_0220828c(p,0,(u8)index);func_01ffa6fc(p);PlaySoundEffect(0x1000e);break;
-case 3:switch(entry[2]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);func_ov003_0220c414(p,1);func_020b4db0(value,p);break;case 3:PlaySoundEffect(0x1000d);func_ov003_0220c414(p,3);func_020b4e10(p);break;}break;
+case 3:switch(entry[2]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(p,1);func_020b4db0(value,p);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(p,3);func_020b4e10(p);break;}break;
 }
 }
 
@@ -197,13 +197,16 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  else {func_020d47f0();func_01ffa6fc(p);}
 }
 
-void func_ov003_0220c414(void *arg0, s32 arg1) {
+void RequestMenuMode(void *arg0, s32 arg1) {
 u8 mode=arg1;
 M2C_FIELD(arg0,u8 *,0x38) |= 0x10;
 ((Ov003ModeByte *)((u8 *)arg0+0x36))->mode=mode;
 }
 
-void func_ov003_0220c43c(void *arg0) {
+/* Apply the menu action deferred on this UI object: clear its pending bit and set the
+   display engine's plane bits, then run the mode - 1 confirms the highlighted unit
+   selection, 2 redraws the unit label, 3 resets the selection buffer. */
+void RunPendingMenuAction(void *arg0) {
     s32 func_020d4810(void);
     void func_ov003_02207e80(void *);
     void func_ov003_0220c328(void *, s32);
@@ -211,97 +214,96 @@ void func_ov003_0220c43c(void *arg0) {
     extern void **gCur3DSpriteEngine;
 
     u8 *obj = (u8 *)arg0;
-    u32 r1 = obj[0x38];
+    u32 state = obj[0x38];
 
-    if (!(((u32)r1 << 27) >> 31)) {
+    if (!(((u32)state << 27) >> 31)) {
         return;
     }
     obj[0x38] &= ~0x10;
 
     {
-        u16 * volatile sp2c;
-        sp2c = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp2c = (u16)((*sp2c & ~0x1) | 0x1);
+        u16 * volatile disp0;
+        disp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp0 = (u16)((*disp0 & ~0x1) | 0x1);
     }
     {
-        u16 * volatile sp28;
-        sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp28 = (u16)(*sp28 & ~0x2);
+        u16 * volatile disp1;
+        disp1 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp1 = (u16)(*disp1 & ~0x2);
     }
     {
-        u16 * volatile sp24;
-        sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp24 = (u16)(*sp24 & ~0x4);
+        u16 * volatile disp2;
+        disp2 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp2 = (u16)(*disp2 & ~0x4);
     }
     {
-        u16 * volatile sp20;
-        sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp20 = (u16)(*sp20 & ~0x8);
+        u16 * volatile disp3;
+        disp3 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp3 = (u16)(*disp3 & ~0x8);
     }
     {
-        u16 * volatile sp1c;
-        sp1c = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp1c = (u16)(*sp1c & ~0x10);
+        u16 * volatile disp4;
+        disp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp4 = (u16)(*disp4 & ~0x10);
     }
     {
-        u16 * volatile sp18;
-        sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp18 = (u16)(*sp18 & ~0x20);
+        u16 * volatile disp5;
+        disp5 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp5 = (u16)(*disp5 & ~0x20);
     }
     {
-        u16 * volatile sp14;
-        sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp14 = (u16)(*sp14 & ~0x100);
+        u16 * volatile disp6;
+        disp6 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp6 = (u16)(*disp6 & ~0x100);
     }
     {
-        u16 * volatile sp10;
-        sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp10 = (u16)(*sp10 & ~0x200);
+        u16 * volatile disp7;
+        disp7 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp7 = (u16)(*disp7 & ~0x200);
     }
     {
-        u16 * volatile spC;
-        spC = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *spC = (u16)(*spC & ~0x400);
+        u16 * volatile disp8;
+        disp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp8 = (u16)(*disp8 & ~0x400);
     }
     {
-        u16 * volatile sp8;
-        sp8 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp8 = (u16)(*sp8 | 0x800);
+        u16 * volatile disp9;
+        disp9 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp9 = (u16)(*disp9 | 0x800);
     }
     {
-        u16 * volatile sp4;
-        sp4 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp4 = (u16)(*sp4 & ~0x1000);
+        u16 * volatile disp10;
+        disp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp10 = (u16)(*disp10 & ~0x1000);
     }
     {
-        u16 * volatile sp0;
-        sp0 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
-        *sp0 = (u16)(*sp0 | 0x2000);
+        u16 * volatile disp11;
+        disp11 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        *disp11 = (u16)(*disp11 | 0x2000);
     }
 
     {
-        u32 val = ((Ov003ModeByte *)(obj + 0x36))->mode;
+        u32 mode = ((Ov003ModeByte *)(obj + 0x36))->mode;
 
-        switch (val) {
+        switch (mode) {
         case 0:
             break;
         case 1: {
-            s32 r0 = func_020d4810();
-            if (r0 == 0) {
+            s32 canConfirm = func_020d4810();
+            if (canConfirm == 0) {
                 return;
             }
             func_ov003_02207e80(obj);
             {
-                u16 **pp = (u16 **)(obj + 0x5c);
                 u16 *unit = **(u16 ***)(obj + 0x5c);
-                s32 r1v;
+                s32 sel;
                 if (unit != 0) {
-                    r1v = (s32)unit[4];
+                    sel = (s32)unit[4];
                 } else {
-                    r1v = -1;
+                    sel = -1;
                 }
-                r1v = r1v - 0xb;
-                func_ov003_0220c328(obj, (s32)(u8)r1v);
+                sel = sel - 0xb;
+                func_ov003_0220c328(obj, (s32)(u8)sel);
             }
             return;
         }

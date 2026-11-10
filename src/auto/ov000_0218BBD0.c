@@ -15,7 +15,7 @@ int func_ov000_0218bbd0(void *arg0) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 *data_ov000_021df644;
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
     s32 func_020a76d4(void *);
@@ -30,7 +30,7 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
     s32 func_ov000_021a9904(s32);
-    s32 func_ov000_0217d150(s32, s32, void *);
+    s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
     void func_ov000_0217c3a4(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
@@ -143,7 +143,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 *data_ov000_021df644;
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
     s32 func_020a76d4(void *);
@@ -158,7 +158,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
     s32 func_ov000_021a9904(s32);
-    s32 func_ov000_0217d150(s32, s32, void *);
+    s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
     void func_ov000_0217c3a4(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
@@ -172,7 +172,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     s32 i, x, y, kind, health, damage, score, bonus;
 
     if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
-    func_01ffc328(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
     for (i = 0; i < func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)); i++)
         func_01ffb9c4((s8)(i + 0x6f));
 
@@ -249,7 +249,7 @@ s32 func_ov000_0218c400(s32 arg0) {
                         if (v1 < d1) goto score;
                     }
                 bonus_chk:
-                    if (other[0xc] == 0 && func_ov000_021a9904(((Unit0218C4 *)other)->kind) == 2 && func_ov000_0217d150(position[0], position[1], other) == 0)
+                    if (other[0xc] == 0 && func_ov000_021a9904(((Unit0218C4 *)other)->kind) == 2 && CanAttackUnitFrom(position[0], position[1], other) == 0)
                         bonus = 0x80000;
                 score:
                     score = func_ov000_02176e28(flags | (bonus | ((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)]), position);
@@ -279,7 +279,7 @@ s32 func_ov000_0218c400(s32 arg0) {
 #pragma opt_strength_reduction reset
 void func_ov000_0218ca94(void) {
 extern void **gCurrentMap;
-switch(func_ov000_021a98e4((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)){
+switch(GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)){
 case 0: func_ov000_0218b0d8(0); return;
 case 1: if(func_020a85c8((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))func_ov000_0218c400(0);else func_ov000_0218bbd0(0);return;
 }}
@@ -288,7 +288,7 @@ s32 func_ov000_0218cb20(void) {
 extern void **gCurrentMap;
 u32 x=(u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26;
 if(x==6)return 0;
-switch(func_ov000_021a98e4(x)){
+switch(GetUnitAttackClass(x)){
 case 0: return func_ov000_0218b0d8(1);
 case 1: if(func_020a85c8((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))return func_ov000_0218c400(1);else return func_ov000_0218bbd0(1);
 default:return 0;

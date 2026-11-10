@@ -9,13 +9,13 @@ typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 
 #pragma opt_propagation off
 s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
-    M2C_UNK func_020492a8(s8 *);
+    M2C_UNK StringToLower(s8 *);
     s32 AppendUpdateProField(s32 *, M2C_UNK *, s8 *);
     s32 AppendUpdateUiField(s32 *, M2C_UNK *, s8 *);
     s32 AppendInfoIntField(s32 *, s32, s32);
-    M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
+    M2C_UNK StringCopyN(s8 *, s8 *, M2C_UNK);
     s32 StringLength(s8 *);
-    s32 func_0206ad38(s8 *);
+    s32 ParseInt(s8 *);
     extern M2C_UNK data_020fe72c;
     extern M2C_UNK data_020fe734;
     extern M2C_UNK data_020fe744;
@@ -90,8 +90,8 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             gpiSetErrorString(arg0, &data_020fe928);
             return 2;
         }
-        func_020580fc(sp0, arg2, 0x1F);
-        func_020580fc(temp_r4 + 0x110, sp0, 0x1F);
+        StringCopyN(sp0, arg2, 0x1F);
+        StringCopyN(temp_r4 + 0x110, sp0, 0x1F);
         temp_r0 = AppendUpdateProField(arg0, &data_020fe72c, sp0);
         if (temp_r0 != 0) {
             return temp_r0;
@@ -102,8 +102,8 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             gpiSetErrorString(arg0, &data_020fe928);
             return 2;
         }
-        func_020580fc(sp0, arg2, 0x15);
-        func_020580fc(temp_r4 + 0x12F, sp0, 0x15);
+        StringCopyN(sp0, arg2, 0x15);
+        StringCopyN(temp_r4 + 0x12F, sp0, 0x15);
         temp_r0_2 = AppendUpdateProField(arg0, &data_020fe734, sp0);
         if (temp_r0_2 != 0) {
             return temp_r0_2;
@@ -114,9 +114,9 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             gpiSetErrorString(arg0, &data_020fe928);
             return 2;
         }
-        func_020580fc(sp0, arg2, 0x33);
-        func_020492a8(sp0);
-        func_020580fc(temp_r4 + 0x144, sp0, 0x33);
+        StringCopyN(sp0, arg2, 0x33);
+        StringToLower(sp0);
+        StringCopyN(temp_r4 + 0x144, sp0, 0x33);
         temp_r0_3 = AppendUpdateUiField(arg0, &data_020fe744, sp0);
         if (temp_r0_3 != 0) {
             return temp_r0_3;
@@ -127,36 +127,36 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             gpiSetErrorString(arg0, &data_020fe928);
             return 2;
         }
-        func_020580fc(sp0, arg2, 0x1F);
-        func_020580fc(temp_r4 + 0x177, sp0, 0x1F);
+        StringCopyN(sp0, arg2, 0x1F);
+        StringCopyN(temp_r4 + 0x177, sp0, 0x1F);
         temp_r0_4 = AppendUpdateUiField(arg0, &data_020fe938, sp0);
         if (temp_r0_4 != 0) {
             return temp_r0_4;
         }
         break;
     case 4:
-        func_020580fc(sp0, arg2, 0x1F);
+        StringCopyN(sp0, arg2, 0x1F);
         temp_r0_5 = AppendUpdateProField(arg0, &data_020fe74c, sp0);
         if (temp_r0_5 != 0) {
             return temp_r0_5;
         }
         break;
     case 5:
-        func_020580fc(sp0, arg2, 0x1F);
+        StringCopyN(sp0, arg2, 0x1F);
         temp_r0_6 = AppendUpdateProField(arg0, &data_020fe758, sp0);
         if (temp_r0_6 != 0) {
             return temp_r0_6;
         }
         break;
     case 7:
-        func_020580fc(sp0, arg2, 0x4C);
+        StringCopyN(sp0, arg2, 0x4C);
         temp_r0_7 = AppendUpdateProField(arg0, &data_020fe770, sp0);
         if (temp_r0_7 != 0) {
             return temp_r0_7;
         }
         break;
     case 8:
-        func_020580fc(sp0, arg2, 0xB);
+        StringCopyN(sp0, arg2, 0xB);
         temp_r0_8 = AppendUpdateProField(arg0, &data_020fe77c, sp0);
         if (temp_r0_8 != 0) {
             return temp_r0_8;
@@ -167,7 +167,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             gpiSetErrorString(arg0, &data_020fe944);
             return 2;
         }
-        func_020580fc(sp0, arg2, 3);
+        StringCopyN(sp0, arg2, 3);
         temp_r0_9 = AppendUpdateProField(arg0, &data_020fe788, sp0);
         if (temp_r0_9 != 0) {
             return temp_r0_9;
@@ -188,120 +188,120 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         }
         break;
     case 6:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_11 = AppendUpdateProField(arg0, &data_020fe764, sp0);
         if (temp_r0_11 != 0) {
             return temp_r0_11;
         }
         break;
     case 13:
-        temp_r0_12 = AppendInfoIntField(arg0, 0x70D, func_0206ad38(arg2));
+        temp_r0_12 = AppendInfoIntField(arg0, 0x70D, ParseInt(arg2));
         if (temp_r0_12 != 0) {
             return temp_r0_12;
         }
         break;
     case 14:
-        temp_r0_13 = AppendInfoIntField(arg0, 0x70E, func_0206ad38(arg2));
+        temp_r0_13 = AppendInfoIntField(arg0, 0x70E, ParseInt(arg2));
         if (temp_r0_13 != 0) {
             return temp_r0_13;
         }
         break;
     case 15:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_14 = AppendUpdateProField(arg0, &data_020fe95c, sp0);
         if (temp_r0_14 != 0) {
             return temp_r0_14;
         }
         break;
     case 16:
-        temp_r0_15 = AppendInfoIntField(arg0, 0x710, func_0206ad38(arg2));
+        temp_r0_15 = AppendInfoIntField(arg0, 0x710, ParseInt(arg2));
         if (temp_r0_15 != 0) {
             return temp_r0_15;
         }
         break;
     case 17:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_16 = AppendUpdateProField(arg0, &data_020fe970, sp0);
         if (temp_r0_16 != 0) {
             return temp_r0_16;
         }
         break;
     case 18:
-        temp_r0_17 = AppendInfoIntField(arg0, 0x712, func_0206ad38(arg2));
+        temp_r0_17 = AppendInfoIntField(arg0, 0x712, ParseInt(arg2));
         if (temp_r0_17 != 0) {
             return temp_r0_17;
         }
         break;
     case 20:
-        temp_r0_18 = AppendInfoIntField(arg0, 0x714, func_0206ad38(arg2));
+        temp_r0_18 = AppendInfoIntField(arg0, 0x714, ParseInt(arg2));
         if (temp_r0_18 != 0) {
             return temp_r0_18;
         }
         break;
     case 21:
-        temp_r0_19 = AppendInfoIntField(arg0, 0x715, func_0206ad38(arg2));
+        temp_r0_19 = AppendInfoIntField(arg0, 0x715, ParseInt(arg2));
         if (temp_r0_19 != 0) {
             return temp_r0_19;
         }
         break;
     case 22:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_20 = AppendUpdateProField(arg0, &data_020fe984, sp0);
         if (temp_r0_20 != 0) {
             return temp_r0_20;
         }
         break;
     case 23:
-        func_020580fc(sp0, arg2, 0x33);
+        StringCopyN(sp0, arg2, 0x33);
         temp_r0_21 = AppendUpdateProField(arg0, &data_020fe7cc, sp0);
         if (temp_r0_21 != 0) {
             return temp_r0_21;
         }
         break;
     case 24:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_22 = AppendUpdateProField(arg0, &data_020fe7d4, sp0);
         if (temp_r0_22 != 0) {
             return temp_r0_22;
         }
         break;
     case 25:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_23 = AppendUpdateProField(arg0, &data_020fe7dc, sp0);
         if (temp_r0_23 != 0) {
             return temp_r0_23;
         }
         break;
     case 26:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_24 = AppendUpdateProField(arg0, &data_020fe7e4, sp0);
         if (temp_r0_24 != 0) {
             return temp_r0_24;
         }
         break;
     case 27:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_25 = AppendUpdateProField(arg0, &data_020fe7ec, sp0);
         if (temp_r0_25 != 0) {
             return temp_r0_25;
         }
         break;
     case 28:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_26 = AppendUpdateProField(arg0, &data_020fe7f4, sp0);
         if (temp_r0_26 != 0) {
             return temp_r0_26;
         }
         break;
     case 29:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_27 = AppendUpdateProField(arg0, &data_020fe7fc, sp0);
         if (temp_r0_27 != 0) {
             return temp_r0_27;
         }
         break;
     case 30:
-        func_020580fc(sp0, arg2, 0x100);
+        StringCopyN(sp0, arg2, 0x100);
         temp_r0_28 = AppendUpdateProField(arg0, &data_020fe804, sp0);
         if (temp_r0_28 != 0) {
             return temp_r0_28;
@@ -339,7 +339,7 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
 
 s32 func_02053c9c(void **a,s32 b,s32 c,s32 d,s32 e,s32 f) {
 s32 func_02055b84(void **,s32,void **);void *func_02037794(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void func_02052408(void *,void *);
-s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 func_0204ec8c(void **,s32);
+s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
 register void *buffer; register s32 id; register s32 finish=d; register s32 value=b;
 void *found,*req; void *base=*a; s32 enabled,result;RequestPair534 pair;
@@ -351,15 +351,15 @@ if(!buffer){gpiSetErrorString(a,&data_020fe824);return 1;}
 func_02052408(M2C_FIELD(found,void **,12),buffer);
 M2C_FIELD(buffer,s32 *,0)=0;M2C_FIELD(buffer,s32 *,4)=b;
 pair.a=e;pair.b=f;
-result=func_02054330(a,2,0,&req,1,e,f);if(result)return result;
+result=gpiAddOperation(a,2,0,&req,1,e,f);if(result)return result;
 id=M2C_FIELD(req,s32 *,24);
 result=gpiAddCallback(a,pair,buffer,req,0);if(result)return result;
 func_02054484(a,req);
 }else{
-result=func_02054330(a,2,0,&req,d,e,f);if(result)return result;
+result=gpiAddOperation(a,2,0,&req,d,e,f);if(result)return result;
 id=M2C_FIELD(req,s32 *,24);result=func_02053c04(a,b,id);if(result)return result;
 }
-if(d){result=func_0204ec8c(a,id);if(result)return result;}
+if(d){result=gpiThink(a,id);if(result)return result;}
 return 0;
 }
 
@@ -414,11 +414,11 @@ void func_02053f18(void *arg0) {
     M2C_FIELD(arg0, void **, 0xC) = NULL;
 }
 
-s32 func_02053fe4(void **arg0, void *arg1) {
+s32 gpiFinishOperation(void **arg0, void *arg1) {
     void *func_02037794(s32);
     void func_02065210(void *, s32, s32);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
-    M2C_UNK func_020640a8(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK AssertFailed(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
     s32 gpiAddCallback(void **, RequestPair534, void *, void *, s32);
     extern M2C_UNK data_020fe9ec;
     extern M2C_UNK data_020fe9c4;
@@ -435,13 +435,13 @@ s32 func_02053fe4(void **arg0, void *arg1) {
     void *buffer;
 
     if (arg0 == NULL) {
-        func_020640a8((M2C_UNK)&data_020fe9ec, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x22);
+        AssertFailed((M2C_UNK)&data_020fe9ec, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x22);
     }
     if (*arg0 == NULL) {
-        func_020640a8((M2C_UNK)&data_020fea10, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x23);
+        AssertFailed((M2C_UNK)&data_020fea10, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x23);
     }
     if (operation == NULL) {
-        func_020640a8((M2C_UNK)&data_020fea24, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x24);
+        AssertFailed((M2C_UNK)&data_020fea24, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x24);
     }
 
     pair.a = M2C_FIELD(operation, s32 *, 0xC);
@@ -537,14 +537,14 @@ s32 func_02053fe4(void **arg0, void *arg1) {
                 }
                 break;
             default:
-                func_020640a8((M2C_UNK)&data_020fea48, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x6B);
+                AssertFailed((M2C_UNK)&data_020fea48, (M2C_UNK)&data_020fea00, (M2C_UNK)&data_020fe9c4, 0x6B);
                 break;
         }
     }
     return 0;
 }
 
-s32 func_02054330(void **arg0, s32 arg1, s32 arg2, void **arg3, s32 arg4, s32 arg5, s32 arg6) {
+s32 gpiAddOperation(void **arg0, s32 arg1, s32 arg2, void **arg3, s32 arg4, s32 arg5, s32 arg6) {
     void *func_02037794(M2C_UNK);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020fea38;

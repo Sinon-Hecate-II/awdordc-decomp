@@ -152,11 +152,11 @@ if(M2C_FIELD(*gCurrentMap,s16 *,0x6ed6))M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)
 #pragma opt_strength_reduction reset
 void func_020cdeac(s32 a,s32 b,u8 *p) {
 s32 func_020a76d4(u8 *);
-extern u8 data_ov000_021b5c08,data_ov000_021b5c09;s32 off;
+extern u8 gUnitMinAttackRange,data_ov000_021b5c09;s32 off;
 func_020cdcc4(a,b,(s16)func_020a76d4(p),0);
 off=((u32)(*p<<26)>>26)*112;
 if(*(&data_ov000_021b5c09+off)==1)return;
-func_020cdcc4(a,b,(s16)(*(&data_ov000_021b5c08+off)-1),-1);
+func_020cdcc4(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);
 }
 
 void func_020cdf30(s32 x,s32 y,s32 f) {
@@ -187,16 +187,16 @@ void func_020cdfec(s32 unit, s32 x, s32 y) {
 
 s32 func_020ce0ec(s32 a,s32 b) {
 s32 IsSameTeam(s32,s32);
-extern s8 data_ov000_021b5540[],data_ov000_021b56c0[];
+extern s8 data_ov000_021b5540[],gTerrainPropertyFlags[];
 s32 i=b&31,v;
 if(data_ov000_021b5540[i])return 1;
-if(data_ov000_021b56c0[i]){v=(b&224)>>5;if(!v)return 1;if(!IsSameTeam(v,a))return 1;}
+if(gTerrainPropertyFlags[i]){v=(b&224)>>5;if(!v)return 1;if(!IsSameTeam(v,a))return 1;}
 return 0;
 }
 
 #pragma push
 #pragma opt_common_subs off
-void func_020ce150(s32 a,s32 b,s32 c,u8 d,s32 e,s32 f) {
+void MarkThreatCells(s32 a,s32 b,s32 c,u8 d,s32 e,s32 f) {
 s32 func_020ce0ec(s32,s32);
 s32 func_020a8528(s32);
 extern void **gCurrentMap;
@@ -260,7 +260,7 @@ y=(s16)(y+1);dy=(s16)(dy+1);
 }while(y<=ymax);
 }
 #pragma pop
-void func_020ce434(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void func_020ce150(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;switch(d){case 1:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);return;case 3:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);case 2:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52ba),e,f);case 0:default:break;}}
+void MarkThreatBitmap(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void MarkThreatCells(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;switch(d){case 1:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);return;case 3:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);case 2:MarkThreatCells(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52ba),e,f);case 0:default:break;}}
 
 void func_020ce508(void *p,s32 x,s32 y) {
 s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),func_020a7824(void *,s32,s32);
@@ -275,10 +275,10 @@ flag=0;allowed=0;
 if(((u32)(M2C_FIELD(*gCurrentMap+player*140,s32 *,0x6810)<<24)>>24)==3) {if(func_020a33c4(player))allowed=1;}
 if(allowed) {if(func_020a27f8((u32)(M2C_FIELD(p,u8 *,0)<<26)>>26,player))flag=2;}
 value=func_020a7824(p,x,y);
-func_020ce434((s16)x,(s16)y,(s16)value,M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c3),(u8)player,(u8)flag);
+MarkThreatBitmap((s16)x,(s16)y,(s16)value,M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c3),(u8)player,(u8)flag);
 }
 
-void func_020ce61c(void *arg0) {
+void MarkUnitThreatRange(void *arg0) {
     void func_020ce508(void *, s32, s32);
     func_020ce508(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
@@ -300,8 +300,8 @@ func_020ce508(M2C_FIELD(*gCurrentMap, void **, 0x52d0),x,y);
 }
 }
 
-s32 func_020ce6f4(s32 a,s32 b) {
-extern s8 data_ov000_021b56c0[];
-if(b==2)return 0;b=a&31;if(b==26)return 5;if(b==23)return 5;return data_ov000_021b56c0[b]?2:0;
+s32 GetTerrainThreatRadius(s32 a,s32 b) {
+extern s8 gTerrainPropertyFlags[];
+if(b==2)return 0;b=a&31;if(b==26)return 5;if(b==23)return 5;return gTerrainPropertyFlags[b]?2:0;
 }
 

@@ -25,13 +25,13 @@ done:
 
 s32 func_ov003_021eba74(void) {
  s32 func_020846a4();
- s32 func_020848f8();
+ s32 GetReadyPlayerMask();
  void *func_02084e24(s32);
  s8 i;
  s32 mask;
  void *p;
  if(func_020846a4()==0) return 0;
- mask=func_020848f8();
+ mask=GetReadyPlayerMask();
  for(i=0;i<4;i++) {
   if(mask & (1<<i)) {
    p=func_02084e24(i);

@@ -271,9 +271,9 @@ void func_02003a8c(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02
 
 void func_02003aa8(s32 a){void func_02004e20(s32);*(s32 *)0x4000400=0x19;func_02004e20(a);}
 
-void func_02003ac4(void) {
+void GX_BeginFrame(void) {
 void func_02003c3c(void);
-void func_02003c64(void);
+void GX_RestoreMatrixStack(void);
 void func_02003e24(void);
 func_02003c3c();
 *(volatile u32 *)0x4000504=0;
@@ -288,7 +288,7 @@ while(*(volatile u32 *)0x4000600&0x8000000){}
 *(volatile u16 *)0x4000060&=0xcffb;
 *(volatile u32 *)0x4000600|=0x8000;
 *(volatile u32 *)0x4000600=(*(volatile u32 *)0x4000600&~0xc0000000)|0x80000000;
-func_02003c64();
+GX_RestoreMatrixStack();
 *(volatile u32 *)0x4000350=0;
 *(volatile u16 *)0x4000354=0x7fff;
 *(volatile u16 *)0x4000356=0;
@@ -320,7 +320,7 @@ while(*(volatile u32 *)0x4000600&0x8000000){
 }
 
 
-void func_02003c64(void){
+void GX_RestoreMatrixStack(void){
 s32 a,b;
 *(volatile u32 *)0x4000600|=0x8000;
 while(func_02003ec4(&a)){
@@ -355,14 +355,14 @@ if(b)*(volatile u32 *)0x4000448=b;
 }
 
 
-void func_02003d8c(s32 a,s32 b,s32 c,s32 d){if(a){*(volatile u16 *)0x400035c=d;*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3f40)|((c<<8)|(b<<6)|0x80);}else *(volatile u16 *)0x4000060&=0xcf7f;}
+void GX_SetFog(s32 a,s32 b,s32 c,s32 d){if(a){*(volatile u16 *)0x400035c=d;*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3f40)|((c<<8)|(b<<6)|0x80);}else *(volatile u16 *)0x4000060&=0xcf7f;}
 
-void func_02003de4(M2C_UNK arg0) {
+void GX_LoadToonTable(M2C_UNK arg0) {
     M2C_UNK func_02007e20(M2C_UNK, s32, M2C_UNK);
     func_02007e20(arg0, 0x04000380, 0x40);
 }
 
-void func_02003dfc(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
+void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
     s32 var_r1;
 
     var_r1 = arg0 | (arg1 << 0x10) | (arg3 << 0x18);

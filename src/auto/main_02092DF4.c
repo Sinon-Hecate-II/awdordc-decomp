@@ -329,7 +329,7 @@ void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02093614(void *arg0, u8 arg1, u8 arg2) {
-    M2C_UNK func_01ffada0(u8, u8, u32, s32, s32);
+    M2C_UNK FloodFillUnitRange(u8, u8, u32, s32, s32);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
     s32 func_ov000_0216939c();
     M2C_UNK func_ov000_02169540(M2C_UNK, M2C_UNK);
@@ -339,7 +339,7 @@ void func_02093614(void *arg0, u8 arg1, u8 arg2) {
     signed char *ptr;
     void *q;
 
-    func_01ffada0(r4[1], r4[2], (u32) (r4[0] << 0x1A) >> 0x1A, 0x6E, 1);
+    FloodFillUnitRange(r4[1], r4[2], (u32) (r4[0] << 0x1A) >> 0x1A, 0x6E, 1);
     func_01ffc4b8(arg1, arg2, (s32) *gCurrentMap + 0x5388);
     ptr = (signed char *) *gCurrentMap + 0x5388;
     while (*ptr != 4 && *ptr != -1) {

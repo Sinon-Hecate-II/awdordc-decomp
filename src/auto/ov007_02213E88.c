@@ -572,7 +572,7 @@ void func_ov007_02214d88(void) {
     Map_MinDistanceThreshold();
 }
 
-s32 func_ov007_02214d98(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+s32 RandomCoordInRange(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK RandomIntRange(M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
     s32 var_r4;

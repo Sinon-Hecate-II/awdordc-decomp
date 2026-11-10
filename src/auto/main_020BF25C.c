@@ -25,7 +25,7 @@ extern M2C_UNK data_0215d890, data_0215deec, gMovementCostTable;
 #pragma opt_propagation off
 void *func_020bf25c(s32 arg0,s32 arg1) {
 s32 func_020bf054(s32); void *func_020bfa60(s32);
-s32 func_020bee64(s32); s32 func_02086680(s32); void func_02068d68(char*,const char*); void func_020675e4(char*,const char*,...);
+s32 func_020bee64(s32); s32 GetLocalizedText(s32); void func_02068d68(char*,const char*); void StringFormat(char*,const char*,...);
 s32 func_020a8a84(s32); s32 func_020cfbdc(s32); void func_020bf10c(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=func_020bf054(a);
@@ -33,35 +33,35 @@ p=func_020bfa60(n);
 switch(a) {
 case 0: case 5:
 if(func_020bee64(n)) {
-func_02068d68(buf+256,func_02086680(0x4800003f));
-if(SaveRangeAU((u32)p[0]))func_02068d68(buf+256,func_02086680(0x48000039));
-if(SaveRangeBU((u32)p[0]))func_02068d68(buf+256,func_02086680(0x4800003a));
-n=func_020a8a84(p[0]);func_020675e4(buf,data_021295c4,n,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
-func_02068d68(buf+256,func_02086680(0x4800003f));func_02068d68(buf+256,func_02086680(0x4800003e));
-func_020675e4(buf,data_021295d0,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_021295d8);
-func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+func_02068d68(buf+256,GetLocalizedText(0x4800003f));
+if(SaveRangeAU((u32)p[0]))func_02068d68(buf+256,GetLocalizedText(0x48000039));
+if(SaveRangeBU((u32)p[0]))func_02068d68(buf+256,GetLocalizedText(0x4800003a));
+n=func_020a8a84(p[0]);StringFormat(buf,data_021295c4,n,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
+func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_02068d68(buf+256,GetLocalizedText(0x4800003e));
+StringFormat(buf,data_021295d0,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_021295d8);
+func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
 } else if(func_020e4b28(b)) {
 rec=(SaveRankRecord *)data_0215dba4+b;c1=0;c2=0;c3=0;
 i=0; goto check_entries;
 scan_entry: { if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].state>=3){s32 id=i+0xa1; if(SaveRangeA(id))c1++;if(SaveRangeB(id))c2++;if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].rank==4)c3++;} i++; }
 check_entries: if(i<64) goto scan_entry;
-if(c1==26)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
-func_020675e4(buf,data_021295dc,func_02086680(0x4800003b),c1);func_02068d68(buf+256,buf);
-if(c2==38)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
-func_020675e4(buf,data_021295e4,func_02086680(0x4800003c),c2);func_02068d68(buf+256,buf);
-if(c3==64)func_02068d68(buf+256,func_02086680(0x48000040));else func_02068d68(buf+256,func_02086680(0x4800003f));
-func_020675e4(buf,data_021295ec,func_02086680(0x4800003d),c3);func_02068d68(buf+256,buf);
-func_02068d68(buf+256,data_021295f4);func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
-}else if(a==5)func_02068d68(buf+256,func_02086680(0x48000041));else func_02068d68(buf+256,func_02086680(0x4800002d));
+if(c1==26)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295dc,GetLocalizedText(0x4800003b),c1);func_02068d68(buf+256,buf);
+if(c2==38)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295e4,GetLocalizedText(0x4800003c),c2);func_02068d68(buf+256,buf);
+if(c3==64)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295ec,GetLocalizedText(0x4800003d),c3);func_02068d68(buf+256,buf);
+func_02068d68(buf+256,data_021295f4);func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+}else if(a==5)func_02068d68(buf+256,GetLocalizedText(0x48000041));else func_02068d68(buf+256,GetLocalizedText(0x4800002d));
 break;
 case 1:
 if(func_020bee64(n)&&b) {
-func_020c8d7c(p[0]);func_02068d68(buf+256,func_02086680(0x4800003f));
-func_020675e4(buf,data_021295f8,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
-func_02068d68(buf+256,func_02086680(0x4800003f));func_02068d68(buf+256,func_02086680(0x4800003e));
-func_020675e4(buf,data_021295fc,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_02129604);
-func_02068d68(buf+256,func_02086680(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
-}else func_02068d68(buf+256,func_02086680(0x4800002e));
+func_020c8d7c(p[0]);func_02068d68(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295f8,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
+func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_02068d68(buf+256,GetLocalizedText(0x4800003e));
+StringFormat(buf,data_021295fc,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_02129604);
+func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+}else func_02068d68(buf+256,GetLocalizedText(0x4800002e));
 break;
 }
 return buf+256;
@@ -354,12 +354,12 @@ void func_020c01ec(M2C_UNK arg0) {
 void func_020c0204(void) {
     s32 func_02076208();
     M2C_UNK func_02076244();
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020bf7c4();
     M2C_UNK func_020c4910();
     if (func_02076208() != 0) {
-        func_02086680(0xC000034D);
+        GetLocalizedText(0xC000034D);
         func_02076244();
     }
     func_020bf7c4();

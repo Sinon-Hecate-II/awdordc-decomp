@@ -48,7 +48,7 @@ void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_0200323c(s32);
     M2C_UNK func_020032bc(s32);
     M2C_UNK func_020aca8c(s32);
-    M2C_UNK func_02082770(void);
+    M2C_UNK Reset3DSpriteBankState(void);
     M2C_UNK func_01ff9b38(void);
     void func_ov011_0222134c(void *);
     void func_ov011_0222161c(void *);
@@ -92,7 +92,7 @@ void func_ov011_0222140c(void *arg0) {
         ((u8 *)*(s32 *)gCur3DSpriteEngine)[0x53] = 0;
         *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
         func_020aca8c(3);
-        func_02082770();
+        Reset3DSpriteBankState();
         func_01ff9b38();
     }
     gCur3DSpriteEngine = saved;

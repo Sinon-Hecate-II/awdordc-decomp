@@ -15,9 +15,9 @@ void func_ov007_0221d008(u8 *arg0) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 data_ov007_022205c0;
-    extern s32 data_ov007_02220890;
+    extern s32 gGlyphDakuten;
     extern s32 data_ov007_02220960;
-    extern s32 data_ov007_02220d28;
+    extern s32 gGlyphHandakuten;
     extern s32 gSoftKeyLayoutJp[];
     extern s32 gMapEditRecords;
     extern s32 gMapEditObjectList;
@@ -62,13 +62,13 @@ void func_ov007_0221d008(u8 *arg0) {
 case 0x68: if((s32)&gSoftKeyLayoutJp[0]==*(s32 *)((u8 *)ctx+0x34)){
 s32 old=*phase;
 s32 *value=&data_ov007_02220960;
-if(func_020194e0(value,&data_ov007_02220890)==0) {
+if(func_020194e0(value,&gGlyphDakuten)==0) {
 s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
 if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(func_020194e0(value,&data_ov007_02220d28)==0) {
+} else if(func_020194e0(value,&gGlyphHandakuten)==0) {
 s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
 if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
@@ -88,13 +88,13 @@ PlaySoundEffect(0x1000d);return;
 }else {
 s32 old=*phase;
 s32 *value=&data_ov007_022205c0;
-if(func_020194e0(value,&data_ov007_02220890)==0) {
+if(func_020194e0(value,&gGlyphDakuten)==0) {
 s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
 if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(func_020194e0(value,&data_ov007_02220d28)==0) {
+} else if(func_020194e0(value,&gGlyphHandakuten)==0) {
 s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
 if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}

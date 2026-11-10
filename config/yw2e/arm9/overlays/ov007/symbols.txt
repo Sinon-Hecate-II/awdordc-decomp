@@ -1,4 +1,4 @@
-func_ov007_02211200 kind:function(arm,size=0x22c) addr:0x02211200
+MapEditor_StartMap kind:function(arm,size=0x22c) addr:0x02211200
 func_ov007_0221142c kind:function(arm,size=0x54) addr:0x0221142c
 func_ov007_02211480 kind:function(arm,size=0x2c) addr:0x02211480
 func_ov007_022114ac kind:function(arm,size=0x18) addr:0x022114ac
@@ -96,7 +96,7 @@ func_ov007_02214864 kind:function(arm,size=0x208) addr:0x02214864
 LoadMapFromExport kind:function(arm,size=0x2cc) addr:0x02214a6c
 Map_MinDistanceThreshold kind:function(arm,size=0x50) addr:0x02214d38
 func_ov007_02214d88 kind:function(arm,size=0x10) addr:0x02214d88
-func_ov007_02214d98 kind:function(arm,size=0x8c) addr:0x02214d98
+RandomCoordInRange kind:function(arm,size=0x8c) addr:0x02214d98
 func_ov007_02214e24 kind:function(arm,size=0xd8) addr:0x02214e24
 Map_MarkUnitsMoved kind:function(arm,size=0xfc) addr:0x02214efc
 func_ov007_02214ff8 kind:function(arm,size=0x130) addr:0x02214ff8
@@ -113,7 +113,7 @@ func_ov007_02215dd8 kind:function(arm,size=0xbc) addr:0x02215dd8
 func_ov007_02215e94 kind:function(arm,size=0xd8) addr:0x02215e94
 func_ov007_02215f6c kind:function(arm,size=0x1ac) addr:0x02215f6c
 func_ov007_02216118 kind:function(arm,size=0x11c) addr:0x02216118
-func_ov007_02216234 kind:function(arm,size=0x584) addr:0x02216234
+PickPathEndpoints kind:function(arm,size=0x584) addr:0x02216234
 DrawOrthogonalPath kind:function(arm,size=0x2bc) addr:0x022167b8
 func_ov007_02216a74 kind:function(arm,size=0x180) addr:0x02216a74
 func_ov007_02216bf4 kind:function(arm,size=0xa0) addr:0x02216bf4
@@ -231,7 +231,7 @@ func_ov007_0221dce0 kind:function(arm,size=0x1f4) addr:0x0221dce0
 func_ov007_0221ded4 kind:function(arm,size=0x11c) addr:0x0221ded4
 func_ov007_0221dff0 kind:function(arm,size=0x14) addr:0x0221dff0
 func_ov007_0221e004 kind:function(arm,size=0xc) addr:0x0221e004
-func_ov007_0221e010 kind:function(arm,size=0x558) addr:0x0221e010
+MapEditorTypeCharacter kind:function(arm,size=0x558) addr:0x0221e010
 func_ov007_0221e568 kind:function(arm,size=0x154) addr:0x0221e568
 func_ov007_0221e6bc kind:function(arm,size=0x14) addr:0x0221e6bc
 func_ov007_0221e6d0 kind:function(arm,size=0x18c) addr:0x0221e6d0
@@ -258,7 +258,7 @@ data_ov007_0221f574 kind:data(any) addr:0x0221f574
 data_ov007_0221f5a4 kind:data(any) addr:0x0221f5a4
 data_ov007_0221f5c0 kind:data(any) addr:0x0221f5c0
 data_ov007_0221f5f8 kind:data(any) addr:0x0221f5f8
-data_ov007_0221f678 kind:data(any) addr:0x0221f678
+gMapNameFormat kind:data(any) addr:0x0221f678
 data_ov007_0221f680 kind:data(any) addr:0x0221f680
 data_ov007_0221f690 kind:data(any) addr:0x0221f690
 data_ov007_0221f6a0 kind:data(any) addr:0x0221f6a0
@@ -702,7 +702,7 @@ data_ov007_02220880 kind:data(any) addr:0x02220880
 data_ov007_02220884 kind:data(any) addr:0x02220884
 data_ov007_02220888 kind:data(any) addr:0x02220888
 data_ov007_0222088c kind:data(any) addr:0x0222088c
-data_ov007_02220890 kind:data(any) addr:0x02220890
+gGlyphDakuten kind:data(any) addr:0x02220890
 data_ov007_02220894 kind:data(any) addr:0x02220894
 data_ov007_02220898 kind:data(any) addr:0x02220898
 data_ov007_0222089c kind:data(any) addr:0x0222089c
@@ -996,7 +996,7 @@ data_ov007_02220d18 kind:data(any) addr:0x02220d18
 data_ov007_02220d1c kind:data(any) addr:0x02220d1c
 data_ov007_02220d20 kind:data(any) addr:0x02220d20
 data_ov007_02220d24 kind:data(any) addr:0x02220d24
-data_ov007_02220d28 kind:data(any) addr:0x02220d28
+gGlyphHandakuten kind:data(any) addr:0x02220d28
 data_ov007_02220d2c kind:data(any) addr:0x02220d2c
 data_ov007_02220d30 kind:data(any) addr:0x02220d30
 gMapEditPath kind:data(any) addr:0x02220d34

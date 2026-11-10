@@ -25,7 +25,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if(IsUnitSelected(unit)) flags|=0x400000;
  unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
  if(((UnkStruct_ov000_021A860C *)unit)->unk0==21) flags|=0x800000;
- func_01ffc328(unit);
+ BuildUnitMoveRange(unit);
  map=*gCurrentMap;
  {
  AiPlayerB0 *player=(AiPlayerB0 *)(map+0x67a4)+M2C_FIELD(map,u16 *,0x52a4);
@@ -96,7 +96,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if(!func_ov000_02177f24(x,y,pos)) continue;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if((map[n+0x2d48]>=data_ov000_021df644[2] || map[n+0x2840]>=data_ov000_021df644[1]) && !p[12] && func_ov000_021a9904(((UnkStruct_ov000_021A860C *)p)->unk0)==2) continue;
- if(!func_ov000_0217d150(pos[0],pos[1],p)) extra=0x80000;
+ if(!CanAttackUnitFrom(pos[0],pos[1],p)) extra=0x80000;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if(map[n+0x2840]>=data_ov000_021df644[1] && M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0==16 && (data_ov000_021b5bfc[((UnkStruct_ov000_021A860C *)p)->unk0*112+19]&7)) extra=0x80000;
  n=((u16 *)(map+0x3758))[y]+x;

@@ -201,7 +201,7 @@ s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 func_0203761c(void);v
 s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7) {
     s32 func_0203761c(void); void func_02039100(void); void func_02039204(s32);
     s32 func_0203ae50(void); u32 func_02037eec(u32);
-    void func_0203c614(s32,s32,u8,s32,void *,s32,s32,s32);
+    void StartJoinMatch(s32,s32,u8,s32,void *,s32,s32,s32);
     extern void *gNetSession; extern M2C_UNK func_02039520;
     u8 buf2[64]; u8 buf1[64];
     if (func_0203761c() != 0 || M2C_FIELD(gNetSession,s32 *,0x24) != 3) return 0;
@@ -210,7 +210,7 @@ s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7
     M2C_FIELD(gNetSession,s32 *,0x84)=a5;
     func_02039204(5);
     if(a0 != 0) {
-        func_0203c614(a0,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
+        StartJoinMatch(a0,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
     } else {
         u32 k; u8 *p; s32 i, j;
         a1=0; i=a1;
@@ -222,7 +222,7 @@ s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7
             while(k<func_0203ae50()-j-1) { *p=p[1]; p++; k++; }
             j=(j+1)&255;
         }
-        func_0203c614((s32)buf2,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
+        StartJoinMatch((s32)buf2,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
     }
     return 1;
 }
@@ -233,7 +233,7 @@ s32 func_02038b1c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 func_0203761c(void);
     void func_02039100(void);
     void func_02039204(s32);
-    s32 func_0203ae6c(s32);
+    s32 GetSessionPlayerId(s32);
     s32 func_0204e364(void **, s32);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 func_0204e1b4(void **, s32, void *);
@@ -264,7 +264,7 @@ s32 func_02038b1c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD(gNetSession, s32 *, 0x8C) = arg2;
     func_02039204(5);
 
-    r4 = func_0203ae6c(arg0);
+    r4 = GetSessionPlayerId(arg0);
     if (r4 == 0 || func_0204e364((void **)((char *)gNetSession + 0x1C), r4) == 0) {
         mode = 0x0B;
         goto tail;

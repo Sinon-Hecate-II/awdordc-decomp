@@ -5,7 +5,7 @@ typedef struct UnitKind18e584 { u8 kind:6; u8 flags:2; } UnitKind18e584;
 
 #pragma opt_strength_reduction off
 void func_ov000_0218e584(void) {
-M2C_UNK func_01ffada0(s32,s32,s32,s32,s32);
+M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
 s32 func_ov000_021a9214(void*,s32,s32);
@@ -23,7 +23,7 @@ u8 id;
 func_ov000_0218df00();
 
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-func_01ffada0(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
+FloodFillUnitRange(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
 bestY=-1;bestX=bestY;best=bestY+0x8000;
 
 for(y=0;y<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5146);y++){
@@ -81,7 +81,7 @@ PlanMoveDestination(bestX,bestY);
 }
 #pragma opt_strength_reduction off
 void func_ov000_0218e9ac(void) {
-M2C_UNK func_01ffada0(s32,s32,s32,s32,s32);
+M2C_UNK FloodFillUnitRange(s32,s32,s32,s32,s32);
 void SetMapCursor(u32,u32,u32,u32,u32);
 u8 CanUnitAttackKind();
 s32 func_ov000_021a9214(void*,s32,s32);
@@ -103,7 +103,7 @@ extern u8 data_ov000_021b5bfc[];
 
 bestX=-1;bestY=bestX;best=bestX+0x8000;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-func_01ffada0(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
+FloodFillUnitRange(selected[1],selected[2],((UnitKind18e584*)selected)->kind,0x6e,1);
 func_01ffb9c4(0x6f);
 
 for(y=0;y<M2C_FIELD(((u8*)*gCurrentMap),u16*,0x5146);y++){
@@ -162,7 +162,7 @@ PlanMoveDestination(bestX,bestY);
 #pragma opt_strength_reduction reset
 void func_ov000_0218edd8(void) {
     M2C_UNK func_ov000_0218dda4();
-    M2C_UNK func_ov000_0218e340();
+    M2C_UNK SelectJoinTarget();
     void func_ov000_0218e9ac();
     void func_ov000_0218e584();
     s32 func_ov000_021a93a8(void *, s32, s32);
@@ -173,7 +173,7 @@ void func_ov000_0218edd8(void) {
     void *temp_r1;
     temp_r0 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (func_ov000_021a93a8(temp_r0, M2C_FIELD(temp_r0, u8 *, 1), M2C_FIELD(temp_r0, u8 *, 2)) == 0) {
-        func_ov000_0218e340();
+        SelectJoinTarget();
     }
     temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32)(M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) == 0) return;
@@ -187,7 +187,7 @@ void func_ov000_0218edd8(void) {
 
 void func_ov000_0218eea8(void) {
     M2C_UNK func_ov000_0218dda4();
-    M2C_UNK func_ov000_0218e340();
+    M2C_UNK SelectJoinTarget();
     void func_ov000_0218e9ac();
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 IsFootUnitKind(u32);
@@ -198,7 +198,7 @@ void func_ov000_0218eea8(void) {
 
     temp_r0 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (func_ov000_021a93a8(temp_r0, M2C_FIELD(temp_r0, u8 *, 1), M2C_FIELD(temp_r0, u8 *, 2)) == 0) {
-        func_ov000_0218e340();
+        SelectJoinTarget();
     }
     temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32) (M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) != 1) {
@@ -215,7 +215,7 @@ void func_ov000_0218ef40(void) {
     s32 func_020ba510(s32, s32);
     s32 func_ov000_02177f24(s32, s32, s16 *);
     void SetMapCursor(u32, u32, u32, u32, u32);
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     void func_01ffb9c4(s8);
     extern void **gCurrentMap;
 
@@ -237,7 +237,7 @@ void func_ov000_0218ef40(void) {
     s32 okay;
 
     base=*gCurrentMap;
-    func_01ffc328(*(void **)((u8 *)base + 0x52D0));
+    BuildUnitMoveRange(*(void **)((u8 *)base + 0x52D0));
     func_01ffb9c4(0x6f);
 
     base=*gCurrentMap;
@@ -288,10 +288,10 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *data_ov000_021df580;
-s32 IsFootUnitKind(u32); void func_01ffc328(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
-func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
+BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 func_01ffb9c4(111);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){

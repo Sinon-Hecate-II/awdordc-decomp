@@ -376,7 +376,7 @@ void func_020ab150(void *arg0, s16 arg1) {
     extern M2C_UNK data_02126bd0;
     void *temp_r0;
 
-    func_01ffa574(M2C_FIELD(arg0, void **, 0x60));
+    DeleteSpriteObject(M2C_FIELD(arg0, void **, 0x60));
     temp_r0 = func_01ffa3dc(&data_02126b28, 4);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02126bd0;
@@ -397,8 +397,8 @@ u16 func_020ab194(void *arg0) {
 }
 
 void func_020ab1a8(void *arg0) {
-    M2C_UNK func_01ffa574(s32);
-    M2C_UNK (*fp)(s32) = (M2C_UNK (*)(s32))func_01ffa574;
+    M2C_UNK DeleteSpriteObject(s32);
+    M2C_UNK (*fp)(s32) = (M2C_UNK (*)(s32))DeleteSpriteObject;
     M2C_UNK v = M2C_FIELD(arg0, s32 *, 0x60);
     fp(v);
 }

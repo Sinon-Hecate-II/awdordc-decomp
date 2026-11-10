@@ -11,7 +11,7 @@ s32 func_020b4264(u8 *arg0) {
     void func_020ceec8(void);
     s32 func_020cfbb0(s32);
     s32 func_020cfbdc(s32);
-    void func_02068c50(u8 *, s32);
+    void StringCopy(u8 *, s32);
     void func_020cfa58(s32);
     void func_020ceffc(void);
     void func_020cfb54(void);
@@ -107,7 +107,7 @@ s32 func_020b4264(u8 *arg0) {
     dst = MAPBASE;
     M2C_FIELD(dst, u8 *, 0x5141) = func_020cfbb0(M2C_FIELD(dst, u16 *, 0x5142));
     dst = MAPBASE;
-    func_02068c50(dst + 0x5120, func_020cfbdc(M2C_FIELD(dst, u16 *, 0x5142)));
+    StringCopy(dst + 0x5120, func_020cfbdc(M2C_FIELD(dst, u16 *, 0x5142)));
     func_020cfa58(M2C_FIELD(MAPBASE, u16 *, 0x5142));
     func_020ceffc();
     for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {

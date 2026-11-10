@@ -6,7 +6,7 @@ extern u8 data_02102ee4[];
 extern u16 data_02168f14[];
 
 s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
-    M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *data_027e0058;
     extern s32 gFrameCounter;
 
@@ -25,7 +25,7 @@ s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
         if (node[3] & 8) goto node_search;
     }
 
-    func_01ffada0(node[0], node[1], node[2], 0x6e, 0);
+    FloodFillUnitRange(node[0], node[1], node[2], 0x6e, 0);
 
     {
         void *base = (void *)*data_027e0058;

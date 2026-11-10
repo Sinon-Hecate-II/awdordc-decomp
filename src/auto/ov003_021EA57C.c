@@ -12,7 +12,7 @@ void func_ov003_021ea57c(void *arg0) {
     s32 func_0207c928(u32, M2C_UNK);
     M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
     s32 func_020846a4();
-    s32 func_02086680();
+    s32 GetLocalizedText();
     M2C_UNK func_02088d94(void *);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02098844(M2C_UNK, s32, M2C_UNK, s32, u32, u32, s32);
@@ -96,7 +96,7 @@ void func_ov003_021ea57c(void *arg0) {
             }
             func_020990fc(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), temp_r4, 8, 0);
             func_ov003_021e6e94(temp_r5);
-            func_0209b2b4(1, 8, 3, func_02086680(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
+            func_0209b2b4(1, 8, 3, GetLocalizedText(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
         }
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
         gCur3DSpriteEngine = temp_r6;

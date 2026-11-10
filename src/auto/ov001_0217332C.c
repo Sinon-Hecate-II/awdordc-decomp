@@ -18,51 +18,53 @@ void func_ov001_02173fa4(void *arg0);
 void func_ov001_02174018(void *arg0);
 void func_ov001_0217408c(int arg0);
 
-void func_ov001_0217332c(void) {
-s32 func_ov001_0218bb24(s32);s32 func_ov001_0218bb00(s32);s32 func_ov001_0218bb48(s32);
-void Ov001_MoveMenuSelection(s32);void func_ov001_021737d8(s8);
-void func_ov001_02173074(void);void func_ov001_021730a4(void);void func_ov001_02185024(s32);
-extern u8 *data_ov001_021900f8[];
-extern u8 data_ov001_0218f5d0[],data_ov001_0218f320[];
-s32 selected;u8 *p;
-if(func_ov001_0218bb24(32))Ov001_MoveMenuSelection(0);
-if(func_ov001_0218bb24(64))Ov001_MoveMenuSelection(1);
-if(func_ov001_0218bb24(16))Ov001_MoveMenuSelection(2);
-if(func_ov001_0218bb24(128))Ov001_MoveMenuSelection(3);
-if(func_ov001_0218bb00(1)){
-p=gOv001MenuState;
-selected=M2C_FIELD(p,s8 *,0x121);
+/* Handle the on-screen keyboard: move the cursor, emit the highlighted character or action and
+ * switch between the lowercase, symbols and uppercase pages with X/Y. */
+void Ov001_KeyboardInput(void) {
+s32 KeyHeld(s32);s32 KeyPressed(s32);s32 KeyReleased(s32);
+void Ov001_MoveMenuSelection(s32);void Ov001_SetKeyboardPage(s8);
+void Ov001_ToggleKeyboardCase(void);void Ov001_ToggleKeyboardSymbols(void);void Ov001_PlaySound(s32);
+extern u8 *gKeyboardCharTables[];
+extern u8 gKeyboardSpecialChars[],gKeyboardActionChars[];
+s32 selected;Ov001KeyboardState *p;
+if(KeyHeld(KEY_LEFT))Ov001_MoveMenuSelection(0);
+if(KeyHeld(KEY_UP))Ov001_MoveMenuSelection(1);
+if(KeyHeld(KEY_RIGHT))Ov001_MoveMenuSelection(2);
+if(KeyHeld(KEY_DOWN))Ov001_MoveMenuSelection(3);
+if(KeyPressed(KEY_A)){
+p=(Ov001KeyboardState *)gOv001MenuState;
+selected=p->selectedKey;
 if(selected<47){
-if(!p[0x124]){func_ov001_02185024(9);return;}
-p[0x11c]=data_ov001_021900f8[p[0x11d]][selected];
-if(M2C_FIELD(gOv001MenuState,u8 *,0x11d)==1)func_ov001_021737d8(0);
+if(!p->canAdd){Ov001_PlaySound(9);return;}
+p->key=gKeyboardCharTables[p->page][selected];
+if(((Ov001KeyboardState *)gOv001MenuState)->page==1)Ov001_SetKeyboardPage(0);
 return;
 }
 if(selected-47<4){
 switch(selected-47){
-case 0:func_ov001_02173074();return;
-case 1:func_ov001_021730a4();return;
-case 2:if(!p[0x124]){func_ov001_02185024(9);return;}break;
-case 3:if(!p[0x123]){func_ov001_02185024(9);return;}break;
+case 0:Ov001_ToggleKeyboardCase();return;
+case 1:Ov001_ToggleKeyboardSymbols();return;
+case 2:if(!p->canAdd){Ov001_PlaySound(9);return;}break;
+case 3:if(!p->canDelete){Ov001_PlaySound(9);return;}break;
 }
-if(p[0x11d]==1)func_ov001_021737d8(0);
-M2C_FIELD(gOv001MenuState,u8 *,0x11c)=data_ov001_0218f5d0[selected-47];
+if(p->page==1)Ov001_SetKeyboardPage(0);
+((Ov001KeyboardState *)gOv001MenuState)->key=gKeyboardSpecialChars[selected-47];
 return;
 }
-p[0x11c]=data_ov001_0218f320[selected-51];
+p->key=gKeyboardActionChars[selected-51];
 }
-if(func_ov001_0218bb24(2)){
-p=gOv001MenuState;
-if(!p[0x123]){
-if(p[0x125])return;
-func_ov001_02185024(9);
-M2C_FIELD(gOv001MenuState,u8 *,0x125)=1;
+if(KeyHeld(KEY_B)){
+p=(Ov001KeyboardState *)gOv001MenuState;
+if(!p->canDelete){
+if(p->deleteBuzzed)return;
+Ov001_PlaySound(9);
+((Ov001KeyboardState *)gOv001MenuState)->deleteBuzzed=1;
 return;
 }
-p[0x11c]=128;
-}else if(func_ov001_0218bb48(2))M2C_FIELD(gOv001MenuState,u8 *,0x125)=0;
-if(func_ov001_0218bb00(0x400))func_ov001_02173074();
-if(func_ov001_0218bb00(0x800))func_ov001_021730a4();
+p->key=KBD_KEY_DELETE;
+}else if(KeyReleased(KEY_B))((Ov001KeyboardState *)gOv001MenuState)->deleteBuzzed=0;
+if(KeyPressed(KEY_X))Ov001_ToggleKeyboardCase();
+if(KeyPressed(KEY_Y))Ov001_ToggleKeyboardSymbols();
 }
 
 #pragma scheduling off
@@ -111,7 +113,7 @@ func_ov001_0218a384(M2C_FIELD((u8 *)gOv001MenuState+i*4,s32 *,0xfc),-1,data_ov00
 }
 }
 #pragma opt_strength_reduction off
-void func_ov001_021737d8(s8 arg0) {
+void Ov001_SetKeyboardPage(s8 arg0) {
 s32 var_r4,var_r5,var_r6,var_r7;
 var_r5=0;var_r6=0;var_r4=0;var_r7=0;
 M2C_FIELD(gOv001MenuState,s8*,0x11d)=arg0;
@@ -191,7 +193,7 @@ void func_ov001_02173924(void) {
  * entries and refreshes the cursor. */
 void Ov001_MoveMenuSelection(s32 direction) {
 extern s8 gOv001MenuTransitions[];
-void func_ov001_02185024(s32);
+void Ov001_PlaySound(s32);
 s32 fromState = M2C_FIELD(gOv001MenuState,s8 *,0x121);
 void *state; s32 toState;
 M2C_FIELD(gOv001MenuState,s8 *,0x121)=*(gOv001MenuTransitions+fromState*4+direction);
@@ -204,7 +206,7 @@ else if(toState==-2) {switch(M2C_FIELD(state,s8 *,0x120)) {case 0:case 49:M2C_FI
 else if(toState==-3) {switch(M2C_FIELD(state,s8 *,0x120)) {case 6:case 41:M2C_FIELD(state,s8 *,0x121)=41;break;case 7:case 42:M2C_FIELD(state,s8 *,0x121)=42;break;case 9:case 44:M2C_FIELD(state,s8 *,0x121)=44;break;case 10:case 45:M2C_FIELD(state,s8 *,0x121)=45;break;case 11:case 34:case 35:case 50:M2C_FIELD(state,s8 *,0x121)=46;break;default:M2C_FIELD(state,s8 *,0x121)=43;break;}}
 else if(toState==-4) {switch(M2C_FIELD(state,s8 *,0x120)) {case 0:case 49:M2C_FIELD(state,s8 *,0x121)=0;break;case 1:case 36:M2C_FIELD(state,s8 *,0x121)=1;break;case 3:case 38:M2C_FIELD(state,s8 *,0x121)=3;break;case 4:case 39:M2C_FIELD(state,s8 *,0x121)=4;break;case 5:case 40:M2C_FIELD(state,s8 *,0x121)=5;break;default:M2C_FIELD(state,s8 *,0x121)=2;break;}}
 else if(toState==-5) {switch(M2C_FIELD(state,s8 *,0x120)) {case 6:case 41:M2C_FIELD(state,s8 *,0x121)=6;break;case 7:case 42:M2C_FIELD(state,s8 *,0x121)=7;break;case 9:case 44:M2C_FIELD(state,s8 *,0x121)=9;break;case 10:case 45:M2C_FIELD(state,s8 *,0x121)=10;break;case 11:case 34:M2C_FIELD(state,s8 *,0x121)=11;break;case 35:case 50:M2C_FIELD(state,s8 *,0x121)=50;break;default:M2C_FIELD(state,s8 *,0x121)=8;break;}}
-func_ov001_02173924();func_ov001_02185024(8);}
+func_ov001_02173924();Ov001_PlaySound(8);}
 
 void func_ov001_02173e38(void *arg0) {
     typedef struct { s32 x; u32 y; } Position;

@@ -400,7 +400,7 @@ void func_02043d00(s32 arg0, u32 arg1) {
     s32 func_02038f6c(void);
     void *GetConnection(void);
     void MI_CpuCopy8(void *, void *, s32);
-    s32 func_02068eac(void *, void *, s32);
+    s32 StringCompareN(void *, void *, s32);
     s32 func_0203f45c(s32, u32, u32, u32, void *, s32);
     extern u8 data_020fca00[];
     u8 record[20];
@@ -417,7 +417,7 @@ void func_02043d00(s32 arg0, u32 arg1) {
 
     for (;;) {
         MI_CpuCopy8((void *)arg0, record, 0x14);
-        if (func_02068eac(record, data_020fca00, 4) != 0) return;
+        if (StringCompareN(record, data_020fca00, 4) != 0) return;
         if (*(u32 *)(record + 4) != 3) return;
         MI_CpuCopy8((void *)(arg0 + 0x14), buf, record[9]);
         if (func_0203f45c(record[8], *(u32 *)(record + 16), *(u32 *)(record + 12), *(u16 *)(record + 10), buf, record[9] >> 2) == 0) return;

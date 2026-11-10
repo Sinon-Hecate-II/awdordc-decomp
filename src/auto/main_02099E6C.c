@@ -7,7 +7,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void func_0207a3b0(s32, u32, u16, u8, s32, u16, s32, s32, s32, s32, s32);
     s32 func_0207c8ec(s32, M2C_UNK);
-    void *func_02086680(s32);
+    void *GetLocalizedText(s32);
     s32 func_02091dc4(M2C_UNK);
     s32 func_02091ddc(M2C_UNK);
     M2C_UNK func_020943bc(s32);
@@ -212,7 +212,7 @@ loop_1:
         case 3:
             M2C_FIELD(arg0, void **, 0x38) = (void *) (temp_r1 + 2);
             temp_r6 = *gCurrentMap;
-            M2C_FIELD(arg0, void **, 0x34) = func_02086680(M2C_FIELD((u8 *)&gMovementCostTable + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
+            M2C_FIELD(arg0, void **, 0x34) = GetLocalizedText(M2C_FIELD((u8 *)&gMovementCostTable + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
             return func_02099e6c(arg0, arg1);
         default:
             func_0209c418(arg0);

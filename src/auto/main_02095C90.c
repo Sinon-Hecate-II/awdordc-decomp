@@ -111,12 +111,12 @@ void func_02095f90(void) {
 void func_02095f94(s32 arg0) {
 void func_02095fc0(void);
 M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
-void func_02068c50(void *,s32);
+void StringCopy(void *,s32);
 extern M2C_UNK data_02102b18;
 s32 p;
 func_02095fc0();
 p=func_01ffa3dc(&data_02102b18,7);
-func_02068c50((u8 *)p+0x36,arg0);
+StringCopy((u8 *)p+0x36,arg0);
 }
 
 void func_02095fc0(void) {

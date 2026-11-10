@@ -5,7 +5,7 @@ typedef struct ByteBlock16 { u8 bytes[16]; } ByteBlock16;
 #pragma opt_common_subs off
 s32 func_02058ca4(void){
 extern M2C_UNK data_020ff43c,data_0213dce0;
-void *func_020377a8(void *,s32);s32 func_020497cc(s32,void *,s32,s32);
+void *gpiRealloc(void *,s32);s32 ghiRecv(s32,void *,s32,s32);
 void func_02058c14(void);s32 func_020593c0(s8 *,s32);void func_020651c4(void *,void *,s32);
 s32 n,used,cap;void *h,*g;
 if(M2C_FIELD(&data_020ff43c,s32 *,0)==-1)return 0;
@@ -13,11 +13,11 @@ if(M2C_FIELD(&data_0213dce0,s32 *,16)!=5)return 0;
 if(func_02058f28(M2C_FIELD(&data_020ff43c,s32 *,0)))do{g=&data_0213dce0;h=&data_020ff43c;
 if(M2C_FIELD(g,s32 *,44)-M2C_FIELD(g,s32 *,0)<128){
 cap=M2C_FIELD(g,s32 *,44);if(cap<256)M2C_FIELD(g,s32 *,44)=256;else M2C_FIELD(g,s32 *,44)=cap*2;
-M2C_FIELD(g,void **,12)=func_020377a8(M2C_FIELD(g,void **,12),M2C_FIELD(g,s32 *,44)+1);
+M2C_FIELD(g,void **,12)=gpiRealloc(M2C_FIELD(g,void **,12),M2C_FIELD(g,s32 *,44)+1);
 if(!M2C_FIELD(g,void **,12))return 0;
 }
 used=M2C_FIELD(g,s32 *,0);
-n=func_020497cc(M2C_FIELD(h,s32 *,0),M2C_FIELD(g,u8 **,12)+used,M2C_FIELD(g,s32 *,44)-used,0);
+n=ghiRecv(M2C_FIELD(h,s32 *,0),M2C_FIELD(g,u8 **,12)+used,M2C_FIELD(g,s32 *,44)-used,0);
 if(n<=0){func_02058c14();return 0;}
 M2C_FIELD(g,s32 *,0)+=n;
 M2C_FIELD(g,u8 **,12)[M2C_FIELD(g,s32 *,0)]=0;
@@ -41,7 +41,7 @@ void func_02058df4(s8 *arg0, s32 arg1) {
 
 M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     s8 *func_02068d68(s8 *, s8 *);
-    s8 *func_02068fdc(s8 *, s8 *);
+    s8 *StringFind(s8 *, s8 *);
     s32 StringLength(s8 *);
     extern const u8 data_020eab2f[];
     extern s8 data_020ff4ac[];
@@ -66,7 +66,7 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) = t;
     func_02068d68(sp0, arg1);
     func_02068d68(sp0, data_020ff4ac);
-    p = func_02068fdc((s8 *)arg0, sp0);
+    p = StringFind((s8 *)arg0, sp0);
     if (p == 0) return 0;
     n = StringLength(sp0);
     str = p + n;
@@ -119,7 +119,7 @@ s32 func_02058f9c(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_02059020(void *arg0) {
-    s32 func_0206ad38(M2C_UNK);
+    s32 ParseInt(M2C_UNK);
     s32 *func_02048690(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4b0;
@@ -132,8 +132,8 @@ void func_02059020(void *arg0) {
     s32 temp_r5;
     s32 temp_r6;
 
-    temp_r5 = func_0206ad38(func_02058f10(arg0, &data_020ff4b0));
-    temp_r4 = func_0206ad38(func_02058f10(arg0, &data_020ff4b8));
+    temp_r5 = ParseInt(func_02058f10(arg0, &data_020ff4b0));
+    temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4b8));
     temp_r6 = func_02058f10(arg0, &data_020ff4bc);
     temp_r0 = func_02058f9c(0, temp_r4, 0);
     if (temp_r0 == -1) {
@@ -149,7 +149,7 @@ void func_02059020(void *arg0) {
 }
 
 void func_020590d0(void *arg0) {
-    s32 func_0206ad38(M2C_UNK);
+    s32 ParseInt(M2C_UNK);
     s32 *func_02048690(s32, s32);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4c4;
@@ -159,8 +159,8 @@ void func_020590d0(void *arg0) {
     s32 temp_r0;
     s32 temp_r4;
 
-    temp_r4 = func_0206ad38(func_02058f10(arg0, &data_020ff4c4));
-    temp_r0 = func_02058f9c(3, func_0206ad38(func_02058f10(arg0, &data_020ff4b8)), 0);
+    temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4c4));
+    temp_r0 = func_02058f9c(3, ParseInt(func_02058f10(arg0, &data_020ff4b8)), 0);
     if (temp_r0 == -1) {
         return;
     }
@@ -174,23 +174,23 @@ void func_020590d0(void *arg0) {
 }
 
 void func_0205915c(void *arg0) {
-s32 func_0206ad38(M2C_UNK);s8 *func_02068fdc(s8 *,s8 *);s32 func_02058f9c(s32,s32,s32);M2C_UNK func_02059448(s32,s32,s32,s32,s32);M2C_UNK *func_02058f10(void *,M2C_UNK *);
+s32 ParseInt(M2C_UNK);s8 *StringFind(s8 *,s8 *);s32 func_02058f9c(s32,s32,s32);M2C_UNK func_02059448(s32,s32,s32,s32,s32);M2C_UNK *func_02058f10(void *,M2C_UNK *);
 extern M2C_UNK data_020ff4cc,data_020ff4b8,data_020ff4d4,data_020ff4d8,data_020ff4dc,data_020ff4e4,data_020ff4a8;
 s32 result; s32 n,a,b,c,d; s8 *p,*text;
-a=func_0206ad38(func_02058f10(arg0,&data_020ff4cc));
-b=func_0206ad38(func_02058f10(arg0,&data_020ff4b8));
-c=func_0206ad38(func_02058f10(arg0,&data_020ff4d4));
-d=func_0206ad38(func_02058f10(arg0,&data_020ff4d8));
+a=ParseInt(func_02058f10(arg0,&data_020ff4cc));
+b=ParseInt(func_02058f10(arg0,&data_020ff4b8));
+c=ParseInt(func_02058f10(arg0,&data_020ff4d4));
+d=ParseInt(func_02058f10(arg0,&data_020ff4d8));
 result=func_02058f9c(1,b,c);
 if(result==-1)return;
-n=func_0206ad38(func_02058f10(arg0,&data_020ff4dc));
-p=func_02068fdc(arg0,(s8 *)&data_020ff4e4);
+n=ParseInt(func_02058f10(arg0,&data_020ff4dc));
+p=StringFind(arg0,(s8 *)&data_020ff4e4);
 if(!p){text=(s8 *)&data_020ff4a8;n=0;}else text=p+6;
 func_02059448(result,a,d,(s32)text,n);
 }
 
 void func_02059240(void *arg0) {
-    s32 func_0206ad38(M2C_UNK);
+    s32 ParseInt(M2C_UNK);
     M2C_UNK func_02059448(s32, s32, s32, s32, s32);
     extern M2C_UNK data_020ff4ec;
     extern M2C_UNK data_020ff4d4;
@@ -202,10 +202,10 @@ void func_02059240(void *arg0) {
     s32 temp_r5;
     s32 temp_r6;
 
-    temp_r6 = func_0206ad38(func_02058f10(arg0, &data_020ff4ec));
-    temp_r5 = func_0206ad38(func_02058f10(arg0, &data_020ff4d4));
-    temp_r4 = func_0206ad38(func_02058f10(arg0, &data_020ff4b8));
-    temp_r4_2 = func_0206ad38(func_02058f10(arg0, &data_020ff4d8));
+    temp_r6 = ParseInt(func_02058f10(arg0, &data_020ff4ec));
+    temp_r5 = ParseInt(func_02058f10(arg0, &data_020ff4d4));
+    temp_r4 = ParseInt(func_02058f10(arg0, &data_020ff4b8));
+    temp_r4_2 = ParseInt(func_02058f10(arg0, &data_020ff4d8));
     temp_r0 = func_02058f9c(2, temp_r4, temp_r5);
     if (temp_r0 == -1) {
         return;
@@ -214,7 +214,7 @@ void func_02059240(void *arg0) {
 }
 
 void func_020592d8(s8 *arg0, s32 arg1) {
-    s32 func_02068eac(void *, void *, s32);
+    s32 StringCompareN(void *, void *, s32);
     void func_02059020();
     void func_020590d0();
     void func_0205915c();
@@ -225,11 +225,11 @@ void func_020592d8(s8 *arg0, s32 arg1) {
     extern u8 data_020ff518[];
 
     arg0[arg1] = 0;
-    if (func_02068eac(arg0, data_020ff4f4, 8) == 0) { func_02059020(arg0, arg1); return; }
-    if (func_02068eac(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
-    if (func_02068eac(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
-    if (func_02068eac(arg0, data_020ff50c, 8) == 0) { func_0205915c(arg0, arg1); return; }
-    if (func_02068eac(arg0, data_020ff518, 8) != 0) return;
+    if (StringCompareN(arg0, data_020ff4f4, 8) == 0) { func_02059020(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff50c, 8) == 0) { func_0205915c(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff518, 8) != 0) return;
     func_02059240(arg0, arg1);
 }
 
@@ -387,55 +387,55 @@ s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) 
 
 void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_020596a0(void *, void *, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp4[64];
-    func_020675e4(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
+    StringFormat(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
     func_020596a0(arg0, sp4, arg2, arg3, arg4);
 }
 
 void func_02059830(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
     s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp8[64];
-    func_020675e4(sp8, &data_020ff524, arg1, func_02059640(arg0, arg4));
+    StringFormat(sp8, &data_020ff524, arg1, func_02059640(arg0, arg4));
     func_02059708(arg0, sp8, arg2, arg3, arg4);
 }
 
 void func_02059890(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_02059778(void *, void *, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp4[64];
-    func_020675e4(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
+    StringFormat(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
     func_02059778(arg0, sp4, arg2, arg3, arg4);
 }
 
 void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_020596a0(void *, void *, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp4[64];
-    func_020675e4(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
     func_020596a0(arg0, sp4, arg2, arg3, arg4);
 }
 
 void func_02059948(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
     s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp8[64];
-    func_020675e4(sp8, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp8, &data_020ff52c, arg1, func_02059670(arg0, arg4));
     func_02059708(arg0, sp8, arg2, arg3, arg4);
 }
 
 void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_02059778(void *, void *, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020675e4(void *, M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp4[64];
-    func_020675e4(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
     func_02059778(arg0, sp4, arg2, arg3, arg4);
 }
 
@@ -454,7 +454,7 @@ return 1;
 }
 
 u8 *func_02059aa0(u8 *arg0) {
- M2C_UNK func_020640a8();
+ M2C_UNK AssertFailed();
  s32 func_02067774(void);
  void func_02049208(void);
  void func_020677a8(void);
@@ -462,7 +462,7 @@ u8 *func_02059aa0(u8 *arg0) {
  extern M2C_UNK data_020ff56c;
  extern M2C_UNK data_020ff574;
  s32 i; u32 parity; u8 *p; u32 a,b;
- if (arg0 == NULL) func_020640a8(&data_020ff56c, &data_020ff574, &data_020ff534, 0x2b);
+ if (arg0 == NULL) AssertFailed(&data_020ff56c, &data_020ff574, &data_020ff534, 0x2b);
  func_02049208();
  func_020677a8();
  arg0[0] = func_02067774() % 93 + 33;

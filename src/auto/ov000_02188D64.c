@@ -54,58 +54,62 @@ void SelectCarriedUnitAction(void) {
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-s32 func_ov000_02189000(s32 x,s32 y,s16 *out) {
+/* Finds the cheapest tile orthogonally adjacent to (x,y) that the current
+ * player may enter: passable, usable terrain, and either empty or held by one
+ * of the player's direct-combat units. Writes its x,y to out and returns 1, or
+ * returns 0 when no such tile exists. */
+s32 FindAdjacentPassableTile(s32 x,s32 y,s16 *out) {
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5bfc[];
-s32 func_ov000_021a9084(s32); s32 IsCurrentPlayerUnit(s16); s32 func_ov000_021a98e4(s32);
-s32 sy; s32 ndy,minx,maxy;
-register s32 id,dy,j,i,maxx;
+s32 func_ov000_021a9084(s32); s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
+s32 row; s32 negDy,minX,maxY;
+register s32 unitId,dy,col,rowIndex,maxX;
 s32 dist,kind,cost,zero,adx;
 void *base;
 out[0]=0x270f;
-minx=x-1;
-if(minx<0)minx=0;
-i=y-1;
-if(i<0)i=0;
+minX=x-1;
+if(minX<0)minX=0;
+rowIndex=y-1;
+if(rowIndex<0)rowIndex=0;
 base=*gCurrentMap;
-maxx=M2C_FIELD(base,u16*,0x5144)-1;
-if(x+1<maxx)maxx=x+1;
-maxy=M2C_FIELD(base,u16*,0x5146)-1;
-if(y+1<maxy)maxy=y+1;
-for(;i<=maxy;i++){
-j=minx;
-if(j<=maxx){
-dy=y-i;ndy=i-y;sy=i;
+maxX=M2C_FIELD(base,u16*,MAP_WIDTH)-1;
+if(x+1<maxX)maxX=x+1;
+maxY=M2C_FIELD(base,u16*,MAP_HEIGHT)-1;
+if(y+1<maxY)maxY=y+1;
+for(;rowIndex<=maxY;rowIndex++){
+col=minX;
+if(col<=maxX){
+dy=y-rowIndex;negDy=rowIndex-y;row=rowIndex;
 do {
 dist=0;
-adx=x-j;
-if(adx>0)dist=adx+dist;else dist=(j-x)+dist;
-if(dy>0)dist=dist+dy;else dist=dist+ndy;
+adx=x-col;
+if(adx>0)dist=adx+dist;else dist=(col-x)+dist;
+if(dy>0)dist=dist+dy;else dist=dist+negDy;
 if(dist>=1&&dist<=1){
 base=*gCurrentMap;
-cost=M2C_FIELD(M2C_FIELD(base+i*4,s8**,0x52e8),s8*,j);
+cost=M2C_FIELD(M2C_FIELD(base+rowIndex*4,s8**,MAP_GRID),s8*,col);
 if(cost>=0&&cost<=110){
-if(func_ov000_021a9084(M2C_FIELD(base+j+M2C_FIELD(base+i*2,u16*,0x3758),u8*,0x1420))){
+if(func_ov000_021a9084(M2C_FIELD(base+col+M2C_FIELD(base+rowIndex*2,u16*,MAP_ROW_OFFSETS),u8*,MAP_CELL_TERRAIN))){
 base=*gCurrentMap;
-id=M2C_FIELD(base+j,u8*,M2C_FIELD(base+i*2,u16*,0x3758));
-if(id){
-if(!IsCurrentPlayerUnit((s16)id))goto next;
+unitId=M2C_FIELD(base+col,u8*,M2C_FIELD(base+rowIndex*2,u16*,MAP_ROW_OFFSETS));
+if(unitId){
+if(!IsCurrentPlayerUnit((s16)unitId))goto next;
 
 base=*gCurrentMap;
-kind=(u32)(M2C_FIELD(base+id*14,u8*,0x59a4)<<26)>>26;
-if((data_ov000_021b5bfc[kind*112+19]&7)||func_ov000_021a98e4(kind)==1)goto next;
+kind=(u32)(M2C_FIELD(base+unitId*MAP_UNIT_STRIDE,u8*,MAP_UNIT_RECORDS)<<26)>>26;
+if((data_ov000_021b5bfc[kind*112+19]&7)||GetUnitAttackClass(kind)==1)goto next;
 }
 {
-if(out[0]==0x270f||M2C_FIELD(M2C_FIELD(*gCurrentMap+i*4,s8**,0x52e8),s8*,j)<=M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8**,0x52e8),s8*,out[0])){
-out[0]=j;out[1]=(s16)sy;
+if(out[0]==0x270f||M2C_FIELD(M2C_FIELD(*gCurrentMap+rowIndex*4,s8**,MAP_GRID),s8*,col)<=M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8**,MAP_GRID),s8*,out[0])){
+out[0]=col;out[1]=(s16)row;
 }
 }
 }
 }
 }
 next:
-j++;
-}while(j<=maxx);
+col++;
+}while(col<=maxX);
 }
 }
 if(out[0]==0x270f)return 0;return 1;
@@ -117,9 +121,9 @@ extern void **gCurrentMap;
 extern u8 *data_ov000_021df580;
 extern u8 data_ov000_021b5bfc[];
 s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
-void SelectMapLayer(void *); void func_01ffc328(void *);
+void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
 s32 func_ov000_021a9084(s32); s32 func_ov000_021a9d8c(s16,s16);
-s32 IsCurrentPlayerUnit(s16); s32 func_ov000_021a98e4(s32);
+s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
 register s32 sy,bestScore,score,y,x,bestCost;
 s32 bestX,bestY,kind,terrain,attr;
 volatile s32 id;
@@ -130,7 +134,7 @@ bestScore=0x7fff;
 bestCost=bestScore;
 score=func_020a7b3c((u32)(arg0[0]<<26)>>26,M2C_FIELD(data_ov000_021df580,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
-func_01ffc328(arg0);
+BuildUnitMoveRange(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 bestX=0x270f;
 out[0]=0x270f;
@@ -151,7 +155,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
     if(IsCurrentPlayerUnit(id)){
      map=*gCurrentMap;
      kind=(u32)(M2C_FIELD((u8*)map+id*14,u8*,0x59a4)<<26)>>26;
-     if((data_ov000_021b5bfc[kind*112+19]&7)==0&&func_ov000_021a98e4(kind)!=1){
+     if((data_ov000_021b5bfc[kind*112+19]&7)==0&&GetUnitAttackClass(kind)!=1){
       if(M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x]<=bestCost){
        bestY=sy;bestX=x;
        bestCost=M2C_FIELD((u8*)*gCurrentMap+y*4,s8**,0x52e8)[x];
@@ -194,12 +198,12 @@ return 1;
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *data_ov000_021df580;
- void func_01ffada0();void func_01ffb9c4();s32 CanKindAttack();s32 func_0207c8ec();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
+ void FloodFillUnitRange();void func_01ffb9c4();s32 CanKindAttack();s32 func_0207c8ec();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
  unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
- func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
+ FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
  func_01ffb9c4(111);
  map=*gCurrentMap;
  index=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
@@ -211,7 +215,7 @@ void func_ov000_021895bc(void){
  if(!CanKindAttack((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
  if((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30!=2)goto next;
  if(data_ov000_021df7e4[index&63])goto next;
- if(!func_ov000_02189000(unit[1],unit[2],out))goto next;
+ if(!FindAdjacentPassableTile(unit[1],unit[2],out))goto next;
  score=(func_0207c8ec(M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8 **,0x52e8),s8 *,out[0]),data_ov000_021df580[5])+1)<<7;
  ux=unit[1];uy=unit[2];minx=ux-4;if(minx<0)minx=0;
  y=uy-4;if(y<0)y=0;

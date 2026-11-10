@@ -5,7 +5,7 @@ typedef struct { u8 active:1; u8 remaining:7; } TransitionFlags;
 #pragma opt_common_subs off
 u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     u8 func_01ffa6fc(void *);
     s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
     M2C_UNK func_ov011_022257b4(void *);
@@ -275,7 +275,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_FIELD(arg0, u16 *, 0x3A) = 0x29CBU;
     do {
         if (M2C_FIELD((arg0 + (var_r5 * 4)), s32 *, 0x40) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
             M2C_FIELD((arg0 + (var_r5 * 4)), s32 *, 0x40) = 0;
         }
         var_r5 += 1;

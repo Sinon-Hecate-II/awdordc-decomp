@@ -1,19 +1,93 @@
 /* 9 functions from 0x0221E004 to 0x0221EDA8 (ov007), found by ds-decomp. */
 #include "common.h"
+extern M2C_UNK gMapEditObjectList;
+int func_020194e0(const void *, const void *);
+static inline void SetTextIndex(void *p, s8 n) {
+    if (n < 0 || n >= 17) return;
+    if (n < 17 && ((u32 *)&gMapEditObjectList)[n] != 0) goto valid;
+    if (n <= 0) return;
+    if (((u32 *)&gMapEditObjectList)[n-1] == 0) return;
+valid: M2C_FIELD(p,s8 *,0x3c) = n;
+}
+static inline int FindTextIndex(void *p) {
+    s32 result; u32 *needle; s32 i; u32 *table;
+    if (M2C_FIELD(p,s8 *,0x3c) == 0) return -1;
+    table=M2C_FIELD(p,u32 **,0x34);
+    needle=(u32 *)&gMapEditObjectList + (M2C_FIELD(p,s8 *,0x3c)-1);
+    result=-1;
+    for(i=0;i<75;i++) if(func_020194e0(needle,(void *)table[i])==0){result=i;break;}
+    return result;
+}
 
 void func_ov007_0221e004(void) {
     M2C_UNK func_ov007_0221c718();
     func_ov007_0221c718();
 }
 
-M2C_UNK func_ov007_0221e010(void) { return 0; }
+/* Types one glyph into the map editor's text line. A combining voiced or
+ * semi-voiced mark rewrites the previous character to its combined form; a
+ * full line or a line wider than 64 pixels is rejected with an error dialog,
+ * otherwise the glyph is appended and the cursor advanced. */
+M2C_UNK MapEditorTypeCharacter(void *arg0) {
+extern u32 gGlyphDakuten, gGlyphHandakuten;
+extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
+void func_02007ef4(const void*,void*,u32);
+void func_02019424(void*,u32);
+int func_02099ae8(void*); int func_0209c268(s32*);
+void func_020b269c(void);
+void *func_0208b564(void*);
+void func_020899cc(void*,s32,s32,u32);
+void func_01ffa8c4(void*,s32);
+M2C_UNK PlaySoundEffect(s32);
+void *editor; s32 oldIndex; u32 glyph,line[17],*glyphPtr; s32 found; u32 width; void *savedEngine,*dialog;
+editor=M2C_FIELD(arg0,void **,0x10);
+glyph=M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)[M2C_FIELD(arg0,u8 *,0)];
+oldIndex=M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX);
+if(func_020194e0((void*)glyph,&gGlyphDakuten)==0){
+found=FindTextIndex(editor);
+if(found>=0){
+SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)-1);
+if(func_020194e0((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_DAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
+glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_DAKUTEN_VARIANTS);
+}else{return PlaySoundEffect(0x1001d);}
+}else if(func_020194e0((void*)glyph,&gGlyphHandakuten)==0){
+found=FindTextIndex(editor);
+if(found>=0){
+SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)-1);
+if(func_020194e0((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_HANDAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
+glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_HANDAKUTEN_VARIANTS);
+}else{return PlaySoundEffect(0x1001d);}
+}
+if(M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)>=16){
+SetTextIndex(editor,oldIndex);func_020b269c();
+savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
+dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000012);
+M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
+gCur3DSpriteEngine=savedEngine;func_01ffa8c4(editor,5);return PlaySoundEffect(0x1001d);
+}
+func_02007ef4(&gMapEditObjectList,line,0x44);
+line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
+func_02019424(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
+width=0;glyphPtr=line;
+if(*glyphPtr){do{if(!func_02099ae8(glyphPtr)&&width)width++;width+=func_0209c268((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
+if(width>64){
+SetTextIndex(editor,oldIndex);func_020b269c();
+savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
+dialog=func_0208b564(editor);func_020899cc(dialog,2,0x2800,0x46000013);
+M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
+gCur3DSpriteEngine=savedEngine;func_01ffa8c4(editor,5);return PlaySoundEffect(0x1001d);
+}
+func_02007ef4(line,&gMapEditObjectList,0x44);
+SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)+1);
+return PlaySoundEffect(0x1000d);
+}
 
 void func_ov007_0221e568(u8 *arg0) {
     M2C_UNK func_0207c8ec(u8, M2C_UNK);
     M2C_UNK func_0207c928(u8, M2C_UNK);
     M2C_UNK func_020b1c60(u8);
     extern u16 *gKeyState;
-    M2C_UNK func_ov007_0221e010(void);
+    M2C_UNK MapEditorTypeCharacter(void *arg0);
     extern u8 data_ov007_0221f5a4[];
     u16 temp_r5;
     u16 temp_r6;
@@ -25,7 +99,7 @@ void func_ov007_0221e568(u8 *arg0) {
     var_r7 = *arg0;
     ptr = arg0;
     if (temp_r5 & 1) {
-        func_ov007_0221e010();
+        MapEditorTypeCharacter(arg0);
         return;
     }
     if (temp_r6 & 0x40) {
@@ -256,7 +330,7 @@ extern u16 **gCur3DSpriteEngine;
 void func_ov007_0221ec40(void *arg0) {
     M2C_UNK func_0208df84(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
     u16 func_0209b5e4(s32, M2C_UNK *);
-    M2C_UNK func_0209b67c(u16, M2C_UNK, u16, u16, s32);
+    M2C_UNK DrawTileRow(u16, M2C_UNK, u16, u16, s32);
     s32 func_0209c268(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
@@ -279,7 +353,7 @@ void func_ov007_0221ec40(void *arg0) {
         var_r10 = &gMapEditObjectList;
         do {
             temp_r5 = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
-            func_0209b67c((u16) (var_r6 + ((u32) (8 - func_0209c268(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
+            DrawTileRow((u16) (var_r6 + ((u32) (8 - func_0209c268(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
             var_r8 = (s32) (u16) (var_r8 + (((u32) (((u32) (temp_r5 + 7) >> 3) + 3) >> 2) << 8));
             var_r9 = var_r9 + 1;
             var_r6 = var_r6 + 8;

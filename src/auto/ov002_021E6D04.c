@@ -52,7 +52,10 @@ void func_ov002_021e6d04(void *arg0) {
 }
 
 #pragma opt_common_subs off
-void func_ov002_021e6db4(void *arg0) {
+/* Sets up the ov002 battle scene: loads both players' settings and status
+ * panels, initialises each side's battle unit view and its character effects,
+ * then configures the background/3D-sprite control registers. */
+void InitBattleScene(void *state) {
     void func_ov002_021e7a64(void *);
     void func_ov002_021e3890(void *);
     void PlayerPanels_Init(void *);
@@ -75,13 +78,13 @@ void func_ov002_021e6db4(void *arg0) {
     PlayerPanels_Init(data_ov002_021f2f44);
 
     {
-        s32 i = 0;
-        void *p = &data_ov002_021f3124;
+        s32 side = 0;
+        void *unitView = &data_ov002_021f3124;
         do {
-            func_ov002_021e85e8(p);
-            i++;
-            p = (u8 *)p + 0x2C;
-        } while (i < 2);
+            func_ov002_021e85e8(unitView);
+            side++;
+            unitView = (u8 *)unitView + 0x2C;
+        } while (side < 2);
     }
 
     func_ov002_021e6cdc(&data_ov002_021f3018);
@@ -89,34 +92,34 @@ void func_ov002_021e6db4(void *arg0) {
     func_020af760();
 
     {
-        void *r5 = &data_ov002_021f3124;
-        void *r6 = &gPlayerSettings;
-        s32 r7 = 0;
-        M2C_FIELD(arg0, u8 *, 8) = (u8)r7;
-        M2C_FIELD(arg0, s32 *, 0) = r7;
-        M2C_FIELD(arg0, s32 *, 4) = r7;
-        M2C_FIELD(arg0, u8 *, 9) = (u8)r7;
+        void *unitView = &data_ov002_021f3124;
+        void *settings = &gPlayerSettings;
+        s32 side = 0;
+        M2C_FIELD(state, u8 *, 8) = (u8)side;
+        M2C_FIELD(state, s32 *, 0) = side;
+        M2C_FIELD(state, s32 *, 4) = side;
+        M2C_FIELD(state, u8 *, 9) = (u8)side;
 
         do {
-            func_ov002_021e8738(r5);
-            func_ov002_021e42a8(r5, -0x50);
+            func_ov002_021e8738(unitView);
+            func_ov002_021e42a8(unitView, -0x50);
             {
-                void *ptr = M2C_FIELD(r6, void **, 4);
-                if (M2C_FIELD(ptr, u8 *, 0x3D) == 2) {
-                    if (M2C_FIELD(r5, u8 *, 0x2A) != 0) {
-                        func_ov002_021e8d04(r5, 0x200);
+                void *player = M2C_FIELD(settings, void **, 4);
+                if (M2C_FIELD(player, u8 *, 0x3D) == 2) {
+                    if (M2C_FIELD(unitView, u8 *, 0x2A) != 0) {
+                        func_ov002_021e8d04(unitView, 0x200);
                     }
                 }
             }
-            r7++;
-            r5 = (u8 *)r5 + 0x2C;
-            r6 = (u8 *)r6 + 0x18;
-        } while (r7 < 2);
+            side++;
+            unitView = (u8 *)unitView + 0x2C;
+            settings = (u8 *)settings + 0x18;
+        } while (side < 2);
     }
 
 
     {
-        volatile u16 *r1;
+        volatile u16 *ctrlReg;
         M2C_FIELD(g3DSpriteBankMain, u16 *, 0) = (u16)(M2C_FIELD(g3DSpriteBankMain, u16 *, 0) | 0x10);
         M2C_FIELD(g3DSpriteBankMain, u16 *, 0) = (u16)(M2C_FIELD(g3DSpriteBankMain, u16 *, 0) & ~0x20);
         M2C_FIELD(g3DSpriteBankMain, u16 *, 0) = (u16)(M2C_FIELD(g3DSpriteBankMain, u16 *, 0) | 0x40);
@@ -133,12 +136,12 @@ void func_ov002_021e6db4(void *arg0) {
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b5=0;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b8=0;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b9=0;
-        r1 = (volatile u16 *)0x4000060;
+        ctrlReg = (volatile u16 *)0x4000060;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b10=1;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b11=1;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b12=0;
         ((SetupFlags *)((u8 *)g3DSpriteBankMain+0x12))->b13=0;
-        r1[0] = (u16)((r1[0] & ~0x3000) | 0x8);
+        ctrlReg[0] = (u16)((ctrlReg[0] & ~0x3000) | 0x8);
     }
 
 

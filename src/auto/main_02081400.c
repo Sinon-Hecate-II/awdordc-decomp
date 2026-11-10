@@ -137,11 +137,11 @@ void func_020816cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 s32 func_020816f4(M2C_UNK arg0) {
-    M2C_UNK func_02068c50(M2C_UNK *, M2C_UNK *);
+    M2C_UNK StringCopy(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02101e7c;
     extern M2C_UNK data_0214c14c;
-    func_02068c50(&data_0214c14c, &data_02101e7c);
+    StringCopy(&data_0214c14c, &data_02101e7c);
     func_02068d68(&data_0214c14c, arg0);
     return (s32)&data_0214c14c;
 }
@@ -285,75 +285,78 @@ M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x10)=0;
 M2C_FIELD(M2C_FIELD(&gKeyState,u8 **,4),u8 *,0x11)=16;
 }
 #pragma scheduling reset
-void func_02081ae4(void) {
+/* Samples the touch screen for this frame and updates the tracked touch state:
+ * current and start position, the movement bounds, the hold and repeat timers,
+ * and the started/pressed/tap/released flags the game reads. */
+void UpdateTouchInput(void) {
     extern M2C_UNK gKeyState;
     extern M2C_UNK data_0214c18c;
     void func_0200d778(void);
     s32 func_0200d80c(u16 *);
     void func_0200dbf0(u16 *, u16 *);
-    u8 buf[0x10];
+    u8 sample[0x10];
 
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x14) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x13) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x15) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x16) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_STARTED) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_PRESSED) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_TAP) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_RELEASED) = 0;
 
     if (M2C_FIELD(&data_0214c18c, u8 *, 1) != 0) {
         return;
     }
     func_0200d778();
-    if (func_0200d80c((u16 *)(buf + 8)) != 0) {
-        *(u16 *)(buf + 6) = 3;
+    if (func_0200d80c((u16 *)(sample + 8)) != 0) {
+        *(u16 *)(sample + 6) = 3;
     } else {
-    func_0200dbf0((u16 *)buf, (u16 *)(buf + 8));
+    func_0200dbf0((u16 *)sample, (u16 *)(sample + 8));
     }
-    if (*(u16 *)(buf + 6) != 0) {
+    if (*(u16 *)(sample + 6) != 0) {
         goto invalid;
     }
 
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x0) = *(u16 *)(buf + 0);
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x2) = *(u16 *)(buf + 2);
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_CUR_X) = *(u16 *)(sample + 0);
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_CUR_Y) = *(u16 *)(sample + 2);
 
-    if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x12) == 0) {
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x14) = 1;
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x4) = *(u16 *)(buf + 0);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x6) = *(u16 *)(buf + 2);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xc) = *(u16 *)(buf + 0);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x8) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xc);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xe) = *(u16 *)(buf + 2);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xa) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xe);
+    if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE) == 0) {
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_STARTED) = 1;
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_START_X) = *(u16 *)(sample + 0);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_START_Y) = *(u16 *)(sample + 2);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_X) = *(u16 *)(sample + 0);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_X) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_X);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_Y) = *(u16 *)(sample + 2);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_Y) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_Y);
     }
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x12) = (u8)1;
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE) = (u8)1;
 
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x8) = *(u16 *)(buf + 0) < M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x8) ? *(u16 *)(buf + 0) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0x8);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xc) = *(u16 *)(buf + 0) > M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xc) ? *(u16 *)(buf + 0) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xc);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xa) = *(u16 *)(buf + 2) < M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xa) ? *(u16 *)(buf + 2) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xa);
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xe) = *(u16 *)(buf + 2) > M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xe) ? *(u16 *)(buf + 2) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, 0xe);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_X) = *(u16 *)(sample + 0) < M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_X) ? *(u16 *)(sample + 0) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_X);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_X) = *(u16 *)(sample + 0) > M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_X) ? *(u16 *)(sample + 0) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_X);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_Y) = *(u16 *)(sample + 2) < M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_Y) ? *(u16 *)(sample + 2) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MIN_Y);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_Y) = *(u16 *)(sample + 2) > M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_Y) ? *(u16 *)(sample + 2) : M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u16 *, TOUCH_MAX_Y);
 
-        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x10) < 0xff) {
-            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x10) += 1;
+        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_HOLD_FRAMES) < 0xff) {
+            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_HOLD_FRAMES) += 1;
         }
 
-        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x11) -= 1;
-        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x11) != 0) {
-            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x13) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x14);
+        M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_REPEAT_TIMER) -= 1;
+        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_REPEAT_TIMER) != 0) {
+            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_PRESSED) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_STARTED);
             return;
         } else {
-            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x13) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x12);
-            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x11) = 4;
+            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_PRESSED) = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE);
+            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_REPEAT_TIMER) = 4;
             return;
         }
 invalid:
-        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x12) == 1) {
-            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x16) = 1;
-            if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x10) <= 4) {
-                M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x15) = 1;
+        if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE) == 1) {
+            M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_RELEASED) = 1;
+            if (M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_HOLD_FRAMES) <= 4) {
+                M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_TAP) = 1;
             }
         }
 reset_tail:
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x12) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x10) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, 0x11) = 0x10;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_HOLD_FRAMES) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_REPEAT_TIMER) = 0x10;
     return;
 }
 

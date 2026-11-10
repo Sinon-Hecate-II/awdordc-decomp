@@ -33,7 +33,7 @@ DAACC_RET func_020daacc(void *arg0) {
     M2C_UNK func_020b1c44(s32, M2C_UNK);
     M2C_UNK func_020809c0(u16 *, s32, s32);
     M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
-    M2C_UNK func_020675e4(void *, const char *, ...);
+    M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK func_0209b2b4(s32, s32, s32, void *, s32, s32);
     s32 func_ov009_022246ac(s32);
     extern void **g3DSpriteEngineMain;
@@ -109,7 +109,7 @@ DAACC_RET func_020daacc(void *arg0) {
             v6c = M2C_FIELD(unit, u8 *, 0x6C);
             func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 0x14, 2);
             func_020e4cd8((u16 *)((u8 *)unit + 0x50), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
-            func_020675e4(buf2, data_0212d24c, data_0212d248[0], data_0212d244[1] + v6b, data_0212d248[0], data_0212d244[1] + v6c);
+            StringFormat(buf2, data_0212d24c, data_0212d248[0], data_0212d244[1] + v6b, data_0212d248[0], data_0212d244[1] + v6c);
             func_0209b2b4(0x1A, (s16)y, 1, buf2, 0x9000, (u16)(x + 0x28));
             M2C_FIELD(arg0, s8 *, 0x42)++;
             x += 0x34;
@@ -126,7 +126,7 @@ DAACC_RET func_020daacc(void *arg0) {
         for (j = M2C_FIELD(arg0, s8 *, 0x42); j < 4; j++) {
             gUnitSlotIds[j] = -1;
             func_020e4cd8(data_0212d258, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
-            func_020675e4(buf, data_0212d270);
+            StringFormat(buf, data_0212d270);
             func_0209b2b4(0x1A, (s16)y, 1, buf, 0x9000, (u16)(x + 0x28));
             x += 0x34;
             y += 5;
@@ -151,7 +151,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
     M2C_UNK func_020b1c44(s32, M2C_UNK);
     M2C_UNK func_020809c0(u16 *, s32, s32);
     M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
-    M2C_UNK func_020675e4(void *, const char *, ...);
+    M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK func_0209b2b4(s32, s32, s32, void *, s32, s32);
     s32 func_020c52ec(s32);
     s32 func_020c544c(s32);
@@ -202,7 +202,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
             gUnitSlotIds[M2C_FIELD(menu, s8 *, 0x42)] = i;
             func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 20, 2);
             func_020e4cd8((u16 *)info, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
-            func_020675e4(nameBuf, gUnitListNameFormat, data_0212d27c[0], data_0212d278[1] + glyphB, data_0212d27c[0], data_0212d278[1] + glyphA);
+            StringFormat(nameBuf, gUnitListNameFormat, data_0212d27c[0], data_0212d278[1] + glyphB, data_0212d27c[0], data_0212d278[1] + glyphA);
             func_0209b2b4(26, (s16)y, 1, nameBuf, 0x9000, (u16)(x + 0x28));
             M2C_FIELD(menu, s8 *, 0x42)++;
             x += 0x34;
@@ -213,7 +213,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
         for (j = M2C_FIELD(menu, s8 *, 0x42); j < 4; j++) {
             gUnitSlotIds[j] = -1;
             func_020e4cd8(data_0212d28c, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
-            func_020675e4(emptyBuf, gUnitListEmptyName);
+            StringFormat(emptyBuf, gUnitListEmptyName);
             func_0209b2b4(26, (s16)y, 1, emptyBuf, 0x9000, (u16)(x + 0x28));
             x += 0x34;
             y += 5;
@@ -266,7 +266,7 @@ void func_020db1a0(void *arg0) {
  M2C_UNK UpdateSpriteAnimation(s32);s32 GetSpriteAnimValue(s32);
  M2C_UNK func_020b1c44(s32,M2C_UNK);M2C_UNK func_020809c0(u16 *,s32,s32);
  M2C_UNK func_020e4cd8(u16 *,u32,u32,u32,u16,u16,u32);
- M2C_UNK func_020675e4(void *,const char *,...);M2C_UNK func_0209b2b4(s32,s32,s32,void *,s32,s32);
+ M2C_UNK StringFormat(void *,const char *,...);M2C_UNK func_0209b2b4(s32,s32,s32,void *,s32,s32);
  s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 func_ov009_02224194(void);s32 func_ov009_022241b4(void);s32 func_ov009_02224070(s32);
  extern void **gCur3DSpriteEngine,**g3DSpriteEngineMain;
  extern s32 gUnitSlotIds[];
@@ -289,7 +289,7 @@ void func_020db1a0(void *arg0) {
  unit=(void *)func_ov009_02224064();count=M2C_FIELD(unit,u8 *,0x1c);glyphA=M2C_FIELD(unit,u8 *,0x1b);
  func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+0x86),20,2);
  func_020e4cd8(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
- func_020675e4(buf0,data_0212d2b4,data_0212d2b0[0],data_0212d2ac[1]+glyphA,data_0212d2b0[0],data_0212d2ac[1]+count);
+ StringFormat(buf0,data_0212d2b4,data_0212d2b0[0],data_0212d2ac[1]+glyphA,data_0212d2b0[0],data_0212d2ac[1]+count);
  func_0209b2b4(26,2,1,buf0,0x9000,(u16)(x+40));x+=52;
  } else {
  ime=DisableUnitListIme();
@@ -303,7 +303,7 @@ void func_020db1a0(void *arg0) {
  }
  func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+0x86),20,2);
  func_020e4cd8((u16 *)((u8 *)unit+0x50),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
- func_020675e4(buf1,data_0212d2c8,data_0212d2c4[0],data_0212d2c0[1]+glyphA,data_0212d2c4[0],data_0212d2c0[1]+count);
+ StringFormat(buf1,data_0212d2c8,data_0212d2c4[0],data_0212d2c0[1]+glyphA,data_0212d2c4[0],data_0212d2c0[1]+count);
  func_0209b2b4(26,2,1,buf1,0x9000,(u16)(x+40));
  {u32 oldIme=ime;RestoreUnitListIme(oldIme);}x+=52;
  }
@@ -332,7 +332,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_UNK func_020b1c44(s32, M2C_UNK);
     M2C_UNK func_020809c0(u16 *, s32, s32);
     M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
-    M2C_UNK func_020675e4(void *, const char *, ...);
+    M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK func_0209b2b4(s32, s32, s32, void *, s32, s32);
     M2C_UNK func_ov010_02229b00(void);
     s32 func_ov010_02229a38(void);
@@ -377,7 +377,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     threshold = func_ov010_02229a40();
     func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x86), 0x14, 2);
     func_020e4cd8((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
-    func_020675e4(buf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + threshold, data_0212d2f0[0], data_0212d2ec[1] + r10);
+    StringFormat(buf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + threshold, data_0212d2f0[0], data_0212d2ec[1] + r10);
     func_0209b2b4(0x1a, 2, 1, buf, 0x9000, (u16)(x + 0x28));
     x = x + 0x34;
 

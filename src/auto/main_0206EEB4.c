@@ -11,7 +11,7 @@ extern u32 data_0210074c[4];
 #pragma opt_strength_reduction off
 void func_0206eeb4(u8 *out,double x){
 u32 func_0206f794(double,...);s32 func_0206f7a8(double,...);s32 func_0206f700(u64);
-double func_0206dfd0(double,s32 *);double func_0206e08c(double,s32);u64 func_02070550(double);
+double func_0206dfd0(double,s32 *);double ScaleDoubleByExp(double,s32);u64 func_02070550(double);
 void func_0206e6cc(void *,s32);void func_0206e3e0(void *,u64);void func_0206e4ac(void *,void *,void *);
 s32 exp,n;u8 b[38],a[38];u64 bits;DoubleBits value; s8 sign;
 sign=func_0206f794(x)!=0;
@@ -22,7 +22,7 @@ x=func_0206dfd0(x,&exp);
 value.d=x;bits=value.u|0x10000000000000ULL;
 n=53-func_0206f700((bits & -bits)-1);
 func_0206e6cc(a,exp-n);
-x=func_0206e08c(x,n);
+x=ScaleDoubleByExp(x,n);
 func_0206e3e0(b,func_02070550(x));
 func_0206e4ac(out,b,a);out[0]=sign;
 }
@@ -50,7 +50,7 @@ s32 func_0206f7a8(double,...);
 double func_0206df88(double,double);
 double func_0207191c(u32);
 double func_0206e2d8(double,double);
-double func_0206e08c(double,s32);
+double ScaleDoubleByExp(double,s32);
 void func_0206e630(void*,void*,s32);
 int func_0206eb30(void*,void*);
 int func_0206ea50(void*,void*);
@@ -84,7 +84,7 @@ x=tmp;exp-=n;
 }
 if(exp<0)x/=func_0206e2d8(5.0,(double)-exp);
 else x*=func_0206e2d8(5.0,(double)exp);
-x=func_0206e08c(x,exp);
+x=ScaleDoubleByExp(x,exp);
 if(func_0206f7a8(x)==2){(*(u64*)&x)=0x7fefffffffffffffULL;}
 yp=(u64*)&y;func_0206eeb4((u8*)&b,x);
 above=0;if(!func_0206ea50(&b,&value)){
@@ -125,11 +125,11 @@ s32 func_0206f7a8(double x, ...) {
 
 double func_0206f818(double x, s32 n) {
  double func_0206dfd0(double, s32 *);
- double func_0206e08c(double, s32);
+ double ScaleDoubleByExp(double, s32);
  s32 exponent;
  x=func_0206dfd0(x,&exponent);
  exponent+=n;
- return func_0206e08c(x,exponent);
+ return ScaleDoubleByExp(x,exponent);
 }
 
 #pragma scheduling off
@@ -237,12 +237,12 @@ void *func_0206fa14(void *arg0) {
 
 #pragma use_frame_pointer on
 void func_0206fa3c(StringStorage *self,u32 capacity) {
-u32 StringLength(void *);void *MemAllocArray(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
+u32 StringLength(void *);void *MemAllocArray(u32);void StringCopy(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
 if(capacity>0x7ffffffeU) {
  exception[0]=(u32)data_02100888;
  {void *p=MemAllocArray(StringLength(data_02100894)+1);zero=0;func_0206f8c4(exception+1,(u32)p,*(u32 *)&zero);}
- func_02068c50((void *)exception[1],data_02100894);
+ StringCopy((void *)exception[1],data_02100894);
  exception[0]=(u32)data_02100874;
  func_0207465c(data_021008b8,exception,func_02070068);
 }

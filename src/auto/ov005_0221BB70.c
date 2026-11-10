@@ -72,7 +72,7 @@ void func_ov005_0221bcb0(void *arg0) {
     void *func_01ffa770(M2C_UNK *);
 void func_01ffa8c4(void *,s32);
 void func_01ff9ce8(s32);
-void func_01ffa574(void *);
+void DeleteSpriteObject(void *);
 extern M2C_UNK data_ov005_02220db8;void *object;
     u16 *volatile sp38;
     u16 *volatile sp34;
@@ -154,7 +154,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=0;
 func_01ff9ce8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 M2C_FIELD(arg0,s32 *,0x34)=0;
-func_01ffa574(arg0);
+DeleteSpriteObject(arg0);
 }
 #pragma opt_strength_reduction off
 #pragma opt_lifetimes off

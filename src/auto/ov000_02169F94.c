@@ -8,7 +8,7 @@ extern const A77cTable data_ov000_021aabb0;
 void func_ov000_02169f94(void *p) {
 s32 func_020a7298(u8,u8);
 void func_ov000_0216a1ac(void *);
-void func_0208fb0c(s32,s32,s32);
+void PlaySoundAtTile(s32,s32,s32);
 extern s32 *data_027e0058;extern M2C_UNK data_ov000_021aec98;
 s32 idx,mode,x,y;
 idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*data_027e0058+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
@@ -16,7 +16,7 @@ x=M2C_FIELD(p,s16 *,0x4c)+8;
 y=M2C_FIELD(p,s16 *,0x4e)+8;
 mode=*(s32 *)((u8 *)&data_ov000_021aec98+idx*20);
 x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;
-switch(mode){case 0:return;case 0x8000:func_ov000_0216a1ac(p);return;case 0x4000:func_02090034(0);return;default:func_0208fb0c(mode,x,y);return;}
+switch(mode){case 0:return;case 0x8000:func_ov000_0216a1ac(p);return;case 0x4000:func_02090034(0);return;default:PlaySoundAtTile(mode,x,y);return;}
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0216a2b8(void *);
@@ -44,7 +44,7 @@ default:return 0;
 }
 
 void func_ov000_0216a1ac(void *p){
-s32 func_020a7298(u8,u8);void func_0208fb0c(s32,s32,s32);void func_0208fae8(s32);
+s32 func_020a7298(u8,u8);void PlaySoundAtTile(s32,s32,s32);void func_0208fae8(s32);
 extern s32 *gCurrentMap;extern s32 data_ov000_021aec94;
 s32 index,x,y;u16 effect;
 index=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
@@ -53,7 +53,7 @@ switch(M2C_FIELD(p,u8 *,0x42)){
 case 1:case 2:
 if(!*(s32 *)((u8 *)&data_ov000_021aec94+index*20))return;
 effect=func_ov000_0216a0a4((s32)p,x,y);if(!effect)return;
-func_0208fb0c(effect,x,y);return;
+PlaySoundAtTile(effect,x,y);return;
 case 22:
 if(M2C_FIELD(p,void **,0x3c)&& (M2C_FIELD(M2C_FIELD(p,void **,0x3c),u16 *,4)&32)){func_0208fae8(0x5d);break;}
 default:
@@ -90,8 +90,8 @@ void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
 
 void func_ov000_0216a374(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
-    extern M2C_UNK data_027e005c;
-    AddSprite(arg0, arg1, arg2, &data_027e005c, arg3);
+    extern M2C_UNK gSpriteDesc32x16;
+    AddSprite(arg0, arg1, arg2, &gSpriteDesc32x16, arg3);
 }
 
 s32 GetRecordDefinition(s32 arg0, s32 arg1) {

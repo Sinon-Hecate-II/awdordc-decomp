@@ -18,9 +18,9 @@ s32 func_ov000_021974bc(s32,s32,void*);
 s32 func_ov000_0219763c(s32,void*,s32);
 void func_ov000_02197a8c(void*,s32,s32,s32,s32,s32,s32);
 s32 func_020a85dc(s32);
-s32 func_ov000_021a98e4(s32);
+s32 GetUnitAttackClass(s32);
 s32 GetUnitMoveRange(s32,s32);
-s32 func_01ffada0(s32,s32,s32,s32,s32);
+s32 FloodFillUnitRange(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s32);
 s32 tileX,tileY;
 s32 unitId,influence;
@@ -43,10 +43,10 @@ if(influence<25)continue;
 influence=func_ov000_02197470(influence,0,unit->unk0_6);
 influence=func_ov000_021974bc(influence,0,unit);
 influence=func_ov000_0219763c(influence,unit,unit->unk6);
-if(!func_ov000_021a98e4(unit->unk0)){
+if(!GetUnitAttackClass(unit->unk0)){
 if(unit){if(!unit)id=0;else id=unit-(UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS);owner=(id>>6)+1;}else owner=0;
 owner=GetUnitMoveRange(owner,unit->unk0);
-func_01ffada0(((u8 *)unit)[1],((u8 *)unit)[2],unit->unk0,owner,1);
+FloodFillUnitRange(((u8 *)unit)[1],((u8 *)unit)[2],unit->unk0,owner,1);
 func_01ffb9c4(111);
 for(tileY=0;tileY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);tileY++){
 for(tileX=0;tileX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);tileX++){
@@ -94,7 +94,7 @@ extern u8 *data_ov000_021df658;
 extern u8 *data_ov000_021df580;
 extern u8 *data_ov000_021df57c;
 extern u8 *data_ov000_021df644;
-extern u8 data_ov000_021df7d0[];
+extern u8 gAiCommand[];
 extern M2C_UNK data_ov000_021df604;
 extern void (*data_ov000_021df654)(void);
 
@@ -116,7 +116,7 @@ if (state == 0) {
     return;
 }
 if (state == 0x40) {
-    data_ov000_021df7d0[0x13] = 0;
+    gAiCommand[0x13] = 0;
 } else {
     cont = (u8 *)*gCurrentMap;
     base = *(u8 **)cont;
@@ -153,9 +153,9 @@ if (state == 0x40) {
     data_ov000_021df580[7] = (u8)(data_ov000_021df580[7] & ~1);
     data_ov000_021df580[7] = (u8)(data_ov000_021df580[7] & ~2);
     *(u16 *)(data_ov000_021df580 + 8) = 0;
-    data_ov000_021df7d0[0] = 0;
-    data_ov000_021df7d0[0x13] = 0;
-    data_ov000_021df7d0[6] = 0;
+    gAiCommand[0] = 0;
+    gAiCommand[0x13] = 0;
+    gAiCommand[6] = 0;
     {
         u8 *up2 = *(u8 **)(base + 0x52d0);
         u8 uuy = up2[2];
@@ -173,7 +173,7 @@ if (state == 0x40) {
 if (func_02072b04(&data_ov000_021df604) == 0) {
     data_ov000_021df654();
 }
-if (data_ov000_021df7d0[0x13] != 0) {
+if (gAiCommand[0x13] != 0) {
     data_ov000_021df658++;
     data_ov000_021df580[0] = 3;
     return;
@@ -202,12 +202,12 @@ return;
 #pragma opt_lifetimes off
 void func_ov000_02199ce0(void) {
 void func_02085348(void *,s32);
-extern u8 data_ov000_021df7d0[];
+extern u8 gAiCommand[];
 extern u8 data_02156e50[];
 s32 i;
 u8 *s;
 u8 *d;
-s=data_ov000_021df7d0;
+s=gAiCommand;
 d=data_02156e50;
 d[0]=s[0]; d[2]=s[2]; d[3]=s[3]; d[4]=s[4]; d[5]=s[5]; d[1]=s[1];
 *(s32 *)(d+8)=*(s32 *)(s+8);
@@ -220,7 +220,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
     void func_ov000_0217d3b8(s32);
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
     s32 func_02084464(void *, void *);
     s32 func_0207c2e0(void);
@@ -229,7 +229,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     extern s32 *gCurrentMap;
     extern M2C_UNK data_ov000_021df604;
     extern u8 data_ov000_021df7dc[];
-    extern u8 data_ov000_021df7d0[];
+    extern u8 gAiCommand[];
     extern u8 data_02168f0c[];
 
     u8 *unit;
@@ -247,25 +247,25 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
 
         unit[0xA] |= 0x80;
         func_02072b10(&data_ov000_021df604, 1);
-        func_01ffc328(unit);
+        BuildUnitMoveRange(unit);
     }
         func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
         func_02084464(((u8 *)*gCurrentMap) + 0x5388, data_ov000_021df7dc);
 
-        data_ov000_021df7d0[1] = ((u8 *)*gCurrentMap)[0x52D4];
+        gAiCommand[1] = ((u8 *)*gCurrentMap)[0x52D4];
 
-        *(s32 *)(data_ov000_021df7d0 + 8) = func_0207c2e0();
+        *(s32 *)(gAiCommand + 8) = func_0207c2e0();
 
-        data_ov000_021df7d0[4] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52D8));
-        data_ov000_021df7d0[5] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52DA));
-        data_ov000_021df7d0[2] = (u8)arg0;
-        data_ov000_021df7d0[3] = (u8)arg1;
-        data_ov000_021df7d0[0] = arg2;
-        data_ov000_021df7d0[6] = arg3;
-        data_ov000_021df7d0[7] = arg4;
+        gAiCommand[4] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52D8));
+        gAiCommand[5] = (u8)*((s16 *)(((u8 *)*gCurrentMap) + 0x52DA));
+        gAiCommand[2] = (u8)arg0;
+        gAiCommand[3] = (u8)arg1;
+        gAiCommand[0] = arg2;
+        gAiCommand[6] = arg3;
+        gAiCommand[7] = arg4;
 
         result=func_020a641c((s32)*(u8 **)((u8 *)*gCurrentMap+0x52d0),((u8 *)*gCurrentMap)[0x52d5]);
-        state=data_ov000_021df7d0;
+        state=gAiCommand;
         unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
         ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
         ((volatile u8 *)state)[0x13] = 1;
@@ -289,23 +289,23 @@ void func_ov000_02199f50(s32 a, s32 b, s32 c, s32 d) {
     void func_02084568(s32, s32, s32, s32);
     extern s32 *gCurrentMap;
     extern u8 data_ov000_021df7dc[];
-    extern u8 data_ov000_021df7d0[];
+    extern u8 gAiCommand[];
     extern u8 data_02168f0c[];
     func_02084464((u8 *)*gCurrentMap + 0x5388, data_ov000_021df7dc);
-    data_ov000_021df7d0[1] = (u8)b;
-    *(s32 *)(data_ov000_021df7d0 + 8) = func_0207c2e0();
-    data_ov000_021df7d0[0] = (u8)a;
-    data_ov000_021df7d0[2] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52dc);
-    data_ov000_021df7d0[3] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52de);
-    data_ov000_021df7d0[4] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52d8);
-    data_ov000_021df7d0[5] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52da);
-    data_ov000_021df7d0[6] = (u8)c;
-    data_ov000_021df7d0[7] = (u8)d;
+    gAiCommand[1] = (u8)b;
+    *(s32 *)(gAiCommand + 8) = func_0207c2e0();
+    gAiCommand[0] = (u8)a;
+    gAiCommand[2] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52dc);
+    gAiCommand[3] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52de);
+    gAiCommand[4] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52d8);
+    gAiCommand[5] = (u8)*(s16 *)((u8 *)*gCurrentMap + 0x52da);
+    gAiCommand[6] = (u8)c;
+    gAiCommand[7] = (u8)d;
     if (*(s32 *)((u8 *)*gCurrentMap + 0x52d0) != 0) {
         s32 _r = func_020a641c(*(s32 *)((u8 *)*gCurrentMap + 0x52d0),
                                 (u8)*((u8 *)*gCurrentMap + 0x52d5));
         volatile u8 *_u = (volatile u8 *)*(s32 *)((u8 *)*gCurrentMap + 0x52d0);
-        data_ov000_021df7d0[0x12] = (((u32)_u[0xa] << 25) >> 25) - _r;
+        gAiCommand[0x12] = (((u32)_u[0xa] << 25) >> 25) - _r;
     }
     if (data_02168f0c[0] != 0) {
         func_02084568(a, b, c, d);
@@ -314,27 +314,27 @@ void func_ov000_02199f50(s32 a, s32 b, s32 c, s32 d) {
 
 void func_ov000_0219a064(void) {
 extern s32 *gCurrentMap;
-extern u8 data_ov000_021df7d0[];
+extern u8 gAiCommand[];
 u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 
 if(!p || !((Field7 *)(p+6))->value) return;
 
-if(data_ov000_021df7d0[0]==4) p[11]|=0x40;
-else if(data_ov000_021df7d0[2]!=data_ov000_021df7d0[4] || data_ov000_021df7d0[3]!=data_ov000_021df7d0[5]) p[11]&=~0x40;
+if(gAiCommand[0]==4) p[11]|=0x40;
+else if(gAiCommand[2]!=gAiCommand[4] || gAiCommand[3]!=gAiCommand[5]) p[11]&=~0x40;
 }
 
 #pragma push
 #pragma opt_strength_reduction off
 void func_ov000_0219a0e0(void) {
 extern s32 *gCurrentMap;
-s32 func_ov000_021a9164(s32,s16,s16);
+s32 IsCellUnitOnSameArmy(s32,s16,s16);
 s32 x,y;u32 idx;u8 *base=(u8 *)*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
 idx=x+M2C_FIELD(base+y*2,u16 *,0x3758);
 if((u8)(M2C_FIELD(base+(idx>>3),u8 *,0x5160)&(1<<(idx&7)))&&
 M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0)!=0){
-if(func_ov000_021a9164((u8)M2C_FIELD(base,u16 *,0x52a4),x,y)==0){
+if(IsCellUnitOnSameArmy((u8)M2C_FIELD(base,u16 *,0x52a4),x,y)==0){
 base=(u8 *)*gCurrentMap;
 M2C_FIELD(base+0x59a4+M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0)*14,u8 *,0xb)|=0x40;
 }
@@ -435,7 +435,7 @@ return sum+1;
 void func_ov000_0219a418(void) {
 void SelectMapLayer(s32);
 void FillMapLayer(s32);
-M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 extern s32 *gCurrentMap;
 extern u8 *data_ov000_021df580;
 s32 count=0;
@@ -448,7 +448,7 @@ SelectMapLayer((s32)*gCurrentMap+0x1e30);
 base=(u8 *)*gCurrentMap;
 for(p=base+0x6c60;*p!=0xff;p+=6){
 if(M2C_FIELD(base+M2C_FIELD(p,u8 *,1)+M2C_FIELD(base+M2C_FIELD(p,u8 *,2)*2,u16 *,0x3758),s8 *,0x2338)==0){
-func_01ffada0(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),1,0x6e,0);
+FloodFillUnitRange(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),1,0x6e,0);
 base=(u8 *)*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){

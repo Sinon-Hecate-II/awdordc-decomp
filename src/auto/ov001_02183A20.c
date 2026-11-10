@@ -8,7 +8,7 @@ void func_ov001_02183a20(void) {
     s32 func_ov001_02183e0c(void);
     void func_ov001_02183d18(void);
     void func_ov001_02183ba4(void);
-    void func_ov001_02185024(s32);
+    void Ov001_PlaySound(s32);
     void func_ov001_02185048(s32);
     void func_ov001_0218bd64(M2C_UNK *);
     extern void *data_ov001_02193dfc;
@@ -29,7 +29,7 @@ void func_ov001_02183a20(void) {
                     if ((u8)M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1b) == 0) {
                         return;
                     }
-                    func_ov001_02185024(0x16);
+                    Ov001_PlaySound(0x16);
                     func_ov001_02185048(0);
                     M2C_FIELD(data_ov001_02193dfc, u8 *, 0x1d) = 1;
                     func_ov001_0218bd64((M2C_UNK *)((u8 *)data_ov001_02193dfc + 0x14));
@@ -95,7 +95,7 @@ void func_ov001_02183ba4(void) {
     void func_ov001_0218508c(void);
     extern void *data_ov001_02193dfc;
     extern u8 data_ov001_0218fb5c[];
-    extern u8 data_ov001_0218fd20[];
+    extern u8 gTouchScreenRect[];
     M2C_UNK sp0;
     void *base;
     s32 r4;
@@ -103,7 +103,7 @@ void func_ov001_02183ba4(void) {
     u16 spf2;
     s32 thr;
 
-    if (func_ov001_0218bb6c((M2C_UNK *)data_ov001_0218fd20) != 0) {
+    if (func_ov001_0218bb6c((M2C_UNK *)gTouchScreenRect) != 0) {
         func_ov001_0218bd64(&sp0);
         spf0 = M2C_FIELD(&sp0, u16 *, 0x0);
         base = data_ov001_02193dfc;
@@ -190,7 +190,7 @@ M2C_FIELD(data_ov001_02193dfc,u8 *,0x1d)=3;
 #pragma peephole reset
 s32 func_ov001_02183d80(void) {
     void func_ov001_02183e58(s32, M2C_UNK *);
-    s32 func_ov001_0218bbd8(M2C_UNK *);
+    s32 TouchRectPressed(M2C_UNK *);
     s32 func_ov001_0218bc44(M2C_UNK *);
     s32 sp0[2];
     s32 var_r5;
@@ -208,7 +208,7 @@ loop_3:
     var_r5 += 1;
     if (var_r5 > 3) {
         func_ov001_02183e58(4, sp0);
-        if (func_ov001_0218bbd8(sp0) != 0) {
+        if (TouchRectPressed(sp0) != 0) {
             return 4;
         }
         return 0;

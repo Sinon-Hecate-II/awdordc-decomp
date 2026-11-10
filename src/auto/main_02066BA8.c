@@ -4,7 +4,7 @@ typedef struct { u8 a,b,c,d,e,f,g,h; s32 width,precision; } HexFormat;
 typedef struct { char *q; u32 lo,hi; char space,pad; } FormatterScratch;
 static inline void heapSwap(s8 *a,s8 *b,u32 n) { s8 t; if(n) do { t=*a; *a++=*b; *b++=t; } while(--n); }
 
-char *func_020658fc(s32,char *,HexFormat);
+char *FormatIntegerNarrow(s32,char *,HexFormat);
 char *func_02065b48(u64,char *,HexFormat);
 char *func_02066444(double,char *,HexFormat);
 char *func_02065e44(double,char *,HexFormat);
@@ -44,7 +44,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
             if(f.e==2)value=(s16)value;
             if(f.e==1)value=(s8)value;
             if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
-            else {text=func_020658fc(value,buffer+512,f);if(!text)goto invalid;}
+            else {text=FormatIntegerNarrow(value,buffer+512,f);if(!text)goto invalid;}
             len=buffer+511-text;break;
         case 'o': case 'u': case 'x': case 'X':
             if(f.e==3) {args+=4;value=*(long *)(args-4);}
@@ -56,7 +56,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
             if(f.e==2)value=(u16)value;
             if(f.e==1)value=(u8)value;
             if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
-            else {text=func_020658fc(value,buffer+512,f);if(!text)goto invalid;}
+            else {text=FormatIntegerNarrow(value,buffer+512,f);if(!text)goto invalid;}
             len=buffer+511-text;break;
         case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':
             if(f.e==9){args+=8;real=*(double *)(args-8);}
@@ -210,7 +210,7 @@ void func_020675bc(s32 arg0, s32 arg1, s32 arg2, ...) {
 
 }
 
-void func_020675e4(s32 arg0, s32 arg1, ...) {
+void StringFormat(s32 arg0, s32 arg1, ...) {
     char *args;
     args = (char *)(((u32)&arg1 & ~3U) + 4);
     func_02067554((char *)arg0, -1, arg1, args);

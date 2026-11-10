@@ -6,7 +6,7 @@
 M2C_UNK func_ov005_0221d818(M2C_UNK arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
-extern u8 data_027e005c[],data_02101f4c[],data_027e0064[],data_027e0084[],data_027e0074[];
+extern u8 gSpriteDesc32x16[],data_02101f4c[],data_027e0064[],gSpriteDesc8x8[],data_027e0074[];
 extern u8 data_0215c34a[],data_0215c334[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
@@ -26,7 +26,7 @@ void *map;
 u8 *p,*q;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-AddSprite(192,M2C_FIELD(arg0,s32 *,0x44)&255,RESULT_ATTR((M2C_FIELD(arg0,s32 *,0x54)<<3)+0x398,0xc000),data_027e005c,5);
+AddSprite(192,M2C_FIELD(arg0,s32 *,0x44)&255,RESULT_ATTR((M2C_FIELD(arg0,s32 *,0x54)<<3)+0x398,0xc000),gSpriteDesc32x16,5);
 i=M2C_FIELD(arg0,s32 *,0x50);
 y=(169-M2C_FIELD(arg0,s32 *,0x44))&255;
 func_02098cb8(0,7,y,RESULT_ATTR(i*24+0x270,(u32)(i<<28)>>16),1,5);
@@ -44,7 +44,7 @@ y=M2C_FIELD(arg0,s32 *,0x48)+54;
 if(y>=-8&&y<192){number0=data_0215c34a[(M2C_FIELD(arg0,s32 *,0x50)+1)*12];
 ay=y&255;dx=0;
 do{DivMod(number0,10,&number0,&digit0);
-AddSprite((u16)((208-dx)&511),ay,(u16)((digit0&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
+AddSprite((u16)((208-dx)&511),ay,(u16)((digit0&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),gSpriteDesc8x8,0);
 dx+=8;}while(number0);}}
 {s32 number1,digit1;
 y=M2C_FIELD(arg0,s32 *,0x48)+70;
@@ -53,7 +53,7 @@ map=(u8 *)map+(M2C_FIELD(arg0,s32 *,0x50)+1)*140;
 number1=M2C_FIELD(map,s32 *,0x67a8);
 ay=(u16)(y&255);dx=0;
 do{DivMod(number1,10,&number1,&digit1);
-AddSprite((u16)((208-dx)&511),ay,(u16)((digit1&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
+AddSprite((u16)((208-dx)&511),ay,(u16)((digit1&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),gSpriteDesc8x8,0);
 dx+=8;}while(number1);}}
 {s32 number2,digit2;
 y=M2C_FIELD(arg0,s32 *,0x48)+86;
@@ -62,7 +62,7 @@ map=(u8 *)map+(M2C_FIELD(arg0,s32 *,0x50)+1)*140;
 number2=M2C_FIELD(map,s32 *,0x67b0);
 ay=(u16)(y&255);dx=0;
 do{DivMod(number2,10,&number2,&digit2);
-AddSprite((u16)((208-dx)&511),ay,(u16)((digit2&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
+AddSprite((u16)((208-dx)&511),ay,(u16)((digit2&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),gSpriteDesc8x8,0);
 dx+=8;}while(number2);}}
 
 gCur3DSpriteEngine=saved;
@@ -83,7 +83,7 @@ AddSprite((u16)ox,(u16)((ay&0xff00)|((ay-16)&255)),attr,data_027e0074,5);
 { s32 digit,number; number=count;dx=0;
 ay=(ay&0xff00)|((ay+4)&255);ox=(ox+39)&511;
 do{DivMod(number,10,&number,&digit);
-AddSprite((u16)((ox-dx)&511),ay,(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),data_027e0084,0);dx+=8;}while(number);
+AddSprite((u16)((ox-dx)&511),ay,(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),gSpriteDesc8x8,0);dx+=8;}while(number);
 }
 gCur3DSpriteEngine=saved2;
 }
@@ -105,7 +105,7 @@ AddSprite((u16)x,py,RESULT_ATTR(tile,0xe000),data_027e0064,5);
 AddSprite((u16)((x+19)&511),(u16)(((ay|(ay&255))&0xff00)|(py&255)),RESULT_ATTR(0x3a8,0xc000),data_027e0064,5);
 { s32 digit,number; number=score;dx=0;
 do{DivMod(number,10,&number,&digit);
-AddSprite((u16)((x+42-dx)&511),(u16)((ay&0xff00)|((ay+5)&255)),(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),data_027e0084,0);dx+=8;}while(number);}
+AddSprite((u16)((x+42-dx)&511),(u16)((ay&0xff00)|((ay+5)&255)),(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),gSpriteDesc8x8,0);dx+=8;}while(number);}
 }
 }
 }

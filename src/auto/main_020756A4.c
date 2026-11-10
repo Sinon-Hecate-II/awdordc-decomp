@@ -413,7 +413,7 @@ loop_6:
     goto loop_6;
 }
 
-u8 func_02076614(u32 arg0) {
+u8 CountBits(u32 arg0) {
     u32 temp_r0;
     u32 temp_r0_2;
     u32 temp_r0_3;

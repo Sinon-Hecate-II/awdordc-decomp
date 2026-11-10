@@ -1,13 +1,14 @@
 /* 14 functions from 0x0207D130 to 0x0207DE50 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { s16 coords[24]; } TerrainCoords48;
 typedef struct { s16 coords[12]; } TerrainCoords24;
 extern void **gCurrentMap;
 extern u8 gTerrainTileset;
-extern const s16 data_020ebe8c[24];
+extern const s16 gNeighborOffsets8[24];
 extern const s16 gTerrainNeighborOffsets[24];
-extern const u16 data_021018a4[16];
-extern const u16 data_021018c4[256];
+extern const u16 gTerrainEndTileTable[16];
+extern const u16 gTerrainVariantTable[256];
 extern const u8 gTerrainClassFlags[];
 
 extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc[], data_020ed6bc[], data_020edabc[], data_020ec2bc[];
@@ -212,25 +213,29 @@ u8 func_0207dbfc(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-u16 func_0207dc0c(s32 x, s32 y) {
-    TerrainCoords48 first;
-    TerrainCoords24 second;
+/* 8-neighbour connected-terrain autotile: collects which of the eight surrounding
+ * tiles carry the 0x20000 connection class flag into an 8-bit mask, then checks
+ * for a lone cardinal connection whose neighbour carries the 0x80000 end-cap
+ * class flag and returns that end-cap tile, else the tile for the whole mask. */
+u16 GetTerrainConnectionVariant(s32 x, s32 y) {
+    TerrainCoords48 neighbors8;
+    TerrainCoords24 neighbors4;
     s32 j;
-    u8 b, mask = 0;
+    u8 endMask, mask = 0;
 
-    first = *(const TerrainCoords48 *)data_020ebe8c;
+    neighbors8 = *(const TerrainCoords48 *)gNeighborOffsets8;
     {
         void **maps = gCurrentMap;
         const u16 *tileAttr = ((const u16 **)&gTerrainTileset)[1];
         {
             s32 i;
-            s16 *p = first.coords;
+            s16 *p = neighbors8.coords;
             for (i = 0; i < 8; i++, p += 3) {
                 s32 nx = x + p[0];
                 s32 ny = y + p[1];
-                if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
-                    u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
-                    u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
+                if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, MAP_WIDTH) && ny < M2C_FIELD(*maps, u16 *, MAP_HEIGHT)) {
+                    u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, MAP_ROW_OFFSETS);
+                    u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, MAP_CELL_TILE_ID);
                     if ((((const u32 (*)[2])gTerrainClassFlags)[tileAttr[tile]][0] & 0x20000) == 0) {
                         mask |= 1 << i;
                         mask &= 0xff;
@@ -258,24 +263,24 @@ u16 func_0207dc0c(s32 x, s32 y) {
             }
 do_second:
             {
-                b = 0;
-                second = *(const TerrainCoords24 *)gTerrainNeighborOffsets;
+                endMask = 0;
+                neighbors4 = *(const TerrainCoords24 *)gTerrainNeighborOffsets;
                 {
-                    s16 *p = second.coords;
+                    s16 *p = neighbors4.coords;
                     for (j = 0; j < 4; j++, p += 3) {
                         s32 nx = x + p[0];
                         s32 ny = y + p[1];
-                        if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
-                            u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
-                            u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
+                        if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, MAP_WIDTH) && ny < M2C_FIELD(*maps, u16 *, MAP_HEIGHT)) {
+                            u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, MAP_ROW_OFFSETS);
+                            u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, MAP_CELL_TILE_ID);
                             if ((((const u32 (*)[2])gTerrainClassFlags)[tileAttr[tile]][0] & 0x80000) != 0) {
-                                b |= 1 << j;
-                                b &= 0xff;
+                                endMask |= 1 << j;
+                                endMask &= 0xff;
                             }
                         }
                     }
                     {
-                        u16 val = data_021018a4[b];
+                        u16 val = gTerrainEndTileTable[endMask];
                         if (val != 0) {
                             return val;
                         }
@@ -284,7 +289,7 @@ do_second:
             }
         }
 skip_second:
-        return data_021018c4[mask];
+        return gTerrainVariantTable[mask];
     }
 }
 #pragma pop

@@ -1,6 +1,9 @@
 /* 7 functions from 0x021E3500 to 0x021E4448 (ov003), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { u32 low:8; u32 middle:6; u32 high:6; u32 rest:12; } PreviewItemFields;
+typedef struct { u32 enabled:1; u32 rest:31; } PreviewItemStatus;
+
 typedef struct PreviewBits { u8 low:2; u8 bank:2; u8 high:4; } PreviewBits;
 
 typedef struct MenuBits3ff8 { u8 bank:2; u8 other:6; } MenuBits3ff8;
@@ -266,6 +269,9 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     } while (i < 8);
 }
 
+#pragma opt_common_subs off
+#pragma opt_propagation on
+#pragma opt_strength_reduction on
 void func_ov003_021e3aec(void *arg0, s32 arg1) {
     u8 func_ov003_021e1500(s32, s32, s32);
     void *func_020c7e6c(s32);
@@ -282,11 +288,12 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     extern u8 data_ov003_0220f34c[];
     extern M2C_UNK data_027e0064;
 
-    u8 *p5c, *p;
+    s32 bit;
     u8 id;
-    u16 value, tile;
+    u16 value, value2, tile;
+    s32 adj;
     volatile s32 flag;
-    s32 bit, adj;
+    u8 *p5c, *p;
     s16 w, h;
     s32 x, shift, color;
     u8 i, j;
@@ -299,29 +306,28 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     bit = 0;
     adj = 0;
     id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
-    p5c = M2C_FIELD(arg0, void **, 0x5c);
-
+    
     if (func_ov003_021e1500(id, 0, 4)) {
-        value = M2C_FIELD((u8 *)p5c + (id & 0xff) * 2, u16 *, 8);
+        value = M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x5c) + (id & 0xff) * 2, u16 *, 8);
     } else if (func_ov003_021e1500(id, 5, 9)) {
         value = (u16)(id + 0x10e);
     }
 
     p = func_020c7e6c(value);
     if (M2C_FIELD(p, u8 *, 0x2f) != 0) flag = 1;
-    if ((u32)(M2C_FIELD(p, u32 *, 0x38) << 0x1f) >> 0x1f) bit = 1;
+    if (M2C_FIELD(p,PreviewItemStatus*,0x38).enabled) bit = 1;
 
     if (flag != 0) {
         if (bit != 0) adj = -0x40;
         tile = (u16)(func_ov003_02200968(7) * 16 + 0x140);
-        shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+        shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
         x = (arg1 + 0xc0 + adj) & 0x1ff;
         color = (0x3ff & (tile >> shift)) | 0x6000;
         AddSprite((u16)x, 0x1c, (u16)color, data_ov003_0220f34c, 0xb);
     }
     if (bit != 0) {
         tile = (u16)(func_ov003_02200968(0xc) * 16 + 0x140);
-        shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+        shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
         x = (arg1 + 0xc0) & 0x1ff;
         color = (0x3ff & (tile >> shift)) | 0x6000;
         AddSprite((u16)x, 0x1c, (u16)color, data_ov003_0220f34c, 0xb);
@@ -329,30 +335,32 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
 
     w = M2C_FIELD(arg0, s16 *, 0x62);
     h = M2C_FIELD(arg0, s16 *, 0x64);
-    M2C_FIELD(M2C_FIELD(*gCur3DSpriteEngine, void **, 0), s16 *, 0x38) = (s16)(-((0xa4 - (w / 2)) + arg1));
-    M2C_FIELD(M2C_FIELD(*gCur3DSpriteEngine, void **, 0), s16 *, 0x40) = (s16)(-(0x6c - (h / 2)));
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x38) = (s16)(-((0xa4 - (w / 2)) + arg1));
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = (s16)(-(0x6c - (h / 2)));
 
-    shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
-    color = (0x3ff & (0x288 >> shift)) | 0xa000;
-    func_0208dd7c((s16)(arg1 + 0xa3 - (w / 2)), (s16)(0x6b - (h / 2)), (s16)(w + 2), (s16)(h + 2), color, 0x11, 1);
+    w = M2C_FIELD(arg0, s16 *, 0x62);
+    h = M2C_FIELD(arg0, s16 *, 0x64);
+    shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
+    color = (u16)((0x3ff & (0x288 >> shift)) | 0xa000);
+    func_0208dd7c((s16)((0xa3 - (w / 2)) + arg1), (s16)(0x6b - (h / 2)), (s16)(w + 2), (s16)(h + 2), color, 0x11, 1);
 
     id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
-    p5c = M2C_FIELD(arg0, void **, 0x5c);
-    if (func_ov003_021e1500(id, 0, 4)) {
-        value = M2C_FIELD((u8 *)p5c + (id & 0xff) * 2, u16 *, 8);
+        if (func_ov003_021e1500(id, 0, 4)) {
+        value2 = M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x5c) + (id & 0xff) * 2, u16 *, 8);
     } else if (func_ov003_021e1500(id, 5, 9)) {
-        value = (u16)(id + 0x10e);
+        value2 = (u16)(id + 0x10e);
     }
 
-    tile = (u16)(func_ov003_02200a18(7, value) * 4 + 0x328);
-    shift = (u32)(*(u16 *)M2C_FIELD(*gCur3DSpriteEngine, void **, 0) << 0x11) >> 0x1e;
+    tile = (u16)(func_ov003_02200a18(7, value2) * 4 + 0x328);
+    shift = (u32)(*(u16 *)*gCur3DSpriteEngine << 0x11) >> 0x1e;
     color = (0x3ff & (tile >> shift)) | 0x9800;
     AddSprite((u16)((arg1 + 3) & 0x1ff), 0x15, (u16)color, &data_027e0064, 0x11);
 
-    func_020a92bc(M2C_FIELD(arg0, void **, 0x50), (s16)(func_0207c928(id, 5) + 1));
+    func_020a92bc(M2C_FIELD(arg0, void **, 0x50), (s16)(func_0207c928(M2C_FIELD(M2C_FIELD(arg0,void**,0x48),u8*,6), 5) + 1));
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x28) &= ~0xe0;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 6) = (s16)(arg1 + 0x24);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 8) = 0x1c;
+    p54=M2C_FIELD(arg0,void**,0x50);
+    M2C_FIELD(p54,s16*,6)=(s16)(arg1+0x24);
+    M2C_FIELD(p54,s16*,8)=0x1c;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s16 *, 0x12) = 0x258;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), u8 *, 0x21) = 9;
     func_020a94fc(M2C_FIELD(arg0, void **, 0x50));
@@ -362,35 +370,35 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     for (i = 0; i < 2; i = (u8)(i + 1)) {
         switch (i) {
         case 0:
-            saved = *gCur3DSpriteEngine;
-            gCur3DSpriteEngine = g3DSpriteEngineSub;
             word = M2C_FIELD(p, u32 *, 0xc);
+            saved = (u16 *)gCur3DSpriteEngine;
+            gCur3DSpriteEngine = g3DSpriteEngineSub;
             r6 = (s32)((u32)(word << 4) >> 0x16);
             func_020a92bc(M2C_FIELD(arg0, void **, 0x54), r6);
             p54 = M2C_FIELD(arg0, void **, 0x54);
             M2C_FIELD(p54, s16 *, 6) = (s16)id40;
             M2C_FIELD(p54, s16 *, 8) = 0x3b;
             func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
-            *gCur3DSpriteEngine = saved;
+            gCur3DSpriteEngine = (u16 **)saved;
             break;
         case 1:
             M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), u8 *, 0x29) = 2;
-            saved = *gCur3DSpriteEngine;
+            saved = (u16 *)gCur3DSpriteEngine;
             for (j = 0; j < 3; j = (u8)(j + 1)) {
-                word = M2C_FIELD(p, u32 *, 8);
                 if (j == 0) {
-                    r6 = (s32)((u32)(word << 0x18) >> 0x18);
+                    r6 = M2C_FIELD(p,PreviewItemFields*,8).low;
                 } else if (j == 1) {
-                    r6 = (s32)((u32)(word << 0x12) >> 0x1a);
-                } else {
-                    r6 = (s32)((u32)(word << 0xc) >> 0x1a);
+                    r6 = M2C_FIELD(p,PreviewItemFields*,8).middle;
+                } else if(j == 2) {
+                    r6 = M2C_FIELD(p,PreviewItemFields*,8).high;
                 }
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
                 func_020a92bc(M2C_FIELD(arg0, void **, 0x54), (s16)r6);
-                M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), s16 *, 6) = (s16)(arg1 + j * 0x16 + 0x14);
-                M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), s16 *, 8) = 0x45;
+                p54=M2C_FIELD(arg0,void**,0x54);
+                M2C_FIELD(p54,s16*,6)=(s16)(arg1+j*0x16+0x14);
+                M2C_FIELD(p54,s16*,8)=0x45;
                 func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
-                *gCur3DSpriteEngine = saved;
+                gCur3DSpriteEngine = (u16 **)saved;
             }
             M2C_FIELD(M2C_FIELD(arg0, void **, 0x54), u8 *, 0x29) = 0;
             break;

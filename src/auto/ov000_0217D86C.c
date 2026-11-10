@@ -10,11 +10,11 @@ s32 func_ov000_0217d86c(void) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 data_ov000_021b5c0f[];
-    s32 func_ov000_021a98e4(void);
+    s32 GetUnitAttackClass(void);
     s32 func_ov000_021a9014(s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 IsFootUnitKind(s32);
-    void func_01ffada0(s32,s32,s32,s32,s32);
+    void FloodFillUnitRange(s32,s32,s32,s32,s32);
 
     s32 varc;
     s32 var8 = 0;
@@ -44,10 +44,10 @@ s32 func_ov000_0217d86c(void) {
 
     unit = M2C_FIELD(*gCurrentMap, void **, 0x52d0);
     if (!(data_ov000_021b5c0f[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 7)) return var8;
-    if (func_ov000_021a98e4() != 0) return 0;
+    if (GetUnitAttackClass() != 0) return 0;
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0xb) << 24) >> 31)) return 0;
 
-    func_01ffada0(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 1), M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 2), 7, 0x6e, 0);
+    FloodFillUnitRange(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 1), M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 2), 7, 0x6e, 0);
 
     count = 0;
     count2 = 0;
@@ -112,7 +112,7 @@ extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 void SelectMapLayer(void *);
 s32 func_ov000_02179be0(void);
-void func_01ffada0(s32,s32,s32,s32,s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s8);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
@@ -122,7 +122,7 @@ u32 kind;
 if(((u32)(**(u8 **)((u8 *)*gCurrentMap+0x52d0)<<26)>>26)!=23)return 0;
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-func_01ffada0(unit[1],unit[2],((Unit7DC *)unit)->kind,func_ov000_02179be0(),1);
+FloodFillUnitRange(unit[1],unit[2],((Unit7DC *)unit)->kind,func_ov000_02179be0(),1);
 func_01ffb9c4(0x6f);
 for(p=1;p<5;p++){
 if(!IsPlayerActive(p))continue;
@@ -147,7 +147,7 @@ extern s8 data_ov000_021b5500[],data_ov000_021e0f60[],data_ov000_021b55a0[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021dee00[],data_ov000_021dee04[];
 void SelectMapLayer(void *);
-void func_01ffada0(s32,s32,s32,s32,s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
 s32 func_020d27ec(s16,u8);
@@ -181,7 +181,7 @@ if(unit->x==entry[1]&&unit->y==entry[2]){if(unit->cargo)goto next;}
 if(unit->hp>60&&unit->tx==entry[1]&&unit->ty==entry[2])goto next;
 if(!unit->ammo||unit->tx==63)continue;
 SelectMapLayer(data_ov000_021e0f60);
-func_01ffada0(unit->tx,unit->ty,1,3,0);
+FloodFillUnitRange(unit->tx,unit->ty,1,3,0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto next;
 }}

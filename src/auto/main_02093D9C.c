@@ -167,9 +167,9 @@ s32 func_020940b8(void *arg0) {
 }
 
 s32 func_020940e4(void *arg0) {
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     M2C_UNK func_02095f94();
-    func_02086680(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+    GetLocalizedText(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
     func_02095f94();
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;

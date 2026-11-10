@@ -9,12 +9,12 @@ static inline void Priority25d(s32 offset,s32 n){u16 *p=(u16 *)(M2C_FIELD(gCur3D
 typedef struct Mode25d {u16 mode:3;u16 rest:13;} Mode25d;
 
 void func_ov011_02225a9c(void *arg0,s32 arg1,s32 arg2,s32 arg3){
-void func_020675e4(void *,void *,...);
+void StringFormat(void *,void *,...);
 void func_ov011_02226550(s32,s32);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 extern u8 data_ov011_02228b48[];
 char buf[8];s32 start;u8 alpha;
-func_020675e4(buf,data_ov011_02228b48,arg3);
+StringFormat(buf,data_ov011_02228b48,arg3);
 switch(arg3){case 0:start=600;break;case 1:start=1600;break;case 2:start=2600;break;case 3:start=3600;break;case 4:start=4600;break;case 5:start=5600;break;case 6:start=6600;break;case 7:start=7600;break;case 8:start=8600;break;case 9:start=9600;break;}
 if(M2C_FIELD(arg0,u16 *,0x3a)==start){
 M2C_FIELD(arg0,u16 *,0x3c)=arg1;
@@ -108,7 +108,7 @@ M2C_FIELD(arg0,u8 *,0x38)++;
 void func_ov011_02226550(s32 arg0,s32 arg1) {
 s32 func_01ff9ce8(u8);
 s32 func_0200bc5c(void *);
-s32 func_02068c50(void *,s32);
+s32 StringCopy(void *,s32);
 s32 func_02068d68(void *,void *);
 s32 func_020814e4(void *);
 s32 func_02081528(void);
@@ -117,10 +117,10 @@ s32 func_02081644(void *,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov011_02228c14,data_ov011_02228c1c,data_ov011_02228c20,data_ov011_02228c24,data_ov011_02228c28;
 u32 sp60[8],sp40[8],sp20[8],sp0[8];
-func_02068c50(sp60,arg0);func_02068d68(sp60,&data_ov011_02228c14);
-func_02068c50(sp40,arg0);func_02068d68(sp40,&data_ov011_02228c1c);
-func_02068c50(sp20,arg0);func_02068d68(sp20,&data_ov011_02228c20);
-func_02068c50(sp0,arg0);func_02068d68(sp0,&data_ov011_02228c24);
+StringCopy(sp60,arg0);func_02068d68(sp60,&data_ov011_02228c14);
+StringCopy(sp40,arg0);func_02068d68(sp40,&data_ov011_02228c1c);
+StringCopy(sp20,arg0);func_02068d68(sp20,&data_ov011_02228c20);
+StringCopy(sp0,arg0);func_02068d68(sp0,&data_ov011_02228c24);
 func_01ff9ce8((u8)arg1);func_0200bc5c(&data_ov011_02228c28);
 func_020814e4(sp60);
 func_02081590(sp40,M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32 *,12));

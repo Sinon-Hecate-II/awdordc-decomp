@@ -4,7 +4,7 @@
 void MemFree(void *arg0);
 void MemFreeArray(void *arg0);
 void func_020e35cc(void *arg0);
-void func_01ffa574(void *arg0);
+void DeleteSpriteObject(void *arg0);
 void func_020af71c(void);
 typedef void (*VFn)(void *);
 static inline void RestoreByte(void *p,u8 v) { M2C_FIELD(p,u8 *,15)=v; }
@@ -81,12 +81,12 @@ for(i=0;i<6;i++) {
 
     obj = M2C_FIELD(self, void **, 0x68);
     if (obj != NULL) {
-{void *child=M2C_FIELD(obj,void **,0);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,4);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,8);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,12);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,16);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,20);if(child)func_01ffa574(child);}
+{void *child=M2C_FIELD(obj,void **,0);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,4);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,8);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,12);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,16);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,20);if(child)DeleteSpriteObject(child);}
         MemFree(obj);
     }
 

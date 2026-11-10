@@ -77,7 +77,7 @@ void func_0202f5bc(void) {
 }
 
 s32 func_0202f5f4(void) {
- s32 func_02068eac(void *, void *, s32);
+ s32 StringCompareN(void *, void *, s32);
  extern M2C_UNK data_0213d100;
  s32 offset;
  void *base;
@@ -94,7 +94,7 @@ s32 func_0202f5f4(void) {
  for (i=0;i<count;i++) {
   if (i != selected && M2C_FIELD(p + i*4,u8 *,0x445)<6) {
    s32 off = i*0xC0;
-   if (func_02068eac(base+offset,base+off,M2C_FIELD(p+off,u16 *,0x47A))==0) return 2;
+   if (StringCompareN(base+offset,base+off,M2C_FIELD(p+off,u16 *,0x47A))==0) return 2;
   }
  }
  return 1;
@@ -145,14 +145,14 @@ s32 func_0202f800(void *arg0) {
 }
 
 s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
- s32 func_02068eac(void *,void *,s32);
+ s32 StringCompareN(void *,void *,s32);
  s32 t; u8 k; s32 i; u32 n; void *p=arg2;
  if(M2C_FIELD(arg0,u16 *,0xA)==0x20) { t=func_0202f800(arg0); if(t>0)return t; }
  i=0;
  if(arg1>0) {
  n=M2C_FIELD(arg0,u16 *,0xA); k=n;
  do {
- if(k==M2C_FIELD(p,u8 *,3) && func_02068eac(arg0+0xC,p+4,n)==0)return M2C_FIELD(p,u8 *,1);
+ if(k==M2C_FIELD(p,u8 *,3) && StringCompareN(arg0+0xC,p+4,n)==0)return M2C_FIELD(p,u8 *,1);
  i++; p+=0x24;
  }while(i<arg1);
  }
@@ -160,14 +160,14 @@ s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
 }
 
 s32 func_0202f910(void *arg0,void *arg1) {
- s32 func_02068eac(void *,void *,s32);
+ s32 StringCompareN(void *,void *,s32);
  s32 t,i; void *p,*q; s32 len,n;
  if(M2C_FIELD(arg0,u16 *,0xA)==0x20) {t=func_0202f800(arg0); if(t>0)return t;}
  n=M2C_FIELD(arg1,u8 *,0xD12); i=0;
  if(n>0) {
  len=M2C_FIELD(arg0,u16 *,0xA); p=arg1; q=arg1+0x47C;
  do{
- if(len==M2C_FIELD(p,u16 *,0x47A) && func_02068eac(arg0+0xC,q,len)==0) return M2C_FIELD(arg1+i*4,u8 *,0x445);
+ if(len==M2C_FIELD(p,u16 *,0x47A) && StringCompareN(arg0+0xC,q,len)==0) return M2C_FIELD(arg1+i*4,u8 *,0x445);
  i++; p+=0xC0; q+=0xC0;
  }while(i<n);
  }
@@ -369,7 +369,7 @@ return 8;
 u8 func_0202ff14(void *arg0) {
     s32 func_0202f800(void *);
     s32 func_020305e8(s32);
-    s32 func_02068eac(void *, void *, s32);
+    s32 StringCompareN(void *, void *, s32);
     s32 sp0;
     s32 temp_r0_2;
     s32 temp_r0_3;
@@ -408,7 +408,7 @@ u8 func_0202ff14(void *arg0) {
             var_r9 = arg0 + 0x300;
             temp_r11 = arg0 + 0x10C;
             do {
-                if ((M2C_FIELD(temp_r4, u16 *, 0xA) == M2C_FIELD(var_r7, u8 *, 0x303)) && (func_02068eac((void*)(temp_r4 + 0xC), var_r8, M2C_FIELD(temp_r4,u16*,0xA)) == 0)) {
+                if ((M2C_FIELD(temp_r4, u16 *, 0xA) == M2C_FIELD(var_r7, u8 *, 0x303)) && (StringCompareN((void*)(temp_r4 + 0xC), var_r8, M2C_FIELD(temp_r4,u16*,0xA)) == 0)) {
                     if (var_r6 == 0) {
                         sp0 = (s32) M2C_FIELD(var_r7, u8 *, 0x301);
                     } else {

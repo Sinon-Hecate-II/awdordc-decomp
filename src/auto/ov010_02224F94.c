@@ -365,19 +365,19 @@ return 0;
 }
 
 void func_ov010_02225934(void) {
- extern s32 data_ov010_0222edd8;
- M2C_FIELD(&data_ov010_0222edd8,s32 *,0x10)=1;
+ extern s32 gStreamVoiceState;
+ M2C_FIELD(&gStreamVoiceState,s32 *,0x10)=1;
 }
 
 void func_ov010_02225948(void) {
 void func_ov010_02224f28(void);
-extern s32 data_ov010_0222edd8;
+extern s32 gStreamVoiceState;
 func_ov010_02224f28();
-M2C_FIELD(&data_ov010_0222edd8,s32 *,16)=0;
+M2C_FIELD(&gStreamVoiceState,s32 *,16)=0;
 }
 
 void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, s32 arg4) {
-    extern s32 data_ov010_0222edd8;
+    extern s32 gStreamVoiceState;
     extern s32 data_ov010_0222edf8;
     void func_ov010_02225934(void);
     void func_02007f8c(void *, u32, u32);
@@ -404,29 +404,29 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
         return;
     }
 
-    if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 4) != 0) {
-        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 0x10) == 0) {
+    if (M2C_FIELD(&gStreamVoiceState, s32 *, 4) != 0) {
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, 0x10) == 0) {
             func_0200ddb0(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
-            M2C_FIELD(&data_ov010_0222edd8, s32 *, 4) = 0;
+            M2C_FIELD(&gStreamVoiceState, s32 *, 4) = 0;
         }
     }
 
     pos = arg4;
     changed = 0;
     if ((u32)func_0200dfa8() - (u32)pos < (u32)size) {
-        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) != 0) {
-            M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) = 0;
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, 8) != 0) {
+            M2C_FIELD(&gStreamVoiceState, s32 *, 8) = 0;
             pos += size;
             changed = 1;
         }
     } else {
-        if (M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) != 1) {
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, 8) != 1) {
             changed = 1;
-            M2C_FIELD(&data_ov010_0222edd8, s32 *, 8) = 1;
+            M2C_FIELD(&gStreamVoiceState, s32 *, 8) = 1;
         }
     }
 
-    M2C_FIELD(&data_ov010_0222edd8, s32 *, 0) = (s32)func_ov010_02222b0c(arr[0], size, 0);
+    M2C_FIELD(&gStreamVoiceState, s32 *, 0) = (s32)func_ov010_02222b0c(arr[0], size, 0);
 
     if (changed) {
         func_ov010_022227b0(pos, size);
@@ -447,98 +447,101 @@ void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, 
 
 #pragma push
 #pragma optimization_level 2
-s32 func_ov010_02225aa4(M2C_UNK *arg0, M2C_UNK arg1) {
-extern s32 data_ov010_0222edd8;
-extern s32 data_ov010_0222ee14;
-extern const u8 data_ov010_0222bf64[];
+/* Allocates the two sample buffers of the streaming voice, configures its sound
+ * player and starts the voice, letting the given refill callback feed the
+ * buffers; the length is in milliseconds. */
+s32 StartStreamedVoice(M2C_UNK *refillCallback, M2C_UNK lengthMs) {
+extern s32 gStreamVoiceState;
+extern s32 gStreamSoundPlayer;
+extern const u8 gStreamChannels[];
 void func_0200dd40(void);
 void func_0200e2f8(void);
 void func_0200e868(s32);
 void func_0200e880(s32);
-s32 func_ov010_022260f4(s32,s32);
-void func_ov010_02226100(s32,s32);
+s32 AllocAlignedBuffer(s32,s32);
+void FreeBuffer(s32,s32);
 void func_0202b46c(void *);
 void func_0202b4e4(void *,s32,u8 *);
 void func_0202b77c(void *,s32);
 void func_0202b7e8(void *,s32,s32);
 s32 Sound_StartVoice(void *,s32,s32,s32,s32,s32,void *,s32);
-u8 channels[1];
-u8 *cp;
-u32 i;
-u32 n;
-s32 size;
+u8 channelList[1];
+u8 *channelCursor;
+u32 channelIndex;
+u32 sampleBytes;
+s32 bufferSize;
 s32 result;
-s32 p;
+s32 buffer2;
 u8 channel;
 func_0200dd40();func_0200e2f8();func_0200e868(1);func_0200e880(3);
-n=((u32)(arg1*8000)*2)/1000;
-size=n*2;
-M2C_FIELD(&data_ov010_0222edd8,s32 *,0x18)=n*4;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14)=size;
-if(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)==0){
-M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)=func_ov010_022260f4(n*4,32);
-if(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)==0){func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x18));M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)=0;func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14));M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c)=0;return 0;}
+sampleBytes=((u32)(lengthMs*8000)*2)/1000;
+bufferSize=sampleBytes*2;
+M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE)=sampleBytes*4;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE)=bufferSize;
+if(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)==0){
+M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)=AllocAlignedBuffer(sampleBytes*4,32);
+if(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)=0;FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2)=0;return 0;}
 }
-p=M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c);
-if(p==0){
-p=func_ov010_022260f4(M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14),32);
-M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c)=p;
-if(p==0){func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x18));M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)=0;func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14));M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c)=0;return 0;}
+buffer2=M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2);
+if(buffer2==0){
+buffer2=AllocAlignedBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE),32);
+M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2)=buffer2;
+if(buffer2==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)=0;FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2)=0;return 0;}
 }
-M2C_FIELD(&data_ov010_0222edd8,s32 *,0)=0;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x20)=3;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x24)=p;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x28)=M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14);M2C_FIELD(&data_ov010_0222edd8,s32 *,0x2c)=0x1040;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x30)=1;channel=data_ov010_0222bf64[0];M2C_FIELD(&data_ov010_0222edd8,s32 *,0x34)=0;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x38)=0;
-M2C_FIELD(&data_ov010_0222edd8,s32 *,4)=0;M2C_FIELD(&data_ov010_0222edd8,s32 *,0x10)=0;
-channels[0]=channel;
-func_0202b46c(&data_ov010_0222ee14);
-func_0202b4e4(&data_ov010_0222ee14,1,channels);
-func_0202b77c(&data_ov010_0222ee14,127);
-cp=channels;
-i=0;do {func_0202b7e8(&data_ov010_0222ee14,*cp++,0);i++;}while(i<1);
-result=Sound_StartVoice(&data_ov010_0222ee14,1,M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),size,0x41,2,arg0,M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c));
-if(result==0){func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x18));M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)=0;func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14));M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c)=0;}
+M2C_FIELD(&gStreamVoiceState,s32 *,0)=0;M2C_FIELD(&gStreamVoiceState,s32 *,0x20)=3;M2C_FIELD(&gStreamVoiceState,s32 *,0x24)=buffer2;M2C_FIELD(&gStreamVoiceState,s32 *,0x28)=M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE);M2C_FIELD(&gStreamVoiceState,s32 *,0x2c)=0x1040;M2C_FIELD(&gStreamVoiceState,s32 *,0x30)=1;channel=gStreamChannels[0];M2C_FIELD(&gStreamVoiceState,s32 *,0x34)=0;M2C_FIELD(&gStreamVoiceState,s32 *,0x38)=0;
+M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_ACTIVE)=0;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_PAUSED)=0;
+channelList[0]=channel;
+func_0202b46c(&gStreamSoundPlayer);
+func_0202b4e4(&gStreamSoundPlayer,1,channelList);
+func_0202b77c(&gStreamSoundPlayer,127);
+channelCursor=channelList;
+channelIndex=0;do {func_0202b7e8(&gStreamSoundPlayer,*channelCursor++,0);channelIndex++;}while(channelIndex<1);
+result=Sound_StartVoice(&gStreamSoundPlayer,1,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),bufferSize,0x41,2,refillCallback,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2));
+if(result==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)=0;FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2)=0;}
 return result;
 }
 #pragma pop
 void func_ov010_02225cd8(void) {
-    M2C_UNK func_ov010_02225aa4(M2C_UNK *, M2C_UNK);
-    func_ov010_02225aa4((void *)&func_ov010_02225964, 0x44);
+    M2C_UNK StartStreamedVoice(M2C_UNK *, M2C_UNK);
+    StartStreamedVoice((void *)&func_ov010_02225964, 0x44);
 }
 
 s32 func_ov010_02225cf0(void) {
-    extern s32 data_ov010_0222edd8;
-    return data_ov010_0222edd8;
+    extern s32 gStreamVoiceState;
+    return gStreamVoiceState;
 }
 
 void func_ov010_02225d00(void) {
-extern s32 data_ov010_0222ee14;
+extern s32 gStreamSoundPlayer;
 void func_0202b70c(void *);
 void func_0202a9f0(void);
 void func_02004e60(s32,s32);
 s32 i;
-func_0202b70c(&data_ov010_0222ee14);
+func_0202b70c(&gStreamSoundPlayer);
 for(i=0;i<4;i++){func_0202a9f0();func_02004e60(1,1);}
 }
 
 void func_ov010_02225d38(void) {
     M2C_UNK func_0200df70();
-    extern M2C_UNK data_ov010_0222ee14;
+    extern M2C_UNK gStreamSoundPlayer;
     func_0200df70();
-    func_0202b760(&data_ov010_0222ee14);
+    func_0202b760(&gStreamSoundPlayer);
 }
 
 void func_ov010_02225d50(void) {
-extern s32 data_ov010_0222edd8;
-M2C_FIELD(&data_ov010_0222edd8,s32 *,4)=1;
+extern s32 gStreamVoiceState;
+M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
 }
 
 void func_ov010_02225d64(void) {
-extern s32 data_ov010_0222edd8;
+extern s32 gStreamVoiceState;
 void func_0200df14(void (*)(void),s32);
 func_0200df14(func_ov010_02225948,0);
-M2C_FIELD(&data_ov010_0222edd8,s32 *,4)=0;
+M2C_FIELD(&gStreamVoiceState,s32 *,4)=0;
 }
 
 s32 func_ov010_02225d8c(void) {
-    extern M2C_UNK data_ov010_0222edd8;
-    return M2C_FIELD(&data_ov010_0222edd8, s32 *, 0x10);
+    extern M2C_UNK gStreamVoiceState;
+    return M2C_FIELD(&gStreamVoiceState, s32 *, 0x10);
 }
 
 s32 func_ov010_02225d9c(void) {
@@ -547,17 +550,17 @@ s32 out[4];func_ov010_02224f74(out);return out[0];
 }
 
 void func_ov010_02225db8(void) {
-extern s32 data_ov010_0222ee14;
-extern s32 data_ov010_0222edd8;
+extern s32 gStreamSoundPlayer;
+extern s32 gStreamVoiceState;
 void func_0202b544(void *);
-void func_ov010_02226100(s32,s32);
+void FreeBuffer(s32,s32);
 void func_0200e868(s32);
-func_0202b760(&data_ov010_0222ee14);
-func_0202b544(&data_ov010_0222ee14);
-func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,12),M2C_FIELD(&data_ov010_0222edd8,s32 *,24));
-M2C_FIELD(&data_ov010_0222edd8,s32 *,12)=0;
-func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,28),M2C_FIELD(&data_ov010_0222edd8,s32 *,20));
-M2C_FIELD(&data_ov010_0222edd8,s32 *,28)=0;
+func_0202b760(&gStreamSoundPlayer);
+func_0202b544(&gStreamSoundPlayer);
+FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,12),M2C_FIELD(&gStreamVoiceState,s32 *,24));
+M2C_FIELD(&gStreamVoiceState,s32 *,12)=0;
+FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,28),M2C_FIELD(&gStreamVoiceState,s32 *,20));
+M2C_FIELD(&gStreamVoiceState,s32 *,28)=0;
 func_0200e868(0);
 }
 

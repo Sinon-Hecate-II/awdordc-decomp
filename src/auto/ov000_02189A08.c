@@ -15,7 +15,7 @@ typedef struct {
 void func_ov000_02189a08(void) {
     s32 func_020a33c4(s32);
     s32 func_020a7b3c(s32, s32, s32, s32, s32);
-    void func_01ffada0(s32, s32, u8, s32, s32);
+    void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void SelectMapLayer(void *);
     s32 func_ov000_021a8eb0(s32, s32, s32);
     s32 func_ov000_021a9084(s32);
@@ -54,7 +54,7 @@ void func_ov000_02189a08(void) {
     bonus = func_020a33c4(*(u16 *)((u8 *)score + 0x52a4));
     score = func_020a7b3c((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
     sel = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-    func_01ffada0(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
+    FloodFillUnitRange(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
 
     if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
         y = 0;
@@ -96,7 +96,7 @@ void func_ov000_02189a08(void) {
     SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
     bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
     bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
-    func_01ffada0(bestX, bestY, 7, 0x6e, 0);
+    FloodFillUnitRange(bestX, bestY, 7, 0x6e, 0);
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 
     if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
@@ -334,7 +334,7 @@ return 0;
 
 #pragma opt_propagation off
 s32 IsValidMoveCell(s32 x, s32 y) {
-    s32 func_ov000_021a98e4(s32);
+    s32 GetUnitAttackClass(s32);
     s32 IsUnitSelected(void *);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a9904(s32);
@@ -347,7 +347,7 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     extern u8 data_ov000_021dfc4c[];
     extern u8 *data_ov000_021df644;
 
-    if (!func_ov000_021a98e4(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !IsUnitSelected(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
+    if (!GetUnitAttackClass(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !IsUnitSelected(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
 u8 attr=data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
 if(attr&7) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
 if((u8)((1<<(idx&7)) & data_ov000_021df9bc[idx>>3])) goto valid;

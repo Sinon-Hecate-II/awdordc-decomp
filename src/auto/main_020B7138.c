@@ -22,7 +22,7 @@ void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 void func_020b7178(void *task) {
     M2C_UNK func_02076910(u32, u32);
     M2C_UNK func_0207b774(u32, u32);
-    M2C_UNK func_0208fb0c(M2C_UNK, u32, u32);
+    M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
     s32 func_020b5200(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020b695c(s32, s32, M2C_UNK);
     extern void **gCurrentMap;
@@ -37,7 +37,7 @@ void func_020b7178(void *task) {
     y = M2C_FIELD(task, u32 *, 0x60);
     mode = M2C_FIELD(task, u32 *, 0x64);
     spawnIndex = M2C_FIELD(task, s32 *, 0x58);
-    func_0208fb0c(0x104, x, y);
+    PlaySoundAtTile(0x104, x, y);
     switch (mode) {
     default:
         break;
@@ -75,13 +75,13 @@ loop_15:
 }
 
 void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
- M2C_UNK func_0207b774(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK func_0208fb0c(M2C_UNK,u32,u32);
- u32 func_020a4ab0(u32);
+ M2C_UNK func_0207b774(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
+ u32 GetFacingOffset(u32);
  void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
  void func_020b51dc(void); s32 func_020b51f0(void);
  extern M2C_UNK data_02128f9c,data_02128fa4,data_02128fac;
  s32 t,t2; u32 tile; s32 x,y; void *p,*q;
- tile=func_020a4ab0(arg2); x=0; y=0;
+ tile=GetFacingOffset(arg2); x=0; y=0;
  func_020b51dc(); t=func_020b5200(&data_02128f9c,0);
  switch(arg2) {case 0:x=-132;y=132;break;case 1:y=176;break;case 2:x=132;y=x;break;case 3:y=172;break;default:break;}
  p=func_020b5188(&data_02128fa4,x+arg0*16,y+arg1*16,48,t,0,arg4);
@@ -92,7 +92,7 @@ void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
  t2=func_020b51f0();
  switch(arg2) {case 0:x=-12;y=12;break;case 1:x=0;y=16;break;case 2:x=12;y=x;break;case 3:x=0;y=12;break;default:break;}
  q=func_020b5188(&data_02128fac,x+arg0*16,y+arg1*16,32,t2,1,arg4);
- if(q) {func_0208fb0c(0x103,arg0,arg1+2); ((SpriteTile *)q)->tile=(u16)tile;}
+ if(q) {PlaySoundAtTile(0x103,arg0,arg1+2); ((SpriteTile *)q)->tile=(u16)tile;}
  func_0207b774(arg0,arg1+2);func_0207b7e8(q);
 }
 
@@ -125,21 +125,21 @@ p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=
 #pragma pop
 /* Draw a centered gauge and two flanking icon sprites for the object. */
 void func_020b7724(void *obj) {
-void func_0209b67c(u16,s32,u16,u16,s32);
+void DrawTileRow(u16,s32,u16,u16,s32);
 void AddSprite(s32,s32,u16,void *,s32);
 extern void *gCur3DSpriteEngine; extern u8 data_027e0064[];
 s32 size=M2C_FIELD(obj,s32 *,0x34);
-func_0209b67c((u16)((256-size)/2),0x58,(u16)size,(u16)(0xd000|((0x39c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),11);
+DrawTileRow((u16)((256-size)/2),0x58,(u16)size,(u16)(0xd000|((0x39c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),11);
 AddSprite(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
 AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
 }
 
 void func_020b7824(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_01ffa574(s32);
+    M2C_UNK DeleteSpriteObject(s32);
     extern void *gCur3DSpriteEngine;
-    func_01ffa574(M2C_FIELD(arg0, s32 *, 0x38));
-    func_01ffa574(M2C_FIELD(arg0, s32 *, 0x3C));
+    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
+    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x3C));
     func_01ff9ce8(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
 }

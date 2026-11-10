@@ -61,7 +61,7 @@ void func_0209cce4(s32 arg0) {
 }
 
 void func_0209cd00(s32 arg0) {
- M2C_UNK func_01ffa574();
+ M2C_UNK DeleteSpriteObject();
  extern M2C_UNK data_0211dff0;
  extern M2C_UNK data_021583e0;
  u8 *p;
@@ -69,15 +69,15 @@ void func_0209cd00(s32 arg0) {
  p = (u8 *)&data_021583e0;
  i = 0;
  do {
-  if (M2C_FIELD(p, void **, 4) == &data_0211dff0 && M2C_FIELD(p, s32 *, 0x34) == arg0) func_01ffa574(p);
+  if (M2C_FIELD(p, void **, 4) == &data_0211dff0 && M2C_FIELD(p, s32 *, 0x34) == arg0) DeleteSpriteObject(p);
   i++;
   p += 0x74;
  } while (i < 0x80);
 }
 
 s32 func_0209cd4c(void) {
-    M2C_UNK func_01ffa574();
-    func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
+    DeleteSpriteObject();
     return 0;
 }
 
@@ -355,7 +355,7 @@ s32 func_0209d224(void *arg0) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
-                func_01ffa574(arg0);
+                DeleteSpriteObject(arg0);
                 return 0;
             }
         }
@@ -374,7 +374,7 @@ s32 func_0209d2b0(void *arg0) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
-                func_01ffa574(arg0);
+                DeleteSpriteObject(arg0);
                 return 0;
             }
         }
@@ -393,7 +393,7 @@ s32 func_0209d33c(void *arg0) {
         void *other = *p;
         if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
             if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
-                func_01ffa574(other);
+                DeleteSpriteObject(other);
                 break;
             }
         }
@@ -715,7 +715,7 @@ void func_0209da98(void *arg0) {
     count = M2C_FIELD(arg0, s32 *, 0x5c) + 1;
     M2C_FIELD(arg0, s32 *, 0x5c) = count;
     if (count < M2C_FIELD(arg0, s32 *, 0x60)) return;
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_0209dabc(s32 arg0) {

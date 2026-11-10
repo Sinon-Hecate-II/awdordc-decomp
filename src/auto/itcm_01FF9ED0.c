@@ -5,7 +5,7 @@
 void func_01ff9ed0(void){
 s32 func_01ff9c34(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;extern u16 *g3DSpriteBankMain;
-s32 saved=gCur3DSpriteEngine,j=0,i=0,base,size;void *p;u8 same,flag;
+s32 saved=gCur3DSpriteEngine,j=0,i=0,size;u32 base;void *p;u8 same,flag;
 do{
 p=(void*)(i==0?g3DSpriteEngineMain:g3DSpriteEngineSub);
 same=(s32)p==g3DSpriteEngineMain;gCur3DSpriteEngine=(s32)p;
@@ -18,11 +18,13 @@ size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
 {
 s32 dest;
 if(flag)dest=((u32)(g3DSpriteBankMain[1]<<29)>>29)<<16;else dest=0;
+dest=base+dest;
 p=(void*)gCur3DSpriteEngine;
 {
-u8 *tp=((u8**)p)[j];
+u8 *tp=*(u8 **)p;
 void *dp=((void**)((u8*)p+0x20))[j];
-func_02007ef4(dp,base+dest+(((u32)(M2C_FIELD(tp+j*2,u16*,6)<<19)>>27)<<11),size);
+dest+=((u32)(M2C_FIELD(tp+j*2,u16*,6)<<19)>>27)<<11;
+func_02007ef4(dp,dest,size);
 }
 }
 }}
@@ -258,9 +260,10 @@ void func_01ffa4e8(void *p) {
  }
 }
 
-#pragma optimization_level 1
-void func_01ffa574(void *arg0) { do { if(!arg0) break; if(M2C_FIELD(arg0,s32 *,4)==0) break; if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);func_01ffa4e8(arg0);func_01ffa4a0(arg0); } while(0); }
-#pragma optimization_level reset
+#pragma push
+#pragma optimization_level 2
+void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);func_01ffa4e8(arg0);func_01ffa4a0(arg0); } while(0); }
+#pragma pop
 void func_01ffa5b8(void *p){
 extern u8 data_027e15b8,data_027e15b4;
 extern s32 gCur3DSpriteEngine;
@@ -277,22 +280,22 @@ if(data_027e15b8 && data_027e15b4)goto skip;
 M2C_FIELD(p,u8*,0x30)&=~16;
 }
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
-M2C_FIELD(p,u8*,0x30)&=~64;
 do{
+M2C_FIELD(p,u8*,0x30)&=~64;
 if(!M2C_FIELD(p,s32*,0x10))func_01ffa160(p);
 if(M2C_FIELD(p,s32*,0x10))((void(*)(void*))M2C_FIELD(p,s32*,0x10))(p);
 }while(M2C_FIELD(p,u8*,0x30)&64);
 M2C_FIELD(p,u8*,0x30)&=~64;
 gCur3DSpriteEngine=old;
+if(M2C_FIELD(p,u8*,0x30)&1)return;
 }
 skip:
-if(M2C_FIELD(p,u8*,0x30)&1)return;
 if(M2C_FIELD(p,s32*,0x14)){
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=M2C_FIELD(p,s32*,0x28);
 ((void(*)(void*))M2C_FIELD(p,s32*,0x14))(p);
 gCur3DSpriteEngine=old;
-}
 if(M2C_FIELD(p,u8*,0x30)&1)return;
+}
 next=M2C_FIELD(p,void**,0x1c);if(next)func_01ffa5b8(next);
 }
 #pragma scheduling reset
@@ -445,13 +448,13 @@ void func_01ffa9d0(M2C_UNK arg0) {
 }
 
 void func_01ffa9e4(M2C_UNK arg0) {
-    void func_01ffa574(void *);
-    func_01ffa928(arg0, (M2C_UNK *) &func_01ffa574);
+    void DeleteSpriteObject(void *);
+    func_01ffa928(arg0, (M2C_UNK *) &DeleteSpriteObject);
 }
 
 void func_01ffa9f8(M2C_UNK arg0) {
-    void func_01ffa574(void *);
-    func_01ffa968(arg0, (M2C_UNK *)&func_01ffa574);
+    void DeleteSpriteObject(void *);
+    func_01ffa968(arg0, (M2C_UNK *)&DeleteSpriteObject);
 }
 
 void func_01ffaa0c(s32 arg0) {
@@ -465,7 +468,7 @@ void func_01ffaa0c(s32 arg0) {
     i = 0;
     do {
         if (M2C_FIELD(p, s32 *, 4) != 0 && M2C_FIELD(p, u16 *, 0x2E) == arg0) {
-            func_01ffa574(p);
+            DeleteSpriteObject(p);
         }
         i++;
         p += 0x74;

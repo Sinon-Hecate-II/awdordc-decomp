@@ -4,7 +4,7 @@ typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
-    M2C_UNK func_0208fb0c(M2C_UNK, s32, s32);
+    M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 func_0208c080(void *, s32);
     void func_02080750(s32, s32, s32);
@@ -70,7 +70,7 @@ void func_020b6168(void *arg0) {
 
     func_02080750(2, 0x3C, 0);
     func_02080358(4, 0, 2, 0);
-    func_0208fb0c(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    PlaySoundAtTile(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
     func_020cc6a4();
 }
 
@@ -89,7 +89,7 @@ void func_020b6320(void) {
  * copy its label string into the task, then move the view onto the marker. */
 void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     void *func_01ffa42c();
-    M2C_UNK func_02068c50(void *, M2C_UNK *);
+    M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128e98;
     void *task;
     task = func_01ffa42c(&data_02128cec, parent);
@@ -98,13 +98,13 @@ void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     M2C_FIELD(task, s16 *, 0x4C) = range;
     M2C_FIELD(task, s16 *, 0x4E) = tileIdx;
     M2C_FIELD(task, s32 *, 0x50) = 0;
-    func_02068c50(task + 0x34, &data_02128e98);
+    StringCopy(task + 0x34, &data_02128e98);
     func_0207b774(x, y);
 }
 
 void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     void *func_01ffa42c();
-    M2C_UNK func_02068c50(void *, M2C_UNK *);
+    M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128ea4;
     M2C_UNK *g = &data_02128cec;
     void *p;
@@ -114,13 +114,13 @@ void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
     M2C_FIELD(p, s16 *, 0x4E) = arg3;
     M2C_FIELD(p, s32 *, 0x50) = 0;
-    func_02068c50(p + 0x34, &data_02128ea4);
+    StringCopy(p + 0x34, &data_02128ea4);
     func_0207b774(arg0, arg1);
 }
 
 void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     void *func_01ffa42c();
-    M2C_UNK func_02068c50(void *, M2C_UNK *);
+    M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128cec, data_02128eb0;
     M2C_UNK *g = &data_02128cec;
     void *p;
@@ -130,7 +130,7 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     M2C_FIELD(p, s16 *, 0x4C) = arg2;
     M2C_FIELD(p, s16 *, 0x4E) = arg3;
     M2C_FIELD(p, s32 *, 0x50) = 0;
-    func_02068c50(p + 0x34, &data_02128eb0);
+    StringCopy(p + 0x34, &data_02128eb0);
     func_0207b774(arg0, arg1);
 }
 
@@ -139,7 +139,7 @@ void func_020b6444(void *arg0) {
     void func_020b5200(M2C_UNK *, s32);
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 func_0208c080(void *, s32);
-    M2C_UNK func_0208fb0c(M2C_UNK, s32, s32);
+    M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_02128ebc;
     extern M2C_UNK data_02128ec4;
@@ -170,7 +170,7 @@ void func_020b6444(void *arg0) {
     }
     {
         u8 *uu = M2C_FIELD(arg0, u8 **, 0x5c);
-        func_0208fb0c(0x12f, uu[1], uu[2]);
+        PlaySoundAtTile(0x12f, uu[1], uu[2]);
     }
 }
 
@@ -236,7 +236,7 @@ void func_020b6698(void *arg0) {
     func_0208c080(p, 1);
     M2C_FIELD(p, void (**)(void *), 0x68) = func_020b65e4;
     M2C_FIELD(p, void (**)(void *), 0x6C) = func_020b65f8;
-    func_0208fb0c(0x130, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    PlaySoundAtTile(0x130, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
 void func_020b6718(void *arg0) {
@@ -254,17 +254,17 @@ void func_020b6718(void *arg0) {
     func_0208c080(temp_r0, 0);
     M2C_FIELD(temp_r0, void (**)(void *), 0x6C) = func_020b6570;
     func_020cc6a4();
-    func_0208fb0c(0x131, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    PlaySoundAtTile(0x131, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
 void func_020b6794(void *arg0) {
-    M2C_UNK func_020ce434(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK MarkThreatBitmap(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
     M2C_UNK func_020cfd28(void);
     extern void **gCurrentMap;
     void **m = gCurrentMap;
     void *p = arg0;
     u8 v = (u8)M2C_FIELD(*m, u16 *, 0x52A4);
-    func_020ce434(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, 1, v, 2);
+    MarkThreatBitmap(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, 1, v, 2);
     func_020cfd28();
 }
 
@@ -326,7 +326,7 @@ func_02076910(x,y);
 sx+=x; sy+=y; n++;
 }
 func_02080750(1,20,0); func_02080358(4,0,2,0);
-if(n>0) func_0208fb0c(0x6d,func_0207c8ec(sx,n),func_0207c8ec(sy,n));
+if(n>0) PlaySoundAtTile(0x6d,func_0207c8ec(sx,n),func_0207c8ec(sy,n));
 else func_0208facc(0x6d);
 }
 
@@ -345,7 +345,7 @@ u16 count=(u16)(bits>>21);
 if(count) return;
 a=func_0208c1ec(arg0);
 t=func_0208c200(arg0);
-func_0208fb0c(0xfc,a,t);
+PlaySoundAtTile(0xfc,a,t);
 }
 
 s32 func_020b6b80(void *p) {
@@ -370,16 +370,16 @@ M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
 
 #pragma opt_common_subs off
 void func_020b6c6c(void *arg0) {
-M2C_UNK func_0208c1ec(void *);M2C_UNK func_0208c200(void *);M2C_UNK func_0208fb0c(s32,s32,s32);s32 func_020b6b80(void *);u32 func_0207c2f0(void);M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,void*);extern M2C_UNK data_02128f08;
+M2C_UNK func_0208c1ec(void *);M2C_UNK func_0208c200(void *);M2C_UNK PlaySoundAtTile(s32,s32,s32);s32 func_020b6b80(void *);u32 func_0207c2f0(void);M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,void*);extern M2C_UNK data_02128f08;
 s32 x,y,v;u16 frame;
 v=M2C_FIELD(arg0,s32*,0x60);frame=(u16)(M2C_FIELD(arg0,u32*,0x48)>>21);
 x=func_0208c1ec(arg0);y=func_0208c200(arg0)-1;
-switch(frame){case 0:func_0208fb0c(253,x,y);break;case 20:func_0208fb0c(254,x,y);break;case 32:func_0208fb0c(256,x,y);break;case 90:func_0208fb0c(255,x,y);break;case 104:func_0208fb0c(258,x,y);break;}
+switch(frame){case 0:PlaySoundAtTile(253,x,y);break;case 20:PlaySoundAtTile(254,x,y);break;case 32:PlaySoundAtTile(256,x,y);break;case 90:PlaySoundAtTile(255,x,y);break;case 104:PlaySoundAtTile(258,x,y);break;}
 if(frame==60)func_020b6b80(arg0);
 if((s32)frame<32)return;if((s32)frame>90)return;if((s32)frame%8)return;
 if(func_0207c2f0()&1)x+=(s32)func_0207c2f0()%2+2;else x-=(s32)func_0207c2f0()%2+2;
 if(func_0207c2f0()&1)y+=(s32)func_0207c2f0()%2+2;else y-=(s32)func_0207c2f0()%2+2;
-func_0208fb0c(257,x,y);func_020b5134(&data_02128f08,x,y,16,v,1,arg0);
+PlaySoundAtTile(257,x,y);func_020b5134(&data_02128f08,x,y,16,v,1,arg0);
 }
 #pragma opt_common_subs reset
 void func_020b6e4c(void) {
@@ -415,12 +415,12 @@ void func_020b6fd8(void *arg0) {
 }
 
 void func_020b6ff4(void *arg0) {
-    M2C_UNK func_0208fb0c(s32, s32, s32);
+    M2C_UNK PlaySoundAtTile(s32, s32, s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
     extern M2C_UNK data_02128f3c;
     extern M2C_UNK data_02128f48;
     func_020b5134(&data_02128f48, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 0x10, func_020b5200(&data_02128f3c, 0), 0, arg0);
-    func_0208fb0c(0x105, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    PlaySoundAtTile(0x105, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void func_020b7050(void *arg0) {
@@ -439,7 +439,7 @@ void func_020b70b0(void *arg0) {
     extern M2C_UNK data_02128f80;
     s32 temp = func_020b5200(&data_02128f74, 2);
     func_020b5134(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, temp, 2, arg0);
-    func_0208fb0c(0x106, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    PlaySoundAtTile(0x106, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
 }
 
 void func_020b710c(void *arg0) {

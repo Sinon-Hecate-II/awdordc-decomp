@@ -440,12 +440,12 @@ s32 func_020bf0dc(s32 arg0, s32 arg1) {
 }
 
 void func_020bf10c(s8 *arg0,void *arg1) {
-M2C_UNK func_020675e4(); u32 func_020e31e0();
+M2C_UNK StringFormat(); u32 func_020e31e0();
 extern u8 data_0212956c[],data_0212958c[],data_021295a8[];
 switch(func_020e31e0()){
-case 0:func_020675e4(arg0,data_0212956c,dateYear(arg1),dateMonth(arg1),dateDay(arg1),dateHour(arg1),dateMinute(arg1));return;
-case 1:func_020675e4(arg0,data_0212958c,dateMonth(arg1),dateDay(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
-case 2:case 3:case 4:case 5:func_020675e4(arg0,data_021295a8,dateDay(arg1),dateMonth(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
+case 0:StringFormat(arg0,data_0212956c,dateYear(arg1),dateMonth(arg1),dateDay(arg1),dateHour(arg1),dateMinute(arg1));return;
+case 1:StringFormat(arg0,data_0212958c,dateMonth(arg1),dateDay(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
+case 2:case 3:case 4:case 5:StringFormat(arg0,data_021295a8,dateDay(arg1),dateMonth(arg1),dateYear(arg1),dateHour(arg1),dateMinute(arg1));return;
 default:*arg0=0;return;
 }}
 

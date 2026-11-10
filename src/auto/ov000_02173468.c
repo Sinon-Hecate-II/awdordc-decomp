@@ -22,7 +22,7 @@ void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 data_02168f14[];
-extern u8 data_ov000_021b8dfc[],data_027e007c[],data_027e0084[],data_02101f0c[],data_027e0064[],data_02101f3c[],data_027e00a4[];
+extern u8 data_ov000_021b8dfc[],data_027e007c[],gSpriteDesc8x8[],data_02101f0c[],data_027e0064[],data_02101f3c[],gSpriteDesc16x8[];
 extern s8 data_ov000_021b56a0[],data_ov000_021b5600[],data_ov000_021b5680[],data_ov000_021b56e0[];
 
 StatsOrder1734 order;
@@ -39,11 +39,11 @@ if(!M2C_FIELD(arg0,u8 *,0x15)){
 if(func_ov000_021724b8(temp,M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0))!=-1)AddSprite(4,1,0xc144,data_ov000_021b8dfc,0);
 AddSprite(135,25,(u16)(((164-M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,4))&1023)|0x6000),data_027e007c,1);
 if(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,8)){
-AddSprite(135,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,24)+128)&1023)|0x8000),data_027e0084,1);
-AddSprite(143,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,20)+128)&1023)|0x8000),data_027e0084,1);
-AddSprite(151,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,16)+128)&1023)|0x8000),data_027e0084,1);
-AddSprite(159,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,12)+128)&1023)|0x8000),data_027e0084,1);
-}else AddSprite(147,38,0x808a,data_027e0084,1);
+AddSprite(135,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,24)+128)&1023)|0x8000),gSpriteDesc8x8,1);
+AddSprite(143,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,20)+128)&1023)|0x8000),gSpriteDesc8x8,1);
+AddSprite(151,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,16)+128)&1023)|0x8000),gSpriteDesc8x8,1);
+AddSprite(159,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,12)+128)&1023)|0x8000),gSpriteDesc8x8,1);
+}else AddSprite(147,38,0x808a,gSpriteDesc8x8,1);
 a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 b=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 c=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
@@ -54,7 +54,7 @@ AddSprite(136,53,(u16)(((base+224)&1023)|0x6000),data_027e007c,1);
 for(line=73,i=0;i<8;i++,line+=10){
 a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 digit=M2C_FIELD(data_ov000_021b56e0+order.values[i]*32,s8 *,a);if(digit<0)digit=10;
-AddSprite(147,(u16)line,(u16)(((digit+128)&1023)|0x8000),data_027e0084,1);
+AddSprite(147,(u16)line,(u16)(((digit+128)&1023)|0x8000),gSpriteDesc8x8,1);
 }
 }
 if(func_ov000_02173e6c(arg0)){
@@ -75,24 +75,24 @@ if(!r.flags[3])goto next;
 if(r.flags[4])a=1;else a=0;
 hidden=a&255;
 if(M2C_FIELD(arg0,s32 *,8)<60&&func_02086420((u8)counter)){
-AddSprite(241,(u16)y1,0x60be,data_027e00a4,1);
-AddSprite(241,(u16)y2,0x60de,data_027e00a4,1);
+AddSprite(241,(u16)y1,0x60be,gSpriteDesc16x8,1);
+AddSprite(241,(u16)y2,0x60de,gSpriteDesc16x8,1);
 }
 tens=hidden?10:func_0207c8ec(r.hp,10);ones=hidden?10:r.hp-tens*10;
-if(tens)AddSprite(193,(u16)y3,(u16)(((tens+140)&1023)|0x8000),data_027e0084,1);
-AddSprite(201,(u16)y3,(u16)(((ones+140)&1023)|0x8000),data_027e0084,1);
+if(tens)AddSprite(193,(u16)y3,(u16)(((tens+140)&1023)|0x8000),gSpriteDesc8x8,1);
+AddSprite(201,(u16)y3,(u16)(((ones+140)&1023)|0x8000),gSpriteDesc8x8,1);
 map=*gCurrentMap;show=1;
 if(map[0x5156]==0&&map[0x5158]!=2)show=1;
 else if(!(M2C_FIELD(map+mapOffset,u8 *,0x684f)&2)&&!data_02168f14[2])show=0;
 if(show){
 tens=hidden?10:func_0207c8ec(r.ammo,10);ones=hidden?10:r.ammo-tens*10;
-if(tens)AddSprite(193,(u16)y4,(u16)(((tens+140)&1023)|0x8000),data_027e0084,1);
-AddSprite(201,(u16)y4,(u16)(((ones+140)&1023)|0x8000),data_027e0084,1);
-for(j=0,n=r.count;j<n;j++){xDigit=(5-j)*8+206;digit=hidden?10:r.digits.values[j];AddSprite((u16)xDigit,(u16)y5,(u16)(((digit+140)&1023)|0x8000),data_027e0084,1);}
+if(tens)AddSprite(193,(u16)y4,(u16)(((tens+140)&1023)|0x8000),gSpriteDesc8x8,1);
+AddSprite(201,(u16)y4,(u16)(((ones+140)&1023)|0x8000),gSpriteDesc8x8,1);
+for(j=0,n=r.count;j<n;j++){xDigit=(5-j)*8+206;digit=hidden?10:r.digits.values[j];AddSprite((u16)xDigit,(u16)y5,(u16)(((digit+140)&1023)|0x8000),gSpriteDesc8x8,1);}
 }else{
-AddSprite(193,(u16)y4,0x8096,data_027e0084,1);
-AddSprite(201,(u16)y4,0x8096,data_027e0084,1);
-for(j=0;j<6;j++)AddSprite((u16)((5-j)*8+206),(u16)y5,0x8096,data_027e0084,1);
+AddSprite(193,(u16)y4,0x8096,gSpriteDesc8x8,1);
+AddSprite(201,(u16)y4,0x8096,gSpriteDesc8x8,1);
+for(j=0;j<6;j++)AddSprite((u16)((5-j)*8+206),(u16)y5,0x8096,gSpriteDesc8x8,1);
 }
 if(r.flags[2]&&!func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,0x5142))){
 a=r.second;b=a-6;if(b<0)b=0;

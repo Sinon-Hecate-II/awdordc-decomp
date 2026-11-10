@@ -476,14 +476,14 @@ void SetSpriteQuad(s32 a,s16 b,s16 c,s16 d,s16 e) {
 }
 
 void *func_01ff8e44(s32 a, s32 b) {
-    extern u8 data_027e0084[8];
+    extern u8 gSpriteDesc8x8[8];
     extern u8 data_027e006c[8];
     extern u8 data_027e009c[8];
-    extern u8 data_027e00a4[8];
+    extern u8 gSpriteDesc16x8[8];
     extern u8 data_027e0064[8];
     extern u8 data_027e0074[8];
     extern u8 data_027e007c[8];
-    extern u8 data_027e005c[8];
+    extern u8 gSpriteDesc32x16[8];
     extern u8 data_027e00ac[8];
     extern u8 data_027e0094[8];
     extern u8 data_027e00b4[8];
@@ -492,14 +492,14 @@ void *func_01ff8e44(s32 a, s32 b) {
     switch (a) {
     case 0x08:
         switch (b) {
-        case 0x08: return data_027e0084;
+        case 0x08: return gSpriteDesc8x8;
         case 0x10: return data_027e006c;
         case 0x20: return data_027e009c;
         }
         break;
     case 0x10:
         switch (b) {
-        case 0x08: return data_027e00a4;
+        case 0x08: return gSpriteDesc16x8;
         case 0x10: return data_027e0064;
         case 0x20: return data_027e0074;
         }
@@ -507,7 +507,7 @@ void *func_01ff8e44(s32 a, s32 b) {
     case 0x20:
         switch (b) {
         case 0x08: return data_027e007c;
-        case 0x10: return data_027e005c;
+        case 0x10: return gSpriteDesc32x16;
         case 0x20: return data_027e00ac;
         case 0x40: return data_027e0094;
         }

@@ -16,4 +16,36 @@ typedef struct GHIBuffer {
     s32  encrypted;     /* +0x20 pass writes through the connection encryptor */
 } GHIBuffer;
 
+/* Socket address passed to the NitroSDK-style socket wrappers: length byte,
+ * family byte, big-endian port, IPv4 address in network byte order. */
+typedef struct GhiSocketAddress {
+    u8  len;      /* +0x00 */
+    u8  family;   /* +0x01: AF_INET = 2 */
+    u16 port;     /* +0x02 */
+    u32 addr;     /* +0x04 */
+} GhiSocketAddress;
+
+/* GameSpy ghttp's per-request connection state machine.  Only the fields the
+ * game's matched code touches so far are named; the rest is padding. */
+typedef struct GHIConnection {
+    u8   pad00[0x10];
+    s32  state;            /* +0x10: GHTTPState */
+    u8   pad14[0x08];
+    u32  addr;             /* +0x1C: resolved IPv4 address, host order */
+    u16  port;             /* +0x20: port from the URL */
+    u16  pad22;
+    u8   pad24[0x14];
+    s32  result;           /* +0x38: GHTTPResult of a failed request */
+    u8   pad3C[0x0C];
+    s32  socket;           /* +0x48: SOCKET, -1 until created */
+    s32  lastSocketError;  /* +0x4C: saved errno of the last socket call */
+    u8   pad50[0xAC];
+    s32  completed;        /* +0xFC: nonzero once the request has finished */
+    u8   pad100[0x34];
+    s32  throttle;         /* +0x134: throttle the transfer with a small recv buffer */
+    u8   pad138[0x24];
+    char *serverOverride;  /* +0x15C: connect here instead of the URL host */
+    u16  portOverride;     /* +0x160: port used with serverOverride */
+} GHIConnection;
+
 #endif

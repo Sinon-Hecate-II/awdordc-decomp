@@ -12,10 +12,10 @@ static inline s32 UnitOwnerA4e08(u8 *p){return p?(UnitIndexA4e08(p)>>6)+1:0;}
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
-    void func_01ffada0(s32, s32, s32, s32, s32);
+    void FloodFillUnitRange(s32, s32, s32, s32, s32);
     void func_01ffb9c4(s8);
     s32 IsUnitOnCurrentTeam(s32);
-    s32 func_020ba924(s32, s32);
+    s32 GetTerrainPropertyFlagsAt(s32, s32);
     s32 func_ov000_021a43c4(void);
     s32 func_ov000_021a8784(s32);
     s32 IsCurrentPlayerUnit(s32);
@@ -39,7 +39,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     u8 kind;
     s32 ret;
 
-    func_01ffada0(arg0, arg1, 7, 0x6e, 0);
+    FloodFillUnitRange(arg0, arg1, 7, 0x6e, 0);
     func_01ffb9c4(0x6f);
 
     inner = *gCurrentMap;
@@ -90,7 +90,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
             rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
             unit = ((u8 *)inner + idx)[rowOff];
             if (unit == 0) continue;
-            if (func_020ba924(idx, outer) == 1) special = 1;
+            if (GetTerrainPropertyFlagsAt(idx, outer) == 1) special = 1;
             if (IsUnitOnCurrentTeam(unit) == 0) {
                 kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
                 {
@@ -132,17 +132,17 @@ s32 func_ov000_021a4dc4(void) {
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
-s32 GetUnitMoveRange(s32,u32);void func_01ffada0(s32,s32,s32,s32,s32);
+s32 GetUnitMoveRange(s32,u32);void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s8);s32 IsUnitOnCurrentTeam(s32);
 s32 GetUnitDamagePercent(u32,s32);s32 func_0207c8ec(s32,s32);
-s32 func_ov000_021a9820(s32,u32);s32 func_020a85c8(u32);
+s32 GetUnitMaxAttackRange(s32,u32);s32 func_020a85c8(u32);
 s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
 u8 flags=data_ov000_021b5c0f[kind*112];
 u16 health;
 u8 *unit;
 sum=0;max=0;health=0;
 if(flags&16){
-func_01ffada0(cx,cy,14,GetUnitMoveRange(M2C_FIELD(MAP,u16*,0x52a4),14),1);
+FloodFillUnitRange(cx,cy,14,GetUnitMoveRange(M2C_FIELD(MAP,u16*,0x52a4),14),1);
 for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(M2C_FIELD(MAP+y*4,s8**,0x52e8)[x]<0||!CELL(x,y,0x508)||!IsUnitOnCurrentTeam(CELL(x,y,0)))continue;
 { void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
@@ -160,7 +160,7 @@ if(kind==22&&KIND(unit)!=23)continue;
 if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(data_ov000_021b5bfc[kind*112+19]&16)){
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
-func_01ffada0(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
+FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
 func_01ffb9c4(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
 value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
@@ -171,13 +171,13 @@ if((((data_ov000_021b5bfc[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)
 ((u32)(kind-20)<=1&&(KIND(unit)==22||KIND(unit)==15||KIND(unit)==17))){
 
 M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
-func_01ffada0(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
+FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
 func_01ffb9c4(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
 value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
 }
-range=func_ov000_021a9820(UnitOwnerA4e08(unit),KIND(unit));
+range=GetUnitMaxAttackRange(UnitOwnerA4e08(unit),KIND(unit));
 if(range<=1)continue;
 if(range<distance&&!func_020a85c8(KIND(unit)))continue;
 range=data_ov000_021b5bfc[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
@@ -195,7 +195,7 @@ return sum+max;
  * influence layer across every valid cell unless the acting player already has a
  * type-23 marker on the map. */
 void MarkPlayerInfluence(u8 player){
-void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 GetUnitMoveRange(s32,u32);s32 IsUnitOnCurrentTeam(s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 GetUnitMoveRange(s32,u32);s32 IsUnitOnCurrentTeam(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 unitId,unitOffset; s32 scanX,scanY;u8 *unit;u8 *otherUnit;s32 x,y;void *base;s32 unitIndex,owner;u32 kind;
 M2C_FIELD(*gCurrentMap,u16*,0x52b6)=player;
@@ -204,7 +204,7 @@ do{
 base=*gCurrentMap;unit=(u8*)(base+0x59a4)+unitOffset;
 kind=(u32)(unit[0]<<26)>>26;if(!kind)goto next;if(kind!=22)goto next;
 if(unit){unitIndex=unit?((s32)(unit-(u8*)(base+0x59a4)))/14:0;owner=(unitIndex>>6)+1;}else owner=0;
-func_01ffada0(unit[1],unit[2],23,GetUnitMoveRange(owner,kind),33);func_01ffb9c4(111);
+FloodFillUnitRange(unit[1],unit[2],23,GetUnitMoveRange(owner,kind),33);func_01ffb9c4(111);
 base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++,base=*gCurrentMap){

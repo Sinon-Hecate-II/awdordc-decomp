@@ -153,19 +153,19 @@ void func_0205b050(void *arg0, s32 arg1) {
 }
 
 void func_0205b058(void *a,s32 b) {
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020ff7ec,data_020ff7e0,data_020ff7b0;
-if(!a)func_020640a8(&data_020ff7ec,&data_020ff7e0,&data_020ff7b0,0x1a3);
+if(!a)AssertFailed(&data_020ff7ec,&data_020ff7e0,&data_020ff7b0,0x1a3);
 M2C_FIELD(a,s32 *,0x40)=b;
 }
 
 s32 func_0205b094(void *arg0) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020ff7c8;
     extern M2C_UNK data_020ff7e0;
     extern M2C_UNK data_020ff7ec;
     if (arg0 == NULL) {
-        func_020640a8(&data_020ff7ec, &data_020ff7e0, &data_020ff7c8, 0x1AA);
+        AssertFailed(&data_020ff7ec, &data_020ff7e0, &data_020ff7c8, 0x1AA);
     }
     return M2C_FIELD(arg0, s32 *, 0x40);
 }
@@ -297,20 +297,14 @@ s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 func_0205a0d0();s32 func_0205cb4c();
 #pragma push
 #pragma opt_propagation off
 s32 func_0205b758(void *arg0) {
-    s32 var_r2;
-
-    if (func_0205cb4c() == 0) {
-        return 0;
-    }
-    if (M2C_FIELD(arg0, s32 *, 0xC) == 6) {
-        var_r2 = 0;
-    } else {
-        var_r2 = 1;
-    }
-    if (func_0205b110(arg0, 2, var_r2) == 0) {
-        return 0;
-    }
-    return 1;
+ s32 b;
+ if(func_0205cb4c()==0)return 0;
+ if(M2C_FIELD(arg0,s32*,12)!=6)goto nonzero;
+ b=0;goto call;
+ nonzero:b=1;
+ call:
+ if(func_0205b110(arg0,2,b)==0)return 0;
+ return 1;
 }
 #pragma pop
 /* Increment the object's command counter and dispatch one of its commands (0-6). */

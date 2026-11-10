@@ -7,23 +7,23 @@ extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020f
 #pragma opt_strength_reduction off
 s32 func_0205180c(void **a, void *b, char *text) {
 s32 func_0205817c(void **,char *,s32);
-s32 func_02058254(char *,M2C_UNK *,void *,s32);
-s32 func_0206ad38(char *);
+s32 GetStringField(char *,M2C_UNK *,void *,s32);
+s32 ParseInt(char *);
 M2C_UNK func_02055bc0(void **,s32);
-s32 func_02068fdc(char *,M2C_UNK *);
+s32 StringFind(char *,M2C_UNK *);
 M2C_UNK func_02058620(void **,s32,M2C_UNK *);
 M2C_UNK func_02050744(void **,s32,s32);
-s32 func_02068eac(char *,M2C_UNK *,s32);
+s32 StringCompareN(char *,M2C_UNK *,s32);
 s32 SendNewUserProfile(void **,void *);
 s32 func_020511dc(void **,void *);
-s32 func_020675e4(char *,M2C_UNK *,...);
+s32 StringFormat(char *,M2C_UNK *,...);
 s32 StringLength(char *);
-M2C_UNK func_020491bc(char *,s32,char *);
+M2C_UNK Md5Hex(char *,s32,char *);
 s32 func_0206527c(void *,void *,s32);
 s32 *func_02055aa0(void **,s32);
 void *func_02037794(s32);
 void func_02065210(void *,s32,s32);
-void func_020580fc(void *,void *,s32);
+void StringCopyN(void *,void *,s32);
 s32 gpiAddCallback(void **,Callback518,void *,void *,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 M2C_UNK func_02054484();
@@ -39,16 +39,16 @@ if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
 func_02055bc0(a,M2C_FIELD(p,s32 *,0x1a0));
 M2C_FIELD(p,s32 *,0x19c)=0;M2C_FIELD(p,s32 *,0x1a0)=0;
 }else if(M2C_FIELD(p,s32 *,0x418)==0x201){
-if(func_02058254(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
+if(GetStringField(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
 }
-if(func_02068fdc(text,&data_020fe56c)){func_02058620(a,M2C_FIELD(p,s32 *,0x418),p);func_02050744(a,4,1);return 4;}
+if(StringFind(text,&data_020fe56c)){func_02058620(a,M2C_FIELD(p,s32 *,0x418),p);func_02050744(a,4,1);return 4;}
 else {func_02058620(a,M2C_FIELD(p,s32 *,0x418),p);func_02050744(a,4,0);return 4;}
 }
 q=M2C_FIELD(b,void **,4);
 switch(M2C_FIELD(b,s32 *,20)){
 case 1:
-if(func_02068eac(text,&data_020fe574,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
-if(!func_02058254(text,&data_020fe488,q,128)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
+if(StringCompareN(text,&data_020fe574,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
+if(!GetStringField(text,&data_020fe488,q,128)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
 if(M2C_FIELD(q,s32 *,0x304)){
 result=SendNewUserProfile(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=3;
@@ -58,29 +58,29 @@ M2C_FIELD(b,s32 *,20)=2;
 }
 break;
 case 3:
-if(func_02068eac(text,&data_020fe5ac,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
-if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x19c)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
+if(StringCompareN(text,&data_020fe5ac,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
+if(!GetStringField(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
+if(!GetStringField(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
 result=func_020511dc(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=2;break;
 case 2:
-if(func_02068eac(text,&data_020fe5e4,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
-if(!func_02058254(text,&data_020fe5ec,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x198)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x19c)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
-if(!func_02058254(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
-if(!func_02058254(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
+if(StringCompareN(text,&data_020fe5e4,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
+if(!GetStringField(text,&data_020fe5ec,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+M2C_FIELD(p,s32 *,0x198)=ParseInt(work.buf);
+if(!GetStringField(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
+if(!GetStringField(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
+if(!GetStringField(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
+if(!GetStringField(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
 if(M2C_FIELD(q,s8 *,0xc2))chosen=(char *)q+0xc2;
 else if(M2C_FIELD(p,s8 *,0x12f))chosen=(char *)p+0x12f;
-else {func_020675e4(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
-func_020675e4(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
-func_020491bc(work.buf,StringLength(work.buf),work.hash);
-if(!func_02058254(text,&data_020fe600,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
+else {StringFormat(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
+StringFormat(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
+Md5Hex(work.buf,StringLength(work.buf),work.hash);
+if(!GetStringField(text,&data_020fe600,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 if(func_0206527c(work.hash,work.buf,32)){func_02058620(a,0x108,&data_020fe608);func_02050744(a,3,1);return 3;}
 if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
 M2C_FIELD(p,s32 *,0x1d8)=3;
@@ -90,7 +90,7 @@ q=func_02037794(32);
 if(!q){gpiSetErrorString((M2C_UNK)a,&data_020fe424);return 1;}
 func_02065210(q,0,32);
 M2C_FIELD(q,s32 *,4)=M2C_FIELD(p,s32 *,0x1a0);M2C_FIELD(q,s32 *,0)=0;
-func_020580fc((char *)q+8,work.token,21);
+StringCopyN((char *)q+8,work.token,21);
 result=gpiAddCallback(a,callback,q,b,0);
 if(result)return result;
 }
@@ -104,7 +104,7 @@ s32 func_02051ed0(void **arg0) {
 M2C_UNK func_02050744(void **,s32,s32);
 s32 func_0205835c(void **,s32,s32 *);
 M2C_UNK func_02058620(void **,s32,M2C_UNK *);
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fe200,data_020fe3c4,data_020fe628,data_020fe650;
 s32 state,result;void *p=*arg0;
 result=func_0205835c(arg0,M2C_FIELD(p,s32 *,0x1d4),&state);
@@ -114,7 +114,7 @@ func_02058620(arg0,0x107,&data_020fe628);
 func_02050744(arg0,4,1);return 4;
 }
 if(state==0)return 0;
-if(state!=3)func_020640a8(&data_020fe650,&data_020fe3c4,&data_020fe200,0x2ef);
+if(state!=3)AssertFailed(&data_020fe650,&data_020fe3c4,&data_020fe200,0x2ef);
 M2C_FIELD(p,s32 *,0x1d8)=2;
 return 0;
 }
@@ -135,7 +135,7 @@ extern u32 gGsKeyFinal;
 extern u32 data_020fe668;
 extern u32 data_020fe67c;
 extern s32 func_02051f74(void **, void *);
-void func_02052038(void **arg0, s32 arg1) {
+void gpiDisconnect(void **arg0, s32 arg1) {
     s32 v;
     void *temp_r4;
     s32 temp_r2;
@@ -227,38 +227,38 @@ s32 func_02052200(s32 day,s32 month,s32 year){
 s32 func_02052360(M2C_UNK arg0,s32 arg1,s32 *arg2,s32 *arg3,s32 *arg4){
 s32 func_02052200(s32,s32,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fe680,data_020fe6a4,data_020fe6b0,data_020fe6c0;
 s32 hi=(u8)(arg1>>24),mid=(u8)(arg1>>16);
 s32 low=(u16)arg1;
-if(!func_02052200(hi,mid,low))func_020640a8(&data_020fe6c0,&data_020fe6a4,&data_020fe680,0xb7);
+if(!func_02052200(hi,mid,low))AssertFailed(&data_020fe6c0,&data_020fe6a4,&data_020fe680,0xb7);
 if(!func_02052200(hi,mid,low)){gpiSetErrorString(arg0,&data_020fe6b0);return 2;}
 *arg2=hi;*arg3=mid;*arg4=low;
 return 0;
 }
 
 void func_02052408(u8 *src,u8 *dst){
-void func_020580fc(void *,void *,s32);
+void StringCopyN(void *,void *,s32);
 void *p;
-p=*(void **)(src+0);if(!p)dst[8]=0;else func_020580fc(dst+8,p,31);
-p=*(void **)(src+4);if(!p)dst[39]=0;else func_020580fc(dst+39,p,21);
-p=*(void **)(src+8);if(!p)dst[60]=0;else func_020580fc(dst+60,p,51);
-p=*(void **)(src+12);if(!p)dst[111]=0;else func_020580fc(dst+111,p,31);
-p=*(void **)(src+16);if(!p)dst[142]=0;else func_020580fc(dst+142,p,31);
-p=*(void **)(src+20);if(!p)dst[173]=0;else func_020580fc(dst+173,p,76);
+p=*(void **)(src+0);if(!p)dst[8]=0;else StringCopyN(dst+8,p,31);
+p=*(void **)(src+4);if(!p)dst[39]=0;else StringCopyN(dst+39,p,21);
+p=*(void **)(src+8);if(!p)dst[60]=0;else StringCopyN(dst+60,p,51);
+p=*(void **)(src+12);if(!p)dst[111]=0;else StringCopyN(dst+111,p,31);
+p=*(void **)(src+16);if(!p)dst[142]=0;else StringCopyN(dst+142,p,31);
+p=*(void **)(src+20);if(!p)dst[173]=0;else StringCopyN(dst+173,p,76);
 *(s32 *)(dst+252)=*(s32 *)(src+24);
-func_020580fc(dst+256,src+28,11);
-func_020580fc(dst+267,src+39,3);
+StringCopyN(dst+256,src+28,11);
+StringCopyN(dst+267,src+39,3);
 p=src+52;
 *(s32 *)(dst+272)=*(s32 *)(src+44);
 *(s32 *)(dst+276)=*(s32 *)(src+48);
-if(!p)dst[280]=0;else func_020580fc(dst+280,p,128);
+if(!p)dst[280]=0;else StringCopyN(dst+280,p,128);
 *(s32 *)(dst+408)=*(s32 *)(src+180);
 *(s32 *)(dst+412)=*(s32 *)(src+184);
 *(s32 *)(dst+416)=*(s32 *)(src+188);
 *(s32 *)(dst+420)=*(s32 *)(src+192);
 *(s32 *)(dst+424)=*(s32 *)(src+196);
-p=*(void **)(src+200);if(!p)dst[428]=0;else func_020580fc(dst+428,p,51);
+p=*(void **)(src+200);if(!p)dst[428]=0;else StringCopyN(dst+428,p,51);
 *(s32 *)(dst+252)=*(s32 *)(src+24);
 *(s32 *)(dst+272)=*(s32 *)(src+44);
 *(s32 *)(dst+276)=*(s32 *)(src+48);

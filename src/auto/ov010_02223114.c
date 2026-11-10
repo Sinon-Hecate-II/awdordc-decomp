@@ -10,7 +10,7 @@ s32 func_ov010_02223114(void) {
     void func_ov010_022235a4();
     M2C_UNK func_ov010_02223624(void *, void *, s32);
     s32 func_ov010_02223764(void *, u8);
-    M2C_UNK func_ov010_02224ef8();
+    M2C_UNK Link_FreePacket();
     s32 i;
     s32 type;
     s32 count;
@@ -36,7 +36,7 @@ s32 func_ov010_02223114(void) {
             }
             M2C_FIELD(item, void **, 0x474) = (s8 *)item + 0x1C;
             func_ov010_02223478(item);
-            if (func_ov010_02223764(item, M2C_FIELD(item, u8 *, 0x11)) < 0) func_ov010_02224ef8(item);
+            if (func_ov010_02223764(item, M2C_FIELD(item, u8 *, 0x11)) < 0) Link_FreePacket(item);
             i++;
         } while (i < count);
     }
@@ -90,14 +90,14 @@ void func_ov010_022232e0(void) {
 void func_ov010_02223314(s32 arg0) {
     void *func_ov010_02223440(s32);
     M2C_UNK func_ov010_02223478(void *);
-    M2C_UNK func_ov010_02224ef8();
+    M2C_UNK Link_FreePacket();
     extern s32 data_ov010_0222d880[];
     void *item;
     item = func_ov010_02223440(arg0);
     if (item != NULL) {
         do {
             func_ov010_02223478(item);
-            func_ov010_02224ef8(item);
+            Link_FreePacket(item);
             item = func_ov010_02223440(arg0);
         } while (item != NULL);
     }
@@ -105,12 +105,12 @@ void func_ov010_02223314(s32 arg0) {
 }
 
 void func_ov010_0222335c(void) {
-M2C_UNK func_ov010_02224ef8();
+M2C_UNK Link_FreePacket();
 extern s32 data_ov010_0222d878;
 extern s32 data_ov010_0222d880[];
 void *p=(void *)data_ov010_0222d878;
 s32 i;
-while(p) { void *old=p; p=M2C_FIELD(p,void **,8); func_ov010_02224ef8(old); }
+while(p) { void *old=p; p=M2C_FIELD(p,void **,8); Link_FreePacket(old); }
 for(i=0;i<3;i++) data_ov010_0222d880[i]=0;
 }
 
@@ -202,29 +202,29 @@ OS_RestoreInterrupts(v);
 }
 
 void func_ov010_0222369c(s32 arg0) {
-    void *func_ov010_02223878(s32);
-    M2C_UNK func_ov010_022238c0(s32);
-    M2C_UNK func_ov010_02224ef8(void *);
+    void *Link_PeekPacket(s32);
+    M2C_UNK Link_PopPacket(s32);
+    M2C_UNK Link_FreePacket(void *);
     extern s32 data_ov010_0222d89c[];
     void *item;
-    item = func_ov010_02223878(arg0);
+    item = Link_PeekPacket(arg0);
     if (item != NULL) {
         do {
-            func_ov010_022238c0(arg0);
-            func_ov010_02224ef8(item);
-            item = func_ov010_02223878(arg0);
+            Link_PopPacket(arg0);
+            Link_FreePacket(item);
+            item = Link_PeekPacket(arg0);
         } while (item != NULL);
     }
     data_ov010_0222d89c[arg0] = 0;
 }
 
 void func_ov010_022236e4(void) {
- s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_UNK func_ov010_02224ef8(void *);
+ s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_UNK Link_FreePacket(void *);
  extern s32 data_ov010_0222d88c,data_ov010_0222d890[],data_ov010_0222d89c[];
  s32 i;void *node;void *next;
  data_ov010_0222d88c=OS_DisableInterrupts();
  i=0;goto check;
- loop: node=(void *)data_ov010_0222d890[i];while(node){next=M2C_FIELD(node,void **,8);data_ov010_0222d890[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;func_ov010_02224ef8(node);node=(void *)data_ov010_0222d890[i];}data_ov010_0222d89c[i]=0;i++;
+ loop: node=(void *)data_ov010_0222d890[i];while(node){next=M2C_FIELD(node,void **,8);data_ov010_0222d890[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;Link_FreePacket(node);node=(void *)data_ov010_0222d890[i];}data_ov010_0222d89c[i]=0;i++;
  check:if(i<3)goto loop;
  OS_RestoreInterrupts(data_ov010_0222d88c);
 }
@@ -266,7 +266,7 @@ data_ov010_0222d89c[group]++;
 OS_RestoreInterrupts(data_ov010_0222d88c);
 return data_ov010_0222d89c[group];
 }
-void *func_ov010_02223878(s32 arg0) {
+void *Link_PeekPacket(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern s32 data_ov010_0222d88c;
@@ -280,7 +280,7 @@ void *func_ov010_02223878(s32 arg0) {
     return NULL;
 }
 
-s32 func_ov010_022238c0(s32 arg0) {
+s32 Link_PopPacket(s32 arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern s32 data_ov010_0222d88c;
@@ -301,7 +301,7 @@ s32 func_ov010_022238c0(s32 arg0) {
     return data_ov010_0222d89c[arg0];
 }
 
-s32 func_ov010_0222392c(s32 arg0) {
+s32 Link_GetQueueCount(s32 arg0) {
     extern s32 data_ov010_0222d89c[];
     return data_ov010_0222d89c[arg0];
 }
@@ -335,21 +335,21 @@ void func_ov010_0222393c(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov010_022239c8(void *arg0) {
-    M2C_UNK func_ov010_02224ef8();
+    M2C_UNK Link_FreePacket();
     if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        func_ov010_02224ef8();
+        Link_FreePacket();
         M2C_FIELD(arg0, s32 *, 0x3C) = 0;
     }
     M2C_FIELD(arg0, s32 *, 0x38) = -1;
 }
 
-void func_ov010_022239f4(void *arg0, s32 arg1) {
-    M2C_UNK func_ov010_022238c0(s32);
+void Link_AdvancePacket(void *arg0, s32 arg1) {
+    M2C_UNK Link_PopPacket(s32);
     if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        func_ov010_02224ef8();
+        Link_FreePacket();
     }
     M2C_FIELD(arg0, s32 *, 0x3C) = arg1;
-    func_ov010_022238c0(M2C_FIELD(arg0, s32 *, 0x34));
+    Link_PopPacket(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 void func_ov010_02223a20(void *arg0, u32 arg1) {

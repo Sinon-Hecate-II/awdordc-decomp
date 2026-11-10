@@ -2,10 +2,10 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 *data_ov000_021df580;
-void func_01ffc328(void *);
+void BuildUnitMoveRange(void *);
 void func_01ffb9c4(int);
 int func_020d27a4(int,int);
-int IsFootUnitKind(int);int func_ov000_021a98e4(int);
+int IsFootUnitKind(int);int GetUnitAttackClass(int);
 int func_ov000_021a8a88(void *);
 int func_ov000_021a93ec(s16,s16);
 int func_ov000_02177f24(int,int,s16 *);
@@ -61,13 +61,13 @@ void func_ov000_02190f74(void){
 #pragma push
 #pragma opt_common_subs off
 extern void **gCurrentMap;
-void func_01ffc328(void *);
+void BuildUnitMoveRange(void *);
 s32 IsCurrentPlayerUnit(s16);
 s32 func_0207c8ec(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a91d0(u8);
 s32 id; Unit1911 *unit; s32 x,y,h,cur; Map1911 *map;
-func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
+BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 map=*gCurrentMap;
@@ -95,12 +95,12 @@ void func_ov000_021911bc(void){
 #pragma push
 #pragma opt_common_subs off
 extern void **gCurrentMap;
-void func_01ffc328(void *);
+void BuildUnitMoveRange(void *);
 s32 IsCurrentPlayerUnit(s16);
 s32 func_0207c8ec(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 id,x,y,h,cur;Map1911 *map;Unit1911 *unit;
-func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
+BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 map=*gCurrentMap;
@@ -131,7 +131,7 @@ void func_ov000_0219137c(void){
  int y,x;
  Map1911 *map;Unit1911 *unit;
  s16 position[2];
- func_01ffc328(((Map1911 *)*gCurrentMap)->selected);
+ BuildUnitMoveRange(((Map1911 *)*gCurrentMap)->selected);
  func_01ffb9c4(111);
  for(y=0;y<((Map1911 *)*gCurrentMap)->height;y++){
  for(x=0;x<((Map1911 *)*gCurrentMap)->width;x++){
@@ -146,7 +146,7 @@ void func_ov000_0219137c(void){
  if(unit->kind==0)continue;
  if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),unit?unit-(Unit1911 *)((u8 *)map+0x59a4):0)==1)continue;
  if(!IsFootUnitKind(unit->kind)){
- if(func_ov000_021a98e4(unit->kind)==1)goto candidate_checks;
+ if(GetUnitAttackClass(unit->kind)==1)goto candidate_checks;
  if(!IsFootUnitKind(((Map1911 *)*gCurrentMap)->selected->kind))goto candidate_checks;
  switch(((Map1911 *)*gCurrentMap)->selected->flags2){case 0:continue;default:goto candidate_checks;}
  }else if(!func_ov000_021a8a88(unit)){

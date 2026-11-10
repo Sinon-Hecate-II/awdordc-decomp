@@ -24,7 +24,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208168c(s32, M2C_UNK);
     M2C_UNK func_020822b8(u16 *);
-    M2C_UNK func_02082770();
+    M2C_UNK Reset3DSpriteBankState();
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -140,7 +140,7 @@ void func_ov004_02217f5c(void *arg0) {
     temp_r0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp1C = temp_r0;
     *sp1C = *sp1C | 0x100;
-    func_02082770();
+    Reset3DSpriteBankState();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -160,7 +160,7 @@ void func_ov004_02217f5c(void *arg0) {
     temp_r0_2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp8 = temp_r0_2;
     *sp8 = *sp8 | 0x100;
-    func_02082770();
+    Reset3DSpriteBankState();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
     gCur3DSpriteEngine = g3DSpriteEngineMain;

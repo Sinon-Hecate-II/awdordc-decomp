@@ -409,11 +409,11 @@ s32 func_ov010_02228678(M2C_UNK *arg0) {
 
 void func_ov010_022286cc(void *arg0) {
     M2C_UNK func_ov010_0222866c(M2C_UNK);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     if (func_ov010_0222866c(M2C_FIELD(arg0, s32 *, 0x34)) != 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_ov010_022286f0(void *arg0) {

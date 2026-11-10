@@ -104,7 +104,7 @@ extern KindScan96 data_ov000_021b5bfc[];
 extern u8 *data_ov000_021df580;
 s32 func_ov000_02178e84(s32,s32);
 void FillMapLayer(s32);
-s32 func_ov000_021a98e4(u32);
+s32 GetUnitAttackClass(u32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 func_020a76d4(void *);
 u32 func_ov000_0219694c(s32,s32);
@@ -117,7 +117,7 @@ FillMapLayer(0);
 i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
 if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
 u=(u8 *)*gCurrentMap+0x59a4+off;
-if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||func_ov000_021a98e4((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
+if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||GetUnitAttackClass((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
 if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,7)){
 l=u[1]-func_020a76d4(u)<0?0:u[1]-func_020a76d4(u);
 t=u[2]-func_020a76d4(u)<0?0:u[2]-func_020a76d4(u);
@@ -152,12 +152,12 @@ if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2
 #pragma opt_strength_reduction reset
 void func_ov000_021972e0(void) {
 extern void **gCurrentMap;
-void func_01ffada0(s32,s32,s32,s32,s32);
+void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void PlanMoveDestination(s32,s32);
 Map972e0 *base; u8 *unit; s32 x, y, bestX, bestY, best;
 base=*gCurrentMap;
 unit=M2C_FIELD(base,u8 **,0x52d0);
-func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,0);
+FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,0);
 base=*gCurrentMap;
 if (M2C_FIELD(M2C_FIELD(base,void **,0x52f8),s8 *,0)>=0) {PlanMoveDestination(0,4); return;}
 bestX=-1; best=32767;
@@ -270,12 +270,12 @@ s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
     s32 func_ov000_02197434(s32, s32);
     s32 func_ov000_02197470(s32, M2C_UNK, M2C_UNK);
     s32 func_ov000_0219763c(s32, void *, s32);
-    s32 func_ov000_021a98e4(u32);
+    s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
     extern u8 data_ov000_021e0a58[];
     void *base;
     s32 v, result, old;
-    if (func_ov000_021a98e4((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26)) {
+    if (GetUnitAttackClass((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26)) {
         base = *gCurrentMap;
         return M2C_FIELD((u8 *)base + (x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)), u8 *, 0x2840);
     }

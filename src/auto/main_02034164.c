@@ -55,14 +55,14 @@ return 0;
 }
 
 s32 func_020345f4(Unk02034164 *obj,int a,int b) {
- void func_020651c4(void *,void *,int); char *func_02068fdc(int,void *); int func_02034908(s32,void *,s32);
+ void func_020651c4(void *,void *,int); char *StringFind(int,void *); int func_02034908(s32,void *,s32);
  Buffer02034164 *buf=(Buffer02034164 *)obj->buffer;
  int n=StringLength(b); unsigned int fmt=StringLength((int)&data_020fb674);
  signed char save; char *p; int room;
  n+= (int)((fmt-4)+(unsigned int)StringLength(a));
  room=buf->end-buf->current;
  if(n+1>room && func_02034908((int)obj,buf,n-room+1)==0)return 1;
- p=func_02068fdc(buf->start,&data_020fb59c)+2;
+ p=StringFind(buf->start,&data_020fb59c)+2;
  save=*p;
  func_020651c4(p+n,p,StringLength((int)p)+1);
  p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
@@ -174,33 +174,33 @@ s32 func_02034908(s32 a,void *arg,s32 c){extern M2C_UNK data_020fb6b8;extern M2C
 
 #pragma opt_common_subs off
 s32 func_020349b0(Unk02034164 *p,s32 text) {
-void func_02068d18(s32,s32,s32);char *func_02068fdc(int,void *);s32 func_0206ad38(char *);
+void func_02068d18(s32,s32,s32);char *StringFind(int,void *);s32 ParseInt(char *);
 extern M2C_UNK data_020fb6c8,data_020fb6d0,data_020fb6dc,data_020fb6e0;
 char *port=0,*q,*path;u32 n;
 if((u32)StringLength(text)>=256)return 0;
 func_02068d18((s32)p->url,text,256);
 n=StringLength(text);
 if(n!=StringLength((s32)p->url))return 0;
-q=func_02068fdc((s32)p->url,&data_020fb6c8);
+q=StringFind((s32)p->url,&data_020fb6c8);
 if(q){
 p->unk1124=(s32)(p->url+7);
 p->unk1130=0;p->unk1134=80;
 }else{
-q=func_02068fdc((s32)p->url,&data_020fb6d0);
+q=StringFind((s32)p->url,&data_020fb6d0);
 if(!q)return 0;
 p->unk1124=(s32)(q+8);
 p->unk1130=1;p->unk1134=443;
 }
-q=func_02068fdc(p->unk1124,&data_020fb6dc);
+q=StringFind(p->unk1124,&data_020fb6dc);
 if(q){*q=0;port=q+1;}
-q=func_02068fdc(p->unk1124,&data_020fb6e0);
+q=StringFind(p->unk1124,&data_020fb6e0);
 if(!q)p->unk1128=0;else{*q=0;p->unk1128=(s32)(q+1);}
-if(port)p->unk1134=func_0206ad38(port);
+if(port)p->unk1134=ParseInt(port);
 return 1;
 }
 #pragma opt_common_subs reset
 s32 func_02034b04(Unk02034164 *obj,Buffer02034164 *buf,s32 a,s32 b) {
-void func_02068c50(void *,s32);
+void StringCopy(void *,s32);
 extern M2C_UNK data_020fb6e4,data_020fb704,data_020fb724,data_020fb740;
 s32 (*alloc)(M2C_UNK *,s32)=obj->alloc;
 M2C_UNK (*free)(M2C_UNK *,s32,s32)=obj->free;
@@ -209,8 +209,8 @@ if(buf->end>buf->current)return 0;
 if(((Pair02034164 *)buf->start)[buf->end].first){
 ((Pair02034164 *)buf->start)[buf->end].second=alloc(&data_020fb704,StringLength(b)+1);
 if(((Pair02034164 *)buf->start)[buf->end].second){
-func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].first,a);
-func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].second,b);
+StringCopy((void *)((Pair02034164 *)buf->start)[buf->end].first,a);
+StringCopy((void *)((Pair02034164 *)buf->start)[buf->end].second,b);
 buf->end++;return 1;}}
 if(((Pair02034164 *)buf->start)[buf->end].first){free(&data_020fb724,((Pair02034164 *)buf->start)[buf->end].first,0);((Pair02034164 *)buf->start)[buf->end].first=0;}
 if(((Pair02034164 *)buf->start)[buf->end].second){free(&data_020fb740,((Pair02034164 *)buf->start)[buf->end].second,0);((Pair02034164 *)buf->start)[buf->end].second=0;}
@@ -218,29 +218,29 @@ return 0;
 }
 
 s32 func_02034c58(Unk02034164 *arg0,s32 arg1) {
-char *func_02068fdc(s32,void*); s32 func_02068eac(s32,void*,s32); s32 StringLength(s32); M2C_UNK func_02007f8c(void*,s32,s32);
+char *StringFind(s32,void*); s32 StringCompareN(s32,void*,s32); s32 StringLength(s32); M2C_UNK func_02007f8c(void*,s32,s32);
 extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,data_020fb5cc,data_020fb770,data_020fb774,data_020fb778;
 s32 buf[3]; char *base,*end,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
 buf[0]=(s32)((u8*)arg0+0x1a38);buf[1]=32;buf[2]=0;
 func_02007f8c((void*)buf[0],0,256);
 input=M2C_FIELD(arg0,s32*,0x1a08);
-base=func_02068fdc(input,&data_020fb59c);
+base=StringFind(input,&data_020fb59c);
 if(!base)return 0;
 end=base+4+StringLength((s32)(base+4));
-colon=func_02068fdc(input,&data_020fb75c);
+colon=StringFind(input,&data_020fb75c);
 if(!colon)return 0;
 save=colon[4];colon[4]='\0';
 result=func_02034b04(arg0,(Buffer02034164*)buf,(s32)&data_020fb760,(s32)(colon+1));
 colon[4]=save;
 if(result!=1)return 0;
-if(arg1==1 || func_02068eac((s32)(colon+1),&data_020fb76c,3)!=0)return 1;
-p=func_02068fdc((s32)(colon+5),&data_020fb5cc);
+if(arg1==1 || StringCompareN((s32)(colon+1),&data_020fb76c,3)!=0)return 1;
+p=StringFind((s32)(colon+5),&data_020fb5cc);
 if(!p)return 0;
 p+=2;
 while(!(p[0]==13 || p[1]==10)){
-colon=func_02068fdc((s32)p,&data_020fb770);if(!colon)break;
+colon=StringFind((s32)p,&data_020fb770);if(!colon)break;
 save=*colon;*colon=0;value=colon+2;
-term=func_02068fdc((s32)value,&data_020fb5cc);
+term=StringFind((s32)value,&data_020fb5cc);
 if(!term){*colon=save;break;}
 save2=*term;*term=0;
 if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
@@ -249,10 +249,10 @@ result=StringLength((s32)value);
 }
 p=base+4;
 while(p<end){
-colon=func_02068fdc((s32)p,&data_020fb774);if(!colon)break;
+colon=StringFind((s32)p,&data_020fb774);if(!colon)break;
 save=*colon;*colon=0;value=colon+1;
-term=func_02068fdc((s32)value,&data_020fb778);
-if(!term)term=func_02068fdc((s32)value,&data_020fb5cc);
+term=StringFind((s32)value,&data_020fb778);
+if(!term)term=StringFind((s32)value,&data_020fb5cc);
 if(term){save2=*term;*term=0;}
 if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
 result=StringLength((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;
@@ -263,11 +263,11 @@ return 1;
 #pragma opt_propagation on
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-s32 func_02034ef8(void *a,s32 b){s32 func_02068d98(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(func_02068d98(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
+s32 func_02034ef8(void *a,s32 b){s32 StringCompare(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(StringCompare(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
 #pragma optimize_ifs off
 s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 StringLength(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,StringLength(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
 #pragma optimize_ifs reset
-s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 StringLength(s32);void func_02068c50(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;func_02068c50(c,p);return 1;}
+s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;StringCopy(c,p);return 1;}
 
 void func_02034fe4(void *arg0, void *arg1, s32 arg2) {
 extern M2C_UNK data_020fb77c; extern M2C_UNK data_020fb798;

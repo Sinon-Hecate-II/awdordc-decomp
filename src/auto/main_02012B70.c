@@ -109,7 +109,7 @@ s32 func_02012f40(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 s32 func_02012fac(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
 s32 func_020114b4();s32 func_02011934(void);s32 func_02011994(void);
-void func_02007e98(s32,void *,s32);s32 func_02076614(s32);s32 func_02011a20(u16,s32,s32);
+void func_02007e98(s32,void *,s32);s32 CountBits(s32);s32 func_02011a20(u16,s32,s32);
 void func_02013668(void *);void func_02013794(void *);void func_02013590(void *);
 s32 mode,mask=1,result,i,opt;u32 bits;u16 *p;u8 *block;
 result=func_020114b4(2,9,10);if(result)return result;
@@ -121,7 +121,7 @@ p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;p[7]=0;
 bits=flags|(1<<mode);
 opt=option?1:0;((u16 *)(buffer+0x800))[12]=opt;
 bits=(u16)bits;((u16 *)(buffer+0x800))[7]=bits;
-result=func_02076614(bits);p=(u16 *)(buffer+0x800);
+result=CountBits(bits);p=(u16 *)(buffer+0x800);
 p[9]=result;p[10]=count*result;
 if((u32)p[10]>508){p[7]=0;return 6;}
 p[10]+=4;p[14]=1;
@@ -366,8 +366,8 @@ return func_02013afc(arg0,a,(s32)arg1+4,arg2);
 }
 #pragma scheduling reset
 s32 func_02013afc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_02076614(s32);
-    return (M2C_FIELD(arg0, u16 *, 0x810) * func_02076614(arg1 & ((1 << arg3) - 1))) + arg2;
+    s32 CountBits(s32);
+    return (M2C_FIELD(arg0, u16 *, 0x810) * CountBits(arg1 & ((1 << arg3) - 1))) + arg2;
 }
 
 void func_02013b2c(M2C_UNK arg0, M2C_UNK arg1) {

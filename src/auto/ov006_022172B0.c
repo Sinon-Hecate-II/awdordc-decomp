@@ -3,7 +3,7 @@
 typedef struct { s32 v[4]; } Ov006Date;
 extern const Ov006Date data_ov006_02218394;
 
-void func_ov006_022172b0(M2C_UNK arg0) {s8 func_020848c4(); u8 func_020848f8(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_022172b0(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *func_01ffa42c(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=func_01ffa42c(&data_ov006_02218918,arg0);
@@ -12,7 +12,7 @@ M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=3;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
 M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
-M2C_FIELD(p,u8 *,0x4d)=func_020848f8();
+M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;
 do {
@@ -23,7 +23,7 @@ i++;
 }
 }
 
-void func_ov006_0221734c(M2C_UNK arg0,s32 arg1,s32 arg2) {s8 func_020848c4(); u8 func_020848f8(); s32 func_020c7e58(M2C_UNK);
+void func_ov006_0221734c(M2C_UNK arg0,s32 arg1,s32 arg2) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);
 void *func_01ffa42c(void *,M2C_UNK);
 extern M2C_UNK data_ov006_0221890c,data_ov006_02218918;
 u8 i; void *p=func_01ffa42c(&data_ov006_02218918,arg0);
@@ -32,7 +32,7 @@ M2C_FIELD(p,void **,0)=&data_ov006_0221890c;
 M2C_FIELD(p,u8 *,0x34)=4;
 M2C_FIELD(p,s32 *,0x50)=0;M2C_FIELD(p,s32 *,0x54)=0;
 M2C_FIELD(p,s8 *,0x4c)=func_020848c4();
-M2C_FIELD(p,u8 *,0x4d)=func_020848f8();
+M2C_FIELD(p,u8 *,0x4d)=GetReadyPlayerMask();
 M2C_FIELD(p,s32 *,0x38)=func_020c7e58(0);
 i=0;
 do {
@@ -489,12 +489,12 @@ void func_ov006_02217de4(void *arg0) {
 }
 
 void func_ov006_02217e78(void *arg0) {
-M2C_UNK func_020675e4(void *,void *,s32,s32); M2C_UNK func_02084d1c(s32); M2C_UNK func_020899fc(void *,s32,s32,void *); s32 func_020c9244(s32,s32); s32 func_020c9268(s32,s32); 
+M2C_UNK StringFormat(void *,void *,s32,s32); M2C_UNK func_02084d1c(s32); M2C_UNK func_020899fc(void *,s32,s32,void *); s32 func_020c9244(s32,s32); s32 func_020c9268(s32,s32); 
 extern M2C_UNK data_ov006_02218dd4;
 u8 sp0[64]; s32 x,y; void *p;
 switch(M2C_FIELD(arg0,u8 *,0x3b)) {
 case 1: func_02084d1c(M2C_FIELD(arg0,s32 *,0x3c)); return;
-case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); y=func_020c9268(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); func_02084d1c(x); func_020675e4(sp0,&data_ov006_02218dd4,x,y); p=(void *)func_0208b564(arg0); func_020899fc(p,2,0xcc00,sp0); M2C_FIELD(p,s32 *,0x58)|=0x400; return;
+case 2: x=func_020c9244(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); y=func_020c9268(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40)); func_02084d1c(x); StringFormat(sp0,&data_ov006_02218dd4,x,y); p=(void *)func_0208b564(arg0); func_020899fc(p,2,0xcc00,sp0); M2C_FIELD(p,s32 *,0x58)|=0x400; return;
 }}
 
 void func_ov006_02217f20(void *arg0) {

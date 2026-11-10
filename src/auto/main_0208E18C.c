@@ -15,7 +15,7 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     extern s32 gCur3DSpriteEngine;
     extern u32 data_020f35c8[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc8x8[];
     extern s16 gSinCosTable[];
     s32 tbl[25];
     s32 i;
@@ -27,20 +27,20 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
     r7 = a0 & 0x3ff;
     r4 = a1 & 0xff;
-    AddSprite((u16)r7, (u8)r4, (u16)(a4 + ((0x54 >> sh) & 0x3ff)), data_027e0084, (u8)a5);
+    AddSprite((u16)r7, (u8)r4, (u16)(a4 + ((0x54 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
 
     v8 = a0 + a2 - 8;
     r4 = v8 & 0x1ff;
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)r4, (u8)a1, (u16)(a4 + ((0x56 >> sh) & 0x3ff)), data_027e0084, (u8)a5);
+    AddSprite((u16)r4, (u8)a1, (u16)(a4 + ((0x56 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
 
     vc = a1 + a3 - 8;
     r7 = vc & 0xff;
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)(a0 & 0x3ff), (u8)r7, (u16)(a4 + ((0x58 >> sh) & 0x3ff)), data_027e0084, (u8)a5);
+    AddSprite((u16)(a0 & 0x3ff), (u8)r7, (u16)(a4 + ((0x58 >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
 
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    AddSprite((u16)r4, (u8)r7, (u16)(a4 + ((0x5a >> sh) & 0x3ff)), data_027e0084, (u8)a5);
+    AddSprite((u16)r4, (u8)r7, (u16)(a4 + ((0x5a >> sh) & 0x3ff)), gSpriteDesc8x8, (u8)a5);
 
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
     DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
@@ -127,7 +127,7 @@ void DrawTimerDigits(s16 x, s32 y, u16 baseTile, u8 priority, s32 value) {
 s32 func_0207c8ec(s32,s32);
 void AddSprite(u16,u16,u16,void *,u8);
 extern s32 gCur3DSpriteEngine;
-extern u8 data_027e00a4[],data_027e0084[];
+extern u8 gSpriteDesc16x8[],gSpriteDesc8x8[];
 s32 minutes,centis;
 u16 sy;
 const s32 mask=0x3ff;
@@ -135,17 +135,17 @@ minutes=func_0207c8ec(value,60);
 centis=func_0207c8ec((value%60)*100,60);
 if(value<600)baseTile+=(32>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask;
 sy=(u16)y;
-AddSprite((u16)x,sy,(u16)(baseTile+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e00a4,priority);
+AddSprite((u16)x,sy,(u16)(baseTile+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc16x8,priority);
 x+=48;
-AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
 centis=func_0207c8ec(centis,10);
-AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
-AddSprite((u16)x,sy,(u16)(baseTile+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+AddSprite((u16)x,sy,(u16)(baseTile+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
 do{
-AddSprite((u16)x,sy,(u16)(baseTile+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+AddSprite((u16)x,sy,(u16)(baseTile+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 minutes=func_0207c8ec(minutes,10);
 x-=8;
 }while(minutes!=0);

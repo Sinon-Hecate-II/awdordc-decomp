@@ -8,7 +8,7 @@ void func_ov000_0216d2b4(void *arg0) {
 extern void *data_ov000_021df5e0;extern void **gCurrentMap;
 extern const u8 data_ov000_021adcfc[];
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-extern u8 data_027e0064[],data_027e0084[],data_027e00a4[],data_02101f0c[];
+extern u8 data_027e0064[],gSpriteDesc8x8[],gSpriteDesc16x8[],data_02101f0c[];
 s32 func_020a334c(s32);void AddSprite(u16,u16,u16,void *,s32);
 s32 y,v,topIndex,topX,x,unit,owner,i,palette,tile,t,colorIndex;void *old,*p; u8 colors[6]; u8 c0,c1,c2,c3,c4,c5;
 p=data_ov000_021df5e0;unit=M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,13));owner=func_020a334c(unit);
@@ -31,19 +31,19 @@ x=i%4*64;y=i/4*20;v=func_020a866c(i);if(!v)continue;
 tile=func_020a72b0(0,v)+437;
 AddSprite((u16)((x+2)&mx1),(u8)(y+18),(u16)(((tile)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt1)|((u32)((palette+11)<<28)>>16)),data_027e0064,0);
 
-if((s8)func_020a2868(v,unit,owner)>0){AddSprite((u16)((x+28)&mx2),(u8)(y+19),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt2)|0x6000),data_027e0084,0);
+if((s8)func_020a2868(v,unit,owner)>0){AddSprite((u16)((x+28)&mx2),(u8)(y+19),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt2)|0x6000),gSpriteDesc8x8,0);
 }
-if((s8)func_020a28f4(v,unit,owner)>0){AddSprite((u16)((x+28)&mx3),(u8)(y+28),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt3)|0x6000),data_027e0084,0);
+if((s8)func_020a28f4(v,unit,owner)>0){AddSprite((u16)((x+28)&mx3),(u8)(y+28),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt3)|0x6000),gSpriteDesc8x8,0);
 }
 t=(s8)func_020a296c(v,unit,owner);
-if(t==1){AddSprite((u16)((x+47)&mx4),(u8)(y+19),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt4)|0x6000),data_027e00a4,0);
+if(t==1){AddSprite((u16)((x+47)&mx4),(u8)(y+19),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt4)|0x6000),gSpriteDesc16x8,0);
 }
-else if(t==2){AddSprite((u16)((x+47)&mx5),(u8)(y+19),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt5)|0x6000),data_027e00a4,0);
+else if(t==2){AddSprite((u16)((x+47)&mx5),(u8)(y+19),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt5)|0x6000),gSpriteDesc16x8,0);
 }
 t=(s8)func_020a29e4(v,unit,owner);
-if(t==1){AddSprite((u16)((x+47)&mx6),(u8)(y+28),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt6)|0x6000),data_027e00a4,0);
+if(t==1){AddSprite((u16)((x+47)&mx6),(u8)(y+28),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt6)|0x6000),gSpriteDesc16x8,0);
 }
-else if(t==2){AddSprite((u16)((x+47)&mx7),(u8)(y+28),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt7)|0x6000),data_027e00a4,0);
+else if(t==2){AddSprite((u16)((x+47)&mx7),(u8)(y+28),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt7)|0x6000),gSpriteDesc16x8,0);
 }
 }
 }
@@ -54,7 +54,7 @@ AddSprite((u16)((x)&511),(u8)(8),(u16)(((384)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3D
 
 if(M2C_FIELD(data_ov000_021df5e0,s16 *,18)<=0)func_ov000_0216d23c();
 x=EaseInterpolate(4,-214,34,M2C_FIELD(data_ov000_021df5e0,s16 *,18),12);
-func_0209b67c((u16)(x&511),8,128,(u16)(((388>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&1023)|0x2000),0);
+DrawTileRow((u16)(x&511),8,128,(u16)(((388>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&1023)|0x2000),0);
 if(M2C_FIELD(data_ov000_021df5e0,s16 *,18)<=0)func_ov000_0216d130();
 x=EaseInterpolate(4,-240,8,M2C_FIELD(data_ov000_021df5e0,s16 *,18),12);
 AddSprite((u16)((x)&511),(u8)(24),(u16)(((320)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);

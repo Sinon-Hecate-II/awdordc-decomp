@@ -142,7 +142,7 @@ s32 func_0209fd2c(void) {
     /* Walk the map grid; for every cell whose stored value is >= 0 and
        whose passability test succeeds, append (x, y, value) to the output
        list. Terminate the list with a -1 sentinel and return the count. */
-    s32 func_020ba924(s32, s32);
+    s32 GetTerrainPropertyFlagsAt(s32, s32);
     extern void *data_0215be00;
     extern s32 *gCurrentMap;
     s32 count;
@@ -163,7 +163,7 @@ s32 func_0209fd2c(void) {
             x = 0;
             if ((s32)M2C_FIELD(obj, u16 *, 0x5144) > 0) {
                 do {
-                    if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0 && func_020ba924(x, y) == 1) {
+                    if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0 && GetTerrainPropertyFlagsAt(x, y) == 1) {
                         M2C_FIELD(out, u8 *, 0) = (u8)x;
                         M2C_FIELD(out, u8 *, 1) = (u8)y;
                         count++;

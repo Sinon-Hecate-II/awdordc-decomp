@@ -364,7 +364,7 @@ void func_02095ad0(u8 *p){
 u8 func_02091dc4(s32);
 s32 func_02091ddc(s32);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void func_01ffa574(void *);
+void DeleteSpriteObject(void *);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 u16 *volatile a;
 u16 *volatile b;
@@ -403,7 +403,7 @@ next:i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;
 if(*(s32 *)(p+100)<*(s32 *)(p+96))return;
-func_01ffa574(p);
+DeleteSpriteObject(p);
 }
 
 void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {

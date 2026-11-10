@@ -30,7 +30,7 @@ func_020cbdbc();func_020a3b58();func_020a694c();func_020a69bc();func_020cfd28();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
-void func_020d457c(void){extern void **gCurrentMap;if(func_0208f8a0())return;func_ov000_0216c200();if(M2C_FIELD(*gCurrentMap,u16*,0x52a2)==1){if(M2C_FIELD(*gCurrentMap,u16*,0x52a4)==1)M2C_FIELD(*gCurrentMap,u16*,0x52b0)=10;else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=9;}else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=8;}
+void func_020d457c(void){extern void **gCurrentMap;if(func_0208f8a0())return;BuildArmyInfoWindow();if(M2C_FIELD(*gCurrentMap,u16*,0x52a2)==1){if(M2C_FIELD(*gCurrentMap,u16*,0x52a4)==1)M2C_FIELD(*gCurrentMap,u16*,0x52b0)=10;else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=9;}else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=8;}
 
 void func_020d45d8(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=M2C_FIELD(*gCurrentMap,u16*,0x52b2);M2C_FIELD(*gCurrentMap,u16*,0x52b2)=0;func_020ca4c0();}
 
@@ -81,7 +81,7 @@ void func_020d482c(void) {
     s32 inRange;
 
     if ((u8)((u32)(data_02168f14 << 29) >> 29) == 0)
-        func_0209f390();
+        InitBattleMapConfig();
     if (func_020846a4()) {
         mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         inRange = 0;

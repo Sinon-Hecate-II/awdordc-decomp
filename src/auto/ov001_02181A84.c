@@ -150,9 +150,9 @@ void func_ov001_02181d60(void) {
     M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02175e04(M2C_UNK);
     void func_ov001_021820f0(M2C_UNK);
-    s32 func_ov001_0218bb00(s32);
-    s32 func_ov001_0218bb24(s32);
-    s32 func_ov001_0218bbd8(void *);
+    s32 KeyPressed(s32);
+    s32 KeyHeld(s32);
+    s32 TouchRectPressed(void *);
     extern M2C_UNK data_ov001_0218fab6;
     extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218faf8;
@@ -168,7 +168,7 @@ void func_ov001_02181d60(void) {
 
     for (index = 0; index < 4; index++) {
         entry = (u8 *)&data_ov001_0218fab6 + func_ov001_02175e04(1) * 32 + index * 8;
-        if (func_ov001_0218bbd8(entry) != 0) {
+        if (TouchRectPressed(entry) != 0) {
             func_ov001_021716d8(1);
             M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = (s8)index;
             r6 = func_ov001_02175e04(1);
@@ -190,12 +190,12 @@ void func_ov001_02181d60(void) {
             return;
         }
     }
-    if (func_ov001_0218bb00(1) != 0) { func_ov001_021716d8(1); return; }
-    if (func_ov001_0218bb00(2) != 0) { func_ov001_021716d8(0); return; }
-    if (func_ov001_0218bb24(0x40) != 0) { func_ov001_021820f0(1); return; }
-    if (func_ov001_0218bb24(0x80) != 0) { func_ov001_021820f0(3); return; }
-    if (func_ov001_0218bb24(0x20) != 0) { func_ov001_021820f0(0); return; }
-    if (func_ov001_0218bb24(0x10) == 0) return;
+    if (KeyPressed(1) != 0) { func_ov001_021716d8(1); return; }
+    if (KeyPressed(2) != 0) { func_ov001_021716d8(0); return; }
+    if (KeyHeld(0x40) != 0) { func_ov001_021820f0(1); return; }
+    if (KeyHeld(0x80) != 0) { func_ov001_021820f0(3); return; }
+    if (KeyHeld(0x20) != 0) { func_ov001_021820f0(0); return; }
+    if (KeyHeld(0x10) == 0) return;
     func_ov001_021820f0(2);
 }
 
@@ -205,14 +205,14 @@ void func_ov001_02181ee4(void) {
 
 void func_ov001_02181ee8(void) {
     s32 func_ov001_021716c4(void);
-    M2C_UNK func_ov001_02185024(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021821e4(void);
     void func_ov001_02181f3c(void);
     extern M2C_UNK data_ov001_02193dd4;
     switch (func_ov001_021716c4()) {
-    case 0: func_ov001_02185024(7); break;
+    case 0: Ov001_PlaySound(7); break;
     case 1:
-        func_ov001_02185024(6);
+        Ov001_PlaySound(6);
         func_ov001_021821e4();
         M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) = 1;
         break;
@@ -266,7 +266,7 @@ case 3:func_ov001_02175d64(2,0);func_ov001_02175da0(0,0);func_ov001_0217f72c(1);
 
 void func_ov001_021820f0(M2C_UNK arg0) {
     M2C_UNK func_ov001_02175e04(M2C_UNK);
-    M2C_UNK func_ov001_02185024(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK func_ov001_02172094(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193dd4;
     extern M2C_UNK data_ov001_0218fa96;
@@ -299,7 +299,7 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     }
 
     M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = M2C_FIELD(&data_ov001_02193dd4, s8 *, 0);
-    func_ov001_02185024(8);
+    Ov001_PlaySound(8);
     r6 = func_ov001_02175e04(1);
     r5 = func_ov001_02175e04(1);
     temp_r4b = func_ov001_02175e04(1);
@@ -332,7 +332,7 @@ void func_ov001_0218223c(void) {
     M2C_UNK func_ov001_0217231c(M2C_UNK);
     void func_ov001_021822c8(void);
     void func_ov001_02182370(void);
-    M2C_UNK func_ov001_02185024(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
     extern s8 data_ov001_02193ddc;
     extern M2C_UNK func_ov001_02182408;
     s32 sp0;
@@ -351,7 +351,7 @@ void func_ov001_0218223c(void) {
     func_ov001_021713c4(0);
     func_ov001_02182370();
     func_ov001_0217231c(0);
-    func_ov001_02185024(0xC);
+    Ov001_PlaySound(0xC);
     func_ov001_02175d54(&func_ov001_02182408);
 }
 
@@ -493,11 +493,11 @@ void func_ov001_021825a8(s32 arg0) {
     func_ov001_0218508c();
     if (result > 0) {
         data_ov001_02193ddc = 1;
-        func_ov001_02185024(0x11);
+        Ov001_PlaySound(0x11);
     } else {
         func_0202f1dc();
         func_ov001_0217d260();
-        func_ov001_02185024(0x12);
+        Ov001_PlaySound(0x12);
     }
     func_ov001_02175d54((M2C_UNK *)&func_ov001_021824c8);
     func_ov001_0218c92c(0, arg0);

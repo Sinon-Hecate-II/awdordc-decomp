@@ -5,7 +5,7 @@ typedef struct CallbackPair { s32 first, second; } CallbackPair;
 void func_020543e8(void **arg0, void *arg1) {
     M2C_UNK func_020496b8(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe9b0;
     extern M2C_UNK data_020fea00;
     extern M2C_UNK data_020fea4c;
@@ -19,7 +19,7 @@ void func_020543e8(void **arg0, void *arg1) {
         temp_r0 = M2C_FIELD(temp_r2, s32 *, 0x210) - 1;
         M2C_FIELD(temp_r2, s32 *, 0x210) = temp_r0;
         if (temp_r0 < 0) {
-            func_020640a8(&data_020fea4c, &data_020fea00, &data_020fe9b0, 0xB6);
+            AssertFailed(&data_020fea4c, &data_020fea00, &data_020fe9b0, 0xB6);
         }
         func_020496cc(M2C_FIELD(temp_r5, s32 *, 4), 2);
         func_020496b8(M2C_FIELD(temp_r5, s32 *, 4));
@@ -74,7 +74,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  void *func_02055940(void **,void *,s32);
  void *func_02052600(void **,void *,s32);
  void *func_02057ff8(void **,void *,s32);
- M2C_UNK func_02058170(void **,M2C_UNK *,...);
+ M2C_UNK gpiLogMessage(void **,M2C_UNK *,...);
  extern M2C_UNK data_020fea6c,data_020fea48,data_020fea00,data_020fe9d8;
  void *p=NULL;
  switch(M2C_FIELD(b,u32 *,0)) {
@@ -82,7 +82,7 @@ void *func_0205455c(void **a,void *b,s32 c) {
  case 1:p=func_02055940(a,b,c);break;
  case 2:p=func_02052600(a,b,c);break;
  case 4:p=func_02057ff8(a,b,c);break;
- default:func_02058170(a,&data_020fea6c,M2C_FIELD(b,u32 *,0));func_020640a8(&data_020fea48,&data_020fea00,&data_020fe9d8,326);break;
+ default:gpiLogMessage(a,&data_020fea6c,M2C_FIELD(b,u32 *,0));AssertFailed(&data_020fea48,&data_020fea00,&data_020fe9d8,326);break;
  }
  if(p) M2C_FIELD(b,void **,28)=p;
  return p;
@@ -94,101 +94,104 @@ M2C_UNK func_02054600(M2C_UNK arg0, void *arg1) {
 
 #pragma push
 #pragma opt_common_subs off
-s32 func_0205495c(M2C_UNK a, void *b) {
+/* Handles a peer waiting for its connection answer: reads the \auth\ reply from
+ * the peer, checks its \sig\ signature against the MD5 of the session text, sends
+ * \aack\ or \anack\, then marks the peer connected with the reply's player id. */
+s32 gpiProcessPeerAcceptingConnection(M2C_UNK a, void *b) {
     void *func_02037794(M2C_UNK);
-    s32 func_020491bc(M2C_UNK, s32, M2C_UNK);
+    s32 Md5Hex(M2C_UNK, s32, M2C_UNK);
     s32 gpiStringDup(s32);
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK gpiAppendStringField(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 gpiReceiveData(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
-    s32 func_02058254(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 GetStringField(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK StringFormat(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 StringLength(M2C_UNK);
-    M2C_UNK func_02068d98(M2C_UNK, M2C_UNK);
-    s32 func_02068eac(M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_0206ad38(M2C_UNK);
-    M2C_UNK func_02068fdc(M2C_UNK, M2C_UNK);
+    M2C_UNK StringCompare(M2C_UNK, M2C_UNK);
+    s32 StringCompareN(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK ParseInt(M2C_UNK);
+    M2C_UNK StringFind(M2C_UNK, M2C_UNK);
 
-    extern M2C_UNK data_020fec18, data_020fec0c, data_020feb24, data_020febb0, data_020feba8;
-    extern M2C_UNK data_020feb88, data_020feb90, data_020feb98, data_020feba0, data_020fec38;
-    extern M2C_UNK data_020febb4, data_020febe0;
+    extern M2C_UNK data_020fec18, data_020fec0c, data_020feb24, data_020febb0, gGsKeyFinalAuth;
+    extern M2C_UNK gGsKeyAuth, gGsKeyPid, gGsKeyNickAuth, gGsKeySig, gGsAuthSigFormat;
+    extern M2C_UNK gGsKeyAuthNack, gGsKeyAuthAck;
 
-    void **arg0 = (void **)a;
-    void *base = *arg0;
-    s32 spC;
-    s32 sp8;
-    char buf81[0x100];
-    char buf71[0x10];
-    char buf52[0x1f];
-    char buf31[0x21];
-    char other[0x21];
-    void *p;
-    void *q;
-    s32 num;
-    s32 len;
-    s32 ret;
+    void **gpi = (void **)a;
+    void *session = *gpi;
+    s32 bytesRead;
+    s32 ioStatus;
+    char authText[0x100];
+    char pidText[0x10];
+    char nickText[0x1f];
+    char peerSig[0x21];
+    char localSig[0x21];
+    void *text;
+    void *tagEnd;
+    s32 playerId;
+    s32 textLen;
+    s32 ioResult;
 
-    if (M2C_FIELD(b, s32 *, 0) != 0x68) {
-        func_020640a8(&data_020fec18, &data_020fec0c, &data_020feb24, 0xc1);
+    if (M2C_FIELD(b, s32 *, 0) != GPI_PEER_STATE_WAITING) {
+        AssertFailed(&data_020fec18, &data_020fec0c, &data_020feb24, 0xc1);
     }
-        ret = gpiReceiveData(arg0, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &spC, &sp8, &data_020febb0);
-        if (ret != 0) {
-            return ret;
-        }
-        if (sp8 != 0) {
-            M2C_FIELD(b, s32 *, 0) = 0x6a;
-            return 0;
-        }
- 
 
-    p = M2C_FIELD(b, void **, 0x18);
-    q = (void *)func_02068fdc((M2C_UNK)p, (M2C_UNK)&data_020feba8);
-    if (q == NULL) goto end;
-
-    *((char *)q) = 0;
-    p = M2C_FIELD(b,void **,0x18);
-
-    if (func_02068eac((M2C_UNK)p, (M2C_UNK)&data_020feb88, 6) != 0) goto fail_end_0x794;
-
-    if (func_02058254((M2C_UNK)p, (M2C_UNK)&data_020feb90, (M2C_UNK)buf71, 0x10) == 0) {
-        M2C_FIELD(b, s32 *, 0) = 0x6a;
+    ioResult = gpiReceiveData(gpi, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &bytesRead, &ioStatus, &data_020febb0);
+    if (ioResult != 0) {
+        return ioResult;
+    }
+    if (ioStatus != 0) {
+        M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 
-    num = (s32)func_0206ad38((M2C_UNK)buf71);
+    text = M2C_FIELD(b, void **, 0x18);
+    tagEnd = (void *)StringFind((M2C_UNK)text, (M2C_UNK)&gGsKeyFinalAuth);
+    if (tagEnd == NULL) goto end;
 
-    if (func_02058254((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&data_020feb98, (M2C_UNK)buf52, 0x1f) == 0) {
-        M2C_FIELD(b, s32 *, 0) = 0x6a;
+    *((char *)tagEnd) = 0;
+    text = M2C_FIELD(b, void **, 0x18);
+
+    if (StringCompareN((M2C_UNK)text, (M2C_UNK)&gGsKeyAuth, 6) != 0) goto fail_end_0x794;
+
+    if (GetStringField((M2C_UNK)text, (M2C_UNK)&gGsKeyPid, (M2C_UNK)pidText, 0x10) == 0) {
+        M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 
-    if (func_02058254((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&data_020feba0, (M2C_UNK)buf31, 0x21) == 0) {
-        M2C_FIELD(b, s32 *, 0) = 0x6a;
+    playerId = (s32)ParseInt((M2C_UNK)pidText);
+
+    if (GetStringField((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeyNickAuth, (M2C_UNK)nickText, 0x1f) == 0) {
+        M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 
-    func_020675e4((M2C_UNK)buf81, (M2C_UNK)&data_020fec38, (M2C_UNK)((char *)base + 0x177), (M2C_UNK)M2C_FIELD(base, s32 *, 0x1a0), (M2C_UNK)num);
-
-    len = StringLength((M2C_UNK)buf81);
-    func_020491bc((M2C_UNK)buf81, len, (M2C_UNK)other);
-
-    if (func_02068d98((M2C_UNK)buf31, (M2C_UNK)other) != 0) {
-        gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febb4);
-        gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
-        M2C_FIELD(b,s32 *,0)=0x6a;
+    if (GetStringField((M2C_UNK)M2C_FIELD(b, void **, 0x18), (M2C_UNK)&gGsKeySig, (M2C_UNK)peerSig, 0x21) == 0) {
+        M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
-    gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febe0);
-    gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
-    M2C_FIELD(b,s32 *,0)=0x69;
-    M2C_FIELD(b,s32 *,12)=num;
+
+    StringFormat((M2C_UNK)authText, (M2C_UNK)&gGsAuthSigFormat, (M2C_UNK)((char *)session + 0x177), (M2C_UNK)M2C_FIELD(session, s32 *, 0x1a0), (M2C_UNK)playerId);
+
+    textLen = StringLength((M2C_UNK)authText);
+    Md5Hex((M2C_UNK)authText, textLen, (M2C_UNK)localSig);
+
+    if (StringCompare((M2C_UNK)peerSig, (M2C_UNK)localSig) != 0) {
+        gpiAppendStringField((M2C_UNK)gpi, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&gGsKeyAuthNack);
+        gpiAppendStringField((M2C_UNK)gpi, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&gGsKeyFinalAuth);
+        M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
+        return 0;
+    }
+    gpiAppendStringField((M2C_UNK)gpi, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&gGsKeyAuthAck);
+    gpiAppendStringField((M2C_UNK)gpi, (M2C_UNK)((char *)b + 0x28), (M2C_UNK)&gGsKeyFinalAuth);
+    M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_CONNECTED;
+    M2C_FIELD(b, s32 *, 12) = playerId;
     goto finish;
 fail_end_0x794:
-    M2C_FIELD(b,s32 *,0)=0x6a;
+    M2C_FIELD(b, s32 *, 0) = GPI_PEER_STATE_ERROR;
     return 0;
 finish:
-    M2C_FIELD(b,s32 *,0x20)=0;
+    M2C_FIELD(b, s32 *, 0x20) = 0;
 end:
     return 0;
 }
@@ -322,13 +325,13 @@ block_42:
 
 s32 func_02054f0c(M2C_UNK a,void *b) {
  s32 func_02054600(M2C_UNK,void *);
- s32 func_0205495c(M2C_UNK,void *);
+ s32 gpiProcessPeerAcceptingConnection(M2C_UNK,void *);
  s32 gpiProcessPeer(void **,void *);
  extern M2C_UNK data_020fec54,data_020fec0c,data_020feac4;
  s32 v=0;
- if(M2C_FIELD(b,s32 *,0)==100) func_020640a8(&data_020fec54,&data_020fec0c,&data_020feac4,473);
+ if(M2C_FIELD(b,s32 *,0)==100) AssertFailed(&data_020fec54,&data_020fec0c,&data_020feac4,473);
  if(M2C_FIELD(b,s32 *,0)!=105) {
- if(M2C_FIELD(b,s32 *,4)) v=func_02054600(a,b);else v=func_0205495c(a,b);
+ if(M2C_FIELD(b,s32 *,4)) v=func_02054600(a,b);else v=gpiProcessPeerAcceptingConnection(a,b);
  }
  if(!v && M2C_FIELD(b,s32 *,0)==105) v=gpiProcessPeer(a,b);
  return v;
@@ -351,7 +354,7 @@ void func_02055008(void **manager, void *entry) {
     M2C_UNK func_0204890c(s32, M2C_UNK);
     M2C_UNK func_0204f89c(void **, s32, s32, s32);
     M2C_UNK func_02054fa8(void **, void *);
-    M2C_UNK func_02058170(void **, M2C_UNK *, ...);
+    M2C_UNK gpiLogMessage(void **, M2C_UNK *, ...);
     extern M2C_UNK data_020feab4;
     extern M2C_UNK data_020fec08;
     extern M2C_UNK data_020fec0c;
@@ -365,7 +368,7 @@ void func_02055008(void **manager, void *entry) {
 
     base = *manager;
     if (entry == NULL) {
-        func_020640a8(&data_020fec7c, &data_020fec0c, &data_020feab4, 0x213);
+        AssertFailed(&data_020fec7c, &data_020fec0c, &data_020feab4, 0x213);
     }
     previous = M2C_FIELD(base, void **, 0x434);
     if (previous == entry) {
@@ -376,8 +379,8 @@ void func_02055008(void **manager, void *entry) {
     if (cursor != entry) {
 loop_5:
         if (cursor == NULL) {
-            func_020640a8(&data_020fec08, &data_020fec0c, &data_020feab4, 0x225);
-            func_02058170(manager, &data_020fec8c);
+            AssertFailed(&data_020fec08, &data_020fec0c, &data_020feab4, 0x225);
+            gpiLogMessage(manager, &data_020fec8c);
             return;
         }
         previous = cursor;
@@ -404,15 +407,15 @@ block_9:
 }
 
 void func_02055124(M2C_UNK arg0) {
-    M2C_UNK func_0204932c(M2C_UNK, M2C_UNK);
+    M2C_UNK ghiSetRecvBufferSize(M2C_UNK, M2C_UNK);
     M2C_UNK func_02049370(M2C_UNK, M2C_UNK);
     M2C_UNK func_020493b0(M2C_UNK);
     M2C_UNK func_020493f8(M2C_UNK);
-    func_0204932c(arg0, 0x4000);
-    func_0204932c(arg0, 0x8000);
-    func_0204932c(arg0, 0x10000);
-    func_0204932c(arg0, 0x20000);
-    func_0204932c(arg0, 0x40000);
+    ghiSetRecvBufferSize(arg0, 0x4000);
+    ghiSetRecvBufferSize(arg0, 0x8000);
+    ghiSetRecvBufferSize(arg0, 0x10000);
+    ghiSetRecvBufferSize(arg0, 0x20000);
+    ghiSetRecvBufferSize(arg0, 0x40000);
     func_02049370(arg0, 0x4000);
     func_02049370(arg0, 0x8000);
     func_02049370(arg0, 0x10000);
@@ -421,7 +424,7 @@ void func_02055124(M2C_UNK arg0) {
 }
 
 s32 func_0205519c(void **arg0) {
-    M2C_UNK func_020492ec(M2C_UNK, s32);
+    M2C_UNK ghiSetNonBlocking(M2C_UNK, s32);
     s32 func_02049534(s32);
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
     s32 gpiGetTime(M2C_UNK);
@@ -445,7 +448,7 @@ s32 func_0205519c(void **arg0) {
             if (temp_r0_2 != NULL) {
                 M2C_FIELD(temp_r0_2, s32 *, 0) = 0x68;
                 M2C_FIELD(temp_r0_2, s32 *, 8) = temp_r0;
-                func_020492ec(temp_r0, 0);
+                ghiSetNonBlocking(temp_r0, 0);
                 func_02055124(M2C_FIELD(temp_r0_2, s32 *, 8));
             } else {
                 func_020496b8(temp_r0);
@@ -499,12 +502,12 @@ void *func_020552e0(void **a,s32 b,s32 c) {
 
 s32 func_02055360(M2C_UNK arg0, void *arg1) {
     s32 func_02053c04(M2C_UNK, s32, s32);
-    s32 func_02054330(M2C_UNK, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
+    s32 gpiAddOperation(M2C_UNK, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
     void *spC;
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_02054330(arg0, 2, 0, &spC, 0, 0, 0);
+    temp_r0 = gpiAddOperation(arg0, 2, 0, &spC, 0, 0, 0);
     if (temp_r0 != 0) {
         return temp_r0;
     }

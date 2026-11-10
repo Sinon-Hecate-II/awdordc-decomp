@@ -36,7 +36,7 @@ M2C_UNK *func_020b5284(u32 arg0) {
 
 /* Draws one of several unit/map status overlays at position (x, y) depending on mode. */
 void func_020b5314(u8 mode, s32 x, s32 y) {
-    M2C_UNK func_0208fb0c(s32, s16, s16);
+    M2C_UNK PlaySoundAtTile(s32, s16, s16);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
@@ -45,27 +45,27 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
     case 0:
     case 1:
     case 2:
-        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
         func_02080750(1, 0x14, 0);
         return;
     case 3:
-        ((Fb0c)func_0208fb0c)(0x6d, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x6d, x, y);
         func_02080750(1, 0x14, 0);
         return;
     case 4:
-        ((Fb0c)func_0208fb0c)(0x73, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x73, x, y);
         func_02080750(1, 0x14, 0);
         return;
     case 5:
-        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
         func_02080750(0, 0xa, 0);
         return;
     case 6:
-        ((Fb0c)func_0208fb0c)(0x8a, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
         func_02080750(0, 5, 0);
         return;
     case 7:
-        ((Fb0c)func_0208fb0c)(0x11f, x, y);
+        ((Fb0c)PlaySoundAtTile)(0x11f, x, y);
         func_02080750(0, 5, 0);
         return;
     case 8:
@@ -75,7 +75,7 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
         func_02080358(4, 0, 2, 0);
         return;
     case 9:
-        ((Fb0c)func_0208fb0c)(0xfa, x, y);
+        ((Fb0c)PlaySoundAtTile)(0xfa, x, y);
         func_02080750(1, 0x1e, 0);
         func_02080358(8, 0, 4, 0);
         return;
@@ -383,7 +383,7 @@ void func_020b5e28(void *arg0) {
     void *func_020b5134(void *, s16, s16, M2C_UNK, s32, s32, void *);
     M2C_UNK func_020b51dc();
     M2C_UNK func_020b5200(s32, M2C_UNK);
-    M2C_UNK func_0208fb0c(s32, s16, s16);
+    M2C_UNK PlaySoundAtTile(s32, s16, s16);
     void *temp_r0;
     func_020b51dc();
     func_020b5200(arg0 + 0x34, 0);
@@ -395,7 +395,7 @@ void func_020b5e28(void *arg0) {
     M2C_FIELD(arg0,s16 *,0x4A)=0x40;
     M2C_FIELD(arg0,s32 *,0x54)=M2C_FIELD(M2C_FIELD(arg0,void **,0x60),s32 *,0x38);
     M2C_FIELD(arg0,s32 *,0x58)=M2C_FIELD(M2C_FIELD(arg0,void **,0x60),s32 *,0x38)-0x1E00;
-    func_0208fb0c(0x94,M2C_FIELD(arg0,s16 *,0x44),M2C_FIELD(arg0,s16 *,0x46));
+    PlaySoundAtTile(0x94,M2C_FIELD(arg0,s16 *,0x44),M2C_FIELD(arg0,s16 *,0x46));
 }
 
 void func_020b5edc(void *arg0) {
@@ -410,7 +410,7 @@ void func_020b5edc(void *arg0) {
 }
 
 void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
-    M2C_UNK func_02068c50(void *, M2C_UNK *);
+    M2C_UNK StringCopy(void *, M2C_UNK *);
     extern M2C_UNK data_02128b04;
     extern M2C_UNK data_02128e8c;
     void *temp_r0;
@@ -418,7 +418,7 @@ void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
     temp_r0 = func_01ffa42c(&data_02128b04, arg2);
     M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
-    func_02068c50(temp_r0 + 0x34, &data_02128e8c);
+    StringCopy(temp_r0 + 0x34, &data_02128e8c);
 }
 
 void func_020b5f74(s32 arg0, s32 arg1) {
@@ -460,8 +460,8 @@ void func_020b5fec(void *arg0) {
 }
 
 void func_020b607c(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
-    M2C_UNK func_0208fb0c(s32, s16, s16);
+    M2C_UNK DeleteSpriteObject(void *);
+    M2C_UNK PlaySoundAtTile(s32, s16, s16);
     s32 temp_r0;
 
     M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
@@ -472,9 +472,9 @@ void func_020b607c(void *arg0) {
     func_0208c080(func_020b5134(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0), 1);
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x50);
     if (temp_r0 != 0) {
-        func_0208fb0c(temp_r0, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+        PlaySoundAtTile(temp_r0, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
     }
-    func_01ffa574(M2C_FIELD(arg0, void **, 0x60));
+    DeleteSpriteObject(M2C_FIELD(arg0, void **, 0x60));
     func_01ffa6fc(arg0);
 }
 

@@ -245,7 +245,7 @@ else if(M2C_FIELD(g,u8 *,1)==47){g->state->flags.released=1;M2C_FIELD(g,u8 *,1)=
 }
 
 #pragma opt_peephole off
-s32 func_ov001_0218bb00(s32 arg0) {
+s32 KeyPressed(s32 arg0) {
     extern M2C_UNK data_ov001_02193e48;
     if (arg0 == (arg0 & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32))) {
         return 1;
@@ -253,14 +253,14 @@ s32 func_ov001_0218bb00(s32 arg0) {
     return 0;
 }
 #pragma opt_peephole reset
-s32 func_ov001_0218bb24(s32 a) {
+s32 KeyHeld(s32 a) {
     extern M2C_UNK data_ov001_02193e48;
     s32 t;
     t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34);
     return a == t;
 }
 
-s32 func_ov001_0218bb48(s32 a) {
+s32 KeyReleased(s32 a) {
     extern M2C_UNK data_ov001_02193e48;
     s32 t;
     t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x36);
@@ -275,7 +275,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 func_ov001_0218bbd8(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectPressed(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<30>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -291,7 +291,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 func_ov001_0218bcb0(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectHeld(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<28>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -299,7 +299,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return func_ov001_0218bbd8(box);}
+s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return TouchRectPressed(box);}
 
 s32 func_ov001_0218bd64(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u16 x,y;
 if(!M2C_FIELD(p,TouchFlags *,0x38).active){x=M2C_FIELD(p,volatile u16 *,0x2c);y=M2C_FIELD(p,volatile u16 *,0x2e);a[0]=x;a[1]=y;return 0;}

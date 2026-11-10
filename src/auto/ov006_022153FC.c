@@ -104,11 +104,11 @@ void func_ov006_022153fc(M2C_UNK arg0) {
 
 void *func_ov006_02215620(void *p){
 extern M2C_UNK data_ov006_02218610;
-M2C_UNK func_01ffa574(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK func_020e4ca0();
+M2C_UNK DeleteSpriteObject(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK func_020e4ca0();
 s32 *arr;void *q=0;
 M2C_FIELD(p,void **,0)=&data_ov006_02218610;
 arr=M2C_FIELD(p,s32 **,0x3c);
-if(arr){func_01ffa574(arr[0]);func_01ffa574(arr[1]);func_01ffa574(arr[2]);func_01ffa574(arr[3]);func_01ffa574(arr[4]);func_01ffa574(arr[5]);MemFree((s32)arr);}
+if(arr){DeleteSpriteObject(arr[0]);DeleteSpriteObject(arr[1]);DeleteSpriteObject(arr[2]);DeleteSpriteObject(arr[3]);DeleteSpriteObject(arr[4]);DeleteSpriteObject(arr[5]);MemFree((s32)arr);}
 q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 q=M2C_FIELD(p,void **,0x44);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 q=M2C_FIELD(p,void **,0x48);if(q)MemFree((s32)q);
@@ -118,7 +118,7 @@ func_020e4ca0();MemFree((s32)p);return (void*)p;
 
 #pragma scheduling off
 void *func_ov006_022156e4(void *arg0) {
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK MemFree(M2C_UNK);
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov006_02218610;
@@ -127,12 +127,12 @@ void *func_ov006_022156e4(void *arg0) {
     M2C_FIELD(p, void **, 0) = &data_ov006_02218610;
     p = M2C_FIELD(p, void **, 0x3C);
     if (p != 0) {
-        func_01ffa574(M2C_FIELD(p, void **, 0));
-        func_01ffa574(M2C_FIELD(p, void **, 4));
-        func_01ffa574(M2C_FIELD(p, void **, 8));
-        func_01ffa574(M2C_FIELD(p, void **, 0xC));
-        func_01ffa574(M2C_FIELD(p, void **, 0x10));
-        func_01ffa574(M2C_FIELD(p, void **, 0x14));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 0));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 4));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 8));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 0xC));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 0x10));
+        DeleteSpriteObject(M2C_FIELD(p, void **, 0x14));
         MemFree(p);
         p = arg0;
     }

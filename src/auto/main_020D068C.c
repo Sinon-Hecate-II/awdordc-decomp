@@ -1,5 +1,6 @@
 /* 17 functions from 0x020D068C to 0x020D166C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 bytes[14]; } D068CUnit;
 extern s32 *gCurrentMap;
 static inline s32 D068CIndex(void *p) { s32 n; if(p) n=((s32)p-(*gCurrentMap+0x59a4))/14; else n=0; return n; }
@@ -23,7 +24,7 @@ static inline void D068CApply(void *p) {
 void func_020d0bf8(M2C_UNK);
 void func_020d0bac(void *,s32);
 
-void func_020d068c(void *p,s16 index) {
+void InitBattleUnit(void *p,s16 index) {
 s32 func_020d05f4(); s32 func_020a3518();
 void *q,*m; register s32 stride=14;
 q=(void *)*gCurrentMap+0x59a4+index*stride;
@@ -41,7 +42,7 @@ M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 }
 
 #pragma opt_propagation off
-void func_020d0868(void *a,void **b,s32 c,s32 d) {
+void ResolveUnitAttack(void *a,void **b,s32 c,s32 d) {
 s32 func_020a76d4(void *); s32 func_020a792c(); s32 func_020a875c();
 extern u8 data_ov000_021b5bfc[];
 register u16 x=0; register u16 y; register s16 z; register u8 *p=data_ov000_021b5bfc+((D068CBits *)M2C_FIELD(a,void **,0))->value*112;
@@ -89,7 +90,7 @@ s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
  return var_r4!=0 || temp_r0!=0;
 }
 
-void func_020d0afc(void *arg0,s32 arg1,M2C_UNK arg2) {
+void ApplyBattleDamage(void *arg0,s32 arg1,M2C_UNK arg2) {
  s32 func_020d18e8(void *);
  s32 var_r0,var_r4;u32 temp_r0;
  var_r4=100;
@@ -132,7 +133,7 @@ M2C_FIELD(a,s16 *,0x1a)=x;
 M2C_FIELD(a,s16 *,0xe)=((u32)(M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,6)<<25)>>25)-M2C_FIELD(a,s16 *,0x1a);
 }
 
-void func_020d0cdc(void *arg0, void *arg1) {
+void ApplyCounterDamage(void *arg0, void *arg1) {
     
     s16 var_r0_2;
     s32 var_r0;
@@ -160,7 +161,7 @@ void func_020d0cdc(void *arg0, void *arg1) {
     func_020d0c1c(arg0, arg1);
 }
 
-void func_020d0d7c(void *arg0, void *arg1) {
+void ResolveBattleTie(void *arg0, void *arg1) {
     s16 temp_r2;
     s16 temp_r3;
 
@@ -186,31 +187,35 @@ void func_020d0d7c(void *arg0, void *arg1) {
     }
 }
 
-s32 func_020d0ddc(void) {
+s32 GetDamageBonus(void) {
     return 0;
 }
 
-void func_020d0de4(s16 index,s16 other,s16 *pos) {
- s32 func_020d0ddc();
- register u8 oldy,oldx; register s32 dist;
- oldy=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1);
- M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,1)=pos[0];
- oldx=M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,2);
- M2C_FIELD(*gCurrentMap+0x59a4+index*14,u8 *,2)=pos[1];
- func_020d068c((void *)(*gCurrentMap+0x6eb8),index);
- func_020d068c((void *)(*gCurrentMap+0x6ed8),other);
- dist=ManhattanDistance(M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6eb8,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6eb8,void **,0),u8 *,2),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0),u8 *,2));
- ((void (*)(void *,void **,s16,s32))func_020d0868)((void *)(*gCurrentMap+0x6eb8),(void **)(*gCurrentMap+0x6ed8),dist,1);
- ((void (*)(void *,void **,s16,s32))func_020d0868)((void *)(*gCurrentMap+0x6ed8),(void **)(*gCurrentMap+0x6eb8),dist,0);
- func_020d0afc((void *)(*gCurrentMap+0x6eb8),0,1);
- func_020d0afc((void *)(*gCurrentMap+0x6ed8),1,1);
- if(func_020d0ddc((u8)D068COwner(M2C_FIELD(*gCurrentMap+0x6ed8,void **,0)))==1)
-  func_020d0cdc((void *)(*gCurrentMap+0x6ed8),(void *)(*gCurrentMap+0x6eb8));
+/* Moves the attacker onto `destination`, then resolves one exchange of blows
+ * between it and the defender: loads both battle participants, measures their
+ * distance, works out and applies each side's damage (counter included), picks
+ * the survivor, and finally puts the attacker back where it stood. */
+void RunBattle(s16 attacker,s16 defender,s16 *destination) {
+ s32 GetDamageBonus();
+ register u8 oldX,oldY; register s32 dist;
+ oldX=M2C_FIELD(*gCurrentMap+MAP_UNIT_RECORDS+attacker*MAP_UNIT_STRIDE,u8 *,1);
+ M2C_FIELD(*gCurrentMap+MAP_UNIT_RECORDS+attacker*MAP_UNIT_STRIDE,u8 *,1)=destination[0];
+ oldY=M2C_FIELD(*gCurrentMap+MAP_UNIT_RECORDS+attacker*MAP_UNIT_STRIDE,u8 *,2);
+ M2C_FIELD(*gCurrentMap+MAP_UNIT_RECORDS+attacker*MAP_UNIT_STRIDE,u8 *,2)=destination[1];
+ InitBattleUnit((void *)(*gCurrentMap+MAP_BATTLE_ATTACKER),attacker);
+ InitBattleUnit((void *)(*gCurrentMap+MAP_BATTLE_DEFENDER),defender);
+ dist=ManhattanDistance(M2C_FIELD(M2C_FIELD(*gCurrentMap+MAP_BATTLE_ATTACKER,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+MAP_BATTLE_ATTACKER,void **,0),u8 *,2),M2C_FIELD(M2C_FIELD(*gCurrentMap+MAP_BATTLE_DEFENDER,void **,0),u8 *,1),M2C_FIELD(M2C_FIELD(*gCurrentMap+MAP_BATTLE_DEFENDER,void **,0),u8 *,2));
+ ((void (*)(void *,void **,s16,s32))ResolveUnitAttack)((void *)(*gCurrentMap+MAP_BATTLE_ATTACKER),(void **)(*gCurrentMap+MAP_BATTLE_DEFENDER),dist,1);
+ ((void (*)(void *,void **,s16,s32))ResolveUnitAttack)((void *)(*gCurrentMap+MAP_BATTLE_DEFENDER),(void **)(*gCurrentMap+MAP_BATTLE_ATTACKER),dist,0);
+ ApplyBattleDamage((void *)(*gCurrentMap+MAP_BATTLE_ATTACKER),0,1);
+ ApplyBattleDamage((void *)(*gCurrentMap+MAP_BATTLE_DEFENDER),1,1);
+ if(GetDamageBonus((u8)D068COwner(M2C_FIELD(*gCurrentMap+MAP_BATTLE_DEFENDER,void **,0)))==1)
+  ApplyCounterDamage((void *)(*gCurrentMap+MAP_BATTLE_DEFENDER),(void *)(*gCurrentMap+MAP_BATTLE_ATTACKER));
  else
-  func_020d0cdc((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
- func_020d0d7c((void *)(*gCurrentMap+0x6eb8),(void *)(*gCurrentMap+0x6ed8));
- M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a5)=oldy;
- M2C_FIELD(*gCurrentMap+index*14,u8 *,0x59a6)=oldx;
+  ApplyCounterDamage((void *)(*gCurrentMap+MAP_BATTLE_ATTACKER),(void *)(*gCurrentMap+MAP_BATTLE_DEFENDER));
+ ResolveBattleTie((void *)(*gCurrentMap+MAP_BATTLE_ATTACKER),(void *)(*gCurrentMap+MAP_BATTLE_DEFENDER));
+ M2C_FIELD(*gCurrentMap+attacker*MAP_UNIT_STRIDE,u8 *,0x59a5)=oldX;
+ M2C_FIELD(*gCurrentMap+attacker*MAP_UNIT_STRIDE,u8 *,0x59a6)=oldY;
 }
 
 void func_020d1034(void *arg0) {

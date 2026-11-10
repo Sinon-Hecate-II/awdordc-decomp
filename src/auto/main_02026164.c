@@ -43,7 +43,7 @@ void func_020261d8(u8 *state, u8 *data, s32 len) {
     state[1] = i;
 }
 
-s32 func_02026244(u16 *arr, s32 n) {
+s32 BigNumLen(u16 *arr, s32 n) {
     s32 var_r1 = n;
     while (var_r1 != 0 && arr[var_r1 - 1] == 0) {
         var_r1 -= 1;
@@ -51,22 +51,22 @@ s32 func_02026244(u16 *arr, s32 n) {
     return var_r1;
 }
 
-s32 func_0202626c(u16 *arr, s32 n) {
+s32 BigNumSign(u16 *arr, s32 n) {
     if ((arr[n - 1] & 0x8000) != 0) {
         return -1;
     }
-    return func_02026244(arr, n) != 0;
+    return BigNumLen(arr, n) != 0;
 }
 
-void func_0202629c(u16 *dst, u16 *src1, u16 *src2, s32 len) {
+void BigNumAdd(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     s32 a;
     s32 b;
     s32 m;
     s32 k;
     u32 carry;
 
-    a = func_02026244(src1, len);
-    b = func_02026244(src2, len);
+    a = BigNumLen(src1, len);
+    b = BigNumLen(src2, len);
     m = a;
     if (a < b) {
         m = b;
@@ -102,7 +102,7 @@ void func_02026338(u16 *dst, u16 *src, u32 carry, s32 len) {
     }
 }
 
-void func_0202639c(u16 *arr, s32 n) {
+void BigNumNeg(u16 *arr, s32 n) {
     void func_02026338(u16 *, u16 *, u32, s32);
     s32 i;
     for (i = 0; i < n; i++) {
@@ -111,8 +111,8 @@ void func_0202639c(u16 *arr, s32 n) {
     func_02026338(arr, arr, 1, n);
 }
 
-void func_020263dc(u16 *dst, u16 *src1, u16 *src2, s32 len) {
-    s32 func_02026244(u16 *, s32);
+void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
+    s32 BigNumLen(u16 *, s32);
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     s32 a;
     s32 b;
@@ -120,8 +120,8 @@ void func_020263dc(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     s32 k;
     s32 borrow;
 
-    a = func_02026244(src1, len);
-    b = func_02026244(src2, len);
+    a = BigNumLen(src1, len);
+    b = BigNumLen(src2, len);
     m = a;
     if (a < b) {
         m = b;
@@ -177,11 +177,11 @@ void func_02026524(u16 *arr, u32 carry, s32 i, s32 len) {
     }
 }
 
-void func_02026558(u16 *dst,u16 *src1,u16 *src2,s32 len){
-M2C_UNK func_02007f8c(u8 *,s32,u32);s32 func_02026244(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
+void BigNumMul(u16 *dst,u16 *src1,u16 *src2,s32 len){
+M2C_UNK func_02007f8c(u8 *,s32,u32);s32 BigNumLen(u16 *,s32);void func_02026524(u16 *,u32,s32,s32);
 s32 a,b,i,j;
 func_02007f8c((u8 *)dst,0,(u32)(len*2));
-a=func_02026244(src1,len);b=func_02026244(src2,len);
+a=BigNumLen(src1,len);b=BigNumLen(src2,len);
 for(i=0;i<b;i++){
 j=0;while(j<a && j<len-i){
 func_02026524(dst,(u32)src1[j]*(u32)src2[i],i+j,len);j++;
@@ -191,12 +191,12 @@ func_02026524(dst,(u32)src1[j]*(u32)src2[i],i+j,len);j++;
 
 void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
-    s32 func_02026244(u16 *, s32);
+    s32 BigNumLen(u16 *, s32);
     s32 n;
     u32 carry;
     s32 k;
 
-    n = func_02026244(src, len);
+    n = BigNumLen(src, len);
     carry = 0;
     k = 0;
     while (k < n) {
@@ -213,7 +213,7 @@ void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
 }
 
 void func_0202667c(u16 *dst,u16 *src,s32 n){
-s32 m=func_02026244(src,n); s32 i,k,j; u32 p;
+s32 m=BigNumLen(src,n); s32 i,k,j; u32 p;
 if(n>m*2)func_02007f8c((u8*)(dst+m*2),0,(n-m*2)*2);
 i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
 for(k=0;k<m;k++){i=k+1;goto test;
@@ -242,14 +242,14 @@ u64 func_020267e0(void *arg0) {
 }
 
 #pragma scheduling off
-void func_020267fc(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
+void BigNumDivMod(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
 M2C_UNK MI_CpuCopy8(s32,s32,s32);
 M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
 u64 func_02072088(u64,u64);
 s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
 q=work+n;r=q+n;
 func_02007f8c((u8 *)q,0,n*4);
-na=func_02026244(a,n);nb=func_02026244(b,n);
+na=BigNumLen(a,n);nb=BigNumLen(b,n);
 if(na>0 && nb>0){
 i=nb+(n-na)-1;
 if(i>=n){MI_CpuCopy8((s32)a,(s32)r,n*2);}
@@ -265,7 +265,7 @@ if(digit>65535)digit=65535;
 again:
 func_02026604(work,b,(u16)digit,n);
 if(func_020264ec(r,work,n)<0){digit--;goto again;}
-func_020263dc(r,r,work,n);*q=digit;
+BigNumSub(r,r,work,n);*q=digit;
 }while(++i<n);
 }
 }
@@ -276,10 +276,10 @@ if(rem)MI_CpuCopy8((s32)r,(s32)rem,n*2);
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    s32 func_02026244(u16 *, s32);
-    void func_02026558(u16 *, u16 *, u16 *, s32);
+    s32 BigNumLen(u16 *, s32);
+    void BigNumMul(u16 *, u16 *, u16 *, s32);
     void func_0202667c(u16 *, u16 *, s32);
-    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+    void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     extern u16 *(*gAlloc)(s32);
     extern void (*gFree)(void *);
 
@@ -297,7 +297,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     temp_r5 = temp_r4 + arg3;
     func_02007f8c((u8 *)(arg0 + 1), 0, (u32)((arg3 - 1) * 2));
     *arg0 = 1;
-    var_r6 = (u32)((arg3 - func_02026244(arg2, arg3)) * 16);
+    var_r6 = (u32)((arg3 - BigNumLen(arg2, arg3)) * 16);
     for (; (u32)var_r6 < (u32)(arg3 * 16); var_r6++) {
         if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
             MI_CpuCopy8(sp8, (s32)arg0, arg3 * 2);
@@ -311,13 +311,13 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
             func_0202667c(temp_r4, arg0, arg3);
             MI_CpuCopy8((s32)temp_r4, (s32)arg0, temp_r11);
             if (arg4 != 0) {
-                func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);
+                BigNumDivMod(0, arg0, arg4, arg0, arg3, temp_r5);
             }
             if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
-                func_02026558(temp_r4, arg0, (u16 *)sp8, arg3);
+                BigNumMul(temp_r4, arg0, (u16 *)sp8, arg3);
                 MI_CpuCopy8((s32)temp_r4, (s32)arg0, temp_r11);
                 if (arg4 != 0) {
-                    func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);
+                    BigNumDivMod(0, arg0, arg4, arg0, arg3, temp_r5);
                 }
             }
             var_r6 += 1;
@@ -328,11 +328,11 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
 #pragma scheduling reset
 void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    s32 func_0202626c(u16 *, s32);
-    void func_0202629c(u16 *, u16 *, u16 *, s32);
-    void func_020263dc(u16 *, u16 *, u16 *, s32);
-    void func_02026558(u16 *, u16 *, u16 *, s32);
-    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+    s32 BigNumSign(u16 *, s32);
+    void BigNumAdd(u16 *, u16 *, u16 *, s32);
+    void BigNumSub(u16 *, u16 *, u16 *, s32);
+    void BigNumMul(u16 *, u16 *, u16 *, s32);
+    void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
 
     s32 bytes;
     u16 *p5;
@@ -359,29 +359,29 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     MI_CpuCopy8((s32)arg2, (s32)p2, bytes);
     p3[0] = 1;
 
-    if (func_0202626c(base, n) > 0) {
+    if (BigNumSign(base, n) > 0) {
         do {
-            func_020267fc(p1, p2, base, p5, n, p6);
+            BigNumDivMod(p1, p2, base, p5, n, p6);
             MI_CpuCopy8((s32)base, (s32)p2, bytes);
             MI_CpuCopy8((s32)p5, (s32)base, bytes);
-            func_02026558(p5, p1, p3, n);
-            func_020263dc(p5, p4, p5, n);
+            BigNumMul(p5, p1, p3, n);
+            BigNumSub(p5, p4, p5, n);
             MI_CpuCopy8((s32)p3, (s32)p4, bytes);
             MI_CpuCopy8((s32)p5, (s32)p3, bytes);
-        } while (func_0202626c(base, n) > 0);
+        } while (BigNumSign(base, n) > 0);
     }
-    func_0202629c(p4, p4, arg2, n);
-    func_020267fc(0, p4, arg2, arg0, n, p6);
+    BigNumAdd(p4, p4, arg2, n);
+    BigNumDivMod(0, p4, arg2, arg0, n, p6);
 }
 #pragma scheduling reset
 void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
 {
   M2C_UNK func_02007f8c(u8 *, s32, u32);
   M2C_UNK MI_CpuCopy8(s32, s32, s32);
-  void func_0202629c(u16 *, u16 *, u16 *, s32);
-  void func_020263dc(u16 *, u16 *, u16 *, s32);
+  void BigNumAdd(u16 *, u16 *, u16 *, s32);
+  void BigNumSub(u16 *, u16 *, u16 *, s32);
   s32 func_020264ec(u16 *, u16 *, s32);
-  void func_02026558(u16 *, u16 *, u16 *, s32);
+  void BigNumMul(u16 *, u16 *, u16 *, s32);
       void func_0202667c(u16 *, u16 *, s32);
   M2C_UNK func_020651c4(M2C_UNK, M2C_UNK, M2C_UNK);
   MI_CpuCopy8((s32) arg0, (s32) arg1, arg3 * 2);
@@ -392,13 +392,13 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
   else
     if (arg2 != 0)
   {
-    func_02026558(arg0, arg1, (u16 *) arg2, arg3);
+    BigNumMul(arg0, arg1, (u16 *) arg2, arg3);
   }
-  func_02026558(arg7, arg0, arg6, arg4);
+  BigNumMul(arg7, arg0, arg6, arg4);
   arg2 = (arg3 - arg4) * 2;
   func_02007f8c((u8 *) (arg7 + arg4), 0, (u32) arg2);
-  func_02026558(arg8, arg7, arg5, arg3);
-  func_0202629c(arg0, arg0, arg8, arg3);
+  BigNumMul(arg8, arg7, arg5, arg3);
+  BigNumAdd(arg0, arg0, arg8, arg3);
   func_020651c4((s32) arg0, (s32) (arg0 + arg4), (arg3 - arg4) * 2);
   func_02007f8c((u8 *) ((arg0 + arg3) - arg4), 0, (u32) (arg4 * 2));
   switch (func_020264ec(arg0, arg5, arg3))
@@ -408,7 +408,7 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
       return;
 
     case 1:
-      func_020263dc(arg0, arg0, arg5, arg3);
+      BigNumSub(arg0, arg0, arg5, arg3);
       return;
 
   }
@@ -417,12 +417,12 @@ void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
+void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
-    s32 func_02026244(u16 *, s32);
+    s32 BigNumLen(u16 *, s32);
     void func_02026484(u16 *, u16 *, u32, s32);
-    void func_02026558(u16 *, u16 *, u16 *, s32);
-    void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
+    void BigNumMul(u16 *, u16 *, u16 *, s32);
+    void BigNumDivMod(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026b70(u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026cbc(u16 *, u16 *, s32, s32, s32, u16 *, u16 *, u16 *, u16 *);
     extern u16 *(*gAlloc)(s32);
@@ -454,16 +454,16 @@ void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     sp20 = r5;
     r5 = sp20 + n;
 
-    t = func_02026244((u16 *)arg4, n);
+    t = BigNumLen((u16 *)arg4, n);
     buf[t] = 1;
 
     func_02026b70(r6, buf, (u16 *)arg4, n, sp24);
-    func_02026558(r7, buf, r6, n);
+    BigNumMul(r7, buf, r6, n);
     func_02026484(r6, r7, 1, n);
-    func_020267fc(r6, r6, (u16 *)arg4, (u16 *)0, n, r5);
-    func_02026558(sp24, (u16 *)arg1, buf, n);
-    func_020267fc((u16 *)0, sp24, (u16 *)arg4, sp24, n, r5);
-    func_020267fc((u16 *)0, buf, (u16 *)arg4, (u16 *)arg0, n, r5);
+    BigNumDivMod(r6, r6, (u16 *)arg4, (u16 *)0, n, r5);
+    BigNumMul(sp24, (u16 *)arg1, buf, n);
+    BigNumDivMod((u16 *)0, sp24, (u16 *)arg4, sp24, n, r5);
+    BigNumDivMod((u16 *)0, buf, (u16 *)arg4, (u16 *)arg0, n, r5);
 
     counter=0;
     if ((t << 4) != 0) {
@@ -483,7 +483,7 @@ void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     gFree(buf);
 }
 #pragma pop
-void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {
+void BigNumFromBytes(s16 *dst, u8 *src, s32 count, s32 size) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
     s16 *var_r4;
     s32 var_r5;
@@ -507,7 +507,7 @@ void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {
     }
 }
 
-void func_0202704c(u8 *dst, u16 *src, s32 n) {
+void BigNumToBytes(u8 *dst, u16 *src, s32 n) {
     u8 *p;
     dst += n - 1;
     while (n > 1) {

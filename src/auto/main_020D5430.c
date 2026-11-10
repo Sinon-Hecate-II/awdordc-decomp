@@ -28,7 +28,7 @@ void func_020d54b8(void) {
  if(!func_020d4dd0())return;
  if(!func_020bcc04())return;
  if(!func_020bdcd0())return;
- func_02082770();
+ Reset3DSpriteBankState();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }
 
@@ -89,34 +89,38 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=8;
 PlaySoundEffect(0x1001c);return 1;
 }
 
-s32 func_020d5aa0(u8 x,u8 y,s32 check,s32 allow,u8 mode){
+/* Handle confirming the tile under the battle-map cursor: if it is a valid move
+   destination finish the move (optionally playing the terrain effect); if it is empty,
+   holds a spent unit or a global lock is set, reject it (consumeInvalid decides whether
+   the press is swallowed); otherwise select the unit there and open its action menu. */
+s32 ConfirmCursorTile(u8 x,u8 y,s32 playMoveEffect,s32 consumeInvalid,u8 menuMode){
 extern void *gCurrentMap; extern M2C_UNK data_0211fbc4; extern u16 data_02168f14;
-s32 slot; M2C_UNK (*cb)(); void *unit;
+M2C_UNK (*cb)();
 func_020c93cc();
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758));
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x59a4+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)*14;
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS));
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_UNIT_RECORDS+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)*14;
 
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d6)=0;
-if(func_020cf878(x,y)) { if(check)func_020b97c4(x,y); return 1; }
-if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)) != 0 || ((u32)(data_02168f14<<22)>>31)) { if(!allow)return 0; func_020c752c();return 1; }
-func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
+if(func_020cf878(x,y)) { if(playMoveEffect)func_020b97c4(x,y); return 1; }
+if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(data_02168f14<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
+func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
+func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
 func_020cfd28();
 func_020d5554(x,y);
 func_0209fb70();
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)>>6)+1;
-SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
-func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)>>6)+1;
+SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_CELL_ORDER);
+func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER);
 func_020d5868();
 func_0207a748(0);func_0207b028(7);
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=2;
-func_020a06a0(mode);
+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_MODE)=2;
+func_020a06a0(menuMode);
 func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 func_020d6778(2);
-if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4)))func_02091c20(21,1);
+if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER)))func_02091c20(21,1);
 return 1;
 }
 
@@ -298,7 +302,7 @@ void func_020d6208(void) {
             }
             {
                 void *p2 = *(void **)(region + 0x2d0);
-                func_020d5aa0(((u8 *)p2)[1], ((u8 *)p2)[2], 1, 1, 1);
+                ConfirmCursorTile(((u8 *)p2)[1], ((u8 *)p2)[2], 1, 1, 1);
                 return;
             }
         }

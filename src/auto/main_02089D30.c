@@ -362,7 +362,7 @@ void func_0208a750(void *arg0) {
         temp_r0 = *(u16 **)gCur3DSpriteEngine;
         sp28 = (u16 *)((u8 *)temp_r0 + 0x10);
         *sp28 = (s16) (*sp28 | 0x10);
-        func_02082770();
+        Reset3DSpriteBankState();
         temp_r1_15 = *(u16 **)gCur3DSpriteEngine;
         sp24 = (u16 *)((u8 *)temp_r1_15 + 0x12);
         *sp24 = (s16) ((*sp24 & ~1) | 1);
@@ -402,13 +402,13 @@ void func_0208a750(void *arg0) {
 }
 #pragma pop
 void func_0208ab78(void *arg0) {
-    M2C_UNK func_02082770();
+    M2C_UNK Reset3DSpriteBankState();
     M2C_UNK Reset3DSpriteEngineState();
     M2C_UNK func_020b26dc();
     M2C_UNK func_020d472c();
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x15) >> 0x1F) & 0xFF) {
         Reset3DSpriteEngineState();
-        func_02082770();
+        Reset3DSpriteBankState();
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {
         func_020d472c();

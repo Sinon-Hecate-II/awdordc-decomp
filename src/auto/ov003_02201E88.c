@@ -10,7 +10,7 @@ static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIE
 
 void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 func_020846a4();
-    s32 func_020848f8();
+    s32 GetReadyPlayerMask();
     void func_02088da8(void *);
     void *func_0208931c(void *);
     void func_02098e04(void *, s32, s32);
@@ -45,7 +45,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         slotCount = slotCount + 1;
     } while ((u32) slotCount < 4);
     slotCount = 0;
-    participantMask = func_020848f8();
+    participantMask = GetReadyPlayerMask();
     participant = 0;
     do {
         if (participantMask & (1 << participant)) {

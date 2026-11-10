@@ -7,20 +7,20 @@ s32 func_ov000_02197814(void *unitA, void *unitB, s32 bonus) {
     s32 func_0206409c(s32);
     s32 func_ov000_021a89a4(void *);
     s32 GetUnitMoveRange(s32, u32);
-    s32 func_ov000_021a9820(s32, u32);
-    s32 func_ov000_021a98e4(u32);
+    s32 GetUnitMaxAttackRange(s32, u32);
+    s32 GetUnitAttackClass(u32);
     s32 dist, n, idx, v, limit;
     if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0xc)) bonus++;
     dist = func_0206409c(M2C_FIELD(unitA, u8 *, 1) - M2C_FIELD(unitB, u8 *, 1));
     dist += func_0206409c(M2C_FIELD(unitA, u8 *, 2) - M2C_FIELD(unitB, u8 *, 2));
-    if (func_ov000_021a98e4((u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) == 0) {
+    if (GetUnitAttackClass((u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) == 0) {
         if (unitB) { if (!unitB) n = 0; else n = ((s32)((u8 *)unitB - ((u8 *)*gCurrentMap + 0x59a4))) / 14; idx = (n >> 6) + 1; } else idx = 0;
         v = func_ov000_021a89a4(unitA);
         limit = bonus + (v + GetUnitMoveRange(idx, (u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) + 1);
     } else {
         if (unitB) { if (!unitB) n = 0; else n = ((s32)((u8 *)unitB - ((u8 *)*gCurrentMap + 0x59a4))) / 14; idx = (n >> 6) + 1; } else idx = 0;
         v = func_ov000_021a89a4(unitA);
-        limit = bonus + (v + func_ov000_021a9820(idx, (u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26));
+        limit = bonus + (v + GetUnitMaxAttackRange(idx, (u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26));
     }
     if (dist > limit) return 0;
     return 1;

@@ -328,7 +328,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, ObjFlags3A *, 0x3A).b.lo = 1;
 }
 void *func_ov003_02205ce8(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK func_020af1f8(void);
     M2C_UNK MemFree(void *);
     M2C_UNK func_ov003_021f140c(M2C_UNK);
@@ -352,18 +352,18 @@ void *func_ov003_02205ce8(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, void **, 0x40);
     if (temp_r5 != NULL) {
         if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            func_01ffa574(M2C_FIELD(temp_r5, s32 *, 0));
+            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 0));
         }
         if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            func_01ffa574(M2C_FIELD(temp_r5, s32 *, 4));
+            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 4));
         }
         var_r6 = 0;
         do {
             if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8) != 0) {
-                func_01ffa574(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
+                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
             }
             if (M2C_FIELD((u8 *)temp_r5 + ((s32)var_r6 << 2), s32 *, 0x28) != 0) {
-                func_01ffa574(M2C_FIELD((u8 *)temp_r5 + ((s32)var_r6 << 2), s32 *, 0x28));
+                DeleteSpriteObject(M2C_FIELD((u8 *)temp_r5 + ((s32)var_r6 << 2), s32 *, 0x28));
             }
             var_r6 += 1;
         } while (var_r6 < 8U);
@@ -382,10 +382,10 @@ void *func_ov003_02205ce8(void *arg0) {
         M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
     }
     if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        func_01ffa574(M2C_FIELD(arg0, s32 *, 0x4C));
+        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x4C));
     }
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        func_01ffa574(M2C_FIELD(arg0, s32 *, 0x58));
+        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x58));
     }
     func_ov003_021f140c(4);
     if (((u32)(M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
@@ -400,7 +400,7 @@ void *func_ov003_02205ce8(void *arg0) {
 }
 
 M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020990c0();
     M2C_UNK MemFree();
     extern M2C_UNK data_ov003_02210754;
@@ -411,10 +411,10 @@ M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
     var_r4 = 0;
     do {
         if (arg0[var_r4 + 5] != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         if (arg0[var_r4 + 9] != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         var_r4 += 1;
     } while (var_r4 < 4);
@@ -423,7 +423,7 @@ M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
 }
 
 M2C_UNK **func_ov003_02205e94(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020741c4(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK MemFree();
     extern M2C_UNK data_ov003_02210764;
@@ -443,7 +443,7 @@ M2C_UNK **func_ov003_02205e94(M2C_UNK **arg0) {
     var_r5 = 0;
     do {
         if (arg0[var_r5 + 0x3A] != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         var_r5 += 1;
     } while (var_r5 < 9);
@@ -454,7 +454,7 @@ M2C_UNK **func_ov003_02205e94(M2C_UNK **arg0) {
 
 #pragma opt_common_subs off
 void *func_ov003_02205f28(void *arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020af1f8();
     M2C_UNK MemFree();
     M2C_UNK func_ov003_021f140c(M2C_UNK);
@@ -478,18 +478,18 @@ void *func_ov003_02205f28(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, void **, 0x40);
     if (temp_r5 != NULL) {
         if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            func_01ffa574(M2C_FIELD(temp_r5, s32 *, 0));
+            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 0));
         }
         if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            func_01ffa574(M2C_FIELD(temp_r5, s32 *, 4));
+            DeleteSpriteObject(M2C_FIELD(temp_r5, s32 *, 4));
         }
         var_r6 = 0;
         do {
             if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8) != 0) {
-                func_01ffa574(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
+                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 8));
             }
             if (M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 0x28) != 0) {
-                func_01ffa574(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 0x28));
+                DeleteSpriteObject(M2C_FIELD(temp_r5 + (var_r6 * 4), s32 *, 0x28));
             }
             ++var_r6;
         } while (var_r6 < 8U);
@@ -508,10 +508,10 @@ void *func_ov003_02205f28(void *arg0) {
         M2C_FIELD(*temp_r0_3, void (**)(void *), 4)(temp_r0_3);
     }
     if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        func_01ffa574(M2C_FIELD(arg0, s32 *, 0x4C));
+        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x4C));
     }
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        func_01ffa574(M2C_FIELD(arg0, s32 *, 0x58));
+        DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x58));
     }
     func_ov003_021f140c(4);
     if (((u32)(M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
@@ -527,7 +527,7 @@ void *func_ov003_02205f28(void *arg0) {
 }
 #pragma opt_common_subs reset
 M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020990c0();
     extern M2C_UNK data_ov003_02210754;
     register s32 var_r4;
@@ -537,10 +537,10 @@ M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
     var_r4 = 0;
     do {
         if (arg0[var_r4 + 5] != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         if (arg0[var_r4 + 9] != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         var_r4 += 1;
     } while (var_r4 < 4);
@@ -548,7 +548,7 @@ M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
 }
 
 M2C_UNK **func_ov003_022060d4(M2C_UNK **arg0) {
-M2C_UNK func_01ffa574(void *);
+M2C_UNK DeleteSpriteObject(void *);
 M2C_UNK func_020741c4(void *,M2C_UNK,M2C_UNK,M2C_UNK *);
 extern M2C_UNK data_ov003_02210764;
 extern M2C_UNK func_ov003_021f05f8;
@@ -563,7 +563,7 @@ i++;
 i=0;
 do {
 p=arg0[i+0x3a];
-if(p)func_01ffa574(p);
+if(p)DeleteSpriteObject(p);
 i++;
 }while(i<9);
 func_020741c4((u8 *)arg0+8,8,0x18,&func_ov003_021f05f8);

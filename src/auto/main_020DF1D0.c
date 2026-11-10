@@ -42,16 +42,111 @@ static inline s32 SpriteCancelDF(void *q,u16 keys) {
  return 0;
 }
 
-M2C_UNK func_020df1d0(void) { return 0; }
+#pragma opt_common_subs off
+/* Per-frame update for the link/multiplayer player-list menu: animates its
+ * three row sprites, handles back (B) and ready (A) input, plays page/count
+ * sounds, and mirrors the menu onto the requested DS screen side. */
+void LinkMenuUpdate(void *menu) {
+ void MenuSpriteUpdate(void *);void func_02088f1c(void *);void func_02088ff4(void *);
+ void func_020d47f0(void);void func_01ffa6fc(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
+ u32 GetActivePlayerMask(void);u32 CountBits(void);u32 func_ov010_02229a40(void);
+ s32 func_ov010_022282b4(s32);s32 func_ov010_02229bdc(void);
+ void func_0208b758(void *,s32);u32 GetReadyPlayerMask(void);
+ void func_ov010_0222952c(void);void func_ov010_02229a94(void);void func_020d47d0(void);void ResetPlayerMask(void);
+ s32 func_020890b8(void *);s32 func_02089064(void *);void *func_ov010_02229b0c(s32);
+ extern u16 *gKeyState;
+ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+ s32 func_0208b5ec(void);void func_0208af20(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,u32);
+ void *sprite,*unused;u16 keys;u32 readyMask,playerCount;s32 prevPlayerCount;
+ sprite=M2C_FIELD(menu,void **,0x50);if(sprite)MenuSpriteUpdate(sprite);
+ sprite=M2C_FIELD(menu,void **,0x54);if(sprite)MenuSpriteUpdate(sprite);
+ sprite=M2C_FIELD(menu,void **,0x58);if(sprite)MenuSpriteUpdate(sprite);
+ keys=*gKeyState;M2C_FIELD(menu,u16 *,0x48)&=~32;
+ {void *flipSprite=M2C_FIELD(menu,void **,0x58);
+ u32 base=(u32)(M2C_FIELD(flipSprite,u8 *,0x59)<<28)>>28;
+ s32 next=base+2,test;
+ if(next!=(u16)((u32)(M2C_FIELD(flipSprite,u32 *,0x40)<<6)>>24))test=1;else test=0;
+ if(test&255) {
+ if(SpritePressedDF(flipSprite)||(keys&2)) {
+ if(M2C_FIELD(flipSprite,s8 *,0x5a)>=0)SpriteStateDF(flipSprite,base+1,12);
+ func_020d47f0();func_01ffa6fc(menu);func_ov010_022294ec();PlaySoundEffect(0x1000f);return;
+ }
+ }
+
+ }
+ GetActivePlayerMask();playerCount=CountBits();prevPlayerCount=M2C_FIELD(menu,s8 *,0x41);
+ if(prevPlayerCount>1||playerCount>1) {
+ if(prevPlayerCount!=playerCount) {
+ PlaySoundEffect(prevPlayerCount<(s32)playerCount?0x122:0x123);
+ M2C_FIELD(menu,s8 *,0x41)=playerCount;
+ }
+ }
+ if(M2C_FIELD(menu,u16 *,0x48)&0x100) {
+ if(func_0208b5ec())func_0208af20();
+ {s32 i; void *savedEngine=gCur3DSpriteEngine;
+ for(i=0;i<2;i++) {
+ u8 screen;gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
+ screen=M2C_FIELD(menu,u8 *,0x44);
+ if(screen==0&&gCur3DSpriteEngine!=g3DSpriteEngineMain)continue;
+ if(screen==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
+ if(screen==3&&gCur3DSpriteEngine!=savedEngine)continue;
+ {void *drawn=func_0208b564(menu);func_020899cc(drawn,2,M2C_FIELD(menu,u16 *,0x46)<<5,0x44000001);M2C_FIELD(drawn,u32 *,0x58)|=0x1000;}
+ }
+ gCur3DSpriteEngine=savedEngine;
+ }
+ func_020d47f0();func_01ffa6fc(menu);func_ov010_022294ec();return;
+ }
+ if(func_ov010_02229a40()>=2&&func_ov010_022282b4(3)) {
+ if(M2C_FIELD(menu,s16 *,0x4c)>0)M2C_FIELD(menu,s16 *,0x4c)--;
+ if(func_ov010_02229bdc()) {
+ sprite=M2C_FIELD(menu,void **,0x54);
+ {u32 base=(u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28; s32 next=base+2,test;
+ if(next!=(u16)((u32)(M2C_FIELD(sprite,u32 *,0x40)<<6)>>24))test=1;else test=0;
+ if(!(test&255)) {SpriteStateDF(sprite,base,0);
+ func_02088f1c(M2C_FIELD(menu,void **,0x54));func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000012);}}
+ {sprite=M2C_FIELD(menu,void **,0x54);
+ if(!SpriteChangedDF(sprite))return;
+ if(!SpritePressedDF(sprite)&&!(keys&1)&&M2C_FIELD(menu,s16 *,0x4c)!=0)return;
+ }
+ readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ sprite=M2C_FIELD(menu,void **,0x54);
+ if(M2C_FIELD(sprite,s8 *,0x5a)>=0)SpriteStateDF(sprite,((u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28)+1,12);
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(menu);PlaySoundEffect(0x1000e);return;
+ } else {
+ sprite=M2C_FIELD(menu,void **,0x60);
+ if(!func_020890b8(sprite)&&!func_02089064(M2C_FIELD(menu,void **,0x60))) {func_02088f1c(M2C_FIELD(menu,void **,0x60));
+ func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000012);}
+ {void *entry=func_ov010_02229b0c(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
+ readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(menu);PlaySoundEffect(0x1000e);return;
+ }
+ } else {
+ M2C_FIELD(menu,s16 *,0x4c)=0x708;
+ if(func_ov010_02229bdc()) {
+ {void *row=M2C_FIELD(menu,void **,0x54);
+ u32 base=(u32)(M2C_FIELD(row,u8 *,0x59)<<28)>>28;
+ s32 next=base+2,test;
+ if(next!=(u16)((u32)(M2C_FIELD(row,u32 *,0x40)<<6)>>24))test=1;else test=0;
+ if(!(test&255))return;
+ SpriteStateDF(row,next,0);
+ }
+ func_02088ff4(M2C_FIELD(menu,void **,0x54));func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000011);
+ } else {
+ if(func_020890b8(M2C_FIELD(menu,void **,0x60)))return;
+ if(!func_02089064(M2C_FIELD(menu,void **,0x60)))return;
+ func_02088ff4(M2C_FIELD(menu,void **,0x60));func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000011);
+ }
+ }
+}
 
 #pragma opt_common_subs off
 void func_020df718(void *arg0) {
  void MenuSpriteUpdate(void *);void func_02088f1c(void *);void func_02088ff4(void *);
  void func_020d47f0(void);void func_01ffa6fc(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
- u32 func_02084970(void);u32 func_02076614(void);u32 func_ov010_02229a40(void);
+ u32 GetActivePlayerMask(void);u32 CountBits(void);u32 func_ov010_02229a40(void);
  s32 func_ov010_022282b4(s32);s32 func_ov010_02229bdc(void);
- void func_0208b758(void *,s32);u32 func_020848f8(void);
- void func_ov010_0222952c(void);void func_ov010_02229a94(void);void func_020d47d0(void);void func_02084a40(void);
+ void func_0208b758(void *,s32);u32 GetReadyPlayerMask(void);
+ void func_ov010_0222952c(void);void func_ov010_02229a94(void);void func_020d47d0(void);void ResetPlayerMask(void);
  s32 func_020890b8(void *);s32 func_02089064(void *);void *func_ov010_02229b0c(s32);
  extern u16 *gKeyState;
  void *q,*p;u16 keys;u32 state,now;s32 old;
@@ -71,7 +166,7 @@ void func_020df718(void *arg0) {
  }
 
  }
- func_02084970();now=func_02076614();old=M2C_FIELD(arg0,s8 *,0x41);
+ GetActivePlayerMask();now=CountBits();old=M2C_FIELD(arg0,s8 *,0x41);
  if(old>1||now>1) {
  if(old!=now) {
  PlaySoundEffect(old<(s32)now?0x122:0x123);
@@ -90,17 +185,17 @@ void func_020df718(void *arg0) {
  if(!(test&255))return;}
  if(!SpritePressedDF(button)&&!(keys&1))return;
  }
- state=func_020848f8();if(state!=func_02084970())return;
+ state=GetReadyPlayerMask();if(state!=GetActivePlayerMask())return;
  q=M2C_FIELD(arg0,void **,0x54);
  if(M2C_FIELD(q,s8 *,0x5a)>=0)SpriteStateDF(q,((u32)(M2C_FIELD(q,u8 *,0x59)<<28)>>28)+1,12);
- func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();func_02084a40();func_01ffa6fc(arg0);PlaySoundEffect(0x1000e);return;
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(arg0);PlaySoundEffect(0x1000e);return;
  } else {
  q=M2C_FIELD(arg0,void **,0x60);
  if(!func_020890b8(q)&&!func_02089064(M2C_FIELD(arg0,void **,0x60)))func_02088f1c(M2C_FIELD(arg0,void **,0x60));
  func_0208b758(M2C_FIELD(arg0,void **,0x64),0x44000012);
  {void *entry=func_ov010_02229b0c(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
- state=func_020848f8();if(state!=func_02084970())return;
- func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();func_02084a40();func_01ffa6fc(arg0);PlaySoundEffect(0x1000e);return;
+ state=GetReadyPlayerMask();if(state!=GetActivePlayerMask())return;
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(arg0);PlaySoundEffect(0x1000e);return;
  }
  } else {
  if(func_ov010_02229bdc()) {
@@ -131,13 +226,12 @@ void func_020e0140(void) {
     func_020debf4();
 }
 
-void func_020e014c(void) {
-    M2C_UNK func_020df1d0();
-    func_020df1d0();
+void func_020e014c(void *arg0) {
+    LinkMenuUpdate(arg0);
 }
 
-void func_020e0158(void) {
-    func_020df1d0();
+void func_020e0158(void *arg0) {
+    LinkMenuUpdate(arg0);
 }
 
 void func_020e0164(void *arg0) {

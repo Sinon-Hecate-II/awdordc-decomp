@@ -14,12 +14,12 @@ void func_020c4d28(M2C_UNK arg0) {
     s32 func_020761f8();
     s32 func_02076208();
     M2C_UNK func_02076244();
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     if (func_020761f8() != 0) {
         return;
     }
     if (func_02076208() != 0) {
-        func_02086680(0xC000034C);
+        GetLocalizedText(0xC000034C);
         func_02076244();
     }
     func_01ffa6fc(arg0);
@@ -137,7 +137,7 @@ void func_020c4ff4(M2C_UNK arg0) {
         return;
     }
     if (func_02076208() != 0) {
-        func_02086680(0xC000034D);
+        GetLocalizedText(0xC000034D);
         func_02076244();
     }
     func_01ffa6fc(arg0);
@@ -196,7 +196,7 @@ void func_020c5230(M2C_UNK arg0) {
         return;
     }
     if (func_02076208() != 0) {
-        func_02086680(0xC000034D);
+        GetLocalizedText(0xC000034D);
         func_02076244();
     }
     func_01ffa6fc(arg0);

@@ -21,7 +21,7 @@ return count;
 }
 
 s32 func_ov000_021a06e4(M2C_UNK arg0) {
-s32 IsFootUnitKind(); s32 func_ov000_021a98e4(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
+s32 IsFootUnitKind(); s32 GetUnitAttackClass(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
 extern u16 data_02168f14; extern void **gCurrentMap; extern void *gAiState;
 void *p;
 if(IsFootUnitKind()!=0 || func_ov000_021a9904(arg0)==2)return 0;
@@ -32,26 +32,26 @@ switch(M2C_FIELD(p,u16*,0x5142)) {case 0xae: if(M2C_FIELD(p,u16*,0x52a4)==3)retu
 if(M2C_FIELD(gAiState,u8*,2)==12)return 5;
 p=*gCurrentMap;
 if(M2C_FIELD(p,u8*,0x5156)!=0 || M2C_FIELD(p,u8*,0x5158)==2) {
-if(func_ov000_021a98e4(arg0)==1)return 4;
+if(GetUnitAttackClass(arg0)==1)return 4;
 }
 return 0;
 }
 
-void func_ov000_021a07c0(s32 arg0) {
-s32 func_ov000_021a43e8(); s32 func_ov000_021a98e4(M2C_UNK);
-extern u8 data_ov000_021df7d0[]; extern void *gAiState; extern u8 *data_ov000_021df580;
+void CommitAiAction(s32 arg0) {
+s32 func_ov000_021a43e8(); s32 GetUnitAttackClass(M2C_UNK);
+extern u8 gAiCommand[]; extern void *gAiState; extern u8 *data_ov000_021df580;
 extern u8 data_ov000_021e00af[],data_ov000_021dfd98[],data_ov000_021dfd99[],data_ov000_021dfd9a[];
 extern s8 data_ov000_021e00b0[];
 s32 offset; s32 index;
-data_ov000_021df7d0[7]=func_ov000_021a06e4(data_ov000_021df7d0[6]);
+gAiCommand[7]=func_ov000_021a06e4(gAiCommand[6]);
 offset=arg0*12;
 data_ov000_021e00af[offset]=252;
 M2C_FIELD(gAiState,u8*,7)++;
 M2C_FIELD(gAiState,u8*,4)=arg0;
-if((data_ov000_021b5c0f[(s16)data_ov000_021df7d0[6]*(s16)112]&7) && func_ov000_021a43e8()==0){
-if(func_ov000_021a98e4(data_ov000_021df7d0[6])==0){index=data_ov000_021e00b0[offset];data_ov000_021dfd98[index*8]++;}
-if(func_ov000_021a98e4(data_ov000_021df7d0[6])==1){index=data_ov000_021e00b0[offset];data_ov000_021dfd99[index*8]++;}
-if(data_ov000_021df7d0[6]==26){index=data_ov000_021e00b0[offset];data_ov000_021dfd9a[index*8]++;}
+if((data_ov000_021b5c0f[(s16)gAiCommand[6]*(s16)112]&7) && func_ov000_021a43e8()==0){
+if(GetUnitAttackClass(gAiCommand[6])==0){index=data_ov000_021e00b0[offset];data_ov000_021dfd98[index*8]++;}
+if(GetUnitAttackClass(gAiCommand[6])==1){index=data_ov000_021e00b0[offset];data_ov000_021dfd99[index*8]++;}
+if(gAiCommand[6]==26){index=data_ov000_021e00b0[offset];data_ov000_021dfd9a[index*8]++;}
 }
 M2C_FIELD(gAiState,u8*,3)=1;
 *data_ov000_021df580=5;
@@ -116,15 +116,15 @@ return total*func_ov000_021a0aec(arg0,arg1,(u32)(M2C_FIELD(arg2,u8 *,0)<<26)>>26
    area, then scores each island: enemy/friendly unit counts, terrain flags and
    the best target tile value. Stores one 8-byte record per group in gAiTargetGroups. */
 s32 BuildAiTargetGroups(void) {
-    void func_01ffada0(s32,s32,s32,s32,s32);
+    void FloodFillUnitRange(s32,s32,s32,s32,s32);
     s32 IsUnitOnCurrentTeam(s32);
     s32 func_020a7bd4(s32);
     s32 IsFootUnitKind();
     s32 IsCurrentPlayerUnit(s16);
     s32 func_ov000_021a43e8();
-    s32 func_ov000_021a98e4(s32);
+    s32 GetUnitAttackClass(s32);
     s32 func_ov000_021a99dc(void *);
-    s32 func_ov000_021a8ff0(s32);
+    s32 IsPropertyTerrain(s32);
     s32 func_020d27ec(s32,s32);
     s32 func_ov000_021a4a98(s32,s32);
     void func_ov000_021a11b0(s32);
@@ -144,7 +144,7 @@ s32 BuildAiTargetGroups(void) {
     group=gAiTargetGroups;
     for (; index < M2C_FIELD(gAiState,u8 *,0); index++,candidate+=12) {
         if ((s8)candidate[4] != -1) continue;
-        func_01ffada0(candidate[0],candidate[1],1,110,0);
+        FloodFillUnitRange(candidate[0],candidate[1],1,110,0);
         statusFlags=0; typeFlags=0;
         group[0]=0;
         group[3]&=~1;
@@ -168,8 +168,8 @@ s32 BuildAiTargetGroups(void) {
                                 if(unit->unk6>=61) typeFlags|=1;
                             }
                             if(IsCurrentPlayerUnit((s16)unitId) && (data_ov000_021b5bfc[unit->unk0*112+0x13]&7) && !func_ov000_021a43e8(unit->unk0)) {
-                                if(func_ov000_021a98e4(unit->unk0)==0) group[4]++;
-                                if(func_ov000_021a98e4(unit->unk0)==1) group[5]++;
+                                if(GetUnitAttackClass(unit->unk0)==0) group[4]++;
+                                if(GetUnitAttackClass(unit->unk0)==1) group[5]++;
                                 if(unit->unk0==26) group[6]++;
                             }
                         } else if(!func_ov000_021a99dc(unit)) {
@@ -180,7 +180,7 @@ s32 BuildAiTargetGroups(void) {
                     }
                     base=*gCurrentMap;
                     terrainId=base[0x1420+x+*(u16 *)(base+y*2+0x3758)];
-                    if(func_ov000_021a8ff0(terrainId)==1) {
+                    if(IsPropertyTerrain(terrainId)==1) {
                         base=*gCurrentMap;
                         if(!func_020d27ec(M2C_FIELD(base,s16 *,0x52a8),base[0x1420+x+*(u16 *)(base+y*2+0x3758)])) {
                             base=*gCurrentMap;

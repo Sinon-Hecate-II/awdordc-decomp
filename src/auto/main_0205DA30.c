@@ -116,7 +116,7 @@ s32 func_0205de10(void) {
 
 #pragma scheduling off
 s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_020496a4(s32, s32, s32);
+    s32 ghiSocket(s32, s32, s32);
     void *func_0205d7f4();
     M2C_UNK func_0205d88c();
     void func_0205da30();
@@ -140,7 +140,7 @@ s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg4;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg5;
-    M2C_FIELD(temp_r0, s32 *, 0) = func_020496a4(2, 2, 0);
+    M2C_FIELD(temp_r0, s32 *, 0) = ghiSocket(2, 2, 0);
     M2C_FIELD(temp_r0, s32 *, 0x20) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x32) = 0;
     M2C_FIELD(temp_r0, s8 *, 0x33) = 0;
@@ -383,10 +383,10 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     M2C_UNK func_02049208();
     M2C_UNK func_0205ec0c();
     s32 func_0205ec80(s8 *, s32, void *, M2C_UNK);
-    M2C_UNK func_020675e4(s8 *, M2C_UNK *, s32);
+    M2C_UNK StringFormat(s8 *, M2C_UNK *, s32);
     s32 func_02067774();
     M2C_UNK func_020677a8();
-    M2C_UNK func_02068c50(void *, s32);
+    M2C_UNK StringCopy(void *, s32);
     extern M2C_UNK data_020ff8d8;
     extern M2C_UNK data_020ff9e8;
     extern s32 data_0213e358;
@@ -411,8 +411,8 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     }
     func_02049208();
     func_020677a8();
-    func_02068c50(var_r6 + 4, arg3);
-    func_02068c50(var_r6 + 0x44, arg4);
+    StringCopy(var_r6 + 4, arg3);
+    StringCopy(var_r6 + 0x44, arg4);
     M2C_FIELD(var_r6, s32 *, 0xC0) = arg2;
     var_r5 = 0;
     M2C_FIELD(var_r6, s32 *, 0xAC) = 0;
@@ -454,7 +454,7 @@ s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     if (arg5 != 0) {
         temp_r4 = data_0213e370;
         if (temp_r4 == 0) {
-            func_020675e4(sp0, &data_020ff9e8, arg3);
+            StringFormat(sp0, &data_020ff9e8, arg3);
         }
         if (temp_r4 != 0) {
             var_r0 = &data_0213e370;
@@ -527,7 +527,7 @@ void func_0205e8b0(void *arg0) {
 void func_0205da30(void *arg0) {
 s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 func_02049208(void);
 void func_0205d944(s32,s32,u16,void *,s32);
-s32 func_02068c50(void *,s32); s32 StringLength(void *);
+s32 StringCopy(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,data_0213e144;
 union { NetworkHandshakePacket header; u8 bytes[88]; } packet; NetworkHandshakePacket *p=&packet.header; u8 *buf=packet.bytes;
 u32 ip,a,b,c,d;
@@ -547,7 +547,7 @@ a=func_0205d998();b=func_0205d998();c=func_0205d998();d=func_0205d998();
 ip=((c>>24)&255)|((d>>8)&0xff00)|((b<<8)&0xff0000)|((a<<24)&0xff000000);
 packet.bytes[15]=ip>>24;packet.bytes[16]=ip>>16;packet.bytes[17]=ip>>8;packet.bytes[18]=ip;
 packet.bytes[19]=0;packet.bytes[20]=0;
-func_02068c50(packet.bytes+21,(s32)&gServiceNameBuffer);
+StringCopy(packet.bytes+21,(s32)&gServiceNameBuffer);
 len=StringLength(&gServiceNameBuffer)+22;
 if(p->flag && M2C_FIELD(arg0,s32 *,20)==0){
 buf[12]=0;func_0205d944(M2C_FIELD(arg0,s32 *,4),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);

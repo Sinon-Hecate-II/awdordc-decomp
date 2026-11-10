@@ -13,12 +13,12 @@ void SetMapCursor(int, int, int, int, int);
 #pragma opt_strength_reduction off
 void func_ov000_0218ae58(void) {
     s32 func_ov000_021a9740(void *, s32);
-    void func_01ffada0(s32, s32, u8, s32, s32);
+    void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void func_01ffb9c4(s8);
     s32 func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_0217aa2c(s32, s32);
-    s32 func_ov000_02179e48(void *);
+    s32 FindAttackPosition(void *);
     s32 func_ov000_0217e6bc(s32, s32);
     void PlanMoveDestination(s32, s32);
 
@@ -36,7 +36,7 @@ void func_ov000_0218ae58(void) {
         if (func_ov000_021a9740(unit, 1) < 10) return;
 
         unit = *(void **)(((u8 *)*gCurrentMap) + 0x52d0);
-        func_01ffada0(
+        FloodFillUnitRange(
             ((u8 *)unit)[1],
             ((u8 *)unit)[2],
             ((UnitKind0218 *)unit)->kind,
@@ -80,7 +80,7 @@ next:;
 
     if (best == 0x7fff) return;
 
-    if (!func_ov000_02179e48(cand)) return;
+    if (!FindAttackPosition(cand)) return;
     if (!func_ov000_0217e6bc(cand[0], cand[1])) return;
     PlanMoveDestination(cand[0], cand[1]);
     return;
@@ -109,8 +109,8 @@ void func_ov000_0218b02c(void) {
  * placed on each chosen cell. */
 void PlanMoveDestination(s32 targetX,s32 targetY) {
 void SelectMapLayer(void *);
-void func_01ffada0(s32,s32,u8,s32,s32);
-void func_01ffc328(void *);
+void FloodFillUnitRange(s32,s32,u8,s32,s32);
+void BuildUnitMoveRange(void *);
 s32 IsValidMoveCell(s16,s16);
 s32 func_ov000_021a8be8(s16,s16,s32);
 s32 func_ov000_021a9d8c(s16,s16);
@@ -121,11 +121,11 @@ s32 bestX,bestY,specialX,specialY,bestD,specialD;
 s32 bestC,bestV,specialC,x,specialV,score,y,cost,cellCost;u8 *unit;
 bestX=-1;bestY=0;bestV=0x7fffffff;specialX=bestX;specialY=bestY;bestD=bestY;specialD=bestY;specialV=0x7fffffff;
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-func_01ffada0(targetX,targetY,((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind,110,0);
+FloodFillUnitRange(targetX,targetY,((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind,110,0);
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
 if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]<0) (*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]=110;
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
-func_01ffc328(*(void **)((u8 *)*gCurrentMap+0x52d0));
+BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap+0x52d0));
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
 if(!IsValidMoveCell(unit[1],unit[2]) ||
 (((UnitKind0218 *)*(u8 **)((u8 *)*gCurrentMap+0x52d0))->kind==22 &&

@@ -173,10 +173,10 @@ s32 func_ov004_022134d0(void) {
 }
 
 s32 func_ov004_02213564(void) {
- extern void **gCurrentMap; extern u8 data_ov000_021df7d0;
+ extern void **gCurrentMap; extern u8 gAiCommand;
  u8 value; u8 *p; u8 *base; u8 x,y;
  base=*gCurrentMap; p=M2C_FIELD(base,u8 **,0x52D0); x=p[1]; y=p[2];
- if(data_ov000_021df7d0==3) {
+ if(gAiCommand==3) {
  p=base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)); value=p[0x1420];
  if(((s32)(value&0xE0)>>5)==1&&(value&0x1F)==0x10)return 1;
  } return 0;
@@ -184,12 +184,12 @@ s32 func_ov004_02213564(void) {
 
 s32 func_ov004_022135d8(void) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021df7d0;
+extern u8 gAiCommand;
 u8 value,*p,*base,x,y;
 base=*gCurrentMap;
 p=M2C_FIELD(base,u8 **,0x52d0);
 x=p[1];y=p[2];
-if(data_ov000_021df7d0==3) {
+if(gAiCommand==3) {
 p=base+(x+M2C_FIELD(base+y*2,u16 *,0x3758));value=p[0x1420];
 if(((s32)(value&0xe0)>>5)==1 && (value&0x1f)==0x11)return 1;
 }
@@ -198,12 +198,12 @@ return 0;
 
 s32 func_ov004_0221364c(void) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021df7d0;
+extern u8 gAiCommand;
 u8 value,*p,*base,x,y;
 base=*gCurrentMap;
 p=M2C_FIELD(base,u8 **,0x52d0);
 x=p[1];y=p[2];
-if(data_ov000_021df7d0==3 && M2C_FIELD(base,u16 *,0x52a4)==1) {
+if(gAiCommand==3 && M2C_FIELD(base,u16 *,0x52a4)==1) {
 p=base+(x+M2C_FIELD(base+y*2,u16 *,0x3758));value=p[0x1420];
 if((value&0x1f)==0x11)return 1;
 }

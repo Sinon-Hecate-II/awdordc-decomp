@@ -154,12 +154,12 @@ void func_020855f0(M2C_UNK arg0) {
 }
 
 u8 func_02085608(void *a) {
-    s32 func_020848f8(void);
+    s32 GetReadyPlayerMask(void);
     s32 func_0208471c(void);
     s32 first, second;
     s32 result;
-    first=func_020848f8();
-    second=func_020848f8();
+    first=GetReadyPlayerMask();
+    second=GetReadyPlayerMask();
     result=first!=(M2C_FIELD(a,u16 *,0x44)&second);
     if(func_0208471c()) result=0;
     return (u8)result;

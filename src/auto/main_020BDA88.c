@@ -204,13 +204,13 @@ void func_020be12c(void) {
 void func_020be130(void *arg0) {
     s32 func_02076208();
     M2C_UNK func_02076244();
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     M2C_UNK func_020e35cc(s32);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
     if (func_02076208() != 0) {
-        func_02086680(0xC000034C);
+        GetLocalizedText(0xC000034C);
         func_02076244();
     }
     if (temp_r4 == 0) {
@@ -221,11 +221,11 @@ void func_020be130(void *arg0) {
 
 void func_020be168(M2C_UNK arg0) {
     s32 func_020761f8();
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     if (func_020761f8() != 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_020be188(s32 arg0) {
@@ -268,7 +268,7 @@ void func_020be2f8(M2C_UNK arg0) {
 }
 
 u8 func_020be324(s32 arg0,M2C_UNK arg1){
-void *func_02076228(void);s32 func_02076234(void);s32 func_020761c0(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK func_02086680(s32);M2C_UNK func_02076244();
+void *func_02076228(void);s32 func_02076234(void);s32 func_020761c0(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
 u8 *p,*best;s32 n,i,id; s32 better; u32 high;u32 b,a;u8 result;
 p=func_02076228();best=0;n=func_02076234();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));
@@ -277,7 +277,7 @@ if(!better)goto next;
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return 0;
 result=func_020761c0(id,arg1);
-if(func_02076208()){func_02086680(0xc000034d);func_02076244();}
+if(func_02076208()){GetLocalizedText(0xc000034d);func_02076244();}
 return result;
 }
 

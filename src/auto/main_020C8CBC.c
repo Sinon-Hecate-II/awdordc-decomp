@@ -220,7 +220,7 @@ return (u16)((a>>20)&0xffff);
 
 s32 func_020c9288(s32 a,s32 b,s32 c) {
 void *func_020c7e88(s32); void *func_0208b564(s32);
-void func_020675e4(void *,const void *,...); void func_020899fc(void *,s32,s32,void *);
+void StringFormat(void *,const void *,...); void func_020899fc(void *,s32,s32,void *);
 extern char data_0212b19c[];
 u64 v=func_020c91ac(a), q,qq; s32 x,y,z,w; char buf[64]; void *p;
 func_020c7e88(a);
@@ -228,7 +228,7 @@ if(!v)return 0;
 q=v/10000; qq=q/10000;
 func_020c9244(v);func_020c9268(v);
 x=(qq/10000)%10000; y=qq%10000; z=q%10000; w=v%10000;
-func_020675e4(buf,data_0212b19c,x,y,z,w);
+StringFormat(buf,data_0212b19c,x,y,z,w);
 p=func_0208b564(c);func_020899fc(p,2,b<<5,buf);
 M2C_FIELD(p,u32 *,0x58)|=0x400;return 1;
 }
@@ -311,17 +311,17 @@ func_02091700(d,c+1);
 }
 
 void func_020c9654(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-M2C_UNK func_0208fb0c(s32,M2C_UNK,M2C_UNK);
+M2C_UNK PlaySoundAtTile(s32,M2C_UNK,M2C_UNK);
 switch(arg2) {
 
-case 0:func_0208fb0c(129,arg0,arg1);return;
-case 1:func_0208fb0c(228,arg0,arg1);return;
-case 2:func_0208fb0c(228,arg0,arg1);return;
-case 3:func_0208fb0c(276,arg0,arg1);return;
-case 4:func_0208fb0c(273,arg0,arg1);return;
-case 5:func_0208fb0c(273,arg0,arg1);return;
-case 6:func_0208fb0c(273,arg0,arg1);return;
-case 7:func_0208fb0c(273,arg0,arg1);return;
+case 0:PlaySoundAtTile(129,arg0,arg1);return;
+case 1:PlaySoundAtTile(228,arg0,arg1);return;
+case 2:PlaySoundAtTile(228,arg0,arg1);return;
+case 3:PlaySoundAtTile(276,arg0,arg1);return;
+case 4:PlaySoundAtTile(273,arg0,arg1);return;
+case 5:PlaySoundAtTile(273,arg0,arg1);return;
+case 6:PlaySoundAtTile(273,arg0,arg1);return;
+case 7:PlaySoundAtTile(273,arg0,arg1);return;
 }}
 
 #pragma push
@@ -344,7 +344,7 @@ func_020cc6a4();
 void func_020c97c0(void *arg0) {
     s32 func_02077700(void);
     s32 func_0207c8ec(s32, s32);
-    M2C_UNK func_020910d0(s32, s32 *, s32, M2C_UNK);
+    M2C_UNK DrawSprite3D(s32, s32 *, s32, M2C_UNK);
     s32 func_01ffa6fc(void *);
     extern u16 *gKeyState;
     s32 sp[3];
@@ -362,7 +362,7 @@ void func_020c97c0(void *arg0) {
     sp[0] = M2C_FIELD(arg0, s32 *, 0x34) * 0x30;
     sp[1] = M2C_FIELD(arg0, s32 *, 0x38) * 0x30;
     sp[2] = 0x8B1;
-    func_020910d0(M2C_FIELD(arg0, s32 *, 0x54), sp, temp_r0, 0);
+    DrawSprite3D(M2C_FIELD(arg0, s32 *, 0x54), sp, temp_r0, 0);
     temp_r0_2 = M2C_FIELD(arg0, s32 *, 0x4C);
     if (temp_r0_2 > 0) {
         temp_r0_3 = temp_r0_2 - 1;

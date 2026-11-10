@@ -5,7 +5,7 @@ void func_02041e44(void);
 
 void func_020411dc(s32 arg0){
 extern s32 data_020fc904;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void func_0205ea70(s32);void func_02041fb0(s8,s32);u64 func_02007004(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 func_0203f058();s32 func_0204084c(void);void func_02042ad0(void);void func_0203af50(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void func_0203e410(void);s32 func_02042f94(void);void func_02061738(s32);
+s32 SetConnectionState(s32);void func_0205ea70(s32);void SendConnectionPacket(s8,s32);u64 func_02007004(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void func_02041ce0(void);s32 func_0203f058();s32 func_0204084c(void);void func_02042ad0(void);void func_0203af50(s32,void *,s32);s32 func_0203aeb4(s32);void func_0203e9b0(void);void func_020614b0(s32);void func_0203bd0c(void);void func_0203e410(void);s32 func_02042f94(void);void func_02061738(s32);
 s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
 switch(arg0){
 case 0:
@@ -24,7 +24,7 @@ a=0;if(M2C_FIELD(GetConnection(),u8*,21)==2)goto complete;
 a=GetConnection();if(M2C_FIELD(a,u8*,13)==M2C_FIELD(GetConnection(),u8*,22)){
 complete:
 if(M2C_FIELD(GetConnection(),u8*,21)==2){a=GetConnection();d=GetConnection();M2C_FIELD(a,s32*,524)=M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13)*4,s32*,244);}else{M2C_FIELD(GetConnection(),s32*,524)=0;a=GetConnection();M2C_FIELD(a,s32*,244)=M2C_FIELD(GetConnection(),s32*,512);}
-SetConnectionState(16);M2C_FIELD(GetConnection(),s32*,468)=0;for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++)((void (*)(u32,s32))func_02041fb0)(M2C_FIELD((u8 *)GetConnection()+i,u8*,720),2);
+SetConnectionState(16);M2C_FIELD(GetConnection(),s32*,468)=0;for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++)((void (*)(u32,s32))SendConnectionPacket)(M2C_FIELD((u8 *)GetConnection()+i,u8*,720),2);
 }else{
 values[0]=0;values[1]=M2C_FIELD(GetConnection(),u8*,13);a=GetConnection();values[2]=M2C_FIELD(a+M2C_FIELD(GetConnection(),u8*,13),u8*,720);
 if(M2C_FIELD(GetConnection(),u8*,21)==0){M2C_FIELD(GetConnection(),s32*,232)=2;a=GetConnection();M2C_FIELD(a,u64*,236)=func_02007004();}
@@ -225,7 +225,7 @@ return 1;
 }
 
 /* Prepare and send a 4-byte notification packet (type 2 or 3) about a player slot, then timestamp the connection state. */
-void func_02041fb0(s8 arg0, s32 arg1) {
+void SendConnectionPacket(s8 arg0, s32 arg1) {
     u64 func_02007004(void);
     void func_0204433c(s32, s8, void *, s32);
     u8 buf[4];

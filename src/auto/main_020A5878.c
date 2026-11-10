@@ -6,56 +6,59 @@ extern s8 *data_ov000_021b5c58[];
 extern u8 data_ov000_021b5c0f[];
 extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
 
-void func_020a5878(void *arg0) {
-s32 func_0207b7c4(void);s32 func_020a4ab0(s32);
-void func_0208fb0c(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 func_020a4c7c(void *);void func_0207b774(u8,u8);void func_0207b764(u8,u8);void func_01ffa6fc(void *);
+/* Advances the unit-move animation: when a move entry is queued it eases the
+ * unit's sub-tile offset toward the next facing, and at the end restores the
+ * map cursor to the moving player's position. */
+void UpdateUnitMove(void *ctrl) {
+s32 func_0207b7c4(void);s32 GetFacingOffset(s32);
+void PlaySoundAtTile(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
+s32 IsActionEntryActive(void *);void func_0207b774(u8,u8);void func_0207b764(u8,u8);void func_01ffa6fc(void *);
 extern s32 *gCurrentMap;
-s32 x,y,dir,turnCount; u8 *unit; void *map; u8 *player;
+s32 startOffset,endOffset,facing,turnCount; u8 *unit; void *map; u8 *player;
 if(func_0207b7c4())return;
-unit=M2C_FIELD(arg0,u8 **,0x38);
+unit=M2C_FIELD(ctrl,u8 **,0x38);
 if(unit){
-dir=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30);
-x=func_020a4ab0(dir%3)/256;
-dir=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30)+1;
-y=func_020a4ab0(dir%3)/256;
-if(M2C_FIELD(arg0,s32 *,0x3C)==0){
-M2C_FIELD(arg0,s32 *,0x40)=unit[4];
+facing=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30);
+startOffset=GetFacingOffset(facing%3)/256;
+facing=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30)+1;
+endOffset=GetFacingOffset(facing%3)/256;
+if(M2C_FIELD(ctrl,s32 *,0x3C)==0){
+M2C_FIELD(ctrl,s32 *,0x40)=unit[4];
 M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0x3C0)|0x200;
-func_0208fb0c(0x10C,unit[0],unit[1]);
+PlaySoundAtTile(0x10C,unit[0],unit[1]);
 }
-M2C_FIELD(arg0,s32 *,0x3C)++;
-unit[4]=EaseInterpolate(4,x,y,M2C_FIELD(arg0,s32 *,0x3C),60);
-if(M2C_FIELD(arg0,s32 *,0x3C)<60)return;
+M2C_FIELD(ctrl,s32 *,0x3C)++;
+unit[4]=EaseInterpolate(4,startOffset,endOffset,M2C_FIELD(ctrl,s32 *,0x3C),60);
+if(M2C_FIELD(ctrl,s32 *,0x3C)<60)return;
 M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0x3C0)|0x1C0;
-unit[4]=M2C_FIELD(arg0,s32 *,0x40);
-y=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30)+1;
-dir=y%3;
-M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0xC000)|((u32)((u16)dir<<30)>>16);
-M2C_FIELD(arg0,void **,0x38)=0;
+unit[4]=M2C_FIELD(ctrl,s32 *,0x40);
+endOffset=((u32)(M2C_FIELD(unit,u16 *,2)<<16)>>30)+1;
+facing=endOffset%3;
+M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0xC000)|((u32)((u16)facing<<30)>>16);
+M2C_FIELD(ctrl,void **,0x38)=0;
 return;
 }
-unit=M2C_FIELD(arg0,u8 **,0x34);
+unit=M2C_FIELD(ctrl,u8 **,0x34);
 while(((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)!=0){
 map=(void *)*gCurrentMap;
-if(M2C_FIELD(map,u16 *,0x52A4)==1 && (turnCount=M2C_FIELD(map,u16 *,0x52A2))>1 && ((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)==7 && func_020a4c7c(unit)){
-M2C_FIELD(arg0,void **,0x38)=M2C_FIELD(arg0,void **,0x34);
-M2C_FIELD(arg0,s32 *,0x3C)=0;
-unit=M2C_FIELD(arg0,u8 **,0x38);
+if(M2C_FIELD(map,u16 *,0x52A4)==1 && (turnCount=M2C_FIELD(map,u16 *,0x52A2))>1 && ((u32)(M2C_FIELD(unit,u16 *,2)<<22)>>28)==7 && IsActionEntryActive(unit)){
+M2C_FIELD(ctrl,void **,0x38)=M2C_FIELD(ctrl,void **,0x34);
+M2C_FIELD(ctrl,s32 *,0x3C)=0;
+unit=M2C_FIELD(ctrl,u8 **,0x38);
 func_0207b774(unit[0],unit[1]);
-M2C_FIELD(arg0,u8 **,0x34)+=8;
-M2C_FIELD(arg0,u8 *,0x44)=1;
+M2C_FIELD(ctrl,u8 **,0x34)+=8;
+M2C_FIELD(ctrl,u8 *,0x44)=1;
 return;
 }
-M2C_FIELD(arg0,u8 **,0x34)+=8;
-unit=M2C_FIELD(arg0,u8 **,0x34);
+M2C_FIELD(ctrl,u8 **,0x34)+=8;
+unit=M2C_FIELD(ctrl,u8 **,0x34);
 }
-if(M2C_FIELD(arg0,u8 *,0x44)){
+if(M2C_FIELD(ctrl,u8 *,0x44)){
 map=(void *)*gCurrentMap;
 player=(u8 *)map+0x67A4+M2C_FIELD(map,u16 *,0x52A4)*140;
 func_0207b764(player[0x2D],player[0x2E]);
 }
-func_01ffa6fc(arg0);
+func_01ffa6fc(ctrl);
 }
 
 void func_020a5ac8(void) {

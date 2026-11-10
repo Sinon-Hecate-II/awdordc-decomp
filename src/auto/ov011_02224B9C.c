@@ -197,11 +197,11 @@ void func_ov011_02225114(M2C_UNK arg0) { s32 func_01ffa42c(M2C_UNK *,M2C_UNK); M
    program the viewport/projection matrix blocks, and set up the 3D command and capture registers. */
 void func_ov011_0222513c(void) {
     M2C_UNK func_02003bd0();
-    M2C_UNK func_02003dfc(M2C_UNK, M2C_UNK, s32, M2C_UNK, s32);
+    M2C_UNK GX_SetClearColor(M2C_UNK, M2C_UNK, s32, M2C_UNK, s32);
     M2C_UNK func_02003fc8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
     func_02003bd0();
     *(u16 *)0x04000060 = (*(u16 *)0x04000060 & ~0x3000) | 8;
-    func_02003dfc(0, 0, 0x7FFF, 0x3F, 0);
+    GX_SetClearColor(0, 0, 0x7FFF, 0x3F, 0);
     M2C_FIELD((void *)0x040004C8, s32 *, 0) = 0x1FF00000;
     M2C_FIELD((void *)0x040004C8, s32 *, 4) = 0x7FFF;
     M2C_FIELD((void *)0x040004C8, s32 *, -8) = 0x7FFFFFFF;
@@ -222,7 +222,7 @@ void func_ov011_02225224(void) {
 }
 
 void func_ov011_02225238(void *a) {
-M2C_UNK func_0200bc5c(M2C_UNK *); M2C_UNK func_020675e4(void *,M2C_UNK *,s32);
+M2C_UNK func_0200bc5c(M2C_UNK *); M2C_UNK StringFormat(void *,M2C_UNK *,s32);
 M2C_UNK func_0208be8c(void *,void *,void *,M2C_UNK *,s32,s32,s32); M2C_UNK func_0208c080(void *,M2C_UNK);void *func_0208c528(void *);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK data_ov011_02228b28,data_ov011_02228b30,data_ov011_02228b38,data_ov011_02228b3c;
@@ -231,8 +231,8 @@ char first[32],second[32];void *saved;void *p;s32 x,y;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(a,s16 *,0x38)=0;M2C_FIELD(a,s16 *,0x3a)=0;M2C_FIELD(a,s16 *,0x3c)=0;M2C_FIELD(a,s16 *,0x3e)=0;M2C_FIELD(a,s16 *,0x40)=0;M2C_FIELD(a,s16 *,0x42)=0;
 M2C_FIELD(a,s32 *,0x44)=0;M2C_FIELD(a,s32 *,0x48)=0;M2C_FIELD(a,u8 *,0x36)=1;
-func_020675e4(first,&data_ov011_02228b28,M2C_FIELD(a,s32 *,0x54));
-func_020675e4(second,&data_ov011_02228b30,M2C_FIELD(a,s32 *,0x54));
+StringFormat(first,&data_ov011_02228b28,M2C_FIELD(a,s32 *,0x54));
+StringFormat(second,&data_ov011_02228b30,M2C_FIELD(a,s32 *,0x54));
 func_0200bc5c(&data_ov011_02228b38);
 M2C_FIELD(a,void **,0x4c)=func_0208c528(a);
 func_0208be8c(M2C_FIELD(a,void **,0x4c),first,second,&data_ov011_02228b3c,data_ov011_02228cec,M2C_FIELD(a,u8 *,0x35),1);
@@ -243,12 +243,12 @@ data_ov011_02228cec+=0x200;gCur3DSpriteEngine=saved;
 }
 
 void func_ov011_02225348(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s16 arg3, s16 arg4, register u32 arg5) {
- M2C_UNK func_01ffa574(void *);
+ M2C_UNK DeleteSpriteObject(void *);
  s16 EaseInterpolate(M2C_UNK, M2C_UNK, s16, u32, s32);
  u32 temp_ip; void *temp_r3; s32 x,y;
  temp_ip=M2C_FIELD(arg0,u32 *,0x48);
  if(temp_ip >= (u32)(arg5-1)) {
- if(M2C_FIELD(arg0,void **,0x4c)!=NULL) func_01ffa574(M2C_FIELD(arg0,void **,0x4c));
+ if(M2C_FIELD(arg0,void **,0x4c)!=NULL) DeleteSpriteObject(M2C_FIELD(arg0,void **,0x4c));
  M2C_FIELD(arg0,void **,0x4c)=NULL; return; }
  M2C_FIELD(arg0,s16 *,0x38)=EaseInterpolate(0,arg1,arg3,temp_ip,arg5);
  M2C_FIELD(arg0,s16 *,0x3a)=EaseInterpolate(0,arg2,arg4,M2C_FIELD(arg0,u32 *,0x48),arg5);
@@ -282,9 +282,9 @@ void func_ov011_02225420(void *arg0, s32 arg1) {
 
 void func_ov011_02225428(void *arg0) {
     s32 func_020720f0(s32, s32);
-    s32 func_02086680(s32);
+    s32 GetLocalizedText(s32);
     s32 func_0209b5e4(s32, s32);
-    void func_0209b67c(u16, s32, u16, s32, s32);
+    void DrawTileRow(u16, s32, u16, s32, s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *temp_r7;
@@ -302,7 +302,7 @@ void func_ov011_02225428(void *arg0) {
 
     temp_r7 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(arg0, s16 *, 0x58) = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((M2C_FIELD(arg0, u8 *, 0x35) + 1) << 6) + 0x40) << 5), func_02086680(M2C_FIELD(arg0, s32 *, 0x50)));
+    M2C_FIELD(arg0, s16 *, 0x58) = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((M2C_FIELD(arg0, u8 *, 0x35) + 1) << 6) + 0x40) << 5), GetLocalizedText(M2C_FIELD(arg0, s32 *, 0x50)));
     temp_r2 = M2C_FIELD(arg0, s16 *, 0x58);
     temp_r0 = 0x80 - ((s32) (temp_r2 + ((u32) temp_r2 >> 0x1F)) >> 1);
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x38) - temp_r0;
@@ -315,11 +315,11 @@ void func_ov011_02225428(void *arg0) {
         temp_r10 = M2C_FIELD(arg0, u8 *, 0x34);
         temp_r9 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
         temp_r6 = func_020720f0(0x80, temp_r10);
-        func_0209b67c((u16) (temp_r4 & 0x1FF), (u16) ((u8) (((temp_r6 * temp_r9) + 0x28) - func_020720f0(0x80, temp_r10 * 2)) | 0x400), (u16) temp_r8, (u16) ((0x3FF & ((s32) ((temp_r9 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        DrawTileRow((u16) (temp_r4 & 0x1FF), (u16) ((u8) (((temp_r6 * temp_r9) + 0x28) - func_020720f0(0x80, temp_r10 * 2)) | 0x400), (u16) temp_r8, (u16) ((0x3FF & ((s32) ((temp_r9 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         temp_r8_2 = M2C_FIELD(arg0, u8 *, 0x34);
         temp_r6_2 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
         temp_r8_3 = func_020720f0(0x80, temp_r8_2);
-        func_0209b67c((u16) ((temp_r4 + 2) & 0x1FF), (u16) ((u8) (((temp_r8_3 * temp_r6_2) + 0x2A) - func_020720f0(0x80, temp_r8_2 * 2)) | 0x400), (u16) M2C_FIELD(arg0, s16 *, 0x58), (u16) ((0x3FF & ((s32) ((temp_r6_2 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        DrawTileRow((u16) ((temp_r4 + 2) & 0x1FF), (u16) ((u8) (((temp_r8_3 * temp_r6_2) + 0x2A) - func_020720f0(0x80, temp_r8_2 * 2)) | 0x400), (u16) M2C_FIELD(arg0, s16 *, 0x58), (u16) ((0x3FF & ((s32) ((temp_r6_2 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
     }
     gCur3DSpriteEngine = temp_r7;
 }
@@ -334,31 +334,31 @@ void func_ov011_02225604(void *arg0) {
 }
 
 void func_ov011_02225624(void *arg0) {
- M2C_UNK func_01ffa574(void *); void func_ov011_02225428(void *);
+ M2C_UNK DeleteSpriteObject(void *); void func_ov011_02225428(void *);
 if(M2C_FIELD(arg0,s32 *,0x50))func_ov011_02225428(arg0);
  func_ov011_02225348(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
- if(M2C_FIELD(arg0,u32 *,0x44)<199)return; func_01ffa574(arg0);
+ if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
 }
 
 void *func_ov011_02225684(M2C_UNK **arg0) { M2C_UNK func_02086608(s32); extern M2C_UNK data_02129b9c; extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; M2C_FIELD(arg0,u8 *,0x34)|=2; M2C_FIELD(arg0,s16 *,0x3a)=0; M2C_FIELD(arg0,s8 *,0x37)=0; M2C_FIELD(arg0,s8 *,0x38)=0; M2C_FIELD(arg0,u8 *,0x34)&=~0xf0; M2C_FIELD(arg0,u8 *,0x35)&=~15; M2C_FIELD(arg0,s32 *,0x50)=0; do { arg0[i+16]=0; i++; }while(i<3); M2C_FIELD(arg0,M2C_UNK **,0x4c)=&data_02129b9c; func_02086608(10); return arg0; }
 
-void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK func_01ffa574(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {func_01ffa574(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10);  return arg0; }
+void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10);  return arg0; }
 
-void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK func_01ffa574(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {func_01ffa574(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10); MemFree(arg0); return arg0; }
+void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10); MemFree(arg0); return arg0; }
 
 void func_ov011_022257b4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 4);
 }
 
 void func_ov011_022257c4(void *arg0) {
-s32 func_02086680(s32); s32 func_0209b5e4(s32,s32); void func_0209b67c(u16,s32,u16,s32,s32);
+s32 GetLocalizedText(s32); s32 func_0209b5e4(s32,s32); void DrawTileRow(u16,s32,u16,s32,s32);
 extern void *g3DSpriteEngineMain; extern void *gCur3DSpriteEngine;
 s16 width,x; u16 w; void *saved;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-width=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c),func_02086680(M2C_FIELD(arg0,s32 *,0x50)));
+width=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c),GetLocalizedText(M2C_FIELD(arg0,s32 *,0x50)));
 x=128-width/2;w=width;
-func_0209b67c((u16)(x&511),14,w,0xf800,11);
-func_0209b67c((u16)((x+1)&511),15,w,0xe800,17);
+DrawTileRow((u16)(x&511),14,w,0xf800,11);
+DrawTileRow((u16)((x+1)&511),15,w,0xe800,17);
 gCur3DSpriteEngine=saved;
 }
 

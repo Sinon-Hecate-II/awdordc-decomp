@@ -186,7 +186,7 @@ void func_020a6fcc(void) {
 #pragma opt_instruction_scheduling off
 s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=data_ov000_021b5c5c[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
 #pragma opt_instruction_scheduling reset
-s32 func_020a7074(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
+s32 CanUnitsJoin(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
 s32 func_0207c8ec(s32,s32);s32 IsUnitSelected(void *);
 s32 x,y,h;
 if(a->unk0!=b->unk0)return 0;

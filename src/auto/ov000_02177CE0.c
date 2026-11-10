@@ -1,41 +1,45 @@
 /* 6 functions from 0x02177CE0 to 0x02178778 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
-s32 func_ov000_02177ce0(s32 x,s32 y){
+/* Scores a tile as a movement destination for the AI unit under the cursor:
+ * remaining movement, nearby-own-unit and terrain-movement bonuses, the
+ * direct/indirect threat on the tile, and a few positional preferences. */
+s32 ScoreMoveDestination(s32 x,s32 y){
 extern u8 data_ov000_021b5c0f[], data_ov000_021dfcf0[];
 extern void **gCurrentMap;extern void *data_ov000_021df580;extern s8 data_ov000_021b55a0[];
 s32 func_ov000_021a9d8c(s16,s16);s32 func_020d27ec(s32,s32,s32);
 s32 func_020d0654(s32,s32,s32);s32 func_0207c8ec(s32,s32);
 s32 func_020d03ec(s32,s32,s32);s32 func_ov000_021a9214(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
-void *base,*cell; s32 cost,result,kind,weight;
-if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,0x5144)||y>=M2C_FIELD(*gCurrentMap,u16 *,0x5146))return -1;
+void *base,*cell; s32 moveCost,score,terrain,threat;
+if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))return -1;
 if(func_ov000_021a9d8c((s16)x,(s16)y))return -1;
 base=*gCurrentMap;
-cost=M2C_FIELD(M2C_FIELD(base+y*4,s8 **,0x52e8),s8 *,x);
-if(cost<0||cost>M2C_FIELD(data_ov000_021df580,u8 *,5))return -1;
-cell=base+(x+M2C_FIELD(base+y*2,u16 *,0x3758));
-result=15-cost;
-kind=M2C_FIELD(cell,u8 *,0x1420)&31;
-weight=M2C_FIELD(cell,u8 *,0x2840)+M2C_FIELD(cell,u8 *,0x2d48)*2;
-if(result<0)result=0;
-if(data_ov000_021b5c0f[((u32)(*M2C_FIELD(base,u8 **,0x52d0)<<26)>>26)*112]&7){
-u32 index=y*M2C_FIELD(base,u16 *,0x5144)+x;
-if((u8)((1<<(index&7))&data_ov000_021dfcf0[index>>3]))result+=16;
+moveCost=M2C_FIELD(M2C_FIELD(base+y*4,s8 **,MAP_GRID),s8 *,x);
+if(moveCost<0||moveCost>M2C_FIELD(data_ov000_021df580,u8 *,5))return -1;
+cell=base+(x+M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS));
+score=15-moveCost;
+terrain=M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN)&31;
+threat=M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_DIRECT)+M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_INDIRECT)*2;
+if(score<0)score=0;
+if(data_ov000_021b5c0f[((u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26)*112]&7){
+u32 index=y*M2C_FIELD(base,u16 *,MAP_WIDTH)+x;
+if((u8)((1<<(index&7))&data_ov000_021dfcf0[index>>3]))score+=16;
 }
-if(!data_ov000_021b55a0[kind]||!func_020d27ec(M2C_FIELD(base,u8 *,0x52d4),M2C_FIELD(cell,u8 *,0x1420),data_ov000_021b55a0[kind])){
+if(!data_ov000_021b55a0[terrain]||!func_020d27ec(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),data_ov000_021b55a0[terrain])){
 base=*gCurrentMap;
-result+=(func_0207c8ec(func_020d0654(M2C_FIELD(base,u16 *,0x52a4),(u32)(*M2C_FIELD(base,u8 **,0x52d0)<<26)>>26,kind),10)+1)<<5;
+score+=(func_0207c8ec(func_020d0654(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
 }
-if(func_020d03ec(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))result+=0x200;
-result+=(0x300-weight)<<10;
-if(!data_ov000_021b55a0[kind]&&func_ov000_021a9214(M2C_FIELD(*gCurrentMap,void **,0x52d0),x,y)==1)result+=0x100000;
-if(func_ov000_021a93a8(M2C_FIELD(*gCurrentMap,void **,0x52d0),x,y)==1)result+=0x200000;
-if(weight<20)result+=0x400000;
-return result;
+if(func_020d03ec(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),x,y))score+=0x200;
+score+=(0x300-threat)<<10;
+if(!data_ov000_021b55a0[terrain]&&func_ov000_021a9214(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x100000;
+if(func_ov000_021a93a8(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),x,y)==1)score+=0x200000;
+if(threat<20)score+=0x400000;
+return score;
 }
 
 s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
-    s32 func_ov000_02177ce0(s32, s32);
+    s32 ScoreMoveDestination(s32, s32);
     extern void **gCurrentMap;
     extern s32 gFrameCounter;
     s32 magic = 0x270F;
@@ -81,7 +85,7 @@ s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
                     if (d0 > 0) dist = dist + d0;
                     else dist = dist + d1;
                     if (dist == 1) {
-                        temp = func_ov000_02177ce0((s32)(s16)inner, (s32)(s16)outer);
+                        temp = ScoreMoveDestination((s32)(s16)inner, (s32)(s16)outer);
                         if (temp >= best && (temp != best || !(gFrameCounter & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;
@@ -234,7 +238,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
 }
 
 s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
-    s32 func_ov000_02177ce0(s32, s32);
+    s32 ScoreMoveDestination(s32, s32);
     s32 func_ov000_021a9a28(u32, s32, s32);
     extern void **gCurrentMap;
     extern s32 gFrameCounter;
@@ -275,7 +279,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
                     if (d0 > 0) dist = dist + d0;
                     else dist = dist + d1;
                     if (dist >= 1 && dist <= 1 && func_ov000_021a9a28((u32)(*M2C_FIELD(*gCurrentMap,u8**,0x52d0)<<26)>>26,inner,outer)) {
-                        temp = func_ov000_02177ce0(inner, outer);
+                        temp = ScoreMoveDestination(inner, outer);
                         if (temp >= best && (temp != best || !(gFrameCounter & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;

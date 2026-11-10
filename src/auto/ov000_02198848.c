@@ -20,12 +20,12 @@ void AddPlayerThreatInfluence(u8 player) {
     if (!func_ov000_021973f8(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind)) {
         return;
     }
-    if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0) {
-        bonus = func_020d0ddc((s32)(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) & 0xff));
+    if (GetUnitAttackClass(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0) {
+        bonus = GetDamageBonus((s32)(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) & 0xff));
     }
     if (*(u8 *)((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) * 140 + 0x67ce) == 1) {
-        if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0 ||
-            func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 2) {
+        if (GetUnitAttackClass(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0 ||
+            GetUnitAttackClass(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 2) {
             flag = 1;
         }
     }
@@ -64,7 +64,7 @@ void AddPlayerThreatInfluence(u8 player) {
             }
         }
         if (!(((u32)unit->tail[3] << 25) >> 31)) {
-            if (!func_ov000_021a947c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), unit->kind, unit->x, unit->y)) {
+            if (!IsUnitVisibleAtCell(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), unit->kind, unit->x, unit->y)) {
                 continue;
             }
         }
@@ -217,7 +217,7 @@ void func_ov000_02198fec(u8 player) {
     }
 
     map = (s32 *)*gCurrentMap;
-    bonus = func_020d0ddc((s32)(*(u16 *)((u8 *)map + 0x52a4) & 0xff));
+    bonus = GetDamageBonus((s32)(*(u16 *)((u8 *)map + 0x52a4) & 0xff));
     saved = *(u16 *)((u8 *)map + 0x52b6);
     *(u16 *)((u8 *)map + 0x52b6) = player;
 
@@ -252,7 +252,7 @@ void func_ov000_02198fec(u8 player) {
         value = func_ov000_021974bc(value, 0, (void *)unit);
         value = func_ov000_0219763c(value, (void *)unit, (s32)(unit->health & 0x7f));
 
-        if (!func_ov000_021a98e4(kind)) {
+        if (!GetUnitAttackClass(kind)) {
             if (bonus == 1) {
                 if (GetUnitDamagePercent(14, kind) >= 0x32) {
                     continue;
@@ -317,7 +317,7 @@ extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 s32 value, bonus, i; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(6))return;
-bonus=func_020d0ddc((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+bonus=GetDamageBonus((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
 for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
@@ -329,7 +329,7 @@ if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
 kind=unit->kind;
 value=func_ov000_02197434(kind,6);
 if(value<25)continue;
-if(!func_ov000_021a98e4(unit->kind) && GetUnitDamagePercent(6,unit->kind)>=50)continue;
+if(!GetUnitAttackClass(unit->kind) && GetUnitDamagePercent(6,unit->kind)>=50)continue;
 value=func_ov000_02197470(value,0,unit->owner);
 value=func_ov000_021974bc(value,0,unit);
 value=func_ov000_0219763c(value,unit,unit->health);

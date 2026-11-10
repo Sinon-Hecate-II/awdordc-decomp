@@ -154,48 +154,51 @@ void func_020de610(void) {
 
 }
 
-M2C_UNK func_020de614(M2C_UNK a0, M2C_UNK a1) {
+/* Prepares the 3D matching scene: switches in the main sprite engine, loads the
+ * matching archive and the 2P/4P background chosen by GetSetupCode, resets the
+ * menu sprites, then registers the scene's ov010 update callbacks. */
+M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
 void func_01ff9ce8(u8); void func_0200bc5c(void *); void *func_020e3218(void *); void func_020814e4(void *); void func_02081590(void *,void *); void func_02081528(void); void func_02080944(void *,s32,s32,s32);
 void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK data_0212d460,data_0212d468,data_0212d478,data_0212d488;
+extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
 void func_020de868(s32,s32,void *); s32 func_020de884(s32);
-void *old=gCur3DSpriteEngine; void *p; s32 code,t;
+void *savedEngine=gCur3DSpriteEngine; void *sprite; s32 layout,animValue;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_01ff9ce8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-func_0200bc5c(&data_0212d460);
-func_020814e4(func_020e3218(&data_0212d468));
-code=GetSetupCode((void *)a0);
-switch(code) {
-case 4: func_02081590(func_020e3218(&data_0212d478),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-case 2: func_02081590(func_020e3218(&data_0212d488),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+func_0200bc5c(&gMatchScenePath);
+func_020814e4(func_020e3218(&gMatchSceneNarc));
+layout=GetSetupCode((void *)setup);
+switch(layout) {
+case 4: func_02081590(func_020e3218(&gMatchScene4PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 2: func_02081590(func_020e3218(&gMatchScene2PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
 }
 func_02081528();
 func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
-gCur3DSpriteEngine=old;
-M2C_FIELD(a0,u16 *,0x48)|=0x20;
-p=M2C_FIELD(a0,void **,0x54);
-SetupSetFrame(p,(u16)(((SetupSprite *)p)->baseFrame+2),0);
-func_02088f1c(M2C_FIELD(a0,void **,0x58));
-func_02088da8(M2C_FIELD(a0,void **,0x60));
-func_0208b758(M2C_FIELD(a0,void **,0x64),0x44000011);
-func_02088f1c(M2C_FIELD(a0,void **,0x64));
-if(GetSpriteAnimValue(M2C_FIELD(a0,void **,0x68))) {
-t=GetSpriteAnimValue(M2C_FIELD(a0,void **,0x68));
-p=M2C_FIELD(a0,void **,0x68);
-M2C_FIELD(p,u16 *,0xe)=t;
-M2C_FIELD(p,u16 *,0x10)=0;
-M2C_FIELD(p,u16 *,0xc)=12;
-M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+gCur3DSpriteEngine=savedEngine;
+M2C_FIELD(setup,u16 *,0x48)|=0x20;
+sprite=M2C_FIELD(setup,void **,0x54);
+SetupSetFrame(sprite,(u16)(((SetupSprite *)sprite)->baseFrame+2),0);
+func_02088f1c(M2C_FIELD(setup,void **,0x58));
+func_02088da8(M2C_FIELD(setup,void **,0x60));
+func_0208b758(M2C_FIELD(setup,void **,0x64),0x44000011);
+func_02088f1c(M2C_FIELD(setup,void **,0x64));
+if(GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68))) {
+animValue=GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68));
+sprite=M2C_FIELD(setup,void **,0x68);
+M2C_FIELD(sprite,u16 *,0xe)=animValue;
+M2C_FIELD(sprite,u16 *,0x10)=0;
+M2C_FIELD(sprite,u16 *,0xc)=12;
+M2C_FIELD(sprite,u16 *,2)=M2C_FIELD(sprite,u16 *,4);
 }
-M2C_FIELD(a0,u16 *,0x48)&=~0x100;
-M2C_FIELD(a0,u16 *,0x48)&=~0x200;
-M2C_FIELD(a0,u8 *,0x41)=0;
-code=GetSetupCode((void *)a0);
-func_ov010_02228f80(a1,code,1,(void *)func_020de868,(void *)a0,(void *)func_020de884,(void *)a0,0);
+M2C_FIELD(setup,u16 *,0x48)&=~0x100;
+M2C_FIELD(setup,u16 *,0x48)&=~0x200;
+M2C_FIELD(setup,u8 *,0x41)=0;
+layout=GetSetupCode((void *)setup);
+func_ov010_02228f80(side,layout,1,(void *)func_020de868,(void *)setup,(void *)func_020de884,(void *)setup,0);
 }
 
 void func_020de868(s32 arg0, s32 arg1, void *arg2) {
@@ -332,13 +335,13 @@ void func_020deba4(M2C_UNK arg0) {
 }
 
 void func_020debb4(M2C_UNK arg0) {
-    M2C_UNK func_020de614(M2C_UNK, M2C_UNK);
-    func_020de614(arg0, 0);
+    M2C_UNK SetupMatchScene(M2C_UNK, M2C_UNK);
+    SetupMatchScene(arg0, 0);
 }
 
 void func_020debc4(M2C_UNK arg0) {
-    M2C_UNK func_020de614(M2C_UNK, M2C_UNK);
-    func_020de614(arg0, 1);
+    M2C_UNK SetupMatchScene(M2C_UNK, M2C_UNK);
+    SetupMatchScene(arg0, 1);
 }
 
 void func_020debd4(M2C_UNK arg0) {
@@ -360,18 +363,18 @@ void func_020899cc(void*,int,int,u32);
 void func_020d47f0(void);
 void func_01ffa6fc(void*);
 void PlaySoundEffect(u32);
-u32 func_02084970(void);
-u32 func_02076614(void);
+u32 GetActivePlayerMask(void);
+u32 CountBits(void);
 u32 func_ov009_02225470(void);
 void func_02088f1c(void*);
 void func_02088ff4(void*);
 void func_0208b758(void*,u32);
-u32 func_020848f8(void);
+u32 GetReadyPlayerMask(void);
 void func_ov009_02224064(void);
 void func_ov009_02224c34(int);
 void func_ov009_02223fbc(void);
 void func_020d47d0(void);
-void func_02084a40(void);
+void ResetPlayerMask(void);
 int func_020890b8(void*);
 int func_02089064(void*);
 void *func_ov009_02224070(int);
@@ -451,8 +454,8 @@ func_01ffa6fc(self);
 PlaySoundEffect(0x1000f);
 return;
 }}
-func_02084970();
-v=func_02076614();
+GetActivePlayerMask();
+v=CountBits();
 
 if((M2C_FIELD(self,s8 *,0x41)>1||v>1)&&M2C_FIELD(self,s8 *,0x41)!=v)PlaySoundEffect(M2C_FIELD(self,s8 *,0x41)<(s32)v?0x122:0x123);
 
@@ -476,8 +479,8 @@ if(!SetupIsActive(p))return;
 can=(u8)(M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xb)==1 || ((((SetupSprite*)p)->alternate) && M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xc)==1));
 if(!can && !(keys&1))return;
 
-v=func_020848f8();
-if(v!=func_02084970())return;
+v=GetReadyPlayerMask();
+if(v!=GetActivePlayerMask())return;
 
 func_ov009_02224064();
 p=M2C_FIELD(self,void * *,0x54);
@@ -487,7 +490,7 @@ if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+1,1
 func_ov009_02224c34(0);
 func_ov009_02223fbc();
 func_020d47d0();
-func_02084a40();
+ResetPlayerMask();
 func_01ffa6fc(self);
 PlaySoundEffect(0x1000e);return;
 
@@ -504,15 +507,15 @@ func_0208b758(M2C_FIELD(self,void * *,0x64),0x44000011);
 p=func_ov009_02224070(0);
 if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;
 
-v=func_020848f8();
-if(v!=func_02084970())return;
+v=GetReadyPlayerMask();
+if(v!=GetActivePlayerMask())return;
 
 func_ov009_022258a8(self);
 
 }
 func_ov009_02223fbc();
 func_020d47d0();
-func_02084a40();
+ResetPlayerMask();
 func_01ffa6fc(self);
 PlaySoundEffect(0x1000e);
 

@@ -10,63 +10,67 @@ static inline s32 unit_blocks_action(s32 unit) {
 
 #pragma push
 #pragma opt_propagation off
-s32 func_ov000_021a947c(s32 x, s32 y, s32 a, s32 b) {
+/* Fog-of-war visibility test used by targeting and threat marking: tells whether a
+ * unit of the given kind, belonging to the given player, standing at (x,y) is visible.
+ * Units are visible with fog off, when the cell holds a friendly unit, or when an
+ * orthogonal neighbour does; the unit kind and the cell's terrain can also hide it. */
+s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 data_ov000_021b5c0f[];
     extern s8 data_ov000_021b5680[];
     s32 func_020a33c4(s32);
-    u8 func_ov000_021a9164(u8, s32, s32);
+    u8 IsCellUnitOnSameArmy(u8, s32, s32);
     s32 func_ov000_021a93b0(s32, s32, s32);
 
-    s32 rb = b;
-    s32 ra = a;
-    s32 ry = y;
-    s32 rx = x;
-    u16 racc = 0;
+    s32 cellY = y;
+    s32 cellX = x;
+    s32 kind = unitKind;
+    s32 side = player;
+    u16 neighbours = 0;
 
     if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) == 0) {
         if (M2C_FIELD(data_ov000_021df580, u8 *, 0xD) != 2) {
             return 1;
         }
     }
-        if (!func_ov000_021a93b0(rx, ra, rb)) {
+        if (!func_ov000_021a93b0(side, cellX, cellY)) {
             return 1;
         }
-    if (unit_blocks_action(rx)) return 1;
+    if (unit_blocks_action(side)) return 1;
 
-    if (func_ov000_021a9164(rx, ra, rb) == 1) {
+    if (IsCellUnitOnSameArmy(side, cellX, cellY) == 1) {
         return 1;
     }
 
-    if (data_ov000_021b5c0f[ry * 0x70] == 0x10) {
-        u16 row = M2C_FIELD((u8 *)*gCurrentMap + rb * 2, u16 *, 0x3758);
-        u8 terrain = M2C_FIELD((u8 *)*gCurrentMap + (ra + row), u8 *, 0x1420) & 0x1F;
+    if (data_ov000_021b5c0f[kind * 0x70] == 0x10) {
+        u16 row = M2C_FIELD((u8 *)*gCurrentMap + cellY * 2, u16 *, MAP_ROW_OFFSETS);
+        u8 terrain = M2C_FIELD((u8 *)*gCurrentMap + (cellX + row), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
         if (data_ov000_021b5680[terrain] == 0) {
             return 1;
         }
     }
 
-    if (ra > 0) {
-        racc = (u16)(racc + func_ov000_021a9164(rx, (s16)(ra - 1), rb));
+    if (cellX > 0) {
+        neighbours = (u16)(neighbours + IsCellUnitOnSameArmy(side, (s16)(cellX - 1), cellY));
     }
-    if (rb > 0) {
-        racc = (u16)(racc + func_ov000_021a9164(rx, ra, (s16)(rb - 1)));
+    if (cellY > 0) {
+        neighbours = (u16)(neighbours + IsCellUnitOnSameArmy(side, cellX, (s16)(cellY - 1)));
     }
     {
-        u16 width = M2C_FIELD(*gCurrentMap, u16 *, 0x5144);
-        if (ra < (s32)width - 1) {
-            racc = (u16)(racc + func_ov000_021a9164(rx, (s16)(ra + 1), rb));
+        u16 width = M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH);
+        if (cellX < (s32)width - 1) {
+            neighbours = (u16)(neighbours + IsCellUnitOnSameArmy(side, (s16)(cellX + 1), cellY));
         }
     }
     {
-        u16 height = M2C_FIELD(*gCurrentMap, u16 *, 0x5146);
-        if (rb < (s32)height - 1) {
-            racc = (u16)(racc + func_ov000_021a9164(rx, ra, (s16)(rb + 1)));
+        u16 height = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);
+        if (cellY < (s32)height - 1) {
+            neighbours = (u16)(neighbours + IsCellUnitOnSameArmy(side, cellX, (s16)(cellY + 1)));
         }
     }
 
-    return racc != 0;
+    return neighbours != 0;
 }
 #pragma pop
 void GetAttackDamage(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
@@ -111,7 +115,7 @@ void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
     func_020a7b3c(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
-void func_ov000_021a9820(M2C_UNK arg0, M2C_UNK arg1) {
+void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7c10(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
     extern void *data_ov000_021df580;
@@ -119,21 +123,21 @@ void func_ov000_021a9820(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_ov000_021a9860(s32 a,s32 b) {
- extern void **data_027e0058;s32 func_020ba924(s32,s32);
+ extern void **data_027e0058;s32 GetTerrainPropertyFlagsAt(s32,s32);
  s32 p=(s32)*data_027e0058;
  if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)==24)return 1;
- return func_020ba924(a,b);
+ return GetTerrainPropertyFlagsAt(a,b);
 }
 
 s32 IsFootUnitKind(s32 a) {
  switch(a){case 1:case 2:case 3:return 1;default:return 0;}
 }
 
-s32 func_ov000_021a98c8(s32 a) {
+s32 IsCaptureKind(s32 a) {
  switch(a){case 1:case 2:return 1;default:return 0;}
 }
 
-s32 func_ov000_021a98e4(s32 arg0) {
+s32 GetUnitAttackClass(s32 arg0) {
     s32 func_020a7bd4(void);
     s32 temp_r0;
 
@@ -180,7 +184,7 @@ return result;
 }
 
 s32 func_ov000_021a99dc(u8 *arg0) {
- if(func_ov000_021a98e4((u32)(*arg0<<26)>>26)==2 || ((u32)(*arg0<<26)>>26)==25) {
+ if(GetUnitAttackClass((u32)(*arg0<<26)>>26)==2 || ((u32)(*arg0<<26)>>26)==25) {
  if(arg0[12]==0) return 1;
  }
  return 0;

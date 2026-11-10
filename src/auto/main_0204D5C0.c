@@ -38,10 +38,10 @@ void func_0204db34(s32 *arg0) {
 }
 
 s32 func_0204db50(void **arg0) {
- s32 func_0204ec8c(void **,s32);
+ s32 gpiThink(void **,s32);
  if(arg0==0 || *arg0==0) return 2;
  if(M2C_FIELD(*arg0,s32 *,0x108)!=0) return 0;
- return func_0204ec8c(arg0,0);
+ return gpiThink(arg0,0);
 }
 
 s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
@@ -57,7 +57,7 @@ s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
 }
 
 s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32),s32 e){
- s32 func_02050f98(void **,void *,void *,void *,void *,s8 *,s8 *,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
+ s32 gpiStartConnection(void **,void *,void *,void *,void *,s8 *,s8 *,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
  void gpiSetErrorString(void **,void *);
  extern M2C_UNK data_020fda34,data_020fda44;
  void *q;
@@ -68,12 +68,12 @@ s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32)
  if(M2C_FIELD(q,s32 *,0x108)){
  s32 buf[8]={0};cb(p,buf,e);return 0;
  }
- return func_02050f98(p,&data_020fda44,&data_020fda44,&data_020fda44,&data_020fda44,a,b,0,c,0,d,cb,e);
+ return gpiStartConnection(p,&data_020fda44,&data_020fda44,&data_020fda44,&data_020fda44,a,b,0,c,0,d,cb,e);
 }
 
 void func_0204dcd8(void **arg0) {
-    M2C_UNK func_0204e84c(void **);
-    M2C_UNK func_02052038(void **, M2C_UNK);
+    M2C_UNK gpiResetConnection(void **);
+    M2C_UNK gpiDisconnect(void **, M2C_UNK);
     void *temp_r1;
 
     if (arg0 != NULL) {
@@ -82,8 +82,8 @@ void func_0204dcd8(void **arg0) {
             if (M2C_FIELD(temp_r1, s32 *, 0x108) != 0) {
                 return;
             }
-            func_02052038(arg0, 1);
-            func_0204e84c(arg0);
+            gpiDisconnect(arg0, 1);
+            gpiResetConnection(arg0);
         }
     }
 }
@@ -109,22 +109,22 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
 
 s32 func_0204ddd4(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){
 s32 func_02053c9c(void **,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
-extern M2C_UNK data_020fda34;extern s32 data_020fda48;
+extern M2C_UNK data_020fda34;extern s32 gGpiMsgDisconnected;
 void *q;
 if(!p || !(q=*p) || !a)return 2;
 if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
 if(M2C_FIELD(q,s32 *,0x108)){s32 buf[129]={0};cb(p,buf,d);return 0;}
-if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&data_020fda48);return 2;}
+if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&gGpiMsgDisconnected);return 2;}
 return func_02053c9c(p,a,b,c,cb,d);
 }
 
 s32 func_0204deb0(void **arg0,s32 arg1,s32 arg2) {
  s32 func_0205342c(void **,s32,s32);
- extern s32 data_020fda48;
+ extern s32 gGpiMsgDisconnected;
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
  return func_0205342c(arg0,arg1,arg2);
 }
 
@@ -132,23 +132,23 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
     /* Build an add-buddy request in the connection's send buffer from the session key, new profile id and reason string. */
     void gpiAppendStringField(void **, void *, s8 *);
     void gpiAppendIntField(void **, void *, s32);
-    void func_020580fc(void *, s8 *, s32);
-    extern s32 data_020fda48, data_020fda78;
-    extern s8 data_020fda88, data_020fda94, data_020fdaa0, data_020fdab0, data_020fdabc;
+    void StringCopyN(void *, s8 *, s32);
+    extern s32 gGpiMsgDisconnected, data_020fda78;
+    extern s8 data_020fda88, gGsKeySessKey, data_020fdaa0, data_020fdab0, gGsKeyFinalStatus;
     s8 buf[0x401];
     s8 *c;
     void *session;
     if (!connection || !(session = *connection)) return 2;
     if (M2C_FIELD(session, s32 *, 0x108)) return 0;
     if (M2C_FIELD(session, s32 *, 0x1d8) == 4) {
-        gpiSetErrorString(connection, &data_020fda48);
+        gpiSetErrorString(connection, &gGpiMsgDisconnected);
         return 2;
     }
     if (!reason) {
         gpiSetErrorString(connection, &data_020fda78);
         return 2;
     }
-    func_020580fc(buf, reason, 0x401);
+    StringCopyN(buf, reason, 0x401);
     if (*buf) {
         c = buf;
         do {
@@ -157,23 +157,23 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
         } while (*c);
     }
     gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fda88);
-    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fda94);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &gGsKeySessKey);
     gpiAppendIntField(connection, (u8 *)session + 0x1f4, M2C_FIELD(session, s32 *, 0x198));
     gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdaa0);
     gpiAppendIntField(connection, (u8 *)session + 0x1f4, newProfileId);
     gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdab0);
     gpiAppendStringField(connection, (u8 *)session + 0x1f4, buf);
-    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdabc);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &gGsKeyFinalStatus);
     return 0;
 }
 
 s32 func_0204e074(void **arg0,s32 arg1) {
  s32 func_0204fa60(void **,s32);
- extern s32 data_020fda48;
+ extern s32 gGpiMsgDisconnected;
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
  return func_0204fa60(arg0,arg1);
 }
 
@@ -182,12 +182,12 @@ s32 func_0204e0c4(void **arg0,s32 arg1) {
  s32 func_02055b84(void **,s32,void **);
  void func_02055bf4(void **,void *);
  s32 func_02055d6c(void *);
- extern s32 data_020fda48;
+ extern s32 gGpiMsgDisconnected;
  void *sp0;
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
  if(func_02055b84(arg0,arg1,&sp0)==0) return 0;
  M2C_FIELD(sp0,s32 *,0x14)--;
  if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
@@ -208,9 +208,9 @@ s32 func_0204e184(void **arg0,volatile s32 *arg1) {
 
 s32 func_0204e1b4(void **p,s32 index,void *out){
  void *func_02055d3c(void **,s32);
- void func_020580fc(void *,s8 *,s32);
+ void StringCopyN(void *,s8 *,s32);
  void gpiSetErrorString(void **,void *);
- void func_020640a8(void *,void *,void *,s32);
+ void AssertFailed(void *,void *,void *,s32);
  void func_02065210(void *,s32,s32);
  extern M2C_UNK data_020fda10,data_020fdac4,data_020fdad4,data_020fdae4,data_020fdaf0;
  void *q,*entry,*details; s8 *text; s32 count;
@@ -222,13 +222,13 @@ s32 func_0204e1b4(void **p,s32 index,void *out){
  entry=func_02055d3c(p,index);
  if(!entry){gpiSetErrorString(p,&data_020fdad4);return 2;}
  details=M2C_FIELD(entry,void **,8);
- if(!details)func_020640a8(&data_020fdae4,&data_020fdaf0,&data_020fda10,0x5cf);
+ if(!details)AssertFailed(&data_020fdae4,&data_020fdaf0,&data_020fda10,0x5cf);
  M2C_FIELD(out,s32 *,0)=M2C_FIELD(entry,s32 *,0);
  M2C_FIELD(out,s32 *,4)=M2C_FIELD(details,s32 *,4);
  text=M2C_FIELD(details,s8 **,8);
- if(!text)*text=0;else func_020580fc((u8 *)out+8,text,256);
+ if(!text)*text=0;else StringCopyN((u8 *)out+8,text,256);
  text=M2C_FIELD(details,s8 **,12);
- if(!text)*text=0;else func_020580fc((u8 *)out+0x108,text,256);
+ if(!text)*text=0;else StringCopyN((u8 *)out+0x108,text,256);
  M2C_FIELD(out,s32 *,0x208)=M2C_FIELD(details,s32 *,0x10);
  M2C_FIELD(out,s32 *,0x20c)=M2C_FIELD(details,s32 *,0x14);
  return 0;
@@ -255,11 +255,11 @@ s32 func_0204e364(void **arg0,s32 arg1) {
 
 s32 func_0204e3b0(void **arg0,s32 arg1) {
  s32 func_0204fb50(void **,s32);
- extern s32 data_020fda48;
+ extern s32 gGpiMsgDisconnected;
  void *p; s32 result;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
  result=func_0204fb50(arg0,arg1);
  if(result==0) return 0;
  return result;

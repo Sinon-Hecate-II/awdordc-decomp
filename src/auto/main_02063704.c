@@ -55,7 +55,7 @@ s32 func_020637fc(void *arg0) {
     s32 func_02063338(void *, u8 *, s32);
     s32 func_020634f4(void *, u8 *, s32);
     s32 func_02063678(M2C_UNK, u8 *, s32);
-    void func_020640a8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void func_020651c4(void *, void *, s32);
     extern u8 data_021001b4[], data_0210012c[], data_021000d8[];
     s32 result = 0;
@@ -99,7 +99,7 @@ s32 func_020637fc(void *arg0) {
             break;
         }
         if ((M2C_FIELD(arg0, s32 *, 0x80) -= size) < 0) {
-            func_020640a8((M2C_UNK) data_021001b4, (M2C_UNK) data_0210012c, (M2C_UNK) data_021000d8, 0x5B4);
+            AssertFailed((M2C_UNK) data_021001b4, (M2C_UNK) data_0210012c, (M2C_UNK) data_021000d8, 0x5B4);
         }
         if (M2C_FIELD(arg0, s32 *, 0x80) != 0 && M2C_FIELD(arg0, u8 **, 0x7C) != NULL) {
             func_020651c4(M2C_FIELD(arg0, u8 **, 0x7C), M2C_FIELD(arg0, u8 **, 0x7C) + size,
@@ -117,7 +117,7 @@ s32 func_020637fc(void *arg0) {
 #pragma scheduling off
 s32 func_020639c0(void *arg0) {
     s32 func_02049534(s32);
-    s32 func_020497cc(s32, s32, s32, M2C_UNK);
+    s32 ghiRecv(s32, s32, s32, M2C_UNK);
     M2C_UNK func_0206006c(void *, s32, s32);
     M2C_UNK func_02061efc(void *);
     s32 func_02062e30(void *);
@@ -130,7 +130,7 @@ s32 func_020639c0(void *arg0) {
         return 0;
     }
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x80);
-    temp_r0 = func_020497cc(M2C_FIELD(arg0, s32 *, 0x4B0), M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, 0x1000 - temp_r5, 0);
+    temp_r0 = ghiRecv(M2C_FIELD(arg0, s32 *, 0x4B0), M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, 0x1000 - temp_r5, 0);
     if ((u32) (temp_r0 + 1) <= 1U) {
         func_02061efc(arg0);
         return 3;
@@ -153,10 +153,10 @@ s32 func_020639c0(void *arg0) {
 }
 #pragma opt_strength_reduction off
 s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
-s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 func_020623bc(void *,s32,s32,s32,s32);
+s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 SBServerListConnectAndQuery(void *,s32,s32,s32,s32);
 u8 packet[16]; u16 size; u16 temp; s32 result; u8 *d; u8 *s;
 if(M2C_FIELD(arg0,s32 *,0)==1) {
-func_020623bc(arg0,0,0,2,0);
+SBServerListConnectAndQuery(arg0,0,0,2,0);
 }
 if(M2C_FIELD(arg0,s32 *,0)==1)return 3;
 temp=arg4+9;size=(u8)(temp>>8)|((temp<<8)&0xff00);
@@ -324,7 +324,7 @@ s32 func_0206409c(s32 arg0) {
     return var_r0;
 }
 
-void func_020640a8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void AssertFailed(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_02063df8();
     M2C_UNK func_0206743c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_021002b0;

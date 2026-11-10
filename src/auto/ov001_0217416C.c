@@ -233,10 +233,10 @@ void func_ov001_021747cc(void) {
 
 void func_ov001_021747e4(void) {
     extern void *data_ov001_02193d20;
-    s32 func_ov001_0218bbd8(void *);
+    s32 TouchRectPressed(void *);
     void func_ov001_0218b2e0(void *, void *, void *);
-    void func_ov001_02185024(s32);
-    extern u8 data_ov001_0218fd20[];
+    void Ov001_PlaySound(s32);
+    extern u8 gTouchScreenRect[];
     extern u8 data_ov001_0218f642[];
     extern u8 data_ov001_0218f5f0[];
     extern u8 data_ov001_0218f618[];
@@ -248,7 +248,7 @@ void func_ov001_021747e4(void) {
     u8 *p;
     s32 i;
 
-    if (func_ov001_0218bbd8(data_ov001_0218fd20) == 0) {
+    if (TouchRectPressed(gTouchScreenRect) == 0) {
         return;
     }
     M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) = -1;
@@ -256,12 +256,12 @@ void func_ov001_021747e4(void) {
     p = data_ov001_0218f642;
     for (i = 0; i < 10; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5f0, buf);
-        if (func_ov001_0218bbd8(buf) != 0) {
+        if (TouchRectPressed(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x67) == 0) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 return;
             }
-            func_ov001_02185024(0);
+            Ov001_PlaySound(0);
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)i;
             return;
         }
@@ -271,17 +271,17 @@ void func_ov001_021747e4(void) {
     p = data_ov001_0218f618;
     for (i = 0; i < 2; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5f8, buf);
-        if (func_ov001_0218bbd8(buf) != 0) {
+        if (TouchRectPressed(buf) != 0) {
             if (i != 0) goto mid_770;
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) goto mid_78c;
 mid_770:
             if (i != 1) goto mid_79c;
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x68) != 0) goto mid_79c;
 mid_78c:
-            func_ov001_02185024(9);
+            Ov001_PlaySound(9);
             return;
 mid_79c:
-            func_ov001_02185024(0);
+            Ov001_PlaySound(0);
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)(i + 10);
             return;
         }
@@ -291,8 +291,8 @@ mid_79c:
     p = data_ov001_0218f620;
     for (i = 0; i < 2; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5fc, buf);
-        if (func_ov001_0218bbd8(buf) != 0) {
-            func_ov001_02185024(0);
+        if (TouchRectPressed(buf) != 0) {
+            Ov001_PlaySound(0);
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)(i + 12);
             return;
         }
@@ -311,8 +311,8 @@ void func_ov001_021749c0(void) {
     extern u8 data_ov001_0218f620[];
     extern u8 data_ov001_0218f5fc[];
     extern u8 data_ov001_0218f5e8[];
-    extern u8 data_ov001_0218fd20[];
-    int func_ov001_0218bcb0(void *);
+    extern u8 gTouchScreenRect[];
+    int TouchRectHeld(void *);
     void func_ov001_0218b2e0(void *, void *, void *);
     int func_ov001_02175290(void);
 
@@ -321,14 +321,14 @@ void func_ov001_021749c0(void) {
     s32 i;
 
     M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = 0;
-    if (func_ov001_0218bcb0(data_ov001_0218fd20) == 0) {
+    if (TouchRectHeld(gTouchScreenRect) == 0) {
         return;
     }
 
     p = data_ov001_0218f642;
     for (i = 0; i < 10; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5f0, buf);
-        if (func_ov001_0218bcb0(buf) != 0) {
+        if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i) {
                 return;
             }
@@ -343,7 +343,7 @@ void func_ov001_021749c0(void) {
     p = data_ov001_0218f618;
     for (i = 0; i < 2; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5f8, buf);
-        if (func_ov001_0218bcb0(buf) != 0) {
+        if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 10) {
                 return;
             }
@@ -358,7 +358,7 @@ void func_ov001_021749c0(void) {
     p = data_ov001_0218f620;
     for (i = 0; i < 2; i++) {
         func_ov001_0218b2e0(p, data_ov001_0218f5fc, buf);
-        if (func_ov001_0218bcb0(buf) != 0) {
+        if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 12) {
                 return;
             }
@@ -373,7 +373,7 @@ void func_ov001_021749c0(void) {
 
 void func_ov001_02174b90(void) {
     extern void *data_ov001_02193d20;
-    extern u8 data_ov001_0218fd20[];
+    extern u8 gTouchScreenRect[];
     extern u8 data_ov001_0218f642[];
     extern u8 data_ov001_0218f5f0[];
     extern u8 data_ov001_0218f618[];
@@ -383,13 +383,13 @@ void func_ov001_02174b90(void) {
     void func_ov001_0218b2e0(void *, void *, void *);
     s32 func_ov001_0218bb6c(void *);
     void func_ov001_02174d80(s32);
-    void func_ov001_02185024(s32);
+    void Ov001_PlaySound(s32);
 
     s32 i;
     u8 buf[8];
     u8 *p;
 
-    if (func_ov001_0218bb6c(data_ov001_0218fd20) == 0) {
+    if (func_ov001_0218bb6c(gTouchScreenRect) == 0) {
         goto fail;
     }
 
@@ -426,7 +426,7 @@ void func_ov001_02174b90(void) {
                 }
             }
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) = -1;
                 return;
             } else {
@@ -473,38 +473,38 @@ void func_ov001_02174dcc(void) {
     extern u8 data_ov001_0218f5ec[];
     extern u8 data_ov001_0218f5e8[];
     void func_ov001_0217531c(s32);
-    s32 func_ov001_0218bb00(s32);
-    s32 func_ov001_0218bb24(s32);
-    s32 func_ov001_0218bb48(s32);
-    void func_ov001_02185024(s32);
+    s32 KeyPressed(s32);
+    s32 KeyHeld(s32);
+    s32 KeyReleased(s32);
+    void Ov001_PlaySound(s32);
     register s8 k;
 
-    if (func_ov001_0218bb24(0x20)) {
+    if (KeyHeld(0x20)) {
         func_ov001_0217531c(0);
     }
-    if (func_ov001_0218bb24(0x40)) {
+    if (KeyHeld(0x40)) {
         func_ov001_0217531c(1);
     }
-    if (func_ov001_0218bb24(0x10)) {
+    if (KeyHeld(0x10)) {
         func_ov001_0217531c(2);
     }
-    if (func_ov001_0218bb24(0x80)) {
+    if (KeyHeld(0x80)) {
         func_ov001_0217531c(3);
     }
-    if (func_ov001_0218bb00(1)) {
+    if (KeyPressed(1)) {
         k = M2C_FIELD(data_ov001_02193d20, s8 *, 0x63);
         if (k < 10) {
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x67) != 0) {
                 M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f6dc[k];
             } else {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
             }
             return;
         }
         if (k - 10 < 2) {
             if ((k - 10 == 0 && M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) ||
                 (k - 10 == 1 && M2C_FIELD(data_ov001_02193d20, u8 *, 0x68) == 0)) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 return;
             }
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5ec[k - 10];
@@ -512,17 +512,17 @@ void func_ov001_02174dcc(void) {
         }
         M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5e8[k - 12];
     }
-    if (func_ov001_0218bb24(2)) {
+    if (KeyHeld(2)) {
         if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) {
             if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) == 0) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) = 1;
             }
         } else {
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = 0x10;
         }
     } else {
-        if (func_ov001_0218bb48(2)) {
+        if (KeyReleased(2)) {
             M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) = 0;
         }
     }

@@ -88,10 +88,10 @@ M2C_UNK func_02023318(void *arg0) {
 
 void func_020234e4(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02021f1c(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02022fdc(void *, M2C_UNK, s32);
+    M2C_UNK RsaCrtDecrypt(void *, M2C_UNK, s32);
     M2C_UNK func_020232b8(void *);
     M2C_UNK func_02023318(void *);
-    func_02022fdc(arg0, arg1, M2C_FIELD(arg0, s32 *, 0x81C));
+    RsaCrtDecrypt(arg0, arg1, M2C_FIELD(arg0, s32 *, 0x81C));
     func_020232b8(arg0);
     func_02021f1c(arg0, 0, 0);
     func_02023318(arg0);
@@ -333,7 +333,7 @@ loop_1:
     goto loop_1;
 }
 
-void func_02023c74(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void TlsUpdateHandshakeHash(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02025748(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_02026014();
     func_02026014(arg0 + 0x2EC);
@@ -377,7 +377,7 @@ void func_02023ca0(void *arg0, void *arg1) {
  case 20:func_020236d8(arg0,(M2C_UNK)p);break;
  default:M2C_FIELD(arg0,u8 *,0x455)=9;break;
  }
- func_02023c74(arg0,p-4,len+4);p+=len;n-=len+4;
+ TlsUpdateHandshakeHash(arg0,p-4,len+4);p+=len;n-=len+4;
  if(n==0)break;
  state=M2C_FIELD(arg0,u8 *,0x455);
  }while(state!=9);
@@ -429,7 +429,7 @@ s32 func_02023f20(void *arg0) {
             } else {
                 func_02022e78(channel, buf + 1);
             }
-            func_02023c74(channel, buf, size);
+            TlsUpdateHandshakeHash(channel, buf, size);
             gFree[0](buf);
         } else {
             M2C_FIELD(channel, u8 *, 0x455) = 9;
@@ -457,9 +457,9 @@ s32 func_02023f20(void *arg0) {
 
 void GenerateRandomBytes(u8 *dst,s32 len){
 M2C_UNK func_02025fc0(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK func_02026014();void func_02026134(void*,void*);void func_020241f0(M2C_UNK*,s32);
-extern s8 data_02138cc0;extern u64 data_021372f8[3];extern M2C_UNK data_02138e38;extern u8 data_02138e4b;
+extern s8 gTlsRandomState;extern u64 data_021372f8[3];extern M2C_UNK data_02138e38;extern u8 data_02138e4b;
 u8 ctx[92],hash[20];u32 seed; s32 out,index,state,j;u32 carry,total;u8 *p,*q;
-if(!*(u8*)&data_02138cc0){data_021372f8[0]=data_021372f8[1]*data_021372f8[0]+data_021372f8[2];seed=data_021372f8[0]>>32;func_020241f0((M2C_UNK*)&seed,4);}
+if(!*(u8*)&gTlsRandomState){data_021372f8[0]=data_021372f8[1]*data_021372f8[0]+data_021372f8[2];seed=data_021372f8[0]>>32;func_020241f0((M2C_UNK*)&seed,4);}
 out=0;index=20;
 while(out<len){
 if(index==20){
@@ -478,7 +478,7 @@ void func_020241f0(M2C_UNK *p,s32 n) {
  M2C_UNK func_02025fc0(void *);
  M2C_UNK func_02026014();
  M2C_UNK func_020260cc(void *,void *);
- extern s8 data_02138cc0;
+ extern s8 gTlsRandomState;
  extern M2C_UNK data_02138e38;
  u8 buf[0x5C];
  s32 state;
@@ -488,6 +488,6 @@ void func_020241f0(M2C_UNK *p,s32 n) {
  func_02026014(buf,p,n);
  func_020260cc(buf,&data_02138e38);
  OS_RestoreInterrupts(state);
- data_02138cc0=1;
+ gTlsRandomState=1;
 }
 

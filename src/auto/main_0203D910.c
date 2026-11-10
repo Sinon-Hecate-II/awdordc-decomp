@@ -204,7 +204,7 @@ void func_0203dcf4(void) {
 
 void func_0203dd30(u8 arg0, s32 arg1, void *arg2) {
     M2C_UNK func_020411dc(M2C_UNK);
-    M2C_UNK func_02041fb0(u8, M2C_UNK);
+    M2C_UNK SendConnectionPacket(u8, M2C_UNK);
     s32 GetConnectedPlayerMask(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
     s32 temp_r4_3;
@@ -233,7 +233,7 @@ void func_0203dd30(u8 arg0, s32 arg1, void *arg2) {
             M2C_FIELD(GetConnection(), s8 *, 0x1AD) = 0;
             SetConnectionState(9);
         }
-        func_02041fb0(arg0, 3);
+        SendConnectionPacket(arg0, 3);
         return;
     case 3:
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) == 0x10) {
@@ -251,14 +251,14 @@ void func_0203dd30(u8 arg0, s32 arg1, void *arg2) {
             if ((s32) M2C_FIELD(GetConnection(), u8 *, 0xD) >= 1) {
                 do {
                     temp_r0 = GetConnection();
-                    func_02041fb0(M2C_FIELD((temp_r0 + var_r5), u8 *, 0x2D0), 4);
+                    SendConnectionPacket(M2C_FIELD((temp_r0 + var_r5), u8 *, 0x2D0), 4);
                     var_r5 += 1;
                 } while (var_r5 <= (s32) M2C_FIELD(GetConnection(), u8 *, 0xD));
             }
             SetConnectionState(0x11);
             return;
         }
-        func_02041fb0(arg0, 4);
+        SendConnectionPacket(arg0, 4);
         return;
     case 4:
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) != 9) {

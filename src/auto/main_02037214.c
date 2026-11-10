@@ -262,7 +262,7 @@ void func_02037794(M2C_UNK arg0) {
     func_02037694(5, arg0);
 }
 
-void func_020377a8(M2C_UNK arg0, M2C_UNK arg1) {
+void gpiRealloc(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02037714(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     func_02037714(5, arg0, arg1, arg1);
 }
@@ -525,7 +525,7 @@ if (!arg1) return -1;
 p=func_02068ee0(arg2,arg3); if(!p)return -1;
 for (;;) {
 len=StringLength(arg0);
-if(func_02068eac((u8*)(p+1),(u8*)arg0,len)!=0)goto next;
+if(StringCompareN((u8*)(p+1),(u8*)arg0,len)!=0)goto next;
 len=StringLength(arg0); if(arg3==*(s8 *)(len+(s32)p+1))goto extract;
 next:
 q=func_02068ee0(p+1,arg3);if(!q)return -1;

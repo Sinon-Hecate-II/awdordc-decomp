@@ -3,7 +3,7 @@
 typedef struct { s8 sign; s8 pad; s16 exp; u8 len; char digits[33]; } DecimalBD;
 typedef struct { u8 a,sign,b,alt; u8 c; u16 conv; s32 d,precision; } FormatBD;
 typedef struct { u8 mode; u8 pad; u16 digits; } DecimalFormBD;
-extern u16 data_020eaf78[];
+extern u16 gWideCharClassTable[];
 extern u16 data_02100564[], data_02100570[], data_0210057c[], data_02100584[], data_0210058c[], data_02100598[], data_021005a4[], data_021005ac[];
 
 #pragma scheduling on
@@ -34,12 +34,12 @@ while(dec.len>1 && *--q=='0'){dec.len--;dec.exp++;}
 switch((u8)dec.digits[0]){
 case '0': dec.exp=0; break;
 case 'I':
-if(value<0.0){result=end-5;if(((u32)conv>=128?0:data_020eaf78[conv]&512))func_0206cdac(result,data_02100564);else func_0206cdac(result,data_02100570);}
-else{result=end-4;if(((u32)conv>=128?0:data_020eaf78[conv]&512))func_0206cdac(result,data_0210057c);else func_0206cdac(result,data_02100584);}
+if(value<0.0){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_02100564);else func_0206cdac(result,data_02100570);}
+else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_0210057c);else func_0206cdac(result,data_02100584);}
 return result;
 case 'N':
-if(dec.sign){result=end-5;if(((u32)conv>=128?0:data_020eaf78[conv]&512))func_0206cdac(result,data_0210058c);else func_0206cdac(result,data_02100598);}
-else{result=end-4;if(((u32)conv>=128?0:data_020eaf78[conv]&512))func_0206cdac(result,data_021005a4);else func_0206cdac(result,data_021005ac);}
+if(dec.sign){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_0210058c);else func_0206cdac(result,data_02100598);}
+else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_021005a4);else func_0206cdac(result,data_021005ac);}
 return result;
 }
 dec.exp+=dec.len-1;
@@ -97,8 +97,8 @@ return result;
 #pragma scheduling off
 u16 *func_0206cdcc(u16 *,s32);
 s32 func_0206cd90(u16 *);
-u16 *func_0206adf8(u16 *,char **,FormatBD *);
-u16 *func_0206b370(s32,u16 *,FormatBD);
+u16 *ParseFormatSpec(u16 *,char **,FormatBD *);
+u16 *FormatInteger(s32,u16 *,FormatBD);
 u16 *func_0206b5c0(u64,u16 *,FormatBD);
 u16 *func_0206b8c0(double,u16 *,FormatBD);
 u16 *func_0206add0(u16 *,s32,s32);
@@ -133,7 +133,7 @@ s32 func_0206c3c8(s32 (*writer)(void *,const u16 *,s32), void *state, u16 *p, ch
         len=mark-p;
 total+=len;
         if(len && !writer(state,p,len)) return -1;
-        p=func_0206adf8(q,&args,&f);
+        p=ParseFormatSpec(q,&args,&f);
         switch(f.conv) {
         case 'd': case 'i':
             if(((u8)f.c)==3) {args+=4;
@@ -158,7 +158,7 @@ value=*(s32 *)(args-4);
             if(((u8)f.c)==4 || ((u8)f.c)==6){text=func_0206b5c0(wide,buffer+512,f);
 if(!text)goto invalid;
 }
-            else {text=func_0206b370(value,buffer+512,f);
+            else {text=FormatInteger(value,buffer+512,f);
 if(!text)goto invalid;
 }
             len=buffer+511-text;
@@ -186,7 +186,7 @@ value=*(s32 *)(args-4);
             if(((u8)f.c)==4 || ((u8)f.c)==6){text=func_0206b5c0(wide,buffer+512,f);
 if(!text)goto invalid;
 }
-            else {text=func_0206b370(value,buffer+512,f);
+            else {text=FormatInteger(value,buffer+512,f);
 if(!text)goto invalid;
 }
             len=buffer+511-text;

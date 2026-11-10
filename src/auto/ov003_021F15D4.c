@@ -161,9 +161,9 @@ M2C_FIELD(&gSceneLayerConfig,void **,0)=a;
 }
 
 void func_ov003_021f1a58(void) {
-    M2C_UNK func_01ffa574(s32);
+    M2C_UNK DeleteSpriteObject(s32);
     extern u8 data_ov003_022111c0;
-    func_01ffa574(M2C_FIELD(&data_ov003_022111c0, s32 *, 0x10));
+    DeleteSpriteObject(M2C_FIELD(&data_ov003_022111c0, s32 *, 0x10));
 }
 
 void func_ov003_021f1a70(void) {

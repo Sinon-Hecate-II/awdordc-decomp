@@ -14,7 +14,7 @@ typedef struct { u8 a,b; } HexPair;
 extern HexText6 data_02100514;
 extern HexText5 data_0210051c,data_02100524,data_02100534,data_0210053c;
 extern HexText4 data_0210052c,data_02100530,data_02100544,data_02100548;
-char *func_020658fc(int,char *,HexFormat);
+char *FormatIntegerNarrow(int,char *,HexFormat);
 void func_0206f034();
 double func_0206dfb0(double);
 
@@ -107,25 +107,102 @@ char *func_0206536c(char *input, s32 **args, HexFormat *out) {
  return format+1;
 }
 
-char *func_020658fc(int value,char *out,HexFormat fmt) {
-s32 width; s32 negative=0; u32 base; char *p=out; s32 count=0; s32 precision=fmt.precision; s32 digit; s32 sign; u8 type; u8 alt;
-*--p=0;
-alt=fmt.d; type=fmt.f; width=fmt.width; sign=fmt.b;
-if(value==0 && precision==0) { if(!alt || type!='o') return p; }
-switch(type) {
-case 'd': case 'i': base=10; if(value<0) { if(value != (s32)0x80000000) value=-value; negative=1; } break;
-case 'o': base=8; sign=0; break;
-case 'u': base=10; sign=0; break;
-case 'x': case 'X': base=16; sign=0; break;
-}
-do { digit=(u32)value%base; value=(u32)value/base; if(digit<10) digit+='0'; else if(type=='x') digit+=87; else digit+=55; *--p=digit; ++count; } while(value!=0);
-if(base==8 && alt && *p!='0') { *--p='0'; ++count; }
-if(fmt.a==2) { precision=width; if(negative || sign) --precision; if(base==16 && alt) precision-=2; }
-if(precision+(out-p)>509) return 0;
-while(count<precision) { *--p='0'; ++count; }
-if(base==16 && alt) { *--p=type; *--p='0'; }
-if(negative) *--p='-'; else if(sign==1) *--p='+'; else if(sign==2) *--p=' ';
-return p;
+/* Format a 32-bit integer as narrow text for the printf conversions d/i/o/u/x/X,
+   applying alternate form, zero padding, precision and sign.  Digits are written
+   backwards from `end`; returns their start, or 0 if the result would not fit
+   the caller's 512-byte buffer. */
+char *FormatIntegerNarrow(int value, char *end, HexFormat fmt) {
+    s32 width;
+    s32 negative = 0;
+    u32 base;
+    char *cursor = end;
+    s32 digits = 0;
+    s32 precision = fmt.precision;
+    s32 digit;
+    s32 sign;
+    u8 conversion;
+    u8 alternate;
+
+    *--cursor = 0;
+    alternate = fmt.d;
+    conversion = fmt.f;
+    width = fmt.width;
+    sign = fmt.b;
+    if (value == 0 && precision == 0) {
+        if (!alternate || conversion != 'o') {
+            return cursor;
+        }
+    }
+    switch (conversion) {
+    case 'd':
+    case 'i':
+        base = 10;
+        if (value < 0) {
+            if (value != (s32)0x80000000) {
+                value = -value;
+            }
+            negative = 1;
+        }
+        break;
+    case 'o':
+        base = 8;
+        sign = 0;
+        break;
+    case 'u':
+        base = 10;
+        sign = 0;
+        break;
+    case 'x':
+    case 'X':
+        base = 16;
+        sign = 0;
+        break;
+    }
+    do {
+        digit = (u32)value % base;
+        value = (u32)value / base;
+        if (digit < 10) {
+            digit += '0';
+        } else if (conversion == 'x') {
+            digit += 87;
+        } else {
+            digit += 55;
+        }
+        *--cursor = digit;
+        ++digits;
+    } while (value != 0);
+    if (base == 8 && alternate && *cursor != '0') {
+        *--cursor = '0';
+        ++digits;
+    }
+    if (fmt.a == 2) {
+        precision = width;
+        if (negative || sign) {
+            --precision;
+        }
+        if (base == 16 && alternate) {
+            precision -= 2;
+        }
+    }
+    if (precision + (end - cursor) > 509) {
+        return 0;
+    }
+    while (digits < precision) {
+        *--cursor = '0';
+        ++digits;
+    }
+    if (base == 16 && alternate) {
+        *--cursor = conversion;
+        *--cursor = '0';
+    }
+    if (negative) {
+        *--cursor = '-';
+    } else if (sign == 1) {
+        *--cursor = '+';
+    } else if (sign == 2) {
+        *--cursor = ' ';
+    }
+    return cursor;
 }
 
 #pragma opt_scheduling off
@@ -175,7 +252,7 @@ char *func_02065e44(double value,char *end,HexFormat fmt) {
  bytes=(u8 *)&value;
  f.a=1;f.b=1;f.c=0;f.d=0;f.e=0;f.width=0;f.precision=1;f.f=100;
  for(i=0;i<4;i++){tmp=((s8 *)bytes)[i];((s8 *)bytes)[i]=((s8 *)bytes)[7-i];((s8 *)bytes)[7-i]=tmp;}
- p=func_020658fc(((((u32)((u8 *)&value)[1]<<17)|((u32)((u8 *)&value)[0]<<25))>>21&0x7ff)-1023,end,f);
+ p=FormatIntegerNarrow(((((u32)((u8 *)&value)[1]<<17)|((u32)((u8 *)&value)[0]<<25))>>21&0x7ff)-1023,end,f);
  *--p=spec=='a'?'p':'P';
  bit=precision*4+11;
  n=precision;

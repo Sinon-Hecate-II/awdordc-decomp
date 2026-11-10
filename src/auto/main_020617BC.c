@@ -60,14 +60,14 @@ s32 func_02061818(s32 *arg0, s32 *arg1) {
 
 s32 func_020618f0(s32 *arg0, s32 *arg1) {
     s32 func_02060afc(s32, s32, M2C_UNK *);
-    s32 func_02068d98(s32, s32);
+    s32 StringCompare(s32, s32);
     extern void *data_0213e4bc;
     extern M2C_UNK data_0210011c;
     s32 temp_r4;
     s32 var_r0;
 
     temp_r4 = func_02060afc(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c);
-    var_r0 = func_02068d98(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c));
+    var_r0 = StringCompare(temp_r4, func_02060afc(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &data_0210011c));
     if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
@@ -192,19 +192,19 @@ func_02048eac(func_020609bc(a),pair);
 return pair[0];
 }
 
-void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void func_020640a8(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)func_020640a8(data_02100120,data_0210012c,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
+void func_02061d24(void *a,s32 b) {s32 func_020609bc(s32);s32 *func_02048ff8(s32,s32 *);void func_02048f54(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=func_02048ff8(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,data_0210012c,data_02100094,0xf4);if(!p)return;if(--p[1])return;func_02048f54(func_020609bc((s32)a),pair);}
 
 s32 func_02061da0(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
 void func_02061dd0(void *p,void *a,void *b,void *c,s32 d,s32 force,s32 cb,s32 userdata){
 extern u8 data_0210013c[],data_021000c4[],data_0210014c[];extern s32 gDnsQueryState[];extern M2C_UNK data_0210011c;
-void func_020640a8(void*,void*,void*,s32);s32 func_020609bc(s32);void func_02068c50(void*,void*);void func_02062e28(void*,void*);s32 func_02049208(void);void func_020677a8(s32);void func_0204926c(void);
-if(!p)func_020640a8(data_0210013c,data_0210012c,data_021000c4,0x11c);
+void AssertFailed(void*,void*,void*,s32);s32 func_020609bc(s32);void StringCopy(void*,void*);void func_02062e28(void*,void*);s32 func_02049208(void);void func_020677a8(s32);void func_0204926c(void);
+if(!p)AssertFailed(data_0210013c,data_0210012c,data_021000c4,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
 M2C_FIELD(p,s32*,0)=1;func_02061c8c(p);func_020609bc((s32)p);
-func_02068c50((u8*)p+0xc,a);func_02068c50((u8*)p+0x30,b);func_02068c50((u8*)p+0x54,c);
+StringCopy((u8*)p+0xc,a);StringCopy((u8*)p+0x30,b);StringCopy((u8*)p+0x54,c);
 M2C_FIELD(p,s32*,0x488)=cb;M2C_FIELD(p,s32*,0x48c)=0;
-if(!cb)func_020640a8(data_0210014c,data_0210012c,data_021000c4,0x132);
+if(!cb)AssertFailed(data_0210014c,data_0210012c,data_021000c4,0x132);
 M2C_FIELD(p,s32*,0x494)=userdata;M2C_FIELD(p,void**,0x498)=&data_0210011c;
 M2C_FIELD(p,s32*,0x4a0)=0;M2C_FIELD(p,s32*,0x4b0)=-1;
 M2C_FIELD(p,s32*,0x7c)=0;M2C_FIELD(p,s32*,0x80)=0;M2C_FIELD(p,s32*,8)=0;
@@ -214,7 +214,7 @@ func_02062e28(p,&data_0210011c);M2C_FIELD(p,s32*,0x5cc)=0;
 func_020677a8(func_02049208());func_0204926c();
 }
 
-s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 func_02068eac(void *,void *,u32);void func_02062e28(void *,void *);void func_020626d4(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!func_02068eac(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));func_020626d4(a);}
+s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 StringCompareN(void *,void *,u32);void func_02062e28(void *,void *);void SBServerListDisconnect(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!StringCompareN(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));SBServerListDisconnect(a);}
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];
@@ -229,22 +229,22 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
     return (s32)((func_020722fc(h, arg1)) >> 32);
 }
 
-s32 func_02062010(void *p){
-s32 func_02061fb8(void*,s32);void func_02068c50(void*,void*);void func_020675e4(void*,void*,...);s32 func_020498e4(void*);void *func_02021768(void*);s32 func_020496a4(s32,s32,s32);s32 func_02049740(s32,void*,s32);s32 func_020496b8(s32);
+s32 SBServerListOpenConnection(void *p){
+s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 func_020498e4(void*);void *func_02021768(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 func_020496b8(s32);
 extern void *data_0213e4bc;extern u8 data_02100160[];
 u8 buf[128];Addr617BC addr;s32 n,fd;void *host;
 n=func_02061fb8((u8*)p+12,20);
-if(M2C_FIELD(&data_0213e4bc,void**,4))func_02068c50(buf,M2C_FIELD(&data_0213e4bc,void**,4));
-else func_020675e4(buf,data_02100160,(u8*)p+12,n);
+if(M2C_FIELD(&data_0213e4bc,void**,4))StringCopy(buf,M2C_FIELD(&data_0213e4bc,void**,4));
+else StringFormat(buf,data_02100160,(u8*)p+12,n);
 addr.family=2;addr.port=0xee70;addr.addr=func_020498e4(buf);
 if(addr.addr==-1){host=func_02021768(buf);if(!host)return 2;Copy617BC((u8*)&addr.addr,*M2C_FIELD(host,u8***,12));}
 fd=M2C_FIELD(p,s32*,0x4b0);
-if(fd==-1){fd=func_020496a4(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
-if(func_02049740(fd,&addr,8)==0)return 0;
+if(fd==-1){fd=ghiSocket(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
+if(ghiConnect(fd,&addr,8)==0)return 0;
 func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
 }
 
-void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
+void AppendString(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     M2C_UNK MemCopy(s32, M2C_UNK *, s32);
     s32 StringLength(M2C_UNK *);
     extern M2C_UNK data_0210011c;
@@ -261,20 +261,20 @@ void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     *arg0 += temp_r5;
 }
 
-void func_0206218c(s8 **arg0, s8 arg1, s32 *arg2) {
+void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
     **arg0 = arg1;
     *arg2 += 1;
     *arg0 += 1;
 }
 
-void func_020621b0(u8 **a,s32 b,s32 *c,...){u8 *p=*a;u8 *q=(u8 *)&b;u8 x,y;x=q[1];y=q[0];p[0]=y;p[1]=x;x=q[3];y=q[2];p[2]=y;p[3]=x;*c+=4;*a+=4;}
+void AppendInt32BE(u8 **a,s32 b,s32 *c,...){u8 *p=*a;u8 *q=(u8 *)&b;u8 x,y;x=q[1];y=q[0];p[0]=y;p[1]=x;x=q[3];y=q[2];p[2]=y;p[3]=x;*c+=4;*a+=4;}
 
-void func_02062204(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
+void AppendBytes(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
 M2C_UNK MemCopy(s32,M2C_UNK *,s32);
 MemCopy(*a,b,c);*d+=c;*a+=c;
 }
 
-void func_02062238(void *arg0) {
+void GenerateSessionKey(void *arg0) {
  s32 func_02067774(void);
  s32 i, parity; s8 *p; s32 a,b;
  *(s8 *)((u8 *)arg0+0x74)=func_02067774()%93+33;
@@ -291,7 +291,7 @@ void func_02062238(void *arg0) {
 s32 func_02062324(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02061efc(void *);
-    s32 func_020623bc(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 SBServerListConnectAndQuery(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
     s32 temp_r0_2;
     s32 var_r7;
@@ -301,8 +301,8 @@ loop_1:
     var_r7 -= 1;
     temp_r0_2 = func_02049810(M2C_FIELD(arg0, s32 *, 0x4B0), arg1, arg2, 0);
     if ((temp_r0_2 <= 0) && (var_r7 >= 0)) {
-        func_020626d4(arg0);
-        temp_r0 = func_020623bc(arg0, 0, 0, 2, 0);
+        SBServerListDisconnect(arg0);
+        temp_r0 = SBServerListConnectAndQuery(arg0, 0, 0, 2, 0);
         if (temp_r0 != 0) {
             func_02061efc(arg0);
             return temp_r0;
@@ -321,30 +321,33 @@ block_6:
 
 #pragma push
 #pragma opt_propagation off
-s32 func_020623bc(void *a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
+/* Connect a server list to the QR2 master server and send the initial query packet:
+   protocol header, game id, host names, session key, requested fields, filter, query
+   flags and (for flag 0x80) the maximum server count; allocate the receive buffer. */
+s32 SBServerListConnectAndQuery(void *slist, M2C_UNK filter, M2C_UNK fields, M2C_UNK queryFlags, s32 maxServers) {
 extern u8 data_0210017c[],data_02100100[];extern M2C_UNK data_0210011c;
-void func_020640a8(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 func_02037794(s32);
-u8 buf[768];s32 n;u8 *p;u16 len;u8 *src,*dst;s32 r;
-if(M2C_FIELD(a,s32*,0)!=1)func_020640a8(data_0210017c,data_0210012c,data_02100100,0x20a);
-if(!b)b=(s32)&data_0210011c;if(!c)c=(s32)&data_0210011c;
-if((u32)StringLength((M2C_UNK*)b)>256)return 6;if((u32)StringLength((M2C_UNK*)c)>256)return 6;
-r=func_02062010(a);if(r)return r;
-M2C_FIELD(a,s32*,0x5c4)=d;func_02062238(a);
-n=2;p=buf+2;
-func_0206218c((s8**)&p,0,&n);func_0206218c((s8**)&p,1,&n);func_0206218c((s8**)&p,3,&n);
-func_020621b0(&p,M2C_FIELD(a,s32*,0x4b8),&n);
-func_0206213c((s32*)&p,(M2C_UNK*)((u8*)a+12),&n);func_0206213c((s32*)&p,(M2C_UNK*)((u8*)a+48),&n);
-func_02062204((s32*)&p,(M2C_UNK*)((u8*)a+0x74),8,&n);
-func_0206213c((s32*)&p,(M2C_UNK*)c,&n);func_0206213c((s32*)&p,(M2C_UNK*)b,&n);
-func_020621b0(&p,((u32)d<<24&0xff000000)|(((u32)d<<8&0xff0000)|(((u32)d>>24&255)|((u32)d>>8&0xff00))),&n);
-if(M2C_FIELD(a,s32*,0x5c4)&8)func_020621b0(&p,M2C_FIELD(a,s32*,0x4a4),&n);
-if(M2C_FIELD(a,s32*,0x5c4)&128)func_020621b0(&p,e,&n);
-src=(u8 *)&len;
-len=(((u16)n>>8)&255)|(((u16)n<<8)&0xff00);
-dst=buf;*((Pair617BC *)dst)=*((Pair617BC *)src);
-if(func_02049810(M2C_FIELD(a,s32*,0x4b0),(s32)dst,n,0)<=0){func_020626d4(a);return 3;}
-M2C_FIELD(a,s32*,0)=3;M2C_FIELD(a,s32*,0x5c8)=0;
-if(!M2C_FIELD(a,s32*,0x7c)){M2C_FIELD(a,s32*,0x7c)=func_02037794(4096);if(!M2C_FIELD(a,s32*,0x7c))return 5;M2C_FIELD(a,s32*,0x80)=0;}
+void AssertFailed(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 func_02037794(s32);
+u8 packet[768];s32 length;u8 *out;u16 beLength;u8 *lenBytes,*packetBytes;s32 err;
+if(M2C_FIELD(slist,s32*,0)!=1)AssertFailed(data_0210017c,data_0210012c,data_02100100,0x20a);
+if(!filter)filter=(s32)&data_0210011c;if(!fields)fields=(s32)&data_0210011c;
+if((u32)StringLength((M2C_UNK*)filter)>256)return 6;if((u32)StringLength((M2C_UNK*)fields)>256)return 6;
+err=SBServerListOpenConnection(slist);if(err)return err;
+M2C_FIELD(slist,s32*,0x5c4)=queryFlags;GenerateSessionKey(slist);
+length=2;out=packet+2;
+AppendByte((s8**)&out,0,&length);AppendByte((s8**)&out,1,&length);AppendByte((s8**)&out,3,&length);
+AppendInt32BE(&out,M2C_FIELD(slist,s32*,0x4b8),&length);
+AppendString((s32*)&out,(M2C_UNK*)((u8*)slist+12),&length);AppendString((s32*)&out,(M2C_UNK*)((u8*)slist+48),&length);
+AppendBytes((s32*)&out,(M2C_UNK*)((u8*)slist+0x74),8,&length);
+AppendString((s32*)&out,(M2C_UNK*)fields,&length);AppendString((s32*)&out,(M2C_UNK*)filter,&length);
+AppendInt32BE(&out,((u32)queryFlags<<24&0xff000000)|(((u32)queryFlags<<8&0xff0000)|(((u32)queryFlags>>24&255)|((u32)queryFlags>>8&0xff00))),&length);
+if(M2C_FIELD(slist,s32*,0x5c4)&8)AppendInt32BE(&out,M2C_FIELD(slist,s32*,0x4a4),&length);
+if(M2C_FIELD(slist,s32*,0x5c4)&128)AppendInt32BE(&out,maxServers,&length);
+lenBytes=(u8 *)&beLength;
+beLength=(((u16)length>>8)&255)|(((u16)length<<8)&0xff00);
+packetBytes=packet;*((Pair617BC *)packetBytes)=*((Pair617BC *)lenBytes);
+if(func_02049810(M2C_FIELD(slist,s32*,0x4b0),(s32)packetBytes,length,0)<=0){SBServerListDisconnect(slist);return 3;}
+M2C_FIELD(slist,s32*,0)=3;M2C_FIELD(slist,s32*,0x5c8)=0;
+if(!M2C_FIELD(slist,s32*,0x7c)){M2C_FIELD(slist,s32*,0x7c)=func_02037794(4096);if(!M2C_FIELD(slist,s32*,0x7c))return 5;M2C_FIELD(slist,s32*,0x80)=0;}
 return 0;
 }
 #pragma pop
@@ -358,7 +361,7 @@ for(i=0;i<func_02048688(M2C_FIELD(a,s32 *,8));i++)func_02061d24(a,*func_02048690
 func_0204861c(M2C_FIELD(a,s32 *,8));M2C_FIELD(a,s32 *,8)=0;
 }
 
-s32 func_020626d4(void *a) {
+s32 SBServerListDisconnect(void *a) {
 s32 func_020377c4();s32 func_020496b8();
 if(M2C_FIELD(a,s32 *,0x7c))func_020377c4(M2C_FIELD(a,s32 *,0x7c));
 M2C_FIELD(a,s32 *,0x7c)=0;M2C_FIELD(a,s32 *,0x80)=0;
@@ -371,8 +374,8 @@ void func_02062738(void *arg0) {
     M2C_UNK func_0204861c();
     M2C_UNK func_02060a20(void *);
     M2C_UNK func_02061c34(void *);
-    M2C_UNK func_020626d4();
-    func_020626d4();
+    M2C_UNK SBServerListDisconnect();
+    SBServerListDisconnect();
     func_02061c34(arg0);
     func_02060a20(arg0);
     if (M2C_FIELD(arg0, s32 *, 4) != 0) {

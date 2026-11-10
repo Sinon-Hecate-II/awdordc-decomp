@@ -3,43 +3,45 @@
 extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0212bd14[],data_0212bd28[],data_0212bd38[],data_0212bd48[];
 
 #pragma opt_strength_reduction off
-void func_020ce738(void) {
-s32 func_020cd728(void);void func_020ce61c(void *);s32 IsPlayerPresent(s32);
-s32 func_020ce6f4(s32,s32);void func_020ce434(s16,s16,s16,u32,u8,u8);
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern s8 data_ov000_021b56c0[];
-s32 tile;s32 owner,x,y,kind; s32 id,player,playerUnitID,unitOffset,playerOffset;u8 *unit;void *base;s16 value;
+/* Rebuild the danger-zone bitmaps: mark every unit's threat range and, for
+ * each owned property tile, its (team-coloured) influence range. */
+void MarkThreatRanges(void) {
+s32 func_020cd728(void);void MarkUnitThreatRange(void *);s32 IsPlayerPresent(s32);
+s32 GetTerrainThreatRadius(s32,s32);void MarkThreatBitmap(s16,s16,s16,u32,u8,u8);
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern s8 gTerrainPropertyFlags[];
+s32 tile;s32 owner,x,y,terrainKind; s32 unitId,player,playerUnitId,unitOffset,playerOffset;u8 *unit;void *map;s16 radius;
 if(func_020cd728()){
-for(id=1,unitOffset=14;id<256;id++,unitOffset+=14){
+for(unitId=1,unitOffset=14;unitId<256;unitId++,unitOffset+=14){
 unit=(u8 *)*gCurrentMap+0x59A4+unitOffset;
-if(((u32)(unit[0]<<26)>>26)!=0)func_020ce61c(unit);
+if(((u32)(unit[0]<<26)>>26)!=0)MarkUnitThreatRange(unit);
 }
 }else{
 for(player=1,playerOffset=140;player<5;player++,playerOffset+=140){
 if(IsPlayerPresent(player) && M2C_FIELD((u8 *)*gCurrentMap+playerOffset,u8 *,0x67C3)!=0){
-playerUnitID=gPlayerUnitIdBase[player]+1;
-if(playerUnitID<gPlayerUnitIdBase[player]+51){
-unitOffset=playerUnitID*14;
+playerUnitId=gPlayerUnitIdBase[player]+1;
+if(playerUnitId<gPlayerUnitIdBase[player]+51){
+unitOffset=playerUnitId*14;
 do {
 unit=(u8 *)*gCurrentMap+0x59A4+unitOffset;
-if(((u32)(unit[0]<<26)>>26)!=0)func_020ce61c(unit);
-playerUnitID++;unitOffset+=14;
-}while(playerUnitID<gPlayerUnitIdBase[player]+51);
+if(((u32)(unit[0]<<26)>>26)!=0)MarkUnitThreatRange(unit);
+playerUnitId++;unitOffset+=14;
+}while(playerUnitId<gPlayerUnitIdBase[player]+51);
 }
 }
 }
 }
-base=*gCurrentMap;
-for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
-tile=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),u8 *,0x1420);
-kind=tile&31;
-if(data_ov000_021b56c0[kind] && (owner=(tile&0xE0)>>5)!=0){
-value=func_020ce6f4(tile,M2C_FIELD(base,u8 *,0x5158));
-func_020ce434((s16)x,(s16)y,value,M2C_FIELD((u8 *)*gCurrentMap+owner*140,u8 *,0x67C3),(u8)owner,1);
+map=*gCurrentMap;
+for(y=0;y<M2C_FIELD(map,u16 *,0x5146);y++){
+for(x=0;x<M2C_FIELD(map,u16 *,0x5144);x++,map=*gCurrentMap){
+tile=M2C_FIELD(M2C_FIELD(map+y*2,u16 *,0x3758)+(map+x),u8 *,0x1420);
+terrainKind=tile&31;
+if(gTerrainPropertyFlags[terrainKind] && (owner=(tile&0xE0)>>5)!=0){
+radius=GetTerrainThreatRadius(tile,M2C_FIELD(map,u8 *,0x5158));
+MarkThreatBitmap((s16)x,(s16)y,radius,M2C_FIELD((u8 *)*gCurrentMap+owner*140,u8 *,0x67C3),(u8)owner,1);
 }
-if(kind==26){
-value=func_020ce6f4(tile,M2C_FIELD(*gCurrentMap,u8 *,0x5158));
-func_020ce434((s16)x,(s16)y,value,3,0,1);
+if(terrainKind==26){
+radius=GetTerrainThreatRadius(tile,M2C_FIELD(*gCurrentMap,u8 *,0x5158));
+MarkThreatBitmap((s16)x,(s16)y,radius,3,0,1);
 }
 }
 }
@@ -47,13 +49,13 @@ func_020ce434((s16)x,(s16)y,value,3,0,1);
 #pragma opt_strength_reduction reset
 void func_020ce9a0(void) {
 extern void **gCurrentMap;
-void func_020cd7bc(u8,u8); void func_020cd754(u8);void func_020ce738(void);
+void func_020cd7bc(u8,u8); void func_020cd754(u8);void MarkThreatRanges(void);
 void *p=*gCurrentMap;
 if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67c3)==3)
 func_020cd7bc(M2C_FIELD(p,u16 *,0x52b8),M2C_FIELD(p,u16 *,0x52ba));
 else func_020cd754(M2C_FIELD(p,u16 *,0x52ba));
 p=*gCurrentMap;
-if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2)func_020ce738();
+if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2)MarkThreatRanges();
 }
 
 void func_020cea28(void){
@@ -133,7 +135,7 @@ void func_020ceb48(void) {
 
 void func_020ced08(void) {
     extern void **gCurrentMap;
-    extern s8 data_ov000_021b56c0[];
+    extern s8 gTerrainPropertyFlags[];
     extern u16 data_ov000_021aeee8[];
     void func_020cf2c8(void);
     s32 IsPlayerPresent(s32);
@@ -158,7 +160,7 @@ void func_020ced08(void) {
         if (tile == 0xFF) {
             return;
         }
-        if (data_ov000_021b56c0[tile & 0x1F] != 0) {
+        if (gTerrainPropertyFlags[tile & 0x1F] != 0) {
             u16 *rowTable = (u16 *)((u8 *)p + 0x3758);
             u16 row = rowTable[yc];
             u8 posTile = ((u8 *)p + xc)[row + 0x1420];
@@ -266,7 +268,7 @@ void func_020cf0a8(s32 id)
   void func_020cfa58(u16);
   u32 func_020cfbb0(u16);
   void *func_020cfbdc(u16);
-  void *func_02068c50(void *, const void *);
+  void *StringCopy(void *, const void *);
   void func_020ceffc(void);
   void func_020cf058(s32);
   void func_020cfb54(void);
@@ -300,7 +302,7 @@ void func_020cf0a8(s32 id)
   dest[0x21] = (u8) func_020cfbb0(id);
   dest = ((u8 *) (*gCurrentMap)) + 0x120;
   new_var = dest + 0x5000;
-  func_02068c50(new_var, func_020cfbdc(id));
+  StringCopy(new_var, func_020cfbdc(id));
   func_020ceffc();
   func_020cf058(id);
   for (y = 0; y < (*((u16 *) (((u8 *) (*gCurrentMap)) + 0x5146))); y++)
@@ -323,17 +325,17 @@ void func_020cf0a8(s32 id)
 }
 #pragma opt_strength_reduction reset
 void func_020cf278(s32 arg0) {
-s32 func_020a8898(s32); void func_020ceec8(void);
+s32 MapData_GetTileset(s32); void func_020ceec8(void);
 extern void **gCurrentMap;
 u8 old=M2C_FIELD(*gCurrentMap,u8 *,0x5157);
-M2C_FIELD(*gCurrentMap,u8 *,0x5157)=func_020a8898(arg0);
+M2C_FIELD(*gCurrentMap,u8 *,0x5157)=MapData_GetTileset(arg0);
 func_020ceec8();
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
 }
 
 void func_020cf2c8(void) {
     extern void **gCurrentMap;
-    extern s8 data_ov000_021b56c0[];
+    extern s8 gTerrainPropertyFlags[];
     void SelectMapLayer(void *);
     void FillMapLayer(s32);
     s32 count;
@@ -355,7 +357,7 @@ void func_020cf2c8(void) {
             row = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
             tile = M2C_FIELD(row + ((u8 *)base + x), u8 *, 0x1420);
             k = tile & 0x1f;
-            a = data_ov000_021b56c0[k];
+            a = gTerrainPropertyFlags[k];
             if (a != 0 && k != 0x14 && k != 0x15)
                 M2C_FIELD((u8 *)*gCurrentMap + ((tile & 0xe0) >> 5) * 0x8c, u8 *, 0x67bc) += 1;
             if (a != 0 || k == 0x18) {

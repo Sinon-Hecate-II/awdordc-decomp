@@ -8,10 +8,10 @@ for(i=0;i<M2C_FIELD(&data_0213dcac,s32 *,12);i++) {
 if(M2C_FIELD(M2C_FIELD(&data_0213dcac,void ***,4)[i],s32 *,0)==0)return i;
 }
 if(M2C_FIELD(&data_0213dcac,s32 *,0)!=M2C_FIELD(&data_0213dcac,s32 *,12))
-func_020640a8(&data_020fd068,&data_020fd090,&data_020fd014,0x33);
+AssertFailed(&data_020fd068,&data_020fd090,&data_020fd014,0x33);
 oldCount=M2C_FIELD(&data_0213dcac,s32 *,12);
 newCount=oldCount+4;
-p=func_020377a8(M2C_FIELD(&data_0213dcac,void **,4),newCount*4);
+p=gpiRealloc(M2C_FIELD(&data_0213dcac,void **,4),newCount*4);
 if(p==NULL)return -1;
 M2C_FIELD(&data_0213dcac,void **,4)=p;
 for(i=oldCount;i<newCount;i++){
@@ -94,10 +94,10 @@ s32 func_0204ace8(void *obj) {
 extern M2C_UNK data_020fd0a4,data_020fd090,data_020fd024,data_020fd0b0,data_0213dcac,data_020fd0cc,data_020fd0f4;
 M2C_UNK func_0204a610(); M2C_UNK func_0204a614(); M2C_UNK func_020496cc(s32,M2C_UNK); M2C_UNK func_020496b8(s32);
 void ghiFreeBuffer(void *); void func_0204bc64(void *); s32 func_0204b688(void *); void func_0204b690(s32 *);
-if(!obj)func_020640a8(&data_020fd0a4,&data_020fd090,&data_020fd024,0xb3);
-if(M2C_FIELD(obj,s32 *,4)<0)func_020640a8(&data_020fd0b0,&data_020fd090,&data_020fd024,0xb4);
-if(M2C_FIELD(obj,s32 *,4)>=M2C_FIELD(&data_0213dcac,s32 *,12))func_020640a8(&data_020fd0cc,&data_020fd090,&data_020fd024,0xb5);
-if(!M2C_FIELD(obj,s32 *,0))func_020640a8(&data_020fd0f4,&data_020fd090,&data_020fd024,0xb6);
+if(!obj)AssertFailed(&data_020fd0a4,&data_020fd090,&data_020fd024,0xb3);
+if(M2C_FIELD(obj,s32 *,4)<0)AssertFailed(&data_020fd0b0,&data_020fd090,&data_020fd024,0xb4);
+if(M2C_FIELD(obj,s32 *,4)>=M2C_FIELD(&data_0213dcac,s32 *,12))AssertFailed(&data_020fd0cc,&data_020fd090,&data_020fd024,0xb5);
+if(!M2C_FIELD(obj,s32 *,0))AssertFailed(&data_020fd0f4,&data_020fd090,&data_020fd024,0xb6);
 if(!obj)return 0; if(!M2C_FIELD(obj,s32 *,0))return 0; if(M2C_FIELD(obj,s32 *,4)<0)return 0; if(M2C_FIELD(obj,s32 *,4)>=M2C_FIELD(&data_0213dcac,s32 *,12))return 0;
 func_0204a610();
 func_020377c4(M2C_FIELD(obj,s32 *,20));func_020377c4(M2C_FIELD(obj,s32 *,24));func_020377c4(M2C_FIELD(obj,s32 *,36));func_020377c4(M2C_FIELD(obj,s32 *,40));func_020377c4(M2C_FIELD(obj,s32 *,264));func_020377c4(M2C_FIELD(obj,s32 *,348));
@@ -113,8 +113,8 @@ void *func_0204aecc(s32 arg0) {
  extern M2C_UNK data_020fd108, data_020fd090, data_020fd050, data_020fd118, data_0213dcac;
  M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
  void *p;
- if(arg0<0) func_020640a8(&data_020fd108,&data_020fd090,&data_020fd050,0x101);
- if(arg0>=M2C_FIELD(&data_0213dcac,s32 *,12)) func_020640a8(&data_020fd118,&data_020fd090,&data_020fd050,0x102);
+ if(arg0<0) AssertFailed(&data_020fd108,&data_020fd090,&data_020fd050,0x101);
+ if(arg0>=M2C_FIELD(&data_0213dcac,s32 *,12)) AssertFailed(&data_020fd118,&data_020fd090,&data_020fd050,0x102);
  func_0204a610();
  if(arg0<0 || arg0>=M2C_FIELD(&data_0213dcac,s32 *,12)) {func_0204a614();return NULL;}
  p=M2C_FIELD(&data_0213dcac,void ***,4)[arg0];
@@ -145,10 +145,10 @@ void func_0204afd8(void *obj) {
     extern M2C_UNK data_020fd0a4;
     extern M2C_UNK data_020fd134;
     if (obj == NULL) {
-        func_020640a8(&data_020fd0a4, &data_020fd090, &data_020fd038, 0x132);
+        AssertFailed(&data_020fd0a4, &data_020fd090, &data_020fd038, 0x132);
     }
     if (M2C_FIELD(obj, s32 *, 0x108) == 0) {
-        func_020640a8(&data_020fd134, &data_020fd090, &data_020fd038, 0x133);
+        AssertFailed(&data_020fd134, &data_020fd090, &data_020fd038, 0x133);
     }
     M2C_FIELD(obj, s32 *, 0x10) = 0;
     func_020377c4(M2C_FIELD(obj, s32 *, 0x14));
@@ -206,7 +206,7 @@ void func_0204b154(void *arg0) {
 }
 
 void func_0204c738(void *);
-void func_0204c7fc(void *);
+void ghiDoConnect(void *);
 void func_0204ca4c(void *);
 void ghiSendRequest(void *);
 void func_0204ce20(void *);
@@ -221,13 +221,13 @@ s32 func_0204b210(void *operation) {
     s32 func_0204ace8(void *);
     s32 status;
 
-    if (!operation) func_020640a8(&data_020fd170, &data_020fd17c, &data_020fd158, 0x5B);
+    if (!operation) AssertFailed(&data_020fd170, &data_020fd17c, &data_020fd158, 0x5B);
     if (func_0204aecc(M2C_FIELD(operation, s32 *, 4)) != operation)
-        func_020640a8(&data_020fd188, &data_020fd17c, &data_020fd158, 0x5C);
+        AssertFailed(&data_020fd188, &data_020fd17c, &data_020fd158, 0x5C);
     if (M2C_FIELD(operation, s32 *, 0x12C)) return 0;
     M2C_FIELD(operation, s32 *, 0x12C) = 1;
     if (M2C_FIELD(operation, s32 *, 0x10) == 0) func_0204c738(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 1) func_0204c7fc(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 1) ghiDoConnect(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 2) func_0204ca4c(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
@@ -260,7 +260,7 @@ void func_0204b3cc(void) {
     M2C_UNK func_0204a610();
     M2C_UNK func_0204a614();
     void func_0204b0dc();
-    extern s32 data_0213dca8;
+    extern s32 gHttpServerOverride;
     extern s32 data_0213dcbc;
     s32 temp_r1;
 
@@ -269,9 +269,9 @@ void func_0204b3cc(void) {
     data_0213dcbc = temp_r1;
     if (temp_r1 == 0) {
         func_0204b0dc();
-        if (data_0213dca8 != 0) {
+        if (gHttpServerOverride != 0) {
             func_020377c4();
-            data_0213dca8 = 0;
+            gHttpServerOverride = 0;
         }
         func_0204a614();
         func_0204a60c();
@@ -291,9 +291,9 @@ s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 po
     s32 bufferInitialized;
 
     /* Start an HTTP download into a caller buffer or growable buffer, optionally blocking. */
-    if (!url || !*url) func_020640a8(&data_020fd1c4, &data_020fd17c, &data_020fd14c, 0x128);
-    if (bufferSize < 0) func_020640a8(&data_020fd1d4, &data_020fd17c, &data_020fd14c, 0x129);
-    if (buffer && bufferSize == 0) func_020640a8(&data_020fd1e4, &data_020fd17c, &data_020fd14c, 0x12a);
+    if (!url || !*url) AssertFailed(&data_020fd1c4, &data_020fd17c, &data_020fd14c, 0x128);
+    if (bufferSize < 0) AssertFailed(&data_020fd1d4, &data_020fd17c, &data_020fd14c, 0x129);
+    if (buffer && bufferSize == 0) AssertFailed(&data_020fd1e4, &data_020fd17c, &data_020fd14c, 0x12a);
     if (!url || !*url) return -1;
     if (bufferSize < 0) return -1;
     if (buffer && bufferSize == 0) return -1;
@@ -359,7 +359,7 @@ void func_0204b690(s32 *arg0) {
 }
 
 M2C_UNK *GetContentType(void *arg0) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020fd264;
     extern M2C_UNK data_020fd334;
     extern M2C_UNK data_020fd384;
@@ -370,7 +370,7 @@ M2C_UNK *GetContentType(void *arg0) {
 
     temp_r4 = M2C_FIELD(arg0, void **, 0x13C);
     if (temp_r4 == NULL) {
-        func_020640a8(&data_020fd384, &data_020fd334, &data_020fd264, 0x192);
+        AssertFailed(&data_020fd384, &data_020fd334, &data_020fd264, 0x192);
     }
     if (temp_r4 == NULL) {
         return &data_020fd38c;
@@ -389,7 +389,7 @@ s32 func_0204b70c(void *arg0) {
  if(n==0)return total;
  for(i=0;i<n;i++) {
  q=func_02048690(M2C_FIELD(p,s32 *,0),i);
- if(M2C_FIELD(q,s32 *,0)!=0)func_020640a8(&data_020fd3f8,&data_020fd334,&data_020fd2d0,0x1b0);
+ if(M2C_FIELD(q,s32 *,0)!=0)AssertFailed(&data_020fd3f8,&data_020fd334,&data_020fd2d0,0x1b0);
  total += StringLength(M2C_FIELD(q,s32 *,4)); total += M2C_FIELD(q,s32 *,12); total += M2C_FIELD(q,s32 *,20)*2; total++;
  }
  return total+(n-1);
@@ -407,10 +407,10 @@ if(M2C_FIELD(q,s32 *,0)==0){
 total+=data_0213dcc0[1];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=M2C_FIELD(q,s32 *,12);
 }else if(M2C_FIELD(q,s32 *,0)==1){
 total+=data_0213dcc0[3];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=StringLength(M2C_FIELD(q,s32 *,12));total+=StringLength(M2C_FIELD(q,s32 *,16));
-q=func_02048690(M2C_FIELD(obj,s32 *,0x140),i);if(!q)func_020640a8(data_020fd438,&data_020fd334,data_020fd310,0x1ec);total+=M2C_FIELD(q,s32 *,12);
+q=func_02048690(M2C_FIELD(obj,s32 *,0x140),i);if(!q)AssertFailed(data_020fd438,&data_020fd334,data_020fd310,0x1ec);total+=M2C_FIELD(q,s32 *,12);
 }else if(M2C_FIELD(q,s32 *,0)==2){
 total+=data_0213dcc0[3];total+=StringLength(M2C_FIELD(q,s32 *,4));total+=StringLength(M2C_FIELD(q,s32 *,16));total+=StringLength(M2C_FIELD(q,s32 *,20));total+=M2C_FIELD(q,s32 *,12);
-}else {func_020640a8(data_020fd330,&data_020fd334,data_020fd310,0x1f9);return 0;}
+}else {AssertFailed(data_020fd330,&data_020fd334,data_020fd310,0x1f9);return 0;}
 }
 return total+data_0213dcc0[0];
 }
@@ -419,7 +419,7 @@ s32 func_0204b958(void *arg0) {
  s32 func_0204b7b8(void *); s32 func_0204b70c(void *);
  extern M2C_UNK data_020fd384,data_020fd334,data_020fd27c;
  void *p=M2C_FIELD(arg0,void **,0x13c);
- if(p==NULL)func_020640a8(&data_020fd384,&data_020fd334,&data_020fd27c,0x20c);
+ if(p==NULL)AssertFailed(&data_020fd384,&data_020fd334,&data_020fd27c,0x20c);
  if(p==NULL)return 0;
  if(M2C_FIELD(p,s32 *,12)!=0)return func_0204b7b8(arg0);
  return func_0204b70c(arg0);

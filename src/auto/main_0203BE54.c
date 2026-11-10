@@ -9,8 +9,8 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s8 func_020427b4(void);
     M2C_UNK StringLength(s32);
-    M2C_UNK func_02068c50(M2C_UNK, s32);
-    s32 func_02068d98(void);
+    M2C_UNK StringCopy(M2C_UNK, s32);
+    s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
     extern u8 data_0213d3bc[];
     extern u8 data_0213d3bd[];
@@ -28,7 +28,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     }
     if ((u32) var_r7 >= 0x64U && data_0213d3bc[(var_r7 - 0x64) * 0xC] != 0) {
         s32 off = (var_r7 - 0x64) * 0xC;
-        if (*((volatile s32 *)(data_0213d3c0 + off)) != 0 && func_02068d98() != 0) {
+        if (*((volatile s32 *)(data_0213d3c0 + off)) != 0 && StringCompare() != 0) {
             return 0;
         }
     } else {
@@ -50,7 +50,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
         func_0203dc38(9, 0xFFFEC77F);
         return 0;
     }
-    func_02068c50(temp_r0, var_r6);
+    StringCopy(temp_r0, var_r6);
     *((volatile s32 *)(data_0213d3c4 + temp_r4)) = var_r5;
     func_0205fdbc(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
     return var_r7;
@@ -62,8 +62,8 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s8 func_020427b4(void);
     M2C_UNK StringLength(s32);
-    M2C_UNK func_02068c50(M2C_UNK, s32);
-    s32 func_02068d98(void);
+    M2C_UNK StringCopy(M2C_UNK, s32);
+    s32 StringCompare(void);
     M2C_UNK func_0205fdbc(s8, s32);
     extern u8 data_0213d3bc[];
     extern u8 data_0213d3bd[];
@@ -85,7 +85,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
         if (var_r7 >= 0x64U) {
             temp_r3 = (var_r7 - 0x64) * 0xC;
             if (data_0213d3bc[temp_r3] != 0) {
-                if (*((s32 *)(data_0213d3c0 + temp_r3)) != 0 && func_02068d98() != 0) {
+                if (*((s32 *)(data_0213d3c0 + temp_r3)) != 0 && StringCompare() != 0) {
                     return 0;
                 }
                 goto block_11;
@@ -110,7 +110,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
             func_0203dc38(9, 0xFFFEC77F);
             return 0;
         }
-        func_02068c50(temp_r0, var_r6);
+        StringCopy(temp_r0, var_r6);
         *((s32 *)(data_0213d3c4 + temp_r4)) = var_r5;
         func_0205fdbc((s8) var_r7, *((s32 *)(var_r8 + temp_r4)));
         return (s8) var_r7;
@@ -244,7 +244,9 @@ ResetConnectionSync(0);
 
 #pragma push
 #pragma scheduling off
-void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
+/* Begin joining an online match: store the connection mode and player list, create the
+   peer connection, register the match keys (player id/format/version) and connect. */
+void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 eventCallback, s32 eventData, s32 resultCallback, s32 resultData) {
     void *GetConnection(void);
     s32 SetConnectionState(s32);
     s32 func_0203e908(s32, s32, M2C_UNK, M2C_UNK);
@@ -266,26 +268,25 @@ void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     u8 sp34[12];
     s32 sp14[8];
     void *p, *q;
-    s32 r6;
 
-    func_0203e908(1, c, e, f);
-    *((u8 *)((p = GetConnection())) + 0x1A6) = (u8)(d ? 1 : 0);
+    func_0203e908(1, matchType, eventCallback, eventData);
+    *((u8 *)((p = GetConnection())) + 0x1A6) = (u8)(flag ? 1 : 0);
     q = GetConnection();
-    M2C_FIELD(q, s32 *, 0x474) = g;
+    M2C_FIELD(q, s32 *, 0x474) = resultCallback;
     q = GetConnection();
-    M2C_FIELD(q, s32 *, 0x478) = h;
+    M2C_FIELD(q, s32 *, 0x478) = resultData;
     p = GetConnection();
-    MI_CpuCopy8(a, (u8 *)p + 0x304, b);
+    MI_CpuCopy8(playerList, (u8 *)p + 0x304, listLength);
     p = GetConnection();
-    M2C_FIELD(p, s32 *, 0x344) = b;
+    M2C_FIELD(p, s32 *, 0x344) = listLength;
 
-    if (b == 0) goto error;
+    if (listLength == 0) goto error;
     {
-        if (b < (s32)c && d == 0) {
+        if (listLength < (s32)matchType && flag == 0) {
             s32 *gp = M2C_FIELD(&gConnectionMgr, s32 *, 0);
             if (gp == 0 || *(u8 *)gp == 0) goto error;
             {
-                if (b < (s32)(((u8 *)gp)[1]) - 1) {
+                if (listLength < (s32)(((u8 *)gp)[1]) - 1) {
 error:
                     func_0203dc38(10, 0);
                     goto done;
@@ -310,9 +311,9 @@ error:
                     goto done;
                 }
             }
-                func_0200567c(sp34, 12, &data_020fc908, c);
+                func_0200567c(sp34, 12, &data_020fc908, matchType);
                 func_02037d78(&gKeyFME, sp34, sp14, 0x2F);
-                func_02037db0(&gKeyMDF, (d != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
+                func_02037db0(&gKeyMDF, (flag != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
                 func_0200567c(sp34, 12, &data_020fc908, 3);
                 func_02037db0(&gKeyVER, sp34, sp14, 0x2F);
                 func_0203af50(4, sp14, 0);

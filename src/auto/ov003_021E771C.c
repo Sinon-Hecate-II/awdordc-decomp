@@ -37,7 +37,7 @@ static inline s32 ov003_entries_differ(void *arg0) {
 
 void func_ov003_021e771c(void *arg0, s32 arg1) {
 s32 func_020cfb94(void); s32 func_020a22fc(s32); s32 func_ov003_02200808(u8);
-s32 func_020846a4(void);u8 *func_02084e64(void);s32 func_020848f8(void);
+s32 func_020846a4(void);u8 *func_02084e64(void);s32 GetReadyPlayerMask(void);
 u8 *func_02084e24(s32); u8 func_020848c4(void);s32 func_020a23b4(s32);s32 func_020a2370(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
 void *func_020ab1c4(s32);s16 func_ov003_022004a8(u8);s32 func_0207c928(s32,s32);s32 func_0207c8ec(s32,s32);
@@ -49,7 +49,7 @@ for(i=0;i<4;i++)p[10+i]=func_ov003_02200808((u8)func_020a22fc(i+1));
 if(func_020846a4()){
 remote=func_02084e64();
 for(i=0;i<4;i++){p[0x74+i]=255;p[10+i]=remote?remote[0x12+i]:12;}
-i=0;mask=func_020848f8();
+i=0;mask=GetReadyPlayerMask();
 for(id=0;id<4;id++){
 if(mask&(1<<id)){
 p[0x74+i]=(u8)id;

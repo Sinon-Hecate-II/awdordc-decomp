@@ -1,5 +1,6 @@
 /* 50 functions from 0x020A28F4 to 0x020A38F4 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
 
@@ -107,60 +108,64 @@ u8 func_020a2be0(s32 a){extern u16 data_02168f14;s32 func_020a334c(s32);s32 func
 
 void func_020a2c58(void *arg0){func_020a363c(M2C_FIELD(arg0,s32 *,0x5c));}
 
-void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s32 p=*gCurrentMap+0x67a4+M2C_FIELD(a,s32 *,0x5c)*0x8c;s32 i=func_020a3460(M2C_FIELD(a,s32 *,0x5c));u32 v=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;if(M2C_FIELD(data_021261c4+v*0x9c,s32 *,i*0x28)==0){func_01ffa574(a);}else{M2C_FIELD(a,u16 *,0x70)=1;M2C_FIELD(a,u16 *,0x6c)=0;}}
+void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s32 p=*gCurrentMap+0x67a4+M2C_FIELD(a,s32 *,0x5c)*0x8c;s32 i=func_020a3460(M2C_FIELD(a,s32 *,0x5c));u32 v=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;if(M2C_FIELD(data_021261c4+v*0x9c,s32 *,i*0x28)==0){DeleteSpriteObject(a);}else{M2C_FIELD(a,u16 *,0x70)=1;M2C_FIELD(a,u16 *,0x6c)=0;}}
 
-void func_020a2ce8(void *a) {
+/* Advances a player's on-map unit display by one unit: walks that player's unit
+ * slots, checks whether the unit may be shown for this army, positions and
+ * animates the sprite (drawing it only when its cell is in the visible-cell
+ * bitmap), then moves the view's slot and frame counters on. */
+void UpdatePlayerUnitView(void *view) {
 void func_020cfd28(void);
 extern s32 *gCurrentMap;
 extern u8 gMovementCostTable[], data_021261c8[];
-s32 player, i, index;
+s32 player, spriteSet, armyId;
 u8 *unit;
-s32 map, off;
-u32 p;
-player=M2C_FIELD(a,s32 *,0x5c);
+s32 map, playerOffset;
+u32 tmp;
+player=M2C_FIELD(view,s32 *,0x5c);
 if(func_0207b7c4())return;
-if(M2C_FIELD(a,s16 *,0x70)<51){
-off=player*0x8c;
+if(M2C_FIELD(view,s16 *,0x70)<51){
+playerOffset=player*0x8c;
 do {
 map=*gCurrentMap;
-unit=(u8 *)(map+0x59a4+(M2C_FIELD(map,u16 *,0x52a8)+M2C_FIELD(a,s16 *,0x70))*14);
-if(((u32)(unit[0]<<26)>>26)!=0){
-i=func_020a3460(player);
-index=(u32)(M2C_FIELD(map+off,s32 *,0x6810)<<24)>>24;
-if(((s32 (*)(u8 *))M2C_FIELD(gMovementCostTable+index*156+i*40,s32 *,0x58))(unit)){
+unit=(u8 *)(map+MAP_UNIT_RECORDS+(M2C_FIELD(map,u16 *,MAP_CURSOR_OWNER)+M2C_FIELD(view,s16 *,0x70))*MAP_UNIT_STRIDE);
+if(((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)!=0){
+spriteSet=func_020a3460(player);
+armyId=(u32)(M2C_FIELD(map+playerOffset,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24;
+if(((s32 (*)(u8 *))M2C_FIELD(gMovementCostTable+armyId*156+spriteSet*40,s32 *,0x58))(unit)){
 map=*gCurrentMap;
-p=unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758);
-if((u8)(M2C_FIELD(map+(p>>3),u8 *,0x5201)&(1<<(p&7)))) {
-if(!(M2C_FIELD(unit,u16 *,4)&8))goto visible;
+tmp=M2C_FIELD(unit,u8 *,MAP_UNIT_X)+M2C_FIELD(map+M2C_FIELD(unit,u8 *,MAP_UNIT_Y)*2,u16 *,MAP_ROW_OFFSETS);
+if((u8)(M2C_FIELD(map+(tmp>>3),u8 *,MAP_CELL_BITMAP)&(1<<(tmp&7)))) {
+if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))goto visible;
 }
-if(!(M2C_FIELD(unit,u16 *,4)&8)){
-func_0207b764(unit[1],unit[2]);
+if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8)){
+func_0207b764(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(func_0207b7c4())return;
 }
-p=*gCurrentMap+0x67a4+off;
-i=func_020a3460(player);
-index=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;
-((void (*)(u8 *))M2C_FIELD(data_021261c8+index*156,s32 *,i*40))(unit);
+tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
+spriteSet=func_020a3460(player);
+armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
+((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 goto increment;
 visible:
-func_0207b764(unit[1],unit[2]);
+func_0207b764(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(func_0207b7c4())return;
-p=*gCurrentMap+0x67a4+off;
-i=func_020a3460(player);
-index=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;
-((void (*)(u8 *))M2C_FIELD(data_021261c8+index*156,s32 *,i*40))(unit);
+tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
+spriteSet=func_020a3460(player);
+armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
+((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 done:
-func_020bcc78(unit[1],unit[2],M2C_FIELD(a,s16 *,0x6c),func_020a3460(player),a);
+func_020bcc78(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),M2C_FIELD(view,s16 *,0x6c),func_020a3460(player),view);
 increment:
-M2C_FIELD(a,s16 *,0x70)++;
+M2C_FIELD(view,s16 *,0x70)++;
 break;
 }
 }
-M2C_FIELD(a,s16 *,0x70)++;
-}while(M2C_FIELD(a,s16 *,0x70)<51);
+M2C_FIELD(view,s16 *,0x70)++;
+}while(M2C_FIELD(view,s16 *,0x70)<51);
 }
-if(M2C_FIELD(a,s16 *,0x70)==51)func_01ffa6fc(a);
-M2C_FIELD(a,s16 *,0x6c)++;
+if(M2C_FIELD(view,s16 *,0x70)==51)func_01ffa6fc(view);
+M2C_FIELD(view,s16 *,0x6c)++;
 func_020cfd28();
 }
 

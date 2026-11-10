@@ -20,12 +20,12 @@ s32 EaseInterpolate(s32, s32, s32, s32, s32);
 void func_0207d990(s32, void *, void *);
 
 void func_02077624(void) {
-    M2C_UNK func_02003de4();
+    M2C_UNK GX_LoadToonTable();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     extern u32 gFrameCounter;
     extern const u16 data_020eb210[];
     extern const u16 data_020eb250[];
-    extern u16 data_02140fc8[];
+    extern u16 gToonTable[];
     s32 i;
     s32 blend;
     const u16 *src0;
@@ -52,10 +52,10 @@ void func_02077624(void) {
         lo = EaseInterpolate(0, a & 0x1F, b & 0x1F, blend, 0x20);
         mid = EaseInterpolate(0, (a & 0x3E0) >> 5, (b & 0x3E0) >> 5, blend, 0x20);
         hi = EaseInterpolate(0, (a & 0x7C00) >> 0xA, (b & 0x7C00) >> 0xA, blend, 0x20);
-        data_02140fc8[i] = lo | (mid << 5) | (hi << 10);
+        gToonTable[i] = lo | (mid << 5) | (hi << 10);
         i++;
     } while (i < 0x20);
-    func_02003de4();
+    GX_LoadToonTable();
 }
 
 void func_02077700(void) {
@@ -131,15 +131,15 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  *(volatile u32 *)0x04000448=1;
 }
 #pragma pop
-void func_02077a30(void) {
-    M2C_UNK func_02003d8c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02003d8c(0, 0, 0, 0);
+void GX_DisableFog(void) {
+    M2C_UNK GX_SetFog(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    GX_SetFog(0, 0, 0, 0);
 }
 
 void func_02077a4c(void) {extern M2C_UNK data_02140f70;M2C_FIELD(&data_02140f70,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
 
-void func_02077a7c(void) {void func_02077c8c();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
-func_02077c8c();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
+void func_02077a7c(void) {void Map_BeginFrame();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
+Map_BeginFrame();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
 
 /* Interpolate two constant backdrop colors by blend factor t and store the resulting RGB plus engine viewport dimensions into data_02140f88. */
 M2C_UNK func_02077ab8(s32 arg0) {
@@ -197,70 +197,68 @@ void func_02077c78(void) {
     *(s32 *)0x04000540 = 0;
 }
 
-void func_02077c8c(void) {
-    void func_02003ac4(void);
-    void func_02003c64(void);
-    M2C_UNK func_02003dfc(s32, s32, s16, s32, s32);
-    M2C_UNK func_02003de4(M2C_UNK);
-    void func_02077a30(void);
+/* Set up a map frame: configure the 3D sprite bank's layer modes, let the active map view claim
+ * its VRAM banks, program the main screen and 3D registers and load the current toon table. */
+void Map_BeginFrame(void) {
+    void GX_BeginFrame(void);
+    void GX_RestoreMatrixStack(void);
+    M2C_UNK GX_SetClearColor(s32, s32, s16, s32, s32);
+    M2C_UNK GX_LoadToonTable(M2C_UNK);
+    void GX_DisableFog(void);
     extern u32 g3DSpriteBankMain;
     extern void *gCur3DSpriteEngine;
     extern s32 *gCurrentMap;
-    extern u16 data_02140fc8[];
+    extern u16 gToonTable[];
 
-    u8 *obj;
-    u16 *p;
-    void **eng;
-    u8 *cur;
-    u8 *node;
-    u8 *hw;
-    u16 *hp;
-    u32 val;
+    u8 *spriteBank;
+    u16 *bank;
+    u8 *disp;
+    u32 dispcnt;
 
-    obj = (u8 *)g3DSpriteBankMain;
-    *(u32 *)(obj + 0x34) = 1;
-    {u16 * volatile p0=(u16 *)*(u32 *)gCur3DSpriteEngine;*p0=*p0 & ~7;}
+    spriteBank = (u8 *)g3DSpriteBankMain;
+    *(u32 *)(spriteBank + 0x34) = 1;
+    {u16 * volatile flags=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags=*flags & ~7;}
     *(u16 *)g3DSpriteBankMain |=8;
-    {u16 * volatile p1=(u16 *)*(u32 *)gCur3DSpriteEngine;*p1=*p1|16;}
-    {u16 * volatile p2=(u16 *)*(u32 *)gCur3DSpriteEngine;*p2=*p2|32;}
-    {u16 * volatile p3=(u16 *)*(u32 *)gCur3DSpriteEngine;*p3=*p3|64;}
-    {u16 * volatile p4=(u16 *)*(u32 *)gCur3DSpriteEngine;*p4=*p4|128;}
-    {u16 * volatile p5=(u16 *)*(u32 *)gCur3DSpriteEngine;*p5=*p5|256;}
-    p=(u16 *)*(u32 *)gCur3DSpriteEngine;p[3]=(p[3] & ~3)|3;
-    p=(u16 *)*(u32 *)gCur3DSpriteEngine;p[4]=(p[4] & ~3);
-    p=(u16 *)*(u32 *)gCur3DSpriteEngine;p[5]=(p[5] & ~3);
-    p=(u16 *)*(u32 *)gCur3DSpriteEngine;p[6]=(p[6] & ~3);
-    func_02003ac4();
-    func_02003c64();
+    {u16 * volatile flags1=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags1=*flags1|16;}
+    {u16 * volatile flags2=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags2=*flags2|32;}
+    {u16 * volatile flags3=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags3=*flags3|64;}
+    {u16 * volatile flags4=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags4=*flags4|128;}
+    {u16 * volatile flags5=(u16 *)*(u32 *)gCur3DSpriteEngine;*flags5=*flags5|256;}
+    bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[3]=(bank[3] & ~3)|3;
+    bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[4]=(bank[4] & ~3);
+    bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[5]=(bank[5] & ~3);
+    bank=(u16 *)*(u32 *)gCur3DSpriteEngine;bank[6]=(bank[6] & ~3);
+    GX_BeginFrame();
+    GX_RestoreMatrixStack();
 
     {
-        void **q = (void **)((u8 *)gCurrentMap + 4);
-        void *field4 = *q;
-        void (**cbp)(void) = (void (**)(void))((u8 *)field4 + 0x4c);
-        void (*cb)(void) = *cbp;
-        if (cb != 0) {
-            cb();
+        void **viewSlot = (void **)((u8 *)gCurrentMap + 4);
+        void *mapView = *viewSlot;
+        void (**cbSlot)(void) = (void (**)(void))((u8 *)mapView + 0x4c);
+        void (*beginView)(void) = *cbSlot;
+        if (beginView != 0) {
+            beginView();
         }
     }
 
-    hw = (u8 *)0x4000000;
-    val = *(u32 *)hw;
-    val = (val & ~0x1f00) | 0x1100;
-    *(u32 *)hw = val;
-    p = (u16 *)hw;
-    p[4] = p[4] & ~3;
-    p[0x30] = p[0x30] & (u16)0xcfef;
-    p[0x30] = (p[0x30] & ~0x3000) | 8;
-    p[0x28] = 0;
-    func_02003dfc(0, 0x1f, (s16)0x7fff, 0x3f, 0);
+    disp = (u8 *)0x4000000;                  /* DISPCNT */
+    dispcnt = *(u32 *)disp;
+    dispcnt = (dispcnt & ~0x1f00) | 0x1100;  /* main-engine VRAM banks */
+    *(u32 *)disp = dispcnt;
+    bank = (u16 *)disp;
+    bank[4] = bank[4] & ~3;                  /* BG0CNT priority */
+    bank[0x30] = bank[0x30] & (u16)0xcfef;   /* DISP3DCNT */
+    bank[0x30] = (bank[0x30] & ~0x3000) | 8;
+    bank[0x28] = 0;                          /* BLDCNT: no blending */
+    GX_SetClearColor(0, 0x1f, (s16)0x7fff, 0x3f, 0);
 
     {
-        u16 *hptr=(u16 *)0x4000060;
+        u16 *disp3d=(u16 *)0x4000060;
         *(volatile u32 *)0x4000580=0xbfff0000;
-        *hptr=(*hptr & 0xffffcffd)|2;
-        func_02003de4((M2C_UNK)data_02140fc8);
-        func_02077a30();
-        *(u32 *)0x4000540=0;
+        *disp3d=(*disp3d & 0xffffcffd)|2;
+        GX_LoadToonTable((M2C_UNK)gToonTable);
+        GX_DisableFog();
+        *(u32 *)0x4000540=0;                 /* SWAP_BUFFERS: no buffer swap */
     }
 }
 

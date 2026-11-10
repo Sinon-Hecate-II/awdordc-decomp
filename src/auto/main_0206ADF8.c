@@ -1,22 +1,53 @@
 /* 5 functions from 0x0206ADF8 to 0x0206BD7C (main), found by ds-decomp. */
 #include "common.h"
 
-extern const u16 data_020eaf78[];
+extern const u16 gWideCharClassTable[];
 static inline int FormatDigit(u16 ch) {
-    return (ch >= 128) ? 0 : data_020eaf78[ch] & 8;
+    return (ch >= 128) ? 0 : gWideCharClassTable[ch] & 8;
 }
 
-typedef struct { u8 pad, sign, unused, alternate; u8 reserved; u8 _pad; u16 conversion; s32 width, precision; } FormatFlags;
+typedef struct {
+    u8 pad;         /* +0x00: padding, FORMAT_PAD_* */
+    u8 sign;        /* +0x01: sign prefix, FORMAT_SIGN_* */
+    u8 unused;      /* +0x02: a '.' precision was given */
+    u8 alternate;   /* +0x03: '#' alternate form */
+    u8 reserved;    /* +0x04: length modifier, FORMAT_LENGTH_* */
+    u8 _pad;        /* +0x05: alignment */
+    u16 conversion; /* +0x06: conversion character, FORMAT_CONV_INVALID = bad spec */
+    s32 width;      /* +0x08: field width */
+    s32 precision;  /* +0x0C: precision */
+} FormatFlags;
 
-/* Rounds the decimal number held at `number` at digit position `digitPos`. */
-u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
+/* FormatFlags.pad values. */
+enum { FORMAT_PAD_LEFT = 0, FORMAT_PAD_SPACE = 1, FORMAT_PAD_ZERO = 2 };
+/* FormatFlags.sign values. */
+enum { FORMAT_SIGN_NONE = 0, FORMAT_SIGN_PLUS = 1, FORMAT_SIGN_SPACE = 2 };
+/* Length-modifier codes in FormatFlags.reserved. */
+enum {
+    FORMAT_LENGTH_NONE = 0,
+    FORMAT_LENGTH_HH   = 1,
+    FORMAT_LENGTH_H    = 2,
+    FORMAT_LENGTH_L    = 3,
+    FORMAT_LENGTH_LL   = 4,
+    FORMAT_LENGTH_WIDE = 5, /* l applied to c/s: wide character or string */
+    FORMAT_LENGTH_J    = 6,
+    FORMAT_LENGTH_Z    = 7,
+    FORMAT_LENGTH_T    = 8,
+    FORMAT_LENGTH_LD   = 9
+};
+#define FORMAT_CONV_INVALID 0xFFFF
+
+/* Parses one printf conversion specification (flags, width, precision, length
+ * modifier and conversion character) starting just after '%' in `input`, stores
+ * it in *out and returns the character after the specification. */
+u16 *ParseFormatSpec(u16 *input, s32 **args, FormatFlags *out) {
     u16 *format;
     FormatFlags f;
     u16 ch;
     int active;
-    int modifier;
+    int hasLength;
 
-    f.pad = 1; f.sign = 0; f.unused = 0; f.alternate = 0; f.reserved = 0;
+    f.pad = FORMAT_PAD_SPACE; f.sign = FORMAT_SIGN_NONE; f.unused = 0; f.alternate = 0; f.reserved = FORMAT_LENGTH_NONE;
     f.width = 0; f.precision = 0;
 
     format = input + 1;
@@ -30,11 +61,11 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
     do {
         active = 1;
         switch (ch) {
-            case '-': f.pad = 0; break;
-            case '+': f.sign = 1; break;
-            case ' ': if (f.sign != 1) f.sign = 2; break;
+            case '-': f.pad = FORMAT_PAD_LEFT; break;
+            case '+': f.sign = FORMAT_SIGN_PLUS; break;
+            case ' ': if (f.sign != FORMAT_SIGN_PLUS) f.sign = FORMAT_SIGN_SPACE; break;
             case '#': f.alternate = 1; break;
-            case '0': if (f.pad) f.pad = 2; break;
+            case '0': if (f.pad) f.pad = FORMAT_PAD_ZERO; break;
             default: active = 0; break;
         }
         if (!active) break;
@@ -45,7 +76,7 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
         *args += 1;
         f.width = (*args)[-1];
         if (f.width < 0) {
-            f.pad = 0;
+            f.pad = FORMAT_PAD_LEFT;
             f.width = -f.width;
         }
         ch = *++format;
@@ -56,7 +87,7 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
         }
     }
     if (f.width > 509) {
-        f.conversion = 0xffff;
+        f.conversion = FORMAT_CONV_INVALID;
         *out = f;
         return format + 1;
     }
@@ -77,63 +108,63 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
         }
     }
 
-    modifier = 1;
+    hasLength = 1;
     switch (ch) {
-        case 'h': f.reserved = 2; if (format[1] == 'h') { f.reserved = 1; ch = *++format; } break;
-        case 'l': f.reserved = 3; if (format[1] == 'l') { f.reserved = 4; ch = *++format; } break;
-        case 'L': f.reserved = 9; break;
-        case 'j': f.reserved = 6; break;
-        case 't': f.reserved = 8; break;
-        case 'z': f.reserved = 7; break;
-        default: modifier = 0; break;
+        case 'h': f.reserved = FORMAT_LENGTH_H; if (format[1] == 'h') { f.reserved = FORMAT_LENGTH_HH; ch = *++format; } break;
+        case 'l': f.reserved = FORMAT_LENGTH_L; if (format[1] == 'l') { f.reserved = FORMAT_LENGTH_LL; ch = *++format; } break;
+        case 'L': f.reserved = FORMAT_LENGTH_LD; break;
+        case 'j': f.reserved = FORMAT_LENGTH_J; break;
+        case 't': f.reserved = FORMAT_LENGTH_T; break;
+        case 'z': f.reserved = FORMAT_LENGTH_Z; break;
+        default: hasLength = 0; break;
     }
-    if (modifier) ch = *++format;
+    if (hasLength) ch = *++format;
     f.conversion = ch;
 
     switch (ch) {
         case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-            if (f.reserved == 9) f.reserved = 4;
+            if (f.reserved == FORMAT_LENGTH_LD) f.reserved = FORMAT_LENGTH_LL;
             if (!f.unused) f.precision = 1;
-            else if (f.pad == 2) f.pad = 1;
+            else if (f.pad == FORMAT_PAD_ZERO) f.pad = FORMAT_PAD_SPACE;
             break;
         case 'f': case 'F':
-            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
-                f.reserved == 8 || f.reserved == 4) f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_H || f.reserved == FORMAT_LENGTH_J || f.reserved == FORMAT_LENGTH_Z ||
+                f.reserved == FORMAT_LENGTH_T || f.reserved == FORMAT_LENGTH_LL) f.conversion = FORMAT_CONV_INVALID;
             else if (!f.unused) f.precision = 6;
             break;
         case 'a': case 'A':
             if (!f.unused) f.precision = 13;
-            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
-                f.reserved == 8 || f.reserved == 4 || f.reserved == 1)
-                f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_H || f.reserved == FORMAT_LENGTH_J || f.reserved == FORMAT_LENGTH_Z ||
+                f.reserved == FORMAT_LENGTH_T || f.reserved == FORMAT_LENGTH_LL || f.reserved == FORMAT_LENGTH_HH)
+                f.conversion = FORMAT_CONV_INVALID;
             break;
         case 'g': case 'G':
             if (f.precision == 0) f.precision = 1;
         case 'e': case 'E':
-            if (f.reserved == 2 || f.reserved == 6 || f.reserved == 7 ||
-                f.reserved == 8 || f.reserved == 4 || f.reserved == 1)
-                f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_H || f.reserved == FORMAT_LENGTH_J || f.reserved == FORMAT_LENGTH_Z ||
+                f.reserved == FORMAT_LENGTH_T || f.reserved == FORMAT_LENGTH_LL || f.reserved == FORMAT_LENGTH_HH)
+                f.conversion = FORMAT_CONV_INVALID;
             else if (!f.unused) f.precision = 6;
             break;
         case 'p':
-            f.reserved = 3;
+            f.reserved = FORMAT_LENGTH_L;
             f.alternate = 1;
             f.conversion = 'x';
             f.precision = 8;
             break;
         case 'c':
-            if (f.reserved == 3) f.reserved = 5;
-            else if (f.unused || f.reserved != 0) f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_L) f.reserved = FORMAT_LENGTH_WIDE;
+            else if (f.unused || f.reserved != FORMAT_LENGTH_NONE) f.conversion = FORMAT_CONV_INVALID;
             break;
         case 's':
-            if (f.reserved == 3) f.reserved = 5;
-            else if (f.reserved) f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_L) f.reserved = FORMAT_LENGTH_WIDE;
+            else if (f.reserved) f.conversion = FORMAT_CONV_INVALID;
             break;
         case 'n':
-            if (f.reserved == 9) f.conversion = 0xffff;
+            if (f.reserved == FORMAT_LENGTH_LD) f.reserved = FORMAT_LENGTH_LL;
             break;
         default:
-            f.conversion = 0xffff;
+            f.conversion = FORMAT_CONV_INVALID;
             break;
     }
 
@@ -141,25 +172,102 @@ u16 *func_0206adf8(u16 *input, s32 **args, FormatFlags *out) {
     return format + 1;
 }
 
-u16 *func_0206b370(s32 value, u16 *end, FormatFlags flags) {
-s32 width; s32 negative=0; u32 base; u16 *p=end; s32 count=0; s32 precision=flags.precision; s32 digit; s32 sign; u16 type; u8 alt;
-*--p=0;
-alt=flags.alternate; type=flags.conversion; width=flags.width; sign=flags.sign;
-if(value==0 && precision==0) { if(!alt || type!='o') return p; }
-switch(type) {
-case 'd': case 'i': base=10; if(value<0) { if(value != (s32)0x80000000) value=-value; negative=1; } break;
-case 'o': base=8; sign=0; break;
-case 'u': base=10; sign=0; break;
-case 'x': case 'X': base=16; sign=0; break;
-}
-do { digit=(u32)value%base; value=(u32)value/base; if(digit<10) digit+='0'; else if(type=='x') digit+=87; else digit+=55; *--p=digit; ++count; } while(value!=0);
-if(base==8 && alt && *p!='0') { *--p='0'; ++count; }
-if(flags.pad==2) { precision=width; if(negative || sign) --precision; if(base==16 && alt) precision-=2; }
-if(precision+(end-p)>509) return 0;
-while(count<precision) { *--p='0'; ++count; }
-if(base==16 && alt) { *--p=type; *--p='0'; }
-if(negative) *--p='-'; else if(sign==1) *--p='+'; else if(sign==2) *--p=' ';
-return p;
+/* Format a 32-bit integer as UTF-16 text for the printf conversions
+   d/i/o/u/x/X, applying alternate form, zero padding, precision and sign.
+   Digits are written backwards from `end`; returns their start, or 0 if the
+   result would not fit the caller's 512-unit buffer. */
+u16 *FormatInteger(s32 value, u16 *end, FormatFlags flags) {
+    s32 width;
+    s32 negative = 0;
+    u32 base;
+    u16 *out = end;
+    s32 digits = 0;
+    s32 precision = flags.precision;
+    s32 digit;
+    s32 sign;
+    u16 conversion;
+    u8 alternate;
+
+    *--out = 0;
+    alternate = flags.alternate;
+    conversion = flags.conversion;
+    width = flags.width;
+    sign = flags.sign;
+    if (value == 0 && precision == 0) {
+        if (!alternate || conversion != 'o') {
+            return out;
+        }
+    }
+    switch (conversion) {
+    case 'd':
+    case 'i':
+        base = 10;
+        if (value < 0) {
+            if (value != (s32)0x80000000) {
+                value = -value;
+            }
+            negative = 1;
+        }
+        break;
+    case 'o':
+        base = 8;
+        sign = 0;
+        break;
+    case 'u':
+        base = 10;
+        sign = 0;
+        break;
+    case 'x':
+    case 'X':
+        base = 16;
+        sign = 0;
+        break;
+    }
+    do {
+        digit = (u32)value % base;
+        value = (u32)value / base;
+        if (digit < 10) {
+            digit += '0';
+        } else if (conversion == 'x') {
+            digit += 87;
+        } else {
+            digit += 55;
+        }
+        *--out = digit;
+        ++digits;
+    } while (value != 0);
+    if (base == 8 && alternate && *out != '0') {
+        *--out = '0';
+        ++digits;
+    }
+    if (flags.pad == FORMAT_PAD_ZERO) {
+        precision = width;
+        if (negative || sign) {
+            --precision;
+        }
+        if (base == 16 && alternate) {
+            precision -= 2;
+        }
+    }
+    if (precision + (end - out) > 509) {
+        return 0;
+    }
+    while (digits < precision) {
+        *--out = '0';
+        ++digits;
+    }
+    if (base == 16 && alternate) {
+        *--out = conversion;
+        *--out = '0';
+    }
+    if (negative) {
+        *--out = '-';
+    } else if (sign == FORMAT_SIGN_PLUS) {
+        *--out = '+';
+    } else if (sign == FORMAT_SIGN_SPACE) {
+        *--out = ' ';
+    }
+    return out;
 }
 
 /* Formats a 64-bit integer into a UTF-16 string buffer according to printf flags */
@@ -260,7 +368,7 @@ u16 *func_0206b5c0(s64 value, u16 *end, FormatFlags flags) {
 u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     u16 *func_0206cdac(u16 *, u16 *);
     void func_0206f034(void *, double, void *);
-    u16 *func_0206b370(s32, u16 *, FormatFlags);
+    u16 *FormatInteger(s32, u16 *, FormatFlags);
     double func_0206dfb0(double);
     extern u16 data_02100558[], data_02100564[], data_02100570[], data_0210057c[], data_02100584[], data_0210058c[], data_02100598[], data_021005a4[], data_021005ac[];
     FormatFlags f;
@@ -317,7 +425,7 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     exp = ((((u32)bytes[1]) << 17) | (((u32)bytes[0]) << 25)) >> 21 & 0x7ff;
     exp = exp - 1023;
     f.pad = 1; f.sign = 1; f.unused = 0; f.alternate = 0; f.reserved = 0; f.conversion = 'd'; f.width = 0; f.precision = 1;
-    p = func_0206b370(exp, end, f);
+    p = FormatInteger(exp, end, f);
     *--p = (spec == 'a' ? 'p' : 'P');
     bit = precision * 4 + 11;
     n = precision;

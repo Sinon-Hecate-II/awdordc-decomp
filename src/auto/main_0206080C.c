@@ -132,19 +132,19 @@ M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
 }
 
 void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
- s32 func_020675e4(void *,void *,...);
+ s32 StringFormat(void *,void *,...);
  extern M2C_UNK data_02100060;
  u8 buf[20];
- func_020675e4(buf,&data_02100060);
+ StringFormat(buf,&data_02100060);
  gpiPlayerSetString(a,b,(M2C_UNK *)buf);
 }
 
 s32 func_02060afc(void *arg0,s32 arg1,s32 arg2){
  void *func_02048ff8(s32,s32 *);
- M2C_UNK func_020640a8(void *,void *,void *,s32);
+ M2C_UNK AssertFailed(void *,void *,void *,s32);
  extern M2C_UNK data_02100064,data_0210006c,data_02100048;
  s32 sp0[2]; void *temp_r0;
- if(!arg0)func_020640a8(&data_02100064,&data_0210006c,&data_02100048,0x97);
+ if(!arg0)AssertFailed(&data_02100064,&data_0210006c,&data_02100048,0x97);
  if(!arg0)return 0;
  sp0[0]=arg1;temp_r0=func_02048ff8(M2C_FIELD(arg0,s32 *,0x18),sp0);
  if(temp_r0)arg2=M2C_FIELD(temp_r0,s32 *,4);
@@ -152,12 +152,12 @@ s32 func_02060afc(void *arg0,s32 arg1,s32 arg2){
 }
 
 s32 func_02060b68(void *arg0,s32 arg1,s32 arg2){
- s32 func_02068d98(s32,void *);
- s32 func_0206ad38(void *);
+ s32 StringCompare(s32,void *);
+ s32 ParseInt(void *);
  extern M2C_UNK data_02100078; extern u16 gCharClassTable[];
  s8 *p,*q; u8 c; s32 v;
  if(!arg0)return arg2;
- if(!func_02068d98(arg1,&data_02100078))return func_02061088(arg0);
+ if(!StringCompare(arg1,&data_02100078))return func_02061088(arg0);
  p=(s8 *)func_02060afc(arg0,arg1,0);
  if(!p)return arg2;
  if(*p!='-')q=p;else q=p+1;
@@ -165,7 +165,7 @@ s32 func_02060b68(void *arg0,s32 arg1,s32 arg2){
  if((s32)c<0 || (s32)c>=128)v=0;
  else v=gCharClassTable[c]&8;
  if(!v)return arg2;
- return func_0206ad38(p);
+ return ParseInt(p);
 }
 
 double func_02060c10(void *arg0,s32 arg1,double arg2){
@@ -217,11 +217,11 @@ s32 func_02060cc4(void *arg0) {
 }
 
 s32 func_02060ccc(M2C_UNK *arg0){
- s32 func_02068d98(s32,void *);
+ s32 StringCompare(s32,void *);
  extern void *data_020eac38[2];
  void *sp0[2]; void **arr=sp0; u32 i;
  sp0[0]=data_020eac38[0];sp0[1]=data_020eac38[1];
- for(i=0;i<2;i++){if(!func_02068d98((s32)arg0,arr[i]))return 0;}
+ for(i=0;i<2;i++){if(!StringCompare((s32)arg0,arr[i]))return 0;}
  return 1;
 }
 
@@ -265,7 +265,7 @@ void func_02060d90(M2C_UNK arg0, s32 arg1) {
 #pragma peephole off
 void func_02060e10(M2C_UNK a,s8 *p,s32 n){
 s32 func_02061da0(s8 *,s32);
-s32 func_020675e4(void *,void *,...);
+s32 StringFormat(void *,void *,...);
 s32 StringLength(const char *);
 extern M2C_UNK data_02100084;
 volatile Packet60E packet;s8 *start; s32 pass,len,fields,row,col; s8 *key,*value;
@@ -280,7 +280,7 @@ fields=0;while(*p){len=func_02061da0(p,n);if(len<0)return;if(len>100)return;p+=l
 p++;n--;
 for(row=0;row<packet.count;row++){key=start;for(col=0;col<fields;col++){
 len=func_02061da0(p,n);if(len<0)return;
-func_020675e4(packet.buf,&data_02100084,key,row);gpiPlayerSetString(a,(M2C_UNK *)packet.buf,p);
+StringFormat(packet.buf,&data_02100084,key,row);gpiPlayerSetString(a,(M2C_UNK *)packet.buf,p);
 p+=len;n-=len;key+=StringLength(key)+1;
 }}
 }
@@ -354,7 +354,7 @@ void func_02061184(void *a,u32 event,void *p,void *q){
 void func_0206045c(void *,void *,s32,s32);
 void func_0206040c(void *,s32);
 s32 func_02048688(s32);
-M2C_UNK func_020626d4(void *);
+M2C_UNK SBServerListDisconnect(void *);
 s32 flag;
 switch(event){
 case 0:
@@ -372,7 +372,7 @@ case 2:
 if(M2C_FIELD(p,u8 *,0x14)&0x2c)func_0206095c(q,p);
 M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,3,p,M2C_FIELD(q,s32 *,0x634));break;
 case 3:
-if(M2C_FIELD(q,s32 *,0x620))func_020626d4(a);
+if(M2C_FIELD(q,s32 *,0x620))SBServerListDisconnect(a);
 if(!func_02048688(M2C_FIELD(a,s32 *,4))||!M2C_FIELD(q,s32 *,0x10))
 M2C_FIELD(q,void (**)(void *,s32,void *,s32),0x630)(q,4,0,M2C_FIELD(q,s32 *,0x634));break;
 case 5:
@@ -429,18 +429,18 @@ void func_020614b0(s32 arg0) {
 
 s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
  extern char *data_020ffc1c[]; extern char data_0210008c[];
- s32 StringLength(const char *); s32 func_020675e4(void *,void *,...);
- s32 func_020623bc(s32,char *,s32,s32,s32); void func_02049260(s32);
+ s32 StringLength(const char *); s32 StringFormat(void *,void *,...);
+ s32 SBServerListConnectAndQuery(s32,char *,s32,s32,s32); void func_02049260(s32);
  char buf[256]={0}; s32 len=0,i; char *p; s32 result;
  M2C_FIELD(a,s32 *,0x620)=c;
  M2C_FIELD(a,s32 *,0x40)=0;
  for(i=0;i<e;i++){
  p=data_020ffc1c[*(u8 *)(d+(u32)i)];
  if(len+StringLength(p)+1>=256)break;
- len+=func_020675e4(buf+len,data_0210008c,p);
+ len+=StringFormat(buf+len,data_0210008c,p);
  func_0206093c((void *)a,*(u8 *)(d+(u32)i));
  }
- result=func_020623bc(a+0x4c,buf,f,g,h);
+ result=SBServerListConnectAndQuery(a+0x4c,buf,f,g,h);
  if(result)return result;
  if(!b){
  goto check;
@@ -486,8 +486,8 @@ s32 func_02061704(s32 arg0) {
 }
 
 M2C_UNK func_0206171c(void *p){
- M2C_UNK func_020626d4(void *);M2C_UNK func_02060414(void *);
- func_020626d4((u8 *)p+0x4c);func_02060414(p);
+ M2C_UNK SBServerListDisconnect(void *);M2C_UNK func_02060414(void *);
+ SBServerListDisconnect((u8 *)p+0x4c);func_02060414(p);
 }
 
 void func_02061738(s32 arg0) {

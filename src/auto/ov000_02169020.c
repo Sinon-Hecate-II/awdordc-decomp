@@ -230,11 +230,11 @@ void func_ov000_021696d4(void) {
 }
 
 void func_ov000_021696f8(void *arg0) {
- void func_01ffa574(void *);
+ void DeleteSpriteObject(void *);
  M2C_UNK func_020d47b0();
  void *p=M2C_FIELD(arg0,void **,0x3C);
  if(p) M2C_FIELD(p,u16 *,4)&=~6;
- func_01ffa574(arg0);
+ DeleteSpriteObject(arg0);
  func_020d47b0();
 }
 
@@ -370,7 +370,7 @@ void func_ov000_02169a24(void) {
 void func_ov000_02169a28(void *p) {
  s32 func_0207cfb8(void *);
  void func_02091248(s32);
- void func_020910d0(void *,s32 *,s32,s32);
+ void DrawSprite3D(void *,s32 *,s32,s32);
  s32 v[3]; void *q; s32 n;
  u8 mode=func_0207cfb8((void *)(*gCurrentMap+0x6EF8))<=0?0x10:0x18;
  if(mode==0x10){q=M2C_FIELD(p,void **,0x34);n=0x30000;}
@@ -380,7 +380,7 @@ void func_ov000_02169a28(void *p) {
  v[1]=(M2C_FIELD(p,s16 *,0x4E)+16)*48;
  v[2]=0x871;
  func_02091248(31);
- func_020910d0(q,v,n,0);
+ DrawSprite3D(q,v,n,0);
 }
 
 s32 func_ov000_02169ae4(void *p) {

@@ -6,7 +6,7 @@ extern u8 data_02168f14[16];
 
 s32 func_020d6398(s32 x,s32 y){
 extern void **gCurrentMap;
-s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 func_020a7074(void*,void*); u8 IsSameTeam(s32,s32);
+s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 CanUnitsJoin(void*,void*); u8 IsSameTeam(s32,s32);
 u8 *base=*gCurrentMap;
 s32 id=base[x+*(u16*)(base+y*2+0x3758)];
 s32 cell,off,a,b,n;
@@ -18,7 +18,7 @@ if(id==0)return 1;
 if(id==base[0x52d6])return 0;
 if(func_020ba790(x,y)==1)return 1;
 base=*gCurrentMap; off=id*14;
-if(func_020a7074(*(u8**)(base+0x52d0),base+0x59a4+off)==1)return 1;
+if(CanUnitsJoin(*(u8**)(base+0x52d0),base+0x59a4+off)==1)return 1;
 base=*gCurrentMap;
 if(func_020a85b8((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)){
 base=*gCurrentMap;table=base+0x59a4;unit=table+off;
@@ -106,9 +106,9 @@ void func_020d6778(s32 mode) {
 
 void DrawDecimalNumber(s32 arg0, s32 arg1, s32 arg2) {
 M2C_UNK AddSprite(u16,u16,u16,M2C_UNK *,s32);
-extern M2C_UNK data_027e0084;extern u16 **gCur3DSpriteEngine;
+extern M2C_UNK gSpriteDesc8x8;extern u16 **gCur3DSpriteEngine;
 do {
-AddSprite((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&data_027e0084,8);
+AddSprite((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&gSpriteDesc8x8,8);
 arg0-=8;arg2/=10;
 }while(arg2);
 }

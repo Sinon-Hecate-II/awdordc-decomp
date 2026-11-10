@@ -49,7 +49,7 @@ s32 func_020bcc34(void) {
 }
 
 void func_020bcc78(u8 arg0,u8 arg1,M2C_UNK arg2,M2C_UNK arg3,s32 arg4) {
-void func_0208fb0c(s32,u8,u8);
+void PlaySoundAtTile(s32,u8,u8);
 void func_020b5188(void *,u8,u8,s32,s32,s32,s32);
 extern void **gCurrentMap;
 extern M2C_UNK data_021293a4,data_021293b0,data_021293bc;
@@ -61,15 +61,15 @@ switch((u32)(value<<24)>>24) {
 case 2:
 case 9:
 func_020b5188(&data_021293a4,arg0,arg1,0,0,0,arg4);
-func_0208fb0c(0x12a,arg0,arg1);
+PlaySoundAtTile(0x12a,arg0,arg1);
 break;
 case 8:
 func_020b5188(&data_021293b0,arg0,arg1,0,0,0,arg4);
-func_0208fb0c(0x12b,arg0,arg1);
+PlaySoundAtTile(0x12b,arg0,arg1);
 break;
 default:
 func_020b5188(&data_021293bc,arg0,arg1,0,0,0,arg4);
-func_0208fb0c(0x129,arg0,arg1);
+PlaySoundAtTile(0x129,arg0,arg1);
 break;
 }
 }
@@ -88,7 +88,7 @@ void func_020bcdec(void *arg0) {
     func_0208f7d0();
 }
 
-void func_020bce04(s32 a){void func_0208fb0c(s32,u8,u8);void func_020b5188(void *,u8,u8,s32,s32,s32,s32);extern u8 data_021293cc[];extern void **gCurrentMap;void *p=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_0208fb0c(0x128,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2));p=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020b5188(data_021293cc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0,0,0,a);}
+void func_020bce04(s32 a){void PlaySoundAtTile(s32,u8,u8);void func_020b5188(void *,u8,u8,s32,s32,s32,s32);extern u8 data_021293cc[];extern void **gCurrentMap;void *p=M2C_FIELD(*gCurrentMap,void **,0x52d0);PlaySoundAtTile(0x128,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2));p=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020b5188(data_021293cc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0,0,0,a);}
 
 void func_020bce74(void *a){extern void **gCurrentMap;extern u8 data_021261bc[];void func_020a3428(s32,s32);s32 x=M2C_FIELD(a,s32 *,0x5c),y=M2C_FIELD(a,s32 *,0x64);u32 v;func_020a3428(x,y);v=(u32)(M2C_FIELD((u8 *)*gCurrentMap+x*0x8c,s32 *,0x6810)<<24)>>24;(*(void (**)(s32,void *))(data_021261bc+v*0x9c+y*0x28))(x,a);}
 
@@ -278,10 +278,10 @@ void func_020bd3c0(void *arg0) {
     PlaySoundEffect(arg0);
 }
 
-s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 func_020d5aa0(s32,s32,s32,s32,s32);extern void *data_02101e88;extern void **gCurrentMap;
+s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *data_02101e88;extern void **gCurrentMap;
 if(func_020947c0())return 0;
 if(M2C_FIELD(data_02101e88,u8 *,0x12)&&M2C_FIELD(data_02101e88,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020d58c4(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
-if(M2C_FIELD(data_02101e88,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(func_020d5aa0(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
+if(M2C_FIELD(data_02101e88,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
 }
 
 s32 func_020bd650(void) {

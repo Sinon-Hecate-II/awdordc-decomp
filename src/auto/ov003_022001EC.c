@@ -6,7 +6,7 @@ extern s16 data_ov003_022103d4[4];
 extern s16 data_ov003_022103cc[4];
 
 void *func_ov003_022001ec(void *obj) {
-    void func_01ffa574(void *);
+    void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
@@ -39,22 +39,22 @@ void *func_ov003_022001ec(void *obj) {
     if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
-        if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
-        if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        if (M2C_FIELD(sub, void **, 8) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 8));
-        if (M2C_FIELD(sub, void **, 12) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 12));
-        if (M2C_FIELD(sub, void **, 16) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 16));
-        if (M2C_FIELD(sub, void **, 20) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 20));
-        if (M2C_FIELD(sub, void **, 24) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 24));
-        if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
-        if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
-        if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
+        if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
+        if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
+        if (M2C_FIELD(sub, void **, 8) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 8));
+        if (M2C_FIELD(sub, void **, 12) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 12));
+        if (M2C_FIELD(sub, void **, 16) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 16));
+        if (M2C_FIELD(sub, void **, 20) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 20));
+        if (M2C_FIELD(sub, void **, 24) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 24));
+        if (M2C_FIELD(sub, void **, 28) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 28));
+        if (M2C_FIELD(sub, void **, 32) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 32));
+        if (M2C_FIELD(sub, void **, 36) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 36));
         MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
-        if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
-        if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
+        if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
+        if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
         MemFree(sub);
     }
     func_ov003_021f140c(4);

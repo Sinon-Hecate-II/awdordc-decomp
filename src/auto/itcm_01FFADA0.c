@@ -3,19 +3,19 @@
 
 typedef struct UnkB454Bits { u32 value : 8; u32 rest : 24; } UnkB454Bits;
 
-M2C_UNK func_01ffada0(M2C_UNK a0, M2C_UNK a1, M2C_UNK a2, M2C_UNK a3, M2C_UNK a4) { (void)a0;(void)a1;(void)a2;(void)a3;(void)a4; return 0; }
+M2C_UNK FloodFillUnitRange(M2C_UNK a0, M2C_UNK a1, M2C_UNK a2, M2C_UNK a3, M2C_UNK a4) { (void)a0;(void)a1;(void)a2;(void)a3;(void)a4; return 0; }
 
 void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
-    extern void *data_027e0a90;
-    extern s8 *data_027e00cc;
+    extern void *gMoveSearchCurrent;
+    extern s8 *gMoveSearchState;
     extern void **gCurrentMap;
     extern u8 data_ov000_021b55c0[];
-    extern s32 data_027e0a94;
-    extern void *data_027e0a98;
+    extern s32 gMoveSearchCount;
+    extern void *gMoveSearchWrite;
     s32 func_020d280c(s32, s32, s32);
 
-    u8 *q = (u8 *)data_027e0a90;
-    s8 *terrain = data_027e00cc;
+    u8 *q = (u8 *)gMoveSearchCurrent;
+    s8 *terrain = gMoveSearchState;
     u8 q0 = q[0];
     u8 q1 = q[1];
     u8 x = (u8)(arg1 + q0);
@@ -122,15 +122,15 @@ void func_01ffb114(s32 arg0, s32 arg1, s32 arg2) {
 
 enqueue:
     if (score > *(s16 *)(terrain + 0x20)) return;
-    if (data_027e0a94 >= 0x15d) return;
-    data_027e0a94++;
+    if (gMoveSearchCount >= 0x15d) return;
+    gMoveSearchCount++;
     {
-        u8 *cursor = (u8 *)data_027e0a98;
+        u8 *cursor = (u8 *)gMoveSearchWrite;
         cursor[0] = x;
         cursor[1] = y;
         cursor[2] = (u8)arg0;
         cursor[3] = (u8)score;
-        data_027e0a98 = cursor + 4;
+        gMoveSearchWrite = cursor + 4;
         tablePtr = (void **)((u8 *)m + y * 4 + 0x52e8);
         ((u8 *)tablePtr[0])[x] = (u8)score;
     }
@@ -148,7 +148,7 @@ base=*gCurrentMap;
 }
 
 void func_01ffb454(s32 arg0) {
-extern u8 data_ov000_021b5bfc[]; extern u8 gMovementCostTable[]; extern s8 *data_027e00cc; extern void **data_027e0058; extern u8 data_02168f08[];
+extern u8 data_ov000_021b5bfc[]; extern u8 gMovementCostTable[]; extern s8 *gMoveSearchState; extern void **data_027e0058; extern u8 data_02168f08[];
 s32 func_020a33c4(s32);
 s32 i; u8 *unit=data_ov000_021b5bfc+arg0*0x70;
 for(i=0;i<32;i++) {
@@ -161,30 +161,30 @@ s8 *table;
 variant=(u32)(M2C_FIELD(data_02168f08,u16 *,12)<<18)>>31; if(variant) variant=((UnkB454Bits *)(entry+0x6c))->value;
 type=func_020a33c4(index);
 table=M2C_FIELD(gMovementCostTable+variant*0x9c+type*0x28+entry[0x25]*4,s8 **,0x64);
-data_027e00cc[i]=(table+unit[0x12]*32)[i];
+gMoveSearchState[i]=(table+unit[0x12]*32)[i];
 }
 }
 
 #pragma opt_peephole off
 void func_01ffb50c(void) {
 extern s8 data_ov000_021b54e0[];
-extern s8 *data_027e00cc;
+extern s8 *gMoveSearchState;
 s32 i;
 for(i=0;i<32;i++) {
  s32 value=data_ov000_021b54e0[i];
- if(value) data_027e00cc[i]=1; else ((u8*)data_027e00cc)[i]=255;
+ if(value) gMoveSearchState[i]=1; else ((u8*)gMoveSearchState)[i]=255;
 }
 }
 #pragma opt_peephole reset
 void SelectMapLayer(s32 arg0) {
-extern void **gCurrentMap; extern s8 *data_027e00cc;
+extern void **gCurrentMap; extern s8 *gMoveSearchState;
 s32 i=0; void *base=*gCurrentMap;
 for(;i<M2C_FIELD(base,u16 *,0x5146);i++) {
 ((s32 *)base)[i+0x14ba]=arg0+((u16 *)base)[i+0x1bac];
 base=*gCurrentMap;
 }
-data_027e00cc[0x24]=M2C_FIELD(base,u16 *,0x5144);
-data_027e00cc[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+gMoveSearchState[0x24]=M2C_FIELD(base,u16 *,0x5144);
+gMoveSearchState[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 }
 
 void func_01ffb5ec(s32 cx,s32 cy,s32 radius,s8 value){

@@ -1,5 +1,6 @@
 /* 9 functions from 0x02187188 to 0x02187F7C (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void (*data_ov000_021df648)(void);
 void func_ov000_02188338(void);
 extern void **gCurrentMap;
@@ -272,7 +273,7 @@ void func_ov000_02187820(void) {
     extern u32 gFrameCounter;
     s32 func_ov000_021a9d8c(s16, s16);
     s32 CountAdjacentAccessibleCells(s32, s32);
-    void func_01ffc328(void *);
+    void BuildUnitMoveRange(void *);
     void *selected;
     s32 bestX = -1;
     s32 bestY = -1;
@@ -285,7 +286,7 @@ void func_ov000_02187820(void) {
     s32 ret;
 
     selected = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    func_01ffc328(selected);
+    BuildUnitMoveRange(selected);
     for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
             if (((s8 **)((u8 *)*gCurrentMap + 0x52E8))[y][x] < 0) {
@@ -332,30 +333,33 @@ void func_ov000_02187820(void) {
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov000_021879f4(void){
+/* Pick where the AI's current unit should move: scan every reachable cell and
+   take the lowest-cost one, preferring cells whose property flag bit 0x80 is
+   set, then hand the choice to PlanMoveDestination. */
+void ChooseMoveDestination(void){
  extern u8 *data_ov000_021df580;
- s32 func_01ffada0();
+ s32 FloodFillUnitRange();
  s32 CountAdjacentAccessibleCells(s32,s32);
  s32 func_0207c8ec(s32,s32);
  s32 func_0207c928(s32,s32);
  void PlanMoveDestination(s32,s32);
  u8 *unit;
  s32 bestX,bestY,bestCost,bestFlag,y,x,flag,cost,mask;
- void *base;
+ void *mapBase;
  bestX=-1;bestY=-1;bestCost=32767;bestFlag=0;
- unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
- func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
- base=*gCurrentMap;
- for(y=0;y<M2C_FIELD(base,u16 *,0x5146);y++){
- for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++,base=*gCurrentMap){
- s32 v=M2C_FIELD(base+y*4,s8 **,0x52e8)[x];
- if(v<0 || v<=data_ov000_021df580[5])continue;
- if(M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),s8 *,0x3250)==0)continue;
+ unit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+ FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
+ mapBase=*gCurrentMap;
+ for(y=0;y<M2C_FIELD(mapBase,u16 *,MAP_HEIGHT);y++){
+ for(x=0;x<M2C_FIELD(mapBase,u16 *,MAP_WIDTH);x++,mapBase=*gCurrentMap){
+ s32 cellCost=M2C_FIELD(mapBase+y*4,s8 **,MAP_GRID)[x];
+ if(cellCost<0 || cellCost<=data_ov000_021df580[5])continue;
+ if(M2C_FIELD(mapBase+x+M2C_FIELD(mapBase+y*2,u16 *,MAP_ROW_OFFSETS),s8 *,0x3250)==0)continue;
  if(!CountAdjacentAccessibleCells(x,y))continue;
- cost=func_0207c8ec(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])+1;
- if(func_0207c928(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])==0)--cost;
- base=*gCurrentMap;
- flag=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),u8 *,0x3250);
+ cost=func_0207c8ec(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],data_ov000_021df580[5])+1;
+ if(func_0207c928(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],data_ov000_021df580[5])==0)--cost;
+ mapBase=*gCurrentMap;
+ flag=M2C_FIELD(mapBase+x+M2C_FIELD(mapBase+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,0x3250);
  if(bestCost<cost){
  if(bestFlag&128)continue;
  if(!(flag&128))continue;
@@ -384,7 +388,7 @@ void func_ov000_021879f4(void){
 void func_ov000_02187c3c(void) {
     extern void **gCurrentMap;
     extern u8 *data_ov000_021df580;
-    s32 func_01ffada0(s32, s32, s32, s32, s32, s32);
+    s32 FloodFillUnitRange(s32, s32, s32, s32, s32, s32);
     s32 CountAdjacentAccessibleCells(s32, s32);
     s32 func_0207c8ec(s32, s32);
     s32 func_0207c928(s32, s32);
@@ -396,7 +400,7 @@ void func_ov000_02187c3c(void) {
     s32 bestVal = 0;
     s32 y, x, score;
 
-    func_01ffada0(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x1),
+    FloodFillUnitRange(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x1),
                   M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x2),
                   ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0x0) << 26) >> 26),
                   0x6e, 1, -1);
@@ -427,7 +431,7 @@ void func_ov000_02187c3c(void) {
 #pragma opt_strength_reduction reset
 void func_ov000_02187e20(void) {
 func_ov000_02187820();
-if(data_ov000_021df648==func_ov000_02188338) func_ov000_021879f4();
+if(data_ov000_021df648==func_ov000_02188338) ChooseMoveDestination();
 func_ov000_02187c3c();
 }
 

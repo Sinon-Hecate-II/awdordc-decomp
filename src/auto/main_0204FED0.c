@@ -4,19 +4,19 @@
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
 void gpiAppendIntField(s32 a,s32 b) {
-    void func_020675e4(void *,void *);
+    void StringFormat(void *,void *);
     void gpiAppendStringField(s32,s32,void *);
     extern M2C_UNK data_020fdfb0;
     u8 buf[16];
-    func_020675e4(buf,&data_020fdfb0);
+    StringFormat(buf,&data_020fdfb0);
     gpiAppendStringField(a,b,(M2C_UNK *)buf);
 }
 
 s32 gpiSendOrBufferChar(M2C_UNK arg0,s32 arg1,s8 *arg2,M2C_UNK arg3,M2C_UNK *arg4,s32 *arg5,M2C_UNK *arg6) {
 s32 func_02049810(M2C_UNK,s8 *,M2C_UNK,M2C_UNK);
-s32 func_02049900(M2C_UNK);
+s32 ghiGetLastSocketError(M2C_UNK);
 void func_02050744(void **,s32,s32);
-M2C_UNK func_02058170(M2C_UNK,M2C_UNK *,M2C_UNK *);
+M2C_UNK gpiLogMessage(M2C_UNK,M2C_UNK *,M2C_UNK *);
 M2C_UNK func_02058620(M2C_UNK,M2C_UNK,M2C_UNK *);
 extern M2C_UNK data_020fdfb4;
 extern M2C_UNK data_020fdfdc;
@@ -24,7 +24,7 @@ s8 *buf; s32 r; s32 e;
 buf=(s8 *)arg6;
 r=func_02049810(arg1,arg2,arg3,0);
 if(r==-1) {
-e=func_02049900(arg1);
+e=ghiGetLastSocketError(arg1);
 if(e!=-6 && e!=-26 && e!=-76) {
 if(buf[0]==80 && buf[1]==82) return 3;
 func_02058620(arg0,5,&data_020fdfb4);
@@ -35,7 +35,7 @@ return 3;
 } else {
 if(r!=0) { *arg5=r; *arg4=0; }
 if(r!=0) goto done;
-func_02058170(arg0,&data_020fdfdc,(M2C_UNK *)buf);
+gpiLogMessage(arg0,&data_020fdfdc,(M2C_UNK *)buf);
 *arg5=0; *arg4=1;
 }
 done:
@@ -46,16 +46,16 @@ s32 func_0204fff8(M2C_UNK arg0, void *arg1, s8 arg2, M2C_UNK arg3) {
     s32 func_02048688(s32);
     s32 func_0204fcfc(M2C_UNK, void *, s8);
     s32 gpiSendOrBufferChar(M2C_UNK, s32, s8 *, M2C_UNK, M2C_UNK *, s32 *, M2C_UNK *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fdef8;
-    extern M2C_UNK data_020fdf74;
+    extern M2C_UNK gGpiBufferFileName;
     extern M2C_UNK data_020fe000;
     extern M2C_UNK data_020fe024;
     M2C_UNK sp10;
     s32 spC;
 
     if (M2C_FIELD(arg1, s32 *, 0x28) == 0) {
-        func_020640a8(&data_020fe000, &data_020fdf74, &data_020fdef8, 0xde);
+        AssertFailed(&data_020fe000, &gGpiBufferFileName, &data_020fdef8, 0xde);
     }
     if (((M2C_FIELD(arg1, s32 *, 0x30) - M2C_FIELD(arg1, s32 *, 0x34)) == 0) &&
         (func_02048688(M2C_FIELD(arg1, s32 *, 0x38)) == 0)) {
@@ -74,9 +74,9 @@ s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s
     s32 func_02048688(s32);
     M2C_UNK gpiAppendStringToBufferLen(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 gpiSendOrBufferChar(M2C_UNK, s32, s8 *, M2C_UNK, M2C_UNK *, s32 *, M2C_UNK *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fdf24;
-    extern M2C_UNK data_020fdf74;
+    extern M2C_UNK gGpiBufferFileName;
     extern M2C_UNK data_020fe000;
     extern M2C_UNK data_020fe024;
     M2C_UNK unusedStatus;
@@ -86,7 +86,7 @@ s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s
 
     /* Send string to peer, buffering the bytes that cannot be sent immediately. */
     if (M2C_FIELD(peer, s32 *, 0x28) == 0) {
-        func_020640a8(&data_020fe000, &data_020fdf74, &data_020fdf24, 0xfb);
+        AssertFailed(&data_020fe000, &gGpiBufferFileName, &data_020fdf24, 0xfb);
     }
     offset = 0;
     if (stringLen == 0) {
@@ -121,21 +121,21 @@ void func_020501d8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRead, s32 *connClosed, M2C_UNK arg5) {
-    void *func_020377a8(void *, s32);
-    s32 func_020497cc(s32, void *, s32, s32);
-    s32 func_02049900(s32);
+    void *gpiRealloc(void *, s32);
+    s32 ghiRecv(s32, void *, s32, s32);
+    s32 ghiGetLastSocketError(s32);
     M2C_UNK gpiSetErrorString(M2C_UNK, M2C_UNK *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_020fdf74;
-    extern M2C_UNK data_020fded4;
-    extern M2C_UNK data_020fe028;
-    extern M2C_UNK data_020fe040;
-    extern M2C_UNK data_020fe054;
-    extern M2C_UNK data_020fe068;
-    extern M2C_UNK data_020fdf80;
-    extern M2C_UNK data_020fe07c;
-    extern M2C_UNK data_020fe0a8;
-    extern M2C_UNK data_020fe0cc;
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    extern M2C_UNK gGpiBufferFileName;
+    extern M2C_UNK gGpiRecvToBufferName;
+    extern M2C_UNK gGpiAssertSockValid;
+    extern M2C_UNK gGpiAssertInputBuffer;
+    extern M2C_UNK gGpiAssertBytesRead;
+    extern M2C_UNK gGpiAssertConnClosed;
+    extern M2C_UNK gGpiRecvOutOfMemory;
+    extern M2C_UNK gGpiRecvError;
+    extern M2C_UNK gGpiMsgRecvClosed;
+    extern M2C_UNK gGpiMsgRecvTotal;
     s32 *buf;
     void *data;
     s32 end;
@@ -148,16 +148,16 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
     buf = (s32 *)inputBuffer;
 
     if (sock == -1) {
-        func_020640a8(&data_020fe028, &data_020fdf74, &data_020fded4, 0x150);
+        AssertFailed(&gGpiAssertSockValid, &gGpiBufferFileName, &gGpiRecvToBufferName, 0x150);
     }
     if (inputBuffer == 0) {
-        func_020640a8(&data_020fe040, &data_020fdf74, &data_020fded4, 0x151);
+        AssertFailed(&gGpiAssertInputBuffer, &gGpiBufferFileName, &gGpiRecvToBufferName, 0x151);
     }
     if (bytesRead == 0) {
-        func_020640a8(&data_020fe054, &data_020fdf74, &data_020fded4, 0x152);
+        AssertFailed(&gGpiAssertBytesRead, &gGpiBufferFileName, &gGpiRecvToBufferName, 0x152);
     }
     if (connClosed == 0) {
-        func_020640a8(&data_020fe068, &data_020fdf74, &data_020fded4, 0x153);
+        AssertFailed(&gGpiAssertConnClosed, &gGpiBufferFileName, &gGpiRecvToBufferName, 0x153);
     }
 
     end = buf[2];
@@ -169,22 +169,22 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
     for (;;) {
         if (end + 0x800 > size) {
             size = end + 0x800;
-            data = func_020377a8(data, size + 1);
+            data = gpiRealloc(data, size + 1);
             if (data == 0) {
-                gpiSetErrorString(connection, &data_020fdf80);
+                gpiSetErrorString(connection, &gGpiRecvOutOfMemory);
                 return 1;
             }
         }
-        received = func_020497cc(sock, (char *)data + end, size - end, 0);
+        received = ghiRecv(sock, (char *)data + end, size - end, 0);
         if (received == -1) {
-            err = func_02049900(sock);
+            err = ghiGetLastSocketError(sock);
             if (err != -6 && err != -0x1A && err != -0x4C) {
-                gpiSetErrorString(connection, &data_020fe07c);
+                gpiSetErrorString(connection, &gGpiRecvError);
                 return 3;
             }
         } else if (received == 0) {
             closed = 1;
-            func_02058170(connection, &data_020fe0a8, (M2C_UNK *)arg5);
+            gpiLogMessage(connection, &gGpiMsgRecvClosed, (M2C_UNK *)arg5);
         } else {
             end += received;
             total += received;
@@ -205,7 +205,7 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
     }
 
     if (total != 0) {
-        ((M2C_UNK (*)(M2C_UNK, M2C_UNK *, M2C_UNK, s32))func_02058170)(connection, &data_020fe0cc, (M2C_UNK *)arg5, total);
+        ((M2C_UNK (*)(M2C_UNK, M2C_UNK *, M2C_UNK, s32))gpiLogMessage)(connection, &gGpiMsgRecvTotal, (M2C_UNK *)arg5, total);
     }
 
     buf[0] = (s32)data;
@@ -217,9 +217,9 @@ s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRe
 }
 
 s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
- s32 func_020640a8(s32 *,s32 *,s32 *,s32);
+ s32 AssertFailed(s32 *,s32 *,s32 *,s32);
  s32 func_020651c4(s32,s32,s32);
- extern s32 data_020fdee4,data_020fdf5c,data_020fdf74,data_020fe0e0,data_020fe0ec,data_020fe0f8;
+ extern s32 data_020fdee4,data_020fdf5c,gGpiBufferFileName,data_020fe0e0,data_020fe0ec,data_020fe0f8;
  s32 sp18,sp14;
  s32 done;
  void *buffer;
@@ -230,7 +230,7 @@ s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5
  s32 data;
  s32 start;
  buffer=arg2;out=arg3;
- if(!arg2)func_020640a8(&data_020fdf5c,&data_020fdf74,&data_020fdee4,0x1b9);
+ if(!arg2)AssertFailed(&data_020fdf5c,&gGpiBufferFileName,&data_020fdee4,0x1b9);
  done=0;
  end=M2C_FIELD(buffer,s32 *,8);
  start=M2C_FIELD(buffer,s32 *,12);
@@ -245,9 +245,9 @@ s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5
  if(arg4) {
  if(done>0){func_020651c4(data,data+done,remaining+1);end-=done;}
  }else start+=done;
- if(end<0)func_020640a8(&data_020fe0e0,&data_020fdf74,&data_020fdee4,0x1de);
- if(start<0)func_020640a8(&data_020fe0ec,&data_020fdf74,&data_020fdee4,0x1df);
- if(start>end)func_020640a8(&data_020fe0f8,&data_020fdf74,&data_020fdee4,0x1e0);
+ if(end<0)AssertFailed(&data_020fe0e0,&gGpiBufferFileName,&data_020fdee4,0x1de);
+ if(start<0)AssertFailed(&data_020fe0ec,&gGpiBufferFileName,&data_020fdee4,0x1df);
+ if(start>end)AssertFailed(&data_020fe0f8,&gGpiBufferFileName,&data_020fdee4,0x1e0);
  M2C_FIELD(buffer,s32 *,8)=end;
  M2C_FIELD(buffer,s32 *,12)=start;
  if(out)*out=sp18;
@@ -256,9 +256,9 @@ s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5
 
 s32 gpiReadMessageFromPeer(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg4) {
     s8 *func_02068ee0(M2C_UNK, M2C_UNK);
-    s32 func_02068eac(s32, M2C_UNK *, s32);
-    s32 func_02058254(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
-    s32 func_0206ad38(M2C_UNK *);
+    s32 StringCompareN(s32, M2C_UNK *, s32);
+    s32 GetStringField(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
+    s32 ParseInt(M2C_UNK *);
     extern M2C_UNK data_020fe104;
     extern M2C_UNK data_020fe10c;
     extern M2C_UNK data_020fe110;
@@ -277,18 +277,18 @@ s32 gpiReadMessageFromPeer(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3,
     if (temp_r0 == NULL) {
         goto done;
     }
-    if (func_02068eac((s32)(temp_r0 - 5), &data_020fe104, 5) != 0) {
+    if (StringCompareN((s32)(temp_r0 - 5), &data_020fe104, 5) != 0) {
         return 3;
     }
     *temp_r0 = 0;
-    if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe10c, sp0, 0x10) == 0) {
+    if (GetStringField(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe10c, sp0, 0x10) == 0) {
         return 3;
     }
-    *arg3 = func_0206ad38(sp0);
-    if (func_02058254(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe110, sp0, 0x10) == 0) {
+    *arg3 = ParseInt(sp0);
+    if (GetStringField(M2C_FIELD(arg1, M2C_UNK *, 0), &data_020fe110, sp0, 0x10) == 0) {
         return 3;
     }
-    temp = func_0206ad38(sp0);
+    temp = ParseInt(sp0);
     if (M2C_FIELD(arg1, s32 *, 8) > (temp + 1 + (temp_r0 - (s8 *)M2C_FIELD(arg1, M2C_UNK *, 0)))) {
         if (temp_r0[temp + 1] != 0) {
             return 3;
@@ -316,7 +316,7 @@ M2C_FIELD(p,s32 *,12)=0;return 0;
 void func_02050744(void **arg0, s32 arg1, s32 arg2) {
     void *func_02037794(s32);
     s32 gpiAddCallback(void *, volatile Unk02050838Pair, s32, s32, u32);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe128;
     extern M2C_UNK data_020fe140;
     extern M2C_UNK data_020fe154;
@@ -326,13 +326,13 @@ void func_02050744(void **arg0, s32 arg1, s32 arg2) {
     void *conn = *arg0;
 
     if (conn == NULL) {
-        func_020640a8(&data_020fe140, &data_020fe154, &data_020fe128, 0x23);
+        AssertFailed(&data_020fe140, &data_020fe154, &data_020fe128, 0x23);
     }
     if (arg1 == 0) {
-        func_020640a8(&data_020fe164, &data_020fe154, &data_020fe128, 0x24);
+        AssertFailed(&data_020fe164, &data_020fe154, &data_020fe128, 0x24);
     }
     if (arg2 != 1 && arg2 != 0) {
-        func_020640a8(&data_020fe17c, &data_020fe154, &data_020fe128, 0x25);
+        AssertFailed(&data_020fe17c, &data_020fe154, &data_020fe128, 0x25);
     }
     if (arg2 == 1) {
         M2C_FIELD(conn, s32 *, 0x41C) = 1;
@@ -373,10 +373,10 @@ M2C_FIELD(base,void **,0x43c)=p;return 0;
 
 void func_020508dc(void *obj,void *node){
 void func_020377c4(void *);
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
 extern M2C_UNK data_020fe1bc,data_020fe154,data_020fe118,data_020fe1dc;
-if(!M2C_FIELD(node,void **,0))func_020640a8(&data_020fe1bc,&data_020fe154,&data_020fe118,0x6e);
-if(!M2C_FIELD(node,void **,8))func_020640a8(&data_020fe1dc,&data_020fe154,&data_020fe118,0x6f);
+if(!M2C_FIELD(node,void **,0))AssertFailed(&data_020fe1bc,&data_020fe154,&data_020fe118,0x6e);
+if(!M2C_FIELD(node,void **,8))AssertFailed(&data_020fe1dc,&data_020fe154,&data_020fe118,0x6f);
 M2C_FIELD(node,void (**)(void *,void *,void *),0)(obj,M2C_FIELD(node,void **,8),M2C_FIELD(node,void **,4));
 {
 s32 code=M2C_FIELD(node,s32 *,12);

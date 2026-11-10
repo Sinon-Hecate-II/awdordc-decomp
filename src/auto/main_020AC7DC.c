@@ -45,12 +45,12 @@ s32 func_020ac924(M2C_UNK arg0, s32 arg1) {
 }
 
 void func_020ac970(M2C_UNK arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020ac924(M2C_UNK, M2C_UNK);
     func_020ac924(arg0, 0);
-    func_01ffa574();
+    DeleteSpriteObject();
     func_020ac924(arg0, 1);
-    func_01ffa574();
+    DeleteSpriteObject();
 }
 
 void func_020ac998(s32 mode) {
@@ -466,45 +466,45 @@ done:
 }
 
 void func_020ad460(s32 arg0) {
- M2C_UNK func_02068c50(M2C_UNK *, s32);
+ M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279d8, data_0215c3c8;
- func_02068c50(&data_0215c3c8, data_021278a4[arg0]);
+ StringCopy(&data_0215c3c8, data_021278a4[arg0]);
  func_02068d68(&data_0215c3c8, &data_021279d8);
  func_020ad42c(arg0, &data_0215c3c8);
 }
 
 void func_020ad4a0(s32 arg0) {
- M2C_UNK func_02068c50(M2C_UNK *, s32);
+ M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e0, data_0215c3e8;
- func_02068c50(&data_0215c3e8, data_021278a4[arg0]);
+ StringCopy(&data_0215c3e8, data_021278a4[arg0]);
  func_02068d68(&data_0215c3e8, &data_021279e0);
  func_020ad42c(arg0, &data_0215c3e8);
 }
 
 void func_020ad4e0(s32 arg0) {
- M2C_UNK func_02068c50(M2C_UNK *, s32);
+ M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e4, data_0215c408;
- func_02068c50(&data_0215c408, data_021278a4[arg0]);
+ StringCopy(&data_0215c408, data_021278a4[arg0]);
  func_02068d68(&data_0215c408, &data_021279e4);
  func_020ad42c(arg0, &data_0215c408);
 }
 
 void func_020ad520(s32 arg0) {
- M2C_UNK func_02068c50(M2C_UNK *, s32);
+ M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e8, data_0215c3a8;
- func_02068c50(&data_0215c3a8, data_021278a4[arg0]);
+ StringCopy(&data_0215c3a8, data_021278a4[arg0]);
  func_02068d68(&data_0215c3a8, &data_021279e8);
  func_020ad42c(arg0, &data_0215c3a8);
 }
@@ -592,8 +592,8 @@ void func_020ad67c(void) {
 }
 
 s32 func_020ad690(void) {
-extern s16 *data_0215c428;
-return data_0215c428[2] != 0;
+extern s16 *gScreenTransition;
+return gScreenTransition[2] != 0;
 }
 
 s32 func_020ad6b0(void) {
@@ -609,30 +609,30 @@ s32 func_020ad6d0(void) {
 }
 
 void func_020ad6f0(void) {
-    extern s16 *data_0215c428;
-    *data_0215c428 |= 1;
+    extern s16 *gScreenTransition;
+    *gScreenTransition |= 1;
 }
 
 void func_020ad70c(void) {
-extern s16 *data_0215c428;
-*data_0215c428 &= ~1;
+extern s16 *gScreenTransition;
+*gScreenTransition &= ~1;
 }
 
 u8 func_020ad728(void) {
- extern s16 *data_0215c428;
+ extern s16 *gScreenTransition;
  u8 result;
- if (data_0215c428[0] & 1) result=1; else result=0;
+ if (gScreenTransition[0] & 1) result=1; else result=0;
  return result;
 }
 
 void func_020ad74c(void) {
- extern s16 *data_0215c428;
+ extern s16 *gScreenTransition;
  s32 func_020ad690();
  void func_01ff9ce8(u8);
- void func_020ad78c(void);
- data_0215c428[2]=1-data_0215c428[2];
+ void DrawScreenTransition(void);
+ gScreenTransition[2]=1-gScreenTransition[2];
  func_01ff9ce8((u8)func_020ad690());
- func_020ad78c();
- data_0215c428[3]=0;
+ DrawScreenTransition();
+ gScreenTransition[3]=0;
 }
 

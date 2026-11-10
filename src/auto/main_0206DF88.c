@@ -18,30 +18,39 @@ double func_0206dfd0(double x,s32 *exp) {
 
 double func_02070134(double,double);
 s32 func_0206f7a8(double);
-double func_0206e08c(double x,s32 n) {
- double func_02070658(double,double);
- double func_02070134(double,double);
- s32 func_0206f7a8(double);
- s32 k,hx,lx;
- if(func_0206f7a8(x)<=2 || x==0.0)return x;
- hx=((s32*)&x)[1]; lx=((s32*)&x)[0];
- k=(hx&0x7ff00000)>>20;
- if(k==0){
- if((lx|(hx&0x7fffffff))==0)return x;
- x=func_02070658(x,18014398509481984.0);
- hx=((s32*)&x)[1]; k=((hx&0x7ff00000)>>20)-54;
- if(n < -50000)return func_02070658(1.0e-300,x);
- }
- if(k==0x7ff)return func_02070134(x,x);
- k=k+n;
- if(k>0x7fe)return func_02070658(1.0e300,func_0206df88(1.0e300,x));
- if(k>0){((s32*)&x)[1]=(hx&0x800fffff)|(k<<20);return x;}
- if(k<=-54){
- if(n>50000)return func_02070658(1.0e300,func_0206df88(1.0e300,x));
- return func_02070658(1.0e-300,func_0206df88(1.0e-300,x));
- }
- ((s32*)&x)[1]=(hx&0x800fffff)|((k+54)<<20);
- return func_02070658(5.551115123125783e-17,x);
+/* scalbn: return x * 2^scale, splitting the scaling into two steps and going
+   through the soft-float multiply/copysign helpers at the overflow and
+   underflow limits (2^54 steps for subnormals). */
+double ScaleDoubleByExp(double x, s32 scale) {
+    double func_02070658(double, double);
+    double func_02070134(double, double);
+    s32 func_0206f7a8(double);
+    s32 exponent, hiWord, loWord;
+
+    if (func_0206f7a8(x) <= 2 || x == 0.0) return x;
+    hiWord = ((s32 *)&x)[1];
+    loWord = ((s32 *)&x)[0];
+    exponent = (hiWord & 0x7ff00000) >> 20;
+    if (exponent == 0) {
+        if ((loWord | (hiWord & 0x7fffffff)) == 0) return x;
+        x = func_02070658(x, 18014398509481984.0);
+        hiWord = ((s32 *)&x)[1];
+        exponent = ((hiWord & 0x7ff00000) >> 20) - 54;
+        if (scale < -50000) return func_02070658(1.0e-300, x);
+    }
+    if (exponent == 0x7ff) return func_02070134(x, x);
+    exponent = exponent + scale;
+    if (exponent > 0x7fe) return func_02070658(1.0e300, func_0206df88(1.0e300, x));
+    if (exponent > 0) {
+        ((s32 *)&x)[1] = (hiWord & 0x800fffff) | (exponent << 20);
+        return x;
+    }
+    if (exponent <= -54) {
+        if (scale > 50000) return func_02070658(1.0e300, func_0206df88(1.0e300, x));
+        return func_02070658(1.0e-300, func_0206df88(1.0e-300, x));
+    }
+    ((s32 *)&x)[1] = (hiWord & 0x800fffff) | ((exponent + 54) << 20);
+    return func_02070658(5.551115123125783e-17, x);
 }
 
 void func_0206e2d8(void) {

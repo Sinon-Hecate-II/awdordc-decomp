@@ -16,7 +16,7 @@ extern s8 data_ov000_021b55a0[];
 #pragma opt_common_subs on
 #pragma opt_strength_reduction off
 void func_ov000_02191970(void){
-void SelectMapLayer(void*);void func_01ffada0(s32,s32,u32,s32,s32);
+void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,u32,s32,s32);
 s32 func_ov000_021a89a4(void*);s32 CanKindAttack(u32,u32);
 s32 GetUnitMoveRange(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
@@ -29,7 +29,7 @@ s32 distance,otherDistance,x,y,range,d,temporary;
 void *unit;
 if(M2C_FIELD(SEL,u8*,12))return;
 SelectMapLayer(MAP+0x2338);
-func_01ffada0(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,1);
+FloodFillUnitRange(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,1);
 SelectMapLayer(MAP+0x1e30);
 limit=func_ov000_021a89a4(SEL)+1;
 index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
@@ -50,11 +50,11 @@ temporary=limit+range;
 if(d<temporary&&(func_ov000_0217bcf4(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),range*2-1)==1||
 func_ov000_0217bcd4(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range)==1)){special=1;d=temporary;}
 if(d>bestDistance+range)continue;
-func_01ffada0(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range,1);
+FloodFillUnitRange(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range,1);
 distance=32767;otherDistance=32767;
 if(((u32)(M2C_FIELD(unit,u16*,8)<<26)>>26)!=63){
 SelectMapLayer(MAP+0x3250);
-func_01ffada0(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,0);
+FloodFillUnitRange(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,0);
 SelectMapLayer(MAP+0x1e30);
 if(CELL(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),0x3250)<0)continue;
 }

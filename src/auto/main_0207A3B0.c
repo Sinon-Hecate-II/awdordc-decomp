@@ -524,7 +524,7 @@ void func_0207af6c(void *arg0) {
 
 void func_0207af7c(void *arg0){
 s16 (*p)[4]=M2C_FIELD(arg0,void **,0x54);s16 i;
-if(M2C_FIELD(arg0,s16 *,0x6e)==8){func_0207a748(1);func_01ffa574(arg0);return;}
+if(M2C_FIELD(arg0,s16 *,0x6e)==8){func_0207a748(1);DeleteSpriteObject(arg0);return;}
 M2C_FIELD(arg0,s16 *,0x6e)++;
 if(M2C_FIELD(arg0,s16 *,0x6c)>204)return;
 func_02091230();
@@ -590,7 +590,7 @@ void func_0207b164(void *arg0) {
     extern u8 data_02144ce0[];
     s32 func_0206409c(s32);
     s32 func_020720f0(s32, s32);
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     extern void *gCurrentMap;
 
     void (*cb)(void);
@@ -632,7 +632,7 @@ void func_0207b164(void *arg0) {
     } else {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) = M2C_FIELD(arg0, s16 *, 0x38);
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514a) = M2C_FIELD(arg0, s16 *, 0x3a);
-        func_01ffa574(arg0);
+        DeleteSpriteObject(arg0);
         }
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1c);
         if (cb != NULL) {

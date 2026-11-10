@@ -6,7 +6,7 @@ void func_ov011_022273c8(void *arg0) {
     M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     u32 func_0209b5e4(s32, M2C_UNK *);
-    M2C_UNK func_0209b67c(u16, s32, u16, u16, s32);
+    M2C_UNK DrawTileRow(u16, s32, u16, u16, s32);
     extern M2C_UNK data_02101f78;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
@@ -99,17 +99,17 @@ void func_ov011_022273c8(void *arg0) {
         temp_r5 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3000, &data_ov011_02228c88);
         temp_r6 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3800, &data_ov011_02228ca4);
         temp_r7 = (u32) temp_r11 >> 1;
-        func_0209b67c((u16) ((0x80 - temp_r7) & 0x1FF), 0x440, temp_r11, (u16) ((0x3FF & (0x100 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        DrawTileRow((u16) ((0x80 - temp_r7) & 0x1FF), 0x440, temp_r11, (u16) ((0x3FF & (0x100 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         temp_r8 = (u32) temp_r4 >> 1;
-        func_0209b67c((u16) ((0x80 - temp_r8) & 0x1FF), 0x480, temp_r4, (u16) ((0x3FF & (0x140 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        DrawTileRow((u16) ((0x80 - temp_r8) & 0x1FF), 0x480, temp_r4, (u16) ((0x3FF & (0x140 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         sp4 = (u32) temp_r5 >> 1;
-        func_0209b67c((u16) ((0x80 - sp4) & 0x1FF), 0x48E, temp_r5, (u16) ((0x3FF & (0x180 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        DrawTileRow((u16) ((0x80 - sp4) & 0x1FF), 0x48E, temp_r5, (u16) ((0x3FF & (0x180 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         temp_r9 = (u32) temp_r6 >> 1;
-        func_0209b67c((u16) ((0x80 - temp_r9) & 0x1FF), 0x49C, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
-        func_0209b67c((u16) ((0x82 - temp_r7) & 0x1FF), 0x442, temp_r11, (u16) ((0x3FF & (0x100 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
-        func_0209b67c((u16) ((0x82 - temp_r8) & 0x1FF), 0x482, temp_r4, (u16) ((0x3FF & (0x140 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
-        func_0209b67c((u16) ((0x82 - sp4) & 0x1FF), 0x490, temp_r5, (u16) ((0x3FF & (0x180 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
-        func_0209b67c((u16) ((0x82 - temp_r9) & 0x1FF), 0x49E, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        DrawTileRow((u16) ((0x80 - temp_r9) & 0x1FF), 0x49C, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        DrawTileRow((u16) ((0x82 - temp_r7) & 0x1FF), 0x442, temp_r11, (u16) ((0x3FF & (0x100 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        DrawTileRow((u16) ((0x82 - temp_r8) & 0x1FF), 0x482, temp_r4, (u16) ((0x3FF & (0x140 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        DrawTileRow((u16) ((0x82 - sp4) & 0x1FF), 0x490, temp_r5, (u16) ((0x3FF & (0x180 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        DrawTileRow((u16) ((0x82 - temp_r9) & 0x1FF), 0x49E, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
         temp_r1 = M2C_FIELD(arg0, u16 *, 0x3A);
         if ((u32) temp_r1 <= 0x2A08U) {
             temp_r0_7 = EaseInterpolate(4, 0, 0x10, temp_r1 - 0x29CC, 0x3C);

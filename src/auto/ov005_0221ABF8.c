@@ -128,7 +128,7 @@ void func_ov005_0221b01c(void *arg0) {
 
 void func_ov005_0221b088(void *arg0) {
     M2C_UNK func_01ff9ce8(s32);
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(arg0, s32 *, 0x34) += 1;
@@ -138,7 +138,7 @@ void func_ov005_0221b088(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3C) = 0;
     M2C_FIELD(arg0, s32 *, 0x34) = 0;
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 /* Draws the three result-screen scores (at +0x3C/+0x40/+0x44) and their total as
@@ -146,7 +146,7 @@ void func_ov005_0221b088(void *arg0) {
  * horizontally by the scroll value at +0x38. */
 M2C_UNK func_ov005_0221b114(void *arg0) {
     extern void *gCur3DSpriteEngine;
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc8x8[];
     M2C_UNK DivMod(s32, s32, s32 *, s32 *);
     M2C_UNK AddSprite(u16, u16, u16, void *, s32);
     s32 startX0, offset0, high0;
@@ -170,7 +170,7 @@ M2C_UNK func_ov005_0221b114(void *arg0) {
         bppShift = ((u32)(bankFlags << 17)) >> 30;
         tileBase = 0x3ff & (0x140 >> bppShift);
         AddSprite((u16)(((startX0 - offset0) & 0x1ff) | high0), 0x12,
-            (u16)(((digit0 & 0x3ff) + tileBase) | 0x6000), data_027e0084, 0);
+            (u16)(((digit0 & 0x3ff) + tileBase) | 0x6000), gSpriteDesc8x8, 0);
         offset0 += 8;
     } while (number0 != 0);
 
@@ -184,7 +184,7 @@ M2C_UNK func_ov005_0221b114(void *arg0) {
         bppShift = ((u32)(bankFlags << 17)) >> 30;
         tileBase = 0x3ff & (0x140 >> bppShift);
         AddSprite((u16)(((startX1 - offset1) & 0x1ff) | high1), 0x26,
-            (u16)(((digit1 & 0x3ff) + tileBase) | 0x7000), data_027e0084, 0);
+            (u16)(((digit1 & 0x3ff) + tileBase) | 0x7000), gSpriteDesc8x8, 0);
         offset1 += 8;
     } while (number1 != 0);
 
@@ -198,7 +198,7 @@ M2C_UNK func_ov005_0221b114(void *arg0) {
         bppShift = ((u32)(bankFlags << 17)) >> 30;
         tileBase = 0x3ff & (0x140 >> bppShift);
         AddSprite((u16)(((startX2 - offset2) & 0x1ff) | high2), 0x3a,
-            (u16)(((digit2 & 0x3ff) + tileBase) | 0x8000), data_027e0084, 0);
+            (u16)(((digit2 & 0x3ff) + tileBase) | 0x8000), gSpriteDesc8x8, 0);
         offset2 += 8;
     } while (number2 != 0);
 
@@ -212,7 +212,7 @@ M2C_UNK func_ov005_0221b114(void *arg0) {
         bppShift = ((u32)(bankFlags << 17)) >> 30;
         tileBase = 0x3ff & (0x140 >> bppShift);
         AddSprite((u16)(((startX3 - offset3) & 0x1ff) | high3), 0x50,
-            (u16)(((digit3 & 0x3ff) + tileBase) | 0x9000), data_027e0084, 0);
+            (u16)(((digit3 & 0x3ff) + tileBase) | 0x9000), gSpriteDesc8x8, 0);
         offset3 += 8;
     } while (number3 != 0);
     return number3;

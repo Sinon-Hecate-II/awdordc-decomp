@@ -165,7 +165,7 @@ void func_020cfbb0(u32 arg0) {
 }
 
 void func_020cfbdc(u32 arg0) {
-    M2C_UNK func_02086680();
+    M2C_UNK GetLocalizedText();
     M2C_UNK func_020a8888();
     M2C_UNK func_020c7fe4();
     if ((arg0 >= 0xE1U) && (arg0 < 0x1A9U)) {
@@ -173,15 +173,15 @@ void func_020cfbdc(u32 arg0) {
         return;
     }
     func_020a8888();
-    func_02086680();
+    GetLocalizedText();
 }
 
 u8 func_020cfc0c(s32 arg0) {
  extern s32 *gCurrentMap;
- extern s8 data_ov000_021b56c0[];
+ extern s8 gTerrainPropertyFlags[];
  s32 mask=arg0 & 0xE0;
  if(mask==0) return 0;
- if(data_ov000_021b56c0[arg0 & 0x1F]==0) return 0;
+ if(gTerrainPropertyFlags[arg0 & 0x1F]==0) return 0;
  return M2C_FIELD((void *)*gCurrentMap+(mask>>5)*0x8C,u8 *,0x67C1);
 }
 

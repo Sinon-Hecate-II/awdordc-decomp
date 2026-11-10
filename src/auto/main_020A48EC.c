@@ -22,7 +22,7 @@ Unk020AEntry *p=func_020a48ec(a,b,c,d,e,f,g,h);u16 top=(u16)k;u16 kind=(u16)j;u8
 
 void func_020a4a68(Unk020AEntry *p) {while(p->type){*p=p[1];p++;}}
 
-s32 func_020a4ab0(s32 arg0) {
+s32 GetFacingOffset(s32 arg0) {
     switch (arg0) {                                 /* irregular */
     case 0:
         return 0x2000;
@@ -56,12 +56,12 @@ void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     func_020a49cc(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
 }
 
-u8 func_020a4c7c(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
+u8 IsActionEntryActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
 
 s32 func_020a4ce8(s32 a) {
 extern s32 *gCurrentMap;
 Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);s32 n=0;
-while(p->type){if(p->type==a){if(func_020a4c7c(p))n++;}p++;}return n!=0;
+while(p->type){if(p->type==a){if(IsActionEntryActive(p))n++;}p++;}return n!=0;
 }
 
 void func_020a4d58(void) {
@@ -94,7 +94,7 @@ s32 GetOrderCenterOffsetY(void) {
 void SelectAreaOrderTargets(Unk020AEntry *order) {
 extern s32 *gCurrentMap;extern u8 data_ov000_021b5bfc[];
 void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb734(s32,s32,s32,s8);
-s32 IsSameTeam(s32,s32);s32 func_ov000_021a947c(s32,s32,s32);s32 func_020a600c(s32);
+s32 IsSameTeam(s32,s32);s32 IsUnitVisibleAtCell(s32,s32,s32);s32 func_020a600c(s32);
 s32 centerX,centerY;
 u16 bestX,bestY;
 u8 *unit;
@@ -119,7 +119,7 @@ rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);
 unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
 if(!unitId)continue;
 if(IsSameTeam(M2C_FIELD(map,u16 *,0x52a4),(unitId>>6)+1)==1)continue;
-if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))continue;
+if(!IsUnitVisibleAtCell(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))continue;
 seenIndex=0;
 if(count>0){map=*gCurrentMap;rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);scan=chosenIds;
 do{if(*scan==unitId)break;scan++;seenIndex++;}while(seenIndex<count);}
@@ -183,7 +183,7 @@ xx++;}while(xx<=right);}}
 s32 func_020a5364(Unk020AEntry *p,s8 color,u8 arg2) {
 void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
 Unk020ABaseEntry *bp=(Unk020ABaseEntry *)p;
-if(!func_020a4c7c(p))return 0;
+if(!IsActionEntryActive(p))return 0;
 switch(p->type) {
 case 4: {
 s32 dx=GetOrderCenterOffsetX();s32 dy=GetOrderCenterOffsetY();
@@ -204,7 +204,7 @@ void func_020a54c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
 }
 
-void func_020a54d0(void *a) {void func_01ffa574();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;func_01ffa574(a);}
+void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;DeleteSpriteObject(a);}
 
 void func_020a54f4(void *a){
 M2C_UNK func_01ffa8c4(void *,s32);void *func_020a45f8(s16,s16);
@@ -236,7 +236,7 @@ void func_020a561c(void *arg0) {
 void func_020a5648(void) {
 extern s32 *gCurrentMap;
 Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);
-while(p->type){if(func_020a4c7c(p)&& ((Unk020APlayer *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4)){
+while(p->type){if(IsActionEntryActive(p)&& ((Unk020APlayer *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4)){
 switch(p->type){case 4:case 5:case 6:case 7: M2C_FIELD(p,s8 *,6)-=1;break;}
 }p++;}
 }
@@ -246,7 +246,7 @@ extern s32 *gCurrentMap;
 void ClearSelectionQueue(void);s32 func_01ffa8c4(void *,s32);
 ClearSelectionQueue();
 while(M2C_FIELD(arg0,Unk020AEntry **,0x34)->type) {
-if(func_020a4c7c(M2C_FIELD(arg0,Unk020AEntry **,0x34))) {
+if(IsActionEntryActive(M2C_FIELD(arg0,Unk020AEntry **,0x34))) {
 s32 type; Unk020AEntry *p=M2C_FIELD(arg0,Unk020AEntry **,0x34);
 if((s32)((Unk020ABaseEntry *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4) && M2C_FIELD(p,s8 *,6)==0) {
 type=p->type; switch(type) {

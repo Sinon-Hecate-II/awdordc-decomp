@@ -1,5 +1,6 @@
 /* 34 functions from 0x0209BC58 to 0x0209CC04 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct { s16 value; s8 mode; u8 low:4; u8 high:4; } SpriteAttribute0209;
 typedef struct SpriteStateWord {
     u32 state : 3;
     u32 field3 : 4;
@@ -38,9 +39,9 @@ void func_0209bccc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16
 }
 
 void func_0209bd0c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
-s32 func_02086680(s32);
+s32 GetLocalizedText(s32);
 s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
-func_0209bd60(a,b,c,d,e,func_02086680(f),g,h);
+func_0209bd60(a,b,c,d,e,GetLocalizedText(f),g,h);
 }
 
 s32 func_0209bd60(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
@@ -155,7 +156,7 @@ void func_0209bfc8(void) {
 
 void func_0209bfdc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
-    func_0209c024(arg0, arg1, arg2, func_02086680(arg3), (s32) arg4, (s32) arg5);
+    func_0209c024(arg0, arg1, arg2, GetLocalizedText(arg3), (s32) arg4, (s32) arg5);
 }
 
 s32 func_0209c024(s32 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
@@ -282,7 +283,7 @@ s32 func_0209c2a8(void) {
 }
 
 s32 func_0209c2c4(u8 *arg0) {
-    s32 func_02086680(u32);
+    s32 GetLocalizedText(u32);
     s32 func_0209c268(u8 *);
     s32 func_0209c1c0(u8 *, s32 *);
     extern u8 gMovementCostTable[];
@@ -309,7 +310,7 @@ s32 func_0209c2c4(u8 *arg0) {
                 u16 sel;
                 map = (u8 *)*gCurrentMap;
                 sel = M2C_FIELD(map, u16 *, 0x52A4);
-                sp0 += func_0209c268((u8 *)func_02086680(M2C_FIELD(gMovementCostTable + ((u32)(M2C_FIELD(map + (u32)sel * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
+                sp0 += func_0209c268((u8 *)GetLocalizedText(M2C_FIELD(gMovementCostTable + ((u32)(M2C_FIELD(map + (u32)sel * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
                 r9 += 2;
                 break;
             }
@@ -481,16 +482,10 @@ void *func_0209c6d8(s32 arg0) {
  return base+(flag<<7)+(arg0<<2);
 }
 
-s32 func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4){
-void *func_0209c6d8(s32);
-u8 *p=func_0209c6d8(arg0);
-u32 old,value,x;
-u8 y;
-*(s16 *)p=arg1;p[2]=arg2;
-old=*(volatile u8 *)(p+3);value=*(volatile u8 *)&arg4;
-x=(value&15u)|(old&~15u);
-y=(u8)x;
-p[3]=(y&~240u)|((value<<28)>>24);
+void func_0209c720(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
+ void *func_0209c6d8(s32);
+ SpriteAttribute0209 *p=func_0209c6d8(arg0);
+ p->value=arg1;p->mode=arg2;p->low=arg4;p->high=arg4;
 }
 
 void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {

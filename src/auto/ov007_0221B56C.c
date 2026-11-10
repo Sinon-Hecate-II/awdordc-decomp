@@ -46,10 +46,10 @@ s32 func_ov007_0221b6c8(s32 arg0, s32 arg1) {
 }
 
 s32 func_ov007_0221b704(s32 a,s32 b) {
- extern s32 *gCurrentMap; extern s8 data_ov000_021b56c0[];
+ extern s32 *gCurrentMap; extern s8 gTerrainPropertyFlags[];
  s32 p=*gCurrentMap;
  s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
- if(data_ov000_021b56c0[v&31]) return (v&0xE0)>>5;
+ if(gTerrainPropertyFlags[v&31]) return (v&0xE0)>>5;
  return 0;
 }
 
@@ -251,7 +251,7 @@ func_020e35cc(buf);
 #pragma optimization_level 4
 #pragma opt_strength_reduction off
 void func_ov007_0221c030(s32 a,s32 b,s32 c,s32 d){
-extern s32 *gCurrentMap;extern s8 data_ov000_021b56c0[];
+extern s32 *gCurrentMap;extern s8 gTerrainPropertyFlags[];
 s32 func_0207f460(s32);
 s32 y,x,p,q,v,k;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
@@ -259,7 +259,7 @@ for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 p=*gCurrentMap;
 q=(p+x)+M2C_FIELD(p+(y<<1),u16 *,0x3758);
 v=M2C_FIELD(q,u8 *,0x1420);k=v&31;
-if(data_ov000_021b56c0[k]){
+if(gTerrainPropertyFlags[k]){
 if(a==((v&0xe0)>>5))M2C_FIELD(q,u8 *,0x1420)=k|0x20;
 if(b==((v&0xe0)>>5)){p=*gCurrentMap;M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420)=k|64;}
 if(c==((v&0xe0)>>5)){p=*gCurrentMap;M2C_FIELD(M2C_FIELD(p+(y<<1),u16 *,0x3758)+(p+x),u8 *,0x1420)=k|96;}

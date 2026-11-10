@@ -265,13 +265,13 @@ void func_ov010_0222a258(void) {
 }
 
 void func_ov010_0222a278(void) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     s32 func_01ffa770(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
     if (func_01ffa770(&data_ov010_0222c544) == 0) {
         return;
     }
-    func_01ffa574();
+    DeleteSpriteObject();
 }
 
 u8 func_ov010_0222a298(void) {
@@ -305,12 +305,12 @@ void func_ov010_0222a2b4(void *arg0) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *func_02086680(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void func_ov010_0222a750(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 func_0208b5ec(void);void func_0208af20(void);void *func_0208b564(void *);void func_020899fc(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void func_ov010_0222a750(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 func_0208b5ec(void);void func_0208af20(void);void *func_0208b564(void *);void func_020899fc(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
-func_ov010_0222bc54((u8 *)a+0x44,func_02086680(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
+func_ov010_0222bc54((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
 func_ov010_0222a750(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
-func_ov010_0222a750(sp+0xc,sp+0x18,func_02086680((void *)0x42000000));
+func_ov010_0222a750(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));
 func_ov010_0222a750(sp,sp+0xc,sp+0x24);
 func_ov010_0222bbe8((u8 *)a+0x44,sp);func_0206fa14(sp);func_0206fa14(sp+0xc);func_0206fa14(sp+0x18);
 if(!M2C_FIELD(a,s32 *,0x38))return;

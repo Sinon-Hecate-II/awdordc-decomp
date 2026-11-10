@@ -3,7 +3,7 @@
 typedef struct { u8 pad[0x40]; u32 tile:9; u32 palette:9; u32 priority:8; u32 other:6; } SpriteE0F14;
 
 
-#pragma opt_common_subs off
+#pragma opt_common_subs on
 void func_020e0f14(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
@@ -188,7 +188,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(temp_r0_3, s16 *, 0x34) = 0x9C;
     c0 = 0xC0;
     M2C_FIELD(temp_r0_3, s16 *, 0x36) = c0;
-    ((SpriteE0F14 *)temp_r0_3)->tile=64;
+    ((SpriteE0F14 *)temp_r0_3)->tile=(u16)(c0-128);
     ((SpriteE0F14 *)temp_r0_3)->palette=32;
     func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, c0);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3C) = 0;
@@ -207,8 +207,7 @@ void func_020e0f14(M2C_UNK arg0) {
     gCur3DSpriteEngine = temp_r5;
     func_020e4c64();
 }
-
-#pragma opt_common_subs off
+#pragma opt_common_subs reset
 void func_020e147c(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
@@ -232,14 +231,14 @@ void func_020e147c(M2C_UNK arg0) {
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *temp_r0;
+    void *temp_r0_2;
+    void *temp_r0_3;
+    void *temp_r0_4;
     void *temp_r5;
     void *temp_r6;
     void *temp_r6_2;
     void *temp_r6_3;
     void *temp_r6_4;
-    void *temp_r0_2;
-    void *temp_r0_3;
-    void *temp_r0_4;
     s16 temp_r7;
     s16 temp_r7_2;
     s16 temp_r7_3;
@@ -264,6 +263,8 @@ void func_020e147c(M2C_UNK arg0) {
     s32 var_r0_2;
     s32 var_r0_3;
     s32 var_r0_4;
+    s16 c0;
+    u16 tile;
 
     temp_r0 = func_01ffa42c(&data_0212c6a8, arg0);
     if (temp_r0 == NULL) {
@@ -390,14 +391,12 @@ void func_020e147c(M2C_UNK arg0) {
     temp_r0_3 = func_0208931c(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x60) = temp_r0_3;
     M2C_FIELD(temp_r0_3, s16 *, 0x34) = 0x9C;
-    M2C_FIELD(temp_r0_3, s16 *, 0x36) = 0xC0;
-    {
-        s32 _v = M2C_FIELD(temp_r0_3, s32 *, 0x40);
-        _v = (_v & ~0x1FF) | 0x40;
-        _v = (_v & 0xFFFC01FF) | 0x4000;
-        M2C_FIELD(temp_r0_3, s32 *, 0x40) = _v;
-    }
-    func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, 0xC0);
+    c0 = 0xC0;
+    M2C_FIELD(temp_r0_3, s16 *, 0x36) = c0;
+    tile=64;
+    ((SpriteE0F14 *)temp_r0_3)->tile=tile;
+    ((SpriteE0F14 *)temp_r0_3)->palette=32;
+    func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, c0);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3C) = 0;
     temp_r1_7 = M2C_FIELD(temp_r0, void **, 0x60);
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
@@ -406,8 +405,8 @@ void func_020e147c(M2C_UNK arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
-    temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
+    temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
     M2C_FIELD(temp_r2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     func_0208b698(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     func_02088da8(M2C_FIELD(temp_r0, void **, 0x64));

@@ -33,43 +33,43 @@ void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
 void func_01ffc204(s32 arg0,s32 arg1,u8 *arg2) {
 void func_01ffc108(s16,s16,s16,s32);
 s32 func_020a76d4(u8 *);
-extern u8 data_ov000_021b5c08;
+extern u8 gUnitMinAttackRange;
 func_01ffc108((s16)arg0,(s16)arg1,(s16)func_020a76d4(arg2),0x40);
 if(func_020a76d4(arg2)==1) return;
-func_01ffc108((s16)arg0,(s16)arg1,(s16)(*(&data_ov000_021b5c08+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
+func_01ffc108((s16)arg0,(s16)arg1,(s16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
 }
 
 void func_01ffc294(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
-    M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void **gCurrentMap;
     void *temp_r0;
 
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B6) = arg0;
-    func_01ffada0(arg1, arg2, arg3, arg4, arg5);
+    FloodFillUnitRange(arg1, arg2, arg3, arg4, arg5);
     temp_r0 = *gCurrentMap;
     M2C_FIELD(temp_r0, u16 *, 0x52B6) = (u16) M2C_FIELD(temp_r0, u16 *, 0x52A4);
 }
 
 void func_01ffc2e8(void *arg0) {
 s32 func_020a7694(void);
-M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 s16 value=func_020a7694();
-func_01ffada0(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,1);
+FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,1);
 }
 
-void func_01ffc328(void *arg0) {
+void BuildUnitMoveRange(void *arg0) {
 s32 func_020a7694(void);
-M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 s16 value=func_020a7694();
-func_01ffada0(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,3);
+FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,3);
 }
 
 void func_01ffc368(s32 arg0,s32 arg1,u8 *arg2) {
 void func_01ffb5ec(u16,u16,u16,s32);
 s32 func_020a76d4(u8 *);
-extern u8 data_ov000_021b5c08;
+extern u8 gUnitMinAttackRange;
 func_01ffb5ec((u16)arg0,(u16)arg1,(u16)func_020a76d4(arg2),0);
-func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&data_ov000_021b5c08+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
+func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
 }
 
 void func_01ffc3e8(s32 x,s32 y) {

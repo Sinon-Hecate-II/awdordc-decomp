@@ -29,7 +29,7 @@ void func_0205fbb0(void *arg0, s32 arg1) {
     M2C_UNK func_0205ebb0(void *, void *);
     M2C_UNK func_0205ef8c(void *, s32, void *);
     M2C_UNK func_0205f364(void *, void *, s32, s32, s32, s32, s32, s32);
-    M2C_UNK func_020675e4(void *, void *, s32, ...);
+    M2C_UNK StringFormat(void *, void *, s32, ...);
     extern s32 data_0213e358;
     extern s32 data_0213e35c[];
     extern M2C_UNK data_020ffa88;
@@ -53,7 +53,7 @@ void func_0205fbb0(void *arg0, s32 arg1) {
     var_r8 = 0;
     if (data_0213e358 > 0) {
         do {
-            func_020675e4(sp10, &data_020ffa88, var_r8);
+            StringFormat(sp10, &data_020ffa88, var_r8);
             func_0205ebb0(sp24, sp10);
             func_0205ebb0(sp24, (M2C_UNK *)func_02021c10(data_0213e35c[var_r8]));
             var_r8 += 1;
@@ -232,7 +232,7 @@ func_02049824(M2C_FIELD(a,s32 *,32),buf,n,0,addr,8);
 #pragma opt_propagation reset
 void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     M2C_UNK func_0204926c();
-    s32 func_020496a4(M2C_UNK, M2C_UNK);
+    s32 ghiSocket(M2C_UNK, M2C_UNK);
     extern s32 gDnsQueryState[];
     if ((arg3 == 0) && (gDnsQueryState[0] != 1)) {
         return;
@@ -244,7 +244,7 @@ void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
     M2C_FIELD(arg0, s32 *, 0x44) = arg4;
     M2C_FIELD(arg0, s32 *, 0x48) = arg5;
     M2C_FIELD(arg0, s32 *, 0x28) = 0;
-    M2C_FIELD(arg0, s32 *, 0x20) = func_020496a4(2, 2);
+    M2C_FIELD(arg0, s32 *, 0x20) = ghiSocket(2, 2);
     func_020601a4(arg0 + 0x14);
     func_020601a4(arg0 + 8);
 }
@@ -310,12 +310,12 @@ void func_020605d8(void *arg0, void *arg1, void *arg2, s32 unused) {
     s32 func_02049208();
     M2C_UNK func_02060138(void *, void *);
     M2C_UNK func_02060d90(void *, M2C_UNK);
-    s32 func_02068fdc(M2C_UNK, M2C_UNK *);
+    s32 StringFind(M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_02100030;
     s32 var_r6;
     u8 temp_r0;
 
-    if (func_02068fdc(arg2, &data_02100030) != 0) {
+    if (StringFind(arg2, &data_02100030) != 0) {
         var_r6 = 1;
     } else {
         var_r6 = 0;

@@ -171,7 +171,7 @@ s32 func_02045458(s32 a, s32 b) {
     void *func_02068d18(void *, void *, s32);
     s32 func_0206abd8(void *, s32, s32);
     s32 func_0204800c(void *, void *, s32, s32, s32, s32);
-    s32 func_02068d98(void *, void *);
+    s32 StringCompare(void *, void *);
     void func_02047750(s32);
     extern M2C_UNK data_0213db20;
     extern void *data_020fb2f8;
@@ -203,7 +203,7 @@ s32 func_02045458(s32 a, s32 b) {
         return 5;
     }
     M2C_FIELD(&data_0213db20, s32 *, 4) = M2C_FIELD((void *)b, s32 *, 0x1c);
-    if (func_02068d98(data_020fb2f8, (void *)&data_020fca38) == 0) {
+    if (StringCompare(data_020fb2f8, (void *)&data_020fca38) == 0) {
         func_02047750(1);
     } else {
         func_02047750(0);
@@ -216,7 +216,7 @@ s32 func_02045620(void){void func_020478b8(void);extern s32 data_0213db20;func_0
 
 s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
     s32 func_0203761c();
-    s32 func_02047940(s32, s32, s32, s32, s32, s32);
+    s32 BuildWebPutRequest(s32, s32, s32, s32, s32, s32);
     extern s32 data_0213db20;
     s32 r;
     if (func_0203761c() != 0) {
@@ -231,7 +231,7 @@ s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
     if (arg3 == 0 && arg4 != 0) {
         return 2;
     }
-    r = func_02047940((s32)arg0, M2C_FIELD(&data_0213db20, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
+    r = BuildWebPutRequest((s32)arg0, M2C_FIELD(&data_0213db20, s32 *, 4), arg1, arg2, arg3, (s32)arg4);
     if (r == 2) goto L8;
     if (r != 3) goto Ldata;
     goto L9;

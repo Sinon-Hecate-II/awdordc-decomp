@@ -179,8 +179,8 @@ void func_020a7bec(void) {
 }
 
 u8 func_020a7bf8(s32 arg0) {
- extern u8 data_ov000_021b5c08[];
- return data_ov000_021b5c08[arg0 * 0x70];
+ extern u8 gUnitMinAttackRange[];
+ return gUnitMinAttackRange[arg0 * 0x70];
 }
 
 s32 func_020a7c10(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {

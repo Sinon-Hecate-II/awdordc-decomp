@@ -1,5 +1,10 @@
 /* 8 functions from 0x02215DD8 to 0x02216C94 (ov007), found by ds-decomp. */
 #include "common.h"
+extern void **gCurrentMap;
+static inline u16 TileAt(s16 x,s16 y) {
+void *map=*gCurrentMap;
+return M2C_FIELD((u8*)map+(x+M2C_FIELD((u8*)map+y*2,u16 *,0x3758))*2,u16 *,0xa10);
+}
 
 s32 func_ov007_02215dd8(s32 *x,s32 *y,s32 value){
 s32 RandomIntRange(s32,s32);s32 func_ov007_022156a4(s32,s32);extern void **gCurrentMap;
@@ -121,8 +126,54 @@ loop_outer:
     goto loop_outer;
 }
 
-s32 func_ov007_02216234() {
-    return 0;
+/* Chooses two random endpoints, near the given points and within `radius`, for
+ * a path drawn by DrawOrthogonalPath, and reports its orientation in
+ * `orientation` (0 = horizontal segments at the ends, 1 = vertical ones).
+ * Endpoints may not land on a type-3 tile; after 100 tries it gives up. */
+s32 PickPathEndpoints(s32 x0,s32 y0,s32 x1,s32 y1,s32 radius,s16 *outA,s16 *outB,s32 *orientation){
+s32 RandomCoordInRange(s32,s32,s32);s32 ManhattanDistance(s16,s16,s16,s16);s32 RandomIntRange(s32,s32);extern void **gCurrentMap;
+s32 attempts=0; s32 dx=x0-x1; s32 dy;
+if((dx<0?-dx:dx)<radius){dy=y0-y1;if((dy<0?-dy:dy)<radius)goto random;}
+if((dx<0?-dx:dx)<radius){
+*orientation=1;
+do {
+if(++attempts>100)return 0;
+outA[0]=RandomCoordInRange(x0-radius,x0+radius,0);
+outA[1]=y0>y1?RandomCoordInRange(y0-radius,y0,1):RandomCoordInRange(y0,y0+radius,1);
+}while(TileAt(outA[0],outA[1])==3||ManhattanDistance(outA[0],outA[1],(s16)x0,(s16)y0)>radius);
+do {
+if(++attempts>100)return 0;
+outB[0]=RandomCoordInRange(x1-radius,x1+radius,0);
+outB[1]=y0>y1?RandomCoordInRange(y1,y1+radius,1):RandomCoordInRange(y1-radius,y1,1);
+}while(TileAt(outB[0],outB[1])==3||ManhattanDistance(outB[0],outB[1],(s16)x1,(s16)y1)>radius);
+}else{
+dy=y0-y1;if((dy<0?-dy:dy)<radius){
+*orientation=0;
+do {
+if(++attempts>100)return 0;
+outA[1]=RandomCoordInRange(y0-radius,y0+radius,1);
+outA[0]=x0>x1?RandomCoordInRange(x0-radius,x0,0):RandomCoordInRange(x0,x0+radius,0);
+}while(TileAt(outA[0],outA[1])==3||ManhattanDistance(outA[0],outA[1],(s16)x0,(s16)y0)>radius);
+do {
+if(++attempts>100)return 0;
+outB[1]=RandomCoordInRange(y1-radius,y1+radius,1);
+outB[0]=x0>x1?RandomCoordInRange(x1,x1+radius,0):RandomCoordInRange(x1-radius,x1,0);
+}while(TileAt(outB[0],outB[1])==3||ManhattanDistance(outB[0],outB[1],(s16)x1,(s16)y1)>radius);
+}else{
+random:
+*orientation=RandomIntRange(0,1);
+do {
+if(++attempts>100)return 0;
+outA[0]=x0>x1?RandomCoordInRange(x0-radius,x0,0):RandomCoordInRange(x0,x0+radius,0);
+outA[1]=y0>y1?RandomCoordInRange(y0-radius,y0,1):RandomCoordInRange(y0,y0+radius,1);
+}while(TileAt(outA[0],outA[1])==3||ManhattanDistance(outA[0],outA[1],(s16)x0,(s16)y0)>radius);
+do {
+if(++attempts>100)return 0;
+outB[0]=x0>x1?RandomCoordInRange(x1,x1+radius,0):RandomCoordInRange(x1-radius,x1,0);
+outB[1]=y0>y1?RandomCoordInRange(y1,y1+radius,1):RandomCoordInRange(y1-radius,y1,1);
+}while(TileAt(outB[0],outB[1])==3||ManhattanDistance(outB[0],outB[1],(s16)x1,(s16)y1)>radius);
+}}
+return 1;
 }
 
 /* Draws an orthogonal three-segment path between (x0,y0) and (x1,y1) on the

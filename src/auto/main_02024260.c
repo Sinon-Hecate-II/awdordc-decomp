@@ -4,121 +4,125 @@
 extern void *(*gAlloc)(s32);
 extern void (*gFree[])(void *);
 
-s32 func_02024260(void *arg0) {
-    u32 func_02022070(void);
+/* Builds the server's TLS handshake flight - ServerHello (random time + 32-byte
+ * random, session id, cipher suite), then Certificate and ServerHelloDone for a
+ * fresh session - and sends it as one handshake record, updating the transcript
+ * hashes on the way. */
+s32 TlsSendServerHello(void *arg0) {
+    u32 GetUnixTime(void);
     void GenerateRandomBytes(void *, s32);
     M2C_UNK MI_CpuCopy8(s32, void *, u32);
-    void func_02023c74(void *, void *, s32);
-    M2C_UNK func_0201d844(s8 *, s32, s32, s32, void *);
+    void TlsUpdateHandshakeHash(void *, void *, s32);
+    M2C_UNK TcpSendData(s8 *, s32, s32, s32, void *);
     extern void *(*gAlloc)(s32);
     extern void (*gFree[])(void *);
-    extern s32 data_02138cc0[2];
+    extern s32 gTlsRandomState[2];
 
-    register void *q, *buf;
-    register u8 *cur;
-    register void *node;
-    register s32 nodeSize;
-    register void *r9;
-    u32 rnd;
-    s32 h;
-    u32 r3;
-    s32 t2, t1;
-    s32 total, payload;
+    register void *conn, *record;
+    register u8 *p;
+    register void *cert;
+    register s32 certLen;
+    register void *owner;
+    u32 unixTime;
+    s32 cipherSuite;
+    u32 id;
+    s32 v, n;
+    s32 totalLen, bodyLen;
 
-    r9 = arg0;
-    q = M2C_FIELD(r9, void **, 0xC);
-    node = M2C_FIELD(q, void **, 0x820);
-    nodeSize = node ? M2C_FIELD(node, s32 *, 0x0) : 0;
+    owner = arg0;
+    conn = M2C_FIELD(owner, void **, 0xC);
+    cert = M2C_FIELD(conn, void **, 0x820);
+    certLen = cert ? M2C_FIELD(cert, s32 *, 0x0) : 0;
 
-    rnd = func_02022070();
-    M2C_FIELD(q, u8 *, 0x54) = (u8)(rnd >> 24);
-    M2C_FIELD(q, u8 *, 0x55) = (u8)(rnd >> 16);
-    M2C_FIELD(q, u8 *, 0x56) = (u8)(rnd >> 8);
-    M2C_FIELD(q, u8 *, 0x57) = (u8)rnd;
+    unixTime = GetUnixTime();
+    M2C_FIELD(conn, u8 *, 0x54) = (u8)(unixTime >> 24);
+    M2C_FIELD(conn, u8 *, 0x55) = (u8)(unixTime >> 16);
+    M2C_FIELD(conn, u8 *, 0x56) = (u8)(unixTime >> 8);
+    M2C_FIELD(conn, u8 *, 0x57) = (u8)unixTime;
 
-    GenerateRandomBytes((u8 *)q + 0x58, 0x1C);
+    GenerateRandomBytes((u8 *)conn + 0x58, 0x1C);
 
-    buf = gAlloc(nodeSize + 0x9D);
-    if (buf == 0) {
-        M2C_FIELD(q, u8 *, 0x455) = 9;
+    record = gAlloc(certLen + 0x9D);
+    if (record == 0) {
+        M2C_FIELD(conn, u8 *, 0x455) = 9;
         return 1;
     }
 
-    M2C_FIELD(buf, u8 *, 5) = 2;
-    M2C_FIELD(buf, u8 *, 6) = 0;
-    M2C_FIELD(buf, u8 *, 7) = 0;
-    M2C_FIELD(buf, u8 *, 8) = 0x46;
-    M2C_FIELD(buf, u8 *, 9) = 3;
-    M2C_FIELD(buf, u8 *, 0xA) = 0;
-    MI_CpuCopy8((s32)((u8 *)q + 0x54), (void *)((u8 *)buf + 0xB), 0x20);
-    M2C_FIELD(buf, u8 *, 0x2B) = 0x20;
+    M2C_FIELD(record, u8 *, 5) = 2;
+    M2C_FIELD(record, u8 *, 6) = 0;
+    M2C_FIELD(record, u8 *, 7) = 0;
+    M2C_FIELD(record, u8 *, 8) = 0x46;
+    M2C_FIELD(record, u8 *, 9) = 3;
+    M2C_FIELD(record, u8 *, 0xA) = 0;
+    MI_CpuCopy8((s32)((u8 *)conn + 0x54), (void *)((u8 *)record + 0xB), 0x20);
+    M2C_FIELD(record, u8 *, 0x2B) = 0x20;
 
-    if (M2C_FIELD(q, u8 *, 0x30) != 0) {
-        MI_CpuCopy8((s32)((u8 *)q + 0x74), (void *)((u8 *)buf + 0x2C), 0x20);
-        M2C_FIELD(q, u8 *, 0x31) = 1;
-        cur = (u8 *)buf + 0x4C;
+    if (M2C_FIELD(conn, u8 *, 0x30) != 0) {
+        MI_CpuCopy8((s32)((u8 *)conn + 0x74), (void *)((u8 *)record + 0x2C), 0x20);
+        M2C_FIELD(conn, u8 *, 0x31) = 1;
+        p = (u8 *)record + 0x4C;
     } else {
-        GenerateRandomBytes((u8 *)buf + 0x2C, 0x1C);
-        cur = (u8 *)buf + 0x4C;
-        r3 = data_02138cc0[1];
-        M2C_FIELD(buf, u8 *, 0x48) = (u8)(r3 >> 24);
-        M2C_FIELD(buf, u8 *, 0x49) = (u8)(r3 >> 16);
-        M2C_FIELD(buf, u8 *, 0x4A) = (u8)(r3 >> 8);
-        M2C_FIELD(buf, u8 *, 0x4B) = (u8)r3;
-        MI_CpuCopy8((s32)(cur - 0x20), (void *)((u8 *)q + 0x74), 0x20);
-        t2 = data_02138cc0[1];
-        M2C_FIELD(q, u8 *, 0x31) = 0;
-        data_02138cc0[1] = t2 + 1;
+        GenerateRandomBytes((u8 *)record + 0x2C, 0x1C);
+        p = (u8 *)record + 0x4C;
+        id = gTlsRandomState[1];
+        M2C_FIELD(record, u8 *, 0x48) = (u8)(id >> 24);
+        M2C_FIELD(record, u8 *, 0x49) = (u8)(id >> 16);
+        M2C_FIELD(record, u8 *, 0x4A) = (u8)(id >> 8);
+        M2C_FIELD(record, u8 *, 0x4B) = (u8)id;
+        MI_CpuCopy8((s32)(p - 0x20), (void *)((u8 *)conn + 0x74), 0x20);
+        v = gTlsRandomState[1];
+        M2C_FIELD(conn, u8 *, 0x31) = 0;
+        gTlsRandomState[1] = v + 1;
     }
 
-    h = M2C_FIELD(q, u16 *, 0x32);
-    M2C_FIELD(cur, u8 *, 0) = (u8)(h >> 8);
-    h = M2C_FIELD(q, u16 *, 0x32);
-    M2C_FIELD(cur, u8 *, 1) = (u8)h;
-    M2C_FIELD(cur, u8 *, 2) = 0;
+    cipherSuite = M2C_FIELD(conn, u16 *, 0x32);
+    M2C_FIELD(p, u8 *, 0) = (u8)(cipherSuite >> 8);
+    cipherSuite = M2C_FIELD(conn, u16 *, 0x32);
+    M2C_FIELD(p, u8 *, 1) = (u8)cipherSuite;
+    M2C_FIELD(p, u8 *, 2) = 0;
 
-    cur += 3;
-    if (M2C_FIELD(q, u8 *, 0x31) == 0) {
-        if (nodeSize != 0) {
-            t2 = nodeSize + 6;
-            M2C_FIELD(cur, u8 *, 0) = 0x0B;
-            t1 = nodeSize + 3;
-            M2C_FIELD(cur, u8 *, 1) = (u8)(t2 >> 16);
-            M2C_FIELD(cur, u8 *, 2) = (u8)(t2 >> 8);
-            M2C_FIELD(cur, u8 *, 3) = (u8)t2;
-            M2C_FIELD(cur, u8 *, 4) = (u8)(t1 >> 16);
-            M2C_FIELD(cur, u8 *, 5) = (u8)(t1 >> 8);
-            M2C_FIELD(cur, u8 *, 6) = (u8)t1;
-            M2C_FIELD(cur, u8 *, 7) = (u8)(nodeSize >> 16);
-            M2C_FIELD(cur, u8 *, 8) = (u8)(nodeSize >> 8);
-            M2C_FIELD(cur, u8 *, 9) = (u8)nodeSize;
-            cur += 10;
-            MI_CpuCopy8((s32)M2C_FIELD(node, void **, 4), (void *)cur, (u32)nodeSize);
-            cur += nodeSize;
+    p += 3;
+    if (M2C_FIELD(conn, u8 *, 0x31) == 0) {
+        if (certLen != 0) {
+            v = certLen + 6;
+            M2C_FIELD(p, u8 *, 0) = 0x0B;
+            n = certLen + 3;
+            M2C_FIELD(p, u8 *, 1) = (u8)(v >> 16);
+            M2C_FIELD(p, u8 *, 2) = (u8)(v >> 8);
+            M2C_FIELD(p, u8 *, 3) = (u8)v;
+            M2C_FIELD(p, u8 *, 4) = (u8)(n >> 16);
+            M2C_FIELD(p, u8 *, 5) = (u8)(n >> 8);
+            M2C_FIELD(p, u8 *, 6) = (u8)n;
+            M2C_FIELD(p, u8 *, 7) = (u8)(certLen >> 16);
+            M2C_FIELD(p, u8 *, 8) = (u8)(certLen >> 8);
+            M2C_FIELD(p, u8 *, 9) = (u8)certLen;
+            p += 10;
+            MI_CpuCopy8((s32)M2C_FIELD(cert, void **, 4), (void *)p, (u32)certLen);
+            p += certLen;
         }
-        M2C_FIELD(cur, u8 *, 0) = 0x0E;
-        M2C_FIELD(cur, u8 *, 1) = 0;
-        M2C_FIELD(cur, u8 *, 2) = 0;
-        M2C_FIELD(cur, u8 *, 3) = 0;
-        cur += 4;
+        M2C_FIELD(p, u8 *, 0) = 0x0E;
+        M2C_FIELD(p, u8 *, 1) = 0;
+        M2C_FIELD(p, u8 *, 2) = 0;
+        M2C_FIELD(p, u8 *, 3) = 0;
+        p += 4;
     }
 
-    total = (s32)((u8 *)cur - (u8 *)buf);
-    payload = total - 5;
-    M2C_FIELD(buf, u8 *, 0) = 0x16;
-    M2C_FIELD(buf, u8 *, 1) = 3;
-    M2C_FIELD(buf, u8 *, 2) = 0;
-    M2C_FIELD(buf, u8 *, 3) = (u8)(payload >> 8);
-    M2C_FIELD(buf, u8 *, 4) = (u8)payload;
-    func_02023c74(q, (void *)((u8 *)buf + 5), payload);
-    func_0201d844((s8 *)buf, payload + 5, 0, 0, arg0);
-    gFree[0](buf);
+    totalLen = (s32)((u8 *)p - (u8 *)record);
+    bodyLen = totalLen - 5;
+    M2C_FIELD(record, u8 *, 0) = 0x16;
+    M2C_FIELD(record, u8 *, 1) = 3;
+    M2C_FIELD(record, u8 *, 2) = 0;
+    M2C_FIELD(record, u8 *, 3) = (u8)(bodyLen >> 8);
+    M2C_FIELD(record, u8 *, 4) = (u8)bodyLen;
+    TlsUpdateHandshakeHash(conn, (void *)((u8 *)record + 5), bodyLen);
+    TcpSendData((s8 *)record, bodyLen + 5, 0, 0, arg0);
+    gFree[0](record);
 
-    return M2C_FIELD(q, u8 *, 0x31);
+    return M2C_FIELD(conn, u8 *, 0x31);
 }
 
 void func_020244c0(void *arg0) {
-    void func_02023c74(void *, void *, s32);
+    void TlsUpdateHandshakeHash(void *, void *, s32);
     void *temp_r5;
     void *temp_r4;
 
@@ -150,14 +154,14 @@ void func_020244c0(void *arg0) {
     MI_CpuCopy8(temp_r5 + 0x2EC, temp_r5 + 0x348, 0x5C);
     func_020235fc(temp_r5, temp_r4 + 0x1F, 0);
     MI_CpuCopy8(temp_r5 + 0x348, temp_r5 + 0x2EC, 0x5C);
-    func_02023c74(temp_r5, temp_r4 + 0xB, 0x28);
-    func_0201d844(temp_r4, func_02023a04(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
+    TlsUpdateHandshakeHash(temp_r5, temp_r4 + 0xB, 0x28);
+    TcpSendData(temp_r4, func_02023a04(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
     gFree[0](temp_r4);
 }
 
 s32 func_02024a6c(void *p){s32 func_02023f20(void *);if(func_02023f20(p)!=7)return 1;return func_02023f20(p)!=6;}
 
-s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 func_02024260(void *);void func_02023318(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(func_02024260(p)){func_02023318(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
+s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 TlsSendServerHello(void *);void func_02023318(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(TlsSendServerHello(p)){func_02023318(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
 
 #pragma scheduling off
 void func_02024b24(void *p) {
@@ -329,7 +333,7 @@ s32 func_02024f20(void *arg0) {
 
 s32 func_02024f9c(s32 arg0, u32 arg1, s32 arg2, s32 arg3, void *arg4) {
     M2C_UNK MI_CpuCopy8(s32, void *, u32);
-    M2C_UNK func_0201d844(s8 *, s32, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK TcpSendData(s8 *, s32, M2C_UNK, M2C_UNK, void *);
     s32 func_02023a04(void *, s8 *);
     extern void *(*gAlloc)(s32);
     extern void (*gFree[])(void *);
@@ -376,7 +380,7 @@ loop_1:
         var_r8 += temp_r11;
         M2C_FIELD(temp_r0, s8 *, 4) = (s8) var_r6;
         temp_r0_2 = func_02023a04(sp8, (s8 *)temp_r0);
-        if ((u32)func_0201d844((s8 *)temp_r0, temp_r0_2, 0, 0, arg4) < (u32)temp_r0_2) {
+        if ((u32)TcpSendData((s8 *)temp_r0, temp_r0_2, 0, 0, arg4) < (u32)temp_r0_2) {
             var_r6 = 0;
         }
         gFree[0](temp_r0);
@@ -389,7 +393,7 @@ loop_1:
     return sp4;
 }
 
-void func_020250d0(void *arg0) { M2C_UNK func_0201d844(s8 *,s32,s32,s32,void *); s32 func_02023a04(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; func_0201d844(a,func_02023a04(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }
+void func_020250d0(void *arg0) { M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *); s32 func_02023a04(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; TcpSendData(a,func_02023a04(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }
 
 void func_02025150(void *arg0) { extern void (*gFree[])(void *); void *p=M2C_FIELD(arg0,void **,12); void *q; M2C_FIELD(p,u8 *,0x455)=0; q=M2C_FIELD(p,void **,0x824); if(q)gFree[0](q); M2C_FIELD(p,void **,0x824)=0; }
 
@@ -408,12 +412,12 @@ void func_02025188(s8 arg0) {
 #pragma opt_common_subs off
 s32 func_02024618(void *p){
 
-u32 func_02022070(void);
+u32 GetUnixTime(void);
 void GenerateRandomBytes(void *,s32);
 M2C_UNK MI_CpuCopy8(s32,void *,u32);
 void func_02021e7c(void *,s32,u16);
-M2C_UNK func_0201d844(s8 *,s32,s32,s32,void *);
-void func_02023c74(void *,void *,s32);
+M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *);
+void TlsUpdateHandshakeHash(void *,void *,s32);
 extern u16 data_020faffc[];
 
 u8 *q=M2C_FIELD(p,u8 **,12),*buf,*cursor;
@@ -426,7 +430,7 @@ return 9;
 }
 buf[9]=3;
 buf[10]=0;
-rnd=func_02022070();
+rnd=GetUnixTime();
 q[0x34]=rnd>>24;
 q[0x35]=rnd>>16;
 q[0x36]=rnd>>8;
@@ -464,8 +468,8 @@ buf[6]=n>>16;
 buf[7]=n>>8;
 buf[8]=n;
 
-func_0201d844(buf,len+5,0,0,p);
-func_02023c74(q,buf+5,len);
+TcpSendData(buf,len+5,0,0,p);
+TlsUpdateHandshakeHash(q,buf+5,len);
 gFree[0](buf);
 
 }
@@ -477,13 +481,13 @@ gFree[0](buf);
  * 0x16 handshake header. Frees its temporary buffers. */
 void TlsSendHandshake(void *arg0) {
     s32 MI_CpuCopy8(s32, void *, u32);
-    M2C_UNK func_0201d844(s8 *, s32, s32, s32, void *);
-    s32 func_020220b8();
-    M2C_UNK func_02022104(s32);
-    void func_02023c74(void *, void *, s32);
+    M2C_UNK TcpSendData(s8 *, s32, s32, s32, void *);
+    s32 BoostThreadPriority();
+    M2C_UNK RestoreThreadPriority(s32);
+    void TlsUpdateHandshakeHash(void *, void *, s32);
     void GenerateRandomBytes(void *, s32);
     M2C_UNK func_020269dc(M2C_UNK *, void *, void *, s32, void *);
-    M2C_UNK func_02026ff0(void *, M2C_UNK *, s32, s32);
+    M2C_UNK BigNumFromBytes(void *, M2C_UNK *, s32, s32);
     extern M2C_UNK data_020ea750;
     extern void *(*gAlloc)(s32);
     void *conn;
@@ -505,7 +509,7 @@ void TlsSendHandshake(void *arg0) {
 
     conn = M2C_FIELD(arg0, void **, 0xC);
     if (M2C_FIELD(conn, u8 *, 0x5AC) != 0) {
-        func_0201d844((s8 *)&data_020ea750, 7, 0, 0, arg0);
+        TcpSendData((s8 *)&data_020ea750, 7, 0, 0, arg0);
     }
     M2C_FIELD(conn, s8 *, 0) = 3;
     M2C_FIELD(conn, s8 *, 1) = 0;
@@ -533,12 +537,12 @@ void TlsSendHandshake(void *arg0) {
     chunkB = chunkA + (wordCount * 2);
     savedChunkA = chunkA;
     chunkC = chunkB + (wordCount * 2);
-    func_02026ff0(chunkA, buf, byteLen, wordCount);
-    func_02026ff0(chunkB, conn + 0x598, M2C_FIELD(conn, s32 *, 0x5A0), wordCount);
-    func_02026ff0(chunkC, conn + 0x494, byteLen, wordCount);
-    resource = func_020220b8();
+    BigNumFromBytes(chunkA, buf, byteLen, wordCount);
+    BigNumFromBytes(chunkB, conn + 0x598, M2C_FIELD(conn, s32 *, 0x5A0), wordCount);
+    BigNumFromBytes(chunkC, conn + 0x494, byteLen, wordCount);
+    resource = BoostThreadPriority();
     func_020269dc(work, savedChunkA, chunkB, wordCount, chunkC);
-    func_02022104(resource);
+    RestoreThreadPriority(resource);
     out = gAlloc(byteLen + 0x49);
     if (out == NULL) {
         gFree[0](buf);
@@ -571,8 +575,8 @@ void TlsSendHandshake(void *arg0) {
             p += 2;
         } while (wordIndex >= 0);
     }
-    func_0201d844((s8 *)out, byteLen + 9, 0, 0, arg0);
-    func_02023c74(conn, out + 5, byteLen + 4);
+    TcpSendData((s8 *)out, byteLen + 9, 0, 0, arg0);
+    TlsUpdateHandshakeHash(conn, out + 5, byteLen + 4);
     gFree[0](out);
     gFree[0](work);
     gFree[0](buf);

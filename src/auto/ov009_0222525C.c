@@ -116,10 +116,10 @@ u8 func_ov009_02225460(void) {
 }
 
 void func_ov009_02225470(void) {
-    M2C_UNK func_02076614();
+    M2C_UNK CountBits();
     M2C_UNK func_ov009_02224174();
     func_ov009_02224174();
-    func_02076614();
+    CountBits();
 }
 
 void func_ov009_02225480(void) {
@@ -570,7 +570,7 @@ void func_ov009_02225d14(void) {
 }
 
 void func_ov009_02225d20(void *arg0) {
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     s32 func_ov009_022241b4();
     M2C_UNK func_ov009_022244ec(M2C_UNK);
     s32 func_ov009_02224508(M2C_UNK);
@@ -584,7 +584,7 @@ void func_ov009_02225d20(void *arg0) {
     if (func_ov009_02224508(1) != 0) {
         return;
     }
-    func_02086680(0x4400000A);
+    GetLocalizedText(0x4400000A);
     func_ov009_022244ec(1);
     temp_r2 = M2C_FIELD(arg0, M2C_UNK (**)(s32, s32), 0x34);
     if (temp_r2 == NULL) {
@@ -605,13 +605,13 @@ void func_ov009_02225d88(s32 arg0) {
 }
 
 void func_ov009_02225db4(void) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     s32 func_01ffa770(M2C_UNK *);
     extern M2C_UNK data_ov009_02226874;
     if (func_01ffa770(&data_ov009_02226874) == 0) {
         return;
     }
-    func_01ffa574();
+    DeleteSpriteObject();
 }
 
 void func_ov009_02225dd4(void *arg0) {
@@ -635,7 +635,7 @@ extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 void *created; u32 byte; s32 flags; s32 value; s32 i; s32 savedBank; u32 bank; s8 mode;
 if(M2C_FIELD(entity,s32 *,0x40)==0)return;
 if(func_0208b5ec())func_0208af20();
-value=func_02086680(M2C_FIELD(entity,s32 *,0x38));
+value=GetLocalizedText(M2C_FIELD(entity,s32 *,0x38));
 flags=M2C_FIELD(entity,s32 *,0x3c);
 savedBank=gCur3DSpriteEngine;i=0;byte=flags;
 do {

@@ -7,10 +7,10 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 static inline void InitSocketAddress(s32 *p) { s32 addr=(s32)p; M2C_FIELD(addr,s32 *,0)=0; M2C_FIELD(addr,s32 *,4)=0; }
 
 s32 func_020553c4(M2C_UNK arg0, void *arg1) {
-    s32 func_020492ec(s32, M2C_UNK);
-    s32 func_020496a4(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02049740(s32, UnkSocketAddress *, u8);
-    s32 func_02049900(s32);
+    s32 ghiSetNonBlocking(s32, M2C_UNK);
+    s32 ghiSocket(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 ghiConnect(s32, UnkSocketAddress *, u8);
+    s32 ghiGetLastSocketError(s32);
     void func_02050744(void *, s32, s32);
     M2C_UNK func_02055124(s32);
     void func_02058620(void **, s32, M2C_UNK);
@@ -26,13 +26,13 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
         gpiSetErrorString(arg0, &data_020feb6c);
         return 3;
     }
-    M2C_FIELD(arg1, s32 *, 0x8) = func_020496a4(2, 1, 0);
+    M2C_FIELD(arg1, s32 *, 0x8) = ghiSocket(2, 1, 0);
     if (M2C_FIELD(arg1, s32 *, 0x8) == -1) {
         func_02058620(arg0, 5, &data_020fecb0);
         func_02050744(arg0, 3, 0);
         return 3;
     }
-    if (func_020492ec(M2C_FIELD(arg1, s32 *, 0x8), 0) == 0) {
+    if (ghiSetNonBlocking(M2C_FIELD(arg1, s32 *, 0x8), 0) == 0) {
         func_02058620(arg0, 5, &data_020fecd8);
         func_02050744(arg0, 3, 0);
         return 3;
@@ -43,8 +43,8 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
     qp = (s32 *)node;
     addr[1] = M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x10);
     *((s16 *)addr + 1) = (s16) M2C_FIELD(M2C_FIELD(qp,void **,8),s32 *,0x14);
-    if (func_02049740(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)addr, 8) == -1) {
-        s32 r = func_02049900(M2C_FIELD(arg1, s32 *, 0x8));
+    if (ghiConnect(M2C_FIELD(arg1, s32 *, 0x8), (UnkSocketAddress *)addr, 8) == -1) {
+        s32 r = ghiGetLastSocketError(M2C_FIELD(arg1, s32 *, 0x8));
         if ((r != -6) && (r != -0x1a) && (r != -0x4c)) {
             func_02058620(arg0, 5, &data_020fed0c);
             func_02050744(arg0, 3, 1);
@@ -60,8 +60,8 @@ s32 func_02055550(s32 ctx,void *p,s32 a,s32 str) {
 s32 StringLength(s32 *);s32 gpiAppendStringField();s32 gpiAppendIntField();s32 gpiAppendStringToBufferLen();s32 func_0204fcfc();s32 gpiGetTime(s32);
 extern s32 data_020fec7c,data_020fec0c,data_020fead4,data_020fed34,data_020fed44,data_020fed48,data_020fed50;
 s32 buf[6];s32 len,r;
-if(!p)func_020640a8(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
-if(!str)func_020640a8(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
+if(!p)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
+if(!str)AssertFailed(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
 len=StringLength((s32 *)str);
 Init55550(buf);buf[4]=a;
 r=gpiAppendStringField(ctx,buf,&data_020fed44);if(r)return r;
@@ -78,13 +78,13 @@ return 0;
 }
 void func_020556e0(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
 M2C_UNK func_020501d8(s32,s32,void *);
-M2C_UNK func_020640a8(void *,void *,void *,s32);
-M2C_UNK func_020675e4(void *,void *,...);
+M2C_UNK AssertFailed(void *,void *,void *,s32);
+M2C_UNK StringFormat(void *,void *,...);
 extern M2C_UNK data_020fed58,data_020fec0c,data_020feae8,data_020fed64;
 u8 buf[64];s32 b,a,c;
 a=arg3[0];b=arg3[1];c=arg3[2];
-if(!arg3)func_020640a8(&data_020fed58,&data_020fec0c,&data_020feae8,0x376);
-func_020675e4(buf,&data_020fed64,arg2,a,b,c);
+if(!arg3)AssertFailed(&data_020fed58,&data_020fec0c,&data_020feae8,0x376);
+StringFormat(buf,&data_020fed64,arg2,a,b,c);
 func_020501d8(arg0,arg1,buf);
 }
 
@@ -93,15 +93,15 @@ s32 gpiGetTime(M2C_UNK);
 s32 func_0204fff8(M2C_UNK,void *,M2C_UNK);
 s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
 s32 func_020501d8(s32,s32,void *);
-M2C_UNK func_020640a8(void *,void *,void *,s32);
-M2C_UNK func_020675e4(void *,void *,...);
+M2C_UNK AssertFailed(void *,void *,void *,s32);
+M2C_UNK StringFormat(void *,void *,...);
 s32 StringLength(M2C_UNK *);
 extern M2C_UNK data_020feb04,data_020fec0c,data_020fec7c,data_020fed78,data_020fed7c;
 M2C_UNK buffer[8];s32 result;
-if(!arg1)func_020640a8(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
+if(!arg1)AssertFailed(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
 if(!arg2)arg2=&data_020fed78;
 if(arg3==-1)arg3=StringLength(arg2);
-func_020675e4(buffer,&data_020fed7c,arg3);
+StringFormat(buffer,&data_020fed7c,arg3);
 result=func_020501d8(arg0,arg1,buffer);if(result)return result;
 result=gpiSendOrBufferStringLen(arg0,arg1,arg2,arg3);if(result)return result;
 result=func_0204fff8(arg0,arg1,0);if(result)return result;
@@ -149,14 +149,14 @@ return p->handle!=0;
 
 s32 func_02055940(void **a,void *b,s32 c) {
 s32 func_0205817c(void **,s32,s32);void func_02058620(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
-s32 func_02068eac(s32,void *,s32);void func_02050744(void *,s32,s32);void *func_02037794(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
-s32 func_02058254(s32,void *,void *,s32);s32 func_0206ad38(void *);
+s32 StringCompareN(s32,void *,s32);void func_02050744(void *,s32,s32);void *func_02037794(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+s32 GetStringField(s32,void *,void *,s32);s32 ParseInt(void *);
 extern M2C_UNK data_020feda0,data_020feda8,data_020fedd8,data_020fede4;
 char buffer[16];Unk02050838Pair pair;s32 *p;s32 r;s32 value;
 if(func_0205817c(a,c,1))return 4;
-if(func_02068eac(c,&data_020feda0,5)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
-if(!func_02058254(c,&data_020fedd8,buffer,16)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
-value=func_0206ad38(buffer);
+if(StringCompareN(c,&data_020feda0,5)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
+if(!GetStringField(c,&data_020fedd8,buffer,16)){func_02058620(a,1,(s32)&data_020feda8);func_02050744(a,3,1);return 3;}
+value=ParseInt(buffer);
 pair=*(Unk02050838Pair *)((u8 *)b+12);
 if(pair.unk_0){p=func_02037794(8);if(!p){gpiSetErrorString((s32)a,(s32 *)&data_020fede4);return 1;}p[1]=value;p[0]=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
 func_02054484(a,b);return 0;
@@ -164,7 +164,7 @@ func_02054484(a,b);return 0;
 
 s32 func_02055aa0(void **arg0, s32 arg1) {
     M2C_UNK func_02048eac(s32,s32 *);
-    M2C_UNK func_020640a8();
+    M2C_UNK AssertFailed();
     extern M2C_UNK data_020fed8c;
     extern M2C_UNK data_020fedf4;
     extern M2C_UNK data_020fedfc;
@@ -174,7 +174,7 @@ s32 func_02055aa0(void **arg0, s32 arg1) {
 
     temp_r4 = *arg0;
     if (arg1 <= 0) {
-        func_020640a8(&data_020fedf4, &data_020fedfc, &data_020fed8c, 0x2B5);
+        AssertFailed(&data_020fedf4, &data_020fedfc, &data_020fed8c, 0x2B5);
     }
     if (arg1 <= 0) {
         return 0;
@@ -230,9 +230,9 @@ void func_02055bf4(void **arg0) {
 }
 
 s32 func_02055c08(s32 arg0,void *arg1,void *arg2) {
-s32 func_02068d98(s32,s32);
+s32 StringCompare(s32,s32);
 void *p=M2C_FIELD(arg1,void **,12);
-if(p && func_02068d98(M2C_FIELD(arg2,s32 *,0),M2C_FIELD(p,s32 *,0))==0 && func_02068d98(M2C_FIELD(arg2,s32 *,4),M2C_FIELD(p,s32 *,8))==0){
+if(p && StringCompare(M2C_FIELD(arg2,s32 *,0),M2C_FIELD(p,s32 *,0))==0 && StringCompare(M2C_FIELD(arg2,s32 *,4),M2C_FIELD(p,s32 *,8))==0){
 *M2C_FIELD(arg2,void ***,8)=arg1;M2C_FIELD(arg2,s32 *,12)=1;return 0;
 }
 return 1;
@@ -277,25 +277,25 @@ s32 func_02055d6c(void *arg0) {
 }
 
 s32 func_02055da4(void **ctx,void *entry){
-void *func_02037794(s32);s32 func_020496a4(s32,s32,s32);s32 func_020492ec(s32,s32);void *func_02021768(void *);
-s32 func_02049740(s32,UnkSocketAddress *,u8);s32 func_02049900(s32);
+void *func_02037794(s32);s32 ghiSocket(s32,s32,s32);s32 ghiSetNonBlocking(s32,s32);void *func_02021768(void *);
+s32 ghiConnect(s32,UnkSocketAddress *,u8);s32 ghiGetLastSocketError(s32);
 s32 gpiSetErrorString(M2C_UNK,M2C_UNK *);void func_02058620(void **,s32,M2C_UNK);void func_02050744(void *,s32,s32);
-M2C_UNK func_020640a8(void *,void *,void *,s32);
+M2C_UNK AssertFailed(void *,void *,void *,s32);
 extern M2C_UNK data_020fee8c,data_020fee9c,data_020feec4,data_020fee4c,data_020feef8,data_020fef28,data_020fef48,data_020fee34,data_020fef54;
 void *p=M2C_FIELD(entry,void **,4),*host;s32 addr[2];s32 r;
 M2C_FIELD(p,s32 *,12)=4096;M2C_FIELD(p,void **,8)=func_02037794(4097);
 if(!M2C_FIELD(p,void **,8)){gpiSetErrorString(ctx,&data_020fee8c);return 1;}
-M2C_FIELD(p,s32 *,4)=func_020496a4(2,1,0);
+M2C_FIELD(p,s32 *,4)=ghiSocket(2,1,0);
 if(M2C_FIELD(p,s32 *,4)==-1){func_02058620(ctx,5,&data_020fee9c);func_02050744(ctx,3,1);return 3;}
-if(!func_020492ec(M2C_FIELD(p,s32 *,4),0)){func_02058620(ctx,5,&data_020feec4);func_02050744(ctx,3,1);return 3;}
+if(!ghiSetNonBlocking(M2C_FIELD(p,s32 *,4),0)){func_02058620(ctx,5,&data_020feec4);func_02050744(ctx,3,1);return 3;}
 host=func_02021768(&data_020fee4c);
 if(!host){func_02058620(ctx,5,&data_020feef8);func_02050744(ctx,3,1);return 3;}
 InitSocketAddress(addr);((u8 *)addr)[1]=2;
 addr[1]=**M2C_FIELD(host,s32 ***,12);
-if(!addr[1])func_020640a8(&data_020fef28,&data_020fef48,&data_020fee34,89);
+if(!addr[1])AssertFailed(&data_020fef28,&data_020fef48,&data_020fee34,89);
 ((u16 *)addr)[1]=0xcd74;
-if(func_02049740(M2C_FIELD(p,s32 *,4),(UnkSocketAddress *)addr,8)==-1){
-r=func_02049900(M2C_FIELD(p,s32 *,4));
+if(ghiConnect(M2C_FIELD(p,s32 *,4),(UnkSocketAddress *)addr,8)==-1){
+r=ghiGetLastSocketError(M2C_FIELD(p,s32 *,4));
 if(r!=-6&&r!=-26&&r!=-76){func_02058620(ctx,5,&data_020fef54);func_02050744(ctx,3,1);return 3;}}
 M2C_FIELD(entry,s32 *,20)=1;return 0;
 }
@@ -338,8 +338,8 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
 }
 
 s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 func_0204ec8c(void **, s32);
-    s32 func_02054330(void **, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
+    s32 gpiThink(void **, s32);
+    s32 gpiAddOperation(void **, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
     s32 func_02055da4(void **, void *);
     void *spC;
     s32 temp_r0;
@@ -349,7 +349,7 @@ s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     temp_r4 = *arg0;
     M2C_FIELD(temp_r4, s32 *, 0x210) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x210) + 1);
-    temp_r0_3 = func_02054330(arg0, 3, arg1, &spC, arg2, arg3, arg4);
+    temp_r0_3 = gpiAddOperation(arg0, 3, arg1, &spC, arg2, arg3, arg4);
     if (temp_r0_3 != 0) {
         return temp_r0_3;
     }
@@ -358,7 +358,7 @@ s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
         return temp_r0_2;
     }
     if (M2C_FIELD(spC, s32 *, 8) != 0) {
-        temp_r0 = func_0204ec8c(arg0, M2C_FIELD(spC, s32 *, 0x18));
+        temp_r0 = gpiThink(arg0, M2C_FIELD(spC, s32 *, 0x18));
         if (temp_r0 != 0) {
             return temp_r0;
         }
@@ -367,7 +367,7 @@ s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 s32 func_020560e4(M2C_UNK arg0,s8 *arg1,s8 *arg2,s8 *arg3,s8 *arg4,s8 *arg5,s32 arg6,s32 arg7,s32 arg8,s32 arg9,s32 argA) {
-M2C_UNK func_020492a8(void *);s32 func_02055fa4(M2C_UNK,void **,M2C_UNK);M2C_UNK func_020580fc(void *,s8 *,M2C_UNK);M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
+M2C_UNK StringToLower(void *);s32 func_02055fa4(M2C_UNK,void **,M2C_UNK);M2C_UNK StringCopyN(void *,s8 *,M2C_UNK);M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 extern M2C_UNK data_020fef7c;
 void *sp4;s32 r;
 if(arg1 && *arg1)goto ready;
@@ -377,12 +377,12 @@ if(arg5 && *arg5)goto ready;
 if(arg6==0){if(arg2 && *arg2)goto ready;gpiSetErrorString(arg0,&data_020fef7c);return 2;}
 ready:
 r=func_02055fa4(arg0,&sp4,1);if(r)return r;
-if(!arg1)M2C_FIELD(sp4,s8 *,0x28)=0;else func_020580fc(sp4+0x28,arg1,31);
-if(!arg2)M2C_FIELD(sp4,s8 *,0x47)=0;else func_020580fc(sp4+0x47,arg2,21);
-if(!arg3)M2C_FIELD(sp4,s8 *,0x5c)=0;else func_020580fc(sp4+0x5c,arg3,51);
-func_020492a8(sp4+0x5c);
-if(!arg4)M2C_FIELD(sp4,s8 *,0x8f)=0;else func_020580fc(sp4+0x8f,arg4,31);
-if(!arg5)M2C_FIELD(sp4,s8 *,0xae)=0;else func_020580fc(sp4+0xae,arg5,31);
+if(!arg1)M2C_FIELD(sp4,s8 *,0x28)=0;else StringCopyN(sp4+0x28,arg1,31);
+if(!arg2)M2C_FIELD(sp4,s8 *,0x47)=0;else StringCopyN(sp4+0x47,arg2,21);
+if(!arg3)M2C_FIELD(sp4,s8 *,0x5c)=0;else StringCopyN(sp4+0x5c,arg3,51);
+StringToLower(sp4+0x5c);
+if(!arg4)M2C_FIELD(sp4,s8 *,0x8f)=0;else StringCopyN(sp4+0x8f,arg4,31);
+if(!arg5)M2C_FIELD(sp4,s8 *,0xae)=0;else StringCopyN(sp4+0xae,arg5,31);
 M2C_FIELD(sp4,s32 *,0x130)=arg6;
 if(arg7<0)arg7=0;
 M2C_FIELD(sp4,s32 *,0x134)=arg7;

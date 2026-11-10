@@ -2,18 +2,18 @@
 #include "common.h"
 #include "battle_map.h"
 static inline void ScanVisibilityRow(s32 ty,s32 player) {
-extern void **gCurrentMap; extern s8 data_ov000_021b56c0[];
-s32 func_020ce6f4(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
+extern void **gCurrentMap; extern s8 gTerrainPropertyFlags[];
+s32 GetTerrainThreatRadius(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
 s32 tx,t,kind;u8 *map;
 for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
 map=*gCurrentMap;t=M2C_FIELD(map+tx+M2C_FIELD(map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
-if(kind==26)func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
-if(data_ov000_021b56c0[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
+if(kind==26)func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
+if(gTerrainPropertyFlags[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
 }
 }
 #pragma optimization_level 0
-static inline s32 TerrainMarkable(s32 kind) { extern s8 data_ov000_021b56c0[]; return data_ov000_021b56c0[kind]; }
-static inline void RevealTerrain(s32 x,s32 y,s32 terrain,s32 player) { s32 func_020ce6f4(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 value=func_020ce6f4(terrain,player); func_ov000_0218500c(x,y,terrain,value); }
+static inline s32 TerrainMarkable(s32 kind) { extern s8 gTerrainPropertyFlags[]; return gTerrainPropertyFlags[kind]; }
+static inline void RevealTerrain(s32 x,s32 y,s32 terrain,s32 player) { s32 GetTerrainThreatRadius(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 value=GetTerrainThreatRadius(terrain,player); func_ov000_0218500c(x,y,terrain,value); }
 #pragma optimization_level reset
 extern void **gCurrentMap;
 extern u8 data_ov000_021e0550[];
@@ -62,8 +62,8 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 
 #pragma optimization_level 3
 void func_ov000_021855e4(void) {
-extern u8 *data_ov000_021df580; extern s8 data_ov000_021b56c0[];
-void func_02007f8c(void*,s32,s32); s32 func_020ce6f4(s32,s32);
+extern u8 *data_ov000_021df580; extern s8 gTerrainPropertyFlags[];
+void func_02007f8c(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
 s32 IsUnitOnCurrentTeam(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 GetUnitMoveRange(s32,u32);
@@ -81,10 +81,10 @@ func_02007f8c(data_ov000_021e0550,0,1288);
 for(ty=0;ty<M2C_FIELD(*gCurrentMap,u16*,0x5146);ty++)for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
 map=*gCurrentMap;
 t=M2C_FIELD(map+tx+M2C_FIELD((short)map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
-if(kind==26)func_ov000_0218500c(tx,ty,t,func_020ce6f4(t,player));
-if(data_ov000_021b56c0[kind]){
+if(kind==26)func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
+if(gTerrainPropertyFlags[kind]){
 if(func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty)){
-s32 r=func_020ce6f4(t,player);
+s32 r=GetTerrainThreatRadius(t,player);
 func_ov000_0218500c(tx,ty,t,r);
 }
 }
@@ -116,27 +116,27 @@ if(((u32)(unit[0]<<26)>>26)==5)func_ov000_021854e0(unit[1],unit[2],5,2);
 }
 #pragma optimization_level reset
 void func_ov000_02185a74(u32 dir) {
-extern u8 *data_027e0a90; extern u8 *data_027e00cc; extern s32 data_027e0a94; extern u8 *data_027e0a98;
+extern u8 *gMoveSearchCurrent; extern u8 *gMoveSearchState; extern s32 gMoveSearchCount; extern u8 *gMoveSearchWrite;
 u8 *p; void *map; s32 w,x,y,h,c,old;
-data_027e00cc[36]=data_027e0a90[0];
-data_027e00cc[37]=data_027e0a90[1];
-switch(dir){case 0:case 1:break;case 2:data_027e00cc[37]--;break;case 3:data_027e00cc[37]++;break;case 4:data_027e00cc[36]--;break;case 5:data_027e00cc[36]++;break;default:break;}
-if(data_027e0a94>=349)return;
-map=*gCurrentMap;p=data_027e00cc;
+gMoveSearchState[36]=gMoveSearchCurrent[0];
+gMoveSearchState[37]=gMoveSearchCurrent[1];
+switch(dir){case 0:case 1:break;case 2:gMoveSearchState[37]--;break;case 3:gMoveSearchState[37]++;break;case 4:gMoveSearchState[36]--;break;case 5:gMoveSearchState[36]++;break;default:break;}
+if(gMoveSearchCount>=349)return;
+map=*gCurrentMap;p=gMoveSearchState;
 w=M2C_FIELD(map,u16 *,0x5144);x=p[36];
 if(x>=w)return;
 y=p[37];h=M2C_FIELD(map,u16 *,0x5146);
 if(y>=h)return;
 c=M2C_FIELD(((s8 **)((u8 *)map+0x52e8))[y],s8 *,x);
 if(c<0)return;if(c>110)return;
-if((s8)data_ov000_021e0f60[data_027e0a90[0]+data_027e0a90[1]*w]<=c)return;
+if((s8)data_ov000_021e0f60[gMoveSearchCurrent[0]+gMoveSearchCurrent[1]*w]<=c)return;
 old=(s8)data_ov000_021e0f60[x+y*w];
 if(old<=c && old>=0)return;
 data_ov000_021e0f60[x+y*w]=c;
-data_027e0a98[0]=p[36];
-data_027e0a98[1]=data_027e00cc[37];
-data_027e0a98[2]=dir;
-data_027e0a98+=4;data_027e0a94++;
+gMoveSearchWrite[0]=p[36];
+gMoveSearchWrite[1]=gMoveSearchState[37];
+gMoveSearchWrite[2]=dir;
+gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 
 M2C_UNK func_ov000_02185c20(M2C_UNK arg0, M2C_UNK arg1) {
@@ -159,11 +159,11 @@ s32 IsWithinAttackRange(u8 *a,u8 *b,s32 c){
  * map's danger/score layer (keeping the smallest value per cell). */
 void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  extern u16 gPlayerUnitIdBase[];
- s32 func_ov000_021a98e4(s32);
+ s32 GetUnitAttackClass(s32);
  s32 IsUnitSelected(void *);
  s32 GetUnitDamagePercent(u32,u32);
  s32 GetUnitMoveRange(s32,u32);
- void func_01ffada0(s32,s32,s32,s32,s32);
+ void FloodFillUnitRange(s32,s32,s32,s32,s32);
  void func_01ffb9c4(s32);
  s32 slot,value,x,y,existing;
  u8 *unit, *q=(u8 *)target;
@@ -171,14 +171,14 @@ void MarkPlayerThreatsToUnit(u8 player, s32 target) {
  for(slot=gPlayerUnitIdBase[player]+1;slot<gPlayerUnitIdBase[player]+0x33;slot++){
  unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+slot*14;
  if(!((u32)(unit[0]<<26)>>26))continue;
- if(func_ov000_021a98e4((u32)(unit[0]<<26)>>26))continue;
+ if(GetUnitAttackClass((u32)(unit[0]<<26)>>26))continue;
  if(M2C_FIELD(unit,u16 *,4)&8)continue;
  if(IsUnitSelected(unit))continue;
  if(!GetUnitDamagePercent((u32)(unit[0]<<26)>>26,(u32)(q[0]<<26)>>26))continue;
  if(!IsWithinAttackRange(q,unit,0))continue;
  if(unit){if(unit == 0)value=0;else value=((s32)unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/14;value=(value>>6)+1;}else value=0;
  value=GetUnitMoveRange(value,(u32)(unit[0]<<26)>>26);
- func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,value,12);
+ FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,value,12);
  func_01ffb9c4(0x6f);
  if(M2C_FIELD(((s8 **)((u8 *)*gCurrentMap+MAP_GRID))[q[2]],s8 *,q[1])<0)continue;
  func_ov000_02185c20(q[1],q[2]);

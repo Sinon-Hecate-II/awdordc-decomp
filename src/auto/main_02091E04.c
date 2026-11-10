@@ -450,14 +450,14 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_020926f8(s32 arg0) {
- s32 func_02086680(s32); void func_02099e10(void); void func_020943e0(void); void func_02094424(void);
+ s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void func_02094424(void);
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
  u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 func_02091f18(s32);
  s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK func_0209707c(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 saved; void *old; s32 r10,r9; void *r8,*r7,*r6,*r5ptr,*tmp,*result; u32 sp8;
- saved=func_02086680(arg0);
+ saved=GetLocalizedText(arg0);
  func_02099e10(); func_020943e0(); func_02094424();
  if(func_02099dcc(saved)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
  old=gCur3DSpriteEngine;

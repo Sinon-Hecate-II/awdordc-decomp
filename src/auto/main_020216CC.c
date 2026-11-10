@@ -274,7 +274,7 @@ i++;q+=92;
 OS_RestoreInterrupts(old);
 }
 
-s32 func_02022070(void){
+s32 GetUnixTime(void){
 void func_0200ef4c(void *);void func_0200eff8(void *);s32 func_0200f7e0(void *,void *);
 s32 a[4],b[3];
 func_0200ef4c(a);func_0200eff8(b);return func_0200f7e0(a,b)+0x386d4380;
@@ -285,7 +285,7 @@ void func_020220a8(s32 arg0) {
     M2C_FIELD(&data_020faffc, s32 *, 4) = arg0;
 }
 
-s32 func_020220b8(void) {
+s32 BoostThreadPriority(void) {
 s32 func_02006028(void *); void func_02005f80(s32,u32);
 extern M2C_UNK data_020faffc, data_0212dca4;
 void *p; s32 x;
@@ -296,7 +296,7 @@ func_02005f80((s32)p,M2C_FIELD(&data_020faffc,u32 *,4));
 return x;
 }
 
-void func_02022104(u32 a){
+void RestoreThreadPriority(u32 a){
 void func_02005f80(s32,u32);
 extern M2C_UNK data_0212dca4;
 if(a>=32)return;
@@ -319,11 +319,11 @@ void func_02022128(s32 arg0, s32 arg1) {
 }
 
 void *func_02022150(void *p,void *key){
-s32 func_02068d98(void *,void *);
+s32 StringCompare(void *,void *);
 s32 i;void **a;s32 n;void *v;
 n=M2C_FIELD(p,s32 *,0x818);
 i=0;
-if(n>0){a=M2C_FIELD(p,void ***,0x814);do{v=a[i];if(!func_02068d98(M2C_FIELD(v,void **,0),key))return v;i++;}while(i<n);}return 0;
+if(n>0){a=M2C_FIELD(p,void ***,0x814);do{v=a[i];if(!StringCompare(M2C_FIELD(v,void **,0),key))return v;i++;}while(i<n);}return 0;
 }
 
 u32 func_0202219c(u8 **p){

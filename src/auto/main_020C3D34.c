@@ -100,9 +100,9 @@ func_02080cfc(data_0212a4a8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,20)+32);
 func_020814ac(data_0212a4b4,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,40)+448,0,(u16)color);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
 color=names.names[kind];
-func_020675e4(buf,data_0212a4c0,color);
+StringFormat(buf,data_0212a4c0,color);
 func_0208116c(buf,704,32);
-func_020675e4(buf,data_0212a4cc,color);
+StringFormat(buf,data_0212a4cc,color);
 func_020814e4(func_020e3218(data_0212a4d8));
 func_02081590(func_020e3218(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
 func_02081528();
@@ -393,12 +393,12 @@ void func_020c4c34(M2C_UNK arg0) {
     s32 func_020761f8();
     s32 func_02076208();
     M2C_UNK func_02076244();
-    M2C_UNK func_02086680(s32);
+    M2C_UNK GetLocalizedText(s32);
     if (func_020761f8() != 0) {
         return;
     }
     if (func_02076208() != 0) {
-        func_02086680(0xC000034C);
+        GetLocalizedText(0xC000034C);
         func_02076244();
     }
     func_01ffa6fc(arg0);

@@ -6,12 +6,12 @@ extern u8 gAiTargetCandidates;
 extern s8 data_ov000_021b5580[], data_ov000_021b55a0[], data_ov000_021e0f60[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df590[], data_ov000_021df594[];
-extern u8 data_ov000_021df7d0[];
+extern u8 gAiCommand[];
 
 /* Among candidate entries, return index of the one with highest score that is visible/passable. */
 s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
     void SelectMapLayer(void *);
-    void func_01ffada0(s32, s32, s32, s32, s32);
+    void FloodFillUnitRange(s32, s32, s32, s32, s32);
     extern void **gCurrentMap;
     extern u8 *gAiState;
     extern u8 gAiTargetCandidates;
@@ -26,7 +26,7 @@ s16 func_ov000_021a2100(s32 areaX, s32 areaY) {
     bestIndex = -1;
     entry = &gAiTargetCandidates;
     SelectMapLayer(data_ov000_021e0f60);
-    func_01ffada0(areaX, areaY, 1, 3, 0);
+    FloodFillUnitRange(areaX, areaY, 1, 3, 0);
     SelectMapLayer((u8 *)*gCurrentMap + 0x1E30);
     for (i = 0; i < *gAiState; i++, entry += 12) {
         if (entry[3] < 252U && entry[2] == 1 &&
@@ -46,10 +46,10 @@ s32 func_020a8a14(u16,u16); s32 func_020d27ec(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
 s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
-void SelectMapLayer(void *); void func_01ffada0(s32,s32,s32,s32,s32);
+void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out=&gAiTargetCandidates+*gAiState*12;
 u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *candidate,*scan,*best; void *map; s32 player,index,count=0,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row; u8 funds; unsigned int penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void func_ov000_021a07c0(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 if(!arg0 && (func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&8))return 0;
 entry=(u8 *)*gCurrentMap+0x6c60;
@@ -80,7 +80,7 @@ if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
 SelectMapLayer(data_ov000_021e0f60);
-func_01ffada0(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,arg0?3:6,0);
+FloodFillUnitRange(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,arg0?3:6,0);
 SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
 }
@@ -183,10 +183,10 @@ best=out;bestdelta=(s32)out[4]-out[5];if(bestdelta<0)bestdelta=-bestdelta;
 }
 if(!best)return 0;
 if(best[3]==19){
-data_ov000_021df7d0[6]=1;func_ov000_021a07c0((s8)best[6]);
-data_ov000_021df7d0[7]=2;gAiState[12]=19;gAiState[13]=(s8)best[7];
+gAiCommand[6]=1;CommitAiAction((s8)best[6]);
+gAiCommand[7]=2;gAiState[12]=19;gAiState[13]=(s8)best[7];
 }else{
-data_ov000_021df7d0[6]=best[3];func_ov000_021a07c0((s8)best[6]);data_ov000_021df7d0[7]=1;
+gAiCommand[6]=best[3];CommitAiAction((s8)best[6]);gAiCommand[7]=1;
 }
 gAiState[14]=best[0];gAiState[15]=best[1];return 1;
 }
@@ -194,12 +194,12 @@ gAiState[14]=best[0];gAiState[15]=best[1];return 1;
 #pragma opt_propagation off
 /* Plan a special-unit action if no conflicting units exist, a target is available, and the player can afford it. */
 s32 func_ov000_021a2db8(void) {
- void func_01ffada0(s32,s32,s32,s32,s32);
+ void FloodFillUnitRange(s32,s32,s32,s32,s32);
  s32 func_020d243c(u16); s32 func_020d2d18(u16,u8);
  s32 func_ov000_0217bc84(s32,s32,s32);
- void func_ov000_021a07c0(s32); s32 func_ov000_021a6d4c(void);
+ void CommitAiAction(s32); s32 func_ov000_021a6d4c(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- extern void *data_ov000_021df580; extern u8 data_ov000_021df7d0[];
+ extern void *data_ov000_021df580; extern u8 gAiCommand[];
  s32 unitIndex,choice; u32 unitKind; u8 *unit; void *map; void *lastMap; u16 player;
  if(!func_020d243c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  map=*gCurrentMap;
@@ -219,11 +219,11 @@ s32 func_ov000_021a2db8(void) {
  unit=map+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*140;
  if(func_ov000_0217bc84(unit[43]&127,unit[44]&127,4)!=0 && (s32)M2C_FIELD(*gCurrentMap,u16 *,0x52a2)<10)return 0;
  map=*gCurrentMap;unit=map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;
- func_01ffada0(unit[43]&127,unit[44]&127,7,110,0);
+ FloodFillUnitRange(unit[43]&127,unit[44]&127,7,110,0);
  choice=func_ov000_021a6d4c();if(choice==-1)return 0;
- if(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<23)>>29)&2)data_ov000_021df7d0[6]=6;
- else data_ov000_021df7d0[6]=7;
+ if(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<23)>>29)&2)gAiCommand[6]=6;
+ else gAiCommand[6]=7;
  lastMap=*gCurrentMap;player=M2C_FIELD(lastMap,u16 *,0x52a4);
- if(func_020d2d18(player,data_ov000_021df7d0[6])*10>M2C_FIELD(lastMap+player*140,s32 *,0x67a4))return 0;
- func_ov000_021a07c0(choice);return 1;
+ if(func_020d2d18(player,gAiCommand[6])*10>M2C_FIELD(lastMap+player*140,s32 *,0x67a4))return 0;
+ CommitAiAction(choice);return 1;
 }

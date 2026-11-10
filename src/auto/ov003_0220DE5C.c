@@ -336,12 +336,12 @@ for(i=0;i<6;i++) {
 
     obj = M2C_FIELD(self, void **, 0x68);
     if (obj != NULL) {
-{void *child=M2C_FIELD(obj,void **,0);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,4);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,8);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,12);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,16);if(child)func_01ffa574(child);}
-{void *child=M2C_FIELD(obj,void **,20);if(child)func_01ffa574(child);}
+{void *child=M2C_FIELD(obj,void **,0);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,4);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,8);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,12);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,16);if(child)DeleteSpriteObject(child);}
+{void *child=M2C_FIELD(obj,void **,20);if(child)DeleteSpriteObject(child);}
         MemFree(obj);
     }
 

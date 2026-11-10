@@ -11,7 +11,7 @@ typedef struct { u16 low:11; u16 high:5; } Health_021906a0;
 typedef struct { u8 a[3]; u8 count; u8 b[2]; } Supply_021906a0;
 
 extern void **gCurrentMap;
-void func_01ffc328(void *);
+void BuildUnitMoveRange(void *);
 int IsCurrentPlayerUnit(int);
 int func_ov000_021a8984(int);
 int CanUnitAttackKind(void *,int);
@@ -206,7 +206,7 @@ void func_ov000_021906a0(int arg0) {
  int sx = -1, sy = -1, kind = 0, x, y;
  u8 *m;
  u16 pos[2];
- func_01ffc328(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+ BuildUnitMoveRange(*(void **)((u8 *)*gCurrentMap + 0x52d0));
  for (y = 0; y < *(u16 *)((u8 *)*gCurrentMap + 0x5146); y++) {
   for (x = 0; x < *(u16 *)((u8 *)*gCurrentMap + 0x5144); x++) {
    m = *gCurrentMap;

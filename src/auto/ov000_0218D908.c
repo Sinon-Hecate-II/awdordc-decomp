@@ -1,5 +1,6 @@
 /* 4 functions from 0x0218D908 to 0x0218E584 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct {u8 pad[0x58];u16 row;} ScanRow;
 static inline s32 ScanUnitIndex(u8 *unit,u8 *map){if(unit==0)return 0;return (s32)(unit-(map+0x59a4))/14;}
 static inline s32 ScanAdjacentCount(u8 *unit){
@@ -28,7 +29,7 @@ void func_ov000_0218d908(void) {
     extern u8 *data_ov000_021df644;
     extern u8 data_ov000_021b5bfc[], data_ov000_021dfcf0[];
     s32 func_ov000_0218d40c(void);
-    M2C_UNK func_01ffc328(s32);
+    M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 CanUnitAttackKind(void *, s32);
@@ -47,7 +48,7 @@ void func_ov000_0218d908(void) {
     s32 score, moveCost;
 
     if (!func_ov000_0218d40c()) return;
-    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
     y = 0;
     map = *gCurrentMap;
     while (y < M2C_FIELD(map, u16 *, 0x5146)) {
@@ -122,7 +123,7 @@ nextTile:
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0218dda4(void) {
-    M2C_UNK func_01ffc328(s32);
+    M2C_UNK BuildUnitMoveRange(s32);
     M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
     s32 func_ov000_021aa820(s16 *, u16, M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
@@ -143,7 +144,7 @@ void func_ov000_0218dda4(void) {
     var_r5 = -1;
     var_r4 = -1;
     var_r6 = -1;
-    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
     var_r3 = 0;
     owner=gCurrentMap;
     temp_r7 = *owner;
@@ -188,13 +189,13 @@ void func_ov000_0218dda4(void) {
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
-M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK BuildUnitMoveRange(s32);void func_01ffb9c4(s8);s32 GetUnitAttackClass(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *data_ov000_021df580;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
-if(func_ov000_021a98e4((u32)(selected[0]<<26)>>26))return;
-func_01ffc328(M2C_FIELD(*gCurrentMap,s32 *,0x52d0));func_01ffb9c4(111);
+if(GetUnitAttackClass((u32)(selected[0]<<26)>>26))return;
+BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,s32 *,0x52d0));func_01ffb9c4(111);
 map=*gCurrentMap;
 for(y=0;y<M2C_FIELD(map,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(map,u16 *,0x5144);){
@@ -224,48 +225,52 @@ SetMapCursor((s16)bestY,(s16)bestX,4,(u8)temp,0);
 
 #pragma push
 #pragma opt_propagation off
-void func_ov000_0218e340(void) {
+/* Chooses which friendly unit a damaged acting unit should join with: scans the
+ * current player's units for a same-kind, same-owner one it can merge with,
+ * scores the merge by the two units' combined health, and points the map cursor
+ * at the best candidate with the join action. */
+void SelectJoinTarget(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 IsUnitSelected(void *); s32 IsFootUnitKind(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
-s32 x=-1,y=-1,best=0,i; u8 *unit; s32 offset; void *map; u8 *active; s32 hp,other,score;
-map=*gCurrentMap; active=M2C_FIELD(map,u8 **,0x52d0);
-if (((u32)(M2C_FIELD(active,u16 *,6)<<25)>>25)>50) return;
-if(active[12])return;
-func_01ffc328((s32)active);
+M2C_UNK BuildUnitMoveRange(s32); s32 CanUnitsJoin(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 IsUnitSelected(void *); s32 IsFootUnitKind(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
+s32 targetX=-1,targetY=-1,bestScore=0,unitId; u8 *candidate; s32 offset; void *map; u8 *acting; s32 candidateHealth,actingHealth,score;
+map=*gCurrentMap; acting=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+if (((u32)(M2C_FIELD(acting,u16 *,MAP_UNIT_HEALTH)<<25)>>25)>50) return;
+if(M2C_FIELD(acting,u8 *,MAP_UNIT_CARRIED))return;
+BuildUnitMoveRange((s32)acting);
 map=*gCurrentMap;
-i=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
-if(i<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){
-offset=i*14;
+unitId=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)]+1;
+if(unitId<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)]+51){
+offset=unitId*MAP_UNIT_STRIDE;
 do {
-unit=(u8 *)((s32)map+0x59a4)+offset;
-if(!((u32)(unit[0]<<26)>>26))goto next;
-if(M2C_FIELD((u8 *)map+unit[2]*4,s8 **,0x52e8)[unit[1]]<0)goto next;
-active=M2C_FIELD(map,u8 **,0x52d0);
-if(active==unit)goto next;
-if(M2C_FIELD(unit,u16 *,4)&8)goto next;
-if(!func_020a7074(active,unit))goto next;
-if(func_ov000_021a93a8(unit,unit[1],unit[2])==1)goto next;
-if(IsUnitSelected(M2C_FIELD(*gCurrentMap,void **,0x52d0))){
-hp=(u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25;
-other=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25;
-score=other+hp; if(score<=130)goto evaluate;
+candidate=(u8 *)((s32)map+MAP_UNIT_RECORDS)+offset;
+if(!((u32)(M2C_FIELD(candidate,u8 *,MAP_UNIT_KIND)<<26)>>26))goto next;
+if(M2C_FIELD((u8 *)map+M2C_FIELD(candidate,u8 *,MAP_UNIT_Y)*4,s8 **,MAP_GRID)[M2C_FIELD(candidate,u8 *,MAP_UNIT_X)]<0)goto next;
+acting=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+if(acting==candidate)goto next;
+if(M2C_FIELD(candidate,u16 *,MAP_UNIT_FLAGS)&8)goto next;
+if(!CanUnitsJoin(acting,candidate))goto next;
+if(func_ov000_021a93a8(candidate,M2C_FIELD(candidate,u8 *,MAP_UNIT_X),M2C_FIELD(candidate,u8 *,MAP_UNIT_Y))==1)goto next;
+if(IsUnitSelected(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))){
+candidateHealth=(u32)(M2C_FIELD(candidate,u16 *,MAP_UNIT_HEALTH)<<25)>>25;
+actingHealth=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25;
+score=actingHealth+candidateHealth; if(score<=130)goto evaluate;
 goto next;
 }else{
-hp=(u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25;
-other=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25;
-score=other+hp; if(score>110)goto next;
+candidateHealth=(u32)(M2C_FIELD(candidate,u16 *,MAP_UNIT_HEALTH)<<25)>>25;
+actingHealth=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25;
+score=actingHealth+candidateHealth; if(score>110)goto next;
 }
 evaluate:
-if(score>100)score=300-other+hp;
-if(score>=best){x=unit[1];y=unit[2];best=score;}
+if(score>100)score=300-actingHealth+candidateHealth;
+if(score>=bestScore){targetX=M2C_FIELD(candidate,u8 *,MAP_UNIT_X);targetY=M2C_FIELD(candidate,u8 *,MAP_UNIT_Y);bestScore=score;}
 next:
-i++;offset+=14;map=*gCurrentMap;
-}while(i<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51);
+unitId++;offset+=MAP_UNIT_STRIDE;map=*gCurrentMap;
+}while(unitId<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)]+51);
 }
-if(x==-1)return;
-if(IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26))func_ov000_0218dda4();
-active=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-M2C_FIELD(active,u16 *,8)&=~0x3000;
-SetMapCursor((s16)x,(s16)y,9,0,0);
+if(targetX==-1)return;
+if(IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_KIND)<<26)>>26))func_ov000_0218dda4();
+acting=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);
+M2C_FIELD(acting,u16 *,8)&=~0x3000;
+SetMapCursor((s16)targetX,(s16)targetY,9,0,0);
 }
 #pragma pop

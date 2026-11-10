@@ -54,6 +54,25 @@ typedef struct DS3DSpriteEngine {
     void *filler_54;
 } DS3DSpriteEngine;
 
+/* Control word of a 3D sprite object (at object+0x44). */
+typedef struct SpriteFlags {
+    u32 attr:16;          /* 16-bit attribute handed to the sprite draw call */
+    u32 screen:3;         /* engine to draw on: 0 main, 1 sub, 3 the active one */
+    u32 a:1;
+    u32 closeOnInput:1;   /* destroy the object once an input arrives */
+    u32 yAttr:1;          /* extra bit OR-ed into the 2D sprite's y */
+    u32 drawMode:2;       /* 0 none, 1 3D transform, 2 screen-space sprite */
+    u32 easing:2;         /* 0 none, else the EaseInterpolate curve of the fade */
+    u32 high:6;
+} SpriteFlags;
+
+/* Timing word of a 3D sprite object (at object+0x48). */
+typedef struct SpriteTimer {
+    u32 delay:10;    /* frames left before the object is updated */
+    u32 duration:11; /* total frames of the eased fade */
+    u32 elapsed:11;  /* frames since the fade started */
+} SpriteTimer;
+
 /* Easing curves of EaseInterpolate(mode, from, to, t, duration). */
 enum {
     EASE_LINEAR = 0,      /* constant speed */

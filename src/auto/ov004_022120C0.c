@@ -9,7 +9,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK func_020811b8();
     M2C_UNK func_0208116c();
     M2C_UNK func_02007ef4();
-    M2C_UNK func_020675e4();
+    M2C_UNK StringFormat();
     M2C_UNK func_020814e4();
     M2C_UNK func_020e3218();
     M2C_UNK func_02081590();
@@ -89,13 +89,13 @@ void func_ov004_022120c0(void *arg0) {
             func_020811b8(&data_ov004_02218e14, 3, 0, 0x200);
             func_0208116c(&data_ov004_02218e1c, 0, 0x20);
             func_02007ef4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x20, 0x20);
-            func_020675e4(bp, &data_ov004_02218e24, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e24, *((u8 *)a0 + 0x3a));
             func_020814e4(bp);
-            func_020675e4(bp, &data_ov004_02218e34, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e34, *((u8 *)a0 + 0x3a));
             func_02081590(func_020e3218(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10) + 0x20);
             func_02080cfc(&data_ov004_02218e44, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x100, 1);
-            func_020675e4(bp, &data_ov004_02218e4c, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e4c, *((u8 *)a0 + 0x3a));
             func_02081590(func_020e3218(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14) + 0x20);
             func_02080cfc(&data_ov004_02218e5c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x100, 0x1001);
@@ -154,9 +154,9 @@ void func_ov004_022120c0(void *arg0) {
 }
 
 void func_ov004_022124e0(s32 x,s32 y,s32 z,s32 number) {
-void AddSprite(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK data_027e005c,data_027e006c;
-AddSprite((u16)x,(u16)y,(u16)(z+SpriteTile124(14)),&data_027e005c,11);
-AddSprite((u16)(x+32),(u16)y,(u16)(z+SpriteTile124(18)),&data_027e005c,11);
+void AddSprite(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc32x16,data_027e006c;
+AddSprite((u16)x,(u16)y,(u16)(z+SpriteTile124(14)),&gSpriteDesc32x16,11);
+AddSprite((u16)(x+32),(u16)y,(u16)(z+SpriteTile124(18)),&gSpriteDesc32x16,11);
 AddSprite((u16)(x+64),(u16)y,(u16)(z+SpriteTile124(number/10+22)),&data_027e006c,11);
 AddSprite((u16)(x+72),(u16)y,(u16)(z+SpriteTile124(number%10+22)),&data_027e006c,11);
 }
@@ -164,18 +164,18 @@ AddSprite((u16)(x+72),(u16)y,(u16)(z+SpriteTile124(number%10+22)),&data_027e006c
 void func_ov004_02212688(s32 x, s32 y, s32 z)
 {
   void AddSprite(u16, u16, u16, void *, s32);
-  extern M2C_UNK data_027e005c;
-  AddSprite((u16) x, (u16) y, (u16) z, &data_027e005c, 11);
-  AddSprite((u16) (x + 32), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
-  AddSprite((u16) (x + 64), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
-  AddSprite((u16)((x + 96) | 4096), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
-  AddSprite((u16) ((x + 128) | 4096), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
+  extern M2C_UNK gSpriteDesc32x16;
+  AddSprite((u16) x, (u16) y, (u16) z, &gSpriteDesc32x16, 11);
+  AddSprite((u16) (x + 32), (u16) y, (u16) (z + SpriteTile124(4)), &gSpriteDesc32x16, 11);
+  AddSprite((u16) (x + 64), (u16) y, (u16) (z + SpriteTile124(8)), &gSpriteDesc32x16, 11);
+  AddSprite((u16)((x + 96) | 4096), (u16) y, (u16) (z + SpriteTile124(8)), &gSpriteDesc32x16, 11);
+  AddSprite((u16) ((x + 128) | 4096), (u16) y, (u16) (z + SpriteTile124(4)), &gSpriteDesc32x16, 11);
   x = (x+160)|4096;
-  AddSprite((u16)x,(u16)y,(u16)z,&data_027e005c,11);
+  AddSprite((u16)x,(u16)y,(u16)z,&gSpriteDesc32x16,11);
 }
 
 void func_ov004_0221285c(void) {
-    M2C_UNK func_02082770();
+    M2C_UNK Reset3DSpriteBankState();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -193,7 +193,7 @@ void func_ov004_0221285c(void) {
         }
         gCur3DSpriteEngine = var_r1;
         if (var_r1 == g3DSpriteEngineSub) {
-            func_02082770();
+            Reset3DSpriteBankState();
         }
         var_r8 += 1;
     } while (var_r8 < 2);

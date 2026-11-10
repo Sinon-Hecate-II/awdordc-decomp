@@ -4,7 +4,7 @@
 #pragma opt_loop_invariants off
 #pragma opt_strength_reduction off
 void func_ov000_0219b3c8(void) {
-    void func_01ffada0(s32, s32, s32, s32, s32);
+    void FloodFillUnitRange(s32, s32, s32, s32, s32);
     s32 GetUnitMoveRange(s32, s32);
     void func_ov000_0219c508(void *, s32);
     s32 func_020d27ec(s32, u8);
@@ -50,7 +50,7 @@ void func_ov000_0219b3c8(void) {
         continue;
     }
 
-    func_01ffada0(rec[1], rec[2], 1, sp4, 0);
+    FloodFillUnitRange(rec[1], rec[2], 1, sp4, 0);
     data=*gCurrentMap;
 
     rec_x = rec[1];
@@ -94,7 +94,7 @@ void func_ov000_0219b3c8(void) {
 #pragma opt_loop_invariants reset
 #pragma opt_strength_reduction reset
 s32 func_ov000_0219b648(s32 arg0,s32 arg1) {
- void SelectMapLayer(void *); void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb9c4(s32);
+ void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);void func_01ffb9c4(s32);
  s32 CanKindAttack(s32,s32); s32 ManhattanDistance(s16,s16,s16,s16);
  extern u8 data_ov000_021e0f60[],data_ov000_021b5bfc[],gMovementCostTable[];
  extern u16 gPlayerUnitIdBase[];
@@ -103,7 +103,7 @@ s32 func_ov000_0219b648(s32 arg0,s32 arg1) {
  SelectMapLayer(data_ov000_021e0f60);
  map=*gCurrentMap;
  costs=M2C_FIELD(gMovementCostTable,s8 **,0x64)+data_ov000_021b5bfc[0x82]*32;
- func_01ffada0(x,y,1,3-costs[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31],1);
+ FloodFillUnitRange(x,y,1,3-costs[M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,0x3758)),u8 *,0x1420)&31],1);
  func_01ffb9c4(0x6f);
  SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
  for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {

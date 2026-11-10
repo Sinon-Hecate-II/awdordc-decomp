@@ -69,7 +69,7 @@ s32 func_02048558(s32,s32,void (*)(void *));
 s32 func_020377c4(void *);
 M2C_UNK func_02048dc4(s32);
 s32 func_0204861c(s32);
-s32 func_020496a4(s32,s32,s32);
+s32 ghiSocket(s32,s32,s32);
 s32 func_020496e0(s32,void *,s32);
 M2C_UNK func_020496b8(s32);
 s32 func_020498b8(s32,void *,s32 *);
@@ -93,7 +93,7 @@ M2C_FIELD(p,s32 *,0xc)=func_02048c84(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
 if(!M2C_FIELD(p,s32 *,0xc)){func_020377c4(p);return 1;}
 M2C_FIELD(p,s32 *,0x10)=func_02048558(4,4,(void (*)(void *))func_0205cc90);
 if(!M2C_FIELD(p,s32 *,0x10)){func_02048dc4(M2C_FIELD(p,s32 *,0xc));func_020377c4(p);return 1;}
-M2C_FIELD(p,s32 *,0)=func_020496a4(2,2,0);
+M2C_FIELD(p,s32 *,0)=ghiSocket(2,2,0);
 if(M2C_FIELD(p,s32 *,0)==-1){func_02048dc4(M2C_FIELD(p,s32 *,0xc));func_0204861c(M2C_FIELD(p,s32 *,0x10));func_020377c4(p);return 3;}
 swapped=((port>>8)&0xff)|((port<<8)&0xff00);
 { struct Packet_0205 pkt={0};
@@ -265,7 +265,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     void func_0205d70c(M2C_UNK **, s32 *);
     s32 func_0204955c(s32);
     s32 func_02049824(s32, s32, s32, s32, void *, s32);
-    s32 func_02049900(s32);
+    s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, s32, s32);
     void func_0205d49c(void *);
     s32 func_0205cca0(void *, s32, s32);
@@ -288,7 +288,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
 
     res = func_02049824(*(s32 *)p, (s32)arg3, arg4, 0, &pkt, 8);
     if (res == -1) {
-        s32 r = func_02049900(*(s32 *)p);
+        s32 r = ghiGetLastSocketError(*(s32 *)p);
         if (r == -15) {
             s32 c = func_0205c244(p, arg1, arg2);
             if (c != 0) {
@@ -371,18 +371,18 @@ void func_0205d49c(void *a) {
 
 char *func_0205d4d8(s32 a,s32 b,char *p) {
 s32 func_02021c10(s32);
-s32 func_020675e4(char *,const char *,...);
+s32 StringFormat(char *,const char *,...);
 extern s32 data_0213e114;
 extern char data_0213e118[],data_020ff848[],data_020ff850[],data_020ff854[];
 volatile s32 saved;
 if (!p) { data_0213e114^=1; p=data_0213e118+data_0213e114*22; }
 if(a) {
 saved=a;
-if(b) func_020675e4(p,data_020ff848,func_02021c10(a),b);
-else func_020675e4(p,data_020ff850,func_02021c10(a));
+if(b) StringFormat(p,data_020ff848,func_02021c10(a),b);
+else StringFormat(p,data_020ff850,func_02021c10(a));
 } else {
 if(!b) *p=0;
-else func_020675e4(p,data_020ff854,b);
+else StringFormat(p,data_020ff854,b);
 }
 return p;
 }
@@ -390,9 +390,9 @@ return p;
 #pragma opt_common_subs off
 s32 func_0205d588(char *a, s32 *b, u16 *c) {
     char *func_02068ee0(char *, s32);
-    M2C_UNK func_020640a8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void MemCopy(void *, const void *, s32);
-    s32 func_0206ad38(char *);
+    s32 ParseInt(char *);
     s32 func_020498e4(void *);
     void *func_02021768(void *);
     extern u16 gCharClassTable[];
@@ -416,7 +416,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
             if (colon == r8) { r8 = 0; r4 = 0; } else {
                 s32 r9 = (s32)colon - (s32)r8;
                 if (r9 >= 0x100) {
-                    func_020640a8((M2C_UNK)data_020ff858, (M2C_UNK)data_020ff878, (M2C_UNK)data_020ff834, 0x81);
+                    AssertFailed((M2C_UNK)data_020ff858, (M2C_UNK)data_020ff878, (M2C_UNK)data_020ff834, 0x81);
                 }
                     MemCopy(buf, r8, r9);
                     r8 = buf;
@@ -433,7 +433,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
                     }
                 }
             {
-                s32 rr = func_0206ad38((char *)(r5 + 1));
+                s32 rr = ParseInt((char *)(r5 + 1));
                 if (rr < 0 || rr > 0xffff) {
                     return 0;
                 }

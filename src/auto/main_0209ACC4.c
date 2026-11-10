@@ -129,7 +129,7 @@ void func_0209aeb4(void *arg0) {
     s32 func_0209acc4(void *);
     u32 func_0209dc9c(void);
     u32 func_0209dde0(void);
-    M2C_UNK func_01ffa574(M2C_UNK);
+    M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK func_01ffa6fc(M2C_UNK);
     s32 func_01ffa770(M2C_UNK *);
     extern M2C_UNK data_02102eac;
@@ -191,7 +191,7 @@ void func_0209aeb4(void *arg0) {
                     func_02097964();
                     func_01ffa6fc(arg0);
                 } else {
-                    func_01ffa574(arg0);
+                    DeleteSpriteObject(arg0);
                 }
             }
         skip_tail:
@@ -288,7 +288,7 @@ void func_0209b1b0(void *arg0) {
 
 void func_0209b26c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
-    func_0209b2b4(arg0, arg1, arg2, func_02086680(arg3), arg4, arg5);
+    func_0209b2b4(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
 }
 
 void func_0209b2b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
@@ -299,7 +299,7 @@ void func_0209b2b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
 
 void func_0209b2dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
     void func_0209b32c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
-    func_0209b32c(arg0, arg1, arg2, func_02086680(arg3), arg4, arg5, arg6);
+    func_0209b32c(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5, arg6);
 }
 
 void func_0209b32c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
@@ -363,9 +363,9 @@ void func_0209b59c(M2C_UNK arg0, s32 arg1) {
 }
 
 void func_0209b5c4(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_02086680(M2C_UNK);
+    s32 GetLocalizedText(M2C_UNK);
     M2C_UNK func_0209b5e4(M2C_UNK, s32);
-    func_0209b5e4(arg0, func_02086680(arg1));
+    func_0209b5e4(arg0, GetLocalizedText(arg1));
 }
 
 s32 func_0209b5e4(M2C_UNK a,s32 b) {
@@ -381,27 +381,31 @@ s32 func_0209b5e4(M2C_UNK a,s32 b) {
 
 #pragma push
 #pragma scheduling off
-void func_0209b67c(s32 a0,s32 a1,s32 a2,u16 a3,s32 a4) {
-extern u8 data_027e005c[],data_027e00a4[],data_027e0084[];
+/* Draw a 16-pixel-tall run of map tiles, width pixels wide starting at tile baseTile, at (x, y)
+ * as priority-ordered 3D sprites; 4-cell pieces use the 32x16 descriptor, then 2-cell and 1-cell
+ * pieces use the 16x8 and 8x8 ones stacked in pairs, advancing across the tile grid and wrapping
+ * the screen x coordinate at 512. */
+void DrawTileRow(s32 x,s32 y,s32 width,u16 baseTile,s32 priority) {
+extern u8 gSpriteDesc32x16[],gSpriteDesc16x8[],gSpriteDesc8x8[];
 extern s32 gCur3DSpriteEngine;
-s32 n=(a2+7)>>3;u32 x=a0,y=a1;u16 param=a3;
-if(n>=4)do {
-u32 mode,nextParam,nextX;
-EmitSpritePriority((u16)x,y,param,data_027e005c,a4);
+s32 cells=(width+7)>>3;u32 curX=x,curY=y;u16 tile=baseTile;
+if(cells>=4)do {
+u32 mode,nextTile,nextX;
+EmitSpritePriority((u16)curX,curY,tile,gSpriteDesc32x16,priority);
 mode=((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30;
-nextParam=param+(0x3ff&(8>>(s32)mode));
-nextX=(((x&0x1ff)+32)&0x1ff)|(x&0xfe00);
-param=(u16)nextParam;x=(u16)nextX;n-=4;
-}while(n>=4);
-if(n>=2){
+nextTile=tile+(0x3ff&(8>>(s32)mode));
+nextX=(((curX&0x1ff)+32)&0x1ff)|(curX&0xfe00);
+tile=(u16)nextTile;curX=(u16)nextX;cells-=4;
+}while(cells>=4);
+if(cells>=2){
 u32 mode;
-DrawSpritePairPriority(x,y,param,data_027e00a4,a4);
+DrawSpritePairPriority(curX,curY,tile,gSpriteDesc16x8,priority);
 mode=((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30;
-param=(u16)(param+(0x3ff&(2>>(s32)mode)));
-x=(u16)((((x&0x1ff)+16)&0x1ff)|(x&0xfe00));
-n-=2;
+tile=(u16)(tile+(0x3ff&(2>>(s32)mode)));
+curX=(u16)((((curX&0x1ff)+16)&0x1ff)|(curX&0xfe00));
+cells-=2;
 }
-if(n>=1)DrawSpritePairPriority(x,y,param,data_027e0084,a4);
+if(cells>=1)DrawSpritePairPriority(curX,curY,tile,gSpriteDesc8x8,priority);
 }
 #pragma pop
 void func_0209b8c0(void *arg0) {
@@ -442,9 +446,9 @@ s32 func_0209b91c(M2C_UNK arg0, s32 arg1) {
 #pragma scheduling off
 void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     void func_01ff90e4(u16, u16, u32, u16 *);
-    extern u8 data_027e005c[];
-    extern u8 data_027e00a4[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc32x16[];
+    extern u8 gSpriteDesc16x8[];
+    extern u8 gSpriteDesc8x8[];
     extern s32 gCur3DSpriteEngine;
 
     s32 n = ((s32)a2 + 7) >> 3;
@@ -457,7 +461,7 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
             u32 mode;
             u32 nextParam;
             u32 nextX;
-            EmitSprite((u16)x, y, (u32)param, (u16 *)data_027e005c);
+            EmitSprite((u16)x, y, (u32)param, (u16 *)gSpriteDesc32x16);
             n -= 4;
             mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
             nextParam = param + (0x3ff & (8 >> (s32)mode));
@@ -469,7 +473,7 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
 
     if (n >= 2) {
         u32 mode;
-        DrawSpritePair(x,y,param,(u16 *)data_027e00a4);
+        DrawSpritePair(x,y,param,(u16 *)gSpriteDesc16x8);
         mode = (u32)(((u32)(**(u16 **)gCur3DSpriteEngine) << 17) >> 30);
         param = (u16)(param + (0x3ff & (2 >> (s32)mode)));
         x = (u16)((((((x & 0x1ff) + 0x10) & 0x1ff) | (x & 0xfe00))));
@@ -477,15 +481,15 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     }
 
     if (n >= 1) {
-        DrawSpritePair(x,y,param,(u16 *)data_027e0084);
+        DrawSpritePair(x,y,param,(u16 *)gSpriteDesc8x8);
     }
 }
 #pragma scheduling reset
 void func_0209bbd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
     void func_0209bc18(M2C_UNK, M2C_UNK, s32, s32, u16, u16);
-    M2C_UNK func_02086680(M2C_UNK);
+    M2C_UNK GetLocalizedText(M2C_UNK);
 
-    func_0209bc18(arg0, arg1, arg2, func_02086680(arg3), arg4, arg5);
+    func_0209bc18(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
 }
 
 void func_0209bc18(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {

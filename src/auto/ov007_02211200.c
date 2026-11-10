@@ -1,45 +1,49 @@
 /* 41 functions from 0x02211200 to 0x02212200 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
-void func_ov007_02211200(void *arg0) {
+/* Starts the map editor for the map gCurrentMap points at: resets the map and
+ * player state, gives the map a name (its saved name, or a default "%s%02d"
+ * built from the map slot), resets the editor palette and opens the editor scenes. */
+void MapEditor_StartMap(void *editor) {
  extern void **gCurrentMap;
- extern u8 data_ov007_0221f678[];
+ extern u8 gMapNameFormat[];
  void func_ov007_02211ea4(s32);void func_ov007_02211f10(s32);
  void func_ov007_02211f60(s32);void func_ov007_02211f70(s32);void func_ov007_02211f80(s32);void func_ov007_02211fb0(s32);void func_ov007_02211fc0(s32);
  void func_ov007_022121b0(void);void func_ov007_022121d4(s32);void func_ov007_022121e4(void);
  void func_020cf498(s16,s16);
- void *base;
- s32 value;
- s32 x,y;
+ void *map;
+ s32 text;
+ s32 centerX,centerY;
  void (*callback)(void);
  func_020ceb48();func_020d8cfc();
- M2C_FIELD(*gCurrentMap,u8*,0x5141)=4;
- func_020bfb74(0);func_0209f5dc();func_020bfa80(0);
- if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,0x5142))){
- base=*gCurrentMap;
- value=func_02086680(0xc00002eb);
- func_020675e4((u8*)base+0x5120,data_ov007_0221f678,value,func_020c8018(M2C_FIELD(base,u16*,0x5142))+1);
+ M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
+ func_020bfb74(0);ResetPlayerSetupTables();func_020bfa80(0);
+ if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
+ map=*gCurrentMap;
+ text=GetLocalizedText(0xc00002eb);
+ StringFormat((u8*)map+MAP_NAME,gMapNameFormat,text,func_020c8018(M2C_FIELD(map,u16*,MAP_ID))+1);
  }else{
- base=*gCurrentMap;
- value=func_020cfbdc(M2C_FIELD(base,u16*,0x5142));
- func_02068c50((u8*)base+0x5120,value);
+ map=*gCurrentMap;
+ text=func_020cfbdc(M2C_FIELD(map,u16*,MAP_ID));
+ StringCopy((u8*)map+MAP_NAME,text);
  }
  InitPlayerStates();func_020d1f2c();
- M2C_FIELD(*gCurrentMap,u16*,0x52a4)=0;
+ M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
  func_020ceec8();func_02086608(4);func_020cbdbc();func_020a68d4();func_020a45cc();func_020a23c4();func_020d1c58();func_020d1ce0();
- func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,0x5142));func_020b1ae0();
+ func_ov007_0221c648(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
  func_0207ce28((u8*)*gCurrentMap+0x6ef8);func_020d4b30();
- base=*gCurrentMap;
- x=(u32)M2C_FIELD(base,u16*,0x5144)>>1;
- y=(u32)M2C_FIELD(base,u16*,0x5146)>>1;
- func_020cf498((s16)x,(s16)y);func_0207b754(x,y);
+ map=*gCurrentMap;
+ centerX=(u32)M2C_FIELD(map,u16*,MAP_WIDTH)>>1;
+ centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
+ func_020cf498((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
  func_ov007_02211ea4(0);func_ov007_02211f10(0);func_ov007_02211f60(1);func_ov007_02211f70(1);func_ov007_02211f80(0);func_ov007_02211fb0(1);func_ov007_02211fc0(0);
  func_ov007_022121b0();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();func_ov007_022121d4(0);
- M2C_FIELD(arg0,u8*,0x34)=1;
+ M2C_FIELD(editor,u8*,0x34)=1;
  func_ov007_022121e4();
 }
 

@@ -429,7 +429,7 @@ if(p){r=p;M2C_FIELD(&data_ov010_0222d908,void **,4)=M2C_FIELD(p,void **,0);}
 OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));return r;
 }
 
-void func_ov010_02224ef8(void *p){extern M2C_UNK data_ov010_0222d908;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&data_ov010_0222d908,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&data_ov010_0222d908,void **,4);M2C_FIELD(&data_ov010_0222d908,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));}
+void Link_FreePacket(void *p){extern M2C_UNK data_ov010_0222d908;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&data_ov010_0222d908,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&data_ov010_0222d908,void **,4);M2C_FIELD(&data_ov010_0222d908,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&data_ov010_0222d908,s32 *,0));}
 
 #pragma opt_common_subs off
 void func_ov010_02224f28(void) {

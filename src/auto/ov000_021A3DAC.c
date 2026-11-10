@@ -7,11 +7,11 @@ static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; retu
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
 s32 func_ov000_021a3dac(void) {
- s32 func_ov000_021a6264(s32);void func_ov000_021a0204(void);
- void func_01ffada0(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void func_ov000_021a34bc(u8);
- s32 func_020ba924(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 func_ov000_021a98c8(s32);
- s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void func_ov000_021a07c0(s32);
- extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 data_ov000_021b5bfc[];extern M2C_UNK data_ov000_021df7d0;
+ s32 func_ov000_021a6264(s32);void ResetAiTargetCandidates(void);
+ void FloodFillUnitRange(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void func_ov000_021a34bc(u8);
+ s32 GetTerrainPropertyFlagsAt(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 IsCaptureKind(s32);
+ s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void CommitAiAction(s32);
+ extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 data_ov000_021b5bfc[];extern M2C_UNK gAiCommand;
  s32 other,armed,transport,flag,index,i;
  u8 *candidate;
  u8 *unit;
@@ -21,9 +21,9 @@ s32 func_ov000_021a3dac(void) {
  void **holder;
  for(;;){
  index=func_ov000_021a6264(3);
- if(index==-1){func_ov000_021a0204();return 0;}
+ if(index==-1){ResetAiTargetCandidates();return 0;}
  candidate=gAiTargetCandidates+index*12;
- func_01ffada0(candidate[0],candidate[1],2,110,0);
+ FloodFillUnitRange(candidate[0],candidate[1],2,110,0);
  for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),24);i++)func_ov000_021a34bc((u8)(i+111));
  combat=0;capture=0;carrier=0;armed=0;y=0;other=0;transport=0;flag=0;map=GetCandidateMapState();
  for(;y<M2C_FIELD(map,u16 *,0x5146);y++){
@@ -31,7 +31,7 @@ s32 func_ov000_021a3dac(void) {
  tile=M2C_FIELD(M2C_FIELD((u8 *)map+y*4,s8 **,0x52e8),s8 *,x);
  if(tile<0)goto nextCell;
  if(tile<=110){
- if(func_020ba924(x,y)==1)goto foundFlag;
+ if(GetTerrainPropertyFlagsAt(x,y)==1)goto foundFlag;
  {
  map=*gCurrentMap;
  {u8 terrain=M2C_FIELD((u8 *)map+x+M2C_FIELD((u8 *)map+y*2+0x3700,u16 *,0x58),u8 *,0x1420);
@@ -52,9 +52,9 @@ s32 func_ov000_021a3dac(void) {
  if(IsCurrentPlayerUnit((s16)id)!=1)goto nextCell;
  if(M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x)<=110) {
  if(((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30)==2){
- if(func_ov000_021a98c8(((UnkStruct_ov000_021A860C *)unit)->unk0))capture=(s8)(capture+1);else combat=(s8)(combat+1);
+ if(IsCaptureKind(((UnkStruct_ov000_021A860C *)unit)->unk0))capture=(s8)(capture+1);else combat=(s8)(combat+1);
  } else {
- if(func_ov000_021a98c8(((UnkStruct_ov000_021A860C *)unit)->unk0))other=(s8)(other+1);
+ if(IsCaptureKind(((UnkStruct_ov000_021A860C *)unit)->unk0))other=(s8)(other+1);
  else if(M2C_FIELD(data_ov000_021b5bfc+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7)armed=(s8)(armed+1);
  }
  }
@@ -68,7 +68,7 @@ s32 func_ov000_021a3dac(void) {
  if(!(combat+armed)&&capture<=1)goto discard;
  required=transport+1;
  if(required*4>combat+capture)goto discard;
- M2C_FIELD(&data_ov000_021df7d0,u8 *,6)=24;func_ov000_021a07c0(index);func_ov000_021a0204();return 1;
+ M2C_FIELD(&gAiCommand,u8 *,6)=24;CommitAiAction(index);ResetAiTargetCandidates();return 1;
  discard: candidate[3]=253;
  }
 }
@@ -79,8 +79,8 @@ s32 func_ov000_021a41f8(void){
 s32 func_020d2d18(u16,s32);u8 func_ov000_021a43a0(s32);s32 func_ov000_021a3dac(void);
 s32 func_ov000_021a6264(s32);s32 func_ov000_021a5ffc(s32);u8 func_ov000_021a88c8(s32);
 s32 func_ov000_021a379c(void);s32 func_ov000_021a36e4(void);s32 func_ov000_021a3644(s32);
-void func_ov000_021a07c0(s32);
-extern void **gCurrentMap;extern M2C_UNK data_ov000_021df7d0;
+void CommitAiAction(s32);
+extern void **gCurrentMap;extern M2C_UNK gAiCommand;
 void *p;u16 id;s32 a,r,n,x,y,z;
 if(!func_ov000_021a43a0(2))return 0;
 p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
@@ -90,7 +90,7 @@ r=func_ov000_021a6264(3);if(r==-1){r=func_ov000_021a5ffc(3);if(r==-1)return 0;}
 a=func_ov000_021a88c8(24);n=func_ov000_021a379c();
 if(!n){if(func_ov000_021a36e4()<=1)return 0;}
 if(a){y=func_ov000_021a3644(24)+1;x=func_ov000_021a3644(25);z=func_ov000_021a36e4()-x*2;if(z<0)z=0;if(n+z<y*4)return 0;}
-M2C_FIELD(&data_ov000_021df7d0,u8 *,6)=24;func_ov000_021a07c0(r);return 1;
+M2C_FIELD(&gAiCommand,u8 *,6)=24;CommitAiAction(r);return 1;
 }
 
 u8 func_ov000_021a4320(void) {
@@ -156,7 +156,7 @@ s32 func_ov000_021a43e8(s32 arg0) {
 }
 
 s32 func_ov000_021a4414(void) {
-s32 func_ov000_021a43e8(s32);s32 func_ov000_021a98e4(s32);
+s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 u8 *entries;s32 count7=0,count8=0,i,idx;void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16*,0x52a4)];
@@ -166,8 +166,8 @@ idx=i*14;
 if((u32)(entries[idx]<<26)>>26){
 if(!func_ov000_021a43e8((u32)(entries[idx]<<26)>>26)){
 if(data_ov000_021b5bfc[((u32)(entries[idx]<<26)>>26)*112+19]&7){
-if(func_ov000_021a98e4((u32)(entries[idx]<<26)>>26)==0)count7++;
-if(func_ov000_021a98e4((u32)(entries[idx]<<26)>>26)==1)count8++;
+if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==0)count7++;
+if(GetUnitAttackClass((u32)(entries[idx]<<26)>>26)==1)count8++;
 }}}
 base=*gCurrentMap;
 }
@@ -176,7 +176,7 @@ return 1;
 }
 
 s32 func_ov000_021a4510(void) {
-s32 func_ov000_021a43e8(s32);s32 func_ov000_021a98e4(s32);
+s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 a=0,b=0,i;
 void *base=*gCurrentMap;
@@ -185,15 +185,15 @@ for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++
 u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
 if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
 if(data_ov000_021b5bfc[((u32)(entry[0]<<26)>>26)*112+19]&7){
-if(func_ov000_021a98e4((u32)(entry[0]<<26)>>26)==0)a++;
-if(func_ov000_021a98e4((u32)(entry[0]<<26)>>26)==1)b++;
+if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
+if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
 }}
 }
 if(a>b)return 0;return 1;
 }
 
 s32 func_ov000_021a4608(void) {
-s32 func_ov000_021a43e8(s32);s32 func_ov000_021a98e4(s32);
+s32 func_ov000_021a43e8(s32);s32 GetUnitAttackClass(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 a=0,b=0,i;
 void *base=*gCurrentMap;
@@ -202,8 +202,8 @@ for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++
 u8 *entry=(u8 *)*gCurrentMap+0x59a4+i*14;
 if(((u32)(entry[0]<<26)>>26)!=0 && !func_ov000_021a43e8((u32)(entry[0]<<26)>>26)){
 if(data_ov000_021b5bfc[((u32)(entry[0]<<26)>>26)*112+19]&7 && ((u32)(entry[0]<<26)>>26)!=26){
-if(func_ov000_021a98e4((u32)(entry[0]<<26)>>26)==0)a++;
-if(func_ov000_021a98e4((u32)(entry[0]<<26)>>26)==1)b++;
+if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==0)a++;
+if(GetUnitAttackClass((u32)(entry[0]<<26)>>26)==1)b++;
 }}
 }
 if(a>(b<<1))return 0;return 1;
@@ -211,7 +211,7 @@ if(a>(b<<1))return 0;return 1;
 
 s32 func_ov000_021a4704(void) {
     s32 func_ov000_021a43e8(s32);
-    s32 func_ov000_021a98e4(s32);
+    s32 GetUnitAttackClass(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
@@ -237,10 +237,10 @@ s32 func_ov000_021a4704(void) {
                         if (((u32)((entries[idx]) << 0x1A) >> 0x1A) == 0x1A) {
                             count11 += 1;
                         } else {
-                            if (func_ov000_021a98e4(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 0) {
+                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 0) {
                                 count5 += 1;
                             }
-                            if (func_ov000_021a98e4(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 1) {
+                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 1) {
                                 count6 += 1;
                             }
                         }

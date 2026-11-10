@@ -66,7 +66,7 @@ case 4: func_ov010_02221474((u8 *)arg0+4,arg1,arg2,arg3); return;
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
 s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void func_ov010_0222393c(void *,u32,s32);void func_ov010_022232e0(void);void func_ov010_02225288(void);
-extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,gLinkConfig;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 data_ov010_0222c998[];
+extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,gLinkConfig;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 gLinkChannelStates[];
 s32 i; s32 saved; s32 n; u8 x,y; u8 *t;
 saved=func_020070a4();
 M2C_FIELD(&data_ov010_0222c960,u16 *,0)=saved; data_ov010_0222c000=1;
@@ -87,7 +87,7 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,3848)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3856)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3860)=0;
 func_ov010_02225174();
-i=0;goto test;loop:{data_ov010_0222c98c[i]=0;func_ov010_02223654(i);func_ov010_0222393c(data_ov010_0222c998+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
+i=0;goto test;loop:{data_ov010_0222c98c[i]=0;func_ov010_02223654(i);func_ov010_0222393c(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
 func_ov010_022232e0();func_ov010_02225288();return 1;
 }
 #pragma opt_strength_reduction reset
@@ -104,7 +104,7 @@ void func_ov010_02224f28(void);
 s32 func_020070a4(void);
 extern s32 data_ov010_0222c960;
 extern void *data_ov010_0222c98c[];
-extern u8 data_ov010_0222c998[];
+extern u8 gLinkChannelStates[];
 s32 i;
 if(!p)return 0;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==3)return 0;
@@ -118,7 +118,7 @@ test2:if((u32)i<3)goto loop2;
 found:
 M2C_FIELD(&data_ov010_0222c960,s32*,0x20)++;
 M2C_FIELD(&data_ov010_0222c960,u32*,4)|=M2C_FIELD(p,u32*,8);
-func_ov010_0222393c((void *)((s32)data_ov010_0222c998+i*0x94),i,M2C_FIELD(p,u8*,5));
+func_ov010_0222393c((void *)((s32)gLinkChannelStates+i*0x94),i,M2C_FIELD(p,u8*,5));
 func_ov010_02223654(i);
 if(M2C_FIELD(p,s32*,12)!=2)return 1;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==1){
@@ -138,7 +138,7 @@ return 1;
 }
 #pragma optimization_level reset
 void func_ov010_022226fc(void *arg0) {
-extern void *data_ov010_0222c98c[]; extern u8 data_ov010_0222c998[]; extern M2C_UNK data_ov010_0222c960;
+extern void *data_ov010_0222c98c[]; extern u8 gLinkChannelStates[]; extern M2C_UNK data_ov010_0222c960;
 void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010_02223314(u32); void func_ov010_02224f28(void);
 u32 i;
 for(i=0;i<3;i++) {
@@ -146,7 +146,7 @@ if(data_ov010_0222c98c[i]==arg0) {
 s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20);
 data_ov010_0222c98c[i]=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;
-func_ov010_022239c8(data_ov010_0222c998+i*0x94);
+func_ov010_022239c8(gLinkChannelStates+i*0x94);
 func_ov010_0222369c(i);
 func_ov010_02223314(i);
 M2C_FIELD(&data_ov010_0222c960,u32 *,4)=M2C_FIELD(&data_ov010_0222c960,u32 *,4) & ~M2C_FIELD(arg0,u32 *,8);
@@ -185,60 +185,64 @@ return 1;
 }
 
 #pragma optimization_level 3
-s32 func_ov010_022228c0(void *dst,s32 size,u32 group,s32 *flag){
-s32 func_ov010_0222392c(s32);
+/* Pulls the next queued packet for one link channel and plays it into `dst`:
+ * keeps the channel's playback clock in step with the packet timestamps, skips
+ * packets that arrived too late, and reports the packet's player bit in `flag`.
+ * Returns 1 when a packet was delivered. */
+s32 Link_PullChannelPacket(void *dst,s32 size,u32 channel,s32 *flag){
+s32 Link_GetQueueCount(s32);
 s64 func_02007004(void);
-void *func_ov010_02223878(s32);
-s32 func_ov010_022239f4(void *,void *);
+void *Link_PeekPacket(s32);
+s32 Link_AdvancePacket(void *,void *);
 void func_02007ef4(void *,void *,s32);
-void func_ov010_02224ef8(void *);
-extern u8 data_ov010_0222c998[];
+void Link_FreePacket(void *);
+extern u8 gLinkChannelStates[];
 s32 count;
-void *item;
-void *state=data_ov010_0222c998+group*0x94;
+void *packet;
+void *state=gLinkChannelStates+channel*LINK_CHANNEL_STRIDE;
 s32 first=1;
 u64 now;
-count=func_ov010_0222392c(group);
+count=Link_GetQueueCount(channel);
 while(count!=0){
 now=func_02007004();
-item=func_ov010_02223878(group);
-if(!item)goto empty;
-if(M2C_FIELD(item,u64 *,0x46c)>now+0x34){
-if(M2C_FIELD(item,s32 *,0x45c)==0 && M2C_FIELD(state,void **,0x3c)!=0){
+packet=Link_PeekPacket(channel);
+if(!packet)goto empty;
+if(M2C_FIELD(packet,u64 *,0x46c)>now+0x34){
+if(M2C_FIELD(packet,s32 *,0x45c)==0 && M2C_FIELD(state,void **,0x3c)!=0){
 M2C_FIELD(state,s32 *,0x20)++;
 func_02007ef4(M2C_FIELD(M2C_FIELD(state,void **,0x3c),void **,0x474),dst,size);
-func_ov010_02224ef8(M2C_FIELD(state,void **,0x3c));
+Link_FreePacket(M2C_FIELD(state,void **,0x3c));
 M2C_FIELD(state,void **,0x3c)=0;
-if(flag)*flag|=1<<M2C_FIELD(item,u8 *,0x10);
+if(flag)*flag|=1<<M2C_FIELD(packet,u8 *,0x10);
 return 1;
 }
 return 0;
 }
-if(now>M2C_FIELD(item,u64 *,0x46c)+0x8b4c){
-M2C_FIELD(state,u32 *,0x58)=M2C_FIELD(item,u32 *,0x18);
-count=func_ov010_022239f4(state,item);
-func_ov010_02223878(group);
+if(now>M2C_FIELD(packet,u64 *,0x46c)+0x8b4c){
+M2C_FIELD(state,u32 *,0x58)=M2C_FIELD(packet,u32 *,0x18);
+count=Link_AdvancePacket(state,packet);
+Link_PeekPacket(channel);
 first=0;
 }else{
 
-if(M2C_FIELD(state,u32 *,0x58)+1!=M2C_FIELD(item,u32 *,0x18) && M2C_FIELD(state,u32 *,0x58)!=0 && M2C_FIELD(state,u32 *,0x58)<=M2C_FIELD(item,u32 *,0x18)){
-if(M2C_FIELD(item,s32 *,0x45c)==0)M2C_FIELD(state,s32 *,0x14)++;
+if(M2C_FIELD(state,u32 *,0x58)+1!=M2C_FIELD(packet,u32 *,0x18) && M2C_FIELD(state,u32 *,0x58)!=0 && M2C_FIELD(state,u32 *,0x58)<=M2C_FIELD(packet,u32 *,0x18)){
+if(M2C_FIELD(packet,s32 *,0x45c)==0)M2C_FIELD(state,s32 *,0x14)++;
 }
-M2C_FIELD(state,u32 *,0x58)=M2C_FIELD(item,u32 *,0x18);
+M2C_FIELD(state,u32 *,0x58)=M2C_FIELD(packet,u32 *,0x18);
 if(first && M2C_FIELD(state,s32 *,0x70)){
-count=func_ov010_022239f4(state,item);
-func_ov010_02223878(group);
+count=Link_AdvancePacket(state,packet);
+Link_PeekPacket(channel);
 M2C_FIELD(state,s32 *,0x70)--;
 }else{
-u32 t=(u32)(now-M2C_FIELD(item,u64 *,0x464));
+u32 t=(u32)(now-M2C_FIELD(packet,u64 *,0x464));
 u32 x=M2C_FIELD(state,u32 *,0x28);
 u32 z=t-x;
 M2C_FIELD(state,u32 *,0x28)=t;
 z-=M2C_FIELD(state,u32 *,0x28);
 {u32 smooth=t+(z>>4);M2C_FIELD(state,u32 *,0x2c)=smooth;M2C_FIELD(state,u32 *,0)=smooth;}
-func_02007ef4(M2C_FIELD(item,void **,0x474),dst,size);
-func_ov010_022239f4(state,item);
-if(flag)*flag|=1<<M2C_FIELD(item,u8 *,0x10);
+func_02007ef4(M2C_FIELD(packet,void **,0x474),dst,size);
+Link_AdvancePacket(state,packet);
+if(flag)*flag|=1<<M2C_FIELD(packet,u8 *,0x10);
 return 1;
 }
 }
@@ -246,12 +250,12 @@ continue;
 empty:
 M2C_FIELD(state,s32 *,8)=count;return 0;
 }
-if(M2C_FIELD(state,void **,0x3c)){func_ov010_02224ef8(M2C_FIELD(state,void **,0x3c));M2C_FIELD(state,void **,0x3c)=0;}
+if(M2C_FIELD(state,void **,0x3c)){Link_FreePacket(M2C_FIELD(state,void **,0x3c));M2C_FIELD(state,void **,0x3c)=0;}
 return 0;
 }
 #pragma optimization_level reset
 s32 func_ov010_02222b0c(void *p,s32 size,s32 *out){
-s32 func_ov010_022228c0(void*,s32,u32,s32*);
+s32 Link_PullChannelPacket(void*,s32,u32,s32*);
 void func_ov010_02225558(void*,void*,void*,s32);
 void func_02007e98(s32,void*,s32);
 void func_ov010_02225304(void*,s32);
@@ -262,13 +266,13 @@ if(out)*out=0;
 result=0;
 if(size==M2C_FIELD(&data_ov010_0222c960,s32*,0x24)&&M2C_FIELD(&data_ov010_0222c960,s32*,0x20)){
 for(i=0;i<3;i++){
-if(func_ov010_022228c0(p,size,i,out)==1){result=1;break;}
+if(Link_PullChannelPacket(p,size,i,out)==1){result=1;break;}
 }
 if(result){
 j=i+1;
 if(j==3)result=1;
 else for(;j<3;j++){
-if(func_ov010_022228c0(data_ov010_0222cb54,size,j,out)==1)
+if(Link_PullChannelPacket(data_ov010_0222cb54,size,j,out)==1)
 func_ov010_02225558(p,data_ov010_0222cb54,p,size);
 }
 }else func_02007e98(0,p,size);
@@ -314,7 +318,7 @@ void func_ov010_02225538(void *,u32,u32);
 s32 func_ov010_02224f94(u32,u32,s32);
 void func_ov010_022234f8(void *,void *,u32);
 void func_ov010_022235f8(void *,void *,u32);
-s32 func_02076614(void);
+s32 CountBits(void);
 u32 n;
 u32 packetFlags;
 u8 *payload,*packet;
@@ -361,7 +365,7 @@ n=M2C_FIELD(&data_ov010_0222c960,u32 *,4);
 M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
 n&=~(1U<<M2C_FIELD(&gLinkConfig,u8 *,0));
 M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)=func_02076614()-1;
+M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)=CountBits()-1;
 if(M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)>7)return 0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0xf10)=0;
 return (s32)packet;
@@ -375,10 +379,10 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void func_ov010_0222335c(void);
     s32 func_ov010_02223b18(void *, void *);
     void func_ov010_022233ac(void *);
-    void func_ov010_02224ef8(void *);
+    void Link_FreePacket(void *);
     void MI_CpuCopy8(void *, void *, s32);
     extern M2C_UNK data_ov010_0222c960;
-    extern u8 data_ov010_0222c998[];
+    extern u8 gLinkChannelStates[];
     extern u8 data_ov010_0222be2d[];
     extern u8 data_ov010_0222be2c[];
 
@@ -405,11 +409,11 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (M2C_FIELD(&data_ov010_0222c960, s32 *, 0x20) == 0)
         return (s32)slot;
 
-    p = data_ov010_0222c998;
+    p = gLinkChannelStates;
     i = 0;
     do {
         if (a0 == M2C_FIELD(p, s32 *, 0x38)) {
-            slot = data_ov010_0222c998 + i * 0x94;
+            slot = gLinkChannelStates + i * 0x94;
             break;
         }
         i++;
@@ -470,7 +474,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD(item, u32 *, 0x18) = M2C_FIELD(a1, u16 *, 6);
 
     if (func_ov010_02223b18(slot, item) == 0) {
-        func_ov010_02224ef8(item);
+        Link_FreePacket(item);
         return 0;
     }
     func_ov010_022233ac(item);

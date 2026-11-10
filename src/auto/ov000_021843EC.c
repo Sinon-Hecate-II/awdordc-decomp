@@ -16,10 +16,10 @@ static inline u8 Terrain851B8(s32 x,s32 y) { extern void **gCurrentMap;u8 *p=*gC
 #pragma opt_common_subs off
 int IsFootUnitKind(int);
 int GetUnitDamagePercent(int,int);
-int func_ov000_021a9820(int,int);
-int func_ov000_021a98e4(int);
+int GetUnitMaxAttackRange(int,int);
+int GetUnitAttackClass(int);
 int func_0207c8ec(int,int);
-void func_01ffada0(int,int,int,int,int);
+void FloodFillUnitRange(int,int,int,int,int);
 void func_02007f8c(void *,int,int);
 int func_020d27a4(int,int);
 int GetUnitMoveRange(int,int);
@@ -51,7 +51,7 @@ if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
 if(!((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7)))))return;
 }
-func_01ffada0(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,data_ov000_021df580[5]*2,0);
+FloodFillUnitRange(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,data_ov000_021df580[5]*2,0);
 func_02007f8c(data_ov000_021e0f60,0,1288);
 ally=0;enemy=0;
 map=*gCurrentMap;y=0;
@@ -81,24 +81,24 @@ if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(k
 ally++;goto next_unit;
 }
 if(M2C_FIELD(((Map843EC *)*gCurrentMap)->costs[y],s8 *,x)>data_ov000_021df580[5])goto next_unit;
-if(func_ov000_021a98e4((u32)(unit[0]<<26)>>26)==1){
-if(x-func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)<0)left=0;
-else left=x-func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
-if(y-func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)<0)top=0;
-else top=y-func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
+if(GetUnitAttackClass((u32)(unit[0]<<26)>>26)==1){
+if(x-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)<0)left=0;
+else left=x-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
+if(y-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)<0)top=0;
+else top=y-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
 bounds=(u8 *)*gCurrentMap+0x5120;
-if(x+func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,36)-1)right=((Map851B8 *)*gCurrentMap)->width-1;
-else right=x+func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
+if(x+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,36)-1)right=((Map851B8 *)*gCurrentMap)->width-1;
+else right=x+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
 bounds=(u8 *)*gCurrentMap+0x5120;
-if(y+func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1)bottom=((Map851B8 *)*gCurrentMap)->height-1;
-else bottom=y+func_ov000_021a9820(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
+if(y+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)>=M2C_FIELD(bounds,u16 *,38)-1)bottom=((Map851B8 *)*gCurrentMap)->height-1;
+else bottom=y+GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
 for(yy=top;yy<=bottom;yy++){
 xx=left;dst=(s8 *)data_ov000_021e0f60+xx;
 for(;xx<=right;xx++,dst++){
 dist=Distance851B8(x,y,xx,yy);
 kind=(u32)(unit[0]<<26)>>26;
 if(dist>=data_ov000_021b5bfc[kind*112+12]){
-if(dist<=func_ov000_021a9820(Unk21843Owner(unit),kind)){
+if(dist<=GetUnitMaxAttackRange(Unk21843Owner(unit),kind)){
 if(dist==1)dst[yy*((Map851B8 *)*gCurrentMap)->width]++;
 else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
 }
@@ -108,7 +108,7 @@ else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
 }else{
 if(attrs[19]&16){
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
+FloodFillUnitRange(unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
 func_01ffb9c4(111);
 map=*gCurrentMap;
 for(sy=0;sy<((Map851B8 *)map)->height;sy++){

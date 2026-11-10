@@ -71,8 +71,8 @@ void gpiAppendStringField(void*,void*,void*);
 void gpiAppendIntField(void*,void*,s32);
 s32 gpiReceiveData(void*,s32,void*,s32*,s32*,void*);
 s32 func_02058450(void*,s32,s32*,char*,char*);
-s32 func_02068d98(void*,void*);
-void *func_020377a8(void*,s32);
+s32 StringCompare(void*,void*);
+void *gpiRealloc(void*,s32);
 void *func_02037794(s32);
 s32 gpiAddCallback(void*,ProtocolCallback,void*,void*,s32);
 s32 func_020560e4(void*,void*,void*,void*,void*,void*,s32,s32,s32,s32,s32);
@@ -168,7 +168,7 @@ gpiAppendStringField(a,request+24,data_020ff0b4);
 gpiAppendStringField(a,request+24,request+71);
 gpiAppendStringField(a,request+24,data_020fefe4);
 gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
-}else{func_020640a8(data_020ff0c4,data_020fef48,data_020fee0c,0x275);}
+}else{AssertFailed(data_020ff0c4,data_020fef48,data_020fee0c,0x275);}
 gpiAppendStringField(a,request+24,data_020ff0c8);
 gpiAppendStringField(a,request+24,gServiceNameBuffer);
 gpiAppendStringField(a,request+24,data_020ff0d4);
@@ -177,33 +177,33 @@ M2C_FIELD(b,s32*,20)=4;
 }else if(M2C_FIELD(b,s32*,20)==4){
 result=gpiReceiveData(a,M2C_FIELD(request,s32*,4),request+8,&token,&status,&data_020fef90);
 if(result){if(result!=3)return result;func_02058620(a,0xd01,data_020ff0dc);func_02050744(a,3,0);return 3;}
-if(func_02068fdc(M2C_FIELD(request,void**,8),data_020ff0d4)!=0){
+if(StringFind(M2C_FIELD(request,void**,8),data_020ff0d4)!=0){
 previous=0;M2C_FIELD(b,s32*,20)=5;
 if(func_0205817c(a,M2C_FIELD(request,s32*,8),1)){M2C_FIELD(request,s32*,0x140)=1;return 4;}
 if(M2C_FIELD(request,s32*,0)==1){
 done=0;response[0]=0;response[1]=0;response[2]=0x601;response[3]=0;
 do{
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(!func_02068d98(name,data_020ff108)){
+if(!StringCompare(name,data_020ff108)){
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(!func_02068d98(name,data_020ff110)){
-if(func_02068d98(value,data_020ff0c4))response[2]=0x600;done=1;
+if(!StringCompare(name,data_020ff110)){
+if(StringCompare(value,data_020ff0c4))response[2]=0x600;done=1;
 }
-}else if(!func_02068d98(name,data_020ff118)){
+}else if(!StringCompare(name,data_020ff118)){
 response[1]++;
-response[3]=(s32)func_020377a8((void*)response[3],response[1]*172);
+response[3]=(s32)gpiRealloc((void*)response[3],response[1]*172);
 if(!response[3]){gpiSetErrorString(a,data_020fee8c);return 1;}
 entry=(void*)(response[3]+(response[1]-1)*172);
-func_02065210(entry,0,172);M2C_FIELD(entry,s32*,0)=func_0206ad38(value);
+func_02065210(entry,0,172);M2C_FIELD(entry,s32*,0)=ParseInt(value);
 inner=0;token=previous;
 do{
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(!func_02068d98(name,data_020ff11c)){func_020580fc(entry+4,value,31);}
-else if(!func_02068d98(name,data_020ff124)){func_020580fc(entry+35,value,21);}
-else if(!func_02068d98(name,data_020ff130)){func_020580fc(entry+56,value,31);}
-else if(!func_02068d98(name,data_020ff13c)){func_020580fc(entry+87,value,31);}
-else if(!func_02068d98(name,data_020ff148)){func_020580fc(entry+118,value,51);}
-else if(!func_02068d98(name,data_020ff118)||!func_02068d98(name,data_020ff108)){previous=token;inner=1;}
+if(!StringCompare(name,data_020ff11c)){StringCopyN(entry+4,value,31);}
+else if(!StringCompare(name,data_020ff124)){StringCopyN(entry+35,value,21);}
+else if(!StringCompare(name,data_020ff130)){StringCopyN(entry+56,value,31);}
+else if(!StringCompare(name,data_020ff13c)){StringCopyN(entry+87,value,31);}
+else if(!StringCompare(name,data_020ff148)){StringCopyN(entry+118,value,51);}
+else if(!StringCompare(name,data_020ff118)||!StringCompare(name,data_020ff108)){previous=token;inner=1;}
 }while(!inner);
 }else{func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 }while(!done);
@@ -214,9 +214,9 @@ if(code==0x600 && response[2]==0x600){result=func_020560e4(a,request+0x28,reques
 callback2.function=M2C_FIELD(b,s32*,12);callback2.argument=M2C_FIELD(b,s32*,16);
 if(callback2.function){
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(func_02068d98(name,data_020ff178)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+if(StringCompare(name,data_020ff178)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 entry=func_02037794(60);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}
-M2C_FIELD(entry,s32*,0)=0;func_020580fc(entry+4,request+0x5c,51);
+M2C_FIELD(entry,s32*,0)=0;StringCopyN(entry+4,request+0x5c,51);
 M2C_FIELD(entry,s32*,56)=value[0]=='0'?0:1;
 result=gpiAddCallback(a,callback2,entry,b,0);if(result)return result;
 }
@@ -224,28 +224,28 @@ result=gpiAddCallback(a,callback2,entry,b,0);if(result)return result;
 callback3.function=M2C_FIELD(b,s32*,12);callback3.argument=M2C_FIELD(b,s32*,16);
 if(callback3.function){
 entry=func_02037794(68);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}
-M2C_FIELD(entry,s32*,0)=0;func_02068c50(entry+4,request+0x5c);
+M2C_FIELD(entry,s32*,0)=0;StringCopy(entry+4,request+0x5c);
 M2C_FIELD(entry,s32*,56)=0;M2C_FIELD(entry,s32*,60)=0;M2C_FIELD(entry,s32*,64)=0;
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(func_02068d98(name,data_020ff17c)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+if(StringCompare(name,data_020ff17c)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 done=0;
 do{
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
-if(!func_02068d98(name,data_020ff11c)){
-void *array=func_020377a8(M2C_FIELD(entry,void**,60),(M2C_FIELD(entry,s32*,56)+1)*4);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
+if(!StringCompare(name,data_020ff11c)){
+void *array=gpiRealloc(M2C_FIELD(entry,void**,60),(M2C_FIELD(entry,s32*,56)+1)*4);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
 M2C_FIELD(entry,void**,60)=array;
 array=func_02037794(31);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
 ((void**)M2C_FIELD(entry,void**,60))[M2C_FIELD(entry,s32*,56)]=array;
-func_020580fc(array,value,31);M2C_FIELD(entry,s32*,56)++;
-}else if(!func_02068d98(name,data_020ff124)){
+StringCopyN(array,value,31);M2C_FIELD(entry,s32*,56)++;
+}else if(!StringCompare(name,data_020ff124)){
 if(M2C_FIELD(entry,s32*,56)>0){
-void *array=func_020377a8(M2C_FIELD(entry,void**,64),M2C_FIELD(entry,s32*,56)*4);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
+void *array=gpiRealloc(M2C_FIELD(entry,void**,64),M2C_FIELD(entry,s32*,56)*4);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
 M2C_FIELD(entry,void**,64)=array;
 array=func_02037794(21);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
 ((void**)M2C_FIELD(entry,void**,64))[M2C_FIELD(entry,s32*,56)-1]=array;
-func_020580fc(array,value,21);
+StringCopyN(array,value,21);
 }
-}else if(!func_02068d98(name,data_020ff180))done=1;
+}else if(!StringCompare(name,data_020ff180))done=1;
 else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 }while(!done);
 result=gpiAddCallback(a,callback3,entry,b,3);if(result)return result;
@@ -258,17 +258,17 @@ entry=func_02037794(16);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}
 M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=M2C_FIELD(request,s32*,0x138);M2C_FIELD(entry,s32*,8)=0;M2C_FIELD(entry,s32*,12)=0;
 done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(!func_02068d98(name,data_020ff188))done=1;
-else if(!func_02068d98(name,data_020ff190)){
+if(!StringCompare(name,data_020ff188))done=1;
+else if(!StringCompare(name,data_020ff190)){
 count=M2C_FIELD(entry,s32*,8)+1;M2C_FIELD(entry,s32*,8)=count;
-array=func_020377a8(M2C_FIELD(entry,void**,12),count*296);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
-M2C_FIELD(entry,void**,12)=array;item=array+(count-1)*296;func_02065210(item,0,296);M2C_FIELD(item,s32*,36)=1;M2C_FIELD(item,s32*,0)=func_0206ad38(value);
+array=gpiRealloc(M2C_FIELD(entry,void**,12),count*296);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,12)=array;item=array+(count-1)*296;func_02065210(item,0,296);M2C_FIELD(item,s32*,36)=1;M2C_FIELD(item,s32*,0)=ParseInt(value);
 inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(!func_02068d98(name,data_020ff194))func_020580fc(item+40,value,256);
-else if(!func_02068d98(name,data_020ff11c))func_020580fc(item+4,value,31);
-if(!func_02068d98(name,data_020ff19c))M2C_FIELD(item,s32*,36)=func_0206ad38(value);
-else if(!func_02068d98(name,data_020ff190)||!func_02068d98(name,data_020ff188)){previous=token;inner=1;}
+if(!StringCompare(name,data_020ff194))StringCopyN(item+40,value,256);
+else if(!StringCompare(name,data_020ff11c))StringCopyN(item+4,value,31);
+if(!StringCompare(name,data_020ff19c))M2C_FIELD(item,s32*,36)=ParseInt(value);
+else if(!StringCompare(name,data_020ff190)||!StringCompare(name,data_020ff188)){previous=token;inner=1;}
 }while(!inner);
 }else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 }while(!done);result=gpiAddCallback(a,callback4,entry,b,4);if(result)return result;
@@ -279,13 +279,13 @@ callback5.function=M2C_FIELD(b,s32*,12);callback5.argument=M2C_FIELD(b,s32*,16);
 if(callback5.function){
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(func_02068d98(name,data_020ff1a8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
-code=func_0206ad38(value);
+if(StringCompare(name,data_020ff1a8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+code=ParseInt(value);
 if(code)M2C_FIELD(ctx,s32*,0x418)=code;
 extra=0;
 if(!code){
-if(!func_02058254(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
-else extra=func_0206ad38(value);
+if(!GetStringField(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
+else extra=ParseInt(value);
 }
 entry=func_02037794(8);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;
 result=gpiAddCallback(a,callback5,entry,b,0);if(result)return result;
@@ -296,13 +296,13 @@ callback6.function=M2C_FIELD(b,s32*,12);callback6.argument=M2C_FIELD(b,s32*,16);
 if(callback6.function){
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(func_02068d98(name,data_020ff1b4)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
-code=func_0206ad38(value);
+if(StringCompare(name,data_020ff1b4)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+code=ParseInt(value);
 if(code)M2C_FIELD(ctx,s32*,0x418)=code;
 extra=0;
 if(1){
-if(!func_02058254(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
-else extra=func_0206ad38(value);
+if(!GetStringField(M2C_FIELD(request,s32*,8),data_020ff1ac,value,512)){if(!code){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}}
+else extra=ParseInt(value);
 }
 entry=func_02037794(8);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}M2C_FIELD(entry,s32*,0)=code;M2C_FIELD(entry,s32*,4)=extra;
 result=gpiAddCallback(a,callback6,entry,b,0);if(result)return result;
@@ -315,22 +315,22 @@ entry=func_02037794(12);if(!entry){gpiSetErrorString(a,data_020fee8c);return 1;}
 M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=0;M2C_FIELD(entry,s32*,8)=0;
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(func_02068d98(name,data_020ff1b8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+if(StringCompare(name,data_020ff1b8)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(!func_02068d98(name,data_020ff1c0))done=1;
-else if(!func_02068d98(name,data_020ff1c8)){
+if(!StringCompare(name,data_020ff1c0))done=1;
+else if(!StringCompare(name,data_020ff1c8)){
 count=M2C_FIELD(entry,s32*,4);
-array=func_020377a8(M2C_FIELD(entry,void**,8),(count+1)*172);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
-M2C_FIELD(entry,void**,8)=array;item=array+count*172;func_02065210(item,0,172);M2C_FIELD(entry,s32*,4)=count+1;M2C_FIELD(item,s32*,0)=func_0206ad38(value);
+array=gpiRealloc(M2C_FIELD(entry,void**,8),(count+1)*172);if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
+M2C_FIELD(entry,void**,8)=array;item=array+count*172;func_02065210(item,0,172);M2C_FIELD(entry,s32*,4)=count+1;M2C_FIELD(item,s32*,0)=ParseInt(value);
 inner=0;token=previous;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(!func_02068d98(name,data_020ff11c))func_020580fc(item+4,value,31);
-else if(!func_02068d98(name,data_020ff124))func_020580fc(item+35,value,21);
-else if(!func_02068d98(name,data_020ff1cc))func_020580fc(item+56,value,31);
-else if(!func_02068d98(name,data_020ff1d4))func_020580fc(item+87,value,31);
-else if(!func_02068d98(name,data_020ff148))func_020580fc(item+118,value,51);
-else if(!func_02068d98(name,data_020ff1c8)||!func_02068d98(name,data_020ff1c0)){previous=token;inner=1;}
+if(!StringCompare(name,data_020ff11c))StringCopyN(item+4,value,31);
+else if(!StringCompare(name,data_020ff124))StringCopyN(item+35,value,21);
+else if(!StringCompare(name,data_020ff1cc))StringCopyN(item+56,value,31);
+else if(!StringCompare(name,data_020ff1d4))StringCopyN(item+87,value,31);
+else if(!StringCompare(name,data_020ff148))StringCopyN(item+118,value,51);
+else if(!StringCompare(name,data_020ff1c8)||!StringCompare(name,data_020ff1c0)){previous=token;inner=1;}
 }while(!inner);
 }else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 }while(!done);result=gpiAddCallback(a,callback7,entry,b,8);if(result)return result;
@@ -343,21 +343,21 @@ count=0;entry=func_02037794(12);if(!entry){gpiSetErrorString(a,data_020fee8c);re
 M2C_FIELD(entry,s32*,0)=0;M2C_FIELD(entry,s32*,4)=0;M2C_FIELD(entry,s32*,8)=0;
 result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(func_02068d98(name,data_020ff1dc)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
-M2C_FIELD(entry,s32*,4)=func_0206ad38(value);
+if(StringCompare(name,data_020ff1dc)){func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
+M2C_FIELD(entry,s32*,4)=ParseInt(value);
 array=func_02037794(M2C_FIELD(entry,s32*,4)*4);M2C_FIELD(entry,void**,8)=array;if(!array){gpiSetErrorString(a,data_020fee8c);return 1;}
 done=0;do{result=func_02058450(a,M2C_FIELD(request,s32*,8),&previous,name,value);if(result)return result;
 
-if(!func_02068d98(name,data_020ff11c)){
-item=func_02037794(21);((void**)M2C_FIELD(entry,void**,8))[count]=item;if(!item){gpiSetErrorString(a,data_020fee8c);return 1;}func_020580fc(item,value,21);count++;
-}else if(!func_02068d98(name,data_020ff1e0)){
-if(count!=M2C_FIELD(entry,s32*,4))func_020640a8(data_020ff1e8,data_020fef48,data_020fee0c,0x515);
+if(!StringCompare(name,data_020ff11c)){
+item=func_02037794(21);((void**)M2C_FIELD(entry,void**,8))[count]=item;if(!item){gpiSetErrorString(a,data_020fee8c);return 1;}StringCopyN(item,value,21);count++;
+}else if(!StringCompare(name,data_020ff1e0)){
+if(count!=M2C_FIELD(entry,s32*,4))AssertFailed(data_020ff1e8,data_020fef48,data_020fee0c,0x515);
 M2C_FIELD(entry,s32*,4)=count;done=1;
 }else {func_02058620(a,1,data_020ff150);func_02050744(a,3,1);return 3;}
 }while(!done);result=gpiAddCallback(a,callback8,entry,b,9);if(result)return result;
 
 }}
-else func_020640a8(data_020ff0c4,data_020fef48,data_020fee0c,0x52a);
+else AssertFailed(data_020ff0c4,data_020fef48,data_020fee0c,0x52a);
 
 M2C_FIELD(request,s32*,0x140)=1;loop=0;
 }

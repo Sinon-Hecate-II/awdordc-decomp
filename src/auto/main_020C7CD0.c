@@ -134,7 +134,7 @@ u8 func_020c7f30(s32 a) {
 }
 
 s32 func_020c7fe4(M2C_UNK arg0) {
-    s32 func_02086680(s32);
+    s32 GetLocalizedText(s32);
     s32 func_020c8020(M2C_UNK);
     s32 temp_r4;
 
@@ -142,7 +142,7 @@ s32 func_020c7fe4(M2C_UNK arg0) {
     if (func_020c8020(arg0) != 0) {
         return temp_r4 + 6;
     }
-    return func_02086680(0xC00002EC);
+    return GetLocalizedText(0xC00002EC);
 }
 
 s32 func_020c8018(s32 arg0) {
@@ -240,7 +240,7 @@ i++;src++;
 }while(i<M2C_FIELD(a,u8 *,0x2f));
 }
 
-void func_020c83f4(u8 *p){extern void **gCurrentMap;void func_02068c50(void *,void *);void func_020a231c(s32,s32);s32 i;u8 *base;func_02068c50((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)func_020a231c(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
+void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void func_020a231c(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)func_020a231c(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
 
 s32 func_020c8484(s32 arg) {
 extern void **gCurrentMap;
@@ -326,13 +326,13 @@ void func_020c86a8(void *p) {
 }
 
 void func_020c879c(void *arg0){
-extern void **gCurrentMap;extern s8 data_ov000_021b56c0[];
-void func_02007e98(s32,s32,s32);void func_02068c50(void *,void *);s32 func_020a23b4(s32);s32 func_020a2360(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
+extern void **gCurrentMap;extern s8 gTerrainPropertyFlags[];
+void func_02007e98(s32,s32,s32);void StringCopy(void *,void *);s32 func_020a23b4(s32);s32 func_020a2360(s32);void func_02007ef4(void *,void *,s32);void func_020c86a8(void *);void *func_020bfa74(void);
 u8 counts[6];u8 *out=arg0;
 u8 *cursor=out+0x54;
 u16 i;
 func_02007e98(0,(s32)out,0x6f8);*(u32 *)out=0x20070731;
-func_02068c50(out+6,(u8 *)*gCurrentMap+0x5120);
+StringCopy(out+6,(u8 *)*gCurrentMap+0x5120);
 out[4]=((Map8484 *)*gCurrentMap)->width;out[5]=((Map8484 *)*gCurrentMap)->height;
 {s32 y,x;
 y=0;x=0;do{if(func_020a23b4(x))y=(u16)(y+1);x=(u16)(x+1);}while((u32)x<5);
@@ -344,7 +344,7 @@ x=0;while(x<M2C_FIELD(*gCurrentMap,u16 *,0x5144)){
 Map8484 *map=*gCurrentMap;
 s32 row=map->rows[y];
 s32 cell=M2C_FIELD((u8 *)map+x+row,u8 *,0x1420);
-*cursor++=cell;if(data_ov000_021b56c0[cell&31]){counts[5]++;counts[cell>>5]++;}
+*cursor++=cell;if(gTerrainPropertyFlags[cell&31]){counts[5]++;counts[cell>>5]++;}
 x++;
 }y++;
 }

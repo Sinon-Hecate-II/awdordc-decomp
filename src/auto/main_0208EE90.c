@@ -10,7 +10,7 @@ M2C_UNK func_0208ee90(void *p) {
     M2C_UNK func_01ffa6fc(void *);
     extern u16 *gKeyState;
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain, **g3DSpriteEngineSub;
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc8x8[];
     s32 j, index, screen;
 s32 drawCount;
     s64 value, delta;
@@ -58,10 +58,10 @@ s32 drawCount;
         drawCount=M2C_FIELD(p,s32 *,0x5c);
         value=M2C_FIELD(p,s64 *,0x60);
         priority=M2C_FIELD(p,u8 *,0x49);
-        AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y-8),(u16)(attr+((24>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
-        AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y+8),(u16)(attr+((56>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
+        AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y-8),(u16)(attr+((24>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),gSpriteDesc8x8,priority);
+        AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y+8),(u16)(attr+((56>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),gSpriteDesc8x8,priority);
         for(;drawCount>0;drawCount--) {
-            AddSprite(x,y,(u16)(attr+(((value%10*2)>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
+            AddSprite(x,y,(u16)(attr+(((value%10*2)>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),gSpriteDesc8x8,priority);
             x-=8;
             value/=10;
         }
@@ -395,7 +395,7 @@ void func_0208f940(void *arg0) {
 }
 
 void func_0208f94c(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     s16 temp_r1;
     s32 temp_r4;
 
@@ -408,7 +408,7 @@ void func_0208f94c(void *arg0) {
     if (func_0208fe7c(M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
         func_0208ff94(temp_r4);
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_0208f998(s32 arg0, s16 arg1) {
@@ -481,7 +481,7 @@ void func_0208fae8(M2C_UNK arg0) {
     func_020901b0(0, -1, arg0, func_0208fa3c());
 }
 
-void func_0208fb0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_0208fa78(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208ff94(s32);
     s32 temp_r4;

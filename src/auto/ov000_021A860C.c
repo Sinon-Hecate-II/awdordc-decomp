@@ -140,7 +140,7 @@ s32 func_ov000_021a8b78(void *a){s32 func_0207c8ec(s32,s32);u32 v;s32 n,i,x;v=(u
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;
 s32 IsUnitOnCurrentTeam(s32);
-s32 func_ov000_021a947c(u16,s32,s16,s16);
+s32 IsUnitVisibleAtCell(u16,s32,s16,s16);
 s32 func_020a600c(u16);
 s32 i; s32 right; s32 ny; s32 j; s32 dy; s32 left; s32 top; s32 bottom; s32 d;void *base;
 left=x-radius;if(left<0)left=0;
@@ -156,7 +156,7 @@ if(d>=0&&d<=radius){base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
 if(!d)continue;
 if(IsUnitOnCurrentTeam(d)==1)continue;
-if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,(s16)i,(s16)j))continue;
+if(!IsUnitVisibleAtCell(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,(s16)i,(s16)j))continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
 if(func_020a600c(d))return 1;
@@ -213,7 +213,7 @@ u8 IsCurrentPlayerUnit(s32 arg0) {
     return var_r0;
 }
 
-u8 func_ov000_021a8ff0(s32 arg0) {
+u8 IsPropertyTerrain(s32 arg0) {
     extern s8 data_ov000_021b54c0[];
     u8 var_r0;
     if (data_ov000_021b54c0[arg0 & 0x1F] != 0) {
@@ -261,7 +261,7 @@ u8 func_ov000_021a911c(s32 a,s32 b,s32 c){
 extern void **gCurrentMap;u8 *p=*gCurrentMap;s32 n=(a>>6)+1;u8 r;
 if(n==(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)>>5))r=1;else r=0;return r;}
 
-u8 func_ov000_021a9164(s32 a,s32 b,s32 c){
+u8 IsCellUnitOnSameArmy(s32 a,s32 b,s32 c){
 extern void **gCurrentMap;u8 *p=*gCurrentMap;
 s32 v=M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x508);u8 r;if(!v)return 0;
 if(M2C_FIELD(p+a*0x8c,u8 *,0x67ca)==M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67ca))r=1;else r=0;return r;}
@@ -271,7 +271,7 @@ s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case
 s32 func_ov000_021a9214(void *a,s32 b,s32 c){
 extern void **gCurrentMap;s32 func_020d280c();
 u8 *p=*gCurrentMap;s32 n;
-if(func_ov000_021a8ff0(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420))==1){
+if(IsPropertyTerrain(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420))==1){
 if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
 if(func_020d280c((n>>6)+1,b,c)){
 p=*gCurrentMap;

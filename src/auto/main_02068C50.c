@@ -1,7 +1,7 @@
 /* 8 functions from 0x02068C50 to 0x02069048 (main), found by ds-decomp. */
 #include "common.h"
 
-unsigned char *func_02068c50(unsigned char *dst,const unsigned char *src){unsigned char *p=dst;u32 n=(u32)src&3;u32 w,t,v;if(((u32)dst&3)==n){if(n){if(!(*p=*src))return dst;n=3-n;while(n){if(!(*++p=*++src))return dst;--n;}++p;++src;}w=*(const u32*)src;if(!((w+0xfefefeff)&~w&0x80808080)){p-=4;do{*(u32*)(p+=4)=w;src+=4;w=*(const u32*)src;t=w+0xfefefeff;v=~w;t=v&t;}while(!(t&0x80808080));p+=4;}}if(!(*p=*src))return dst;while((*++p=*++src)!=0){}return dst;}
+unsigned char *StringCopy(unsigned char *dst,const unsigned char *src){unsigned char *p=dst;u32 n=(u32)src&3;u32 w,t,v;if(((u32)dst&3)==n){if(n){if(!(*p=*src))return dst;n=3-n;while(n){if(!(*++p=*++src))return dst;--n;}++p;++src;}w=*(const u32*)src;if(!((w+0xfefefeff)&~w&0x80808080)){p-=4;do{*(u32*)(p+=4)=w;src+=4;w=*(const u32*)src;t=w+0xfefefeff;v=~w;t=v&t;}while(!(t&0x80808080));p+=4;}}if(!(*p=*src))return dst;while((*++p=*++src)!=0){}return dst;}
 
 s8 *func_02068d18(s8 *a,s8 *b,s32 n) {
 s8 *p=a;
@@ -24,7 +24,7 @@ while((*p++=*b++)!=0);
 return a;
 }
 
-s32 func_02068d98(u8 *a,u8 *b){
+s32 StringCompare(u8 *a,u8 *b){
 u32 c,d,z; s32 diff,n;
 c=*a; diff=c-*b; if(diff)return diff;
 n=(u32)a&3;
@@ -53,7 +53,7 @@ do{c=*++a;diff=c-*++b;if(diff)return diff;}while(c);
 return 0;
 }
 
-s32 func_02068eac(u8 *a,u8 *b,s32 n) {
+s32 StringCompareN(u8 *a,u8 *b,s32 n) {
 if(n) {
 do {
 u32 y=*b++;
@@ -96,7 +96,7 @@ c=*q++;
 return q-a-1;
 }
 
-u8 *func_02068fdc(u8 *a,u8 *b) {
+u8 *StringFind(u8 *a,u8 *b) {
 u8 first,c,x,y;
 u8 *p,*q,*r;
 if(!b || !(first=*b)) return a;

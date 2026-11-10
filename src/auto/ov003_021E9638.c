@@ -386,7 +386,7 @@ void func_ov003_021ea134(s32 arg0) {
 
 void func_ov003_021ea154(void *p){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
-void func_01ff9ce8(s32); s32 func_ov003_022008b8(u8); void func_02088da8(void*); void func_02088d94(void*); void func_020990fc(void*,s32,s32,s32); void *func_ov003_021e6e94(s32); void *func_02086680(void*); void func_0209b2b4(s32,s32,s32,void*,s32,u16);
+void func_01ff9ce8(s32); s32 func_ov003_022008b8(u8); void func_02088da8(void*); void func_02088d94(void*); void func_020990fc(void*,s32,s32,s32); void *func_ov003_021e6e94(s32); void *GetLocalizedText(void*); void func_0209b2b4(s32,s32,s32,void*,s32,u16);
 void *old; s8 id,n; u8 flag;
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 func_01ff9ce8(3);
@@ -396,7 +396,7 @@ if(!n)func_02088da8(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
 else {
 if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))func_02088d94(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
 func_020990fc(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),n,8,0);
-func_0209b2b4(1,8,3,func_02086680(func_ov003_021e6e94(id)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
+func_0209b2b4(1,8,3,GetLocalizedText(func_ov003_021e6e94(id)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;gCur3DSpriteEngine=old;
 flag=E9638Toggle(p);

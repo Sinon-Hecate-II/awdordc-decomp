@@ -47,12 +47,12 @@ s32 func_ov010_02225f60(void) {
     void func_ov010_02225d64();
     s32 func_ov010_02229bf4();
     void func_ov010_02222c28();
-    s32 func_ov010_022260f4(s32, s32);
+    s32 AllocAlignedBuffer(s32, s32);
 
     if (M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) != 0) {
         return 1;
     }
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) = func_ov010_022260f4(0x6b40, 32);
+    M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) = AllocAlignedBuffer(0x6b40, 32);
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 16) = 1;
     M2C_FIELD(&data_ov010_0222ee70, void **, 8) = &data_ov010_0222ee98;
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 12) = 2;
@@ -107,22 +107,22 @@ void func_ov010_022260b8(void) {
     void func_ov010_02225db8();
     void func_ov010_02228b50(s32);
     void func_ov010_02225778();
-    void func_ov010_02226100();
+    void FreeBuffer();
     extern M2C_UNK data_ov010_0222ee70;
     func_ov010_02225d38();
     func_ov010_02225db8();
     func_ov010_02228b50(0);
     func_ov010_02225778();
-    func_ov010_02226100(M2C_FIELD(&data_ov010_0222ee70, s32 *, 0), M2C_FIELD(&data_ov010_0222ee70, s32 *, 0x1C));
+    FreeBuffer(M2C_FIELD(&data_ov010_0222ee70, s32 *, 0), M2C_FIELD(&data_ov010_0222ee70, s32 *, 0x1C));
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) = 0;
 }
 
-s32 func_ov010_022260f4() {
+s32 AllocAlignedBuffer() {
     M2C_UNK func_020e3580();
     func_020e3580();
 }
 
-void func_ov010_02226100(s32 arg0) {
+void FreeBuffer(s32 arg0) {
     M2C_UNK func_020e35cc();
     if (arg0 == 0) {
         return;

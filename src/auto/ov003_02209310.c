@@ -184,10 +184,10 @@ s32 func_ov003_02209cc8(void *arg0) {
 u32 func_ov003_02209cdc(void *arg0) {
     M2C_UNK func_ov003_0220adb4(void *);
     u32 func_ov003_0220c10c(void *);
-    M2C_UNK func_ov003_0220c43c();
+    M2C_UNK RunPendingMenuAction();
     u32 temp_r0;
 
-    func_ov003_0220c43c();
+    RunPendingMenuAction();
     temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x38) << 0x1B) >> 0x1F;
     if (temp_r0 != 0) {
         return temp_r0;

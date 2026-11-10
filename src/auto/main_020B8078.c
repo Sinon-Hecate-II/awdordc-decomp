@@ -83,15 +83,15 @@ p[42]=0; p[41]=4;
 }
 
 void func_020b821c(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
-    M2C_UNK func_02082770();
+    M2C_UNK Reset3DSpriteBankState();
     extern void *g3DSpriteBankMain;
     s8 temp_r4;
 
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     temp_r4 = EaseInterpolate(0, 0, 4, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
-    func_02082770();
+    Reset3DSpriteBankState();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
     M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
     M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
@@ -107,7 +107,7 @@ void func_020b821c(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_020b8338(void *arg0) {
@@ -116,15 +116,15 @@ p[42]=0; p[41]=2;
 }
 
 void func_020b834c(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
-    M2C_UNK func_02082770();
+    M2C_UNK Reset3DSpriteBankState();
     extern void *g3DSpriteBankMain;
     s8 temp_r4;
 
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     temp_r4 = EaseInterpolate(0, 4, 0, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
-    func_02082770();
+    Reset3DSpriteBankState();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
     M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
     M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
@@ -140,8 +140,8 @@ void func_020b834c(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
         return;
     }
-    func_02082770();
-    func_01ffa574(arg0);
+    Reset3DSpriteBankState();
+    DeleteSpriteObject(arg0);
 }
 
 u8 func_020b846c(M2C_UNK arg0) {

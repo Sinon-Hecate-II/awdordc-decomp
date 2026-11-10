@@ -402,9 +402,9 @@ void func_020994f8(u16 *a, s32 b, s32 c) {
 #pragma opt_strength_reduction off
 s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     extern void *gCur3DSpriteEngine;
-    s32 func_02068d98(void *, void *);
+    s32 StringCompare(void *, void *);
     s32 StringLength(M2C_UNK);
-    void func_02068c50(M2C_UNK, M2C_UNK);
+    void StringCopy(M2C_UNK, M2C_UNK);
     s32 func_0209b370(s32, s32, s32, s32, s32, s32, u16, u16, u16);
     void func_020994f8(u16 *, s32, s32);
     s32 func_0209c268(M2C_UNK);
@@ -432,7 +432,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
     if (*(u8 *)obj != 1) {
         for (;;) {
             if (*((u8 *)obj + idx * 4 + 0x203) == arg5) {
-                if (func_02068d98((void *)((u8 *)obj + cursor), (void *)arg3) == 0) {
+                if (StringCompare((void *)((u8 *)obj + cursor), (void *)arg3) == 0) {
                     u = *(u16 *)((u8 *)obj + idx * 4 + 0x200);
                     byte2 = *((u8 *)obj + idx * 4 + 0x202);
                     func_020994f8((u16 *)(arg2 + arg0 * 2 + arg1 * 64),
@@ -464,7 +464,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
 
     *(u16 *)((u8 *)obj + 0x300) = (u16)(*(u16 *)((u8 *)obj + 0x300) + width * 2);
 
-    func_02068c50((M2C_UNK)((u8 *)obj + cursor), (M2C_UNK)arg3);
+    StringCopy((M2C_UNK)((u8 *)obj + cursor), (M2C_UNK)arg3);
 
     len = StringLength((M2C_UNK)arg3);
     end = cursor + len + 1;

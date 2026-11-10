@@ -78,21 +78,21 @@ s32 func_02059d24(void *arg0) {
 
 void func_02059d34(void *p,s32 a) {
 extern M2C_UNK data_020ff5d4,data_020ff5f0,data_020ff5a8;
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))func_020640a8(&data_020ff5d4,&data_020ff5f0,&data_020ff5a8,35);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
+if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&data_020ff5f0,&data_020ff5a8,35);
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
 void func_02059d84(void *p,s32 a) {
 extern M2C_UNK data_020ff5fc,data_020ff5f0,data_020ff5bc;
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))func_020640a8(&data_020ff5fc,&data_020ff5f0,&data_020ff5bc,46);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
+if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5fc,&data_020ff5f0,&data_020ff5bc,46);
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a>>8;
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
 void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(s32, s32, s32);
     s32 StringLength(s32);
     extern M2C_UNK data_020ff594;
@@ -106,7 +106,7 @@ void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
             var_r4 = StringLength(arg1);
         }
         if ((s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4) > (s32) M2C_FIELD(arg0, s32 *, 4)) {
-            func_020640a8(&data_020ff620, &data_020ff5f0, &data_020ff594, 0x40);
+            AssertFailed(&data_020ff620, &data_020ff5f0, &data_020ff594, 0x40);
         }
         MemCopy(M2C_FIELD(arg0, s32 *, 0) + M2C_FIELD(arg0, s32 *, 8), arg1, var_r4);
         M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4);
@@ -117,8 +117,8 @@ void func_02059e78(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020ff644,data_020ff5f0,data_020ff580,data_020ff65c;
 void func_020651c4(s32,s32,s32);s32 start;
 if(a==-1)a=M2C_FIELD(p,s32 *,8)-b;
-if(a>M2C_FIELD(p,s32 *,8))func_020640a8(&data_020ff644,&data_020ff5f0,&data_020ff580,79);
-if(b>M2C_FIELD(p,s32 *,8)-a)func_020640a8(&data_020ff65c,&data_020ff5f0,&data_020ff580,80);
+if(a>M2C_FIELD(p,s32 *,8))AssertFailed(&data_020ff644,&data_020ff5f0,&data_020ff580,79);
+if(b>M2C_FIELD(p,s32 *,8)-a)AssertFailed(&data_020ff65c,&data_020ff5f0,&data_020ff580,80);
 start=M2C_FIELD(p,s32 *,0)+a;
 func_020651c4(start,start+b,M2C_FIELD(p,s32 *,8)-a-b);
 M2C_FIELD(p,s32 *,8)-=b;
@@ -130,7 +130,7 @@ s32 func_02059f18(void *arg0) {
     extern M2C_UNK data_020ff774;
     extern M2C_UNK data_020ff77c;
     if (arg0 == NULL) {
-        func_020640a8(&data_020ff774, &data_020ff77c, &data_020ff704, 0x1B);
+        AssertFailed(&data_020ff774, &data_020ff77c, &data_020ff704, 0x1B);
     }
     if (arg0 == NULL) {
         return 1;
@@ -150,7 +150,7 @@ s32 func_02059f18(void *arg0) {
 
 s32 func_02059fb4(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e){
 extern int data_020ff78c,data_020ff77c,data_020ff738;
-if(!p||!q)func_020640a8(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
+if(!p||!q)AssertFailed(&data_020ff78c,&data_020ff77c,&data_020ff738,0x3d);
 if(!p||!q)return 1;
 if(!M2C_FIELD(p,void **,0x20))return 1;
 if(!e||!d){d=0;e=0;}
@@ -164,9 +164,9 @@ return 1;
 
 s32 func_0205a0d0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 M2C_UNK func_0205cef8(void *);
-M2C_UNK func_020640a8(M2C_UNK*,M2C_UNK*,M2C_UNK*,M2C_UNK);
+M2C_UNK AssertFailed(M2C_UNK*,M2C_UNK*,M2C_UNK*,M2C_UNK);
 extern M2C_UNK data_020ff7a4,data_020ff77c,data_020ff6d4;
-if(!arg0)func_020640a8(&data_020ff7a4,&data_020ff77c,&data_020ff6d4,0x69);
+if(!arg0)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6d4,0x69);
 if(!arg0)return 1;
 M2C_FIELD(arg0,s32*,0x18)=arg1;
 if(!M2C_FIELD(arg0,void**,0x28))return 1;
@@ -186,7 +186,7 @@ return 1;
 
 s32 func_0205a1b8(void *p,void *a,s32 b,s32 c){
 extern int data_020ff7a4,data_020ff77c,data_020ff6bc;
-if(!p)func_020640a8(&data_020ff7a4,&data_020ff77c,&data_020ff6bc,0x94);
+if(!p)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff6bc,0x94);
 if(!p)return 1;
 if(!M2C_FIELD(p,void **,0x2c))return 1;
 if(!b||!a){a=0;b=0;}
@@ -202,7 +202,7 @@ func_0205cef8(M2C_FIELD(p,void **,8));return 0;
 
 int func_0205a29c(void *arg0, int arg1) {
     M2C_UNK func_0205cef8(void *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020ff7a4;
     extern M2C_UNK data_020ff77c;
     extern M2C_UNK data_020ff6a8;
@@ -210,7 +210,7 @@ int func_0205a29c(void *arg0, int arg1) {
     void *base;
 
     if (arg0 == NULL) {
-        func_020640a8(&data_020ff7a4, &data_020ff77c, &data_020ff6a8, 0xBA);
+        AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff6a8, 0xBA);
     }
     if (arg0 == NULL) {
         return 1;
@@ -237,12 +237,12 @@ int func_0205a29c(void *arg0, int arg1) {
 
 s32 func_0205a360(void *arg0, void *arg1) {
     M2C_UNK func_0205cef8(void *);
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020ff7a4;
     extern M2C_UNK data_020ff77c;
     extern M2C_UNK data_020ff694;
     if (arg0 == NULL) {
-        func_020640a8(&data_020ff7a4, &data_020ff77c, &data_020ff694, 0xD9);
+        AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff694, 0xD9);
     }
     if (arg0 == NULL) {
         return 1;
@@ -269,7 +269,7 @@ s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
     void *func_02048690(int, int);
     void *callback;
     extern int data_020ff7a4, data_020ff77c, data_020ff6ec;
-    if (!connection) func_020640a8(&data_020ff7a4, &data_020ff77c, &data_020ff6ec, 0x101);
+    if (!connection) AssertFailed(&data_020ff7a4, &data_020ff77c, &data_020ff6ec, 0x101);
     if (!connection) return 1;
     callback = func_02048690(M2C_FIELD(connection, void **, 0x98), callbackIndex);
     if (!callback) return 1;
@@ -290,7 +290,7 @@ s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
 s32 gti2ReceiveFilterCallback(void *p,void *a,s32 b,s32 c,s32 d){
 void *func_02048690(int,int);void *entry;
 extern int data_020ff7a4,data_020ff77c,data_020ff71c;
-if(!p)func_020640a8(&data_020ff7a4,&data_020ff77c,&data_020ff71c,0x12d);
+if(!p)AssertFailed(&data_020ff7a4,&data_020ff77c,&data_020ff71c,0x12d);
 if(!p)return 1;
 entry=func_02048690(M2C_FIELD(p,void **,0x9c),a);if(!entry)return 1;
 if(!c||!b){b=0;c=0;}
@@ -307,7 +307,7 @@ func_0205cef8(M2C_FIELD(p,void **,8));return 0;
 s32 func_0205a614(void *p,void *q,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){
 extern int data_020ff774,data_020ff77c,data_020ff680;
 void (*cb)(void *,void *,s32,s32,s32,s32,s32);
-if(!p)func_020640a8(&data_020ff774,&data_020ff77c,&data_020ff680,0x160);
+if(!p)AssertFailed(&data_020ff774,&data_020ff77c,&data_020ff680,0x160);
 if(!p)return 1;
 if(f)cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x28);
 else cb=M2C_FIELD(p,void (**)(void *,void *,s32,s32,s32,s32,s32),0x2c);
@@ -325,7 +325,7 @@ return 1;}
 s32 gti2UnrecognizedMessageCallback(void *p,s32 a,s32 b,s32 c,s32 d,s32 *out){
 extern int data_020ff774,data_020ff77c,data_020ff754;
 *out=0;
-if(!p)func_020640a8(&data_020ff774,&data_020ff77c,&data_020ff754,0x197);
+if(!p)AssertFailed(&data_020ff774,&data_020ff77c,&data_020ff754,0x197);
 if(!p)return 1;
 if(!M2C_FIELD(p,void **,0x30))return 1;
 if(!d||!c){c=0;d=0;}

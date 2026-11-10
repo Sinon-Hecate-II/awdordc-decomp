@@ -182,9 +182,9 @@ extern u16 **gCur3DSpriteEngine;
 extern u16 **g3DSpriteEngineSub;
 M2C_UNK func_01ff9ce8(s32);
 void *func_020bf25c(s32,u8);
-s32 func_02086680(s32);
-void func_02068c50(void *,void *);
-s32 func_020675e4(void *,void *,...);
+s32 GetLocalizedText(s32);
+void StringCopy(void *,void *);
+s32 StringFormat(void *,void *,...);
 void func_0209b2b4(s32,s32,s32,void *,u16,u16);
 extern char data_ov003_02211188[];
 u16 **saved=gCur3DSpriteEngine;
@@ -205,12 +205,12 @@ bit=((u32)byte38<<29)>>31;
 kind=M2C_FIELD(kindptr,u8 *,15);
 scale=(bit<<8)-bit+1;
 switch(kind){
-case 9:func_02068c50(buf,func_020bf25c(0,idx));break;
-case 11:func_02068c50(buf,func_020bf25c(5,idx));break;
-case 10:func_02068c50(buf,func_020bf25c(1,idx));break;
+case 9:StringCopy(buf,func_020bf25c(0,idx));break;
+case 11:StringCopy(buf,func_020bf25c(5,idx));break;
+case 10:StringCopy(buf,func_020bf25c(1,idx));break;
 default:
 idx=(u8)((inner?M2C_FIELD(inner,u16 *,8):-1)-11);
-func_020675e4(buf,data_ov003_02211188,func_02086680(M2C_FIELD(*(void **)((char *)M2C_FIELD(arg0,void **,0x48)+(s16)idx*(s16)36),s32 *,12)));
+StringFormat(buf,data_ov003_02211188,GetLocalizedText(M2C_FIELD(*(void **)((char *)M2C_FIELD(arg0,void **,0x48)+(s16)idx*(s16)36),s32 *,12)));
 break;
 }
 func_0209b2b4(0,0,1,buf,0x3000,(u16)scale);

@@ -23,7 +23,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
 
     extern s32 *gCurrentMap;
     extern s32 data_0211fb5c;
-    extern u8 data_ov000_021b5c08[];
+    extern u8 gUnitMinAttackRange[];
 
     u8 *base;
     s8 *ctx;
@@ -51,7 +51,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
 
     unit = *(u8 **)(base + 0x52d0);
     kind = unit[0] & 0x3F;
-    attr = data_ov000_021b5c08[kind * 112];
+    attr = gUnitMinAttackRange[kind * 112];
     cap = func_020a76d4((M2C_UNK)unit);
 
     if (cap > 1 && func_020a85c8(kind) == 0) {
@@ -519,7 +519,7 @@ if(count)*dst++=count;
 #pragma opt_strength_reduction off
 void func_020a17c0(s32 arg0, s32 arg1) {
     M2C_UNK SelectMapLayer(M2C_UNK);
-    M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
     s32 y;
     s32 x;
@@ -527,7 +527,7 @@ void func_020a17c0(s32 arg0, s32 arg1) {
 
     base = (u8 *)*gCurrentMap;
     SelectMapLayer(base + 0x1E30);
-    func_01ffada0(arg0, arg1, 0x1D, 0x6E, 0);
+    FloodFillUnitRange(arg0, arg1, 0x1D, 0x6E, 0);
 
     base = (u8 *)*gCurrentMap;
     for (y = 0; y < M2C_FIELD(base, u16 *, 0x5146); y++) {

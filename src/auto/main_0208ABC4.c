@@ -11,7 +11,6 @@ typedef struct {
 
 typedef struct { u32 width:9; u32 height:9; u32 rest:14; } WindowSize0208;
 typedef struct { u16 low:6; u16 window:2; u16 high:8; } WindowControl0208;
-typedef struct { s32 x, y; } WindowOrigin0208;
 u8 func_0208b5a8(void);
 
 /* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
@@ -141,7 +140,7 @@ void func_0208af20(void *arg0) {
     temp_r1 = M2C_FIELD(arg0, s32 *, 0x58);
     temp_r2 = (u32) (temp_r1 << 0x1A) >> 0x1D;
     if (temp_r2 == 0) {
-        func_01ffa574(arg0, temp_r1, temp_r2);
+        DeleteSpriteObject(arg0, temp_r1, temp_r2);
     } else {
         M2C_FIELD(arg0, s32 *, 0x58) = (s32) ((temp_r1 & ~0x38) | 0x18);
         M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0x30) | 0x20);
@@ -158,7 +157,7 @@ void func_0208af20(void *arg0) {
 }
 
 void func_0208af98(void *p) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32); void func_02088d94(void*);void func_02089c80(void*);s32 func_020890d4();void func_0209b67c(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32); void func_02088d94(void*);void func_02089c80(void*);s32 func_020890d4();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
  s32 bottom,right,tx,ty,j,maxw,i,depth,y,x,height,width; u8 alpha;u32 tile,mode,count;u16 frame;void *old,*engine; WindowControl0208 *volatile control;u8 *widths,*aligns;s32 w; u16 kind;
  frame=(u16)(0x1000|(0x3ff&(0xa0>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
  tile=M2C_FIELD(p,u16*,0x3e)<<5;
@@ -209,9 +208,9 @@ void func_0208af98(void *p) {
      w=M2C_FIELD(p,u8**,0x68)[j];
      kind=(u16)(0x2000|(0x3ff&((tile>>5)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
      switch(M2C_FIELD(p,u8**,0x6c)[j]){
-      case 2:func_0209b67c((u16)tx,(u16)ty,(u16)((w+31)&~31),kind,depth);break;
-      case 3:func_0209b67c((u16)(tx+maxw-w),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
-      default:func_0209b67c((u16)(x+(width-(s32)w)/2),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+      case 2:DrawTileRow((u16)tx,(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+      case 3:DrawTileRow((u16)(tx+maxw-w),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+      default:DrawTileRow((u16)(x+(width-(s32)w)/2),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
      }
      tile+=((((s32)w+7)>>3)+3>>2)<<8;
      ty+=16;j++;
@@ -340,8 +339,8 @@ gCur3DSpriteEngine=old;
 }
 
 void func_0208b758(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_02086680(M2C_UNK);
-    func_0208b698(arg0, func_02086680(arg1));
+    s32 GetLocalizedText(M2C_UNK);
+    func_0208b698(arg0, GetLocalizedText(arg1));
 }
 
 /* Refresh the display banks selected by the entity's mode, then allocate and link a handle for it. */
@@ -377,8 +376,8 @@ void func_0208b778(void *entity) {
 }
 
 void func_0208b868(void *arg0) {
-    M2C_UNK func_01ffa574(s32);
-    func_01ffa574(M2C_FIELD(arg0, s32 *, 0x60));
+    M2C_UNK DeleteSpriteObject(s32);
+    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x60));
 }
 
 void func_0208b878(void) {

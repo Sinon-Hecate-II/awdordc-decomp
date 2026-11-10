@@ -32,10 +32,10 @@ void func_ov001_02176fb0(void) {
 }
 
 void func_ov001_02176fc4(void) {
-    if (func_ov001_0218bb00(1) != 0) {
+    if (KeyPressed(1) != 0) {
         func_ov001_021716d8(1);
     }
-    if (func_ov001_0218bb00(2) == 0) {
+    if (KeyPressed(2) == 0) {
         return;
     }
     func_ov001_021716d8(0);
@@ -52,11 +52,11 @@ void func_ov001_02177000(void) {
     temp_r0 = func_ov001_021716c4();
     switch (temp_r0) {
     case 0:
-        func_ov001_02185024(7);
+        Ov001_PlaySound(7);
         func_ov001_02175d54((M2C_UNK *)&func_ov001_02177068);
         return;
     case 1:
-        func_ov001_02185024(6);
+        Ov001_PlaySound(6);
         func_ov001_021862d8(0x18, 0, 1, -1, 0);
         func_ov001_02171750();
         func_ov001_02175d54((M2C_UNK *)&func_ov001_021771a4);
@@ -118,11 +118,11 @@ void func_ov001_021771a4(void) {
     temp_r0 = func_ov001_02186648();
     switch (temp_r0) {
     case 1:
-        func_ov001_02185024(0xE);
+        Ov001_PlaySound(0xE);
         data_ov001_02193d64 = 1;
         break;
     case 0:
-        func_ov001_02185024(7);
+        Ov001_PlaySound(7);
         break;
     default: return;
     }
@@ -197,8 +197,8 @@ void func_ov001_02177340(void) {
 
 void func_ov001_02177354(void) {
     M2C_UNK func_ov001_021716d8(M2C_UNK);
-    s32 func_ov001_0218bb00(M2C_UNK);
-    if (func_ov001_0218bb00(1) == 0) {
+    s32 KeyPressed(M2C_UNK);
+    if (KeyPressed(1) == 0) {
         return;
     }
     func_ov001_021716d8(0);
@@ -210,10 +210,10 @@ void func_ov001_02177374(void) {
 
 void func_ov001_02177378(void) {
     s32 func_ov001_021716c4();
-    M2C_UNK func_ov001_02185024(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021773a0(void);
     if (func_ov001_021716c4() != 0) return;
-    func_ov001_02185024(6);
+    Ov001_PlaySound(6);
     func_ov001_02175d54((M2C_UNK *)&func_ov001_021773a0);
 }
 
@@ -329,7 +329,7 @@ void func_ov001_02177780(void) {
 }
 
 void func_ov001_02177794(void) {
-    if (func_ov001_0218bb00(2) == 0) {
+    if (KeyPressed(2) == 0) {
         return;
     }
     func_ov001_021716d8(0);
@@ -342,7 +342,7 @@ void func_ov001_021777b4(void) {
 void func_ov001_021777b8(void) {
     void func_ov001_021777e0(void);
     if (func_ov001_021716c4() != 0) return;
-    func_ov001_02185024(7);
+    Ov001_PlaySound(7);
     func_ov001_02175d54((M2C_UNK *)&func_ov001_021777e0);
 }
 
@@ -486,13 +486,13 @@ void func_ov001_02177bf0(void){
 M2C_UNK func_ov001_021716d8(M2C_UNK);
 M2C_UNK func_ov001_02172094(u16,u16,u16,u16);
 void func_ov001_02177f1c(s32);
-s32 func_ov001_0218bb00(s32);s32 func_ov001_0218bb24(s32);s32 func_ov001_0218bbd8(void *);
+s32 KeyPressed(s32);s32 KeyHeld(s32);s32 TouchRectPressed(void *);
 extern u8 data_ov001_0218f762[];
 extern M2C_UNK data_ov001_0218f77a,data_ov001_0218f77e,data_ov001_0218f77c,data_ov001_0218f780,data_ov001_02193d68;
 u32 index;u8 *entry;s32 offset;u16 a,b,c,d;
 entry=data_ov001_0218f762;
 for(index=0;index<3;index++,entry+=8){
-if(func_ov001_0218bbd8(entry)){
+if(TouchRectPressed(entry)){
 func_ov001_021716d8(1);
 offset=(u8)index*8;
 a=M2C_FIELD(&data_ov001_0218f77a,u16 *,offset);
@@ -502,10 +502,10 @@ d=M2C_FIELD(&data_ov001_0218f780,u16 *,offset);
 M2C_FIELD(&data_ov001_02193d68,s8 *,0)=index;
 func_ov001_02172094(a,b,c,d);return;
 }}
-if(func_ov001_0218bb00(1)){func_ov001_021716d8(1);return;}
-if(func_ov001_0218bb00(2)){func_ov001_021716d8(0);return;}
-if(func_ov001_0218bb24(0x40)){func_ov001_02177f1c(1);return;}
-if(!func_ov001_0218bb24(0x80))return;
+if(KeyPressed(1)){func_ov001_021716d8(1);return;}
+if(KeyPressed(2)){func_ov001_021716d8(0);return;}
+if(KeyHeld(0x40)){func_ov001_02177f1c(1);return;}
+if(!KeyHeld(0x80))return;
 func_ov001_02177f1c(3);
 }
 #pragma opt_strength_reduction reset
@@ -522,18 +522,18 @@ void func_ov001_02177ce8(void) {
     struct { u64 value; u32 unk_08[3]; } sp0;
     switch (func_ov001_021716c4()) {
     case 0:
-        func_ov001_02185024(7);
+        Ov001_PlaySound(7);
         break;
     case 1:
         func_02045cbc(&sp0);
         if (M2C_FIELD(&data_ov001_02193d68, u8 *, 0) != 0) {
             if (sp0.value == 0) {
-                func_ov001_02185024(9);
+                Ov001_PlaySound(9);
                 func_ov001_021716f8(-1);
                 return;
             }
         }
-        func_ov001_02185024(6);
+        Ov001_PlaySound(6);
         func_ov001_02177fac();
         M2C_FIELD(&data_ov001_02193d68, u8 *, 1) = 1;
         break;

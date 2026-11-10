@@ -4,7 +4,7 @@ typedef struct { u8 flag0:1, flag1:1, flags:6; } FlagsC253c;
 typedef struct { u16 pad:13, shift:2, last:1; } ModeC253c;
 extern void *gCur3DSpriteEngine;
 extern u8 gSinCosTable[];
-extern u8 data_027e005c[];
+extern u8 gSpriteDesc32x16[];
 extern u8 data_027e00b4[];
 extern u8 data_02129780[];
 extern u8 data_027e007c[];
@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void func_0200bc5c(void *);void func_020a92bc(void *,s32);void *func_020e3218(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void func_02068c50(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void func_0200bc5c(void *);void func_020a92bc(void *,s32);void *func_020e3218(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -82,22 +82,22 @@ func_0208116c(sOccupationCommonFile,0x360,64);
 func_01ff9ce8(2);
 
 /* build "<CO name>.narc" and load the CO's portrait archive */
-func_02068c50(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
+StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
 func_02068d68(path,sNarcExt);
 func_020814e4(path);
 
 /* "<CO name>.cg" -> background frame slot */
-func_02068c50(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
+StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
 func_02068d68(path,sCgExt);
 func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
 
 /* "<CO name>.sc" -> portrait slot */
-func_02068c50(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
+StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
 func_02068d68(path,sScExt);
 func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
 
 /* "<CO name>.cl" -> palette data */
-func_02068c50(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
+StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
 func_02068d68(path,sClExt);
 func_020815d4(path,*(void **)(screen+76),0,128);
 func_02081528();
@@ -146,7 +146,7 @@ scaleC=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void *
 q0=func_0207c8ec(cosine<<4,scaleD);q1=func_0207c8ec((-sine)<<4,scaleC);q2=func_0207c8ec(sine<<4,scaleB);q3=func_0207c8ec(cosine<<4,scratch);
 SetSpriteQuad(0,q0,q1,q2,q3);
 if(((FlagsC253c *)(panel+80))->flag0){func_020a92bc(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}func_020a94fc(*(void **)(panel+60));}
-if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e005c,11);
+if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);
 if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e00b4,11);
 scratch=GetCOPaletteOffset((*(u8 **)(panel+64))[1]);
 AddSprite(76,117,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);

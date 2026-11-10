@@ -23,25 +23,25 @@ else if(*dst==63)*dst=table[1];
 }
 
 s32 ghiResizeBuffer(s32 *p,s32 n) {
-s32 func_020377a8(s32,s32);
+s32 gpiRealloc(s32,s32);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce58,data_020fcedc;
 s32 v,total;
-if(!p)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce58,0x20);
-if(n<=0)func_020640a8(&data_020fcedc,&data_020fcecc,&data_020fce58,0x21);
+if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce58,0x20);
+if(n<=0)AssertFailed(&data_020fcedc,&data_020fcecc,&data_020fce58,0x21);
 if(!p)return 0;
 if(n<=0)return 0;
 total=p[2];total+=n;
-v=func_020377a8(p[1],total);
+v=gpiRealloc(p[1],total);
 if(!v)return 0;
 p[1]=v;p[2]=total;return 1;
 }
 
 s32 ghiInitBuffer(void *connection,s32 *buffer,s32 size,s32 grow) {
 extern M2C_UNK data_020fcef0,data_020fcecc,data_020fce38,data_020fcec4,data_020fcefc,data_020fcedc;
-if(!connection)func_020640a8(&data_020fcef0,&data_020fcecc,&data_020fce38,0x43);
-if(!buffer)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce38,0x44);
-if(size<=0)func_020640a8(&data_020fcefc,&data_020fcecc,&data_020fce38,0x45);
-if(grow<=0)func_020640a8(&data_020fcedc,&data_020fcecc,&data_020fce38,0x46);
+if(!connection)AssertFailed(&data_020fcef0,&data_020fcecc,&data_020fce38,0x43);
+if(!buffer)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce38,0x44);
+if(size<=0)AssertFailed(&data_020fcefc,&data_020fcecc,&data_020fce38,0x45);
+if(grow<=0)AssertFailed(&data_020fcedc,&data_020fcecc,&data_020fce38,0x46);
 if(!connection)return 0;
 if(!buffer)return 0;
 if(size<=0)return 0;
@@ -55,10 +55,10 @@ if(!ghiResizeBuffer(buffer,size))return 0;
 /* Initialize a fixed-size buffer wrapper with a connection, user storage and capacity. */
 s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size) {
     extern M2C_UNK data_020fcef0, data_020fcecc, data_020fce68, data_020fcec4, data_020fcf0c, data_020fcf18;
-    if (!connection) func_020640a8(&data_020fcef0, &data_020fcecc, &data_020fce68, 0x74);
-    if (!buffer) func_020640a8(&data_020fcec4, &data_020fcecc, &data_020fce68, 0x75);
-    if (!userBuffer) func_020640a8(&data_020fcf0c, &data_020fcecc, &data_020fce68, 0x76);
-    if (size <= 0) func_020640a8(&data_020fcf18, &data_020fcecc, &data_020fce68, 0x77);
+    if (!connection) AssertFailed(&data_020fcef0, &data_020fcecc, &data_020fce68, 0x74);
+    if (!buffer) AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce68, 0x75);
+    if (!userBuffer) AssertFailed(&data_020fcf0c, &data_020fcecc, &data_020fce68, 0x76);
+    if (size <= 0) AssertFailed(&data_020fcf18, &data_020fcecc, &data_020fce68, 0x77);
     if (!connection) return 0;
     if (!buffer) return 0;
     if (!userBuffer) return 0;
@@ -78,7 +78,7 @@ s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size
 void ghiFreeBuffer(s32 *p) {
 void func_020377c4(s32);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce28;
-if(!p)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce28,0x9b);
+if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce28,0x9b);
 if(!p || !p[1])return;
 if(!p[7])func_020377c4(p[1]);
 func_02065210(p,0,0x24);
@@ -87,7 +87,7 @@ func_02065210(p,0,0x24);
 /* Append data to a GHIBuffer, growing it if needed; when the buffer is encrypted
    the data is passed through the connection's encryptor first. */
 s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     s32 StringLength(s32);
     s32 ghiResizeBuffer(s32 *, s32);
     void MemCopy(void *, void *, s32);
@@ -102,9 +102,9 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     void *connection = buffer->connection;
     typedef s32 (*Cb)(void *, void *, void *, s32 *, s32, s32 *);
 
-    if (buffer == 0) func_020640a8(&data_020fcec4, &data_020fcecc, &data_020fce94, 0xb7);
-    if (data == 0) func_020640a8(&data_020fcf24, &data_020fcecc, &data_020fce94, 0xb8);
-    if (dataLen < 0) func_020640a8(&data_020fcf2c, &data_020fcecc, &data_020fce94, 0xb9);
+    if (buffer == 0) AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce94, 0xb7);
+    if (data == 0) AssertFailed(&data_020fcf24, &data_020fcecc, &data_020fce94, 0xb8);
+    if (dataLen < 0) AssertFailed(&data_020fcf2c, &data_020fcecc, &data_020fce94, 0xb9);
     if (buffer == 0) return 0;
     if (data == 0) return 0;
     if (dataLen < 0) return 0;
@@ -117,7 +117,7 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
         s32 result;
         s32 room;
         if (M2C_FIELD(connection, s32 *, 0x168) == 0) {
-            func_020640a8(&data_020fcf3c, &data_020fcecc, &data_020fce94, 0xce);
+            AssertFailed(&data_020fcf3c, &data_020fcecc, &data_020fce94, 0xce);
         }
         do {
             u8 *dest;
@@ -186,27 +186,27 @@ s32 AppendChar(s32 p,s32 c) {
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce7c;
 u8 v=c;
-if(!p)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce7c,0x131);
+if(!p)AssertFailed(&data_020fcec4,&data_020fcecc,&data_020fce7c,0x131);
 if(!p)return 0;
 return ghiAppendDataToBuffer(p,(s32 *)&v,1);
 }
 
 void AppendInt(s32 a,s32 b) {
-void func_020675e4(void *,void *,s32);
+void StringFormat(void *,void *,s32);
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcf80;
 s32 buf[4];
-func_020675e4(buf,&data_020fcf80,b);
+StringFormat(buf,&data_020fcf80,b);
 ghiAppendDataToBuffer(a,buf,0);
 }
 
 void ResetBuffer(void *arg0) {
-    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fce48;
     extern M2C_UNK data_020fcec4;
     extern M2C_UNK data_020fcecc;
     if (arg0 == NULL) {
-        func_020640a8(&data_020fcec4, &data_020fcecc, &data_020fce48, 0x16C);
+        AssertFailed(&data_020fcec4, &data_020fcecc, &data_020fce48, 0x16C);
     }
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
     M2C_FIELD(arg0, s32 *, 0x10) = 0;
@@ -225,7 +225,7 @@ loop_1:
     if ((PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), 0, &sp4, &sp0) == -1) || (sp0 != 0)) {
         M2C_FIELD(arg0, s32 *, 0xFC) = 1;
         M2C_FIELD(arg0, s32 *, 0x38) = 5;
-        M2C_FIELD(arg0, s32 *, 0x4C) = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        M2C_FIELD(arg0, s32 *, 0x4C) = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
         return 0;
     }
     if (sp4 == 0) {
@@ -247,8 +247,8 @@ loop_1:
 s32 func_0204a3dc(s32 *p,u8 *dst,s32 *len) {
 extern M2C_UNK data_020fcf84,data_020fcecc,data_020fceac,data_020fcf98;
 s32 n,left;
-if(!p)func_020640a8(&data_020fcf84,&data_020fcecc,&data_020fceac,0x1b7);
-if(!len)func_020640a8(&data_020fcf98,&data_020fcecc,&data_020fceac,0x1b8);
+if(!p)AssertFailed(&data_020fcf84,&data_020fcecc,&data_020fceac,0x1b7);
+if(!len)AssertFailed(&data_020fcf98,&data_020fcecc,&data_020fceac,0x1b8);
 n=*len;
 if(!n)return 0;
 left=p[3]-p[4];
@@ -261,7 +261,7 @@ dst[n]=0;*len=n;p[4]+=n;return 1;
 void func_0204a498(void *p) {
 extern M2C_UNK data_020fcfec,data_020fcff8,data_020fcfd0;
 s32 a,b,r;
-if(!p)func_020640a8(&data_020fcfec,&data_020fcff8,&data_020fcfd0,0x1b);
+if(!p)AssertFailed(&data_020fcfec,&data_020fcff8,&data_020fcfd0,0x1b);
 if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32),0x40))return;
 if(M2C_FIELD(p,s32 *,12)){a=0;b=0;}else{a=M2C_FIELD(p,s32 *,0xc0);b=M2C_FIELD(p,s32 *,0x100);}
 r=M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32),0x40)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x38),a,b,M2C_FIELD(p,s32 *,0x44));
@@ -270,7 +270,7 @@ if(a && !r)M2C_FIELD(p,s32 *,0xd8)=1;
 
 void InvokeRequestCallback(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020fcfec,data_020fcff8,data_020fcfb8;
-if(!p)func_020640a8(&data_020fcfec,&data_020fcff8,&data_020fcfb8,0x45);
+if(!p)AssertFailed(&data_020fcfec,&data_020fcff8,&data_020fcfb8,0x45);
 if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c))return;
 M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x10),a,b,M2C_FIELD(p,s32 *,0x100),M2C_FIELD(p,s32 *,0x104),M2C_FIELD(p,s32 *,0x44));
 }
@@ -281,7 +281,7 @@ void func_0204a594(void *arg0) {
     extern M2C_UNK data_020fcfec;
     extern M2C_UNK data_020fcff8;
     if (arg0 == NULL) {
-        func_020640a8(&data_020fcfec, &data_020fcff8, &data_020fcfa4, 0x5E);
+        AssertFailed(&data_020fcfec, &data_020fcff8, &data_020fcfa4, 0x5E);
     }
     if (M2C_FIELD(arg0, M2C_UNK (**)(s32, s32, s32, s32, s32, s32), 0x150) == NULL) {
         return;
@@ -344,7 +344,7 @@ return 0;
 s32 func_0204a740(void *p,u8 *dst,s32 *len) {
 u32 func_02049208(void);
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
-s32 func_020497cc(s32,u8 *,s32,s32);
+s32 ghiRecv(s32,u8 *,s32,s32);
 
 extern s32 data_020fd00c[];
 s32 r; s32 err; s32 n; u32 now; register s32 got; register s32 out;
@@ -362,10 +362,10 @@ M2C_FIELD(p,s32 *,0x80)=M2C_FIELD(p,s32 *,0xf8);
 M2C_FIELD(p,s32 *,0x84)=M2C_FIELD(p,s32 *,0xf8);
 }return 0;
 }
-got=func_020497cc(M2C_FIELD(p,s32 *,0x48),dst,n,0);
+got=ghiRecv(M2C_FIELD(p,s32 *,0x48),dst,n,0);
 r=got;
 if((u32)got==0xffffffffU){
-err=func_02049900(M2C_FIELD(p,s32 *,0x48));
+err=ghiGetLastSocketError(M2C_FIELD(p,s32 *,0x48));
 if(err==-6||err==-26||err==-76)return 1;
 M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=5;
 M2C_FIELD(p,s32 *,0x4c)=err;M2C_FIELD(p,s32 *,0x130)=1;return 3;
@@ -390,13 +390,13 @@ out=0;dst[got]=0;*len=r;if(r<=0)out=1;return out;
 #pragma opt_propagation reset
 s32 func_0204a954(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_02049810(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02049900(s32);
+    s32 ghiGetLastSocketError(s32);
     s32 temp_r0;
     s32 temp_r0_2;
 
     temp_r0 = func_02049810(M2C_FIELD(arg0, s32 *, 0x48), arg1, arg2, 0);
     if (temp_r0 == -1) {
-        temp_r0_2 = func_02049900(M2C_FIELD(arg0, s32 *, 0x48));
+        temp_r0_2 = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
         if ((temp_r0_2 != -6) && (temp_r0_2 != -0x1A) && (temp_r0_2 != -0x4C)) {
             M2C_FIELD(arg0, s32 *, 0xFC) = 1;
             M2C_FIELD(arg0, s32 *, 0x38) = 5;

@@ -184,12 +184,12 @@ s32 func_0209def8(void) {
 }
 
 void func_0209dfe4(void *arg0) {
-    M2C_UNK func_01ffa574(void *);
+    M2C_UNK DeleteSpriteObject(void *);
     s32 func_02005d90(s32);
     if (func_02005d90(M2C_FIELD(arg0, s32 *, 0x34)) == 0) {
         return;
     }
-    func_01ffa574(arg0);
+    DeleteSpriteObject(arg0);
 }
 
 void func_0209e008(void *arg0) {
@@ -426,7 +426,7 @@ M2C_UNK func_0209e5d0(void *arg0) {
     func_02099318(M2C_FIELD(arg0, void **, 0x6C), 0);
 }
 
-M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return func_02082770(v);}
+M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return Reset3DSpriteBankState(v);}
 
 s32 func_0209e660(void *arg0) { (void)arg0; return 0; }
 

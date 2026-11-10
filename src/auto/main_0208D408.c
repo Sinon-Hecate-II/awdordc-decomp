@@ -11,8 +11,8 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
     extern s16 gSinCosTable[];
     extern u8 data_020f35ba[];
     extern u8 data_027e007c[];
-    extern u8 data_027e00a4[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc16x8[];
+    extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
     s32 func_0207c8ec(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
@@ -81,7 +81,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
         AddSprite((u16)((curX & 0x1FF) | 0x2000),
                       (u16)(curY & 0xFF),
                       (u16)tileBase,
-                      (void *)data_027e00a4,
+                      (void *)gSpriteDesc16x8,
                       layerPriority);
     }
     while (remaining >= 0x8) {
@@ -89,7 +89,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
         AddSprite((u16)((curX & 0x1FF) | 0x2000),
                       (u16)(curY & 0xFF),
                       (u16)tileBase,
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x4) {
@@ -98,7 +98,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
         AddSprite((u16)((curX & 0x1FF) | 0x2000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (4 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x2) {
@@ -107,7 +107,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
         AddSprite((u16)((curX & 0x1FF) | 0x2000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (6 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x1) {
@@ -116,7 +116,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
         AddSprite((u16)((curX & 0x1FF) | 0x2000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (8 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
 }
@@ -131,7 +131,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern u8 data_020f359e[];
     extern u8 data_027e009c[];
     extern u8 data_027e006c[];
-    extern u8 data_027e0084[];
+    extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
     s32 func_0207c8ec(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
@@ -209,7 +209,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)((curX & 0x1FF) | 0x1000),
                       (u16)(curY & 0xFF),
                       tileBase,
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x4) {
@@ -218,7 +218,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)((curX & 0x1FF) | 0x1000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (4 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x2) {
@@ -227,7 +227,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)((curX & 0x1FF) | 0x1000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (6 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
     while (remaining >= 0x1) {
@@ -236,7 +236,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         AACC((u16)((curX & 0x1FF) | 0x1000),
                       (u16)(curY & 0xFF),
                       (u16)(tileBase + (0x3FF & (8 >> (s32)mode))),
-                      (void *)data_027e0084,
+                      (void *)gSpriteDesc8x8,
                       layerPriority);
     }
 #undef AACC

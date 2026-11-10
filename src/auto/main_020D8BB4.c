@@ -147,7 +147,7 @@ void func_020d9054(s32 a){M2C_UNK func_01ffa42c(M2C_UNK *,M2C_UNK);extern M2C_UN
 void func_020d908c(void) {
     M2C_UNK func_020d4d78(void);
     void func_020822b8(void *);
-    void func_02082770(void);
+    void Reset3DSpriteBankState(void);
     void func_02082700(void);
     void func_020c0a88(void);
     void func_0207c780(M2C_UNK *, M2C_UNK);
@@ -177,7 +177,7 @@ void func_020d908c(void) {
     t = (u16 *)*(void **)gCur3DSpriteEngine;
     *t = (u16)(*t & ~7);
     func_020822b8(&buf);
-    func_02082770();
+    Reset3DSpriteBankState();
     func_02082700();
     func_020c0a88();
     func_0207c780(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));

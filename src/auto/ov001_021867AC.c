@@ -13,21 +13,21 @@ void func_ov001_021867ac(void) {
 extern u8 data_ov001_0218fcfc[];
 extern const u16 data_ov001_0218fc70[];
 extern const s8 data_ov001_0218fc5c[], data_ov001_0218fc5d[];
-s32 func_ov001_0218bbd8(void *);
-s32 func_ov001_0218bb00(s32);
+s32 TouchRectPressed(void *);
+s32 KeyPressed(s32);
 void func_ov001_0218b2e0(const void *, const void *, void *);
 void func_ov001_02186ba8(s32);
 s32 i;
 u32 rect[2];
 for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
     func_ov001_0218b2e0(&((const u32 (*)[2])data_ov001_0218fccc)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][((const u8 (*)[2])data_ov001_0218fc52)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)][i]], &((const u32 *)data_ov001_0218fc70)[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)], rect);
-    if (func_ov001_0218bbd8(rect)) {
+    if (TouchRectPressed(rect)) {
         M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = i;
         break;
     }
 }
-if (func_ov001_0218bb00(1)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
-if (func_ov001_0218bb00(2)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
+if (KeyPressed(1)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5c[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
+if (KeyPressed(2)) M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b) = data_ov001_0218fc5d[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c) * 2];
 for (i = 0; i < data_ov001_0218fcfc[M2C_FIELD(data_ov001_02193e18, u8 *, 0x1c)]; i++) {
     if (i == M2C_FIELD(data_ov001_02193e18, s8 *, 0x1b)) {
         func_ov001_02186ba8(i);

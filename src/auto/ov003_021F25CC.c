@@ -248,7 +248,7 @@ void InitMapSelectScreen(s32 arg0) {
     void func_ov003_021f1be8(void);
     void func_ov003_021f192c(void *);
     void func_ov003_021f18b4(void *);
-    void func_02084a40(void);
+    void ResetPlayerMask(void);
     s32 func_020846a4(void);
     void func_020852a8(void);
     void func_ov003_021f1884(s32);
@@ -338,7 +338,7 @@ void InitMapSelectScreen(s32 arg0) {
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,4)=2;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,5)=15;
     func_ov003_021f18b4(M2C_FIELD(arg0,void **,0x38));
-    func_02084a40();
+    ResetPlayerMask();
     if (func_020846a4() != 0) {
         func_020852a8();
     }

@@ -401,7 +401,7 @@ void func_ov003_021e4908(void *arg0) {
 }
 
 void *func_ov003_021e4d2c(void *arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
@@ -431,10 +431,10 @@ void *func_ov003_021e4d2c(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, void **, 0x44);
     if (temp_r5 != NULL) {
         if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         MemFree(temp_r5);
     }
@@ -451,10 +451,10 @@ void *func_ov003_021e4d2c(void *arg0) {
         M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
     }
     if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        func_01ffa574();
+        DeleteSpriteObject();
     }
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        func_01ffa574();
+        DeleteSpriteObject();
     }
     func_ov003_021f140c(4);
     func_020c127c();
@@ -474,7 +474,7 @@ s32 func_ov003_021e4e58(s32 arg0) {
 }
 
 M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     extern M2C_UNK data_ov003_0220f45c;
     u8 var_r4;
@@ -483,7 +483,7 @@ M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
     var_r4 = 0;
     do {
         if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         var_r4 += 1;
     } while ((u32) var_r4 < 0xBU);
@@ -492,7 +492,7 @@ M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
 }
 
 void *func_ov003_021e4eb8(void *arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK func_020c127c();
     M2C_UNK func_020c8e40();
@@ -522,10 +522,10 @@ void *func_ov003_021e4eb8(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, void **, 0x44);
     if (temp_r5 != NULL) {
         if (M2C_FIELD(temp_r5, s32 *, 0) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         if (M2C_FIELD(temp_r5, s32 *, 4) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         MemFree(temp_r5);
     }
@@ -542,10 +542,10 @@ void *func_ov003_021e4eb8(void *arg0) {
         M2C_FIELD(*temp_r0_4, void (**)(void *), 4)(temp_r0_4);
     }
     if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) {
-        func_01ffa574();
+        DeleteSpriteObject();
     }
     if (M2C_FIELD(arg0, s32 *, 0x58) != 0) {
-        func_01ffa574();
+        DeleteSpriteObject();
     }
     func_ov003_021f140c(4);
     func_020c127c();
@@ -560,7 +560,7 @@ void *func_ov003_021e4eb8(void *arg0) {
 }
 
 M2C_UNK **func_ov003_021e4fec(M2C_UNK **arg0) {
-    M2C_UNK func_01ffa574();
+    M2C_UNK DeleteSpriteObject();
     extern M2C_UNK data_ov003_0220f45c;
     u8 var_r4;
 
@@ -568,7 +568,7 @@ M2C_UNK **func_ov003_021e4fec(M2C_UNK **arg0) {
     var_r4 = 0;
     do {
         if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {
-            func_01ffa574();
+            DeleteSpriteObject();
         }
         var_r4 += 1;
     } while ((u32) var_r4 < 0xBU);
