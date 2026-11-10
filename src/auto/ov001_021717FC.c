@@ -256,19 +256,13 @@ func_ov001_0218a384(((s32 *)data_ov001_02193d10)[3],-1,b,d);
 }
 
 void func_ov001_02172184(void) {
-    void func_ov001_0218a1cc(s32);
-    extern s32 data_ov001_02193d10;
-    s32 v;
-    s32 i = 0;
-
-    do {
-        v = ((s32 *)data_ov001_02193d10)[i];
-        if (v != 0) {
-            func_ov001_0218a1cc(v);
-            ((s32 *)data_ov001_02193d10)[i] = 0;
-        }
-        i++;
-    } while (i < 4);
+ void func_ov001_0218a1cc(s32);
+ extern s32 data_ov001_02193d10;
+ s32 i,v;
+ for(i=0;i<4;i++){
+ v=((s32*)data_ov001_02193d10)[i];
+ if(v){func_ov001_0218a1cc(v);((s32*)data_ov001_02193d10)[i]=0;}
+ }
 }
 
 void func_ov001_021721c4(void) {

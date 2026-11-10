@@ -223,24 +223,15 @@ s32 gpiStringDup(s32 arg0) {
     return temp_r0;
 }
 
-#pragma opt_cond_exec off
+#pragma push
+#pragma optimization_level 2
 s8 *func_020492a8(s8 *p) {
-    extern M2C_UNK data_020eac40;
-    s8 *q = p;
-    s32 c = *p;
-    if (c != 0) {
-        do {
-            if (c < 0) goto skip;
-            if (c >= 128) goto skip;
-            c = ((u8 *)&data_020eac40)[c];
-        skip:
-            *p = (s8)c;
-            c = *++p;
-        } while (c != 0);
-    }
-    return q;
+extern M2C_UNK data_020eac40;
+s8 *q=p; s32 c=*p;
+if(c){do{if(c>=0 && c<128){c=((u8 *)&data_020eac40)[c];} *p=c;c=*++p;}while(c);}
+return q;
 }
-#pragma opt_cond_exec reset
+#pragma pop
 s32 func_020492ec(M2C_UNK arg0, s32 arg1) {
     s32 func_020219e8(M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;

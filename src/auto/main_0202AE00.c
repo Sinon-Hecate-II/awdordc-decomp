@@ -210,7 +210,7 @@ void func_0202b544(void *arg0) {
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-s32 func_0202b56c(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
+s32 Sound_StartVoice(void *a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     extern M2C_UNK data_0213bb88;
     void func_0202b760(void *);
     s32 func_020722fc(s32, s32);
@@ -315,7 +315,7 @@ void func_0202b77c(void *a,s32 b){s32 func_020098d0(s32);s32 ch;s32 r,i;M2C_FIEL
 #pragma scheduling off
 void func_0202b7e8(void *a,register s32 b,s32 c){M2C_UNK func_02008dfc(s32,s32,s32);s32 func_020098d0(s32);extern M2C_UNK data_0213bbd8;s32 r;if(b>M2C_FIELD(a,s32 *,72)-1)return;b=M2C_FIELD(a+b,u8 *,76);M2C_FIELD(&data_0213bbd8,s32 *,b*8)=c;r=func_020098d0(M2C_FIELD(a,s32 *,60)+c);func_02008dfc(1<<b,r&255,r>>8);}
 #pragma scheduling reset
-void func_0202b83c(void *arg0, s32 arg1, M2C_UNK arg2) {
+void Sound_SetChannelVolume(void *arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK func_02008e24(s32, M2C_UNK);
     if (arg1 > (s32) (M2C_FIELD(arg0, s32 *, 0x48) - 1)) {
         return;

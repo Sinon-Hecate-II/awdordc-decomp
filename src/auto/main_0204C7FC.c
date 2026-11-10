@@ -103,7 +103,10 @@ done:size=1024;func_0204a740(a,buf,&size);
 
 #pragma push
 #pragma opt_common_subs off
-void ghiSendRequest(void *arg0) {
+/* Build the HTTP request line and headers (Host, User-Agent, Connection, Content-Length/
+   Content-Type for POST) into the request's send buffer, then flush it to the socket and
+   advance the request to its "sent" state. */
+void ghiSendRequest(void *request) {
   s32 ghiAppendDataToBuffer(void *, void *, s32);
   s32 AppendHttpHeader(M2C_UNK, M2C_UNK *, M2C_UNK *);
   M2C_UNK AppendChar(s32, s32);
@@ -115,54 +118,54 @@ void ghiSendRequest(void *arg0) {
   u8 *func_02068fdc(s32, M2C_UNK *);
   M2C_UNK func_020675e4(void *, void *, s32);
   extern M2C_UNK sHttpMethodPost, sHttpMethodHead, sHttpMethodGet, sHttpVersion;
-  extern M2C_UNK sHeaderHost, sHeaderHostColon, data_020fd8dc, data_020fd8d8;
-  extern M2C_UNK data_020fd8e8, data_020fd8f8, data_020fd904, data_020fd910;
-  extern M2C_UNK data_020fd918, data_020fd91c, data_020fd92c;
+  extern M2C_UNK sHeaderHost, sHeaderHostColon, sHeaderUserAgent, sHttpCrlf;
+  extern M2C_UNK sGameSpyUserAgent, sHeaderConnection, sConnectionKeepAlive, sConnectionClose;
+  extern M2C_UNK sFormatInt, sHeaderContentLength, sHeaderContentType;
   extern s32 data_0213dca8;
-  u8 *buf;
-  u8 tmp[16];
-  if (M2C_FIELD(arg0, s32 *, 0x5c) == 0) {
-    buf = (u8 *)arg0 + 0x50;
-    ghiAppendDataToBuffer(buf,
-      M2C_FIELD(arg0, s32 *, 0x13c) ? (void *)&sHttpMethodPost :
-        (M2C_FIELD(arg0, s32 *, 0xc) == 3 ? (void *)&sHttpMethodHead : (void *)&sHttpMethodGet), 0);
-    if (M2C_FIELD(arg0, s32 *, 0x15c) || data_0213dca8)
-      ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x14), 0);
+  u8 *sendBuf;
+  u8 lenText[16];
+  if (M2C_FIELD(request, s32 *, 0x5c) == 0) {
+    sendBuf = (u8 *)request + 0x50;
+    ghiAppendDataToBuffer(sendBuf,
+      M2C_FIELD(request, s32 *, 0x13c) ? (void *)&sHttpMethodPost :
+        (M2C_FIELD(request, s32 *, 0xc) == 3 ? (void *)&sHttpMethodHead : (void *)&sHttpMethodGet), 0);
+    if (M2C_FIELD(request, s32 *, 0x15c) || data_0213dca8)
+      ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x14), 0);
     else
-      ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x24), 0);
-    ghiAppendDataToBuffer(buf, &sHttpVersion, 0);
-    if (M2C_FIELD(arg0, u16 *, 0x20) == 0x50)
-      AppendHttpHeader((M2C_UNK)buf, &sHeaderHost, (M2C_UNK *)M2C_FIELD(arg0, s32 *, 0x18));
+      ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x24), 0);
+    ghiAppendDataToBuffer(sendBuf, &sHttpVersion, 0);
+    if (M2C_FIELD(request, u16 *, 0x20) == 0x50)
+      AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderHost, (M2C_UNK *)M2C_FIELD(request, s32 *, 0x18));
     else {
-      ghiAppendDataToBuffer(buf, &sHeaderHostColon, 0);
-      ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x18), 0);
-    AppendChar((s32)buf, 0x3a);
-    AppendInt((s32)buf, M2C_FIELD(arg0, u16 *, 0x20));
-    ghiAppendDataToBuffer(buf, &data_020fd8d8, 2);
+      ghiAppendDataToBuffer(sendBuf, &sHeaderHostColon, 0);
+      ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x18), 0);
+    AppendChar((s32)sendBuf, 0x3a);
+    AppendInt((s32)sendBuf, M2C_FIELD(request, u16 *, 0x20));
+    ghiAppendDataToBuffer(sendBuf, &sHttpCrlf, 2);
     }
-    if (!M2C_FIELD(arg0, s32 *, 0x28) ||
-        !func_02068fdc(M2C_FIELD(arg0, s32 *, 0x28), &data_020fd8dc))
-      AppendHttpHeader((M2C_UNK)buf, &data_020fd8dc, &data_020fd8e8);
-    if (M2C_FIELD(arg0, s32 *, 0x34))
-      AppendHttpHeader((M2C_UNK)buf, &data_020fd8f8, &data_020fd904);
+    if (!M2C_FIELD(request, s32 *, 0x28) ||
+        !func_02068fdc(M2C_FIELD(request, s32 *, 0x28), &sHeaderUserAgent))
+      AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderUserAgent, &sGameSpyUserAgent);
+    if (M2C_FIELD(request, s32 *, 0x34))
+      AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderConnection, &sConnectionKeepAlive);
     else
-      AppendHttpHeader((M2C_UNK)buf, &data_020fd8f8, &data_020fd910);
-    if (M2C_FIELD(arg0, s32 *, 0x13c)) {
-      func_020675e4(tmp, &data_020fd918, M2C_FIELD(arg0, s32 *, 0x14c));
-      AppendHttpHeader((M2C_UNK)buf, &data_020fd91c, (M2C_UNK *)tmp);
-    AppendHttpHeader((M2C_UNK)buf, &data_020fd92c, (M2C_UNK *)GetContentType(arg0));
+      AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderConnection, &sConnectionClose);
+    if (M2C_FIELD(request, s32 *, 0x13c)) {
+      func_020675e4(lenText, &sFormatInt, M2C_FIELD(request, s32 *, 0x14c));
+      AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderContentLength, (M2C_UNK *)lenText);
+    AppendHttpHeader((M2C_UNK)sendBuf, &sHeaderContentType, (M2C_UNK *)GetContentType(request));
     }
-    if (M2C_FIELD(arg0, s32 *, 0x28))
-      ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x28), 0);
-    ghiAppendDataToBuffer(buf, &data_020fd8d8, 2);
-    if (buf != (u8 *)arg0 + 0x50)
-      ghiAppendDataToBuffer((u8 *)arg0 + 0x50, (void *)M2C_FIELD(buf, s32 *, 4), M2C_FIELD(buf, s32 *, 0xc));
+    if (M2C_FIELD(request, s32 *, 0x28))
+      ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x28), 0);
+    ghiAppendDataToBuffer(sendBuf, &sHttpCrlf, 2);
+    if (sendBuf != (u8 *)request + 0x50)
+      ghiAppendDataToBuffer((u8 *)request + 0x50, (void *)M2C_FIELD(sendBuf, s32 *, 4), M2C_FIELD(sendBuf, s32 *, 0xc));
   }
-  if (SendBufferedData(arg0) == 0) return;
-  if (M2C_FIELD(arg0, s32 *, 0x60) < M2C_FIELD(arg0, s32 *, 0x5c)) return;
-  ResetBuffer((u8 *)arg0 + 0x50);
-  if(M2C_FIELD(arg0, s32 *, 0x13c)) M2C_FIELD(arg0, s32 *, 0x10)=4; else M2C_FIELD(arg0, s32 *, 0x10)=5;
-  InvokeRequestCallback(arg0, 0, 0);
+  if (SendBufferedData(request) == 0) return;
+  if (M2C_FIELD(request, s32 *, 0x60) < M2C_FIELD(request, s32 *, 0x5c)) return;
+  ResetBuffer((u8 *)request + 0x50);
+  if(M2C_FIELD(request, s32 *, 0x13c)) M2C_FIELD(request, s32 *, 0x10)=4; else M2C_FIELD(request, s32 *, 0x10)=5;
+  InvokeRequestCallback(request, 0, 0);
 }
 #pragma pop
 void func_0204ce20(void *arg0) {
@@ -236,13 +239,13 @@ M2C_FIELD(a,s32 *,228)=major;M2C_FIELD(a,s32 *,232)=minor;M2C_FIELD(a,s32 *,236)
 void func_0204d084(void *a){
 s32 func_0204a740(void *,void *,s32 *);s32 ghiAppendDataToBuffer();s32 func_0204cf38(void *);
 s32 func_02049900(s32);u8 *func_02068fdc(s32,M2C_UNK *);
-extern M2C_UNK data_020fd8d8;
+extern M2C_UNK sHttpCrlf;
 u8 buf[1024];s32 len=1024; s32 n,off;u8 *p;
 n=func_0204a740(a,buf,&len);
 if(n==3)return;
 if(n==1 && M2C_FIELD(a,s32 *,132)==M2C_FIELD(a,s32 *,128))return;
 if(n==0 && !ghiAppendDataToBuffer((u8 *)a+116,buf,len))return;
-p=func_02068fdc(M2C_FIELD(a,s32 *,120),&data_020fd8d8);
+p=func_02068fdc(M2C_FIELD(a,s32 *,120),&sHttpCrlf);
 if(p){
 *p=0;off=p-M2C_FIELD(a,u8 **,120);
 M2C_FIELD(a,s32 *,248)=off+1;

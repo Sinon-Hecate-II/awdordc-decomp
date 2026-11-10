@@ -1,98 +1,101 @@
 /* 14 functions from 0x0202DBAC to 0x0202E470 (main), found by ds-decomp. */
 #include "common.h"
 void func_0202de74(void *);
-void func_0202dfa8(void *);
+void Sound_ReleaseChannel(void *);
 void func_0202e12c(M2C_UNK);
 void func_0202e02c(M2C_UNK,void *);
 
-s32 Sound_StartPlayer(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
+/* Set up and start one sound/music player slot from a sample descriptor:
+ * pick the slot, install its callbacks, derive its sample rate and channel
+ * count, acquire the channel, then start the voice on the hardware. */
+s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, s32 startPos, s32 lengthMs, s32 loopStart, s32 loopEnd, s32 streamCallback, s32 streamArg) {
     void *Sound_AcquirePlayer(void **, s32, s32);
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     void Sound_ReleasePlayer(void *);
     u64 func_02072088(u64, u64);
     void func_0202eec0(void *);
     void func_0202eed8(void *, s32, s32);
-    s32 func_0202df70(void *, s32, s32);
+    s32 Sound_AcquireChannel(void *, s32, s32);
     u32 func_020722fc(u32, u32);
-    s32 func_0202b56c(void *, s32, s32, s32, s32, s32, s32, s32);
-    void func_0202dfa8(void *);
-    void func_0202b83c(void *, s32, M2C_UNK);
+    s32 Sound_StartVoice(void *, s32, s32, s32, s32, s32, s32, s32);
+    void Sound_ReleaseChannel(void *);
+    void Sound_SetChannelVolume(void *, s32, M2C_UNK);
     void func_0202e1f4(M2C_UNK, s32, M2C_UNK *, M2C_UNK, void *);
 
-    void *p;
+    void *player;
     void *pb;
-    s32 active;
-    s32 cap;
-    s32 c0;
+    s32 playMode;
+    s32 channels;
+    s32 playType;
 
-    p = Sound_AcquirePlayer(a, c, d);
-    pb = b;
-    if (p == 0) {
+    player = Sound_AcquirePlayer(handle, slotIndex, priority);
+    pb = sample;
+    if (player == 0) {
         return 0;
     }
-    Sound_SetPlayerCallbacks(p, *(s32 *)pb);
-    if (M2C_FIELD(p, s32 (**)(void *, s32), 0x164)(p, *(s32 *)pb) == 0) {
-        Sound_ReleasePlayer(p);
+    Sound_SetPlayerCallbacks(player, *(s32 *)pb);
+    if (M2C_FIELD(player, s32 (**)(void *, s32), 0x164)(player, *(s32 *)pb) == 0) {
+        Sound_ReleasePlayer(player);
         return 0;
     }
 
-    M2C_FIELD(p, s32 *, 0x160) = (s32)func_02072088((u64)(u32)M2C_FIELD(p, u16 *, 0xC4) * (u32)f, 0x3E8ULL);
-    if (M2C_FIELD(p, s32 *, 0x160) != 0 && M2C_FIELD(p, u8 *, 0xC0) == 2) {
-        M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) | 0x10;
+    M2C_FIELD(player, s32 *, 0x160) = (s32)func_02072088((u64)(u32)M2C_FIELD(player, u16 *, 0xC4) * (u32)lengthMs, 0x3E8ULL);
+    if (M2C_FIELD(player, s32 *, 0x160) != 0 && M2C_FIELD(player, u8 *, 0xC0) == 2) {
+        M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) | 0x10;
     } else {
-        M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) & ~0x10;
+        M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) & ~0x10;
     }
 
-    M2C_FIELD(p, s32 *, 0x114) = 4;
-    M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) & ~0x20;
-    M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) & ~0x2;
-    M2C_FIELD(p, s32 *, 0x118) = 0;
-    M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) & ~0x4;
-    M2C_FIELD(p, s32 *, 0x110) = M2C_FIELD(p, s32 *, 0x110) & ~0x8;
-    M2C_FIELD(p, s32 *, 0x11C) = 0;
-    M2C_FIELD(p, s32 *, 0x134) = g;
-    M2C_FIELD(p, s32 *, 0x138) = h;
-    M2C_FIELD(p, s32 *, 0x13C) = i;
-    M2C_FIELD(p, s32 *, 0x140) = j;
-    M2C_FIELD(p, s32 *, 0x144) = e;
-    M2C_FIELD(p, s32 *, 0x15C) = 0;
-    M2C_FIELD(p, s32 *, 0x154) = *(u8 *)((u8 *)pb + 4);
-    M2C_FIELD(p, s32 *, 0x158) = 0x7F;
-    func_0202eec0((u8 *)p + 0xE8);
-    func_0202eed8((u8 *)p + 0xE8, 0x7F00, 1);
+    M2C_FIELD(player, s32 *, 0x114) = 4;
+    M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) & ~0x20;
+    M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) & ~0x2;
+    M2C_FIELD(player, s32 *, 0x118) = 0;
+    M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) & ~0x4;
+    M2C_FIELD(player, s32 *, 0x110) = M2C_FIELD(player, s32 *, 0x110) & ~0x8;
+    M2C_FIELD(player, s32 *, 0x11C) = 0;
+    M2C_FIELD(player, s32 *, 0x134) = loopStart;
+    M2C_FIELD(player, s32 *, 0x138) = loopEnd;
+    M2C_FIELD(player, s32 *, 0x13C) = streamCallback;
+    M2C_FIELD(player, s32 *, 0x140) = streamArg;
+    M2C_FIELD(player, s32 *, 0x144) = startPos;
+    M2C_FIELD(player, s32 *, 0x15C) = 0;
+    M2C_FIELD(player, s32 *, 0x154) = *(u8 *)((u8 *)pb + 4);
+    M2C_FIELD(player, s32 *, 0x158) = 0x7F;
+    func_0202eec0((u8 *)player + 0xE8);
+    func_0202eed8((u8 *)player + 0xE8, 0x7F00, 1);
 
-    c0 = M2C_FIELD(p, u8 *, 0xC0);
-    switch (c0) { case 0: active = 0; break; case 1: case 2: active = 1; break; }
+    playType = M2C_FIELD(player, u8 *, 0xC0);
+    switch (playType) { case 0: playMode = 0; break; case 1: case 2: playMode = 1; break; }
 
-    cap = M2C_FIELD(p, u8 *, 0xC2);
+    channels = M2C_FIELD(player, u8 *, 0xC2);
     if (*(u8 *)((u8 *)pb + 7) & 0x1) {
-        cap = 2;
+        channels = 2;
     }
-    if (cap > M2C_FIELD(p, u8 *, 0x124)) {
-        cap = M2C_FIELD(p, u8 *, 0x124);
+    if (channels > M2C_FIELD(player, u8 *, 0x124)) {
+        channels = M2C_FIELD(player, u8 *, 0x124);
     }
-    M2C_FIELD(p, u32 *, 0x110) = (M2C_FIELD(p, u32 *, 0x110) & ~0x40) | ((u32)((cap == 1) << 31) >> 25);
+    M2C_FIELD(player, u32 *, 0x110) = (M2C_FIELD(player, u32 *, 0x110) & ~0x40) | ((u32)((channels == 1) << 31) >> 25);
 
-    if (func_0202df70(p, cap, (s32)((u8 *)p + 0x126)) == 0) {
-        M2C_FIELD(p, void (**)(void *), 0x168)(p);
-        Sound_ReleasePlayer(p);
+    if (Sound_AcquireChannel(player, channels, (s32)((u8 *)player + 0x126)) == 0) {
+        M2C_FIELD(player, void (**)(void *), 0x168)(player);
+        Sound_ReleasePlayer(player);
         return 0;
     }
 
     {
-        s32 mul = M2C_FIELD(p, s32 *, 0x130) * cap;
-        s32 q = (s32)func_020722fc((u32)mul, (u32)M2C_FIELD(p, u8 *, 0x124));
-        if (func_0202b56c(p, active, M2C_FIELD(p, s32 *, 0x12C), q, M2C_FIELD(p, u16 *, 0xC6), 4, (M2C_UNK)func_0202e1f4, (M2C_UNK)p) == 0) {
-            func_0202dfa8(p);
-            M2C_FIELD(p, void (**)(void *), 0x168)(p);
-            Sound_ReleasePlayer(p);
+        s32 scaledSize = M2C_FIELD(player, s32 *, 0x130) * channels;
+        s32 channelBytes = (s32)func_020722fc((u32)scaledSize, (u32)M2C_FIELD(player, u8 *, 0x124));
+        if (Sound_StartVoice(player, playMode, M2C_FIELD(player, s32 *, 0x12C), channelBytes, M2C_FIELD(player, u16 *, 0xC6), 4, (M2C_UNK)func_0202e1f4, (M2C_UNK)player) == 0) {
+            Sound_ReleaseChannel(player);
+            M2C_FIELD(player, void (**)(void *), 0x168)(player);
+            Sound_ReleasePlayer(player);
             return 0;
         }
     }
 
-    if (cap == 2) {
-        func_0202b83c(p, 0, (M2C_UNK)0);
-        func_0202b83c(p, 1, (M2C_UNK)0x7F);
+    if (channels == 2) {
+        Sound_SetChannelVolume(player, 0, (M2C_UNK)0);
+        Sound_SetChannelVolume(player, 1, (M2C_UNK)0x7F);
     }
 
     return 1;
@@ -145,20 +148,20 @@ M2C_UNK func_0202df0c(void *arg0) {
 void func_0202e02c(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
 extern M2C_UNK data_0213c920; extern M2C_UNK data_0213c290;
 if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
-func_0202dfa8(arg0);
+Sound_ReleaseChannel(arg0);
 M2C_FIELD(arg0,void (**)(void *),0x168)(arg0);
 func_0202e02c((M2C_UNK)&data_0213c920,arg0);
 if(M2C_FIELD(&data_0213c290,void **,4)) func_0202e02c((M2C_UNK)((u8 *)M2C_FIELD(&data_0213c290,void **,4)+0x4e0),arg0);
 Sound_ReleasePlayer(arg0);
 }
 
-s32 func_0202df70(void *arg0,s32 arg1,s32 arg2) {
+s32 Sound_AcquireChannel(void *arg0,s32 arg1,s32 arg2) {
 s32 func_0202b4e4(void *,s32,s32);
 if(M2C_FIELD(arg0,s32 *,0x120)==0 && func_0202b4e4(arg0,arg1,arg2)==0) return 0;
 M2C_FIELD(arg0,s32 *,0x120)++; return 1;
 }
 
-void func_0202dfa8(void *arg0) {
+void Sound_ReleaseChannel(void *arg0) {
     M2C_UNK func_0202b544();
     s32 temp_r1;
     s32 temp_r1_2;

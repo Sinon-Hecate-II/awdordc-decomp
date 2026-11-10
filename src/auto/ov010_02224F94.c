@@ -461,7 +461,7 @@ void func_0202b46c(void *);
 void func_0202b4e4(void *,s32,u8 *);
 void func_0202b77c(void *,s32);
 void func_0202b7e8(void *,s32,s32);
-s32 func_0202b56c(void *,s32,s32,s32,s32,s32,void *,s32);
+s32 Sound_StartVoice(void *,s32,s32,s32,s32,s32,void *,s32);
 u8 channels[1];
 u8 *cp;
 u32 i;
@@ -492,7 +492,7 @@ func_0202b4e4(&data_ov010_0222ee14,1,channels);
 func_0202b77c(&data_ov010_0222ee14,127);
 cp=channels;
 i=0;do {func_0202b7e8(&data_ov010_0222ee14,*cp++,0);i++;}while(i<1);
-result=func_0202b56c(&data_ov010_0222ee14,1,M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),size,0x41,2,arg0,M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c));
+result=Sound_StartVoice(&data_ov010_0222ee14,1,M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),size,0x41,2,arg0,M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c));
 if(result==0){func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x18));M2C_FIELD(&data_ov010_0222edd8,s32 *,0xc)=0;func_ov010_02226100(M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c),M2C_FIELD(&data_ov010_0222edd8,s32 *,0x14));M2C_FIELD(&data_ov010_0222edd8,s32 *,0x1c)=0;}
 return result;
 }
