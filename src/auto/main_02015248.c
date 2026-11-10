@@ -1,5 +1,6 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
+typedef struct RomHeader_020152c8 { u8 unk_0[0x80]; u32 offset; } RomHeader_020152c8;
 
 
 /* Select units by state into priority groups, then dispatch the matching network action. */
@@ -31,10 +32,79 @@ u32 func_02015248(void *arg0) {
  return result;
 }
 
-s32 func_020152c8(void *arg0, void *arg1, s32 arg2) {
-    return 0;
+void AutoloadCallback(void);
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
+ s32 func_0200bbe0(void *,s32,s32);void func_0200bbf0(void *,s32,s32);void func_0200b774();s32 func_0200b144();void func_0200b99c();M2C_UNK func_02008048(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
+ extern u8 data_020f554c[];extern u32 *data_020f5548;
+ u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
+ size=arg2;result=0;
+ if(size>=0x164){
+ left=size;p=arg1;owned=0;header=0;table=0;p+=0x160;left-=0x160;
+ if(arg0){
+ origin=M2C_FIELD(arg0,u32 *,0x2c)-M2C_FIELD(arg0,u32 *,0x24);
+ if(func_0200bbe0(arg0,(s32)arg1,0x160)<0x160)left=0;
+ base=M2C_FIELD(arg1,u32 *,0x80);if(!base)base=0x1000000;
+ }else{
+ base=((RomHeader_020152c8 *)0x027ffe00)->offset;if(!base)base=0x1000000;owned=1;
+ func_0200b774(file);
+ n=func_0200b144(data_020f554c,3);
+ func_0200b99c(file,n,0,base+0x88,-1);
+ arg0=file;origin=M2C_FIELD(arg0,u32 *,0x2c)-M2C_FIELD(arg0,u32 *,0x24);
+ func_02008048(0x027ffe00,(s32)arg1,0x160);
+ M2C_FIELD(arg1,u32 *,0x60)|=0x406000;
+ }
+ if(left<0x88)left=0;
+ else{func_0200bbf0(arg0,origin+base,0);func_0200bbe0(arg0,(s32)p,0x88);p+=0x88;left-=0x88;}
+ if(left>=0x70){
+ header=p;func_02018470(p);
+ p+=0x70;left-=0x70;func_02018484(header,0,0x160,arg1,3);
+ n=M2C_FIELD(arg0,u32 *,8);
+ for(i=0;i<3&&M2C_FIELD(n,s8 *,i)!=0;i++);
+ func_02008048(n,(s32)header+0x10,i);M2C_FIELD(header,u32 *,0x14)=i;
+ }else left=0;
+ if(left<0x10)left=0;
+ else{
+ M2C_FIELD(p,u32 *,0)=0;
+ M2C_FIELD(p,u32 *,4)=M2C_FIELD(arg1,u32 *,0x20)+(origin+M2C_FIELD(arg0,u32 *,0x24));
+ M2C_FIELD(p,u32 *,8)=M2C_FIELD(arg1,u32 *,0x30)+(origin+M2C_FIELD(arg0,u32 *,0x24));
+ table=p;p+=0x10;left-=0x10;
+ }
+ if(left>=M2C_FIELD(arg1,u32 *,0x2c)+M2C_FIELD(arg1,u32 *,0x3c)){
+ readBase=M2C_FIELD(arg0,u32 *,0x24);
+ func_0200bbf0(arg0,M2C_FIELD(table,u32 *,4)-readBase,0);
+ func_0200bbe0(arg0,(s32)p,M2C_FIELD(arg1,u32 *,0x2c));
+ func_02018484(header,M2C_FIELD(table,u32 *,4),M2C_FIELD(arg1,u32 *,0x2c),p,3);
+ left=M2C_FIELD(arg1,u32 *,0x2c);
+ func_0200bbf0(arg0,M2C_FIELD(table,u32 *,8)-readBase,0);
+ func_0200bbe0(arg0,(s32)p+left,M2C_FIELD(arg1,u32 *,0x3c));
+ func_02018484(header,M2C_FIELD(table,u32 *,8),M2C_FIELD(arg1,u32 *,0x3c),p+left,3);
+ result=1;
+ }else if(left>=0xcc00){
+ left=M2C_FIELD(arg0,u32 *,0x24);base=M2C_FIELD(table,u32 *,4);
+ func_0200bbf0(arg0,base-left,0);func_0200bbe0(arg0,(s32)p,0x4400);
+ func_02018484(header,base,0x4400,p,3);
+ func_0200bbf0(arg0,base+0x4400-left,0);func_0200bbe0(arg0,(s32)p+0x4400,0x4400);
+ func_02018484(header,base+0x4400,0x4400,p+0x4400,2);
+ func_0200bbf0(arg0,base+0x8800-left,0);func_0200bbe0(arg0,(s32)p+0x8800,0x4400);
+ func_02018484(header,base+0x8800,0x4400,p+0x8800,2);result=1;
+ }
+ func_0200bbf0(arg0,origin,0);
+ if(owned){
+ func_0200ba9c(file);
+ if(result){
+ info[0]=M2C_FIELD(arg1,u32 *,0x20);info[1]=M2C_FIELD(arg1,u32 *,0x28)-M2C_FIELD(arg1,u32 *,0x20);info[2]=M2C_FIELD(header,u32 *,0x48)-M2C_FIELD(arg1,u32 *,0x20);info[3]=size;
+ ranges=data_020f5548;
+ func_02015724(info,0x4000,0x8000,1);
+ while(ranges[1]){func_02015724(info,ranges[0],ranges[0]+ranges[1],0);ranges+=2;}
+ n=(u32)AutoloadCallback-M2C_FIELD(arg1,u32 *,0x28);M2C_FIELD(M2C_FIELD(header,void **,0x48),u32 *,n)=0xe12fff1e;
+ }
+ }
+ if(result)func_020067e0(arg1,size);
+ }
+ return result;
 }
-
 void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, s32);
     M2C_UNK func_02008048(s32, s32, s32);

@@ -1,6 +1,23 @@
 /* 4 functions from 0x0218D908 to 0x0218E584 (ov000), found by ds-decomp. */
 #include "common.h"
 typedef struct {u8 pad[0x58];u16 row;} ScanRow;
+static inline s32 ScanUnitIndex(u8 *unit,u8 *map){if(unit==0)return 0;return (s32)(unit-(map+0x59a4))/14;}
+static inline s32 ScanAdjacentCount(u8 *unit){
+extern void **gCurrentMap;s32 ex,ey,xmin,ymin,xmax,ymax,nx,ny,d,count=0;s32 zero=0;void **owner;u8 *map,*other;u32 index;
+ex=unit[1];ey=unit[2];xmin=ex-1;if(xmin<0)xmin=0;ymin=ey-1;if(ymin<0)ymin=0;
+owner=gCurrentMap;map=*owner;
+xmax=M2C_FIELD(map,u16 *,0x5144)-1;if(ex+1<xmax)xmax=ex+1;
+ymax=M2C_FIELD(map,u16 *,0x5146)-1;if(ey+1<ymax)ymax=ey+1;
+for(ny=ymin;ny<=ymax;ny++)for(nx=xmin;nx<=xmax;nx++){
+d=zero;if(ex-nx>0)d+=ex-nx;else d+=nx-ex;if(ey-ny>0)d+=ey-ny;else d+=ny-ey;
+if(d<1||d>1)continue;
+map=*owner;if(M2C_FIELD(M2C_FIELD(map+ny*4,s8 **,0x52e8),s8 *,nx)<0)continue;
+index=M2C_FIELD(map+M2C_FIELD(map+ny*2,u16 *,0x3758)+nx,u8 *,0);
+other=map+0x59a4+index*14;
+if(((u32)(other[0]<<26)>>26)!=0&&(M2C_FIELD(other,u16 *,4)&1))continue;
+count++;
+}return count;
+}
 static inline u16 ScanHeight(void *p){return M2C_FIELD(p,u16 *,0x5146);}
 
 #pragma opt_strength_reduction off
@@ -167,54 +184,42 @@ void func_ov000_0218dda4(void) {
     func_ov000_02199d74((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);
 }
 
+#pragma opt_strength_reduction off
 void func_ov000_0218df00(void){
+#pragma opt_strength_reduction off
+
 M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 func_ov000_0217a0a8(void *);s32 func_ov000_02199d74(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *data_ov000_021df580;
-s32 bestY=-1,bestScore=0,bestX=-1,temp=0;
-s32 y=0,x,count,ex,ey,xmin,ymin,xmax,ymax,nx,ny,d,dy,index,score;u8 *map,*unit,*selected; s16 position[2];
+s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
+bestY=-1;bestScore=0;bestX=-1;temp=0;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
 if(func_ov000_021a98e4((u32)(selected[0]<<26)>>26))return;
 func_01ffc328(M2C_FIELD(*gCurrentMap,s32 *,0x52d0));func_01ffb9c4(111);
 map=*gCurrentMap;
 for(y=0;y<M2C_FIELD(map,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(map,u16 *,0x5144);x++){
-if(M2C_FIELD(M2C_FIELD(map,s8 **,0x52e8+y*4),s8 *,x)<0)goto next_cell;
-index=M2C_FIELD(map+x+M2C_FIELD(map,u16 *,0x3758+y*2),u8 *,0);
+for(x=0;x<M2C_FIELD(map,u16 *,0x5144);){
+if(M2C_FIELD(M2C_FIELD(map+y*4,s8 **,0x52e8),s8 *,x)<0)goto next_cell;
+index=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)index*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)goto next_cell;
 if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),unit?(s32)(unit-(map+0x59a4))/14:0)==1)goto next_cell;
 if(!func_ov000_021a93ec(x,y))goto next_cell;
 if(!func_ov000_02177f24(x,y,position))goto next_cell;
-map=*gCurrentMap;index=M2C_FIELD(map+x+M2C_FIELD(map,u16 *,0x3758+y*2),u8 *,0);
+map=*gCurrentMap;index=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 score=func_ov000_02176e28(index|0x10000,position);
 if(!score||score<bestScore)goto next_cell;
-if(func_ov000_0217a0a8(unit)==1){
-ex=unit[1];ey=unit[2];count=0;
-xmin=ex-1;if(xmin<0)xmin=0;ymin=ey-1;if(ymin<0)ymin=0;
-map=*gCurrentMap;
-xmax=M2C_FIELD(map,u16 *,0x5144)-1;if(ex+1<xmax)xmax=ex+1;
-ymax=M2C_FIELD(map,u16 *,0x5146)-1;if(ey+1<ymax)ymax=ey+1;
-for(ny=ymin;ny<=ymax;ny++)for(nx=xmin;nx<=xmax;nx++){
-d=0;if(ex-nx>0)d+=ex-nx;else d+=nx-ex;
-if(ey-ny>0)d+=ey-ny;else d+=ny-ey;
-if(d<1||d>1)continue;
-map=*gCurrentMap;if(M2C_FIELD(M2C_FIELD(map,s8 **,0x52e8+ny*4),s8 *,nx)<0)continue;
-index=M2C_FIELD(map+nx+M2C_FIELD(map,u16 *,0x3758+ny*2),u8 *,0);
-selected=map+0x59a4+index*14;
-if(((u32)(selected[0]<<26)>>26)!=0&&(M2C_FIELD(selected,u16 *,4)&1))continue;
-count++;
-}
-if(count<=1)goto next_cell;
-}
+if(func_ov000_0217a0a8(unit)==1){count=ScanAdjacentCount(unit);if(count<=1)goto next_cell;}
 bestScore=score;bestY=position[0];bestX=position[1];map=*gCurrentMap;
-temp=M2C_FIELD(map+x+M2C_FIELD(map,u16 *,0x3758+y*2),u8 *,0);
-next_cell:map=*gCurrentMap;
+temp=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+next_cell:x++;map=*gCurrentMap;
 }
 }
 if(!bestScore)return;
 M2C_FIELD(data_ov000_021df580,u8 *,7)&=~2;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);M2C_FIELD(selected,u16 *,8)&=~0x3000;
 func_ov000_02199d74((s16)bestY,(s16)bestX,4,(u8)temp,0);
+
+#pragma opt_strength_reduction reset
 }
 
 #pragma push

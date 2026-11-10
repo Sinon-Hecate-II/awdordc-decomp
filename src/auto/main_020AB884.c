@@ -252,7 +252,7 @@ void func_020abfcc(u16 arg0, u16 arg1) {
     }
 }
 
-M2C_UNK func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
+void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
     u8 func_020abf3c(u8);
     void func_020abe3c(u8, s8);
     void func_020abee4(u8, s8);
@@ -261,9 +261,10 @@ M2C_UNK func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
     extern s32 data_027e00c4;
     s32 savedEngine;
     s32 i;
-    s32 x;
-    u16 *volatile sp44;
+    s32 x; s32 engine;
+    u16 *volatile sp4c;
     u16 *volatile sp48;
+    u16 *volatile sp44;
     u16 *volatile sp40;
     u16 *volatile sp3c;
     u16 *volatile sp38;
@@ -286,37 +287,38 @@ M2C_UNK func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
 
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            gCur3DSpriteEngine = data_027e00c8;
+            engine = data_027e00c8;
         } else {
-            gCur3DSpriteEngine = data_027e00c4;
+            engine = data_027e00c4;
         }
 
-        if (arg0 == 0 && gCur3DSpriteEngine != data_027e00c8) {
+        gCur3DSpriteEngine=engine;
+        if (arg0 == 0 && engine != data_027e00c8) {
             continue;
         }
-        if (arg0 == 1 && gCur3DSpriteEngine != data_027e00c4) {
+        if (arg0 == 1 && engine != data_027e00c4) {
             continue;
         }
-        if (arg0 == 3 && gCur3DSpriteEngine != savedEngine) {
+        if (arg0 == 3 && engine != savedEngine) {
             continue;
         }
 
         x = func_020abf3c(arg0);
-        if (x == 0 || x == 1) {
+        switch(x){case 0:case 1:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0;
-        } else if (x == 2) {
-            sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
-            *sp44 = *sp44 & ~0x200;
+        break;case 2:
+            sp4c = (u16 *)*(u8 **)gCur3DSpriteEngine;
+            *sp4c = *sp4c & ~0x200;
 
             sp48 = (u16 *)*(u8 **)gCur3DSpriteEngine;
             *sp48 = *sp48 & ~0x400;
         }
 
-        if (arg2 == 0) {
+        switch(arg2){case 0:
             *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
-        } else if (arg2 == 1) {
+        break;case 1:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
-        } else if (arg2 == 2) {
+        break;case 2:
             sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
             *sp44 = *sp44 | 0x200;
 
@@ -386,7 +388,6 @@ M2C_UNK func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
     }
 
     gCur3DSpriteEngine = savedEngine;
-    return 0;
 }
 
 void func_020ac598(s32 arg0) {
@@ -415,7 +416,7 @@ void func_020ac5c8(void *arg0) {
 }
 
 void func_020ac5e0(void *arg0) {
- u8 func_020abf3c(u8); M2C_UNK func_020ac144(u8,s32,u8);
+ u8 func_020abf3c(u8); void func_020ac144(u8,s32,u8);
  M2C_FIELD(arg0,u16 *,0x38)=0;
  switch(func_020abf3c(M2C_FIELD(arg0,u8 *,0x3c))) {
  case 0: case 2: if(M2C_FIELD(arg0,s32 *,0x34)==1)M2C_FIELD(arg0,s32 *,0x34)=0; break;
@@ -491,7 +492,7 @@ void func_020ac7a0(void *arg0) {
 }
 
 void func_020ac7b8(void *arg0) {
-    M2C_UNK func_020ac144(u8, M2C_UNK, u8);
+    void func_020ac144(u8, M2C_UNK, u8);
     M2C_FIELD(arg0, s16 *, 0x38) = 0;
     func_020ac144(M2C_FIELD(arg0, u8 *, 0x3C), 1, (u8) M2C_FIELD(arg0, s32 *, 0x34));
 }

@@ -1,5 +1,10 @@
 /* 11 functions from 0x020362D4 to 0x02037214 (main), found by ds-decomp. */
 #include "common.h"
+extern void *data_0213d1c8;
+extern s32 data_020fb2f8;
+extern s32 data_0213d13c[];
+extern s32 data_0212dca4[];
+extern u8 data_020fba20[], data_020fba28[], data_020fba2c[], data_020fba34[], data_020fba3c[], data_020fba48[], data_020fba50[], data_020fba58[];
 
 s32 func_020362d4(s32 arg0){
 M2C_UNK func_02037694();void func_02007f8c(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK func_020376d8();u64 func_02007004(void);extern M2C_UNK data_0213d138;
@@ -151,7 +156,51 @@ M2C_FIELD(&data_0213d1b4,s64 *,12)=now-t;M2C_FIELD(&data_0213d1b4,s64 *,4)=now;M
 fail:return 0;
 }
 
-M2C_UNK func_02036a7c(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s8 *g) { return 0; }
+M2C_UNK func_02036a7c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s8 *g) {
+ s32 func_0206cd90();void func_0206cdac();void func_02007f8c();M2C_UNK func_02037694();M2C_UNK func_020376d8();void func_02068d18();void *func_02068fdc();void func_02008048();s32 func_02033ccc();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 func_020347dc();s32 func_02033de8();s32 func_02006028();void func_02033e80();M2C_UNK func_02034480(void *);void func_020371f4();void func_02037204();
+ s32 opts[7];u8 work[0x94];s32 sum,i,pos,n;u16 *buf=0;void *p;
+ if(!a||b<=0||b>50||!e||!f)return 0;
+ sum=0;for(i=0;i<b;i++)sum+=func_0206cd90(((s32 *)a)[i])+1;
+ if(sum-1<=0||sum-1>500)return 0;
+ if(data_0213d1c8)return 0;
+ func_02007f8c(e,0,b);
+ data_0213d1c8=(void *)func_02037694(0,0x1d28);
+ if(!data_0213d1c8)goto fail;
+ func_02007f8c(data_0213d1c8,0,0x1d28);
+ M2C_FIELD(data_0213d1c8,s32 *,0x1c14)=0;
+ func_02007f8c(work,0,0x94);
+ M2C_FIELD(data_0213d1c8,s32 *,0x1d1c)=e;
+ M2C_FIELD(data_0213d1c8,s32 *,0x1d20)=f;
+ M2C_FIELD(data_0213d1c8,s32 *,0x1d24)=b;
+ func_02068d18(data_0213d1c8+0x1c18,data_020fb2f8,256);
+ M2C_FIELD(data_0213d1c8,u8 *,0x1d18)=0;
+ p=func_02068fdc(data_0213d1c8+0x1c18,data_020fba20);
+ if(!p)goto fail;
+ func_02008048(data_020fba28,p,4);
+ p=data_0213d1c8+0x1c18;
+ opts[0]=(s32)p;opts[1]=0;opts[2]=0x400;opts[3]=(s32)func_020371f4;opts[4]=(s32)func_02037204;opts[5]=0;if(d<=0)opts[6]=10000;else opts[6]=d;
+ if(func_02033ccc(data_0213d1c8,opts)!=0)goto fail;
+ M2C_FIELD(data_0213d1c8,s32 *,0x1c14)=1;
+ if(!func_020336c0(work))goto fail;
+ if(!func_02033988(data_0213d1c8,work,data_0213d13c[0]))goto fail;
+ if(func_020346d0(data_0213d1c8,data_020fba2c,g,1))goto fail;
+ if(func_020346d0(data_0213d1c8,data_020fba34,data_020fba3c,8))goto fail;
+ if(c&&func_020346d0(data_0213d1c8,data_020fba48,c,4))goto fail;
+ if(func_020347dc(data_0213d1c8,data_020fba50))goto fail;
+ buf=(u16 *)func_02037694(0,sum*2);
+ if(!buf)goto fail;
+ pos=0;for(i=0;i<b;i++){func_0206cdac(buf+pos,((s32 *)a)[i]);n=pos+func_0206cd90(((s32 *)a)[i]);if(n>=sum-1)break;buf[n]=9;pos=n+1;}
+ if(func_020346d0(data_0213d1c8,data_020fba58,buf,(sum-1)*2))goto fail;
+ func_020376d8(0,buf,0);buf=0;
+ if(func_02033de8(data_0213d1c8))goto fail;
+ n=func_02006028(data_0212dca4[1]);
+ func_02033e80(data_0213d1c8,n-1);
+ if(M2C_FIELD(data_0213d1c8,s32 *,0x1ba4))return 1;
+fail:
+ if(buf)func_020376d8(0,buf,0);
+ if(data_0213d1c8){if(M2C_FIELD(data_0213d1c8,s32 *,0x1c14)==1)func_02034480(data_0213d1c8);func_020376d8(0,data_0213d1c8,0);data_0213d1c8=0;}
+ return 0;
+}
 
 void func_02036ec0(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
  M2C_UNK func_02036a7c(s32,s32,s32,s32,s32,s32,s8 *);
