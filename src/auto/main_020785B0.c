@@ -13,7 +13,7 @@ typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } Render
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
 extern u8 data_02141f08[1920], data_02141788[1920];
 extern s16 gSinCosTable[2048];
-extern u32 data_020edebc[][2];
+extern u32 gTerrainClassFlags[][2];
 
 extern u32 data_027e15bc;
 extern u8 data_02140f70[24];
@@ -297,7 +297,7 @@ func_020793f0(&ctx);pos.x-=192;func_0207971c(&pos,&ctx);pos.x+=384;func_020796b0
 void func_02079310(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
 void func_02079db0(s32,s32,s32,s32,s32,s32);s32 func_020cfc0c(s32);
 s32 flags; s32 mask,x=0,y=0;
-if(f)mask=24;else{x+=16;mask=8;y=x;} flags=data_020edebc[c][0];
+if(f)mask=24;else{x+=16;mask=8;y=x;} flags=gTerrainClassFlags[c][0];
 if(mask&(u16)flags)x+=func_020cfc0c(e);
 if(d){func_02079db0(a,b,c,x,g,h);func_02079db0(a,b,d,y,g,h);return;}
 func_02079db0(a,b,c,x,g,h);

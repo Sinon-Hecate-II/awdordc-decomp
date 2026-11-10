@@ -10,14 +10,14 @@ s32 func_02045d94(void *, s32);
 s32 func_02046ebc(void *);
 
 u64 func_02046d38(u32 a,u32 b,u32 c,u32 d){
-void func_02008048(u8 *,u8 *,u32);extern u8 data_020ea944[];extern u8 data_020ea94c[];
+void MI_CpuCopy8(u8 *,u8 *,u32);extern u8 data_020ea944[];extern u8 data_020ea94c[];
 union { u64 value; u8 bytes[8]; } packed;u8 tmp[8];s32 i;u8 *p;u8 *q;u8 *order;
 packed.value=((u64)d&3) | (((u64)c&1)<<2) | (((u64)b&0xffffff)<<3) | (((u64)a&0xffff)<<27);
 p=packed.bytes;
 for(i=0;i<6;i++){*p^=0xd6;p++;}
 p=packed.bytes;
 for(i=0;i<5;i++){u8 x=*p;*p++=(data_020ea94c[(x>>4)&15]<<4)|data_020ea94c[x&15];}
-func_02008048(packed.bytes,tmp,8);
+MI_CpuCopy8(packed.bytes,tmp,8);
 q=tmp;order=data_020ea944;
 for(i=0;i<5;i++)packed.bytes[*order++]=*q++;
 packed.bytes[5]&=7;packed.bytes[7]=0;packed.bytes[6]=0;

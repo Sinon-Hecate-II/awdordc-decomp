@@ -234,7 +234,7 @@ extern void *data_ov001_02193e28;
 func_ov001_0218836c(M2C_FIELD(data_ov001_02193e28,s32 *,0xAC8));
 M2C_FIELD(data_ov001_02193e28,u8 *,0xA90)=1;
 M2C_FIELD(data_ov001_02193e28,u16 *,0x648)=func_02012084();
-func_02008048(M2C_FIELD(data_ov001_02193e28,void **,0xAA4),(u8 *)data_ov001_02193e28+0xA50,0x40);
+MI_CpuCopy8(M2C_FIELD(data_ov001_02193e28,void **,0xAA4),(u8 *)data_ov001_02193e28+0xA50,0x40);
 M2C_FIELD(data_ov001_02193e28,u8 *,0xA93)=0;
 M2C_FIELD(data_ov001_02193e28,s32 *,0x204)=0;
 M2C_FIELD(data_ov001_02193e28,u16 *,0x648)++;

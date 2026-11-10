@@ -243,7 +243,7 @@ u64 func_020267e0(void *arg0) {
 
 #pragma scheduling off
 void func_020267fc(u16 *out,u16 *a,u16 *b,u16 *rem,s32 n,u16 *work) {
-M2C_UNK func_02008048(s32,s32,s32);
+M2C_UNK MI_CpuCopy8(s32,s32,s32);
 M2C_UNK func_020651c4(M2C_UNK,M2C_UNK,M2C_UNK);
 u64 func_02072088(u64,u64);
 s32 i;u32 digit;u16 *q,*r;s32 nb,na,bytes;u64 divisor;
@@ -252,9 +252,9 @@ func_02007f8c((u8 *)q,0,n*4);
 na=func_02026244(a,n);nb=func_02026244(b,n);
 if(na>0 && nb>0){
 i=nb+(n-na)-1;
-if(i>=n){func_02008048((s32)a,(s32)r,n*2);}
+if(i>=n){MI_CpuCopy8((s32)a,(s32)r,n*2);}
 else {
-func_02008048((s32)a,(s32)(q+i),na*2);
+MI_CpuCopy8((s32)a,(s32)(q+i),na*2);
 if(nb>2){bytes=nb*2;divisor=func_020267cc(b+nb-1);}
 else if(nb>1){bytes=nb*2;divisor=((u64(*)(volatile u16 *))func_020267bc)(b+nb-1);}
 else {bytes=nb*2;divisor=func_020267b0(b+nb-1);}
@@ -269,13 +269,13 @@ func_020263dc(r,r,work,n);*q=digit;
 }while(++i<n);
 }
 }
-if(out)func_02008048((s32)q,(s32)out,n*2);
-if(rem)func_02008048((s32)r,(s32)rem,n*2);
+if(out)MI_CpuCopy8((s32)q,(s32)out,n*2);
+if(rem)MI_CpuCopy8((s32)r,(s32)rem,n*2);
 }
 #pragma scheduling reset
 void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     M2C_UNK func_02007f8c(u8 *, s32, u32);
-    M2C_UNK func_02008048(s32, s32, s32);
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 func_02026244(u16 *, s32);
     void func_02026558(u16 *, u16 *, u16 *, s32);
     void func_0202667c(u16 *, u16 *, s32);
@@ -300,7 +300,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     var_r6 = (u32)((arg3 - func_02026244(arg2, arg3)) * 16);
     for (; (u32)var_r6 < (u32)(arg3 * 16); var_r6++) {
         if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
-            func_02008048(sp8, (s32)arg0, arg3 * 2);
+            MI_CpuCopy8(sp8, (s32)arg0, arg3 * 2);
             var_r6++;
             break;
         }
@@ -309,13 +309,13 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
         temp_r11 = arg3 * 2;
         do {
             func_0202667c(temp_r4, arg0, arg3);
-            func_02008048((s32)temp_r4, (s32)arg0, temp_r11);
+            MI_CpuCopy8((s32)temp_r4, (s32)arg0, temp_r11);
             if (arg4 != 0) {
                 func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);
             }
             if (arg2[arg3 - (var_r6 >> 4) - 1] & (0x8000U >> (var_r6 & 0xF))) {
                 func_02026558(temp_r4, arg0, (u16 *)sp8, arg3);
-                func_02008048((s32)temp_r4, (s32)arg0, temp_r11);
+                MI_CpuCopy8((s32)temp_r4, (s32)arg0, temp_r11);
                 if (arg4 != 0) {
                     func_020267fc(0, arg0, arg4, arg0, arg3, temp_r5);
                 }
@@ -327,7 +327,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
 }
 #pragma scheduling reset
 void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
-    M2C_UNK func_02008048(s32, s32, s32);
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 func_0202626c(u16 *, s32);
     void func_0202629c(u16 *, u16 *, u16 *, s32);
     void func_020263dc(u16 *, u16 *, u16 *, s32);
@@ -355,19 +355,19 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     p5 = p4 + n;
     p6 = p5 + n;
 
-    func_02008048((s32)arg1, (s32)base, bytes);
-    func_02008048((s32)arg2, (s32)p2, bytes);
+    MI_CpuCopy8((s32)arg1, (s32)base, bytes);
+    MI_CpuCopy8((s32)arg2, (s32)p2, bytes);
     p3[0] = 1;
 
     if (func_0202626c(base, n) > 0) {
         do {
             func_020267fc(p1, p2, base, p5, n, p6);
-            func_02008048((s32)base, (s32)p2, bytes);
-            func_02008048((s32)p5, (s32)base, bytes);
+            MI_CpuCopy8((s32)base, (s32)p2, bytes);
+            MI_CpuCopy8((s32)p5, (s32)base, bytes);
             func_02026558(p5, p1, p3, n);
             func_020263dc(p5, p4, p5, n);
-            func_02008048((s32)p3, (s32)p4, bytes);
-            func_02008048((s32)p5, (s32)p3, bytes);
+            MI_CpuCopy8((s32)p3, (s32)p4, bytes);
+            MI_CpuCopy8((s32)p5, (s32)p3, bytes);
         } while (func_0202626c(base, n) > 0);
     }
     func_0202629c(p4, p4, arg2, n);
@@ -377,14 +377,14 @@ void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
 void func_02026cbc(u16 *arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4, u16 *arg5, u16 *arg6, u16 *arg7, u16 *arg8)
 {
   M2C_UNK func_02007f8c(u8 *, s32, u32);
-  M2C_UNK func_02008048(s32, s32, s32);
+  M2C_UNK MI_CpuCopy8(s32, s32, s32);
   void func_0202629c(u16 *, u16 *, u16 *, s32);
   void func_020263dc(u16 *, u16 *, u16 *, s32);
   s32 func_020264ec(u16 *, u16 *, s32);
   void func_02026558(u16 *, u16 *, u16 *, s32);
       void func_0202667c(u16 *, u16 *, s32);
   M2C_UNK func_020651c4(M2C_UNK, M2C_UNK, M2C_UNK);
-  func_02008048((s32) arg0, (s32) arg1, arg3 * 2);
+  MI_CpuCopy8((s32) arg0, (s32) arg1, arg3 * 2);
   if (arg2 == 1)
   {
     func_0202667c(arg0, arg1, arg3);

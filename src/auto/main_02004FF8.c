@@ -183,17 +183,17 @@ void func_020053a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_020053b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    s32 func_0200751c();
+    s32 OS_DisableInterrupts();
     M2C_UNK func_02007548();
     M2C_UNK func_0200755c(M2C_UNK);
-    M2C_UNK func_02007530(M2C_UNK);
+    M2C_UNK OS_RestoreInterrupts(M2C_UNK);
     s32 old;
 
     if (arg0 != M2C_FIELD((void *)arg1, u16 *, 4)) return -2;
     if (arg3 != 0) {
         old = func_02007548();
     } else {
-        old = func_0200751c();
+        old = OS_DisableInterrupts();
     }
     M2C_FIELD((void *)arg1, u16 *, 4) = 0;
     if (arg2 != 0) ((void (*)(void))arg2)();
@@ -201,7 +201,7 @@ s32 func_020053b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     if (arg3 != 0) {
         func_0200755c(old);
     } else {
-        func_02007530(old);
+        OS_RestoreInterrupts(old);
     }
     return 0;
 }
@@ -212,10 +212,10 @@ void func_02005424(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    s32 func_0200751c();
+    s32 OS_DisableInterrupts();
     M2C_UNK func_02007548();
     M2C_UNK func_0200755c(M2C_UNK);
-    M2C_UNK func_02007530(M2C_UNK);
+    M2C_UNK OS_RestoreInterrupts(M2C_UNK);
     s32 func_020081c8(M2C_UNK, M2C_UNK);
     s32 old;
     s32 temp_r4;
@@ -223,7 +223,7 @@ s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     if (arg3 != 0) {
         old = func_02007548();
     } else {
-        old = func_0200751c();
+        old = OS_DisableInterrupts();
     }
     temp_r4 = func_020081c8(arg0, arg1);
     if (temp_r4 == 0) {
@@ -233,7 +233,7 @@ s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     if (arg3 != 0) {
         func_0200755c(old);
     } else {
-        func_02007530(old);
+        OS_RestoreInterrupts(old);
     }
     return temp_r4;
 }
@@ -462,11 +462,11 @@ s32 func_02005ab0(void) {
 
 /* Initializes a managed memory-block object (obj) backed by buffer (buf) of (bufLen) bytes, with priority (priority) and callback (callback); registers it in the global block list. */
 void func_02005ac0(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
-s32 func_0200751c(void); s32 func_02007530(s32);
+s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 void func_020061a0(); void func_02006198();
 void func_02007e54(s32,void *,s32); void func_02005bbc(void);
 s32 state; s32 id; u8 *base;
-state=func_0200751c();
+state=OS_DisableInterrupts();
 id=func_020056b0();
 M2C_FIELD(obj,s32 *,0x70)=priority;
 M2C_FIELD(obj,s32 *,0x6c)=id;
@@ -490,13 +490,13 @@ M2C_FIELD(obj,s32 *,0x80)=0;
 M2C_FIELD(obj,s32 *,0x7c)=0;
 func_02007e54(0,(u8 *)obj+0xa4,12);
 M2C_FIELD(obj,s32 *,0xb0)=0;
-func_02007530(state);
+OS_RestoreInterrupts(state);
 }
 
 void func_02005bbc(void) {
     M2C_UNK func_02005bdc(s32, M2C_UNK);
     extern M2C_UNK data_0212dc80;
-    func_0200751c();
+    OS_DisableInterrupts();
     func_02005bdc(M2C_FIELD(&data_0212dc80, s32 *, 0x28), 0);
 }
 
@@ -520,7 +520,7 @@ void func_02005c70(void);
 void *p=*M2C_FIELD(&data_0212dc80,void ***,8);
 void (*cb)(s32)=M2C_FIELD(p,void (**)(s32),0xB4);
 if(cb){M2C_FIELD(p,void (**)(s32),0xB4)=NULL;cb(a);
-func_0200751c();}func_02005c70();
+OS_DisableInterrupts();}func_02005c70();
 }
 
 void func_02005c70(void){
@@ -543,12 +543,12 @@ void func_02005ccc(void *p){
 void func_02005d48(void *);
 void func_02005eac(void);
 extern s32 data_0212dc80;
-s32 old=func_0200751c();
+s32 old=OS_DisableInterrupts();
 if(M2C_FIELD(&data_0212dc80,void **,40)==p)func_02005c70();
 func_02006130();func_02006644(p);func_02005d48(p);
 if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
 M2C_FIELD(p,s32 *,100)=2;
-func_02005df4(p+156);func_02006164();func_02007530(old);func_02005eac();
+func_02005df4(p+156);func_02006164();OS_RestoreInterrupts(old);func_02005eac();
 }
 
 void func_02005d48(void *arg0) {
@@ -563,11 +563,11 @@ void func_02005d60(void *arg0) {
     M2C_UNK func_02005da4(void *);
     s32 temp_r4;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     if (M2C_FIELD(arg0, s32 *, 0x64) != 2) {
         func_02005da4(arg0 + 0x9C);
     }
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
 }
 
 s32 func_02005d90(void *arg0) {
@@ -579,30 +579,30 @@ s32 func_02005d90(void *arg0) {
 
 M2C_UNK func_02005da4(void *a){
 extern M2C_UNK data_0212dc80;
-s32 irq=func_0200751c();
+s32 irq=OS_DisableInterrupts();
 void *p=M2C_FIELD(M2C_FIELD(&data_0212dc80,void **,8),void **,0);
 if(a){M2C_FIELD(p,void **,0x78)=a;func_020056c8(a,p);}
-M2C_FIELD(p,s32 *,0x64)=0;func_020058a0();func_02007530(irq);
+M2C_FIELD(p,s32 *,0x64)=0;func_020058a0();OS_RestoreInterrupts(irq);
 }
 
 M2C_UNK func_02005df4(void *a){
-s32 irq=func_0200751c();
+s32 irq=OS_DisableInterrupts();
 if(M2C_FIELD(a,s32 *,0)){
 while(M2C_FIELD(a,s32 *,0)){
 void *p=func_02005740(a);
 M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x78)=0;M2C_FIELD(p,s32 *,0x80)=0;M2C_FIELD(p,s32 *,0x7c)=0;
 }
 M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;func_020058a0();
-}func_02007530(irq);
+}OS_RestoreInterrupts(irq);
 }
 
-void func_02005e5c(void *arg0) {
+void TaskWake(void *arg0) {
     s32 temp_r4;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 0x64) = 1;
     func_020058a0();
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
 }
 
 void *func_02005e84(void) {
@@ -614,32 +614,32 @@ return p;
 
 void func_02005eac(void) {
 
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     s32 temp_r4;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     func_020058a0();
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
 }
 
-void func_02005ec8(void){
+void TaskYield(void){
 extern M2C_UNK data_0212dc80;
 void *prev=0,*last=0; s32 count=0;
 s32 irq;
 void *cur=M2C_FIELD(&data_0212dc80,void **,0x28);
 void *p,*before;
-irq=func_0200751c();
+irq=OS_DisableInterrupts();
 p=M2C_FIELD(&data_0212dc80,void **,0x2c);before=0;
 while(p){
 if(p==cur)prev=before;
 if(M2C_FIELD(cur,u32 *,0x70)==M2C_FIELD(p,u32 *,0x70)){last=p;count++;}
 before=p;p=M2C_FIELD(p,void **,0x68);
 }
-if(count<=1 || last==cur){func_02007530(irq);return;}
+if(count<=1 || last==cur){OS_RestoreInterrupts(irq);return;}
 if(!prev)M2C_FIELD(&data_0212dc80,void **,0x2c)=M2C_FIELD(cur,void **,0x68);
 else M2C_FIELD(prev,void **,0x68)=M2C_FIELD(cur,void **,0x68);
 M2C_FIELD(cur,void **,0x68)=M2C_FIELD(last,void **,0x68);M2C_FIELD(last,void **,0x68)=cur;
-func_020058a0();func_02007530(irq);
+func_020058a0();OS_RestoreInterrupts(irq);
 }
 

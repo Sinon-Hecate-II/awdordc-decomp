@@ -58,7 +58,7 @@ void func_ov003_021f3648(void *arg0) {
 
 void func_ov003_021f3688(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    M2C_UNK **func_02082028(M2C_UNK);
+    M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK func_020886d4();
     M2C_UNK func_020886fc();
     M2C_UNK func_0208f780(M2C_UNK);
@@ -119,9 +119,9 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, s8 *, 0x46) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x47) = 1;
         func_ov003_021f140c(4);
-        M2C_FIELD(temp_r0, M2C_UNK ***, 0x38) = func_02082028(6);
-        M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = func_02082028(0xC);
-        temp_r0_2 = func_02082028(0xC);
+        M2C_FIELD(temp_r0, M2C_UNK ***, 0x38) = MemAlloc(6);
+        M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = MemAlloc(0xC);
+        temp_r0_2 = MemAlloc(0xC);
         if (temp_r0_2 != NULL) {
             *temp_r0_2 = &data_ov003_0220fd9c;
         }
@@ -319,7 +319,7 @@ void *func_ov003_021f3cec(void *obj) {
     void func_ov003_021f18a4(void);
     void func_020af1e4(void);
     void func_ov003_021f1a58(void);
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     void *base;
     void *inner;
     s32 mode_result;
@@ -357,19 +357,19 @@ void *func_ov003_021f3cec(void *obj) {
     }
     func_020af1e4();
     func_ov003_021f1a58();
-    func_02082040(M2C_FIELD(obj, void **, 0x38));
-    func_02082040(M2C_FIELD(obj, void **, 0x3C));
+    MemFree(M2C_FIELD(obj, void **, 0x38));
+    MemFree(M2C_FIELD(obj, void **, 0x3C));
     inner = M2C_FIELD(obj, void **, 0x40);
     if (inner) {
         ((void (*)(void *))M2C_FIELD(M2C_FIELD(inner, void **, 0), void **, 4))(inner);
     }
-    func_02082040(obj);
+    MemFree(obj);
     return obj;
 }
 
 s32 func_ov003_021f3df4(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -385,7 +385,7 @@ void *func_ov003_021f3e08(void *obj) {
     void func_ov003_021f18a4(void);
     void func_020af1e4(void);
     void func_ov003_021f1a58(void);
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     void *base;
     void *inner;
     s32 mode_result;
@@ -423,8 +423,8 @@ void *func_ov003_021f3e08(void *obj) {
     }
     func_020af1e4();
     func_ov003_021f1a58();
-    func_02082040(M2C_FIELD(obj, void **, 0x38));
-    func_02082040(M2C_FIELD(obj, void **, 0x3C));
+    MemFree(M2C_FIELD(obj, void **, 0x38));
+    MemFree(M2C_FIELD(obj, void **, 0x3C));
     inner = M2C_FIELD(obj, void **, 0x40);
     if (inner) {
         ((void (*)(void *))M2C_FIELD(M2C_FIELD(inner, void **, 0), void **, 4))(inner);

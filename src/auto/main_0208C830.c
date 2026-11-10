@@ -211,7 +211,10 @@ void DrawHorizontalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
         px=(s16)(px+0x1); len=(s16)(len-0x1);
     }
 }
-void DrawVerticalBar(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
+/* Draws a vertical strip of `length` pixels at (x,y), filling it with tiles of
+ * decreasing height (128 down to 1). The first 128/64-pixel chunk is drawn as a
+ * rotated quad using the sin/cos table, for the slanted look of UI frames. */
+void DrawVerticalBar(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern s16 gSinCosTable[];
     extern u8 data_020f359e[];
     extern u8 data_027e009c[];
@@ -223,29 +226,29 @@ void DrawVerticalBar(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
     void AddSprite(u16, u16, u16, void *, s32);
 #define AACC ((void (*)(u16, u16, s32, void *, s32))AddSprite)
 
-    s16 r9 = arg1;
-    s16 r10 = arg0;
-    s16 r8 = arg2;
-    s32 r7 = arg3;
-    s32 r6 = arg4;
+    s16 y0 = y;
+    s16 px = x;
+    s16 len = length;
+    s32 t = tile;
+    s32 pri = priority;
 
-    if (r10 < 0) return;
-    if (r10 > 0x100) return;
-    if (r9 < 0) {
-        r8 = (s16)(r8 + r9);
-        r9 = 0;
+    if (px < 0) return;
+    if (px > 0x100) return;
+    if (y0 < 0) {
+        len = (s16)(len + y0);
+        y0 = 0;
     }
-    if (r9 > 0xc0) {
-        r8 = (s16)(r8 + (r9 - 0xc0));
-        r9 = 0xc0;
+    if (y0 > 0xc0) {
+        len = (s16)(len + (y0 - 0xc0));
+        y0 = 0xc0;
     }
     {
-        s32 sum = r9 + r8;
-        if (sum > 0xc0) r8 = (s16)(0xc0 - r9);
-        sum = r9 + r8;
-        if (sum < 0) r8 = (s16)(0 - r9);
+        s32 sum = y0 + len;
+        if (sum > 0xc0) len = (s16)(0xc0 - y0);
+        sum = y0 + len;
+        if (sum < 0) len = (s16)(0 - y0);
     }
-    if (r8 >= 0x40) {
+    if (len >= 0x40) {
         {
             s16 t0 = gSinCosTable[0];
             s16 t1 = gSinCosTable[1];
@@ -255,73 +258,73 @@ void DrawVerticalBar(s16 arg0, s16 arg1, s16 arg2, s32 arg3, s32 arg4) {
                 (s16)func_0207c8ec((s32)t0 << 4, 0x100),
                 (s16)func_0207c8ec((s32)t1 << 4, 0x200));
         }
-        while (r8 >= 0x80) {
-            AACC((u16)((((r10 - 4) & 0x1FF)) | 0x3600),
-                          (u16)((r9 & 0xFF) | 0x300),
-                          r7,
+        while (len >= 0x80) {
+            AACC((u16)((((px - 4) & 0x1FF)) | 0x3600),
+                          (u16)((y0 & 0xFF) | 0x300),
+                          t,
                           (void *)data_020f359e,
-                          r6);
-            r9=(s16)(r9+0x80); r8=(s16)(r8-0x80);
+                          pri);
+            y0=(s16)(y0+0x80); len=(s16)(len-0x80);
         }
-        while (r8 >= 0x40) {
-            AACC((u16)((((r10 - 4) & 0x1FF)) | 0x3600),
-                          (u16)((r9 & 0xFF) | 0x300),
-                          r7,
+        while (len >= 0x40) {
+            AACC((u16)((((px - 4) & 0x1FF)) | 0x3600),
+                          (u16)((y0 & 0xFF) | 0x300),
+                          t,
                           (void *)data_027e009c,
-                          r6);
-            r9=(s16)(r9+0x40); r8=(s16)(r8-0x40);
+                          pri);
+            y0=(s16)(y0+0x40); len=(s16)(len-0x40);
         }
     }
-    while (r8 >= 0x20) {
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      r7,
+    while (len >= 0x20) {
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      t,
                       (void *)data_027e009c,
-                      r6);
-        r9=(s16)(r9+0x20); r8=(s16)(r8-0x20);
+                      pri);
+        y0=(s16)(y0+0x20); len=(s16)(len-0x20);
     }
-    while (r8 >= 0x10) {
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      r7,
+    while (len >= 0x10) {
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      t,
                       (void *)data_027e006c,
-                      r6);
-        r9=(s16)(r9+0x10); r8=(s16)(r8-0x10);
+                      pri);
+        y0=(s16)(y0+0x10); len=(s16)(len-0x10);
     }
-    while (r8 >= 0x8) {
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      r7,
+    while (len >= 0x8) {
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      t,
                       (void *)data_027e0084,
-                      r6);
-        r9=(s16)(r9+0x8); r8=(s16)(r8-0x8);
+                      pri);
+        y0=(s16)(y0+0x8); len=(s16)(len-0x8);
     }
-    while (r8 >= 0x4) {
+    while (len >= 0x4) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      (u16)(r7 + (0x3FF & (4 >> (s32)mode))),
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      (u16)(t + (0x3FF & (4 >> (s32)mode))),
                       (void *)data_027e0084,
-                      r6);
-        r9=(s16)(r9+0x4); r8=(s16)(r8-0x4);
+                      pri);
+        y0=(s16)(y0+0x4); len=(s16)(len-0x4);
     }
-    while (r8 >= 0x2) {
+    while (len >= 0x2) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      (u16)(r7 + (0x3FF & (6 >> (s32)mode))),
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      (u16)(t + (0x3FF & (6 >> (s32)mode))),
                       (void *)data_027e0084,
-                      r6);
-        r9=(s16)(r9+0x2); r8=(s16)(r8-0x2);
+                      pri);
+        y0=(s16)(y0+0x2); len=(s16)(len-0x2);
     }
-    while (r8 >= 0x1) {
+    while (len >= 0x1) {
         u32 mode = ((u32)(**(u16 **)gCur3DSpriteEngine << 17)) >> 30;
-        AACC((u16)(r10 & 0x1FF),
-                      (u16)(r9 & 0xFF),
-                      (u16)(r7 + (0x3FF & (8 >> (s32)mode))),
+        AACC((u16)(px & 0x1FF),
+                      (u16)(y0 & 0xFF),
+                      (u16)(t + (0x3FF & (8 >> (s32)mode))),
                       (void *)data_027e0084,
-                      r6);
-        r9=(s16)(r9+0x1); r8=(s16)(r8-0x1);
+                      pri);
+        y0=(s16)(y0+0x1); len=(s16)(len-0x1);
     }
 #undef AACC
 }

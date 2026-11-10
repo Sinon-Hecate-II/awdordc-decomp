@@ -258,7 +258,7 @@ void func_020af230(void) {
 M2C_UNK func_020af244(void *p) {
     M2C_UNK func_0207c928(M2C_UNK);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-    extern M2C_UNK data_027e00bc;
+    extern M2C_UNK g3DSpriteBankMain;
 
     s32 idx;
     void *base;
@@ -296,7 +296,7 @@ M2C_UNK func_020af244(void *p) {
         w1 = ((u16 *)base)[idx + 0x20];
         dx = (s32)w0 - (s32)((s16 *)dBase)[0x1E];
         dy = (s32)w1 - (s32)((s16 *)dBase)[0x1F];
-        c = (u32)data_027e00bc;
+        c = (u32)g3DSpriteBankMain;
         value = (c & (u32)dx) | ((c << 16) & (u32)(dy << 16));
         if (idx <= 3) *(u32 *)(0x4000010 + idx * 4) = value;
         pp[0x21] = (s16)(pp[0x21] + 1);
@@ -387,8 +387,8 @@ void func_020af71c(void) {
 }
 
 s32 func_020af730(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -397,8 +397,8 @@ void func_020af744(void) {
 }
 
 s32 func_020af748(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

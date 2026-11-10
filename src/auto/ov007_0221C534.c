@@ -1,19 +1,19 @@
 /* 9 functions from 0x0221C534 to 0x0221D008 (ov007), found by ds-decomp. */
 #include "common.h"
 
-extern u32 data_ov007_02221e10[];
+extern u32 gMapEditObjectList[];
 int func_020194e0(const void*,const void*);
 static inline void SetTextIndex(void *p,s8 n) {
 if(n<0 || n>=17)return;
-if(n<17 && data_ov007_02221e10[n]!=0) goto valid;
+if(n<17 && gMapEditObjectList[n]!=0) goto valid;
 if(n<=0)return;
-if(data_ov007_02221e10[n-1]==0)return;
+if(gMapEditObjectList[n-1]==0)return;
 valid: M2C_FIELD(p,s8 *,0x3c)=n;
 }
 static inline int FindTextIndex(void *p) {
 s32 result,i;u32 *needle;u32 *table;
 if(M2C_FIELD(p,s8 *,0x3c)==0)return -1;
-table=M2C_FIELD(p,u32 **,0x34);needle=data_ov007_02221e10+(M2C_FIELD(p,s8 *,0x3c)-1);result=-1;
+table=M2C_FIELD(p,u32 **,0x34);needle=gMapEditObjectList+(M2C_FIELD(p,s8 *,0x3c)-1);result=-1;
 for(i=0;i<75;i++)if(func_020194e0(needle,(void*)table[i])==0){result=i;break;}
 return result;
 }
@@ -116,14 +116,14 @@ if(kind<0||kind>99)ok=1;else{
 table=M2C_FIELD(state,u32 * *,0x34);text=table[kind];oldIndex=M2C_FIELD(state,s8 *,0x3c);
 if(func_020194e0(text,&data_ov007_0222076c)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
 table=M2C_FIELD(state,u32 * *,0x34);
-if(func_020194e0(data_ov007_02221e10+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+75])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
+if(func_020194e0(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+75])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 text=table[index+75];}
 else if(func_020194e0(text,&data_ov007_02220ab8)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
 table=M2C_FIELD(state,u32 * *,0x34);
-if(func_020194e0(data_ov007_02221e10+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+150])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
+if(func_020194e0(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+150])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 text=table[index+150];}
 if(M2C_FIELD(state,s8 *,0x3c)>=16){SetTextIndex(state,oldIndex);ok=0;goto checked;}
-func_02007ef4(data_ov007_02221e10,copy,0x44);
+func_02007ef4(gMapEditObjectList,copy,0x44);
 copy[M2C_FIELD(state,s8 *,0x3c)]=0;
 func_02019424(copy+M2C_FIELD(state,s8 *,0x3c),text);
 width=0;cursor=copy;
@@ -154,12 +154,12 @@ s32 func_020e32e8(M2C_UNK *);
 M2C_UNK func_0208fe30(s32);
 extern void *g3DSpriteEngineMain;
 extern void *gCur3DSpriteEngine;
-extern M2C_UNK data_ov007_02220d34;
-extern s32 data_ov007_02220d40[];
-extern M2C_UNK data_ov007_0222192c;
-extern M2C_UNK data_ov007_0222193c;
-extern M2C_UNK data_ov007_0222194c;
-extern M2C_UNK data_ov007_0222195c;
+extern M2C_UNK gMapEditPath;
+extern s32 gSoftKeyLayouts[];
+extern M2C_UNK gSoftKeyNarcName;
+extern M2C_UNK gSoftKeyEuFileName;
+extern M2C_UNK gSoftKeyUsFileName;
+extern M2C_UNK gSoftKeyJpFileName;
 s32 kind;
 void *p;
 void *saved;
@@ -167,17 +167,17 @@ s32 old;
 kind=M2C_FIELD(arg0,u8 *,0);
 p=M2C_FIELD(arg0,void **,0x10);
 old=M2C_FIELD(p,s32 *,0x34);
-if((s32)kind>=100 && (s32)kind<103) M2C_FIELD(p,s32 *,0x34)=data_ov007_02220d40[kind-100];
+if((s32)kind>=100 && (s32)kind<103) M2C_FIELD(p,s32 *,0x34)=gSoftKeyLayouts[kind-100];
 if(old==M2C_FIELD(p,s32 *,0x34))return;
-func_0200bc5c(&data_ov007_02220d34);
+func_0200bc5c(&gMapEditPath);
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020e32e8(&data_ov007_0222192c);
+func_020e32e8(&gSoftKeyNarcName);
 func_020814e4();
 switch(kind){
-case 102:func_02081590(func_020e32e8(&data_ov007_0222195c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 100:func_02081590(func_020e32e8(&data_ov007_0222194c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 101:func_02081590(func_020e32e8(&data_ov007_0222193c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 102:func_02081590(func_020e32e8(&gSoftKeyJpFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 100:func_02081590(func_020e32e8(&gSoftKeyUsFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 101:func_02081590(func_020e32e8(&gSoftKeyEuFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
 }
 func_02081528();
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),32,24,5);

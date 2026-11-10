@@ -18,9 +18,9 @@ void func_ov007_0221d008(u8 *arg0) {
     extern s32 data_ov007_02220890;
     extern s32 data_ov007_02220960;
     extern s32 data_ov007_02220d28;
-    extern s32 data_ov007_02221224[];
-    extern s32 data_ov007_02221e0c;
-    extern s32 data_ov007_02221e10;
+    extern s32 gSoftKeyLayoutJp[];
+    extern s32 gMapEditRecords;
+    extern s32 gMapEditObjectList;
     s32 padding[17];
     s32 scratch[17];
     void *ctx;
@@ -34,82 +34,82 @@ void func_ov007_0221d008(u8 *arg0) {
         if (*phase > 0) {
             index = (s8)(*phase - 1);
             if (index < 0 || index >= 17) goto shift_67;
-            if (!(index < 17 && ((s32 *)&data_ov007_02221e10)[index] != 0) &&
-                (index <= 0 || ((s32 *)&data_ov007_02221e10)[index - 1] == 0)) goto shift_67;
+            if (!(index < 17 && ((s32 *)&gMapEditObjectList)[index] != 0) &&
+                (index <= 0 || ((s32 *)&gMapEditObjectList)[index - 1] == 0)) goto shift_67;
             *phase = (s8)index;
         shift_67:
             i = *phase;
             while (i < 16) {
-                ((s32 *)&data_ov007_02221e10)[i] = ((s32 *)&data_ov007_02221e10)[i + 1];
+                ((s32 *)&gMapEditObjectList)[i] = ((s32 *)&gMapEditObjectList)[i + 1];
                 i++;
             }
-            M2C_FIELD(&data_ov007_02221e0c, s32 *, 0x44) = 0;
+            M2C_FIELD(&gMapEditRecords, s32 *, 0x44) = 0;
             func_0208fe30(0x1000d);
             return;
         }
         index = *phase;
-        if (index != 0 || ((s32 *)&data_ov007_02221e10)[index] == 0) goto no_move_67;
+        if (index != 0 || ((s32 *)&gMapEditObjectList)[index] == 0) goto no_move_67;
         for (i = index; i < 16; i++) {
-            ((s32 *)&data_ov007_02221e10)[i] = ((s32 *)&data_ov007_02221e10)[i + 1];
+            ((s32 *)&gMapEditObjectList)[i] = ((s32 *)&gMapEditObjectList)[i + 1];
         }
-        M2C_FIELD(&data_ov007_02221e0c, s32 *, 0x44) = 0;
+        M2C_FIELD(&gMapEditRecords, s32 *, 0x44) = 0;
         func_0208fe30(0x1000d);
         return;
     no_move_67:
         func_0208fe30(0x1001d);
         return;
     }
-case 0x68: if((s32)&data_ov007_02221224[0]==*(s32 *)((u8 *)ctx+0x34)){
+case 0x68: if((s32)&gSoftKeyLayoutJp[0]==*(s32 *)((u8 *)ctx+0x34)){
 s32 old=*phase;
 s32 *value=&data_ov007_02220960;
 if(func_020194e0(value,&data_ov007_02220890)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&data_ov007_02221e10)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
+if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {func_0208fe30(0x1001d);return;}
 } else if(func_020194e0(value,&data_ov007_02220d28)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&data_ov007_02221e10)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
+if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 }else {func_0208fe30(0x1001d);return;}
 }
-if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
-func_02007ef4(&data_ov007_02221e10,(s8 *)scratch,0x44);
+if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
+func_02007ef4(&gMapEditObjectList,(s8 *)scratch,0x44);
 scratch[*phase]=0;
 func_02019424(&scratch[*phase],(s32)value);
 {s32 *node; u32 count=0; node=scratch; if(*node){do{if(func_02099ae8(node)==0){if(count)count++;} count+=func_0209c268(node);}while(*++node);}
-if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
+if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
 }
-func_02007ef4(scratch,(s8 *)&data_ov007_02221e10,0x44);
-{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next; }
+func_02007ef4(scratch,(s8 *)&gMapEditObjectList,0x44);
+{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next; }
 func_0208fe30(0x1000d);return;
 }else {
 s32 old=*phase;
 s32 *value=&data_ov007_022205c0;
 if(func_020194e0(value,&data_ov007_02220890)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&data_ov007_02221e10)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
+if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {func_0208fe30(0x1001d);return;}
 } else if(func_020194e0(value,&data_ov007_02220d28)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&data_ov007_02221e10)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&data_ov007_02221e10)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
+if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;func_0208fe30(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 }else {func_0208fe30(0x1001d);return;}
 }
-if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
-func_02007ef4(&data_ov007_02221e10,(s8 *)padding,0x44);
+if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
+func_02007ef4(&gMapEditObjectList,(s8 *)padding,0x44);
 padding[*phase]=0;
 func_02019424(&padding[*phase],(s32)value);
 {s32 *node; u32 count=0; node=padding; if(*node){do{if(func_02099ae8(node)==0){if(count)count++;} count+=func_0209c268(node);}while(*++node);}
-if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&data_ov007_02221e10)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&data_ov007_02221e10)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
+if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=func_0208b564((s32)ctx); func_020899cc(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; func_01ffa8c4((s32)ctx,5); } func_0208fe30(0x1001d); return;}
 }
-func_02007ef4(padding,(s8 *)&data_ov007_02221e10,0x44);
-{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&data_ov007_02221e10)[next] != 0) || (next > 0 && ((s32 *)&data_ov007_02221e10)[next-1] != 0))) *phase = next; }
+func_02007ef4(padding,(s8 *)&gMapEditObjectList,0x44);
+{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next; }
 func_0208fe30(0x1000d);return;
 } default:return;}}
 
@@ -167,7 +167,7 @@ void func_ov007_0221dcd4(void) {
 
 void func_ov007_0221dce0(void *arg0) {
     M2C_UNK func_01ffa8c4(s32, M2C_UNK);
-    M2C_UNK func_02008048(s32 *, s8 *, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(s32 *, s8 *, M2C_UNK);
     s32 func_020194e0(s32 *, M2C_UNK *);
     M2C_UNK func_020899cc(void *, M2C_UNK, M2C_UNK, s32);
     void *func_0208b564(s32);
@@ -180,8 +180,8 @@ void func_ov007_0221dce0(void *arg0) {
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_02220404;
     extern M2C_UNK data_ov007_02220824;
-    extern M2C_UNK data_ov007_02221e0c;
-    extern s32 data_ov007_02221e10;
+    extern M2C_UNK gMapEditRecords;
+    extern s32 gMapEditObjectList;
     s32 *var_r7_2;
     s32 temp_r4;
     s32 temp_r5;
@@ -204,8 +204,8 @@ void func_ov007_0221dce0(void *arg0) {
         return;
     case 0x6A:
         var_r1 = 0;
-        var_r2 = &data_ov007_02221e10;
-        if (M2C_FIELD(&data_ov007_02221e0c, s32 *, 4) != 0) {
+        var_r2 = &gMapEditObjectList;
+        if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
             do {
                 var_r2 += 1;
                 var_r1 += 1;
@@ -213,8 +213,8 @@ void func_ov007_0221dce0(void *arg0) {
         }
         if (var_r1 != 0) {
             var_r7 = 1;
-            var_r8 = &data_ov007_02221e10;
-            if (M2C_FIELD(&data_ov007_02221e0c, s32 *, 4) != 0) {
+            var_r8 = &gMapEditObjectList;
+            if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
 loop_9:
                 if ((func_020194e0(var_r8, &data_ov007_02220404) != 0) && (func_020194e0(var_r8, &data_ov007_02220824) != 0)) {
                     var_r7 = 0;
@@ -226,15 +226,15 @@ loop_9:
                 }
             }
             if (var_r7 == 0) {
-                var_r7_2 = &data_ov007_02221e10;
-                var_r8_2 = M2C_FIELD(&data_ov007_02221e0c, s8 **, 0);
+                var_r7_2 = &gMapEditObjectList;
+                var_r8_2 = M2C_FIELD(&gMapEditRecords, s8 **, 0);
                 var_r9 = 0;
                 while ((*var_r7_2 != 0) && (var_r9 < 0x10U)) {
                     if ((func_02099ae8(var_r7_2) != 0) || (func_02099b00(var_r7_2) != 0)) {
-                        func_02008048(var_r7_2, var_r8_2, 2);
+                        MI_CpuCopy8(var_r7_2, var_r8_2, 2);
                         var_r8_2 += 2;
                     } else {
-                        func_02008048(var_r7_2, var_r8_2, 1);
+                        MI_CpuCopy8(var_r7_2, var_r8_2, 1);
                         var_r8_2 += 1;
                     }
                     var_r9 += 1;

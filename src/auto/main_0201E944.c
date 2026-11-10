@@ -5,7 +5,7 @@ typedef struct DnsPacket0201e944 { u16 header[6]; u8 name[48]; } DnsPacket0201e9
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_0201e944(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 func_02007004(void); void func_02008048(void*,void*,u32);
+void func_0201db20(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *func_0201e914(u8*); u64 func_02007004(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK data_02137290;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[3]=0;packet[2]=0x100;label=qname;packet[4]=0;packet[5]=0;
@@ -34,7 +34,7 @@ p=func_0201e914(p);len=(u16)((p[8]<<8)|p[9]);type=(u16)((p[0]<<8)|p[1]);
 if(b==type){
 if(b!=12){label=p+8;p+=6;v1=(u16)((p[len]<<8)|p[len+1]);v2=(u16)((label[len]<<8)|label[len+1]);result=(v1<<16)|v2;}
 else if(len>e)result=2;
-else{func_02008048(p+10,(void*)d,len);result=1;}
+else{MI_CpuCopy8(p+10,(void*)d,len);result=1;}
 break;
 }
 p+=len+10;
@@ -437,12 +437,12 @@ for(;;){
 func_020064d0(arg0,&p,1);
 if(!p)return;
 v=M2C_FIELD(p,s32 (**)(s32),0)(p);
-old=func_0200751c();
+old=OS_DisableInterrupts();
 func_02006130();
 func_02006390(arg0,0,0);
 if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))func_020062fc(M2C_FIELD(p,s32*,8),v,0);
-func_0201f210(p);func_02006164();func_02007530(old);
+func_0201f210(p);func_02006164();OS_RestoreInterrupts(old);
 }
 }
 
@@ -486,10 +486,10 @@ void *arg0;
 extern s32 data_020faf98;
 s32 p,old,size;
 size=func_0201f518(arg0);
-old=func_0200751c();
+old=OS_DisableInterrupts();
 p=M2C_FIELD(data_020faf98,s32 (**)(s32),0x18)(size);
 if(p){func_02007f8c(p,0,size);func_0201f5c0(p,arg0);func_020213f0(p);}
-func_02007530(old);return p;
+OS_RestoreInterrupts(old);return p;
 }
 
 s32 func_0201f518(void *arg0) {
@@ -562,7 +562,7 @@ s32 func_0201f6bc(s32 arg0, void *arg1, s32 arg2) {
 
 s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK func_02005ac0(s32, M2C_UNK *, s32, s32, s32, s32);
-    M2C_UNK func_02005e5c(s32);
+    M2C_UNK TaskWake(s32);
     M2C_UNK func_020062d4(s32, s32, s32);
     M2C_UNK func_0200654c(s32);
     s32 func_0201f598(void *);
@@ -573,7 +573,7 @@ s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     func_020062d4(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
     func_0200654c(arg1 + 0xE0);
     func_02005ac0(arg1 + 0x20, (M2C_UNK *)&func_0201f350, arg1, arg0 + temp_r4, (s32) M2C_FIELD(arg2, u16 *, 0), (s32) M2C_FIELD(arg2, u8 *, 2));
-    func_02005e5c(arg1 + 0x20);
+    TaskWake(arg1 + 0x20);
     return arg0 + temp_r4;
 }
 

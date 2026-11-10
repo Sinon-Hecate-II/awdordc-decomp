@@ -192,9 +192,9 @@ void *func_ov005_0221fdb0(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
-        func_02082040(temp_r4);
+        MemFree(temp_r4);
     }
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -206,14 +206,14 @@ void *func_ov005_0221fdf0(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
-        func_02082040(temp_r4);
+        MemFree(temp_r4);
     }
     return arg0;
 }
 
 s32 func_ov005_0221fe28(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -222,8 +222,8 @@ void func_ov005_0221fe3c(void) {
 }
 
 s32 func_ov005_0221fe40(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -252,7 +252,7 @@ M2C_UNK **func_ov005_0221fe58(M2C_UNK **arg0) {
         var_r9 += 1;
     } while (var_r9 < 2);
     gCur3DSpriteEngine = temp_r8;
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 #pragma opt_strength_reduction reset
@@ -286,7 +286,7 @@ void *func_ov005_0221ff38(void *arg0) {
     extern M2C_UNK data_ov005_02220fb8;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fb8;
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) func_01ffaa6c();
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -301,11 +301,11 @@ void *func_ov005_0221ff6c(void *arg0) {
 }
 
 void *func_ov005_0221ff98(void *arg0) {
-    M2C_UNK func_02082040(void *);
+    M2C_UNK MemFree(void *);
     extern M2C_UNK data_ov005_02220fe0;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fe0;
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x34));
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -321,8 +321,8 @@ void func_ov005_0221ffe8(void) {
 }
 
 s32 func_ov005_0221ffec(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -331,8 +331,8 @@ void func_ov005_02220000(void) {
 }
 
 s32 func_ov005_02220004(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

@@ -43,12 +43,12 @@ s32 func_0207c368(u8 *arg0, s32 arg1) {
 
 void func_0207c39c(void *arg0) {
     M2C_UNK func_02007ef4(s32, s32, s32);
-    M2C_UNK func_02008048(s32, s32, s32);
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 flags = M2C_FIELD(arg0, s32 *, 0x40);
     s32 src = M2C_FIELD(arg0, s32 *, 0x38);
     s32 dst = M2C_FIELD(arg0, s32 *, 0x3C);
     if (flags & 3) {
-        func_02008048(src, dst, flags);
+        MI_CpuCopy8(src, dst, flags);
     } else {
         func_02007ef4(src, dst, flags);
     }
@@ -314,7 +314,7 @@ s32 func_0207c928(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A8;
 }
 
-void func_0207c964(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
+void DivMod(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = arg0;
     *(volatile s64 *)0x04000298 = (u32)arg1;

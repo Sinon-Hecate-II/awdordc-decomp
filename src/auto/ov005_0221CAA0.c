@@ -1,5 +1,6 @@
 /* 3 functions from 0x0221CAA0 to 0x0221D818 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
 extern void *g3DSpriteEngineSub;
@@ -21,82 +22,92 @@ void func_02088e84(void*,s32,s16,s32,s32);
 s32 func_020aae10(void*);
 s32 func_020aae44(void*);
 void func_02087d84(void*,s32,s16,s16,s32,s32);
+/* Results screen intro animation: over 32 frames it cuts the cell grid of the 3D sprite into
+   an upper and a lower half (the cut travels down), scrolls the results in from the right and
+   from below, slides the two marker sprites up into place and finally clears the 3D sprite
+   state of both screens. */
 void ResultsScreenAnimate(void *arg0) {
-u16 *volatile p0;
-u16 *volatile p1;
-u16 *volatile p2;
-u16 *volatile p3;
-u16 *volatile p4;
-u16 *volatile p5;
-u16 *volatile p6;
-u16 *volatile p7;
-u16 *volatile p8;
-u16 *volatile p9;
-u16 *volatile p10;
-u16 *volatile p11;
-u16 *volatile p12;
-u16 *volatile p13;
-s32 n,v,i; void *saved,*sprite; s16 y,x,z; s32 a,b;
-M2C_FIELD(arg0,s32*,0x3c)++;
-n=EaseInterpolate(0,0,16,M2C_FIELD(arg0,s32*,0x3c),32);
-saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(M2C_FIELD(arg0,s32*,0x3c)==1) {p0=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p0=(*p0 & ~0xc0)|0x40;
-p1=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p1=*p1 & ~ 1;
-p2=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p2=*p2 & ~ 2;
-p3=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p3=*p3 | 4;
-p4=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p4=*p4 & ~ 8;
-p5=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p5=*p5 & ~ 16;
-p6=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p6=*p6 & ~ 32;
-p7=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p7=*p7 & ~ 256;
-p8=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p8=*p8 & ~ 512;
-p9=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p9=*p9 & ~ 1024;
-p10=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p10=*p10 | 2048;
-p11=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p11=*p11 & ~ 4096;
-p12=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p12=*p12 & ~ 8192;
-}
-M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=n;
-M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=16-n;
-gCur3DSpriteEngine=saved;
-v=EaseInterpolate(4,192,0,M2C_FIELD(arg0,s32*,0x3c),32);
-M2C_FIELD(arg0,s32*,0x40)=M2C_FIELD(arg0,s32*,0x48)=v;
-v=EaseInterpolate(4,-32,0,M2C_FIELD(arg0,s32*,0x3c),32);
-M2C_FIELD(arg0,s32*,0x44)=M2C_FIELD(arg0,s32*,0x4c)=v;
-z=(s16)M2C_FIELD(arg0,s32*,0x44);
-sprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,60);
-func_02088e84(sprite,160,z,160,z);
-if((u8)(M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,18)!=0)){
-y=M2C_FIELD(sprite,s16*,0x52); x=M2C_FIELD(sprite,s16*,0x50);
-a=func_020aae10(sprite); b=func_020aae44(sprite);
-func_02087d84(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)a,(u16)b); }
-M2C_FIELD(sprite,s16*,0x34)=160; M2C_FIELD(sprite,s16*,0x36)=z;
-if((u8)(M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,18)!=0)){
-y=M2C_FIELD(sprite,s16*,0x52); x=M2C_FIELD(sprite,s16*,0x50);
-a=func_020aae10(sprite); b=func_020aae44(sprite);
-func_02087d84(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)a,(u16)b); }
-{ void *sprite2; s16 y2,x2,z2; s32 a2,b2;
-z2=(s16)M2C_FIELD(arg0,s32*,0x44);
-sprite2=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,64);
-func_02088e84(sprite2,224,z2,224,z2);
-if((u8)(M2C_FIELD(M2C_FIELD(sprite2,void**,0x64),u8*,18)!=0)){
-y2=M2C_FIELD(sprite2,s16*,0x52); x2=M2C_FIELD(sprite2,s16*,0x50);
-a2=func_020aae10(sprite2); b2=func_020aae44(sprite2);
-func_02087d84(M2C_FIELD(sprite2,void**,0x64),1,x2,y2,(u16)a2,(u16)b2); }
-M2C_FIELD(sprite2,s16*,0x34)=224; M2C_FIELD(sprite2,s16*,0x36)=z2;
-if((u8)(M2C_FIELD(M2C_FIELD(sprite2,void**,0x64),u8*,18)!=0)){
-y2=M2C_FIELD(sprite2,s16*,0x52); x2=M2C_FIELD(sprite2,s16*,0x50);
-a2=func_020aae10(sprite2); b2=func_020aae44(sprite2);
-func_02087d84(M2C_FIELD(sprite2,void**,0x64),1,x2,y2,(u16)a2,(u16)b2); }
-}
-if(M2C_FIELD(arg0,s32*,0x3c)!=32)return;
-saved=gCur3DSpriteEngine;
-for(i=0;i<2;i++){
-gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-p13=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p13=*p13 & ~0xc0;
-M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=0;
-M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=0;
-M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x53)=0;
-} gCur3DSpriteEngine=saved;
-M2C_FIELD(arg0,u8*,0x58)=0; M2C_FIELD(arg0,s32*,0x3c)=0;func_01ffa6fc(arg0);
+  u16 *volatile oamAttr0;
+  u16 *volatile oamAttr1;
+  u16 *volatile oamAttr2;
+  u16 *volatile oamAttr3;
+  u16 *volatile oamAttr4;
+  u16 *volatile oamAttr5;
+  u16 *volatile oamAttr6;
+  u16 *volatile oamAttr7;
+  u16 *volatile oamAttr8;
+  u16 *volatile oamAttr9;
+  u16 *volatile oamAttr10;
+  u16 *volatile oamAttr11;
+  u16 *volatile oamAttr12;
+  u16 *volatile oamAttr13;
+  s32 splitRow,scroll,i; void *savedEngine,*leftSprite; s16 spriteY,spriteX,panelY; s32 width,height;
+  M2C_FIELD(arg0,s32*,0x3c)++;
+  splitRow=EaseInterpolate(EASE_LINEAR,0,16,M2C_FIELD(arg0,s32*,0x3c),32);
+  savedEngine=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
+  if(M2C_FIELD(arg0,s32*,0x3c)==1) {
+  /* the 3D sprite's OBJ attribute word: priority 1, affine off, not disabled, 256 colour
+     palette, square shape, mosaic off, colour mode on, affine parameter 0 */
+  oamAttr0=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr0=(*oamAttr0 & ~0xc0)|0x40;
+  oamAttr1=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr1=*oamAttr1 & ~ 1;
+  oamAttr2=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr2=*oamAttr2 & ~ 2;
+  oamAttr3=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr3=*oamAttr3 | 4;
+  oamAttr4=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr4=*oamAttr4 & ~ 8;
+  oamAttr5=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr5=*oamAttr5 & ~ 16;
+  oamAttr6=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr6=*oamAttr6 & ~ 32;
+  oamAttr7=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr7=*oamAttr7 & ~ 256;
+  oamAttr8=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr8=*oamAttr8 & ~ 512;
+  oamAttr9=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr9=*oamAttr9 & ~ 1024;
+  oamAttr10=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr10=*oamAttr10 | 2048;
+  oamAttr11=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr11=*oamAttr11 & ~ 4096;
+  oamAttr12=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr12=*oamAttr12 & ~ 8192;
+  }
+  /* rows of the 3D sprite's cell grid above and below the cut */
+  M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=splitRow;
+  M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=16-splitRow;
+  gCur3DSpriteEngine=savedEngine;
+  scroll=EaseInterpolate(EASE_OUT_QUAD,192,0,M2C_FIELD(arg0,s32*,0x3c),32);
+  M2C_FIELD(arg0,s32*,0x40)=M2C_FIELD(arg0,s32*,0x48)=scroll;
+  scroll=EaseInterpolate(EASE_OUT_QUAD,-32,0,M2C_FIELD(arg0,s32*,0x3c),32);
+  M2C_FIELD(arg0,s32*,0x44)=M2C_FIELD(arg0,s32*,0x4c)=scroll;
+  panelY=(s16)M2C_FIELD(arg0,s32*,0x44);
+  /* the two marker sprites of the scene, at display object offsets 0x3c and 0x40 */
+  leftSprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,60);
+  func_02088e84(leftSprite,160,panelY,160,panelY);
+  if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
+  spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
+  width=func_020aae10(leftSprite); height=func_020aae44(leftSprite);
+  func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
+  M2C_FIELD(leftSprite,s16*,0x34)=160; M2C_FIELD(leftSprite,s16*,0x36)=panelY;
+  if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
+  spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
+  width=func_020aae10(leftSprite); height=func_020aae44(leftSprite);
+  func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
+  { void *rightSprite; s16 spriteY2,spriteX2,panelY2; s32 width2,height2;
+  panelY2=(s16)M2C_FIELD(arg0,s32*,0x44);
+  rightSprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,64);
+  func_02088e84(rightSprite,224,panelY2,224,panelY2);
+  if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
+  spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
+  width2=func_020aae10(rightSprite); height2=func_020aae44(rightSprite);
+  func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
+  M2C_FIELD(rightSprite,s16*,0x34)=224; M2C_FIELD(rightSprite,s16*,0x36)=panelY2;
+  if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
+  spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
+  width2=func_020aae10(rightSprite); height2=func_020aae44(rightSprite);
+  func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
+  }
+  if(M2C_FIELD(arg0,s32*,0x3c)!=32)return;
+  /* the animation is over: clear the 3D sprite of both screens */
+  savedEngine=gCur3DSpriteEngine;
+  for(i=0;i<2;i++){
+  gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
+  oamAttr13=(u16*)(*(u8**)gCur3DSpriteEngine+18); *oamAttr13=*oamAttr13 & ~0xc0;
+  M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=0;
+  M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=0;
+  M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x53)=0;
+  } gCur3DSpriteEngine=savedEngine;
+  M2C_FIELD(arg0,u8*,0x58)=0; M2C_FIELD(arg0,s32*,0x3c)=0;func_01ffa6fc(arg0);
 }
 
 void func_ov005_0221cff8(void *arg0) {

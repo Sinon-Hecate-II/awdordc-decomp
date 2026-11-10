@@ -1,7 +1,7 @@
 /* 2 functions from 0x02191970 to 0x0219234C (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df7e4[];
 extern s8 data_ov000_021b55a0[];
 #define MAP (*gCurrentMap)
@@ -22,7 +22,7 @@ s32 func_ov000_021a97e0(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a9a28(u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 func_020d27ec(u32,u32);
-void func_ov000_02199d74(s16,s16,s32,s32,s32);void func_ov000_0218a9ac(s32,s32);
+void SetMapCursor(s16,s16,s32,s32,s32);void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,candidateX=-1,candidateY=-1;
 s32 bestDistance=32767,chosen=0,special,index,offset,limit;
 s32 distance,otherDistance,x,y,range,d,temporary;
@@ -32,11 +32,11 @@ func_01ffb554(MAP+0x2338);
 func_01ffada0(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,1);
 func_01ffb554(MAP+0x1e30);
 limit=func_ov000_021a89a4(SEL)+1;
-index=data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+1;
-if(index<data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+51){
+index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
+if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){
 offset=index*14;
 for(;
-index<data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
+index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=MAP+0x59a4+offset;
 if(!KIND(unit)||!func_ov000_021a9934(KIND(SEL),KIND(unit))||
 data_ov000_021df7e4[index&63]||((u32)(M2C_FIELD(unit,u8*,11)<<24)>>31))continue;
@@ -82,8 +82,8 @@ else bestDistance=CELL(candidateX,candidateY,0x2338);
 }
 if(bestX==-1)return;
 data_ov000_021df7e4[chosen&63]++;
-if(bestDistance<limit)func_ov000_02199d74(bestX,bestY,2,0,0);
-else func_ov000_0218a9ac(bestX,bestY);
+if(bestDistance<limit)SetMapCursor(bestX,bestY,2,0,0);
+else PlanMoveDestination(bestX,bestY);
 }
 #pragma optimization_level reset
 #pragma opt_propagation reset

@@ -10,7 +10,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
     s32 func_020208ac(void *);
     s32 func_0201f1d0(void *, s32, s32);
     s32 func_0201f328(s32, s32);
-    s32 func_02008048(s32, s32, s32);
+    s32 MI_CpuCopy8(s32, s32, s32);
     void *ctx;
     void *entry;
     s32 curBuffer;
@@ -42,9 +42,9 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
         M2C_FIELD(entry, s32 *, 24) = start;
         startPos = byteCount - M2C_FIELD(entry, s32 *, 20);
         M2C_FIELD(entry, s32 *, 28) = startPos;
-        func_02008048(curBuffer + M2C_FIELD(entry, s32 *, 20), M2C_FIELD(entry, s32 *, 24), startPos);
+        MI_CpuCopy8(curBuffer + M2C_FIELD(entry, s32 *, 20), M2C_FIELD(entry, s32 *, 24), startPos);
     }
-    func_02008048(curBuffer, M2C_FIELD(entry, s32 *, 16), M2C_FIELD(entry, s32 *, 20));
+    MI_CpuCopy8(curBuffer, M2C_FIELD(entry, s32 *, 16), M2C_FIELD(entry, s32 *, 20));
     curBuffer = M2C_FIELD(ctx, u16 *, 0x100);
     M2C_FIELD(entry, u16 *, 32) = startPos;
     M2C_FIELD(ctx, u16 *, 0x100) = M2C_FIELD(entry, u16 *, 32);
@@ -125,7 +125,7 @@ s32 func_020209dc(s32 arg0) {
     s32 var_r3;
     void *temp_r5;
     temp_r5 = M2C_FIELD(M2C_FIELD(&data_0212dca4, void **, 4), void **, 0xA4);
-    lock = func_0200751c();
+    lock = OS_DisableInterrupts();
     if (temp_r5 != NULL) {
         var_r3 = M2C_FIELD(temp_r5, u16 *, 0x2E);
         if ((var_r3 != 0) && (temp_r2 = M2C_FIELD(temp_r5, u16 *, 0x2C), temp_r2 != 0)) {
@@ -139,7 +139,7 @@ s32 func_020209dc(s32 arg0) {
     } else {
         var_r5 = M2C_FIELD(&data_02138ad0, s32 *, 0x24) * 2;
     }
-    func_02007530(lock);
+    OS_RestoreInterrupts(lock);
     if (var_r5 > 0) {
         temp_r0 = func_020720f0(arg0, var_r5);
         if (temp_r0 > 0) return var_r5 * temp_r0;
@@ -148,7 +148,7 @@ s32 func_020209dc(s32 arg0) {
 }
 
 s32 func_02020a80(s32 arg0, s32 arg1, void *arg2) {
-    M2C_UNK func_02008048(s32, s32, s32);
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 temp_r0;
     s32 var_r4;
     s32 var_r5;
@@ -165,12 +165,12 @@ s32 func_02020a80(s32 arg0, s32 arg1, void *arg2) {
         }
     }
     if (var_r4 > 0) {
-        func_02008048(M2C_FIELD(arg2, s32 *, 0x10), arg0, var_r4);
+        MI_CpuCopy8(M2C_FIELD(arg2, s32 *, 0x10), arg0, var_r4);
         M2C_FIELD(arg2, s32 *, 0x10) = (s32) (M2C_FIELD(arg2, s32 *, 0x10) + var_r4);
         M2C_FIELD(arg2, s32 *, 0x14) = (s32) (M2C_FIELD(arg2, s32 *, 0x14) - var_r4);
     }
     if (var_r5 > 0) {
-        func_02008048(M2C_FIELD(arg2, s32 *, 0x18), arg0 + var_r4, var_r5);
+        MI_CpuCopy8(M2C_FIELD(arg2, s32 *, 0x18), arg0 + var_r4, var_r5);
         M2C_FIELD(arg2, s32 *, 0x18) = (s32) (M2C_FIELD(arg2, s32 *, 0x18) + var_r5);
         M2C_FIELD(arg2, s32 *, 0x1C) = (s32) (M2C_FIELD(arg2, s32 *, 0x1C) - var_r5);
     }
@@ -294,10 +294,10 @@ s32 func_02020cf8(void *arg0) {
     if (M2C_FIELD(temp_r4, s8 *, 0x73) == 2) var_r0 = M2C_FIELD(temp_r4, s32 *, 0x68);
     else var_r0 = M2C_FIELD(temp_r4, s32 *, 0x64);
     func_0201f244(var_r0, 0);
-    temp_r5 = func_0200751c();
+    temp_r5 = OS_DisableInterrupts();
     func_02021430((M2C_UNK)temp_r4);
     func_02021418(temp_r4);
-    func_02007530(temp_r5);
+    OS_RestoreInterrupts(temp_r5);
     M2C_FIELD(temp_r4, s16 *, 0x70) |= 0x20;
     return 0;
 }
@@ -326,10 +326,10 @@ M2C_FIELD(M2C_FIELD(obj,s32*,0x64),s32*,0x104)=0;
 func_02005df4(M2C_FIELD(obj,s32*,0x64)+0x10c);
 func_02020e90(M2C_FIELD(obj,s32*,0x64));
 }else if(state==2)func_02020e90(M2C_FIELD(obj,s32*,0x68));
-lock=func_0200751c();
+lock=OS_DisableInterrupts();
 func_02021430(obj);func_02021490(obj);
 M2C_FIELD(data_020faf98,void (**)(s32),0x1c)(obj);
-func_02007530(lock);
+OS_RestoreInterrupts(lock);
 }
 
 void func_02020e90(s32 arg0) {
@@ -339,8 +339,8 @@ void func_02020e90(s32 arg0) {
     M2C_UNK func_02006164();
     M2C_UNK func_020062fc(s32, M2C_UNK, M2C_UNK);
     s32 func_02006390(s32, void **, M2C_UNK);
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_0201f210(void *);
     void *sp0;
     s32 temp_r0;
@@ -350,7 +350,7 @@ void func_02020e90(s32 arg0) {
         return;
     }
     func_02005d60(arg0 + 0x20);
-    temp_r8 = func_0200751c();
+    temp_r8 = OS_DisableInterrupts();
     func_02006130();
     if (func_02006390(arg0, &sp0, 0) != 0) {
         do {
@@ -365,19 +365,19 @@ void func_02020e90(s32 arg0) {
     }
     func_02006164();
     func_02005eac();
-    func_02007530(temp_r8);
+    OS_RestoreInterrupts(temp_r8);
 }
 
 M2C_UNK func_02020f30(void) {
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_02020d90();
     extern M2C_UNK data_02138b30;
-    s32 temp_r5 = func_0200751c();
+    s32 temp_r5 = OS_DisableInterrupts();
     if (data_02138b30 != 0) {
         do { func_02020d90(); } while (data_02138b30 != 0);
     }
-    func_02007530(temp_r5);
+    OS_RestoreInterrupts(temp_r5);
 }
 
 s32 func_02020f6c(void) {
@@ -407,8 +407,8 @@ s32 func_02020f6c(void) {
 }
 
 s32 func_02021010(void) {
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_02020c28(s32);
     extern s32 data_02138acc;
     extern M2C_UNK data_02138b2c;
@@ -416,13 +416,13 @@ s32 func_02021010(void) {
     s32 var_r6;
     s32 temp_r0;
 loop_1:
-    temp_r0 = func_0200751c();
+    temp_r0 = OS_DisableInterrupts();
     var_r6 = data_02138b2c;
     while (var_r6 != 0) {
         if (var_r6 != data_02138acc && !(M2C_FIELD(var_r6, s16 *, 0x70) & 0x10)) { break; }
         var_r6 = M2C_FIELD(var_r6, s32 *, 0x7C);
     }
-    func_02007530(temp_r0);
+    OS_RestoreInterrupts(temp_r0);
     if (var_r6 != 0) { func_02020c28(var_r6); goto loop_1; }
     if ((data_02138b2c == 0 || (data_02138b2c == data_02138acc && M2C_FIELD(data_02138b2c, s32 *, 0x7C) == 0)) && data_02138b30 == 0) { return 0; }
     return -0x1A;
@@ -481,15 +481,15 @@ s32 func_02021134(s32 arg0) {
 }
 
 s32 func_020211e4(s32 arg0) {
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     s32 func_0201ed20(s32);
     extern M2C_UNK data_021372f0;
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
     s32 temp_r7;
-    temp_r5 = func_0200751c();
+    temp_r5 = OS_DisableInterrupts();
     temp_r6 = M2C_FIELD(&data_021372f0, s32 *, 0);
     temp_r7 = M2C_FIELD(&data_021372f0, s32 *, 4);
     M2C_FIELD(&data_021372f0, s32 *, 0) = 0;
@@ -497,7 +497,7 @@ s32 func_020211e4(s32 arg0) {
     temp_r4 = func_0201ed20(arg0);
     M2C_FIELD(&data_021372f0, s32 *, 0) = temp_r6;
     M2C_FIELD(&data_021372f0, s32 *, 4) = temp_r7;
-    func_02007530(temp_r5);
+    OS_RestoreInterrupts(temp_r5);
     return temp_r4;
 }
 
@@ -535,10 +535,10 @@ if(func_020214a8()!=0) result|=0x80;
 else {
 if(M2C_FIELD(arg0,volatile s16 *,0x70)&0x40) result|=0x20;
 if(M2C_FIELD(arg0,s8 *,0x73)==1 || (M2C_FIELD(arg0,volatile s16 *,0x70)&4)){
-lock=func_0200751c();
+lock=OS_DisableInterrupts();
 if(func_0202139c(arg0)>0) result|=1;
 if(func_02020714(arg0)>0) result|=8;
-func_02007530(lock);
+OS_RestoreInterrupts(lock);
 }
 type=M2C_FIELD(arg0,s8 *,0x73);flag=1;
 if(type!=0 && type!=4) flag=0;

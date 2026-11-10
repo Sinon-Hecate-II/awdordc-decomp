@@ -281,7 +281,7 @@ return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 void func_020cb704(void *a){s32 func_020ba510(s32,s32);extern s32 data_0215be0c;extern void **gCurrentMap;extern u8 data_0212b1b8[][4];u16 i=0;data_0215be0c=0;do{void *p=*gCurrentMap;s32 n=func_020ba510(M2C_FIELD(p,s16 *,0x52dc)+(s8)data_0212b1b8[i][2],M2C_FIELD(p,s16 *,0x52de)+(s8)data_0212b1b8[i][3]);data_0215be0c |= data_0212b1b8[i][0]*n;i++;}while(i<4);M2C_FIELD(a,s16 *,0x34)=0;}
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
-void func_01ffa574(void *);void func_020bac24(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK func_ov000_02199f50(s32,u8,u8,u8);
+void func_01ffa574(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK func_ov000_02199f50(s32,u8,u8,u8);
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
@@ -291,7 +291,7 @@ if(i>=4){
 if(!M2C_FIELD(arg0,s16 *,0x36)){
 p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c2)=M2C_FIELD(p,s16 *,0x52dc);
 p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c4)=M2C_FIELD(p,s16 *,0x52de);}
-func_01ffa574(arg0);func_020bac24();
+func_01ffa574(arg0);BattleUpdateUnitCursor();
 if(!M2C_FIELD(arg0,s16 *,0x36))func_ov000_02199f50(6,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),0,0);
 func_020d468c();
 return;

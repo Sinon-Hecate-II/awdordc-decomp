@@ -54,13 +54,13 @@ void func_020ac970(M2C_UNK arg0) {
 }
 
 void func_020ac998(s32 mode) {
-s32 func_020abf3c(u8); void func_020ac144(u8,s32,s32);
+s32 GetScreenMode(u8); void ConfigureScreenEngine(u8,s32,s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;
 u8 currentIsPrimary, screen; u16 *volatile p; u16 *volatile q;
 if(gCur3DSpriteEngine==g3DSpriteEngineMain)currentIsPrimary=1;else currentIsPrimary=0;
 if(currentIsPrimary!=1)screen=1;else screen=0;
-if(mode==3)mode=func_020abf3c(screen);
-func_020ac970(screen);func_020ac144(screen,0,mode);
+if(mode==3)mode=GetScreenMode(screen);
+func_020ac970(screen);ConfigureScreenEngine(screen,0,mode);
 switch(mode){
 case 0: case 1: M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x50)=0;break;
 case 2:
@@ -72,9 +72,9 @@ break;
 }
 
 M2C_UNK func_020aca8c(M2C_UNK arg0) {
-    s32 func_020abf3c(u8);
+    s32 GetScreenMode(u8);
     void func_020ac970(M2C_UNK);
-    void func_020ac144(u8, s32, s32);
+    void ConfigureScreenEngine(u8, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     u8 currentIsPrimary;
@@ -110,9 +110,9 @@ M2C_UNK func_020aca8c(M2C_UNK arg0) {
         screen = 0;
     }
     if (arg0 == 3) {
-        mode = func_020abf3c(screen);
+        mode = GetScreenMode(screen);
         func_020ac970(screen);
-        func_020ac144(screen, 1, mode);
+        ConfigureScreenEngine(screen, 1, mode);
         switch (mode) {
         case 0:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;

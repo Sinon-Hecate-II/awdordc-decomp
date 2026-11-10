@@ -1,13 +1,13 @@
 /* 6 functions from 0x02067CB0 to 0x02068C50 (main), found by ds-decomp. */
 #include "common.h"
 #include "scan_spec.h"
-extern const u16 data_020ead40[];
+extern const u16 gCharClassTable[];
 extern u32 data_021002ec;
 static inline s32 ScanOutside67cb0(s32 c) { s32 outside=1; if(c>=0 && c<128)outside=0; return outside; }
-static inline s32 ScanSpace67cb0(s32 c) {return ScanOutside67cb0(c)?0:data_020ead40[c]&0x100;}
+static inline s32 ScanSpace67cb0(s32 c) {return ScanOutside67cb0(c)?0:gCharClassTable[c]&0x100;}
 
 
-char *func_020677b8(char *,ScanSpec677b8 *);
+char *ParseScanConversion(char *,ScanSpec677b8 *);
 u32 func_0206a384(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 u64 func_0206a76c(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 f64 func_02069048(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
@@ -40,7 +40,7 @@ failed=1;fmt++;continue;
 }
 nread++;fmt++;continue;
 }
-fmt=func_020677b8(fmt,&spec);
+fmt=ParseScanConversion(fmt,&spec);
 if(!spec.suppress && spec.conversion!='%')dst=(void *)*(++args-1);else dst=0;
 if(spec.conversion!='n' && !failed && get(ctx,0,2)){
 if(!safe)break;failed=1;

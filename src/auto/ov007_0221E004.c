@@ -131,7 +131,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_020e32e8(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    extern M2C_UNK data_ov007_02220d40;
+    extern M2C_UNK gSoftKeyLayouts;
     extern M2C_UNK data_ov007_02220d4c;
     extern M2C_UNK data_ov007_02221980;
     extern M2C_UNK data_ov007_0222198c;
@@ -208,7 +208,7 @@ void func_ov007_0221e878(void *arg0) {
     func_020814e4();
     var_r2 = 0;
 loop_1:
-    if (M2C_FIELD(arg0, s32 *, 0x34) == *(&data_ov007_02220d40 + (var_r2 * 4))) {
+    if (M2C_FIELD(arg0, s32 *, 0x34) == *(&gSoftKeyLayouts + (var_r2 * 4))) {
         var_r0 = var_r2 + 0x64;
     } else {
         var_r2 += 1;
@@ -260,8 +260,8 @@ void func_ov007_0221ec40(void *arg0) {
     s32 func_0209c268(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    extern M2C_UNK data_ov007_02221e0c;
-    extern M2C_UNK data_ov007_02221e10;
+    extern M2C_UNK gMapEditRecords;
+    extern M2C_UNK gMapEditObjectList;
     u16 **sp8;
     M2C_UNK *var_r10;
     s16 var_r6;
@@ -275,8 +275,8 @@ void func_ov007_0221ec40(void *arg0) {
     var_r6 = 0x10;
     var_r8 = 0x4D00;
     var_r9 = 0;
-    if (M2C_FIELD(&data_ov007_02221e0c, s32 *, 4) != 0) {
-        var_r10 = &data_ov007_02221e10;
+    if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
+        var_r10 = &gMapEditObjectList;
         do {
             temp_r5 = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
             func_0209b67c((u16) (var_r6 + ((u32) (8 - func_0209c268(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
@@ -284,7 +284,7 @@ void func_ov007_0221ec40(void *arg0) {
             var_r9 = var_r9 + 1;
             var_r6 = var_r6 + 8;
             var_r10 = &var_r10[1];
-        } while (*(&data_ov007_02221e10 + (var_r9 * 4)) != 0);
+        } while (*(&gMapEditObjectList + (var_r9 * 4)) != 0);
     }
     gCur3DSpriteEngine = sp8;
 }

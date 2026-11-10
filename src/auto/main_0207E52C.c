@@ -7,12 +7,12 @@ typedef struct { TerrainOffset7E52 values[4]; } TerrainNeighbors7E52;
 #pragma opt_lifetimes off
 #pragma opt_instruction_scheduling off
 s32 func_0207e52c(s32 x,s32 y) {
-s32 func_0207e150(s32,s32);s32 func_0207dc0c(s32,s32);s32 func_0207de50(s32,s32);s32 func_0207e338(s32,s32);s32 func_0207e39c(s32,s32);s32 func_0207e400(s32,s32);s32 func_0207e464(s32,s32);s32 func_0207e4c8(s32,s32);
+s32 func_0207e150(s32,s32);s32 func_0207dc0c(s32,s32);s32 GetTerrainEdgeVariant(s32,s32);s32 func_0207e338(s32,s32);s32 func_0207e39c(s32,s32);s32 func_0207e400(s32,s32);s32 func_0207e464(s32,s32);s32 func_0207e4c8(s32,s32);
 extern TerrainVariants7E52 data_020ebe04,data_020ebe14,data_020ebe24;
-extern TerrainNeighbors7E52 data_020ebe58;
+extern TerrainNeighbors7E52 gTerrainNeighborOffsets;
 extern void **gCurrentMap;
-extern void *data_02101884;
-extern M2C_UNK data_020edebc;
+extern void *gTerrainTileset;
+extern M2C_UNK gTerrainClassFlags;
 u16 *lookup;
 TerrainVariants7E52 variantsA,variantsB,variantsC;
 TerrainNeighbors7E52 adjacent0,adjacent1,adjacent2,adjacent3,adjacent4,adjacent5;
@@ -22,7 +22,7 @@ u32 bits=0;
 u8 *map;
 variantsA=data_020ebe04;variantsB=data_020ebe14;variantsC=data_020ebe24;
 map=*gCurrentMap;
-lookup=M2C_FIELD(&data_02101884,u16 **,4);
+lookup=M2C_FIELD(&gTerrainTileset,u16 **,4);
 row=M2C_FIELD(map+y*2,u16 *,0x3758);
 index=row+x;
 tile=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
@@ -33,7 +33,7 @@ case 53:return func_0207e400(x,y);
 case 220:return func_0207e464(x,y);
 case 224:return func_0207e4c8(x,y);
 case 56:
-adjacent0=data_020ebe58;
+adjacent0=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent0.values[i].x;ny=y+adjacent0.values[i].y;
 if(nx<0||ny<0)continue;
@@ -41,7 +41,7 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&3145728)bits=(u8)(bits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&3145728)bits=(u8)(bits|(1<<i));
 }
 switch(bits){
 case 1:
@@ -59,7 +59,7 @@ bits=(u8)(bits|1);break;
 }
 return (u16)(tile+bits);
 case 104:
-adjacent1=data_020ebe58;
+adjacent1=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent1.values[i].x;ny=y+adjacent1.values[i].y;
 if(nx<0||ny<0)continue;
@@ -67,11 +67,11 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&3211264)bits=(u8)(bits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&3211264)bits=(u8)(bits|(1<<i));
 }
 return (u16)(tile+bits);
 case 120:
-adjacent2=data_020ebe58;
+adjacent2=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent2.values[i].x;ny=y+adjacent2.values[i].y;
 if(nx<0||ny<0)continue;
@@ -79,13 +79,13 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&3211264)bits=(u8)(bits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&3211264)bits=(u8)(bits|(1<<i));
 }
 return (u16)(tile+bits);
 case 88:
 case 152:
 {u8 specialBits=0;
-adjacent3=data_020ebe58;
+adjacent3=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent3.values[i].x;ny=y+adjacent3.values[i].y;
 if(nx<0||ny<0)continue;
@@ -93,14 +93,14 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&8388608)specialBits=(u8)(specialBits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&8388608)specialBits=(u8)(specialBits|(1<<i));
 }
 return (u16)(tile+specialBits);
 }
 case 72:
 case 136:
 {u8 specialBits=0;
-adjacent4=data_020ebe58;
+adjacent4=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent4.values[i].x;ny=y+adjacent4.values[i].y;
 if(nx<0||ny<0)continue;
@@ -108,7 +108,7 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&12582912)specialBits=(u8)(specialBits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&12582912)specialBits=(u8)(specialBits|(1<<i));
 }
 switch(specialBits){
 case 1:
@@ -127,7 +127,7 @@ specialBits=(u8)(specialBits|1);break;
 return (u16)(tile+specialBits);
 }
 case 14:
-adjacent5=data_020ebe58;
+adjacent5=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
 nx=x+adjacent5.values[i].x;ny=y+adjacent5.values[i].y;
 if(nx<0||ny<0)continue;
@@ -135,13 +135,13 @@ map=*gCurrentMap;
 if(nx>=M2C_FIELD(map,u16 *,0x5144)||ny>=M2C_FIELD(map,u16 *,0x5146))continue;
 index=M2C_FIELD(map+ny*2,u16 *,0x3758)+nx;
 type=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
-if(M2C_FIELD(&data_020edebc,u32 *,type*8)&0x1000000)bits=(u8)(bits|(1<<i));
+if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&0x1000000)bits=(u8)(bits|(1<<i));
 }
 return (u16)(tile+bits);
 
 case 227:return func_0207e150(x,y);
 case 173:return func_0207dc0c(x,y);
-case 265:return func_0207de50(x,y);
+case 265:return GetTerrainEdgeVariant(x,y);
 case 44:case 48:case 168:
 nx=x+1;
 if(nx>=0&&y>=0){
@@ -168,16 +168,16 @@ default:return tile;
 #pragma opt_lifetimes reset
 s32 func_0207ef5c(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0207dc0c(s32, s32);
-    s32 func_0207de50(s32, s32);
+    s32 GetTerrainEdgeVariant(s32, s32);
     s32 func_0207e338(s32, s32);
-    extern M2C_UNK data_020edebc;
+    extern M2C_UNK gTerrainClassFlags;
     u16 flags;
-    flags = (u16)M2C_FIELD(&data_020edebc, u32 *, arg2 * 8);
+    flags = (u16)M2C_FIELD(&gTerrainClassFlags, u32 *, arg2 * 8);
     if (arg2 == 0x34) return 5;
     if (flags & 1) return func_0207e338(arg0, arg1);
     if (flags & 2) return func_0207dc0c(arg0, arg1);
     if (!(flags & 4)) return 0;
-    return func_0207de50(arg0, arg1);
+    return GetTerrainEdgeVariant(arg0, arg1);
 }
 
 s32 func_0207efb4(s32 arg0) {

@@ -137,11 +137,11 @@ void func_020a6cbc(void *arg0) {
 
 void func_020a6ccc(void *self){
 void func_020a71a0(s32,s32,s32);s32 func_020b5258(void);s32 func_020a81d0(void *);void func_020d0288(void *,s32,s32,s32,s32,s32);s32 func_020d02b4(void *);void func_01ffa6fc(void *);
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 u8 *bits=M2C_FIELD(self,u8 **,0x54);s32 count=0,player,i;u32 pos;s32 iter[8];UnkStruct_ov000_021A860C *p;
 if(func_020b5258())return;
 for(player=1;player<5;player++){
-for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 if(p->unk0 && func_020a81d0(p)){
 func_020d0288(iter,2,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),M2C_FIELD(*gCurrentMap,u16 *,0x5144),M2C_FIELD(*gCurrentMap,u16 *,0x5146));
@@ -162,9 +162,9 @@ if(!count)func_01ffa6fc(self);
 }
 
 void func_020a6eb0(void){
-extern u16 data_ov000_021aeef4[];s32 func_020a85dc(u32);
+extern u16 gPlayerUnitIdBase[];s32 func_020a85dc(u32);
 s32 i;UnkStruct_ov000_021A860C *p;u8 n;
-for(i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
+for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
 p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 if(p->unk0 && !(M2C_FIELD(p,u16 *,4)&8)){
 M2C_FIELD(p,u16 *,4)&=~0x81;

@@ -38,13 +38,13 @@ s32 func_020352ec(void) {
 void func_02035304(void) {
     M2C_UNK func_02005ac0(void *, void (*)(void), void *, void *, s32, s32);
     s32 func_02005d90(void *);
-    M2C_UNK func_02005e5c(void *);
+    M2C_UNK TaskWake(void *);
     void func_0203538c(void);
     extern void *data_0213d138;
     if (M2C_FIELD(data_0213d138, s32 *, 0x1188) != 0 && func_02005d90(data_0213d138 + 0x111C) == 0) {
         return;
     }
     func_02005ac0(data_0213d138 + 0x111C, func_0203538c, data_0213d138, data_0213d138 + 0x1000, 0x1000, 0x10);
-    func_02005e5c(data_0213d138 + 0x111C);
+    TaskWake(data_0213d138 + 0x111C);
 }
 

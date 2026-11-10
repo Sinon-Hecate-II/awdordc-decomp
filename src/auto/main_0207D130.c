@@ -3,12 +3,12 @@
 typedef struct { s16 coords[24]; } TerrainCoords48;
 typedef struct { s16 coords[12]; } TerrainCoords24;
 extern void **gCurrentMap;
-extern u8 data_02101884;
+extern u8 gTerrainTileset;
 extern const s16 data_020ebe8c[24];
-extern const s16 data_020ebe58[24];
+extern const s16 gTerrainNeighborOffsets[24];
 extern const u16 data_021018a4[16];
 extern const u16 data_021018c4[256];
-extern const u8 data_020edebc[];
+extern const u8 gTerrainClassFlags[];
 
 extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc[], data_020ed6bc[], data_020edabc[], data_020ec2bc[];
 extern u32 data_0214c0c0[2];
@@ -196,18 +196,18 @@ func_02002e3c(state);
 }
 
 void func_0207db18(u8 arg0) { switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)) {
-case 4: M2C_FIELD(&data_02101884,const u8 **,4)=data_020ec6bc;break;
-case 5: M2C_FIELD(&data_02101884,const u8 **,4)=data_020ecabc;break;
-case 6: M2C_FIELD(&data_02101884,const u8 **,4)=data_020ecebc;break;
-case 7: M2C_FIELD(&data_02101884,const u8 **,4)=data_020ed2bc;break;
-case 8: M2C_FIELD(&data_02101884,const u8 **,4)=data_020ed6bc;break;
-case 9: M2C_FIELD(&data_02101884,const u8 **,4)=data_020edabc;break;
-default:M2C_FIELD(&data_02101884,const u8 **,4)=data_020ec2bc;break;
-} data_02101884=arg0; }
+case 4: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec6bc;break;
+case 5: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecabc;break;
+case 6: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ecebc;break;
+case 7: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ed2bc;break;
+case 8: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ed6bc;break;
+case 9: M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020edabc;break;
+default:M2C_FIELD(&gTerrainTileset,const u8 **,4)=data_020ec2bc;break;
+} gTerrainTileset=arg0; }
 
 u8 func_0207dbfc(void) {
-    extern u8 data_02101884;
-    return data_02101884;
+    extern u8 gTerrainTileset;
+    return gTerrainTileset;
 }
 
 #pragma push
@@ -221,7 +221,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
     first = *(const TerrainCoords48 *)data_020ebe8c;
     {
         void **maps = gCurrentMap;
-        const u16 *tileAttr = ((const u16 **)&data_02101884)[1];
+        const u16 *tileAttr = ((const u16 **)&gTerrainTileset)[1];
         {
             s32 i;
             s16 *p = first.coords;
@@ -231,7 +231,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
                 if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
                     u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
                     u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
-                    if ((((const u32 (*)[2])data_020edebc)[tileAttr[tile]][0] & 0x20000) == 0) {
+                    if ((((const u32 (*)[2])gTerrainClassFlags)[tileAttr[tile]][0] & 0x20000) == 0) {
                         mask |= 1 << i;
                         mask &= 0xff;
                     }
@@ -259,7 +259,7 @@ u16 func_0207dc0c(s32 x, s32 y) {
 do_second:
             {
                 b = 0;
-                second = *(const TerrainCoords24 *)data_020ebe58;
+                second = *(const TerrainCoords24 *)gTerrainNeighborOffsets;
                 {
                     s16 *p = second.coords;
                     for (j = 0; j < 4; j++, p += 3) {
@@ -268,7 +268,7 @@ do_second:
                         if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*maps, u16 *, 0x5144) && ny < M2C_FIELD(*maps, u16 *, 0x5146)) {
                             u16 off = M2C_FIELD((u8 *)*maps + ny * 2, u16 *, 0x3758);
                             u16 tile = M2C_FIELD((u8 *)*maps + (nx + off) * 2, u16 *, 0xa10);
-                            if ((((const u32 (*)[2])data_020edebc)[tileAttr[tile]][0] & 0x80000) != 0) {
+                            if ((((const u32 (*)[2])gTerrainClassFlags)[tileAttr[tile]][0] & 0x80000) != 0) {
                                 b |= 1 << j;
                                 b &= 0xff;
                             }

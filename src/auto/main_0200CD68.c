@@ -222,10 +222,10 @@ s32 func_0200d5bc(u16 *p) {
 }
 #pragma opt_propagation reset
 void func_0200d650(s16 *p){
-s32 func_0200751c(void);void func_02007530(s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 s32 t,n;
 if(!p){M2C_FIELD(&data_0212fc70,u16*,0x34)=0;return;}
-t=func_0200751c();
+t=OS_DisableInterrupts();
 if((n=p[2])!=0){
 *(volatile u16*)0x4000280=0;
 *(volatile u32*)0x4000290=0x10000000;
@@ -244,15 +244,15 @@ M2C_FIELD(&data_0212fc70,s32*,44)=p[3];
 while(*(volatile u16*)0x4000280&0x8000){}
 M2C_FIELD(&data_0212fc70,s32*,48)=*(volatile s32*)0x40002a0;
 }else{M2C_FIELD(&data_0212fc70,s32*,40)=0;M2C_FIELD(&data_0212fc70,s32*,44)=0;M2C_FIELD(&data_0212fc70,s32*,48)=0;}
-func_02007530(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
+OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16*,0x34)=1;}
 
 #pragma opt_instruction_scheduling off
 void func_0200d778(void) {
-s32 func_0200751c(void); void func_02007530(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=func_0200751c();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
-if(ok==0) {func_02007530(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1;
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
+s32 t=OS_DisableInterrupts();s32 ok=(func_02009eb0(6,0x3000000,0)>=0);
+if(ok==0) {OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=1;
 if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(0,4,0);
-} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=1;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~1;func_02007530(t);}
+} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=1;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~1;OS_RestoreInterrupts(t);}
 }
 #pragma opt_instruction_scheduling reset
 s32 func_0200d80c(u16 *a) {
@@ -264,8 +264,8 @@ func_0200dd14(1);if(M2C_FIELD(&data_0212fc70,u16 *,0x38)&1)return 1;
 
 #pragma opt_instruction_scheduling off
 void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_02009eb0(s32, u32, s32);
     u32 i;
     s32 t;
@@ -281,7 +281,7 @@ void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
         i++;
         ((u16 *)M2C_FIELD(&data_0212fc70, s32 *, 0x14))[v * 4 + 2] = (u16)v;
     }
-    t = func_0200751c();
+    t = OS_DisableInterrupts();
     if (func_02009eb0(6, (arg1 & 0xff) | 0x100 | 0x2000000, 0) < 0) {
         goto fail;
     }
@@ -290,7 +290,7 @@ void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
         goto okpath;
     }
 fail:
-    func_02007530(t);
+    OS_RestoreInterrupts(t);
     M2C_FIELD(&data_0212fc70, u16 *, 0x38) |= 2;
     if (M2C_FIELD(&data_0212fc70, void (**)(s32, s32, s32), 4)) {
         M2C_FIELD(&data_0212fc70, void (**)(s32, s32, s32), 4)(1, 4, 0);
@@ -299,16 +299,16 @@ fail:
 okpath:
     M2C_FIELD(&data_0212fc70, u16 *, 0x3a) |= 2;
     M2C_FIELD(&data_0212fc70, u16 *, 0x38) &= ~2;
-    func_02007530(t);
+    OS_RestoreInterrupts(t);
     return;
 }
 #pragma opt_instruction_scheduling reset
 void func_0200d95c(void) {
-s32 func_0200751c(void); void func_02007530(s32); s32 func_02009eb0(s32,u32,s32);
-s32 t=func_0200751c();s32 ok=(func_02009eb0(6,0x3000200,0)>=0);
-if(!ok) {func_02007530(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=4;
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02009eb0(s32,u32,s32);
+s32 t=OS_DisableInterrupts();s32 ok=(func_02009eb0(6,0x3000200,0)>=0);
+if(!ok) {OS_RestoreInterrupts(t);M2C_FIELD(&data_0212fc70,u16 *,0x38)|=4;
 if(M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4))M2C_FIELD(&data_0212fc70,void (**)(s32,s32,s32),4)(2,4,0);
-} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=4;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~4;func_02007530(t);}
+} else { M2C_FIELD(&data_0212fc70,u16 *,0x3a)|=4;M2C_FIELD(&data_0212fc70,u16 *,0x38)&=~4;OS_RestoreInterrupts(t);}
 }
 #pragma opt_instruction_scheduling reset
 u16 func_0200d9f4(void) {
@@ -318,8 +318,8 @@ u16 func_0200d9f4(void) {
 
 #pragma opt_instruction_scheduling off
 s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     volatile s16 *p = (volatile s16 *)arg0;
     s32 saved;
     s32 c;
@@ -331,7 +331,7 @@ s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, 
     if (arg3 >= 0x100 || arg7 >= 0x100 || arg4 >= 0xC0 || arg8 >= 0xC0) return 1;
     if (arg3 == arg7 || arg4 == arg8 || arg1 == arg5 || arg2 == arg6) return 1;
 
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = (s32)((arg1 - arg5) << 8);
     *(volatile s64 *)0x04000298 = (u32)(arg3 - arg7);
@@ -344,21 +344,21 @@ s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, 
     *(volatile s32 *)0x04000290 = dy << 8;
     *(volatile s64 *)0x04000298 = (u32)sy;
     if (r >= 0x8000 || r < -0x8000) {
-        func_02007530(saved);
+        OS_RestoreInterrupts(saved);
         return 1;
     }
     p[2] = (s16)r;
     c = (s32)((arg1 + arg5) << 8) - p[2] * (s32)(arg3 + arg7);
     c = (c << 9) >> 16;
     if (c >= 0x8000 || c < -0x8000) {
-        func_02007530(saved);
+        OS_RestoreInterrupts(saved);
         return 1;
     }
     p[0] = (s16)c;
     while (*(volatile u16 *)0x04000280 & 0x8000) {
     }
     r = *(volatile s32 *)0x040002A0;
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
     if (r >= 0x8000 || r < -0x8000) {
         return 1;
     }

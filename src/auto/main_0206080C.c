@@ -154,7 +154,7 @@ s32 func_02060afc(void *arg0,s32 arg1,s32 arg2){
 s32 func_02060b68(void *arg0,s32 arg1,s32 arg2){
  s32 func_02068d98(s32,void *);
  s32 func_0206ad38(void *);
- extern M2C_UNK data_02100078; extern u16 data_020ead40[];
+ extern M2C_UNK data_02100078; extern u16 gCharClassTable[];
  s8 *p,*q; u8 c; s32 v;
  if(!arg0)return arg2;
  if(!func_02068d98(arg1,&data_02100078))return func_02061088(arg0);
@@ -163,7 +163,7 @@ s32 func_02060b68(void *arg0,s32 arg1,s32 arg2){
  if(*p!='-')q=p;else q=p+1;
  c=*(u8 *)q;
  if((s32)c<0 || (s32)c>=128)v=0;
- else v=data_020ead40[c]&8;
+ else v=gCharClassTable[c]&8;
  if(!v)return arg2;
  return func_0206ad38(p);
 }

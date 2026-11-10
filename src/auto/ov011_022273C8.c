@@ -239,8 +239,8 @@ void func_ov011_02227ef0(void) {
 }
 
 s32 func_ov011_02227ef4(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

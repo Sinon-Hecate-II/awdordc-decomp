@@ -170,11 +170,11 @@ s32 func_ov000_021724cc(void *arg0, s32 arg1) {
 
 #pragma opt_strength_reduction off
 void *func_ov000_021724dc(void *arg0) {
-void *func_02082028(s32);
+void *MemAlloc(s32);
 s32 i,j,k; void *p,*q,*t;
 M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0;
 M2C_FIELD(arg0,s32 *,12)=0; M2C_FIELD(arg0,s32 *,16)=0; M2C_FIELD(arg0,u8 *,20)=0;
-p=func_02082028(0x11c);
+p=MemAlloc(0x11c);
 if(p){
 M2C_FIELD(p,s32 *,0)=1; M2C_FIELD(p,s32 *,4)=0; M2C_FIELD(p,s32 *,8)=0; i=0;
 q=(u8*)p+0x3c;
@@ -190,8 +190,8 @@ M2C_FIELD(arg0,void **,0x18)=p;func_ov000_02172754(arg0);return arg0;
 #pragma opt_strength_reduction reset
 
 void *func_ov000_021725c8(void *arg0) {
-    M2C_UNK func_02082040(s32);
-    func_02082040(M2C_FIELD(arg0, s32 *, 0x18));
+    M2C_UNK MemFree(s32);
+    MemFree(M2C_FIELD(arg0, s32 *, 0x18));
     return arg0;
 }
 

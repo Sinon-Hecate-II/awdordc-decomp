@@ -50,7 +50,7 @@ void func_ov003_021ee8b8(void *arg0) {
     M2C_UNK func_0208fe30(s32);
     s16 GetSpriteAnimValue(void *);
     
-    s32 func_ov003_021e6cac(u8, M2C_UNK, M2C_UNK);
+    s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6d28();
     M2C_UNK func_ov003_021e74ac(void *, M2C_UNK);
@@ -234,13 +234,13 @@ foundPlayer:
             M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-                if (func_ov003_021e6cac((u8) temp_r0_3, 0, 3) != 0) {
+                if (InRange((u8) temp_r0_3, 0, 3) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 4, 7) != 0) {
+                } else if (InRange((u8) temp_r0_3, 4, 7) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 8, 0x14) != 0) {
+                } else if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 0x15, 0x18) != 0) {
+                } else if (InRange((u8) temp_r0_3, 0x15, 0x18) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
                 } else if ((u8) temp_r0_3 == 0x19) {
                     temp_r0_4 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;

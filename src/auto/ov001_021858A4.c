@@ -103,7 +103,7 @@ s32 func_ov001_02185bf4(s32 arg0){
 void *func_ov001_0218b6f8(s32,s32);u64 func_02007004(void);
 s32 func_02012218(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02011af8(void *);u16 func_02011e98(void);void func_02007740(void *);
-void func_02008048(void *,void *,s32);s32 func_ov001_02185d78(void);
+void MI_CpuCopy8(void *,void *,s32);s32 func_ov001_02185d78(void);
 M2C_UNK func_ov001_0218c884(M2C_UNK,void (*)(void),M2C_UNK,M2C_UNK);
 M2C_UNK func_ov001_0218b71c(M2C_UNK);
 void func_ov001_02185ea8();void func_ov001_0218619c();
@@ -126,9 +126,9 @@ p=*state;
 }
 M2C_FIELD(data_ov001_02193e14,u16 *,0x137c)=func_02011e98();
 func_02007740(buf);
-func_02008048((void *)data_ov001_0218fbf0,(u8 *)data_ov001_02193e14+0x1388,8);
+MI_CpuCopy8((void *)data_ov001_0218fbf0,(u8 *)data_ov001_02193e14+0x1388,8);
 M2C_FIELD(data_ov001_02193e14,u8 *,0x1391)=1;
-func_02008048(buf+4,(u8 *)data_ov001_02193e14+0x1394,M2C_FIELD(buf,u16 *,0x1a)<<1);
+MI_CpuCopy8(buf+4,(u8 *)data_ov001_02193e14+0x1394,M2C_FIELD(buf,u16 *,0x1a)<<1);
 if(func_ov001_02185d78()){
 M2C_FIELD(data_ov001_02193e14,M2C_UNK *,0x1b90)=func_ov001_0218c884(0,func_ov001_0218619c,0,0x78);
 return 1;
@@ -196,7 +196,7 @@ case 4:func_ov001_02185d78();break;default:func_02007958(p);break;}
 void func_ov001_02185f38(u16 *arg0) {
     void func_020067a8(void *, s32);
     s32 func_0206527c(void *, const void *, s32);
-    void func_02008048(void *, void *, s32);
+    void MI_CpuCopy8(void *, void *, s32);
     extern void *data_ov001_02193e14;
     extern const u8 data_ov001_0218fbf0[];
     extern const u8 data_ov001_0218fbe8[];
@@ -226,7 +226,7 @@ void func_ov001_02185f38(u16 *arg0) {
         slot = base + 0x1300;
         for (k = 0; k < 16; k++) {
             if (func_0206527c(slot, data_ov001_0218fbe8, 6) == 0) {
-                func_02008048(rec + 4, base + 0x1300 + k * 7, 6);
+                MI_CpuCopy8(rec + 4, base + 0x1300 + k * 7, 6);
                 *(u8 *)((u8 *)data_ov001_02193e14 + k * 7 + 0x1306) = (rec[0x15] & 1) ? 1 : 0;
                 break;
             }

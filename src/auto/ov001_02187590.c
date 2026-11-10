@@ -20,23 +20,23 @@ u16 func_ov001_021878c8(void) {
 u16 func_ov001_021878dc(s32 arg0){extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];s16 *q=data_ov001_02193e1c;data_ov001_02190c68[0]=(u16*)(q+1);data_ov001_02190c68[1]=(u16*)(q+2);data_ov001_02190c68[2]=(u16*)(q+3);data_ov001_02190c68[3]=(u16*)(q+4);data_ov001_02190c68[4]=(u16*)(q+5);data_ov001_02190c68[5]=(u16*)(q+6);return *data_ov001_02190c68[arg0];}
 #pragma scheduling off
 s32 func_ov001_02187934(s32 arg0) {
-    void *func_0200751c(s32);
-    void func_02007530(void *);
-    s32 func_02008048(void *, void *, s32);
+    void *OS_DisableInterrupts(s32);
+    void OS_RestoreInterrupts(void *);
+    s32 MI_CpuCopy8(void *, void *, s32);
     extern s16 *data_ov001_02193e1c;
     u16 buf[7];
     s16 *gp;
     u16 mask;
     void *r;
-    r = func_0200751c(arg0);
+    r = OS_DisableInterrupts(arg0);
     gp = data_ov001_02193e1c;
     mask = 1 << arg0;
     if (!((u16)gp[1] & mask)) {
-        func_02007530(r);
+        OS_RestoreInterrupts(r);
         return 0;
     }
-    func_02008048(gp, buf, 14);
-    func_02007530(r);
+    MI_CpuCopy8(gp, buf, 14);
+    OS_RestoreInterrupts(r);
     if (buf[2] & mask) return 2;
     if (buf[3] & mask) return 3;
     if (buf[4] & mask) return 4;

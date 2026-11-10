@@ -1,6 +1,6 @@
 /* 35 functions from 0x02043E10 to 0x02044E04 (main), found by ds-decomp. */
 #include "common.h"
-void func_02008048(void *,void *,s32);
+void MI_CpuCopy8(void *,void *,s32);
 
 s32 func_02043e10(M2C_UNK arg0, M2C_UNK arg1, void *arg2, s32 arg3) {
     (void) arg0;
@@ -17,11 +17,11 @@ s32 func_020441e8(s32 arg0) {
     if (arg0 != 0) {
         return 1;
     }
-    if (M2C_FIELD(func_02044268(), u8 *, 0x15) != 3) {
-        temp_r0 = func_02044268();
+    if (M2C_FIELD(GetConnection(), u8 *, 0x15) != 3) {
+        temp_r0 = GetConnection();
         M2C_FIELD(temp_r0, u8 *, 0x17D) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x17D) + 1);
     }
-    if ((M2C_FIELD(func_02044268(), u8 *, 0x15) == 3) || ((u32) M2C_FIELD(func_02044268(), u8 *, 0x17D) >= 5U)) {
+    if ((M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) || ((u32) M2C_FIELD(GetConnection(), u8 *, 0x17D) >= 5U)) {
         func_0203dc38(6, 0xFFFEAE6C);
         return 0;
     }
@@ -29,18 +29,18 @@ s32 func_020441e8(s32 arg0) {
 }
 
 void func_02044258(s32 arg0) {
-    extern M2C_UNK data_0213d39c;
-    M2C_FIELD(&data_0213d39c, s32 *, 4) = arg0;
+    extern M2C_UNK gConnectionMgr;
+    M2C_FIELD(&gConnectionMgr, s32 *, 4) = arg0;
 }
 
-s32 func_02044268(void) {
-    extern M2C_UNK data_0213d39c;
-    return M2C_FIELD(&data_0213d39c, s32 *, 4);
+s32 GetConnection(void) {
+    extern M2C_UNK gConnectionMgr;
+    return M2C_FIELD(&gConnectionMgr, s32 *, 4);
 }
 
-void func_02044278(s32 arg0) {
- extern M2C_UNK data_0213d39c;
- M2C_FIELD(M2C_FIELD(&data_0213d39c, void **, 4), s32 *, 0x1A0) = arg0;
+void SetConnectionState(s32 arg0) {
+ extern M2C_UNK gConnectionMgr;
+ M2C_FIELD(M2C_FIELD(&gConnectionMgr, void **, 4), s32 *, 0x1A0) = arg0;
 }
 
 void func_0204428c(M2C_UNK arg0) {
@@ -176,7 +176,7 @@ void func_0204467c(void *arg0, s16 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg2;
 }
 
-u16 func_020446ac(void *a){void func_02008048(void *,void *,s32);s32 func_0206527c(void *,void *,s32);extern M2C_UNK data_020fca34;u16 buf[4];func_02008048(a,buf,8);if(func_0206527c(&buf[3],&data_020fca34,2)==0)return buf[2];return 0;}
+u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 func_0206527c(void *,void *,s32);extern M2C_UNK data_020fca34;u16 buf[4];MI_CpuCopy8(a,buf,8);if(func_0206527c(&buf[3],&data_020fca34,2)==0)return buf[2];return 0;}
 
 s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 
@@ -282,7 +282,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
     }
 }
 
-void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4(s32);void func_02008048(void *,void *,s32);u64 func_02007004(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(data_0213db14+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;func_02008048((void *)b,q,c);cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=func_02007004();}
+void func_02044b5c(s32 a,s32 b,s32 c){extern s32 data_0213db14;s32 func_020390b4(s32);void MI_CpuCopy8(void *,void *,s32);u64 func_02007004(void);s32 i;void *p;void *q;void (*cb)(s32,void *,s32);i=func_020390b4(a);p=(void *)(data_0213db14+i*0x30);q=M2C_FIELD(p,void **,4);if(!q)return;if(M2C_FIELD(p,s32 *,8)<c)return;MI_CpuCopy8((void *)b,q,c);cb=M2C_FIELD(data_0213db14,void (**)(s32,void *,s32),0x604);if(cb)cb(i,M2C_FIELD(p,void **,4),c);if(!M2C_FIELD(data_0213db14,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;M2C_FIELD(p,u64 *,0x24)=func_02007004();}
 
 void func_02044bf8(s32 a,s32 b,s32 c) {
 extern s32 data_0213db14;
@@ -293,7 +293,7 @@ v=func_020446ac(b);
 switch(v){
 case 1:
 if(c!=8)return;
-func_02008048(b,buf,8);
+MI_CpuCopy8(b,buf,8);
 M2C_FIELD(p,s32 *,0x18)=*(s32 *)buf;
 M2C_FIELD(p,s32 *,0x10)=0;
 if(!M2C_FIELD(p,s32 *,4))goto state3;
@@ -309,13 +309,13 @@ M2C_FIELD(p,u16 *,0x22)=v;
 }
 
 void func_02044cc0(s32 a,void *b,s32 c){
-extern s32 data_0213db14; s32 func_02044a24(s32); void func_02008048(void *,void *,s32);void func_02037638(s32,s32);u64 func_02007004(void);
+extern s32 data_0213db14; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void func_02037638(s32,s32);u64 func_02007004(void);
 void *p;void (*cb)(s32,void *,s32);s32 pos,len;
 p=(void *)(data_0213db14+a*0x30);
 if(func_02044a24(a)==2){
 pos=M2C_FIELD(p,s32 *,0x10);
 if(pos+c>M2C_FIELD(p,s32 *,8)){func_02037638(6,0xfffe82ac);return;}
-func_02008048(b,M2C_FIELD(p,u8 **,4)+pos,c);
+MI_CpuCopy8(b,M2C_FIELD(p,u8 **,4)+pos,c);
 }
 M2C_FIELD(p,s32 *,0x10)+=c;
 len=M2C_FIELD(p,s32 *,0x18);

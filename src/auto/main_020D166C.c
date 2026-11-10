@@ -184,10 +184,10 @@ void func_020d1c38(void) {
 }
 
 void func_020d1c58(void){
-extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 void func_020cd8a8(void);void func_020cd754(s32);void func_020d0270(void);void func_020cea28(void);
 M2C_FIELD(*gCurrentMap,u16 *,0x52a6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4)<<5;
-M2C_FIELD(*gCurrentMap,u16 *,0x52a8)=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)];
+M2C_FIELD(*gCurrentMap,u16 *,0x52a8)=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)];
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
 func_020cd8a8();func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));func_020d0270();func_020cea28();
 }

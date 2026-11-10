@@ -211,13 +211,13 @@ s32 func_020d29a8(M2C_UNK arg0) {
 }
 
 s32 func_020d2a00(s32 arg0) {
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern s32 *gCurrentMap;
     s32 end;
     s32 i;
 
-    i = data_ov000_021aeef4[arg0] + 1;
-    end = data_ov000_021aeef4[arg0] + 0x33;
+    i = gPlayerUnitIdBase[arg0] + 1;
+    end = gPlayerUnitIdBase[arg0] + 0x33;
     if (i < end) {
         u8 *p = (u8 *)*gCurrentMap + 0x59A4 + i * 14;
         do {
@@ -386,7 +386,7 @@ void func_020d2d90(s32 arg0) {
 }
 
 s32 func_020d2dcc(s32 arg0) {
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern s32 *gCurrentMap;
     s32 val;
     s32 end;
@@ -394,7 +394,7 @@ s32 func_020d2dcc(s32 arg0) {
     u8 *base;
     u8 *p;
 
-    val = data_ov000_021aeef4[arg0];
+    val = gPlayerUnitIdBase[arg0];
     i = val + 1;
     end = val + 0x33;
     if (i < end) {
@@ -414,7 +414,7 @@ s32 func_020d2dcc(s32 arg0) {
 #pragma opt_common_subs on
 void *func_020d2e3c(u16 arg0) {
 extern s32 *gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 register s32 start;
 u32 teamOffset;
 s32 *map;
@@ -426,7 +426,7 @@ u16 x;
 SelectionUnit *units;
 map=gCurrentMap;
 base=(u8 *)*map;
-team=data_ov000_021aeef4[arg0];
+team=gPlayerUnitIdBase[arg0];
 start=*(s16 *)(base+0x52c0)+1;
 current=(s16 *)(base+0x52c0);
 x=start;

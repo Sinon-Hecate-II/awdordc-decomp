@@ -119,69 +119,70 @@ break;
 return 0;
 }
 
-void func_020b2a50(void *arg0) {
+/* Updates animated scrolling/panning state and interpolates position using easing */
+void func_020b2a50(void *context) {
     s32 func_020b1b1c(void *, s32);
     s16 EaseInterpolate(s32, s16, s16, s32, s32);
-    void (*cb)(void *);
+    void (*callback)(void *);
     s16 timer;
-    u16 unk1e;
+    u16 duration;
 
-    switch (M2C_FIELD(arg0, u8 *, 4)) {
+    switch (M2C_FIELD(context, u8 *, 4)) {
     case 0:
-        M2C_FIELD(arg0, u8 *, 4) = 1;
-        M2C_FIELD(arg0, u16 *, 0xE) = 0;
-        if (func_020b1b1c(arg0, 4) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = (s16)(0 - M2C_FIELD(arg0, s16 *, 0x18));
+        M2C_FIELD(context, u8 *, 4) = 1;
+        M2C_FIELD(context, u16 *, 0xE) = 0;
+        if (func_020b1b1c(context, 4) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = (s16)(0 - M2C_FIELD(context, s16 *, 0x18));
         }
-        if (func_020b1b1c(arg0, 8) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = 0x100;
+        if (func_020b1b1c(context, 8) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = 0x100;
         }
-        if (func_020b1b1c(arg0, 0x10) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 8) = (s16)(0 - M2C_FIELD(arg0, s16 *, 0x1A));
+        if (func_020b1b1c(context, 0x10) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 8) = (s16)(0 - M2C_FIELD(context, s16 *, 0x1A));
         }
-        if (func_020b1b1c(arg0, 0x20) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 8) = 0xC0;
+        if (func_020b1b1c(context, 0x20) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 8) = 0xC0;
         }
-        if ((s16)M2C_FIELD(arg0, u16 *, 0xE) == 0) {
+        if ((s16)M2C_FIELD(context, u16 *, 0xE) == 0) {
             return;
         }
         break;
     case 3:
-        M2C_FIELD(arg0, u8 *, 4) = 4;
-        M2C_FIELD(arg0, u16 *, 0xE) = 0;
-        if (func_020b1b1c(arg0, 0x40) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 8) = M2C_FIELD(arg0, s16 *, 0x16);
-            M2C_FIELD(arg0, s16 *, 0xA) = (s16)(0 - M2C_FIELD(arg0, s16 *, 0x18));
-            M2C_FIELD(arg0, s16 *, 0xC) = M2C_FIELD(arg0, s16 *, 0x16);
+        M2C_FIELD(context, u8 *, 4) = 4;
+        M2C_FIELD(context, u16 *, 0xE) = 0;
+        if (func_020b1b1c(context, 0x40) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
+            M2C_FIELD(context, s16 *, 0xA) = (s16)(0 - M2C_FIELD(context, s16 *, 0x18));
+            M2C_FIELD(context, s16 *, 0xC) = M2C_FIELD(context, s16 *, 0x16);
         }
-        if (func_020b1b1c(arg0, 0x80) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 8) = M2C_FIELD(arg0, s16 *, 0x16);
-            M2C_FIELD(arg0, s16 *, 0xA) = 0x100;
-            M2C_FIELD(arg0, s16 *, 0xC) = M2C_FIELD(arg0, s16 *, 0x16);
+        if (func_020b1b1c(context, 0x80) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
+            M2C_FIELD(context, s16 *, 0xA) = 0x100;
+            M2C_FIELD(context, s16 *, 0xC) = M2C_FIELD(context, s16 *, 0x16);
         }
-        if (func_020b1b1c(arg0, 0x100) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 8) = M2C_FIELD(arg0, s16 *, 0x16);
-            M2C_FIELD(arg0, s16 *, 0xA) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 0xC) = (s16)(0 - M2C_FIELD(arg0, s16 *, 0x1A));
+        if (func_020b1b1c(context, 0x100) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
+            M2C_FIELD(context, s16 *, 0xA) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 0xC) = (s16)(0 - M2C_FIELD(context, s16 *, 0x1A));
         }
-        if (func_020b1b1c(arg0, 0x200) != 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = M2C_FIELD(arg0, u16 *, 0x1E);
-            M2C_FIELD(arg0, s16 *, 6) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 8) = M2C_FIELD(arg0, s16 *, 0x16);
-            M2C_FIELD(arg0, s16 *, 0xA) = M2C_FIELD(arg0, s16 *, 0x14);
-            M2C_FIELD(arg0, s16 *, 0xC) = 0xC0;
+        if (func_020b1b1c(context, 0x200) != 0) {
+            M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
+            M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
+            M2C_FIELD(context, s16 *, 0xA) = M2C_FIELD(context, s16 *, 0x14);
+            M2C_FIELD(context, s16 *, 0xC) = 0xC0;
         }
-        if ((s16)M2C_FIELD(arg0, u16 *, 0xE) == 0) {
+        if ((s16)M2C_FIELD(context, u16 *, 0xE) == 0) {
             return;
         }
         break;
@@ -189,40 +190,40 @@ void func_020b2a50(void *arg0) {
         break;
     }
 
-    switch (M2C_FIELD(arg0, u8 *, 4)) {
+    switch (M2C_FIELD(context, u8 *, 4)) {
     case 1:
-        timer = (s16)M2C_FIELD(arg0, u16 *, 0xE);
+        timer = (s16)M2C_FIELD(context, u16 *, 0xE);
         if (timer > 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = (u16)(timer - 1);
+            M2C_FIELD(context, u16 *, 0xE) = (u16)(timer - 1);
         } else {
-            M2C_FIELD(arg0, u16 *, 0xE) = 0;
-            M2C_FIELD(arg0, u8 *, 4) = 2;
+            M2C_FIELD(context, u16 *, 0xE) = 0;
+            M2C_FIELD(context, u8 *, 4) = 2;
         }
-        unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x14) = EaseInterpolate(5, M2C_FIELD(arg0, s16 *, 6),
-            M2C_FIELD(arg0, s16 *, 0xA), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
-        unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x16) = EaseInterpolate(5, M2C_FIELD(arg0, s16 *, 8),
-            M2C_FIELD(arg0, s16 *, 0xC), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
+        duration = M2C_FIELD(context, u16 *, 0x1E);
+        M2C_FIELD(context, s16 *, 0x14) = EaseInterpolate(5, M2C_FIELD(context, s16 *, 6),
+            M2C_FIELD(context, s16 *, 0xA), duration - (s16)M2C_FIELD(context, u16 *, 0xE), (s32)duration);
+        duration = M2C_FIELD(context, u16 *, 0x1E);
+        M2C_FIELD(context, s16 *, 0x16) = EaseInterpolate(5, M2C_FIELD(context, s16 *, 8),
+            M2C_FIELD(context, s16 *, 0xC), duration - (s16)M2C_FIELD(context, u16 *, 0xE), (s32)duration);
         return;
     case 4:
-        timer = (s16)M2C_FIELD(arg0, u16 *, 0xE);
+        timer = (s16)M2C_FIELD(context, u16 *, 0xE);
         if (timer <= 0) {
-            M2C_FIELD(arg0, u16 *, 0xE) = 0;
-            M2C_FIELD(arg0, u8 *, 4) = 5;
-            cb = M2C_FIELD(arg0, void (**)(void *), 0x38);
-            if (cb != NULL) {
-                cb(arg0);
+            M2C_FIELD(context, u16 *, 0xE) = 0;
+            M2C_FIELD(context, u8 *, 4) = 5;
+            callback = M2C_FIELD(context, void (**)(void *), 0x38);
+            if (callback != NULL) {
+                callback(context);
             }
         } else {
-            M2C_FIELD(arg0, u16 *, 0xE) = (u16)(timer - 1);
+            M2C_FIELD(context, u16 *, 0xE) = (u16)(timer - 1);
         }
-        unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x14) = EaseInterpolate(2, M2C_FIELD(arg0, s16 *, 6),
-            M2C_FIELD(arg0, s16 *, 0xA), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
-        unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x16) = EaseInterpolate(2, M2C_FIELD(arg0, s16 *, 8),
-            M2C_FIELD(arg0, s16 *, 0xC), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
+        duration = M2C_FIELD(context, u16 *, 0x1E);
+        M2C_FIELD(context, s16 *, 0x14) = EaseInterpolate(2, M2C_FIELD(context, s16 *, 6),
+            M2C_FIELD(context, s16 *, 0xA), duration - (s16)M2C_FIELD(context, u16 *, 0xE), (s32)duration);
+        duration = M2C_FIELD(context, u16 *, 0x1E);
+        M2C_FIELD(context, s16 *, 0x16) = EaseInterpolate(2, M2C_FIELD(context, s16 *, 8),
+            M2C_FIELD(context, s16 *, 0xC), duration - (s16)M2C_FIELD(context, u16 *, 0xE), (s32)duration);
         return;
     }
 }

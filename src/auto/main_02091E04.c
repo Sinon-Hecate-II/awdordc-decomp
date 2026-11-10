@@ -1,6 +1,6 @@
 /* 71 functions from 0x02091E04 to 0x02092DF4 (main), found by ds-decomp. */
 #include "common.h"
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern void **gCurrentMap;
 
 u8 func_02091e04(void) {
@@ -307,7 +307,7 @@ s32 func_0207b764(s16,s16);
 s32 i,limit; void *p,*entry; u8 (*entries)[14]; u32 bits;
 if(!func_0209600c()){
 p=M2C_FIELD(arg0,void **,4);
-for(i=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+1;i<data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+0x33;i++){
+for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
 entries=(void *)((u8 *)*gCurrentMap+0x59a4);
 entry=entries[i];
 bits=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;

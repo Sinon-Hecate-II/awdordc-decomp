@@ -238,13 +238,13 @@ return 0;
 
 void func_020329d0(void) {
 M2C_UNK func_0200654c(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
-s32 func_02005d90(void *); M2C_UNK func_02005e5c(void *); void func_02032d84(void);
+s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void func_02032d84(void);
 extern M2C_UNK data_0213d114; extern M2C_UNK data_0213d11c;
 func_0200654c(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
 M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x13f0)=0;
 if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1384)!=0 && func_02005d90(M2C_FIELD(&data_0213d114,void **,8)+0x1318)==0)return;
 func_02005ac0(M2C_FIELD(&data_0213d114,void **,8)+0x1318,func_02032d84,&data_0213d11c,M2C_FIELD(&data_0213d114,void **,8)+0x1000,0x1000,0x10);
-func_02005e5c(M2C_FIELD(&data_0213d114,void **,8)+0x1318);
+TaskWake(M2C_FIELD(&data_0213d114,void **,8)+0x1318);
 }
 
 void func_02032a84(void) {
@@ -291,7 +291,7 @@ return result;
 
 void func_02032be4(void *arg0) {
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0213d114;
 
     void *p = M2C_FIELD(&data_0213d114, void **, 8);
@@ -299,7 +299,7 @@ void func_02032be4(void *arg0) {
         func_02007f8c(arg0, 0, 0x1C4);
     }
         p = M2C_FIELD(&data_0213d114, void **, 8);
-        func_02008048((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
+        MI_CpuCopy8((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
     {
         s32 v = M2C_FIELD(arg0, s32 *, 0);
         if (v < 0x4E20 || v >= 0x7530) {

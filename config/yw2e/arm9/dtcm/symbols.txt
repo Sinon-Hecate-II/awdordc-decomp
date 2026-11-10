@@ -13,7 +13,7 @@ data_027e009c kind:data(any) addr:0x027e009c
 data_027e00a4 kind:data(any) addr:0x027e00a4
 data_027e00ac kind:data(any) addr:0x027e00ac
 data_027e00b4 kind:data(any) addr:0x027e00b4
-data_027e00bc kind:data(any) addr:0x027e00bc
+g3DSpriteBankMain kind:data(any) addr:0x027e00bc
 data_027e00c0 kind:data(any) addr:0x027e00c0
 g3DSpriteEngineSub kind:data(any) addr:0x027e00c4
 g3DSpriteEngineMain kind:data(any) addr:0x027e00c8

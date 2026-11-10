@@ -178,8 +178,8 @@ return 1;
 #pragma opt_common_subs off
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
- extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];extern u8 data_ov000_021df7e4[];extern u8 *data_ov000_021df580;
- void func_01ffada0();void func_01ffb9c4();s32 func_ov000_021a9934();s32 func_0207c8ec();s32 func_ov000_021a8fc0(s16);s32 func_ov000_02189248(u8 *,s16 *);void func_ov000_02199d74();void func_ov000_0218a9ac();void func_ov000_02189a08();
+ extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *data_ov000_021df580;
+ void func_01ffada0();void func_01ffb9c4();s32 func_ov000_021a9934();s32 func_0207c8ec();s32 func_ov000_021a8fc0(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
@@ -187,8 +187,8 @@ void func_ov000_021895bc(void){
  func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,1);
  func_01ffb9c4(111);
  map=*gCurrentMap;
- index=data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+1;
- if(index<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51){offset=index*14;do{
+ index=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
+ if(index<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){offset=index*14;do{
  unit=(u8 *)map+0x59a4+offset;
  n=(u32)(unit[0]<<26)>>26;if(!n)goto next;
  if(M2C_FIELD(unit,u16 *,4)&8)goto next;
@@ -217,7 +217,7 @@ void func_ov000_021895bc(void){
  }
  if(best>=score){best=score;bestx=unit[1];besty=unit[2];}
  next:index++;offset+=14;map=*gCurrentMap;
- }while(index<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51); }
+ }while(index<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51); }
  if(bestx!=-1){
  unit=(u8 *)map+0x59a4+M2C_FIELD(map,u8 *,bestx+M2C_FIELD(map+besty*2,u16 *,0x3758))*14;
  if(func_ov000_02189248(unit,out)==1){
@@ -226,9 +226,9 @@ void func_ov000_021895bc(void){
  data_ov000_021df7e4[n&63]++;
  ux=out[0];uy=out[1];map=*gCurrentMap;
  if(M2C_FIELD(map,u8 *,ux+M2C_FIELD(map+uy*2,u16 *,0x3758))==0&&M2C_FIELD(M2C_FIELD(map+uy*4,s8 **,0x52e8),s8 *,ux)<=data_ov000_021df580[5]){
- func_ov000_02199d74(ux,uy,2,0,0);return;
+ SetMapCursor(ux,uy,2,0,0);return;
  }
- func_ov000_0218a9ac(ux,uy);return;
+ PlanMoveDestination(ux,uy);return;
  }
  }
  func_ov000_02189a08();

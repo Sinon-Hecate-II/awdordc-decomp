@@ -64,7 +64,7 @@ func_020067c4(arg1,arg2); func_020112b4(17,arg0); r=((s32 (*)(s32,s32,void *,u32
 }
 
 s32 func_02012e74(s32 arg0,void *arg1,void *arg2,u32 arg3) {
- void *func_02011440(); s32 func_020114b4(s32,s32); s32 func_020067a8(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32); void func_02008048(void *,void *,u32);
+ void *func_02011440(); s32 func_020114b4(s32,s32); s32 func_020067a8(s32,s32); void func_020067c4(void *,u32); s32 func_020112b4(s32,s32); s32 func_02011324(s32,s32); void MI_CpuCopy8(void *,void *,u32);
  u32 buf[2]; void *p; s32 r;
  p=func_02011440();r=func_020114b4(1,11);if(r)return r;
  func_020067a8(M2C_FIELD(p,void **,4)+16,4);
@@ -72,7 +72,7 @@ s32 func_02012e74(s32 arg0,void *arg1,void *arg2,u32 arg3) {
  if(arg3>1508)return 6;
  func_020067c4(arg2,arg3);
  func_020112b4(18,arg0);
- func_02008048(arg1,buf,6);
+ MI_CpuCopy8(arg1,buf,6);
  r=((s32 (*)(s32,s32,u32,u32,void *,u32))func_02011324)(18,4,buf[0],buf[1],arg2,arg3);
  if(!r)r=2;return r;
 }
@@ -274,7 +274,7 @@ void func_02013590(void *p) {
 
 void func_02013668(void *p) {
 void func_02013888(void *,u32,void *);
-s32 func_0200751c(void);void func_02007530(s32);void func_02013954(void *,s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02013954(void *,s32);
 void *q=M2C_FIELD(p,void **,0x1c);s32 bit,irq;u32 one=1;u16 slot;
 if(!q)return;
 if(M2C_FIELD(p,u16 *,2)==0) {
@@ -283,11 +283,11 @@ case 21:func_02013888(q,M2C_FIELD(p,u16 *,0x12),M2C_FIELD(p,void **,12));func_02
 case 7:func_02013954(q,0);break;
 case 25:break;
 case 9:case 26:
-bit=M2C_FIELD(p,u16 *,0x12);irq=func_0200751c();
+bit=M2C_FIELD(p,u16 *,0x12);irq=OS_DisableInterrupts();
 slot=M2C_FIELD(q,u16 *,0x808);
 ((u16 (*)[256])q)[slot][0]&=~(one<<bit);
 if(M2C_FIELD(q,u16 *,0x818)==one){slot=(slot+1)&3;((u16 (*)[256])q)[slot][0]&=~(one<<bit);}
-func_02007530(irq);func_02013954(q,0);
+OS_RestoreInterrupts(irq);func_02013954(q,0);
 if(M2C_FIELD(q,u16 *,0x818)==one)func_02013954(q,0);
 break;
 }
@@ -316,7 +316,7 @@ break;
 }
 
 void func_02013888(void *p,u32 index,void *src) {
- void func_02007e20(void *,void *,u32);void func_02007df8(s32,void *,u32);s32 func_0200751c(void);void func_02007530(s32);
+ void func_02007e20(void *,void *,u32);void func_02007df8(s32,void *,u32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
  u16 mask=1<<index; u16 slot; void *dst; s32 irq;
  if(!(M2C_FIELD(p,u16 *,0x80e)&mask))return;
  slot=M2C_FIELD(p,u16 *,0x808);
@@ -328,16 +328,16 @@ void func_02013888(void *p,u32 index,void *src) {
  dst=(void *)func_02013afc(p,M2C_FIELD(p,u16 *,0x80e),(s32)&((u16 (*)[256])p)[slot][2],index);
  if(src)func_02007e20(src,dst,M2C_FIELD(p,u16 *,0x810));
  else func_02007df8(0,dst,M2C_FIELD(p,u16 *,0x810));
- irq=func_0200751c();
+ irq=OS_DisableInterrupts();
  M2C_FIELD(p,u16 *,slot<<9)&=~mask;
  ((u16 (*)[256])((u8 *)p+2))[slot][0]|=mask;
- func_02007530(irq);
+ OS_RestoreInterrupts(irq);
 }
 
 void func_02013954(void *p,s32 flag) {
-s32 func_0200751c(void);void func_02007530(s32);s32 func_02011994(void);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 func_02011994(void);
 void func_02007df8(s32,void *,u32);
-s32 irq=func_0200751c();s32 clear,next,old,mask,r;
+s32 irq=OS_DisableInterrupts();s32 clear,next,old,mask,r;
 if(((u16 (*)[256])p)[M2C_FIELD(p,u16 *,0x808)][0]==0){
 mask=func_02011994();
 old=M2C_FIELD(p,u16 *,0x808);next=(old+1)&3;
@@ -347,12 +347,12 @@ func_02007df8(0,p+(clear<<9),512);
 M2C_FIELD(p,u16 *,0x808)=next;
 ((u16 (*)[256])p)[old][0]=M2C_FIELD(p,u16 *,0x80e);
 if(flag==1)((u16 (*)[256])p)[old][0]&=~1;
-func_02007530(irq);
+OS_RestoreInterrupts(irq);
 r=func_02012c28((s32)func_02013590,(s32)p,p+(old<<9),M2C_FIELD(p,u16 *,0x814),(u16)(M2C_FIELD(p,u16 *,0x80e)&mask),M2C_FIELD(p,u16 *,0x816),1);
 if(r==7){M2C_FIELD(p+old*2,u16 *,0x800)=0xffff;M2C_FIELD(p,u16 *,0x80a)=(M2C_FIELD(p,u16 *,0x80a)+1)&3;return;}
 if(r==0||r==2)return;
 M2C_FIELD(p,u16 *,0x81c)=5;
-}else func_02007530(irq);
+}else OS_RestoreInterrupts(irq);
 }
 
 #pragma scheduling off

@@ -60,14 +60,14 @@ arg0->count++;
 }
 
 void func_02074aec(List_02074920 *arg0,s32 arg1) {
-void func_02008048(void *,void *,u32);
+void MI_CpuCopy8(void *,void *,u32);
 Entry_02074920 *p; u32 i,n;
 n=arg0->count; i=0; p=arg0->entries;
 for(;i<n;i++,p++) {
 if(arg1==p->id) {
 if(i<n-1) {
 Entry_02074920 *q=&arg0->entries[i];
-do {func_02008048(q+1,q,40); i++; q++;} while(i<arg0->count-1);
+do {MI_CpuCopy8(q+1,q,40); i++; q++;} while(i<arg0->count-1);
 }
 arg0->count--; return;
 }
@@ -76,7 +76,7 @@ arg0->count--; return;
 
 /* Sorts the entry list by kind and id using bubble sort. */
 u32 func_02074b84(List_02074920 *list) {
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     u32 i;
     Entry_02074920 *cur;
     u32 j;
@@ -103,9 +103,9 @@ u32 func_02074b84(List_02074920 *list) {
                 u8 nextKind = (cur + 1)->kind;
                 u8 curKind = cur->kind;
                 if (((u32)curKind > (u32)nextKind) || (curKind == nextKind && cur->id > (cur + 1)->id)) {
-                    func_02008048(cur, scratch, 0x28);
-                    func_02008048(cur + 1, cur, 0x28);
-                    func_02008048(scratch, cur + 1, 0x28);
+                    MI_CpuCopy8(cur, scratch, 0x28);
+                    MI_CpuCopy8(cur + 1, cur, 0x28);
+                    MI_CpuCopy8(scratch, cur + 1, 0x28);
                 }
                 i = i + 1;
                 limit = list->count - 1;
@@ -177,7 +177,7 @@ func_0200fe6c(low); func_020055f4(low); return result;
 void func_02074dec(s32 arg0){
 void *func_020e34bc(u32);void func_020e35cc(void *);s32 func_0200558c(void);void func_020055f4(u8);void func_0200fe5c(u16);void func_0200fe6c(u8);
 s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 func_020747ec(void *,u16);
-void func_02007ef4(void *,void *,u32);void func_02007e98(s32,void *,u32);void func_02007f8c(void *,s32,u32);void func_02008048(void *,void *,u32);
+void func_02007ef4(void *,void *,u32);void func_02007e98(s32,void *,u32);void func_02007f8c(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
 buf=func_020e34bc(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
 id=func_0200558c();low=id;i=0;p=a;off=0;off20=20;off256=256;
@@ -208,7 +208,7 @@ if(selected==-1){a[0x2051]=1;M2C_FIELD((unsigned short)a,s32*,0xc00)=-1;M2C_FIEL
 goto found;
 fail:func_020055f4(low);func_020e35cc(buf);return;
 found:a[0x2051]=0;func_0200fe5c(low);ok=func_0201033c((selected<<10)+(page<<8),(s32 *)buf,256,0,0,0,6,1,0)!=0;func_0200fe6c(low);
-if(ok==1){M2C_FIELD(a,s32*,0xc00)=selected;M2C_FIELD(a,s32*,0xc04)=page;M2C_FIELD(a,u32*,0xc08)=stamp;func_02008048(buf+20,a+0xc0c,64);}else{a[0x2052]=1;goto fail;}
+if(ok==1){M2C_FIELD(a,s32*,0xc00)=selected;M2C_FIELD(a,s32*,0xc04)=page;M2C_FIELD(a,u32*,0xc08)=stamp;MI_CpuCopy8(buf+20,a+0xc0c,64);}else{a[0x2052]=1;goto fail;}
 func_020055f4(low);func_020e35cc(buf);
 mask=invalid-65536;for(i=0,p=a;i<256;i++,p+=12){rank=(a[0xc0c+(i>>2)]>>((i&3)*2))&3;if(rank==3&&p[6]==0){a[0xc0c+(i>>2)]&=(mask^(3<<((i&3)*2)));a[0x2053]=1;}}
 count=(u32 *)(a+0x204c);M2C_FIELD(a,u32*,0x204c)=0;mask=invalid-65536;
@@ -227,7 +227,7 @@ if(ok == 0){a[0x2052]=1;func_02007e98(0,((u8 *)((List_02074920 *)(a+0xc4c))->ent
 
 void func_020753f8(void *a, void *b, void *c, s32 d, u8 e, u32 f) {
 void *func_020e34bc(u32); void func_020e35cc(void *); s32 func_0200558c(void); void func_020055f4(u8); void func_0200fe5c(u16); void func_0200fe6c(u8);
-void func_02007ef4(void *,void *,u32); void func_02007e98(s32,void *,u32); void func_02008048(void *,void *,u32);
+void func_02007ef4(void *,void *,u32); void func_02007e98(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);
 u32 func_020746fc(void *,void *); s32 func_0201033c(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
@@ -260,7 +260,7 @@ func_0200fe5c(id);
 func_0201033c((s32)p,(s32 *)(idx<<10),M2C_FIELD(p,u16 *,12),0,0,1,7,10,2);
 ok=func_02010584()!=0;((void(*)(u32))func_0200fe6c)(id);
 if(!ok){M2C_FIELD((u8 *)a+0x2000,u8 *,0x52)=1;break;}
-func_02008048(p+8,(u8 *)a+idx*12,12);
+MI_CpuCopy8(p+8,(u8 *)a+idx*12,12);
 prev=idx;idx=M2C_FIELD(p,u16 *,18);
 }
 ((void(*)(u32))func_020055f4)(id);func_020e35cc(p);

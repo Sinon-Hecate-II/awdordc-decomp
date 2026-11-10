@@ -11,7 +11,7 @@ extern u8 data_0215c34a[],data_0215c334[],data_ov005_02220a1c[],data_ov005_02220
 void AddSprite(u16,u16,u16,void *,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
 s32 func_020cfb94(void);
-void func_0207c964(s32,s32,s32 *,s32 *);
+void DivMod(s32,s32,s32 *,s32 *);
 s32 func_0207c928(s32,s32);
 void *func_020a866c(s32);
 s32 func_020d3014(s32,void *);
@@ -43,7 +43,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x40)=-M2C_FIELD(arg0,s32 *,0x4c);
 y=M2C_FIELD(arg0,s32 *,0x48)+54;
 if(y>=-8&&y<192){number0=data_0215c34a[(M2C_FIELD(arg0,s32 *,0x50)+1)*12];
 ay=y&255;dx=0;
-do{func_0207c964(number0,10,&number0,&digit0);
+do{DivMod(number0,10,&number0,&digit0);
 AddSprite((u16)((208-dx)&511),ay,(u16)((digit0&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
 dx+=8;}while(number0);}}
 {s32 number1,digit1;
@@ -52,7 +52,7 @@ if(y>=-8&&y<192){map=*gCurrentMap;
 map=(u8 *)map+(M2C_FIELD(arg0,s32 *,0x50)+1)*140;
 number1=M2C_FIELD(map,s32 *,0x67a8);
 ay=(u16)(y&255);dx=0;
-do{func_0207c964(number1,10,&number1,&digit1);
+do{DivMod(number1,10,&number1,&digit1);
 AddSprite((u16)((208-dx)&511),ay,(u16)((digit1&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
 dx+=8;}while(number1);}}
 {s32 number2,digit2;
@@ -61,7 +61,7 @@ if(y>=-8&&y<192){map=*gCurrentMap;
 map=(u8 *)map+(M2C_FIELD(arg0,s32 *,0x50)+1)*140;
 number2=M2C_FIELD(map,s32 *,0x67b0);
 ay=(u16)(y&255);dx=0;
-do{func_0207c964(number2,10,&number2,&digit2);
+do{DivMod(number2,10,&number2,&digit2);
 AddSprite((u16)((208-dx)&511),ay,(u16)((digit2&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023)|0x6000),data_027e0084,0);
 dx+=8;}while(number2);}}
 
@@ -82,7 +82,7 @@ if(count>99)count=99;
 AddSprite((u16)ox,(u16)((ay&0xff00)|((ay-16)&255)),attr,data_027e0074,5);
 { s32 digit,number; number=count;dx=0;
 ay=(ay&0xff00)|((ay+4)&255);ox=(ox+39)&511;
-do{func_0207c964(number,10,&number,&digit);
+do{DivMod(number,10,&number,&digit);
 AddSprite((u16)((ox-dx)&511),ay,(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),data_027e0084,0);dx+=8;}while(number);
 }
 gCur3DSpriteEngine=saved2;
@@ -104,7 +104,7 @@ tile=func_020a72b0(n+1,map)+0x3ac;
 AddSprite((u16)x,py,RESULT_ATTR(tile,0xe000),data_027e0064,5);
 AddSprite((u16)((x+19)&511),(u16)(((ay|(ay&255))&0xff00)|(py&255)),RESULT_ATTR(0x3a8,0xc000),data_027e0064,5);
 { s32 digit,number; number=score;dx=0;
-do{func_0207c964(number,10,&number,&digit);
+do{DivMod(number,10,&number,&digit);
 AddSprite((u16)((x+42-dx)&511),(u16)((ay&0xff00)|((ay+5)&255)),(u16)(((digit&1023)+((0x140 >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023))|0x6000),data_027e0084,0);dx+=8;}while(number);}
 }
 }

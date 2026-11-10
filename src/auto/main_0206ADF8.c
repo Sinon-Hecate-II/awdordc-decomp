@@ -162,25 +162,99 @@ if(negative) *--p='-'; else if(sign==1) *--p='+'; else if(sign==2) *--p=' ';
 return p;
 }
 
+/* Formats a 64-bit integer into a UTF-16 string buffer according to printf flags */
 u16 *func_0206b5c0(s64 value, u16 *end, FormatFlags flags) {
-s32 width; s32 negative=0; s32 precision=flags.precision; u64 base; u16 *p=end; s32 count=0; s32 digit; s32 sign; u16 type; u8 alt;
-*--p=0;
-alt=flags.alternate; type=flags.conversion; width=flags.width; sign=flags.sign;
-if(value==0 && precision==0) { if(!alt || type!='o') return p; }
-switch(type) {
-case 'd': case 'i': base=10; if(value<0) { if(value != (s64)0x8000000000000000ULL) value=-value; negative=1; } break;
-case 'o': base=8; sign=0; break;
-case 'u': base=10; sign=0; break;
-case 'x': case 'X': base=16; sign=0; break;
-}
-do { digit=(u64)value%base; value=(u64)value/base; if(digit<10) digit+='0'; else if(type=='x') digit+=87; else digit+=55; *--p=digit; ++count; } while(value!=0);
-if(base==8 && alt && *p!='0') { *--p='0'; ++count; }
-if(flags.pad==2) { precision=width; if(negative || sign) --precision; if(base==16 && alt) precision-=2; }
-if(precision+(end-p)>509) return 0;
-while(count<precision) { *--p='0'; ++count; }
-if(base==16 && alt) { *--p=type; *--p='0'; }
-if(negative) *--p='-'; else if(sign==1) *--p='+'; else if(sign==2) *--p=' ';
-return p;
+    s32 width;
+    s32 negative = 0;
+    s32 precision = flags.precision;
+    u64 base;
+    u16 *p = end;
+    s32 count = 0;
+    s32 digit;
+    s32 sign;
+    u16 type;
+    u8 alt;
+
+    *--p = 0;
+    alt = flags.alternate;
+    type = flags.conversion;
+    width = flags.width;
+    sign = flags.sign;
+    if (value == 0 && precision == 0) {
+        if (!alt || type != 'o') {
+            return p;
+        }
+    }
+    switch (type) {
+    case 'd':
+    case 'i':
+        base = 10;
+        if (value < 0) {
+            if (value != (s64)0x8000000000000000ULL) {
+                value = -value;
+            }
+            negative = 1;
+        }
+        break;
+    case 'o':
+        base = 8;
+        sign = 0;
+        break;
+    case 'u':
+        base = 10;
+        sign = 0;
+        break;
+    case 'x':
+    case 'X':
+        base = 16;
+        sign = 0;
+        break;
+    }
+    do {
+        digit = (u64)value % base;
+        value = (u64)value / base;
+        if (digit < 10) {
+            digit += '0';
+        } else if (type == 'x') {
+            digit += 87;
+        } else {
+            digit += 55;
+        }
+        *--p = digit;
+        ++count;
+    } while (value != 0);
+    if (base == 8 && alt && *p != '0') {
+        *--p = '0';
+        ++count;
+    }
+    if (flags.pad == 2) {
+        precision = width;
+        if (negative || sign) {
+            --precision;
+        }
+        if (base == 16 && alt) {
+            precision -= 2;
+        }
+    }
+    if (precision + (end - p) > 509) {
+        return 0;
+    }
+    while (count < precision) {
+        *--p = '0';
+        ++count;
+    }
+    if (base == 16 && alt) {
+        *--p = type;
+        *--p = '0';
+    }
+    if (negative) {
+        *--p = '-';
+    } else if (sign == 1) {
+        *--p = '+';
+    } else if (sign == 2) {
+        *--p = ' ';
+    }
+    return p;
 }
 
 u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {

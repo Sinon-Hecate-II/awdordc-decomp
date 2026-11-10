@@ -7,7 +7,7 @@ extern void (*data_021372d0[])(void *);
 s32 func_02024260(void *arg0) {
     u32 func_02022070(void);
     void func_020240c0(void *, s32);
-    M2C_UNK func_02008048(s32, void *, u32);
+    M2C_UNK MI_CpuCopy8(s32, void *, u32);
     void func_02023c74(void *, void *, s32);
     M2C_UNK func_0201d844(s8 *, s32, s32, s32, void *);
     extern void *(*data_021372a4)(s32);
@@ -50,11 +50,11 @@ s32 func_02024260(void *arg0) {
     M2C_FIELD(buf, u8 *, 8) = 0x46;
     M2C_FIELD(buf, u8 *, 9) = 3;
     M2C_FIELD(buf, u8 *, 0xA) = 0;
-    func_02008048((s32)((u8 *)q + 0x54), (void *)((u8 *)buf + 0xB), 0x20);
+    MI_CpuCopy8((s32)((u8 *)q + 0x54), (void *)((u8 *)buf + 0xB), 0x20);
     M2C_FIELD(buf, u8 *, 0x2B) = 0x20;
 
     if (M2C_FIELD(q, u8 *, 0x30) != 0) {
-        func_02008048((s32)((u8 *)q + 0x74), (void *)((u8 *)buf + 0x2C), 0x20);
+        MI_CpuCopy8((s32)((u8 *)q + 0x74), (void *)((u8 *)buf + 0x2C), 0x20);
         M2C_FIELD(q, u8 *, 0x31) = 1;
         cur = (u8 *)buf + 0x4C;
     } else {
@@ -65,7 +65,7 @@ s32 func_02024260(void *arg0) {
         M2C_FIELD(buf, u8 *, 0x49) = (u8)(r3 >> 16);
         M2C_FIELD(buf, u8 *, 0x4A) = (u8)(r3 >> 8);
         M2C_FIELD(buf, u8 *, 0x4B) = (u8)r3;
-        func_02008048((s32)(cur - 0x20), (void *)((u8 *)q + 0x74), 0x20);
+        MI_CpuCopy8((s32)(cur - 0x20), (void *)((u8 *)q + 0x74), 0x20);
         t2 = data_02138cc0[1];
         M2C_FIELD(q, u8 *, 0x31) = 0;
         data_02138cc0[1] = t2 + 1;
@@ -93,7 +93,7 @@ s32 func_02024260(void *arg0) {
             M2C_FIELD(cur, u8 *, 8) = (u8)(nodeSize >> 8);
             M2C_FIELD(cur, u8 *, 9) = (u8)nodeSize;
             cur += 10;
-            func_02008048((s32)M2C_FIELD(node, void **, 4), (void *)cur, (u32)nodeSize);
+            MI_CpuCopy8((s32)M2C_FIELD(node, void **, 4), (void *)cur, (u32)nodeSize);
             cur += nodeSize;
         }
         M2C_FIELD(cur, u8 *, 0) = 0x0E;
@@ -144,12 +144,12 @@ void func_020244c0(void *arg0) {
     M2C_FIELD(temp_r4, u8 *, 0xC) = 0;
     M2C_FIELD(temp_r4, u8 *, 0xD) = 0;
     M2C_FIELD(temp_r4, u8 *, 0xE) = 0x24;
-    func_02008048(temp_r5 + 0x3A4, temp_r5 + 0x3FC, 0x58);
+    MI_CpuCopy8(temp_r5 + 0x3A4, temp_r5 + 0x3FC, 0x58);
     func_02023520(temp_r5, temp_r4 + 0xF, 0);
-    func_02008048(temp_r5 + 0x3FC, temp_r5 + 0x3A4, 0x58);
-    func_02008048(temp_r5 + 0x2EC, temp_r5 + 0x348, 0x5C);
+    MI_CpuCopy8(temp_r5 + 0x3FC, temp_r5 + 0x3A4, 0x58);
+    MI_CpuCopy8(temp_r5 + 0x2EC, temp_r5 + 0x348, 0x5C);
     func_020235fc(temp_r5, temp_r4 + 0x1F, 0);
-    func_02008048(temp_r5 + 0x348, temp_r5 + 0x2EC, 0x5C);
+    MI_CpuCopy8(temp_r5 + 0x348, temp_r5 + 0x2EC, 0x5C);
     func_02023c74(temp_r5, temp_r4 + 0xB, 0x28);
     func_0201d844(temp_r4, func_02023a04(temp_r5, temp_r4 + 0x6) + 6, 0, 0, arg0);
     data_021372d0[0](temp_r4);
@@ -250,7 +250,7 @@ void func_02024d8c(u32 arg0, void *arg1) {
 void func_02024ddc(void *arg0) {
     s32 func_0201d59c(u32 *, M2C_UNK);
     M2C_UNK func_0201d67c(u32, M2C_UNK);
-    M2C_UNK func_02008048(s32, void *, u32);
+    M2C_UNK MI_CpuCopy8(s32, void *, u32);
     void func_02023ca0(void *, void *);
     extern void *(*data_021372a4)(s32);
     void *r4;
@@ -292,7 +292,7 @@ void func_02024ddc(void *arg0) {
             r6 = 0;
         }
     }
-    func_02008048((s32)temp_r0,
+    MI_CpuCopy8((s32)temp_r0,
                    (void *)((u8 *)M2C_FIELD(r4, void **, 0x824) + M2C_FIELD(r4, s32 *, 0x82C)),
                    (u32)sp0);
     func_0201d67c(sp0, (M2C_UNK)arg0);
@@ -328,7 +328,7 @@ s32 func_02024f20(void *arg0) {
 }
 
 s32 func_02024f9c(s32 arg0, u32 arg1, s32 arg2, s32 arg3, void *arg4) {
-    M2C_UNK func_02008048(s32, void *, u32);
+    M2C_UNK MI_CpuCopy8(s32, void *, u32);
     M2C_UNK func_0201d844(s8 *, s32, M2C_UNK, M2C_UNK, void *);
     s32 func_02023a04(void *, s8 *);
     extern void *(*data_021372a4)(s32);
@@ -365,10 +365,10 @@ loop_1:
             var_r7 = (s32) var_r9;
         }
         temp_r11 = var_r6 - var_r7;
-        func_02008048(var_r10, (s8 *)temp_r0 + 5, (u32) var_r7);
+        MI_CpuCopy8(var_r10, (s8 *)temp_r0 + 5, (u32) var_r7);
         var_r10 += var_r7;
         var_r9 -= var_r7;
-        func_02008048(var_r8, (s8 *)temp_r0 + 5 + var_r7, temp_r11);
+        MI_CpuCopy8(var_r8, (s8 *)temp_r0 + 5 + var_r7, temp_r11);
         M2C_FIELD(temp_r0, s8 *, 0) = 0x17;
         M2C_FIELD(temp_r0, s8 *, 1) = 3;
         M2C_FIELD(temp_r0, s8 *, 2) = 0;
@@ -410,7 +410,7 @@ s32 func_02024618(void *p){
 
 u32 func_02022070(void);
 void func_020240c0(void *,s32);
-M2C_UNK func_02008048(s32,void *,u32);
+M2C_UNK MI_CpuCopy8(s32,void *,u32);
 void func_02021e7c(void *,s32,u16);
 M2C_UNK func_0201d844(s8 *,s32,s32,s32,void *);
 void func_02023c74(void *,void *,s32);
@@ -433,10 +433,10 @@ q[0x36]=rnd>>8;
 q[0x37]=rnd;
 
 func_020240c0(q+0x38,28);
-func_02008048((s32)(q+0x34),buf+11,32);
+MI_CpuCopy8((s32)(q+0x34),buf+11,32);
 func_02021e7c(q,M2C_FIELD(p,s32 *,0x1c),M2C_FIELD(p,u16 *,0x18));
 
-if(q[0x30]){buf[0x2b]=32;func_02008048((s32)(q+0x74),buf+0x2c,32);cursor=buf+0x4c;}
+if(q[0x30]){buf[0x2b]=32;MI_CpuCopy8((s32)(q+0x74),buf+0x2c,32);cursor=buf+0x4c;}
 else{buf[0x2b]=0;cursor=buf+0x2c;}
 cursor[0]=0;
 cursor[1]=4;
@@ -473,7 +473,7 @@ data_021372d0[0](buf);
 #pragma push
 #pragma opt_strength_reduction off
 void func_020247ac(void *arg0) {
-    s32 func_02008048(s32, void *, u32);
+    s32 MI_CpuCopy8(s32, void *, u32);
     M2C_UNK func_0201d844(s8 *, s32, s32, s32, void *);
     s32 func_020220b8();
     M2C_UNK func_02022104(s32);
@@ -520,7 +520,7 @@ void func_020247ac(void *arg0) {
     M2C_FIELD(temp_r0, s8 *, 1) = 2;
     func_020240c0(temp_r0 + 2, temp_r9 - 0x33);
     *(temp_r0 + (temp_r9 - 0x31)) = 0;
-    func_02008048(temp_r4, (temp_r0 + temp_r9) - 0x30, 0x30);
+    MI_CpuCopy8(temp_r4, (temp_r0 + temp_r9) - 0x30, 0x30);
     temp_r0_2 = data_021372a4(temp_r7 * 8);
     if (temp_r0_2 == NULL) {
         data_021372d0[0](temp_r0);

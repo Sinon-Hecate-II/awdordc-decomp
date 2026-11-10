@@ -6,7 +6,7 @@ typedef struct { u8 pad[0x40]; u32 tile:9; u32 palette:9; u32 priority:8; u32 ot
 #pragma opt_common_subs off
 void func_020e0f14(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -84,7 +84,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x5C) = NULL;
     M2C_FIELD(temp_r0, void **, 0x60) = NULL;
     M2C_FIELD(temp_r0, void **, 0x64) = NULL;
-    temp_r0_2 = func_02082028(0x12);
+    temp_r0_2 = MemAlloc(0x12);
     if (temp_r0_2 != NULL) {
         M2C_FIELD(temp_r0_2, s8 *, 0) = 4;
         M2C_FIELD(temp_r0_2, s8 *, 1) = 0;
@@ -211,7 +211,7 @@ void func_020e0f14(M2C_UNK arg0) {
 #pragma opt_common_subs off
 void func_020e147c(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -288,7 +288,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x5C) = NULL;
     M2C_FIELD(temp_r0, void **, 0x60) = NULL;
     M2C_FIELD(temp_r0, void **, 0x64) = NULL;
-    temp_r0_2 = func_02082028(0x12);
+    temp_r0_2 = MemAlloc(0x12);
     if (temp_r0_2 != NULL) {
         M2C_FIELD(temp_r0_2, s8 *, 0) = 4;
         M2C_FIELD(temp_r0_2, s8 *, 1) = 0;

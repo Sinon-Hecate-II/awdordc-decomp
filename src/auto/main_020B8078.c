@@ -86,24 +86,24 @@ void func_020b821c(void *arg0) {
     M2C_UNK func_01ffa574(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     M2C_UNK func_02082770();
-    extern void *data_027e00bc;
+    extern void *g3DSpriteBankMain;
     s8 temp_r4;
 
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     temp_r4 = EaseInterpolate(0, 0, 4, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
     func_02082770();
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) ((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0xC0) | 0xC0);
-    M2C_FIELD(data_027e00bc, s8 *, 0x53) = temp_r4;
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) ((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~1) | 1);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~2);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~4);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~8);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x10);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x100);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x200);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x400);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x800);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x1000);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
+    M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~2);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~4);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~8);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x10);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x100);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x200);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x400);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x800);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x1000);
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
         return;
     }
@@ -119,24 +119,24 @@ void func_020b834c(void *arg0) {
     M2C_UNK func_01ffa574(void *);
     s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     M2C_UNK func_02082770();
-    extern void *data_027e00bc;
+    extern void *g3DSpriteBankMain;
     s8 temp_r4;
 
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     temp_r4 = EaseInterpolate(0, 4, 0, M2C_FIELD(arg0, s16 *, 0x54), (s32) M2C_FIELD(arg0, s16 *, 0x52));
     func_02082770();
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) ((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0xC0) | 0xC0);
-    M2C_FIELD(data_027e00bc, s8 *, 0x53) = temp_r4;
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) ((M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~1) | 1);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~2);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~4);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~8);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x10);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x100);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x200);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x400);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x800);
-    M2C_FIELD(data_027e00bc, u16 *, 0x12) = (u16) (M2C_FIELD(data_027e00bc, u16 *, 0x12) & ~0x1000);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0xC0) | 0xC0);
+    M2C_FIELD(g3DSpriteBankMain, s8 *, 0x53) = temp_r4;
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) ((M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~1) | 1);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~2);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~4);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~8);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x10);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x100);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x200);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x400);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x800);
+    M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 0x12) & ~0x1000);
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
         return;
     }

@@ -148,13 +148,13 @@ s32 func_0203152c(void) {
 
 void func_0203155c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     extern u8 data_020ea894[];
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     s32 func_0202f5ac(u8);
     s32 func_0203161c(void *);
     s32 func_02031670(s32);
     u8 idx;
 
-    func_02008048(data_020ea894, (void *)arg2, 0x58);
+    MI_CpuCopy8(data_020ea894, (void *)arg2, 0x58);
     M2C_FIELD(arg2, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
     M2C_FIELD(arg2, s32 *, 8) = M2C_FIELD(arg0, s32 *, 4);
     idx = M2C_FIELD(arg1, u8 *, 0xD0D);
@@ -245,7 +245,7 @@ void func_02031784(M2C_UNK arg0, M2C_UNK arg1) {
 void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
     s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     extern M2C_UNK data_020fb2a4;
     M2C_UNK buf0[2];
     M2C_UNK buf1[4];
@@ -253,7 +253,7 @@ void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
     if (func_0206527c((M2C_UNK)buf0, &data_020fb2a4, 8) != 0) {
         return;
     }
-    func_02008048(buf1, (void *)arg1, 0xA);
+    MI_CpuCopy8(buf1, (void *)arg1, 0xA);
 }
 
 s32 func_020317f8(M2C_UNK arg0) {
@@ -330,13 +330,13 @@ void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
     M2C_UNK func_0200c454(M2C_UNK *);
     M2C_UNK func_0200c494(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0200c55c(M2C_UNK *, M2C_UNK *);
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     u8 digest[20];
     u8 ctx[88];
     func_0200c454((M2C_UNK *)ctx);
     func_0200c494((M2C_UNK *)ctx, (M2C_UNK)arg0, 0x18);
     func_0200c55c((M2C_UNK *)digest, (M2C_UNK *)ctx);
-    func_02008048(digest + 3, (void *)arg1, 0xD);
+    MI_CpuCopy8(digest + 3, (void *)arg1, 0xD);
 }
 
 void func_0203197c(u8 *src, u8 *dst) {
@@ -344,7 +344,7 @@ void func_0203197c(u8 *src, u8 *dst) {
     extern signed char *data_020fb23c[];
     extern u8 data_020ea908[];
     extern u8 data_020ea918[];
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
 
     s32 i;
     for (i = 0; i < 0xD; i++) {
@@ -356,7 +356,7 @@ void func_0203197c(u8 *src, u8 *dst) {
     for (i = 0; i < 0xD; i++) {
         dst[i] = (u8)(dst[i] ^ data_020fb23c[1][i]);
     }
-    func_02008048(dst, tmp, 0xD);
+    MI_CpuCopy8(dst, tmp, 0xD);
     for (i = 0; i < 0xD; i++) {
         dst[data_020ea908[i]] = tmp[i];
     }

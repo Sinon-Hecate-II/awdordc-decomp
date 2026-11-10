@@ -256,39 +256,43 @@ if(a[12])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[12]*14);
 if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
 }
 
-void func_020d11f4(void){
+/* Resolves a fight after damage has been applied to both battle participants:
+ * for each side that dropped to 0 HP it credits the opponent and notifies the
+ * unit's owner, then writes back the surviving HP and runs the destruction
+ * effect, and finally plays the impact sound if a side's HP changed. */
+void ApplyBattleResult(void){
 extern u8 data_02168f08[];
 void func_020d18fc(s32,s32);s32 func_020d19b4(s32);s32 func_020a3594(s32,s32);M2C_UNK func_0208fe30(s32);
-void *p,*r;
-if(M2C_FIELD(*gCurrentMap,s16*,28358)<=0){
+void *unit,*record;
+if(M2C_FIELD(*gCurrentMap,s16*,0x6ec6)<=0){
 if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
-p=M2C_FIELD(*gCurrentMap,void**,28376);
-if(((D11F4Bits *)p)->team<3)D11F4Set(p,((D11F4Bits *)p)->team+1);
+unit=M2C_FIELD(*gCurrentMap,void**,0x6ed8);
+if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
-r=(void*)(*gCurrentMap+28344);
-func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,28376)),D068CLow(M2C_FIELD(r,void**,0)));
-if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,28376)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,28344));
+record=(void*)(*gCurrentMap+0x6eb8);
+func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),D068CLow(M2C_FIELD(record,void**,0)));
+if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
 }
-if(M2C_FIELD(*gCurrentMap,s16*,28390)<=0){
+if(M2C_FIELD(*gCurrentMap,s16*,0x6ee6)<=0){
 if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
-p=M2C_FIELD(*gCurrentMap,void**,28344);
-if(((D11F4Bits *)p)->team<3)D11F4Set(p,((D11F4Bits *)p)->team+1);
+unit=M2C_FIELD(*gCurrentMap,void**,0x6eb8);
+if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
-r=(void*)(*gCurrentMap+28376);
-func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,28344)),D068CLow(M2C_FIELD(r,void**,0)));
-if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,28344)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,28376));
+record=(void*)(*gCurrentMap+0x6ed8);
+func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),D068CLow(M2C_FIELD(record,void**,0)));
+if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
 }
-((void (*)())func_020d1034)(*gCurrentMap+28344,*gCurrentMap+28376);
-((void (*)())func_020d1034)(*gCurrentMap+28376,*gCurrentMap+28344);
-((void (*)())func_020d1094)(*gCurrentMap+28344,*gCurrentMap+28376);
-((void (*)())func_020d1094)(*gCurrentMap+28376,*gCurrentMap+28344);
+((void (*)())func_020d1034)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
+((void (*)())func_020d1034)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
+((void (*)())func_020d1094)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
+((void (*)())func_020d1094)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec4)!=M2C_FIELD(*gCurrentMap,s16*,0x6eca)){
-r=(void*)(*gCurrentMap+0x6eb8);
-if(M2C_FIELD(r,s16*,18)==func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
+record=(void*)(*gCurrentMap+0x6eb8);
+if(M2C_FIELD(record,s16*,18)==func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
 }
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee4)==M2C_FIELD(*gCurrentMap,s16*,0x6eea))return;
-r=(void*)(*gCurrentMap+0x6ed8);
-if(M2C_FIELD(r,s16*,18)!=func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
+record=(void*)(*gCurrentMap+0x6ed8);
+if(M2C_FIELD(record,s16*,18)!=func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
 sound:func_0208fe30(0x115);
 }
 

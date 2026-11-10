@@ -200,7 +200,7 @@ func_ov001_0217c7e8();func_ov001_0217c8ac();
 }
 
 s32 func_ov001_0217c5d4(s32 arg0) {
-    M2C_UNK func_02008048(void *, u8 *, s32);
+    M2C_UNK MI_CpuCopy8(void *, u8 *, s32);
     s32 func_0206ad38(u8 *);
     extern void *data_ov001_02193da4;
     u8 buf[4];
@@ -213,7 +213,7 @@ s32 func_ov001_0217c5d4(s32 arg0) {
     offset = M2C_FIELD(data_ov001_02193da4, u8 *, 0x14) * 3;
     c = base[offset];
     if (c != 0 && c != 0x20) return 1;
-    func_02008048(base + offset, buf, 3);
+    MI_CpuCopy8(base + offset, buf, 3);
     i = 0;
     p = buf;
     buf[3] = 0;

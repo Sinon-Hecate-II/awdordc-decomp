@@ -420,7 +420,7 @@ void func_ov001_021841cc(u16 *p) {
 #pragma scheduling off
 void func_ov001_02184230(u16 *arg0) {
     void func_020067a8(void *, s32);
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     s32 func_0206527c(M2C_UNK, M2C_UNK, s32);
     void func_02011f2c(M2C_UNK *, M2C_UNK *);
     extern s32 data_ov001_02193e00;
@@ -481,8 +481,8 @@ void func_ov001_02184230(u16 *arg0) {
                 s32 parsedCount;
                 s32 k;
                 dest = work.slots + j * 0x2a;
-                func_02008048((void *)(record + 4), (void *)(dest + 0x20), 6);
-                func_02008048((void *)(record + 0xc), (void *)dest, 0x20);
+                MI_CpuCopy8((void *)(record + 4), (void *)(dest + 0x20), 6);
+                MI_CpuCopy8((void *)(record + 0xc), (void *)dest, 0x20);
                 *(u16 *)(dest + 0x26) = *(u16 *)((u8 *)arg0 + 0x50 + i * 2);
 
                 if ((*(u16 *)(record + 0x2c) & 0x10) == 0) {
@@ -549,15 +549,15 @@ void func_ov001_02184484(s8 arg0) {
 }
 
 void func_ov001_02184498(void *arg0) {
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     extern s32 data_ov001_02193e04;
-    func_02008048(arg0, (void *)((s8 *)data_ov001_02193e04 + 0x440), 0x20);
+    MI_CpuCopy8(arg0, (void *)((s8 *)data_ov001_02193e04 + 0x440), 0x20);
     *(u8 *)((s8 *)data_ov001_02193e04 + 0x4e7) = 0;
 }
 
 void func_ov001_021844c8(u8 *arg0) {
     void func_02007f8c(void *, s32, u32);
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     s32 func_ov001_0218c3e0(u8 *, s32);
     s32 func_ov001_02184f4c(u8);
     extern s32 data_ov001_02193e04;
@@ -591,7 +591,7 @@ void func_ov001_021844c8(u8 *arg0) {
         }
         default:
             ((u8 *)data_ov001_02193e04)[0x4e6] = (u8)((((u8 *)data_ov001_02193e04)[0x4e6] & ~0xfc) | 0x04);
-            func_02008048(arg0, (u8 *)data_ov001_02193e04 + 0x480, 0x10);
+            MI_CpuCopy8(arg0, (u8 *)data_ov001_02193e04 + 0x480, 0x10);
             break;
     }
 
@@ -644,9 +644,9 @@ void func_ov001_021846d8(u8 *arg0) {
 }
 
 void func_ov001_021846f8(u8 *arg0) {
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     extern s32 data_ov001_02193e04;
-    func_02008048((void *)((u8 *)data_ov001_02193e04 + 0x440), arg0, 0x20);
+    MI_CpuCopy8((void *)((u8 *)data_ov001_02193e04 + 0x440), arg0, 0x20);
 }
 
 void func_ov001_0218471c(s32 arg0) {

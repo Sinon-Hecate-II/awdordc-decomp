@@ -6,11 +6,11 @@ typedef struct { u8 x,y; u8 unk[10]; } UnkA66Entry;
 #pragma opt_strength_reduction off
 void func_ov000_021a58c8(u8 arg0) {
 void func_01ffada0(s32,s32,s32,s32,s32);s32 func_ov000_021a8fc0(u8);
-extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 id,x,y,v,unitOffset; s32 x2,y2; u8 *tile; s32 oldValue; void *base;u8 *unit;
 M2C_FIELD(*gCurrentMap,u16 *,0x52B6)=arg0;
-id=data_ov000_021aeef4[arg0]+1;
-if(id>=data_ov000_021aeef4[arg0]+51)return;
+id=gPlayerUnitIdBase[arg0]+1;
+if(id>=gPlayerUnitIdBase[arg0]+51)return;
 unitOffset=id*14;
 do {
 base=*gCurrentMap;unit=(u8 *)(base+0x59A4)+unitOffset;
@@ -40,7 +40,7 @@ if(v<=oldValue) M2C_FIELD(tile+0x2000,s8 *,0x338)=v;
 }
 next:;
 id++;unitOffset+=14;
-}while(id<data_ov000_021aeef4[arg0]+51);
+}while(id<gPlayerUnitIdBase[arg0]+51);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021a5b28(void) {
@@ -71,7 +71,7 @@ void func_ov000_021a5bd4(u8 arg0) {
     void func_02007f8c(void*,s32,s32);
     s32 func_020d27c0(s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021e0f60[];
     void *base;
     u8 *unit, *tile;
@@ -81,8 +81,8 @@ void func_ov000_021a5bd4(u8 arg0) {
     s32 index;
     s32 v, old;
     M2C_FIELD(*gCurrentMap,u16*,0x52B6)=arg0;
-    id=data_ov000_021aeef4[arg0]+1;
-    if(id>=data_ov000_021aeef4[arg0]+51)return;
+    id=gPlayerUnitIdBase[arg0]+1;
+    if(id>=gPlayerUnitIdBase[arg0]+51)return;
     unitOffset=id*14;
     do {
         unit=(u8 *)(*gCurrentMap+0x59A4)+unitOffset;
@@ -129,7 +129,7 @@ void func_ov000_021a5bd4(u8 arg0) {
         }
         next:;
         id++;unitOffset+=14;
-    } while(id<data_ov000_021aeef4[arg0]+51);
+    } while(id<gPlayerUnitIdBase[arg0]+51);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021a5f50(void) {

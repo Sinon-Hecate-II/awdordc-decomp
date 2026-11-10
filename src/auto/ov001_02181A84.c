@@ -459,7 +459,7 @@ void func_ov001_02182514(void) {
     s32 func_ov001_02184c60();
     s32 func_0202f28c();
     s32 func_02046878();
-    M2C_UNK func_02008048(s32, s32, s32);
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
     M2C_UNK func_ov001_02171494();
     M2C_UNK func_ov001_0218af70(s32);
     M2C_UNK func_ov001_0218b368(s32, s32);
@@ -470,8 +470,8 @@ void func_ov001_02182514(void) {
     s32 temp_r4;
     temp_r4 = func_ov001_02184c60();
     if (func_0202f28c() == 0) return;
-    func_02008048(func_02046878(), temp_r4 + 0xF0, 0xE);
-    func_02008048(func_02046878(), temp_r4 + 0x1F0, 0xE);
+    MI_CpuCopy8(func_02046878(), temp_r4 + 0xF0, 0xE);
+    MI_CpuCopy8(func_02046878(), temp_r4 + 0x1F0, 0xE);
     func_ov001_02171494();
     func_ov001_0218af70(0);
     func_ov001_0218b368(0, 0x15);

@@ -320,7 +320,7 @@ void func_020d6350(void) {
  extern void *gCurrentMap;
  void *p=M2C_FIELD(gCurrentMap,void **,0);
  func_020cf498(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
- func_020d468c();func_020bac24();
+ func_020d468c();BattleUpdateUnitCursor();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }
 

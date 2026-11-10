@@ -150,10 +150,10 @@ return 0;
 M2C_UNK func_01ff9690() { return 0; }
 
 void func_01ff9ab4(void) {
-    extern u16 *data_027e00bc;
-    func_0200245c(((u32)(M2C_FIELD(data_027e00bc, u16 *, 4) << 31) >> 31) != 0);
-    func_02002428(((u32)(M2C_FIELD(data_027e00bc, u16 *, 4) << 30) >> 31) != 0);
-    if (((u32)(M2C_FIELD(data_027e00bc, u16 *, 4) << 29) >> 31) != 0) {
+    extern u16 *g3DSpriteBankMain;
+    func_0200245c(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 31) >> 31) != 0);
+    func_02002428(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 30) >> 31) != 0);
+    if (((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 29) >> 31) != 0) {
         *(volatile u16 *)0x04000004 |= 0x20;
     } else {
         *(volatile u16 *)0x04000004 &= ~0x20;
@@ -200,9 +200,9 @@ void func_01ff9ce8(u8 arg0) {
 }
 
 void func_01ff9d38(s32 arg0) {
-    extern u16 *data_027e00bc;
+    extern u16 *g3DSpriteBankMain;
     extern s32 g3DSpriteEngineMain;
-    func_02007e98(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00bc << 0x1D) >> 0x1D), arg0));
+    func_02007e98(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*g3DSpriteBankMain << 0x1D) >> 0x1D), arg0));
 }
 
 void func_01ff9d88(s32 arg0) {

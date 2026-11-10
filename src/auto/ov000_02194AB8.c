@@ -26,7 +26,7 @@ s32 func_ov000_02179e48(s16 *);
 s32 RandomIntRange(s32,s32);
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 s32 high=0x7fff,mid=0x7fff,low=0x7fff;
 s16 posHigh[2];
@@ -43,9 +43,9 @@ threshold=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_o
 for(team=1;team<5;team++){
 if(!func_020d1938(team))continue;
 if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),team)==1)continue;
-id=data_ov000_021aeef4[team]+1;
+id=gPlayerUnitIdBase[team]+1;
 offset=id*14;
-for(;id<data_ov000_021aeef4[team]+51;id++,offset+=14){
+for(;id<gPlayerUnitIdBase[team]+51;id++,offset+=14){
 map=*gCurrentMap;unit=(map+0x59a4)+offset;
 kind=((UnitKind1955 *)unit)->kind;
 if(!kind)continue;
@@ -160,7 +160,7 @@ arg0[0]=posHigh[0];arg0[1]=posHigh[1];return 1;
 void func_ov000_021954a4(void) {
     s32 func_ov000_02194ab8(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_02194ab8(sp0) == 0) {
@@ -169,7 +169,7 @@ void func_ov000_021954a4(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 s32 func_ov000_021954dc(s16 *arg0) {
@@ -195,7 +195,7 @@ s32 func_ov000_021954dc(s16 *arg0) {
 void func_ov000_0219553c(void) {
     s32 func_ov000_021954dc(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_021954dc(sp0) == 0) {
@@ -204,7 +204,7 @@ void func_ov000_0219553c(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 #pragma opt_strength_reduction off
@@ -246,7 +246,7 @@ out[0]=cand[0];out[1]=cand[1];return 1;
 void func_ov000_02195750(void) {
     s32 func_ov000_02195574(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_02195574(sp0) == 0) {
@@ -255,7 +255,7 @@ void func_ov000_02195750(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 #pragma opt_strength_reduction off

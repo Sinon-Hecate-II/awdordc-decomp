@@ -214,7 +214,7 @@ void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     s32 func_020e34bc(u32);
     void func_01ffa8bc(void *, s32);
     void func_02005ac0(s32, void (*)(void *), void *, s32, u32, s32);
-    void func_02005e5c(s32);
+    void TaskWake(s32);
     extern M2C_UNK data_0211f7dc;
     void *p;
     p = func_01ffa3dc(&data_0211f7dc, 3);
@@ -225,7 +225,7 @@ void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     M2C_FIELD(p, s32 *, 0x40) = arg0;
     M2C_FIELD(p, s32 *, 0x44) = arg1;
     func_02005ac0(M2C_FIELD(p, s32 *, 0x34), func_0209e034, p + 0x40, M2C_FIELD(p, s32 *, 0x38) + (arg2 & ~3), arg2, arg3);
-    func_02005e5c(M2C_FIELD(p, s32 *, 0x34));
+    TaskWake(M2C_FIELD(p, s32 *, 0x34));
 }
 
 u8 func_0209e0dc(M2C_UNK arg0) {
@@ -475,8 +475,8 @@ void func_0209ea08(void) {
 }
 
 s32 func_0209ea0c(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

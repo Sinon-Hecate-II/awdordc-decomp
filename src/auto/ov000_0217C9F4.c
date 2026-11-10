@@ -186,12 +186,12 @@ void func_ov000_0217d3b8(s32 arg0) {
 #pragma push
 #pragma opt_strength_reduction off
 void func_ov000_0217d428(void) {
-extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 func_ov000_021a98a8(u32);s32 func_ov000_02179b08(void *);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 func_ov000_021a89a4(void *);
 s32 i,off,bx,by,best,x,y,v,id;Unit0217d428 *unit;u8 *rec;void *p;
-i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
-if(i>=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
+i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
+if(i>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
 off=i*14;do{
 unit=(Unit0217d428*)((u8*)*gCurrentMap+0x59a4+off);
 if(unit->kind==0)goto nextUnit;
@@ -217,15 +217,15 @@ SetTarget0217d428(unit,bx,by);
 if(best<=func_ov000_021a89a4(unit))unit->active=0;
 else unit->mode=1;
 nextUnit: i++;off+=14;
-}while(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
+}while(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
 }
 #pragma opt_strength_reduction off
 void func_ov000_0217d6dc(void) {
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     s32 func_ov000_021a98a8(u32);
 
     void ***mapSlot = (void ***)&gCurrentMap;
-    u16 *tblBase = data_ov000_021aeef4;
+    u16 *tblBase = gPlayerUnitIdBase;
 
     void *map;
     void *m0;

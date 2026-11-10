@@ -2,7 +2,7 @@
 #include "common.h"
 static inline void clear_socket_address(void *p) { s32 *v = p; v[0] = 0; v[1] = 0; }
 static inline s32 char_outside(s32 c) { s32 bad=1; if(c>=0) { if(c<128)bad=0; } return bad; }
-static inline s32 char_space(s32 c) { extern u16 data_020ead40[]; return char_outside(c) ? 0 : (data_020ead40[c] & 256); }
+static inline s32 char_space(s32 c) { extern u16 gCharClassTable[]; return char_outside(c) ? 0 : (gCharClassTable[c] & 256); }
 
 void func_0204c7fc(void *arg0) {
     s32 func_020492ec(s32, s32);
@@ -219,7 +219,7 @@ void func_0204ceb8(void *arg0) {
 
 s32 func_0204cf38(void *a){
 extern M2C_UNK data_020fd858,data_020fd864,data_020fd7e0,data_020fd968,data_020fd988;
-extern u16 data_020ead40[];
+extern u16 gCharClassTable[];
 M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 s32 func_02068adc(void *,M2C_UNK *,...);
 s32 major,minor,status,pos,n,ch;

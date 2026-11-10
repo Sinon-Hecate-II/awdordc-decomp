@@ -18,38 +18,38 @@ s32 func_020a1944(s32 arg0) {
 void func_020a196c(void) {
  s32 func_020cd2f8(void); s32 func_020a1da0(s32); s32 func_020a1e44(s32); s32 func_020a1f88(s32);
  s32 func_020a1d74(s32); void func_020a1a0c(void); void func_020a1adc(void);
- extern M2C_UNK data_0215c324;
+ extern M2C_UNK gSpriteAnimConfig;
  s32 i, bits, mask;
  s32 value;
- M2C_FIELD(&data_0215c324,u8 *,0x14) = func_020cd2f8();
- M2C_FIELD(&data_0215c324,u8 *,0x10) = func_020a1da0(M2C_FIELD(&data_0215c324,u8 *,0x14));
- M2C_FIELD(&data_0215c324,u8 *,0x11) = func_020a1e44(M2C_FIELD(&data_0215c324,u8 *,0x14));
- M2C_FIELD(&data_0215c324,u8 *,0x12) = func_020a1f88(M2C_FIELD(&data_0215c324,u8 *,0x14));
- M2C_FIELD(&data_0215c324,u16 *,0x16) = func_020a1d74(M2C_FIELD(&data_0215c324,u8 *,0x14));
- M2C_FIELD(&data_0215c324,u8 *,0x13) = func_020a1944(M2C_FIELD(&data_0215c324,u16 *,0x16));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14) = func_020cd2f8();
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x10) = func_020a1da0(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x11) = func_020a1e44(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x12) = func_020a1f88(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16) = func_020a1d74(M2C_FIELD(&gSpriteAnimConfig,u8 *,0x14));
+ M2C_FIELD(&gSpriteAnimConfig,u8 *,0x13) = func_020a1944(M2C_FIELD(&gSpriteAnimConfig,u16 *,0x16));
  func_020a1a0c(); func_020a1adc();
- i=0; bits=M2C_FIELD(&data_0215c324,s32 *,0x18);
+ i=0; bits=M2C_FIELD(&gSpriteAnimConfig,s32 *,0x18);
  do {mask = -1 ^ (1 << i); i++; bits &= mask;} while(i<15);
- M2C_FIELD(&data_0215c324,s32 *,0x18)=bits;
+ M2C_FIELD(&gSpriteAnimConfig,s32 *,0x18)=bits;
 }
 
 #pragma peephole off
 void func_020a1a0c(void) {
-    extern M2C_UNK data_0215c324;
+    extern M2C_UNK gSpriteAnimConfig;
     u8 *ctr;
     u8 *arr;
     s32 j;
     s32 i;
     u8 *p;
 
-    p = (u8 *)&data_0215c324;
+    p = (u8 *)&gSpriteAnimConfig;
     for (i = 0; i < 4; i++, p++) {
         p[0] = 0;
         p[4] = 0;
         p[8] = 0;
     }
-    ctr = (u8 *)&data_0215c324;
-    arr = (u8 *)&data_0215c324;
+    ctr = (u8 *)&gSpriteAnimConfig;
+    arr = (u8 *)&gSpriteAnimConfig;
     ctr[12] = 0;
     ctr[13] = 0;
     ctr[14] = 0;
@@ -118,10 +118,10 @@ case 23:{u8 *p=data_0215c334+(terrain>>5)*12;p[19]++;break;}}
 }
 #pragma pop
 s32 func_020a1d74(s32 arg0) {
-    extern M2C_UNK data_0215c324;
+    extern M2C_UNK gSpriteAnimConfig;
     s32 var_r0;
 
-    var_r0 = M2C_FIELD(&data_0215c324, u8 *, 0x12) + (M2C_FIELD(&data_0215c324, u8 *, 0x10) + M2C_FIELD(&data_0215c324, u8 *, 0x11));
+    var_r0 = M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x12) + (M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x10) + M2C_FIELD(&gSpriteAnimConfig, u8 *, 0x11));
     if (var_r0 >= 0x3E8) {
         var_r0 = 0x3E7;
     }

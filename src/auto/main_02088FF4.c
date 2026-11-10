@@ -411,9 +411,9 @@ M2C_UNK **func_02089944(M2C_UNK **arg0) {
 
 M2C_UNK **func_0208996c(M2C_UNK **arg0) {
  M2C_UNK func_02089cec(M2C_UNK **);
- M2C_UNK func_02082040(M2C_UNK **);
+ M2C_UNK MemFree(M2C_UNK **);
  *arg0=&data_02102638;
- func_02089bdc();func_02089cec(arg0);func_02082040(arg0);return arg0;
+ func_02089bdc();func_02089cec(arg0);MemFree(arg0);return arg0;
 }
 
 void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

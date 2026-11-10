@@ -13,7 +13,7 @@ extern M2C_UNK data_0212d6c8, data_0212d6d4, data_0212d6e0, data_0212d6f0, data_
 
 #pragma opt_propagation off
 void func_020e24c0(s32 arg0) {
-void *func_01ffa42c(void*,s32); void *func_02082028(s32);
+void *func_01ffa42c(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
@@ -25,7 +25,7 @@ M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=0;M2C_FIELD(obj,s32*,0x3c)=
 M2C_FIELD(obj,u8*,0x40)=0;M2C_FIELD(obj,u8*,0x41)=0;M2C_FIELD(obj,u8*,0x42)=0;M2C_FIELD(obj,u8*,0x43)=4;M2C_FIELD(obj,u8*,0x44)=0;
 M2C_FIELD(obj,u16*,0x46)=0x3a8;M2C_FIELD(obj,u16*,0x48)=0;M2C_FIELD(obj,u16*,0x4a)=0;M2C_FIELD(obj,u16*,0x4c)=0x708;
 M2C_FIELD(obj,void**,0x50)=0;M2C_FIELD(obj,void**,0x54)=0;M2C_FIELD(obj,void**,0x58)=0;M2C_FIELD(obj,void**,0x5c)=0;M2C_FIELD(obj,void**,0x60)=0;M2C_FIELD(obj,void**,0x64)=0;
-q=func_02082028(18);
+q=MemAlloc(18);
 if(q){M2C_FIELD(q,u8*,0)=4;M2C_FIELD(q,u8*,1)=0;M2C_FIELD(q,u16*,2)=0;M2C_FIELD(q,u16*,4)=0;M2C_FIELD(q,u16*,6)=1;M2C_FIELD(q,u16*,8)=0;M2C_FIELD(q,u16*,10)=1;M2C_FIELD(q,u16*,12)=1;M2C_FIELD(q,u16*,14)=0;M2C_FIELD(q,u16*,16)=0;M2C_FIELD(q,u16*,2)=M2C_FIELD(q,u16*,4);}
 M2C_FIELD(obj,void**,0x68)=q;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -86,7 +86,7 @@ gCur3DSpriteEngine=saved;func_020e4c64();
 }
 #pragma opt_propagation reset
 void func_020e2a2c(s32 arg0) {
-void *func_01ffa42c(void*,s32); void *func_02082028(s32);
+void *func_01ffa42c(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 func_020aab24(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 func_020aae10(void*); s32 func_020aae44(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
@@ -98,7 +98,7 @@ M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=1;M2C_FIELD(obj,s32*,0x3c)=
 M2C_FIELD(obj,u8*,0x40)=0;M2C_FIELD(obj,u8*,0x41)=0;M2C_FIELD(obj,u8*,0x42)=0;M2C_FIELD(obj,u8*,0x43)=4;M2C_FIELD(obj,u8*,0x44)=0;
 M2C_FIELD(obj,u16*,0x46)=0x3a8;M2C_FIELD(obj,u16*,0x48)=0;M2C_FIELD(obj,u16*,0x4a)=0;M2C_FIELD(obj,u16*,0x4c)=0x708;
 M2C_FIELD(obj,void**,0x50)=0;M2C_FIELD(obj,void**,0x54)=0;M2C_FIELD(obj,void**,0x58)=0;M2C_FIELD(obj,void**,0x5c)=0;M2C_FIELD(obj,void**,0x60)=0;M2C_FIELD(obj,void**,0x64)=0;
-q=func_02082028(18);
+q=MemAlloc(18);
 if(q){M2C_FIELD(q,u8*,0)=4;M2C_FIELD(q,u8*,1)=0;M2C_FIELD(q,u16*,2)=0;M2C_FIELD(q,u16*,4)=0;M2C_FIELD(q,u16*,6)=1;M2C_FIELD(q,u16*,8)=0;M2C_FIELD(q,u16*,10)=1;M2C_FIELD(q,u16*,12)=1;M2C_FIELD(q,u16*,14)=0;M2C_FIELD(q,u16*,16)=0;M2C_FIELD(q,u16*,2)=M2C_FIELD(q,u16*,4);}
 M2C_FIELD(obj,void**,0x68)=q;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -159,23 +159,23 @@ gCur3DSpriteEngine=saved;func_020e4c64();
 }
 
 void *func_020e2f9c(void *arg0) {
- M2C_UNK func_02082040();
+ M2C_UNK MemFree();
  M2C_UNK func_020e4ca0();
  extern M2C_UNK data_0212d1e8;
  M2C_FIELD(arg0,M2C_UNK **,0)=&data_0212d1e8;
- if(M2C_FIELD(arg0,void **,0x68)!=0)func_02082040(M2C_FIELD(arg0,void **,0x68));
+ if(M2C_FIELD(arg0,void **,0x68)!=0)MemFree(M2C_FIELD(arg0,void **,0x68));
  func_020e4ca0();
- func_02082040(arg0);
+ MemFree(arg0);
  return arg0;
 }
 
 void *func_020e2fd4(void *arg0) {
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_0212d1e8;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212d1e8;
     if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        func_02082040();
+        MemFree();
     }
     func_020e4ca0();
     return arg0;

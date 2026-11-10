@@ -438,7 +438,7 @@ void func_020d3d68(void) {
     u8 *func_020a32f4(s32);
     s32 func_020d243c(s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     void *base;
     u16 cols;
     u16 rows;
@@ -470,7 +470,7 @@ void func_020d3d68(void) {
                 r5 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67CF) & 0x7F;
                 r6 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67D0) & 0x7F;
             } else {
-                val = data_ov000_021aeef4[r4];
+                val = gPlayerUnitIdBase[r4];
                 idx = val + 1;
                 end = val + 0x33;
                 for (; idx < end; idx++) {

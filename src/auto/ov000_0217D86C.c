@@ -112,7 +112,7 @@ s32 func_ov000_0217d86c(void) {
 
 s32 func_ov000_0217dcd0(void){
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 void func_01ffb554(void *);
 s32 func_ov000_02179be0(void);
 void func_01ffada0(s32,s32,s32,s32,s32);
@@ -130,7 +130,7 @@ func_01ffb9c4(0x6f);
 for(p=1;p<5;p++){
 if(!func_020d1938(p))continue;
 if(func_020d273c(*(u16 *)((u8 *)*gCurrentMap+0x52a4),p)==1)continue;
-i=data_ov000_021aeef4[p]+1;end=data_ov000_021aeef4[p]+0x33;
+i=gPlayerUnitIdBase[p]+1;end=gPlayerUnitIdBase[p]+0x33;
 for(;i<end;i++){
 Unit7DC *entry=&((Unit7DC *)((u8 *)*gCurrentMap+0x59a4))[i];
 kind=entry->kind;
@@ -147,7 +147,7 @@ s32 func_ov000_0217de64(s32 x,s32 y,s32 kind,s32 extra,s16 *result) {
 extern void **gCurrentMap;
 extern Candidate7DE data_ov000_021e00ac[];
 extern s8 data_ov000_021b5500[],data_ov000_021e0f60[],data_ov000_021b55a0[];
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021dee00[],data_ov000_021dee04[];
 void func_01ffb554(void *);
 void func_01ffada0(s32,s32,s32,s32,s32);
@@ -177,7 +177,7 @@ if(M2C_FIELD((u8 *)*gCurrentMap+(entry[1])+M2C_FIELD((u8 *)*gCurrentMap+(entry[2
 if(func_ov000_021a8d7c(entry[1],entry[2],5))continue;
 for(p=1;p<5;p++){
 if(!func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)||!func_020d1938(p)||M2C_FIELD((u8 *)*gCurrentMap+p*140,u8 *,0x67c2)!=2)continue;
-for(i=data_ov000_021aeef4[p]+1;i<data_ov000_021aeef4[p]+51;i++){
+for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+51;i++){
 unit=(Unit7DE *)((u8*)*gCurrentMap+0x59a4+i*14);
 if(!unit->kind||!func_ov000_021a98a8(unit->kind))continue;
 if(unit->x==entry[1]&&unit->y==entry[2]){if(unit->cargo)goto next;}
@@ -209,7 +209,7 @@ if(score>=0){n=score+1;if(out->other>=n)out->other=n;}
 }
 for(p=1;p<5;p++){
 if(!func_020d1938(p)||p==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))continue;
-for(i=data_ov000_021aeef4[p]+1;i<data_ov000_021aeef4[p]+51;i++){
+for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+51;i++){
 unit=(Unit7DE *)((u8 *)*gCurrentMap+0x59a4+i*14);
 if(!unit->kind||unit->kind!=*wanted)continue;
 score=M2C_FIELD((u8 *)*gCurrentMap+(unit->x)+M2C_FIELD((u8 *)*gCurrentMap+(unit->y*2),u16 *,0x3758),s8 *,0x2338);

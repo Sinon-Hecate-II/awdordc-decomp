@@ -1,7 +1,7 @@
 /* 16 functions from 0x0201BDE0 to 0x0201CB4C (main), found by ds-decomp. */
 #include "common.h"
 
-void *func_0201bde0(s32 a,s32 b) {
+void *TcpFindConnection(s32 a,s32 b) {
  s32 func_0201bd2c(s32,s32,void *);
  extern M2C_UNK data_0212dca4;
  void *q;
@@ -47,17 +47,17 @@ M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  func_0201aca0(func_0201a704(M2C_FIELD(a,s32 *,28)));
 }
 
-void func_0201bf58(M2C_UNK arg0, M2C_UNK arg1) {
+void TcpSendAck(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0201bee4(M2C_UNK, M2C_UNK, M2C_UNK);
     func_0201bee4(arg0, 0x10, arg1);
 }
 
-void func_0201bf6c(M2C_UNK arg0, M2C_UNK arg1) {
+void TcpSendFinAck(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0201bee4(M2C_UNK, M2C_UNK, M2C_UNK);
     func_0201bee4(arg0, 0x11, arg1);
 }
 
-M2C_UNK func_0201bf80(M2C_UNK a,M2C_UNK b,s32 c,M2C_UNK d){
+M2C_UNK TcpSendReset(M2C_UNK a,M2C_UNK b,s32 c,M2C_UNK d){
 extern M2C_UNK data_021373d4,data_02137390,data_02137290;
 void func_02007f8c(void *,s32,s32);
 u16 e,f,g,h,i,j,k,l; s32 n;void *p=&data_021373d4;
@@ -92,224 +92,227 @@ func_0201be44(arg1,arg2);func_0201bee4((s32)arg2,18,0);
 }
 
 s32 func_0201c1a8(s32 a,s32 b,s32 c) {
- void *p=func_0201bde0(a,b);
+ void *p=TcpFindConnection(a,b);
  u8 v;
  if(p) {
  v=M2C_FIELD(p,u8 *,8);
  if(v==1)func_0201c0bc(a,b,p);
  else if((u8)(v+253)<=1) {M2C_FIELD(p,s32 *,40)--;func_0201c0bc(a,b,p);}
- else func_0201bf80(a,b,c,0);
+ else TcpSendReset(a,b,c,0);
  return 1;
  }
  return 0;
 }
 
 void func_0201c230(void *arg0, void *arg1, s32 arg2) {
-s32 func_0201bb68(s32,s32);s32 func_0201c1a8(s32,s32,s32);void *func_0201bc58();M2C_UNK func_0201c0bc();M2C_UNK func_02005ec8();
+s32 func_0201bb68(s32,s32);s32 func_0201c1a8(s32,s32,s32);void *func_0201bc58();M2C_UNK func_0201c0bc();M2C_UNK TaskYield();
 u16 a,b,c,d;u32 p0,p1;void *r;
 a=M2C_FIELD(arg0,u16 *,0x12);b=M2C_FIELD(arg0,u16 *,0x10);c=M2C_FIELD(arg0,u16 *,0xe);d=M2C_FIELD(arg0,u16 *,0xc);
 p0=((u32)(u16)((d>>8)|(d<<8))<<16)|(u16)((c>>8)|(c<<8));p1=((u32)(u16)((b>>8)|(b<<8))<<16)|(u16)((a>>8)|(a<<8));
 if(!func_0201bb68(p0,p1))return;if(func_0201c1a8((s32)arg0,(s32)arg1,arg2))return;
-r=func_0201bc58(arg0,arg1);if(r){func_0201c0bc(arg0,arg1,r);return;}func_02005ec8();r=func_0201bc58(arg0,arg1);if(r)func_0201c0bc(arg0,arg1,r);
+r=func_0201bc58(arg0,arg1);if(r){func_0201c0bc(arg0,arg1,r);return;}TaskYield();r=func_0201bc58(arg0,arg1);if(r)func_0201c0bc(arg0,arg1,r);
 }
 
 /* Build a response packet from a received request and mark it ready. */
 void func_0201c308(s32 a,void *b,s32 c) {
-void *p=func_0201bde0(a,(s32)b);u16 d,e,f,g,h;
-if(!p || M2C_FIELD(p,u8 *,8)!=2){func_0201bf80(a,b,c,0);return;}
-func_02005ec8();
+void *p=TcpFindConnection(a,(s32)b);u16 d,e,f,g,h;
+if(!p || M2C_FIELD(p,u8 *,8)!=2){TcpSendReset(a,b,c,0);return;}
+TaskYield();
 d=M2C_FIELD(b,u16 *,6);e=M2C_FIELD(b,u16 *,4);
 M2C_FIELD(p,u32 *,36)=(((u16)(((s32)e>>8)|(e<<8))<<16)|(u16)(((s32)d>>8)|(d<<8)))+1;
 f=M2C_FIELD(b,u16 *,10);g=M2C_FIELD(b,u16 *,8);
 M2C_FIELD(p,u32 *,48)=((u16)(((s32)g>>8)|(g<<8))<<16)|(u16)(((s32)f>>8)|(f<<8));
 h=M2C_FIELD(b,u16 *,14);M2C_FIELD(p,u16 *,44)=((s32)h>>8)|(h<<8);
-func_0201be44(b,p);func_0201bf58(p,0);M2C_FIELD(p,u8 *,8)=4;
-if(M2C_FIELD(p,s32 *,4)==1){M2C_FIELD(p,s32 *,4)=0;func_02005e5c(M2C_FIELD(p,s32 *,0));}
+func_0201be44(b,p);TcpSendAck(p,0);M2C_FIELD(p,u8 *,8)=4;
+if(M2C_FIELD(p,s32 *,4)==1){M2C_FIELD(p,s32 *,4)=0;TaskWake(M2C_FIELD(p,s32 *,0));}
 }
 
-void func_0201c400(void *a, void *b, s32 c) {
-  void *func_0201bde0(s32, s32);
-  void func_0201bf58(M2C_UNK, M2C_UNK);
-  void func_0201bf6c(M2C_UNK, M2C_UNK);
-  M2C_UNK func_0201bf80(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-  M2C_UNK func_02005e5c(M2C_UNK);
-  M2C_UNK func_02005ec8();
-  M2C_UNK func_0200751c();
-  M2C_UNK func_02007530(M2C_UNK);
-  M2C_UNK func_02008048(void *, s32, u32);
-  void *p;
-  u16 f6, f4, fA, f8, fE;
-  u8 flags;
-  u32 val, space;
-  s32 complete;
+/* Consume one incoming TCP segment for an established connection: track the
+ * ACK number, copy the payload into the receive buffer and drive the
+ * connection state machine, sending the ACK / FIN / RST it calls for. */
+void TcpProcessAck(void *net, void *seg, s32 len) {
+  void *TcpFindConnection(s32, s32);
+  void TcpSendAck(M2C_UNK, M2C_UNK);
+  void TcpSendFinAck(M2C_UNK, M2C_UNK);
+  M2C_UNK TcpSendReset(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+  M2C_UNK TaskWake(M2C_UNK);
+  M2C_UNK TaskYield();
+  M2C_UNK OS_DisableInterrupts();
+  M2C_UNK OS_RestoreInterrupts(M2C_UNK);
+  M2C_UNK MI_CpuCopy8(void *, s32, u32);
+  void *conn;
+  u16 seqLo, seqHi, ackLo, ackHi, window;
+  u8 tcpFlags;
+  u32 value, space;
+  s32 isComplete;
 
-  p = func_0201bde0((s32)a, (s32)b);
-  if (p == NULL) {
-    func_0201bf80(a, b, c, 0);
+  conn = TcpFindConnection((s32)net, (s32)seg);
+  if (conn == NULL) {
+    TcpSendReset(net, seg, len, 0);
     return;
   }
 
-  fA = M2C_FIELD(b, u16 *, 0xa);
-  f8 = M2C_FIELD(b, u16 *, 0x8);
-  val = ((u32)(u16)(((s32)f8 >> 8) | (f8 << 8)) << 16) | (u16)(((s32)fA >> 8) | (fA << 8));
-  flags = M2C_FIELD(b, u8 *, 0xd);
-  if ((s32)(val - M2C_FIELD(p, u32 *, 0x30)) > 0) {
-    M2C_FIELD(p, u32 *, 0x30) = val;
+  ackLo = M2C_FIELD(seg, u16 *, 0xa);
+  ackHi = M2C_FIELD(seg, u16 *, 0x8);
+  value = ((u32)(u16)(((s32)ackHi >> 8) | (ackHi << 8)) << 16) | (u16)(((s32)ackLo >> 8) | (ackLo << 8));
+  tcpFlags = M2C_FIELD(seg, u8 *, 0xd);
+  if ((s32)(value - M2C_FIELD(conn, u32 *, 0x30)) > 0) {
+    M2C_FIELD(conn, u32 *, 0x30) = value;
   }
 
-  f6 = M2C_FIELD(b, u16 *, 0x6);
-  f4 = M2C_FIELD(b, u16 *, 0x4);
-  val = ((u32)(u16)(((s32)f4 >> 8) | (f4 << 8)) << 16) | (u16)(((s32)f6 >> 8) | (f6 << 8));
-  if (M2C_FIELD(p, u8 *, 0x8) == 4 && M2C_FIELD(p, u32 *, 0x24) != val) {
-    func_0201bf58(p, 0);
+  seqLo = M2C_FIELD(seg, u16 *, 0x6);
+  seqHi = M2C_FIELD(seg, u16 *, 0x4);
+  value = ((u32)(u16)(((s32)seqHi >> 8) | (seqHi << 8)) << 16) | (u16)(((s32)seqLo >> 8) | (seqLo << 8));
+  if (M2C_FIELD(conn, u8 *, 0x8) == TCP_STATE_ESTABLISHED && M2C_FIELD(conn, u32 *, 0x24) != value) {
+    TcpSendAck(conn, 0);
     return;
   }
 
-  fE = M2C_FIELD(b, u16 *, 0xe);
-  M2C_FIELD(p, u16 *, 0x2c) = (u16)(((s32)fE >> 8) | (fE << 8));
+  window = M2C_FIELD(seg, u16 *, 0xe);
+  M2C_FIELD(conn, u16 *, 0x2c) = (u16)(((s32)window >> 8) | (window << 8));
 
-  switch (M2C_FIELD(p, u8 *, 0x8)) {
-  case 0:
-  case 2:
-    func_0201bf80(a, b, c, 0);
+  switch (M2C_FIELD(conn, u8 *, 0x8)) {
+  case TCP_STATE_CLOSED:
+  case TCP_STATE_SYN_SENT:
+    TcpSendReset(net, seg, len, 0);
     break;
-  case 3:
-    M2C_FIELD(p, u8 *, 0x8) = 4;
-    if (M2C_FIELD(p, s32 *, 0x4) == 1) {
-      M2C_FIELD(p, s32 *, 0x4) = 0;
-      func_02005e5c(M2C_FIELD(p, s32 *, 0));
+  case TCP_STATE_SYN_RCVD:
+    M2C_FIELD(conn, u8 *, 0x8) = TCP_STATE_ESTABLISHED;
+    if (M2C_FIELD(conn, s32 *, 0x4) == 1) {
+      M2C_FIELD(conn, s32 *, 0x4) = 0;
+      TaskWake(M2C_FIELD(conn, s32 *, 0));
     }
-    if (c == 0) break;
-  case 4: {
-    M2C_UNK saved;
-    M2C_FIELD(p, u32 *, 0x34)++;
-    space = M2C_FIELD(p, u32 *, 0x3c) - M2C_FIELD(p, u32 *, 0x44);
-    if ((u32)c > space) {
-      complete = 0;
-      c = space;
+    if (len == 0) break;
+  case TCP_STATE_ESTABLISHED: {
+    M2C_UNK irq;
+    M2C_FIELD(conn, u32 *, 0x34)++;
+    space = M2C_FIELD(conn, u32 *, 0x3c) - M2C_FIELD(conn, u32 *, 0x44);
+    if ((u32)len > space) {
+      isComplete = 0;
+      len = space;
     } else {
-      complete = 1;
+      isComplete = 1;
     }
-    if (c != 0) {
-      saved = func_0200751c();
-      func_02008048((u8 *)b + (((u8)M2C_FIELD(b, u8 *, 0xc) & 0xf0) / 4),
-                    M2C_FIELD(p, u32 *, 0x40) + M2C_FIELD(p, u32 *, 0x44), (u32)c);
-      M2C_FIELD(p, u32 *, 0x44) += (u32)c;
-      M2C_FIELD(p, u32 *, 0x24) += (u32)c;
-      func_02007530(saved);
-      if (M2C_FIELD(p, s32 *, 0x4) == 2) {
-        M2C_FIELD(p, s32 *, 0x4) = 0;
-        func_02005e5c(M2C_FIELD(p, s32 *, 0));
+    if (len != 0) {
+      irq = OS_DisableInterrupts();
+      MI_CpuCopy8((u8 *)seg + (((u8)M2C_FIELD(seg, u8 *, 0xc) & 0xf0) / 4),
+                  M2C_FIELD(conn, u32 *, 0x40) + M2C_FIELD(conn, u32 *, 0x44), (u32)len);
+      M2C_FIELD(conn, u32 *, 0x44) += (u32)len;
+      M2C_FIELD(conn, u32 *, 0x24) += (u32)len;
+      OS_RestoreInterrupts(irq);
+      if (M2C_FIELD(conn, s32 *, 0x4) == 2) {
+        M2C_FIELD(conn, s32 *, 0x4) = 0;
+        TaskWake(M2C_FIELD(conn, s32 *, 0));
       }
     }
-    if (complete && (flags & 1)) {
-      M2C_FIELD(p, u8 *, 0x8) = 6;
-      M2C_FIELD(p, u32 *, 0x24)++;
-      func_0201bf6c(p, 0);
-      if (c == 0 && M2C_FIELD(p, s32 *, 0x4) == 2) {
-        M2C_FIELD(p, s32 *, 0x4) = 0;
-        func_02005e5c(M2C_FIELD(p, s32 *, 0));
+    if (isComplete && (tcpFlags & TCP_FLAG_FIN)) {
+      M2C_FIELD(conn, u8 *, 0x8) = TCP_STATE_LAST_ACK;
+      M2C_FIELD(conn, u32 *, 0x24)++;
+      TcpSendFinAck(conn, 0);
+      if (len == 0 && M2C_FIELD(conn, s32 *, 0x4) == 2) {
+        M2C_FIELD(conn, s32 *, 0x4) = 0;
+        TaskWake(M2C_FIELD(conn, s32 *, 0));
       }
-    } else if (c != 0) {
-      func_0201bf58(p, 0);
+    } else if (len != 0) {
+      TcpSendAck(conn, 0);
     }
     break;
   }
-  case 7:
-  case 8:
-    if (flags & 1) {
-      M2C_FIELD(p, u32 *, 0x24) += (u32)c + 1;
-      func_0201bf58(p, 0);
-      M2C_FIELD(p, u8 *, 0x8) = 0;
-      if (M2C_FIELD(p, s32 *, 0x4) == 2) {
-        M2C_FIELD(p, s32 *, 0x4) = 0;
-        func_02005e5c(M2C_FIELD(p, s32 *, 0));
+  case TCP_STATE_FIN_WAIT1:
+  case TCP_STATE_FIN_WAIT2:
+    if (tcpFlags & TCP_FLAG_FIN) {
+      M2C_FIELD(conn, u32 *, 0x24) += (u32)len + 1;
+      TcpSendAck(conn, 0);
+      M2C_FIELD(conn, u8 *, 0x8) = TCP_STATE_CLOSED;
+      if (M2C_FIELD(conn, s32 *, 0x4) == 2) {
+        M2C_FIELD(conn, s32 *, 0x4) = 0;
+        TaskWake(M2C_FIELD(conn, s32 *, 0));
       }
     } else {
-      if (c != 0) {
-        M2C_FIELD(p, u32 *, 0x24) += (u32)c;
-        func_0201bf58(p, 0);
+      if (len != 0) {
+        M2C_FIELD(conn, u32 *, 0x24) += (u32)len;
+        TcpSendAck(conn, 0);
       }
-      M2C_FIELD(p, u8 *, 0x8) = 8;
+      M2C_FIELD(conn, u8 *, 0x8) = TCP_STATE_FIN_WAIT2;
     }
     break;
-  case 6:
-  case 9:
-    M2C_FIELD(p, u8 *, 0x8) = 0;
-    if (M2C_FIELD(p, s32 *, 0x4) == 2) {
-      M2C_FIELD(p, s32 *, 0x4) = 0;
-      func_02005e5c(M2C_FIELD(p, s32 *, 0));
+  case TCP_STATE_LAST_ACK:
+  case TCP_STATE_TIME_WAIT:
+    M2C_FIELD(conn, u8 *, 0x8) = TCP_STATE_CLOSED;
+    if (M2C_FIELD(conn, s32 *, 0x4) == 2) {
+      M2C_FIELD(conn, s32 *, 0x4) = 0;
+      TaskWake(M2C_FIELD(conn, s32 *, 0));
     }
     break;
   default:
-    if (flags & 1) {
-      M2C_FIELD(p, u32 *, 0x24)++;
+    if (tcpFlags & TCP_FLAG_FIN) {
+      M2C_FIELD(conn, u32 *, 0x24)++;
     }
-    func_0201bf58(p, 0);
+    TcpSendAck(conn, 0);
     break;
   }
-  func_02005ec8();
+  TaskYield();
 }
 
 void func_0201c718(s32 arg0, s32 arg1, s32 arg2) {
-    void *func_0201bde0(s32, s32);
-    void func_0201bf58(M2C_UNK, M2C_UNK);
-    void func_0201bf6c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0201bf80(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02005e5c(M2C_UNK);
+    void *TcpFindConnection(s32, s32);
+    void TcpSendAck(M2C_UNK, M2C_UNK);
+    void TcpSendFinAck(M2C_UNK, M2C_UNK);
+    M2C_UNK TcpSendReset(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK TaskWake(M2C_UNK);
     void *p;
     u8 v;
-    p = func_0201bde0(arg0, arg1);
+    p = TcpFindConnection(arg0, arg1);
     if (p == NULL) return;
     v = M2C_FIELD(p, u8 *, 8);
     switch (v) {
     case 7:
         M2C_FIELD(p, s32 *, 0x24)++;
-        func_0201bf58(p, 0);
+        TcpSendAck(p, 0);
         M2C_FIELD(p, u8 *, 8) = 9;
         break;
     case 8:
         M2C_FIELD(p, s32 *, 0x24)++;
-        func_0201bf58(p, 0);
+        TcpSendAck(p, 0);
         M2C_FIELD(p, u8 *, 8) = 0;
         if (M2C_FIELD(p, s32 *, 4) == 2) {
             M2C_FIELD(p, s32 *, 4) = 0;
-            func_02005e5c(M2C_FIELD(p, M2C_UNK *, 0));
+            TaskWake(M2C_FIELD(p, M2C_UNK *, 0));
         }
         break;
     case 4:
         M2C_FIELD(p, s32 *, 0x24)++;
-        func_0201bf6c(p, 0);
+        TcpSendFinAck(p, 0);
         M2C_FIELD(p, u8 *, 8) = 6;
         break;
     default:
-        func_0201bf80(arg0, arg1, arg2, 0);
+        TcpSendReset(arg0, arg1, arg2, 0);
         break;
     }
 }
 
 void func_0201c7e4(s32 a,s32 b) {
-    M2C_UNK func_02005e5c(s32);
-    M2C_UNK func_02005ec8();
-    void *func_0201bde0();
+    M2C_UNK TaskWake(s32);
+    M2C_UNK TaskYield();
+    void *TcpFindConnection();
     void *temp_r0;
 
-    temp_r0 = func_0201bde0();
+    temp_r0 = TcpFindConnection();
     if (temp_r0 == NULL) {
         return;
     }
-    func_02005ec8();
+    TaskYield();
     M2C_FIELD(temp_r0, s8 *, 8) = 0;
     if ((u32) (M2C_FIELD(temp_r0, s32 *, 4) - 1) > 1U) {
         return;
     }
     M2C_FIELD(temp_r0, s32 *, 4) = 0;
-    func_02005e5c(M2C_FIELD(temp_r0, s32 *, 0));
+    TaskWake(M2C_FIELD(temp_r0, s32 *, 0));
 }
 
 void func_0201c820(void *a,void *b,s32 c){
 s32 func_0201a674(void *,s32,void *,s32);
-void func_0201c400(void *,void *,s32);
+void TcpProcessAck(void *,void *,s32);
 s32 t,kind;u8 flags;
 if(func_0201a674(b,c,a,6))return;
 t=M2C_FIELD(b,u8 *,12)&240;
@@ -319,18 +322,18 @@ c-=(t/4);
 switch(kind){
 case 2:if(flags&40)return;func_0201c230(a,b,c);return;
 case 18:if(flags&40)return;func_0201c308(a,b,c);return;
-case 17:case 16:func_0201c400(a,b,c);return;
+case 17:case 16:TcpProcessAck(a,b,c);return;
 case 1:func_0201c718((s32)a,(s32)b,c);return;
-default:if(flags&4){func_0201c7e4((s32)a,(s32)b);return;}func_0201bf80(a,b,c,0);return;
+default:if(flags&4){func_0201c7e4((s32)a,(s32)b);return;}TcpSendReset(a,b,c,0);return;
 }
 }
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
 void func_0201c940(void *arg0, void *arg1, s32 arg2) {
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
-    M2C_UNK func_02008048(void *, s32, u32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
+    M2C_UNK MI_CpuCopy8(void *, s32, u32);
     s32 func_0201a674(void *, s32, void *, M2C_UNK);
     extern M2C_UNK data_0212dca4;
     s32 (*temp_r3_5)(s32, u32, void *);
@@ -354,7 +357,7 @@ void func_0201c940(void *arg0, void *arg1, s32 arg2) {
     if ((M2C_FIELD(arg1, u16 *, 6) != 0) && (func_0201a674(arg1, arg2, arg0, 0x11) != 0)) {
         return;
     }
-    temp_r5 = func_0200751c();
+    temp_r5 = OS_DisableInterrupts();
     var_r1 = M2C_FIELD(&data_0212dca4, void **, 8);
     if (var_r1 != NULL) {
 loop_5:
@@ -389,10 +392,10 @@ block_18:
                     } else {
                         M2C_FIELD(temp_r4, u32 *, 0x44) = temp_r0_2;
                     }
-                    func_02008048(arg1 + 8, M2C_FIELD(temp_r4, s32 *, 0x40), M2C_FIELD(temp_r4, u32 *, 0x44));
+                    MI_CpuCopy8(arg1 + 8, M2C_FIELD(temp_r4, s32 *, 0x40), M2C_FIELD(temp_r4, u32 *, 0x44));
                     if (M2C_FIELD(temp_r4, s32 *, 4) == 3) {
                         M2C_FIELD(temp_r4, s32 *, 4) = 0;
-                        func_02005e5c(M2C_FIELD(temp_r4, s32 *, 0));
+                        TaskWake(M2C_FIELD(temp_r4, s32 *, 0));
                     } else {
                         temp_r3_5 = M2C_FIELD(temp_r4, s32 (**)(s32, u32, void *), 0x38);
                         if (temp_r3_5 != NULL) {
@@ -413,7 +416,7 @@ block_30:
             }
         }
     }
-    func_02007530(temp_r5);
+    OS_RestoreInterrupts(temp_r5);
     /*v4*/
 }
 #pragma opt_propagation reset

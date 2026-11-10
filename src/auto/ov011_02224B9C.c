@@ -344,7 +344,7 @@ void *func_ov011_02225684(M2C_UNK **arg0) { M2C_UNK func_02086608(s32); extern M
 
 void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK func_01ffa574(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {func_01ffa574(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10);  return arg0; }
 
-void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK func_01ffa574(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {func_01ffa574(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10); func_02082040(arg0); return arg0; }
+void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK func_01ffa574(void *); M2C_UNK func_02086658(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {func_01ffa574(p); arg0[i+16]=0;} i++;}while(i<3); func_02086658(10); MemFree(arg0); return arg0; }
 
 void func_ov011_022257b4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 4);

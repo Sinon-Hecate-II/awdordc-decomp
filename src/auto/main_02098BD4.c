@@ -351,8 +351,8 @@ void func_02099420(void) {
 }
 
 s32 func_02099424(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -361,8 +361,8 @@ void func_02099438(void) {
 }
 
 s32 func_0209943c(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

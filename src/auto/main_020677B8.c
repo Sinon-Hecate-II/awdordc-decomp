@@ -1,14 +1,14 @@
 /* 1 function from 0x020677B8 to 0x02067CB0 (main), found by ds-decomp. */
 #include "common.h"
 #include "scan_spec.h"
-extern const ScanSpec677b8 data_020eae40;
-extern const u16 data_020ead40[];
-static inline s32 ScanDigit677b8(s32 c) { return (c<0 || c>=128)?0:data_020ead40[c]&8; }
+extern const ScanSpec677b8 gDefaultScanSpec;
+extern const u16 gCharClassTable[];
+static inline s32 ScanDigit677b8(s32 c) { return (c<0 || c>=128)?0:gCharClassTable[c]&8; }
 
 /* Parse one scanf conversion specification (just past a '%') from input into
  * specOut and return the pointer just after the specification. */
-char *func_020677b8(char *input,ScanSpec677b8 *specOut){
-ScanSpec677b8 spec=data_020eae40;
+char *ParseScanConversion(char *input,ScanSpec677b8 *specOut){
+ScanSpec677b8 spec=gDefaultScanSpec;
 char *cursor=input+1;
 s32 ch=*cursor;
 s32 hasLengthModifier;

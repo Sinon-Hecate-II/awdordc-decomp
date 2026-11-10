@@ -7,7 +7,7 @@ static inline void SetSpriteSizeE19(void *p,u16 x,u16 y){ M2C_FIELD(p,u32 *,0x40
 #pragma opt_propagation off
 void func_020e19e8(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -84,7 +84,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x5C) = NULL;
     M2C_FIELD(temp_r0, void **, 0x60) = NULL;
     M2C_FIELD(temp_r0, void **, 0x64) = NULL;
-    temp_r0_2 = func_02082028(0x12);
+    temp_r0_2 = MemAlloc(0x12);
     if (temp_r0_2 != NULL) {
         M2C_FIELD(temp_r0_2, s8 *, 0) = 4;
         M2C_FIELD(temp_r0_2, s8 *, 1) = 0;
@@ -209,7 +209,7 @@ void func_020e19e8(M2C_UNK arg0) {
 #pragma optimization_level 2
 void func_020e1f54(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -286,7 +286,7 @@ void func_020e1f54(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x5C) = NULL;
     M2C_FIELD(temp_r0, void **, 0x60) = NULL;
     M2C_FIELD(temp_r0, void **, 0x64) = NULL;
-    temp_r0_2 = func_02082028(0x12);
+    temp_r0_2 = MemAlloc(0x12);
     if (temp_r0_2 != NULL) {
         M2C_FIELD(temp_r0_2, s8 *, 0) = 4;
         M2C_FIELD(temp_r0_2, s8 *, 1) = 0;

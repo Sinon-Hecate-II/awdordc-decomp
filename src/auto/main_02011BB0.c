@@ -288,7 +288,7 @@ s32 func_020124c4(s32 a,void *b){s32 func_020114b4();s32 func_020113d0(void *,s3
 s32 func_020125b0(s32 sendCode, void *params) {
 s32 func_020114b4();
 s32 func_020113d0(void *, s32);
-void func_02008048(void *, void *, s32);
+void MI_CpuCopy8(void *, void *, s32);
 u16 packet[30];
 s32 r;
 u16 type;
@@ -308,11 +308,11 @@ M2C_FIELD(packet, u16 *, 2) = M2C_FIELD(params, u16 *, 6);
 M2C_FIELD(packet, u32 *, 4) = M2C_FIELD(params, u32 *, 0);
 M2C_FIELD(packet, u16 *, 8) = M2C_FIELD(params, u16 *, 4);
 M2C_FIELD(packet, u16 *, 10) = M2C_FIELD(params, u16 *, 8);
-func_02008048((u8 *)params + 10, &packet[6], 6);
+MI_CpuCopy8((u8 *)params + 10, &packet[6], 6);
 M2C_FIELD(packet, u16 *, 18) = M2C_FIELD(params, u16 *, 16);
 M2C_FIELD(packet, u16 *, 54) = M2C_FIELD(params, u16 *, 52);
 M2C_FIELD(packet, u16 *, 20) = M2C_FIELD(params, u16 *, 18);
-func_02008048((u8 *)params + 20, &packet[11], 32);
+MI_CpuCopy8((u8 *)params + 20, &packet[11], 32);
 r = func_020113d0(packet, 60);
 if (!r) r = 2;
 return r;
@@ -336,12 +336,12 @@ s32 func_02012700(M2C_UNK arg0) {
 
 s32 func_02012740(s32 a,u16 *b,void *c,s32 d,u16 e){
 void *func_02011440(void);
-void func_020067c4(void *,s32);void func_02008048(void *,void *,s32);void func_02007f8c(void *,s32,s32);s32 func_020113d0(void *,s32);
+void func_020067c4(void *,s32);void MI_CpuCopy8(void *,void *,s32);void func_02007f8c(void *,s32,s32);s32 func_020113d0(void *,s32);
 u32 packet[10];s32 r;void *p;
 r=func_020114b4(1,2);if(r)return r;if(!b)return 6;
 func_020067c4(b,*b*2);p=func_02011440();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;func_020112b4(12,a);
 M2C_FIELD(packet,u16 *,0)=12;M2C_FIELD(packet,u16 **,4)=b;
-if(c)func_02008048(c,&packet[2],24);else func_02007f8c(&packet[2],0,24);
+if(c)MI_CpuCopy8(c,&packet[2],24);else func_02007f8c(&packet[2],0,24);
 M2C_FIELD(packet,s32 *,32)=d;M2C_FIELD(packet,u16 *,38)=e;
 r=func_020113d0(packet,40);if(!r)r=2;return r;
 }

@@ -362,12 +362,12 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 
 s32 func_0209375c(void *arg0){
 extern void **data_027e0058;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 void *p=M2C_FIELD(arg0,void **,4);
 void *found=0;
 s32 i;
 void *entry; u8 (*entries)[14]; u32 kind;
-for(i=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+1;i<data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+0x33;i++){
+for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
 entries=(void *)((u8 *)*data_027e0058+0x59a4);
 entry=entries[i];
 kind=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
@@ -391,12 +391,12 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 
 s32 func_02093888(void *arg0) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 void *p=M2C_FIELD(arg0,void **,4);
 u32 v=M2C_FIELD(p,s32 *,12);
 void *found=0;
-s32 i=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+1;
-s32 end=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+0x33;
+s32 i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;
+s32 end=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;
 u8 a=(u8)v;
 u8 b=(u8)(v>>8);
 if(i<end) {
@@ -438,10 +438,10 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 
 s32 func_020939e0(void *arg0) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 void *p=M2C_FIELD(arg0,void **,4);
 s32 i;
-for(i=data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+1;i<data_ov000_021aeef4[M2C_FIELD(p,s16 *,8)]+0x33;i++){
+for(i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;i<gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;i++){
 u32 bits=(u32)(M2C_FIELD((u8 *)*gCurrentMap+i*14,u8 *,0x59A4)<<26)>>26;
 if(bits && (M2C_FIELD(p,s16 *,10)==0 || bits==M2C_FIELD(p,s16 *,10))) {
 func_020a6718(i);p=M2C_FIELD(arg0,void **,4);
@@ -477,12 +477,12 @@ s32 func_02093b28(void *arg0) {
 }
 
 s32 func_02093b48(void *arg0) {
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern void **gCurrentMap;
     s32 *func_02092ca8(s32 **, s32);
     void *p = M2C_FIELD(arg0, void **, 4);
     s16 start_field = M2C_FIELD(p, s16 *, 8);
-    s32 start = data_ov000_021aeef4[start_field];
+    s32 start = gPlayerUnitIdBase[start_field];
     s32 i = start + 1;
     s32 limit = start + 0x33;
     s32 found = 0;

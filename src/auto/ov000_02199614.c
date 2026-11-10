@@ -5,7 +5,7 @@ typedef struct { u16 value:7; } Field7;
 
 void func_ov000_02199614(u8 player) {
 extern s32 *gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 s32 func_ov000_021973f8(s32);
 s32 func_ov000_02197434(s32,s32);
 s32 func_ov000_02197470(s32,s32,s32);
@@ -24,7 +24,7 @@ u8 *base,*cell;
 s32 owner,id,amount;
 if(!func_ov000_021973f8(21))return;
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
-for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 base=(u8 *)*gCurrentMap;
 unit=(UnkStruct_ov000_021A860C *)(base+0x59a4+i*14);
 if(!unit->unk0)continue;
@@ -211,7 +211,7 @@ for(i=0;i<6;i++,s++,d++) d[12]=s[12];
 func_02085348(data_02156e50,0x14);
 }
 #pragma opt_lifetimes reset
-void func_ov000_02199d74(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
+void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
     void func_ov000_0217d3b8(s32);
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
@@ -353,13 +353,13 @@ void func_ov000_0219a1f4(void) {
     void func_ov000_0219a8c4(void);
     s32 func_ov000_021a9b84(void);
     extern s32 *gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 *data_ov000_021df580;
 
     {
         u8 *map = *(u8 **)gCurrentMap;
         u16 val = *(u16 *)(map + 0x52a4);
-        map[0x52d4] = (u8)data_ov000_021aeef4[val];
+        map[0x52d4] = (u8)gPlayerUnitIdBase[val];
     }
     {
         u8 *map = *(u8 **)gCurrentMap;

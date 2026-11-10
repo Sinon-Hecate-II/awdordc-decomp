@@ -239,7 +239,7 @@ func_ov007_0221e85c kind:function(arm,size=0x1c) addr:0x0221e85c
 func_ov007_0221e878 kind:function(arm,size=0x3bc) addr:0x0221e878
 func_ov007_0221ec34 kind:function(arm,size=0xc) addr:0x0221ec34
 func_ov007_0221ec40 kind:function(arm,size=0x168) addr:0x0221ec40
-func_ov007_0221eda8 kind:function(arm,size=0x478) addr:0x0221eda8
+MapEditListInput kind:function(arm,size=0x478) addr:0x0221eda8
 func_ov007_0221f220 kind:function(arm,size=0xc) addr:0x0221f220
 func_ov007_0221f22c kind:function(arm,size=0xc) addr:0x0221f22c
 func_ov007_0221f238 kind:function(arm,size=0xc) addr:0x0221f238
@@ -999,21 +999,21 @@ data_ov007_02220d24 kind:data(any) addr:0x02220d24
 data_ov007_02220d28 kind:data(any) addr:0x02220d28
 data_ov007_02220d2c kind:data(any) addr:0x02220d2c
 data_ov007_02220d30 kind:data(any) addr:0x02220d30
-data_ov007_02220d34 kind:data(any) addr:0x02220d34
-data_ov007_02220d40 kind:data(any) addr:0x02220d40
+gMapEditPath kind:data(any) addr:0x02220d34
+gSoftKeyLayouts kind:data(any) addr:0x02220d40
 data_ov007_02220d4c kind:data(any) addr:0x02220d4c
 data_ov007_02220d58 kind:data(any) addr:0x02220d58
 data_ov007_02220d80 kind:data(any) addr:0x02220d80
 data_ov007_02220da8 kind:data(any) addr:0x02220da8
 data_ov007_02220dd0 kind:data(any) addr:0x02220dd0
 data_ov007_02220df8 kind:data(any) addr:0x02220df8
-data_ov007_02220ea0 kind:data(any) addr:0x02220ea0
-data_ov007_02221224 kind:data(any) addr:0x02221224
-data_ov007_022215a8 kind:data(any) addr:0x022215a8
-data_ov007_0222192c kind:data(any) addr:0x0222192c
-data_ov007_0222193c kind:data(any) addr:0x0222193c
-data_ov007_0222194c kind:data(any) addr:0x0222194c
-data_ov007_0222195c kind:data(any) addr:0x0222195c
+gSoftKeyLayoutUs kind:data(any) addr:0x02220ea0
+gSoftKeyLayoutJp kind:data(any) addr:0x02221224
+gSoftKeyLayoutEu kind:data(any) addr:0x022215a8
+gSoftKeyNarcName kind:data(any) addr:0x0222192c
+gSoftKeyEuFileName kind:data(any) addr:0x0222193c
+gSoftKeyUsFileName kind:data(any) addr:0x0222194c
+gSoftKeyJpFileName kind:data(any) addr:0x0222195c
 data_ov007_02221974 kind:data(any) addr:0x02221974
 data_ov007_02221980 kind:data(any) addr:0x02221980
 data_ov007_0222198c kind:data(any) addr:0x0222198c
@@ -1029,5 +1029,5 @@ data_ov007_02221a50 kind:bss addr:0x02221a50
 data_ov007_02221a84 kind:bss addr:0x02221a84
 data_ov007_02221da4 kind:bss addr:0x02221da4 ambiguous
 data_ov007_02221e08 kind:bss addr:0x02221e08
-data_ov007_02221e0c kind:bss addr:0x02221e0c
-data_ov007_02221e10 kind:bss addr:0x02221e10
+gMapEditRecords kind:bss addr:0x02221e0c
+gMapEditObjectList kind:bss addr:0x02221e10

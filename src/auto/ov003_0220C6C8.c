@@ -8,18 +8,18 @@ extern u8 data_ov003_02210ac4[], data_ov003_02210b0c[], data_ov003_02210c44[];
 extern u8 data_ov003_02210a4c[], data_ov003_02211028[], data_ov003_02211018[], data_ov003_0220fb28[];
 extern u8 data_0215d9b8[];
 typedef struct { void *vtable; u8 unk4,unk5,unk6,unk7; s16 unk8,unkA; u8 unkC,unkD; s16 unkE,unk10,unk12,unk14,unk16; u8 unk18,pad[3]; void *child; } Unk0220C6C8Slider;
-void *func_02082028(int);
+void *MemAlloc(int);
 static inline Unk0220C6C8Sprite *Unk0220C6C8CreateSprite(int kind) {
-Unk0220C6C8Sprite *sprite=func_02082028(0x12);
+Unk0220C6C8Sprite *sprite=MemAlloc(0x12);
 if(sprite) { sprite->kind=kind; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0; sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0; sprite->unk2=sprite->unk4; }
 return sprite;
 }
 void func_020a9218(void *);
 static inline Unk0220C6C8Anim *Unk0220C6C8CreateAnim(u8 *data) { Unk0220C6C8Anim *anim; Unk0220C6C8Sprite *sprite;
-anim=func_02082028(0x10);
+anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data; anim->current=(u32 *)data; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -37,11 +37,11 @@ static inline void Unk0220C6C8Reset(Unk0220C6C8Anim *p) { p->unkE=0; p->unkF=0; 
 
 void *func_01ffa42c(void *, void *);
 int func_ov003_022066a8(int);
-void *func_02082028(int);
+void *MemAlloc(int);
 extern u8 data_ov003_022109ec[];
-extern u8 data_ov003_02211060[];
+extern u8 gMapSelectVTable[];
 extern u32 data_02101fd8;
-void *func_02082034(int);
+void *MemAllocArray(int);
 void *func_020e34bc(int);
 void func_02007f8c(void *, int, int);
 void func_020a9218(void *);
@@ -59,7 +59,7 @@ int i, base;
 u8 *entry;
 u8 *p = func_01ffa42c(data_ov003_022109ec, a);
 if (p) {
-*(void **)p = data_ov003_02211060;
+*(void **)p = gMapSelectVTable;
 p[0x34]=0; p[0x35]=0;
 ((Unk0220C6C8Nibbles *)(p+0x36))->low=4;
 ((Unk0220C6C8Nibbles *)(p+0x36))->high=0;
@@ -77,10 +77,10 @@ p[0x34]=0; p[0x35]=0;
 *(u32 *)(p+0x40)=0;
 *(u32 *)(p+0x44)=func_ov003_022066a8(0);
 *(u32 *)(p+0x68)=0;
-*(void **)(p+0x4c)=func_02082028(0x24);anim=func_02082028(0x10);
+*(void **)(p+0x4c)=MemAlloc(0x24);anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data_ov003_02210ac4; anim->current=(u32 *)data_ov003_02210ac4; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -91,10 +91,10 @@ anim->sprite=sprite; anim->current=anim->start; anim->index=0;
 func_020a9218(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p, u8 **, 0x4c), Unk0220C6C8Anim **, 0x18)=anim;
-anim=func_02082028(0x10);
+anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data_ov003_02210b0c; anim->current=(u32 *)data_ov003_02210b0c; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -105,11 +105,11 @@ anim->sprite=sprite; anim->current=anim->start; anim->index=0;
 func_020a9218(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(M2C_FIELD(p, u8 **, 0x4c), Unk0220C6C8Anim **, 0x1c)=anim;
-M2C_FIELD(p, void **, 0x48)=func_02082034(0xd8);
-for (i=0;i<6;i++) {anim=func_02082028(0x10);
+M2C_FIELD(p, void **, 0x48)=MemAllocArray(0xd8);
+for (i=0;i<6;i++) {anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data_ov003_02210ac4; anim->current=(u32 *)data_ov003_02210ac4; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -120,10 +120,10 @@ anim->sprite=sprite; anim->current=anim->start; anim->index=0;
 func_020a9218(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(entry=M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,24)=anim;
-anim=func_02082028(0x10);
+anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data_ov003_02210b0c; anim->current=(u32 *)data_ov003_02210b0c; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -134,10 +134,10 @@ anim->sprite=sprite; anim->current=anim->start; anim->index=0;
 func_020a9218(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(entry=M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,28)=anim;
-anim=func_02082028(0x10);
+anim=MemAlloc(0x10);
 if (anim) {
 anim->start=(u32 *)data_ov003_02210c44; anim->current=(u32 *)data_ov003_02210c44; anim->index=0; anim->unkE=0; anim->unkF=0;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = anim->current[1]; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -149,7 +149,7 @@ func_020a9218(anim); anim->unkE=0; anim->unkF=0;
 }
 M2C_FIELD(entry=M2C_FIELD(p,u8 **,0x48)+i*0x24,Unk0220C6C8Anim **,32)=anim;
 }
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = 0; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -160,7 +160,7 @@ func_020a9188(sprite,0x78);
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unk4=0xc000;
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unk8=7;
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x50)->unkA=7;
-sprite = func_02082028(0x12);
+sprite = MemAlloc(0x12);
 if (sprite) {
 sprite->kind = 1; sprite->unk1=0; sprite->unk2=0; sprite->unk4=0;
 sprite->unk6=1; sprite->unk8=0; sprite->unkA=1; sprite->unkC=1; sprite->unkE=0; sprite->unk10=0;
@@ -169,13 +169,13 @@ sprite->unk2=sprite->unk4;
 M2C_FIELD(p,Unk0220C6C8Sprite **,0x54)=sprite;
 resetSprite=M2C_FIELD(p,Unk0220C6C8Sprite **,0x54);
 resetSprite->unkE=0; resetSprite->unk10=0; resetSprite->unkC=0; resetSprite->unk2=resetSprite->unk4;
-M2C_FIELD(p,u8 **,0x58)=func_02082028(0x1c);
+M2C_FIELD(p,u8 **,0x58)=MemAlloc(0x1c);
 M2C_FIELD(M2C_FIELD(p,u8 **,0x58),void **,0xc)=data_ov003_02210a4c;
 M2C_FIELD(p,u8 **,0x58)[8]=1; M2C_FIELD(p,u8 **,0x58)[0]=0;
 M2C_FIELD(M2C_FIELD(p,u8 **,0x58),s16 *,4)=0xc0;
 M2C_FIELD(M2C_FIELD(p,u8 **,0x58),s16 *,2)=M2C_FIELD(M2C_FIELD(p,u8 **,0x58),s16 *,4);
 M2C_FIELD(M2C_FIELD(p,u8 **,0x58),s16 *,6)=-4;
-q=func_02082028(0x24);
+q=MemAlloc(0x24);
 if(q) {
 M2C_FIELD(q,u16 *,0x10)=30; q[0x12]=0;
 M2C_FIELD(q,u32 *,0)=0; M2C_FIELD(q,u32 *,4)=0;
@@ -184,7 +184,7 @@ M2C_FIELD(q,void **,0x14)=func_020e34bc(0x168);
 func_02007f8c(M2C_FIELD(q,void **,0x14),0,0x168);
 }
 M2C_FIELD(p,u8 **,0x5c)=q;
-q=func_02082028(0x20);
+q=MemAlloc(0x20);
 if(q) {
 M2C_FIELD(q,void **,0)=data_ov003_02211028;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
@@ -192,7 +192,7 @@ M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
 func_020a9a1c(q,0,127);
 q[12]=70;q[13]=24;M2C_FIELD(q,s16 *,8)=145;M2C_FIELD(q,s16 *,10)=6;
-t=func_02082028(0x1c);
+t=MemAlloc(0x1c);
 if(t) {
 M2C_FIELD(t,void **,0)=data_ov003_02211018;
 t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
@@ -209,7 +209,7 @@ if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD
 base=M2C_FIELD(q,s16 *,8);
 i=base+func_0207c8ec(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
-q=func_02082028(0x20);
+q=MemAlloc(0x20);
 if(q) {
 M2C_FIELD(q,void **,0)=data_ov003_02211028;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
@@ -217,7 +217,7 @@ M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
 func_020a9a1c(q,0,127);
 q[12]=70;q[13]=24;M2C_FIELD(q,s16 *,8)=145;M2C_FIELD(q,s16 *,10)=36;
-t=func_02082028(0x1c);
+t=MemAlloc(0x1c);
 if(t) {
 M2C_FIELD(t,void **,0)=data_ov003_02211018;
 t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
@@ -234,10 +234,10 @@ if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD
 base=M2C_FIELD(q,s16 *,8);
 i=base+func_0207c8ec(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
-q=func_02082028(24);
+q=MemAlloc(24);
 if(q) { M2C_FIELD(q,u32 *,0)=0;M2C_FIELD(q,u32 *,4)=0;M2C_FIELD(q,u32 *,8)=0;M2C_FIELD(q,u32 *,12)=0;M2C_FIELD(q,u32 *,16)=0;M2C_FIELD(q,u32 *,20)=0; }
 M2C_FIELD(p,u8 **,0x68)=q;
-q=func_02082028(72);
+q=MemAlloc(72);
 if(q) {M2C_FIELD(q,void **,0)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,4)=0;M2C_FIELD(q,s32 *,8)=2;M2C_FIELD(q,s32 *,12)=0;M2C_FIELD(q,s32 *,16)=1;q[20]=1;
 M2C_FIELD(q,void **,24)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,s32 *,32)=2;M2C_FIELD(q,s32 *,36)=0;M2C_FIELD(q,s32 *,40)=1;q[44]=1;
 M2C_FIELD(q,void **,48)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;

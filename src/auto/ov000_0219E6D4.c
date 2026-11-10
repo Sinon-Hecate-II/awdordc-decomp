@@ -23,7 +23,7 @@ void func_ov000_0219e6d4(void) {
 void func_ov000_0219e72c(void) {
     /* Variant collecting type-5 map entries, installing func_ov000_02181b8c. */
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -39,7 +39,7 @@ void func_ov000_0219e72c(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     obj = *gCurrentMap;
-    baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
     index = baseIndex + 1;
     if (index < baseIndex + 0x33) {
         stride = index * 14;
@@ -56,7 +56,7 @@ void func_ov000_0219e72c(void) {
             index++;
             obj = *gCurrentMap;
             stride += 14;
-        } while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -374,7 +374,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_020ce630(s32, s32, void *);
     void func_020cfd28(void);
     void func_020bbc2c(s32);
-    void func_020bac24(void);
+    void BattleUpdateUnitCursor(void);
     void func_ov000_0219f3fc(void);
     void func_ov000_0219f448(void);
     void func_ov000_0219f494(void);
@@ -433,14 +433,14 @@ s32 func_ov000_0219f0d8(void) {
         break;
     case 5:
         func_020bbc2c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 6:
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 7:
         func_020bb110();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 8:
         return func_ov000_0219f518();
@@ -448,7 +448,7 @@ s32 func_ov000_0219f0d8(void) {
         return func_ov000_0219f5fc();
     case 10:
         func_020bb458();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 11:
         func_ov000_0219fabc(1);
@@ -457,18 +457,18 @@ s32 func_ov000_0219f0d8(void) {
         break;
     case 12:
         func_020bb768();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 13:
         func_020bbac8();
         break;
     case 14:
         func_ov000_0219fc64();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 15:
         func_ov000_0219fcdc();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 17:
         func_ov000_0219fd54();
@@ -485,11 +485,11 @@ s32 func_ov000_0219f0d8(void) {
         return func_ov000_0219f6fc();
     case 22:
         func_020bbed4();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 23:
         func_020bc0e0();
-        func_020bac24();
+        BattleUpdateUnitCursor();
         break;
     case 24: {
         u8 *d = data_ov000_021df7d0;

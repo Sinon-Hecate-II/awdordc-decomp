@@ -49,7 +49,7 @@ case 12:func_020e19e8(a);return;
 case 13:func_020e1f54(a);return;
 case 14:func_020e24c0(a);return;
 case 15:func_020e2a2c(a);return;
-case 16:case 17:func_ov003_021f1c0c();func_02086330();func_02085054(0,0x6e0,a);return;
+case 16:case 17:ApplyBgLayerVisibility();func_02086330();func_02085054(0,0x6e0,a);return;
 case 18:func_ov003_021fe3b4(a);return;
 case 19:func_ov003_021fe780(a);return;
 case 20:func_ov003_021feb4c(a);return;
@@ -113,7 +113,7 @@ void func_ov003_021f18b4(u8 *arg0) {
     void func_020af144(u8, u8, u8, u8);
     void func_020af178(u8, u8);
     void func_020af19c(u8, u8);
-    extern M2C_UNK data_ov003_0220fc78;
+    extern M2C_UNK gSceneLayerConfig;
     u8 temp_r0;
     u8 temp_r1;
     temp_r1 = arg0[3];
@@ -125,7 +125,7 @@ void func_ov003_021f18b4(u8 *arg0) {
     } else if (temp_r1 != 0) {
         func_020af19c(arg0[4], arg0[5]);
     }
-    M2C_FIELD(&data_ov003_0220fc78, u8 **, 4) = arg0;
+    M2C_FIELD(&gSceneLayerConfig, u8 **, 4) = arg0;
 }
 
 void func_ov003_021f1920(void) {
@@ -135,7 +135,7 @@ void func_ov003_021f1920(void) {
 
 void func_ov003_021f192c(void *a) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
-extern u8 data_ov003_022111c0;extern M2C_UNK data_ov003_0220fc78;
+extern u8 data_ov003_022111c0;extern M2C_UNK gSceneLayerConfig;
 void *func_0208931c(s32);s32 func_020aaf74(void *);
 void func_020a9a30(s32,s32,s32,void *);
 s32 old=gCur3DSpriteEngine,current;void *p; s32 i=0;u8 mode;s32 k,n;u32 m;
@@ -157,7 +157,7 @@ M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((m<<24)>>6);
 M2C_FIELD(p,u16 *,0x3c)=0xc00;
 }while(++i<2);
 gCur3DSpriteEngine=old;
-M2C_FIELD(&data_ov003_0220fc78,void **,0)=a;
+M2C_FIELD(&gSceneLayerConfig,void **,0)=a;
 }
 
 void func_ov003_021f1a58(void) {
@@ -176,27 +176,27 @@ void func_ov003_021f1ab8(s32 arg0) {
     M2C_UNK func_020822b8();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK data_ov003_0220fc78;
+    extern M2C_UNK gSceneLayerConfig;
     s32 temp_r4;
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020822b8();
     gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&data_ov003_0220fc78, s32 *, 8) = arg0;
+    M2C_FIELD(&gSceneLayerConfig, s32 *, 8) = arg0;
 }
 
 void func_ov003_021f1af8(s32 arg0) {
     M2C_UNK func_020822b8();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK data_ov003_0220fc78;
+    extern M2C_UNK gSceneLayerConfig;
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020822b8();
     gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&data_ov003_0220fc78, s32 *, 12) = arg0;
+    M2C_FIELD(&gSceneLayerConfig, s32 *, 12) = arg0;
 }
 
 void func_ov003_021f1b38(s32 arg0, s32 arg1) {
@@ -245,59 +245,62 @@ u8 func_ov003_021f1bfc(void) {
     return data_ov003_022111c0;
 }
 
-M2C_UNK func_ov003_021f1c0c(void) {
+/* Enables the configured BG0-BG3 layer (and disables the rest) on both the
+ * main and sub 2D engines, using the shared 6-byte layer descriptor:
+ * [0]=main on, [1]=main layer, [3]=sub on, [4]=sub layer. */
+M2C_UNK ApplyBgLayerVisibility(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
-    extern M2C_UNK data_ov003_0220fc78;
+    extern M2C_UNK gSceneLayerConfig;
     extern M2C_UNK g3DSpriteEngineSub;
-    u8 *info;
-    s32 saved;
-    u8 i;
+    u8 *layers;
+    s32 savedEngine;
+    u8 layer;
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    for (i = 0; i < 4; i++) {
-        info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
-        if (info[0] != 0 && info[1] == i) {
-            switch (i) {
-            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x10; break; }
-            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x20; break; }
-            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x40; break; }
-            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x80; break; }
-            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x100; break; }
+    for (layer = 0; layer < 4; layer++) {
+        layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4);
+        if (layers[0] != 0 && layers[1] == layer) {
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x100; break; }
             }
         } else {
-            switch (i) {
-            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x10; break; }
-            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x20; break; }
-            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x40; break; }
-            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x80; break; }
-            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x100; break; }
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x100; break; }
             }
         }
     }
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    for (i = 0; i < 4; i++) {
-        info = M2C_FIELD(&data_ov003_0220fc78, u8 **, 4);
-        if (info[3] != 0 && info[4] == i) {
-            switch (i) {
-            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x10; break; }
-            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x20; break; }
-            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x40; break; }
-            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x80; break; }
-            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p | 0x100; break; }
+    for (layer = 0; layer < 4; layer++) {
+        layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4);
+        if (layers[3] != 0 && layers[4] == layer) {
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x100; break; }
             }
         } else {
-            switch (i) {
-            case 0: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x10; break; }
-            case 1: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x20; break; }
-            case 2: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x40; break; }
-            case 3: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x80; break; }
-            case 4: { u16 *volatile p = *(u16 **)gCur3DSpriteEngine; *p = *p & ~0x100; break; }
+            switch (layer) {
+            case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x10; break; }
+            case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x20; break; }
+            case 2: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x40; break; }
+            case 3: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x80; break; }
+            case 4: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg & ~0x100; break; }
             }
         }
     }
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
     return (M2C_UNK)&gCur3DSpriteEngine;
 }
 
@@ -305,7 +308,7 @@ void func_ov003_021f2008(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
     extern M2C_UNK g3DSpriteEngineSub;
-    extern M2C_UNK data_ov003_0220fc78;
+    extern M2C_UNK gSceneLayerConfig;
     extern s32 data_ov003_0220fc88[2][4];
 
     u32 savedEngine;
@@ -315,7 +318,7 @@ void func_ov003_021f2008(void) {
     savedEngine = (u32)gCur3DSpriteEngine;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    gl = (u8 *)&data_ov003_0220fc78 + 4;
+    gl = (u8 *)&gSceneLayerConfig + 4;
     for (i = 0; i < 5; i++) {
         if (data_ov003_0220fc88[0][i] != 0) continue;
         if (gl[0] == 0) continue;

@@ -19,17 +19,17 @@ void func_0209bfdc(s16,s16,void *,u32,int,int);
 /* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
 void func_ov000_0216ecc8(s32 mode,s32 reverse){
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern s8 data_ov000_021aab79[];
 extern M2C_UNK data_ov000_021df5e4;
 extern u32 data_ov000_021b5bfc[];
 void *func_020e34bc(s32);void func_020e35cc(void *);
-void func_02008048(void *,void *,s32);s32 func_0207c8ec(s32,s32);
+void MI_CpuCopy8(void *,void *,s32);s32 func_0207c8ec(s32,s32);
 s32 n=0,i,j,k,l,out,t,v,h,idx,z;
 u8 *tmp=func_020e34bc(64),*p,*q,*map,*attr;
 s8 *order=data_ov000_021aab79;
 for(t=1;t<27;t++,order++){
-for(i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){
+for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){
 map=*gCurrentMap;p=map+0x59a4+i*14;
 v=(u32)(p[0]<<26)>>26;
 if(v && v==*order)((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[n++]=i-M2C_FIELD(map,u16 *,0x52a8);
@@ -37,7 +37,7 @@ if(v && v==*order)((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[n++]=i-M2C_FIE
 ((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[n]=0;
 out=0;
 switch(mode){
-case 0:func_02008048(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);break;
+case 0:MI_CpuCopy8(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);break;
 case 1:
 for(h=10;h>0;h--)for(i=0;i<n;i++){
 map=*gCurrentMap;idx=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i]+M2C_FIELD(map,u16 *,0x52a8);
@@ -61,7 +61,7 @@ if(v==h)tmp[out++]=z;
 }
 if(reverse){
 for(i=0;i<n;i++)((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i]=tmp[n-1-i];
-func_02008048(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);
+MI_CpuCopy8(M2C_FIELD(&data_ov000_021df5e4,u8 **,4),tmp,64);
 }
 out=0;
 for(i=0;i<n;i++){
@@ -105,7 +105,7 @@ func_020e35cc(tmp);
 #pragma opt_strength_reduction off
 s32 func_ov000_0216f1b4(s32 arg0) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 register s32 offset;
 u8 *base,*arr;
 s32 limit,j;
@@ -116,8 +116,8 @@ base=*gCurrentMap;
 arr=base+0x59a4;
 offset=*(u16 *)(base+0x52a8);
 if (!(*(u16 *)(arr+(offset+arg0)*14+4)&8)) return 0;
-i=data_ov000_021aeef4[*(u16 *)(base+0x52a4)]+1;
-if(i >= data_ov000_021aeef4[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33) goto done;
+i=gPlayerUnitIdBase[*(u16 *)(base+0x52a4)]+1;
+if(i >= gPlayerUnitIdBase[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33) goto done;
 cell=arr+i*14;
 do {
 if (((u32)(cell[0]<<26)>>26)==0) goto next;
@@ -127,7 +127,7 @@ if(arg0==cell[12]-offset){
 if(cell[13]==0) goto second;
 if(!(*(u16 *)(cell+4)&8)) return 1;
 arg0=i-offset;
-limit=data_ov000_021aeef4[*(u16 *)(base+0x52a4)];
+limit=gPlayerUnitIdBase[*(u16 *)(base+0x52a4)];
 j=limit+1;
 if(j<limit+0x33){
 c2=base+0x59a4+j*14;
@@ -144,7 +144,7 @@ j++;c2+=14;
 if(!(*(u16 *)(cell+4)&8))return 2;
 second:
 arg0=i-offset;
-limit=data_ov000_021aeef4[*(u16 *)(base+0x52a4)];
+limit=gPlayerUnitIdBase[*(u16 *)(base+0x52a4)];
 j=limit+1;
 if(j<limit+0x33){
 c2=base+0x59a4+j*14;
@@ -160,7 +160,7 @@ j++;c2+=14;
 }
 next:
 i++;cell+=14;
-}while(i<data_ov000_021aeef4[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33);
+}while(i<gPlayerUnitIdBase[*(u16 *)((u8 *)*gCurrentMap+0x52a4)]+0x33);
 done:
 return 0;
 }

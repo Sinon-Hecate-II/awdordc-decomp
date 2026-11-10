@@ -54,8 +54,8 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     void func_0208fe30(u32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    s32 func_ov003_021e6cac(u8, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021e6ef4();
+    s32 InRange(u8, M2C_UNK, M2C_UNK);
+    M2C_UNK HandleWaypointInput();
     s16 func_ov003_022004a8(u8);
     s32 temp_r3;
     s32 temp_r4_2;
@@ -70,7 +70,7 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     void *temp_r6;
 
     temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-    func_ov003_021e6ef4(M2C_FIELD(arg0,void **,0x6c),unused_arg1);
+    HandleWaypointInput(M2C_FIELD(arg0,void **,0x6c),unused_arg1);
     if (temp_r4 == (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E)) {
         return;
     }
@@ -89,13 +89,13 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
         temp_r0 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-        if (func_ov003_021e6cac((u8) temp_r0, 0, 3) != 0) {
+        if (InRange((u8) temp_r0, 0, 3) != 0) {
             func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-        } else if (func_ov003_021e6cac((u8) temp_r0, 4, 7) != 0) {
+        } else if (InRange((u8) temp_r0, 4, 7) != 0) {
             func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
-        } else if (func_ov003_021e6cac((u8) temp_r0, 8, 0x14) != 0) {
+        } else if (InRange((u8) temp_r0, 8, 0x14) != 0) {
             func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-        } else if (func_ov003_021e6cac((u8) temp_r0, 0x15, 0x18) != 0) {
+        } else if (InRange((u8) temp_r0, 0x15, 0x18) != 0) {
             func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
         } else if ((u8) temp_r0 == 0x19) {
             temp_r0_2 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
@@ -128,30 +128,57 @@ void func_ov003_021ec57c(void *arg0, s32 unused_arg1) {
 #pragma pop
 void func_ov003_021ec780(u8 *p,s32 i) {p+=14;p[i]=p[i]==1?2:1;}
 
-s32 func_ov003_021e6cac(u8,s32,s32);
-void func_ov003_021e8654(s32,s32,s32);
-s32 func_ov003_021e8308(void*);
+s32 InRange(u8,s32,s32);
+void StepCounter(s32,s32,s32);
+s32 EntriesDiffer(void*);
 #pragma inline on
 #pragma opt_propagation on
-void func_ov003_021ec79c(void *arg0,s32 arg1,s32 arg2){s32 n=M2C_FIELD(arg0+0x18,s32*,arg1*24)-1;
-if(((s32 (*)(s16,s16,s16))func_ov003_021e6cac)((s16)n,(s16)M2C_FIELD(arg0+0x20,s32*,arg1*24),(s16)M2C_FIELD(arg0+0x1c,s32*,arg1*24))||arg2){M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
-} else {
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
-}}else{
-if(n>M2C_FIELD(arg0+0x1c,s32*,arg1*24))n=M2C_FIELD(arg0+0x1c,s32*,arg1*24);else n=n<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):n;
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
-} else {
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
-}}
-if(ov003_entries_differ(arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
-if(ov003_entries_differ(arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
-if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
-if(func_ov003_021e8308((void*)arg0))return;func_ov003_021e8654(arg0+0x14+arg1*24,-1,arg2);
-if(func_ov003_021e8308((void*)arg0))return;func_ov003_021ec79c(arg0,arg1,arg2);}
+/* Decrements counter entry `index` by one (wrapping or clamping to its min/max at
+ * +0x1c/+0x20 when the wrap byte at +0x28 is set), then steps the sibling counter
+ * -1 and recurses while the entry group keeps changing. */
+void StepCounterDown(void *counters, s32 index, s32 force) {
+    s32 next = M2C_FIELD(counters + 0x18, s32 *, index * 24) - 1;
+    if (((s32 (*)(s16, s16, s16))InRange)((s16)next, (s16)M2C_FIELD(counters + 0x20, s32 *, index * 24), (s16)M2C_FIELD(counters + 0x1c, s32 *, index * 24)) || force) {
+        M2C_FIELD(counters + 0x18, s32 *, index * 24) = next;
+        if (((u8 (*)[24])counters)[index][0x28]) {
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) -= M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) > M2C_FIELD(entry, s32 *, 0x1c));
+            }
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) += M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) < M2C_FIELD(entry, s32 *, 0x20));
+            }
+        } else {
+            M2C_FIELD(counters + 0x18, s32 *, index * 24) = M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24) ? M2C_FIELD(counters + 0x1c, s32 *, index * 24) : (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : M2C_FIELD(counters + 0x18, s32 *, index * 24));
+        }
+    } else {
+        if (next > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) next = M2C_FIELD(counters + 0x1c, s32 *, index * 24); else next = next < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : next;
+        M2C_FIELD(counters + 0x18, s32 *, index * 24) = next;
+        if (((u8 (*)[24])counters)[index][0x28]) {
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) -= M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) > M2C_FIELD(entry, s32 *, 0x1c));
+            }
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) += M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) < M2C_FIELD(entry, s32 *, 0x20));
+            }
+        } else {
+            M2C_FIELD(counters + 0x18, s32 *, index * 24) = M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24) ? M2C_FIELD(counters + 0x1c, s32 *, index * 24) : (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : M2C_FIELD(counters + 0x18, s32 *, index * 24));
+        }
+    }
+    if (ov003_entries_differ(counters)) return;
+    StepCounter(counters + 0x14 + index * 24, -1, force);
+    if (ov003_entries_differ(counters)) return;
+    StepCounter(counters + 0x14 + index * 24, -1, force);
+    if (EntriesDiffer((void *)counters)) return;
+    StepCounter(counters + 0x14 + index * 24, -1, force);
+    if (EntriesDiffer((void *)counters)) return;
+    StepCounter(counters + 0x14 + index * 24, -1, force);
+    if (EntriesDiffer((void *)counters)) return;
+    StepCounterDown(counters, index, force);
+}
 void func_ov003_021eca9c(void *arg0, u32 arg1) {
     s32 func_020846a4();
     void func_0208fe30(u32);

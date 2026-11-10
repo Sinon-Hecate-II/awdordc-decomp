@@ -75,7 +75,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0202c3ac(s32, void *, s32, s32);
     M2C_UNK func_020067c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_0202c02c();
     M2C_UNK func_0202c46c(M2C_UNK, M2C_UNK);
     s32 func_0202c444();
@@ -117,7 +117,7 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
         return NULL;
     }
     temp_r0 = r5 + 0x3C; /* cast ignored? */
-    func_02008048((M2C_UNK)((u8 *)r5 + 0x3C), (M2C_UNK)((u8 *)r5 + 0x3C + (M2C_FIELD(r5, s32 *, 0x38) * 4)), r6);
+    MI_CpuCopy8((M2C_UNK)((u8 *)r5 + 0x3C), (M2C_UNK)((u8 *)r5 + 0x3C + (M2C_FIELD(r5, s32 *, 0x38) * 4)), r6);
     func_02007f8c((M2C_UNK)((u8 *)r5 + 0x3C), 0, r6);
     func_020067c4(r5, r4 + 0x3C);
     if (r7 != 0) {
@@ -127,19 +127,19 @@ M2C_UNK *func_0202cebc(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0202cfc4(s32 arg0,s32 arg1,s32 arg2) {
-s32 func_0200751c();
+s32 OS_DisableInterrupts();
 s32 func_0202c014(s32);
 s32 func_0202c444(s32);
 s32 func_0202c46c(s32,s32);
-void func_02007530(s32);
+void OS_RestoreInterrupts(s32);
 s32 handle;
 s32 saved;
 if(!arg1)return;
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 handle=func_0202c014(arg1);
 if(arg0==func_0202c444(arg2))func_0202c46c(arg2,0);
 func_0202c014(handle);
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 
 void func_0202d01c(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {

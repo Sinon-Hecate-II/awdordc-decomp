@@ -249,7 +249,7 @@ s32 func_ov000_021a7348(void) {
     s32 func_ov000_021a911c(s16);
     extern s32 *gCurrentMap;
     extern void *data_ov000_021df580;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern u8 data_0212616c[];
 
@@ -296,7 +296,7 @@ s32 func_ov000_021a7348(void) {
             s32 limit;
             s32 firstIdx;
             u8 *firstUnit;
-            start = data_ov000_021aeef4[player];
+            start = gPlayerUnitIdBase[player];
             firstIdx=start+1;
             limit=start+0x33;
             if(firstIdx < limit) {
@@ -323,8 +323,8 @@ s32 func_ov000_021a7348(void) {
             } while(firstUnit+=14,++firstIdx < limit);
             }
         } else {
-            start = data_ov000_021aeef4[player];
-            for (idx = start + 1; idx < data_ov000_021aeef4[player] + 0x33; idx++) {
+            start = gPlayerUnitIdBase[player];
+            for (idx = start + 1; idx < gPlayerUnitIdBase[player] + 0x33; idx++) {
                 unit = (u8 *)*gCurrentMap + 0x59a4 + idx * 14;
                 kind = (u32)(unit[0] << 26) >> 26;
                 if (kind == 0) {

@@ -544,7 +544,7 @@ void func_02090810(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_02090830(void *arg0) {
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     void *temp_r2;
     void *temp_r2_2;
     void *temp_r2_3;
@@ -559,7 +559,7 @@ void func_02090830(void *arg0) {
         if (arg0 == NULL) {
             return;
         }
-        func_02082040();
+        MemFree();
         return;
     }
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x38) = (void *) M2C_FIELD(arg0, void **, 8);
@@ -570,11 +570,11 @@ void func_02090830(void *arg0) {
     if (arg0 == NULL) {
         return;
     }
-    func_02082040();
+    MemFree();
 }
 
 void func_02090894(void **arg0) {
-    M2C_UNK func_02082040(void **);
+    M2C_UNK MemFree(void **);
     void func_02090a88(void *);
     void **var_r4;
     void **temp_r5;
@@ -585,7 +585,7 @@ void func_02090894(void **arg0) {
         do {
             temp_r5 = M2C_FIELD(var_r4, void ***, 8);
             if (var_r4 != NULL) {
-                func_02082040(var_r4);
+                MemFree(var_r4);
             }
             var_r4 = temp_r5;
         } while (temp_r5 != NULL);
@@ -596,7 +596,7 @@ void func_02090894(void **arg0) {
 void func_020908dc(void *arg0) {
     void func_02090830(void *);
     void func_0209075c(void *, void *, s32);
-    void *func_02082028(s32);
+    void *MemAlloc(s32);
     u8 *cur;
     u8 *node;
     void *next;
@@ -635,7 +635,7 @@ void func_020908dc(void *arg0) {
                 goto skip;
             case 0x10:
                 if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) > 0) {
-                    node = func_02082028(0x30);
+                    node = MemAlloc(0x30);
                     if (node != NULL) {
                         func_0209075c(node, arg0, M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) - 1);
                     }
@@ -672,7 +672,7 @@ done:
 void func_02090a88(void *arg0) {
     void func_02090c7c(void *);
     void func_0209075c(void *, void *, s32);
-    void *func_02082028(s32);
+    void *MemAlloc(s32);
     u8 *cur;
     u8 *node;
     void *next;
@@ -705,7 +705,7 @@ void func_02090a88(void *arg0) {
                 goto skip;
             case 0x10:
                 if (M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) > 0) {
-                    node = func_02082028(0x30);
+                    node = MemAlloc(0x30);
                     if (node != NULL) {
                         func_0209075c(node, arg0, M2C_FIELD(M2C_FIELD(arg0, u8 **, 0x10), s16 *, 6) - 1);
                     }

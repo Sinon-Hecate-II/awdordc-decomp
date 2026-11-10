@@ -153,7 +153,7 @@ cb(a,b);
 #pragma push
 #pragma scheduling off
 void func_ov010_02227954(s32 a,void *b,s32 c) {
-void func_02008048(void *,void *,u32);
+void MI_CpuCopy8(void *,void *,u32);
 void *func_01ffa770(void *);
 void *func_ov010_022268f4(s32,u32,u32);
 void func_02007f8c(void *,s32,u32);
@@ -162,7 +162,7 @@ extern u8 data_ov010_0222c160[], data_ov010_0222ef58[],data_ov010_0222ef88[];
 extern M2C_UNK data_ov010_0222eee0;
 u32 kind; void *state; Ov010Packet header; volatile Ov010Packet *h;
 void (*cb)(s32,void *,s32);
-func_02008048(b,&header,12);
+MI_CpuCopy8(b,&header,12);
 h=&header;
 if(header.magic==0x5f57464d) {
 u32 channel=h->channel;

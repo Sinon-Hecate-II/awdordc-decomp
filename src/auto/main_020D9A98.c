@@ -83,10 +83,10 @@ void func_020d9d80(void *entry) {
     }
 }
 
-void func_020d9e7c(void *arg0){extern s32 data_02168f7c[]; s32 temp_r2; u16 temp_r3; void *temp_r4;
+void func_020d9e7c(void *arg0){extern s32 gUnitSlotIds[]; s32 temp_r2; u16 temp_r3; void *temp_r4;
 temp_r4=M2C_FIELD(arg0,void**,0x10); temp_r3=M2C_FIELD(temp_r4,u16*,0x48);
 if(temp_r3&0x20)return; temp_r2=temp_r3&2; if(temp_r2!=0)return;
-if(data_02168f7c[M2C_FIELD(arg0,u8*,0)]<0)return; if(temp_r2!=0)return;
+if(gUnitSlotIds[M2C_FIELD(arg0,u8*,0)]<0)return; if(temp_r2!=0)return;
 M2C_FIELD(temp_r4,u16*,0x48)=temp_r3&~1;
 M2C_FIELD(temp_r4,u16*,0x48)=M2C_FIELD(temp_r4,u16*,0x48)|2;
 func_0208fe30(0x1000D); func_01ffa6fc(temp_r4);}
@@ -262,7 +262,7 @@ void func_020da480(void *arg0) {
     M2C_UNK func_020d47f0(void);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
-    extern void *data_027e00bc;
+    extern void *g3DSpriteBankMain;
     extern u8 data_0212c5f2[];
     extern u8 data_0212c5f0[];
     extern u8 data_0212d1f4[];
@@ -289,7 +289,7 @@ void func_020da480(void *arg0) {
     *(u16 *)((u8 *)unitStruct + 0xc) = 0xc;
     *(u16 *)((u8 *)unitStruct + 0x2) = *(u16 *)((u8 *)unitStruct + 0x4);
 
-    tmpPtr = data_027e00bc;
+    tmpPtr = g3DSpriteBankMain;
     *(u16 *)tmpPtr = (u16)(*(u16 *)tmpPtr & ~0x8);
 
     savedEngine = gCur3DSpriteEngine;

@@ -12,7 +12,7 @@ int func_ov000_02177f24(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
 int func_ov000_0217a0a8(void *);
 int func_ov000_021aa820(s16 *,u16,int,int);
-void func_ov000_02199d74(s16,s16,int,int,int);
+void SetMapCursor(s16,s16,int,int,int);
 void func_ov000_02199f38(void);
 void func_ov000_0217c3a4(void);
 
@@ -53,7 +53,7 @@ static inline s32 Health1911(Unit1911 *u) {s32 h=u->health;return h?func_0207c8e
 /* AI heal pass: mark the selected (medic) unit as acting, then scan every tile
  * on the map. For each living unit (value != 0) of the same kind as the selected
  * unit, not already at full health (h != 10), trigger the heal routine
- * (func_ov000_02199d74) at that tile when the combined health clears one of the
+ * (SetMapCursor) at that tile when the combined health clears one of the
  * thresholds: the unit's cell attribute is a healable type (func_ov000_021a91d0)
  * and h+cur<=15; or cur<7 and h+cur<=12; or h+cur<=10. opt_common_subs is
  * disabled because the three heal checks intentionally duplicate the call. */
@@ -64,7 +64,7 @@ extern void **gCurrentMap;
 void func_01ffc328(void *);
 s32 func_ov000_021a8fc0(s16);
 s32 func_0207c8ec(s32,s32);
-void func_ov000_02199d74(s16,s16,s32,s32,s32);
+void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a91d0(u8);
 s32 id; Unit1911 *unit; s32 x,y,h,cur; Map1911 *map;
 func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
@@ -83,9 +83,9 @@ if(h==10)continue;
 cur=Health1911(((Map1911 *)*gCurrentMap)->selected);
 map=*gCurrentMap;
 if(func_ov000_021a91d0(M2C_FIELD((u32)map+M2C_FIELD(unit,u8 *,1)+map->rows[M2C_FIELD(unit,u8 *,2)],u8 *,0x1420))&&h+cur<=15)
-func_ov000_02199d74((s16)x,(s16)y,9,0,0);
-if(cur<7&&h+cur<=12)func_ov000_02199d74((s16)x,(s16)y,9,0,0);
-if(h+cur<=10)func_ov000_02199d74((s16)x,(s16)y,9,0,0);
+SetMapCursor((s16)x,(s16)y,9,0,0);
+if(cur<7&&h+cur<=12)SetMapCursor((s16)x,(s16)y,9,0,0);
+if(h+cur<=10)SetMapCursor((s16)x,(s16)y,9,0,0);
 }
 }
 #pragma pop
@@ -98,7 +98,7 @@ extern void **gCurrentMap;
 void func_01ffc328(void *);
 s32 func_ov000_021a8fc0(s16);
 s32 func_0207c8ec(s32,s32);
-void func_ov000_02199d74(s16,s16,s32,s32,s32);
+void SetMapCursor(s16,s16,s32,s32,s32);
 s32 id,x,y,h,cur;Map1911 *map;Unit1911 *unit;
 func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
@@ -116,7 +116,7 @@ if(h==10)continue;
 cur=Health1911(((Map1911 *)*gCurrentMap)->selected);
 if(h>=7&&cur>=7)continue;
 if(h+cur>15)continue;
-func_ov000_02199d74((s16)x,(s16)y,9,0,0);
+SetMapCursor((s16)x,(s16)y,9,0,0);
 }
 }
 #pragma pop
@@ -168,12 +168,12 @@ void func_ov000_0219137c(void){
  if(portX!=-1){
  position[0]=portX;position[1]=portY;
  if(func_ov000_021aa820(position,M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,0)==1){
- func_ov000_02199d74((s16)portX,(s16)portY,19,(u8)position[0],(u8)position[1]);return;
+ SetMapCursor((s16)portX,(s16)portY,19,(u8)position[0],(u8)position[1]);return;
  }}
  if(best==0)return;
  if(((AIState1913 *)data_ov000_021df580)->active){func_ov000_02199f38();return;}
  func_ov000_0217c3a4();
- func_ov000_02199d74((s16)destX,(s16)destY,4,(u8)unitId,0);
+ SetMapCursor((s16)destX,(s16)destY,4,(u8)unitId,0);
 #pragma pop
 }
 

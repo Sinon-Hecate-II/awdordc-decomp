@@ -4,7 +4,7 @@ typedef struct { u8 a,b,c,d,e,f,g,h; s32 width,precision; } HexFormat;
 typedef struct { s8 sign; s8 pad; s16 exp; u8 len; char digits[33]; } DecimalBD;
 typedef struct { u8 mode; u8 pad; u16 digits; } DecimalFormBD;
 typedef struct { u8 a,b; } HexPair;
-extern const u16 data_020ead40[];
+extern const u16 gCharClassTable[];
 extern u8 data_0210051c[],data_02100524[],data_0210052c[],data_02100530[],data_02100534[],data_0210053c[],data_02100544[],data_02100548[];
 
 /* Rounds the decimal string in an object at the given digit position. */
@@ -88,12 +88,12 @@ while(dec.len>1 && *--q=='0'){dec.len--;dec.exp++;}
 switch((u8)dec.digits[0]){
 case '0': dec.exp=0; break;
 case 'I':
-if(value<0.0){result=end-5;if((conv<0 || conv>=128?0:data_020ead40[conv]&512)){u8 *src=data_0210051c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}else {u8 *src=data_02100524;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}}
-else{result=end-4;if((conv<0 || conv>=128?0:data_020ead40[conv]&512)){u8 *src=data_0210052c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}else {u8 *src=data_02100530;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}}
+if(value<0.0){result=end-5;if((conv<0 || conv>=128?0:gCharClassTable[conv]&512)){u8 *src=data_0210051c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}else {u8 *src=data_02100524;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}}
+else{result=end-4;if((conv<0 || conv>=128?0:gCharClassTable[conv]&512)){u8 *src=data_0210052c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}else {u8 *src=data_02100530;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}}
 return result;
 case 'N':
-if(dec.sign){result=end-5;if((conv<0 || conv>=128?0:data_020ead40[conv]&512)){u8 *src=data_02100534;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}else {u8 *src=data_0210053c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}}
-else{result=end-4;if((conv<0 || conv>=128?0:data_020ead40[conv]&512)){u8 *src=data_02100544;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}else {u8 *src=data_02100548;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}}
+if(dec.sign){result=end-5;if((conv<0 || conv>=128?0:gCharClassTable[conv]&512)){u8 *src=data_02100534;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}else {u8 *src=data_0210053c;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;result[4]=src[4];}}
+else{result=end-4;if((conv<0 || conv>=128?0:gCharClassTable[conv]&512)){u8 *src=data_02100544;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}else {u8 *src=data_02100548;HexPair pair;pair=*(HexPair *)(src+0);*(HexPair *)(result+0)=pair;pair=*(HexPair *)(src+2);*(HexPair *)(result+2)=pair;}}
 return result;
 }
 dec.exp+=dec.len-1;

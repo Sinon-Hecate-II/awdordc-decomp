@@ -3,21 +3,21 @@
 void func_020258ac(void *, u32 *, u32);
 
 void func_020251b8(s32 now) {
-void func_0200751c(void);void func_02007530(void);void func_02005e5c(void *);
+void OS_DisableInterrupts(void);void OS_RestoreInterrupts(void);void TaskWake(void *);
 extern M2C_UNK data_02138cc8;extern M2C_UNK data_0212dca4;
 u8 *p; s32 i; void *node; void *q;
-func_0200751c();
+OS_DisableInterrupts();
 i=0;p=(u8 *)&data_02138cc8;
 do{
 if(p[0x5a]!=0 && now-M2C_FIELD(p,s32 *,0x50)>957)p[0x5a]=0;
 i++;p+=0x5c;
 }while(i<4);
-func_02007530();
+OS_RestoreInterrupts();
 node=M2C_FIELD(&data_0212dca4,void **,8);
 while(node!=NULL){
 q=M2C_FIELD(node,void **,0xa4);
 if(q!=NULL && M2C_FIELD(q,void **,0)!=NULL && M2C_FIELD(q,u8 *,9)!=0 && M2C_FIELD(q,u8 *,8)==4 && M2C_FIELD(M2C_FIELD(q,void **,12),u8 *,0x455)<8 && now-M2C_FIELD(q,s32 *,16)>239 && M2C_FIELD(q,s32 *,4)==2){
-M2C_FIELD(q,u8 *,8)=0;M2C_FIELD(q,s32 *,4)=0;func_02005e5c(M2C_FIELD(q,void **,0));
+M2C_FIELD(q,u8 *,8)=0;M2C_FIELD(q,s32 *,4)=0;TaskWake(M2C_FIELD(q,void **,0));
 }
 node=M2C_FIELD(node,void **,0x68);
 }
@@ -30,63 +30,65 @@ void func_02025298(void) {
 }
 
 void func_020252b4(M2C_UNK *arg0, void *arg1, u32 arg2) {
-    void func_02008048(s32, void *, u32);
-    func_02008048(arg1, arg0, arg2);
+    void MI_CpuCopy8(s32, void *, u32);
+    MI_CpuCopy8(arg1, arg0, arg2);
 }
 
 void func_020252cc(M2C_UNK *arg0, void *arg1, u32 arg2) {
-    void func_02008048(s32, void *, u32);
-    func_02008048(arg1, arg0, arg2);
+    void MI_CpuCopy8(s32, void *, u32);
+    MI_CpuCopy8(arg1, arg0, arg2);
 }
 
-void func_020252e4(void *state,s32 block){
-extern u8 data_020fb064;extern u32 data_020fb0e4;
-u32 a,b,c,d,buf[16];s32 n,i;u32 t;
+/* MD5 compression function: mixes one 64-byte block into the 16-byte state
+ * (a,b,c,d) using the MD5 K table and the per-step message-word permutation. */
+void MD5_Transform(void *state,s32 block){
+extern u8 gMd5MessageIndex;extern u32 gMd5Constants;
+u32 a,b,c,d,words[16];s32 offset,i;u32 tmp;
 a=M2C_FIELD(state,u32*,0);b=M2C_FIELD(state,u32*,4);c=M2C_FIELD(state,u32*,8);d=M2C_FIELD(state,u32*,12);
-func_020252cc(buf,block,64);n=0;
+func_020252cc(words,block,64);offset=0;
 for(i=0;i<4;i++){
-t=a + (((u32*)&data_020fb0e4)[n+0]+((d ^ (b & (c ^ d)))+buf[((u8*)&data_020fb064)[n+0]]));
-a=b+((t<<7)|(t>>25));
-t=d + (((u32*)&data_020fb0e4)[n+1]+((c ^ (a & (b ^ c)))+buf[((u8*)&data_020fb064)[n+1]]));
-d=a+((t<<12)|(t>>20));
-t=c + (((u32*)&data_020fb0e4)[n+2]+((b ^ (d & (a ^ b)))+buf[((u8*)&data_020fb064)[n+2]]));
-c=d+((t<<17)|(t>>15));
-t=b + (((u32*)&data_020fb0e4)[n+3]+((a ^ (c & (d ^ a)))+buf[((u8*)&data_020fb064)[n+3]]));
-b=c+((t<<22)|(t>>10));
-n+=4;
+tmp=a + (((u32*)&gMd5Constants)[offset+0]+((d ^ (b & (c ^ d)))+words[((u8*)&gMd5MessageIndex)[offset+0]]));
+a=b+((tmp<<7)|(tmp>>25));
+tmp=d + (((u32*)&gMd5Constants)[offset+1]+((c ^ (a & (b ^ c)))+words[((u8*)&gMd5MessageIndex)[offset+1]]));
+d=a+((tmp<<12)|(tmp>>20));
+tmp=c + (((u32*)&gMd5Constants)[offset+2]+((b ^ (d & (a ^ b)))+words[((u8*)&gMd5MessageIndex)[offset+2]]));
+c=d+((tmp<<17)|(tmp>>15));
+tmp=b + (((u32*)&gMd5Constants)[offset+3]+((a ^ (c & (d ^ a)))+words[((u8*)&gMd5MessageIndex)[offset+3]]));
+b=c+((tmp<<22)|(tmp>>10));
+offset+=4;
 }
 for(i=0;i<4;i++){
-t=a + (((u32*)&data_020fb0e4)[n+0]+((c ^ (d & (b ^ c)))+buf[((u8*)&data_020fb064)[n+0]]));
-a=b+((t<<5)|(t>>27));
-t=d + (((u32*)&data_020fb0e4)[n+1]+((b ^ (c & (a ^ b)))+buf[((u8*)&data_020fb064)[n+1]]));
-d=a+((t<<9)|(t>>23));
-t=c + (((u32*)&data_020fb0e4)[n+2]+((a ^ (b & (d ^ a)))+buf[((u8*)&data_020fb064)[n+2]]));
-c=d+((t<<14)|(t>>18));
-t=b + (((u32*)&data_020fb0e4)[n+3]+((d ^ (a & (c ^ d)))+buf[((u8*)&data_020fb064)[n+3]]));
-b=c+((t<<20)|(t>>12));
-n+=4;
+tmp=a + (((u32*)&gMd5Constants)[offset+0]+((c ^ (d & (b ^ c)))+words[((u8*)&gMd5MessageIndex)[offset+0]]));
+a=b+((tmp<<5)|(tmp>>27));
+tmp=d + (((u32*)&gMd5Constants)[offset+1]+((b ^ (c & (a ^ b)))+words[((u8*)&gMd5MessageIndex)[offset+1]]));
+d=a+((tmp<<9)|(tmp>>23));
+tmp=c + (((u32*)&gMd5Constants)[offset+2]+((a ^ (b & (d ^ a)))+words[((u8*)&gMd5MessageIndex)[offset+2]]));
+c=d+((tmp<<14)|(tmp>>18));
+tmp=b + (((u32*)&gMd5Constants)[offset+3]+((d ^ (a & (c ^ d)))+words[((u8*)&gMd5MessageIndex)[offset+3]]));
+b=c+((tmp<<20)|(tmp>>12));
+offset+=4;
 }
 for(i=0;i<4;i++){
-t=a + (((u32*)&data_020fb0e4)[n+0]+((d ^ (b ^ c))+buf[((u8*)&data_020fb064)[n+0]]));
-a=b+((t<<4)|(t>>28));
-t=d + (((u32*)&data_020fb0e4)[n+1]+((c ^ (a ^ b))+buf[((u8*)&data_020fb064)[n+1]]));
-d=a+((t<<11)|(t>>21));
-t=c + (((u32*)&data_020fb0e4)[n+2]+((b ^ (d ^ a))+buf[((u8*)&data_020fb064)[n+2]]));
-c=d+((t<<16)|(t>>16));
-t=b + (((u32*)&data_020fb0e4)[n+3]+((a ^ (c ^ d))+buf[((u8*)&data_020fb064)[n+3]]));
-b=c+((t<<23)|(t>>9));
-n+=4;
+tmp=a + (((u32*)&gMd5Constants)[offset+0]+((d ^ (b ^ c))+words[((u8*)&gMd5MessageIndex)[offset+0]]));
+a=b+((tmp<<4)|(tmp>>28));
+tmp=d + (((u32*)&gMd5Constants)[offset+1]+((c ^ (a ^ b))+words[((u8*)&gMd5MessageIndex)[offset+1]]));
+d=a+((tmp<<11)|(tmp>>21));
+tmp=c + (((u32*)&gMd5Constants)[offset+2]+((b ^ (d ^ a))+words[((u8*)&gMd5MessageIndex)[offset+2]]));
+c=d+((tmp<<16)|(tmp>>16));
+tmp=b + (((u32*)&gMd5Constants)[offset+3]+((a ^ (c ^ d))+words[((u8*)&gMd5MessageIndex)[offset+3]]));
+b=c+((tmp<<23)|(tmp>>9));
+offset+=4;
 }
 for(i=0;i<4;i++){
-t=a + (((u32*)&data_020fb0e4)[n+0]+((c ^ (b | ~d))+buf[((u8*)&data_020fb064)[n+0]]));
-a=b+((t<<6)|(t>>26));
-t=d + (((u32*)&data_020fb0e4)[n+1]+((b ^ (a | ~c))+buf[((u8*)&data_020fb064)[n+1]]));
-d=a+((t<<10)|(t>>22));
-t=c + (((u32*)&data_020fb0e4)[n+2]+((a ^ (d | ~b))+buf[((u8*)&data_020fb064)[n+2]]));
-c=d+((t<<15)|(t>>17));
-t=b + (((u32*)&data_020fb0e4)[n+3]+((d ^ (c | ~a))+buf[((u8*)&data_020fb064)[n+3]]));
-b=c+((t<<21)|(t>>11));
-n+=4;
+tmp=a + (((u32*)&gMd5Constants)[offset+0]+((c ^ (b | ~d))+words[((u8*)&gMd5MessageIndex)[offset+0]]));
+a=b+((tmp<<6)|(tmp>>26));
+tmp=d + (((u32*)&gMd5Constants)[offset+1]+((b ^ (a | ~c))+words[((u8*)&gMd5MessageIndex)[offset+1]]));
+d=a+((tmp<<10)|(tmp>>22));
+tmp=c + (((u32*)&gMd5Constants)[offset+2]+((a ^ (d | ~b))+words[((u8*)&gMd5MessageIndex)[offset+2]]));
+c=d+((tmp<<15)|(tmp>>17));
+tmp=b + (((u32*)&gMd5Constants)[offset+3]+((d ^ (c | ~a))+words[((u8*)&gMd5MessageIndex)[offset+3]]));
+b=c+((tmp<<21)|(tmp>>11));
+offset+=4;
 }
 M2C_FIELD(state,u32*,0)+=a;M2C_FIELD(state,u32*,4)+=b;M2C_FIELD(state,u32*,8)+=c;M2C_FIELD(state,u32*,12)+=d;
 }
@@ -100,7 +102,7 @@ void func_02025700(void *arg0) {
 }
 
 void func_02025748(void *arg0, s32 arg1, u32 arg2) {
-void func_02008048(s32,void *,u32); void func_020252e4(void *,s32);
+void MI_CpuCopy8(s32,void *,u32); void MD5_Transform(void *,s32);
 u32 index,low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x10);
 index=(old>>3)&63;
@@ -108,10 +110,10 @@ low=old+(arg2<<3); M2C_FIELD(arg0,u32 *,0x10)=low;
 if(low<(arg2<<3))M2C_FIELD(arg0,u32 *,0x14)++;
 count=64-index;
 M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
-if(arg2>=count){func_02008048(arg1,(u8 *)arg0+24+index,count);index=0;func_020252e4(arg0,(s32)arg0+24);
-while(count+63<arg2){func_020252e4(arg0,arg1+(s32)count);count+=64;}
+if(arg2>=count){MI_CpuCopy8(arg1,(u8 *)arg0+24+index,count);index=0;MD5_Transform(arg0,(s32)arg0+24);
+while(count+63<arg2){MD5_Transform(arg0,arg1+(s32)count);count+=64;}
 }else count=0;
-func_02008048(arg1+count,(u8 *)arg0+24+index,arg2-count);
+MI_CpuCopy8(arg1+count,(u8 *)arg0+24+index,arg2-count);
 }
 
 
@@ -256,7 +258,7 @@ void func_02025fc0(void *arg0) {
 
 #pragma opt_strength_reduction off
 M2C_UNK func_02026014(void *arg0,s32 arg1,u32 arg2) {
-void func_02008048(s32,void *,u32); void func_02025938(void *,s32);
+void MI_CpuCopy8(s32,void *,u32); void func_02025938(void *,s32);
 s32 index; u32 low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x18);
 index=(old>>3)&63;
@@ -265,11 +267,11 @@ if(low<arg2*8)M2C_FIELD(arg0,u32 *,0x14)++;
 count=64-index;
 M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
 if(arg2>=count) {
-func_02008048(arg1,(u8 *)arg0+0x1c+index,count);
+MI_CpuCopy8(arg1,(u8 *)arg0+0x1c+index,count);
 index=0;func_02025938(arg0,(s32)arg0+0x1c);
 while(count+63<arg2){func_02025938(arg0,arg1+count);count+=64;}
 }else count=0;
-func_02008048(arg1+count,(u8 *)arg0+0x1c+index,arg2-count);
+MI_CpuCopy8(arg1+count,(u8 *)arg0+0x1c+index,arg2-count);
 }
 #pragma opt_strength_reduction reset
 void func_020260cc(void *arg0, M2C_UNK *arg1) {

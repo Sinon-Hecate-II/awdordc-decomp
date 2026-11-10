@@ -61,12 +61,12 @@ void func_020e5740(void) {
 
 M2C_UNK **func_020e57b4(M2C_UNK **arg0) {
  M2C_UNK func_020e35cc();
- M2C_UNK func_02082040(M2C_UNK **);
+ M2C_UNK MemFree(M2C_UNK **);
  extern M2C_UNK data_0212dba0;
  extern s32 data_02168ff4;
  *arg0 = &data_0212dba0;
  if (data_02168ff4 != 0) func_020e35cc();
- func_02082040(arg0);
+ MemFree(arg0);
  return arg0;
 }
 

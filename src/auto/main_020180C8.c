@@ -116,9 +116,9 @@ void func_02018470(M2C_UNK arg0) {
 }
 
 void func_02018484(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 func_0200751c();void func_02007530(s32);void func_02007958();
+s32 OS_DisableInterrupts();void OS_RestoreInterrupts(s32);void func_02007958();
 u32 end; s32 saved; u32 p;
-saved=func_0200751c();p=arg0+0x30;end=arg0+0x70;
+saved=OS_DisableInterrupts();p=arg0+0x30;end=arg0+0x70;
 for(;;){
 if(p>=end)func_02007958();
 if(M2C_FIELD(p,s32 *,12)==0){
@@ -126,20 +126,20 @@ M2C_FIELD(p,s32 *,0)=arg1;M2C_FIELD(p,s32 *,4)=arg2;M2C_FIELD(p,s32 *,8)=arg3;M2
 }
 p+=16;
 }
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 
 s32 func_020184ec(s32 *arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
-    s32 func_0200751c(void);
-    void func_02008048(s32, M2C_UNK, s32);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void MI_CpuCopy8(s32, M2C_UNK, s32);
+    void OS_RestoreInterrupts(s32);
     u8 *end;
     s32 result;
     u8 *p;
     s32 temp_r0;
     s32 saved;
     result = 0;
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     p = (u8 *)arg0 + 0x30;
     end = (u8 *)arg0 + 0x70;
     for (; p < end; p += 0x10) {
@@ -147,7 +147,7 @@ s32 func_020184ec(s32 *arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
             temp_r0 = arg1 - M2C_FIELD(p, s32 *, 0);
             if (0 <= temp_r0) {
                 if ((u32)(temp_r0 + arg3) <= (u32)M2C_FIELD(p, u32 *, 4)) {
-                    func_02008048(M2C_FIELD(p, s32 *, 8) + temp_r0, arg2, arg3);
+                    MI_CpuCopy8(M2C_FIELD(p, s32 *, 8) + temp_r0, arg2, arg3);
                     result = 1;
                     *arg0 = 0;
                     break;
@@ -155,13 +155,13 @@ s32 func_020184ec(s32 *arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
             }
         }
     }
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
     return result;
 }
 
 void func_02018584(void *r7) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     void func_02005f80(void *, s32);
     void func_02005da4(s32);
     s32 func_02006028(void *);
@@ -172,7 +172,7 @@ void func_02018584(void *r7) {
     void (*r6)(void *);
 
     while (1) {
-        saved = func_0200751c();
+        saved = OS_DisableInterrupts();
         if (*(void **)((u8 *)r7 + 0xc0) == (void *)0) {
             do {
                 r6 = (void (*)(void *))0;
@@ -184,11 +184,11 @@ void func_02018584(void *r7) {
         r4 = *(void **)((u8 *)r7 + 0xc0);
         *(void **)((u8 *)r7 + 0xc0) = *(void **)((u8 *)r4 + 0x0);
         func_02005f80(r7, (s32)(*(unsigned int *)((u8 *)r4 + 0x4) >> 1));
-        func_02007530(saved);
+        OS_RestoreInterrupts(saved);
         if (*(void **)((u8 *)r4 + 0x8) != (void *)0) {
             ((void (*)(void *))(*(void **)((u8 *)r4 + 0x8)))(r4);
         }
-        saved = func_0200751c();
+        saved = OS_DisableInterrupts();
         r6 = (void (*)(void *))(*(void **)((u8 *)r4 + 0xc));
         {
             s32 val = func_02006028(r7);
@@ -214,7 +214,7 @@ void func_02018584(void *r7) {
             r6(r4);
         }
         if (r4 != (void *)((u8 *)r7 + 0xc4)) {
-            func_02007530(saved);
+            OS_RestoreInterrupts(saved);
             continue;
         }
         func_02005bbc();
@@ -224,22 +224,22 @@ void func_02018584(void *r7) {
 
 void func_0201869c(M2C_UNK arg0, s32 arg1) {
     extern s32 data_02136c80;
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     void func_02018738(M2C_UNK);
     void func_02005ac0(M2C_UNK, void (*)(void *), M2C_UNK, M2C_UNK, s32, s32);
-    void func_02005e5c(M2C_UNK);
+    void TaskWake(M2C_UNK);
     void func_02018584(void *);
     s32 saved;
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     if (data_02136c80 == 0) {
         data_02136c80 = arg0;
         func_02018738(arg0 + 0x000000C4);
         M2C_FIELD(arg0, s32 *, 0x000000C0) = 0;
         func_02005ac0(arg0, func_02018584, arg0, arg0 + 0x000000E4 + ((arg1 - 0x000000E4) & ~3), (arg1 - 0x000000E4) & ~3, 0);
-        func_02005e5c(arg0);
+        TaskWake(arg0);
     }
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
 }
 
 s32 func_0201871c(void) {
@@ -265,9 +265,9 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     extern s32 data_02136c80;
     s32 func_0201871c(void);
     s32 func_02006028(void *);
-    s32 func_0200751c(void);
-    void func_02007530(s32);
-    void func_02005e5c(M2C_UNK);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void TaskWake(M2C_UNK);
     s32 saved;
     void *base;
     void *p;
@@ -293,7 +293,7 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
             r6 = 0x1f;
         }
     }
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     {
         u32 f4 = M2C_FIELD(p, u32 *, 4);
         u32 low = f4 & 1u;
@@ -310,7 +310,7 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
         }
         M2C_FIELD(base, void **, 0xc0) = p;
         M2C_FIELD(p, void **, 0) = (void *)0;
-        func_02005e5c((M2C_UNK)base);
+        TaskWake((M2C_UNK)base);
     } else {
         if (p == (void *)((u8 *)base + 0xc4)) {
             void **curp = (void **)M2C_FIELD(base, void ***, 0xc0);
@@ -346,21 +346,21 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
             }
         }
     }
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
 }
 
 void func_020188c8(M2C_UNK arg0) {
     extern M2C_UNK data_02136c80;
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_0201871c(void);
     void func_02018764(M2C_UNK, s32, M2C_UNK, s32);
     s32 saved;
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     if (func_0201871c() != 0) {
         func_02018764((M2C_UNK)((u8 *)data_02136c80 + 0xC4), 0, arg0, 0);
     }
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
 }
 
 void func_02018910(s32 arg0) {
@@ -412,7 +412,7 @@ void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
     extern M2C_UNK data_02136c84;
     s32 func_02018bd0(s32);
     s32 func_02018b44(u8 *, s32);
-    void func_02008048(M2C_UNK, M2C_UNK, s32);
+    void MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
 
     s32 r4 = arg2;
     u8 type = arg0[0];
@@ -429,7 +429,7 @@ void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
             if (v > M2C_FIELD(&data_02136c84, s32 *, 0xC)) {
                 return (void *)0;
             }
-            func_02008048((M2C_UNK)(arg0 + 2), (M2C_UNK)(arg1 + 3), M2C_FIELD(&data_02136c84, s32 *, 8));
+            MI_CpuCopy8((M2C_UNK)(arg0 + 2), (M2C_UNK)(arg1 + 3), M2C_FIELD(&data_02136c84, s32 *, 8));
             r4 = func_02018b44(arg1, r4);
         }
         break;
@@ -442,7 +442,7 @@ void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
         r4 = (s32)(arg0 + 3);
         *(u16 *)(arg1 + 2) = arg0[1];
         *(u16 *)(arg1 + 2) = (u16)(*(u16 *)(arg1 + 2) | ((arg0[2] << 8) & 0xFF00));
-        func_02008048((M2C_UNK)r4, (M2C_UNK)(arg1 + 4), M2C_FIELD(&data_02136c84, s32 *, 8));
+        MI_CpuCopy8((M2C_UNK)r4, (M2C_UNK)(arg1 + 4), M2C_FIELD(&data_02136c84, s32 *, 8));
         r4 = r4 + M2C_FIELD(&data_02136c84, s32 *, 8);
         break;
     default:
@@ -453,7 +453,7 @@ void *func_02018a28(u8 *arg0, u8 *arg1, s32 arg2) {
 
 s32 func_02018b44(u8 *arg0, s32 arg1) {
     extern M2C_UNK data_02136c84;
-    void func_02008048(M2C_UNK, M2C_UNK, s32);
+    void MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
     s32 func_02018bd0(s32);
 
     s32 r6 = arg1;
@@ -464,7 +464,7 @@ s32 func_02018b44(u8 *arg0, s32 arg1) {
         s32 r4;
         if (type > M2C_FIELD(&data_02136c84, s32 *, 0xC)) return 0;
         r4 = arg1 - 1;
-        func_02008048((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&data_02136c84, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&data_02136c84, s32 *, 0x8)), M2C_FIELD(&data_02136c84, s32 *, 0x8));
+        MI_CpuCopy8((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&data_02136c84, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&data_02136c84, s32 *, 0x8)), M2C_FIELD(&data_02136c84, s32 *, 0x8));
         *((u32 *)((u8 *)M2C_FIELD(&data_02136c84, u32 *, 0x4) + 0x1E0 + r4 * 4)) |= (1U << type);
         if (!func_02018bd0(r6)) return 0;
         return (s32)(M2C_FIELD(&data_02136c84, M2C_UNK *, 0x4) + r4 * 32);
@@ -585,24 +585,24 @@ void func_02018df0(void *arg0) {
 }
 #pragma opt_propagation reset
 void func_02018e24(M2C_UNK arg0,void *arg1) {
-M2C_UNK func_0200751c(void); void func_02007530(s32); M2C_UNK func_02005584(M2C_UNK); M2C_UNK func_020054cc(M2C_UNK); M2C_UNK WaitByLoop(M2C_UNK);
+M2C_UNK OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); M2C_UNK func_02005584(M2C_UNK); M2C_UNK func_020054cc(M2C_UNK); M2C_UNK WaitByLoop(M2C_UNK);
 for(;;){
-M2C_FIELD(arg1,s32 *,4)=func_0200751c();
+M2C_FIELD(arg1,s32 *,4)=OS_DisableInterrupts();
 M2C_FIELD(arg1,s32 *,0)=func_02005584(0x27fffe8)&0x40;
 if(M2C_FIELD(arg1,s32 *,0)!=0)return;
 if(func_020054cc(arg0)==0)return;
-func_02007530(M2C_FIELD(arg1,s32 *,4));
+OS_RestoreInterrupts(M2C_FIELD(arg1,s32 *,4));
 WaitByLoop(1);
 }
 }
 
 void func_02018e80(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_020054c0(M2C_UNK);
-    void func_02007530(s32);
+    void OS_RestoreInterrupts(s32);
     if (M2C_FIELD(arg1, s32 *, 0) == 0) {
         func_020054c0(arg0);
     }
-    func_02007530(M2C_FIELD(arg1, s32 *, 4));
+    OS_RestoreInterrupts(M2C_FIELD(arg1, s32 *, 4));
 }
 
 void func_02018ea4(M2C_UNK arg0) {
@@ -617,13 +617,13 @@ void func_02018ea4(M2C_UNK arg0) {
 }
 
 void func_02018ef4(s32 arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_02018c5c(void);
     void func_02006cc0(s32, s32);
     extern M2C_UNK data_02136c98;
     s32 saved;
-    saved = func_0200751c();
+    saved = OS_DisableInterrupts();
     data_02136c98 = (M2C_UNK)arg0;
     if (func_02018c5c() == 0) {
         s32 r1;
@@ -634,7 +634,7 @@ void func_02018ef4(s32 arg0) {
         }
         func_02006cc0(0xf000, r1);
     }
-    func_02007530(saved);
+    OS_RestoreInterrupts(saved);
 }
 
 void func_02018f3c(void) {

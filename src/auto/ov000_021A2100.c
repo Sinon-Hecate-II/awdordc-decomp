@@ -4,7 +4,7 @@ extern void **gCurrentMap;
 extern u8 *data_ov000_021df578;
 extern u8 data_ov000_021e00ac;
 extern s8 data_ov000_021b5580[], data_ov000_021b55a0[], data_ov000_021e0f60[];
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df590[], data_ov000_021df594[];
 extern u8 data_ov000_021df7d0[];
 
@@ -72,7 +72,7 @@ if(data_ov000_021b5580[entry[0]&31])goto nextEntry;
 if(func_ov000_021a8d7c(entry[1],entry[2],5))goto nextEntry;
 for(player=1;player<5;player++){
 if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&func_020d1938(player)&&M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c2)==2){
-for(index=data_ov000_021aeef4[player]+1;index<data_ov000_021aeef4[player]+51;index++){
+for(index=gPlayerUnitIdBase[player]+1;index<gPlayerUnitIdBase[player]+51;index++){
 unit=(u8 *)*gCurrentMap+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
 if(!kind||!func_ov000_021a98a8(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))continue;
@@ -144,7 +144,7 @@ nextProperty:candidate+=6;
 }
 for(enemyPlayer=1;enemyPlayer<5;enemyPlayer++){
 if(!func_020d1938(enemyPlayer)||enemyPlayer==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))continue;
-for(enemyIndex=data_ov000_021aeef4[enemyPlayer]+1;enemyIndex<data_ov000_021aeef4[enemyPlayer]+51;enemyIndex++){
+for(enemyIndex=gPlayerUnitIdBase[enemyPlayer]+1;enemyIndex<gPlayerUnitIdBase[enemyPlayer]+51;enemyIndex++){
 map=*gCurrentMap;enemyUnit=map+0x59a4+enemyIndex*14;
 kind=(u32)(enemyUnit[0]<<26)>>26;
 if(!kind||kind!=data_ov000_021df590[pass])continue;
@@ -198,13 +198,13 @@ s32 func_ov000_021a2db8(void) {
  s32 func_020d243c(u16); s32 func_020d2d18(u16,u8);
  s32 func_ov000_0217bc84(s32,s32,s32);
  void func_ov000_021a07c0(s32); s32 func_ov000_021a6d4c(void);
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  extern void *data_ov000_021df580; extern u8 data_ov000_021df7d0[];
  s32 unitIndex,choice; u32 unitKind; u8 *unit; void *map; void *lastMap; u16 player;
  if(!func_020d243c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  map=*gCurrentMap;
- unitIndex=data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+1;
- if(unitIndex<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51){
+ unitIndex=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
+ if(unitIndex<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){
  unit=map+0x59a4+unitIndex*14;
  do{
  unitKind=(u32)(unit[0]<<26)>>26;
@@ -214,7 +214,7 @@ s32 func_ov000_021a2db8(void) {
  if(((u32)(unit[11]<<28)>>28)==5)return 0;
  }
  nextUnit:unitIndex++;unit+=14;
- }while(unitIndex<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
+ }while(unitIndex<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
  }
  unit=map+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*140;
  if(func_ov000_0217bc84(unit[43]&127,unit[44]&127,4)!=0 && (s32)M2C_FIELD(*gCurrentMap,u16 *,0x52a2)<10)return 0;

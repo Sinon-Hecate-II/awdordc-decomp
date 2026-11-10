@@ -244,7 +244,7 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
     void func_ov010_02229190(s32,s32,s32,s32,s32,s32);
     void func_ov010_022292e4(s32,s32,s32,s32,s32,s32);
     void func_020deb44(s32,s32,s32,s32,s32,void *);
-    extern s32 data_02168f7c[];
+    extern s32 gUnitSlotIds[];
     void *old = gCur3DSpriteEngine;
     s32 code;
     s32 code2;
@@ -308,7 +308,7 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
     code2=GetSetupCode((void *)arg0);
     func_ov010_02229190(arg1,code2,(s32)func_020deb44,arg0,0,0);
     } else {
-    func_ov010_022292e4(arg1,data_02168f7c[M2C_FIELD((void *)arg0,s8 *,0x43)],(s32)func_020deb44,arg0,0,0);
+    func_ov010_022292e4(arg1,gUnitSlotIds[M2C_FIELD((void *)arg0,s8 *,0x43)],(s32)func_020deb44,arg0,0,0);
     }
 }
 #pragma opt_strength_reduction off

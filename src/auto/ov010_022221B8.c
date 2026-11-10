@@ -371,7 +371,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 func_ov010_02223b18(void *, void *);
     void func_ov010_022233ac(void *);
     void func_ov010_02224ef8(void *);
-    void func_02008048(void *, void *, s32);
+    void MI_CpuCopy8(void *, void *, s32);
     extern M2C_UNK data_ov010_0222c960;
     extern u8 data_ov010_0222c998[];
     extern u8 data_ov010_0222be2d[];
@@ -451,7 +451,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     len = a2 - 0xc;
     src = (u8 *)item + 0x45c - len;
-    func_02008048((u8 *)a1 + 0xc, src, len);
+    MI_CpuCopy8((u8 *)a1 + 0xc, src, len);
 
     M2C_FIELD(item, u8 *, 0x11) = (u8)M2C_FIELD(slot, s32 *, 0x34);
     M2C_FIELD(item, s32 *, 0xc) = id;

@@ -408,7 +408,7 @@ s32 func_02045c90(M2C_UNK arg0) {
 }
 
 void func_02045cbc(void *arg0) {
-    void func_02008048(void *, void *, u32);
+    void MI_CpuCopy8(void *, void *, u32);
     extern M2C_UNK data_0213db34;
     extern M2C_UNK data_0213db39;
     extern M2C_UNK data_0213db3e;
@@ -416,7 +416,7 @@ void func_02045cbc(void *arg0) {
     u32 *p = (u32 *)arg0;
     u32 a, b, c, d, mask;
 
-    func_02008048(&data_0213db34, arg0, 6);
+    MI_CpuCopy8(&data_0213db34, arg0, 6);
     mask = 0x7FF;
     a = p[0];
     d = mask - 0x800;
@@ -426,7 +426,7 @@ void func_02045cbc(void *arg0) {
     mask = b & mask;
     p[1] = mask;
 
-    func_02008048(&data_0213db39, (char *)arg0 + 8, 6);
+    MI_CpuCopy8(&data_0213db39, (char *)arg0 + 8, 6);
     a = p[2];
     b = p[3];
     a = a >> 3;
@@ -443,7 +443,7 @@ void func_02045cbc(void *arg0) {
     mask = mask & d;
     p[3] = mask;
 
-    func_02008048(&data_0213db3e, (char *)arg0 + 0x10, 2);
+    MI_CpuCopy8(&data_0213db3e, (char *)arg0 + 0x10, 2);
     a = *(u16 *)((char *)arg0 + 0x10);
     d = 0x3FF;
     a = (s32)a >> 6;
@@ -452,6 +452,6 @@ void func_02045cbc(void *arg0) {
     d = a & d;
     *(u16 *)((char *)arg0 + 0x10) = (u16)d;
 
-    func_02008048(&data_0213db40, (char *)arg0 + 0x12, 2);
+    MI_CpuCopy8(&data_0213db40, (char *)arg0 + 0x12, 2);
 }
 

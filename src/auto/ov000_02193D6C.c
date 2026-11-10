@@ -5,7 +5,7 @@ typedef struct { u16 x:6; u16 y:6; u16 unk:2; u16 state:2; } Position_02194090;
 #include "ov000_unit_entry.h"
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern M2C_UNK data_ov000_021b5bfc;
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,u8**,0x52d0)
@@ -54,7 +54,7 @@ void func_ov000_02194090(void) {
  ((Position_02194090 *)(unit+8))->x=(u16)sx;
  ((Position_02194090 *)(unit+8))->y=(u16)sy;
  func_ov000_0217c3a4();
- func_ov000_02199d74((s16)sx,(s16)sy,7,0,0);
+ SetMapCursor((s16)sx,(s16)sy,7,0,0);
 }
 
 #pragma push
@@ -66,7 +66,7 @@ s32 func_ov000_0217d86c(void);void func_ov000_02194090(void);
 void func_01ffb554(void*);void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb3d0(s32);
 s32 func_ov000_021a8984(u32);s32 func_ov000_021a995c(u8*,u32);
 s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
-void func_ov000_0218a9ac(s32,s32);
+void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
 u32 mode;u8 *unit;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<26)>>29)&4))return;
@@ -88,9 +88,9 @@ func_01ffb554(MAP+0x1e30);
 }
 func_01ffb554(MAP+0x2338);func_01ffb3d0(127);func_01ffb554(MAP+0x1e30);
 found=0;
-index=data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+1;
-if(index<data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+51){offset=index*14;
-for(;index<data_ov000_021aeef4[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
+index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
+if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){offset=index*14;
+for(;index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=(u8*)(MAP+0x59a4)+offset;
 if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||func_ov000_021a8984((u32)(unit[11]<<28)>>28)||!func_ov000_021a995c(unit,KIND(SEL)))continue;
 if(unit[12]){
@@ -115,13 +115,13 @@ if(PATH(x,y)<0||(CELL(x,y,0x1420)&31)!=19||
 !func_ov000_021a911c(M2C_FIELD(MAP,s16*,0x52a8),x,y))continue;
 distance=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}
-if(bestX==-1)return;func_ov000_0218a9ac(bestX,bestY);return;
+if(bestX==-1)return;PlanMoveDestination(bestX,bestY);return;
 }
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(PATH(x,y)<0||!func_ov000_021a9084(CELL(x,y,0x1420)))continue;
 distance=COST(x,y,0x2338);if(distance==127)continue;
 distance+=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}
-if(bestX==-1)return;func_ov000_0218a9ac(bestX,bestY);
+if(bestX==-1)return;PlanMoveDestination(bestX,bestY);
 }
 #pragma pop

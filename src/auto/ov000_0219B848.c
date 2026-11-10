@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u8 data_ov000_021e00ac;
 extern s8 data_ov000_021b5580[],data_ov000_021b55a0[],data_ov000_021b5500[],data_ov000_021e0f60[];
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
 s32 func_020a8a14(u16,u16); s32 func_020d27ec(s16,u8);
@@ -31,7 +31,7 @@ if(M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)&22
 if(func_ov000_021a8d7c(entry[1],entry[2],5))goto nextEntry;
 for(player=1;player<5;player++){
 if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&func_020d1938(player)&&M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c2)==2){
-for(index=data_ov000_021aeef4[player]+1;index<data_ov000_021aeef4[player]+51;index++){
+for(index=gPlayerUnitIdBase[player]+1;index<gPlayerUnitIdBase[player]+51;index++){
 unit=(u8 *)*gCurrentMap+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
 if(!kind||!func_ov000_021a98a8(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))continue;
@@ -80,7 +80,7 @@ nextProperty:candidate+=6;
 }
 }
 map=*gCurrentMap;
-for(index=data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+1;index<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;index++){
+for(index=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;index<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;index++){
 unit=map+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
 if(!kind||kind!=data_ov000_021df41c[pass]||((u32)(unit[11]<<28)>>28))goto nextOwn;
@@ -111,7 +111,7 @@ nextOwn:map=*gCurrentMap;
 }
 for(enemyPlayer=1;enemyPlayer<5;enemyPlayer++){
 if(!func_020d1938(enemyPlayer)||enemyPlayer==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))continue;
-for(enemyIndex=data_ov000_021aeef4[enemyPlayer]+1;enemyIndex<data_ov000_021aeef4[enemyPlayer]+51;enemyIndex++){
+for(enemyIndex=gPlayerUnitIdBase[enemyPlayer]+1;enemyIndex<gPlayerUnitIdBase[enemyPlayer]+51;enemyIndex++){
 map=*gCurrentMap;enemyUnit=map+0x59a4+enemyIndex*14;
 kind=(u32)(enemyUnit[0]<<26)>>26;
 if(!kind||kind!=data_ov000_021df41c[pass])continue;
@@ -170,7 +170,7 @@ extern void **gCurrentMap;
 extern u8 *data_ov000_021df580;
 extern u8 data_02168f0c[8];
 
-void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];s32 found=0,i;void *base=*gCurrentMap;u16 start=data_ov000_021aeef4[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
+void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 found=0,i;void *base=*gCurrentMap;u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
 
 void func_ov000_0219c508(s8 *arg0, s8 arg1) {
 extern void **gCurrentMap;

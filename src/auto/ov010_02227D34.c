@@ -123,9 +123,9 @@ void func_ov010_02227f14(void) {
 }
 
 void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008048(M2C_UNK, s32);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222f02c;
-    func_02008048(arg1, (arg0 * 0x6C) + (s32) &data_ov010_0222f02c);
+    MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &data_ov010_0222f02c);
 }
 
 void func_ov010_02227fac(s32 arg0,s32 arg1,s32 arg2) {

@@ -237,7 +237,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     s32 func_ov000_02187320(s32, s32, void *, void *);
     s32 func_ov000_0217bd44(s32, s32, s32, s32);
     s32 func_ov000_02188b50(s32, s32);
-    void func_ov000_02199d74(s32, s32, s32, s32, s32);
+    void SetMapCursor(s32, s32, s32, s32, s32);
     s32 func_ov000_021a98a8(u32);
 
     s16 pos1[2];
@@ -252,7 +252,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     t = func_ov000_0217bd44(arg0, arg1, pos1[0], pos1[1]);
     if (r < 2) return;
     if (func_ov000_02188b50(arg0, arg1) == 1) {
-        func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]) & 0xff);
+        SetMapCursor((s16)arg0, (s16)arg1, 8, t & 0xff, func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]) & 0xff);
         return;
     }
     unitC = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) * 0xE;
@@ -264,7 +264,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     if (((u32)(unitD[0] << 26) >> 26) == 0x0D) return;
     if (((u32)(unitD[11] << 28) >> 28) >= 6) return;
     unitD[11] = (unitD[11] & 0xF0) | ((u32)(unitC[11] << 28) >> 28);
-    func_ov000_02199d74((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
+    SetMapCursor((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
 }
 #pragma peephole reset
 void func_ov000_02187820(void) {
@@ -338,7 +338,7 @@ void func_ov000_021879f4(void){
  s32 func_ov000_02186e64(s32,s32);
  s32 func_0207c8ec(s32,s32);
  s32 func_0207c928(s32,s32);
- void func_ov000_0218a9ac(s32,s32);
+ void PlanMoveDestination(s32,s32);
  u8 *unit;
  s32 bestX,bestY,bestCost,bestFlag,y,x,flag,cost,mask;
  void *base;
@@ -378,7 +378,7 @@ void func_ov000_021879f4(void){
  }
  }
  if(bestX==-1)return;
- func_ov000_0218a9ac(bestX,bestY);
+ PlanMoveDestination(bestX,bestY);
 }
 #pragma pop
 void func_ov000_02187c3c(void) {
@@ -388,7 +388,7 @@ void func_ov000_02187c3c(void) {
     s32 func_ov000_02186e64(s32, s32);
     s32 func_0207c8ec(s32, s32);
     s32 func_0207c928(s32, s32);
-    void func_ov000_0218a9ac(s32, s32);
+    void PlanMoveDestination(s32, s32);
 
     s32 bestX = -1;
     s32 bestY = -1;
@@ -422,7 +422,7 @@ void func_ov000_02187c3c(void) {
         }
     }
     if (bestVal == 0) return;
-    func_ov000_0218a9ac(bestX, bestY);
+    PlanMoveDestination(bestX, bestY);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02187e20(void) {

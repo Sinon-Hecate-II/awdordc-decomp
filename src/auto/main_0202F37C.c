@@ -467,16 +467,16 @@ s32 func_020300cc(void *arg0) {
 
 /* Builds an outgoing command/payload at `out` from game state `state` using mode `type` (0..9); returns whether out[0] is nonzero. */
 s32 func_020300e8(void *state, u32 type, void *out) {
-void func_02008048(void *,void *,s32);
+void MI_CpuCopy8(void *,void *,s32);
 void func_0203181c(s32,void *);
 void func_02031784(s32,void *);
 switch(type) {
 case 2:state+=0x100;
 case 1:state+=0x100;
-case 0:M2C_FIELD(out,u8 *,0)=(u32)(M2C_FIELD(state,u8 *,0xE6)<<30)>>30;func_02008048(state+0x80,out+2,0x50);break;
+case 0:M2C_FIELD(out,u8 *,0)=(u32)(M2C_FIELD(state,u8 *,0xE6)<<30)>>30;MI_CpuCopy8(state+0x80,out+2,0x50);break;
 case 5:state+=0x100;
 case 4:state+=0x100;
-case 3:M2C_FIELD(out,u8 *,0)=1;func_02008048(state+0xD1,out+2,0x14);M2C_FIELD(out,u8 *,0x16)=0;break;
+case 3:M2C_FIELD(out,u8 *,0)=1;MI_CpuCopy8(state+0xD1,out+2,0x14);M2C_FIELD(out,u8 *,0x16)=0;break;
 case 6:M2C_FIELD(out,u8 *,0)=2;func_0203181c(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
 case 7:M2C_FIELD(out,u8 *,0)=2;func_02031784(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
 case 8:case 9:break;

@@ -80,15 +80,15 @@ func_02009298(p);func_020092d0(1);
 #pragma opt_common_subs off
 s32 func_02009100(s32 flags){
 extern M2C_UNK data_0212e020;extern QueueNode09298 *data_0212e044[];
-s32 func_0200751c(void);s32 func_0200982c(void);
+s32 OS_DisableInterrupts(void);s32 func_0200982c(void);
 State09100 *state; s32 irq;QueueNode09298 *head,*tail;
-irq=func_0200751c();
+irq=OS_DisableInterrupts();
 if(flags&1){
 while(((State09100*)&data_0212e020)->count==func_0200982c()){
-func_02007530(irq);func_0200758c(100);irq=func_0200751c();
+OS_RestoreInterrupts(irq);func_0200758c(100);irq=OS_DisableInterrupts();
 }
 }else if(((State09100*)&data_0212e020)->count==func_0200982c()){
-func_02007530(irq);return 0;
+OS_RestoreInterrupts(irq);return 0;
 }
 state=(State09100*)&data_0212e020;
 head=data_0212e044[state->index];
@@ -101,7 +101,7 @@ else state->head=head;
 state->tail=tail;
 state->pending--;
 state->count++;
-func_02007530(irq);
+OS_RestoreInterrupts(irq);
 return (s32)head;
 }
 #pragma opt_common_subs reset
@@ -138,37 +138,37 @@ return p;
 
 #pragma opt_common_subs off
 s32 func_02009298(M2C_UNK *arg0) {
-s32 func_0200751c(void);extern M2C_UNK data_0212e020;
-s32 s=func_0200751c(); M2C_UNK **p=(M2C_UNK **)&data_0212e020;
+s32 OS_DisableInterrupts(void);extern M2C_UNK data_0212e020;
+s32 s=OS_DisableInterrupts(); M2C_UNK **p=(M2C_UNK **)&data_0212e020;
 if(p[3]==0)p[2]=arg0;else *p[3]=arg0;
-p[3]=arg0;*arg0=0;return func_02007530(s);
+p[3]=arg0;*arg0=0;return OS_RestoreInterrupts(s);
 }
 #pragma opt_common_subs reset
 s32 func_020092d0(s32 flags) {
-s32 func_0200751c(void); s32 func_02007530(s32);
+s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 s32 func_02009100(s32); M2C_UNK func_020067e0(M2C_UNK,M2C_UNK);
 s32 func_02009eb0(s32,M2C_UNK,s32); void func_0200968c(void);
 extern M2C_UNK data_0212e020; extern u8 data_0212e300[]; extern QueueNode09298 *data_0212e044[];
-s32 irq=func_0200751c();
+s32 irq=OS_DisableInterrupts();
 
-if(!((State09100*)&data_0212e020)->unk8){func_02007530(irq);return 1;}
+if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 if(((State09100*)&data_0212e020)->pending>=8){
-if(!(flags&1)){func_02007530(irq);return 0;}
+if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
 do {func_02009100(1);} while(((State09100*)&data_0212e020)->pending>=8);
-if(!((State09100*)&data_0212e020)->unk8){func_02007530(irq);return 1;}
+if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 func_020067e0((M2C_UNK)data_0212e300,0x1800);
 if(func_02009eb0(7,((State09100*)&data_0212e020)->unk8,0)<0){
 u8 *buf;
-if(!(flags&1)){func_02007530(irq);return 0;}
+if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
 buf=data_0212e300;
 goto retry;
 again: {
-func_02007530(irq);
+OS_RestoreInterrupts(irq);
 func_02009100(0);
-irq=func_0200751c();
+irq=OS_DisableInterrupts();
 func_020067e0((M2C_UNK)buf,0x1800);
-if(!((State09100*)&data_0212e020)->unk8){func_02007530(irq);return 1;}
+if(!((State09100*)&data_0212e020)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
 retry:
 if(((State09100*)&data_0212e020)->pending>=8)goto again;
@@ -185,7 +185,7 @@ if(((State09100*)&data_0212e020)->unk18>8)((State09100*)&data_0212e020)->unk18=0
 ((State09100*)&data_0212e020)->unkc=0;
 ((State09100*)&data_0212e020)->pending++;
 ((State09100*)&data_0212e020)->unk20++;
-func_02007530(irq);
+OS_RestoreInterrupts(irq);
 if(flags&2)func_0200968c();
 return 1;
 }
@@ -201,17 +201,17 @@ do {func_02009100(1);}while(!func_02009524(a));
 }
 
 s32 func_020094f8(void) {
-s32 func_0200751c(void);extern M2C_UNK data_0212e020;
-s32 s=func_0200751c();s32 r;
+s32 OS_DisableInterrupts(void);extern M2C_UNK data_0212e020;
+s32 s=OS_DisableInterrupts();s32 r;
 if(M2C_FIELD(&data_0212e020,s32 *,8)==0)r=M2C_FIELD(&data_0212e020,s32 *,4);else r=M2C_FIELD(&data_0212e020,s32 *,32);
-func_02007530(s);return r;
+OS_RestoreInterrupts(s);return r;
 }
 
-s32 func_02009524(u32 a){s32 func_0200751c(void);s32 func_02007530(s32);extern M2C_UNK data_0212e020;s32 state=func_0200751c();s32 r;u32 v=M2C_FIELD(&data_0212e020,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}func_02007530(state);return r;}
+s32 func_02009524(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&data_0212e020,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
 
-s32 func_02009574(void){s32 func_0200751c(void);s32 func_02007530(s32);extern M2C_UNK data_0212e020;s32 state=func_0200751c();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}func_02007530(state);return count;}
+s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 
-s32 func_020095b0(void){s32 func_0200751c(void);s32 func_02007530(s32);extern M2C_UNK data_0212e020;s32 state=func_0200751c();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}func_02007530(state);return count;}
+s32 func_020095b0(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&data_0212e020,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 
 s32 func_020095ec(void) {
     s32 func_02009574();
@@ -223,7 +223,7 @@ s32 func_020095ec(void) {
 }
 
 void func_02009608(int unused,int arg1) {
-s32 func_0200751c(void);s32 s=func_0200751c();func_020097bc(arg1);func_02007530(s);
+s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
 }
 
 void func_0200962c(void){M2C_UNK func_0200758c(M2C_UNK);s32 func_020096fc();M2C_UNK func_02009e40(M2C_UNK,M2C_UNK *);s32 func_02009e8c(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);func_02009e40(7,(M2C_UNK *)&func_02009608);if(!func_020096fc())return;if(func_02009e8c(7,1))return;do{func_0200758c(100);}while(!func_02009e8c(7,1));}
@@ -235,9 +235,9 @@ void func_0200968c(void) {
     } while (func_02009eb0(7, 0, 0) < 0);
 }
 
-void *func_020096b4(void){s32 func_0200751c(void);s32 func_02007530(s32);extern M2C_UNK data_0212e020;s32 state=func_0200751c();void *p=M2C_FIELD(&data_0212e020,void **,0);void *next;if(!p){func_02007530(state);return 0;}next=*(void **)p;M2C_FIELD(&data_0212e020,void **,0)=next;if(!next)M2C_FIELD(&data_0212e020,s32 *,16)=0;func_02007530(state);return p;}
+void *func_020096b4(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK data_0212e020;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&data_0212e020,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&data_0212e020,void **,0)=next;if(!next)M2C_FIELD(&data_0212e020,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
 
-s32 func_020096fc(void){s32 func_020062b4(void);s32 func_0200751c(void);s32 func_02007530(s32);s32 state,v,result;if(!func_020062b4())return 1;state=func_0200751c();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;func_02007530(state);if(v)result=1;else result=0;return result;}
+s32 func_020096fc(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
 
 void func_0200973c(void){extern M2C_UNK data_0212fb00;int i=0;u8 *p=(u8 *)&data_0212fb00;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
 
@@ -399,7 +399,7 @@ void func_02009d34(void) {
 
 #pragma scheduling off
 s32 func_02009d40(void){
-s32 func_0200751c(void);s32 state=func_0200751c();int i,timeout,value,stable;
+s32 OS_DisableInterrupts(void);s32 state=OS_DisableInterrupts();int i,timeout,value,stable;
 if(!data_0212fb64){
 data_0212fb64=1;
 {Shared09d40 *p=(Shared09d40 *)0x027ffc00; p->value=0;}
@@ -417,16 +417,16 @@ if(timeout<=0){stable=0;break;}timeout--;
 stable++;
 }
 }
-return func_02007530(state);
+return OS_RestoreInterrupts(state);
 }
 #pragma scheduling on
 s32 func_02009e40(s32 a,M2C_UNK *b){
-s32 func_0200751c(void);extern s32 data_0212fb68[];
-s32 s=func_0200751c();s32 *base=(s32 *)0x027ffc00;
+s32 OS_DisableInterrupts(void);extern s32 data_0212fb68[];
+s32 s=OS_DisableInterrupts();s32 *base=(s32 *)0x027ffc00;
 data_0212fb68[a]=(s32)b;
 if(b)base[226]|=1<<a;
 else base[226]&=~(1<<a);
-return func_02007530(s);
+return OS_RestoreInterrupts(s);
 }
 
 s32 func_02009e8c(s32 a, s32 b) {

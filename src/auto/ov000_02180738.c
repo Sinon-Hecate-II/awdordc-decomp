@@ -6,13 +6,13 @@ static inline u8 PlayerMode02180738(PlayerRecord02180738 *players, s32 index) { 
 void func_ov000_02180738(void) {
 M2C_UNK func_ov000_02198c08();
 M2C_UNK func_ov000_0218cfec();
-M2C_UNK func_ov000_02199d74(u8, u8, s32, s32, s32);
+M2C_UNK SetMapCursor(u8, u8, s32, s32, s32);
 extern void **gCurrentMap;
 void *temp_r1;
 func_ov000_02198c08();
 func_ov000_0218cfec();
 temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-func_ov000_02199d74(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
+SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
 
 void func_ov000_02180778(void) {
@@ -324,7 +324,7 @@ void func_ov000_02180b9c(void) {
 
 void func_ov000_02180c10(void) {
     M2C_UNK func_ov000_0218cfec();
-    M2C_UNK func_ov000_02199d74(u8, u8, s32, s32, s32);
+    M2C_UNK SetMapCursor(u8, u8, s32, s32, s32);
     extern void **gCurrentMap;
     void *temp_r0;
     void *temp_r1;
@@ -333,7 +333,7 @@ void func_ov000_02180c10(void) {
         func_ov000_0218cfec();
     }
     temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    func_ov000_02199d74(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
+    SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
 
 void func_ov000_02180c74(void) {
@@ -603,7 +603,7 @@ func_ov000_02198c60();
 base=*gCurrentMap;unit=M2C_FIELD(base,void **,0x52d0);
 idx=M2C_FIELD(unit,u8 *,1)+M2C_FIELD((u8 *)base+M2C_FIELD(unit,u8 *,2)*2,u16 *,0x3758);
 if(M2C_FIELD((u8 *)base+idx,u8 *,0x2840)+M2C_FIELD((u8 *)base+idx,u8 *,0x2d48)>=(s32)((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25))return;
-func_ov000_02199d74(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),23,0,0);
+SetMapCursor(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),23,0,0);
 }
 
 void func_ov000_021816ac(void) {

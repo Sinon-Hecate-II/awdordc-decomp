@@ -73,7 +73,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    u32 func_ov003_021e6cac(u8, M2C_UNK, M2C_UNK);
+    u32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6d28();
     M2C_UNK func_ov003_021e74ac(void *, u8);
     s16 func_ov003_022004a8(u8);
@@ -189,16 +189,16 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
         return temp_r0_2;
     }
     temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-    if (func_ov003_021e6cac((u8) temp_r0_3, 0, 3) != 0) {
+    if (InRange((u8) temp_r0_3, 0, 3) != 0) {
         return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
     }
-    if (func_ov003_021e6cac((u8) temp_r0_3, 4, 7) != 0) {
+    if (InRange((u8) temp_r0_3, 4, 7) != 0) {
         return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
     }
-    if (func_ov003_021e6cac((u8) temp_r0_3, 8, 0x14) != 0) {
+    if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
         return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
     }
-    temp_r0 = func_ov003_021e6cac((u8) temp_r0_3, 0x15, 0x18);
+    temp_r0 = InRange((u8) temp_r0_3, 0x15, 0x18);
     if (temp_r0 != 0) {
         return func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
     }

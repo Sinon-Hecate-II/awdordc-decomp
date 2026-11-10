@@ -134,13 +134,13 @@ void func_ov000_02181b8c(void) {
 
 void func_ov000_02181ba4(void) {
 extern void **gCurrentMap;
-M2C_UNK func_ov000_02199d74(u8,u8,s32,s32,s32);
+M2C_UNK SetMapCursor(u8,u8,s32,s32,s32);
 void *p;
 if(func_ov000_02180410()!=0)return;
 p=*gCurrentMap;
 if(func_020a8a14(M2C_FIELD(p,u16 *,0x5142),M2C_FIELD(p,u16 *,0x52a4)) & 0x40)return;
 p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-func_ov000_02199d74(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
+SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
 }
 
 void func_ov000_02181c10(void) {

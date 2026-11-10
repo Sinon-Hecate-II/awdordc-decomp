@@ -37,9 +37,9 @@ void func_ov000_0218d908(void) {
     s32 func_ov000_021a9d8c(s16, s16);
     s32 func_ov000_02178778(s16, s16);
     s32 func_ov000_02178e84(s16, s16);
-    s32 func_ov000_021a9e08(s32, s32, s32, s32);
+    s32 CellMoveScore(s32, s32, s32, s32);
     void func_ov000_0217c3a4(void);
-    M2C_UNK func_ov000_02199d74(s16, s16, M2C_UNK, u8, s32);
+    M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
     s32 bestX = -1, bestY = -1, bestScore = 0x7fffffff, bestCost = 0x7fff, useTransport = 0;
     u8 *unit;
     s32 y, x;
@@ -88,7 +88,7 @@ void func_ov000_0218d908(void) {
                     u32 bit = tileIndex & 7;
                     if (!(u8)((1 << bit) & data_ov000_021dfcf0[tileIndex >> 3])) goto nextTile;
                 }
-                score = func_ov000_021a9e08(x, y, 1, 2);
+                score = CellMoveScore(x, y, 1, 2);
                 moveCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
                 if (score > bestScore) goto nextTile;
                 if (score == bestScore && moveCost > bestCost) goto nextTile;
@@ -117,13 +117,13 @@ nextTile:
         }
     }
     func_ov000_0217c3a4();
-    if (useTransport) func_ov000_02199d74((s16)bestX, (s16)bestY, 7, 0, 0);
-    else func_ov000_02199d74((s16)bestX, (s16)bestY, 2, 0, 0);
+    if (useTransport) SetMapCursor((s16)bestX, (s16)bestY, 7, 0, 0);
+    else SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_0218dda4(void) {
     M2C_UNK func_01ffc328(s32);
-    M2C_UNK func_ov000_02199d74(s16, s16, M2C_UNK, u8, s32);
+    M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
     s32 func_ov000_021aa820(s16 *, u16, M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     void **owner;
@@ -181,14 +181,14 @@ void func_ov000_0218dda4(void) {
     if (func_ov000_021aa820(pos, M2C_FIELD(*owner, u16 *, 0x52A4), 1, 0) != 1) {
         return;
     }
-    func_ov000_02199d74((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);
+    SetMapCursor((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);
 }
 
 #pragma opt_strength_reduction off
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
-M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 func_ov000_0217a0a8(void *);s32 func_ov000_02199d74(s16,s16,s32,u8,s32);
+M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 func_ov000_0217a0a8(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *data_ov000_021df580;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
@@ -217,7 +217,7 @@ next_cell:x++;map=*gCurrentMap;
 if(!bestScore)return;
 M2C_FIELD(data_ov000_021df580,u8 *,7)&=~2;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);M2C_FIELD(selected,u16 *,8)&=~0x3000;
-func_ov000_02199d74((s16)bestY,(s16)bestX,4,(u8)temp,0);
+SetMapCursor((s16)bestY,(s16)bestX,4,(u8)temp,0);
 
 #pragma opt_strength_reduction reset
 }
@@ -225,16 +225,16 @@ func_ov000_02199d74((s16)bestY,(s16)bestX,4,(u8)temp,0);
 #pragma push
 #pragma opt_propagation off
 void func_ov000_0218e340(void) {
-extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
-M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 func_020a7cfc(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK func_ov000_02199d74(s16,s16,s32,u8,s32);
+extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
+M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 func_020a7cfc(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
 s32 x=-1,y=-1,best=0,i; u8 *unit; s32 offset; void *map; u8 *active; s32 hp,other,score;
 map=*gCurrentMap; active=M2C_FIELD(map,u8 **,0x52d0);
 if (((u32)(M2C_FIELD(active,u16 *,6)<<25)>>25)>50) return;
 if(active[12])return;
 func_01ffc328((s32)active);
 map=*gCurrentMap;
-i=data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+1;
-if(i<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51){
+i=gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+1;
+if(i<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51){
 offset=i*14;
 do {
 unit=(u8 *)((s32)map+0x59a4)+offset;
@@ -260,12 +260,12 @@ if(score>100)score=300-other+hp;
 if(score>=best){x=unit[1];y=unit[2];best=score;}
 next:
 i++;offset+=14;map=*gCurrentMap;
-}while(i<data_ov000_021aeef4[M2C_FIELD(map,u16 *,0x52a4)]+51);
+}while(i<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51);
 }
 if(x==-1)return;
 if(func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26))func_ov000_0218dda4();
 active=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 M2C_FIELD(active,u16 *,8)&=~0x3000;
-func_ov000_02199d74((s16)x,(s16)y,9,0,0);
+SetMapCursor((s16)x,(s16)y,9,0,0);
 }
 #pragma pop

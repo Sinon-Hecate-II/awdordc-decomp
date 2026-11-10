@@ -1,10 +1,14 @@
 /* 9 functions from 0x02198848 to 0x02199614 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct Unit98 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 health:7; u16 rest:9; u8 tail[6]; } Unit98;
 
-void func_ov000_02198848(u8 player) {
+/* Adds the influence of every unit of `player` that can engage the unit under the
+ * cursor: each such unit's threat value is the damage it would deal to that unit,
+ * written into the AI influence maps by func_ov000_02197a8c. */
+void AddPlayerThreatInfluence(u8 player) {
     extern s32 *gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     s32 value;
     s32 flag;
     s32 i;
@@ -13,21 +17,21 @@ void func_ov000_02198848(u8 player) {
 
     flag = 0;
     bonus = 0;
-    if (!func_ov000_021973f8(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind)) {
+    if (!func_ov000_021973f8(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind)) {
         return;
     }
-    if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind) == 0) {
-        bonus = func_020d0ddc((s32)(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4) & 0xff));
+    if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0) {
+        bonus = func_020d0ddc((s32)(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) & 0xff));
     }
-    if (*(u8 *)((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x52a4) * 140 + 0x67ce) == 1) {
-        if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind) == 0 ||
-            func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind) == 2) {
+    if (*(u8 *)((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) * 140 + 0x67ce) == 1) {
+        if (func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0 ||
+            func_ov000_021a98e4(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 2) {
             flag = 1;
         }
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52b6) = player;
-    for (i = data_ov000_021aeef4[player] + 1; i < data_ov000_021aeef4[player] + 51; i++) {
-        unit = (Unit98 *)((u8 *)*gCurrentMap + 0x59a4 + i * 14);
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = player;
+    for (i = gPlayerUnitIdBase[player] + 1; i < gPlayerUnitIdBase[player] + 51; i++) {
+        unit = (Unit98 *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * 14);
         if (unit->kind == 0) {
             continue;
         }
@@ -36,21 +40,21 @@ void func_ov000_02198848(u8 player) {
             s32 yy = unit->y;
             s32 xx = unit->x;
             s32 idx;
-            s32 row = *(u16 *)((u8 *)m + yy * 2 + 0x3758);
+            s32 row = *(u16 *)((u8 *)m + yy * 2 + MAP_ROW_OFFSETS);
             idx = *(u8 *)((u8 *)m + xx + row + 0x508);
-            if (!func_020a85dc(((Unit98 *)((u8 *)m + idx * 14 + 0x59a4))->kind)) {
+            if (!func_020a85dc(((Unit98 *)((u8 *)m + idx * 14 + MAP_UNIT_RECORDS))->kind)) {
                 continue;
             }
         }
-        value = func_ov000_02197434(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind);
+        value = func_ov000_02197434(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind);
         if (value < 25) {
             continue;
         }
-        if (!func_ov000_02197814(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0), (void *)unit, 0)) {
+        if (!func_ov000_02197814(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), (void *)unit, 0)) {
             continue;
         }
-        if (((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->flags & 0x20) {
-            if (!func_ov000_021a96f4(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind, 0)) {
+        if (((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->flags & 0x20) {
+            if (!func_ov000_021a96f4(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind, 0)) {
                 continue;
             }
         }
@@ -60,17 +64,17 @@ void func_ov000_02198848(u8 player) {
             }
         }
         if (!(((u32)unit->tail[3] << 25) >> 31)) {
-            if (!func_ov000_021a947c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), unit->kind, unit->x, unit->y)) {
+            if (!func_ov000_021a947c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), unit->kind, unit->x, unit->y)) {
                 continue;
             }
         }
-        value = func_ov000_02197470(value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->owner, unit->owner);
-        value = func_ov000_021974bc(value, M2C_FIELD(*gCurrentMap, s32 *, 0x52d0), (void *)unit);
+        value = func_ov000_02197470(value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->owner, unit->owner);
+        value = func_ov000_021974bc(value, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), (void *)unit);
         value = func_ov000_0219763c(value, (void *)unit, (s32)unit->health);
         {
-            register s32 b asm("r3") = func_020a7cfc(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0)) != 0;
-            func_ov000_02197a8c((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->kind,
-                                (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, 0x52d0))->health, (u8)b, flag, bonus);
+            register s32 b asm("r3") = func_020a7cfc(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0;
+            func_ov000_02197a8c((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind,
+                                (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->health, (u8)b, flag, bonus);
         }
     }
 }
@@ -91,7 +95,7 @@ void func_ov000_02198c60(void) {
     void func_ov000_02198c08(void);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
-    void func_ov000_02198848(u8);
+    void AddPlayerThreatInfluence(u8);
     extern s32 *data_027e0058;
     extern void *data_ov000_021df580;
     extern M2C_UNK data_ov000_021e0a58;
@@ -117,7 +121,7 @@ void func_ov000_02198c60(void) {
     for (i = 1; i < 5; i++) {
         if (func_020d1938(i) != 0 &&
             func_020d273c(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), i) == 0) {
-            func_ov000_02198848((u8)i);
+            AddPlayerThreatInfluence((u8)i);
         }
     }
 
@@ -138,12 +142,12 @@ void func_ov000_02198c60(void) {
 
 void func_ov000_02198da4(u8 player) {
 extern s32 *gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 s32 i, value; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(14))return;
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
-for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
 if(!(unit->kind))continue;
 if(M2C_FIELD(unit,u16 *,4)&8){
@@ -187,7 +191,7 @@ void func_ov000_02198f60(void) {
 #pragma opt_strength_reduction off
 void func_ov000_02198fec(u8 player) {
     extern s32 *gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
 
     s32 *map;
@@ -217,7 +221,7 @@ void func_ov000_02198fec(u8 player) {
     saved = *(u16 *)((u8 *)map + 0x52b6);
     *(u16 *)((u8 *)map + 0x52b6) = player;
 
-    start = data_ov000_021aeef4[player];
+    start = gPlayerUnitIdBase[player];
     for (i = start + 1; i < start + 0x33; i++) {
         unit = (Unit98 *)((u8 *)*gCurrentMap + 0x59a4 + i * 14);
         if (unit->kind == 0) {
@@ -309,13 +313,13 @@ void func_ov000_02199330(void) {
 
 void func_ov000_021993bc(u8 player) {
 extern s32 *gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 s32 value, bonus, i; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(6))return;
 bonus=func_020d0ddc((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
-for(i=data_ov000_021aeef4[player]+1;i<data_ov000_021aeef4[player]+51;i++){
+for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
 if(!(unit->kind))continue;
 if(M2C_FIELD(unit,u16 *,4)&8){

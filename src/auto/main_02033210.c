@@ -85,7 +85,7 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     void func_0200563c(void *, void *, ...);
     void func_02007724(void *);
     void func_02007740(void *);
-    M2C_UNK func_02008048(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_0200f0ac(s32, s32);
     void func_02007958(void);
     void *func_02029784(void);
@@ -93,8 +93,8 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     void func_020067a8(void *, s32);
     u8 func_0202f248(void);
     void func_020317ac(void *, void *);
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     extern u8 data_020fb428[], data_020fb430[], data_020fb438[], data_020fb440[], data_020fb44c[], data_020fb468[];
     s32 var_r6;
     void *var_r7;
@@ -123,11 +123,11 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     if (*(u8 *)0x027FFE0C == 0) {
         func_02007958();
     }
-    func_02008048((void *)0x027FFE0C, (void *)((u8 *)arg0 + 0x15), 4);
+    MI_CpuCopy8((void *)0x027FFE0C, (void *)((u8 *)arg0 + 0x15), 4);
     if (*(u8 *)0x027FFE10 == 0) {
         func_02007958();
     }
-    func_02008048((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
+    MI_CpuCopy8((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
     *((u8 *)arg0 + 0x1d) = 0x30;
     func_02007724(sp_16);
     dst=(u8*)arg0+0x1f;src=sp_16;
@@ -137,18 +137,18 @@ s32 func_020336e8(s32 arg0, void *arg1) {
         sp_38[0] = 1;
     }
     func_0200567c((void *)((u8 *)arg0 + 0x2c), 3, data_020fb438, sp_38[0]);
-    func_02008048(sp_38 + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
+    MI_CpuCopy8(sp_38 + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
     func_0200567c((void *)((u8 *)arg0 + 0x2f), 5, data_020fb440, sp_38[2], sp_38[3]);
     if (func_0200f0ac((s32)(sp_vals + 3), (s32)(sp_vals + 0)) != 0) {
         return 0;
     }
     func_0200567c((void *)((u8 *)arg0 + 0x34), 0xd, data_020fb44c,
         sp_vals[3], sp_vals[4], sp_vals[5], sp_vals[0], sp_vals[1], sp_vals[2]);
-    var_r6 = func_0200751c();
+    var_r6 = OS_DisableInterrupts();
     var_r7 = func_02029784();
     func_020067a8(var_r7, 6);
     if (var_r7 == NULL) {
-        func_02007530(var_r6);
+        OS_RestoreInterrupts(var_r6);
         return 0;
     }
     dst=(u8*)arg0+0x41;
@@ -160,12 +160,12 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     var_r5 = func_020297c8(&sp_14);
     func_020067a8(var_r5, 0x20);
     if (var_r5 == NULL) {
-        func_02007530(var_r6);
+        OS_RestoreInterrupts(var_r6);
         return 0;
     }
     func_020317ac(var_r5, (void *)((u8 *)arg0 + 0x72));
-    func_02008048(var_r5, (void *)((u8 *)arg0 + 0x4e), 0x20);
-    func_02007530(var_r6);
+    MI_CpuCopy8(var_r5, (void *)((u8 *)arg0 + 0x4e), 0x20);
+    OS_RestoreInterrupts(var_r6);
     return 1;
 }
 #pragma pop
@@ -240,7 +240,7 @@ s32 func_02033de8(void *arg0) {
 void func_02033e80(void *arg0, s32 arg1) {
     void func_02005ac0(void *, void *, void *, void *, s32, s32);
     s32 func_02005d90(void *);
-    void func_02005e5c(void *);
+    void TaskWake(void *);
     void func_0200654c(void *);
     extern s32 data_0213d134;
     extern u8 func_02034164[];
@@ -251,7 +251,7 @@ void func_02033e80(void *arg0, s32 arg1) {
     if(M2C_FIELD(arg0,s32 *,0x1018)==1) data_0213d134=1; else data_0213d134=0;
     if(M2C_FIELD(arg0,s32 *,0x1ba4)!=0 && func_02005d90(arg0+0x1b38)==0) return;
     func_02005ac0(arg0+0x1b38,func_02034164,arg0,arg0+0x1000,0x1000,arg1);
-    func_02005e5c(arg0+0x1b38);
+    TaskWake(arg0+0x1b38);
 }
 
 void func_02033f3c(void *arg0) {

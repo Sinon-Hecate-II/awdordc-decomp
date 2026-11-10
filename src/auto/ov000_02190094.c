@@ -18,18 +18,18 @@ int func_ov000_021a995c(void *,int);
 int func_ov000_0217c2d4(void *);
 void func_ov000_0217c3a4(void);
 int func_ov000_0217de64(s16,s16,int,u8,void *);
-void func_ov000_02199d74(s16,s16,int,int,int);
+void SetMapCursor(s16,s16,int,int,int);
 #pragma opt_strength_reduction off
 void func_ov000_021906a0(int);
 extern u8 *data_ov000_021df580;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 void func_01ffc2e8(void *);
 s32 func_ov000_02179be0(void);
 void func_ov000_0217a59c(s32,s32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);
 s32 func_020a7694(void *);
 void func_ov000_02199f38(void);
-void func_ov000_0218a9ac(s32,s32);
+void PlanMoveDestination(s32,s32);
 s32 func_ov000_021a91d0(s32);
 void func_ov000_02190b54(void);
 #pragma push
@@ -61,8 +61,8 @@ void func_ov000_02190094(void)
     {
       func_01ffc2e8(new_var[0]);
       new_var[1] = *gCurrentMap;
-      scan = data_ov000_021aeef4[*((u16 *) (new_var[1] + 0x52a4))] + 1;
-      if (scan < (data_ov000_021aeef4[*((u16 *) (new_var[1] + 0x52a4))] + 51))
+      scan = gPlayerUnitIdBase[*((u16 *) (new_var[1] + 0x52a4))] + 1;
+      if (scan < (gPlayerUnitIdBase[*((u16 *) (new_var[1] + 0x52a4))] + 51))
       {
         u = (u8 *) (((UnkStruct_ov000_021A860C *) (new_var[1] + 0x59a4)) + scan);
         do
@@ -91,7 +91,7 @@ void func_ov000_02190094(void)
           scan++;
           u += 14;
         }
-        while (scan < (data_ov000_021aeef4[*((u16 *) (((u8 *) (*gCurrentMap)) + 0x52a4))] + 51));
+        while (scan < (gPlayerUnitIdBase[*((u16 *) (((u8 *) (*gCurrentMap)) + 0x52a4))] + 51));
       }
     }
   }
@@ -123,7 +123,7 @@ void func_ov000_02190094(void)
           {
             func_ov000_021906a0(d);
           }
-          func_ov000_0218a9ac(a, b);
+          PlanMoveDestination(a, b);
         }
       }
     }
@@ -186,7 +186,7 @@ void func_ov000_02190094(void)
       }
     }
     ((Position_021906a0 *) ((*((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0))) + 8))->state = 1;
-    func_ov000_0218a9ac(sx, sy);
+    PlanMoveDestination(sx, sy);
   }
   else
   {
@@ -272,6 +272,6 @@ void func_ov000_021906a0(int arg0) {
    unit[11] = (unit[11] & ~15) | 2;
   }
  }
- func_ov000_02199d74((s16)sx, (s16)sy, 7, 0, 0);
+ SetMapCursor((s16)sx, (s16)sy, 7, 0, 0);
 }
 void func_ov000_02190b54(void) { }

@@ -177,7 +177,7 @@ void func_0202dfa8(void *arg0) {
 
 void func_0202dfcc(void *arg0, s32 arg1) {
     M2C_UNK func_02005ac0(void *, M2C_UNK *, void *, s32, s32, s32);
-    M2C_UNK func_02005e5c(void *);
+    M2C_UNK TaskWake(void *);
     M2C_UNK func_0200654c(void *);
     M2C_UNK func_02029c30(void *, M2C_UNK);
     extern M2C_UNK func_0202ee30;
@@ -186,21 +186,21 @@ void func_0202dfcc(void *arg0, s32 arg1) {
     func_0200654c(arg0 + 0x4C8);
     M2C_FIELD(arg0, s32 *, 0x4C4) = 0;
     M2C_FIELD(arg0, s32 *, 0x4C0) = 0;
-    func_02005e5c(arg0);
+    TaskWake(arg0);
 }
 
 void func_0202e02c(M2C_UNK arg0,void *arg1) {
-s32 func_0200751c(void); M2C_UNK func_02007530(s32);
+s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);
 void *func_02029ddc(M2C_UNK,M2C_UNK); M2C_UNK func_02029d7c(M2C_UNK,void *);
 s32 saved; void *node,*next;
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 node=func_02029ddc(arg0,0);
 while(node) {
 next=func_02029ddc(arg0,(M2C_UNK)node);
 if(M2C_FIELD(node,void **,8)==arg1) {func_02029d7c(arg0,node);func_0202e12c((M2C_UNK)node);}
 node=next;
 }
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 
 void *func_0202e09c(M2C_UNK arg0) {
@@ -210,14 +210,14 @@ void *func_0202e09c(M2C_UNK arg0) {
     void *temp_r0;
     void *temp_r1;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     temp_r0 = func_02029ddc(arg0, 0);
     if (temp_r0 != NULL) {
         func_02029d7c(arg0, temp_r0);
         temp_r1 = M2C_FIELD(temp_r0, void **, 8);
         M2C_FIELD(temp_r1, s32 *, 0x11C) = (s32) (M2C_FIELD(temp_r1, s32 *, 0x11C) - 1);
     }
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
     return temp_r0;
 }
 
@@ -225,23 +225,23 @@ void *func_0202e09c(M2C_UNK arg0) {
 M2C_UNK func_0202e0ec(void) {
 extern M2C_UNK data_0213c29c[];
 s32 saved; M2C_UNK node;
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 node=(M2C_UNK)func_02029ddc((M2C_UNK)data_0213c29c,0);
 if(node!=0) func_02029d7c((M2C_UNK)&data_0213c29c,(void *)node);
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 return node;
 }
 #pragma opt_common_subs reset
 void func_0202e12c(M2C_UNK arg0) {
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_02029c74(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0213c29c[];
     s32 temp_r4;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     func_02029c74(data_0213c29c, arg0);
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
 }
 
 void func_0202e158(s32 arg0,s32 arg1,void *arg2) {

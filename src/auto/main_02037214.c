@@ -17,7 +17,7 @@ return data_0213d1e0[0]>>32;
 s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  extern s8 *data_020fba88;
  void func_02007f8c(void *,s32,s32);
- void func_02008048(void *,void *,u32);
+ void MI_CpuCopy8(void *,void *,u32);
  u32 extra,total;
  s32 count;
  u8 *src=arg0,*end;
@@ -37,7 +37,7 @@ s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  count=bits/6+(bits%6!=0);
  if(n>=3)n=3;
  func_02007f8c(buf,0,3);
- func_02008048(src,buf,n);
+ MI_CpuCopy8(src,buf,n);
  dst[0]=data_020fba88[buf[0]>>2];
  if(count<2)c=42;else {a=buf[0];b=buf[1];c=data_020fba88[((a<<4)&63)|(b>>4)];}dst[1]=c;
  if(count<3)c=42;else {a=buf[1];b=buf[2];c=data_020fba88[((a<<2)&63)|(b>>6)];}dst[2]=c;
@@ -245,14 +245,14 @@ M2C_UNK func_02037714(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 M2C_UNK func_02037728(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK size,s32 align){
-void func_02008048(void *,void *,u32);
+void MI_CpuCopy8(void *,void *,u32);
 s32 p; u32 n;
 p=func_020376a4(a,size,align);
 if(!p)return 0;
 if(b){
 unused=func_02037670(b);
 if((u32)unused<=(u32)size)size=unused;
-func_02008048(b,p,size);
+MI_CpuCopy8(b,p,size);
 func_020376d8(a,b,unused);
 }
 return p;

@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern s8 data_ov000_021b5500[];
 extern void *data_ov000_021df580;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 typedef struct UnitF468Data {u8 bytes[14];} UnitF468Data;
 typedef struct ByteF468 {u8 kind:6;u8 team:2;} ByteF468;
 typedef struct ActionF468 {u8 action:4;u8 rest:4;} ActionF468;
@@ -29,8 +29,8 @@ void func_ov000_0218f468(void){
 s32 func_0207c8ec(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a8fc0(s16);
 void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void func_01ffc328(void *);
 s32 func_020d27a4(s32,s32);s32 func_ov000_021a97d0(s32,s32);
-s32 func_ov000_021aa820(s16 *,u16,s32,s32);void func_ov000_02199d74(s16,s16,s32,u8,u8);
-s32 func_ov000_021a995c(void *,s32);void func_01ffada0(u8,u8,u8,s32,s32);void func_ov000_0218a9ac(s32,s32);
+s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
+s32 func_ov000_021a995c(void *,s32);void func_01ffada0(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
 u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
 u=SelectedF468();x=M2C_FIELD(u,DestF468 *,8).x;y=M2C_FIELD(u,DestF468 *,8).y;
 health=M2C_FIELD(u,HealthF468 *,6).health;
@@ -61,29 +61,29 @@ m=MapF468();tile=TileF468(x,y);
 if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
 pos[0]=x;pos[1]=y;
 if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
-ClearF468();func_ov000_0217c3a4();func_ov000_02199d74((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
+ClearF468();func_ov000_0217c3a4();SetMapCursor((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
 }
 m=MapF468();tile=TileF468(x,y);v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;
-M2C_FIELD(v,u8 *,3)++;func_ov000_02199d74((s16)x,(s16)y,2,0,0);return;
+M2C_FIELD(v,u8 *,3)++;SetMapCursor((s16)x,(s16)y,2,0,0);return;
 }
 v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;M2C_FIELD(v,u8 *,3)++;
-ClearF468();func_ov000_0217c3a4();func_ov000_02199d74((s16)x,(s16)y,3,0,0);return;
+ClearF468();func_ov000_0217c3a4();SetMapCursor((s16)x,(s16)y,3,0,0);return;
 }
 if(ActionGetF468(SelectedF468())==2){
 s32 i,offset;
-i=data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+1;
-if(i<data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51){offset=i*14;do {
+i=gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+1;
+if(i<gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51){offset=i*14;do {
 v=(u8 *)MapF468()+0x59a4+offset;
 if(KindF468(v)!=0 && (KindF468(v)==13 || KindF468(v)==19) && ActionGetF468(v)!=6 && PassF468(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2))>=0 && x==M2C_FIELD(v,DestF468 *,8).x && y==M2C_FIELD(v,DestF468 *,8).y && func_ov000_021a995c(v,KindF468(SelectedF468()))!=0 && M2C_FIELD(v,HealthF468 *,6).flags==0){
-func_ov000_02199d74(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2),7,0,0);
+SetMapCursor(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2),7,0,0);
 }
 i++;offset+=14;
-}while(i<data_ov000_021aeef4[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
+}while(i<gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
 ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();
 }
 u=SelectedF468();func_01ffada0(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
 if(PassF468(x,y)<0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
-func_ov000_0218a9ac(x,y);
+PlanMoveDestination(x,y);
 }
 #pragma opt_strength_reduction reset
 s32 func_ov000_0218fbd4(void) {

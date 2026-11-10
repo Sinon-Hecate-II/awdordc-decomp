@@ -25,7 +25,7 @@ void func_ov005_0221e5a0(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 void func_ov005_0221e88c(void *arg0) {
 void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-void *func_02082028(s32);
+void *MemAlloc(s32);
 void *func_020e34bc(s32);
 s32 func_020e3218(M2C_UNK *);
 s32 func_020cfb94(void);
@@ -70,7 +70,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved; func_02081528();
 M2C_FIELD(p,s32 *,0x3c)=0; M2C_FIELD(p,s32 *,0x50)=0; M2C_FIELD(p,s32 *,0x54)=0;
-q=func_02082028(0x24);
+q=MemAlloc(0x24);
 if(q) {
 M2C_FIELD(q,u16 *,16)=8; M2C_FIELD(q,u8 *,18)=0;
 M2C_FIELD(q,s32 *,0)=0; M2C_FIELD(q,s32 *,4)=0;

@@ -10,9 +10,9 @@ void func_01ff9e44(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 void func_01ff9e78(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    M2C_UNK func_02008048(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32, M2C_UNK);
     extern u16 **gCur3DSpriteEngine;
-    func_02008048(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);
+    MI_CpuCopy8(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
 }
 

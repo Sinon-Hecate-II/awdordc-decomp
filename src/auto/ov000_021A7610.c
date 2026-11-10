@@ -34,7 +34,7 @@ void func_ov000_021a7d08(void) {
     extern void **gCurrentMap;
     extern u16 data_ov000_021e1474[];
     extern u16 data_ov000_021e14aa[];
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     void func_ov000_021a7610(void);
 
     register s32 r5 asm("r5");
@@ -58,8 +58,8 @@ void func_ov000_021a7d08(void) {
         map = *gCurrentMap;
         field = *(u16 *)((u8 *)*gCurrentMap + 0x52A4);
         if (func_020d273c(field, r5) == 1) {
-            start = data_ov000_021aeef4[r5] + 1;
-            limit = data_ov000_021aeef4[r5] + 0x33;
+            start = gPlayerUnitIdBase[r5] + 1;
+            limit = gPlayerUnitIdBase[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
                 u32 kind, value;
                 p = (u8 *)*gCurrentMap + 0x59A4 + inner * 0xE;
@@ -75,8 +75,8 @@ kind >>= 26;
 data_ov000_021e14aa[kind] += value >> 25;
             }
         } else {
-            start = data_ov000_021aeef4[r5] + 1;
-            limit = data_ov000_021aeef4[r5] + 0x33;
+            start = gPlayerUnitIdBase[r5] + 1;
+            limit = gPlayerUnitIdBase[r5] + 0x33;
             for (inner = start; inner < limit; inner++) {
                 u32 kind, value;
                 p = (u8 *)*gCurrentMap + 0x59A4 + inner * 0xE;

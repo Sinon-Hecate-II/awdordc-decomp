@@ -33,9 +33,9 @@ args.a=a;args.b=b;args.c=c;args.d=d;args.e=e;
 }
 
 #pragma opt_common_subs off
-void func_02028160(s32 a){void func_0202826c(void);s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);extern void *data_02138e4c;s32 old=func_0200751c();if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)data_02138e4c+0x22cc);if(M2C_FIELD(data_02138e4c,s32 *,0x2260)!=11)M2C_FIELD(data_02138e4c,s32 *,0x2260)=a;if(a==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
+void func_02028160(s32 a){void func_0202826c(void);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);extern void *data_02138e4c;s32 old=OS_DisableInterrupts();if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)data_02138e4c+0x22cc);if(M2C_FIELD(data_02138e4c,s32 *,0x2260)!=11)M2C_FIELD(data_02138e4c,s32 *,0x2260)=a;if(a==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);OS_RestoreInterrupts(old);}
 #pragma opt_common_subs on
-M2C_UNK func_020281f8(void){void func_0202826c(void);extern void *data_02138e4c;s32 func_0200751c(void);void func_02007530(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);s32 old=func_0200751c();func_02007338((u8 *)data_02138e4c+0x22cc);if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);func_02007530(old);}
+M2C_UNK func_020281f8(void){void func_0202826c(void);extern void *data_02138e4c;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02007338(void *);void func_020072cc(void *,s32,s32,void (*)(void),s32);s32 old=OS_DisableInterrupts();func_02007338((u8 *)data_02138e4c+0x22cc);if(M2C_FIELD(data_02138e4c,s32 *,0x2260)==9)func_020072cc((u8 *)data_02138e4c+0x22cc,0x22f5341,0,func_0202826c,0);OS_RestoreInterrupts(old);}
 
 void func_0202826c(void) {
     M2C_UNK func_020281f8();

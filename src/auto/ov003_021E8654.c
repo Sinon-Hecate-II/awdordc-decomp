@@ -24,10 +24,10 @@ extern u8 data_ov003_0220fc38[];
 extern u8 data_ov003_0220fc50[];
 extern u8 data_ov003_0220fc60[];
 
-void func_ov003_021e8654(void *p,s32 delta,s32 force){
-s32 func_ov003_021e6cac(s16,s16,s16);
+void StepCounter(void *p,s32 delta,s32 force){
+s32 InRange(s16,s16,s16);
 s32 next=delta+M2C_FIELD(p,s32*,4);
-if(func_ov003_021e6cac((s16)next,(s16)M2C_FIELD(p,s32*,12),(s16)M2C_FIELD(p,s32*,8))||force){
+if(InRange((s16)next,(s16)M2C_FIELD(p,s32*,12),(s16)M2C_FIELD(p,s32*,8))||force){
 M2C_FIELD(p,s32*,4)=next;
 if(M2C_FIELD(p,u8*,20)){
 while(M2C_FIELD(p,s32*,4)>M2C_FIELD(p,s32*,8))

@@ -155,14 +155,14 @@ void func_0206f8b8(void) {
 }
 
 void *func_0206f8c4(u32 *self,u32 value,u32 first,...) {
- void *func_02082028(u32);
+ void *MemAlloc(u32);
  s32 *func_0206f9d4(s32 *);
  u32 local[2];
 
  void *p;
  self[0]=value;
  local[0]=value; local[1]=(u32)&first;
- p=func_02082028(16);
+ p=MemAlloc(16);
  if(p) {((u32*)p)[0]=(u32)data_02100734;((u32*)p)[1]=1;((u32*)p)[2]=1;((u32*)p)[0]=(u32)data_0210074c;((u32*)p)[3]=value;}
  self[1]=(u32)p;
  local[0]=0;
@@ -171,8 +171,8 @@ void *func_0206f8c4(u32 *self,u32 value,u32 first,...) {
 }
 
 s32 func_0206f944(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -190,8 +190,8 @@ s32 func_0206f95c(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_0206f984(void *arg0) {
-    M2C_UNK func_0208204c(s32);
-    func_0208204c(M2C_FIELD(arg0, s32 *, 0xC));
+    M2C_UNK MemFreeArray(s32);
+    MemFreeArray(M2C_FIELD(arg0, s32 *, 0xC));
 }
 
 void *func_0206f994(void *self) {
@@ -210,13 +210,13 @@ void func_0206f9c0(void *arg0) {
 
 s32 *func_0206f9d4(s32 *arg0) {
     if (*arg0 != 0) {
-        func_0208204c();
+        MemFreeArray();
     }
     return arg0;
 }
 
 s32 func_0206f9f4(s32 arg0) {
-    func_02082040();
+    MemFree();
     return arg0;
 }
 
@@ -230,18 +230,18 @@ s32 func_0206fa0c(void *arg0) {
 
 void *func_0206fa14(void *arg0) {
     if (((u32) (M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) != 0) {
-        func_02082040(M2C_FIELD(arg0, s32 *, 8));
+        MemFree(M2C_FIELD(arg0, s32 *, 8));
     }
     return arg0;
 }
 
 #pragma use_frame_pointer on
 void func_0206fa3c(StringStorage *self,u32 capacity) {
-u32 func_02068c34(void *);void *func_02082034(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *func_02082028(u32);
+u32 func_02068c34(void *);void *MemAllocArray(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
 if(capacity>0x7ffffffeU) {
  exception[0]=(u32)data_02100888;
- {void *p=func_02082034(func_02068c34(data_02100894)+1);zero=0;func_0206f8c4(exception+1,(u32)p,*(u32 *)&zero);}
+ {void *p=MemAllocArray(func_02068c34(data_02100894)+1);zero=0;func_0206f8c4(exception+1,(u32)p,*(u32 *)&zero);}
  func_02068c50((void *)exception[1],data_02100894);
  exception[0]=(u32)data_02100874;
  func_0207465c(data_021008b8,exception,func_02070068);
@@ -253,9 +253,9 @@ if(capacity<size)capacity=size;
 if(capacity+1<=11)capacity=11;else capacity=(capacity+16)&~15;
 if(capacity==oldcap)return;
 if(capacity==11){buffer=self->small.data;old=self->large.data;allocated=0;}
-else {if(capacity>oldcap)buffer=func_02082028(capacity);else {buffer=func_02082028(capacity);if(!buffer){func_02074000(context);return;}}old=large?self->large.data:self->small.data;allocated=1;}
+else {if(capacity>oldcap)buffer=MemAlloc(capacity);else {buffer=MemAlloc(capacity);if(!buffer){func_02074000(context);return;}}old=large?self->large.data:self->small.data;allocated=1;}
 func_020651c4(buffer,old,size);buffer[size]=0;
-if(large)func_02082040(old);
+if(large)MemFree(old);
 self->large.flag=allocated & 1;
 if(!allocated)self->small.length=(u8)size;
 else {self->large.length=size;self->large.data=buffer;self->large.capacity=capacity;}

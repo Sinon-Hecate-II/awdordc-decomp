@@ -62,7 +62,7 @@ M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u1
     extern M2C_UNK data_021029d8;
     extern M2C_UNK data_021029cc;
     M2C_UNK func_01ffa3dc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02082028(M2C_UNK);
+    M2C_UNK MemAlloc(M2C_UNK);
     void func_020906a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void *r4;
     M2C_UNK alloc;
@@ -78,7 +78,7 @@ M2C_UNK func_02090e0c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u1
         M2C_FIELD(r4, M2C_UNK *, 0x3C) = 0;
         M2C_FIELD(r4, M2C_UNK *, 0x34) = 0;
         M2C_FIELD(r4, u8 *, 0x44) = *((u8 *)&arg6);
-        alloc = func_02082028(0x30);
+        alloc = MemAlloc(0x30);
         if (alloc != 0) {
             func_020906a8(alloc, (M2C_UNK)r4, arg0, arg1, arg2, arg3, arg4, arg5);
         }
@@ -96,7 +96,7 @@ void *func_02090f0c(void *arg0) {
     M2C_UNK func_02090894();
     M2C_UNK func_02090c7c();
     M2C_UNK func_020e35cc(s32);
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     extern M2C_UNK data_021029cc;
     M2C_UNK (*temp_r1)(void *);
 
@@ -114,7 +114,7 @@ void *func_02090f0c(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
         func_020e35cc(M2C_FIELD(arg0, s32 *, 0x40));
     }
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 

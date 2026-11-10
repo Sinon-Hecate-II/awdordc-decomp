@@ -61,7 +61,7 @@ extern void **gCurrentMap;
 void func_01ffb554(void*); void func_01ffc2e8(void*); void func_01ffb9c4(s32);
 s32 func_020d27a4(s32,s32); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
 s32 func_ov000_02176e28(s32,s16*); s32 func_ov000_0217a0a8(void*);
-void func_ov000_02199d74(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
+void SetMapCursor(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
 s32 bestX=-1,bestY=-1,best=0,score,id=0;
 s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
 s32 minX,maxY,n,ux,uy,minY,maxX,xx,yy,index;
@@ -116,7 +116,7 @@ if(n<=1)continue;
 best=score;bestX=pos[0];bestY=pos[1];
 map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
-if(best)func_ov000_02199d74((s16)bestX,(s16)bestY,4,(u8)id,0);
+if(best)SetMapCursor((s16)bestX,(s16)bestY,4,(u8)id,0);
 func_01ffb554((u8*)*gCurrentMap+0x2338);
 func_01ffc2e8(arg0);
 func_01ffb554((u8*)*gCurrentMap+0x1e30);
@@ -129,7 +129,7 @@ void func_ov000_0217fe68(void *arg0) {
 
 void func_ov000_02180268(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 *data_ov000_021df580;extern u8 *data_ov000_021df658;
-s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void func_ov000_02199d74(s32,s32,s32,s32,s32);
+s32 func_ov000_021a9904(u32);void func_ov000_0217f96c(void *);void func_ov000_0217fe68(void *);void SetMapCursor(s32,s32,s32,s32,s32);
 u8 *base=*gCurrentMap;u8 *p,*q;u32 index,selected;
 index=base[x+M2C_FIELD(base+(unsigned)y*2,u16 *,0x3758)];selected=M2C_FIELD(base,u8 *,0x52d4);p=(u8 *)((u32)(base+0x59a4)+index*14);q=M2C_FIELD(base,u8 **,0x52d0);
 if(M2C_FIELD(p,u16 *,4)&1)return;
@@ -137,7 +137,7 @@ if((u32)(p[11]<<28)>>28==6)return;
 M2C_FIELD(data_ov000_021df580,u16 *,8)|=1;
 if(((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27)!=0 || ((u32)(M2C_FIELD(q,u16 *,6)<<25)>>25)<((u32)(M2C_FIELD((u32)p,u16 *,6)<<25)>>25)){
 func_ov000_0217f84c(selected,(u32)index);data_ov000_021df658 -= 1;
-if((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27)func_ov000_02199d74(p[1],p[2],3,0,0);
+if((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27)SetMapCursor(p[1],p[2],3,0,0);
 switch(func_ov000_021a9904((u32)(q[0]<<26)>>26)){case 0:func_ov000_0217f96c(q);break;case 1:func_ov000_0217fe68(q);break;}
 func_ov000_0217f84c(index,selected);++data_ov000_021df658;
 }else{

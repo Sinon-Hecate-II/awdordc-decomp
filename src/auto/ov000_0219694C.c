@@ -99,7 +99,7 @@ u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
 
 void func_ov000_02196bd8(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern KindScan96 data_ov000_021b5bfc[];
 extern u8 *data_ov000_021df580;
 s32 func_ov000_02178e84(s32,s32);
@@ -108,14 +108,14 @@ s32 func_ov000_021a98e4(u32);
 s32 func_ov000_021a97d0(s32,s32);
 s32 func_020a76d4(void *);
 u32 func_ov000_0219694c(s32,s32);
-void func_ov000_02199d74(s32,s32,s32,s32,s32);
+void SetMapCursor(s32,s32,s32,s32,s32);
 u8 *m,*u; MapScan96 *bounds; s32 bx,by,i,off,l,b,l2,b2,l3,x,y,t,r,d,z; u32 best,v;
 m=*gCurrentMap; u=M2C_FIELD(m,u8 **,0x52d0);
 if(!((UnitScan96 *)u)->status)return;
 if(!func_ov000_02178e84(u[1],u[2]))return;
 func_01ffb3d0(0);
-i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
-if(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
+i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
+if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
 u=(u8 *)*gCurrentMap+0x59a4+off;
 if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||func_ov000_021a98e4((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
 if(func_ov000_021a97d0((u32)(u[0]<<26)>>26,7)){
@@ -142,24 +142,24 @@ m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 if((M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&31)!=18||!(M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&224))continue;
 M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
-}}nextUnit: i++;off+=14;}while(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);}
+}}nextUnit: i++;off+=14;}while(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);}
 { s32 l3,t3,b3; u32 best3; s32 x3,y3,r3,d3; u8 *u3;
 m=*gCurrentMap; u3=M2C_FIELD(m,u8 **,0x52d0);
 best3=0;l3=u3[1]-5<0?0:u3[1]-5;t3=u3[2]-5;if(t3<0)t3=0;r3=M2C_FIELD(m,u16 *,0x5144)-1;if(u3[1]+5<r3)r3=u3[1]+5;b3=M2C_FIELD(m,u16 *,0x5146)-1;if(u3[2]+5<b3)b3=u3[2]+5;
 z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=func_ov000_0219694c(x3,y3);if(!v||best3>v)continue;if(best3==v&&data_ov000_021df580[3]<50)continue;best3=v;bx=x3;by=y3;}
-if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);func_ov000_02199d74(u3[1],u3[2],21,(u8)bx,(u8)by);
+if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2],21,(u8)bx,(u8)by);
 }}
 #pragma opt_strength_reduction reset
 void func_ov000_021972e0(void) {
 extern void **gCurrentMap;
 void func_01ffada0(s32,s32,s32,s32,s32);
-void func_ov000_0218a9ac(s32,s32);
+void PlanMoveDestination(s32,s32);
 Map972e0 *base; u8 *unit; s32 x, y, bestX, bestY, best;
 base=*gCurrentMap;
 unit=M2C_FIELD(base,u8 **,0x52d0);
 func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,110,0);
 base=*gCurrentMap;
-if (M2C_FIELD(M2C_FIELD(base,void **,0x52f8),s8 *,0)>=0) {func_ov000_0218a9ac(0,4); return;}
+if (M2C_FIELD(M2C_FIELD(base,void **,0x52f8),s8 *,0)>=0) {PlanMoveDestination(0,4); return;}
 bestX=-1; best=32767;
 for(x=0;x<base->width;x++){
 for(y=0;y<base->height;y++){
@@ -169,7 +169,7 @@ if(v>=0 && v<=best){best=v;bestX=x;bestY=y;}
 if(bestX!=-1)break;
 }
 if(bestX==-1)return;
-func_ov000_0218a9ac(bestX,bestY);
+PlanMoveDestination(bestX,bestY);
 }
 
 u8 func_ov000_021973f8(void) {

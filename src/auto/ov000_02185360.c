@@ -154,7 +154,7 @@ s32 func_ov000_02185fb8(u8 *a,u8 *b,s32 c){
 }
 
 void func_ov000_02186070(u8 a, s32 b) {
- extern u16 data_ov000_021aeef4[];
+ extern u16 gPlayerUnitIdBase[];
  s32 func_ov000_021a98e4(s32);
  s32 func_020a7cfc(void *);
  s32 func_ov000_021a97d0(u32,u32);
@@ -165,7 +165,7 @@ void func_ov000_02186070(u8 a, s32 b) {
  u8 *p, *q=(u8 *)b;
  u8 *cell;
  M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=a;
- for(i=data_ov000_021aeef4[a]+1;i<data_ov000_021aeef4[a]+0x33;i++){
+ for(i=gPlayerUnitIdBase[a]+1;i<gPlayerUnitIdBase[a]+0x33;i++){
  p=(u8 *)*gCurrentMap+0x59a4+i*14;
  if(!((u32)(p[0]<<26)>>26))continue;
  if(func_ov000_021a98e4((u32)(p[0]<<26)>>26))continue;

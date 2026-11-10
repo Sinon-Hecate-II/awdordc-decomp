@@ -374,7 +374,7 @@ s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=
 #pragma opt_loop_invariants reset
 #pragma opt_strength_reduction reset
 void func_ov002_021e8738(void *p) {
-    M2C_UNK func_02082028(s32);
+    M2C_UNK MemAlloc(s32);
     void func_ov002_021e8d0c(void *, s8, s8);
     void func_ov002_021e997c(void *);
     s32 func_ov002_021e86f8(s32, s32);
@@ -398,7 +398,7 @@ loop:
     if (flag == 0) {
         if (M2C_FIELD(data_ov002_021f2f44 + owner * 0x68, u8 *, idx * 2 + 8) == 0) goto tail2;
     }
-    alloc = func_02082028(0x90);
+    alloc = MemAlloc(0x90);
     if (alloc != 0) {
         M2C_FIELD(alloc, void **, 0x00) = (void *)data_ov002_021ea704;
         M2C_FIELD(alloc, s32 *, 0x08) = 0;

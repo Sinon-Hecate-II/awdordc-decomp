@@ -203,9 +203,9 @@ M2C_FIELD(arg0,s16 *,16)=(y+M2C_FIELD(arg0,s16 *,16)+1)>>1;
 }
 
 void *func_020b3b4c(void *arg0) {
-    M2C_UNK func_02082040(void *);
+    M2C_UNK MemFree(void *);
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x2C));
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 

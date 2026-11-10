@@ -6,10 +6,10 @@ static inline u32 aaeb0State(void *p) {
     return (q != 0) ? M2C_FIELD((void *) q, u16 *, 8) : 0xFFFFFFFF;
 }
 static inline void *allocAAB(void) {
-void *func_02082028(s32); s32 func_020e34bc(s32); s32 func_02007f8c(s32,s32,s32);
+void *MemAlloc(s32); s32 func_020e34bc(s32); s32 func_02007f8c(s32,s32,s32);
     void *temp_r0;
     s32 temp_r0_2;
-    temp_r0 = func_02082028(0x24);
+    temp_r0 = MemAlloc(0x24);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s16 *, 0x10) = 1;
         M2C_FIELD(temp_r0, s8 *, 0x12) = 0;
@@ -147,7 +147,7 @@ void *func_020aa93c(u32 kind) {
 #pragma opt_common_subs reset
 void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     M2C_UNK func_02088e68(void *, M2C_UNK);
     M2C_UNK func_02088e7c(void *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, u32, s32);
@@ -187,7 +187,7 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
     func_02088e68(arg0, 0xA);
     func_02088e7c(arg0, 6);
-    temp_r0 = func_02082028(0x24);
+    temp_r0 = MemAlloc(0x24);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s16 *, 0x10) = 1;
         M2C_FIELD(temp_r0, s8 *, 0x12) = 0;

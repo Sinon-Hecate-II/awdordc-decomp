@@ -192,10 +192,10 @@ return sum+max;
 #pragma opt_strength_reduction off
 void func_ov000_021a5564(u8 arg0){
 void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 func_ov000_021a97e0(s32,u32);s32 func_020d27c0(s32);
-extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 id,unitOffset; s32 x2,y2;u8 *unit;u8 *unit2;s32 x,y;void *base;s32 index,owner;u32 kind;
 M2C_FIELD(*gCurrentMap,u16*,0x52b6)=arg0;
-id=data_ov000_021aeef4[arg0]+1;if(id>=data_ov000_021aeef4[arg0]+51)return;unitOffset=id*14;
+id=gPlayerUnitIdBase[arg0]+1;if(id>=gPlayerUnitIdBase[arg0]+51)return;unitOffset=id*14;
 do{
 base=*gCurrentMap;unit=(u8*)(base+0x59a4)+unitOffset;
 kind=(u32)(unit[0]<<26)>>26;if(!kind)goto next;if(kind!=22)goto next;
@@ -216,7 +216,7 @@ if(M2C_FIELD(base+y2*4,s8**,0x52e8)[x2]<0)continue;
 M2C_FIELD(base+x2+M2C_FIELD(base+y2*2,u16*,0x3758)+0x2000,s8*,0x338)=M2C_FIELD(base+x2+M2C_FIELD(base+y2*2,u16*,0x3758),s8*,0x2338)+1;
 }}
 next:;id++;unitOffset+=14;
-}while(id<data_ov000_021aeef4[arg0]+51);
+}while(id<gPlayerUnitIdBase[arg0]+51);
 }
 #pragma pop
 void func_ov000_021a581c(void) {

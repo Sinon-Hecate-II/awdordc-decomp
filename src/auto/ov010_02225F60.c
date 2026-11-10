@@ -492,8 +492,8 @@ void func_ov010_022268dc(void) {
 }
 
 s32 func_ov010_022268e0(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -543,7 +543,7 @@ void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {
     func_02007e20(arg1, arg0, 0x18);
 }
 
-void func_ov010_022269f8(s32 a,s32 b,s32 c){func_02008048(b,a+44,c);}
+void func_ov010_022269f8(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
 
 void func_ov010_02226a10(void *a){volatile u32 saved;u32 temp;void *p;temp=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=0;p=M2C_FIELD(a,void **,0);saved=temp;while(p!=0){M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(a,void **,0);}M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}
 

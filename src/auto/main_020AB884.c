@@ -148,8 +148,8 @@ void *func_020abdac(void *arg0) {
  void *p;
  M2C_FIELD(arg0,M2C_UNK **,0)=&data_02126be4;
  p=M2C_FIELD(arg0,void **,0x64);
- if(p!=NULL) {func_020e35cc(M2C_FIELD(p,s32 *,0x14));func_02082040(p);}
- func_02082040(arg0);return arg0;
+ if(p!=NULL) {func_020e35cc(M2C_FIELD(p,s32 *,0x14));MemFree(p);}
+ MemFree(arg0);return arg0;
 }
 
 void *func_020abdec(void *arg0) {
@@ -161,7 +161,7 @@ void *func_020abdec(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, void **, 0x64);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
-        func_02082040(temp_r4);
+        MemFree(temp_r4);
     }
     return arg0;
 }
@@ -171,8 +171,8 @@ void func_020abe24(void) {
 }
 
 s32 func_020abe28(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -207,7 +207,7 @@ void func_020abee4(u8 arg0, s8 arg1) {
     M2C_FIELD((data_0212735c + var_r0), s8 *, 2) = arg1;
 }
 
-u8 func_020abf3c(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 GetScreenMode(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
 u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,2);}
 
 void func_020abf94(void) {
@@ -252,8 +252,12 @@ void func_020abfcc(u16 arg0, u16 arg1) {
     }
 }
 
-void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
-    u8 func_020abf3c(u8);
+/* Applies a display transition to one screen's 3D sprite engine: for each of the
+ * two engines that match `screen`, it sets the OAM/bank flags for the previous
+ * mode, then offsets the screen (mode 0/1) or sets up the split-blank (mode 2),
+ * and records the flag and mode in the screen's state. */
+void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
+    u8 GetScreenMode(u8);
     void func_020abe3c(u8, s8);
     void func_020abee4(u8, s8);
     extern s32 gCur3DSpriteEngine;
@@ -261,7 +265,7 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
     extern s32 g3DSpriteEngineSub;
     s32 savedEngine;
     s32 i;
-    s32 x; s32 engine;
+    s32 prevMode; s32 engine;
     u16 *volatile sp4c;
     u16 *volatile sp48;
     u16 *volatile sp44;
@@ -293,18 +297,18 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
         }
 
         gCur3DSpriteEngine=engine;
-        if (arg0 == 0 && engine != g3DSpriteEngineMain) {
+        if (screen == 0 && engine != g3DSpriteEngineMain) {
             continue;
         }
-        if (arg0 == 1 && engine != g3DSpriteEngineSub) {
+        if (screen == 1 && engine != g3DSpriteEngineSub) {
             continue;
         }
-        if (arg0 == 3 && engine != savedEngine) {
+        if (screen == 3 && engine != savedEngine) {
             continue;
         }
 
-        x = func_020abf3c(arg0);
-        switch(x){case 0:case 1:
+        prevMode = GetScreenMode(screen);
+        switch(prevMode){case 0:case 1:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0;
         break;case 2:
             sp4c = (u16 *)*(u8 **)gCur3DSpriteEngine;
@@ -314,7 +318,7 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
             *sp48 = *sp48 & ~0x400;
         }
 
-        switch(arg2){case 0:
+        switch(mode){case 0:
             *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
         break;case 1:
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
@@ -383,8 +387,8 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4f) = 0;
         }
 
-        ((void(*)(u8, s32))func_020abe3c)(arg0, arg1);
-        ((void(*)(u8, s32))func_020abee4)(arg0, (s32)arg2);
+        ((void(*)(u8, s32))func_020abe3c)(screen, flag);
+        ((void(*)(u8, s32))func_020abee4)(screen, (s32)mode);
     }
 
     gCur3DSpriteEngine = savedEngine;
@@ -416,14 +420,14 @@ void func_020ac5c8(void *arg0) {
 }
 
 void func_020ac5e0(void *arg0) {
- u8 func_020abf3c(u8); void func_020ac144(u8,s32,u8);
+ u8 GetScreenMode(u8); void ConfigureScreenEngine(u8,s32,u8);
  M2C_FIELD(arg0,u16 *,0x38)=0;
- switch(func_020abf3c(M2C_FIELD(arg0,u8 *,0x3c))) {
+ switch(GetScreenMode(M2C_FIELD(arg0,u8 *,0x3c))) {
  case 0: case 2: if(M2C_FIELD(arg0,s32 *,0x34)==1)M2C_FIELD(arg0,s32 *,0x34)=0; break;
  case 1: if(M2C_FIELD(arg0,s32 *,0x34)==0)M2C_FIELD(arg0,s32 *,0x34)=1;
  if(M2C_FIELD(arg0,s32 *,0x34)==2)M2C_FIELD(arg0,s32 *,0x34)=1; break;
  }
- func_020ac144(M2C_FIELD(arg0,u8 *,0x3c),0,M2C_FIELD(arg0,s32 *,0x34));
+ ConfigureScreenEngine(M2C_FIELD(arg0,u8 *,0x3c),0,M2C_FIELD(arg0,s32 *,0x34));
 }
 
 void func_020ac65c(void *arg0) {
@@ -492,8 +496,8 @@ void func_020ac7a0(void *arg0) {
 }
 
 void func_020ac7b8(void *arg0) {
-    void func_020ac144(u8, M2C_UNK, u8);
+    void ConfigureScreenEngine(u8, M2C_UNK, u8);
     M2C_FIELD(arg0, s16 *, 0x38) = 0;
-    func_020ac144(M2C_FIELD(arg0, u8 *, 0x3C), 1, (u8) M2C_FIELD(arg0, s32 *, 0x34));
+    ConfigureScreenEngine(M2C_FIELD(arg0, u8 *, 0x3C), 1, (u8) M2C_FIELD(arg0, s32 *, 0x34));
 }
 

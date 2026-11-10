@@ -115,18 +115,18 @@ void func_02028ef4(void *arg0) {
 }
 
 void func_02029220(void) {
-s32 func_0200751c(void); void func_02007530(s32); void *func_02027d50(void); void func_02007f8c(void *,s32,s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void); void func_02007f8c(void *,s32,s32);
 s32 state; void *base; void *p; void *ptr; s32 val;
-state=func_0200751c(); base=func_02027d50();
-if (!base) { func_02007530(state); return; }
+state=OS_DisableInterrupts(); base=func_02027d50();
+if (!base) { OS_RestoreInterrupts(state); return; }
 p=(s8*)base+0x2000; ptr=M2C_FIELD(p,void**,0x270);
 if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) func_02007f8c(ptr,0,val); }
-func_02007530(state);
+OS_RestoreInterrupts(state);
 }
 
 s32 func_02029274(void) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     void *func_02027d50(void);
     s32 state;
     void *base;
@@ -134,11 +134,11 @@ s32 func_02029274(void) {
     void *r1;
     s32 result;
 
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     base = func_02027d50();
     result = 0;
     if (base == NULL) {
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return result;
     }
     r0 = (void *)((s8 *)base + 0x2000);
@@ -149,43 +149,43 @@ s32 func_02029274(void) {
             result = M2C_FIELD(r1, s32 *, 0);
         }
     }
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     return result;
 }
 
 #pragma push
 #pragma opt_common_subs off
 s32 func_020292cc(s32 arg0) {
- s32 func_0200751c(void); void func_02007530(s32); void *func_02027d50(void);
+ s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *func_02027d50(void);
  s32 state; void *base; u8 flag; s32 result;
- state=func_0200751c(); base=func_02027d50();
- if(base==NULL){func_02007530(state);return 0;}
+ state=OS_DisableInterrupts(); base=func_02027d50();
+ if(base==NULL){OS_RestoreInterrupts(state);return 0;}
  flag=M2C_FIELD(base,u8 *,0x226a);
  if(arg0!=0){result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=1;}
  else {result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=0;}
- func_02007530(state);return result;
+ OS_RestoreInterrupts(state);return result;
 }
 #pragma pop
 s32 func_02029348(void *arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     void *func_02027d50(void);
     void *func_02029594(void *);
     s32 state;
     void *base;
     void *result;
 
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     base = func_02027d50();
     if (base == NULL) {
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return 0;
     }
     if ((result = func_02029594(arg0)) == NULL) {
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return 0;
     }
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     return (s32)result + 0x10;
 }
 
@@ -434,25 +434,25 @@ func_02029a74(&data_02138e5c);
 #pragma opt_common_subs reset
 void *func_02029784(void) {
     s32 func_02027d50(void);
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     void *temp_r4;
     void *var_r5;
     s32 state;
 
     var_r5 = NULL;
     temp_r4 = (void *)func_02027d50();
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     if ((temp_r4 != NULL) && (M2C_FIELD(temp_r4, s32 *, 0x2260) == 9) && (M2C_FIELD(temp_r4, u8 *, 0x226B) == 0)) {
         var_r5 = (void *)((char *)temp_r4 + 0x2144);
     }
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     return var_r5;
 }
 
 void *func_020297c8(u16 *arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_02027d50(void);
 
     s32 r6;
@@ -463,7 +463,7 @@ void *func_020297c8(u16 *arg0) {
     r7 = (void *)0;
     r4 = 0;
     r6 = func_02027d50();
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     if (r6 != 0) {
         if (M2C_FIELD(r6, s32 *, 0x2000 + 0x260) == 9) {
             if (M2C_FIELD(r6, u8 *, 0x2000 + 0x26B) == 0) {
@@ -472,7 +472,7 @@ void *func_020297c8(u16 *arg0) {
             }
         }
     }
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     if (arg0 != (u16 *)0) {
         *arg0 = r4;
     }
@@ -480,22 +480,22 @@ void *func_020297c8(u16 *arg0) {
 }
 
 void func_02029828(s32 arg0) {
-s32 func_0200751c(void);
-void func_02007530(s32);
+s32 OS_DisableInterrupts(void);
+void OS_RestoreInterrupts(s32);
 extern M2C_UNK data_02138e50;
-s32 state=func_0200751c();
+s32 state=OS_DisableInterrupts();
 M2C_FIELD(&data_02138e50,s32 *,0x28)=arg0;
-func_02007530(state);
+OS_RestoreInterrupts(state);
 }
 
 #pragma opt_if-conversion off
 s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_02027d50(void);
     void func_02006564(void *);
     void func_020065e8(void *);
-    void func_02008048(void *, void *, s32);
+    void MI_CpuCopy8(void *, void *, s32);
     s32 func_02012e74(s32, void *, void *, u32);
     void func_02005da4(void *);
     void func_020299d0(void *);
@@ -510,27 +510,27 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 val;
 
     r6 = arg3;
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     if (func_02027d50() == 0) {
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return -1;
     }
     func_02006564(&data_02138e5c);
     base2 = func_02027d50();
     if (base2 == 0) {
         func_020065e8(&data_02138e5c);
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return -1;
     }
     if (M2C_FIELD((void *)base2, s32 *, 0x2260) != 9 ||
         M2C_FIELD((void *)base2, u8 *, 0x226b) == 1) {
         func_020065e8(&data_02138e5c);
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return -4;
     }
-    func_02008048(arg1, (void *)(base2 + 0xf00), arg2);
+    MI_CpuCopy8(arg1, (void *)(base2 + 0xf00), arg2);
     if (arg4 > 0) {
-        func_02008048(r6, (void *)(base2 + 0xf00 + arg2), arg4);
+        MI_CpuCopy8(r6, (void *)(base2 + 0xf00 + arg2), arg4);
     }
     r6 = arg2 + arg4;
     res = func_02012e74((s32)func_020299d0, arg0, (void *)(base2 + 0xf00), (u32)(u16)r6);
@@ -547,7 +547,7 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         case 8:
         default:
             func_020065e8(&data_02138e5c);
-            func_02007530(state);
+            OS_RestoreInterrupts(state);
             return -5;
     }
     func_02005da4(&data_02138e54);
@@ -557,11 +557,11 @@ s32 func_02029848(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     case 1:
     default:
         func_020065e8(&data_02138e5c);
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return -5;
     }
     func_020065e8(&data_02138e5c);
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     return r6;
 }
 #pragma opt_if-conversion reset
@@ -627,15 +627,15 @@ s32 func_02029aac(s32 a, s32 b) {
 }
 
 s32 func_02029ad8(void) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     s32 func_02027d50(void);
     s32 func_02029b9c(void);
     s32 temp_r4;
     s32 var_r5;
     s32 temp_r0;
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     temp_r0 = func_02027d50();
     var_r5 = 0;
     if (temp_r0 != 0) {
@@ -643,7 +643,7 @@ s32 func_02029ad8(void) {
             var_r5 = func_02029b9c();
         }
     }
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
     return var_r5;
 }
 

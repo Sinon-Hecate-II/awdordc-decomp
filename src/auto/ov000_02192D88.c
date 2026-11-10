@@ -11,7 +11,7 @@ void func_01ffc328(void); void func_01ffb9c4(s32);
 s32 func_ov000_021a9d8c(s16,s16); u8 func_ov000_021a8ff0(s32);
 s32 func_ov000_021a9860(s32,s32); s32 func_ov000_02178518(s32,s32,s16 *);
 s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
-s32 func_ov000_02199d74(s16,s16,s32,s32,s32);
+s32 SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 func_020d27ec(s32,s32);
 s32 x,y,bx,by,px,py,tx,ty,best,tie,score,value,id,kind;
 s32 sx,sy,ux,uy;
@@ -43,7 +43,7 @@ if(best!=-1){M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)bx&63);
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)by<<26)>>20);
 {u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(bx+M2C_FIELD(*gCurrentMap+by*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
 value=func_ov000_0217bd44(px,py,bx,by);
-func_ov000_02199d74((s16)px,(s16)py,8,(u8)value,0);}
+SetMapCursor((s16)px,(s16)py,8,(u8)value,0);}
 sy=-1;sx=sy;uy=sy;ux=sy;best=sy;tie=best+0x8000;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
@@ -73,7 +73,7 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)tx&63);
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)ty<<26)>>20);
 {u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(tx+M2C_FIELD(*gCurrentMap+ty*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
 value=func_ov000_0217bd44(ux,uy,sx,sy);
-func_ov000_02199d74((s16)ux,(s16)uy,8,(u8)value,0);
+SetMapCursor((s16)ux,(s16)uy,8,(u8)value,0);
 }
 #pragma opt_if-conversion reset
 #pragma opt_strength_reduction reset
@@ -94,7 +94,7 @@ if(x==0)return x;
 x=func_020cccdc(); if(!x)return x;
 {s32 v=func_ov000_021a8b78(M2C_FIELD(*data_027e0058,void **,0x52d0));if(v>=3)return v;}
 p=M2C_FIELD(*data_027e0058,u8 **,0x52d0);
-return func_ov000_02199d74(p[1],p[2],24,0,0);
+return SetMapCursor(p[1],p[2],24,0,0);
 }
 
 s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
@@ -104,7 +104,7 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
     s32 ManhattanDistance(s32, s32, s32, s32);
     u8 func_ov000_021786a8(s16 *);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     s16 x, y;
     s32 i, best = 0x7fff;
     u8 *base, *rec, *rec7;
@@ -113,7 +113,7 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
     x = (s16)arg0;
     y = (s16)arg1;
     base = (u8 *)*gCurrentMap;
-    start = data_ov000_021aeef4[M2C_FIELD(base, u16 *, 0x52a4)];
+    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52a4)];
     for (i = start + 1; i < start + 0x33; i++) {
         rec = base + 0x59a4 + i * 14;
         {
@@ -181,7 +181,7 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
                 if (!func_020d1938(player)) continue;
                 if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
                 {
-                    u16 start2 = data_ov000_021aeef4[player];
+                    u16 start2 = gPlayerUnitIdBase[player];
                     s32 i2;
                     for (i2 = start2 + 1; i2 < start2 + 0x33; i2++) {
                         u8 *rec2 = base + 0x59a4 + i2 * 14;

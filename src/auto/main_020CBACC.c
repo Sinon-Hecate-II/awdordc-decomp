@@ -412,8 +412,8 @@ void func_020cc8d8(void *arg0) {
 }
 
 void func_020cc974(void) {
-void func_020d468c(void);void func_020d472c(void);void func_020bac24(void);extern void **gCurrentMap;
-func_020d468c();func_020d472c();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;func_020bac24();
+void func_020d468c(void);void func_020d472c(void);void BattleUpdateUnitCursor(void);extern void **gCurrentMap;
+func_020d468c();func_020d472c();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;BattleUpdateUnitCursor();
 }
 
 s32 func_020cc9a4(void) {

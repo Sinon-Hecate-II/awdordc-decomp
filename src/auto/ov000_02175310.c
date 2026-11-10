@@ -239,7 +239,10 @@ void func_ov000_02175ed8(void *arg0) {
     gCur3DSpriteEngine = temp_r4;
 }
 #pragma opt_strength_reduction off
-void func_ov000_02175a20(void *a){
+/* Draws the per-unit status panel of the map info window: picks the graphics set
+ * for the window's current mode, uploads the gauge tiles, then draws the stat
+ * bar and number, the unit-type icon and the team-coloured tiles for `entry`. */
+void Ov000Info_DrawUnitPanel(void *entry){
 M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 func_020e34bc(s32); void func_020e35cc(s32); void func_01ff9ce8(s32); u32 func_ov000_02175074();
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov000_021c2e50,data_ov000_021c2bb0,data_ov000_021c2680,data_ov000_021c23ec,data_ov000_021c2918,data_ov000_021c2158;
@@ -247,32 +250,32 @@ extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 dat
 Tiles75a20 first; TeamTiles75a20 second; void *saved; u16 tile; s32 temp; s32 i,base; s16 index; s32 gfx,step; M2C_UNK *table;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
-tile=(u16)(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
-temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x50)-1);
+tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
+temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 func_01ff9ce8(0);
 switch(func_ov000_02175074()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
 func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)func_01ff85b8(base+step*2,32,384);
 func_020808dc(base,16,2,11);func_020e35cc(temp);
-if(M2C_FIELD(M2C_FIELD(a,void **,16),u8 *,0x48)){
-if(M2C_FIELD(a,s32 *,8)<40)func_02080860(base,10,2,0x2e0,11);
+if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
+if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2e0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
-}else if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,12)>=0){
-if(M2C_FIELD(a,s32 *,8)<40)func_02080860(base,10,2,0x2c0,11);
+}else if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,12)>=0){
+if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2c0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
-}else if(M2C_FIELD(M2C_FIELD(a,void **,16),u8 *,0x49)){
-if(M2C_FIELD(a,s32 *,8)<40)func_02080860(base,10,2,0x2a0,11);
+}else if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x49)){
+if(M2C_FIELD(entry,s32 *,8)<40)func_02080860(base,10,2,0x2a0,11);
 func_02098844(0,26,20,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),data_ov000_021deb10[index],(u16)index,0);
 }else func_020809c0(base,16,2);
-if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x3c))func_02080860(gfx+32,3,1,tile,11);
-if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,32)>0){
-if(M2C_FIELD(a,s32 *,8)<40){func_02080860(gfx+38,3,1,0x28c,11);func_02080860(gfx+44,2,1,0x292,11);}else func_02080860(gfx+38,3,1,0x28c,11);}
-if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,36)>0){
-if(M2C_FIELD(a,s32 *,8)<40){func_02080860(gfx+48,3,1,0x28f,11);func_02080860(gfx+54,2,1,0x292,11);}else func_02080860(gfx+48,3,1,0x28f,11);}
+if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c))func_02080860(gfx+32,3,1,tile,11);
+if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,32)>0){
+if(M2C_FIELD(entry,s32 *,8)<40){func_02080860(gfx+38,3,1,0x28c,11);func_02080860(gfx+44,2,1,0x292,11);}else func_02080860(gfx+38,3,1,0x28c,11);}
+if(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,36)>0){
+if(M2C_FIELD(entry,s32 *,8)<40){func_02080860(gfx+48,3,1,0x28f,11);func_02080860(gfx+54,2,1,0x292,11);}else func_02080860(gfx+48,3,1,0x28f,11);}
 first=data_ov000_021ae2b2;
-func_02080860(gfx+0x308,4,1,(u16)(first.v[M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x54)]*4+0x260),11);
+func_02080860(gfx+0x308,4,1,(u16)(first.v[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x54)]*4+0x260),11);
 second=*(TeamTiles75a20 *)(data_ov000_021ae2a0+6);
-func_02080860(gfx+0x314,4,1,(u16)(second.v[data_ov000_021dede4[M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,4)]]*4+0x240),11);
+func_02080860(gfx+0x314,4,1,(u16)(second.v[data_ov000_021dede4[M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,4)]]*4+0x240),11);
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction reset

@@ -73,19 +73,19 @@ void func_ov004_02213124(M2C_UNK arg0) {
 }
 
 s32 func_ov004_0221313c(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  struct Bits2e98 { u8 kind:6; u8 sub:2; };
  s32 i; s32 p; s32 end; struct Bits2e98 *u;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=(s32)*gCurrentMap+0x59A4+i*14;
  do {u=(struct Bits2e98 *)p; if(u->kind&&u->sub)return 1; i++; p+=14;}while(i<end);}
  return 0;
 }
 
 s32 func_ov004_022131b0(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  u32 bits; s32 i; u8 *p; s32 end;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=90U)return 1; i++; p+=14;}while(i<end);}
  return 0;
@@ -105,29 +105,29 @@ s32 func_ov004_0221322c(void) {
 }
 
 s32 func_ov004_0221326c(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  s32 i; u8 *p; s32 end; u8 *base;
  base=(u8 *)*gCurrentMap;
  if((s32)M2C_FIELD(base,u16 *,0x52A2)<2)return 0;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=base+0x59A4+i*14;
  do {if(((u32)(*p<<26)>>26)&&p[1]==11&&p[2]==6)return 1; i++; p+=14;}while(i<end);}
  return 0;
 }
 
 s32 func_ov004_022132fc(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  u32 bits; s32 i; u8 *p; s32 end;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=70U&&bits==2)return 1; i++; p+=14;}while(i<end);}
  return 0;
 }
 
 s32 func_ov004_02213380(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  u32 bits; s32 i; u8 *p; s32 end;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=70U&&bits==7)return 1; i++; p+=14;}while(i<end);}
  return 0;
@@ -153,20 +153,20 @@ u8 func_ov004_02213404(void) {
 }
 
 s32 func_ov004_02213460(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=data_ov000_021aeef4[2]+1; end=data_ov000_021aeef4[2]+0x33;
+ count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
  if(count<=4)return 1; return 0;
 }
 
 s32 func_ov004_022134d0(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  s32 result; u32 bits; s32 i; u8 *p; s32 end; u8 *base;
  result=1; base=(u8 *)*gCurrentMap;
  if((s32)M2C_FIELD(base,u16 *,0x52A2)>1)return 0;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=base+0x59A4+i*14;
  do {bits=(u32)(*p<<26)>>26; if(bits&&bits==1&&p[2]<=5U)result=0; i++; p+=14;}while(i<end);}
  return result;
@@ -211,9 +211,9 @@ return 0;
 }
 
 s32 func_ov004_022136c0(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  u32 bits; s32 i; u8 *p; s32 end;
- i=data_ov000_021aeef4[1]+1; end=data_ov000_021aeef4[1]+0x33;
+ i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=90U)return 1; i++; p+=14;}while(i<end);}
  return 0;
@@ -231,11 +231,11 @@ if(((s32)(v&0xe0)>>5)==1) {if(base[i]==0)return 1;}
 }
 
 s32 func_ov004_02213798(void) {
-extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 count,i,end;u8 *p,v;
 count=0;
 if(func_02086b40(0))return count;
-i=data_ov000_021aeef4[2]+1;end=data_ov000_021aeef4[2]+0x33;
+i=gPlayerUnitIdBase[2]+1;end=gPlayerUnitIdBase[2]+0x33;
 if(i<end) {
 p=(u8 *)*gCurrentMap+0x59a4+i*14;
 do {v=*p;if((u32)(v<<26)>>26)count++;i++;p+=14;}while(i<end);
@@ -256,9 +256,9 @@ u8 func_ov004_02213820(void) {
 }
 
 s32 func_ov004_02213840(void) {
- extern void **gCurrentMap; extern u16 data_ov000_021aeef4[];
+ extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=data_ov000_021aeef4[2]+1; end=data_ov000_021aeef4[2]+0x33;
+ count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
  if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
  do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
  if(count!=0)return 0; return 1;

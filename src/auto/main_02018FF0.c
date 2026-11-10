@@ -125,19 +125,19 @@ void func_02019320(M2C_UNK);
 extern s32 data_02136e68;
 extern M2C_UNK data_02136e6c,data_02137290;
 void func_02019334();
-s32 func_0200751c(void);
-void func_02007530(s32);
+s32 OS_DisableInterrupts(void);
+void OS_RestoreInterrupts(s32);
 void func_02005ac0(M2C_UNK,void (*)(void),M2C_UNK,void *,s32,s32);
-s32 saved=func_0200751c();
+s32 saved=OS_DisableInterrupts();
 if(!data_02136e68){
 data_02136e68=a;
 func_02019320(a+0xc4);
 func_02019320((s32)&data_02136e6c);
 M2C_FIELD(a,s32 *,0xc0)=0;
 func_02005ac0(a,func_02019334,a,&data_02137290,0x400,20);
-func_02005e5c(a);
+TaskWake(a);
 }
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 
 void func_02019320(M2C_UNK arg0) {
@@ -147,23 +147,23 @@ void func_02019320(M2C_UNK arg0) {
 
 void func_02019334(void *arg0) {
 extern s32 data_02136e68;
-s32 func_0200751c(void); void func_02007530(s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
 void func_02005da4(s32); void func_02005bbc(void);
 s32 saved; Work19334 w; void (*second)(Work19334 *);
 for(;;) {
 func_02007f8c((s32)&w,0,0x24);
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 while(!M2C_FIELD(arg0,Work19334 * volatile *,0xc0)) func_02005da4(0);
 w=*M2C_FIELD((short)arg0,Work19334 **,0xc0);
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 if(w.first) w.result=w.first(&w);
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 second=w.second;
 M2C_FIELD(&data_02136e68,u8 *,0x26)=0;
 if(second) second(&w);
 if(!data_02136e68) break;
 M2C_FIELD(arg0,Work19334 **,0xc0)=0;
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 func_02005bbc();
 }

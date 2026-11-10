@@ -86,18 +86,18 @@ void func_ov002_021e2770(void *arg0, s8 arg1) {
 s32 func_ov002_021e27c4(void *a){s32 sum=0;u8 *p;if(!M2C_FIELD(a,s32 *,4))return sum;p=M2C_FIELD(a,u8 **,0x18);while(p[1]!=255){if(!p[0]){switch(p[1]){case 0:case 2:return sum;case 1:case 6:return 0;case 3:case 4:case 5:default:break;}}else sum+=p[0];p+=12;}return sum;}
 
 void func_ov002_021e2848(void *a,s32 b,s32 c) {
-void *func_02082028(M2C_UNK);
+void *MemAlloc(M2C_UNK);
 M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);
 register void *q;
 void *p;
 if(M2C_FIELD(a,void **,8)) {
-p=func_02082028(8);
+p=MemAlloc(8);
 if(p) {M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;}
 M2C_FIELD(p,void **,0)=M2C_FIELD(a,void **,8);
 M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,12);
 M2C_FIELD(a,void **,12)=p;
 }
-M2C_FIELD(a,void **,8)=((p=func_02082028(0x54)) ? init_021e2848(p) : p);
+M2C_FIELD(a,void **,8)=((p=MemAlloc(0x54)) ? init_021e2848(p) : p);
 q=M2C_FIELD(a,void **,8);
 func_ov002_021e16bc(q,M2C_FIELD(a,u8 *,0x53),M2C_FIELD(a,u8 *,0x47));
 func_ov002_021e179c(q,0,0,(s16)c);
@@ -310,12 +310,12 @@ s32 func_ov002_021e2e28(void *arg0) {
 
 /* Shuffle the five auto-attack slot indices for a panel: take a fixed order from the caller when given, otherwise randomize-then-anchor specific slots, then build a descending priority index table. */
 void func_ov002_021e2eb8(void *panel, void *slotTable, void *orderSeq) {
-void func_02008048(void *, void *, s32);
+void MI_CpuCopy8(void *, void *, s32);
 s32 RandomIntRange(s32, s32);
 void func_ov002_021e3030(u8 *, u8 *);
 s32 j, best; void *entry; s32 k, mask, which, i;
 M2C_FIELD(panel, void **, 4) = slotTable;
-if (orderSeq) func_02008048(orderSeq, panel + 0x12, 5);
+if (orderSeq) MI_CpuCopy8(orderSeq, panel + 0x12, 5);
 else {
 for (i = 0; i < 5; i++) M2C_FIELD(panel + i, u8 *, 0x12) = i;
 for (i = 0; i < 5; i++) func_ov002_021e3030(panel + 0x12 + i, panel + 0x12 + RandomIntRange(0, 4));

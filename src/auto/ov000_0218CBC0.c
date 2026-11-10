@@ -16,7 +16,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
     s32 func_ov000_02176e28(s32, s16 *);
     s32 func_020d27a4(s32, s32);
     void func_ov000_0217c3a4(void);
-    void func_ov000_02199d74(s32, s32, s32, s32, s32);
+    void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
     s32 bestX = -1, bestY = -1, bestScore = 0, bestId = 0, bestX2 = -1, bestY2 = -1;
     s16 savedX, savedY;
@@ -108,11 +108,11 @@ M2C_UNK func_ov000_0218cbc0(void) {
 
     if (bestScore != 0) {
         func_ov000_0217c3a4();
-        func_ov000_02199d74(bestX, bestY, 4, (u8)bestId, 0);
+        SetMapCursor(bestX, bestY, 4, (u8)bestId, 0);
     }
     if (bestHealth != 0xff) {
         func_ov000_0217c3a4();
-        func_ov000_02199d74(bestX2, bestY2, 5, (u8)savedX, (u8)savedY);
+        SetMapCursor(bestX2, bestY2, 5, (u8)savedX, (u8)savedY);
     }
 }
 #pragma opt_strength_reduction reset

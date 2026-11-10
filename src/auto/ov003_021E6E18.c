@@ -46,9 +46,9 @@ s32 func_ov003_021e6e5c(void) {
 }
 
 s32 func_ov003_021e6e94(s32 arg0) {
-    M2C_UNK func_ov003_021e6cac(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK InRange(s32, M2C_UNK, M2C_UNK);
     extern s32 data_ov003_0220f0c8[][2];
-    func_ov003_021e6cac(arg0, 0, 0xD);
+    InRange(arg0, 0, 0xD);
     return data_ov003_0220f0c8[arg0][0];
 }
 
@@ -69,7 +69,7 @@ s32 func_ov003_021e6eb8(s32 arg0) {
  * over the slot groups (previous/next), place the currently held unit into a
  * slot, or scroll the map view. The selected action is then passed to the
  * display refresh (func_01ffa810) and stored as the list's current handle. */
-void func_ov003_021e6ef4(void *arg0,int action){
+void HandleWaypointInput(void *arg0,int action){
 s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 func_020848c4(void);s32 func_020846a4(void);
 s32 func_01ffa810(s32);
 u8 *list=arg0;
@@ -170,13 +170,13 @@ s8 func_ov003_021e74a4(void *arg0) {
  * state (func_ov003_021e7458) or cleared (func_020aad18), and slots 21-25 are
  * released if active; in mode 1 (grid), slots 0-20 are released and 21-25 built.
  * The list's head/tail next-pointers are re-linked to the active range, then the
- * display is refreshed (func_ov003_021e6ef4). */
+ * display is refreshed (HandleWaypointInput). */
 void func_ov003_021e74ac(void *list, s32 mode) {
     s32 func_020846a4(void);
     M2C_UNK func_02087db8(void *, M2C_UNK);
     M2C_UNK func_020aad18(void *);
-    s32 func_ov003_021e6cac(s32, s32, s32);
-    void func_ov003_021e6ef4(void *, s32);
+    s32 InRange(s32, s32, s32);
+    void HandleWaypointInput(void *, s32);
     u32 i;
     u32 j;
     s32 active;
@@ -189,9 +189,9 @@ void func_ov003_021e74ac(void *list, s32 mode) {
         M2C_FIELD(list, s8 *, 0xe5) = 0;
         i = 0;
         do {
-            if (!func_ov003_021e6cac(i, 21, 24)) {
-                if (func_ov003_021e6cac(i, 0, 3)) func_ov003_021e7458(list, i, 0);
-                else if (func_ov003_021e6cac(i, 4, 7)) func_ov003_021e7458(list, i, 4);
+            if (!InRange(i, 21, 24)) {
+                if (InRange(i, 0, 3)) func_ov003_021e7458(list, i, 0);
+                else if (InRange(i, 4, 7)) func_ov003_021e7458(list, i, 4);
                 else func_020aad18(M2C_FIELD(list + i * 4, void **, 0x78));
             } else {
                 sub = M2C_FIELD(M2C_FIELD(list + i * 4, void **, 0x78), void **, 0x64);
@@ -214,7 +214,7 @@ void func_ov003_021e74ac(void *list, s32 mode) {
         M2C_FIELD(list, s8 *, 0xe4) = 21;
         do {
             if (j >= 21) {
-                if (func_ov003_021e6cac(j, 21, 24)) func_ov003_021e7458(list, j, 21);
+                if (InRange(j, 21, 24)) func_ov003_021e7458(list, j, 21);
                 else func_020aad18(M2C_FIELD(list + j * 4, void **, 0x78));
             } else {
                 sub = M2C_FIELD(M2C_FIELD(list + j * 4, void **, 0x78), void **, 0x64);
@@ -230,6 +230,6 @@ void func_ov003_021e74ac(void *list, s32 mode) {
         M2C_FIELD(M2C_FIELD(list, void **, 0xdc), s16 *, 0x6e) = 21;
         break;
     }
-    func_ov003_021e6ef4(list, 25);
+    HandleWaypointInput(list, 25);
 }
 

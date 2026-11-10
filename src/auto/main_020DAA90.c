@@ -36,7 +36,7 @@ DAACC_RET func_020daacc(void *arg0) {
     s32 func_ov009_022246ac(s32);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
-    extern s32 data_02168f7c[];
+    extern s32 gUnitSlotIds[];
     extern s8 data_0212d244[];
     extern s8 data_0212d248[];
     extern char data_0212d24c[];
@@ -102,7 +102,7 @@ DAACC_RET func_020daacc(void *arg0) {
                 *(volatile u16 *)0x04000208 = ime;
                 continue;
             }
-            data_02168f7c[(s8)M2C_FIELD(arg0, s8 *, 0x42)] = i;
+            gUnitSlotIds[(s8)M2C_FIELD(arg0, s8 *, 0x42)] = i;
             v6b = M2C_FIELD(unit, u8 *, 0x6B);
             v6c = M2C_FIELD(unit, u8 *, 0x6C);
             func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 0x14, 2);
@@ -122,7 +122,7 @@ DAACC_RET func_020daacc(void *arg0) {
             *(volatile u16 *)0x04000208 = ime;
         }
         for (j = M2C_FIELD(arg0, s8 *, 0x42); j < 4; j++) {
-            data_02168f7c[j] = -1;
+            gUnitSlotIds[j] = -1;
             func_020e4cd8(data_0212d258, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
             func_020675e4(buf, data_0212d270);
             func_0209b2b4(0x1A, (s16)y, 1, buf, 0x9000, (u16)(x + 0x28));
@@ -140,15 +140,15 @@ M2C_UNK func_020dae28(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-DAE_RET func_020dae38(void *arg0) {
+DAE_RET DrawUnitSlotList(void *arg0) {
 M2C_UNK UpdateSpriteAnimation(s32); s32 GetSpriteAnimValue(s32); M2C_UNK func_020b1c44(s32,M2C_UNK);
 M2C_UNK func_020809c0(u16*,s32,s32); M2C_UNK func_020e4cd8(u16*,u32,u32,u32,u16,u16,u32);
 M2C_UNK func_020675e4(void*,const char*,...); M2C_UNK func_0209b2b4(s32,s32,s32,void*,s32,s32);
 s32 func_020c52ec(s32); s32 func_020c544c(s32); s32 func_0203a68c(s32,s32);
 void func_ov010_0222697c(void*); s32 func_0203a7c0(s32,u8*,u8*,void*,s32*);
 extern void **g3DSpriteEngineMain; extern void **gCur3DSpriteEngine;
-extern s32 data_02168f7c[]; extern s8 data_0212d278[]; extern s8 data_0212d27c[];
-extern char data_0212d280[]; extern u16 data_0212d28c[]; extern char data_0212d2a4[];
+extern s32 gUnitSlotIds[]; extern s8 data_0212d278[]; extern s8 data_0212d27c[];
+extern char gUnitListNameFormat[]; extern u16 data_0212d28c[]; extern char gUnitListEmptyName[];
 void *saved; s32 unit, temp; u16 scroll; u8 a,b; s32 c;
 s32 x,y,i,z,j; s8 buf2[16],buf[16]; u8 info[108];
 UpdateSpriteAnimation(M2C_FIELD(arg0,s32*,0x68));
@@ -172,25 +172,25 @@ func_ov010_0222697c(info);
 if(func_0203a7c0(unit,&a,&b,info,&c)!=6)continue;
 if(!(info[0x1a]&2)||a==b)continue;
 if(M2C_FIELD(arg0,s32*,0x38)!=M2C_FIELD(info,s8*,0x28))continue;
-data_02168f7c[M2C_FIELD(arg0,s8*,0x42)]=i;
+gUnitSlotIds[M2C_FIELD(arg0,s8*,0x42)]=i;
 func_020809c0((u16*)(M2C_FIELD(gCur3DSpriteEngine,u32*,0x24)+6+(z<<1)),20,2);
 func_020e4cd8((u16*)info,M2C_FIELD(gCur3DSpriteEngine,u32*,0x10),M2C_FIELD(gCur3DSpriteEngine,u32*,0x24),9,3,(u16)y,x);
-func_020675e4(buf2,data_0212d280,data_0212d27c[0],data_0212d278[1]+b,data_0212d27c[0],data_0212d278[1]+a);
+func_020675e4(buf2,gUnitListNameFormat,data_0212d27c[0],data_0212d278[1]+b,data_0212d27c[0],data_0212d278[1]+a);
 func_0209b2b4(26,(s16)y,1,buf2,0x9000,(u16)(x+0x28));
 M2C_FIELD(arg0,s8*,0x42)++;x+=0x34;z+=0xa0;y+=5;
 if(M2C_FIELD(arg0,s8*,0x42)==4)break;
 }
 for(j=M2C_FIELD(arg0,s8*,0x42);j<4;j++){
-data_02168f7c[j]=-1;
+gUnitSlotIds[j]=-1;
 func_020e4cd8(data_0212d28c,M2C_FIELD(gCur3DSpriteEngine,u32*,0x10),M2C_FIELD(gCur3DSpriteEngine,u32*,0x24),9,3,(u16)y,x);
-func_020675e4(buf,data_0212d2a4);
+func_020675e4(buf,gUnitListEmptyName);
 func_0209b2b4(26,(s16)y,1,buf,0x9000,(u16)(x+0x28));x+=0x34;y+=5;
 }
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2; gCur3DSpriteEngine=saved;
 }
 void func_020db134(void) {
-    ((void (*)())func_020dae38)();
+    ((void (*)())DrawUnitSlotList)();
 }
 
 void func_020db140(void) {
@@ -213,7 +213,7 @@ void func_020db164(void *arg0) {
 }
 
 void func_020db170(void) {
-    ((M2C_UNK (*)())func_020dae38)();
+    ((M2C_UNK (*)())DrawUnitSlotList)();
 }
 
 void func_020db17c(void) {
@@ -221,7 +221,7 @@ void func_020db17c(void) {
 }
 
 void func_020db188(void) {
-    ((M2C_UNK (*)())func_020dae38)();
+    ((M2C_UNK (*)())DrawUnitSlotList)();
 }
 
 void func_020db194(void) {

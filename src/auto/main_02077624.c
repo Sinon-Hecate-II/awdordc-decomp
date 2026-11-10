@@ -7,8 +7,8 @@ static inline u8 mapByte020778cc(s32 map,u32 index) { return M2C_FIELD(map+index
 static inline u8 mapFog020778cc(u8 *bits,u32 index) { return bits[index>>3] & (1<<(index&7)); }
 static inline u8 *mapBits020778cc(u8 *dims) { return dims+0xe1; }
 static inline u32 tileFlags020778cc(u16 tile) {
- extern u32 data_020edebc[][2];
- return data_020edebc[tile][0] & 0x7fff0000;
+ extern u32 gTerrainClassFlags[][2];
+ return gTerrainClassFlags[tile][0] & 0x7fff0000;
 }
 
 typedef struct Unk0207Color3 { u32 words[3]; } Unk0207Color3;
@@ -95,7 +95,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  extern s32 *gCurrentMap;
  extern u8 data_02141f08[];
  extern u8 data_02142ebc[3840];
- extern u32 data_020edebc[][2];
+ extern u32 gTerrainClassFlags[][2];
  extern u8 data_02141788[];
  s32 x,y;
  u32 flags;
@@ -203,7 +203,7 @@ void func_02077c8c(void) {
     M2C_UNK func_02003dfc(s32, s32, s16, s32, s32);
     M2C_UNK func_02003de4(M2C_UNK);
     void func_02077a30(void);
-    extern u32 data_027e00bc;
+    extern u32 g3DSpriteBankMain;
     extern void *gCur3DSpriteEngine;
     extern s32 *gCurrentMap;
     extern u16 data_02140fc8[];
@@ -217,10 +217,10 @@ void func_02077c8c(void) {
     u16 *hp;
     u32 val;
 
-    obj = (u8 *)data_027e00bc;
+    obj = (u8 *)g3DSpriteBankMain;
     *(u32 *)(obj + 0x34) = 1;
     {u16 * volatile p0=(u16 *)*(u32 *)gCur3DSpriteEngine;*p0=*p0 & ~7;}
-    *(u16 *)data_027e00bc |=8;
+    *(u16 *)g3DSpriteBankMain |=8;
     {u16 * volatile p1=(u16 *)*(u32 *)gCur3DSpriteEngine;*p1=*p1|16;}
     {u16 * volatile p2=(u16 *)*(u32 *)gCur3DSpriteEngine;*p2=*p2|32;}
     {u16 * volatile p3=(u16 *)*(u32 *)gCur3DSpriteEngine;*p3=*p3|64;}

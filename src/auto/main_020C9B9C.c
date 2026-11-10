@@ -99,14 +99,14 @@ void func_020c9e14(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_020cbc88(void *, void *);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     s16 temp_r1;
     if (M2C_FIELD(arg0, s16 *, 0x6E) & 0x11) {
         func_01ffa6fc(arg0);
         return;
     }
     while ((temp_r1 = M2C_FIELD(arg0, s16 *, 0x70)) < 0x33) {
-        func_020cbc88((u8 *)*gCurrentMap + 0x59A4 + (temp_r1 + data_ov000_021aeef4[M2C_FIELD(arg0, s16 *, 0x6C)]) * 0xE, arg0);
+        func_020cbc88((u8 *)*gCurrentMap + 0x59A4 + (temp_r1 + gPlayerUnitIdBase[M2C_FIELD(arg0, s16 *, 0x6C)]) * 0xE, arg0);
         M2C_FIELD(arg0, s16 *, 0x70) += 1;
         return;
     }

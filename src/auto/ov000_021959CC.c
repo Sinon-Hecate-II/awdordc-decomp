@@ -44,7 +44,7 @@ s32 func_ov000_02195b80(s16 *out) {
     void func_01ffb554(void *);
     void func_01ffc328(void *);
     s32 func_ov000_021a9d8c(s16, s16);
-    s32 func_ov000_0218a520(s16, s16);
+    s32 IsValidMoveCell(s16, s16);
     s32 func_ov000_021959cc(s32, s32, s32, s32);
     s32 func_020a76d4(void *);
 
@@ -138,7 +138,7 @@ s32 func_ov000_02195b80(s16 *out) {
                 }
 
                 if (func_ov000_021a9d8c((s16)x, (s16)y) != 0) continue;
-                if (func_ov000_0218a520((s16)x, (s16)y) == 0) continue;
+                if (IsValidMoveCell((s16)x, (s16)y) == 0) continue;
 
                 if (flag != 0) {
                     rows = *(void **)((u8 *)*gCurrentMap + 0x52e8 + y * 4);
@@ -166,7 +166,7 @@ void func_ov000_02195ea4(void) {
     s32 func_ov000_02195b80(s16 *);
     s32 func_ov000_02195788(s16 *);
     s32 func_ov000_0217e6bc(s16,s16);
-    void func_ov000_0218a9ac(s16,s16);
+    void PlanMoveDestination(s16,s16);
     extern void **gCurrentMap;
     s16 sp0[2];
     if (func_ov000_021a98e4((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)==1) {
@@ -175,7 +175,7 @@ void func_ov000_02195ea4(void) {
         if (func_ov000_02195788(sp0)==0) return;
     }
     if (func_ov000_0217e6bc(sp0[0],sp0[1])==0) return;
-    func_ov000_0218a9ac(sp0[0],sp0[1]);
+    PlanMoveDestination(sp0[0],sp0[1]);
 }
 
 s32 func_ov000_02195f1c(s16 *arg0) {
@@ -225,7 +225,7 @@ s32 func_ov000_02195f1c(s16 *arg0) {
 void func_ov000_0219604c(void) {
     s32 func_ov000_02195f1c(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_02195f1c(sp0) == 0) {
@@ -234,7 +234,7 @@ void func_ov000_0219604c(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 s32 func_ov000_02196084(s16 *arg0) {
@@ -295,7 +295,7 @@ s32 func_ov000_02196084(s16 *arg0) {
 void func_ov000_0219619c(void) {
     s32 func_ov000_02196084(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_02196084(sp0) == 0) {
@@ -304,7 +304,7 @@ void func_ov000_0219619c(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 s32 func_ov000_021961d4(s16 *arg0) {
@@ -364,7 +364,7 @@ s32 func_ov000_021961d4(s16 *arg0) {
 void func_ov000_021962f8(void) {
     s32 func_ov000_021961d4(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_021961d4(sp0) == 0) {
@@ -373,7 +373,7 @@ void func_ov000_021962f8(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 s32 func_ov000_02196330(void) {
@@ -418,7 +418,7 @@ s32 func_ov000_02196398(s16 *arg0) {
 void func_ov000_021963f8(void) {
     s32 func_ov000_02196398(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
-    void func_ov000_0218a9ac(s16, s16);
+    void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (func_ov000_02196398(sp0) == 0) {
@@ -427,7 +427,7 @@ void func_ov000_021963f8(void) {
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
         return;
     }
-    func_ov000_0218a9ac(sp0[0], sp0[1]);
+    PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 #pragma opt_strength_reduction off
@@ -533,7 +533,7 @@ extern void **gCurrentMap; extern u8 **data_ov000_021df580;
 s32 func_ov000_021a98e4(u32); s32 func_020a76d4(void *);
 void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
 s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
-s32 func_ov000_02179e48(s16 *); s32 func_ov000_0217e6bc(s16,s16); void func_ov000_0218a9ac(s16,s16);
+s32 func_ov000_02179e48(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
 s32 limit; s32 flags; s32 best=0x7fff; s32 y,x; s16 cand[2];
 if(func_ov000_021a98e4(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind)==1)
 limit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
@@ -558,11 +558,11 @@ best=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,0x52e8)[x];
 if(best==0x7fff)return;
 if(!func_ov000_02179e48(cand))return;
 if(!func_ov000_0217e6bc(cand[0],cand[1]))return;
-func_ov000_0218a9ac(cand[0],cand[1]);
+PlanMoveDestination(cand[0],cand[1]);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
-s32 func_ov000_021a9934(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void func_ov000_0218a9ac(s16,s16);
+s32 func_ov000_021a9934(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **data_ov000_021df580;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<29)>>29)&4))return;
@@ -583,6 +583,6 @@ next: x++;p++;
 }while(x<cols); rowend:y++; }while(y<(s32)M2C_FIELD(base,u16 *,0x5146));
 if(best==0x7fff)return;
 if(!func_ov000_0217e6bc(sx,sy))return;
-func_ov000_0218a9ac(sx,sy);
+PlanMoveDestination(sx,sy);
 }
 

@@ -4,7 +4,7 @@
 void func_ov003_021f05fc(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02074114(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
-    M2C_UNK **func_02082028(M2C_UNK);
+    M2C_UNK **MemAlloc(M2C_UNK);
     void func_ov003_021f13ec(s32);
     extern M2C_UNK data_02102174;
     extern M2C_UNK data_ov003_0220f48c;
@@ -65,7 +65,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x64) = NULL;
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x68) = NULL;
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x6C) = NULL;
-        temp_r0_2 = func_02082028(0x12);
+        temp_r0_2 = MemAlloc(0x12);
         if (temp_r0_2 != NULL) {
             M2C_FIELD(temp_r0_2, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_2, s8 *, 1) = 0;
@@ -80,7 +80,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_2, u16 *, 2) = (u16) M2C_FIELD(temp_r0_2, u16 *, 4);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = temp_r0_2;
-        temp_r0_3 = func_02082028(0x14);
+        temp_r0_3 = MemAlloc(0x14);
         if (temp_r0_3 != NULL) {
             M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_ov003_0220faf8;
             M2C_FIELD(temp_r0_3, s16 *, 4) = 8;
@@ -97,7 +97,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_3, s8 *, 0xD) = 0x63;
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x40) = temp_r0_3;
-        temp_r0_4 = func_02082028(0x12);
+        temp_r0_4 = MemAlloc(0x12);
         if (temp_r0_4 != NULL) {
             M2C_FIELD(temp_r0_4, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_4, s8 *, 1) = 0;
@@ -112,7 +112,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_4, u16 *, 2) = (u16) M2C_FIELD(temp_r0_4, u16 *, 4);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x44) = temp_r0_4;
-        temp_r0_5 = func_02082028(0x12);
+        temp_r0_5 = MemAlloc(0x12);
         if (temp_r0_5 != NULL) {
             M2C_FIELD(temp_r0_5, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_5, s8 *, 1) = 0;
@@ -127,7 +127,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_5, u16 *, 2) = (u16) M2C_FIELD(temp_r0_5, u16 *, 4);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x48) = temp_r0_5;
-        temp_r0_6 = func_02082028(0x12);
+        temp_r0_6 = MemAlloc(0x12);
         if (temp_r0_6 != NULL) {
             M2C_FIELD(temp_r0_6, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_6, s8 *, 1) = 0;
@@ -142,7 +142,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_6, u16 *, 2) = (u16) M2C_FIELD(temp_r0_6, u16 *, 4);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C) = temp_r0_6;
-        temp_r0_7 = func_02082028(0x12);
+        temp_r0_7 = MemAlloc(0x12);
         if (temp_r0_7 != NULL) {
             M2C_FIELD(temp_r0_7, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_7, s8 *, 1) = 0;
@@ -157,7 +157,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_7, u16 *, 2) = (u16) M2C_FIELD(temp_r0_7, u16 *, 4);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x50) = temp_r0_7;
-        temp_r0_8 = func_02082028(0x48);
+        temp_r0_8 = MemAlloc(0x48);
         if (temp_r0_8 != NULL) {
             var_r1 = 0;
             M2C_FIELD(temp_r0_8, M2C_UNK **, 0) = NULL;
@@ -172,7 +172,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             } while ((u32) var_r1 < 4U);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x64) = temp_r0_8;
-        temp_r0_9 = func_02082028(0x80);
+        temp_r0_9 = MemAlloc(0x80);
         if (temp_r0_9 != NULL) {
             var_r3 = 0;
             *temp_r0_9 = &data_ov003_0220fb08;
@@ -183,7 +183,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
             } while (var_r3 < 0xD);
         }
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x68) = temp_r0_9;
-        temp_r0_10 = func_02082028(0xE8);
+        temp_r0_10 = MemAlloc(0xE8);
         if (temp_r0_10 != NULL) {
             *temp_r0_10 = &data_ov003_0220fb18;
             func_02074114(temp_r0_10 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
@@ -199,11 +199,13 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, u8 *, 0x39) = (u8) ((M2C_FIELD(temp_r0, u8 *, 0x39) & ~1) | 1);
 }
 
-M2C_UNK func_ov003_021f09dc(M2C_UNK arg0) {
+/* Releases the four-player battle object's children and re-applies its vtables
+ * and per-player settings, but keeps the object itself alive. */
+M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     M2C_UNK func_020846a4();
     M2C_UNK func_020848c4();
     void func_020850dc();
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     M2C_UNK func_01ffa574();
     M2C_UNK func_ov003_022008b8();
     void func_020a230c(M2C_UNK, M2C_UNK);
@@ -213,152 +215,154 @@ M2C_UNK func_ov003_021f09dc(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
 
-    M2C_UNK *r5;
-    M2C_UNK t;
-    u8 r1, b, r6;
+    M2C_UNK *setup;
+    M2C_UNK playerCount;
+    u8 playerState, controlMode, playerId;
     u8 i;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220fb38;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
+    M2C_FIELD(obj, M2C_UNK **, 0) = &data_ov003_0220fb38;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
 
     // block 0
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 0) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 0) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0xe);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0xe);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x74);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x74) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x74);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(1, r1);
+    func_020a23a4(1, playerState);
 
     // block 1
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 1) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 1) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0xf);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0xf);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x75);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x75) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x75);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(2, r1);
+    func_020a23a4(2, playerState);
 
     // block 2
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 2) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 2) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0x10);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0x10);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x76);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x76) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x76);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(3, r1);
+    func_020a23a4(3, playerState);
 
     // block 3
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 3) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 3) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0x11);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0x11);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x77);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x77) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x77);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(4, r1);
+    func_020a23a4(4, playerState);
 
-    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    // per-player army colours
+    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
-    func_020a232c(1, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
-    func_020a232c(2, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x30) & 0xff);
-    func_020a232c(3, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
-    func_020a232c(4, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
+    // per-player teams
+    func_020a232c(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
+    func_020a232c(2, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x30) & 0xff);
+    func_020a232c(3, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
+    func_020a232c(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
     if (func_020846a4() != 0) {
         func_020850dc();
     }
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x3c)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x3c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x40)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x40), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x40));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x3c)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x3c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x40)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x40), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x40));
     }
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x44)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x44));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x48)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x48));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x4c)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x4c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x50)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x50));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x44)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x44));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x48)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x48));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x4c)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x4c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x50)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x50));
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x64)) {
-        M2C_UNK *rblk = M2C_FIELD(arg0, M2C_UNK **, 0x64);
-        if (M2C_FIELD(rblk, M2C_UNK **, 0)) func_01ffa574(M2C_FIELD(rblk, M2C_UNK **, 0));
-        if (M2C_FIELD(rblk, M2C_UNK **, 4)) func_01ffa574(M2C_FIELD(rblk, M2C_UNK **, 4));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x64)) {
+        M2C_UNK *block = M2C_FIELD(obj, M2C_UNK **, 0x64);
+        if (M2C_FIELD(block, M2C_UNK **, 0)) func_01ffa574(M2C_FIELD(block, M2C_UNK **, 0));
+        if (M2C_FIELD(block, M2C_UNK **, 4)) func_01ffa574(M2C_FIELD(block, M2C_UNK **, 4));
         for (i = 0; i < 4; i++) {
-            if (((M2C_UNK *)((u8 *)rblk + 0x8))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x8))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x18))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x18))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x28))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x28))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x38))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x38))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x8))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x8))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x18))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x18))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x28))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x28))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x38))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x38))[i]);
         }
-        func_02082040(rblk);
+        MemFree(block);
     }
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x58)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x58));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x5c)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x5c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x54)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x54));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x60)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x60));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x58)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x58));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x5c)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x5c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x54)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x54));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x60)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x60));
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x68)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x68), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x68));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x68)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x68), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x68));
     }
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x6c)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x6c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x6c)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x6c));
     }
 
     func_ov003_021f140c(4);
-    return arg0;
+    return obj;
 }
 
 s32 func_ov003_021f0dcc(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -378,7 +382,7 @@ M2C_UNK **func_ov003_021f0de0(M2C_UNK **arg0) {
         }
         var_r4 += 1;
     } while (var_r4 < 0xD);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -397,16 +401,19 @@ M2C_UNK **func_ov003_021f0e30(M2C_UNK **arg0) {
         var_r4 += 1;
     } while ((u32)var_r4 < 0x1AU);
     func_020741c4((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK func_ov003_021f0e94(M2C_UNK arg0) {
+/* Destructor for the four-player battle object: re-applies the vtables and the
+ * per-player settings from the battle setup, then releases every child
+ * allocation and the object itself. */
+M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     M2C_UNK func_020846a4();
     M2C_UNK func_020848c4();
     void func_020850dc();
-    M2C_UNK func_02082040();
+    M2C_UNK MemFree();
     M2C_UNK func_01ffa574();
     M2C_UNK func_ov003_022008b8();
     void func_020a230c(M2C_UNK, M2C_UNK);
@@ -416,153 +423,153 @@ M2C_UNK func_ov003_021f0e94(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
 
-    M2C_UNK *r5;
-    M2C_UNK t;
-    u8 r1, b, r6;
+    M2C_UNK *setup;
+    M2C_UNK playerCount;
+    u8 playerState, controlMode, playerId;
     u8 i;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220fb38;
-    M2C_FIELD(arg0, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
+    M2C_FIELD(obj, M2C_UNK **, 0) = &data_ov003_0220fb38;
+    M2C_FIELD(obj, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
 
     // block 0
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 0) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 0) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0xe);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0xe);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x74);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x74) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x74);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(1, r1);
+    func_020a23a4(1, playerState);
 
     // block 1
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 1) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 1) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0xf);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0xf);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x75);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x75) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x75);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(2, r1);
+    func_020a23a4(2, playerState);
 
     // block 2
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 2) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 2) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0x10);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0x10);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x76);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x76) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x76);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(3, r1);
+    func_020a23a4(3, playerState);
 
     // block 3
-    r5 = M2C_FIELD(arg0, M2C_UNK **, 0x6c);
-    t = M2C_FIELD(r5, s8 *, 4);
-    if (t <= 3) r1 = 0;
+    setup = M2C_FIELD(obj, M2C_UNK **, 0x6c);
+    playerCount = M2C_FIELD(setup, s8 *, 4);
+    if (playerCount <= 3) playerState = 0;
     else {
-        b = M2C_FIELD(r5, u8 *, 0x11);
-        if (b == 1) {
+        controlMode = M2C_FIELD(setup, u8 *, 0x11);
+        if (controlMode == 1) {
             if (func_020846a4() == 1) {
-                r6 = M2C_FIELD(r5, u8 *, 0x77);
-                if (r6 == func_020848c4()) r1 = 1;
-                else r1 = (u8)((M2C_FIELD(r5, u8 *, 0x77) + 3) & 0xff);
+                playerId = M2C_FIELD(setup, u8 *, 0x77);
+                if (playerId == func_020848c4()) playerState = 1;
+                else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
             } else {
-                r1 = 1;
+                playerState = 1;
             }
         } else {
-            r1 = 2;
+            playerState = 2;
         }
     }
-    func_020a23a4(4, r1);
+    func_020a23a4(4, playerState);
 
-    // bytes a-d (direct reloads)
-    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xa)));
-    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xb)));
-    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xc)));
-    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), u8 *, 0xd)));
+    // per-player army colours
+    func_020a230c(1, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xa)));
+    func_020a230c(2, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xb)));
+    func_020a230c(3, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xc)));
+    func_020a230c(4, func_ov003_022008b8(M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), u8 *, 0xd)));
 
-    // arrays (word loads masked)
-    func_020a232c(1, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
-    func_020a232c(2, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x30) & 0xff);
-    func_020a232c(3, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
-    func_020a232c(4, M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
+    // per-player teams
+    func_020a232c(1, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x18) & 0xff);
+    func_020a232c(2, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x30) & 0xff);
+    func_020a232c(3, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
+    func_020a232c(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
     if (func_020846a4() != 0) {
         func_020850dc();
     }
 
     // cleanup pointers 0x3c..0x50
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x3c)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x3c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x40)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x40), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x40));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x3c)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x3c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x40)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x40), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x40));
     }
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x44)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x44));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x48)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x48));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x4c)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x4c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x50)) func_02082040(M2C_FIELD(arg0, M2C_UNK **, 0x50));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x44)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x44));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x48)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x48));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x4c)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x4c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x50)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x50));
 
-    // 0x64 block
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x64)) {
-        M2C_UNK *rblk = M2C_FIELD(arg0, M2C_UNK **, 0x64);
-        if (M2C_FIELD(rblk, M2C_UNK **, 0)) func_01ffa574(M2C_FIELD(rblk, M2C_UNK **, 0));
-        if (M2C_FIELD(rblk, M2C_UNK **, 4)) func_01ffa574(M2C_FIELD(rblk, M2C_UNK **, 4));
+    // 0x64 sub-block
+    if (M2C_FIELD(obj, M2C_UNK **, 0x64)) {
+        M2C_UNK *block = M2C_FIELD(obj, M2C_UNK **, 0x64);
+        if (M2C_FIELD(block, M2C_UNK **, 0)) func_01ffa574(M2C_FIELD(block, M2C_UNK **, 0));
+        if (M2C_FIELD(block, M2C_UNK **, 4)) func_01ffa574(M2C_FIELD(block, M2C_UNK **, 4));
         for (i = 0; i < 4; i++) {
-            if (((M2C_UNK *)((u8 *)rblk + 0x8))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x8))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x18))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x18))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x28))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x28))[i]);
-            if (((M2C_UNK *)((u8 *)rblk + 0x38))[i]) func_01ffa574(((M2C_UNK *)((u8 *)rblk + 0x38))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x8))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x8))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x18))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x18))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x28))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x28))[i]);
+            if (((M2C_UNK *)((u8 *)block + 0x38))[i]) func_01ffa574(((M2C_UNK *)((u8 *)block + 0x38))[i]);
         }
-        func_02082040(rblk);
+        MemFree(block);
     }
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x58)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x58));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x5c)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x5c));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x54)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x54));
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x60)) func_01ffa574(M2C_FIELD(arg0, M2C_UNK **, 0x60));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x58)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x58));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x5c)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x5c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x54)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x54));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x60)) func_01ffa574(M2C_FIELD(obj, M2C_UNK **, 0x60));
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x68)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x68), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x68));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x68)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x68), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x68));
     }
-    if (M2C_FIELD(arg0, M2C_UNK **, 0x6c)) {
-        M2C_UNK *vt0 = M2C_FIELD(M2C_FIELD(arg0, M2C_UNK **, 0x6c), M2C_UNK *, 0);
-        ((void (*)(M2C_UNK))vt0[1])(M2C_FIELD(arg0, M2C_UNK **, 0x6c));
+    if (M2C_FIELD(obj, M2C_UNK **, 0x6c)) {
+        M2C_UNK *vtable = M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0);
+        ((void (*)(M2C_UNK))vtable[1])(M2C_FIELD(obj, M2C_UNK **, 0x6c));
     }
 
     func_ov003_021f140c(4);
 
-    func_02082040(arg0);
-    return arg0;
+    MemFree(obj);
+    return obj;
 }
 #pragma opt_strength_reduction reset
 M2C_UNK **func_ov003_021f128c(M2C_UNK **arg0) {
@@ -608,14 +615,14 @@ void func_ov003_021f1330(void) {
 }
 
 s32 func_ov003_021f1334(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
 void func_ov003_021f1348(s32 arg0) {
-    M2C_UNK func_ov003_021f0e94(s32);
-    func_ov003_021f0e94(arg0 + 0xFFFFFFCC);
+    M2C_UNK DestroyBattleObject(s32);
+    DestroyBattleObject(arg0 + 0xFFFFFFCC);
 }
 
 s32 func_ov003_021f13c8(void) {

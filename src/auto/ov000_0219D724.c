@@ -3,7 +3,7 @@
 
 void func_ov000_0219d724(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
@@ -15,7 +15,7 @@ void func_ov000_0219cdf4(void);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 data_ov000_021df658 = &data_ov000_021df824;
 obj = *gCurrentMap;
-baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
 index = baseIndex + 1;
 if (index < baseIndex + 0x33) {
 stride = index * 14;
@@ -31,7 +31,7 @@ data_ov000_021df658 = out + 1;
 index++;
 obj = *gCurrentMap;
 stride += 14;
-} while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
 }
 *data_ov000_021df658 = 0;
 data_ov000_021df658 = &data_ov000_021df824;
@@ -45,7 +45,7 @@ void func_ov000_0219d848(void) {
     /* Collect the indices of type-6 map entries into a list, then install the
        func_ov000_021811e8 callback. */
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -62,7 +62,7 @@ void func_ov000_0219d848(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     obj = *gCurrentMap;
-    baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
     index = baseIndex + 1;
     if (index < baseIndex + 0x33) {
         stride = index * 14;
@@ -79,7 +79,7 @@ void func_ov000_0219d848(void) {
             index++;
             obj = *gCurrentMap;
             stride += 14;
-        } while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -90,7 +90,7 @@ void func_ov000_0219d848(void) {
 void func_ov000_0219d960(void) {
     /* Variant of func_ov000_0219d848 installing func_ov000_02181560. */
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -107,7 +107,7 @@ void func_ov000_0219d960(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     obj = *gCurrentMap;
-    baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
     index = baseIndex + 1;
     if (index < baseIndex + 0x33) {
         stride = index * 14;
@@ -124,7 +124,7 @@ void func_ov000_0219d960(void) {
             index++;
             obj = *gCurrentMap;
             stride += 14;
-        } while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -136,7 +136,7 @@ void func_ov000_0219da78(void) {
     /* Collect the indices of type-6 map entries into a list, then install the
        func_ov000_021812a8 callback. */
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -153,7 +153,7 @@ void func_ov000_0219da78(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     obj = *gCurrentMap;
-    baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
     index = baseIndex + 1;
     if (index < baseIndex + 0x33) {
         stride = index * 14;
@@ -170,7 +170,7 @@ void func_ov000_0219da78(void) {
             index++;
             obj = *gCurrentMap;
             stride += 14;
-        } while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -310,7 +310,7 @@ void func_ov000_0219de40(void) {
 
 void func_ov000_0219de98(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
@@ -323,7 +323,7 @@ u32 type;
 void *table,*obj,*unit;
 data_ov000_021df658=&data_ov000_021df824;
 obj=*gCurrentMap;
-baseIndex=data_ov000_021aeef4[M2C_FIELD(obj,u16 *,0x52a4)];
+baseIndex=gPlayerUnitIdBase[M2C_FIELD(obj,u16 *,0x52a4)];
 index=baseIndex+1;
 if(index<baseIndex+0x33) {
 stride=index*14;
@@ -341,7 +341,7 @@ data_ov000_021df658=out+1;
 }
 }
 index++;obj=*gCurrentMap;stride+=14;
-}while(index<data_ov000_021aeef4[M2C_FIELD(obj,u16 *,0x52a4)]+0x33);
+}while(index<gPlayerUnitIdBase[M2C_FIELD(obj,u16 *,0x52a4)]+0x33);
 }
 *data_ov000_021df658=0;
 data_ov000_021df658=&data_ov000_021df824;
@@ -351,7 +351,7 @@ data_ov000_021df654=&func_ov000_021816ac;
 
 void func_ov000_0219dfac(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
@@ -362,7 +362,7 @@ void func_ov000_0219c9e8(int);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 data_ov000_021df658 = &data_ov000_021df824;
 obj = *gCurrentMap;
-baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
 index = baseIndex + 1;
 if (index < baseIndex + 0x33) {
 stride = index * 14;
@@ -378,7 +378,7 @@ data_ov000_021df658 = out + 1;
 index++;
 obj = *gCurrentMap;
 stride += 14;
-} while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
 }
 *data_ov000_021df658 = 0;
 data_ov000_021df658 = &data_ov000_021df824;
@@ -390,7 +390,7 @@ data_ov000_021df654 = &func_ov000_021816c4;
 void func_ov000_0219e0d0(void) {
     void func_ov000_0219c9e8(s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -409,7 +409,7 @@ void func_ov000_0219e0d0(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     gameState = *gCurrentMap;
-    countBase = data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)];
+    countBase = gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)];
     slotIndex = countBase + 1;
     if (slotIndex < countBase + 0x33) {
         stride = slotIndex * 14;
@@ -430,7 +430,7 @@ void func_ov000_0219e0d0(void) {
             slotIndex++;
             gameState = *gCurrentMap;
             stride += 14;
-        } while (slotIndex < data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
+        } while (slotIndex < gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -444,7 +444,7 @@ void func_ov000_0219e0d0(void) {
 void func_ov000_0219e214(void) {
     void func_ov000_0219c9e8(s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -463,7 +463,7 @@ void func_ov000_0219e214(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     gameState = *gCurrentMap;
-    countBase = data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)];
+    countBase = gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)];
     slotIndex = countBase + 1;
     if (slotIndex < countBase + 0x33) {
         stride = slotIndex * 14;
@@ -484,7 +484,7 @@ void func_ov000_0219e214(void) {
             slotIndex++;
             gameState = *gCurrentMap;
             stride += 14;
-        } while (slotIndex < data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
+        } while (slotIndex < gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -498,7 +498,7 @@ void func_ov000_0219e214(void) {
 void func_ov000_0219e358(void) {
     void func_ov000_0219c9e8(s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
@@ -517,7 +517,7 @@ void func_ov000_0219e358(void) {
 
     data_ov000_021df658 = &data_ov000_021df824;
     gameState = *gCurrentMap;
-    countBase = data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)];
+    countBase = gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)];
     slotIndex = countBase + 1;
     if (slotIndex < countBase + 0x33) {
         stride = slotIndex * 14;
@@ -538,7 +538,7 @@ void func_ov000_0219e358(void) {
             slotIndex++;
             gameState = *gCurrentMap;
             stride += 14;
-        } while (slotIndex < data_ov000_021aeef4[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
+        } while (slotIndex < gPlayerUnitIdBase[M2C_FIELD(gameState,u16 *,0x52A4)] + 0x33);
     }
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
@@ -549,7 +549,7 @@ void func_ov000_0219e358(void) {
 
 void func_ov000_0219e49c(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
@@ -560,7 +560,7 @@ void func_ov000_0219cd0c(void);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 data_ov000_021df658 = &data_ov000_021df824;
 obj = *gCurrentMap;
-baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
 index = baseIndex + 1;
 if (index < baseIndex + 0x33) {
 stride = index * 14;
@@ -576,7 +576,7 @@ data_ov000_021df658 = out + 1;
 index++;
 obj = *gCurrentMap;
 stride += 14;
-} while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
 }
 *data_ov000_021df658 = 0;
 data_ov000_021df658 = &data_ov000_021df824;
@@ -587,7 +587,7 @@ data_ov000_021df654 = &func_ov000_02181a14;
 
 void func_ov000_0219e5b8(void) {
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5bfc[];
 extern s8 *data_ov000_021df580;
 extern M2C_UNK *data_ov000_021df654;
@@ -598,7 +598,7 @@ void func_ov000_0219cd0c(void);
 s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
 data_ov000_021df658 = &data_ov000_021df824;
 obj = *gCurrentMap;
-baseIndex = data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)];
+baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
 index = baseIndex + 1;
 if (index < baseIndex + 0x33) {
 stride = index * 14;
@@ -614,7 +614,7 @@ data_ov000_021df658 = out + 1;
 index++;
 obj = *gCurrentMap;
 stride += 14;
-} while (index < data_ov000_021aeef4[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
 }
 *data_ov000_021df658 = 0;
 data_ov000_021df658 = &data_ov000_021df824;

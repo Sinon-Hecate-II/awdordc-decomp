@@ -3,7 +3,7 @@
 
 #pragma scheduling off
 void *func_0201cb4c(void *packet,s32 *done){
-extern u8 data_021375b8[];extern s32 data_02137290;u64 func_02007004(void);void func_02008048(void *,void *,u32);
+extern u8 data_021375b8[];extern s32 data_02137290;u64 func_02007004(void);void MI_CpuCopy8(void *,void *,u32);
 u16 id;u32 head;u8 *freeSlot=0,*slot;u32 covered;u32 offset,end,ip,finalEnd;u32 flags,len,i,count;u16 a,b,t;u32 first;
 *done=0;t=M2C_FIELD(packet,u16 *,6);flags=(u16)(((s32)t>>8)|(t<<8));
 if(!(flags&0x3fff))return packet;
@@ -26,7 +26,7 @@ if(!M2C_FIELD(freeSlot,void **,0x34))return 0;
 M2C_FIELD(freeSlot,u32 *,0)=ip;M2C_FIELD(freeSlot,u16 *,6)=id;M2C_FIELD(freeSlot,u16 *,8)=0;
 M2C_FIELD(freeSlot,u32 *,0x2c)=(u32)(func_02007004()>>16);
 M2C_FIELD(freeSlot,void **,0x30)=(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14+head;
-func_02008048(packet,(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14,head);
+MI_CpuCopy8(packet,(u8 *)M2C_FIELD(freeSlot,void **,0x34)+14,head);
 }
 if(M2C_FIELD(slot,u16 *,4)==8||end>4096){
 void (*release)(void *)=M2C_FIELD(&data_02137290,void (**)(void *),0x40);M2C_FIELD(slot,u16 *,4)=0;release(M2C_FIELD(slot,void **,0x34));return 0;
@@ -36,7 +36,7 @@ if(!(flags&0x2000)){M2C_FIELD(slot,u16 *,10)=end;M2C_FIELD(slot,u16 *,8)=count;}
 M2C_FIELD(slot+M2C_FIELD(slot,u16 *,4)*2,u16 *,12)=offset;
 M2C_FIELD(slot+M2C_FIELD(slot,u16 *,4)*2,u16 *,28)=count;
 M2C_FIELD(slot,u16 *,4)++;
-func_02008048((u8 *)packet+head,(u8 *)M2C_FIELD(slot,void **,0x30)+offset*8,len);
+MI_CpuCopy8((u8 *)packet+head,(u8 *)M2C_FIELD(slot,void **,0x30)+offset*8,len);
 id=M2C_FIELD(slot,u16 *,8);if(!id)return 0;
 count=M2C_FIELD(slot,u16 *,4);i=covered=0;
 while(i<count){u8 *p=slot+i*2;if(M2C_FIELD(p,u16 *,12)<=covered&&covered<M2C_FIELD(p,u16 *,28)){covered=M2C_FIELD(p,u16 *,28);i=0;}else i++;}
@@ -294,8 +294,8 @@ void func_0201d244(void *arg0) {
 
 void func_0201d25c(void *arg0) {
     M2C_UNK func_02005da4(M2C_UNK);
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     s32 func_0201d0f4();
     s32 temp_r0;
     s32 temp_r4;
@@ -304,10 +304,10 @@ void func_0201d25c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x28) = temp_r0;
     M2C_FIELD(arg0, s32 *, 0x30) = temp_r0;
     M2C_FIELD(arg0, s8 *, 8) = 1;
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 4) = 1;
     func_02005da4(0);
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
 }
 
 void func_0201d29c(s32 arg0) {
@@ -349,12 +349,12 @@ loop_1:
     M2C_FIELD(arg0, u8 *, 8) = 2U;
     M2C_FIELD(arg0, s32 *, 0x10) = (s32)(func_02007004() >> 16);
     func_0201bee4(arg0, 2, 0x18);
-    temp_r9 = func_0200751c();
+    temp_r9 = OS_DisableInterrupts();
     if ((M2C_FIELD(arg0, u8 *, 8) == 2) && (M2C_FIELD(&data_02137290, s32 *, 0x50) != 0)) {
         M2C_FIELD(arg0, s32 *, 4) = 1;
         func_02005da4(0);
     }
-    func_02007530(temp_r9);
+    OS_RestoreInterrupts(temp_r9);
     if (M2C_FIELD(arg0, u8 *, 8) == 4) {
         return 0;
     }
@@ -378,22 +378,22 @@ return 0;
 }
 
 void func_0201d434(void *arg0) {
-    M2C_UNK func_02005ec8();
-    M2C_UNK func_0201bf58(void *, M2C_UNK);
-    M2C_UNK func_0201bf6c(void *, M2C_UNK);
+    M2C_UNK TaskYield();
+    M2C_UNK TcpSendAck(void *, M2C_UNK);
+    M2C_UNK TcpSendFinAck(void *, M2C_UNK);
     u8 temp_r1;
 
-    func_02005ec8();
+    TaskYield();
     temp_r1 = M2C_FIELD(arg0, u8 *, 8);
     if ((u32) (u8) (temp_r1 + 0xFD) <= 1U) {
-        func_0201bf6c(arg0, 0x19);
+        TcpSendFinAck(arg0, 0x19);
         M2C_FIELD(arg0, u8 *, 8) = 7U;
         return;
     }
     if (temp_r1 == 0) {
         return;
     }
-    func_0201bf58(arg0, 0x1A);
+    TcpSendAck(arg0, 0x1A);
 }
 
 void func_0201d484(void) {
@@ -424,41 +424,41 @@ done:M2C_FIELD(node,u8 *,8)=0;
 }
 
 s32 func_0201d548(s32 *arg0, void *arg1) {
-    s32 func_0200751c();
+    s32 OS_DisableInterrupts();
     M2C_UNK func_02005da4(M2C_UNK);
-    M2C_UNK func_02007530(s32);
+    M2C_UNK OS_RestoreInterrupts(s32);
     s32 var_r6;
     s32 temp_r7;
 
-    temp_r7 = func_0200751c();
+    temp_r7 = OS_DisableInterrupts();
     var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
     while (var_r6 == 0) {
         M2C_FIELD(arg1, s32 *, 4) = 3;
         func_02005da4(0);
         var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
     }
-    func_02007530(temp_r7);
+    OS_RestoreInterrupts(temp_r7);
     *arg0 = var_r6;
     return M2C_FIELD(arg1, s32 *, 0x40);
 }
 
 s32 func_0201d59c(u32 *arg0, M2C_UNK arg1) {
-    s32 func_0200751c(void);
+    s32 OS_DisableInterrupts(void);
     M2C_UNK func_02005da4(M2C_UNK);
-    M2C_UNK func_02007530(s32);
-    M2C_UNK func_02005ec8(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    M2C_UNK TaskYield(void);
     s32 temp_r8;
     s32 temp_r0;
 
     if (M2C_FIELD((void *)arg1, s32 *, 0x44) == 0 && M2C_FIELD((void *)arg1, u8 *, 0x8) == 4) {
-        temp_r8 = func_0200751c();
+        temp_r8 = OS_DisableInterrupts();
         while (M2C_FIELD((void *)arg1, s32 *, 0x44) == 0 && M2C_FIELD((void *)arg1, u8 *, 0x8) == 4) {
             M2C_FIELD((void *)arg1, s32 *, 0x4) = 2;
             func_02005da4(0);
         }
-        func_02007530(temp_r8);
+        OS_RestoreInterrupts(temp_r8);
     } else {
-        func_02005ec8();
+        TaskYield();
     }
     temp_r0 = M2C_FIELD((void *)arg1, s32 *, 0x44);
     *arg0 = (u32)temp_r0;
@@ -495,16 +495,16 @@ fail:
 }
 
 void func_0201d67c(u32 arg0, void *arg1) {
-    M2C_UNK func_0200751c(void);
-    M2C_UNK func_02007530(M2C_UNK);
+    M2C_UNK OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(M2C_UNK);
     M2C_UNK func_020651c4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0201bf58(void *, M2C_UNK);
+    M2C_UNK TcpSendAck(void *, M2C_UNK);
     u8 kind;
     u32 var_r6;
     u32 left;
     M2C_UNK irq;
 
-    irq = func_0200751c();
+    irq = OS_DisableInterrupts();
     left = M2C_FIELD(arg1, u32 *, 0x44);
     var_r6 = 0;
     if ((left == M2C_FIELD(arg1, u32 *, 0x3C)) && (arg0 != 0)) {
@@ -517,14 +517,14 @@ void func_0201d67c(u32 arg0, void *arg1) {
         M2C_FIELD(arg1, u32 *, 0x44) = left - arg0;
         func_020651c4(base, base + arg0);
     }
-    func_02007530(irq);
+    OS_RestoreInterrupts(irq);
     kind = M2C_FIELD(arg1, u8 *, 8);
     if (kind != 0xA && kind != 0xB) {
         if (M2C_FIELD(arg1, u32 *, 0x44) != 0) {
             if (var_r6 == 0) {
                 return;
             }
-            func_0201bf58(arg1, 0x1B);
+            TcpSendAck(arg1, 0x1B);
         }
     }
 }
@@ -542,7 +542,7 @@ else func_0201d67c(arg0,p);
 s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     extern M2C_UNK data_02137290;
     M2C_UNK func_0201b524(M2C_UNK, s32, M2C_UNK, s32, s32);
-    M2C_UNK func_02005ec8(void);
+    M2C_UNK TaskYield(void);
 
     M2C_UNK v8;
     s32 v11;
@@ -597,7 +597,7 @@ s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
         zero = 0;
         v5 = v5 - v4;
         func_0201b524(v10, v4, v8, 0x18, zero);
-        func_02005ec8();
+        TaskYield();
         v10 = (M2C_UNK)((u8 *)v10 + v4);
         v9 = v9 - v4;
         if (v9 == 0) {

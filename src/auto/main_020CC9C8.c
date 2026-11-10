@@ -377,11 +377,11 @@ void func_020cd754(s32 arg0) {
 #pragma pop
 void func_020cd7bc(s32 arg0, s32 arg1) {
  extern s32 *gCurrentMap;
- void func_02008048(s32,s32);
+ void MI_CpuCopy8(s32,s32);
  s32 base=*gCurrentMap+0x160;
  s32 size=0xa1;
  base=base+0x5000;
- func_02008048(size*arg0+base,size*arg1+base);
+ MI_CpuCopy8(size*arg0+base,size*arg1+base);
 }
 
 s32 func_020cd7ec(s32 arg0, s32 arg1) {

@@ -491,21 +491,21 @@ void func_02082000(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u
 
 void func_02082014(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u8 *,2)=0;}
 
-void func_02082028(void) {
+void MemAlloc(void) {
     M2C_UNK func_020e34bc();
     func_020e34bc();
 }
 
-void func_02082034(void) {
+void MemAllocArray(void) {
     func_020e34bc();
 }
 
-void func_02082040(void) {
+void MemFree(void) {
     M2C_UNK func_020e35cc();
     func_020e35cc();
 }
 
-void func_0208204c(void) {
+void MemFreeArray(void) {
     func_020e35cc();
 }
 
@@ -562,7 +562,7 @@ void func_02082134(s32 arg0, u32 arg1) {
 void func_02082164(u8 *arg0) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
-    extern void *data_027e00bc;
+    extern void *g3DSpriteBankMain;
     u8 *r4;
     u16 *p;
     u16 *q;
@@ -598,17 +598,17 @@ void func_02082164(u8 *arg0) {
     }
 
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-        q = (u16 *)data_027e00bc;
+        q = (u16 *)g3DSpriteBankMain;
         {
             u8 t1 = r4[1];
             *q = (*q & ~0x8) | ((t1 & 0x1) << 3);
         }
-        q = (u16 *)data_027e00bc;
+        q = (u16 *)g3DSpriteBankMain;
         {
             u8 t3 = r4[3];
             *(q + 1) = (*(q + 1) & ~0x7) | (t3 & 0x7);
         }
-        q = (u16 *)data_027e00bc;
+        q = (u16 *)g3DSpriteBankMain;
         *(q + 1) = *(q + 1) & ~0x38;
     }
 

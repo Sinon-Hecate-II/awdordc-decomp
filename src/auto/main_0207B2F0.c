@@ -166,14 +166,14 @@ void func_0207b800(void) {
 void func_0207b84c(void) {
     void func_020822b8(void *);
     extern M2C_UNK data_02100c64, data_02100c70;
-    extern u16 *data_027e00bc;
+    extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
     u16 *volatile sprite0;
     u16 *volatile sprite1;
     u16 *volatile sprite2;
     u8 isSecondaryEngine;
 
-    *data_027e00bc |= 8;
+    *g3DSpriteBankMain |= 8;
     sprite0 = *gCur3DSpriteEngine;
     *sprite0 = *sprite0 & ~7;
     func_020822b8(&data_02100c64);
@@ -183,7 +183,7 @@ void func_0207b84c(void) {
         isSecondaryEngine = 0;
     }
     if (isSecondaryEngine) {
-        *data_027e00bc |= 8;
+        *g3DSpriteBankMain |= 8;
         sprite1 = *gCur3DSpriteEngine;
         *sprite1 = *sprite1 & ~7;
         func_020822b8(&data_02100c64);
@@ -197,14 +197,14 @@ void func_0207b84c(void) {
 void func_0207b940(void) {
     void func_020822b8(void *);
     extern M2C_UNK data_02100c58, data_02100c70;
-    extern u16 *data_027e00bc;
+    extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
     u16 *volatile sp4;
     u16 *volatile sp0;
     u8 equal;
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) equal = 1; else equal = 0;
     if (equal) {
-        *data_027e00bc &= ~8;
+        *g3DSpriteBankMain &= ~8;
         sp4 = *gCur3DSpriteEngine;
         *sp4 = *sp4 & ~7;
         func_020822b8(&data_02100c58);

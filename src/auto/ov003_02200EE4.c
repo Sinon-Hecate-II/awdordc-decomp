@@ -212,7 +212,7 @@ reg4 = *gCur3DSpriteEngine; *reg4 = (*reg4 & ~256) | ((u32)(flag4 << 31) >> 23);
 }
 
 void func_ov003_02201620(void *arg0, s32 arg1) {
-    void *func_02082028(s32);
+    void *MemAlloc(s32);
     s32 func_0207c928(s32, s32);
     s32 func_0207c8ec(s32, s32);
     void *func_020ab1c4(s32);
@@ -243,42 +243,42 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
         if (i < 8) {
             switch (i) {
             case 0:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_022107c4;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 1:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210774;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 2:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221088c;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 3:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210864;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 4:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221083c;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 5:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210814;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 6:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_022107ec;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;
             case 7:
-                obj = func_02082028(4);
+                obj = MemAlloc(4);
                 if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221079c;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
                 break;

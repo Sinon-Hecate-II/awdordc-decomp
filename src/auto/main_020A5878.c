@@ -4,7 +4,7 @@ typedef struct { u8 kind:6; u8 owner:2; u8 x,y,unk3; u16 flags; u16 hp:7; u16 am
 extern u8 data_ov000_021b5c0a[], data_ov000_021b5c05[];
 extern s8 *data_ov000_021b5c58[];
 extern u8 data_ov000_021b5c0f[];
-extern s16 data_ov000_021aeef4[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
+extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
 
 void func_020a5878(void *arg0) {
 s32 func_0207b7c4(void);s32 func_020a4ab0(s32);
@@ -200,7 +200,7 @@ s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020d27c0(s32);u8
 
 s32 func_020a600c(s32 arg0) {
     extern s32 *gCurrentMap;
-    extern s16 data_ov000_021aeef4[];
+    extern s16 gPlayerUnitIdBase[];
     s32 func_020a7d38(Unit5B *);
     s32 func_020d27c0(s32);
     s32 func_020d27ec(s32, s32);
@@ -237,7 +237,7 @@ s32 func_020a600c(s32 arg0) {
         u16 rowOff = *(u16 *)(base + y * 2 + 0x3758);
         u16 w = *(u16 *)(base + 0x52a4);
         u8 tile = *(u8 *)(x + rowOff + base + 0x1420);
-        s16 val = data_ov000_021aeef4[w];
+        s16 val = gPlayerUnitIdBase[w];
         if (func_020d27ec(val, tile)) {
             return 1;
         }

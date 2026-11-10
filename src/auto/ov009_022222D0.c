@@ -40,7 +40,7 @@ static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {
 
 void func_ov009_022222d0(s32 arg0) {
     M2C_UNK func_02007f8c(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02008048(s32, void *, s32);
+    M2C_UNK MI_CpuCopy8(s32, void *, s32);
     s32 func_0208206c();
     s32 func_02082088();
     s32 func_020c5400(void *);
@@ -51,13 +51,13 @@ void func_ov009_022222d0(s32 arg0) {
     if (func_020c5400(sp0) == 0) return;
     func_02007f8c(spC,0,0x1A);
     temp_r4=func_0208206c();
-    func_02008048(temp_r4,spC,func_02082088()*2);
+    MI_CpuCopy8(temp_r4,spC,func_02082088()*2);
     func_ov009_02224d9c(0xF,sp0,0x28,(u16)(1<<arg0));
 }
 
 #pragma scheduling off
 s32 func_ov009_02222348(s32 arg0) {
-M2C_UNK func_02008048(s32,void *,s32);
+M2C_UNK MI_CpuCopy8(s32,void *,s32);
 s32 func_0206527c(s32,void *,s32);
 extern M2C_UNK data_ov009_02226cc0, data_ov009_02226d80, data_ov009_02226d84;
 s32 freeIndex; s32 i; u8 *p; s32 offset; s32 equal;
@@ -67,7 +67,7 @@ if(M2C_FIELD(p,s32*,0xc4)==0) { if(freeIndex<0)freeIndex=i; }
 else {
 if(func_0206527c(arg0+4,p+4,6)==0) equal=1; else equal=0;
 if(equal) {
-func_02008048(arg0,p,0xc0);
+MI_CpuCopy8(arg0,p,0xc0);
 M2C_FIELD(p,u16*,0xc0)=0x1e0;
 M2C_FIELD(p,s32*,0xc4)=1;
 return 1;
@@ -77,7 +77,7 @@ i++;p+=0xc8;
 }while(i<4);
 if(freeIndex<0)return 0;
 offset=freeIndex*0xc8;
-func_02008048(arg0,(u8 *)&data_ov009_02226cc0+offset,0xc0);
+MI_CpuCopy8(arg0,(u8 *)&data_ov009_02226cc0+offset,0xc0);
 {
 void *base = &data_ov009_02226d80;
 *(u16 *)((char *)base + offset) = 0x1e0;

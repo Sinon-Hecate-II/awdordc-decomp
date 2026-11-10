@@ -7,7 +7,7 @@ extern s16 data_ov003_022103cc[4];
 
 void *func_ov003_022001ec(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -19,7 +19,7 @@ void *func_ov003_022001ec(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -34,9 +34,9 @@ void *func_ov003_022001ec(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -49,17 +49,17 @@ void *func_ov003_022001ec(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();
-    func_02082040(obj);
+    MemFree(obj);
     return obj;
 }
 

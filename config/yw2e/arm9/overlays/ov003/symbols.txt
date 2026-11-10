@@ -82,7 +82,7 @@ func_ov003_021e6c6c kind:function(arm,size=0x10) addr:0x021e6c6c
 func_ov003_021e6c7c kind:function(arm,size=0x10) addr:0x021e6c7c
 func_ov003_021e6c8c kind:function(arm,size=0x10) addr:0x021e6c8c
 func_ov003_021e6c9c kind:function(arm,size=0x10) addr:0x021e6c9c
-func_ov003_021e6cac kind:function(arm,size=0x18) addr:0x021e6cac
+InRange kind:function(arm,size=0x18) addr:0x021e6cac
 func_ov003_021e6cc4 kind:function(arm,size=0x38) addr:0x021e6cc4
 func_ov003_021e6cfc kind:function(arm,size=0x2c) addr:0x021e6cfc
 func_ov003_021e6d28 kind:function(arm,size=0x2c) addr:0x021e6d28
@@ -95,7 +95,7 @@ func_ov003_021e6e40 kind:function(arm,size=0x1c) addr:0x021e6e40
 func_ov003_021e6e5c kind:function(arm,size=0x38) addr:0x021e6e5c
 func_ov003_021e6e94 kind:function(arm,size=0x24) addr:0x021e6e94
 func_ov003_021e6eb8 kind:function(arm,size=0x3c) addr:0x021e6eb8
-func_ov003_021e6ef4 kind:function(arm,size=0x4c8) addr:0x021e6ef4
+HandleWaypointInput kind:function(arm,size=0x4c8) addr:0x021e6ef4
 func_ov003_021e73bc kind:function(arm,size=0xc) addr:0x021e73bc
 func_ov003_021e73c8 kind:function(arm,size=0x1c) addr:0x021e73c8
 func_ov003_021e73e4 kind:function(arm,size=0x8) addr:0x021e73e4
@@ -107,9 +107,9 @@ func_ov003_021e74ac kind:function(arm,size=0x270) addr:0x021e74ac
 func_ov003_021e771c kind:function(arm,size=0xbd4) addr:0x021e771c
 func_ov003_021e82f0 kind:function(arm,size=0xc) addr:0x021e82f0
 func_ov003_021e82fc kind:function(arm,size=0xc) addr:0x021e82fc
-func_ov003_021e8308 kind:function(arm,size=0x4c) addr:0x021e8308
+EntriesDiffer kind:function(arm,size=0x4c) addr:0x021e8308
 func_ov003_021e8354 kind:function(arm,size=0x300) addr:0x021e8354
-func_ov003_021e8654 kind:function(arm,size=0x17c) addr:0x021e8654
+StepCounter kind:function(arm,size=0x17c) addr:0x021e8654
 func_ov003_021e87d0 kind:function(arm,size=0xc) addr:0x021e87d0
 func_ov003_021e87dc kind:function(arm,size=0xc8) addr:0x021e87dc
 func_ov003_021e88a4 kind:function(arm,size=0x3c) addr:0x021e88a4
@@ -169,7 +169,7 @@ func_ov003_021ebfcc kind:function(arm,size=0x518) addr:0x021ebfcc
 func_ov003_021ec4e4 kind:function(arm,size=0x98) addr:0x021ec4e4
 func_ov003_021ec57c kind:function(arm,size=0x204) addr:0x021ec57c
 func_ov003_021ec780 kind:function(arm,size=0x1c) addr:0x021ec780
-func_ov003_021ec79c kind:function(arm,size=0x300) addr:0x021ec79c
+StepCounterDown kind:function(arm,size=0x300) addr:0x021ec79c
 func_ov003_021eca9c kind:function(arm,size=0x1cc) addr:0x021eca9c
 func_ov003_021ecc68 kind:function(arm,size=0x6c) addr:0x021ecc68
 func_ov003_021eccd4 kind:function(arm,size=0x5a8) addr:0x021eccd4
@@ -204,11 +204,11 @@ func_ov003_021f01f0 kind:function(arm,size=0x3dc) addr:0x021f01f0
 func_ov003_021f05cc kind:function(arm,size=0x2c) addr:0x021f05cc
 func_ov003_021f05f8 kind:function(arm,size=0x4) addr:0x021f05f8
 func_ov003_021f05fc kind:function(arm,size=0x3e0) addr:0x021f05fc
-func_ov003_021f09dc kind:function(arm,size=0x3f0) addr:0x021f09dc
+ShutdownBattleObject kind:function(arm,size=0x3f0) addr:0x021f09dc
 func_ov003_021f0dcc kind:function(arm,size=0x14) addr:0x021f0dcc
 func_ov003_021f0de0 kind:function(arm,size=0x50) addr:0x021f0de0
 func_ov003_021f0e30 kind:function(arm,size=0x64) addr:0x021f0e30
-func_ov003_021f0e94 kind:function(arm,size=0x3f8) addr:0x021f0e94
+DestroyBattleObject kind:function(arm,size=0x3f8) addr:0x021f0e94
 func_ov003_021f128c kind:function(arm,size=0x48) addr:0x021f128c
 func_ov003_021f12d4 kind:function(arm,size=0x5c) addr:0x021f12d4
 func_ov003_021f1330 kind:function(arm,size=0x4) addr:0x021f1330
@@ -264,7 +264,7 @@ func_ov003_021f1bc0 kind:function(arm,size=0x14) addr:0x021f1bc0
 func_ov003_021f1bd4 kind:function(arm,size=0x14) addr:0x021f1bd4
 func_ov003_021f1be8 kind:function(arm,size=0x14) addr:0x021f1be8
 func_ov003_021f1bfc kind:function(arm,size=0x10) addr:0x021f1bfc
-func_ov003_021f1c0c kind:function(arm,size=0x3fc) addr:0x021f1c0c
+ApplyBgLayerVisibility kind:function(arm,size=0x3fc) addr:0x021f1c0c
 func_ov003_021f2008 kind:function(arm,size=0x424) addr:0x021f2008
 func_ov003_021f242c kind:function(arm,size=0x80) addr:0x021f242c
 func_ov003_021f24ac kind:function(arm,size=0x40) addr:0x021f24ac
@@ -337,7 +337,7 @@ func_ov003_021fcb70 kind:function(arm,size=0x1a0) addr:0x021fcb70
 func_ov003_021fcd10 kind:function(arm,size=0x14) addr:0x021fcd10
 func_ov003_021fcd24 kind:function(arm,size=0xc) addr:0x021fcd24
 func_ov003_021fcd30 kind:function(arm,size=0x14) addr:0x021fcd30
-func_ov003_021fcd44 kind:function(arm,size=0x350) addr:0x021fcd44
+SetupEntityDisplay kind:function(arm,size=0x350) addr:0x021fcd44
 func_ov003_021fd094 kind:function(arm,size=0xc) addr:0x021fd094
 func_ov003_021fd0a0 kind:function(arm,size=0x14) addr:0x021fd0a0
 func_ov003_021fd0b4 kind:function(arm,size=0xd8) addr:0x021fd0b4
@@ -618,10 +618,10 @@ func_ov003_0220c6bc kind:function(arm,size=0xc) addr:0x0220c6bc
 func_ov003_0220c6c8 kind:function(arm,size=0xbc8) addr:0x0220c6c8
 func_ov003_0220d290 kind:function(arm,size=0xbcc) addr:0x0220d290
 func_ov003_0220de5c kind:function(arm,size=0xbcc) addr:0x0220de5c
-func_ov003_0220ea28 kind:function(arm,size=0x308) addr:0x0220ea28
+MapSelectScreen_Delete kind:function(arm,size=0x308) addr:0x0220ea28
 func_ov003_0220ed30 kind:function(arm,size=0x3c) addr:0x0220ed30
 func_ov003_0220ed6c kind:function(arm,size=0x14) addr:0x0220ed6c
-func_ov003_0220ed80 kind:function(arm,size=0x300) addr:0x0220ed80
+MapSelectScreen_Destroy kind:function(arm,size=0x300) addr:0x0220ed80
 func_ov003_0220f080 kind:function(arm,size=0x34) addr:0x0220f080
 func_ov003_0220f0b4 kind:function(arm,size=0x4) addr:0x0220f0b4
 data_ov003_0220f0b8 kind:data(any) addr:0x0220f0b8
@@ -722,7 +722,7 @@ data_ov003_0220fc30 kind:data(any) addr:0x0220fc30
 data_ov003_0220fc38 kind:data(any) addr:0x0220fc38
 data_ov003_0220fc50 kind:data(any) addr:0x0220fc50
 data_ov003_0220fc60 kind:data(any) addr:0x0220fc60
-data_ov003_0220fc78 kind:data(any) addr:0x0220fc78
+gSceneLayerConfig kind:data(any) addr:0x0220fc78
 data_ov003_0220fc88 kind:data(any) addr:0x0220fc88
 data_ov003_0220fc98 kind:data(any) addr:0x0220fc98
 data_ov003_0220fca8 kind:data(any) addr:0x0220fca8
@@ -860,7 +860,7 @@ data_ov003_02211018 kind:data(any) addr:0x02211018
 data_ov003_02211028 kind:data(any) addr:0x02211028
 data_ov003_02211030 kind:data(any) addr:0x02211030
 data_ov003_02211044 kind:data(any) addr:0x02211044
-data_ov003_02211060 kind:data(any) addr:0x02211060
+gMapSelectVTable kind:data(any) addr:0x02211060
 data_ov003_0221106c kind:data(any) addr:0x0221106c
 data_ov003_0221107c kind:data(any) addr:0x0221107c
 data_ov003_02211084 kind:data(any) addr:0x02211084

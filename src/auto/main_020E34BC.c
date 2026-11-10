@@ -203,7 +203,7 @@ void func_020e37dc(void *arg0) {
     s32 func_ov010_02226738(void);
     M2C_UNK func_01ffa8c4(void *, s32);
     s32 func_ov010_022267b0(s32, s32 *);
-    void func_02008048(s32, void *, s32);
+    void MI_CpuCopy8(s32, void *, s32);
     s32 sp[7];
     void *temp_r4;
 
@@ -223,7 +223,7 @@ void func_020e37dc(void *arg0) {
     M2C_FIELD(temp_r4, s32 *, 0xc) = sp[3];
     M2C_FIELD(temp_r4, s32 *, 0x30c) = sp[5];
 
-    func_02008048(sp[6], (u8 *)temp_r4 + 0x10, sp[5]);
+    MI_CpuCopy8(sp[6], (u8 *)temp_r4 + 0x10, sp[5]);
 
     *M2C_FIELD(arg0, s32 **, 0x40) = 1;
 }
@@ -292,7 +292,7 @@ void func_020e39d8(void *list) {
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
     s32 func_02084cf8(void);
-    void func_02008048(s32, void *, s32);
+    void MI_CpuCopy8(s32, void *, s32);
     extern s32 data_0212d744;
     s32 entry[7];
     s32 total;
@@ -319,7 +319,7 @@ void func_020e39d8(void *list) {
             M2C_FIELD(node, s32 *, 0xc) = entry[3];
             M2C_FIELD(node, s32 *, 0x30c) = entry[5];
 
-            func_02008048(entry[6], node + 0x10, entry[5]);
+            MI_CpuCopy8(entry[6], node + 0x10, entry[5]);
             node += 0x310;
             count++;
         }
@@ -394,7 +394,7 @@ void func_020e3bf0(void *list) {
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
     s32 func_02084cf8(void);
-    void func_02008048(s32, void *, s32);
+    void MI_CpuCopy8(s32, void *, s32);
     extern s32 data_0212d744;
     s32 entry[7];
     s32 total;
@@ -421,7 +421,7 @@ void func_020e3bf0(void *list) {
             M2C_FIELD(node, s32 *, 0xc) = entry[3];
             M2C_FIELD(node, s32 *, 0x30c) = entry[5];
 
-            func_02008048(entry[6], node + 0x10, entry[5]);
+            MI_CpuCopy8(entry[6], node + 0x10, entry[5]);
             node += 0x310;
             count++;
         }
@@ -488,7 +488,7 @@ void func_020e3e04(void *arg0) {
     M2C_UNK func_01ffa8c4(void *, s32);
     s32 func_ov010_02226744(void);
     s32 func_ov010_022267b0(s32, s32 *);
-    void func_02008048(s32, void *, s32);
+    void MI_CpuCopy8(s32, void *, s32);
     s32 sp[7];
     s32 total;
     s32 count;
@@ -512,7 +512,7 @@ void func_020e3e04(void *arg0) {
             M2C_FIELD(node_ptr, s32 *, 0xc) = sp[3];
             M2C_FIELD(node_ptr, s32 *, 0x30c) = sp[5];
 
-            func_02008048(sp[6], node_ptr + 0x10, sp[5]);
+            MI_CpuCopy8(sp[6], node_ptr + 0x10, sp[5]);
             node_ptr += 0x310;
             count++;
         }
@@ -708,14 +708,14 @@ void func_020e4304(void) {
 
 void *func_020e4318(void *arg0) {
     void func_020e35cc();
-    void func_02082040(void *);
+    void MemFree(void *);
     extern M2C_UNK data_0212da10;
 
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212da10;
     if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
         func_020e35cc();
     }
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 

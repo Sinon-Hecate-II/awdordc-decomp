@@ -1,5 +1,27 @@
 /* 25 functions from 0x020DD4F8 to 0x020DE264 (main), found by ds-decomp. */
 #include "common.h"
+/* Menu that pages through the unit preview (ov009 3D view): the cursor picks one of the unit
+ * slots, gUnitSlotIds turns the slot into a unit id and ov009 shows that unit in 3D. */
+typedef struct UnitMenu {
+    u8 pad00[0x34];
+    s32 kind;             /* +0x34: screen that opened the menu (0 = map, 1/2 = others) */
+    s32 variant;          /* +0x38: sub-kind used when kind == 0 */
+    u8 pad3C[4];
+    u8 step;              /* +0x40: screen step handed to the engine */
+    s8 shownIndex;        /* +0x41: option last shown */
+    s8 index;             /* +0x42: option the cursor points at */
+    s8 slot;              /* +0x43: unit slot under the cursor, index into gUnitSlotIds */
+    u8 pad44[4];
+    u16 flags;            /* +0x48: bit0 accepted, bit1 input handled, bit5 redraw pending */
+    u8 pad4A[6];
+    void *cursorSprite;   /* +0x50: frame base+2 = highlighted */
+    void *titleSprite;    /* +0x54 */
+    void *backSprite;     /* +0x58: back button */
+    void *confirmSprite;  /* +0x5C: confirm button of the no-slot-list variant */
+    void *panelSprite;    /* +0x60 */
+    void *unitSprite;     /* +0x64: previewed unit */
+    void *animSprite;     /* +0x68 */
+} UnitMenu;
 typedef struct {u8 pad[0x59];u8 base:4;u8 pressed:1;u8 rest:3;} SpriteInput;
 static inline u8 SpritePressed(void *p) {
 void *q=M2C_FIELD(p,void **,0x64);s32 result=1;
@@ -18,42 +40,48 @@ M2C_FIELD(p,s8 *,0x5a)=timer;
 static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteFrame(p,SpriteBase(p)+1,12);}
 
 
-void func_020dd4f8(void *arg0) {
+/* Input handler of the unit preview menu: the back button closes the 3D view, the cursor
+   sprite shows whether the unit of the slot under the cursor exists and confirming picks
+   that unit. */
+void UnitPreviewMenuInput(void *arg0) {
 void func_020aacf0(void *);void func_020d47f0(void);void func_01ffa8c4(void *,s32);void func_0208fe30(s32);void func_01ffa6fc(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
-extern u16 *data_02101e84;extern M2C_UNK data_02168f7c;
-u16 keys;void *p;
+extern u16 *data_02101e84;extern M2C_UNK gUnitSlotIds;
+u16 keys;void *cursorSprite;
 if(M2C_FIELD(arg0,void **,0x50))func_020aacf0(M2C_FIELD(arg0,void **,0x50));
 if(M2C_FIELD(arg0,void **,0x54))func_020aacf0(M2C_FIELD(arg0,void **,0x54));
 if(M2C_FIELD(arg0,void **,0x58))func_020aacf0(M2C_FIELD(arg0,void **,0x58));
 keys=*data_02101e84;
 M2C_FIELD(arg0,u16 *,0x48)&=~32;
+/* the back button closes the 3D view */
 if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
 func_ov009_02224688();
 PressSprite(M2C_FIELD(arg0,void **,0x58));
 func_020d47f0();func_01ffa8c4(arg0,1);func_0208fe30(0x1000f);return;
 }
+/* the cursor moved to another option */
 if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg0,s8 *,0x41)!=M2C_FIELD(arg0,s8 *,0x42)){
 func_0208fe30(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
 M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
 }
 if(func_020b212c()<4){
-s32 v=(&data_02168f7c)[M2C_FIELD(arg0,s8 *,0x43)];
-if(v<0)v=0;else v=func_ov009_022246ac(v);
-if(v){void *p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p),0);}
-else {void *p=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p)+2,0);}
-p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))return;
-if(!(SpritePressed(p) || (keys&1)))return;
+/* the unit of the slot under the cursor: the cursor sprite shows it as available or not */
+s32 unitId=(&gUnitSlotIds)[M2C_FIELD(arg0,s8 *,0x43)];
+if(unitId<0)unitId=0;else unitId=func_ov009_022246ac(unitId);
+if(unitId){void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);}
+else {void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite)+2,0);}
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
+if(!(SpritePressed(cursorSprite) || (keys&1)))return;
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
-PressSprite(p);
+PressSprite(cursorSprite);
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)&=~1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
 func_0208fe30(0x1000d);func_01ffa6fc(arg0);return;
 }
-p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))SetSpriteFrame(p,SpriteBase(p),0);
-p=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(p))return;
-if(!(SpritePressed(p) || (keys&1)))return;
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
+if(!(SpritePressed(cursorSprite) || (keys&1)))return;
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 PressSprite(M2C_FIELD(arg0,void **,0x5c));
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
@@ -74,7 +102,7 @@ M2C_UNK func_020dd980(void *arg0) {
     void func_01ffa6fc(void *);
     s32 func_020b212c(void);
     extern u16 *data_02101e84;
-    extern M2C_UNK data_02168f7c;
+    extern M2C_UNK gUnitSlotIds;
 
     void *temp_r4;
     u16 var_r5;
@@ -188,7 +216,7 @@ L600:
     }
     idx = func_020b212c();
     sprite2 = M2C_FIELD(temp_r4, void **, 0x50);
-    tableVal = *(&data_02168f7c + idx);
+    tableVal = *(&gUnitSlotIds + idx);
     low = (u8)(((u32)(M2C_FIELD(sprite2, u8 *, 0x59) << 0x1c)) >> 0x1c);
     if (tableVal < 0) {
         goto L680;
@@ -264,13 +292,13 @@ void func_020dde30(void) {
 }
 
 void func_020dde3c(void) {
-    void func_020dd4f8();
-    func_020dd4f8();
+    void UnitPreviewMenuInput();
+    UnitPreviewMenuInput();
 }
 
 void func_020dde48(void) {
-    void func_020dd4f8();
-    func_020dd4f8();
+    void UnitPreviewMenuInput();
+    UnitPreviewMenuInput();
 }
 
 void func_020dde54(void) {
@@ -416,7 +444,7 @@ void func_020ddfd8(void *arg0, M2C_UNK arg1) {
     extern M2C_UNK data_0212d3f8;
     extern M2C_UNK data_0212d408;
     extern M2C_UNK data_0212d418;
-    extern M2C_UNK data_02168f7c;
+    extern M2C_UNK gUnitSlotIds;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     s32 temp_r0;
@@ -493,7 +521,7 @@ void func_020ddfd8(void *arg0, M2C_UNK arg1) {
         func_ov009_02224730(0, arg1, temp_r6, func_ov009_0222429c(), (u8)var_r4);
         return;
     }
-    temp_r0_4 = func_ov009_022246ac(*(&data_02168f7c + M2C_FIELD(arg0, s8 *, 0x43)));
+    temp_r0_4 = func_ov009_022246ac(*(&gUnitSlotIds + M2C_FIELD(arg0, s8 *, 0x43)));
     if (temp_r0_4 == 0) {
         return;
     }

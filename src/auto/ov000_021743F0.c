@@ -8,7 +8,7 @@ typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
  * opens the terrain or unit-statistics panel for the cell under the cursor and
  * runs the panel's state machine. */
 void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
-extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *data_ov000_021df5fc; extern u8 data_021291b0[];
+extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *gOv000InfoWindow; extern u8 data_021291b0[];
 int func_020d4ea8(void); int func_01ffa770(void *); s32 func_ov000_0216ca8c(s32,s32);
 void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
 void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void func_ov000_021751b4(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
@@ -27,7 +27,7 @@ if(menu->trigger){
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|128;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|256;}
 if(menu->pendingState!=OV000_INFO_NO_TERRAIN)menu->pendingState=OV000_INFO_NO_TERRAIN;
-Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc,-1); menu->hasUnit=0;
+Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow,-1); menu->hasUnit=0;
 }
 menu->cursorX=x; menu->cursorY=y;
 menu->pressed=0; menu->trigger=0; break;
@@ -64,8 +64,8 @@ if(selected && M2C_FIELD(selected,u8 *,1)==x && M2C_FIELD(selected,u8 *,2)==y)oc
 if(occupant && ((u32)(M2C_FIELD(occupant,u8 *,0)<<26)>>26)==0)unit=0; else unit=occupant;
 }
 terrain=func_ov000_0216ca8c(x,y);
-if(unit){menu->hasUnit=1;Ov000_InfoWindow_OpenCell(data_ov000_021df5fc,(s32)unit,terrain);}
-else {menu->hasUnit=0;Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc,terrain);}
+if(unit){menu->hasUnit=1;Ov000_InfoWindow_OpenCell(gOv000InfoWindow,(s32)unit,terrain);}
+else {menu->hasUnit=0;Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow,terrain);}
 }
 }break;
 }
@@ -120,13 +120,13 @@ void Ov000_InfoWindow_OpenCell(void *arg0, s32 arg1, s32 arg2) {
     void Ov000_InfoWindow_ShowTerrain(void *, s32);
     M2C_UNK func_ov000_02175310(s32);
     extern Ov000Flags data_0215d9b8;
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     if (arg1 == 0) {
-        Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc, arg2);
+        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, arg2);
         return;
     }
     if (((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 16) >> 31) == 1) {
-        Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc, arg2);
+        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, arg2);
         return;
     }
     func_ov000_02175310(M2C_FIELD(arg0, s32 *, 0));
@@ -152,7 +152,7 @@ void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
 void func_ov000_02174ab4(void *arg0) {
 extern void **gCurrentMap;
 extern Ov000Flags data_0215d9b8;
-extern Ov000MenuState *data_ov000_021df5fc;
+extern Ov000MenuState *gOv000InfoWindow;
 s32 func_ov000_0216ca8c(s32,s32);
 void *unit;
 void *base=*gCurrentMap;
@@ -172,13 +172,13 @@ index=func_ov000_0216ca8c(x,y);
 switch(M2C_FIELD(arg0,s32 *,8)){
 case 2: case 3: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
-void *state=data_ov000_021df5fc;
+void *state=gOv000InfoWindow;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags & ~0x8000;
 Ov000_InfoWindow_OpenCell(state,(s32)unit,index);
 break; }
 case 4: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
-void *state=data_ov000_021df5fc;
+void *state=gOv000InfoWindow;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags | 0x8000;
 Ov000_InfoWindow_ShowTerrain(state,index);
 break; }
@@ -187,8 +187,8 @@ break; }
 
 void func_ov000_02174be8(void) {
     M2C_UNK func_ov000_02173f78(void *);
-    extern Ov000MenuState *data_ov000_021df5fc;
-    func_ov000_02173f78(data_ov000_021df5fc);
+    extern Ov000MenuState *gOv000InfoWindow;
+    func_ov000_02173f78(gOv000InfoWindow);
 }
 
 void func_ov000_02174c00(void) {
@@ -197,9 +197,9 @@ void func_ov000_02174c00(void) {
 }
 
 u8 func_ov000_02174c0c(void) {
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     u8 var_r0;
-    if (data_ov000_021df5fc != 0) {
+    if (gOv000InfoWindow != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -208,66 +208,66 @@ u8 func_ov000_02174c0c(void) {
 }
 
 void func_ov000_02174c2c(void) {
-    s32 *func_02082028(M2C_UNK);
+    s32 *MemAlloc(M2C_UNK);
     void *func_ov000_02173ea8(void *);
     M2C_UNK func_01ffa3dc(void *, s32);
     extern M2C_UNK data_ov000_021b8e5c;
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     void *var_r0;
-    var_r0 = func_02082028(0x20);
+    var_r0 = MemAlloc(0x20);
     if (var_r0 != 0) {
         var_r0 = func_ov000_02173ea8(var_r0);
     }
-    data_ov000_021df5fc = var_r0;
+    gOv000InfoWindow = var_r0;
     func_01ffa3dc(&data_ov000_021b8e5c, 8);
 }
 
 void func_ov000_02174c64(void) {
     void Ov000_InfoWindow_Update(Ov000MenuState *);
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return;
-    Ov000_InfoWindow_Update(data_ov000_021df5fc);
+    Ov000_InfoWindow_Update(gOv000InfoWindow);
 }
 
 void func_ov000_02174c88(void) {
     void func_ov000_021743ec(void *);
     void func_ov000_02173f30(void *);
-    M2C_UNK func_02082040(s32);
+    M2C_UNK MemFree(s32);
     void func_01ffa9e4(void *);
     void func_020c127c(void);
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     extern M2C_UNK data_ov000_021b8e5c;
     void *temp;
     if (func_ov000_02174c0c() == 0) return;
-    func_ov000_021743ec(data_ov000_021df5fc);
-    temp = data_ov000_021df5fc;
+    func_ov000_021743ec(gOv000InfoWindow);
+    temp = gOv000InfoWindow;
     if (temp != 0) {
         func_ov000_02173f30(temp);
-        func_02082040((s32)temp);
+        MemFree((s32)temp);
     }
-    data_ov000_021df5fc = 0;
+    gOv000InfoWindow = 0;
     func_01ffa9e4(&data_ov000_021b8e5c);
     func_020c127c();
 }
 
 void func_ov000_02174ce8(void) {
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return;
-    M2C_FIELD(data_ov000_021df5fc, u8 *, 0x11) = 1;
+    M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
 }
 
 void func_ov000_02174d10(s32 arg0, s32 arg1) {
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return;
-    M2C_FIELD(data_ov000_021df5fc, u8 *, 0x11) = 1;
-    ((void (*)())func_ov000_02174a68)(data_ov000_021df5fc, arg0, arg1);
+    M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
+    ((void (*)())func_ov000_02174a68)(gOv000InfoWindow, arg0, arg1);
 }
 
 s32 func_ov000_02174d50(void) {
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     s32 result;
     if (func_ov000_02174c0c() != 0) {
-        result = M2C_FIELD(data_ov000_021df5fc, u8 *, 0x13);
+        result = M2C_FIELD(gOv000InfoWindow, u8 *, 0x13);
     } else {
         result = 0;
     }
@@ -276,9 +276,9 @@ s32 func_ov000_02174d50(void) {
 
 s32 func_ov000_02174d78(void) {
     void func_ov000_02174ab4(void *);
-    extern Ov000MenuState *data_ov000_021df5fc;
+    extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return 0;
-    func_ov000_02174ab4(data_ov000_021df5fc);
+    func_ov000_02174ab4(gOv000InfoWindow);
     return 1;
 }
 
@@ -310,21 +310,21 @@ gCur3DSpriteEngine=saved;
 }
 
 s32 func_ov000_02175074(void) {
-    extern Ov000MenuState *data_ov000_021df5fc;
-    return M2C_FIELD(data_ov000_021df5fc, s32 *, 0x1C);
+    extern Ov000MenuState *gOv000InfoWindow;
+    return M2C_FIELD(gOv000InfoWindow, s32 *, 0x1C);
 }
 
 /* Initialize the 0x14-byte sub-object stored at entry+0x10 (allocating it
  * and its 0x104-byte descriptor) and clear the leading fields of entry. */
 void *func_ov000_02175088(void *entry) {
-    s32 *func_02082028(M2C_UNK);
+    s32 *MemAlloc(M2C_UNK);
     s32 *alloc;
 
     M2C_FIELD(entry, s32 *, 0) = 0;
     M2C_FIELD(entry, s32 *, 4) = 0;
     M2C_FIELD(entry, s32 *, 8) = 0;
     M2C_FIELD(entry, s8 *, 0xC) = 0;
-    alloc = func_02082028(0x104);
+    alloc = MemAlloc(0x104);
     M2C_FIELD(entry, s32 **, 0x10) = alloc;
     *alloc = 0;
     M2C_FIELD(M2C_FIELD(entry, s32 **, 0x10), s32 *, 0x10) = 0;
@@ -357,8 +357,8 @@ void *func_ov000_02175088(void *entry) {
 }
 
 void *func_ov000_0217519c(void *arg0) {
-    M2C_UNK func_02082040(s32);
-    func_02082040(M2C_FIELD(arg0, s32 *, 0x10));
+    M2C_UNK MemFree(s32);
+    MemFree(M2C_FIELD(arg0, s32 *, 0x10));
     return arg0;
 }
 

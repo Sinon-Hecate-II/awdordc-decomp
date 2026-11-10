@@ -25,7 +25,7 @@ data_ov001_02193d24.ptr=func_ov001_0218b6f8(0x26c,4);
 data_ov001_02193d24.state=0;
 func_02007df8(0,&rec,0x104);
 rec.kind=0x50; rec.size=12;
-func_02008048(data_ov001_0218f6e8,rec.text);
+MI_CpuCopy8(data_ov001_0218f6e8,rec.text);
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0)=3;
 M2C_FIELD(data_ov001_02193d24.ptr,MenuRecord *,2)=rec;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x106)=1;

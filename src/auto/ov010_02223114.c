@@ -193,12 +193,12 @@ u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
 s32 func_ov010_02223624(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
 #pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
-s32 func_0200751c(void); void func_02007530(s32);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
 extern s32 data_ov010_0222d88c; extern s32 data_ov010_0222d890[]; extern s32 data_ov010_0222d89c[]; extern s32 data_ov010_0222d8a8[];
-s32 *a=data_ov010_0222d89c; s32 *b=data_ov010_0222d890; s32 v=func_0200751c();
+s32 *a=data_ov010_0222d89c; s32 *b=data_ov010_0222d890; s32 v=OS_DisableInterrupts();
 data_ov010_0222d88c=v;
 data_ov010_0222d8a8[arg0]=0; b[arg0]=0; a[arg0]=0;
-func_02007530(v);
+OS_RestoreInterrupts(v);
 }
 
 void func_ov010_0222369c(s32 arg0) {
@@ -219,25 +219,25 @@ void func_ov010_0222369c(s32 arg0) {
 }
 
 void func_ov010_022236e4(void) {
- s32 func_0200751c(void);void func_02007530(s32);M2C_UNK func_ov010_02224ef8(void *);
+ s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_UNK func_ov010_02224ef8(void *);
  extern s32 data_ov010_0222d88c,data_ov010_0222d890[],data_ov010_0222d89c[];
  s32 i;void *node;void *next;
- data_ov010_0222d88c=func_0200751c();
+ data_ov010_0222d88c=OS_DisableInterrupts();
  i=0;goto check;
  loop: node=(void *)data_ov010_0222d890[i];while(node){next=M2C_FIELD(node,void **,8);data_ov010_0222d890[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;func_ov010_02224ef8(node);node=(void *)data_ov010_0222d890[i];}data_ov010_0222d89c[i]=0;i++;
  check:if(i<3)goto loop;
- func_02007530(data_ov010_0222d88c);
+ OS_RestoreInterrupts(data_ov010_0222d88c);
 }
 
 #pragma opt_common_subs off
 s32 func_ov010_02223764(void *p,u8 group){
-s32 func_0200751c(void);void func_02007530(s32);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 extern s32 data_ov010_0222d890[],data_ov010_0222d8a8[],data_ov010_0222d89c[];
 extern s32 data_ov010_0222d88c;
 void *q;
 if(!p)return -1;
 if(group>=3)return -1;
-data_ov010_0222d88c=func_0200751c();
+data_ov010_0222d88c=OS_DisableInterrupts();
 if(!data_ov010_0222d890[group]){
 data_ov010_0222d890[group]=(s32)p;
 M2C_FIELD(p,s32*,4)=0;
@@ -263,31 +263,31 @@ data_ov010_0222d890[group]=(s32)p;
 }
 done:
 data_ov010_0222d89c[group]++;
-func_02007530(data_ov010_0222d88c);
+OS_RestoreInterrupts(data_ov010_0222d88c);
 return data_ov010_0222d89c[group];
 }
 void *func_ov010_02223878(s32 arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     extern s32 data_ov010_0222d88c;
     extern s32 data_ov010_0222d890[];
-    data_ov010_0222d88c = func_0200751c();
+    data_ov010_0222d88c = OS_DisableInterrupts();
     if (data_ov010_0222d890[arg0] != 0) {
-        func_02007530(data_ov010_0222d88c);
+        OS_RestoreInterrupts(data_ov010_0222d88c);
         return (void *)data_ov010_0222d890[arg0];
     }
-    func_02007530(data_ov010_0222d88c);
+    OS_RestoreInterrupts(data_ov010_0222d88c);
     return NULL;
 }
 
 s32 func_ov010_022238c0(s32 arg0) {
-    s32 func_0200751c(void);
-    void func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
     extern s32 data_ov010_0222d88c;
     extern s32 data_ov010_0222d890[];
     extern s32 data_ov010_0222d89c[];
     void *temp;
-    data_ov010_0222d88c = func_0200751c();
+    data_ov010_0222d88c = OS_DisableInterrupts();
     temp = (void *)data_ov010_0222d890[arg0];
     if (temp != NULL) {
         void *next = M2C_FIELD(temp, void **, 8);
@@ -297,7 +297,7 @@ s32 func_ov010_022238c0(s32 arg0) {
             M2C_FIELD(next, s32 *, 4) = 0;
         }
     }
-    func_02007530(data_ov010_0222d88c);
+    OS_RestoreInterrupts(data_ov010_0222d88c);
     return data_ov010_0222d89c[arg0];
 }
 

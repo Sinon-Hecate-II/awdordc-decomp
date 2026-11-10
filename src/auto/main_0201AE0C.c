@@ -3,7 +3,7 @@
 
 void func_0201ae0c(void *a,u32 ip,s32 create){
 u64 func_02007004(void);s32 func_0201a6c4(u32);s32 func_0201a764(u32);
-M2C_UNK func_02008048(M2C_UNK*,void*,M2C_UNK);
+M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 extern M2C_UNK data_02137290,data_02137310,data_0213731a;
 u16 now;u32 i,best;u8 *p;s32 age,off;s32 delta;
 if(ip==0x7f000001 || ip==M2C_FIELD(&data_02137290,u32*,80))return;
@@ -14,7 +14,7 @@ p=(u8*)&data_02137310;
 for(i=0;i<8;i++,p+=12){
 if(ip==M2C_FIELD(p,u32*,0)){
 off=i*12;M2C_FIELD(&data_0213731a,u16*,off)=now;
-func_02008048(a,(u8*)&data_02137310+off+4,6);return;
+MI_CpuCopy8(a,(u8*)&data_02137310+off+4,6);return;
 }}
 if(!create)return;
 age=0;p=(u8*)&data_02137310;best=0;i=0;
@@ -25,13 +25,13 @@ if(age<(s16)delta){best=i;age=(u16)delta;}
 i++;
 }while(i<8);
 off=best*12;M2C_FIELD(&data_02137310,u32*,off)=ip;
-func_02008048(a,(u8*)&data_02137310+off+4,6);
+MI_CpuCopy8(a,(u8*)&data_02137310+off+4,6);
 M2C_FIELD(&data_0213731a,u16*,off)=now;
 }
 
 #pragma scheduling off
 void func_0201af48(void *a, s32 b, M2C_UNK c, M2C_UNK d, u32 ip, u16 type) {
-M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);
+M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 s32 func_0201a704(u32); s32 func_0201a764(u32);
 M2C_UNK func_0201a824(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK *func_0201abd0(void); M2C_UNK *func_0201ad9c(s32);
@@ -43,7 +43,7 @@ n=func_0201a704(ip);if(!n)return;
 p=func_0201abd0();
 if(!p)p=func_0201ad9c(n);
 if(!p)return;
-func_02008048(p,(u8 *)a-14,6);
+MI_CpuCopy8(p,(u8 *)a-14,6);
 }else{
 M2C_FIELD(a,u8 *,-14)=1;
 M2C_FIELD(a,u8 *,-13)=0;
@@ -52,13 +52,13 @@ M2C_FIELD(a,u8 *,-11)=(ip>>16)&127;
 M2C_FIELD(a,u8 *,-10)=ip>>8;
 M2C_FIELD(a,u8 *,-9)=ip;
 }
-func_02008048(&data_02137778,(u8 *)a-8,6);
+MI_CpuCopy8(&data_02137778,(u8 *)a-8,6);
 func_0201a824((u8 *)a-14,b+14,c,d);
 }
 #pragma scheduling on
 void func_0201b018(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
-s32 func_0200751c(void);void func_02007530(s32);
-M2C_UNK func_02008048(M2C_UNK*,void*,M2C_UNK);
+s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
+M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 s32 func_0201a658(u8*,s32);s32 func_0201a764(u32);
 M2C_UNK func_0201a880(void*,void*,void*,s32,s32,s32);
 extern M2C_UNK data_02137290,data_020faf80,data_02137778;
@@ -71,10 +71,10 @@ sum=func_0201a658(a-20,20);
 M2C_FIELD(a,u16*,-10)=(sum>>8)|(sum<<8);
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&data_02137290,u32*,80))func_0201af48(a-20,b+20,c,d,ip,0x800);
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&data_02137290,u32*,80)){if(!func_0201a764(ip))return;}
-func_02008048(&data_020faf80,a-28,8);
-t=func_0200751c();
+MI_CpuCopy8(&data_020faf80,a-28,8);
+t=OS_DisableInterrupts();
 func_0201a880(&data_02137778,&data_02137778,a-28,b+28,c,d);
-func_02007530(t);
+OS_RestoreInterrupts(t);
 }
 
 void func_0201b140(void *arg0,u32 arg1,void *arg2,u32 arg3,u32 arg4,u8 arg5){
@@ -156,7 +156,7 @@ M2C_FIELD(c,u32 *,40)+=b;if(d&3)M2C_FIELD(c,u32 *,40)+=1;
 }
 
 void func_0201b798(void *arg0) {
-    M2C_UNK func_02008048(M2C_UNK *, void *, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK *, void *, M2C_UNK);
     M2C_UNK func_0201a824(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_02137290;
     extern M2C_UNK data_02137778;
@@ -164,14 +164,14 @@ void func_0201b798(void *arg0) {
     u16 temp_ip_2;
 
     M2C_FIELD(arg0, s16 *, 6) = 0x200;
-    func_02008048(arg0 + 8, arg0 + 0x12, 0xA);
-    func_02008048(&data_02137778, arg0 + 8, 6);
+    MI_CpuCopy8(arg0 + 8, arg0 + 0x12, 0xA);
+    MI_CpuCopy8(&data_02137778, arg0 + 8, 6);
     temp_ip = (u16) ((u32) M2C_FIELD(&data_02137290, u32 *, 0x50) >> 0x10);
     M2C_FIELD(arg0, s16 *, 0xE) = (s16) ((temp_ip >> 8) | (temp_ip << 8));
     temp_ip_2 = (u16) M2C_FIELD(&data_02137290, u32 *, 0x50);
     M2C_FIELD(arg0, s16 *, 0x10) = (s16) ((temp_ip_2 >> 8) | (temp_ip_2 << 8));
-    func_02008048(arg0 + 0x12, arg0 - 0xE, 6);
-    func_02008048(&data_02137778, arg0 - 8, 6);
+    MI_CpuCopy8(arg0 + 0x12, arg0 - 0xE, 6);
+    MI_CpuCopy8(&data_02137778, arg0 - 8, 6);
     func_0201a824(arg0 - 0xE, 0x2A, 0, 0);
 }
 
@@ -211,10 +211,10 @@ func_0201b140(arg1,arg2,0,0,val,1);
 }
 #pragma optimization_level 4
 M2C_UNK func_0201ba68(void *arg0,u8 *arg1,M2C_UNK arg2) {
-s32 func_0200751c(void); void func_02007530(s32); void func_02005e5c(s32); M2C_UNK func_02008048(M2C_UNK *,void *,M2C_UNK);
+s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void TaskWake(s32); M2C_UNK MI_CpuCopy8(M2C_UNK *,void *,M2C_UNK);
 extern M2C_UNK data_0212dca4;
 void *entry; s32 saved,id; void *node; u16 low,high; u32 max,len;
-saved=func_0200751c();
+saved=OS_DisableInterrupts();
 node=M2C_FIELD(&data_0212dca4,void **,8);
 while(node){
 entry=M2C_FIELD(node,void **,0xa4);
@@ -224,15 +224,15 @@ low=M2C_FIELD(arg0,u16 *,14);high=M2C_FIELD(arg0,u16 *,12);
 if(M2C_FIELD(entry,u32 *,28)==(((u16)(((s32)high>>8)|(high<<8))<<16)|(u16)(((s32)low>>8)|(low<<8)))){
 max=M2C_FIELD(entry,u32 *,60);len=arg2-8;
 if(len>max)M2C_FIELD(entry,u32 *,68)=max;else M2C_FIELD(entry,u32 *,68)=len;
-func_02008048((M2C_UNK *)(arg1+8),M2C_FIELD(entry,void **,64),M2C_FIELD(entry,u32 *,68));
-if(M2C_FIELD(entry,s32 *,4)==3){M2C_FIELD(entry,s32 *,4)=0;func_02005e5c(M2C_FIELD(entry,s32 *,0));}
+MI_CpuCopy8((M2C_UNK *)(arg1+8),M2C_FIELD(entry,void **,64),M2C_FIELD(entry,u32 *,68));
+if(M2C_FIELD(entry,s32 *,4)==3){M2C_FIELD(entry,s32 *,4)=0;TaskWake(M2C_FIELD(entry,s32 *,0));}
 break;
 }
 }
 }
 node=M2C_FIELD(node,void **,104);
 }
-func_02007530(saved);
+OS_RestoreInterrupts(saved);
 }
 
 s32 func_0201bb68(s32 arg0, s32 arg1) {

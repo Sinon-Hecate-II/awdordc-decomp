@@ -23,7 +23,7 @@ void func_ov003_021eccd4(void *arg0) {
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    s32 func_ov003_021e6cac(u8, M2C_UNK, M2C_UNK);
+    s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6d28();
     M2C_UNK func_ov003_021e74ac(void *, M2C_UNK);
@@ -197,13 +197,13 @@ void func_ov003_021eccd4(void *arg0) {
             M2C_FIELD(M2C_FIELD((short)arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-                if (func_ov003_021e6cac((u8) temp_r0_3, 0, 3) != 0) {
+                if (InRange((u8) temp_r0_3, 0, 3) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 4, 7) != 0) {
+                } else if (InRange((u8) temp_r0_3, 4, 7) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 8, 0x14) != 0) {
+                } else if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-                } else if (func_ov003_021e6cac((u8) temp_r0_3, 0x15, 0x18) != 0) {
+                } else if (InRange((u8) temp_r0_3, 0x15, 0x18) != 0) {
                     func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
                 } else if ((u8) temp_r0_3 == 0x19) {
                     temp_r0_4 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
@@ -248,11 +248,11 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     M2C_UNK func_0208fe30(s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    s32 func_ov003_021e6cac(u8, M2C_UNK, M2C_UNK);
+    s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6e08(u32);
     M2C_UNK func_ov003_021e6e18(u32);
-    M2C_UNK func_ov003_021e6ef4(void *, u32);
+    M2C_UNK HandleWaypointInput(void *, u32);
     s16 func_ov003_022004a8(u8);
     M2C_UNK func_ov003_022006b0(M2C_UNK, u8);
     extern void *g3DSpriteEngineMain;
@@ -308,7 +308,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     }
     temp_r0 = M2C_FIELD(arg0, void **, 0x6C);
     temp_r5_2 = (u8) M2C_FIELD(M2C_FIELD(temp_r0, void **, 0xE0), u16 *, 0x2E);
-    func_ov003_021e6ef4(temp_r0, arg1);
+    HandleWaypointInput(temp_r0, arg1);
     if (temp_r5_2 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E)) {
         func_0208fe30(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
@@ -321,13 +321,13 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
         if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
             temp_r0_2 = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-            if (func_ov003_021e6cac((u8) temp_r0_2, 0, 3) != 0) {
+            if (InRange((u8) temp_r0_2, 0, 3) != 0) {
                 func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-            } else if (func_ov003_021e6cac((u8) temp_r0_2, 4, 7) != 0) {
+            } else if (InRange((u8) temp_r0_2, 4, 7) != 0) {
                 func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
-            } else if (func_ov003_021e6cac((u8) temp_r0_2, 8, 0x14) != 0) {
+            } else if (InRange((u8) temp_r0_2, 8, 0x14) != 0) {
                 func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-            } else if (func_ov003_021e6cac((u8) temp_r0_2, 0x15, 0x18) != 0) {
+            } else if (InRange((u8) temp_r0_2, 0x15, 0x18) != 0) {
                 func_0208b758(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
             } else if ((u8) temp_r0_2 == 0x19) {
                 temp_r0_3 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;

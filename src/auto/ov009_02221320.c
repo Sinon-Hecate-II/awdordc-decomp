@@ -99,8 +99,8 @@ void func_ov009_022213f0(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_ov009_0222140c(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_02008048();
-    func_02008048(arg1, arg0 + 0x20, arg2);
+    M2C_UNK MI_CpuCopy8();
+    MI_CpuCopy8(arg1, arg0 + 0x20, arg2);
 }
 
 void func_ov009_02221424(void *arg0) {
@@ -271,7 +271,7 @@ void func_ov009_02221ae8(Receive21ae8 *state){
 s32 func_ov009_02224194(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
 s32 func_ov009_022254a4(void);s32 func_ov009_02224d9c(s32,s32,s32,u16);s32 func_ov009_02223a30(s32,s32,s32,u8,s32);
 s32 func_ov009_02224164(u16);s32 func_ov009_02224174(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
-M2C_UNK func_02008048();void func_ov009_02222278(s32,M2C_UNK);
+M2C_UNK MI_CpuCopy8();void func_ov009_02222278(s32,M2C_UNK);
 s32 func_ov009_02225450(void);s32 func_ov009_022240ac(void);s32 func_020c4b60(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 func_ov009_022222d0(u8);
 u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
 s32 i,packet,channel,n,value,keep;u8 *p;u32 size;Descriptor21ae8 desc;s32 (*callback)(u8,s32);
@@ -299,12 +299,12 @@ func_ov009_02224164(M2C_FIELD(packet,u16 *,12));p=M2C_FIELD(data_ov009_022268e0,
 if(p){M2C_FIELD(p,u8 *,0)=1;M2C_FIELD(M2C_FIELD(data_ov009_022268e0,s32 *,0x24),u16 *,2)=func_ov009_02224174();}break;
 case 7:func_ov009_02224164(M2C_FIELD(packet,u16 *,12));break;
 case 8:
-func_ov009_02224ca4();func_02008048(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
+func_ov009_02224ca4();MI_CpuCopy8(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
 func_ov009_02224d30(p,desc.type,desc.flags.low,desc.flags.high,0,desc.length,desc.mask);
 state->channels[channel].offset=0;state->channels[channel].packet=p;break;
 case 9:
 n=M2C_FIELD(packet,u32 *,8);p=state->channels[channel].packet;
-func_02008048(packet+12,p+12+state->channels[channel].offset,n);state->channels[channel].offset+=n;break;
+MI_CpuCopy8(packet+12,p+12+state->channels[channel].offset,n);state->channels[channel].offset+=n;break;
 case 10:
 p=state->channels[channel].packet;
 if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae8(data_ov009_022269b0,channel,p);
@@ -337,9 +337,9 @@ callback=M2C_FIELD(data_ov009_022268e0,s32 (**)(u8,s32),0x54);if(callback)keep=c
 }
 #pragma opt_lifetimes reset
 void func_ov009_02222278(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008048(M2C_UNK, s32);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
     extern M2C_UNK data_ov009_02226b40;
-    func_02008048(arg1, (arg0 * 0x60) + (s32) &data_ov009_02226b40);
+    MI_CpuCopy8(arg1, (arg0 * 0x60) + (s32) &data_ov009_02226b40);
 }
 
 s32 func_ov009_0222229c(s32 arg0, s32 arg1) {

@@ -3,7 +3,7 @@
 extern u8 data_ov000_021df7e4[64];
 extern u8 *data_ov000_021df580;
 extern void **gCurrentMap;
-extern u16 data_ov000_021aeef4[];
+extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021b5c05[];
 extern u8 data_ov000_021b5c0a[];
 extern void *data_ov000_021df57c;
@@ -23,7 +23,7 @@ data_ov000_021df580[4]+=func_ov000_0219a3b0(i);
 void func_ov000_0219a618(void) {
 s32 func_020d1938(s32); s32 i,j,end;
 for(i=1;i<5;i++) if(func_020d1938(i)) {
-s32 start=data_ov000_021aeef4[i];
+s32 start=gPlayerUnitIdBase[i];
 for(j=start+1;j<start+0x33;j++) {
 u8 *p=(u8 *)*gCurrentMap+0x59a4+j*14;
 if((u32)(p[0]<<26)>>26) {
@@ -78,7 +78,7 @@ void func_ov000_0219a8a4(void *arg0) {
 
 void func_ov000_0219a8c4(void) {
     extern void **gCurrentMap;
-    extern u16 data_ov000_021aeef4[];
+    extern u16 gPlayerUnitIdBase[];
     s32 i;
     u8 *e;
     u32 type;
@@ -86,8 +86,8 @@ void func_ov000_0219a8c4(void) {
     u16 start;
     void *base;
     base = *gCurrentMap;
-    start = data_ov000_021aeef4[M2C_FIELD(base, u16 *, 0x52a4)];
-    for (i = start + 1; i < data_ov000_021aeef4[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)] + 0x33; i++) {
+    start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52a4)];
+    for (i = start + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)] + 0x33; i++) {
         e = (u8 *)*gCurrentMap + 0x59a4 + i * 14;
         type = (u32)(e[0] << 26) >> 26;
         if (type == 0) continue;

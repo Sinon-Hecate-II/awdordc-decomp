@@ -22,20 +22,20 @@ s32 func_02030554(s32 a){void *func_0202f48c(s32);void func_02007e54(s32,void *,
 
 s32 func_020305e8(u8 *a){void *func_0202f48c(s32);s32 func_02068eac(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(func_0202f48c(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!func_02068eac(a+12,&data_020ea84c,8))return 8;}return 0;}
 
-s32 func_02030634(void *a){u8 func_02030780(void *);void func_02008048(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){func_02008048(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
+s32 func_02030634(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 
 s32 func_02030694(void *a){
-u8 func_02030780(void *);void func_02008048(void *,void *,s32);
+u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);
 extern M2C_UNK data_020fb224,data_020ea844,data_020ea854;
 u8 n;u8 *p;u32 v;
 p=(u8*)a+0x300;n=func_02030780(a);
 p+=n*36;
 v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==4){func_02008048(&data_020fb224,p+4,8);p[3]=8;p[1]=6;n++;p+=36;}
+if(v==0||v==4){MI_CpuCopy8(&data_020fb224,p+4,8);p[3]=8;p[1]=6;n++;p+=36;}
 v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==7){func_02008048(&data_020ea844,p+4,8);p[3]=8;p[1]=9;n++;p+=36;}
+if(v==0||v==7){MI_CpuCopy8(&data_020ea844,p+4,8);p[3]=8;p[1]=9;n++;p+=36;}
 v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;
-if(v==0||v==8){func_02008048(&data_020ea854,p+4,11);p[3]=11;p[1]=10;n++;}
+if(v==0||v==8){MI_CpuCopy8(&data_020ea854,p+4,11);p[3]=11;p[1]=10;n++;}
 return n;
 }
 

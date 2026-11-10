@@ -4,7 +4,7 @@
 s32 func_02014b34(u16 arg0) {
  s32 func_020189a4(s8 *,void *);s32 func_02015f10(s32,u16,s32);
  extern u8 data_020f5544;extern void *data_02136c4c;
- M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK func_02008048(M2C_UNK,M2C_UNK,M2C_UNK);
+ M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK,M2C_UNK);
  void *base;u8 packet[6];u8 counts[16];s32 ptr;s8 selected=-1;u16 idx,idx2,mask=0;u8 tries,candidate;s8 owner;
  func_02007f8c((s32)counts,0,16);base=data_02136c4c;
  for(idx=1;idx<=15;idx++){
@@ -24,7 +24,7 @@ s32 func_02014b34(u16 arg0) {
  }
  packet[0]=3;*(s16 *)(packet+2)=selected;
  ptr=func_020189a4((s8 *)packet,base);
- if(ptr)func_02008048((s32)(data_02136c4c+0x1788+selected*0x5d4),ptr,0xe4);
+ if(ptr)MI_CpuCopy8((s32)(data_02136c4c+0x1788+selected*0x5d4),ptr,0xe4);
  return func_02015f10(0xea,mask,(s32)data_02136c4c);
 }
 

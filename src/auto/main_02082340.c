@@ -175,13 +175,13 @@ M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
 M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
 }
 void func_02082b78(void){
-extern void *data_027e00bc;extern void *data_027e00c0;
+extern void *g3DSpriteBankMain;extern void *data_027e00c0;
 extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineSub;extern void **g3DSpriteEngineMain;
 u16 *volatile a;u16 *volatile b;void **old;s32 i;
-M2C_FIELD(data_027e00bc,s32*,0x34)=1;M2C_FIELD(data_027e00c0,s32*,0x34)=1;
-M2C_FIELD(data_027e00bc,u16*,4)=(M2C_FIELD(data_027e00bc,u16*,4)&~1)|1;
-M2C_FIELD(data_027e00bc,u16*,4)&=~2;
-M2C_FIELD(data_027e00bc,u16*,4)&=~4;
+M2C_FIELD(g3DSpriteBankMain,s32*,0x34)=1;M2C_FIELD(data_027e00c0,s32*,0x34)=1;
+M2C_FIELD(g3DSpriteBankMain,u16*,4)=(M2C_FIELD(g3DSpriteBankMain,u16*,4)&~1)|1;
+M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~2;
+M2C_FIELD(g3DSpriteBankMain,u16*,4)&=~4;
 a=*gCur3DSpriteEngine;*a=*a&~0x1000;
 b=*gCur3DSpriteEngine;*b=*b&~0x6000;
 old=gCur3DSpriteEngine;
@@ -242,7 +242,7 @@ void func_02082d08(void) {
     void func_02007e98(s32, s32, s32);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
-    extern void *data_027e00bc;
+    extern void *g3DSpriteBankMain;
     extern void *data_027e00c0;
     extern void **g3DSpriteEngineSub;
     extern u8 data_027e068c[];
@@ -259,7 +259,7 @@ void func_02082d08(void) {
     extern u8 data_0214c270[];
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    *g3DSpriteEngineMain = data_027e00bc;
+    *g3DSpriteEngineMain = g3DSpriteBankMain;
     *(u32 *)((u8 *)g3DSpriteEngineMain + 0x1c) = 0x06400000;
     *(void **)((u8 *)g3DSpriteEngineMain + 0x30) = (void *)data_027e068c;
     *(void **)((u8 *)g3DSpriteEngineMain + 0x34) = (void *)data_0214e8dc;

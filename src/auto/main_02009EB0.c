@@ -5,18 +5,18 @@ typedef struct { u32 a,b,c; } UnkA3Block;
 typedef struct { UnkA3Block block; u32 kind, length; u8 name[128]; } PathEntry;
 typedef struct { u32 a:5; u32 c:1; u32 b:26; } FifoWord;
 
-s32 func_02009eb0(u32 a,u32 b,u32 c) { s32 func_0200751c(void);s32 func_02007530(s32);FifoWord v; s32 key;v.a=a;v.c=c;v.b=b;if(*(volatile u16 *)0x04000184&0x4000){*(volatile u16 *)0x04000184|=0xc000;return -1;}key=func_0200751c();if(*(volatile u16 *)0x04000184&2){func_02007530(key);return -2;}*(volatile u32 *)0x04000188=*(u32 *)&v;func_02007530(key);return 0;}
+s32 func_02009eb0(u32 a,u32 b,u32 c) { s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);FifoWord v; s32 key;v.a=a;v.c=c;v.b=b;if(*(volatile u16 *)0x04000184&0x4000){*(volatile u16 *)0x04000184|=0xc000;return -1;}key=OS_DisableInterrupts();if(*(volatile u16 *)0x04000184&2){OS_RestoreInterrupts(key);return -2;}*(volatile u32 *)0x04000188=*(u32 *)&v;OS_RestoreInterrupts(key);return 0;}
 
 void func_02009f38(void){
-s32 func_0200751c(void);s32 func_02007530(s32);
+s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);
 extern void (*data_0212fb68[])(u32,u32,u32);
 FifoWord v;s32 result,key;u32 tag;void (*cb)(u32,u32,u32);
 for(;;){
 if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;result=-3;}
 else{
-key=func_0200751c();
-if(*(volatile u16*)0x04000184&0x100){func_02007530(key);result=-4;}
-else{*(u32*)&v=*(volatile u32*)0x04100000;func_02007530(key);result=0;}
+key=OS_DisableInterrupts();
+if(*(volatile u16*)0x04000184&0x100){OS_RestoreInterrupts(key);result=-4;}
+else{*(u32*)&v=*(volatile u32*)0x04100000;OS_RestoreInterrupts(key);result=0;}
 }
 if(result==-4)return;
 if(result==-3)continue;
@@ -26,19 +26,19 @@ if(cb)cb(tag,v.b,v.c);
 else if(!v.c){
 v.c=1;
 if(*(volatile u16*)0x04000184&0x4000){*(volatile u16*)0x04000184|=0xc000;continue;}
-key=func_0200751c();
-if(*(volatile u16*)0x04000184&2){func_02007530(key);continue;}
+key=OS_DisableInterrupts();
+if(*(volatile u16*)0x04000184&2){OS_RestoreInterrupts(key);continue;}
 *(volatile u32*)0x04000188=*(u32*)&v;
-func_02007530(key);
+OS_RestoreInterrupts(key);
 }
 }
 }
 
-void func_0200a050(void *p,s32 a) {s32 func_0200751c(void);s32 func_02007530(s32);s32 func_02005df4(void *);s32 k;void *prev,*next;k=func_0200751c();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;func_02005df4((u8 *)p+24);func_02007530(k);}
+void func_0200a050(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 func_02005df4(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;func_02005df4((u8 *)p+24);OS_RestoreInterrupts(k);}
 
 s32 func_0200a0ac(void *a, s32 b) {
-    s32 func_0200751c(void);
-    s32 func_02007530(s32);
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
     M2C_UNK func_02005da4(void *);
     extern s32 (*data_020ea674[])(void *);
     void func_0200a050(void *, s32);
@@ -83,7 +83,7 @@ s32 func_0200a0ac(void *a, s32 b) {
     if (e == 6) {
         outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
         if (outer != 0) {
-            b = func_0200751c();
+            b = OS_DisableInterrupts();
             has200 = (M2C_FIELD(c, s32 *, 0x1c) & 0x200) ? 1 : 0;
             if (has200 != 0) {
                 do {
@@ -95,7 +95,7 @@ s32 func_0200a0ac(void *a, s32 b) {
                     }
                 } while (has200 != 0);
                 e = M2C_FIELD(a, s32 *, 0x14);
-                func_02007530(b);
+                OS_RestoreInterrupts(b);
                 goto done;
             }
         } else {
@@ -117,9 +117,9 @@ done:
 s32 func_0200a23c(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
 
 s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_0200751c();
+    s32 OS_DisableInterrupts();
     M2C_UNK func_02005da4(void *);
-    M2C_UNK func_02007530(s32);
+    M2C_UNK OS_RestoreInterrupts(s32);
     void *temp_r4;
     s32 var_r0;
     u32 var_r0_2;
@@ -135,7 +135,7 @@ s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
         M2C_FIELD(temp_r4, s32 *, 0x1C) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x1C) & ~0x200);
         break;
     case 6:
-        temp_r5 = func_0200751c();
+        temp_r5 = OS_DisableInterrupts();
         if (M2C_FIELD(temp_r4, s32 *, 0x1C) & 0x200) {
             var_r0_2 = 1;
         } else {
@@ -151,7 +151,7 @@ s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
                 }
             } while (var_r0_3 != 0);
         }
-        func_02007530(temp_r5);
+        OS_RestoreInterrupts(temp_r5);
         var_r0 = M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x24), s32 *, 0x14);
         break;
     }
@@ -309,23 +309,23 @@ s32 func_0200abd4(void) {
 u32 func_0200abdc(u8 *p,s32 n){u32 result=0; s32 i,shift;u32 c;if(n<=3){i=0;if(n>0){shift=0;do{c=p[i];if(!c)break;c=c-0x41;if(c<=25)c+=0x61;else c+=0x41;result|=c<<shift;i++;shift+=8;}while(i<n);}}return result;}
 #pragma opt_propagation reset
 s32 func_0200ac34(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    M2C_UNK func_02008048(s32, M2C_UNK, M2C_UNK);
-    func_02008048(M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg1, arg3);
+    M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);
+    MI_CpuCopy8(M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg1, arg3);
     return 0;
 }
 
 s32 func_0200ac50(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    func_02008048(arg1, M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg3);
+    MI_CpuCopy8(arg1, M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg3);
     return 0;
 }
 
-s32 func_0200ac70(s32 a,s32 b,s32 c,s32 d){func_02008048(c,b,d);return 0;}
+s32 func_0200ac70(s32 a,s32 b,s32 c,s32 d){MI_CpuCopy8(c,b,d);return 0;}
 
 #pragma opt_common_subs off
 M2C_UNK *func_0200ac88(void *arg0) {
     M2C_UNK func_02005df4(void *);
-    s32 func_0200751c();
-    M2C_UNK func_02007530(s32);
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
     void func_0200a050(void *, s32);
     M2C_UNK func_0200b774(M2C_UNK *);
     s32 temp_r4;
@@ -344,7 +344,7 @@ M2C_UNK *func_0200ac88(void *arg0) {
     s32 var_r7;
     u8 sp0[0x48];
 
-    temp_r4 = func_0200751c();
+    temp_r4 = OS_DisableInterrupts();
     if (M2C_FIELD(arg0, s32 *, 0x1C) & 0x20) {
         var_r0 = 1;
     } else {
@@ -401,11 +401,11 @@ M2C_UNK *func_0200ac88(void *arg0) {
                 if (var_r7 != 0) {
                     M2C_FIELD(arg0, s32 *, 0x1C) = (s32) (M2C_FIELD(arg0, s32 *, 0x1C) | 0x10);
                 }
-                func_02007530(temp_r4);
+                OS_RestoreInterrupts(temp_r4);
                 if ((var_r7 != 0) && (M2C_FIELD(arg0, s32 *, 0x58) & 0x200)) {
                     M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK *, M2C_UNK), 0x54)(temp_r5, 9);
                 }
-                temp_r4_2 = func_0200751c();
+                temp_r4_2 = OS_DisableInterrupts();
                 M2C_FIELD(temp_r5, s32 *, 0xC) = (s32) (M2C_FIELD(temp_r5, s32 *, 0xC) | 0x40);
                 if (*(volatile s32 *)((s8 *)temp_r5 + 0xC) & 4) {
                     var_r0_6 = 1;
@@ -414,10 +414,10 @@ M2C_UNK *func_0200ac88(void *arg0) {
                 }
                 if (var_r0_6 != 0) {
                     func_02005df4((u8 *)temp_r5 + 0x18);
-                    func_02007530(temp_r4_2);
+                    OS_RestoreInterrupts(temp_r4_2);
                     return NULL;
                 }
-                func_02007530(temp_r4_2);
+                OS_RestoreInterrupts(temp_r4_2);
                 return temp_r5;
             }
         }
@@ -446,7 +446,7 @@ block_41:
         M2C_FIELD(arg0, s32 *, 0x1C) = (s32) ((M2C_FIELD(arg0, s32 *, 0x1C) & ~0x40) | 8);
         func_02005df4(arg0 + 0x14);
     }
-    func_02007530(temp_r4);
+    OS_RestoreInterrupts(temp_r4);
     return NULL;
 }
 #pragma opt_common_subs reset

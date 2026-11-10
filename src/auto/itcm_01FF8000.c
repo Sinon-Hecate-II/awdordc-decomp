@@ -36,7 +36,7 @@ void func_01ff82e4(u32 r0, void *r1, u32 r2) {
 
 s32 func_01ff8300(void) {
 s32 func_01ff83a8(u32, void *, s32);
-void func_0200673c(void); void func_02006748(void); void func_02006804(void); void func_02006810(void); s32 func_0200751c(void); void func_02007530(s32);
+void func_0200673c(void); void func_02006748(void); void func_02006804(void); void func_02006810(void); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
 s32 state;
 u32 start;
 void *dst;
@@ -49,7 +49,7 @@ u32 base;
 base=*(u32*)0x27ffc2c;
 if(base>=0x8000) func_01ff83a8(base,(void*)0x27ffe00,0x160);
 start=*(u32*)0x27ffe20; dst=*(void**)0x27ffe28; size=*(s32*)0x27ffe2c; start2=*(s32*)0x27ffe30; dst2=*(void**)0x27ffe38; size2=*(s32*)0x27ffe3c;
-state=func_0200751c(); func_02006748(); func_0200673c(); func_02007530(state); func_02006810(); func_02006804();
+state=OS_DisableInterrupts(); func_02006748(); func_0200673c(); OS_RestoreInterrupts(state); func_02006810(); func_02006804();
 start+=base;
 if(start<0x8000) { diff=0x8000-start; dst=(u8*)dst+diff; size-=diff; start=0x8000; }
 func_01ff83a8(start,dst,size);
@@ -120,22 +120,22 @@ int func_01ff83a8(unsigned int addr, void *dst, int size)
 }
 
 void func_01ff8480(s32 a,s32 b,s32 c,s32 d) {
- s32 func_0200751c(void); void func_02007530(s32);
- s32 state=func_0200751c();
+ s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
+ s32 state=OS_DisableInterrupts();
  volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
  p[0]=b;p[1]=c;p[2]=d;
- func_02007530(state);
+ OS_RestoreInterrupts(state);
 }
 
 void func_01ff84c0(s32 a,s32 b,s32 c,s32 d) {
- s32 func_0200751c(void); void func_02007530(s32);
- s32 state=func_0200751c();
+ s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
+ s32 state=OS_DisableInterrupts();
  volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
  p[0]=b;p[1]=c;p[2]=d;
  (void)*(volatile u32 *)0x40000b0;
  (void)*(volatile u32 *)0x40000b0;
  if(a==0){p[0]=0;p[1]=0;p[2]=0x81400001;}
- func_02007530(state);
+ OS_RestoreInterrupts(state);
 }
 
 void func_01ff8530(s32 a,s32 b,s32 c,s32 d) {

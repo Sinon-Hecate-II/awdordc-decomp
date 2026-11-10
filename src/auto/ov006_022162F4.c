@@ -213,7 +213,7 @@ void func_ov006_02216c10(void) {
 void func_ov006_02216c24(s32 selectedUnit) {
     void *func_01ffa42c(void *, s32);
     void func_02007f8c(void *, s32, u32);
-    void *func_02082028(u32);
+    void *MemAlloc(u32);
     void *func_020e34bc(u32);
     extern M2C_UNK data_02129870, data_ov006_022187f0, data_ov006_022188f8;
     void *obj, *child;
@@ -227,7 +227,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
     M2C_FIELD(obj, u8 *, 0x38) = 0;
     M2C_FIELD(obj, s16 *, 0x3a) = -0x8000;
     M2C_FIELD(obj, s16 *, 0x3c) = -0x8000;
-    child = func_02082028(0x24);
+    child = MemAlloc(0x24);
     if (child != NULL) {
         M2C_FIELD(child, u16 *, 0x10) = 0xc;
         M2C_FIELD(child, u8 *, 0x12) = 0;
@@ -245,7 +245,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
         func_02007f8c(M2C_FIELD(child, void **, 0x14), 0, 0x90);
     }
     M2C_FIELD(obj, void **, 0x40) = child;
-    child = func_02082028(0x2c);
+    child = MemAlloc(0x2c);
     if (child != NULL) {
         M2C_FIELD(child, void **, 0) = &data_02129870;
         M2C_FIELD(child, u8 *, 4) = 0;
@@ -264,7 +264,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
         M2C_FIELD(child, u8 *, 0x29) = 0;
     }
     M2C_FIELD(obj, void **, 0x44) = child;
-    child = func_02082028(0x12);
+    child = MemAlloc(0x12);
     if (child != NULL) {
         M2C_FIELD(child, u8 *, 0) = 4;
         M2C_FIELD(child, u8 *, 1) = 0;
@@ -282,7 +282,7 @@ void func_ov006_02216c24(s32 selectedUnit) {
 }
 
 void *func_ov006_02216da4(void *arg0) {
- M2C_UNK func_02082040(void *);
+ M2C_UNK MemFree(void *);
  M2C_UNK func_020e35cc(s32);
  extern M2C_UNK data_ov006_022188f8;
  void *temp_r4;
@@ -291,20 +291,20 @@ void *func_ov006_02216da4(void *arg0) {
  temp_r4 = M2C_FIELD(arg0, void **, 0x40);
  if (temp_r4 != NULL) {
  func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
- func_02082040(temp_r4);
+ MemFree(temp_r4);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x44);
  if (temp_r0 != NULL) {
  M2C_FIELD(M2C_FIELD(temp_r0, void **, 0), void (**)(void *), 4)(temp_r0);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x48);
- if (temp_r0 != NULL) func_02082040(temp_r0);
- func_02082040(arg0);
+ if (temp_r0 != NULL) MemFree(temp_r0);
+ MemFree(arg0);
  return arg0;
 }
 
 void *func_ov006_02216e0c(void *arg0) {
- M2C_UNK func_02082040(void *);
+ M2C_UNK MemFree(void *);
  M2C_UNK func_020e35cc(s32);
  extern M2C_UNK data_ov006_022188f8;
  void *temp_r4;
@@ -313,14 +313,14 @@ void *func_ov006_02216e0c(void *arg0) {
  temp_r4 = M2C_FIELD(arg0, void **, 0x40);
  if (temp_r4 != NULL) {
  func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
- func_02082040(temp_r4);
+ MemFree(temp_r4);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x44);
  if (temp_r0 != NULL) {
  M2C_FIELD(M2C_FIELD(temp_r0, void **, 0), void (**)(void *), 4)(temp_r0);
  }
  temp_r0 = M2C_FIELD(arg0, void **, 0x48);
- if (temp_r0 != NULL) func_02082040(temp_r0);
+ if (temp_r0 != NULL) MemFree(temp_r0);
  
  return arg0;
 }

@@ -19,7 +19,7 @@ u64 func_020c5430(void *);
 void func_020c5498(char *,u64);
 void func_02007df8(int,void *,int);
 void func_02007e20(void *,void *,int);
-void func_02008048(void *,void *,int);
+void MI_CpuCopy8(void *,void *,int);
 void func_02019e64(void *,int,void *,int,int);
 void func_020e4cd8(void *,void *,void *,int,int,int,int);
 extern u8 *gCur3DSpriteEngine;
@@ -86,9 +86,9 @@ if(custom[0]) func_02007e20(custom,text,26);
 else {
 id=func_020c5430(item);
 if(id) {func_020c5498(name,id);func_02019e64(text,0,name,0,0);}
-else func_02008048(data_ov006_022186b4,text,26);
+else MI_CpuCopy8(data_ov006_022186b4,text,26);
 }
-} else func_02008048(data_ov006_022186d0,text,26);
+} else MI_CpuCopy8(data_ov006_022186d0,text,26);
 func_020e4cd8(text,M2C_FIELD(gCur3DSpriteEngine,void **,16),M2C_FIELD(gCur3DSpriteEngine,void **,36),6,5,(u16)ty,tile);
 tile+=48;row=0;col=0;
 j=0;do {if(j==32) {row++;col=0;}

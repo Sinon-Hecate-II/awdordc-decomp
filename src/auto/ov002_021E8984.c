@@ -18,7 +18,7 @@ static inline void *Next021e8e8c(void *head, void *node) {
 #pragma opt_common_subs off
 #pragma scheduling off
 void func_ov002_021e8984(void *arg0){
-s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_02087048(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov002_021e9014(void *);void func_ov002_021e4b94(void *);
+s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_02087048(s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02087b94(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
 extern u16 **gCur3DSpriteEngine;extern u8 data_ov002_021f30f8[],data_ov002_021f30e4[],data_ov002_021f3043[],data_ov002_021f303c[];
 s32 j,x,y,alpha,t,i,depth;u8 used,best;void *p;volatile s32 *matrix=(volatile s32 *)0x4000444;
 x=M2C_FIELD(arg0,s16 *,0x1e)+M2C_FIELD(arg0,s16 *,0x22);y=M2C_FIELD(arg0,s16 *,0x24);
@@ -47,7 +47,7 @@ t=(s32)(M2C_FIELD(arg0,u16 *,0x1c)<<12)>>8;matrix[10]=t;matrix[10]=t;matrix[10]=
 used=0;j=0;
 do{depth=-32767;best=255;i=0;do{p=M2C_FIELD((u8 *)arg0+i*4,void **,8);if(p&&!(used&(1<<i))){if(depth<=M2C_FIELD(p,s16 *,0x70)){depth=M2C_FIELD(p,s16 *,0x70);best=i;}}i++;}while(i<5);
 if(best==255)break;
-func_ov002_021e9014(M2C_FIELD((u8 *)arg0+best*4,void **,8));used|=1<<best;j++;
+DrawUnitModelTree(M2C_FIELD((u8 *)arg0+best*4,void **,8));used|=1<<best;j++;
 }while(j<5);
 *(volatile s32 *)0x4000448=1;if(x||y)*(volatile s32 *)0x4000448=1;
 func_ov002_021e4b94(arg0);
@@ -145,32 +145,35 @@ void func_ov002_021e9008(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0x8A) = arg2;
 }
 
-void func_ov002_021e9014(void *unit){
+/* Draws a unit model: pushes the GX transform, applies its position (mirrored when the
+ * flip byte at +0x8C is set), scale and the two optional rotation offsets, then draws
+ * the model and its three child lists; pops the transforms at the end. */
+void DrawUnitModelTree(void *unit){
 void func_ov002_021e1ef8(void *,s32);void func_ov002_021e2cf0(void *);void func_ov002_021e3e7c(void *);
-void *node,*obj;s32 x,z,y,scale;volatile u32 *matrix=(volatile u32 *)0x4000444;
+void *node,*child;s32 transX,transZ,transY,modelScale;volatile u32 *matrix=(volatile u32 *)0x4000444;
 matrix[0]=0;
 if(!M2C_FIELD(unit,u8 *,0x8c)){
 Translate021e9014(-M2C_FIELD(unit,s16 *,0x6c),M2C_FIELD(unit,s16 *,0x6e),M2C_FIELD(unit,s16 *,0x70));
 }else{Translate021e9014(M2C_FIELD(unit,s16 *,0x6c),M2C_FIELD(unit,s16 *,0x6e),M2C_FIELD(unit,s16 *,0x70));}
-scale=(s32)(M2C_FIELD(unit,u16 *,0x72)<<12)>>8;
-*(volatile s32 *)0x400046c=scale;*(volatile s32 *)0x400046c=scale;*(volatile s32 *)0x400046c=0x1000;
+modelScale=(s32)(M2C_FIELD(unit,u16 *,0x72)<<12)>>8;
+*(volatile s32 *)0x400046c=modelScale;*(volatile s32 *)0x400046c=modelScale;*(volatile s32 *)0x400046c=0x1000;
 if(M2C_FIELD(unit,s32 *,0x74)||M2C_FIELD(unit,s32 *,0x78)){
 matrix[0]=0;
 if(!M2C_FIELD(unit,u8 *,0x8c)){Translate021e9014(-(M2C_FIELD(unit,s32 *,0x74)>>8),M2C_FIELD(unit,s32 *,0x78)>>8,0);}else{Translate021e9014(M2C_FIELD(unit,s32 *,0x74)>>8,M2C_FIELD(unit,s32 *,0x78)>>8,0);}
 }
 if(M2C_FIELD(unit,s16 *,0x7c)||M2C_FIELD(unit,s16 *,0x7e)){
 matrix[0]=0;
-if(!M2C_FIELD(unit,u8 *,0x8c)){x=-M2C_FIELD(unit,s16 *,0x7c);y=M2C_FIELD(unit,s16 *,0x7e);matrix[11]=x;matrix[11]=y;matrix[11]=0;}
-else{x=M2C_FIELD(unit,s16 *,0x7c);y=M2C_FIELD(unit,s16 *,0x7e);matrix[11]=x;matrix[11]=y;matrix[11]=0;}
+if(!M2C_FIELD(unit,u8 *,0x8c)){transX=-M2C_FIELD(unit,s16 *,0x7c);transY=M2C_FIELD(unit,s16 *,0x7e);matrix[11]=transX;matrix[11]=transY;matrix[11]=0;}
+else{transX=M2C_FIELD(unit,s16 *,0x7c);transY=M2C_FIELD(unit,s16 *,0x7e);matrix[11]=transX;matrix[11]=transY;matrix[11]=0;}
 }
 func_ov002_021e1ef8(unit,0);
-node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){obj=M2C_FIELD(node,void **,0);if(M2C_FIELD(obj,u8 *,0x4a))func_ov002_021e1ef8(obj,0);}
-node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){obj=M2C_FIELD(node,void **,0);if(M2C_FIELD(obj,u8 *,0x4a))func_ov002_021e2cf0(obj);}
+node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
+node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e2cf0(child);}
 node=0;while((node=Next021e8e8c(unit+0x64,node))!=0)func_ov002_021e3e7c(M2C_FIELD(node,void **,0));
 if(M2C_FIELD(unit,s16 *,0x7c)||M2C_FIELD(unit,s16 *,0x7e))*(volatile u32 *)0x4000448=1;
 if(M2C_FIELD(unit,s32 *,0x74)||M2C_FIELD(unit,s32 *,0x78))*(volatile u32 *)0x4000448=1;
-node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){obj=M2C_FIELD(node,void **,0);if(!M2C_FIELD(obj,u8 *,0x4a))func_ov002_021e1ef8(obj,0);}
-node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){obj=M2C_FIELD(node,void **,0);if(!M2C_FIELD(obj,u8 *,0x4a))func_ov002_021e2cf0(obj);}
+node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
+node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))func_ov002_021e2cf0(child);}
 *(volatile u32 *)0x4000448=1;
 }
 

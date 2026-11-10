@@ -27,9 +27,9 @@ s32 func_02070030(s32 arg0) {
 }
 
 s32 func_02070048(s32 arg0) {
-    M2C_UNK func_02082040(s32);
+    M2C_UNK MemFree(s32);
     func_0206f994(arg0 + 4);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -41,7 +41,7 @@ s32 func_02070068(s32 arg0) {
 
 s32 func_02070080(s32 arg0) {
     func_0206f994(arg0 + 4);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -52,7 +52,7 @@ s32 func_020700a0(s32 arg0) {
 
 s32 func_020700b8(s32 arg0) {
     func_0206f994(arg0 + 4);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 

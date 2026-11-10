@@ -20,7 +20,7 @@ void func_ov000_0219234c(void *arg0) {
 void func_01ffb554(void *);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a8fc0(u32);s32 func_ov000_021a8ff0(u32);
 s32 func_ov000_02178518(s32,s32,s16 *);s32 func_ov000_0217bd44(s32,s32,s32,s32);
-void func_ov000_02199d74(s16,s16,s32,s32,s32);
+void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a97e0(u32,u32);s32 func_020d27ec(u32,u32);
 void *unit; s32 ux,uy,range,n,d,score,bestX,bestY,candX,candY;void *m,*p; s8 *cost; s16 point[2];s8 *table;
 m=MAP;d=M2C_FIELD(SEL,u8 *,12);unit=m+0x59a4+d*14;if(!d)return;
@@ -43,7 +43,7 @@ M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u8 *,11)&=~15;
 M2C_FIELD(unit,u8 *,11)=(M2C_FIELD(unit,u8 *,11)&~15)|1;
-func_ov000_02199d74(point[0],point[1],8,(u8)d,0);
+SetMapCursor(point[0],point[1],8,(u8)d,0);
 }
 func_01ffb554(MAP+0x2338);
 range=func_ov000_021a97e0(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
@@ -90,7 +90,7 @@ M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u8 *,11)&=~15;
 M2C_FIELD(unit,u8 *,11)=(M2C_FIELD(unit,u8 *,11)&~15)|1;
-func_ov000_02199d74((s16)candX,(s16)candY,8,d,0);
+SetMapCursor((s16)candX,(s16)candY,8,d,0);
 }
 p=SEL;func_01ffada0(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),KIND(p),110,1);
 if(M2C_FIELD(M2C_FIELD(MAP+uy*4,s8 **,0x52e8),s8 *,ux)<0){
@@ -101,7 +101,7 @@ M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 func_ov000_02199f38();
 }
-func_ov000_0218a9ac(ux,uy);
+PlanMoveDestination(ux,uy);
 }
 }
 #pragma optimization_level reset

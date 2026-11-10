@@ -371,7 +371,7 @@ void func_ov009_0222598c(s32 arg0) {
  s32 func_02007f8c(s32, s32, s32);
  s32 func_0208206c();
  s32 func_02082088(void);
- void func_02008048(void *, void *, s32);
+ void MI_CpuCopy8(void *, void *, s32);
  M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
  extern M2C_UNK data_ov009_022268e0;
  u8 buffer[40];
@@ -390,7 +390,7 @@ void func_ov009_0222598c(s32 arg0) {
  if(!mask) return;
  func_02007f8c((s32)(buffer+12),0,26);
  p=(void *)func_0208206c();
- func_02008048(p,buffer+12,func_02082088()*2);
+ MI_CpuCopy8(p,buffer+12,func_02082088()*2);
  func_ov009_02224d9c(13,buffer,40,mask);
  } else {
  M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
@@ -454,8 +454,8 @@ void func_ov009_02225b7c(void) {
 }
 
 s32 func_ov009_02225b80(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -473,7 +473,7 @@ void *func_ov009_02225bbc(void *arg0) {
         func_ov009_02224d1c();
         M2C_FIELD(arg0, s32 *, 0x38) = 0;
     }
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -488,7 +488,7 @@ s32 func_ov009_02225c14(s32 arg0) {
     M2C_UNK func_020741c4(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK func_ov009_0222497c;
     func_020741c4(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
-    func_02082040(arg0);
+    MemFree(arg0);
     return arg0;
 }
 
@@ -497,8 +497,8 @@ void func_ov009_02225c44(void) {
 }
 
 s32 func_ov009_02225c48(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -507,8 +507,8 @@ void func_ov009_02225c5c(void) {
 }
 
 s32 func_ov009_02225c60(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -517,8 +517,8 @@ void func_ov009_02225c74(void) {
 }
 
 s32 func_ov009_02225c78(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -527,8 +527,8 @@ void func_ov009_02225c8c(void) {
 }
 
 s32 func_ov009_02225c90(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -537,8 +537,8 @@ void func_ov009_02225ca4(void) {
 }
 
 s32 func_ov009_02225ca8(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 

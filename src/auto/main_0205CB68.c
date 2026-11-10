@@ -395,7 +395,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
     s32 func_0206ad38(char *);
     s32 func_020498e4(void *);
     void *func_02021768(void *);
-    extern u16 data_020ead40[];
+    extern u16 gCharClassTable[];
     extern char data_020ff858[];
     extern char data_020ff878[];
     extern char data_020ff834[];
@@ -426,7 +426,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
                     char *r3 = colon + 1;
                     signed char ch = *r3;
                     while (ch != 0) {
-                        s32 v = (ch < 0 || ch >= 0x80) ? 0 : data_020ead40[ch] & 8;
+                        s32 v = (ch < 0 || ch >= 0x80) ? 0 : gCharClassTable[ch] & 8;
                         if (v == 0) return 0;
                         r3++;
                         ch = *r3;

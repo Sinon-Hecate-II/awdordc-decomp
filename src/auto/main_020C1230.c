@@ -1,6 +1,6 @@
 /* 27 functions from 0x020C1230 to 0x020C1F58 (main), found by ds-decomp. */
 #include "common.h"
-extern s32 data_020f4dd0[];
+extern s32 gCOAssetNames[];
 
 void func_020c1230(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
@@ -279,18 +279,18 @@ s32 GetCOAssetIndex(s32 arg0) {
  }
 }
 
-u16 func_020c1e48(void) {
+u16 GetCOPaletteOffset(void) {
     s32 GetCOAssetIndex();
     return (u16) ((GetCOAssetIndex() * 0x14) + 0x424);
 }
 
-s32 func_020c1e6c(s32 arg0) {
+s32 GetCOAssetName(s32 arg0) {
  s32 n=GetCOAssetIndex(arg0);
  func_020c1dac((s16)n,0,8);
- return data_020f4dd0[n];
+ return gCOAssetNames[n];
 }
 
-u16 func_020c1e9c(u32 arg0) {
+u16 GetCOPortraitOffset(u32 arg0) {
  switch(arg0) {
  case 0:return 0xffff;
  case 1:arg0=0;break;
@@ -301,5 +301,5 @@ u16 func_020c1e9c(u32 arg0) {
  return arg0*4+0x4ec;
 }
 
-s32 func_020c1efc(u32 a) { s32 func_020ae22c(s32); switch(a){case 1:return func_020ae22c(2);case 2:return func_020ae22c(4);case 3:return func_020ae22c(5);case 4:return func_020ae22c(0);case 0:default:return 0;}}
+s32 GetCOFaceIndex(u32 a) { s32 func_020ae22c(s32); switch(a){case 1:return func_020ae22c(2);case 2:return func_020ae22c(4);case 3:return func_020ae22c(5);case 4:return func_020ae22c(0);case 0:default:return 0;}}
 

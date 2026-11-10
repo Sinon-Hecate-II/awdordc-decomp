@@ -429,9 +429,9 @@ s32 func_0203bcf8(void) {
 
 void func_0203bd0c(void) {
     M2C_UNK func_0205d8f4();
-    extern M2C_UNK data_0213d39c;
-    if (M2C_FIELD(&data_0213d39c, s32 *, 0x10) != 0) {
-        M2C_FIELD(&data_0213d39c, s32 *, 0xC) = 1;
+    extern M2C_UNK gConnectionMgr;
+    if (M2C_FIELD(&gConnectionMgr, s32 *, 0x10) != 0) {
+        M2C_FIELD(&gConnectionMgr, s32 *, 0xC) = 1;
         return;
     }
     func_0205d8f4();
@@ -450,27 +450,27 @@ s32 func_0203bd34(void) {
 s32 func_0203bd54(void) {
     s32 func_0203761c();
     s32 func_02038f6c();
-    void *func_02044268();
+    void *GetConnection();
     if (func_0203761c() != 0) {
         return 0;
     }
-    if ((func_02044268() == NULL) || (func_02038f6c() != 5) || (M2C_FIELD(func_02044268(), u8 *, 0x1A9) != 0)) {
+    if ((GetConnection() == NULL) || (func_02038f6c() != 5) || (M2C_FIELD(GetConnection(), u8 *, 0x1A9) != 0)) {
         return 0;
     }
     return 1;
 }
 
 s32 func_0203bda0(void (*callback)(s32),s32 arg) {
-s32 func_0203761c(void);void *func_02044268(void);s32 func_02038f6c(void);void func_0203e410(void);
+s32 func_0203761c(void);void *GetConnection(void);s32 func_02038f6c(void);void func_0203e410(void);
 void *p;
-if(func_0203761c()!=0||!func_02044268()||M2C_FIELD(func_02044268(),u8 *,0x15)!=2||(func_02038f6c()!=5&&func_02038f6c()!=6))return 0;
-if(M2C_FIELD(func_02044268(),s32 *,0x1a0)==10){
-p=func_02044268();M2C_FIELD(p,u8 *,0x16)=M2C_FIELD(func_02044268(),u8 *,0xd);
+if(func_0203761c()!=0||!GetConnection()||M2C_FIELD(GetConnection(),u8 *,0x15)!=2||(func_02038f6c()!=5&&func_02038f6c()!=6))return 0;
+if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==10){
+p=GetConnection();M2C_FIELD(p,u8 *,0x16)=M2C_FIELD(GetConnection(),u8 *,0xd);
 func_0203e410();if(callback)callback(arg);
 }else{
-M2C_FIELD(func_02044268(),void (**)(s32),0x47c)=callback;
-M2C_FIELD(func_02044268(),s32 *,0x480)=arg;
-M2C_FIELD(func_02044268(),u8 *,0x1ae)=1;
+M2C_FIELD(GetConnection(),void (**)(s32),0x47c)=callback;
+M2C_FIELD(GetConnection(),s32 *,0x480)=arg;
+M2C_FIELD(GetConnection(),u8 *,0x1ae)=1;
 }return 1;
 }
 

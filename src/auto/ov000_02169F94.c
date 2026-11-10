@@ -224,7 +224,7 @@ return M2C_FIELD(func_ov000_0216a38c(1,a),s32 *,0x14);
 }
 
 s32 func_ov000_0216a7fc(void) {
-    s32 func_ov000_0216aba8(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 EvalScriptConditions(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 *func_ov000_0216b0c8();
     s32 *temp_r0_2;
     s32 temp_r0;
@@ -233,7 +233,7 @@ s32 func_ov000_0216a7fc(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = *temp_r0_2;
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -247,7 +247,7 @@ s32 func_ov000_0216a834(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 4);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -261,7 +261,7 @@ s32 func_ov000_0216a86c(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 8);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -275,7 +275,7 @@ s32 func_ov000_0216a8a4(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0xC);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -286,7 +286,7 @@ extern s32 *gCurrentMap;
 s32 p= (s32)func_ov000_0216b0c8();s32 index;
 if(a==0)index=0;else index=(a-(*gCurrentMap+0x59a4))/14;
 if((index&0xc0)>>6)return 0;
-if(p && M2C_FIELD(p,s32 *,16))return func_ov000_0216aba8(M2C_FIELD(p,s32 *,16),a,0,0,1);return 0;
+if(p && M2C_FIELD(p,s32 *,16))return EvalScriptConditions(M2C_FIELD(p,s32 *,16),a,0,0,1);return 0;
 }
 
 s32 func_ov000_0216a97c(M2C_UNK arg0, M2C_UNK arg1) {
@@ -297,7 +297,7 @@ s32 func_ov000_0216a97c(M2C_UNK arg0, M2C_UNK arg1) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x14);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, arg0, arg1, 0, 1);
+            return EvalScriptConditions(temp_r0, arg0, arg1, 0, 1);
         }
     }
     return 0;
@@ -311,7 +311,7 @@ s32 func_ov000_0216a9bc(M2C_UNK arg0) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, arg0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, arg0, 0, 0, 1);
         }
     }
     return 0;
@@ -325,7 +325,7 @@ s32 func_ov000_0216aa04(M2C_UNK arg0, M2C_UNK arg1) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, arg0, 0, arg1, 1);
+            return EvalScriptConditions(temp_r0, arg0, 0, arg1, 1);
         }
     }
     return 0;
@@ -339,7 +339,7 @@ s32 func_ov000_0216aa44(M2C_UNK arg0, M2C_UNK arg1) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x1C);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, arg1, 0, arg0, 1);
+            return EvalScriptConditions(temp_r0, arg1, 0, arg0, 1);
         }
     }
     return 0;
@@ -353,7 +353,7 @@ s32 func_ov000_0216aa84(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x20);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -367,7 +367,7 @@ s32 func_ov000_0216aabc(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x24);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -381,7 +381,7 @@ s32 func_ov000_0216aaf4(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x28);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -395,7 +395,7 @@ s32 func_ov000_0216ab2c(void) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x2C);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, 1);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -409,7 +409,7 @@ s32 func_ov000_0216ab64(s32 arg0) {
     if (temp_r0_2 != NULL) {
         temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x30);
         if (temp_r0 != 0) {
-            return func_ov000_0216aba8(temp_r0, 0, 0, 0, arg0);
+            return EvalScriptConditions(temp_r0, 0, 0, 0, arg0);
         }
     }
     return 0;

@@ -21,10 +21,10 @@ static inline ScriptPlayer16 *ScriptPlayerAt16(s32 n) { extern s32 *gCurrentMap;
 #pragma optimization_level 0
 /* Evaluate a scripted condition list (8-byte commands, terminated by opcode 0x22):
  * return 1 when any condition/OR-group holds, otherwise 0. Failing groups are
- * skipped with func_ov000_0216b074; when applyEffects is set the action commands
+ * skipped with SkipToNextConditionGroup; when applyEffects is set the action commands
  * of a satisfied group are also executed. */
-s32 func_ov000_0216aba8(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
-u8 *func_ov000_0216b074(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 func_020a7cfc(); s32 func_020a32f4();
+s32 EvalScriptConditions(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
+u8 *SkipToNextConditionGroup(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 func_020a7cfc(); s32 func_020a32f4();
 extern s32 *gCurrentMap;
 s32 (*conditionFn)(); s32 matched=0; s32 turnMatches;
 while(cmd[0]!=34) {
@@ -34,38 +34,38 @@ turnMatches=0;
 if(*(u16*)(cmd+2)==65535 || (*(u16*)(cmd+2)==0 && M2C_FIELD(*gCurrentMap,u16*,0x52a2)==0) || *(u16*)(cmd+2)==ScriptTurn16()){
 if(cmd[1]==0 || cmd[1]==ScriptPhase16())turnMatches=1;
 }
-if(!turnMatches)cmd=func_ov000_0216b074(cmd);break;
+if(!turnMatches)cmd=SkipToNextConditionGroup(cmd);break;
 case 23:case 24:case 25:
-if(cmd[1]!=255 && func_02086b40(cmd[1])){cmd=func_ov000_0216b074(cmd);break;}
+if(cmd[1]!=255 && func_02086b40(cmd[1])){cmd=SkipToNextConditionGroup(cmd);break;}
 if(!applyEffects){matched=1;break;}
 if(*(s32*)(cmd+4)){func_02094808(*(s32*)(cmd+4));matched=1;}
 if(cmd[1]!=255)func_02086ae4(cmd[1],1);
 break;
-case 15:case 16:case 17:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=1)cmd=func_ov000_0216b074(cmd);break;
-case 18:case 19:case 20:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=0)cmd=func_ov000_0216b074(cmd);break;
+case 15:case 16:case 17:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=1)cmd=SkipToNextConditionGroup(cmd);break;
+case 18:case 19:case 20:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=0)cmd=SkipToNextConditionGroup(cmd);break;
 case 3:case 4:case 5:
-if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
+if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd);break;
 case 26:
-if(!unit || cmd[1]!=(((unit?((ScriptUnit16*)unit-ScriptUnitAt16(0)):0)>>6)+1))cmd=func_ov000_0216b074(cmd);break;
-case 27:if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
-case 28:if(!unit || !func_020a7cfc(unit))cmd=func_ov000_0216b074(cmd);break;
+if(!unit || cmd[1]!=(((unit?((ScriptUnit16*)unit-ScriptUnitAt16(0)):0)>>6)+1))cmd=SkipToNextConditionGroup(cmd);break;
+case 27:if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd);break;
+case 28:if(!unit || !func_020a7cfc(unit))cmd=SkipToNextConditionGroup(cmd);break;
 case 29:
-if(!target || cmd[1]!=(((target?((ScriptUnit16*)target-ScriptUnitAt16(0)):0)>>6)+1))cmd=func_ov000_0216b074(cmd);break;
-case 30:if(!target || ((ScriptUnit16*)target)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
-case 31:if(!target || !func_020a7cfc(target))cmd=func_ov000_0216b074(cmd);break;
-case 32:if(!func_020a32f4(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
-case 33:if(ScriptPlayerAt16(cmd[1])->flag)cmd=func_ov000_0216b074(cmd);break;
-case 12:case 13:case 14:if(cmd[1]!=teamId)cmd=func_ov000_0216b074(cmd);break;
-case 6:case 7:case 8:if(!func_02086b40(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
-case 9:case 10:case 11:if(func_02086b40(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
-case 22:cmd=func_ov000_0216b074(cmd);break;
+if(!target || cmd[1]!=(((target?((ScriptUnit16*)target-ScriptUnitAt16(0)):0)>>6)+1))cmd=SkipToNextConditionGroup(cmd);break;
+case 30:if(!target || ((ScriptUnit16*)target)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd);break;
+case 31:if(!target || !func_020a7cfc(target))cmd=SkipToNextConditionGroup(cmd);break;
+case 32:if(!func_020a32f4(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 33:if(ScriptPlayerAt16(cmd[1])->flag)cmd=SkipToNextConditionGroup(cmd);break;
+case 12:case 13:case 14:if(cmd[1]!=teamId)cmd=SkipToNextConditionGroup(cmd);break;
+case 6:case 7:case 8:if(!func_02086b40(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 9:case 10:case 11:if(func_02086b40(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 22:cmd=SkipToNextConditionGroup(cmd);break;
 default:break;
 }
 cmd+=8;
 }
 return matched;
 }
-u8 *func_ov000_0216b074(u8 *arg0) {
+u8 *SkipToNextConditionGroup(u8 *arg0) {
     while (*arg0 != 0x17 && *arg0 != 0x18 && *arg0 != 0x19) {
         if (*arg0 == 0x22) {
             return arg0;
@@ -85,7 +85,7 @@ void *func_ov000_0216b0c8(void) {
     }
 }
 #pragma optimization_level 0
-s32 func_ov000_0216b104(void) {  void *p=func_ov000_0216b0c8(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return func_ov000_0216aba8(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
+s32 func_ov000_0216b104(void) {  void *p=func_ov000_0216b0c8(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return EvalScriptConditions(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
 #pragma optimization_level reset
 s32 func_ov000_0216b154(void) {
     return 0;

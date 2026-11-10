@@ -388,8 +388,8 @@ void func_ov007_0221863c(void *arg0) {
     s8 *func_ov007_02217b64(u8);
     M2C_UNK func_ov007_02217be8(M2C_UNK, u8, u8);
     s32 func_ov007_02217c50(void *);
-    void *func_02082028(s32);
-    M2C_UNK func_02082040(void *);
+    void *MemAlloc(s32);
+    M2C_UNK MemFree(void *);
     M2C_UNK func_02087d18(M2C_UNK, s16, s16, s32, s32, s32, s32);
     void *func_020e34bc(s32);
     void func_02007f8c(void *, s32, s32);
@@ -416,17 +416,17 @@ void func_ov007_0221863c(void *arg0) {
     r4 = M2C_FIELD(arg0, void **, 0x58);
     if (r4 != NULL) {
         func_020e35cc(M2C_FIELD(r4, s32 *, 0x14));
-        func_02082040(r4);
+        MemFree(r4);
         M2C_FIELD(arg0, void **, 0x58) = NULL;
     }
     r4 = M2C_FIELD(arg0, void **, 0x5C);
     if (r4 != NULL) {
         func_020e35cc(M2C_FIELD(r4, s32 *, 0x14));
-        func_02082040(r4);
+        MemFree(r4);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
 
-    node0 = func_02082028(0x24);
+    node0 = MemAlloc(0x24);
     if (node0 != NULL) {
         void *buf;
         M2C_FIELD(node0, u16 *, 0x10) = 0x40;
@@ -447,7 +447,7 @@ void func_ov007_0221863c(void *arg0) {
     }
     M2C_FIELD(arg0, void **, 0x58) = node0;
 
-    node1 = func_02082028(0x24);
+    node1 = MemAlloc(0x24);
     if (node1 != NULL) {
         void *buf;
         s32 c = func_ov007_02217c50(arg0);
@@ -547,7 +547,7 @@ void func_ov007_0221863c(void *arg0) {
 }
 
 void func_ov007_02218a60(void *arg0) {
-    M2C_UNK func_02082040(void *);
+    M2C_UNK MemFree(void *);
     M2C_UNK func_020a40c0(u8);
     M2C_UNK func_020e35cc(s32);
     extern void **gCurrentMap;
@@ -557,13 +557,13 @@ void func_ov007_02218a60(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, void **, 0x58);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
-        func_02082040(temp_r4);
+        MemFree(temp_r4);
     }
     M2C_FIELD(arg0, void **, 0x58) = NULL;
     temp_r4_2 = M2C_FIELD(arg0, void **, 0x5C);
     if (temp_r4_2 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4_2, s32 *, 0x14));
-        func_02082040(temp_r4_2);
+        MemFree(temp_r4_2);
     }
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
     func_020a40c0(M2C_FIELD(*gCurrentMap, u8 *, 0x5158));

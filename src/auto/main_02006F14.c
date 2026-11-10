@@ -42,16 +42,16 @@ func_02005154(0,func_02006f9c,0);
 }
 #pragma optimization_level reset
 u64 func_02007004(void) {
-    u32 func_0200751c(void);
-    void func_02007530(u32);
+    u32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(u32);
     extern u16 data_0212dfb4;
     volatile u16 timer;
     volatile u64 count;
-    u32 state = func_0200751c();
+    u32 state = OS_DisableInterrupts();
     timer = *(volatile u16 *)0x04000100;
     count = M2C_FIELD(&data_0212dfb4, u64 *, 8) & 0x0000FFFFFFFFFFFFULL;
     if ((*(volatile u32 *)0x04000214 & 8) && !(timer & 0x8000)) count++;
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
     return (count << 16) | timer;
 }
 
@@ -158,28 +158,28 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     }
 }
 void func_020072cc(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
- M2C_UNK func_02007958(); u32 func_0200751c(void); void func_02007530(u32); void func_020071a0();
+ M2C_UNK func_02007958(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_020071a0();
  u32 state; u64 time;
  if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)func_02007958();
- state=func_0200751c();
+ state=OS_DisableInterrupts();
  M2C_FIELD(arg0,s32 *,0x1c)=0;
  M2C_FIELD(arg0,s32 *,0x20)=0;
  M2C_FIELD(arg0,volatile s32 *,0)=arg3;
  M2C_FIELD(arg0,s32 *,4)=arg4;
  time=delay+func_02007004();
- func_020071a0(arg0,(u32)time,(u32)(time>>32)); func_02007530(state);
+ func_020071a0(arg0,(u32)time,(u32)(time>>32)); OS_RestoreInterrupts(state);
 }
 #pragma opt_common_subs reset
 void func_02007338(void *arg0) {
- u32 func_0200751c(void);
- void func_02007530(u32);
+ u32 OS_DisableInterrupts(void);
+ void OS_RestoreInterrupts(u32);
  extern u16 data_0212dfc4;
  u32 state;
  void *prev;
  void *next;
- state = func_0200751c();
+ state = OS_DisableInterrupts();
  if (M2C_FIELD(arg0,s32 *,0) == 0) {
- func_02007530(state);
+ OS_RestoreInterrupts(state);
  return;
  }
  prev = M2C_FIELD(arg0,void **,0x18);
@@ -197,7 +197,7 @@ void func_02007338(void *arg0) {
  M2C_FIELD(arg0,s32 *,0) = 0;
  M2C_FIELD(arg0,s32 *,0x1C) = 0;
  M2C_FIELD(arg0,s32 *,0x20) = 0;
- func_02007530(state);
+ OS_RestoreInterrupts(state);
 }
 
 #pragma interworking on
@@ -367,8 +367,8 @@ void func_02007668(s32 arg0) {
 }
 
 void func_02007724(M2C_UNK arg0) {
-    M2C_UNK func_02008048(s32, M2C_UNK, M2C_UNK);
-    func_02008048(0x027FFCF4, arg0, 6);
+    M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);
+    MI_CpuCopy8(0x027FFCF4, arg0, 6);
 }
 
 void func_02007740(void *arg0) {
@@ -397,13 +397,13 @@ void func_020077cc(void) {
 }
 
 void func_02007800(s32 arg0,s32 arg1) {
- u32 func_0200751c(void);
- void func_02007530(u32);
+ u32 OS_DisableInterrupts(void);
+ void OS_RestoreInterrupts(u32);
  s32 func_020077c4(u32);
  s32 bits;
  u32 state;
  s32 index,mask;
- state=func_0200751c();
+ state=OS_DisableInterrupts();
  bits=arg0 & data_0212dfe8 & 0x1ff;
 
  loop:
@@ -414,7 +414,7 @@ void func_02007800(s32 arg0,s32 arg1) {
  if(arg1==data_0212dfec[index]) {data_0212dfec[index]=0; data_0212dfe8 &= mask;}
  goto loop;
  }
- func_02007530(state);
+ OS_RestoreInterrupts(state);
 }
 
 void func_02007888(void *out_arg) {
@@ -459,8 +459,8 @@ void func_02007888(void *out_arg) {
 }
 
 s32 func_02007958(void) {
- u32 func_0200751c(void); void func_02007968(void);
- for (;;) { func_0200751c(); func_02007968(); }
+ u32 OS_DisableInterrupts(void); void func_02007968(void);
+ for (;;) { OS_DisableInterrupts(); func_02007968(); }
 }
 
 void func_02007974(s8 arg0) {
@@ -468,15 +468,15 @@ void func_02007974(s8 arg0) {
 }
 
 void func_02007984(s32 a,s32 b,u32 c,u32 n) {
- u32 func_0200751c(void); void func_02007530(u32); void func_01ff8554(s32,u32,s32,u32);
+ u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_01ff8554(s32,u32,s32,u32);
  volatile u32 *p; u32 state;
  if (!n) return;
  p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
  while (*p & 0x80000000) {}
- state=func_0200751c();
+ state=OS_DisableInterrupts();
  *(volatile u32 *)(0x040000E0+a*4)=c;
  func_01ff8554(a,0x040000E0+a*4,b,(n>>2)|0x85000000);
- func_02007530(state);
+ OS_RestoreInterrupts(state);
  while (*p & 0x80000000) {}
 }
 
@@ -505,8 +505,8 @@ void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
 void func_02007ae0(s32 arg0, M2C_UNK arg1, s32 arg2, u32 arg3, void (*arg4)(s32), s32 arg5) {
     void func_02007c3c(s32);
     void func_0200510c(s32, s32, s32);
-    u32 func_0200751c(void);
-    void func_02007530(u32);
+    u32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(u32);
     void func_01ff8530(s32, s32, M2C_UNK, s32);
     u32 state;
 
@@ -520,16 +520,16 @@ void func_02007ae0(s32 arg0, M2C_UNK arg1, s32 arg2, u32 arg3, void (*arg4)(s32)
     func_02007c3c(arg0);
     if (arg4 != 0) {
         func_0200510c(arg0, (s32)arg4, arg5);
-        state = func_0200751c();
+        state = OS_DisableInterrupts();
         M2C_FIELD((arg0 * 4 + 0x04000000), s32 *, 0xE0) = arg2;
         func_01ff8530(arg0, arg0 * 4 + 0x040000E0, arg1, (arg3 >> 2) | 0xC5000000);
-        func_02007530(state);
+        OS_RestoreInterrupts(state);
         return;
     }
-    state = func_0200751c();
+    state = OS_DisableInterrupts();
     M2C_FIELD((arg0 * 4 + 0x04000000), s32 *, 0xE0) = arg2;
     func_01ff8530(arg0, arg0 * 4 + 0x040000E0, arg1, (arg3 >> 2) | 0x85000000);
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
 }
 
 void func_02007ba4(s32 a, s32 b, s32 c, s32 d, void (*e)(s32), s32 f) {
@@ -554,20 +554,20 @@ void func_02007ba4(s32 a, s32 b, s32 c, s32 d, void (*e)(s32), s32 f) {
 }
 
 void func_02007c3c(s32 a) {
- u32 func_0200751c(void); void func_02007530(u32);
- u32 state=func_0200751c();
+ u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32);
+ u32 state=OS_DisableInterrupts();
  while (*(volatile u32 *)(0x040000B0 + (a*3+2)*4) & 0x80000000) {}
  if (a==0) {
  volatile u32 *p=(volatile u32 *)(0x040000B0+a*12);
  p[0]=0;p[1]=0;p[2]=0x81400001;
  }
- func_02007530(state);
+ OS_RestoreInterrupts(state);
 }
 
 void func_02007ca4(s32 a) {
-    u32 func_0200751c(void);
-    void func_02007530(u32);
-    u32 state = func_0200751c();
+    u32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(u32);
+    u32 state = OS_DisableInterrupts();
     volatile u16 *p = (volatile u16 *)(0x040000B0 + (a * 6 + 5) * 2);
     *p = *p & ~0x3A00;
     *p = *p & ~0x8000;
@@ -579,7 +579,7 @@ void func_02007ca4(s32 a) {
         q[1] = 0;
         q[2] = 0x81400001;
     }
-    func_02007530(state);
+    OS_RestoreInterrupts(state);
 }
 
 void func_02007d20(s32 arg0, s32 arg1) {

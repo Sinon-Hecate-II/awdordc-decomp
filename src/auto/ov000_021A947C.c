@@ -279,7 +279,7 @@ u8 func_ov000_021a9d8c(u32 arg0,s32 arg1) {
  return 0;
 }
 
-u32 func_ov000_021a9e08(s32 x,s32 y,s32 a,s32 b){
+u32 CellMoveScore(s32 x,s32 y,s32 a,s32 b){
 extern void **gCurrentMap;
 extern u8 data_ov000_021e0a58[],data_ov000_021b5c0f[],data_ov000_021dfb04[],data_ov000_021dfcf0[],data_ov000_021dfa60[],data_ov000_021dfba8[];
 void *base=*gCurrentMap;
@@ -305,7 +305,7 @@ return result;
 }
 
 s32 func_ov000_021a9f30(void) {
- extern void **gCurrentMap; extern u16 data_02168f14; extern u16 data_ov000_021aeef4[]; extern s32 (**data_ov000_021df57c)(s32,s32);
+ extern void **gCurrentMap; extern u16 data_02168f14; extern u16 gPlayerUnitIdBase[]; extern s32 (**data_ov000_021df57c)(s32,s32);
  s32 func_020d2c18(u16); s32 func_020a3150(u16); void *func_020a32f4(u16); s32 func_020a7cfc(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 func_020d2d50(s32,s32); s32 func_020a7bbc(s32); s32 func_ov000_021aa2c4(s32,s32);
  s32 kind; u8 *best; s32 i; u8 *p; s32 offset;
  func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
@@ -315,8 +315,8 @@ s32 func_ov000_021a9f30(void) {
  if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  if(func_020a32f4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  kind=func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
- i=data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
- if(i<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){
+ i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
+ if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){
  offset=i*14; do {
  p=(u8 *)*gCurrentMap+0x59a4+offset;
  if(((u32)(p[0]<<26)>>26)==0)goto next;
@@ -334,7 +334,7 @@ s32 func_ov000_021a9f30(void) {
  if(best && func_020a7bbc((u32)(best[0]<<26)>>26)>=func_020a7bbc((u32)(p[0]<<26)>>26))continue;
  best=p;
  next:;
- }while((++i,offset+=14,i)<data_ov000_021aeef4[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
+ }while((++i,offset+=14,i)<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
  }
  if(best){if(!best)return 0;return ((s32)best-(s32)((u8 *)*gCurrentMap+0x59a4))/14;}
  return 0;

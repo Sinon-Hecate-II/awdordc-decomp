@@ -2,11 +2,11 @@
 #include "common.h"
 extern const u8 data_020eae6d[267];
 extern const u8 data_020eae68[5];
-extern const u16 data_020ead40[128];
+extern const u16 gCharClassTable[128];
 extern const u8 data_020eacc0[128];
 extern float data_021002e8;
 extern double data_021002f0;
-static inline s32 ScanFloatClass(s32 ch,s32 mask){return (ch<0||ch>=128)?0:data_020ead40[ch]&mask;}
+static inline s32 ScanFloatClass(s32 ch,s32 mask){return (ch<0||ch>=128)?0:gCharClassTable[ch]&mask;}
 static inline s32 ScanFloatUpper(s32 ch){return (ch<0||ch>=128)?ch:data_020eacc0[ch];}
 typedef struct { char text[9]; } ScanWord9;
 typedef struct { char text[5]; } ScanWord5;

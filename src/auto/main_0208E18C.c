@@ -209,8 +209,8 @@ void func_0208ed40(void) {
 }
 
 s32 func_0208ed44(s32 arg0) {
-    M2C_UNK func_02082040();
-    func_02082040();
+    M2C_UNK MemFree();
+    MemFree();
     return arg0;
 }
 
@@ -267,7 +267,7 @@ void *func_0208ee1c(void *arg0) {
     return arg0;
 }
 #pragma opt_propagation reset
-void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); func_02082040(arg0); return arg0; }
+void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); MemFree(arg0); return arg0; }
 
 #pragma opt_propagation reset
 void func_0208ee60(void *arg0, u32 arg1, s32 arg2) {

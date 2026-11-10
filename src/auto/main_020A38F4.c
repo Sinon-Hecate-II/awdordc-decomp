@@ -305,9 +305,9 @@ void func_020a44e8(void) {
 }
 
 void func_020a44fc(M2C_UNK arg0, s32 arg1) {
-    M2C_UNK func_02008048(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32, M2C_UNK);
     extern s32 *gCurrentMap;
-    func_02008048(arg0, *gCurrentMap + 0x58A4 + (arg1 * 8), 8);
+    MI_CpuCopy8(arg0, *gCurrentMap + 0x58A4 + (arg1 * 8), 8);
 }
 
 void func_020a4528(void) {

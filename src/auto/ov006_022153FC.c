@@ -5,7 +5,7 @@ extern s8 data_ov006_02218345[];
 extern s8 data_ov006_02218e10[];
 void func_ov006_022153fc(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
-    void *func_02082028(M2C_UNK);
+    void *MemAlloc(M2C_UNK);
     void *func_020b2eb8(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK func_020e4c64();
     typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
@@ -28,7 +28,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov006_02218610;
         M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
-        temp_r0_2 = func_02082028(0x18);
+        temp_r0_2 = MemAlloc(0x18);
         if (temp_r0_2 != NULL) {
             M2C_FIELD(temp_r0_2, s32 *, 0) = 0;
             M2C_FIELD(temp_r0_2, s32 *, 4) = 0;
@@ -38,7 +38,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_2, s32 *, 0x14) = 0;
         }
         M2C_FIELD(temp_r0, void **, 0x3C) = temp_r0_2;
-        temp_r0_3 = func_02082028(0x2C);
+        temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
             M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
@@ -57,7 +57,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_3, s8 *, 0x29) = 0;
         }
         M2C_FIELD(temp_r0, void **, 0x40) = temp_r0_3;
-        temp_r0_4 = func_02082028(0x2C);
+        temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
             M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
@@ -76,7 +76,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_4, s8 *, 0x29) = 0;
         }
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_4;
-        temp_r0_5 = func_02082028(0x12);
+        temp_r0_5 = MemAlloc(0x12);
         if (temp_r0_5 != NULL) {
             M2C_FIELD(temp_r0_5, s8 *, 0) = 4;
             M2C_FIELD(temp_r0_5, s8 *, 1) = 0;
@@ -91,7 +91,7 @@ void func_ov006_022153fc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_5, u16 *, 2) = (u16) M2C_FIELD(temp_r0_5, u16 *, 4);
         }
         M2C_FIELD(temp_r0, void **, 0x48) = temp_r0_5;
-        var_r0 = func_02082028(0x3C);
+        var_r0 = MemAlloc(0x3C);
         if (var_r0 != NULL) {
             var_r0 = func_020b2eb8(var_r0, 7, 1, 0xEF, 0x10, 6, 0x18);
         }
@@ -104,22 +104,22 @@ void func_ov006_022153fc(M2C_UNK arg0) {
 
 void *func_ov006_02215620(void *p){
 extern M2C_UNK data_ov006_02218610;
-M2C_UNK func_01ffa574(M2C_UNK);M2C_UNK func_02082040(M2C_UNK);M2C_UNK func_020e4ca0();
+M2C_UNK func_01ffa574(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK func_020e4ca0();
 s32 *arr;void *q=0;
 M2C_FIELD(p,void **,0)=&data_ov006_02218610;
 arr=M2C_FIELD(p,s32 **,0x3c);
-if(arr){func_01ffa574(arr[0]);func_01ffa574(arr[1]);func_01ffa574(arr[2]);func_01ffa574(arr[3]);func_01ffa574(arr[4]);func_01ffa574(arr[5]);func_02082040((s32)arr);}
+if(arr){func_01ffa574(arr[0]);func_01ffa574(arr[1]);func_01ffa574(arr[2]);func_01ffa574(arr[3]);func_01ffa574(arr[4]);func_01ffa574(arr[5]);MemFree((s32)arr);}
 q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 q=M2C_FIELD(p,void **,0x44);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-q=M2C_FIELD(p,void **,0x48);if(q)func_02082040((s32)q);
+q=M2C_FIELD(p,void **,0x48);if(q)MemFree((s32)q);
 q=M2C_FIELD(p,void **,0x4c);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-func_020e4ca0();func_02082040((s32)p);return (void*)p;
+func_020e4ca0();MemFree((s32)p);return (void*)p;
 }
 
 #pragma scheduling off
 void *func_ov006_022156e4(void *arg0) {
     M2C_UNK func_01ffa574(M2C_UNK);
-    M2C_UNK func_02082040(M2C_UNK);
+    M2C_UNK MemFree(M2C_UNK);
     M2C_UNK func_020e4ca0();
     extern M2C_UNK data_ov006_02218610;
     void *p = arg0;
@@ -133,7 +133,7 @@ void *func_ov006_022156e4(void *arg0) {
         func_01ffa574(M2C_FIELD(p, void **, 0xC));
         func_01ffa574(M2C_FIELD(p, void **, 0x10));
         func_01ffa574(M2C_FIELD(p, void **, 0x14));
-        func_02082040(p);
+        MemFree(p);
         p = arg0;
     }
     p = M2C_FIELD(arg0, void **, 0x40);
@@ -146,7 +146,7 @@ void *func_ov006_022156e4(void *arg0) {
     }
     p = M2C_FIELD(arg0, void **, 0x48);
     if (p != 0) {
-        func_02082040(p);
+        MemFree(p);
     }
     p = M2C_FIELD(arg0, void **, 0x4C);
     if (p != 0) {
@@ -564,7 +564,7 @@ done:
 }
 
 M2C_UNK func_ov006_02215ee4(void *arg0){
-void func_01ffa8c4(void *,s32);void func_02008048(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 func_0208fe30(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
+void func_01ffa8c4(void *,s32);void MI_CpuCopy8(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 func_0208fe30(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 buf[3];u64 b,a;void *p=M2C_FIELD(arg0,void **,0x10);void *q;u16 **old;
 if(M2C_FIELD(arg0,u8 *,0)==12){
@@ -573,7 +573,7 @@ func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47f0();func_01ffa8c4(p,3);func_0
 a=func_020c53e4(0);b=func_020c54ac(data_ov006_02218e10);
 if((a==0||b==0||a!=b)&&func_020c5474(b)){
 func_020c5424(buf,b);if(!func_020c54e8(buf)){
-func_02008048(data_ov006_02218e10,M2C_FIELD(p,s32 *,0x34),13);
+MI_CpuCopy8(data_ov006_02218e10,M2C_FIELD(p,s32 *,0x34),13);
 q=M2C_FIELD(p,void **,0x48);M2C_FIELD(q,s16 *,14)=0;M2C_FIELD(q,s16 *,16)=256;M2C_FIELD(q,s16 *,12)=12;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
 func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47d0();func_01ffa8c4(p,3);func_0208fe30(0x1000e);return;}
 func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000003);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,5);func_0208fe30(0x1001d);return;

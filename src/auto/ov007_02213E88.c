@@ -333,13 +333,13 @@ void func_ov007_022145bc(void) {
 }
 
 void func_ov007_022145f8(void) {
-extern s32 *gCurrentMap;extern u16 data_ov000_021aeef4[];
+extern s32 *gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 func_020a7310(void *);
 s32 i; MapUnit145F8 *p;
 p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
 if(p->flags==3)p->flags=0;
 else {
-for(i=data_ov000_021aeef4[func_020a7310(p)]+1;i<data_ov000_021aeef4[func_020a7310(M2C_FIELD(*gCurrentMap,void **,0x52d0))]+51;i++){
+for(i=gPlayerUnitIdBase[func_020a7310(p)]+1;i<gPlayerUnitIdBase[func_020a7310(M2C_FIELD(*gCurrentMap,void **,0x52d0))]+51;i++){
 p=(MapUnit145F8 *)((u8 *)*gCurrentMap+0x59a4)+i;
 if(p->kind)p->flags=0;
 }

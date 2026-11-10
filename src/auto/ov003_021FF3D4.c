@@ -3,7 +3,7 @@
 
 void func_ov003_021ff3d4(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    void *func_02082028(s32);
+    void *MemAlloc(s32);
     M2C_UNK func_020a9188(void *, M2C_UNK);
     M2C_UNK func_020a92bc(void *, M2C_UNK);
     extern M2C_UNK data_02102174;
@@ -59,7 +59,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
         M2C_FIELD(temp_r0, s32 *, 0x68) = 0;
         M2C_FIELD(temp_r0, s32 *, 0x70) = 0;
-        temp_r0_2 = func_02082028(0x187C);
+        temp_r0_2 = MemAlloc(0x187C);
         if (temp_r0_2 != NULL) {
             M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_ov003_022100d4;
             M2C_FIELD(temp_r0_2, M2C_UNK **, 4) = &data_ov003_0220f47c;
@@ -87,7 +87,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_2, s16 *, 0x26) = 8;
         }
         M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_2;
-        temp_r0_3 = func_02082028(0x2C);
+        temp_r0_3 = MemAlloc(0x2C);
         if (temp_r0_3 != NULL) {
             M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_02129870;
             M2C_FIELD(temp_r0_3, s8 *, 4) = 0;
@@ -112,7 +112,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r2_2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r2_2, u8 *, 0x20) & ~0xE0) | 0x40);
         temp_r2_3 = M2C_FIELD(temp_r0, void **, 0x50);
         M2C_FIELD(temp_r2_3, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_3, u8 *, 0x28) & ~0xE0) | 0x20);
-        temp_r0_4 = func_02082028(0x2C);
+        temp_r0_4 = MemAlloc(0x2C);
         if (temp_r0_4 != NULL) {
             M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &data_02129870;
             M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
@@ -139,7 +139,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r5_3, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r5_3, u8 *, 0x28) & ~0xE0);
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s16 *, 0x12) = 0x270;
         M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x54), s8 *, 0x21) = 9;
-        temp_r0_5 = func_02082028(8);
+        temp_r0_5 = MemAlloc(8);
         if (temp_r0_5 != NULL) {
             M2C_FIELD(temp_r0_5, s32 *, 0) = 0;
             M2C_FIELD(temp_r0_5, s32 *, 4) = 0;
@@ -165,7 +165,7 @@ void func_ov003_021ff7ac(void) {
 /* Destructor: releases all owned sub-objects and frees this object. */
 void *func_ov003_021ff7d4(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -184,7 +184,7 @@ void *func_ov003_021ff7d4(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -199,9 +199,9 @@ void *func_ov003_021ff7d4(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -214,13 +214,13 @@ void *func_ov003_021ff7d4(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();
@@ -230,7 +230,7 @@ void *func_ov003_021ff7d4(void *obj) {
 /* Destructor: releases all owned sub-objects and frees this object. */
 void *func_ov003_021ff9dc(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -249,7 +249,7 @@ void *func_ov003_021ff9dc(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -264,9 +264,9 @@ void *func_ov003_021ff9dc(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -279,24 +279,24 @@ void *func_ov003_021ff9dc(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();
-    func_02082040(obj);
+    MemFree(obj);
     return obj;
 }
 
 /* Releases all owned sub-objects but does not free this object (vtable reset to base first). */
 void *func_ov003_021ffbec(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -315,7 +315,7 @@ void *func_ov003_021ffbec(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -330,9 +330,9 @@ void *func_ov003_021ffbec(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -345,13 +345,13 @@ void *func_ov003_021ffbec(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();
@@ -361,7 +361,7 @@ void *func_ov003_021ffbec(void *obj) {
 /* Destructor: releases all owned sub-objects and frees this object. */
 void *func_ov003_021ffdf4(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -380,7 +380,7 @@ void *func_ov003_021ffdf4(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -395,9 +395,9 @@ void *func_ov003_021ffdf4(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -410,23 +410,23 @@ void *func_ov003_021ffdf4(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();
-    func_02082040(obj);
+    MemFree(obj);
     return obj;
 }
 
 void *func_ov003_02200004(void *obj) {
     void func_01ffa574(void *);
-    void func_02082040(void *);
+    void MemFree(void *);
     void func_020c127c(void);
     void func_020e35cc(s32);
     void func_ov003_021f140c(s32);
@@ -441,7 +441,7 @@ void *func_ov003_02200004(void *obj) {
     sub = M2C_FIELD(obj, void **, 0x70);
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
-        func_02082040(sub);
+        MemFree(sub);
     }
     child = M2C_FIELD(obj, void **, 68);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
@@ -456,9 +456,9 @@ void *func_ov003_02200004(void *obj) {
     child = M2C_FIELD(obj, void **, 96);
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
     child = M2C_FIELD(obj, void **, 88);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     child = M2C_FIELD(obj, void **, 100);
-    if (child != NULL) func_02082040(child);
+    if (child != NULL) MemFree(child);
     sub = M2C_FIELD(obj, void **, 104);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
@@ -471,13 +471,13 @@ void *func_ov003_02200004(void *obj) {
         if (M2C_FIELD(sub, void **, 28) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 28));
         if (M2C_FIELD(sub, void **, 32) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 32));
         if (M2C_FIELD(sub, void **, 36) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 36));
-        func_02082040(sub);
+        MemFree(sub);
     }
     sub = M2C_FIELD(obj, void **, 108);
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) func_01ffa574(M2C_FIELD(sub, void **, 4));
-        func_02082040(sub);
+        MemFree(sub);
     }
     func_ov003_021f140c(4);
     func_020c127c();

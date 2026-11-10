@@ -75,8 +75,8 @@ func_ov000_0216aabc kind:function(arm,size=0x38) addr:0x0216aabc
 func_ov000_0216aaf4 kind:function(arm,size=0x38) addr:0x0216aaf4
 func_ov000_0216ab2c kind:function(arm,size=0x38) addr:0x0216ab2c
 func_ov000_0216ab64 kind:function(arm,size=0x44) addr:0x0216ab64
-func_ov000_0216aba8 kind:function(arm,size=0x4cc) addr:0x0216aba8
-func_ov000_0216b074 kind:function(arm,size=0x54) addr:0x0216b074
+EvalScriptConditions kind:function(arm,size=0x4cc) addr:0x0216aba8
+SkipToNextConditionGroup kind:function(arm,size=0x54) addr:0x0216b074
 func_ov000_0216b0c8 kind:function(arm,size=0x3c) addr:0x0216b0c8
 func_ov000_0216b104 kind:function(arm,size=0x50) addr:0x0216b104
 func_ov000_0216b154 kind:function(arm,size=0x8) addr:0x0216b154
@@ -235,7 +235,7 @@ func_ov000_021755b4 kind:function(arm,size=0x18c) addr:0x021755b4
 func_ov000_02175740 kind:function(arm,size=0x138) addr:0x02175740
 func_ov000_02175878 kind:function(arm,size=0x140) addr:0x02175878
 func_ov000_021759b8 kind:function(arm,size=0x68) addr:0x021759b8
-func_ov000_02175a20 kind:function(arm,size=0x4b8) addr:0x02175a20
+Ov000Info_DrawUnitPanel kind:function(arm,size=0x4b8) addr:0x02175a20
 func_ov000_02175ed8 kind:function(arm,size=0xd8) addr:0x02175ed8
 func_ov000_02175fb0 kind:function(arm,size=0xa2c) addr:0x02175fb0
 func_ov000_021769dc kind:function(arm,size=0x30) addr:0x021769dc
@@ -422,9 +422,9 @@ func_ov000_0218a230 kind:function(arm,size=0x64) addr:0x0218a230
 func_ov000_0218a294 kind:function(arm,size=0x64) addr:0x0218a294
 func_ov000_0218a2f8 kind:function(arm,size=0x104) addr:0x0218a2f8
 func_ov000_0218a3fc kind:function(arm,size=0x124) addr:0x0218a3fc
-func_ov000_0218a520 kind:function(arm,size=0x278) addr:0x0218a520
-func_ov000_0218a798 kind:function(arm,size=0x214) addr:0x0218a798
-func_ov000_0218a9ac kind:function(arm,size=0x4ac) addr:0x0218a9ac
+IsValidMoveCell kind:function(arm,size=0x278) addr:0x0218a520
+DestinationScore kind:function(arm,size=0x214) addr:0x0218a798
+PlanMoveDestination kind:function(arm,size=0x4ac) addr:0x0218a9ac
 func_ov000_0218ae58 kind:function(arm,size=0x1d4) addr:0x0218ae58
 func_ov000_0218b02c kind:function(arm,size=0xac) addr:0x0218b02c
 func_ov000_0218b0d8 kind:function(arm,size=0xaf8) addr:0x0218b0d8
@@ -501,7 +501,7 @@ func_ov000_02197814 kind:function(arm,size=0x178) addr:0x02197814
 func_ov000_0219798c kind:function(arm,size=0x4) addr:0x0219798c
 func_ov000_02197990 kind:function(arm,size=0xfc) addr:0x02197990
 func_ov000_02197a8c kind:function(arm,size=0xdbc) addr:0x02197a8c
-func_ov000_02198848 kind:function(arm,size=0x3c0) addr:0x02198848
+AddPlayerThreatInfluence kind:function(arm,size=0x3c0) addr:0x02198848
 func_ov000_02198c08 kind:function(arm,size=0x58) addr:0x02198c08
 func_ov000_02198c60 kind:function(arm,size=0x144) addr:0x02198c60
 func_ov000_02198da4 kind:function(arm,size=0x1bc) addr:0x02198da4
@@ -514,7 +514,7 @@ func_ov000_02199614 kind:function(arm,size=0x2dc) addr:0x02199614
 func_ov000_021998f0 kind:function(arm,size=0x8c) addr:0x021998f0
 func_ov000_0219997c kind:function(arm,size=0x364) addr:0x0219997c
 func_ov000_02199ce0 kind:function(arm,size=0x94) addr:0x02199ce0
-func_ov000_02199d74 kind:function(arm,size=0x1c4) addr:0x02199d74
+SetMapCursor kind:function(arm,size=0x1c4) addr:0x02199d74
 func_ov000_02199f38 kind:function(arm,size=0x18) addr:0x02199f38
 func_ov000_02199f50 kind:function(arm,size=0x114) addr:0x02199f50
 func_ov000_0219a064 kind:function(arm,size=0x7c) addr:0x0219a064
@@ -762,7 +762,7 @@ func_ov000_021a9bc0 kind:function(arm,size=0x68) addr:0x021a9bc0
 func_ov000_021a9c28 kind:function(arm,size=0x68) addr:0x021a9c28
 func_ov000_021a9c90 kind:function(arm,size=0xfc) addr:0x021a9c90
 func_ov000_021a9d8c kind:function(arm,size=0x7c) addr:0x021a9d8c
-func_ov000_021a9e08 kind:function(arm,size=0x128) addr:0x021a9e08
+CellMoveScore kind:function(arm,size=0x128) addr:0x021a9e08
 func_ov000_021a9f30 kind:function(arm,size=0x2e4) addr:0x021a9f30
 func_ov000_021aa214 kind:function(arm,size=0xb0) addr:0x021aa214
 func_ov000_021aa2c4 kind:function(arm,size=0xac) addr:0x021aa2c4
@@ -1132,7 +1132,7 @@ data_ov000_021aec98 kind:data(any) addr:0x021aec98
 data_ov000_021aeee0 kind:data(any) addr:0x021aeee0
 data_ov000_021aeee4 kind:data(any) addr:0x021aeee4
 data_ov000_021aeee8 kind:data(any) addr:0x021aeee8
-data_ov000_021aeef4 kind:data(any) addr:0x021aeef4
+gPlayerUnitIdBase kind:data(any) addr:0x021aeef4
 data_ov000_021aef00 kind:data(any) addr:0x021aef00
 data_ov000_021aef04 kind:data(any) addr:0x021aef04
 data_ov000_021aef0c kind:data(any) addr:0x021aef0c
@@ -1963,7 +1963,7 @@ data_ov000_021df5e0 kind:bss addr:0x021df5e0
 data_ov000_021df5e4 kind:bss addr:0x021df5e4
 data_ov000_021df5ec kind:bss addr:0x021df5ec
 data_ov000_021df5f0 kind:bss addr:0x021df5f0
-data_ov000_021df5fc kind:bss addr:0x021df5fc
+gOv000InfoWindow kind:bss addr:0x021df5fc
 data_ov000_021df600 kind:bss addr:0x021df600
 data_ov000_021df604 kind:bss addr:0x021df604
 data_ov000_021df644 kind:bss addr:0x021df644

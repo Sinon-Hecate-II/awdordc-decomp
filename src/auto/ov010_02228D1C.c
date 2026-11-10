@@ -421,14 +421,14 @@ void func_ov010_02229580(void *arg0) {
 }
 
 void *func_ov010_0222959c(void *arg0, u8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6) {
-    M2C_UNK func_02008048(s32, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     M2C_FIELD(arg0,s32 *,0) = 0x5F57464D;
     M2C_FIELD(arg0,s8 *,4) = arg1;
     M2C_FIELD(arg0,u8 *,5) = (M2C_FIELD(arg0,u8 *,5) & ~0xF) | (arg2 & 0xF);
     M2C_FIELD(arg0,u8 *,5) = (M2C_FIELD(arg0,u8 *,5) & ~0xF0) | ((arg3 & 0xF) << 4);
     M2C_FIELD(arg0,u16 *,6) = arg6;
     M2C_FIELD(arg0,s32 *,8) = arg5;
-    if (arg4 != 0 && arg5 != 0) func_02008048(arg4,(s32)arg0 + 0xC,arg5);
+    if (arg4 != 0 && arg5 != 0) MI_CpuCopy8(arg4,(s32)arg0 + 0xC,arg5);
     return arg0;
 }
 
@@ -661,14 +661,14 @@ s32 func_ov010_02229b48(s32 arg0) {
 }
 
 s32 func_ov010_02229b5c(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02008048(s32, s32, M2C_UNK);
+    M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = func_ov010_02229b00();
     if (temp_r0 == 0) {
         return 0;
     }
-    func_02008048(temp_r0 + 0x2C, arg0, arg1);
+    MI_CpuCopy8(temp_r0 + 0x2C, arg0, arg1);
     return arg0;
 }
 
@@ -685,7 +685,7 @@ s32 func_ov010_02229b90(void) {
 
 s32 func_ov010_02229ba8(s32 a,s32 b,s32 c) {
 s32 p=func_ov010_02229b0c(a);
-if(!p)return 0;func_02008048(p+0x2c,b,c);return b;
+if(!p)return 0;MI_CpuCopy8(p+0x2c,b,c);return b;
 }
 
 s32 func_ov010_02229bdc(void) {
