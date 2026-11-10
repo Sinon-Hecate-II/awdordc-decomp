@@ -490,7 +490,7 @@ void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
 
 #pragma opt_common_subs off
 M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
- s32 func_02068c34(s32);
+ s32 StringLength(s32);
  s32 func_020e34bc(s32);
  void func_02068c50(s32,s32);
  void func_02068d68(s32,s32);
@@ -498,11 +498,11 @@ M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  register s32 p; register s32 len;
  if(!arg1)return;
  if(!M2C_FIELD(arg0,s32 *,0x64)) {
- M2C_FIELD(arg0,s32 *,0x64)=func_020e34bc(func_02068c34(arg1)+1);
+ M2C_FIELD(arg0,s32 *,0x64)=func_020e34bc(StringLength(arg1)+1);
  func_02068c50(M2C_FIELD(arg0,s32 *,0x64),arg1);
  } else {
- len=func_02068c34(M2C_FIELD(arg0,s32 *,0x64));
- p=func_020e34bc(len+func_02068c34(arg1)+1);
+ len=StringLength(M2C_FIELD(arg0,s32 *,0x64));
+ p=func_020e34bc(len+StringLength(arg1)+1);
  func_02068c50(p,M2C_FIELD(arg0,s32 *,0x64));func_02068d68(p,arg1);
  func_02089bdc(arg0);M2C_FIELD(arg0,s32 *,0x64)=p;
  }

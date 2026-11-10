@@ -14,7 +14,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
     s32 AppendUpdateUiField(s32 *, M2C_UNK *, s8 *);
     s32 AppendInfoIntField(s32 *, s32, s32);
     M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
-    s32 func_02068c34(s8 *);
+    s32 StringLength(s8 *);
     s32 func_0206ad38(s8 *);
     extern M2C_UNK data_020fe72c;
     extern M2C_UNK data_020fe734;
@@ -163,7 +163,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         }
         break;
     case 9:
-        if (func_02068c34(arg2) != 2) {
+        if (StringLength(arg2) != 2) {
             func_02058644(arg0, &data_020fe944);
             return 2;
         }
@@ -318,8 +318,8 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
 }
 #pragma opt_propagation reset
 s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
-    M2C_UNK func_0204fed0(void **, void *, s32);
+    M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
+    M2C_UNK gpiAppendIntField(void **, void *, s32);
     extern M2C_UNK data_020fe710;
     extern M2C_UNK data_020fe84c;
     extern M2C_UNK data_020fe990;
@@ -327,13 +327,13 @@ s32 func_02053c04(void **arg0, s32 arg1, s32 arg2) {
     void *temp_r4;
 
     temp_r4 = *arg0;
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fe990);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fe710);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, arg1);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fe9a8);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, arg2);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fe84c);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe990);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe710);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg1);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe9a8);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg2);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fe84c);
     return 0;
 }
 

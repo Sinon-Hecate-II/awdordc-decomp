@@ -353,7 +353,7 @@ u8 func_ov000_02188a8c(s32 arg0, s32 arg1) {
 #pragma opt_condition off
 #pragma opt_strength_reduction off
 s32 func_ov000_02188b50(s32 arg0, s32 arg1) {
-    s32 func_ov000_021a98a8(s32);
+    s32 IsFootUnitKind(s32);
     u8 func_ov000_021883c0(s32, s32);
     u8 func_ov000_02188538(s32, s32);
     u8 func_ov000_02188a8c(s32, s32);
@@ -368,7 +368,7 @@ s32 func_ov000_02188b50(s32 arg0, s32 arg1) {
     table = (u8 *)base + 0x59A4;
     entry = (u8 *)table + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
 
-    if (func_ov000_021a98a8(((u32)(entry[0] << 26) >> 26)) != 0 || ((u32)(entry[0] << 26) >> 26) == 0x0D) {
+    if (IsFootUnitKind(((u32)(entry[0] << 26) >> 26)) != 0 || ((u32)(entry[0] << 26) >> 26) == 0x0D) {
         fp = (s32 (*)(s32, s32))func_ov000_021883c0;
     } else {
         ln = ((u32)(entry[0x0B] << 28) >> 28);

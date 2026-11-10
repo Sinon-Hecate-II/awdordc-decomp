@@ -16,7 +16,7 @@ s32 func_ov000_021a947c(s32,s32,s32,s32);
 s32 func_020a600c(u16);
 s32 func_ov000_021a96f4(s32,s32,s32);
 s32 GetAttackDamage(s32,s32,s32);
-s32 func_ov000_021a98a8(s32);
+s32 IsFootUnitKind(s32);
 s32 func_020d27ec(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
 void func_01ffc2e8(void *);
@@ -65,7 +65,7 @@ kind=(*(UnitKind1955 **)(map+0x52d0))->kind;
 if(kind==23&&((UnitKind1955 *)unit)->kind==22)cost>>=2;
 if(kind==16){if(data_ov000_021b5bfc[((UnitKind1955 *)unit)->kind*112+19]&16)value<<=1;else value>>=1;}
 if(value<20){
-if(!func_ov000_021a98a8(kind))continue;
+if(!IsFootUnitKind(kind))continue;
 if(low<=threshold){if(cost>threshold||cost<low)continue;}else if(cost>low)continue;
 low=cost;posLow[0]=unit[1];posLow[1]=unit[2];
 }else if(value<50){

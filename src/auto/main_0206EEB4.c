@@ -237,11 +237,11 @@ void *func_0206fa14(void *arg0) {
 
 #pragma use_frame_pointer on
 void func_0206fa3c(StringStorage *self,u32 capacity) {
-u32 func_02068c34(void *);void *MemAllocArray(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
+u32 StringLength(void *);void *MemAllocArray(u32);void func_02068c50(void *,void *);void func_0207465c(void *,void *,void *);void func_02070068(void);void func_020651c4(void *,void *,u32);void *MemAlloc(u32);
 u8 context[20]; u32 exception[3]; u8 zero; int large; u32 size,oldcap; u8 *buffer; int allocated; u8 *old;
 if(capacity>0x7ffffffeU) {
  exception[0]=(u32)data_02100888;
- {void *p=MemAllocArray(func_02068c34(data_02100894)+1);zero=0;func_0206f8c4(exception+1,(u32)p,*(u32 *)&zero);}
+ {void *p=MemAllocArray(StringLength(data_02100894)+1);zero=0;func_0206f8c4(exception+1,(u32)p,*(u32 *)&zero);}
  func_02068c50((void *)exception[1],data_02100894);
  exception[0]=(u32)data_02100874;
  func_0207465c(data_021008b8,exception,func_02070068);

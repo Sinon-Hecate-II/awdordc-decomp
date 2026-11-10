@@ -447,7 +447,7 @@ s32 func_0202a7f8(void *arg0, M2C_UNK arg1, void *arg2) {
     s32 func_0200b184(void *, M2C_UNK, s32);
     M2C_UNK func_0200b118(void *);
     s32 func_0200b2bc(void *, void *, s32, s32, s32, s32, s32, s32);
-    s32 func_02068c34(M2C_UNK);
+    s32 StringLength(M2C_UNK);
     void *var_r7;
     void *var_r8;
     void *var_r9;
@@ -489,7 +489,7 @@ s32 func_0202a7f8(void *arg0, M2C_UNK arg1, void *arg2) {
     M2C_FIELD(arg0, void **, 0x60) = var_r7;
     temp_r4 = var_r9 + 8;
     M2C_FIELD(arg0, void **, 0x64) = temp_r4;
-    if (func_0200b184(arg0, arg1, func_02068c34(arg1)) == 0) {
+    if (func_0200b184(arg0, arg1, StringLength(arg1)) == 0) {
         return 0;
     }
     if (func_0200b2bc(arg0, temp_r4, (var_r7 + 0xC) - temp_r4, M2C_FIELD(var_r7, s32 *, 4) - 0xC, (var_r8 + 8) - temp_r4, M2C_FIELD(var_r8, s32 *, 4) - 8, 0, 0) != 0) {

@@ -66,15 +66,15 @@ s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
     M2C_FIELD(temp_r4, s32 *, 0x214) = arg1;
     func_020580fc(temp_r4 + 0x218, sp100, 0x100);
     func_020580fc(temp_r4 + 0x318, sp0, 0x100);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb28);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, arg1);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fda94);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb34);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, sp100);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdb44);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, sp0);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdabc);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdb28);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, arg1);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fda94);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdb34);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, sp100);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdb44);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, sp0);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdabc);
     return 0;
 }
 #pragma opt_common_subs reset
@@ -255,8 +255,8 @@ s32 func_0204ec8c(void **arg0, s32 arg1) {
 }
 
 s32 func_0204ee40(void **arg0, void *arg1) {
-    M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
-    M2C_UNK func_0204fed0(void **, void *, s32);
+    M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
+    M2C_UNK gpiAppendIntField(void **, void *, s32);
     extern M2C_UNK data_020fdd94;
     extern M2C_UNK data_020fdda0;
     extern M2C_UNK data_020fddac;
@@ -265,14 +265,14 @@ s32 func_0204ee40(void **arg0, void *arg1) {
     void *temp_r4;
 
     temp_r4 = *arg0;
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdd94);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fdda0);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fddac);
-    func_0204fed0(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, s32 *, 0));
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fddbc);
-    func_0204fea0(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, M2C_UNK **, 0x10));
-    func_0204fea0(arg0, temp_r4 + 0x1F4, &data_020fddc4);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdd94);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fdda0);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(temp_r4, s32 *, 0x198));
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddac);
+    gpiAppendIntField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, s32 *, 0));
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddbc);
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, M2C_FIELD(arg1, M2C_UNK **, 0x10));
+    gpiAppendStringField(arg0, temp_r4 + 0x1F4, &data_020fddc4);
     return 0;
 }
 

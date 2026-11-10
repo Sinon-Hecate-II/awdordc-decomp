@@ -167,7 +167,7 @@ s32 func_02045458(s32 a, s32 b) {
     s32 func_0203761c(void);
     s32 func_020323b0(void *);
     s32 func_020323f4(void *);
-    u32 func_02068c34(void *);
+    u32 StringLength(void *);
     void *func_02068d18(void *, void *, s32);
     s32 func_0206abd8(void *, s32, s32);
     s32 func_0204800c(void *, void *, s32, s32, s32, s32);
@@ -190,7 +190,7 @@ s32 func_02045458(s32 a, s32 b) {
     if (func_020323b0((void *)b) == 0 || func_020323f4((void *)b) == 0) {
         return 6;
     }
-    if (func_02068c34((void *)a) >= 0x54u) {
+    if (StringLength((void *)a) >= 0x54u) {
         return 4;
     }
     func_02068d18(text, (void *)a, 0x14);

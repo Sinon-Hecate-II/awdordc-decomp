@@ -1,13 +1,16 @@
 /* 14 functions from 0x020CD8A8 to 0x020CE738 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 #pragma push
 #pragma opt_propagation off
-/* Recomputes the per-player team-color/relation byte (map+0x67C3) for the
- * current turn and picks the two team indices (map+0x52B8/0x52BA) that decide
- * which players share map data. The active player's value comes from a lookup
- * on its kind; its allies inherit it, and when a second human team exists that
- * team is given the opposite value. */
+/* At the start of a turn, decide which side (team) each player fights for
+ * (PLAYER_SIDE_OFF). All sides are cleared first; the active player's side comes
+ * from gSideByControlKind looked up by its control kind (a CPU is team A, a human
+ * team A with the human flag), and its same-army allies inherit it. Once the
+ * remaining humans all share one team the other armies get the opposite side.
+ * Finally the two team slots (MAP_TEAM_A_PLAYER / MAP_TEAM_B_PLAYER) are reset to
+ * players 0 and 1, the players whose army lists the two teams share. */
 void SetupPlayerTeams(void) {
     s32 GetPlayerRelation(u16, u16);
     s32 PlayerHasHumanAlly(s32);
@@ -39,27 +42,27 @@ void SetupPlayerTeams(void) {
     void *mapStore;
 
     clearSlot = 1;
-    slotOffset = 0x8C;
-    M2C_FIELD(*gCurrentMap, s8 *, 0x67C3) = 0;
+    slotOffset = MAP_PLAYER_STRIDE;
+    M2C_FIELD(*gCurrentMap, s8 *, PLAYER_SIDE_OFF) = 0;
     do {
         clearSlot += 1;
-        M2C_FIELD((*gCurrentMap + slotOffset), s8 *, 0x67C3) = 0;
-        slotOffset += 0x8C;
+        M2C_FIELD((*gCurrentMap + slotOffset), s8 *, PLAYER_SIDE_OFF) = 0;
+        slotOffset += MAP_PLAYER_STRIDE;
     } while (clearSlot < 5);
     mapActive = *gCurrentMap;
-    teamColor = gSideByControlKind[M2C_FIELD(((M2C_FIELD(mapActive, u16 *, 0x52A4) * 0x8C) + (s32) mapActive), u8 *, 0x67C2)];
-    if ((teamColor == 1) && (PlayerHasHumanAlly(M2C_FIELD(mapActive,u16 *,0x52A4)) != 0)) {
+    teamColor = gSideByControlKind[M2C_FIELD(((M2C_FIELD(mapActive, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE) + (s32) mapActive), u8 *, PLAYER_CONTROL_OFF)];
+    if ((teamColor == 1) && (PlayerHasHumanAlly(M2C_FIELD(mapActive,u16 *,MAP_CURRENT_PLAYER)) != 0)) {
         teamColor |= 2;
     }
     mapStore = *gCurrentMap;
-    activeIndex=M2C_FIELD(mapStore,u16 *,0x52A4);
-    M2C_FIELD(((activeIndex * 0x8C) + (s32) mapStore), s8 *, 0x67C3) = (s8) teamColor;
-    SetAllyTeamColor(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), teamColor);
-    if (HumansShareOneTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    activeIndex=M2C_FIELD(mapStore,u16 *,MAP_CURRENT_PLAYER);
+    M2C_FIELD(((activeIndex * MAP_PLAYER_STRIDE) + (s32) mapStore), s8 *, PLAYER_SIDE_OFF) = (s8) teamColor;
+    SetAllyTeamColor(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), teamColor);
+    if (HumansShareOneTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         opposingColor = teamColor ^ 3;
         k = 1;
         do {
-            activePlayer = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
+            activePlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
             otherIndex = activePlayer + k;
             if (otherIndex >= 5) {
                 otherIndex -= 4;
@@ -67,7 +70,7 @@ void SetupPlayerTeams(void) {
             opponent = (u16) otherIndex;
             if ((GetPlayerRelation(activePlayer, opponent) == 1) && (IsPlayerHuman(opponent) != 0)) {
                 nextIndex = opponent + 1;
-                M2C_FIELD(((opponent * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) opposingColor;
+                M2C_FIELD(((opponent * MAP_PLAYER_STRIDE) + (s32) *gCurrentMap), u8 *, PLAYER_SIDE_OFF) = (u8) opposingColor;
                 m = 1;
                 do {
                     teammate = nextIndex;
@@ -75,7 +78,7 @@ void SetupPlayerTeams(void) {
                         teammate = nextIndex - 4;
                     }
                     if (GetPlayerRelation(opponent, (u16) teammate) == 2) {
-                        M2C_FIELD(((teammate * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) opposingColor;
+                        M2C_FIELD(((teammate * MAP_PLAYER_STRIDE) + (s32) *gCurrentMap), u8 *, PLAYER_SIDE_OFF) = (u8) opposingColor;
                     }
                     m += 1;
                     nextIndex += 1;
@@ -88,19 +91,19 @@ void SetupPlayerTeams(void) {
 loop_19:
     if (scanSlot == 5) {
         mapLast = *gCurrentMap;
-        activeRecord = (M2C_FIELD(mapLast, u16 *, 0x52A4) * 0x8C) + (s32) (mapLast + 0x67A4);
-        M2C_FIELD(activeRecord, u8 *, 0x1F) = (u8) (M2C_FIELD(activeRecord, u8 *, 0x1F) | 2);
+        activeRecord = (M2C_FIELD(mapLast, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE) + (s32) (mapLast + MAP_PLAYER_STATES);
+        M2C_FIELD(activeRecord, u8 *, PLAYER_REC_SIDE) = (u8) (M2C_FIELD(activeRecord, u8 *, PLAYER_REC_SIDE) | 2);
         mapFinal = *gCurrentMap;
-        activeIndex2 = M2C_FIELD(mapFinal, u16 *, 0x52A4);
-        SetAllyTeamColor(activeIndex2, M2C_FIELD(((activeIndex2 * 0x8C) + (s32) mapFinal), u8 *, 0x67C3));
-    } else if (((IsPlayerActive(scanSlot) == 0) || (IsPlayerHuman(scanSlot) == 0)) && ((IsPlayerActive(scanSlot) == 0) || !(M2C_FIELD(((scanSlot * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) & 2))) {
+        activeIndex2 = M2C_FIELD(mapFinal, u16 *, MAP_CURRENT_PLAYER);
+        SetAllyTeamColor(activeIndex2, M2C_FIELD(((activeIndex2 * MAP_PLAYER_STRIDE) + (s32) mapFinal), u8 *, PLAYER_SIDE_OFF));
+    } else if (((IsPlayerActive(scanSlot) == 0) || (IsPlayerHuman(scanSlot) == 0)) && ((IsPlayerActive(scanSlot) == 0) || !(M2C_FIELD(((scanSlot * MAP_PLAYER_STRIDE) + (s32) *gCurrentMap), u8 *, PLAYER_SIDE_OFF) & 2))) {
         scanSlot += 1;
         if ((u32) scanSlot < 6U) {
             goto loop_19;
         }
     }
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B8) = 0;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52BA) = 1;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_TEAM_A_PLAYER) = 0;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_TEAM_B_PLAYER) = 1;
 }
 #pragma pop
 void SetAllyTeamColor(s32 a, s32 b) {

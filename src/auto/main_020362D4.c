@@ -91,10 +91,10 @@ s32 func_020364f4(void) {
 }
 
 void func_0203667c(void) {
- s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 func_02068c34(M2C_UNK *);
+ s32 func_02021688(s32,M2C_UNK *,s32); M2C_UNK func_02021750(s32,s32); M2C_UNK func_0202175c(s32); s32 StringLength(M2C_UNK *);
  extern M2C_UNK data_020fb968; extern M2C_UNK data_0213d138;
  s32 x;
- x=func_02068c34(&data_020fb968);
+ x=StringLength(&data_020fb968);
  x=func_02021688(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0),&data_020fb968,x);
  if(x==-56) return;
  if(x<=0) {
@@ -136,11 +136,11 @@ func_0202175c(M2C_FIELD(M2C_FIELD(&data_0213d138,void **,16),s32 *,0));
 }
 
 s32 func_02036860(const char *arg0){
-s32 func_02068c34(M2C_UNK *);s32 func_0200f0ac(void *,void *);s64 func_0200f7e0(void *,void *);void func_02068c50(void *,const char *);s32 func_0206ad38();s32 func_02068d98(void *,void *);
+s32 StringLength(M2C_UNK *);s32 func_0200f0ac(void *,void *);s64 func_0200f7e0(void *,void *);void func_02068c50(void *,const char *);s32 func_0206ad38();s32 func_02068d98(void *,void *);
 extern M2C_UNK data_020fba00,data_0213d1b4;extern s32 data_0213e9f4;extern char *data_020fb9d0[];
 s32 date[4],time[3];char buf[32];s64 now,t;s32 i,n;
-n=func_02068c34((M2C_UNK *)arg0);
-if(n!=func_02068c34(&data_020fba00)||arg0[7]!=32||arg0[11]!=32||arg0[16]!=32||arg0[19]!=58||arg0[22]!=58||arg0[25]!=32)goto fail;
+n=StringLength((M2C_UNK *)arg0);
+if(n!=StringLength(&data_020fba00)||arg0[7]!=32||arg0[11]!=32||arg0[16]!=32||arg0[19]!=58||arg0[22]!=58||arg0[25]!=32)goto fail;
 if(func_0200f0ac(date,time))goto fail;
 now=func_0200f7e0(date,time);if(now==-1)goto fail;
 func_02068c50(buf,arg0);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;

@@ -280,66 +280,69 @@ void func_020b7c4c(void) {
     PlaySoundEffect(0xE5);
 }
 
+/* Per-frame fade-out for a 3D sprite: wipes the sprite's rows away over the last
+   eleventh of the task and restores them in the first twelfth, playing the fade
+   sound effects, then updates the bank's OAM attribute and row split. */
 void func_020b7c5c(void *arg0) {
  s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 PlaySoundEffect(s32);
  extern void *gCur3DSpriteEngine;
- s32 a=(u16)((FadeTask*)arg0)->duration;
- s32 b=(u16)((FadeTask*)arg0)->frame;
- s32 r6=16;
- s32 q;
-     u16 *volatile sp2C;
-    u16 *volatile sp28;
-    u16 *volatile sp24;
-    u16 *volatile sp20;
-    u16 *volatile sp1C;
-    u16 *volatile sp18;
-    u16 *volatile sp14;
-    u16 *volatile sp10;
-    u16 *volatile sp0C;
-    u16 *volatile sp08;
-    u16 *volatile sp04;
+ s32 duration=(u16)((FadeTask*)arg0)->duration;
+ s32 frame=(u16)((FadeTask*)arg0)->frame;
+ s32 rows=16;
+ s32 step;
+     u16 *volatile attrClear1;
+    u16 *volatile attrClear2;
+    u16 *volatile attrClear4;
+    u16 *volatile attrClear8;
+    u16 *volatile attrClear10;
+    u16 *volatile attrSet100;
+    u16 *volatile attrSet200;
+    u16 *volatile attrSet400;
+    u16 *volatile attrSet800;
+    u16 *volatile attrSet1000;
+    u16 *volatile attrSetSplit;
 
 
  if(func_0208c1dc(arg0))PlaySoundEffect(0xe6);
- if(b==(a*9)/12)PlaySoundEffect(0xe7);
- q=a/12;
- if(b<q)r6=EaseInterpolate(0,0,16,b,q);
- if(b>(a*11)/12)r6=EaseInterpolate(0,r6,0,b-(a*11)/12,q);
-     sp2C = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp2C = (u16)(*sp2C & ~0x1);
+ if(frame==(duration*9)/12)PlaySoundEffect(0xe7);
+ step=duration/12;
+ if(frame<step)rows=EaseInterpolate(0,0,16,frame,step);
+ if(frame>(duration*11)/12)rows=EaseInterpolate(0,rows,0,frame-(duration*11)/12,step);
+     attrClear1 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrClear1 = (u16)(*attrClear1 & ~0x1);
 
-    sp28 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp28 = (u16)(*sp28 & ~0x2);
+    attrClear2 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrClear2 = (u16)(*attrClear2 & ~0x2);
 
-    sp24 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp24 = (u16)(*sp24 & ~0x4);
+    attrClear4 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrClear4 = (u16)(*attrClear4 & ~0x4);
 
-    sp20 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp20 = (u16)(*sp20 & ~0x8);
+    attrClear8 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrClear8 = (u16)(*attrClear8 & ~0x8);
 
-    sp1C = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp1C = (u16)(*sp1C & ~0x10);
+    attrClear10 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrClear10 = (u16)(*attrClear10 & ~0x10);
 
-    sp18 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp18 = (u16)(*sp18 | 0x100);
+    attrSet100 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSet100 = (u16)(*attrSet100 | 0x100);
 
-    sp14 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp14 = (u16)(*sp14 | 0x200);
+    attrSet200 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSet200 = (u16)(*attrSet200 | 0x200);
 
-    sp10 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp10 = (u16)(*sp10 | 0x400);
+    attrSet400 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSet400 = (u16)(*attrSet400 | 0x400);
 
-    sp0C = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp0C = (u16)(*sp0C | 0x800);
+    attrSet800 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSet800 = (u16)(*attrSet800 | 0x800);
 
-    sp08 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp08 = (u16)(*sp08 | 0x1000);
+    attrSet1000 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSet1000 = (u16)(*attrSet1000 | 0x1000);
 
-    sp04 = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
-    *sp04 = (*sp04 & ~0xc0) | 0x40;
+    attrSetSplit = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
+    *attrSetSplit = (*attrSetSplit & ~0xc0) | 0x40;
 
-    *(u8 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x51) = (u8)r6;
-    *(u8 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x52) = (u8)(0x10 - r6);
+    *(u8 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x51) = (u8)rows;
+    *(u8 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x52) = (u8)(0x10 - rows);
 }
 
 #pragma cplusplus on

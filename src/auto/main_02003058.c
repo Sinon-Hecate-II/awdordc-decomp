@@ -17,34 +17,34 @@ void func_02003f34(void *arg0) {
     }
 }
 
-void func_02003058(s32 a){extern M2C_UNK data_0212dbc4;M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,6))&~a;M2C_FIELD(&data_0212dbc4,u16 *,6)=a;switch(a){case 0:break;case 12:*(volatile u8 *)0x4000243=0x8a;*(volatile u8 *)0x4000242=0x82;break;case 4:*(volatile u8 *)0x4000242=0x82;break;case 8:*(volatile u8 *)0x4000243=0x82;break;}func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));}
+void func_02003058(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,6))&~a;M2C_FIELD(&gVramBankState,u16 *,6)=a;switch(a){case 0:break;case 12:*(volatile u8 *)0x4000243=0x8a;*(volatile u8 *)0x4000242=0x82;break;case 4:*(volatile u8 *)0x4000242=0x82;break;case 8:*(volatile u8 *)0x4000243=0x82;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
 
-void func_02003124(s32 a){extern M2C_UNK data_0212dbc4;M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,18))&~a;M2C_FIELD(&data_0212dbc4,u16 *,18)=a;switch(a){case 0:break;case 4:*(volatile u8 *)0x4000242=0x84;break;case 0x180:*(volatile u8 *)0x4000249=0x81;case 0x80:*(volatile u8 *)0x4000248=0x81;break;}func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));}
+void func_02003124(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,18))&~a;M2C_FIELD(&gVramBankState,u16 *,18)=a;switch(a){case 0:break;case 4:*(volatile u8 *)0x4000242=0x84;break;case 0x180:*(volatile u8 *)0x4000249=0x81;case 0x80:*(volatile u8 *)0x4000248=0x81;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
 
-void func_020031cc(s32 a){extern M2C_UNK data_0212dbc4;M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,20))&~a;M2C_FIELD(&data_0212dbc4,u16 *,20)=a;switch(a){case 0:break;case 8:*(volatile u8 *)0x4000243=0x84;break;case 0x100:*(volatile u8 *)0x4000249=0x82;break;}func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));}
+void func_020031cc(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,20))&~a;M2C_FIELD(&gVramBankState,u16 *,20)=a;switch(a){case 0:break;case 8:*(volatile u8 *)0x4000243=0x84;break;case 0x100:*(volatile u8 *)0x4000249=0x82;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
 
 void func_0200323c(u32 a) {
-extern M2C_UNK data_0212dbc4;
-M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,22))&~a;
-M2C_FIELD(&data_0212dbc4,u16 *,22)=a;
+extern M2C_UNK gVramBankState;
+M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,22))&~a;
+M2C_FIELD(&gVramBankState,u16 *,22)=a;
 if(a!=0){if(a==128){*(volatile u32 *)0x04001000|=0x40000000;*(volatile u8 *)0x04000248=130;}}else {*(volatile u32 *)0x04001000&=~0x40000000;}
-func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
 }
 
 void func_020032bc(u32 a) {
-extern M2C_UNK data_0212dbc4;
-M2C_FIELD(&data_0212dbc4,u16 *,0)=(M2C_FIELD(&data_0212dbc4,u16 *,0)|M2C_FIELD(&data_0212dbc4,u16 *,24))&~a;
-M2C_FIELD(&data_0212dbc4,u16 *,24)=a;
+extern M2C_UNK gVramBankState;
+M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,24))&~a;
+M2C_FIELD(&gVramBankState,u16 *,24)=a;
 if(a!=0){if(a==256){*(volatile u32 *)0x04001000|=0x80000000;*(volatile u8 *)0x04000249=131;}}else {*(volatile u32 *)0x04001000&=~0x80000000;}
-func_02002620(M2C_FIELD(&data_0212dbc4,u16 *,0));
+GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
 }
 
 s32 func_0200333c(M2C_UNK *a) {
-    extern M2C_UNK data_0212dbc4;
+    extern M2C_UNK gVramBankState;
     u16 v = M2C_FIELD(a, u16 *, 0);
     M2C_FIELD(a, u16 *, 0) = 0;
-    M2C_FIELD(&data_0212dbc4, u16 *, 0) = (u16)(M2C_FIELD(&data_0212dbc4, u16 *, 0) | v);
-    func_02002620((s32)v);
+    M2C_FIELD(&gVramBankState, u16 *, 0) = (u16)(M2C_FIELD(&gVramBankState, u16 *, 0) | v);
+    GX_ReleaseBanks((s32)v);
     return (s32)v;
 }
 
@@ -155,8 +155,8 @@ void func_020035e4(void) {
 }
 
 void func_020035f8(void) {
-    extern M2C_UNK data_0212dbc4;
-    func_02003458(&data_0212dbc4);
+    extern M2C_UNK gVramBankState;
+    func_02003458(&gVramBankState);
 }
 
 void func_0200360c(void) {

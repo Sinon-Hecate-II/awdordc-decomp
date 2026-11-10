@@ -73,12 +73,12 @@ int func_ov000_0218b0d8(void *arg0) {
  map=*gCurrentMap;
  if(!M2C_FIELD(map,s16 *,0x6ed6)) continue;
  if(damage>=repairHP) { if(damage<hp || repairHP>hp) continue; } else if(repairHP<hp) continue;
- if(((AiPlayerB0 *)(map+0x67a4))[M2C_FIELD(map,u16 *,0x52a4)].mode==3 && damage<hp && !func_ov000_021a98a8(M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0)) {
+ if(((AiPlayerB0 *)(map+0x67a4))[M2C_FIELD(map,u16 *,0x52a4)].mode==3 && damage<hp && !IsFootUnitKind(M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0)) {
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if(map[n+0x2840]>=data_ov000_021df644[1] || map[n+0x2d48]>=data_ov000_021df644[2]) continue;
  }
  map=*gCurrentMap;
- if(((AiPlayerB0 *)(map+0x67a4))[M2C_FIELD(map,u16 *,0x52a4)].mode==2 && func_ov000_021a9c90(bestX,bestY)>=2 && !func_ov000_021a98a8(M2C_FIELD(*gCurrentMap,UnkStruct_ov000_021A860C **,0x52d0)->unk0)) {
+ if(((AiPlayerB0 *)(map+0x67a4))[M2C_FIELD(map,u16 *,0x52a4)].mode==2 && func_ov000_021a9c90(bestX,bestY)>=2 && !IsFootUnitKind(M2C_FIELD(*gCurrentMap,UnkStruct_ov000_021A860C **,0x52d0)->unk0)) {
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if(map[n+0x2d48]>=data_ov000_021df644[2]) continue;
  }

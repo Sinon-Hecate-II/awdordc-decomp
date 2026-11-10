@@ -534,7 +534,7 @@ state=*gCurrentMap;
 switch((u32)(M2C_FIELD(M2C_FIELD(state,void **,0x52d0),u8 *,11)<<28)>>28) {
 case 0: func_ov000_021804d4(); return;
 case 1: func_ov000_0218053c(); return;
-case 2: if(func_ov000_021a9c28()==1)func_ov000_021805a0(); else func_ov000_021804d4(); return;
+case 2: if(HasEnemyPlayer()==1)func_ov000_021805a0(); else func_ov000_021804d4(); return;
 case 3: func_ov000_02180608(); return;
 case 4: func_ov000_02180670(); return;
 case 5: if(func_020d243c(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else func_ov000_02180670(); return;
@@ -569,7 +569,7 @@ void func_ov000_02181470(void) {
     switch ((u32)(M2C_FIELD(M2C_FIELD(state, void **, 0x52D0), u8 *, 11) << 28) >> 28) {
     case 0: func_ov000_02180934(); return;
     case 1: func_ov000_021809b0(); return;
-    case 2: if (func_ov000_021a9c28() == 1) func_ov000_02180a28(); else func_ov000_02180934(); return;
+    case 2: if (HasEnemyPlayer() == 1) func_ov000_02180a28(); else func_ov000_02180934(); return;
     case 3: func_ov000_02180aa4(); return;
     case 4: func_ov000_02180b20(); return;
     case 5: if (func_020d243c(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else func_ov000_02180b20(); return;

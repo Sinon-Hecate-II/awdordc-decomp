@@ -209,9 +209,9 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  extern u8 data_ov000_021b5c0f[];
  extern void *data_ov000_021df57c;
  s32 v,t; s32 func_0207c8ec(s32,s32);
- if(a==3 && func_ov000_021a98a8(b))a=1;
- if(a==6 && func_ov000_021a98a8(b))a=7;
- if(func_ov000_021a98a8(b))v=GetAttackDamage(a,b,1)>>1;
+ if(a==3 && IsFootUnitKind(b))a=1;
+ if(a==6 && IsFootUnitKind(b))a=7;
+ if(IsFootUnitKind(b))v=GetAttackDamage(a,b,1)>>1;
  else if(b==22){t=GetAttackDamage(a,b,1);v=func_ov000_021a96f4(a,b,1)+(t>>1);}
  else v=GetAttackDamage(a,b,1);
  if((data_ov000_021b5c0f[a*112]&7) && (data_ov000_021b5c0f[b*112]&32))v>>=1;

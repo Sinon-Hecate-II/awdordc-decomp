@@ -14,7 +14,7 @@ static inline s32 Min851B8(s32 a,s32 b) { return b<a?b:a; }
 static inline u8 Terrain851B8(s32 x,s32 y) { extern void **gCurrentMap;u8 *p=*gCurrentMap;return M2C_FIELD(p+x+M2C_FIELD(p+y*2,u16 *,0x3758),u8 *,0x1420); }
 
 #pragma opt_common_subs off
-int func_ov000_021a98a8(int);
+int IsFootUnitKind(int);
 int func_ov000_021a97d0(int,int);
 int func_ov000_021a9820(int,int);
 int func_ov000_021a98e4(int);
@@ -35,7 +35,7 @@ u8 *bounds;
 u8 *unit;
 if(M2C_FIELD(map+M2C_FIELD(map,u16 *,0x52a4)*140,u8 *,0x67ce)==3)return;
 selected=M2C_FIELD(map,u8 **,0x52d0);
-if(func_ov000_021a98a8((u32)(selected[0]<<26)>>26))return;
+if(IsFootUnitKind((u32)(selected[0]<<26)>>26))return;
 field=c*112;
 if(data_ov000_021b5c0f[field]&7) {
 selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
@@ -66,7 +66,7 @@ n=M2C_FIELD(map+row+x,u8 *,0x508);
 if(n==0)goto next_unit;
 unit=map+0x59a4 + n*14;
 if(unit==M2C_FIELD(map,u8 **,0x52d0))goto next_unit;
-if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26))goto next_unit;
+if(IsFootUnitKind((u32)(unit[0]<<26)>>26))goto next_unit;
 if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
 if(attrs[19]&7){
 kind=(u32)(unit[0]<<26)>>26;

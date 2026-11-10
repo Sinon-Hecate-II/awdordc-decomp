@@ -318,13 +318,13 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
 void func_020deb44(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
 
 void func_020deb74(M2C_UNK arg0) {
-    M2C_UNK func_020ddfd8(M2C_UNK, M2C_UNK);
-    func_020ddfd8(arg0, 0);
+    M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
+    SetupUnitPreviewScene(arg0, 0);
 }
 
 void func_020deb84(M2C_UNK arg0) {
-    M2C_UNK func_020ddfd8(M2C_UNK, M2C_UNK);
-    func_020ddfd8(arg0, 1);
+    M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
+    SetupUnitPreviewScene(arg0, 1);
 }
 
 void func_020deb94(M2C_UNK arg0) {

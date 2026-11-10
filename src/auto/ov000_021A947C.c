@@ -125,7 +125,7 @@ s32 func_ov000_021a9860(s32 a,s32 b) {
  return func_020ba924(a,b);
 }
 
-s32 func_ov000_021a98a8(s32 a) {
+s32 IsFootUnitKind(s32 a) {
  switch(a){case 1:case 2:case 3:return 1;default:return 0;}
 }
 
@@ -236,7 +236,7 @@ s32 func_ov000_021a9bc0(void *arg0) {
  return 1;
 }
 
-s32 func_ov000_021a9c28(void) {
+s32 HasEnemyPlayer(void) {
  extern void **gCurrentMap;
  s32 IsPlayerActive(s32);
  s32 IsSameTeam(u16,s32);

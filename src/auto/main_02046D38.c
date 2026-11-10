@@ -141,7 +141,7 @@ void func_020473a8(void) {
 void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
     void MemCopy(void *, const void *, s32);
     void func_02076658(u8 *, u8 *, s32);
-    s32 func_02068c34(const void *);
+    s32 StringLength(const void *);
     s32 func_02068eac(void *, void *, s32);
     void func_020376d8(s32, s32, s32);
     extern M2C_UNK data_020fca58;
@@ -174,7 +174,7 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
                 M2C_FIELD(&data_020fca58,u8 **,0x58)[i*2] = digits.bytes[target[i] >>4];
                 M2C_FIELD(&data_020fca58,u8 **,0x58)[i*2+1] = digits.bytes[target[i]&15];
             }
-            len = func_02068c34(data_020fcac0);
+            len = StringLength(data_020fcac0);
             *(M2C_FIELD(&data_020fca58,u8 **,0x58)-len) = 0x26;
             M2C_FIELD(&data_020fca58, s32 *, 0x4) = 6;
             goto free_input;
@@ -186,7 +186,7 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
         }
     break;
     case 7:
-        len = func_02068c34(data_020fcac8);
+        len = StringLength(data_020fcac8);
         if (func_02068eac(arg0, data_020fcac8, len) == 0) {
             func_020376d8(0, (s32)arg0, 0);
             M2C_FIELD(&data_020fca58, s32 *, 0x4) = 1;
@@ -223,7 +223,7 @@ s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
     u8 *func_02037694(s32, s32);
     void func_020475b8(s32);
     s32 func_020475cc(void);
-    void func_02049ab8(u8 *, u8 *, s32, s32);
+    void Base64Encode(u8 *, u8 *, s32, s32);
 
     n = arg4 + arg2;
     sum = 0;
@@ -241,7 +241,7 @@ s32 func_0204760c(u8 *arg0, u8 *arg1, u32 arg2, u8 *arg3, u32 arg4) {
     p[1] = sum >> 16;
     p[2] = sum >> 8;
     p[3] = sum;
-    func_02049ab8(p, arg0, n + 4, 2);
+    Base64Encode(p, arg0, n + 4, 2);
     func_020376d8(0, (s32)p, 0);
     arg0[func_02047370(n + 4)] = 0;
     return 0;
@@ -341,14 +341,14 @@ s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) 
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
     }
     r5 = func_02047370((u8 *)arg5+0x18);
-    len_cb1c = func_02068c34(&data_020fcb1c);
-    len_cb24 = func_02068c34(&data_020fcb24);
-    len_cac0 = func_02068c34(data_020fcac0);
-    len_after = func_02068c34(func_0206f8b8((void *)arg1,tmp,10));
-    len_cb50 = func_02068c34(&data_020fcb50);
-    len_cb8c = func_02068c34(&data_020fcb58);
-    len_data0 = func_02068c34(M2C_FIELD(&data_020fca58,void **,0));
-    len_cb88 = func_02068c34(&data_020fca68);
+    len_cb1c = StringLength(&data_020fcb1c);
+    len_cb24 = StringLength(&data_020fcb24);
+    len_cac0 = StringLength(data_020fcac0);
+    len_after = StringLength(func_0206f8b8((void *)arg1,tmp,10));
+    len_cb50 = StringLength(&data_020fcb50);
+    len_cb8c = StringLength(&data_020fcb58);
+    len_data0 = StringLength(M2C_FIELD(&data_020fca58,void **,0));
+    len_cb88 = StringLength(&data_020fca68);
     accum = r5 + (len_cb1c + (len_cb24 + (len_cac0 + (len_after + (len_cb50 + (len_cb8c + (len_data0 + len_cb88)))))));
     ptr = func_02037694(0, accum + 1);
     M2C_FIELD(&data_020fca58, void **, 0x54) = ptr;
@@ -362,11 +362,11 @@ s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) 
                     &data_020fcb58, arg1, &data_020fcb24, &data_020fcb88);
 
     ptr=M2C_FIELD(&data_020fca58,void **,0x54);
-    len_ptr = func_02068c34(ptr);
+    len_ptr = StringLength(ptr);
     M2C_FIELD(&data_020fca58, void **, 0x5c) = (void *)((u8 *)ptr + len_ptr);
 
-    len_cb1c2 = func_02068c34(&data_020fcb1c);
-    len_cb242 = func_02068c34(&data_020fcb24);
+    len_cb1c2 = StringLength(&data_020fcb1c);
+    len_cb242 = StringLength(&data_020fcb24);
     M2C_FIELD(&data_020fca58, s32 *, 0x58) =
         (s32)M2C_FIELD(&data_020fca58, void **, 0x5c) - len_cb1c2 - len_cb242;
 
@@ -382,7 +382,7 @@ s32 func_02047940(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5) 
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
         return 2;
     } else {
-        len_cac0b = func_02068c34(data_020fcac0);
+        len_cac0b = StringLength(data_020fcac0);
         *(u8 *)((u8 *)M2C_FIELD(&data_020fca58, void **, 0x58) - len_cac0b) = 0;
         M2C_FIELD(&data_020fca58, s32 *, 0x04) = 4;
         return 0;

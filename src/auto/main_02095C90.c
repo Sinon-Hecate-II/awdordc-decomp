@@ -126,17 +126,17 @@ void func_02095fc0(void) {
 }
 
 void func_02095fd4(void) {
-void *func_02091da8(void);
-M2C_FIELD(func_02091da8(),s8 *,0x46)=0;
+void *Get3DSpriteManager(void);
+M2C_FIELD(Get3DSpriteManager(),s8 *,0x46)=0;
 }
 
 u8 func_02095fe8(void) {
-    void *func_02091da8();
-    return M2C_FIELD(func_02091da8(), u8 *, 0x46);
+    void *Get3DSpriteManager();
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x46);
 }
 
 void func_02095ff8(s8 arg0) {
-    M2C_FIELD(func_02091da8(), s8 *, 0x46) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x46) = arg0;
 }
 
 u8 func_0209600c(void) {

@@ -9,7 +9,7 @@ s32 func_ov000_0219b848(void) {
 s32 func_020a8a14(u16,u16); s32 func_020d27ec(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
-s32 func_ov000_021a98a8(s32); s32 func_ov000_021a8984(s32);
+s32 IsFootUnitKind(s32); s32 func_ov000_021a8984(s32);
 void SelectMapLayer(void *); void func_01ffada0(s32,s32,s32,s32,s32);
 u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
@@ -34,7 +34,7 @@ if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&IsPlayerActive(playe
 for(index=gPlayerUnitIdBase[player]+1;index<gPlayerUnitIdBase[player]+51;index++){
 unit=(u8 *)*gCurrentMap+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
-if(!kind||!func_ov000_021a98a8(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))continue;
+if(!kind||!IsFootUnitKind(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>28))continue;
 if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27))goto nextEntry;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
@@ -86,7 +86,7 @@ kind=(u32)(unit[0]<<26)>>26;
 if(!kind||kind!=data_ov000_021df41c[pass]||((u32)(unit[11]<<28)>>28))goto nextOwn;
 cost=M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(cost<0||(M2C_FIELD(unit,u16 *,4)&8))goto nextOwn;
-if(((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)&&func_ov000_021a98a8(kind)){
+if(((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)&&IsFootUnitKind(kind)){
 map=*gCurrentMap;
 kind=M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16 *,0x3758),u8 *,0x1420)&31;
 if(data_ov000_021b5500[kind])goto nextOwn;

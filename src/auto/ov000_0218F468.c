@@ -92,7 +92,7 @@ PlanMoveDestination(x,y);
  * cells by terrain kind (towns, HQ, transport), prefers the least threatened
  * cell on ties, and places the cursor on the chosen tile. */
 void SelectAIDestination(void) {
-s32 func_ov000_021a98a8(s32);
+s32 IsFootUnitKind(s32);
 void func_01ffc328(void *);
 s32 func_ov000_021a8b78(void *);
 s32 func_ov000_021a9d8c(s16,s16);
@@ -108,7 +108,7 @@ s32 healthyUnit;
 s32 bestScore,bestTransportScore,bestThreat;
 s32 terrainKind,cellY,cellX,cellScore,threatValue;
 u8 *map,*cellPtr,*record;
-if(!func_ov000_021a98a8(KindF468(SelectedF468())))return;
+if(!IsFootUnitKind(KindF468(SelectedF468())))return;
 func_01ffc328(SelectedF468());
 bestY=9999;bestX=bestY;transportY=bestY;transportX=bestY;bestScore=-1;bestTransportScore=-1;bestThreat=32767;
 healthyUnit=(u8)(func_ov000_021a8b78(SelectedF468())>=5);

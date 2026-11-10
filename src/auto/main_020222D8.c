@@ -247,10 +247,10 @@ void func_02022fdc(s32 arg0, s32 arg1, void *arg2) {
 void func_0202321c(s32 arg0,u8 *arg1,u8 *arg2) {
 void func_02025700(void *); void func_02025748(void *,void *,s32); void func_02025800(void *,s32);
 void func_02025fc0(void *); void func_02026014(void *,void *,s32);void func_020260cc(void *,void *);
-s32 func_02068c34(void *);
+s32 StringLength(void *);
 u8 sp0[20];
 func_02025fc0(arg2+0x348);
-func_02026014(arg2+0x348,arg1,func_02068c34(arg1));
+func_02026014(arg2+0x348,arg1,StringLength(arg1));
 func_02026014(arg2+0x348,arg2,0x30);
 func_02026014(arg2+0x348,arg2+0x34,0x40);
 func_020260cc(arg2+0x348,sp0);
@@ -262,7 +262,7 @@ func_02025800(arg2+0x3fc,arg0);
 #pragma opt_strength_reduction off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
 s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
-u32 func_02022258(u8*); s32 func_0206527c(void*,void*,s32); s32 func_02068c34(void*);
+u32 func_02022258(u8*); s32 func_0206527c(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
 u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
 if(len<0 || len>2000)return 1;
@@ -295,7 +295,7 @@ case 6: {
 u8 *oid=p; char *name;
 for(i=0;i<6;i++){
 name=data_020fb004[i];
-if(func_0206527c(oid,name,func_02068c34(name))==0){
+if(func_0206527c(oid,name,StringLength(name))==0){
 switch(i){
 case 1:case 2:if(mode==0)M2C_FIELD(ctx,s32*,0x45c)=i;M2C_FIELD(ctx,u8*,0x5ad)=i;break;
 case 3:case 4:if(mode!=2)M2C_FIELD(ctx,s32*,0x458)=i;break;

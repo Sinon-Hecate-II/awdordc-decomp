@@ -99,12 +99,12 @@ s32 func_0205495c(M2C_UNK a, void *b) {
     s32 func_020491bc(M2C_UNK, s32, M2C_UNK);
     s32 func_02049274(s32);
     s32 func_02049910(M2C_UNK);
-    M2C_UNK func_0204fea0(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK gpiAppendStringField(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02050208(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
     s32 func_02058254(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02068c34(M2C_UNK);
+    s32 StringLength(M2C_UNK);
     M2C_UNK func_02068d98(M2C_UNK, M2C_UNK);
     s32 func_02068eac(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_0206ad38(M2C_UNK);
@@ -170,17 +170,17 @@ s32 func_0205495c(M2C_UNK a, void *b) {
 
     func_020675e4((M2C_UNK)buf81, (M2C_UNK)&data_020fec38, (M2C_UNK)((char *)base + 0x177), (M2C_UNK)M2C_FIELD(base, s32 *, 0x1a0), (M2C_UNK)num);
 
-    len = func_02068c34((M2C_UNK)buf81);
+    len = StringLength((M2C_UNK)buf81);
     func_020491bc((M2C_UNK)buf81, len, (M2C_UNK)other);
 
     if (func_02068d98((M2C_UNK)buf31, (M2C_UNK)other) != 0) {
-        func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febb4);
-        func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
+        gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febb4);
+        gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
         M2C_FIELD(b,s32 *,0)=0x6a;
         return 0;
     }
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febe0);
-    func_0204fea0((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
+    gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020febe0);
+    gpiAppendStringField((M2C_UNK)arg0, (M2C_UNK)((char *)b+0x28), (M2C_UNK)&data_020feba8);
     M2C_FIELD(b,s32 *,0)=0x69;
     M2C_FIELD(b,s32 *,12)=num;
     goto finish;

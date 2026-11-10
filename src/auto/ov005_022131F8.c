@@ -76,7 +76,7 @@ MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
 gHistoryMenu=func_020e34bc(100);
-func_02082c84();func_020026d8(1);func_02002968(2);func_02003124(4);func_020031cc(8);
+func_02082c84();GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)func_ov005_02211c24(j);

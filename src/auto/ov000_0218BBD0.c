@@ -25,7 +25,7 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 func_0207c8ec(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
-    s32 func_ov000_021a98a8(s32);
+    s32 IsFootUnitKind(s32);
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
@@ -153,7 +153,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     s32 func_0207c8ec(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
-    s32 func_ov000_021a98a8(s32);
+    s32 IsFootUnitKind(s32);
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a93ec(s16, s16);
@@ -206,7 +206,7 @@ s32 func_ov000_0218c400(s32 arg0) {
 
             if (M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x52a4) * 0x8c + 0x67ce, u8 *, 0) == 3) {
                 if (damage < health) {
-                    if (func_ov000_021a98a8(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
+                    if (IsFootUnitKind(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
                         u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
                         if (!(M2C_FIELD(tile, u8 *, 0x2840) < data_ov000_021df644[1] && M2C_FIELD(tile, u8 *, 0x2d48) < data_ov000_021df644[2])) continue;
                     }
@@ -214,7 +214,7 @@ s32 func_ov000_0218c400(s32 arg0) {
             }
             if (M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x52a4) * 0x8c + 0x67ce, u8 *, 0) == 2) {
                 if (func_ov000_021a9c90(bestX, bestY) >= 2) {
-                    if (func_ov000_021a98a8(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
+                    if (IsFootUnitKind(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
                         u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
                         if (M2C_FIELD(tile, u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
                     }

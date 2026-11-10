@@ -21,7 +21,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     s32 IsCurrentPlayerUnit(s32);
     u8 func_ov000_021a9084(s32);
     s32 func_ov000_021a90a8(s32, s32, s32);
-    u8 func_ov000_021a98a8(s32);
+    u8 IsFootUnitKind(s32);
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     extern u8 data_ov000_021b5bfc[];
@@ -95,12 +95,12 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
                 kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
                 {
                     u8 *info = data_ov000_021b5bfc + kind * 0x70;
-                    if ((info[0x13] & 7) != 0 && func_ov000_021a98a8(kind) != 0) return 0;
+                    if ((info[0x13] & 7) != 0 && IsFootUnitKind(kind) != 0) return 0;
                 }
             } else {
                 if (IsCurrentPlayerUnit(unit) == 1) {
                     kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
-                    if (func_ov000_021a98a8(kind) != 0) count++;
+                    if (IsFootUnitKind(kind) != 0) count++;
                 }
             }
         }

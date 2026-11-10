@@ -46,9 +46,9 @@ s32 func_02034870(void *,void *,s32);
 extern M2C_UNK data_020fb600;extern M2C_UNK data_020fb654;
 M2C_UNK *fmt; s32 a,n; u32 b; void *p=arg0->buffer;
 if(arg0->unk1008==0)fmt=&data_020fb600;else fmt=&data_020fb654;
-a=func_02068c34(arg0->unk1124);
-b=func_02068c34((s32)fmt);
-if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)func_02068c34(arg0->unk1128))+0x400)!=1)return 1;
+a=StringLength(arg0->unk1124);
+b=StringLength((s32)fmt);
+if(func_02034870(arg0,(u8*)arg0 + 0x19f8,a+(s32)((b-4)+(u32)StringLength(arg0->unk1128))+0x400)!=1)return 1;
 n=func_0200567c(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,12),fmt,arg0->unk1128,arg0->unk1124);
 M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,4)+n;
 return 0;
@@ -57,14 +57,14 @@ return 0;
 s32 func_020345f4(Unk02034164 *obj,int a,int b) {
  void func_020651c4(void *,void *,int); char *func_02068fdc(int,void *); int func_02034908(s32,void *,s32);
  Buffer02034164 *buf=(Buffer02034164 *)obj->buffer;
- int n=func_02068c34(b); unsigned int fmt=func_02068c34((int)&data_020fb674);
+ int n=StringLength(b); unsigned int fmt=StringLength((int)&data_020fb674);
  signed char save; char *p; int room;
- n+= (int)((fmt-4)+(unsigned int)func_02068c34(a));
+ n+= (int)((fmt-4)+(unsigned int)StringLength(a));
  room=buf->end-buf->current;
  if(n+1>room && func_02034908((int)obj,buf,n-room+1)==0)return 1;
  p=func_02068fdc(buf->start,&data_020fb59c)+2;
  save=*p;
- func_020651c4(p+n,p,func_02068c34((int)p)+1);
+ func_020651c4(p+n,p,StringLength((int)p)+1);
  p[func_0200567c(p,n+1,&data_020fb674,a,b)]=save;
  buf->current+=n;return 0;
 }
@@ -72,7 +72,7 @@ s32 func_020345f4(Unk02034164 *obj,int a,int b) {
 s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   extern M2C_UNK data_020fb680, data_020fb684;
   s32 func_02037214(s32, s32, void *, s32);
-  s32 func_02068c34(s32);
+  s32 StringLength(s32);
   int func_02034908(s32, void *, s32);
   s32 ctr = *(s32 *)((u8 *)obj + 0x19f4);
   Buffer02034164 *buf = (Buffer02034164 *)obj->buffer;
@@ -91,9 +91,9 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 
   first = func_02037214(a, b, (void *)0, 0);
 
-  lenf = func_02068c34((s32)fmtstr);
+  lenf = StringLength((s32)fmtstr);
 
-  lenn = func_02068c34((s32)name);
+  lenn = StringLength((s32)name);
 
   total = first + ((lenf - 2) + lenn);
 
@@ -124,7 +124,7 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
     s32 func_0200567c(s32, s32, M2C_UNK *, M2C_UNK);
     s32 func_02034908(s32, void *, s32);
-    s32 func_02068c34(M2C_UNK);
+    s32 StringLength(M2C_UNK);
     extern M2C_UNK data_020fb68c;
     s32 temp_r0;
     s32 temp_r0_2;
@@ -132,7 +132,7 @@ s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
     void *temp_r5;
 
     temp_r5 = arg0 + 0x19F8;
-    temp_r0 = func_02068c34(arg1);
+    temp_r0 = StringLength(arg1);
     var_r1 = M2C_FIELD(temp_r5, s32 *, 8) - M2C_FIELD(temp_r5, s32 *, 4);
     if (temp_r0 > var_r1) {
         if (func_02034908(arg0, temp_r5, (temp_r0 - var_r1) + 1) == 0) {
@@ -177,10 +177,10 @@ s32 func_020349b0(Unk02034164 *p,s32 text) {
 void func_02068d18(s32,s32,s32);char *func_02068fdc(int,void *);s32 func_0206ad38(char *);
 extern M2C_UNK data_020fb6c8,data_020fb6d0,data_020fb6dc,data_020fb6e0;
 char *port=0,*q,*path;u32 n;
-if((u32)func_02068c34(text)>=256)return 0;
+if((u32)StringLength(text)>=256)return 0;
 func_02068d18((s32)p->url,text,256);
-n=func_02068c34(text);
-if(n!=func_02068c34((s32)p->url))return 0;
+n=StringLength(text);
+if(n!=StringLength((s32)p->url))return 0;
 q=func_02068fdc((s32)p->url,&data_020fb6c8);
 if(q){
 p->unk1124=(s32)(p->url+7);
@@ -205,9 +205,9 @@ extern M2C_UNK data_020fb6e4,data_020fb704,data_020fb724,data_020fb740;
 s32 (*alloc)(M2C_UNK *,s32)=obj->alloc;
 M2C_UNK (*free)(M2C_UNK *,s32,s32)=obj->free;
 if(buf->end>buf->current)return 0;
-((Pair02034164 *)buf->start)[buf->end].first=alloc(&data_020fb6e4,func_02068c34(a)+1);
+((Pair02034164 *)buf->start)[buf->end].first=alloc(&data_020fb6e4,StringLength(a)+1);
 if(((Pair02034164 *)buf->start)[buf->end].first){
-((Pair02034164 *)buf->start)[buf->end].second=alloc(&data_020fb704,func_02068c34(b)+1);
+((Pair02034164 *)buf->start)[buf->end].second=alloc(&data_020fb704,StringLength(b)+1);
 if(((Pair02034164 *)buf->start)[buf->end].second){
 func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].first,a);
 func_02068c50((void *)((Pair02034164 *)buf->start)[buf->end].second,b);
@@ -218,7 +218,7 @@ return 0;
 }
 
 s32 func_02034c58(Unk02034164 *arg0,s32 arg1) {
-char *func_02068fdc(s32,void*); s32 func_02068eac(s32,void*,s32); s32 func_02068c34(s32); M2C_UNK func_02007f8c(void*,s32,s32);
+char *func_02068fdc(s32,void*); s32 func_02068eac(s32,void*,s32); s32 StringLength(s32); M2C_UNK func_02007f8c(void*,s32,s32);
 extern M2C_UNK data_020fb75c,data_020fb760,data_020fb76c,data_020fb5cc,data_020fb770,data_020fb774,data_020fb778;
 s32 buf[3]; char *base,*end,*p,*colon,*value,*term; s8 save,save2; s32 result; s32 input;
 buf[0]=(s32)((u8*)arg0+0x1a38);buf[1]=32;buf[2]=0;
@@ -226,7 +226,7 @@ func_02007f8c((void*)buf[0],0,256);
 input=M2C_FIELD(arg0,s32*,0x1a08);
 base=func_02068fdc(input,&data_020fb59c);
 if(!base)return 0;
-end=base+4+func_02068c34((s32)(base+4));
+end=base+4+StringLength((s32)(base+4));
 colon=func_02068fdc(input,&data_020fb75c);
 if(!colon)return 0;
 save=colon[4];colon[4]='\0';
@@ -244,7 +244,7 @@ term=func_02068fdc((s32)value,&data_020fb5cc);
 if(!term){*colon=save;break;}
 save2=*term;*term=0;
 if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;*term=save2;return 0;}
-result=func_02068c34((s32)value);
+result=StringLength((s32)value);
 *colon=save;*term=save2;p=value+result+2;
 }
 p=base+4;
@@ -255,7 +255,7 @@ term=func_02068fdc((s32)value,&data_020fb778);
 if(!term)term=func_02068fdc((s32)value,&data_020fb5cc);
 if(term){save2=*term;*term=0;}
 if(func_02034b04(arg0,(Buffer02034164*)buf,(s32)p,(s32)value)!=1){*colon=save;if(term)*term=save2;return 0;}
-result=func_02068c34((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;
+result=StringLength((s32)value);*colon=save;p=value+result+1;if(term)*term=save2;
 }
 return 1;
 }
@@ -265,9 +265,9 @@ return 1;
 #pragma opt_common_subs off
 s32 func_02034ef8(void *a,s32 b){s32 func_02068d98(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(func_02068d98(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
 #pragma optimize_ifs off
-s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,func_02068c34(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
+s32 func_02034f50(void *a,s32 b,u8 *c,u32 d){s32 func_02034ef8(void *,s32);s32 StringLength(s32);s32 func_0203739c(s32,s32,u8 *,u32);s32 p=func_02034ef8(a,b);s32 n;if(!p)return 0;n=func_0203739c(p,StringLength(p),c,d);if(n==-1)return n;if((u32)n>=d)return n;c[n]=0;return n;}
 #pragma optimize_ifs reset
-s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 func_02068c34(s32);void func_02068c50(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(func_02068c34(p)>=d)return 0;func_02068c50(c,p);return 1;}
+s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 func_02034ef8(void *,s32);s32 StringLength(s32);void func_02068c50(void *,s32);s32 p=func_02034ef8(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;func_02068c50(c,p);return 1;}
 
 void func_02034fe4(void *arg0, void *arg1, s32 arg2) {
 extern M2C_UNK data_020fb77c; extern M2C_UNK data_020fb798;

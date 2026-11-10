@@ -2,14 +2,14 @@
 #include "common.h"
 
 void func_ov002_021e1500(void) {
-    M2C_UNK func_020026d8(M2C_UNK);
+    M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002c64(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
     M2C_UNK func_02082c84();
     func_02082c84();
     func_02002c64(3);
-    func_020026d8(0x10);
+    GX_SetBankForBG(0x10);
     func_02002968(0x40);
     func_02002e3c(0x20);
 }
@@ -158,13 +158,13 @@ void func_ov002_021e1790(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0x3E) = arg2;
 }
 
-void func_ov002_021e179c(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
+void SetEffectNodeTranslation(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
     M2C_FIELD(arg0, s16 *, 0x3C) = arg1;
     M2C_FIELD(arg0, s16 *, 0x3E) = arg2;
     M2C_FIELD(arg0, s16 *, 0x40) = arg3;
 }
 
-void func_ov002_021e17ac(void *arg0, s16 arg1) {
+void SetEffectScale(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x42) = arg1;
 }
 

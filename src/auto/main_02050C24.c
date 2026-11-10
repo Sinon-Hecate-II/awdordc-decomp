@@ -202,9 +202,9 @@ void func_020511dc(void *a, void *b) {
     M2C_UNK func_020491bc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, ...);
     M2C_UNK func_02055c68(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
-    M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
-    M2C_UNK func_0204fed0(void **, void *, M2C_UNK);
-    extern M2C_UNK data_020fe434, data_020fe43c, data_020fe44c, data_020fe480, data_020fe488, data_020fe494, data_020fe4a0, data_020fe4b0, data_020fe4b8, data_020fe4bc, data_020fe4c8, data_020fe4d4, data_020fe4e0, data_020fe4ec, data_020fe4f4, data_020fe500, data_020fe50c, data_020fe51c, data_020fe524, gServiceNameBuffer;
+    M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
+    M2C_UNK gpiAppendIntField(void **, void *, M2C_UNK);
+    extern M2C_UNK data_020fe434, data_020fe43c, data_020fe44c, data_020fe480, data_020fe488, data_020fe494, gGsKeyUniqueNick, data_020fe4b0, data_020fe4b8, data_020fe4bc, data_020fe4c8, data_020fe4d4, data_020fe4e0, data_020fe4ec, gGsKeyProductId, gGsKeyGameName, gGsKeyNamespaceId, gGsKeyId1, gGsKeyFinal, gServiceNameBuffer;
     void **pa = (void **)a;
     void *session = *pa;
     char *r5 = (char *)b;
@@ -238,143 +238,146 @@ void func_020511dc(void *a, void *b) {
             M2C_FIELD(session, M2C_UNK *, 0x1a0) = M2C_FIELD(sp10, M2C_UNK *, 0x0);
         }
     }
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe480);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe488);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)(r5 + 0x80));
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe480);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe488);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)(r5 + 0x80));
     if ((signed char) r5[0xc2] != 0) {
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe494);
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)(r5 + 0xc2));
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe494);
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)(r5 + 0xc2));
     } else {
         if ((signed char) ((char *)session)[0x100 + 0x2f] != 0) {
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4a0);
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x12f));
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyUniqueNick);
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x12f));
         } else {
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4b0);
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x110));
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4b8);
-            func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x144));
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4b0);
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x110));
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4b8);
+            gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)((char *)session + 0x144));
         }
     }
     if (M2C_FIELD(session, M2C_UNK *, 0x19c) != 0) {
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4bc);
-        func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x19c));
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4bc);
+        gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x19c));
     }
     if (M2C_FIELD(session, M2C_UNK *, 0x1a0) != 0) {
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4c8);
-        func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x1a0));
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4c8);
+        gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x1a0));
     }
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4d4);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)digest);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4d4);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)digest);
     if (M2C_FIELD(session, M2C_UNK *, 0x10c) == 1) {
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4e0);
-        func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4ec);
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4e0);
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4ec);
         {
             unsigned int low = (unsigned int)M2C_FIELD(session, M2C_UNK *, 0x208) & 0xffffu;
             unsigned int out = ((low >> 8) & 0xff) | ((low << 8) & 0xff00);
-            func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)((signed short)(out << 16 >> 16)));
+            gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)((signed short)(out << 16 >> 16)));
         }
     }
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe4f4);
-    func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x46c));
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe500);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &gServiceNameBuffer);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe50c);
-    func_0204fed0(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x470));
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe51c);
-    func_0204fea0(pa, (void *)((char *)session + 0x1f4), &data_020fe524);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyProductId);
+    gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x46c));
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyGameName);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gServiceNameBuffer);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyNamespaceId);
+    gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x470));
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyId1);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyFinal);
 }
 
 #pragma push
 #pragma opt_propagation off
-s32 func_02051580(void **arg0, void *arg1) {
-    M2C_UNK func_020499e0(s32);
-    s8 func_020499fc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0204fea0(void **, void *, M2C_UNK *);
-    M2C_UNK func_02049ab8(s8 *, M2C_UNK *, u32, M2C_UNK);
-    M2C_UNK func_0204fed0(void **, void *, s32);
-    u32 func_02068c34(void *);
+/* Builds the GameSpy "newuser" request: encrypts the password and (if given)
+   the CD key with the gspy keystream and base64, then appends all profile
+   fields (email, nick, ids, game name...) to the outgoing request buffer. */
+s32 SendNewUserProfile(void **conn, void *params) {
+    M2C_UNK SeedRandom(s32);
+    s8 RandomRange(M2C_UNK, M2C_UNK);
+    M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
+    M2C_UNK Base64Encode(s8 *, M2C_UNK *, u32, M2C_UNK);
+    M2C_UNK gpiAppendIntField(void **, void *, s32);
+    u32 StringLength(void *);
 
-    extern M2C_UNK data_020fe4a0;
-    extern M2C_UNK data_020fe4f4;
-    extern M2C_UNK data_020fe500;
-    extern M2C_UNK data_020fe50c;
-    extern M2C_UNK data_020fe51c;
-    extern M2C_UNK data_020fe524;
-    extern M2C_UNK data_020fe52c;
-    extern M2C_UNK data_020fe538;
-    extern M2C_UNK data_020fe540;
-    extern M2C_UNK data_020fe548;
-    extern M2C_UNK data_020fe558;
+    extern M2C_UNK gGsKeyUniqueNick;
+    extern M2C_UNK gGsKeyProductId;
+    extern M2C_UNK gGsKeyGameName;
+    extern M2C_UNK gGsKeyNamespaceId;
+    extern M2C_UNK gGsKeyId1;
+    extern M2C_UNK gGsKeyFinal;
+    extern M2C_UNK gGsKeyNewUser;
+    extern M2C_UNK gGsKeyEmail;
+    extern M2C_UNK gGsKeyNick;
+    extern M2C_UNK gGsKeyPasswordEnc;
+    extern M2C_UNK gGsKeyCdKeyEnc;
     extern M2C_UNK gServiceNameBuffer;
 
-    s8 sp2D[0x1F];
-    s8 sp0[0x2D];
-    s8 spA6[0x42];
-    s8 sp4C[0x5A];
+    s8 passwordBytes[0x1F];
+    s8 passwordEnc[0x2D];
+    s8 cdkeyBytes[0x42];
+    s8 cdkeyEnc[0x5A];
 
-    void *temp_r5;
-    register void *temp_r1_2;
-    u32 idx;
-    u32 temp_r6;
-    s8 *var_r7;
-    u32 temp_r7;
-    s8 *var_r8;
-    u32 var_r8_2;
-    s8 *addr;
-    s8 temp_val;
+    void *session;
+    register void *src2;
+    u32 i;
+    u32 cdkeyLen;
+    s8 *q;
+    u32 passwordLen;
+    s8 *p;
+    u32 j;
+    s8 *src;
+    s8 randByte;
 
-    temp_r5 = *arg0;
-    temp_r7 = func_02068c34(temp_r5 + 0x177);
-    func_020499e0(0x79707367);
-    idx = 0;
-    if (temp_r7 > idx) {
-        var_r8 = sp2D;
+    session = *conn;
+    passwordLen = StringLength(session + 0x177);
+    SeedRandom(0x79707367);
+    i = 0;
+    if (passwordLen > i) {
+        p = passwordBytes;
         do {
-            temp_val = (s8)((s32 (*)(s32,s32))func_020499fc)(0,0xFF);
-            addr = (s8 *)(temp_r5 + idx + 0x100);
-            idx += 1;
-            *var_r8 = (s8)((s8)M2C_FIELD(addr, s8 *, 0x77) ^ temp_val);
-            var_r8 += 1;
-        } while (idx < temp_r7);
+            randByte = (s8)((s32 (*)(s32,s32))RandomRange)(0,0xFF);
+            src = (s8 *)(session + i + 0x100);
+            i += 1;
+            *p = (s8)((s8)M2C_FIELD(src, s8 *, 0x77) ^ randByte);
+            p += 1;
+        } while (i < passwordLen);
     }
-    sp2D[idx] = 0;
-    func_02049ab8(sp2D, sp0, temp_r7, 1);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe52c);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe538);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, temp_r5 + 0x144);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe540);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, temp_r5 + 0x110);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe548);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, (M2C_UNK *)sp0);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe4f4);
-    func_0204fed0(arg0, temp_r5 + 0x1F4, M2C_FIELD(temp_r5, s32 *, 0x46C));
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe500);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &gServiceNameBuffer);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe50c);
-    func_0204fed0(arg0, temp_r5 + 0x1F4, M2C_FIELD(temp_r5, s32 *, 0x470));
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe4a0);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, temp_r5 + 0x12F);
-    if (M2C_FIELD(arg1, s8 *, 0x2C2) != 0) {
-        temp_r6 = func_02068c34(arg1 + 0x2C2);
-        func_020499e0(0x79707367);
-        var_r8_2 = 0;
-        if (temp_r6 > var_r8_2) {
-            var_r7 = spA6;
+    passwordBytes[i] = 0;
+    Base64Encode(passwordBytes, passwordEnc, passwordLen, 1);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyNewUser);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyEmail);
+    gpiAppendStringField(conn, session + 0x1F4, session + 0x144);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyNick);
+    gpiAppendStringField(conn, session + 0x1F4, session + 0x110);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyPasswordEnc);
+    gpiAppendStringField(conn, session + 0x1F4, (M2C_UNK *)passwordEnc);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyProductId);
+    gpiAppendIntField(conn, session + 0x1F4, M2C_FIELD(session, s32 *, 0x46C));
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyGameName);
+    gpiAppendStringField(conn, session + 0x1F4, &gServiceNameBuffer);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyNamespaceId);
+    gpiAppendIntField(conn, session + 0x1F4, M2C_FIELD(session, s32 *, 0x470));
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyUniqueNick);
+    gpiAppendStringField(conn, session + 0x1F4, session + 0x12F);
+    if (M2C_FIELD(params, s8 *, 0x2C2) != 0) {
+        cdkeyLen = StringLength(params + 0x2C2);
+        SeedRandom(0x79707367);
+        j = 0;
+        if (cdkeyLen > j) {
+            q = cdkeyBytes;
             do {
-                temp_val = (s8)((s32 (*)(s32,s32))func_020499fc)(0,0xFF);
-                temp_r1_2 = arg1 + var_r8_2 + 0x200;
-                var_r8_2 += 1;
-                *var_r7 = (s8)((s8)M2C_FIELD(temp_r1_2, s8 *, 0xC2) ^ temp_val);
-                var_r7 += 1;
-            } while (var_r8_2 < temp_r6);
+                randByte = (s8)((s32 (*)(s32,s32))RandomRange)(0,0xFF);
+                src2 = params + j + 0x200;
+                j += 1;
+                *q = (s8)((s8)M2C_FIELD(src2, s8 *, 0xC2) ^ randByte);
+                q += 1;
+            } while (j < cdkeyLen);
         }
-        spA6[var_r8_2] = 0;
-        func_02049ab8(spA6, (s8 *)sp4C, temp_r6, 1);
-        func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe558);
-        func_0204fea0(arg0, temp_r5 + 0x1F4, (M2C_UNK *)sp4C);
+        cdkeyBytes[j] = 0;
+        Base64Encode(cdkeyBytes, (s8 *)cdkeyEnc, cdkeyLen, 1);
+        gpiAppendStringField(conn, session + 0x1F4, &gGsKeyCdKeyEnc);
+        gpiAppendStringField(conn, session + 0x1F4, (M2C_UNK *)cdkeyEnc);
     }
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe51c);
-    func_0204fea0(arg0, temp_r5 + 0x1F4, &data_020fe524);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyId1);
+    gpiAppendStringField(conn, session + 0x1F4, &gGsKeyFinal);
     return 0;
 }
 #pragma pop

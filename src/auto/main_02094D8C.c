@@ -15,14 +15,14 @@ void func_02094d8c(M2C_UNK arg0) {
 }
 
 void func_02094dac(void) {
-    s32 func_02091db4();
+    s32 Get3DSpriteCount();
     M2C_UNK func_020979a4(M2C_UNK);
     s32 temp_r0;
 
     if (func_0209600c() != 0) {
         return;
     }
-    temp_r0 = func_02091db4();
+    temp_r0 = Get3DSpriteCount();
     switch (temp_r0) {                              /* irregular */
     case 0:
     case 1:

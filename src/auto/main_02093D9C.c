@@ -1,7 +1,7 @@
 /* 57 functions from 0x02093D9C to 0x02094D8C (main), found by ds-decomp. */
 #include "common.h"
 
-void *func_02091da8(void);
+void *Get3DSpriteManager(void);
 
 s32 func_02093d9c(void *arg0) {
     s32 func_02091e14();
@@ -295,13 +295,13 @@ s32 func_02094384(void *arg0) {
 }
 
 void func_020943a8(s8 arg0) {
-    void *func_02091da8();
-    M2C_FIELD(func_02091da8(), s8 *, 0x4D) = arg0;
+    void *Get3DSpriteManager();
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D) = arg0;
 }
 
 void func_020943bc(s8 arg0) {
-    void *func_02091da8(void);
-    M2C_FIELD(func_02091da8(), s8 *, 0x49) = arg0;
+    void *Get3DSpriteManager(void);
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x49) = arg0;
 }
 
 void func_020943d0(void) {
@@ -309,21 +309,21 @@ void func_020943d0(void) {
 }
 
 void func_020943e0(s8 arg0) {
-    void *func_02091da8(void);
-    M2C_FIELD(func_02091da8(), s8 *, 0x48) = arg0;
+    void *Get3DSpriteManager(void);
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x48) = arg0;
 }
 
-void func_020943f4(s32 arg0,s8 arg1) { void *func_02091da8(); M2C_FIELD(func_02091da8()+arg0,s8 *,0x44)=arg1; }
+void func_020943f4(s32 arg0,s8 arg1) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager()+arg0,s8 *,0x44)=arg1; }
 
-void func_02094410(s8 arg0) { void *func_02091da8(); M2C_FIELD(func_02091da8(),s8 *,0x4E)=arg0; }
+void func_02094410(s8 arg0) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager(),s8 *,0x4E)=arg0; }
 
 void func_02094424(void) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;
-    M2C_UNK func_02091db4(void);
-    M2C_UNK func_02091e24(void);
-    void *func_02091da8(void);
+    M2C_UNK Get3DSpriteCount(void);
+    M2C_UNK Get3DSpriteTarget(void);
+    void *Get3DSpriteManager(void);
     M2C_UNK func_02097128(M2C_UNK);
     M2C_UNK func_0209713c(M2C_UNK);
     M2C_UNK func_02097150(M2C_UNK, M2C_UNK);
@@ -340,34 +340,34 @@ void func_02094424(void) {
     for (i = 0; i < 2; i = i + 1) {
         gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
 
-        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
-            ((func_02091e24() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
-            ((func_02091e24() != 3) || (gCur3DSpriteEngine == saved))) {
+        if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
+            ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
+            ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == saved))) {
             func_02097128(2);
             func_0209713c(1);
 
             M2C_FIELD(M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0), u16 *, 0x3A) = 0;
             M2C_FIELD(M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = 0;
 
-            switch (func_02091db4()) {
+            switch (Get3DSpriteCount()) {
             case 2: {
                 void *da;
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x480);
                 break;
             }
             case 0:
             case 1: {
                 void *da;
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x40);
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x240);
-                da = func_02091da8();
+                da = Get3DSpriteManager();
                 M2C_FIELD(da, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x440);
                 break;
             }
@@ -392,10 +392,10 @@ void func_020945f8(void) {
  extern M2C_UNK data_02157fe8;
  void *func_02091f18(s32);
  s16 i; u8 *p;
- M2C_FIELD(func_02091da8(),u8*,0x4b)=0;
+ M2C_FIELD(Get3DSpriteManager(),u8*,0x4b)=0;
  p=(u8*)&data_02157fe8;
  for(i=0;i<8;i++,p+=0x18)*(s32*)p=0;
- for(i=0;i<8;) { p=func_02091da8(); p+=(u32)i*4; i++; M2C_FIELD(p,s32*,0x24)=0; }
+ for(i=0;i<8;) { p=Get3DSpriteManager(); p+=(u32)i*4; i++; M2C_FIELD(p,s32*,0x24)=0; }
  func_02086ac0();func_020947ac();func_02095fd4();
  for(i=0;i<3;i++)M2C_FIELD(func_02091f18(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
@@ -439,32 +439,32 @@ s32 func_02094724(s32 value) {
 }
 
 void func_02094758(void) {
- void *func_02091da8(void);
- void *p=func_02091da8();
+ void *Get3DSpriteManager(void);
+ void *p=Get3DSpriteManager();
  M2C_FIELD(p,s8 *,0x4B)++;
 }
 
 void func_02094770(void) {
- void *func_02091da8(void);
- void *p=func_02091da8();
+ void *Get3DSpriteManager(void);
+ void *p=Get3DSpriteManager();
  M2C_FIELD(p,s8 *,0x4B)--;
 }
 
 u8 func_02094788(void) {
-    void *func_02091da8();
-    return M2C_FIELD(func_02091da8(), u8 *, 0x4B);
+    void *Get3DSpriteManager();
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4B);
 }
 
 void func_02094798(void) {
-    M2C_FIELD(func_02091da8(), s8 *, 0x47) = 1;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 1;
 }
 
 void func_020947ac(void) {
-    M2C_FIELD(func_02091da8(), s8 *, 0x47) = 0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 0;
 }
 
 u8 func_020947c0(void) {
-    return M2C_FIELD(func_02091da8(), u8 *, 0x47);
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x47);
 }
 
 void func_020947d0(s32 *arg0) {
@@ -489,8 +489,8 @@ void func_02094808(s32 value) {
    s32 i;
    if(!func_020946d0()) {func_020948c4(value);return;}
    for(i=0;i<8;i++) {
-   if(!M2C_FIELD(func_02091da8()+((u32)i*4),s32 *,0x24)) {
-   M2C_FIELD(func_02091da8()+((u32)i*4),s32 *,0x24)=value;
+   if(!M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)) {
+   M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=value;
    return;
    }}
 }
@@ -499,15 +499,15 @@ void func_02094860(void) {
    void *func_020948c4(s32);
  s32 i;
  void *p;
- if(!M2C_FIELD(func_02091da8(),s32 *,0x24)) return;
- func_020948c4(M2C_FIELD(func_02091da8(),s32 *,0x24));
+ if(!M2C_FIELD(Get3DSpriteManager(),s32 *,0x24)) return;
+ func_020948c4(M2C_FIELD(Get3DSpriteManager(),s32 *,0x24));
  i=0;
  do {
- p=func_02091da8();
- M2C_FIELD(p+((u32)i*4),s32 *,0x24)=M2C_FIELD(func_02091da8()+((u32)(i+1)*4),s32 *,0x24);
+ p=Get3DSpriteManager();
+ M2C_FIELD(p+((u32)i*4),s32 *,0x24)=M2C_FIELD(Get3DSpriteManager()+((u32)(i+1)*4),s32 *,0x24);
  i++;
  }while(i<7);
- M2C_FIELD(func_02091da8()+((u32)i*4),s32 *,0x24)=0;
+ M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=0;
 }
 
 #pragma optimization_level 2
@@ -730,7 +730,7 @@ void func_02094c90(s32 slot, s32 arg1) {
  if(func_02091e50()<0)return;
  if(func_02091e50()>=3)return;
  value=func_02091e70(3);
- ptrA=func_02091da8();ptrB=func_02091da8();ptrC=func_02091f18(3);ptrD=func_02091f18(3);
+ ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=func_02091f18(3);ptrD=func_02091f18(3);
  func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(func_02091f18(3),u16*,4));
 }
 

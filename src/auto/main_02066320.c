@@ -66,7 +66,7 @@ void func_0206f034(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_02066320(void *, int);
 
-int func_02068c34(char *);
+int StringLength(char *);
 void func_020650a4(void *, void *, int);
 double value=arg0;
 DecimalFormBD form;

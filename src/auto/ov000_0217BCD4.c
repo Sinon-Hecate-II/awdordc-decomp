@@ -60,7 +60,7 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
     void SelectMapLayer(void *);
     s32 func_01ffada0(s32, s32, s32, s32, s32);
     s32 IsCurrentPlayerUnit(s16);
-    s32 func_ov000_021a98a8(void);
+    s32 IsFootUnitKind(void);
     s32 ManhattanDistance(s32, s32, s32, s32);
     extern void **gCurrentMap;
 
@@ -171,7 +171,7 @@ s32 func_ov000_0217bdb4(s32 arg0, s32 arg1) {
                     continue;
                 }
 
-                if (func_ov000_021a98a8() == 0) {
+                if (IsFootUnitKind() == 0) {
                     continue;
                 }
 
@@ -313,9 +313,9 @@ return 0;
 
 void func_ov000_0217c3a4(void) {
 extern void **gCurrentMap;
-s32 func_ov000_021a98a8();
+s32 IsFootUnitKind();
 void *p;
-if(!func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26))return;
+if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26))return;
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0x3F)|0x3F;
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);

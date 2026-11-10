@@ -75,9 +75,9 @@ void func_020af860(s32 arg0, s32 arg1) {
     M2C_UNK func_0208ffe4(s32, s32);
     M2C_UNK func_02090100(s32, s32);
     void func_020af8c8(s32, s32);
-    extern M2C_UNK data_ov002_021f30f4;
+    extern M2C_UNK gEffectTable;
     s32 off = arg0 * 0x18;
-    u8 *p = (u8 *)&data_ov002_021f30f4 + off;
+    u8 *p = (u8 *)&gEffectTable + off;
     s32 v = M2C_FIELD(M2C_FIELD(*(void **)p, void **, 0x34), s32 *, 4);
 
     if (v == 0) {
@@ -97,7 +97,7 @@ void func_020af8c8(s32 arg0, s32 arg1) {
     M2C_UNK func_02090158(s32, u8, M2C_UNK);
     extern M2C_UNK data_02127ed8;
     extern M2C_UNK data_ov002_021f2f44;
-    extern M2C_UNK data_ov002_021f30f4;
+    extern M2C_UNK gEffectTable;
     extern M2C_UNK data_ov002_021f314e;
     s32 var_r1;
     s32 var_r1_2;
@@ -106,7 +106,7 @@ void func_020af8c8(s32 arg0, s32 arg1) {
     u8 temp_r0;
     void *temp_r1;
 
-    temp_r1 = *(void **)((u8 *)&data_ov002_021f30f4 + (arg0 * 0x18));
+    temp_r1 = *(void **)((u8 *)&gEffectTable + (arg0 * 0x18));
     if (M2C_FIELD(M2C_FIELD(temp_r1, void **, 0x34), s32 *, 4) == 0) {
         return;
     }
@@ -143,23 +143,23 @@ void func_020af8c8(s32 arg0, s32 arg1) {
 }
 
 void func_020af9cc(s32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK func_02090034(s32,s32); extern M2C_UNK data_ov002_021f30f4;
-if(arg2==0 && M2C_FIELD(*(void **)((u8*)&data_ov002_021f30f4+arg0*0x18),u8 *,0x3d)==3)return;
+M2C_UNK func_02090034(s32,s32); extern M2C_UNK gEffectTable;
+if(arg2==0 && M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*0x18),u8 *,0x3d)==3)return;
 func_02090034(arg0,arg1);
 }
 
-void func_020afa00(s32 a){extern M2C_UNK data_ov002_021f30f4;extern u8 data_ov002_021f3103;extern u8 data_0215c430[];u32 n=*((u8 *)&data_ov002_021f3103+a*24);void *p=*(void **)((u8 *)&data_ov002_021f30f4+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((data_0215c430)[a])return;(data_0215c430)[a]=4;}func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
+void func_020afa00(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c430[];u32 n=*((u8 *)&gEffectDefaultVariant+a*24);void *p=*(void **)((u8 *)&gEffectTable+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((data_0215c430)[a])return;(data_0215c430)[a]=4;}func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
 
-void func_020afa64(s32 a){extern M2C_UNK data_ov002_021f30f4;s32 b;if(a==0)b=1;else b=0;func_020af828(a,M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&data_ov002_021f30f4+b*24),void **,0x34),s32 *,0x10));}
+void func_020afa64(s32 a){extern M2C_UNK gEffectTable;s32 b;if(a==0)b=1;else b=0;func_020af828(a,M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable+b*24),void **,0x34),s32 *,0x10));}
 
-void func_020afa98(s32 a){extern M2C_UNK data_ov002_021f30f4;extern u8 data_ov002_021f3103;extern u8 data_0215c42c[];s32 n;if(M2C_FIELD((u8 *)*(void **)((u8 *)&data_ov002_021f30f4+(a==0?1:0)*24)+*((u8 *)&data_ov002_021f3103+(a==0?1:0)*24),u8 *,0x3e)==1){if((data_0215c42c)[a])return;(data_0215c42c)[a]=4;n=1;}else n=0;func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&data_ov002_021f30f4+a*24),void **,0x34)+n*4,s32 *,0x14));}
+void func_020afa98(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 data_0215c42c[];s32 n;if(M2C_FIELD((u8 *)*(void **)((u8 *)&gEffectTable+(a==0?1:0)*24)+*((u8 *)&gEffectDefaultVariant+(a==0?1:0)*24),u8 *,0x3e)==1){if((data_0215c42c)[a])return;(data_0215c42c)[a]=4;n=1;}else n=0;func_020af828(a,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),void **,0x34)+n*4,s32 *,0x14));}
 
-void func_020afb34(s32 a){extern M2C_UNK data_ov002_021f30f4;switch(M2C_FIELD(*(void **)((u8 *)&data_ov002_021f30f4+a*24),u8 *,0x3d)){case 2:func_020af828(a,0x2000b);return;case 3:func_020af828(a,0x2000c);return;default:func_020af828(a,0x2000a);return;}}
+void func_020afb34(s32 a){extern M2C_UNK gEffectTable;switch(M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),u8 *,0x3d)){case 2:func_020af828(a,0x2000b);return;case 3:func_020af828(a,0x2000c);return;default:func_020af828(a,0x2000a);return;}}
 
 void func_020afb94(s32 arg0) {
-extern M2C_UNK data_ov002_021f30f4;
+extern M2C_UNK gEffectTable;
 void func_020afb34(s32);
-s32 v=M2C_FIELD(M2C_FIELD(*(void **)((u8*)&data_ov002_021f30f4+arg0*24),void **,0x34),s32 *,0x1c);
+s32 v=M2C_FIELD(M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*24),void **,0x34),s32 *,0x1c);
 if(v){func_020af828(arg0,v);return;}func_020afb34(arg0);
 }
 

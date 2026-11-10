@@ -42,7 +42,7 @@ void func_02058df4(s8 *arg0, s32 arg1) {
 M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     s8 *func_02068d68(s8 *, s8 *);
     s8 *func_02068fdc(s8 *, s8 *);
-    s32 func_02068c34(s8 *);
+    s32 StringLength(s8 *);
     extern const u8 data_020eab2f[];
     extern s8 data_020ff4ac[];
     extern M2C_UNK data_0213dce0;
@@ -68,7 +68,7 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     func_02068d68(sp0, data_020ff4ac);
     p = func_02068fdc((s8 *)arg0, sp0);
     if (p == 0) return 0;
-    n = func_02068c34(sp0);
+    n = StringLength(sp0);
     str = p + n;
     base = (s8 *)data_0213dd10 + (M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) << 8);
     dst = base;

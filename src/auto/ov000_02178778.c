@@ -18,7 +18,7 @@ static inline u8 Kind787(void *u){return M2C_FIELD(u,Bits787 *,0).low;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178778(s32 x,s32 y){
-s32 func_ov000_021a9084(s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a98e4(s32);s32 func_ov000_021a98a8(s32);
+s32 func_ov000_021a9084(s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a98e4(s32);s32 IsFootUnitKind(s32);
 s32 left,top,right,bottom,xx,yy,id,count;void *m,*u,*sel; s32 found;u32 attr;
 if(M2C_FIELD(data_ov000_021df580,Mode787 *,10).mode&4){s32 left,top,right,bottom,xx,yy,id;
 left=Max787(x-1,0);top=Max787(y-1,0);m=Map787();right=Min787(x+1,M2C_FIELD(m,u16 *,0x5144)-1);bottom=Min787(y+1,M2C_FIELD(m,u16 *,0x5146)-1);
@@ -56,7 +56,7 @@ if(func_ov000_021a98e4(Kind787(u))==0){
 attr=data_ov000_021b5bfc[Kind787(Selected787())*112+19];
 if(attr&7){if(data_ov000_021b5bfc[Kind787(u)*112+19]&7)goto compatible;else goto next_tile;}
 else {if(!(attr&32) || !(data_ov000_021b5bfc[Kind787(u)*112+19]&32))continue;}
-compatible:if(func_ov000_021a98a8(Kind787(u))==0){found=1;goto done;}
+compatible:if(IsFootUnitKind(Kind787(u))==0){found=1;goto done;}
 }}}}}}next_tile:;}
 done:return (u8)(found!=0);
 }

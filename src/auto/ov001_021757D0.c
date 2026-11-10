@@ -91,7 +91,7 @@ func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK
 
 void func_ov001_02175a8c(void) {
     void func_0200245c(s32);
-    void func_020026d8(s32);
+    void GX_SetBankForBG(s32);
     void func_02002968(s32);
     void func_02002514(s32, s32, s32);
     void func_02002598(void *, s32);
@@ -106,7 +106,7 @@ void func_ov001_02175a8c(void) {
     void func_020024cc(void);
 
     func_0200245c(0);
-    func_020026d8(1);
+    GX_SetBankForBG(1);
     func_02002968(2);
     func_02002514(1, 0, 0);
 

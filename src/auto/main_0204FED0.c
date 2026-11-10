@@ -3,13 +3,13 @@
 
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
-void func_0204fed0(s32 a,s32 b) {
+void gpiAppendIntField(s32 a,s32 b) {
     void func_020675e4(void *,void *);
-    void func_0204fea0(s32,s32,void *);
+    void gpiAppendStringField(s32,s32,void *);
     extern M2C_UNK data_020fdfb0;
     u8 buf[16];
     func_020675e4(buf,&data_020fdfb0);
-    func_0204fea0(a,b,(M2C_UNK *)buf);
+    gpiAppendStringField(a,b,(M2C_UNK *)buf);
 }
 
 s32 gpiSendOrBufferChar(M2C_UNK arg0,s32 arg1,s8 *arg2,M2C_UNK arg3,M2C_UNK *arg4,s32 *arg5,M2C_UNK *arg6) {
@@ -116,8 +116,8 @@ s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s
 
 void func_020501d8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK gpiSendOrBufferStringLen(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 func_02068c34(M2C_UNK);
-    gpiSendOrBufferStringLen(arg0, arg1, arg2, func_02068c34(arg2));
+    s32 StringLength(M2C_UNK);
+    gpiSendOrBufferStringLen(arg0, arg1, arg2, StringLength(arg2));
 }
 
 s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRead, s32 *connClosed, M2C_UNK arg5) {

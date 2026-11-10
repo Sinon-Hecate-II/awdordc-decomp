@@ -30,7 +30,7 @@ s32 func_02047370(void *);
 void func_020376d8(s32,s32,s32);
 void *func_02037694(s32,s32);
 s32 func_0204760c(void *,void *,s32,void *,s32);
-s32 func_02068c34(M2C_UNK);
+s32 StringLength(M2C_UNK);
 void *func_0206f8b8(void *,void *,s32);
 
     s32 r5;
@@ -56,14 +56,14 @@ void *func_0206f8b8(void *,void *,s32);
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
     }
     r5 = func_02047370((u8 *)*(void **)arg4+0x18);
-    len_cb1c = func_02068c34(&data_020fcb1c);
-    lengths[0] = func_02068c34(&data_020fcb24);
-    lengths[1] = func_02068c34(&data_020fcac0);
-    lengths[2] = func_02068c34(func_0206f8b8((void *)arg2,tmp,10));
-    lengths[3] = func_02068c34(&data_020fcb50);
-    lengths[4] = func_02068c34(&data_020fcb8c);
-    len_data0 = func_02068c34(M2C_FIELD(&data_020fca58,void **,0));
-    len_cb88 = func_02068c34(&data_020fca68);
+    len_cb1c = StringLength(&data_020fcb1c);
+    lengths[0] = StringLength(&data_020fcb24);
+    lengths[1] = StringLength(&data_020fcac0);
+    lengths[2] = StringLength(func_0206f8b8((void *)arg2,tmp,10));
+    lengths[3] = StringLength(&data_020fcb50);
+    lengths[4] = StringLength(&data_020fcb8c);
+    len_data0 = StringLength(M2C_FIELD(&data_020fca58,void **,0));
+    len_cb88 = StringLength(&data_020fca68);
     accum = r5 + (len_cb1c + (lengths[0] + (lengths[1] + (lengths[2] + (lengths[3] + (lengths[4] + (len_data0 + len_cb88)))))));
     ptr = func_02037694(0, accum + 1);
     M2C_FIELD(&data_020fca58, void **, 0x54) = ptr;
@@ -77,11 +77,11 @@ void *func_0206f8b8(void *,void *,s32);
                     &data_020fcb8c, arg2, &data_020fcb24, &data_020fcb88);
 
     ptr=M2C_FIELD(&data_020fca58,void **,0x54);
-    len_ptr = func_02068c34(ptr);
+    len_ptr = StringLength(ptr);
     M2C_FIELD(&data_020fca58, void **, 0x5c) = (void *)((u8 *)ptr + len_ptr);
 
-    len_cb1c2 = func_02068c34(&data_020fcb1c);
-    len_cb242 = func_02068c34(&data_020fcb24);
+    len_cb1c2 = StringLength(&data_020fcb1c);
+    len_cb242 = StringLength(&data_020fcb24);
     M2C_FIELD(&data_020fca58, s32 *, 0x58) =
         (s32)M2C_FIELD(&data_020fca58, void **, 0x5c) - len_cb1c2 - len_cb242;
 
@@ -96,7 +96,7 @@ void *func_0206f8b8(void *,void *,s32);
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
         return 2;
     } else {
-        len_cac0b = func_02068c34(&data_020fcac0);
+        len_cac0b = StringLength(&data_020fcac0);
         *(u8 *)((u8 *)M2C_FIELD(&data_020fca58, void **, 0x58) - len_cac0b) = 0;
         M2C_FIELD(&data_020fca58, s32 *, 0x04) = 4;
         return 0;
@@ -110,7 +110,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
     void func_020376d8(s32, s32, s32);
     void *func_02037694(s32, s32);
     s32 func_0204760c(void *, void *, s32, void *, s32);
-    s32 func_02068c34(M2C_UNK);
+    s32 StringLength(M2C_UNK);
     void *func_0206f8b8(void *, void *, s32);
     M2C_UNK func_020675e4();
 
@@ -136,14 +136,14 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
     }
     r6 = func_02047370((void *)0x14);
 
-    len_cb1c = func_02068c34((M2C_UNK)&data_020fcb1c);
-    len_cb24 = func_02068c34((M2C_UNK)&data_020fcb24);
-    len_cac0 = func_02068c34((M2C_UNK)&data_020fcac0);
-    len_after = func_02068c34(func_0206f8b8((void *)a, tmp, 10));
-    len_cb50 = func_02068c34((M2C_UNK)&data_020fcb50);
-    len_cba0 = func_02068c34((M2C_UNK)&data_020fcba0);
-    len_data0 = func_02068c34(M2C_FIELD(&data_020fca58, M2C_UNK *, 0x00));
-    len_cb88 = func_02068c34((M2C_UNK)&data_020fca68);
+    len_cb1c = StringLength((M2C_UNK)&data_020fcb1c);
+    len_cb24 = StringLength((M2C_UNK)&data_020fcb24);
+    len_cac0 = StringLength((M2C_UNK)&data_020fcac0);
+    len_after = StringLength(func_0206f8b8((void *)a, tmp, 10));
+    len_cb50 = StringLength((M2C_UNK)&data_020fcb50);
+    len_cba0 = StringLength((M2C_UNK)&data_020fcba0);
+    len_data0 = StringLength(M2C_FIELD(&data_020fca58, M2C_UNK *, 0x00));
+    len_cb88 = StringLength((M2C_UNK)&data_020fca68);
 
     accum = r6 + (len_cb1c + (len_cb24 + (len_cac0 + (len_after + (len_cb50 + (len_cba0 + (len_data0 + len_cb88)))))));
 
@@ -159,11 +159,11 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
                    &data_020fcba0, a, &data_020fcb24, &data_020fcb88);
 
     ptr = M2C_FIELD(&data_020fca58,void **,0x54);
-    len_ptr = func_02068c34(ptr);
+    len_ptr = StringLength(ptr);
     M2C_FIELD(&data_020fca58, void **, 0x5c) = (void *)((u8 *)ptr + len_ptr);
 
-    len_cb1c2 = func_02068c34((M2C_UNK)&data_020fcb1c);
-    len_cb242 = func_02068c34((M2C_UNK)&data_020fcb24);
+    len_cb1c2 = StringLength((M2C_UNK)&data_020fcb1c);
+    len_cb242 = StringLength((M2C_UNK)&data_020fcb24);
     M2C_FIELD(&data_020fca58, s32 *, 0x58) =
         (s32)M2C_FIELD(&data_020fca58, void **, 0x5c) - len_cb1c2 - len_cb242;
 
@@ -178,7 +178,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
         M2C_FIELD(&data_020fca58, s32 *, 0x54) = 0;
         return 2;
     } else {
-        len_cac0b = func_02068c34((M2C_UNK)&data_020fcac0);
+        len_cac0b = StringLength((M2C_UNK)&data_020fcac0);
         *(u8 *)((u8 *)M2C_FIELD(&data_020fca58, void **, 0x58) - len_cac0b) = 0;
         M2C_FIELD(&data_020fca58, s32 *, 0x04) = 4;
         return 0;
@@ -186,14 +186,14 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
 }
 #pragma pop
 s32 func_0204800c(u8 *a, u8 *b, s32 c, u32 d, u32 e, s32 f) {
-    s32 func_02068c34();
+    s32 StringLength();
     s32 MemCopy();
     s32 i, n;
     u32 k;
     u8 *p;
     M2C_FIELD(&data_020fca58, s32 *, 12) = 0;
-    if ((u32)func_02068c34(a) >= 32) return 0;
-    if (func_02068c34(b) != 20) return 0;
+    if ((u32)StringLength(a) >= 32) return 0;
+    if (StringLength(b) != 20) return 0;
     if ((c - 5) & 7) return 0;
     if (!(d & 1)) return 0;
     n = 0;
@@ -245,7 +245,7 @@ void func_0204817c(void) {
 
 /* Sets up a DNS query for service availability for the given service name. */
 void InitServiceAvailabilityQuery(s8 *serviceName) {
-    s32 func_02068c50(); s32 func_0204926c(); s32 func_020675e4(); s32 func_020496a4(); s32 func_02068c34(); s32 MemCopy();
+    s32 func_02068c50(); s32 func_0204926c(); s32 func_020675e4(); s32 func_020496a4(); s32 StringLength(); s32 MemCopy();
     extern M2C_UNK gServiceNameBuffer, gOverrideDnsName, gServiceAvailabilityFormat, gDnsPacketHeader, gDnsQueryNameBuffer;
     s8 hostNameBuffer[64]; s32 hasOverride, dnsNameLength;
     func_02068c50(&gServiceNameBuffer, serviceName);
@@ -257,7 +257,7 @@ void InitServiceAvailabilityQuery(s8 *serviceName) {
     M2C_FIELD(&gDnsQueryState, s32 *, 4) = func_020496a4(2, 2, 0);
     if (M2C_FIELD(&gDnsQueryState, s32 *, 4) == -1) return;
     M2C_FIELD(&gDnsQueryState, s8 *, 0x10) = 9;
-    dnsNameLength = func_02068c34(serviceName);
+    dnsNameLength = StringLength(serviceName);
     MemCopy(&gDnsQueryNameBuffer, serviceName, dnsNameLength + 1);
     M2C_FIELD(&gDnsQueryState, s32 *, 0x50) = dnsNameLength + 6;
     func_0204817c();

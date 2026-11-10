@@ -40,7 +40,7 @@ void func_ov011_0222134c(void *arg0) {
 #pragma opt_strength_reduction off
 void func_ov011_0222140c(void *arg0) {
     M2C_UNK func_02082c84(void);
-    M2C_UNK func_020026d8(s32);
+    M2C_UNK GX_SetBankForBG(s32);
     M2C_UNK func_02003124(s32);
     M2C_UNK func_020031cc(s32);
     M2C_UNK func_02002968(s32);
@@ -62,7 +62,7 @@ void func_ov011_0222140c(void *arg0) {
     s32 engine;
 
     func_02082c84();
-    func_020026d8(3);
+    GX_SetBankForBG(3);
     func_02003124(4);
     func_020031cc(8);
     func_02002968(0x10);

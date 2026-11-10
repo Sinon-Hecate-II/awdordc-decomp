@@ -5,7 +5,7 @@ extern u8 *data_ov000_021df580;
 void func_01ffc328(void *);
 void func_01ffb9c4(int);
 int func_020d27a4(int,int);
-int func_ov000_021a98a8(int);int func_ov000_021a98e4(int);
+int IsFootUnitKind(int);int func_ov000_021a98e4(int);
 int func_ov000_021a8a88(void *);
 int func_ov000_021a93ec(s16,s16);
 int func_ov000_02177f24(int,int,s16 *);
@@ -145,9 +145,9 @@ void func_ov000_0219137c(void){
  unit=(Unit1911 *)((u8 *)map+0x59a4)+((u8 *)map)[x+map->rows[y]];
  if(unit->kind==0)continue;
  if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),unit?unit-(Unit1911 *)((u8 *)map+0x59a4):0)==1)continue;
- if(!func_ov000_021a98a8(unit->kind)){
+ if(!IsFootUnitKind(unit->kind)){
  if(func_ov000_021a98e4(unit->kind)==1)goto candidate_checks;
- if(!func_ov000_021a98a8(((Map1911 *)*gCurrentMap)->selected->kind))goto candidate_checks;
+ if(!IsFootUnitKind(((Map1911 *)*gCurrentMap)->selected->kind))goto candidate_checks;
  switch(((Map1911 *)*gCurrentMap)->selected->flags2){case 0:continue;default:goto candidate_checks;}
  }else if(!func_ov000_021a8a88(unit)){
  if(unit->health<=30)continue;
@@ -159,7 +159,7 @@ void func_ov000_0219137c(void){
  map=*gCurrentMap;
  score=func_ov000_02176e28(((u8 *)map)[x+map->rows[y]],position);
  if(!score)continue;
- if(((Map1911 *)*gCurrentMap)->selected->kind==1 && !func_ov000_021a98a8(unit->kind) && M2C_FIELD(*gCurrentMap,s16 *,0x6ee6)!=0 && M2C_FIELD(*gCurrentMap,s16 *,0x6ef2)<15)continue;
+ if(((Map1911 *)*gCurrentMap)->selected->kind==1 && !IsFootUnitKind(unit->kind) && M2C_FIELD(*gCurrentMap,s16 *,0x6ee6)!=0 && M2C_FIELD(*gCurrentMap,s16 *,0x6ef2)<15)continue;
  if(score<best)continue;
  if(HasBetterAttackerNearby(unit)==1 && CountAdjacentBounds1913(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))<=1)continue;
  best=score;destX=position[0];destY=position[1];

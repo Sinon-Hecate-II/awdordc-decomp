@@ -209,14 +209,14 @@ void func_02049270(void) {
 
 s32 func_02049274(s32 arg0) {
     s32 func_02037794(s32);
-    s32 func_02068c34();
+    s32 StringLength();
     M2C_UNK func_02068c50(s32, s32);
     s32 temp_r0;
 
     if (arg0 == 0) {
         return 0;
     }
-    temp_r0 = func_02037794(func_02068c34() + 1);
+    temp_r0 = func_02037794(StringLength() + 1);
     if (temp_r0 != 0) {
         func_02068c50(temp_r0, arg0);
     }
@@ -456,7 +456,7 @@ return v;
 
 s32 func_020499c0(void) { extern s32 data_020fcdd4; s32 func_02049974(s32); return data_020fcdd4=func_02049974(data_020fcdd4); }
 
-void func_020499e0(s32 arg0) {
+void SeedRandom(s32 arg0) {
     extern s32 data_020fcdd4;
     s32 var_r1;
 
@@ -468,7 +468,7 @@ void func_020499e0(s32 arg0) {
     data_020fcdd4 = var_r1;
 }
 
-s32 func_020499fc(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}
+s32 RandomRange(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}
 
 void func_02049a20(signed char *src,unsigned char *dst,int n) {
 unsigned char b[3]; int i;

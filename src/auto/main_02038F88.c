@@ -243,23 +243,23 @@ void func_02039698(s32 unused, void *arg1) {
 
 void func_020396d0(s32 a,void *b,s32 c){
 extern char data_020fc89c[],data_020fc8a4[];extern void *data_0213d1f8;
-s32 func_0203ad70(s32,void *,s32);u32 func_02068c34(const char *);s32 func_0206527c(const void *,const void *,u32);char *func_02068ee0(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
+s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 func_0206527c(const void *,const void *,u32);char *func_02068ee0(const char *,s32);void *func_02068d18(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
 char buf[12]={0};char *p=M2C_FIELD(b,char **,8);u32 n;
 if(func_0203ad70(a,b,c))return;
-if(func_0206527c(p,data_020fc89c,func_02068c34(data_020fc89c)))return;
-p+=func_02068c34(data_020fc89c);
+if(func_0206527c(p,data_020fc89c,StringLength(data_020fc89c)))return;
+p+=StringLength(data_020fc89c);
 n=func_02068ee0(p,'v')-p;
 func_02068d18(buf,p,n);
 if(n>10)return;
 if(func_0206abd8(buf,0,10)!=3)return;
 p+=n+1;
-if(func_0206527c(p,data_020fc8a4,func_02068c34(data_020fc8a4)))return;
+if(func_0206527c(p,data_020fc8a4,StringLength(data_020fc8a4)))return;
 if(M2C_FIELD(data_0213d1f8,s32 *,0x24)!=5){
 if(M2C_FIELD(data_0213d1f8,s32 *,0x24)!=6)return;
 if(M2C_FIELD(data_0213d1f8,volatile u8 *,0x389)!=2&&M2C_FIELD(data_0213d1f8,volatile u8 *,0x389)!=3)return;
 }
-func_0203db94(a,M2C_FIELD(b,s32 *,0),p+func_02068c34(data_020fc8a4));
+func_0203db94(a,M2C_FIELD(b,s32 *,0),p+StringLength(data_020fc8a4));
 }
 
 void func_02039838(void) {

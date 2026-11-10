@@ -433,7 +433,7 @@ void func_ov000_021963f8(void) {
 #pragma opt_strength_reduction off
 s32 func_ov000_02196430(s16 *arg0) {
     s32 func_ov000_02194ab8(s16 *);
-    s32 func_ov000_021a9c28(void);
+    s32 HasEnemyPlayer(void);
     s32 func_ov000_021954dc(s16 *);
     s32 func_ov000_02195574(s16 *);
     s32 func_ov000_02195788(s16 *);
@@ -462,7 +462,7 @@ s32 func_ov000_02196430(s16 *arg0) {
         }
         break;
     case 2:
-        if (func_ov000_021a9c28() == 1) {
+        if (HasEnemyPlayer() == 1) {
             if (func_ov000_021954dc(arg0) == 0) {
                 return 0;
             }

@@ -238,7 +238,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     s32 func_ov000_0217bd44(s32, s32, s32, s32);
     s32 func_ov000_02188b50(s32, s32);
     void SetMapCursor(s32, s32, s32, s32, s32);
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
 
     s16 pos1[2];
     s16 pos2[2];
@@ -256,11 +256,11 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
         return;
     }
     unitC = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) * 0xE;
-    if (func_ov000_021a98a8((u32)(unitC[0] << 26) >> 26) != 0) return;
+    if (IsFootUnitKind((u32)(unitC[0] << 26) >> 26) != 0) return;
     if (((u32)(unitC[0] << 26) >> 26) == 0x0D) return;
     if (((u32)(unitC[11] << 28) >> 28) >= 6) return;
     unitD = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xD) * 0xE;
-    if (func_ov000_021a98a8((u32)(unitD[0] << 26) >> 26) != 0) return;
+    if (IsFootUnitKind((u32)(unitD[0] << 26) >> 26) != 0) return;
     if (((u32)(unitD[0] << 26) >> 26) == 0x0D) return;
     if (((u32)(unitD[11] << 28) >> 28) >= 6) return;
     unitD[11] = (unitD[11] & 0xF0) | ((u32)(unitC[11] << 28) >> 28);

@@ -148,7 +148,7 @@ index=unit ? (unit-base)/14:0;
 if(!func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),index))goto next;
 if(!func_ov000_021a97d0((u32)(unit[0]<<26)>>26,(u32)(other[0]<<26)>>26))goto next;
 if(func_ov000_021a9904((u32)(unit[0]<<26)>>26))goto next;
-if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26))goto next;
+if(IsFootUnitKind((u32)(unit[0]<<26)>>26))goto next;
 if(((u32)(unit[0]<<26)>>26)==4)goto next;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)<60)goto next;
 if(M2C_FIELD(unit,u16 *,4)&1){
@@ -190,7 +190,7 @@ void func_ov000_0217d3b8(s32 arg0) {
  * move target; clears the unit's active flag when the target is within its budget. */
 void AssignUnitMoveTargets(void) {
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021a98a8(u32);s32 func_ov000_02179b08(void *);void func_01ffada0(s32,s32,u32,s32,s32);
+s32 IsFootUnitKind(u32);s32 func_ov000_02179b08(void *);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 func_ov000_021a89a4(void *);
 s32 unitId,unitOffset,bestX,bestY,bestScore,x,y,value,tileId;Unit0217d428 *unit;u8 *rec;void *p;
 unitId=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
@@ -198,7 +198,7 @@ if(unitId>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
 unitOffset=unitId*14;do{
 unit=(Unit0217d428*)((u8*)*gCurrentMap+0x59a4+unitOffset);
 if(unit->kind==0)goto nextUnit;
-if(!func_ov000_021a98a8(unit->kind))goto nextUnit;
+if(!IsFootUnitKind(unit->kind))goto nextUnit;
 if(unit->active==0)goto nextUnit;
 value=func_ov000_02179b08(unit);
 func_01ffada0(unit->x,unit->y,unit->kind,value,0);
@@ -225,7 +225,7 @@ nextUnit: unitId++;unitOffset+=14;
 #pragma opt_strength_reduction off
 void func_ov000_0217d6dc(void) {
     extern u16 gPlayerUnitIdBase[];
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
 
     void ***mapSlot = (void ***)&gCurrentMap;
     u16 *tblBase = gPlayerUnitIdBase;
@@ -253,7 +253,7 @@ void func_ov000_0217d6dc(void) {
 
         kind = ((u32)rec[0] << 26) >> 26;
         if (kind == 0) goto loopinc;
-        if (func_ov000_021a98a8(kind) == 0) goto loopinc;
+        if (IsFootUnitKind(kind) == 0) goto loopinc;
         if ((((u32)rec[11] << 26) >> 31) == 0) goto loopinc;
 
         {

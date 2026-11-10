@@ -179,9 +179,9 @@ void *func_ov010_0222bc88(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
 
 M2C_UNK func_ov010_0222bcd8(void *arg0, M2C_UNK arg1, u32 arg2, M2C_UNK arg3) {
     void *func_0206fc18(void *, M2C_UNK, u32, void *, void *, Flag);
-    s32 func_02068c34(M2C_UNK);
+    s32 StringLength(M2C_UNK);
     Flag unused;
-    return (M2C_UNK)func_0206fc18(arg0, arg1, arg2, (void *)arg3, (u8 *)arg3 + func_02068c34(arg3), unused);
+    return (M2C_UNK)func_0206fc18(arg0, arg1, arg2, (void *)arg3, (u8 *)arg3 + StringLength(arg3), unused);
 }
 
 s32 func_ov010_0222bd24(s32 arg0) {

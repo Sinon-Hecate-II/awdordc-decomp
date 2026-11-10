@@ -26,7 +26,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
         char *mark=(char *)func_02068ee0(p,37);
         q=mark;
         if (!mark) {
-            len=func_02068c34(p); total+=len;
+            len=StringLength(p); total+=len;
             if(len && !writer(state,p,len)) return -1;
             break;
         }
@@ -87,7 +87,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
                 len=f.precision;
                 end=(char *)func_02065224(text,0,len);
                 if(end)len=end-text;
-            }else len=func_02068c34(text);
+            }else len=StringLength(text);
             break;
         case 'n':{
             void *ptr;
@@ -108,7 +108,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
         case 255:
         default:
         invalid:
-            len=func_02068c34(q);
+            len=StringLength(q);
             if(len && !writer(state,q,len))return -1;
             return total+len;
         }

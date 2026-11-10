@@ -8,7 +8,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020376d8(M2C_UNK);
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s8 func_020427b4(void);
-    M2C_UNK func_02068c34(s32);
+    M2C_UNK StringLength(s32);
     M2C_UNK func_02068c50(M2C_UNK, s32);
     s32 func_02068d98(void);
     M2C_UNK func_0205fdbc(s8, s32);
@@ -44,7 +44,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     if (*((volatile s32 *)(data_0213d3c0 + temp_r4)) != 0) {
         func_020376d8(4);
     }
-    temp_r0 = func_02037694(4, func_02068c34(var_r6) + 1);
+    temp_r0 = func_02037694(4, StringLength(var_r6) + 1);
     *((volatile s32 *)(data_0213d3c0 + temp_r4)) = temp_r0;
     if (temp_r0 == 0) {
         func_0203dc38(9, 0xFFFEC77F);
@@ -61,7 +61,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020376d8(M2C_UNK);
     M2C_UNK func_0203dc38(M2C_UNK, s32);
     s8 func_020427b4(void);
-    M2C_UNK func_02068c34(s32);
+    M2C_UNK StringLength(s32);
     M2C_UNK func_02068c50(M2C_UNK, s32);
     s32 func_02068d98(void);
     M2C_UNK func_0205fdbc(s8, s32);
@@ -103,7 +103,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
         if (*((s32 *)(data_0213d3c0 + temp_r4)) != 0) {
             func_020376d8(4);
         }
-        temp_r0 = func_02037694(4, func_02068c34(var_r6) + 1);
+        temp_r0 = func_02037694(4, StringLength(var_r6) + 1);
         var_r8 = data_0213d3c0;
         *((s32 *)(var_r8 + temp_r4)) = temp_r0;
         if (temp_r0 == 0) {
@@ -211,7 +211,7 @@ void func_0203c428(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5){
 void *GetConnection(void);s32 SetConnectionState(s32);
 s32 func_0203e908(s32,s32,M2C_UNK,M2C_UNK);
 s32 func_0203ec48(void*,s32,s32,s32);
-s32 func_02068c34(s32);s32 func_02037694(s32,s32);
+s32 StringLength(s32);s32 func_02037694(s32,s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK*,s32);
 s32 func_02043008(s32);
 extern M2C_UNK gConnectionMgr,data_020fc8fc,data_020fc904,func_020432d4;
@@ -220,7 +220,7 @@ value=M2C_FIELD(state,s32*,8);
 if(value){func_020376d8(4,value,0);M2C_FIELD(&gConnectionMgr,s32*,8)=0;}
 if(arg1){
 len=func_0203ec48(text,-1,32,3);
-len=256-len-func_02068c34((s32)&data_020fc8fc);
+len=256-len-StringLength((s32)&data_020fc8fc);
 value=func_02037694(4,len);
 M2C_FIELD(&gConnectionMgr,s32*,8)=value;
 if(!value){func_0203dc38(9,0xfffec77f);return;}

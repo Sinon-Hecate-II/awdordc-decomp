@@ -100,7 +100,7 @@ M2C_FIELD(a,void **,12)=p;
 M2C_FIELD(a,void **,8)=((p=MemAlloc(0x54)) ? init_021e2848(p) : p);
 q=M2C_FIELD(a,void **,8);
 func_ov002_021e16bc(q,M2C_FIELD(a,u8 *,0x53),M2C_FIELD(a,u8 *,0x47));
-func_ov002_021e179c(q,0,0,(s16)c);
+SetEffectNodeTranslation(q,0,0,(s16)c);
 ((M2C_UNK (*)(void *,s32,u16,u8,s32))func_ov002_021e16dc)(q,M2C_FIELD(a,s32 *,4),M2C_FIELD(a,u16 *,0x38),M2C_FIELD(a,u8 *,0x3a),b);
 M2C_FIELD(q,s32 *,0x28)=M2C_FIELD(a,s32 *,0x1c);
 M2C_FIELD(q,s32 *,0x2c)=M2C_FIELD(a,s32 *,0x24);
@@ -137,7 +137,7 @@ void func_ov002_021e29f8(void *arg0,s32 a,s32 b) {
  func_ov002_021ea4bc(M2C_FIELD((u8 *)&data_ov002_021f312c+M2C_FIELD(arg0,u8 *,0x53)*44,s32 *,M2C_FIELD(arg0,u8 *,0x47)*4),a,b);
 }
 
-void func_ov002_021e2a20(void *arg0) {
+void InitEffectNode(void *arg0) {
     M2C_UNK func_ov002_021e16bc();
     func_ov002_021e16bc();
     M2C_FIELD(arg0, s32 *, 0x54) = 0;
@@ -159,7 +159,7 @@ void func_ov002_021e2a20(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x86) = 0;
 }
 
-void func_ov002_021e2a80(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);func_ov002_021e16dc(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
+void SetEffectNodeResource(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);func_ov002_021e16dc(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
 
 void func_ov002_021e2aa8(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
@@ -228,9 +228,9 @@ void func_ov002_021e2cf0(void *arg0) {
     func_ov002_021e1ef8(arg0, (u8) M2C_FIELD(arg0, u16 *, 0x86));
 }
 
-void func_ov002_021e2d04(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_ov002_021e179c();
-    func_ov002_021e179c();
+void SetEffectNodePosition(void *arg0, s32 arg1, s32 arg2) {
+    M2C_UNK SetEffectNodeTranslation();
+    SetEffectNodeTranslation();
     M2C_FIELD(arg0, s32 *, 0x54) = (s32) (arg1 << 8);
     M2C_FIELD(arg0, s32 *, 0x58) = (s32) (arg2 << 8);
 }
@@ -252,7 +252,7 @@ void func_ov002_021e2d2c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     M2C_FIELD(arg0, s16 *, 0x86) = 0;
 }
 
-void func_ov002_021e2d78(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, s16 arg7) {
+void SetEffectNodeTransform(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, s16 arg7) {
  s32 var_r2=arg2; s32 var_r4; s32 var_r5;
  M2C_FIELD(arg0,s32 *,0x5c)=arg3*arg5-arg1;
  M2C_FIELD(arg0,s32 *,0x60)=var_r2-arg4*arg5;
@@ -275,7 +275,7 @@ void func_ov002_021e2d78(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
  M2C_FIELD(arg0,s16 *,0x86)=1;
 }
 
-void func_ov002_021e2e18(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
+void SetEffectNodeScreenPosition(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
     M2C_FIELD(arg0, s16 *, 0x80) = arg1;
     M2C_FIELD(arg0, s16 *, 0x82) = arg2;
     M2C_FIELD(arg0, s16 *, 0x84) = arg3;

@@ -266,7 +266,7 @@ void func_02060d90(M2C_UNK arg0, s32 arg1) {
 void func_02060e10(M2C_UNK a,s8 *p,s32 n){
 s32 func_02061da0(s8 *,s32);
 s32 func_020675e4(void *,void *,...);
-s32 func_02068c34(const char *);
+s32 StringLength(const char *);
 extern M2C_UNK data_02100084;
 volatile Packet60E packet;s8 *start; s32 pass,len,fields,row,col; s8 *key,*value;
 while(*p){len=func_02061da0(p,n);if(len<0)return;key=p;n-=len;p+=len;
@@ -281,7 +281,7 @@ p++;n--;
 for(row=0;row<packet.count;row++){key=start;for(col=0;col<fields;col++){
 len=func_02061da0(p,n);if(len<0)return;
 func_020675e4(packet.buf,&data_02100084,key,row);gpiPlayerSetString(a,(M2C_UNK *)packet.buf,p);
-p+=len;n-=len;key+=func_02068c34(key)+1;
+p+=len;n-=len;key+=StringLength(key)+1;
 }}
 }
 }
@@ -429,14 +429,14 @@ void func_020614b0(s32 arg0) {
 
 s32 func_020614d4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
  extern char *data_020ffc1c[]; extern char data_0210008c[];
- s32 func_02068c34(const char *); s32 func_020675e4(void *,void *,...);
+ s32 StringLength(const char *); s32 func_020675e4(void *,void *,...);
  s32 func_020623bc(s32,char *,s32,s32,s32); void func_02049260(s32);
  char buf[256]={0}; s32 len=0,i; char *p; s32 result;
  M2C_FIELD(a,s32 *,0x620)=c;
  M2C_FIELD(a,s32 *,0x40)=0;
  for(i=0;i<e;i++){
  p=data_020ffc1c[*(u8 *)(d+(u32)i)];
- if(len+func_02068c34(p)+1>=256)break;
+ if(len+StringLength(p)+1>=256)break;
  len+=func_020675e4(buf+len,data_0210008c,p);
  func_0206093c((void *)a,*(u8 *)(d+(u32)i));
  }

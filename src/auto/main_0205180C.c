@@ -1,7 +1,7 @@
 #include "common.h"
 typedef struct {s32 function,argument;} Callback518;
 typedef struct {char token[21], hash[33], name[82], buf[512];} Response518;
-extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020fe488,data_020fe5ac,data_020fe4bc,data_020fe5b4,data_020fe4c8,data_020fe5e4,data_020fe5ec,data_020fe4a0,data_020fe5f8,data_020fe434,data_020fe43c,data_020fe44c,data_020fe600,data_020fe608,data_020fe424;
+extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020fe488,data_020fe5ac,data_020fe4bc,data_020fe5b4,data_020fe4c8,data_020fe5e4,data_020fe5ec,gGsKeyUniqueNick,data_020fe5f8,data_020fe434,data_020fe43c,data_020fe44c,data_020fe600,data_020fe608,data_020fe424;
 
 
 #pragma opt_strength_reduction off
@@ -14,10 +14,10 @@ s32 func_02068fdc(char *,M2C_UNK *);
 M2C_UNK func_02058620(void **,s32,M2C_UNK *);
 M2C_UNK func_02050744(void **,s32,s32);
 s32 func_02068eac(char *,M2C_UNK *,s32);
-s32 func_02051580(void **,void *);
+s32 SendNewUserProfile(void **,void *);
 s32 func_020511dc(void **,void *);
 s32 func_020675e4(char *,M2C_UNK *,...);
-s32 func_02068c34(char *);
+s32 StringLength(char *);
 M2C_UNK func_020491bc(char *,s32,char *);
 s32 func_0206527c(void *,void *,s32);
 s32 *func_02055aa0(void **,s32);
@@ -50,7 +50,7 @@ case 1:
 if(func_02068eac(text,&data_020fe574,5)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
 if(!func_02058254(text,&data_020fe488,q,128)){func_02058620(a,1,&data_020fe57c);func_02050744(a,3,1);return 3;}
 if(M2C_FIELD(q,s32 *,0x304)){
-result=func_02051580(a,q);if(result)return result;
+result=SendNewUserProfile(a,q);if(result)return result;
 M2C_FIELD(b,s32 *,20)=3;
 }else{
 result=func_020511dc(a,q);if(result)return result;
@@ -73,13 +73,13 @@ if(!func_02058254(text,&data_020fe4bc,work.buf,512)){func_02058620(a,1,&data_020
 M2C_FIELD(p,s32 *,0x19c)=func_0206ad38(work.buf);
 if(!func_02058254(text,&data_020fe4c8,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 M2C_FIELD(p,s32 *,0x1a0)=func_0206ad38(work.buf);
-if(!func_02058254(text,&data_020fe4a0,work.token,21))work.token[0]=0;
+if(!func_02058254(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
 if(!func_02058254(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
 if(M2C_FIELD(q,s8 *,0xc2))chosen=(char *)q+0xc2;
 else if(M2C_FIELD(p,s8 *,0x12f))chosen=(char *)p+0x12f;
 else {func_020675e4(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
 func_020675e4(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
-func_020491bc(work.buf,func_02068c34(work.buf),work.hash);
+func_020491bc(work.buf,StringLength(work.buf),work.hash);
 if(!func_02058254(text,&data_020fe600,work.buf,512)){func_02058620(a,1,&data_020fe5b4);func_02050744(a,3,1);return 3;}
 if(func_0206527c(work.hash,work.buf,32)){func_02058620(a,0x108,&data_020fe608);func_02050744(a,3,1);return 3;}
 if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
@@ -131,7 +131,7 @@ if(!M2C_FIELD(b,s32 *,12)||(M2C_FIELD(q,s32 *,260)==1&&!M2C_FIELD(b,void **,8)))
 return 1;
 }
 
-extern u32 data_020fe524;
+extern u32 gGsKeyFinal;
 extern u32 data_020fe668;
 extern u32 data_020fe67c;
 extern s32 func_02051f74(void **, void *);
@@ -151,9 +151,9 @@ void func_02052038(void **arg0, s32 arg1) {
     }
     if (temp_r2 != 0) {
         if ((arg1 != 0) && (temp_r2 == 3)) {
-            func_0204fea0(arg0, (char *)temp_r4 + 0x1F4, &data_020fe668);
-            func_0204fed0(arg0, (char *)temp_r4 + 0x1F4, *(s32 *)((char *)temp_r4 + 0x198));
-            func_0204fea0(arg0, (char *)temp_r4 + 0x1F4, &data_020fe524);
+            gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &data_020fe668);
+            gpiAppendIntField(arg0, (char *)temp_r4 + 0x1F4, *(s32 *)((char *)temp_r4 + 0x198));
+            gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &gGsKeyFinal);
         }
         func_02050430(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
         temp_r0 = *(s32 *)((char *)temp_r4 + 0x1D4);

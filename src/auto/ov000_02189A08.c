@@ -167,11 +167,11 @@ void func_ov000_02189a08(void) {
 }
 
 void func_ov000_02189df4(void) {
-    M2C_UNK func_ov000_02188d64();
+    M2C_UNK SelectCarriedUnitAction();
     M2C_UNK func_ov000_021895bc();
     extern void **gCurrentMap;
     if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) != 0) {
-        func_ov000_02188d64();
+        SelectCarriedUnitAction();
         return;
     }
     func_ov000_021895bc();
@@ -218,7 +218,7 @@ return n;
 
 #pragma pop
 s32 func_ov000_0218a080(u8 arg0) {
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s32 count = 0;
@@ -228,7 +228,7 @@ s32 func_ov000_0218a080(u8 arg0) {
     for (i = start + 1; i < gPlayerUnitIdBase[arg0] + 0x33; i++) {
         UnkStruct_ov000_02189A08 *entry = &((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap + 0x59A4))[i];
         u32 type = entry->unk0;
-        if (type != 0 && !(entry->unk4 & 8) && func_ov000_021a98a8(type) != 0 && ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[entry->unk2][entry->unk1] != -1) {
+        if (type != 0 && !(entry->unk4 & 8) && IsFootUnitKind(type) != 0 && ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[entry->unk2][entry->unk1] != -1) {
             count += 1;
         }
     }
@@ -237,7 +237,7 @@ s32 func_ov000_0218a080(u8 arg0) {
 
 /* Counts units of an enemy player whose map position is visible (-1 would mark blocked) and whose unit info has nonzero field at +0xC and bit0-2 of +0x13. */
 s32 func_ov000_0218a140(u8 arg0) {
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
@@ -248,7 +248,7 @@ s32 func_ov000_0218a140(u8 arg0) {
     for (i = start + 1; i < gPlayerUnitIdBase[arg0] + 0x33; i++) {
         UnkStruct_ov000_02189A08 *entry = &((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap + 0x59A4))[i];
         u32 type = entry->unk0;
-        if (type != 0 && !(entry->unk4 & 8) && func_ov000_021a98a8(type) == 0) {
+        if (type != 0 && !(entry->unk4 & 8) && IsFootUnitKind(type) == 0) {
             u8 *info = data_ov000_021b5bfc + entry->unk0 * 0x70;
             if ((info[0x13] & 7) && info[0xc] != 0 && ((s8 **)((u8 *)*gCurrentMap + 0x52E8))[entry->unk2][entry->unk1] != -1) {
                 count++;
@@ -309,7 +309,7 @@ if(type!=0 && !(entry->unk4&8) && (data_ov000_021b5bfc[type*0x70+0x13]&7) && ((s
 }}}return count;}
 
 s32 func_ov000_0218a3fc(void){
-s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);s32 func_ov000_021a98a8(u32);
+s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);s32 IsFootUnitKind(u32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 p,i;
 for(p=1;p<5;p++){
@@ -319,10 +319,10 @@ UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMa
 u32 type=entry->unk0;
 if(type!=0&&(data_ov000_021b5bfc[type*112+0x13]&7)&&((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1){
 if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)==0){
-if(func_ov000_021a98a8(entry->unk0)==0)goto success;
+if(IsFootUnitKind(entry->unk0)==0)goto success;
 goto next;
 }else{
-if(func_ov000_021a98a8(entry->unk0)==0)goto next;
+if(IsFootUnitKind(entry->unk0)==0)goto next;
 }
 success:return 1;
 }

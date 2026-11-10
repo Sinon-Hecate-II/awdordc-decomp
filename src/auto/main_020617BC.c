@@ -214,7 +214,7 @@ func_02062e28(p,&data_0210011c);M2C_FIELD(p,s32*,0x5cc)=0;
 func_020677a8(func_02049208());func_0204926c();
 }
 
-s32 func_02061efc(void *a) {s32 func_02068c34(M2C_UNK *);s32 func_02068eac(void *,void *,u32);void func_02062e28(void *,void *);void func_020626d4(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)func_02068c34(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!func_02068eac(p,q,func_02068c34(q))){func_02062e28(a,(u8 *)p+func_02068c34(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));func_020626d4(a);}
+s32 func_02061efc(void *a) {s32 StringLength(M2C_UNK *);s32 func_02068eac(void *,void *,u32);void func_02062e28(void *,void *);void func_020626d4(void *);s32 n;void *p,*q,*s;n=M2C_FIELD(a,s32 *,0x80);if(n>0){s=data_02100090;if((u32)n>(u32)StringLength(s)){p=M2C_FIELD(a,void **,0x7c);q=data_02100090;if(!func_02068eac(p,q,StringLength(q))){func_02062e28(a,(u8 *)p+StringLength(s));M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));}}}M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,4,data_0213e4b4[0],M2C_FIELD(a,s32 *,0x494));func_020626d4(a);}
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];
@@ -246,7 +246,7 @@ func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
 
 void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     M2C_UNK MemCopy(s32, M2C_UNK *, s32);
-    s32 func_02068c34(M2C_UNK *);
+    s32 StringLength(M2C_UNK *);
     extern M2C_UNK data_0210011c;
     M2C_UNK *var_r7;
     s32 temp_r5;
@@ -255,7 +255,7 @@ void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     if (var_r7 == NULL) {
         var_r7 = &data_0210011c;
     }
-    temp_r5 = func_02068c34(var_r7) + 1;
+    temp_r5 = StringLength(var_r7) + 1;
     MemCopy(*arg0, var_r7, temp_r5);
     *arg2 += temp_r5;
     *arg0 += temp_r5;
@@ -323,11 +323,11 @@ block_6:
 #pragma opt_propagation off
 s32 func_020623bc(void *a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
 extern u8 data_0210017c[],data_02100100[];extern M2C_UNK data_0210011c;
-void func_020640a8(void*,void*,void*,s32);s32 func_02068c34(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 func_02037794(s32);
+void func_020640a8(void*,void*,void*,s32);s32 StringLength(M2C_UNK*);s32 func_02049810(s32,s32,s32,s32);s32 func_02037794(s32);
 u8 buf[768];s32 n;u8 *p;u16 len;u8 *src,*dst;s32 r;
 if(M2C_FIELD(a,s32*,0)!=1)func_020640a8(data_0210017c,data_0210012c,data_02100100,0x20a);
 if(!b)b=(s32)&data_0210011c;if(!c)c=(s32)&data_0210011c;
-if((u32)func_02068c34((M2C_UNK*)b)>256)return 6;if((u32)func_02068c34((M2C_UNK*)c)>256)return 6;
+if((u32)StringLength((M2C_UNK*)b)>256)return 6;if((u32)StringLength((M2C_UNK*)c)>256)return 6;
 r=func_02062010(a);if(r)return r;
 M2C_FIELD(a,s32*,0x5c4)=d;func_02062238(a);
 n=2;p=buf+2;

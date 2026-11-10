@@ -1,40 +1,55 @@
 /* 4 functions from 0x02188D64 to 0x02189A08 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_unit_entry.h"
 
 
-void func_ov000_02188d64(void){
-extern void **gCurrentMap;extern u8 *data_ov000_021df580;
-s32 func_ov000_021a98a8(s32);s32 func_ov000_021a9c28(void);s32 func_020d243c(u16);
-void func_ov000_02188370(void);void func_ov000_021884e4(void);void func_ov000_02188688(void);void func_ov000_02188790(void);void func_ov000_021888ec(void);void func_ov000_02188a38(void);
-u8 *p,*unit;u8 id,tmp;
-p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-id=p[13];
-if(id && func_ov000_021a98a8((u32)(M2C_FIELD((u8 *)*gCurrentMap+id*14,u8 *,0x59a4)<<26)>>26) &&
-!func_ov000_021a98a8((u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u8 **,0x52d0)[12]*14,u8 *,0x59a4)<<26)>>26)){
-{u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);u8 tmp=p[12];p[12]=p[13];M2C_FIELD(*gCurrentMap,u8 **,0x52d0)[13]=tmp;}
-M2C_FIELD(data_ov000_021df580,u16 *,8)|=64;
-}
-p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-id=p[12];
-unit=(u8 *)*gCurrentMap+0x59a4+(s16)id*14;
-if(((u32)(unit[0]<<26)>>26)==13 && p[13]){
-p[12]=p[13];
-M2C_FIELD(*gCurrentMap,u8 **,0x52d0)[13]=id;
-unit=(u8 *)*gCurrentMap+0x59a4+M2C_FIELD(*gCurrentMap,u8 **,0x52d0)[12]*14;
-M2C_FIELD(data_ov000_021df580,u16 *,8)|=64;
-}
-if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26) || ((u32)(unit[0]<<26)>>26)==13)func_ov000_02188370();
-else switch((u32)(unit[11]<<28)>>28){
-case 0:case 1:func_ov000_021884e4();break;
-case 2:if(func_ov000_021a9c28()==1)func_ov000_02188688();else func_ov000_021884e4();break;
-case 3:case 4:func_ov000_02188790();break;
-case 5:if(func_020d243c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==1)func_ov000_021888ec();else func_ov000_02188790();break;
-case 7:case 8:case 9:func_ov000_02188a38();break;
-}
-if(M2C_FIELD(data_ov000_021df580,u16 *,8)&64){
-{u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);u8 tmp=p[12];p[12]=p[13];M2C_FIELD(*gCurrentMap,u8 **,0x52d0)[13]=tmp;}
-M2C_FIELD(data_ov000_021df580,u16 *,8)&=~64;
-}
+/* Picks the carried unit the cursor's unit will command (a foot unit, else the
+ * non-transport one), opens the action handler for that unit's action state,
+ * then restores the carry order. */
+void SelectCarriedUnitAction(void) {
+    extern void **gCurrentMap;
+    extern u8 *data_ov000_021df580;
+    s32 IsFootUnitKind(s32);
+    s32 HasEnemyPlayer(void);
+    s32 func_020d243c(u16);
+    void func_ov000_02188370(void);
+    void func_ov000_021884e4(void);
+    void func_ov000_02188688(void);
+    void func_ov000_02188790(void);
+    void func_ov000_021888ec(void);
+    void func_ov000_02188a38(void);
+    UnkStruct_ov000_021A860C *sel, *unit;
+    u8 id, tmp;
+
+    sel = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT);
+    id = sel->unkC[1];
+    if (id && IsFootUnitKind(((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[id].unk0) &&
+        !IsFootUnitKind(((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[0]].unk0)) {
+        {UnkStruct_ov000_021A860C *p = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT); tmp = p->unkC[0]; p->unkC[0] = p->unkC[1]; M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = tmp;}
+        M2C_FIELD(data_ov000_021df580, u16 *, 8) |= 64;
+    }
+    sel = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT);
+    id = sel->unkC[0];
+    unit = (UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + (s16)id * 14);
+    if (unit->unk0 == 13 && sel->unkC[1]) {
+        sel->unkC[0] = sel->unkC[1];
+        M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = id;
+        unit = (UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[0] * 14);
+        M2C_FIELD(data_ov000_021df580, u16 *, 8) |= 64;
+    }
+    if (IsFootUnitKind(unit->unk0) || unit->unk0 == 13) func_ov000_02188370();
+    else switch (unit->unkB) {
+    case 0: case 1: func_ov000_021884e4(); break;
+    case 2: if (HasEnemyPlayer() == 1) func_ov000_02188688(); else func_ov000_021884e4(); break;
+    case 3: case 4: func_ov000_02188790(); break;
+    case 5: if (func_020d243c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) func_ov000_021888ec(); else func_ov000_02188790(); break;
+    case 7: case 8: case 9: func_ov000_02188a38(); break;
+    }
+    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 64) {
+        {UnkStruct_ov000_021A860C *p = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT); tmp = p->unkC[0]; p->unkC[0] = p->unkC[1]; M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = tmp;}
+        M2C_FIELD(data_ov000_021df580, u16 *, 8) &= ~64;
+    }
 }
 
 #pragma opt_common_subs off

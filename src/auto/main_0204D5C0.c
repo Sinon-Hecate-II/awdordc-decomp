@@ -130,8 +130,8 @@ s32 func_0204deb0(void **arg0,s32 arg1,s32 arg2) {
 
 s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
     /* Build an add-buddy request in the connection's send buffer from the session key, new profile id and reason string. */
-    void func_0204fea0(void **, void *, s8 *);
-    void func_0204fed0(void **, void *, s32);
+    void gpiAppendStringField(void **, void *, s8 *);
+    void gpiAppendIntField(void **, void *, s32);
     void func_020580fc(void *, s8 *, s32);
     extern s32 data_020fda48, data_020fda78;
     extern s8 data_020fda88, data_020fda94, data_020fdaa0, data_020fdab0, data_020fdabc;
@@ -156,14 +156,14 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
             c++;
         } while (*c);
     }
-    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fda88);
-    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fda94);
-    func_0204fed0(connection, (u8 *)session + 0x1f4, M2C_FIELD(session, s32 *, 0x198));
-    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdaa0);
-    func_0204fed0(connection, (u8 *)session + 0x1f4, newProfileId);
-    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdab0);
-    func_0204fea0(connection, (u8 *)session + 0x1f4, buf);
-    func_0204fea0(connection, (u8 *)session + 0x1f4, &data_020fdabc);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fda88);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fda94);
+    gpiAppendIntField(connection, (u8 *)session + 0x1f4, M2C_FIELD(session, s32 *, 0x198));
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdaa0);
+    gpiAppendIntField(connection, (u8 *)session + 0x1f4, newProfileId);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdab0);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, buf);
+    gpiAppendStringField(connection, (u8 *)session + 0x1f4, &data_020fdabc);
     return 0;
 }
 

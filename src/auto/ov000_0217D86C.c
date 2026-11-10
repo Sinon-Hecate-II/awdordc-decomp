@@ -13,7 +13,7 @@ s32 func_ov000_0217d86c(void) {
     s32 func_ov000_021a98e4(void);
     s32 func_ov000_021a9014(s32);
     s32 IsCurrentPlayerUnit(s16);
-    s32 func_ov000_021a98a8(s32);
+    s32 IsFootUnitKind(s32);
     void func_01ffada0(s32,s32,s32,s32,s32);
 
     s32 varc;
@@ -76,7 +76,7 @@ s32 func_ov000_0217d86c(void) {
                     if ((u32)(M2C_FIELD(urec, u8 *, 0xb) << 24) >> 31) {
                         count3++;
                         ukind = (((u32)(M2C_FIELD(urec, u8 *, 0) << 26)) >> 26);
-                        if (func_ov000_021a98a8(ukind) != 0) count2++;
+                        if (IsFootUnitKind(ukind) != 0) count2++;
                         if (((u32)(M2C_FIELD(urec, u8 *, 0) << 26) >> 26) == 6) var8 = 1;
                     }
                 }
@@ -94,7 +94,7 @@ s32 func_ov000_0217d86c(void) {
     }
     if (var4 != 0 && varc < 3) return 0;
     skind = (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26)) >> 26);
-    funcRes = func_ov000_021a98a8(skind);
+    funcRes = IsFootUnitKind(skind);
     if (funcRes != 0) {
         if (count <= 3) { if (count2 == 0) M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0xb) |= 0x80; }
         else if (count2 <= 1) M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0xb) |= 0x80;
@@ -151,7 +151,7 @@ void func_01ffada0(s32,s32,s32,s32,s32);
 s32 IsPlayerActive(s32);
 s32 IsSameTeam(u16,s32);
 s32 func_020d27ec(s16,u8);
-s32 func_ov000_021a98a8(s32);
+s32 IsFootUnitKind(s32);
 s32 func_ov000_021a9a28(s32);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 void func_ov000_0217a59c(s32,s32,s32,s32);
@@ -176,7 +176,7 @@ for(p=1;p<5;p++){
 if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)||!IsPlayerActive(p)||M2C_FIELD((u8 *)*gCurrentMap+p*140,u8 *,0x67c2)!=2)continue;
 for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+51;i++){
 unit=(Unit7DE *)((u8*)*gCurrentMap+0x59a4+i*14);
-if(!unit->kind||!func_ov000_021a98a8(unit->kind))continue;
+if(!unit->kind||!IsFootUnitKind(unit->kind))continue;
 if(unit->x==entry[1]&&unit->y==entry[2]){if(unit->cargo)goto next;}
 if(unit->hp>60&&unit->tx==entry[1]&&unit->ty==entry[2])goto next;
 if(!unit->ammo||unit->tx==63)continue;

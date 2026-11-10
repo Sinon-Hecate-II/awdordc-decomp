@@ -315,7 +315,7 @@ void func_0209e26c(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x59) = arg1;
     var_r5 = 0;
     do {
-        temp_r0 = func_0209e2c0(arg0, var_r5);
+        temp_r0 = Get3DSpriteChild(arg0, var_r5);
         func_020991f4(temp_r0, arg1);
         func_02099204(temp_r0);
         var_r5 += 1;
@@ -327,7 +327,7 @@ void func_0209e2b8(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x58) = arg1;
 }
 
-s32 func_0209e2c0(void *arg0, s32 arg1) {
+s32 Get3DSpriteChild(void *arg0, s32 arg1) {
     s32 var_r1;
 
     var_r1 = arg1;
@@ -344,7 +344,7 @@ void *func_0209e2d8(M2C_UNK arg0) {
 
     var_r5 = 0;
 loop_1:
-    temp_r4 = func_0209e2c0(arg0, var_r5);
+    temp_r4 = Get3DSpriteChild(arg0, var_r5);
     if ((func_02099320() != 0) && (M2C_FIELD(temp_r4, u8 *, 0x5C) != 0)) {
         return temp_r4;
     }
@@ -367,8 +367,8 @@ void func_0209e320(void *arg0) {
     u8 *a,*p=arg0,*b;
     void *old,*engine,*q,*q0;
     u32 mode;
-    q0=(void*)func_0209e2c0(p,0);
-    q=(void*)func_0209e2c0(p,1);
+    q0=(void*)Get3DSpriteChild(p,0);
+    q=(void*)Get3DSpriteChild(p,1);
     b=M2C_FIELD(q,u8**,0x60);
     a=M2C_FIELD(q0,u8**,0x60);
     old=gCur3DSpriteEngine;
@@ -445,7 +445,7 @@ void func_0209e998(void) {
     func_0209e660();
 }
 
-void **func_0209e9a4(s32 arg0) {
+void **Alloc3DSprite(s32 arg0) {
     void **func_01ffa3dc(M2C_UNK *, s32);
     M2C_UNK func_02089108();
     extern M2C_UNK data_0211f810, data_0211f804;

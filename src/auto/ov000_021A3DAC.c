@@ -9,7 +9,7 @@ static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; retu
 s32 func_ov000_021a3dac(void) {
  s32 func_ov000_021a6264(s32);void func_ov000_021a0204(void);
  void func_01ffada0(u8,u8,s32,s32,s32);s32 func_ov000_021a97e0(u16,s32);void func_ov000_021a34bc(u8);
- s32 func_020ba924(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a98a8(s32);s32 func_ov000_021a98c8(s32);
+ s32 func_020ba924(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 func_ov000_021a98c8(s32);
  s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void func_ov000_021a07c0(s32);
  extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 data_ov000_021b5bfc[];extern M2C_UNK data_ov000_021df7d0;
  s32 other,armed,transport,flag,index,i;
@@ -45,7 +45,7 @@ s32 func_ov000_021a3dac(void) {
  if(!id)goto nextCell;
  unit=(u8 *)map+0x59a4+id*14;
  if(!IsUnitOnCurrentTeam(id)){
- if(!func_ov000_021a98a8(((UnkStruct_ov000_021A860C *)unit)->unk0))goto nextCell;
+ if(!IsFootUnitKind(((UnkStruct_ov000_021A860C *)unit)->unk0))goto nextCell;
  if(!(M2C_FIELD(data_ov000_021b5bfc+((UnkStruct_ov000_021A860C *)unit)->unk0*112,u8 *,0x13)&7))goto nextCell;
  goto discard;
  }
@@ -148,8 +148,8 @@ u8 func_ov000_021a43c4(void) {
 }
 
 s32 func_ov000_021a43e8(s32 arg0) {
-    s32 func_ov000_021a98a8();
-    if ((func_ov000_021a98a8() != 0) || (arg0 == 4)) {
+    s32 IsFootUnitKind();
+    if ((IsFootUnitKind() != 0) || (arg0 == 4)) {
         return 1;
     }
     return 0;

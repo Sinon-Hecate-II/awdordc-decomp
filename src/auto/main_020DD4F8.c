@@ -283,7 +283,10 @@ void func_020ddfcc(void) {
     func_020ddf6c();
 }
 
-void func_020ddfd8(void *arg0, M2C_UNK arg1) {
+/* Prepares the ov009 3D unit preview: switches to the main screen's engine,
+   loads the palette/texture set for the menu's screen kind, resets the menu
+   sprites, then queues either the confirm action or the slot's unit preview. */
+void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
     s32 func_02012084();
@@ -307,36 +310,36 @@ void func_020ddfd8(void *arg0, M2C_UNK arg1) {
     extern M2C_UNK gUnitSlotIds;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    s32 temp_r0;
-    s32 temp_r0_3;
-    s32 temp_r0_4;
-    s32 temp_r6;
-    s32 var_r1;
-    s32 var_r4;
-    void *temp_r0_2;
-    void *temp_r2;
-    void *temp_r4;
+    s32 kind;
+    s32 kind2;
+    s32 unitId;
+    s32 id;
+    s32 layout;
+    s32 layout2;
+    void *titleSprite;
+    void *animSprite;
+    void *savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     func_0200bc5c(&data_0212d3f0);
     func_020e3218(&data_0212d3f8);
     func_020814e4();
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x34);
-    var_r1 = -1;
-    switch (temp_r0) {                              /* switch 1; irregular */
+    kind = menu->kind;
+    layout = -1;
+    switch (kind) {                                 /* switch 1; irregular */
     case 1:                                         /* switch 1 */
     case 2:                                         /* switch 1 */
-        var_r1 = 2;
+        layout = 2;
         break;
     case 0:                                         /* switch 1 */
-        switch(M2C_FIELD(arg0,s32 *,0x38)){case 1:var_r1=2;break;default:var_r1=4;break;}
+        switch(menu->variant){case 1:layout=2;break;default:layout=4;break;}
         break;
     }
-    if (var_r1 != 2) {
-        if (var_r1 == 4) {
+    if (layout != 2) {
+        if (layout == 4) {
             func_02081590(func_020e3218(&data_0212d408), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
         }
     } else {
@@ -345,46 +348,46 @@ void func_020ddfd8(void *arg0, M2C_UNK arg1) {
     func_02081528();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x18, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
-    gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(arg0, u16 *, 0x48) = (u16) (M2C_FIELD(arg0, u16 *, 0x48) | 0x20);
-    temp_r0_2 = M2C_FIELD(arg0, void **, 0x54);
-    M2C_FIELD(temp_r0_2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
-    M2C_FIELD(temp_r0_2, s8 *, 0x5A) = 0;
-    func_02088f1c(M2C_FIELD(arg0, s32 *, 0x58));
-    func_02088da8(M2C_FIELD(arg0, s32 *, 0x60));
-    func_0208b758(M2C_FIELD(arg0, s32 *, 0x64), 0x44000011);
-    func_02088f1c(M2C_FIELD(arg0, s32 *, 0x64));
-    if (GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68)) != 0) {
-        temp_r0=GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-        temp_r2 = M2C_FIELD(arg0, void **, 0x68);
-        M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
-        M2C_FIELD(temp_r2, s16 *, 0x10) = 0;
-        M2C_FIELD(temp_r2, s16 *, 0xC) = 0xC;
-        M2C_FIELD(temp_r2, u16 *, 2) = (u16) M2C_FIELD(temp_r2, u16 *, 4);
+    gCur3DSpriteEngine = savedEngine;
+    menu->flags = (u16) (menu->flags | 0x20);
+    titleSprite = menu->titleSprite;
+    M2C_FIELD(titleSprite, s32 *, 0x40) = (s32) ((M2C_FIELD(titleSprite, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(titleSprite, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
+    M2C_FIELD(titleSprite, s8 *, 0x5A) = 0;
+    func_02088f1c((s32)menu->backSprite);
+    func_02088da8((s32)menu->panelSprite);
+    func_0208b758((s32)menu->unitSprite, 0x44000011);
+    func_02088f1c((s32)menu->unitSprite);
+    if (GetSpriteAnimValue(menu->animSprite) != 0) {
+        id=GetSpriteAnimValue(menu->animSprite);
+        animSprite = menu->animSprite;
+        M2C_FIELD(animSprite, s16 *, 0xE) = id;
+        M2C_FIELD(animSprite, s16 *, 0x10) = 0;
+        M2C_FIELD(animSprite, s16 *, 0xC) = 0xC;
+        M2C_FIELD(animSprite, u16 *, 2) = (u16) M2C_FIELD(animSprite, u16 *, 4);
     }
-    M2C_FIELD(arg0, u16 *, 0x48) = (u16) (M2C_FIELD(arg0, u16 *, 0x48) & ~0x100);
-    M2C_FIELD(arg0, u16 *, 0x48) = (u16) (M2C_FIELD(arg0, u16 *, 0x48) & ~0x200);
-    M2C_FIELD(arg0, s8 *, 0x41) = 0;
-    if (M2C_FIELD(arg0, u16 *, 0x48) & 1) {
-        temp_r0_3 = M2C_FIELD(arg0, s32 *, 0x34);
-        var_r4 = -1;
-        switch (temp_r0_3) {                        /* switch 2; irregular */
+    menu->flags = (u16) (menu->flags & ~0x100);
+    menu->flags = (u16) (menu->flags & ~0x200);
+    menu->shownIndex = 0;
+    if (menu->flags & 1) {
+        kind2 = menu->kind;
+        layout2 = -1;
+        switch (kind2) {                            /* switch 2; irregular */
         case 1:                                     /* switch 2 */
         case 2:                                     /* switch 2 */
-            var_r4 = 2;
+            layout2 = 2;
             break;
         case 0:                                     /* switch 2 */
-            switch(M2C_FIELD(arg0,s32 *,0x38)){case 1:var_r4=2;break;default:var_r4=4;break;}
+            switch(menu->variant){case 1:layout2=2;break;default:layout2=4;break;}
             break;
         }
-        temp_r6 = func_02012084();
-        func_ov009_02224730(0, arg1, temp_r6, func_ov009_0222429c(), (u8)var_r4);
+        id = func_02012084();
+        func_ov009_02224730(0, side, id, func_ov009_0222429c(), (u8)layout2);
         return;
     }
-    temp_r0_4 = func_ov009_022246ac(*(&gUnitSlotIds + M2C_FIELD(arg0, s8 *, 0x43)));
-    if (temp_r0_4 == 0) {
+    unitId = func_ov009_022246ac(*(&gUnitSlotIds + menu->slot));
+    if (unitId == 0) {
         return;
     }
-    func_ov009_022249a4(1, arg1, temp_r0_4);
+    func_ov009_022249a4(1, side, unitId);
 }
 

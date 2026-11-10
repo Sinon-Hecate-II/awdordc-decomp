@@ -44,7 +44,7 @@ retry:
  if(func_020ba924(x,y)==1)goto reject;
  unit=(UnkStruct_ov000_021A860C *)((u8*)*gCurrentMap+0x59a4)+unitId;
  if(!IsUnitOnCurrentTeam(unitId)){
- if(!func_ov000_021a98a8(unit->unk0)){
+ if(!IsFootUnitKind(unit->unk0)){
  if(!func_020a7bd4(unit->unk0))goto next;
  goto reject;
  }
@@ -232,7 +232,7 @@ uid=M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0);
 if(!uid)goto next;
 unit=(UnkStruct_ov000_021A860C *)(base+0x59a4)+uid;
 if(!IsUnitOnCurrentTeam(uid)){
-if(!func_ov000_021a98a8(unit->unk0))goto next;
+if(!IsFootUnitKind(unit->unk0))goto next;
 if(!(M2C_FIELD((u8*)&data_ov000_021b5bfc+unit->unk0*112,u8*,19)&7))goto next;
 base=*gCurrentMap;
 if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]>110)goto next;

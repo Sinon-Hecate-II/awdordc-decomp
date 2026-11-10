@@ -57,18 +57,18 @@ s32 func_020553c4(M2C_UNK arg0, void *arg1) {
 
 #pragma opt_dead_code off
 s32 func_02055550(s32 ctx,void *p,s32 a,s32 str) {
-s32 func_02068c34(s32 *);s32 func_0204fea0();s32 func_0204fed0();s32 gpiAppendStringToBufferLen();s32 func_0204fcfc();s32 func_02049910(s32);
+s32 StringLength(s32 *);s32 gpiAppendStringField();s32 gpiAppendIntField();s32 gpiAppendStringToBufferLen();s32 func_0204fcfc();s32 func_02049910(s32);
 extern s32 data_020fec7c,data_020fec0c,data_020fead4,data_020fed34,data_020fed44,data_020fed48,data_020fed50;
 s32 buf[6];s32 len,r;
 if(!p)func_020640a8(&data_020fec7c,&data_020fec0c,&data_020fead4,0x340);
 if(!str)func_020640a8(&data_020fed34,&data_020fec0c,&data_020fead4,0x341);
-len=func_02068c34((s32 *)str);
+len=StringLength((s32 *)str);
 Init55550(buf);buf[4]=a;
-r=func_0204fea0(ctx,buf,&data_020fed44);if(r)return r;
-r=func_0204fed0(ctx,buf,a);if(r)return r;
-r=func_0204fea0(ctx,buf,&data_020fed48);if(r)return r;
-r=func_0204fed0(ctx,buf,len);if(r)return r;
-r=func_0204fea0(ctx,buf,&data_020fed50);if(r)return r;
+r=gpiAppendStringField(ctx,buf,&data_020fed44);if(r)return r;
+r=gpiAppendIntField(ctx,buf,a);if(r)return r;
+r=gpiAppendStringField(ctx,buf,&data_020fed48);if(r)return r;
+r=gpiAppendIntField(ctx,buf,len);if(r)return r;
+r=gpiAppendStringField(ctx,buf,&data_020fed50);if(r)return r;
 buf[5]=buf[2];
 r=gpiAppendStringToBufferLen(ctx,buf,str,len);if(r)return r;
 r=func_0204fcfc(ctx,buf,0);if(r)return r;
@@ -95,12 +95,12 @@ s32 gpiSendOrBufferStringLen(M2C_UNK,void *,M2C_UNK *,s32);
 s32 func_020501d8(s32,s32,void *);
 M2C_UNK func_020640a8(void *,void *,void *,s32);
 M2C_UNK func_020675e4(void *,void *,...);
-s32 func_02068c34(M2C_UNK *);
+s32 StringLength(M2C_UNK *);
 extern M2C_UNK data_020feb04,data_020fec0c,data_020fec7c,data_020fed78,data_020fed7c;
 M2C_UNK buffer[8];s32 result;
 if(!arg1)func_020640a8(&data_020fec7c,&data_020fec0c,&data_020feb04,0x389);
 if(!arg2)arg2=&data_020fed78;
-if(arg3==-1)arg3=func_02068c34(arg2);
+if(arg3==-1)arg3=StringLength(arg2);
 func_020675e4(buffer,&data_020fed7c,arg3);
 result=func_020501d8(arg0,arg1,buffer);if(result)return result;
 result=gpiSendOrBufferStringLen(arg0,arg1,arg2,arg3);if(result)return result;

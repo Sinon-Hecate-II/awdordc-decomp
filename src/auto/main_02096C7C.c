@@ -40,7 +40,7 @@ void func_02096d0c(void) {
 }
 
 void func_02096d5c(void) {
-    M2C_UNK func_020026d8(M2C_UNK);
+    M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
@@ -49,7 +49,7 @@ void func_02096d5c(void) {
     M2C_UNK func_020032bc(M2C_UNK);
     M2C_UNK func_02082c84();
     func_02082c84();
-    func_020026d8(1);
+    GX_SetBankForBG(1);
     func_02002968(2);
     func_02003124(4);
     func_020031cc(8);
@@ -131,7 +131,7 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_0209707c(void) {
-    s32 func_02091e24();
+    s32 Get3DSpriteTarget();
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -148,7 +148,7 @@ void func_0209707c(void) {
             var_r0 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r0;
-        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((func_02091e24() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((func_02091e24() != 3) || (gCur3DSpriteEngine == temp_r4))) {
+        if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == temp_r4))) {
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         }
         var_r5 += 1;
@@ -157,12 +157,12 @@ void func_0209707c(void) {
 }
 
 void func_02097128(s8 arg0) {
-    void *func_02091da8();
-    M2C_FIELD(func_02091da8(), s8 *, 0x4A) = arg0;
+    void *Get3DSpriteManager();
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4A) = arg0;
 }
 
 void func_0209713c(s8 arg0) {
-    M2C_FIELD(func_02091da8(), s8 *, 0x4C) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4C) = arg0;
 }
 
 void func_02097150(M2C_UNK arg0, s16 arg1) {
@@ -174,9 +174,9 @@ void func_02097164(s32 a,s8 b) { s32 *func_02091f18(); M2C_FIELD(func_02091f18()
 
 void func_02097178(s32 a,s32 b) { s32 *func_02091f18(); s32 p; M2C_FIELD(func_02091f18(),u8 *,7)=b; p=func_0209e9dc((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
 
-void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=func_0209e9dc((u16)a);if(!p)return;q=func_0209e2c0(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)func_02098e2c(r,0);else func_02098e2c(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
+void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=func_0209e9dc((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)func_02098e2c(r,0);else func_02098e2c(r,M2C_FIELD(q,u8 *,0x58));func_0209e320(p); }
 
-void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc((u16)a);if(!p)return;q=func_0209e2c0(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);func_02098e2c(r,b);func_0209e320(p); }
+void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);func_02098e2c(r,b);func_0209e320(p); }
 
 void func_02097280(s32 arg0) {
     M2C_UNK func_02088db8(void *, s32);
@@ -192,7 +192,7 @@ void func_02097280(s32 arg0) {
     if (temp_r0 == NULL) {
         return;
     }
-    temp_r7 = func_0209e2c0(temp_r0, arg0);
+    temp_r7 = Get3DSpriteChild(temp_r0, arg0);
     var_r8 = 8;
     temp_r4 = M2C_FIELD(temp_r7, s32 *, 0x60);
     if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r0, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
@@ -226,7 +226,7 @@ void func_02097348(s32 arg0) {
     if (temp_r0 == NULL) {
         return;
     }
-    temp_r7 = func_0209e2c0(temp_r0, arg0);
+    temp_r7 = Get3DSpriteChild(temp_r0, arg0);
     var_r8 = 8;
     temp_r4 = M2C_FIELD(temp_r7, s32 *, 0x60);
     if (func_020abe90((u8) ((u32) (M2C_FIELD(temp_r0, u8 *, 0x48) << 0x1C) >> 0x1D)) == 1) {
@@ -250,7 +250,7 @@ void func_02097410(void) {
 
 }
 
-void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc(2);if(!p)return;q=func_0209e2c0(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);func_02098e2c(r,b); }
+void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=func_0209e9dc(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);func_02098e2c(r,b); }
 
 void func_0209747c(M2C_UNK arg0, s32 arg1) {
     s32 temp_r0;
@@ -261,7 +261,7 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
     if (temp_r0 == 0) {
         return;
     }
-    temp_r0_2 = func_0209e2c0(temp_r0, arg0);
+    temp_r0_2 = Get3DSpriteChild(temp_r0, arg0);
     temp_r0_3 = M2C_FIELD(temp_r0_2, s32 *, 0x60);
     if (arg1 != 0) {
         func_02098e2c(temp_r0_3, 0U);
@@ -271,113 +271,115 @@ void func_0209747c(M2C_UNK arg0, s32 arg1) {
     func_0209e320(temp_r0);
 }
 
-void func_020974d0(s32 arg0) {
-    s32 func_02091db4();
-    s32 func_02091e24();
+/* Builds the 3D sprite cells for the current sprite mode on both screens:
+   1 sprite, a 3x2 cell grid, or 2 sprites, all sharing the given sprite data. */
+void Build3DSpriteScene(s32 spriteData) {
+    s32 Get3DSpriteCount();
+    s32 Get3DSpriteTarget();
     void func_020943a8(s32);
     M2C_UNK func_02098e04(void *, s32, u16);
     M2C_UNK func_020990d4(void *, s32, u16);
     M2C_UNK func_0209e184(void *, M2C_UNK, M2C_UNK, u16);
-    void *func_0209e9a4(s32);
+    void *Alloc3DSprite(s32);
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void *spC;
-    s32 sp8;
-    s32 sp4;
-    s32 sp0;
-    void **var_r0;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_4;
-    void *temp_r0_6;
-    void *temp_r0_8;
-    u16 temp_r5;
-    s32 var_r6;
-    s32 var_r6_2;
-    void *temp_r7;
-    void *temp_r7_2;
-    s32 var_r8;
-    s32 var_r8_2;
-    s32 var_r9;
-    s32 var_r9_2;
-    void *temp_r0_3;
-    void *temp_r0_5;
-    void *temp_r0_7;
+    void *savedEngine;
+    s32 screen;
+    s32 row;
+    s32 unused;
+    void **enginePtr;
+    s32 nextScreen;
+    s32 spriteCount;
+    s32 nextRow;
+    void *part;
+    void *part2;
+    u16 rowId;
+    s32 slot;
+    s32 slot2;
+    void *child;
+    void *child2;
+    s32 yOff;
+    s32 yOff2;
+    s32 tileOff;
+    s32 tileOff2;
+    void *sprite;
+    void *sprite1;
+    void *sprite2;
 
-    sp0 = arg0;
-    spC = (void *)gCur3DSpriteEngine;
-    sp8 = 0;
+    unused = spriteData;
+    savedEngine = (void *)gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (sp8 == 0) {
-            var_r0 = &g3DSpriteEngineMain;
+        if (screen == 0) {
+            enginePtr = &g3DSpriteEngineMain;
         } else {
-            var_r0 = &g3DSpriteEngineSub;
+            enginePtr = &g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = *var_r0;
-        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((func_02091e24() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((func_02091e24() != 3) || (gCur3DSpriteEngine == (void *)spC))) {
-            temp_r0_2 = func_02091db4();
-            switch (temp_r0_2) {                    /* irregular */
+        gCur3DSpriteEngine = *enginePtr;
+        if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == (void *)savedEngine))) {
+            spriteCount = Get3DSpriteCount();
+            switch (spriteCount) {                  /* irregular */
             case 0:
-                temp_r0_3 = func_0209e9a4(sp0);
-                func_0209e184(temp_r0_3, 1, 0, 8U);
-                M2C_FIELD(temp_r0_3, s16 *, 0x2E) = 2;
-                M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x400;
+                sprite = Alloc3DSprite(unused);
+                func_0209e184(sprite, 1, 0, 8U);
+                M2C_FIELD(sprite, s16 *, 0x2E) = 2;
+                M2C_FIELD(sprite, s16 *, 0x3C) = 0x400;
                 break;
             case 1:
-                sp4 = 0;
-                var_r8 = 0x9000;
-                var_r9 = 0x9800;
+                row = 0;
+                yOff = 0x9000;
+                tileOff = 0x9800;
                 do {
-                    temp_r0_5 = func_0209e9a4(sp0);
-                    func_0209e184(temp_r0_5, 1, 0x8000, (u16) (sp4 + 0xD));
-                    var_r6 = 0;
-                    temp_r5 = (u16) sp4;
-                    M2C_FIELD(temp_r0_5, u16 *, 0x2E) = temp_r5;
-                    M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x400;
+                    sprite1 = Alloc3DSprite(unused);
+                    func_0209e184(sprite1, 1, 0x8000, (u16) (row + 0xD));
+                    slot = 0;
+                    rowId = (u16) row;
+                    M2C_FIELD(sprite1, u16 *, 0x2E) = rowId;
+                    M2C_FIELD(sprite1, s16 *, 0x3C) = 0x400;
 loop_17:
-                    temp_r0_6 = func_0209e2c0(temp_r0_5, var_r6);
-                    temp_r7 = M2C_FIELD(temp_r0_6, void **, 0x60);
-                    func_02098e04(temp_r7, var_r8, (u16) (sp4 + 0xA));
-                    func_020990d4(temp_r0_6, var_r9, temp_r5);
-                    M2C_FIELD(temp_r7, s16 *, 0x3C) = 0x400;
-                    var_r6 += 1;
-                    M2C_FIELD(temp_r0_6, s16 *, 0x3C) = 0x400;
-                    if ((s32) var_r6 < 2) {
+                    part = Get3DSpriteChild(sprite1, slot);
+                    child = M2C_FIELD(part, void **, 0x60);
+                    func_02098e04(child, yOff, (u16) (row + 0xA));
+                    func_020990d4(part, tileOff, rowId);
+                    M2C_FIELD(child, s16 *, 0x3C) = 0x400;
+                    slot += 1;
+                    M2C_FIELD(part, s16 *, 0x3C) = 0x400;
+                    if ((s32) slot < 2) {
                         goto loop_17;
                     }
-                    var_r8 += 0x200;
-                    temp_r0_4 = sp4 + 1;
-                    sp4 = temp_r0_4;
-                    var_r9 += 0xA00;
-                } while (temp_r0_4 < 3);
+                    yOff += 0x200;
+                    nextRow = row + 1;
+                    row = nextRow;
+                    tileOff += 0xA00;
+                } while (nextRow < 3);
                 break;
             case 2:
-                temp_r0_7 = func_0209e9a4(sp0);
-                func_0209e184(temp_r0_7, 2, 0, 0xDU);
-                M2C_FIELD(temp_r0_7, s16 *, 0x2E) = 2;
-                M2C_FIELD(temp_r0_7, s16 *, 0x3C) = 0x400;
-                var_r6_2 = 0;
-                var_r8_2 = 0x1800;
-                var_r9_2 = 0x2000;
+                sprite2 = Alloc3DSprite(unused);
+                func_0209e184(sprite2, 2, 0, 0xDU);
+                M2C_FIELD(sprite2, s16 *, 0x2E) = 2;
+                M2C_FIELD(sprite2, s16 *, 0x3C) = 0x400;
+                slot2 = 0;
+                yOff2 = 0x1800;
+                tileOff2 = 0x2000;
                 do {
-                    temp_r0_8 = func_0209e2c0(temp_r0_7, var_r6_2);
-                    temp_r7_2 = M2C_FIELD(temp_r0_8, void **, 0x60);
-                    func_02098e04(temp_r7_2, var_r8_2, (u16) (var_r6_2 + 0xA));
-                    func_020990d4(temp_r0_8, var_r9_2, var_r6_2);
-                    M2C_FIELD(temp_r7_2, s16 *, 0x3C) = 0x400;
-                    M2C_FIELD(temp_r0_8, s16 *, 0x3C) = 0x400;
-                    var_r8_2 += 0x200;
-                    var_r9_2 += 0x8000;
-                    var_r6_2 += 1;
-                } while ((s32) var_r6_2 < 2);
+                    part2 = Get3DSpriteChild(sprite2, slot2);
+                    child2 = M2C_FIELD(part2, void **, 0x60);
+                    func_02098e04(child2, yOff2, (u16) (slot2 + 0xA));
+                    func_020990d4(part2, tileOff2, slot2);
+                    M2C_FIELD(child2, s16 *, 0x3C) = 0x400;
+                    M2C_FIELD(part2, s16 *, 0x3C) = 0x400;
+                    yOff2 += 0x200;
+                    tileOff2 += 0x8000;
+                    slot2 += 1;
+                } while ((s32) slot2 < 2);
                 break;
             }
         }
-        temp_r0 = sp8 + 1;
-        sp8 = temp_r0;
-    } while (temp_r0 < 2);
-    gCur3DSpriteEngine = spC;
+        nextScreen = screen + 1;
+        screen = nextScreen;
+    } while (nextScreen < 2);
+    gCur3DSpriteEngine = savedEngine;
     func_020943a8(-1);
 }
 
@@ -480,14 +482,14 @@ s32 func_02097964(void) {
 s32 func_020979a4(s32 a) { s32 *func_02091f18();s32 i,q,p,b;for(i=0;i<3;i++){q=func_02091f18(i);p=func_0209e9dc((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);func_0209e320(p);}}func_020943a8(a);func_02094ba0(a);func_0209707c();return 1;}
 
 void func_02097a2c(s32 arg0) {
-    s32 func_02091db4();
+    s32 Get3DSpriteCount();
     M2C_UNK func_020991f4(s32, s32);
     M2C_UNK func_02099204(s32);
     long var_r6;
     s32 temp_r0;
     s32 temp_r0_2;
 
-    if (func_02091db4() != 2) {
+    if (Get3DSpriteCount() != 2) {
         return;
     }
     temp_r0 = func_0209e9dc(2);
@@ -496,7 +498,7 @@ void func_02097a2c(s32 arg0) {
     }
     var_r6 = 0;
     do {
-        temp_r0_2 = func_0209e2c0(temp_r0, var_r6);
+        temp_r0_2 = Get3DSpriteChild(temp_r0, var_r6);
         if (var_r6 == arg0) {
             func_020991f4(temp_r0_2, 1);
         } else {
@@ -513,7 +515,7 @@ void func_02097aa8(void) {
 }
 
 void func_02097aac(s32 arg0, u8 arg1) {
-    s32 func_02091e24();
+    s32 Get3DSpriteTarget();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteEngineSub;
@@ -532,9 +534,9 @@ void func_02097aac(s32 arg0, u8 arg1) {
         if(engineIndex==0)engine=g3DSpriteEngineMain;
         else engine=g3DSpriteEngineSub;
         gCur3DSpriteEngine=engine;
-        if(((func_02091e24()!=0)||(gCur3DSpriteEngine==g3DSpriteEngineMain)) &&
-           ((func_02091e24()!=1)||(gCur3DSpriteEngine==g3DSpriteEngineSub)) &&
-           ((func_02091e24()!=3)||(gCur3DSpriteEngine==saved))) {
+        if(((Get3DSpriteTarget()!=0)||(gCur3DSpriteEngine==g3DSpriteEngineMain)) &&
+           ((Get3DSpriteTarget()!=1)||(gCur3DSpriteEngine==g3DSpriteEngineSub)) &&
+           ((Get3DSpriteTarget()!=3)||(gCur3DSpriteEngine==saved))) {
             for(row=1;row<rows;row++){
                 for(col=0;col<32;col++)base[row*32+col]=0;
             }
@@ -553,7 +555,7 @@ void func_02097bac(M2C_UNK arg0) {
 
     temp_r5 = func_02091f18();
     temp_r4 = func_02091e70(arg0);
-    func_02097aac(*temp_r5 + (temp_r4 * 2), M2C_FIELD(func_02091da8(), u8 *, 0x4A));
+    func_02097aac(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
 }
 
 s32 func_02097be0(void) {
@@ -561,7 +563,7 @@ s32 func_020890d4(s32);
 s32 i,p,j;
 i=0;do {p=func_0209e9dc((u16)i);if(p) {
 if(func_020890d4(p))return 1;
-j=0;do {if(func_020890d4(func_0209e2c0(p,j)))return 1;j++;}while(j<2);
+j=0;do {if(func_020890d4(Get3DSpriteChild(p,j)))return 1;j++;}while(j<2);
 }i++;}while(i<3);return 0;
 }
 

@@ -67,8 +67,8 @@ extern char data_020ff1e8[];
 s32 func_020562d0(void *a,void *b) {
 s32 func_02050430(void*,s32,void*,void*,s32,void*);
 s32 func_0205835c(void*,s32,s32*);
-void func_0204fea0(void*,void*,void*);
-void func_0204fed0(void*,void*,s32);
+void gpiAppendStringField(void*,void*,void*);
+void gpiAppendIntField(void*,void*,s32);
 s32 func_02050208(void*,s32,void*,s32*,s32*,void*);
 s32 func_02058450(void*,s32,s32*,char*,char*);
 s32 func_02068d98(void*,void*);
@@ -90,88 +90,88 @@ if(kind==4){func_02058620(a,0xd01,data_020fef94);func_02050744(a,4,0);return 4;}
 if(kind==3){
 i=M2C_FIELD(request,s32*,0);
 if(i==1){
-func_0204fea0(a,request+24,data_020fefc0);
-func_0204fea0(a,request+24,data_020fefcc);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
-func_0204fea0(a,request+24,data_020fefd8);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
-func_0204fea0(a,request+24,data_020fefe4);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
-if(M2C_FIELD(request,s8*,40)){func_0204fea0(a,request+24,data_020feff4);
-func_0204fea0(a,request+24,request+40);
+gpiAppendStringField(a,request+24,data_020fefc0);
+gpiAppendStringField(a,request+24,data_020fefcc);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,408));
+gpiAppendStringField(a,request+24,data_020fefd8);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,416));
+gpiAppendStringField(a,request+24,data_020fefe4);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
+if(M2C_FIELD(request,s8*,40)){gpiAppendStringField(a,request+24,data_020feff4);
+gpiAppendStringField(a,request+24,request+40);
 }
-if(M2C_FIELD(request,s8*,71)){func_0204fea0(a,request+24,data_020feffc);
-func_0204fea0(a,request+24,request+71);
+if(M2C_FIELD(request,s8*,71)){gpiAppendStringField(a,request+24,data_020feffc);
+gpiAppendStringField(a,request+24,request+71);
 }
-if(M2C_FIELD(request,s8*,92)){func_0204fea0(a,request+24,data_020ff00c);
-func_0204fea0(a,request+24,request+92);
+if(M2C_FIELD(request,s8*,92)){gpiAppendStringField(a,request+24,data_020ff00c);
+gpiAppendStringField(a,request+24,request+92);
 }
-if(M2C_FIELD(request,s8*,143)){func_0204fea0(a,request+24,data_020ff014);
-func_0204fea0(a,request+24,request+143);
+if(M2C_FIELD(request,s8*,143)){gpiAppendStringField(a,request+24,data_020ff014);
+gpiAppendStringField(a,request+24,request+143);
 }
-if(M2C_FIELD(request,s8*,174)){func_0204fea0(a,request+24,data_020ff020);
-func_0204fea0(a,request+24,request+174);
+if(M2C_FIELD(request,s8*,174)){gpiAppendStringField(a,request+24,data_020ff020);
+gpiAppendStringField(a,request+24,request+174);
 }
-if(M2C_FIELD(request,s32*,304)!=0){func_0204fea0(a,request+24,data_020ff02c);
-func_0204fed0(a,request+24,M2C_FIELD(request,s32*,304));}
-if(M2C_FIELD(request,s32*,308)>0){func_0204fea0(a,request+24,data_020ff038);
-func_0204fed0(a,request+24,M2C_FIELD(request,s32*,308));}
-}else if(i==2){func_0204fea0(a,request+24,data_020ff040);
-func_0204fea0(a,request+24,data_020ff00c);
-func_0204fea0(a,request+24,request+92);
-}else if(i==3){func_0204fea0(a,request+24,data_020ff048);
-func_0204fea0(a,request+24,data_020ff00c);
-func_0204fea0(a,request+24,request+92);
-func_0204fea0(a,request+24,data_020ff050);
-func_0204fea0(a,request+24,request+205);
-func_0204fea0(a,request+24,data_020fefe4);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
-}else if(i==4){func_0204fea0(a,request+24,data_020ff058);
-func_0204fea0(a,request+24,data_020fefcc);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
-func_0204fea0(a,request+24,data_020fefd8);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
-func_0204fea0(a,request+24,data_020ff064);
-func_0204fed0(a,request+24,M2C_FIELD(request,s32*,0x138));
-}else if(i==5){func_0204fea0(a,request+24,data_020ff070);
-func_0204fea0(a,request+24,data_020feff4);
-func_0204fea0(a,request+24,request+40);
-func_0204fea0(a,request+24,data_020ff00c);
-func_0204fea0(a,request+24,request+92);
-func_0204fea0(a,request+24,data_020ff050);
-func_0204fea0(a,request+24,request+205);
+if(M2C_FIELD(request,s32*,304)!=0){gpiAppendStringField(a,request+24,data_020ff02c);
+gpiAppendIntField(a,request+24,M2C_FIELD(request,s32*,304));}
+if(M2C_FIELD(request,s32*,308)>0){gpiAppendStringField(a,request+24,data_020ff038);
+gpiAppendIntField(a,request+24,M2C_FIELD(request,s32*,308));}
+}else if(i==2){gpiAppendStringField(a,request+24,data_020ff040);
+gpiAppendStringField(a,request+24,data_020ff00c);
+gpiAppendStringField(a,request+24,request+92);
+}else if(i==3){gpiAppendStringField(a,request+24,data_020ff048);
+gpiAppendStringField(a,request+24,data_020ff00c);
+gpiAppendStringField(a,request+24,request+92);
+gpiAppendStringField(a,request+24,data_020ff050);
+gpiAppendStringField(a,request+24,request+205);
+gpiAppendStringField(a,request+24,data_020fefe4);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
+}else if(i==4){gpiAppendStringField(a,request+24,data_020ff058);
+gpiAppendStringField(a,request+24,data_020fefcc);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,408));
+gpiAppendStringField(a,request+24,data_020fefd8);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,416));
+gpiAppendStringField(a,request+24,data_020ff064);
+gpiAppendIntField(a,request+24,M2C_FIELD(request,s32*,0x138));
+}else if(i==5){gpiAppendStringField(a,request+24,data_020ff070);
+gpiAppendStringField(a,request+24,data_020feff4);
+gpiAppendStringField(a,request+24,request+40);
+gpiAppendStringField(a,request+24,data_020ff00c);
+gpiAppendStringField(a,request+24,request+92);
+gpiAppendStringField(a,request+24,data_020ff050);
+gpiAppendStringField(a,request+24,request+205);
 }else if(i==6){
-func_0204fea0(a,request+24,data_020ff078);
-func_0204fea0(a,request+24,data_020feff4);
-func_0204fea0(a,request+24,request+40);
-func_0204fea0(a,request+24,data_020ff00c);
-func_0204fea0(a,request+24,request+92);
-func_0204fea0(a,request+24,data_020ff050);
-func_0204fea0(a,request+24,request+205);
-func_0204fea0(a,request+24,data_020ff084);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1132));
-func_0204fea0(a,request+24,data_020fefe4);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
-func_0204fea0(a,request+24,data_020feffc);
-func_0204fea0(a,request+24,request+71);
-if(M2C_FIELD(request,s8*,0xec)){func_0204fea0(a,request+24,data_020ff090);
-func_0204fea0(a,request+24,request+236);
-}}else if(i==7){func_0204fea0(a,request+24,data_020ff098);
-func_0204fea0(a,request+24,data_020fefcc);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,408));
-func_0204fea0(a,request+24,data_020fefd8);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,416));
-func_0204fea0(a,request+24,data_020fefe4);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
-}else if(i==8){func_0204fea0(a,request+24,data_020ff0a4);
-func_0204fea0(a,request+24,data_020ff0b4);
-func_0204fea0(a,request+24,request+71);
-func_0204fea0(a,request+24,data_020fefe4);
-func_0204fed0(a,request+24,M2C_FIELD(ctx,s32*,1136));
+gpiAppendStringField(a,request+24,data_020ff078);
+gpiAppendStringField(a,request+24,data_020feff4);
+gpiAppendStringField(a,request+24,request+40);
+gpiAppendStringField(a,request+24,data_020ff00c);
+gpiAppendStringField(a,request+24,request+92);
+gpiAppendStringField(a,request+24,data_020ff050);
+gpiAppendStringField(a,request+24,request+205);
+gpiAppendStringField(a,request+24,data_020ff084);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1132));
+gpiAppendStringField(a,request+24,data_020fefe4);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
+gpiAppendStringField(a,request+24,data_020feffc);
+gpiAppendStringField(a,request+24,request+71);
+if(M2C_FIELD(request,s8*,0xec)){gpiAppendStringField(a,request+24,data_020ff090);
+gpiAppendStringField(a,request+24,request+236);
+}}else if(i==7){gpiAppendStringField(a,request+24,data_020ff098);
+gpiAppendStringField(a,request+24,data_020fefcc);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,408));
+gpiAppendStringField(a,request+24,data_020fefd8);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,416));
+gpiAppendStringField(a,request+24,data_020fefe4);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
+}else if(i==8){gpiAppendStringField(a,request+24,data_020ff0a4);
+gpiAppendStringField(a,request+24,data_020ff0b4);
+gpiAppendStringField(a,request+24,request+71);
+gpiAppendStringField(a,request+24,data_020fefe4);
+gpiAppendIntField(a,request+24,M2C_FIELD(ctx,s32*,1136));
 }else{func_020640a8(data_020ff0c4,data_020fef48,data_020fee0c,0x275);}
-func_0204fea0(a,request+24,data_020ff0c8);
-func_0204fea0(a,request+24,gServiceNameBuffer);
-func_0204fea0(a,request+24,data_020ff0d4);
+gpiAppendStringField(a,request+24,data_020ff0c8);
+gpiAppendStringField(a,request+24,gServiceNameBuffer);
+gpiAppendStringField(a,request+24,data_020ff0d4);
 M2C_FIELD(b,s32*,20)=4;
 }
 }else if(M2C_FIELD(b,s32*,20)==4){

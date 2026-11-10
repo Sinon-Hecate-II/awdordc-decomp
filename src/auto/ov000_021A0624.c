@@ -8,23 +8,23 @@ extern void **gCurrentMap;
 u8 func_ov000_021a0624(s32 a,s32 b) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021a98a8(void);
+s32 IsFootUnitKind(void);
 s32 count=0;
 s32 i;
 void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
 for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++) {
 UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-if(entry->unk0!=0 && i!=a && func_ov000_021a98a8()!=0 && b==entry->unkB_4) count++;
+if(entry->unk0!=0 && i!=a && IsFootUnitKind()!=0 && b==entry->unkB_4) count++;
 }
 return count;
 }
 
 s32 func_ov000_021a06e4(M2C_UNK arg0) {
-s32 func_ov000_021a98a8(); s32 func_ov000_021a98e4(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
+s32 IsFootUnitKind(); s32 func_ov000_021a98e4(M2C_UNK); s32 func_ov000_021a9904(M2C_UNK);
 extern u16 data_02168f14; extern void **gCurrentMap; extern void *gAiState;
 void *p;
-if(func_ov000_021a98a8()!=0 || func_ov000_021a9904(arg0)==2)return 0;
+if(IsFootUnitKind()!=0 || func_ov000_021a9904(arg0)==2)return 0;
 if(!(((u32)(data_02168f14<<29)>>29)&255)) {
 p=*gCurrentMap;
 switch(M2C_FIELD(p,u16*,0x5142)) {case 0xae: if(M2C_FIELD(p,u16*,0x52a4)==3)return 10; break;default:break;}
@@ -119,7 +119,7 @@ s32 BuildAiTargetGroups(void) {
     void func_01ffada0(s32,s32,s32,s32,s32);
     s32 IsUnitOnCurrentTeam(s32);
     s32 func_020a7bd4(s32);
-    s32 func_ov000_021a98a8();
+    s32 IsFootUnitKind();
     s32 IsCurrentPlayerUnit(s16);
     s32 func_ov000_021a43e8();
     s32 func_ov000_021a98e4(s32);
@@ -163,7 +163,7 @@ s32 BuildAiTargetGroups(void) {
                         unit=(UnkStruct_ov000_021A860C *)(base+0x59a4+unitId*14);
                         if(IsUnitOnCurrentTeam(unitId)==1) {
                             if(func_020a7bd4(unit->unk0)) group[0]--;
-                            if(func_ov000_021a98a8(unit->unk0) && unit->unk6>=61) group[3]=(group[3]&~1)|1;
+                            if(IsFootUnitKind(unit->unk0) && unit->unk6>=61) group[3]=(group[3]&~1)|1;
                             if ((unit->unk0==6 && unit->unkB!=5) || unit->unk0==14) {
                                 if(unit->unk6>=61) typeFlags|=1;
                             }
@@ -174,7 +174,7 @@ s32 BuildAiTargetGroups(void) {
                             }
                         } else if(!func_ov000_021a99dc(unit)) {
                             group[0]+=2;
-                            if ((data_ov000_021b5bfc[unit->unk0*112+0x13]&7) && !func_ov000_021a98a8(unit->unk0)) statusFlags|=1;
+                            if ((data_ov000_021b5bfc[unit->unk0*112+0x13]&7) && !IsFootUnitKind(unit->unk0)) statusFlags|=1;
                             if ((data_ov000_021b5bfc[unit->unk0*112+0x13]&16) && unit->unk0!=19) typeFlags|=2;
                         }
                     }

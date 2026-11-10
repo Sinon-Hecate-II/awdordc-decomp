@@ -109,7 +109,7 @@ return 1;}return 0;
 }
 
 s32 func_02058254(s32 a,void *b,void *c,s32 n){
-void func_020640a8(void *,void *,void *,s32);void *func_02068fdc(s32,void *);s32 func_02068c34(void *);
+void func_020640a8(void *,void *,void *,s32);void *func_02068fdc(s32,void *);s32 StringLength(void *);
 extern M2C_UNK data_020ff31c,data_020ff2dc,data_020ff2a8,data_020ff32c,data_020ff338,data_020ff348;
 s8 *p;s32 ch,v;s32 i;
 if(!a)func_020640a8(&data_020ff31c,&data_020ff2dc,&data_020ff2a8,269);
@@ -117,7 +117,7 @@ if(!b)func_020640a8(&data_020ff32c,&data_020ff2dc,&data_020ff2a8,270);
 if(!c)func_020640a8(&data_020ff338,&data_020ff2dc,&data_020ff2a8,271);
 if(n<=0)func_020640a8(&data_020ff348,&data_020ff2dc,&data_020ff2a8,272);
 ch=*(s8 *)b;p=func_02068fdc(a,b);if(!p)return 0;
-p+=func_02068c34(b);
+p+=StringLength(b);
 for(i=0;i<n-1 && (v=p[i])!=0 && v!=ch;i++)*(s8 *)((u32)c+(u32)i)=v;
 ((s8 *)c)[i]=0;return 1;
 }
@@ -277,12 +277,12 @@ return (s32)func_02058b94(p);
 }
 
 s32 func_0205893c(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);void *func_02058b94(void *);void func_020640a8(void *,void *,void *,s32);s32 func_02068c34(void *);void *func_02037794(s32);void func_02068c50(void *,void *);void func_02068d68(void *,void *);void func_020377c4(void *);s32 func_02058b18(void *,void *);
+void *func_02058bb4(void *,s32);void *func_02058b94(void *);void func_020640a8(void *,void *,void *,s32);s32 StringLength(void *);void *func_02037794(s32);void func_02068c50(void *,void *);void func_02068d68(void *,void *);void func_020377c4(void *);s32 func_02058b18(void *,void *);
 extern M2C_UNK data_020ff420,data_020ff414,data_020ff400;
 void *p=func_02058bb4(a,b);void *q;void *r;s32 n;
 if(!p)return 0;
 if(M2C_FIELD(p,s32 *,4)!=2)func_020640a8(&data_020ff420,&data_020ff414,&data_020ff400,209);
-q=func_02058b94(p);n=func_02068c34(q);n+=func_02068c34(c);
+q=func_02058b94(p);n=StringLength(q);n+=StringLength(c);
 r=func_02037794(n+1);func_02068c50(r,q);func_02068d68(r,c);func_02058b18(p,r);func_020377c4(r);return (s32)func_02058b94(p);
 }
 

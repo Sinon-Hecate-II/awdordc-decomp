@@ -465,7 +465,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
 }
 #pragma opt_common_subs reset
 void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
-    s32 func_02068c34(M2C_UNK *);
+    s32 StringLength(M2C_UNK *);
     extern M2C_UNK data_020ff888;
     M2C_UNK *temp_r2;
 
@@ -478,7 +478,7 @@ void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
     if (*arg1 != -1) {
         return;
     }
-    *arg1 = func_02068c34(temp_r2) + 1;
+    *arg1 = StringLength(temp_r2) + 1;
 }
 
 void *func_0205d75c(s32 a) {

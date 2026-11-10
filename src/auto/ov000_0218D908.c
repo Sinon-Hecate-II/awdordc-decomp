@@ -226,7 +226,7 @@ SetMapCursor((s16)bestY,(s16)bestX,4,(u8)temp,0);
 #pragma opt_propagation off
 void func_ov000_0218e340(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 IsUnitSelected(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 IsUnitSelected(void *); s32 IsFootUnitKind(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
 s32 x=-1,y=-1,best=0,i; u8 *unit; s32 offset; void *map; u8 *active; s32 hp,other,score;
 map=*gCurrentMap; active=M2C_FIELD(map,u8 **,0x52d0);
 if (((u32)(M2C_FIELD(active,u16 *,6)<<25)>>25)>50) return;
@@ -263,7 +263,7 @@ i++;offset+=14;map=*gCurrentMap;
 }while(i<gPlayerUnitIdBase[M2C_FIELD(map,u16 *,0x52a4)]+51);
 }
 if(x==-1)return;
-if(func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26))func_ov000_0218dda4();
+if(IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26))func_ov000_0218dda4();
 active=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 M2C_FIELD(active,u16 *,8)&=~0x3000;
 SetMapCursor((s16)x,(s16)y,9,0,0);

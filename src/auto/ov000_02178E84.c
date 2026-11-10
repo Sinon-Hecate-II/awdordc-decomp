@@ -20,7 +20,7 @@ return d;
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
-s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a98a8(u32);s32 func_ov000_021a9318(s32,s32,s32);
+s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(u32);s32 func_ov000_021a9318(s32,s32,s32);
 u8 *unit;void *map;u32 terrain,kind; s32 x,y,d,xmin,ymin,xmax,ymax,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
@@ -28,7 +28,7 @@ terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420);
 if(!data_ov000_021b54c0[terrain&31])return 1;
 if(!func_020d27ec(M2C_FIELD(map,s16 *,0x52a8),terrain)){
 unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-if(func_ov000_021a98a8((u32)(unit[0]<<26)>>26))return 1;
+if(IsFootUnitKind((u32)(unit[0]<<26)>>26))return 1;
 xmin=arg0-3;if(xmin<0)xmin=0;
 ymin=arg1-3;if(ymin<0)ymin=0;
 map=*gCurrentMap;
@@ -42,7 +42,7 @@ kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)kind*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)continue;
 if(IsUnitOnCurrentTeam(kind)!=1)continue;
-if(!func_ov000_021a98a8((u32)(unit[0]<<26)>>26))continue;
+if(!IsFootUnitKind((u32)(unit[0]<<26)>>26))continue;
 if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
 }
 map=*gCurrentMap;
@@ -141,19 +141,19 @@ return 0;
 }
 #pragma opt_propagation off
 s32 func_ov000_02179b08(void *arg0) {
-s32 func_ov000_021a89a4(void *);s32 func_ov000_021a98a8(u32);
+s32 func_ov000_021a89a4(void *);s32 IsFootUnitKind(u32);
 extern u8 data_ov000_021b5c0f[];extern void *data_ov000_021df57c;extern void *data_ov000_021df580;
 s32 value;u8 scale;u32 id;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<26)>>29)&4))return 110;
 id=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;if(!(data_ov000_021b5c0f[id*0x70]&7))return 110;
 if((u32)(M2C_FIELD(arg0,u8 *,11)<<24)>>31)return 110;
-if(func_ov000_021a98a8(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
+if(IsFootUnitKind(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
 if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(data_ov000_021df57c,u8 *,15);else scale=M2C_FIELD(data_ov000_021df57c,u8 *,14);
 value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }
 #pragma opt_propagation reset
 s32 func_ov000_02179be0(u8 *arg0,void *arg1,u32 arg2) {
-s32 func_ov000_021a98a8(u32);
+s32 IsFootUnitKind(u32);
 extern void **data_027e0058;
 extern u8 data_ov000_021b5c0f[];
 extern void *data_ov000_021df57c;
@@ -164,7 +164,7 @@ p=M2C_FIELD(*data_027e0058,void **,0x52d0);
 id=(u32)(M2C_FIELD(p,u8 *,0)<<26)>>26;
 if(!(data_ov000_021b5c0f[id*0x70]&7))return 110;
 if((u32)(M2C_FIELD(p,u8 *,11)<<24)>>31)return 110;
-if(func_ov000_021a98a8(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;
+if(IsFootUnitKind(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;
 else value=M2C_FIELD(data_ov000_021df580,u8 *,5);
 if(((u32)(M2C_FIELD(M2C_FIELD(*data_027e0058,void **,0x52d0),u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(data_ov000_021df57c,u8 *,15);
 else scale=M2C_FIELD(data_ov000_021df57c,u8 *,14);

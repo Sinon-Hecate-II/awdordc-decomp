@@ -11,7 +11,7 @@ extern const u16 data_ov005_02220030[];
 extern u8 data_ov005_02221304[],data_ov005_02220484[],data_ov005_02220570[];
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 void func_02086608(s32);void *func_020e34bc(s32);void func_02082c84(void);
-void func_020026d8(s32);void func_02002968(s32);void func_02003124(s32);void func_020031cc(s32);void func_02002ab8(s32);void func_0200323c(s32);
+void GX_SetBankForBG(s32);void func_02002968(s32);void func_02003124(s32);void func_020031cc(s32);void func_02002ab8(s32);void func_0200323c(s32);
 void func_02007e98(s32,void *,s32);s32 func_020ad5dc(void);s32 func_ov005_022140f8(s32);s32 func_ov005_02214120(s32);
 s32 RandomIntRange(s32,s32);void func_02090248(s32);void func_ov005_022140e4(void);void func_020822b8(void *);
 
@@ -20,7 +20,7 @@ void func_ov005_02215664(void *arg0){
 volatile ScreenConfig02215664 first=*(const ScreenConfig02215664 *)(data_ov005_02220030+6);
 volatile ScreenConfig02215664 second=*(const ScreenConfig02215664 *)data_ov005_02220030;
 s32 i,j,k,t,saved;void *w;
-func_02086608(7);M2C_FIELD(data_ov005_02221304,u8 **,8)=func_020e34bc(0x188);func_02082c84();func_020026d8(1);func_02002968(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_0200323c(128);func_02007e98(0,M2C_FIELD(data_ov005_02221304,u8 **,8),0x188);
+func_02086608(7);M2C_FIELD(data_ov005_02221304,u8 **,8)=func_020e34bc(0x188);func_02082c84();GX_SetBankForBG(1);func_02002968(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_0200323c(128);func_02007e98(0,M2C_FIELD(data_ov005_02221304,u8 **,8),0x188);
 M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,0)=1;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,2)=-1;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,136)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,134)=M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,136);M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u8 *,138)=0;
 M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,144)=-1;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,142)=M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,144);M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,140)=M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,142);
 M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,146)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,148)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,150)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,152)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,154)=func_020ad5dc();M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,158)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),u16 *,156)=0;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,160)=-1;M2C_FIELD(M2C_FIELD(data_ov005_02221304,u8 **,8),s16 *,226)=-1;

@@ -353,7 +353,7 @@ void func_ov002_021e85e8(void *p) {
     M2C_UNK func_ov002_021e3f2c(void *, u8);
     extern M2C_UNK data_ov002_021f3124;
     extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
-    extern u8 *data_ov002_021f30f4[];
+    extern u8 *gEffectTable[];
     s32 i;
     u8 flag;
     if (p != &data_ov002_021f3124) flag = 1; else flag = 0;
@@ -365,7 +365,7 @@ void func_ov002_021e85e8(void *p) {
     M2C_FIELD(p, u16 *, 0x1C) = 256;
     M2C_FIELD(p, u16 *, 0x1E) = 0; M2C_FIELD(p, u16 *, 0x20) = 0; M2C_FIELD(p, u16 *, 0x22) = 0; M2C_FIELD(p, u16 *, 0x24) = 0;
     M2C_FIELD(p, s8 *, 0x26) = -1;
-    if (M2C_FIELD(*(u8 **)((u8 *)data_ov002_021f30f4 + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
+    if (M2C_FIELD(*(u8 **)((u8 *)gEffectTable + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
     M2C_FIELD(p, u8 *, 0x28) = 0; else M2C_FIELD(p, u8 *, 0x28) = 1;
     M2C_FIELD(p, u8 *, 0x29) = 0;
     func_ov002_021e3f2c(p, M2C_FIELD(p, u8 *, 0x27));

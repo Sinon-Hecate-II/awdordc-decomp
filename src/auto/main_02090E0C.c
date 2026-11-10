@@ -791,18 +791,18 @@ if(b!=0)return;
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+((a<<5)&~1));
 }
 
-M2C_UNK *func_02091da8(void) {
-    extern M2C_UNK data_02157f98;
-    return &data_02157f98;
+M2C_UNK *Get3DSpriteManager(void) {
+    extern M2C_UNK g3DSpriteManager;
+    return &g3DSpriteManager;
 }
 
-u8 func_02091db4(void) {
-    return M2C_FIELD(func_02091da8(), u8 *, 0x48);
+u8 Get3DSpriteCount(void) {
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x48);
 }
 
 u8 func_02091dc4(s32 arg0) {
-    M2C_UNK *func_02091da8(void);
-    M2C_UNK *base = func_02091da8();
+    M2C_UNK *Get3DSpriteManager(void);
+    M2C_UNK *base = Get3DSpriteManager();
     return M2C_FIELD((char *)base + arg0, u8 *, 0x44);
 }
 

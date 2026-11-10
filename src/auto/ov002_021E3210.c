@@ -71,8 +71,8 @@ for(p=a+34,i=0;i<5;i++,p+=4)M2C_FIELD(p,u8 *,2)&=~7;
 }
 
 s32 func_ov002_021e377c(void *arg0) {
-    extern u8 data_ov002_021f30f4;
-    extern u8 data_ov002_021f3103;
+    extern u8 gEffectTable;
+    extern u8 gEffectDefaultVariant;
     u8 *p;
     s32 i;
     s32 min;
@@ -96,7 +96,7 @@ s32 func_ov002_021e377c(void *arg0) {
         b = 0;
     }
     min = -1;
-    if (M2C_FIELD((u8 *)M2C_FIELD(&data_ov002_021f30f4, void **, b * 0x18) + M2C_FIELD(&data_ov002_021f3103, u8 *, a * 0x18) * 4, s32 *, 0x1c) == 0) {
+    if (M2C_FIELD((u8 *)M2C_FIELD(&gEffectTable, void **, b * 0x18) + M2C_FIELD(&gEffectDefaultVariant, u8 *, a * 0x18) * 4, s32 *, 0x1c) == 0) {
         for (p = arg0 + 0x36, i = 0; i < 5; i++, p += 4) {
             t = M2C_FIELD(p, s16 *, 0);
             if (t == -1) break;
@@ -182,7 +182,7 @@ else{*(volatile u16 *)0x4000304&=~0x8000;func_020033e0();func_020031cc(8);func_0
 #pragma opt_strength_reduction off
 M2C_UNK func_ov002_021e3a7c(s32 *p) {
     extern u8 gPlayerSettings;
-    extern u8 data_ov002_021f30f4;
+    extern u8 gEffectTable;
     void func_02082098(s32, s32);
     void func_02082104(s32, s32);
     void func_02082134(s32, s32);
@@ -193,7 +193,7 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
         func_02082104(2, 15);
         func_02082104(3, 14);
         i = M2C_FIELD(&gPlayerSettings, u8 *, 1);
-        if (M2C_FIELD(M2C_FIELD(&data_ov002_021f30f4, void **, i * 24), u8 *, 0x3D) != 2) {
+        if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
             func_02082134(3, 1);
         } else {
             func_02082134(3, 0);
@@ -208,7 +208,7 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
         } else {
             i = 0;
         }
-        if (M2C_FIELD(M2C_FIELD(&data_ov002_021f30f4, void **, i * 24), u8 *, 0x3D) != 2) {
+        if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
             func_02082134(3, 1);
         } else {
             func_02082134(3, 0);

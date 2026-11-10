@@ -6,7 +6,7 @@ typedef struct { u16 a, b, c, d, e, f; } Ov004DisplayConfig;
 void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_01ff85b8(s32, u16, s32);
     s32 func_01ff9c34(u8, M2C_UNK);
-    M2C_UNK func_020026d8(M2C_UNK);
+    M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002c64(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
@@ -115,7 +115,7 @@ void func_ov004_02217f5c(void *arg0) {
     Ov004DisplayConfig sp30 = *(Ov004DisplayConfig *)((u8 *)&data_ov004_02218bc4 + 12);
     func_02082c84();
     func_02002c64(3);
-    func_020026d8(0x20);
+    GX_SetBankForBG(0x20);
     func_02002968(0x10);
     func_02002e3c(0x40);
     func_02003124(4);

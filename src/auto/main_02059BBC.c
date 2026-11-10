@@ -5,7 +5,7 @@ typedef struct { s32 v[4]; } Unk0205Copy;
 u8 *func_02059bbc(void *out_, void *in_)
 {
   u64 func_020720f0(s32, s32);
-  s32 func_02068c34(s32);
+  s32 StringLength(s32);
   s32 func_02059a04(s8 *);
   s32 func_02067774(void);
   s32 func_0206409c(s32);
@@ -21,7 +21,7 @@ u8 *func_02059bbc(void *out_, void *in_)
   s32 flag;
   s32 a;
   s32 b;
-  n = func_02068c34((s32) data_020ff548);
+  n = StringLength((s32) data_020ff548);
   flag = func_02059a04(in);
   i = 0;
   step = 0;
@@ -94,7 +94,7 @@ M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(s32, s32, s32);
-    s32 func_02068c34(s32);
+    s32 StringLength(s32);
     extern M2C_UNK data_020ff594;
     extern M2C_UNK data_020ff5f0;
     extern M2C_UNK data_020ff620;
@@ -103,7 +103,7 @@ void func_02059df0(void *arg0, s32 arg1, s32 arg2) {
     var_r4 = arg2;
     if ((arg1 != 0) && (var_r4 != 0)) {
         if (var_r4 == -1) {
-            var_r4 = func_02068c34(arg1);
+            var_r4 = StringLength(arg1);
         }
         if ((s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4) > (s32) M2C_FIELD(arg0, s32 *, 4)) {
             func_020640a8(&data_020ff620, &data_020ff5f0, &data_020ff594, 0x40);

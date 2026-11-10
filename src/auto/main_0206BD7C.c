@@ -12,7 +12,7 @@ void func_0206f034(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_0206bc58(void *, int);
 u16 *func_0206cdac(u16 *, u16 *);
-int func_02068c34(char *);
+int StringLength(char *);
 s32 func_020650a4(void *, void *, int);
 double value=arg0;
 DecimalFormBD form;
@@ -90,8 +90,8 @@ if(dec.sign)*--p='-';
 else if(sign==1)*--p='+';
 else if(sign==2)*--p=' ';
 }
-result=end-func_02068c34(p)-1;
-func_020650a4(result,p,func_02068c34(p));
+result=end-StringLength(p)-1;
+func_020650a4(result,p,StringLength(p));
 return result;
 }
 #pragma scheduling off
@@ -103,7 +103,7 @@ u16 *func_0206b5c0(u64,u16 *,FormatBD);
 u16 *func_0206b8c0(double,u16 *,FormatBD);
 u16 *func_0206add0(u16 *,s32,s32);
 char *func_02065224(char *,s32,s32);
-s32 func_02068c34(char *);
+s32 StringLength(char *);
 s32 func_020650a4(void *,void *,s32);
 s32 func_02065020(void *,void *,s32);
 extern u16 data_021005b4[];
@@ -241,7 +241,7 @@ n=f.precision;
 e=func_02065224(str,0,n);
 if(e)n=e-str;
 }
-else n=func_02068c34(str);
+else n=StringLength(str);
 len=func_020650a4(buffer,str,n);
 if(len<0)goto invalid;
 text=buffer;

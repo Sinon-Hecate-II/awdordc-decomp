@@ -7,12 +7,12 @@ static inline void copy633(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes
 static inline void copy633h(void *dst, void *src) { *(PairBytes *)dst=*(PairBytes *)src; }
 
 void func_02062770(void *a,s8 *b,s32 n) {
-s32 func_02068c34(void *);
+s32 StringLength(void *);
 void func_0205fed8(void *,void *,s32);
 s32 i;
 s32 size;
 s8 *p;
-size=func_02068c34((u8 *)a+0x54);
+size=StringLength((u8 *)a+0x54);
 p=(s8 *)a+0x54;
 for(i=0;i<n;i++){
 s32 x=p[i%size];
@@ -88,7 +88,7 @@ if(n-5<2)return;
  * and then the typed field list and raw key/value list into the player. Returns the
  * number of bytes consumed. */
 s32 gpiProcessPlayerRecord(M2C_UNK ctx,s32 player,u8 *data,s32 size,s32 readLength) {
-void gpiPlayerSetFlags(s32,s32);void gpiPlayerSetAddress(s32,s32,u16);void gpiPlayerSetValue(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void gpiPlayerSetInt(s32,s32,s32);void gpiPlayerSetString(s32,s32,void *);s32 func_02068c34(void *);u8 gpiPlayerGetState(s32);void gpiPlayerSetState(s32,u8);
+void gpiPlayerSetFlags(s32,s32);void gpiPlayerSetAddress(s32,s32,u16);void gpiPlayerSetValue(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void gpiPlayerSetInt(s32,s32,s32);void gpiPlayerSetString(s32,s32,void *);s32 StringLength(void *);u8 gpiPlayerGetState(s32);void gpiPlayerSetState(s32,u8);
 s32 id;u16 rawPort,port; s32 totalSize=size; s32 flags=*data;s32 count,index,length; s32 *field;u8 *key;
 data+=5;gpiPlayerSetFlags(player,flags);size-=5;
 if(flags&GPI_REC_FLAG_SKIP){data+=2;size-=2;}
@@ -105,14 +105,14 @@ case GPI_FIELD_BYTE:gpiPlayerSetInt(player,field[0],*data++);size--;break;
 case GPI_FIELD_PORT:{u8 *dst=(u8 *)&rawPort;u8 x=((volatile u8 *)data)[0],y=((volatile u8 *)data)[1];*dst++=x;*dst=y;}gpiPlayerSetInt(player,field[0],(u16)(((rawPort>>8)&255)|((rawPort<<8)&0xff00)));data+=2;size-=2;break;
 case GPI_FIELD_STRING:
 if(readLength){length=*data++;size--;}else length=255;
-if(length==255){gpiPlayerSetString(player,field[0],data);length=func_02068c34(data)+1;data+=length;size-=length;}else gpiPlayerSetString(player,field[0],M2C_FIELD((u8 *)ctx+length*4,void **,0x84));
+if(length==255){gpiPlayerSetString(player,field[0],data);length=StringLength(data)+1;data+=length;size-=length;}else gpiPlayerSetString(player,field[0],M2C_FIELD((u8 *)ctx+length*4,void **,0x84));
 break;
 }
 }
 gpiPlayerSetState(player,gpiPlayerGetState(player)|GPI_PLAYER_STATE_FIELDS);
 }
 if(flags&GPI_REC_FLAG_KEYS){
-while(*(s8 *)data && size>0){key=data;length=func_02068c34(data)+1;data+=length;size-=length;gpiPlayerSetString(player,(s32)key,data);length=func_02068c34(data)+1;data+=length;size-=length;}
+while(*(s8 *)data && size>0){key=data;length=StringLength(data)+1;data+=length;size-=length;gpiPlayerSetString(player,(s32)key,data);length=StringLength(data)+1;data+=length;size-=length;}
 size--;gpiPlayerSetState(player,gpiPlayerGetState(player)|GPI_PLAYER_STATE_KEYS);
 }
 return totalSize-size;

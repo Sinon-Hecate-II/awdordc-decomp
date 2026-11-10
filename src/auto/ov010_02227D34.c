@@ -9,7 +9,7 @@ typedef void (Ov010Callback::*Ov010CallbackFn)();
 
 void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
     void func_ov010_0222697c(void *);
-    s32 func_02068c34(char *);
+    s32 StringLength(char *);
     s32 func_0203a9d0(char *, s32, void *, s32);
     void *func_020c4b60(void);
     void func_02007e20(void *, void *, s32);
@@ -23,7 +23,7 @@ void func_ov010_02227d34(s32 arg0, void *arg1, char *arg2, s32 arg3) {
 
     if (arg2 != 0 && *arg2 != 0) {
         func_ov010_0222697c(buf);
-        r = func_02068c34(arg2);
+        r = StringLength(arg2);
         if (func_0203a9d0(arg2, r, buf, 0x6c) == 0x6c) {
             p = func_020c4b60();
             off = arg0 * 0x28;

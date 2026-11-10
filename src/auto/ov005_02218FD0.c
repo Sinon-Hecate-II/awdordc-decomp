@@ -3,7 +3,7 @@
 
 void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020026d8(M2C_UNK);
+    M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02002bb8(M2C_UNK);
@@ -132,7 +132,7 @@ void func_ov005_02218fd0(void *arg0) {
     s32 var_r1;
 
     func_02082c84();
-    func_020026d8(1);
+    GX_SetBankForBG(1);
     func_02002968(2);
     func_02003124(4);
     func_020031cc(8);

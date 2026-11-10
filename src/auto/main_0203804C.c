@@ -42,10 +42,10 @@ func_02039be4((u8 *)data_0213d1f8+0x98,b,(u8 *)data_0213d1f8+0x1c,c,M2C_FIELD(b,
 func_0203a9dc((u8 *)data_0213d1f8+0x318,(u8 *)data_0213d1f8+0x1c,(u8 *)data_0213d1f8+0x2e,h,i);
 func_0203c110((u8 *)data_0213d1f8+0x374,(u8 *)data_0213d1f8+0x1c,data_0213d1f8,(u8 *)data_0213d1f8+4,data_0213df10,data_0213e010,h,i);
 func_02044708((u8 *)data_0213d1f8+0x7f8);
-if((u32)func_02068c34(d)>=0x100)len=255;else len=func_02068c34(d);
+if((u32)StringLength(d)>=0x100)len=255;else len=StringLength(d);
 MI_CpuCopy8(d,data_0213df10,len);
 data_0213df10[len]=0;
-if((u32)func_02068c34(e)>=0x100)len=255;else len=func_02068c34(e);
+if((u32)StringLength(e)>=0x100)len=255;else len=StringLength(e);
 MI_CpuCopy8(e,data_0213e010,len);
 data_0213e010[len]=0;
 }

@@ -177,9 +177,9 @@ s32 func_020649a8(void *arg0) {
 }
 
 char *func_02064a90(char *s) {
- s32 func_02068c34(char *);
+ s32 StringLength(char *);
  s32 i=0;
- s32 j=func_02068c34(s)-1;
+ s32 j=StringLength(s)-1;
  while(i<j) { char temp=s[i]; s[i]=s[j]; s[j]=temp; i++; j--; }
  return s;
 }
@@ -332,9 +332,9 @@ return (*(s32 (**)(s8 *,u16))(data_0210040c[2]+4))(a,b);
 }
 
 u32 func_020650a4(s16 *out,char *in,u32 n) {
-s32 func_02068c34(char *);
+s32 StringLength(char *);
 u32 i; s32 left;
-left=func_02068c34(in); i=0;
+left=StringLength(in); i=0;
 if(out) {
 for(;i<n;i++) {
 if(*in) {

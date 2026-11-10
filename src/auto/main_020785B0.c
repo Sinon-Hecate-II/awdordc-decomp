@@ -101,7 +101,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_02078d68(void*);
+void DrawMapEffectEntry(void*);
 void func_02078ff4(s32,s32,s32,u8);
 void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
 #pragma push
@@ -157,7 +157,7 @@ func_02079310(x,y,a,b,tile,visible,v1,v2);
 func_020778cc(x0,y0,x1,y1);
 for(i=0;i<32;i++){
 void *p=(void*)(*gCurrentMap+0x58a4+i*8);
-if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)func_02078d68(p);
+if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)DrawMapEffectEntry(p);
 }
 if(func_020cd6b0())func_02077740();
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
@@ -183,25 +183,28 @@ func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 #pragma push
 #pragma scheduling on
 #pragma opt_common_subs on
-void func_02078d68(void *arg0) {
+/* Draws one map order/effect marker on the 3D layer: kind 3 is a pulsating
+   alpha-blended quad, 6/7/8 are sprites (optionally rotated) and 9 calls the
+   map's cell callback. */
+void DrawMapEffectEntry(void *arg0) {
 s32 func_020ae22c(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_020a4ab0(s32);void func_020cf674(s16,s16,s32);
 MapRenderEntry *entry=arg0;u32 bits=M2C_FIELD(arg0,u16 *,2);s32 x=M2C_FIELD(arg0,u8 *,0),y=M2C_FIELD(arg0,u8 *,1);
-s32 dx=entry->dx,dy=entry->dy; s32 a,b,c,d,color; u32 alpha; s16 ax,by,cx,dy2;
+s32 offX=entry->dx,offY=entry->dy; s32 x0,y0,x1,y1,color; u32 alpha; s16 sx0,sy0,sx1,sy1;
 switch(entry->kind){
 case 3:
-a=(x<<4)*48;b=(y<<4)*48;c=a+dx*768;d=b+dy*768;
+x0=(x<<4)*48;y0=(y<<4)*48;x1=x0+offX*768;y1=y0+offY*768;
 color=func_020ae22c(M2C_FIELD(arg0,u8 *,4));
 if(((*(volatile u32 *)&gFrameCounter)&63)<32)alpha=EaseInterpolate(4,2,12,(*(volatile u32 *)&gFrameCounter)&63,32);
 else alpha=EaseInterpolate(1,12,2,((*(volatile u32 *)&gFrameCounter)&63)-32,32);
 if(!(alpha=(u8)alpha))return;
 *(volatile u32*)0x40004a8=0x2d00000;
 *(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);
-ax=a;by=b;cx=c;dy2=d;
+sx0=x0;sy0=y0;sx1=x1;sy1=y1;
 *(volatile u32*)0x4000500=1;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)ax|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)dy2<<16);*(volatile u32*)0x400048c=0x430;
-*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)cx|((u16)by<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)sx0|((u16)sy0<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)sx0|((u16)sy1<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)sx1|((u16)sy1<<16);*(volatile u32*)0x400048c=0x430;
+*(volatile u32*)0x4000480=color;*(volatile u32*)0x400048c=(u16)sx1|((u16)sy0<<16);*(volatile u32*)0x400048c=0x430;
 *(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;return;
 case 6:func_02078c60(x,y,0,0x381);return;
 case 7:func_02078c60(x,y,(u16)func_020a4ab0(entry->angle),0x382);return;

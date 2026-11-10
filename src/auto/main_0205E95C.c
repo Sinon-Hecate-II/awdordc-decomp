@@ -84,8 +84,8 @@ void func_0205eb50(u8 *p, s32 a) {
 void func_0205eb7c(void *a,M2C_UNK b){void func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
 void func_0205ebb0(void *a,M2C_UNK *b){
-s32 func_02068c34(void *);void MemCopy(void *,void *,s32);
-s32 n=func_02068c34(b)+1;
+s32 StringLength(void *);void MemCopy(void *,void *,s32);
+s32 n=StringLength(b)+1;
 s32 used=M2C_FIELD(a,s32 *,0x800);
 if(n>0x800-used)n=0x800-used;
 if(!n)return;
@@ -212,7 +212,7 @@ void func_0205ef8c(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIEL
 
 void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
  void func_02068c50(void *,void *);
- s32 func_02068c34(void *);
+ s32 StringLength(void *);
  void func_0205ee48(void *,s32,void *,s32);
  void func_0205ed84(void *,s32,void *);
  s8 buf[65];
@@ -220,9 +220,9 @@ void func_0205efbc(void *a,void *b,s8 *p,s32 n) {
  if(n>65)return;
  if(p[n-1])return;
  func_02068c50(buf,p);
- func_0205ee48((u8 *)a+68,func_02068c34((u8 *)a+68),buf,n-1);
+ func_0205ee48((u8 *)a+68,StringLength((u8 *)a+68),buf,n-1);
  func_0205ed84(buf,n-1,(u8 *)b+M2C_FIELD(b,s32 *,0x800));
- M2C_FIELD(b,s32 *,0x800)+=func_02068c34((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
+ M2C_FIELD(b,s32 *,0x800)+=StringLength((u8 *)b+M2C_FIELD(b,s32 *,0x800))+1;
 }
 
 void func_0205f05c(void *arg0,M2C_UNK arg1) {

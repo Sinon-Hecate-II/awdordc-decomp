@@ -166,7 +166,7 @@ void func_ov000_0218edd8(void) {
     void func_ov000_0218e9ac();
     void func_ov000_0218e584();
     s32 func_ov000_021a93a8(void *, s32, s32);
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     void *temp_r0;
@@ -177,7 +177,7 @@ void func_ov000_0218edd8(void) {
     }
     temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32)(M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) == 0) return;
-    if (func_ov000_021a98a8((u32)(M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) func_ov000_0218dda4();
+    if (IsFootUnitKind((u32)(M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) func_ov000_0218dda4();
     M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8)(M2C_FIELD(data_ov000_021df580, u8 *, 7) | 2);
     switch ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u16 *, 8) << 0x12) >> 0x1E) {
     case 1: func_ov000_0218e9ac(); break;
@@ -190,7 +190,7 @@ void func_ov000_0218eea8(void) {
     M2C_UNK func_ov000_0218e340();
     void func_ov000_0218e9ac();
     s32 func_ov000_021a93a8(void *, s32, s32);
-    s32 func_ov000_021a98a8(u32);
+    s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
     void *temp_r0;
@@ -204,7 +204,7 @@ void func_ov000_0218eea8(void) {
     if (((u32) (M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) != 1) {
         return;
     }
-    if (func_ov000_021a98a8((u32) (M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) {
+    if (IsFootUnitKind((u32) (M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) {
         func_ov000_0218dda4();
     }
     M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8) (M2C_FIELD(data_ov000_021df580, u8 *, 7) | 2);
@@ -288,9 +288,9 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *data_ov000_021df580;
-s32 func_ov000_021a98a8(u32); void func_01ffc328(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void func_01ffc328(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
-if(!func_ov000_021a98a8((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
+if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
 func_01ffc328(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 func_01ffb9c4(111);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
@@ -302,7 +302,7 @@ if((tile&31)!=15 && (tile&31)!=17 && (tile&31)!=18)continue;
 if((tile>>5)!=0){if(!func_020d280c(M2C_FIELD(map,u16 *,0x52a4),x,y))continue;}
 map=*gCurrentMap;
 unit=map+0x59a4+14*M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
-if(!func_ov000_021a98a8((u32)(unit[0]<<26)>>26))continue;
+if(!IsFootUnitKind((u32)(unit[0]<<26)>>26))continue;
 if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),unit?((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14:0)==1)continue;
 if(!func_ov000_021a8a88(unit))continue;
 if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
@@ -317,7 +317,7 @@ return;
 
 void func_ov000_0218f37c(void) {
 extern void **gCurrentMap;
-s32 func_ov000_021a98a8(u32);
+s32 IsFootUnitKind(u32);
 s32 func_ov000_021a8b78(void *);
 void func_ov000_0217c3a4(void);
 void SetMapCursor(u32,u32,u32,u32,u32);
@@ -325,7 +325,7 @@ u8 *p;
 u8 *base;
 u8 *q;
 p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
-if(!func_ov000_021a98a8((u32)(p[0]<<26)>>26))return;
+if(!IsFootUnitKind((u32)(p[0]<<26)>>26))return;
 p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
 if(!((u32)(M2C_FIELD(p,u16 *,6)<<16)>>27))return;
 if(func_ov000_021a8b78(p)>=2) {

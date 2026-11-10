@@ -296,7 +296,7 @@ cb(arg0);
 return 0;
 }
 
-s32 func_02068c34(s8 *arg0) {
+s32 StringLength(s8 *arg0) {
     s32 var_r2;
     s8 *var_r0;
     s8 temp_r1;

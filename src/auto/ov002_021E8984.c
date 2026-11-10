@@ -113,7 +113,7 @@ s32 func_ov002_021e8e7c(s32 arg0) {
 /* Advance one unit's animation: tick its child lists, accumulate position deltas, and step its frame. */
 void func_ov002_021e8e8c(void *unit){
 void func_ov002_021e1844(void *);void func_ov002_021e2aa8(void *);void func_ov002_021e3e64(void *);
-extern u8 data_ov002_021f30f4[],data_ov002_021f314e[];
+extern u8 gEffectTable[],data_ov002_021f314e[];
 void *node;
 func_ov002_021e1844(unit);
 node=0;
@@ -124,7 +124,7 @@ node=0;
 while((node=Next021e8e8c(unit+0x64,node))!=0){func_ov002_021e3e64(M2C_FIELD(node,void **,0));}
 M2C_FIELD(unit,s32 *,0x74)+=M2C_FIELD(unit,s16 *,0x88);
 M2C_FIELD(unit,s32 *,0x78)+=M2C_FIELD(unit,s16 *,0x8a);
-if(M2C_FIELD(M2C_FIELD(data_ov002_021f30f4,void **,M2C_FIELD(unit,u8 *,0x8c)*24),u8 *,0x3d)==2){
+if(M2C_FIELD(M2C_FIELD(gEffectTable,void **,M2C_FIELD(unit,u8 *,0x8c)*24),u8 *,0x3d)==2){
 M2C_FIELD(unit,s32 *,0x80)++;
 M2C_FIELD(unit,s16 *,0x7e)+=func_ov002_021e8d70(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44],M2C_FIELD(unit,s32 *,0x80));
 if(M2C_FIELD(unit,s32 *,0x80)==func_ov002_021e8e7c(data_ov002_021f314e[M2C_FIELD(unit,u8 *,0x8c)*44]))M2C_FIELD(unit,s32 *,0x80)=0;
@@ -278,35 +278,35 @@ void func_ov002_021e9e0c(void *, s32);
 void func_ov002_021ea208(void *, s32);
 void func_ov002_021ea37c(void *);
 void func_ov002_021ea4bc(void *, s16, s16);
-extern u8 data_ov002_021f30f4[], data_ov002_021f3103[], data_ov002_021f314e[];
+extern u8 gEffectTable[], gEffectDefaultVariant[], data_ov002_021f314e[];
 s32 off;
 switch (mode) {
 case 0:
 off = M2C_FIELD(unit, u8 *, 0x8c) * 24;
-if (data_ov002_021f3103[off] == 0) { func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(data_ov002_021f30f4, void **, off), u8 *, 0x39)); return; }
-func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(data_ov002_021f30f4, void **, off), u8 *, 0x3a)); return;
+if (gEffectDefaultVariant[off] == 0) { func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x39)); return; }
+func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x3a)); return;
 case 1:
 if (flag == 0) { func_ov002_021e9e0c(unit, value); return; }
 func_ov002_021e9e0c(unit, -1); return;
 case 2:
 if (flag == 0) { func_ov002_021ea208(unit, value); return; }
-func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(data_ov002_021f30f4, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
+func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
 if (data_ov002_021f314e[M2C_FIELD(unit, u8 *, 0x8c) * 44]) func_ov002_021ea37c(unit); else func_ov002_021ea208(unit, -1);
-if (M2C_FIELD(M2C_FIELD(data_ov002_021f30f4, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) == 0) func_ov002_021e9008(unit, 0x800, -0x800); else func_ov002_021ea4bc(unit, 0, 0);
-if (M2C_FIELD(M2C_FIELD(data_ov002_021f30f4, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) != 2) return;
+if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) == 0) func_ov002_021e9008(unit, 0x800, -0x800); else func_ov002_021ea4bc(unit, 0, 0);
+if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) != 2) return;
 func_ov002_021e9008(unit, 0x200, 0x100); M2C_FIELD(unit, s32 *, 0x80) = -1; return;
 }
 }
 
 void func_ov002_021e994c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s8 arg4) {
-    M2C_UNK func_ov002_021e9f80(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SpawnEffectNode(M2C_UNK, M2C_UNK, M2C_UNK);
     if (arg2 != 1) {
         return;
     }
     if (arg4 == 0) {
-        func_ov002_021e9f80(arg0, arg1, arg3);
+        SpawnEffectNode(arg0, arg1, arg3);
         return;
     }
-    func_ov002_021e9f80(arg0, arg1, -1);
+    SpawnEffectNode(arg0, arg1, -1);
 }
 

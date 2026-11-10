@@ -219,7 +219,7 @@ loop_7:
 s32 func_0204c0fc(void *state, void *context, s32 flag) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     M2C_UNK func_020675e4(void *, void *, ...);
-    s32 func_02068c34(const char *);
+    s32 StringLength(const char *);
     s32 func_0204a9d0(void *, void *, s32);
     s32 func_0204bcdc(void *, void *);
     s32 func_0204bec0(void *, void *);
@@ -260,7 +260,7 @@ s32 func_0204c0fc(void *state, void *context, s32 flag) {
             }
         }
         {
-            s32 len = func_02068c34((const char *)buf);
+            s32 len = StringLength((const char *)buf);
             s32 res = func_0204a9d0(context, buf, len);
             if (res == 0) return 0;
             if (res == 2) return 2;
@@ -280,7 +280,7 @@ s32 func_0204c0fc(void *state, void *context, s32 flag) {
 }
 
 s32 func_0204c300(void *arg0){
-M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_0204a30c(void *);void func_0204a2c8(void *);s32 func_0204a9d0(void *,void *,s32);s32 func_02068c34(const char *);
+M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);s32 func_0204a30c(void *);void func_0204a2c8(void *);s32 func_0204a9d0(void *,void *,s32);s32 StringLength(const char *);
 extern M2C_UNK data_020fd6c0,data_020fd334,data_020fd210,data_020fd440,data_020fd6cc,data_020fd454,data_020fd6ec,data_020fd710,data_020fd760,data_020fd76c,data_020fd798;
 void *p;s32 r,n;
 if(!arg0)func_020640a8(&data_020fd6c0,&data_020fd334,&data_020fd210,0x404);
@@ -300,7 +300,7 @@ if(!r){if(!M2C_FIELD(arg0,s32 *,0xfc)||!M2C_FIELD(arg0,s32 *,0x38))func_020640a8
 if(r==2)return 2;
 M2C_FIELD(arg0,s32 *,0x144)++;
 }
-if(M2C_FIELD(M2C_FIELD(arg0,void **,0x13c),s32 *,12)){if(!func_0204a9d0(arg0,&data_020fd798,func_02068c34(&data_020fd798)))return 0;}
+if(M2C_FIELD(M2C_FIELD(arg0,void **,0x13c),s32 *,12)){if(!func_0204a9d0(arg0,&data_020fd798,StringLength(&data_020fd798)))return 0;}
 return M2C_FIELD(arg0,s32 *,0x5c)?2:1;
 }
 

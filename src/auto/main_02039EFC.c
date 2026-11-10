@@ -212,13 +212,13 @@ if(b)*(u8 *)b=0;if(c)*(u8 *)c=0;return 0;
 
 s32 func_0203a7c0(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 *e) {
 s32 func_0203a6a4(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-s32 func_02068c34(void *);
+s32 StringLength(void *);
 s32 func_0203739c(void *,s32,s32,s32);
 u8 buf[256];s32 n,v;
 n=func_0203a6a4(a,b,c,(s32)buf);
 if(!n){*e=-1;return n;}
-*e=func_0203739c(buf,func_02068c34(buf),0,0);
-if(!d || (v=*e)==-1)return n;func_0203739c(buf,func_02068c34(buf),d,v);
+*e=func_0203739c(buf,StringLength(buf),0,0);
+if(!d || (v=*e)==-1)return n;func_0203739c(buf,StringLength(buf),d,v);
 return n;
 }
 

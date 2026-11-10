@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ghttp.h"
 
-void func_02049ab8(u8 *src,s8 *dst,s32 len,s32 mode){
+void Base64Encode(u8 *src,s8 *dst,s32 len,s32 mode){
 void func_02049a20(u8 *,s8 *,s32);
 extern const s8 data_020ea970[],data_020ea974[],data_020ea978[];
 const s8 *table; s8 *start=dst,*pad; s32 left=len,rem;
@@ -88,7 +88,7 @@ func_02065210(p,0,0x24);
    the data is passed through the connection's encryptor first. */
 s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    s32 func_02068c34(s32);
+    s32 StringLength(s32);
     s32 ghiResizeBuffer(s32 *, s32);
     void MemCopy(void *, void *, s32);
     extern M2C_UNK data_020fcec4;
@@ -110,7 +110,7 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     if (dataLen < 0) return 0;
 
     if (dataLen == 0) {
-        dataLen = func_02068c34((s32)data);
+        dataLen = StringLength((s32)data);
     }
 
     if (buffer->encrypted == 1) {

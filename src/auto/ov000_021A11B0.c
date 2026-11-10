@@ -12,7 +12,7 @@ extern u8 gAiTargetCandidates[],data_ov000_021b5bfc[];
 s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a10e4(s32,void *);
 s32 ManhattanDistance(s32,s32,s16,s16);void SelectMapLayer(void *);
 void func_01ffada0(u8,u8,s32,s32,s32);
-s32 func_ov000_021a99dc(void *);s32 func_ov000_021a98a8(s32);
+s32 func_ov000_021a99dc(void *);s32 IsFootUnitKind(s32);
 s32 func_ov000_021a8ff0(s32);s32 func_020d27ec(s16,s32);
 register u8 *p asm("r8");
 s32 y,i,id,d,xmin,xmax,ymin,ymax,r,dx,dy,cx,cy,w,h;
@@ -67,7 +67,7 @@ map=*gCurrentMap;if(M2C_FIELD(map+((Map16E8 *)map)->rows[y]+x,s8 *,0x2338)<0)con
 }
 if(IsUnitOnCurrentTeam(id)==1)M2C_FIELD(p,s8 *,5)--;
 else{
-if(p[2]==3 || func_ov000_021a98a8((u32)(unit[0]<<26)>>26))M2C_FIELD(p,s8 *,5)++;
+if(p[2]==3 || IsFootUnitKind((u32)(unit[0]<<26)>>26))M2C_FIELD(p,s8 *,5)++;
 else M2C_FIELD(p,s8 *,5)+=2;
 p[6]++;
 }

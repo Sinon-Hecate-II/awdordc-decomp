@@ -409,13 +409,13 @@ void func_ov001_02189ebc(s32 arg0, ...) {
 }
 
 s32 func_ov001_02189ef0(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_02068c34(void *);
+    s32 StringLength(void *);
     s32 func_0206527c(void *, void *, s32);
     s32 temp_r4;
     s32 temp_r0;
     
-    temp_r4 = func_02068c34(arg0);
-    temp_r0 = func_02068c34(arg1);
+    temp_r4 = StringLength(arg0);
+    temp_r0 = StringLength(arg1);
     if (temp_r4 < arg2 || temp_r0 < arg2) {
         return 0;
     }

@@ -527,7 +527,7 @@ void func_0205e8b0(void *arg0) {
 void func_0205da30(void *arg0) {
 s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 func_02049208(void);
 void func_0205d944(s32,s32,u16,void *,s32);
-s32 func_02068c50(void *,s32); s32 func_02068c34(void *);
+s32 func_02068c50(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,data_0213e144;
 union { NetworkHandshakePacket header; u8 bytes[88]; } packet; NetworkHandshakePacket *p=&packet.header; u8 *buf=packet.bytes;
 u32 ip,a,b,c,d;
@@ -548,7 +548,7 @@ ip=((c>>24)&255)|((d>>8)&0xff00)|((b<<8)&0xff0000)|((a<<24)&0xff000000);
 packet.bytes[15]=ip>>24;packet.bytes[16]=ip>>16;packet.bytes[17]=ip>>8;packet.bytes[18]=ip;
 packet.bytes[19]=0;packet.bytes[20]=0;
 func_02068c50(packet.bytes+21,(s32)&gServiceNameBuffer);
-len=func_02068c34(&gServiceNameBuffer)+22;
+len=StringLength(&gServiceNameBuffer)+22;
 if(p->flag && M2C_FIELD(arg0,s32 *,20)==0){
 buf[12]=0;func_0205d944(M2C_FIELD(arg0,s32 *,4),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);
 }

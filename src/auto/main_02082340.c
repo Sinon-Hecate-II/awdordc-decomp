@@ -217,7 +217,7 @@ void func_02082c84(void) {
 }
 
 void func_02082cb4(void) {
-    M2C_UNK func_020026d8(M2C_UNK);
+    M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02002c64(M2C_UNK);
@@ -228,7 +228,7 @@ void func_02082cb4(void) {
     M2C_UNK func_020032bc(M2C_UNK);
     func_02082c84();
     func_02002c64(1);
-    func_020026d8(2);
+    GX_SetBankForBG(2);
     func_02003124(4);
     func_020031cc(8);
     func_02002968(0x10);

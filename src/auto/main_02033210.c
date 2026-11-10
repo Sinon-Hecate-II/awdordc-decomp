@@ -9,7 +9,7 @@ extern u8 data_020fb558[], data_020fb570[];
 s32 func_02033210(void){
 extern M2C_UNK gNasConnection;extern s32 data_0213e9f4;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
-void *func_02034ef8(void*,void*);s32 func_02036860(void*);s32 func_0206ad38(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 func_02068c34(s32);
+void *func_02034ef8(void*,void*);s32 func_02036860(void*);s32 func_0206ad38(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
 void *end; s32 status; void *response;void *p;
 p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
 response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)func_02036860(end);
@@ -18,7 +18,7 @@ if(data_0213e9f4==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008
 if(status!=200){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=status+23000;return 18;}
 if(func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
 status=func_0206ac70(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
-if(end!=p+0x100c+func_02068c34((s32)(p+0x100c))){M2C_FIELD(p,s32*,0x1008)=0x4e85;return 12;}
+if(end!=p+0x100c+StringLength((s32)(p+0x100c))){M2C_FIELD(p,s32*,0x1008)=0x4e85;return 12;}
 M2C_FIELD(p,s32*,0x1008)=status+20000;
 if(status<100){
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1052)=0;
@@ -37,19 +37,19 @@ M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_F
 s32 func_020334d8(void *p,void *a,void *b){
 extern M2C_UNK gNasConnection,data_0213d120;extern s32 data_0213d13c;
 extern u8 data_020fb3ec[],data_020fb3f8[],data_020fb400[],data_020fb408[],data_020fb410[],data_020fb414[],data_020fb41c[];
-s32 func_02068c34(s32);s32 func_020346d0(void *,void *,void *,s32);s32 BuildFriendProfile(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
+s32 StringLength(s32);s32 func_020346d0(void *,void *,void *,s32);s32 BuildFriendProfile(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
 u8 buffer[0x94];
 s32 v0=M2C_FIELD(&gNasConnection,s32 *,0x10),v1=M2C_FIELD(&gNasConnection,s32 *,0xc);
 if(v0==0 && v1==0){
-if(func_020346d0(p,data_020fb3f8,data_020fb3ec,func_02068c34((s32)data_020fb3ec)))return 8;
+if(func_020346d0(p,data_020fb3f8,data_020fb3ec,StringLength((s32)data_020fb3ec)))return 8;
 }else{
-if(func_020346d0(p,data_020fb3f8,data_020fb400,func_02068c34((s32)data_020fb400)))return 8;
+if(func_020346d0(p,data_020fb3f8,data_020fb400,StringLength((s32)data_020fb400)))return 8;
 }
-if(func_020346d0(p,data_020fb408,a,func_02068c34((s32)a)))return 8;
+if(func_020346d0(p,data_020fb408,a,StringLength((s32)a)))return 8;
 if(!BuildFriendProfile((s32)buffer,&data_0213d120))return 5;
 if(!func_02033988(p,buffer,data_0213d13c))return 8;
 if(M2C_FIELD(&gNasConnection,s32 *,4)==1){
-if(func_020346d0(p,data_020fb414,data_020fb410,func_02068c34((s32)data_020fb410)))return 8;
+if(func_020346d0(p,data_020fb414,data_020fb410,StringLength((s32)data_020fb410)))return 8;
 }
 {
 void *bb=b;
@@ -175,7 +175,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     s32 func_0200567c(void *, s32, void *, s32, s32);
     s32 func_020345f4(void *, void *, void *);
     s32 func_020346d0(void *, void *, void *, s32);
-    s32 func_02068c34(s32);
+    s32 StringLength(s32);
     s32 func_0206cd90(void *);
     extern u8 data_020fb478[], data_020fb484[], data_020fb48c[], data_020fb494[], data_020fb49c[];
     extern u8 data_020fb4a4[], data_020fb4ac[], data_020fb4b4[], data_020fb4bc[], data_020fb4c4[];
@@ -184,21 +184,21 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     u8 sp4[0x24];
 
     func_0200567c(sp4, 0x21, data_020fb478, 2, 2);
-    if (func_020346d0(arg0, data_020fb484, sp4, func_02068c34((s32)sp4)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb48c, arg1, func_02068c34((s32)arg1)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb494, (u8 *)arg1 + 0xe, func_02068c34((s32)arg1 + 0xe)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb49c, (u8 *)arg1 + 0x41, func_02068c34((s32)arg1 + 0x41)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4a4, (u8 *)arg1 + 0x6f, func_02068c34((s32)arg1 + 0x6f)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4ac, (u8 *)arg1 + 0x15, func_02068c34((s32)arg1 + 0x15)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4b4, (u8 *)arg1 + 0x1a, func_02068c34((s32)arg1 + 0x1a)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4bc, (u8 *)arg1 + 0x1d, func_02068c34((s32)arg1 + 0x1d)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4c4, (u8 *)arg1 + 0x1f, func_02068c34((s32)arg1 + 0x1f)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4cc, (u8 *)arg1 + 0x2c, func_02068c34((s32)arg1 + 0x2c)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4d4, (u8 *)arg1 + 0x2f, func_02068c34((s32)arg1 + 0x2f)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4dc, (u8 *)arg1 + 0x34, func_02068c34((s32)arg1 + 0x34)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb484, sp4, StringLength((s32)sp4)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb48c, arg1, StringLength((s32)arg1)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb494, (u8 *)arg1 + 0xe, StringLength((s32)arg1 + 0xe)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb49c, (u8 *)arg1 + 0x41, StringLength((s32)arg1 + 0x41)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4a4, (u8 *)arg1 + 0x6f, StringLength((s32)arg1 + 0x6f)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4ac, (u8 *)arg1 + 0x15, StringLength((s32)arg1 + 0x15)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4b4, (u8 *)arg1 + 0x1a, StringLength((s32)arg1 + 0x1a)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4bc, (u8 *)arg1 + 0x1d, StringLength((s32)arg1 + 0x1d)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4c4, (u8 *)arg1 + 0x1f, StringLength((s32)arg1 + 0x1f)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4cc, (u8 *)arg1 + 0x2c, StringLength((s32)arg1 + 0x2c)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4d4, (u8 *)arg1 + 0x2f, StringLength((s32)arg1 + 0x2f)) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4dc, (u8 *)arg1 + 0x34, StringLength((s32)arg1 + 0x34)) != 0) return 0;
     if (func_020346d0(arg0, data_020fb4e4, (u8 *)arg1 + 0x7e, func_0206cd90((u8 *)arg1 + 0x7e) * 2) != 0) return 0;
     if (arg2 == 1) {
-        if (func_020346d0(arg0, data_020fb4ec, (u8 *)arg1 + 0x4e, func_02068c34((s32)arg1 + 0x4e)) != 0) return 0;
+        if (func_020346d0(arg0, data_020fb4ec, (u8 *)arg1 + 0x4e, StringLength((s32)arg1 + 0x4e)) != 0) return 0;
     }
     func_0200567c(sp4, 0x21, data_020fb4f4, 2, 2);
     if (func_020345f4(arg0, data_020fb50c, sp4) != 0) return 0;
@@ -225,13 +225,13 @@ return ((InitState*)p)->status;
 s32 func_02033de8(void *arg0) {
     M2C_UNK func_0200567c();
     s32 func_020345f4(void *, void *, void *);
-    s32 func_02068c34(s32);
+    s32 StringLength(s32);
     s32 func_02068fdc(s32, void *);
     extern u8 data_020fb588[], data_020fb594[], data_020fb59c[], data_020fb5a4[], data_020fb5a8[];
     u8 sp0[8];
     s32 temp;
     if (func_020345f4(arg0, data_020fb588, data_020fb594)) return 1;
-    temp = func_02068c34(func_02068fdc(M2C_FIELD(arg0,s32 *,0x19f8),data_020fb59c)+4);
+    temp = StringLength(func_02068fdc(M2C_FIELD(arg0,s32 *,0x19f8),data_020fb59c)+4);
     if (temp) {
         func_0200567c(sp0,7,data_020fb5a4,temp);
         if (func_020345f4(arg0,data_020fb5a8,sp0)) return 1;
@@ -304,7 +304,7 @@ void func_02034068(void *arg0) {
 }
 
 s32 func_0203407c(void *a){
-s32 func_02068c34(s32);s32 func_02068fdc(s32,void *);s32 func_0206ad38(s8 *);
+s32 StringLength(s32);s32 func_02068fdc(s32,void *);s32 func_0206ad38(s8 *);
 extern u8 data_020fb59c[];extern M2C_UNK data_020fb5b8,data_020fb5cc;
 s8 ch;void *hdr; s8 *p,*end; s32 len; s8 *q;
 p=M2C_FIELD(a,s8 **,0x1a08);hdr=(u8 *)a+0x1a08;
@@ -315,7 +315,7 @@ M2C_FIELD(a,s32 *,0x1a34)=M2C_FIELD(hdr,s8 **,4)-p;
 func_020065e8(a+0x1a18);
 q=(s8 *)func_02068fdc(M2C_FIELD(hdr,s32 *,0),&data_020fb5b8);
 if(q==NULL)return 1;
-len=func_02068c34(&data_020fb5b8);
+len=StringLength(&data_020fb5b8);
 end=(s8 *)func_02068fdc((s32)(q+len),&data_020fb5cc);
 ch=*end;*end=0;
 func_02006564(a+0x1a18);

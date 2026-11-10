@@ -4,20 +4,20 @@ extern u16 gPlayerUnitIdBase[];
 extern void **gCurrentMap;
 
 u8 func_02091e04(void) {
-    void *func_02091da8();
-    return M2C_FIELD(func_02091da8(), u8 *, 0x4E);
+    void *Get3DSpriteManager();
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4E);
 }
 
 s32 func_02091e14(void) {
-    void *func_02091da8();
-    return M2C_FIELD(func_02091da8(), u8 *, 0x49);
+    void *Get3DSpriteManager();
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
-u8 func_02091e24(void) {
+u8 Get3DSpriteTarget(void) {
     if (func_02091e14() == 2) {
         return 0U;
     }
-    return M2C_FIELD(func_02091da8(), u8 *, 0x49);
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
 void func_02091e44(void) {
@@ -26,20 +26,20 @@ void func_02091e44(void) {
 }
 
 s8 func_02091e50(void) {
-    s32 func_02091db4();
-    if (func_02091db4() == 2) {
+    s32 Get3DSpriteCount();
+    if (Get3DSpriteCount() == 2) {
         return 2;
     }
-    return M2C_FIELD(func_02091da8(), s8 *, 0x4D);
+    return M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D);
 }
 
 s32 func_02091e70(s32 arg0) {
-    s32 func_02091db4();
+    s32 Get3DSpriteCount();
     s32 temp_r0;
     u8 temp_r0_2;
     void *temp_r4;
     temp_r4 = (void *)func_02091f18(arg0);
-    temp_r0 = func_02091db4();
+    temp_r0 = Get3DSpriteCount();
     switch (temp_r0) {
     case 1:
         temp_r0_2 = M2C_FIELD(temp_r4, u8 *, 7);
@@ -62,7 +62,7 @@ u16 func_02091ecc(u16 arg0) {
 }
 
 s32 func_02091ef0(void) {
-    return (M2C_FIELD(func_02091da8(), u8 *, 0x4A) * 2) + 2;
+    return (M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A) * 2) + 2;
 }
 
 s32 func_02091f08(void) {
@@ -77,7 +77,7 @@ s32 func_02091f18(s32 arg0) {
     if (var_r4 == 3) {
         var_r4 = func_02091e50();
     }
-    return (var_r4 * 0xC) + func_02091da8();
+    return (var_r4 * 0xC) + Get3DSpriteManager();
 }
 
 void func_02091f40(void) {
@@ -452,7 +452,7 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 s32 func_020926f8(s32 arg0) {
  s32 func_02086680(s32); void func_02099e10(void); void func_020943e0(void); void func_02094424(void);
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
- u8 func_02091e24(void); s32 func_02091e70(s32); s32 func_02091da8(void); s32 func_02091f18(s32);
+ u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 func_02091f18(s32);
  s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK func_0209707c(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
@@ -463,10 +463,10 @@ s32 func_020926f8(s32 arg0) {
  old=gCur3DSpriteEngine;
  for(r10=0;r10<2;r10++){
  if(r10==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
- if(func_02091e24()==0 && gCur3DSpriteEngine!=g3DSpriteEngineMain)goto next;
- if(func_02091e24()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
- if(func_02091e24()==3 && gCur3DSpriteEngine!=old)goto next;
- r9=func_02091e70(2); r8=(void *)func_02091da8();r7=(void *)func_02091da8();
+ if(Get3DSpriteTarget()==0 && gCur3DSpriteEngine!=g3DSpriteEngineMain)goto next;
+ if(Get3DSpriteTarget()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
+ if(Get3DSpriteTarget()==3 && gCur3DSpriteEngine!=old)goto next;
+ r9=func_02091e70(2); r8=(void *)Get3DSpriteManager();r7=(void *)Get3DSpriteManager();
  r6=(void *)func_02091f18(2);r5ptr=(void *)func_02091f18(2);tmp=(void *)func_02091f18(2);
  sp8=M2C_FIELD(r5ptr,u8 *,6);sp8=sp8<<28;sp8=sp8>>16;
  result=(void *)func_0209bd60((s16)r9,1,M2C_FIELD(r8,u8 *,0x4c),

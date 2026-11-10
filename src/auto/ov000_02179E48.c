@@ -352,7 +352,7 @@ u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
  extern void **gCurrentMap;
  s32 func_ov000_021a9860(s32,s32);
  s32 IsCurrentPlayerUnit(s32);
- s32 func_ov000_021a98a8(s32);
+ s32 IsFootUnitKind(s32);
  void *base;
  s32 id;
  if (func_ov000_021a9860(arg0,arg1) == 0) return 0;
@@ -360,7 +360,7 @@ u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
  id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  if (id == 0) return 1;
  if (IsCurrentPlayerUnit((s16)id) == 0) return 0;
- return func_ov000_021a98a8(((u32)(M2C_FIELD(*gCurrentMap + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
+ return IsFootUnitKind(((u32)(M2C_FIELD(*gCurrentMap + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
 }
 
 u8 func_ov000_0217ac78(s32 arg0, s32 arg1) {
