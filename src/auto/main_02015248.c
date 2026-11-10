@@ -1,6 +1,7 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct RomHeader_020152c8 { u8 unk_0[0x80]; u32 offset; } RomHeader_020152c8;
+static inline u32 FilePosition_020152c8(void *file) { return M2C_FIELD(file,u32 *,0x2c)-M2C_FIELD(file,u32 *,0x24); }
 
 
 /* Select units by state into priority groups, then dispatch the matching network action. */

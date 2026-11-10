@@ -1,7 +1,7 @@
 /* 24 functions from 0x021743F0 to 0x02175310 (ov000), found by ds-decomp. */
 #include "common.h"
 
-typedef struct { s32 fields[8]; } Ov000MenuState;
+typedef Ov000InfoMenu Ov000MenuState;
 typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
 
 void func_ov000_021743f0(void *arg0) {

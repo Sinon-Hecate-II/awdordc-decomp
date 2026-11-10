@@ -34,6 +34,31 @@ typedef s32 M2C_UNK32;
 #define M2C_CARRY 0
 #define M2C_OVERFLOW(a) (0)
 typedef struct { s32 fd; s16 events; s16 revents; } PollFd;
+
+/* Panels of the ov000 map info window (the box that follows the map cursor). */
+enum {
+    OV000_INFO_IDLE = 1,        /* no panel shown */
+    OV000_INFO_TERRAIN = 2,     /* terrain / unit info panel */
+    OV000_INFO_NO_TERRAIN = 3,  /* info panel with nothing selected */
+    OV000_INFO_UNIT_STATS = 4   /* detailed unit statistics panel */
+};
+
+/* State of the ov000 map info window, one instance (gOv000InfoWindow). */
+typedef struct Ov000InfoMenu {
+    void *statsWindow;   /* +0x00: unit statistics panel object */
+    void *panel;         /* +0x04: terrain / unit info panel controller */
+    s32 state;           /* +0x08: panel currently shown, OV000_INFO_* */
+    s32 pendingState;    /* +0x0C: panel requested this frame */
+    u8 refresh;          /* +0x10: panel content must be rebuilt */
+    u8 trigger;          /* +0x11: re-read the cell under the cursor */
+    u8 pressed;          /* +0x12: confirm button state last frame */
+    u8 hasUnit;          /* +0x13: cursor cell holds a unit */
+    s8 prevMode;         /* +0x14: map interaction mode last frame */
+    s16 cursorX;         /* +0x16: cell under the cursor */
+    s16 cursorY;         /* +0x18 */
+    s8 animFrame;        /* +0x1A: cursor blink timer, -1 = not blinking */
+    s32 unk1C;           /* +0x1C */
+} Ov000InfoMenu;
 #endif
 
 #endif

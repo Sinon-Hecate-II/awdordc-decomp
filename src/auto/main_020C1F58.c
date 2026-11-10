@@ -9,38 +9,113 @@ extern u8 data_027e00b4[];
 extern u8 data_02129780[];
 extern u8 data_027e007c[];
 
-M2C_UNK func_020c1f58(u8 *p){
-extern u8 data_0212989c[],data_02129778[],data_021298a8[],data_021298bc[],data_021298c8[],data_021298d8[],data_021298e0[],data_021298e4[],data_021298e8[],data_021298ec[],data_021298f8[],data_02129904[],data_02129910[];
+/* Initialise the CO "occupation" cut-in: open the /occupation archive, set up the
+ * 3D sprite object, load the CO's .narc/.cg/.sc/.cl portrait and frame textures,
+ * then restore the sprite engine and mark the screen as ready. */
+M2C_UNK func_020c1f58(u8 *screen){
+extern u8 data_0212989c[];   /* "/occupation" */
+extern u8 data_02129778[];   /* sprite animation descriptor */
+extern u8 data_021298a8[];   /* "res_occupation_obj" */
+extern u8 data_021298bc[];   /* "plate.cg" */
+extern u8 data_021298c8[];   /* "obj_common.cl" */
+extern u8 data_021298d8[];   /* ".narc" */
+extern u8 data_021298e0[];   /* ".cg" */
+extern u8 data_021298e4[];   /* ".sc" */
+extern u8 data_021298e8[];   /* ".cl" */
+extern u8 data_021298ec[];   /* "frame.narc" */
+extern u8 data_021298f8[];   /* "frame.cg" */
+extern u8 data_02129904[];   /* "frame.sc" */
+extern u8 data_02129910[];   /* "frame.cl" */
 extern void *data_027e00c8,*gCurrentMap;
 void func_0200bc5c(void *);void func_020a92bc(void *,s32);void *func_020e3218(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *func_020c1e6c(s32);void func_02068c50(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
-u8 buf[64];u8 *resource;void *saved;u16 *volatile v0;u16 *volatile v1;u16 *volatile v2;u16 *volatile v3;u16 *volatile v4;u16 *volatile v5;u16 *volatile v6;u16 *volatile v7;u16 *volatile v8;u16 *volatile v9;u16 *volatile v10;u16 *volatile v11;u16 *volatile v12;u16 *volatile v13;u16 *volatile v14;u16 *volatile v15;
+u8 path[64];
+u8 *objectRes;
+void *savedEngine;
+u16 *volatile statReg0;
+u16 *volatile statReg1;
+u16 *volatile statReg2;
+u16 *volatile statReg3;
+u16 *volatile statReg4;
+u16 *volatile statReg5;
+u16 *volatile statReg6;
+u16 *volatile statReg7;
+u16 *volatile statReg8;
+u16 *volatile statReg9;
+u16 *volatile statReg10;
+u16 *volatile statReg11;
+u16 *volatile statReg12;
+u16 *volatile statReg13;
+u16 *volatile statReg14;
+u16 *volatile statReg15;
+
 func_0200bc5c(data_0212989c);
-M2C_FIELD(*(void **)(p+60),u16*,18)=860;
-M2C_FIELD(*(void **)(p+60),u8*,22)=16;
-M2C_FIELD(*(void **)(p+60),u8*,20)=32;
-M2C_FIELD(*(void **)(p+60),u8*,23)=24;
-func_020a92bc(*(void **)(p+60),20);
-M2C_FIELD(*(void **)(p+60),u8*,33)=11;
-M2C_FIELD(*(void **)(p+60),u8*,32)=(M2C_FIELD(*(void **)(p+60),u8*,32)&~224)|32;
-M2C_FIELD(*(void **)(p+60),void **,36)=data_02129778;
-M2C_FIELD(*(void **)(p+60),u8*,40)&=~224;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
-v0=*(u16 **)gCur3DSpriteEngine;*v0=*v0|16;
-v1=*(u16 **)gCur3DSpriteEngine;*v1=*v1|32;
-v2=*(u16 **)gCur3DSpriteEngine;*v2=*v2|64;
-v3=*(u16 **)gCur3DSpriteEngine;*v3=*v3&~128;
-v4=*(u16 **)gCur3DSpriteEngine;*v4=*v4|256;
+M2C_FIELD(*(void **)(screen+60),u16*,18)=860;
+M2C_FIELD(*(void **)(screen+60),u8*,22)=16;
+M2C_FIELD(*(void **)(screen+60),u8*,20)=32;
+M2C_FIELD(*(void **)(screen+60),u8*,23)=24;
+func_020a92bc(*(void **)(screen+60),20);
+M2C_FIELD(*(void **)(screen+60),u8*,33)=11;
+M2C_FIELD(*(void **)(screen+60),u8*,32)=(M2C_FIELD(*(void **)(screen+60),u8*,32)&~224)|32;
+M2C_FIELD(*(void **)(screen+60),void **,36)=data_02129778;
+M2C_FIELD(*(void **)(screen+60),u8*,40)&=~224;
+
+/* switch to the CO sprite engine and configure its first display register */
+savedEngine=gCur3DSpriteEngine;
+gCur3DSpriteEngine=data_027e00c8;
+statReg0=*(u16 **)gCur3DSpriteEngine;*statReg0=*statReg0|16;
+statReg1=*(u16 **)gCur3DSpriteEngine;*statReg1=*statReg1|32;
+statReg2=*(u16 **)gCur3DSpriteEngine;*statReg2=*statReg2|64;
+statReg3=*(u16 **)gCur3DSpriteEngine;*statReg3=*statReg3&~128;
+statReg4=*(u16 **)gCur3DSpriteEngine;*statReg4=*statReg4|256;
 *(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3000)|8;
-v5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v5=(*v5&~192)|64;
-M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,81)=16;M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,82)=0;v6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v6=*v6&~1;v7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v7=*v7&~2;v8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v8=*v8&~4;v9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v9=*v9&~8;v10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v10=*v10&~16;v11=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v11=*v11|256;v12=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v12=*v12&~512;v13=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v13=*v13&~1024;v14=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v14=*v14&~2048;v15=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*v15=*v15&~4096;resource=func_02080e30(func_020e3218(data_021298a8),1);
-func_0207c780(resource,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
-func_0207c780(resource+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
-if(p[54]==0)func_0207c780(resource+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(resource+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
-func_0207c780(resource+0x92c,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8480);
-func_020e35cc(resource);
+statReg5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg5=(*statReg5&~192)|64;
+M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,81)=16;M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,82)=0;statReg6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg6=*statReg6&~1;statReg7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg7=*statReg7&~2;statReg8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg8=*statReg8&~4;statReg9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg9=*statReg9&~8;statReg10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg10=*statReg10&~16;statReg11=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg11=*statReg11|256;statReg12=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg12=*statReg12&~512;statReg13=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg13=*statReg13&~1024;statReg14=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg14=*statReg14&~2048;statReg15=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg15=*statReg15&~4096;
+
+objectRes=func_02080e30(func_020e3218(data_021298a8),1);
+func_0207c780(objectRes,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
+func_0207c780(objectRes+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
+if(screen[54]==0)func_0207c780(objectRes+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(objectRes+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
+func_0207c780(objectRes+0x92c,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8480);
+func_020e35cc(objectRes);
 func_02080cfc(data_021298bc,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
-func_0208116c(data_021298c8,0x360,64);func_01ff9ce8(2);func_02068c50(buf,func_020c1e6c((*(u8 **)(p+64))[1]));func_02068d68(buf,data_021298d8);func_020814e4(buf);func_02068c50(buf,func_020c1e6c((*(u8 **)(p+64))[1]));func_02068d68(buf,data_021298e0);func_02081590(buf,M2C_FIELD(gCur3DSpriteEngine,void **,20));func_02068c50(buf,func_020c1e6c((*(u8 **)(p+64))[1]));func_02068d68(buf,data_021298e4);func_02081590(buf,M2C_FIELD(gCur3DSpriteEngine,void **,40));func_02068c50(buf,func_020c1e6c((*(u8 **)(p+64))[1]));func_02068d68(buf,data_021298e8);func_020815d4(buf,*(void **)(p+76),0,128);func_02081528();func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;func_01ff9ce8(1);
-func_020814e4(data_021298ec);func_02081590(data_021298f8,M2C_FIELD(gCur3DSpriteEngine,void **,16));func_02081590(data_02129904,M2C_FIELD(gCur3DSpriteEngine,void **,36));func_020815fc(data_02129910,32,32);func_02081528();func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;gCur3DSpriteEngine=saved;p[53]=1;func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)gCurrentMap,s16*,0x52de));
+func_0208116c(data_021298c8,0x360,64);
+func_01ff9ce8(2);
+
+/* build "<CO name>.narc" and load the CO's portrait archive */
+func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
+func_02068d68(path,data_021298d8);
+func_020814e4(path);
+
+/* "<CO name>.cg" -> background frame slot */
+func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
+func_02068d68(path,data_021298e0);
+func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
+
+/* "<CO name>.sc" -> portrait slot */
+func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
+func_02068d68(path,data_021298e4);
+func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
+
+/* "<CO name>.cl" -> palette data */
+func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
+func_02068d68(path,data_021298e8);
+func_020815d4(path,*(void **)(screen+76),0,128);
+func_02081528();
+func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
+M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
+func_01ff9ce8(1);
+
+/* load the shared frame.narc and its .cg/.sc/.cl parts */
+func_020814e4(data_021298ec);
+func_02081590(data_021298f8,M2C_FIELD(gCur3DSpriteEngine,void **,16));
+func_02081590(data_02129904,M2C_FIELD(gCur3DSpriteEngine,void **,36));
+func_020815fc(data_02129910,32,32);
+func_02081528();
+func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
+M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
+gCur3DSpriteEngine=savedEngine;
+screen[53]=1;
+func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)gCurrentMap,s16*,0x52de));
 }
 
 void func_020c253c(u8 *p){
