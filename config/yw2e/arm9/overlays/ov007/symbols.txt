@@ -156,14 +156,14 @@ func_ov007_022193c8 kind:function(arm,size=0xc) addr:0x022193c8
 func_ov007_022193d4 kind:function(arm,size=0xc) addr:0x022193d4
 func_ov007_022193e0 kind:function(arm,size=0x38) addr:0x022193e0
 func_ov007_02219418 kind:function(arm,size=0x18) addr:0x02219418
-func_ov007_02219430 kind:function(arm,size=0x14) addr:0x02219430
+GetPanelObject kind:function(arm,size=0x14) addr:0x02219430
 func_ov007_02219444 kind:function(arm,size=0xc8) addr:0x02219444
 func_ov007_0221950c kind:function(arm,size=0x128) addr:0x0221950c
 func_ov007_02219634 kind:function(arm,size=0xc0) addr:0x02219634
 func_ov007_022196f4 kind:function(arm,size=0x18) addr:0x022196f4
 func_ov007_0221970c kind:function(arm,size=0xc8) addr:0x0221970c
 func_ov007_022197d4 kind:function(arm,size=0x128) addr:0x022197d4
-func_ov007_022198fc kind:function(arm,size=0x1b8) addr:0x022198fc
+UpdatePanelDisplay kind:function(arm,size=0x1b8) addr:0x022198fc
 func_ov007_02219ab4 kind:function(arm,size=0x18) addr:0x02219ab4
 func_ov007_02219acc kind:function(arm,size=0x1c) addr:0x02219acc
 func_ov007_02219ae8 kind:function(arm,size=0x50) addr:0x02219ae8
@@ -246,7 +246,7 @@ func_ov007_0221f238 kind:function(arm,size=0xc) addr:0x0221f238
 func_ov007_0221f244 kind:function(arm,size=0xc) addr:0x0221f244
 func_ov007_0221f250 kind:function(arm,size=0x14) addr:0x0221f250
 func_ov007_0221f264 kind:function(arm,size=0xc) addr:0x0221f264
-func_ov007_0221f270 kind:function(arm,size=0x1e8) addr:0x0221f270
+CreateMapEditList kind:function(arm,size=0x1e8) addr:0x0221f270
 func_ov007_0221f458 kind:function(arm,size=0x58) addr:0x0221f458
 func_ov007_0221f4b0 kind:function(arm,size=0x50) addr:0x0221f4b0
 data_ov007_0221f500 kind:data(any) addr:0x0221f500
@@ -1006,7 +1006,7 @@ data_ov007_02220d58 kind:data(any) addr:0x02220d58
 data_ov007_02220d80 kind:data(any) addr:0x02220d80
 data_ov007_02220da8 kind:data(any) addr:0x02220da8
 data_ov007_02220dd0 kind:data(any) addr:0x02220dd0
-data_ov007_02220df8 kind:data(any) addr:0x02220df8
+gMapEditListTemplate kind:data(any) addr:0x02220df8
 gSoftKeyLayoutUs kind:data(any) addr:0x02220ea0
 gSoftKeyLayoutJp kind:data(any) addr:0x02221224
 gSoftKeyLayoutEu kind:data(any) addr:0x022215a8
@@ -1014,7 +1014,7 @@ gSoftKeyNarcName kind:data(any) addr:0x0222192c
 gSoftKeyEuFileName kind:data(any) addr:0x0222193c
 gSoftKeyUsFileName kind:data(any) addr:0x0222194c
 gSoftKeyJpFileName kind:data(any) addr:0x0222195c
-data_ov007_02221974 kind:data(any) addr:0x02221974
+gMapEditListVTable kind:data(any) addr:0x02221974
 data_ov007_02221980 kind:data(any) addr:0x02221980
 data_ov007_0222198c kind:data(any) addr:0x0222198c
 data_ov007_02221998 kind:data(any) addr:0x02221998

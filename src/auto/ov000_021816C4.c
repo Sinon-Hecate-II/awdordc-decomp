@@ -69,7 +69,7 @@ void func_ov000_02181838(void) {
 
 void func_ov000_0218190c(void) {
 extern void **gCurrentMap;
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 void *state;
 if(func_ov000_02180410()!=0){func_ov000_0218046c();return;}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==6)return;
@@ -80,7 +80,7 @@ if(M2C_FIELD(state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67ce))func_ov000_02
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==8){func_ov000_021962f8();func_ov000_0218b02c();return;}
 func_ov000_021935c4();
 func_ov000_02194370();
-M2C_FIELD(data_ov000_021df580,u16 *,8)|=0x20;
+M2C_FIELD(gAiCommandState,u16 *,8)|=0x20;
 func_ov000_02192d88();
 func_ov000_021935c4();
 func_ov000_0218b02c();
@@ -147,14 +147,14 @@ void func_ov000_02181c10(void) {
 s32 func_ov000_0218cb20(void);
 s32 func_ov000_021aa3bc(void);
 extern void *gAiSettings;
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 s32 (*callback)(void);
 if(func_ov000_02180410()!=0)return;
 func_ov000_02198c60();
 if(func_ov000_0218cb20()!=0)return;
 callback=M2C_FIELD(gAiSettings,s32 (**)(void),4);
 if(callback==NULL) {if(!func_ov000_021aa3bc())return;} else {if(!callback())return;}
-M2C_FIELD(data_ov000_021df580,u16 *,8)|=0x100;
+M2C_FIELD(gAiCommandState,u16 *,8)|=0x100;
 func_ov000_0218d040(0);
 }
 

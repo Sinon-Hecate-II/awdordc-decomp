@@ -50,7 +50,7 @@ void func_020a9a1c(void *, int, int);
 void func_020a979c(void *, int, int);
 int func_020bf9e0(void);
 int func_020bfa20(void);
-int func_0207c8ec(int, int);
+int Divide(int, int);
 void func_ov003_0220c6c8(void *a) {
 u8 *t, *q;
 Unk0220C6C8Anim *anim;
@@ -207,7 +207,7 @@ M2C_FIELD(p,u8 **,96)=q;
 i=func_020bf9e0(); q=M2C_FIELD(p,u8 **,96); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
-i=base+func_0207c8ec(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
+i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
 q=MemAlloc(0x20);
 if(q) {
@@ -232,7 +232,7 @@ M2C_FIELD(p,u8 **,100)=q;
 i=func_020bfa20(); q=M2C_FIELD(p,u8 **,100); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
-i=base+func_0207c8ec(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
+i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 func_020a979c(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
 q=MemAlloc(24);
 if(q) { M2C_FIELD(q,u32 *,0)=0;M2C_FIELD(q,u32 *,4)=0;M2C_FIELD(q,u32 *,8)=0;M2C_FIELD(q,u32 *,12)=0;M2C_FIELD(q,u32 *,16)=0;M2C_FIELD(q,u32 *,20)=0; }

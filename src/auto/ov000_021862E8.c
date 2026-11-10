@@ -57,7 +57,7 @@ void func_ov000_02186940(void *arg0) {
 
 u8 func_ov000_0218695c(void *arg0) {
 s32 IsUnitSelected(void *); s32 func_ov000_021a8a88(void *); s32 GetUnitAttackClass(u32);
-extern u8 data_ov000_021b5c0f;
+extern u8 gUnitKindFlags;
 u16 flags; u8 result;
 flags=M2C_FIELD(arg0,u16 *,4);
 if(flags&8)return 0;
@@ -65,16 +65,16 @@ if(!(flags&1) && ((u32)(M2C_FIELD(arg0,u8 *,10)<<24)>>31)==0)return 0;
 if(((u32)(M2C_FIELD(arg0,u16 *,6)<<16)>>27)!=0 && func_ov000_021a8a88(arg0)==1)return 1;
 if(IsUnitSelected(arg0)!=0)return 1;
 if(GetUnitAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)!=1)return 0;
-result= !(*(&data_ov000_021b5c0f+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))&32);
+result= !(*(&gUnitKindFlags+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))&32);
 return result;
 }
 
 void func_ov000_02186a18(void) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f;
+    extern u8 gUnitKindFlags;
     extern u8 gUnitKindStats[];
     extern u16 gPlayerUnitIdBase[];
-    extern u8 *data_ov000_021df644;
+    extern u8 *gAiUnitTypeTuning;
     extern s8 gAiRangeLayer[];
     s32 GetUnitAttackClass(u32);
     u8 func_ov000_0218695c(void *);
@@ -92,7 +92,7 @@ void func_ov000_02186a18(void) {
     if (GetUnitAttackClass((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) == 1
         && ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) != 0x1a)
         return;
-    if ((&data_ov000_021b5c0f)[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 0x20)
+    if ((&gUnitKindFlags)[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 0x20)
         return;
     n = gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)];
     i = n + 1;
@@ -116,9 +116,9 @@ void func_ov000_02186a18(void) {
                 if (func_ov000_021a9d8c((s16)x, (s16)y)) continue;
                 if (func_020cf878(x, y)) continue;
                 if ((gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
-                    if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= data_ov000_021df644[1]) continue;
+                    if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= gAiUnitTypeTuning[1]) continue;
                 }
-                if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
+                if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2d48) >= gAiUnitTypeTuning[2]) continue;
                 fx = x;
                 fy = y;
                 best = ((u8 *)gAiRangeLayer)[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];

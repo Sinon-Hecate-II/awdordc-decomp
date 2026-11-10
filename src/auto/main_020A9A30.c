@@ -3,7 +3,7 @@
 extern char data_02126bf0[],data_02126c00[],data_02126c18[],data_02126c24[],data_02126c34[],data_02126c44[],data_02126c54[],data_02126c64[],data_02126c74[],data_02126c84[],data_02126c94[],data_02126ca8[],data_02126cbc[],data_02126ccc[],data_02126ce0[],data_02126cf4[],data_02126d08[],data_02126d10[],data_02126d18[],data_02126d28[],data_02126d38[],data_02126d44[],data_02126d50[],data_02126d60[],data_02126d6c[],data_02126d78[],data_02126d84[],data_02126d90[],data_02126d9c[],data_02126dac[],data_02126dbc[],data_02126dcc[],data_02126ddc[],data_02126dec[],data_02126df8[],data_02126e04[],data_02126e10[],data_02126e1c[],data_02126e2c[],data_02126e3c[],data_02126e4c[],data_02126e5c[],data_02126e68[],data_02126e78[],data_02126e84[],data_02126e94[],data_02126ea4[],data_02126eb4[],data_02126ec4[],data_02126ed4[],data_02126ee4[],data_02126ef4[],data_02126f04[],data_02126f14[],data_02126f24[],data_02126f38[],data_02126f48[],data_02126f5c[],data_02126f6c[],data_02126f7c[],data_02126f90[],data_02126fa0[],data_02126fb0[],data_02126fc0[],data_02126fd4[],data_02126fe4[],data_02126ff0[],data_02126ffc[],data_02127008[],data_02127014[],data_02127020[],data_02127030[],data_02127040[],data_02127054[],data_0212706c[],data_02127060[],data_02127068[],data_02127088[],data_0212707c[],data_02127084[],data_021270a4[],data_02127098[],data_021270a0[],data_021270b4[],data_021270c4[],data_021270d8[],data_021270ec[],data_021270fc[],data_0212710c[],data_0212711c[],data_02127130[],data_0212714c[],data_02127164[],data_0212717c[],data_02127194[],data_021271ac[],data_021271c8[],data_021271e0[],data_021271fc[],data_02127214[],data_0212722c[],data_02127248[],data_02127260[],data_0212727c[],data_02127298[],data_021272b4[],data_021272d0[],data_021272e8[],data_021272f8[],data_02127308[],data_02127318[],data_02127328[],data_02127334[],data_02127340[],data_02127348[];
 extern char *data_02126a90;extern u16 **gCur3DSpriteEngine;
 char *GetLocalizedFileName(void *);s32 StringFormat(char *,const char *,...);
-void func_02080c50(void *,s32);void func_020814e4(void *);void SetFileDirectory(void *);void func_02081590(void *,s32);void func_02081528(void);void LoadDecompressedFileTo(void *,s32);
+void func_02080c50(void *,s32);void OpenNarcArchive(void *);void SetFileDirectory(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);void LoadDecompressedFileTo(void *,s32);
 
 
 int func_020a9a30(int a,int b,int c,int d){char name[256],path[256];char *base=data_02126bf0;u16 size;
@@ -88,7 +88,7 @@ case 5:switch(b){case 0:StringFormat(name,GetLocalizedFileName(data_02127334));b
 }
 StringFormat(path,data_02127340,base,name);
 if(b==2){func_02080c50(path,d);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;}
-else if(a==2){SetFileDirectory(base);func_020814e4(GetLocalizedFileName(data_02127348));func_02081590(name,d);func_02081528();}
+else if(a==2){SetFileDirectory(base);OpenNarcArchive(GetLocalizedFileName(data_02127348));LoadNarcFileDecompressed(name,d);CloseNarcArchive();}
 else LoadDecompressedFileTo(path,d);
 size=0;if(c&1)size+=12;if(c&2)size+=12;if(c&3)size+=44;if(c&4)size+=28;return size;
 }

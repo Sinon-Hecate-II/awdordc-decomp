@@ -59,7 +59,7 @@ if (type != 0 && type == arg0 && entry->unkB != arg1) { count += 1; }
 return count;
 }
 
-s32 func_ov000_021a88c8(s32 arg0) {
+s32 CountPlayerUnitsOfKind(s32 arg0) {
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];u8 func_ov000_021a8984(s32);
 s32 count=0,i;void *base=*gCurrentMap;
 u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];
@@ -87,8 +87,8 @@ u8 func_ov000_021a8984(s32 arg0) {
 
 s32 func_ov000_021a89a4(UnkValue_021a89a4 *a) {
 extern void **gCurrentMap;
-s32 func_020a86f0(s32);s32 func_0207c8ec(s32,s32);s32 func_020a75b8(void *);
-s32 n=func_0207c8ec(a->value,func_020a86f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
+s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 func_020a75b8(void *);
+s32 n=Divide(a->value,func_020a86f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
 if(func_020a75b8(a)<=n)n=func_020a75b8(a);
 return n;
 }
@@ -134,7 +134,7 @@ u8 func_ov000_021a8a88(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))r
 
 s32 func_ov000_021a8ac8(void *a){extern void **gCurrentMap;s32 n;if(a){if(!a)n=0;else n=((s32)a-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(M2C_FIELD(*gCurrentMap,u16 *,0x52a8)!=n){if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;}return func_ov000_021a8a60(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20;}
 
-s32 func_ov000_021a8b78(void *a){s32 func_0207c8ec(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=func_0207c8ec(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
+s32 func_ov000_021a8b78(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=func_ov000_021a8a60(a);while(x<20){x+=n;i++;}return i;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
@@ -232,7 +232,7 @@ if(data_ov000_021b54c0[i])v=1;else v=0;
 return v;
 }
 
-u8 func_ov000_021a9044(s32 a,s32 b){
+u8 IsTerrainPassable(s32 a,s32 b){
 extern u8 gMovementTypeTable[];
 extern M2C_UNK gMovementCostTable;
 u32 row=gMovementTypeTable[a*0x70];

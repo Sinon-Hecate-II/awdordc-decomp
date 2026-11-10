@@ -1,5 +1,6 @@
 /* 23 functions from 0x020CAB8C to 0x020CBACC (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct UnitCB9 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 hp; u8 tail[6]; } UnitCB9;
 typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealthCB;
 extern u8 data_0212b1b8[][4];
@@ -52,8 +53,8 @@ s32 func_020cad1c(s32 *arg0, s32 arg1) {
     s32 func_020cac3c(s32, s32);
     void func_020bda88(s32 *, s32);
     void PlaySoundEffect(s32);
-    void func_020cf5ec(s32);
-    s32 func_020bcb94(void);
+    void MoveMapCursorToTarget(s32);
+    s32 GetKeyActionFlags(void);
     s32 func_020bdbf4(s32);
     extern void **gCurrentMap;
     extern s8 data_0212b1ba[];
@@ -81,8 +82,8 @@ s32 func_020cad1c(s32 *arg0, s32 arg1) {
     M2C_FIELD(map, s16 *, 0x52C2) = (s16)(M2C_FIELD(map, s16 *, 0x52DC) + data_0212b1ba[sp0 * 4]);
     map = *gCurrentMap;
     M2C_FIELD(map, s16 *, 0x52C4) = (s16)(M2C_FIELD(map, s16 *, 0x52DE) + data_0212b1bb[sp0 * 4]);
-    func_020cf5ec(1);
-    result_r6 = func_020bcb94();
+    MoveMapCursorToTarget(1);
+    result_r6 = GetKeyActionFlags();
     result_r6 = result_r6 | func_020bdbf4(arg1);
     if (result_r6 & 0x20) {
         return 0x20;
@@ -158,11 +159,11 @@ void func_020cb018(s16 arg0) {
 }
 
 s32 func_020cb038(void *arg0,s32 arg1){
-s32 func_0207c8ec(s32,s32); M2C_UNK func_020d2b10(s32,u16);
+s32 Divide(s32,s32); M2C_UNK func_020d2b10(s32,u16);
 extern void **gCurrentMap; extern u16 data_ov000_021b5c02[];extern M2C_UNK gUnitKindStats;
 u8 *tab;s32 sum=0;u16 cost;u32 n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25);u16 h,idx;void *map;
-if(arg1){n >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112)*(n?func_0207c8ec(n-1,10)+1:sum);
-}else {n >>=25;cost=n?func_0207c8ec(n-1,10)+1:sum;}
+if(arg1){n >>=25;cost=*(u16 *)((u8 *)data_ov000_021b5c02+((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112)*(n?Divide(n-1,10)+1:sum);
+}else {n >>=25;cost=n?Divide(n-1,10)+1:sum;}
 tab=(u8 *)&gUnitKindStats;
 loop:
 if(((u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28)!=tab[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*112+9]){
@@ -171,7 +172,7 @@ else{update:h=M2C_FIELD(arg0,u16 *,6);sum+=cost;M2C_FIELD(arg0,u16 *,6)=(h&~0x78
 return sum;}
 
 s32 func_020cb170(void *arg0, s32 arg1) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     M2C_UNK func_020d2b10(s32, u16);
     extern void **gCurrentMap;
     extern M2C_UNK gUnitKindStats;
@@ -185,7 +186,7 @@ s32 func_020cb170(void *arg0, s32 arg1) {
 
     var_r7 = 0;
     temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
-    temp_r8 = temp_r0 ? (func_0207c8ec(temp_r0 - 1, 0xA) + 1) : var_r7;
+    temp_r8 = temp_r0 ? (Divide(temp_r0 - 1, 0xA) + 1) : var_r7;
     tab = (u8 *) &gUnitKindStats;
 loop_4:
     if (((u32) (M2C_FIELD(arg0, u8 *, 0xA) << 0x19) >> 0x19) != tab[((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70 + 0xE]) {
@@ -211,7 +212,7 @@ block_8:
 s32 func_020cb254(void *p,s32 count,s32 pay){
 s32 GetUnitOwner(void);
 s32 func_020d2d18(s32,u32);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 M2C_UNK func_020d2b10(s32,u16);
 extern void **gCurrentMap;
 s32 owner,total,health,level,offset;u16 cost,v;
@@ -220,7 +221,7 @@ cost=func_020d2d18(owner,(u32)(M2C_FIELD(p,u8*,0)<<26)>>26);
 if(count){offset=owner*140;
 do{
 health=((UnitHealthCB*)p)->health;
-if(!health)level=0;else level=func_0207c8ec(health-1,10)+1;
+if(!health)level=0;else level=Divide(health-1,10)+1;
 if(level==10)break;
 if(pay){
 if(M2C_FIELD(offset+(s32)*gCurrentMap,s32*,0x67a4)<(s32)cost)break;
@@ -232,7 +233,7 @@ if(((UnitHealthCB*)p)->health>100)((UnitHealthCB*)p)->health=100;
 }while(--count);
 }
 health=((UnitHealthCB*)p)->health;
-if(!health)level=0;else level=func_0207c8ec(health-1,10)+1;
+if(!health)level=0;else level=Divide(health-1,10)+1;
 ((UnitHealthCB*)p)->health=(u16)(level*10);
 return total;
 }
@@ -314,19 +315,24 @@ void func_020cb8f8(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x50) = 1;
 }
 
-void func_020cb904(void *state){
+/* Stepping overlay task: from the saved cursor it scans the current player's units
+ * and finds the next one worth marking - a unit whose terrain allows its kind and
+ * whose cargo has a cost or a value. It highlights that unit's tile (mode 1 when the
+ * cargo has value, 2 when only cost) and saves the next cursor; at the end of the
+ * unit list the task retires itself. */
+void MarkUnitCargoTiles(void *state){
 extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;
 u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;
 if(func_020c98b4(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
 map=*gCurrentMap;
-unit=(UnitCB9 *)(map+0x59a4+(M2C_FIELD(map,u16 *,0x52a8)+i)*14);
+unit=(UnitCB9 *)(map+MAP_UNIT_RECORDS+(M2C_FIELD(map,u16 *,0x52a8)+i)*MAP_UNIT_STRIDE);
 if(!unit->kind || (unit->flags&8))continue;
 a=0;b=0;
-if(func_020d280c(M2C_FIELD(map,u16 *,0x52a4),unit->x,unit->y)){
+if(func_020d280c(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),unit->x,unit->y)){
 s32 kind=unit->kind; s32 x; s32 y; s32 terrain; s8 *table;
 map=*gCurrentMap; x=unit->x;y=unit->y;
-terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
+terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN)&31;
 table=M2C_FIELD((u8 *)&gUnitKindStats+kind*112,s8 **,0x58);
 if(table[terrain]){
 if(!func_020a8604(kind)){

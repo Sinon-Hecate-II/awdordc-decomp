@@ -21,7 +21,7 @@ void func_ov001_02179ea8(void) {
     void func_ov001_02171dd0(M2C_UNK);
     void func_ov001_0217a0d4(void);
     void func_ov001_0217a17c(void);
-    M2C_UNK func_ov001_0218ad0c(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateTextPanel(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0217ac18(void);
     void func_ov001_0217b130(void);
@@ -44,7 +44,7 @@ void func_ov001_02179ea8(void) {
         func_ov001_02171dd0((M2C_UNK)2);
         func_ov001_0217a0d4();
         func_ov001_0217a17c();
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc) = (s32)func_ov001_0218ad0c((M2C_UNK)0, (M2C_UNK)0);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc) = (s32)CreateTextPanel((M2C_UNK)0, (M2C_UNK)0);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x3c) =
         (s32)func_ov001_0218c884((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
     func_ov001_0217ac18();
@@ -53,8 +53,8 @@ void func_ov001_02179ea8(void) {
 }
 
 void func_ov001_02179f80(void) {
-    s32 func_ov001_02171d30(void *);
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    s32 Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
@@ -67,13 +67,13 @@ void func_ov001_02179f80(void) {
     typedef struct { u8 bytes[22]; } Buf22;
     Buf25 buf25 = *(Buf25 *)&data_ov001_0218f7ab;
     Buf22 buf22 = *(Buf22 *)&data_ov001_0218f795;
-    func_ov001_02171d90(&data_ov001_021906e8, &func_020044ec);
+    Ov001_LoadAsset(&data_ov001_021906e8, &func_020044ec);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4) =
-        func_ov001_02189dc8(func_ov001_02171d30(&buf25), 0, 4);
+        func_ov001_02189dc8(Ov001_LocalizePath(&buf25), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8) =
-        func_ov001_02189dc8(func_ov001_02171d30(&buf22), 0, 4);
+        func_ov001_02189dc8(Ov001_LocalizePath(&buf22), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x04000008, u16 *, 0) = (M2C_FIELD((void *)0x04000008, u16 *, 0) & ~3) | 3;
@@ -420,7 +420,7 @@ void func_ov001_0217ac18(void) {
     M2C_UNK func_ov001_0217ae38(s32, s32);
     M2C_UNK func_ov001_0217aec4();
     M2C_UNK func_ov001_0218b1ec(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b298(M2C_UNK);
+    M2C_UNK CloseTextPanel(M2C_UNK);
     extern M2C_UNK gMapSelectState;
     s32 var_r4;
     s32 var_r5;
@@ -450,7 +450,7 @@ void func_ov001_0217ac18(void) {
             var_r7 += 1;
         } while (var_r5 < var_r4);
     }
-    func_ov001_0218b298(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc));
+    CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0xc));
     func_ov001_0217aec4();
 }
 

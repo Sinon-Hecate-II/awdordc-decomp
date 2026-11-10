@@ -3,13 +3,13 @@
 
 /* Validates the linked sub-object and propagates its state into the entity's slots. */
 void func_ov006_02218200(void *entity) {
-    s32 func_020c79ec();
+    s32 GetMapRecordBuffer();
     s32 func_020c7e58(s32);
     s32 func_02084cf8();
     s32 func_020c8c6c(void *);
     s32 func_020c7a3c(s32);
     void *sub = M2C_FIELD(entity, void **, 0x54);
-    s32 curId = func_020c79ec();
+    s32 curId = GetMapRecordBuffer();
     s32 prevId = func_020c7e58(0);
     s32 hasSub;
     s32 ok;

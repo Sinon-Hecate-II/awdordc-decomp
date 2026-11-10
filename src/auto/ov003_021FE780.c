@@ -300,13 +300,13 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
 }
 
 void func_ov003_021fef18(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
     extern M2C_UNK data_ov003_0220ff2c;
     void *temp_r0;
 
-    temp_r0 = func_01ffa770(&data_ov003_0220ff2c);
+    temp_r0 = FindObjectByClass(&data_ov003_0220ff2c);
     if (temp_r0 == NULL) {
         return;
     }
@@ -488,7 +488,7 @@ void func_ov003_021ff36c(void) {
     extern M2C_UNK data_ov003_0220fe1c;
     void *temp_r0;
 
-    temp_r0 = func_01ffa770(&data_ov003_0220fe1c);
+    temp_r0 = FindObjectByClass(&data_ov003_0220fe1c);
     if (temp_r0 == NULL) {
         return;
     }
@@ -499,7 +499,7 @@ void func_ov003_021ff36c(void) {
 void func_ov003_021ff3ac(void) {
     extern M2C_UNK data_ov003_0220fe1c;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_ov003_0220fe1c);
+    temp_r0 = FindObjectByClass(&data_ov003_0220fe1c);
     if (temp_r0 == NULL) {
         return;
     }

@@ -1,6 +1,6 @@
 /* 18 functions from 0x021724C0 to 0x0217332C (ov001), found by ds-decomp. */
 #include "common.h"
-void func_ov001_02172ba4(void);
+void Ov001_HandleKeyboardKeyPress(void);
 typedef struct SpritePosition { s32 x, y; } SpritePosition;
 static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
     u32 value = *sprite;
@@ -15,7 +15,7 @@ void func_ov001_021724c0(void) {
     M2C_UNK func_ov001_0218a260(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a474(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218ac04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b12c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawPanelText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218a070(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov001_0217355c(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -104,7 +104,7 @@ void func_ov001_021724c0(void) {
             sp22 = 0x12;
             {
                 void *cur = ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0];
-                func_ov001_0218b12c(cur, sp1c, sp1e, sp20, sp22, 2, 0x480, (M2C_UNK)&sp14);
+                DrawPanelText(cur, sp1c, sp1e, sp20, sp22, 2, 0x480, (M2C_UNK)&sp14);
             }
             sp1c = sp1c + 0x12;
             sp10++;
@@ -137,17 +137,17 @@ void func_ov001_02172824(void) {
  func_ov001_0218c924(M2C_FIELD(gOv001MenuState, s32 *, 0x118), func_ov001_02173e38);
 }
 
-u8 func_ov001_02172858(void) {
+u8 GetKeyboardKey(void) {
     extern void *gOv001MenuState;
     return M2C_FIELD(gOv001MenuState, u8 *, 0x11C);
 }
 
-void func_ov001_0217286c(s8 arg0) {
+void Ov001_SetKeyboardCanDelete(s8 arg0) {
     extern void *gOv001MenuState;
     M2C_FIELD(gOv001MenuState, s8 *, 0x123) = arg0;
 }
 
-void func_ov001_02172880(s8 arg0) {
+void Ov001_SetKeyboardCanAdd(s8 arg0) {
  extern void *gOv001MenuState;
  M2C_FIELD(gOv001MenuState, s8 *, 0x124) = arg0;
 }
@@ -243,77 +243,80 @@ void func_ov001_02172b00(s32 arg0) {
 void func_ov001_02172b8c(void) {
     void Ov001_HandleKeyboardKeyRelease(void);
     M2C_UNK Ov001_KeyboardInput();
-    func_ov001_02172ba4();
+    Ov001_HandleKeyboardKeyPress();
     func_ov001_02172d8c();
     Ov001_HandleKeyboardKeyRelease();
     Ov001_KeyboardInput();
 }
 
-void func_ov001_02172ba4(void) {
+/* Handles the stylus being pressed on the on-screen keyboard: records the key under the press,
+ * buzzing instead when the text is full and the key cannot be added, or the delete key when
+ * nothing can be deleted. */
+void Ov001_HandleKeyboardKeyPress(void) {
     extern void *gOv001MenuState;
     extern u16 gTouchScreenRect[];
-    extern u16 data_ov001_0218f36c[];
-    extern u16 data_ov001_0218f330[];
-    extern u16 data_ov001_0218f34c[];
-    extern u16 data_ov001_0218f35c[];
-    extern u16 data_ov001_0218f344[];
-    extern u16 data_ov001_0218f32c[];
-    extern s32 data_ov001_02190110[];
+    extern u16 gKeyboardCharKeyPos[];
+    extern u16 gKeyboardCharKeySize[];
+    extern u16 gKeyboardAuxKeyPos[];
+    extern u16 gKeyboardAuxKeySize[];
+    extern u16 gKeyboardActionKeyPos[];
+    extern u16 gKeyboardActionKeySize[];
+    extern s32 gKeyboardAuxKeySound[];
     s32 TouchRectPressed(void *);
     void BuildTouchRect(void *, void *, void *);
     void Ov001_PlaySound(s32);
     u16 buf[4];
     s32 i;
     if (!TouchRectPressed(gTouchScreenRect)) return;
-    M2C_FIELD(gOv001MenuState, s8 *, 0x11e) = -1;
+    ((Ov001KeyboardState *)gOv001MenuState)->touchKey = -1;
     {
-        u16 *a = data_ov001_0218f36c;
-        for (i = 0; i < 0x2f; i++) {
-            BuildTouchRect(a, data_ov001_0218f330, buf);
+        u16 *keyPos = gKeyboardCharKeyPos;
+        for (i = 0; i < KBD_CHAR_KEY_COUNT; i++) {
+            BuildTouchRect(keyPos, gKeyboardCharKeySize, buf);
             if (TouchRectPressed(buf)) {
-                if (M2C_FIELD(gOv001MenuState, u8 *, 0x124) == 0) {
+                if (((Ov001KeyboardState *)gOv001MenuState)->canAdd == 0) {
                     Ov001_PlaySound(9);
                     return;
                 }
                 Ov001_PlaySound(0);
-                M2C_FIELD(gOv001MenuState, u8 *, 0x11e) = (u8)i;
+                ((Ov001KeyboardState *)gOv001MenuState)->touchKey = (u8)i;
                 return;
             }
-            a += 2;
+            keyPos += 2;
         }
     }
     {
-        u16 *c = data_ov001_0218f35c;
-        u16 *b = data_ov001_0218f34c;
+        u16 *keySize = gKeyboardAuxKeySize;
+        u16 *keyPos = gKeyboardAuxKeyPos;
         for (i = 0; i < 4; i++) {
-            BuildTouchRect(b, c, buf);
+            BuildTouchRect(keyPos, keySize, buf);
             if (TouchRectPressed(buf)) {
-                if ((i == 3 && M2C_FIELD(gOv001MenuState, u8 *, 0x123) == 0) ||
-                    (i == 2 && M2C_FIELD(gOv001MenuState, u8 *, 0x124) == 0)) {
+                if ((i == 3 && ((Ov001KeyboardState *)gOv001MenuState)->canDelete == 0) ||
+                    (i == 2 && ((Ov001KeyboardState *)gOv001MenuState)->canAdd == 0)) {
                     Ov001_PlaySound(9);
                     return;
                 }
-                Ov001_PlaySound(data_ov001_02190110[i]);
-                M2C_FIELD(gOv001MenuState, u8 *, 0x11e) = (u8)(i + 0x2f);
+                Ov001_PlaySound(gKeyboardAuxKeySound[i]);
+                ((Ov001KeyboardState *)gOv001MenuState)->touchKey = (u8)(i + KBD_CHAR_KEY_COUNT);
                 return;
             }
-            c += 2;
-            b += 2;
+            keySize += 2;
+            keyPos += 2;
         }
     }
     {
-        u16 *e;
-        u16 *d;
-        d = data_ov001_0218f344;
-        e = data_ov001_0218f32c;
+        u16 *keySize;
+        u16 *keyPos;
+        keyPos = gKeyboardActionKeyPos;
+        keySize = gKeyboardActionKeySize;
         for (i = 0; i < 2; i++) {
-            BuildTouchRect(d, e, buf);
+            BuildTouchRect(keyPos, keySize, buf);
             if (TouchRectPressed(buf)) {
                 Ov001_PlaySound(0);
-                M2C_FIELD(gOv001MenuState, u8 *, 0x11e) = (u8)(i + 0x33);
+                ((Ov001KeyboardState *)gOv001MenuState)->touchKey = (u8)(i + KBD_ACTION_KEY_BASE);
                 return;
             }
-            d += 2;
+            keyPos += 2;
         }
     }
     return;
@@ -322,17 +325,17 @@ void func_ov001_02172ba4(void) {
 s32 func_ov001_02172d8c(void) {
     extern void *gOv001MenuState;
     extern u16 gTouchScreenRect[];
-    extern u16 data_ov001_0218f36c[];
-    extern u16 data_ov001_0218f330[];
+    extern u16 gKeyboardCharKeyPos[];
+    extern u16 gKeyboardCharKeySize[];
     extern void *gKeyboardCharTables[];
     extern u16 data_ov001_0218f364[];
     extern u16 data_ov001_0218f354[];
     extern u16 gKeyboardSpecialChars[];
-    extern u16 data_ov001_0218f344[];
-    extern u16 data_ov001_0218f32c[];
+    extern u16 gKeyboardActionKeyPos[];
+    extern u16 gKeyboardActionKeySize[];
     extern u16 gKeyboardActionChars[];
-    extern u16 data_ov001_0218f34c[];
-    extern u16 data_ov001_0218f35c[];
+    extern u16 gKeyboardAuxKeyPos[];
+    extern u16 gKeyboardAuxKeySize[];
     extern u16 data_ov001_0218f350[];
     extern u16 data_ov001_0218f360[];
     void BuildTouchRect(void *, void *, void *);
@@ -353,8 +356,8 @@ s32 func_ov001_02172d8c(void) {
         return 0;
     }
 
-    p = (u8 *)data_ov001_0218f36c;
-    q = (u8 *)data_ov001_0218f330;
+    p = (u8 *)gKeyboardCharKeyPos;
+    q = (u8 *)gKeyboardCharKeySize;
     for (i = 0; i < 0x2f; i++) {
         BuildTouchRect(p, q, buf);
         if (TouchRectHeld(buf) != 0) {
@@ -381,7 +384,7 @@ s32 func_ov001_02172d8c(void) {
             if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x2f) {
                 return 0;
             }
-            M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = (u8)data_ov001_0218f344[i];
+            M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = (u8)gKeyboardActionKeyPos[i];
             if (M2C_FIELD(gOv001MenuState, u8 *, 0x11d) == 1) {
                 Ov001_SetKeyboardPage(0);
                 M2C_FIELD(gOv001MenuState, u8 *, 0x121) = (u8)(i + 0x2f);
@@ -394,14 +397,14 @@ s32 func_ov001_02172d8c(void) {
     }
 
     p = (u8 *)gKeyboardSpecialChars;
-    q = (u8 *)data_ov001_0218f344;
+    q = (u8 *)gKeyboardActionKeyPos;
     for (i = 0; i < 2; i++) {
         BuildTouchRect(p, q, buf);
         if (TouchRectHeld(buf) != 0) {
             if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != i + 0x33) {
                 return 0;
             }
-            M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = (u8)data_ov001_0218f32c[i];
+            M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = (u8)gKeyboardActionKeySize[i];
             M2C_FIELD(gOv001MenuState, u8 *, 0x121) = (u8)(i + 0x33);
             func_ov001_02173924();
             return 0;
@@ -420,7 +423,7 @@ s32 func_ov001_02172d8c(void) {
         return 0;
     }
 
-    BuildTouchRect(data_ov001_0218f34c, data_ov001_0218f360, buf);
+    BuildTouchRect(gKeyboardAuxKeyPos, data_ov001_0218f360, buf);
     if (TouchRectHeld(buf) != 0) {
         if (M2C_FIELD(gOv001MenuState, s8 *, 0x11e) != 0x30) {
             return 0;
@@ -451,12 +454,12 @@ void Ov001_ToggleKeyboardSymbols(void) {
  * a delay until the text can no longer be deleted. */
 void Ov001_HandleKeyboardKeyRelease(void) {
     extern u16 gTouchScreenRect[];
-    extern u16 data_ov001_0218f36c[];
-    extern u16 data_ov001_0218f330[];
+    extern u16 gKeyboardCharKeyPos[];
+    extern u16 gKeyboardCharKeySize[];
     extern u16 data_ov001_0218f364[];
     extern u16 data_ov001_0218f354[];
-    extern u16 data_ov001_0218f344[];
-    extern u16 data_ov001_0218f32c[];
+    extern u16 gKeyboardActionKeyPos[];
+    extern u16 gKeyboardActionKeySize[];
     extern void *gOv001MenuState;
     void BuildTouchRect(void *, void *, void *);
     s32 TouchRectReleased(void *);
@@ -472,9 +475,9 @@ void Ov001_HandleKeyboardKeyRelease(void) {
         goto fail;
     }
 
-    keyPos = (u8 *)data_ov001_0218f36c;
+    keyPos = (u8 *)gKeyboardCharKeyPos;
     for (i = 0; i < KBD_CHAR_KEY_COUNT; i++) {
-        BuildTouchRect(keyPos, data_ov001_0218f330, buf);
+        BuildTouchRect(keyPos, gKeyboardCharKeySize, buf);
         if (TouchRectReleased(buf) != 0) {
             if (((Ov001KeyboardState *)gOv001MenuState)->touchKey != i) {
                 goto fail;
@@ -520,9 +523,9 @@ void Ov001_HandleKeyboardKeyRelease(void) {
         keyPos += 4;
     }
 
-    keyPos = (u8 *)data_ov001_0218f344;
+    keyPos = (u8 *)gKeyboardActionKeyPos;
     for (i = 0; i < 2; i++) {
-        BuildTouchRect(keyPos, data_ov001_0218f32c, buf);
+        BuildTouchRect(keyPos, gKeyboardActionKeySize, buf);
         if (TouchRectReleased(buf) != 0) {
             if (((Ov001KeyboardState *)gOv001MenuState)->touchKey != i + KBD_ACTION_KEY_BASE) {
                 goto fail;

@@ -101,7 +101,7 @@ void MD5_Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
 }
 
-void func_02025748(void *arg0, s32 arg1, u32 arg2) {
+void MD5_Update(void *arg0, s32 arg1, u32 arg2) {
 void MI_CpuCopy8(s32,void *,u32); void MD5_Transform(void *,s32);
 u32 index,low,old,count;
 old=M2C_FIELD(arg0,u32 *,0x10);
@@ -119,7 +119,7 @@ MI_CpuCopy8(arg1+count,(u8 *)arg0+24+index,arg2-count);
 
 void MD5_Final(void *arg0, M2C_UNK *arg1) {
     void func_020252b4(M2C_UNK *, void *, u32);
-    void func_02025748(void *, s32, u32);
+    void MD5_Update(void *, s32, u32);
     extern M2C_UNK data_020fb0a4;
     s32 temp_r0;
     s32 var_r2;
@@ -131,8 +131,8 @@ void MD5_Final(void *arg0, M2C_UNK *arg1) {
     } else {
         var_r2 = 0x78 - temp_r0;
     }
-    func_02025748(arg0, &data_020fb0a4, var_r2);
-    func_02025748(arg0, arg1, 8);
+    MD5_Update(arg0, &data_020fb0a4, var_r2);
+    MD5_Update(arg0, arg1, 8);
     func_020252b4(arg1, arg0, 0x10);
 }
 

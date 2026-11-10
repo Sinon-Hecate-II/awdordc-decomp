@@ -168,7 +168,7 @@ void func_ov000_021a5f50(void) {
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }
 
-s32 func_ov000_021a5ffc(s32 arg0) {
+s32 FindAiTargetOfType(s32 arg0) {
 extern u8 *gAiState;
 extern M2C_UNK gAiTargetCandidates;
 u8 *p;
@@ -350,7 +350,7 @@ s32 r=-1;
 if(gAiState[1]>=2)r=func_ov000_021a6528(a);
 if(r==-1)r=func_ov000_021a605c(a);
 if(r==-1)r=func_ov000_021a6310(a);
-if(r==-1)r=func_ov000_021a5ffc(a);
+if(r==-1)r=FindAiTargetOfType(a);
 return r;
 }
 

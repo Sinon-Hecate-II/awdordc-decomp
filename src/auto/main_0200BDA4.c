@@ -103,7 +103,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
 {
   void InitFileRequest(void *);
   s32 func_0200b99c(void *, s32, u32, u32, s32);
-  s32 func_0200bbe0(void *, void *, s32);
+  s32 FileRead(void *, void *, s32);
   void func_0200ba9c(void *);
   s32 func_0200b9e4(void *, Unk0200FilePair);
   u32 work[18];
@@ -133,7 +133,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   {
     return 0;
   }
-  if (func_0200bbe0(work, arg0, 32) != 32)
+  if (FileRead(work, arg0, 32) != 32)
   {
     func_0200ba9c(work);
     return 0;
@@ -166,21 +166,21 @@ arg0[9]=work[9];arg0[10]=work[10]-work[9];func_0200ba9c(work);return 1;
 return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
 }
 #pragma optimization_level 4
-s32 func_0200c180(u32 arg0,s32 arg1,s32 arg2) {
+s32 HmacSha1Verify(u32 arg0,s32 arg1,s32 arg2) {
 M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32);
-void MI_CpuCopy8();void func_0200cd68();
-extern u32 data_020f5224[2];
+void MI_CpuCopy8();void HmacSha1();
+extern u32 gHmacSha1Key[2];
 u32 out[5];u8 work[64];u32 i;u32 *p;
 MI_CpuFill8((s32)out,0,20);
-MI_CpuCopy8(data_020f5224[0],work,data_020f5224[1]);
-func_0200cd68(out,arg1,arg2,work,data_020f5224[1]);
+MI_CpuCopy8(gHmacSha1Key[0],work,gHmacSha1Key[1]);
+HmacSha1(out,arg1,arg2,work,gHmacSha1Key[1]);
 p=out;for(i=0;i<20;i+=4,p++) if(*p!=*(u32 *)(arg0+i)) break;
 return i==20;
 }
 
 void func_0200c214(void *arg0) {
     u32 func_0200bf0c(void *);
-    s32 func_0200c180(u32, s32, s32);
+    s32 HmacSha1Verify(u32, s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     void func_02007958(void);
     void func_02000970(s32);
@@ -212,7 +212,7 @@ void func_0200c214(void *arg0) {
             count = (s32)(end - start) / 20;
             if (idx < (u32)count) {
                 p = start + idx * 20;
-                if (func_0200c180((u32)p, M2C_FIELD(r5, s32 *, 4), r4) == 0) {
+                if (HmacSha1Verify((u32)p, M2C_FIELD(r5, s32 *, 4), r4) == 0) {
                     MI_CpuFill8(M2C_FIELD(r5, s32 *, 4), 0, r4);
                     func_02007958();
                     return;
@@ -388,7 +388,7 @@ void func_0200c55c(M2C_UNK arg0, void *arg1) {
 
 void func_0200c614(void *arg0) { (void)arg0; }
 
-void func_0200c9c8(void *arg0) {
+void Sha1Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
     M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
     M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
@@ -399,7 +399,7 @@ void func_0200c9c8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
 }
 
-void func_0200ca18(void *arg0, void *arg1, u32 arg2) {
+void Sha1Update(void *arg0, void *arg1, u32 arg2) {
     void MI_CpuCopy8(void *, void *, u32);
     extern void (*gSha1Transform)(void *, void *, u32);
     u8 *buf;

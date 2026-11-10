@@ -13,8 +13,8 @@ typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u
 #pragma opt_if-conversion off
 int func_ov000_0218bbd0(void *arg0) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    extern u8 *data_ov000_021df644;
+    extern void *gAiCommandState;
+    extern u8 *gAiUnitTypeTuning;
     void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
@@ -22,7 +22,7 @@ int func_ov000_0218bbd0(void *arg0) {
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_021a9740(void *, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
     s32 IsFootUnitKind(s32);
@@ -39,8 +39,8 @@ int func_ov000_0218bbd0(void *arg0) {
     s32 bestHealth = 0xff;
     s32 terrainFlags = 0, flags = 0;
     volatile s32 maxX, maxY; s32 minX, minY;
-    extern s8 data_ov000_021b55a0[];
-    extern u8 data_ov000_021b5c0f[], gUnitKindStats[];
+    extern s8 gTerrainPropertyType[];
+    extern u8 gUnitKindFlags[], gUnitKindStats[];
     s32 savedX, savedY;
     u8 *unit;
     u8 *other;
@@ -50,8 +50,8 @@ int func_ov000_0218bbd0(void *arg0) {
     if (((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->state != 6) {
         if (func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
             terrainFlags |= 0x40000;
-        else if ((func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && data_ov000_021b55a0[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
-            ((data_ov000_021b5c0f[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && func_ov000_021a9318(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
+        else if ((func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && gTerrainPropertyType[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
+            ((gUnitKindFlags[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && func_ov000_021a9318(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
             terrainFlags |= 0x10000;
     }
     position[0] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1]; position[1] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
@@ -72,7 +72,7 @@ int func_ov000_0218bbd0(void *arg0) {
             if (unit != 0 && func_ov000_021a9bc0() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
-            } else if ((((u32)M2C_FIELD(data_ov000_021df580, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
+            } else if ((((u32)M2C_FIELD(gAiCommandState, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
                 kind = 1;
                 health = M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x539c) & 0x7f;
                 if (health == 0) goto c20;
@@ -81,7 +81,7 @@ int func_ov000_0218bbd0(void *arg0) {
                 goto c20;
             }
 
-            damage = func_0207c8ec(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             if (damage < health && damage < 10) continue;
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
             if (M2C_FIELD(*gCurrentMap, s16 *, 0x6ed6) == 0) continue;
@@ -96,7 +96,7 @@ int func_ov000_0218bbd0(void *arg0) {
                 if (damage < health) {
                     {
                         u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
-                        if (!(M2C_FIELD(tile, u8 *, 0x2840) < data_ov000_021df644[1] && M2C_FIELD(tile, u8 *, 0x2d48) < data_ov000_021df644[2])) continue;
+                        if (!(M2C_FIELD(tile, u8 *, 0x2840) < gAiUnitTypeTuning[1] && M2C_FIELD(tile, u8 *, 0x2d48) < gAiUnitTypeTuning[2])) continue;
                     }
                 }
             }
@@ -141,8 +141,8 @@ int func_ov000_0218bbd0(void *arg0) {
 #pragma opt_if-conversion reset
 s32 func_ov000_0218c400(s32 arg0) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    extern u8 *data_ov000_021df644;
+    extern void *gAiCommandState;
+    extern u8 *gAiUnitTypeTuning;
     void BuildUnitMoveRange(void *);
     void func_01ffb9c4(int);
     s32 IsUnitSelected(void *);
@@ -150,7 +150,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_021a9740(void *, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
     s32 IsFootUnitKind(s32);
@@ -183,7 +183,7 @@ s32 func_ov000_0218c400(s32 arg0) {
             if (unit != 0 && func_ov000_021a9bc0() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
-            } else if ((((u32)M2C_FIELD(data_ov000_021df580, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
+            } else if ((((u32)M2C_FIELD(gAiCommandState, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
                 kind = 1;
                 health = M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x539c) & 0x7f;
                 if (health == 0) goto c20;
@@ -192,7 +192,7 @@ s32 func_ov000_0218c400(s32 arg0) {
                 goto c20;
             }
 
-            damage = func_0207c8ec(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             if (damage < health && damage < 10) continue;
             if (func_ov000_02178268(x, y, position) == 0) continue;
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
@@ -208,7 +208,7 @@ s32 func_ov000_0218c400(s32 arg0) {
                 if (damage < health) {
                     if (IsFootUnitKind(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
                         u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
-                        if (!(M2C_FIELD(tile, u8 *, 0x2840) < data_ov000_021df644[1] && M2C_FIELD(tile, u8 *, 0x2d48) < data_ov000_021df644[2])) continue;
+                        if (!(M2C_FIELD(tile, u8 *, 0x2840) < gAiUnitTypeTuning[1] && M2C_FIELD(tile, u8 *, 0x2d48) < gAiUnitTypeTuning[2])) continue;
                     }
                 }
             }
@@ -216,7 +216,7 @@ s32 func_ov000_0218c400(s32 arg0) {
                 if (func_ov000_021a9c90(bestX, bestY) >= 2) {
                     if (IsFootUnitKind(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind) == 0) {
                         u8 *tile = (u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758);
-                        if (M2C_FIELD(tile, u8 *, 0x2d48) >= data_ov000_021df644[2]) continue;
+                        if (M2C_FIELD(tile, u8 *, 0x2d48) >= gAiUnitTypeTuning[2]) continue;
                     }
                 }
             }
@@ -240,12 +240,12 @@ s32 func_ov000_0218c400(s32 arg0) {
                 if (func_ov000_02178268(x, y, position) == 0) continue;
                 {
                     u32 v2 = M2C_FIELD((u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758), u8 *, 0x2d48);
-                    u32 d2 = data_ov000_021df644[2];
+                    u32 d2 = gAiUnitTypeTuning[2];
                     bonus = 0;
                     if (v2 >= d2) goto bonus_chk;
                     {
                         u32 v1 = M2C_FIELD((u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758), u8 *, 0x2840);
-                        u32 d1 = data_ov000_021df644[1];
+                        u32 d1 = gAiUnitTypeTuning[1];
                         if (v1 < d1) goto score;
                     }
                 bonus_chk:

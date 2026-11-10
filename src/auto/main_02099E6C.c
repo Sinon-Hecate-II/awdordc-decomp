@@ -6,7 +6,7 @@
 s32 func_02099e6c(void *arg0, s32 arg1) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     void func_0207a3b0(s32, u32, u16, u8, s32, u16, s32, s32, s32, s32, s32);
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     void *GetLocalizedText(s32);
     s32 func_02091dc4(M2C_UNK);
     s32 func_02091ddc(M2C_UNK);
@@ -42,7 +42,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02099ac4(void *);
     s32 func_02099ae8();
     s32 func_02099b00(void *);
-    M2C_UNK func_02099e58(void *);
+    M2C_UNK StopTextObject(void *);
     M2C_UNK func_0209c418(void *);
     M2C_UNK func_0209c428(void *);
     extern M2C_UNK data_02102e74;
@@ -168,7 +168,7 @@ loop_1:
     case 12:
         if (func_020999b8(arg0) == 0) {
             temp_r0_5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 1);
-            switch(temp_r0_5){case 0:func_02099e58(arg0);break;default:M2C_FIELD(arg0,u8 *,0x55)=temp_r0_5;M2C_FIELD(arg0,s8 *,0x54)=0;break;}
+            switch(temp_r0_5){case 0:StopTextObject(arg0);break;default:M2C_FIELD(arg0,u8 *,0x55)=temp_r0_5;M2C_FIELD(arg0,s8 *,0x54)=0;break;}
         }
         func_0209c418(arg0);
         func_0209c418(arg0);
@@ -184,7 +184,7 @@ loop_1:
                 if (temp_r0_7 == 0) {
                     var_r0 = 0;
                 } else {
-                    var_r0 = func_0207c8ec(temp_r0_7 - 1, 0xA) + 1;
+                    var_r0 = Divide(temp_r0_7 - 1, 0xA) + 1;
                 }
                 func_0207a3b0(M2C_FIELD(arg0, s32 *, 0x40) + (M2C_FIELD(arg0, u8 *, 0x4A) * 2) + (M2C_FIELD(arg0, u8 *, 0x4B) << 6), (u32) (M2C_FIELD(temp_r4_2, u8 *, 0) << 0x1A) >> 0x1A, M2C_FIELD(*gCurrentMap, u16 *, 0x52A8), M2C_FIELD(temp_r4_2, u8 *, 0xC), 0, (s32) var_r0, 0, 0, 0, 0, 0);
                 M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 2);
@@ -200,7 +200,7 @@ loop_1:
                 if (temp_r0_8 == 0) {
                     var_r0_2 = 0;
                 } else {
-                    var_r0_2 = func_0207c8ec(temp_r0_8 - 1, 0xA) + 1;
+                    var_r0_2 = Divide(temp_r0_8 - 1, 0xA) + 1;
                 }
                 func_0207a3b0(M2C_FIELD(arg0, s32 *, 0x40) + (M2C_FIELD(arg0, u8 *, 0x4A) * 2) + (M2C_FIELD(arg0, u8 *, 0x4B) << 6), (u32) (M2C_FIELD(temp_r4_3, u8 *, 0) << 0x1A) >> 0x1A, M2C_FIELD(*gCurrentMap, u16 *, 0x52A8), M2C_FIELD(temp_r4_3, u8 *, 0xC), 0, (s32) var_r0_2, 0, 0, 0, 0, 0);
                 M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 2);

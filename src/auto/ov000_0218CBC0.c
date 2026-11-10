@@ -6,11 +6,11 @@ typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u
 #pragma opt_strength_reduction off
 M2C_UNK func_ov000_0218cbc0(void) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
     s32 func_ov000_021a9740(void *, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_020d1690(s32, s32, s16 *);
     s32 func_ov000_021a93ec(s16, s16);
     s32 func_ov000_02176e28(s32, s16 *);
@@ -61,7 +61,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
             if (unit != 0 && func_ov000_021a9bc0() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
-            } else if ((((u32)M2C_FIELD(data_ov000_021df580, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
+            } else if ((((u32)M2C_FIELD(gAiCommandState, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
                 kind = 1;
                 health = M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x539c) & 0x7f;
                 if (health == 0) goto c20;
@@ -70,7 +70,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
                 goto c20;
             }
 
-            damage = func_0207c8ec(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
             if (M2C_FIELD(*gCurrentMap, s16 *, 0x6ed6) == 0) continue;
             if (damage >= bestHealth) {
@@ -154,7 +154,7 @@ return 0;
  * transport unit, then places the cursor on it. */
 void FindBestMoveTarget(void) {
     extern void **gCurrentMap;
-    extern u8 *data_ov000_021df644;
+    extern u8 *gAiUnitTypeTuning;
     s32 func_ov000_0218d40c(void);
     M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
@@ -211,7 +211,7 @@ void FindBestMoveTarget(void) {
                 if (func_ov000_02178778((s16)x, (s16)y) == 1) goto nextTile;
                 if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
                 map = *gCurrentMap;
-                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= data_ov000_021df644[2]) goto nextTile;
+                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= gAiUnitTypeTuning[2]) goto nextTile;
                 score = CellMoveScore(x, y, 1, 2);
                 moveCost=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x2338);
                 if(moveCost<0)moveCost=110;

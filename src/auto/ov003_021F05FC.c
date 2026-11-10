@@ -202,7 +202,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
 /* Releases the four-player battle object's children and re-applies its vtables
  * and per-player settings, but keeps the object itself alive. */
 M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
-    M2C_UNK func_020846a4();
+    M2C_UNK IsLinkSessionActive();
     M2C_UNK func_020848c4();
     void func_020850dc();
     M2C_UNK MemFree();
@@ -230,7 +230,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0xe);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x74);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
@@ -250,7 +250,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0xf);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x75);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
@@ -270,7 +270,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0x10);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x76);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
@@ -290,7 +290,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0x11);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x77);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
@@ -315,7 +315,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     func_020a232c(3, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
     func_020a232c(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
-    if (func_020846a4() != 0) {
+    if (IsLinkSessionActive() != 0) {
         func_020850dc();
     }
 
@@ -410,7 +410,7 @@ M2C_UNK **func_ov003_021f0e30(M2C_UNK **arg0) {
  * per-player settings from the battle setup, then releases every child
  * allocation and the object itself. */
 M2C_UNK DestroyBattleObject(M2C_UNK obj) {
-    M2C_UNK func_020846a4();
+    M2C_UNK IsLinkSessionActive();
     M2C_UNK func_020848c4();
     void func_020850dc();
     M2C_UNK MemFree();
@@ -438,7 +438,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0xe);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x74);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x74) + 3) & 0xff);
@@ -458,7 +458,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0xf);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x75);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x75) + 3) & 0xff);
@@ -478,7 +478,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0x10);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x76);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x76) + 3) & 0xff);
@@ -498,7 +498,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     else {
         controlMode = M2C_FIELD(setup, u8 *, 0x11);
         if (controlMode == 1) {
-            if (func_020846a4() == 1) {
+            if (IsLinkSessionActive() == 1) {
                 playerId = M2C_FIELD(setup, u8 *, 0x77);
                 if (playerId == func_020848c4()) playerState = 1;
                 else playerState = (u8)((M2C_FIELD(setup, u8 *, 0x77) + 3) & 0xff);
@@ -523,7 +523,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     func_020a232c(3, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x48) & 0xff);
     func_020a232c(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
-    if (func_020846a4() != 0) {
+    if (IsLinkSessionActive() != 0) {
         func_020850dc();
     }
 
@@ -626,12 +626,12 @@ void func_ov003_021f1348(s32 arg0) {
 }
 
 s32 func_ov003_021f13c8(void) {
-    s32 func_01ffa770();
+    s32 FindObjectByClass();
     extern M2C_UNK data_ov003_022111c0;
     if (M2C_FIELD(&data_ov003_022111c0, s32 *, 0xC) == 0) {
         return 0;
     }
-    return func_01ffa770();
+    return FindObjectByClass();
 }
 
 void func_ov003_021f13ec(s32 arg0) {

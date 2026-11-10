@@ -11,6 +11,20 @@ typedef struct { s32 words[5]; } ContextTemplate;
 extern ContextTemplate data_ov011_02227f3c;
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *data_027e01d8;
 
+/* An entry of the intro menu built by func_ov011_0222588c. */
+typedef struct MenuEntry011 {
+    u8 unknown00[0x34]; /* +0x00 */
+    u8 count;           /* +0x34 number of entries in the menu */
+    u8 index;           /* +0x35 index of this entry */
+    u8 unknown36[2];    /* +0x36 */
+    s16 posX;           /* +0x38 entry x position */
+    s16 posY;           /* +0x3a entry y position */
+    u8 unknown3c[0x14]; /* +0x3c */
+    s32 labelId;        /* +0x50 localized text id */
+    u8 unknown54[4];    /* +0x54 */
+    s16 textWidth;      /* +0x58 width of the rendered label */
+} MenuEntry011;
+
 /* Submit a 2D sprite/quad to one of the two 3D sprite engines (screen 0 or 1,
    selected by arg1, or to the engine already active when arg1 is 3) using the
    geometry template data_ov011_02227f3c with its corner fields overwritten;
@@ -280,48 +294,50 @@ void func_ov011_02225420(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x54) = arg1;
 }
 
-void func_ov011_02225428(void *arg0) {
+/* Renders the entry's localized label into the sprite buffer and draws the
+ * two-row highlight bar behind it, positioned from the entry's index. */
+void DrawMenuEntryHighlight(MenuEntry011 *entry) {
     s32 func_020720f0(s32, s32);
     s32 GetLocalizedText(s32);
     s32 func_0209b5e4(s32, s32);
     void DrawTileRow(u16, s32, u16, s32, s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void *temp_r7;
-    s16 temp_r2;
-    s16 temp_r4;
-    s16 temp_r8;
-    s32 temp_r1;
-    s32 temp_r6;
-    s32 temp_r6_2;
-    s32 temp_r8_3;
-    s32 temp_r9;
-    u8 temp_r10;
-    u8 temp_r8_2;
-    s16 temp_r0;
+    void *savedEngine;
+    s16 labelWidth;
+    s16 x2;
+    s16 width;
+    s32 clamped;
+    s32 step1;
+    s32 slotB;
+    s32 step2;
+    s32 slotA;
+    u8 count;
+    u8 count2;
+    s16 x;
 
-    temp_r7 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(arg0, s16 *, 0x58) = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((M2C_FIELD(arg0, u8 *, 0x35) + 1) << 6) + 0x40) << 5), GetLocalizedText(M2C_FIELD(arg0, s32 *, 0x50)));
-    temp_r2 = M2C_FIELD(arg0, s16 *, 0x58);
-    temp_r0 = 0x80 - ((s32) (temp_r2 + ((u32) temp_r2 >> 0x1F)) >> 1);
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x38) - temp_r0;
-    if (temp_r1 < temp_r2) {
-        M2C_FIELD(arg0, s16 *, 0x58) = (s16) temp_r1;
+    entry->textWidth = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((entry->index + 1) << 6) + 0x40) << 5), GetLocalizedText(entry->labelId));
+    labelWidth = entry->textWidth;
+    x = 0x80 - ((s32) (labelWidth + ((u32) labelWidth >> 0x1F)) >> 1);
+    clamped = entry->posX - x;
+    if (clamped < labelWidth) {
+        entry->textWidth = (s16) clamped;
     }
-    temp_r8 = M2C_FIELD(arg0, s16 *, 0x58);
-    temp_r4 = temp_r0;
-    if ((s32) temp_r8 > 0) {
-        temp_r10 = M2C_FIELD(arg0, u8 *, 0x34);
-        temp_r9 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
-        temp_r6 = func_020720f0(0x80, temp_r10);
-        DrawTileRow((u16) (temp_r4 & 0x1FF), (u16) ((u8) (((temp_r6 * temp_r9) + 0x28) - func_020720f0(0x80, temp_r10 * 2)) | 0x400), (u16) temp_r8, (u16) ((0x3FF & ((s32) ((temp_r9 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
-        temp_r8_2 = M2C_FIELD(arg0, u8 *, 0x34);
-        temp_r6_2 = M2C_FIELD(arg0, u8 *, 0x35) + 1;
-        temp_r8_3 = func_020720f0(0x80, temp_r8_2);
-        DrawTileRow((u16) ((temp_r4 + 2) & 0x1FF), (u16) ((u8) (((temp_r8_3 * temp_r6_2) + 0x2A) - func_020720f0(0x80, temp_r8_2 * 2)) | 0x400), (u16) M2C_FIELD(arg0, s16 *, 0x58), (u16) ((0x3FF & ((s32) ((temp_r6_2 << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+    width = entry->textWidth;
+    x2 = x;
+    if ((s32) width > 0) {
+        count = entry->count;
+        slotA = entry->index + 1;
+        step1 = func_020720f0(0x80, count);
+        DrawTileRow((u16) (x2 & 0x1FF), (u16) ((u8) (((step1 * slotA) + 0x28) - func_020720f0(0x80, count * 2)) | 0x400), (u16) width, (u16) ((0x3FF & ((s32) ((slotA << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        count2 = entry->count;
+        slotB = entry->index + 1;
+        step2 = func_020720f0(0x80, count2);
+        DrawTileRow((u16) ((x2 + 2) & 0x1FF), (u16) ((u8) (((step2 * slotB) + 0x2A) - func_020720f0(0x80, count2 * 2)) | 0x400), (u16) entry->textWidth, (u16) ((0x3FF & ((s32) ((slotB << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
     }
-    gCur3DSpriteEngine = temp_r7;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov011_02225600(void) {
@@ -334,8 +350,8 @@ void func_ov011_02225604(void *arg0) {
 }
 
 void func_ov011_02225624(void *arg0) {
- M2C_UNK DeleteSpriteObject(void *); void func_ov011_02225428(void *);
-if(M2C_FIELD(arg0,s32 *,0x50))func_ov011_02225428(arg0);
+ M2C_UNK DeleteSpriteObject(void *); void DrawMenuEntryHighlight();
+if(M2C_FIELD(arg0,s32 *,0x50))DrawMenuEntryHighlight(arg0);
  func_ov011_02225348(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
  if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
 }

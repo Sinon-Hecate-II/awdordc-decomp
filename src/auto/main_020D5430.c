@@ -4,7 +4,7 @@
 
 void func_020d5430(void) {
  extern void *gCurrentMap;
- func_020cf850(0x1001a);func_0207a7a4(1,4);func_020cf5ec(1);
+ func_020cf850(0x1001a);func_0207a7a4(1,4);MoveMapCursorToTarget(1);
  if(!func_020bcac0())return;
  if(!func_020bd650())return;
  func_020bd104();func_ov000_021696d4();func_020cfd28();func_0207a768();
@@ -47,46 +47,63 @@ void func_020d5554(s32 arg0, s32 arg1) {
 }
 
 void func_020d5868(void) {
- void *func_0209f8e4(s32);
+ void *GetTargetPosition(s32);
  extern void *gCurrentMap;
  s32 i=0;
  for(;i<func_0209f8d4();i++) {
- void *p=func_0209f8e4(i);
+ void *p=GetTargetPosition(i);
  void *base=M2C_FIELD(gCurrentMap,void **,0);
  u8 **rows=(u8 **)((u8 *)base+0x52e8);
  rows[M2C_FIELD(p,s16 *,6)][M2C_FIELD(p,s16 *,4)]=111;
  }
 }
 
-s32 func_020d58c4(s32 x,s32 y) {
-void *func_020a45f8(s32,s32);
-extern void *gCurrentMap;
-void *unit; s32 a,b; M2C_UNK (*cb)();
-unit=func_020a45f8(x,y);
-if(unit){
-SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
-FillMapLayer(-1);
-if(func_020a5364(unit,64,1)){
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),52);if(cb)cb();
-goto finish;
-}
-}
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758));
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x59a4+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)*14;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d6)=0;
-if(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758))==0){func_020d5514();return 1;}
-a=func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-b=func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-if(a==0 && b==0){PlaySoundEffect(0x1001d);return 0;}
-SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
-func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),52);if(cb)cb();
-func_020cfd28();
-func_020d5554(x,y);
+/* Handles a press on the battle-map tile the cursor is aimed at (B button / touch release):
+ * if a map command entry covers the tile, activate it; otherwise make the unit on the tile the
+ * cursor unit and show it, playing the invalid sound when there is nothing selectable there. */
+s32 SelectCursorTarget(s32 x, s32 y) {
+    void *func_020a45f8(s32, s32);
+    extern void *gCurrentMap;
+    void *entry;
+    s32 a, b;
+    M2C_UNK (*cb)();
+
+    entry = func_020a45f8(x, y);
+    if (entry) {
+        SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
+        FillMapLayer(-1);
+        if (func_020a5364(entry, 64, 1)) {
+            cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 52);
+            if (cb) cb();
+            goto finish;
+        }
+    }
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) =
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, x + M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + y * 2, u16 *, MAP_ROW_OFFSETS));
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT) =
+        (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS + M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_CARRIER) = 0;
+    if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, x + M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + y * 2, u16 *, MAP_ROW_OFFSETS)) == 0) {
+        func_020d5514();
+        return 1;
+    }
+    a = func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    b = func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    if (a == 0 && b == 0) {
+        PlaySoundEffect(0x1001d);
+        return 0;
+    }
+    SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
+    func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 52);
+    if (cb) cb();
+    func_020cfd28();
+    func_020d5554(x, y);
 finish:
-func_0207a748(1);
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=8;
-PlaySoundEffect(0x1001c);return 1;
+    func_0207a748(1);
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 8;
+    PlaySoundEffect(0x1001c);
+    return 1;
 }
 
 /* Handle confirming the tile under the battle-map cursor: if it is a valid move
@@ -102,7 +119,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FI
 
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
 if(func_020cf878(x,y)) { if(playMoveEffect)func_020b97c4(x,y); return 1; }
-if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || func_020a7cb0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
+if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
 func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
@@ -119,37 +136,44 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_MODE)=2;
 func_020a06a0(menuMode);
 func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
-func_020d6778(2);
+DrawUnitInfoPanel(2);
 if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER)))func_02091c20(21,1);
 return 1;
 }
 
-void func_020d5d0c(u8 *p,s32 index,s32 arg2){
-extern void *gCurrentMap; extern M2C_UNK data_0211fbc4;
-s32 slot; M2C_UNK (*cb)(); void *unit;
-func_020c93cc();
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)=(p+index)[12];
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x59a4+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)*14;
-slot=p?((s32)p-(s32)((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x59a4))/14:0;
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d6)=slot;
-M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0),u16 *,4)&=~8;
-func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
-func_020cfd28();
-unit=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0);
-func_020d5554(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2));
-func_0209fb70();
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)>>6)+1;
-SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
-func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4);
-func_020d5868();
-func_0207a748(0);func_0207b028(7);
-M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=2;
-func_020a06a0(arg2);
-func_01ffa3dc(&data_0211fbc4,6);
-PlaySoundEffect(0x1001c);
+/* Select the unit carried by `transport` (cargoSlot 0 = first cargo, 1 = next in
+ * the carry chain) and open its action menu, remembering the transport in
+ * MAP_CURSOR_CARRIER; menuMode is passed to the map's menu handler. */
+void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
+    extern void *gCurrentMap;
+    extern M2C_UNK data_0211fbc4;
+    s32 carrier;
+    M2C_UNK (*cb)();
+    void *unit;
+
+    func_020c93cc();
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) = (transport + cargoSlot)[MAP_UNIT_CARRIED];
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT) = (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS + M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
+    carrier = transport ? ((s32)transport - (s32)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_CARRIER) = carrier;
+    M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_FLAGS) &= ~8;
+    func_ov000_0216a8dc(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 56); if (cb) cb();
+    func_020cfd28();
+    unit = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT);
+    func_020d5554(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
+    func_0209fb70();
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) >> 6) + 1;
+    SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
+    func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
+    func_020d5868();
+    func_0207a748(0); func_0207b028(7);
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 2;
+    func_020a06a0(menuMode);
+    func_01ffa3dc(&data_0211fbc4, 6);
+    PlaySoundEffect(0x1001c);
 }
 
 /* Move the battle-map cursor to tile (x,y): reject the move if the tile is out of
@@ -297,7 +321,7 @@ void func_020d6208(void) {
                 u8 a = region[0x2d4];
                 u8 b = ((u8 *)elem)[0x0c];
                 u8 flag = (a != b) ? 1 : 0;
-                func_020d5d0c(elem, flag, 1);
+                SelectCarriedUnit(elem, flag, 1);
                 return;
             }
             {

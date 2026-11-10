@@ -1,11 +1,34 @@
 /* 40 functions from 0x022001EC to 0x02200EE4 (ov003), found by ds-decomp. */
 #include "common.h"
 
+/* A polymorphic ov003 scene object: a vtable at +0, a second interface vtable at
+ * +0x34, then the children, buffers and sprite-handle arrays it owns. */
+typedef struct Ov003Object {
+    void *vtable;        /* +0x00 */
+    u8  filler_04[0x30];
+    void *iface;         /* +0x34 second vtable */
+    u8  filler_38[0x0C];
+    void *child44;       /* +0x44 child object */
+    u8  filler_48[4];
+    void *child4C;       /* +0x4C child object */
+    void *child50;       /* +0x50 child object */
+    void *child54;       /* +0x54 child object */
+    void *buffer58;      /* +0x58 buffer */
+    void *child5C;       /* +0x5C child object */
+    void *child60;       /* +0x60 child object */
+    void *buffer64;      /* +0x64 buffer */
+    void *sprites68;     /* +0x68 array of 10 sprite handles */
+    void *sprites6C;     /* +0x6C array of 2 sprite handles */
+    void *sub70;         /* +0x70 sub-object with a resource handle at +0x14 */
+} Ov003Object;
+
 extern s32 data_ov003_022103dc[4];
 extern s16 data_ov003_022103d4[4];
 extern s16 data_ov003_022103cc[4];
 
-void *func_ov003_022001ec(void *obj) {
+/* Destructor: resets the object's vtables to the base ones, releases every owned
+ * child object, buffer and sprite array, then frees the object itself. */
+void *DestroyOv003Object(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
@@ -14,30 +37,31 @@ void *func_ov003_022001ec(void *obj) {
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     void *sub;
     void *child;
-    M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
-    M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
-    sub = M2C_FIELD(obj, void **, 0x70);
+
+    obj->vtable = &data_ov003_02210104;
+    obj->iface = &data_ov003_02210130;
+    sub = obj->sub70;
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
-    child = M2C_FIELD(obj, void **, 68);
+    child = obj->child44;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 76);
+    child = obj->child4C;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 80);
+    child = obj->child50;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 84);
+    child = obj->child54;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 92);
+    child = obj->child5C;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 96);
+    child = obj->child60;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 88);
+    child = obj->buffer58;
     if (child != NULL) MemFree(child);
-    child = M2C_FIELD(obj, void **, 100);
+    child = obj->buffer64;
     if (child != NULL) MemFree(child);
-    sub = M2C_FIELD(obj, void **, 104);
+    sub = obj->sprites68;
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
@@ -51,7 +75,7 @@ void *func_ov003_022001ec(void *obj) {
         if (M2C_FIELD(sub, void **, 36) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 36));
         MemFree(sub);
     }
-    sub = M2C_FIELD(obj, void **, 108);
+    sub = obj->sprites6C;
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
@@ -150,7 +174,7 @@ func_020ae7a4(a,1,func_ov003_0220058c((u8)func_020a2360(b+1)));
 
 void func_ov003_022006dc(s32 arg0) {
     extern void **gCurrentMap;
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     void func_020833d0(void);
     s32 func_020bfda8(s32);
     void func_020a231c(s32, s32);
@@ -167,7 +191,7 @@ void func_ov003_022006dc(s32 arg0) {
     u8 *r6;
     u8 sp[0x24];
 
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         return;
     }
     func_020833d0();
@@ -220,8 +244,8 @@ s32 func_ov003_022008b8(u32 a){switch(a){case 0:return 1;case 1:return 2;case 2:
 s32 func_ov003_02200968(u32 a){switch(a){case 3:return 3;case 4:return 4;case 0:return 0;case 1:return 1;case 2:return 2;case 5:return 5;case 6:return 6;case 7:return 7;case 8:return 8;case 9:return 9;case 10:return 10;case 11:return 11;case 12:return 12;default:return 0;}}
 
 u16 func_ov003_02200a18(u32 arg0, M2C_UNK arg1) {
-s32 func_020c7ef4(M2C_UNK); s32 func_020c80a4(M2C_UNK); s32 func_020cfbb0(M2C_UNK);
-s32 n=func_020cfbb0(arg1);s32 r;
+s32 func_020c7ef4(M2C_UNK); s32 func_020c80a4(M2C_UNK); s32 GetMapPlayerCount(M2C_UNK);
+s32 n=GetMapPlayerCount(arg1);s32 r;
 switch(arg0){case 1:return 3;case 3:return n+2;case 4:return 0;case 5:return 1;case 6:return 2;case 2:return n+5;case 7:case 8:case 9:case 10:case 11:if(!func_020c7ef4(arg1))return 13;r=func_020c80a4(arg1)?n+8:n+12;return (u16)r;default:case 0:break;}return 0;
 }
 
@@ -279,19 +303,19 @@ u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 u8 func_ov003_02200c7c(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_0208485c();
     s32 result;
-    if (func_020846a4() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && func_0208485c()) result = 1;
     else result = 0;
     return result;
 }
 
 u8 func_ov003_02200ca8(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084890();
     s32 result;
-    if (func_020846a4() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && func_02084890()) result = 1;
     else result = 0;
     return result;
 }

@@ -22,7 +22,7 @@ void func_ov010_0222b9e8(void) {
 
 void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     s32 func_0208206c();
     extern M2C_UNK data_ov010_0222c6c4;
     extern M2C_UNK data_ov010_0222c928;
@@ -32,7 +32,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
         func_020d47d0();
         return;
     }
-    if (func_01ffa770(&data_ov010_0222c6c4) != 0) {
+    if (FindObjectByClass(&data_ov010_0222c6c4) != 0) {
         return;
     }
     temp_r0 = CreateSpriteObject(&data_ov010_0222c6c4, arg2);
@@ -50,7 +50,7 @@ void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
 
 void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     s32 func_0208206c();
     extern M2C_UNK data_ov010_0222c5d4;
     extern M2C_UNK data_ov010_0222c928;
@@ -59,7 +59,7 @@ void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
         func_020d47d0();
         return;
     }
-    if (func_01ffa770(&data_ov010_0222c5d4) != 0) return;
+    if (FindObjectByClass(&data_ov010_0222c5d4) != 0) return;
     temp_r0 = CreateSpriteObject(&data_ov010_0222c5d4, arg2);
     if (temp_r0 == NULL) return;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov010_0222c928;

@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u16 data_0215d9b8[];
 extern u8 gMapConfig[];
-extern u8 *data_02168f08;
+extern u8 *gMapData;
 typedef struct { u8 a[33],b;u16 c,d,e; s16 f,g,h,i;u16 j,k;u8 l,m,n,o,p,q,r,s;u8 t[2],u[2];u8 v[322]; } SettingsB3C;
 typedef struct {u16 a;u8 b,c;u16 d,e;u32 f,g;} HeaderB3C;
 typedef struct {u32 a,b,c,d;u8 e[10];u16 f;u8 g[4];u16 h,i;s8 j;u8 k,l,m,n,o,p,q,r,s,t,u,v,w,z;u8 aa[27],bb[27];u32 cc,dd;u32 ee[4];u32 ff,gg;} PlayerB3C;
@@ -16,7 +16,7 @@ typedef struct {u8 a[2];} Bytes2B3C;
 typedef struct {u32 a[4];} Words4B3C;
 
 u8 func_020b34f8(void *arg0) {
-    s32 func_0207c8ec();
+    s32 Divide();
     M2C_UNK PlaySoundEffect(s32);
     s32 active, i, factor, delta;
     s16 old, n;
@@ -33,7 +33,7 @@ u8 func_020b34f8(void *arg0) {
     }
     step = M2C_FIELD(arg0, u8 *, 0x5);
     limit = M2C_FIELD(arg0, u8 *, 0x4);
-    n = func_0207c8ec(M2C_FIELD(arg0, s16 *, 0xA) + step - 1, step);
+    n = Divide(M2C_FIELD(arg0, s16 *, 0xA) + step - 1, step);
     n = (old = M2C_FIELD(arg0, volatile s16 *, 0xC), limit >= n ? n : limit);
     for (i = 0; i < n; i++) {
         if (M2C_FIELD(arg0, s16 *, 0xC) != 0) {
@@ -60,7 +60,7 @@ u8 func_020b34f8(void *arg0) {
 
 #pragma opt_propagation off
 void func_020b35d4(void *p) {
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 s32 Modulo(s32,s32);
 u8 func_020b3410(void *);
 M2C_UNK PlaySoundEffect(s32);
@@ -75,11 +75,11 @@ s32 n,active,delta,factor;
 cols=M2C_FIELD(p,u8 *,5);
 total=M2C_FIELD(p,s16 *,10);
 visible=M2C_FIELD(p,u8 *,4);
-pages=func_0207c8ec(total+cols-1,cols);
+pages=Divide(total+cols-1,cols);
 if(visible>=pages)visible=pages;
 visible=(s16)visible;
 col=Modulo(M2C_FIELD(p,s16 *,8),cols);
-row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
+row=Divide(M2C_FIELD(p,s16 *,8),cols);
 held=gKeyState[0];pressed=gKeyState[1];
 oldscroll=M2C_FIELD(p,s16 *,12);
 oldselected=M2C_FIELD(p,s16 *,8);
@@ -111,7 +111,7 @@ M2C_FIELD(p,s16 *,8)=n;
 }else{
 M2C_FIELD(p,s16 *,8)-=cols;
 n=M2C_FIELD(p,s16 *,12);
-if((s16)func_0207c8ec(M2C_FIELD(p,s16 *,8),cols)-n<=0){
+if((s16)Divide(M2C_FIELD(p,s16 *,8),cols)-n<=0){
 if(n>0)M2C_FIELD(p,s16 *,12)--;
 delta=M2C_FIELD(p,s16 *,12);factor=M2C_FIELD(p,u8 *,7);delta-=oldscroll;
 M2C_FIELD(p,s16 *,18)=delta*factor;
@@ -125,7 +125,7 @@ M2C_FIELD(p,s16 *,8)+=cols;
 n=M2C_FIELD(p,s16 *,8);
 if(n>total-1)n=total-1;
 M2C_FIELD(p,s16 *,8)=n;
-row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
+row=Divide(M2C_FIELD(p,s16 *,8),cols);
 n=M2C_FIELD(p,s16 *,12);
 if(row-n>=visible-1){
 if(n<pages-visible)M2C_FIELD(p,s16 *,12)=n+1;
@@ -159,17 +159,17 @@ PlaySoundEffect(0x10019);
 #pragma opt_propagation reset
 /* Returns whether tile column x is currently visible in the camera viewport. */
 u8 func_020b3960(void *camera, int x) {
-int func_0207c8ec(int,int);
+int Divide(int,int);
 u8 visibleTiles, tileSize; s16 total, scroll, tile; int tileCount;
 visibleTiles=M2C_FIELD(camera,u8*,4); tileSize=M2C_FIELD(camera,u8*,5); total=M2C_FIELD(camera,s16*,10);
-tileCount=(s16)func_0207c8ec(total+tileSize-1,tileSize);
+tileCount=(s16)Divide(total+tileSize-1,tileSize);
 if(x<0 || total<=x)return 0;
 scroll=M2C_FIELD(camera,s16*,12);
-tile=func_0207c8ec(x,tileSize);
+tile=Divide(x,tileSize);
 if(tileCount>visibleTiles)tileCount=visibleTiles;
 total=tileCount;
-if(M2C_FIELD(camera,s16*,18)>0) {scroll-= (s16)func_0207c8ec(M2C_FIELD(camera,s16*,18)+(M2C_FIELD(camera,u8*,7)-1),M2C_FIELD(camera,u8*,7)); total++;}
-else if(M2C_FIELD(camera,s16*,18)<0) {scroll-=(s16)func_0207c8ec(M2C_FIELD(camera,s16*,18),M2C_FIELD(camera,u8*,7)); total++;}
+if(M2C_FIELD(camera,s16*,18)>0) {scroll-= (s16)Divide(M2C_FIELD(camera,s16*,18)+(M2C_FIELD(camera,u8*,7)-1),M2C_FIELD(camera,u8*,7)); total++;}
+else if(M2C_FIELD(camera,s16*,18)<0) {scroll-=(s16)Divide(M2C_FIELD(camera,s16*,18),M2C_FIELD(camera,u8*,7)); total++;}
 return scroll<=tile && tile<scroll+total;
 }
 
@@ -184,13 +184,13 @@ void func_020b3a58(M2C_UNK arg0) {
 }
 
 void func_020b3a80(void *arg0) {
-s32 func_0207c8ec();
+s32 Divide();
 s32 Modulo(s32,s32);
 s16 a,b; s16 x,y,c,old; s16 delta; s32 d,e;
 a=M2C_FIELD(arg0,u8 *,6); b=M2C_FIELD(arg0,u8 *,7);
 x=Modulo(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5));
 c=M2C_FIELD(arg0,s16 *,12);
-delta=func_0207c8ec(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5))-c;
+delta=Divide(M2C_FIELD(arg0,s16 *,8),M2C_FIELD(arg0,u8 *,5))-c;
 x=(s16)(M2C_FIELD(arg0,s16 *,20)+x*a);
 y=(s16)(M2C_FIELD(arg0,s16 *,22)+delta*b);
 old=M2C_FIELD(arg0,s16 *,14);
@@ -264,7 +264,7 @@ void func_020b3c44(void) {
 
 #pragma opt_strength_reduction off
 void func_020b3c48(void *p) {
-void func_020cfa58(s32);void func_020cfb54(void);void func_020a1720(void *);
+void LoadMapTileData(s32);void FreeMapTileData(void);void func_020a1720(void *);
 u8 *map,*src;void *dst; s32 n,x,y,i,j,unitStart,saveStart,off;u16 tile,old;
 src=(u8 *)*gCurrentMap+0x52c2;
 M2C_FIELD(p,s16*,0x18)=M2C_FIELD(src,s16*,0);
@@ -305,14 +305,14 @@ M2C_FIELD(dst,u16*,6)=M2C_FIELD(src,u16*,6);
 M2C_FIELD(dst,u32*,8)=M2C_FIELD(src,u32*,8);
 M2C_FIELD(dst,u32*,12)=M2C_FIELD(src,u32*,12);
 
-func_020cfa58(M2C_FIELD(*gCurrentMap,u16*,0x5142));
+LoadMapTileData(M2C_FIELD(*gCurrentMap,u16*,0x5142));
 n=0;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
 map=*gCurrentMap;
 i=x+M2C_FIELD(map+y*2,u16*,0x3758);
 tile=M2C_FIELD(map+i*2,u16*,0xa10);
-old=M2C_FIELD(data_02168f08+i*2,u16*,2);
+old=M2C_FIELD(gMapData+i*2,u16*,2);
 if(tile!=old && (M2C_FIELD(map+old,u8*,0x6a60)&31)!=27){
 M2C_FIELD((u8 *)p+n*4,u16*,0xf0a)=tile;
 M2C_FIELD((u8 *)p+n*4,u8*,0xf08)=x;
@@ -321,7 +321,7 @@ M2C_FIELD((u8 *)p+n*4,u8*,0xf09)=y;n++;
 }
 }
 if(n<99)M2C_FIELD((u8 *)p+n*4,u16*,0xf0a)=0xffff;
-func_020cfb54();
+FreeMapTileData();
 dst=p;
 for(i=0;i<4;i++){
 src=(u8 *)*gCurrentMap+0x67a4+(i+1)*140;

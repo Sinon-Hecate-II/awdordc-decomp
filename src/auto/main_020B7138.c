@@ -19,7 +19,7 @@ void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 
 /* Rasterize a mode-selected line into the path grid, install its endpoint as
  * the next path cell, and spawn the entities along it. */
-void func_020b7178(void *task) {
+void UpdateBeamEffect(void *task) {
     M2C_UNK func_02076910(u32, u32);
     M2C_UNK func_0207b774(u32, u32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
@@ -74,42 +74,44 @@ loop_15:
     func_020b695c(spawnIndex, func_020b5200(&data_02128f94, 8), 8);
 }
 
-void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
+/* Spawns the beam attack effect on a tile: a beam sprite whose task extends it
+ * in the facing direction, plus a charge sprite and the cursor move. */
+void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) {
  M2C_UNK func_0207b774(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
  u32 GetFacingOffset(u32);
  void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
  void func_020b51dc(void); s32 func_020b51f0(void);
- extern M2C_UNK data_02128f9c,data_02128fa4,data_02128fac;
- s32 t,t2; u32 tile; s32 x,y; void *p,*q;
- tile=GetFacingOffset(arg2); x=0; y=0;
- func_020b51dc(); t=func_020b5200(&data_02128f9c,0);
- switch(arg2) {case 0:x=-132;y=132;break;case 1:y=176;break;case 2:x=132;y=x;break;case 3:y=172;break;default:break;}
- p=func_020b5188(&data_02128fa4,x+arg0*16,y+arg1*16,48,t,0,arg4);
- if(p) {
- ((SpriteTile *)p)->tile=(u16)(tile+0x4000);
- M2C_FIELD(p,s32 *,0x58)=arg3; M2C_FIELD(p,s32 *,0x5c)=arg0; M2C_FIELD(p,s32 *,0x60)=arg1; M2C_FIELD(p,u32 *,0x64)=arg2; M2C_FIELD(p,void (**)(void *),0x68)=func_020b7178; arg4=p;
+ extern M2C_UNK sBeam04Color,sBeam04Sprite,sBeamChargeSprite;
+ s32 beamColor,chargeColor; u32 facingTile; s32 offsetX,offsetY; void *beam,*charge;
+ facingTile=GetFacingOffset(facing); offsetX=0; offsetY=0;
+ func_020b51dc(); beamColor=func_020b5200(&sBeam04Color,0);
+ switch(facing) {case 0:offsetX=-132;offsetY=132;break;case 1:offsetY=176;break;case 2:offsetX=132;offsetY=offsetX;break;case 3:offsetY=172;break;default:break;}
+ beam=func_020b5188(&sBeam04Sprite,offsetX+tileX*16,offsetY+tileY*16,48,beamColor,0,parent);
+ if(beam) {
+ ((SpriteTile *)beam)->tile=(u16)(facingTile+0x4000);
+ M2C_FIELD(beam,s32 *,0x58)=order; M2C_FIELD(beam,s32 *,0x5c)=tileX; M2C_FIELD(beam,s32 *,0x60)=tileY; M2C_FIELD(beam,u32 *,0x64)=facing; M2C_FIELD(beam,void (**)(void *),0x68)=UpdateBeamEffect; parent=beam;
  }
- t2=func_020b51f0();
- switch(arg2) {case 0:x=-12;y=12;break;case 1:x=0;y=16;break;case 2:x=12;y=x;break;case 3:x=0;y=12;break;default:break;}
- q=func_020b5188(&data_02128fac,x+arg0*16,y+arg1*16,32,t2,1,arg4);
- if(q) {PlaySoundAtTile(0x103,arg0,arg1+2); ((SpriteTile *)q)->tile=(u16)tile;}
- func_0207b774(arg0,arg1+2);func_0207b7e8(q);
+ chargeColor=func_020b51f0();
+ switch(facing) {case 0:offsetX=-12;offsetY=12;break;case 1:offsetX=0;offsetY=16;break;case 2:offsetX=12;offsetY=offsetX;break;case 3:offsetX=0;offsetY=12;break;default:break;}
+ charge=func_020b5188(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
+ if(charge) {PlaySoundAtTile(0x103,tileX,tileY+2); ((SpriteTile *)charge)->tile=(u16)facingTile;}
+ func_0207b774(tileX,tileY+2);func_0207b7e8(charge);
 }
 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void func_020814e4(void);void func_02081590(void *,s32);void func_020815fc(void *,s32,s32);void func_02081528(void);s32 func_01ff9c34(u8,s32);void func_01ff85b8(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 func_01ff9c34(u8,s32);void func_01ff85b8(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
 M2C_FIELD(a,s32 *,0x34)=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x7380,func_020a8b3c(icon));
 func_02091d4c(0x1d);base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2b80;q=func_ov000_0216ce10(icon);func_02007ef4(q,base+0x4000,128);
 func_01ff9e44(func_ov000_0216ce84(kind),0x360,32);
-SetFileDirectory(data_02128fb8);GetLocalizedFileName(data_02128fc0);func_020814e4();
-func_02081590(GetLocalizedFileName(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
-func_02081590(GetLocalizedFileName(data_02128fd4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
-func_020815fc(GetLocalizedFileName(data_02128fdc),192,32);func_02081528();
+SetFileDirectory(data_02128fb8);GetLocalizedFileName(data_02128fc0);OpenNarcArchive();
+LoadNarcFileDecompressed(GetLocalizedFileName(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
+LoadNarcFileDecompressed(GetLocalizedFileName(data_02128fd4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
+LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_02128fdc),192,32);CloseNarcArchive();
 palette=func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;func_01ff85b8(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;

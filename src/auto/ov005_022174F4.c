@@ -1,18 +1,18 @@
 /* 9 functions from 0x022174F4 to 0x02218008 (ov005), found by ds-decomp. */
 #include "common.h"
-extern void *data_ov005_02221310, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
+extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 extern u8 data_02101f0c[];
-#define STATE data_ov005_02221310
+#define STATE gOv005MenuState
 #define ENGINE M2C_FIELD(gCur3DSpriteEngine,void**,0)
 #define SIZE ((u32)(M2C_FIELD(ENGINE,u16*,0)<<17)>>30)
 #define ATTR(tile,pal) ((u16)(((tile)>>SIZE & 0x3ff)|(pal)))
 
 void func_ov005_022174f4(void) {
-extern void *data_ov005_02221310,*gCur3DSpriteEngine,*g3DSpriteEngineSub;
-s32 value=M2C_FIELD(data_ov005_02221310,s16 *,0x10);
+extern void *gOv005MenuState,*gCur3DSpriteEngine,*g3DSpriteEngineSub;
+s32 value=M2C_FIELD(gOv005MenuState,s16 *,0x10);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-if(func_020bf894(M2C_FIELD(data_ov005_02221310,s16 *,0x10))) {
+if(func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,0x10))) {
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc),0x40);
 func_020985b0(value,8,M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc)+0x40);
 func_02098a34(value,8,2,0,0);
@@ -27,15 +27,15 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_ov005_0221760c(void) {
-extern void *data_ov005_02221310,*gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 value=M2C_FIELD(data_ov005_02221310,s16 *,0x10);
+extern void *gOv005MenuState,*gCur3DSpriteEngine,*g3DSpriteEngineMain;
+s32 value=M2C_FIELD(gOv005MenuState,s16 *,0x10);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(func_020bf894(M2C_FIELD(data_ov005_02221310,s16 *,0x10)))
+if(func_020bf894(M2C_FIELD(gOv005MenuState,s16 *,0x10)))
 func_02098d78(value,0x8380,6);
 else func_02007e98(0,M2C_FIELD(g3DSpriteEngineMain,s32 *,0x1c)+0x8380,0x20);
 gCur3DSpriteEngine=saved;
-M2C_FIELD(data_ov005_02221310,s16 *,0x18)=-1;
+M2C_FIELD(gOv005MenuState,s16 *,0x18)=-1;
 }
 
 #pragma opt_strength_reduction off
@@ -96,7 +96,7 @@ gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction reset
 void func_ov005_02217dc0(u8 *arg0) {
-extern void *gKeyState,*data_ov005_02221310;
+extern void *gKeyState,*gOv005MenuState;
 u32 old=*arg0; u16 keys=M2C_FIELD(gKeyState,u16 *,2);s32 value=old;
 if(keys&0x40)value=old-4;
 else if(keys&0x80)value=old+4;
@@ -105,15 +105,15 @@ else if(keys&0x10)value=old+1;
 if(value<0)value+=12;
 if(value>11)value-=12;
 if(value!=old)func_020b1c60(value);
-M2C_FIELD(data_ov005_02221310,s16 *,0xe)=value;
-M2C_FIELD(data_ov005_02221310,s16 *,0x10)=M2C_FIELD(data_ov005_02221310,s16 *,0xe)+1;
+M2C_FIELD(gOv005MenuState,s16 *,0xe)=value;
+M2C_FIELD(gOv005MenuState,s16 *,0x10)=M2C_FIELD(gOv005MenuState,s16 *,0xe)+1;
 }
 
 void func_ov005_02217e4c(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
-    extern void *data_ov005_02221310;
-    M2C_FIELD(data_ov005_02221310, s16 *, 0xE) = (s16) *arg0;
-    M2C_FIELD(data_ov005_02221310, s16 *, 0x10) = (s16) (M2C_FIELD(data_ov005_02221310, s16 *, 0xE) + 1);
+    extern void *gOv005MenuState;
+    M2C_FIELD(gOv005MenuState, s16 *, 0xE) = (s16) *arg0;
+    M2C_FIELD(gOv005MenuState, s16 *, 0x10) = (s16) (M2C_FIELD(gOv005MenuState, s16 *, 0xE) + 1);
     PlaySoundEffect(0x10019);
 }
 
@@ -130,11 +130,11 @@ func_ov005_02217334(value);
 }
 
 void func_ov005_02217f18(u8 *arg0) {
-extern void *data_ov005_02221310;
-M2C_FIELD(data_ov005_02221310,s16 *,0x12)=*arg0;
+extern void *gOv005MenuState;
+M2C_FIELD(gOv005MenuState,s16 *,0x12)=*arg0;
 func_ov005_02217334(*arg0);
-func_020bf8fc(M2C_FIELD(data_ov005_02221310,s16 *,0x10),M2C_FIELD(data_ov005_02221310,s16 *,0x12));
-func_ov005_022173b4(M2C_FIELD(data_ov005_02221310,s16 *,0x10));
+func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,0x10),M2C_FIELD(gOv005MenuState,s16 *,0x12));
+Ov005DrawEntryList(M2C_FIELD(gOv005MenuState,s16 *,0x10));
 PlaySoundEffect(0x10019);
 }
 
@@ -148,7 +148,7 @@ i++;
 }while(i<12);
 }
 
-void func_ov005_02217fc8(void) {
+void Ov005AddDetailSprites(void) {
     M2C_UNK func_020b22a4(s32, M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK data_ov005_02220828;
     s32 var_r6;

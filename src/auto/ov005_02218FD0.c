@@ -14,10 +14,10 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(M2C_UNK *, s32);
-    M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
+    M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
@@ -293,11 +293,11 @@ void func_ov005_02218fd0(void *arg0) {
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300);
     SetFileDirectory(&data_ov005_02221058);
     LoadFileToSpriteBuffer(&data_ov005_02221060, 0x320, 0x20);
-    func_020814e4(&data_ov005_0222106c);
-    func_02081590(&data_ov005_0222107c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
-    func_02081590(&data_ov005_0222108c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
-    func_020815fc(&data_ov005_0222109c, 0x120, 0xE0);
-    func_02081528();
+    OpenNarcArchive(&data_ov005_0222106c);
+    LoadNarcFileDecompressed(&data_ov005_0222107c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
+    LoadNarcFileDecompressed(&data_ov005_0222108c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+    LoadNarcFileToSpriteBuffer(&data_ov005_0222109c, 0x120, 0xE0);
+    CloseNarcArchive();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     LoadDecompressedFileTo(&data_ov005_022210ac, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3700);
@@ -307,11 +307,11 @@ void func_ov005_02218fd0(void *arg0) {
     func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
     SetFileDirectory(&data_ov005_022210c8);
-    func_020814e4(&data_ov005_022210d0);
-    func_02081590(&data_ov005_022210e0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
-    func_02081590(&data_ov005_022210f0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
-    func_020815fc(&data_ov005_02221100, 0x120, 0xC0);
-    func_02081528();
+    OpenNarcArchive(&data_ov005_022210d0);
+    LoadNarcFileDecompressed(&data_ov005_022210e0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
+    LoadNarcFileDecompressed(&data_ov005_022210f0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+    LoadNarcFileToSpriteBuffer(&data_ov005_02221100, 0x120, 0xC0);
+    CloseNarcArchive();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     if (M2C_FIELD(*data_027e0058, u16 *, 0x5142) == 0xBA) {
@@ -425,9 +425,12 @@ void func_ov005_02219bc0(void) {
     func_ov005_02219aec();
 }
 
-void func_ov005_02219bcc(void *p) {
+/* Advances the result screen's background reveal: over 16 frames it slides the page
+ * sprite down from y=160 to y=192, then loads the "/result" background image and
+ * retires the transition object. */
+void AnimateResultSlide(void *p) {
 extern s32 gCur3DSpriteEngine;
-extern u8 data_ov005_022211f0[], data_ov005_022211f8[];
+extern u8 sResultDir[], sResultBackgroundFile[];
 s32 func_020aae10(void *); s32 func_020aae44(void *);
 void *q; s16 a,b,y,c,d; s32 t,u,v,w;
 M2C_FIELD(p,s32 *,0x3c)++;
@@ -442,8 +445,8 @@ if(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0) v=1; else v=0;
 if(v&255){c=M2C_FIELD(q,s16 *,0x52);d=M2C_FIELD(q,s16 *,0x50);w=func_020aae10(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,d,c,(u16)w,(u16)func_020aae44(q));}
 if(M2C_FIELD(p,s32 *,0x3c)==16){
 M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,u8 *,0x44)=0;
-SetFileDirectory(data_ov005_022211f0);
-LoadDecompressedFileTo(data_ov005_022211f8,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
+SetFileDirectory(sResultDir);
+LoadDecompressedFileTo(sResultBackgroundFile,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;func_01ffa6fc(p);
@@ -466,8 +469,8 @@ AddSprite((u16)(x&mask),y,(u16)((mask2&(base>>bits))|0xec00),&data_027e00b4,0);
 }
 
 void func_ov005_02219e40(void) {
-    void func_ov005_02219bcc();
-    func_ov005_02219bcc();
+    void AnimateResultSlide();
+    AnimateResultSlide();
 }
 
 void func_ov005_02219e4c(void) {

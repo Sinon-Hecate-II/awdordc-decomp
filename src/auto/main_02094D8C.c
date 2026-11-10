@@ -55,13 +55,13 @@ bank=0;
 p28=*(u16**)engine; *p28 = *p28 & ~0x40;
 p24=*(u16**)gCur3DSpriteEngine; *p24 = *p24 & ~0x80;
 SetFileDirectory(&data_02102d0c);
-func_020ad460(arg2);func_020814e4();
+func_020ad460(arg2);OpenNarcArchive();
 if(arg2==0x4a){
-func_020ad4a0(arg2);func_02081590(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
-func_020ad4e0(arg2);func_02081590(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
+func_020ad4a0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
+func_020ad4e0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
 }else {
-func_02081590(func_020ad4a0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
-func_02081590(func_020ad4e0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
+LoadNarcFileDecompressed(func_020ad4a0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
+LoadNarcFileDecompressed(func_020ad4e0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
 }
 if(arg1==2)bank=0;
 if(arg1==3)bank=1;
@@ -70,7 +70,7 @@ switch(func_02081568()){
 case 0x100:
 amount=(u8)(bank*6+4); bank=amount<<5;
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+arg1),u16*,0)&=~0x80;
-func_020815fc(func_020ad520(arg2),bank,0xc0);
+LoadNarcFileToSpriteBuffer(func_020ad520(arg2),bank,0xc0);
 func_020ae768((u8)func_02091e04(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&~1),0xc0);
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)func_01ff9c34((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((amount&15)<<12));
 break;
@@ -92,7 +92,7 @@ case 2:p18=*(u16**)gCur3DSpriteEngine;*p18=*p18|0x40;break;
 case 3:p14=*(u16**)gCur3DSpriteEngine;*p14=*p14|0x80;break;
 case 4:p10=*(u16**)gCur3DSpriteEngine;*p10=*p10|0x100;break;
 }
-func_020ad604(arg2);func_02081528();
+func_020ad604(arg2);CloseNarcArchive();
 end:i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;
@@ -108,11 +108,11 @@ default:func_0208f780(func_020ad584(arg0));return;
 }
 
 u8 func_020952a4(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102aa8;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02102aa8) != 0) {
+    if (FindObjectByClass(&data_02102aa8) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -164,11 +164,11 @@ void func_020953d0(void) {
 }
 
 u8 func_020953e8(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102ac8;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02102ac8) != 0) {
+    if (FindObjectByClass(&data_02102ac8) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -199,11 +199,11 @@ void func_0209544c(s16 arg0) {
 }
 
 u8 func_0209546c(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102a88;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02102a88) != 0) {
+    if (FindObjectByClass(&data_02102a88) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

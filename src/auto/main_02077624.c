@@ -1,8 +1,9 @@
 /* 21 functions from 0x02077624 to 0x020785B0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
-static inline s32 cellIndex02078170(s32 x,s32 y) { extern s32 *gCurrentMap; return x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758); }
-static inline u8 initialCell02078170(s8 elev) { return elev>=0 ? 2:0; }
+static inline s32 MapCellIndex(s32 x,s32 y) { extern s32 *gCurrentMap; return x+M2C_FIELD(*gCurrentMap+y*2,u16 *,MAP_ROW_OFFSETS); }
+static inline u8 BaseCellCode(s8 elev) { return elev>=0 ? 2:0; }
 static inline u8 mapByte020778cc(s32 map,u32 index) { return M2C_FIELD(map+index,u8 *,0x1420); }
 static inline u8 mapFog020778cc(u8 *bits,u32 index) { return bits[index>>3] & (1<<(index&7)); }
 static inline u8 *mapBits020778cc(u8 *dims) { return dims+0xe1; }
@@ -93,7 +94,7 @@ a=(u16)(s16)(z>>8);b=(u16)(s16)(y>>8);c=(u16)(s16)ty;d=(u16)(s16)(x>>8);e=(u16)(
 void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  void func_02079310(s32,s32,s32,s32,u8,u8,u8,u8);
  extern s32 *gCurrentMap;
- extern u8 data_02141f08[];
+ extern u8 gMapCellCodes[];
  extern u8 data_02142ebc[3840];
  extern u32 gTerrainClassFlags[][2];
  extern u8 data_02141788[];
@@ -120,7 +121,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  index=x+M2C_FIELD(base+y*2,u16 *,0x3758);
  fog=mapFog020778cc(bits,index);
  terrain=mapByte020778cc(base,index);
- a=(data_02141f08+x*40)[y];
+ a=(gMapCellCodes+x*40)[y];
  b=(data_02141788+x*40)[y];
  func_02079310(x,y,0xac,0,terrain,fog,a,b);
  }
@@ -274,8 +275,8 @@ void func_02077ebc(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02081384(M2C_UNK *, s32);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
     M2C_UNK func_0208166c(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0208168c(M2C_UNK *, s32);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
@@ -316,7 +317,7 @@ void func_02077ebc(void) {
     func_02081400(&data_02100af0, 0x1200, 0x200);
     func_02081384(GetLocalizedFileName(&data_02100afc), 0x20000);
     func_02081400(&data_02100b0c, 0x1400, 0x40);
-    func_020814e4(&data_02100b1c);
+    OpenNarcArchive(&data_02100b1c);
     func_0208168c(&data_02100b28, 0x22F20);
     func_0208166c(&data_02100b3c, 0x1460, 0x40);
     func_0208168c(&data_02100b50, 0x21000);
@@ -327,7 +328,7 @@ void func_02077ebc(void) {
     func_0208166c(&data_02100b94, 0x1520, 0x20);
     func_0208168c(&data_02100b9c, 0x327A0);
     func_0208166c(&data_02100ba4, 0x1540, 0x20);
-    func_02081528();
+    CloseNarcArchive();
 }
 
 void func_02078068(void) {
@@ -385,28 +386,31 @@ void func_02078068(void) {
 #pragma optimization_level 2
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
+/* Fills the per-cell display code buffer gMapCellCodes for the visible viewport,
+ * clamped to the map: 2 for land, 3 for high ground (elevation >= 0x40), 1 for a
+ * highlighted cell (a bridge/pipe terrain kind or the cursor) and 0 elsewhere. */
+void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     u8 func_020bd118(void);
     s32 func_020774cc(void);
     u8 func_020a4700(s32, s32);
     extern s32 *gCurrentMap;
-    extern u8 data_02141f08[];
+    extern u8 gMapCellCodes[];
     extern M2C_UNK data_02140f70;
-    u8 *dims;
-    u16 width;
-    u16 height;
+    u8 *viewRect;
+    u16 mapWidth;
+    u16 mapHeight;
     s32 x;
-    u8 flag;
+    u8 highlightCursor;
     s32 y;
 
-    dims = (u8 *)*gCurrentMap + 0x120;
-    width = M2C_FIELD(dims,u16 *,0x5024);
-    height = M2C_FIELD(dims,u16 *,0x5026);
-    flag = func_020bd118();
+    viewRect = (u8 *)*gCurrentMap + 0x120;
+    mapWidth = M2C_FIELD(viewRect,u16 *,0x5024);
+    mapHeight = M2C_FIELD(viewRect,u16 *,0x5026);
+    highlightCursor = func_020bd118();
     if (x0 < 0) x0 = 0;
     if (y0 < 0) y0 = 0;
-    if (x1 > width - 1) x1 = width - 1;
-    if (y1 > height - 1) y1 = height - 1;
+    if (x1 > mapWidth - 1) x1 = mapWidth - 1;
+    if (y1 > mapHeight - 1) y1 = mapHeight - 1;
 
     if (func_020774cc()) {
     for (y = y0; y <= y1; y++) {
@@ -414,37 +418,37 @@ void func_02078170(s32 x0, s32 y0, s32 x1, s32 y1) {
             u16 rowVal;
             s32 cell;
             u8 tile;
-            u8 cellVal;
+            u8 code;
             s8 elev;
 
-            rowVal = *(u16 *)((u8 *)*gCurrentMap + 0x3758 + y * 2);
+            rowVal = *(u16 *)((u8 *)*gCurrentMap + MAP_ROW_OFFSETS + y * 2);
             cell = x + rowVal;
-            tile = *((u8 *)*gCurrentMap + 0x1420 + cell);
-            elev = (s8)*((u8 *)*gCurrentMap + 0x1e30 + cell);
-            cellVal = initialCell02078170(elev);
-            elev = *(s8 *)((u8 *)*gCurrentMap + 0x1e30 + cellIndex02078170(x,y));
-            if (elev >= 0x40) cellVal = 3;
+            tile = *((u8 *)*gCurrentMap + MAP_CELL_TERRAIN + cell);
+            elev = (s8)*((u8 *)*gCurrentMap + MAP_CELL_ORDER + cell);
+            code = BaseCellCode(elev);
+            elev = *(s8 *)((u8 *)*gCurrentMap + MAP_CELL_ORDER + MapCellIndex(x,y));
+            if (elev >= 0x40) code = 3;
 
-            if ((tile & 0x1F) == 0x1D &&
+            if ((tile & MAP_TERRAIN_KIND_MASK) == 0x1D &&
                 *(s32 *)(((u8 *)&data_02140f70) + 0xC) != 0 &&
                 func_020a4700(x, y) != 0) {
-                cellVal = 1;
+                code = 1;
             }
 
-            if (flag) {
-                if (*(s16 *)((u8 *)*gCurrentMap + 0x52C2) == x &&
-                    *(s16 *)((u8 *)*gCurrentMap + 0x52C4) == y) {
-                    cellVal = 1;
+            if (highlightCursor) {
+                if (*(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_X) == x &&
+                    *(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_Y) == y) {
+                    code = 1;
                 }
             }
 
-            (data_02141f08+x * 0x28)[y] = cellVal;
+            (gMapCellCodes+x * 0x28)[y] = code;
         }
     }
     } else {
     for (y = y0; y <= y1; y++) {
             for (x = x0; x <= x1; x++) {
-                (data_02141f08+x * 0x28)[y] = 0;
+                (gMapCellCodes+x * 0x28)[y] = 0;
             }
         }
     }

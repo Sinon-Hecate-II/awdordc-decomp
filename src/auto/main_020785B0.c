@@ -1,5 +1,6 @@
 /* 10 functions from 0x020785B0 to 0x020793F0 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s32 ClampRenderCoord(s32 v, u16 *dims, s32 axis) {
  s32 max=dims[axis]-1;
  if(v>max)return max;
@@ -11,7 +12,7 @@ typedef struct { u8 x,y; u16 dx:3,dy:3,kind:4,unused:4,angle:2; u8 value; } MapR
 typedef struct { s32 x,y,z; } Vec3;
 typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } RenderUnit;
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
-extern u8 data_02141f08[1920], data_02141788[1920];
+extern u8 gMapCellCodes[1920], data_02141788[1920];
 extern s16 gSinCosTable[2048];
 extern u32 gTerrainClassFlags[][2];
 
@@ -102,7 +103,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 #pragma push
 #pragma opt_strength_reduction off
 void DrawMapEffectEntry(void*);
-void func_02078ff4(s32,s32,s32,u8);
+void RenderUnitAt(s32,s32,s32,u8);
 void func_02079310(s32,s32,s32,s32,s32,s32,s32,s32);
 #pragma push
 #pragma opt_strength_reduction off
@@ -113,7 +114,7 @@ void func_02078828(void) {
 extern s32 *gCurrentMap;
 extern u16 data_02142ebc[],data_02143dbc[];
 void func_02079d0c(s32,s32,Vec3*);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 s32 rawx,rawy,rawx1,rawy1;
 s32 i,y,x,x1,mode,x0,y0,y1;
 u32 counts[32];
@@ -129,14 +130,14 @@ func_02077624();func_02077a4c();func_0207866c();
 *(volatile u32*)0x4000440=2;
 *(volatile u32*)0x4000454=0;
 func_02079d0c(0,0,&pos);
-rawx=func_0207c8ec(pos.x,768); rawy=func_0207c8ec(pos.y,768);
+rawx=Divide(pos.x,768); rawy=Divide(pos.y,768);
 func_02079d0c(256,192,&pos);
-rawx1=func_0207c8ec(pos.x,768);rawy1=func_0207c8ec(pos.y,768);
+rawx1=Divide(pos.x,768);rawy1=Divide(pos.y,768);
 x0=ClampRenderCoord(rawx,(u16*)(*gCurrentMap+0x5120),18);
 y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
-func_0207750c();func_02078170(x0,y0,x1,y1);func_02078340(x0,y0,x1,y1);
+func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);func_02078340(x0,y0,x1,y1);
 func_02078528();func_020785b0();func_0207863c();func_0207f9f4();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
@@ -150,7 +151,7 @@ tile=M2C_FIELD(base+index,u8*,0x1420);
 visible=((u8*)(base+0x5120+0xe1))[index>>3]&(1<<(index&7));
 visible=(u8)visible;
 if(!tile)continue;
-v1=(data_02141f08+x*40)[y];v2=(data_02141788+x*40)[y];
+v1=(gMapCellCodes+x*40)[y];v2=(data_02141788+x*40)[y];
 counts[tile&31]++;
 func_02079310(x,y,a,b,tile,visible,v1,v2);
 }
@@ -161,7 +162,7 @@ if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)DrawMapEffectEntry(p);
 }
 if(func_020cd6b0())func_02077740();
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
-if(func_020a62ac(x,y))func_02078ff4(x,y,data_02141f08[x*40+y],mode);
+if(func_020a62ac(x,y))RenderUnitAt(x,y,gMapCellCodes[x*40+y],mode);
 }
 *(volatile u32*)0x4000448=1;
 func_0207877c(1,0x108,counts[26]);func_0207877c(2,0x109,counts[27]);
@@ -169,7 +170,7 @@ func_0207877c(1,0x108,counts[26]);func_0207877c(2,0x109,counts[27]);
 #pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
 void func_02004078(s32,s32); void func_02079db0(s32,s32,s32,s32,s32,s32);
-s32 a,b,c,d,sn,cs; a=(data_02141f08+x*40)[y];b=(data_02141788+x*40)[y];
+s32 a,b,c,d,sn,cs; a=(gMapCellCodes+x*40)[y];b=(data_02141788+x*40)[y];
 *(volatile u32 *)0x4000444=0;
 if(angle){d=(y<<4)*48+0x180;c=(x<<4)*48+0x180;
 cs=gSinCosTable[(angle>>4)*2+1];sn=gSinCosTable[(angle>>4)*2];
@@ -217,18 +218,22 @@ func_020cf674((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
 }
 }
 #pragma pop
-void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
+/* Draws the unit standing on map tile (x,y): finds its record, collects the status
+ * bits that select the unit's status icons (fuel/HP warning, cargo, acted,
+ * selected, ...), converts the tile to world coordinates and hands it to
+ * RenderUnitSprite. */
+void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 func_020a7d80(void *);
     s32 func_020a7dc4(void *);
     s32 func_020a8604(s32);
     s32 func_020a7d38(void *);
-    s32 func_020a7cc8(void *);
-    s32 func_020a7ce4(void *);
+    s32 UnitHasFacing(void *);
+    s32 UnitHasCargo(void *);
     s32 func_020d2850(s32, u16, s32);
-    s32 func_020a7cb0(void *);
+    s32 HasUnitActed(void *);
     s32 IsUnitSelected(void *);
     s32 func_020a7d50(void *);
-    void func_020791ac(Vec3 *, RenderUnit *, s32, s32, s32, u8);
+    void RenderUnitSprite(Vec3 *, RenderUnit *, s32, s32, s32, u8);
     extern s32 *gCurrentMap;
 
     s32 base, player, kind, vecx, vecy, vecz; s32 flags;
@@ -238,13 +243,13 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     Vec3 pos;
 
     base = *gCurrentMap;
-    rowoff = *(u16 *)((u8 *)base + arg1 * 2 + 0x3758);
-    val = *(u8 *)((u8 *)base + (arg0 + rowoff) + 0x508);
+    rowoff = *(u16 *)((u8 *)base + y * 2 + MAP_ROW_OFFSETS);
+    val = *(u8 *)((u8 *)base + (x + rowoff) + MAP_CELL_UNIT_ID);
     if (val == 0) return;
 
     flags = 0;
     player = ((val & 0xc0) >> 6) + 1;
-    unit = (u8 *)base + 0x59a4 + (s32)(val * 14);
+    unit = (u8 *)base + MAP_UNIT_RECORDS + (s32)(val * MAP_UNIT_STRIDE);
 
     if (func_020a7d80((void *)unit)) flags |= 0x2;
     if (func_020a7dc4((void *)unit)) {
@@ -254,32 +259,32 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     }
     if (func_020a7d38((void *)unit)) flags |= 0x20;
     {
-        u8 b = *(u8 *)((u8 *)*gCurrentMap + (player) * 0x8c + 0x67c3);
-        if (!(b & 0x2)) flags |= 0x1;
+        u8 side = *(u8 *)((u8 *)*gCurrentMap + (player) * MAP_PLAYER_STRIDE + PLAYER_SIDE_OFF);
+        if (!(side & SIDE_TEAM_B)) flags |= 0x1;
     }
-    if (func_020a7cc8((void *)unit)) flags |= 0x40;
-    if (func_020a7ce4((void *)unit)) flags |= 0x80;
+    if (UnitHasFacing((void *)unit)) flags |= 0x40;
+    if (UnitHasCargo((void *)unit)) flags |= 0x80;
     {
         kind = ((RenderUnit *)unit)->kind;
-        if (func_020d2850(kind, *(u16 *)((u8 *)*gCurrentMap + 0x52a4), (u16)player)) flags |= 0x100;
+        if (func_020d2850(kind, *(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER), (u16)player)) flags |= 0x100;
     }
-    if (func_020a7cb0((void *)unit)) flags |= 0x200;
+    if (HasUnitActed((void *)unit)) flags |= 0x200;
     if (IsUnitSelected((void *)unit)) flags |= 0x400;
     if (func_020a7d50((void *)unit)) flags |= 0x800;
 
-    vecx = (arg0 * 16 + 8) * 48;
-    vecy = (arg1 * 16 + 16) * 48;
-    vecz = ((arg1 << 12) >> 8) + 1073;
+    vecx = (x * 16 + 8) * 48;
+    vecy = (y * 16 + 16) * 48;
+    vecz = ((y << 12) >> 8) + 1073;
 
     pos.x = vecx;
     pos.y = vecy;
     pos.z = vecz;
-    func_020791ac(&pos, (RenderUnit *)unit, player, flags, arg2, (u8)arg3);
+    RenderUnitSprite(&pos, (RenderUnit *)unit, player, flags, extra, (u8)mode);
 }
 
 #pragma scheduling on
-void func_020791ac(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
-s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 func_0207c8ec(s32,s32);
+void RenderUnitSprite(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
+s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 Divide(s32,s32);
 void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
 Vec3 pos;UnitRenderContext ctx; s32 variant;
@@ -294,7 +299,7 @@ ctx.variant=variant;ctx.flags=flags;
 ctx.side=unit->side;
 ctx.color=M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cc);
 ctx.extra=extra;ctx.mode=mode;
-ctx.hp=unit->hp==0?0:func_0207c8ec(unit->hp-1,10)+1;
+ctx.hp=unit->hp==0?0:Divide(unit->hp-1,10)+1;
 func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);
 }
 void func_02079310(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){

@@ -84,17 +84,17 @@ s32 func_02084614(void) {
     return 0;
 }
 
-s32 func_02084644(void){s32 func_0208858c(s32);s32 func_ov009_02224194(void);s32 func_ov010_022282b4(s32);s32 b;if(func_0208858c(9)){if(func_ov009_02224194())b=1;else b=0;if(b)return 1;}else if(func_0208858c(10)&&func_ov010_022282b4(0))return 2;return 0;}
+s32 GetActiveOverlay(void){s32 func_0208858c(s32);s32 GetLinkPhase(void);s32 func_ov010_022282b4(s32);s32 b;if(func_0208858c(9)){if(GetLinkPhase())b=1;else b=0;if(b)return 1;}else if(func_0208858c(10)&&func_ov010_022282b4(0))return 2;return 0;}
 
-s32 func_020846a4(void) {
-    s32 func_ov009_02224194();
+s32 IsLinkSessionActive(void) {
+    s32 GetLinkPhase();
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        if (func_ov009_02224194() != 0) {
+        if (GetLinkPhase() != 0) {
             var_r0 = 1;
         } else {
             var_r0 = 0;
@@ -112,7 +112,7 @@ s32 func_020846e8(void) {
     s32 func_ov010_02228cc8();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02224158();
@@ -128,10 +128,10 @@ s32 func_0208471c(void) {
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        if ((func_ov009_02224194() == 8) || (func_ov009_02224194() == 9)) {
+        if ((GetLinkPhase() == 8) || (GetLinkPhase() == 9)) {
             return 1;
         }
         return 0;
@@ -152,7 +152,7 @@ s32 func_0208477c(void) {
     s32 func_ov010_022282b4(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02224508(1);
@@ -180,21 +180,21 @@ s32 func_020847b8(void) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 func_020847f4(void){s32 a=func_02084644();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
+s32 func_020847f4(void){s32 a=GetActiveOverlay();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
 
 void func_02084824(void) {
     M2C_UNK func_020847f4();
     func_020847f4();
 }
 
-s32 func_02084830(void){void *func_ov010_02229b00(void);if(func_02084644()==2 && M2C_FIELD(func_ov010_02229b00(),s8 *,0x27)==0)return 1;return 0;}
+s32 func_02084830(void){void *func_ov010_02229b00(void);if(GetActiveOverlay()==2 && M2C_FIELD(func_ov010_02229b00(),s8 *,0x27)==0)return 1;return 0;}
 
 s32 func_0208485c(void) {
     s32 func_ov009_022254a4();
     s32 func_ov010_02229bdc();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_022254a4();
@@ -210,7 +210,7 @@ s32 func_02084890(void) {
     s32 func_ov010_02229bf4();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_022254d8();
@@ -226,7 +226,7 @@ s32 func_020848c4(void) {
     s32 func_ov010_02229a08();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02225450();
@@ -238,14 +238,14 @@ s32 func_020848c4(void) {
 }
 
 s32 GetReadyPlayerMask(void) {
-    s32 func_ov009_02224174();
+    s32 GetConnectedPlayers();
     s32 func_ov010_02229a24();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02224174();
+        return GetConnectedPlayers();
     case 2:
         return func_ov010_02229a24();
     default:
@@ -253,7 +253,7 @@ s32 GetReadyPlayerMask(void) {
     }
 }
 
-s32 func_0208492c(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(func_02084644()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
+s32 func_0208492c(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(GetActiveOverlay()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
 
 u16 GetActivePlayerMask(void) {
     s32 bit;
@@ -265,7 +265,7 @@ u16 GetActivePlayerMask(void) {
 
     bit = 0;
     var_r5 = 0;
-    switch (func_02084644()) {
+    switch (GetActiveOverlay()) {
     case 1:
         var_r6 = 0;
         bit = 1;
@@ -297,7 +297,7 @@ s32 func_02084a0c(void) {
     s32 func_ov010_02229a40();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02225470();
@@ -313,7 +313,7 @@ void ResetPlayerMask(void) {
     M2C_UNK func_ov010_02229a50();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02225480();
@@ -324,12 +324,12 @@ void ResetPlayerMask(void) {
     }
 }
 
-s32 func_02084a6c(void) {
+s32 GetOverlayEventFlags(void) {
     s32 func_ov009_02225494();
     s32 func_ov010_02229a64();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02225494();
@@ -340,7 +340,7 @@ s32 func_02084a6c(void) {
     }
 }
 
-s32 func_02084aa0(s32 a){s32 v,r;v=func_02084a6c();r=1;if(!(v&(1<<a)))r=0;return r;}
+s32 func_02084aa0(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
 
 s32 func_02084ac0(M2C_UNK arg0) {
     s32 func_ov009_02224070(M2C_UNK);
@@ -349,7 +349,7 @@ s32 func_02084ac0(M2C_UNK arg0) {
     s32 temp_r0_2;
     s32 temp_r0_3;
 
-    temp_r0_3 = func_02084644();
+    temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
         temp_r0_2 = func_ov009_02224070(arg0);
@@ -371,7 +371,7 @@ s8 func_02084b08(M2C_UNK arg0) {
     void *temp_r0;
     void *temp_r0_2;
 
-    temp_r0_3 = func_02084644();
+    temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
         temp_r0_2 = func_ov009_02224070(arg0);
@@ -393,7 +393,7 @@ s8 func_02084b58(M2C_UNK arg0) {
     void *temp_r0;
     void *temp_r0_2;
 
-    temp_r0_3 = func_02084644();
+    temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
         temp_r0_2 = func_ov009_02224070(arg0);
@@ -415,7 +415,7 @@ s8 func_02084ba8(M2C_UNK arg0) {
     void *temp_r0;
     void *temp_r0_2;
 
-    temp_r0_3 = func_02084644();
+    temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* irregular */
     case 1:
         temp_r0_2 = func_ov009_02224070(arg0);
@@ -437,7 +437,7 @@ s32 func_02084bf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02224d9c(arg0, arg1, arg2, 0xFFFF);
@@ -451,7 +451,7 @@ s32 func_02084bf8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 s32 func_02084c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02224d9c(arg0, arg1, arg2, arg3);
@@ -467,7 +467,7 @@ void func_02084cc0(M2C_UNK arg0) {
     M2C_UNK func_ov010_02228c88(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02225348(arg0);
@@ -478,12 +478,12 @@ void func_02084cc0(M2C_UNK arg0) {
     }
 }
 
-s32 func_02084cf8(void){void *func_ov010_02229b00(void);s32 v=-1;if(func_02084644()==2)v=M2C_FIELD(func_ov010_02229b00(),s32 *,0x1c);return v;}
+s32 func_02084cf8(void){void *func_ov010_02229b00(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(func_ov010_02229b00(),s32 *,0x1c);return v;}
 
 void func_02084d1c(s32 arg0) {
-    s32 func_02084644();
+    s32 GetActiveOverlay();
     void *func_ov010_02229b00();
-    if (func_02084644() != 2) {
+    if (GetActiveOverlay() != 2) {
         return;
     }
     M2C_FIELD(func_ov010_02229b00(), s32 *, 0x1C) = arg0;
@@ -494,7 +494,7 @@ s32 func_02084d3c(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_ov010_02229b5c(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_022240c0(arg0, arg1);
@@ -510,7 +510,7 @@ void func_02084d88(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_ov010_02229a74(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02223f7c(arg0, arg1);
@@ -526,7 +526,7 @@ s32 func_02084dcc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_ov010_02229ba8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_0222410c(arg0, arg1, arg2);
@@ -542,7 +542,7 @@ s32 func_02084e24(M2C_UNK arg0) {
     s32 func_ov010_02229b90(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_022240f4(arg0);
@@ -563,7 +563,7 @@ void func_02084e74(void) {
     M2C_UNK func_ov010_02229a94();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02223fbc();
@@ -579,7 +579,7 @@ s32 func_02084ea0(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_ov010_02229d54(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02225654(arg0, arg1);
@@ -595,7 +595,7 @@ s32 func_02084eec(M2C_UNK arg0) {
     s32 func_ov010_02229eb4(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_022257ac(arg0);
@@ -611,7 +611,7 @@ s32 func_02084f2c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
     s32 func_ov010_02229fd0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {
     case 1:
         return func_ov009_02225938(arg0, arg1, arg2, arg3, arg4, arg5);
@@ -627,7 +627,7 @@ s32 func_02084fc0(M2C_UNK arg0) {
     s32 func_ov010_022294c8(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         return func_ov009_02224c1c(arg0);
@@ -661,7 +661,7 @@ void func_02085054(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_ov010_0222ba94(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_022261e4(arg0, arg1, arg2);
@@ -677,7 +677,7 @@ void func_020850a4(M2C_UNK arg0) {
     M2C_UNK func_ov010_0222bb64(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02226268(arg0);
@@ -693,7 +693,7 @@ void func_020850dc(void) {
     M2C_UNK func_ov010_0222bb8c();
     s32 temp_r0;
 
-    temp_r0 = func_02084644();
+    temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
         func_ov009_02226290();

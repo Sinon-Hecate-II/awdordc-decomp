@@ -50,13 +50,13 @@ s32 func_ov000_02188338(void) {
 }
 
 void func_ov000_02188370(void) {
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = func_ov000_021882c4;
     data_ov000_021df648 = func_ov000_02188338;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
 u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
@@ -128,13 +128,13 @@ s32 func_ov000_02188488(void) {
 }
 
 void func_ov000_021884e4(void) {
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = (s32 (*)(void))func_ov000_02188448;
     data_ov000_021df648 = func_ov000_02188488;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_02188688();
 }
 
@@ -180,13 +180,13 @@ s32 func_ov000_02188680(void) {
 
 void func_ov000_02188688(void) {
     s32 func_ov000_021885c8(void);
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = func_ov000_021885c8;
     data_ov000_021df648 = func_ov000_02188680;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
 void CanDoAiAction2(s32 arg0, s32 arg1) {
@@ -231,13 +231,13 @@ s32 func_ov000_02188778(void) {
 }
 
 void func_ov000_02188790(void) {
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = (s32 (*)(void))func_ov000_02188744;
     data_ov000_021df648 = func_ov000_02188778;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_021884e4();
 }
 
@@ -273,13 +273,13 @@ s32 func_ov000_021888e4(void) {
 }
 
 void func_ov000_021888ec(void) {
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = (s32 (*)(void))func_ov000_02188850;
     data_ov000_021df648 = func_ov000_021888e4;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_021884e4();
 }
 
@@ -318,13 +318,13 @@ s32 func_ov000_02188a30(void) {
 }
 
 void func_ov000_02188a38(void) {
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = (s32 (*)(void))func_ov000_021889ac;
     data_ov000_021df648 = func_ov000_02188a30;
     func_ov000_02187f7c();
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 8) func_ov000_02187e20();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_021884e4();
 }
 

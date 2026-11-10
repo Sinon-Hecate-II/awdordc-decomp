@@ -147,9 +147,9 @@ void func_ov007_0221cd5c(void) {
 void func_ov007_0221cd68(void *arg0) {
 M2C_UNK SetFileDirectory(M2C_UNK *);
 M2C_UNK func_020808dc(s32,s32,s32,s32);
-M2C_UNK func_020814e4();
-M2C_UNK func_02081528();
-M2C_UNK func_02081590(s32,s32);
+M2C_UNK OpenNarcArchive();
+M2C_UNK CloseNarcArchive();
+M2C_UNK LoadNarcFileDecompressed(s32,s32);
 s32 func_020e32e8(M2C_UNK *);
 M2C_UNK PlaySoundEffect(s32);
 extern void *g3DSpriteEngineMain;
@@ -173,13 +173,13 @@ SetFileDirectory(&gMapEditPath);
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020e32e8(&gSoftKeyNarcName);
-func_020814e4();
+OpenNarcArchive();
 switch(kind){
-case 102:func_02081590(func_020e32e8(&gSoftKeyJpFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 100:func_02081590(func_020e32e8(&gSoftKeyUsFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
-case 101:func_02081590(func_020e32e8(&gSoftKeyEuFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 102:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyJpFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 100:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyUsFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
+case 101:LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyEuFileName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24));break;
 }
-func_02081528();
+CloseNarcArchive();
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;

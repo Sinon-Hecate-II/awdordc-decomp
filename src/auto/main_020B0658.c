@@ -226,8 +226,8 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
 #pragma scheduling off
 void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
     M2C_UNK func_0208168c(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020a40c0();
     extern M2C_UNK data_02128064;
@@ -326,7 +326,7 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     SetFileDirectory(&data_02128064);
     switch (arg1) {
     case 0:
-        func_020814e4(&data_02128070);
+        OpenNarcArchive(&data_02128070);
         func_0208168c(&data_02128080, 0);
         func_020b0cd0((s32)&data_02128090, 0, 0x400, mode);
         func_020b0cd0((s32)&data_021280a0, 0x400, 0x200, mode);
@@ -335,10 +335,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_021280dc, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_021280f0, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_02128104, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 3:
-        func_020814e4(&data_02128118);
+        OpenNarcArchive(&data_02128118);
         func_0208168c(&data_02128128, 0);
         func_020b0cd0((s32)&data_02128138, 0, 0x400, mode);
         func_020b0cd0((s32)&data_02128148, 0x400, 0x200, mode);
@@ -347,10 +347,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128184, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128198, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_021281ac, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 1:
-        func_020814e4(&data_021281c0);
+        OpenNarcArchive(&data_021281c0);
         func_0208168c(&data_021281d0, 0);
         func_020b0cd0((s32)&data_021281e0, 0, 0x400, mode);
         func_020b0cd0((s32)&data_021281ec, 0x400, 0x200, mode);
@@ -359,10 +359,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128220, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128234, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_02128244, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 2:
-        func_020814e4(&data_02128258);
+        OpenNarcArchive(&data_02128258);
         func_0208168c(&data_02128268, 0);
         func_020b0cd0((s32)&data_02128278, 0, 0x400, mode);
         func_020b0cd0((s32)&data_02128288, 0x400, 0x200, mode);
@@ -371,10 +371,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_021282c4, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_021282d8, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_021282ec, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 4:
-        func_020814e4(&data_02128300);
+        OpenNarcArchive(&data_02128300);
         func_0208168c(&data_02128310, 0);
         func_020b0cd0((s32)&data_02128320, 0, 0x400, mode);
         func_020b0cd0((s32)&data_0212832c, 0x400, 0x200, mode);
@@ -383,10 +383,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128360, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128374, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_02128384, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 5:
-        func_020814e4(&data_02128398);
+        OpenNarcArchive(&data_02128398);
         func_0208168c(&data_021283a8, 0);
         func_020b0cd0((s32)&data_021283b8, 0, 0x400, mode);
         func_020b0cd0((s32)&data_021283c8, 0x400, 0x200, mode);
@@ -395,10 +395,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128404, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128418, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_0212842c, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 6:
-        func_020814e4(&data_02128440);
+        OpenNarcArchive(&data_02128440);
         func_0208168c(&data_02128450, 0);
         func_020b0cd0((s32)&data_02128460, 0, 0x400, mode);
         func_020b0cd0((s32)&data_0212846c, 0x400, 0x200, mode);
@@ -407,10 +407,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_021284a0, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_021284b4, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_021284c4, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 7:
-        func_020814e4(&data_021284d8);
+        OpenNarcArchive(&data_021284d8);
         func_0208168c(&data_021284e8, 0);
         func_020b0cd0((s32)&data_021284f8, 0, 0x400, mode);
         func_020b0cd0((s32)&data_02128508, 0x400, 0x200, mode);
@@ -419,10 +419,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128544, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128558, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_0212856c, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 8:
-        func_020814e4(&data_02128580);
+        OpenNarcArchive(&data_02128580);
         func_0208168c(&data_02128590, 0);
         func_020b0cd0((s32)&data_0212859c, 0, 0x400, mode);
         func_020b0cd0((s32)&data_021285a8, 0x400, 0x200, mode);
@@ -431,10 +431,10 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_021285d8, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_021285e8, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_021285f8, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         return;
     case 9:
-        func_020814e4(&data_02128608);
+        OpenNarcArchive(&data_02128608);
         func_0208168c(&data_02128618, 0);
         func_020b0cd0((s32)&data_02128624, 0, 0x400, mode);
         func_020b0cd0((s32)&data_02128630, 0x400, 0x200, mode);
@@ -443,7 +443,7 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
         func_020b0cd0((s32)&data_02128660, 0xA00, 0x200, mode);
         func_020b0cd0((s32)&data_02128670, 0xC00, 0x400, mode);
         func_020b0cd0((s32)&data_02128680, 0x1000, 0x200, mode);
-        func_02081528();
+        CloseNarcArchive();
         break;
     default: break;
     }

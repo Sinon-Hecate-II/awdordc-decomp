@@ -317,7 +317,9 @@ void func_020943f4(s32 arg0,s8 arg1) { void *Get3DSpriteManager(); M2C_FIELD(Get
 
 void func_02094410(s8 arg0) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager(),s8 *,0x4E)=arg0; }
 
-void func_02094424(void) {
+/* Resets both 3D sprite engines (main and sub) and, for each, points the three
+ * layer records at its tile memory and reinitialises the three layers. */
+void Reset3DSpriteEngines(void) {
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;
@@ -331,18 +333,18 @@ void func_02094424(void) {
     M2C_UNK func_02097178(M2C_UNK, M2C_UNK);
     M2C_UNK func_020971c0(M2C_UNK, M2C_UNK);
 
-    s32 saved;
-    s32 i;
-    s32 j;
-    s32 base;
+    s32 savedEngine;
+    s32 engineIndex;
+    s32 layer;
+    s32 tileBase;
 
-    saved = gCur3DSpriteEngine;
-    for (i = 0; i < 2; i = i + 1) {
-        gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+    savedEngine = gCur3DSpriteEngine;
+    for (engineIndex = 0; engineIndex < 2; engineIndex = engineIndex + 1) {
+        gCur3DSpriteEngine = (engineIndex == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
 
         if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
             ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
-            ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == saved))) {
+            ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == savedEngine))) {
             func_02097128(2);
             func_0209713c(1);
 
@@ -351,40 +353,40 @@ void func_02094424(void) {
 
             switch (Get3DSpriteCount()) {
             case 2: {
-                void *da;
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x480);
+                void *manager;
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0);
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x480);
                 break;
             }
             case 0:
             case 1: {
-                void *da;
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x40);
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x240);
-                da = Get3DSpriteManager();
-                M2C_FIELD(da, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x440);
+                void *manager;
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x40);
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0xC) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x240);
+                manager = Get3DSpriteManager();
+                M2C_FIELD(manager, void **, 0x18) = (void *)((s8 *)M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0x24) + 0x440);
                 break;
             }
             }
 
-            base = 0x124;
-            for (j = 0; j < 3; j = j + 1) {
-                func_02097150(j, base);
-                func_02097164(j, j);
-                func_02097178(j, 0);
-                func_020971c0(j, 0);
-                base = base + 0x80;
+            tileBase = 0x124;
+            for (layer = 0; layer < 3; layer = layer + 1) {
+                func_02097150(layer, tileBase);
+                func_02097164(layer, layer);
+                func_02097178(layer, 0);
+                func_020971c0(layer, 0);
+                tileBase = tileBase + 0x80;
             }
         }
     }
 
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_020947ac(void);
@@ -399,10 +401,10 @@ void func_020945f8(void) {
  func_02086ac0();func_020947ac();func_02095fd4();
  for(i=0;i<3;i++)M2C_FIELD(func_02091f18(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
- func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);func_02094424();
+ func_020943a8(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
 }
 
-s32 func_020946d0(void) {
+s32 IsDialogActive(void) {
  extern M2C_UNK data_02157fe8;
  s32 i;
  u8 *p;
@@ -468,7 +470,7 @@ u8 func_020947c0(void) {
 }
 
 void func_020947d0(s32 *arg0) {
-    s32 func_020946d0();
+    s32 IsDialogActive();
     void func_02094860(void);
     M2C_UNK func_02095fd4();
     M2C_UNK func_020d472c();
@@ -476,7 +478,7 @@ void func_020947d0(s32 *arg0) {
         return;
     }
     *arg0 = 0;
-    if (func_020946d0() == 0) {
+    if (IsDialogActive() == 0) {
         func_020947ac();
         func_02095fd4();
         func_02094860();
@@ -487,7 +489,7 @@ void func_020947d0(s32 *arg0) {
 void func_02094808(s32 value) {
    void *func_020948c4(s32);
    s32 i;
-   if(!func_020946d0()) {func_020948c4(value);return;}
+   if(!IsDialogActive()) {func_020948c4(value);return;}
    for(i=0;i<8;i++) {
    if(!M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)) {
    M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=value;
@@ -581,7 +583,7 @@ void func_020949f8(void) {
     u8 *var_r4;
     s32 var_r5;
 
-    if (func_020946d0() == 0) {
+    if (IsDialogActive() == 0) {
         return;
     }
     if (func_02094788() != 0) {

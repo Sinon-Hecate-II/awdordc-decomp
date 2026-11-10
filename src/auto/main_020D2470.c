@@ -316,10 +316,10 @@ s32 GetPlayerCommanderId(s32 arg0) {
 }
 #pragma pop
 s32 func_020d2c58(s32 arg0) {
- extern M2C_UNK data_02168f08;
+ extern M2C_UNK gMapData;
  s32 func_020a334c(s32);s32 func_020a3594(s32,s32);s32 func_020a3518(s32);
  s32 r5; s32 count=0;
- if((((u32)M2C_FIELD(&data_02168f08,u16 *,12)<<19)>>31)==0)return 0;
+ if((((u32)M2C_FIELD(&gMapData,u16 *,12)<<19)>>31)==0)return 0;
  if(func_020a334c(arg0))return 0;
  if(!func_020a3594(arg0,2))return 0;
  r5=func_020a3518(arg0);if(r5>=func_020a3594(arg0,1))count++;
@@ -342,11 +342,11 @@ s32 func_020d2d18(arg0, arg1)
     s32 arg1;
 {
     s32 func_020a7bbc(s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 t;
 
     t = func_020a7bbc(arg1);
-    return func_0207c8ec(t * 0x64, 0x64);
+    return Divide(t * 0x64, 0x64);
 }
 
 s32 func_020d2d38(void) {
@@ -599,27 +599,27 @@ return result;
 }
 
 void func_020d33c4(void) {
-    extern M2C_UNK data_02168f08;
-    M2C_FIELD(&data_02168f08, s32 *, 8) = 0;
+    extern M2C_UNK gMapData;
+    M2C_FIELD(&gMapData, s32 *, 8) = 0;
 }
 
 void func_020d33d8(void) {
-    extern M2C_UNK data_02168f08;
-    M2C_FIELD(&data_02168f08, s32 *, 8) = 1;
+    extern M2C_UNK gMapData;
+    M2C_FIELD(&gMapData, s32 *, 8) = 1;
 }
 
 void func_020d33ec(void) {
-    extern M2C_UNK data_02168f08;
-    M2C_FIELD(&data_02168f08, s32 *, 8) = 0;
+    extern M2C_UNK gMapData;
+    M2C_FIELD(&gMapData, s32 *, 8) = 0;
 }
 
 void func_020d3400(void){
-extern M2C_UNK data_02168f08; extern s32 *gCurrentMap;
-s32 func_020947c0(void); s32 func_020b5258(void); void func_0209cbe4(void *);
+extern M2C_UNK gMapData; extern s32 *gCurrentMap;
+s32 func_020947c0(void); s32 IsBattleEffectActive(void); void func_0209cbe4(void *);
 u8 *p; s32 q;
-if(M2C_FIELD(&data_02168f08,s32 *,8)==0)return;
+if(M2C_FIELD(&gMapData,s32 *,8)==0)return;
 if(func_020947c0()!=0)return;
-if(func_020b5258()!=0)return;
+if(IsBattleEffectActive()!=0)return;
 p=(u8 *)*gCurrentMap;
 q=(s32)p+0x67a4+M2C_FIELD(p,u16 *,0x52a4)*0x8c;
 func_0209cbe4((u8 *)q+0x84);

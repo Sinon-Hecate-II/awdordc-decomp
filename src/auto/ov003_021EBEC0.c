@@ -12,29 +12,29 @@ static inline s32 ov003_entries_differ(s32 arg0) {
 void func_ov003_021ec4e4(u8 *);
 #pragma inline off
 void func_ov003_021ebec0(void *p,u32 state){
-void PlaySoundEffect(u32);void func_ov003_021ebfcc(void *);s32 func_ov003_021ebc38(void *);void func_ov003_021e9cfc(void *,s32);void func_ov003_021ec4e4(u8 *);void UpdateWaypointSelection(void *,s32);
+void PlaySoundEffect(u32);void func_ov003_021ebfcc(void *);s32 IsWaypointPanelIdle(void *);void SetWaypointPanelState(void *,s32);void func_ov003_021ec4e4(u8 *);void UpdateWaypointSelection(void *,s32);
 PlaySoundEffect(0x1000f);
 switch(state){
 case 25:case 3:case 2:case 1:case 0:func_ov003_021ebfcc(p);break;
 case 4:case 5:case 6:case 7:
-if(func_ov003_021ebc38(p))func_ov003_021ebfcc(p);else func_ov003_021e9cfc(p,0);break;
+if(IsWaypointPanelIdle(p))func_ov003_021ebfcc(p);else SetWaypointPanelState(p,0);break;
 case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:
-func_ov003_021ec4e4(M2C_FIELD(p,u8 **,0x6c));func_ov003_021e9cfc(p,0);UpdateWaypointSelection(p,27);break;
+func_ov003_021ec4e4(M2C_FIELD(p,u8 **,0x6c));SetWaypointPanelState(p,0);UpdateWaypointSelection(p,27);break;
 case 21:case 22:case 23:case 24:
-if(func_ov003_021ebc38(p))func_ov003_021ebfcc(p);else func_ov003_021e9cfc(p,0);break;
+if(IsWaypointPanelIdle(p))func_ov003_021ebfcc(p);else SetWaypointPanelState(p,0);break;
 }
 }
 
 #pragma push
 #pragma opt_propagation on
 void func_ov003_021ebfcc(void *p) {
- void PlaySoundEffect(u32); s32 func_020846a4(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
+ void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 func_02084d3c(void*,s32); void func_02084d88(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
  void func_02088d94(void*); void func_02088da8(void*); void func_02088f1c(s32); void func_02088ff4(s32);
  s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 func_020aae44(void*); s32 func_020aae10(void*); s16 func_ov003_022004a8(u8); s32 func_0208b758(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
- if(func_020846a4()){
+ if(IsLinkSessionActive()){
   if(!func_02084d3c(buf,0x24))return;
   mode=(u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30;
   flag=mode==0;
@@ -52,7 +52,7 @@ void func_ov003_021ebfcc(void *p) {
  {u8 v=M2C_FIELD(p,u8*,0x39)&~12;flag=((u32)(v<<28)>>30)==0;M2C_FIELD(p,u8*,0x39)=v;}
  if(flag && func_ov003_021e6d28()){func_02088d94(M2C_FIELD(p,void**,0x58));func_02088f1c(*M2C_FIELD(p,s32**,0x64));}
  entries=M2C_FIELD(p,s32**,0x64);count=M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);n=count&255;
- if(!func_020846a4()){for(i=0;i<4;i++){if(i<n){func_02088d94((void*)entries[i+2]);func_02088d94((void*)entries[i+6]);}}}
+ if(!IsLinkSessionActive()){for(i=0;i<4;i++){if(i<n){func_02088d94((void*)entries[i+2]);func_02088d94((void*)entries[i+6]);}}}
  s=M2C_FIELD(p,void**,0x48);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  s=M2C_FIELD(p,void**,0x50);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=256;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  s=M2C_FIELD(p,void**,0x4c);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=192;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
@@ -87,7 +87,7 @@ void func_ov003_021ec4e4(u8 *p) {
 s32 func_020848c4(void);
 s32 func_ov003_021e6cfc(void);
 s32 func_ov003_021e6d28(void);
-s32 func_ov003_021e6eb8(u8);
+s32 IsWaypointOptionValid(u8);
 u8 v=p[9];
 u8 t;
 if(func_ov003_021e6cfc()!=0) {
@@ -100,7 +100,7 @@ if(func_ov003_021e6d28()!=0) {
 t=(p+p[7])[0x74];
 if(t!=func_020848c4())goto update;
 }
-if(func_ov003_021e6eb8(v)==0)return;
+if(IsWaypointOptionValid(v)==0)return;
 update:
 (p+p[7])[10]=v;
 p[8]=v;
@@ -241,18 +241,21 @@ void StepCounterDown(void *counters, s32 index, s32 force) {
     if (EntriesDiffer((void *)counters)) return;
     StepCounterDown(counters, index, force);
 }
-void func_ov003_021eca9c(void *arg0, u32 arg1) {
-    s32 func_020846a4();
+/* Applies the waypoint option panel action the player picked (direction group 0-3,
+ * slot group 4-7, option group 8-20, group 21-24, or 25 = confirm): updates the
+ * panel's selection and state, and plays the select or error sound. */
+void ApplyWaypointMenuAction(void *arg0, u32 arg1) {
+    s32 IsLinkSessionActive();
     void PlaySoundEffect(u32);
-    s32 func_ov003_021e6eb8(u8);
-    s32 func_ov003_021e73e4(s32);
-    s32 func_ov003_021e73ec(s32, s32);
-    void func_ov003_021e9cfc(void *,s32);
-    s32 func_ov003_021ebc38(void *);
+    s32 IsWaypointOptionValid(u8);
+    s32 GetWaypointSlotIndex(s32);
+    s32 IsWaypointSlotLocalPlayer(s32, s32);
+    void SetWaypointPanelState(void *,s32);
+    s32 IsWaypointPanelIdle(void *);
     void UpdateWaypointSelection(void *,s32);
-    s32 func_ov003_021ecc68(M2C_UNK,M2C_UNK);
+    s32 CanUseWaypointAction(M2C_UNK,M2C_UNK);
     M2C_UNK func_ov003_021eccd4(void *);
-    if (func_ov003_021ecc68((s32)arg0,arg1) == 0) {
+    if (CanUseWaypointAction((s32)arg0,arg1) == 0) {
         return;
     }
     switch (arg1) {
@@ -260,16 +263,16 @@ void func_ov003_021eca9c(void *arg0, u32 arg1) {
     case 1:
     case 2:
     case 3:
-        if ((func_020846a4() != 0) && (func_ov003_021e73ec(M2C_FIELD(arg0, s32 *, 0x6C), func_ov003_021e73e4(M2C_FIELD(arg0, s32 *, 0x6C))) == 0)) {
+        if ((IsLinkSessionActive() != 0) && (IsWaypointSlotLocalPlayer(M2C_FIELD(arg0, s32 *, 0x6C), GetWaypointSlotIndex(M2C_FIELD(arg0, s32 *, 0x6C))) == 0)) {
             PlaySoundEffect(0x1001D);
             return;
         }
-        if (func_ov003_021ebc38(arg0) != 0) {
-            func_ov003_021e9cfc(arg0, 2);
+        if (IsWaypointPanelIdle(arg0) != 0) {
+            SetWaypointPanelState(arg0, 2);
             UpdateWaypointSelection(arg0, 0x1DU);
         } else {
             UpdateWaypointSelection(arg0, arg1);
-            func_ov003_021e9cfc(arg0, 0);
+            SetWaypointPanelState(arg0, 0);
         }
         break;
     case 4:
@@ -277,10 +280,10 @@ void func_ov003_021eca9c(void *arg0, u32 arg1) {
     case 6:
     case 7:
         UpdateWaypointSelection(arg0, arg1);
-        if (func_ov003_021ebc38(arg0) != 0) {
-            func_ov003_021e9cfc(arg0, 1);
+        if (IsWaypointPanelIdle(arg0) != 0) {
+            SetWaypointPanelState(arg0, 1);
         } else {
-            func_ov003_021e9cfc(arg0, 0);
+            SetWaypointPanelState(arg0, 0);
         }
         break;
     case 8:
@@ -296,11 +299,11 @@ void func_ov003_021eca9c(void *arg0, u32 arg1) {
     case 18:
     case 19:
     case 20:
-        if (func_ov003_021e6eb8((u8) (arg1 - 8)) == 0) {
+        if (IsWaypointOptionValid((u8) (arg1 - 8)) == 0) {
             PlaySoundEffect(0x1001D);
             return;
         }
-        func_ov003_021e9cfc(arg0, 0);
+        SetWaypointPanelState(arg0, 0);
         UpdateWaypointSelection(arg0, 0x1BU);
         break;
     case 21:
@@ -308,10 +311,10 @@ void func_ov003_021eca9c(void *arg0, u32 arg1) {
     case 23:
     case 24:
         UpdateWaypointSelection(arg0, arg1);
-        if (func_ov003_021ebc38(arg0) != 0) {
-            func_ov003_021e9cfc(arg0, 3);
+        if (IsWaypointPanelIdle(arg0) != 0) {
+            SetWaypointPanelState(arg0, 3);
         } else {
-            func_ov003_021e9cfc(arg0, 0);
+            SetWaypointPanelState(arg0, 0);
         }
         break;
     case 25:
@@ -322,13 +325,13 @@ void func_ov003_021eca9c(void *arg0, u32 arg1) {
     PlaySoundEffect(0x1000D);
 }
 
-s32 func_ov003_021ecc68(M2C_UNK a,M2C_UNK b) {
-s32 func_020846a4(void);
+s32 CanUseWaypointAction(M2C_UNK a,M2C_UNK b) {
+s32 IsLinkSessionActive(void);
 s32 func_ov003_021e6cfc(void);
 s32 func_ov003_021e6e08(M2C_UNK);
 M2C_UNK func_ov003_021e6e18(M2C_UNK);
 s32 t;
-if(func_020846a4()==0)return 1;
+if(IsLinkSessionActive()==0)return 1;
 t=func_ov003_021e6e08(b);
 func_ov003_021e6e18(b);
 if(t==0||t==25||t==8)return 1;

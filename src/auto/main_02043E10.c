@@ -329,7 +329,7 @@ M2C_FIELD(p,u64 *,0x24)=GetSystemTick();
 }
 
 void func_02044da4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0203dd30(M2C_UNK, u16, M2C_UNK);
+    M2C_UNK ReceiveConnectionPacket(M2C_UNK, u16, M2C_UNK);
     void *func_020449f0();
     u16 temp_r1;
     void *temp_r0;
@@ -340,7 +340,7 @@ void func_02044da4(M2C_UNK arg0, M2C_UNK arg1) {
     if ((temp_r1 != 2) && (temp_r1 != 3) && (temp_r1 != 4)) {
         return;
     }
-    func_0203dd30(arg0, temp_r1, arg1);
+    ReceiveConnectionPacket(arg0, temp_r1, arg1);
 }
 
 s32 func_02044de0(void) {

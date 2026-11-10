@@ -83,7 +83,7 @@ return PlaySoundEffect(0x1000d);
 }
 
 void func_ov007_0221e568(u8 *arg0) {
-    M2C_UNK func_0207c8ec(u8, M2C_UNK);
+    M2C_UNK Divide(u8, M2C_UNK);
     M2C_UNK Modulo(u8, M2C_UNK);
     M2C_UNK func_020b1c60(u8);
     extern u16 *gKeyState;
@@ -103,7 +103,7 @@ void func_ov007_0221e568(u8 *arg0) {
         return;
     }
     if (temp_r6 & 0x40) {
-        if (func_0207c8ec(var_r7, 0xF) == 0) {
+        if (Divide(var_r7, 0xF) == 0) {
             if (temp_r6 == temp_r5) {
                 var_r7 = data_ov007_0221f5a4[Modulo(var_r7, 0xF)];
             }
@@ -114,7 +114,7 @@ void func_ov007_0221e568(u8 *arg0) {
             goto block_15;
         }
     } else if (temp_r6 & 0x80) {
-        if (func_0207c8ec(var_r7, 0xF) == 4) {
+        if (Divide(var_r7, 0xF) == 4) {
             if (temp_r6 == temp_r5) {
                 var_r7 = data_ov007_0221f5a4[Modulo(var_r7, 0xF)];
             }
@@ -192,9 +192,9 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02091d4c(M2C_UNK);
@@ -279,7 +279,7 @@ void func_ov007_0221e878(void *arg0) {
     SetFileDirectory(&data_ov007_02221980);
     LoadDecompressedFileTo(func_020e32e8(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
     func_020e32e8(&data_ov007_02221998);
-    func_020814e4();
+    OpenNarcArchive();
     var_r2 = 0;
 loop_1:
     if (M2C_FIELD(arg0, s32 *, 0x34) == *(&gSoftKeyLayouts + (var_r2 * 4))) {
@@ -294,16 +294,16 @@ loop_1:
     }
     switch (var_r0) {                               /* irregular */
     case 0x66:
-        func_02081590(func_020e32e8(&data_ov007_022219a8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219a8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     case 0x64:
-        func_02081590(func_020e32e8(&data_ov007_022219b8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219b8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     case 0x65:
-        func_02081590(func_020e32e8(&data_ov007_022219c8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+        LoadNarcFileDecompressed(func_020e32e8(&data_ov007_022219c8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     }
-    func_02081528();
+    CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_022219d8, 0xA0, 0x60);
     func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
     func_02091d4c(4);

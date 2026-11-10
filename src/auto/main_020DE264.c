@@ -31,9 +31,9 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void func_01ff9ce8(u8);
     void SetFileDirectory(void *);
     void *GetLocalizedFileName(void *);
-    void func_020814e4(void *);
-    void func_02081590(void *, void *);
-    void func_02081528(void);
+    void OpenNarcArchive(void *);
+    void LoadNarcFileDecompressed(void *, void *);
+    void CloseNarcArchive(void);
     void func_02080944(void *, s32, s32, s32);
     void func_0208e7ec(s32, s32);
     void func_02088f1c(void *);
@@ -68,14 +68,14 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
     SetFileDirectory(&data_0212d428);
-    func_020814e4(GetLocalizedFileName(&data_0212d430));
+    OpenNarcArchive(GetLocalizedFileName(&data_0212d430));
 
     setupCode=GetSetupCode((void*)setup);
     switch(setupCode) {
-    case 4:func_02081590(GetLocalizedFileName(&data_0212d440),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
-    case 2:func_02081590(GetLocalizedFileName(&data_0212d450),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
+    case 4:LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d440),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
+    case 2:LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d450),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
     }
-    func_02081528();
+    CloseNarcArchive();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x20), 0x20, 0x18, 0x5);
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x1;
@@ -158,7 +158,7 @@ void func_020de610(void) {
  * matching archive and the 2P/4P background chosen by GetSetupCode, resets the
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
-void func_01ff9ce8(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void func_020814e4(void *); void func_02081590(void *,void *); void func_02081528(void); void func_02080944(void *,s32,s32,s32);
+void func_01ff9ce8(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void func_02080944(void *,s32,s32,s32);
 void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
@@ -169,13 +169,13 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_01ff9ce8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&gMatchScenePath);
-func_020814e4(GetLocalizedFileName(&gMatchSceneNarc));
+OpenNarcArchive(GetLocalizedFileName(&gMatchSceneNarc));
 layout=GetSetupCode((void *)setup);
 switch(layout) {
-case 4: func_02081590(GetLocalizedFileName(&gMatchScene4PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-case 2: func_02081590(GetLocalizedFileName(&gMatchScene2PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 4: LoadNarcFileDecompressed(GetLocalizedFileName(&gMatchScene4PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 2: LoadNarcFileDecompressed(GetLocalizedFileName(&gMatchScene2PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
 }
-func_02081528();
+CloseNarcArchive();
 func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 gCur3DSpriteEngine=savedEngine;
@@ -230,9 +230,9 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void func_01ff9ce8(u8);
     void SetFileDirectory(void *);
     void *GetLocalizedFileName(void *);
-    void func_020814e4(void *);
-    void func_02081590(void *, void *);
-    void func_02081528(void);
+    void OpenNarcArchive(void *);
+    void LoadNarcFileDecompressed(void *, void *);
+    void CloseNarcArchive(void);
     void func_02080944(void *, s32, s32, s32);
     void func_02088f1c(void *);
     void func_02088da8(void *);
@@ -261,15 +261,15 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
     SetFileDirectory(&gLinkResourcePath);
-    func_020814e4(GetLocalizedFileName(&gMatchingNarcPath));
+    OpenNarcArchive(GetLocalizedFileName(&gMatchingNarcPath));
 
     layout=GetSetupCode((void *)setup);
     switch(layout) {
-    case 4: func_02081590(GetLocalizedFileName(&gMatching4PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-    case 2: func_02081590(GetLocalizedFileName(&gMatching2PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 4: LoadNarcFileDecompressed(GetLocalizedFileName(&gMatching4PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 2: LoadNarcFileDecompressed(GetLocalizedFileName(&gMatching2PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
     }
 
-    func_02081528();
+    CloseNarcArchive();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x20), 0x20, 0x18, 0x5);
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x1;

@@ -73,33 +73,33 @@ reject:
 #pragma pop
 
 s32 func_ov000_021a3210(void){
-s32 func_0207c8ec(s32,s32);s32 func_020d2d18(u16,s32);
-void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);
-extern void **gCurrentMap;extern void *data_ov000_021df580;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
+s32 Divide(s32,s32);s32 func_020d2d18(u16,s32);
+void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);
+extern void **gCurrentMap;extern void *gAiCommandState;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
 if(func_020d2d18(id,19)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
-if(M2C_FIELD(data_ov000_021df580,u8 *,6)==1){n=M2C_FIELD(gAiSettings,u8 *,19);if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;}
-if(PlanTransportAction()==1)return 1;r=FindAiTargetByCost(2);if(r==-1){r=func_ov000_021a5ffc(2);if(r==-1)return 0;}
-v=func_ov000_021a88c8(19);
+if(M2C_FIELD(gAiCommandState,u8 *,6)==1){n=M2C_FIELD(gAiSettings,u8 *,19);if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;}
+if(PlanTransportAction()==1)return 1;r=FindAiTargetByCost(2);if(r==-1){r=FindAiTargetOfType(2);if(r==-1)return 0;}
+v=CountPlayerUnitsOfKind(19);
 n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
-if(func_0207c8ec(v*100,n)<M2C_FIELD(gAiSettings,u8 *,11)){
+if(Divide(v*100,n)<M2C_FIELD(gAiSettings,u8 *,11)){
 M2C_FIELD(&gAiCommand,u8 *,6)=19;
 }else{return 0;}
 CommitAiAction(r);return 1;
 }
 
 s32 func_ov000_021a3364(void){
-s32 func_0207c8ec(s32,s32);s32 func_020d2d18(u16,s32);
-void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 func_ov000_021a88c8(s32);
+s32 Divide(s32,s32);s32 func_020d2d18(u16,s32);
+void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *p=*gCurrentMap;u16 id=M2C_FIELD(p,u16 *,0x52a4);s32 r,t,v;u8 n;
 if(func_020d2d18(id,13)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 n=M2C_FIELD(gAiSettings,u8 *,18);
 if(n && M2C_FIELD(*gCurrentMap,u16 *,0x52a2)>n)return 0;
 r=func_ov000_021a61cc(1);if(r==-1)return 0;
-t=func_ov000_021a88c8(13);v=t+func_ov000_021a88c8(19);
+t=CountPlayerUnitsOfKind(13);v=t+CountPlayerUnitsOfKind(19);
 n=M2C_FIELD(gAiState,u8 *,8);if(!n)return 0;
-if(func_0207c8ec(v*100,n)<M2C_FIELD(gAiSettings,u8 *,12)){
+if(Divide(v*100,n)<M2C_FIELD(gAiSettings,u8 *,12)){
 M2C_FIELD(&gAiCommand,u8 *,6)=13;
 }else{return 0;}
 CommitAiAction(r);return 1;
@@ -208,7 +208,7 @@ s32 c7,c8,y,x,c18,c14,initial,flag,id,i;
 s8 c11;
 void *base;
 u8 *record;
-initial=(u8)(func_ov000_021a88c8(24)+func_ov000_021a88c8(25));
+initial=(u8)(CountPlayerUnitsOfKind(24)+CountPlayerUnitsOfKind(25));
 retry:
 id=FindAiTargetByCost(3);
 if(id==-1){ResetAiTargetCandidates();return 0;}
@@ -273,15 +273,15 @@ record[3]=253;goto retry;
 #pragma pop
 s32 func_ov000_021a3c84(void){
 s32 func_020d2d18(u16,s32);s32 func_ov000_021a43a0(s32);s32 func_ov000_021a3854(void);
-s32 FindAiTargetByCost(s32);s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a88c8(s32);void CommitAiAction(s32);
+s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);void CommitAiAction(s32);
 extern void **gCurrentMap;extern M2C_UNK gAiCommand;
 void *p;u16 id;s32 r,a,b,n,x,y,z;
 if(!func_ov000_021a43a0(1))return 0;
 p=*gCurrentMap;id=M2C_FIELD(p,u16 *,0x52a4);
 if(func_020d2d18(id,25)*10>M2C_FIELD((u8 *)p+id*140,s32 *,0x67a4))return 0;
 if(func_ov000_021a3854()==1)return 1;
-r=FindAiTargetByCost(3);if(r==-1){r=func_ov000_021a5ffc(3);if(r==-1)return 0;}
-a=func_ov000_021a88c8(24);b=func_ov000_021a88c8(25);
+r=FindAiTargetByCost(3);if(r==-1){r=FindAiTargetOfType(3);if(r==-1)return 0;}
+a=CountPlayerUnitsOfKind(24);b=CountPlayerUnitsOfKind(25);
 n=func_ov000_021a36e4();if(!n)return 0;
 if(a+b){x=func_ov000_021a3644(24);y=func_ov000_021a3644(25)+1;z=x-(func_ov000_021a379c()>>2);if(z<0)z=0;if(n<(y+z)*4)return 0;}
 M2C_FIELD(&gAiCommand,u8 *,6)=25;CommitAiAction(r);return 1;

@@ -184,7 +184,7 @@ void func_ov005_022155e8(u8 *arg0) {
 }
 
 void func_ov005_02215650(void) {
-    M2C_UNK func_01ffa770(M2C_UNK *);
+    M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov005_02220510;
-    func_01ffa770(&data_ov005_02220510);
+    FindObjectByClass(&data_ov005_02220510);
 }

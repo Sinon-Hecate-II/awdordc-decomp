@@ -211,9 +211,9 @@ saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 buffer=func_020e34bc(512);
 func_01ff9d88(0);
-func_020814e4(data_ov005_0222028c);
+OpenNarcArchive(data_ov005_0222028c);
 func_020816cc(data_ov005_0222029c,buffer,0,0);
-func_02081528();
+CloseNarcArchive();
 i=0;offset=0;
 do{
 if(M2C_FIELD((u8 *)gHistoryMenu+i,u8 *,0x40)){
@@ -245,8 +245,8 @@ gCur3DSpriteEngine=saved;
 #pragma pop
 void func_ov005_02212db8(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
- M2C_UNK func_020814e4();
- M2C_UNK func_02081528();
+ M2C_UNK OpenNarcArchive();
+ M2C_UNK CloseNarcArchive();
  M2C_UNK func_020816cc(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
@@ -254,16 +254,16 @@ void func_ov005_02212db8(void) {
  extern M2C_UNK data_ov005_022202ac, data_ov005_022202bc, data_ov005_022202cc;
  SetFileDirectory(&data_ov005_022202ac);
  GetLocalizedFileName(&data_ov005_022202bc);
- func_020814e4();
+ OpenNarcArchive();
  func_020816cc(GetLocalizedFileName(&data_ov005_022202cc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
- func_02081528();
+ CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 
 void func_ov005_02212e20(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
- M2C_UNK func_020814e4();
- M2C_UNK func_02081528();
+ M2C_UNK OpenNarcArchive();
+ M2C_UNK CloseNarcArchive();
  M2C_UNK func_020816cc(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
@@ -271,16 +271,16 @@ void func_ov005_02212e20(void) {
  extern M2C_UNK data_ov005_022202e0, data_ov005_022202f0, data_ov005_02220300;
  SetFileDirectory(&data_ov005_022202e0);
  GetLocalizedFileName(&data_ov005_022202f0);
- func_020814e4();
+ OpenNarcArchive();
  func_020816cc(GetLocalizedFileName(&data_ov005_02220300),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
- func_02081528();
+ CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 
 void func_ov005_02212e88(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
- M2C_UNK func_020814e4();
- M2C_UNK func_02081528();
+ M2C_UNK OpenNarcArchive();
+ M2C_UNK CloseNarcArchive();
  M2C_UNK func_020816cc(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
@@ -288,9 +288,9 @@ void func_ov005_02212e88(void) {
  extern M2C_UNK data_ov005_02220314, data_ov005_02220324, data_ov005_02220334;
  SetFileDirectory(&data_ov005_02220314);
  GetLocalizedFileName(&data_ov005_02220324);
- func_020814e4();
+ OpenNarcArchive();
  func_020816cc(GetLocalizedFileName(&data_ov005_02220334),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
- func_02081528();
+ CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 

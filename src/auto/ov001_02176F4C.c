@@ -150,10 +150,10 @@ void func_ov001_02177214(void) {
 }
 
 void func_ov001_02177238(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190534;
     extern M2C_UNK func_0200448c;
-    func_ov001_02171d90(&data_ov001_02190534, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190534, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -253,20 +253,20 @@ void func_ov001_02177440(void) {
     M2C_UNK func_ov001_02171c24(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02172250(M2C_UNK);
     void func_ov001_02177474(void);
-    M2C_UNK func_ov001_021774f4();
+    M2C_UNK DrawMacAddressPanel();
     extern M2C_UNK func_ov001_021776c8;
     func_ov001_02177474();
     func_ov001_02172250(0x11);
     func_ov001_02171c24(0x3A, -1, 0);
-    func_ov001_021774f4();
+    DrawMacAddressPanel();
     Ov001_SetStepCallback(&func_ov001_021776c8);
 }
 
 void func_ov001_02177474(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190548;
     extern M2C_UNK func_0200448c;
-    func_ov001_02171d90(&data_ov001_02190548, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190548, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -274,23 +274,25 @@ void func_ov001_02177474(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
 }
 
-M2C_UNK func_ov001_021774f4(void) {
-void *func_ov001_0218ad0c(s32,s32); void func_02007724(void *); s32 func_0206ccf8(void *,s32,void *,...);
-void func_ov001_0218b12c(void *,s32,s32,s32,s32,s32,s32,void *); M2C_UNK func_02045cbc(void *);void func_ov001_0218b298(void *);
-extern u8 data_ov001_0219055c[],data_ov001_02190598[],data_ov001_021905c0[];
-u32 state[5]; u32 parts[4]; char text[42]; u8 mac[6]; void *win; u64 value;s32 i;
-win=func_ov001_0218ad0c(0,0);
-func_02007724(mac);
-func_0206ccf8(text,20,data_ov001_0219055c,mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
-func_ov001_0218b12c(win,8,64,240,28,2,1152,text);
-func_02045cbc(state);value=*(u64 *)state;
-if(value){
-parts[3]=(value%10)*1000;value/=10;
-for(i=0;i<3;i++){parts[2-i]=value%10000;value/=10000;}
-func_0206ccf8(text,20,data_ov001_02190598,parts[0],parts[1],parts[2],parts[3]);
-}else func_0206ccf8(text,20,data_ov001_021905c0);
-func_ov001_0218b12c(win,8,120,240,28,2,1152,text);
-func_ov001_0218b298(win);
+/* Draws a two-line panel: the console's MAC address and its Wi-Fi profile code
+ * (or a dashes placeholder when that code is zero), then closes the panel. */
+M2C_UNK DrawMacAddressPanel(void) {
+void *CreateTextPanel(s32,s32); void GetMacAddress(void *); s32 StringFormatWide(void *,s32,void *,...);
+void DrawPanelText(void *,s32,s32,s32,s32,s32,s32,void *); M2C_UNK GetWfcProfile(void *);void CloseTextPanel(void *);
+extern u8 sMacAddressFormat[],sGroupedCodeFormat[],sEmptyCodeText[];
+u32 profile[5]; u32 groups[4]; char text[42]; u8 macAddress[6]; void *panel; u64 code;s32 i;
+panel=CreateTextPanel(0,0);
+GetMacAddress(macAddress);
+StringFormatWide(text,20,sMacAddressFormat,macAddress[0],macAddress[1],macAddress[2],macAddress[3],macAddress[4],macAddress[5]);
+DrawPanelText(panel,8,64,240,28,2,1152,text);
+GetWfcProfile(profile);code=*(u64 *)profile;
+if(code){
+groups[3]=(code%10)*1000;code/=10;
+for(i=0;i<3;i++){groups[2-i]=code%10000;code/=10000;}
+StringFormatWide(text,20,sGroupedCodeFormat,groups[0],groups[1],groups[2],groups[3]);
+}else StringFormatWide(text,20,sEmptyCodeText);
+DrawPanelText(panel,8,120,240,28,2,1152,text);
+CloseTextPanel(panel);
 }
 
 void func_ov001_021776c8(void) {
@@ -419,19 +421,19 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177b24);
 }
 
 void func_ov001_02177988(void) {
-s32 func_ov001_02171d30(void *); M2C_UNK func_ov001_02171d90(M2C_UNK *,M2C_UNK *);
-void *func_ov001_02189dc8(s32,s32,s32); M2C_UNK func_02045cbc(void *);
+s32 Ov001_LocalizePath(void *); M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);
+void *func_ov001_02189dc8(s32,s32,s32); M2C_UNK GetWfcProfile(void *);
 void MI_CpuCopy8(void *,void *,u32); void func_020067e0(void *,u32); void func_020040b4(void *,s32,u32);void func_ov001_02189ebc(void *);
 extern M2C_UNK data_ov001_0218f734,data_ov001_0218f74a,data_ov001_021905e8,data_ov001_02190600,data_ov001_02193d68,func_020046cc,func_0200448c;
 MenuBuf22 b=*(MenuBuf22 *)&data_ov001_0218f734;
 MenuBuf23 c=*(MenuBuf23 *)&data_ov001_0218f74a;
 struct {u64 value;u32 rest[3];} state;
 register u8 *dst,*src; register s32 i; register void *p;
-func_ov001_02171d90(&data_ov001_021905e8,&func_020046cc);
-func_ov001_02171d90(&data_ov001_02190600,&func_0200448c);
-M2C_FIELD(&data_ov001_02193d68,void **,4)=func_ov001_02189dc8(func_ov001_02171d30(&c),0,4);
-p=func_ov001_02189dc8(func_ov001_02171d30(&b),0,4);
-func_02045cbc(&state);
+Ov001_LoadAsset(&data_ov001_021905e8,&func_020046cc);
+Ov001_LoadAsset(&data_ov001_02190600,&func_0200448c);
+M2C_FIELD(&data_ov001_02193d68,void **,4)=func_ov001_02189dc8(Ov001_LocalizePath(&c),0,4);
+p=func_ov001_02189dc8(Ov001_LocalizePath(&b),0,4);
+GetWfcProfile(&state);
 if(state.value==0) {for(i=0,dst=(u8 *)p+0xc0,src=(u8 *)p+0x40;i<2;i++,dst+=32,src+=32)MI_CpuCopy8(dst,src,32);}
 func_020067e0(p,512);func_020040b4(p,0,512);func_ov001_02189ebc(p);
 M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
@@ -514,7 +516,7 @@ void func_ov001_02177ce4(void) {
 }
 
 void func_ov001_02177ce8(void) {
-    M2C_UNK func_02045cbc(void *);
+    M2C_UNK GetWfcProfile(void *);
     M2C_UNK func_ov001_021716f8(M2C_UNK);
     M2C_UNK func_ov001_02177fac();
     void func_ov001_02177d8c(void);
@@ -525,7 +527,7 @@ void func_ov001_02177ce8(void) {
         Ov001_PlaySound(7);
         break;
     case 1:
-        func_02045cbc(&sp0);
+        GetWfcProfile(&sp0);
         if (M2C_FIELD(&data_ov001_02193d68, u8 *, 0) != 0) {
             if (sp0.value == 0) {
                 Ov001_PlaySound(9);

@@ -7,7 +7,7 @@ typedef struct { TerrainOffset7E52 values[4]; } TerrainNeighbors7E52;
 #pragma opt_lifetimes off
 #pragma opt_instruction_scheduling off
 s32 func_0207e52c(s32 x,s32 y) {
-s32 func_0207e150(s32,s32);s32 GetTerrainConnectionVariant(s32,s32);s32 GetTerrainEdgeVariant(s32,s32);s32 func_0207e338(s32,s32);s32 func_0207e39c(s32,s32);s32 func_0207e400(s32,s32);s32 func_0207e464(s32,s32);s32 func_0207e4c8(s32,s32);
+s32 GetTerrainDualVariant(s32,s32);s32 GetTerrainConnectionVariant(s32,s32);s32 GetTerrainEdgeVariant(s32,s32);s32 func_0207e338(s32,s32);s32 func_0207e39c(s32,s32);s32 func_0207e400(s32,s32);s32 func_0207e464(s32,s32);s32 func_0207e4c8(s32,s32);
 extern TerrainVariants7E52 data_020ebe04,data_020ebe14,data_020ebe24;
 extern TerrainNeighbors7E52 gTerrainNeighborOffsets;
 extern void **gCurrentMap;
@@ -139,7 +139,7 @@ if(M2C_FIELD(&gTerrainClassFlags,u32 *,type*8)&0x1000000)bits=(u8)(bits|(1<<i));
 }
 return (u16)(tile+bits);
 
-case 227:return func_0207e150(x,y);
+case 227:return GetTerrainDualVariant(x,y);
 case 173:return GetTerrainConnectionVariant(x,y);
 case 265:return GetTerrainEdgeVariant(x,y);
 case 44:case 48:case 168:

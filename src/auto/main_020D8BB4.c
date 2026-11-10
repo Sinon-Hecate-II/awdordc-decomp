@@ -62,7 +62,7 @@ void func_020d8cfc(void) {
 }
 
 u8 func_020d8d00(void) {
-    s32 func_01ffa770(void *);
+    s32 FindObjectByClass(void *);
     extern M2C_UNK data_0212c534;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -70,7 +70,7 @@ u8 func_020d8d00(void) {
     u8 var_r0;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_01ffa770(&data_0212c534) != 0) var_r0 = 1;
+    if (FindObjectByClass(&data_0212c534) != 0) var_r0 = 1;
     else var_r0 = 0;
     gCur3DSpriteEngine = temp_r4;
     return var_r0;
@@ -94,7 +94,7 @@ void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 u8 func_020d8db0(void) {
-    s32 func_01ffa770(void *);
+    s32 FindObjectByClass(void *);
     extern void *data_0212c36c;
     extern M2C_UNK data_0212c498;
     extern void *g3DSpriteEngineSub;
@@ -105,7 +105,7 @@ u8 func_020d8db0(void) {
     if (M2C_FIELD(data_0212c36c, s16 *, 4) != M2C_FIELD(data_0212c36c, s16 *, 2)) return 1;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_01ffa770(&data_0212c498) != 0) var_r0 = 1;
+    if (FindObjectByClass(&data_0212c498) != 0) var_r0 = 1;
     else var_r0 = 0;
     gCur3DSpriteEngine = temp_r4;
     return var_r0;
@@ -268,9 +268,9 @@ void func_020d93d4(void) {
 
 /* Processes two current-entity slots, creating/updating linked objects for an entity when conditions allow. */
 void func_020d93e0(void *entity) {
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     s32 func_0208477c(void);
-    s32 func_02084a6c(void);
+    s32 GetOverlayEventFlags(void);
     s32 func_0208b5ec(void);
     void func_0208af20(void);
     void *func_0208b564(void *);
@@ -281,9 +281,9 @@ void func_020d93e0(void *entity) {
     s32 i;
     void *created;
 
-    if (!func_020846a4()) return;
+    if (!IsLinkSessionActive()) return;
     if (func_0208477c()) return;
-    if (!func_02084a6c()) return;
+    if (!GetOverlayEventFlags()) return;
     M2C_FIELD(entity, u16 *, 0x48) |= 0x1000;
     if (func_0208b5ec()) func_0208af20();
     savedEntity = gCur3DSpriteEngine;

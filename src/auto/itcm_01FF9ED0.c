@@ -329,7 +329,7 @@ void func_01ffa730(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x30) = (u8) (M2C_FIELD(arg0, u8 *, 0x30) | 0x40);
 }
 
-void *func_01ffa770(s32 arg0) {
+void *FindObjectByClass(s32 arg0) {
  extern void **data_021581a8;
  extern void *data_021581dc[];
  void **p=data_021581dc;

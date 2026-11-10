@@ -72,7 +72,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     u16 func_ov003_021fbcd8(void *, s32);
     s32 func_ov003_021f3f24(s32, s32, s32, s32);
     s16 func_ov003_021f3fa0(s32, s32, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void func_ov003_021f9fe0(void *, s32, s32);
     void func_ov003_021f9e50(void *, s32, s32);
     void func_ov003_021fad10(void *, s32, s32);
@@ -347,8 +347,8 @@ L608:
                 q = M2C_FIELD(arg0->f60, s16 *, 4);
                 temp_r9 = (s16) ((((s16) M2C_FIELD(arg0->f60, s32 *, 0x10)) + 1) * q);
                 temp_r5 = GetSpriteAnimValue(arg0->f60 + 0x20);
-                r11r = func_0207c8ec(temp_r9, 2);
-                w = func_0207c8ec(temp_r9, 2);
+                r11r = Divide(temp_r9, 2);
+                w = Divide(temp_r9, 2);
                 pv = func_ov003_021f3fa0((s16) (temp_r5 + (s16) ((lim - i) * q)), (s16) (-r11r), (s16) w);
                 temp_r9 = (s16) (-0x10 - pv);
 L698:

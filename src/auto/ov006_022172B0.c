@@ -99,8 +99,8 @@ void func_ov006_022174d0(void *arg0) {
 void func_ov006_02217504(void *arg0) {
     M2C_UNK func_02084f2c(void *, M2C_UNK, M2C_UNK, void *, void *, void *);
     M2C_UNK func_020c8f0c(s32, s32);
-    s32 func_020cfbdc(u16);
-    func_020c8f0c(M2C_FIELD(arg0, s32 *, 0x3C), func_020cfbdc((u16) M2C_FIELD(arg0, s32 *, 0x34)));
+    s32 GetMapName(u16);
+    func_020c8f0c(M2C_FIELD(arg0, s32 *, 0x3C), GetMapName((u16) M2C_FIELD(arg0, s32 *, 0x34)));
     func_02084f2c(arg0 + 0x3C, 1, 0, arg0 + 0x40, arg0 + 0x44, arg0);
 }
 
@@ -135,7 +135,7 @@ M2C_FIELD(&data_ov006_02218e20,s32 *,8)=1;
 
 void func_ov006_0221762c(void *arg0) {
     M2C_UNK func_020c47e4(M2C_UNK);
-    M2C_UNK func_020c85c4(M2C_UNK, M2C_UNK);
+    M2C_UNK LoadMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK func_020c7b48(M2C_UNK, M2C_UNK);
     M2C_UNK func_020c7cd0(M2C_UNK, M2C_UNK);
     s32 func_02084cf8(void);
@@ -161,7 +161,7 @@ void func_ov006_0221762c(void *arg0) {
     cell = (u32 *)M2C_FIELD(arg0, u32 *, 0x4C);
 
     func_020c47e4((M2C_UNK)c);
-    func_020c85c4(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    LoadMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     func_020c7b48(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
     func_020c7cd0(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     cell[0x14] = (u32)func_02084cf8();
@@ -263,7 +263,7 @@ void func_ov006_02217948(void *arg0) {
 }
 
 void func_ov006_022179b4(void *arg0) {
-    s32 func_0207c2f0();
+    s32 NextRandomValue();
     u64 func_020720f0(s32, s32);
     s32 func_020c7a3c(s32);
     M2C_UNK func_020c7cd0(s32, s32);
@@ -316,7 +316,7 @@ void func_ov006_022179b4(void *arg0) {
         SetSpriteAnimation(arg0, 3);
         return;
     }
-    temp_r1 = (s32)(func_020720f0(func_0207c2f0(), sp0) >> 32);
+    temp_r1 = (s32)(func_020720f0(NextRandomValue(), sp0) >> 32);
     temp_r2 = M2C_FIELD(arg0, u32 *, 0x3C);
     var_r3 = 0;
     var_r4 = 0;

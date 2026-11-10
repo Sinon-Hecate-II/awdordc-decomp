@@ -24,9 +24,9 @@ void func_ov003_021e6234(void *obj) {
     M2C_UNK func_020a92bc(s32, s32);
     M2C_UNK func_020c12f8(s32, s32, s32, M2C_UNK);
     M2C_UNK func_020c1878(s32);
-    M2C_UNK func_020cf0a8(M2C_UNK);
+    M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020cf278(M2C_UNK);
-    s32 func_020cfbdc(M2C_UNK);
+    s32 GetMapName(M2C_UNK);
     s32 func_ov006_02217d0c();
     extern void **gCurrentMap;
     extern void *g3DSpriteEngineSub;
@@ -35,14 +35,14 @@ void func_ov003_021e6234(void *obj) {
 
     ResetMapUnits();
     func_020cf278(0xE1);
-    func_020cf0a8(0xE1);
+    LoadBattleMap(0xE1);
     M2C_FIELD(obj, s16 *, 0x62) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5144) * 4);
     M2C_FIELD(obj, s16 *, 0x64) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5146) * 4);
     func_020c1878(M2C_FIELD(obj, s32 *, 0x68) + 4);
     savedContext = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020809c0(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x2C), 9, 2);
-    func_0209b2b4(0, 0, 3, func_020cfbdc(0xE1), 0x9000, 0x11);
+    func_0209b2b4(0, 0, 3, GetMapName(0xE1), 0x9000, 0x11);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_01ff9ce8(0);
     func_020c12f8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x143, 5);
@@ -550,19 +550,19 @@ s32 func_ov003_021e6cc4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 u8 func_ov003_021e6cfc(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_0208485c();
     s32 result;
-    if (func_020846a4() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && func_0208485c()) result = 1;
     else result = 0;
     return result;
 }
 
 u8 func_ov003_021e6d28(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084890();
     s32 result;
-    if (func_020846a4() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && func_02084890()) result = 1;
     else result = 0;
     return result;
 }

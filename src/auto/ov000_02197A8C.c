@@ -1,7 +1,7 @@
 /* 1 function from 0x02197A8C to 0x02198848 (ov000), found by ds-decomp. */
 #include "common.h"
 extern u8 **gCurrentMap;
-extern u8 data_ov000_021b5c0f[], gUnitKindStats[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
+extern u8 gUnitKindFlags[], gUnitKindStats[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
 s32 GetUnitAttackClass(s32);
 s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitMoveRange(s32,s32);
@@ -36,8 +36,8 @@ return (index>>6)+1;
 }
 
 #pragma scheduling off
-void func_ov000_02197a8c(u8 *unit, s32 b, s32 c, s32 d, u8 e, u8 f, u8 g) {
-u8 flags=data_ov000_021b5c0f[c*112];
+void AddUnitThreatInfluence(u8 *unit, s32 b, s32 c, s32 d, u8 e, u8 f, u8 g) {
+u8 flags=gUnitKindFlags[c*112];
 u8 *map=*gCurrentMap;
 s32 x,y,idx,kind,loX,hiX,loY,hiY,dist,value;
 u8 *dimensions;

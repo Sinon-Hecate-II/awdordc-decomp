@@ -424,7 +424,7 @@ void func_020e3bf0(void *list) {
 }
 
 void func_020e3ccc(void *arg0) {
-    s32 func_0207c2f0(void);
+    s32 NextRandomValue(void);
     s32 RandomIntRange(s32, s32);
     s32 func_ov010_02226538(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
@@ -440,7 +440,7 @@ void func_020e3ccc(void *arg0) {
     }
     temp5 = RandomIntRange(0, data_0212d744 - r6) + 1;
     sp[0] = 0x10;
-    sp[1] = (func_0207c2f0() & 1) == 0;
+    sp[1] = (NextRandomValue() & 1) == 0;
     sp[2] = r6;
     sp[3] = 0;
     sp[4] = temp5;

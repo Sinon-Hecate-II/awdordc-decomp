@@ -277,13 +277,13 @@ return (s32)func_02058b94(p);
 }
 
 s32 func_0205893c(void *a,s32 b,void *c) {
-void *func_02058bb4(void *,s32);void *func_02058b94(void *);void AssertFailed(void *,void *,void *,s32);s32 StringLength(void *);void *gpiMalloc(s32);void StringCopy(void *,void *);void func_02068d68(void *,void *);void gpiFree(void *);s32 func_02058b18(void *,void *);
+void *func_02058bb4(void *,s32);void *func_02058b94(void *);void AssertFailed(void *,void *,void *,s32);s32 StringLength(void *);void *gpiMalloc(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void gpiFree(void *);s32 func_02058b18(void *,void *);
 extern M2C_UNK data_020ff420,data_020ff414,data_020ff400;
 void *p=func_02058bb4(a,b);void *q;void *r;s32 n;
 if(!p)return 0;
 if(M2C_FIELD(p,s32 *,4)!=2)AssertFailed(&data_020ff420,&data_020ff414,&data_020ff400,209);
 q=func_02058b94(p);n=StringLength(q);n+=StringLength(c);
-r=gpiMalloc(n+1);StringCopy(r,q);func_02068d68(r,c);func_02058b18(p,r);gpiFree(r);return (s32)func_02058b94(p);
+r=gpiMalloc(n+1);StringCopy(r,q);StringAppend(r,c);func_02058b18(p,r);gpiFree(r);return (s32)func_02058b94(p);
 }
 
 s32 func_020589e0(void *a,s32 b,void *c) {

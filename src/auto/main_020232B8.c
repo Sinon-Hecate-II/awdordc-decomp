@@ -12,12 +12,16 @@ M2C_UNK func_020232b8(void *p) {
  return MI_CpuCopy8((s32)buf,(s32)p,48);
 }
 
-M2C_UNK func_02023318(void *arg0) {
+/* Derives the TLS record-layer keys: for each direction it runs the master secret
+ * through the key-block PRF (SHA1 or MD5 per the negotiated hash) once per block and
+ * writes the per-direction MAC secrets and RC4 keys into TLS_KEY_BLOCK, then points
+ * the in/out MAC key fields at them and initialises both RC4 states. */
+M2C_UNK TlsInitRecordKeys(void *arg0) {
     M2C_UNK SHA1_Init();
     M2C_UNK SHA1_Update();
     M2C_UNK SHA1_Final();
     M2C_UNK MD5_Init();
-    M2C_UNK func_02025748();
+    M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
     M2C_UNK RC4_Init();
     u8 buf[0x18];
@@ -31,13 +35,13 @@ M2C_UNK func_02023318(void *arg0) {
     s32 bw;
     s32 bt;
 
-    switch (M2C_FIELD(arg0, u16 *, 0x32)) {
-    case 4:
+    switch (M2C_FIELD(arg0, u16 *, TLS_HASH_ALGORITHM)) {
+    case TLS_HASH_MD5:
         w = 0x10;
         h = 0x10;
         t = 0;
         break;
-    case 5:
+    case TLS_HASH_SHA1:
         w = 0x14;
         h = 0x10;
         t = 0;
@@ -45,79 +49,79 @@ M2C_UNK func_02023318(void *arg0) {
     }
     i = 0;
     if ((w + h + t) * 2 > 0) {
-        base = (s32)arg0 + 0x74;
+        base = (s32)arg0 + TLS_KEY_BLOCK;
         off = i;
         do {
-            SHA1_Init((s32)arg0 + 0x348);
+            SHA1_Init((s32)arg0 + TLS_SHA1_CTX);
             buf[0] = (u8)(i + 0x41);
             for (j = 0; j < i + 1; j++) {
-                SHA1_Update((s32)arg0 + 0x348, buf, 1);
+                SHA1_Update((s32)arg0 + TLS_SHA1_CTX, buf, 1);
             }
-            SHA1_Update((s32)arg0 + 0x348, (s32)arg0, 0x30);
-            SHA1_Update((s32)arg0 + 0x348, (s32)arg0 + 0x54, 0x20);
-            SHA1_Update((s32)arg0 + 0x348, (s32)arg0 + 0x34, 0x20);
-            SHA1_Final((s32)arg0 + 0x348, buf + 1);
-            MD5_Init((s32)arg0 + 0x3fc);
-            func_02025748((s32)arg0 + 0x3fc, (s32)arg0, 0x30);
-            func_02025748((s32)arg0 + 0x3fc, buf + 1, 0x14);
-            MD5_Final((s32)arg0 + 0x3fc, base + off);
+            SHA1_Update((s32)arg0 + TLS_SHA1_CTX, (s32)arg0 + TLS_MASTER_SECRET, 0x30);
+            SHA1_Update((s32)arg0 + TLS_SHA1_CTX, (s32)arg0 + TLS_RANDOM_B, 0x20);
+            SHA1_Update((s32)arg0 + TLS_SHA1_CTX, (s32)arg0 + TLS_RANDOM_A, 0x20);
+            SHA1_Final((s32)arg0 + TLS_SHA1_CTX, buf + 1);
+            MD5_Init((s32)arg0 + TLS_MD5_CTX);
+            MD5_Update((s32)arg0 + TLS_MD5_CTX, (s32)arg0 + TLS_MASTER_SECRET, 0x30);
+            MD5_Update((s32)arg0 + TLS_MD5_CTX, buf + 1, 0x14);
+            MD5_Final((s32)arg0 + TLS_MD5_CTX, base + off);
             off += 0x10;
             i++;
         } while (off < (w + h + t) * 2);
     }
-    if (M2C_FIELD(arg0, u8 *, 0x454) != 0) {
-        base = (s32)arg0 + 0x74;
-        M2C_FIELD(arg0, s32 *, 0x1d4) = base;
-        M2C_FIELD(arg0, s32 *, 0x1d8) = base + 2 * w;
+    if (M2C_FIELD(arg0, u8 *, TLS_SERVER_SIDE) != 0) {
+        base = (s32)arg0 + TLS_KEY_BLOCK;
+        M2C_FIELD(arg0, s32 *, TLS_MAC_KEY_IN) = base;
+        M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_IN) = base + 2 * w;
         bw = base + w;
-        M2C_FIELD(arg0, s32 *, 0xbc) = bw;
+        M2C_FIELD(arg0, s32 *, TLS_MAC_KEY_OUT) = bw;
         bt = bw + w;
-        M2C_FIELD(arg0, s32 *, 0xc0) = bt + h;
+        M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_OUT) = bt + h;
     } else {
-        base = (s32)arg0 + 0x74;
-        M2C_FIELD(arg0, s32 *, 0xbc) = base;
-        M2C_FIELD(arg0, s32 *, 0xc0) = base + 2 * w;
+        base = (s32)arg0 + TLS_KEY_BLOCK;
+        M2C_FIELD(arg0, s32 *, TLS_MAC_KEY_OUT) = base;
+        M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_OUT) = base + 2 * w;
         bw = base + w;
-        M2C_FIELD(arg0, s32 *, 0x1d4) = bw;
+        M2C_FIELD(arg0, s32 *, TLS_MAC_KEY_IN) = bw;
         bt = bw + w;
-        M2C_FIELD(arg0, s32 *, 0x1d8) = bt + h;
+        M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_IN) = bt + h;
     }
-    RC4_Init((s32)arg0 + 0x1e0, M2C_FIELD(arg0, s32 *, 0x1d8), 0x10);
-    RC4_Init((s32)arg0 + 0xc8, M2C_FIELD(arg0, s32 *, 0xc0), 0x10);
+    RC4_Init((s32)arg0 + TLS_RC4_IN, M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_IN), 0x10);
+    RC4_Init((s32)arg0 + TLS_RC4_OUT, M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_OUT), 0x10);
 }
 
 void func_020234e4(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02021f1c(void *, M2C_UNK, M2C_UNK);
     M2C_UNK RsaCrtDecrypt(void *, M2C_UNK, s32);
     M2C_UNK func_020232b8(void *);
-    M2C_UNK func_02023318(void *);
+    M2C_UNK TlsInitRecordKeys(void *);
     RsaCrtDecrypt(arg0, arg1, M2C_FIELD(arg0, s32 *, 0x81C));
     func_020232b8(arg0);
     func_02021f1c(arg0, 0, 0);
-    func_02023318(arg0);
+    TlsInitRecordKeys(arg0);
     M2C_FIELD(arg0, s8 *, 0x455) = 5;
 }
 
 M2C_UNK func_02023520(void *arg0, void *arg1, s32 arg2) {
     M2C_UNK MD5_Init();
-    M2C_UNK func_02025748();
+    M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
     M2C_UNK MI_CpuFill8();
     extern u8 data_020fb054[], data_020fb05c[];
     u8 sp0[0x30];
     if ((M2C_FIELD(arg0, u8 *, 0x454) ^ arg2) != 0)
-        func_02025748(arg0 + 0x3A4, data_020fb054, 4);
+        MD5_Update(arg0 + 0x3A4, data_020fb054, 4);
     else
-        func_02025748(arg0 + 0x3A4, data_020fb05c, 4);
-    func_02025748(arg0 + 0x3A4, arg0, 0x30);
+        MD5_Update(arg0 + 0x3A4, data_020fb05c, 4);
+    MD5_Update(arg0 + 0x3A4, arg0, 0x30);
     MI_CpuFill8(sp0, 0x36, 0x30);
-    func_02025748(arg0 + 0x3A4, sp0, 0x30);
+    MD5_Update(arg0 + 0x3A4, sp0, 0x30);
     MD5_Final(arg0 + 0x3A4, arg1);
     MD5_Init(arg0 + 0x3A4);
-    func_02025748(arg0 + 0x3A4, arg0, 0x30);
+    MD5_Update(arg0 + 0x3A4, arg0, 0x30);
     MI_CpuFill8(sp0, 0x5C, 0x30);
-    func_02025748(arg0 + 0x3A4, sp0, 0x30);
-    func_02025748(arg0 + 0x3A4, arg1, 0x10);
+    MD5_Update(arg0 + 0x3A4, sp0, 0x30);
+    MD5_Update(arg0 + 0x3A4, arg1, 0x10);
     MD5_Final(arg0 + 0x3A4, arg1);
 }
 
@@ -186,7 +190,7 @@ s32 func_020237bc(s32 x,s32 unused,s32 value) {
 s32 func_020237d4(void *channel, u8 *msg) {
     M2C_UNK MI_CpuFill8();
     M2C_UNK MD5_Init();
-    M2C_UNK func_02025748();
+    M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
     M2C_UNK SHA1_Init();
     M2C_UNK SHA1_Update();
@@ -204,18 +208,18 @@ s32 func_020237d4(void *channel, u8 *msg) {
         dataLen -= 16;
         msg[3]=dataLen>>8;msg[4]=dataLen;
         MD5_Init(channel + 0x3FC);
-        func_02025748(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
+        MD5_Update(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
         MI_CpuFill8(pad, 0x36, 0x30);
-        func_02025748(channel + 0x3FC, pad, 0x30);
-        func_02025748(channel + 0x3FC, channel + 0x2E4, 8);
-        func_02025748(channel + 0x3FC, msg, 1);
-        func_02025748(channel + 0x3FC, msg + 3, dataLen + 2);
+        MD5_Update(channel + 0x3FC, pad, 0x30);
+        MD5_Update(channel + 0x3FC, channel + 0x2E4, 8);
+        MD5_Update(channel + 0x3FC, msg, 1);
+        MD5_Update(channel + 0x3FC, msg + 3, dataLen + 2);
         MD5_Final(channel + 0x3FC, digest);
         MD5_Init(channel + 0x3FC);
-        func_02025748(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
+        MD5_Update(channel + 0x3FC, *(void **)((u8 *)channel + 0x1D4), 0x10);
         MI_CpuFill8(pad, 0x5C, 0x30);
-        func_02025748(channel + 0x3FC, pad, 0x30);
-        func_02025748(channel + 0x3FC, digest, 0x10);
+        MD5_Update(channel + 0x3FC, pad, 0x30);
+        MD5_Update(channel + 0x3FC, digest, 0x10);
         MD5_Final(channel + 0x3FC, digest);
         digestSize=16;
         break;
@@ -251,7 +255,7 @@ s32 func_020237d4(void *channel, u8 *msg) {
 s32 TlsAppendRecordMac(void *channel, u8 *msg) {
     M2C_UNK MI_CpuFill8();
     M2C_UNK MD5_Init();
-    M2C_UNK func_02025748();
+    M2C_UNK MD5_Update();
     M2C_UNK MD5_Final();
     M2C_UNK SHA1_Init();
     M2C_UNK SHA1_Update();
@@ -268,18 +272,18 @@ s32 TlsAppendRecordMac(void *channel, u8 *msg) {
     switch (hashAlgorithm) {
     case TLS_HASH_MD5:
         MD5_Init(channel + TLS_MD5_CTX);
-        func_02025748(channel + TLS_MD5_CTX, *(void **)((u8 *)channel + TLS_MAC_KEY_OUT), 0x10);
+        MD5_Update(channel + TLS_MD5_CTX, *(void **)((u8 *)channel + TLS_MAC_KEY_OUT), 0x10);
         MI_CpuFill8(pad, TLS_HMAC_IPAD, 0x30);
-        func_02025748(channel + TLS_MD5_CTX, pad, 0x30);
-        func_02025748(channel + TLS_MD5_CTX, channel + TLS_SEQ_OUT, 8);
-        func_02025748(channel + TLS_MD5_CTX, msg, 1);
-        func_02025748(channel + TLS_MD5_CTX, msg + 3, length + 2);
+        MD5_Update(channel + TLS_MD5_CTX, pad, 0x30);
+        MD5_Update(channel + TLS_MD5_CTX, channel + TLS_SEQ_OUT, 8);
+        MD5_Update(channel + TLS_MD5_CTX, msg, 1);
+        MD5_Update(channel + TLS_MD5_CTX, msg + 3, length + 2);
         MD5_Final(channel + TLS_MD5_CTX, (u8 *)payload + length);
         MD5_Init(channel + TLS_MD5_CTX);
-        func_02025748(channel + TLS_MD5_CTX, *(void **)((u8 *)channel + TLS_MAC_KEY_OUT), 0x10);
+        MD5_Update(channel + TLS_MD5_CTX, *(void **)((u8 *)channel + TLS_MAC_KEY_OUT), 0x10);
         MI_CpuFill8(pad, TLS_HMAC_OPAD, 0x30);
-        func_02025748(channel + TLS_MD5_CTX, pad, 0x30);
-        func_02025748(channel + TLS_MD5_CTX, (u8 *)payload + length, 0x10);
+        MD5_Update(channel + TLS_MD5_CTX, pad, 0x30);
+        MD5_Update(channel + TLS_MD5_CTX, (u8 *)payload + length, 0x10);
         MD5_Final(channel + TLS_MD5_CTX, (u8 *)payload + length);
         length += 0x10;
         break;
@@ -338,10 +342,10 @@ loop_1:
 }
 
 void TlsUpdateHandshakeHash(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02025748(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK MD5_Update(s32, M2C_UNK, M2C_UNK);
     M2C_UNK SHA1_Update();
     SHA1_Update(arg0 + 0x2EC);
-    func_02025748(arg0 + 0x3A4, arg1, arg2);
+    MD5_Update(arg0 + 0x3A4, arg1, arg2);
 }
 
 void func_02023ca0(void *arg0, void *arg1) {

@@ -11,7 +11,7 @@ static inline void CallPanelUpdate(void *p) {
 
 #pragma opt_common_subs off
 void func_ov003_021eccd4(void *arg0) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084d3c(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02088d94(void *);
@@ -63,7 +63,7 @@ void func_ov003_021eccd4(void *arg0) {
     void *temp_r6_2;
 
     PlaySoundEffect(0x1000D);
-    if (func_020846a4() != 0) {
+    if (IsLinkSessionActive() != 0) {
         if (func_02084d3c(sp0, 0x24) == 0) {
             return;
         }
@@ -130,7 +130,7 @@ void func_ov003_021eccd4(void *arg0) {
             }
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8)GetPanelCount(M2C_FIELD(arg0, void **, 0x6C));
-            if (func_020846a4() == 0) {
+            if (IsLinkSessionActive() == 0) {
                 var_r6 = 0;
                 do {
                     if (var_r6 < temp_r7) {
@@ -246,7 +246,7 @@ void func_ov003_021eccd4(void *arg0) {
 
 #pragma opt_propagation off
 void func_ov003_021ed27c(void *arg0, u32 arg1) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     M2C_UNK func_02088d94(void *);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02089438(void *);
@@ -300,7 +300,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     void *temp_r5_6;
 
 
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         var_r0 = 1;
     } else {
         temp_r5 = func_ov003_021e6e08(arg1);

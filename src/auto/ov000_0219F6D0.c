@@ -1,33 +1,35 @@
 /* 19 functions from 0x0219F6D0 to 0x021A0624 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 id:6; } UnitId6;
 
 s32 func_ov000_0219f6d0(void) {
-    extern void *data_ov000_021df580;
-    extern s32 data_ov000_021e1468;
-    data_ov000_021e1468 = 0;
-    M2C_FIELD(data_ov000_021df580, s8 *, 1) = 7;
+    extern void *gAiCommandState;
+    extern s32 gAiCommandTimer;
+    gAiCommandTimer = 0;
+    M2C_FIELD(gAiCommandState, s8 *, 1) = 7;
     return 1;
 }
 
 s32 func_ov000_0219f6fc(void) {
-    extern void *data_ov000_021df580;
-    extern s32 data_ov000_021e1468;
-    data_ov000_021e1468 = 0;
-    M2C_FIELD(data_ov000_021df580, s8 *, 1) = 7;
+    extern void *gAiCommandState;
+    extern s32 gAiCommandTimer;
+    gAiCommandTimer = 0;
+    M2C_FIELD(gAiCommandState, s8 *, 1) = 7;
     return 1;
 }
 
-s32 func_ov000_0219f728(void) {
-    void func_020cc6a4(void);
+s32 ProcessAiCommandDelay(void) {
+    void CancelMapCursorAnimation(void);
     s32 IsPlayerHuman(u16);
-    void func_020cf5ec(s32);
-    s32 func_020cd674(void);
+    void MoveMapCursorToTarget(s32);
+    s32 IsFastAnimation(void);
     extern u16 gMapConfig;
     extern void **gCurrentMap;
     extern u8 gAiCommand[];
-    extern void *data_ov000_021df580;
-    extern s32 data_ov000_021e1468;
+    extern void *gAiCommandState;
+    extern s32 gAiCommandTimer;
     u8 *unit;
     u8 col;
     u8 *base;
@@ -39,48 +41,51 @@ s32 func_ov000_0219f728(void) {
     s32 visible;
     s32 limit = 0x1e;
 
+    /* Hold an AI command for a few frames: on a fog-of-war map move the cursor
+       to the acting unit when its tile can be seen, then hand over to the next
+       command step; a human-controlled or non-fog turn skips the wait. */
     if ((((u32)(gMapConfig << 22)) >> 31) == 0) {
-        if (IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a4)) != 0) {
-            if ((u8)(gAiCommand[0] + 0xfc) <= 1) {
-                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;
-            } else if (gAiCommand[0] == 0x13) {
-                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 4;
+        if (IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER)) != 0) {
+            if ((u8)(gAiCommand[AI_COMMAND_KIND] + 0xfc) <= 1) {
+                M2C_FIELD(gAiCommandState, u8 *, 1) = 3;
+            } else if (gAiCommand[AI_COMMAND_KIND] == 0x13) {
+                M2C_FIELD(gAiCommandState, u8 *, 1) = 4;
             } else {
-                M2C_FIELD(data_ov000_021df580, u8 *, 1) = 6;
+                M2C_FIELD(gAiCommandState, u8 *, 1) = 6;
             }
-            func_020cc6a4();
+            CancelMapCursorAnimation();
             return 1;
         }
     }
-    if (gAiCommand[0] == 4) {
+    if (gAiCommand[AI_COMMAND_KIND] == 4) {
         base = M2C_FIELD(gCurrentMap, void **, 0);
-        player = M2C_FIELD(base, u16 *, 0x52a4);
+        player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
         attr = M2C_FIELD(base + player * 0x8c, u8 *, 0x67c3);
-        unit = base + 0x59a4 + gAiCommand[6] * 14;
+        unit = base + MAP_UNIT_RECORDS + gAiCommand[AI_COMMAND_UNIT] * MAP_UNIT_STRIDE;
         row = unit[2];
         col = unit[1];
         if (attr & 2) {
             visible = 1;
         } else {
-            cell = col + M2C_FIELD(base + row * 2, u16 *, 0x3758);
-            bits = M2C_FIELD(base + (cell >> 3), u8 *, 0x5201) & (1 << (cell & 7));
+            cell = col + M2C_FIELD(base + row * 2, u16 *, MAP_ROW_OFFSETS);
+            bits = M2C_FIELD(base + (cell >> 3), u8 *, MAP_CELL_BITMAP) & (1 << (cell & 7));
             visible = (bits != 0);
         }
         if (visible != 0) {
-            M2C_FIELD(base, u16 *, 0x52c2) = col;
-            M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52c4) = unit[2];
-            func_020cf5ec(2);
+            M2C_FIELD(base, u16 *, MAP_CURSOR_TARGET_X) = col;
+            M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURSOR_TARGET_Y) = unit[2];
+            MoveMapCursorToTarget(2);
         }
     }
-    if (func_020cd674() != 0) limit = 0x14;
-    data_ov000_021e1468 = data_ov000_021e1468 + 1;
-    if (data_ov000_021e1468 > limit) {
-        if ((u8)(gAiCommand[0] + 0xfc) <= 1) {
-            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;
-        } else if (gAiCommand[0] == 0x13) {
-            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 4;
+    if (IsFastAnimation() != 0) limit = 0x14;
+    gAiCommandTimer = gAiCommandTimer + 1;
+    if (gAiCommandTimer > limit) {
+        if ((u8)(gAiCommand[AI_COMMAND_KIND] + 0xfc) <= 1) {
+            M2C_FIELD(gAiCommandState, u8 *, 1) = 3;
+        } else if (gAiCommand[AI_COMMAND_KIND] == 0x13) {
+            M2C_FIELD(gAiCommandState, u8 *, 1) = 4;
         } else {
-            M2C_FIELD(data_ov000_021df580, u8 *, 1) = 6;
+            M2C_FIELD(gAiCommandState, u8 *, 1) = 6;
         }
     }
     return 0;
@@ -90,11 +95,11 @@ s32 func_ov000_0219f918(void) {
 void func_020bb0d0(u8);
 void func_020bb0ec(u8,u8);
 extern u8 gAiCommand[];
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 if(gAiCommand[0] == 4) func_020bb0d0(gAiCommand[6]);
 else func_020bb0ec(gAiCommand[6],gAiCommand[7]);
-M2C_FIELD(data_ov000_021df580,s8 *,0)=2;
-M2C_FIELD(data_ov000_021df580,s8 *,1)=0;
+M2C_FIELD(gAiCommandState,s8 *,0)=2;
+M2C_FIELD(gAiCommandState,s8 *,1)=0;
 return 0;
 }
 
@@ -103,11 +108,11 @@ void BattleUpdateUnitCursor(void);
 void func_020cc66c(u8,u8);
 void func_020bbbbc(u8,u8,u8,u8,s32);
 extern u8 gAiCommand[];
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 BattleUpdateUnitCursor();
 func_020cc66c(gAiCommand[6],gAiCommand[7]);
 func_020bbbbc(gAiCommand[2],gAiCommand[3],gAiCommand[6],gAiCommand[7],7);
-M2C_FIELD(data_ov000_021df580,s8 *,1)=5;
+M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
 }
 
@@ -116,18 +121,18 @@ void BattleUpdateUnitCursor(void);
 void func_020cc66c(u8,u8);
 void func_020bbd98(u8,u8,s32);
 extern u8 gAiCommand[];
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 BattleUpdateUnitCursor();
 func_020cc66c(gAiCommand[6],gAiCommand[7]);
 func_020bbd98(gAiCommand[6],gAiCommand[7],0);
-M2C_FIELD(data_ov000_021df580,s8 *,1)=5;
+M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
 }
 
 s32 func_ov000_0219fa0c(void) {
-extern void *data_ov000_021df580;
-M2C_FIELD(data_ov000_021df580, s8 *, 0) = 2;
-M2C_FIELD(data_ov000_021df580, s8 *, 1) = 0;
+extern void *gAiCommandState;
+M2C_FIELD(gAiCommandState, s8 *, 0) = 2;
+M2C_FIELD(gAiCommandState, s8 *, 1) = 0;
 return 0;
 }
 
@@ -135,22 +140,22 @@ s32 func_ov000_0219fa30(void) {
 s32 func_020d4774(void);
 void func_ov000_021696f8(void *);
 void BattleUpdateUnitCursor(void);
-extern s32 data_ov000_021e1468;
-extern void *data_ov000_021df580;
+extern s32 gAiCommandTimer;
+extern void *gAiCommandState;
 if(func_020d4774()==0) {
-if(M2C_FIELD(&data_ov000_021e1468,void **,4)) func_ov000_021696f8(M2C_FIELD(&data_ov000_021e1468,void **,4));
-if(M2C_FIELD(&data_ov000_021e1468,void **,8)) func_ov000_021696f8(M2C_FIELD(&data_ov000_021e1468,void **,8));
+if(M2C_FIELD(&gAiCommandTimer,void **,4)) func_ov000_021696f8(M2C_FIELD(&gAiCommandTimer,void **,4));
+if(M2C_FIELD(&gAiCommandTimer,void **,8)) func_ov000_021696f8(M2C_FIELD(&gAiCommandTimer,void **,8));
 BattleUpdateUnitCursor();
-M2C_FIELD(data_ov000_021df580,u8 *,0)=2;
-M2C_FIELD(data_ov000_021df580,u8 *,1)=0;
+M2C_FIELD(gAiCommandState,u8 *,0)=2;
+M2C_FIELD(gAiCommandState,u8 *,1)=0;
 }
 return 0;
 }
 
 s32 func_ov000_0219fa98(void) {
-extern void *data_ov000_021df580;
-M2C_FIELD(data_ov000_021df580, s8 *, 0) = 2;
-M2C_FIELD(data_ov000_021df580, s8 *, 1) = 0;
+extern void *gAiCommandState;
+M2C_FIELD(gAiCommandState, s8 *, 0) = 2;
+M2C_FIELD(gAiCommandState, s8 *, 1) = 0;
 return 0;
 }
 
@@ -227,13 +232,13 @@ void func_ov000_0219fd54(void) {
 
 void func_ov000_0219fdc8(void) {
     void InitAiTurn(void);
-    void func_ov000_02199588(void);
+    void BuildThreatMapAgainstKind6(void);
     s32 func_ov000_021a19a8(void);
     s32 func_ov000_021a1ab8(void);
     s32 func_ov000_021a1b1c(void);
     s32 func_ov000_021a1d08(void);
     s32 func_ov000_021a21f8(s32);
-    s32 func_ov000_021a1f14(void);
+    s32 BuildAiBasicUnit(void);
     void UpdateAiCandidateCosts(void);
     s32 func_ov000_021a4320(void);
     s32 func_ov000_021a1dec(void);
@@ -242,7 +247,7 @@ void func_ov000_0219fdc8(void) {
     void CommitAiAction(s32);
     void func_ov000_021a029c(void);
     extern u8 *gAiState;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern u8 gAiCommand[];
     extern void **gCurrentMap;
 
@@ -252,14 +257,14 @@ void func_ov000_0219fdc8(void) {
     register s32 one = 1;
 
     if (addr578[0][2] != 0 && addr578[0][7] >= 0x32) {
-        M2C_FIELD(data_ov000_021df580, u8 *, 0) = 6;
+        M2C_FIELD(gAiCommandState, u8 *, 0) = 6;
         return;
     }
     switch (addr578[0][2]) {
         case 0:
             InitAiTurn();
             addr578[0][2]++;
-            func_ov000_02199588();
+            BuildThreatMapAgainstKind6();
             break;
         case 1:
             if (func_ov000_021a19a8() != 0) return;
@@ -320,7 +325,7 @@ void func_ov000_0219fdc8(void) {
             func_ov000_021a029c();
             break;
         case 9:
-            if (func_ov000_021a1f14() != 0) return;
+            if (BuildAiBasicUnit() != 0) return;
             addr578[0][2]++;
             func_ov000_021a029c();
             break;
@@ -349,7 +354,7 @@ void func_ov000_0219fdc8(void) {
             func_ov000_021a029c();
             break;
     }
-    M2C_FIELD(data_ov000_021df580, u8 *, 0) = 6;
+    M2C_FIELD(gAiCommandState, u8 *, 0) = 6;
 }
 
 void func_ov000_021a01c0(void) {

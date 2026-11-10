@@ -4,7 +4,7 @@
 typedef struct { u16 x:6; u16 y:6; u16 unk:2; u16 state:2; } Position_02194090;
 #include "ov000_unit_entry.h"
 extern void **gCurrentMap;
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 extern u16 gPlayerUnitIdBase[];
 extern M2C_UNK gUnitKindStats;
 #define MAP (*gCurrentMap)
@@ -62,7 +62,7 @@ void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
 void func_ov000_02194370(void){
 s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
-s32 func_ov000_021a43c4(void);s32 func_ov000_021a88c8(s32);s32 CanKindAttack(u32,u32);
+s32 func_ov000_021a43c4(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
 s32 func_ov000_021a8984(u32);s32 CanUnitAttackKind(u8*,u32);
@@ -70,10 +70,10 @@ s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
 void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
 u32 mode;u8 *unit;
-if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<26)>>29)&4))return;
+if(!(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)&4))return;
 if(!IsPlayerHuman(M2C_FIELD(MAP,u16*,0x52a4))&&GetUnitAttackClass(KIND(SEL))==1){
 if(KIND(SEL)!=26)return;
-if(!func_ov000_021a43c4()&&!func_ov000_021a88c8(24)&&!func_ov000_021a88c8(25))return;
+if(!func_ov000_021a43c4()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
 }
 if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;

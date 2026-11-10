@@ -6,13 +6,13 @@ extern struct { u8 state; u8 pad[3]; void *ptr; } data_ov001_02193d24;
 typedef struct { s32 x; u32 y; } Position;
 
 void func_ov001_02175600(int arg0) {
-extern void *data_ov001_02193d20;
+extern void *gOv001Keypad;
 int i; unsigned int *ptr;
 func_ov001_0218c92c(0,arg0);
-for(i=0;i<4;i++){ptr=(unsigned int *)data_ov001_02193d20;func_ov001_0218a1cc(((void **)ptr)[i+0x12]);ptr=(unsigned int *)data_ov001_02193d20;func_ov001_0218ace0(((void **)ptr)[i]);}
-for(i=0;i<2;i++){ptr=(unsigned int *)data_ov001_02193d20;func_ov001_0218a1cc(((void **)ptr)[i+0x10]);}
-for(i=0;i<2;i++){ptr=(unsigned int *)data_ov001_02193d20;func_ov001_0218c104(((void **)ptr)[i+0xe]);}
-for(i=0;i<10;i++){ptr=(unsigned int *)data_ov001_02193d20;func_ov001_0218c104(((void **)ptr)[i+4]);}
+for(i=0;i<4;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)ptr)[i+0x12]);ptr=(unsigned int *)gOv001Keypad;func_ov001_0218ace0(((void **)ptr)[i]);}
+for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218a1cc(((void **)ptr)[i+0x10]);}
+for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218c104(((void **)ptr)[i+0xe]);}
+for(i=0;i<10;i++){ptr=(unsigned int *)gOv001Keypad;func_ov001_0218c104(((void **)ptr)[i+4]);}
 func_ov001_0218b71c((void *)0x02193D20);
 }
 
@@ -33,7 +33,7 @@ M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x108)=-1;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10a)=1;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10c)=-1;
 M2C_FIELD(data_ov001_02193d24.ptr,s16 *,0x10e)=-1;
-func_02007724((char *)data_ov001_02193d24.ptr+0x110);
+GetMacAddress((char *)data_ov001_02193d24.ptr+0x110);
 if(func_ov001_0216d088(func_ov001_02175880,func_ov001_02175890))func_02007958();
 }
 

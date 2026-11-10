@@ -211,9 +211,9 @@ void func_ov007_0221352c(s32 arg0, s32 arg1) {
 void func_ov007_02213554(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK);
     void *GetLocalizedFileName(M2C_UNK);
-    void func_020814e4(M2C_UNK);
-    void func_02081590(M2C_UNK, M2C_UNK);
-    void func_02081528(void);
+    void OpenNarcArchive(M2C_UNK);
+    void LoadNarcFileDecompressed(M2C_UNK, M2C_UNK);
+    void CloseNarcArchive(void);
     void LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_020896f0(M2C_UNK);
     void func_02089424(void*);
@@ -236,10 +236,10 @@ void func_ov007_02213554(void *arg0) {
     SetFileDirectory(&data_ov007_0221fdb0);
     M2C_FIELD(*(void **) gCur3DSpriteEngine, u16 *, 0x3A) = 0;
     M2C_FIELD(*(void **) gCur3DSpriteEngine, u16 *, 0x42) = 0;
-    func_020814e4(GetLocalizedFileName(&data_ov007_0221fdbc));
-    func_02081590(GetLocalizedFileName(&data_ov007_0221fdcc), M2C_FIELD(gCur3DSpriteEngine, void **, 0x10));
-    func_02081590(GetLocalizedFileName(&data_ov007_0221fdd8), M2C_FIELD(gCur3DSpriteEngine, void **, 0x24));
-    func_02081528();
+    OpenNarcArchive(GetLocalizedFileName(&data_ov007_0221fdbc));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0221fdcc), M2C_FIELD(gCur3DSpriteEngine, void **, 0x10));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0221fdd8), M2C_FIELD(gCur3DSpriteEngine, void **, 0x24));
+    CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_0221fde4, 0, 0x20);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(r4, s32 *, 0x34) = M2C_FIELD(*gCurrentMap, u16 *, 0x5144);

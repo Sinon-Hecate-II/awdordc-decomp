@@ -1,5 +1,6 @@
 /* 29 functions from 0x020AD78C to 0x020AE768 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #pragma push
 #pragma optimization_level 0
 static inline void DisplaySetBits(u16 *reg,u16 bits) { *reg |= bits; }
@@ -7,80 +8,83 @@ static inline void DisplayClearBits(u16 *reg,u16 bits) { *reg &= ~bits; }
 #pragma pop
 
 #pragma opt_common_subs off
+/* Loads the assets of the current screen-transition variant: builds the
+ * variant's .narc name, opens it, then loads the .cl palette, .cg graphic and
+ * .sc screen data into the sub engine and marks the active side's engine flag. */
 void DrawScreenTransition(void) {
-    void func_020ad67c(void);
-    s32 func_020ad690(void);
-    s32 func_020ad6b0(void);
-    s32 func_020ad6d0(void);
+    void SetScreenTransitionDirectory(void);
+    s32 GetScreenTransitionSide(void);
+    s32 GetScreenTransitionCgTarget(void);
+    s32 GetScreenTransitionScTarget(void);
     void func_01ff9ce8(u8);
     void StringCopy(void *, void *);
-    void func_02068d68(void *, void *);
+    void StringAppend(void *, void *);
     M2C_UNK GetLocalizedFileName(M2C_UNK);
-    u8 func_020814e4(M2C_UNK);
-    void func_020815fc(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02081590(void *, void *);
+    u8 OpenNarcArchive(M2C_UNK);
+    void LoadNarcFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 LoadNarcFileDecompressed(void *, void *);
     void func_020816cc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02081528(void);
+    void CloseNarcArchive(void);
 
     extern s32 gScreenTransition;
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
-    typedef struct { void *p; s32 pad; } E8;
-    extern E8 data_02127c08[];
-    extern char data_02127d8c[];
-    extern char data_02127d94[];
-    extern char data_02127d98[];
-    extern char data_02127d9c[];
+    typedef struct { void *p; s32 pad; } TransitionName;
+    extern TransitionName gScreenTransitionNames[];
+    extern char sTransitionNarcExt[];
+    extern char sTransitionClExt[];
+    extern char sTransitionCgExt[];
+    extern char sTransitionScExt[];
 
-    u16 **saved;
-    char sp[0x40];
-    s32 idx;
-    M2C_UNK h;
+    u16 **savedEngine;
+    char pathBuffer[0x40];
+    s32 variant;
+    M2C_UNK resolvedPath;
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020ad67c();
-    func_01ff9ce8((u8)func_020ad690());
+    SetScreenTransitionDirectory();
+    func_01ff9ce8((u8)GetScreenTransitionSide());
 
-    idx = ((s16 *)gScreenTransition)[1];
-    StringCopy((void *)sp, data_02127c08[idx].p);
-    func_02068d68((void *)sp, data_02127d8c);
+    variant = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
+    StringAppend((void *)pathBuffer, sTransitionNarcExt);
 
-    func_020814e4(GetLocalizedFileName((M2C_UNK)sp));
+    OpenNarcArchive(GetLocalizedFileName((M2C_UNK)pathBuffer));
 
-    idx = ((s16 *)gScreenTransition)[1];
-    StringCopy((void *)sp, data_02127c08[idx].p);
-    func_02068d68((void *)sp, data_02127d94);
+    variant = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
+    StringAppend((void *)pathBuffer, sTransitionClExt);
 
-    if (func_020ad690() == 0) {
-        func_020815fc(GetLocalizedFileName((M2C_UNK)sp), 0, 0x100);
+    if (GetScreenTransitionSide() == 0) {
+        LoadNarcFileToSpriteBuffer(GetLocalizedFileName((M2C_UNK)pathBuffer), 0, 0x100);
     } else {
-        func_020815fc(GetLocalizedFileName((M2C_UNK)sp), 0x100, 0x100);
+        LoadNarcFileToSpriteBuffer(GetLocalizedFileName((M2C_UNK)pathBuffer), 0x100, 0x100);
     }
 
-    idx = ((s16 *)gScreenTransition)[1];
-    StringCopy((void *)sp, data_02127c08[idx].p);
-    func_02068d68((void *)sp, data_02127d98);
+    variant = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
+    StringAppend((void *)pathBuffer, sTransitionCgExt);
 
-    h = GetLocalizedFileName((M2C_UNK)sp);
-    func_02081590(h, (void *)((char *)0 + func_020ad6b0() + 0x20));
+    resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
+    LoadNarcFileDecompressed(resolvedPath, (void *)((char *)0 + GetScreenTransitionCgTarget() + 0x20));
 
-    idx = ((s16 *)gScreenTransition)[1];
-    StringCopy((void *)sp, data_02127c08[idx].p);
-    func_02068d68((void *)sp, data_02127d9c);
+    variant = ((s16 *)gScreenTransition)[1];
+    StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
+    StringAppend((void *)pathBuffer, sTransitionScExt);
 
-    if (func_020ad690() == 0) {
-        h = GetLocalizedFileName((M2C_UNK)sp);
-        func_020816cc(h, func_020ad6d0(), 1, 0);
+    if (GetScreenTransitionSide() == 0) {
+        resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
+        func_020816cc(resolvedPath, GetScreenTransitionScTarget(), 1, 0);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
     } else {
-        h = GetLocalizedFileName((M2C_UNK)sp);
-        func_020816cc(h, func_020ad6d0(), 1, 8);
+        resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
+        func_020816cc(resolvedPath, GetScreenTransitionScTarget(), 1, 8);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x2;
     }
 
-    func_02081528();
-    gCur3DSpriteEngine = saved;
+    CloseNarcArchive();
+    gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
 void func_020ad968(void) {
@@ -100,14 +104,14 @@ void func_020ad968(void) {
  * the 12-byte animation state from the variant in screenInfo+0x5C. */
 void InitScreenTransition(M2C_UNK a0) {
     void func_020ad968(void);
-    void func_020ad67c(void);
-    s32 func_020ad690(void);
+    void SetScreenTransitionDirectory(void);
+    s32 GetScreenTransitionSide(void);
     void func_01ff9ce8(u8);
     void DrawScreenTransition(void);
     M2C_UNK GetLocalizedFileName(M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(M2C_UNK, M2C_UNK);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_020ad6f0(void);
+    void SetScreenTransitionDone(void);
     void SetScreenTransitionEnabled(s32);
     M2C_UNK func_020e34bc(M2C_UNK);
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -155,15 +159,15 @@ void InitScreenTransition(M2C_UNK a0) {
     *(s16 *)((char *)gScreenTransition + 8) = 20;
     *(s16 *)((char *)gScreenTransition + 6) = *(s16 *)((char *)gScreenTransition + 8);
 
-    func_020ad67c();
-    func_01ff9ce8((u8)func_020ad690());
+    SetScreenTransitionDirectory();
+    func_01ff9ce8((u8)GetScreenTransitionSide());
     DrawScreenTransition();
 
     LoadDecompressedFileTo(GetLocalizedFileName((M2C_UNK)sScreenChangeCgFile),
         (M2C_UNK)(*(u32 *)((u8 *)g3DSpriteEngineSub + 0x1c) + 0x2800));
     LoadFileToSpriteBuffer((M2C_UNK)sScreenChangeClFile, 0x2c0, 0x20);
 
-    func_020ad6f0();
+    SetScreenTransitionDone();
     SetScreenTransitionEnabled(1);
 
     gCur3DSpriteEngine = saved;
@@ -215,25 +219,28 @@ void func_020adc78(void) {
 }
 
 #pragma opt_common_subs off
-void func_020adde0(void) {
+/* Advances the screen-change split transition by one frame: switches the
+   sliding half on the first frames, moves the two halves apart with an eased
+   offset, and marks the transition done when the last frame is reached. */
+void UpdateScreenTransition(void) {
     u8 func_0207b7c4(void);
     void func_020d8f1c(s16, s32);
-    s32 func_020ad690(void);
-    void func_020ad74c(void);
+    s32 GetScreenTransitionSide(void);
+    void FlipScreenTransition(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void func_020ad6f0(void);
+    void SetScreenTransitionDone(void);
 
     extern s32 gScreenTransition;
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
 
-    s16 v;
-    u16 **saved;
-    u8 idx;
-    s32 res;
-    s16 *pp;
-    s16 hi;
-    s16 lo;
+    s16 offset;
+    u16 **savedEngine;
+    u8 side;
+    s32 value;
+    s16 *transition;
+    s16 length;
+    s16 frame;
 
     if (((s16 *)gScreenTransition)[0] & 4) {
         if (func_0207b7c4() != 0) {
@@ -243,15 +250,15 @@ void func_020adde0(void) {
         return;
     }
 
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
 
     switch (((s16 *)gScreenTransition)[3]) {
     case 0:
-        func_020ad74c();
+        FlipScreenTransition();
         break;
     case 1:
-        if (func_020ad690() == 0) {
+        if (GetScreenTransitionSide() == 0) {
             (*gCur3DSpriteEngine)[3] &= ~3;
             (*gCur3DSpriteEngine)[4] = ((*gCur3DSpriteEngine)[4] & ~3) | 1;
             (*gCur3DSpriteEngine)[5] = ((*gCur3DSpriteEngine)[5] & ~3) | 2;
@@ -265,35 +272,35 @@ void func_020adde0(void) {
         break;
     default:
         if (((s16 *)gScreenTransition)[3] == ((s16 *)gScreenTransition)[4]) {
-            func_020ad6f0();
+            SetScreenTransitionDone();
         }
         break;
     }
 
-    v = ((s16 *)gScreenTransition)[5];
-    idx = (u8)func_020ad690();
-    *((u16 *)((char *)*gCur3DSpriteEngine + 0x38 + (idx << 1))) = v;
-    *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (idx << 1))) = 0;
+    offset = ((s16 *)gScreenTransition)[5];
+    side = (u8)GetScreenTransitionSide();
+    *((u16 *)((char *)*gCur3DSpriteEngine + 0x38 + (side << 1))) = offset;
+    *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (side << 1))) = 0;
 
-    pp = (s16 *)gScreenTransition;
-    res = EaseInterpolate(4, 0x100, 0, pp[3], pp[4]);
+    transition = (s16 *)gScreenTransition;
+    value = EaseInterpolate(EASE_OUT_QUAD, 0x100, 0, transition[3], transition[4]);
 
-    ((s16 *)gScreenTransition)[5] = res;
+    ((s16 *)gScreenTransition)[5] = value;
     ((s16 *)gScreenTransition)[3] = ((s16 *)gScreenTransition)[3] + 1;
-    hi = ((s16 *)gScreenTransition)[4];
-    lo = ((s16 *)gScreenTransition)[3];
-    if (lo >= hi) {
-        ((s16 *)gScreenTransition)[3] = hi;
+    length = ((s16 *)gScreenTransition)[4];
+    frame = ((s16 *)gScreenTransition)[3];
+    if (frame >= length) {
+        ((s16 *)gScreenTransition)[3] = length;
     }
 
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
 s32 func_020adfd0(void) {
- s32 func_01ffa770(M2C_UNK *);
+ s32 FindObjectByClass(M2C_UNK *);
  extern M2C_UNK data_02127bc8;
  u8 var_r0;
- if(func_01ffa770(&data_02127bc8)!=0) var_r0=1; else var_r0=0;
+ if(FindObjectByClass(&data_02127bc8)!=0) var_r0=1; else var_r0=0;
  return var_r0;
 }
 

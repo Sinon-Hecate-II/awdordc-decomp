@@ -307,7 +307,7 @@ void func_ov003_021fd1e4(void) {
 }
 
 void func_ov003_021fd1f0(void *arg0) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_UNK func_ov003_021f152c(M2C_UNK);
     s32 func_ov003_021f153c();
@@ -323,7 +323,7 @@ void func_ov003_021fd1f0(void *arg0) {
     if (!(var_r0 & 0xFF)) {
         return;
     }
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         return;
     }
     if (func_ov003_021f153c() != 0) {

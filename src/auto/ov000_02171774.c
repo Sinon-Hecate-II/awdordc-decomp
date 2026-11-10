@@ -17,7 +17,7 @@ void func_ov000_02171774(void *p) {
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
  extern u8 data_ov000_021b8d60[],data_ov000_021b8d68[],data_ov000_021b8d7c[],data_ov000_021b8d8c[],data_ov000_021b8d9c[],data_ov000_021b8dac[],data_ov000_021b8db4[],data_ov000_021b8dc4[],data_ov000_021b8dd4[],data_ov000_021b8de4[];
  void *GetLocalizedFileName(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
- void SetFileDirectory(void*);void func_020814e4(void*);void func_02081590(void*,void*);void func_020815fc(void*,s32,s32);void func_02081528(void);
+ void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
  s32 func_01ff9c34(u8,s32);void func_01ff85b8(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void func_02007ef4(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
@@ -26,11 +26,11 @@ void func_ov000_02171774(void *p) {
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
  gCur3DSpriteEngine=g3DSpriteEngineMain;
  SetFileDirectory(data_ov000_021b8d60);
- func_020814e4(GetLocalizedFileName(data_ov000_021b8d68));
- func_02081590(GetLocalizedFileName(data_ov000_021b8d7c),M2C_FIELD(gCur3DSpriteEngine,void**,0x14));
- func_02081590(GetLocalizedFileName(data_ov000_021b8d8c),M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28));
- func_020815fc(GetLocalizedFileName(data_ov000_021b8d9c),96,32);
- func_02081528();
+ OpenNarcArchive(GetLocalizedFileName(data_ov000_021b8d68));
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b8d7c),M2C_FIELD(gCur3DSpriteEngine,void**,0x14));
+ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b8d8c),M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28));
+ LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_ov000_021b8d9c),96,32);
+ CloseNarcArchive();
  {u16 v=func_01ff9c34((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
  func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
  i=1;k=140;do{
@@ -128,7 +128,7 @@ M2C_UNK *func_ov000_0217244c(void) {
     return &data_ov000_021df5ec;
 }
 
-s32 func_ov000_02172458(void *arg0, s32 arg1) {
+s32 GetNationFlagSprite(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add1c[];
     return M2C_FIELD(data_ov000_021add1c, s32 *, arg1 << 5);
 }
@@ -163,7 +163,7 @@ s16 func_ov000_021724b8(void *arg0, s32 arg1) {
     return M2C_FIELD(data_ov000_021add34, s16 *, arg1 << 5);
 }
 
-s32 func_ov000_021724cc(void *arg0, s32 arg1) {
+s32 GetNationName(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add38[];
     return M2C_FIELD(data_ov000_021add38, s32 *, arg1 << 5);
 }

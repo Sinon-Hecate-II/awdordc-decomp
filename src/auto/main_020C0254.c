@@ -7,11 +7,11 @@ extern u8 data_02163ef0[];
 typedef struct { s8 x,y,index,flag; s32 value; } CEntry;
 
 u8 func_020c0254(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02129404;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02129404) != 0) {
+    if (FindObjectByClass(&data_02129404) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -82,12 +82,12 @@ s8 func_020c03d4(s32 arg0, s32 arg1) {
 
 void func_020c03e0(void *arg0, s32 arg1) {
     void func_0207bc80(u16);
-    void func_0207bfb4(void);
+    void DrawSpriteBatch(void);
     s32 temp_r0;
     void (*temp_r3)(s32, u8, u8);
     temp_r0 = func_020c03bc(arg0, arg1);
     func_0207bc80(M2C_FIELD(temp_r0, u16 *, 0x26));
-    func_0207bfb4();
+    DrawSpriteBatch();
     temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 0x10);
     if (temp_r3 == 0) return;
     temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
@@ -180,17 +180,17 @@ void func_020c0564(void *arg0) {
 }
 
 s32 func_020c05b0(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
-    return func_01ffa770(&data_02129630);
+    return FindObjectByClass(&data_02129630);
 }
 
 u8 func_020c05c4(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02129630) != 0) {
+    if (FindObjectByClass(&data_02129630) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -550,10 +550,10 @@ void func_020c1194(void *arg0) {
 
 s32 func_020c11e4(s32 a) {
 extern M2C_UNK data_02129690;
-s32 func_01ffa770(M2C_UNK *);
+s32 FindObjectByClass(M2C_UNK *);
 M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);
 void *p;
-if(func_01ffa770(&data_02129690))return 0;
+if(FindObjectByClass(&data_02129690))return 0;
 p=(void *)func_01ffa3dc(&data_02129690,7);
 M2C_FIELD(p,s32 *,0x34)=a;
 return 1;

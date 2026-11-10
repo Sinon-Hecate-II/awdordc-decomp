@@ -112,7 +112,7 @@ s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
- s32 func_0207c8ec(s32, s32);
+ s32 Divide(s32, s32);
  s32 func_020a7a74(s32, s32, s32, s32, u8);
  register s32 temp_r0;
  s32 var_r0;
@@ -125,7 +125,7 @@ s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8
  if ((int)var_r5 == 0) return 0;
  temp_r0 = func_020a7a74(arg0, arg3, arg4, arg5, arg6);
  base += temp_r0;
- var_r0 = func_0207c8ec(var_r5 * base, 100);
+ var_r0 = Divide(var_r5 * base, 100);
  if (var_r0 <= 1) var_r0 = 1;
  return var_r0;
 }
@@ -214,7 +214,7 @@ u8 func_020a7c98(s32 arg0) {
  return gMovementTypeTable[arg0 * 0x70];
 }
 
-u8 func_020a7cb0(void *arg0) {
+u8 HasUnitActed(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u16 *, 4) & 1) {
@@ -225,7 +225,7 @@ u8 func_020a7cb0(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7cc8(void *arg0) {
+u8 UnitHasFacing(void *arg0) {
     u8 var_r0;
 
     if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x10) >> 0x1B) != 0) {
@@ -236,7 +236,7 @@ u8 func_020a7cc8(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7ce4(void *arg0) {
+u8 UnitHasCargo(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0xC) != 0) {
@@ -352,13 +352,13 @@ u32 func_020a7f38(void *arg0) {
 
 void func_020a7f48(void *unit,s32 x,s32 y,s32 mode) {
 extern void **data_027e0058;
-void func_020d0288(void *,s32,s32,s32,s32,s32);s32 func_020d02b4(void *);
+void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);
 u8 func_020a8478(s32,s32);u8 func_020a80fc(s32,s32);u8 func_020a8164(s32,s32);void func_020a7f18(void *,u32);
 s32 iter[8];void *map;void *base; s32 idx;
 map=*data_027e0058;
-func_020d0288(iter,mode,x,y,M2C_FIELD(map,u16 *,0x5144),M2C_FIELD(map,u16 *,0x5146));
+InitAreaScan(iter,mode,x,y,M2C_FIELD(map,u16 *,0x5144),M2C_FIELD(map,u16 *,0x5146));
 for(;;){
-if(!func_020d02b4(iter))return;
+if(!NextAreaTile(iter))return;
 if(func_020a8478(iter[4],iter[5])){
 map=*data_027e0058;
 idx=M2C_FIELD(M2C_FIELD(map+2*iter[5],u16 *,0x3758)+(map+iter[4]),u8 *,0x508);
@@ -549,7 +549,7 @@ u8 func_020a85c8(s32 arg0) {
     return var_r0;
 }
 
-u8 func_020a85dc(s32 arg0) {
+u8 IsCarrierUnitKind(s32 arg0) {
     u8 var_r0;
 
     if (arg0 == 0x15) {

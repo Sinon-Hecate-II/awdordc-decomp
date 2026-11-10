@@ -13,7 +13,7 @@ s32 func_020aae10(void *);
 s32 func_020aae44(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
 s32 GetSpriteAnimValue(void *);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void *,s32);
 s32 func_ov003_02206690(s32,s32,s32);
@@ -78,10 +78,10 @@ if((s32)scale>=2)scale2=scale;else if(scale>2)scale2=2;else{scale2=-2;if((s32)sc
 sine=gSinCosTable[1];cosine=gSinCosTable[0];
 if((s32)scale<2){if(scale>2)scale=2;else if((s32)scale<-2)scale=-2;}
 d=sine<<4;
-a=func_0207c8ec(d,256);
-b=func_0207c8ec((-cosine)<<4,scale);
-c=func_0207c8ec(cosine<<4,256);
-d=func_0207c8ec(d,scale2);
+a=Divide(d,256);
+b=Divide((-cosine)<<4,scale);
+c=Divide(cosine<<4,256);
+d=Divide(d,scale2);
 SetSpriteQuad(0,(s16)a,(s16)b,(s16)c,(s16)d);
 obj=M2C_FIELD(arg0,void **,96);
 boolean=M2C_FIELD(M2C_FIELD(obj,void **,0x1c),u8 *,6)|M2C_FIELD(obj,u8 *,6);
@@ -108,10 +108,10 @@ if((s32)scale>=2)scale2=scale;else if(scale>2)scale2=2;else{scale2=-2;if((s32)sc
 sine=gSinCosTable[1];cosine=gSinCosTable[0];
 if((s32)scale<2){if(scale>2)scale=2;else if((s32)scale<-2)scale=-2;}
 d=sine<<4;
-a=func_0207c8ec(d,256);
-b=func_0207c8ec((-cosine)<<4,scale);
-c=func_0207c8ec(cosine<<4,256);
-d=func_0207c8ec(d,scale2);
+a=Divide(d,256);
+b=Divide((-cosine)<<4,scale);
+c=Divide(cosine<<4,256);
+d=Divide(d,scale2);
 SetSpriteQuad(1,(s16)a,(s16)b,(s16)c,(s16)d);
 obj=M2C_FIELD(arg0,void **,100);
 boolean=M2C_FIELD(M2C_FIELD(obj,void **,0x1c),u8 *,6)|M2C_FIELD(obj,u8 *,6);

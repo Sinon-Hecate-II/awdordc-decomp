@@ -33,7 +33,7 @@ void func_02014ccc(void *arg0) {
  void InitFileRequest(void *);
  s32 func_0200b99c(void *,s32,s32,s32,s32);
  void func_0200ba9c(void *);
- s32 func_0200bbe0(void *,s32,s32);
+ s32 FileRead(void *,s32,s32);
  u32 sp4[18];
  s32 val;
  void *a,*b;
@@ -41,7 +41,7 @@ void func_02014ccc(void *arg0) {
  InitFileRequest(sp4);
  val=M2C_FIELD(a,s32 *,0);
  if(func_0200b99c(sp4,func_0200b144(b+16,M2C_FIELD(b,s32 *,0x14)),val,val+M2C_FIELD(a,s32 *,4),-1)!=0){
- if(M2C_FIELD(a,s32 *,4)==func_0200bbe0(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;
+ if(M2C_FIELD(a,s32 *,4)==FileRead(sp4,M2C_FIELD(a,s32 *,8),M2C_FIELD(a,s32 *,4))) M2C_FIELD(a,s32 *,12)=2;
  func_0200ba9c(sp4);
  }
  if(M2C_FIELD(a,s32 *,12)==2)return;

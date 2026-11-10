@@ -10,12 +10,12 @@ typedef struct { u32 w0; u32 w1; u32 w2; u32 w3; } MapQuad;
 
 s32 func_020b4264(u8 *arg0) {
     void func_020ceec8(void);
-    s32 func_020cfbb0(s32);
-    s32 func_020cfbdc(s32);
+    s32 GetMapPlayerCount(s32);
+    s32 GetMapName(s32);
     void StringCopy(u8 *, s32);
-    void func_020cfa58(s32);
+    void LoadMapTileData(s32);
     void BuildMapRowOffsets(void);
-    void func_020cfb54(void);
+    void FreeMapTileData(void);
     void func_020a17c0(s32, s32);
     void func_020a23a4(s32, s32);
     void func_020a231c(s32, s32);
@@ -26,7 +26,7 @@ s32 func_020b4264(u8 *arg0) {
     extern void *gCurrentMap;
     extern M2C_UNK data_0215d9b8;
     extern M2C_UNK gMapConfig;
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     u8 *src;
     u8 *dst;
     u8 *rec;
@@ -106,18 +106,18 @@ s32 func_020b4264(u8 *arg0) {
     M2C_FIELD(&gMapConfig, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0x28);
     func_020ceec8();
     dst = MAPBASE;
-    M2C_FIELD(dst, u8 *, 0x5141) = func_020cfbb0(M2C_FIELD(dst, u16 *, 0x5142));
+    M2C_FIELD(dst, u8 *, 0x5141) = GetMapPlayerCount(M2C_FIELD(dst, u16 *, 0x5142));
     dst = MAPBASE;
-    StringCopy(dst + 0x5120, func_020cfbdc(M2C_FIELD(dst, u16 *, 0x5142)));
-    func_020cfa58(M2C_FIELD(MAPBASE, u16 *, 0x5142));
+    StringCopy(dst + 0x5120, GetMapName(M2C_FIELD(dst, u16 *, 0x5142)));
+    LoadMapTileData(M2C_FIELD(MAPBASE, u16 *, 0x5142));
     BuildMapRowOffsets();
     for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(MAPBASE, u16 *, 0x5144); x++) {
             M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10) =
-                M2C_FIELD((u8 *)M2C_FIELD(&data_02168f08, u16 **, 0) + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 2);
+                M2C_FIELD((u8 *)M2C_FIELD(&gMapData, u16 **, 0) + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 2);
         }
     }
-    func_020cfb54();
+    FreeMapTileData();
     for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(MAPBASE, u16 *, 0x5144); x++) {
             M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)), u8 *, 0x1420) =

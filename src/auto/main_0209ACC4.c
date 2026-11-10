@@ -33,7 +33,40 @@ extern s32 gCur3DSpriteEngine;
 typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
 
-s32 func_0209acc4(void *arg0) {
+/* State of a text object: a cursor into a byte-code text script and the glyph
+ * cell buffer of the current line that the script is drawn into. */
+typedef struct TextState {
+    u8  filler_00[0x34];
+    u8 *cursor;        /* +0x34 current byte of the text script */
+    u8 *next;          /* +0x38 saved script pointer (used by the 0 command) */
+    s32 pixelX;        /* +0x3C x position in pixels */
+    u16 *cells;        /* +0x40 glyph cell buffer base */
+    u16 baseAttr;      /* +0x44 attribute OR-ed into every cell */
+    u16 attr16;        /* +0x46 attribute handed to the glyph draw call */
+    u8  lineX;         /* +0x48 first cell x of the line */
+    u8  lineY;         /* +0x49 first cell y of the line */
+    u8  cellX;         /* +0x4A current cell x offset in the line */
+    u8  cellY;         /* +0x4B current cell y offset in the line */
+    u16 linePixel;     /* +0x4C pixel offset of the current line */
+    u16 lineStart;     /* +0x4E pixel offset the line starts at */
+    void (*callback)(void); /* +0x50 redraw callback */
+    s8  delay;         /* +0x54 frames left before the next step */
+    s8  speed;         /* +0x55 frames per step; nonzero also enables the tick sound */
+    u8  column;        /* +0x56 pixel offset inside the current cell (0..7) */
+    s8  palette;       /* +0x57 glyph palette */
+    u8  unk58;         /* +0x58 */
+    u8  unk59;         /* +0x59 */
+    u8  screenMode;    /* +0x5A which sprite engine to draw on */
+    u8  unk5B;         /* +0x5B */
+    u8  flags;         /* +0x5C bit1 = pending redraw, bit3 = text stored */
+    u8  filler_5D[3];
+    void *sound;       /* +0x60 sound effect played on each glyph */
+} TextState;
+
+/* Advance a text object by one script step: interpret the next byte-code
+ * command, lay out and draw its glyph into the current line's cell buffer, and
+ * return 0 once the script is exhausted (1 means keep going). */
+s32 DrawTextStep(void *arg0) {
     s32 PlaySoundEffect(void *);
     s32 func_02099818(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
@@ -46,6 +79,7 @@ s32 func_0209acc4(void *arg0) {
     M2C_UNK func_0209ac6c(void *, s32);
     s32 func_0209c168(void *, s32);
     M2C_UNK func_0209c418(void *);
+    TextState *st = arg0;
     s32 var_r6;
     s32 temp_r7;
     s32 temp_r8;
@@ -53,62 +87,62 @@ s32 func_0209acc4(void *arg0) {
 
 main_loop:
     {
-        u32 sw = func_02099e6c(arg0, func_020999e8(arg0));
+        u32 sw = func_02099e6c(st, func_020999e8(st));
         switch (sw) {
         case 0:
             return 0;
         case 3:
-            if ((s8) M2C_FIELD(arg0, s8 *, 0x54) < 0) goto end_block;
+            if ((s8) st->delay < 0) goto end_block;
             return 1;
         case 2:
-            if (func_020999b8(arg0) != 0) goto end_block;
+            if (func_020999b8(st) != 0) goto end_block;
             return 1;
         default:
         case 1:
-            temp_r7 = func_02099ae8(M2C_FIELD(arg0, void **, 0x34));
-            temp_r8 = func_02099b00(M2C_FIELD(arg0, void **, 0x34));
-            if (func_020999b8(arg0) == 0) {
-                if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x2) {
-                    func_02099a30(arg0);
-                    M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) & ~0x2);
+            temp_r7 = func_02099ae8(st->cursor);
+            temp_r8 = func_02099b00(st->cursor);
+            if (func_020999b8(st) == 0) {
+                if (st->flags & 0x2) {
+                    func_02099a30(st);
+                    st->flags = (u8) (st->flags & ~0x2);
                     return 1;
                 }
-                if (!(M2C_FIELD(arg0, u8 *, 0x4A) == M2C_FIELD(arg0, u8 *, 0x48) && M2C_FIELD(arg0, u8 *, 0x56) == 0)) {
-                    func_0209c168(arg0, 1);
+                if (!(st->cellX == st->lineX && st->column == 0)) {
+                    func_0209c168(st, 1);
                 }
                 if (temp_r7 != 0) {
-                    func_02099854(M2C_FIELD(arg0, void **, 0x34), M2C_FIELD(arg0, s32 *, 0x3C) + (M2C_FIELD(arg0, u16 *, 0x4C) << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
+                    func_02099854(st->cursor, st->pixelX + (st->linePixel << 5), st->column, st->attr16);
                     var_r6 = 7;
                 } else {
                     s32 pixels;
-                    void *p = M2C_FIELD(arg0, void **, 0x34);
+                    void *p = st->cursor;
 
                     if (temp_r8 != 0) {
-                        u16 t1 = M2C_FIELD(arg0, u16 *, 0x4C);
-                        pixels = M2C_FIELD(arg0,volatile s32 *,0x3c);
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 1), pixels + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
+                        u16 t1 = st->linePixel;
+                        pixels = M2C_FIELD(st, volatile s32 *, 0x3c);
+                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 1), pixels + (t1 << 5), st->column, st->attr16);
                     } else {
-                        u16 t1 = M2C_FIELD(arg0, u16 *, 0x4C);
-                        pixels = M2C_FIELD(arg0,volatile s32 *,0x3c);
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 0), pixels + (t1 << 5), M2C_FIELD(arg0, u8 *, 0x56), M2C_FIELD(arg0, u16 *, 0x46));
+                        u16 t1 = st->linePixel;
+                        pixels = M2C_FIELD(st, volatile s32 *, 0x3c);
+                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 0), pixels + (t1 << 5), st->column, st->attr16);
                     }
                 }
-                if ((u8) M2C_FIELD(arg0, u8 *, 0x56) <= 1U) {
-                    func_0209ac6c(arg0, func_020999e8(arg0));
+                if ((u8) st->column <= 1U) {
+                    func_0209ac6c(st, func_020999e8(st));
                 }
-                if (func_0209c168(arg0, var_r6) != 0) {
-                    func_0209ac6c(arg0, func_020999e8(arg0));
+                if (func_0209c168(st, var_r6) != 0) {
+                    func_0209ac6c(st, func_020999e8(st));
                 }
-                if ((notify=M2C_FIELD(arg0, void **, 0x60)) != 0 && (s8) M2C_FIELD(arg0, s8 *, 0x55) != 0) {
+                if ((notify = st->sound) != 0 && (s8) st->speed != 0) {
                     PlaySoundEffect(notify);
                 }
             }
             if (!(temp_r7 == 0 && temp_r8 == 0)) {
-                func_0209c418(arg0);
+                func_0209c418(st);
             }
-            func_0209c418(arg0);
+            func_0209c418(st);
 end_block:
-            if ((s8) M2C_FIELD(arg0, s8 *, 0x54) < 0) {
+            if ((s8) st->delay < 0) {
                 goto main_loop;
             }
             return 1;
@@ -116,7 +150,9 @@ end_block:
     }
 }
 
-void func_0209aeb4(void *arg0) {
+/* Per-frame update of a text object: handles action input, ticks the step delay,
+ * runs the redraw callback and advances the text script on the mapped screen. */
+void UpdateTextObject(TextState *st) {
     s32 func_020952a4(void);
     s32 func_020953e8(void);
     s32 func_0209546c(void);
@@ -125,80 +161,80 @@ void func_0209aeb4(void *arg0) {
     s32 func_02097964(void);
     s32 func_02097be0(void);
     s32 func_020999b8(void *);
-    M2C_UNK func_02099e58(M2C_UNK);
-    s32 func_0209acc4(void *);
+    M2C_UNK StopTextObject(M2C_UNK);
+    s32 DrawTextStep(void *);
     u32 func_0209dc9c(void);
     u32 func_0209dde0(void);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK func_01ffa6fc(M2C_UNK);
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102eac;
     extern M2C_UNK data_02102e74;
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
 
-    u32 combined;
-    s32 saved;
-    s32 i;
+    u32 actionMask;
+    s32 savedEngine;
+    s32 screenIndex;
 
-    combined = func_0209dc9c();
-    combined = combined | func_0209dde0();
-    combined = (u16)combined;
+    actionMask = func_0209dc9c();
+    actionMask = actionMask | func_0209dde0();
+    actionMask = (u16)actionMask;
 
-    if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x1) {
-        if (func_01ffa770(&data_02102eac) != 0) return;
-        if (func_01ffa770(&data_02102e74) != 0) return;
+    if (st->flags & 0x1) {
+        if (FindObjectByClass(&data_02102eac) != 0) return;
+        if (FindObjectByClass(&data_02102e74) != 0) return;
         if (func_02097be0() != 0) return;
         if (func_020952a4() != 0) return;
         if (func_020953e8() != 0) return;
         if (func_0209546c() != 0) return;
     }
 
-    if (M2C_FIELD(arg0,s8 *,0x55) >= 1 && func_02096038()) {
-        if (combined & 0x400) func_02095ff8(1);
-        if ((combined & 0x30) && M2C_FIELD(arg0,u16 *,0x4c) != M2C_FIELD(arg0,u16 *,0x4e))
-            func_02099e58((s32)arg0);
+    if (st->speed >= 1 && func_02096038()) {
+        if (actionMask & 0x400) func_02095ff8(1);
+        if ((actionMask & 0x30) && st->linePixel != st->lineStart)
+            StopTextObject((s32)st);
     }
-    if (func_020999b8(arg0)) func_02099e58((s32)arg0);
-    M2C_FIELD(arg0,s8 *,0x54) = M2C_FIELD(arg0,s8 *,0x54)+1;
+    if (func_020999b8(st)) StopTextObject((s32)st);
+    st->delay = st->delay+1;
     {
-        s32 t=M2C_FIELD(arg0,s8 *,0x54);
-        if (t >= 0 && t < M2C_FIELD(arg0,s8 *,0x55)) return;
-        if (t >= 0) M2C_FIELD(arg0,s8 *,0x54)=0;
-        ((void (*)(void))M2C_FIELD(arg0,void **,0x50))();
+        s32 t=st->delay;
+        if (t >= 0 && t < st->speed) return;
+        if (t >= 0) st->delay=0;
+        st->callback();
     }
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     {
-        for (i = 0; i < 2; i++) {
-            s32 cur;
-            if (i == 0) cur = g3DSpriteEngineMain; else cur = g3DSpriteEngineSub;
-            gCur3DSpriteEngine = cur;
+        for (screenIndex = 0; screenIndex < 2; screenIndex++) {
+            s32 engine;
+            if (screenIndex == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
+            gCur3DSpriteEngine = engine;
             {
-                u8 mode = M2C_FIELD(arg0, u8 *, 0x5A);
+                u8 mode = st->screenMode;
                 if (mode == 0) {
-                    if (cur != g3DSpriteEngineMain) goto skip_tail;
+                    if (engine != g3DSpriteEngineMain) goto skip_tail;
                 }
                 if (mode == 1) {
-                    if (cur != g3DSpriteEngineSub) goto skip_tail;
+                    if (engine != g3DSpriteEngineSub) goto skip_tail;
                 }
                 if (mode == 3) {
-                    if (cur != saved) goto skip_tail;
+                    if (engine != savedEngine) goto skip_tail;
                 }
             }
-            if (func_0209acc4(arg0) == 0) {
-                if (M2C_FIELD(arg0, u8 *, 0x5C) & 0x1) {
+            if (DrawTextStep(st) == 0) {
+                if (st->flags & 0x1) {
                     func_02097964();
-                    func_01ffa6fc(arg0);
+                    func_01ffa6fc(st);
                 } else {
-                    DeleteSpriteObject(arg0);
+                    DeleteSpriteObject(st);
                 }
             }
         skip_tail:
             ;
         }
     }
-    gCur3DSpriteEngine = saved;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_0209b084(void *entity) {
@@ -314,7 +350,7 @@ void func_0209b32c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
 #pragma opt_propagation off
 M2C_UNK func_0209b370(M2C_UNK a, M2C_UNK b, M2C_UNK c, s32 d, s32 e, s32 f, u16 g, u16 h, u16 i) {
     M2C_UNK func_0209be10(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
-    M2C_UNK func_02099e58(s32);
+    M2C_UNK StopTextObject(s32);
     void *func_01ffa3dc(M2C_UNK *, s32);
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK data_021032d8;
@@ -323,15 +359,15 @@ M2C_UNK func_0209b370(M2C_UNK a, M2C_UNK b, M2C_UNK c, s32 d, s32 e, s32 f, u16 
     temp_r5 = gCur3DSpriteEngine;
     temp_r5 = M2C_FIELD(temp_r5, s32 *, 0x54);
     func_0209be10(temp_r5, a, b, c, d, e, f, (s32)g, (s32)h, (s32)i);
-    func_02099e58(temp_r5);
+    StopTextObject(temp_r5);
     func_01ffa3dc(&data_021032d8, 7);
 }
 #pragma opt_propagation reset
 void func_0209b3e8(s16 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
- s32 func_0207c8ec(s32,s32);
+ s32 Divide(s32,s32);
  DigitTable table=data_020f399c;
  do {func_0209b2b4(a,b,c,table.digits[d%10],e,f);
- d=func_0207c8ec(d,10); if(!d) return;
+ d=Divide(d,10); if(!d) return;
  f+=2; a--;
  } while(1);
 }

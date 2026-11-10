@@ -103,9 +103,9 @@ color=names.names[kind];
 StringFormat(buf,data_0212a4c0,color);
 LoadFileToSpriteBuffer(buf,704,32);
 StringFormat(buf,data_0212a4cc,color);
-func_020814e4(GetLocalizedFileName(data_0212a4d8));
-func_02081590(GetLocalizedFileName(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
-func_02081528();
+OpenNarcArchive(GetLocalizedFileName(data_0212a4d8));
+LoadNarcFileDecompressed(GetLocalizedFileName(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
+CloseNarcArchive();
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
 func_020985b0(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
 func_02098a34(M2C_FIELD(data_02164094,s16*,8),8,3,0,0);
@@ -181,10 +181,10 @@ s32 func_020c4798(void) {
 }
 
 void func_020c47e4(s32 *arg0) {
- s32 func_02084644(void);
+ s32 GetActiveOverlay(void);
  s32 func_02037ca0(s32 *,s32 *);
  s32 a[4];s32 b[3];
- if(func_02084644()!=2)return;
+ if(GetActiveOverlay()!=2)return;
  if(!func_02037ca0(a,b))return;
  arg0[0]=a[0];arg0[1]=a[1];arg0[2]=a[2];arg0[3]=a[3];
  arg0[4]=b[0];arg0[5]=b[1];arg0[6]=b[2];

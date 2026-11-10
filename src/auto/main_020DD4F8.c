@@ -291,9 +291,9 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02012084();
     M2C_UNK func_02080944(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02088da8(s32);
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_0208b758(s32, s32);
@@ -326,7 +326,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     SetFileDirectory(&data_0212d3f0);
     GetLocalizedFileName(&data_0212d3f8);
-    func_020814e4();
+    OpenNarcArchive();
     kind = menu->kind;
     layout = -1;
     switch (kind) {                                 /* switch 1; irregular */
@@ -340,12 +340,12 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     }
     if (layout != 2) {
         if (layout == 4) {
-            func_02081590(GetLocalizedFileName(&data_0212d408), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+            LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d408), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
         }
     } else {
-        func_02081590(GetLocalizedFileName(&data_0212d418), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+        LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d418), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     }
-    func_02081528();
+    CloseNarcArchive();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x18, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     gCur3DSpriteEngine = savedEngine;

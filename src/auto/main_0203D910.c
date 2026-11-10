@@ -179,11 +179,11 @@ void func_0203dc18(void) {
 }
 
 void func_0203dc38(s32 arg0,s32 arg1) {
- extern s32 data_020fc904;
+ extern s32 sEmptyString;
  s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 func_0203af50(s32,s32 *,s32); void func_0203e9b0();
  s32 a,b,c; void *p;
  if(GetConnection()==0 || arg0==0) return;
- func_02041e44(); SetNetError(arg0,arg1); func_0203af50(1,&data_020fc904,0);
+ func_02041e44(); SetNetError(arg0,arg1); func_0203af50(1,&sEmptyString,0);
  a=M2C_FIELD(GetConnection(),u8 *,0x15)==2;
  b=M2C_FIELD(GetConnection(),s32 *,0x20c)==0;
  p=GetConnection();
@@ -202,63 +202,68 @@ void func_0203dcf4(void) {
     func_0205ea70(M2C_FIELD(GetConnection(), s32 *, 0x10));
 }
 
-void func_0203dd30(u8 arg0, s32 arg1, void *arg2) {
+/* Receive handler for the connection handshake packets (types 2..4), the
+ * counterpart of SendConnectionPacket.  Type 2 (join) records the peer's player
+ * slot and answers with type 3; type 3 (ready) collects the peers' ready mask
+ * and, once every connected player is ready, tells them type 4 and moves the
+ * connection to its running state; type 4 (start) advances the joiner. */
+void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
     M2C_UNK func_020411dc(M2C_UNK);
     M2C_UNK SendConnectionPacket(u8, M2C_UNK);
     s32 GetConnectedPlayerMask(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
-    s32 temp_r4_3;
-    s32 temp_r4_4;
-    s32 var_r5;
-    u8 temp_r6;
-    void *temp_r0;
-    void *temp_r4;
-    void *temp_r4_2;
+    s32 readyValue;
+    s32 connectedMask;
+    s32 i;
+    u8 slot;
+    void *session;
+    void *session2;
+    void *session3;
 
-    switch (arg1) {                                 /* irregular */
+    switch (packetType) {
     case 2:
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) == 1) {
-            if (M2C_FIELD(arg2, u8 *, 0) == 1) {
+            if (M2C_FIELD(payload, u8 *, 0) == 1) {
                 M2C_FIELD(GetConnection(), s32 *, 0x20C) = 0;
             }
-            temp_r6 = M2C_FIELD(arg2, u8 *, 1);
-            temp_r0 = GetConnection();
-            M2C_FIELD((temp_r0 + temp_r6), u8 *, 0x2D0) = (u8) M2C_FIELD(arg2, u8 *, 2);
-            temp_r4 = GetConnection();
-            M2C_FIELD((temp_r4 + (temp_r6 * 4)), s32 *, 0xF4) = (s32) M2C_FIELD(GetConnection(), s32 *, 0x200);
+            slot = M2C_FIELD(payload, u8 *, 1);
+            session = GetConnection();
+            M2C_FIELD((session + slot), u8 *, 0x2D0) = (u8) M2C_FIELD(payload, u8 *, 2);
+            session2 = GetConnection();
+            M2C_FIELD((session2 + (slot * 4)), s32 *, 0xF4) = (s32) M2C_FIELD(GetConnection(), s32 *, 0x200);
             if ((M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) || (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1)) {
-                temp_r4_2 = GetConnection();
-                M2C_FIELD(temp_r4_2, u8 *, 0x16) = (u8) M2C_FIELD(GetConnection(), u8 *, 0xD);
+                session3 = GetConnection();
+                M2C_FIELD(session3, u8 *, 0x16) = (u8) M2C_FIELD(GetConnection(), u8 *, 0xD);
             }
             M2C_FIELD(GetConnection(), s8 *, 0x1AD) = 0;
             SetConnectionState(9);
         }
-        SendConnectionPacket(arg0, 3);
+        SendConnectionPacket(fromPlayer, 3);
         return;
     case 3:
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) == 0x10) {
-            temp_r0 = GetConnection();
-            M2C_FIELD(temp_r0, s32 *, 0x1D4) = (s32) (M2C_FIELD(temp_r0, s32 *, 0x1D4) | (1 << arg0));
-            temp_r4_3 = M2C_FIELD(arg2, u8 *, 0) | (M2C_FIELD(arg2, u8 *, 1) << 8);
-            if (temp_r4_3 > (s32) M2C_FIELD(GetConnection(), u16 *, 0x1B0)) {
-                M2C_FIELD(GetConnection(), s16 *, 0x1B0) = (s16) temp_r4_3;
+            session = GetConnection();
+            M2C_FIELD(session, s32 *, 0x1D4) = (s32) (M2C_FIELD(session, s32 *, 0x1D4) | (1 << fromPlayer));
+            readyValue = M2C_FIELD(payload, u8 *, 0) | (M2C_FIELD(payload, u8 *, 1) << 8);
+            if (readyValue > (s32) M2C_FIELD(GetConnection(), u16 *, 0x1B0)) {
+                M2C_FIELD(GetConnection(), s16 *, 0x1B0) = (s16) readyValue;
             }
-            temp_r4_4 = GetConnectedPlayerMask(0);
-            if (temp_r4_4 != M2C_FIELD(GetConnection(), s32 *, 0x1D4)) {
+            connectedMask = GetConnectedPlayerMask(0);
+            if (connectedMask != M2C_FIELD(GetConnection(), s32 *, 0x1D4)) {
                 return;
             }
-            var_r5 = 1;
+            i = 1;
             if ((s32) M2C_FIELD(GetConnection(), u8 *, 0xD) >= 1) {
                 do {
-                    temp_r0 = GetConnection();
-                    SendConnectionPacket(M2C_FIELD((temp_r0 + var_r5), u8 *, 0x2D0), 4);
-                    var_r5 += 1;
-                } while (var_r5 <= (s32) M2C_FIELD(GetConnection(), u8 *, 0xD));
+                    session = GetConnection();
+                    SendConnectionPacket(M2C_FIELD((session + i), u8 *, 0x2D0), 4);
+                    i += 1;
+                } while (i <= (s32) M2C_FIELD(GetConnection(), u8 *, 0xD));
             }
             SetConnectionState(0x11);
             return;
         }
-        SendConnectionPacket(arg0, 4);
+        SendConnectionPacket(fromPlayer, 4);
         return;
     case 4:
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) != 9) {
@@ -299,80 +304,84 @@ void func_0203e064(M2C_UNK arg0) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_0203e088(s32 arg0,s32 arg1) { s32 func_0203e0ec(s32,s32); s32 i; if(GetConnection()==0)return 0; for(i=0;i<arg1;i++){ if(arg0==M2C_FIELD(GetConnection()+i*4,s32 *,0xf4)){func_0203e0ec(i,arg1);return 1;}} return 0; }
+s32 func_0203e088(s32 arg0,s32 arg1) { s32 RemoveConnectionPeer(s32,s32); s32 i; if(GetConnection()==0)return 0; for(i=0;i<arg1;i++){ if(arg0==M2C_FIELD(GetConnection()+i*4,s32 *,0xf4)){RemoveConnectionPeer(i,arg1);return 1;}} return 0; }
 #pragma opt_strength_reduction reset
-s32 func_0203e0ec(s32 arg0, s32 arg1) {
-    s32 GetConnection(void); void func_0203e2e4(void);
-    s32 r9, r8, r11;
-    void *p3, *p4;
-    void *a, *b, *baseFirst, *baseSecond;
-    u8 byteVal, bb;
-    s32 r4, r5, r6, r7, idx;
-    void *q, *w;
-    r9 = arg0;
-    r8 = arg1;
+/* Removes the peer at peer slot index `slotIndex` from the connection's per-peer tables
+ * (player id + port, peer id, IPv4 address + port, and player slot): clears the
+ * player's presence bit, shifts the later entries down, clears the last entry and
+ * recomputes the active player count.  Returns the removed peer's connection id. */
+s32 RemoveConnectionPeer(s32 slotIndex, s32 peerCount) {
+    s32 GetConnection(void); void UpdateConnectedPlayerCount(void);
+    s32 slot, count, removedPeerId;
+    void *sessionA, *sessionB;
+    void *connA, *connB, *dstBase, *srcBase;
+    u8 playerSlot, nextPlayerSlot;
+    s32 i, shiftCount, nextIndex, curIndex, lastIndex;
+    void *srcPos, *dstPos;
+    slot = slotIndex;
+    count = peerCount;
     if (GetConnection() == 0) return 0;
-    r11 = *(s32 *)((u8 *)GetConnection() + r9 * 4 + 0xf4);
-    p3 = GetConnection();
-    p4 = GetConnection();
-    byteVal = *(u8 *)((u8 *)p4 + r9 + 0x2d0);
-    *(s32 *)((u8 *)p3 + 0x2f0) &= ~(1 << byteVal);
-    func_0203e2e4();
-    if (r9 < r8 - 1) {
-        r5 = r8 - r9 - 1;
-        r4 = 0;
-        if (r5 > 0) {
+    removedPeerId = *(s32 *)((u8 *)GetConnection() + slot * 4 + CONN_SESSION_PEER_IDS);
+    sessionA = GetConnection();
+    sessionB = GetConnection();
+    playerSlot = *(u8 *)((u8 *)sessionB + slot + CONN_SESSION_PEER_SLOTS);
+    *(s32 *)((u8 *)sessionA + CONN_SESSION_PLAYER_MASK) &= ~(1 << playerSlot);
+    UpdateConnectedPlayerCount();
+    if (slot < count - 1) {
+        shiftCount = count - slot - 1;
+        i = 0;
+        if (shiftCount > 0) {
             do {
-                r7 = r9 + r4;
-                r6 = r7 + 1;
-                a = GetConnection();
-                b = GetConnection();
-                *(s32 *)((u8 *)a + r7 * 4 + 0x24) = *(s32 *)((u8 *)b + r6 * 4 + 0x24);
-                a = GetConnection();
-                b = GetConnection();
-                *(u16 *)((u8 *)a + r7 * 2 + 0xa4) = *(u16 *)((u8 *)b + r6 * 2 + 0xa4);
-                a = GetConnection();
-                b = GetConnection();
-                *(s32 *)((u8 *)a + r7 * 4 + 0xf4) = *(s32 *)((u8 *)b + r6 * 4 + 0xf4);
-                a = GetConnection();
-                b = GetConnection();
-                *(s32 *)((u8 *)a + r7 * 4 + 0x210) = *(s32 *)((u8 *)b + r6 * 4 + 0x210);
-                a = GetConnection();
-                b = GetConnection();
-                *(u16 *)((u8 *)a + r7 * 2 + 0x290) = *(u16 *)((u8 *)b + r6 * 2 + 0x290);
-                baseFirst = GetConnection();
-                baseSecond = GetConnection();
-                q = (void *)((s32)r9 + (s32)baseSecond);
-                bb = *(u8 *)(r4 + (s32)q + 0x2d1);
-                w = (void *)((s32)r9 + (s32)baseFirst);
-                *(u8 *)(r4 + (s32)w + 0x2d0) = bb;
-                r4++;
-            } while (r4 < r5);
+                curIndex = slot + i;
+                nextIndex = curIndex + 1;
+                connA = GetConnection();
+                connB = GetConnection();
+                *(s32 *)((u8 *)connA + curIndex * 4 + CONN_SESSION_PEER_DATA) = *(s32 *)((u8 *)connB + nextIndex * 4 + CONN_SESSION_PEER_DATA);
+                connA = GetConnection();
+                connB = GetConnection();
+                *(u16 *)((u8 *)connA + curIndex * 2 + CONN_SESSION_PEER_DATA_PORT) = *(u16 *)((u8 *)connB + nextIndex * 2 + CONN_SESSION_PEER_DATA_PORT);
+                connA = GetConnection();
+                connB = GetConnection();
+                *(s32 *)((u8 *)connA + curIndex * 4 + CONN_SESSION_PEER_IDS) = *(s32 *)((u8 *)connB + nextIndex * 4 + CONN_SESSION_PEER_IDS);
+                connA = GetConnection();
+                connB = GetConnection();
+                *(s32 *)((u8 *)connA + curIndex * 4 + CONN_SESSION_PEER_IPS) = *(s32 *)((u8 *)connB + nextIndex * 4 + CONN_SESSION_PEER_IPS);
+                connA = GetConnection();
+                connB = GetConnection();
+                *(u16 *)((u8 *)connA + curIndex * 2 + CONN_SESSION_PEER_PORTS) = *(u16 *)((u8 *)connB + nextIndex * 2 + CONN_SESSION_PEER_PORTS);
+                dstBase = GetConnection();
+                srcBase = GetConnection();
+                srcPos = (void *)((s32)slot + (s32)srcBase);
+                nextPlayerSlot = *(u8 *)(i + (s32)srcPos + CONN_SESSION_PEER_SLOTS + 1);
+                dstPos = (void *)((s32)slot + (s32)dstBase);
+                *(u8 *)(i + (s32)dstPos + CONN_SESSION_PEER_SLOTS) = nextPlayerSlot;
+                i++;
+            } while (i < shiftCount);
         }
     }
-    if (r8 > 0) {
-        idx = r8 - 1;
-        b = GetConnection();
-        *(s32 *)((u8 *)b + idx * 4 + 0x24) = 0;
-        b = GetConnection();
-        *(u16 *)((u8 *)b + idx * 2 + 0xa4) = 0;
-        b = GetConnection();
-        *(s32 *)((u8 *)b + idx * 4 + 0xf4) = 0;
-        b = GetConnection();
-        *(s32 *)((u8 *)b + idx * 4 + 0x210) = 0;
-        b = GetConnection();
-        *(u16 *)((u8 *)b + idx * 2 + 0x290) = 0;
-        b = GetConnection();
-        *(u8 *)((u8 *)b + idx + 0x2d0) = 0;
+    if (count > 0) {
+        lastIndex = count - 1;
+        connB = GetConnection();
+        *(s32 *)((u8 *)connB + lastIndex * 4 + CONN_SESSION_PEER_DATA) = 0;
+        connB = GetConnection();
+        *(u16 *)((u8 *)connB + lastIndex * 2 + CONN_SESSION_PEER_DATA_PORT) = 0;
+        connB = GetConnection();
+        *(s32 *)((u8 *)connB + lastIndex * 4 + CONN_SESSION_PEER_IDS) = 0;
+        connB = GetConnection();
+        *(s32 *)((u8 *)connB + lastIndex * 4 + CONN_SESSION_PEER_IPS) = 0;
+        connB = GetConnection();
+        *(u16 *)((u8 *)connB + lastIndex * 2 + CONN_SESSION_PEER_PORTS) = 0;
+        connB = GetConnection();
+        *(u8 *)((u8 *)connB + lastIndex + CONN_SESSION_PEER_SLOTS) = 0;
     }
-    return r11;
+    return removedPeerId;
 }
 
 s32 func_0203e2a4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xd); }
 
 s32 func_0203e2c4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xe); }
 
-void func_0203e2e4(void) {
+void UpdateConnectedPlayerCount(void) {
  s32 n=-1; s32 i;
  for(i=0;i<32;i++) { if(M2C_FIELD(GetConnection(),s32 *,0x2f0) & (1<<i)) n++; }
  if(n==-1) { M2C_FIELD(GetConnection(),u8 *,0xe)=0; return; }
@@ -440,7 +449,7 @@ void func_0203e570(s32 resetMode) {
     M2C_UNK func_02007df8(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007e54(M2C_UNK, s32, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
-    s16 func_02037eec(M2C_UNK);
+    s16 RandomBelow(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
     void *temp_r0;
     void *temp_r0_2;
@@ -455,7 +464,7 @@ void func_0203e570(s32 resetMode) {
     M2C_FIELD(GetConnection(), s8 *, 0xC) = 0;
     M2C_FIELD(GetConnection(), s8 *, 0x17C) = 0;
     temp_r5 = GetConnection();
-    M2C_FIELD(temp_r5, s16 *, 0x17E) = func_02037eec(0x10000);
+    M2C_FIELD(temp_r5, s16 *, 0x17E) = RandomBelow(0x10000);
     M2C_FIELD(GetConnection(), s32 *, 0x180) = 0;
     temp_r0 = GetConnection();
     M2C_FIELD(temp_r0, s32 *, 0x184) = 0;

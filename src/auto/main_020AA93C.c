@@ -1,5 +1,6 @@
 /* 29 functions from 0x020AA93C to 0x020AB884 (main), found by ds-decomp. */
 #include "common.h"
+#include "unit_sprite.h"
 static inline u32 aaeb0State(void *p) {
     u32 q;
     q = M2C_FIELD(p, u32 *, 0);
@@ -52,8 +53,10 @@ typedef struct { u8 value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 
 #pragma opt_dead_stores off
-void *func_020aa93c(u32 kind) {
-    switch(kind) {
+/* Return the UnitSpriteDef record for a unit kind.  Kinds that share a sprite
+ * size and graphics set share one record; an unknown kind has no record. */
+void *GetUnitSpriteDef(u32 unitKind) {
+    switch(unitKind) {
     case 0:
     case 1:
     case 2:
@@ -211,11 +214,11 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
 void MenuSpriteUpdate(void *arg0) {
     M2C_UNK func_02088044(s32);
     s32 func_02089064();
-    void func_020aaeb0(void *);
+    void UpdateUnitSpriteFrame(void *);
     if (func_02089064() != 0) {
         func_02088044(M2C_FIELD(arg0, s32 *, 0x64));
     }
-    func_020aaeb0(arg0);
+    UpdateUnitSpriteFrame(arg0);
 }
 
 /* Updates the sprite entry for a unit: updates an existing slot when one is present, otherwise allocates a new one. */
@@ -256,13 +259,13 @@ void func_020aad18(void *unit) {
 }
 
 u32 func_020aae10(void *arg0) {
-    void *func_020aa93c(u32);
+    void *GetUnitSpriteDef(u32);
     u32 idx;
     void *ptr;
     u32 value;
 
     idx = (u32)(M2C_FIELD(arg0, u8 *, 0x58) << 25) >> 25;
-    ptr = func_020aa93c(idx);
+    ptr = GetUnitSpriteDef(idx);
     value = M2C_FIELD(ptr, u8 *, 0);
     if (value == 0) {
         return M2C_FIELD(arg0, UnkAAFields *, 0x40).x;
@@ -271,25 +274,25 @@ u32 func_020aae10(void *arg0) {
 }
 
 u32 func_020aae44(void *arg0) {
- void *func_020aa93c(u32);
+ void *GetUnitSpriteDef(u32);
  u32 idx; void *ptr; u32 value;
  idx=(u32)(M2C_FIELD(arg0,u8 *,0x58)<<25)>>25;
- ptr=func_020aa93c(idx);value=M2C_FIELD(ptr,u8 *,1);
+ ptr=GetUnitSpriteDef(idx);value=M2C_FIELD(ptr,u8 *,1);
  if(value==0){return M2C_FIELD(arg0,UnkAAFields *,0x40).y;} return value;
 }
 
 s32 func_020aae78(void *arg0) {
-    void *func_020aa93c(u32);
-    return M2C_FIELD(func_020aa93c((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 4);
+    void *GetUnitSpriteDef(u32);
+    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 4);
 }
 
 s32 func_020aae94(void *arg0) {
-    void *func_020aa93c(u32);
-    return M2C_FIELD(func_020aa93c((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 8);
+    void *GetUnitSpriteDef(u32);
+    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 8);
 }
 
 #pragma opt_common_subs off
-void func_020aaeb0(void *arg0) {
+void UpdateUnitSpriteFrame(void *arg0) {
     u32 nibble;
     s8 v5a;
     s32 test;
@@ -319,55 +322,58 @@ M2C_UNK *func_020aaf74(void) {
     return &data_02126b0c;
 }
 
-void func_020aaf80(void *arg0) {
+/* Per-frame update of the unit sprite on a list task: validates the sprite
+ * state, advances the idle frame on its timer and plays the press animation when
+ * the sprite's button is held. */
+void UpdateUnitSpriteAnimation(void *task) {
     s32 func_01ffa14c(void *);s32 func_020890d4(void *);s32 func_02089080(void *);
     s32 func_020ad3f0(void);u8 func_020ab2a4(void);
-    void MenuSpriteUpdate(void *);void func_020aaeb0(void *);
-    u16 func_020ab194(void *);void func_020819e8(u16);
-    void *func_020aa93c(u32);
+    void MenuSpriteUpdate(void *);void UpdateUnitSpriteFrame(void *);
+    u16 GetSpriteButtonMask(void *);void func_020819e8(u16);
+    void *GetUnitSpriteDef(u32);
     extern volatile u16 *gKeyState;
-    void *p=M2C_FIELD(arg0,void **,0x34);
-    void *q;
+    void *sprite=M2C_FIELD(task,void **,0x34);
+    void *owner;
     u32 cond,frame,bits;
     u16 keys;
-    if(func_01ffa14c(M2C_FIELD(p,void **,0x18))==0) {
-        cond=M2C_FIELD(M2C_FIELD(p,void **,0x18),u8 *,0x31)!=0?1:0;
+    if(func_01ffa14c(M2C_FIELD(sprite,void **,0x18))==0) {
+        cond=M2C_FIELD(M2C_FIELD(sprite,void **,0x18),u8 *,0x31)!=0?1:0;
         if(cond&255)goto fail;
     }
-    if(func_020890d4(p)!=0)goto fail;
-    if(func_02089080(p)!=0)goto fail;
+    if(func_020890d4(sprite)!=0)goto fail;
+    if(func_02089080(sprite)!=0)goto fail;
     if(func_020ad3f0()!=0)goto fail;
-    cond=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0?1:0;
+    cond=M2C_FIELD(M2C_FIELD(sprite,void **,MENU_SPRITE_OWNER),u8 *,0x12)!=0?1:0;
     if(!(cond&255))goto fail;
     if(func_020ab2a4()!=0)goto fail;
-    MenuSpriteUpdate(p);
-    q=M2C_FIELD(p,void **,0x64);
+    MenuSpriteUpdate(sprite);
+    owner=M2C_FIELD(sprite,void **,MENU_SPRITE_OWNER);
     cond=1;
-    if(M2C_FIELD(q,s8 *,11)!=1 &&
-        (!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31) || M2C_FIELD(q,s8 *,12)!=1))cond=0;
+    if(M2C_FIELD(owner,s8 *,11)!=1 &&
+        (!((u32)(M2C_FIELD(sprite,u8 *,MENU_SPRITE_BASE)<<27)>>31) || M2C_FIELD(owner,s8 *,12)!=1))cond=0;
     if(cond&255) {
-        if(M2C_FIELD(p,s8 *,0x5a)>=0){
-            frame=(u16)(((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+1);
-            bits=M2C_FIELD(p,u32 *,0x40);
-            M2C_FIELD(p,u32 *,0x40)=(bits&~0x03fc0000)|((frame<<24)>>6);
-            M2C_FIELD(p,s8 *,0x5a)=12;
+        if(M2C_FIELD(sprite,s8 *,MENU_SPRITE_TIMER)>=0){
+            frame=(u16)(((u32)(M2C_FIELD(sprite,u8 *,MENU_SPRITE_BASE)<<28)>>28)+1);
+            bits=M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME);
+            M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME)=(bits&~0x03fc0000)|((frame<<24)>>6);
+            M2C_FIELD(sprite,s8 *,MENU_SPRITE_TIMER)=12;
         }
-        if(func_020ab194(p)!=0)func_020819e8(func_020ab194(p));
+        if(GetSpriteButtonMask(sprite)!=0)func_020819e8(GetSpriteButtonMask(sprite));
         return;
     }
-    if(func_020ab194(p)==0)return;
+    if(GetSpriteButtonMask(sprite)==0)return;
     keys=gKeyState[0];
-    if(M2C_FIELD(func_020aa93c((u32)(M2C_FIELD(p,u8 *,0x58)<<25)>>25),u32 *,8)&16)
+    if(M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(sprite,u8 *,0x58)<<25)>>25),u32 *,8)&16)
         keys=gKeyState[1];
-    if(!(keys&func_020ab194(p)))return;
-    if(M2C_FIELD(p,s8 *,0x5a)<0)return;
-    frame=(u16)(((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+1);
-    bits=M2C_FIELD(p,u32 *,0x40);
-    M2C_FIELD(p,u32 *,0x40)=(bits&~0x03fc0000)|((frame<<24)>>6);
-    M2C_FIELD(p,s8 *,0x5a)=12;
+    if(!(keys&GetSpriteButtonMask(sprite)))return;
+    if(M2C_FIELD(sprite,s8 *,MENU_SPRITE_TIMER)<0)return;
+    frame=(u16)(((u32)(M2C_FIELD(sprite,u8 *,MENU_SPRITE_BASE)<<28)>>28)+1);
+    bits=M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME);
+    M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME)=(bits&~0x03fc0000)|((frame<<24)>>6);
+    M2C_FIELD(sprite,s8 *,MENU_SPRITE_TIMER)=12;
     return;
 fail:
-    func_020aaeb0(p);
+    UpdateUnitSpriteFrame(sprite);
 }
 
 void func_020ab150(void *arg0, s16 arg1) {
@@ -386,7 +392,7 @@ void func_020ab150(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, void **, 0x60) = temp_r0;
 }
 
-u16 func_020ab194(void *arg0) {
+u16 GetSpriteButtonMask(void *arg0) {
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 0x60);
@@ -491,10 +497,10 @@ s16 GetScrollLimit(void *arg0) {
 }
 #pragma opt_propagation reset
 void ScrollListTo(void *arg0,s16 arg1,s32 arg2){
- s32 func_0207c8ec(s16,s16);s32 GetSpriteAnimValue(void *);
+ s32 Divide(s16,s16);s32 GetSpriteAnimValue(void *);
  s32 mul;s16 r6,r7,v;
  M2C_FIELD(arg0,s16 *,12)=arg1;
- mul=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));
+ mul=M2C_FIELD(arg0,u8 *,10)*(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));
  M2C_FIELD(arg0,s16 *,40)=0;M2C_FIELD(arg0,s16 *,42)=-mul;
  r6=M2C_FIELD(arg0,s16 *,42);r7=M2C_FIELD(arg0,s16 *,60);
  M2C_FIELD(arg0,s16 *,62)=GetSpriteAnimValue((u8 *)arg0+48);
@@ -505,7 +511,7 @@ void ScrollListTo(void *arg0,s16 arg1,s32 arg2){
 
 #pragma opt_common_subs off
 void func_020ab3b0(void *p,s32 value,s32 flag){
-s32 func_0207c8ec(s16,s16);s32 Modulo(s16,s16);void UpdateListScroll(void *);
+s32 Divide(s16,s16);s32 Modulo(s16,s16);void UpdateListScroll(void *);
 s32 limit,v,y; s16 a,b;
 *(volatile s32 *)((s8 *)p+0x14)=value;
 if(*(u8 *)((s8 *)p+0x24)){
@@ -514,7 +520,7 @@ while(v>limit){v=*(volatile s32 *)((s8 *)p+0x1c); value=*(volatile s32 *)((s8 *)
 limit=*(volatile s32 *)((s8 *)p+0x1c);
 while(v<limit){v=*(volatile s32 *)((s8 *)p+0x18);value=*(volatile s32 *)((s8 *)p+0x14);v=value+(v-limit+1);*(volatile s32 *)((s8 *)p+0x14)=v;limit=*(volatile s32 *)((s8 *)p+0x1c);}
 }else{limit=*(volatile s32 *)((s8 *)p+0x18);v=*(volatile s32 *)((s8 *)p+0x14);if(v<=limit){limit=*(volatile s32 *)((s8 *)p+0x1c);if(v>=limit)limit=v;}*(volatile s32 *)((s8 *)p+0x14)=limit;}
-y=*(volatile u8 *)((s8 *)p+0xa)*(s16)func_0207c8ec((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
+y=*(volatile u8 *)((s8 *)p+0xa)*(s16)Divide((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
 *(volatile s16 *)((s8 *)p+0x2c)=*(volatile u8 *)((s8 *)p+0xb)*(s16)Modulo((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
 *(volatile s16 *)((s8 *)p+0x2e)=y;UpdateListScroll(p);if(flag!=1)return;
 a=*(s16 *)((s8 *)p+0x2c);*(s16 *)((s8 *)p+0x52)=a;*(s16 *)((s8 *)p+0x50)=a;

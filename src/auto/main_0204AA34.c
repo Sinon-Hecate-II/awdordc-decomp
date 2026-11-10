@@ -1,47 +1,48 @@
 /* 19 functions from 0x0204AA34 to 0x0204B9B8 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 
 s32 func_0204aa34(void) {
-extern M2C_UNK data_0213dcac,data_020fd068,data_020fd090,data_020fd014;
+extern M2C_UNK gGhiConnectionList,data_020fd068,data_020fd090,data_020fd014;
 s32 i, newCount, oldCount; void *p;
-for(i=0;i<M2C_FIELD(&data_0213dcac,s32 *,12);i++) {
-if(M2C_FIELD(M2C_FIELD(&data_0213dcac,void ***,4)[i],s32 *,0)==0)return i;
+for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) {
+if(M2C_FIELD(M2C_FIELD(&gGhiConnectionList,void ***,4)[i],s32 *,0)==0)return i;
 }
-if(M2C_FIELD(&data_0213dcac,s32 *,0)!=M2C_FIELD(&data_0213dcac,s32 *,12))
+if(M2C_FIELD(&gGhiConnectionList,s32 *,0)!=M2C_FIELD(&gGhiConnectionList,s32 *,12))
 AssertFailed(&data_020fd068,&data_020fd090,&data_020fd014,0x33);
-oldCount=M2C_FIELD(&data_0213dcac,s32 *,12);
+oldCount=M2C_FIELD(&gGhiConnectionList,s32 *,12);
 newCount=oldCount+4;
-p=gpiRealloc(M2C_FIELD(&data_0213dcac,void **,4),newCount*4);
+p=gpiRealloc(M2C_FIELD(&gGhiConnectionList,void **,4),newCount*4);
 if(p==NULL)return -1;
-M2C_FIELD(&data_0213dcac,void **,4)=p;
+M2C_FIELD(&gGhiConnectionList,void **,4)=p;
 for(i=oldCount;i<newCount;i++){
-M2C_FIELD(&data_0213dcac,void ***,4)[i]=gpiMalloc(0x184);
-p=M2C_FIELD(&data_0213dcac,void ***,4)[i];
+M2C_FIELD(&gGhiConnectionList,void ***,4)[i]=gpiMalloc(0x184);
+p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
 if(p==NULL){
-for(--i;i>=oldCount;--i)gpiFree(M2C_FIELD(&data_0213dcac,void ***,4)[i]);
+for(--i;i>=oldCount;--i)gpiFree(M2C_FIELD(&gGhiConnectionList,void ***,4)[i]);
 return -1;
 }
 M2C_FIELD(p,s32 *,0)=0;
 }
-M2C_FIELD(&data_0213dcac,s32 *,12)=newCount;
+M2C_FIELD(&gGhiConnectionList,s32 *,12)=newCount;
 return oldCount;
 }
 
 #pragma push
 #pragma opt_propagation off
 void *func_0204ab50(void) {
-extern M2C_UNK data_0213dcac;
-M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
+extern M2C_UNK gGhiConnectionList;
+M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
 s32 ghiInitBuffer(void *,void *,s32,s32);
-s32 func_0204ace8(void *);
+s32 ghiFreeConnection(void *);
 s32 i, ok; void *p;
-func_0204a610(); i=func_0204aa34();
-if(i==-1){func_0204a614();return NULL;}
-p=M2C_FIELD(&data_0213dcac,void ***,4)[i];
+ghiLockMutex(); i=func_0204aa34();
+if(i==-1){ghiUnlockMutex();return NULL;}
+p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
 func_02065210(p,0,0x184);
 M2C_FIELD(p,volatile s32 *,0)=1;
 M2C_FIELD(p,volatile s32 *,4)=i;
-{s32 old=M2C_FIELD(&data_0213dcac,s32 *,8); M2C_FIELD(&data_0213dcac,s32 *,8)=old+1; M2C_FIELD(p,s32 *,8)=old;}
+{s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,8); M2C_FIELD(&gGhiConnectionList,s32 *,8)=old+1; M2C_FIELD(p,s32 *,8)=old;}
 M2C_FIELD(p,s32 *,12)=0;
 M2C_FIELD(p,s32 *,16)=0;
 M2C_FIELD(p,s32 *,20)=0;
@@ -84,55 +85,83 @@ ok=ghiInitBuffer(p,p+0x50,0x800,0x1000);
 if(ok)ok=ghiInitBuffer(p,p+0x74,0x800,0x800);
 if(ok)ok=ghiInitBuffer(p,p+0x98,0x800,0x400);
 if(!ok){
-((void (*)(void *))&func_0204ace8)(p);func_0204a614();return NULL;
+((void (*)(void *))&ghiFreeConnection)(p);ghiUnlockMutex();return NULL;
 }
-{s32 old=M2C_FIELD(&data_0213dcac,s32 *,0); M2C_FIELD(&data_0213dcac,s32 *,0)=old+1;}
-func_0204a614();return p;
+{s32 old=M2C_FIELD(&gGhiConnectionList,s32 *,0); M2C_FIELD(&gGhiConnectionList,s32 *,0)=old+1;}
+ghiUnlockMutex();return p;
 }
 #pragma pop
-s32 func_0204ace8(void *obj) {
-extern M2C_UNK data_020fd0a4,data_020fd090,data_020fd024,data_020fd0b0,data_0213dcac,data_020fd0cc,data_020fd0f4;
-M2C_UNK func_0204a610(); M2C_UNK func_0204a614(); M2C_UNK func_020496cc(s32,M2C_UNK); M2C_UNK func_020496b8(s32);
-void ghiFreeBuffer(void *); void func_0204bc64(void *); s32 func_0204b688(void *); void func_0204b690(s32 *);
-if(!obj)AssertFailed(&data_020fd0a4,&data_020fd090,&data_020fd024,0xb3);
-if(M2C_FIELD(obj,s32 *,4)<0)AssertFailed(&data_020fd0b0,&data_020fd090,&data_020fd024,0xb4);
-if(M2C_FIELD(obj,s32 *,4)>=M2C_FIELD(&data_0213dcac,s32 *,12))AssertFailed(&data_020fd0cc,&data_020fd090,&data_020fd024,0xb5);
-if(!M2C_FIELD(obj,s32 *,0))AssertFailed(&data_020fd0f4,&data_020fd090,&data_020fd024,0xb6);
-if(!obj)return 0; if(!M2C_FIELD(obj,s32 *,0))return 0; if(M2C_FIELD(obj,s32 *,4)<0)return 0; if(M2C_FIELD(obj,s32 *,4)>=M2C_FIELD(&data_0213dcac,s32 *,12))return 0;
-func_0204a610();
-gpiFree(M2C_FIELD(obj,s32 *,20));gpiFree(M2C_FIELD(obj,s32 *,24));gpiFree(M2C_FIELD(obj,s32 *,36));gpiFree(M2C_FIELD(obj,s32 *,40));gpiFree(M2C_FIELD(obj,s32 *,264));gpiFree(M2C_FIELD(obj,s32 *,348));
-if(M2C_FIELD(obj,s32 *,72)!=-1){func_020496cc(M2C_FIELD(obj,s32 *,72),2);func_020496b8(M2C_FIELD(obj,s32 *,72));}
-ghiFreeBuffer(obj+0x50);ghiFreeBuffer(obj+0x74);ghiFreeBuffer(obj+0x98);ghiFreeBuffer(obj+0xbc);
-if(M2C_FIELD(obj,s32 *,0x140))func_0204bc64(obj);
-if(M2C_FIELD(obj,void **,0x13c) && func_0204b688(M2C_FIELD(obj,void **,0x13c))){func_0204b690(M2C_FIELD(obj,s32 **,0x13c));M2C_FIELD(obj,s32 *,0x13c)=0;}
-if(M2C_FIELD(obj,s32 *,0x16c)){if(M2C_FIELD(obj,void **,0x178)) M2C_FIELD(obj,void (**)(void *,void *),0x178)(obj,obj+0x164);M2C_FIELD(obj,s32 *,0x16c)=0;}
-{s32 *counts=&data_0213dcac; M2C_FIELD(obj,s32 *,0)=0; (*counts)--;}func_0204a614();return 1;
+/* Release a connection slot: free the strings, buffers and socket it owns,
+   run the encryptor cleanup and mark the slot free again. */
+s32 ghiFreeConnection(void *connection) {
+    extern M2C_UNK data_020fd0a4, data_020fd090, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
+    M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
+    M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK func_020496b8(s32);
+    void ghiFreeBuffer(void *); void func_0204bc64(void *);
+    s32 func_0204b688(void *); void func_0204b690(s32 *);
+    GHIConnection *conn = (GHIConnection *)connection;
+
+    if (!connection) AssertFailed(&data_020fd0a4, &data_020fd090, &data_020fd024, 0xb3);
+    if (conn->request < 0) AssertFailed(&data_020fd0b0, &data_020fd090, &data_020fd024, 0xb4);
+    if (conn->request >= ((GHIConnectionList *)&gGhiConnectionList)->length) AssertFailed(&data_020fd0cc, &data_020fd090, &data_020fd024, 0xb5);
+    if (!conn->inUse) AssertFailed(&data_020fd0f4, &data_020fd090, &data_020fd024, 0xb6);
+    if (!connection) return 0;
+    if (!conn->inUse) return 0;
+    if (conn->request < 0) return 0;
+    if (conn->request >= ((GHIConnectionList *)&gGhiConnectionList)->length) return 0;
+    ghiLockMutex();
+    gpiFree(conn->url);
+    gpiFree(conn->host);
+    gpiFree(conn->path);
+    gpiFree(conn->headers);
+    gpiFree(conn->redirectURL);
+    gpiFree(conn->serverOverride);
+    if (conn->socket != -1) {
+        func_020496cc(conn->socket, 2);
+        func_020496b8(conn->socket);
+    }
+    ghiFreeBuffer(&conn->buffer);
+    ghiFreeBuffer(&conn->readBuffer);
+    ghiFreeBuffer(&conn->decryptBuffer);
+    ghiFreeBuffer(&conn->bodyBuffer);
+    if (conn->postItems) func_0204bc64(conn);
+    if (conn->postData && func_0204b688(conn->postData)) {
+        func_0204b690(conn->postData);
+        conn->postData = 0;
+    }
+    if (conn->encryptor) {
+        if (conn->encryptorCleanup) conn->encryptorCleanup(conn, conn->encryptorState);
+        conn->encryptor = 0;
+    }
+    {s32 *counts = &gGhiConnectionList; M2C_FIELD(conn, s32 *, 0) = 0; (*counts)--;}
+    ghiUnlockMutex();
+    return 1;
 }
 
 void *func_0204aecc(s32 arg0) {
- extern M2C_UNK data_020fd108, data_020fd090, data_020fd050, data_020fd118, data_0213dcac;
- M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
+ extern M2C_UNK data_020fd108, data_020fd090, data_020fd050, data_020fd118, gGhiConnectionList;
+ M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
  void *p;
  if(arg0<0) AssertFailed(&data_020fd108,&data_020fd090,&data_020fd050,0x101);
- if(arg0>=M2C_FIELD(&data_0213dcac,s32 *,12)) AssertFailed(&data_020fd118,&data_020fd090,&data_020fd050,0x102);
- func_0204a610();
- if(arg0<0 || arg0>=M2C_FIELD(&data_0213dcac,s32 *,12)) {func_0204a614();return NULL;}
- p=M2C_FIELD(&data_0213dcac,void ***,4)[arg0];
+ if(arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) AssertFailed(&data_020fd118,&data_020fd090,&data_020fd050,0x102);
+ ghiLockMutex();
+ if(arg0<0 || arg0>=M2C_FIELD(&gGhiConnectionList,s32 *,12)) {ghiUnlockMutex();return NULL;}
+ p=M2C_FIELD(&gGhiConnectionList,void ***,4)[arg0];
  if(M2C_FIELD(p,s32 *,0)==0) p=NULL;
- func_0204a614(); return p;
+ ghiUnlockMutex(); return p;
 }
 
 void func_0204af74(M2C_UNK *arg0) {
- extern M2C_UNK data_0213dcac;
- M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
+ extern M2C_UNK gGhiConnectionList;
+ M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
  s32 i; void *p;
- if(M2C_FIELD(&data_0213dcac,s32 *,0)<=0) return;
- func_0204a610();
- for(i=0;i<M2C_FIELD(&data_0213dcac,s32 *,12);i++) {
- p=M2C_FIELD(&data_0213dcac,void ***,4)[i];
+ if(M2C_FIELD(&gGhiConnectionList,s32 *,0)<=0) return;
+ ghiLockMutex();
+ for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) {
+ p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
  if(M2C_FIELD(p,s32 *,0)!=0) ((void (*)(void *))arg0)(p);
  }
- func_0204a614();
+ ghiUnlockMutex();
 }
 
 /* Reset and release an object's resources and counters, logging if null/empty. */
@@ -177,16 +206,16 @@ void func_0204afd8(void *obj) {
 }
 
 void func_0204b0dc(void) {
- extern M2C_UNK data_0213dcac; s32 func_0204ace8(void *);
+ extern M2C_UNK gGhiConnectionList; s32 ghiFreeConnection(void *);
  void func_0204af74(M2C_UNK *);
  s32 i;
- if(M2C_FIELD(&data_0213dcac,void **,4)==NULL)return;
- func_0204af74((M2C_UNK *)func_0204ace8);
- for(i=0;i<M2C_FIELD(&data_0213dcac,s32 *,12);i++) gpiFree(M2C_FIELD(&data_0213dcac,void ***,4)[i]);
- gpiFree(M2C_FIELD(&data_0213dcac,void **,4));
- M2C_FIELD(&data_0213dcac,void **,4)=NULL;
- M2C_FIELD(&data_0213dcac,s32 *,12)=0;
- M2C_FIELD(&data_0213dcac,s32 *,0)=0;
+ if(M2C_FIELD(&gGhiConnectionList,void **,4)==NULL)return;
+ func_0204af74((M2C_UNK *)ghiFreeConnection);
+ for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) gpiFree(M2C_FIELD(&gGhiConnectionList,void ***,4)[i]);
+ gpiFree(M2C_FIELD(&gGhiConnectionList,void **,4));
+ M2C_FIELD(&gGhiConnectionList,void **,4)=NULL;
+ M2C_FIELD(&gGhiConnectionList,s32 *,12)=0;
+ M2C_FIELD(&gGhiConnectionList,s32 *,0)=0;
 }
 
 void func_0204b154(void *arg0) {
@@ -218,7 +247,7 @@ void func_0204da30(void *);
 s32 func_0204b210(void *operation) {
     extern M2C_UNK data_020fd170, data_020fd17c, data_020fd158, data_020fd188;
     void func_0204a498(void *);
-    s32 func_0204ace8(void *);
+    s32 ghiFreeConnection(void *);
     s32 status;
 
     if (!operation) AssertFailed(&data_020fd170, &data_020fd17c, &data_020fd158, 0x5B);
@@ -242,29 +271,29 @@ s32 func_0204b210(void *operation) {
     else {
         func_0204b154(operation);
         func_0204a498(operation);
-        func_0204ace8(operation);
+        ghiFreeConnection(operation);
     }
     return status;
 }
 
 void func_0204b378(void) {
- M2C_UNK func_0204a608(); M2C_UNK func_0204a610(); M2C_UNK func_0204a614();
+ M2C_UNK func_0204a608(); M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
  extern s32 data_020fd00c, data_020fd010, data_0213dcbc;
- func_0204a610();
+ ghiLockMutex();
  if (++data_0213dcbc == 1) { func_0204a608(); data_020fd010=125; data_020fd00c=250; return; }
- func_0204a614();
+ ghiUnlockMutex();
 }
 
 void func_0204b3cc(void) {
     M2C_UNK func_0204a60c();
-    M2C_UNK func_0204a610();
-    M2C_UNK func_0204a614();
+    M2C_UNK ghiLockMutex();
+    M2C_UNK ghiUnlockMutex();
     void func_0204b0dc();
     extern s32 gHttpServerOverride;
     extern s32 data_0213dcbc;
     s32 temp_r1;
 
-    func_0204a610();
+    ghiLockMutex();
     temp_r1 = data_0213dcbc - 1;
     data_0213dcbc = temp_r1;
     if (temp_r1 == 0) {
@@ -273,11 +302,11 @@ void func_0204b3cc(void) {
             gpiFree();
             gHttpServerOverride = 0;
         }
-        func_0204a614();
+        ghiUnlockMutex();
         func_0204a60c();
         return;
     }
-    func_0204a614();
+    ghiUnlockMutex();
 }
 
 s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
@@ -303,13 +332,13 @@ s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 po
     M2C_FIELD(connection, s32 *, 12) = 0;
     M2C_FIELD(connection, void **, 20) = gpiStringDup(url);
     if (!M2C_FIELD(connection, void **, 20)) {
-        func_0204ace8(connection);
+        ghiFreeConnection(connection);
         return -1;
     }
     if (headers && *headers) {
         M2C_FIELD(connection, void **, 40) = gpiStringDup(headers);
         if (!M2C_FIELD(connection, void **, 40)) {
-            func_0204ace8(connection);
+            ghiFreeConnection(connection);
             return -1;
         }
     }
@@ -325,11 +354,11 @@ s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 po
     else
         bufferInitialized = ghiInitBuffer(connection, (u8 *)connection + 0xbc, 0x800, 0x800);
     if (!bufferInitialized) {
-        func_0204ace8(connection);
+        ghiFreeConnection(connection);
         return -1;
     }
     if (post && !func_0204bad4(connection)) {
-        func_0204ace8(connection);
+        ghiFreeConnection(connection);
         return -1;
     }
     if (blocking) {

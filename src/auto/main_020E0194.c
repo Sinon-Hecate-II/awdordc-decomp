@@ -6,14 +6,14 @@ M2C_UNK func_020e02ac();
 typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
-s32 func_020846a4(void);s32 func_0208477c(void);s32 func_02084a6c(void);
+s32 IsLinkSessionActive(void);s32 func_0208477c(void);s32 GetOverlayEventFlags(void);
 s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
-if(!func_020846a4())return 0;
+if(!IsLinkSessionActive())return 0;
 if(func_0208477c())return 0;
-if(func_02084a6c()){
+if(GetOverlayEventFlags()){
 M2C_FIELD(entity,u16 *,0x48)|=0x1000;
 if(func_0208b5ec())func_0208af20();
 saved=gCur3DSpriteEngine;i=0;
@@ -271,7 +271,7 @@ void func_020e0af8(void) {
 
 /* Updates child objects and resumes the entity script when its primary child is ready or A is pressed. */
 void func_020e0b04(void *entity) {
-    s32 func_020846a4(void); s32 func_0208477c(void); s32 func_02084a6c(void);
+    s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
     s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
     void func_020d47f0(void); void SetSpriteAnimation(void *, s32);

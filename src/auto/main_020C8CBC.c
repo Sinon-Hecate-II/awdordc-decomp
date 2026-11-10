@@ -25,22 +25,22 @@ loop_1:
 s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void func_020868ac(s32,s32);s32 func_020c8054(s32);void func_020bef44(s32);func_02086844(a,0);func_02086878(a,0);func_020868ac(a-225,0);if(!func_020c8054(a))return;func_020bef44(8);}
 
 void func_020c8d50(M2C_UNK arg0) {
-    s32 func_020c79ec();
+    s32 GetMapRecordBuffer();
     M2C_UNK func_020c8624(M2C_UNK, s32);
     M2C_UNK func_020c879c();
     s32 temp_r4;
 
-    temp_r4 = func_020c79ec();
+    temp_r4 = GetMapRecordBuffer();
     func_020c879c();
     func_020c8d0c(arg0);
     func_020c8624(arg0, temp_r4);
 }
 
 s32 func_020c8d7c(s32 a){
-s32 func_020c79ec();void *func_020c7a08();s32 func_020c8018(s32);
+s32 GetMapRecordBuffer();void *func_020c7a08();s32 func_020c8018(s32);
 s32 func_020be324(u8,s32);s32 func_0207c368(void *,s32);
 extern u8 data_02164d64[];
-s32 n=func_020c79ec(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
+s32 n=GetMapRecordBuffer(),v,b;u32 c;void *p;func_020c79f8();p=func_020c7a08();b=0;
 if(a>=225) b=(a<425);c=(b==0)?0:1;if(!c)return 0;
 v=func_020c8018(a);if(!func_020be324((u8)(v+9),n))return 0;
 if(!func_0207c368(p+6,33))return 0;
@@ -172,7 +172,7 @@ void func_020c9120(s16 arg0, s32 arg1) {
     extern M2C_UNK data_0212b0ac;
     void *temp_r0;
 
-    temp_r0 = func_01ffa770(&data_0212b0ac);
+    temp_r0 = FindObjectByClass(&data_0212b0ac);
     if (temp_r0 == NULL) {
         return;
     }
@@ -338,12 +338,12 @@ func_020c960c(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FI
 M2C_FIELD(arg0,s32 *,0x50)=0x200;
 M2C_FIELD(arg0,s32 *,0x4c)=-1;
 func_020c9654(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));
-func_020cc6a4();
+CancelMapCursorAnimation();
 }
 #pragma pop
 void func_020c97c0(void *arg0) {
     s32 func_02077700(void);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     M2C_UNK DrawSprite3D(s32, s32 *, s32, M2C_UNK);
     s32 func_01ffa6fc(void *);
     extern u16 *gKeyState;
@@ -358,7 +358,7 @@ void func_020c97c0(void *arg0) {
 
     temp_r0 = func_02077700();
     field = M2C_FIELD(arg0, s32 *, 0x50);
-    temp_r0 = func_0207c8ec(temp_r0 * field, 0x100);
+    temp_r0 = Divide(temp_r0 * field, 0x100);
     sp[0] = M2C_FIELD(arg0, s32 *, 0x34) * 0x30;
     sp[1] = M2C_FIELD(arg0, s32 *, 0x38) * 0x30;
     sp[2] = 0x8B1;
@@ -391,11 +391,11 @@ void func_020c989c(void *arg0) {
 }
 
 u8 func_020c98b4(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_0212b3e4;
     u8 var_r0;
 
-    if (func_01ffa770(&data_0212b3e4) != 0) {
+    if (FindObjectByClass(&data_0212b3e4) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -404,7 +404,7 @@ u8 func_020c98b4(void) {
 }
 
 s32 func_020c98d8(s32 x, s32 y, s32 mode) {
-    M2C_UNK func_01ffa770(M2C_UNK *);
+    M2C_UNK FindObjectByClass(M2C_UNK *);
     void SetFileDirectory(M2C_UNK *);
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
@@ -455,7 +455,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
 
     if (mode != 0 && mode != 1 && mode != 2) goto second_path;
 
-    if (func_01ffa770(&data_0212b3e4) == 0) {
+    if (FindObjectByClass(&data_0212b3e4) == 0) {
         SetFileDirectory(&data_0212b77c);
         func_020813c4(GetLocalizedFileName(&data_0212b788), 0x329a0);
         func_0208143c(&data_0212b794, 0x1560, 0x20);

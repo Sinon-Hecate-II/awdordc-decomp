@@ -7,7 +7,7 @@ static inline void Blend129(s32 n){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpri
 static inline void Store129(s32 off,u16 n){M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,off)=n;}
 
 void func_ov004_02212918(void *state){
-s32 EaseInterpolate(s32,s16,s16,u16,s32);void func_0208c830(void *,s32);void func_0208c7b8(void *,s32);void func_ov004_022124e0(s32,s32,s32,s32);void func_ov004_02212688(s32,s32,s32);
+s32 EaseInterpolate(s32,s16,s16,u16,s32);void func_0208c830(void *,s32);void func_0208c7b8(void *,s32);void func_ov004_022124e0(s32,s32,s32,s32);void DrawWindowFrameBar(s32,s32,s32);
 s32 saved,screen,engine,value;
 saved=gCur3DSpriteEngine;
 for(screen=0;screen<2;screen++){
@@ -41,7 +41,7 @@ func_0208c7b8(M2C_FIELD(state,void **,0x44),32);M2C_FIELD(state,u8 *,0x3b)++;bre
 Store129(0x3a,0);Store129(0x42,0xffb0);Store129(0x3c,0);Store129(0x44,0xffb0);
 Store129(0x3e,(u8)(M2C_FIELD(state,u16 *,0x36)>>1));Store129(0x46,0);
 func_ov004_022124e0(80,56,0,M2C_FIELD(state,u8 *,0x3a));
-func_ov004_02212688(32,96-M2C_FIELD(state,u8 *,0x3c),0);func_ov004_02212688(32,96+M2C_FIELD(state,u8 *,0x3c),0);
+DrawWindowFrameBar(32,96-M2C_FIELD(state,u8 *,0x3c),0);DrawWindowFrameBar(32,96+M2C_FIELD(state,u8 *,0x3c),0);
 }}
 gCur3DSpriteEngine=saved;M2C_FIELD(state,u16 *,0x36)++;
 }

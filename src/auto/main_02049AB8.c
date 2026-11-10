@@ -297,11 +297,11 @@ void func_0204a60c(void) {
 
 }
 
-void func_0204a610(void) {
+void ghiLockMutex(void) {
 
 }
 
-void func_0204a614(void) {
+void ghiUnlockMutex(void) {
 
 }
 

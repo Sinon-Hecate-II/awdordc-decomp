@@ -75,7 +75,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 void func_020b939c(void *arg0) {
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
-    s32 func_020cd674();
+    s32 IsFastAnimation();
     extern void **gCurrentMap;
     void *temp_r1;
 
@@ -83,7 +83,7 @@ void func_020b939c(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x6E) = 8;
     temp_r1 = *gCurrentMap;
     PlaySoundAtTile(0x111, M2C_FIELD(temp_r1, s16 *, 0x52C2), M2C_FIELD(temp_r1, s16 *, 0x52C4));
-    if (func_020cd674() == 0) {
+    if (IsFastAnimation() == 0) {
         return;
     }
     DeleteSpriteObject(arg0);
@@ -144,7 +144,7 @@ void func_020b96e0(u8 *a) {
     s32 func_020d2dcc(s32);
     M2C_UNK PlaySoundEffect(s32);
     void func_02096b6c(u32);
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020b2178();
     M2C_UNK func_01ffa9bc(M2C_UNK *);
     void func_020b953c(s32, s32);
@@ -161,7 +161,7 @@ void func_020b96e0(u8 *a) {
         PlaySoundEffect(0x1001d);
         func_02096b6c(0xc0000332);
     } else {
-        void *result = func_01ffa770(&data_021291b0);
+        void *result = FindObjectByClass(&data_021291b0);
         func_020b953c(data_0215d858[index * 2], (s32)result);
     }
     func_020b2178();

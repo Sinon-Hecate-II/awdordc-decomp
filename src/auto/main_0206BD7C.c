@@ -331,7 +331,7 @@ s32 func_0206ccb8(void *arg0, M2C_UNK arg1, s32 arg2) {
     return result;
 }
 
-void func_0206ccf8(s32 arg0, s32 arg1, s32 arg2, ...) {
+void StringFormatWide(s32 arg0, s32 arg1, s32 arg2, ...) {
     void func_0206cd20();
     char *args;
     args = (char *)(((u32)&arg2 & ~3U) + 4);

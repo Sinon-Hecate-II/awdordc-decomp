@@ -35,11 +35,11 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void func_020af04c(s32, s32, s32, s32);
     void SetFileDirectory(void *);
     s32 GetLocalizedFileName(void *);
-    void func_020814e4(void);
-    void func_02081590(s32,s32);
-    void func_020815fc(s32,s32,s32);
-    void func_02081528(void);
-    void func_020cf0a8(u16);
+    void OpenNarcArchive(void);
+    void LoadNarcFileDecompressed(s32,s32);
+    void LoadNarcFileToSpriteBuffer(s32,s32,s32);
+    void CloseNarcArchive(void);
+    void LoadBattleMap(u16);
     void func_ov003_021ff3d4(void *);
     void func_02089438(void *);
     void func_02086608(s32);
@@ -130,11 +130,11 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 
     SetFileDirectory(data_ov005_02220198);
     GetLocalizedFileName(data_ov005_022201a0);
-    func_020814e4();
-    func_02081590(GetLocalizedFileName(data_ov005_022201b0),M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
-    func_02081590(GetLocalizedFileName(data_ov005_022201c0),M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
-    func_020815fc(GetLocalizedFileName(data_ov005_022201d0),0,0x20);
-    func_02081528();
+    OpenNarcArchive();
+    LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_022201b0),M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
+    LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_022201c0),M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+    LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_ov005_022201d0),0,0x20);
+    CloseNarcArchive();
     {
         void *cur = (void *)gCur3DSpriteEngine;
         u8 val = M2C_FIELD(cur, u8 *, 0x46);
@@ -145,7 +145,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     gCur3DSpriteEngine = data_027e00c4;
     {
         void *map = *gCurrentMap;
-        func_020cf0a8(M2C_FIELD(map, u16 *, 0x5142));
+        LoadBattleMap(M2C_FIELD(map, u16 *, 0x5142));
     }
     func_ov003_021ff3d4((void *)arg0);
     gCur3DSpriteEngine = savedEngine;
@@ -334,21 +334,21 @@ gCur3DSpriteEngine = old;
 }
 
 void func_ov005_02211b4c(void) {
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     extern M2C_UNK data_0215d9b8;
     extern s32 gHistoryMenu;
     s32 timeVal;
 
     timeVal = M2C_FIELD(&data_0215d9b8, s32 *, 0x74);
-    M2C_FIELD(gHistoryMenu, s32 *, 4) = func_0207c8ec(timeVal, 0x34BC0);
+    M2C_FIELD(gHistoryMenu, s32 *, 4) = Divide(timeVal, 0x34BC0);
     if (M2C_FIELD(gHistoryMenu, s32 *, 4) > 0x3E7) {
         M2C_FIELD(gHistoryMenu, s32 *, 4) = 0x3E7;
         M2C_FIELD(gHistoryMenu, s32 *, 8) = 0x3B;
         M2C_FIELD(gHistoryMenu, s32 *, 12) = 0x3B;
         return;
     }
-    M2C_FIELD(gHistoryMenu, s32 *, 8) = func_0207c8ec(timeVal, 0xE10) % 60;
-    M2C_FIELD(gHistoryMenu, s32 *, 12) = func_0207c8ec(timeVal, 0x3C) % 60;
+    M2C_FIELD(gHistoryMenu, s32 *, 8) = Divide(timeVal, 0xE10) % 60;
+    M2C_FIELD(gHistoryMenu, s32 *, 12) = Divide(timeVal, 0x3C) % 60;
 }
 
 void func_ov005_02211c24(s32 arg0) {

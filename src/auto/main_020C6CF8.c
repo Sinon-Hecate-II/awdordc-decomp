@@ -152,7 +152,7 @@ void func_020c727c(void) {
 }
 
 void func_020c72b4(void) {
- s32 func_ov000_0216cd78(s32,s32); s32 func_ov000_0216cd90(s32);
+ s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
  void func_0207c3dc(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *p; s32 n; s32 a; s32 b;
@@ -162,14 +162,14 @@ void func_020c72b4(void) {
  p = base + 0x67a4 + ((n >> 6)+1)*0x8c;
  a = M2C_FIELD(base + n*14,u8 *,0x59a4);
  b = p[0x1d];
- a = func_ov000_0216cd78((u32)(a << 26) >> 26,p[0x29]);
+ a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
  func_0207c3dc(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4780,0x80,0);
  func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
  func_0209c720(0,0x23c,10,2,2);
 }
 
 void func_020c7378(void) {
- s32 func_ov000_0216cd78(s32,s32); s32 func_ov000_0216cd90(s32);
+ s32 GetUnitIconTiles(s32,s32); s32 func_ov000_0216cd90(s32);
  void func_0207c3dc(s32,void *,s32,s32); void func_01ff9e44(s32,s32,s32); void func_0209c720(s32,s32,s32,s32,s32);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  u8 *base; u8 *p; s32 n; s32 a; s32 b;
@@ -179,7 +179,7 @@ void func_020c7378(void) {
  p = base + 0x67a4 + ((n >> 6)+1)*0x8c;
  a = M2C_FIELD(base + n*14,u8 *,0x59a4);
  b = p[0x1d];
- a = func_ov000_0216cd78((u32)(a << 26) >> 26,p[0x29]);
+ a = GetUnitIconTiles((u32)(a << 26) >> 26,p[0x29]);
  func_0207c3dc(a,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x4800,0x80,0);
  func_01ff9e44(func_ov000_0216cd90(b),0x340,0x20);
  func_0209c720(1,0x240,10,2,2);
@@ -272,11 +272,11 @@ void func_020c7654(void) {
 
 void func_020c7688(void *a) {
 extern void **gCurrentMap;
-s32 func_020946d0(void *); s32 func_020d4dd0(void); s32 func_020bcc34(void); s32 func_020bddd4(void);
+s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 func_020bcc34(void); s32 func_020bddd4(void);
 M2C_UNK func_020d468c(); M2C_UNK func_ov000_02199f50(s32,u8,s32,s32);
 M2C_UNK func_0207b764(s16,s16);
 u32 flags=0;
-if(func_020946d0(a))return;
+if(IsDialogActive(a))return;
 func_020bdfdc();
 if(func_020d4dd0()){
 flags|=func_020bcc34();flags|=func_020bddd4();
@@ -380,17 +380,17 @@ void func_020c79c4(s32 arg0, s32 arg1, M2C_UNK arg2) {
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
 }
 
-s32 func_020c79ec(void) {
+s32 GetMapRecordBuffer(void) {
     s32 func_020be120();
     return func_020be120();
 }
 
 s32 func_020c79f8(void) {
-    return func_020c79ec() + 0x54;
+    return GetMapRecordBuffer() + 0x54;
 }
 
 s32 func_020c7a08(void) {
-    return func_020c79ec();
+    return GetMapRecordBuffer();
 }
 
 s32 func_020c7a14(void) {

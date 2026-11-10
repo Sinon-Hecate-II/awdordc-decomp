@@ -196,7 +196,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     extern void **gCurrentMap;
     s32 func_ov000_0216ca8c(u8, u8);
     s32 IsUnitSelected(void *);
-    void func_020d03ec(s32, u8, u8);
+    void IsCellInPlayerMoveRange(s32, u8, u8);
     s32 func_020a27f8(s32, s32);
     u8 *a;
     u8 *r7;
@@ -296,7 +296,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
         ptr = a + r5 + 0x16;
     } else {
         idx3=UnitOwner80(r7);
-        func_020d03ec(idx3, r7[1], r7[2]);
+        IsCellInPlayerMoveRange(idx3, r7[1], r7[2]);
         M2C_FIELD(a+r5,u8 *,0x16) = 1;
         ptr = a + r5 + 0x16;
     }

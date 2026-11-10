@@ -3,16 +3,16 @@
 
 void func_020b25b8(void){
 u8 func_020b2714(void);void func_020b2d5c(void*);
-extern u16 **gCur3DSpriteEngine;extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*data_02128690;extern u8 data_0215c45c[];
+extern u16 **gCur3DSpriteEngine;extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;extern u8 gSpriteSlots[];
 void *old,*p;u8 mode;s32 j,i;u8 *q;
 if(func_020b2714())return;
 old=gCur3DSpriteEngine;
 i=0;do{
 if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
-mode=M2C_FIELD(data_02128690,u8*,0x24);
+mode=M2C_FIELD(gSpriteSlotManager,u8*,0x24);
 if((mode!=0||p==g3DSpriteEngineMain)&&(mode!=1||p==g3DSpriteEngineSub)&&(mode!=3||p==old)){
-j=0;q=data_0215c45c;
+j=0;q=gSpriteSlots;
 do{if(q[1])func_020b2d5c(q);j++;q+=60;}while(j<85);
 func_020b1d84();
 }
@@ -21,41 +21,41 @@ gCur3DSpriteEngine=old;
 }
 
 void func_020b269c(void) {
-    extern void *data_02128690;
-    M2C_FIELD(data_02128690, u8 *, 0x26) = (u8) (M2C_FIELD(data_02128690, u8 *, 0x26) + 1);
+    extern void *gSpriteSlotManager;
+    M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) = (u8) (M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) + 1);
 }
 
 u8 func_020b26b8(void) {
-extern void *data_02128690;
-return M2C_FIELD(data_02128690,u8 *,0x26)!=0;
+extern void *gSpriteSlotManager;
+return M2C_FIELD(gSpriteSlotManager,u8 *,0x26)!=0;
 }
 
 void func_020b26dc(void) {
-extern void *data_02128690;
-M2C_FIELD(data_02128690,u8 *,0x26)-=1;
+extern void *gSpriteSlotManager;
+M2C_FIELD(gSpriteSlotManager,u8 *,0x26)-=1;
 }
 
 void func_020b26f8(void) {
-extern void *data_02128690;
-M2C_FIELD(data_02128690,u8 *,0x27)+=1;
+extern void *gSpriteSlotManager;
+M2C_FIELD(gSpriteSlotManager,u8 *,0x27)+=1;
 }
 
 u8 func_020b2714(void) {
-extern void *data_02128690;
-return M2C_FIELD(data_02128690,u8 *,0x27)!=0;
+extern void *gSpriteSlotManager;
+return M2C_FIELD(gSpriteSlotManager,u8 *,0x27)!=0;
 }
 
 void func_020b2738(void) {
-extern void *data_02128690;
-M2C_FIELD(data_02128690,u8 *,0x27)-=1;
+extern void *gSpriteSlotManager;
+M2C_FIELD(gSpriteSlotManager,u8 *,0x27)-=1;
 }
 
-s32 func_020b2754(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_020b1b1c(void *, M2C_UNK);
+s32 SpriteSlotHitTest(void *arg0, s32 arg1, s32 arg2) {
+    s32 SpriteSlotHasFlags(void *, M2C_UNK);
     s16 temp_r1;
     s16 temp_r1_2;
 
-    if (func_020b1b1c(arg0, 0x1000) != 0) {
+    if (SpriteSlotHasFlags(arg0, 0x1000) != 0) {
         return 1;
     }
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x14);
@@ -69,59 +69,64 @@ s32 func_020b2754(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_020b27d0(void *p) {
-extern void *gTouchState,*data_02128690;
-s32 func_020946d0(void);s32 func_020b1b1c(void *,M2C_UNK);
-void func_020b1c90(void *);
+s32 TryFocusSpriteSlot(void *p) {
+extern void *gTouchState,*gSpriteSlotManager;
+s32 IsDialogActive(void);s32 SpriteSlotHasFlags(void *,M2C_UNK);
+void FocusSpriteSlot(void *);
 u16 x=M2C_FIELD(gTouchState,u16 *,0);
 u16 y=M2C_FIELD(gTouchState,u16 *,2);
-if(func_020946d0())return 0;
+if(IsDialogActive())return 0;
 if(!M2C_FIELD(gTouchState,u8 *,0x12))return 0;
-if(!func_020b1b1c(p,1))return 0;
-if(!func_020b2754(p,x,y))return 0;
-if(M2C_FIELD(data_02128690,void **,0xc)==p)return 0;
-if(func_020b1b1c(p,0x400))return 0;
-func_020b1c90(p);
+if(!SpriteSlotHasFlags(p,1))return 0;
+if(!SpriteSlotHitTest(p,x,y))return 0;
+if(M2C_FIELD(gSpriteSlotManager,void **,0xc)==p)return 0;
+if(SpriteSlotHasFlags(p,0x400))return 0;
+FocusSpriteSlot(p);
 return 1;
 }
 
-s32 func_020b288c(void *arg0) {
+/* Touch handler for one sprite-button slot.  Its state machine reaches
+ * SPRITE_SLOT_PRESSED on a touch that starts inside the slot, becomes
+ * SPRITE_SLOT_DRAGGED once the touch is held past TOUCH_DRAG_FRAMES, and returns
+ * to idle whenever the finger leaves or lifts.  A release inside the slot that
+ * did not drag (and with no dialog up) fires the slot's callback and returns 1. */
+s32 HandleSpriteSlotTouch(void *slot) {
 extern void *gTouchState;
-s32 func_020946d0(void);s32 func_020b1b1c(void *,M2C_UNK);
-void func_020b1b2c(void *,M2C_UNK);void func_020b1c90(void *);
-s32 func_020b1b34(void *);s32 func_020b2754(void *,s32,s32);
-s32 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
-s32 w=M2C_FIELD(gTouchState,u16 *,4),h=M2C_FIELD(gTouchState,u16 *,6);
-s32 d;void (*cb)(void *);
-switch(func_020b1b34(arg0)){
-case 2:
-if(!func_020b2754(arg0,x,y)){func_020b1b2c(arg0,0);break;}
-if(M2C_FIELD(gTouchState,u8 *,0x16))func_020b1b2c(arg0,0);
+s32 IsDialogActive(void);s32 SpriteSlotHasFlags(void *,M2C_UNK);
+void SetSpriteSlotState(void *,M2C_UNK);void FocusSpriteSlot(void *);
+s32 GetSpriteSlotState(void *);s32 SpriteSlotHitTest(void *,s32,s32);
+s32 touchX=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_X),touchY=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_Y);
+s32 touchStartX=M2C_FIELD(gTouchState,u16 *,TOUCH_START_X),touchStartY=M2C_FIELD(gTouchState,u16 *,TOUCH_START_Y);
+s32 drag;void (*callback)(void *);
+switch(GetSpriteSlotState(slot)){
+case SPRITE_SLOT_DRAGGED:
+if(!SpriteSlotHitTest(slot,touchX,touchY)){SetSpriteSlotState(slot,SPRITE_SLOT_IDLE);break;}
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_RELEASED))SetSpriteSlotState(slot,SPRITE_SLOT_IDLE);
 break;
-case 0:
-if(M2C_FIELD(gTouchState,u8 *,0x14)&&func_020b2754(arg0,x,y)==1)func_020b1b2c(arg0,1);
+case SPRITE_SLOT_IDLE:
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED)&&SpriteSlotHitTest(slot,touchX,touchY)==1)SetSpriteSlotState(slot,SPRITE_SLOT_PRESSED);
 break;
-case 1:
-if(!func_020b2754(arg0,x,y)){func_020b1b2c(arg0,0);break;}
-if(M2C_FIELD(gTouchState,u8 *,0x16)){
-func_020b1b2c(arg0,0);
-if(func_020b1b1c(arg0,0x400))return 0;
-if(func_020946d0())return 0;
-if(func_020b1b1c(arg0,1))func_020b1c90(arg0);
-if((d=x-w,d<0?-d:d)>0x10||(d=y-h,d<0?-d:d)>0x10)return 0;
-cb=M2C_FIELD(arg0,void (**)(void *),0x2c);
-if(cb)cb(arg0);
+case SPRITE_SLOT_PRESSED:
+if(!SpriteSlotHitTest(slot,touchX,touchY)){SetSpriteSlotState(slot,SPRITE_SLOT_IDLE);break;}
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_RELEASED)){
+SetSpriteSlotState(slot,SPRITE_SLOT_IDLE);
+if(SpriteSlotHasFlags(slot,0x400))return 0;
+if(IsDialogActive())return 0;
+if(SpriteSlotHasFlags(slot,1))FocusSpriteSlot(slot);
+if((drag=touchX-touchStartX,drag<0?-drag:drag)>0x10||(drag=touchY-touchStartY,drag<0?-drag:drag)>0x10)return 0;
+callback=M2C_FIELD(slot,void (**)(void *),0x2c);
+if(callback)callback(slot);
 return 1;
 }
-if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==0x14)func_020b1b2c(arg0,2);
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)&&M2C_FIELD(gTouchState,u8 *,TOUCH_HOLD_FRAMES)==TOUCH_DRAG_FRAMES)SetSpriteSlotState(slot,SPRITE_SLOT_DRAGGED);
 break;
 }
 return 0;
 }
 
 /* Updates animated scrolling/panning state and interpolates position using easing */
-void func_020b2a50(void *context) {
-    s32 func_020b1b1c(void *, s32);
+void AnimateSpriteSlot(void *context) {
+    s32 SpriteSlotHasFlags(void *, s32);
     s16 EaseInterpolate(s32, s16, s16, s32, s32);
     void (*callback)(void *);
     s16 timer;
@@ -131,19 +136,19 @@ void func_020b2a50(void *context) {
     case 0:
         M2C_FIELD(context, u8 *, 4) = 1;
         M2C_FIELD(context, u16 *, 0xE) = 0;
-        if (func_020b1b1c(context, 4) != 0) {
+        if (SpriteSlotHasFlags(context, 4) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = (s16)(0 - M2C_FIELD(context, s16 *, 0x18));
         }
-        if (func_020b1b1c(context, 8) != 0) {
+        if (SpriteSlotHasFlags(context, 8) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = 0x100;
         }
-        if (func_020b1b1c(context, 0x10) != 0) {
+        if (SpriteSlotHasFlags(context, 0x10) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 8) = (s16)(0 - M2C_FIELD(context, s16 *, 0x1A));
         }
-        if (func_020b1b1c(context, 0x20) != 0) {
+        if (SpriteSlotHasFlags(context, 0x20) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 8) = 0xC0;
         }
@@ -154,28 +159,28 @@ void func_020b2a50(void *context) {
     case 3:
         M2C_FIELD(context, u8 *, 4) = 4;
         M2C_FIELD(context, u16 *, 0xE) = 0;
-        if (func_020b1b1c(context, 0x40) != 0) {
+        if (SpriteSlotHasFlags(context, 0x40) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
             M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
             M2C_FIELD(context, s16 *, 0xA) = (s16)(0 - M2C_FIELD(context, s16 *, 0x18));
             M2C_FIELD(context, s16 *, 0xC) = M2C_FIELD(context, s16 *, 0x16);
         }
-        if (func_020b1b1c(context, 0x80) != 0) {
+        if (SpriteSlotHasFlags(context, 0x80) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
             M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
             M2C_FIELD(context, s16 *, 0xA) = 0x100;
             M2C_FIELD(context, s16 *, 0xC) = M2C_FIELD(context, s16 *, 0x16);
         }
-        if (func_020b1b1c(context, 0x100) != 0) {
+        if (SpriteSlotHasFlags(context, 0x100) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
             M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
             M2C_FIELD(context, s16 *, 0xA) = M2C_FIELD(context, s16 *, 0x14);
             M2C_FIELD(context, s16 *, 0xC) = (s16)(0 - M2C_FIELD(context, s16 *, 0x1A));
         }
-        if (func_020b1b1c(context, 0x200) != 0) {
+        if (SpriteSlotHasFlags(context, 0x200) != 0) {
             M2C_FIELD(context, u16 *, 0xE) = M2C_FIELD(context, u16 *, 0x1E);
             M2C_FIELD(context, s16 *, 6) = M2C_FIELD(context, s16 *, 0x14);
             M2C_FIELD(context, s16 *, 8) = M2C_FIELD(context, s16 *, 0x16);
@@ -235,8 +240,8 @@ extern u16 **gCur3DSpriteEngine;
 u32 a,b; s16 x,y; s32 flag;
 a=M2C_FIELD(arg0,u16 *,0x20); b=M2C_FIELD(arg0,u16 *,0x22);
 x=M2C_FIELD(arg0,s16 *,0x18); y=M2C_FIELD(arg0,s16 *,0x1a); flag=0;
-if(!func_020b1b1c(arg0,2))return;
-if(func_020b1b1c(arg0,0x800))flag=0x400;
+if(!SpriteSlotHasFlags(arg0,2))return;
+if(SpriteSlotHasFlags(arg0,0x800))flag=0x400;
 func_01ff883c((u16)(M2C_FIELD(arg0,s16 *,0x14)&0x1ff),(u16)((M2C_FIELD(arg0,s16 *,0x16)&0xff)|flag),(u16)((0x3ff&(a>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((b<<28)>>16)),func_01ff8e44(x,y));
 }
 
@@ -247,10 +252,10 @@ if(!cb)return;cb(p);
 
 void func_020b2e2c(void) {
 s32 func_020b1bb0(void);
-extern void *data_02128690;
+extern void *gSpriteSlotManager;
 void *p; void (*cb)(void *);
 if(!func_020b1bb0())return;
-p=M2C_FIELD(data_02128690,void **,0xc);
+p=M2C_FIELD(gSpriteSlotManager,void **,0xc);
 cb=M2C_FIELD(p,void (**)(void *),0x30);
 if(!cb)return; cb(p);
 }
@@ -308,7 +313,7 @@ return arg0;
 }
 
 void func_020b3038(void *arg0, s32 arg1) {
-    M2C_UNK func_0207c8ec();
+    M2C_UNK Divide();
     s16 val8;
     u8 step;
     s16 orig_a;
@@ -328,7 +333,7 @@ void func_020b3038(void *arg0, s32 arg1) {
     orig_a = M2C_FIELD(arg0, s16 *, 0xA);
     r8 = M2C_FIELD(arg0, u8 *, 0x4);
     orig_c = M2C_FIELD(arg0, s16 *, 0xC);
-    fres = (s16) func_0207c8ec(orig_a + step - 1, step);
+    fres = (s16) Divide(orig_a + step - 1, step);
     if (arg1 < 0) {
         return;
     }
@@ -342,7 +347,7 @@ void func_020b3038(void *arg0, s32 arg1) {
         do {
             M2C_FIELD(arg0, s16 *, 0x8) = (s16) (M2C_FIELD(arg0, s16 *, 0x8) - 1);
             c = M2C_FIELD(arg0, s16 *, 0xC);
-            f = (s16) func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x8), step);
+            f = (s16) Divide(M2C_FIELD(arg0, s16 *, 0x8), step);
             diff = (s16) (f - c);
             if (diff < 0) {
                 if (c > 0) {
@@ -363,7 +368,7 @@ void func_020b3038(void *arg0, s32 arg1) {
             }
             M2C_FIELD(arg0, s16 *, 0x8) = cur;
             c = M2C_FIELD(arg0, s16 *, 0xC);
-            f = (s16) func_0207c8ec(cur, step);
+            f = (s16) Divide(cur, step);
             diff = (s16) (f - c);
             if (diff > (s16) r8const) {
                 if (c < r9) {
@@ -406,24 +411,24 @@ s16 func_020b316c(void *arg0) {
 }
 
 u8 func_020b320c(void *p) {
-s32 func_0207c8ec(s32);
+s32 Divide(s32);
 s32 step=M2C_FIELD(p,volatile u8 *,5);
 s32 a=M2C_FIELD(p,u8 *,4);
-s16 b=func_0207c8ec(M2C_FIELD(p,s16 *,0xa)+step-1);
+s16 b=Divide(M2C_FIELD(p,s16 *,0xa)+step-1);
 if(a>=b)a=b;
 return M2C_FIELD(p,s16 *,0xc)+(s16)a<b;
 }
 
 u8 func_020b325c(void *arg0) {
-M2C_UNK func_0207c8ec();
+M2C_UNK Divide();
 u8 value; s32 step=M2C_FIELD(arg0,volatile u8 *,5);
-func_0207c8ec(M2C_FIELD(arg0,s16 *,0xa)+step-1);
+Divide(M2C_FIELD(arg0,s16 *,0xa)+step-1);
 if(M2C_FIELD(arg0,s16 *,0xc)>0)value=1;else value=0;
 return value;
 }
 
 u8 func_020b3290(void *arg0) {
-    M2C_UNK func_0207c8ec();
+    M2C_UNK Divide();
     M2C_UNK PlaySoundEffect(s32);
     s32 temp_r4;
     s32 temp_r5;
@@ -448,7 +453,7 @@ u8 func_020b3290(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, u8 *, 5);
     temp_r6 = M2C_FIELD(arg0, s16 *, 0xA);
     var_r7 = M2C_FIELD(arg0, u8 *, 4);
-    temp_r0 = func_0207c8ec((temp_r6 + temp_r4) - 1, temp_r4);
+    temp_r0 = Divide((temp_r6 + temp_r4) - 1, temp_r4);
     temp_r2 = temp_r0;
     if ((s32) var_r7 >= (s32) temp_r0) {
         var_r7 = temp_r2;
@@ -480,13 +485,13 @@ M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
 }
 
 u8 func_020b3368(void *arg0) {
-M2C_UNK func_0207c8ec();
+M2C_UNK Divide();
 M2C_UNK PlaySoundEffect(s32);
 s16 current; s32 step; s32 active; s32 old; u8 result; s32 factor, delta;
 if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
 step=M2C_FIELD(arg0,u8 *,5);
-func_0207c8ec(M2C_FIELD(arg0,s16 *,0xa)+step-1,step);
+Divide(M2C_FIELD(arg0,s16 *,0xa)+step-1,step);
 current=M2C_FIELD(arg0,s16 *,0xc);old=M2C_FIELD(arg0,volatile s16 *,0xc);
 if(current==0)return 0;
 M2C_FIELD(arg0,s16 *,0xc)=current-1;
@@ -499,12 +504,12 @@ return result;
 }
 
 u8 func_020b3410(void *arg0){
-s32 func_0207c8ec(); M2C_UNK PlaySoundEffect(s32);
+s32 Divide(); M2C_UNK PlaySoundEffect(s32);
 s32 active,i,factor,delta; s16 total,count,limit; u8 step,result; s32 n,old;
 if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
 step=M2C_FIELD(arg0,u8 *,5);total=M2C_FIELD(arg0,s16 *,10);n=M2C_FIELD(arg0,u8 *,4);
-limit=func_0207c8ec(total+step-1,step);
+limit=Divide(total+step-1,step);
 count=(old=M2C_FIELD(arg0,volatile s16 *,12),n>=limit?limit:n);
 for(i=0;i<count;i++){
 if(limit!=M2C_FIELD(arg0,volatile s16 *,12)+count)M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(arg0,volatile s16 *,12)+1;

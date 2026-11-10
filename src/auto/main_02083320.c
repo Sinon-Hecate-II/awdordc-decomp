@@ -27,8 +27,8 @@ typedef struct SpriteText {
 } SpriteText;
 
 u8 func_02083320(s32 arg0,s32 arg1) {
- s32 func_020846a4();
- if(func_020846a4()==0) return 1;
+ s32 IsLinkSessionActive();
+ if(IsLinkSessionActive()==0) return 1;
  return (u8)((s32)(u16)(arg0-225)/50)==(u8)(arg1-8);
 }
 
@@ -108,12 +108,12 @@ void func_0208352c(void *arg0) {
 #pragma opt_strength_reduction off
 void func_020835d4(void *obj) {
  extern s16 gSinCosTable[];
- s32 func_0207c8ec(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+ s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
  s32 i,e,d,a,b,s; u16 y,x; s32 c,offset,pos,glyph;
  x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
  c=gSinCosTable[1]<<4;s=*(volatile s16 *)gSinCosTable;
  M2C_FIELD(obj,u16 *,0x54)++;
- a=func_0207c8ec(c,256);b=func_0207c8ec((-s)<<4,64);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,64);
+ a=Divide(c,256);b=Divide((-s)<<4,64);d=Divide(s<<4,256);e=Divide(c,64);
  SetSpriteQuad(31,(s16)a,(s16)b,(s16)d,(s16)e);
  for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
  if(M2C_FIELD(obj,u16 *,0x54)<M2C_FIELD((u8 *)obj+i,u8 *,0x44))break;
@@ -128,7 +128,7 @@ void func_020835d4(void *obj) {
 }
 void func_020837b4(void *obj) {
 extern s16 gSinCosTable[]; extern u8 gSpriteDesc64x64[];
-s32 func_0207c8ec(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+s32 Divide(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
 s32 s; s16 c; s32 scale2,scale1,a,b,d,e,i,offset,pos,glyph; u16 y; s32 x;
 x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
 M2C_FIELD(obj,u16 *,0x54)++;
@@ -136,7 +136,7 @@ scale1=((EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-EaseInterpola
 c=gSinCosTable[1];s=gSinCosTable[0];
 scale2=((EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))>=2?EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)>2?2:(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16) < -2 ? -2:EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))));
 
-a=func_0207c8ec(c<<4,256);b=func_0207c8ec((-s)<<4,scale2);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,scale1);
+a=Divide(c<<4,256);b=Divide((-s)<<4,scale2);d=Divide(s<<4,256);e=Divide(c,scale1);
 SetSpriteQuad(31,(s16)a,(s16)b,(s16)d,(s16)e);
 offset=EaseInterpolate(4,128,0,M2C_FIELD(obj,u16 *,0x54),16);
 pos=x-42-offset;

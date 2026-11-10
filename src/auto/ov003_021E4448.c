@@ -2,7 +2,7 @@
 #include "common.h"
 
 void func_ov003_021e4448(void *arg0){
-M2C_UNK func_ov003_021f2860(void *);M2C_UNK func_ov003_021f140c(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 func_020c85c4(s32,s32);
+M2C_UNK func_ov003_021f2860(void *);M2C_UNK func_ov003_021f140c(M2C_UNK);M2C_UNK func_ov003_021f2780(M2C_UNK,M2C_UNK *);M2C_UNK func_ov006_0221734c(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
 extern M2C_UNK data_ov003_0220f47c;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
@@ -16,7 +16,7 @@ base=M2C_FIELD(arg0,void **,0x68);
 if((u32)i>=count)M2C_FIELD((s32)base+i*0x6f8,u8 *,0x27)=zero;
 else{
 val=M2C_FIELD(block+i*2,u16 *,4);
-func_020c85c4(val,(s32)base+i*0x6f8);
+LoadMapRecord(val,(s32)base+i*0x6f8);
 }
 i++;
 }while(i<5);

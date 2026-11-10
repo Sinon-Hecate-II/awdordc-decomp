@@ -25,9 +25,9 @@ static inline u16 ScanHeight(void *p){return M2C_FIELD(p,u16 *,0x5146);}
 /* Chooses a reachable recovery destination, preferring a suitable transport or a low-score tile. */
 void func_ov000_0218d908(void) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    extern u8 *data_ov000_021df644;
-    extern u8 gUnitKindStats[], data_ov000_021dfcf0[];
+    extern void *gAiCommandState;
+    extern u8 *gAiUnitTypeTuning;
+    extern u8 gUnitKindStats[], gAiRangeBitmap[];
     s32 func_ov000_0218d40c(void);
     M2C_UNK BuildUnitMoveRange(s32);
     s32 CanKindAttack(s32, s32);
@@ -58,7 +58,7 @@ void func_ov000_0218d908(void) {
                 s8 *costRow = M2C_FIELD((u8 *)map + y * 4, s8 **, 0x52e8);
                 u16 flags;
                 if (costRow[x] < 0) goto nextTile;
-                flags = M2C_FIELD(data_ov000_021df580, u16 *, 8);
+                flags = M2C_FIELD(gAiCommandState, u16 *, 8);
                 if (flags & 1) {
                     if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), s8 *, 0x2338) < 0) {
                         costRow[x] = -1;
@@ -83,11 +83,11 @@ void func_ov000_0218d908(void) {
                 if (func_ov000_02178778((s16)x, (s16)y) == 1) goto nextTile;
                 if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
                 map = *gCurrentMap;
-                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= data_ov000_021df644[2]) goto nextTile;
+                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= gAiUnitTypeTuning[2]) goto nextTile;
                 if (gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 112 + 19] & 7) {
                     u32 tileIndex = y * M2C_FIELD(map, u16 *, 0x5144) + x;
                     u32 bit = tileIndex & 7;
-                    if (!(u8)((1 << bit) & data_ov000_021dfcf0[tileIndex >> 3])) goto nextTile;
+                    if (!(u8)((1 << bit) & gAiRangeBitmap[tileIndex >> 3])) goto nextTile;
                 }
                 score = CellMoveScore(x, y, 1, 2);
                 moveCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
@@ -107,7 +107,7 @@ nextTile:
     }
     if (bestX == -1) return;
     {
-        u8 *state = data_ov000_021df580;
+        u8 *state = gAiCommandState;
         u16 flags = M2C_FIELD(state, u16 *, 8);
         if (flags & 1) {
             unit = M2C_FIELD(map, u8 **, 0x52d0);
@@ -190,7 +190,7 @@ void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
 M2C_UNK BuildUnitMoveRange(s32);void func_01ffb9c4(s8);s32 GetUnitAttackClass(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
-extern void **gCurrentMap;extern void *data_ov000_021df580;
+extern void **gCurrentMap;extern void *gAiCommandState;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
@@ -216,7 +216,7 @@ next_cell:x++;map=*gCurrentMap;
 }
 }
 if(!bestScore)return;
-M2C_FIELD(data_ov000_021df580,u8 *,7)&=~2;
+M2C_FIELD(gAiCommandState,u8 *,7)&=~2;
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);M2C_FIELD(selected,u16 *,8)&=~0x3000;
 SetMapCursor((s16)bestY,(s16)bestX,4,(u8)temp,0);
 

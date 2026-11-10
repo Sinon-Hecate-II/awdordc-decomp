@@ -192,7 +192,7 @@ void func_ov000_0219ce90(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern u8 data_ov000_021df824;
@@ -231,14 +231,14 @@ void func_ov000_0219ce90(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_02180e4c;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219cfc8(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern u8 data_ov000_021df824;
@@ -276,14 +276,14 @@ void func_ov000_0219cfc8(void) {
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
     func_ov000_0219c8fc();
     data_ov000_021df654 = &func_ov000_02180ec8;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219d0f4(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern u8 data_ov000_021df824;
@@ -321,7 +321,7 @@ void func_ov000_0219d0f4(void) {
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
     func_ov000_0219c8fc();
     data_ov000_021df654 = &func_ov000_02180f14;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 #pragma scheduling off
@@ -329,7 +329,7 @@ void func_ov000_0219d220(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern u8 data_ov000_021df824;
@@ -372,14 +372,14 @@ void func_ov000_0219d220(void) {
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
     func_ov000_0219c8fc();
     data_ov000_021df654 = &RunAIUnitAction;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 #pragma scheduling on
 void func_ov000_0219d358(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern u8 data_ov000_021df824;
@@ -420,14 +420,14 @@ if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) != 0 || M2C_FIELD(*gCurrentMap, u8 *, 
 }
 func_ov000_0219cdf4();
 data_ov000_021df654 = &func_ov000_021811e8;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 
 void func_ov000_0219d4b4(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern u8 data_ov000_021df824;
@@ -468,14 +468,14 @@ func_ov000_0219caac();
 skip:
 func_ov000_0219cdf4();
 data_ov000_021df654 = &func_ov000_021812a8;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 
 void func_ov000_0219d604(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern u8 data_ov000_021df824;
@@ -508,6 +508,6 @@ data_ov000_021df658 = &data_ov000_021df824;
 func_ov000_0219c984();
 func_ov000_0219cb98();
 data_ov000_021df654 = &func_ov000_021813a4;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 

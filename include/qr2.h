@@ -24,4 +24,15 @@
 /* The state value that only terminates the query (no trailing keep-alive). */
 #define QR2_STATE_FINAL   2
 
+/* Callbacks of the QR2 connection record, called with the record's context. */
+#define QR2_CB_APPEND_KEY    0x88 /* void (*)(s32 key, void *query, void *ctx) */
+#define QR2_CB_APPEND_IDX1   0x8C /* void (*)(s32 key, s32 index, void *query, void *ctx) */
+#define QR2_CB_APPEND_IDX2   0x90 /* void (*)(s32 key, s32 index, void *query, void *ctx) */
+#define QR2_CB_COLLECT_KEYS  0x94 /* void (*)(s32 mode, u8 *keyList, void *ctx) */
+#define QR2_CB_REPEAT_COUNT  0x98 /* s32 (*)(s32 mode, void *ctx) */
+#define QR2_CTX              0x10C /* void *context passed to every callback */
+
+/* A query collects at most this many key ids before appending them. */
+#define QR2_KEY_LIST_SIZE 256
+
 #endif

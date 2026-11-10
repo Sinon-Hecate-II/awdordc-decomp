@@ -22,7 +22,7 @@ void func_ov000_02189a08(void) {
     void PlanMoveDestination(s32, s32);
 
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern u8 gUnitKindStats[];
 
     register s32 bestX asm("r4") = -1;
@@ -52,7 +52,7 @@ void func_ov000_02189a08(void) {
 
     score = (s32)*gCurrentMap;
     bonus = func_020a33c4(*(u16 *)((u8 *)score + 0x52a4));
-    score = func_020a7b3c((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
+    score = func_020a7b3c((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
     sel = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
     FloodFillUnitRange(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
 
@@ -95,7 +95,7 @@ void func_ov000_02189a08(void) {
     candScore = 0x7fff;
     SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
     bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
-    bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
+    bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
     FloodFillUnitRange(bestX, bestY, 7, 0x6e, 0);
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 
@@ -160,7 +160,7 @@ void func_ov000_02189a08(void) {
 
     costRow = *(s8 **)((u8 *)*gCurrentMap + bestY * 4 + 0x52e8);
     finalCost = costRow[bestX];
-    if (finalCost <= *(u8 *)((u8 *)data_ov000_021df580 + 0x05)) {
+    if (finalCost <= *(u8 *)((u8 *)gAiCommandState + 0x05)) {
         return;
     }
     PlanMoveDestination(bestX, bestY);
@@ -342,13 +342,13 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     s32 func_ov000_02178778(s32, s32);
     s32 func_ov000_021a9084(s32);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
+    extern u8 gUnitKindFlags[];
     extern u8 data_ov000_021df9bc[];
     extern u8 data_ov000_021dfc4c[];
-    extern u8 *data_ov000_021df644;
+    extern u8 *gAiUnitTypeTuning;
 
     if (!GetUnitAttackClass(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !IsUnitSelected(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
-u8 attr=data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
+u8 attr=gUnitKindFlags[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
 if(attr&7) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
 if((u8)((1<<(idx&7)) & data_ov000_021df9bc[idx>>3])) goto valid;
 }
@@ -360,7 +360,7 @@ if((u8)((1<<(idx&7)) & data_ov000_021dfc4c[idx>>3])) goto valid;
         s32 cell; u8 *ptr; u8 *map;
         u8 limit;
         u16 rowOffset;
-        map=(u8 *)*gCurrentMap; ptr=data_ov000_021df644;
+        map=(u8 *)*gCurrentMap; ptr=gAiUnitTypeTuning;
         rowOffset=*(u16 *)(map+y*2+0x3758);
         cell = (s32)(map + (x + rowOffset) + 0x2000);
         limit=ptr[1];
@@ -377,7 +377,7 @@ valid:
     }
     {
 u32 unitKind2=((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0;
-if(data_ov000_021b5c0f[unitKind2*0x70]!=0x20 && func_ov000_021a9904(unitKind2)!=2) {
+if(gUnitKindFlags[unitKind2*0x70]!=0x20 && func_ov000_021a9904(unitKind2)!=2) {
 u8 *m=(u8 *)*gCurrentMap;
 u16 rowOffset=*(u16 *)(m+y*2+0x3758);
 u8 terrain=(m+(x+rowOffset)+0x1000)[0x420]&0x1f;
@@ -403,7 +403,7 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov000_021a8a38(s32, s32, s32, s32);
     s32 ManhattanDistance(s32, s32, s32, s32);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
+    extern u8 gUnitKindFlags[];
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
     s32 val;
@@ -422,7 +422,7 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     map = *gCurrentMap;
     selected = M2C_FIELD(map, void **, 0x52D0);
-    savedAttr = data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)selected)->unk0 * 0x70];
+    savedAttr = gUnitKindFlags[((UnkStruct_ov000_02189A08 *)selected)->unk0 * 0x70];
     if (savedAttr & 0x7) { savedAttr = 0x7; }
 
     map = *gCurrentMap;

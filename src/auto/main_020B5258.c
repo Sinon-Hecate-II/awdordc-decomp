@@ -4,7 +4,7 @@ typedef struct { u8 kind:6; u8 rest:2; } UnitKindBits;
 extern u8 data_ov000_021b5c0d[];
 extern s32 *gCurrentMap;
 
-u8 func_020b5258(void) {
+u8 IsBattleEffectActive(void) {
     s32 func_0208c724();
     s32 func_020c306c();
     u8 var_r0;
@@ -83,15 +83,15 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
 }
 
 void func_020b5480(void *arg0) {
-    s32 func_0208c1ec(void *);
-    s32 func_0208c200(void *);
+    s32 GetObjectTileX(void *);
+    s32 GetObjectTileY(void *);
     void func_020b5314(u8, s32, s32);
     s32 temp_r4;
     u8 temp_r5;
     temp_r5 = (u8) M2C_FIELD(arg0, s32 *, 0x5C);
     if (M2C_FIELD(arg0, s32 *, 0x58) & 0xFF) return;
-    temp_r4 = func_0208c1ec(arg0);
-    func_020b5314(temp_r5, temp_r4, func_0208c200(arg0));
+    temp_r4 = GetObjectTileX(arg0);
+    func_020b5314(temp_r5, temp_r4, GetObjectTileY(arg0));
     M2C_FIELD(arg0, s32 *, 0x58) = 1;
 }
 
@@ -130,14 +130,14 @@ M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
 }
 
 void func_020b55c4(void *arg0) {
-s32 func_0208c1ec(void *); s32 func_0208c200(void *);
+s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
 void func_020a6718(u8); void func_020a6728(u8);
 void func_020b5314(u8,s32,s32); void func_020ca484(void); void func_ov000_0216ab2c(void);
 s32 x; u8 a,b,c;
 a=M2C_FIELD(arg0,s32 *,0x5c); b=M2C_FIELD(arg0,s32 *,0x60); c=M2C_FIELD(arg0,s32 *,0x64);
 if(M2C_FIELD(arg0,s32 *,0x58)&255) return;
-x=func_0208c1ec(arg0);
-func_020b5314(a,x,func_0208c200(arg0));
+x=GetObjectTileX(arg0);
+func_020b5314(a,x,GetObjectTileY(arg0));
 if(b) func_020a6728(c); else func_020a6718(c);
 func_020cfd28();
 M2C_FIELD(arg0,s32 *,0x58)=1; func_020ca484(); func_ov000_0216ab2c();
@@ -480,7 +480,7 @@ void func_020b607c(void *arg0) {
 
 void func_020b6124(void *arg0) {
     M2C_UNK func_02076910(s32, s32);
-    M2C_UNK func_020a71a0(s32, s32, s32);
+    M2C_UNK DamageUnitAtTile(s32, s32, s32);
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
@@ -492,6 +492,6 @@ void func_020b6124(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
     temp_r6 = M2C_FIELD(arg0, s32 *, 0x60);
     func_02076910(temp_r4, temp_r5);
-    func_020a71a0(temp_r4, temp_r5, temp_r6);
+    DamageUnitAtTile(temp_r4, temp_r5, temp_r6);
 }
 

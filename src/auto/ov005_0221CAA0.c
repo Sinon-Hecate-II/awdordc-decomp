@@ -15,7 +15,7 @@ typedef struct { u32 width:9,height:9,other:14; } BoxSizeBits;
 static inline void boxSize(void *p,u32 w,u32 h) { M2C_FIELD(p,u32*,0x40)=((M2C_FIELD(p,u32*,0x40)&~511)|(w&(-512U>>23)))&0xfffc01ff | ((h<<23)>>14); }
 
 static inline void boxBounds(s32 x,s32 y,u32 w,u32 h,void *p) { boxPosition(p,x,y); boxSize(p,w,h); }
-void *func_01ffa770(void*);
+void *FindObjectByClass(void*);
 void func_01ffa6fc(void*);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s16,s32,s32);
@@ -72,7 +72,7 @@ void ResultsScreenAnimate(void *arg0) {
   M2C_FIELD(arg0,s32*,0x44)=M2C_FIELD(arg0,s32*,0x4c)=scroll;
   panelY=(s16)M2C_FIELD(arg0,s32*,0x44);
   /* the two marker sprites of the scene, at display object offsets 0x3c and 0x40 */
-  leftSprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,60);
+  leftSprite=M2C_FIELD(FindObjectByClass(data_ov005_02220d50),void**,60);
   func_02088e84(leftSprite,160,panelY,160,panelY);
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
@@ -85,7 +85,7 @@ void ResultsScreenAnimate(void *arg0) {
   func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
   { void *rightSprite; s16 spriteY2,spriteX2,panelY2; s32 width2,height2;
   panelY2=(s16)M2C_FIELD(arg0,s32*,0x44);
-  rightSprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,64);
+  rightSprite=M2C_FIELD(FindObjectByClass(data_ov005_02220d50),void**,64);
   func_02088e84(rightSprite,224,panelY2,224,panelY2);
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
@@ -111,12 +111,12 @@ void ResultsScreenAnimate(void *arg0) {
 }
 
 void func_ov005_0221cff8(void *arg0) {
-void *func_01ffa770(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
+void *FindObjectByClass(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
 extern u8 data_ov005_02220d50[];
 s32 i,y;void *sprite,*p;u32 width,height;
-func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x38));
-func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x3c));
-func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x40));
+func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x38));
+func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x3c));
+func_020aad18(M2C_FIELD(FindObjectByClass(data_ov005_02220d50),s32*,0x40));
 i=0;
 if(func_020cfb94()>0){y=79;do{
 func_02087d18(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
@@ -144,12 +144,12 @@ s32 func_020a72e8(u8);
 s32 func_ov000_0216cdec(s32,u8);
 s32 func_020cfb94(void);
 void *GetLocalizedFileName(void *);
-void func_020814e4(void);
-void func_02081590(void *,void *);
-void func_02081528(void);
+void OpenNarcArchive(void);
+void LoadNarcFileDecompressed(void *,void *);
+void CloseNarcArchive(void);
 void func_01ff85b8(void *,s32,s32);
 void PlaySoundEffect(s32);
-void *func_01ffa770(void *);
+void *FindObjectByClass(void *);
 void func_02087db8(void *,s32);
 void func_02087e34(void *);
 void func_01ffa6fc(void *);
@@ -230,12 +230,12 @@ void func_ov005_0221d160(void *arg0){
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) ? M2C_FIELD(arg0, s32 *, 0x54) - 1 : 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
         GetLocalizedFileName(data_ov005_02220f1c);
-        func_020814e4();
+        OpenNarcArchive();
         if (mode == 0)
-            func_02081590(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         else
-            func_02081590(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
-        func_02081528();
+            LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+        CloseNarcArchive();
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
@@ -244,12 +244,12 @@ void func_ov005_0221d160(void *arg0){
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) == 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x54) + 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
         GetLocalizedFileName(data_ov005_02220f1c);
-        func_020814e4();
+        OpenNarcArchive();
         if (mode == 0)
-            func_02081590(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         else
-            func_02081590(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
-        func_02081528();
+            LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+        CloseNarcArchive();
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
@@ -260,17 +260,17 @@ void func_ov005_0221d160(void *arg0){
         return;
     PlaySoundEffect(0x1000e);
     {
-        void *p = M2C_FIELD(M2C_FIELD(func_01ffa770(data_ov005_02220d50), void **, 56), void **, 100);
+        void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 56), void **, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
             func_02087db8(p, 1);
     }
     {
-        void *p = M2C_FIELD(M2C_FIELD(func_01ffa770(data_ov005_02220d50), void **, 60), void**, 100);
+        void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 60), void**, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
             func_02087db8(p, 1);
     }
     {
-        void *p = M2C_FIELD(M2C_FIELD(func_01ffa770(data_ov005_02220d50), void **, 64), void **, 100);
+        void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 64), void **, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
             func_02087db8(p, 1);
     }

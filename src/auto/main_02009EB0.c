@@ -37,11 +37,11 @@ OS_RestoreInterrupts(key);
 
 void CompleteFileRequest(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 OS_WakeupThread(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;OS_WakeupThread((u8 *)p+24);OS_RestoreInterrupts(k);}
 
-s32 func_0200a0ac(void *a, s32 b) {
+s32 ExecuteFileCommand(void *a, s32 b) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
-    extern s32 (*data_020ea674[])(void *);
+    extern s32 (*gFileCommandHandlers[])(void *);
     void CompleteFileRequest(void *, s32);
 
     s32 e;
@@ -79,7 +79,7 @@ s32 func_0200a0ac(void *a, s32 b) {
         e = 7;
     }
     if (e == 7) {
-        e = data_020ea674[b](a);
+        e = gFileCommandHandlers[b](a);
     }
     if (e == 6) {
         outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
@@ -115,7 +115,7 @@ done:
     return e;
 }
 
-s32 func_0200a23c(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
+s32 CompareNamesNoCase(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
 
 s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 OS_DisableInterrupts();
@@ -160,14 +160,14 @@ s32 func_0200a28c(void *arg0, M2C_UNK arg1, s32 arg2) {
     return var_r0;
 }
 
-void func_0200a34c(void *arg0, s32 arg1) {
-    M2C_UNK func_0200a0ac(void *, M2C_UNK);
+void StartDirectoryRead(void *arg0, s32 arg1) {
+    M2C_UNK ExecuteFileCommand(void *, M2C_UNK);
     M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) | 4);
     M2C_FIELD(arg0, s32 *, 0x30) = (s32) M2C_FIELD(arg0, s32 *, 8);
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
     M2C_FIELD(arg0, s16 *, 0x36) = 0;
     M2C_FIELD(arg0, s16 *, 0x34) = arg1;
-    func_0200a0ac(arg0, 2);
+    ExecuteFileCommand(arg0, 2);
 }
 
 void func_0200a380(void *p){
@@ -228,59 +228,76 @@ M2C_FIELD(p,u16 *,0x26)+=1;
 M2C_FIELD(p,u32 *,0x28)=in[1];return r;
 }
 
-s32 func_0200a59c(void *p) {
- s32 func_0200a0ac(void *,s32);
- void func_0200a34c(void *,s32);
- s32 func_0200a23c(u8 *,u8 *,u32);
- u8 *path=M2C_FIELD(p,u8 **,0x3c);
- s32 mode=M2C_FIELD(p,s32 *,0x40);
- s32 ok,first,kind,length;
- PathEntry entry;
- func_0200a0ac(p,2);
- first=*path;
- while(first!=0){
- length=0;
- {s32 one=1,zero=0;
- goto scan;
- next: length++;
- scan: kind=path[length];ok=zero;
- if(kind!=0 && kind!=47 && kind!=92)ok=one;
- if(ok)goto next;
- }
- if(kind!=0 || mode!=0)kind=1;
- if(length==0)return 1;
- if(first==46){
- if(length==1){path++;goto advance;}
- if((length==2)&(path[1]==46)){
- if(M2C_FIELD(p,u16 *,0x24)!=0)func_0200a34c(p,M2C_FIELD(p,s32 *,0x2c));
- path+=2;goto advance;
- }
- }
- if(length>127)return 1;
- M2C_FIELD(p,void **,0x30)=&entry;
- M2C_FIELD(p,u32 *,0x34)=0;
- for(;;){
- if(func_0200a0ac(p,3)!=0)return 1;
- if(kind==entry.kind && length==entry.length && func_0200a23c(path,entry.name,length)==0)break;
- }
- if(kind){
- *(UnkA3Block *)((u8 *)p+0x30)=entry.block;
- path+=length;
- func_0200a0ac(p,2);
- }else{
- u32 *out;
- if(mode)return 1;
- out=*(u32 * volatile *)((u8 *)p+0x44);
- {u32 b,a; a=*(volatile u32 *)&entry.block.a;b=*(volatile u32 *)&entry.block.b;*(volatile u32 *)&out[0]=a;out[1]=b;}
- return 0;
- }
- advance:
- path+=(*path!=0);
- first=*path;
- }
- if(!mode)return 1;
- *(UnkA3Block *)M2C_FIELD(p,void **,0x44)=*(UnkA3Block *)((u8 *)p+0x20);
- return 0;
+/* Resolves the path at request+0x3c one component at a time (handling "." and
+ * "..") against the directory listing and stores the matching file or
+ * directory entry at request+0x44; wantDirectory asks for a directory. */
+s32 ResolvePathEntry(void *request) {
+    s32 ExecuteFileCommand(void *, s32);
+    void StartDirectoryRead(void *, s32);
+    s32 CompareNamesNoCase(u8 *, u8 *, u32);
+    u8 *path = M2C_FIELD(request, u8 **, 0x3c);
+    s32 wantDirectory = M2C_FIELD(request, s32 *, 0x40);
+    s32 isNameChar, firstChar, kind, nameLength;
+    PathEntry entry;
+
+    ExecuteFileCommand(request, 2);
+    firstChar = *path;
+    while (firstChar != 0) {
+        nameLength = 0;
+        {
+            s32 one = 1, zero = 0;
+            goto scan;
+        next:
+            nameLength++;
+        scan:
+            kind = path[nameLength];
+            isNameChar = zero;
+            if (kind != 0 && kind != 47 && kind != 92) isNameChar = one;
+            if (isNameChar) goto next;
+        }
+        if (kind != 0 || wantDirectory != 0) kind = 1;
+        if (nameLength == 0) return 1;
+        if (firstChar == 46) {
+            if (nameLength == 1) { path++; goto advance; }
+            if ((nameLength == 2) & (path[1] == 46)) {
+                if (M2C_FIELD(request, u16 *, 0x24) != 0)
+                    StartDirectoryRead(request, M2C_FIELD(request, s32 *, 0x2c));
+                path += 2; goto advance;
+            }
+        }
+        if (nameLength > 127) return 1;
+        M2C_FIELD(request, void **, 0x30) = &entry;
+        M2C_FIELD(request, u32 *, 0x34) = 0;
+        for (;;) {
+            if (ExecuteFileCommand(request, 3) != 0) return 1;
+            if (kind == entry.kind && nameLength == entry.length &&
+                CompareNamesNoCase(path, entry.name, nameLength) == 0) break;
+        }
+        if (kind) {
+            *(UnkA3Block *)((u8 *)request + 0x30) = entry.block;
+            path += nameLength;
+            ExecuteFileCommand(request, 2);
+        } else {
+            u32 *fileIdOut;
+            if (wantDirectory) return 1;
+            fileIdOut = *(u32 * volatile *)((u8 *)request + 0x44);
+            {
+                u32 b, a;
+                a = *(volatile u32 *)&entry.block.a;
+                b = *(volatile u32 *)&entry.block.b;
+                *(volatile u32 *)&fileIdOut[0] = a;
+                fileIdOut[1] = b;
+            }
+            return 0;
+        }
+    advance:
+        path += (*path != 0);
+        firstChar = *path;
+    }
+    if (!wantDirectory) return 1;
+    *(UnkA3Block *)M2C_FIELD(request, void **, 0x44) =
+        *(UnkA3Block *)((u8 *)request + 0x20);
+    return 0;
 }
 
 void func_0200a780(void *arg0) { (void)arg0; }
@@ -291,7 +308,7 @@ if(off>=M2C_FIELD(q,u32 *,0x30)) return 1;
 in[0]=(u32)q; in[1]=M2C_FIELD(q,u32 *,0x2c)+off;
 r=func_0200a28c(in,(M2C_UNK)out,8); if(r)return r;
 M2C_FIELD(p,u32 *,0x30)=out[0]; M2C_FIELD(p,u32 *,0x34)=out[1]; M2C_FIELD(p,u32 *,0x38)=n;
-return func_0200a0ac(p,7);
+return ExecuteFileCommand(p,7);
 }
 
 s32 func_0200abac(void *arg0) {

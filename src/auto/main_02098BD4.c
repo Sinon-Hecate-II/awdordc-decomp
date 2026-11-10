@@ -37,17 +37,17 @@ AddSprite((u16)arg1,arg2,arg3,result,arg5);
 
 M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
     M2C_UNK SetFileDirectory();
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     s32 func_02098034(M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_02103274, data_02103280;
     if (func_02098034(arg0) == 0) return;
     SetFileDirectory();
-    func_020814e4(&data_02103274);
-    func_02081590(GetLocalizedFileName(&data_02103280), arg1);
-    func_02081528();
+    OpenNarcArchive(&data_02103274);
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_02103280), arg1);
+    CloseNarcArchive();
 }
 
 M2C_UNK func_02098d48(M2C_UNK arg0, u16 arg1) {

@@ -5,8 +5,8 @@
 #pragma opt_if-conversion off
 int func_ov000_02192d88(void){
 extern void **gCurrentMap;
-extern u16 *data_ov000_021df580;
-extern s8 data_ov000_021b55a0[32];
+extern u16 *gAiCommandState;
+extern s8 gTerrainPropertyType[32];
 void BuildUnitMoveRange(void); void func_01ffb9c4(s32);
 s32 func_ov000_021a9d8c(s16,s16); u8 IsPropertyTerrain(s32);
 s32 func_ov000_021a9860(s32,s32); s32 func_ov000_02178518(s32,s32,s16 *);
@@ -29,7 +29,7 @@ if(func_ov000_021a9d8c((s16)x,(s16)y))continue;
 if(IsPropertyTerrain(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)) && M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x508))continue;
 if(!func_ov000_021a9860(x,y))continue;
 if(!func_ov000_02178518(x,y,pos))continue;
-if(M2C_FIELD(*gCurrentMap,u8 *,0x6c63+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x1928)*6) && !(data_ov000_021df580[4]&0x20)){
+if(M2C_FIELD(*gCurrentMap,u8 *,0x6c63+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x1928)*6) && !(gAiCommandState[4]&0x20)){
 if(func_ov000_0217bdb4(x,y)==1)continue;
 }
 score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
@@ -54,13 +54,13 @@ if(!func_ov000_02178518(x,y,pos))continue;
 kind=(u32)(unit[0]<<26)>>26;
 switch(kind){
 case 1:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x80))continue;
-if(!(data_ov000_021df580[4]&0x20)){if(!func_ov000_0217c08c(x,y,3,dest))continue;}
+if(!(gAiCommandState[4]&0x20)){if(!func_ov000_0217c08c(x,y,3,dest))continue;}
 else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
 case 2:if(!(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x3250)&0x40))continue;
-if(!(data_ov000_021df580[4]&0x20)){if(!func_ov000_0217c08c(x,y,2,dest))continue;}
+if(!(gAiCommandState[4]&0x20)){if(!func_ov000_0217c08c(x,y,2,dest))continue;}
 else{if(!func_ov000_021a9860(x,y))continue;dest[0]=x;dest[1]=(s16)y;}break;
 default:continue;}
-if(data_ov000_021b55a0[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
+if(gTerrainPropertyType[M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31] && func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)))score=0;
 else score=M2C_FIELD(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8),s8 *,x);
 value=M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2840)+M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x2d48);
 switch(M2C_FIELD(*gCurrentMap+x+M2C_FIELD(*gCurrentMap+y*2,u16 *,0x3758),u8 *,0x1420)&31){case 15:score+=100;break;case 17:score+=80;break;case 24:score+=60;break;case 18:score+=40;break;case 19:score+=20;break;case 22:score+=20;break;}

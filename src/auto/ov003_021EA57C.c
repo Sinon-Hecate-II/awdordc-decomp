@@ -8,10 +8,10 @@ static inline void SetMenuSpritePosition(void *p,s16 x,s16 y){M2C_FIELD(p,s16 *,
 void func_ov003_021ea57c(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK AddSprite(M2C_UNK, u8, u16, M2C_UNK *, s32);
-    s32 func_0207c8ec(u32, M2C_UNK);
+    s32 Divide(u32, M2C_UNK);
     s32 Modulo(u32, M2C_UNK);
     M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 GetLocalizedText();
     M2C_UNK func_02088d94(void *);
     M2C_UNK func_02088da8(void *);
@@ -221,7 +221,7 @@ after_56:
     do {
         temp_r6_2 = (s16)(temp_r8_2 + ((Modulo(var_r7_2, 4) * 0x31) + 0x1D));
         temp_r2 = temp_r6_2;
-        temp_r1 = (s16)((func_0207c8ec(var_r7_2, 4) * 0x12) + 0x59);
+        temp_r1 = (s16)((Divide(var_r7_2, 4) * 0x12) + 0x59);
         temp_r3_2 = temp_r5_3 + (var_r7_2 * 4);
         temp_r0_5 = M2C_FIELD(temp_r3_2, void **, 0x14);
         var_r7_2 += 1;
@@ -256,7 +256,7 @@ after_56:
             AddSprite(0xC0, (u8) (s16) (((temp_r3_3 << 5) / 98) + 0xA0), (u16) ((0x3FF & (0x660 >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0x8000), &data_027e00b4, 0xB);
         }
     }
-    if ((func_ov003_021e6e40() != 0) && (func_020846a4() != 0)) {
+    if ((func_ov003_021e6e40() != 0) && (IsLinkSessionActive() != 0)) {
         temp_r1_3 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x4C)) - 0x5E;
         temp_r3_4 = ((temp_r1_3 * 0xA) / 98);
         temp_r1_4 = M2C_FIELD(arg0, void **, 0x60);

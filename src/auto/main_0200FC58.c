@@ -153,7 +153,10 @@ M2C_FIELD(p,s32 *,0x1c)=0x10000;M2C_FIELD(p,s32 *,0x20)=256;M2C_FIELD(p,s32 *,0x
 fail:M2C_FIELD(p,s32 *,0x18)=M2C_FIELD(p,s32 *,4)=0;M2C_FIELD(data_0212fde0,s32 *,0)=3;
 }
 #pragma opt_common_subs off
-void func_02010164(void *arg0) {
+/* Task body of the chunked memory transfer: moves the task's remaining bytes between its source
+ * and destination in chunks (through a bounce buffer for reads), then wakes the waiting thread
+ * and calls the completion callback. */
+void RunTransferTask(void *arg0) {
     void func_02000b9c(s32);
     void OS_WakeupThread(void *);
     void DC_InvalidateRange(void *, s32);
@@ -164,51 +167,51 @@ void func_02010164(void *arg0) {
     void OS_RestoreInterrupts(s32);
     void MI_CpuCopy8(void *, void *, u32);
     void func_02010d14(void *, s32, s32);
-    register u32 temp_r4_2;
-    s32 temp_r5;
-    M2C_UNK (*temp_r6_2)(s32);
-    register u32 temp_r4, var_r5;
-    register void *temp_r6;
-    register s32 temp_r7;
-    register u32 var_r8;
-    register s32 temp_r10;
+    register u32 irq;
+    s32 callbackArg;
+    M2C_UNK (*callback)(s32);
+    register u32 mode, chunk;
+    register void *buffer;
+    register s32 type;
+    register u32 count;
+    register s32 retries;
 
-    u32 temp_r0;
+    u32 left;
 
 
-    temp_r7 = M2C_FIELD(arg0, s32 *, 0x2C);
-    temp_r4 = M2C_FIELD(arg0, u32 *, 0x34);
-    temp_r10 = M2C_FIELD(arg0, s32 *, 0x30);
-    var_r5 = 0x100;
+    type = M2C_FIELD(arg0, s32 *, 0x2C);
+    mode = M2C_FIELD(arg0, u32 *, 0x34);
+    retries = M2C_FIELD(arg0, s32 *, 0x30);
+    chunk = 0x100;
     func_02000b9c(0x02000BC4);
-    if (temp_r7 == 0xB) {
-        var_r5 = func_02010438();
+    if (type == 0xB) {
+        chunk = func_02010438();
     }
-    temp_r6 = arg0 + 0x120;
+    buffer = arg0 + 0x120;
 loop_3:
-    var_r8 = M2C_FIELD(arg0, u32 *, 0x24);
-    if (var_r5 < var_r8) {
-        var_r8 = var_r5;
+    count = M2C_FIELD(arg0, u32 *, 0x24);
+    if (chunk < count) {
+        count = chunk;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), u32 *, 0x14) = var_r8;
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0), u32 *, 0x14) = count;
     if (M2C_FIELD(arg0, volatile s32 *, 0x114) & 0x40) {
         M2C_FIELD(arg0, s32 *, 0x114) = (s32) (M2C_FIELD(arg0, s32 *, 0x114) & ~0x40);
         M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, 0) = 7;
     } else {
-        switch (temp_r4) {
+        switch (mode) {
         default:
             break;
         case 0:
-            DC_InvalidateRange(temp_r6, var_r8);
+            DC_InvalidateRange(buffer, count);
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = (void *) M2C_FIELD((u32)arg0, void **, 0x1C);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = temp_r6;
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = buffer;
             break;
         case 1:
         case 2:
-            MI_CpuCopy8(M2C_FIELD(arg0, void **, 0x1C), temp_r6, var_r8);
-            func_020067e0(temp_r6, var_r8);
+            MI_CpuCopy8(M2C_FIELD(arg0, void **, 0x1C), buffer, count);
+            func_020067e0(buffer, count);
             func_02006804();
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = temp_r6;
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = buffer;
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);
             break;
         case 3:
@@ -216,39 +219,39 @@ loop_3:
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);
             break;
         }
-        if (((s32 (*)(void *, s32, s32))func_02010d14)(arg0, temp_r7, temp_r10) != 0) {
-            if (temp_r4 == 2) {
+        if (((s32 (*)(void *, s32, s32))func_02010d14)(arg0, type, retries) != 0) {
+            if (mode == 2) {
                 if (((s32 (*)(void *, s32, s32))func_02010d14)(arg0, 9, 1) != 0) {
                     goto block_23;
                 }
             } else {
-                if (temp_r4 == 0) {
-                    MI_CpuCopy8(temp_r6, M2C_FIELD(arg0, void **, 0x20), var_r8);
+                if (mode == 0) {
+                    MI_CpuCopy8(buffer, M2C_FIELD(arg0, void **, 0x20), count);
                 }
 block_23:
-                M2C_FIELD(arg0, void **, 0x1C) = (void *) (M2C_FIELD(arg0, void **, 0x1C) + var_r8);
-                M2C_FIELD(arg0, void **, 0x20) = (void *) (M2C_FIELD(arg0, void **, 0x20) + var_r8);
-                temp_r0 = M2C_FIELD(arg0, u32 *, 0x24) - var_r8;
-                M2C_FIELD(arg0, u32 *, 0x24) = temp_r0;
-                if (temp_r0) {
+                M2C_FIELD(arg0, void **, 0x1C) = (void *) (M2C_FIELD(arg0, void **, 0x1C) + count);
+                M2C_FIELD(arg0, void **, 0x20) = (void *) (M2C_FIELD(arg0, void **, 0x20) + count);
+                left = M2C_FIELD(arg0, u32 *, 0x24) - count;
+                M2C_FIELD(arg0, u32 *, 0x24) = left;
+                if (left) {
                     goto loop_3;
                 }
             }
         }
     }
-    temp_r6_2 = M2C_FIELD(arg0, M2C_UNK (**)(s32), 0x38);
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x3C);
-    temp_r4_2 = OS_DisableInterrupts();
+    callback = M2C_FIELD(arg0, M2C_UNK (**)(s32), 0x38);
+    callbackArg = M2C_FIELD(arg0, s32 *, 0x3C);
+    irq = OS_DisableInterrupts();
     M2C_FIELD(arg0, s32 *, 0x114) = (s32) (M2C_FIELD(arg0, s32 *, 0x114) & ~0x4C);
     OS_WakeupThread(arg0 + 0x10C);
     if (M2C_FIELD(arg0, s32 *, 0x114) & 0x10) {
         TaskWake(arg0 + 0x44);
     }
-    OS_RestoreInterrupts(temp_r4_2);
-    if (temp_r6_2 == NULL) {
+    OS_RestoreInterrupts(irq);
+    if (callback == NULL) {
         return;
     }
-    temp_r6_2(temp_r5);
+    callback(callbackArg);
 }
 #pragma opt_common_subs reset
 s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
@@ -259,7 +262,7 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     void OS_RestoreInterrupts(s32);
     void OS_SleepThread(void *);
     void func_0200fb0c(void *);
-    void func_02010164(void *);
+    void RunTransferTask(void *);
     void *p = &data_0212fde0;
     s32 state;
     u32 oldf;
@@ -290,11 +293,11 @@ s32 func_0201033c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     M2C_FIELD(p, s32 *, 0x30) = a7;
     M2C_FIELD(p, s32 *, 0x34) = a8;
     if (a5 != 0) {
-        func_0200fb0c((void *)func_02010164);
+        func_0200fb0c((void *)RunTransferTask);
         return 1;
     }
     M2C_FIELD(&data_0212fde0, u32 *, 0x104) = M2C_FIELD(&gSocketManager, u32 *, 0x4);
-    func_02010164(p);
+    RunTransferTask(p);
     return *M2C_FIELD(p, s32 **, 0) == 0;
 }
 

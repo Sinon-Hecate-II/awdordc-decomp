@@ -1,13 +1,13 @@
 /* 3 functions from 0x0203CB38 to 0x0203D910 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct { u8 a, b; u16 c; s32 d; } UnkPacket;
-extern u8 data_020ff88c[8];
+extern u8 gNatNegMagic[8];
 extern char data_020fc920[12];
 extern char data_020fc92c[12];
 extern char data_020fc938[24];
 void func_02007e54(int, void *, int);
 void *GetConnection(void);
-void func_0205e510(void *, int, void *);
+void HandleNatNegPacket(void *, int, void *);
 void func_0205f83c(int, void *, int, void *);
 int func_0206527c(void *, void *, int);
 
@@ -25,8 +25,8 @@ s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
     if ((c==0xfe && arg3[1]==0xfd)||c==0x5c) {
         if (M2C_FIELD(GetConnection(),s32 *,0x10))
             func_0205f83c(M2C_FIELD(GetConnection(),s32 *,0x10),arg3,arg4,&packet);
-    } else if (!func_0206527c(arg3,data_020ff88c,6)) {
-        func_0205e510(arg3,arg4,&packet);
+    } else if (!func_0206527c(arg3,gNatNegMagic,6)) {
+        HandleNatNegPacket(arg3,arg4,&packet);
     } else {
         switch(c) { case 0xfe: unused=0; default: return 0; }
     }

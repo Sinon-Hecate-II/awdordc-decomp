@@ -129,7 +129,7 @@ s32 func_020a1d74(s32 arg0) {
 }
 
 s32 func_020a1da0(s32 arg0) {
- s32 func_020a8984(u16); s32 IsPlayerActive(s32); s32 func_0207c8ec(s32,s32);
+ s32 func_020a8984(u16); s32 IsPlayerActive(s32); s32 Divide(s32,s32);
  extern s32 *gCurrentMap;
  s32 base, result, difference;
  u16 current;
@@ -139,8 +139,8 @@ s32 func_020a1da0(s32 arg0) {
  current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
  difference = base - current;
  if (difference < 0) difference = -difference;
- if (current <= base) result = func_0207c8ec(difference * 100, base) + 100;
- else result = 100 - func_0207c8ec(difference * 100, base * 3);
+ if (current <= base) result = Divide(difference * 100, base) + 100;
+ else result = 100 - Divide(difference * 100, base * 3);
  if (result < 0) result = 0;
  if (result > 150) result = 150;
  return result;
@@ -175,7 +175,7 @@ s32 func_020a1f88(s32 player) {
     extern s32 *gCurrentMap;
     extern s8 data_ov000_021b5580[];
     s32 IsPlayerActive(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);
-    s32 func_0207c8ec(s32,s32);
+    s32 Divide(s32,s32);
     u32 own,enemy,other,buildings,extra,delta;
     s32 i,offset,playerOffset,clear,x,y,result;
     void *q; register void *base;
@@ -208,7 +208,7 @@ s32 func_020a1f88(s32 player) {
     if(own+extra==0)return 0;
     other=enemy-(other+buildings);
     other=enemy-other;
-    result=func_0207c8ec(((other+delta)*500)>>2,own+extra);
+    result=Divide(((other+delta)*500)>>2,own+extra);
     if(result>=100)result=((result-100)>>1)+100;
     if(result<0)result=0;
     if(result>150)result=150;
@@ -216,13 +216,13 @@ s32 func_020a1f88(s32 player) {
 }
 
 void func_020a2148(u16 *arg0) {
- s32 func_020846a4(void); s32 func_020cd6d4(void);
+ s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
  u16 *func_020bfa74(void); void func_020bfa80(u16 *); void func_020bfebc(u16 *);
  s32 func_020a22fc(s32); s32 func_020a2370(s32); s32 func_020a23b4(s32);
  s32 i; u16 *p; u16 value;
  p=arg0;
  if(p==0) p=func_020bfa74();
- if(func_020846a4()!=0) return;
+ if(IsLinkSessionActive()!=0) return;
  if(func_020cd6d4()!=0) return;
  func_020bfa80(p); func_020bfebc(p);
  i=0;
@@ -239,7 +239,7 @@ void func_020a2204(u16 *arg0) {
 u16 *func_020bfa74(void);
 s32 func_020cd6d4(void);
 void func_020c002c(u16 *);
-s32 func_020846a4(void);
+s32 IsLinkSessionActive(void);
 u32 func_020bf894(s32);
 void func_020a230c(s32,s32);
 void func_020a232c(s32,s32);
@@ -272,7 +272,7 @@ low=((SaveInitEntry *)p)->id;
 r7=((SaveInitEntry *)p)->index;
 r8=((SaveInitEntry *)p)->mode;
 if(func_020bf894(low)) r6=((SaveInitEntry *)p)->id;
-if(func_020846a4()){
+if(IsLinkSessionActive()){
 r6=M2C_FIELD(&data_0211faf4,u8 *,r9); r7=r9; r8=0;
 }
 func_020a230c(r9,r6);

@@ -75,7 +75,7 @@ s32 StringCompare(void*,void*);
 void *gpiRealloc(void*,s32);
 void *gpiMalloc(s32);
 s32 gpiAddCallback(void*,ProtocolCallback,void*,void*,s32);
-s32 func_020560e4(void*,void*,void*,void*,void*,void*,s32,s32,s32,s32,s32);
+s32 gpiSearchProfiles(void*,void*,void*,void*,void*,void*,s32,s32,s32,s32,s32);
 s32 result,status,token,loop,done,inner,previous,kind,i;
 void *ctx=M2C_FIELD(a,void**,0),*request=M2C_FIELD(b,void**,4);
 ProtocolCallback callback1,callback2,callback3,callback4,callback5,callback6,callback7,callback8;
@@ -209,7 +209,7 @@ else if(!StringCompare(name,data_020ff118)||!StringCompare(name,data_020ff108)){
 }while(!done);
 code=response[2];
 if(M2C_FIELD(b,void**,12))((void(*)(void*,s32*,s32))M2C_FIELD(b,void**,12))(a,response,M2C_FIELD(b,s32*,16));
-if(code==0x600 && response[2]==0x600){result=func_020560e4(a,request+0x28,request+0x47,request+0x5c,request+0x8f,request+0xae,M2C_FIELD(request,s32*,0x130),response[1]+M2C_FIELD(request,s32*,0x134),M2C_FIELD(b,s32*,8),M2C_FIELD(b,s32*,12),M2C_FIELD(b,s32*,16));if(result)return result;gpiFree(response[3]);response[3]=0;}
+if(code==0x600 && response[2]==0x600){result=gpiSearchProfiles(a,request+0x28,request+0x47,request+0x5c,request+0x8f,request+0xae,M2C_FIELD(request,s32*,0x130),response[1]+M2C_FIELD(request,s32*,0x134),M2C_FIELD(b,s32*,8),M2C_FIELD(b,s32*,12),M2C_FIELD(b,s32*,16));if(result)return result;gpiFree(response[3]);response[3]=0;}
 }else if(M2C_FIELD(request,s32*,0)==2){
 callback2.function=M2C_FIELD(b,s32*,12);callback2.argument=M2C_FIELD(b,s32*,16);
 if(callback2.function){

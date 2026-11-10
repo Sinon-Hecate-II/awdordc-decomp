@@ -8,7 +8,7 @@ extern const Table020a8b3c data_020f49e0;
 s32 func_020a86f8(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 func_020a736c(void *, u8, u8);
  s32 func_020a792c(u32, s32, s32, s32);
- s32 func_0207c8ec();
+ s32 Divide();
  s32 temp_r0;
  u32 temp_r4;
  s32 var_r0;
@@ -17,7 +17,7 @@ s32 func_020a86f8(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  temp_r5 = func_020a736c(arg0, arg0[1], arg0[2]) + 100;
  temp_r0 = func_020a792c(temp_r4, arg1, arg2, arg3);
  if (temp_r0 == 0) return 0;
- var_r0 = func_0207c8ec(temp_r5 * temp_r0, 100);
+ var_r0 = Divide(temp_r5 * temp_r0, 100);
  if (var_r0 <= 1) var_r0 = 1;
  return var_r0;
 }
@@ -290,13 +290,13 @@ s32 func_020a8e28(s32 arg0, s32 arg1) {
 
 void func_020a8e3c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 i,s32 j){void func_0208718c();void func_020871a8(s32,s32,s32,s32,s32,u16);s32 px,py,x,y;px=a-(func_020a8ce4(d,g)>>1);py=b-(func_020a8ce4(e,h)>>1);x=func_020a8ce4(d,g);y=func_020a8ce4(e,h);if(i!=256)x=func_020a8ce4(x,i);if(j!=256)y=func_020a8ce4(y,j);func_0208718c();func_020871a8(px,py,c,x,y,(u16)f);}
 
-u8 func_020a8ef8(s32 a){s32 func_020848c4();s32 func_0207c8ec();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=func_020848c4();if(b==(u8)func_0207c8ec(a-225,50))v=1;else v=0;return v;}
+u8 func_020a8ef8(s32 a){s32 func_020848c4();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=func_020848c4();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 
 u16 func_020a8f4c(s32 arg0) {
-    M2C_UNK func_020846a4();
+    M2C_UNK IsLinkSessionActive();
     s32 func_020848c4();
     u8 func_020a8ef8(s32);
-    func_020846a4();
+    IsLinkSessionActive();
     if (func_020a8ef8(arg0) == 0) {
         return 0xFFFFU;
     }
@@ -306,7 +306,7 @@ u16 func_020a8f4c(s32 arg0) {
 void UpdateSpriteAnimation(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
 
 s16 GetSpriteAnimValue(void *arg0) {
-    s32 func_0207c8ec();
+    s32 Divide();
     extern M2C_UNK gSinCosTable;
     s16 temp_ip;
     s16 temp_ip_2;
@@ -321,7 +321,7 @@ s16 GetSpriteAnimValue(void *arg0) {
         if (M2C_FIELD(arg0, s16 *, 0xC) == 0) {
             var_r0 = M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA));
         } else {
-            var_r0 = (M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(M2C_FIELD(arg0, u16 *, 2) * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE)), M2C_FIELD(arg0, s16 *, 0xC))) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE));
+            var_r0 = (M2C_FIELD(arg0, s16 *, 0xA) * Divide(M2C_FIELD(arg0, u16 *, 2) * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE)), M2C_FIELD(arg0, s16 *, 0xC))) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE));
         }
         return var_r0;
     case 3:
@@ -330,11 +330,11 @@ s16 GetSpriteAnimValue(void *arg0) {
             return (s16) (M2C_FIELD(arg0, s16 *, 8) + (M2C_FIELD(arg0, s16 *, 0x10) * M2C_FIELD(arg0, s16 *, 0xA)));
         }
         temp_r3 = M2C_FIELD(arg0, u16 *, 2);
-        return (s16) ((M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(temp_r3 * (temp_r3 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip * temp_ip)) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE)));
+        return (s16) ((M2C_FIELD(arg0, s16 *, 0xA) * Divide(temp_r3 * (temp_r3 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip * temp_ip)) + (M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0xE)));
     case 4:
         temp_ip_2 = M2C_FIELD(arg0, s16 *, 0xC);
         temp_r3_2 = temp_ip_2 - M2C_FIELD(arg0, u16 *, 2);
-        return (s16) ((M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0x10)) - (M2C_FIELD(arg0, s16 *, 0xA) * func_0207c8ec(temp_r3_2 * (temp_r3_2 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip_2 * temp_ip_2)));
+        return (s16) ((M2C_FIELD(arg0, s16 *, 8) + M2C_FIELD(arg0, s16 *, 0x10)) - (M2C_FIELD(arg0, s16 *, 0xA) * Divide(temp_r3_2 * (temp_r3_2 * (M2C_FIELD(arg0, s16 *, 0x10) - M2C_FIELD(arg0, s16 *, 0xE))), temp_ip_2 * temp_ip_2)));
     case 0: {
         u16 u = M2C_FIELD(arg0, u16 *, 2);
         s16 a = M2C_FIELD(arg0, s16 *, 0xA);
@@ -349,8 +349,8 @@ s16 GetSpriteAnimValue(void *arg0) {
 }
 
 void func_020a9188(void *arg0, u16 arg1) {
-    s32 func_0207c8ec();
-    M2C_FIELD(arg0, s16 *, 6) = func_0207c8ec(0x10000);
+    s32 Divide();
+    M2C_FIELD(arg0, s16 *, 6) = Divide(0x10000);
     M2C_FIELD(arg0, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 4);
 }
 
@@ -406,7 +406,7 @@ void func_020a92bc(void *arg0,s32 arg1) {
  M2C_UNK MI_CpuFill8(s32,s32,s32);
  s32 Modulo(s32,s32);
  s32 func_0207cb5c(s32,s32);
- s32 func_0207c8ec();
+ s32 Divide();
  s32 clamped, n, value, digit; u32 i;
  MI_CpuFill8((s32)arg0+11,0,6);
  clamped=0xf423f;
@@ -423,7 +423,7 @@ void func_020a92bc(void *arg0,s32 arg1) {
  case 0:M2C_FIELD(arg0+i,u8 *,11)=Modulo(M2C_FIELD(arg0,s32 *,28),10);break;
  case 1:case 2:case 3:case 4:case 5:
  digit=Modulo(M2C_FIELD(arg0,s32 *,28),func_0207cb5c(10,i+1));
- M2C_FIELD(arg0+i,u8 *,11)=func_0207c8ec(digit,func_0207cb5c(10,i));break;
+ M2C_FIELD(arg0+i,u8 *,11)=Divide(digit,func_0207cb5c(10,i));break;
  }
  }
 }

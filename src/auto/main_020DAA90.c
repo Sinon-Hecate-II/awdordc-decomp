@@ -267,7 +267,7 @@ void func_020db1a0(void *arg0) {
  M2C_UNK func_020b1c44(s32,M2C_UNK);M2C_UNK func_020809c0(u16 *,s32,s32);
  M2C_UNK func_020e4cd8(u16 *,u32,u32,u32,u16,u16,u32);
  M2C_UNK StringFormat(void *,const char *,...);M2C_UNK func_0209b2b4(s32,s32,s32,void *,s32,s32);
- s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 func_ov009_02224194(void);s32 func_ov009_022241b4(void);s32 func_ov009_02224070(s32);
+ s32 func_ov009_02224064(void);s32 func_ov009_022246ac(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 func_ov009_022241b4(void);s32 func_ov009_02224070(s32);
  extern void **gCur3DSpriteEngine,**g3DSpriteEngineMain;
  extern s32 gUnitSlotIds[];
  extern s8 data_0212d2ac[],data_0212d2b0[],data_0212d2c0[],data_0212d2c4[];
@@ -297,7 +297,7 @@ void func_020db1a0(void *arg0) {
  if(!unit) {M2C_FIELD(arg0,u16 *,0x48)|=0x100;{u32 oldIme=ime;RestoreUnitListIme(oldIme);}return;}
  if((u32)M2C_FIELD(unit,u8 *,0x4a)!=0x60U){{u32 oldIme=ime;RestoreUnitListIme(oldIme);}return;}
  count=M2C_FIELD(unit,u8 *,0x6c);glyphA=func_ov009_02225470();
- if(func_ov009_02224194()==7) {
+ if(GetLinkPhase()==7) {
  switch(func_ov009_022241b4()) {case 12:M2C_FIELD(arg0,u16 *,0x48)|=0x200;break;case 1:case 11:case 21:M2C_FIELD(arg0,u16 *,0x48)|=0x100;break;default:M2C_FIELD(arg0,u16 *,0x48)|=0x200;break;}
  {u32 oldIme=ime;RestoreUnitListIme(oldIme);}return;
  }

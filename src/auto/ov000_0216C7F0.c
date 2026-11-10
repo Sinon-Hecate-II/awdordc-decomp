@@ -85,10 +85,10 @@ s32 func_ov000_0216cc4c(s32 arg0, s32 arg1) {
 
 s32 func_ov000_0216cc84(s32 arg0, s32 arg1) {
  s32 func_020d05f4(s32,s32,s32);
- s32 func_0207c8ec(s32,s32);
+ s32 Divide(s32,s32);
  extern s32 *gCurrentMap;
  s32 base = *gCurrentMap;
- s32 result = func_0207c8ec(func_020d05f4(M2C_FIELD(base,u16 *,0x52A4),0,M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1*2,u16 *,0x3758)),u8 *,0x1420)&31),10);
+ s32 result = Divide(func_020d05f4(M2C_FIELD(base,u16 *,0x52A4),0,M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1*2,u16 *,0x3758)),u8 *,0x1420)&31),10);
  if(result>4) return 4;
  if(result<0) return 0;
  return result;
@@ -99,14 +99,14 @@ u32 GetUnitKind(u8 *arg0) {
 }
 
 s32 GetUnitHealthBarCount(void *arg0) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     u32 temp_r0;
 
     temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
     if (temp_r0 == 0) {
         return 0;
     }
-    return func_0207c8ec(temp_r0 - 1, 0xA) + 1;
+    return Divide(temp_r0 - 1, 0xA) + 1;
 }
 
 u32 func_ov000_0216cd2c(void *arg0) {
@@ -122,7 +122,7 @@ s32 func_020e3438(s32);extern u8 data_ov000_021b5c69;
 return func_020e3438(1)+((&data_ov000_021b5c69)[arg0*0x70]<<8);
 }
 
-void *func_ov000_0216cd78(void) {
+void *GetUnitIconTiles(void) {
  s32 func_020a7298();
  extern M2C_UNK data_02121e08;
  return (u8 *)&data_02121e08 + (func_020a7298() << 7);
@@ -215,9 +215,9 @@ gCur3DSpriteEngine=saved;
 
 void func_ov000_0216d130(void) {
     M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_020e3004();
     M2C_UNK *func_020e3018(u8);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -236,9 +236,9 @@ void func_ov000_0216d130(void) {
     if (!temp_z) {
         func_020e3004();
         GetLocalizedFileName(&data_ov000_021b884c);
-        func_020814e4();
-        func_02081590(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
-        func_02081528();
+        OpenNarcArchive();
+        LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
+        CloseNarcArchive();
         func_ov000_0216cee8();
     } else {
         func_02007e98(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);

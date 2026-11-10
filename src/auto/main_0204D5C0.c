@@ -89,7 +89,7 @@ void func_0204dcd8(void **arg0) {
 }
 
 s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
- s32 func_020560e4(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
+ s32 gpiSearchProfiles(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
  void gpiSetErrorString(void **,void *);extern M2C_UNK data_020fda34;
  s32 buf[4];s32 *result;void *q;
  if(!p || !(q=*p))return 2;
@@ -104,7 +104,7 @@ s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(
  cb(p,result,h);
  return 0;
  }
- return func_020560e4(p,a,b,c,d,e,f,0,g,cb,h);
+ return gpiSearchProfiles(p,a,b,c,d,e,f,0,g,cb,h);
 }
 
 s32 func_0204ddd4(void **p,s32 a,s32 b,s32 c,void (*cb)(void **,s32 *,s32),s32 d){

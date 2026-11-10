@@ -145,12 +145,12 @@ void InitMapListScreen(void) {
     extern M2C_UNK gMapListState;
     void func_ov001_0217d680(void);
     void InitMapListGraphics(void);
-    u8 func_ov001_02175ddc(void);
+    u8 Ov001_GetLanguage(void);
     M2C_UNK func_ov001_02171c24(s32, s32, s32);
     void func_ov001_02171dd0(M2C_UNK);
     void func_ov001_021722c4(void);
     M2C_UNK func_ov001_021838a8(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void *func_ov001_0218ad0c(s32, s32);
+    void *CreateTextPanel(s32, s32);
     void *func_ov001_0218a5f0(s32, s32);
     void *func_ov001_0218c884(s32, void (*)(void), s32, s32);
     M2C_UNK func_ov001_0217e238(void);
@@ -173,7 +173,7 @@ void InitMapListScreen(void) {
     func_ov001_0217d680();
     InitMapListGraphics();
     if (M2C_FIELD(&gMapListState, u8 *, 1) == 0) {
-        value = func_ov001_02175ddc();
+        value = Ov001_GetLanguage();
         func_ov001_02171c24(0x30, (s32)data_ov001_0218f99c[value], M2C_FIELD(profile, u8 *, 0xf4) + 1);
     } else {
         func_ov001_02171c24(0x45, -1, 0);
@@ -182,7 +182,7 @@ void InitMapListScreen(void) {
     func_ov001_021722c4();
     func_ov001_021838a8(2, 0x55, 0xf1, 0x41,
                         (M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x14) = func_ov001_0218ad0c(0, 1);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x14) = CreateTextPanel(0, 1);
     for (i = 0; i < 7; i++) {
         ((void **)M2C_FIELD(&gMapListState, void **, 8))[i + 6] = func_ov001_0218a5f0(0, 0x29);
     }
@@ -214,8 +214,8 @@ void InitMapListScreen(void) {
  * sets and the list-background tilemaps into VRAM, create the background list
  * objects and point the layered background control registers at them. */
 void InitMapListGraphics(void) {
-    M2C_UNK func_ov001_02171d30(void *);
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov001_02189dc8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_02183694(M2C_UNK);
     M2C_UNK func_ov001_02183720(void);
@@ -236,20 +236,20 @@ void InitMapListGraphics(void) {
     M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) =
         (M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) & 0x43) | 0x218 | 0xC00;
 
-    func_ov001_02171d90(&sYbObjKbPath, &func_02004160);      /* UI palette */
-    func_ov001_02171d90(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
-    func_ov001_02171d90(&sJbBgStep21NcgPath, &func_020046cc);/* background tiles, step 21 */
-    func_ov001_02171d90((void *)&bgStep2Path, &func_020040b4);   /* background palette, step 2 */
-    func_ov001_02171d90(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
+    Ov001_LoadAsset(&sYbObjKbPath, &func_02004160);      /* UI palette */
+    Ov001_LoadAsset(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
+    Ov001_LoadAsset(&sJbBgStep21NcgPath, &func_020046cc);/* background tiles, step 21 */
+    Ov001_LoadAsset((void *)&bgStep2Path, &func_020040b4);   /* background palette, step 2 */
+    Ov001_LoadAsset(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&listBackPath), 0, 4);
+        func_ov001_02189dc8(Ov001_LocalizePath((void *)&listBackPath), 0, 4);
     func_ov001_02183694(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
     func_ov001_02183720();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 12) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&bgStep2Path), 0, 4);
+        func_ov001_02189dc8(Ov001_LocalizePath((void *)&bgStep2Path), 0, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 16) =
-        func_ov001_02189dc8(func_ov001_02171d30((void *)&bgStep21Path), 0, 4);
+        func_ov001_02189dc8(Ov001_LocalizePath((void *)&bgStep21Path), 0, 4);
 
     /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 0) & ~3) | 3;

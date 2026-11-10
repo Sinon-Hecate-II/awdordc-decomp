@@ -166,22 +166,25 @@ void func_020bc0e0(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_020bc454(void) {
-s32 func_0207d0b8(void); s32 func_0207d0d4(void); void func_020cfc5c(void);
+/* Auto-repeat handler for the map cursor: takes the held D-pad direction, pins
+ * the cursor target cell to the matching edge of the visible window, clamps it
+ * to the map and then steps it one cell along the direction. */
+void MoveMapCursorWithKeys(void) {
+s32 func_0207d0b8(void); s32 func_0207d0d4(void); void ClampCursorToMap(void);
 extern s32 *gCurrentMap; extern void *gKeyState; extern s16 data_021292dc; extern s16 data_021292de;
 s32 dir=(M2C_FIELD(gKeyState,u16 *,6)>>4)&15;
-s32 w=func_0207d0b8(), h=func_0207d0d4(), n;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x5144)<w)w=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
-if(M2C_FIELD(*gCurrentMap,u16 *,0x5146)<h)h=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
-if(((s16 (*)[2])&data_021292dc)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=(M2C_FIELD(*gCurrentMap,s16 *,0x5148)>>4)+1;
-if(((s16 (*)[2])&data_021292dc)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=(w-2)+(M2C_FIELD(*gCurrentMap,s16 *,0x5148)>>4);
-if(((s16 (*)[2])&data_021292de)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=(M2C_FIELD(*gCurrentMap,s16 *,0x514a)>>4)+1;
-if(((s16 (*)[2])&data_021292de)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=(h-2)+(M2C_FIELD(*gCurrentMap,s16 *,0x514a)>>4);
-func_020cfc5c();
-n=M2C_FIELD(*gCurrentMap,s16 *,0x52c2)+((s16 (*)[2])&data_021292dc)[dir][0];
-if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,0x5144))M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=n;
-n=M2C_FIELD(*gCurrentMap,s16 *,0x52c4)+((s16 (*)[2])&data_021292de)[dir][0];
-if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,0x5146))M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=n;
+s32 viewW=func_0207d0b8(), viewH=func_0207d0d4(), n;
+if(M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)<viewW)viewW=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);
+if(M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)<viewH)viewH=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);
+if(((s16 (*)[2])&data_021292dc)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4)+1;
+if(((s16 (*)[2])&data_021292dc)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=(viewW-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X)>>4);
+if(((s16 (*)[2])&data_021292de)[dir][0]<0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4)+1;
+if(((s16 (*)[2])&data_021292de)[dir][0]>0)M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=(viewH-2)+(M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y)>>4);
+ClampCursorToMap();
+n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)+((s16 (*)[2])&data_021292dc)[dir][0];
+if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH))M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=n;
+n=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)+((s16 (*)[2])&data_021292de)[dir][0];
+if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=n;
 }
 #pragma pop
 void func_020bc610(void *arg0) {
@@ -259,7 +262,7 @@ s32 func_020bc910(void) {
     void PlaySoundEffect(void *);
     s32 func_0207b764(u8, u8);
     s32 ConfirmCursorTile(s16, s16, s32, s32, u8);
-    void func_020d58c4(s32, s32);
+    void SelectCursorTarget(s32, s32);
 
     extern s32 *gCurrentMap;
     extern void *gKeyState;
@@ -310,7 +313,7 @@ s32 func_020bc910(void) {
         s32 *map2 = *gCurrentMap;
         s16 xx = M2C_FIELD(map2, s16 *, 0x52C2);
         s16 yy = M2C_FIELD(map2, s16 *, 0x52C4);
-        func_020d58c4(xx, yy);
+        SelectCursorTarget(xx, yy);
     }
     return 1;
 }
@@ -357,7 +360,7 @@ s32 func_020bcaf0(void) {
     return 0;
 }
 
-void func_020bcb34(s32 *arg0,s32 arg1) {
+void MoveSelectionWithKeys(s32 *arg0,s32 arg1) {
 extern void *gKeyState;
 if(M2C_FIELD(gKeyState,u16 *,2)&0x90) {
 (*arg0)++;

@@ -14,10 +14,10 @@ void InitTelopWindow(void *telop) {
     void func_02096d0c(void);
     M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081590(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
-    void func_02081528(void);
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
+    void CloseNarcArchive(void);
     M2C_UNK func_01ff9c34(M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff85b8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
@@ -63,11 +63,11 @@ void InitTelopWindow(void *telop) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2;
     SetFileDirectory(&sTelopWindowPath);
-    func_020814e4(&sTelopNarcFile);
-    func_02081590(&sTelopCgFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
-    func_02081590(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
-    func_020815fc(&sTelopClFile, 0x20, 0x20);
-    func_02081528();
+    OpenNarcArchive(&sTelopNarcFile);
+    LoadNarcFileDecompressed(&sTelopCgFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
+    LoadNarcFileDecompressed(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+    LoadNarcFileToSpriteBuffer(&sTelopClFile, 0x20, 0x20);
+    CloseNarcArchive();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
                   (u16)func_01ff9c34((u8)((u32)(*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 0),
                   0x1000);
@@ -192,12 +192,12 @@ void func_020960b4(void) {
 }
 
 void func_020960cc(s32 arg0, s32 arg1, void *arg2) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = arg0 - arg1;
     M2C_FIELD(arg2, s16 *, 0) = (s16) (((u32) (temp_r0 & 0x3F) >> 1) * 8);
-    M2C_FIELD(arg2, s16 *, 2) = (s16) (func_0207c8ec(temp_r0, 0x40) * 8);
+    M2C_FIELD(arg2, s16 *, 2) = (s16) (Divide(temp_r0, 0x40) * 8);
 }
 
 void func_020960fc(void *arg0) {
@@ -330,13 +330,13 @@ block_8:
 
 void func_0209643c(void){
 extern s32 *gCurrentMap;
-s32 func_020c79ec(void);s32 func_020846a4(void);s32 func_020c85c4(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
+s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142);
 s32 p,i;Unit964 *unit; s32 off;
 if(id>=225&&id<425){
-p=func_020c79ec();
-if(!func_020846a4()){
-if(!func_020c85c4(id,p))return;
+p=GetMapRecordBuffer();
+if(!IsLinkSessionActive()){
+if(!LoadMapRecord(id,p))return;
 }
 func_020c8564(p);
 }else{

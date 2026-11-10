@@ -1,5 +1,7 @@
 /* 20 functions from 0x0205DA30 to 0x0205E95C (main), found by ds-decomp. */
 #include "common.h"
+#include "natneg.h"
+#include "qr2.h"
 
 typedef struct { u8 bytes[6]; } NetworkAddress6;
 typedef struct { NetworkAddress6 address; u8 type,length; u32 ip; u8 reserved,value,flag,addr[4],port[2]; char name[64]; } NetworkHandshakePacket;
@@ -7,16 +9,16 @@ typedef struct { u8 bytes[20]; } NetworkPacket20Bytes;
 typedef struct { NetworkAddress6 address; u8 type, length; u32 ip, value; u16 port; u8 flag, mode; } NetworkPacket20;
 typedef struct { u8 bytes[21]; } NetworkPacket21Bytes;
 typedef struct { NetworkAddress6 address; u8 type, length; u32 ip; u8 reserved, value; u8 tail[7]; } NetworkPacket21;
-extern NetworkAddress6 data_020ff88c;
+extern NetworkAddress6 gNatNegMagic;
 
 #pragma opt_propagation off
 void func_0205dc78(void *arg0) {
     void func_0205d944(s32, s32, u16, void *, s32);
     s32 GetTickCountMs(void);
-    extern NetworkAddress6 data_020ff88c;
+    extern NetworkAddress6 gNatNegMagic;
     u8 sp04[0x14];
 
-    register u8 *pr1 asm("r1") = (u8 *)&data_020ff88c;
+    register u8 *pr1 asm("r1") = (u8 *)&gNatNegMagic;
     register s32 vr2 asm("r2");
     register u8 vr7 asm("r7");
     register u8 vr6 asm("r6");
@@ -105,12 +107,12 @@ s32 func_0205ddd0(void *arg0, s32 arg1) {
 }
 
 s32 func_0205de10(void) {
- extern M2C_UNK data_0213e144, data_020ff89c, data_020ff8b8;
- if (M2C_FIELD(&data_0213e144,s32 *,12)==0)
- M2C_FIELD(&data_0213e144,s32 *,12)=func_0205ddd0(M2C_FIELD(&data_0213e144,void **,4),(s32)&data_020ff89c);
- if (M2C_FIELD(&data_0213e144,s32 *,8)==0)
- M2C_FIELD(&data_0213e144,s32 *,8)=func_0205ddd0(M2C_FIELD(&data_0213e144,void **,0),(s32)&data_020ff8b8);
- if(M2C_FIELD(&data_0213e144,s32 *,12)==0 || M2C_FIELD(&data_0213e144,s32 *,8)==0) return 0;
+ extern M2C_UNK gNatNegManager, data_020ff89c, data_020ff8b8;
+ if (M2C_FIELD(&gNatNegManager,s32 *,12)==0)
+ M2C_FIELD(&gNatNegManager,s32 *,12)=func_0205ddd0(M2C_FIELD(&gNatNegManager,void **,4),(s32)&data_020ff89c);
+ if (M2C_FIELD(&gNatNegManager,s32 *,8)==0)
+ M2C_FIELD(&gNatNegManager,s32 *,8)=func_0205ddd0(M2C_FIELD(&gNatNegManager,void **,0),(s32)&data_020ff8b8);
+ if(M2C_FIELD(&gNatNegManager,s32 *,12)==0 || M2C_FIELD(&gNatNegManager,s32 *,8)==0) return 0;
  return 1;
 }
 
@@ -165,54 +167,56 @@ void func_0205df50(void) {
  M2C_FIELD(p,s32 *,16)=4;
 }
 
-void func_0205df88(void *p) {
-s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void func_0205e510(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void func_0205dc78(void *);
-extern u8 data_0213e158[];
-u8 address[8]; s32 size=8; u8 packet[8]; s32 n;
-if(M2C_FIELD(p,s32 *,16)==4){func_0205d88c(p);return;}
-if(-1!=M2C_FIELD(p,s32 *,0)){
+/* Polls one NAT-negotiation peer: drains its socket, retries the current step
+   when the deadline passes, and releases the peer on completion or timeout. */
+void UpdateNatNegPeer(void *peer) {
+s32 func_0205d88c(); s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void func_0205dc78(void *);
+extern u8 gNatNegRecvBuffer[];
+u8 address[8]; s32 size=8; u8 reply[8]; s32 n;
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){func_0205d88c(peer);return;}
+if(-1!=M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)){
 do {
-if(!func_02049534(M2C_FIELD(p,s32 *,0)))break;
-n=func_020497e0(M2C_FIELD(p,s32 *,0),data_0213e158,512,0,address,&size);
+if(!func_02049534(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)))break;
+n=func_020497e0(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),gNatNegRecvBuffer,512,0,address,&size);
 if(n==-1)break;
-func_0205e510(data_0213e158,n,(M2C_UNK)address);
-} while(M2C_FIELD(p,s32 *,16)!=4 && M2C_FIELD(p,s32 *,0)!=-1);
+HandleNatNegPacket(gNatNegRecvBuffer,n,(M2C_UNK)address);
+} while(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)!=NATNEG_STATE_DONE && M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)!=-1);
 }
-if((M2C_FIELD(p,s32 *,16)==0 || M2C_FIELD(p,s32 *,16)==2) && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
-if(M2C_FIELD(p,s32 *,32)>M2C_FIELD(p,s32 *,36)){
-M2C_FIELD(p,M2C_UNK (**)(s32,s32,void *,s32),56)(2,-1,0,M2C_FIELD(p,s32 *,60));
-((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
+if((M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START || M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_CONNECT) && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)>M2C_FIELD(peer,s32 *,NATNEG_PEER_MAX_RETRIES)){
+M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(2,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
+((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }else{
-M2C_FIELD(p,s32 *,32)++;
-if(M2C_FIELD(p,s32 *,16)==0)((void (*)(void *))func_0205da30)(p);else func_0205dc78(p);
+M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)++;
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))func_0205da30)(peer);else func_0205dc78(peer);
 }
 }
-if(M2C_FIELD(p,s32 *,16)==3 && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
-if(M2C_FIELD(p,s32 *,4)==-1){
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_REPORT && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET2)==-1){
 u16 port;
-packet[1]=2;
-port=M2C_FIELD(p,u16 *,48);
-*(u16 *)(packet+2)=((port>>8)&255)|((port<<8)&0xff00);
-*(u32 *)(packet+4)=M2C_FIELD(p,u32 *,44);
-M2C_FIELD(p,M2C_UNK (**)(s32,s32,void *,s32),56)(0,M2C_FIELD(p,s32 *,0),packet,M2C_FIELD(p,s32 *,60));
-M2C_FIELD(p,s32 *,0)=-1;
+reply[1]=2;
+port=M2C_FIELD(peer,u16 *,NATNEG_PEER_REMOTE_PORT);
+*(u16 *)(reply+2)=((port>>8)&255)|((port<<8)&0xff00);
+*(u32 *)(reply+4)=M2C_FIELD(peer,u32 *,NATNEG_PEER_REMOTE_IP);
+M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),reply,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
+M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)=-1;
 }
-((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
+((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
-if(M2C_FIELD(p,s32 *,16)==1 && (u32)GetTickCountMs()>M2C_FIELD(p,u32 *,40)){
-M2C_FIELD(p,M2C_UNK (**)(s32,s32,void *,s32),56)(1,-1,0,M2C_FIELD(p,s32 *,60));
-((void (*)(s32))func_0205df50)(M2C_FIELD(p,s32 *,8));
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_ACKED && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(1,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
+((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
 }
 
 void func_0205e178(void) {
     s32 Vector_GetCount();
     M2C_UNK Vector_GetItem(s32, s32);
-    void func_0205df88();
-    extern M2C_UNK data_0213e144;
+    void UpdateNatNegPeer();
+    extern M2C_UNK gNatNegManager;
     s32 var_r5;
 
-    if (M2C_FIELD(&data_0213e144, s32 *, 0x10) == 0) {
+    if (M2C_FIELD(&gNatNegManager, s32 *, 0x10) == 0) {
         return;
     }
     var_r5 = Vector_GetCount() - 1;
@@ -220,8 +224,8 @@ void func_0205e178(void) {
         return;
     }
     do {
-        Vector_GetItem(M2C_FIELD(&data_0213e144, s32 *, 0x10), var_r5);
-        func_0205df88();
+        Vector_GetItem(M2C_FIELD(&gNatNegManager, s32 *, 0x10), var_r5);
+        UpdateNatNegPeer();
         var_r5 -= 1;
     } while (var_r5 >= 0);
 }
@@ -232,7 +236,7 @@ M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
  u16 port;
  u32 ip;
  packet.length=6;
- packet.address=data_020ff88c;
+ packet.address=gNatNegMagic;
  packet.type=2;
  packet.value=M2C_FIELD(arg0,s32 *,12);
  ip=M2C_FIELD(arg0,u32 *,8);
@@ -348,7 +352,7 @@ void func_0205e40c(void *arg0, void *arg1, void *arg2) {
     }
 }
 
-void func_0205e510(u8 *packet,s32 length,M2C_UNK arg2) {
+void HandleNatNegPacket(u8 *packet,s32 length,M2C_UNK arg2) {
 s32 func_0205d920(M2C_UNK);
 void *func_0205d75c(void);
 u32 a[5];
@@ -378,94 +382,100 @@ func_0205e40c(p,&b,arg2);
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_0205e670(u8 **arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9, s32 argA, s32 argB, s32 argC, s32 argD) {
+/* Creates and fills a GameSpy QR2 connection record: allocates a 0x110-byte
+ * record (or uses the static default when outConnection is NULL), stores the
+ * socket, game/player names, local port, state callbacks and NAT-negotiation
+ * flag, seeds the random local address bytes, refreshes the local IP list and
+ * resolves the master server for the record's request id. Returns 0, or 3 when
+ * the master server cannot be resolved. */
+s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 gameName, s32 playerName, s32 reportToMaster, s32 natNeg, s32 appendKeyCb, s32 appendIdx1Cb, s32 appendIdx2Cb, s32 collectKeysCb, s32 repeatCountCb, s32 eventCb, s32 context) {
     u8 *gpiMalloc(M2C_UNK);
     M2C_UNK GetTickCountMs();
-    M2C_UNK func_0205ec0c();
-    s32 func_0205ec80(s8 *, s32, void *, M2C_UNK);
+    M2C_UNK RefreshLocalIps();
+    s32 ResolveHostAddress(s8 *, s32, void *, M2C_UNK);
     M2C_UNK StringFormat(s8 *, M2C_UNK *, s32);
-    s32 func_02067774();
-    M2C_UNK func_020677a8();
+    s32 Rand();
+    M2C_UNK SetRandSeed();
     M2C_UNK StringCopy(void *, s32);
-    extern M2C_UNK data_020ff8d8;
-    extern M2C_UNK data_020ff9e8;
+    extern M2C_UNK gQr2DefaultConnection;
+    extern M2C_UNK gMasterHostFormat;
     extern s32 gLocalIpCount;
-    extern s8 data_0213e370;
-    s8 sp0[64];
+    extern s8 gMasterHostOverride;
+    s8 hostBuf[64];
     u8 *temp_r0;
-    
-    s32 var_r0_2;
-    s32 var_r2;
-    s32 var_r5;
-    u8 *var_r6;
-    s8 *var_r0;
-    s8 temp_r4;
-    s32 temp_r0_2;
-    void *temp_r0_3;
-    void *temp_r3;
 
-    if (arg0 == NULL) {
-        var_r6 = (u8 *)&data_020ff8d8;
+    s32 result;
+    s32 clearIndex;
+    s32 byteIndex;
+    u8 *qr2;
+    s8 *hostName;
+    s8 hostOverride;
+    s32 rnd;
+    void *temp_r0_3;
+    void *cellPtr;
+
+    if (outConnection == NULL) {
+        qr2 = (u8 *)&gQr2DefaultConnection;
     } else {
-        var_r6 = *arg0 = gpiMalloc(0x110);
+        qr2 = *outConnection = gpiMalloc(0x110);
     }
     GetTickCountMs();
-    func_020677a8();
-    StringCopy(var_r6 + 4, arg3);
-    StringCopy(var_r6 + 0x44, arg4);
-    M2C_FIELD(var_r6, s32 *, 0xC0) = arg2;
-    var_r5 = 0;
-    M2C_FIELD(var_r6, s32 *, 0xAC) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xB0) = 0;
-    M2C_FIELD(var_r6, s32 *, 0) = arg1;
-    M2C_FIELD(var_r6, s32 *, 0xB8) = 1;
-    M2C_FIELD(var_r6, s32 *, 0x10C) = argD;
-    M2C_FIELD(var_r6, s32 *, 0x88) = arg7;
-    M2C_FIELD(var_r6, s32 *, 0x8C) = arg8;
-    M2C_FIELD(var_r6, s32 *, 0x90) = arg9;
-    M2C_FIELD(var_r6, s32 *, 0x94) = argA;
-    M2C_FIELD(var_r6, s32 *, 0x98) = argB;
-    M2C_FIELD(var_r6, s32 *, 0x9C) = argC;
-    M2C_FIELD(var_r6, s32 *, 0xA0) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xA4) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xD4) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xBC) = arg5;
-    M2C_FIELD(var_r6, s32 *, 0xC4) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xC8) = arg6;
-    M2C_FIELD(var_r6, s32 *, 0x104) = 0;
-    M2C_FIELD(var_r6, s16 *, 0x108) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xA8) = 0;
-    M2C_FIELD(var_r6, s32 *, 0xB4) = 0;
+    SetRandSeed();
+    StringCopy(qr2 + QR2_GAMENAME, gameName);
+    StringCopy(qr2 + 0x44, playerName);
+    M2C_FIELD(qr2, s32 *, QR2_LOCAL_PORT) = localPort;
+    byteIndex = 0;
+    M2C_FIELD(qr2, s32 *, QR2_LAST_SENT) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_SOCKET) = socket;
+    M2C_FIELD(qr2, s32 *, 0xB8) = 1;
+    M2C_FIELD(qr2, s32 *, QR2_CTX) = context;
+    M2C_FIELD(qr2, s32 *, QR2_CB_APPEND_KEY) = appendKeyCb;
+    M2C_FIELD(qr2, s32 *, QR2_CB_APPEND_IDX1) = appendIdx1Cb;
+    M2C_FIELD(qr2, s32 *, QR2_CB_APPEND_IDX2) = appendIdx2Cb;
+    M2C_FIELD(qr2, s32 *, QR2_CB_COLLECT_KEYS) = collectKeysCb;
+    M2C_FIELD(qr2, s32 *, QR2_CB_REPEAT_COUNT) = repeatCountCb;
+    M2C_FIELD(qr2, s32 *, 0x9C) = eventCb;
+    M2C_FIELD(qr2, s32 *, 0xA0) = 0;
+    M2C_FIELD(qr2, s32 *, 0xA4) = 0;
+    M2C_FIELD(qr2, s32 *, 0xD4) = 0;
+    M2C_FIELD(qr2, s32 *, 0xBC) = reportToMaster;
+    M2C_FIELD(qr2, s32 *, 0xC4) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_NATNEG) = natNeg;
+    M2C_FIELD(qr2, s32 *, QR2_PUBLIC_IP) = 0;
+    M2C_FIELD(qr2, s16 *, QR2_PUBLIC_PORT) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_PUBLIC_VALID) = 0;
+    M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 0;
     do {
-        temp_r0_2 = func_02067774();
-        temp_r3 = var_r6 + var_r5;
-        var_r5 += 1;
-        M2C_FIELD(temp_r3, s8 *, 0x84) = temp_r0_2 % 255;
-    } while (var_r5 < 4);
-    var_r2 = 0;
+        rnd = Rand();
+        cellPtr = qr2 + byteIndex;
+        byteIndex += 1;
+        M2C_FIELD(cellPtr, s8 *, QR2_LOCAL_IP) = rnd % 255;
+    } while (byteIndex < 4);
+    clearIndex = 0;
     do {
-        ((s32 *)var_r6)[var_r2+54] = -1;
-        var_r2 += 1;
-    } while (var_r2 < 0xA);
-    M2C_FIELD(var_r6, s32 *, 0x100) = 0;
+        ((s32 *)qr2)[clearIndex+54] = -1;
+        clearIndex += 1;
+    } while (clearIndex < 0xA);
+    M2C_FIELD(qr2, s32 *, 0x100) = 0;
     if (gLocalIpCount == 0) {
-        func_0205ec0c();
+        RefreshLocalIps();
     }
-    if (arg5 != 0) {
-        temp_r4 = data_0213e370;
-        if (temp_r4 == 0) {
-            StringFormat(sp0, &data_020ff9e8, arg3);
+    if (reportToMaster != 0) {
+        hostOverride = gMasterHostOverride;
+        if (hostOverride == 0) {
+            StringFormat(hostBuf, &gMasterHostFormat, gameName);
         }
-        if (temp_r4 != 0) {
-            var_r0 = &data_0213e370;
+        if (hostOverride != 0) {
+            hostName = &gMasterHostOverride;
         } else {
-            var_r0 = sp0;
+            hostName = hostBuf;
         }
-        var_r0_2 = func_0205ec80(var_r0, 0x6CFC, var_r6 + 0xCC, 0);
+        result = ResolveHostAddress(hostName, 0x6CFC, qr2 + QR2_REQUEST_ID, 0);
     } else {
-        var_r0_2 = 1;
+        result = 1;
     }
-    if (var_r0_2 == 0) {
+    if (result == 0) {
         return 3;
     }
     return 0;
@@ -528,13 +538,13 @@ void func_0205da30(void *arg0) {
 s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);
-extern M2C_UNK gServiceNameBuffer,data_0213e144;
+extern M2C_UNK gServiceNameBuffer,gNatNegManager;
 union { NetworkHandshakePacket header; u8 bytes[88]; } packet; NetworkHandshakePacket *p=&packet.header; u8 *buf=packet.bytes;
 u32 ip,a,b,c,d;
 s32 len,sock,pa,pb;
 u16 port;
 {
-u8 a0=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[0],a1=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[1],a2=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[2],a3=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[3],a4=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[4],a5=((volatile NetworkAddress6 *)&data_020ff88c)->bytes[5];
+u8 a0=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[0],a1=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[1],a2=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[2],a3=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[3],a4=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[4],a5=((volatile NetworkAddress6 *)&gNatNegMagic)->bytes[5];
 p->address.bytes[0]=a0;p->address.bytes[1]=a1;p->address.bytes[2]=a2;p->address.bytes[3]=a3;p->address.bytes[4]=a4;p->address.bytes[5]=a5;
 p->length=0;
 }
@@ -550,10 +560,10 @@ packet.bytes[19]=0;packet.bytes[20]=0;
 StringCopy(packet.bytes+21,(s32)&gServiceNameBuffer);
 len=StringLength(&gServiceNameBuffer)+22;
 if(p->flag && M2C_FIELD(arg0,s32 *,20)==0){
-buf[12]=0;func_0205d944(M2C_FIELD(arg0,s32 *,4),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);
+buf[12]=0;func_0205d944(M2C_FIELD(arg0,s32 *,4),M2C_FIELD(&gNatNegManager,s32 *,12),0x6cfd,buf,len);
 }
 if(M2C_FIELD(arg0,s32 *,24)==0){
-buf[12]=1;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&data_0213e144,s32 *,12),0x6cfd,buf,len);
+buf[12]=1;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&gNatNegManager,s32 *,12),0x6cfd,buf,len);
 }
 sock=p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0);
 pa=func_0205d9fc(p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0));
@@ -561,7 +571,7 @@ pb=func_0205d9fc(sock);
 port=((pa>>8)&255)|((pb<<8)&0xff00);
 packet.bytes[20]=port;packet.bytes[19]=port>>8;
 if(M2C_FIELD(arg0,s32 *,28)==0){
-buf[12]=2;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&data_0213e144,s32 *,8),0x6cfd,buf,len);
+buf[12]=2;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&gNatNegManager,s32 *,8),0x6cfd,buf,len);
 }
 M2C_FIELD(arg0,s32 *,40)=GetTickCountMs()+500;
 M2C_FIELD(arg0,s32 *,36)=30;

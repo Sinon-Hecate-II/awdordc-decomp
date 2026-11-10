@@ -5,7 +5,7 @@ void func_ov000_0219d724(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern s8 data_ov000_021df824;
@@ -38,7 +38,7 @@ data_ov000_021df658 = &data_ov000_021df824;
 func_ov000_0219c9e8(1);
 func_ov000_0219cdf4();
 data_ov000_021df654 = &func_ov000_02181470;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 
 void func_ov000_0219d848(void) {
@@ -47,7 +47,7 @@ void func_ov000_0219d848(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -84,7 +84,7 @@ void func_ov000_0219d848(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_021811e8;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219d960(void) {
@@ -92,7 +92,7 @@ void func_ov000_0219d960(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -129,7 +129,7 @@ void func_ov000_0219d960(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_02181560;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219da78(void) {
@@ -138,7 +138,7 @@ void func_ov000_0219da78(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -175,11 +175,11 @@ void func_ov000_0219da78(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_021812a8;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219db90(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -189,11 +189,11 @@ void func_ov000_0219db90(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_021855e4;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219dbe8(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -203,11 +203,11 @@ void func_ov000_0219dbe8(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_0219b3c8;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219dc40(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -217,12 +217,12 @@ void func_ov000_0219dc40(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_0219a6c8;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219dc98(void) {
     s8 FindBestSelectableUnit();
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -240,12 +240,12 @@ void func_ov000_0219dc98(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_02181ba4;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219dd14(void) {
     s8 func_ov000_021aa214();
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -263,11 +263,11 @@ void func_ov000_0219dd14(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_02181c10;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219dd90(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -277,11 +277,11 @@ void func_ov000_0219dd90(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &AssignUnitMoveTargets;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219dde8(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -291,11 +291,11 @@ void func_ov000_0219dde8(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_0217d6dc;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219de40(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -305,13 +305,13 @@ void func_ov000_0219de40(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_0217d850;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219de98(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern s8 data_ov000_021df824;
@@ -346,14 +346,14 @@ index++;obj=*gCurrentMap;stride+=14;
 *data_ov000_021df658=0;
 data_ov000_021df658=&data_ov000_021df824;
 data_ov000_021df654=&func_ov000_021816ac;
-*data_ov000_021df580=2;
+*gAiCommandState=2;
 }
 
 void func_ov000_0219dfac(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern s8 data_ov000_021df824;
@@ -384,7 +384,7 @@ stride += 14;
 data_ov000_021df658 = &data_ov000_021df824;
 func_ov000_0219c9e8(0);
 data_ov000_021df654 = &func_ov000_021816c4;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 
 void func_ov000_0219e0d0(void) {
@@ -392,7 +392,7 @@ void func_ov000_0219e0d0(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -436,7 +436,7 @@ void func_ov000_0219e0d0(void) {
     data_ov000_021df658 = &data_ov000_021df824;
     func_ov000_0219c9e8(0);
     data_ov000_021df654 = &func_ov000_021817c0;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 /* Collects eligible slot indices into the slot list buffer, then installs the
@@ -446,7 +446,7 @@ void func_ov000_0219e214(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -490,7 +490,7 @@ void func_ov000_0219e214(void) {
     data_ov000_021df658 = &data_ov000_021df824;
     func_ov000_0219c9e8(0);
     data_ov000_021df654 = &func_ov000_02181838;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 /* Collects eligible slot indices into the slot list buffer, then installs the
@@ -500,7 +500,7 @@ void func_ov000_0219e358(void) {
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -544,14 +544,14 @@ void func_ov000_0219e358(void) {
     data_ov000_021df658 = &data_ov000_021df824;
     func_ov000_0219c9e8(0);
     data_ov000_021df654 = &func_ov000_0218190c;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219e49c(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern s8 data_ov000_021df824;
@@ -582,14 +582,14 @@ stride += 14;
 data_ov000_021df658 = &data_ov000_021df824;
 func_ov000_0219cd0c();
 data_ov000_021df654 = &func_ov000_02181a14;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 
 void func_ov000_0219e5b8(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern M2C_UNK *data_ov000_021df654;
 extern s8 *data_ov000_021df658;
 extern s8 data_ov000_021df824;
@@ -620,6 +620,6 @@ stride += 14;
 data_ov000_021df658 = &data_ov000_021df824;
 
 data_ov000_021df654 = &func_ov000_02181b34;
-*data_ov000_021df580 = 2;
+*gAiCommandState = 2;
 }
 

@@ -18,14 +18,14 @@ extern s32 data_0215d8a0[2];   // 8 bytes / 4
 
 void func_0209bc58(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
     s32 func_01ffa3dc(M2C_UNK *, s32);
-    M2C_UNK func_02099e58(s32);
+    M2C_UNK StopTextObject(s32);
     M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103300;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r4;
     temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x54);
     func_0209bdcc(temp_r4, arg0, arg1, arg2, arg3, arg4, arg5, (s32)arg6, (s32)arg7);
-    func_02099e58(temp_r4);
+    StopTextObject(temp_r4);
     func_01ffa3dc(&data_02103300, 7);
 }
 
@@ -112,19 +112,19 @@ M2C_FIELD(a,u8 *,0x4b)=(u8)c;
 }
 
 u8 func_0209bf28(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02103328;
     extern M2C_UNK data_021032d8;
     extern M2C_UNK data_02103300;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02103328) != 0) {
+    if (FindObjectByClass(&data_02103328) != 0) {
         return 1U;
     }
-    if (func_01ffa770(&data_021032d8) != 0) {
+    if (FindObjectByClass(&data_021032d8) != 0) {
         return 1U;
     }
-    if (func_01ffa770(&data_02103300) != 0) {
+    if (FindObjectByClass(&data_02103300) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -149,9 +149,9 @@ void func_0209bfa8(void) {
 }
 
 void func_0209bfc8(void) {
-    M2C_UNK func_01ffa770(M2C_UNK *);
+    M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02103328;
-    func_01ffa770(&data_02103328);
+    FindObjectByClass(&data_02103328);
 }
 
 void func_0209bfdc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
@@ -554,8 +554,8 @@ p++;
 }
 
 void func_0209c8d4(void) {
-    s32 func_02084644();
-    s32 func_020846a4();
+    s32 GetActiveOverlay();
+    s32 IsLinkSessionActive();
     M2C_UNK func_02086844(u16, M2C_UNK);
     M2C_UNK func_02086878(u16, M2C_UNK);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
@@ -600,7 +600,7 @@ void func_0209c8d4(void) {
         var_r7 += 1;
         M2C_FIELD(&data_0215c334, s32 *, 8) = var_r0;
     } while (var_r7 < 0xF);
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         func_02086844(temp_r8, 1);
         if (func_020cd1e4() != 0) {
             if ((func_020d1afc() != 0) && (func_020d1b40() == 0)) {
@@ -668,7 +668,7 @@ void func_0209c8d4(void) {
         }
         var_r5 += 1;
     } while (var_r5 < 0xF);
-    temp_r0_3 = func_02084644();
+    temp_r0_3 = GetActiveOverlay();
     switch (temp_r0_3) {                            /* switch 3; irregular */
     case 1:                                         /* switch 3 */
         func_02091c20(0x21, 1);

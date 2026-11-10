@@ -42,11 +42,11 @@ func_020893a8(M2C_FIELD(M2C_FIELD(p,void **,0x6c),void **,0),0x8b80,1,func_020ae
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
 static inline void ov003_menu_back(void *p){
-s32 func_02084644(void);s32 func_020846a4(void);void func_ov003_021fc98c(void *,s32);
+s32 GetActiveOverlay(void);s32 IsLinkSessionActive(void);void func_ov003_021fc98c(void *,s32);
 s32 special;
 if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))special=1;
-else if(ov003_menu_kind(p,4)){if(func_02084644()==2)special=1;else special=0;}else special=0;
-if(special&&func_020846a4())func_ov003_021fc98c(p,3);
+else if(ov003_menu_kind(p,4)){if(GetActiveOverlay()==2)special=1;else special=0;}else special=0;
+if(special&&IsLinkSessionActive())func_ov003_021fc98c(p,3);
 else M2C_FIELD(M2C_FIELD(p,void ***,0),void (**)(void *),0x20)(p);
 }
 static inline u8 ov003_button_ready(void *button){
@@ -60,7 +60,7 @@ if(M2C_FIELD(sprite,s16 *,0x34)==M2C_FIELD(sprite,s16 *,0x5e)&&M2C_FIELD(sprite,
 extern void func_ov003_021fca84(void *);
 #pragma opt_propagation off
 void func_ov003_021f7164(void *arg0) {
-void MenuSpriteUpdate(void *);void func_02088044(void *);s32 func_0207c8ec(s32,s32);
+void MenuSpriteUpdate(void *);void func_02088044(void *);s32 Divide(s32,s32);
 void func_020ab4c0(void *);void func_020ab598(void *);void PlaySoundEffect(s32);void func_ov003_021f92f4(void *,s32);
 s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
 void func_ov003_021fcb70(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
@@ -87,8 +87,8 @@ func_02088044(M2C_FIELD(p,void **,0x70));
 button=M2C_FIELD(p,void **,0x70);keyy=M2C_FIELD(button,u8 *,12);keyx=M2C_FIELD(button,u8 *,11);
 list=M2C_FIELD(p,void **,0x4c);
 enable=0;
-if((s16)func_0207c8ec(M2C_FIELD(list,s16 *,12),M2C_FIELD(list,s16 *,8))>0)
-if(M2C_FIELD(list,s16 *,6)<=(s16)func_0207c8ec((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(list,s16 *,8)))enable=active;
+if((s16)Divide(M2C_FIELD(list,s16 *,12),M2C_FIELD(list,s16 *,8))>0)
+if(M2C_FIELD(list,s16 *,6)<=(s16)Divide((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(list,s16 *,8)))enable=active;
 if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,24);
 if((u8)ov003_button_pressed(button)){
@@ -98,8 +98,8 @@ func_ov003_021f92f4(p,0);active=0;
 }
 if(active){
 s16 rows,oldRows;list=M2C_FIELD(p,void **,0x4c);
-rows=M2C_FIELD(list,s16 *,6);oldRows=(s16)func_0207c8ec(M2C_FIELD(list,s16 *,12),M2C_FIELD(list,s16 *,8));
-enable=rows+oldRows<(s16)func_0207c8ec((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(list,s16 *,8))+1;
+rows=M2C_FIELD(list,s16 *,6);oldRows=(s16)Divide(M2C_FIELD(list,s16 *,12),M2C_FIELD(list,s16 *,8));
+enable=rows+oldRows<(s16)Divide((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(list,s16 *,8))+1;
 if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,28);
 if((u8)ov003_button_pressed(button)){

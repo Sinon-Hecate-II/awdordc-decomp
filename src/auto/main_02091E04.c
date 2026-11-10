@@ -154,9 +154,9 @@ s16 func_02092084(void *arg0) {
 }
 
 void func_020920c4(void *arg0) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102a70;
-    if (func_01ffa770(&data_02102a70) == 0) {
+    if (FindObjectByClass(&data_02102a70) == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
@@ -334,7 +334,7 @@ s32 func_02092434(void *arg0) {
 }
 
 s32 func_02092460(void *arg0) {
-    if (func_01ffa770(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
+    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
         return 0;
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -450,7 +450,7 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_020926f8(s32 arg0) {
- s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void func_02094424(void);
+ s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
  s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
  u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 func_02091f18(s32);
  s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
@@ -458,7 +458,7 @@ s32 func_020926f8(s32 arg0) {
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 saved; void *old; s32 r10,r9; void *r8,*r7,*r6,*r5ptr,*tmp,*result; u32 sp8;
  saved=GetLocalizedText(arg0);
- func_02099e10(); func_020943e0(); func_02094424();
+ func_02099e10(); func_020943e0(); Reset3DSpriteEngines();
  if(func_02099dcc(saved)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
  old=gCur3DSpriteEngine;
  for(r10=0;r10<2;r10++){

@@ -15,7 +15,7 @@ s32 GetUnitHealthBarCount(void *);
 s32 func_ov000_0216cd2c(void *);
 s32 GetUnitAmmo(void *);
 s32 func_ov000_0216cd4c(s32);
-s32 func_ov000_0216cd78(s32,s32);
+s32 GetUnitIconTiles(s32,s32);
 s32 func_ov000_0216cd90(s32);
 void func_0207c3dc(s32,s32,s32,s32);
 void func_01ff9e44(s32,s32,s32);
@@ -48,13 +48,13 @@ DrawDecimalNumber((x+79)&511,screenY,GetUnitAmmo(unit));
 func_0207c3dc(func_ov000_0216cd4c(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4480,256,0);
 AddSprite((u16)((x+20)&511),(u16)((y+2)&255),(u16)((0x3ff & (0x224 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x9000),gSpriteDesc32x16,8);
 func_01ff9e44(func_ov000_0216cd90(colorIndex),0x300,32);
-func_0207c3dc(func_ov000_0216cd78(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
+func_0207c3dc(GetUnitIconTiles(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
 AddSprite((u16)((x+4)&511),(u16)((y+4)&255),(u16)((0x3ff & (0x218 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),gSpriteDesc16x16,9);
 }
 #pragma pop
 void func_020d8084(void *arg0, s32 arg1, s32 arg2, s32 arg3) { (void)arg0; (void)arg1; (void)arg2; (void)arg3; }
 
-s32 func_020d849c(void *arg0) {
+s32 GetUnitPanelKind(void *arg0) {
     s32 func_020d2850(u32, u16, u8);
     extern void **gCurrentMap;
     s32 var_r3;
@@ -78,19 +78,19 @@ void func_020d8540(void) {
 void func_020d8594(void) {
     /* Ease the camera height towards its target (168), using the hardware divider. */
     extern void **gCurrentMap;
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void *mapData;
     mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) <= 0) {
         M2C_FIELD(mapData, u16 *, 0x52E6) = (M2C_FIELD(mapData, u16 *, 0x52E6) & ~3) | 1;
         mapData = *gCurrentMap;
         if (M2C_FIELD(mapData, s16 *, 0x52E4) <= -99) M2C_FIELD(mapData, s16 *, 0x52E4) = 262;
-        else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) + 100, 2);
+        else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4) + 100, 2);
     }
     mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) > 168) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) <= 169) M2C_FIELD(mapData, s16 *, 0x52E4) = 168;
-        else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) - 168, 2);
+        else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4) - 168, 2);
         func_020d8540();
     }
     if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 168) func_020d8540();
@@ -99,19 +99,19 @@ void func_020d8594(void) {
 void func_020d867c(void) {
     /* Ease the camera height across the 0/268 wrap boundary, using the hardware divider. */
     extern void **gCurrentMap;
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void *mapData;
     mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) >= 168) {
         M2C_FIELD(mapData, u16 *, 0x52E6) = (M2C_FIELD(mapData, u16 *, 0x52E6) & ~3);
         mapData = *gCurrentMap;
         if (M2C_FIELD(mapData, s16 *, 0x52E4) >= 267) M2C_FIELD(mapData, s16 *, 0x52E4) = -94;
-        else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4) - 268, 2);
+        else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4) - 268, 2);
     }
     mapData = *gCurrentMap;
     if (M2C_FIELD(mapData, s16 *, 0x52E4) < 0) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) >= -1) M2C_FIELD(mapData, s16 *, 0x52E4) = 0;
-        else M2C_FIELD(mapData, s16 *, 0x52E4) -= func_0207c8ec(M2C_FIELD(mapData, s16 *, 0x52E4), 2);
+        else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4), 2);
         func_020d8540();
     }
     if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 0) func_020d8540();
@@ -216,9 +216,9 @@ void func_020d8914(void) {
 }
 
 void func_020d8928(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     extern M2C_UNK data_02168f0c;
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         return;
     }
     M2C_FIELD(&data_02168f0c, s8 *, 0) = 1;

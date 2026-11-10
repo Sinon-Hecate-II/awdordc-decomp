@@ -92,7 +92,7 @@ if(y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1)M2C_FIELD(*gCurrentMap+(y+1)*4,u8 **
 void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
     void func_01ffc718(s8 *, s8 *);
     extern void **gCurrentMap;
-    s32 func_0207c2f0(void);
+    s32 NextRandomValue(void);
     s8 *start;
     s16 dirs[4];
     s16 costs[4];
@@ -126,9 +126,9 @@ void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
         }
         switch (count) {
         case 1: dir = dirs[0]; break;
-        case 2: dir = dirs[(func_0207c2f0() >> 14) & 1]; break;
-        case 3: dir = dirs[func_0207c2f0() % 3]; break;
-        case 4: dir = dirs[func_0207c2f0() % 4]; break;
+        case 2: dir = dirs[(NextRandomValue() >> 14) & 1]; break;
+        case 3: dir = dirs[NextRandomValue() % 3]; break;
+        case 4: dir = dirs[NextRandomValue() % 4]; break;
         }
         *dirPath++ = dir;
         switch (dir) { case 0: x++; break; case 1: x--; break; case 3: y++; break; case 2: y--; break; }

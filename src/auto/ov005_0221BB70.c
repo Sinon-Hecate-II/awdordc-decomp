@@ -41,14 +41,14 @@ void func_ov005_0221bb70(M2C_UNK arg0) {
 }
 
 M2C_UNK func_ov005_0221bc28(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
     extern M2C_UNK data_ov005_02220d50;
-    func_020aad18(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), s32 *, 0x38));
+    func_020aad18(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38));
 }
 
 void func_ov005_0221bc44(M2C_UNK arg0) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_02087db8(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_01ffa6fc(M2C_UNK);
@@ -58,7 +58,7 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
     u8 active;
     if (!(*gKeyState & 1)) return;
     PlaySoundEffect(0x1000D);
-    object = M2C_FIELD(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
+    object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
     if (active) func_02087db8(object, 1);
     func_01ffa6fc(arg0);
@@ -69,7 +69,7 @@ void func_ov005_0221bcb0(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK gSpriteAnimConfig;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
 void SetSpriteAnimation(void *,s32);
 void func_01ff9ce8(s32);
 void DeleteSpriteObject(void *);
@@ -92,7 +92,7 @@ extern M2C_UNK data_ov005_02220db8;void *object;
     s32 n;
     s32 i;
 
-    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-1)*2){object=func_01ffa770(&data_ov005_02220db8);if(object)SetSpriteAnimation(object,0);}
+    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gSpriteAnimConfig,u8 *,12),M2C_FIELD(&gSpriteAnimConfig,u8 *,13)),M2C_FIELD(&gSpriteAnimConfig,u8 *,14))-1)*2){object=FindObjectByClass(&data_ov005_02220db8);if(object)SetSpriteAnimation(object,0);}
 M2C_FIELD(arg0, s32 *, 0x34) += 1;
     if (M2C_FIELD(arg0, s32 *, 0x34) == 1) {
         sp38 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
@@ -247,7 +247,7 @@ void func_ov005_0221c9e4(M2C_UNK arg0) {
 
 void func_ov005_0221ca04(s32 arg0) {
     void *func_01ffa3dc(M2C_UNK *, s32);
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_01ffaa5c(s32);
     s32 func_01ffaa7c();
     extern M2C_UNK data_ov005_02220b00;
@@ -265,7 +265,7 @@ void func_ov005_0221ca04(s32 arg0) {
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x40) = 0x20;
     M2C_FIELD(temp_r0, s8 *, 0x44) = 1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(func_01ffa770(&data_ov005_02220d50), s32 *, 0x38);
+    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38);
 }
 
 void func_ov005_0221ca70(void) {

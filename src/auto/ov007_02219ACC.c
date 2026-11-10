@@ -10,10 +10,10 @@ void func_ov007_02219acc(void *arg0) {
 void func_ov007_02219ae8(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
-    void *func_ov007_02219430();
+    void *GetPanelObject();
     void *temp_r4;
 
-    temp_r4 = func_ov007_02219430();
+    temp_r4 = GetPanelObject();
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     M2C_FIELD(temp_r4, s16 *, 0x3E) = EaseInterpolate(4, 0x100, 0, M2C_FIELD(arg0, s16 *, 0x54), 4);
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
@@ -24,7 +24,7 @@ void func_ov007_02219ae8(void *arg0) {
 
 void func_ov007_02219b38(void *arg0) {
 M2C_UNK func_ov007_0221863c(void *);
-void *p=func_ov007_02219430();
+void *p=GetPanelObject();
 M2C_FIELD(p+M2C_FIELD(p,u8 *,0x37),u8 *,0x38)=M2C_FIELD(arg0,s32 *,0x5c);
 func_ov007_0221863c(p);
 M2C_FIELD(arg0,s16 *,0x54)=0;
@@ -33,7 +33,7 @@ M2C_FIELD(arg0,s16 *,0x54)=0;
 void func_ov007_02219b64(void *arg0) {
     void *temp_r4;
 
-    temp_r4 = func_ov007_02219430();
+    temp_r4 = GetPanelObject();
     M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
     M2C_FIELD(temp_r4, s16 *, 0x3E) = EaseInterpolate(4, 0, 0x100, M2C_FIELD(arg0, s16 *, 0x54), 4);
     if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
@@ -157,7 +157,7 @@ void func_ov007_0221a018(void) {
     u8 func_ov007_02211f30(void);
     u8 func_ov007_02211f40(void);
     s32 func_ov000_0216cd4c(s32);
-    void *func_ov000_0216cd78(s32, s32);
+    void *GetUnitIconTiles(s32, s32);
     void *func_ov000_0216cd90(s32);
     void func_0207c3dc(s32, s32, s32, s32);
     void func_01ff9e44(void *, s32, s32);
@@ -178,7 +178,7 @@ void func_ov007_0221a018(void) {
     slot = func_ov007_02211f40();
     tileAttr = (u8) M2C_FIELD((M2C_FIELD(gCurrentMap, s32 *, 0) + slot * 0x8C + 0x6000), u8 *, 0x7CD);
     baseAddr = func_ov000_0216cd4c(tileGroup);
-    srcPtr = func_ov000_0216cd78(tileGroup, tileAttr);
+    srcPtr = GetUnitIconTiles(tileGroup, tileAttr);
     dstPtr = func_ov000_0216cd90(slot);
     savedBank = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -207,8 +207,8 @@ void func_ov007_0221a160(void) {
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK SetFileDirectory();
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
-    void func_020814e4(M2C_UNK);
-    M2C_UNK func_02081590(M2C_UNK, M2C_UNK);
+    void OpenNarcArchive(M2C_UNK);
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK, M2C_UNK);
     void LoadFileToSpriteBuffer(M2C_UNK, s32, s32);
     s32 func_01ff9c34(s32);
     void func_01ff85b8(M2C_UNK, u16, s32);
@@ -283,13 +283,13 @@ void func_ov007_0221a160(void) {
 
     SetFileDirectory(&data_ov007_022200d8);
 
-    func_020814e4(GetLocalizedFileName(&data_ov007_022200e4));
+    OpenNarcArchive(GetLocalizedFileName(&data_ov007_022200e4));
 
-    func_02081590(GetLocalizedFileName(&data_ov007_022200f0), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_022200f0), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
 
-    func_02081590(GetLocalizedFileName(&data_ov007_022200fc), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_022200fc), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
 
-    func_02081528();
+    CloseNarcArchive();
 
     LoadFileToSpriteBuffer(&data_ov007_02220108, 0x40, 0x180);
 
@@ -329,13 +329,13 @@ void func_ov007_0221a160(void) {
 
     SetFileDirectory(&data_ov007_02220140);
 
-    func_020814e4(GetLocalizedFileName(&data_ov007_0222014c));
+    OpenNarcArchive(GetLocalizedFileName(&data_ov007_0222014c));
 
-    func_02081590(GetLocalizedFileName(&data_ov007_02220158), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3180);
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_02220158), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3180);
 
-    func_02081590(GetLocalizedFileName(&data_ov007_02220164), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3580);
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_02220164), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3580);
 
-    func_02081528();
+    CloseNarcArchive();
 
     LoadFileToSpriteBuffer(&data_ov007_02220170, 0x3A0, 0x20);
 

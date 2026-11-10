@@ -7,8 +7,8 @@ static inline u32 FilePosition_020152c8(void *file) { return M2C_FIELD(file,u32 
 /* Select units by state into priority groups, then dispatch the matching network action. */
 
 u32 func_02015248(void *arg0) {
- s32 func_0200bbe0(void *,s32,s32);
- void func_0200bbf0(void *,s32,s32);
+ s32 FileRead(void *,s32,s32);
+ void FileSeek(void *,s32,s32);
  void *p;
  u32 result;
  u32 sp0[24];
@@ -17,10 +17,10 @@ u32 func_02015248(void *arg0) {
  result = 0;
  if (arg0 != NULL) {
      pos = M2C_FIELD(arg0, s32 *, 0x2c) - M2C_FIELD(arg0, s32 *, 0x24);
-     if ((u32)func_0200bbe0(arg0, (s32)sp0, 0x60) >= 0x60U) {
+     if ((u32)FileRead(arg0, (s32)sp0, 0x60) >= 0x60U) {
          p = sp0;
      }
-     func_0200bbf0(arg0, pos, 0);
+     FileSeek(arg0, pos, 0);
  } else {
      p = (void *)0x027ffe00;
  }
@@ -37,7 +37,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
- s32 func_0200bbe0(void *,s32,s32);void func_0200bbf0(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
+ s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 func_0200b144();void func_0200b99c();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void func_0200ba9c();void func_02015724(void *,u32,u32,s32);void func_020067e0();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -45,7 +45,7 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  left=size;p=arg1;owned=0;header=0;table=0;p+=0x160;left-=0x160;
  if(arg0){
  origin=M2C_FIELD(arg0,u32 *,0x2c)-M2C_FIELD(arg0,u32 *,0x24);
- if(func_0200bbe0(arg0,(s32)arg1,0x160)<0x160)left=0;
+ if(FileRead(arg0,(s32)arg1,0x160)<0x160)left=0;
  base=M2C_FIELD(arg1,u32 *,0x80);if(!base)base=0x1000000;
  }else{
  base=((RomHeader_020152c8 *)0x027ffe00)->offset;if(!base)base=0x1000000;owned=1;
@@ -57,7 +57,7 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  M2C_FIELD(arg1,u32 *,0x60)|=0x406000;
  }
  if(left<0x88)left=0;
- else{func_0200bbf0(arg0,origin+base,0);func_0200bbe0(arg0,(s32)p,0x88);p+=0x88;left-=0x88;}
+ else{FileSeek(arg0,origin+base,0);FileRead(arg0,(s32)p,0x88);p+=0x88;left-=0x88;}
  if(left>=0x70){
  header=p;func_02018470(p);
  p+=0x70;left-=0x70;func_02018484(header,0,0x160,arg1,3);
@@ -74,24 +74,24 @@ s32 func_020152c8(void *arg0,void *arg1,s32 arg2){
  }
  if(left>=M2C_FIELD(arg1,u32 *,0x2c)+M2C_FIELD(arg1,u32 *,0x3c)){
  readBase=M2C_FIELD(arg0,u32 *,0x24);
- func_0200bbf0(arg0,M2C_FIELD(table,u32 *,4)-readBase,0);
- func_0200bbe0(arg0,(s32)p,M2C_FIELD(arg1,u32 *,0x2c));
+ FileSeek(arg0,M2C_FIELD(table,u32 *,4)-readBase,0);
+ FileRead(arg0,(s32)p,M2C_FIELD(arg1,u32 *,0x2c));
  func_02018484(header,M2C_FIELD(table,u32 *,4),M2C_FIELD(arg1,u32 *,0x2c),p,3);
  left=M2C_FIELD(arg1,u32 *,0x2c);
- func_0200bbf0(arg0,M2C_FIELD(table,u32 *,8)-readBase,0);
- func_0200bbe0(arg0,(s32)p+left,M2C_FIELD(arg1,u32 *,0x3c));
+ FileSeek(arg0,M2C_FIELD(table,u32 *,8)-readBase,0);
+ FileRead(arg0,(s32)p+left,M2C_FIELD(arg1,u32 *,0x3c));
  func_02018484(header,M2C_FIELD(table,u32 *,8),M2C_FIELD(arg1,u32 *,0x3c),p+left,3);
  result=1;
  }else if(left>=0xcc00){
  left=M2C_FIELD(arg0,u32 *,0x24);base=M2C_FIELD(table,u32 *,4);
- func_0200bbf0(arg0,base-left,0);func_0200bbe0(arg0,(s32)p,0x4400);
+ FileSeek(arg0,base-left,0);FileRead(arg0,(s32)p,0x4400);
  func_02018484(header,base,0x4400,p,3);
- func_0200bbf0(arg0,base+0x4400-left,0);func_0200bbe0(arg0,(s32)p+0x4400,0x4400);
+ FileSeek(arg0,base+0x4400-left,0);FileRead(arg0,(s32)p+0x4400,0x4400);
  func_02018484(header,base+0x4400,0x4400,p+0x4400,2);
- func_0200bbf0(arg0,base+0x8800-left,0);func_0200bbe0(arg0,(s32)p+0x8800,0x4400);
+ FileSeek(arg0,base+0x8800-left,0);FileRead(arg0,(s32)p+0x8800,0x4400);
  func_02018484(header,base+0x8800,0x4400,p+0x8800,2);result=1;
  }
- func_0200bbf0(arg0,origin,0);
+ FileSeek(arg0,origin,0);
  if(owned){
  func_0200ba9c(file);
  if(result){

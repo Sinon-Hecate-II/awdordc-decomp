@@ -164,7 +164,12 @@ s32 func_020453e4(s32 *a) {
  a[0]=x;a[1]=*p++;a[2]=(s32)p;return 0;
 }
 
-s32 func_02045458(s32 a, s32 b) {
+/* Validates a NAS web request: checks the network state and the request context,
+ * copies the 20-byte key and the four request words out of the request string,
+ * builds the stored request descriptor, records the context's source id, and
+ * selects the GameSpy endpoint for the configured NAS server. Returns 0 on
+ * success, otherwise a nonzero error code. */
+s32 RegisterWebRequest(s32 requestStr, s32 context) {
     s32 HasNetError(void);
     s32 func_020323b0(void *);
     s32 func_020323f4(void *);
@@ -175,12 +180,12 @@ s32 func_02045458(s32 a, s32 b) {
     s32 StringCompare(void *, void *);
     void func_02047750(s32);
     extern M2C_UNK gWebTransaction;
-    extern void *data_020fb2f8;
-    extern M2C_UNK data_020fca38;
+    extern void *gNasServer;
+    extern M2C_UNK gNasProdUrl;
 
-    u8 text[0x15];
-    u8 buf[9] = {0};
-    s32 r8, r7, r6, parsed4;
+    u8 key[0x15];
+    u8 parseBuf[9] = {0};
+    s32 param0, param1, param2, param3;
 
     if (HasNetError() != 0) {
         return 1;
@@ -188,23 +193,23 @@ s32 func_02045458(s32 a, s32 b) {
     if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 0) {
         return 3;
     }
-    if (func_020323b0((void *)b) == 0 || func_020323f4((void *)b) == 0) {
+    if (func_020323b0((void *)context) == 0 || func_020323f4((void *)context) == 0) {
         return 6;
     }
-    if (StringLength((void *)a) >= 0x54u) {
+    if (StringLength((void *)requestStr) >= 0x54u) {
         return 4;
     }
-    func_02068d18(text, (void *)a, 0x14);
-    text[0x14] = 0;
-    r8 = func_0206abd8(func_02068d18(buf, (void *)(a + 0x14), 8), 0, 0x10);
-    r7 = func_0206abd8(func_02068d18(buf, (void *)(a + 0x1c), 8), 0, 0x10);
-    r6 = func_0206abd8(func_02068d18(buf, (void *)(a + 0x24), 8), 0, 0x10);
-    parsed4 = func_0206abd8(func_02068d18(buf, (void *)(a + 0x2c), 8), 0, 0x10);
-    if (func_0204800c((void *)(a + 0x34), text, r8, r7, r6, parsed4) == 0) {
+    func_02068d18(key, (void *)requestStr, 0x14);
+    key[0x14] = 0;
+    param0 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x14), 8), 0, 0x10);
+    param1 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x1c), 8), 0, 0x10);
+    param2 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x24), 8), 0, 0x10);
+    param3 = func_0206abd8(func_02068d18(parseBuf, (void *)(requestStr + 0x2c), 8), 0, 0x10);
+    if (func_0204800c((void *)(requestStr + 0x34), key, param0, param1, param2, param3) == 0) {
         return 5;
     }
-    M2C_FIELD(&gWebTransaction, s32 *, 4) = M2C_FIELD((void *)b, s32 *, 0x1c);
-    if (StringCompare(data_020fb2f8, (void *)&data_020fca38) == 0) {
+    M2C_FIELD(&gWebTransaction, s32 *, 4) = M2C_FIELD((void *)context, s32 *, 0x1c);
+    if (StringCompare(M2C_FIELD(&gNasServer, void **, 0), (void *)&gNasProdUrl) == 0) {
         func_02047750(1);
     } else {
         func_02047750(0);
@@ -447,7 +452,7 @@ s32 func_02045c90(M2C_UNK arg0) {
     return 0;
 }
 
-void func_02045cbc(void *arg0) {
+void GetWfcProfile(void *arg0) {
     void MI_CpuCopy8(void *, void *, u32);
     extern M2C_UNK data_0213db34;
     extern M2C_UNK data_0213db39;

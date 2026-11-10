@@ -26,7 +26,7 @@ s32 func_ov000_021a89a4(void *);
 s32 FindAttackPosition(s16 *);
 s32 RandomIntRange(s32,s32);
 extern void **gCurrentMap;
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
 s32 high=0x7fff,mid=0x7fff,low=0x7fff;
@@ -38,8 +38,8 @@ s32 threshold,team,id,value,cost,kind,x,y,terrain,index,xx,yy,x0,y0,x1,y1,sum,de
 u8 *map,*unit,*selected;
 func_ov000_02179be0();
 func_ov000_02179d3c();
-if(!(M2C_FIELD(data_ov000_021df580,u16 *,8)&32)&&GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1){
-threshold=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
+if(!(M2C_FIELD(gAiCommandState,u16 *,8)&32)&&GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind)==1){
+threshold=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(gAiCommandState,u8 *,5);
 }else threshold=0;
 for(team=1;team<5;team++){
 if(!IsPlayerActive(team))continue;
@@ -270,8 +270,8 @@ s32 SelectPropertyDestination(s16 *out) {
     s32 func_ov000_0217bc34(s32, s32, s32, s32);
     void FloodFillUnitRange(u8, u8, s32, s32, s32);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
-    extern void *data_ov000_021df644;
+    extern u8 gUnitKindFlags[];
+    extern void *gAiUnitTypeTuning;
     UnitKind1955 *acting;
     s32 kind;
     u8 kindFlags;
@@ -279,7 +279,7 @@ s32 SelectPropertyDestination(s16 *out) {
     s32 attackClass;
     acting = *(UnitKind1955 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT);
     kind = acting->kind;
-    kindFlags = data_ov000_021b5c0f[kind * 0x70];
+    kindFlags = gUnitKindFlags[kind * 0x70];
     if (kindFlags & 0x20) return 0;
     FloodFillUnitRange(M2C_FIELD(acting, u8 *, MAP_UNIT_X), M2C_FIELD(acting, u8 *, MAP_UNIT_Y), kind, 110, 0);
     for (y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++) {
@@ -299,7 +299,7 @@ s32 SelectPropertyDestination(s16 *out) {
             if (!func_ov000_0217bc34(x, y, 2, 5)) continue;
             attackClass = GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT))->kind);
             if (attackClass == 1) {
-                threatLimit = ((u8 *)data_ov000_021df644)[2];
+                threatLimit = ((u8 *)gAiUnitTypeTuning)[2];
                 map=(u8 *)*gCurrentMap; rowOffset=*(u16 *)(map+MAP_ROW_OFFSETS+y*2);
                 threat = *(u8 *)(map + x + rowOffset + MAP_CELL_THREAT_INDIRECT);
                 if (threat >= threatLimit) continue;

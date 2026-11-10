@@ -8,7 +8,7 @@ void func_ov003_021f14a0(void);void func_01ff9b38(void);
 void *func_020ab1c4(void*);void func_020aab24(void*,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s32,s32,s32);void func_02088da8(void*);
 s32 func_020aae10(void*);s32 func_020aae44(void*);void func_02087d84(void*,s32,s16,s16,u16,u16);
-void *func_0208bc24(void*);s32 func_0207c8ec(s32,s32);s32 Modulo(s32,s32);
+void *func_0208bc24(void*);s32 Divide(s32,s32);s32 Modulo(s32,s32);
 void func_ov003_021e1530(void*,u8);void *func_020896f0(void*);void func_020893f4(void*,s32,s32);void func_02089438(void*);
 static inline void RefreshSprite(void *sprite) {
 u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;
@@ -59,7 +59,7 @@ ResetAnim(M2C_FIELD(p,void**,0x3c));ResetAnim(M2C_FIELD(p,void**,0x40));
 n=VisibleEntries(p);menu=M2C_FIELD(p,u8**,0x48);menu[11]=n;n=func_ov003_021f2560();
 if(menu[11])menu[6]=5;else if(n)menu[6]=0;
 for(i=0;i<11;i++){
-if(i<10){x=(s16)((func_0207c8ec(i,5)<<7)+6);y=(s16)((Modulo(i,5)<<4)+40);w=116;h=16;}
+if(i<10){x=(s16)((Divide(i,5)<<7)+6);y=(s16)((Modulo(i,5)<<4)+40);w=116;h=16;}
 else if(i==10){x=110;y=162;w=36;h=28;}
 switch(i){
 case 0:case 1:case 2:case 3:case 4:

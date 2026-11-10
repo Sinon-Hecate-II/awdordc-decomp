@@ -9,7 +9,7 @@ void func_020b6168(void *arg0) {
     s32 func_0208c080(void *, s32);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
-    M2C_UNK func_020cc6a4(void);
+    M2C_UNK CancelMapCursorAnimation(void);
     void func_020b6124(void *);
 
     u8 *core;
@@ -71,11 +71,11 @@ void func_020b6168(void *arg0) {
     func_02080750(2, 0x3C, 0);
     func_02080358(4, 0, 2, 0);
     PlaySoundAtTile(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
-    func_020cc6a4();
+    CancelMapCursorAnimation();
 }
 
 /* Step the screen-transition down-counter (func_020b524c -> func_0208c6fc, which
- * fires func_02081528 once the counter wraps to zero), then finalize the current
+ * fires CloseNarcArchive once the counter wraps to zero), then finalize the current
  * map view and run its registered callbacks (func_020cfd28 -> func_020d0270 +
  * func_020cfd38). */
 void func_020b6320(void) {
@@ -242,7 +242,7 @@ void func_020b6698(void *arg0) {
 void func_020b6718(void *arg0) {
     M2C_UNK func_0208c080(void *, M2C_UNK);
     void *func_020b5188(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
-    M2C_UNK func_020cc6a4();
+    M2C_UNK CancelMapCursorAnimation();
     extern M2C_UNK data_02128ee4;
     extern M2C_UNK data_02128eec;
     void func_020b6570(void *);
@@ -253,7 +253,7 @@ void func_020b6718(void *arg0) {
     temp_r0 = func_020b5188(&data_02128eec, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
     func_0208c080(temp_r0, 0);
     M2C_FIELD(temp_r0, void (**)(void *), 0x6C) = func_020b6570;
-    func_020cc6a4();
+    CancelMapCursorAnimation();
     PlaySoundAtTile(0x131, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
 }
 
@@ -310,45 +310,45 @@ M2C_FIELD(p,s32 *,0x34)=0;return p;
 }
 
 s32 func_020b695c(s32 i, s32 a, s32 b) {
-s32 func_0209f8d4(void); void *func_0209f8e4(s32);
+s32 func_0209f8d4(void); void *GetTargetPosition(s32);
 s32 func_020b5134(M2C_UNK *,s32,s32,s32,s32,s32,void *);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 extern void **gCurrentMap; extern M2C_UNK data_02128ef4;
 s32 n=0, sx=0, sy=0; s32 x,y;
 for (;i<func_0209f8d4();i++) {
-u16 id=M2C_FIELD(func_0209f8e4(i),u16 *,0);
+u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);
 u8 *u=(u8 *)*gCurrentMap+0x59a4+id*14;
-void *p=func_0209f8e4(i);
+void *p=GetTargetPosition(i);
 x=u[1]; y=u[2];
-func_020a71a0(x,y,M2C_FIELD(p,u16 *,2));
+DamageUnitAtTile(x,y,M2C_FIELD(p,u16 *,2));
 M2C_FIELD((void *)func_020b5134(&data_02128ef4,x,y,16,a,b,(void *)7),s32 *,0x3c)=0x8c1;
 func_02076910(x,y);
 sx+=x; sy+=y; n++;
 }
 func_02080750(1,20,0); func_02080358(4,0,2,0);
-if(n>0) PlaySoundAtTile(0x6d,func_0207c8ec(sx,n),func_0207c8ec(sy,n));
+if(n>0) PlaySoundAtTile(0x6d,Divide(sx,n),Divide(sy,n));
 else func_0208facc(0x6d);
 }
 
 s32 func_020b6a9c(s16 start) {
-s32 func_0209f8d4(void); void *func_0209f8e4(s32);s32 func_020720f0(s32,s32);
+s32 func_0209f8d4(void); void *GetTargetPosition(s32);s32 func_020720f0(s32,s32);
 extern void **gCurrentMap;
 s32 x=0,y=0,n=0,i=start;void *p;u16 id;
-for(;i<func_0209f8d4();i++){id=M2C_FIELD(func_0209f8e4(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
+for(;i<func_0209f8d4();i++){id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;x+=M2C_FIELD(p,u8 *,1);y+=M2C_FIELD(p,u8 *,2);n++;}
 if(n>0)func_0207b774(func_020720f0(x,n),func_020720f0(y,n));
 }
 
 void func_020b6b40(void *arg0) {
-s32 func_0208c1ec(void *); s32 func_0208c200(void *);
+s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
 s32 a; s32 t; u32 bits=M2C_FIELD(arg0,u32 *,0x48);
 u16 count=(u16)(bits>>21);
 if(count) return;
-a=func_0208c1ec(arg0);
-t=func_0208c200(arg0);
+a=GetObjectTileX(arg0);
+t=GetObjectTileY(arg0);
 PlaySoundAtTile(0xfc,a,t);
 }
 
-s32 func_020b6b80(void *p) {
+s32 ApplyPendingDamage(void *p) {
 s32 func_020b695c(s32,s32,s32);
 s32 b=M2C_FIELD(p,s32 *,0x64);
 s32 a=M2C_FIELD(p,s32 *,0x58);
@@ -357,34 +357,58 @@ func_020b695c(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
 }
 
 void func_020b6bac(void *arg0) {
-s32 func_0209f8d4(void);void *func_0209f8e4(s32);
+s32 func_0209f8d4(void);void *GetTargetPosition(s32);
 void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
 extern void **gCurrentMap;extern M2C_UNK data_02128efc;
 s32 v,n,i;void *p,*q;
 i=M2C_FIELD(arg0,s32 *,0x58);v=M2C_FIELD(arg0,s32 *,0x5c);n=0;
-for(;i<func_0209f8d4();i++){u16 id=M2C_FIELD(func_0209f8e4(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;
+for(;i<func_0209f8d4();i++){u16 id=M2C_FIELD(GetTargetPosition(i),u16 *,0);p=*gCurrentMap+0x59a4+id*14;
 q=func_020b5188(&data_02128efc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),16,v,0,arg0);
 M2C_FIELD(q,u32 *,0x48)=(M2C_FIELD(q,u32 *,0x48)&~1023)|((u8)n&1023);
 M2C_FIELD(q,void (**)(void *),0x6c)=func_020b6b40;n+=8;}
 }
 
 #pragma opt_common_subs off
-void func_020b6c6c(void *arg0) {
-M2C_UNK func_0208c1ec(void *);M2C_UNK func_0208c200(void *);M2C_UNK PlaySoundAtTile(s32,s32,s32);s32 func_020b6b80(void *);u32 func_0207c2f0(void);M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,void*);extern M2C_UNK data_02128f08;
-s32 x,y,v;u16 frame;
-v=M2C_FIELD(arg0,s32*,0x60);frame=(u16)(M2C_FIELD(arg0,u32*,0x48)>>21);
-x=func_0208c1ec(arg0);y=func_0208c200(arg0)-1;
-switch(frame){case 0:PlaySoundAtTile(253,x,y);break;case 20:PlaySoundAtTile(254,x,y);break;case 32:PlaySoundAtTile(256,x,y);break;case 90:PlaySoundAtTile(255,x,y);break;case 104:PlaySoundAtTile(258,x,y);break;}
-if(frame==60)func_020b6b80(arg0);
-if((s32)frame<32)return;if((s32)frame>90)return;if((s32)frame%8)return;
-if(func_0207c2f0()&1)x+=(s32)func_0207c2f0()%2+2;else x-=(s32)func_0207c2f0()%2+2;
-if(func_0207c2f0()&1)y+=(s32)func_0207c2f0()%2+2;else y-=(s32)func_0207c2f0()%2+2;
-PlaySoundAtTile(257,x,y);func_020b5134(&data_02128f08,x,y,16,v,1,arg0);
+/* Per-frame update of the Aurora effect: plays its sound cues at fixed frames,
+ * applies the staged damage at frame 60, shakes the tile randomly between
+ * frames 32 and 90 and spawns a smoke puff. */
+void UpdateAuroraEffect(void *effect) {
+    M2C_UNK GetObjectTileX(void *);
+    M2C_UNK GetObjectTileY(void *);
+    M2C_UNK PlaySoundAtTile(s32, s32, s32);
+    s32 ApplyPendingDamage(void *);
+    u32 NextRandomValue(void);
+    M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    extern M2C_UNK gAuroraSmokeName;
+    s32 tileX, tileY, power;
+    u16 frame;
+
+    power = M2C_FIELD(effect, s32 *, 0x60);
+    frame = (u16)(M2C_FIELD(effect, u32 *, 0x48) >> 21);
+    tileX = GetObjectTileX(effect);
+    tileY = GetObjectTileY(effect) - 1;
+    switch (frame) {
+    case 0: PlaySoundAtTile(253, tileX, tileY); break;
+    case 20: PlaySoundAtTile(254, tileX, tileY); break;
+    case 32: PlaySoundAtTile(256, tileX, tileY); break;
+    case 90: PlaySoundAtTile(255, tileX, tileY); break;
+    case 104: PlaySoundAtTile(258, tileX, tileY); break;
+    }
+    if (frame == 60) ApplyPendingDamage(effect);
+    if ((s32)frame < 32) return;
+    if ((s32)frame > 90) return;
+    if ((s32)frame % 8) return;
+    if (NextRandomValue() & 1) tileX += (s32)NextRandomValue() % 2 + 2;
+    else tileX -= (s32)NextRandomValue() % 2 + 2;
+    if (NextRandomValue() & 1) tileY += (s32)NextRandomValue() % 2 + 2;
+    else tileY -= (s32)NextRandomValue() % 2 + 2;
+    PlaySoundAtTile(257, tileX, tileY);
+    func_020b5134(&gAuroraSmokeName, tileX, tileY, 16, power, 1, effect);
 }
 #pragma opt_common_subs reset
 void func_020b6e4c(void) {
-    M2C_UNK func_020b6b80();
-    func_020b6b80();
+    M2C_UNK ApplyPendingDamage();
+    ApplyPendingDamage();
 }
 
 void func_020b6e58(void *arg0) {
@@ -393,7 +417,7 @@ void func_020b6e58(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x56) = 0;
 }
 
-void func_020b6e70(void *a){s32 func_020b5200(M2C_UNK *,s32);s32 func_020b51f0(void);void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);void func_01ffa6fc(void *);extern M2C_UNK data_02128f14,data_02128f20,data_02128f2c,data_02128f34;void func_020b6bac(void *);void func_020b6c6c(void *);void func_020b6e4c(void);s32 n=M2C_FIELD(a,s16 *,0x56);s32 x,y,v;void *p;v=M2C_FIELD(a,s16 *,0x6c);x=M2C_FIELD(a,s32 *,0x38);y=M2C_FIELD(a,s32 *,0x3c);M2C_FIELD(a,s16 *,0x56)=n+1;switch(n){case 0:M2C_FIELD(a,s32 *,0x5c)=func_020b5200(&data_02128f14,0);break;case 1:M2C_FIELD(a,s32 *,0x60)=func_020b5200(&data_02128f20,1);break;case 2:M2C_FIELD(a,s32 *,0x64)=func_020b5200(&data_02128f2c,8);break;case 3:p=func_020b5188(&data_02128f34,x,y,1,func_020b51f0(),2,a);M2C_FIELD(p,s32 *,0x58)=v;M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(a,s32 *,0x5c);M2C_FIELD(p,s32 *,0x60)=M2C_FIELD(a,s32 *,0x60);M2C_FIELD(p,s32 *,0x64)=M2C_FIELD(a,s32 *,0x64);M2C_FIELD(p,u32 *,0x48)=(M2C_FIELD(p,u32 *,0x48)&~1023)|10;M2C_FIELD(p,void **,0x68)=func_020b6bac;M2C_FIELD(p,void **,0x6c)=func_020b6c6c;M2C_FIELD(p,void **,0x70)=func_020b6e4c;func_01ffa6fc(a);break;}}
+void func_020b6e70(void *a){s32 func_020b5200(M2C_UNK *,s32);s32 func_020b51f0(void);void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);void func_01ffa6fc(void *);extern M2C_UNK data_02128f14,data_02128f20,data_02128f2c,data_02128f34;void func_020b6bac(void *);void UpdateAuroraEffect(void *);void func_020b6e4c(void);s32 n=M2C_FIELD(a,s16 *,0x56);s32 x,y,v;void *p;v=M2C_FIELD(a,s16 *,0x6c);x=M2C_FIELD(a,s32 *,0x38);y=M2C_FIELD(a,s32 *,0x3c);M2C_FIELD(a,s16 *,0x56)=n+1;switch(n){case 0:M2C_FIELD(a,s32 *,0x5c)=func_020b5200(&data_02128f14,0);break;case 1:M2C_FIELD(a,s32 *,0x60)=func_020b5200(&data_02128f20,1);break;case 2:M2C_FIELD(a,s32 *,0x64)=func_020b5200(&data_02128f2c,8);break;case 3:p=func_020b5188(&data_02128f34,x,y,1,func_020b51f0(),2,a);M2C_FIELD(p,s32 *,0x58)=v;M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(a,s32 *,0x5c);M2C_FIELD(p,s32 *,0x60)=M2C_FIELD(a,s32 *,0x60);M2C_FIELD(p,s32 *,0x64)=M2C_FIELD(a,s32 *,0x64);M2C_FIELD(p,u32 *,0x48)=(M2C_FIELD(p,u32 *,0x48)&~1023)|10;M2C_FIELD(p,void **,0x68)=func_020b6bac;M2C_FIELD(p,void **,0x6c)=UpdateAuroraEffect;M2C_FIELD(p,void **,0x70)=func_020b6e4c;func_01ffa6fc(a);break;}}
 
 void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
     M2C_UNK func_020b6a9c(s16);

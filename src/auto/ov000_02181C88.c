@@ -5,9 +5,9 @@ s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
 void FillMapLayer(s8);
 s32 func_01ffb9c4(s8);
 void MI_CpuFill8(void *, s32, s32);
-s32 func_0207c8ec(s32, s32);
+s32 Divide(s32, s32);
 s32 func_020a85c8(u32);
-s32 func_020a85dc(u32);
+s32 IsCarrierUnitKind(u32);
 s32 func_020d0164(s32, s32);
 s32 IsUnitOnCurrentTeam(s32);
 s32 func_020d280c(u16, u8, s32);
@@ -26,7 +26,7 @@ extern u8 data_ov000_021dfa60;
 extern u8 data_ov000_021dfb04;
 extern u8 data_ov000_021dfba8;
 extern u8 data_ov000_021dfc4c;
-extern u8 data_ov000_021dfcf0;
+extern u8 gAiRangeBitmap;
 extern u8 gAiRangeLayer;
 typedef struct { u8 kind:6; u8 flags:2; } Unk02181C88Kind;
 static inline s32 Unk02181C88Index(s8 *unit) { if(unit==0)return 0; return (s32)(unit-(*gCurrentMap+0x59A4))/14; }
@@ -273,7 +273,7 @@ void func_ov000_02181c88(void) {
     s8 *temp_r8;
     s8 *var_r9_4;
     
-    MI_CpuFill8(&data_ov000_021dfcf0, 0, 0xA1);
+    MI_CpuFill8(&gAiRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfba8, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021df918, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfb04, 0, 0xA1);
@@ -291,9 +291,9 @@ void func_ov000_02181c88(void) {
         temp_r3 = temp_r0_2 + 0x59A4;
         temp_r8 = temp_r3 + sp2C;
         var_r1 = (u32) (M2C_FIELD((temp_r3 + sp2C), u8 *, 0) << 0x1A) >> 0x1A;
-        if ((var_r1 != 0) && (!(M2C_FIELD(temp_r8, u16 *, 0x4) & 8) || (temp_ret = func_020a85dc((u32) (M2C_FIELD(((M2C_FIELD((M2C_FIELD((temp_r0_2 + (M2C_FIELD(temp_r8, u8 *, 0x2) * 2)), u16 *, 0x3758) + (temp_r0_2 + M2C_FIELD(temp_r8, u8 *, 0x1))), u8 *, 0x508) * 0xE) + temp_r0_2), u8 *, 0x59A4) << 0x1A) >> 0x1A), (temp_ret != 0)))) {
-            temp_r4 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 7), 0x64);
-            temp_ret_2 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 0xE), 0x64);
+        if ((var_r1 != 0) && (!(M2C_FIELD(temp_r8, u16 *, 0x4) & 8) || (temp_ret = IsCarrierUnitKind((u32) (M2C_FIELD(((M2C_FIELD((M2C_FIELD((temp_r0_2 + (M2C_FIELD(temp_r8, u8 *, 0x2) * 2)), u16 *, 0x3758) + (temp_r0_2 + M2C_FIELD(temp_r8, u8 *, 0x1))), u8 *, 0x508) * 0xE) + temp_r0_2), u8 *, 0x59A4) << 0x1A) >> 0x1A), (temp_ret != 0)))) {
+            temp_r4 = Divide(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 7), 0x64);
+            temp_ret_2 = Divide(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 0xE), 0x64);
             temp_r0_3 = temp_ret_2;
             
             if ((temp_r4 < 0x28) && (temp_r0_3 < 0x28)) {
@@ -1091,7 +1091,7 @@ void func_ov000_02181c88(void) {
                 }
                 if (var_r9_8 >= var_r11_2) {
                     temp_r4_3 = (var_lr * var_r5_3) + var_r2_9;
-                    M2C_FIELD((&data_ov000_021dfcf0 + (temp_r4_3 >> 3)), u8 *, 0) = M2C_FIELD((&data_ov000_021dfcf0 + (temp_r4_3 >> 3)), u8 *, 0) | (1 << (temp_r4_3 & 7));
+                    M2C_FIELD((&gAiRangeBitmap + (temp_r4_3 >> 3)), u8 *, 0) = M2C_FIELD((&gAiRangeBitmap + (temp_r4_3 >> 3)), u8 *, 0) | (1 << (temp_r4_3 & 7));
                 }
                 if (var_r10_6 >= var_ip) {
                     temp_r4_4 = (var_lr * M2C_FIELD((*sp28), u16 *, 0x5144)) + var_r2_9;

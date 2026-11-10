@@ -7,7 +7,7 @@ typedef struct { u8 pad[0x60]; u64 v; u64 *p; } UnkNode0208EE1C;
 
 void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     void AddSprite(u16, u16, u16, void *, u8);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void DrawVerticalBar(s32, s16, s16, u16);
     void DrawVerticalBarReverse(s16, s16, s16, u16);
     void DrawHorizontalBar(s16, s32, s16, u16);
@@ -64,20 +64,20 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
         s32 x5 = d1 << 4;
         s32 x7 = (-d0) << 4;
         s32 x6 = d0 << 4;
-        s32 c1 = func_0207c8ec(x5, 0x200);
-        s32 c2 = func_0207c8ec(x7, 0x100);
-        s32 c3 = func_0207c8ec(x6, 0x200);
-        s32 c4 = func_0207c8ec(x5, 0x100);
+        s32 c1 = Divide(x5, 0x200);
+        s32 c2 = Divide(x7, 0x100);
+        s32 c3 = Divide(x6, 0x200);
+        s32 c4 = Divide(x5, 0x100);
         SetSpriteQuad(0x1c, (s16)c1, (s16)c2, (s16)c3, (s16)c4);
-        c1 = func_0207c8ec(x5, 0x100);
-        c2 = func_0207c8ec(x7, 0x200);
-        c3 = func_0207c8ec(x6, 0x100);
-        c4 = func_0207c8ec(x5, 0x200);
+        c1 = Divide(x5, 0x100);
+        c2 = Divide(x7, 0x200);
+        c3 = Divide(x6, 0x100);
+        c4 = Divide(x5, 0x200);
         SetSpriteQuad(0x1b, (s16)c1, (s16)c2, (s16)c3, (s16)c4);
-        c1 = func_0207c8ec(x5, 0x200);
-        c2 = func_0207c8ec(x7, 0x200);
-        c3 = func_0207c8ec(x6, 0x200);
-        c4 = func_0207c8ec(x5, 0x200);
+        c1 = Divide(x5, 0x200);
+        c2 = Divide(x7, 0x200);
+        c3 = Divide(x6, 0x200);
+        c4 = Divide(x5, 0x200);
         SetSpriteQuad(0x1f, (s16)c1, (s16)c2, (s16)c3, (s16)c4);
     }
 
@@ -120,33 +120,33 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     }
 }
 
-void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; SetFileDirectory(data_02102888); func_020814e4(data_02102898); func_02081590(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); func_020815fc(data_021028b0,(arg1+16)<<5,32); func_02081528(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }
+void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; SetFileDirectory(data_02102888); OpenNarcArchive(data_02102898); LoadNarcFileDecompressed(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); LoadNarcFileToSpriteBuffer(data_021028b0,(arg1+16)<<5,32); CloseNarcArchive(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }
 
 /* Draw a minutes:centiseconds readout with AddSprite digits at (x, y). */
 void DrawTimerDigits(s16 x, s32 y, u16 baseTile, u8 priority, s32 value) {
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 void AddSprite(u16,u16,u16,void *,u8);
 extern s32 gCur3DSpriteEngine;
 extern u8 gSpriteDesc16x8[],gSpriteDesc8x8[];
 s32 minutes,centis;
 u16 sy;
 const s32 mask=0x3ff;
-minutes=func_0207c8ec(value,60);
-centis=func_0207c8ec((value%60)*100,60);
+minutes=Divide(value,60);
+centis=Divide((value%60)*100,60);
 if(value<600)baseTile+=(32>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask;
 sy=(u16)y;
 AddSprite((u16)x,sy,(u16)(baseTile+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc16x8,priority);
 x+=48;
 AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
-centis=func_0207c8ec(centis,10);
+centis=Divide(centis,10);
 AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
 AddSprite((u16)x,sy,(u16)(baseTile+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
 x-=8;
 do{
 AddSprite((u16)x,sy,(u16)(baseTile+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),gSpriteDesc8x8,priority);
-minutes=func_0207c8ec(minutes,10);
+minutes=Divide(minutes,10);
 x-=8;
 }while(minutes!=0);
 }

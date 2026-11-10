@@ -2,7 +2,7 @@
 #include "common.h"
 
 void func_ov003_021eaed0(void *arg0) {
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         return;
     }
 }
@@ -24,13 +24,13 @@ done:
 }
 
 s32 func_ov003_021eba74(void) {
- s32 func_020846a4();
+ s32 IsLinkSessionActive();
  s32 GetReadyPlayerMask();
  void *func_02084e24(s32);
  s8 i;
  s32 mask;
  void *p;
- if(func_020846a4()==0) return 0;
+ if(IsLinkSessionActive()==0) return 0;
  mask=GetReadyPlayerMask();
  for(i=0;i<4;i++) {
   if(mask & (1<<i)) {
@@ -88,7 +88,7 @@ void func_ov003_021ebc00(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x5A) = 0;
 }
 
-u8 func_ov003_021ebc38(void *arg0) {
+u8 IsWaypointPanelIdle(void *arg0) {
     u8 var_r0;
 
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x18) >> 0x1C) == 0) {

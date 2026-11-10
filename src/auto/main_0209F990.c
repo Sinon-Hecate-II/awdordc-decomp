@@ -454,7 +454,7 @@ v=M2C_FIELD(M2C_FIELD(p+y*4,s8 **,0x52e8),s8 *,x);
 if(v<0||v>110)return 0;
 if(M2C_FIELD(p,u8 *,x+M2C_FIELD(p+y*2,u16 *,0x3758)))return result;
 result+=(110-v)<<8;
-result+=func_020d03ec((M2C_FIELD(p,u8 *,0x52d4)>>6)+1,x,y)?64:0;
+result+=IsCellInPlayerMoveRange((M2C_FIELD(p,u8 *,0x52d4)>>6)+1,x,y)?64:0;
 p=(void *)*gCurrentMap;
 cell=x+M2C_FIELD(p+y*2,u16 *,0x3758);
 unit=M2C_FIELD(p,u8 **,0x52d0);
@@ -466,7 +466,7 @@ return result+func_020d05f4(owner,kind,terrain);
 
 s32 func_020a086c(s16 *arg0, s16 *arg1) {
     s32 func_020a0750(s32, s32);
-    s32 func_0207c2f0(void);
+    s32 NextRandomValue(void);
     unsigned long long func_020720f0(s32, s32);
     extern s8 data_0211fbbc[];
     s32 xv = *arg0;
@@ -485,7 +485,7 @@ s32 func_020a086c(s16 *arg0, s16 *arg1) {
     }
     if (best == 0) return 0;
     {
-        unsigned long long q = func_020720f0(func_0207c2f0(), tiecount + 1);
+        unsigned long long q = func_020720f0(NextRandomValue(), tiecount + 1);
         s32 ticket = (s32)(q >> 32);
         s32 idx = 0;
         for (idx = 0; idx < 4; idx++) {

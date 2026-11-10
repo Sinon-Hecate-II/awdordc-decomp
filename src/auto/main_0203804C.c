@@ -175,7 +175,7 @@ void func_02038438(void) {
 
 s32 func_02038688(u16 *text,s32 unused,s32 a,s32 b){
 extern void *gNetSession;
-s32 HasNetError(void); u32 func_02038020(u16 *);
+s32 HasNetError(void); u32 Utf16StringLength(u16 *);
 void func_02007df8(s32,void *,s32); void func_02007e20(void *,void *,s32);
 s32 func_02037a0c(void);void func_02039db4(s32,s32);void SetNetState(s32);void InitServiceAvailabilityQuery(s32);
 u32 n;
@@ -186,7 +186,7 @@ M2C_FIELD(gNetSession,s32 *,116)=b;
 if(!text || !*text)n=0;
 else{
 func_02007df8(0,(u8 *)gNetSession+46,52);
-if(func_02038020(text)>25)n=25;else n=func_02038020(text);
+if(Utf16StringLength(text)>25)n=25;else n=Utf16StringLength(text);
 func_02007e20(text,(u8 *)gNetSession+46,n*2);
 }
 M2C_FIELD((u8 *)gNetSession+n*2,u16 *,46)=0;
@@ -196,11 +196,11 @@ SetNetState(1);InitServiceAvailabilityQuery(M2C_FIELD(gNetSession,s32 *,104));re
 
 s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(void);void SetNetState(s32);void func_0203ac20(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(HasNetError() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;SetNetState(4);func_0203ac20(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
 
-s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void func_0203c428(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;SetNetState(5);func_0203c428((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
+s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void StartHostMatch(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;SetNetState(5);StartHostMatch((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
 
 s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7) {
     s32 HasNetError(void); void ResetPlayerSlots(void); void SetNetState(s32);
-    s32 func_0203ae50(void); u32 func_02037eec(u32);
+    s32 func_0203ae50(void); u32 RandomBelow(u32);
     void StartJoinMatch(s32,s32,u8,s32,void *,s32,s32,s32);
     extern void *gNetSession; extern M2C_UNK func_02039520;
     u8 buf2[64]; u8 buf1[64];
@@ -217,7 +217,7 @@ s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7
         while(i<func_0203ae50()) { buf1[i]=(u8)i; i=(i+1)&255; }
         j=0;
         while(j<func_0203ae50()) {
-            k=func_02037eec(func_0203ae50()-j);
+            k=RandomBelow(func_0203ae50()-j);
             buf2[j]=buf1[k]; p=&buf1[k]; a1++;
             while(k<func_0203ae50()-j-1) { *p=p[1]; p++; k++; }
             j=(j+1)&255;

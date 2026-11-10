@@ -120,7 +120,7 @@ void func_ov001_0218c4c0(void) {
     void func_02002968(s32);
     void func_02002ab8(s32);
     void func_02002bb8(s32);
-    void func_02002c64(s32);
+    void GX_SetBankForTex(s32);
     void func_02002e3c(s32);
     void func_02002f24(s32);
     void func_02003124(s32);
@@ -138,7 +138,7 @@ void func_ov001_0218c4c0(void) {
     func_02002968(data_ov001_02193e70[1]);
     func_02002ab8(data_ov001_02193e70[2]);
     func_02002bb8(data_ov001_02193e70[3]);
-    func_02002c64(data_ov001_02193e70[4]);
+    GX_SetBankForTex(data_ov001_02193e70[4]);
     func_02002e3c(data_ov001_02193e70[5]);
     func_02002f24(data_ov001_02193e70[6]);
     func_02003124(data_ov001_02193e70[7]);

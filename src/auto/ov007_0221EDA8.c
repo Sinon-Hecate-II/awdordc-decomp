@@ -34,9 +34,9 @@ return child;
 void MapEditListInput(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b1c60(M2C_UNK);
@@ -150,19 +150,19 @@ loop_25:
         savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         func_020e32e8(&gSoftKeyNarcName);
-        func_020814e4();
+        OpenNarcArchive();
         switch (mode) {                           /* switch 2; irregular */
         case SOFTKEY_MODE_JP:                     /* switch 2 */
-            func_02081590(func_020e32e8(&gSoftKeyJpFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyJpFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         case SOFTKEY_MODE_US:                     /* switch 2 */
-            func_02081590(func_020e32e8(&gSoftKeyUsFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyUsFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         case SOFTKEY_MODE_EU:                     /* switch 2 */
-            func_02081590(func_020e32e8(&gSoftKeyEuFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            LoadNarcFileDecompressed(func_020e32e8(&gSoftKeyEuFileName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             break;
         }
-        func_02081528();
+        CloseNarcArchive();
         func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         gCur3DSpriteEngine = savedEngine;
@@ -250,7 +250,10 @@ void func_ov007_0221f264(void) {
     func_ov007_0221ec34();
 }
 
-void func_ov007_0221f270(u8 *arg0) {
+/* Create the map editor's name-entry list: build its list widget of the current
+ * region's softkey layout, copy up to 16 glyphs of the name into the shared
+ * glyph list and create the label and panel children. */
+void CreateMapEditList(u8 *name) {
     void *CreateSpriteObject(M2C_UNK *);
     M2C_UNK func_02007e98(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
@@ -261,85 +264,84 @@ void func_ov007_0221f270(u8 *arg0) {
     s32 GetLanguage();
     s32 func_020e34bc(M2C_UNK);
     extern M2C_UNK gHeapObjectVTable;
-    extern M2C_UNK data_ov007_02220df8;
+    extern M2C_UNK gMapEditListTemplate;
     extern M2C_UNK gSoftKeyLayoutUs;
     extern M2C_UNK gSoftKeyLayoutJp;
-    extern M2C_UNK data_ov007_02221974;
+    extern M2C_UNK gMapEditListVTable;
     extern u8 *gMapEditRecords;
     extern M2C_UNK gMapEditObjectList;
-    M2C_UNK *var_r1;
-    u32 var_r8;
-    s32 temp_r0_3;
-    M2C_UNK *var_r9;
-    u8 *var_r5;
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r0_4;
+    M2C_UNK *layout;
+    u32 i;
+    M2C_UNK *dst;
+    u8 *p;
+    void *widget;
+    void *label;
+    void *panel;
 
-    var_r5 = arg0;
-    temp_r0 = CreateSpriteObject(&data_ov007_02220df8);
-    if (temp_r0 == NULL) {
+    p = name;
+    widget = CreateSpriteObject(&gMapEditListTemplate);
+    if (widget == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov007_02221974;
+    M2C_FIELD(widget, M2C_UNK **, 0) = &gMapEditListVTable;
     if (GetLanguage() == 0) {
-        var_r1 = &gSoftKeyLayoutJp;
+        layout = &gSoftKeyLayoutJp;
     } else {
-        var_r1 = &gSoftKeyLayoutUs;
+        layout = &gSoftKeyLayoutUs;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = var_r1;
-    M2C_FIELD(temp_r0, void **, 0x38) = NULL;
-    M2C_FIELD(temp_r0, s8 *, 0x3C) = 0;
-    M2C_FIELD(temp_r0, s16 *, 0x3E) = -0x8000;
-    M2C_FIELD(temp_r0, s16 *, 0x40) = -0x8000;
-    M2C_FIELD(temp_r0, void **, 0x44) = NULL;
-    gMapEditRecords = var_r5;
+    M2C_FIELD(widget, M2C_UNK **, 0x34) = layout;
+    M2C_FIELD(widget, void **, 0x38) = NULL;
+    M2C_FIELD(widget, s8 *, 0x3C) = 0;
+    M2C_FIELD(widget, s16 *, 0x3E) = -0x8000;
+    M2C_FIELD(widget, s16 *, 0x40) = -0x8000;
+    M2C_FIELD(widget, void **, 0x44) = NULL;
+    gMapEditRecords = p;
     func_02007e98(0, &gMapEditObjectList, 0x44);
-    var_r9 = &gMapEditObjectList;
-    var_r8 = 0;
-    while ((*var_r5 != 0) && (var_r8 < 0x10U)) {
-        if ((func_02099ae8(var_r5) != 0) || (func_02099b00(var_r5) != 0)) {
-            MI_CpuCopy8(var_r5, var_r9, 2);
-            var_r5 += 2;
+    dst = &gMapEditObjectList;
+    i = 0;
+    while ((*p != 0) && (i < 0x10U)) {
+        if ((func_02099ae8(p) != 0) || (func_02099b00(p) != 0)) {
+            MI_CpuCopy8(p, dst, 2);
+            p += 2;
         } else {
-            MI_CpuCopy8(var_r5, var_r9, 1);
-            var_r5 += 1;
+            MI_CpuCopy8(p, dst, 1);
+            p += 1;
         }
-        var_r8 += 1;
-        var_r9 = (M2C_UNK *)((u8 *)var_r9 + 4);
+        i += 1;
+        dst = (M2C_UNK *)((u8 *)dst + 4);
 
     }
-    temp_r0_2 = InitOv007Text(MemAlloc(0x24));
-    M2C_FIELD(temp_r0, void **, 0x38) = temp_r0_2;
-    temp_r0_4 = MemAlloc(0x2C);
-    if (temp_r0_4 != NULL) {
-        M2C_FIELD(temp_r0_4, M2C_UNK **, 0) = &gHeapObjectVTable;
-        M2C_FIELD(temp_r0_4, s8 *, 4) = 0;
-        M2C_FIELD(temp_r0_4, s16 *, 0x12) = 0;
-        M2C_FIELD(temp_r0_4, s8 *, 0x14) = 8;
-        M2C_FIELD(temp_r0_4, s8 *, 0x15) = 8;
-        M2C_FIELD(temp_r0_4, s8 *, 0x16) = 1;
-        M2C_FIELD(temp_r0_4, s8 *, 0x17) = 8;
-        M2C_FIELD(temp_r0_4, s8 *, 0x18) = 8;
-        M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).active = 0;
-        M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).mode = 0;
-        M2C_FIELD(temp_r0_4, Ov006C24Flags *, 0x20).kind = 2;
-        M2C_FIELD(temp_r0_4, s8 *, 0x21) = 0;
-        M2C_FIELD(temp_r0_4, s32 *, 0x24) = 0;
-        M2C_FIELD(temp_r0_4, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_4, u8 *, 0x28) & ~0xE0);
-        M2C_FIELD(temp_r0_4, s8 *, 0x29) = 0;
+    label = InitOv007Text(MemAlloc(0x24));
+    M2C_FIELD(widget, void **, 0x38) = label;
+    panel = MemAlloc(0x2C);
+    if (panel != NULL) {
+        M2C_FIELD(panel, M2C_UNK **, 0) = &gHeapObjectVTable;
+        M2C_FIELD(panel, s8 *, 4) = 0;
+        M2C_FIELD(panel, s16 *, 0x12) = 0;
+        M2C_FIELD(panel, s8 *, 0x14) = 8;
+        M2C_FIELD(panel, s8 *, 0x15) = 8;
+        M2C_FIELD(panel, s8 *, 0x16) = 1;
+        M2C_FIELD(panel, s8 *, 0x17) = 8;
+        M2C_FIELD(panel, s8 *, 0x18) = 8;
+        M2C_FIELD(panel, Ov006C24Flags *, 0x20).active = 0;
+        M2C_FIELD(panel, Ov006C24Flags *, 0x20).mode = 0;
+        M2C_FIELD(panel, Ov006C24Flags *, 0x20).kind = 2;
+        M2C_FIELD(panel, s8 *, 0x21) = 0;
+        M2C_FIELD(panel, s32 *, 0x24) = 0;
+        M2C_FIELD(panel, u8 *, 0x28) = (u8) (M2C_FIELD(panel, u8 *, 0x28) & ~0xE0);
+        M2C_FIELD(panel, s8 *, 0x29) = 0;
     }
-    M2C_FIELD(temp_r0, void **, 0x44) = temp_r0_4;
+    M2C_FIELD(widget, void **, 0x44) = panel;
 }
 
 void *func_ov007_0221f458(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_020e35cc(s32);
-    extern M2C_UNK data_ov007_02221974;
+    extern M2C_UNK gMapEditListVTable;
     void *temp_r4;
     void *temp_r0;
 
-    M2C_FIELD(arg0, void **, 0) = &data_ov007_02221974;
+    M2C_FIELD(arg0, void **, 0) = &gMapEditListVTable;
     temp_r4 = M2C_FIELD(arg0, void **, 0x38);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));
@@ -356,11 +358,11 @@ void *func_ov007_0221f458(void *arg0) {
 void *func_ov007_0221f4b0(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_020e35cc(s32);
-    extern M2C_UNK data_ov007_02221974;
+    extern M2C_UNK gMapEditListVTable;
     void *temp_r4;
     void *temp_r0;
 
-    M2C_FIELD(arg0, void **, 0) = &data_ov007_02221974;
+    M2C_FIELD(arg0, void **, 0) = &gMapEditListVTable;
     temp_r4 = M2C_FIELD(arg0, void **, 0x38);
     if (temp_r4 != NULL) {
         func_020e35cc(M2C_FIELD(temp_r4, s32 *, 0x14));

@@ -25,7 +25,7 @@ s32 func_ov000_0217c4c8(void *);
 s32 GetUnitMoveRange(s32,u32);
 s32 func_ov000_0217c420(void *,void *);
 s32 IsUnitOnCurrentTeam(s32);
-extern u8 gUnitKindStats[],data_ov000_021b5c0f[];
+extern u8 gUnitKindStats[],gUnitKindFlags[];
 s32 count=0,maxY,minY,maxX,minX,x,y,dx,dy; u32 dist;
 u8 *map,*record,*units; s32 id; void *dimensions;
 if(GetUnitAttackClass(unit->kind)==1)return func_ov000_0217c4c8(unit);
@@ -70,7 +70,7 @@ if(gUnitKindStats[((Unit0217d428 *)record)->kind*112+19]&16)count++;
 }
 if(func_ov000_0217c420(M2C_FIELD(*gCurrentMap,void**,0x52d0),unit)==1){
 count++;
-if(data_ov000_021b5c0f[((Unit0217d428 *)M2C_FIELD(*gCurrentMap,void**,0x52d0))->kind*112]&16)count++;
+if(gUnitKindFlags[((Unit0217d428 *)M2C_FIELD(*gCurrentMap,void**,0x52d0))->kind*112]&16)count++;
 }
 return count;
 }
@@ -127,8 +127,8 @@ case13:
    selected one) that can damage the target unit, 0 otherwise. Restores the order layer. */
 s32 CanAttackUnitFrom(s32 x,s32 y,u8 *target){
 extern void **gCurrentMap;
-extern void *data_ov000_021df580;
-extern u8 *data_ov000_021df644;
+extern void *gAiCommandState;
+extern u8 *gAiUnitTypeTuning;
 void SelectMapLayer(void *);
 void FloodFillUnitRange(s32,s32,u32,s32,s32);
 u8 *candidate;
@@ -137,7 +137,7 @@ u8 *unitsBase;
 s32 rowOffset;
 u32 threshold;
 SelectMapLayer((u8 *)*gCurrentMap+MAP_CELL_SCORE);
-FloodFillUnitRange(x,y,((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26),M2C_FIELD(data_ov000_021df580,u8 *,5),0);
+FloodFillUnitRange(x,y,((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26),M2C_FIELD(gAiCommandState,u8 *,5),0);
 map=(s32)*gCurrentMap;
 row=0;
 if(row<M2C_FIELD(map,u16 *,MAP_HEIGHT))do {
@@ -157,7 +157,7 @@ if(((u32)(candidate[0]<<26)>>26)==4)goto next;
 if(((u32)(M2C_FIELD(candidate,u16 *,6)<<25)>>25)<60)goto next;
 if(M2C_FIELD(candidate,u16 *,4)&1){
 map=(s32)*gCurrentMap;
-threshold=data_ov000_021df644[2];
+threshold=gAiUnitTypeTuning[2];
 rowOffset=M2C_FIELD(map+row*2,u16 *,MAP_ROW_OFFSETS);
 if(M2C_FIELD(rowOffset+(map+col),u8 *,0x2d48)<threshold)goto next;
 }
@@ -305,6 +305,6 @@ loopinc:
 }
 #pragma opt_strength_reduction on
 void func_ov000_0217d850(void) {
-    extern void *data_ov000_021df580;
-    M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8) (M2C_FIELD(data_ov000_021df580, u8 *, 7) & ~8);
+    extern void *gAiCommandState;
+    M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) & ~8);
 }

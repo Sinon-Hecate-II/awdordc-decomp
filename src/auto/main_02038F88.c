@@ -3,14 +3,14 @@
 
 s32 func_02038f88(void) {
 extern void *gNetSession;
-s32 func_02037eec(s32);s32 func_0205d4d8(s32,u16,s32);
+s32 RandomBelow(s32);s32 func_0205d4d8(s32,u16,s32);
 s32 func_0205ad4c(void *,s32,s32,s32,void (*)(s32 *));
 void func_02039ba8(s32 *); void func_0203d6c8(void); void func_0203d5d4(void);
 void func_0205ada8(s32,void (*)(void));void func_0205b050(s32,void (*)(void));
 u32 func_020393d4();
 void *base; s32 result;u16 angle;
 if(M2C_FIELD(gNetSession,s32 *,0))return 0;
-angle=func_02037eec(0x4000)+0xc000;
+angle=RandomBelow(0x4000)+0xc000;
 base=gNetSession;
 result=func_0205ad4c(gNetSession,func_0205d4d8(0,angle,0),M2C_FIELD(base,s32 *,0x14),M2C_FIELD(base,s32 *,0x18),func_02039ba8);
 if(func_020393d4(result))return result;
@@ -111,7 +111,7 @@ void SetNetState(s32 arg0) {
     M2C_FIELD(gNetSession, s32 *, 0x24) = arg0;
 }
 
-s32 func_02039224(s32 arg0) { s32 func_0203e0ec(s32,s32); s32 func_0203e338(u8 **); u8 *p,*q; s32 n,i; n=func_0203e338(&p); i=0; if(n>0) { q=p; do { if(arg0==*q)break; i++; q++; }while(i<n); } if(i==n)return 0; return func_0203e0ec(i,n); }
+s32 func_02039224(s32 arg0) { s32 RemoveConnectionPeer(s32,s32); s32 func_0203e338(u8 **); u8 *p,*q; s32 n,i; n=func_0203e338(&p); i=0; if(n>0) { q=p; do { if(arg0==*q)break; i++; q++; }while(i<n); } if(i==n)return 0; return RemoveConnectionPeer(i,n); }
 
 u32 func_02039284(u8 *src, s32 n) {
 u32 acc=0; u32 i=0;
@@ -189,7 +189,7 @@ void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
     s32 func_0203dcf4(void);
     void SetNetState(s32);
     u32 func_02039284(u8 *, s32);
-    void func_0203e2e4(void);
+    void UpdateConnectedPlayerCount(void);
 
     if (arg0 == 0 && arg1 != 0) {
         if (M2C_FIELD(gNetSession, s32 *, 0x514) == 0) {
@@ -210,7 +210,7 @@ void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
                 }
                 M2C_FIELD(gNetSession, u32 *, 0x664) =
                     func_02039284(((u8 *)gNetSession) + 0x244 + 0x400, M2C_FIELD(gNetSession, u8 *, 0x381) + 1);
-                func_0203e2e4();
+                UpdateConnectedPlayerCount();
             L:;
             }
         }
@@ -280,7 +280,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     void SetNetError(s32, s32);
     M2C_UNK func_0203e410();
     M2C_UNK func_0203e064();
-    s32 func_0203e0ec();
+    s32 RemoveConnectionPeer();
     M2C_UNK func_0203af50();
     M2C_UNK func_0205ea70();
     M2C_UNK func_0203aeb4();
@@ -392,7 +392,7 @@ void func_02039844(s32 arg0, s32 arg1) {
                     {
                         void *b2 = gNetSession;
                         u8 t3 = M2C_FIELD(b2, u8 *, 0x381);
-                        func_0203e0ec((s32)t3 + 1, (s32)t3 + 3);
+                        RemoveConnectionPeer((s32)t3 + 1, (s32)t3 + 3);
                     }
                 }
             }
@@ -487,9 +487,9 @@ void func_02039be4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
 
 void func_02039c68(void) {
     void func_0203a034(void);
-    void func_0203a0e8(void *, s32);
+    void StartNasRequest(void *, s32);
     extern M2C_UNK data_0213d380;
-    func_0203a0e8(func_0203a034, 0);
+    StartNasRequest(func_0203a034, 0);
     M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 4) = 1;
     M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x30) = 0;
 }

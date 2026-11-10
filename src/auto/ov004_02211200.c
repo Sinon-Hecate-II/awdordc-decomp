@@ -9,9 +9,9 @@ void func_ov004_02211200(void) {
 }
 
 void func_ov004_0221120c(M2C_UNK arg0) {
-    s32 func_020946d0();
+    s32 IsDialogActive();
     M2C_UNK func_01ffa6fc(M2C_UNK);
-    if (func_020946d0() != 0) {
+    if (IsDialogActive() != 0) {
         return;
     }
     func_01ffa6fc(arg0);
@@ -36,7 +36,7 @@ void func_ov004_0221126c(M2C_UNK arg0) {
     s32 func_020cd1e4();
     s32 func_020e4b54();
     M2C_UNK func_ov004_02227ecc_unk(M2C_UNK);
-    if (func_020946d0() != 0) {
+    if (IsDialogActive() != 0) {
         return;
     }
     if ((func_020cd1e4() != 0) && (func_020e4b54() != 0)) {
@@ -98,7 +98,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     void *func_0208931c(void);
     M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
     void func_0208f998(s32, s32);
-    s32 func_0207c2f0(void);
+    s32 NextRandomValue(void);
     void *func_0208c528(void *);
     void func_0208bddc(void *, void *, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -180,9 +180,9 @@ M2C_UNK func_ov004_02211374(void *arg0) {
         if (M2C_FIELD(arg0, u16 *, 0x48) > M2C_FIELD(arg0, u16 *, 0x46)) {
             M2C_FIELD(arg0, u16 *, 0x46) = M2C_FIELD(arg0, u16 *, 0x46) + 1;
             if ((M2C_FIELD(arg0, u16 *, 0x46) & 0x1F) == 1) {
-                s32 t1 = func_0207c2f0();
+                s32 t1 = NextRandomValue();
                 s32 r8 = (t1 % 0xC0) + 0x20 - M2C_FIELD(arg0, s16 *, 0x4E);
-                s32 t2 = func_0207c2f0();
+                s32 t2 = NextRandomValue();
                 s32 r9 = (t2 % 0x40) + 0x20 - M2C_FIELD(arg0, s16 *, 0x50);
                 spr = func_0208c528(arg0);
                 func_0208bddc(spr, (void *)data_ov004_02218cb0, 0, 0, 0);
@@ -240,10 +240,10 @@ void func_ov004_02211744(void *ctx) {
             (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
             SetFileDirectory(data_ov004_02218cbc);
-            func_020814e4(data_ov004_02218cc4);
-            func_02081590(data_ov004_02218cd4, M2C_FIELD((void *)gCur3DSpriteEngine, u8 **, 0x1c) + 0x6b80);
-            func_020815fc(data_ov004_02218ce0, 0x360, 0x20);
-            func_02081528();
+            OpenNarcArchive(data_ov004_02218cc4);
+            LoadNarcFileDecompressed(data_ov004_02218cd4, M2C_FIELD((void *)gCur3DSpriteEngine, u8 **, 0x1c) + 0x6b80);
+            LoadNarcFileToSpriteBuffer(data_ov004_02218ce0, 0x360, 0x20);
+            CloseNarcArchive();
         }
         i++;
     } while (i < 2);
@@ -287,10 +287,10 @@ void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
     u32 func_01ff9c34(u8, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringFormat(void *, void *, void *);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(M2C_UNK *, s32);
-    M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
+    M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208161c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020822b8(u16 *);
     s32 func_02091e14();
@@ -368,28 +368,28 @@ config[4]=e;config[5]=f;
         if (((func_02091e14() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((func_02091e14() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((func_02091e14() != 3) || (gCur3DSpriteEngine == temp_r8))) {
             func_020822b8(config);
             SetFileDirectory(&data_ov004_02218cf8);
-            func_020814e4(&data_ov004_02218d00);
-            func_02081590(&data_ov004_02218d10, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
-            func_020815fc(&data_ov004_02218d1c, 0, 0x20);
-            func_02081590(&data_ov004_02218d28, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
-            func_02081590(&data_ov004_02218d34, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
-            func_02081528();
+            OpenNarcArchive(&data_ov004_02218d00);
+            LoadNarcFileDecompressed(&data_ov004_02218d10, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
+            LoadNarcFileToSpriteBuffer(&data_ov004_02218d1c, 0, 0x20);
+            LoadNarcFileDecompressed(&data_ov004_02218d28, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+            LoadNarcFileDecompressed(&data_ov004_02218d34, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+            CloseNarcArchive();
             StringFormat(buffer, &data_ov004_02218d40, arg1);
-            func_020814e4(buffer);
+            OpenNarcArchive(buffer);
             StringFormat(buffer, &data_ov004_02218d48, arg1);
-            func_02081590(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
+            LoadNarcFileDecompressed(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
             StringFormat(buffer, &data_ov004_02218d50, arg1);
-            func_02081590(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+            LoadNarcFileDecompressed(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             StringFormat(buffer, &data_ov004_02218d58, arg1);
             func_0208161c(buffer, 2, 0, 0x200);
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), (u16)func_01ff9c34((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 2), 0);
-            func_02081528();
-            func_020814e4(&data_ov004_02218d60);
-            func_02081590(&data_ov004_02218d6c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
-            func_02081590(&data_ov004_02218d78, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+            CloseNarcArchive();
+            OpenNarcArchive(&data_ov004_02218d60);
+            LoadNarcFileDecompressed(&data_ov004_02218d6c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
+            LoadNarcFileDecompressed(&data_ov004_02218d78, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
             func_0208161c(&data_ov004_02218d84, 3, 0x200, 0x200);
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16)func_01ff9c34((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 3), 0x1000);
-            func_02081528();
+            CloseNarcArchive();
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = 0;
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x40) = 0;
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = 0;
@@ -495,9 +495,9 @@ void func_ov004_02211f3c(void) {
 
 void func_ov004_02211f60(void) {
     void func_ov004_02211744();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov004_02218c20;
-    if (func_01ffa770(&data_ov004_02218c20) == 0) {
+    if (FindObjectByClass(&data_ov004_02218c20) == 0) {
         return;
     }
     func_ov004_02211744();
@@ -505,31 +505,31 @@ void func_ov004_02211f60(void) {
 
 void func_ov004_02211f80(void) {
     void func_ov004_02211844();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov004_02218c20;
-    if (func_01ffa770(&data_ov004_02218c20) == 0) {
+    if (FindObjectByClass(&data_ov004_02218c20) == 0) {
         return;
     }
     func_ov004_02211844();
 }
 
 void func_ov004_02211fa0(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov004_02218c20;
     s32 temp_r0;
-    temp_r0 = func_01ffa770(&data_ov004_02218c20);
+    temp_r0 = FindObjectByClass(&data_ov004_02218c20);
     if (temp_r0 == 0) return;
     func_ov004_02211924((void *)temp_r0, 0xA0, 0x80, 0x100, 0x800, 0x3C);
     PlaySoundEffect(0x113);
 }
 
 void func_ov004_02211ff4(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov004_02218c20;
     s32 temp_r0;
-    temp_r0 = func_01ffa770(&data_ov004_02218c20);
+    temp_r0 = FindObjectByClass(&data_ov004_02218c20);
     if (temp_r0 == 0) return;
     func_ov004_02211924((void *)temp_r0, 0x80, 0x60, 0x400, 0x100, 0x1E);
     PlaySoundEffect(0x112);

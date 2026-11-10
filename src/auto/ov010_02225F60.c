@@ -146,7 +146,7 @@ s32 func_ov010_0222613c(void) {
     s32 func_ov010_022282b4(M2C_UNK);
     void func_ov010_02226204();
     u8 *func_020c4acc();
-    s32 func_02045458(M2C_UNK *, u8 *);
+    s32 RegisterWebRequest(M2C_UNK *, u8 *);
     M2C_UNK func_ov010_02226114(M2C_UNK);
     M2C_UNK **func_01ffa3dc(M2C_UNK *, s32);
     void func_ov010_02228298(M2C_UNK);
@@ -160,7 +160,7 @@ s32 func_ov010_0222613c(void) {
     var_r4 = 1;
     if (func_ov010_022282b4(5) != 0) return 1;
     func_ov010_02226204();
-    temp_r0 = func_02045458(&data_ov010_0222c0e8, func_020c4acc() + 4);
+    temp_r0 = RegisterWebRequest(&data_ov010_0222c0e8, func_020c4acc() + 4);
     switch (temp_r0) {
     case 0:
         break;
@@ -573,7 +573,7 @@ extern "C" s32 func_ov010_02226be8(s32 a) {
 }
 #pragma cplusplus off
 void func_ov010_02226c68(void *arg0) {
-s32 func_02001fb4(s32,s32);s32 func_0207c8ec(s32,s32);s32 func_02038f34(u8);void func_02038438(void);
+s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);s32 func_02038f34(u8);void func_02038438(void);
 s32 func_ov010_02226be8(s32);void func_ov010_02227bc8(u8);void func_ov010_0222972c(s32,void *,s32,u16);s32 func_ov010_02229a08(void);s32 func_ov010_02229a24(void);
 s32 t,n,limit,raw;u16 mask;u8 i;
 t=func_02001fb4(0x3e8000,0x3c000);
@@ -586,7 +586,7 @@ mask=raw & (-1 ^ (1U<<func_ov010_02229a08()));
 if(mask && (mask & func_ov010_02229a24()) && !func_ov010_02226be8(1))func_ov010_0222972c(1,arg0+0x34,4,mask);
 M2C_FIELD(arg0,s32 *,0x34)=0;
 }
-limit=func_0207c8ec(0x1b7740,1000);i=0;
+limit=Divide(0x1b7740,1000);i=0;
 do{
 if(func_02038f34(i)){
 {void *entry=arg0+i*4;n=M2C_FIELD(entry,s32 *,0x38)+1;M2C_FIELD(entry,s32 *,0x38)=n;}

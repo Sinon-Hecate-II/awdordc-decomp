@@ -95,18 +95,18 @@ void ApplyBattleDamage(void *arg0,s32 arg1,M2C_UNK arg2) {
  s32 var_r0,var_r4;u32 temp_r0;
  var_r4=100;
  temp_r0=(u32)(M2C_FIELD(M2C_FIELD(arg0,void**,0),u16*,6)<<25)>>25;
- if(temp_r0==0)var_r0=0;else var_r0=func_0207c8ec(temp_r0-1,10)+1;
- M2C_FIELD(arg0,s16*,0x16)=M2C_FIELD(arg0,s16*,0x16)+func_0207c8ec(M2C_FIELD(arg0,s16*,6)*var_r0,10);
+ if(temp_r0==0)var_r0=0;else var_r0=Divide(temp_r0-1,10)+1;
+ M2C_FIELD(arg0,s16*,0x16)=M2C_FIELD(arg0,s16*,0x16)+Divide(M2C_FIELD(arg0,s16*,6)*var_r0,10);
  M2C_FIELD(arg0,s16*,0x14)=M2C_FIELD(arg0,s16*,0x18);
  if(arg1==1)var_r4+=func_020d18e8(arg0);
- M2C_FIELD(arg0,s16*,0x14)=func_0207c8ec(M2C_FIELD(arg0,s16*,0x14)*var_r4,100);
+ M2C_FIELD(arg0,s16*,0x14)=Divide(M2C_FIELD(arg0,s16*,0x14)*var_r4,100);
  M2C_FIELD(arg0,s16*,0x1c)=M2C_FIELD(arg0,s16*,0x14);
  func_020d0bac(arg0,arg2);
  if(M2C_FIELD(arg0,s16*,0x14)<0)M2C_FIELD(arg0,s16*,0x14)=0;
 }
 
 #pragma opt_cond_exec off
-void func_020d0bac(void *p,s32 a) { extern u8 data_02168f08[]; if(((u32)M2C_FIELD(data_02168f08,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
+void func_020d0bac(void *p,s32 a) { extern u8 gMapData[]; if(((u32)M2C_FIELD(gMapData,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))func_020d0bf8)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
 #pragma opt_cond_exec reset
 void func_020d0bf8(M2C_UNK arg0) {
     M2C_UNK RandomIntRange(s32, s32);
@@ -121,14 +121,14 @@ void func_020d0bf8(M2C_UNK arg0) {
 void func_020d0c1c(void *a,void *b) {
 u32 n=(u32)(M2C_FIELD(M2C_FIELD(b,void **,0),u16 *,6)<<25)>>25;
 s32 x;
-if(n==0)x=0;else x=func_0207c8ec(n-1,10)+1;
-M2C_FIELD(b,s16 *,0x1c)=func_0207c8ec(M2C_FIELD(b,s16 *,0x1c)*x,10);
+if(n==0)x=0;else x=Divide(n-1,10)+1;
+M2C_FIELD(b,s16 *,0x1c)=Divide(M2C_FIELD(b,s16 *,0x1c)*x,10);
 if(M2C_FIELD(a,s16 *,0x16)==0)x=999;
-else x=func_0207c8ec(M2C_FIELD(b,s16 *,0x1c)*100,M2C_FIELD(a,s16 *,0x16));
+else x=Divide(M2C_FIELD(b,s16 *,0x1c)*100,M2C_FIELD(a,s16 *,0x16));
 M2C_FIELD(b,s16 *,0x1c)=x;
 if(M2C_FIELD(b,s16 *,0x1c)>=999)M2C_FIELD(b,s16 *,0x1c)=999;
 if(M2C_FIELD(a,s16 *,0x16)==0)x=999;
-else x=func_0207c8ec(M2C_FIELD(b,s16 *,0x14)*100,M2C_FIELD(a,s16 *,0x16));
+else x=Divide(M2C_FIELD(b,s16 *,0x14)*100,M2C_FIELD(a,s16 *,0x16));
 M2C_FIELD(a,s16 *,0x1a)=x;
 M2C_FIELD(a,s16 *,0xe)=((u32)(M2C_FIELD(M2C_FIELD(a,void **,0),u16 *,6)<<25)>>25)-M2C_FIELD(a,s16 *,0x1a);
 }
@@ -144,9 +144,9 @@ void ApplyCounterDamage(void *arg0, void *arg1) {
     if (temp_r0 == 0) {
         var_r0 = 0;
     } else {
-        var_r0 = func_0207c8ec(temp_r0 - 1, 0xA) + 1;
+        var_r0 = Divide(temp_r0 - 1, 0xA) + 1;
     }
-    M2C_FIELD(arg0, s16 *, 0x14) = func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x14) * var_r0, 0xA);
+    M2C_FIELD(arg0, s16 *, 0x14) = Divide(M2C_FIELD(arg0, s16 *, 0x14) * var_r0, 0xA);
     func_020d0c1c(arg1, arg0);
     var_r0_2 = M2C_FIELD(arg1, s16 *, 0xE);
     if ((s32) var_r0_2 < 0) {
@@ -155,9 +155,9 @@ void ApplyCounterDamage(void *arg0, void *arg1) {
     if (var_r0_2 == 0) {
         var_r0_3 = 0;
     } else {
-        var_r0_3 = func_0207c8ec(var_r0_2 - 1, 0xA) + 1;
+        var_r0_3 = Divide(var_r0_2 - 1, 0xA) + 1;
     }
-    M2C_FIELD(arg1, s16 *, 0x14) = func_0207c8ec(M2C_FIELD(arg1, s16 *, 0x14) * var_r0_3, 0xA);
+    M2C_FIELD(arg1, s16 *, 0x14) = Divide(M2C_FIELD(arg1, s16 *, 0x14) * var_r0_3, 0xA);
     func_020d0c1c(arg0, arg1);
 }
 
@@ -219,7 +219,7 @@ void RunBattle(s16 attacker,s16 defender,s16 *destination) {
 }
 
 void func_020d1034(void *arg0) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     M2C_UNK func_020a6328(void *, s32);
     s16 temp_r0;
     s32 var_r1;
@@ -230,13 +230,13 @@ void func_020d1034(void *arg0) {
     if (temp_r0 == 0) {
         var_r5 = 0;
     } else {
-        var_r5 = func_0207c8ec(temp_r0 - 1, 0xA) + 1;
+        var_r5 = Divide(temp_r0 - 1, 0xA) + 1;
     }
     temp_r0_2 = (u32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0), u16 *, 6) << 0x19) >> 0x19;
     if (temp_r0_2 == 0) {
         var_r1 = 0;
     } else {
-        var_r1 = func_0207c8ec(temp_r0_2 - 1, 0xA) + 1;
+        var_r1 = Divide(temp_r0_2 - 1, 0xA) + 1;
     }
     func_020a6328(M2C_FIELD(arg0, void **, 0), var_r1 - var_r5);
 }
@@ -266,11 +266,11 @@ if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
  * unit's owner, then writes back the surviving HP and runs the destruction
  * effect, and finally plays the impact sound if a side's HP changed. */
 void ApplyBattleResult(void){
-extern u8 data_02168f08[];
+extern u8 gMapData[];
 void func_020d18fc(s32,s32);s32 IsPlayerHuman(s32);s32 func_020a3594(s32,s32);M2C_UNK PlaySoundEffect(s32);
 void *unit,*record;
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec6)<=0){
-if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
+if((u32)(M2C_FIELD(gMapData,u16*,12)<<23)>>31){
 unit=M2C_FIELD(*gCurrentMap,void**,0x6ed8);
 if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
@@ -279,7 +279,7 @@ func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),D068CLow(M2C_FIE
 if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
 }
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee6)<=0){
-if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
+if((u32)(M2C_FIELD(gMapData,u16*,12)<<23)>>31){
 unit=M2C_FIELD(*gCurrentMap,void**,0x6eb8);
 if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }

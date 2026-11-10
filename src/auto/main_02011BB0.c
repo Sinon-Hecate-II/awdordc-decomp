@@ -68,9 +68,9 @@ u16 func_02011d58(void) {
 
 u16 func_02011d78(void){void *func_02011440();s32 func_02011450();void DC_InvalidateRange(void *,s32);void *p=func_02011440();void *q;u16 n;if(func_02011450())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
 
-u16 func_02011e08(void){void func_02007724(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;func_02007724(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
+u16 func_02011e08(void){void GetMacAddress(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
 
-u16 func_02011e98(void){void func_02007724(u8 *);u8 buf[6];s32 i;u16 sum;u8 *p;u16 v;func_02007724(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*13;return (s32)v%10+30;}
+u16 func_02011e98(void){void GetMacAddress(u8 *);u8 buf[6];s32 i;u16 sum;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*13;return (s32)v%10+30;}
 
 /* Parse the item list embedded in the input buffer into *out (at most 16 items). */
 void func_02011f2c(ParsedItems *out, void *in) {

@@ -44,12 +44,12 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     void StringFormat(void *, void *, ...);
     void SetFileDirectory(void *);
     void func_02082134(s32, s32);
-    void func_020814e4(void *);
-    void func_02081590(void *, s32);
+    void OpenNarcArchive(void *);
+    void LoadNarcFileDecompressed(void *, s32);
     void func_02081578(void *, void *);
     s32 func_01ff9c34(u8, s32);
     void func_01ff85b8(void *, u16, u16);
-    void func_02081528(void);
+    void CloseNarcArchive(void);
     extern void *gCur3DSpriteEngine;
     extern char data_02127eac[], data_02127eb8[], data_02127ec0[], data_02127ec8[], data_02127ed0[];
 
@@ -67,11 +67,11 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     func_02082134(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
     SetFileDirectory(data_02127eac);
     StringFormat(sp0, data_02127eb8, sp100);
-    func_020814e4(sp0);
+    OpenNarcArchive(sp0);
     StringFormat(sp0, data_02127ec0, sp100);
-    func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0xc));
+    LoadNarcFileDecompressed(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0xc));
     StringFormat(sp0, data_02127ec8, sp100);
-    func_02081590(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20));
+    LoadNarcFileDecompressed(sp0, *(s32 *)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20));
     StringFormat(sp0, data_02127ed0, sp100);
     func_02081578(sp0, (void *)((char *)*(void **)((char *)gCur3DSpriteEngine + 0x30) + (r4 << 5)));
     {
@@ -84,7 +84,7 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
         void *ptr = *(void **)((char *)gCur3DSpriteEngine + r5 * 4 + 0x20);
         func_01ff85b8(ptr, vv16, sz16);
     }
-    func_02081528();
+    CloseNarcArchive();
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x10;
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 1 << r5;
 }

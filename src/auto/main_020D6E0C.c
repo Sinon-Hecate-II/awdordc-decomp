@@ -1,5 +1,6 @@
 /* 4 functions from 0x020D6E0C to 0x020D7BC8 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s32 Tile6e0c(s32 tile, s32 offset) {
 extern void *gCur3DSpriteEngine;
 return (((tile >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023)|0x9000)+((offset >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))&1023);
@@ -13,11 +14,11 @@ static inline s32 SpriteTile7944(s32 tile) { extern void *gCur3DSpriteEngine;ret
 typedef struct { s32 v[2][2]; } OffsetTable;
 extern OffsetTable data_020f4e98;
 extern s32 *gCurrentMap;
-void func_020d7944(s32, s32, s32, s32);
+void DrawUnitIcon(s32, s32, s32, s32);
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_020d6e0c(s32 x,s32 y,s32 unused,s32 mode) {
+void DrawUnitInfoFrame(s32 x,s32 y,s32 unused,s32 mode) {
 void AddSprite(u16,u16,u16,void *,s32);
 extern void *gCur3DSpriteEngine;
 extern M2C_UNK data_02101f0c;
@@ -65,31 +66,37 @@ void func_020d759c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     (void) arg0; (void) arg1; (void) arg2;
 }
 
-void func_020d7944(s32 x,s32 y,s32 index,s32 unit){
-s32 GetUnitKind(s32);s32 GetUnitHealthBarCount(s32);s32 func_ov000_0216cd78(s32,u8);
+/* Draws a unit's icon on the map at screen (x,y): copies the unit's 16x16 icon
+ * tile for its kind and the owning player's colour variant into the sprite
+ * engine, draws that sprite and a second one below it, and then the unit's
+ * health-bar count as a decimal number unless the unit is at full health.
+ * iconIndex is the carried-unit icon slot; unit is the unit's BattleMapUnit
+ * record, 0 for an empty slot. */
+void DrawUnitIcon(s32 x,s32 y,s32 iconIndex,s32 unit){
+s32 GetUnitKind(s32);s32 GetUnitHealthBarCount(s32);s32 GetUnitIconTiles(s32,u8);
 void func_0207c3dc(s32,s32,s32,s32);void AddSprite(u16,u16,u16,void *,s32);void DrawDecimalNumber(s32,u8,s32);
 extern void *gCur3DSpriteEngine;extern M2C_UNK gSpriteDesc16x16;
 extern s32 *gCurrentMap;
-s32 kind=GetUnitKind(unit);s32 slot,color,health,tile;s32 yy,xx;
-if(unit==0)slot=0;else slot=(unit-(*gCurrentMap+0x59a4))/14;
-color=M2C_FIELD(*gCurrentMap+((slot>>6)+1)*140,u8 *,0x67cd);
-health=GetUnitHealthBarCount(unit);tile=(index+1)*4+0x218;
-func_0207c3dc(func_ov000_0216cd78(kind,color),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
-yy=y&255;xx=x&511;
-AddSprite((u16)xx,(u16)yy,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&gSpriteDesc16x16,9);
-yy+=0x400;
-AddSprite((u16)xx,(u16)yy,(u16)((1023&(0x150>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))|0x9000)+(1023&(0x60>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),&gSpriteDesc16x16,10);
-if(health==10)return;
-DrawDecimalNumber((x+8)&511,(y+8)&255,health);
+s32 kind=GetUnitKind(unit);s32 unitIndex,variant,healthBars,tile;s32 screenY,screenX;
+if(unit==0)unitIndex=0;else unitIndex=(unit-(*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
+variant=M2C_FIELD(*gCurrentMap+((unitIndex>>6)+1)*MAP_PLAYER_STRIDE,u8 *,0x67cd);
+healthBars=GetUnitHealthBarCount(unit);tile=(iconIndex+1)*4+0x218;
+func_0207c3dc(GetUnitIconTiles(kind,variant),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
+screenY=y&255;screenX=x&511;
+AddSprite((u16)screenX,(u16)screenY,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&gSpriteDesc16x16,9);
+screenY+=0x400;
+AddSprite((u16)screenX,(u16)screenY,(u16)((1023&(0x150>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))|0x9000)+(1023&(0x60>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),&gSpriteDesc16x16,10);
+if(healthBars==10)return;
+DrawDecimalNumber((x+8)&511,(y+8)&255,healthBars);
 }
 #pragma opt_common_subs reset
-void func_020d7b04(s32 x, s32 y, s32 kind, void *p) {
+void DrawCarriedUnits(s32 x, s32 y, s32 kind, void *p) {
 OffsetTable offsets = data_020f4e98; s32 n = 0; u32 v;
 v = ((u8 *)p)[12];
-if (v) { func_020d7944(x + offsets.v[kind][0], y-16, n, *gCurrentMap + 0x59a4 + v*14); n++; }
+if (v) { DrawUnitIcon(x + offsets.v[kind][0], y-16, n, *gCurrentMap + 0x59a4 + v*14); n++; }
 v = ((u8 *)p)[13];
 if (!v) return;
-func_020d7944(x + offsets.v[kind][n], y-16, n, *gCurrentMap + 0x59a4 + v*14);
+DrawUnitIcon(x + offsets.v[kind][n], y-16, n, *gCurrentMap + 0x59a4 + v*14);
 }
 static inline s32 SecondTile7944(void) {
 extern void *gCur3DSpriteEngine;

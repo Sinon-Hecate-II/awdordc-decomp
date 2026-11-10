@@ -103,9 +103,9 @@ void Qr2_SendState(void *qr2, s32 state) {
 }
 
 void func_0205fdbc(s32 arg0, s32 arg1) {
-    extern s32 data_020ffc1c[];
+    extern s32 gQr2KeyNames[];
     if (arg0 < 50 || arg0 > 254) return;
-    data_020ffc1c[arg0] = arg1;
+    gQr2KeyNames[arg0] = arg1;
 }
 
 u8 func_0205fddc(u8 *arg0,u32 arg1,u8 *arg2,u32 arg3,u8 *arg4,u32 *arg5){
@@ -277,8 +277,8 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
     s32 GetTickCountMs(void);
     void gpiPlayerSetString(void *, s32, void *);
     void func_02060e10(void *, void *, s32);
-    s32 func_02061da0(void *, s32);
-    extern s32 data_020ffc1c[];
+    s32 BoundedStringLength(void *, s32);
+    extern s32 gQr2KeyNames[];
     s32 chunkLen;
     s32 index;
 
@@ -290,11 +290,11 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
     if (M2C_FIELD(entry, u8 *, 0x14) & 4) {
         index = 0;
         while (index < M2C_FIELD(owner, s32 *, 0x40)) {
-            chunkLen = func_02061da0(payload, length);
+            chunkLen = BoundedStringLength(payload, length);
             if (chunkLen < 0) {
                 break;
             }
-            gpiPlayerSetString(entry, data_020ffc1c[M2C_FIELD(owner + index, u8 *, 0x2C)], payload);
+            gpiPlayerSetString(entry, gQr2KeyNames[M2C_FIELD(owner + index, u8 *, 0x2C)], payload);
             index++;
             payload += chunkLen;
             length -= chunkLen;

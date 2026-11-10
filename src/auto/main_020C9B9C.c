@@ -1,5 +1,14 @@
 /* 17 functions from 0x020C9B9C to 0x020CAB8C (main), found by ds-decomp. */
 #include "common.h"
+
+/* A selection menu (sprite object type 7): the highlighted entry and how many
+   entries the menu has. */
+typedef struct SelectionMenu {
+    u8 pad00[0x6C];
+    s16 selection;  /* +0x6C: highlighted entry */
+    s16 count;      /* +0x6E: number of entries */
+    s16 progress;   /* +0x70: animation/step counter */
+} SelectionMenu;
 static inline s32 RangeLeft(void) {
 extern void **gCurrentMap; s32 func_020a7714(void *);
 void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)-range;
@@ -275,7 +284,7 @@ void func_020ca4c0(void) {
 void func_020ca4fc(void *arg0) {
     void PlaySoundEffect(s32);
     s16 func_0209f8d4(void);
-    void *func_0209f8e4(s16);
+    void *GetTargetPosition(s16);
     void func_020cbdbc(void);
     extern void **gCurrentMap;
     s16 temp_r4;
@@ -287,7 +296,7 @@ void func_020ca4fc(void *arg0) {
     temp_r1 = *gCurrentMap;
     temp_r4 = M2C_FIELD(temp_r1, s16 *, 0x52C2);
     temp_r5 = M2C_FIELD(temp_r1, s16 *, 0x52C4);
-    temp_r0 = func_0209f8e4(M2C_FIELD(arg0, s16 *, 0x6C));
+    temp_r0 = GetTargetPosition(M2C_FIELD(arg0, s16 *, 0x6C));
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(temp_r0, s16 *, 4);
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(temp_r0, s16 *, 6);
     func_020cbdbc();
@@ -296,45 +305,48 @@ void func_020ca4fc(void *arg0) {
     PlaySoundEffect(0x10019);
 }
 
-void func_020ca59c(void *dialog) {
+/* Per-frame update of the target-list selection menu: read the confirm, cancel
+   and menu keys plus the touch state, then move the map cursor to the selected
+   entry or close the menu. */
+void UpdateUnitSelectionMenu(void *dialog) {
     M2C_UNK func_020be010(void);
     s32 func_0207b7c4(void);
     s32 func_020cccb8(void);
-    s32 func_020bcb94(void);
-    s32 func_020bd990(s16);
+    s32 GetKeyActionFlags(void);
+    s32 GetTouchActionFlags(s16);
     s32 func_020d46cc(void);
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK func_0207b764(s16, s16);
-    void *func_0209f8e4(s16);
+    void *GetTargetPosition(s16);
     M2C_UNK func_020cc66c(s16, s16);
     s32 func_020ccca0(void);
     void func_020d8fa0(void);
-    void func_020bcb34(void *, s16);
-    void func_020bd7a4(void *, s16);
+    void MoveSelectionWithKeys(void *, s16);
+    void UpdateSelectionFromTouch(void *, s16);
     void PlaySoundEffect(s32);
-    void func_020cf5ec(s32);
-    void func_020d6778(s32);
+    void MoveMapCursorToTarget(s32);
+    void DrawUnitInfoPanel(s32);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK func_020cf69c(s32, s32);
     extern void **gCurrentMap;
     extern s32 data_0215be0c;
 
-    s32 saved = M2C_FIELD(dialog, s16 *, 0x6C);
+    s32 saved = ((SelectionMenu *)dialog)->selection;
     s32 flags = 0;
-    s16 r6 = M2C_FIELD(dialog, s16 *, 0x6E);
+    s16 count = ((SelectionMenu *)dialog)->count;
     s32 merged;
     s32 oldval;
-    void *p;
+    void *target;
 
-    if (r6 > 1) {
-    func_020be010();
+    if (count > 1) {
+        func_020be010();
     }
     if (func_0207b7c4() != 0) return;
     if (func_020cccb8() != 0) return;
 
-    flags |= func_020bcb94();
-    merged = flags | func_020bd990(r6);
+    flags |= GetKeyActionFlags();
+    merged = flags | GetTouchActionFlags(count);
 
     if (merged & 0x20) {
         if (!func_020d46cc()) {
@@ -348,10 +360,10 @@ void func_020ca59c(void *dialog) {
         return;
     }
     if (merged & 0x10) {
-        void *p;
-        data_0215be0c = M2C_FIELD(dialog, s16 *, 0x6C);
-        p = func_0209f8e4(M2C_FIELD(dialog, s16 *, 0x6C));
-        func_020cc66c(M2C_FIELD(p, s16 *, 0x4), M2C_FIELD(p, s16 *, 0x6));
+        void *target;
+        data_0215be0c = ((SelectionMenu *)dialog)->selection;
+        target = GetTargetPosition(((SelectionMenu *)dialog)->selection);
+        func_020cc66c(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
         DeleteSpriteObject(dialog);
         return;
     }
@@ -362,20 +374,20 @@ void func_020ca59c(void *dialog) {
     if (merged & 0x40) {
         func_020d8fa0();
     }
-        oldval = saved;
-        func_020bcb34(&saved, r6);
-        func_020bd7a4(&saved, r6);
-        if (oldval != saved) {
-            PlaySoundEffect(0x10019);
-        }
-            M2C_FIELD(dialog, s16 *, 0x6C) = (s16)saved;
-            p = func_0209f8e4(M2C_FIELD(dialog, s16 *, 0x6C));
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(p, s16 *, 0x4);
-            M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(p, s16 *, 0x6);
-            func_0207b764(M2C_FIELD(p, s16 *, 0x4), M2C_FIELD(p, s16 *, 0x6));
-            if (func_0207b7c4() != 0) return;
-            func_020cf5ec(2);
-            func_020d6778(1);
+    oldval = saved;
+    MoveSelectionWithKeys(&saved, count);
+    UpdateSelectionFromTouch(&saved, count);
+    if (oldval != saved) {
+        PlaySoundEffect(0x10019);
+    }
+    ((SelectionMenu *)dialog)->selection = (s16)saved;
+    target = GetTargetPosition(((SelectionMenu *)dialog)->selection);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(target, s16 *, 0x4);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(target, s16 *, 0x6);
+    func_0207b764(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
+    if (func_0207b7c4() != 0) return;
+    MoveMapCursorToTarget(2);
+    DrawUnitInfoPanel(1);
 }
 
 void func_020ca77c(M2C_UNK arg0) {

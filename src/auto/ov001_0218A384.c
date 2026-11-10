@@ -41,7 +41,7 @@ void func_ov001_0218a4d4(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
  *arg3=M2C_FIELD(base,u32 *,arg1*8)&0xFF;
 }
 
-void func_ov001_0218a504(s32 arg0, M2C_UNK arg1) {
+void Ov001_LoadCharBank(s32 arg0, M2C_UNK arg1) {
  s32 func_ov001_02189dc8(M2C_UNK,M2C_UNK *,M2C_UNK);
  extern M2C_UNK data_ov001_02193e34;
  M2C_UNK sp0;
@@ -301,7 +301,7 @@ void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
 void func_ov001_0218aab4(void) {
     void *func_ov001_0218b6f8(s32, M2C_UNK);
     void *func_ov001_0218a698(s32, s32, s32);
-    s32 func_ov001_02175ddc(void);
+    s32 Ov001_GetLanguage(void);
     s32 func_ov001_02189dc8(M2C_UNK, M2C_UNK *, M2C_UNK);
     void func_ov001_02169130(void *, M2C_UNK);
     extern M2C_UNK data_ov001_02193e40;
@@ -313,7 +313,7 @@ void func_ov001_0218aab4(void) {
     data_ov001_02193e40 = p;
     M2C_FIELD((void *)data_ov001_02193e40, void **, 0x670) = func_ov001_0218a698(0x20, (s32)p + 0x10, 0x30);
 
-    if (func_ov001_02175ddc() == 6) {
+    if (Ov001_GetLanguage() == 6) {
         s32 i;
         s32 acc = 0;
         M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c0);
@@ -379,7 +379,7 @@ void func_ov001_0218ace0(M2C_UNK arg0) {
 }
 
 #pragma opt_propagation off
-void *func_ov001_0218ad0c(s32 arg0,s32 arg1) {
+void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *func_ov001_0218b6f8(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
@@ -512,7 +512,7 @@ void func_ov001_0218b080(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16
     }
 }
 
-void func_ov001_0218b12c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     M2C_UNK func_ov001_0216a9d0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     u8 spC;
     u8 spD;
@@ -563,7 +563,7 @@ void func_ov001_0218b200(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 a
     func_ov001_0216a398(temp_r5, M2C_FIELD(arg0, u8 *, 0x2E), M2C_FIELD(arg0, u8 *, 0x2F), arg1, arg2, 0, (s32) M2C_FIELD(arg0, u16 *, 0x2C), 2);
 }
 
-void func_ov001_0218b298(s32 arg0) {
+void CloseTextPanel(s32 arg0) {
     extern M2C_UNK data_ov001_02193e40;
     void *p = M2C_FIELD(&data_ov001_02193e40, void **, 0);
     if (arg0 == (s32)p + 0x610) {

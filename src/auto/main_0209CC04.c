@@ -199,8 +199,8 @@ s32 func_0209cf0c(void *arg0) {
 }
 
 s32 func_0209cf2c(void *arg0) {
-    s32 func_01ffa770(s32);
-    if (func_01ffa770(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4)) != 0) {
+    s32 FindObjectByClass(s32);
+    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4)) != 0) {
         return 0;
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);

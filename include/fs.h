@@ -48,4 +48,23 @@ struct FSFileRequest {
 #define FS_EVENT_IDLE             10
 #define FS_EVENT_IDLE_MASK    0x400
 
+/* A resource archive (the game's data pack).  The 0x30-byte file header names
+ * three sections by file offset and byte size; LoadResourceArchive reads them
+ * into a memory pool and records the loaded pointers at +0x84..+0x8C. */
+typedef struct ResourceArchive {
+    u8 pad00[0x10];
+    s32 extraOffset;    /* +0x10 optional section: file offset */
+    s32 extraSize;      /* +0x14 optional section: byte size */
+    s32 objectOffset;   /* +0x18 object table section: file offset */
+    s32 objectSize;     /* +0x1C object table section: byte size */
+    s32 dataOffset;     /* +0x20 data section: file offset */
+    s32 dataSize;       /* +0x24 data section: byte size */
+    u8 pad28[0x0C];     /* +0x28 */
+    u8 request[0x48];   /* +0x34 FSFileRequest used to read the sections */
+    u8 pad7C[0x08];     /* +0x7C */
+    void *dataBlock;    /* +0x84 loaded data section */
+    void *extraBlock;   /* +0x88 loaded optional section */
+    void *objectBlock;  /* +0x8C loaded object table section */
+} ResourceArchive;
+
 #endif

@@ -77,7 +77,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     s32 func_ov003_021e6d28();
     M2C_UNK func_ov003_021e74ac(void *, u8);
     s16 func_ov003_022004a8(u8);
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s8 *temp_r4;
     s8 *temp_r4_5;
     s32 temp_r3;
@@ -116,7 +116,7 @@ u32 func_ov003_021e984c(void *arg0, u8 arg1) {
     }
     temp_r4 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
     temp_r7 = (s8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4);
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         var_r8 = 0;
         do {
             if (var_r8 < (u32)(u8)temp_r7) {
@@ -275,7 +275,7 @@ u8 func_ov003_021e9ce0(void *arg0) {
     return var_r0;
 }
 
-void func_ov003_021e9cfc(void *p,s32 mode){
+void SetWaypointPanelState(void *p,s32 mode){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
 void func_ov003_022006b0(s32,u8); void func_02089438(void*); void func_02088d94(void*); void func_02088da8(void*);
 void *old;

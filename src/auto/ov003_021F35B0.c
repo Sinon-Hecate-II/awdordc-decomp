@@ -311,7 +311,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
 void *func_ov003_021f3cec(void *obj) {
     extern M2C_UNK data_ov003_0220fdac;
     extern void **gCurrentMap;
-    s32 func_020c79ec(void);
+    s32 GetMapRecordBuffer(void);
     void func_020c8664(u16, s32);
     void func_ov003_021f140c(s32);
     s32 func_ov003_021f1608(void);
@@ -326,7 +326,7 @@ void *func_ov003_021f3cec(void *obj) {
 
     M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
     base = (u8 *)*gCurrentMap + 0x5120;
-    func_020c8664(M2C_FIELD(base, u16 *, 0x22), func_020c79ec());
+    func_020c8664(M2C_FIELD(base, u16 *, 0x22), GetMapRecordBuffer());
     M2C_FIELD(obj, u8 *, 0x34) = 3;
     inner = M2C_FIELD(obj, void **, 0x40);
     switch (M2C_FIELD(inner, u8 **, 8)[M2C_FIELD(inner, s8 *, 5)]) {
@@ -377,7 +377,7 @@ s32 func_ov003_021f3df4(s32 arg0) {
 void *func_ov003_021f3e08(void *obj) {
     extern M2C_UNK data_ov003_0220fdac;
     extern void **gCurrentMap;
-    s32 func_020c79ec(void);
+    s32 GetMapRecordBuffer(void);
     void func_020c8664(u16, s32);
     void func_ov003_021f140c(s32);
     s32 func_ov003_021f1608(void);
@@ -392,7 +392,7 @@ void *func_ov003_021f3e08(void *obj) {
 
     M2C_FIELD(obj, void **, 0) = &data_ov003_0220fdac;
     base = (u8 *)*gCurrentMap + 0x5120;
-    func_020c8664(M2C_FIELD(base, u16 *, 0x22), func_020c79ec());
+    func_020c8664(M2C_FIELD(base, u16 *, 0x22), GetMapRecordBuffer());
     M2C_FIELD(obj, u8 *, 0x34) = 3;
     inner = M2C_FIELD(obj, void **, 0x40);
     switch (M2C_FIELD(inner, u8 **, 8)[M2C_FIELD(inner, s8 *, 5)]) {
@@ -497,28 +497,28 @@ s16 func_ov003_021f3fe4(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 u8 func_ov003_021f400c(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     u32 func_02084a0c();
     s32 result;
-    if (func_020846a4() && func_02084a0c() <= 1U) result = 1;
+    if (IsLinkSessionActive() && func_02084a0c() <= 1U) result = 1;
     else result = 0;
     return result;
 }
 
 u8 func_ov003_021f4038(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_0208485c();
     s32 result;
-    if (func_020846a4() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && func_0208485c()) result = 1;
     else result = 0;
     return result;
 }
 
 u8 func_ov003_021f4064(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084890();
     s32 result;
-    if (func_020846a4() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && func_02084890()) result = 1;
     else result = 0;
     return result;
 }

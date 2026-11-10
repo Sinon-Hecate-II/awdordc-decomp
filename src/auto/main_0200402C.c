@@ -455,14 +455,14 @@ void func_02004bb0(M2C_UNK arg0, u32 arg1, u32 arg2) {
 }
 
 void func_02004cf0(void) {
-    M2C_UNK func_02002c64(s32);
+    M2C_UNK GX_SetBankForTex(s32);
     M2C_UNK func_02007c3c(s32);
     extern s32 data_020f5204;
     extern M2C_UNK data_0212dbfc;
     if (data_020f5204 != -1) {
         func_02007c3c(data_020f5204);
     }
-    func_02002c64(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14));
+    GX_SetBankForTex(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14));
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x1C) = 0;
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x18) = 0;
     M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x4) = 0;

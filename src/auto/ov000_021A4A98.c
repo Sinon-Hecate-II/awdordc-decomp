@@ -1,7 +1,7 @@
 /* 5 functions from 0x021A4A98 to 0x021A58C8 (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
+extern u8 gUnitKindFlags[],gUnitKindStats[];
 #define MAP (*gCurrentMap)
 #define KIND(p) ((u32)((p)[0]<<26)>>26)
 #define ROW(y) M2C_FIELD(MAP+(y)*2,u16*,0x3758)
@@ -23,7 +23,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     s32 func_ov000_021a90a8(s32, s32, s32);
     u8 IsFootUnitKind(s32);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern u8 gUnitKindStats[];
 
     s32 count = 0;
@@ -79,7 +79,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
                         terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
                         if (terrain != 0x13 && func_ov000_021a8784(0x18) != 0) flag = 1;
                         if (flag == 0) {
-                            void *gp = data_ov000_021df580;
+                            void *gp = gAiCommandState;
                             u16 t = ((u16 *)gp)[5];
                             if ((((t >> 9) & 7) & 4) && func_ov000_021a43c4() == 1) flag = 1;
                         }
@@ -134,10 +134,10 @@ s32 func_ov000_021a4dc4(void) {
 s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
 s32 GetUnitMoveRange(s32,u32);void FloodFillUnitRange(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s8);s32 IsUnitOnCurrentTeam(s32);
-s32 GetUnitDamagePercent(u32,s32);s32 func_0207c8ec(s32,s32);
+s32 GetUnitDamagePercent(u32,s32);s32 Divide(s32,s32);
 s32 GetUnitMaxAttackRange(s32,u32);s32 func_020a85c8(u32);
 s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
-u8 flags=data_ov000_021b5c0f[kind*112];
+u8 flags=gUnitKindFlags[kind*112];
 u16 health;
 u8 *unit;
 sum=0;max=0;health=0;
@@ -163,7 +163,7 @@ M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
 func_01ffb9c4(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
-value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
+value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind!=14)sum+=value;else if(value>max)max=value;continue;
 }
 if((((gUnitKindStats[kind*112+19]&16)||kind==22||kind==25)&&KIND(unit)==23)||
@@ -174,14 +174,14 @@ M2C_FIELD(MAP,u16*,0x52b6)=UnitOwnerA4e08(unit);
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),GetUnitMoveRange(UnitOwnerA4e08(unit),KIND(unit)),1);
 func_01ffb9c4(111);
 if(M2C_FIELD(MAP+cy*4,s8**,0x52e8)[cx]<0)continue;
-value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
+value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 if(kind==15&&KIND(unit)==6)value>>=1;sum+=value;continue;
 }
 range=GetUnitMaxAttackRange(UnitOwnerA4e08(unit),KIND(unit));
 if(range<=1)continue;
 if(range<distance&&!func_020a85c8(KIND(unit)))continue;
 range=gUnitKindStats[KIND(unit)*112+12];if(range<=2)range=2;if(range>distance)continue;
-value=func_0207c8ec(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
+value=Divide(((u32)(M2C_FIELD(unit,u16*,6)<<25)>>25)*GetUnitDamagePercent(KIND(unit),kind),100);
 sum+=value;
 }
 M2C_FIELD(MAP,u16*,0x52b6)=saved;

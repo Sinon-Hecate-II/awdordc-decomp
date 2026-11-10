@@ -102,10 +102,10 @@ s32 func_02040878(s32 arg0, s32 arg1) {
     s32 func_0203f058(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     u64 GetSystemTick(void);
     void *GetConnection(void);
-    s32 func_02061784(s32, M2C_UNK);
-    s32 func_02060c44(s32 *);
-    s32 func_02060b68(s32, M2C_UNK, s32);
-    u16 func_02060c4c(void *);
+    s32 SBServerListGetServer(s32, M2C_UNK);
+    s32 SBServerGetIp(s32 *);
+    s32 SBServerGetIntValue(s32, M2C_UNK, s32);
+    u16 SBServerGetPort(void *);
     extern M2C_UNK sDwcKeyPid;
     s32 loc[3];
     void *p, *q;
@@ -119,13 +119,13 @@ s32 func_02040878(s32 arg0, s32 arg1) {
         return 0;
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 0) {
-        u = func_02061784(M2C_FIELD(GetConnection(), s32 *, 0xe4), 0);
+        u = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, 0xe4), 0);
         p = GetConnection();
-        M2C_FIELD(p, s32 *, 0xf4) = func_02060b68(u, (s32) &sDwcKeyPid, 0);
+        M2C_FIELD(p, s32 *, 0xf4) = SBServerGetIntValue(u, (s32) &sDwcKeyPid, 0);
         p = GetConnection();
-        M2C_FIELD(p, s32 *, 0x24) = func_02060c44((s32 *) u);
+        M2C_FIELD(p, s32 *, 0x24) = SBServerGetIp((s32 *) u);
         p = GetConnection();
-        M2C_FIELD(p, u16 *, 0xa4) = func_02060c4c((void *) u);
+        M2C_FIELD(p, u16 *, 0xa4) = SBServerGetPort((void *) u);
         p = GetConnection();
         q = GetConnection();
         slot = 1;

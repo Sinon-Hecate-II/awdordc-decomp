@@ -79,7 +79,7 @@ return 1;
 /* True when a friendly unit within 4 tiles of the target would damage it better than the selected unit. */
 s32 HasBetterAttackerNearby(void *target) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
+extern u8 gUnitKindFlags[],gUnitKindStats[];
 s32 GetUnitAttackClass(s32);s32 IsCurrentPlayerUnit(s32);s32 GetAttackDamage(s32,s32,s32);
 u8 *p=target,*map=*gCurrentMap,*sel,*unit;
 s32 kind,tileX,tileY,minX,minY,maxX,maxY,cellX;
@@ -87,7 +87,7 @@ u32 ck;
 s32 cellY,distance,selectedDamage,candidateDamage;
 sel=M2C_FIELD(map,u8 **,0x52d0);
 kind=(u32)(sel[0]<<26)>>26;
-if(!(data_ov000_021b5c0f[kind*112]&0x27))return 0;
+if(!(gUnitKindFlags[kind*112]&0x27))return 0;
 if(GetUnitAttackClass(kind))return 0;
 map=*gCurrentMap;
 if(!M2C_FIELD(map,s16 *,0x6ee6))return 0;
@@ -245,8 +245,8 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 #pragma opt_common_subs off
 u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
-    extern s32 func_0207c8ec(s32, s32);
+    extern u8 gUnitKindFlags[];
+    extern s32 Divide(s32, s32);
     extern s32 func_020a86f0(s32);
     extern s32 func_020a86bc(s32, s32);
     void *base;
@@ -265,17 +265,17 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     base = *gCurrentMap;
     sel = *(u8 **)(base + 0x52D0);
     kind = (s32)(((u32)(sel[0] << 26)) >> 26);
-    attr = data_ov000_021b5c0f[kind * 0x70];
+    attr = gUnitKindFlags[kind * 0x70];
     if (!(attr & 0x30)) return 1;
     row = ((s8 **)(base + 0x52E8))[y];
     cell = row[x];
     if (cell == 0) return 1;
-    t = func_0207c8ec(cell - 1, arg2);
+    t = Divide(cell - 1, arg2);
 
     base = *gCurrentMap;
     sel = *(u8 **)(base + 0x52D0);
     kind = (s32)(((u32)(sel[0] << 26)) >> 26);
-    attr = data_ov000_021b5c0f[kind * 0x70];
+    attr = gUnitKindFlags[kind * 0x70];
 
     if (attr & 0x10) goto special;
     if (kind != 0x16) goto normal;

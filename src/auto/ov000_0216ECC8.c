@@ -13,7 +13,7 @@ void func_0209c048(s16,s16,void *,int,int,int);
 void func_0209c024(s16,s16,void *,int,int,int);
 void func_0207a61c(void *,u16,u16,int,u16,u8,u8);
 void func_0209b2dc(s16,s16,int,u32,int,int,u16);
-int func_0207c8ec(int,int);int GetLocalizedText(u32);int func_0209c268(int);
+int Divide(int,int);int GetLocalizedText(u32);int func_0209c268(int);
 void func_0209bfdc(s16,s16,void *,u32,int,int);
 
 /* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
@@ -24,7 +24,7 @@ extern s8 data_ov000_021aab79[];
 extern M2C_UNK data_ov000_021df5e4;
 extern u32 gUnitKindStats[];
 void *func_020e34bc(s32);void func_020e35cc(void *);
-void MI_CpuCopy8(void *,void *,s32);s32 func_0207c8ec(s32,s32);
+void MI_CpuCopy8(void *,void *,s32);s32 Divide(s32,s32);
 s32 n=0,i,j,k,l,out,t,v,h,idx,z;
 u8 *tmp=func_020e34bc(64),*p,*q,*map,*attr;
 s8 *order=data_ov000_021aab79;
@@ -42,7 +42,7 @@ case 1:
 for(h=10;h>0;h--)for(i=0;i<n;i++){
 map=*gCurrentMap;idx=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i]+M2C_FIELD(map,u16 *,0x52a8);
 v=(u32)(M2C_FIELD(map+idx*14,u16 *,0x59aa)<<25)>>25;
-if(v==0)v=0;else v=func_0207c8ec(v-1,10)+1;
+if(v==0)v=0;else v=Divide(v-1,10)+1;
 if(h==v)tmp[out++]=((u8 *)M2C_FIELD(&data_ov000_021df5e4,u8 **,4))[i];
 }break;
 case 2:
@@ -193,7 +193,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  if(icon)func_0209c024((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
  func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
  func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)data_ov000_021df5e4);
- health=u->unk6;if(health==0)health=0;else health=func_0207c8ec(health-1,10)+1;
+ health=u->unk6;if(health==0)health=0;else health=Divide(health-1,10)+1;
  func_0209c048(18,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),health,0,0);
  func_0209c048(21,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayFuel *)((u8 *)u+10))->fuel,0,0);
  func_0209c024(22,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
@@ -254,18 +254,18 @@ void ScrollListDrawRows(s32 mode) {
 void ScrollListDrawTabs(void *p){
 extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
 extern M2C_UNK data_ov000_021b8ac0,data_ov000_021b8ad0,data_ov000_021b8ae0,data_ov000_021b8af4,data_ov000_021b8b04,data_ov000_021b8b18;
-s32 GetLocalizedFileName(void *);void func_02081590(s32,s32);void func_02080944(s32,s32,s32,s32);
+s32 GetLocalizedFileName(void *);void LoadNarcFileDecompressed(s32,s32);void func_02080944(s32,s32,s32,s32);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 SetFileDirectory(&data_ov000_021b8ac0);
-GetLocalizedFileName(&data_ov000_021b8ad0);func_020814e4();
+GetLocalizedFileName(&data_ov000_021b8ad0);OpenNarcArchive();
 switch(M2C_FIELD(p,s16 *,0x34)){
-case 0:func_02081590(GetLocalizedFileName(&data_ov000_021b8ae0),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 1:func_02081590(GetLocalizedFileName(&data_ov000_021b8af4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 2:func_02081590(GetLocalizedFileName(&data_ov000_021b8b04),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 3:func_02081590(GetLocalizedFileName(&data_ov000_021b8b18),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 0:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ae0),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 1:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8af4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 2:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8b04),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 3:LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8b18),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
 }
-func_02081528();func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),32,24,6);
+CloseNarcArchive();func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),32,24,6);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 gCur3DSpriteEngine=saved;
 }

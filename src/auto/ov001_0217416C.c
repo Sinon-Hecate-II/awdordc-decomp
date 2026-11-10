@@ -1,13 +1,14 @@
 /* 18 functions from 0x0217416C to 0x02174F68 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_keypad.h"
 
 
 void func_ov001_0217416c(void) {
-    extern u8 data_ov001_0218f5f0[];
+    extern u8 gKeypadLayout[];
     extern u8 data_ov001_0218f5dc[];
     extern u8 data_ov001_0218f628[];
     extern u8 func_ov001_02174548[];
-    extern void *data_ov001_02193d20;
+    extern void *gOv001Keypad;
     M2C_UNK func_ov001_0218b6f8();
     M2C_UNK func_ov001_0218a5f0();
     M2C_UNK func_ov001_0218a61c();
@@ -42,13 +43,13 @@ void func_ov001_0217416c(void) {
     s32 sp10;
     u16 sp16;
 
-    sp1c = *(u16*)(data_ov001_0218f5f0 + 0x20);
-    sp1e = *(u16*)(data_ov001_0218f5f0 + 0x22);
+    sp1c = *(u16*)(gKeypadLayout + 0x20);
+    sp1e = *(u16*)(gKeypadLayout + 0x22);
     sp20 = 0x1c;
     sp22 = 0x14;
 
     p = (void*)func_ov001_0218b6f8(0x6c, 0x4);
-    data_ov001_02193d20 = p;
+    gOv001Keypad = p;
     M2C_FIELD(p, u8*, 0x60) = 0x1f;
     M2C_FIELD(p, u8*, 0x63) = 0;
     M2C_FIELD(p, u8*, 0x66) = 1;
@@ -118,32 +119,32 @@ void func_ov001_0217416c(void) {
 }
 
 void func_ov001_021744a8(void) {
-    extern void *data_ov001_02193d20;
+    extern void *gOv001Keypad;
     void func_ov001_021753c8(void);
-    func_ov001_0218a1cc(M2C_FIELD(data_ov001_02193d20, s32 *, 0x58));
-    func_ov001_0218c924(M2C_FIELD(data_ov001_02193d20, s32 *, 0x5c), func_ov001_021753c8);
+    func_ov001_0218a1cc(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
+    func_ov001_0218c924(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), func_ov001_021753c8);
 }
 
 u8 func_ov001_021744dc(void) {
-    extern void *data_ov001_02193d20;
-    return M2C_FIELD(data_ov001_02193d20, u8 *, 0x60);
+    extern void *gOv001Keypad;
+    return M2C_FIELD(gOv001Keypad, u8 *, 0x60);
 }
 
 void func_ov001_021744f0(s8 arg0) {
-    extern void *data_ov001_02193d20;
-    M2C_FIELD(data_ov001_02193d20, s8 *, 0x66) = arg0;
+    extern void *gOv001Keypad;
+    M2C_FIELD(gOv001Keypad, s8 *, 0x66) = arg0;
 }
 
 void func_ov001_02174504(s8 arg0) {
-    extern void *data_ov001_02193d20;
-    M2C_FIELD(data_ov001_02193d20, s8 *, 0x67) = arg0;
+    extern void *gOv001Keypad;
+    M2C_FIELD(gOv001Keypad, s8 *, 0x67) = arg0;
 }
 
-void func_ov001_02174518(s8 arg0){extern void *data_ov001_02193d20;M2C_FIELD(data_ov001_02193d20,s8*,0x68)=arg0;}
+void func_ov001_02174518(s8 arg0){extern void *gOv001Keypad;M2C_FIELD(gOv001Keypad,s8*,0x68)=arg0;}
 
 s32 func_ov001_0217452c(void) {
-    extern void *data_ov001_02193d20;
-    if (data_ov001_02193d20 != 0) {
+    extern void *gOv001Keypad;
+    if (gOv001Keypad != 0) {
         return 1;
     }
     return 0;
@@ -151,10 +152,10 @@ s32 func_ov001_0217452c(void) {
 
 #pragma opt_propagation off
 void func_ov001_02174548(s32 arg0){
-extern void *data_ov001_02193d20;
+extern void *gOv001Keypad;
 void func_ov001_021745cc(s32);
 u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,16),u32 *,0);
+v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,16),u32 *,0);
 y=v&0x1ff0000;x=(v&255)-12;
 ((volatile s32 *)pos)[1]=y>>16;
 ((volatile s32 *)pos)[0]=x;
@@ -164,10 +165,10 @@ func_ov001_0218c924(arg0,func_ov001_021745cc);
 }
 #pragma opt_propagation reset
 void func_ov001_021745cc(s32 arg0){
-extern void *data_ov001_02193d20;
+extern void *gOv001Keypad;
 void func_ov001_02174650(s32);
 u32 v; u32 hi; u32 lo; s32 x; s32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void**,28),u32*,0);
+v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void**,28),u32*,0);
 hi=v&0x1ff0000;
 lo=v&255;
 x=(s32)lo-12;
@@ -182,10 +183,10 @@ func_ov001_0218c924(arg0,func_ov001_02174650);
 
 #pragma opt_propagation off
 void func_ov001_02174650(s32 arg0){
-extern void *data_ov001_02193d20;
+extern void *gOv001Keypad;
 void func_ov001_021746d4(s32);
 u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,40),u32 *,0);
+v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,40),u32 *,0);
 y=v&0x1ff0000;
 x=(v&255)-12;
 ((volatile s32 *)pos)[1]=y>>16;
@@ -197,10 +198,10 @@ func_ov001_0218c924(arg0,func_ov001_021746d4);
 }
 #pragma opt_propagation off
 void func_ov001_021746d4(s32 arg0){
-extern void *data_ov001_02193d20;
+extern void *gOv001Keypad;
 void func_ov001_02174758(s32);
 u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(data_ov001_02193d20,void **,52),u32 *,0);
+v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,52),u32 *,0);
 y=v&0x1ff0000;
 x=(v&255)-12;
 ((volatile s32 *)pos)[1]=y>>16;
@@ -211,267 +212,278 @@ func_ov001_02174f68(4,192);
 func_ov001_0218c924(arg0,func_ov001_02174758);
 }
 #pragma opt_propagation on
-void func_ov001_02174758(s32 arg0){extern void *data_ov001_02193d20;
+void func_ov001_02174758(s32 arg0){extern void *gOv001Keypad;
 void func_ov001_021747cc(void);
 s32 pos[2];
-func_ov001_0218a4d4(M2C_FIELD(data_ov001_02193d20,s32*,0x40),0,&pos[1],&pos[0]);
+func_ov001_0218a4d4(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
 pos[0]-=12;
 if(pos[0]>170){func_ov001_02174f68(4,pos[0]);return;}
-func_ov001_02174f68(4,170);func_ov001_02175290();func_ov001_0218c924(arg0,func_ov001_021747cc);
+func_ov001_02174f68(4,170);Ov001KeypadCommitKey();func_ov001_0218c924(arg0,func_ov001_021747cc);
 }
 
-void func_ov001_021749c0(void);
-void func_ov001_021747e4(void);
-void func_ov001_02174b90(void);
+void Ov001KeypadTouchHeld(void);
+void Ov001KeypadTouchPressed(void);
+void Ov001KeypadTouchReleased(void);
 void func_ov001_021747cc(void) {
           void func_ov001_02174dcc(void);
-    func_ov001_021747e4();
-    func_ov001_021749c0();
-    func_ov001_02174b90();
+    Ov001KeypadTouchPressed();
+    Ov001KeypadTouchHeld();
+    Ov001KeypadTouchReleased();
     func_ov001_02174dcc();
 }
 
-void func_ov001_021747e4(void) {
-    extern void *data_ov001_02193d20;
+/* Handles the start of a stylus touch on the numeric keypad: remembers the key the touch landed
+ * on, buzzing instead when a key that cannot be used yet is touched (the digit keys while the
+ * code is full, delete with nothing to remove, next with no free slot). */
+void Ov001KeypadTouchPressed(void) {
+    extern void *gOv001Keypad;
     s32 TouchRectPressed(void *);
     void BuildTouchRect(void *, void *, void *);
     void Ov001_PlaySound(s32);
     extern u8 gTouchScreenRect[];
-    extern u8 data_ov001_0218f642[];
-    extern u8 data_ov001_0218f5f0[];
-    extern u8 data_ov001_0218f618[];
-    extern u8 data_ov001_0218f5f8[];
-    extern u8 data_ov001_0218f620[];
-    extern u8 data_ov001_0218f5fc[];
+    extern u8 gKeypadDigitRects[];
+    extern u8 gKeypadLayout[];
+    extern u8 gKeypadAuxRects[];
+    extern u8 gKeypadAuxKeySize[];
+    extern u8 gKeypadActionRects[];
+    extern u8 gKeypadActionKeySize[];
 
-    u8 buf[8];
-    u8 *p;
-    s32 i;
+    u8 touchRect[8];
+    u8 *keyRect;
+    s32 key;
 
     if (TouchRectPressed(gTouchScreenRect) == 0) {
         return;
     }
-    M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) = -1;
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) = -1;
 
-    p = data_ov001_0218f642;
-    for (i = 0; i < 10; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f0, buf);
-        if (TouchRectPressed(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x67) == 0) {
+    keyRect = gKeypadDigitRects;
+    for (key = 0; key < KEYPAD_KEY_COUNT; key++) {
+        BuildTouchRect(keyRect, gKeypadLayout, touchRect);
+        if (TouchRectPressed(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_DIGITS_ON) == 0) {
                 Ov001_PlaySound(9);
                 return;
             }
             Ov001_PlaySound(0);
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)i;
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_TOUCH_KEY) = (u8)key;
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f618;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f8, buf);
-        if (TouchRectPressed(buf) != 0) {
-            if (i != 0) goto mid_770;
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) goto mid_78c;
-mid_770:
-            if (i != 1) goto mid_79c;
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x68) != 0) goto mid_79c;
-mid_78c:
+    keyRect = gKeypadAuxRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadAuxKeySize, touchRect);
+        if (TouchRectPressed(touchRect) != 0) {
+            if (key != 0) goto checkNext;
+            if (M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CAN_DELETE) == 0) goto buzz;
+checkNext:
+            if (key != 1) goto accept;
+            if (M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CAN_NEXT) != 0) goto accept;
+buzz:
             Ov001_PlaySound(9);
             return;
-mid_79c:
+accept:
             Ov001_PlaySound(0);
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)(i + 10);
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_TOUCH_KEY) = (u8)(key + KEYPAD_DELETE);
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f620;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5fc, buf);
-        if (TouchRectPressed(buf) != 0) {
+    keyRect = gKeypadActionRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadActionKeySize, touchRect);
+        if (TouchRectPressed(touchRect) != 0) {
             Ov001_PlaySound(0);
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x61) = (u8)(i + 12);
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_TOUCH_KEY) = (u8)(key + KEYPAD_CLEAR);
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 }
 
-void func_ov001_021749c0(void) {
-    extern void *data_ov001_02193d20;
-    extern u8 data_ov001_0218f642[];
-    extern u8 data_ov001_0218f5f0[];
-    extern u8 data_ov001_0218f6dc[];
-    extern u8 data_ov001_0218f618[];
-    extern u8 data_ov001_0218f5f8[];
-    extern u8 data_ov001_0218f5ec[];
-    extern u8 data_ov001_0218f620[];
-    extern u8 data_ov001_0218f5fc[];
-    extern u8 data_ov001_0218f5e8[];
+/* Stylus held on the numeric keypad: resets the produced key code and then, if the
+ * touch has not moved off the key it started on, commits the key under the finger
+ * (number keys, then delete/next, then clear/confirm) to KEYPAD_CODE. */
+void Ov001KeypadTouchHeld(void) {
+    extern void *gOv001Keypad;
+    extern u8 gKeypadDigitRects[];
+    extern u8 gKeypadLayout[];
+    extern u8 gKeypadDigitChars[];
+    extern u8 gKeypadAuxRects[];
+    extern u8 gKeypadAuxKeySize[];
+    extern u8 gKeypadAuxCodes[];
+    extern u8 gKeypadActionRects[];
+    extern u8 gKeypadActionKeySize[];
+    extern u8 gKeypadActionCodes[];
     extern u8 gTouchScreenRect[];
     int TouchRectHeld(void *);
     void BuildTouchRect(void *, void *, void *);
-    int func_ov001_02175290(void);
+    int Ov001KeypadCommitKey(void);
 
-    u8 buf[8];
-    u8 *p;
-    s32 i;
+    u8 touchRect[8];
+    u8 *keyRect;
+    s32 key;
 
-    M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = 0;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = 0;
     if (TouchRectHeld(gTouchScreenRect) == 0) {
         return;
     }
 
-    p = data_ov001_0218f642;
-    for (i = 0; i < 10; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f0, buf);
-        if (TouchRectHeld(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i) {
+    keyRect = gKeypadDigitRects;
+    for (key = 0; key < KEYPAD_KEY_COUNT; key++) {
+        BuildTouchRect(keyRect, gKeypadLayout, touchRect);
+        if (TouchRectHeld(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key) {
                 return;
             }
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f6dc[i];
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x63) = (u8)i;
-            func_ov001_02175290();
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadDigitChars[key];
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)key;
+            Ov001KeypadCommitKey();
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f618;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f8, buf);
-        if (TouchRectHeld(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 10) {
+    keyRect = gKeypadAuxRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadAuxKeySize, touchRect);
+        if (TouchRectHeld(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_DELETE) {
                 return;
             }
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5ec[i];
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x63) = (u8)(i + 10);
-            func_ov001_02175290();
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadAuxCodes[key];
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)(key + KEYPAD_DELETE);
+            Ov001KeypadCommitKey();
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f620;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5fc, buf);
-        if (TouchRectHeld(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 12) {
+    keyRect = gKeypadActionRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadActionKeySize, touchRect);
+        if (TouchRectHeld(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_CLEAR) {
                 return;
             }
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5e8[i];
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x63) = (u8)(i + 12);
-            func_ov001_02175290();
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadActionCodes[key];
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)(key + KEYPAD_CLEAR);
+            Ov001KeypadCommitKey();
             return;
         }
-        p += 4;
+        keyRect += 4;
     }
 }
 
-void func_ov001_02174b90(void) {
-    extern void *data_ov001_02193d20;
+/* Handle the end of a stylus touch on the numeric keypad: whichever key was
+ * released is committed only if it is still the key the touch started on.  The
+ * delete key auto-repeats while the stylus is held and produces its code every
+ * few releases once the repeat delay is reached; any other key just ends the
+ * repeat and resets it. */
+void Ov001KeypadTouchReleased(void) {
+    extern void *gOv001Keypad;
     extern u8 gTouchScreenRect[];
-    extern u8 data_ov001_0218f642[];
-    extern u8 data_ov001_0218f5f0[];
-    extern u8 data_ov001_0218f618[];
-    extern u8 data_ov001_0218f5f8[];
-    extern u8 data_ov001_0218f620[];
-    extern u8 data_ov001_0218f5fc[];
+    extern u8 gKeypadDigitRects[];
+    extern u8 gKeypadLayout[];
+    extern u8 gKeypadAuxRects[];
+    extern u8 gKeypadAuxKeySize[];
+    extern u8 gKeypadActionRects[];
+    extern u8 gKeypadActionKeySize[];
     void BuildTouchRect(void *, void *, void *);
     s32 TouchRectReleased(void *);
-    void func_ov001_02174d80(s32);
+    void Ov001KeypadSetHighlight(s32);
     void Ov001_PlaySound(s32);
 
-    s32 i;
-    u8 buf[8];
-    u8 *p;
+    s32 key;
+    u8 touchRect[8];
+    u8 *keyRect;
 
     if (TouchRectReleased(gTouchScreenRect) == 0) {
         goto fail;
     }
 
-    p = data_ov001_0218f642;
-    for (i = 0; i < 10; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f0, buf);
-        if (TouchRectReleased(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i) {
+    keyRect = gKeypadDigitRects;
+    for (key = 0; key < KEYPAD_KEY_COUNT; key++) {
+        BuildTouchRect(keyRect, gKeypadLayout, touchRect);
+        if (TouchRectReleased(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key) {
                 goto fail;
             }
-            func_ov001_02174d80(i);
+            Ov001KeypadSetHighlight(key);
             goto tail;
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f618;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5f8, buf);
-        if (TouchRectReleased(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 10) {
+    keyRect = gKeypadAuxRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadAuxKeySize, touchRect);
+        if (TouchRectReleased(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_DELETE) {
                 goto fail;
             }
-            func_ov001_02174d80(i + 10);
-            if (i != 0) {
+            Ov001KeypadSetHighlight(key + KEYPAD_DELETE);
+            if (key != 0) {
                 goto tail;
             }
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x65) =
-                (u8)(M2C_FIELD(data_ov001_02193d20, u8 *, 0x65) + 1);
+            M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) =
+                (u8)(M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) + 1);
             {
-                u8 __v = M2C_FIELD(data_ov001_02193d20, u8 *, 0x65);
-                if (__v < 0x28) {
+                u8 repeatCount = M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT);
+                if (repeatCount < KEYPAD_REPEAT_DELAY) {
                     return;
                 }
             }
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) {
+            if (M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CAN_DELETE) == 0) {
                 Ov001_PlaySound(9);
-                M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) = -1;
+                M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) = -1;
                 return;
             } else {
-                M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = 0x10;
-                M2C_FIELD(data_ov001_02193d20, u8 *, 0x65) =
-                    (u8)(M2C_FIELD(data_ov001_02193d20, u8 *, 0x65) - 7);
+                M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = KEYPAD_CODE_DELETE;
+                M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) =
+                    (u8)(M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) - KEYPAD_REPEAT_STEP);
                 return;
             }
         }
-        p += 4;
+        keyRect += 4;
     }
 
-    p = data_ov001_0218f620;
-    for (i = 0; i < 2; i++) {
-        BuildTouchRect(p, data_ov001_0218f5fc, buf);
-        if (TouchRectReleased(buf) != 0) {
-            if (M2C_FIELD(data_ov001_02193d20, s8 *, 0x61) != i + 12) {
+    keyRect = gKeypadActionRects;
+    for (key = 0; key < 2; key++) {
+        BuildTouchRect(keyRect, gKeypadActionKeySize, touchRect);
+        if (TouchRectReleased(touchRect) != 0) {
+            if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_CLEAR) {
                 goto fail;
             }
-            func_ov001_02174d80(i + 12);
+            Ov001KeypadSetHighlight(key + KEYPAD_CLEAR);
             goto tail;
         }
-        p += 4;
+        keyRect += 4;
     }
 
 fail:
-    func_ov001_02174d80(-1);
+    Ov001KeypadSetHighlight(-1);
 
 tail:
-    M2C_FIELD(data_ov001_02193d20, u8 *, 0x65) = 0;
+    M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) = 0;
     return;
 }
 
-void func_ov001_02174d80(s32 arg0){extern void *data_ov001_02193d20;
-if(arg0==M2C_FIELD(data_ov001_02193d20,s8*,0x62))return;
+void Ov001KeypadSetHighlight(s32 arg0){extern void *gOv001Keypad;
+if(arg0==M2C_FIELD(gOv001Keypad,s8*,0x62))return;
 func_ov001_021751c8(arg0,1);
-func_ov001_021751c8(M2C_FIELD(data_ov001_02193d20,s8*,0x62),0);
-M2C_FIELD(data_ov001_02193d20,s8*,0x62)=arg0;
+func_ov001_021751c8(M2C_FIELD(gOv001Keypad,s8*,0x62),0);
+M2C_FIELD(gOv001Keypad,s8*,0x62)=arg0;
 }
 
 void func_ov001_02174dcc(void) {
-    extern void *data_ov001_02193d20;
-    extern u8 data_ov001_0218f6dc[];
-    extern u8 data_ov001_0218f5ec[];
-    extern u8 data_ov001_0218f5e8[];
+    extern void *gOv001Keypad;
+    extern u8 gKeypadDigitChars[];
+    extern u8 gKeypadAuxCodes[];
+    extern u8 gKeypadActionCodes[];
     void func_ov001_0217531c(s32);
     s32 KeyPressed(s32);
     s32 KeyHeld(s32);
@@ -492,38 +504,38 @@ void func_ov001_02174dcc(void) {
         func_ov001_0217531c(3);
     }
     if (KeyPressed(1)) {
-        k = M2C_FIELD(data_ov001_02193d20, s8 *, 0x63);
+        k = M2C_FIELD(gOv001Keypad, s8 *, 0x63);
         if (k < 10) {
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x67) != 0) {
-                M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f6dc[k];
+            if (M2C_FIELD(gOv001Keypad, u8 *, 0x67) != 0) {
+                M2C_FIELD(gOv001Keypad, u8 *, 0x60) = gKeypadDigitChars[k];
             } else {
                 Ov001_PlaySound(9);
             }
             return;
         }
         if (k - 10 < 2) {
-            if ((k - 10 == 0 && M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) ||
-                (k - 10 == 1 && M2C_FIELD(data_ov001_02193d20, u8 *, 0x68) == 0)) {
+            if ((k - 10 == 0 && M2C_FIELD(gOv001Keypad, u8 *, 0x66) == 0) ||
+                (k - 10 == 1 && M2C_FIELD(gOv001Keypad, u8 *, 0x68) == 0)) {
                 Ov001_PlaySound(9);
                 return;
             }
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5ec[k - 10];
+            M2C_FIELD(gOv001Keypad, u8 *, 0x60) = gKeypadAuxCodes[k - 10];
             return;
         }
-        M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = data_ov001_0218f5e8[k - 12];
+        M2C_FIELD(gOv001Keypad, u8 *, 0x60) = gKeypadActionCodes[k - 12];
     }
     if (KeyHeld(2)) {
-        if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x66) == 0) {
-            if (M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) == 0) {
+        if (M2C_FIELD(gOv001Keypad, u8 *, 0x66) == 0) {
+            if (M2C_FIELD(gOv001Keypad, u8 *, 0x69) == 0) {
                 Ov001_PlaySound(9);
-                M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) = 1;
+                M2C_FIELD(gOv001Keypad, u8 *, 0x69) = 1;
             }
         } else {
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x60) = 0x10;
+            M2C_FIELD(gOv001Keypad, u8 *, 0x60) = 0x10;
         }
     } else {
         if (KeyReleased(2)) {
-            M2C_FIELD(data_ov001_02193d20, u8 *, 0x69) = 0;
+            M2C_FIELD(gOv001Keypad, u8 *, 0x69) = 0;
         }
     }
 }

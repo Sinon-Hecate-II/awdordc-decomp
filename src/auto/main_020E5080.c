@@ -8,9 +8,9 @@ extern u8 data_0212da70[],data_0212da40[],data_0212db88[],data_0212db38[],data_0
 void func_02082cb4(void);void func_02003560(void);void func_02002bb8(s32);
 void func_020822b8(void*);void func_020aeebc(s32,s32,s32);void func_020aef7c(s32,s32,s32);
 void SetFileDirectory(void*);void *GetLocalizedFileName(void*);
-void func_020814e4(void);void func_01ff9ce8(s32);
-void func_02081590(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);
-void func_020808dc(void*,s32,s32,s32);void func_02081528(void);
+void OpenNarcArchive(void);void func_01ff9ce8(s32);
+void LoadNarcFileDecompressed(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);
+void func_020808dc(void*,s32,s32,s32);void CloseNarcArchive(void);
 void *func_020ab1c4(void*);void func_020aab24(void*,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s32,s32,s32);s32 func_020aae10(void*);s32 func_020aae44(void*);
 void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
@@ -31,12 +31,12 @@ M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,81)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,82)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,83)=0;
 func_020aeebc(2,15,5);SetFileDirectory(data_0212da40);
-GetLocalizedFileName(data_0212db88);func_020814e4();func_01ff9ce8(0);
-func_02081590(GetLocalizedFileName(data_0212db38),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0xc));
-func_02081590(GetLocalizedFileName(data_0212db78),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20));
+GetLocalizedFileName(data_0212db88);OpenNarcArchive();func_01ff9ce8(0);
+LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db38),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0xc));
+LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db78),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20));
 LoadFileToSpriteBuffer(data_0212da4c,0xa0,0x20);
 func_020808dc(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20),0x20,0x18,5);
-M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;func_02081528();
+M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;CloseNarcArchive();
 M2C_FIELD(arg0,void **,0x38)=func_020ab1c4(arg0);
 func_020aab24(M2C_FIELD(arg0,void **,0x38),2,0x140,3,1);
 obj=M2C_FIELD(arg0,void **,0x38);func_02088e84(obj,0xe0,0xa0,0xe0,0xa0);
@@ -63,14 +63,14 @@ M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,81)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,82)=0;
 M2C_FIELD(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0),u8 *,83)=0;
 func_020aef7c(2,15,5);SetFileDirectory(data_0212da34);
-GetLocalizedFileName(data_0212db28);func_020814e4();func_01ff9ce8(0);
-func_02081590(GetLocalizedFileName(data_0212db68),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0xc));
-func_02081590(GetLocalizedFileName(data_0212db58),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20));
+GetLocalizedFileName(data_0212db28);OpenNarcArchive();func_01ff9ce8(0);
+LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db68),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0xc));
+LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db58),M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20));
 LoadFileToSpriteBuffer(data_0212da58,0xa0,0x20);
 func_020808dc(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20),0x20,0x18,5);
 M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;
-func_02081590(GetLocalizedFileName(data_0212db48),(u8*)M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x1c)+0x2800);
-LoadFileToSpriteBuffer(data_0212da64,0x2c0,0x20);func_02081528();
+LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db48),(u8*)M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(data_0212da64,0x2c0,0x20);CloseNarcArchive();
 M2C_FIELD(arg0,void **,0x34)=func_0208931c(arg0);obj=M2C_FIELD(arg0,void **,0x34);
 M2C_FIELD(obj,u8 *,0x58)=15;
 func_020a9a30(2,0,15,(u8*)M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x1c)+0x2a00);
@@ -103,7 +103,7 @@ void func_020e5678(void) {
 void func_020e569c(M2C_UNK arg0) {
  void *func_01ffa444(M2C_UNK *, M2C_UNK);
  M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
- s16 func_0207c8ec(s32, M2C_UNK);
+ s16 Divide(s32, M2C_UNK);
  s32 func_020e3580(M2C_UNK, M2C_UNK);
  extern M2C_UNK data_0212da88;
  extern M2C_UNK data_0212dba0;
@@ -118,7 +118,7 @@ void func_020e569c(M2C_UNK arg0) {
  M2C_FIELD(obj, s32 *, 0x34) = 0;
  M2C_FIELD(obj, s32 *, 0x38) = 0;
  M2C_FIELD(obj, u8 *, 0x3C) = 0;
- M2C_FIELD(obj, s16 *, 0x3E) = func_0207c8ec(0x2BF20, 0x3E8);
+ M2C_FIELD(obj, s16 *, 0x3E) = Divide(0x2BF20, 0x3E8);
  M2C_FIELD(obj, u8 *, 0x40) = 0;
  data_02168ff4 = func_020e3580(0x20, 0x20);
  MI_CpuFill8((u8 *)obj + 0x41, 0, 0xA);
@@ -127,19 +127,19 @@ void func_020e569c(M2C_UNK arg0) {
 }
 
 void func_020e5740(void) {
- void *func_01ffa770(M2C_UNK *);
+ void *FindObjectByClass(M2C_UNK *);
  M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
- s16 func_0207c8ec(s32, M2C_UNK);
+ s16 Divide(s32, M2C_UNK);
  extern M2C_UNK data_0212da88;
  u8 flags;
  void *obj;
- obj = func_01ffa770(&data_0212da88);
+ obj = FindObjectByClass(&data_0212da88);
  if (obj == NULL) return;
  flags = M2C_FIELD(obj, u8 *, 0x3C);
  if (!(flags & 2)) {
  if (!(flags & 1)) return;
  }
- M2C_FIELD(obj, s16 *, 0x3E) = func_0207c8ec(0x2BF20, 0x3E8);
+ M2C_FIELD(obj, s16 *, 0x3E) = Divide(0x2BF20, 0x3E8);
  if ((M2C_FIELD(obj, u8 *, 0x3C) &= ~1) & 2) return;
  M2C_FIELD(obj, u8 *, 0x3C) |= 2;
  SetSpriteAnimation(obj, 1);

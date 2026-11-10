@@ -9,14 +9,14 @@ extern u8 data_020fb558[], data_020fb570[];
 s32 func_02033210(void){
 extern M2C_UNK gNasConnection;extern s32 gErrno;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
-void *func_02034ef8(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
+void *FindHttpHeader(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 ReadHttpHeader(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 StringLength(s32);
 void *end; s32 status; void *response;void *p;
 p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
-response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)ParseHttpDate(end);
-p=M2C_FIELD(&gNasConnection,void **,8);end=0;gErrno=0;status=ParseInt(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
+response=M2C_FIELD(p,void **,0x1314);end=FindHttpHeader(response,data_020fb398);if(end)ParseHttpDate(end);
+p=M2C_FIELD(&gNasConnection,void **,8);end=0;gErrno=0;status=ParseInt(FindHttpHeader(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
 if(gErrno==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 12;}
 if(status!=200){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=status+23000;return 18;}
-if(func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
+if(ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
 status=func_0206ac70(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
 if(end!=p+0x100c+StringLength((s32)(p+0x100c))){M2C_FIELD(p,s32*,0x1008)=0x4e85;return 12;}
 M2C_FIELD(p,s32*,0x1008)=status+20000;
@@ -26,10 +26,10 @@ M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x101f)=0;
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x117f)=0;
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1010)=0;
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1188)=0;
-func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3b8,M2C_FIELD(&gNasConnection,void **,8)+0x1052,0x12d);
-func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c0,M2C_FIELD(&gNasConnection,void **,8)+0x101f,0x33);
-func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c8,M2C_FIELD(&gNasConnection,void **,8)+0x117f,9);
-func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3d4,M2C_FIELD(&gNasConnection,void **,8)+0x1010,15);
+ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3b8,M2C_FIELD(&gNasConnection,void **,8)+0x1052,0x12d);
+ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c0,M2C_FIELD(&gNasConnection,void **,8)+0x101f,0x33);
+ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c8,M2C_FIELD(&gNasConnection,void **,8)+0x117f,9);
+ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3d4,M2C_FIELD(&gNasConnection,void **,8)+0x1010,15);
 func_02034fa4(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3e0,M2C_FIELD(&gNasConnection,void **,8)+0x1188,65);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_FIELD(&gNasConnection,s32*,0)=1;else M2C_FIELD(&gNasConnection,s32*,0)=2;
 }return 0;}
@@ -71,9 +71,9 @@ void func_0203367c(s32 arg0) {
 
 void func_020336c0(s32 arg0) {
     s32 BuildFriendProfile(s32, void *);
-    void func_02045cbc(void *);
+    void GetWfcProfile(void *);
     u8 sp0[20];
-    func_02045cbc(sp0);
+    GetWfcProfile(sp0);
     BuildFriendProfile(arg0, sp0);
 }
 
@@ -85,7 +85,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     M2C_UNK func_0200567c();
     void MI_CpuFill8(void *, s32, s32);
     void func_0200563c(void *, void *, ...);
-    void func_02007724(void *);
+    void GetMacAddress(void *);
     void func_02007740(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetLocalTime(s32, s32);
@@ -131,7 +131,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     }
     MI_CpuCopy8((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
     *((u8 *)arg0 + 0x1d) = 0x30;
-    func_02007724(macBytes);
+    GetMacAddress(macBytes);
     dst=(u8*)arg0+0x1f;src=macBytes;
     for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,gFmtHex02,*src);
     func_02007740(userSettings);

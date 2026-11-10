@@ -1,5 +1,6 @@
 /* 17 functions from 0x021707D8 to 0x02171774 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 
 #pragma opt_strength_reduction off
@@ -68,35 +69,38 @@ gCur3DSpriteEngine=old;
 }
 void func_ov000_02170ca0(void) {
     M2C_UNK func_01ffa6fc(s32);
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov000_021b8b88;
     s32 temp_r4;
-    temp_r4 = func_01ffa770(&data_ov000_021b8b88);
+    temp_r4 = FindObjectByClass(&data_ov000_021b8b88);
     PlaySoundEffect(0x10018);
     func_01ffa6fc(temp_r4);
 }
 
 #pragma opt_strength_reduction off
-void func_ov000_02170ccc(void *p){
+/* Loads the map "situation" screen: opens the situation archive, uploads the
+ * character, sprite and palette data, gives every player its portrait tile and
+ * army colour palette, then refreshes the situation panel. */
+void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
-extern M2C_UNK data_ov000_021b8bc8,data_ov000_021b8bd8,data_ov000_021b8be8,data_ov000_021b8bf8,data_ov000_021b8c08;
-void func_020994e0(s32);M2C_UNK func_01ff9ce8(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_02080944(void *,s32,s32,s32);void func_02081528(void);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void func_02007ef4(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
-void *old=gCur3DSpriteEngine;s32 i;void *dst;u8 *u;s32 t,off;
+extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
+void func_020994e0(s32);M2C_UNK func_01ff9ce8(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_02080944(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020c0fac(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void func_02007ef4(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
+void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
 gCur3DSpriteEngine=g3DSpriteEngineMain;func_020994e0(0);func_01ff9ce8(1);func_01ff9ce8(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=1;
-SetFileDirectory(&data_ov000_021b8bc8);func_020814e4(GetLocalizedFileName(&data_ov000_021b8bd8));
-func_02081590(GetLocalizedFileName(&data_ov000_021b8be8),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
-func_02081590(GetLocalizedFileName(&data_ov000_021b8bf8),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
-func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);func_02081528();LoadFileToSpriteBuffer(&data_ov000_021b8c08,192,32);func_020c0fac(p);
-i=0;if(func_020cfb94()>0){t=0x35c;do{
-u=(u8 *)*gCurrentMap+0x67a4+(i+1)*140;dst=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(t<<5);
-func_02007ef4(func_ov000_0216ce10(u[0x27]),dst,128);
-off=(i+27)<<5;func_01ff9e44(func_ov000_0216ce84(u[0x1d]),off,32);
-if(u[0x1c])func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
-i++;t+=4;}while(i<func_020cfb94());}
-func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=old;
+SetFileDirectory(&sSituationDir);OpenNarcArchive(GetLocalizedFileName(&sSituationNarcName));
+LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationCgName),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
+LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationScName),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
+func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);func_020c0fac(object);
+i=0;if(func_020cfb94()>0){tile=0x35c;do{
+player=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+(i+1)*MAP_PLAYER_STRIDE;dest=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(tile<<5);
+func_02007ef4(func_ov000_0216ce10(player[PLAYER_REC_ARMY_STATE]),dest,128);
+paletteOff=(i+27)<<5;func_01ff9e44(func_ov000_0216ce84(player[PLAYER_REC_ARMY_INDEX]),paletteOff,32);
+if(player[0x1c])func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(paletteOff&~1));
+i++;tile+=4;}while(i<func_020cfb94());}
+func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=oldEngine;
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02170ea4(void){
@@ -141,8 +145,8 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK data_ov000_021b8c58,data_ov000_021b8c60,data_ov000_021b8c70,data_ov000_021b8c7c,data_ov000_021b8c88;
 s32 func_020a8afc(s32);void func_0209b26c(s32,s32,s32,s32,u16,u16);
 void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
-void func_020814e4(void *);void func_02081590(void *,void *);void func_020815fc(void *,s32,s32);
-void func_02081528(void);void func_02091d4c(s32);
+void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
+void CloseNarcArchive(void);void func_02091d4c(s32);
 s32 func_01ff9c34(u8,s32);void func_01ff85b8(void *,u16,s32);void func_020c0fac(void *);
 void *old=gCur3DSpriteEngine;s32 n;u16 v;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -150,11 +154,11 @@ n=func_020a8afc(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
 func_02091d4c(0);func_0209b26c(5,8,1,n,0,64);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&data_ov000_021b8c58);
-func_020814e4(GetLocalizedFileName(&data_ov000_021b8c60));
-func_02081590(GetLocalizedFileName(&data_ov000_021b8c70),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
-func_02081590(GetLocalizedFileName(&data_ov000_021b8c7c),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
-func_020815fc(GetLocalizedFileName(&data_ov000_021b8c88),0x60,0x20);
-func_02081528();
+OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8c60));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8c70),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8c7c),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
+LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_ov000_021b8c88),0x60,0x20);
+CloseNarcArchive();
 v=func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
@@ -191,7 +195,7 @@ void func_ov000_02171214(void) {
 s32 func_ov000_0217122c(s32 arg0) {
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern M2C_UNK data_ov000_021b8cdc;
 s32 IsPlayerPresent(s32);s32 IsPlayerCpu(s32);s32 IsPlayerActive(s32);
-void *GetLocalizedFileName(void *);void func_02081590(void *,void *);
+void *GetLocalizedFileName(void *);void LoadNarcFileDecompressed(void *,void *);
 s32 func_02084b08(s32);void func_ov000_0216a30c(s32,s32,s32);
 void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
 void func_02007ef4(void *,void *,s32);void func_01ff9e44(void *,s32,s32);void func_020ae528(void *);
@@ -202,7 +206,7 @@ s32 i=arg0-1,off;u8 *p=(u8 *)*gCurrentMap+0x67a4+arg0*140;
 s32 n=i*5,a=p[0x27],b=p[0x1d],t,color;void *dst,*engine;
 if(!IsPlayerPresent(arg0))return 0;
 if(IsPlayerCpu(arg0))return 0;
-func_02081590(GetLocalizedFileName(&data_ov000_021b8cdc),(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x28)+(n<<6));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8cdc),(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x28)+(n<<6));
 t=i*12;off=t+0x35c;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_ov000_0216a30c(func_02084b08(i),off<<5,11);
@@ -222,17 +226,17 @@ void func_ov000_02171468(u8 *p){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK data_ov000_021b8ce8,data_ov000_021b8cf0,data_ov000_021b8d00,data_ov000_021b8d0c;
 void func_020e4c64(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
-void func_020814e4(void *);void func_02081590(void *,void *);void func_020815fc(void *,s32,s32);
-s32 func_ov000_0217122c(s32);void func_02081528(void);void func_02091d4c(s32);
+void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
+s32 func_ov000_0217122c(s32);void CloseNarcArchive(void);void func_02091d4c(s32);
 s32 func_01ff9c34(u8,s32);void func_01ff85b8(void *,u16,s32);void func_020c0fac(void *);
 void *old=gCur3DSpriteEngine;s32 i;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020e4c64();SetFileDirectory(&data_ov000_021b8ce8);
-func_020814e4(GetLocalizedFileName(&data_ov000_021b8cf0));
-func_02081590(GetLocalizedFileName(&data_ov000_021b8d00),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
-func_020815fc(GetLocalizedFileName(&data_ov000_021b8d0c),0x60,0x20);
+OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8cf0));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8d00),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
+LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_ov000_021b8d0c),0x60,0x20);
 for(i=1;i<5;i++){if(func_ov000_0217122c(i))p[0x34+i]=1;else p[0x34+i]=0;}
-func_02081528();func_02091d4c(0);
+CloseNarcArchive();func_02091d4c(0);
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),(u16)func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2),0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;

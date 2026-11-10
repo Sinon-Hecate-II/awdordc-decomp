@@ -65,17 +65,17 @@ return ret;
 
 void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     void *GetConnection(void);
-    s32 func_02061794();
-    s32 func_02061784();
-    void func_020616d8();
+    s32 SBServerListGetCount();
+    s32 SBServerListGetServer();
+    void SBServerListRemoveServer();
     s32 func_0204292c();
-    s32 func_02060c44();
-    s32 func_02060c4c();
+    s32 SBServerGetIp();
+    s32 SBServerGetPort();
     s32 SetConnectionState();
     void func_020436d8();
-    s32 func_020436dc();
+    s32 EvaluateMatchmakingSessions();
     s32 func_020438b4();
-    s32 func_02060b68();
+    s32 SBServerGetIntValue();
     u64 GetSystemTick(void);
     void func_020410f8();
     s32 func_0204084c();
@@ -113,15 +113,15 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
         M2C_FIELD(ctx, s32 *, 0x174) = 0;
         M2C_FIELD(ctx, s32 *, 0x178) = 0;
 
-        count = func_02061794(arg0);
+        count = SBServerListGetCount(arg0);
         while (i < count) {
-            unit = (void *)func_02061784(arg0, i);
+            unit = (void *)SBServerListGetServer(arg0, i);
             if (func_0204292c() == 0) {
-                func_020616d8(arg0, unit);
+                SBServerListRemoveServer(arg0, unit);
                 i--;
             }
             i++;
-            count = func_02061794(arg0);
+            count = SBServerListGetCount(arg0);
         }
 
         ctx = GetConnection();
@@ -130,23 +130,23 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
         switch (status) {
         case 2:
             i = 0;
-            count = func_02061794(arg0);
+            count = SBServerListGetCount(arg0);
             while (i < count) {
-                unit = (void *)func_02061784(arg0, i);
+                unit = (void *)SBServerListGetServer(arg0, i);
                 if (M2C_FIELD(GetConnection(), s32 *, 0x1c) != 0) {
-                    if (M2C_FIELD(GetConnection(), s32 *, 0x1c) == func_02060c44(unit)) {
+                    if (M2C_FIELD(GetConnection(), s32 *, 0x1c) == SBServerGetIp(unit)) {
                         if (M2C_FIELD(GetConnection(), u16 *, 0x1a) != 0) {
-                            if (M2C_FIELD(GetConnection(), u16 *, 0x1a) == func_02060c4c(unit)) {
+                            if (M2C_FIELD(GetConnection(), u16 *, 0x1a) == SBServerGetPort(unit)) {
                                 goto status2_done;
                             }
                         }
                     }
                 }
                 i++;
-                count = func_02061794(arg0);
+                count = SBServerListGetCount(arg0);
             }
 status2_done:
-            count = func_02061794(arg0);
+            count = SBServerListGetCount(arg0);
             if (i < count) {
                 SetConnectionState(3);
                 ctx = GetConnection();
@@ -168,38 +168,38 @@ status2_done:
             M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
             break;
         case 5:
-            func_020436dc(1);
+            EvaluateMatchmakingSessions(1);
             func_020438b4();
 
             while (1) {
-                count = func_02061794(arg0);
+                count = SBServerListGetCount(arg0);
                 if (count == 0) break;
-                unit = (void *)func_02061784(arg0, 0);
-                kind1 = func_02060c44(unit);
+                unit = (void *)SBServerListGetServer(arg0, 0);
+                kind1 = SBServerGetIp(unit);
                 ctx = GetConnection();
                 if (kind1 != M2C_FIELD(ctx, s32 *, 0x1b8)) {
-                    func_020616d8(arg0, unit);
+                    SBServerListRemoveServer(arg0, unit);
                     continue;
                 }
-                kind2 = func_02060c4c(unit);
+                kind2 = SBServerGetPort(unit);
                 ctx = GetConnection();
                 if (kind2 == (s32)M2C_FIELD(ctx, u16 *, 0x1b4)) {
                     break;
                 }
-                func_020616d8(arg0, unit);
+                SBServerListRemoveServer(arg0, unit);
             }
 
-            count = func_02061794(arg0);
+            count = SBServerListGetCount(arg0);
             if (count == 0) {
                 ctx = GetConnection();
                 M2C_FIELD(ctx, s32 *, 0xe8) = 2;
                 ctx = GetConnection();
                 M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
             } else {
-                unit = (void *)func_02061784(arg0, 0);
-                key = func_02060b68(unit, sDwcKeyPid, 0);
+                unit = (void *)SBServerListGetServer(arg0, 0);
+                key = SBServerGetIntValue(unit, sDwcKeyPid, 0);
                 if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1 && key == M2C_FIELD(GetConnection(), s32 *, 0xf4)) {
-                    if (func_020436dc(0) != 0) {
+                    if (EvaluateMatchmakingSessions(0) != 0) {
                         ctx = GetConnection();
                         if (M2C_FIELD(ctx, u8 *, 0x0d) != 0) {
                             func_020410f8();
@@ -217,7 +217,7 @@ status2_done:
                     }
                 }
                 SetConnectionState(6);
-                unit = (void *)func_02061784(arg0, 0);
+                unit = (void *)SBServerListGetServer(arg0, 0);
                 func_0203ecb0(0, 0, (s32)unit);
                 func_02043184(0, 0, 0);
                 goto cleanup;
@@ -243,39 +243,44 @@ void func_020436d8(void) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_020436dc(s32 sort) {
- void *GetConnection(void);s32 func_02061794(s32);s32 func_02061784(s32,s32);s32 func_02060b68(void *,void *,s32);s32 gpiPlayerSetInt(void *,void *,s32);s32 func_020617a4(s32,s32,void *,s32);s32 func_02037eec(s32);void func_020616d8(s32,void *);
+/* Score the browsed matchmaking sessions: drop sessions whose host pid is one of
+ * our own players (unless in mode 1), run each remaining session through the
+ * matchmaking weight callback, drop non-positive scores, store dwc_eval (random
+ * tie-breaker in the low byte, score in the upper bits) and optionally sort the
+ * list by dwc_eval. Returns 0 when the callback removed every session. */
+s32 EvaluateMatchmakingSessions(s32 sort) {
+ void *GetConnection(void);s32 SBServerListGetCount(s32);s32 SBServerListGetServer(s32,s32);s32 SBServerGetIntValue(void *,void *,s32);s32 gpiPlayerSetInt(void *,void *,s32);s32 SBServerListSort(s32,s32,void *,s32);s32 RandomBelow(s32);void SBServerListRemoveServer(s32,void *);
  extern char sDwcKeyPid[],sDwcKeyEval[];
- s32 removed=0; s32 found,weight;void *ctx; s32 key; s32 i=0; s32 j;void *item;
- for(;i<func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4));i++) {
- item=(void *)func_02061784(M2C_FIELD(GetConnection(),s32 *,0xe4),i);
+ s32 removed=0; s32 isLocal,score;void *session; s32 pid; s32 i=0; s32 slot;void *server;
+ for(;i<SBServerListGetCount(M2C_FIELD(GetConnection(),s32 *,0xe4));i++) {
+ server=(void *)SBServerListGetServer(M2C_FIELD(GetConnection(),s32 *,0xe4),i);
  if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) {
- key=func_02060b68(item,sDwcKeyPid,0);found=0;
- for(j=1;j<=M2C_FIELD(GetConnection(),u8 *,0xd);j++) {
- if(key==M2C_FIELD((u8 *)GetConnection()+j*4,s32 *,0xf4)) {
- func_020616d8(M2C_FIELD(GetConnection(),s32 *,0xe4),item);i--;found=1;break;
+ pid=SBServerGetIntValue(server,sDwcKeyPid,0);isLocal=0;
+ for(slot=1;slot<=M2C_FIELD(GetConnection(),u8 *,0xd);slot++) {
+ if(pid==M2C_FIELD((u8 *)GetConnection()+slot*4,s32 *,0xf4)) {
+ SBServerListRemoveServer(M2C_FIELD(GetConnection(),s32 *,0xe4),server);i--;isLocal=1;break;
  }}
- if(found)continue;
+ if(isLocal)continue;
  }
  if(M2C_FIELD(GetConnection(),s32 *,0x474)) {
- ctx=GetConnection();
- weight=M2C_FIELD(ctx,s32 (**)(s32,s32),0x474)(i,M2C_FIELD(GetConnection(),s32 *,0x478));
- if(weight>0) {if(weight>0x7fffff)weight=0x7fffff;gpiPlayerSetInt(item,sDwcKeyEval,func_02037eec(256)|(weight<<8));}
- else {func_020616d8(M2C_FIELD(GetConnection(),s32 *,0xe4),item);i--;removed=1;}
- }else gpiPlayerSetInt(item,sDwcKeyEval,func_02037eec(128));
+ session=GetConnection();
+ score=M2C_FIELD(session,s32 (**)(s32,s32),0x474)(i,M2C_FIELD(GetConnection(),s32 *,0x478));
+ if(score>0) {if(score>0x7fffff)score=0x7fffff;gpiPlayerSetInt(server,sDwcKeyEval,RandomBelow(256)|(score<<8));}
+ else {SBServerListRemoveServer(M2C_FIELD(GetConnection(),s32 *,0xe4),server);i--;removed=1;}
+ }else gpiPlayerSetInt(server,sDwcKeyEval,RandomBelow(128));
  }
- if(sort && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))!=0)func_020617a4(M2C_FIELD(GetConnection(),s32 *,0xe4),0,sDwcKeyEval,0);
- if(removed && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))==0)return 0;
+ if(sort && SBServerListGetCount(M2C_FIELD(GetConnection(),s32 *,0xe4))!=0)SBServerListSort(M2C_FIELD(GetConnection(),s32 *,0xe4),0,sDwcKeyEval,0);
+ if(removed && SBServerListGetCount(M2C_FIELD(GetConnection(),s32 *,0xe4))==0)return 0;
  return 1;
 }
 s32 func_020438b4(void) {
     void *GetConnection(void);
-    s32 func_02061794(s32);
-    s32 func_02061784(s32, s32);
-    s32 func_02060b68(void *, void *, s32);
+    s32 SBServerListGetCount(s32);
+    s32 SBServerListGetServer(s32, s32);
+    s32 SBServerGetIntValue(void *, void *, s32);
     s32 gpiPlayerSetInt(void *, void *, s32);
-    s32 func_020617a4(s32, s32, void *, s32);
-    s32 func_02037eec(s32);
+    s32 SBServerListSort(s32, s32, void *, s32);
+    s32 RandomBelow(s32);
     s32 func_020720f0(s32, s32);
     extern s32 data_020ea928[];
     extern char sDwcKeyEval[];
@@ -289,19 +294,19 @@ s32 func_020438b4(void) {
     s32 v;
     s32 tmp;
 
-    n = func_02061794(*(s32 *)((u8 *)GetConnection() + 0xE4));
+    n = SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4));
     if (n <= 1) return n;
     i = 0;
-    while (i < func_02061794(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
-        v = func_02060b68((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, -1);
+    while (i < SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
+        v = SBServerGetIntValue((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, -1);
         if (v > best) best = v;
         total += data_020ea928[i];
         i++;
     }
-    rnd = func_02037eec(100);
+    rnd = RandomBelow(100);
     i = 0;
-    while (i < func_02061794(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
-        if (i == func_02061794(*(s32 *)((u8 *)GetConnection() + 0xE4)) - 1) break;
+    while (i < SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
+        if (i == SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4)) - 1) break;
         prev = (i > 0) ? stack[i - 1] : 0;
         tmp = func_020720f0(data_020ea928[i] * 100, total);
         stack[i] = tmp + prev;
@@ -309,8 +314,8 @@ s32 func_020438b4(void) {
         i++;
     }
     if (best < 0x7FFFFFFF) best++;
-    gpiPlayerSetInt((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, best);
-    return func_020617a4(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, sDwcKeyEval, 0);
+    gpiPlayerSetInt((void *)SBServerListGetServer(*(s32 *)((u8 *)GetConnection() + 0xE4), i), sDwcKeyEval, best);
+    return SBServerListSort(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, sDwcKeyEval, 0);
 }
 
 void func_02043a24(s32 a, void *b) {

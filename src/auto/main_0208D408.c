@@ -14,7 +14,7 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
     extern u8 gSpriteDesc16x8[];
     extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     void AddSprite(u16, u16, u16, void *, s32);
 
@@ -46,10 +46,10 @@ void DrawHorizontalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) 
             s16 t0 = gSinCosTable[0];
             s16 t1 = gSinCosTable[1];
             SetSpriteQuad(0x1e,
-                (s16)func_0207c8ec((s32)t1 << 4, 0x200),
-                (s16)func_0207c8ec((-(s32)t0) << 4, -0x100),
-                (s16)func_0207c8ec((s32)t0 << 4, 0x200),
-                (s16)func_0207c8ec((s32)t1 << 4, -0x100));
+                (s16)Divide((s32)t1 << 4, 0x200),
+                (s16)Divide((-(s32)t0) << 4, -0x100),
+                (s16)Divide((s32)t0 << 4, 0x200),
+                (s16)Divide((s32)t1 << 4, -0x100));
         }
         while (remaining >= 0x80) {
         curX=(s16)(curX-0x80); remaining=(s16)(remaining-0x80);
@@ -133,7 +133,7 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
     extern u8 data_027e006c[];
     extern u8 gSpriteDesc8x8[];
     extern void *gCur3DSpriteEngine;
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     void AddSprite(u16, u16, u16, void *, s32);
 #define AACC ((void (*)(u16, u16, s32, void *, s32))AddSprite)
@@ -166,10 +166,10 @@ void DrawVerticalBarReverse(s16 x, s16 y, s16 length, s32 tile, s32 priority) {
             s16 t0 = gSinCosTable[0];
             s16 t1 = gSinCosTable[1];
             SetSpriteQuad(0x1d,
-                (s16)func_0207c8ec((s32)t1 << 4, -0x100),
-                (s16)func_0207c8ec((-(s32)t0) << 4, 0x200),
-                (s16)func_0207c8ec((s32)t0 << 4, -0x100),
-                (s16)func_0207c8ec((s32)t1 << 4, 0x200));
+                (s16)Divide((s32)t1 << 4, -0x100),
+                (s16)Divide((-(s32)t0) << 4, 0x200),
+                (s16)Divide((s32)t0 << 4, -0x100),
+                (s16)Divide((s32)t1 << 4, 0x200));
         }
         while (remaining >= 0x80) {
         curY=(s16)(curY-0x80); remaining=(s16)(remaining-0x80);

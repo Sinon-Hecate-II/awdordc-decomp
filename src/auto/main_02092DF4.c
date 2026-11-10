@@ -464,8 +464,8 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
 void func_02093b0c(void *arg0) {
-    s32 func_020b5258();
-    if (func_020b5258() == 0) {
+    s32 IsBattleEffectActive();
+    if (IsBattleEffectActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }

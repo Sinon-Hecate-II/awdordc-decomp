@@ -50,7 +50,7 @@ if(v==0&&q==0) {if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_0209
 
 void func_0209ecf0(s32 arg0, s32 arg1) {
     void func_020d166c(u8, s32, void *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_020d0468(s32, s32, s32);
     void func_020a2b98(s32, s32);
     s16 func_020a3518(s32);
@@ -110,15 +110,15 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
 
     {
         s16 globalW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ec6);
-        s32 globalRng = (globalW == 0) ? 0 : func_0207c8ec(globalW - 1, 10) + 1;
+        s32 globalRng = (globalW == 0) ? 0 : Divide(globalW - 1, 10) + 1;
         u16 selFlags = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u16 *, 0x6);
         s32 selLow7 = selFlags & 0x7f;
-        s32 selRng = (selLow7 == 0) ? 0 : func_0207c8ec(selLow7 - 1, 10) + 1;
+        s32 selRng = (selLow7 == 0) ? 0 : Divide(selLow7 - 1, 10) + 1;
         s16 baseW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ee6);
-        s32 baseRng = (baseW == 0) ? 0 : func_0207c8ec(baseW - 1, 10) + 1;
+        s32 baseRng = (baseW == 0) ? 0 : Divide(baseW - 1, 10) + 1;
         u16 unitFlags = M2C_FIELD(unitPtr, u16 *, 0x6);
         s32 unitLow7 = unitFlags & 0x7f;
-        s32 unitRng = (unitLow7 == 0) ? 0 : func_0207c8ec(unitLow7 - 1, 10) + 1;
+        s32 unitRng = (unitLow7 == 0) ? 0 : Divide(unitLow7 - 1, 10) + 1;
 
         s32 sdiff = selRng - globalRng;
         s32 udiff = unitRng - baseRng;
@@ -182,7 +182,7 @@ void func_0209f2a8(void) {
     func_020d468c();
 }
 
-void func_0209f2b8(void *p){void *func_0209f8e4(s32);extern s32 data_0215be0c;extern void **gCurrentMap;void func_ov000_02199f50(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=func_0209f8e4(data_0215be0c);func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
+void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 data_0215be0c;extern void **gCurrentMap;void func_ov000_02199f50(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(data_0215be0c);func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
 
 void func_0209f314(void *p){extern void **gCurrentMap;void func_ov000_02199f50(s32,u8,s32,s32);func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 
@@ -394,7 +394,7 @@ s32 func_0209f8d4(void) {
     return M2C_FIELD(&data_0215be00, s32 *, 8);
 }
 
-void *func_0209f8e4(s32 n){extern M2C_UNK data_0215be00;return M2C_FIELD(&data_0215be00,u8 **,4)+n*8;}
+void *GetTargetPosition(s32 n){extern M2C_UNK data_0215be00;return M2C_FIELD(&data_0215be00,u8 **,4)+n*8;}
 
 void func_0209f8f8(s32 a,s32 b,s32 c,s32 d){extern M2C_UNK data_0215be00;Unk09List *s=(Unk09List *)&data_0215be00;Unk09Position *p=s->p;p[s->count].c=a;p[s->count].d=b;p[s->count].a=c;p[s->count].b=d;s->count++;}
 

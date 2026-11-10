@@ -148,7 +148,7 @@ base=*gCurrentMap;
 }
 
 void func_01ffb454(s32 arg0) {
-extern u8 gUnitKindStats[]; extern u8 gMovementCostTable[]; extern s8 *gMoveSearchState; extern void **data_027e0058; extern u8 data_02168f08[];
+extern u8 gUnitKindStats[]; extern u8 gMovementCostTable[]; extern s8 *gMoveSearchState; extern void **data_027e0058; extern u8 gMapData[];
 s32 func_020a33c4(s32);
 s32 i; u8 *unit=gUnitKindStats+arg0*0x70;
 for(i=0;i<32;i++) {
@@ -158,7 +158,7 @@ u8 *entry=(u8 *)base+0x67a4+index*0x8c;
 u32 variant;
 s32 type;
 s8 *table;
-variant=(u32)(M2C_FIELD(data_02168f08,u16 *,12)<<18)>>31; if(variant) variant=((UnkB454Bits *)(entry+0x6c))->value;
+variant=(u32)(M2C_FIELD(gMapData,u16 *,12)<<18)>>31; if(variant) variant=((UnkB454Bits *)(entry+0x6c))->value;
 type=func_020a33c4(index);
 table=M2C_FIELD(gMovementCostTable+variant*0x9c+type*0x28+entry[0x25]*4,s8 **,0x64);
 gMoveSearchState[i]=(table+unit[0x12]*32)[i];

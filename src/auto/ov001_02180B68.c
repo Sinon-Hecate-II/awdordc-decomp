@@ -145,16 +145,16 @@ void func_ov001_02180d44(void) {
 }
 
 void func_ov001_02180da4(void) {
-s32 func_ov001_02171d30(void *);
-M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+s32 Ov001_LocalizePath(void *);
+M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
 s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
 void func_ov001_0218b314(s32,s32);
 PathBuffer80 path = *(PathBuffer80 *)data_ov001_0218f9d4;
-func_ov001_02171d90(&data_ov001_0219099c,&func_02004160);
-func_ov001_02171d90(&data_ov001_021909b0,&func_020046cc);
-func_ov001_02171d90(&data_ov001_021909c8,&func_020040b4);
-func_ov001_02171d90(&data_ov001_021909e0,&func_0200448c);
-*M2C_FIELD(&gOv001MenuRegion,s32 **,4) = func_ov001_02189dc8(func_ov001_02171d30(&path),0,4);
+Ov001_LoadAsset(&data_ov001_0219099c,&func_02004160);
+Ov001_LoadAsset(&data_ov001_021909b0,&func_020046cc);
+Ov001_LoadAsset(&data_ov001_021909c8,&func_020040b4);
+Ov001_LoadAsset(&data_ov001_021909e0,&func_0200448c);
+*M2C_FIELD(&gOv001MenuRegion,s32 **,4) = func_ov001_02189dc8(Ov001_LocalizePath(&path),0,4);
 func_ov001_0218b314(1,16);
 M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
 M2C_FIELD((void *)0x04001008,u16 *,2)=(M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;
@@ -301,7 +301,7 @@ void func_ov001_02181188(void) {
 }
 
 void func_ov001_0218118c(void) {
-s32 func_ov001_021716c4(void),func_ov001_02175dec(void),func_ov001_02175ddc(void);
+s32 func_ov001_021716c4(void),Ov001_GetScreenLayout(void),Ov001_GetLanguage(void);
 s32 func_ov001_02184868();
 M2C_UNK Ov001_PlaySound(s32),func_ov001_021716f8(s32),func_ov001_02171750(void);
 M2C_UNK func_ov001_021862d8(s32,s32,s32,s32,s32);
@@ -313,7 +313,7 @@ u8 n;
 s32 index, frame;
 switch(func_ov001_021716c4()) {
 case 0:
-switch(func_ov001_02175dec()) {
+switch(Ov001_GetScreenLayout()) {
 case 0: Ov001_PlaySound(7); M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=2; break;
 case 1: func_ov001_02171750(); Ov001_SetStepCallback(&func_ov001_02176578); return;
 } goto done;
@@ -324,7 +324,7 @@ if(n>=4) {
 index=n-4;
 if(func_ov001_02184868(index)==255) {Ov001_PlaySound(9);func_ov001_021716f8(-1);return;}
 Ov001_PlaySound(6);
-frame = data_ov001_0218fa74[func_ov001_02175ddc()];
+frame = data_ov001_0218fa74[Ov001_GetLanguage()];
 func_ov001_021862d8(70,0,1,frame,index+1);
 func_ov001_02181794();func_ov001_02171750();Ov001_SetStepCallback(&func_ov001_02181824);return;
 }
@@ -379,7 +379,7 @@ for(i=0;i<3;i++){p=M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4)
 for(i=0;i<3;i++){p=M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,0x10);if(p)func_ov001_0218a1cc(p);}
 func_ov001_02172184();func_ov001_02171cf8();
 func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),void **,0));
-func_ov001_02171d90(&data_ov001_021909f4,&func_02004160);
+Ov001_LoadAsset(&data_ov001_021909f4,&func_02004160);
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,20);
 if(M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)==2){
 func_ov001_02175d64(0,0);Ov001_SetStepCallback(&func_ov001_021768b8);

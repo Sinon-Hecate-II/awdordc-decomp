@@ -208,7 +208,7 @@ void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueu
 
 void func_020a54f4(void *a){
 M2C_UNK SetSpriteAnimation(void *,s32);void *func_020a45f8(s16,s16);
-M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK func_020b7294(s16,s16,u32,s32,void *);
+M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK SpawnBeamEffect(s16,s16,u32,s32,void *);
 extern Unk020APosition *gSelectionQueue;
 Unk020APosition *base=gSelectionQueue,*p,*q; s32 i=0;s16 n,m;void *entry;
 while(base[i].a==0)i++;
@@ -219,7 +219,7 @@ case 4:func_020b6f98((s16)p->c,(s16)p->d,n+1,a);break;
 case 6:case 7:
 entry=func_020a45f8((s16)p->c,(s16)p->d);
 m=M2C_FIELD(a,s16 *,0x54);q=&base[m];
-func_020b7294((s16)q->c,(s16)q->d,(u32)(M2C_FIELD(entry,u16 *,2)<<16)>>30,m+1,a);break;
+SpawnBeamEffect((s16)q->c,(s16)q->d,(u32)(M2C_FIELD(entry,u16 *,2)<<16)>>30,m+1,a);break;
 case 5:q=&base[n+1];func_020b7138((s16)p->c,(s16)p->d,(s16)q->c,(s16)q->d,n+2,a);
 M2C_FIELD(a,s16 *,0x54)++;break;
 }

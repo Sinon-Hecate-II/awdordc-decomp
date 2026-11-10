@@ -160,14 +160,14 @@ void func_ov003_0220b7c0(void *arg0) {
 u8 func_ov003_0220b7fc(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 0) result=1; else result=0; return result; }
 
 void func_ov003_0220b830(void *arg0, s32 arg1) {
- s32 func_0207c8ec(s32,s32); M2C_UNK func_020a979c(void *,s16,s16);
+ s32 Divide(s32,s32); M2C_UNK func_020a979c(void *,s16,s16);
  s32 current,limit; s32 x; s16 base; void *p;
  M2C_FIELD(arg0,s16 *,0x12) += arg1;
  limit=M2C_FIELD(arg0,s16 *,0x16); current=M2C_FIELD(arg0,s16 *,0x12);
  if(current<=limit){limit=M2C_FIELD(arg0,s16 *,0x14); if(current>=limit)limit=current;}
  M2C_FIELD(arg0,s16 *,0x12)=limit;
  p=M2C_FIELD(arg0,void **,0x1c);
- base=M2C_FIELD(arg0,s16 *,8); x=base+func_0207c8ec(M2C_FIELD(arg0,s16 *,0x12)*(s16)(M2C_FIELD(p,s16 *,0x14)-M2C_FIELD(p,s16 *,0x12)),M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14));
+ base=M2C_FIELD(arg0,s16 *,8); x=base+Divide(M2C_FIELD(arg0,s16 *,0x12)*(s16)(M2C_FIELD(p,s16 *,0x14)-M2C_FIELD(p,s16 *,0x12)),M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14));
  p=M2C_FIELD(arg0,void **,0x1c); func_020a979c(p,(s16)x,M2C_FIELD(p,s16 *,0xa));
 }
 

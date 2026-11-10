@@ -101,6 +101,19 @@ enum TcpState {
     TCP_STATE_TIME_WAIT = 9
 };
 
+/* Description of a hash used by Hmac for keyed hashing (HMAC): the digest and
+ * block sizes, the hash state it works on and its three entry points.  The
+ * game's SHA1 one is gSha1HashDescriptor. */
+typedef struct HashDescriptor {
+    u32 digestSize;                            /* +0x00 digest bytes written by final() */
+    u32 blockSize;                             /* +0x04 HMAC block size in bytes */
+    void *context;                             /* +0x08 hash state passed to the callbacks */
+    u8 *digest;                                /* +0x0C scratch for the inner digest */
+    void (*init)(void *);                      /* +0x10 */
+    void (*update)(void *, const void *, s32); /* +0x14 */
+    void (*final)(void *, void *);             /* +0x18 */
+} HashDescriptor;
+
 /* TLS connection (the channel object the TLS record code passes around).  The
  * hash and RC4 states are embedded; the key fields point into the channel's key
  * block, and each direction's sequence number is an 8-byte big-endian counter. */
@@ -123,6 +136,11 @@ enum {
 #define TLS_STATE          0x455 /* u8 TLS record/handshake state */
 #define TLS_HMAC_IPAD      0x36  /* inner HMAC pad byte */
 #define TLS_HMAC_OPAD      0x5c  /* outer HMAC pad byte */
+#define TLS_MASTER_SECRET  0x00  /* u8[48] the session's master secret */
+#define TLS_RANDOM_A       0x34  /* u8[32] one handshake random */
+#define TLS_RANDOM_B       0x54  /* u8[32] the other handshake random */
+#define TLS_KEY_BLOCK      0x74  /* per-direction MAC secrets and RC4 keys derived by TlsInitRecordKeys */
+#define TLS_SERVER_SIDE    0x454 /* u8 nonzero when this endpoint uses the server-side role */
 
 /* ov003 map-select screen: six preview rows of three animations each. */
 typedef struct MapSelectRow {
@@ -272,6 +290,14 @@ typedef struct KeyState {
 #define TOUCH_STARTED      0x14 /* u8 touch began this frame */
 #define TOUCH_TAP          0x15 /* u8 touch was a short tap */
 #define TOUCH_RELEASED     0x16 /* u8 touch ended this frame */
+#define TOUCH_DRAG_FRAMES  20   /* TOUCH_HOLD_FRAMES value at which a hold becomes a drag */
+
+/* Press state of a sprite-button slot (GetSpriteSlotState/SetSpriteSlotState). */
+enum {
+    SPRITE_SLOT_IDLE    = 0, /* not touched */
+    SPRITE_SLOT_PRESSED = 1, /* touch down inside the slot, waiting for release */
+    SPRITE_SLOT_DRAGGED = 2  /* held past TOUCH_DRAG_FRAMES */
+};
 
 /* The CO "occupation" cut-in effect object used by main_020C1F58.  It shares
  * the battle-effect header layout (vtable at +0, timers at +0x34) but its
@@ -458,6 +484,11 @@ enum {
 #define CONN_SESSION_SYNC_EXCESS  0x1B2 /* u16 worst overrun of the sync deadline */
 #define CONN_SESSION_SYNC_RETRY   0x1AC /* u8 retry counter for the sync-measure notices */
 #define CONN_SESSION_PEER_SLOTS   0x2D0 /* u8 slot id per connected peer, indexed from 1 */
+#define CONN_SESSION_PEER_DATA    0x24  /* s32 per slot: peer player id exchanged in connection packets */
+#define CONN_SESSION_PEER_DATA_PORT 0xA4 /* u16 per slot: peer port exchanged in connection packets */
+#define CONN_SESSION_PEER_IPS     0x210 /* s32 per slot: peer IPv4 address */
+#define CONN_SESSION_PEER_PORTS   0x290 /* u16 per slot: peer port */
+#define CONN_SESSION_PLAYER_MASK  0x2F0 /* u32 bitmask of player slots that are present */
 
 /* Fields of the online-match session context (the pointer held at
  * data_0213d38c + 8). */
@@ -653,11 +684,19 @@ typedef struct Ov001KeyboardState {
     u8 deleteBuzzed; /* +0x125 invalid-delete buzz already played while B is held */
 } Ov001KeyboardState;
 
+/* State of the ov001 name-entry screen (gNameEntryState): its entered text and
+ * the position word of its cursor sprite. */
+#define NAME_ENTRY_CURSOR  0x04 /* s32 * cursor sprite's position/attribute word */
+#define NAME_ENTRY_TEXT    0x08 /* u8[33] entered text, NUL-terminated */
+#define NAME_ENTRY_LENGTH  0x29 /* u8 number of characters entered */
+#define NAME_ENTRY_RESULT  0x2a /* u8 result: 0 cancelled, 1 accepted, 2 rejected */
+
 /* Non-printing characters the on-screen keyboard produces. */
 enum {
     KBD_KEY_DELETE = 0x80,
     KBD_KEY_CANCEL = 0x82,
-    KBD_KEY_OK     = 0x83
+    KBD_KEY_OK     = 0x83,
+    KBD_KEY_SPACE  = 0xE01D /* glyph id the space key produces */
 };
 
 /* On-screen keyboard key layout: 47 character keys, then space and delete,
@@ -695,6 +734,7 @@ typedef struct MoveSearchNode {
 #define MOVE_SEARCH_MOVE_RANGE   0x22 /* s16 unit move range (movement points) */
 #define MOVE_SEARCH_WIDTH        0x24 /* u8 map width, filled by SelectMapLayer */
 #define MOVE_SEARCH_HEIGHT       0x25 /* u8 map height, filled by SelectMapLayer */
+#define MOVE_SEARCH_MOVEMENT_TYPE 0x26 /* u8 movement type the search is for */
 #define MOVE_SEARCH_QUEUE_A      0x28 /* MoveSearchNode[349] */
 #define MOVE_SEARCH_QUEUE_B      0x5A0 /* MoveSearchNode[349] */
 #define MOVE_SEARCH_QUEUE_MAX    349
@@ -710,6 +750,17 @@ typedef struct MoveSearchNode {
 #define UNIT_PATH_START_COST 0x5a /* s8 movement cost at the unit's tile */
 #define UNIT_PATH_LENGTH    0x5b /* s8 index of the last step, 0 = empty */
 #define UNIT_PATH_MAX_STEPS 12
+
+/* Direction codes of a movement path (gUnitMovePath / MAP_CURSOR_PATH), one byte per
+ * grid step.  MOVE_DIR_STOP and MOVE_DIR_NONE end the list; MOVE_DIR_ATTACK replaces
+ * the step that would enter an enemy unit. */
+#define MOVE_DIR_LEFT   0
+#define MOVE_DIR_RIGHT  1
+#define MOVE_DIR_DOWN   2
+#define MOVE_DIR_UP     3
+#define MOVE_DIR_STOP   4
+#define MOVE_DIR_ATTACK 10
+#define MOVE_DIR_NONE   (-1)
 
 /* Flag byte at +0x20 of the friend-code entry's sub-panels. */
 typedef struct FriendCodeFlags {
@@ -840,6 +891,30 @@ typedef struct GpiInfoRecord {
     s32  o1;              /* +0x1FC */
     s32  conn;            /* +0x200 */
 } GpiInfoRecord;          /* 0x204 bytes */
+
+/* A GameSpy gpi profile search request (gpiSearch.c): the criteria the search
+ * entry point copies out of its arguments plus the socket and buffers set up. */
+typedef struct GpiSearchRequest {
+    s32    type;           /* +0x00: search type */
+    s32    socket;         /* +0x04: SOCKET, -1 until created */
+    void  *recvBuffer;     /* +0x08: received-data buffer */
+    s32    recvBufferSize; /* +0x0C: its size (0x1000) */
+    u8     pad10[0x08];
+    void  *buffer;         /* +0x18: 0x1001-byte working buffer */
+    s32    bufferSize;     /* +0x1C: its size (0x1000) */
+    u8     pad20[0x08];
+    char   nick[31];       /* +0x28 */
+    char   uniquenick[21]; /* +0x47 */
+    char   email[51];      /* +0x5C */
+    char   firstname[31];  /* +0x8F */
+    char   lastname[31];   /* +0xAE */
+    u8     padCD[0x63];
+    s32    icq;            /* +0x130 */
+    s32    countrycode;    /* +0x134 */
+    s32    pad138;
+    s32    pad13C;         /* +0x13C */
+    s32    pad140;         /* +0x140 */
+} GpiSearchRequest;        /* 0x144 bytes */
 
 /* One decoded multiplayer room-setup record in ov001 (gRoomTeamA/B and
  * gRoomRecord5/6), filled by the packet decoders in ov001_0216BD08.c. */

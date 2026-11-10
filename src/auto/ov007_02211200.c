@@ -16,7 +16,7 @@ void MapEditor_StartMap(void *editor) {
  s32 text;
  s32 centerX,centerY;
  void (*callback)(void);
- func_020ceb48();func_020d8cfc();
+ ResetBattleMap();func_020d8cfc();
  M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
  func_020bfb74(0);ResetPlayerSetupTables();func_020bfa80(0);
  if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
@@ -25,7 +25,7 @@ void MapEditor_StartMap(void *editor) {
  StringFormat((u8*)map+MAP_NAME,gMapNameFormat,text,func_020c8018(M2C_FIELD(map,u16*,MAP_ID))+1);
  }else{
  map=*gCurrentMap;
- text=func_020cfbdc(M2C_FIELD(map,u16*,MAP_ID));
+ text=GetMapName(M2C_FIELD(map,u16*,MAP_ID));
  StringCopy((u8*)map+MAP_NAME,text);
  }
  InitPlayerStates();func_020d1f2c();
@@ -324,7 +324,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void func_020cf828(s32);
     void func_0207a7a4(s32, s32);
     s32 func_ov007_02211990(s32, s32);
-    void func_020cf5ec(s32);
+    void MoveMapCursorToTarget(s32);
     void func_020ccca0(void);
     void func_ov007_02219418(void);
     void func_ov007_022144ec(void);
@@ -367,7 +367,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         r6 = *(s16 *)((u8 *)*gCurrentMap + 0x52c2);
         r7 = *(s16 *)((u8 *)*gCurrentMap + 0x52c4);
         val = func_ov007_02211990(r6, r7);
-        func_020cf5ec(val);
+        MoveMapCursorToTarget(val);
     }
     if (r4 & 0x100) { func_020ccca0(); return; }
     if (r4 & 0x200) { func_ov007_02219418(); return; }
@@ -448,9 +448,9 @@ void func_ov007_02211e6c(M2C_UNK arg0) {
 
 void func_ov007_02211e84(void) {
     M2C_UNK func_01ffa6fc();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov007_0221f5f8;
-    if (func_01ffa770(&data_ov007_0221f5f8) == 0) {
+    if (FindObjectByClass(&data_ov007_0221f5f8) == 0) {
         return;
     }
     func_01ffa6fc();

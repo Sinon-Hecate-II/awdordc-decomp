@@ -16,8 +16,8 @@ static inline s32 unit_blocks_action(s32 unit) {
  * orthogonal neighbour does; the unit kind and the cell's terrain can also hide it. */
 s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    extern u8 data_ov000_021b5c0f[];
+    extern void *gAiCommandState;
+    extern u8 gUnitKindFlags[];
     extern s8 data_ov000_021b5680[];
     s32 func_020a33c4(s32);
     u8 IsCellUnitOnSameArmy(u8, s32, s32);
@@ -30,7 +30,7 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     u16 neighbours = 0;
 
     if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) == 0) {
-        if (M2C_FIELD(data_ov000_021df580, u8 *, 0xD) != 2) {
+        if (M2C_FIELD(gAiCommandState, u8 *, 0xD) != 2) {
             return 1;
         }
     }
@@ -43,7 +43,7 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
         return 1;
     }
 
-    if (data_ov000_021b5c0f[kind * 0x70] == 0x10) {
+    if (gUnitKindFlags[kind * 0x70] == 0x10) {
         u16 row = M2C_FIELD((u8 *)*gCurrentMap + cellY * 2, u16 *, MAP_ROW_OFFSETS);
         u8 terrain = M2C_FIELD((u8 *)*gCurrentMap + (cellX + row), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
         if (data_ov000_021b5680[terrain] == 0) {
@@ -76,15 +76,15 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
 void GetAttackDamage(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    func_020a79e0(arg0, arg1, 0, M2C_FIELD(data_ov000_021df580, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    extern void *gAiCommandState;
+    func_020a79e0(arg0, arg1, 0, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
 }
 
 void func_ov000_021a96f4(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    func_020a79e0(arg0, arg1, 1, M2C_FIELD(data_ov000_021df580, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    extern void *gAiCommandState;
+    func_020a79e0(arg0, arg1, 1, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
 }
 
 s32 func_ov000_021a9740(void *arg0, M2C_UNK arg1) {
@@ -111,15 +111,15 @@ void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {
 void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7b3c(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
-    extern void *data_ov000_021df580;
-    func_020a7b3c(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    extern void *gAiCommandState;
+    func_020a7b3c(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7c10(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
-    extern void *data_ov000_021df580;
-    func_020a7c10(arg1, M2C_FIELD(data_ov000_021df580, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    extern void *gAiCommandState;
+    func_020a7c10(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
 s32 func_ov000_021a9860(s32 a,s32 b) {
@@ -254,7 +254,7 @@ loop:
 }
 
 s32 func_ov000_021a9c90(s32 x,s32 y) {
- extern void **data_027e0058; extern void *data_ov000_021df580;
+ extern void **data_027e0058; extern void *gAiCommandState;
  s32 count=0,i,xmin=x-1,d,v; register s32 ymin,xmax,ymax;
  if(xmin<0)xmin=0;
  ymin=y-1;
@@ -267,7 +267,7 @@ s32 func_ov000_021a9c90(s32 x,s32 y) {
  d=0; if(x-i>0)d+=x-i;else d+=i-x; if(y-ymin>0)d+=y-ymin;else d+=ymin-y;
  if(d<1||d>1)continue;
  v=M2C_FIELD(((s8 **)((u8 *)*data_027e0058+0x52e8))[ymin],s8 *,i);
- if(v>=0 && v<=M2C_FIELD(data_ov000_021df580,u8 *,5))count++;
+ if(v>=0 && v<=M2C_FIELD(gAiCommandState,u8 *,5))count++;
  }
  return count;
 }
@@ -286,7 +286,7 @@ u8 func_ov000_021a9d8c(u32 arg0,s32 arg1) {
 
 u32 CellMoveScore(s32 x,s32 y,s32 a,s32 b){
 extern void **gCurrentMap;
-extern u8 data_ov000_021e0a58[],data_ov000_021b5c0f[],data_ov000_021dfb04[],data_ov000_021dfcf0[],data_ov000_021dfa60[],data_ov000_021dfba8[];
+extern u8 data_ov000_021e0a58[],gUnitKindFlags[],data_ov000_021dfb04[],gAiRangeBitmap[],data_ov000_021dfa60[],data_ov000_021dfba8[];
 void *base=*gCurrentMap;
 u32 row=M2C_FIELD(base+y*2,u16 *,0x3758);
 u8 *cell=(u8 *)base+(x+row);
@@ -294,11 +294,11 @@ s32 d=M2C_FIELD(cell,u8 *,0x2d48);
 void *unit=M2C_FIELD(base,void **,0x52d0);
 s32 unitByte=M2C_FIELD(unit,u8 *,0);s32 kind=(u32)(unitByte<<26)>>26;
 s32 width=M2C_FIELD(base,u16 *,0x5144);u32 index=y*width+x;
-u8 flags=data_ov000_021b5c0f[kind*112];
+u8 flags=gUnitKindFlags[kind*112];
 u32 result=(data_ov000_021e0a58[index]+((a*M2C_FIELD(cell,u8 *,0x2840)+b*d)<<8))<<2;
 if(flags&7){
 s32 first=(u8)(data_ov000_021dfb04[index>>3]&(1<<(index&7)))==0?1:0;
-s32 second=(u8)((1<<(index&7))&data_ov000_021dfcf0[index>>3])!=0?0:2;
+s32 second=(u8)((1<<(index&7))&gAiRangeBitmap[index>>3])!=0?0:2;
 result|=second|first;
 }
 if(flags&16){

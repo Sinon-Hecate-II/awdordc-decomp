@@ -25,43 +25,43 @@ extern M2C_UNK data_0215d890, data_0215deec, gMovementCostTable;
 #pragma opt_propagation off
 void *func_020bf25c(s32 arg0,s32 arg1) {
 s32 func_020bf054(s32); void *func_020bfa60(s32);
-s32 func_020bee64(s32); s32 GetLocalizedText(s32); void func_02068d68(char*,const char*); void StringFormat(char*,const char*,...);
-s32 func_020a8a84(s32); s32 func_020cfbdc(s32); void func_020bf10c(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
+s32 func_020bee64(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
+s32 func_020a8a84(s32); s32 GetMapName(s32); void func_020bf10c(char*,void*); s32 func_020e4b28(s32); void func_020c8d7c(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=func_020bf054(a);
 p=func_020bfa60(n);
 switch(a) {
 case 0: case 5:
 if(func_020bee64(n)) {
-func_02068d68(buf+256,GetLocalizedText(0x4800003f));
-if(SaveRangeAU((u32)p[0]))func_02068d68(buf+256,GetLocalizedText(0x48000039));
-if(SaveRangeBU((u32)p[0]))func_02068d68(buf+256,GetLocalizedText(0x4800003a));
-n=func_020a8a84(p[0]);StringFormat(buf,data_021295c4,n,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
-func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_02068d68(buf+256,GetLocalizedText(0x4800003e));
-StringFormat(buf,data_021295d0,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_021295d8);
-func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
+StringAppend(buf+256,GetLocalizedText(0x4800003f));
+if(SaveRangeAU((u32)p[0]))StringAppend(buf+256,GetLocalizedText(0x48000039));
+if(SaveRangeBU((u32)p[0]))StringAppend(buf+256,GetLocalizedText(0x4800003a));
+n=func_020a8a84(p[0]);StringFormat(buf,data_021295c4,n,GetMapName(p[0]));StringAppend(buf+256,buf);
+StringAppend(buf+256,GetLocalizedText(0x4800003f));StringAppend(buf+256,GetLocalizedText(0x4800003e));
+StringFormat(buf,data_021295d0,p[1]);StringAppend(buf+256,buf);StringAppend(buf+256,data_021295d8);
+StringAppend(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);StringAppend(buf+256,buf);
 } else if(func_020e4b28(b)) {
 rec=(SaveRankRecord *)data_0215dba4+b;c1=0;c2=0;c3=0;
 i=0; goto check_entries;
 scan_entry: { if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].state>=3){s32 id=i+0xa1; if(SaveRangeA(id))c1++;if(SaveRangeB(id))c2++;if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].rank==4)c3++;} i++; }
 check_entries: if(i<64) goto scan_entry;
-if(c1==26)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
-StringFormat(buf,data_021295dc,GetLocalizedText(0x4800003b),c1);func_02068d68(buf+256,buf);
-if(c2==38)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
-StringFormat(buf,data_021295e4,GetLocalizedText(0x4800003c),c2);func_02068d68(buf+256,buf);
-if(c3==64)func_02068d68(buf+256,GetLocalizedText(0x48000040));else func_02068d68(buf+256,GetLocalizedText(0x4800003f));
-StringFormat(buf,data_021295ec,GetLocalizedText(0x4800003d),c3);func_02068d68(buf+256,buf);
-func_02068d68(buf+256,data_021295f4);func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
-}else if(a==5)func_02068d68(buf+256,GetLocalizedText(0x48000041));else func_02068d68(buf+256,GetLocalizedText(0x4800002d));
+if(c1==26)StringAppend(buf+256,GetLocalizedText(0x48000040));else StringAppend(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295dc,GetLocalizedText(0x4800003b),c1);StringAppend(buf+256,buf);
+if(c2==38)StringAppend(buf+256,GetLocalizedText(0x48000040));else StringAppend(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295e4,GetLocalizedText(0x4800003c),c2);StringAppend(buf+256,buf);
+if(c3==64)StringAppend(buf+256,GetLocalizedText(0x48000040));else StringAppend(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295ec,GetLocalizedText(0x4800003d),c3);StringAppend(buf+256,buf);
+StringAppend(buf+256,data_021295f4);StringAppend(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);StringAppend(buf+256,buf);
+}else if(a==5)StringAppend(buf+256,GetLocalizedText(0x48000041));else StringAppend(buf+256,GetLocalizedText(0x4800002d));
 break;
 case 1:
 if(func_020bee64(n)&&b) {
-func_020c8d7c(p[0]);func_02068d68(buf+256,GetLocalizedText(0x4800003f));
-StringFormat(buf,data_021295f8,func_020cfbdc(p[0]));func_02068d68(buf+256,buf);
-func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_02068d68(buf+256,GetLocalizedText(0x4800003e));
-StringFormat(buf,data_021295fc,p[1]);func_02068d68(buf+256,buf);func_02068d68(buf+256,data_02129604);
-func_02068d68(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);func_02068d68(buf+256,buf);
-}else func_02068d68(buf+256,GetLocalizedText(0x4800002e));
+func_020c8d7c(p[0]);StringAppend(buf+256,GetLocalizedText(0x4800003f));
+StringFormat(buf,data_021295f8,GetMapName(p[0]));StringAppend(buf+256,buf);
+StringAppend(buf+256,GetLocalizedText(0x4800003f));StringAppend(buf+256,GetLocalizedText(0x4800003e));
+StringFormat(buf,data_021295fc,p[1]);StringAppend(buf+256,buf);StringAppend(buf+256,data_02129604);
+StringAppend(buf+256,GetLocalizedText(0x4800003f));func_020bf10c(buf,p);StringAppend(buf+256,buf);
+}else StringAppend(buf+256,GetLocalizedText(0x4800002e));
 break;
 }
 return buf+256;
@@ -228,13 +228,13 @@ M2C_FIELD(a,u32 *,12)=M2C_FIELD(&data_0215d890,u32 *,12);
 }
 
 s32 func_020bfc0c(void) {
-s32 func_0207c2f0(void);
+s32 NextRandomValue(void);
 s32 func_020a8924(s32);
 s32 i,count,chosen,n;
 count=0;i=0;
 do { if(func_020a8924(i))count++; i++; } while(i<0x113);
 if(count) {
-chosen=func_0207c2f0()%count;
+chosen=NextRandomValue()%count;
 n=0;i=0;
 do {if(func_020a8924(i)){if(chosen==n)return i;n++;}i++;}while(i<0x113);
 }
@@ -242,19 +242,19 @@ return 0;
 }
 
 s32 func_020bfc94(void) {
-s32 func_0207c2f0(void);
-return func_0207c2f0()%100>80;
+s32 NextRandomValue(void);
+return NextRandomValue()%100>80;
 }
 
 s32 func_020bfccc(void) {
-s32 func_0207c2f0(void);
-s32 n=func_0207c2f0()%100;
+s32 NextRandomValue(void);
+s32 n=NextRandomValue()%100;
 if(n>80)return 1;if(n>60)return 2;if(n>40)return 3;return 0;
 }
 
 s32 func_020bfd1c(u32 a) {
-s32 func_0207c2f0(void);
-s32 n=func_0207c2f0()%100;
+s32 NextRandomValue(void);
+s32 n=NextRandomValue()%100;
 switch(a) {
 case 1:if(n>70)return 1;break;
 case 2:if(n>70)return 3;break;

@@ -13,7 +13,7 @@ extern u32 gFrameCounter;
 #pragma push
 #pragma optimization_level 3
 void func_ov004_02216290(void *arg0){
-void func_0200100c(void *);s32 func_02001fb4(s32,s32);s32 func_0207c8ec(s32,s32);
+void func_0200100c(void *);s32 func_02001fb4(s32,s32);s32 Divide(s32,s32);
 void func_02003fc8(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_02001114(void *,s32,s32,s32);void func_02001068(void *,void *,s32,s32,s32);
 void func_02001148(void *,void *,void *);void func_02007f68(void *,void *);void func_02003a70(void *);
@@ -34,18 +34,18 @@ case 1:M2C_FIELD(arg0,s16 *,76)=48-((48-M2C_FIELD(arg0,s16 *,76))*4)/5;M2C_FIELD
 case 2:M2C_FIELD(arg0,s16 *,76)=-((-M2C_FIELD(arg0,s16 *,76)*7)/8);M2C_FIELD(arg0,s16 *,78)=-((-M2C_FIELD(arg0,s16 *,78)*7)/8);break;
 }
 if(M2C_FIELD(arg0,s32 *,64)==2048||M2C_FIELD(arg0,s32 *,64)==4096){
-if(M2C_FIELD(arg0,s16 *,80)<96-func_0207c8ec(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=96-func_0207c8ec(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);
-if(M2C_FIELD(arg0,s16 *,82)<57-func_0207c8ec(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=57-func_0207c8ec(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);
-if(M2C_FIELD(arg0,s16 *,80)>160-func_0207c8ec(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=160-func_0207c8ec(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);
-if(M2C_FIELD(arg0,s16 *,82)>95-func_0207c8ec(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=95-func_0207c8ec(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);
+if(M2C_FIELD(arg0,s16 *,80)<96-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=96-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);
+if(M2C_FIELD(arg0,s16 *,82)<57-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=57-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);
+if(M2C_FIELD(arg0,s16 *,80)>160-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=160-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);
+if(M2C_FIELD(arg0,s16 *,82)>95-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=95-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);
 }
 if(M2C_FIELD(arg0,s32 *,64)==2048||M2C_FIELD(arg0,s32 *,64)==4096){
 if(M2C_FIELD(arg0,s16 *,68)<0)M2C_FIELD(arg0,s16 *,68)=0;
 if(M2C_FIELD(arg0,s16 *,70)<0)M2C_FIELD(arg0,s16 *,70)=0;
 if(M2C_FIELD(arg0,s16 *,68)>512)M2C_FIELD(arg0,s16 *,68)=512;
 if(M2C_FIELD(arg0,s16 *,70)>304)M2C_FIELD(arg0,s16 *,70)=304;
-if(M2C_FIELD(arg0,s16 *,80)<256-func_0207c8ec(M2C_FIELD(arg0,s32 *,64)*512,4096))M2C_FIELD(arg0,s16 *,80)=256-func_0207c8ec(M2C_FIELD(arg0,s32 *,64)*512,4096);
-if(M2C_FIELD(arg0,s16 *,82)<192-func_0207c8ec(M2C_FIELD(arg0,s32 *,64)*344,4096))M2C_FIELD(arg0,s16 *,82)=192-func_0207c8ec(M2C_FIELD(arg0,s32 *,64)*344,4096);
+if(M2C_FIELD(arg0,s16 *,80)<256-Divide(M2C_FIELD(arg0,s32 *,64)*512,4096))M2C_FIELD(arg0,s16 *,80)=256-Divide(M2C_FIELD(arg0,s32 *,64)*512,4096);
+if(M2C_FIELD(arg0,s16 *,82)<192-Divide(M2C_FIELD(arg0,s32 *,64)*344,4096))M2C_FIELD(arg0,s16 *,82)=192-Divide(M2C_FIELD(arg0,s32 *,64)*344,4096);
 if(M2C_FIELD(arg0,s16 *,80)>0)M2C_FIELD(arg0,s16 *,80)=0;
 if(M2C_FIELD(arg0,s16 *,82)>0)M2C_FIELD(arg0,s16 *,82)=0;
 }
@@ -104,7 +104,7 @@ func_0200100c(qt);func_0200100c(qs);func_0200100c(qm);
 tex_1=M2C_FIELD(node_1,u8 *,5)*32;if((u8)((M2C_FIELD(node_1,u8 *,4)&2)!=0))tex_1+=16;
 cx_1=M2C_FIELD(node_1,s16 *,0);cy_1=M2C_FIELD(node_1,s16 *,2);
 if(!(u8)((M2C_FIELD(node_1,u8 *,4)&1)!=0))continue;
-amount_1=func_0207c8ec(scale*M2C_FIELD(node_1,s32 *,8),4096);
+amount_1=Divide(scale*M2C_FIELD(node_1,s32 *,8),4096);
 func_02001114(qs,amount_1,amount_1,4096);func_0200100c(qt);func_02001068(qt,qt,cx_1,cy_1,0);func_0200100c(q0);func_02001148(qs,qt,q0);func_02007f68(q0,qm);
 *(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(qm);
 flags_1=0;if(M2C_FIELD(node_1,u8 *,5)!=0)flags_1=2;if((u8)((M2C_FIELD(node_1,u8 *,4)&4)!=0))flags_1++;

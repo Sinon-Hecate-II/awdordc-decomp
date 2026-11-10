@@ -94,7 +94,7 @@ if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)func_ov001_02171cf
 func_ov001_021836f4();
 func_ov001_02189ebc(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,8));
 for(i=0;i<2;i++)func_ov001_02189ebc(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,12));
-func_ov001_02171d90(&data_ov001_0219085c,&func_02004160);
+Ov001_LoadAsset(&data_ov001_0219085c,&func_02004160);
 func_ov001_0218b368(1,1);func_ov001_0218b368(0,29);
 *(volatile u32*)0x04000010=0;*(volatile u32*)0x04000018=0;
 *(volatile u16*)0x0400000c=(*(volatile u16*)0x0400000c&0x43)|0xe10;
@@ -123,7 +123,7 @@ void func_ov001_0217e238(void) {
     M2C_UNK func_ov001_02183720();
     M2C_UNK func_ov001_02183738(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov001_0218b1ec(s32, M2C_UNK);
-    M2C_UNK func_ov001_0218b298(s32);
+    M2C_UNK CloseTextPanel(s32);
     extern u16 data_ov001_0218f8fe[];
     extern M2C_UNK gMapListState;
     s32 var_r4;
@@ -147,7 +147,7 @@ void func_ov001_0217e238(void) {
         var_r4 += 1;
     } while (var_r5 < 5);
     func_ov001_02183720();
-    func_ov001_0218b298(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14));
+    CloseTextPanel(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14));
     func_ov001_0217e95c();
 }
 
@@ -343,13 +343,13 @@ func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72
 }
 
 void func_ov001_0217e8d4(void *arg0, s32 arg1) {
-    M2C_UNK func_0206ccf8(M2C_UNK *, M2C_UNK, M2C_UNK *, u8, s32, s32, s32);
+    M2C_UNK StringFormatWide(M2C_UNK *, M2C_UNK, M2C_UNK *, u8, s32, s32, s32);
     M2C_UNK func_ov001_0218b080(s32, M2C_UNK, s32, M2C_UNK, s32, M2C_UNK *, s32);
     extern M2C_UNK data_ov001_02190874;
     extern M2C_UNK gMapListState;
     u8 spC[0x20];
 
-    func_0206ccf8(spC, 0x10, &data_ov001_02190874, M2C_FIELD(arg0, u8 *, 0), (s32) M2C_FIELD(arg0, u8 *, 1), (s32) M2C_FIELD(arg0, u8 *, 2), (s32) M2C_FIELD(arg0, u8 *, 3));
+    StringFormatWide(spC, 0x10, &data_ov001_02190874, M2C_FIELD(arg0, u8 *, 0), (s32) M2C_FIELD(arg0, u8 *, 1), (s32) M2C_FIELD(arg0, u8 *, 2), (s32) M2C_FIELD(arg0, u8 *, 3));
     func_ov001_0218b080(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14), 0x5F, (arg1 * 0x1D) + 8, 2, 7, spC, 1);
 }
 

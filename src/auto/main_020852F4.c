@@ -43,15 +43,15 @@ typedef struct VoiceChatWidget {
 } VoiceChatWidget;
 
 void func_020852f4(void){
- void *func_01ffa770(M2C_UNK *); M2C_UNK func_02091cd0(void *); extern M2C_UNK data_02102088;
- void *p=func_01ffa770(&data_02102088);
+ void *FindObjectByClass(M2C_UNK *); M2C_UNK func_02091cd0(void *); extern M2C_UNK data_02102088;
+ void *p=FindObjectByClass(&data_02102088);
  if(!p)return;
  M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;func_02091cd0(p);
 }
 
 void func_02085324(void){
- void *func_01ffa770(M2C_UNK *); extern M2C_UNK data_02102088;
- void *p=func_01ffa770(&data_02102088);
+ void *FindObjectByClass(M2C_UNK *); extern M2C_UNK data_02102088;
+ void *p=FindObjectByClass(&data_02102088);
  if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
 }
 
@@ -130,8 +130,8 @@ void func_020854b8(M2C_UNK arg0) {
 
 void func_020854d0(void *arg0) {
     s32 func_0208471c();
-    s32 func_02084a6c();
-    if ((func_0208471c() != 0) || (func_02084a6c() != 0)) {
+    s32 GetOverlayEventFlags();
+    if ((func_0208471c() != 0) || (GetOverlayEventFlags() != 0)) {
         func_01ffa6fc(arg0);
         return;
     }
@@ -146,13 +146,13 @@ void func_02085514(M2C_UNK arg0) {
 }
 
 s32 func_0208552c(M2C_UNK arg0, void *arg1) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK MI_CpuCopy8();
     extern M2C_UNK data_021020f4;
     s32 (*temp_r2)(M2C_UNK, void *);
     s32 var_r5;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021020f4);
+    temp_r0 = FindObjectByClass(&data_021020f4);
     var_r5 = 1;
     if (temp_r0 != NULL) {
         if (M2C_FIELD(arg1, u8 *, 4) == 0x85) {
@@ -204,13 +204,13 @@ void func_0208565c(M2C_UNK arg0) {
 }
 
 s32 func_02085674(u32 a,void *b) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     void func_02084c5c(s32,s32,s32,u16);
     extern M2C_UNK data_0210212c;
     void *p;
     s32 result;
     s32 (*callback)(u32,void *);
-    p=func_01ffa770(&data_0210212c);
+    p=FindObjectByClass(&data_0210212c);
     result=1;
     if(p) {
         a=(u32)(M2C_FIELD(b,u8 *,5)<<28)>>28;
@@ -250,7 +250,7 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
 #pragma opt_strength_reduction off
 void func_02085788(s32 arg0) {
     M2C_UNK func_02065210(M2C_UNK *, u8, s32);
-    s32 func_02084644();
+    s32 GetActiveOverlay();
     s32 func_020a2370(s32);
     M2C_UNK func_020c4cdc(s32);
     M2C_UNK func_020c4dd0(s32);
@@ -288,7 +288,7 @@ void func_02085788(s32 arg0) {
 
     sp0 = arg0;
     M2C_FIELD(&data_02157634, s8 *, 0) = 0;
-    if (func_02084644() != 2) {
+    if (GetActiveOverlay() != 2) {
         return;
     }
     temp_r0 = func_ov010_02229b00();
@@ -370,7 +370,7 @@ loop_10:
 #pragma push
 #pragma opt_scheduling off
 void func_020859b4(M2C_UNK arg0) {
-    s32 func_02084644();
+    s32 GetActiveOverlay();
     M2C_UNK func_020c4cdc(M2C_UNK);
     M2C_UNK func_020c4dd0(M2C_UNK);
     void *func_020c5328();
@@ -392,7 +392,7 @@ void func_020859b4(M2C_UNK arg0) {
     void *temp_r6;
     u8 *values;
 
-    if (func_02084644() != 2) {
+    if (GetActiveOverlay() != 2) {
         return;
     }
     temp_r0 = func_ov010_02229b00();

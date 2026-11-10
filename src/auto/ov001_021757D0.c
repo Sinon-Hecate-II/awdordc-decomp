@@ -46,7 +46,7 @@ void func_ov001_02175890(void) {
 }
 
 s32 func_ov001_0217589c(M2C_UNK arg0, s32 arg1, s32 arg2) {
-void func_ov001_02176628(void);
+void Ov001_InitScreen(void);
 s32 func_ov001_02175928(s32,s32);
 void func_ov001_021759c4(void); void Ov001_SetupDisplay(void); void func_ov001_02184f68(void);
 void Ov001_SetStepCallback(s32); void func_ov001_0218b850(void); void func_ov001_0218c7d4(s32);
@@ -56,7 +56,7 @@ M2C_FIELD(&data_ov001_02193d2c,M2C_UNK*,4)=arg0;
 if (!func_ov001_02175928(arg1,arg2)) return -1;
 M2C_FIELD(&data_ov001_02193d2c,u8*,1)=0;
 func_ov001_021759c4(); Ov001_SetupDisplay(); func_ov001_02184f68();
-Ov001_SetStepCallback((s32)func_ov001_02176628);
+Ov001_SetStepCallback((s32)Ov001_InitScreen);
 do {
 func_ov001_0218b850();
 M2C_FIELD(&data_ov001_02193d2c,void(**)(void),12)();
@@ -246,18 +246,18 @@ void func_ov001_02175db4(s32 *arg0, s32 *arg1) {
     }
 }
 
-u8 func_ov001_02175ddc(void) {
+u8 Ov001_GetLanguage(void) {
     extern u8 data_ov001_02193d2c;
     return data_ov001_02193d2c;
 }
 
-s32 func_ov001_02175dec(void) {
+s32 Ov001_GetScreenLayout(void) {
     extern u8 data_ov001_02193d2c;
     typedef struct { u32 a, b; unsigned val : 4; } S;
     return ((S *)&data_ov001_02193d2c)->val;
 }
 
-s32 func_ov001_02175e04(s32 arg0) {
+s32 Ov001_HasOptionFlag(s32 arg0) {
     extern u8 data_ov001_02193d2c;
     if (arg0 & ((u32)M2C_FIELD(&data_ov001_02193d2c, s32 *, 8) >> 4)) {
         return 1;
@@ -302,7 +302,7 @@ void func_ov001_02175eb0(void) {
     func_ov001_0218b71c(&data_ov001_02193d4c);
 }
 
-M2C_UNK func_ov001_02175ec4(M2C_UNK arg0) {
+M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
     M2C_UNK func_ov001_0218a74c(M2C_UNK);
     M2C_UNK func_ov001_02189dc8(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193d4c;

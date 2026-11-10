@@ -21,7 +21,7 @@ int func_ov000_0217de64(s16,s16,int,u8,void *);
 void SetMapCursor(s16,s16,int,int,int);
 #pragma opt_strength_reduction off
 void func_ov000_021906a0(int);
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 extern u16 gPlayerUnitIdBase[];
 void func_01ffc2e8(void *);
 s32 func_ov000_02179be0(void);
@@ -54,7 +54,7 @@ void func_ov000_02190094(void)
   s32 scan;
   u8 *u;
   u8 tile;
-  if (((((u32) (*((u16 *) (data_ov000_021df580 + 10)))) << 26) >> 29) & 4)
+  if (((((u32) (*((u16 *) (gAiCommandState + 10)))) << 26) >> 29) & 4)
   {
     new_var[0] = *((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0));
     if (((UnkStruct_ov000_021A860C *) new_var[0])->unkB_4 == 1)
@@ -109,7 +109,7 @@ void func_ov000_02190094(void)
     {
       new_var[1] = *gCurrentMap;
       index = a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2))));
-      if ((!((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + index))].count) && ((!new_var[1][index]) || ((((u32) data_ov000_021df580[7]) << 28) >> 31)))
+      if ((!((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + index))].count) && ((!new_var[1][index]) || ((((u32) gAiCommandState[7]) << 28) >> 31)))
       {
         d = func_020a7694(*((u8 **) (new_var[1] + 0x52d0)));
         if ((*((s8 **) ((((u8 *) (*gCurrentMap)) + 0x52e8) + (b * 4))))[a] < d)
@@ -144,7 +144,7 @@ void func_ov000_02190094(void)
         continue;
       }
       new_var[1] = *gCurrentMap;
-      if (((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) (((*((u16 *) ((new_var[1] + 0x3758) + (y * 2)))) + (new_var[1] + x)) + 0x1928))].count && (!((*((u16 *) (data_ov000_021df580 + 8))) & 32)))
+      if (((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) (((*((u16 *) ((new_var[1] + 0x3758) + (y * 2)))) + (new_var[1] + x)) + 0x1928))].count && (!((*((u16 *) (gAiCommandState + 8))) & 32)))
       {
         continue;
       }

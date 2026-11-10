@@ -14,7 +14,7 @@ static inline s32 IsNewerValue(u32 b, u32 a) {
 /* Convert the polled touch point to map tile coordinates and, when a tile is under it, record the touched tile in the map context (and in the hover-from-tile state when applicable), notifying the caller of the chosen tile index. */
 void func_020bda88(s32 *outTileIndex, s32 arg) {
     void func_0207bb3c(u16 touchX, u16 touchY, s32 *coords);
-    s32 func_0207c8ec(s32 value, s32 divisor);
+    s32 Divide(s32 value, s32 divisor);
     s32 func_020947c0(void);
     s32 func_020caba4(s32 tileX, s32 tileY, s32 mask);
     void func_020bd0a8(s16 x, s16 y);
@@ -29,8 +29,8 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
     if (func_020947c0() != 0) return;
     if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return;
     func_0207bb3c(touchX, touchY, coords);
-    pixelX = func_0207c8ec(coords[0], 0x300);
-    pixelY = func_0207c8ec(coords[1], 0x300);
+    pixelX = Divide(coords[0], 0x300);
+    pixelY = Divide(coords[1], 0x300);
     tileIndex = func_020caba4(pixelX, pixelY, arg);
     if (tileIndex >= 0) {
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
@@ -51,11 +51,11 @@ void func_020bda88(s32 *outTileIndex, s32 arg) {
 }
 
 s32 func_020bdbf4(s32 arg0) {
-s32 func_020947c0(void); void func_0207bb3c(u16,u16,s32 *); s32 func_0207c8ec(s32,s32); void func_020bd104(void); s32 func_020caba4(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
+s32 func_020947c0(void); void func_0207bb3c(u16,u16,s32 *); s32 Divide(s32,s32); void func_020bd104(void); s32 func_020caba4(s32,s32,s32); extern void *gTouchState; extern void **gCurrentMap;
 s32 coords[3];u16 x,y;s32 scaledX,scaledY,result;
 x=M2C_FIELD(gTouchState,u16 *,0);y=M2C_FIELD(gTouchState,u16 *,2);
 if(func_020947c0()!=0)return 0;
-func_0207bb3c(x,y,coords);scaledX=func_0207c8ec(coords[0],0x300);scaledY=func_0207c8ec(coords[1],0x300);
+func_0207bb3c(x,y,coords);scaledX=Divide(coords[0],0x300);scaledY=Divide(coords[1],0x300);
 if(M2C_FIELD(gTouchState,u8 *,0x16)==0)return 0;
 if(scaledX==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&scaledY==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(func_020caba4(scaledX,scaledY,arg0)>=0)result=0x10;else result=0x20;}else result=0;return result;
 }
@@ -235,10 +235,10 @@ void func_020be188(s32 arg0) {
 }
 
 u8 func_020be1a8(void) {
- s32 func_01ffa770(M2C_UNK *);
+ s32 FindObjectByClass(M2C_UNK *);
  extern M2C_UNK data_0212948c;
  u8 result;
- if (func_01ffa770(&data_0212948c)) return 1;
+ if (FindObjectByClass(&data_0212948c)) return 1;
  if (func_020761f8()) result=1; else result=0;
  return result;
 }

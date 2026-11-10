@@ -115,14 +115,14 @@ void func_ov001_02171c10(void) {
 }
 
 s32 func_ov001_02171c24(s32 a,s32 b,s32 c){
-extern u8 data_ov001_0218feb0[];extern s32 data_ov001_02193d58;void func_0200436c(s32,s32,s32);
-void func_ov001_02171d90(u8 *,void (*)(s32,s32,s32));s32 func_ov001_0218ad0c(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 func_ov001_02171f88(void);s32 func_ov001_0218b12c(s32,s32,s32,s32,s32,s32,s32,s32);s32 func_ov001_0218b298(s32);
+extern u8 data_ov001_0218feb0[];extern s32 gOv001MessageArchive;void func_0200436c(s32,s32,s32);
+void Ov001_LoadAsset(u8 *,void (*)(s32,s32,s32));s32 CreateTextPanel(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 func_ov001_02171f88(void);s32 DrawPanelText(s32,s32,s32,s32,s32,s32,s32,s32);s32 CloseTextPanel(s32);
 s32 p,t;
 if(*(u8 *)&data_ov001_02193ccc)return 0;
-func_ov001_02171d90(data_ov001_0218feb0,func_0200436c);
+Ov001_LoadAsset(data_ov001_0218feb0,func_0200436c);
 *(volatile u32 *)0x4001010=0x1920000;
-p=func_ov001_0218ad0c(1,0);t=func_ov001_02175f60(data_ov001_02193d58,a,b,c);
-func_ov001_0218b12c(p,20,0,216,64,2,func_ov001_02171f88(),t);func_ov001_0218b298(p);
+p=CreateTextPanel(1,0);t=func_ov001_02175f60(gOv001MessageArchive,a,b,c);
+DrawPanelText(p,20,0,216,64,2,func_ov001_02171f88(),t);CloseTextPanel(p);
 data_ov001_02193ccc=1;return 1;
 }
 
@@ -134,24 +134,24 @@ s32 func_ov001_02171cf8(void) {
  return 1;
 }
 
-void *func_ov001_02171d30(u8 *arg0) {
+void *Ov001_LocalizePath(u8 *arg0) {
  void func_02068d18(void *,void *,s32);
- s32 func_ov001_02175ddc(s32);
+ s32 Ov001_GetLanguage(s32);
  s32 value;
  func_02068d18(data_ov001_02193cd0,arg0,63);
  if(arg0[5]==120) return data_ov001_02193cd0;
- value=func_ov001_02175ddc(arg0[5]);
+ value=Ov001_GetLanguage(arg0[5]);
  if(arg0[5]==121 && value!=0) return data_ov001_02193cd0;
  data_ov001_02193cd0[5]=data_ov001_0218f2f8[value];
  return data_ov001_02193cd0;
 }
 
-void func_ov001_02171d90(u8 *arg0,void (*arg1)(s32,s32,s32)) {
+void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
  void func_020067e0(s32,s32);
  s32 func_ov001_02189dc8(void *,s32 *,s32);
  void func_ov001_02189ebc(s32);
  s32 size;
- s32 p=func_ov001_02189dc8(func_ov001_02171d30(arg0),&size,4);
+ s32 p=func_ov001_02189dc8(Ov001_LocalizePath(arg0),&size,4);
  func_020067e0(p,size);
  arg1(p,0,size);
  func_ov001_02189ebc(p);
@@ -178,37 +178,37 @@ void func_ov001_02171e20(M2C_UNK arg0) {
 void func_ov001_02171e58(M2C_UNK arg0) {
     s32 func_ov001_02171f88();
     s32 func_ov001_02175f48(s32, M2C_UNK);
-    s32 func_ov001_0218ad0c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218b12c(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
-    M2C_UNK func_ov001_0218b298(s32);
-    extern s32 data_ov001_02193d58;
+    s32 CreateTextPanel(M2C_UNK, M2C_UNK);
+    M2C_UNK DrawPanelText(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    M2C_UNK CloseTextPanel(s32);
+    extern s32 gOv001MessageArchive;
     s32 temp_r4;
     s32 temp_r5;
 
-    temp_r5 = func_ov001_0218ad0c(0, 0);
-    temp_r4 = func_ov001_02175f48(data_ov001_02193d58, arg0);
-    func_ov001_0218b12c(temp_r5, 0xD, 0x28, 0xE6, 0x70, 2, func_ov001_02171f88(), temp_r4);
-    func_ov001_0218b298(temp_r5);
+    temp_r5 = CreateTextPanel(0, 0);
+    temp_r4 = func_ov001_02175f48(gOv001MessageArchive, arg0);
+    DrawPanelText(temp_r5, 0xD, 0x28, 0xE6, 0x70, 2, func_ov001_02171f88(), temp_r4);
+    CloseTextPanel(temp_r5);
 }
 
 void func_ov001_02171ecc(s32 a,s32 b){
-extern s32 data_ov001_02193d58;
-s32 func_ov001_02175ddc(s32);
+extern s32 gOv001MessageArchive;
+s32 Ov001_GetLanguage(s32);
 extern u16 data_ov001_0218f2de[],data_ov001_0218f2dc[];
 
 void func_ov001_0218af94(s32,s32,s32,s32,s32,s32);
 s32 p,t,x,y;
-p=func_ov001_0218ad0c(0,0);t=func_ov001_02175f48(data_ov001_02193d58,b);
-func_ov001_0218b12c(p,13,60,230,94,2,func_ov001_02171f88(),t);
-x=((s32 (*)(void))func_ov001_02175ddc)();y=((s32 (*)(void))func_ov001_02175ddc)();
+p=CreateTextPanel(0,0);t=func_ov001_02175f48(gOv001MessageArchive,b);
+DrawPanelText(p,13,60,230,94,2,func_ov001_02171f88(),t);
+x=((s32 (*)(void))Ov001_GetLanguage)();y=((s32 (*)(void))Ov001_GetLanguage)();
 func_ov001_0218af94(p,data_ov001_0218f2dc[x*2],data_ov001_0218f2de[y*2],2,0x209,a);
-func_ov001_0218b298(p);
+CloseTextPanel(p);
 }
 
 s32 func_ov001_02171f88(void) {
-    s32 func_ov001_02175ddc(s32);
+    s32 Ov001_GetLanguage(s32);
     extern s32 data_ov001_0218f2c0[];
-    s32 index = ((s32 (*)(void))func_ov001_02175ddc)();
+    s32 index = ((s32 (*)(void))Ov001_GetLanguage)();
     return data_ov001_0218f2c0[index];
 }
 
@@ -268,12 +268,12 @@ void func_ov001_02172184(void) {
 void func_ov001_021721c4(void) {
  void func_0200460c(s32,s32,s32);
  void func_020043cc(s32,s32,s32);
- s32 func_ov001_02175dec(void);
+ s32 Ov001_GetScreenLayout(void);
  data_ov001_02193d14=func_ov001_0218b6f8(192,4);
- func_ov001_02171d90(data_ov001_021900e4,func_0200460c);
- switch(func_ov001_02175dec()) {
- case 0: func_ov001_02171d90(data_ov001_02190094[0],func_020043cc); return;
- case 1: func_ov001_02171d90(data_ov001_02190094[1],func_020043cc); return;
+ Ov001_LoadAsset(data_ov001_021900e4,func_0200460c);
+ switch(Ov001_GetScreenLayout()) {
+ case 0: Ov001_LoadAsset(data_ov001_02190094[0],func_020043cc); return;
+ case 1: Ov001_LoadAsset(data_ov001_02190094[1],func_020043cc); return;
  }
 }
 
@@ -286,7 +286,7 @@ void func_ov001_0217223c(void) {
 void func_ov001_021722dc(s32);
 M2C_UNK func_ov001_02172250(s32 a) {
  void func_02007ef4(s32,s32,s32);
- s32 p=func_ov001_02189dc8(func_ov001_02171d30(data_ov001_02190094[a]),0,4);
+ s32 p=func_ov001_02189dc8(Ov001_LocalizePath(data_ov001_02190094[a]),0,4);
  func_02007ef4(p,data_ov001_02193d14,192);
  func_ov001_02189ebc(p);
  func_ov001_0218c884(1,func_ov001_021722dc,0,120);

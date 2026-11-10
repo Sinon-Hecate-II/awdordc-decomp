@@ -1,11 +1,12 @@
 /* 9 functions from 0x02198848 to 0x02199614 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct Unit98 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 health:7; u16 rest:9; u8 tail[6]; } Unit98;
 
 /* Adds the influence of every unit of `player` that can engage the unit under the
  * cursor: each such unit's threat value is the damage it would deal to that unit,
- * written into the AI influence maps by func_ov000_02197a8c. */
+ * written into the AI influence maps by AddUnitThreatInfluence. */
 void AddPlayerThreatInfluence(u8 player) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
@@ -42,11 +43,11 @@ void AddPlayerThreatInfluence(u8 player) {
             s32 idx;
             s32 row = *(u16 *)((u8 *)m + yy * 2 + MAP_ROW_OFFSETS);
             idx = *(u8 *)((u8 *)m + xx + row + 0x508);
-            if (!func_020a85dc(((Unit98 *)((u8 *)m + idx * 14 + MAP_UNIT_RECORDS))->kind)) {
+            if (!IsCarrierUnitKind(((Unit98 *)((u8 *)m + idx * 14 + MAP_UNIT_RECORDS))->kind)) {
                 continue;
             }
         }
-        value = func_ov000_02197434(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind);
+        value = GetModifiedDamagePercent(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind);
         if (value < 25) {
             continue;
         }
@@ -68,12 +69,12 @@ void AddPlayerThreatInfluence(u8 player) {
                 continue;
             }
         }
-        value = func_ov000_02197470(value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->owner, unit->owner);
-        value = func_ov000_021974bc(value, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), (void *)unit);
-        value = func_ov000_0219763c(value, (void *)unit, (s32)unit->health);
+        value = ApplyAttackBonus(value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->owner, unit->owner);
+        value = ApplyCoZoneBonus(value, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), (void *)unit);
+        value = ApplyHealthBonus(value, (void *)unit, (s32)unit->health);
         {
             register s32 b asm("r3") = IsUnitSelected(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0;
-            func_ov000_02197a8c((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind,
+            AddUnitThreatInfluence((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind,
                                 (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->health, (u8)b, flag, bonus);
         }
     }
@@ -97,7 +98,7 @@ void func_ov000_02198c60(void) {
     void func_ov000_0219798c(void);
     void AddPlayerThreatInfluence(u8);
     extern s32 *data_027e0058;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern M2C_UNK data_ov000_021e0a58;
     u8 state;
     u16 saved;
@@ -108,13 +109,13 @@ void func_ov000_02198c60(void) {
     u16 row;
     u16 width;
 
-    state = M2C_FIELD(data_ov000_021df580, u8 *, 7);
+    state = M2C_FIELD(gAiCommandState, u8 *, 7);
     saved = M2C_FIELD(*data_027e0058, u16 *, 0x52B6);
     if (state & 1) {
         return;
     }
     state = (u8)((state & ~1) | 1);
-    M2C_FIELD(data_ov000_021df580, u8 *, 7) = state;
+    M2C_FIELD(gAiCommandState, u8 *, 7) = state;
     func_ov000_02198c08();
     func_ov000_02197990();
     func_ov000_0219798c();
@@ -140,38 +141,40 @@ void func_ov000_02198c60(void) {
     M2C_FIELD(*data_027e0058, u16 *, 0x52B6) = saved;
 }
 
-void func_ov000_02198da4(u8 player) {
+/* Add the AI influence of one player's units against a kind-14 unit: score the
+ * damage each unit could deal and write it into the influence maps. */
+void AddThreatAgainstKind14(u8 player) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
-s32 i, value; Unit98 *unit; s32 kind;
+s32 i, damage; Unit98 *unit; s32 kind;
 if(!func_ov000_021973f8(14))return;
-M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
+M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
 for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
-unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
+unit=(Unit98 *)(*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE);
 if(!(unit->kind))continue;
 if(M2C_FIELD(unit,u16 *,4)&8){
-s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(map+y*2,u16 *,0x3758); x=(s32)((u8 *)map+x); row+=x; idx=M2C_FIELD(row,u8 *,0x508);
-if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
+s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS); x=(s32)((u8 *)map+x); row+=x; idx=M2C_FIELD(row,u8 *,MAP_CELL_UNIT_ID);
+if(!IsCarrierUnitKind(((Unit98 *)(map+idx*MAP_UNIT_STRIDE+MAP_UNIT_RECORDS))->kind))continue;
 }
 kind=unit->kind;
-if(gUnitKindStats[kind*112+19]&16)continue;
-value=func_ov000_02197434(kind,14);
-if(value<25)continue;
-if(!func_ov000_02197814(M2C_FIELD(*gCurrentMap,s32 *,0x52d0),unit,1))continue;
-value=func_ov000_02197470(value,0,unit->owner);
-value=func_ov000_021974bc(value,0,unit);
-value=func_ov000_0219763c(value,unit,unit->health);
-func_ov000_02197a8c(unit,value,14,100,0,1,0);
+if(gUnitKindStats[kind*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_FLAGS]&16)continue;
+damage=GetModifiedDamagePercent(kind,14);
+if(damage<25)continue;
+if(!func_ov000_02197814(M2C_FIELD(*gCurrentMap,s32 *,MAP_CURSOR_UNIT),unit,1))continue;
+damage=ApplyAttackBonus(damage,0,unit->owner);
+damage=ApplyCoZoneBonus(damage,0,unit);
+damage=ApplyHealthBonus(damage,unit,unit->health);
+AddUnitThreatInfluence(unit,damage,14,100,0,1,0);
 }
 }
 
-void func_ov000_02198f60(void) {
+void BuildThreatMapAgainstKind14(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
-    void func_ov000_02198da4(u8);
+    void AddThreatAgainstKind14(u8);
     extern s32 *gCurrentMap;
     u16 saved;
     s32 i;
@@ -181,7 +184,7 @@ void func_ov000_02198f60(void) {
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
         if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            func_ov000_02198da4(i);
+            AddThreatAgainstKind14(i);
         }
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
@@ -233,7 +236,7 @@ void func_ov000_02198fec(u8 player) {
             s32 xx = unit->x;
             s32 r = *(u16 *)((u8 *)m + yy * 2 + 0x3758);
             idx = *(u8 *)((u8 *)m + xx + r + 0x508);
-            if (!func_020a85dc(((Unit98 *)((u8 *)m + idx * 14 + 0x59a4))->kind)) {
+            if (!IsCarrierUnitKind(((Unit98 *)((u8 *)m + idx * 14 + 0x59a4))->kind)) {
                 continue;
             }
         }
@@ -241,16 +244,16 @@ void func_ov000_02198fec(u8 player) {
         if (gUnitKindStats[kind * 112 + 0x13] & 0x10) {
             continue;
         }
-        value = func_ov000_02197434(kind, 14);
+        value = GetModifiedDamagePercent(kind, 14);
         if (value < 25) {
             continue;
         }
         if (!func_ov000_02197814(*((s32 *)((u8 *)*gCurrentMap + 0x52d0)), (void *)unit, 1)) {
             continue;
         }
-        value = func_ov000_02197470(value, 0, (s32)unit->owner);
-        value = func_ov000_021974bc(value, 0, (void *)unit);
-        value = func_ov000_0219763c(value, (void *)unit, (s32)(unit->health & 0x7f));
+        value = ApplyAttackBonus(value, 0, (s32)unit->owner);
+        value = ApplyCoZoneBonus(value, 0, (void *)unit);
+        value = ApplyHealthBonus(value, (void *)unit, (s32)(unit->health & 0x7f));
 
         if (!GetUnitAttackClass(kind)) {
             if (bonus == 1) {
@@ -260,7 +263,7 @@ void func_ov000_02198fec(u8 player) {
             }
         }
 
-        func_ov000_02197a8c((void *)unit, value, 14, 100, 0, 1, bonus);
+        AddUnitThreatInfluence((void *)unit, value, 14, 100, 0, 1, bonus);
 
         {
             map = (s32 *)*gCurrentMap;
@@ -311,38 +314,61 @@ void func_ov000_02199330(void) {
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }
 
-void func_ov000_021993bc(u8 player) {
-extern s32 *gCurrentMap;
-extern u16 gPlayerUnitIdBase[];
-extern u8 gUnitKindStats[];
-s32 value, bonus, i; Unit98 *unit; s32 kind;
-if(!func_ov000_021973f8(6))return;
-bonus=GetDamageBonus((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=player;
-for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
-unit=(Unit98 *)(*gCurrentMap+0x59a4+i*14);
-if(!(unit->kind))continue;
-if(M2C_FIELD(unit,u16 *,4)&8){
-s32 map=*gCurrentMap; s32 y=unit->y; s32 x=unit->x; s32 idx; s32 row=M2C_FIELD(map+y*2,u16 *,0x3758); x=(s32)((u8 *)map+x); row+=x; idx=M2C_FIELD(row,u8 *,0x508);
-if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
-}
-kind=unit->kind;
-value=func_ov000_02197434(kind,6);
-if(value<25)continue;
-if(!GetUnitAttackClass(unit->kind) && GetUnitDamagePercent(6,unit->kind)>=50)continue;
-value=func_ov000_02197470(value,0,unit->owner);
-value=func_ov000_021974bc(value,0,unit);
-value=func_ov000_0219763c(value,unit,unit->health);
-func_ov000_02197a8c(unit,value,6,100,0,0,bonus);
-}
+/* Add the AI influence of one player's units against a full-health kind-6
+ * unit: score the damage each unit could deal and write it into the maps. */
+void AddThreatAgainstKind6(u8 player) {
+    extern s32 *gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 damage;
+    s32 bonus;
+    s32 i;
+    Unit98 *unit;
+    s32 kind;
+
+    if (!func_ov000_021973f8(6)) {
+        return;
+    }
+    bonus = GetDamageBonus((u8)M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = player;
+    for (i = gPlayerUnitIdBase[player] + 1; i < gPlayerUnitIdBase[player] + 51; i++) {
+        unit = (Unit98 *)(*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE);
+        if (!unit->kind) {
+            continue;
+        }
+        if (unit->flags & 8) {
+            s32 map = *gCurrentMap;
+            s32 y = unit->y;
+            s32 x = unit->x;
+            s32 idx;
+            s32 row = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            x = (s32)((u8 *)map + x);
+            row += x;
+            idx = M2C_FIELD(row, u8 *, MAP_CELL_UNIT_ID);
+            if (!IsCarrierUnitKind(((Unit98 *)(map + idx * MAP_UNIT_STRIDE + MAP_UNIT_RECORDS))->kind)) {
+                continue;
+            }
+        }
+        kind = unit->kind;
+        damage = GetModifiedDamagePercent(kind, 6);
+        if (damage < 25) {
+            continue;
+        }
+        if (!GetUnitAttackClass(unit->kind) && GetUnitDamagePercent(6, unit->kind) >= 50) {
+            continue;
+        }
+        damage = ApplyAttackBonus(damage, 0, unit->owner);
+        damage = ApplyCoZoneBonus(damage, 0, unit);
+        damage = ApplyHealthBonus(damage, unit, unit->health);
+        AddUnitThreatInfluence(unit, damage, 6, 100, 0, 0, bonus);
+    }
 }
 
-void func_ov000_02199588(void) {
+void BuildThreatMapAgainstKind6(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
-    void func_ov000_021993bc(u8);
+    void AddThreatAgainstKind6(u8);
     extern s32 *gCurrentMap;
     u16 saved;
     s32 i;
@@ -352,7 +378,7 @@ void func_ov000_02199588(void) {
     func_ov000_0219798c();
     for (i = 1; i < 5; i++) {
         if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            func_ov000_021993bc(i);
+            AddThreatAgainstKind6(i);
         }
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;

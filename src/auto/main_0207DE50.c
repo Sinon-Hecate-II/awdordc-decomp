@@ -6,7 +6,7 @@ extern const s16 gTerrainNeighborOffsets[12];
 extern void **gCurrentMap;
 extern u16 *gTerrainTileset[2];
 extern const u32 gTerrainClassFlags[];
-extern u16 data_02101ac4[256];
+extern u16 gTerrainDualVariantTable[256];
 extern u16 data_020ebfbc[64];
 extern u16 data_020ec0bc[256];
 extern u16 data_020ebebc[64];
@@ -71,14 +71,47 @@ u16 GetTerrainEdgeVariant(s32 x, s32 y) {
     }
     return mask + 0x109;
 }
-u16 func_0207e150(s32 x,s32 y) { TerrainCoords24 first, second, base; s32 j; u8 b,a=0;
-base = *(const TerrainCoords24 *)gTerrainNeighborOffsets;
-first = base;
-{s32 i; s16 *p=first.coords; for(i=0;i<4;i++,p+=3) { s32 nx,ny; nx=x+p[0]; ny=y+p[1]; if(nx>=0 && ny>=0 && nx<M2C_FIELD(*gCurrentMap,u16 *,0x5144) && ny<M2C_FIELD(*gCurrentMap,u16 *,0x5146)) { u16 off=M2C_FIELD((u8 *)*gCurrentMap+ny*2,u16 *,0x3758); u16 tile=M2C_FIELD((u8 *)*gCurrentMap+(nx+off)*2,u16 *,0xa10); if(((const u32 (*)[2])gTerrainClassFlags)[gTerrainTileset[1][tile]][0]&0x90000) a |= 1<<i; } }}
-b=0;
-second = base;
-{ s16 *p=second.coords; for(j=0;j<4;j++,p+=3) { s32 nx,ny; nx=x+p[0]; ny=y+p[1]; if(nx>=0 && ny>=0 && nx<M2C_FIELD(*gCurrentMap,u16 *,0x5144) && ny<M2C_FIELD(*gCurrentMap,u16 *,0x5146)) { u16 off=M2C_FIELD((u8 *)*gCurrentMap+ny*2,u16 *,0x3758); u16 tile=M2C_FIELD((u8 *)*gCurrentMap+(nx+off)*2,u16 *,0xa10); if(((const u32 (*)[2])gTerrainClassFlags)[gTerrainTileset[1][tile]][0]&0x40000) b |= 1<<j; } }}
-return data_02101ac4[a+(b<<4)]; }
+/* 4-neighbour autotile variant for the 0xE3 terrain family: builds a mask of the
+   orthogonal neighbours carrying the 0x90000 class flag and one of those
+   carrying 0x40000, then returns the tile from the 16x16 variant table. */
+u16 GetTerrainDualVariant(s32 x, s32 y) {
+    TerrainCoords24 neighborA, neighborB, neighborBase;
+    s32 j;
+    u8 maskB, maskA = 0;
+
+    neighborBase = *(const TerrainCoords24 *)gTerrainNeighborOffsets;
+    neighborA = neighborBase;
+    {
+        s32 i;
+        s16 *p = neighborA.coords;
+        for (i = 0; i < 4; i++, p += 3) {
+            s32 nx, ny;
+            nx = x + p[0];
+            ny = y + p[1];
+            if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) && ny < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT)) {
+                u16 rowOffset = M2C_FIELD((u8 *)*gCurrentMap + ny * 2, u16 *, MAP_ROW_OFFSETS);
+                u16 tileId = M2C_FIELD((u8 *)*gCurrentMap + (nx + rowOffset) * 2, u16 *, MAP_CELL_TILE_ID);
+                if (((const u32 (*)[2])gTerrainClassFlags)[gTerrainTileset[1][tileId]][0] & 0x90000) maskA |= 1 << i;
+            }
+        }
+    }
+    maskB = 0;
+    neighborB = neighborBase;
+    {
+        s16 *p = neighborB.coords;
+        for (j = 0; j < 4; j++, p += 3) {
+            s32 nx, ny;
+            nx = x + p[0];
+            ny = y + p[1];
+            if (nx >= 0 && ny >= 0 && nx < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) && ny < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT)) {
+                u16 rowOffset = M2C_FIELD((u8 *)*gCurrentMap + ny * 2, u16 *, MAP_ROW_OFFSETS);
+                u16 tileId = M2C_FIELD((u8 *)*gCurrentMap + (nx + rowOffset) * 2, u16 *, MAP_CELL_TILE_ID);
+                if (((const u32 (*)[2])gTerrainClassFlags)[gTerrainTileset[1][tileId]][0] & 0x40000) maskB |= 1 << j;
+            }
+        }
+    }
+    return gTerrainDualVariantTable[maskA + (maskB << 4)];
+}
 #pragma opt_common_subs reset
 u16 func_0207e338(s32 x,s32 y) { u16 table[256]; u32 count; u16 *dst; const u16 *src; src=data_020ec0bc; dst=table; count=128; do { u16 a=src[0]; u16 b=src[1]; src+=2; dst[0]=a; dst[1]=b; dst+=2; count-=1; } while(count != 0); return *(u16 *)((u8 *)table + ((u32)(y << 28) >> 23) + ((u32)(x << 28) >> 27)) + 1; }
 

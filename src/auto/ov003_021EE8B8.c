@@ -4,13 +4,13 @@ static inline u32 Ov003PanelFlag(void *p) { return (u32)(M2C_FIELD(p,u8 *,0x39)<
 static inline s8 Ov003PanelCount(void *p) { return M2C_FIELD(p,s8 *,4); }
 static inline void Ov003PanelUpdate(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),0x1c)(p); }
 static inline int Ov003PlayersReady(void) {
-    int func_020846a4(void);
+    int IsLinkSessionActive(void);
     u32 GetReadyPlayerMask(void);
     void *func_02084e24(int);
     u32 mask;
     s8 i;
     void *p;
-    if (!func_020846a4()) return 0;
+    if (!IsLinkSessionActive()) return 0;
     mask=GetReadyPlayerMask();
     for(i=0;i<4;i++) {
         if(mask & (1<<i)) {
@@ -28,7 +28,7 @@ void func_02098dc0(s16,int,u16,int);
 void func_02088e84(void *,s16,s32,s16,s32);
 void func_02087d84(void *,int,s16,s16,u16,u16);
 u32 func_020aae10(void *);u32 func_020aae44(void *);
-int func_020846a4(void);
+int IsLinkSessionActive(void);
 s16 func_ov003_022004a8(u8);
 int func_ov003_022008b8(u8);
 int func_ov003_021e6cc4(s16,int,int,int);
@@ -39,7 +39,7 @@ int func_ov003_021e6e5c(void);
 void func_ov003_021ee8b8(void *arg0) {
 #pragma opt_common_subs off
 
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084d3c(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02084d88(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02088d94(void *);
@@ -107,7 +107,7 @@ void func_ov003_021ee8b8(void *arg0) {
     u32 mask;
     void *p, *q;
     int count;
-    if (!func_020846a4()) return;
+    if (!IsLinkSessionActive()) return;
     if (!func_02084d3c(sp0, 0x24)) return;
     packet=func_02084e64();
     if (!packet) return;
@@ -159,7 +159,7 @@ foundPlayer:
             if((var_r0_4&255)&&func_ov003_021e6d28()){func_02088d94(M2C_FIELD(arg0,void **,0x58));func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8) Ov003PanelCount(M2C_FIELD(arg0,void **,0x6c));
-            if (func_020846a4() == 0) {
+            if (IsLinkSessionActive() == 0) {
                 var_r6 = 0;
                 do {
                     if (var_r6 < (u32) temp_r7) {
@@ -469,7 +469,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
                 AddSprite((u16) (temp_r5_3 & 0x1FF), 0x48, (u16) ((sp2C & (0x680 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x9800), data_027e00b4, 0xB);
             }
         }
-        if (func_020846a4() != 0) {
+        if (IsLinkSessionActive() != 0) {
             var_r1 = var_r8;
             if (M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0x74) == 0xFF) {
                 var_r0_6 = 1;

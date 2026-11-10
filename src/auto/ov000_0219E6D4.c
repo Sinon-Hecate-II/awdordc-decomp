@@ -7,7 +7,7 @@ static inline s32 E6D4Call(u8 *p,s16 index) { s32 func_0207b764(u8,u8); u8 *q=p+
 static inline s32 E6D4Check(u8 *p, s16 index) { u8 *q=p+0x59a4+E6D4Offset(index); s32 yes=M2C_FIELD(p+M2C_FIELD(p,u16*,0x52a4)*0x8c,u8*,0x67c3); s32 y=q[2]; u32 x=q[1],bit; if(yes&2)yes=1;else{bit=x+M2C_FIELD(p+y*2,u16*,0x3758);yes=1;if((u8)(M2C_FIELD(p+(bit>>3),u8*,0x5201)&(1<<(bit&7)))==0)yes=0;} return yes; }
 
 void func_ov000_0219e6d4(void) {
- extern s8 *data_ov000_021df580;
+ extern s8 *gAiCommandState;
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
@@ -17,14 +17,14 @@ void func_ov000_0219e6d4(void) {
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
  data_ov000_021df654 = &func_ov000_02183874;
- *data_ov000_021df580 = 2;
+ *gAiCommandState = 2;
 }
 
 void func_ov000_0219e72c(void) {
     /* Variant collecting type-5 map entries, installing func_ov000_02181b8c. */
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
     extern s8 data_ov000_021df824;
@@ -61,27 +61,27 @@ void func_ov000_0219e72c(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = &data_ov000_021df824;
     data_ov000_021df654 = &func_ov000_02181b8c;
-    *data_ov000_021df580 = 2;
+    *gAiCommandState = 2;
 }
 
 void func_ov000_0219e830(void) {
-    extern s8 *data_ov000_021df580;
-    *data_ov000_021df580 = 4;
+    extern s8 *gAiCommandState;
+    *gAiCommandState = 4;
 }
 
 void func_ov000_0219e848(void) {
     extern void (*data_ov000_021df42c[])(void);
     extern void (*data_ov000_021df4b8[])(void);
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern void **gCurrentMap;
     void *temp_r0;
     temp_r0 = *gCurrentMap;
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) == 0 && M2C_FIELD(temp_r0, u8 *, 0x5158) != 2) {
-        data_ov000_021df42c[M2C_FIELD(data_ov000_021df580, u8 *, 2)]();
+        data_ov000_021df42c[M2C_FIELD(gAiCommandState, u8 *, 2)]();
     } else {
-        data_ov000_021df4b8[M2C_FIELD(data_ov000_021df580, u8 *, 2)]();
+        data_ov000_021df4b8[M2C_FIELD(gAiCommandState, u8 *, 2)]();
     }
-    M2C_FIELD(data_ov000_021df580, u8 *, 2)++;
+    M2C_FIELD(gAiCommandState, u8 *, 2)++;
 }
 
 s32 func_ov000_0219e8d0(void) {
@@ -109,18 +109,18 @@ s32 func_ov000_0219e948(void) {
     s32 func_ov000_0219e9f4();
     s32 func_ov000_0219efa4();
     s32 func_ov000_0219f0d8();
-    s32 func_ov000_0219f728();
+    s32 ProcessAiCommandDelay();
     s32 func_ov000_0219f918();
     s32 func_ov000_0219f968();
     s32 func_ov000_0219f9c0();
     s32 func_ov000_0219fa0c();
     s32 func_ov000_0219fa30();
     s32 func_ov000_0219fa98();
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     s32 var_r5;
     var_r5 = 0;
     do {
-        switch (M2C_FIELD(data_ov000_021df580, u8 *, 1)) {
+        switch (M2C_FIELD(gAiCommandState, u8 *, 1)) {
         case 0:
             var_r5 = func_ov000_0219e9f4();
             break;
@@ -143,7 +143,7 @@ s32 func_ov000_0219e948(void) {
             var_r5 = func_ov000_0219f9c0();
             break;
         case 7:
-            var_r5 = func_ov000_0219f728();
+            var_r5 = ProcessAiCommandDelay();
             break;
         case 8:
             var_r5 = func_ov000_0219fa30();
@@ -171,7 +171,7 @@ s32 func_ov000_0219e9f4(void) {
     s32 func_ov000_0219e8d0(void);
 
     extern u8 gAiCommand[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     extern void **gCurrentMap;
     extern u8 data_ov000_021df7dc[];
     extern u8 data_02168f0c;
@@ -192,7 +192,7 @@ s32 func_ov000_0219e9f4(void) {
     func_0207c2d0(*(s32 *)(G0 + 8));
     state = G0[0];
     if (state == 0x14) {
-        data_ov000_021df580[1] = 2;
+        gAiCommandState[1] = 2;
         return 1;
     }
     if (state == 1 || (state >= 12 && state <= 13) || (state >= 15 && state <= 18)) {
@@ -226,7 +226,7 @@ s32 func_ov000_0219e9f4(void) {
                 r3 = func_0207b764(sel[1], sel[2]);
             }
         }
-        data_ov000_021df580[1] = 2;
+        gAiCommandState[1] = 2;
         if (r3 == 0) return 1;
         return 0;
     }
@@ -262,7 +262,7 @@ s32 func_ov000_0219e9f4(void) {
         }
         func_020844a0(data_ov000_021df7dc, (u8 *)map + 0x5388);
         func_020d61f0();
-        data_ov000_021df580[1] = 2;
+        gAiCommandState[1] = 2;
         if (r4 == 0) return 1;
         return 0;
     }
@@ -292,7 +292,7 @@ s32 func_ov000_0219e9f4(void) {
         sel = *(void **)((u8 *)map + 0x52d0);
         ((u8 *)map)[0x52d5] = 0;
         sel[10] = (u8)((sel[10] & ~0x7f) | (G0[18] & 0x7f));
-        data_ov000_021df580[1] = 1;
+        gAiCommandState[1] = 1;
         r4 = 0;
         if (func_ov000_0219e8d0() != 0) {
             return 0;
@@ -324,7 +324,7 @@ final_visibility:
         return 0;
     }
     r4 = func_0207b764(sel[1], sel[2]);
-    data_ov000_021df580[1] = 1;
+    gAiCommandState[1] = 1;
     if (r4 == 0) return 1;
     return 0;
 }
@@ -334,7 +334,7 @@ s32 func_ov000_0219efa4(void) {
     void *func_ov000_0216939c(void *);
     void func_020cfd28(void);
     void func_020844a0(u8 *, u8 *);
-    s32 func_020d6544(s32, s32, s32, void *, s32);
+    s32 ResolvePathAttack(s32, s32, s32, void *, s32);
     s32 func_020d1a1c(s32);
     void func_ov000_02199f50(s32, s32, s32, s32);
     void func_020a64ec(void *);
@@ -348,7 +348,7 @@ s32 func_ov000_0219efa4(void) {
     func_ov000_0216939c(*(void **)((u8 *)*gCurrentMap + 0x52d0));
     func_020cfd28();
     func_020844a0(data_ov000_021df7dc, (u8 *)*gCurrentMap + 0x5388);
-    result = func_020d6544(
+    result = ResolvePathAttack(
         *(s16 *)((u8 *)*gCurrentMap + 0x52d8),
         *(s16 *)((u8 *)*gCurrentMap + 0x52da),
         ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52d0))[0] & 0x3f,
@@ -398,7 +398,7 @@ s32 func_ov000_0219f0d8(void) {
     void func_020bb110(void);
     extern u8 gAiCommand[];
     extern void **gCurrentMap;
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
 
     switch (gAiCommand[0]) {
     case 2: case 13: case 14: case 16: case 17:
@@ -453,7 +453,7 @@ s32 func_ov000_0219f0d8(void) {
     case 11:
         func_ov000_0219fabc(1);
         func_ov000_0219fabc(0);
-        data_ov000_021df580[1] = 8;
+        gAiCommandState[1] = 8;
         break;
     case 12:
         func_020bb768();
@@ -499,8 +499,8 @@ s32 func_ov000_0219f0d8(void) {
     default: {
         func_020bbe10();
         func_020bb028();
-        data_ov000_021df580[0] = 2;
-        data_ov000_021df580[1] = 0;
+        gAiCommandState[0] = 2;
+        gAiCommandState[1] = 0;
         break;
     }
     }
@@ -511,25 +511,25 @@ void func_ov000_0219f3fc(void) {
     void PlaySoundAtTile(s32, u8, u8);
     void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
     PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
-    M2C_FIELD(data_ov000_021df580, s8 *, 1) = 9;
+    M2C_FIELD(gAiCommandState, s8 *, 1) = 9;
 }
 
 void func_ov000_0219f448(void) {
     void PlaySoundAtTile(s32, u8, u8);
     void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
-    extern s8 *data_ov000_021df580;
+    extern s8 *gAiCommandState;
     ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
     PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
-    M2C_FIELD(data_ov000_021df580, s8 *, 1) = 9;
+    M2C_FIELD(gAiCommandState, s8 *, 1) = 9;
 }
 
 void func_ov000_0219f494(void) {
 extern void **gCurrentMap;
-extern s8 *data_ov000_021df580;
+extern s8 *gAiCommandState;
 extern u8 gAiCommand[];
 void func_020a6fcc(void);
 s32 i;
@@ -537,7 +537,7 @@ u8 *p;
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;
 func_020a6fcc();
 p=gAiCommand;
-*data_ov000_021df580=0;
+*gAiCommandState=0;
 M2C_FIELD(*gCurrentMap,u8 *,0x515a)=p[6];
 for(i=0;i<4;i++){
 M2C_FIELD((u8 *)*gCurrentMap+i,u8 *,0x515c)=p[12];
@@ -550,8 +550,8 @@ p++;
 u8 func_ov000_0219f518(void){
 extern void **gCurrentMap;
 extern u8 gAiCommand[];
-extern s8 *data_ov000_021df580;
-extern s32 data_ov000_021e1468;
+extern s8 *gAiCommandState;
+extern s32 gAiCommandTimer;
 s32 func_0207b764(u8,u8);
 u8 result;
 s32 value;
@@ -578,15 +578,15 @@ if(yes){
 q=p+0x59a4+offset;
 value=func_0207b764(q[1],q[2]);
 }
-data_ov000_021e1468=0;
-M2C_FIELD(data_ov000_021df580,u8 *,1)=7;
+gAiCommandTimer=0;
+M2C_FIELD(gAiCommandState,u8 *,1)=7;
 result=value==0;
 return result;
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
 u8 func_ov000_0219f5fc(void){
-s32 func_0207b764(u8,u8);extern void **gCurrentMap;extern u8 gAiCommand[];extern s8 *data_ov000_021df580;extern s32 data_ov000_021e1468;
+s32 func_0207b764(u8,u8);extern void **gCurrentMap;extern u8 gAiCommand[];extern s8 *gAiCommandState;extern s32 gAiCommandTimer;
 void *p=*gCurrentMap;u8 y=gAiCommand[7],x=gAiCommand[6];s32 r=0;u32 n;u32 flags; s32 ok;
 flags=M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3);
 if(flags&2)ok=1;
@@ -595,7 +595,7 @@ ok=1;
 n=x+M2C_FIELD((u8 *)p+y*2,u16 *,0x3758);
 if(!(u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5201)&(1<<(n&7))))ok=0;
 }
-if(ok){r=func_0207b764(x,y);data_ov000_021e1468=0;data_ov000_021df580[1]=7;}else data_ov000_021df580[1]=3;
+if(ok){r=func_0207b764(x,y);gAiCommandTimer=0;gAiCommandState[1]=7;}else gAiCommandState[1]=3;
 return r==0;
 }
 

@@ -285,9 +285,9 @@ s32 func_0208b5c4(void) {
 }
 
 s32 func_0208b5ec(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021027f0;
-    return func_01ffa770(&data_021027f0);
+    return FindObjectByClass(&data_021027f0);
 }
 
 void func_0208b600(void *arg0) {

@@ -1,5 +1,6 @@
 /* 7 functions from 0x021FF3D4 to 0x022001EC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 
 void func_ov003_021ff3d4(M2C_UNK arg0) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
@@ -155,7 +156,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
 void func_ov003_021ff7ac(void) {
     extern M2C_UNK data_ov003_0220fe64;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_ov003_0220fe64);
+    temp_r0 = FindObjectByClass(&data_ov003_0220fe64);
     if (temp_r0 == NULL) {
         return;
     }
@@ -424,7 +425,10 @@ void *func_ov003_021ffdf4(void *obj) {
     return obj;
 }
 
-void *func_ov003_02200004(void *obj) {
+/* Base destructor of the ov003 scene object: resets the vtables to the base
+   ones, then releases every owned child, buffer and sprite array without
+   freeing the object itself. */
+void *Ov003Object_Destructor(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
     void func_020c127c(void);
@@ -436,30 +440,30 @@ void *func_ov003_02200004(void *obj) {
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
     void *sub;
     void *child;
-    M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
-    M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
-    sub = M2C_FIELD(obj, void **, 0x70);
+    obj->vtable = &data_ov003_02210104;
+    obj->iface = &data_ov003_02210130;
+    sub = obj->sub70;
     if (sub != NULL) {
         func_020e35cc(M2C_FIELD(sub, s32 *, 0x14));
         MemFree(sub);
     }
-    child = M2C_FIELD(obj, void **, 68);
+    child = obj->child44;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 76);
+    child = obj->child4C;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 80);
+    child = obj->child50;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 84);
+    child = obj->child54;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 92);
+    child = obj->child5C;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 96);
+    child = obj->child60;
     if (child != NULL) M2C_FIELD(*(void **)child, void (**)(void *), 4)(child);
-    child = M2C_FIELD(obj, void **, 88);
+    child = obj->buffer58;
     if (child != NULL) MemFree(child);
-    child = M2C_FIELD(obj, void **, 100);
+    child = obj->buffer64;
     if (child != NULL) MemFree(child);
-    sub = M2C_FIELD(obj, void **, 104);
+    sub = obj->sprites68;
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));
@@ -473,7 +477,7 @@ void *func_ov003_02200004(void *obj) {
         if (M2C_FIELD(sub, void **, 36) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 36));
         MemFree(sub);
     }
-    sub = M2C_FIELD(obj, void **, 108);
+    sub = obj->sprites6C;
     if (sub != NULL) {
         if (M2C_FIELD(sub, void **, 0) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 0));
         if (M2C_FIELD(sub, void **, 4) != NULL) DeleteSpriteObject(M2C_FIELD(sub, void **, 4));

@@ -85,10 +85,10 @@ void ghiDoConnect(GHIConnection *connection) {
 void func_0204ca4c(void *a){
 s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-extern M2C_UNK data_020fd88c,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
+extern M2C_UNK sUrlSchemeHttps,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
 if(!M2C_FIELD(a,s32 *,0x168)){
-if(!StringCompareN(M2C_FIELD(a,void **,0x14),&data_020fd88c,8)){
+if(!StringCompareN(M2C_FIELD(a,void **,0x14),&sUrlSchemeHttps,8)){
 M2C_FIELD(a,s32 *,0xfc)=1;M2C_FIELD(a,s32 *,0x38)=17;return;
 }
 M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;

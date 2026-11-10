@@ -183,7 +183,7 @@ u8 func_0204284c(void){void *GetConnection(void);u8 i=0;s32 j;do{for(j=0;j<=M2C_
 s32 IsConnectionMember(s32 a){void *GetConnection(void);s32 GetSessionPlayerId(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=GetSessionPlayerId(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
 
 s32 func_0204292c(void *arg0) {
-    s32 func_02060b68(void *, void *, s32);
+    s32 SBServerGetIntValue(void *, void *, s32);
     extern u8 data_020fca1c[];
     extern u8 data_020fca28[];
     extern u8 sDwcKeyMType[];
@@ -192,21 +192,21 @@ s32 func_0204292c(void *arg0) {
     extern u8 sDwcKeyPid[];
     s32 r0;
 
-    // Checks several conditions using func_02060b68, returns 0 if any main check fails.
-    r0 = func_02060b68(arg0, data_020fca1c, -1);
+    // Checks several conditions using SBServerGetIntValue, returns 0 if any main check fails.
+    r0 = SBServerGetIntValue(arg0, data_020fca1c, -1);
     if (r0 == -1) return 0;
-    r0 = func_02060b68(arg0, data_020fca28, -1);
+    r0 = SBServerGetIntValue(arg0, data_020fca28, -1);
     if (r0 == -1) return 0;
-    r0 = func_02060b68(arg0, sDwcKeyMType, -1);
+    r0 = SBServerGetIntValue(arg0, sDwcKeyMType, -1);
     if (r0 == -1) return 0;
-    r0 = func_02060b68(arg0, sDwcKeyMResv, -1);
+    r0 = SBServerGetIntValue(arg0, sDwcKeyMResv, -1);
     if (r0 == -1) {
-        r0 = func_02060b68(arg0, sDwcKeyMResv, 0);
+        r0 = SBServerGetIntValue(arg0, sDwcKeyMResv, 0);
         if (r0 == 0) return 0;
     }
-    r0 = func_02060b68(arg0, sDwcKeyMVer, -1);
+    r0 = SBServerGetIntValue(arg0, sDwcKeyMVer, -1);
     if (r0 == -1) return 0;
-    r0 = func_02060b68(arg0, sDwcKeyPid, 0);
+    r0 = SBServerGetIntValue(arg0, sDwcKeyPid, 0);
     return r0;
 }
 

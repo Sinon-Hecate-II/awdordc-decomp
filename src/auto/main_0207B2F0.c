@@ -1,5 +1,25 @@
 /* 39 functions from 0x0207B2F0 to 0x0207C2F0 (main), found by ds-decomp. */
 #include "common.h"
+/* The current 3D sprite batch: gSpriteBatch holds a pointer to one. Up to ten sprites are
+ * placed into the sprite engine's tile memory. */
+typedef struct SpriteBatch {
+    s32 baseX;          /* +0x00 tile x the batch is placed at */
+    s32 baseY;          /* +0x04 tile y */
+    s32 bank;           /* +0x08 sprite engine bank */
+    s32 bank2;          /* +0x0C second sprite engine bank */
+    s32 tileBase;       /* +0x10 */
+    s32 tileOffset[10]; /* +0x14 running tile offset of each placed sprite */
+    u8 kind[10];        /* +0x3C tile kind of each placed sprite, 0 = empty */
+    u8 selected[10];    /* +0x46 selection state of each placed sprite */
+    s32 tileBase2;      /* +0x50 */
+    s32 count;          /* +0x54 sprites placed */
+    s32 field58;        /* +0x58 */
+    s32 field5C;        /* +0x5C */
+    s32 field60;        /* +0x60 */
+    s32 field64;        /* +0x64 kind drawn with the alternate palette */
+} SpriteBatch;
+
+#define SPRITE_BATCH ((SpriteBatch *)gSpriteBatch)
 
 u8 func_0207b7c4(void);
 void func_0207b754(M2C_UNK, M2C_UNK);
@@ -132,11 +152,11 @@ s32 func_0207b7a4(void *arg0) {
 }
 
 u8 func_0207b7c4(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02100c20;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02100c20) != 0) {
+    if (FindObjectByClass(&data_02100c20) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -298,91 +318,91 @@ s32 func_0207bb3c(s32 arg0, s32 arg1, s32 *arg2) {
 }
 
 void func_0207bbc8(s32 arg0) {
-    extern s32 data_0214bfa4;
-    data_0214bfa4 = arg0;
+    extern s32 gSpriteBatch;
+    gSpriteBatch = arg0;
 }
 
 void func_0207bbd8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_0207bc94(s32, s32);
     void func_0207bcb0(s32);
-    extern s32 data_0214bfa4;
+    extern s32 gSpriteBatch;
     extern u16 **gCur3DSpriteEngine;
     s32 i;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 8) = arg0;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0xC) = arg1;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x10) = M2C_FIELD((u8 *)gCur3DSpriteEngine + arg0 * 4, s32 *, 0xC);
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x14) = arg2;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x50) = arg3;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x54) = 0;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x64) = 0;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0) = 0;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 4) = 0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 8) = arg0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0xC) = arg1;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x10) = M2C_FIELD((u8 *)gCur3DSpriteEngine + arg0 * 4, s32 *, 0xC);
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x14) = arg2;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x50) = arg3;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x54) = 0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = 0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0) = 0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 4) = 0;
     func_0207bc94(10, 2);
     func_0207bcb0(0x20);
     for (i = 0; i < 10; i++) {
-        M2C_FIELD((void *)(data_0214bfa4 + i), u8 *, 0x3C) = 0;
+        M2C_FIELD((void *)(gSpriteBatch + i), u8 *, 0x3C) = 0;
     }
 }
 
 void func_0207bc80(s32 arg0) {
-    extern s32 data_0214bfa4;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x64) = arg0;
+    extern s32 gSpriteBatch;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = arg0;
 }
 
 void func_0207bc94(s32 arg0, s32 arg1) {
-    extern s32 data_0214bfa4;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x58) = arg0;
-    M2C_FIELD((void *)data_0214bfa4, s32 *, 0x5C) = arg1;
+    extern s32 gSpriteBatch;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x58) = arg0;
+    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x5C) = arg1;
 }
 
 void func_0207bcb0(s32 arg0) {
-extern s32 data_0214bfa4;
-M2C_FIELD(data_0214bfa4,s32 *,0x60)=arg0;
+extern s32 gSpriteBatch;
+M2C_FIELD(gSpriteBatch,s32 *,0x60)=arg0;
 }
 
 void func_0207bcc4(s32 arg0, s32 arg1) {
-extern s32 data_0214bfa4;
+extern s32 gSpriteBatch;
 extern u8 data_021011d4[], data_021011d5[];
 void func_0207bd58(s32,s32);
-M2C_FIELD(data_0214bfa4+M2C_FIELD(data_0214bfa4,s32 *,0x54),u8 *,0x3c)=arg0;
-M2C_FIELD(data_0214bfa4+M2C_FIELD(data_0214bfa4,s32 *,0x54),u8 *,0x46)=arg1;
-func_0207bd58(M2C_FIELD(data_0214bfa4,s32 *,0x54), ((data_021011d4[arg0*8]+7)>>3)*((data_021011d5[arg0*8]+7)>>3));
-M2C_FIELD(data_0214bfa4,s32 *,0x54)++;
+M2C_FIELD(gSpriteBatch+M2C_FIELD(gSpriteBatch,s32 *,0x54),u8 *,0x3c)=arg0;
+M2C_FIELD(gSpriteBatch+M2C_FIELD(gSpriteBatch,s32 *,0x54),u8 *,0x46)=arg1;
+func_0207bd58(M2C_FIELD(gSpriteBatch,s32 *,0x54), ((data_021011d4[arg0*8]+7)>>3)*((data_021011d5[arg0*8]+7)>>3));
+M2C_FIELD(gSpriteBatch,s32 *,0x54)++;
 }
 
-s32 func_0207bd40(s32 arg0) {
-extern s32 data_0214bfa4;
-return M2C_FIELD(data_0214bfa4+arg0*4,s32 *,0x14);
+s32 GetBatchTileOffset(s32 arg0) {
+extern s32 gSpriteBatch;
+return M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
 }
 
 void func_0207bd58(s32 arg0,s32 arg1) {
-extern s32 data_0214bfa4;
+extern s32 gSpriteBatch;
 if(arg0>=9)return;
-M2C_FIELD(data_0214bfa4+(arg0+1)*4,s32 *,0x14)=arg1+M2C_FIELD(data_0214bfa4+arg0*4,s32 *,0x14);
+M2C_FIELD(gSpriteBatch+(arg0+1)*4,s32 *,0x14)=arg1+M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
 }
 
 s32 func_0207bd88(s32 arg0) {
-s32 func_0207bd40(s32); extern s32 data_0214bfa4;
-s32 base=data_0214bfa4;
-s32 index=func_0207bd40(arg0);
+s32 GetBatchTileOffset(s32); extern s32 gSpriteBatch;
+s32 base=gSpriteBatch;
+s32 index=GetBatchTileOffset(arg0);
 return M2C_FIELD(base,s32 *,0x10)+M2C_FIELD(base,s32 *,0x60)*index;
 }
 
-s32 func_0207bdac(s32 arg0) {
-extern s32 data_0214bfa4;
-return M2C_FIELD(data_0214bfa4,s32 *,0x50)+arg0;
+s32 GetBatchTile(s32 arg0) {
+extern s32 gSpriteBatch;
+return M2C_FIELD(gSpriteBatch,s32 *,0x50)+arg0;
 }
 
 void func_0207bdc4(void) {
-    s32 func_0207bdac(s32);
+    s32 GetBatchTile(s32);
     void func_01ff9e44(void *, s32, s32);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
-    void func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081590(M2C_UNK *, M2C_UNK);
-    void func_02081528(void);
+    void OpenNarcArchive(M2C_UNK *);
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, M2C_UNK);
+    void CloseNarcArchive(void);
     s32 func_0207bd88(s32);
-    extern s32 data_0214bfa4;
+    extern s32 gSpriteBatch;
     extern u8 data_021011d4[];
     extern u8 data_021011d0[];
     extern M2C_UNK data_0211e12c;
@@ -398,10 +418,10 @@ void func_0207bdc4(void) {
     s32 count;
     s8 *p;
 
-    func_01ff9e44(&data_0211e12c, func_0207bdac(0) << 5, 0x60);
+    func_01ff9e44(&data_0211e12c, GetBatchTile(0) << 5, 0x60);
     r4 = 0;
 
-    base = data_0214bfa4;
+    base = gSpriteBatch;
     count = M2C_FIELD(base, s32 *, 0x54);
     p = (s8 *)base + 0x3C;
     for (i = 0; i < count; i++, p++) {
@@ -416,89 +436,111 @@ void func_0207bdc4(void) {
 
     switch (r4) {
     case 0x30:
-        func_020814e4(GetLocalizedFileName(&data_0210142c));
+        OpenNarcArchive(GetLocalizedFileName(&data_0210142c));
         break;
     case 0x40:
-        func_020814e4(GetLocalizedFileName(&data_02101420));
+        OpenNarcArchive(GetLocalizedFileName(&data_02101420));
         break;
     case 0x60:
-        func_020814e4(GetLocalizedFileName(&data_02101414));
+        OpenNarcArchive(GetLocalizedFileName(&data_02101414));
         break;
     }
 
-    for (i = 0; i < M2C_FIELD(data_0214bfa4, s32 *, 0x54); i++) {
-        base = data_0214bfa4;
+    for (i = 0; i < M2C_FIELD(gSpriteBatch, s32 *, 0x54); i++) {
+        base = gSpriteBatch;
         kind = M2C_FIELD(base, u8 *, i + 0x3C);
         if (kind != 0) {
             M2C_UNK ptr = M2C_FIELD(&data_021011d0, M2C_UNK *, kind << 3);
             M2C_UNK res = GetLocalizedFileName(ptr);
             s32 idx = func_0207bd88(i);
-            func_02081590(res, idx);
+            LoadNarcFileDecompressed(res, idx);
         }
     }
 
-    func_02081528();
+    CloseNarcArchive();
 }
 
 void func_0207bf00(s32 arg0,s32 arg1) {
-extern s32 data_0214bfa4; extern u16 **gCur3DSpriteEngine; void func_0207bfb4(void);
+extern s32 gSpriteBatch; extern u16 **gCur3DSpriteEngine; void DrawSpriteBatch(void);
 s32 x,y;
 u8 index;
-M2C_FIELD(data_0214bfa4,s32 *,0)=arg0>>3;
-M2C_FIELD(data_0214bfa4,s32 *,4)=arg1>>3;
-func_0207bfb4();
+M2C_FIELD(gSpriteBatch,s32 *,0)=arg0>>3;
+M2C_FIELD(gSpriteBatch,s32 *,4)=arg1>>3;
+DrawSpriteBatch();
 x=arg0&7; y=arg1&7;
-index=M2C_FIELD(data_0214bfa4,u32 *,12);
+index=M2C_FIELD(gSpriteBatch,u32 *,12);
 M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x38)=7-x;
 M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x40)=-3-y;
-index=M2C_FIELD(data_0214bfa4,u32 *,8);
+index=M2C_FIELD(gSpriteBatch,u32 *,8);
 M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x38)=-x;
 M2C_FIELD((u8 *)*gCur3DSpriteEngine+index*2,s16 *,0x40)=-y;
 }
 
-void func_0207bfb4(void) {
- extern s32 data_0214bfa4;extern u16 **gCur3DSpriteEngine;
- s32 i; s32 x,y; s32 total; s32 kind,selected; s32 stride; s32 row; s32 col;u16 tile; s32 yy;
- total=0;i=0;x=M2C_FIELD(data_0214bfa4,s32 *,0);y=M2C_FIELD(data_0214bfa4,s32 *,4);
- for(;i<M2C_FIELD(data_0214bfa4,s32 *,0x54);i++) {
- kind=M2C_FIELD(data_0214bfa4+i,u8 *,0x3c);selected=M2C_FIELD(data_0214bfa4+i,u8 *,0x46);
- if(kind) {
- if(M2C_FIELD(data_0214bfa4,s32 *,0x64)!=kind)tile=func_0207bd40(i)|((u32)(func_0207bdac(0)<<28)>>16);
- else tile=func_0207bd40(i)|((u32)(func_0207bdac(1)<<28)>>16);
- if(selected==1)tile=func_0207bd40(i)|((u32)(func_0207bdac(2)<<28)>>16);
- for(row=0;row<func_0207c1a0(i);row++) {
- yy=total+y+row;
- for(col=0;col<func_0207c18c(i);col++) {
- stride=yy*32;
- M2C_FIELD((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+M2C_FIELD(data_0214bfa4,s32 *,8)*4,void **,0x20)+stride*2,u16 *,(x+col)*2)=tile;
- tile++;
- }}
- total+=func_0207c1a0(i);
- }}
- M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1<<M2C_FIELD(data_0214bfa4,s32 *,8);
- M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1<<M2C_FIELD(data_0214bfa4,s32 *,12);
+/* Plots the current 3D sprite batch into the sprite engine's tile memory: each placed sprite is
+ * written as consecutive tile ids at its position, using the palette of its kind or of the
+ * selected sprite. */
+void DrawSpriteBatch(void) {
+    extern s32 gSpriteBatch;
+    extern u16 **gCur3DSpriteEngine;
+    s32 sprite;
+    s32 x, y;
+    s32 totalRows;
+    s32 kind, selected;
+    s32 stride;
+    s32 row;
+    s32 col;
+    u16 tile;
+    s32 rowY;
+
+    totalRows = 0;
+    sprite = 0;
+    x = SPRITE_BATCH->baseX;
+    y = SPRITE_BATCH->baseY;
+    for (; sprite < SPRITE_BATCH->count; sprite++) {
+        kind = SPRITE_BATCH->kind[sprite];
+        selected = SPRITE_BATCH->selected[sprite];
+        if (kind) {
+            if (SPRITE_BATCH->field64 != kind)
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(0) << 28) >> 16);
+            else
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(1) << 28) >> 16);
+            if (selected == 1)
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(2) << 28) >> 16);
+            for (row = 0; row < GetBatchSpriteRows(sprite); row++) {
+                rowY = totalRows + y + row;
+                for (col = 0; col < GetBatchSpriteCols(sprite); col++) {
+                    stride = rowY * 32;
+                    M2C_FIELD((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + SPRITE_BATCH->bank * 4, void **, 0x20) + stride * 2, u16 *, (x + col) * 2) = tile;
+                    tile++;
+                }
+            }
+            totalRows += GetBatchSpriteRows(sprite);
+        }
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << SPRITE_BATCH->bank;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << SPRITE_BATCH->bank2;
 }
 
-s32 func_0207c18c(s32 arg0) {
+s32 GetBatchSpriteCols(s32 arg0) {
     s32 func_0207c1b4();
     return (s32) (func_0207c1b4(arg0) + 7) >> 3;
 }
 
-s32 func_0207c1a0(s32 arg0) {
+s32 GetBatchSpriteRows(s32 arg0) {
     s32 func_0207c1d8();
     return (s32) (func_0207c1d8(arg0) + 7) >> 3;
 }
 
 s32 func_0207c1b4(s32 arg0) {
-    extern s32 data_0214bfa4;
+    extern s32 gSpriteBatch;
     extern u8 data_021011d4[];
-    return data_021011d4[M2C_FIELD((void *)(data_0214bfa4 + arg0), u8 *, 0x3C) * 8];
+    return data_021011d4[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
 s32 func_0207c1d8(s32 arg0) {
-    extern s32 data_0214bfa4;
+    extern s32 gSpriteBatch;
     extern u8 data_021011d5[];
-    return data_021011d5[M2C_FIELD((void *)(data_0214bfa4 + arg0), u8 *, 0x3C) * 8];
+    return data_021011d5[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
 void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {

@@ -313,37 +313,41 @@ if(M2C_FIELD(M2C_FIELD(connection,void **,GHI_POST_DATA),s32 *,12)){if(!ghiSendD
 return M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN)?2:1;
 }
 
-s32 func_0204c580(void *a) {
-s32 gpiStringDup(s8 *); s32 StringCompareN(s8 *,void *,s32); s8 *StringFindChar(s32,s32); s32 func_02068f1c(s8 *,void *); s32 ParseInt(s8 *);
-extern u8 gGhttpAssertConnection[],gGhttpProcessFileName[],data_020fd7c4[],data_020fd874[],data_020fd884[],data_020fd88c[],data_020fd898[];extern s8 data_020fd89c[];
-s8 *p,*q; s32 n,v; s8 ch; s32 secure;
-if(!a)AssertFailed(gGhttpAssertConnection,gGhttpProcessFileName,data_020fd7c4,37);
-if(!a)return 0;
-if(!M2C_FIELD(a,s32 *,20))AssertFailed(data_020fd874,gGhttpProcessFileName,data_020fd7c4,43);
-p=M2C_FIELD(a,s8 **,20);if(!p)return 0;
-if(!StringCompareN(p,data_020fd884,7)){p+=7;secure=0;}
-else if(!StringCompareN(p,data_020fd88c,8)){p+=8;secure=1;}
+/* Parses connection->url: picks the "http://" (port 80) or "https://" (port 443)
+ * scheme, copies the host into connection->host, takes the port from the URL or the
+ * scheme default, then stores the path (defaulting to "/") in connection->path with
+ * spaces turned into '+'.  Returns 0 on a missing or unsupported URL. */
+s32 ghiParseURL(void *connection) {
+s32 gpiStringDup(s8 *); s32 StringCompareN(s8 *,void *,s32); s8 *StringFindChar(s32,s32); s32 StringSpanUntil(s8 *,void *); s32 ParseInt(s8 *);
+extern u8 gGhttpAssertConnection[],gGhttpProcessFileName[],sGhiParseURL[],sGhiConnectionURL[],sUrlSchemeHttp[],sUrlSchemeHttps[],sUrlHostDelimiters[];extern s8 sUrlDefaultPath[];
+s8 *cursor,*hit; s32 span,path; s8 savedChar; s32 secure;
+if(!connection)AssertFailed(gGhttpAssertConnection,gGhttpProcessFileName,sGhiParseURL,37);
+if(!connection)return 0;
+if(!M2C_FIELD(connection,s32 *,GHI_URL))AssertFailed(sGhiConnectionURL,gGhttpProcessFileName,sGhiParseURL,43);
+cursor=M2C_FIELD(connection,s8 **,GHI_URL);if(!cursor)return 0;
+if(!StringCompareN(cursor,sUrlSchemeHttp,7)){cursor+=7;secure=0;}
+else if(!StringCompareN(cursor,sUrlSchemeHttps,8)){cursor+=8;secure=1;}
 else return 0;
-n=func_02068f1c(p,data_020fd898);ch=p[n];p[n]=0;
-M2C_FIELD(a,s32 *,24)=gpiStringDup(p);
-if(!M2C_FIELD(a,s32 *,24))return 0;
-p[n]=ch;p+=n;
-if(*p==58){p++;M2C_FIELD(a,u16 *,32)=ParseInt(p);if(!M2C_FIELD(a,u16 *,32))return 0;
-do {s8 c=*++p; if(c==0)break; if(c==47)break;}while(1);
-}else{if(secure)M2C_FIELD(a,u16 *,32)=443;else M2C_FIELD(a,u16 *,32)=80;}
-done: if(!*p)p=data_020fd89c;
-M2C_FIELD(a,s32 *,36)=gpiStringDup(p);
-v=M2C_FIELD(a,s32 *,36);
-q=StringFindChar(v,32);
-if(q){do{*q=43;v=M2C_FIELD(a,s32 *,36);q=StringFindChar(v,32);}while(q);}
-if(v==0)return 0;return 1;
+span=StringSpanUntil(cursor,sUrlHostDelimiters);savedChar=cursor[span];cursor[span]=0;
+M2C_FIELD(connection,s32 *,GHI_HOST)=gpiStringDup(cursor);
+if(!M2C_FIELD(connection,s32 *,GHI_HOST))return 0;
+cursor[span]=savedChar;cursor+=span;
+if(*cursor==58){cursor++;M2C_FIELD(connection,u16 *,GHI_PORT)=ParseInt(cursor);if(!M2C_FIELD(connection,u16 *,GHI_PORT))return 0;
+do {s8 c=*++cursor; if(c==0)break; if(c==47)break;}while(1);
+}else{if(secure)M2C_FIELD(connection,u16 *,GHI_PORT)=443;else M2C_FIELD(connection,u16 *,GHI_PORT)=80;}
+done: if(!*cursor)cursor=sUrlDefaultPath;
+M2C_FIELD(connection,s32 *,GHI_PATH)=gpiStringDup(cursor);
+path=M2C_FIELD(connection,s32 *,GHI_PATH);
+hit=StringFindChar(path,32);
+if(hit){do{*hit=43;path=M2C_FIELD(connection,s32 *,GHI_PATH);hit=StringFindChar(path,32);}while(hit);}
+if(path==0)return 0;return 1;
 }
 
 void func_0204c738(void *p) {
-void InvokeRequestCallback(void *,s32,s32); void func_0204926c(void); s32 func_0204c580(void *);s32 func_020498e4(s32);void *ghiResolveHostname(s32);extern s32 gHttpServerOverride;
+void InvokeRequestCallback(void *,s32,s32); void func_0204926c(void); s32 ghiParseURL(void *);s32 func_020498e4(s32);void *ghiResolveHostname(s32);extern s32 gHttpServerOverride;
 s32 id,v;void *q;
 InvokeRequestCallback(p,0,0);func_0204926c();
-if(!func_0204c580(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=3;return;}
+if(!ghiParseURL(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=3;return;}
 id=M2C_FIELD(p,s32 *,0x15c);
 if(id==0) { id=gHttpServerOverride ? gHttpServerOverride : M2C_FIELD(p,s32 *,0x18); }
 v=func_020498e4(id);M2C_FIELD(p,s32 *,0x1c)=v;

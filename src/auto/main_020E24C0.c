@@ -339,19 +339,19 @@ void func_020e3344(void) {
  void func_020e3400(void);
  M2C_UNK SetFileDirectory();
  s32 func_02080e30();
- void func_020814e4();
+ void OpenNarcArchive();
  s32 func_020815a8();
- void func_02081528();
+ void CloseNarcArchive();
  func_020e3400();
  SetFileDirectory(&data_0212d6c8);
  data_02168fd0[0]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6d4),1);
  data_02168fd0[1]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6e0),1);
  SetFileDirectory(&data_0212d6f0);
- func_020814e4(GetLocalizedFileName((s32)&data_0212d704));
+ OpenNarcArchive(GetLocalizedFileName((s32)&data_0212d704));
  data_02168fd0[2]=func_020815a8(GetLocalizedFileName((s32)&data_0212d714));
  data_02168fd0[3]=func_020815a8(GetLocalizedFileName((s32)&data_0212d724));
  data_02168fd0[4]=func_020815a8(GetLocalizedFileName((s32)&data_0212d734));
- func_02081528();
+ CloseNarcArchive();
 }
 
 void func_020e3400(void) {

@@ -224,13 +224,13 @@ u8 func_020c1a80(void) {
 void func_020c1a9c(s32 a,s32 b){s32 func_020ae22c(s32); func_0208ca2c(a<<5,(u16)b,func_020ae22c(11),1);}
 
 void func_020c1acc(s32 x,s32 y,s32 tile,s32 pal){
-void func_0207bb3c(s32,s32,s32 *);s32 func_0207c8ec(s32,s32);
+void func_0207bb3c(s32,s32,s32 *);s32 Divide(s32,s32);
 void DrawFrameBorder(s16,s16,s16,s16,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;
 s32 a[3],b[3];s32 xx,yy;
 func_0207bb3c(0,0,a);func_0207bb3c(256,192,b);
-a[0]=func_0207c8ec(a[0]+24,192);a[1]=func_0207c8ec(a[1]+24,192);
-b[0]=func_0207c8ec(b[0]+24,192);b[1]=func_0207c8ec(b[1]+24,192);
+a[0]=Divide(a[0]+24,192);a[1]=Divide(a[1]+24,192);
+b[0]=Divide(b[0]+24,192);b[1]=Divide(b[1]+24,192);
 xx=x+a[0];yy=y+a[1];
 DrawFrameBorder((s16)xx,(s16)yy,(s16)(x+b[0]-xx),(s16)(y+b[1]-yy),(u16)((tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|(u16)(pal<<12)),0,1);
 }

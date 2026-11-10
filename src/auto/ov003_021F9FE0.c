@@ -27,7 +27,7 @@ int func_020a8a84(int);
 void func_020a92bc(void *,int);
 void func_020a94fc(void *);
 int func_ov003_021f400c(void);
-int func_020846a4(void);
+int IsLinkSessionActive(void);
 void *func_020c7e88(int);
 u8 GetLanguage(void);
 void func_ov003_021f9fe0(s32 a,s32 b,s32 c) {
@@ -58,7 +58,7 @@ AddSprite((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_02
 flag=0;
 if(id>=225 && id<425 &&func_020c7eb8(id)==0)flag=1;
 if(((u8)flag && ((mode=(u32)(p[59]<<28)>>28),Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8))) ||
-(!func_ov003_021f400c() && func_020846a4() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)) ||
+(!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)) ||
 (func_ov003_021f2654() && ((u32)(p[57]<<24)>>31))) {
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,56)=-b;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=-c;
@@ -174,7 +174,7 @@ M2C_FIELD(p,u8 **,84)[41]=0;break;
 }
 
 void func_ov003_021fac2c(s32 a, s32 b, s32 c, s32 d, u16 tile) {
-    s16 func_0207c8ec(s32, s32);
+    s16 Divide(s32, s32);
     s16 Modulo(s32, s32);
     extern u16 data_ov003_0220feac[];
     extern void *gCur3DSpriteEngine;
@@ -189,7 +189,7 @@ void func_ov003_021fac2c(s32 a, s32 b, s32 c, s32 d, u16 tile) {
     u16 k;
 
     x = Modulo(a, 2) * 15;
-    y = Modulo(func_0207c8ec(a, 2) * 2, 32);
+    y = Modulo(Divide(a, 2) * 2, 32);
     pos = y * 32 + x;
     off = 0;
     for (row = 0; row < 2; row++) {

@@ -129,22 +129,27 @@ void SetAllyTeamColor(s32 a, s32 b) {
 s32 HumansShareOneTeam(s32 a){s32 IsPlayerActive(s32);s32 IsPlayerHuman(s32);extern void **gCurrentMap;s32 count;u8 team;s32 i,off,own;u8 v;s32 p,q;if(IsPlayerHuman(a))return 0;off=140;own=a*140;team=0;count=0;i=1;do{if(IsPlayerActive(i)&&i!=a){if(count==0){if(IsPlayerHuman(i)){p=(s32)*gCurrentMap;v=M2C_FIELD(p+off,u8 *,0x67ca);if(v!=M2C_FIELD(own+p,u8 *,0x67ca)){team=v;count++;}}}else if(IsPlayerHuman(i)){q=(s32)*gCurrentMap;v=M2C_FIELD(q+off,u8 *,0x67ca);if(team!=v&&v!=M2C_FIELD(own+q,u8 *,0x67ca))return 0;}}i++;off+=140;}while(i<5);return 1;}
 
 #pragma opt_strength_reduction off
-void func_020cdcc4(s32 a,s32 b,s16 r,s32 v){
+/* Walk every map cell within Manhattan distance `radius` of (originX,originY)
+ * and, for each unit found, preview the battle against the selected unit.  When
+ * the preview produced a result the cell is painted with `gridValue` in the
+ * map's overlay grid (0 marks a reachable attack tile, -1 the dead zone closer
+ * than an indirect unit's minimum range). */
+void MarkAttackRangeCells(s32 originX,s32 originY,s16 radius,s32 gridValue){
 extern void **gCurrentMap;s32 func_020a4828(s32,s32);void func_020d1690(s32,s32,void *);s32 func_020d27a4(s32,s32);void func_020d166c(s32,s32,void *);
-s32 neg,y,d,x;s32 id;void *p;
-for(d=(s16)-r,y=(s16)(b-r);y<=b+r;y=(s16)(y+1),d=(s16)(d+1)){
-if(y<0||y>=M2C_FIELD(*gCurrentMap,u16 *,0x5146))continue;
-for(x=(s16)(a-r+(d<0?-d:d)),neg=-d;x<=a+r-(d<0?neg:d);x=(s16)(x+1)){
-if(x<0||x>=M2C_FIELD(*gCurrentMap,u16 *,0x5144))continue;
-id=func_020a4828(x,y);
-if(id){p=*gCurrentMap;func_020d1690(M2C_FIELD(p,u8 *,0x52d4),id,p+0x52dc);
-if(M2C_FIELD(*gCurrentMap,s16 *,0x6ed6))M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]=(s8)v;
+s32 negDy,y,dy,x;s32 targetId;void *map;
+for(dy=(s16)-radius,y=(s16)(originY-radius);y<=originY+radius;y=(s16)(y+1),dy=(s16)(dy+1)){
+if(y<0||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))continue;
+for(x=(s16)(originX-radius+(dy<0?-dy:dy)),negDy=-dy;x<=originX+radius-(dy<0?negDy:dy);x=(s16)(x+1)){
+if(x<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH))continue;
+targetId=func_020a4828(x,y);
+if(targetId){map=*gCurrentMap;func_020d1690(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId,map+MAP_CURSOR_X);
+if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]=(s8)gridValue;
 }else{
-p=*gCurrentMap;
-id=M2C_FIELD(p+x+M2C_FIELD(p+y*2,u16 *,0x3758),u8 *,0);
-if(id&&func_020d27a4(M2C_FIELD(p,u8 *,0x52d4),id)!=1){
-p=*gCurrentMap;func_020d166c(M2C_FIELD(p,u8 *,0x52d4),id,p+0x52dc);
-if(M2C_FIELD(*gCurrentMap,s16 *,0x6ed6))M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]=(s8)v;
+map=*gCurrentMap;
+targetId=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,0);
+if(targetId&&func_020d27a4(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId)!=1){
+map=*gCurrentMap;func_020d166c(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId,map+MAP_CURSOR_X);
+if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]=(s8)gridValue;
 }
 }
 }}
@@ -153,10 +158,10 @@ if(M2C_FIELD(*gCurrentMap,s16 *,0x6ed6))M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)
 void func_020cdeac(s32 a,s32 b,u8 *p) {
 s32 func_020a76d4(u8 *);
 extern u8 gUnitMinAttackRange,data_ov000_021b5c09;s32 off;
-func_020cdcc4(a,b,(s16)func_020a76d4(p),0);
+MarkAttackRangeCells(a,b,(s16)func_020a76d4(p),0);
 off=((u32)(*p<<26)>>26)*112;
 if(*(&data_ov000_021b5c09+off)==1)return;
-func_020cdcc4(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);
+MarkAttackRangeCells(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);
 }
 
 void func_020cdf30(s32 x,s32 y,s32 f) {

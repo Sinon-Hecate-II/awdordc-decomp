@@ -29,33 +29,33 @@ void *func_ov001_02176114(void);
 void func_ov001_02178ff8(void);
 void func_ov001_021792ec(void);
 void func_ov001_02179078(void);
-s32 func_ov001_0218ad0c(s32,s32);
+s32 CreateTextPanel(s32,s32);
 M2C_UNK func_02007df8(s32,void *,s32);
 M2C_UNK func_02007e20(void *,void *,s32);
-M2C_UNK func_ov001_0218b12c(s32,s32,s32,s32,s32,s32,s32,void *);
+M2C_UNK DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);
 extern s8 data_ov001_02193d84;
 u8 buf[22];
 s32 handle;
 void *p;
 p=func_ov001_02176114();
-handle=func_ov001_0218ad0c(0,0);
+handle=CreateTextPanel(0,0);
 M2C_FIELD(&data_ov001_02193d84,u8 *,1)=0;
 M2C_FIELD(&data_ov001_02193d84,u8 *,0)=0;
 func_ov001_02178ff8();
 func_02007df8(0,buf,22);
 func_02007e20(p+2,buf,M2C_FIELD(p,u8 *,1)*2);
-func_ov001_0218b12c(handle,8,53,240,28,2,0x480,buf);
-func_ov001_0218b298(handle);
+DrawPanelText(handle,8,53,240,28,2,0x480,buf);
+CloseTextPanel(handle);
 func_ov001_021760f0(func_ov001_021792ec);
 func_ov001_021862d8(29,4,0,-1,0);
 Ov001_SetStepCallback(func_ov001_02179078);
 }
 
 void func_ov001_02178ff8(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190668;
     extern M2C_UNK func_0200448c;
-    func_ov001_02171d90(&data_ov001_02190668, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190668, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -199,10 +199,10 @@ void func_ov001_02179320(void) {
 }
 
 void func_ov001_0217936c(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_0219067c;
     extern M2C_UNK func_0200448c;
-    func_ov001_02171d90(&data_ov001_0219067c, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_0219067c, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -376,12 +376,12 @@ void func_ov001_02179718(void) {
 }
 
 void func_ov001_02179778(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190690, data_ov001_021906a8, data_ov001_021906c0;
     extern M2C_UNK func_020046cc, func_020040b4, func_0200448c;
-    func_ov001_02171d90(&data_ov001_02190690, &func_020046cc);
-    func_ov001_02171d90(&data_ov001_021906a8, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_021906c0, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190690, &func_020046cc);
+    Ov001_LoadAsset(&data_ov001_021906a8, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_021906c0, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
@@ -618,10 +618,10 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179d5c);
 }
 
 void func_ov001_02179cf0(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_021906d4;
     extern M2C_UNK func_0200448c;
-    func_ov001_02171d90(&data_ov001_021906d4, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_021906d4, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);

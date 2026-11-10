@@ -184,13 +184,13 @@ s32 func_ov000_021694e8(s32 arg0) {
 void func_ov000_02169518(s32 arg0) {
  void func_ov000_02169540(void *,s32);
  extern M2C_UNK data_ov000_021ae988;
- void *p=(void *)func_01ffa770(&data_ov000_021ae988);
+ void *p=(void *)FindObjectByClass(&data_ov000_021ae988);
  if(!p)return;
  func_ov000_02169540(p,arg0);
 }
 
 void func_ov000_02169540(void *p, s32 arg1){
-s32 func_020a7d38(void *);s32 func_020a7d68(void *);s32 func_020946d0(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
+s32 func_020a7d38(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void func_0207b764(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
 extern u8 data_02168f0c[];
 s32 func_ov000_021697a0(volatile s8 *);s32 func_ov000_02169940(s8 *);int func_ov000_02169854(int,int,const signed char *);void func_ov000_02169804(void *,void *);void func_ov000_02169f88(void);
 s8 *path=(s8*)arg1;
@@ -203,7 +203,7 @@ if(!(ok&255))M2C_FIELD(p,u8 *,0x46)=0;
 }
 if(!func_ov000_02169854(x,y,path))M2C_FIELD(p,u8 *,0x46)=0;
 if(M2C_FIELD(p,void **,0x3c) && func_020a7d38(M2C_FIELD(p,void **,0x3c)) && !func_020a7d68(M2C_FIELD(p,void **,0x3c)))M2C_FIELD(p,u8 *,0x46)=0;
-if(func_020946d0())M2C_FIELD(p,u8 *,0x46)=0;
+if(IsDialogActive())M2C_FIELD(p,u8 *,0x46)=0;
 if(M2C_FIELD(p,u8 *,0x46))func_0207b764(x,y);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,0x52a4)))func_02091c20(15,func_ov000_021697a0(path));
 func_ov000_02169804(path,(u8*)p+0x58);
@@ -220,10 +220,10 @@ void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
 }
 
 void func_ov000_021696d4(void) {
- s32 func_01ffa770(M2C_UNK *);
+ s32 FindObjectByClass(M2C_UNK *);
  void func_ov000_021696f8(void *);
  extern M2C_UNK data_ov000_021ae988;
- void *p=(void *)func_01ffa770(&data_ov000_021ae988);
+ void *p=(void *)FindObjectByClass(&data_ov000_021ae988);
  if(!p)return;
  func_ov000_021696f8(p);
  func_ov000_021696d4();
@@ -239,11 +239,11 @@ void func_ov000_021696f8(void *arg0) {
 }
 
 u8 func_ov000_0216971c(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov000_021ae988;
     u8 var_r0;
 
-    if (func_01ffa770(&data_ov000_021ae988) != 0) {
+    if (FindObjectByClass(&data_ov000_021ae988) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -503,13 +503,13 @@ s32 func_ov000_02169ec0(M2C_UNK p) {
 
 s32 func_ov000_02169f08(void *p) {
  s32 func_020a7298(s32,s32);
- s32 func_020cd674(void);
+ s32 IsFastAnimation(void);
  extern M2C_UNK data_ov000_021aec90;
  s32 value;
  void *base=M2C_FIELD(gCurrentMap,void **,0);
  s32 index=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(base+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD));
  value=M2C_FIELD(&data_ov000_021aec90,u8 *,index*20);
- if(func_020cd674()!=0)value<<=1;
+ if(IsFastAnimation()!=0)value<<=1;
  return (s16)value;
 }
 

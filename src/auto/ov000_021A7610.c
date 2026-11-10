@@ -1,5 +1,7 @@
 /* 6 functions from 0x021A7610 to 0x021A860C (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ov000_ai.h"
+#include "battle_map.h"
 #pragma optimization_level 0
 static inline s32 AiWeightedCount(s32 value,s32 kind) { extern u16 data_ov000_021e14aa[]; return data_ov000_021e14aa[kind]*value; }
 #pragma optimization_level reset
@@ -119,44 +121,44 @@ s32 func_ov000_021a7e98(s32 arg0) {
 }
 
 s32 func_ov000_021a7f1c(s32 arg0) {
-s32 func_ov000_021a5ffc(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
+s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 func_ov000_021a484c(s32,s32);s32 func_ov000_021a67f0(u8);s32 func_ov000_021a4980(s8,s32);
 void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 func_020d2d18(u16,s32);
 s32 func_ov000_021a49e0(s32);s32 func_ov000_021a881c(s32,s32);
-extern u8 data_ov000_021b5c6c[],gUnitKindStats[],data_ov000_021b5be0[],gAiTargetCandidates[],gAiCommand[];
-extern u32 data_ov000_021df8ac[];extern void **gCurrentMap;extern u8 *gAiState;
+extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
+extern u32 gUnitKindScores[];extern void **gCurrentMap;extern u8 *gAiState;
 s32 mode,flag,low,best,i,index,other,cost,limit;u8 chosen;u32 score,v; s32 shortfall;u8 *attr,*entry,*map,*state;u16 price,player;
-if(func_ov000_021a5ffc(4)==-1)return -1;
+if(FindAiTargetOfType(4)==-1)return -1;
 mode=func_ov000_021a4dc4();flag=mode&256;
 retry:
 low=(u8)mode;best=0;score=0;limit=low-1;
-for(i=1,attr=data_ov000_021b5c6c;i<27;i++,attr+=112){
-if(score>=data_ov000_021df8ac[i])continue;
+for(i=1,attr=gUnitKindInfo;i<27;i++,attr+=112){
+if(score>=gUnitKindScores[i])continue;
 if(flag){
 if(IsFootUnitKind((u8)i)){if(limit<5)goto regular;}else goto regular;goto next;
 }else if(low && (attr[19]&7)){
 if(!GetUnitAttackClass((u8)i) && !IsFootUnitKind((u8)i) && i!=6)continue;
 if(i==10 || i==26)continue;
 if(IsFootUnitKind((u8)i) && limit>=5)continue;
-v=data_ov000_021df8ac[i];
+v=gUnitKindScores[i];
 if(score<=v>>1){best=i;score=v>>1;}
 continue;
 }
 regular:
 if(GetUnitAttackClass((u8)i)==1 && (attr[19]&7) && func_ov000_021a484c(mode,i)==1)continue;
-score=data_ov000_021df8ac[i];best=i;
+score=gUnitKindScores[i];best=i;
 next:;
 }
 if(!best)return -1;
 attr=gUnitKindStats+best*112;chosen=best;
 again:
-index=func_ov000_021a67f0(data_ov000_021b5be0[best]);
+index=func_ov000_021a67f0(gUnitKindTargetClass[best]);
 if(index==-1)goto reject;
 if((attr[19]&7) && GetUnitAttackClass(chosen)==1){
 entry=gAiTargetCandidates+index*12;
 if(func_ov000_021a4980((s8)entry[4],best)){entry[3]=254;goto again;}
 func_ov000_021a0250();
-}else if((u8)(data_ov000_021b5be0[best]+254)<=1){
+}else if((u8)(gUnitKindTargetClass[best]+254)<=1){
 entry=gAiTargetCandidates+index*12;
 if(func_ov000_021a4e08(entry[0],entry[1],best)>=90){entry[3]=255;goto again;}
 func_ov000_021a0250();
@@ -199,58 +201,62 @@ if(price>((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->money-shortfall)goto r
 }
 gAiCommand[6]=best;return index;
 reject:
-data_ov000_021df8ac[best]=0;func_ov000_021a0250();goto retry;
+gUnitKindScores[best]=0;func_ov000_021a0250();goto retry;
 }
 
-s32 func_ov000_021a8438(s32 index) {
- extern u8 gAiTargetCandidates[],data_ov000_021b5c6c[],data_ov000_021b5be0[],gUnitKindStats[],gAiCommand[];
- extern u8 *data_ov000_021df580; extern u32 data_ov000_021df8ac[];extern void **gCurrentMap;
+/* Picks the best affordable unit kind to build against one AI target candidate:
+ * scans the per-kind scores, rejects unaffordable kinds, then retries once with
+ * the affordable half of the army's income; on success records the kind in
+ * gAiCommand and returns the candidate index, otherwise -1. */
+s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
+ extern u8 gAiTargetCandidates[],gUnitKindInfo[],gUnitKindTargetClass[],gUnitKindStats[],gAiCommand[];
+ extern u8 *gAiCommandState; extern u32 gUnitKindScores[];extern void **gCurrentMap;
  s32 GetUnitAttackClass(u8);s32 func_020d2d18(u16,s32);s32 func_ov000_021a4e08(u32,u32,s32);
- u8 *entry=gAiTargetCandidates+index*12;
- u32 score; s32 retry=0; s32 best,i;u8 *attr;u8 *map;AiPlayer *player;s32 price;u32 flag;s32 cost,money,offset;
- if(entry[2]==3 && (((u32)(*(u16 *)(data_ov000_021df580+10)<<29)>>29)&2))return -1;
+ u8 *candidate=gAiTargetCandidates+candidateIndex*12;
+ u32 bestScore; s32 retried=0; s32 bestKind,kind;u8 *kindInfo;u8 *map;AiPlayer *player;s32 buildCost;u32 indirect;s32 cost,money,offset;
+ if(candidate[2]==3 && (((u32)(*(u16 *)(gAiCommandState+10)<<29)>>29)&2))return -1;
  for(;;) {
- best=0;score=0;
- for(i=1,attr=data_ov000_021b5c6c;i<27;i++,attr+=112) {
- if(score<data_ov000_021df8ac[i]) {
- if(GetUnitAttackClass((u8)i)==1 && (attr[19]&7))continue;
- score=data_ov000_021df8ac[i];best=i;
+ bestKind=0;bestScore=0;
+ for(kind=1,kindInfo=gUnitKindInfo;kind<27;kind++,kindInfo+=112) {
+ if(bestScore<gUnitKindScores[kind]) {
+ if(GetUnitAttackClass((u8)kind)==1 && (kindInfo[19]&7))continue;
+ bestScore=gUnitKindScores[kind];bestKind=kind;
  }}
- if(best==0)return -1;
- if(entry[2]!=data_ov000_021b5be0[best])goto reject;
- cost=func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
- price=(u16)cost;map=*gCurrentMap;player=(AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4);
+ if(bestKind==0)return -1;
+ if(candidate[2]!=gUnitKindTargetClass[bestKind])goto reject;
+ cost=func_020d2d18(*(u16 *)((u8 *)*gCurrentMap+MAP_CURRENT_PLAYER),bestKind)*10;
+ buildCost=(u16)cost;map=*gCurrentMap;player=(AiPlayer *)(map+MAP_PLAYER_STATES)+*(u16 *)(map+MAP_CURRENT_PLAYER);
  money=player->money;
- if(money<price)goto reject;
- if(!retry || (flag=gUnitKindStats[best*112+19]&16)!=0) {
- if(func_ov000_021a4e08(entry[0],entry[1],best)<70)goto accept;
- if(gUnitKindStats[best*112+19]&16)goto reject;
- if(best==22)goto reject;
- retry=1;continue;
+ if(money<buildCost)goto reject;
+ if(!retried || (indirect=gUnitKindStats[bestKind*112+19]&16)!=0) {
+ if(func_ov000_021a4e08(candidate[0],candidate[1],bestKind)<70)goto accept;
+ if(gUnitKindStats[bestKind*112+19]&16)goto reject;
+ if(bestKind==22)goto reject;
+ retried=1;continue;
  } else {
- if(flag!=0)goto reject;
- if(price>(player->income>>1) && price>(money>>1))goto reject;
+ if(indirect!=0)goto reject;
+ if(buildCost>(player->income>>1) && buildCost>(money>>1))goto reject;
  }
- accept:gAiCommand[6]=best;return index;
- reject:data_ov000_021df8ac[best]=0;
+ accept:gAiCommand[AI_COMMAND_UNIT]=bestKind;return candidateIndex;
+ reject:gUnitKindScores[bestKind]=0;
  }
 }
 void func_ov000_021a7610(void) {
 u8 func_ov000_021a7348(void); s32 func_ov000_021a6e5c(u8); s32 func_ov000_021a72c0(s32);
 s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
-s32 func_ov000_021a6f24(s32,s32,s32); s32 func_0207c8ec(s32,s32);
+s32 func_ov000_021a6f24(s32,s32,s32); s32 Divide(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 func_ov000_021a881c(s32,s32); s32 func_020d2d18(u16,s32);
-extern u8 *gAiState; extern u32 data_ov000_021df8ac[27];
-extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *data_ov000_021df580;
+extern u8 *gAiState; extern u32 gUnitKindScores[27];
+extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *gAiCommandState;
 extern u8 data_ov000_021df598[]; extern u8 gUnitKindStats[]; extern void **gCurrentMap;
 s32 values[9]; s32 minimum;
 s32 b,a,i,j,k,t,v;
 s32 kind;
 gAiState[6]=func_ov000_021a7348();
-for(a=0;a<27;a++)data_ov000_021df8ac[a]=0;
+for(a=0;a<27;a++)gUnitKindScores[a]=0;
 for(b=0;b<9;b++)values[b]=0;
 for(i=1;i<27;i++){j=func_ov000_021a6e5c((u8)i);if(j!=10)values[j]+=data_ov000_021e1474[i];}
-t=(u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29;
+t=(u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29;
 if((t&4) && !(t&2))values[7]*=2;
 for(kind=1;kind<27;kind++){
 if(!func_ov000_021a72c0((u8)kind))continue;
@@ -263,7 +269,7 @@ if(gUnitKindStats[data_ov000_021df598[j]*112+19]&16){
 if(kind==6 && (gAiState[6]==2 || gAiState[6]==4))v>>=1;
 if(kind==23 && (gAiState[6]==1 || gAiState[6]==3))v>>=1;
 }
-values[j]-=func_0207c8ec(v,100);
+values[j]-=Divide(v,100);
 }
 }
 for(j=0;j<9;j++)if(values[j]>0)goto positive;
@@ -271,9 +277,9 @@ goto nonpositive;
 positive: {
 for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
-if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
-for(j=0;j<9;j++)if(values[j]>0)data_ov000_021df8ac[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),values[j]);
-for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>3;
+if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
+for(j=0;j<9;j++)if(values[j]>0)gUnitKindScores[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),values[j]);
+for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>3;
 }
 return;
 }
@@ -282,18 +288,18 @@ minimum=0;for(j=0;j<9;j++)if(minimum>values[j])minimum=values[j];
 if(minimum!=0){
 for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
-if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
-for(j=0;j<9;j++)if(values[j]!=0)data_ov000_021df8ac[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),(values[j]-(minimum-1)));
-for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>2;
+if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
+for(j=0;j<9;j++)if(values[j]!=0)gUnitKindScores[i]+=AiProduct(func_ov000_021a7084((u8)i,data_ov000_021df598[j]),(values[j]-(minimum-1)));
+for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
 }
 return;
 }
 for(i=1;i<27;i++){
 if(!func_ov000_021a72c0((u8)i))continue;
-if(i==6 && !(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<29)>>29)&10))continue;
+if(i==6 && !(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29)&10))continue;
 if(!GetAttackDamage(i,1,0))continue;
-data_ov000_021df8ac[i]=func_020d2d18(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
-for(k=0;k<func_ov000_021a881c(i,5);k++)data_ov000_021df8ac[i]-=(u32)data_ov000_021df8ac[i]>>2;
+gUnitKindScores[i]=func_020d2d18(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i);
+for(k=0;k<func_ov000_021a881c(i,5);k++)gUnitKindScores[i]-=(u32)gUnitKindScores[i]>>2;
 }
 }
 

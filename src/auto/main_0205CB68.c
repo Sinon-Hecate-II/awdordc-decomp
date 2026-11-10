@@ -490,11 +490,11 @@ void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
 void *func_0205d75c(s32 a) {
 s32 Vector_GetCount(s32);
 s32 *Vector_GetItem(s32,s32);
-extern M2C_UNK data_0213e144;
+extern M2C_UNK gNatNegManager;
 s32 i; s32 *p;
-if (!M2C_FIELD(&data_0213e144,s32 *,0x10)) return 0;
-for(i=0;i<Vector_GetCount(M2C_FIELD(&data_0213e144,s32 *,0x10));i++) {
-p=Vector_GetItem(M2C_FIELD(&data_0213e144,s32 *,0x10),i);
+if (!M2C_FIELD(&gNatNegManager,s32 *,0x10)) return 0;
+for(i=0;i<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,0x10));i++) {
+p=Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,0x10),i);
 if (p[2]==a) return p;
 }
 return 0;
@@ -507,40 +507,40 @@ M2C_FIELD(p,s32 *,0)=-1; M2C_FIELD(p,s32 *,16)=4;
 }
 
 s32 *func_0205d7f4(void) {
-extern M2C_UNK data_0213e144;
+extern M2C_UNK gNatNegManager;
 s32 func_02048558(s32,s32,void (*)(void *));
 s32 Vector_GetCount(s32); s32 *Vector_GetItem(s32,s32);
-s32 handle=M2C_FIELD(&data_0213e144,s32 *,16); s32 data[16]={0};
-if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=func_02048558(64,4,func_0205d7c4);
-func_020486f8(M2C_FIELD(&data_0213e144,s32 *,16),data);
-return Vector_GetItem(M2C_FIELD(&data_0213e144,s32 *,16),Vector_GetCount(M2C_FIELD(&data_0213e144,s32 *,16))-1);
+s32 handle=M2C_FIELD(&gNatNegManager,s32 *,16); s32 data[16]={0};
+if(!handle)M2C_FIELD(&gNatNegManager,s32 *,16)=func_02048558(64,4,func_0205d7c4);
+func_020486f8(M2C_FIELD(&gNatNegManager,s32 *,16),data);
+return Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,16),Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,16))-1);
 }
 
 void func_0205d88c(s32 *p) {
-extern M2C_UNK data_0213e144;
+extern M2C_UNK gNatNegManager;
 s32 Vector_GetCount(s32); s32 *Vector_GetItem(s32,s32);
 s32 i=0;
-for(;i<Vector_GetCount(M2C_FIELD(&data_0213e144,s32 *,16));i++) {
-if(p==Vector_GetItem(M2C_FIELD(&data_0213e144,s32 *,16),i)) {
-func_0204887c(M2C_FIELD(&data_0213e144,s32 *,16),i);return;
+for(;i<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,16));i++) {
+if(p==Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,16),i)) {
+func_0204887c(M2C_FIELD(&gNatNegManager,s32 *,16),i);return;
 }
 }
 }
 
 void func_0205d8f4(void) {
     M2C_UNK func_0204861c();
-    extern M2C_UNK data_0213e144;
-    if (M2C_FIELD(&data_0213e144, s32 *, 0x10) == 0) {
+    extern M2C_UNK gNatNegManager;
+    if (M2C_FIELD(&gNatNegManager, s32 *, 0x10) == 0) {
         return;
     }
     func_0204861c();
-    M2C_FIELD(&data_0213e144, s32 *, 0x10) = 0;
+    M2C_FIELD(&gNatNegManager, s32 *, 0x10) = 0;
 }
 
 s32 func_0205d920(M2C_UNK arg0) {
     s32 func_0206527c(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020ff88c;
-    if (func_0206527c(arg0, &data_020ff88c, 6) == 0) {
+    extern M2C_UNK gNatNegMagic;
+    if (func_0206527c(arg0, &gNatNegMagic, 6) == 0) {
         return 1;
     }
     return 0;

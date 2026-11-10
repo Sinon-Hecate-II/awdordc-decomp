@@ -16,7 +16,7 @@ return a;
 return a;
 }
 
-s8 *func_02068d68(s8 *a,s8 *b) {
+s8 *StringAppend(s8 *a,s8 *b) {
 s8 *p=a;
 while(*p++);
 p--;
@@ -76,7 +76,7 @@ if(b!=0) return 0;
 return a-1;
 }
 
-s32 func_02068f1c(u8 *a,u8 *b) {
+s32 StringSpanUntil(u8 *a,u8 *b) {
 u8 bits[32];
 u32 i=8;
 u8 *p=bits;

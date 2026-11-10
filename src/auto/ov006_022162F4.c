@@ -5,7 +5,7 @@ typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 
 /* Attaches a shared argument to a block of 3D sprite entries in three tables, then draws a 6x2 grid of 24x24 sprites from a sprite list. */
 void func_ov006_022162f4(void *arg0) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_02088044(void *);
     M2C_UNK PlaySoundEffect(s32);
@@ -103,7 +103,7 @@ void func_ov006_022162f4(void *arg0) {
     }
     temp_r5 = (Modulo(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 0x38;
     temp_r3 = M2C_FIELD(p, s16 *, 0x3A);
-    temp_r2_5 = (func_0207c8ec(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 8;
+    temp_r2_5 = (Divide(M2C_FIELD(p, s8 *, 0x38), 6) * 0x18) + 8;
     if ((temp_r3 == -0x8000) && (M2C_FIELD(p, s16 *, 0x3C) == -0x8000)) {
         goto block_57;
     }
@@ -333,10 +333,10 @@ u8 func_ov006_02216e6c(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 u8 func_ov006_02216e84(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_0208485c();
     s32 result;
-    if (func_020846a4() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && func_0208485c()) result = 1;
     else result = 0;
     return result;
 }
@@ -382,17 +382,17 @@ void func_ov006_02216f5c(void *arg0) {
 
 void func_ov006_02216fd0(void *arg0) {
  extern void **gCurrentMap;
- s32 func_0207c8ec(s32,s32);
- s32 func_020c79ec();
- M2C_UNK func_020c85c4(u16,s32);
+ s32 Divide(s32,s32);
+ s32 GetMapRecordBuffer();
+ M2C_UNK LoadMapRecord(u16,s32);
  s32 func_020be120();
  M2C_UNK func_0208547c(s32,s32,void *);
  M2C_UNK func_0208559c(s32,s32,void *);
  u16 value=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
- u16 n=func_0207c8ec(value-0xe1,0x32);
+ u16 n=Divide(value-0xe1,0x32);
  if(!func_ov006_02216e6c((s16)value,0xe1,0x1a9)) return;
  if(M2C_FIELD(arg0,u8 *,0x4c)==n) {
- func_020c85c4((u16)(value-n*0x32),func_020c79ec());
+ LoadMapRecord((u16)(value-n*0x32),GetMapRecordBuffer());
  func_0208547c(func_020be120(),0x6f8,arg0);
  return;
  }
@@ -410,8 +410,8 @@ void func_ov006_02217078(void *arg0) {
 void func_ov006_022170b4(void *arg0) {
     void *func_020bfa74();
     M2C_UNK func_020c002c(M2C_UNK);
-    M2C_UNK func_020cf0a8(u32);
-    func_020cf0a8((u32) (M2C_FIELD(func_020bfa74(), s32 *, 8) << 0x14) >> 0x15);
+    M2C_UNK LoadBattleMap(u32);
+    LoadBattleMap((u32) (M2C_FIELD(func_020bfa74(), s32 *, 8) << 0x14) >> 0x15);
     if (M2C_FIELD(arg0, u8 *, 0x4C) == 0) {
         return;
     }
@@ -442,9 +442,9 @@ void func_ov006_02217160(void) {
 }
 
 void *func_ov006_02217164(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov006_02218918;
-    return func_01ffa770(&data_ov006_02218918);
+    return FindObjectByClass(&data_ov006_02218918);
 }
 
 void func_ov006_02217178(M2C_UNK arg0) {s8 func_020848c4(); u8 GetReadyPlayerMask(); s32 func_020c7e58(M2C_UNK);

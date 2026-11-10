@@ -1,7 +1,7 @@
 /* 30 functions from 0x020BCB94 to 0x020BDA88 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_020bcb94(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
+s32 GetKeyActionFlags(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
 
 s32 func_020bcbd8(void) {
     extern void *gKeyState;
@@ -108,15 +108,15 @@ void func_020bcee4(void *arg0) {
     func_020cfd28();
 }
 
-void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 func_0207c2f0(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=func_0207c2f0()%6;}
+void func_020bcf14(s32 a){void *func_01ffa3dc(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=func_01ffa3dc(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
 
-void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 func_020947c0(void);void func_0207bb3c(u16,u16,s32 *);s32 func_0207c8ec(s32,s32);void func_020cfc5c(void);
+void func_020bcf6c(void){extern void *gTouchState;extern void **gCurrentMap;s32 func_020947c0(void);void func_0207bb3c(u16,u16,s32 *);s32 Divide(s32,s32);void ClampCursorToMap(void);
 s32 pos[3];u16 x=M2C_FIELD(gTouchState,u16 *,0),y=M2C_FIELD(gTouchState,u16 *,2);
 if(func_020947c0())return;if(!M2C_FIELD(gTouchState,u8 *,0x12))return;
 func_0207bb3c(x,y,pos);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=func_0207c8ec(pos[0],768);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=func_0207c8ec(pos[1],768);
-func_020cfc5c();if(!M2C_FIELD(gTouchState,u8 *,0x14))return;
+M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=Divide(pos[0],768);
+M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=Divide(pos[1],768);
+ClampCursorToMap();if(!M2C_FIELD(gTouchState,u8 *,0x14))return;
 M2C_FIELD(*gCurrentMap,s16 *,0x52ca)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
 M2C_FIELD(*gCurrentMap,s16 *,0x52cc)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 }
@@ -153,9 +153,9 @@ void func_020bd084(void *arg0) {
     }
 }
 
-void func_020bd0a8(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 func_01ffa770(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(func_01ffa770(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
+void func_020bd0a8(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *func_01ffa3dc(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=func_01ffa3dc(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
 
-void func_020bd0e0(void){extern M2C_UNK data_021293d4;s32 func_01ffa770(M2C_UNK *);M2C_UNK func_01ffa9e4(M2C_UNK *);if(!func_01ffa770(&data_021293d4))return;func_01ffa9e4(&data_021293d4);}
+void func_020bd0e0(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa9e4(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;func_01ffa9e4(&data_021293d4);}
 
 void func_020bd104(void) {
     M2C_UNK func_01ffa9bc(M2C_UNK *);
@@ -164,11 +164,11 @@ void func_020bd104(void) {
 }
 
 u8 func_020bd118(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021293d4;
     u8 var_r0;
 
-    if (func_01ffa770(&data_021293d4) != 0) {
+    if (FindObjectByClass(&data_021293d4) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -187,7 +187,7 @@ if(a&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,0x14))return 64;return 3
 /* Updates the map cursor target from the current stylus position. */
 void func_020bd220(void *arg0) {
     void func_0207bb3c(u16, u16, s32 *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void PlaySoundEffect(void *);
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
@@ -209,8 +209,8 @@ void func_020bd220(void *arg0) {
         return;
     }
     func_0207bb3c(touchX, touchY, coords);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = func_0207c8ec(coords[0], 0x300);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = func_0207c8ec(coords[1], 0x300);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = Divide(coords[0], 0x300);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CA) = M2C_FIELD(map, s16 *, 0x52C2);
@@ -234,7 +234,7 @@ void func_020bd220(void *arg0) {
 /* Update the map camera target, optionally moving its lookAt and requesting a refresh. */
 void func_020bd3c0(void *arg0) {
     void func_0207bb3c(u16, u16, s32 *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void PlaySoundEffect(void *);
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
@@ -256,8 +256,8 @@ void func_020bd3c0(void *arg0) {
         return;
     }
     func_0207bb3c(touchX, touchY, coords);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = func_0207c8ec(coords[0], 0x300);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = func_0207c8ec(coords[1], 0x300);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = Divide(coords[0], 0x300);
+    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         map = *gCurrentMap;
         M2C_FIELD(map, s16 *, 0x52CA) = M2C_FIELD(map, s16 *, 0x52C2);
@@ -278,9 +278,9 @@ void func_020bd3c0(void *arg0) {
     PlaySoundEffect(arg0);
 }
 
-s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
+s32 func_020bd560(void){s32 func_020947c0(void);void SelectCursorTarget(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 ConfirmCursorTile(s32,s32,s32,s32,s32);extern void *gTouchState;extern void **gCurrentMap;
 if(func_020947c0())return 0;
-if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020d58c4(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
+if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){SelectCursorTarget(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));func_020bd0e0();return 1;}
 if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c2)==M2C_FIELD(*gCurrentMap,s16 *,0x52ca)&&M2C_FIELD(*gCurrentMap,s16 *,0x52c4)==M2C_FIELD(*gCurrentMap,s16 *,0x52cc)){func_020bd104();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4),1,0,0))return 1;}return 0;
 }
 
@@ -335,9 +335,9 @@ s32 func_020bd684(void) {
     return 0;
 }
 
-void func_020bd7a4(s32 *outIndex, s32 count) {
+void UpdateSelectionFromTouch(s32 *outIndex, s32 count) {
     void func_0207bb3c(u16, u16, s32 *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_020947c0(void);
     s32 func_020bd940(s32, s32, s32);
     void func_020bd0a8(s16, s16);
@@ -357,8 +357,8 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
     if (func_020947c0() != 0) return;
     if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return;
     func_0207bb3c(touchX, touchY, coords);
-    pixelX = func_0207c8ec(coords[0], 0x300);
-    pixelY = func_0207c8ec(coords[1], 0x300);
+    pixelX = Divide(coords[0], 0x300);
+    pixelY = Divide(coords[1], 0x300);
     idx = func_020bd940(count, pixelX, pixelY);
     if (idx >= 0) {
         M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = pixelX;
@@ -385,13 +385,13 @@ void func_020bd7a4(s32 *outIndex, s32 count) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52CC) = 255;
 }
 
-s32 func_020bd940(s32 n,s32 x,s32 y){void *func_0209f8e4(s32);s32 i;for(i=0;i<n;i++){void *p=func_0209f8e4(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
+s32 func_020bd940(s32 n,s32 x,s32 y){void *GetTargetPosition(s32);s32 i;for(i=0;i<n;i++){void *p=GetTargetPosition(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
 
 /* Returns an action code for the unit under the current cursor when it matches the selected tile. */
-s32 func_020bd990(s32 unitIndex) {
+s32 GetTouchActionFlags(s32 unitIndex) {
     s32 func_020947c0(void);
     void func_0207bb3c(u16, u16, s32 *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_020bdf24(s32, s32);
     void func_020bd104(void);
     s32 func_020bd940(s32, s32, s32);
@@ -407,8 +407,8 @@ s32 func_020bd990(s32 unitIndex) {
         return 0;
     }
     func_0207bb3c(cursorX, cursorY, coords);
-    tileX = func_0207c8ec(coords[0], 0x300);
-    tileY = func_0207c8ec(coords[1], 0x300);
+    tileX = Divide(coords[0], 0x300);
+    tileY = Divide(coords[1], 0x300);
     if (M2C_FIELD(gTouchState, u8 *, 0x16) == 0) {
         return 0;
     }

@@ -1,5 +1,7 @@
 /* 12 functions from 0x021A686C to 0x021A7610 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 
 s32 func_ov000_021a686c(void) {
  extern s32 *gCurrentMap;
@@ -78,7 +80,10 @@ s32 func_ov000_021a6a00(void) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov000_021a6ac0(void) {
+/* Choose the type-3 AI target candidate with the lowest danger score, after
+ * flood-filling a kind-23 unit's range from it and rejecting it while a
+ * healthy enemy kind-23 unit is on the map. */
+s32 FindBestTargetCandidate(void) {
   void FloodFillUnitRange(s32,s32,s32,s32,s32);
   void func_ov000_021a5f50(void);
   s32 IsUnitOnCurrentTeam(s32);
@@ -94,25 +99,25 @@ s32 func_ov000_021a6ac0(void) {
   s32 best;
   s32 result;
   s32 id;
-  s32 y;
-  s32 x;
+  s32 row;
+  s32 col;
   best=126;
   result=-1;
   p=(u8 *)&gAiTargetCandidates;
   func_ov000_021a5f50();
   i=0;
   if((s32)*gAiState>0) do {
-  if(p[3]<252 && p[2]==3) {
-  y=p[0];base=*gCurrentMap;x=p[1];
-  v=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),s8 *,0x2338);
+  if(p[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && p[AI_CANDIDATE_TYPE]==3) {
+  col=p[AI_CANDIDATE_X];base=*gCurrentMap;row=p[AI_CANDIDATE_Y];
+  v=M2C_FIELD(M2C_FIELD(base+row*2,u16 *,MAP_ROW_OFFSETS)+(base+col),s8 *,MAP_CELL_SCORE);
   if(best>=v) {
-  FloodFillUnitRange(y,x,23,gUnitKindStats[0xa18]+1,0x20);
+  FloodFillUnitRange(col,row,23,gUnitKindStats[23*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_MOVE]+1,0x20);
   base=*gCurrentMap;
-  for(x=0;x<M2C_FIELD(base,u16 *,0x5146);x++) {
-  for(y=0;y<M2C_FIELD(base,u16 *,0x5144);y++,base=*gCurrentMap) {
-  if(M2C_FIELD(base+x*4,s8 **,0x52e8)[y]<0)continue;
-  id=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),u8 *,0);
-  unit=(u8 *)(base+0x59a4)+id*14;
+  for(row=0;row<M2C_FIELD(base,u16 *,MAP_HEIGHT);row++) {
+  for(col=0;col<M2C_FIELD(base,u16 *,MAP_WIDTH);col++,base=*gCurrentMap) {
+  if(M2C_FIELD(base+row*4,s8 **,MAP_GRID)[col]<0)continue;
+  id=M2C_FIELD(M2C_FIELD(base+row*2,u16 *,MAP_ROW_OFFSETS)+(base+col),u8 *,0);
+  unit=(u8 *)(base+MAP_UNIT_RECORDS)+id*MAP_UNIT_STRIDE;
   if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)!=23)continue;
   if(IsUnitOnCurrentTeam(id)!=0)continue;
   if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>=50)goto next;
@@ -121,7 +126,7 @@ s32 func_ov000_021a6ac0(void) {
   result=i;best=v;
   }
   }
-  next: i++;p+=12;
+  next: i++;p+=AI_CANDIDATE_STRIDE;
   } while(i<*gAiState);
   return result;
 }
@@ -188,15 +193,15 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
  s32 GetUnitAttackClass(u8);
  extern s32 *gCurrentMap;
  extern u8 gUnitMinAttackRange[];
- extern void *data_ov000_021df580;
- if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,0x5156)==0 && M2C_FIELD(data_ov000_021df580,u8 *,13)!=2) return 0;
+ extern void *gAiCommandState;
+ if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,0x5156)==0 && M2C_FIELD(gAiCommandState,u8 *,13)!=2) return 0;
  if(GetUnitAttackClass((u8)kind)==1) {
  if(func_020a85c8(kind))value<<=1;
- value=(value*(func_020a7c10(kind,M2C_FIELD(data_ov000_021df580,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1)+4-gUnitMinAttackRange[kind*112]))>>3;
- if(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<23)>>29)==1 && kind==11)value=(value*3)>>1;
+ value=(value*(func_020a7c10(kind,M2C_FIELD(gAiCommandState,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1)+4-gUnitMinAttackRange[kind*112]))>>3;
+ if(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<23)>>29)==1 && kind==11)value=(value*3)>>1;
  } else {
  if((u32)(kind-8)<=1)kind=7;
- value=(value*func_020a7b3c(kind,M2C_FIELD(data_ov000_021df580,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1))>>3;
+ value=(value*func_020a7b3c(kind,M2C_FIELD(gAiCommandState,u8 *,13),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),arg2,1))>>3;
  }
  if(kind==4)value>>=1;
  if(kind==3)value>>=1;
@@ -206,30 +211,30 @@ s32 func_ov000_021a6f24(s32 value,s32 kind,s32 arg2) {
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_021a7084(s32 a,s32 b) {
- extern u8 data_ov000_021b5c0f[];
+ extern u8 gUnitKindFlags[];
  extern void *gAiSettings;
- s32 v,t; s32 func_0207c8ec(s32,s32);
+ s32 v,t; s32 Divide(s32,s32);
  if(a==3 && IsFootUnitKind(b))a=1;
  if(a==6 && IsFootUnitKind(b))a=7;
  if(IsFootUnitKind(b))v=GetAttackDamage(a,b,1)>>1;
  else if(b==22){t=GetAttackDamage(a,b,1);v=func_ov000_021a96f4(a,b,1)+(t>>1);}
  else v=GetAttackDamage(a,b,1);
- if((data_ov000_021b5c0f[a*112]&7) && (data_ov000_021b5c0f[b*112]&32))v>>=1;
- if((data_ov000_021b5c0f[a*112]&32) && (data_ov000_021b5c0f[b*112]&32))v<<=1;
- if(a==23 && (data_ov000_021b5c0f[b*112]&32) && b!=22)v=0;
+ if((gUnitKindFlags[a*112]&7) && (gUnitKindFlags[b*112]&32))v>>=1;
+ if((gUnitKindFlags[a*112]&32) && (gUnitKindFlags[b*112]&32))v<<=1;
+ if(a==23 && (gUnitKindFlags[b*112]&32) && b!=22)v=0;
  if(a==23 && b==18)v=0;
  if(a==21)v=0;
  if(a==22 && b==20)v<<=1;
- if((data_ov000_021b5c0f[b*112]&16) && a!=12){v<<=1;if(a==14 || a==16)v<<=1;}
- if(a==6 && (data_ov000_021b5c0f[b*112]&16)){
+ if((gUnitKindFlags[b*112]&16) && a!=12){v<<=1;if(a==14 || a==16)v<<=1;}
+ if(a==6 && (gUnitKindFlags[b*112]&16)){
  if((gAiState[6]==2 || gAiState[6]==4) && func_ov000_021a881c(6,5))v>>=1;
  if(gAiState[6]==3)v<<=1;
  }
- if(a==23 && (data_ov000_021b5c0f[b*112]&16)){
+ if(a==23 && (gUnitKindFlags[b*112]&16)){
  if((gAiState[6]==1 || gAiState[6]==3) && func_ov000_021a8784(23))v>>=1;
  if(gAiState[6]==4)v<<=1;
  }
- v=func_ov000_021a6f24(v,a,1); t=M2C_FIELD((s32)gAiSettings+(a-1)*12,u8 *,20); t*=v; return func_0207c8ec(t,100);
+ v=func_ov000_021a6f24(v,a,1); t=M2C_FIELD((s32)gAiSettings+(a-1)*12,u8 *,20); t*=v; return Divide(t,100);
 }
 #pragma pop
 u8 func_ov000_021a72c0(u32 arg0){
@@ -248,7 +253,7 @@ s32 func_ov000_021a7348(void) {
     s32 IsSameTeam(s32,s32);
     s32 func_ov000_021a911c(s16);
     extern s32 *gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
     extern u8 gMovementCostTable[];
@@ -281,7 +286,7 @@ s32 func_ov000_021a7348(void) {
     u32 modeVal;
     u16 tmpUnit;
 
-    tmpMode = *(u16 *)((u8 *)data_ov000_021df580 + 10);
+    tmpMode = *(u16 *)((u8 *)gAiCommandState + 10);
     modeVal = tmpMode << 26;
     modeVal = modeVal >> 29;
     if (!(modeVal & 4)) {

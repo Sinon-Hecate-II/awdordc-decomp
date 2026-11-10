@@ -129,9 +129,9 @@ void func_ov003_021e3714(void *arg0) {
     s32 Modulo(s32, s32);
     void *func_020be120(void);
     void func_02007ef4(void *, void *, u32);
-    void func_020ceb48(void);
+    void ResetBattleMap(void);
     void func_020cf278(s32);
-    void func_020cf0a8(s32);
+    void LoadBattleMap(s32);
     void func_020809c0(u16 *, s32, s32);
     void func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     void func_01ff9ce8(void);
@@ -178,9 +178,9 @@ void func_ov003_021e3714(void *arg0) {
         func_02007ef4((u8 *)M2C_FIELD(arg0,void **,0x68) + offset, src, 0x6f8);
     }
 
-    func_020ceb48();
+    ResetBattleMap();
     func_020cf278(value);
-    func_020cf0a8(value);
+    LoadBattleMap(value);
 
     *(u16 *)((u8 *)arg0 + 0x62) = (u16)(*(u16 *)((u8 *)*gCurrentMap + 0x5144) << 2);
     *(u16 *)((u8 *)arg0 + 0x64) = (u16)(*(u16 *)((u8 *)*gCurrentMap + 0x5146) << 2);
@@ -217,7 +217,7 @@ void func_ov003_021e3714(void *arg0) {
 }
 #pragma pop
 void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 Modulo(s32, s32);
     void func_020a92bc(void *, s32);
     void func_020a94fc(void *);
@@ -244,7 +244,7 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     sp10 = 0x3FF;
     do {
         x = (s16)(Modulo(i, 3) * 0x16 + sp4);
-        y = (s16)(func_0207c8ec(i, 3) * 0x1C + sp8);
+        y = (s16)(Divide(i, 3) * 0x1C + sp8);
         p = M2C_FIELD(arg0, void **, 0x5C);
         value = (s16)func_020c1980((void *)((char *)p + 0x1C), func_ov003_02200ae8((u8)i), spC);
         if (value != 0) {

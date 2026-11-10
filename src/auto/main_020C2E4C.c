@@ -110,11 +110,11 @@ void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 un
 }
 #pragma pop
 u8 func_020c306c(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gBattleEffectPool;
     u8 var_r0;
 
-    if (func_01ffa770(&gBattleEffectPool) != 0) {
+    if (FindObjectByClass(&gBattleEffectPool) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

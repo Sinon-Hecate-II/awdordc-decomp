@@ -7,7 +7,7 @@ u8 *func_02059bbc(void *out_, void *in_)
   u64 func_020720f0(s32, s32);
   s32 StringLength(s32);
   s32 func_02059a04(s8 *);
-  s32 func_02067774(void);
+  s32 Rand(void);
   s32 func_0206409c(s32);
   extern s8 data_020ff548[];
   s8 *in = in_;
@@ -30,7 +30,7 @@ u8 *func_02059bbc(void *out_, void *in_)
   {
     if (((!flag) || (i == 0)) || (i == 13))
     {
-      v = (func_02067774() % 93) + 33;
+      v = (Rand() % 93) + 33;
     }
     else
     {

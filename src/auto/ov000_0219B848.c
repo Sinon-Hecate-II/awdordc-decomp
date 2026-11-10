@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[],data_ov000_021b55a0[],data_ov000_021b5500[],gAiRangeLayer[];
+extern s8 data_ov000_021b5580[],gTerrainPropertyType[],data_ov000_021b5500[],gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
@@ -46,7 +46,7 @@ if(gAiRangeLayer[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto
 }
 }
 }
-out[0]=entry[1];out[1]=entry[2];out[2]=data_ov000_021b55a0[entry[0]];out[5]=255;out[4]=255;
+out[0]=entry[1];out[1]=entry[2];out[2]=gTerrainPropertyType[entry[0]];out[5]=255;out[4]=255;
 for(pass=0;pass<5;pass++){
 func_ov000_0217a59c(entry[1],entry[2],data_ov000_021df41c[pass],110);
 if(data_ov000_021df41c[pass]!=13){
@@ -60,7 +60,7 @@ funds=M2C_FIELD(candidate,s32 *,0)>=price;
 if(!funds&&M2C_FIELD(candidate,s32 *,8)<price)allow=0;
 candidate=map+0x6c60;
 while(candidate[0]!=255){
-if(data_ov000_021b55a0[candidate[0]]==data_ov000_021df424[pass]){
+if(gTerrainPropertyType[candidate[0]]==data_ov000_021df424[pass]){
 map=*gCurrentMap;
 row=M2C_FIELD(map+candidate[2]*2,u16 *,0x3758);
 scan=map+candidate[1]+row;
@@ -163,11 +163,11 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|((u32)(best[1]<<26)>>20
 }
 return 1;
 }
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 extern u16 gMapConfig;
 extern void **gCurrentMap;
 
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 extern u8 data_02168f0c[8];
 
 void func_ov000_0219c444(void){extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];s32 found=0,i;void *base=*gCurrentMap;u16 start=gPlayerUnitIdBase[M2C_FIELD(base,u16 *,0x52a4)];u8 *p;u32 type;for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51;i++){p=((u8 (*)[14])(base+0x59a4))[i];type=(u32)(p[0]<<26)>>26;if(type!=0&&(u8)(type+255)<=2&&((u32)(p[11]<<28)>>28)==0){found=1;break;}}if(!found)return;while(func_ov000_0219b848()){} }
@@ -187,9 +187,9 @@ for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
 SelectMapLayer((void *)*gCurrentMap + 0x1e30);
 }
 
-void func_ov000_0219c5d4(void){for(;;){switch(*data_ov000_021df580){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
+void func_ov000_0219c5d4(void){for(;;){switch(*gAiCommandState){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)gMapConfig<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
 
-s32 func_ov000_0219c680(void){switch(*data_ov000_021df580){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
+s32 func_ov000_0219c680(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 
 u8 func_ov000_0219c6c0(void) {
     s32 func_0209e0dc(M2C_UNK);
@@ -204,25 +204,25 @@ u8 func_ov000_0219c6c0(void) {
 }
 
 void func_ov000_0219c774(void);
-void func_ov000_0219c6e0(void){if(func_020946d0())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(func_ov000_0219c5d4,6,0x2000,17,0);return;}switch(*data_ov000_021df580){case 3:func_ov000_0219e948();return;case 5:func_ov000_021a02ac();return;case 6:func_ov000_0219c774();return;}}
+void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(func_ov000_0219c5d4,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:func_ov000_0219e948();return;case 5:func_ov000_021a02ac();return;case 6:func_ov000_0219c774();return;}}
 
 void func_ov000_0219c774(void) {
     func_ov000_0219a0e0();
     func_020bbb08();
-    data_ov000_021df580[0] = 0;
+    gAiCommandState[0] = 0;
     if (data_02168f0c[0] != 0) {
         func_020844f8();
     }
 }
 
 u8 func_ov000_0219c7b0(void) {
-    extern u8 *data_ov000_021df580;
-    return *data_ov000_021df580;
+    extern u8 *gAiCommandState;
+    return *gAiCommandState;
 }
 
-void func_ov000_0219c7c4(u8 a){*data_ov000_021df580=a;}
+void func_ov000_0219c7c4(u8 a){*gAiCommandState=a;}
 
 void func_ov000_0219c7d8(u8 arg0) {
-    data_ov000_021df580[1] = arg0;
+    gAiCommandState[1] = arg0;
 }
 

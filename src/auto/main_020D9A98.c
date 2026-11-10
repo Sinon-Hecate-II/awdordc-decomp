@@ -5,13 +5,13 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 func_ov009_02224194(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK ResetPlayerMask(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void func_02086208(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
+void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK ResetPlayerMask(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void func_02086208(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK func_020b1c44(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
-if(!func_ov009_02224508(1)&&(func_ov009_02224194()==4||func_ov009_02224194()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
+if(!func_ov009_02224508(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));func_020d47d0();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();func_020d47f0();}break;
 case 1:case 2:
@@ -204,7 +204,7 @@ void func_020da2a0(void *a) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
     M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-    s32 func_02084644(void);void *func_ov010_02229b00(void); s32 state; void *p;
+    s32 GetActiveOverlay(void);void *func_ov010_02229b00(void); s32 state; void *p;
     void **saved = gCur3DSpriteEngine;
     s32 i, x, y;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -220,9 +220,9 @@ void func_020da2a0(void *a) {
     } while (i < 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
     gCur3DSpriteEngine = saved;
-    if(func_02084644()==2) state=(M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4)?1:0;else state=0;
+    if(GetActiveOverlay()==2) state=(M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4)?1:0;else state=0;
     {s32 selected=M2C_FIELD(a,u8 *,0);if(selected==state)return;state=selected;}
-    if(func_02084644()==2){p=func_ov010_02229b00();if(state==1)M2C_FIELD(p,u8 *,0x1a)|=4;else M2C_FIELD(p,u8 *,0x1a)&=~4;}
+    if(GetActiveOverlay()==2){p=func_ov010_02229b00();if(state==1)M2C_FIELD(p,u8 *,0x1a)|=4;else M2C_FIELD(p,u8 *,0x1a)&=~4;}
     PlaySoundEffect(0x10019);
 }
 
@@ -255,10 +255,10 @@ void func_020da480(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK SetFileDirectory(void *);
     M2C_UNK GetLocalizedFileName(void *);
-    M2C_UNK func_020814e4(void);
-    M2C_UNK func_02081590(M2C_UNK, void *);
+    M2C_UNK OpenNarcArchive(void);
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK, void *);
     M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02081528(void);
+    M2C_UNK CloseNarcArchive(void);
     M2C_UNK func_020ae22c(M2C_UNK);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
@@ -331,17 +331,17 @@ void func_020da480(void *arg0) {
     SetFileDirectory(data_0212d1f4);
     r0v = GetLocalizedFileName(data_0212d1fc);
     (void)r0v;
-    func_020814e4();
-    func_02081590(GetLocalizedFileName(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
+    OpenNarcArchive();
+    LoadNarcFileDecompressed(GetLocalizedFileName(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
 
     LoadFileToSpriteBuffer(data_0212d218, 0xa0, 0x80);
     ((u8 *)*gCur3DSpriteEngine)[0x46] |= 1;
 
     r0v = GetLocalizedFileName(data_0212d224);
-    func_02081590(r0v, (void *)((u8 *)*(void **)((u8 *)*gCur3DSpriteEngine + 0x1c) + 0x7100));
+    LoadNarcFileDecompressed(r0v, (void *)((u8 *)*(void **)((u8 *)*gCur3DSpriteEngine + 0x1c) + 0x7100));
 
     LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
-    func_02081528();
+    CloseNarcArchive();
     r0v = func_020ae22c(9);
     func_0208ca2c(0x1000, 1, r0v, 2);
 

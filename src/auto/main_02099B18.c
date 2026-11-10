@@ -116,7 +116,7 @@ s32 func_02099e10(M2C_UNK arg0) {
     return 1;
 }
 
-void func_02099e58(void *arg0) {
+void StopTextObject(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x55) = 0;
     M2C_FIELD(arg0, s8 *, 0x54) = -2;
 }

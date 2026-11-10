@@ -17,7 +17,7 @@ s32 func_ov001_0216eda4(void *a,s32 b,void *c,s32 d){s32 x,n;void *p;p=(void *)f
 
 void func_ov001_0216edf4(void *a){u16 buf[5];u32 n;u8 *dst,*src;u8 *p;dst=(u8 *)buf;buf[0]=0x100;src=data_ov001_0218ca48;dst+=2;n=7;do{u8 t=*src;src++;*dst=t;dst++;n--;}while(n!=0);p=func_ov001_0216ec48(data_ov001_0218fde8,1,buf,2);p=func_ov001_0216ec48(p,2,buf,2);if(data_ov001_02192790[20])p=func_ov001_0216ec48(p,5,buf,2);p=func_ov001_0216ec48(p,3,(u8 *)buf+2,7);if(data_ov001_02192790[20])p=func_ov001_0216ec48(p,4,data_ov001_02192c38,6);func_ov001_0216eb84(a,2,data_ov001_02192cc4,p-data_ov001_0218fde8+8,0);}
 
-s32 func_ov001_0216ee90(void){func_02007724();return 1;}
+s32 func_ov001_0216ee90(void){GetMacAddress();return 1;}
 
 s32 func_ov001_0216f16c(u8 *a,s8 *b,s32 n){s32 c,v,i;v=0;i=v;for(;i<n;i++){c=b[i];switch(c){case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':v+=c-48;break;case 'a':case 'b':case 'c':case 'd':case 'e':case 'f':v+=c-87;break;case 'A':case 'B':case 'C':case 'D':case 'E':case 'F':v+=c-55;break;default:return 0;}if(i%2==0)v<<=4;else{a[i/2]=v;v=0;}}return 1;}
 

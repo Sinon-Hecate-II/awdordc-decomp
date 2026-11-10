@@ -9,7 +9,7 @@ static inline void E1E88Set(void *p, u8 v) { M2C_FIELD(p,s8*,0x59)=v; }
 static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIELD(p,s8*,0x59)=a; }
 
 void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 GetReadyPlayerMask();
     void func_02088da8(void *);
     void *func_0208931c(void *);
@@ -87,7 +87,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         ((void **) spriteSlots)[player + 5] = sprite;
         *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
         if ((u8) iconMode == 1) {
-            if (func_020846a4() != 0) {
+            if (IsLinkSessionActive() != 0) {
                 tileIndex = (u16) ((participantSlots[player] << 4) + 0x180);
             } else {
                 tileIndex = (u16) (0x180 + (player << 4));
@@ -113,7 +113,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
 }
 
 void func_ov003_022020e0(void *p,u8 v){
-s32 func_0207c8ec(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); extern void *data_027e01d8;
+s32 Divide(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); extern void *data_027e01d8;
 s32 flag; s8 a; u8 id; s32 x;
 if((u8)v==1)flag=1;else flag=0;
 M2C_FIELD(p,u8*,0x39)=v;
@@ -124,7 +124,7 @@ flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
 if(flag){
 id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
 x=Modulo(id,4);
-{ s32 y=func_0207c8ec(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(data_027e01d8,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
+{ s32 y=Divide(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(data_027e01d8,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
 }
 M2C_FIELD(data_027e01d8,u8*,0x46)|=8;
 }
@@ -384,7 +384,7 @@ void func_ov003_02202b68(void *p) {
 }
 
 void func_ov003_02202bb0(void *p){
- s32 func_0207c8ec(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); s32 PlaySoundEffect(s32); extern void *gCur3DSpriteEngine;
+ s32 Divide(u8,s32); s32 Modulo(u8,s32); void func_020808dc(s32,s32,s32,s32); s32 PlaySoundEffect(s32); extern void *gCur3DSpriteEngine;
  s32 flag; s8 a; u8 id; s32 x; u8 v=0;
  PlaySoundEffect(0x1000F);
  if(E1E88IsZero(M2C_FIELD(p,u8 *,0x39))) {E1E88Virtual(p);return;}
@@ -396,7 +396,7 @@ void func_ov003_02202bb0(void *p){
  if(flag){
  id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
  x=Modulo(id,4);
- { s32 y=func_0207c8ec(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
+ { s32 y=Divide(id,4); x=(x*8+0x60); func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
  }
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 }

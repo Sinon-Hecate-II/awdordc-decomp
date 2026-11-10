@@ -19,7 +19,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     M2C_UNK func_020a0360(void);
     M2C_UNK func_020a061c(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0207c2f0(void);
+    M2C_UNK NextRandomValue(void);
     M2C_UNK func_020a0750(M2C_UNK, M2C_UNK);
 
     extern s32 *gCurrentMap;
@@ -99,7 +99,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
                 out[0] = (u16)inner;
                 out[1] = (u16)outer;
             } else if (score == best) {
-                if (func_0207c2f0() & 1) {
+                if (NextRandomValue() & 1) {
                     out[0] = (u16)inner;
                     out[1] = (u16)outer;
                 }
@@ -130,7 +130,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
                 out[0] = (u16)inner;
                 out[1] = (u16)outer;
             } else if (score == best2) {
-                if (func_0207c2f0() & 1) {
+                if (NextRandomValue() & 1) {
                     out[0] = (u16)inner;
                     out[1] = (u16)outer;
                 }

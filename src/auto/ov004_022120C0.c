@@ -10,11 +10,11 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK LoadFileToSpriteBuffer();
     M2C_UNK func_02007ef4();
     M2C_UNK StringFormat();
-    M2C_UNK func_020814e4();
+    M2C_UNK OpenNarcArchive();
     M2C_UNK GetLocalizedFileName();
-    M2C_UNK func_02081590();
+    M2C_UNK LoadNarcFileDecompressed();
     M2C_UNK func_01ff85b8();
-    M2C_UNK func_02081528();
+    M2C_UNK CloseNarcArchive();
     M2C_UNK func_020aca8c();
     M2C_UNK func_0208ca14();
     M2C_UNK func_0208c79c();
@@ -90,16 +90,16 @@ void func_ov004_022120c0(void *arg0) {
             LoadFileToSpriteBuffer(&data_ov004_02218e1c, 0, 0x20);
             func_02007ef4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x20, 0x20);
             StringFormat(bp, &data_ov004_02218e24, *((u8 *)a0 + 0x3a));
-            func_020814e4(bp);
+            OpenNarcArchive(bp);
             StringFormat(bp, &data_ov004_02218e34, *((u8 *)a0 + 0x3a));
-            func_02081590(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10) + 0x20);
+            LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e44, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x100, 1);
             StringFormat(bp, &data_ov004_02218e4c, *((u8 *)a0 + 0x3a));
-            func_02081590(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14) + 0x20);
+            LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e5c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x100, 0x1001);
-            func_02081528();
+            CloseNarcArchive();
             LoadDecompressedFileTo(GetLocalizedFileName(&data_ov004_02218e64), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c));
             LoadFileToSpriteBuffer(&data_ov004_02218e70, 0x200, 0x20);
 
@@ -161,17 +161,20 @@ AddSprite((u16)(x+64),(u16)y,(u16)(z+SpriteTile124(number/10+22)),&data_027e006c
 AddSprite((u16)(x+72),(u16)y,(u16)(z+SpriteTile124(number%10+22)),&data_027e006c,11);
 }
 
-void func_ov004_02212688(s32 x, s32 y, s32 z)
+/* Draws a horizontal bar of six 32x16 tiles at (x, y): tiles [0,4,8] then the
+ * mirrored [8,4,0] (the right half flagged with 0x1000 and shifted back), so a
+ * bar is the top or bottom edge of the opening window frame. */
+void DrawWindowFrameBar(s32 x, s32 y, s32 tileBase)
 {
   void AddSprite(u16, u16, u16, void *, s32);
   extern M2C_UNK gSpriteDesc32x16;
-  AddSprite((u16) x, (u16) y, (u16) z, &gSpriteDesc32x16, 11);
-  AddSprite((u16) (x + 32), (u16) y, (u16) (z + SpriteTile124(4)), &gSpriteDesc32x16, 11);
-  AddSprite((u16) (x + 64), (u16) y, (u16) (z + SpriteTile124(8)), &gSpriteDesc32x16, 11);
-  AddSprite((u16)((x + 96) | 4096), (u16) y, (u16) (z + SpriteTile124(8)), &gSpriteDesc32x16, 11);
-  AddSprite((u16) ((x + 128) | 4096), (u16) y, (u16) (z + SpriteTile124(4)), &gSpriteDesc32x16, 11);
+  AddSprite((u16) x, (u16) y, (u16) tileBase, &gSpriteDesc32x16, 11);
+  AddSprite((u16) (x + 32), (u16) y, (u16) (tileBase + SpriteTile124(4)), &gSpriteDesc32x16, 11);
+  AddSprite((u16) (x + 64), (u16) y, (u16) (tileBase + SpriteTile124(8)), &gSpriteDesc32x16, 11);
+  AddSprite((u16)((x + 96) | 4096), (u16) y, (u16) (tileBase + SpriteTile124(8)), &gSpriteDesc32x16, 11);
+  AddSprite((u16) ((x + 128) | 4096), (u16) y, (u16) (tileBase + SpriteTile124(4)), &gSpriteDesc32x16, 11);
   x = (x+160)|4096;
-  AddSprite((u16)x,(u16)y,(u16)z,&gSpriteDesc32x16,11);
+  AddSprite((u16)x,(u16)y,(u16)tileBase,&gSpriteDesc32x16,11);
 }
 
 void func_ov004_0221285c(void) {

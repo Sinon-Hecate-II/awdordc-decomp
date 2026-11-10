@@ -363,8 +363,8 @@ void func_ov003_021fc820(void *arg0) {
 void func_ov003_021fc860(void *arg0) {
 M2C_UNK func_ov003_021f1be8(M2C_UNK);
 void func_ov003_021fc95c(void *);
-s32 func_02084644(void);
-s32 func_020846a4(void);
+s32 GetActiveOverlay(void);
+s32 IsLinkSessionActive(void);
 M2C_UNK PlaySoundEffect(s32);
 void func_020d47f0(void);
 
@@ -420,14 +420,14 @@ result = 0;
 
 if (result == 0) {
 if ((s32) x == 4) {
-result = (func_02084644() == 2) ? 1 : 0;
+result = (GetActiveOverlay() == 2) ? 1 : 0;
 } else {
 result = 0;
 }
 }
 
 if (result != 0) {
-if (func_020846a4() != 0) {
+if (IsLinkSessionActive() != 0) {
 return;
 }
 }

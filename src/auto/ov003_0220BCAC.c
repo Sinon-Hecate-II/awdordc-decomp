@@ -19,7 +19,7 @@ typedef struct {
 void RequestMenuMode(void *, s32);
 #pragma opt_propagation off
 void func_ov003_0220bcac(void *arg0) {
-    extern s32 func_0207c8ec(s32, s32);
+    extern s32 Divide(s32, s32);
     extern void func_020a979c(void *, s16, s16);
     extern void func_ov003_0220c0e8(void *);
 
@@ -40,7 +40,7 @@ void func_ov003_0220bcac(void *arg0) {
     r6 = M2C_FIELD(sub, s16 *, 0x8);
     diff = f14p - f12p;
     val = f12 * diff;
-    q = func_0207c8ec(val, f16 - f14);
+    q = Divide(val, f16 - f14);
     sum = r6 + q;
     p=M2C_FIELD(sub,void **,0x1c);
     func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
@@ -56,7 +56,7 @@ void func_ov003_0220bcac(void *arg0) {
     r6 = M2C_FIELD(sub, s16 *, 0x8);
     diff = f14p - f12p;
     val = f12 * diff;
-    q = func_0207c8ec(val, f16 - f14);
+    q = Divide(val, f16 - f14);
     sum = r6 + q;
     p=M2C_FIELD(sub,void **,0x1c);
     func_020a979c(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));

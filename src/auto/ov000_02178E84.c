@@ -2,13 +2,13 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern s8 data_ov000_021b54c0[],data_ov000_021b5480[];
-extern u8 data_ov000_021b5c0f[];
+extern u8 gUnitKindFlags[];
 extern u32 gUnitKindStats[];
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 static inline s32 ov000_visibility_radius(void){
 s32 func_020a33c4(u16);s32 func_020a7b3c(s32,u8,u16,s32,s32);
 s32 bonus=func_020a33c4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-return func_020a7b3c(24,M2C_FIELD(data_ov000_021df580,u8 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),bonus,0);
+return func_020a7b3c(24,M2C_FIELD(gAiCommandState,u8 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4),bonus,0);
 }
 static inline s32 ov000_scan_distance(s32 x,s32 y,s32 cx,s32 cy){
 s32 d=0,dx=cx-x,dy=cy-y;
@@ -74,9 +74,9 @@ map=*gCurrentMap;
 terrain=M2C_FIELD(map+(arg0+M2C_FIELD(map+arg1*2,u16 *,0x3758)),u8 *,0x1420)&31;
 if(!data_ov000_021b5480[terrain])return 1;
 unit=M2C_FIELD(map,u8 **,0x52d0);
-if(func_ov000_021a9318((u32)(unit[0]<<26)>>26,arg0,arg1)&&((u32)(M2C_FIELD(data_ov000_021df580,u8 *,7)<<30)>>31))return 1;
+if(func_ov000_021a9318((u32)(unit[0]<<26)>>26,arg0,arg1)&&((u32)(M2C_FIELD(gAiCommandState,u8 *,7)<<30)>>31))return 1;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);kind=(u32)(unit[0]<<26)>>26;
-if(data_ov000_021b5c0f[kind*112]&32){
+if(gUnitKindFlags[kind*112]&32){
 xmin=arg0-6;if(xmin<0)xmin=0;ymin=arg1-6;if(ymin<0)ymin=0;
 xmax=M2C_FIELD(map,u16 *,0x5144)-1;if(arg0+6<xmax)xmax=arg0+6;
 ymax=M2C_FIELD(map,u16 *,0x5146)-1;if(arg1+6<ymax)ymax=arg1+6;
@@ -142,12 +142,12 @@ return 0;
 #pragma opt_propagation off
 s32 func_ov000_02179b08(void *arg0) {
 s32 func_ov000_021a89a4(void *);s32 IsFootUnitKind(u32);
-extern u8 data_ov000_021b5c0f[];extern void *gAiSettings;extern void *data_ov000_021df580;
+extern u8 gUnitKindFlags[];extern void *gAiSettings;extern void *gAiCommandState;
 s32 value;u8 scale;u32 id;
-if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<26)>>29)&4))return 110;
-id=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;if(!(data_ov000_021b5c0f[id*0x70]&7))return 110;
+if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<26)>>29)&4))return 110;
+id=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;if(!(gUnitKindFlags[id*0x70]&7))return 110;
 if((u32)(M2C_FIELD(arg0,u8 *,11)<<24)>>31)return 110;
-if(IsFootUnitKind(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
+if(IsFootUnitKind(id)&&M2C_FIELD(gAiCommandState,u8 *,5)<4U)value=4;else value=func_ov000_021a89a4(arg0);
 if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(gAiSettings,u8 *,15);else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }
@@ -155,17 +155,17 @@ value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 s32 func_ov000_02179be0(u8 *arg0,void *arg1,u32 arg2) {
 s32 IsFootUnitKind(u32);
 extern void **data_027e0058;
-extern u8 data_ov000_021b5c0f[];
+extern u8 gUnitKindFlags[];
 extern void *gAiSettings;
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 s32 value,scale;u32 id;void *p;
-if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<26)>>29)&4))return 110;
+if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<26)>>29)&4))return 110;
 p=M2C_FIELD(*data_027e0058,void **,0x52d0);
 id=(u32)(M2C_FIELD(p,u8 *,0)<<26)>>26;
-if(!(data_ov000_021b5c0f[id*0x70]&7))return 110;
+if(!(gUnitKindFlags[id*0x70]&7))return 110;
 if((u32)(M2C_FIELD(p,u8 *,11)<<24)>>31)return 110;
-if(IsFootUnitKind(id)&&M2C_FIELD(data_ov000_021df580,u8 *,5)<4U)value=4;
-else value=M2C_FIELD(data_ov000_021df580,u8 *,5);
+if(IsFootUnitKind(id)&&M2C_FIELD(gAiCommandState,u8 *,5)<4U)value=4;
+else value=M2C_FIELD(gAiCommandState,u8 *,5);
 if(((u32)(M2C_FIELD(M2C_FIELD(*data_027e0058,void **,0x52d0),u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(gAiSettings,u8 *,15);
 else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale;if(value>110)value=110;return value;

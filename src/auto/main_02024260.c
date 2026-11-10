@@ -161,7 +161,7 @@ void func_020244c0(void *arg0) {
 
 s32 func_02024a6c(void *p){s32 func_02023f20(void *);if(func_02023f20(p)!=7)return 1;return func_02023f20(p)!=6;}
 
-s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 TlsSendServerHello(void *);void func_02023318(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(TlsSendServerHello(p)){func_02023318(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
+s32 func_02024a9c(void *p){s32 func_02023f20(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void func_020244c0(void *);if(func_02023f20(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));func_020244c0(p);if(func_02024a6c(p))return 1;}else{if(func_02023f20(p)!=5)return 1;if(func_02024a6c(p))return 1;func_020244c0(p);}return 0;}
 
 #pragma scheduling off
 void func_02024b24(void *p) {
@@ -177,7 +177,7 @@ func_0201d434(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s
 }
 #pragma scheduling reset
 s32 func_02024b94(void *arg0) {
- void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void func_02023318(void *);s32 func_02023f20(void *);void func_020244c0(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
+ void func_02021f1c(void *,s32,u16); void func_020232b8(void *);void TlsInitRecordKeys(void *);s32 func_02023f20(void *);void func_020244c0(void *);void TlsSendHandshake(void *);s32 func_02024a6c(void *);
  void *p=M2C_FIELD(arg0,void **,12);s32 state;
  func_02024618(arg0);
  do {
@@ -185,13 +185,13 @@ s32 func_02024b94(void *arg0) {
  if(state==9)return 1;
  }while(state!=4 && M2C_FIELD(p,u8 *,0x31)==0);
  if(M2C_FIELD(p,u8 *,0x31)) {
- func_02023318(p);
+ TlsInitRecordKeys(p);
  if(func_02024a6c(arg0))return 1;
  func_020244c0(arg0);
  } else {
  TlsSendHandshake(arg0);func_020232b8(p);
  if(M2C_FIELD(p,u8 *,0x30))func_02021f1c(p,M2C_FIELD(arg0,s32 *,0x1c),M2C_FIELD(arg0,u16 *,0x18));
- func_02023318(p);func_020244c0(arg0);
+ TlsInitRecordKeys(p);func_020244c0(arg0);
  if(func_02024a6c(arg0))return 1;
  }
  M2C_FIELD(p,u8 *,0x455)=8;

@@ -2,93 +2,98 @@
 #include "common.h"
 typedef struct { u16 x,y; } TouchPair;
 typedef struct { u8 pad[0x58]; u16 a,b; u8 e,f; u16 c,d; u8 g,h; } TouchInput;
-typedef struct { u32 v[7]; } InputConfig;
 typedef struct { u32 unk0; void (*callback)(s32,s32,s32); u16 sample[4]; u16 index; u16 pad12; void *records; u16 capacity; u8 pad1a[0x1c]; u16 state; u16 flags38, flags3a; } TouchState;
-extern InputConfig data_020ea6d8;
+extern HashDescriptor gSha1HashDescriptor;
 extern M2C_UNK data_0212fc70;
-extern M2C_UNK func_0200c9c8, func_0200ca18, SHA1_Finalize;
+void Sha1Init(void *);
+void Sha1Update(void *, const void *, s32);
+void SHA1_Finalize(void *, void *);
 void func_0200d2c4(u32,u32,u32);
 typedef struct { u32 x:12; u32 y:12; u32 touch:1; u32 valid:2; u32 unused:5; } TouchPacket;
 typedef union { TouchPair pair; TouchPacket bits; } TouchSample;
 typedef struct { u16 x,y,touch,valid; } TouchResult;
 
-void func_0200cd68(u32 a,u32 b,u32 c,u32 d,u32 e) {
-void func_0200cdfc(u8 *,u8 *,s32,u8 *,s32,void *);
-u8 buf[0x68]; u8 small[0x14]; InputConfig cfg = data_020ea6d8;
-cfg.v[2]=(u32)buf; cfg.v[3]=(u32)small;
-cfg.v[4]=(u32)&func_0200c9c8; cfg.v[5]=(u32)&func_0200ca18; cfg.v[6]=(u32)&SHA1_Finalize;
-func_0200cdfc(a,b,c,d,e,&cfg);
+void HmacSha1(u32 a,u32 b,u32 c,u32 d,u32 e) {
+void Hmac(u8 *,u8 *,s32,u8 *,s32,HashDescriptor *);
+u8 ctx[0x68]; u8 innerDigest[0x14]; HashDescriptor cfg = gSha1HashDescriptor;
+cfg.context=ctx; cfg.digest=innerDigest;
+cfg.init=Sha1Init; cfg.update=Sha1Update; cfg.final=SHA1_Finalize;
+Hmac(a,b,c,d,e,&cfg);
 }
 
 #pragma scheduling off
-void func_0200cdfc(u8 *arg0, u8 *arg1, s32 arg2, u8 *arg3, s32 arg4, void *arg5) {
-    u8 sp80[64];
-    u8 sp40[64];
-    u8 sp0[64];
-    s32 var_r2;
-    s32 var_r5;
-    u8 *var_r1;
-    u8 *var_r1_2;
-    u8 *var_r2_2;
-    u8 *var_r6;
-    s32 var_r3_2;
-    u8 temp_r0;
-    u8 temp_r0_2;
+/* Keyed-hash message authentication (HMAC): when the key is longer than one
+ * block it is hashed first, then the inner (0x36) and outer (0x5c) padded keys
+ * are built and fed through the descriptor's hash callbacks with the message
+ * and the inner digest. */
+void Hmac(u8 *digest, u8 *msg, s32 msgLen, u8 *key, s32 keyLen, HashDescriptor *hash) {
+    u8 keyHash[64];
+    u8 innerPad[64];
+    u8 outerPad[64];
+    s32 i;
+    s32 k;
+    u8 *p;
+    u8 *p2;
+    u8 *q;
+    u8 *src;
+    s32 j;
+    u8 b;
+    u8 c;
 
-    var_r5 = arg4;
-    var_r6 = arg3;
-    if ((arg0 != NULL) && (arg1 != NULL) && (arg2 != 0) && (var_r6 != NULL) && (var_r5 != 0) && (arg5 != NULL)) {
-        if (var_r5 > (s32) M2C_FIELD(arg5, s32 *, 4)) {
-            M2C_FIELD(arg5, M2C_UNK (**)(s32), 0x10)(M2C_FIELD(arg5, s32 *, 8));
-            M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), var_r6, var_r5);
-            M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *), 0x18)(M2C_FIELD(arg5, s32 *, 8), &sp80[0]);
-            var_r5 = M2C_FIELD(arg5, s32 *, 0);
-            var_r6 = &sp80[0];
+    k = keyLen;
+    src = key;
+    if ((digest != NULL) && (msg != NULL) && (msgLen != 0) && (src != NULL) && (k != 0) && (hash != NULL)) {
+        if (k > (s32)hash->blockSize) {
+            hash->init(hash->context);
+            hash->update(hash->context, src, k);
+            hash->final(hash->context, keyHash);
+            k = hash->digestSize;
+            src = keyHash;
         }
-        var_r2 = 0;
-        if (var_r5 > 0) {
-            var_r1 = &sp40[0];
+        i = 0;
+        if (k > 0) {
+            p = innerPad;
             do {
-                temp_r0 = var_r6[var_r2];
-                var_r2 += 1;
-                *var_r1 = temp_r0 ^ 0x36;
-                var_r1 += 1;
-            } while (var_r2 < var_r5);
+                b = src[i];
+                i += 1;
+                *p = b ^ 0x36;
+                p += 1;
+            } while (i < k);
         }
-        if (var_r2 < (s32) M2C_FIELD(arg5, s32 *, 4)) {
-            var_r1 = &sp40[var_r2];
+        if (i < (s32)hash->blockSize) {
+            p = &innerPad[i];
             do {
-                *var_r1 = 0x36;
-                var_r1 += 1;
-                var_r2 += 1;
-            } while (var_r2 < (s32) M2C_FIELD(arg5, s32 *, 4));
+                *p = 0x36;
+                p += 1;
+                i += 1;
+            } while (i < (s32)hash->blockSize);
         }
-        M2C_FIELD(arg5, M2C_UNK (**)(s32), 0x10)(M2C_FIELD(arg5, s32 *, 8));
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), &sp40[0], M2C_FIELD(arg5, s32 *, 4));
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), arg1, arg2);
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *), 0x18)(M2C_FIELD(arg5, s32 *, 8), M2C_FIELD(arg5, u8 **, 0xC));
-        var_r3_2 = 0;
-        if (var_r5 > 0) {
-            var_r1_2 = &sp0[0];
+        hash->init(hash->context);
+        hash->update(hash->context, innerPad, hash->blockSize);
+        hash->update(hash->context, msg, msgLen);
+        hash->final(hash->context, hash->digest);
+        j = 0;
+        if (k > 0) {
+            p2 = outerPad;
             do {
-                temp_r0_2 = var_r6[var_r3_2];
-                var_r3_2 += 1;
-                *var_r1_2 = temp_r0_2 ^ 0x5C;
-                var_r1_2 += 1;
-            } while (var_r3_2 < var_r5);
+                c = src[j];
+                j += 1;
+                *p2 = c ^ 0x5C;
+                p2 += 1;
+            } while (j < k);
         }
-        if (var_r3_2 < (s32) M2C_FIELD(arg5, s32 *, 4)) {
-            var_r2_2 = &sp0[var_r3_2];
+        if (j < (s32)hash->blockSize) {
+            q = &outerPad[j];
             do {
-                *var_r2_2 = 0x5C;
-                var_r2_2 += 1;
-                var_r3_2 += 1;
-            } while (var_r3_2 < (s32) M2C_FIELD(arg5, s32 *, 4));
+                *q = 0x5C;
+                q += 1;
+                j += 1;
+            } while (j < (s32)hash->blockSize);
         }
-        M2C_FIELD(arg5, M2C_UNK (**)(s32), 0x10)(M2C_FIELD(arg5, s32 *, 8));
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), &sp0[0], M2C_FIELD(arg5, s32 *, 4));
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *, s32), 0x14)(M2C_FIELD(arg5, s32 *, 8), M2C_FIELD(arg5, u8 **, 0xC), M2C_FIELD(arg5, s32 *, 0));
-        M2C_FIELD(arg5, M2C_UNK (**)(s32, u8 *), 0x18)(M2C_FIELD(arg5, s32 *, 8), arg0);
+        hash->init(hash->context);
+        hash->update(hash->context, outerPad, hash->blockSize);
+        hash->update(hash->context, hash->digest, hash->digestSize);
+        hash->final(hash->context, digest);
     }
 }
 #pragma scheduling reset

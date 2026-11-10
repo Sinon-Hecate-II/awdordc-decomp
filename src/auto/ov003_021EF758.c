@@ -154,9 +154,9 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK func_02088da8(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_02088f1c(s32);
-    M2C_UNK func_020846a4(void);
+    M2C_UNK IsLinkSessionActive(void);
     M2C_UNK func_0208b758(void *, s32);
-    M2C_UNK func_ov003_021e6eb8(u8);
+    M2C_UNK IsWaypointOptionValid(u8);
     M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021e6cfc(void);
     M2C_UNK func_ov003_021e6d28(void);
@@ -196,7 +196,7 @@ void func_ov003_021efb74(void *arg0) {
 
     for (r5 = 0; r5 < 0xc; r5++) {
         e = (char *)r4 + r5 * 4;
-        if (func_ov003_021e6eb8((u8)r5) != 0) {
+        if (IsWaypointOptionValid((u8)r5) != 0) {
             func_02088d94(M2C_FIELD(e, s32 *, 0x14));
         } else {
             func_02088da8(M2C_FIELD(e, s32 *, 0x14));
@@ -222,7 +222,7 @@ void func_ov003_021efb74(void *arg0) {
     r6 = 0;
     if (r5u > 0) {
         do {
-            if (func_020846a4() == 0) {
+            if (IsLinkSessionActive() == 0) {
                 if (r6 < r5u) {
                     er = (char *)r4 + r6 * 4;
                     func_02088d94(M2C_FIELD(er, s32 *, 0x8));
@@ -354,9 +354,9 @@ void func_ov003_021f0010(void) {
 }
 
 void func_ov003_021f0014(void *arg0) {
-s32 func_020846a4(); s32 func_020848c4(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void func_ov003_021f140c(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
+s32 IsLinkSessionActive(); s32 func_020848c4(); s32 func_02084d3c(void *,s32); void func_02084d88(void *,s32); void func_02084e74(); s32 func_020a22fc(s32); s32 func_ov003_021e6d28(); void func_ov003_021f140c(s32); void func_ov003_021f152c(s32); void func_ov003_022006dc(s32); s32 func_ov003_02200808(u8); void func_ov006_022172b0(void *);
 u8 buf[0x24]; s32 v;
-if (!func_020846a4()) return;
+if (!IsLinkSessionActive()) return;
 if (((u32)(M2C_FIELD(arg0,u8 *,0x39)<<31)>>31)==1) v=1; else v=0;
 if (!(v&255)) return;
 func_ov003_022006dc(0); func_ov003_021f152c(1); func_ov003_021f140c(1); func_ov006_022172b0(arg0);

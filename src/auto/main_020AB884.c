@@ -6,30 +6,30 @@
  * scroll position at either end, then rebuilds the pixel offsets of the two
  * sub-lists whose animation timers are being restarted. */
 void UpdateListScroll(void *arg0) {
-s32 func_0207c8ec(s16,s16);s32 Modulo(s16,s16);s16 GetScrollLimit(void *);void ScrollListTo(void *,s16,s32);s32 GetSpriteAnimValue(void *);
+s32 Divide(s16,s16);s32 Modulo(s16,s16);s16 GetScrollLimit(void *);void ScrollListTo(void *,s16,s32);s32 GetSpriteAnimValue(void *);
 s16 rowIdx,unusedB,curOffset,savedTimer; s32 pixOffset; s32 endPos; s32 rowPos; s16 rowStep; s32 visibleRows; s16 finalPos;
 if(M2C_FIELD(arg0,s32 *,0x18)>=(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8)) && M2C_FIELD(arg0,u8 *,4)){
-rowIdx=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
-if(rowIdx<=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8)) &&
-(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8))>=1){
-if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))==0)ScrollListTo(arg0,0,0);
-else {rowPos=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos-1),0);}
+rowIdx=Divide((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+if(rowIdx<=(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8)) &&
+(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8))>=1){
+if((s16)Divide((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))==0)ScrollListTo(arg0,0,0);
+else {rowPos=(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos-1),0);}
 }else{
-rowIdx=func_0207c8ec(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8));
-if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))>=rowIdx){
-rowIdx=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));
-if((s16)func_0207c8ec(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8))<rowIdx){
-endPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8))<<16;
-rowPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))<<16;
+rowIdx=Divide(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8));
+if((s16)Divide((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))>=rowIdx){
+rowIdx=Divide((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));
+if((s16)Divide(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8))<rowIdx){
+endPos=Divide((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8))<<16;
+rowPos=Divide((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))<<16;
 if((rowPos>>16)==(endPos>>16))
-{finalPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));visibleRows=M2C_FIELD(arg0,s16 *,6);rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(finalPos-visibleRows+1),0);}
-else {rowPos=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos+1),0);}
+{finalPos=Divide((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));visibleRows=M2C_FIELD(arg0,s16 *,6);rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(finalPos-visibleRows+1),0);}
+else {rowPos=(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos+1),0);}
 M2C_FIELD(arg0,u8 *,4)=0;
 }
 }
 }
 }
-pixOffset=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+pixOffset=M2C_FIELD(arg0,u8 *,10)*(s16)Divide((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
 M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)Modulo((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
 M2C_FIELD(arg0,s16 *,46)=pixOffset;
 curOffset=M2C_FIELD(arg0,s16 *,44);savedTimer=M2C_FIELD(arg0,s16 *,78);

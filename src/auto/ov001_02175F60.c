@@ -23,7 +23,7 @@ void func_ov001_02175f8c(void *arg0) {
     M2C_UNK func_ov001_0218c884(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
     extern void *data_ov001_02193d50;
     extern u8 data_ov001_0219031c[28];
-    extern M2C_UNK data_ov001_02193d58;
+    extern M2C_UNK gOv001MessageArchive;
     extern void func_ov001_0217612c(void *);
     typedef struct {
         u32 a, b, c, d, e, f;
@@ -37,8 +37,8 @@ void func_ov001_02175f8c(void *arg0) {
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A0) = 0;
     M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A1) = 0;
     buf = *(Buf28 *)data_ov001_0219031c;
-    buf.b = func_ov001_02175f48(data_ov001_02193d58, 0);
-    buf.c = func_ov001_02175f48(data_ov001_02193d58, 1);
+    buf.b = func_ov001_02175f48(gOv001MessageArchive, 0);
+    buf.c = func_ov001_02175f48(gOv001MessageArchive, 1);
     buf.g = (u8)func_ov001_02175e34();
     func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
     if (func_ov001_02188ec4() == 0) func_02007958();
@@ -243,7 +243,7 @@ void func_ov001_021765b4(void) {
     M2C_UNK func_ov001_02184448();
     M2C_UNK func_ov001_0218a534(M2C_UNK);
     M2C_UNK func_ov001_0218c99c(M2C_UNK, M2C_UNK);
-    extern s32 data_ov001_02193d58;
+    extern s32 gOv001MessageArchive;
     if (func_ov001_0218a800(1) != 0) {
         return;
     }
@@ -256,42 +256,46 @@ void func_ov001_021765b4(void) {
     func_ov001_0218a534(0);
     func_ov001_0217223c();
     func_ov001_02171fc0();
-    func_ov001_02175f1c(data_ov001_02193d58);
+    func_ov001_02175f1c(gOv001MessageArchive);
     func_ov001_02175eb0();
     func_ov001_02184448();
     func_ov001_02175e20();
 }
 
-void func_ov001_02176628(void) {
+/* First step of the ov001 screen: initialise its subsystems, load the message
+ * archive for the current language and the character, background and object
+ * resources of both screens, set the background priority and fade in, then
+ * advance to the next step. */
+void Ov001_InitScreen(void) {
     void func_ov001_02184404(void);
     void func_ov001_02175e74(void);
     void func_ov001_02171fa0(void);
     void func_ov001_021721c4(void);
     void func_ov001_02171c10(void);
-    u8 func_ov001_02175ddc(void);
-    s32 func_ov001_02175e04(s32);
-    s32 func_ov001_02175dec(void);
+    u8 Ov001_GetLanguage(void);
+    s32 Ov001_HasOptionFlag(s32);
+    s32 Ov001_GetScreenLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_02175ec4(M2C_UNK);
-    s32 func_ov001_02171d30(void *);
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
-    void func_ov001_0218a504(s32, M2C_UNK);
+    M2C_UNK Ov001_LoadMessageArchive(M2C_UNK);
+    s32 Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    void Ov001_LoadCharBank(s32, M2C_UNK);
     M2C_UNK func_ov001_0218b314(M2C_UNK, M2C_UNK);
-    extern s32 data_ov001_02193d58;
-    extern M2C_UNK data_ov001_021903c4;
-    extern M2C_UNK data_ov001_021903a8[7];
-    extern M2C_UNK data_ov001_021903d4;
-    extern M2C_UNK data_ov001_021903e8;
-    extern M2C_UNK data_ov001_021903fc;
-    extern M2C_UNK data_ov001_02190410;
-    extern M2C_UNK data_ov001_02190424;
-    extern M2C_UNK data_ov001_0219043c;
-    extern M2C_UNK data_ov001_02190454;
-    extern M2C_UNK data_ov001_0219046c;
-    extern M2C_UNK data_ov001_02190484;
-    extern M2C_UNK data_ov001_0219049c;
-    extern M2C_UNK data_ov001_021904b4;
-    extern M2C_UNK data_ov001_021904c8;
+    extern s32 gOv001MessageArchive;
+    extern M2C_UNK gOv001MessagePathUsa;
+    extern M2C_UNK gOv001MessageFilePaths[7];
+    extern M2C_UNK gOv001TopCharPath;
+    extern M2C_UNK gOv001BottomCharPath;
+    extern M2C_UNK gOv001TopBgTilesPath;
+    extern M2C_UNK gOv001TopBgMapPath;
+    extern M2C_UNK gOv001TopObjTilesPath;
+    extern M2C_UNK gOv001ObjMapPath;
+    extern M2C_UNK gOv001BottomBgStep1TilesPath;
+    extern M2C_UNK gOv001BottomBgStep1MapPath;
+    extern M2C_UNK gOv001BottomObjTilesPath;
+    extern M2C_UNK gOv001BottomObjMapPath;
+    extern M2C_UNK gOv001TopScreenPath;
+    extern M2C_UNK gOv001TopStep1Path;
     extern M2C_UNK func_0200466c;
     extern M2C_UNK func_02004108;
     extern M2C_UNK func_02004314;
@@ -303,34 +307,40 @@ void func_ov001_02176628(void) {
     extern M2C_UNK func_0200442c;
     extern M2C_UNK func_ov001_02176808;
 
+    /* Bring up the screen's subsystems. */
     func_ov001_02184404();
     func_ov001_02175e74();
     func_ov001_02171fa0();
     func_ov001_021721c4();
     func_ov001_02171c10();
-    if (func_ov001_02175ddc() == 1 && func_ov001_02175e04(2) != 0) {
-        data_ov001_02193d58 = func_ov001_02175ec4((M2C_UNK)&data_ov001_021903c4);
+    /* English has a separate US archive selected by option flag 2. */
+    if (Ov001_GetLanguage() == 1 && Ov001_HasOptionFlag(2) != 0) {
+        gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)&gOv001MessagePathUsa);
     } else {
-        data_ov001_02193d58 = func_ov001_02175ec4((M2C_UNK)data_ov001_021903a8[func_ov001_02175ddc()]);
+        gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)gOv001MessageFilePaths[Ov001_GetLanguage()]);
     }
-    func_ov001_0218a504(1, func_ov001_02171d30(&data_ov001_021903d4));
-    func_ov001_0218a504(0, func_ov001_02171d30(&data_ov001_021903e8));
-    func_ov001_02171d90(&data_ov001_021903fc, &func_0200466c);
-    func_ov001_02171d90(&data_ov001_02190410, &func_02004108);
-    func_ov001_02171d90(&data_ov001_02190424, &func_02004314);
-    func_ov001_02171d90(&data_ov001_0219043c, &func_020041b8);
-    func_ov001_02171d90(&data_ov001_02190454, &func_020046cc);
-    func_ov001_02171d90(&data_ov001_0219046c, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_02190484, &func_020042bc);
-    func_ov001_02171d90(&data_ov001_0219049c, &func_02004160);
-    switch (func_ov001_02175dec()) {
+    /* Character banks: 1 = top screen, 0 = bottom screen. */
+    Ov001_LoadCharBank(1, Ov001_LocalizePath(&gOv001TopCharPath));
+    Ov001_LoadCharBank(0, Ov001_LocalizePath(&gOv001BottomCharPath));
+    Ov001_LoadAsset(&gOv001TopBgTilesPath, &func_0200466c);
+    Ov001_LoadAsset(&gOv001TopBgMapPath, &func_02004108);
+    Ov001_LoadAsset(&gOv001TopObjTilesPath, &func_02004314);
+    Ov001_LoadAsset(&gOv001ObjMapPath, &func_020041b8);
+    Ov001_LoadAsset(&gOv001BottomBgStep1TilesPath, &func_020046cc);
+    Ov001_LoadAsset(&gOv001BottomBgStep1MapPath, &func_020040b4);
+    Ov001_LoadAsset(&gOv001BottomObjTilesPath, &func_020042bc);
+    Ov001_LoadAsset(&gOv001BottomObjMapPath, &func_02004160);
+    /* The top screen's layout depends on the screen variant. */
+    switch (Ov001_GetScreenLayout()) {
     case 0:
-        func_ov001_02171d90(&data_ov001_021904b4, &func_0200442c);
+        Ov001_LoadAsset(&gOv001TopScreenPath, &func_0200442c);
         break;
     case 1:
-        func_ov001_02171d90(&data_ov001_021904c8, &func_0200442c);
+        Ov001_LoadAsset(&gOv001TopStep1Path, &func_0200442c);
         break;
     }
+    /* Both screens' BG1 use priority 3; the main screen's is written twice to
+     * match the original's display register sequence. */
     M2C_FIELD((void *)0x0400100A, u16 *, 0) = (M2C_FIELD((void *)0x0400100A, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -348,7 +358,7 @@ void func_ov001_02176808(void) {
 
 void func_ov001_02176844(void) {
     M2C_UNK func_ov001_02175d64(M2C_UNK, M2C_UNK);
-    s32 func_ov001_02175dec();
+    s32 Ov001_GetScreenLayout();
     extern M2C_UNK func_ov001_021768b8;
     extern M2C_UNK func_ov001_02180d44;
     s32 temp_r0;
@@ -359,7 +369,7 @@ void func_ov001_02176844(void) {
     if (func_ov001_0218a800(0) != 0) {
         return;
     }
-    temp_r0 = func_ov001_02175dec();
+    temp_r0 = Ov001_GetScreenLayout();
     switch (temp_r0) {                              /* irregular */
     case 0:
         func_ov001_02175d64(0, 1);
@@ -393,8 +403,8 @@ void func_ov001_021768b8(void) {
 
 /* Loads the step-screen background NCL file and registers its rendering callbacks, then selects VRAM banks 3 for the displays. */
 void func_ov001_02176934(void) {
-    s32 func_ov001_02171d30(void *);
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    s32 Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 func_ov001_02189dc8(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_0218f716;
     extern M2C_UNK data_ov001_021904dc;
@@ -406,10 +416,10 @@ void func_ov001_02176934(void) {
     extern M2C_UNK func_020046cc;
     typedef struct { u8 bytes[22]; } Text;
     Text text = *(Text *)&data_ov001_0218f716;
-    func_ov001_02171d90(&data_ov001_021904f4, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_0219050c, &func_0200448c);
-    func_ov001_02171d90(&data_ov001_021904dc, &func_020046cc);
-    M2C_FIELD(&data_ov001_02193d5c, s32 *, 4) = func_ov001_02189dc8(func_ov001_02171d30(&text), 0, 4);
+    Ov001_LoadAsset(&data_ov001_021904f4, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_0219050c, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_021904dc, &func_020046cc);
+    M2C_FIELD(&data_ov001_02193d5c, s32 *, 4) = func_ov001_02189dc8(Ov001_LocalizePath(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -611,10 +621,10 @@ void func_ov001_02176e30(void) {
 }
 
 void func_ov001_02176e78(void) {
- M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+ M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
  extern M2C_UNK data_ov001_02190520;
  extern M2C_UNK func_0200448c;
- func_ov001_02171d90(&data_ov001_02190520, &func_0200448c);
+ Ov001_LoadAsset(&data_ov001_02190520, &func_0200448c);
  M2C_FIELD((void *)0x04001008,u16 *,0) = (M2C_FIELD((void *)0x04001008,u16 *,0) & ~3) | 3;
  M2C_FIELD((void *)0x04001008,u16 *,2) = (M2C_FIELD((void *)0x04001008,u16 *,2) & ~3) | 3;
  *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;

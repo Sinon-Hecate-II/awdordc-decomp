@@ -383,14 +383,14 @@ void func_020bef44(void) {
 }
 
 s32 func_020befd8(void) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     extern M2C_UNK data_0215d890;
     extern u16 gMapConfig;
     s32 var_r4;
     u32 temp_r0;
 
     var_r4 = 0;
-    if (func_020846a4() != 0) {
+    if (IsLinkSessionActive() != 0) {
         return 0;
     }
     temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;

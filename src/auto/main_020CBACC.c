@@ -178,7 +178,7 @@ void func_020c1d28(s32,s32,s32,s32);
 void Reset3DSpriteEngineState(void);
 void Reset3DSpriteBankState(void);
 void func_02091d4c(s32);
-s32 func_020cfbdc(s32);
+s32 GetMapName(s32);
 void func_0209b2b4(s32,s32,s32,s32,s32,s32);
 s32 x,y;
 func_020cfd28();
@@ -198,7 +198,7 @@ Reset3DSpriteBankState();
 func_02091d4c(0);
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+60)=0;
 *(s16 *)(*(u8 **)gCur3DSpriteEngine+68)=0;
-func_0209b2b4(1,0,2,func_020cfbdc(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
+func_0209b2b4(1,0,2,GetMapName(*(u16 *)((u8 *)*gCurrentMap+0x5142)),0,16);
 *(s16 *)((u8 *)*gCurrentMap+0x52b4)=9;
 }
 
@@ -328,13 +328,13 @@ void func_020cc644(void *arg0) {
 }
 
 void func_020cc66c(s32 a,s32 b) {
-extern M2C_UNK data_0212b1dc;s32 func_01ffa770(M2C_UNK *);M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);void *p;
-if(func_01ffa770(&data_0212b1dc))return;
+extern M2C_UNK data_0212b1dc;s32 FindObjectByClass(M2C_UNK *);M2C_UNK func_01ffa3dc(M2C_UNK *,M2C_UNK);void *p;
+if(FindObjectByClass(&data_0212b1dc))return;
 p=(void *)func_01ffa3dc(&data_0212b1dc,7);
 M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
 }
 
-void func_020cc6a4(void) {
+void CancelMapCursorAnimation(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
     extern M2C_UNK data_0212b1dc;
     func_01ffa9e4(&data_0212b1dc);
@@ -343,10 +343,10 @@ void func_020cc6a4(void) {
 void func_020cc6b8(void){
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s32 func_020d46cc(void);void func_020d46ac(void);void func_020c75cc(void);void func_020d468c(void);
-void *func_0209f8e4(void);s32 IsPlayerHuman(u16);void func_02091c20(s32,s32);
+void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void func_02091c20(s32,s32);
 void *p; s32 n;
 if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();return;}
-p=func_0209f8e4();
+p=GetTargetPosition();
 if(M2C_FIELD(p,u16 *,2)==0){
 func_020d468c();
 func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,u16 *,0)&255,0);
@@ -368,10 +368,10 @@ void func_020cc7e0(void) {
 }
 
 s32 func_020cc7f8(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_0211f8fc;
     extern M2C_UNK data_0211f984;
-    if ((func_01ffa770(&data_0211f984) != 0) || (func_01ffa770(&data_0211f8fc) != 0)) {
+    if ((FindObjectByClass(&data_0211f984) != 0) || (FindObjectByClass(&data_0211f8fc) != 0)) {
         return 1;
     }
     return 0;

@@ -40,7 +40,7 @@ void func_02058df4(s8 *arg0, s32 arg1) {
 }
 
 M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
-    s8 *func_02068d68(s8 *, s8 *);
+    s8 *StringAppend(s8 *, s8 *);
     s8 *StringFind(s8 *, s8 *);
     s32 StringLength(s8 *);
     extern const u8 data_020eab2f[];
@@ -64,8 +64,8 @@ M2C_UNK *func_02058e3c(void *arg0, s8 *arg1) {
     t = M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24);
     t ^= 1;
     M2C_FIELD(&data_0213dce0, volatile s32 *, 0x24) = t;
-    func_02068d68(sp0, arg1);
-    func_02068d68(sp0, data_020ff4ac);
+    StringAppend(sp0, arg1);
+    StringAppend(sp0, data_020ff4ac);
     p = StringFind((s8 *)arg0, sp0);
     if (p == 0) return 0;
     n = StringLength(sp0);
@@ -455,23 +455,23 @@ return 1;
 
 u8 *func_02059aa0(u8 *arg0) {
  M2C_UNK AssertFailed();
- s32 func_02067774(void);
+ s32 Rand(void);
  void GetTickCountMs(void);
- void func_020677a8(void);
+ void SetRandSeed(void);
  extern M2C_UNK data_020ff534;
  extern M2C_UNK data_020ff56c;
  extern M2C_UNK data_020ff574;
  s32 i; u32 parity; u8 *p; u32 a,b;
  if (arg0 == NULL) AssertFailed(&data_020ff56c, &data_020ff574, &data_020ff534, 0x2b);
  GetTickCountMs();
- func_020677a8();
- arg0[0] = func_02067774() % 93 + 33;
+ SetRandSeed();
+ arg0[0] = Rand() % 93 + 33;
  parity = 0;
  i = 1; do {
   p = arg0 + i;
   a = p[-1]; b = arg0[0];
   { u32 x,y; if(a<b)x=1;else x=0; if(b<79)y=1;else y=0; parity=(b&1)^(parity^((i^a)&1)); parity^=y; parity^=x; }
-  p[0] = func_02067774() % 93 + 33;
+  p[0] = Rand() % 93 + 33;
   if ((parity && !(p[0]&1)) || (!parity && (p[0]&1)==1)) p[0]++;
   i++; } while(i<0x20);
  return arg0;

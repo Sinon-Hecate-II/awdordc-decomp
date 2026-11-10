@@ -509,9 +509,9 @@ s32 func_02050ad4(void **arg0, s32 arg1) {
 }
 
 void func_02050bbc(s8 *p,s32 n) {
-u32 func_02067774(void);extern s8 data_020fe250[];
+u32 Rand(void);extern s8 data_020fe250[];
 s32 i=0;
-for(;i<n;i++)p[i]=data_020fe250[func_02067774()%62U];
+for(;i<n;i++)p[i]=data_020fe250[Rand()%62U];
 p[i]=0;
 }
 

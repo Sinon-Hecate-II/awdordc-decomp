@@ -4,7 +4,7 @@ typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 
 #pragma opt_strength_reduction off
 void func_ov005_02219fa0(s32 a, s32 b, s32 c) {
-void *func_01ffa770(void *);
+void *FindObjectByClass(void *);
 void *func_01ffa3dc(void *,void *);
 s32 func_02090e0c(s32,u8,s32,s32,s32,s32,s32,void *);
 void func_ov005_02219e58(void *);
@@ -14,7 +14,7 @@ void *obj;
 s32 i;
 void *parent;
 s32 saved,engine;
-parent=func_01ffa770(&data_ov005_02220d50);
+parent=FindObjectByClass(&data_ov005_02220d50);
 obj=func_01ffa3dc(&data_0211e058,parent);
 if(!obj)return;
 M2C_FIELD(obj,void **,0)=&data_ov005_02220fa4;

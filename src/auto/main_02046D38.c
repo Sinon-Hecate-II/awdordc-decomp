@@ -5,7 +5,7 @@ typedef struct { char bytes[17]; } HexDigits;
 typedef struct { char bytes[20]; } HashPrefix;
 typedef struct { u32 lo, hi; } Unk046Pair;
 typedef struct { Unk046Pair a, b; s32 flag; } Unk046State;
-void func_02045cbc(void *);
+void GetWfcProfile(void *);
 s32 func_02045d94(void *, s32);
 s32 func_02046ebc(void *);
 
@@ -30,15 +30,15 @@ return packed.value;
 
 #pragma opt_common_subs on
 s32 func_02046ebc(void *arg0) {
-void func_02045cbc(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void func_02007724(void *);u64 GetSystemTick(void);
+void GetWfcProfile(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void GetMacAddress(void *);u64 GetSystemTick(void);
 u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;u32 state;u8 flag;u32 mac;
-func_02045cbc(p);func_0200ee70();
+GetWfcProfile(p);func_0200ee70();
 if(func_0200ef4c(sp+0x14))return 0;
 if(func_0200eff8(sp+8))return 0;
 diff=MakeTime(sp+0x14,sp+8);if(diff<0)return 0;
 seed=diff;
 if(func_02006f8c()!=0)seed+=(u32)GetSystemTick;
-func_02007724(sp);
+GetMacAddress(sp);
 state=(u32)seed*0x5d588b65+0x269ec3;
 flag=(((sp[0]<<16)|(sp[1]<<8)|sp[2])!=0x9bf);
 mac=(sp[3]<<16)|(sp[4]<<8)|sp[5];
@@ -62,18 +62,18 @@ return 1;
 }
 s32 func_02047098(s32 arg0) { Unk046State s; if (func_02046ebc(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
 
-s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
+s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
 
 #pragma opt_propagation off
 #pragma opt_common_subs off
 s32 func_0204712c(void *arg0) {
-    void func_02045cbc(void *);
+    void GetWfcProfile(void *);
     void func_0200ee70(void);
     s32 func_0200ef4c(void *);
     s32 func_0200eff8(void *);
     long long MakeTime(void *, void *);
     u16 func_02006f8c(void);
-    void func_02007724(void *);
+    void GetMacAddress(void *);
     u64 GetSystemTick(void);
     u64 func_02046d38(u32, u32, u32, u32);
 
@@ -94,7 +94,7 @@ register u32 tmp4, tmp3;
     p = arg0;
     { u8 *q=sp; q[0]=0;q[1]=0;q[2]=0;q[3]=0;q[4]=0;q[5]=0; }
 
-    func_02045cbc(p);
+    GetWfcProfile(p);
     func_0200ee70();
     if (func_0200ef4c(&sp[0x14]) != 0) return 0;
     if (func_0200eff8(&sp[0x8]) != 0) return 0;
@@ -104,7 +104,7 @@ register u32 tmp4, tmp3;
     if (func_02006f8c() != 0) diff += (u32)GetSystemTick;
 
     seed = (u32)diff;
-    func_02007724(sp);
+    GetMacAddress(sp);
     mult=0x5d588b65;inc=0x269ec3;
     r9 = seed * mult + inc;
     spval = (sp[0] << 16) | (sp[1] << 8) | sp[2];
@@ -126,9 +126,9 @@ register u32 tmp4, tmp3;
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void func_020472cc(Unk046State *p) { Unk046State s; func_02045cbc(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
+void func_020472cc(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
 
-s32 func_02047320(void) { Unk046State s; func_02045cbc(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
+s32 func_02047320(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
 
 u32 func_02047370(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
 

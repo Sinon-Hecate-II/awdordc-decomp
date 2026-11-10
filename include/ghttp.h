@@ -28,23 +28,33 @@ typedef struct GhiSocketAddress {
 /* GameSpy ghttp's per-request connection state machine.  Only the fields the
  * game's matched code touches so far are named; the rest is padding. */
 typedef struct GHIConnection {
-    u8   pad00[0x10];
+    s32  inUse;            /* +0x00: nonzero while this slot holds a request */
+    s32  request;          /* +0x04: index of this connection in gGhiConnectionList */
+    s32  id;               /* +0x08: unique id handed out when the slot was taken */
+    s32  pad0C;
     s32  state;            /* +0x10: GHTTPState */
-    u8   pad14[0x08];
+    char *url;             /* +0x14: URL the caller asked for */
+    char *host;            /* +0x18: host name from that URL */
     u32  addr;             /* +0x1C: resolved IPv4 address, host order */
     u16  port;             /* +0x20: port from the URL */
     u16  pad22;
-    u8   pad24[0x14];
+    char *path;            /* +0x24: request path sent on the request line */
+    char *headers;         /* +0x28: extra headers supplied by the caller */
+    u8   pad2C[0x0C];
     s32  result;           /* +0x38: GHTTPResult of a failed request */
     u8   pad3C[0x0C];
     s32  socket;           /* +0x48: SOCKET, -1 until created */
         s32 lastSocketError;  /* +0x4C: saved errno of the last socket call */
-    GHIBuffer buffer;      /* +0x50: request/response scratch buffer */
-    u8   pad74[0x88];
+    GHIBuffer buffer;         /* +0x50: request line/header buffer */
+    GHIBuffer readBuffer;     /* +0x74: body bytes read from the socket */
+    GHIBuffer decryptBuffer;  /* +0x98: body bytes the encryptor works on */
+    GHIBuffer bodyBuffer;     /* +0xBC: caller body buffer, or growable when none */
+    u8   padE0[0x1C];
     s32 completed;        /* +0xFC: nonzero once the request has finished */
     s32 bytesReceived;    /* +0x100: body bytes delivered so far */
     s32 contentLength;    /* +0x104: expected body length, 0 when unknown */
-    u8   pad108[0x08];
+    char *redirectURL;    /* +0x108: URL to fetch after a redirect */
+    s32 pad10C;
     s32 chunked;          /* +0x110: body uses chunked transfer encoding */
     u8   chunkHeader[0x0C];/* +0x114: text of the current chunk-size line */
     s32 chunkHeaderLen;   /* +0x120: bytes in chunkHeader */
@@ -59,14 +69,35 @@ typedef struct GHIConnection {
     s32  postIndex;       /* +0x144: item currently being written */
     s32  postOffset;      /* +0x148: body bytes written so far */
     s32  postLength;      /* +0x14C: total body length (Content-Length) */
-    u8   pad150[0x0C];
+    u8   pad150[0x08];
+    s32  timeout;         /* +0x158: transfer timeout in milliseconds */
     char *serverOverride; /* +0x15C: connect here instead of the URL host */
     u16  portOverride;    /* +0x160: port used with serverOverride */
+    u16  pad162;
+    u8   encryptorState[0x08]; /* +0x164: opaque state passed to the encryptor callbacks */
+    void *encryptor;      /* +0x16C: non-NULL while an encryptor is installed */
+    s32  encryptorFlag;   /* +0x170 */
+    s32  (*encryptorProcess)(void *connection, void *state); /* +0x174 */
+    void (*encryptorCleanup)(void *connection, void *state); /* +0x178 */
+    u8   pad17C[0x08];
 } GHIConnection;
+
+/* The global table of connection slots; the original kept its four members as
+ * separate globals (ghiNumConnections, ghiConnections, ...) laid out in order. */
+typedef struct GHIConnectionList {
+    s32 numConnections;          /* +0x00: slots in use */
+    GHIConnection **connections; /* +0x04: slot array */
+    s32 nextId;                  /* +0x08: next connection id */
+    s32 length;                  /* +0x0C: number of slots allocated */
+} GHIConnectionList;
 
 /* Offsets of the POST upload state inside GHIConnection, for code that still
  * addresses the connection as a byte buffer. */
 #define GHI_RESULT        0x38  /* GHIConnection.result */
+#define GHI_URL           0x14  /* GHIConnection.url */
+#define GHI_HOST          0x18  /* GHIConnection.host */
+#define GHI_PORT          0x20  /* GHIConnection.port */
+#define GHI_PATH          0x24  /* GHIConnection.path */
 #define GHI_BUFFER_LEN    0x5c  /* GHIConnection.buffer.len */
 #define GHI_BUFFER_POS    0x60  /* GHIConnection.buffer.pos */
 #define GHI_COMPLETED     0xfc  /* GHIConnection.completed */

@@ -52,9 +52,13 @@ func_0204dbd4(M2C_FIELD(p,s32 *,0),(u8 *)p+0x48,(u8 *)p+0x148,1,0,c,0);
 if(func_02039e88()) return; M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,4)=d;
 }
 
-void func_0203a0e8(void *a,s32 b){
+/* Starts an online/NAS request for source `b`, remembering the completion callback `a`.
+ * Builds the 72-byte request descriptor (the request name, the payload name at +0x34 and
+ * the alloc/free callbacks at +0x40/+0x44), allocates the NAS connection block and hands
+ * the descriptor to func_020328ac. */
+void StartNasRequest(void *a,s32 b){
 extern M2C_UNK data_0213d380;
-u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 func_020322ec(void *); void func_02032228(void *); void func_0203211c(void *,s32,void *); void func_02031dfc(void *,u32); s32 func_02038020(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void func_02037694(void);void func_020376d8(M2C_UNK,M2C_UNK,M2C_UNK);void func_020328ac(void *,s32);void MI_CpuFill8(void *,s32,s32);
+u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 func_020322ec(void *); void func_02032228(void *); void func_0203211c(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void func_02037694(void);void func_020376d8(M2C_UNK,M2C_UNK,M2C_UNK);void func_020328ac(void *,s32);void MI_CpuFill8(void *,s32,s32);
 u8 buf[72];void *p; s32 n;
 MI_CpuFill8(buf,0,72);M2C_FIELD(&data_0213d380,void **,8)=a;M2C_FIELD(&data_0213d380,s32 *,0)=b;
 if(func_02032370(M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),void **,28))){
@@ -69,7 +73,7 @@ u64 t=GetSystemTick();func_02031dfc((u8 *)M2C_FIELD(&data_0213d380,void **,4)+0x
 }
 p=M2C_FIELD(&data_0213d380,void **,4);func_0203211c((u8 *)p+0x3c,M2C_FIELD(p,s32 *,12),(u8 *)p+0x248);
 }
-n=func_02038020(M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,16));
+n=Utf16StringLength(M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,16));
 MI_CpuCopy8(M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,16),buf,n*2+2);
 StringCopy(buf+0x34,(s32)((u8 *)M2C_FIELD(&data_0213d380,void **,4)+0x251));
 M2C_FIELD(buf,u32 *,64)=(u32)func_02037694;M2C_FIELD(buf,u32 *,68)=(u32)func_020376d8;n=func_020376a4(0,0x1c14,4);
@@ -91,7 +95,7 @@ void func_0203a2b4(void) {
     s32 func_02032370(void *);
     void func_0203a04c(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void MI_CpuFill8(void *, s32, s32);
-    s32 func_02038020(s32);
+    s32 Utf16StringLength(s32);
     void MI_CpuCopy8(s32, void *, s32);
     void func_020328ac(void *, M2C_UNK);
     void func_02039db4(s32, s32);
@@ -141,7 +145,7 @@ void func_0203a2b4(void) {
         } else {
             func_02032b10();
             MI_CpuFill8(buf, 0, 0x48);
-            n = func_02038020(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x10));
+            n = Utf16StringLength(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x10));
             MI_CpuCopy8(M2C_FIELD(M2C_FIELD(&data_0213d380, void **, 4), s32 *, 0x10), buf, n * 2 + 2);
             StringCopy(buf + 0x34, (M2C_UNK)((u8 *)M2C_FIELD(&data_0213d380, void **, 4) + 0x251));
             *(M2C_UNK *)(buf + 0x40) = (M2C_UNK)func_02037694;
@@ -154,7 +158,7 @@ void func_0203a2b4(void) {
 #pragma opt_strength_reduction reset
 void func_0203a4bc(s32 a,void *b) {
 extern M2C_UNK data_0213d380;
-void func_0203211c(void *,s32,void *); M2C_UNK func_0204ddd4(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32); void func_0204deb0(s32,s32,void *); s32 func_02039e88(void); void func_0204dcd8(s32); void func_0203a0e8(void *,s32); s32 StringCompare(s32,M2C_UNK *); void func_0203248c(void *,void *,s32);
+void func_0203211c(void *,s32,void *); M2C_UNK func_0204ddd4(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32); void func_0204deb0(s32,s32,void *); s32 func_02039e88(void); void func_0204dcd8(s32); void StartNasRequest(void *,s32); s32 StringCompare(s32,M2C_UNK *); void func_0203248c(void *,void *,s32);
 u8 buf1[21],buf2[21],buf3[21]; void *p;
 if(M2C_FIELD(b,s32 *,0))return;
 p=M2C_FIELD(&data_0213d380,void **,4);
@@ -165,7 +169,7 @@ func_0204deb0(a,0x705,buf1);if(func_02039e88())return;
 M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,4)=4;
 func_0204ddd4(a,M2C_FIELD(b,s32 *,4),0,0,(M2C_UNK *)func_0203a4bc,0);if(func_02039e88())return;
 }else{
-func_0204dcd8(a);func_0203a0e8((void *)func_0203a034,0);
+func_0204dcd8(a);StartNasRequest((void *)func_0203a034,0);
 M2C_FIELD(M2C_FIELD(&data_0213d380,void **,4),s32 *,4)=1;
 }
 }else if(M2C_FIELD(p,s32 *,4)==4){

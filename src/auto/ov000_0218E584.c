@@ -14,8 +14,8 @@ u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
 void func_ov000_0217c3a4(void);
 extern void **gCurrentMap;
-extern void *data_ov000_021df580,*data_ov000_021df644;
-extern s8 data_ov000_021b55a0[];
+extern void *gAiCommandState,*gAiUnitTypeTuning;
+extern s8 gTerrainPropertyType[];
 s32 bestX,bestY,x,y,best,score,cost;
 u8 *selected,*unit;
 u16 row;
@@ -39,7 +39,7 @@ if((((UnitKind18e584*)unit)->kind)!=0x15)goto next;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if((((UnitKind18e584*)selected)->kind)==0x11)
 if(cost<=best){bestX=x;bestY=y;best=score;}
-if(cost>((u8*)data_ov000_021df580)[5])goto next;
+if(cost>((u8*)gAiCommandState)[5])goto next;
 if(!CanUnitAttackKind(unit))goto next;
 SetMapCursor((s16)x,(s16)y,7,0,0);
 }else{
@@ -47,18 +47,18 @@ if(!func_ov000_021a9214(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
 
 if(!func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y))goto next;
 }
-if(!func_ov000_0217a8a0(x,y,((u8*)data_ov000_021df580)[5]))goto next;
+if(!func_ov000_0217a8a0(x,y,((u8*)gAiCommandState)[5]))goto next;
 
 row=M2C_FIELD(((u8*)*gCurrentMap)+y*2,u16*,0x3758);
-if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>=((u8*)data_ov000_021df644)[2])goto next;
+if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>=((u8*)gAiUnitTypeTuning)[2])goto next;
 cost=M2C_FIELD(((u8*)*gCurrentMap)+y*4,s8**,0x52e8)[x];
 score=cost;
-if(data_ov000_021b55a0[M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x1420)&31])score=cost+((u8*)data_ov000_021df580)[5];
-if(cost<=((u8*)data_ov000_021df580)[5]){
+if(gTerrainPropertyType[M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x1420)&31])score=cost+((u8*)gAiCommandState)[5];
+if(cost<=((u8*)gAiCommandState)[5]){
 if(func_ov000_02178778((s16)x,(s16)y)==1)goto next;
 
 row=M2C_FIELD(((u8*)*gCurrentMap)+y*2,u16*,0x3758);
-if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2840)>((u8*)data_ov000_021df644)[1] || M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>((u8*)data_ov000_021df644)[2])goto next;
+if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2840)>((u8*)gAiUnitTypeTuning)[1] || M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>((u8*)gAiUnitTypeTuning)[2])goto next;
 if(func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)==1)score=0;
 }
 if(score<=best){bestX=x;bestY=y;best=score;}
@@ -69,11 +69,11 @@ next:
 if(bestX==-1)return;
 func_ov000_0217c3a4();
 
-if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)data_ov000_021df580)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
+if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)gAiCommandState)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
 SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
 }
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
-if(func_ov000_021a9214(selected,selected[1],selected[2])==1 && (M2C_FIELD(data_ov000_021df580,u16*,8)&0x80)){
+if(func_ov000_021a9214(selected,selected[1],selected[2])==1 && (M2C_FIELD(gAiCommandState,u16*,8)&0x80)){
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 SetMapCursor(selected[1],selected[2],2,0,0);return;
 }
@@ -90,8 +90,8 @@ u8 func_ov000_0217a8a0(s16,s16,s32);
 void PlanMoveDestination(s32,s32);
 void func_ov000_0217c3a4(void);
 extern void **gCurrentMap;
-extern void *data_ov000_021df580,*data_ov000_021df644;
-extern s8 data_ov000_021b55a0[];
+extern void *gAiCommandState,*gAiUnitTypeTuning;
+extern s8 gTerrainPropertyType[];
 s32 bestY,y,best,score,x,cost,bestX;
 s16 buf[2];
 u8 *selected,*unit;
@@ -121,7 +121,7 @@ selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if(!gUnitKindStats[((UnitKind18e584*)selected)->kind*112+0x6a])goto next;
 if(!(M2C_FIELD(unit,u16*,4)&1))goto next;
 if(!func_ov000_02177f24(x,y,buf))goto next;
-if(M2C_FIELD(((u8*)*gCurrentMap)+buf[0]+M2C_FIELD(((u8*)*gCurrentMap)+buf[1]*2,u16*,0x3758),u8*,0x2d48)>=((u8*)data_ov000_021df644)[2])goto next;
+if(M2C_FIELD(((u8*)*gCurrentMap)+buf[0]+M2C_FIELD(((u8*)*gCurrentMap)+buf[1]*2,u16*,0x3758),u8*,0x2d48)>=((u8*)gAiUnitTypeTuning)[2])goto next;
 SetMapCursor(buf[0],buf[1],2,0,0);goto next;
 case 21:break;case 23:goto case23;default:goto next;
 }
@@ -129,7 +129,7 @@ selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if((((UnitKind18e584*)selected)->kind)==0x11)
 if(cost<=best){bestX=x;bestY=y;best=score;}
 case23:
-if(cost>((u8*)data_ov000_021df580)[5])goto next;
+if(cost>((u8*)gAiCommandState)[5])goto next;
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if(!CanUnitAttackKind(unit,((UnitKind18e584*)selected)->kind))goto next;
 SetMapCursor((s16)x,(s16)y,7,0,0);
@@ -138,13 +138,13 @@ if(!func_ov000_021a9214(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y)){
 
 if(!func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,y))goto next;
 }
-if(!func_ov000_0217a8a0(x,y,((u8*)data_ov000_021df580)[5]))goto next;
+if(!func_ov000_0217a8a0(x,y,((u8*)gAiCommandState)[5]))goto next;
 
 row=M2C_FIELD(((u8*)*gCurrentMap)+y*2,u16*,0x3758);
-if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>=((u8*)data_ov000_021df644)[2])goto next;
+if(M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x2d48)>=((u8*)gAiUnitTypeTuning)[2])goto next;
 cost=M2C_FIELD(((u8*)*gCurrentMap)+y*4,s8**,0x52e8)[x];
 score=cost;
-if(data_ov000_021b55a0[M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x1420)&31])score=cost+((u8*)data_ov000_021df580)[5];
+if(gTerrainPropertyType[M2C_FIELD(((u8*)*gCurrentMap)+x+row,u8*,0x1420)&31])score=cost+((u8*)gAiCommandState)[5];
 if(func_ov000_021a93a8(M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0),x,(short)y)==1)score=0;
 if(score<=best){bestX=x;bestY=y;best=score;}
 }
@@ -154,7 +154,7 @@ next:
 if(best==0x7fff)return;
 func_ov000_0217c3a4();
 
-if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)data_ov000_021df580)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
+if(M2C_FIELD(((u8*)*gCurrentMap)+bestY*4,s8**,0x52e8)[bestX]<=((u8*)gAiCommandState)[5] && ((u8*)*gCurrentMap)[M2C_FIELD(((u8*)*gCurrentMap)+bestY*2,u16*,0x3758)+bestX]==0){
 SetMapCursor((s16)bestX,(s16)bestY,2,0,0);return;
 }
 PlanMoveDestination(bestX,bestY);
@@ -168,7 +168,7 @@ void func_ov000_0218edd8(void) {
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     void *temp_r0;
     void *temp_r1;
     temp_r0 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
@@ -178,7 +178,7 @@ void func_ov000_0218edd8(void) {
     temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
     if (((u32)(M2C_FIELD(temp_r1, u16 *, 8) << 0x12) >> 0x1E) == 0) return;
     if (IsFootUnitKind((u32)(M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) func_ov000_0218dda4();
-    M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8)(M2C_FIELD(data_ov000_021df580, u8 *, 7) | 2);
+    M2C_FIELD(gAiCommandState, u8 *, 7) = (u8)(M2C_FIELD(gAiCommandState, u8 *, 7) | 2);
     switch ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u16 *, 8) << 0x12) >> 0x1E) {
     case 1: func_ov000_0218e9ac(); break;
     case 2: func_ov000_0218e584(); break;
@@ -192,7 +192,7 @@ void func_ov000_0218eea8(void) {
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     void *temp_r0;
     void *temp_r1;
 
@@ -207,7 +207,7 @@ void func_ov000_0218eea8(void) {
     if (IsFootUnitKind((u32) (M2C_FIELD(temp_r1, u8 *, 0) << 0x1A) >> 0x1A) != 0) {
         func_ov000_0218dda4();
     }
-    M2C_FIELD(data_ov000_021df580, u8 *, 7) = (u8) (M2C_FIELD(data_ov000_021df580, u8 *, 7) | 2);
+    M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) | 2);
     func_ov000_0218e9ac();
 }
 
@@ -287,7 +287,7 @@ outer_done:
 }
 
 void func_ov000_0218f0ec(void) {
-extern void **gCurrentMap; extern void *data_ov000_021df580;
+extern void **gCurrentMap; extern void *gAiCommandState;
 s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void func_01ffb9c4(s8); s32 func_020d280c(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void func_ov000_0217c3a4(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
@@ -307,7 +307,7 @@ if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),unit?((s32)unit-(s32)((u8 *
 if(!func_ov000_021a8a88(unit))continue;
 if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
 if(!func_ov000_02177f24(x,y,out))continue;
-if((u32)(M2C_FIELD(data_ov000_021df580,u8 *,7)<<28)>>31){func_ov000_02199f38();return;}
+if((u32)(M2C_FIELD(gAiCommandState,u8 *,7)<<28)>>31){func_ov000_02199f38();return;}
 func_ov000_0217c3a4();
 {u8 *base=*gCurrentMap; SetMapCursor(out[0],out[1],4,base[x+M2C_FIELD(base+y*2,u16 *,0x3758)],0);}
 return;

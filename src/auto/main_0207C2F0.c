@@ -11,14 +11,14 @@ extern Unk0207Color data_021017f4[4];
 extern void **gCurrentMap;
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
 
-s32 func_0207c2f0(void) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+s32 NextRandomValue(void) {
+    s32 Divide(s32, M2C_UNK);
     extern s32 data_0214bfa8;
     s32 temp_r2;
     s32 temp_r4;
     temp_r2 = (data_0214bfa8 * 4) + 2;
     temp_r4 = temp_r2 * (temp_r2 + 1);
-    return data_0214bfa8 = (temp_r4 + func_0207c8ec(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
+    return data_0214bfa8 = (temp_r4 + Divide(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
 }
 
 s32 RandomIntRange(s32 arg0, s32 arg1) {
@@ -30,7 +30,7 @@ s32 RandomIntRange(s32 arg0, s32 arg1) {
         arg0 = arg1;
         arg1 = temp;
     }
-    return arg0 + Modulo(func_0207c2f0() & 0x7fffffff, arg1 - arg0 + 1);
+    return arg0 + Modulo(NextRandomValue() & 0x7fffffff, arg1 - arg0 + 1);
 }
 
 s32 func_0207c368(u8 *arg0, s32 arg1) {
@@ -298,7 +298,7 @@ s32 func_0207c860(void *arg0, u32 arg1, u32 arg2) {
     return result;
 }
 
-s32 func_0207c8ec(s32 arg0, s32 arg1) {
+s32 Divide(s32 arg0, s32 arg1) {
     *(volatile u16 *)0x04000280 = 0;
     *(volatile s32 *)0x04000290 = arg0;
     *(volatile s64 *)0x04000298 = (u32)arg1;
@@ -345,12 +345,12 @@ s32 EaseInterpolate(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
 s32 t;
 if(arg4==0)return arg2;
 switch(arg0){
-case 0:return arg1+func_0207c8ec(arg3*(arg2-arg1),arg4);
-case 1:return arg1+func_0207c8ec((arg2-arg1)*(arg3*arg3),arg4*arg4);
-case 2:return arg1+func_0207c8ec((arg2-arg1)*(arg3*(arg3*arg3)),arg4*(arg4*arg4));
-case 3:return arg1+func_0207c8ec((arg2-arg1)*(arg3*(arg3*(arg3*arg3))),arg4*(arg4*(arg4*arg4)));
-case 4:t=arg4-arg3;return arg2-func_0207c8ec((arg2-arg1)*(t*t),arg4*arg4);
-case 5:t=arg4-arg3;return arg2-func_0207c8ec((arg2-arg1)*(t*(t*t)),arg4*(arg4*arg4));
+case 0:return arg1+Divide(arg3*(arg2-arg1),arg4);
+case 1:return arg1+Divide((arg2-arg1)*(arg3*arg3),arg4*arg4);
+case 2:return arg1+Divide((arg2-arg1)*(arg3*(arg3*arg3)),arg4*(arg4*arg4));
+case 3:return arg1+Divide((arg2-arg1)*(arg3*(arg3*(arg3*arg3))),arg4*(arg4*(arg4*arg4)));
+case 4:t=arg4-arg3;return arg2-Divide((arg2-arg1)*(t*t),arg4*arg4);
+case 5:t=arg4-arg3;return arg2-Divide((arg2-arg1)*(t*(t*t)),arg4*(arg4*arg4));
 default:return 0;
 }}
 
@@ -365,14 +365,14 @@ s32 func_0207cb5c(s32 arg0, s32 arg1) {
 }
 
 s32 func_0207cb88(s32 arg0) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     s32 var_r0;
     s32 var_r5;
 
     var_r0 = arg0;
     var_r5 = 0;
     do {
-        var_r0 = func_0207c8ec(var_r0, 0xA);
+        var_r0 = Divide(var_r0, 0xA);
         var_r5 += 1;
     } while (var_r0 != 0);
     return var_r5;

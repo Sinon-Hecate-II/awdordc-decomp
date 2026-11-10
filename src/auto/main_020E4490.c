@@ -101,7 +101,7 @@ void UpdateTouchInput(void);
 void func_02090390(void);
 void func_02081ee4(void);
 void func_02091bf4(void);
-void func_020b2400(void);
+void UpdateSpriteSlots(void);
 void func_020b25b8(void);
 void func_0209db48(void);
 void func_0208f4f0(void);
@@ -119,7 +119,7 @@ func_01ffa13c(5);func_01ffa5b8();
 func_01ffa13c(6);func_01ffa5b8();
 func_01ffa13c(7);func_01ffa5b8();
 func_01ffa13c(8);func_01ffa5b8();
-func_02091bf4();func_020b2400();func_020b25b8();
+func_02091bf4();UpdateSpriteSlots();func_020b25b8();
 func_01ffa13c(9);func_01ffa5b8();
 func_01ffa13c(10);func_01ffa5b8();
 func_0209db48();
@@ -542,7 +542,7 @@ void func_020e4e8c(void *arg0) {
 #pragma opt_propagation off
 void func_020e4eb0(void *arg0) {
     void DC_InvalidateRange(void *, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
@@ -624,7 +624,7 @@ void func_020e4eb0(void *arg0) {
         } while (p != r2p);
     }
 
-    divres = func_0207c8ec(sum, 10);
+    divres = Divide(sum, 10);
     r10 = divres;
     if (r10 > 3) {
         r10 = 3;

@@ -238,15 +238,15 @@ heapSwap(parent,p,size);
 }
 }
 
-s32 func_02067774(void) {
-    extern s32 data_02100554;
+s32 Rand(void) {
+    extern s32 gRandSeed;
     u32 value;
-    value = (data_02100554 * 0x41C64E6D) + 0x3039;
-    data_02100554 = value;
+    value = (gRandSeed * 0x41C64E6D) + 0x3039;
+    gRandSeed = value;
     return 0x7FFF & (value >> 16);
 }
 
-void func_020677a8(s32 arg0) {
-    extern s32 data_02100554;
-    data_02100554 = arg0;
+void SetRandSeed(s32 arg0) {
+    extern s32 gRandSeed;
+    gRandSeed = arg0;
 }

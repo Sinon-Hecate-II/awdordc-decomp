@@ -18,7 +18,7 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     s32 func_020a796c(s32, s32, s32);
     s32 func_020a86f8(void *, s32, s32, s32);
     void InitBattleUnit(void *, s16);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 func_ov000_0216b154(s32);
     void ApplyBattleDamage(void *, s32, s32);
 
@@ -67,11 +67,11 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     if (f6 == 0) {
         low7 = 0;
     } else {
-        low7 = func_0207c8ec(f6 - 1, 10) + 1;
+        low7 = Divide(f6 - 1, 10) + 1;
     }
     m = (u8 *)*gCurrentMap;
     d4 = *(s16 *)(m + 0x6ed4);
-    prod = func_0207c8ec(d4 * low7, 10);
+    prod = Divide(d4 * low7, 10);
     *(s16 *)(m + 0x6ecc) = (s16)prod;
     *(s16 *)((u8 *)*gCurrentMap + 0x6ed4) = *(s16 *)((u8 *)*gCurrentMap + 0x6ecc);
 
@@ -109,8 +109,8 @@ u8 IsPlayerCpu(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8
 
 s32 func_020d1a1c(s32 arg0) {
  s32 func_0208485c();
- extern M2C_UNK data_02168f08;
- if(M2C_FIELD(&data_02168f08,u8 *,4)==0)return 1;
+ extern M2C_UNK gMapData;
+ if(M2C_FIELD(&gMapData,u8 *,4)==0)return 1;
  if(IsPlayerHuman(arg0))return 1;
  if(func_0208485c() && IsPlayerCpu(arg0))return 1;
  return 0;
@@ -261,7 +261,7 @@ void func_020d1dc8(void) {
 #pragma scheduling off
 void func_020d1f2c(void) {
     extern void **gCurrentMap;
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     s32 func_020cfb94(void);
     s32 func_020a23a4(s32, s32);
     s32 func_020a23b4(s32, s32);
@@ -326,7 +326,7 @@ void func_020d1f2c(void) {
             if (func_020cd6d4() != 0) {
                 ((u8 *)*gCurrentMap)[r9 + 0x67ce] = 2;
             } else {
-                u16 val = M2C_FIELD(&data_02168f08, u16 *, 0xc);
+                u16 val = M2C_FIELD(&gMapData, u16 *, 0xc);
                 ((u8 *)*gCurrentMap)[r9 + 0x67ce] = (u8)(((u32)val << 26) >> 29);
             }
         }
@@ -336,10 +336,10 @@ void func_020d1f2c(void) {
     func_020d1dc8();
 
     {
-        u32 val = M2C_FIELD(&data_02168f08, u16 *, 0xc);
+        u32 val = M2C_FIELD(&gMapData, u16 *, 0xc);
         if (((u32)(val << 18) >> 31) == 0) {
             val &= -4097;
-            M2C_FIELD(&data_02168f08, u16 *, 0xc) = (u16)val;
+            M2C_FIELD(&gMapData, u16 *, 0xc) = (u16)val;
         }
     }
 
@@ -374,12 +374,12 @@ void func_020d2168(void) {
  * funds (from the match settings), flags, commander meter, selected unit and
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
-extern void **gCurrentMap;extern M2C_UNK data_02168f08;
+extern void **gCurrentMap;extern M2C_UNK gMapData;
 void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void SetPlayerSelectedUnit(s32,s32);void func_020d31f0(s32,u8);void func_020d327c(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
-M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67a4)=M2C_FIELD(&data_02168f08,s32*,20);
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67a4)=M2C_FIELD(&gMapData,s32*,20);
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67a8)=0;
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67b0)=0;
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67bc)=0;

@@ -1,8 +1,8 @@
 /* 28 functions from 0x0217AE38 to 0x0217BD88 (ov001), found by ds-decomp. */
 #include "common.h"
 void func_ov001_0217b578(void);
-void func_ov001_0217bc14(void);
-void func_ov001_0217bb20(void);
+void UpdateNameEntryCursor(void);
+void RedrawNameEntryText(void);
 
 void func_ov001_0217b130(void);
 
@@ -192,25 +192,25 @@ void func_ov001_0217b41c(void) {
 }
 
 void func_ov001_0217b444(void) {
-extern void *data_ov001_0218f81c; extern void *data_ov001_02193da0;
+extern void *data_ov001_0218f81c; extern void *gNameEntryState;
 void *func_ov001_0218b6f8(s32,s32);void func_ov001_02175db4(s32 *,s32);
-s32 func_ov001_0218c3e0(void *,s32);void *func_ov001_0218ad0c(s32,s32);void *func_ov001_0218a5f0(s32,s32);
+s32 func_ov001_0218c3e0(void *,s32);void *CreateTextPanel(s32,s32);void *func_ov001_0218a5f0(s32,s32);
 void func_ov001_0217b634(void);
 u8 choices[2]={M2C_FIELD(&data_ov001_0218f81c,u8 *,0),M2C_FIELD(&data_ov001_0218f81c,u8 *,1)};s32 a,b;
-data_ov001_02193da0=func_ov001_0218b6f8(44,4);
+gNameEntryState=func_ov001_0218b6f8(44,4);
 func_ov001_02175db4(&a,(s32)&b);
-if(a==0) {func_ov001_021846f8(data_ov001_02193da0+8); M2C_FIELD(data_ov001_02193da0,u8 *,41)=func_ov001_0218c3e0(data_ov001_02193da0+8,32);}
+if(a==0) {func_ov001_021846f8(gNameEntryState+8); M2C_FIELD(gNameEntryState,u8 *,41)=func_ov001_0218c3e0(gNameEntryState+8,32);}
 func_ov001_0217b578();func_ov001_02172250(a+9);
 if(b==1)func_ov001_02171c24(53,-1,0);else func_ov001_02171c24(choices[a],-1,0);
 func_ov001_02171dd0(2);
-M2C_FIELD(data_ov001_02193da0,void **,0)=func_ov001_0218ad0c(0,0);
-M2C_FIELD(data_ov001_02193da0,void **,4)=func_ov001_0218a5f0(0,62);
-M2C_FIELD(M2C_FIELD(data_ov001_02193da0,void **,4),u16 *,4)=(M2C_FIELD(M2C_FIELD(data_ov001_02193da0,void **,4),u16 *,4)&~0xc00)|0xc00;
-func_ov001_0217bc14();func_ov001_0217bb20();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
+M2C_FIELD(gNameEntryState,void **,0)=CreateTextPanel(0,0);
+M2C_FIELD(gNameEntryState,void **,4)=func_ov001_0218a5f0(0,62);
+M2C_FIELD(M2C_FIELD(gNameEntryState,void **,4),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,4),u16 *,4)&~0xc00)|0xc00;
+UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
 }
 
 void func_ov001_0217b578(void) {
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     extern M2C_UNK data_ov001_02190700;
     extern M2C_UNK data_ov001_02190714;
     extern M2C_UNK data_ov001_0219072c;
@@ -219,10 +219,10 @@ void func_ov001_0217b578(void) {
     extern M2C_UNK func_02004160;
     extern M2C_UNK func_0200448c;
     extern M2C_UNK func_020046cc;
-    func_ov001_02171d90(&data_ov001_02190700, &func_02004160);
-    func_ov001_02171d90(&data_ov001_02190714, &func_020046cc);
-    func_ov001_02171d90(&data_ov001_0219072c, &func_020040b4);
-    func_ov001_02171d90(&data_ov001_02190744, &func_0200448c);
+    Ov001_LoadAsset(&data_ov001_02190700, &func_02004160);
+    Ov001_LoadAsset(&data_ov001_02190714, &func_020046cc);
+    Ov001_LoadAsset(&data_ov001_0219072c, &func_020040b4);
+    Ov001_LoadAsset(&data_ov001_02190744, &func_0200448c);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
     *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 2;
@@ -245,75 +245,78 @@ void func_ov001_0217b688(void) {
     s32 func_ov001_0218a800(s32);
     M2C_UNK func_ov001_021724c0(void);
     M2C_UNK Ov001_PlaySound(s32);
-    M2C_UNK func_ov001_0217286c(s32);
-    M2C_UNK func_ov001_02172880(s32);
+    M2C_UNK Ov001_SetKeyboardCanDelete(s32);
+    M2C_UNK Ov001_SetKeyboardCanAdd(s32);
     void func_ov001_0217b704(void);
     M2C_UNK Ov001_SetStepCallback();
-    extern void *data_ov001_02193da0;
+    extern void *gNameEntryState;
     if (func_ov001_0218a800(1) != 0) return;
     if (func_ov001_0218a800(0) != 0) return;
     func_ov001_021724c0();
     Ov001_PlaySound(0x14);
-    if (M2C_FIELD(data_ov001_02193da0, u8 *, 0x29) == 0) {
-        func_ov001_0217286c(0);
+    if (M2C_FIELD(gNameEntryState, u8 *, 0x29) == 0) {
+        Ov001_SetKeyboardCanDelete(0);
     }
-    if (M2C_FIELD(data_ov001_02193da0, u8 *, 0x29) == 0x20) {
-        func_ov001_02172880(0);
+    if (M2C_FIELD(gNameEntryState, u8 *, 0x29) == 0x20) {
+        Ov001_SetKeyboardCanAdd(0);
     }
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217b704);
 }
 
 void func_ov001_0217b704(void) {
-    s32 func_ov001_02172858();
+    s32 GetKeyboardKey();
     void func_ov001_0217b724(void);
-    if (func_ov001_02172858() == 0xFF) {
+    if (GetKeyboardKey() == 0xFF) {
         return;
     }
     Ov001_SetStepCallback(&func_ov001_0217b724);
 }
 
 void func_ov001_0217b724(void) {
-    void func_ov001_0217b734(void);
+    void HandleNameEntryInput(void);
     void func_ov001_0217b8f4(void);
-    func_ov001_0217b734();
+    HandleNameEntryInput();
     func_ov001_0217b8f4();
 }
 
-void func_ov001_0217b734(void) {
-extern void *data_ov001_02193da0;
+/* Handles one event of the on-screen keyboard in the ov001 name-entry screen: a
+ * delete removes the last character, cancel ends the entry, OK ends it only when
+ * the text is valid, and a character key appends it while the buffer has room. */
+void HandleNameEntryInput(void) {
+extern void *gNameEntryState;
 void func_ov001_0217b8f8(void);
-s32 key=func_ov001_02172858(); s32 *obj;
+s32 key=GetKeyboardKey(); s32 *obj;
 switch(key){
-case 0x80:
-if(M2C_FIELD(data_ov001_02193da0,u8 *,0x29)){
+case KBD_KEY_DELETE:
+if(M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)){
 Ov001_PlaySound(3);
-M2C_FIELD(data_ov001_02193da0,u8 *,0x29)--;
-M2C_FIELD((u8 *)data_ov001_02193da0+M2C_FIELD(data_ov001_02193da0,u8 *,0x29),u8 *,8)=0;
-if(!M2C_FIELD(data_ov001_02193da0,u8 *,0x29))func_ov001_0217286c(0);
-func_ov001_02172880(1);
+M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)--;
+M2C_FIELD((u8 *)gNameEntryState+M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH),u8 *,NAME_ENTRY_TEXT)=0;
+if(!M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH))Ov001_SetKeyboardCanDelete(0);
+Ov001_SetKeyboardCanAdd(1);
 }
 break;
 case 0:break;
-case 0x82:
-Ov001_PlaySound(7);M2C_FIELD(data_ov001_02193da0,u8 *,0x2a)=0;Ov001_SetStepCallback(func_ov001_0217b8f8);return;
-case 0x83:
-if(func_ov001_0217bd88()){
-Ov001_PlaySound(6);M2C_FIELD(data_ov001_02193da0,u8 *,0x2a)=1;
-}else{M2C_FIELD(data_ov001_02193da0,u8 *,0x2a)=2;Ov001_PlaySound(9);}
-obj=M2C_FIELD(data_ov001_02193da0,s32 **,4);*obj=(*obj&0xc1fffcff)|0x200;
+case KBD_KEY_CANCEL:
+Ov001_PlaySound(7);M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=0;Ov001_SetStepCallback(func_ov001_0217b8f8);return;
+case KBD_KEY_OK:
+if(IsNameEntryValid()){
+Ov001_PlaySound(6);M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=1;
+}else{M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=2;Ov001_PlaySound(9);}
+obj=M2C_FIELD(gNameEntryState,s32 **,NAME_ENTRY_CURSOR);*obj=(*obj&0xc1fffcff)|0x200;
 Ov001_SetStepCallback(func_ov001_0217b8f8);return;
-case 0xe01d:
+case KBD_KEY_SPACE:
 default:
-if(M2C_FIELD(data_ov001_02193da0,u8 *,0x29)!=32){
+if(M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)!=32){
 Ov001_PlaySound(1);
-M2C_FIELD((u8 *)data_ov001_02193da0+M2C_FIELD(data_ov001_02193da0,u8 *,0x29),u8 *,8)=key;
-M2C_FIELD(data_ov001_02193da0,u8 *,0x29)++;
-func_ov001_0217286c(1);
-if(M2C_FIELD(data_ov001_02193da0,u8 *,0x29)==32)func_ov001_02172880(0);
+M2C_FIELD((u8 *)gNameEntryState+M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH),u8 *,NAME_ENTRY_TEXT)=key;
+M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)++;
+Ov001_SetKeyboardCanDelete(1);
+if(M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)==32)Ov001_SetKeyboardCanAdd(0);
 }
 break;
 }
-func_ov001_0217bb20();func_ov001_0217bc14();
+RedrawNameEntryText();UpdateNameEntryCursor();
 }
 
 void func_ov001_0217b8f4(void) {
@@ -345,7 +348,7 @@ void func_ov001_0217b944(void) {
     void func_ov001_02175db4(s32 *, s32);
     M2C_UNK func_ov001_021862d8(s32, s32, s32, s32, s32);
     extern void *data_ov001_0218f81c;
-    extern void *data_ov001_02193da0;
+    extern void *gNameEntryState;
     extern M2C_UNK func_ov001_0217ba1c;
     extern M2C_UNK func_ov001_0217bc7c;
     extern M2C_UNK func_ov001_0217bf14;
@@ -356,7 +359,7 @@ void func_ov001_0217b944(void) {
     sp8[0] = M2C_FIELD(&data_ov001_0218f81c, s32 *, 8);
     sp8[1] = M2C_FIELD(&data_ov001_0218f81c, s32 *, 0xC);
     if (func_ov001_02172894() != 0) return;
-    temp_r0 = M2C_FIELD(data_ov001_02193da0, u8 *, 0x2A);
+    temp_r0 = M2C_FIELD(gNameEntryState, u8 *, 0x2A);
     if (temp_r0 == 0) {
         Ov001_SetStepCallback(&func_ov001_0217ba1c);
         return;
@@ -375,7 +378,7 @@ void func_ov001_0217b944(void) {
 #pragma peephole off
 void func_ov001_0217ba1c(void) {
     M2C_UNK func_ov001_02171cf8(void);
-    M2C_UNK func_ov001_02171d90(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov001_0218c104(M2C_UNK);
     M2C_UNK func_ov001_0218af70(M2C_UNK);
     void func_ov001_0218b368(s32, s32);
@@ -384,7 +387,7 @@ void func_ov001_0217ba1c(void) {
     void func_ov001_02175da0(s32, s32);
     s32 Ov001_SetStepCallback(s32 *);
     M2C_UNK func_ov001_0218b71c(M2C_UNK *);
-    extern void *data_ov001_02193da0;
+    extern void *gNameEntryState;
     extern void *data_ov001_02190758;
     extern void func_02004160(void);
     extern void InitMapListScreen(void);
@@ -393,9 +396,9 @@ void func_ov001_0217ba1c(void) {
     s32 sp4, sp0;
     void *p;
     func_ov001_02171cf8();
-    func_ov001_0218c104(M2C_FIELD(data_ov001_02193da0, void **, 4));
+    func_ov001_0218c104(M2C_FIELD(gNameEntryState, void **, 4));
     func_ov001_0218af70(0);
-    func_ov001_02171d90((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&func_02004160);
+    Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&func_02004160);
     func_ov001_0218b368(1, 1);
     func_ov001_0218b368(0, 0x15);
     func_ov001_02175db4(&sp4, &sp0);
@@ -404,7 +407,7 @@ void func_ov001_0217ba1c(void) {
         func_ov001_02175da0(0, sp4);
         Ov001_SetStepCallback((s32 *)InitMapListScreen);
     } else {
-        if (M2C_FIELD(data_ov001_02193da0, u8 *, 0x2A) == 0) {
+        if (M2C_FIELD(gNameEntryState, u8 *, 0x2A) == 0) {
             func_ov001_02175d64(0, 1);
             func_ov001_02175da0(1, 0);
             Ov001_SetStepCallback((s32 *)func_ov001_02179ea8);
@@ -414,38 +417,38 @@ void func_ov001_0217ba1c(void) {
             Ov001_SetStepCallback((s32 *)func_ov001_021828ac);
         }
     }
-    p = sp0 ? (void *)&data_ov001_02193da0 : (void *)&data_ov001_02193da0;
+    p = sp0 ? (void *)&gNameEntryState : (void *)&gNameEntryState;
     func_ov001_0218b71c((M2C_UNK *)p);
 }
 #pragma peephole reset
-void func_ov001_0217bb20(void) {
-extern void *data_ov001_02193da0; extern u8 data_ov001_0218f838[];
-void func_ov001_0218b1ec(s32,s32);void func_ov001_0218b12c(s32,s32,s32,s32,s32,s32,s32,void *);void func_ov001_0218b298(s32);
+void RedrawNameEntryText(void) {
+extern void *gNameEntryState; extern u8 data_ov001_0218f838[];
+void func_ov001_0218b1ec(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
 u16 buf[6]; u16 *p; s32 j,i; u8 v;
 p=&buf[2];p[1]=0;p[2]=0;p[3]=0;p[0]=0;
 buf[3]=32;buf[4]=14;buf[5]=16;
-func_ov001_0218b1ec(M2C_FIELD(data_ov001_02193da0,s32 *,0),0);
+func_ov001_0218b1ec(M2C_FIELD(gNameEntryState,s32 *,0),0);
 i=0;j=i;buf[1]=i;
 do {
 if(i==16){j=0;buf[3]=49;}
-v=M2C_FIELD((u8 *)data_ov001_02193da0+i,u8 *,8);
+v=M2C_FIELD((u8 *)gNameEntryState+i,u8 *,8);
 if(v==32)buf[0]=0xe01d;else buf[0]=v;
 buf[2]=data_ov001_0218f838[j];
-func_ov001_0218b12c(M2C_FIELD(data_ov001_02193da0,s32 *,0),buf[2],buf[3],buf[4],buf[5],2,0x480,buf);
+DrawPanelText(M2C_FIELD(gNameEntryState,s32 *,0),buf[2],buf[3],buf[4],buf[5],2,0x480,buf);
 i++;j++;
 }while(i<32);
-func_ov001_0218b298(M2C_FIELD(data_ov001_02193da0,s32 *,0));
+CloseTextPanel(M2C_FIELD(gNameEntryState,s32 *,0));
 }
 
-void func_ov001_0217bc14(void) {
-    extern void *data_ov001_02193da0;
+void UpdateNameEntryCursor(void) {
+    extern void *gNameEntryState;
     extern u8 data_ov001_0218f834[];
     extern u8 data_ov001_0218f838[];
     void *obj;
     s32 *slot;
     u8 value;
     s32 index, high;
-    obj = data_ov001_02193da0;
+    obj = gNameEntryState;
     value = M2C_FIELD(obj, u8 *, 0x29);
     slot = M2C_FIELD(obj, s32 **, 4);
     index = value & 0xF;
@@ -458,10 +461,10 @@ void func_ov001_0217bc14(void) {
 }
 
 void func_ov001_0217bc7c(void) {
-    extern void *data_ov001_02193da0;
+    extern void *gNameEntryState;
     extern M2C_UNK func_ov001_0217bcd8;
-    M2C_FIELD(data_ov001_02193da0, u8 *, 0x2A) = func_ov001_02186648();
-    switch (M2C_FIELD(data_ov001_02193da0, u8 *, 0x2A)) {
+    M2C_FIELD(gNameEntryState, u8 *, 0x2A) = func_ov001_02186648();
+    switch (M2C_FIELD(gNameEntryState, u8 *, 0x2A)) {
     case 0: Ov001_PlaySound(7); break;
     case 1: Ov001_PlaySound(0xE); break;
     default: return;
@@ -477,7 +480,7 @@ void func_ov001_0217bcd8(void) {
     void func_ov001_0217b688(void);
     void func_ov001_0217ba1c(void);
     extern void *data_ov001_0218f81c;
-    extern void *data_ov001_02193da0;
+    extern void *gNameEntryState;
 
     void *entries[2];
     s32 index;
@@ -486,14 +489,14 @@ void func_ov001_0217bcd8(void) {
     entries[1] = M2C_FIELD(&data_ov001_0218f81c, void **, 0x14);
 
     if (func_ov001_0218665c()) return;
-    if (M2C_FIELD(data_ov001_02193da0, u8 *, 0x2a) == 0) {
-        s32 *p = M2C_FIELD(data_ov001_02193da0, s32 **, 4);
+    if (M2C_FIELD(gNameEntryState, u8 *, 0x2a) == 0) {
+        s32 *p = M2C_FIELD(gNameEntryState, s32 **, 4);
         *p &= 0xc1fffcff;
         Ov001_SetStepCallback((s32 *)func_ov001_0217b688);
         return;
     }
     func_ov001_02175db4(&index, 0);
-    ((void (*)(void *))entries[index])((u8 *)data_ov001_02193da0 + 8);
+    ((void (*)(void *))entries[index])((u8 *)gNameEntryState + 8);
     Ov001_SetStepCallback((s32 *)func_ov001_0217ba1c);
 }
 

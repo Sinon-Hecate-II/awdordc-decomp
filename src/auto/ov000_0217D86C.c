@@ -8,8 +8,8 @@ typedef struct { u8 kind:6; u8 flags:2; u8 x,y; u8 rest[11]; } Unit7DC;
 #pragma opt_lifetimes off
 s32 func_ov000_0217d86c(void) {
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
-    extern u8 data_ov000_021b5c0f[];
+    extern void *gAiCommandState;
+    extern u8 gUnitKindFlags[];
     s32 GetUnitAttackClass(void);
     s32 func_ov000_021a9014(s32);
     s32 IsCurrentPlayerUnit(s16);
@@ -39,11 +39,11 @@ s32 func_ov000_0217d86c(void) {
     u32 skind;
     s32 funcRes;
 
-    if (!(( (u32)(M2C_FIELD(data_ov000_021df580, u16 *, 0xa) << 20) >> 29) & 1)) return var8;
-    if (!(( (u32)(M2C_FIELD(data_ov000_021df580, u16 *, 0xa) << 26) >> 29) & 4)) return var8;
+    if (!(( (u32)(M2C_FIELD(gAiCommandState, u16 *, 0xa) << 20) >> 29) & 1)) return var8;
+    if (!(( (u32)(M2C_FIELD(gAiCommandState, u16 *, 0xa) << 26) >> 29) & 4)) return var8;
 
     unit = M2C_FIELD(*gCurrentMap, void **, 0x52d0);
-    if (!(data_ov000_021b5c0f[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 7)) return var8;
+    if (!(gUnitKindFlags[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70] & 7)) return var8;
     if (GetUnitAttackClass() != 0) return 0;
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0xb) << 24) >> 31)) return 0;
 
@@ -143,7 +143,7 @@ SelectMapLayer((u8 *)*gCurrentMap+0x1e30);return 0;
 s32 func_ov000_0217de64(s32 x,s32 y,s32 kind,s32 extra,s16 *result) {
 extern void **gCurrentMap;
 extern Candidate7DE gAiTargetCandidates[];
-extern s8 data_ov000_021b5500[],gAiRangeLayer[],data_ov000_021b55a0[];
+extern s8 data_ov000_021b5500[],gAiRangeLayer[],gTerrainPropertyType[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021dee00[],data_ov000_021dee04[];
 void SelectMapLayer(void *);
@@ -197,7 +197,7 @@ for(j=0;j<4;wanted++,types++,j++){
 func_ov000_0217a59c(entry[1],entry[2],*wanted,110);
 for(cur=(Candidate7DE *)((u8 *)*gCurrentMap+0x6c60);cur->x!=255;cur=(Candidate7DE *)((u8 *)cur+6)){
 u8 *e=(u8 *)cur;
-if(data_ov000_021b55a0[e[0]]!=*types)continue;
+if(gTerrainPropertyType[e[0]]!=*types)continue;
 cell=(u8 *)*gCurrentMap+e[1]+M2C_FIELD((u8 *)*gCurrentMap+(e[2]*2),u16 *,0x3758);
 score=M2C_FIELD(cell,u8 *,0x1420)&0xe0;
 if(score==0||score==M2C_FIELD(*gCurrentMap,u16 *,0x52a6))continue;
@@ -255,13 +255,13 @@ return 1;
 #pragma opt_strength_reduction reset
 #pragma opt_lifetimes reset
 u8 func_ov000_0217e6bc(s32 arg0,s32 arg1){
-s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *data_ov000_021df580;
+s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *gAiCommandState;
 u32 base;void **unit,*world,*entry;u8 result;
 base=(u32)*gCurrentMap+0x5000;
 if(M2C_FIELD(base,u8 *,0x2d6)!=0)goto active;return 1;active:;
 unit=M2C_FIELD(base,void **,0x2d0);
 if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)!=17)return 1;
-if(ManhattanDistance(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),(s16)arg0,(s16)arg1)<=(s32)(M2C_FIELD(data_ov000_021df580,u8 *,5)*2))return 1;
+if(ManhattanDistance(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),(s16)arg0,(s16)arg1)<=(s32)(M2C_FIELD(gAiCommandState,u8 *,5)*2))return 1;
 world=*gCurrentMap;entry=(u8 *)world+0x59a4+M2C_FIELD((u8 *)world+0x5000,u8 *,0x2d6)*14;
 if(((u32)(M2C_FIELD(entry,u16 *,6)<<25)>>25)<=30)return 1;
 if(((u32)(M2C_FIELD(entry,u8 *,10)<<25)>>25)<=10)result=1;else result=0;

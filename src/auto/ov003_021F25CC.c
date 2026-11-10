@@ -108,15 +108,15 @@ void func_ov003_021f2860(s32 arg0) {
 #pragma push
 #pragma optimization_level 2
 void func_ov003_021f2878(s32 entry) {
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     s32 func_0208471c(void);
-    s32 func_02084644(void);
+    s32 GetActiveOverlay(void);
     void func_ov009_022244ec(M2C_UNK);
     s32 func_ov009_02224508(M2C_UNK);
     s32 func_ov010_022282b4(M2C_UNK);
     void func_ov010_02228298(M2C_UNK);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
-    s32 func_02084a6c(void);
+    s32 GetOverlayEventFlags(void);
     s32 func_02084a0c(void);
     s32 func_ov003_021f17fc(void);
     M2C_UNK func_ov003_021f14c8(void);
@@ -126,7 +126,7 @@ void func_ov003_021f2878(s32 entry) {
     if (M2C_FIELD(entry, u8 *, 0x47) != 0) {
         goto ready;
     }
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         return;
     }
     if (M2C_FIELD(entry, u8 *, 0x34) != 2) {
@@ -142,7 +142,7 @@ void func_ov003_021f2878(s32 entry) {
 ready:
     if (M2C_FIELD(entry,u8 *,0x45) || M2C_FIELD(entry,u8 *,0x46)) return;
     if (func_0208471c() != 0) {
-        s32 sw = func_02084644();
+        s32 sw = GetActiveOverlay();
         switch (sw) { case 1:
             if (func_ov009_02224508(1) == 0) {
                 func_ov009_022244ec(1);
@@ -166,15 +166,15 @@ ready:
 
 tail:
  if(M2C_FIELD(entry,u8 *,0x47)) { M2C_FIELD(entry,u8 *,0x47)=0; return; }
- if(!func_02084a6c() && (u32)func_02084a0c()>1) return;
+ if(!GetOverlayEventFlags() && (u32)func_02084a0c()>1) return;
  if(!Active2878() && !(u8)(IsTerrain2878(M2C_FIELD(M2C_FIELD(entry,void **,0x40),u8 **,8)[M2C_FIELD(M2C_FIELD(entry,void **,0x40),s8 *,5)]) != 0)) M2C_FIELD(entry,u8 *,0x46)=1;
 }
 #pragma pop
 /* Attempt to start a contextual action (overlay-dependent); returns 1 if one was started. */
 s32 func_ov003_021f2a9c(s32 entry) {
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     s32 func_0208b5a8(void);
-    s32 func_02084644(void);
+    s32 GetActiveOverlay(void);
     s32 func_ov009_022241b4(void);
     void func_ov009_02225fb4(s32, s32, s32, void *);
     s32 func_ov010_02228314(s32 *, s32 *);
@@ -183,7 +183,7 @@ s32 func_ov003_021f2a9c(s32 entry) {
     void func_ov010_022282d4(s32);
     s32 result, spare;
 
-    if (!func_020846a4()) {
+    if (!IsLinkSessionActive()) {
         return 0;
     }
     if (!M2C_FIELD(entry, u8 *, 0x45)) {
@@ -192,7 +192,7 @@ s32 func_ov003_021f2a9c(s32 entry) {
     if (func_0208b5a8()) {
         return 0;
     }
-    switch (func_02084644()) {
+    switch (GetActiveOverlay()) {
     case 1:
         func_ov009_02225fb4(0, 0x6e0, func_ov009_022241b4(), (void *)entry);
         break;
@@ -218,11 +218,11 @@ s32 func_ov003_021f2a9c(s32 entry) {
 }
 
 s32 func_ov003_021f2b88(s32 a) {
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     s32 func_0208b5a8(void);
     s32 func_0208b564(s32);
     void func_020899cc(s32,s32,s32,u32);
-    if(!func_020846a4()) return 0;
+    if(!IsLinkSessionActive()) return 0;
     if(M2C_FIELD(a,u8 *,0x45)) return 0;
     if(!M2C_FIELD(a,u8 *,0x46)) return 0;
     if(func_0208b5a8()) return 0;
@@ -249,7 +249,7 @@ void InitMapSelectScreen(s32 arg0) {
     void func_ov003_021f192c(void *);
     void func_ov003_021f18b4(void *);
     void ResetPlayerMask(void);
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     void func_020852a8(void);
     void func_ov003_021f1884(s32);
     void func_ov003_021f2e98(s32);
@@ -339,7 +339,7 @@ void InitMapSelectScreen(s32 arg0) {
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,5)=15;
     func_ov003_021f18b4(M2C_FIELD(arg0,void **,0x38));
     ResetPlayerMask();
-    if (func_020846a4() != 0) {
+    if (IsLinkSessionActive() != 0) {
         func_020852a8();
     }
     func_ov003_021f1884(0x6E0);
@@ -412,7 +412,7 @@ void func_ov003_021f34d8(void) {
 }
 
 void func_ov003_021f34e4(void *a) {
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     void func_020bfbc0(s32);
     void func_020d47d0(void);
     void func_020d47f0(void);
@@ -427,7 +427,7 @@ void func_ov003_021f34e4(void *a) {
     if(test) func_020bfbc0(0);
     if(func_ov003_021f1bfc()==1) {
         func_020d47d0();
-        if(!func_020846a4()) return;
+        if(!IsLinkSessionActive()) return;
         mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
         if(mode!=1 && mode!=5) return;
         func_ov006_02217214(a);

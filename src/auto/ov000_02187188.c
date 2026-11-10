@@ -9,12 +9,12 @@ extern u32 gFrameCounter;
 s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
     extern void **gCurrentMap;
     extern u8 gMovementTypeTable[];
-    extern s8 data_ov000_021b55a0[];
+    extern s8 gTerrainPropertyType[];
     extern M2C_UNK gMovementCostTable;
     s32 func_ov000_021a9d8c(s16, s16);
     s32 func_020d27ec(s32, s32);
-    s32 func_020d0654(s32, s32, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 GetTerrainMoveCost(s32, s32, s32);
+    s32 Divide(s32, s32);
     s32 func_ov000_021a9214(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 result = 0;
@@ -35,12 +35,12 @@ s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
         return -1;
     }
     w = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x2d48);
-    if (data_ov000_021b55a0[tile] == 0 || func_020d27ec(M2C_FIELD(base, u8 *, 0x52d4), M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 0) {
+    if (gTerrainPropertyType[tile] == 0 || func_020d27ec(M2C_FIELD(base, u8 *, 0x52d4), M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 0) {
         base = *gCurrentMap;
-        result += (func_0207c8ec(func_020d0654(M2C_FIELD(base, u16 *, 0x52a4), 1, tile), 10) + 1) << 4;
+        result += (Divide(GetTerrainMoveCost(M2C_FIELD(base, u16 *, 0x52a4), 1, tile), 10) + 1) << 4;
     }
     result += (0x100 - w) << 8;
-    if (data_ov000_021b55a0[tile] == 0) {
+    if (gTerrainPropertyType[tile] == 0) {
         if (func_ov000_021a9214(unit, x, y) == 1) {
             result += 0x10000;
         }
@@ -337,10 +337,10 @@ void func_ov000_02187820(void) {
    take the lowest-cost one, preferring cells whose property flag bit 0x80 is
    set, then hand the choice to PlanMoveDestination. */
 void ChooseMoveDestination(void){
- extern u8 *data_ov000_021df580;
+ extern u8 *gAiCommandState;
  s32 FloodFillUnitRange();
  s32 CountAdjacentAccessibleCells(s32,s32);
- s32 func_0207c8ec(s32,s32);
+ s32 Divide(s32,s32);
  s32 Modulo(s32,s32);
  void PlanMoveDestination(s32,s32);
  u8 *unit;
@@ -353,11 +353,11 @@ void ChooseMoveDestination(void){
  for(y=0;y<M2C_FIELD(mapBase,u16 *,MAP_HEIGHT);y++){
  for(x=0;x<M2C_FIELD(mapBase,u16 *,MAP_WIDTH);x++,mapBase=*gCurrentMap){
  s32 cellCost=M2C_FIELD(mapBase+y*4,s8 **,MAP_GRID)[x];
- if(cellCost<0 || cellCost<=data_ov000_021df580[5])continue;
+ if(cellCost<0 || cellCost<=gAiCommandState[5])continue;
  if(M2C_FIELD(mapBase+x+M2C_FIELD(mapBase+y*2,u16 *,MAP_ROW_OFFSETS),s8 *,0x3250)==0)continue;
  if(!CountAdjacentAccessibleCells(x,y))continue;
- cost=func_0207c8ec(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],data_ov000_021df580[5])+1;
- if(Modulo(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],data_ov000_021df580[5])==0)--cost;
+ cost=Divide(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],gAiCommandState[5])+1;
+ if(Modulo(M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x],gAiCommandState[5])==0)--cost;
  mapBase=*gCurrentMap;
  flag=M2C_FIELD(mapBase+x+M2C_FIELD(mapBase+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,0x3250);
  if(bestCost<cost){
@@ -387,10 +387,10 @@ void ChooseMoveDestination(void){
 #pragma pop
 void func_ov000_02187c3c(void) {
     extern void **gCurrentMap;
-    extern u8 *data_ov000_021df580;
+    extern u8 *gAiCommandState;
     s32 FloodFillUnitRange(s32, s32, s32, s32, s32, s32);
     s32 CountAdjacentAccessibleCells(s32, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     s32 Modulo(s32, s32);
     void PlanMoveDestination(s32, s32);
 
@@ -409,11 +409,11 @@ void func_ov000_02187c3c(void) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
             s32 val;
             if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] < 0) continue;
-            if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] <= data_ov000_021df580[5]) continue;
+            if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] <= gAiCommandState[5]) continue;
             if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) continue;
             if (CountAdjacentAccessibleCells(x, y) == 0) continue;
-            val = func_0207c8ec(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) + 1;
-            if (Modulo(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) == 0) val--;
+            val = Divide(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], gAiCommandState[5]) + 1;
+            if (Modulo(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], gAiCommandState[5]) == 0) val--;
             if (bestSub < val) continue;
             score = M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x3250);
             if (bestSub != val) goto update;

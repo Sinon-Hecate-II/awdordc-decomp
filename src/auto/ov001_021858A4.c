@@ -82,12 +82,12 @@ s32 func_ov001_02185b34(void) {
 }
 
 void func_ov001_02185b60(s32 arg0) {
-    s32 func_ov001_02171d30(s32);
+    s32 Ov001_LocalizePath(s32);
     s32 func_ov001_02189dc8(s32, s32, s32);
     void func_ov001_02185ba8(s32);
     extern s32 data_ov001_02190be4[];
     extern s32 data_ov001_02193e0c;
-    data_ov001_02193e0c = func_ov001_02189dc8(func_ov001_02171d30(data_ov001_02190be4[arg0]), 0, 4);
+    data_ov001_02193e0c = func_ov001_02189dc8(Ov001_LocalizePath(data_ov001_02190be4[arg0]), 0, 4);
     func_ov001_0218c884(1, func_ov001_02185ba8, 0, 0x78);
 }
 

@@ -103,14 +103,14 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
 }
 
 void func_ov005_0221b000(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
     extern M2C_UNK data_ov005_02220d50;
-    func_020aad18(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), s32 *, 0x38));
+    func_020aad18(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38));
 }
 
 void func_ov005_0221b01c(void *arg0) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_02087db8(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_01ffa6fc(void *);
@@ -120,7 +120,7 @@ void func_ov005_0221b01c(void *arg0) {
     u8 active;
     if (!(*gKeyState & 1)) return;
     PlaySoundEffect(0x1000D);
-    object = M2C_FIELD(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
+    object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
     if (active) func_02087db8(object, 1);
     func_01ffa6fc(arg0);
@@ -230,7 +230,7 @@ void func_ov005_0221b430(void) {
 
 void func_ov005_0221b43c(s32 arg0) {
     void *func_01ffa3dc(M2C_UNK *, s32);
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_01ffaa5c(s32);
     s32 func_01ffaa7c();
     extern M2C_UNK data_ov005_02220b00;
@@ -248,7 +248,7 @@ void func_ov005_0221b43c(s32 arg0) {
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x40) = 0x20;
     M2C_FIELD(temp_r0, s8 *, 0x44) = 1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(func_01ffa770(&data_ov005_02220d50), s32 *, 0x38);
+    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38);
 }
 
 void func_ov005_0221b4a8(void) {

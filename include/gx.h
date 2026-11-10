@@ -13,6 +13,9 @@
 #define REG_VRAM_H_CR (*(volatile u8 *)0x04000248)
 #define REG_VRAM_I_CR (*(volatile u8 *)0x04000249)
 
+/* 3D display control. */
+#define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
+
 /* One bit per VRAM bank in the allocator's masks. */
 enum {
     VRAM_BANK_A = 0x001,
@@ -29,9 +32,12 @@ enum {
 /* A bank control value: bit 7 enables the bank, bits 0-2 pick the engine and
  * purpose (1 = main engine background), bits 3-4 the offset in 32 KiB units. */
 #define VRAM_CR_MAIN_BG(ofs) ((u8)(0x81 | ((ofs) << 3)))
+/* A bank control value for a run of main-engine 3D texture banks. */
+#define VRAM_CR_MAIN_TEX(ofs) ((u8)(0x83 | ((ofs) << 3)))
 
 /* Field offsets of the allocator state (gVramBankState). */
 #define VRAM_BANKS_PENDING 0x00 /* banks released by the last change, set back to 0x80 */
 #define VRAM_BANKS_BG      0x02 /* banks assigned to the main engine background */
+#define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 
 #endif

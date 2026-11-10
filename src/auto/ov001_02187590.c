@@ -11,13 +11,13 @@ void func_ov001_021878b4(s16 arg0) {
     *data_ov001_02193e1c = arg0;
 }
 
-u16 func_ov001_021878c8(void) {
+u16 Ov001_GetLinkStatus(void) {
     extern s16 *data_ov001_02193e1c;
     return *(u16 *)data_ov001_02193e1c;
 }
 
 #pragma common_subs off
-u16 func_ov001_021878dc(s32 arg0){extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];s16 *q=data_ov001_02193e1c;data_ov001_02190c68[0]=(u16*)(q+1);data_ov001_02190c68[1]=(u16*)(q+2);data_ov001_02190c68[2]=(u16*)(q+3);data_ov001_02190c68[3]=(u16*)(q+4);data_ov001_02190c68[4]=(u16*)(q+5);data_ov001_02190c68[5]=(u16*)(q+6);return *data_ov001_02190c68[arg0];}
+u16 Ov001_GetLinkInfo(s32 arg0){extern s16 *data_ov001_02193e1c;extern u16 *data_ov001_02190c68[];s16 *q=data_ov001_02193e1c;data_ov001_02190c68[0]=(u16*)(q+1);data_ov001_02190c68[1]=(u16*)(q+2);data_ov001_02190c68[2]=(u16*)(q+3);data_ov001_02190c68[3]=(u16*)(q+4);data_ov001_02190c68[4]=(u16*)(q+5);data_ov001_02190c68[5]=(u16*)(q+6);return *data_ov001_02190c68[arg0];}
 #pragma scheduling off
 s32 func_ov001_02187934(s32 arg0) {
     void *OS_DisableInterrupts(s32);
@@ -399,13 +399,13 @@ extern M2C_UNK data_ov001_02193e20;
 return M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), u16 *, 0x52);
 }
 
-s32 func_ov001_02188394(void) {
+s32 Ov001_GetTaskStep(void) {
 extern M2C_UNK data_ov001_02193e20;
 return M2C_FIELD(M2C_FIELD(&data_ov001_02193e20,void **,4),s32 *,0x40);
 }
 
 s32 func_ov001_021883a8(void) {
-    void func_02007724(u8 *);
+    void GetMacAddress(u8 *);
     void func_ov001_02187b14(s32);
     u16 func_ov001_02188480(u16);
     s32 func_ov001_02187b90(s32);
@@ -413,7 +413,7 @@ s32 func_ov001_021883a8(void) {
     u16 buf[3];
     u16 rv;
 
-    func_02007724((u8 *)buf);
+    GetMacAddress((u8 *)buf);
     M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =
         buf[0] + *(s32 *)0x027ffc3c + buf[1] + buf[2];
     M2C_FIELD(M2C_FIELD(&data_ov001_02193e20, void **, 4), s32 *, 0x58) =

@@ -62,14 +62,14 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 
 #pragma optimization_level 3
 void func_ov000_021855e4(void) {
-extern u8 *data_ov000_021df580; extern s8 gTerrainPropertyFlags[];
+extern u8 *gAiCommandState; extern s8 gTerrainPropertyFlags[];
 void MI_CpuFill8(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
-s32 IsUnitOnCurrentTeam(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
+s32 IsUnitOnCurrentTeam(s32); s32 IsCarrierUnitKind(u32); s32 func_020a7738(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 GetUnitMoveRange(s32,u32);
 void func_01ffc294(u16,s32,s32,u32,s32,s32);
 s32 t;
-s32 player=data_ov000_021df580[13];
+s32 player=gAiCommandState[13];
 s32 sx,sy,x,y;
 u8 *unit;
 s32 radius,n;
@@ -96,7 +96,7 @@ if(!((u32)(unit[0]<<26)>>26))continue;
 if(IsUnitOnCurrentTeam(i)==1)continue;
 if(M2C_FIELD(unit,u16*,4)&8){
 map=*gCurrentMap;
-if(!func_020a85dc((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758),u8*,0x508),u8*,0x59a4)<<26)>>26))continue;
+if(!IsCarrierUnitKind((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758),u8*,0x508),u8*,0x59a4)<<26)>>26))continue;
 }
 if(unit){if(!unit)n=0;else n=(unit-((u8*)*gCurrentMap+(unsigned short)0x59a4))/14;n=(n>>6)+1;}else n=0;
 radius=func_020a7738(unit,unit[1],unit[2],player);

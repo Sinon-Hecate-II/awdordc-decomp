@@ -344,7 +344,7 @@ M2C_UNK func_020913d4(M2C_UNK arg0raw) {
 }
 #pragma opt_if-conversion reset
 void func_02091570(M2C_UNK a) {
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     extern s16 gSinCosTable[];
     void *arg0 = (void *)a;
@@ -418,10 +418,10 @@ void func_02091570(M2C_UNK a) {
         }
 
         r11 = (s32)r3s << 4;
-        res1 = func_0207c8ec(r11, r1);
-        res2 = func_0207c8ec((-(s32)r9s) << 4, r5);
-        res3 = func_0207c8ec((s32)r9s << 4, r4);
-        res4 = (s16)func_0207c8ec(r11, r10);
+        res1 = Divide(r11, r1);
+        res2 = Divide((-(s32)r9s) << 4, r5);
+        res3 = Divide((s32)r9s << 4, r4);
+        res4 = (s16)Divide(r11, r10);
 
         SetSpriteQuad((((s32)*(u8 *)((char *)arg0 + 0x23)) + r7) & 0xFF,
                      res1, res2, res3, res4);

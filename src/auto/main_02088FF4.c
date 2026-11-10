@@ -300,9 +300,9 @@ void func_020896f0(M2C_UNK arg0) {
 }
 
 s32 func_02089714(void) {
-    M2C_UNK func_01ffa770(M2C_UNK *);
+    M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102678;
-    return func_01ffa770(&data_02102678);
+    return FindObjectByClass(&data_02102678);
 }
 
 void func_02089728(void) {
@@ -493,7 +493,7 @@ M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  s32 StringLength(s32);
  s32 func_020e34bc(s32);
  void StringCopy(s32,s32);
- void func_02068d68(s32,s32);
+ void StringAppend(s32,s32);
  void func_02089c34(void *,s32);
  register s32 p; register s32 len;
  if(!arg1)return;
@@ -503,7 +503,7 @@ M2C_UNK func_02089b38(M2C_UNK arg0,M2C_UNK arg1) {
  } else {
  len=StringLength(M2C_FIELD(arg0,s32 *,0x64));
  p=func_020e34bc(len+StringLength(arg1)+1);
- StringCopy(p,M2C_FIELD(arg0,s32 *,0x64));func_02068d68(p,arg1);
+ StringCopy(p,M2C_FIELD(arg0,s32 *,0x64));StringAppend(p,arg1);
  func_02089bdc(arg0);M2C_FIELD(arg0,s32 *,0x64)=p;
  }
  M2C_FIELD(arg0,s32 *,0x68)=func_020e34bc(8);

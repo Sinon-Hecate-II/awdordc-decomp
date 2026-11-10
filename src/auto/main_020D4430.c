@@ -14,7 +14,7 @@ extern void **gCurrentMap;
 void func_020cbdbc(void);
 u8 func_0207b7c4(void);
 void *state;
-if(func_020946d0())return;
+if(IsDialogActive())return;
 if(func_0207b7c4())return;
 state=*gCurrentMap;
 if(M2C_FIELD((u8 *)state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67bd)){
@@ -35,7 +35,7 @@ void func_020d457c(void){extern void **gCurrentMap;if(func_0208f8a0())return;Bui
 
 void func_020d45d8(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=M2C_FIELD(*gCurrentMap,u16*,0x52b2);M2C_FIELD(*gCurrentMap,u16*,0x52b2)=0;func_020ca4c0();}
 
-void func_020d4614(void){extern void **gCurrentMap;if(func_020946d0())return;func_020d33ec();func_020cce4c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;}
+void func_020d4614(void){extern void **gCurrentMap;if(IsDialogActive())return;func_020d33ec();func_020cce4c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;}
 
 void func_020d464c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=20;}
 
@@ -83,7 +83,7 @@ void func_020d482c(void) {
 
     if ((u8)((u32)(gMapConfig << 29) >> 29) == 0)
         InitBattleMapConfig();
-    if (func_020846a4()) {
+    if (IsLinkSessionActive()) {
         mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
         inRange = 0;
         if (mapId >= 225)
@@ -171,7 +171,7 @@ void func_020d4a50(void) {
     func_01ffa3dc(&data_0212be0c, 7);
 }
 
-void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);func_020ceb48();func_020b4c08(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
+void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();func_020b4c08(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
 
 void func_020d4ac8(s16 arg0) {
     extern M2C_UNK data_0212bdcc;
@@ -184,7 +184,7 @@ extern void func_020d4cf0(void);
 extern void func_020a44d0(void);
 extern void func_020d33d8(void);
 extern void func_020cbdbc(void);
-extern int func_020846a4(void);
+extern int IsLinkSessionActive(void);
 extern void func_020852a8(void);
 extern void func_020901b0(int, int, int, int);
 int func_020d4b30() {
@@ -205,7 +205,7 @@ int func_020d4b30() {
     func_020d33d8();
     func_020cbdbc();
 
-    if (func_020846a4() == 1) {
+    if (IsLinkSessionActive() == 1) {
         func_020852a8();
     }
 
@@ -297,7 +297,7 @@ u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,
 void func_020d5068(void);
 void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:UpdateAimingCursor();break;case 3:func_020d5304();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
 
-int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(func_020946d0())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
+int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(IsDialogActive())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 
 void func_020d4f4c(void) {
 s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 func_020bd560(void);
@@ -307,7 +307,7 @@ reset=0; notify=0;
 key=func_020bd13c();
 switch(key) { case 0x1000: notify=1; break; case 0: reset=1; notify=1; break; }
 if(notify) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
-func_020cf5ec(0);
+MoveMapCursorToTarget(0);
 if(func_020d4dd0()) {
 if(func_ov000_0216ab64(1)) return;
 switch(key) {
@@ -321,7 +321,7 @@ case 0x40: func_020d8fa0(); break;
 case 0x80: break;
 }
 }
-func_020d6778(0);
+DrawUnitInfoPanel(0);
 if(!reset) return;
 func_020bdfa8(); func_020be078();
 if(!old) return;
@@ -361,16 +361,16 @@ void UpdateAimingCursor(void) {
  func_0207a7a4(1,4);
  map=*gCurrentMap;
  if (M2C_FIELD(M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*4, s8 **,MAP_GRID)+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),s8*,0)>110) {
- func_020cf5ec(2);
+ MoveMapCursorToTarget(2);
  } else if(func_020d5088(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
  map=*gCurrentMap;
  if(M2C_FIELD((u8*)map+(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*2,u16*,MAP_ROW_OFFSETS)),s8*,MAP_CELL_ORDER)>=0) {
  func_020cf754(1,func_020a76d4(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
- } else func_020cf5ec(1);
+ } else MoveMapCursorToTarget(1);
  } else {
  map=*gCurrentMap;
- if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))func_020cf5ec(2);
- else func_020cf5ec(1);
+ if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MoveMapCursorToTarget(2);
+ else MoveMapCursorToTarget(1);
  }
  if(func_020d4dd0()){
  keys=0;
@@ -396,7 +396,7 @@ void UpdateAimingCursor(void) {
  } else if(keys&0x100)func_020ccca0(); /* R menu */
  else if(keys&0x40)func_020d8fa0(); /* X close */
  }
- func_020d6778(2);
+ DrawUnitInfoPanel(2);
 }
 
 void func_020d52d0(void){extern void **gCurrentMap;func_020b2268();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
@@ -413,7 +413,7 @@ keys=0;
 func_020cf828(0x1001a);
 func_0207a7a4(1,4);
 valid=func_020ba980(M2C_FIELD(*gCurrentMap,s16 *,0x52c2),M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
-if(valid) func_020cf5ec(4); else func_020cf5ec(5);
+if(valid) MoveMapCursorToTarget(4); else MoveMapCursorToTarget(5);
 if(!func_020d4dd0()) return;
 keys |= func_020bcaf0();
 keys |= func_020bdd18();

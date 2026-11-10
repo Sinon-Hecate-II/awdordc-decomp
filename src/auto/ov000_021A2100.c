@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u8 *gAiState;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[], data_ov000_021b55a0[], gAiRangeLayer[];
+extern s8 data_ov000_021b5580[], gTerrainPropertyType[], gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df590[], data_ov000_021df594[];
 extern u8 gAiCommand[];
@@ -87,7 +87,7 @@ if(gAiRangeLayer[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto
 }
 }
 }
-out[0]=entry[1];out[1]=entry[2];out[2]=data_ov000_021b55a0[entry[0]];out[3]=0;out[5]=255;out[4]=255;
+out[0]=entry[1];out[1]=entry[2];out[2]=gTerrainPropertyType[entry[0]];out[3]=0;out[5]=255;out[4]=255;
 for(pass=0;pass<4;pass++){
 func_ov000_0217a59c(entry[1],entry[2],data_ov000_021df590[pass],110);
 allow=1;
@@ -128,7 +128,7 @@ nextCandidate:scan+=12;
 }
 candidate=(u8 *)*gCurrentMap+0x6c60;
 while(candidate[0]!=255){
-if(data_ov000_021b55a0[candidate[0]]==data_ov000_021df594[pass]){
+if(gTerrainPropertyType[candidate[0]]==data_ov000_021df594[pass]){
 map=*gCurrentMap;
 index=M2C_FIELD(map+candidate[2]*2,u16 *,0x3758)+candidate[1];
 kind=M2C_FIELD(map+index,u8 *,0x1420)&224;
@@ -199,7 +199,7 @@ s32 func_ov000_021a2db8(void) {
  s32 func_ov000_0217bc84(s32,s32,s32);
  void CommitAiAction(s32); s32 func_ov000_021a6d4c(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- extern void *data_ov000_021df580; extern u8 gAiCommand[];
+ extern void *gAiCommandState; extern u8 gAiCommand[];
  s32 unitIndex,choice; u32 unitKind; u8 *unit; void *map; void *lastMap; u16 player;
  if(!func_020d243c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;
  map=*gCurrentMap;
@@ -221,7 +221,7 @@ s32 func_ov000_021a2db8(void) {
  map=*gCurrentMap;unit=map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;
  FloodFillUnitRange(unit[43]&127,unit[44]&127,7,110,0);
  choice=func_ov000_021a6d4c();if(choice==-1)return 0;
- if(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<23)>>29)&2)gAiCommand[6]=6;
+ if(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<23)>>29)&2)gAiCommand[6]=6;
  else gAiCommand[6]=7;
  lastMap=*gCurrentMap;player=M2C_FIELD(lastMap,u16 *,0x52a4);
  if(func_020d2d18(player,gAiCommand[6])*10>M2C_FIELD(lastMap+player*140,s32 *,0x67a4))return 0;

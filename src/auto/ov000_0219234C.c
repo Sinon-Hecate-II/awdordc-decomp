@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u8 gMovementCostTable[];
 extern u8 gUnitKindStats[];
-extern s8 data_ov000_021b55a0[];
+extern s8 gTerrainPropertyType[];
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,void **,0x52d0)
 #define ROW(y) M2C_FIELD(MAP+(y)*2,u16 *,0x3758)
@@ -76,7 +76,7 @@ bestX=-1;bestY=-1;candX=-1;candY=-1;bestD=32767;bestScore=-1;
 for(y=0;y<M2C_FIELD(MAP,u16 *,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8 **,0x52e8),s8 *,x)<0||func_ov000_021a9d8c((s16)x,(s16)y)|| (IsPropertyTerrain(TILE(x,y))&&M2C_FIELD(MAP+x+ROW(y),u8 *,0x508))||CELL(x,y,0x2338)<0||!func_ov000_02178518(x,y,point))continue;
 score=CELL(x,y,0x2338);
-if(data_ov000_021b55a0[TILE(x,y)&31]&&func_020d27ec(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
+if(gTerrainPropertyType[TILE(x,y)&31]&&func_020d27ec(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 d=M2C_FIELD(MAP+x+ROW(y),u8 *,0x2840)+M2C_FIELD(MAP+x+ROW(y),u8 *,0x2d48);
 if(bestD<d)continue;
 if(bestD==d&&bestScore<score)continue;

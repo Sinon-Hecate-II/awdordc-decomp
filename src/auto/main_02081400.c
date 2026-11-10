@@ -39,7 +39,7 @@ void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     func_020e35cc(temp_r0);
 }
 
-u8 func_020814e4(M2C_UNK arg0) {
+u8 OpenNarcArchive(M2C_UNK arg0) {
     s32 func_0202a7f8(M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_02101e78;
     extern s32 data_0214c0e0;
@@ -54,7 +54,7 @@ u8 func_020814e4(M2C_UNK arg0) {
     return var_r0;
 }
 
-void func_02081528(void) {
+void CloseNarcArchive(void) {
     M2C_UNK func_0202a940(M2C_UNK *);
     extern s32 data_0214c0e0;
     extern M2C_UNK data_0214c0e4;
@@ -68,81 +68,81 @@ void func_02081528(void) {
 
 void func_02081568(void) {
     M2C_UNK func_02080c00();
-    M2C_UNK func_020816f4();
-    func_020816f4();
+    M2C_UNK BuildNarcPath();
+    BuildNarcPath();
     func_02080c00();
 }
 
 s32 func_02081578(void *arg0, void *arg1) {
-    return func_02080c50(func_020816f4(arg0), arg1);
+    return func_02080c50(BuildNarcPath(arg0), arg1);
 }
 
-s32 func_02081590(void *arg0, void *arg1) {
-    return LoadDecompressedFileTo(func_020816f4(arg0), arg1);
+s32 LoadNarcFileDecompressed(void *arg0, void *arg1) {
+    return LoadDecompressedFileTo(BuildNarcPath(arg0), arg1);
 }
 
 void func_020815a8(void) {
     M2C_UNK func_02081070(s32, M2C_UNK);
-    func_02081070(func_020816f4(), 1);
+    func_02081070(BuildNarcPath(), 1);
 }
 
 s32 func_020815bc(void *arg0, void *arg1) {
-    return func_02081128(func_020816f4(arg0), arg1);
+    return func_02081128(BuildNarcPath(arg0), arg1);
 }
 
 void func_020815d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_02081080(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081080(func_020816f4(arg0), arg1, arg2, arg3);
+ func_02081080(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
-void func_020815fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_020816f4(M2C_UNK);
+void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    s32 BuildNarcPath(M2C_UNK);
     M2C_UNK LoadFileToSpriteBuffer(s32, M2C_UNK, M2C_UNK);
-    LoadFileToSpriteBuffer(func_020816f4(arg0), arg1, arg2);
+    LoadFileToSpriteBuffer(BuildNarcPath(arg0), arg1, arg2);
 }
 
 void func_0208161c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_020811b8(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_020811b8(func_020816f4(arg0), arg1, arg2, arg3);
+ func_020811b8(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void func_02081644(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_02081254(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081254(func_020816f4(arg0), arg1, arg2, arg3);
+ func_02081254(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_02081400(M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081400(func_020816f4(arg0),arg1,arg2);
+ func_02081400(BuildNarcPath(arg0),arg1,arg2);
 }
 
 s32 func_0208168c(void *arg0, void *arg1) {
-    return func_02081384(func_020816f4(arg0), arg1);
+    return func_02081384(BuildNarcPath(arg0), arg1);
 }
 
 void func_020816a4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_02081474(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081474(func_020816f4(arg0), arg1, arg2, arg3);
+ func_02081474(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void func_020816cc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_020816f4(M2C_UNK);
+ s32 BuildNarcPath(M2C_UNK);
  void func_020814ac(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_020814ac(func_020816f4(arg0), arg1, arg2, arg3);
+ func_020814ac(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
-s32 func_020816f4(M2C_UNK arg0) {
+s32 BuildNarcPath(M2C_UNK arg0) {
     M2C_UNK StringCopy(M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK);
+    M2C_UNK StringAppend(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02101e7c;
     extern M2C_UNK data_0214c14c;
     StringCopy(&data_0214c14c, &data_02101e7c);
-    func_02068d68(&data_0214c14c, arg0);
+    StringAppend(&data_0214c14c, arg0);
     return (s32)&data_0214c14c;
 }
 

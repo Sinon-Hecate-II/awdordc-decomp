@@ -205,8 +205,8 @@ void func_0203287c(s32 arg0) {
 }
 
 void func_0203289c(s32 arg0) {
-    extern s32 data_020fb2f8;
-    data_020fb2f8 = arg0;
+    extern s32 gNasServer;
+    gNasServer = arg0;
 }
 
 s32 func_020328ac(Unk032Callbacks *arg,s32 value){
@@ -313,15 +313,15 @@ void func_02032be4(void *arg0) {
 }
 
 s32 func_02032c74(s32 arg0){
-extern M2C_UNK data_020fb2f8,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
-s32 StringCompare(void *,void *);s32 func_02033ccc(void *,void *);void func_02045cbc(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
-if(StringCompare(M2C_FIELD(&data_020fb2f8,void **,0),&data_020fb35c))M2C_FIELD(&data_020fb2f8,s32 *,20)=1;
+extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
+s32 StringCompare(void *,void *);s32 func_02033ccc(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
+if(StringCompare(M2C_FIELD(&gNasServer,void **,0),&data_020fb35c))M2C_FIELD(&gNasServer,s32 *,20)=1;
 { void *p=M2C_FIELD(&gNasConnection,void **,8);
-M2C_FIELD(&data_020fb2f8,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
-M2C_FIELD(&data_020fb2f8,s32 *,16)=M2C_FIELD(p,s32 *,0x1210);
-if(func_02033ccc(M2C_FIELD(p,void **,0x1314),(const void *)&data_020fb2f8))return 4;
+M2C_FIELD(&gNasServer,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
+M2C_FIELD(&gNasServer,s32 *,16)=M2C_FIELD(p,s32 *,0x1210);
+if(func_02033ccc(M2C_FIELD(p,void **,0x1314),(const void *)&gNasServer))return 4;
 }
-if(arg0==1)func_02045cbc(&data_0213d120);
+if(arg0==1)GetWfcProfile(&data_0213d120);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return 4;
 if(func_02033de8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
@@ -341,7 +341,7 @@ u64 GetSystemTick(void);
 M2C_UNK func_02006030(M2C_UNK);
 u64 func_02072088(u64,u64);
 M2C_UNK func_0203367c(M2C_UNK);
-M2C_UNK func_02033038(void);
+M2C_UNK Nas_UpdateRequest(void);
 M2C_UNK func_02034480(M2C_UNK);
 M2C_UNK func_02032c74(M2C_UNK);
 
@@ -393,7 +393,7 @@ for (;;) {
         retryCount = retryCount + 1;
         reinit = 1;
     } else {
-        step = func_02033038();
+        step = Nas_UpdateRequest();
         switch(step) {
         case 0x15: func_0203367c(0x15); return;
         case 0x10:
@@ -452,20 +452,23 @@ for (;;) {
 }
 }
 
-s32 func_02033038(void) {
-    extern M2C_UNK gNasConnection,data_020fb37c,data_020fb38c,data_0213d120;
-    s32 func_02034c58(u32,u32,void*);
+/* One step of the Nintendo WFC authentication server (NAS) HTTP request: depending on the
+ * session state (0x4e00 + the NAS status code) it builds/sends the request or allocates the
+ * receive buffer, returning the next step status to NasConnectTask. */
+s32 Nas_UpdateRequest(void) {
+    extern M2C_UNK gNasConnection, gAllocTagBmWork, gFreeTagBmWork, data_0213d120;
+    s32 ParseHttpResponse(u32, u32, void *);
     s32 func_02033210(void);
-    s32 func_020470dc(void*,void*);
-    void func_02047098(void*);
-    void func_0204712c(void*);
+    s32 func_020470dc(void *, void *);
+    void func_02047098(void *);
+    void func_0204712c(void *);
 
-    u8 *g = *(u8**)((u8*)&gNasConnection + 8);
-    void *(*alloc)(void*,s32) = *(void *(**)(void*,s32))(g + 0x1000 + 0x20c);
-    void (*freefn)(void*,void*,s32) = *(void (**)(void*,void*,s32))(g + 0x1000 + 0x210);
+    u8 *work = *(u8 **)((u8 *)&gNasConnection + 8);
+    void *(*alloc)(void *, s32) = *(void *(**)(void *, s32))(work + 0x1000 + 0x20c);
+    void (*freefn)(void *, void *, s32) = *(void (**)(void *, void *, s32))(work + 0x1000 + 0x210);
 
-    if (func_02034c58(*(u32*)(g + 0x1000 + 0x314), 0, g + 0x1000) != 1) {
-        *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
+    if (ParseHttpResponse(*(u32 *)(work + 0x1000 + 0x314), 0, work + 0x1000) != 1) {
+        *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
         return 14;
     }
     if (func_02033210() != 0) {
@@ -473,39 +476,39 @@ s32 func_02033038(void) {
     }
 
     {
-        s32 state = *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8);
+        s32 state = *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8);
         if (state < 0x4e84) {
-        if (state == 0x4e22) {
-            void *p = alloc((void*)&data_020fb37c, 0x71f);
-            if (p == 0) {
-                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
-                return 2;
+            if (state == 0x4e22) {
+                void *buffer = alloc((void *)&gAllocTagBmWork, 0x71f);
+                if (buffer == 0) {
+                    *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
+                    return 2;
+                }
+                if (func_020470dc(&data_0213d120, (void *)(((u32)buffer + 0x1f) & ~0x1fu)) != 1) {
+                    freefn((void *)&gFreeTagBmWork, buffer, 0);
+                    *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
+                    return 15;
+                }
+                freefn((void *)&gFreeTagBmWork, buffer, 0);
             }
-            if (func_020470dc(&data_0213d120, (void*)(((u32)p + 0x1f) & ~0x1fu)) != 1) {
-                freefn((void*)&data_020fb38c, p, 0);
-                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
-                return 15;
-            }
-            freefn((void*)&data_020fb38c, p, 0);
-        }
-        return 21;
+            return 21;
         }
         else {
             switch (state) {
             case 0x4e88: {
                 func_0204712c(&data_0213d120);
-                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e88;
+                *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e88;
                 return 16;
             }
             case 0x4e8c: {
-                void *p = alloc((void*)&data_020fb37c, 0x700);
-                if (p == 0) {
-                    *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
+                void *buffer = alloc((void *)&gAllocTagBmWork, 0x700);
+                if (buffer == 0) {
+                    *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                     return 17;
                 }
-                func_02047098((void*)(((u32)p + 0x1f) & ~0x1fu));
-                freefn((void*)&data_020fb38c, p, 0);
-                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
+                func_02047098((void *)(((u32)buffer + 0x1f) & ~0x1fu));
+                freefn((void *)&gFreeTagBmWork, buffer, 0);
+                *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                 return 17;
             }
             }

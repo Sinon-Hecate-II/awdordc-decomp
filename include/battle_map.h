@@ -44,6 +44,8 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
 #define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
 #define MAP_VIEW_Y          0x514a /* s16 view scroll y, in 1/16-cell units */
+#define MAP_VIEW_CELL_X     0x5150 /* s16 view scroll x, in whole cells (MAP_VIEW_X / 16) */
+#define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
 #define MAP_ID              0x5142 /* u16 map id, key into the per-map data records */
@@ -53,6 +55,7 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_ROW_OFFSETS     0x3758 /* u16 per row: offset of the row in the cell arrays */
 #define MAP_CELL_UNIT_ID    0x508  /* u8 per cell: id of the unit standing there, 0 if none */
 #define MAP_CELL_TERRAIN    0x1420 /* u8 per cell: low 5 bits terrain kind, high 3 bits owner */
+#define MAP_TILE_TERRAIN    0x6a60 /* u8 per tile id: terrain kind/owner byte the cell gets */
 #define MAP_TERRAIN_KIND_MASK  0x1f /* terrain byte: terrain kind */
 #define MAP_TERRAIN_OWNER_MASK 0xe0 /* terrain byte: owner bits (player << 5) */
 #define MAP_UNIT_RECORDS    0x59a4 /* 256 unit records of 14 bytes */
@@ -81,6 +84,7 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_BATTLE_ATTACKER 0x6eb8
 #define MAP_BATTLE_DEFENDER 0x6ed8
 #define MAP_BATTLE_STRIDE   0x20
+#define MAP_BATTLE_WINNER   0x6ed6 /* s16: side that wins the previewed battle, 0 = no preview */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
 #define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
@@ -132,5 +136,14 @@ enum {
     UNIT_ATTACK_INDIRECT = 1, /* range above 1: needs a free firing tile */
     UNIT_ATTACK_NONE     = 2  /* cannot attack */
 };
+
+/* The decoded map definition block (gMapData) loaded for the current map. */
+#define MAPDATA_WIDTH   0x00 /* u8 map width in cells */
+#define MAPDATA_HEIGHT  0x01 /* u8 map height in cells */
+#define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
+
+/* Map ids in this range are campaign maps with a full 0x6f8-byte record. */
+#define MAP_ID_CAMPAIGN_FIRST 0xE1
+#define MAP_ID_CAMPAIGN_END   0x1A9 /* one past the last campaign map */
 
 #endif

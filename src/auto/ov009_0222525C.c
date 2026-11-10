@@ -3,30 +3,30 @@
 
 void func_ov009_0222525c(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    M2C_UNK func_ov009_02221320(M2C_UNK);
+    M2C_UNK SetLinkPhase(M2C_UNK);
     s32 func_ov009_02223ce4();
-    extern M2C_UNK data_ov009_022264b8;
+    extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226638;
-    func_01ffa9e4(&data_ov009_022264b8);
+    func_01ffa9e4(&gLinkActorClass);
     func_01ffa9e4(&data_ov009_02226638);
     func_01ffa9e4(&data_ov009_022264e0);
     if (func_ov009_02223ce4() != 0) {
         return;
     }
-    func_ov009_02221320(9);
+    SetLinkPhase(9);
 }
 
 void func_ov009_0222529c(void) {
-    s32 func_ov009_02224194();
+    s32 GetLinkPhase();
     s32 func_ov009_022241a4();
     s32 func_ov009_02224688();
     s32 func_ov009_02223b5c();
     s32 func_ov009_02223c08();
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    M2C_UNK func_ov009_02221320(M2C_UNK);
-    extern M2C_UNK data_ov009_022264b8, data_ov009_02226638, data_ov009_022264e0;
-    s32 state = func_ov009_02224194();
+    M2C_UNK SetLinkPhase(M2C_UNK);
+    extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
+    s32 state = GetLinkPhase();
     if (state == 1) return;
     if (state == 2) {
         if (func_ov009_02224688() != 0) return;
@@ -37,8 +37,8 @@ void func_ov009_0222529c(void) {
         func_ov009_0222525c();
         return;
     }
-    func_ov009_02221320(3);
-    func_01ffa9e4(&data_ov009_022264b8);
+    SetLinkPhase(3);
+    func_01ffa9e4(&gLinkActorClass);
     func_01ffa9e4(&data_ov009_02226638);
     func_01ffa9e4(&data_ov009_022264e0);
     switch (func_ov009_022241a4()) {
@@ -61,32 +61,32 @@ void func_ov009_02225348(M2C_UNK arg0) {
 
 s32 func_ov009_02225360(void) {
     M2C_UNK func_01ffa9e4(M2C_UNK *);
-    M2C_UNK func_ov009_02221320(M2C_UNK);
+    M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK func_ov009_022224e0();
-    M2C_UNK func_ov009_022227d4();
+    M2C_UNK SignalLinkError();
     M2C_UNK func_ov009_022244c0();
     s32 func_02011a20(s32, s32, s32);
     s32 func_020122ac(void *);
     void func_ov009_02223cbc(void);
-    extern M2C_UNK data_ov009_022264b8, data_ov009_02226638, data_ov009_022264e0;
-    func_ov009_02221320(1);
+    extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
+    SetLinkPhase(1);
     func_ov009_022224e0();
-    func_01ffa9e4(&data_ov009_022264b8);
+    func_01ffa9e4(&gLinkActorClass);
     func_01ffa9e4(&data_ov009_02226638);
     func_01ffa9e4(&data_ov009_022264e0);
     if (func_02011a20(0xC, 0, 0) != 0) {
-        func_ov009_022227d4();
-        func_ov009_02221320(8);
+        SignalLinkError();
+        SetLinkPhase(8);
         return 0;
     }
     if (func_02011a20(4, 0, 0) != 0) {
-        func_ov009_022227d4();
-        func_ov009_02221320(8);
+        SignalLinkError();
+        SetLinkPhase(8);
         return 0;
     }
     if (func_020122ac(&func_ov009_02223cbc) != 2) {
-        func_ov009_022227d4();
-        func_ov009_02221320(8);
+        SignalLinkError();
+        SetLinkPhase(8);
         return 0;
     }
     func_ov009_022244c0();
@@ -111,30 +111,30 @@ s32 func_ov009_02225450(void) {
 }
 
 u8 func_ov009_02225460(void) {
-    extern M2C_UNK data_ov009_022268e0;
-    return M2C_FIELD(&data_ov009_022268e0, u8 *, 0x157);
+    extern M2C_UNK gLinkState;
+    return M2C_FIELD(&gLinkState, u8 *, 0x157);
 }
 
 void func_ov009_02225470(void) {
     M2C_UNK CountBits();
-    M2C_UNK func_ov009_02224174();
-    func_ov009_02224174();
+    M2C_UNK GetConnectedPlayers();
+    GetConnectedPlayers();
     CountBits();
 }
 
 void func_ov009_02225480(void) {
-    extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, s16 *, 8) = 0;
+    extern M2C_UNK gLinkState;
+    M2C_FIELD(&gLinkState, s16 *, 8) = 0;
 }
 
 u16 func_ov009_02225494(void) {
-    extern M2C_UNK data_ov009_022268e0;
-    return M2C_FIELD(&data_ov009_022268e0, u16 *, 8);
+    extern M2C_UNK gLinkState;
+    return M2C_FIELD(&gLinkState, u16 *, 8);
 }
 
 s32 func_ov009_022254a4(void) {
     s32 func_ov009_02225450();
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 1;
     }
     if (func_ov009_02225450() == 0) {
@@ -144,7 +144,7 @@ s32 func_ov009_022254a4(void) {
 }
 
 s32 func_ov009_022254d8(void) {
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
     if (func_ov009_02225450() != 0) {
@@ -155,35 +155,35 @@ s32 func_ov009_022254d8(void) {
 
 M2C_UNK func_ov009_0222550c(void *arg0, s32 arg1) {
     M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
-    extern M2C_UNK data_ov009_022268e0;
+    extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, s16 *, 4) = 1 << func_ov009_02225450();
-    M2C_FIELD(&data_ov009_022268e0, void **, 0x48) = arg0;
+    M2C_FIELD(&gLinkState, void **, 0x48) = arg0;
     if (func_ov009_022254a4() == 0) return;
-    func_ov009_02224d9c(2, M2C_FIELD(&data_ov009_022268e0, void **, 0x48), 8, 0xFFFF);
+    func_ov009_02224d9c(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
 }
 
 s32 func_ov009_02225560(s32 arg0) {
-    s32 func_ov009_02224174();
-    s32 func_ov009_02224194();
+    s32 GetConnectedPlayers();
+    s32 GetLinkPhase();
     M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
-    extern M2C_UNK data_ov009_022268e0;
+    extern M2C_UNK gLinkState;
     s32 temp_r4;
     s32 var_r5;
-    temp_r4 = func_ov009_02224174();
+    temp_r4 = GetConnectedPlayers();
     var_r5 = 0;
-    if (M2C_FIELD(&data_ov009_022268e0, void **, 0x48) != NULL &&
-        temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, void **, 0x48), u16 *, 4))) var_r5 = 1;
-    if (func_ov009_02224194() == 8 || func_ov009_02224194() == 9) var_r5 = 0;
+    if (M2C_FIELD(&gLinkState, void **, 0x48) != NULL &&
+        temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x48), u16 *, 4))) var_r5 = 1;
+    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r5 = 0;
     if (!(temp_r4 & 1)) var_r5 = 0;
     if (var_r5 == 0 && func_ov009_022254a4() != 0)
-        func_ov009_02224d9c(3, M2C_FIELD(&data_ov009_022268e0, void **, 0x48), 8, 0xFFFF);
+        func_ov009_02224d9c(3, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
     return var_r5;
 }
 
 void func_ov009_022255ec() {
-    extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, void **, 0x48) = NULL;
+    extern M2C_UNK gLinkState;
+    M2C_FIELD(&gLinkState, void **, 0x48) = NULL;
 }
 
 void func_ov009_02225600(void *arg0) {
@@ -193,7 +193,7 @@ void func_ov009_02225600(void *arg0) {
 
 s32 func_ov009_02225614(s32 arg0) {
     s32 func_ov009_02225560(s32);
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
     return func_ov009_02225560(arg0 + 0x38);
@@ -209,7 +209,7 @@ void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
     extern M2C_UNK data_ov009_02226700;
     void *temp_r0;
 
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return NULL;
     }
     temp_r0 = CreateSpriteObject(&data_ov009_02226550, arg1);
@@ -222,29 +222,29 @@ void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
 
 M2C_UNK func_ov009_022256a4(s32 arg0) {
     s32 func_ov009_02223fbc();
-    extern M2C_UNK data_ov009_022268e0;
+    extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, u16 *, 2) = 1 << func_ov009_02225450();
     M2C_FIELD(arg0, u8 *, 0) = func_ov009_02223fbc();
-    M2C_FIELD(&data_ov009_022268e0, s32 *, 0x20) = arg0;
+    M2C_FIELD(&gLinkState, s32 *, 0x20) = arg0;
 }
 
 s32 func_ov009_022256d4(s32 arg0) {
-    s32 func_ov009_02224174();
-    s32 func_ov009_02224194();
-    extern M2C_UNK data_ov009_022268e0;
+    s32 GetConnectedPlayers();
+    s32 GetLinkPhase();
+    extern M2C_UNK gLinkState;
     s32 temp_r4, mask, var_r4;
-    if (M2C_FIELD(&data_ov009_022268e0, void * volatile *, 0x20) != NULL &&
-        (temp_r4 = func_ov009_02224174(), mask = func_ov009_02224174(), temp_r4 != (M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, void **, 0x20), u16 *, 2) & mask))) var_r4 = 1;
+    if (M2C_FIELD(&gLinkState, void * volatile *, 0x20) != NULL &&
+        (temp_r4 = GetConnectedPlayers(), mask = GetConnectedPlayers(), temp_r4 != (M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x20), u16 *, 2) & mask))) var_r4 = 1;
     else var_r4 = 0;
-    if (M2C_FIELD(M2C_FIELD(&data_ov009_022268e0, void **, 0x20), u8 *, 0) == 0) var_r4 = 0;
-    if (func_ov009_02224194() != 4 && func_ov009_02224194() != 5) var_r4 = 0;
-    if (func_ov009_02224194() == 8 || func_ov009_02224194() == 9) var_r4 = 0;
+    if (M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x20), u8 *, 0) == 0) var_r4 = 0;
+    if (GetLinkPhase() != 4 && GetLinkPhase() != 5) var_r4 = 0;
+    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r4 = 0;
     return var_r4;
 }
 
 void func_ov009_02225768(s32 arg0) {
-    extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, void **, 0x20) = NULL;
+    extern M2C_UNK gLinkState;
+    M2C_FIELD(&gLinkState, void **, 0x20) = NULL;
 }
 
 void func_ov009_0222577c(s32 arg0) {
@@ -275,27 +275,27 @@ void func_ov009_022257ac(M2C_UNK arg0) {
 
 M2C_UNK func_ov009_022257d4(s32 arg0) {
     M2C_UNK func_ov009_02224024();
-    extern M2C_UNK data_ov009_022268e0;
+    extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, u8 *, 0) = 0;
     M2C_FIELD(arg0, u16 *, 2) = 0;
-    M2C_FIELD(&data_ov009_022268e0, s32 *, 0x24) = arg0;
+    M2C_FIELD(&gLinkState, s32 *, 0x24) = arg0;
     return func_ov009_02224024();
 }
 
 s32 func_ov009_022257f8(s32 arg0) {
-    extern M2C_UNK data_ov009_022268e0;
+    extern M2C_UNK gLinkState;
     s32 var_r4 = 0;
-    if (M2C_FIELD(&data_ov009_022268e0, u8 **, 0x24) != NULL &&
-        *M2C_FIELD(&data_ov009_022268e0, u8 **, 0x24) != 0) var_r4 = 1;
-    if (func_ov009_02224194() != 4 && func_ov009_02224194() != 5) var_r4 = 0;
+    if (M2C_FIELD(&gLinkState, u8 **, 0x24) != NULL &&
+        *M2C_FIELD(&gLinkState, u8 **, 0x24) != 0) var_r4 = 1;
+    if (GetLinkPhase() != 4 && GetLinkPhase() != 5) var_r4 = 0;
     if (func_ov009_022254a4() != 0) var_r4 = 0;
-    if (func_ov009_02224194() == 8 || func_ov009_02224194() == 9) var_r4 = 0;
+    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r4 = 0;
     return var_r4;
 }
 
 void func_ov009_02225864() {
-    extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, void **, 0x24) = NULL;
+    extern M2C_UNK gLinkState;
+    M2C_FIELD(&gLinkState, void **, 0x24) = NULL;
 }
 
 void func_ov009_02225878(s32 arg0) {
@@ -373,18 +373,18 @@ void func_ov009_0222598c(s32 arg0) {
  s32 func_02082088(void);
  void MI_CpuCopy8(void *, void *, s32);
  M2C_UNK func_ov009_02224d9c(s32, void *, s32, s32);
- extern M2C_UNK data_ov009_022268e0;
+ extern M2C_UNK gLinkState;
  u8 buffer[40];
  u16 mask;
  void *p;
- if (func_ov009_02224194()!=4 && func_ov009_02224194()!=5) {
+ if (GetLinkPhase()!=4 && GetLinkPhase()!=5) {
  M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
- M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=NULL;
+ M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
  return;
  }
  if(func_020c5400(buffer)) {
  M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
- M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=(void *)arg0;
+ M2C_FIELD(&gLinkState, void **, 0x28)=(void *)arg0;
  mask=0xFFFF;
  mask &= (-1 ^ (1U<<func_ov009_02225450()));
  if(!mask) return;
@@ -394,25 +394,25 @@ void func_ov009_0222598c(s32 arg0) {
  func_ov009_02224d9c(13,buffer,40,mask);
  } else {
  M2C_FIELD(arg0, u16 *, 0)=1<<func_ov009_02225450();
- M2C_FIELD(&data_ov009_022268e0, void **, 0x28)=NULL;
+ M2C_FIELD(&gLinkState, void **, 0x28)=NULL;
  }
 }
 
 s32 func_ov009_02225a98(s32 arg0) {
-    s32 func_ov009_02224174();
-    extern M2C_UNK data_ov009_022268e0;
+    s32 GetConnectedPlayers();
+    extern M2C_UNK gLinkState;
     s32 first, mask;
-    if (M2C_FIELD(&data_ov009_022268e0, void **, 0x28) != NULL) {
-        first = func_ov009_02224174();
-        mask = func_ov009_02224174();
-        if (first != (*M2C_FIELD(&data_ov009_022268e0, u16 **, 0x28) & mask)) return 1;
+    if (M2C_FIELD(&gLinkState, void **, 0x28) != NULL) {
+        first = GetConnectedPlayers();
+        mask = GetConnectedPlayers();
+        if (first != (*M2C_FIELD(&gLinkState, u16 **, 0x28) & mask)) return 1;
     }
     return 0;
 }
 
 void func_ov009_02225ae0(s32 arg0) {
-    extern M2C_UNK data_ov009_022268e0;
-    M2C_FIELD(&data_ov009_022268e0, void **, 0x28) = NULL;
+    extern M2C_UNK gLinkState;
+    M2C_FIELD(&gLinkState, void **, 0x28) = NULL;
 }
 
 void func_ov009_02225af4(s32 arg0) {
@@ -422,7 +422,7 @@ void func_ov009_02225af4(s32 arg0) {
 
 s32 func_ov009_02225b04(s32 arg0) {
     s32 func_ov009_02225a98(s32);
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
     return func_ov009_02225a98(arg0 + 0x34);
@@ -554,13 +554,13 @@ void func_ov009_02225ccc(void *arg0) {
 }
 
 s32 func_ov009_02225ce0(s32 arg0, s32 arg1) {
-    s32 func_ov009_02224194();
-    switch (func_ov009_02224194()) {
+    s32 GetLinkPhase();
+    switch (GetLinkPhase()) {
     case 8:
     case 9:
         return 0;
     default:
-        return arg1 != func_ov009_02224194();
+        return arg1 != GetLinkPhase();
     }
 }
 
@@ -577,7 +577,7 @@ void func_ov009_02225d20(void *arg0) {
     M2C_UNK (*temp_r2)(s32, s32);
     s32 temp_r4;
 
-    if ((func_ov009_02224194() != 8) && (func_ov009_02224194() != 9)) {
+    if ((GetLinkPhase() != 8) && (GetLinkPhase() != 9)) {
         return;
     }
     temp_r4 = func_ov009_022241b4();
@@ -606,9 +606,9 @@ void func_ov009_02225d88(s32 arg0) {
 
 void func_ov009_02225db4(void) {
     M2C_UNK DeleteSpriteObject();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov009_02226874;
-    if (func_01ffa770(&data_ov009_02226874) == 0) {
+    if (FindObjectByClass(&data_ov009_02226874) == 0) {
         return;
     }
     DeleteSpriteObject();
@@ -742,8 +742,8 @@ void func_ov009_02226154(void) {
     M2C_UNK func_020852a8();
     M2C_UNK func_020852e0();
     M2C_UNK func_020d47d0();
-    s32 func_ov009_02224194();
-    if (func_ov009_02224194() == 1) {
+    s32 GetLinkPhase();
+    if (GetLinkPhase() == 1) {
         func_020d47d0();
         func_020852a8();
         return;
@@ -762,7 +762,7 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK func_ov009_02224528(M2C_UNK);
     M2C_UNK func_ov009_0222454c();
     extern M2C_UNK data_ov009_02226784;
-    if (func_ov009_02224194() != 0) {
+    if (GetLinkPhase() != 0) {
         func_020d47d0();
         return;
     }
@@ -777,11 +777,11 @@ void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
 }
 
 void func_ov009_022261e4(M2C_UNK arg0, u16 arg1, void *arg2) {
-    s32 func_ov009_02224194(void);
+    s32 GetLinkPhase(void);
     M2C_UNK func_020d47d0(void);
     void *func_01ffa444(void *, void *);
     extern M2C_UNK data_ov009_022267b4;
-    if (func_ov009_02224194() == 0) {
+    if (GetLinkPhase() == 0) {
         func_020d47d0();
         return;
     }

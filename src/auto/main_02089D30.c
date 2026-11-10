@@ -204,7 +204,7 @@ func_0208ad48(arg0);func_02089784(arg0);func_0208aebc(arg0);
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 u32 func_0208a6b0(void *arg0) {
-    u32 func_020846a4(void);
+    u32 IsLinkSessionActive(void);
     u32 PlaySoundEffect(M2C_UNK);
     u32 func_0208ff4c(M2C_UNK);
     M2C_UNK func_0208ffe4(M2C_UNK, M2C_UNK, s32);
@@ -219,7 +219,7 @@ u32 func_0208a6b0(void *arg0) {
     if (temp_r0_3 != 0) {
         return temp_r0_3;
     }
-    temp_r0_2 = func_020846a4();
+    temp_r0_2 = IsLinkSessionActive();
     if (temp_r0_2 == 0) {
         return temp_r0_2;
     }

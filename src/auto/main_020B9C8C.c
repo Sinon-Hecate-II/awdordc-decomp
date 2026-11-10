@@ -6,8 +6,8 @@ typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x
 void func_020b9c8c(u8 *arg0) {
  void func_020994e0(s32); void func_02091cd0(void); void func_020c0a88(void);
  void func_020cfd28(void); void SetFileDirectory(void *);
- M2C_UNK GetLocalizedFileName(void *); void func_020814e4(void);
- void func_02081590(M2C_UNK,M2C_UNK); void func_020815fc(M2C_UNK,s32,s32); void func_02081528(void);
+ M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
+ void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
  void func_01ff85b8(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
  void PlaySoundEffect(s32); void func_020b9558(u8); void func_020c0fac(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
@@ -27,11 +27,11 @@ void func_020b9c8c(u8 *arg0) {
  M2C_FIELD(arg0,u16 *,0x36)=0;
  SetFileDirectory(&data_021291f0);
  GetLocalizedFileName(&data_021291f8);
- func_020814e4();
- func_02081590(GetLocalizedFileName(&data_0212920c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
- func_02081590(GetLocalizedFileName(&data_0212921c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
- func_020815fc(GetLocalizedFileName(&data_0212922c),0xc0,0x20);
- func_02081528();
+ OpenNarcArchive();
+ LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212920c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
+ LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212921c),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
+ LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_0212922c),0xc0,0x20);
+ CloseNarcArchive();
  func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();

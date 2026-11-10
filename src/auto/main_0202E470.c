@@ -349,10 +349,10 @@ void func_0202ed8c(s32 arg0) {
 }
 
 void func_0202ed9c(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_0200bbe0(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0200bbf0(void *, s32, M2C_UNK);
-    func_0200bbf0(arg0 + 0x5C, M2C_FIELD(arg0, s32 *, 0xA4) + arg3, 0);
-    func_0200bbe0(arg0 + 0x5C, arg1, arg2);
+    M2C_UNK FileRead(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK FileSeek(void *, s32, M2C_UNK);
+    FileSeek(arg0 + 0x5C, M2C_FIELD(arg0, s32 *, 0xA4) + arg3, 0);
+    FileRead(arg0 + 0x5C, arg1, arg2);
 }
 
 void func_0202edd4(s32 arg0) {

@@ -1,64 +1,69 @@
 /* 43 functions from 0x0202BD7C to 0x0202CD78 (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 typedef struct { u32 id:24; u32 flags:8; } Unk0202PackedId;
 
-s32 func_0202bd7c(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_0200bbe0(void *, void *, u32);
-    s32 func_0200bbf0(void *, u32, s32);
+/* Load a resource archive: read its 0x30-byte header, then allocate and read
+   the object-table, data and optional extra sections from the file into the
+   given memory pool. */
+s32 LoadResourceArchive(void *archiveData, s32 pool, s32 loadExtra) {
+    s32 FileRead(void *, void *, u32);
+    s32 FileSeek(void *, u32, s32);
     void *func_0202c5f0(s32 *, s32, s32, s32, s32);
     extern M2C_UNK func_0202c488;
     extern M2C_UNK func_0202c494;
     extern M2C_UNK func_0202c4a0;
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r0_3;
-    s32 temp_r1;
-    s32 ret;
+    ResourceArchive *archive = (ResourceArchive *)archiveData;
+    void *objectBuffer;
+    void *dataBuffer;
+    void *extraBuffer;
+    s32 extraSize;
+    s32 bytesRead;
 
-    if (func_0200bbf0(arg0 + 0x34, 0, 0) == 0) {
+    if (FileSeek(archive->request, 0, 0) == 0) {
         return 0;
     }
-    if (func_0200bbe0(arg0 + 0x34, arg0, 0x30) != 0x30) {
+    if (FileRead(archive->request, archive, 0x30) != 0x30) {
         return 0;
     }
-    if (arg1 != 0) {
-        temp_r0 = func_0202c5f0((s32 *)arg1, M2C_FIELD(arg0, s32 *, 0x1C), (s32)&func_0202c488, (s32)arg0, 0);
-        M2C_FIELD(arg0, void **, 0x8C) = temp_r0;
-        if (temp_r0 == 0) {
+    if (pool != 0) {
+        objectBuffer = func_0202c5f0((s32 *)pool, archive->objectSize, (s32)&func_0202c488, (s32)archive, 0);
+        archive->objectBlock = objectBuffer;
+        if (objectBuffer == 0) {
             return 0;
         }
-        if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x18), 0) == 0) {
+        if (FileSeek(archive->request, archive->objectOffset, 0) == 0) {
             return 0;
         }
-        ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x8C), M2C_FIELD(arg0, s32 *, 0x1C));
-        if (ret != M2C_FIELD(arg0, s32 *, 0x1C)) {
+        bytesRead = FileRead(archive->request, archive->objectBlock, archive->objectSize);
+        if (bytesRead != archive->objectSize) {
             return 0;
         }
-        temp_r0_2 = func_0202c5f0((s32 *)arg1, M2C_FIELD(arg0, s32 *, 0x24), (s32)&func_0202c494, (s32)arg0, 0);
-        M2C_FIELD(arg0, void **, 0x84) = temp_r0_2;
-        if (temp_r0_2 == 0) {
+        dataBuffer = func_0202c5f0((s32 *)pool, archive->dataSize, (s32)&func_0202c494, (s32)archive, 0);
+        archive->dataBlock = dataBuffer;
+        if (dataBuffer == 0) {
             return 0;
         }
-        if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x20), 0) == 0) {
+        if (FileSeek(archive->request, archive->dataOffset, 0) == 0) {
             return 0;
         }
-        ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x84), M2C_FIELD(arg0, s32 *, 0x24));
-        if (ret != M2C_FIELD(arg0, s32 *, 0x24)) {
+        bytesRead = FileRead(archive->request, archive->dataBlock, archive->dataSize);
+        if (bytesRead != archive->dataSize) {
             return 0;
         }
-        if (arg2 != 0) {
-            temp_r1 = M2C_FIELD(arg0, s32 *, 0x14);
-            if (temp_r1 != 0) {
-                temp_r0_3 = func_0202c5f0((s32 *)arg1, temp_r1, (s32)&func_0202c4a0, (s32)arg0, 0);
-                M2C_FIELD(arg0, void **, 0x88) = temp_r0_3;
-                if (temp_r0_3 == 0) {
+        if (loadExtra != 0) {
+            extraSize = archive->extraSize;
+            if (extraSize != 0) {
+                extraBuffer = func_0202c5f0((s32 *)pool, extraSize, (s32)&func_0202c4a0, (s32)archive, 0);
+                archive->extraBlock = extraBuffer;
+                if (extraBuffer == 0) {
                     return 0;
                 }
-                if (func_0200bbf0(arg0 + 0x34, M2C_FIELD(arg0, s32 *, 0x10), 0) == 0) {
+                if (FileSeek(archive->request, archive->extraOffset, 0) == 0) {
                     return 0;
                 }
-                ret = func_0200bbe0(arg0 + 0x34, M2C_FIELD(arg0, void **, 0x88), M2C_FIELD(arg0, s32 *, 0x14));
-                if (ret != M2C_FIELD(arg0, s32 *, 0x14)) {
+                bytesRead = FileRead(archive->request, archive->extraBlock, archive->extraSize);
+                if (bytesRead != archive->extraSize) {
                     return 0;
                 }
             }
@@ -67,56 +72,56 @@ s32 func_0202bd7c(void *arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-void func_0202bf54(void *arg0,s32 arg1){extern s32 data_0213c250;u32 i; s32 off;void *p;
+void func_0202bf54(void *arg0,s32 arg1){extern s32 gCurrentArchive;u32 i; s32 off;void *p;
 func_02007e70(arg1,arg0,0x30);
 off=M2C_FIELD(arg0,s32 *,0x18);M2C_FIELD(arg0,s32 *,0x8c)=off==0?0:arg1+off;
 off=M2C_FIELD(arg0,s32 *,0x20);M2C_FIELD(arg0,s32 *,0x84)=off==0?0:arg1+off;
 off=M2C_FIELD(arg0,s32 *,0x10);M2C_FIELD(arg0,s32 *,0x88)=off==0?0:arg1+off;
 for(i=0;i<M2C_FIELD(M2C_FIELD(arg0,void **,0x84),u32 *,8);i++){p=M2C_FIELD(arg0,void **,0x84)+12+i*16;off=M2C_FIELD(p,s32 *,0);M2C_FIELD(p,s32 *,8)=off==0?0:arg1+off;}
-M2C_FIELD(arg0,s32 *,0x30)=0;data_0213c250=(s32)arg0;}
+M2C_FIELD(arg0,s32 *,0x30)=0;gCurrentArchive=(s32)arg0;}
 
-s32 func_0202c014(s32 arg0){extern s32 data_0213c250;s32 old=data_0213c250;data_0213c250=arg0;return old;}
+s32 func_0202c014(s32 arg0){extern s32 gCurrentArchive;s32 old=gCurrentArchive;gCurrentArchive=arg0;return old;}
 
 s32 func_0202c02c(void) {
-    extern s32 data_0213c250;
-    return data_0213c250;
+    extern s32 gCurrentArchive;
+    return gCurrentArchive;
 }
 
-void *func_0202c03c(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,8);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c03c(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,8);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c0a0(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c0a0(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c104(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c104(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c168(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x14);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c168(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x14);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c1cc(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x24);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c1cc(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x24);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c230(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x18);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c230(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x18);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c294(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x20);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c294(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x20);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c2f8(s32 arg0){extern s32 data_0213c250;void *root=(void *)data_0213c250;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *func_0202c2f8(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-s32 func_0202c35c(u32 a){extern s32 data_0213c250;void *p=M2C_FIELD(data_0213c250,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
+s32 func_0202c35c(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
 
-s32 func_0202c384(u32 a){extern s32 data_0213c250;void *p=M2C_FIELD(data_0213c250,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,16);}
+s32 func_0202c384(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,16);}
 
 s32 func_0202c3ac(u32 a,void *b,u32 n,u32 off) {
-extern s32 data_0213c250;s32 func_0200bbf0(void *,u32,s32);s32 func_0200bbe0(void *,void *,u32);
-void *root=(void *)data_0213c250;void *p=M2C_FIELD(root,void **,0x84);
+extern s32 gCurrentArchive;s32 FileSeek(void *,u32,s32);s32 FileRead(void *,void *,u32);
+void *root=(void *)gCurrentArchive;void *p=M2C_FIELD(root,void **,0x84);
 if(a>=M2C_FIELD(p,u32 *,8))return -1;
 p=p+12+a*16;
 if(n>M2C_FIELD(p,u32 *,4)-off)n=M2C_FIELD(p,u32 *,4)-off;
-if(!func_0200bbf0(root+52,M2C_FIELD(p,u32 *,0)+off,0))return -1;
-return func_0200bbe0(root+52,b,n);
+if(!FileSeek(root+52,M2C_FIELD(p,u32 *,0)+off,0))return -1;
+return FileRead(root+52,b,n);
 }
 
-void func_0202c424(volatile u32 *p) {extern s32 data_0213c250;u32 a=M2C_FIELD(data_0213c250,volatile u32 *,0x7c),b=M2C_FIELD(data_0213c250,volatile u32 *,0x80);p[0]=a;p[1]=b;}
+void func_0202c424(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
 
-s32 func_0202c444(u32 a) {extern s32 data_0213c250;void *p=M2C_FIELD(data_0213c250,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
+s32 func_0202c444(u32 a) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
 
-s32 func_0202c46c(s32 a,s32 b) {extern s32 data_0213c250;void *p=M2C_FIELD(data_0213c250,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
+s32 func_0202c46c(s32 a,s32 b) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
 
 void func_0202c488(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
     M2C_FIELD(arg2, s32 *, 0x8C) = 0;

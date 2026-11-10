@@ -538,12 +538,12 @@ if(q)len=q-(p+1);else len=StringLength(p+1);
 func_02068d18(arg1,p+1,len);arg1[len]=0;return len;
 }
 
-u32 func_02037eec(u32 max) {
+u32 RandomBelow(u32 max) {
 extern u64 data_0213d1e0[];
-void func_02007724(void *); u64 GetSystemTick(void);
+void GetMacAddress(void *); u64 GetSystemTick(void);
 u64 seed,v;
 if(data_0213d1e0[0]==0&&data_0213d1e0[1]==0&&data_0213d1e0[2]==0){
-func_02007724(&seed);
+GetMacAddress(&seed);
 seed=((seed>>24)&0xffffffULL)|(GetSystemTick()<<24);
 data_0213d1e0[0]=seed;
 data_0213d1e0[1]=0x5d588b656c078965ULL;
@@ -555,5 +555,5 @@ if(max==0)return v;
 return (v*max)>>32;
 }
 
-s32 func_02038020(u16 *a){s32 i=0;if(*a){do{i++;}while(a[i]);}return i;}
+s32 Utf16StringLength(u16 *a){s32 i=0;if(*a){do{i++;}while(a[i]);}return i;}
 

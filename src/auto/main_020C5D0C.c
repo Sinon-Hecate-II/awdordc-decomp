@@ -226,35 +226,35 @@ s32 func_020c6350(void) {
 }
 
 s32 func_020c6384(void) {
- s32 func_020c9430(s32); s32 func_020a85dc(s32); s32 func_020ba770(void *,s32,s32);
+ s32 func_020c9430(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba770(void *,s32,s32);
  extern void **gCurrentMap;
  void *base;
  if(func_020c9430(0)!=0)return 2;
  if(func_020c6350()==0)return 2;
- if(func_020a85dc(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
+ if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
  if(func_020ba770(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
  return 2;
 }
 
 s32 func_020c6414(void) {
- s32 func_020c9430(s32); s32 func_020a85dc(s32); s32 func_020ba780(void *,s32,s32);
+ s32 func_020c9430(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba780(void *,s32,s32);
  extern void **gCurrentMap;
  void *base;
  if(func_020c9430(1)!=0)return 2;
  if(func_020c6350()==0)return 2;
- if(func_020a85dc(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
+ if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
  base=*gCurrentMap;
  if(func_020ba780(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
  return 2;
 }
 
 s32 func_020c64a4(void) {
- s32 func_020a85dc(s32);
+ s32 IsCarrierUnitKind(s32);
  extern void **gCurrentMap;
  void *base; u32 index;
  if(func_020c6350()==0)return 2;
- if(func_020a85dc(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
+ if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
  base=*gCurrentMap;
  index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,12);
  if(index==0)return 2;
@@ -264,11 +264,11 @@ s32 func_020c64a4(void) {
 }
 
 s32 func_020c6554(void) {
- s32 func_020a85dc(s32);
+ s32 IsCarrierUnitKind(s32);
  extern void **gCurrentMap;
  void *base; u32 index;
  if(func_020c6350()==0)return 2;
- if(func_020a85dc(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
+ if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)==0)return 2;
  base=*gCurrentMap;
  index=M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,13);
  if(index==0)return 2;
@@ -612,17 +612,17 @@ void func_020c6c38(void) {
 }
 
 void func_020c6c50(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK func_020d5d0c(void *,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784(); func_ov000_021696d4();
- func_020d5d0c(M2C_FIELD(*gCurrentMap,void **,0x52D0),0,0);
+ SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),0,0);
 }
 
 void func_020c6c88(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK func_020d5d0c(void *,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
  extern void **gCurrentMap;
  func_020d468c(); func_020c0784(); func_ov000_021696d4();
- func_020d5d0c(M2C_FIELD(*gCurrentMap,void **,0x52D0),1,0);
+ SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),1,0);
 }
 
 void func_020c6cc0(void) {

@@ -5,10 +5,10 @@ s32 func_020d3464(void) {
     void func_0209cbe4(void *);
     void func_02081fd4(void);
     void PlaySoundEffect(s32);
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     extern void **gCurrentMap;
 
-    if (M2C_FIELD(&data_02168f08, u16 *, 0x10) == 0) {
+    if (M2C_FIELD(&gMapData, u16 *, 0x10) == 0) {
         return 0;
     }
 
@@ -25,7 +25,7 @@ s32 func_020d3464(void) {
                 func_0209cbe4(p + 0x88);
             }
             {
-                u16 dataVal = M2C_FIELD(&data_02168f08, u16 *, 0x10);
+                u16 dataVal = M2C_FIELD(&gMapData, u16 *, 0x10);
                 void *b = *gCurrentMap;
                 u16 ii = M2C_FIELD(b, u16 *, 0x52A4);
                 u32 *pp = (u32 *)((u8 *)b + ii * 0x8C + 0x682C);
@@ -90,55 +90,57 @@ void func_020d35d8(void) {
 void func_020d3628(void) {
     M2C_UNK func_020844f8();
     M2C_UNK func_020bbb08();
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     func_020bbb08();
-    if (M2C_FIELD(&data_02168f08, u8 *, 4) == 0) {
+    if (M2C_FIELD(&gMapData, u8 *, 4) == 0) {
         return;
     }
     func_020844f8();
 }
 
-s32 func_020d364c(void) {
+s32 HandleOverlayResult(void) {
  M2C_UNK func_ov000_0219c6c0();
- M2C_UNK func_02084644();
- M2C_UNK func_ov009_02224194();
+ M2C_UNK GetActiveOverlay();
+ M2C_UNK GetLinkPhase();
  void func_ov009_022244ec(M2C_UNK);
  M2C_UNK func_ov010_022282f8();
  M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
  void func_ov010_02228298(M2C_UNK);
- M2C_UNK func_02084a6c();
+ M2C_UNK GetOverlayEventFlags();
  void func_02081fd4(void);
- extern M2C_UNK data_02168f08;
+ extern M2C_UNK gMapData;
  extern void **gCurrentMap;
- s32 r4,r5,a,b;
- if(M2C_FIELD(&data_02168f08,u8 *,4)==0) return 0;
+ s32 overlayResult,eventFlags,errorCode,errorType;
+ /* Poll the active UI overlay (ov009/ov010) for a finished event; while the map
+    waits in state 13/14/19/20, record the result and move on to state 23/24. */
+ if(M2C_FIELD(&gMapData,u8 *,4)==0) return 0;
  if(func_ov000_0219c6c0()!=0) return 0;
- if(M2C_FIELD(&data_02168f08,u8 *,5)!=0 || M2C_FIELD(&data_02168f08,u8 *,6)!=0) return 0;
- r4=0; r5=0;
- switch(func_02084644()){
+ if(M2C_FIELD(&gMapData,u8 *,5)!=0 || M2C_FIELD(&gMapData,u8 *,6)!=0) return 0;
+ overlayResult=0; eventFlags=0;
+ switch(GetActiveOverlay()){
  case 1:
- if(func_ov009_02224194()==8 || func_ov009_02224194()==9){
- func_ov009_022244ec(1); r4=1;
+ if(GetLinkPhase()==8 || GetLinkPhase()==9){
+ func_ov009_022244ec(1); overlayResult=1;
  } break;
  case 2:
- if(func_ov010_022282f8()!=0 ? 1 : r4){
- func_ov010_02228314(&a,&b);
- switch(b){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: func_ov010_02228298(6); break;}
- r4=1;
+ if(func_ov010_022282f8()!=0 ? 1 : overlayResult){
+ func_ov010_02228314(&errorCode,&errorType);
+ switch(errorType){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: func_ov010_02228298(6); break;}
+ overlayResult=1;
  }
  break;
  }
- if(func_02084a6c()!=0) r5=1;
- if(r4!=0 || r5!=0){
+ if(GetOverlayEventFlags()!=0) eventFlags=1;
+ if(overlayResult!=0 || eventFlags!=0){
  switch(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)){
  case 13: case 14: case 19: case 20:
- M2C_FIELD(&data_02168f08,u8 *,5)=r4;
- M2C_FIELD(&data_02168f08,u8 *,6)=r5;
- if(r4!=0){
+ M2C_FIELD(&gMapData,u8 *,5)=overlayResult;
+ M2C_FIELD(&gMapData,u8 *,6)=eventFlags;
+ if(overlayResult!=0){
  func_02081fd4();
  M2C_FIELD(*gCurrentMap,u16 *,0x52b2)=M2C_FIELD(*gCurrentMap,u16 *,0x52b0);
  M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=23;
- } else if(r5!=0){
+ } else if(eventFlags!=0){
  func_02081fd4();
  M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=24;
  }
@@ -151,7 +153,7 @@ s32 func_020d364c(void) {
 void func_020d3830(void) {
     M2C_UNK func_020d4dfc();
     M2C_UNK func_0208b5a8();
-    M2C_UNK func_02084644();
+    M2C_UNK GetActiveOverlay();
     M2C_UNK func_ov009_022241b4();
     void func_ov009_02225fb4(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
@@ -160,7 +162,7 @@ void func_020d3830(void) {
     void func_ov010_022282d4(M2C_UNK);
     M2C_UNK func_02081fec();
     extern void **gCurrentMap;
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
 
     if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
         func_020d4dfc();
@@ -169,10 +171,10 @@ void func_020d3830(void) {
     if (func_0208b5a8() != 0) {
         return;
     }
-    switch (func_02084644()) {
+    switch (GetActiveOverlay()) {
     case 1:
         func_ov009_02225fb4(0, 0x25c, func_ov009_022241b4(), (void *)7);
-        M2C_FIELD(&data_02168f08, u8 *, 7) = 0;
+        M2C_FIELD(&gMapData, u8 *, 7) = 0;
         func_02081fec();
         M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
         break;
@@ -187,7 +189,7 @@ void func_020d3830(void) {
         case 1:
         case 2:
             func_ov010_022282d4(6);
-            M2C_FIELD(&data_02168f08, u8 *, 5) = 0;
+            M2C_FIELD(&gMapData, u8 *, 5) = 0;
             { u16 t = M2C_FIELD(*gCurrentMap, u16 *, 0x52B2);
               M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = t; }
             break;
@@ -195,7 +197,7 @@ void func_020d3830(void) {
         case 4:
         case 5:
         case 6:
-            M2C_FIELD(&data_02168f08, u8 *, 7) = 0;
+            M2C_FIELD(&gMapData, u8 *, 7) = 0;
             func_02081fec();
             M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
             break;
@@ -213,28 +215,28 @@ void func_020d39a4(void) {
 }
 
 s32 func_020d39b4(void) {
-    M2C_UNK func_02084644();
+    M2C_UNK GetActiveOverlay();
     M2C_UNK func_ov010_02228678(M2C_UNK *);
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     s32 local;
-    if (func_02084644() != 2) {
+    if (GetActiveOverlay() != 2) {
         return 0;
     }
     if (func_ov010_02228678(&local) != 0) {
         return 1;
     }
-    M2C_FIELD(&data_02168f08, u8 *, 7) = local;
+    M2C_FIELD(&gMapData, u8 *, 7) = local;
     return 0;
 }
 
 void func_020d39f4(s32 arg0) {
-    M2C_UNK func_02084644();
+    M2C_UNK GetActiveOverlay();
     M2C_UNK CreateSpriteObject(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     extern M2C_UNK data_0212b9d4;
-    switch (func_02084644()) {                      /* irregular */
+    switch (GetActiveOverlay()) {                      /* irregular */
     case 1:
-        M2C_FIELD(&data_02168f08, u8 *, 7) = 0;
+        M2C_FIELD(&gMapData, u8 *, 7) = 0;
         return;
     case 2:
         CreateSpriteObject(&data_0212b9d4, arg0);
@@ -265,8 +267,8 @@ void func_020d3a3c(void) {
 void func_020d3aa4(void *arg0) {
  M2C_UNK func_02086330();
  M2C_UNK func_02085054(M2C_UNK, M2C_UNK, M2C_UNK);
- extern M2C_UNK data_02168f08;
- if (M2C_FIELD(&data_02168f08,u8 *,5) != 0 || M2C_FIELD(&data_02168f08,u8 *,7) == 0) {
+ extern M2C_UNK gMapData;
+ if (M2C_FIELD(&gMapData,u8 *,5) != 0 || M2C_FIELD(&gMapData,u8 *,7) == 0) {
  func_02086330();
  func_02085054(0,0x25c,arg0);
  }
@@ -287,7 +289,7 @@ void func_020d3b18(void) {
 
 void func_020d3b24(void) {
     M2C_UNK func_020d3400();
-    M2C_UNK func_020d364c();
+    M2C_UNK HandleOverlayResult();
     M2C_UNK func_020d3464();
     M2C_UNK func_020d8db0();
     M2C_UNK func_020d46e8();
@@ -329,7 +331,7 @@ void func_020d3b24(void) {
         }
     }
 
-    if (func_020d364c() != 0) return;
+    if (HandleOverlayResult() != 0) return;
     if (func_020d3464() != 0) return;
     if (func_020d8db0() != 0) return;
     if (func_020d46e8() != 0) return;
@@ -413,9 +415,9 @@ void func_020d3cec(void) {
 }
 
 void func_020d3d24(void) {
-    M2C_UNK func_020ceb48();
+    M2C_UNK ResetBattleMap();
     M2C_UNK func_020ceec8();
-    M2C_UNK func_020cf0a8(M2C_UNK);
+    M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020ceea8();
     M2C_UNK func_020a23c4();
     M2C_UNK func_020cfd14();
@@ -423,9 +425,9 @@ void func_020d3d24(void) {
     M2C_UNK func_020d1c58();
     M2C_UNK func_020d1ce0();
     extern void **gCurrentMap;
-    func_020ceb48();
+    ResetBattleMap();
     func_020ceec8();
-    func_020cf0a8(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
+    LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     func_020ceea8();
     func_020a23c4();
     func_020cfd14();
@@ -530,7 +532,7 @@ s32 func_020d3f48(void) {
     M2C_UNK IsPlayerActive(s32);
     M2C_UNK IsPlayerHuman(s32);
     extern void **gCurrentMap;
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     u8 team;
     s32 count;
     s32 i;
@@ -545,7 +547,7 @@ s32 func_020d3f48(void) {
         M2C_FIELD(base, u16 *, 0x52B0) = 1;
         return 0;
     }
-    if (M2C_FIELD(&data_02168f08, u8 *, 4) != 0) {
+    if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
         return 0;
     }
     base = *gCurrentMap;
@@ -582,11 +584,11 @@ s32 func_020d3f48(void) {
 s32 func_020d4060(void) {
     M2C_UNK IsPlayerActive(s32);
     M2C_UNK IsPlayerCpu(s32);
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     extern void *gKeyState;
     s32 i;
 
-    if (M2C_FIELD(&data_02168f08, u8 *, 4) != 0) {
+    if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
         for (i = 1; i < 5; i++) {
             if (IsPlayerActive(i) != 0 && IsPlayerCpu(i) == 0) {
                 return 0;
@@ -608,9 +610,9 @@ s32 func_020d4060(void) {
 void func_020d4110(void) {
     M2C_UNK func_020d3e94();
     void func_01ffa3dc(void *, s32);
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     extern char data_0212ba3c[];
-    if (M2C_FIELD(&data_02168f08, u8 *, 4) != 0) {
+    if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
         func_020d3e94();
         return;
     }
@@ -618,9 +620,9 @@ void func_020d4110(void) {
 }
 
 void func_020d4144(void) {
- M2C_UNK func_020d1a90(); M2C_UNK func_020ca484(); M2C_UNK func_02096b50(M2C_UNK); M2C_UNK func_020d3e94(); extern M2C_UNK data_02168f08; extern void **gCurrentMap;
- if(M2C_FIELD(&data_02168f08,u8*,15)!=0 && func_020d1a90()!=0) {
- if(M2C_FIELD(&data_02168f08,u8*,15)==M2C_FIELD(*gCurrentMap,u16*,0x52A2)) goto same;
+ M2C_UNK func_020d1a90(); M2C_UNK func_020ca484(); M2C_UNK func_02096b50(M2C_UNK); M2C_UNK func_020d3e94(); extern M2C_UNK gMapData; extern void **gCurrentMap;
+ if(M2C_FIELD(&gMapData,u8*,15)!=0 && func_020d1a90()!=0) {
+ if(M2C_FIELD(&gMapData,u8*,15)==M2C_FIELD(*gCurrentMap,u16*,0x52A2)) goto same;
  }
  M2C_FIELD(*gCurrentMap,u16*,0x52B0)=2;
  func_020ca484(); return;
@@ -682,10 +684,10 @@ void func_020d42d0(void) {
 }
 
 void func_020d42f8(void) {
-    M2C_UNK func_020946d0();
+    M2C_UNK IsDialogActive();
     M2C_UNK func_020a5ac8();
     extern void **gCurrentMap;
-    if (func_020946d0() != 0) {
+    if (IsDialogActive() != 0) {
         return;
     }
     func_020a5ac8();
@@ -694,7 +696,7 @@ void func_020d42f8(void) {
 
 #pragma merge_duplicate_code off
 void func_020d432c(void){
-M2C_UNK func_020c0a1c(M2C_UNK);void func_ov000_0219c7c4(s32);extern void **gCurrentMap;extern M2C_UNK data_02168f08;
+M2C_UNK func_020c0a1c(M2C_UNK);void func_ov000_0219c7c4(s32);extern void **gCurrentMap;extern M2C_UNK gMapData;
 u8 *base,*p;u16 idx;u8 val;
 func_020c0a1c(3);
 base=(u8*)*gCurrentMap;p=base+0x5200;
@@ -703,7 +705,7 @@ val=M2C_FIELD(base+idx*0x8c,u8*,0x67c2);
 switch(val){
 case 0:break;
 case 1:
-if((((u32)M2C_FIELD(&data_02168f08,u16*,12)<<22)>>31)==0){M2C_FIELD(p,u16*,0xb0)=13;return;}
+if((((u32)M2C_FIELD(&gMapData,u16*,12)<<22)>>31)==0){M2C_FIELD(p,u16*,0xb0)=13;return;}
 M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
 case 2:M2C_FIELD(p,u16*,0xb0)=14;func_ov000_0219c7c4(0);return;
 case 3:M2C_FIELD(p,u16*,0xb0)=19;return;

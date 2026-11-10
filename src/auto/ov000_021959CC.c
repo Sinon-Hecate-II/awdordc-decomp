@@ -50,9 +50,9 @@ s32 func_ov000_02195b80(s16 *out) {
     s32 func_020a76d4(void *);
 
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
-    extern void *data_ov000_021df644;
-    extern u8 data_ov000_021b55a0[];
+    extern u8 gUnitKindFlags[];
+    extern void *gAiUnitTypeTuning;
+    extern u8 gTerrainPropertyType[];
 
     void *up;
     s32 unitKind;
@@ -67,7 +67,7 @@ s32 func_ov000_02195b80(s16 *out) {
 
     up = *(void **)((u8 *)*gCurrentMap + 0x52d0);
     unitKind = ((u8 *)up)[0] & 0x3f;
-    attr = data_ov000_021b5c0f[unitKind * 0x70];
+    attr = gUnitKindFlags[unitKind * 0x70];
     if (attr & 0x20) {
         return 0;
     }
@@ -112,10 +112,10 @@ s32 func_ov000_02195b80(s16 *out) {
                 m = (u8 *)*gCurrentMap;
                 rowOff = *(u16 *)(m + 0x3758 + y * 2);
                 grid1 = *(u8 *)(m + x + rowOff + 0x2d48);
-                thr = ((u8 *)data_ov000_021df644)[2];
+                thr = ((u8 *)gAiUnitTypeTuning)[2];
                 if (grid1 >= thr) continue;
 
-                if (data_ov000_021b55a0[grid0 & 0x1f] != 0) continue;
+                if (gTerrainPropertyType[grid0 & 0x1f] != 0) continue;
 
                 {
                     s32 mask;
@@ -127,7 +127,7 @@ s32 func_ov000_02195b80(s16 *out) {
                     u8 *m2 = (u8 *)*gCurrentMap;
                     u16 r2off = *(u16 *)(m2 + 0x3758 + y * 2);
                     u8 g1 = *(u8 *)(m2 + x + r2off + 0x2d48);
-                    u8 thr2 = ((u8 *)data_ov000_021df644)[2];
+                    u8 thr2 = ((u8 *)gAiUnitTypeTuning)[2];
                     if (g1 >= thr2) continue;
                 }
 
@@ -183,7 +183,7 @@ s32 func_ov000_02195f1c(s16 *arg0) {
     s32 func_020d243c(u16);
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0f[];
+    extern u8 gUnitKindFlags[];
 
     u8 *map;
     u8 *unit8;
@@ -194,7 +194,7 @@ s32 func_ov000_02195f1c(s16 *arg0) {
 
     map = (u8 *)*gCurrentMap;
     unit8 = (u8 *)*(void **)(map + 0x52d0);
-    if (data_ov000_021b5c0f[((u32)(unit8[0] << 26) >> 26) * 0x70] & 0x20) {
+    if (gUnitKindFlags[((u32)(unit8[0] << 26) >> 26) * 0x70] & 0x20) {
         return 0;
     }
     if (func_020d243c(*(u16 *)(map + 0x52a4)) == 0) {
@@ -532,14 +532,14 @@ s32 func_ov000_02196430(s16 *arg0) {
 /* AI: pick the cheapest enemy-owned property the selected unit can attack, find
  * a firing position next to it and plan the move there. */
 void SelectPropertyAttackDestination(void) {
-extern void **gCurrentMap; extern u8 **data_ov000_021df580;
+extern void **gCurrentMap; extern u8 **gAiCommandState;
 s32 GetUnitAttackClass(u32); s32 func_020a76d4(void *);
 void func_ov000_02179be0(void); void func_ov000_02179d3c(void);
 s32 func_020d27ec(s32,u8); s32 func_ov000_0217d000(u32,s32);
 s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
 s32 attackLimit; s32 terrain; s32 bestCost=0x7fff; s32 y,x; s16 target[2];
 if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind)==1)
-attackLimit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(data_ov000_021df580,u8 *,5);
+attackLimit=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(gAiCommandState,u8 *,5);
 else attackLimit=0;
 func_ov000_02179be0(); func_ov000_02179d3c();
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
@@ -566,9 +566,9 @@ PlanMoveDestination(target[0],target[1]);
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
 s32 CanKindAttack(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
-extern void **gCurrentMap;extern u8 **data_ov000_021df580;
+extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
-if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<29)>>29)&4))return;
+if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<29)>>29)&4))return;
 if(!CanKindAttack(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
 func_ov000_02179be0();func_ov000_02179d3c();
 base=*gCurrentMap;

@@ -8,20 +8,20 @@ void func_ov004_02217f5c(void *arg0) {
     s32 func_01ff9c34(u8, M2C_UNK);
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
-    M2C_UNK func_02002c64(M2C_UNK);
+    M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
     M2C_UNK func_020032bc(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     M2C_UNK func_02081384(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4(M2C_UNK *);
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(M2C_UNK *, s32);
-    M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK OpenNarcArchive(M2C_UNK *);
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
+    M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208168c(s32, M2C_UNK);
     M2C_UNK func_020822b8(u16 *);
     M2C_UNK Reset3DSpriteBankState();
@@ -38,8 +38,8 @@ void func_ov004_02217f5c(void *arg0) {
     s32 func_020aae44(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
-    M2C_UNK func_020ceb48();
-    M2C_UNK func_020cf0a8(s32);
+    M2C_UNK ResetBattleMap();
+    M2C_UNK LoadBattleMap(s32);
     M2C_UNK func_020cf278(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_ov003_021fef58(void *);
@@ -114,7 +114,7 @@ void func_ov004_02217f5c(void *arg0) {
     Ov004DisplayConfig sp3C = *(Ov004DisplayConfig *)&data_ov004_02218bc4;
     Ov004DisplayConfig sp30 = *(Ov004DisplayConfig *)((u8 *)&data_ov004_02218bc4 + 12);
     func_02082c84();
-    func_02002c64(3);
+    GX_SetBankForTex(3);
     GX_SetBankForBG(0x20);
     func_02002968(0x10);
     func_02002e3c(0x40);
@@ -171,19 +171,19 @@ void func_ov004_02217f5c(void *arg0) {
     func_02081400(&data_ov004_0223c5c0, 0x200, 0x20);
     func_02081384(&data_ov004_0223c660, 0x30000);
     func_02081400(&data_ov004_0223c630, 0x220, 0x20);
-    func_020814e4(&data_ov004_0223c624);
+    OpenNarcArchive(&data_ov004_0223c624);
     func_0208168c(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
     func_0208168c(GetLocalizedFileName(&data_ov004_0223c5dc), 0x39000);
-    func_02081528();
+    CloseNarcArchive();
     func_02081400(&data_ov004_0223c5c8, 0x240, 0xA0);
     func_02081400(&data_ov004_0223c5b0, 0x2E0, 0x20);
     func_02081384(&data_ov004_0223c60c, 0x3A000);
     func_02081400(&data_ov004_0223c600, 0x300, 0x20);
-    func_020814e4(&data_ov004_0223c66c);
-    func_02081590(&data_ov004_0223c654, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18) + 0x20);
-    func_02081590(&data_ov004_0223c648, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
-    func_020815fc(&data_ov004_0223c618, 0x1E0, 0x20);
-    func_02081528();
+    OpenNarcArchive(&data_ov004_0223c66c);
+    LoadNarcFileDecompressed(&data_ov004_0223c654, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18) + 0x20);
+    LoadNarcFileDecompressed(&data_ov004_0223c648, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+    LoadNarcFileToSpriteBuffer(&data_ov004_0223c618, 0x1E0, 0x20);
+    CloseNarcArchive();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) func_01ff9c34((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_020a9a30(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
@@ -249,17 +249,17 @@ void func_ov004_02217f5c(void *arg0) {
     if ((temp_r0_6 != 0x800) && (temp_r0_6 != 0x1000)) {
 
     } else {
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) < (s32) (0x60 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x44) * temp_r0_6, 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0x60 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) < (s32) (0x60 - Divide(M2C_FIELD(arg0, s16 *, 0x44) * temp_r0_6, 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0x60 - Divide(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
         }
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) < (s32) (0x39 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0x39 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) < (s32) (0x39 - Divide(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0x39 - Divide(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
         }
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) > (s32) (0xA0 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0xA0 - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) > (s32) (0xA0 - Divide(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0xA0 - Divide(M2C_FIELD(arg0, s16 *, 0x44) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
         }
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) > (s32) (0x5F - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0x5F - func_0207c8ec(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) > (s32) (0x5F - Divide(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0x5F - Divide(M2C_FIELD(arg0, s16 *, 0x46) * M2C_FIELD(arg0, s32 *, 0x40), 0x1000));
         }
     }
     temp_r0_7 = M2C_FIELD(arg0, s32 *, 0x40);
@@ -278,11 +278,11 @@ void func_ov004_02217f5c(void *arg0) {
         if ((s32) M2C_FIELD(arg0, s16 *, 0x46) > 0x130) {
             M2C_FIELD(arg0, s16 *, 0x46) = 0x130;
         }
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) < (s32) (0x100 - func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x40) << 9, 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0x100 - func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x40) << 9, 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x50) < (s32) (0x100 - Divide(M2C_FIELD(arg0, s32 *, 0x40) << 9, 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x50) = (s16) (0x100 - Divide(M2C_FIELD(arg0, s32 *, 0x40) << 9, 0x1000));
         }
-        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) < (s32) (0xC0 - func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x40) * 0x158, 0x1000))) {
-            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0xC0 - func_0207c8ec(M2C_FIELD(arg0, s32 *, 0x40) * 0x158, 0x1000));
+        if ((s32) M2C_FIELD(arg0, s16 *, 0x52) < (s32) (0xC0 - Divide(M2C_FIELD(arg0, s32 *, 0x40) * 0x158, 0x1000))) {
+            M2C_FIELD(arg0, s16 *, 0x52) = (s16) (0xC0 - Divide(M2C_FIELD(arg0, s32 *, 0x40) * 0x158, 0x1000));
         }
         if ((s32) M2C_FIELD(arg0, s16 *, 0x50) > 0) {
             M2C_FIELD(arg0, s16 *, 0x50) = 0;
@@ -316,9 +316,9 @@ loop_46:
         }
     }
     if (var_r5 != NULL) {
-        func_020ceb48();
+        ResetBattleMap();
         func_020cf278(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
-        func_020cf0a8(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
+        LoadBattleMap(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
         func_ov003_021ff36c();
     }
     M2C_FIELD(arg0, s16 *, 0x4C) = 0;

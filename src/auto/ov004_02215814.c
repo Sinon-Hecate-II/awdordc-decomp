@@ -6,10 +6,10 @@
 #pragma opt_strength_reduction off
 void func_ov004_02215814(void *arg0) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
-    s16 func_0207c8ec(s32, s32);
+    s16 Divide(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020ceb48();
-    M2C_UNK func_020cf0a8(s32);
+    M2C_UNK ResetBattleMap();
+    M2C_UNK LoadBattleMap(s32);
     M2C_UNK func_020cf278(s32);
     M2C_UNK func_ov003_021ff36c();
     extern void *gKeyState;
@@ -448,9 +448,9 @@ loop_163:
             }
         }
         if (var_r6_2 != NULL) {
-            func_020ceb48();
+            ResetBattleMap();
             func_020cf278(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
-            func_020cf0a8(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
+            LoadBattleMap(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
             func_ov003_021ff36c();
         }
         M2C_FIELD(arg0, s16 *, 0x4C) = 0;
@@ -459,8 +459,8 @@ loop_163:
     }
     if ((u32) M2C_FIELD(gTouchState, u16 *, 2) < 0x98U) {
         if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
-            M2C_FIELD(arg0, s16 *, 0x48) = func_0207c8ec((M2C_FIELD(gTouchState, u16 *, 0) - M2C_FIELD(arg0, s16 *, 0x50)) << 0xC, M2C_FIELD(arg0, s32 *, 0x40));
-            M2C_FIELD(arg0, s16 *, 0x4A) = func_0207c8ec((M2C_FIELD(gTouchState, u16 *, 2) - M2C_FIELD(arg0, s16 *, 0x52)) << 0xC, M2C_FIELD(arg0, s32 *, 0x40));
+            M2C_FIELD(arg0, s16 *, 0x48) = Divide((M2C_FIELD(gTouchState, u16 *, 0) - M2C_FIELD(arg0, s16 *, 0x50)) << 0xC, M2C_FIELD(arg0, s32 *, 0x40));
+            M2C_FIELD(arg0, s16 *, 0x4A) = Divide((M2C_FIELD(gTouchState, u16 *, 2) - M2C_FIELD(arg0, s16 *, 0x52)) << 0xC, M2C_FIELD(arg0, s32 *, 0x40));
         }
         if (M2C_FIELD(gTouchState, u8 *, 0x15) != 0) {
             temp_r3_5 = M2C_FIELD(arg0, s16 *, 0x48);
@@ -635,9 +635,9 @@ loop_259:
                 }
             }
             if (var_r4_3 != NULL) {
-                func_020ceb48();
+                ResetBattleMap();
                 func_020cf278(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
-                func_020cf0a8(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
+                LoadBattleMap(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
                 func_ov003_021ff36c();
             }
             M2C_FIELD(arg0, s16 *, 0x4C) = 0;

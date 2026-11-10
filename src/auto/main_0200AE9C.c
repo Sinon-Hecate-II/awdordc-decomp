@@ -27,14 +27,14 @@ static inline s32 TestFileFlag(void *a, s32 mask) {
  return result;
 }
 
-M2C_UNK func_0200ae9c(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 func_0200a0ac(void *,s32);s32 GetNextFileRequest(s32);s32 b=M2C_FIELD(a,s32 *,8),key;if(!a)return;do{key=OS_DisableInterrupts();M2C_FIELD(a,volatile s32 *,12)|=64;if((M2C_FIELD(a,volatile s32 *,12)&4)?1:0){OS_WakeupThread(a+24);OS_RestoreInterrupts(key);return;}M2C_FIELD(a,volatile s32 *,12)|=8;OS_RestoreInterrupts(key);if(func_0200a0ac(a,M2C_FIELD(a,s32 *,16))==6)return;a=(void *)GetNextFileRequest(b);}while(a);}
+M2C_UNK func_0200ae9c(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 ExecuteFileCommand(void *,s32);s32 GetNextFileRequest(s32);s32 b=M2C_FIELD(a,s32 *,8),key;if(!a)return;do{key=OS_DisableInterrupts();M2C_FIELD(a,volatile s32 *,12)|=64;if((M2C_FIELD(a,volatile s32 *,12)&4)?1:0){OS_WakeupThread(a+24);OS_RestoreInterrupts(key);return;}M2C_FIELD(a,volatile s32 *,12)|=8;OS_RestoreInterrupts(key);if(ExecuteFileCommand(a,M2C_FIELD(a,s32 *,16))==6)return;a=(void *)GetNextFileRequest(b);}while(a);}
 
 s32 func_0200af30(void *arg0) {
     M2C_UNK CompleteFileRequest(void *, s32);
-    s32 func_0200a0ac(void *, s32);
+    s32 ExecuteFileCommand(void *, s32);
     s32 GetNextFileRequest(s32);
     M2C_UNK func_0200ae9c();
-    CompleteFileRequest(arg0, func_0200a0ac(arg0, M2C_FIELD(arg0, s32 *, 0x10)));
+    CompleteFileRequest(arg0, ExecuteFileCommand(arg0, M2C_FIELD(arg0, s32 *, 0x10)));
     if (GetNextFileRequest(M2C_FIELD(arg0, s32 *, 8)) != 0) {
         func_0200ae9c();
     }
@@ -166,7 +166,7 @@ u32 func_0200b3ec(void *a,u32 memory,u32 size){
 extern M2C_UNK func_0200ac70;
 void InitFileRequest(void *);
 s32 func_0200b99c(void *,s32,s32,s32,s32);
-s32 func_0200bbe0(s32,s32,s32);
+s32 FileRead(s32,s32,s32);
 s32 func_0200ba9c(void *);
 M2C_UNK MI_CpuFill8(void *,M2C_UNK,M2C_UNK);
 u8 file[0x48];u32 required,p;
@@ -175,13 +175,13 @@ if(required<=size){
 p=(memory+31)&~31;
 InitFileRequest(file);
 if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x2c),M2C_FIELD(a,s32 *,0x2c)+M2C_FIELD(a,s32 *,0x30),-1)){
-if(func_0200bbe0((s32)file,p,M2C_FIELD(a,s32 *,0x30))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x30));
+if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x30))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x30));
 func_0200ba9c(file);
 }
 M2C_FIELD(a,u32 *,0x2c)=p;
 p+=M2C_FIELD(a,u32 *,0x30);
 if(func_0200b99c(file,(s32)a,M2C_FIELD(a,s32 *,0x34),M2C_FIELD(a,s32 *,0x34)+M2C_FIELD(a,s32 *,0x38),-1)){
-if(func_0200bbe0((s32)file,p,M2C_FIELD(a,s32 *,0x38))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x38));
+if(FileRead((s32)file,p,M2C_FIELD(a,s32 *,0x38))<0)MI_CpuFill8((void*)p,0,M2C_FIELD(a,s32 *,0x38));
 func_0200ba9c(file);
 }
 M2C_FIELD(a,u32 *,0x34)=p;
@@ -330,12 +330,12 @@ s32 func_0200bad8(void *a){void OS_SleepThread(void *);s32 r=0,key=OS_DisableInt
 
 void func_0200bb98(void *a){s32 key=OS_DisableInterrupts();void *p;if((M2C_FIELD(a,volatile s32 *,12)&1)?1:0){M2C_FIELD(a,volatile s32 *,12)|=2;p=M2C_FIELD(a,void **,8);M2C_FIELD(p,s32 *,28)|=32;}OS_RestoreInterrupts(key);}
 
-s32 func_0200bbe0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 FileRead(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0200b8e0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     return func_0200b8e0(arg0, arg1, arg2, 0);
 }
 
-s32 func_0200bbf0(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}
+s32 FileSeek(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}
 
 s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record data_0212fbec;InitFileRequest(buf);if(!func_0200b79c(buf,a,0,(s32)&v))return 0;data_0212fbec=v;return 1;}
 

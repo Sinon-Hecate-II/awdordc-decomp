@@ -121,8 +121,8 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
 s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 HasNetError();
     void *GetConnection();
-    s32 func_02060b68(s32, M2C_UNK, s32);
-    s32 func_02061784(s32, M2C_UNK);
+    s32 SBServerGetIntValue(s32, M2C_UNK, s32);
+    s32 SBServerListGetServer(s32, M2C_UNK);
     s32 temp_r0;
     s32 var_r4;
 
@@ -130,9 +130,9 @@ s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     if ((GetConnection() == NULL) || (HasNetError() != 0)) {
         return var_r4;
     }
-    temp_r0 = func_02061784(M2C_FIELD(GetConnection(), s32 *, 0xE4), arg0);
+    temp_r0 = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, 0xE4), arg0);
     if (temp_r0 != 0) {
-        var_r4 = func_02060b68(temp_r0, arg1, var_r4);
+        var_r4 = SBServerGetIntValue(temp_r0, arg1, var_r4);
     }
     return var_r4;
 }
@@ -182,7 +182,7 @@ func_0203e570(0);
 s32 func_0203c28c(s32 arg0){
 void *GetConnection(void);
 s32 func_0205b030(s32);s32 func_0205b048(s32);
-s32 func_0205e670(void*,s32,s32,s32,s32,s32,s32,void*,void*,void*,void*,void*,void*,s32);
+s32 Qr2_CreateConnection(void*,s32,s32,s32,s32,s32,s32,void*,void*,void*,void*,void*,void*,s32);
 extern s32 func_02043a24,func_02043b6c,func_02043b70,func_02043b74,func_02043c18,func_02043c20,func_02043c2c,func_02043c4c,func_02043d00;
 s32 i,result,a,b;void *p,*q;
 if(M2C_FIELD(GetConnection(),s32*,16))return 0;
@@ -192,7 +192,7 @@ p=GetConnection();
 a=func_0205b048(*M2C_FIELD(GetConnection(),s32**,4));
 b=func_0205b030(*M2C_FIELD(GetConnection(),s32**,4));
 q=GetConnection();
-result=func_0205e670((u8*)p+16,a,b,M2C_FIELD(q,s32*,0x2f4),M2C_FIELD(GetConnection(),s32*,0x2f8),1,1,&func_02043a24,&func_02043b6c,&func_02043b70,&func_02043b74,&func_02043c18,&func_02043c20,0);
+result=Qr2_CreateConnection((u8*)p+16,a,b,M2C_FIELD(q,s32*,0x2f4),M2C_FIELD(GetConnection(),s32*,0x2f8),1,1,&func_02043a24,&func_02043b6c,&func_02043b70,&func_02043b74,&func_02043c18,&func_02043c20,0);
 if(!result)break;
 func_0205eacc(M2C_FIELD(GetConnection(),s32*,16));
 M2C_FIELD(GetConnection(),s32*,16)=0;
@@ -207,36 +207,39 @@ func_0205ea70(M2C_FIELD(GetConnection(),s32*,16));
 return result;
 }
 
-void func_0203c428(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5){
+/* Start hosting a Wi-Fi match: reserve the matchmaking-message buffer in the
+ * connection manager, copy the player list into it, store the match type and the
+ * event/result callbacks, create the peer connection and announce the match. */
+void StartHostMatch(s32 matchType,s32 playerList,s32 eventCallback,s32 eventData,s32 resultCallback,s32 resultData){
 void *GetConnection(void);s32 SetConnectionState(s32);
 s32 func_0203e908(s32,s32,M2C_UNK,M2C_UNK);
 s32 FormatMatchmakingMessage(void*,s32,s32,s32);
 s32 StringLength(s32);s32 func_02037694(s32,s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK*,s32);
 s32 func_02043008(s32);
-extern M2C_UNK gConnectionMgr,data_020fc8fc,data_020fc904,func_020432d4;
+extern M2C_UNK gConnectionMgr,sMatchMessageSuffix,sEmptyString,func_020432d4;
 u8 text[256]; s32 len;void *p,*q,*r,*t; s32 value; void *state=&gConnectionMgr;
 value=M2C_FIELD(state,s32*,8);
 if(value){func_020376d8(4,value,0);M2C_FIELD(&gConnectionMgr,s32*,8)=0;}
-if(arg1){
+if(playerList){
 len=FormatMatchmakingMessage(text,-1,32,3);
-len=256-len-StringLength((s32)&data_020fc8fc);
+len=256-len-StringLength((s32)&sMatchMessageSuffix);
 value=func_02037694(4,len);
 M2C_FIELD(&gConnectionMgr,s32*,8)=value;
 if(!value){func_0203dc38(9,0xfffec77f);return;}
-MI_CpuCopy8(arg1,value,len);
+MI_CpuCopy8(playerList,value,len);
 ((u8*)M2C_FIELD(&gConnectionMgr,void**,8)+len)[-1]=0;
 }
-func_0203e908(0,arg0,arg2,arg3);
-M2C_FIELD(GetConnection(),s32*,0x474)=arg4;
-M2C_FIELD(GetConnection(),s32*,0x478)=arg5;
+func_0203e908(0,matchType,eventCallback,eventData);
+M2C_FIELD(GetConnection(),s32*,0x474)=resultCallback;
+M2C_FIELD(GetConnection(),s32*,0x478)=resultData;
 SetConnectionState(2);
 if(!M2C_FIELD(GetConnection(),s32*,0xe4)){
 t=GetConnection();q=GetConnection();r=GetConnection();
 M2C_FIELD(t,s32*,0xe4)=func_020613dc(M2C_FIELD(q,s32*,0x2f4),M2C_FIELD(r,s32*,0x2f4),M2C_FIELD(GetConnection(),s32*,0x2f8),0,20,1,0,&func_020432d4,0);
 }
 if(!M2C_FIELD(GetConnection(),s32*,0xe4)&&func_02043008(5))return;
-func_0203af50(3,&data_020fc904,0);
+func_0203af50(3,&sEmptyString,0);
 if(func_02043008(SendMatchmakingParameter(M2C_FIELD(GetConnection(),s32*,0x200))))return;
 if(!M2C_FIELD(GetConnection(),s32*,16))func_0203c28c(M2C_FIELD(GetConnection(),s32*,512));
 ResetConnectionSync(0);
@@ -379,7 +382,7 @@ s32 func_02043008(M2C_UNK);
 s32 func_02042f94(void);
 s32 func_0203c28c(s32);
 s32 func_020613dc(s32,s32,s32,s32,s32,s32,s32,M2C_UNK *,s32);
-extern M2C_UNK data_020fc904,func_020432d4;
+extern M2C_UNK sEmptyString,func_020432d4;
 void *p,*q,*r,*t;
 func_0203e908(3,0,arg1,arg2);
 M2C_FIELD(GetConnection(),s32 *,0x46c)=arg3;
@@ -394,7 +397,7 @@ t=GetConnection();q=GetConnection();r=GetConnection();
 M2C_FIELD(t,s32 *,0xe4)=func_020613dc(M2C_FIELD(q,s32 *,0x2f4),M2C_FIELD(r,s32 *,0x2f4),M2C_FIELD(GetConnection(),s32 *,0x2f8),0,20,1,0,&func_020432d4,0);
 }
 if(!M2C_FIELD(GetConnection(),s32 *,0xe4)&&func_02043008(5))return;
-func_0203af50(5,&data_020fc904,0);
+func_0203af50(5,&sEmptyString,0);
 if(func_02042f94())return;
 if(!M2C_FIELD(GetConnection(),s32 *,0x10)&&func_0203c28c(M2C_FIELD(GetConnection(),s32 *,0x200)))return;
 func_02040878(M2C_FIELD(GetConnection(),s32 *,0xf4),0);

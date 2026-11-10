@@ -17,7 +17,7 @@ void func_ov005_02214b98(void); void func_ov005_02214cdc(void);
 M2C_UNK func_02090248(s32);void func_ov005_02215278(s16);void func_ov005_02215360(s32);
 void func_ov005_022148f0(s32);void func_02088d94(void *);void func_02088da8(void *);
 s32 func_020b2714(void);void func_020b2738(void);void func_020b26f8(void);
-void func_020a9a30(s32,s32,u8,s32);s32 func_01ffa770(void *);
+void func_020a9a30(s32,s32,u8,s32);s32 FindObjectByClass(void *);
 void MenuSpriteUpdate(void *);
 s32 mode; void *saved;
 if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x86)>0){s32 n; s32 alpha; s32 beta; void *saved; u16 * volatile reg;
@@ -46,7 +46,7 @@ else {void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x174
 if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x98)==M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x9a)-6){void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x178);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2;{M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
 else {void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x178);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);{M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
 
-if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e)!=-1 || func_01ffa770(&data_ov005_022204e0)){{void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x184);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2;if((u8)( (((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2) != (u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24))){M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
+if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e)!=-1 || FindObjectByClass(&data_ov005_022204e0)){{void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x184);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2;if((u8)( (((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2) != (u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24))){M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
 {void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x170);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);if((u8)( (((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2) != (u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24))==0){M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
 {void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x16c);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);if((u8)( (((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2) != (u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24))==0){M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
 }else {{void *p=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),void * *,0x184);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28);if((u8)( (((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2) != (u16)((M2C_FIELD(p,u32 *,0x40)<<6)>>24))==0){M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
@@ -141,27 +141,27 @@ void func_ov005_0221730c(void) {
 }
 
 u8 func_ov005_02217320(void) {
-    extern u8 *data_ov005_02221310;
-    return *data_ov005_02221310;
+    extern u8 *gOv005MenuState;
+    return *gOv005MenuState;
 }
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 void func_ov005_02217334(s16 arg0) {
-    extern u8 *data_ov005_02221310;
+    extern u8 *gOv005MenuState;
     s32 i;
     void *p;
     u32 frame;
     u32 word;
 
-    M2C_FIELD(data_ov005_02221310, s16 *, 0x12) = arg0;
+    M2C_FIELD(gOv005MenuState, s16 *, 0x12) = arg0;
     for (i = 0; i < 4; i++) {
         if (i == arg0) {
-            p = M2C_FIELD(data_ov005_02221310 + i * 4, void **, 0x2c);
+            p = M2C_FIELD(gOv005MenuState + i * 4, void **, 0x2c);
             frame = ((u32)(M2C_FIELD(p, u8 *, 0x59) << 28) >> 28) + 1;
             word = M2C_FIELD(p, u32 *, 0x40);
         } else {
-            p = M2C_FIELD(data_ov005_02221310 + i * 4, void **, 0x2c);
+            p = M2C_FIELD(gOv005MenuState + i * 4, void **, 0x2c);
             frame = ((u32)(M2C_FIELD(p, u8 *, 0x59) << 28) >> 28);
             word = M2C_FIELD(p, u32 *, 0x40);
         }
@@ -170,18 +170,18 @@ void func_ov005_02217334(s16 arg0) {
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void func_ov005_022173b4(void) {
+void Ov005DrawEntryList(void) {
     void func_02098ac0(s32, s32, s32, s32);
     void func_02098a34(s32, s32, s32, s32, u8);
-    extern u8 *data_ov005_02221310;
+    extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteEngineSub;
     void *saved = gCur3DSpriteEngine;
-    s32 value = M2C_FIELD(data_ov005_02221310, s16 *, 0x10);
+    s32 value = M2C_FIELD(gOv005MenuState, s16 *, 0x10);
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02098ac0(value, 0, (u16)(M2C_FIELD(data_ov005_02221310, s16 *, 0x10) - 1), 0);
+    func_02098ac0(value, 0, (u16)(M2C_FIELD(gOv005MenuState, s16 *, 0x10) - 1), 0);
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02098a34(value, 8, 2, 0, 0);
     gCur3DSpriteEngine = saved;
@@ -190,30 +190,30 @@ void func_ov005_022173b4(void) {
 
 void func_ov005_02217440(void) {
     M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     void func_020e3004();
     void *func_020e3018(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     u32 func_020bf894(s32);
     void func_ov005_0221730c(void);
-    extern u8 *data_ov005_02221310;
+    extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern M2C_UNK data_ov005_022208f4;
     void *temp_r5;
     void *saved;
 
-    temp_r5 = func_020e3018(M2C_FIELD(data_ov005_02221310, s16 *, 0x10));
+    temp_r5 = func_020e3018(M2C_FIELD(gOv005MenuState, s16 *, 0x10));
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_020bf894(M2C_FIELD(data_ov005_02221310, s16 *, 0x10))) {
+    if (func_020bf894(M2C_FIELD(gOv005MenuState, s16 *, 0x10))) {
         func_020e3004();
         GetLocalizedFileName(&data_ov005_022208f4);
-        func_020814e4();
-        func_02081590(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
-        func_02081528();
+        OpenNarcArchive();
+        LoadNarcFileDecompressed(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
+        CloseNarcArchive();
         func_ov005_0221730c();
     } else {
         func_02007e98(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);

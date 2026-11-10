@@ -1,5 +1,6 @@
 /* 16 functions from 0x020CE738 to 0x020CF69C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0212bd14[],data_0212bd28[],data_0212bd38[],data_0212bd48[];
 
 #pragma opt_strength_reduction off
@@ -81,7 +82,11 @@ if(func_020a600c((u16)id))M2C_FIELD(unit,u16*,4)|=0x40;
 }
 }
 
-void func_020ceb48(void) {
+/* Resets the battle map to its initial state: clears the cursor-target and view
+ * fields, the view-zoom record, the per-player flags and the map header, resets
+ * the map units and the current player/mode/turn, then clears the display
+ * buffers. */
+void ResetBattleMap(void) {
     extern void **gCurrentMap;
     void func_020cbdbc(void);
     void func_0207ce28(void *);
@@ -94,24 +99,24 @@ void func_020ceb48(void) {
     extern u16 data_02156e4c;
     s32 i;
 
-    *(u16 *)((u8 *)*gCurrentMap + 0x52c2) = 0;
-    *(u16 *)((u8 *)*gCurrentMap + 0x52c4) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_X) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_Y) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c6) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c8) = 0;
     func_020cbdbc();
 
-    *(u16 *)((u8 *)*gCurrentMap + 0x5148) = 0;
-    *(u16 *)((u8 *)*gCurrentMap + 0x514a) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_X) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_Y) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x514c) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x514e) = 0;
-    *(u16 *)((u8 *)*gCurrentMap + 0x5150) = 0;
-    *(u16 *)((u8 *)*gCurrentMap + 0x5152) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_CELL_X) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_CELL_Y) = 0;
     *(u8 *)((u8 *)*gCurrentMap + 0x5154) = 0;
     for (i = 0; i < 4; i++) {
         *(u8 *)((u8 *)*gCurrentMap + 0x515c + i) = 0;
     }
 
-    func_0207ce28((u8 *)*gCurrentMap + 0x6ef8);
+    func_0207ce28((u8 *)*gCurrentMap + MAP_VIEW_ZOOM);
 
     *(u8 *)((u8 *)*gCurrentMap + 0x52ae) = 0;
     *(u8 *)((u8 *)*gCurrentMap + 0x52af) = 0;
@@ -121,8 +126,8 @@ void func_020ceb48(void) {
 
     data_02156e4c = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52b0) = 4;
-    *(u16 *)((u8 *)*gCurrentMap + 0x52b4) = 0;
-    *(u16 *)((u8 *)*gCurrentMap + 0x52a4) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_MODE) = 0;
+    *(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52a2) = 1;
 
     ResetMapUnits();
@@ -242,7 +247,7 @@ func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
 #pragma opt_strength_reduction off
 void BuildMapRowOffsets(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
 #pragma opt_strength_reduction reset
-void func_020cf058(M2C_UNK arg0) {
+void LoadPlayerArmies(M2C_UNK arg0) {
     M2C_UNK func_020a231c(s32, s32);
     s32 func_020a8a4c(M2C_UNK, s32);
     s32 var_r5;
@@ -259,69 +264,70 @@ void func_020cf058(M2C_UNK arg0) {
 }
 
 #pragma opt_strength_reduction off
-void func_020cf0a8(s32 id)
+/* Load a map by id into gCurrentMap: copy its name, size and player count,
+ * translate the decoded tile ids into cell tiles and terrain kinds, and set
+ * each player's army.  Campaign maps (0xE1..0x1A8) come from a full record. */
+void LoadBattleMap(s32 id)
 {
-  void *func_020c79ec(void);
+  void *GetMapRecordBuffer(void);
   s32 func_020846a4(void);
-  s32 func_020c85c4(s32, s32);
-  void func_020c854c(s32);
-  void func_020cfa58(u16);
-  u32 func_020cfbb0(u16);
-  void *func_020cfbdc(u16);
+  s32 LoadMapRecord(s32, s32);
+  void ApplyMapRecord(s32);
+  void LoadMapTileData(u16);
+  u32 GetMapPlayerCount(u16);
+  void *GetMapName(u16);
   void *StringCopy(void *, const void *);
   void BuildMapRowOffsets(void);
-  void func_020cf058(s32);
-  void func_020cfb54(void);
+  void LoadPlayerArmies(s32);
+  void FreeMapTileData(void);
   extern void **gCurrentMap;
-  extern u8 *data_02168f08;
-  void *p;
+  extern u8 *gMapData;
+  void *record;
   u8 *dest;
   u8 *new_var;
-  s32 width;
-  s32 height;
   s32 x;
   s32 y;
   u16 row;
   u16 tileId;
   u8 look;
-  *((u16 *) (((u8 *) (*gCurrentMap)) + 0x5142)) = (u16) id;
-  if ((id >= 0xE1) && (id < 0x1A9))
+  M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) = (u16) id;
+  if ((id >= MAP_ID_CAMPAIGN_FIRST) && (id < MAP_ID_CAMPAIGN_END))
   {
-    p = func_020c79ec();
+    record = GetMapRecordBuffer();
     if (func_020846a4() == 0)
     {
-      func_020c85c4(id, (s32) p);
+      LoadMapRecord(id, (s32) record);
     }
-    func_020c854c((s32) p);
+    ApplyMapRecord((s32) record);
     return;
   }
-  func_020cfa58(id);
-  *((u16 *) (((u8 *) (*gCurrentMap)) + 0x5144)) = (u16) data_02168f08[0];
-  *((u16 *) (((u8 *) (*gCurrentMap)) + 0x5146)) = (u16) data_02168f08[1];
-  dest = ((u8 *) (*gCurrentMap)) + 0x5120;
-  dest[0x21] = (u8) func_020cfbb0(id);
+  LoadMapTileData(id);
+  *((u16 *) (((u8 *) (*gCurrentMap)) + MAP_WIDTH)) = (u16) gMapData[MAPDATA_WIDTH];
+  *((u16 *) (((u8 *) (*gCurrentMap)) + MAP_HEIGHT)) = (u16) gMapData[MAPDATA_HEIGHT];
+  dest = ((u8 *) (*gCurrentMap)) + MAP_NAME;
+  dest[MAP_PLAYER_COUNT - MAP_NAME] = (u8) GetMapPlayerCount(id);
   dest = ((u8 *) (*gCurrentMap)) + 0x120;
   new_var = dest + 0x5000;
-  StringCopy(new_var, func_020cfbdc(id));
+  StringCopy(new_var, GetMapName(id));
   BuildMapRowOffsets();
-  func_020cf058(id);
-  for (y = 0; y < (*((u16 *) (((u8 *) (*gCurrentMap)) + 0x5146))); y++)
+  LoadPlayerArmies(id);
+  for (y = 0; y < (*((u16 *) (((u8 *) (*gCurrentMap)) + MAP_HEIGHT))); y++)
   {
-    for (x = 0; x < (*((u16 *) (((u8 *) (*gCurrentMap)) + 0x5144))); x++)
+    for (x = 0; x < (*((u16 *) (((u8 *) (*gCurrentMap)) + MAP_WIDTH))); x++)
     {
       u8 *map = *gCurrentMap;
-      row = *((u16 *) ((map + 0x3758) + (y * 2)));
-      tileId = ((u16 *) data_02168f08)[(x + row) + 1];
-      look = map[0x6a60 + tileId];
-      *((u16 *) ((map + 0xa10) + ((x + row) * 2))) = tileId;
+      row = *((u16 *) ((map + MAP_ROW_OFFSETS) + (y * 2)));
+      tileId = ((u16 *) gMapData)[(x + row) + 1];
+      look = map[MAP_TILE_TERRAIN + tileId];
+      *((u16 *) ((map + MAP_CELL_TILE_ID) + ((x + row) * 2))) = tileId;
       map = *gCurrentMap;
-      row = *((u16 *) ((map + 0x3758) + (y * 2)));
-      map[(0x1420 + x) + row] = look;
+      row = *((u16 *) ((map + MAP_ROW_OFFSETS) + (y * 2)));
+      map[(MAP_CELL_TERRAIN + x) + row] = look;
     }
 
   }
 
-  func_020cfb54();
+  FreeMapTileData();
 }
 #pragma opt_strength_reduction reset
 void func_020cf278(s32 arg0) {
@@ -409,7 +415,7 @@ void func_020cf4f0(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, s16 *out
     *outY = newY;
 }
 
-void func_020cf5ec(s32 arg0) {
+void MoveMapCursorToTarget(s32 arg0) {
     void func_020cf4f0(s16, s16, s32, s16 *, s16 *);
     extern void **gCurrentMap;
     s16 sp6;

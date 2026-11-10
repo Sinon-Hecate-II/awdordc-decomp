@@ -214,7 +214,7 @@ reg4 = *gCur3DSpriteEngine; *reg4 = (*reg4 & ~256) | ((u32)(flag4 << 31) >> 23);
 void func_ov003_02201620(void *arg0, s32 arg1) {
     void *MemAlloc(s32);
     s32 Modulo(s32, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void *func_020ab1c4(s32);
     void func_020aab24(void *, s32, s32, s32, s32);
     void func_02088e84(void *, s32, s32, s32, s32);
@@ -326,7 +326,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
                 M2C_FIELD(cell, s32 *, 0xc) = M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10) ? M2C_FIELD(cell, s32 *, 0x10) : (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14) ? M2C_FIELD(cell, s32 *, 0x14) : M2C_FIELD(cell, s32 *, 0xc));
             }
             r6 = (s16)(Modulo(i, 4) * 64 + 4);
-            r5 = (s16)(func_0207c8ec(i, 4) * 0x48 + 0x38);
+            r5 = (s16)(Divide(i, 4) * 0x48 + 0x38);
             r11 = 0x38;
             r10 = 0x10;
         } else {

@@ -160,7 +160,7 @@ void Reset3DSpriteEngineState(void) {
 
 #pragma scheduling off
 void func_02082a8c(void *arg0, void *arg1) {
-s32 func_0207c8ec(s32,s16);
+s32 Divide(s32,s16);
 extern s16 gSinCosTable[];
 void *out=arg1; void *in=arg0;
 s32 x,y,dx,dy,index,sine,cosine,a,b;
@@ -168,11 +168,11 @@ index=((s32)(u16)(M2C_FIELD(in,u16 *,0x10)<<8)>>4)*2;
 cosine=gSinCosTable[index+1]<<8;
 x=M2C_FIELD(in,s32 *,0); y=M2C_FIELD(in,s32 *,4);
 dx=x-M2C_FIELD(in,s16 *,8);dy=y-M2C_FIELD(in,s16 *,10);
-M2C_FIELD(out,s16 *,0)=func_0207c8ec(cosine,M2C_FIELD(in,s16 *,12))>>4;
+M2C_FIELD(out,s16 *,0)=Divide(cosine,M2C_FIELD(in,s16 *,12))>>4;
 sine=gSinCosTable[index]<<8;
-M2C_FIELD(out,s16 *,2)=func_0207c8ec(sine,M2C_FIELD(in,s16 *,12))>>4;
-M2C_FIELD(out,s16 *,4)=(-func_0207c8ec(sine,M2C_FIELD(in,s16 *,14)))>>4;
-M2C_FIELD(out,s16 *,6)=func_0207c8ec(cosine,M2C_FIELD(in,s16 *,14))>>4;
+M2C_FIELD(out,s16 *,2)=Divide(sine,M2C_FIELD(in,s16 *,12))>>4;
+M2C_FIELD(out,s16 *,4)=(-Divide(sine,M2C_FIELD(in,s16 *,14)))>>4;
+M2C_FIELD(out,s16 *,6)=Divide(cosine,M2C_FIELD(in,s16 *,14))>>4;
 b=dy-y;a=dx-x;
 M2C_FIELD(out,s32 *,8)=M2C_FIELD(out,s16 *,0)*a+M2C_FIELD(out,s16 *,2)*b+(x<<8);
 M2C_FIELD(out,s32 *,12)=M2C_FIELD(out,s16 *,4)*a+M2C_FIELD(out,s16 *,6)*b+(y<<8);
@@ -223,14 +223,14 @@ void func_02082cb4(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
-    M2C_UNK func_02002c64(M2C_UNK);
+    M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK func_02002e3c(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
     M2C_UNK func_020032bc(M2C_UNK);
     func_02082c84();
-    func_02002c64(1);
+    GX_SetBankForTex(1);
     GX_SetBankForBG(2);
     func_02003124(4);
     func_020031cc(8);
@@ -297,19 +297,19 @@ void func_02082d08(void) {
 void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; func_020067e0(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){func_0200478c();func_0200482c(a,c+(b<<13),d);func_0200489c();}else{func_020049dc();func_020049f4(a,c+(b<<13),d);func_02004a58();}}
 
 s32 func_02082f34(s32 arg0) {
-    s32 func_020846a4();
+    s32 IsLinkSessionActive();
     s32 func_02084a0c();
     s32 func_020c7ef4(s32);
-    s32 func_020cfbb0(u16);
+    s32 GetMapPlayerCount(u16);
     s32 temp_r4;
 
-    if (func_020846a4() == 0) {
+    if (IsLinkSessionActive() == 0) {
         if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (arg0 >= 0x113)) {
             return 0;
         }
         goto block_7;
     }
-    temp_r4 = func_020cfbb0((u16) arg0);
+    temp_r4 = GetMapPlayerCount((u16) arg0);
     if (temp_r4 < func_02084a0c()) {
         return 0;
     }
@@ -324,17 +324,17 @@ s32 func_02082fc4(u32 x){switch(x){case 0:return 1;case 2:return 3;case 1:return
 
 s32 func_0208302c(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
 
-u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 func_020c7ef4(s32); s32 func_020cfbb0(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!func_020c7ef4(x))return 7; return func_020cfbb0(x)+7; }
+u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 func_020c7ef4(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!func_020c7ef4(x))return 7; return GetMapPlayerCount(x)+7; }
 
 #pragma opt_common_subs off
 void func_020830ec(u32 mode,Lists020830 *p,s32 arg){
-s32 func_020846a4(void);void func_020831f8(void*,s32,s32);
+s32 IsLinkSessionActive(void);void func_020831f8(void*,s32,s32);
 s32 i;u8 n=0;
 p->count=0;
 switch(mode){
 case 0:case 8:
 for(i=2;i<12;i++){
-if(!func_020846a4()){if(i<8||i>11)goto process;goto next;}else if(i==7)goto next;
+if(!IsLinkSessionActive()){if(i<8||i>11)goto process;goto next;}else if(i==7)goto next;
 process:
 if(mode==8&&i==7)continue;
 func_020831f8((void*)p+(p->count<<9),(u8)i,arg);
@@ -352,21 +352,21 @@ case 1:case 2:case 3:case 4:case 5:break;
 }
 #pragma opt_common_subs reset
 void func_020831f8(void *p,s32 b,s32 c){
-s32 func_020846a4(void);s32 func_02083320(s32,s32);
+s32 IsLinkSessionActive(void);s32 func_02083320(s32,s32);
 s32 count=0; s32 i; s32 limit; u8 type;
 M2C_FIELD(p,u8 *,0x1fe)=b;
 type=func_0208302c(b);
-if(func_020846a4())limit=0x1a9;else limit=0x113;
+if(IsLinkSessionActive())limit=0x1a9;else limit=0x113;
 i=0;while(i<limit){if(func_020832a0(i,type,c)){if(i<0xe1 || i>=0x1a9 || func_02083320(i,b)){((u16 *)p)[count]=i;count++;}}i++;}
 M2C_FIELD(p,u8 *,0x1ff)=count;
 }
 
 s32 func_020832a0(s32 a,s32 b,s32 c){
-s32 func_020a8958(void);s32 func_020846a4(void);s32 func_02086940(s32);s32 func_020cfbb0(u16);
+s32 func_020a8958(void);s32 IsLinkSessionActive(void);s32 func_02086940(s32);s32 GetMapPlayerCount(u16);
 if(b!=func_020a8958())return 0;
 if(!func_02082f34(a))return 0;
-if(c && c!=func_020cfbb0((u16)a))return 0;
-if(!func_020846a4() && b==2){if(!func_02086940(a))return 0;}
+if(c && c!=GetMapPlayerCount((u16)a))return 0;
+if(!IsLinkSessionActive() && b==2){if(!func_02086940(a))return 0;}
 return 1;
 }
 

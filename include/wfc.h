@@ -51,6 +51,17 @@ enum {
 #define WFC_SESSION_NAME     0x2200 /* 0x50-byte display name */
 #define WFC_SESSION_NAME_LEN 0x50
 
+/* The game's own match session object (gWfcMatchSession, 0x1d28 bytes): an HTTP
+ * client object in its first WFC_MATCH_HTTP_SIZE bytes, then the match tail filled
+ * by CreateWfcMatch and read by ProcessWfcMatchResponse. */
+#define WFC_MATCH_HTTP_SIZE    0x1c14 /* size of the embedded HTTP client object */
+#define WFC_MATCH_ACTIVE       0x1c14 /* s32 1 while the match request is active */
+#define WFC_MATCH_URL          0x1c18 /* char[256] request path built from gNasServer */
+#define WFC_MATCH_READY        0x1ba4 /* s32 set once the request has completed */
+#define WFC_MATCH_FLAGS        0x1d1c /* u8 * per-player flag output (one byte each) */
+#define WFC_MATCH_FLAG_COUNT   0x1d20 /* s32 * count of flagged players output */
+#define WFC_MATCH_PLAYER_COUNT 0x1d24 /* s32 number of players the request asked about */
+
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */
 #define HTTP_DATE_DAY_SPACE   7  /* ' ' before the day-of-month */

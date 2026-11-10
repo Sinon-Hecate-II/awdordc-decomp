@@ -147,13 +147,13 @@ void func_ov003_021e8958(void *arg0) {
     void func_0208eb60(void *, s32);
     s32 func_ov003_021f153c(void);
     void func_ov003_021e9830(void *, s32);
-    s32 func_020846a4(void);
+    s32 IsLinkSessionActive(void);
     void *func_02084e64(void);
     void func_ov003_021e984c(void *, s32);
     s32 func_ov003_021e9ce0(void *);
-    void func_ov003_021e9cfc(void *, s32);
+    void SetWaypointPanelState(void *, s32);
     void func_ov003_021e9c50(void *);
-    s32 func_ov003_021e73e4(void *);
+    s32 GetWaypointSlotIndex(void *);
     s32 func_ov003_021e7450(void *);
     void func_ov003_021e9e78(void *, s32, s32);
     void func_ov003_021e9eb4(void *);
@@ -227,7 +227,7 @@ void func_ov003_021e8958(void *arg0) {
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x48), v);
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x50), v);
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x4c), 0xc0);
-    if (func_020846a4()) {
+    if (IsLinkSessionActive()) {
         p = func_02084e64();
         if (p == 0) return;
         func_ov003_021e984c(arg0, M2C_FIELD(p, u8 *, 8));
@@ -236,12 +236,12 @@ void func_ov003_021e8958(void *arg0) {
     } else {
         func_ov003_021e984c(arg0, 0);
     }
-    func_ov003_021e9cfc(arg0, 0);
+    SetWaypointPanelState(arg0, 0);
     func_ov003_021e9c50(arg0);
     func_02089438(M2C_FIELD(arg0, void **, 0x58));
     func_02089438(M2C_FIELD(arg0, void **, 0x5c));
     {
-        s32 a = func_ov003_021e73e4(M2C_FIELD(arg0, void **, 0x6c));
+        s32 a = GetWaypointSlotIndex(M2C_FIELD(arg0, void **, 0x6c));
         s32 b = func_ov003_021e7450(M2C_FIELD(arg0, void **, 0x6c));
         func_ov003_021e9e78(M2C_FIELD(arg0, s32 *, 0x40), a, b);
     }

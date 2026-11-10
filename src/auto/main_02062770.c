@@ -34,12 +34,12 @@ return n;
 
 s32 func_0206283c(void *arg,s32 n) {
 s8 *p=arg;
-s32 func_02061da0(s8 *,s32);
+s32 BoundedStringLength(s8 *,s32);
 while(n>0 && *p){
-s32 k=func_02061da0(p,n);
+s32 k=BoundedStringLength(p,n);
 if(k<0)return 0;
 n-=k;p+=k;
-k=func_02061da0(p,n);
+k=BoundedStringLength(p,n);
 if(k<0)return 0;
 p+=k;n-=k;
 }
@@ -49,7 +49,7 @@ return *p==0;
 
 /* Walks a list of opcodes, advancing data/n as commands require; returns 1 on success. */
 s32 func_020628c0(M2C_UNK context, void *data, s32 n) {
- s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32); s32 func_02061da0(s8*,s32); void AssertFailed(void*,void*,void*,s32);
+ s32 Vector_GetCount(s32); void *Vector_GetItem(s32,s32); s32 BoundedStringLength(s8*,s32); void AssertFailed(void*,void*,void*,s32);
  s32 count, i, k; u8 *p = data;
  count = Vector_GetCount(M2C_FIELD(context, s32 *, 8));
  for (i = 0; i < count; i++) {
@@ -60,7 +60,7 @@ s32 func_020628c0(M2C_UNK context, void *data, s32 n) {
  if (n < 1) return 0;
  k = *p++; n--;
  if (k == 255) {
- k = func_02061da0((s8 *) p, n);
+ k = BoundedStringLength((s8 *) p, n);
  if (k == -1) return 0;
  p += k; n -= k;
  }
@@ -169,7 +169,7 @@ void func_02062e28(void *arg0, s32 arg1) {
 }
 
 s32 func_02062e30(void *a){
-s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void func_020486f8(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 func_02061da0(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
+s32 func_02048558(s32,s32,s32);s32 Vector_GetCount(s32);void func_020486f8(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 func_02061cb4(void *,void *);void AssertFailed(void *,void *,void *,s32);void func_020651c4(void *,void *,s32);
 extern s32 data_0213e4b4;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
@@ -181,7 +181,7 @@ copy633((u8 *)a+0x4a0,p);
 M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,6,data_0213e4b4,M2C_FIELD(a,s32 *,0x494));
 copy633h((u8 *)a+0x4a8,p+4);
 if(M2C_FIELD(a,u16 *,0x4a8)==0xffff){
-if(func_02061da0(p+6,n-6)==-1)break;
+if(BoundedStringLength(p+6,n-6)==-1)break;
 func_02062e28(a,p+6);
 M2C_FIELD(a,void (**)(void *,s32,s32,s32),0x488)(a,5,data_0213e4b4,M2C_FIELD(a,s32 *,0x494));
 if(!M2C_FIELD(a,void **,0x7c))break;
@@ -192,14 +192,14 @@ M2C_FIELD(a,s32 *,0x5c8)=2;M2C_FIELD(a,s32 *,0x484)=-1;
 case 2:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=func_02048558(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
 while(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8))){
-if(n<2)break;len=func_02061da0(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);func_020486f8(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
+if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=func_02061cb4(a,p+1);func_020486f8(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
 }
 if(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8)))break;
 M2C_FIELD(a,s32 *,0x5c8)=3;M2C_FIELD(a,s32 *,0x484)=-1;
 case 3:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;M2C_FIELD(a,s32 *,0x484)=*p++;n--;M2C_FIELD(a,s32 *,0x480)=0;}
 while(M2C_FIELD(a,s32 *,0x484)>M2C_FIELD(a,s32 *,0x480)){
-len=func_02061da0(p,n);if(len==-1)break;r=func_02061cb4(a,p);i=M2C_FIELD(a,s32 *,0x480);p+=len;M2C_FIELD(a,s32 *,0x480)++;M2C_FIELD((u8 *)a+i*4,s32 *,0x84)=r;n-=len;
+len=BoundedStringLength(p,n);if(len==-1)break;r=func_02061cb4(a,p);i=M2C_FIELD(a,s32 *,0x480);p+=len;M2C_FIELD(a,s32 *,0x480)++;M2C_FIELD((u8 *)a+i*4,s32 *,0x84)=r;n-=len;
 }
 if(M2C_FIELD(a,s32 *,0x484)>M2C_FIELD(a,s32 *,0x480))break;
 M2C_FIELD(a,s32 *,0x5c8)=4;
@@ -216,7 +216,7 @@ M2C_FIELD(a,s32 *,0x80)=n;return 0;
 }
 
 s32 func_0206325c(void *a,u8 *p,s32 n) {
- s32 func_02048558(s32,s32,s32); void func_020486f8(s32,s32*); s32 func_02061cb4(void*,void*); s32 func_02061da0(s8*,s32); void func_02062670(void*);
+ s32 func_02048558(s32,s32,s32); void func_020486f8(s32,s32*); s32 func_02061cb4(void*,void*); s32 BoundedStringLength(s8*,s32); void func_02062670(void*);
  s32 entry[2]; s32 i,count,len;
  n--;count=*p++;
  if(M2C_FIELD(a,s32*,8))func_02062670(a);
@@ -224,7 +224,7 @@ s32 func_0206325c(void *a,u8 *p,s32 n) {
  if(!M2C_FIELD(a,s32*,8))return 5;
  for(i=0;i<count;i++){
  if(n<2)return 4;
- len=func_02061da0((s8*)p+1,n-1);
+ len=BoundedStringLength((s8*)p+1,n-1);
  if(len==-1)return 4;
  entry[1]=*p;entry[0]=func_02061cb4(a,p+1);
  func_020486f8(M2C_FIELD(a,s32*,8),entry);
@@ -233,65 +233,70 @@ s32 func_0206325c(void *a,u8 *p,s32 n) {
  return 0;
 }
 
-s32 func_02063338(void *arg0, u8 *arg1, s32 arg2) {
-    s32 func_02061da0(s8 *, s32);
+/* Handle an incoming GameSpy GPI record-list message (response type 6): reads a
+ * count and a flag, then for each record reads a key string, its fixed
+ * id/port/value field block and a trailing string, and dispatches it through the
+ * connection's record callback (at +0x490).  When the flag is set one final empty
+ * record is delivered. */
+s32 GpiHandleRecordList(void *gpi, u8 *data, s32 size) {
+    s32 BoundedStringLength(s8 *, s32);
     s32 flag;
-    void *saved;
+    void *keyStart;
     s32 count;
-    u16 hdr1;
-    u32 hdr0;
-    u32 x;
+    u16 port;
+    u32 id;
+    u32 value;
     u8 *hx; u8 *h0; u8 *h1;
     u8 *p;
-    u8 *cmd;
+    u8 *key;
     s32 i;
     s32 remaining;
-    s32 k;
-    void (*fp)(void *, void *, u32, u16, u32, void *, s32);
+    s32 len;
+    void (*callback)(void *, void *, u32, u16, u32, void *, s32);
 
-    remaining=arg2;
+    remaining=size;
     if (remaining < 2) {
         return 4;
     }
-    p = arg1;
+    p = data;
     count = p[1];
     flag = p[0];
     p += 2;
     remaining -= 2;
     i = 0;
     while (i < count) {
-        h0=(u8 *)&hdr0; hx=(u8 *)&x; h1=(u8 *)&hdr1;
-        saved = p;
-        k = func_02061da0((s8 *)p, remaining);
-        if (k == -1) {
+        h0=(u8 *)&id; hx=(u8 *)&value; h1=(u8 *)&port;
+        keyStart = p;
+        len = BoundedStringLength((s8 *)p, remaining);
+        if (len == -1) {
             return 4;
         }
-        remaining -= k;
-        cmd = p + k;
+        remaining -= len;
+        key = p + len;
         if (remaining < 0xb) {
             return 4;
         }
-        p = cmd + 0xa;
+        p = key + 0xa;
         remaining -= 0xa;
-        *(volatile PairBytes *)h0=*(PairBytes *)cmd;
-        { u8 lo=cmd[2]; u8 hi=cmd[3]; h0[3]=hi; h0[2]=lo; }
-        *(volatile PairBytes *)h1=*(PairBytes *)(cmd+4);
-        *(volatile PairBytes *)hx=*(PairBytes *)(cmd+6);
-        *((volatile PairBytes *)hx+1)=*(PairBytes *)(cmd+8);
-        { u32 a=(x<<24)&0xff000000u; u32 b=(x<<8)&0xff0000u; u32 c=(x>>24)&255; u32 d=(x>>8)&0xff00u; x=a|(b|(c|d)); }
-        k = func_02061da0((s8 *)p, remaining);
-        if (k == -1) {
+        *(volatile PairBytes *)h0=*(PairBytes *)key;
+        { u8 lo=key[2]; u8 hi=key[3]; h0[3]=hi; h0[2]=lo; }
+        *(volatile PairBytes *)h1=*(PairBytes *)(key+4);
+        *(volatile PairBytes *)hx=*(PairBytes *)(key+6);
+        *((volatile PairBytes *)hx+1)=*(PairBytes *)(key+8);
+        { u32 a=(value<<24)&0xff000000u; u32 b=(value<<8)&0xff0000u; u32 c=(value>>24)&255; u32 d=(value>>8)&0xff00u; value=a|(b|(c|d)); }
+        len = BoundedStringLength((s8 *)p, remaining);
+        if (len == -1) {
             return 4;
         }
-        fp = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)arg0 + 0x490);
-        fp(arg0, saved, hdr0, hdr1, x, p, *(s32 *)((u8 *)arg0 + 0x494));
+        callback = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)gpi + 0x490);
+        callback(gpi, keyStart, id, port, value, p, *(s32 *)((u8 *)gpi + 0x494));
         i++;
-        p += k;
-        remaining -= k;
+        p += len;
+        remaining -= len;
     }
     if (flag != 0) {
-        fp = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)arg0 + 0x490);
-        fp(arg0, 0, 0, 0, 0, 0, *(s32 *)((u8 *)arg0 + 0x494));
+        callback = *(void (**)(void *, void *, u32, u16, u32, void *, s32))((u8 *)gpi + 0x490);
+        callback(gpi, 0, 0, 0, 0, 0, *(s32 *)((u8 *)gpi + 0x494));
     }
     return 0;
 }
@@ -299,7 +304,7 @@ s32 func_02063338(void *arg0, u8 *arg1, s32 arg2) {
 s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
     s32 func_02061ac8(M2C_UNK, s32, u16);
     s32 func_02061bc8(void *,s32);
-    s32 func_02061da0(s8 *, s32);
+    s32 BoundedStringLength(s8 *, s32);
 
     u8 *h0,*hx; register u8 *h1;
     u32 sp10;
@@ -344,7 +349,7 @@ s32 func_020634f4(void *arg0, u8 *arg1, s32 arg2) {
     while(count < max && count < 16) {
         s32 k;
         if(arg2 < 1) break;
-        k=func_02061da0((s8 *)arg1,arg2);
+        k=BoundedStringLength((s8 *)arg1,arg2);
         if(k == -1)return 4;
         sp14[count]=arg1;
         arg1+=k; arg2-=k; count++;

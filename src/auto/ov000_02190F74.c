@@ -1,7 +1,8 @@
 /* 3 functions from 0x02190F74 to 0x02191970 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern void **gCurrentMap;
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 void BuildUnitMoveRange(void *);
 void func_01ffb9c4(int);
 int func_020d27a4(int,int);
@@ -48,7 +49,7 @@ static inline int CountAdjacentBounds1913(u8 ux,u8 uy){
  return n;
 }
 
-static inline s32 Health1911(Unit1911 *u) {s32 h=u->health;return h?func_0207c8ec(h-1,10)+1:0;}
+static inline s32 Health1911(Unit1911 *u) {s32 h=u->health;return h?Divide(h-1,10)+1:0;}
 
 /* AI heal pass: mark the selected (medic) unit as acting, then scan every tile
  * on the map. For each living unit (value != 0) of the same kind as the selected
@@ -63,7 +64,7 @@ void func_ov000_02190f74(void){
 extern void **gCurrentMap;
 void BuildUnitMoveRange(void *);
 s32 IsCurrentPlayerUnit(s16);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a91d0(u8);
 s32 id; Unit1911 *unit; s32 x,y,h,cur; Map1911 *map;
@@ -91,31 +92,35 @@ if(h+cur<=10)SetMapCursor((s16)x,(s16)y,9,0,0);
 #pragma pop
 }
 
-void func_ov000_021911bc(void){
+/* AI join pass: marks the selected unit's reachable range, then scans the map
+ * for a same-type friendly unit that is not at full health and whose combined
+ * health with the selected unit is at most 15 with at least one of the two below
+ * 7 (so joining is worthwhile); the cursor is moved to the join target. */
+void FindJoinTarget(void){
 #pragma push
 #pragma opt_common_subs off
 extern void **gCurrentMap;
 void BuildUnitMoveRange(void *);
 s32 IsCurrentPlayerUnit(s16);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
-s32 id,x,y,h,cur;Map1911 *map;Unit1911 *unit;
+s32 unitId,x,y,hp,curHp;Map1911 *map;Unit1911 *unit;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
+for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);y++){
+for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);x++){
 map=*gCurrentMap;
 if(map->grid[y][x]<0)continue;
-id=((u8 *)map)[x+map->rows[y]];
-if(!id)continue;
-if(!IsCurrentPlayerUnit((s16)id))continue;
-map=*gCurrentMap;unit=(Unit1911 *)((u8 *)map+0x59a4)+id;
+unitId=((u8 *)map)[x+map->rows[y]];
+if(!unitId)continue;
+if(!IsCurrentPlayerUnit((s16)unitId))continue;
+map=*gCurrentMap;unit=(Unit1911 *)((u8 *)map+MAP_UNIT_RECORDS)+unitId;
 if(!unit->value)continue;
 if(unit->kind!=map->selected->kind)continue;
-h=Health1911(unit);
-if(h==10)continue;
-cur=Health1911(((Map1911 *)*gCurrentMap)->selected);
-if(h>=7&&cur>=7)continue;
-if(h+cur>15)continue;
+hp=Health1911(unit);
+if(hp==10)continue;
+curHp=Health1911(((Map1911 *)*gCurrentMap)->selected);
+if(hp>=7&&curHp>=7)continue;
+if(hp+curHp>15)continue;
 SetMapCursor((s16)x,(s16)y,9,0,0);
 }
 }
@@ -171,7 +176,7 @@ void func_ov000_0219137c(void){
  SetMapCursor((s16)portX,(s16)portY,19,(u8)position[0],(u8)position[1]);return;
  }}
  if(best==0)return;
- if(((AIState1913 *)data_ov000_021df580)->active){func_ov000_02199f38();return;}
+ if(((AIState1913 *)gAiCommandState)->active){func_ov000_02199f38();return;}
  func_ov000_0217c3a4();
  SetMapCursor((s16)destX,(s16)destY,4,(u8)unitId,0);
 #pragma pop

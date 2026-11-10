@@ -167,7 +167,7 @@ s32 func_0201a264(void) {
 void func_0201a26c(void *arg0) {
     void func_02000b9c(s32);
     unsigned long long GetSystemTick(void);
-    void func_02007724(s32);
+    void GetMacAddress(s32);
     void func_02005ac0(void *, void *, s32, void *, s32, s32);
     void TaskWake(s32);
     s32 func_0201a264(void);
@@ -244,7 +244,7 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
         state = state * M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x70) + M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x78);
         M2C_FIELD((u8 *)&gNetStack, unsigned long long *, 0x68) = state;
         M2C_FIELD((u8 *)&gNetStack, u16 *, 8) = (u16)((u32)(((state >> 32) * 0xf88) >> 32) + 0x400);
-        func_02007724((s32)&data_02137778);
+        GetMacAddress((s32)&data_02137778);
     }
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;

@@ -1,9 +1,9 @@
 /* 3 functions from 0x021843EC to 0x02185360 (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0f[],gUnitKindStats[];
-extern u8 data_ov000_021dfcf0[],data_ov000_021dfba8[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
-extern u8 *data_ov000_021df580;
+extern u8 gUnitKindFlags[],gUnitKindStats[];
+extern u8 gAiRangeBitmap[],data_ov000_021dfba8[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
+extern u8 *gAiCommandState;
 static inline s32 Unk21843Index(u8 *unit) { if(unit==0)return 0;return (s32)(unit-((u8 *)*gCurrentMap+0x59a4))/14; }
 static inline s32 Unk21843Owner(u8 *unit) {if(unit!=0)return (Unk21843Index(unit)>>6)+1;return 0;}
 
@@ -18,7 +18,7 @@ int IsFootUnitKind(int);
 int GetUnitDamagePercent(int,int);
 int GetUnitMaxAttackRange(int,int);
 int GetUnitAttackClass(int);
-int func_0207c8ec(int,int);
+int Divide(int,int);
 void FloodFillUnitRange(int,int,int,int,int);
 void MI_CpuFill8(void *,int,int);
 int func_020d27a4(int,int);
@@ -37,21 +37,21 @@ if(M2C_FIELD(map+M2C_FIELD(map,u16 *,0x52a4)*140,u8 *,0x67ce)==3)return;
 selected=M2C_FIELD(map,u8 **,0x52d0);
 if(IsFootUnitKind((u32)(selected[0]<<26)>>26))return;
 field=c*112;
-if(data_ov000_021b5c0f[field]&7) {
+if(gUnitKindFlags[field]&7) {
 selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
-if(!(data_ov000_021b5c0f[kind*112]&7))return;
-if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)return;
+if(!(gUnitKindFlags[kind*112]&7))return;
+if(Divide(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)return;
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
-if(!((u8)(data_ov000_021dfcf0[idx>>3]&(1<<(idx&7)))))return;
+if(!((u8)(gAiRangeBitmap[idx>>3]&(1<<(idx&7)))))return;
 }else{
-if(!(data_ov000_021b5c0f[field]&16))return;
+if(!(gUnitKindFlags[field]&16))return;
 selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
-if(!(data_ov000_021b5c0f[kind*112]&16))return;
-if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)return;
+if(!(gUnitKindFlags[kind*112]&16))return;
+if(Divide(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)return;
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
 if(!((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7)))))return;
 }
-FloodFillUnitRange(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,data_ov000_021df580[5]*2,0);
+FloodFillUnitRange(a,b,(u32)(M2C_FIELD(M2C_FIELD(map,void **,0x52d0),u8 *,0)<<26)>>26,gAiCommandState[5]*2,0);
 MI_CpuFill8(gAiRangeLayer,0,1288);
 ally=0;enemy=0;
 map=*gCurrentMap;y=0;
@@ -71,16 +71,16 @@ if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
 if(attrs[19]&7){
 kind=(u32)(unit[0]<<26)>>26;
 if(!(gUnitKindStats[kind*112+19]&7))goto next_unit;
-if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)goto next_unit;
+if(Divide(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)goto next_unit;
 }
 if(attrs[19]&16){
 kind=(u32)(unit[0]<<26)>>26;
 if(!(gUnitKindStats[kind*112+19]&16))goto next_unit;
-if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)goto next_unit;
+if(Divide(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)goto next_unit;
 }
 ally++;goto next_unit;
 }
-if(M2C_FIELD(((Map843EC *)*gCurrentMap)->costs[y],s8 *,x)>data_ov000_021df580[5])goto next_unit;
+if(M2C_FIELD(((Map843EC *)*gCurrentMap)->costs[y],s8 *,x)>gAiCommandState[5])goto next_unit;
 if(GetUnitAttackClass((u32)(unit[0]<<26)>>26)==1){
 if(x-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26)<0)left=0;
 else left=x-GetUnitMaxAttackRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26);
@@ -132,7 +132,7 @@ x++;map=*gCurrentMap;
 y++;
 }while(y<((Map851B8 *)map)->height);
 }
-leader=data_ov000_021df580;
+leader=gAiCommandState;
 postattrs=gUnitKindStats+field;
 for(y=0;y<((Map851B8 *)map)->height;y++){
 dst=(s8 *)gAiRangeLayer;
@@ -143,7 +143,7 @@ hp=M2C_FIELD(((Map843EC *)map)->costs[y],s8 *,x);
 if(hp>=0 && hp<=leader[5] && ally>enemy+dst[y*width]){
 if(postattrs[19]&7){
 idx=y*width+x;
-if((u8)(data_ov000_021dfcf0[idx>>3]&(1<<(idx&7))))data_ov000_021df9bc[idx>>3]|=1<<(idx&7);
+if((u8)(gAiRangeBitmap[idx>>3]&(1<<(idx&7))))data_ov000_021df9bc[idx>>3]|=1<<(idx&7);
 }
 if(postattrs[19]&16){
 idx=y*((Map851B8 *)*gCurrentMap)->width+x;

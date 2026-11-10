@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 extern void *gWfcMatchSession;
-extern s32 data_020fb2f8;
+extern s32 gNasServer;
 extern s32 data_0213d13c[];
 extern s32 gSocketManager[];
 extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncoding[], sWfcEncodingUtf16[], sWfcParamType[], sWfcTypeQuery[], sWfcParamWords[];
@@ -183,7 +183,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d1c)=flagsOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d20)=countOut;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1d24)=count;
- func_02068d18(gWfcMatchSession+0x1c18,data_020fb2f8,256);
+ func_02068d18(gWfcMatchSession+0x1c18,gNasServer,256);
  M2C_FIELD(gWfcMatchSession,u8 *,0x1d18)=0;
  p=StringFind(gWfcMatchSession+0x1c18,sWfcMatchPath);
  if(!p)goto fail;
@@ -224,7 +224,7 @@ s32 func_02036f14(void) {
     s32 func_02005d90(void *);
     u32 func_0202f248();
     M2C_UNK func_02034480(void *);
-    s32 func_0203703c();
+    s32 ProcessWfcMatchResponse();
     M2C_UNK SetNetError(M2C_UNK, s32);
     extern void *gWfcMatchSession;
     s32 tmp;
@@ -244,7 +244,7 @@ s32 func_02036f14(void) {
     temp_r0 = M2C_FIELD(gWfcMatchSession, u32 *, 0x1020);
     switch (temp_r0) {
     case 8:
-        if (func_0203703c() == 0) {
+        if (ProcessWfcMatchResponse() == 0) {
             var_r4 = 3;
         } else {
             var_r4 = 2;
@@ -275,16 +275,20 @@ s32 func_02036f14(void) {
     return var_r4;
 }
 
-s32 func_0203703c(void) {
-s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 ParseHttpDate(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 SetNetError(s32,s32);
+/* Processes the match server's HTTP response: parses the Date header, checks the
+ * "httpresult" code, then reads the "prwords" player-word string and turns every
+ * '0'/'1' into a per-player flag, counting the set ones.  Returns 1 on success, or
+ * 0 after SetNetError when the response is bad. */
+s32 ProcessWfcMatchResponse(void) {
+s32 ParseHttpResponse(void *,s32); s32 FindHttpHeader(void *,void *); s32 ParseHttpDate(); s32 ParseInt(); s32 ReadHttpHeader(void *,void *,void *,s32); s32 SetNetError(s32,s32);
 extern void *gWfcMatchSession; extern s32 gErrno;
-extern u8 data_020fba60[],data_020fba68[],data_020fba74[],data_020fba80[];
+extern u8 sWfcHeaderDate[],sWfcHeaderHttpResult[],sWfcHeaderReturnCode[],sWfcHeaderPlayerWords[];
 s32 value; s8 buf[51]; void *p=gWfcMatchSession; s32 r,i;
-if(func_02034c58(p,0)) {
-if(func_02034ef8(p,data_020fba60))ParseHttpDate();
-if(func_02034ef8(p,data_020fba68)){
+if(ParseHttpResponse(p,0)) {
+if(FindHttpHeader(p,sWfcHeaderDate))ParseHttpDate();
+if(FindHttpHeader(p,sWfcHeaderHttpResult)){
 r=ParseInt();
-if(gErrno!=34 && r==200 && func_02034f50(p,data_020fba74,&value,4)>0){
+if(gErrno!=34 && r==200 && ReadHttpHeader(p,sWfcHeaderReturnCode,&value,4)>0){
 r=ParseInt(&value);
 if(gErrno!=34){
 if(r==1)goto error;
@@ -293,12 +297,12 @@ if(r==100)goto readbuf;
 error:
 SetNetError(18,-33000-r);return 0;
 readbuf:
-func_02034f50(p,data_020fba80,buf,51);
+ReadHttpHeader(p,sWfcHeaderPlayerWords,buf,51);
 process:
-*M2C_FIELD(gWfcMatchSession,s32 **,0x1d20)=0;
-for(i=0;i<M2C_FIELD(gWfcMatchSession,s32 *,0x1d24);i++){
-if(buf[i]=='0')M2C_FIELD(gWfcMatchSession,u8 **,0x1d1c)[i]=0;
-else {M2C_FIELD(gWfcMatchSession,u8 **,0x1d1c)[i]=1; ++*M2C_FIELD(gWfcMatchSession,s32 **,0x1d20);}
+*M2C_FIELD(gWfcMatchSession,s32 **,WFC_MATCH_FLAG_COUNT)=0;
+for(i=0;i<M2C_FIELD(gWfcMatchSession,s32 *,WFC_MATCH_PLAYER_COUNT);i++){
+if(buf[i]=='0')M2C_FIELD(gWfcMatchSession,u8 **,WFC_MATCH_FLAGS)[i]=0;
+else {M2C_FIELD(gWfcMatchSession,u8 **,WFC_MATCH_FLAGS)[i]=1; ++*M2C_FIELD(gWfcMatchSession,s32 **,WFC_MATCH_FLAG_COUNT);}
 }return 1;
 }
 }

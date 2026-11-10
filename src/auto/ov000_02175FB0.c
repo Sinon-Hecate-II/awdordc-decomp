@@ -5,35 +5,35 @@
 void func_ov000_02175fb0(void *a) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 void AddSprite(u16,u16,u16,void *,s32);
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],gSpriteDesc16x16[],data_02101f0c[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
 s32 func_020a72b0(s32,s32);u8 func_ov000_02176dcc(void *);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 s32 level,n,d,i,ratio,den,sn,cs,aa,bb,cc,dd,x; void *old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
 AddSprite(4,1,0xc144,data_ov000_021deb7c,0);AddSprite(135,20,0xe16b,data_ov000_021deb20,0);AddSprite(196,20,0xe179,data_ov000_021deb20,0);
-level=0;if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,76))level=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,76)-1,10)+1;
+level=0;if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,76))level=Divide(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,76)-1,10)+1;
 if(level>9){level=10;AddSprite(158,40,0x8081,gSpriteDesc8x8,0);AddSprite(166,40,0x8080,gSpriteDesc8x8,0);}else AddSprite(166,40,(u16)(((level+128)&1023)|0x8000),gSpriteDesc8x8,0);
 AddSprite(179,40,0x9081,gSpriteDesc8x8,0);AddSprite(187,40,0x9080,gSpriteDesc8x8,0);
 {s32 index0,position0;
 for(index0=10-level;index0<10;index0++)AddSprite((u16)((9-index0)*4+158),37,0x60b1,gSpriteDesc8x8,0);}
 
 if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28)){
-n=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24),10);d=M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)-n*10;if(n>0){AddSprite(158,53,(u16)(((n+128)&1023)|32768),gSpriteDesc8x8,0);
+n=Divide(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24),10);d=M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)-n*10;if(n>0){AddSprite(158,53,(u16)(((n+128)&1023)|32768),gSpriteDesc8x8,0);
 }
 AddSprite(166,53,(u16)(((d+128)&1023)|32768),gSpriteDesc8x8,0);
 
-n=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28),10);d=M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28)-n*10;if(n>0){AddSprite(179,53,(u16)(((n+128)&1023)|36864),gSpriteDesc8x8,0);
+n=Divide(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28),10);d=M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28)-n*10;if(n>0){AddSprite(179,53,(u16)(((n+128)&1023)|36864),gSpriteDesc8x8,0);
 }
 AddSprite(187,53,(u16)(((d+128)&1023)|36864),gSpriteDesc8x8,0);
 
 if(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)>0){
 if(!(data_ov000_021df600&1)){M2C_FIELD(data_ov000_021deb10,u16 *,12)=0x4400;data_ov000_021df600|=1;}
-ratio=func_0207c8ec(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)*312,M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28));x=126+(ratio>>4);cs=gSinCosTable[1];
+ratio=Divide(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,24)*312,M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,28));x=126+(ratio>>4);cs=gSinCosTable[1];
 if((ratio<0?-ratio:ratio)>=2)den=ratio;else if(ratio>2)den=2;else{den=-2;if(ratio>=den)den=ratio;}
 sn=gSinCosTable[0];
 n=ratio;
 if((ratio<0?-ratio:ratio)<2){if(ratio>2)n=2;else if(ratio< -2)n=-2;}
-aa=func_0207c8ec(cs<<4,n);bb=func_0207c8ec((-sn)<<4,256);cc=func_0207c8ec(sn<<4,den);dd=func_0207c8ec(cs<<4,256);
+aa=Divide(cs<<4,n);bb=Divide((-sn)<<4,256);cc=Divide(sn<<4,den);dd=Divide(cs<<4,256);
 SetSpriteQuad(2,(s16)aa,(s16)bb,(s16)cc,(s16)dd);
 AddSprite((u16)x,46,0x60a8,data_ov000_021deb18,0);
 

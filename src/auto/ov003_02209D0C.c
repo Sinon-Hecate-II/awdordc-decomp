@@ -3,7 +3,7 @@
 
 
 static inline void UpdateA9Slider(void *p, s16 value) {
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     void func_020a979c(void *, s16, s16);
     void *object;
     s16 position, current, limit, base;
@@ -17,7 +17,7 @@ static inline void UpdateA9Slider(void *p, s16 value) {
     M2C_FIELD(p,s16 *,0x12)=limit;
     object=M2C_FIELD(p,void **,0x1c);
     base=M2C_FIELD(p,s16 *,8);
-    position=base+func_0207c8ec(M2C_FIELD(p,s16 *,0x12)*(s16)(M2C_FIELD(object,s16 *,0x14)-M2C_FIELD(object,s16 *,0x12)),M2C_FIELD(p,s16 *,0x16)-M2C_FIELD(p,s16 *,0x14));
+    position=base+Divide(M2C_FIELD(p,s16 *,0x12)*(s16)(M2C_FIELD(object,s16 *,0x14)-M2C_FIELD(object,s16 *,0x12)),M2C_FIELD(p,s16 *,0x16)-M2C_FIELD(p,s16 *,0x14));
     func_020a979c(M2C_FIELD(p,void **,0x1c),position,M2C_FIELD(M2C_FIELD(p,void **,0x1c),s16 *,0xa));
 }
 

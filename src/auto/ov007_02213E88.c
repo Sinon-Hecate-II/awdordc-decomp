@@ -185,9 +185,9 @@ void func_ov007_022142ec(void) {
 }
 
 void func_ov007_02214324(M2C_UNK arg0) {
-    M2C_UNK func_ov007_0221f270(s32, M2C_UNK);
+    M2C_UNK CreateMapEditList(s32, M2C_UNK);
     extern s32 *gCurrentMap;
-    func_ov007_0221f270(*gCurrentMap + 0x5120, arg0);
+    CreateMapEditList(*gCurrentMap + 0x5120, arg0);
     func_ov007_022121d4(1);
 }
 
@@ -456,7 +456,7 @@ void FillMapTerrain(s32 preset) {
  * packed unit entries back onto the map, then fills the bottom row and right
  * column with the default terrain. */
 void LoadMapFromExport(s32 arg0, s32 arg1) {
-    M2C_UNK func_020c79ec(void);
+    M2C_UNK GetMapRecordBuffer(void);
     M2C_UNK func_020c79f8(void);
     M2C_UNK func_020c7a08(void);
     M2C_UNK func_020c879c(M2C_UNK);
@@ -483,7 +483,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     void *obj;
     s32 lastY,lastX;
     s32 width=arg0,height=arg1;
-    exportBlock = func_020c79ec();
+    exportBlock = GetMapRecordBuffer();
     blockData = (void *)func_020c79f8();
     blockHeader = (void *)func_020c7a08();
     func_020c879c(exportBlock);
@@ -553,7 +553,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
 
 s32 Map_MinDistanceThreshold(s32 arg0) {
     M2C_UNK func_0207ca08(M2C_UNK);
-    M2C_UNK func_0207c8ec(M2C_UNK, M2C_UNK);
+    M2C_UNK Divide(M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
     void *temp_r0;
     s32 var_r1;
@@ -564,7 +564,7 @@ s32 Map_MinDistanceThreshold(s32 arg0) {
     var_r1 = (s32) (M2C_FIELD(temp_r0, u16 *, 0x5146) << 8);
     var_r0 = (s32) (M2C_FIELD(temp_r0, u16 *, 0x5144) << 8);
     var_r5 = func_0207ca08((s32) (var_r1 * var_r0));
-    return func_0207c8ec((s32) (arg0 * var_r5), func_0207ca08(0x3840000));
+    return Divide((s32) (arg0 * var_r5), func_0207ca08(0x3840000));
 }
 
 void func_ov007_02214d88(void) {

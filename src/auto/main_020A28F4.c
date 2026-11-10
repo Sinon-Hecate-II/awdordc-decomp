@@ -267,8 +267,8 @@ void func_020a30bc(void) {
 
 s32 func_020a30c0(s32 a){
 extern u8 data_02126194[];
-s32 func_0207c2f0(void);
-return ((s32 *)(data_02126194+a*0x9c))[func_0207c2f0()%3];
+s32 NextRandomValue(void);
+return ((s32 *)(data_02126194+a*0x9c))[NextRandomValue()%3];
 }
 
 void func_020a3100(s32 arg0) {

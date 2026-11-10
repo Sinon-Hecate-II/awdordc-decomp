@@ -12,14 +12,14 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
     M2C_UNK func_ov000_0217f754(M2C_UNK, M2C_UNK, u8 *, u8 *);
     M2C_UNK func_ov000_02180268(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
-    extern void *data_ov000_021df580;
+    extern void *gAiCommandState;
     u16 temp_r1_2;
     u8 temp_r0;
     u8 temp_r1;
     u8 temp_r2;
     void *temp_r3;
 
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 0x40) {
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 0x40) {
         temp_r3 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
         temp_r2 = M2C_FIELD(temp_r3, u8 *, 0xC);
         M2C_FIELD(temp_r3, u8 *, 0xC) = (u8) M2C_FIELD(temp_r3, u8 *, 0xD);
@@ -29,9 +29,9 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
             *arg3 = *arg4;
             *arg4 = temp_r1;
         }
-        M2C_FIELD(data_ov000_021df580, u16 *, 8) = (u16) (M2C_FIELD(data_ov000_021df580, u16 *, 8) & ~0x40);
+        M2C_FIELD(gAiCommandState, u16 *, 8) = (u16) (M2C_FIELD(gAiCommandState, u16 *, 8) & ~0x40);
     }
-    temp_r1_2 = M2C_FIELD(data_ov000_021df580, u16 *, 8);
+    temp_r1_2 = M2C_FIELD(gAiCommandState, u16 *, 8);
     if (temp_r1_2 & 0x80) {
         return;
     }
@@ -67,7 +67,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     s32 GetUnitMoveRange(s32, s32);
     s32 GetUnitMaxAttackRange(s32, s32);
     s32 func_ov000_021a9d8c(s16, s16);
-    void func_ov000_02198f60(void);
+    void BuildThreatMapAgainstKind14(void);
     void func_01ffc2e8(void *);
     void func_01ffb9c4(s32);
     u8 *map;
@@ -176,7 +176,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         if (sel[0xc] == 0) return;
         p = (u8 *)map + 0x59a4 + sel[0xc] * 14;
         if (data_ov000_021b5c0a[((s32)((u32)(p[0] << 26) >> 26)) * 112] != ((u32)(p[0xa] << 25) >> 25)) return;
-        func_ov000_02198f60();
+        BuildThreatMapAgainstKind14();
         map = *gCurrentMap;
         minX = x - 1; if (minX < 0) minX = 0;
         minY = y - 1; if (minY < 0) minY = 0;

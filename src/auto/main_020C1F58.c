@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void func_01ff85b8(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -83,34 +83,34 @@ func_01ff9ce8(2);
 
 /* build "<CO name>.narc" and load the CO's portrait archive */
 StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-func_02068d68(path,sNarcExt);
-func_020814e4(path);
+StringAppend(path,sNarcExt);
+OpenNarcArchive(path);
 
 /* "<CO name>.cg" -> background frame slot */
 StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-func_02068d68(path,sCgExt);
-func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
+StringAppend(path,sCgExt);
+LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
 
 /* "<CO name>.sc" -> portrait slot */
 StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-func_02068d68(path,sScExt);
-func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
+StringAppend(path,sScExt);
+LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
 
 /* "<CO name>.cl" -> palette data */
 StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-func_02068d68(path,sClExt);
+StringAppend(path,sClExt);
 func_020815d4(path,*(void **)(screen+76),0,128);
-func_02081528();
+CloseNarcArchive();
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
 func_01ff9ce8(1);
 
 /* load the shared frame.narc and its .cg/.sc/.cl parts */
-func_020814e4(sFrameNarcFile);
-func_02081590(sFrameCgFile,M2C_FIELD(gCur3DSpriteEngine,void **,16));
-func_02081590(sFrameScFile,M2C_FIELD(gCur3DSpriteEngine,void **,36));
-func_020815fc(sFrameClFile,32,32);
-func_02081528();
+OpenNarcArchive(sFrameNarcFile);
+LoadNarcFileDecompressed(sFrameCgFile,M2C_FIELD(gCur3DSpriteEngine,void **,16));
+LoadNarcFileDecompressed(sFrameScFile,M2C_FIELD(gCur3DSpriteEngine,void **,36));
+LoadNarcFileToSpriteBuffer(sFrameClFile,32,32);
+CloseNarcArchive();
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
 gCur3DSpriteEngine=savedEngine;
@@ -124,7 +124,7 @@ func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)g
 void DrawOccupationScreen(u8 *panel){
 void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void func_01ff9e44(void *,s32,s32);
 s32 GetCOFaceIndex(s32); s32 func_020ae354(s32,s32,u8,u8);
-void BlendPalette(void *,s32,u8,u8,s32); s32 func_0207c8ec(s32,s32);
+void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16); void func_020a92bc(void *,s32); void func_020a94fc(void *);
 void AddSprite(s32,u16,u16,void *,s32); s32 GetCOPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
 s32 scratch,scaleB,scaleC,scaleD,sine,cosine,q0,q1,q2,q3; u8 fade,row; s16 spriteY;
@@ -143,7 +143,7 @@ UpdateSpriteAnimation(*(void **)(panel+72));
 scratch=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); cosine=((s16 *)gSinCosTable)[1];
 scaleB=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); sine=((s16 *)gSinCosTable)[0];
 scaleC=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); scaleD=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72)))));
-q0=func_0207c8ec(cosine<<4,scaleD);q1=func_0207c8ec((-sine)<<4,scaleC);q2=func_0207c8ec(sine<<4,scaleB);q3=func_0207c8ec(cosine<<4,scratch);
+q0=Divide(cosine<<4,scaleD);q1=Divide((-sine)<<4,scaleC);q2=Divide(sine<<4,scaleB);q3=Divide(cosine<<4,scratch);
 SetSpriteQuad(0,q0,q1,q2,q3);
 if(((FlagsC253c *)(panel+80))->flag0){func_020a92bc(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}func_020a94fc(*(void **)(panel+60));}
 if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);

@@ -4,7 +4,7 @@
 s16 GetSpriteAnimValue(void *);
 void func_02086e9c(void);
 void func_02086dfc(s32);
-s32 func_0207c8ec(s32, s32);
+s32 Divide(s32, s32);
 void func_02087048(s32, s32);
 void func_020a8cf0(s32, s32, s32, s32, u16, s32, u16, u16, u16, volatile u16);
 s32 func_ov003_02206690(s32, s32, s32);
@@ -57,7 +57,7 @@ func_020a8cf0(x+(width>>2),y,1,(u16)half,24,3,0x22a,1,(u16)scaleX,(u16)scaleY);
 }
 if(!(Small856((24*(s16)sy)>>8)|Small856((M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,1)*(s16)sx)>>8))){
 if(i!=Selected856(arg0,none)){
-shiftedX=func_0207c8ec(sx<<8,205);shiftedY=func_0207c8ec(sy<<8,205);
+shiftedX=Divide(sx<<8,205);shiftedY=Divide(sy<<8,205);
 image=M2C_FIELD(desc,u16 *,6);
 if(Mode856(arg0,9)||Mode856(arg0,11)){func_020bf054(0,i);if(func_020bee64())image=base+0x1cc0;else if(!func_020e4b28(i))image=base+0x10c0;}
 if(Pair856(arg0,i)){func_020a8cf0(x-48,y,1,96,16,3,image>>5,1,(u16)shiftedX,(u16)shiftedY);}

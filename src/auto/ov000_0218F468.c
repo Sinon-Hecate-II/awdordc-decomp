@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern s8 data_ov000_021b5500[];
-extern void *data_ov000_021df580;
+extern void *gAiCommandState;
 extern u16 gPlayerUnitIdBase[];
 typedef struct UnitF468Data {u8 bytes[14];} UnitF468Data;
 typedef struct ByteF468 {u8 kind:6;u8 team:2;} ByteF468;
@@ -26,7 +26,7 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 
 #pragma opt_strength_reduction off
 void func_ov000_0218f468(void){
-s32 func_0207c8ec(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);
+s32 Divide(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);
 void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
 s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
@@ -34,7 +34,7 @@ s32 CanUnitAttackKind(void *,s32);void FloodFillUnitRange(u8,u8,u8,s32,s32);void
 u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
 u=SelectedF468();x=M2C_FIELD(u,DestF468 *,8).x;y=M2C_FIELD(u,DestF468 *,8).y;
 health=M2C_FIELD(u,HealthF468 *,6).health;
-if(health==0)health=0;else health=func_0207c8ec(health-1,10)+1;
+if(health==0)health=0;else health=Divide(health-1,10)+1;
 if(health>=7){
 u8 terrain=M2C_FIELD(TileF468(x,y),u8 *,0x1420);
 if((terrain&0xe0)==0 || (terrain&31)==15){
@@ -55,7 +55,7 @@ if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==
 if(PassF468(x,y)>=0){
 if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
 if(func_ov000_021a9d8c((s16)x,(s16)y)!=0){
-if(M2C_FIELD(data_ov000_021df580,FlagF468 *,7).flag)func_ov000_02199f38();return;
+if(M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)func_ov000_02199f38();return;
 }
 m=MapF468();tile=TileF468(x,y);
 if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
@@ -119,13 +119,13 @@ if(func_ov000_021a9d8c((s16)cellX,(s16)cellY)){
 if(!IsCurrentPlayerUnit(M2C_FIELD(TileF468(cellX,cellY),u8 *,0)))continue;
 map=MapF468();
 if(M2C_FIELD(map+M2C_FIELD(TileF468(cellX,cellY),u8 *,0)*14,u16 *,0x59a8)&1)continue;
-if(!M2C_FIELD(data_ov000_021df580,FlagF468 *,7).flag)continue;
+if(!M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)continue;
 }
 terrainKind=M2C_FIELD(TileF468(cellX,cellY),u8 *,0x1420)&31;
 if(healthyUnit==1&&terrainKind!=24)continue;
 if(!func_ov000_021a9860(cellX,cellY))continue;
 map=MapF468();
-if(cellX==M2C_FIELD(SelectedF468(),DestF468 *,8).x&&cellY==M2C_FIELD(SelectedF468(),DestF468 *,8).y)cellScore=M2C_FIELD(data_ov000_021df580,u8 *,5)+1;
+if(cellX==M2C_FIELD(SelectedF468(),DestF468 *,8).x&&cellY==M2C_FIELD(SelectedF468(),DestF468 *,8).y)cellScore=M2C_FIELD(gAiCommandState,u8 *,5)+1;
 else cellScore=M2C_FIELD(M2C_FIELD(map+cellY*4,s8 **,0x52e8),s8 *,cellX);
 switch(terrainKind){
 case 15:cellScore+=25;break;
@@ -141,7 +141,7 @@ cellPtr=map+cellX+M2C_FIELD(map+cellY*2,u16 *,0x3758);
 threatValue=M2C_FIELD(cellPtr,u8 *,0x2840)+M2C_FIELD(cellPtr,u8 *,0x2d48);
 if(bestScore==cellScore){
 if(bestThreat<threatValue)continue;
-if(bestThreat==threatValue&&M2C_FIELD(data_ov000_021df580,u8 *,3)<50)continue;
+if(bestThreat==threatValue&&M2C_FIELD(gAiCommandState,u8 *,3)<50)continue;
 }
 bestX=cellX;bestY=cellY;bestScore=cellScore;bestThreat=threatValue;
 }else{

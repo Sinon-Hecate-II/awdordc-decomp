@@ -115,7 +115,7 @@ void func_ov000_02175740(void *arg0) {
     M2C_UNK func_0207c780(M2C_UNK *, s32);
     M2C_UNK func_02080860(s32, s32, s32, u16, s32);
     M2C_UNK func_020808dc(s32, s32, s32, s32);
-    u32 func_ov000_02175074();
+    u32 GetInfoWindowMode();
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021ae2d0;
@@ -132,7 +132,7 @@ void func_ov000_02175740(void *arg0) {
     gfx = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    switch (func_ov000_02175074()) {
+    switch (GetInfoWindowMode()) {
     case 0:
         gfxTable = &data_ov000_021c2e50;
         break;
@@ -245,7 +245,7 @@ void func_ov000_02175ed8(void *arg0) {
  * for the window's current mode, uploads the gauge tiles, then draws the stat
  * bar and number, the unit-type icon and the team-coloured tiles for `entry`. */
 void Ov000Info_DrawUnitPanel(void *entry){
-M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 func_020e34bc(s32); void func_020e35cc(s32); void func_01ff9ce8(s32); u32 func_ov000_02175074();
+M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 func_020e34bc(s32); void func_020e35cc(s32); void func_01ff9ce8(s32); u32 GetInfoWindowMode();
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov000_021c2e50,data_ov000_021c2bb0,data_ov000_021c2680,data_ov000_021c23ec,data_ov000_021c2918,data_ov000_021c2158;
 extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 data_ov000_021dede4[];
@@ -255,7 +255,7 @@ gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
 tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
 temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 func_01ff9ce8(0);
-switch(func_ov000_02175074()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
+switch(GetInfoWindowMode()){case 0:table=&data_ov000_021c2e50;break;case 1:table=&data_ov000_021c2bb0;break;case 2:table=&data_ov000_021c2680;break;case 3:table=&data_ov000_021c23ec;break;case 4:table=&data_ov000_021c2918;break;case 5:table=&data_ov000_021c2158;break;default:table=&data_ov000_021c2e50;break;}
 func_0207c780(table,temp);func_02080a14(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)func_01ff85b8(base+step*2,32,384);
 func_020808dc(base,16,2,11);func_020e35cc(temp);

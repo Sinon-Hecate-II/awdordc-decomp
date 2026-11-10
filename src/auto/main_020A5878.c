@@ -3,7 +3,7 @@
 typedef struct { u8 kind:6; u8 owner:2; u8 x,y,unk3; u16 flags; u16 hp:7; u16 ammo:4; u16 unk6:5; u16 a:6; u16 b:6; u16 c:2; u16 d:2; u8 fuel:7; u8 flag:1; u8 e:4; u8 f:1; u8 g:1; u8 h:1; u8 i:1; u8 j,k; } Unit5B;
 extern u8 data_ov000_021b5c0a[], data_ov000_021b5c05[];
 extern s8 *data_ov000_021b5c58[];
-extern u8 data_ov000_021b5c0f[];
+extern u8 gUnitKindFlags[];
 extern s16 gPlayerUnitIdBase[];typedef struct { u8 unk0[12]; s32 money; u8 unk10[0x7c]; } UnkStruct_020A6328;
 
 /* Advances the unit-move animation: when a move entry is queued it eases the
@@ -103,7 +103,7 @@ s32 func_020a5b2c(Unit5B *p) {
         if (fuel <= cost) p->fuel = 0;
         else p->fuel = (u8)(fuel - cost);
     }
-    if (!p->fuel && (data_ov000_021b5c0f[p->kind * 112] & 48)) return 1;
+    if (!p->fuel && (gUnitKindFlags[p->kind * 112] & 48)) return 1;
     return 0;
 }
 
@@ -354,13 +354,13 @@ void func_020a6728(M2C_UNK arg0) {
 
 void func_020a6738(M2C_UNK a,M2C_UNK b) {
 extern s32 *gCurrentMap;
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 u8 *p=(u8 *)*gCurrentMap+0x1a4+0x5800+a*14;
 if(b) {
 u32 v;
 func_020d319c((a>>6)+1,(u32)(p[0]<<26)>>26);
 v=(u32)(M2C_FIELD(p,u16 *,6)<<25)>>25;
-func_020a6328(p,v==0?0:func_0207c8ec(v-1,10)+1);
+func_020a6328(p,v==0?0:Divide(v-1,10)+1);
 }else func_020d3120((a>>6)+1);
 if(p[12])func_020a6738(p[12],b);
 if(p[13])func_020a6738(p[13],b);

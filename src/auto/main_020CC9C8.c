@@ -68,11 +68,11 @@ void func_020ccca0(void) {
 }
 
 u8 func_020cccb8(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_0212b424;
     u8 var_r0;
 
-    if (func_01ffa770(&data_0212b424) != 0) {
+    if (FindObjectByClass(&data_0212b424) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -316,7 +316,7 @@ s32 func_020cd614(void) {
     return 0;
 }
 
-s32 func_020cd674(void) {
+s32 IsFastAnimation(void) {
     extern M2C_UNK data_0215d9b8;
     switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 20) >> 30) {
     case 2: return 1;
@@ -338,10 +338,10 @@ u8 func_020cd6b0(void) {
 }
 
 u8 func_020cd6d4(void) {
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     u8 var_r0;
 
-    if (!(((u32) (M2C_FIELD(&data_02168f08, u16 *, 0xC) << 0x1D) >> 0x1D) & 0xFF)) {
+    if (!(((u32) (M2C_FIELD(&gMapData, u16 *, 0xC) << 0x1D) >> 0x1D) & 0xFF)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -350,17 +350,17 @@ u8 func_020cd6d4(void) {
 }
 
 u8 func_020cd6fc(void) {
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     u8 value;
-    if ((u8)((u32)(M2C_FIELD(&data_02168f08, u16 *, 0xC) << 29) >> 29) == 1) value = 1;
+    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, 0xC) << 29) >> 29) == 1) value = 1;
     else value = 0;
     return value;
 }
 
 u8 func_020cd728(void) {
-    extern M2C_UNK data_02168f08;
+    extern M2C_UNK gMapData;
     u8 value;
-    if ((u8)((u32)(M2C_FIELD(&data_02168f08, u16 *, 12) << 29) >> 29) == 2) value = 1;
+    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, 12) << 29) >> 29) == 2) value = 1;
     else value = 0;
     return value;
 }

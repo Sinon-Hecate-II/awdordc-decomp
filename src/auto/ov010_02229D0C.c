@@ -246,9 +246,9 @@ void func_ov010_0222a20c(s32 arg0) {
 
 void func_ov010_0222a238(void) {
     M2C_UNK func_01ffaa5c();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
-    if (func_01ffa770(&data_ov010_0222c544) == 0) {
+    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
         return;
     }
     func_01ffaa5c();
@@ -256,9 +256,9 @@ void func_ov010_0222a238(void) {
 
 void func_ov010_0222a258(void) {
     M2C_UNK func_01ffaa6c();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
-    if (func_01ffa770(&data_ov010_0222c544) == 0) {
+    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
         return;
     }
     func_01ffaa6c();
@@ -266,9 +266,9 @@ void func_ov010_0222a258(void) {
 
 void func_ov010_0222a278(void) {
     M2C_UNK DeleteSpriteObject();
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
-    if (func_01ffa770(&data_ov010_0222c544) == 0) {
+    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
         return;
     }
     DeleteSpriteObject();

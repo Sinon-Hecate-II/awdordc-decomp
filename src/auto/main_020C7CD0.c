@@ -193,11 +193,11 @@ u8 func_020c80ec(s32 a) {
 }
 
 s32 func_020c818c(s32 a,s32 b) {
- s32 func_020c79ec(); s32 func_020c7a14(); s32 func_020c85c4(s32,s32); void func_020868ac(s32,s32);
+ s32 GetMapRecordBuffer(); s32 func_020c7a14(); s32 LoadMapRecord(s32,s32); void func_020868ac(s32,s32);
  s32 q,p,t;
  if(a<0xe1||a>=0x1a9)return 0;
- q=func_020c8018(a);p=func_020c79ec();t=func_020c7a14();
- if(!func_020c85c4(a,p))return 0;
+ q=func_020c8018(a);p=GetMapRecordBuffer();t=func_020c7a14();
+ if(!LoadMapRecord(a,p))return 0;
  M2C_FIELD(t,u32 *,0xc)=(M2C_FIELD(t,u32 *,0xc)&~0xe0000000)|(b<<29);
  func_020868ac(q,1);
  return func_020c8624(a,p);
@@ -260,7 +260,7 @@ base=*gCurrentMap;
 return (s32)base;
 }
 
-void func_020c854c(s32 arg0) {
+void ApplyMapRecord(s32 arg0) {
     void func_020c83f4();
     M2C_UNK func_020c8484(s32);
     func_020c83f4();
@@ -275,24 +275,24 @@ void func_020c8564(M2C_UNK arg0) {
 }
 
 s32 func_020c857c(M2C_UNK arg0) {
-    s32 func_020c79ec();
-    s32 func_020c85c4(M2C_UNK, s32);
+    s32 GetMapRecordBuffer();
+    s32 LoadMapRecord(M2C_UNK, s32);
     M2C_UNK func_020cf2c8();
     M2C_UNK func_020cfd28();
     s32 temp_r0;
 
-    temp_r0 = func_020c79ec();
-    if (func_020c85c4(arg0, temp_r0) == 0) {
+    temp_r0 = GetMapRecordBuffer();
+    if (LoadMapRecord(arg0, temp_r0) == 0) {
         return 0;
     }
-    func_020c854c(temp_r0);
+    ApplyMapRecord(temp_r0);
     func_020c82cc(temp_r0);
     func_020cf2c8();
     func_020cfd28();
     return 1;
 }
 
-s32 func_020c85c4(s32 a,s32 b){u8 func_020c8664(s32,s32);void func_02007e98(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;func_02007e98(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(func_020c8664(a,b))r=1;else r=0;return r;}
+s32 LoadMapRecord(s32 a,s32 b){u8 func_020c8664(s32,s32);void func_02007e98(s32,s32,s32);s32 func_020be324(s32,s32);s32 p=func_020c7ea8(a);u8 r;func_02007e98(0,b,0x6f8);if(!func_020be324(p,b))return 0;if(func_020c8664(a,b))r=1;else r=0;return r;}
 
 s32 func_020c8624(s32 a,s32 b) {
  s32 func_020c7a3c(s32); void func_020be438(s32,s32,s32);
@@ -305,12 +305,12 @@ u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 func_020c8b0c(u8 *,u8 *)
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
-    s32 func_020c7a24(); s32 GetLocalTime(); void func_02007724(void *);
+    s32 func_020c7a24(); s32 GetLocalTime(); void GetMacAddress(void *);
     extern u32 gFrameCounter;
     s32 date[4], time[3];
     s32 v = func_020c7a24(p);
     GetLocalTime(date, time);
-    func_02007724((u8 *)p + 64);
+    GetMacAddress((u8 *)p + 64);
     M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((gFrameCounter << 20) >> 14);
     M2C_FIELD(p, u16 *, 70) = v;
     M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0xff) | (u8)date[0];
@@ -424,9 +424,9 @@ u8 func_020c8b0c(u8 *lhs, u8 *rhs) {
 }
 
 s32 func_020c8c6c(s32 a) {
- void func_02007724(void *);
+ void GetMacAddress(void *);
  u8 buf[6]; s32 i;
- func_02007724(buf);
+ GetMacAddress(buf);
  for(i=0;i<6;i++) {
  if(buf[i]!=*(u8 *)(a+i))return 0;
  }

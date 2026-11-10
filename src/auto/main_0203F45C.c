@@ -30,7 +30,7 @@ if(func_0204183c(payload+1,payload[0])){if(M2C_FIELD(GetConnection(),u8 *,13))fu
 else{func_02040dc8(peer);if(func_0204084c())return 0;TryConnectToPeer(0,0,peer);if(func_0204084c())return 0;break;}}
 if(!M2C_FIELD(GetConnection(),u8 *,21)){
 if(M2C_FIELD(GetConnection(),u8 *,13)){func_020407fc(peer,payload);func_020410f8();if(func_0204084c())return 0;}
-SetConnectionState(6);func_0203ecb0(0,0,func_02061784(M2C_FIELD(GetConnection(),s32 *,228),0));if(func_02043184())return 0;
+SetConnectionState(6);func_0203ecb0(0,0,SBServerListGetServer(M2C_FIELD(GetConnection(),s32 *,228),0));if(func_02043184())return 0;
 }else{SetConnectionState(5);if(func_02043008(SendMatchmakingParameter(peer)))return 0;}break;
 case 3:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)!=peer)break;

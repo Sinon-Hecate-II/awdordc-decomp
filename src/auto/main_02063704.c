@@ -52,7 +52,7 @@ s32 func_020637fc(void *arg0) {
     s32 func_02049810(s32, void *, s32, s32);
     M2C_UNK func_02061efc(void *);
     s32 func_0206325c(void *, u8 *, s32);
-    s32 func_02063338(void *, u8 *, s32);
+    s32 GpiHandleRecordList(void *, u8 *, s32);
     s32 func_020634f4(void *, u8 *, s32);
     s32 func_02063678(M2C_UNK, u8 *, s32);
     void AssertFailed(M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -95,7 +95,7 @@ s32 func_020637fc(void *arg0) {
             result = func_020634f4(arg0, buf + 3, size - 3);
             break;
         case 6:
-            result = func_02063338(arg0, buf + 3, size - 3);
+            result = GpiHandleRecordList(arg0, buf + 3, size - 3);
             break;
         }
         if ((M2C_FIELD(arg0, s32 *, 0x80) -= size) < 0) {

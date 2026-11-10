@@ -174,9 +174,9 @@ func_020b1c78(0);
 }
 
 void *GetScrollList(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov000_021b8a78;
-    return func_01ffa770(&data_ov000_021b8a78);
+    return FindObjectByClass(&data_ov000_021b8a78);
 }
 
 #pragma push
@@ -189,9 +189,9 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02080c50(M2C_UNK *, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_0208ca2c(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020994e0(M2C_UNK);
     M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
@@ -254,9 +254,9 @@ void func_ov000_02170110(void *arg0) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 1;
     SetFileDirectory(&data_ov000_021b8b2c);
     GetLocalizedFileName(&data_ov000_021b8b3c);
-    func_020814e4();
-    func_02081590(GetLocalizedFileName(&data_ov000_021b8b4c), M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x14));
-    func_02081528();
+    OpenNarcArchive();
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8b4c), M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x14));
+    CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov000_021b8b58, 0xC0, 0x20);
     ScrollListDrawTabs(arg0);
     func_020e3058(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);

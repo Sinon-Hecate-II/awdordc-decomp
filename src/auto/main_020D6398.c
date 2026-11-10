@@ -1,5 +1,7 @@
 /* 7 functions from 0x020D6398 to 0x020D6E0C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { s32 v[4]; } MenuBounds;
 extern const MenuBounds data_020f4e88;
 extern u8 gMapConfig[16];
@@ -30,29 +32,35 @@ if(IsSameTeam(a,b)==0)return 1;
 return 0;
 }
 
-s32 func_020d6544(s32 ax,s32 ay,s32 kind,s8 *path,s32 end){
+/* Walks the movement path `path` from (startX,startY): each byte is a MOVE_DIR_*
+ * step and the list ends at MOVE_DIR_STOP or MOVE_DIR_NONE.  When a step would
+ * enter a unit of another army, the path is clipped at the previous tile and
+ * rewritten as an attack (MOVE_DIR_ATTACK then stopCode): the cursor is moved to
+ * that last free tile and the movement cost spent so far is stored.  Returns 1 when
+ * an enemy blocks the path, 0 otherwise. */
+s32 ResolvePathAttack(s32 startX,s32 startY,s32 unitKind,s8 *path,s32 stopCode){
 extern void **gCurrentMap;extern u8 gMovementCostTable[],gUnitKindStats[];
 s32 func_020a85b8(s32);
-s16 oldx=ax,oldy=ay,x=oldx,y=oldy;
-s32 cost=0,dir,owner,terrain;
+s16 prevX=startX,prevY=startY,x=prevX,y=prevY;
+s32 moveCost=0,dir,unitId,terrain;
 void **map;
-s8 *costs;u8 *cell,*base;
-if(func_020a85b8(kind))return 0;
-map=gCurrentMap;costs=*(s8**)(gMovementCostTable+0x64);
-while((dir=*path)!=4 && dir!=-1){
-switch(dir){case 0:x--;break;case 1:x++;break;case 2:y++;break;case 3:y--;break;}
-base=*map;cell=base+x+*(u16*)(base+y*2+0x3758);
-owner=cell[0x508];
-if(owner && base[(owner>>6)*140+0x6856]!=base[*(u16*)(base+0x52a4)*140+0x67ca]){
-path[0]=10;path[1]=end;
-*(s16*)((u8*)*gCurrentMap+0x52dc)=oldx;
-*(s16*)((u8*)*gCurrentMap+0x52de)=oldy;
-((u8*)*gCurrentMap)[0x52d5]=cost;
+s8 *moveCosts;u8 *cell,*base;
+if(func_020a85b8(unitKind))return 0;
+map=gCurrentMap;moveCosts=M2C_FIELD(gMovementCostTable,s8 **,0x64);
+while((dir=*path)!=MOVE_DIR_STOP && dir!=MOVE_DIR_NONE){
+switch(dir){case MOVE_DIR_LEFT:x--;break;case MOVE_DIR_RIGHT:x++;break;case MOVE_DIR_DOWN:y++;break;case MOVE_DIR_UP:y--;break;}
+base=*map;cell=base+x+M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS);
+unitId=cell[MAP_CELL_UNIT_ID];
+if(unitId && M2C_FIELD(base+(unitId>>6)*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF+MAP_PLAYER_STRIDE)!=M2C_FIELD(base+M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF)){
+path[0]=MOVE_DIR_ATTACK;path[1]=stopCode;
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X)=prevX;
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y)=prevY;
+((u8*)*gCurrentMap)[MAP_CURSOR_DIR]=moveCost;
 return 1;
 }
-terrain=cell[0x1420];
-cost+=(costs+gUnitKindStats[((u32)((*(u8**)(base+0x52d0))[0]<<26)>>26)*112+0x12]*32)[terrain&31];
-oldx=x;oldy=y;path++;
+terrain=cell[MAP_CELL_TERRAIN];
+moveCost+=(moveCosts+gUnitKindStats[((u32)(M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)[0]<<26)>>26)*UNIT_KIND_STATS_SIZE+UNIT_KIND_STATS_MOVETYPE]*32)[terrain&MAP_TERRAIN_KIND_MASK];
+prevX=x;prevY=y;path++;
 }
 return 0;
 }
@@ -80,28 +88,32 @@ void func_020d672c(void) {
     LoadFileToSpriteBuffer(&data_0212bf08, 0x320, 0x20);
 }
 
-void func_020d6778(s32 mode) {
+/* Draws the information window for the map tile under the cursor: resolves the
+ * unit (or, when the tile is empty, the cursor's selected unit), picks the panel
+ * side from the sliding panel position and dispatches to the unit, carried-unit
+ * or terrain panel and its frame. */
+void DrawUnitInfoPanel(s32 mode) {
  extern void **gCurrentMap;
- void func_020d87d8(void); s32 func_020d849c(void *);
+ void func_020d87d8(void); s32 GetUnitPanelKind(void *);
  void func_020d6a20(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
- void func_020d7b04(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
- void func_020d8084(s32,s32,u32,u32,s32,void *);void func_020d6e0c(s32,s32,s32,s32);
- u32 enabled=(u32)(*(u16 *)gMapConfig<<21)>>31;
+ void DrawCarriedUnits(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
+ void func_020d8084(s32,s32,u32,u32,s32, void *);void DrawUnitInfoFrame(s32,s32,s32,s32);
+ u32 panelVisible=(u32)(*(u16 *)gMapConfig<<21)>>31;
  MenuBounds bounds=data_020f4e88;
- u8 *unit=0; u8 *map; s16 b; s32 side; u32 y; s16 a,kind; u32 x,id;
- if(!enabled)return;
+ u8 *unit=0; u8 *map; s16 panelY; s32 side; u32 cursorRow; s16 panelX,panelKind; u32 cursorCol,unitId;
+ if(!panelVisible)return;
  func_020d87d8();map=*gCurrentMap;
- y=(u32)(*(u16 *)(map+0x52e6)<<16)>>25;
- x=(u32)(*(u16 *)(map+0x52e6)<<23)>>25;
- id=map[*(u16 *)(map+0x3758+y*2)+x];
- if(id)unit=map+0x59a4+id*14;
- else {u8 *p=*(u8 **)(map+0x52d0);if(p && ((u32)(p[0]<<26)>>26) && p[1]==x && p[2]==y)unit=p;}
- kind=func_020d849c(unit);
- map=*gCurrentMap;a=*(s16 *)(map+0x52e4);
- if(a<=bounds.v[0]) {b=bounds.v[1];side=0;}else {b=bounds.v[3];side=1;}
- switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(a,b,side);break;case 2:break;}
- switch(kind) {case 2:func_020d7b04(a,b,side,unit);case 1:DrawUnitStatus(a,b,side,unit);case 0:func_020d8084(a,b,x,y,side,unit);break;}
- func_020d6e0c(a,b,side,kind);
+ cursorRow=(u32)(*(u16 *)(map+0x52e6)<<16)>>25;
+ cursorCol=(u32)(*(u16 *)(map+0x52e6)<<23)>>25;
+ unitId=map[*(u16 *)(map+MAP_ROW_OFFSETS+cursorRow*2)+cursorCol];
+ if(unitId)unit=map+MAP_UNIT_RECORDS+unitId*MAP_UNIT_STRIDE;
+ else {u8 *p=*(u8 **)(map+MAP_CURSOR_UNIT);if(p && ((u32)(p[0]<<26)>>26) && p[1]==cursorCol && p[2]==cursorRow)unit=p;}
+ panelKind=GetUnitPanelKind(unit);
+ map=*gCurrentMap;panelX=*(s16 *)(map+0x52e4);
+ if(panelX<=bounds.v[0]) {panelY=bounds.v[1];side=0;}else {panelY=bounds.v[3];side=1;}
+ switch(mode) {case 0:func_020d6a20(2,2,*(u16 *)(map+0x52a2),gMapConfig[3]);break;case 1:func_020d759c(panelX,panelY,side);break;case 2:break;}
+ switch(panelKind) {case 2:DrawCarriedUnits(panelX,panelY,side,unit);case 1:DrawUnitStatus(panelX,panelY,side,unit);case 0:func_020d8084(panelX,panelY,cursorCol,cursorRow,side,unit);break;}
+ DrawUnitInfoFrame(panelX,panelY,side,panelKind);
 }
 
 void DrawDecimalNumber(s32 arg0, s32 arg1, s32 arg2) {

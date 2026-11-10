@@ -93,7 +93,7 @@ void func_ov005_0221fa18(void) {
 
 void func_ov005_0221fb14(M2C_UNK arg0) {
     M2C_UNK StringFormat(void *, void *, s32);
-    M2C_UNK func_02068d68(void *, void *);
+    M2C_UNK StringAppend(void *, void *);
     s32 GetLocalizedText(s32);
     M2C_UNK func_020899fc(s32, M2C_UNK, s32, void *);
     s32 func_0208b564(M2C_UNK);
@@ -111,7 +111,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     do {
         if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r9)) {
             StringFormat(sp0, &data_ov005_022212f8, GetLocalizedText(*(s32 *)var_r10));
-            func_02068d68(sp20, sp0);
+            StringAppend(sp20, sp0);
         }
         var_r9 += 1;
         var_r10 += 0x9C;

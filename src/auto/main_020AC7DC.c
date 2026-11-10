@@ -434,15 +434,15 @@ void func_020ad348(s32 arg0, s16 arg1, s32 arg2, s32 arg3) {
 }
 
 u8 func_020ad3f0(void) {
-    s32 func_01ffa770(M2C_UNK *);
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02127360;
     extern M2C_UNK data_02127390;
     u8 var_r0;
 
-    if (func_01ffa770(&data_02127360) != 0) {
+    if (FindObjectByClass(&data_02127360) != 0) {
         return 1U;
     }
-    if (func_01ffa770(&data_02127390) != 0) {
+    if (FindObjectByClass(&data_02127390) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -467,45 +467,45 @@ done:
 
 void func_020ad460(s32 arg0) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
+ M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279d8, data_0215c3c8;
  StringCopy(&data_0215c3c8, data_021278a4[arg0]);
- func_02068d68(&data_0215c3c8, &data_021279d8);
+ StringAppend(&data_0215c3c8, &data_021279d8);
  func_020ad42c(arg0, &data_0215c3c8);
 }
 
 void func_020ad4a0(s32 arg0) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
+ M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e0, data_0215c3e8;
  StringCopy(&data_0215c3e8, data_021278a4[arg0]);
- func_02068d68(&data_0215c3e8, &data_021279e0);
+ StringAppend(&data_0215c3e8, &data_021279e0);
  func_020ad42c(arg0, &data_0215c3e8);
 }
 
 void func_020ad4e0(s32 arg0) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
+ M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e4, data_0215c408;
  StringCopy(&data_0215c408, data_021278a4[arg0]);
- func_02068d68(&data_0215c408, &data_021279e4);
+ StringAppend(&data_0215c408, &data_021279e4);
  func_020ad42c(arg0, &data_0215c408);
 }
 
 void func_020ad520(s32 arg0) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
+ M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK func_020ad42c(s32, M2C_UNK *);
  extern s32 data_021278a4[];
  extern M2C_UNK data_021279e8, data_0215c3a8;
  StringCopy(&data_0215c3a8, data_021278a4[arg0]);
- func_02068d68(&data_0215c3a8, &data_021279e8);
+ StringAppend(&data_0215c3a8, &data_021279e8);
  func_020ad42c(arg0, &data_0215c3a8);
 }
 
@@ -585,30 +585,30 @@ s32 func_020ad658(s32 arg0) {
     return 0;
 }
 
-void func_020ad67c(void) {
+void SetScreenTransitionDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_02127d78;
     SetFileDirectory(&data_02127d78);
 }
 
-s32 func_020ad690(void) {
+s32 GetScreenTransitionSide(void) {
 extern s16 *gScreenTransition;
 return gScreenTransition[2] != 0;
 }
 
-s32 func_020ad6b0(void) {
-    s32 func_020ad690();
+s32 GetScreenTransitionCgTarget(void) {
+    s32 GetScreenTransitionSide();
     extern s32 g3DSpriteEngineSub;
-    return M2C_FIELD((g3DSpriteEngineSub + (func_020ad690() * 4)), s32 *, 0xC);
+    return M2C_FIELD((g3DSpriteEngineSub + (GetScreenTransitionSide() * 4)), s32 *, 0xC);
 }
 
-s32 func_020ad6d0(void) {
- s32 func_020ad690();
+s32 GetScreenTransitionScTarget(void) {
+ s32 GetScreenTransitionSide();
  extern s32 g3DSpriteEngineSub;
- return M2C_FIELD(g3DSpriteEngineSub + func_020ad690()*4, s32 *, 0x20);
+ return M2C_FIELD(g3DSpriteEngineSub + GetScreenTransitionSide()*4, s32 *, 0x20);
 }
 
-void func_020ad6f0(void) {
+void SetScreenTransitionDone(void) {
     extern s16 *gScreenTransition;
     *gScreenTransition |= 1;
 }
@@ -625,13 +625,13 @@ u8 func_020ad728(void) {
  return result;
 }
 
-void func_020ad74c(void) {
+void FlipScreenTransition(void) {
  extern s16 *gScreenTransition;
- s32 func_020ad690();
+ s32 GetScreenTransitionSide();
  void func_01ff9ce8(u8);
  void DrawScreenTransition(void);
  gScreenTransition[2]=1-gScreenTransition[2];
- func_01ff9ce8((u8)func_020ad690());
+ func_01ff9ce8((u8)GetScreenTransitionSide());
  DrawScreenTransition();
  gScreenTransition[3]=0;
 }

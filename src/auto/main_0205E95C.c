@@ -1,5 +1,6 @@
 /* 22 functions from 0x0205E95C to 0x0205F83C (main), found by ds-decomp. */
 #include "common.h"
+#include "qr2.h"
 
 typedef struct { u8 v[4]; } ByteQuad;
 typedef struct { u8 v[2]; } BytePair;
@@ -68,7 +69,7 @@ void func_0205ea70(void *arg0) {
     M2C_FIELD(var_r4, s32 *, 0xB4) = 0;
 }
 
-void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK data_020ff8d8;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&data_020ff8d8)return;gpiFree(p);}
+void func_0205eacc(void *p){extern void *data_020ff8d4;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=data_020ff8d4;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off
@@ -95,7 +96,7 @@ M2C_FIELD(a,s32 *,0x800)+=n;
 }
 
 #pragma opt_common_subs off
-void func_0205ec0c(void) {
+void RefreshLocalIps(void) {
 void *func_02049584(void);
 void *p=func_02049584();
 volatile u8 *s;
@@ -111,7 +112,7 @@ gLocalIpCount=++i;
 }
 }
 #pragma opt_common_subs reset
-s32 func_0205ec80(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=ghiResolveHostname(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
+s32 ResolveHostAddress(s32 a,s32 b,void *c,void **d){s32 func_020498e4(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 v=b;void *p=0;M2C_FIELD(c,u8 *,1)=2;M2C_FIELD(c,u16 *,2)=((u8)(v>>8))|((v<<8)&0xff00);if(!a)M2C_FIELD(c,s32 *,4)=0;else M2C_FIELD(c,s32 *,4)=func_020498e4(a);if(M2C_FIELD(c,s32 *,4)==-1&&StringCompare(a,data_020ffa44)){p=ghiResolveHostname(a);if(!p)return 0;M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);}if(d)*d=p;return 1;}
 
 void func_0205ed28(u8 *arg0, u8 *arg1) {
     u8 temp_r3;
@@ -245,8 +246,8 @@ void func_0205f05c(void *arg0,M2C_UNK arg1) {
 #pragma opt_common_subs off
 void func_0205f10c(M2C_UNK a0,M2C_UNK a1,M2C_UNK a2,s32 count,s32 listPtr) {
 void Qr2AppendString(void *,M2C_UNK *);
-extern M2C_UNK data_020ffa60,data_020ffa68;
-extern M2C_UNK *data_020ffc1c[];
+extern M2C_UNK sQr2UnknownKey,sQr2EmptyValue;
+extern M2C_UNK *gQr2KeyNames[];
 NetworkFieldList fields; u16 wire; s32 port; u8 *wireBytes; u8 lo,hi; u8 *out; s32 n=0; s32 reps,j,before,i,k; u8 *p=(u8 *)listPtr; M2C_UNK *name;
 fields.count=0;
 if(!count)return;
@@ -268,12 +269,12 @@ i=0;
 if(fields.count>0) {
 p=fields.bytes;
 do {
-name=data_020ffc1c[*p]; if(!name)name=&data_020ffa60;
+name=gQr2KeyNames[*p]; if(!name)name=&sQr2UnknownKey;
 Qr2AppendString((void *)a1,name);
 if(a2==0) {
 before=M2C_FIELD(a1,s32 *,2048);
 M2C_FIELD(a0,void (**)(s32,s32,s32),0x88)(*p,a1,M2C_FIELD(a0,s32 *,0x10c));
-if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&data_020ffa68);
+if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&sQr2EmptyValue);
 }
 i++;p++;
 }while(i<fields.count);
@@ -292,7 +293,7 @@ before=M2C_FIELD(a1,s32 *,2048);
 if(a2==0) M2C_FIELD(a0,void (**)(s32,s32,s32),0x88)(p[k],a1,M2C_FIELD(a0,s32 *,0x10c));
 else if(a2==1) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x8c)(p[k],j,a1,M2C_FIELD(a0,s32 *,0x10c));
 else if(a2==2) M2C_FIELD(a0,void (**)(s32,s32,s32,s32),0x90)(p[k],j,a1,M2C_FIELD(a0,s32 *,0x10c));
-if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&data_020ffa68);
+if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&sQr2EmptyValue);
 }
 }
 }
@@ -319,46 +320,71 @@ void func_0205f3bc(M2C_UNK a,M2C_UNK b,u8 *p,s32 n) {
  func_0205f364(a,b,x,q,y,r,z,s);
 }
 
-void func_0205f474(M2C_UNK arg0,void *arg1,M2C_UNK mode) {
-void StringFormat(void *,void *,M2C_UNK,...);
-extern M2C_UNK *data_020ffc1c[];extern M2C_UNK data_020ffa60,data_020ffa68,data_020ffa6c;
-u8 text[128];u8 keys[260];s32 outer; s32 inner,before;u8 *key;M2C_UNK *name;s32 count;void *ctx=(void*)arg0;u8 *dst=arg1;
-M2C_FIELD(keys,s32*,256)=0;
-if((u32)(mode-1)<=1)count=M2C_FIELD(ctx,s32 (**)(s32,s32),0x98)(mode,M2C_FIELD(ctx,s32*,0x10c));else count=1;
-M2C_FIELD(ctx,void (**)(s32,void*,s32),0x94)(mode,keys,M2C_FIELD(ctx,s32*,0x10c));
-outer=0;if(M2C_FIELD(keys,s32*,256)<=0)return;
-do{
-key=keys+outer;
-name=data_020ffc1c[*key];if(!name)name=&data_020ffa60;
-if(!mode){
-Qr2AppendString(dst,name);dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
-before=M2C_FIELD(dst,s32*,0x800);
-M2C_FIELD(ctx,void (**)(s32,void*,s32),0x88)(*key,dst,M2C_FIELD(ctx,s32*,0x10c));
-if(before==M2C_FIELD(dst,s32*,0x800))Qr2AppendString(dst,&data_020ffa68);
-dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
-}else{
-for(inner=0;inner<count;inner++){
-StringFormat(text,&data_020ffa6c,(s32)name,inner);
-Qr2AppendString(dst,(M2C_UNK*)text);dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
-before=M2C_FIELD(dst,s32*,0x800);
-if(mode==1)M2C_FIELD(ctx,void (**)(s32,s32,void*,s32),0x8c)(*key,inner,dst,M2C_FIELD(ctx,s32*,0x10c));
-else if(mode==2)M2C_FIELD(ctx,void (**)(s32,s32,void*,s32),0x90)(*key,inner,dst,M2C_FIELD(ctx,s32*,0x10c));
-if(before==M2C_FIELD(dst,s32*,0x800))Qr2AppendString(dst,&data_020ffa68);
-dst[M2C_FIELD(dst,s32*,0x800)-1]=92;
-}}
-outer++;
-}while(outer<M2C_FIELD(keys,s32*,256));
+/* Appends every key of one mode to a QR2 query string. mode 0 writes plain
+ * "key\value" pairs, modes 1 and 2 write each indexed key "name%d" repeated by
+ * the record's repeat count; the record's callbacks do the actual formatting. */
+void Qr2AppendKeys(M2C_UNK qr2Record, void *query, M2C_UNK mode) {
+    void StringFormat(void *, void *, M2C_UNK, ...);
+    extern M2C_UNK *gQr2KeyNames[];
+    extern M2C_UNK sQr2UnknownKey, sQr2EmptyValue, sQr2IndexedKeyFormat;
+    u8 valueText[128];
+    NetworkFieldList keyList;
+    s32 i;
+    s32 j, lengthBefore;
+    u8 *keyId;
+    M2C_UNK *keyName;
+    s32 repeatCount;
+    void *record = (void *)qr2Record;
+    u8 *queryBuf = query;
+
+    keyList.count = 0;
+    if ((u32)(mode - 1) <= 1) {
+        repeatCount = M2C_FIELD(record, s32 (**)(s32, s32), QR2_CB_REPEAT_COUNT)(mode, M2C_FIELD(record, s32 *, QR2_CTX));
+    } else {
+        repeatCount = 1;
+    }
+    M2C_FIELD(record, void (**)(s32, void *, s32), QR2_CB_COLLECT_KEYS)(mode, keyList.bytes, M2C_FIELD(record, s32 *, QR2_CTX));
+    i = 0;
+    if (keyList.count <= 0) return;
+    do {
+        keyId = keyList.bytes + i;
+        keyName = gQr2KeyNames[*keyId];
+        if (!keyName) keyName = &sQr2UnknownKey;
+        if (!mode) {
+            Qr2AppendString(queryBuf, keyName);
+            queryBuf[M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT) - 1] = '\\';
+            lengthBefore = M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT);
+            M2C_FIELD(record, void (**)(s32, void *, s32), QR2_CB_APPEND_KEY)(*keyId, queryBuf, M2C_FIELD(record, s32 *, QR2_CTX));
+            if (lengthBefore == M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT)) Qr2AppendString(queryBuf, &sQr2EmptyValue);
+            queryBuf[M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT) - 1] = '\\';
+        } else {
+            for (j = 0; j < repeatCount; j++) {
+                StringFormat(valueText, &sQr2IndexedKeyFormat, (s32)keyName, j);
+                Qr2AppendString(queryBuf, (M2C_UNK *)valueText);
+                queryBuf[M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT) - 1] = '\\';
+                lengthBefore = M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT);
+                if (mode == 1) {
+                    M2C_FIELD(record, void (**)(s32, s32, void *, s32), QR2_CB_APPEND_IDX1)(*keyId, j, queryBuf, M2C_FIELD(record, s32 *, QR2_CTX));
+                } else if (mode == 2) {
+                    M2C_FIELD(record, void (**)(s32, s32, void *, s32), QR2_CB_APPEND_IDX2)(*keyId, j, queryBuf, M2C_FIELD(record, s32 *, QR2_CTX));
+                }
+                if (lengthBefore == M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT)) Qr2AppendString(queryBuf, &sQr2EmptyValue);
+                queryBuf[M2C_FIELD(queryBuf, s32 *, QR2_QUERY_COUNT) - 1] = '\\';
+            }
+        }
+        i++;
+    } while (i < keyList.count);
 }
 
 void func_0205f64c(M2C_UNK arg0, void *arg1) {
     void Qr2AppendString(void *, M2C_UNK *);
-                      void func_0205f474(M2C_UNK, void *, M2C_UNK);
+                      void Qr2AppendKeys(M2C_UNK, void *, M2C_UNK);
     extern M2C_UNK data_020ffa74;
     M2C_FIELD(arg1, s32 *, 0x800) = 1;
     M2C_FIELD(arg1, s8 *, 0) = 0x5C;
-    func_0205f474(arg0, arg1, 0);
-    func_0205f474(arg0, arg1, 1);
-    func_0205f474(arg0, arg1, 2);
+    Qr2AppendKeys(arg0, arg1, 0);
+    Qr2AppendKeys(arg0, arg1, 1);
+    Qr2AppendKeys(arg0, arg1, 2);
     Qr2AppendString(arg1, &data_020ffa74);
     M2C_FIELD(arg1, s32 *, 0x800) = (s32) (M2C_FIELD(arg1, s32 *, 0x800) - 1);
 }

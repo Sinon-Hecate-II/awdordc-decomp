@@ -9,7 +9,7 @@ typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
  * runs the panel's state machine. */
 void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
 extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *gOv000InfoWindow; extern u8 data_021291b0[];
-int func_020d4ea8(void); int func_01ffa770(void *); s32 func_ov000_0216ca8c(s32,s32);
+int func_020d4ea8(void); int FindObjectByClass(void *); s32 func_ov000_0216ca8c(s32,s32);
 void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
 void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void func_ov000_021751b4(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
 s32 x=M2C_FIELD(*gCurrentMap,s16 *,0x52c2), y=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
@@ -45,7 +45,7 @@ if(menu->animFrame>=0){
 if(menu->animFrame<4)menu->animFrame++;
 else {M2C_FIELD(menu,u8 *,0x1a)=255; menu->trigger=1;}
 }
-{u8 confirm=func_01ffa770(data_021291b0)!=0;
+{u8 confirm=FindObjectByClass(data_021291b0)!=0;
 if(menu->pressed&&!confirm)menu->trigger=1;
 menu->pressed=confirm;
 }
@@ -339,7 +339,7 @@ void func_ov000_02174da4(s32 x, s32 y) {
     gCur3DSpriteEngine = savedSpriteEngine;
 }
 
-s32 func_ov000_02175074(void) {
+s32 GetInfoWindowMode(void) {
     extern Ov000MenuState *gOv000InfoWindow;
     return M2C_FIELD(gOv000InfoWindow, s32 *, 0x1C);
 }

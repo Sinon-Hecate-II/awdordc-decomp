@@ -319,9 +319,9 @@ void func_020b8910(void) {
 #pragma optimization_level 2
 /* Returns the active instance registered under data_021290dc. */
 void *func_020b895c(void) {
-    void *func_01ffa770();
+    void *FindObjectByClass();
     extern M2C_UNK data_021290dc;
-    return func_01ffa770(&data_021290dc);
+    return FindObjectByClass(&data_021290dc);
 }
 
 /* Initializes the shop menu and its UI elements */

@@ -6,11 +6,11 @@ extern void (*data_02168fe8)(void);
 extern u8 data_02157718[4];
 
 void func_02086208(s32 a){
-void *func_01ffa770(M2C_UNK *);s16 func_0207c8ec(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *func_ov010_02229b00(void);void *MemAlloc(s32);
+void *FindObjectByClass(M2C_UNK *);s16 Divide(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *func_ov010_02229b00(void);void *MemAlloc(s32);
 extern M2C_UNK data_021021d0,data_021021c4;extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 s32 saved;void *p;void *q;
-if(func_02084644()!=2)return;
-if(func_01ffa770(&data_021021d0))return;
+if(GetActiveOverlay()!=2)return;
+if(FindObjectByClass(&data_021021d0))return;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=(void *)func_01ffa3dc(&data_021021d0,a);
 if(p){
@@ -19,7 +19,7 @@ M2C_FIELD(p,u16 *,0x34)=0xde;M2C_FIELD(p,u16 *,0x36)=1;
 M2C_FIELD(p,s32 *,0x38)=M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4;
 M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,s32 *,0x40)=0;M2C_FIELD(p,s32 *,0x44)=0;M2C_FIELD(p,s32 *,0x48)=0;
 M2C_FIELD(p,u8 *,0x4c)=0;M2C_FIELD(p,u8 *,0x4d)=0;
-M2C_FIELD(p,u16 *,0x4e)=func_0207c8ec(0x2bf20,1000);
+M2C_FIELD(p,u16 *,0x4e)=Divide(0x2bf20,1000);
 q=MemAlloc(18);
 if(q){
 M2C_FIELD(q,u8 *,0)=1;M2C_FIELD(q,u8 *,1)=0;
@@ -39,10 +39,10 @@ void func_02086330(void) {
 }
 
 void func_02086344(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021021d0;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021021d0);
+    temp_r0 = FindObjectByClass(&data_021021d0);
     if (temp_r0 == 0) {
         return;
     }
@@ -51,10 +51,10 @@ void func_02086344(void) {
 }
 
 void func_02086370(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021021d0;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021021d0);
+    temp_r0 = FindObjectByClass(&data_021021d0);
     if (temp_r0 == 0) {
         return;
     }
@@ -63,11 +63,11 @@ void func_02086370(void) {
 }
 
 void func_0208639c(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_02091cd0(void *);
     extern M2C_UNK data_021021d0;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021021d0);
+    temp_r0 = FindObjectByClass(&data_021021d0);
     if (temp_r0 == 0) {
         return;
     }
@@ -77,10 +77,10 @@ void func_0208639c(void) {
 }
 
 void func_020863cc(void) {
-    void *func_01ffa770(M2C_UNK *);
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_021021d0;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021021d0);
+    temp_r0 = FindObjectByClass(&data_021021d0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, s8 *, 0x4C) = 0;
         M2C_FIELD(temp_r0, s8 *, 0x4D) = 0;
@@ -88,22 +88,22 @@ void func_020863cc(void) {
 }
 
 void func_020863f0(void) {
-    void *func_01ffa770(M2C_UNK *);
-    s16 func_0207c8ec(s32, s32);
+    void *FindObjectByClass(M2C_UNK *);
+    s16 Divide(s32, s32);
     extern M2C_UNK data_021021d0;
     void *temp_r0;
-    temp_r0 = func_01ffa770(&data_021021d0);
+    temp_r0 = FindObjectByClass(&data_021021d0);
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, s16 *, 0x4E) = func_0207c8ec(0x2BF20, 0x3E8);
+    M2C_FIELD(temp_r0, s16 *, 0x4E) = Divide(0x2BF20, 0x3E8);
 }
 
 s32 func_02086420(M2C_UNK arg0) {
-    s32 func_02084644();
+    s32 GetActiveOverlay();
     void *func_ov010_02229b0c(M2C_UNK);
     void *temp_r0;
-    if (func_02084644() == 2) {
+    if (GetActiveOverlay() == 2) {
         temp_r0 = func_ov010_02229b0c(arg0);
         if (temp_r0 != NULL && M2C_FIELD(temp_r0, s8 *, 0x27) == 1 && M2C_FIELD(temp_r0, s8 *, 0x28) == 0) {
             if (M2C_FIELD(temp_r0, u8 *, 0x1A) & 4) {

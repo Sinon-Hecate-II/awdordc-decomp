@@ -316,7 +316,7 @@ s32 gpiStartProfileSearch(void **connection, void *search) {
     return 0;
 }
 
-s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
+s32 gpiCreateSearchData(M2C_UNK arg0, void **arg1, s32 arg2) {
     void *gpiMalloc(M2C_UNK);
     M2C_UNK gpiSetErrorString(M2C_UNK, M2C_UNK *);
     M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
@@ -353,7 +353,7 @@ s32 func_02055fa4(M2C_UNK arg0, void **arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 gpiStartSearch(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 gpiThink(void **, s32);
     s32 gpiAddOperation(void **, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
     s32 gpiStartProfileSearch(void **, void *);
@@ -382,26 +382,28 @@ s32 func_02056054(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     return 0;
 }
 
-s32 func_020560e4(M2C_UNK arg0,s8 *arg1,s8 *arg2,s8 *arg3,s8 *arg4,s8 *arg5,s32 arg6,s32 arg7,s32 arg8,s32 arg9,s32 argA) {
-M2C_UNK StringToLower(void *);s32 func_02055fa4(M2C_UNK,void **,M2C_UNK);M2C_UNK StringCopyN(void *,s8 *,M2C_UNK);M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
-extern M2C_UNK data_020fef7c;
-void *sp4;s32 r;
-if(arg1 && *arg1)goto ready;
-if(arg3 && *arg3)goto ready;
-if(arg4 && *arg4)goto ready;
-if(arg5 && *arg5)goto ready;
-if(arg6==0){if(arg2 && *arg2)goto ready;gpiSetErrorString(arg0,&data_020fef7c);return 2;}
+s32 gpiSearchProfiles(void **connection,s8 *nick,s8 *uniquenick,s8 *email,s8 *firstname,s8 *lastname,s32 icq,s32 countrycode,s32 flags,s32 callback,s32 callbackParam) {
+M2C_UNK StringToLower(void *);s32 gpiCreateSearchData(M2C_UNK,void **,M2C_UNK);M2C_UNK StringCopyN(void *,s8 *,M2C_UNK);M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
+extern M2C_UNK gGpiSearchMsgNoCriteria;
+GpiSearchRequest *searchData;s32 r;
+/* Start a gpi profile search with the given criteria (at least one of nick,
+   unique nick, email, first name, last name or icq must be supplied). */
+if(nick && *nick)goto ready;
+if(email && *email)goto ready;
+if(firstname && *firstname)goto ready;
+if(lastname && *lastname)goto ready;
+if(icq==0){if(uniquenick && *uniquenick)goto ready;gpiSetErrorString(connection,&gGpiSearchMsgNoCriteria);return 2;}
 ready:
-r=func_02055fa4(arg0,&sp4,1);if(r)return r;
-if(!arg1)M2C_FIELD(sp4,s8 *,0x28)=0;else StringCopyN(sp4+0x28,arg1,31);
-if(!arg2)M2C_FIELD(sp4,s8 *,0x47)=0;else StringCopyN(sp4+0x47,arg2,21);
-if(!arg3)M2C_FIELD(sp4,s8 *,0x5c)=0;else StringCopyN(sp4+0x5c,arg3,51);
-StringToLower(sp4+0x5c);
-if(!arg4)M2C_FIELD(sp4,s8 *,0x8f)=0;else StringCopyN(sp4+0x8f,arg4,31);
-if(!arg5)M2C_FIELD(sp4,s8 *,0xae)=0;else StringCopyN(sp4+0xae,arg5,31);
-M2C_FIELD(sp4,s32 *,0x130)=arg6;
-if(arg7<0)arg7=0;
-M2C_FIELD(sp4,s32 *,0x134)=arg7;
-r=func_02056054(arg0,sp4,arg8,arg9,argA);if(r==0)r=0;return r;
+r=gpiCreateSearchData(connection,(void **)&searchData,1);if(r)return r;
+if(!nick)searchData->nick[0]=0;else StringCopyN(searchData->nick,nick,31);
+if(!uniquenick)searchData->uniquenick[0]=0;else StringCopyN(searchData->uniquenick,uniquenick,21);
+if(!email)searchData->email[0]=0;else StringCopyN(searchData->email,email,51);
+StringToLower(searchData->email);
+if(!firstname)searchData->firstname[0]=0;else StringCopyN(searchData->firstname,firstname,31);
+if(!lastname)searchData->lastname[0]=0;else StringCopyN(searchData->lastname,lastname,31);
+searchData->icq=icq;
+if(countrycode<0)countrycode=0;
+searchData->countrycode=countrycode;
+r=gpiStartSearch(connection,searchData,flags,callback,callbackParam);if(r==0)r=0;return r;
 }
 

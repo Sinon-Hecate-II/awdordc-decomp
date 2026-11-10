@@ -341,9 +341,9 @@ void func_020c54ac(void) {
 
 s32 func_020c54b8(void) {
     s32 func_0203a8dc();
-    s32 func_02084644();
+    s32 GetActiveOverlay();
     s32 func_ov010_022282b4(M2C_UNK);
-    if (func_02084644() != 2) {
+    if (GetActiveOverlay() != 2) {
         return 1;
     }
     if (func_ov010_022282b4(2) == 0) {

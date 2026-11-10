@@ -12,7 +12,7 @@ static inline s32 ov007_item_id(void *p) {
 #pragma opt_propagation off
 void func_ov007_02218ad0(void *arg0) {
     M2C_UNK SetSpriteQuad(M2C_UNK, s32, s32, s32, s32);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     extern M2C_UNK gSinCosTable;
     s32 sp4;
     volatile s32 sp8;
@@ -84,10 +84,10 @@ void func_ov007_02218ad0(void *arg0) {
     temp_r11 = temp_r4 * 0x10;
     temp_r6 = (0 - sine) * 0x10;
     temp_r5 = sine * 0x10;
-    sp8 = func_0207c8ec(temp_r11, var_r1);
-    temp_r8 = func_0207c8ec(temp_r6, var_r9);
-    temp_r7 = func_0207c8ec(temp_r5, var_r8);
-    temp_r0=func_0207c8ec(temp_r11,var_r7);
+    sp8 = Divide(temp_r11, var_r1);
+    temp_r8 = Divide(temp_r6, var_r9);
+    temp_r7 = Divide(temp_r5, var_r8);
+    temp_r0=Divide(temp_r11,var_r7);
     sp4=sp8;
     SetSpriteQuad(0,(s16)sp4,(s16)temp_r8,(s16)temp_r7,(s16)temp_r0);
     var_r1_2 = M2C_FIELD(arg0, u16 *, 0x3E);
@@ -130,10 +130,10 @@ void func_ov007_02218ad0(void *arg0) {
     }
     temp_r0 = temp_r4 * 0x10;
     sp4 = temp_r0;
-    temp_r11_2 = func_0207c8ec(temp_r0, var_r1_2);
-    temp_r8_2 = func_0207c8ec(temp_r6, var_r9_2);
-    temp_r7_2 = func_0207c8ec(temp_r5, var_r8_2);
-    SetSpriteQuad(1, (s16) temp_r11_2, (s16) temp_r8_2, (s16) temp_r7_2, (s32) (s16) func_0207c8ec(temp_r0, var_r7_2));
+    temp_r11_2 = Divide(temp_r0, var_r1_2);
+    temp_r8_2 = Divide(temp_r6, var_r9_2);
+    temp_r7_2 = Divide(temp_r5, var_r8_2);
+    SetSpriteQuad(1, (s16) temp_r11_2, (s16) temp_r8_2, (s16) temp_r7_2, (s32) (s16) Divide(temp_r0, var_r7_2));
     var_r9_3 = M2C_FIELD(arg0, u16 *, 0x40);
     if ((s32) var_r9_3 >= 2) {
         var_r8_3 = var_r9_3;
@@ -153,10 +153,10 @@ void func_ov007_02218ad0(void *arg0) {
         }
     }
     temp_r7_3 = temp_r4 * 0x10;
-    temp_r4_2 = func_0207c8ec(temp_r7_3, 0x100U);
-    temp_r6_2 = func_0207c8ec(temp_r6, var_r9_3);
-    temp_r5_2 = func_0207c8ec(temp_r5, 0x100U);
-    SetSpriteQuad(2, (s16) temp_r4_2, (s16) temp_r6_2, (s16) temp_r5_2, (s32) (s16) func_0207c8ec(temp_r7_3, var_r8_3));
+    temp_r4_2 = Divide(temp_r7_3, 0x100U);
+    temp_r6_2 = Divide(temp_r6, var_r9_3);
+    temp_r5_2 = Divide(temp_r5, 0x100U);
+    SetSpriteQuad(2, (s16) temp_r4_2, (s16) temp_r6_2, (s16) temp_r5_2, (s32) (s16) Divide(temp_r7_3, var_r8_3));
 }
 #pragma pop
 void func_ov007_02218d8c(void *arg0) {
@@ -410,17 +410,17 @@ M2C_UNK func_ov007_02219418(void) {
     return func_01ffa3dc(&data_ov007_0221ff90, 7);
 }
 
-M2C_UNK func_ov007_02219430(void) {
-    M2C_UNK func_01ffa770(M2C_UNK *);
+M2C_UNK GetPanelObject(void) {
+    M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov007_0221ff90;
-    return func_01ffa770(&data_ov007_0221ff90);
+    return FindObjectByClass(&data_ov007_0221ff90);
 }
 
 void func_ov007_02219444(void *arg0) {
-M2C_UNK func_ov007_02219430(void); void func_02088eec(void *,s32); void func_02088da8(void *);
+M2C_UNK GetPanelObject(void); void func_02088eec(void *,s32); void func_02088da8(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp0; u16 **old; void *r4;
-r4=(void *)func_ov007_02219430();
+r4=(void *)GetPanelObject();
 if(M2C_FIELD(r4,u8 *,0x34)!=0) {
 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -442,7 +442,7 @@ void func_ov007_0221950c(void *arg) {
 s32 EaseInterpolate(s32,s32,s32,s32,s32); void DeleteSpriteObject(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp4; u16 **old; void *r4; s32 v;
-r4=(void *)func_ov007_02219430();
+r4=(void *)GetPanelObject();
 M2C_FIELD(arg,s16 *,0x54)++;
 M2C_FIELD(r4,u16 *,0x3c)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
 M2C_FIELD(r4,u16 *,0x3e)=EaseInterpolate(4,0,256,M2C_FIELD(arg,s16 *,0x54),8);
@@ -459,7 +459,7 @@ if(M2C_FIELD(arg,s16 *,0x54)>=8) DeleteSpriteObject(arg);
 }
 
 void func_ov007_02219634(void) {
-    M2C_UNK func_ov007_02219430(void);
+    M2C_UNK GetPanelObject(void);
     void func_02088d94(void *);
     void func_02089438(void *);
     extern u16 **gCur3DSpriteEngine;
@@ -470,7 +470,7 @@ void func_ov007_02219634(void) {
     u16 **old;
     void *r4;
 
-    r4 = (void *)func_ov007_02219430();
+    r4 = (void *)GetPanelObject();
     old = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     sp8 = *g3DSpriteEngineMain;
@@ -490,11 +490,11 @@ void func_ov007_02219634(void) {
 void func_ov007_022196f4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))CreateSpriteObject; extern M2C_UNK data_ov007_0221fdf8; f((void **)&data_ov007_0221fdf8,arg0); }
 
 void func_ov007_0221970c(void *arg) {
-M2C_UNK func_ov007_02219430(void);
+M2C_UNK GetPanelObject(void);
 void func_02088fc4(void *, int); void func_02088da8(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp0; u16 **old; void *r4;
-r4=(void *)func_ov007_02219430();
+r4=(void *)GetPanelObject();
 if (M2C_FIELD(r4,u8 *,0x35)) {
 old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 sp0=*g3DSpriteEngineMain+9; *sp0=(*sp0 & ~0xc0)|0x40;
@@ -512,7 +512,7 @@ void func_ov007_022197d4(void *arg) {
 s32 EaseInterpolate(s32,s32,s32,s32,s32); void DeleteSpriteObject(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile sp4; u16 **old; void *r4; s32 v;
-r4=(void *)func_ov007_02219430();
+r4=(void *)GetPanelObject();
 M2C_FIELD(arg,s16 *,0x54)++;
 M2C_FIELD(r4,u16 *,0x3c)=EaseInterpolate(4,256,0,M2C_FIELD(arg,s16 *,0x54),6);
 M2C_FIELD(r4,u16 *,0x3e)=EaseInterpolate(4,256,0,M2C_FIELD(arg,s16 *,0x54),6);
@@ -528,54 +528,58 @@ gCur3DSpriteEngine=old;
 if(M2C_FIELD(arg,s16 *,0x54)>=6) DeleteSpriteObject(arg);
 }
 
-void func_ov007_022198fc(void) {
-    M2C_UNK func_ov007_02219430(void);
+/* Applies the panel's 3D-sprite setup to the main engine: when the panel is visible
+ * it enables sprite layers 1 and 2 and clears the split/blend state and the bank's
+ * control bits; when it is hidden it marks the panel's two sprites dirty and clears
+ * the bank's control bits. */
+void UpdatePanelDisplay(void) {
+    M2C_UNK GetPanelObject(void);
     void func_01ff9ce8(s32);
     void func_02088d94(void *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    u16 * volatile sp18;
-    u16 * volatile sp14;
-    u16 * volatile sp10;
-    u16 * volatile spC;
-    u16 * volatile sp8;
-    u16 * volatile sp4;
-    u16 * volatile sp0;
-    u16 **old;
-    void *r5;
+    u16 * volatile attrReg;
+    u16 * volatile bankA;
+    u16 * volatile bankB;
+    u16 * volatile bankC;
+    u16 * volatile bankD;
+    u16 * volatile bankE;
+    u16 * volatile bankF;
+    u16 **savedEngine;
+    void *panel;
 
-    r5 = (void *)func_ov007_02219430();
-    if (M2C_FIELD(r5, u8 *, 0x35) != 0) {
-        old = gCur3DSpriteEngine;
+    panel = (void *)GetPanelObject();
+    if (M2C_FIELD(panel, u8 *, 0x35) != 0) {
+        savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         func_01ff9ce8(1);
         func_01ff9ce8(2);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-        sp18 = (u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
-        *sp18 = *sp18 & ~0xc0;
+        attrReg = (u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
+        *attrReg = *attrReg & ~0xc0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x51) = 0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x52) = 0;
         M2C_FIELD(*gCur3DSpriteEngine, u8 *, 0x53) = 0;
-        sp14 = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-        *sp14 = *sp14 & ~0x200;
-        sp10 = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-        *sp10 = *sp10 & ~0x400;
-        spC = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-        *spC = *spC & ~0x800;
-        gCur3DSpriteEngine = old;
+        bankA = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        *bankA = *bankA & ~0x200;
+        bankB = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        *bankB = *bankB & ~0x400;
+        bankC = (u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        *bankC = *bankC & ~0x800;
+        gCur3DSpriteEngine = savedEngine;
     } else {
-        old = gCur3DSpriteEngine;
+        savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_02088d94(M2C_FIELD(r5, void **, 0x50));
-        func_02088d94(M2C_FIELD(r5, void **, 0x54));
-        sp8 = *gCur3DSpriteEngine;
-        *sp8 = *sp8 & ~0x200;
-        sp4 = *gCur3DSpriteEngine;
-        *sp4 = *sp4 & ~0x400;
-        sp0 = *gCur3DSpriteEngine;
-        *sp0 = *sp0 & ~0x800;
-        gCur3DSpriteEngine = old;
+        func_02088d94(M2C_FIELD(panel, void **, 0x50));
+        func_02088d94(M2C_FIELD(panel, void **, 0x54));
+        bankD = *gCur3DSpriteEngine;
+        *bankD = *bankD & ~0x200;
+        bankE = *gCur3DSpriteEngine;
+        *bankE = *bankE & ~0x400;
+        bankF = *gCur3DSpriteEngine;
+        *bankF = *bankF & ~0x800;
+        gCur3DSpriteEngine = savedEngine;
     }
 }
 

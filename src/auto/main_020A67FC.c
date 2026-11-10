@@ -1,8 +1,9 @@
 /* 34 functions from 0x020A67FC to 0x020A7738 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 #include "ov000_unit_entry.h"
-static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 func_0207c8ec(s32,s32);s32 h=p->unk6;if(h==0)return 0;return func_0207c8ec(h-1,10)+1; }
+static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 Divide(s32,s32);s32 h=p->unk6;if(h==0)return 0;return Divide(h-1,10)+1; }
 extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],data_ov000_021b5c5c[],data_ov000_021b5c5d[];
 extern void **gCurrentMap;
 
@@ -113,16 +114,16 @@ void func_020a6b68(void *arg0) {
 
 void func_020a6b90(void *arg0) {
     extern void **gCurrentMap;
-    s32 func_020b5258(void);
+    s32 IsBattleEffectActive(void);
     void func_01ffa6fc(void *);
     void (*callback)(s32, s32, s32);
     callback = (void (*)(s32, s32, s32))M2C_FIELD(gCurrentMap[1], void **, 8);
     if (callback != 0) callback(M2C_FIELD(arg0, s32 *, 0x34) * 16, M2C_FIELD(arg0, s32 *, 0x38) * 16, 10);
-    if (func_020b5258() != 0) return;
+    if (IsBattleEffectActive() != 0) return;
     func_01ffa6fc(arg0);
 }
 
-void func_020a6be4(s32 arg0, void *unused) {
+void SpawnUnitSprite(s32 arg0, void *unused) {
     void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02120670;
     M2C_FIELD(CreateSpriteObject(&data_02120670), s32 *, 0x54) = arg0;
@@ -135,40 +136,43 @@ void func_020a6cbc(void *arg0) {
     func_020e35cc(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
-void func_020a6ccc(void *self){
-void func_020a71a0(s32,s32,s32);s32 func_020b5258(void);s32 func_020a81d0(void *);void func_020d0288(void *,s32,s32,s32,s32,s32);s32 func_020d02b4(void *);void func_01ffa6fc(void *);
+void ApplyAreaDamageEffect(void *effect){
+void DamageUnitAtTile(s32,s32,s32);s32 IsBattleEffectActive(void);s32 func_020a81d0(void *);void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);void func_01ffa6fc(void *);
 extern u16 gPlayerUnitIdBase[];
-u8 *bits=M2C_FIELD(self,u8 **,0x54);s32 count=0,player,i;u32 pos;s32 iter[8];UnkStruct_ov000_021A860C *p;
-if(func_020b5258())return;
+u8 *covered=M2C_FIELD(effect,u8 **,0x54);s32 found=0,player,unitId;u32 index;s32 scan[8];UnkStruct_ov000_021A860C *unit;
+/* Area-damage effect: for the first eligible unit, apply 40 damage to every
+   unit within two tiles of it and spawn its sprite.  The eligibility test
+   func_020a81d0 is always false in this build, so the effect only finishes. */
+if(IsBattleEffectActive())return;
 for(player=1;player<5;player++){
-for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
-p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
-if(p->unk0 && func_020a81d0(p)){
-func_020d0288(iter,2,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),M2C_FIELD(*gCurrentMap,u16 *,0x5144),M2C_FIELD(*gCurrentMap,u16 *,0x5146));
-for(;;){if(!func_020d02b4(iter))break;
-pos=iter[4]+M2C_FIELD((u8 *)*gCurrentMap+iter[5]*2,u16 *,0x3758);
-if(!(u8)(bits[pos>>3]&(1<<(pos&7)))){
-func_020a71a0(iter[4],iter[5],40);
-pos=iter[4]+M2C_FIELD((u8 *)*gCurrentMap+iter[5]*2,u16 *,0x3758);
-bits[pos>>3]|=1<<(pos&7);
+for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+51;unitId++){
+unit=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[unitId];
+if(unit->unk0 && func_020a81d0(unit)){
+InitAreaScan(scan,2,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH),M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT));
+for(;;){if(!NextAreaTile(scan))break;
+index=scan[4]+M2C_FIELD((u8 *)*gCurrentMap+scan[5]*2,u16 *,MAP_ROW_OFFSETS);
+if(!(u8)(covered[index>>3]&(1<<(index&7)))){
+DamageUnitAtTile(scan[4],scan[5],40);
+index=scan[4]+M2C_FIELD((u8 *)*gCurrentMap+scan[5]*2,u16 *,MAP_ROW_OFFSETS);
+covered[index>>3]|=1<<(index&7);
 }
 }
-func_020a6be4((s32)p,self);
-count++;if(count==1)return;
+SpawnUnitSprite((s32)unit,effect);
+found++;if(found==1)return;
 }
 }
 }
-if(!count)func_01ffa6fc(self);
+if(!found)func_01ffa6fc(effect);
 }
 
 void func_020a6eb0(void){
-extern u16 gPlayerUnitIdBase[];s32 func_020a85dc(u32);
+extern u16 gPlayerUnitIdBase[];s32 IsCarrierUnitKind(u32);
 s32 i;UnkStruct_ov000_021A860C *p;u8 n;
 for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+0x33;i++){
 p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 if(p->unk0 && !(M2C_FIELD(p,u16 *,4)&8)){
 M2C_FIELD(p,u16 *,4)&=~0x81;
-if(func_020a85dc(p->unk0)){
+if(IsCarrierUnitKind(p->unk0)){
 n=p->unkC[0];
 if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[n],u16 *,4)&=~1;
 n=p->unkC[1];
@@ -187,7 +191,7 @@ void func_020a6fcc(void) {
 s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=data_ov000_021b5c5c[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
 #pragma opt_instruction_scheduling reset
 s32 CanUnitsJoin(UnkStruct_ov000_021A860C *a,UnkStruct_ov000_021A860C *b){
-s32 func_0207c8ec(s32,s32);s32 IsUnitSelected(void *);
+s32 Divide(s32,s32);s32 IsUnitSelected(void *);
 s32 x,y,h;
 if(a->unk0!=b->unk0)return 0;
 if(b)x=((u8 *)b-((u8 *)*gCurrentMap+0x59a4))/14;else x=0;
@@ -201,7 +205,7 @@ return 1;
 }
 
 #pragma opt_instruction_scheduling off
-void func_020a71a0(s32 x,s32 y,s32 amount) {
+void DamageUnitAtTile(s32 x,s32 y,s32 amount) {
 s32 func_020a8560(u32);
 void *base;
 u8 *p;
@@ -288,7 +292,7 @@ s32 func_020a7558(void) {
 }
 
 s32 func_020a7568(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_0207c8ec(s32, M2C_UNK);
+    s32 Divide(s32, M2C_UNK);
     s32 func_020a2638(void *, M2C_UNK, M2C_UNK);
     s32 var_r4;
     u32 temp_r0;
@@ -298,7 +302,7 @@ s32 func_020a7568(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if (temp_r0 == 0) {
         var_r4 = 0;
     } else {
-        var_r4 = func_0207c8ec(temp_r0 - 1, 0xA) + 1;
+        var_r4 = Divide(temp_r0 - 1, 0xA) + 1;
     }
     return var_r4 + func_020a2638(arg0, arg1, arg2);
 }
@@ -321,7 +325,7 @@ penalty=-(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==1);
 return penalty+(cap+bonus);
 }
 
-s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 func_0207c8ec(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=func_0207c8ec(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
+s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
 s32 func_020a76d4(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 

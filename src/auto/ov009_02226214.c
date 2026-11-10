@@ -5,12 +5,12 @@ void func_ov009_02226214(M2C_UNK arg0) {
     s32 func_0206527c(s32, s32, M2C_UNK);
     s32 func_ov009_02224064();
     s32 func_ov009_022240ac();
-    s32 func_ov009_02224194();
+    s32 GetLinkPhase();
     M2C_UNK func_ov009_02225450();
     M2C_UNK func_ov009_022257ac(M2C_UNK);
     s32 temp_r4;
 
-    if ((func_ov009_02224194() != 4) && (func_ov009_02224194() != 5)) {
+    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return;
     }
     temp_r4 = func_ov009_02224064();

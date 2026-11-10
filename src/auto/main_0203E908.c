@@ -127,13 +127,13 @@ void FormatMatchmakingMessage(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 func_02060c78(void *);
-    s32 func_02060c44(s32 *);
+    s32 SBServerGetIp(s32 *);
     s32 func_020617b4(void *);
     s32 func_02060c90(void *);
     u16 func_02060c98(void *);
     s32 func_020218bc(void);
-    u16 func_02060c4c(void *);
-    u32 func_02037eec(u32);
+    u16 SBServerGetPort(void *);
+    u32 RandomBelow(u32);
     u16 func_0205b030(void *);
     s32 func_0205b048(s32);
     s32 func_0203f058(u8, s32, s32, u16, s32 *, s32);
@@ -156,7 +156,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         low = (u16)low;
         sessionId = ((u32)high << 16) | low;
         if (func_02060c78((void *)data)) {
-            value = func_02060c44((s32 *)data);
+            value = SBServerGetIp((s32 *)data);
             if (value != func_020617b4(M2C_FIELD(GetConnection(), void **, 0xe4))) {
                 deferred = 1;
             } else {
@@ -172,15 +172,15 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
                 deferred = 1;
             } else {
                 s = GetConnection();
-                M2C_FIELD(s + index * 4, s32 *, 0x210) = func_02060c44((s32 *)data);
+                M2C_FIELD(s + index * 4, s32 *, 0x210) = SBServerGetIp((s32 *)data);
                 s = GetConnection();
-                M2C_FIELD(s + index * 2, u16 *, 0x290) = func_02060c4c((void *)data);
+                M2C_FIELD(s + index * 2, u16 *, 0x290) = SBServerGetPort((void *)data);
                 deferred = 0;
             }
         }
         if (deferred) {
             s = GetConnection();
-            M2C_FIELD(s, u16 *, 0x17e) = func_02037eec(0x10000);
+            M2C_FIELD(s, u16 *, 0x17e) = RandomBelow(0x10000);
             M2C_FIELD(GetConnection(), s32 *, 0x19c) = sessionId;
         } else {
             s32 first;
@@ -188,8 +188,8 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
             tempData[0] = func_020218bc();
             tempData[1] = func_0205b030(*(void **)M2C_FIELD(GetConnection(), void **, 4));
             s = GetConnection();
-            first = func_02060c44((s32 *)data);
-            second = func_02060c4c((void *)data);
+            first = SBServerGetIp((s32 *)data);
+            second = SBServerGetPort((void *)data);
             value = func_0203f058(6, M2C_FIELD(s + index * 4, s32 *, 0xf4), first, second, tempData, 2);
             M2C_FIELD(GetConnection(), u8 *, 0x3cd) = 0;
             if (value) {
@@ -200,9 +200,9 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         M2C_FIELD(GetConnection(), u8 *, 0x194) = 0;
         M2C_FIELD(GetConnection(), u8 *, 0x195) = 0;
         s = GetConnection();
-        M2C_FIELD(s, u16 *, 0x196) = func_02060c4c((void *)data);
+        M2C_FIELD(s, u16 *, 0x196) = SBServerGetPort((void *)data);
         s = GetConnection();
-        M2C_FIELD(s, s32 *, 0x198) = func_02060c44((s32 *)data);
+        M2C_FIELD(s, s32 *, 0x198) = SBServerGetIp((s32 *)data);
     } else {
         M2C_FIELD(GetConnection(), u8 *, 0x194) = 1;
         M2C_FIELD(GetConnection(), u8 *, 0x195) = result;

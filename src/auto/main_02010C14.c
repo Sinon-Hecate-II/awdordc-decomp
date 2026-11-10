@@ -312,7 +312,7 @@ s32 func_02011a20(s32 arg0, void (*callback)(void *), s32 arg2) {
         M2C_FIELD(buf, u16 *, 26) = 0xffff;
         M2C_FIELD(buf, u32 *, 28) = arg2;
         M2C_FIELD(buf, u16 *, 18) = 0;
-        func_02007724(buf + 20);
+        GetMacAddress(buf + 20);
     }
     irq = OS_DisableInterrupts();
     result = func_02011450();

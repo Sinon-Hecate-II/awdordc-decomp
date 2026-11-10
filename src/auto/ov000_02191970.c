@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df7e4[];
-extern s8 data_ov000_021b55a0[];
+extern s8 gTerrainPropertyType[];
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,void**,0x52d0)
 #define KIND(p) ((u32)(M2C_FIELD(p,u8*,0)<<26)>>26)
@@ -63,7 +63,7 @@ for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8**,0x52e8),s8*,x)<0||
 CELL(x,y,0x2338)<0||func_ov000_021a9d8c(x,y)!=0||
 !func_ov000_021a9a28(KIND(SEL),x,y)||func_ov000_021a9860(x,y)==1)continue;
-if(func_020d27ec(M2C_FIELD(MAP,u8*,0x52d4),TILE(x,y))==1&&data_ov000_021b55a0[TILE(x,y)&31]!=0)continue;
+if(func_020d27ec(M2C_FIELD(MAP,u8*,0x52d4),TILE(x,y))==1&&gTerrainPropertyType[TILE(x,y)&31]!=0)continue;
 d=CELL(x,y,0x2338);
 if(((u32)(M2C_FIELD(unit,u16*,8)<<26)>>26)!=63){
 temporary=CELL(x,y,0x3250);if(temporary<0)temporary=32767;

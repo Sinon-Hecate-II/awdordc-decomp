@@ -86,4 +86,21 @@ enum {
     EASE_OUT_CUBIC = 5
 };
 
+/* State of the screen-change split transition (gScreenTransition, 12 bytes). */
+typedef struct ScreenTransition {
+    s16 flags;  /* +0x00 TRANSITION_* */
+    s16 type;   /* +0x02 variant of the effect */
+    s16 side;   /* +0x04 which half slides, 0 or 1 */
+    s16 frame;  /* +0x06 current frame */
+    s16 length; /* +0x08 total frames */
+    s16 value;  /* +0x0A eased interpolation value (0..0x100) */
+} ScreenTransition;
+
+/* ScreenTransition::flags */
+enum {
+    TRANSITION_DONE    = 0x1,
+    TRANSITION_ENABLED = 0x2,
+    TRANSITION_CANCEL  = 0x4
+};
+
 #endif

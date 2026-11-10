@@ -5,7 +5,7 @@ typedef struct CertificateTagBits { u8 number:5; u8 constructed:1; u8 category:2
 
 s32 func_02022970(void *arg0) {
     void MD5_Init(void *);
-    void func_02025748(void *, void *, s32);
+    void MD5_Update(void *, void *, s32);
     void MD5_Final(void *, s32);
     void SHA1_Init(void *);
     void SHA1_Update(void *, void *, s32);
@@ -27,7 +27,7 @@ s32 func_02022970(void *arg0) {
     case 3:
         MD5_Init((u8 *)arg0 + 0x3fc);
         t0 = *(s32 *)((u8 *)arg0 + 0x460);
-        func_02025748((u8 *)arg0 + 0x3fc, (void *)t0, *(s32 *)((u8 *)arg0 + 0x464) - t0);
+        MD5_Update((u8 *)arg0 + 0x3fc, (void *)t0, *(s32 *)((u8 *)arg0 + 0x464) - t0);
         MD5_Final((u8 *)arg0 + 0x3fc, (s32)((u8 *)arg0 + 0x468));
         *(s32 *)((u8 *)arg0 + 0x47c) = 0x10;
         break;
@@ -248,7 +248,7 @@ void RsaCrtDecrypt(s32 out, s32 in, void *arg2) {
 }
 
 void func_0202321c(s32 arg0,u8 *arg1,u8 *arg2) {
-void MD5_Init(void *); void func_02025748(void *,void *,s32); void MD5_Final(void *,s32);
+void MD5_Init(void *); void MD5_Update(void *,void *,s32); void MD5_Final(void *,s32);
 void SHA1_Init(void *); void SHA1_Update(void *,void *,s32);void SHA1_Final(void *,void *);
 s32 StringLength(void *);
 u8 sp0[20];
@@ -258,8 +258,8 @@ SHA1_Update(arg2+0x348,arg2,0x30);
 SHA1_Update(arg2+0x348,arg2+0x34,0x40);
 SHA1_Final(arg2+0x348,sp0);
 MD5_Init(arg2+0x3fc);
-func_02025748(arg2+0x3fc,arg2,0x30);
-func_02025748(arg2+0x3fc,sp0,20);
+MD5_Update(arg2+0x3fc,arg2,0x30);
+MD5_Update(arg2+0x3fc,sp0,20);
 MD5_Final(arg2+0x3fc,arg0);
 }
 #pragma opt_strength_reduction off

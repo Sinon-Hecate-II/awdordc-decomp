@@ -9,7 +9,7 @@
  * then restores the carry order. */
 void SelectCarriedUnitAction(void) {
     extern void **gCurrentMap;
-    extern u8 *data_ov000_021df580;
+    extern u8 *gAiCommandState;
     s32 IsFootUnitKind(s32);
     s32 HasEnemyPlayer(void);
     s32 func_020d243c(u16);
@@ -27,7 +27,7 @@ void SelectCarriedUnitAction(void) {
     if (id && IsFootUnitKind(((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[id].unk0) &&
         !IsFootUnitKind(((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS))[M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[0]].unk0)) {
         {UnkStruct_ov000_021A860C *p = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT); tmp = p->unkC[0]; p->unkC[0] = p->unkC[1]; M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = tmp;}
-        M2C_FIELD(data_ov000_021df580, u16 *, 8) |= 64;
+        M2C_FIELD(gAiCommandState, u16 *, 8) |= 64;
     }
     sel = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT);
     id = sel->unkC[0];
@@ -36,7 +36,7 @@ void SelectCarriedUnitAction(void) {
         sel->unkC[0] = sel->unkC[1];
         M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = id;
         unit = (UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[0] * 14);
-        M2C_FIELD(data_ov000_021df580, u16 *, 8) |= 64;
+        M2C_FIELD(gAiCommandState, u16 *, 8) |= 64;
     }
     if (IsFootUnitKind(unit->unk0) || unit->unk0 == 13) func_ov000_02188370();
     else switch (unit->unkB) {
@@ -46,9 +46,9 @@ void SelectCarriedUnitAction(void) {
     case 5: if (func_020d243c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) func_ov000_021888ec(); else func_ov000_02188790(); break;
     case 7: case 8: case 9: func_ov000_02188a38(); break;
     }
-    if (M2C_FIELD(data_ov000_021df580, u16 *, 8) & 64) {
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 64) {
         {UnkStruct_ov000_021A860C *p = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT); tmp = p->unkC[0]; p->unkC[0] = p->unkC[1]; M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = tmp;}
-        M2C_FIELD(data_ov000_021df580, u16 *, 8) &= ~64;
+        M2C_FIELD(gAiCommandState, u16 *, 8) &= ~64;
     }
 }
 
@@ -118,7 +118,7 @@ if(out[0]==0x270f)return 0;return 1;
 #pragma opt_strength_reduction off
 s32 func_ov000_02189248(u8 *arg0,s16 *out) {
 extern void **gCurrentMap;
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 extern u8 gUnitKindStats[];
 s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
@@ -132,7 +132,7 @@ u8 *selp;
 void *map;
 bestScore=0x7fff;
 bestCost=bestScore;
-score=func_020a7b3c((u32)(arg0[0]<<26)>>26,M2C_FIELD(data_ov000_021df580,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
+score=func_020a7b3c((u32)(arg0[0]<<26)>>26,M2C_FIELD(gAiCommandState,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
 BuildUnitMoveRange(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
@@ -197,8 +197,8 @@ return 1;
 #pragma opt_common_subs off
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
- extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *data_ov000_021df580;
- void FloodFillUnitRange();void func_01ffb9c4();s32 CanKindAttack();s32 func_0207c8ec();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
+ extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *gAiCommandState;
+ void FloodFillUnitRange();void func_01ffb9c4();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
@@ -216,7 +216,7 @@ void func_ov000_021895bc(void){
  if((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30!=2)goto next;
  if(data_ov000_021df7e4[index&63])goto next;
  if(!FindAdjacentPassableTile(unit[1],unit[2],out))goto next;
- score=(func_0207c8ec(M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8 **,0x52e8),s8 *,out[0]),data_ov000_021df580[5])+1)<<7;
+ score=(Divide(M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8 **,0x52e8),s8 *,out[0]),gAiCommandState[5])+1)<<7;
  ux=unit[1];uy=unit[2];minx=ux-4;if(minx<0)minx=0;
  y=uy-4;if(y<0)y=0;
  map=*gCurrentMap;
@@ -244,7 +244,7 @@ void func_ov000_021895bc(void){
  n=M2C_FIELD(map,u8 *,bestx+M2C_FIELD(map+besty*2,u16 *,0x3758));
  data_ov000_021df7e4[n&63]++;
  ux=out[0];uy=out[1];map=*gCurrentMap;
- if(M2C_FIELD(map,u8 *,ux+M2C_FIELD(map+uy*2,u16 *,0x3758))==0&&M2C_FIELD(M2C_FIELD(map+uy*4,s8 **,0x52e8),s8 *,ux)<=data_ov000_021df580[5]){
+ if(M2C_FIELD(map,u8 *,ux+M2C_FIELD(map+uy*2,u16 *,0x3758))==0&&M2C_FIELD(M2C_FIELD(map+uy*4,s8 **,0x52e8),s8 *,ux)<=gAiCommandState[5]){
  SetMapCursor(ux,uy,2,0,0);return;
  }
  PlanMoveDestination(ux,uy);return;

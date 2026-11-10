@@ -10,7 +10,7 @@ typedef struct Map972e0 { u8 pad[0x5144]; volatile u16 width; u16 height; } Map9
 #pragma opt_strength_reduction off
 u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021dfcf0[];
+    extern u8 gAiRangeBitmap[];
     s32 func_020ce0ec(s32, s32);
 
     s32 result = 0;
@@ -70,11 +70,11 @@ u32 func_ov000_0219694c(s32 xOrig, s32 yOrig) {
                 base = *gCurrentMap;
                 width = M2C_FIELD(base, u16 *, 0x5144);
                 linear = row * width + col;
-                if ((u8)(data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7)))) result += 0x10000;
+                if ((u8)(gAiRangeBitmap[linear >> 3] & (1 << (linear & 7)))) result += 0x10000;
             } else {
                 if (prop & 0xe0) result += 0x100; else result += 0x10;
                 linear = (u16)(row * width + col);
-                if ((u8)(data_ov000_021dfcf0[linear >> 3] & (1 << (linear & 7)))) result += 1;
+                if ((u8)(gAiRangeBitmap[linear >> 3] & (1 << (linear & 7)))) result += 1;
             }
         }
     }
@@ -101,7 +101,7 @@ void func_ov000_02196bd8(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern KindScan96 gUnitKindStats[];
-extern u8 *data_ov000_021df580;
+extern u8 *gAiCommandState;
 s32 func_ov000_02178e84(s32,s32);
 void FillMapLayer(s32);
 s32 GetUnitAttackClass(u32);
@@ -146,7 +146,7 @@ M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
 { s32 l3,t3,b3; u32 best3; s32 x3,y3,r3,d3; u8 *u3;
 m=*gCurrentMap; u3=M2C_FIELD(m,u8 **,0x52d0);
 best3=0;l3=u3[1]-5<0?0:u3[1]-5;t3=u3[2]-5;if(t3<0)t3=0;r3=M2C_FIELD(m,u16 *,0x5144)-1;if(u3[1]+5<r3)r3=u3[1]+5;b3=M2C_FIELD(m,u16 *,0x5146)-1;if(u3[2]+5<b3)b3=u3[2]+5;
-z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=func_ov000_0219694c(x3,y3);if(!v||best3>v)continue;if(best3==v&&data_ov000_021df580[3]<50)continue;best3=v;bx=x3;by=y3;}
+z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=func_ov000_0219694c(x3,y3);if(!v||best3>v)continue;if(best3==v&&gAiCommandState[3]<50)continue;best3=v;bx=x3;by=y3;}
 if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2],21,(u8)bx,(u8)by);
 }}
 #pragma opt_strength_reduction reset
@@ -183,7 +183,7 @@ u8 func_ov000_021973f8(void) {
     return result;
 }
 
-s32 func_ov000_02197434(s32 arg0, s32 arg1) {
+s32 GetModifiedDamagePercent(s32 arg0, s32 arg1) {
     s32 GetUnitDamagePercent();
     s32 var_r0;
 
@@ -200,8 +200,8 @@ s32 func_ov000_02197434(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 func_ov000_02197470(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_0207c8ec(s32, s32);
+s32 ApplyAttackBonus(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    s32 Divide(s32, s32);
     s32 func_020a8774(M2C_UNK);
     s32 func_020a87b0(M2C_UNK);
     s32 temp_r1;
@@ -214,18 +214,18 @@ s32 func_ov000_02197470(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if ((temp_r4 == 0) && (temp_r1 == 0)) {
 
     } else {
-        var_r6 = func_0207c8ec(var_r6 * (temp_r4 + 0x64), temp_r1 + 0x64);
+        var_r6 = Divide(var_r6 * (temp_r4 + 0x64), temp_r1 + 0x64);
     }
     return var_r6;
 }
 
 /* Scales a base value by percentage modifiers derived from up to two optional unit pointers; returns the base unchanged when neither modifier applies. */
-s32 func_ov000_021974bc(s32 base, void *firstUnit, void *secondUnit) {
+s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
     s32 func_020a2868(u32, s32, s32);
     s32 func_020a28f4(u32, s32, s32);
     s32 func_020a334c(u16);
     s32 IsUnitSelected(void *);
-    s32 func_0207c8ec(s32, s32);
+    s32 Divide(s32, s32);
     extern void **gCurrentMap;
     s32 n, idx, a, b;
     if (secondUnit && IsUnitSelected(secondUnit)) {
@@ -236,11 +236,11 @@ s32 func_ov000_021974bc(s32 base, void *firstUnit, void *secondUnit) {
         if (firstUnit) { if (!firstUnit) n = 0; else n = (s32)((u8 *)firstUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
         b = func_020a28f4((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
     } else b = 0;
-    if (a == 0 && b == 0) { } else base = func_0207c8ec(base * (a + 100), b + 100);
+    if (a == 0 && b == 0) { } else base = Divide(base * (a + 100), b + 100);
     return base;
 }
 
-s32 func_ov000_0219763c(s32 arg0, void *arg1, s32 arg2) {
+s32 ApplyHealthBonus(s32 arg0, void *arg1, s32 arg2) {
     s32 func_020a7558(void *);
     s32 func_ov000_021a9214(void *, u8, u8);
     s32 func_ov000_021a93a8(void *, u8, u8);
@@ -257,19 +257,19 @@ s32 func_ov000_0219763c(s32 arg0, void *arg1, s32 arg2) {
     if (var_r4 >= 0x64) {
         var_r4 = 0x64;
     }
-    var_r0 = func_0207c8ec(arg0 * var_r4, 0x64);
+    var_r0 = Divide(arg0 * var_r4, 0x64);
     if (var_r0 >= 0xFF) {
         var_r0 = 0xFF;
     }
     return var_r0;
 }
 
-/* Returns the terrain damage rating for tile (x, y); for most unit kinds it blends the unit's stats through func_ov000_021974bc and clamps to the existing tile rating. */
+/* Returns the terrain damage rating for tile (x, y); for most unit kinds it blends the unit's stats through ApplyCoZoneBonus and clamps to the existing tile rating. */
 s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
-    s32 func_ov000_021974bc(s32, void *, void *);
-    s32 func_ov000_02197434(s32, s32);
-    s32 func_ov000_02197470(s32, M2C_UNK, M2C_UNK);
-    s32 func_ov000_0219763c(s32, void *, s32);
+    s32 ApplyCoZoneBonus(s32, void *, void *);
+    s32 GetModifiedDamagePercent(s32, s32);
+    s32 ApplyAttackBonus(s32, M2C_UNK, M2C_UNK);
+    s32 ApplyHealthBonus(s32, void *, s32);
     s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
     extern u8 data_ov000_021e0a58[];
@@ -279,14 +279,14 @@ s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
         base = *gCurrentMap;
         return M2C_FIELD((u8 *)base + (x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)), u8 *, 0x2840);
     }
-    v = func_ov000_02197434((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26, (u32)(*M2C_FIELD(*gCurrentMap, u8 **, 0x52d0) << 26) >> 26);
-    v = func_ov000_02197470(v, (u32)(*M2C_FIELD(*gCurrentMap, u8 **, 0x52d0) << 24) >> 30, (u32)(M2C_FIELD(unit, u8 *, 0) << 24) >> 30);
-    v = func_ov000_021974bc(v, M2C_FIELD(*gCurrentMap, void **, 0x52d0), unit);
-    result = func_ov000_0219763c(v, unit, (u32)(M2C_FIELD(unit, u16 *, 6) << 25) >> 25);
+    v = GetModifiedDamagePercent((u32)(M2C_FIELD(unit, u8 *, 0) << 26) >> 26, (u32)(*M2C_FIELD(*gCurrentMap, u8 **, 0x52d0) << 26) >> 26);
+    v = ApplyAttackBonus(v, (u32)(*M2C_FIELD(*gCurrentMap, u8 **, 0x52d0) << 24) >> 30, (u32)(M2C_FIELD(unit, u8 *, 0) << 24) >> 30);
+    v = ApplyCoZoneBonus(v, M2C_FIELD(*gCurrentMap, void **, 0x52d0), unit);
+    result = ApplyHealthBonus(v, unit, (u32)(M2C_FIELD(unit, u16 *, 6) << 25) >> 25);
     base = *gCurrentMap;
     old = M2C_FIELD((u8 *)base + (x + M2C_FIELD((u8 *)base + y * 2, u16 *, 0x3758)), u8 *, 0x2840);
     if (result == old) {
-        result = func_ov000_0219763c(v, unit, hp);
+        result = ApplyHealthBonus(v, unit, hp);
         old = data_ov000_021e0a58[y * M2C_FIELD(*gCurrentMap, u16 *, 0x5144) + x];
         if (result <= old) result = old;
         return result;

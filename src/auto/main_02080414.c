@@ -32,10 +32,10 @@ void func_020804d0(void *arg0) {
 }
 
 void func_02080554(s16 mode,u16 scale,s32 x,s32 y) {
-s32 func_0207c8ec(s32,s32);
+s32 Divide(s32,s32);
 extern void *g3DSpriteEngineSub,*g3DSpriteEngineMain,*gCur3DSpriteEngine;
-s32 a=func_0207c8ec(x*scale,100);
-s32 b=func_0207c8ec(y*scale,100);
+s32 a=Divide(x*scale,100);
+s32 b=Divide(y*scale,100);
 switch(mode){
 case 0:
 M2C_FIELD(g3DSpriteEngineSub,s16 *,0x3c)=a;
@@ -214,7 +214,7 @@ int func_02080c50(int arg0, int arg1) {
             if ((unsigned int)var_9 >= 0x2800) {
                 var_9 = 0x2800;
             }
-            if (func_0200bbe0(sp0, arg1 + var_7, var_9) != var_9) {
+            if (FileRead(sp0, arg1 + var_7, var_9) != var_9) {
                 func_02007958();
                 return 0;
             }
@@ -228,7 +228,7 @@ int func_02080c50(int arg0, int arg1) {
 s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     int InitFileRequest(void *);
     int func_0200ba54(void *, void *);
-    int func_0200bbe0(void *, void *, s32);
+    int FileRead(void *, void *, s32);
     int func_0200ba9c(void *);
     int func_02007958(void);
     int func_020e34f4(s32);
@@ -263,7 +263,7 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
         r4 = 0x2000U;
     }
 
-    if (func_0200bbe0(file, r8, (s32)r4) != (s32)r4) {
+    if (FileRead(file, r8, (s32)r4) != (s32)r4) {
         func_02007958();
         return 0;
     }
@@ -278,7 +278,7 @@ s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
             if (r10 >= 0x2000U) {
                 r10 = (u32)r6;
             }
-            if (func_0200bbe0(file, r8, (s32)r10) != (s32)r10) {
+            if (FileRead(file, r8, (s32)r10) != (s32)r10) {
                 func_02007958();
                 return 0;
             }
@@ -320,7 +320,7 @@ void *func_02080e30(void *arg0, int arg1) {
             if ((unsigned int)chunk >= 0x2800) {
                 chunk = 0x2800;
             }
-            if (func_0200bbe0(sp0, (void *)((char *)buf + off), chunk) != chunk) {
+            if (FileRead(sp0, (void *)((char *)buf + off), chunk) != chunk) {
                 func_02007958();
                 return 0;
             }
@@ -333,21 +333,21 @@ void *func_02080e30(void *arg0, int arg1) {
 
 s32 func_02080efc(s32 path,s32 mode,s32 sizeOut) {
 s32 func_020e34f4(s32);s32 func_020e34bc();s32 func_020e35cc(s32);
-s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 func_0200bbe0(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
+s32 InitFileRequest(void *);s32 func_0200ba54(void *,void *);s32 FileRead(void *,void *,s32);s32 func_0200ba9c(void *);s32 func_02007958(void);
 s32 func_0207c7cc(void *);u32 func_0207c7d8(void *, void *, u32);s32 func_0207c860(void *,void *,s32);
 u32 file[18];u8 ctx[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
 if(mode)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)func_020e34bc(0x2000);
 InitFileRequest(file);
 if(!func_0200ba54(file,(void *)path)){func_02007958();return 0;}
 total=file[10]-file[9];chunk=total<0x2000?total:0x2000;
-if(func_0200bbe0(file,buf,chunk)!=chunk){func_02007958();return 0;}
+if(FileRead(file,buf,chunk)!=chunk){func_02007958();return 0;}
 read+=chunk;
 size=func_0207c7cc(buf);
 if(mode)output=func_020e34bc(size);else output=func_020e34f4(size);
 func_0207c7d8(ctx,buf,(void *)output);
 if(func_0207c860(ctx,buf+4,chunk-4)>0) { u32 next; do {
 next=total-read;if(next>=0x2000)next=0x2000;
-if(func_0200bbe0(file,buf,next)!=next){func_02007958();return 0;}
+if(FileRead(file,buf,next)!=next){func_02007958();return 0;}
 read+=next;
 }while(func_0207c860(ctx,buf,next)>0); }
 func_0200ba9c(file);func_020e35cc((s32)buf);if(sizeOut)*(s32 *)sizeOut=size;
@@ -367,11 +367,11 @@ int func_02081080(int arg0, int arg1, int arg2, int arg3) {
         func_02007958();
         return 0;
     }
-    if (func_0200bbf0(sp0, arg2, 0) == 0) {
+    if (FileSeek(sp0, arg2, 0) == 0) {
         func_02007958();
         return 0;
     }
-    if (func_0200bbe0(sp0, arg1, arg3) != arg3) {
+    if (FileRead(sp0, arg1, arg3) != arg3) {
         func_02007958();
         return 0;
     }

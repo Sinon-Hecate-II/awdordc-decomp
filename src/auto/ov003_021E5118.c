@@ -16,9 +16,9 @@ void func_ov003_021e5118(void *arg0) {
     s32 func_02080e30(M2C_UNK *, M2C_UNK);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_02081340(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(M2C_UNK *, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     s32 func_0208206c();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
@@ -147,9 +147,9 @@ void func_ov003_021e5118(void *arg0) {
     func_02081340(&data_ov003_0220f780, 0x2E0, 0x60, 0x20);
     SetFileDirectory(&data_ov003_0220f788);
     GetLocalizedFileName(&data_ov003_0220f790);
-    func_020814e4();
-    func_02081590(GetLocalizedFileName(&data_ov003_0220f7a0), M2C_FIELD(data_027e01d8, s32 *, 0x18));
-    func_02081528();
+    OpenNarcArchive();
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov003_0220f7a0), M2C_FIELD(data_027e01d8, s32 *, 0x18));
+    CloseNarcArchive();
     func_02081340(&data_ov003_0220f7b0, 0xA0, 0x20, 0x20);
     func_02080944(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 5);
     SetFileDirectory(&data_ov003_0220f7c0);
@@ -297,7 +297,7 @@ void func_ov003_021e5c8c(void) {
 }
 
 void func_ov003_021e5c98(void *arg0,s16 arg1,s16 arg2){
-void AddSprite(u16,u8,u16,void *,s32);s32 func_0207c8ec(s32,s32);s32 Modulo(s32,s32);
+void AddSprite(u16,u8,u16,void *,s32);s32 Divide(s32,s32);s32 Modulo(s32,s32);
 void func_020a92bc(void *,s16);void func_020a94fc(void *);s32 func_020c1980(void *,s32,s32);s32 func_ov003_02200ae8(u8);
 extern u8 gSpriteDesc16x32[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
 s32 sp14,sp10,spC,sp8,sp4; s16 x,y,value;void *p; s32 i,palette,tile;u16 **old;
@@ -308,7 +308,7 @@ M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
 spC=-1;sp14=0x1ff;sp10=0x3ff;
 do{
 x=Modulo(i,3)*22+sp4;
-y=func_0207c8ec(i,3)*28+sp8;
+y=Divide(i,3)*28+sp8;
 p=M2C_FIELD(arg0,void **,0x68);
 value=func_020c1980((u8 *)p+4,func_ov003_02200ae8(i),spC);
 if(value){

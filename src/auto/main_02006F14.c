@@ -366,7 +366,7 @@ void func_02007668(s32 arg0) {
     func_01ff81e4();
 }
 
-void func_02007724(M2C_UNK arg0) {
+void GetMacAddress(M2C_UNK arg0) {
     M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);
     MI_CpuCopy8(0x027FFCF4, arg0, 6);
 }

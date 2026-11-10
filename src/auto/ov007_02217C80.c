@@ -146,9 +146,9 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020814e4();
-    M2C_UNK func_02081528();
-    M2C_UNK func_02081590(s32, s32);
+    M2C_UNK OpenNarcArchive();
+    M2C_UNK CloseNarcArchive();
+    M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -296,10 +296,10 @@ void func_ov007_02217f8c(void *arg0) {
     func_020ab150(M2C_FIELD(arg0, void **, 0x4C), 0x304);
     SetFileDirectory(&data_ov007_02220030);
     GetLocalizedFileName(&data_ov007_0222003c);
-    func_020814e4();
-    func_02081590(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(data_027e01d8, s32 *, 0x10));
-    func_02081590(GetLocalizedFileName(&data_ov007_0222005c), M2C_FIELD(data_027e01d8, s32 *, 0x24));
-    func_02081528();
+    OpenNarcArchive();
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(data_027e01d8, s32 *, 0x10));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222005c), M2C_FIELD(data_027e01d8, s32 *, 0x24));
+    CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_0222006c, 0, 0x20);
     M2C_FIELD(data_027e01d8, s16 *, 0x3A) = 0;
     M2C_FIELD(data_027e01d8, s16 *, 0x42) = 0;
@@ -414,7 +414,7 @@ void func_ov007_0221863c(void *arg0) {
     void *func_ov000_0216cdcc(s32);
     void *func_ov000_0216cdec(s32, s32);
     s32 func_ov000_0216cd4c(s32);
-    void *func_ov000_0216cd78(s32, s32);
+    void *GetUnitIconTiles(s32, s32);
     void *func_ov000_0216cd90(s32);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
@@ -486,7 +486,7 @@ void func_ov007_0221863c(void *arg0) {
             i=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),j,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
             variant=M2C_FIELD((u8 *)*gCurrentMap+i*140+0x6000,u8 *,0x7cd);
             v0=func_ov000_0216cd4c(table[0]);
-            v1=func_ov000_0216cd78(table[0],variant);
+            v1=GetUnitIconTiles(table[0],variant);
             func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
             func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);
             offset+=0x180; tile+=12;
