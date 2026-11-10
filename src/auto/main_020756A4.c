@@ -265,7 +265,7 @@ s32 func_02076234(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_0214
 void func_02076244(M2C_UNK arg0) {
     M2C_UNK func_01ff9b38();
     M2C_UNK func_01ff9ed0();
-    M2C_UNK func_020024cc();
+    M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02008ef0(M2C_UNK);
     M2C_UNK func_020092d0(M2C_UNK);
     M2C_UNK func_02081f08();
@@ -326,7 +326,7 @@ void func_02076244(M2C_UNK arg0) {
     func_01ff9b38();
     func_02082cb4();
     *(u16 *)0x04000304 &= ~0x8000;
-    func_020024cc();
+    GX_TurnOnDisplay();
     var_r6 = 0;
     *(s32 *)0x04001000 |= 0x10000;
     temp_r5 = data_027e01d8;

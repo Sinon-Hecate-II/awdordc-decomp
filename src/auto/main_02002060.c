@@ -94,7 +94,7 @@ if(a!=0){*(volatile u16 *)0x4000004 |= 0x10;return v;}
 return v;
 }
 
-s32 func_0200245c(s32 a) {
+s32 GX_SetVBlankIrq(s32 a) {
 s32 v=*(volatile u16 *)0x4000004 & 8;
 if(a!=0){*(volatile u16 *)0x4000004 |= 8;return v;}
 *(volatile u16 *)0x4000004 &= ~8;
@@ -112,7 +112,7 @@ void func_02002490(void) {
     *(s32 *)0x04000000 = temp_ip & ~0x30000;
 }
 
-void func_020024cc(void) {
+void GX_TurnOnDisplay(void) {
  extern s16 data_020f5200, data_0212dbc0;
  u16 v;
  data_020f5200 = 1;
@@ -124,7 +124,7 @@ void func_020024cc(void) {
  *(volatile u32 *)0x4000000 |= 0x10000;
 }
 
-void func_02002514(u32 a,u32 b,u32 c) {
+void GX_ConfigureDisplay(u32 a,u32 b,u32 c) {
 extern s16 data_020f5200,data_0212dbc0;
 u32 flag=(u16)data_020f5200;
 u32 old=*(volatile u32 *)0x4000000;
@@ -134,11 +134,11 @@ if(!flag)a=0;
 if(!*(u16 *)&data_0212dbc0)data_020f5200=0;
 }
 
-void func_0200257c(s32 arg0) {
+void GX_SetSubBgMode(s32 arg0) {
     *(s32 *)0x04001000 = (*(s32 *)0x04001000 & ~7) | arg0;
 }
 
-void func_02002598(s16 *arg0, s32 arg1) {
+void GX_SetMasterBrightness(s16 *arg0, s32 arg1) {
     if (arg1 == 0) {
         *arg0 = 0;
         return;

@@ -35,7 +35,7 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
     s32 func_ov007_02214d88(s32, s32);
     s32 func_ov007_02215e94(s32 *, s32 *, s32, void *, s32);
     s32 func_ov007_02215f6c(s32 *, s32 *, s32, s16 *, s16 *, s32);
-    M2C_UNK func_ov007_02215254(s32, s32, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
 
     s32 x, y;
     s32 saved;
@@ -60,31 +60,31 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
             switch (mode) {
             case 0:
                 if (!func_ov007_02215e94(&x, &y, 1, arg0, 10)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1c7);
+                Map_SetCellTile(x, y, 0x1c7);
                 if (!func_ov007_02215e94(&x, &y, 1, arg1, 10)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1cc);
+                Map_SetCellTile(x, y, 0x1cc);
                 break;
             case 1:
                 if (!func_ov007_02215e94(&x, &y, 1, arg0, 8)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1c2);
+                Map_SetCellTile(x, y, 0x1c2);
                 ((s16 *)out_a)[0] = (s16)x; ((s16 *)out_a)[1] = (s16)y;
                 if (!func_ov007_02215e94(&x, &y, 1, arg1, 8)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1c2);
+                Map_SetCellTile(x, y, 0x1c2);
                 ((s16 *)out_b)[0] = (s16)x; ((s16 *)out_b)[1] = (s16)y;
                 break;
             case 2:
                 if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 10)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1c2);
+                Map_SetCellTile(x, y, 0x1c2);
                 ((s16 *)out_c)[0] = (s16)x; ((s16 *)out_c)[1] = (s16)y;
                 break;
             case 3:
                 if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 5)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1b9);
+                Map_SetCellTile(x, y, 0x1b9);
                 ((s16 *)out_c)[0] = (s16)x; ((s16 *)out_c)[1] = (s16)y;
                 break;
             case 4:
                 if (!func_ov007_02215f6c(&x, &y, 1, (s16 *)arg0, (s16 *)arg1, 5)) goto done_inner;
-                func_ov007_02215254(x, y, 0x1d9);
+                Map_SetCellTile(x, y, 0x1d9);
                 break;
             }
             saved++;
@@ -100,7 +100,7 @@ void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *a
     M2C_UNK DrawOrthogonalPath(s16, s16, s16, s16, M2C_UNK);
     M2C_UNK func_ov007_0221b8c0(s32, s32);
     M2C_UNK func_ov007_02215704(s32, s32);
-    M2C_UNK func_ov007_02215254(s32, s32, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
     extern void **gCurrentMap;
     extern s8 data_ov007_02221a84[];
     MapPoint sp18, sp14;
@@ -134,7 +134,7 @@ void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *a
                 if (data[x] == 2) {
                     if (func_ov007_0221b8c0(x, y) != 1) {
                         if (func_ov007_02215704(x, y) != 1) {
-                            func_ov007_02215254(x, y, 6);
+                            Map_SetCellTile(x, y, 6);
                         }
                     }
                 }
@@ -150,58 +150,62 @@ void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *a
     return;
 }
 
-s32 func_ov007_02217318(void *arg0, void *arg1, s16 *arg2) {
+/* Pick a random open (type-3) ground cell in the band between two map
+ * points: the search rectangle starts near `a` and extends toward `b`,
+ * clamped to the map. Returns 1 and writes the cell to `out` if one is
+ * found; when several qualify, one is chosen at random. */
+s32 Map_PickRandomGroundCellBetween(void *arg0, void *arg1, s16 *out) {
     extern void **gCurrentMap;
-    s32 func_ov007_022152bc(s32, s32);
+    s32 Map_ScoreNeighborPattern(s32, s32);
     s32 RandomIntRange(s32, s32);
     MapPoint *pa, *pb;
-    s32 cx, cy, count;
-    s32 ax, bx, by, ly, d;
-    s32 lx;
+    s32 x, y, count;
+    s32 aX, bX, bY, top, d;
+    s32 left;
     s32 pick;
     s32 found;
-    s32 ay;
+    s32 aY;
     MapScan *map;
 
     pa = arg0;
     pb = arg1;
     found = 0;
-    bx = pb->x;
-    ax = pa->x;
-    d = ax - bx;
+    bX = pb->x;
+    aX = pa->x;
+    d = aX - bX;
     if (d < 0) d = -d;
     if ((u32) d < 5U) {
-        if (ax < bx) { lx = bx - 10; ax += 10; }
-        else { lx = ax - 10; ax = bx + 10; }
+        if (aX < bX) { left = bX - 10; aX += 10; }
+        else { left = aX - 10; aX = bX + 10; }
     } else {
-        if (ax < bx) { lx = ax; ax += 10; }
-        else { lx = ax - 10; }
+        if (aX < bX) { left = aX; aX += 10; }
+        else { left = aX - 10; }
     }
-    by = ((volatile MapPoint *)pb)->y;
-    ay = ((volatile MapPoint *)pa)->y;
-    d = ay - by;
+    bY = ((volatile MapPoint *)pb)->y;
+    aY = ((volatile MapPoint *)pa)->y;
+    d = aY - bY;
     if (d < 0) d = -d;
     if ((u32) d < 5U) {
-        if (ay < by) { ly = by - 10; ay += 10; }
-        else { ly = ay - 10; ay = by + 10; }
+        if (aY < bY) { top = bY - 10; aY += 10; }
+        else { top = aY - 10; aY = bY + 10; }
     } else {
-        if (ay < by) { ly = ay; ay += 10; }
-        else { ly = ay - 10; }
+        if (aY < bY) { top = aY; aY += 10; }
+        else { top = aY - 10; }
     }
-    if (lx < 0) lx = 0;
-    if (ly < 0) ly = 0;
+    if (left < 0) left = 0;
+    if (top < 0) top = 0;
     map = *gCurrentMap;
-    if (ax >= (s32) map->width) ax = (s32) map->width - 1;
-    if (ay >= (s32) map->height) ay = (s32) map->height - 1;
+    if (aX >= (s32) map->width) aX = (s32) map->width - 1;
+    if (aY >= (s32) map->height) aY = (s32) map->height - 1;
     count = 0;
-    for (cy = ly; cy < ay; cy++) {
-        for (cx = lx; cx < ax; cx++) {
+    for (y = top; y < aY; y++) {
+        for (x = left; x < aX; x++) {
             map = *gCurrentMap;
-            if (map->cells[cx + map->rows[cy]] == 3) {
-                if (func_ov007_022152bc(cx, cy) != -1) {
-                    arg2[0] = cx;
+            if (map->cells[x + map->rows[y]] == 3) {
+                if (Map_ScoreNeighborPattern(x, y) != -1) {
+                    out[0] = x;
                     found = 1;
-                    arg2[1] = (s16) cy;
+                    out[1] = (s16) y;
                     count++;
                 }
             }
@@ -210,16 +214,16 @@ s32 func_ov007_02217318(void *arg0, void *arg1, s16 *arg2) {
     if (count >= 2) {
         pick = RandomIntRange(0, count - 1);
         count = 0;
-        for (cy = ly; cy <= ay; cy++) {
-            for (cx = lx; cx <= ax; cx++) {
+        for (y = top; y <= aY; y++) {
+            for (x = left; x <= aX; x++) {
                 map = *gCurrentMap;
-                if (map->cells[cx + map->rows[cy]] == 3) {
-                    if (func_ov007_022152bc(cx, cy) != -1) {
+                if (map->cells[x + map->rows[y]] == 3) {
+                    if (Map_ScoreNeighborPattern(x, y) != -1) {
                         if (count < pick) {
                             count++;
                         } else {
-                            arg2[0] = cx;
-                            arg2[1] = cy;
+                            out[0] = x;
+                            out[1] = y;
                             break;
                         }
                     }
@@ -231,66 +235,66 @@ s32 func_ov007_02217318(void *arg0, void *arg1, s16 *arg2) {
 }
 
 M2C_UNK func_ov007_02217598(M2C_UNK *a,M2C_UNK *b){
- s32 func_ov007_02217318(void *,void *,s16 *);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ s32 Map_PickRandomGroundCellBetween(void *,void *,s16 *);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s16 sp4[2],sp0[2];
- if(!func_ov007_02217318(a,b,sp4))return;
- if(!func_ov007_02217318(b,a,sp0))return;
- func_ov007_02215254(sp4[0],sp4[1],0x1c9);
- func_ov007_02215254(sp0[0],sp0[1],0x1ce);
+ if(!Map_PickRandomGroundCellBetween(a,b,sp4))return;
+ if(!Map_PickRandomGroundCellBetween(b,a,sp0))return;
+ Map_SetCellTile(sp4[0],sp4[1],0x1c9);
+ Map_SetCellTile(sp0[0],sp0[1],0x1ce);
 }
 
 M2C_UNK func_ov007_02217608(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215bc4(s32 *,s32 *,s32);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=func_ov007_02214d88(20,40);
  for(i=0;i<n;i++){
  if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
- func_ov007_02215254(sp4,sp0,33);
+ Map_SetCellTile(sp4,sp0,33);
  }
 }
 
 M2C_UNK func_ov007_02217680(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215bc4(s32 *,s32 *,s32);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=func_ov007_02214d88(5,20);
  for(i=0;i<n;i++){
  if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
- func_ov007_02215254(sp4,sp0,385);
+ Map_SetCellTile(sp4,sp0,385);
  }
 }
 
 M2C_UNK func_ov007_022176fc(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215bc4(s32 *,s32 *,s32);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=func_ov007_02214d88(20,40);
  for(i=0;i<n;i++){
  if(func_ov007_02215bc4(&sp4,&sp0,1)==0)return;
- func_ov007_02215254(sp4,sp0,2);
+ Map_SetCellTile(sp4,sp0,2);
  }
 }
 
 /* On every passable type-3 cell, randomly place tile 34 with a chance based on how many of its neighbors are open; then in a second pass place tile 34 on type-3 cells with exactly two open neighbors. */
 void func_ov007_02217774(void) {
     extern void **gCurrentMap;
-    s32 func_ov007_022152bc(s32 x, s32 y);
+    s32 Map_ScoreNeighborPattern(s32 x, s32 y);
     s32 func_ov007_02215128(s32 count, s32 mode);
-    M2C_UNK func_ov007_02215254(s32 x, s32 y, s32 value);
+    M2C_UNK Map_SetCellTile(s32 x, s32 y, s32 value);
     s32 x, y, openNeighborCount;
     MapScan *map;
     map = *gCurrentMap;
     for (y = 0; y < (s32)map->height; y++) {
         for (x = 0; x < (s32)map->width; x++) {
             if (map->cells[x + map->rows[y]] == 3) {
-                openNeighborCount = func_ov007_022152bc(x, y);
+                openNeighborCount = Map_ScoreNeighborPattern(x, y);
                 if (openNeighborCount != -1 && func_ov007_02215128(openNeighborCount, 34))
-                    func_ov007_02215254(x, y, 34);
+                    Map_SetCellTile(x, y, 34);
             }
             map = *gCurrentMap;
         }
@@ -298,8 +302,8 @@ void func_ov007_02217774(void) {
     for (y = 0; y < (s32)map->height; y++) {
         for (x = 0; x < (s32)map->width; x++) {
             if (map->cells[x + map->rows[y]] == 3) {
-                if (func_ov007_022152bc(x, y) == 2)
-                    func_ov007_02215254(x, y, 34);
+                if (Map_ScoreNeighborPattern(x, y) == 2)
+                    Map_SetCellTile(x, y, 34);
             }
             map = *gCurrentMap;
         }
@@ -309,33 +313,33 @@ void func_ov007_02217774(void) {
 M2C_UNK func_ov007_022178f4(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215dd8(s32 *,s32 *,s32);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=func_ov007_02214d88(5,10);
  for(i=0;i<n;i++){
  if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
- func_ov007_02215254(sp4,sp0,360);
+ Map_SetCellTile(sp4,sp0,360);
  }
 }
 
 M2C_UNK func_ov007_0221796c(void) {
  s32 func_ov007_02214d88(s32,s32);
  s32 func_ov007_02215dd8(s32 *,s32 *,s32);
- M2C_UNK func_ov007_02215254(s32,s32,s32);
+ M2C_UNK Map_SetCellTile(s32,s32,s32);
  s32 sp4; s32 sp0; s32 i; s32 n;
  n=func_ov007_02214d88(5,10);
  for(i=0;i<n;i++){
  if(func_ov007_02215dd8(&sp4,&sp0,3)==0)return;
- func_ov007_02215254(sp4,sp0,39);
+ Map_SetCellTile(sp4,sp0,39);
  }
 }
 
-M2C_UNK func_ov007_022179e4(void){s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215dd8(s32 *,s32 *,s32);M2C_UNK func_ov007_02215254(s32,s32,s32);s32 sp4,sp0,i,n;n=func_ov007_02214d88(8,15);for(i=0;i<n;i++){if(!func_ov007_02215dd8(&sp4,&sp0,3))return;func_ov007_02215254(sp4,sp0,7);}}
+M2C_UNK func_ov007_022179e4(void){s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215dd8(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=func_ov007_02214d88(8,15);for(i=0;i<n;i++){if(!func_ov007_02215dd8(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
 
 /* Fill every tile of the current map with type 1, then populate enemies, items and other map content. */
 void func_ov007_02217a5c(void) {
     M2C_UNK func_0207c240();
-    M2C_UNK func_ov007_02215254(s32, s32, M2C_UNK);
+    M2C_UNK Map_SetCellTile(s32, s32, M2C_UNK);
     M2C_UNK func_ov007_02216a74();
     M2C_UNK func_ov007_02216bf4();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
@@ -365,7 +369,7 @@ void func_ov007_02217a5c(void) {
             x = 0;
             if ((s32) M2C_FIELD(map, u16 *, 0x5144) > 0) {
                 do {
-                    func_ov007_02215254(x, y, 1);
+                    Map_SetCellTile(x, y, 1);
                     x += 1;
                     map = *gCurrentMap;
                 } while (x < (s32) M2C_FIELD(map, u16 *, 0x5144));

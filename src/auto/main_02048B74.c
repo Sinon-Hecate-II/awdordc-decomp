@@ -207,7 +207,7 @@ void func_02049270(void) {
 
 }
 
-s32 func_02049274(s32 arg0) {
+s32 gpiStringDup(s32 arg0) {
     s32 func_02037794(s32);
     s32 StringLength();
     M2C_UNK func_02068c50(s32, s32);
@@ -433,7 +433,7 @@ s32 func_02049900(void) {
     return M2C_FIELD(&data_0213dc60, s32 *, 4);
 }
 
-void func_02049910(int *out) {
+void gpiGetTime(int *out) {
 int func_02006f8c(void); unsigned long long func_02007004(void);
 unsigned long long func_02072088(unsigned long long, unsigned long long);
 extern char data_020fcdf0[],data_020fce10[],data_020fcdd8[];

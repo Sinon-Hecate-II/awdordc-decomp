@@ -1,5 +1,6 @@
 /* 24 functions from 0x0208ABC4 to 0x0208B884 (main), found by ds-decomp. */
 #include "common.h"
+extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
 typedef struct {
     u8 unk_0x00[0x58];
@@ -8,6 +9,9 @@ typedef struct {
     s32 unk_0x58_8 : 24;
 } Unk0208ABC4;
 
+typedef struct { u32 width:9; u32 height:9; u32 rest:14; } WindowSize0208;
+typedef struct { u16 low:6; u16 window:2; u16 high:8; } WindowControl0208;
+typedef struct { s32 x, y; } WindowOrigin0208;
 u8 func_0208b5a8(void);
 
 /* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
@@ -153,7 +157,71 @@ void func_0208af20(void *arg0) {
     func_0208a714(arg0);
 }
 
-M2C_UNK func_0208af98(M2C_UNK arg0, M2C_UNK arg1) { return 0; }
+void func_0208af98(void *p) {
+ s32 EaseInterpolate(s32,s32,s32,s32,s32); void func_02088d94(void*);void func_02089c80(void*);s32 func_020890d4();void func_0209b67c(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
+ s32 bottom,right,tx,ty,j,maxw,i,depth,y,x,height,width; u8 alpha;u32 tile,mode,count;u16 frame;void *old,*engine; WindowControl0208 *volatile control;u8 *widths,*aligns;s32 w; u16 kind;
+ frame=(u16)(0x1000|(0x3ff&(0xa0>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
+ tile=M2C_FIELD(p,u16*,0x3e)<<5;
+ width=((WindowSize0208*)((u8*)p+0x40))->width;height=((WindowSize0208*)((u8*)p+0x40))->height;
+ x=M2C_FIELD(p,s16*,0x34);y=M2C_FIELD(p,s16*,0x36);depth=M2C_FIELD(p,s8*,0x49);alpha=4;
+ mode=(u32)(M2C_FIELD(p,u8*,0x48)<<26)>>30;
+ switch(mode){
+ case 1:
+  M2C_FIELD(p,u8*,0x4b)++;
+  if(M2C_FIELD(p,u8*,0x4b)>=M2C_FIELD(p,u8*,0x4a)){
+   M2C_FIELD(p,u32*,0x58)=(M2C_FIELD(p,u32*,0x58)&~0x38)|0x10;
+   M2C_FIELD(p,u8*,0x48)&=~0x30;
+   if(M2C_FIELD(p,void**,0x5c))func_02088d94(M2C_FIELD(p,void**,0x5c));
+   if(M2C_FIELD(p,void**,0x60))func_02088d94(M2C_FIELD(p,void**,0x60));
+  }
+  width=(EaseInterpolate(4,0,width,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a))+4)&~7;
+  x+=((s32)(((WindowSize0208*)((u8*)p+0x40))->width)-width)/2;
+  if(!((u32)(M2C_FIELD(p,u32*,0x58)<<18)>>31))alpha=(u8)EaseInterpolate(0,0,4,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a));
+  break;
+ case 2:
+  M2C_FIELD(p,u8*,0x4b)++;
+  if(M2C_FIELD(p,u8*,0x4b)>=M2C_FIELD(p,u8*,0x4a))func_02089c80(p);
+  width=(EaseInterpolate(4,width,0,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a))+4)&~7;
+  x+=((s32)(((WindowSize0208*)((u8*)p+0x40))->width)-width)/2;
+  alpha=(u8)EaseInterpolate(0,4,0,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a));
+  break;
+ }
+ right=x+width;bottom=y+height;old=gCur3DSpriteEngine;
+ for(i=0;i<2;i++){
+  engine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=engine;
+  mode=(u32)(M2C_FIELD(p,u8*,0x48)<<28)>>29;
+  if((mode!=0||engine==g3DSpriteEngineMain)&&(mode!=1||engine==g3DSpriteEngineSub)&&(mode!=3||engine==old)){
+   if((u8)((u32)(M2C_FIELD(p,u32*,0x58)<<21)>>31)){
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x48)=x;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x4a)=y;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x49)=right;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x4b)=bottom;
+    control=(WindowControl0208*)((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0)+0x12);control->window=3;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x51)=0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x52)=0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u8*,0x53)=alpha;
+   }
+   if(!func_020890d4(p)){
+    maxw=0;count=(u32)(M2C_FIELD(p,u32*,0x58)<<10)>>28;
+    if(count){widths=M2C_FIELD(p,u8**,0x68);for(j=0;j<count;j++)if(maxw<*widths++)maxw=M2C_FIELD(p,u8**,0x68)[j];}
+    j=0;if(j<count){ty=y+8;tx=x+(width-maxw)/2;
+    do {
+     w=M2C_FIELD(p,u8**,0x68)[j];
+     kind=(u16)(0x2000|(0x3ff&((tile>>5)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
+     switch(M2C_FIELD(p,u8**,0x6c)[j]){
+      case 2:func_0209b67c((u16)tx,(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+      case 3:func_0209b67c((u16)(tx+maxw-w),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+      default:func_0209b67c((u16)(x+(width-(s32)w)/2),(u16)ty,(u16)((w+31)&~31),kind,depth);break;
+     }
+     tile+=((((s32)w+7)>>3)+3>>2)<<8;
+     ty+=16;j++;
+    }while(j<((u32)(M2C_FIELD(p,u32*,0x58)<<10)>>28));
+   }}
+   if(width>=8&&height>=8)func_0208e18c((s16)x,(s16)y,(s16)width,(s16)height,frame,depth);
+  }
+ }
+ gCur3DSpriteEngine=old;
+}
 
 void func_0208b4e4(void) {
     M2C_UNK func_0208a750();

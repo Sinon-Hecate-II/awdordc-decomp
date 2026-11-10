@@ -1,6 +1,6 @@
 /* 19 functions from 0x0204D5C0 to 0x0204E408 (main), found by ds-decomp. */
 #include "common.h"
-void func_02058644(void **,void *);
+void gpiSetErrorString(void **,void *);
 
 void func_0204d5c0(void *arg0) { }
 
@@ -45,11 +45,11 @@ s32 func_0204db50(void **arg0) {
 }
 
 s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
- void func_02058644(void **,void *);
+ void gpiSetErrorString(void **,void *);
  extern s32 data_020fda24;
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
- if(arg1<0 || arg1>=6) {func_02058644(arg0,&data_020fda24); return 2;}
+ if(arg1<0 || arg1>=6) {gpiSetErrorString(arg0,&data_020fda24); return 2;}
  p=(char *)p+arg1*8;
  M2C_FIELD(p,s32 *,0x1a4)=arg2;
  M2C_FIELD(p,s32 *,0x1a8)=arg3;
@@ -58,13 +58,13 @@ s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
 
 s32 func_0204dbd4(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s32 *,s32),s32 e){
  s32 func_02050f98(void **,void *,void *,void *,void *,s8 *,s8 *,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
- void func_02058644(void **,void *);
+ void gpiSetErrorString(void **,void *);
  extern M2C_UNK data_020fda34,data_020fda44;
  void *q;
  if(!p || !(q=*p))return 2;
  if(!a || !*a)return 2;
  if(!b || !*b)return 2;
- if(!cb){func_02058644(p,&data_020fda34);return 2;}
+ if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
  if(M2C_FIELD(q,s32 *,0x108)){
  s32 buf[8]={0};cb(p,buf,e);return 0;
  }
@@ -90,10 +90,10 @@ void func_0204dcd8(void **arg0) {
 
 s32 func_0204dd0c(void **p,s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,void (*cb)(void **,s32 *,s32),s32 h){
  s32 func_020560e4(void **,s32,s32,s32,s32,s32,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
- void func_02058644(void **,void *);extern M2C_UNK data_020fda34;
+ void gpiSetErrorString(void **,void *);extern M2C_UNK data_020fda34;
  s32 buf[4];s32 *result;void *q;
  if(!p || !(q=*p))return 2;
- if(!cb){func_02058644(p,&data_020fda34);return 2;}
+ if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
  if(M2C_FIELD(q,s32 *,0x108)){
  result=(s32 *)buf;
  *(volatile s32 *)(result+2)=0;
@@ -112,9 +112,9 @@ s32 func_02053c9c(void **,s32,s32,s32,void (*)(void **,s32 *,s32),s32);
 extern M2C_UNK data_020fda34;extern s32 data_020fda48;
 void *q;
 if(!p || !(q=*p) || !a)return 2;
-if(!cb){func_02058644(p,&data_020fda34);return 2;}
+if(!cb){gpiSetErrorString(p,&data_020fda34);return 2;}
 if(M2C_FIELD(q,s32 *,0x108)){s32 buf[129]={0};cb(p,buf,d);return 0;}
-if(M2C_FIELD(q,s32 *,0x1d8)==4){func_02058644(p,&data_020fda48);return 2;}
+if(M2C_FIELD(q,s32 *,0x1d8)==4){gpiSetErrorString(p,&data_020fda48);return 2;}
 return func_02053c9c(p,a,b,c,cb,d);
 }
 
@@ -124,7 +124,7 @@ s32 func_0204deb0(void **arg0,s32 arg1,s32 arg2) {
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {func_02058644(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
  return func_0205342c(arg0,arg1,arg2);
 }
 
@@ -141,11 +141,11 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
     if (!connection || !(session = *connection)) return 2;
     if (M2C_FIELD(session, s32 *, 0x108)) return 0;
     if (M2C_FIELD(session, s32 *, 0x1d8) == 4) {
-        func_02058644(connection, &data_020fda48);
+        gpiSetErrorString(connection, &data_020fda48);
         return 2;
     }
     if (!reason) {
-        func_02058644(connection, &data_020fda78);
+        gpiSetErrorString(connection, &data_020fda78);
         return 2;
     }
     func_020580fc(buf, reason, 0x401);
@@ -173,7 +173,7 @@ s32 func_0204e074(void **arg0,s32 arg1) {
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {func_02058644(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
  return func_0204fa60(arg0,arg1);
 }
 
@@ -187,7 +187,7 @@ s32 func_0204e0c4(void **arg0,s32 arg1) {
  void *p;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {func_02058644(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
  if(func_02055b84(arg0,arg1,&sp0)==0) return 0;
  M2C_FIELD(sp0,s32 *,0x14)--;
  if(M2C_FIELD(p,s32 *,0x100)==0 && M2C_FIELD(sp0,s32 *,0x14)<=0) {
@@ -209,18 +209,18 @@ s32 func_0204e184(void **arg0,volatile s32 *arg1) {
 s32 func_0204e1b4(void **p,s32 index,void *out){
  void *func_02055d3c(void **,s32);
  void func_020580fc(void *,s8 *,s32);
- void func_02058644(void **,void *);
+ void gpiSetErrorString(void **,void *);
  void func_020640a8(void *,void *,void *,s32);
  void func_02065210(void *,s32,s32);
  extern M2C_UNK data_020fda10,data_020fdac4,data_020fdad4,data_020fdae4,data_020fdaf0;
  void *q,*entry,*details; s8 *text; s32 count;
  if(!p || !(q=*p))return 2;
  if(M2C_FIELD(q,s32 *,0x108)){func_02065210(out,0,0x210);return 0;}
- if(!out){func_02058644(p,&data_020fdac4);return 2;}
+ if(!out){gpiSetErrorString(p,&data_020fdac4);return 2;}
  count=M2C_FIELD(q,s32 *,0x430);
- if(index<0 || index>=count){func_02058644(p,&data_020fdad4);return 2;}
+ if(index<0 || index>=count){gpiSetErrorString(p,&data_020fdad4);return 2;}
  entry=func_02055d3c(p,index);
- if(!entry){func_02058644(p,&data_020fdad4);return 2;}
+ if(!entry){gpiSetErrorString(p,&data_020fdad4);return 2;}
  details=M2C_FIELD(entry,void **,8);
  if(!details)func_020640a8(&data_020fdae4,&data_020fdaf0,&data_020fda10,0x5cf);
  M2C_FIELD(out,s32 *,0)=M2C_FIELD(entry,s32 *,0);
@@ -259,7 +259,7 @@ s32 func_0204e3b0(void **arg0,s32 arg1) {
  void *p; s32 result;
  if(arg0==0 || (p=*arg0)==0) return 2;
  if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {func_02058644(arg0,&data_020fda48);return 2;}
+ if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&data_020fda48);return 2;}
  result=func_0204fb50(arg0,arg1);
  if(result==0) return 0;
  return result;

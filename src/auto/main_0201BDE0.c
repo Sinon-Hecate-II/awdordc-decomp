@@ -42,7 +42,7 @@ s32 func_0201bec8(s32 arg0) {
 M2C_UNK func_0201bee4(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  extern M2C_UNK data_0212dca4,data_021374f8;
  if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&data_0212dca4,void **,4)!=&data_021374f8) {
- func_0201b524(0,0,a,b,c);return;
+ TcpSendSegment(0,0,a,b,c);return;
  }
  func_0201aca0(func_0201a704(M2C_FIELD(a,s32 *,28)));
 }

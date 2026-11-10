@@ -487,7 +487,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     s32 func_ov000_0216a7c4(void);
     void *func_01ffa3dc(void *, s32);
     void func_02007f8c(void *, s32, s32);
-    void func_0203804c(void *, void *, s32, void *, void *, s32, s32, void *, s32);
+    void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
     void func_02038688(void *, s32, void *, s32);
     void func_02074114(void *, s32, s32, void *, void *);
 
@@ -509,7 +509,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     func_ov010_02226a88();
     r4=func_020c4acc();
     obj=func_020c4b60();
-    func_0203804c(&data_ov010_0222f1dc,(u8 *)r4+4,0x2b96,&data_ov010_0222c3f0,&data_ov010_0222c3fc,0,0,(u8 *)obj+4,60);
+    InitNetSession(&data_ov010_0222f1dc,(u8 *)r4+4,0x2b96,&data_ov010_0222c3f0,&data_ov010_0222c3fc,0,0,(u8 *)obj+4,60);
     func_ov010_02228b20(b);
     func_ov010_02228b38(c);
     func_ov010_02228b68(d);

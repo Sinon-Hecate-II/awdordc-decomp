@@ -15,7 +15,7 @@ func_ov010_022228c0 kind:function(arm,size=0x24c) addr:0x022228c0
 func_ov010_02222b0c kind:function(arm,size=0x11c) addr:0x02222b0c
 func_ov010_02222c28 kind:function(arm,size=0x74) addr:0x02222c28
 func_ov010_02222c9c kind:function(arm,size=0x10) addr:0x02222c9c
-func_ov010_02222cac kind:function(arm,size=0x27c) addr:0x02222cac
+Link_BuildNextPacket kind:function(arm,size=0x27c) addr:0x02222cac
 func_ov010_02222f28 kind:function(arm,size=0x1ec) addr:0x02222f28
 func_ov010_02223114 kind:function(arm,size=0xc0) addr:0x02223114
 func_ov010_022231d4 kind:function(arm,size=0x10c) addr:0x022231d4
@@ -414,11 +414,11 @@ data_ov010_0222c914 kind:data(any) addr:0x0222c914
 data_ov010_0222c928 kind:data(any) addr:0x0222c928
 data_ov010_0222c93c kind:data(any) addr:0x0222c93c
 data_ov010_0222c960 kind:bss addr:0x0222c960
-data_ov010_0222c970 kind:bss addr:0x0222c970
+gLinkCodecState kind:bss addr:0x0222c970
 data_ov010_0222c98c kind:bss addr:0x0222c98c
 data_ov010_0222c998 kind:bss addr:0x0222c998
 data_ov010_0222cb54 kind:bss addr:0x0222cb54
-data_ov010_0222cfa0 kind:bss addr:0x0222cfa0
+gLinkPacketBuffers kind:bss addr:0x0222cfa0
 data_ov010_0222d6b8 kind:bss addr:0x0222d6b8 ambiguous
 data_ov010_0222d878 kind:bss addr:0x0222d878
 data_ov010_0222d880 kind:bss addr:0x0222d880
@@ -439,7 +439,7 @@ data_ov010_0222d974 kind:bss addr:0x0222d974
 data_ov010_0222ddb4 kind:bss addr:0x0222ddb4
 data_ov010_0222e544 kind:bss addr:0x0222e544 ambiguous
 data_ov010_0222edb4 kind:bss addr:0x0222edb4
-data_ov010_0222edc0 kind:bss addr:0x0222edc0
+gLinkConfig kind:bss addr:0x0222edc0
 data_ov010_0222edd8 kind:bss addr:0x0222edd8
 data_ov010_0222edf8 kind:bss addr:0x0222edf8
 data_ov010_0222ee14 kind:bss addr:0x0222ee14

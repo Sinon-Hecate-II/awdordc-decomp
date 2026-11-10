@@ -6,7 +6,7 @@ typedef struct InitState4E { u8 pad[0x1a4]; InitPair4E pairs[6]; } InitState4E;
 #pragma opt_common_subs off
 s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
     M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
-    M2C_UNK func_02058644(void **, M2C_UNK *);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     s32 func_02068d98(s8 *, void *);
     extern M2C_UNK data_020fda48;
     extern s8 data_020fda94;
@@ -29,15 +29,15 @@ s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
         return 0;
     }
     if (M2C_FIELD(temp_r4, s32 *, 0x1D8) == 4) {
-        func_02058644(arg0, &data_020fda48);
+        gpiSetErrorString(arg0, &data_020fda48);
         return 2;
     }
     if (arg2 == NULL) {
-        func_02058644(arg0, &data_020fdaf8);
+        gpiSetErrorString(arg0, &data_020fdaf8);
         return 2;
     }
     if (arg3 == NULL) {
-        func_02058644(arg0, &data_020fdb10);
+        gpiSetErrorString(arg0, &data_020fdb10);
         return 2;
     }
     func_020580fc(sp100, arg2, 0x100);
@@ -79,15 +79,15 @@ s32 func_0204e408(void **arg0, s32 arg1, s8 *arg2, s8 *arg3) {
 }
 #pragma opt_common_subs reset
 s32 func_0204e634(void **arg0,s32 arg1,s32 arg2) {
-s32 func_0204f978(void **,s32,s32,s32);
-M2C_UNK func_02058644(void **,M2C_UNK *);
+s32 gpiSendMessageToPlayer(void **,s32,s32,s32);
+M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
 extern M2C_UNK data_020fda48; extern M2C_UNK data_020fdb50;
 void *p;
 if(arg0==0 || (p=*arg0)==0)return 2;
 if(M2C_FIELD(p,s32 *,0x108)!=0)return 0;
-if(M2C_FIELD(p,s32 *,0x1d8)==4){func_02058644(arg0,&data_020fda48);return 2;}
-if(arg2==0){func_02058644(arg0,&data_020fdb50);return 2;}
-return func_0204f978(arg0,arg1,1,arg2);
+if(M2C_FIELD(p,s32 *,0x1d8)==4){gpiSetErrorString(arg0,&data_020fda48);return 2;}
+if(arg2==0){gpiSetErrorString(arg0,&data_020fdb50);return 2;}
+return gpiSendMessageToPlayer(arg0,arg1,1,arg2);
 }
 
 s32 func_0204e6a8(void **a,s32 b,s32 c){void *func_02037794(s32);s32 func_020558e8(void **);s32 func_0204e84c(void **);void func_0204e7f0(void **);void func_02065210(void *,s32,s32);void func_02058170(void **,void *,...);extern u8 data_020fdb70[];InitState4E *p;s32 i,r;*a=0;p=func_02037794(0x490);if(!p)return 1;func_02065210(p,0,0x490);M2C_FIELD(p,u8 *,0)=0;M2C_FIELD(p,s32 *,0x418)=0;M2C_FIELD(p,s32 *,0x100)=1;M2C_FIELD(p,s32 *,0x104)=0;M2C_FIELD(p,s32 *,0x108)=0;M2C_FIELD(p,s32 *,0x10c)=0;M2C_FIELD(p,s32 *,0x46c)=b;M2C_FIELD(p,s32 *,0x470)=c;if(!func_020558e8((void **)&p)){func_020377c4(p);p=0;return 1;}M2C_FIELD(p,s32 *,0x420)=0;for(i=0;i<6;i++){p->pairs[i].first=0;p->pairs[i].second=0;}M2C_FIELD(p,s32 *,0x460)=0;func_02058170((void **)&p,data_020fdb70);r=func_0204e84c((void **)&p);if(r){func_0204e7f0((void **)&p);return r;}func_0204926c();func_02049208();func_020677a8();*a=p;return 0;}
@@ -125,14 +125,14 @@ s32 gpiHandleServerData(void *ctx) {
         gGpiMsgOutOfMemory[], gGpiMsgNoOperation[], gGpiKeyBm[], gGpiKeyKa[], gGpiMsgUnsolicited[],
         gGpiMsgServerClosed[];
     void func_02052e18(void *, void *);
-    s32 func_02050430(void *, s32, void *, s32 *, s32, void *);
-    s32 func_02050208(void *, s32, void *, s32 *, s32 *, void *);
+    s32 gpiSendBufferedData(void *, s32, void *, s32 *, s32, void *);
+    s32 gpiReceiveData(void *, s32, void *, s32 *, s32 *, void *);
     void func_02058620(void *, s32, void *);
     void func_02050744(void *, s32, s32);
     u8 *func_02068fdc(void *, void *);
     void func_02058170(void **, void *, ...);
     void *func_020377a8(void *, s32);
-    s32 func_02058644(void **, s32 *);
+    s32 gpiSetErrorString(void **, s32 *);
     void MemCopy(void *, void *, s32);
     void func_020651c4(void *, void *, s32);
     s32 func_0206ad38(void *);
@@ -151,9 +151,9 @@ s32 gpiHandleServerData(void *ctx) {
 
     do {
         func_02052e18(ctx, conn + 0x1f4);
-        result = func_02050430(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1f4, &connectionClosed, 1, gGpiConnTag);
+        result = gpiSendBufferedData(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1f4, &connectionClosed, 1, gGpiConnTag);
         if (result) return result;
-        result = func_02050208(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1dc, &lineLen, &connectionClosed, gGpiConnTag);
+        result = gpiReceiveData(ctx, M2C_FIELD(conn, s32 *, 0x1d4), conn + 0x1dc, &lineLen, &connectionClosed, gGpiConnTag);
         if (result) {
             if (result != 3) return result;
             func_02058620(ctx, 5, gGpiMsgRecvError);
@@ -169,7 +169,7 @@ s32 gpiHandleServerData(void *ctx) {
                 M2C_FIELD(conn, s32 *, 0x1f0) += lineLen < 0x800 ? 0x800 : lineLen;
                 newBuf = func_020377a8(M2C_FIELD(conn, void **, 0x1ec), M2C_FIELD(conn, s32 *, 0x1f0) + 1);
                 if (!newBuf) {
-                    func_02058644(ctx, gGpiMsgOutOfMemory);
+                    gpiSetErrorString(ctx, gGpiMsgOutOfMemory);
                     return 1;
                 }
                 M2C_FIELD(conn, void **, 0x1ec) = newBuf;

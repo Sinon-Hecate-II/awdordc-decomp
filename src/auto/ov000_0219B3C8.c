@@ -5,7 +5,7 @@
 #pragma opt_strength_reduction off
 void func_ov000_0219b3c8(void) {
     void func_01ffada0(s32, s32, s32, s32, s32);
-    s32 func_ov000_021a97e0(s32, s32);
+    s32 GetUnitMoveRange(s32, s32);
     void func_ov000_0219c508(void *, s32);
     s32 func_020d27ec(s32, u8);
     s32 func_ov000_021a91d0(s32);
@@ -27,9 +27,9 @@ void func_ov000_0219b3c8(void) {
 
     rec = (u8 *)data + 0x6c60;
 
-    sp4 = func_ov000_021a97e0(*(u16 *)((u8 *)*gCurrentMap + 0x52a4), 1);
+    sp4 = GetUnitMoveRange(*(u16 *)((u8 *)*gCurrentMap + 0x52a4), 1);
 
-    maxDist = func_ov000_021a97e0(*(u16 *)((u8 *)*gCurrentMap + 0x52a4), 2);
+    maxDist = GetUnitMoveRange(*(u16 *)((u8 *)*gCurrentMap + 0x52a4), 2);
 
     func_ov000_0219c508((u8 *)*gCurrentMap + 0x3250, 0);
 

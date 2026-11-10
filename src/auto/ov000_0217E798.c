@@ -63,8 +63,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     s32 func_020d27a4(s32, s32);
     s32 func_ov000_021a9214(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
-    s32 func_ov000_021a97d0(s32, s32);
-    s32 func_ov000_021a97e0(s32, s32);
+    s32 GetUnitDamagePercent(s32, s32);
+    s32 GetUnitMoveRange(s32, s32);
     s32 func_ov000_021a9820(s32, s32);
     s32 func_ov000_021a9d8c(s16, s16);
     void func_ov000_02198f60(void);
@@ -137,7 +137,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                     } else {
                         owner = 0;
                     }
-                    range = func_ov000_021a97e0(owner, (s32)((u32)(p[0] << 26) >> 26)) + 7;
+                    range = GetUnitMoveRange(owner, (s32)((u32)(p[0] << 26) >> 26)) + 7;
                     if (range < dist) continue;
                     if (data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x13] & 7) {
                         func_01ffc2e8(p);
@@ -145,7 +145,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                         if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8), s8 *, x) < 0) continue;
                     }
                 }
-                if (func_ov000_021a97d0((s32)((u32)(p[0] << 26) >> 26), 0x16) >= 0xa) count++;
+                if (GetUnitDamagePercent((s32)((u32)(p[0] << 26) >> 26), 0x16) >= 0xa) count++;
             }
         }
         if (count != 0) {

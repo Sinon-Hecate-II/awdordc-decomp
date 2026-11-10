@@ -224,5 +224,23 @@ enum {
     GPI_PLAYER_STATE_KEYS   = 2  /* a key/value section has been applied */
 };
 
+/* State of a gpi peer connection (peer->state at +0x00). */
+enum {
+    GPI_PEER_STATE_CREATED     = 100, /* allocated, no challenge answered yet */
+    GPI_PEER_STATE_CHALLENGED  = 101, /* challenge sent, awaiting the answer */
+    GPI_PEER_STATE_HANDSHAKING = 104, /* exchanging the peer's connection fields */
+    GPI_PEER_STATE_CONNECTED   = 105, /* ready: relay game data messages */
+    GPI_PEER_STATE_ERROR       = 106  /* failed; the peer is torn down */
+};
+
+/* Message kinds carried in a gpi message's \m\ field. */
+enum {
+    GPI_MSG_PLAYER_INFO     = 1,   /* player id/name announcement */
+    GPI_MSG_CHALLENGE       = 102, /* challenge request */
+    GPI_MSG_CHALLENGE_REPLY = 103, /* answer to a challenge request */
+    GPI_MSG_GAME_DATA_FIRST = 200,
+    GPI_MSG_GAME_DATA_LAST  = 208
+};
+
 #endif
 

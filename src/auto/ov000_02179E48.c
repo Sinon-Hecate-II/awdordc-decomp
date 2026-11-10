@@ -14,7 +14,7 @@ s32 func_ov000_02179e48(void *pos){
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5c08;
 s32 func_ov000_021a98e4(s32);
-u16 func_ov000_021a97e0(u16,s32);
+u16 GetUnitMoveRange(u16,s32);
 s32 func_ov000_021a9820(u16,u32);
 s32 bx,by,kind,min,range,best;
 s32 x,dist,dy,cx,y,x1,cy,x0,y1,negative;
@@ -29,7 +29,7 @@ map=*gCurrentMap;
 kind=(u32)(M2C_FIELD(M2C_FIELD(map,u8 **,0x52d0),u8 *,0)<<26)>>26;
 if(kind==21){
 min=0;
-range=func_ov000_021a97e0(M2C_FIELD(map,u16 *,0x52a4),17)+1;
+range=GetUnitMoveRange(M2C_FIELD(map,u16 *,0x52a4),17)+1;
 }else{
 min=M2C_FIELD(&data_ov000_021b5c08,u8 *,kind*112);
 range=func_ov000_021a9820(M2C_FIELD(map,u16 *,0x52a4),kind);
@@ -158,7 +158,7 @@ data_027e0a98+=4;data_027e0a94=(void *)((s32)data_027e0a94+1);
 void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void FillMapLayer(s32);
     void SelectMapLayer(void *);
-    u16 func_ov000_021a97e0(u16, s32);
+    u16 GetUnitMoveRange(u16, s32);
     extern void **gCurrentMap;
     void func_01ffb454(s32);
     extern s8 data_027e0a8c;
@@ -182,7 +182,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     *(u16 *)((u8 *)base + 0x20) = (u16)arg3;
 
     *(u16 *)((u8 *)data_027e00cc + 0x22) =
-        func_ov000_021a97e0(*(u16 *)((u8 *)(*gCurrentMap) + 0x52A4), arg2);
+        GetUnitMoveRange(*(u16 *)((u8 *)(*gCurrentMap) + 0x52A4), arg2);
     func_01ffb454(arg2);
 
     M2C_FIELD(data_027e0a98, u8 *, 0) = (u8)arg0;
@@ -339,13 +339,13 @@ u8 func_ov000_0217ab10(s32 arg0, s32 arg1, s32 arg2) {
 
 u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
  extern void **gCurrentMap;
- s32 func_ov000_021a97d0(s32, s32);
+ s32 GetUnitDamagePercent(s32, s32);
  void *base;
  u8 id;
  if (func_ov000_0217ab10(arg0,arg1,0) == 0) return 0;
  base = *gCurrentMap;
  id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
- return func_ov000_021a97d0(arg2, ((u32)(M2C_FIELD(base + id * 14, u8 *, 0x59A4) << 26) >> 26)) > 1;
+ return GetUnitDamagePercent(arg2, ((u32)(M2C_FIELD(base + id * 14, u8 *, 0x59A4) << 26) >> 26)) > 1;
 }
 
 u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {

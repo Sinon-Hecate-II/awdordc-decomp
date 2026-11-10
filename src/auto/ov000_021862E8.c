@@ -3,12 +3,12 @@
 
 void func_ov000_021862e8(s32 arg0) {
 void FillMapLayer(s32); void SelectMapLayer(void *);
-s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32); void func_ov000_02186070(u8,s32);
+s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32); void MarkPlayerThreatsToUnit(u8,s32);
 extern void **gCurrentMap;
 u16 saved; s32 i; void *base;
 base=*gCurrentMap; saved=M2C_FIELD(base,u16 *,0x52b6);
 SelectMapLayer(base+0x2338); FillMapLayer(-1); SelectMapLayer(*gCurrentMap+0x1e30);
-for(i=1;i<5;i++){if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i)==0)func_ov000_02186070(i,arg0);}
+for(i=1;i<5;i++){if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i)==0)MarkPlayerThreatsToUnit(i,arg0);}
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=saved;
 }
 
@@ -78,7 +78,7 @@ void func_ov000_02186a18(void) {
     extern s8 data_ov000_021e0f60[];
     s32 func_ov000_021a98e4(u32);
     u8 func_ov000_0218695c(void *);
-    s32 func_ov000_02185fb8(void *, void *, s32);
+    s32 IsWithinAttackRange(void *, void *, s32);
     void func_ov000_02186940(void *);
     void func_01ffc328(void *);
     u8 func_ov000_021a9d8c(u32, s32);
@@ -101,7 +101,7 @@ void func_ov000_02186a18(void) {
         unit = (u8 *)*gCurrentMap + 0x59a4;
         if (((u32)(unit[i * 0xe] << 26) >> 26) == 0) continue;
         if (!func_ov000_0218695c(unit + i * 0xe)) continue;
-        if (!func_ov000_02185fb8(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), unit + i * 0xe, 0)) continue;
+        if (!IsWithinAttackRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), unit + i * 0xe, 0)) continue;
         func_ov000_02186940(unit + i * 0xe);
         func_01ffc328(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
         fy = -1;

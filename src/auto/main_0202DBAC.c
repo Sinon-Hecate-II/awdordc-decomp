@@ -5,10 +5,10 @@ void func_0202dfa8(void *);
 void func_0202e12c(M2C_UNK);
 void func_0202e02c(M2C_UNK,void *);
 
-s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
-    void *func_0202daf4(void **, s32, s32);
-    M2C_UNK func_0202ec98(void *, s32);
-    void func_0202db80(void *);
+s32 Sound_StartPlayer(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
+    void *Sound_AcquirePlayer(void **, s32, s32);
+    M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
+    void Sound_ReleasePlayer(void *);
     u64 func_02072088(u64, u64);
     void func_0202eec0(void *);
     void func_0202eed8(void *, s32, s32);
@@ -25,14 +25,14 @@ s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s
     s32 cap;
     s32 c0;
 
-    p = func_0202daf4(a, c, d);
+    p = Sound_AcquirePlayer(a, c, d);
     pb = b;
     if (p == 0) {
         return 0;
     }
-    func_0202ec98(p, *(s32 *)pb);
+    Sound_SetPlayerCallbacks(p, *(s32 *)pb);
     if (M2C_FIELD(p, s32 (**)(void *, s32), 0x164)(p, *(s32 *)pb) == 0) {
-        func_0202db80(p);
+        Sound_ReleasePlayer(p);
         return 0;
     }
 
@@ -75,7 +75,7 @@ s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s
 
     if (func_0202df70(p, cap, (s32)((u8 *)p + 0x126)) == 0) {
         M2C_FIELD(p, void (**)(void *), 0x168)(p);
-        func_0202db80(p);
+        Sound_ReleasePlayer(p);
         return 0;
     }
 
@@ -85,7 +85,7 @@ s32 func_0202dbac(void **a, void *b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s
         if (func_0202b56c(p, active, M2C_FIELD(p, s32 *, 0x12C), q, M2C_FIELD(p, u16 *, 0xC6), 4, (M2C_UNK)func_0202e1f4, (M2C_UNK)p) == 0) {
             func_0202dfa8(p);
             M2C_FIELD(p, void (**)(void *), 0x168)(p);
-            func_0202db80(p);
+            Sound_ReleasePlayer(p);
             return 0;
         }
     }
@@ -142,14 +142,14 @@ void func_0202de74(void *arg0) {
 }
 
 M2C_UNK func_0202df0c(void *arg0) {
-void func_0202e02c(M2C_UNK,void *); void func_0202db80(void *);
+void func_0202e02c(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
 extern M2C_UNK data_0213c920; extern M2C_UNK data_0213c290;
 if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
 func_0202dfa8(arg0);
 M2C_FIELD(arg0,void (**)(void *),0x168)(arg0);
 func_0202e02c((M2C_UNK)&data_0213c920,arg0);
 if(M2C_FIELD(&data_0213c290,void **,4)) func_0202e02c((M2C_UNK)((u8 *)M2C_FIELD(&data_0213c290,void **,4)+0x4e0),arg0);
-func_0202db80(arg0);
+Sound_ReleasePlayer(arg0);
 }
 
 s32 func_0202df70(void *arg0,s32 arg1,s32 arg2) {
@@ -330,7 +330,7 @@ void func_0202e1f4(M2C_UNK arg0, s32 arg1, M2C_UNK *arg2, M2C_UNK arg3, void *ar
 void func_0202e32c(void *arg0) {
     void *self = arg0;
     s32 *func_0202c1cc(s32);
-    M2C_UNK func_0202ec98(void *, s32);
+    M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     u64 func_02072088(u64, u64);
     s32 *temp;
     u8 temp_r6;
@@ -351,7 +351,7 @@ void func_0202e32c(void *arg0) {
     temp_r6 = M2C_FIELD(self, u8 *, 0xC0);
     temp_r7 = M2C_FIELD(self, u16 *, 0xC4);
     M2C_FIELD(self, M2C_UNK (**)(void *), 0x168)(self);
-    func_0202ec98(self, *temp);
+    Sound_SetPlayerCallbacks(self, *temp);
     if (M2C_FIELD(self, s32 (**)(void *, s32), 0x164)(self, *temp) == 0) {
         return;
     }

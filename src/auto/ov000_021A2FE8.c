@@ -210,7 +210,7 @@ id=func_ov000_021a6150(3);
 if(id==-1){func_ov000_021a0204();return 0;}
 record=gAiTargetCandidates+12*id;
 func_01ffada0(record[0],record[1],2,110,0);
-for(i=0;i<func_ov000_021a97e0(M2C_FIELD(*gCurrentMap,u16*,0x52a4),24);i++)
+for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16*,0x52a4),24);i++)
 func_ov000_021a34bc((u8)(i+111));
 c7=0;c8=0;c11=0;c18=0;y=0;c14=0;flag=0;
 base=*gCurrentMap;

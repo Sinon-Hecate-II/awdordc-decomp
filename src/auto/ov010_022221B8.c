@@ -66,13 +66,13 @@ case 4: func_ov010_02221474((u8 *)arg0+4,arg1,arg2,arg3); return;
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
 s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void func_ov010_0222393c(void *,u32,s32);void func_ov010_022232e0(void);void func_ov010_02225288(void);
-extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,data_ov010_0222edc0;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 data_ov010_0222c998[];
+extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,gLinkConfig;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 data_ov010_0222c998[];
 s32 i; s32 saved; s32 n; u8 x,y; u8 *t;
 saved=func_020070a4();
 M2C_FIELD(&data_ov010_0222c960,u16 *,0)=saved; data_ov010_0222c000=1;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
-if(M2C_FIELD(&data_ov010_0222edc0,s32 *,16)==1)M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=0;
+if(M2C_FIELD(&gLinkConfig,s32 *,16)==1)M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=0;
 else M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=4;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x24)=0x440;
 n=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
@@ -163,7 +163,7 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
 #pragma push
 #pragma opt_common_subs off
 s32 func_ov010_022227b0(void *src,s32 len){
-extern M2C_UNK data_ov010_0222c960; extern void *data_ov010_0222c98c[];extern u8 data_ov010_0222cfa0[];
+extern M2C_UNK data_ov010_0222c960; extern void *data_ov010_0222c98c[];extern u8 gLinkPacketBuffers[];
 void func_02007ef4(void *,void *,s32);s64 func_02007004(void);s32 func_02072088(s64,s32,s32);
 s32 found=0; s32 off;u8 *p;u16 n;s32 mode;u32 magic=0x5f564354;
 if(len!=M2C_FIELD(&data_ov010_0222c960,s32 *,0x24))return found;
@@ -171,7 +171,7 @@ if(!M2C_FIELD(&data_ov010_0222c960,s32 *,0x20))return found;
 {s32 i=0;goto test;loop:{if(data_ov010_0222c98c[i] && M2C_FIELD(data_ov010_0222c98c[i],s32 *,12)==2){found=1;goto done;}i++;}test:if((u32)i<3)goto loop;done:;}
 if(!found)return 0;
 if(M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)&1){magic=0x5f564354;off=0;}else{magic=0x5f564354;off=0x460;}
-p=data_ov010_0222cfa0+off;
+p=gLinkPacketBuffers+off;
 mode=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
 M2C_FIELD(p,u32 *,0)=magic;
 if(mode>=2)func_02007ef4(src,p+16,len);else func_02007ef4(src,p+12,len);
@@ -279,9 +279,9 @@ return result;
 
 #pragma pop
 s32 func_ov010_02222c28(s32 arg0) {
-extern M2C_UNK data_ov010_0222edc0; extern u8 data_ov010_0222be2d[]; extern u8 data_ov010_0222be2c[]; extern M2C_UNK data_ov010_0222c960;
+extern M2C_UNK gLinkConfig; extern u8 data_ov010_0222be2d[]; extern u8 data_ov010_0222be2c[]; extern M2C_UNK data_ov010_0222c960;
 if(arg0>=5) return 0;
-if(M2C_FIELD(&data_ov010_0222edc0,s32 *,0x10)!=1 && (u32)arg0<=1) return 0;
+if(M2C_FIELD(&gLinkConfig,s32 *,0x10)!=1 && (u32)arg0<=1) return 0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,12)=data_ov010_0222be2d[arg0*2]+data_ov010_0222be2c[arg0*2]*68+12;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=arg0;
 M2C_FIELD(&data_ov010_0222c960,s16 *,0x10)=0;
@@ -298,64 +298,69 @@ void func_ov010_02222c9c(s32 arg0) {
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_propagation off
-s32 func_ov010_02222cac(void) {
+/* Build and encode the next outgoing wireless-link packet: pick the next
+ * queued sequence, measure the payload energy and its hardware square root,
+ * set the header flags from the link state, encode the payload for the
+ * current mode and update the sequence/timer state. Returns the packet to
+ * transmit, or 0 when there is nothing to send. */
+s32 Link_BuildNextPacket(void) {
 extern M2C_UNK data_ov010_0222c960;
-extern u8 data_ov010_0222cfa0[];
+extern u8 gLinkPacketBuffers[];
 extern s32 data_ov010_0222c000;
-extern M2C_UNK data_ov010_0222c970;
-extern M2C_UNK data_ov010_0222edc0;
+extern M2C_UNK gLinkCodecState;
+extern M2C_UNK gLinkConfig;
 u32 func_ov010_0222519c(void *,u32);
 void func_ov010_02225538(void *,u32,u32);
 s32 func_ov010_02224f94(u32,u32,s32);
 void func_ov010_022234f8(void *,void *,u32);
 void func_ov010_022235f8(void *,void *,u32);
 s32 func_02076614(void);
-u32 count;
-u32 flags;
-u8 *buffer,*packet;
-u32 value,hardware;
+u32 n;
+u32 packetFlags;
+u8 *payload,*packet;
+u32 energy,energyRoot;
 s32 mode;
 mode=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
-count=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00);
-if(count>1){M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-1;count=1;}
-if(count==0)return 0;
-packet=data_ov010_0222cfa0+((M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)&1)?0:0x460);
-buffer=packet+12;
-if(mode>=2)buffer+=4;
-value=func_ov010_0222519c(buffer,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24));
+n=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00);
+if(n>1){M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-1;n=1;}
+if(n==0)return 0;
+packet=gLinkPacketBuffers+((M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)&1)?0:0x460);
+payload=packet+12;
+if(mode>=2)payload+=4;
+energy=func_ov010_0222519c(payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24));
 *(volatile u16 *)0x040002b0=0;
-*(volatile u32 *)0x040002b8=value;
+*(volatile u32 *)0x040002b8=energy;
 while(*(volatile u16 *)0x040002b0&0x8000){}
-hardware=*(volatile u32 *)0x040002b4;
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x18))func_ov010_02225538(buffer,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24),hardware);
+energyRoot=*(volatile u32 *)0x040002b4;
+if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x18))func_ov010_02225538(payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24),energyRoot);
 packet[5]=mode;
 if(data_ov010_0222c000){
-s32 result=func_ov010_02224f94(value,hardware,0);
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x28)=result;
-switch(result){
-case 0: count=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)+1;M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=count;return 0;
+s32 energyCheck=func_ov010_02224f94(energy,energyRoot,0);
+M2C_FIELD(&data_ov010_0222c960,s32 *,0x28)=energyCheck;
+switch(energyCheck){
+case 0: n=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)+1;M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=n;return 0;
 case 1: packet[5]|=0x80;break;
 case 3: packet[4]=0x41;break;
 }
 }
 if(!data_ov010_0222c000 && M2C_FIELD(&data_ov010_0222c960,s32 *,8)){
-flags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,8)=0;packet[5]=flags|0x80;
+packetFlags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,8)=0;packet[5]=packetFlags|0x80;
 }
 if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)){
-flags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)=0;packet[5]=flags|0x80;
+packetFlags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)=0;packet[5]=packetFlags|0x80;
 }
 if(mode>=2){
 if(packet[5]&0x80){M2C_FIELD(&data_ov010_0222c960,s16 *,0x10)=0;M2C_FIELD(&data_ov010_0222c960,u8 *,0x12)=0;}
-func_ov010_02222454(buffer-4,(s32)buffer,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1,&data_ov010_0222c970,mode);
+func_ov010_02222454(payload-4,(s32)payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1,&gLinkCodecState,mode);
 }else if(mode==1){
-func_ov010_022234f8(buffer,buffer,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
+func_ov010_022234f8(payload,payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
 }else if(mode==0){
-func_ov010_022235f8(buffer,buffer,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
+func_ov010_022235f8(payload,payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
 }
-count=M2C_FIELD(&data_ov010_0222c960,u32 *,4);
-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=count;
-count&=~(1U<<M2C_FIELD(&data_ov010_0222edc0,u8 *,0));
-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=count;
+n=M2C_FIELD(&data_ov010_0222c960,u32 *,4);
+M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
+n&=~(1U<<M2C_FIELD(&gLinkConfig,u8 *,0));
+M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)=func_02076614()-1;
 if(M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)>7)return 0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0xf10)=0;

@@ -97,10 +97,10 @@ M2C_UNK func_02054600(M2C_UNK arg0, void *arg1) {
 s32 func_0205495c(M2C_UNK a, void *b) {
     void *func_02037794(M2C_UNK);
     s32 func_020491bc(M2C_UNK, s32, M2C_UNK);
-    s32 func_02049274(s32);
-    s32 func_02049910(M2C_UNK);
+    s32 gpiStringDup(s32);
+    s32 gpiGetTime(M2C_UNK);
     M2C_UNK gpiAppendStringField(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02050208(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
+    s32 gpiReceiveData(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
     s32 func_02058254(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK func_020675e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -132,7 +132,7 @@ s32 func_0205495c(M2C_UNK a, void *b) {
     if (M2C_FIELD(b, s32 *, 0) != 0x68) {
         func_020640a8(&data_020fec18, &data_020fec0c, &data_020feb24, 0xc1);
     }
-        ret = func_02050208(arg0, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &spC, &sp8, &data_020febb0);
+        ret = gpiReceiveData(arg0, M2C_FIELD(b, s32 *, 8), (void *)((char *)b + 0x18), &spC, &sp8, &data_020febb0);
         if (ret != 0) {
             return ret;
         }
@@ -193,16 +193,16 @@ end:
     return 0;
 }
 #pragma pop
-s32 func_02054bb8(void **arg0,void *arg1){
+s32 gpiSendQueuedMessages(void **arg0,void *arg1){
 s32 func_02048688(s32); void *func_02048690(s32,s32);
 M2C_UNK func_0204890c(s32,s32);
-s32 func_02050430(void **,s32,void *,s32 *,s32,M2C_UNK *);
+s32 gpiSendBufferedData(void **,s32,void *,s32 *,s32,M2C_UNK *);
 extern M2C_UNK data_020febb0;
 s32 sp8; void *p; s32 result;
 if(M2C_FIELD(arg1,s32 *,0x30))return 0;
 while(func_02048688(M2C_FIELD(arg1,s32 *,0x38))){
 p=func_02048690(M2C_FIELD(arg1,s32 *,0x38),0);
-result=func_02050430(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
+result=gpiSendBufferedData(arg0,M2C_FIELD(arg1,s32 *,8),p,&sp8,0,&data_020febb0);
 if(sp8 || result){M2C_FIELD(arg1,s32 *,0)=0x6a;return 0;}
 if(M2C_FIELD(p,s32 *,12)!=M2C_FIELD(p,s32 *,8))break;
 func_0204890c(M2C_FIELD(arg1,s32 *,0x38),0);
@@ -210,108 +210,110 @@ func_0204890c(M2C_FIELD(arg1,s32 *,0x38),0);
 return 0;
 }
 
-s32 func_02054c8c(void **arg0, void *arg1) {
+/* Advance one connected gpi peer: flush its queued output, read the peer
+ * socket, then parse each incoming message and queue the player events it
+ * carries (player announcement, challenge reply, game data). */
+s32 gpiProcessPeer(void **gpi, void *peer) {
     void *func_02037794(M2C_UNK);
-    s32 func_02049274(s32);
-    s32 func_02049910(M2C_UNK);
-    M2C_UNK func_0204f978(void **, s32, M2C_UNK, M2C_UNK *);
-    s32 func_02050208(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
-    s32 func_02050430(void **, s32, void *, s32 *, s32, M2C_UNK *);
-    s32 func_020505b0(void **, void *, s32 *, s32 *, s32 *);
-    M2C_UNK func_020506ec(void **, void *);
-    s32 func_02050838(void **, CallbackPair, void *, s32, s32);
-    s32 func_02054bb8(void **, void *);
+    s32 gpiStringDup(s32);
+    s32 gpiGetTime(M2C_UNK);
+    M2C_UNK gpiSendMessageToPlayer(void **, s32, M2C_UNK, M2C_UNK *);
+    s32 gpiReceiveData(void **, s32, void *, s32 *, s32 *, M2C_UNK *);
+    s32 gpiSendBufferedData(void **, s32, void *, s32 *, s32, M2C_UNK *);
+    s32 gpiReadMessageFromPeer(void **, void *, s32 *, s32 *, s32 *);
+    M2C_UNK gpiConsumeReadBuffer(void **, void *);
+    s32 gpiAddCallback(void **, CallbackPair, void *, s32, s32);
+    s32 gpiSendQueuedMessages(void **, void *);
     M2C_UNK func_02057f74(void **, void *, s32, s32, s32, s32);
-    M2C_UNK func_02058644(void **, M2C_UNK *);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020febb0;
-    extern M2C_UNK data_020fec40;
-    extern M2C_UNK data_020fec50;
-    s32 sp20;
-    s32 sp1C;
-    CallbackPair pair;
-    s32 sp10;
-    s32 spC;
-    s32 sp8;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r0_4;
-    s32 temp_r1;
-    u32 temp_r0_6;
-    void *temp_r0_5;
-    void *temp_r7;
+    extern M2C_UNK gpiErrorOutOfMemory;
+    extern M2C_UNK gpiChallengeReply;
+    s32 bytesRead;
+    s32 ioStatus;
+    CallbackPair playerCallback;
+    s32 message;
+    s32 messageType;
+    s32 messageLength;
+    s32 callbackResult;
+    s32 readResult;
+    s32 sendQueuedResult;
+    s32 sendResult;
+    s32 callbackFn;
+    void *eventData;
+    void *conn;
 
-    temp_r7 = *arg0;
-    if (M2C_FIELD(arg1, s32 *, 0x30) != 0) {
-        temp_r0_4 = func_02050430(arg0, M2C_FIELD(arg1, s32 *, 8), arg1 + 0x28, &sp1C, 1, &data_020febb0);
-        if ((sp1C == 0) && (temp_r0_4 == 0)) {
+    conn = *gpi;
+    if (M2C_FIELD(peer, s32 *, 0x30) != 0) {
+        sendResult = gpiSendBufferedData(gpi, M2C_FIELD(peer, s32 *, 8), peer + 0x28, &ioStatus, 1, &data_020febb0);
+        if ((ioStatus == 0) && (sendResult == 0)) {
             goto block_5;
         }
-        M2C_FIELD(arg1, s32 *, 0) = 0x6A;
+        M2C_FIELD(peer, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
 block_5:
-    if (M2C_FIELD(arg1, s32 *, 0x30) == 0) {
-        temp_r0_3 = func_02054bb8(arg0, arg1);
-        if (temp_r0_3 != 0) {
-            return temp_r0_3;
+    if (M2C_FIELD(peer, s32 *, 0x30) == 0) {
+        sendQueuedResult = gpiSendQueuedMessages(gpi, peer);
+        if (sendQueuedResult != 0) {
+            return sendQueuedResult;
         }
-        if (M2C_FIELD(arg1, s32 *, 0) == 0x6A) {
+        if (M2C_FIELD(peer, s32 *, 0) == GPI_PEER_STATE_ERROR) {
             return 0;
         }
         goto block_10;
     }
 block_10:
-    if (func_02050208(arg0, M2C_FIELD(arg1, s32 *, 8), arg1 + 0x18, &sp20, &sp1C, &data_020febb0) != 0) {
-        M2C_FIELD(arg1, s32 *, 0) = 0x6A;
+    if (gpiReceiveData(gpi, M2C_FIELD(peer, s32 *, 8), peer + 0x18, &bytesRead, &ioStatus, &data_020febb0) != 0) {
+        M2C_FIELD(peer, s32 *, 0) = GPI_PEER_STATE_ERROR;
         return 0;
     }
-    if (sp20 > 0) {
-        M2C_FIELD(arg1, s32 *, 0x10) = (s32) (func_02049910(0) + 0x12C);
+    if (bytesRead > 0) {
+        M2C_FIELD(peer, s32 *, 0x10) = (s32) (gpiGetTime(0) + 0x12C);
     }
 loop_15:
-    temp_r0_2 = func_020505b0(arg0, arg1 + 0x18, &sp10, &spC, &sp8);
-    if (temp_r0_2 != 0) {
-        return temp_r0_2;
+    readResult = gpiReadMessageFromPeer(gpi, peer + 0x18, &message, &messageType, &messageLength);
+    if (readResult != 0) {
+        return readResult;
     }
-    if (sp10 != 0) {
-        switch (spC) {
-        case 1:
-                temp_r1 = M2C_FIELD(temp_r7, s32 *, 0x1BC);
-                pair.first = temp_r1;
-                pair.second = M2C_FIELD(temp_r7, s32 *, 0x1C0);
-                if (temp_r1 != 0) {
-                    temp_r0_5 = func_02037794(0xC);
-                    if (temp_r0_5 == NULL) {
-                        func_02058644(arg0, &data_020fec40);
+    if (message != 0) {
+        switch (messageType) {
+        case GPI_MSG_PLAYER_INFO:
+                callbackFn = M2C_FIELD(conn, s32 *, 0x1BC);
+                playerCallback.first = callbackFn;
+                playerCallback.second = M2C_FIELD(conn, s32 *, 0x1C0);
+                if (callbackFn != 0) {
+                    eventData = func_02037794(0xC);
+                    if (eventData == NULL) {
+                        gpiSetErrorString(gpi, &gpiErrorOutOfMemory);
                         return 1;
                     }
-                    M2C_FIELD(temp_r0_5, s32 *, 0) = (s32) M2C_FIELD(arg1, s32 *, 0xC);
-                    M2C_FIELD(temp_r0_5, s32 *, 8) = func_02049274(sp10);
-                    M2C_FIELD(temp_r0_5, s32 *, 4) = func_02049910(0);
-                    temp_r0 = func_02050838(arg0, pair, temp_r0_5, 0, 2);
-                    if (temp_r0 != 0) {
-                        return temp_r0;
+                    M2C_FIELD(eventData, s32 *, 0) = (s32) M2C_FIELD(peer, s32 *, 0xC);
+                    M2C_FIELD(eventData, s32 *, 8) = gpiStringDup(message);
+                    M2C_FIELD(eventData, s32 *, 4) = gpiGetTime(0);
+                    callbackResult = gpiAddCallback(gpi, playerCallback, eventData, 0, 2);
+                    if (callbackResult != 0) {
+                        return callbackResult;
                     }
                     }
 
             break;
-        case 0x66:
-            func_0204f978(arg0, M2C_FIELD(arg1,s32 *,0xc),0x67,&data_020fec50);
+        case GPI_MSG_CHALLENGE:
+            gpiSendMessageToPlayer(gpi, M2C_FIELD(peer,s32 *,0xc),GPI_MSG_CHALLENGE_REPLY,&gpiChallengeReply);
             break;
         case 200: case 201: case 202: case 203: case 204: case 205: case 206: case 207: case 208:
-            func_02057f74(arg0,arg1,spC,M2C_FIELD(arg1,s32 *,0x18),sp10,sp8);
+            func_02057f74(gpi,peer,messageType,M2C_FIELD(peer,s32 *,0x18),message,messageLength);
             break;
         default: break;
         }
 block_41:
-        func_020506ec(arg0, arg1 + 0x18);
+        gpiConsumeReadBuffer(gpi, peer + 0x18);
         goto block_42;
     }
 block_42:
-    if (sp10 == 0) {
-        if (sp1C != 0) {
-            M2C_FIELD(arg1, s32 *, 0) = 0x6A;
+    if (message == 0) {
+        if (ioStatus != 0) {
+            M2C_FIELD(peer, s32 *, 0) = GPI_PEER_STATE_ERROR;
         }
         return 0;
     }
@@ -321,14 +323,14 @@ block_42:
 s32 func_02054f0c(M2C_UNK a,void *b) {
  s32 func_02054600(M2C_UNK,void *);
  s32 func_0205495c(M2C_UNK,void *);
- s32 func_02054c8c(void **,void *);
+ s32 gpiProcessPeer(void **,void *);
  extern M2C_UNK data_020fec54,data_020fec0c,data_020feac4;
  s32 v=0;
  if(M2C_FIELD(b,s32 *,0)==100) func_020640a8(&data_020fec54,&data_020fec0c,&data_020feac4,473);
  if(M2C_FIELD(b,s32 *,0)!=105) {
  if(M2C_FIELD(b,s32 *,4)) v=func_02054600(a,b);else v=func_0205495c(a,b);
  }
- if(!v && M2C_FIELD(b,s32 *,0)==105) v=func_02054c8c(a,b);
+ if(!v && M2C_FIELD(b,s32 *,0)==105) v=gpiProcessPeer(a,b);
  return v;
 }
 
@@ -422,7 +424,7 @@ s32 func_0205519c(void **arg0) {
     M2C_UNK func_020492ec(M2C_UNK, s32);
     s32 func_02049534(s32);
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
-    s32 func_02049910(M2C_UNK);
+    s32 gpiGetTime(M2C_UNK);
     M2C_UNK func_020496b8(s32);
     s32 func_02054f0c(M2C_UNK, void *);
     void func_02055008(void **, void *);
@@ -455,7 +457,7 @@ s32 func_0205519c(void **arg0) {
         do {
             temp_r6 = M2C_FIELD(var_r7, void **, 0x3C);
             temp_r0_3 = func_02054f0c(arg0, var_r7);
-            if ((M2C_FIELD(var_r7, s32 *, 0) == 0x6A) || (temp_r0_3 != 0) || (func_02049910(0) > (s32) M2C_FIELD(var_r7, s32 *, 0x10))) {
+            if ((M2C_FIELD(var_r7, s32 *, 0) == 0x6A) || (temp_r0_3 != 0) || (gpiGetTime(0) > (s32) M2C_FIELD(var_r7, s32 *, 0x10))) {
                 func_02055008(arg0, var_r7);
             }
             var_r7 = temp_r6;
@@ -478,7 +480,7 @@ void func_020552c4(s32 *arg0) {
 
 void *func_020552e0(void **a,s32 b,s32 c) {
  void *func_02037794(s32);
- s32 func_02049910(s32);
+ s32 gpiGetTime(s32);
  s32 func_02048558(s32,s32,void *);
  void *base=*a;
  void *p=func_02037794(64);
@@ -488,7 +490,7 @@ void *func_020552e0(void **a,s32 b,s32 c) {
  M2C_FIELD(p,s32 *,4)=c;
  M2C_FIELD(p,s32 *,8)=-1;
  M2C_FIELD(p,s32 *,12)=b;
- M2C_FIELD(p,s32 *,16)=func_02049910(0)+300;
+ M2C_FIELD(p,s32 *,16)=gpiGetTime(0)+300;
  M2C_FIELD(p,void **,60)=M2C_FIELD(base,void **,0x434);
  M2C_FIELD(p,s32 *,56)=func_02048558(24,0,func_020552c4);
  M2C_FIELD(base,void **,0x434)=p;

@@ -84,7 +84,7 @@ if(n<=value)return 1;break;
 return 0;
 }
 
-void func_ov007_02215254(s32 arg0, s32 arg1, s32 arg2) {
+void Map_SetCellTile(s32 arg0, s32 arg1, s32 arg2) {
     s8 GetTerrainValueForTile(s32);
     extern s32 *gCurrentMap;
     s32 temp_ip;
@@ -96,7 +96,7 @@ void func_ov007_02215254(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = GetTerrainValueForTile(arg2);
 }
 
-s32 func_ov007_022152bc(s32 x,s32 y){
+s32 Map_ScoreNeighborPattern(s32 x,s32 y){
 s32 func_ov007_0221b754(s32,s32);
 s32 vertical=0,horizontal=0,n;
 Map14E24 *m;
@@ -151,12 +151,12 @@ s32 func_ov007_02215704(s32 x, s32 y) {
     s32 func_ov007_0221b754(s32, s32);
     if (func_ov007_0221b754(x - 1, y) == 1 && ((s8 *)data_ov007_02221a84 + y * 30)[x - 1] != 2 &&
         func_ov007_0221b754(x + 1, y) == 1 && ((s8 *)data_ov007_02221a84 + y * 30)[x + 1] != 2) {
-        func_ov007_02215254(x, y, 36);
+        Map_SetCellTile(x, y, 36);
         return 1;
     }
     if (func_ov007_0221b754(x, y - 1) == 1 && ((s8 *)data_ov007_02221a84 + (y - 1) * 30)[x] != 2 &&
         func_ov007_0221b754(x, y + 1) == 1 && ((s8 *)data_ov007_02221a84 + (y + 1) * 30)[x] != 2) {
-        func_ov007_02215254(x, y, 36);
+        Map_SetCellTile(x, y, 36);
         return 1;
     }
     return 0;
@@ -173,7 +173,7 @@ Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
 
     scale = arg2 * 5;
 
-    func_ov007_02215254(arg0, arg1, scale + 0x1c0);
+    Map_SetCellTile(arg0, arg1, scale + 0x1c0);
 
     tries = 0;
     placed = tries;
@@ -185,7 +185,7 @@ Point15A0C func_ov007_022157fc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
         if (rx < 0 || (m = (Map14E24 *)*gCurrentMap, rx >= m->width) || ry < 0 || ry >= m->height) { placed--; goto first_next; }
         t = m->cells[rx + m->rows[ry]];
         if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
-            func_ov007_02215254(rx, ry, base + 0x1c1);
+            Map_SetCellTile(rx, ry, base + 0x1c1);
         } else {
             tries++;
             placed--;
@@ -206,7 +206,7 @@ first_next:
             m = (Map14E24 *)*gCurrentMap;
             t = m->cells[rx + m->rows[ry]];
             if (t == 1 && ry >= 0 && ry < m->height && rx >= 0 && rx < m->width) {
-                func_ov007_02215254(rx, ry, base);
+                Map_SetCellTile(rx, ry, base);
             } else {
                 tries++;
                 placed--;
@@ -237,7 +237,7 @@ for(i=x-1;i<=x+1;i++){
 if(i<0||i>=((Map14E24 *)*map)->width)goto retry;
 if(M2C_FIELD((u8 *)*map+((Map14E24 *)*map)->rows[j]+i,u8 *,0x1420)&0xe0)goto retry;
 }}
-for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)func_ov007_02215254(xx,yy,1);
+for(yy=y-1;yy<=y+1;yy++)for(xx=x-1;xx<=x+1;xx++)Map_SetCellTile(xx,yy,1);
 return func_ov007_022157fc(x,y,a,b,c);
 }
 #pragma opt_common_subs reset

@@ -18,7 +18,7 @@ extern s8 data_ov000_021b55a0[];
 void func_ov000_02191970(void){
 void SelectMapLayer(void*);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a89a4(void*);s32 CanKindAttack(u32,u32);
-s32 func_ov000_021a97e0(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
+s32 GetUnitMoveRange(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a9a28(u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 func_020d27ec(u32,u32);
@@ -44,7 +44,7 @@ switch(KIND(SEL)){
 case 13:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)==1)break;continue;
 case 19:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)!=0)break;continue;
 }
-range=func_ov000_021a97e0(M2C_FIELD(MAP,u16*,0x52a4),KIND(unit));
+range=GetUnitMoveRange(M2C_FIELD(MAP,u16*,0x52a4),KIND(unit));
 { s32 ux=M2C_FIELD(unit,u8*,1); s32 row=ROW(M2C_FIELD(unit,u8*,2)); d=M2C_FIELD(MAP+ux+row,s8*,0x2338); } special=0;
 temporary=limit+range;
 if(d<temporary&&(func_ov000_0217bcf4(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),range*2-1)==1||

@@ -24,7 +24,7 @@ data_027e0a98+=4;data_027e0a94++;return 0;
 s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_01ffb454(s32);
     s32 func_ov000_0217acd4(s32);
-    s32 func_ov000_021a97e0(u16, s32);
+    s32 GetUnitMoveRange(u16, s32);
     extern s8 data_027e0a8c;
     extern void *data_027e0a90;
     extern s32 data_027e0a94;
@@ -38,7 +38,7 @@ s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     data_027e0a8c = 0;
     data_027e0a90 = data_027e00cc + 0x5A0;
     M2C_FIELD(data_027e00cc, s16 *, 0x20) = arg3;
-    M2C_FIELD(data_027e00cc, s16 *, 0x22) = func_ov000_021a97e0(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
+    M2C_FIELD(data_027e00cc, s16 *, 0x22) = GetUnitMoveRange(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
     M2C_FIELD(data_027e00cc, s8 *, 0x26) = arg2;
     func_01ffb454(arg2);
     M2C_FIELD(data_027e0a98, s8 *, 0) = arg0;
@@ -130,7 +130,7 @@ data_027e0a98+=4;data_027e0a94++;return 0;
 s32 func_ov000_0217b3bc(s8 arg0, s8 arg1, s8 arg2, s16 arg3) {
     void func_01ffb454(s32);
     s32 func_ov000_0217b1e8(M2C_UNK);
-    s32 func_ov000_021a97e0(u16, s32);
+    s32 GetUnitMoveRange(u16, s32);
     extern void **gCurrentMap;
     extern void *data_027e00cc;
     extern s8 data_027e0a8c;
@@ -146,7 +146,7 @@ s32 func_ov000_0217b3bc(s8 arg0, s8 arg1, s8 arg2, s16 arg3) {
     data_027e0a98 = data_027e00cc + 0x28;
     data_027e0a94 = 0;
     M2C_FIELD(data_027e00cc, s16 *, 0x20) = arg3;
-    M2C_FIELD(data_027e00cc, s16 *, 0x22) = func_ov000_021a97e0(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
+    M2C_FIELD(data_027e00cc, s16 *, 0x22) = GetUnitMoveRange(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
     M2C_FIELD(data_027e00cc, s8 *, 0x26) = arg2;
     func_01ffb454(arg2);
     M2C_FIELD(data_027e0a98, s8 *, 0) = arg0;
@@ -244,7 +244,7 @@ data_027e0a98+=4;data_027e0a94++;return 0;
 
 s32 func_ov000_0217b8f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_ov000_0217b708(M2C_UNK);
-    s32 func_ov000_021a97e0(u16, s32);
+    s32 GetUnitMoveRange(u16, s32);
     extern void **data_027e0058;
     extern void *data_027e00cc;
     extern s8 data_027e0a8c;
@@ -260,7 +260,7 @@ s32 func_ov000_0217b8f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     data_027e0a98 = data_027e00cc + 0x28;
     data_027e0a94 = 0;
     M2C_FIELD(data_027e00cc, s16 *, 0x20) = (s16)arg3;
-    M2C_FIELD(data_027e00cc, s16 *, 0x22) = (s16)func_ov000_021a97e0(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), arg2);
+    M2C_FIELD(data_027e00cc, s16 *, 0x22) = (s16)GetUnitMoveRange(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), arg2);
     M2C_FIELD(data_027e00cc, s8 *, 0x26) = (s8)arg2;
     M2C_FIELD(data_027e0a98, s8 *, 0) = (s8)arg0;
     M2C_FIELD(data_027e0a98, s8 *, 1) = (s8)arg1;

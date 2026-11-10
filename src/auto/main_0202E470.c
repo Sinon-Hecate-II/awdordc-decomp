@@ -317,7 +317,7 @@ block_118:
 }
 
 #pragma pop
-void func_0202ec98(void *arg0,s32 arg1) {
+void Sound_SetPlayerCallbacks(void *arg0,s32 arg1) {
  if(func_0202c444(arg1)==0) {
  M2C_FIELD(arg0,void **,0x164)=func_0202ed18;
  M2C_FIELD(arg0,void **,0x168)=func_0202ed8c;

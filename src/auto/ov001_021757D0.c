@@ -48,14 +48,14 @@ void func_ov001_02175890(void) {
 s32 func_ov001_0217589c(M2C_UNK arg0, s32 arg1, s32 arg2) {
 void func_ov001_02176628(void);
 s32 func_ov001_02175928(s32,s32);
-void func_ov001_021759c4(void); void func_ov001_02175a8c(void); void func_ov001_02184f68(void);
+void func_ov001_021759c4(void); void Ov001_SetupDisplay(void); void func_ov001_02184f68(void);
 void func_ov001_02175d54(s32); void func_ov001_0218b850(void); void func_ov001_0218c7d4(s32);
 void func_ov001_0218bdb0(void); void func_ov001_0218c63c(void); void func_02007598(void); void func_ov001_02175d04(void);
 extern u8 data_ov001_02193d2c;
 M2C_FIELD(&data_ov001_02193d2c,M2C_UNK*,4)=arg0;
 if (!func_ov001_02175928(arg1,arg2)) return -1;
 M2C_FIELD(&data_ov001_02193d2c,u8*,1)=0;
-func_ov001_021759c4(); func_ov001_02175a8c(); func_ov001_02184f68();
+func_ov001_021759c4(); Ov001_SetupDisplay(); func_ov001_02184f68();
 func_ov001_02175d54((s32)func_ov001_02176628);
 do {
 func_ov001_0218b850();
@@ -81,38 +81,42 @@ return 1;
 #pragma opt_propagation reset
 void func_ov001_021759c4(void) {
 extern u8 data_ov001_02193d2c;
-M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK func_02007958(); void func_0200245c(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK func_ov001_0218c678(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK func_ov001_0218a7a4(); M2C_UNK func_ov001_0218b6f8(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
+M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK func_02007958(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK func_ov001_0218c40c(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK func_ov001_0218c678(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK func_ov001_0218a7a4(); M2C_UNK func_ov001_0218b6f8(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
 M2C_UNK p;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
-if(!func_02006f8c())func_02007958();if(!func_02007180())func_02007958();func_0200245c(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
+if(!func_02006f8c())func_02007958();if(!func_02007180())func_02007958();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
 func_ov001_0218c40c();func_ov001_0218b648(M2C_FIELD(&data_ov001_02193d2c,M2C_UNK *,4));func_ov001_0218be2c();func_ov001_0218c678();func_ov001_02189ad0();func_ov001_0218b79c();func_ov001_0218a7a4();p=func_ov001_0218b6f8(0x700,0x20);func_02046884();func_ov001_0218b71c(&p);
 }
 
-void func_ov001_02175a8c(void) {
-    void func_0200245c(s32);
+/* Initialise the display for overlay 001: allocate VRAM banks for the
+ * background, reset and configure the background control/scroll registers of
+ * both the main and sub engines, set up alpha blending and master brightness,
+ * then turn the main display on. */
+void Ov001_SetupDisplay(void) {
+    void GX_SetVBlankIrq(s32);
     void GX_SetBankForBG(s32);
     void func_02002968(s32);
-    void func_02002514(s32, s32, s32);
-    void func_02002598(void *, s32);
-    void func_020039a0(s32, s32, s32);
+    void GX_ConfigureDisplay(s32, s32, s32);
+    void GX_SetMasterBrightness(void *, s32);
+    void GX_SetBlendControl(s32, s32, s32);
     void func_02003124(s32);
     void func_020031cc(s32);
-    void func_0200257c(s32);
+    void GX_SetSubBgMode(s32);
     void func_ov001_0218aab4(void);
     void func_ov001_0218bfd4(void);
     void func_ov001_0218c168(void);
     void func_ov001_02189f48(void);
-    void func_020024cc(void);
+    void GX_TurnOnDisplay(void);
 
-    func_0200245c(0);
+    GX_SetVBlankIrq(0);
     GX_SetBankForBG(1);
     func_02002968(2);
-    func_02002514(1, 0, 0);
+    GX_ConfigureDisplay(1, 0, 0);
 
     *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0x1f00);
     *(volatile u32 *)0x04000000 = (*(volatile u32 *)0x04000000 & ~0xe000);
-    func_02002598((void *)0x0400006C, 0);
+    GX_SetMasterBrightness((void *)0x0400006C, 0);
 
     *(volatile u32 *)0x04000000 =
         (*(volatile u32 *)0x04000000 & 0xffcfffef) | 0x10 | 0x200000;
@@ -124,10 +128,10 @@ void func_ov001_02175a8c(void) {
     *(volatile u32 *)0x04000014 = 0;
     *(volatile u32 *)0x04000018 = 0;
     *(volatile u32 *)0x0400001c = 0;
-    func_020039a0(0x04000050, 0x3f, 0x10);
+    GX_SetBlendControl(0x04000050, 0x3f, 0x10);
     func_02003124(0x80);
     func_020031cc(0x100);
-    func_0200257c(0);
+    GX_SetSubBgMode(0);
 
     {
         volatile u32 *display = (volatile u32 *)0x04001000;
@@ -136,7 +140,7 @@ void func_ov001_02175a8c(void) {
         *display = value & ~0x1f00;
         value = *display;
         *display = value & ~0xe000;
-        func_02002598((u8 *)display + 0x6c, 0);
+        GX_SetMasterBrightness((u8 *)display + 0x6c, 0);
     }
 
 
@@ -150,7 +154,7 @@ void func_ov001_02175a8c(void) {
     *(volatile u32 *)0x04001014 = 0;
     *(volatile u32 *)0x04001018 = 0;
     *(volatile u32 *)0x0400101c = 0;
-    func_020039a0(0x04001050, 0x3f, 0x10);
+    GX_SetBlendControl(0x04001050, 0x3f, 0x10);
 
     *(volatile u16 *)0x04000008 = (*(volatile u16 *)0x04000008 & 0x43) | 0xc00;
     *(volatile u16 *)0x0400000a = (*(volatile u16 *)0x0400000a & 0x43) | 0x108 | 0xc00;
@@ -169,10 +173,10 @@ void func_ov001_02175a8c(void) {
     func_ov001_0218bfd4();
     func_ov001_0218c168();
     func_ov001_02189f48();
-    func_020024cc();
+    GX_TurnOnDisplay();
 
     *(volatile u32 *)0x04001000 = (*(volatile u32 *)0x04001000 | 0x10000);
-    func_0200245c(1);
+    GX_SetVBlankIrq(1);
 }
 
 void func_ov001_02175d04(void) {

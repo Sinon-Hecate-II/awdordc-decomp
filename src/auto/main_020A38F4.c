@@ -170,84 +170,27 @@ M2C_FIELD(*gCurrentMap,u8 *,0x5159)=0;
 #pragma push
 #pragma opt_instruction_scheduling on
 void func_020a4154(void) {
-    void func_01ff90e4(u8, u8, s32, void *);
-    extern u8 data_021204a4[];
-    extern s32 *data_027e0058;
-    extern s32 data_027e15c0;
-    s16 i;
-    s32 offset;
-    void *p;
-    void *q;
-    s32 drawOffset;
-    s32 end;
-    u32 j;
-    s16 next;
-    i = 0;
-    offset = 0;
-    do {
-        p = M2C_FIELD(data_027e0058, void **, 0xC);
-        i++;
-        M2C_FIELD(p, u16 *, offset) += M2C_FIELD((u8 *)p + offset, u16 *, 4);
-        q = (u8 *)M2C_FIELD(data_027e0058, void **, 0xC) + offset;
-        offset += 12;
-        M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
-    } while (i < 32);
-    j = (u32)(data_027e15c0 << 31) >> 27;
-    end = j + 16;
-    if (end <= (s32)j) return;
-    drawOffset = (s16)j * 12;
-    do {
-        p = (u8 *)M2C_FIELD(data_027e0058, void **, 0xC) + drawOffset;
-        q = M2C_FIELD(data_027e0058, void **, 0);
-        {
-            u8 ax = (u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148));
-            u8 ay = (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A));
-            u8 idx = (u8)M2C_FIELD(p, u16 *, 8);
-            func_01ff90e4(ax, ay, 0, data_021204a4 + idx * 8);
-        }
-        next = j + 1;
-        drawOffset += 12;
-        j = next;
-    } while (end > (s32)j);
+void func_01ff90e4(u8,u8,s32,void *); extern u8 data_021204a4[];extern s32 *gCurrentMap;extern s32 data_027e15c0;
+s16 i=0; s32 offset=0;void *p,*q;s32 drawOffset,end;u32 j;s16 next;
+do {p=M2C_FIELD(gCurrentMap,void **,12);i++;M2C_FIELD(p,u16 *,offset)+=M2C_FIELD((u8 *)p+offset,u16 *,4);q=(u8 *)M2C_FIELD(gCurrentMap,void **,12)+offset;offset+=12;M2C_FIELD(q,u16 *,2)+=M2C_FIELD(q,u16 *,6);}while(i<32);
+j=(u32)(data_027e15c0<<31)>>27;end=j+16;if(end<=(s32)j)return;drawOffset=(s16)j*12;
+do {p=(u8 *)M2C_FIELD(gCurrentMap,void **,12)+drawOffset;q=M2C_FIELD(gCurrentMap,void **,0);
+{u16 x=M2C_FIELD(p,volatile u16 *,0);s16 mx=M2C_FIELD(q,volatile s16 *,0x5148);u16 idx=M2C_FIELD(p,volatile u16 *,8);
+func_01ff90e4((u8)((x>>8)-mx),(u8)((M2C_FIELD(p,u16 *,2)>>8)-M2C_FIELD(q,s16 *,0x514a)),0,data_021204a4+idx*8);}
+next=j+1;drawOffset+=12;j=next;}while(end>(s32)j);
 }
 
 #pragma push
 #pragma opt_instruction_scheduling on
 void func_020a4250(void) {
-    void func_01ff90e4(u8, u8, s32, void *);
-    extern u8 data_021204bc[];
-    extern s32 *gCurrentMap;
-    extern s32 data_027e15c0;
-    s16 i = 0;
-    s32 offset = 0;
-    void *p;
-    void *q;
-    s32 drawOffset;
-    s32 end;
-    u32 j;
-    s16 next;
-    do {
-        p = M2C_FIELD(gCurrentMap, void **, 0xC);
-        i = (s16)(i + 1);
-        M2C_FIELD(p, u16 *, offset) += M2C_FIELD((u8 *)p + offset, u16 *, 4);
-        q = (u8 *)M2C_FIELD(gCurrentMap, void **, 0xC) + offset;
-        offset = offset + 12;
-        M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
-    } while (i < 32);
-    j = (u32)(data_027e15c0 << 31) >> 27;
-    end = (j + 16);
-    if ((end) <= (s32)(j)) return;
-    drawOffset = (s16)j * 12;
-    do {
-        p = (u8 *)M2C_FIELD(gCurrentMap, void **, 0xC) + drawOffset;
-        q = M2C_FIELD(gCurrentMap, void **, 0);
-        func_01ff90e4((u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148)),
-                     (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A)), 0,
-                     data_021204bc + M2C_FIELD(p, u16 *, 8) * 8);
-        next = (s16)(j + 1);
-        drawOffset = drawOffset + 12;
-        j = next;
-    } while (end > (s32)j);
+void func_01ff90e4(u8,u8,s32,void *); extern u8 data_021204bc[];extern s32 *data_027e0058;extern s32 data_027e15c0;
+s16 i=0; s32 offset=0;void *p,*q;s32 drawOffset,end;u32 j;s16 next;
+do {p=M2C_FIELD(data_027e0058,void **,12);i++;M2C_FIELD(p,u16 *,offset)+=M2C_FIELD((u8 *)p+offset,u16 *,4);q=(u8 *)M2C_FIELD(data_027e0058,void **,12)+offset;offset+=12;M2C_FIELD(q,u16 *,2)+=M2C_FIELD(q,u16 *,6);}while(i<32);
+j=(u32)(data_027e15c0<<31)>>27;end=j+16;if(end<=(s32)j)return;drawOffset=(s16)j*12;
+do {p=(u8 *)M2C_FIELD(data_027e0058,void **,12)+drawOffset;q=M2C_FIELD(data_027e0058,void **,0);
+{u16 x=M2C_FIELD(p,volatile u16 *,0);s16 mx=M2C_FIELD(q,volatile s16 *,0x5148);u16 idx=M2C_FIELD(p,volatile u16 *,8);
+func_01ff90e4((u8)((x>>8)-mx),(u8)((M2C_FIELD(p,u16 *,2)>>8)-M2C_FIELD(q,s16 *,0x514a)),0,data_021204bc+idx*8);}
+next=j+1;drawOffset+=12;j=next;}while(end>(s32)j);
 }
 #pragma pop
 void func_020a434c(void) {

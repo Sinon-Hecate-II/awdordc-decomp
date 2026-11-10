@@ -45,6 +45,8 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define MAP_ROW_OFFSETS     0x3758 /* u16 per row: offset of the row in the cell arrays */
 #define MAP_UNIT_RECORDS    0x59a4 /* 256 unit records of 14 bytes */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
+#define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
+#define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */

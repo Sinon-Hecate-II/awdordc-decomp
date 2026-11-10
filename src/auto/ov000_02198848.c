@@ -254,7 +254,7 @@ void func_ov000_02198fec(u8 player) {
 
         if (!func_ov000_021a98e4(kind)) {
             if (bonus == 1) {
-                if (func_ov000_021a97d0(14, kind) >= 0x32) {
+                if (GetUnitDamagePercent(14, kind) >= 0x32) {
                     continue;
                 }
             }
@@ -329,7 +329,7 @@ if(!func_020a85dc(((Unit98 *)(map+idx*14+0x59a4))->kind))continue;
 kind=unit->kind;
 value=func_ov000_02197434(kind,6);
 if(value<25)continue;
-if(!func_ov000_021a98e4(unit->kind) && func_ov000_021a97d0(6,unit->kind)>=50)continue;
+if(!func_ov000_021a98e4(unit->kind) && GetUnitDamagePercent(6,unit->kind)>=50)continue;
 value=func_ov000_02197470(value,0,unit->owner);
 value=func_ov000_021974bc(value,0,unit);
 value=func_ov000_0219763c(value,unit,unit->health);

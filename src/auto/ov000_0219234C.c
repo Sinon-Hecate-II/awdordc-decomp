@@ -21,7 +21,7 @@ void SelectMapLayer(void *);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(u32);s32 func_ov000_021a8ff0(u32);
 s32 func_ov000_02178518(s32,s32,s16 *);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
-s32 func_ov000_021a97e0(u32,u32);s32 func_020d27ec(u32,u32);
+s32 GetUnitMoveRange(u32,u32);s32 func_020d27ec(u32,u32);
 void *unit; s32 ux,uy,range,n,d,score,bestX,bestY,candX,candY;void *m,*p; s8 *cost; s16 point[2];s8 *table;
 m=MAP;d=M2C_FIELD(SEL,u8 *,12);unit=m+0x59a4+d*14;if(!d)return;
 d=M2C_FIELD(unit,u16 *,8);uy=(u32)(d<<20)>>26;n=M2C_FIELD(m+uy*2,u16 *,0x3758);ux=(u32)(d<<26)>>26;d=M2C_FIELD(m+(n+ux),u8 *,0x1420);
@@ -46,7 +46,7 @@ M2C_FIELD(unit,u8 *,11)=(M2C_FIELD(unit,u8 *,11)&~15)|1;
 SetMapCursor(point[0],point[1],8,(u8)d,0);
 }
 SelectMapLayer(MAP+0x2338);
-range=func_ov000_021a97e0(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
+range=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 func_01ffada0(ux,uy,KIND(unit),range,0);
 { s32 sx,sy,nx,ny,lx,ly,hx,hy,invalid;
 for(sy=0;sy<M2C_FIELD(MAP,u16 *,0x5146);sy++){
@@ -76,7 +76,7 @@ bestX=-1;bestY=-1;candX=-1;candY=-1;bestD=32767;bestScore=-1;
 for(y=0;y<M2C_FIELD(MAP,u16 *,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8 **,0x52e8),s8 *,x)<0||func_ov000_021a9d8c((s16)x,(s16)y)|| (func_ov000_021a8ff0(TILE(x,y))&&M2C_FIELD(MAP+x+ROW(y),u8 *,0x508))||CELL(x,y,0x2338)<0||!func_ov000_02178518(x,y,point))continue;
 score=CELL(x,y,0x2338);
-if(data_ov000_021b55a0[TILE(x,y)&31]&&func_020d27ec(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=func_ov000_021a97e0(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
+if(data_ov000_021b55a0[TILE(x,y)&31]&&func_020d27ec(M2C_FIELD(MAP,u8 *,0x52d4),TILE(x,y)))score+=GetUnitMoveRange(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 d=M2C_FIELD(MAP+x+ROW(y),u8 *,0x2840)+M2C_FIELD(MAP+x+ROW(y),u8 *,0x2d48);
 if(bestD<d)continue;
 if(bestD==d&&bestScore<score)continue;

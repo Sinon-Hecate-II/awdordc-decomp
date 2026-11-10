@@ -8,7 +8,7 @@ static inline void *GetCandidateMapState(void) { extern void **gCurrentMap; retu
 #pragma opt_lifetimes off
 s32 func_ov000_021a3dac(void) {
  s32 func_ov000_021a6264(s32);void func_ov000_021a0204(void);
- void func_01ffada0(u8,u8,s32,s32,s32);s32 func_ov000_021a97e0(u16,s32);void func_ov000_021a34bc(u8);
+ void func_01ffada0(u8,u8,s32,s32,s32);s32 GetUnitMoveRange(u16,s32);void func_ov000_021a34bc(u8);
  s32 func_020ba924(s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 IsFootUnitKind(s32);s32 func_ov000_021a98c8(s32);
  s32 IsCurrentPlayerUnit(s16);s32 func_ov000_021a8984(s32);void func_ov000_021a07c0(s32);
  extern void **gCurrentMap;extern u8 gAiTargetCandidates[];extern u8 data_ov000_021b5bfc[];extern M2C_UNK data_ov000_021df7d0;
@@ -24,7 +24,7 @@ s32 func_ov000_021a3dac(void) {
  if(index==-1){func_ov000_021a0204();return 0;}
  candidate=gAiTargetCandidates+index*12;
  func_01ffada0(candidate[0],candidate[1],2,110,0);
- for(i=0;i<func_ov000_021a97e0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),24);i++)func_ov000_021a34bc((u8)(i+111));
+ for(i=0;i<GetUnitMoveRange(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),24);i++)func_ov000_021a34bc((u8)(i+111));
  combat=0;capture=0;carrier=0;armed=0;y=0;other=0;transport=0;flag=0;map=GetCandidateMapState();
  for(;y<M2C_FIELD(map,u16 *,0x5146);y++){
  for(x=0;x<M2C_FIELD(map,u16 *,0x5144);){
@@ -343,19 +343,19 @@ s32 func_ov000_021a4944(s32 arg0) {
     extern u8 data_ov000_021dfd98[];
     extern u8 data_ov000_021dfd99[];
     extern u8 data_ov000_021dfd9a[];
-    s32 a9a;
-    s32 diff;
-    s32 a98;
+    u32 temp_r1;
+    s32 temp_r2;
     s32 var_ip;
+    s32 temp_r3;
 
     var_ip = data_ov000_021dfd99[arg0 * 8];
-    a9a = data_ov000_021dfd9a[arg0 * 8];
-    diff = var_ip - a9a;
-    a98 = data_ov000_021dfd98[arg0 * 8];
-    if (diff != 0) {
-        var_ip = diff + (a9a >> 1);
+    temp_r1 = data_ov000_021dfd9a[arg0 * 8];
+    temp_r2 = var_ip - temp_r1;
+    temp_r3 = data_ov000_021dfd98[arg0 * 8];
+    if (temp_r2 != 0) {
+        var_ip = temp_r2 + ((s32)temp_r1 >> 1);
     }
-    if (a98 > (var_ip << 1)) {
+    if (temp_r3 > (var_ip << 1)) {
         return 0;
     }
     return 1;

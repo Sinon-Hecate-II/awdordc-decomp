@@ -34,21 +34,14 @@ static inline BOOL check_val(void *arg0, s32 *sp) {
 
 
 s32 func_020e352c(s32, s32);
-#pragma opt_common_subs off
-void func_020e34bc(s32 arg0) {
-    volatile u32 saved;
-    u16 old;
-    u32 s;
-
-    old = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    saved = old;
-    func_020e352c(arg0, 8);
-    s = saved;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = s;
+#pragma push
+#pragma opt_common_subs on
+s32 func_020e34bc(s32 arg0) {
+ volatile u32 saved; u16 old; u32 s; s32 result;
+ old=*(volatile u16*)0x04000208; *(volatile u16*)0x04000208=0;saved=old;
+ result=func_020e352c(arg0,8);s=saved;(void)*(volatile u16*)0x04000208;*(volatile u16*)0x04000208=s;return result;
 }
-
+#pragma pop
 s32 func_020e34f4(s32 arg0) {
     void func_020e3580(s32, s32);
     volatile u32 saved;
@@ -773,7 +766,7 @@ void func_020e4378(void) {
 }
 
 void func_020e4458(void) {
-    M2C_UNK func_0200245c(M2C_UNK, u16);
+    M2C_UNK GX_SetVBlankIrq(M2C_UNK, u16);
     M2C_UNK func_02004ff8(M2C_UNK, M2C_UNK *);
     M2C_UNK func_020051c8(M2C_UNK);
     extern M2C_UNK func_020e4688;
@@ -783,6 +776,6 @@ void func_020e4458(void) {
     func_020051c8(1);
     temp_r1 = *(u16 *)0x04000208;
     *(u16 *)0x04000208 = 1;
-    func_0200245c(1, temp_r1);
+    GX_SetVBlankIrq(1, temp_r1);
 }
 

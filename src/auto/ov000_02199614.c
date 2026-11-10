@@ -19,7 +19,7 @@ s32 func_ov000_0219763c(s32,void*,s32);
 void func_ov000_02197a8c(void*,s32,s32,s32,s32,s32,s32);
 s32 func_020a85dc(s32);
 s32 func_ov000_021a98e4(s32);
-s32 func_ov000_021a97e0(s32,s32);
+s32 GetUnitMoveRange(s32,s32);
 s32 func_01ffada0(s32,s32,s32,s32,s32);
 void func_01ffb9c4(s32);
 s32 tileX,tileY;
@@ -45,7 +45,7 @@ influence=func_ov000_021974bc(influence,0,unit);
 influence=func_ov000_0219763c(influence,unit,unit->unk6);
 if(!func_ov000_021a98e4(unit->unk0)){
 if(unit){if(!unit)id=0;else id=unit-(UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS);owner=(id>>6)+1;}else owner=0;
-owner=func_ov000_021a97e0(owner,unit->unk0);
+owner=GetUnitMoveRange(owner,unit->unk0);
 func_01ffada0(((u8 *)unit)[1],((u8 *)unit)[2],unit->unk0,owner,1);
 func_01ffb9c4(111);
 for(tileY=0;tileY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);tileY++){

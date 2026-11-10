@@ -172,7 +172,7 @@ s32 i, x, test;
 u32 base, next;
 s32 i2;
 void *item;
-register s32 y, end;
+s32 y, end;
 s32 color;
 u8 selected;
 void *p;
@@ -235,7 +235,7 @@ p=M2C_FIELD(arg0,void **,0x50);
 base=(u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28;
 next=base+2;
 changed=(u16)((u32)(M2C_FIELD(p,s32 *,0x40)<<6)>>24);
-if(next==changed) changed=0;else changed=1;
+changed = (next == changed) ? 0U : 1U;
 if((u8)changed == 0){
 M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)base<<24)>>6);
 M2C_FIELD(p,u8 *,0x5a)=0;

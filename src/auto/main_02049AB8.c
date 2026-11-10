@@ -163,7 +163,7 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     return 1;
 }
 
-s32 func_0204a1b0(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
+s32 AppendHttpHeader(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
     s32 ghiAppendDataToBuffer(M2C_UNK, M2C_UNK *, M2C_UNK,...);
     extern M2C_UNK data_020fcf78;
     extern M2C_UNK data_020fcf7c;
@@ -182,7 +182,7 @@ s32 func_0204a1b0(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
     return 0;
 }
 
-s32 func_0204a230(s32 p,s32 c) {
+s32 AppendChar(s32 p,s32 c) {
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce7c;
 u8 v=c;
@@ -191,7 +191,7 @@ if(!p)return 0;
 return ghiAppendDataToBuffer(p,(s32 *)&v,1);
 }
 
-void func_0204a290(s32 a,s32 b) {
+void AppendInt(s32 a,s32 b) {
 void func_020675e4(void *,void *,s32);
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcf80;
@@ -200,7 +200,7 @@ func_020675e4(buf,&data_020fcf80,b);
 ghiAppendDataToBuffer(a,buf,0);
 }
 
-void func_0204a2c8(void *arg0) {
+void ResetBuffer(void *arg0) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fce48;
     extern M2C_UNK data_020fcec4;
@@ -213,7 +213,7 @@ void func_0204a2c8(void *arg0) {
     *M2C_FIELD(arg0, s8 **, 4) = 0;
 }
 
-s32 func_0204a30c(void *arg0) {
+s32 SendBufferedData(void *arg0) {
     s32 PollOneFd(s32, M2C_UNK, s32 *, s32 *);
     s32 sp4;
     s32 sp0;
@@ -268,7 +268,7 @@ r=M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32),0x40)(M2C_FIELD(p,s32 *,4),M2C_FIELD
 if(a && !r)M2C_FIELD(p,s32 *,0xd8)=1;
 }
 
-void func_0204a518(void *p,s32 a,s32 b) {
+void InvokeRequestCallback(void *p,s32 a,s32 b) {
 extern M2C_UNK data_020fcfec,data_020fcff8,data_020fcfb8;
 if(!p)func_020640a8(&data_020fcfec,&data_020fcff8,&data_020fcfb8,0x45);
 if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c))return;
@@ -324,7 +324,7 @@ M2C_FIELD(arg0,s32 *,0x80)+=sp8;
 used=M2C_FIELD(arg0,s32 *,0xa8);
 if(used>255){
 left=M2C_FIELD(arg0,s32 *,0xa4)-used;
-if(!left)func_0204a2c8((u8*)arg0+0x98);
+if(!left)ResetBuffer((u8*)arg0+0x98);
 else {
 p=M2C_FIELD(arg0,s32 *,0x9c);
 func_020651c4(p,p+used,left);

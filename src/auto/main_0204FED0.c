@@ -120,11 +120,11 @@ void func_020501d8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     gpiSendOrBufferStringLen(arg0, arg1, arg2, StringLength(arg2));
 }
 
-s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRead, s32 *connClosed, M2C_UNK arg5) {
+s32 gpiReceiveData(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRead, s32 *connClosed, M2C_UNK arg5) {
     void *func_020377a8(void *, s32);
     s32 func_020497cc(s32, void *, s32, s32);
     s32 func_02049900(s32);
-    M2C_UNK func_02058644(M2C_UNK, M2C_UNK *);
+    M2C_UNK gpiSetErrorString(M2C_UNK, M2C_UNK *);
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020fdf74;
     extern M2C_UNK data_020fded4;
@@ -171,7 +171,7 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
             size = end + 0x800;
             data = func_020377a8(data, size + 1);
             if (data == 0) {
-                func_02058644(connection, &data_020fdf80);
+                gpiSetErrorString(connection, &data_020fdf80);
                 return 1;
             }
         }
@@ -179,7 +179,7 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
         if (received == -1) {
             err = func_02049900(sock);
             if (err != -6 && err != -0x1A && err != -0x4C) {
-                func_02058644(connection, &data_020fe07c);
+                gpiSetErrorString(connection, &data_020fe07c);
                 return 3;
             }
         } else if (received == 0) {
@@ -216,7 +216,7 @@ s32 func_02050208(M2C_UNK connection, s32 sock, void *inputBuffer, s32 *bytesRea
     return 0;
 }
 
-s32 func_02050430(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
+s32 gpiSendBufferedData(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
  s32 func_020640a8(s32 *,s32 *,s32 *,s32);
  s32 func_020651c4(s32,s32,s32);
  extern s32 data_020fdee4,data_020fdf5c,data_020fdf74,data_020fe0e0,data_020fe0ec,data_020fe0f8;
@@ -254,7 +254,7 @@ s32 func_02050430(s32 arg0,s32 arg1,void *arg2,s32 *arg3,s32 arg4,s32 arg5) {
  return 0;
 }
 
-s32 func_020505b0(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg4) {
+s32 gpiReadMessageFromPeer(M2C_UNK connection, void *arg1, s8 **arg2, s32 *arg3, s32 *arg4) {
     s8 *func_02068ee0(M2C_UNK, M2C_UNK);
     s32 func_02068eac(s32, M2C_UNK *, s32);
     s32 func_02058254(M2C_UNK, M2C_UNK *, M2C_UNK *, s32);
@@ -303,7 +303,7 @@ done:
     return 0;
 }
 
-s32 func_020506ec(s32 unused,void *p) {
+s32 gpiConsumeReadBuffer(s32 unused,void *p) {
 s32 n;
 if(!p || !M2C_FIELD(p,s32 *,0) || !M2C_FIELD(p,s32 *,12))return 0;
 n=M2C_FIELD(p,s32 *,8)-M2C_FIELD(p,s32 *,12);
@@ -315,7 +315,7 @@ M2C_FIELD(p,s32 *,12)=0;return 0;
 
 void func_02050744(void **arg0, s32 arg1, s32 arg2) {
     void *func_02037794(s32);
-    s32 func_02050838(void *, volatile Unk02050838Pair, s32, s32, u32);
+    s32 gpiAddCallback(void *, volatile Unk02050838Pair, s32, s32, u32);
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe128;
     extern M2C_UNK data_020fe140;
@@ -353,14 +353,14 @@ void func_02050744(void **arg0, s32 arg1, s32 arg2) {
             M2C_FIELD(temp_r0, s32 *, 4) = M2C_FIELD(conn, s32 *, 0x418);
             M2C_FIELD(temp_r0, void **, 8) = conn;
         }
-        func_02050838(arg0, sp8, (s32)temp_r0, 0, 1);
+        gpiAddCallback(arg0, sp8, (s32)temp_r0, 0, 1);
     }
 }
 
-s32 func_02050838(void *arg0,volatile Unk02050838Pair pair,s32 c,s32 arg4,u32 arg5) {
+s32 gpiAddCallback(void *arg0,volatile Unk02050838Pair pair,s32 c,s32 arg4,u32 arg5) {
 void *func_02037794(s32);extern M2C_UNK data_020fe1ac;
 void *base=M2C_FIELD(arg0,void **,0);void *p=func_02037794(24);void *q;s32 tmp;
-if(!p){func_02058644(arg0,&data_020fe1ac);return 1;}
+if(!p){gpiSetErrorString(arg0,&data_020fe1ac);return 1;}
 M2C_FIELD(p,s32 *,0)=pair.unk_0;M2C_FIELD(p,s32 *,4)=pair.unk_4;M2C_FIELD(p,s32 *,8)=c;
 tmp=arg4?M2C_FIELD(arg4,s32 *,24):0;
 M2C_FIELD(p,s32 *,12)=arg5;

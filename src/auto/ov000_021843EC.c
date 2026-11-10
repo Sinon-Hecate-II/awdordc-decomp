@@ -15,14 +15,14 @@ static inline u8 Terrain851B8(s32 x,s32 y) { extern void **gCurrentMap;u8 *p=*gC
 
 #pragma opt_common_subs off
 int IsFootUnitKind(int);
-int func_ov000_021a97d0(int,int);
+int GetUnitDamagePercent(int,int);
 int func_ov000_021a9820(int,int);
 int func_ov000_021a98e4(int);
 int func_0207c8ec(int,int);
 void func_01ffada0(int,int,int,int,int);
 void func_02007f8c(void *,int,int);
 int func_020d27a4(int,int);
-int func_ov000_021a97e0(int,int);
+int GetUnitMoveRange(int,int);
 void SelectMapLayer(void *);
 void func_01ffb9c4(s8);
 void func_ov000_021843ec(s32 a,s32 b,s32 c) {
@@ -40,14 +40,14 @@ field=c*112;
 if(data_ov000_021b5c0f[field]&7) {
 selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
 if(!(data_ov000_021b5c0f[kind*112]&7))return;
-if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*func_ov000_021a97d0(kind,7),100)<40)return;
+if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)return;
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
 if(!((u8)(data_ov000_021dfcf0[idx>>3]&(1<<(idx&7)))))return;
 }else{
 if(!(data_ov000_021b5c0f[field]&16))return;
 selected=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);kind=(u32)(selected[0]<<26)>>26;
 if(!(data_ov000_021b5c0f[kind*112]&16))return;
-if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*func_ov000_021a97d0(kind,14),100)<40)return;
+if(func_0207c8ec(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)return;
 map=*gCurrentMap;idx=b*((Map851B8 *)map)->width+a;
 if(!((u8)(data_ov000_021dfba8[idx>>3]&(1<<(idx&7)))))return;
 }
@@ -71,12 +71,12 @@ if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
 if(attrs[19]&7){
 kind=(u32)(unit[0]<<26)>>26;
 if(!(data_ov000_021b5bfc[kind*112+19]&7))goto next_unit;
-if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*func_ov000_021a97d0(kind,7),100)<40)goto next_unit;
+if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,7),100)<40)goto next_unit;
 }
 if(attrs[19]&16){
 kind=(u32)(unit[0]<<26)>>26;
 if(!(data_ov000_021b5bfc[kind*112+19]&16))goto next_unit;
-if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*func_ov000_021a97d0(kind,14),100)<40)goto next_unit;
+if(func_0207c8ec(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*GetUnitDamagePercent(kind,14),100)<40)goto next_unit;
 }
 ally++;goto next_unit;
 }
@@ -108,7 +108,7 @@ else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
 }else{
 if(attrs[19]&16){
 SelectMapLayer((u8 *)*gCurrentMap+0x2338);
-func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,func_ov000_021a97e0(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
+func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
 func_01ffb9c4(111);
 map=*gCurrentMap;
 for(sy=0;sy<((Map851B8 *)map)->height;sy++){

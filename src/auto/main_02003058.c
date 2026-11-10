@@ -219,7 +219,7 @@ void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);
 }
 
-void func_020039a0(void *arg0, s32 arg1, s32 arg2) {
+void GX_SetBlendControl(void *arg0, s32 arg1, s32 arg2) {
     if (arg2 < 0) {
         M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0);
         M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg2);

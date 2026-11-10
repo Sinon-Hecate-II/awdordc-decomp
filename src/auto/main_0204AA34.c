@@ -139,7 +139,7 @@ void func_0204af74(M2C_UNK *arg0) {
 void func_0204afd8(void *obj) {
     M2C_UNK func_020496b8(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
-    M2C_UNK func_0204a2c8(void *);
+    M2C_UNK ResetBuffer(void *);
     extern M2C_UNK data_020fd038;
     extern M2C_UNK data_020fd090;
     extern M2C_UNK data_020fd0a4;
@@ -163,9 +163,9 @@ void func_0204afd8(void *obj) {
     func_020496cc(M2C_FIELD(obj, s32 *, 0x48), 2);
     func_020496b8(M2C_FIELD(obj, s32 *, 0x48));
     M2C_FIELD(obj, s32 *, 0x48) = -1;
-    func_0204a2c8(obj + 0x50);
-    func_0204a2c8(obj + 0x74);
-    func_0204a2c8(obj + 0x98);
+    ResetBuffer(obj + 0x50);
+    ResetBuffer(obj + 0x74);
+    ResetBuffer(obj + 0x98);
     M2C_FIELD(obj, s32 *, 0xE4) = 0;
     M2C_FIELD(obj, s32 *, 0xE8) = 0;
     M2C_FIELD(obj, s32 *, 0xEC) = 0;
@@ -208,7 +208,7 @@ void func_0204b154(void *arg0) {
 void func_0204c738(void *);
 void func_0204c7fc(void *);
 void func_0204ca4c(void *);
-void func_0204cbac(void *);
+void ghiSendRequest(void *);
 void func_0204ce20(void *);
 void func_0204ceb8(void *);
 void func_0204d084(void *);
@@ -229,7 +229,7 @@ s32 func_0204b210(void *operation) {
     if (M2C_FIELD(operation, s32 *, 0x10) == 0) func_0204c738(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 1) func_0204c7fc(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 2) func_0204ca4c(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 3) func_0204cbac(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 4) func_0204ce20(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 6) func_0204d084(operation);
@@ -282,7 +282,7 @@ void func_0204b3cc(void) {
 
 s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
     extern s32 data_020fd1c4, data_020fd17c, data_020fd14c, data_020fd1d4, data_020fd1e4, data_0213dcbc;
-    void *func_02049274(char *);
+    void *gpiStringDup(char *);
     s32 ghiInitFixedBuffer(void *, void *, void *, s32);
     s32 ghiInitBuffer(void *, void *, s32, s32);
     s32 func_0204bad4(void *);
@@ -301,13 +301,13 @@ s32 func_0204b428(char *url, char *headers, void *buffer, s32 bufferSize, s32 po
     connection = func_0204ab50();
     if (!connection) return -1;
     M2C_FIELD(connection, s32 *, 12) = 0;
-    M2C_FIELD(connection, void **, 20) = func_02049274(url);
+    M2C_FIELD(connection, void **, 20) = gpiStringDup(url);
     if (!M2C_FIELD(connection, void **, 20)) {
         func_0204ace8(connection);
         return -1;
     }
     if (headers && *headers) {
-        M2C_FIELD(connection, void **, 40) = func_02049274(headers);
+        M2C_FIELD(connection, void **, 40) = gpiStringDup(headers);
         if (!M2C_FIELD(connection, void **, 40)) {
             func_0204ace8(connection);
             return -1;
@@ -358,7 +358,7 @@ void func_0204b690(s32 *arg0) {
     func_020377c4(arg0);
 }
 
-M2C_UNK *func_0204b6ac(void *arg0) {
+M2C_UNK *GetContentType(void *arg0) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020fd264;
     extern M2C_UNK data_020fd334;

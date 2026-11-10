@@ -99,12 +99,12 @@ s32 func_ov000_021a9740(void *arg0, M2C_UNK arg1) {
     return var_r0;
 }
 
-void func_ov000_021a97d0(M2C_UNK arg0, M2C_UNK arg1) {
+void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a799c(M2C_UNK, M2C_UNK, M2C_UNK);
     func_020a799c(arg0, arg1, 0);
 }
 
-void func_ov000_021a97e0(M2C_UNK arg0, M2C_UNK arg1) {
+void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020a7b3c(M2C_UNK, u8, u16, s32, s32);
     extern void **data_027e0058;
     extern void *data_ov000_021df580;

@@ -18,18 +18,14 @@ void func_020af79c(void) {
     func_02090480(0);
 }
 
-#pragma scheduling on
+#pragma push
+#pragma scheduling off
 void func_020af7ac(void) {
-    extern u8 data_0215c430[];
-    extern u8 data_0215c42c[];
-    volatile u8 *p = data_0215c430;
-    volatile u8 *q = data_0215c42c;
-    s32 i;
-    for (i = 0; i < 2; i++) {
-        *p++ = 0;
-        *q++ = 0;
-    }
+extern u8 data_0215c430[],data_0215c42c[];
+s32 i=0;u8 zero=i;volatile u8 *p=data_0215c430,*q=data_0215c42c;
+do { *p++=zero; *q++=zero; } while(++i<2);
 }
+#pragma pop
 void func_020af7dc(void) {
     extern u8 data_0215c42c[];
     extern u8 data_0215c430[];

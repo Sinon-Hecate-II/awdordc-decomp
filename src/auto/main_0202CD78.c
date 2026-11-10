@@ -441,7 +441,7 @@ if(a){size=p[0x124]<<11;handle=(s32)func_0202c5f0((s32*)a,size,callback,(s32)p,0
 i++;p+=0x174;}while(i<4);return 1;
 }
 
-s32 func_0202d8a0(s32 a,s32 b,s32 c){void *func_0202c1cc(s32);s32 func_0202dbac(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=func_0202c1cc(b);if(!p)return 0;return func_0202dbac(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
+s32 func_0202d8a0(s32 a,s32 b,s32 c){void *func_0202c1cc(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=func_0202c1cc(b);if(!p)return 0;return Sound_StartPlayer(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
 
 s32 func_0202d8fc(s32 arg) {
 void * volatile *arg0=(void * volatile *)arg;
@@ -512,9 +512,9 @@ i++;p+=0x174;
 }while(i<4);
 }
 
-void *func_0202daf4(void **a,s32 b,s32 c){extern u8 data_0213c92c[];void func_0202d9cc(void **);void func_0202de74(void *);void *p;if(*a)func_0202d9cc(a);p=data_0213c92c+b*0x174;if(!M2C_FIELD(p,s32 *,0x12c))return 0;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<31)>>31)!=0){if(c<M2C_FIELD(p,s32 *,0x150))return 0;func_0202de74(p);}M2C_FIELD(p,s32 *,0x150)=c;M2C_FIELD(p,u32 *,0x110)=(M2C_FIELD(p,u32 *,0x110)&~1)|1;M2C_FIELD(p,void ***,0x14c)=a;*a=p;return p;}
+void *Sound_AcquirePlayer(void **a,s32 b,s32 c){extern u8 data_0213c92c[];void func_0202d9cc(void **);void func_0202de74(void *);void *p;if(*a)func_0202d9cc(a);p=data_0213c92c+b*0x174;if(!M2C_FIELD(p,s32 *,0x12c))return 0;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<31)>>31)!=0){if(c<M2C_FIELD(p,s32 *,0x150))return 0;func_0202de74(p);}M2C_FIELD(p,s32 *,0x150)=c;M2C_FIELD(p,u32 *,0x110)=(M2C_FIELD(p,u32 *,0x110)&~1)|1;M2C_FIELD(p,void ***,0x14c)=a;*a=p;return p;}
 
-void func_0202db80(void *arg0) {
+void Sound_ReleasePlayer(void *arg0) {
 s32 *p=M2C_FIELD(arg0,s32 **,0x14c);
 if(p){*p=0;M2C_FIELD(arg0,s32 **,0x14c)=0;}
 M2C_FIELD(arg0,u32 *,0x110)&=~1;

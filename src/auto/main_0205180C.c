@@ -24,8 +24,8 @@ s32 *func_02055aa0(void **,s32);
 void *func_02037794(s32);
 void func_02065210(void *,s32,s32);
 void func_020580fc(void *,void *,s32);
-s32 func_02050838(void **,Callback518,void *,void *,s32);
-M2C_UNK func_02058644(M2C_UNK,M2C_UNK *);
+s32 gpiAddCallback(void **,Callback518,void *,void *,s32);
+M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 M2C_UNK func_02054484();
 Response518 work;
 void *q;
@@ -87,11 +87,11 @@ M2C_FIELD(p,s32 *,0x1d8)=3;
 callback=*(Callback518 *)((char *)b+12);
 if(callback.function){
 q=func_02037794(32);
-if(!q){func_02058644((M2C_UNK)a,&data_020fe424);return 1;}
+if(!q){gpiSetErrorString((M2C_UNK)a,&data_020fe424);return 1;}
 func_02065210(q,0,32);
 M2C_FIELD(q,s32 *,4)=M2C_FIELD(p,s32 *,0x1a0);M2C_FIELD(q,s32 *,0)=0;
 func_020580fc((char *)q+8,work.token,21);
-result=func_02050838(a,callback,q,b,0);
+result=gpiAddCallback(a,callback,q,b,0);
 if(result)return result;
 }
 func_02054484(a,b);
@@ -155,7 +155,7 @@ void func_02052038(void **arg0, s32 arg1) {
             gpiAppendIntField(arg0, (char *)temp_r4 + 0x1F4, *(s32 *)((char *)temp_r4 + 0x198));
             gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &gGsKeyFinal);
         }
-        func_02050430(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
+        gpiSendBufferedData(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
         temp_r0 = *(s32 *)((char *)temp_r4 + 0x1D4);
         if (temp_r0 != -1) {
             func_020496cc(temp_r0, 2);
@@ -226,13 +226,13 @@ s32 func_02052200(s32 day,s32 month,s32 year){
 
 s32 func_02052360(M2C_UNK arg0,s32 arg1,s32 *arg2,s32 *arg3,s32 *arg4){
 s32 func_02052200(s32,s32,s32);
-M2C_UNK func_02058644(M2C_UNK,M2C_UNK *);
+M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fe680,data_020fe6a4,data_020fe6b0,data_020fe6c0;
 s32 hi=(u8)(arg1>>24),mid=(u8)(arg1>>16);
 s32 low=(u16)arg1;
 if(!func_02052200(hi,mid,low))func_020640a8(&data_020fe6c0,&data_020fe6a4,&data_020fe680,0xb7);
-if(!func_02052200(hi,mid,low)){func_02058644(arg0,&data_020fe6b0);return 2;}
+if(!func_02052200(hi,mid,low)){gpiSetErrorString(arg0,&data_020fe6b0);return 2;}
 *arg2=hi;*arg3=mid;*arg4=low;
 return 0;
 }

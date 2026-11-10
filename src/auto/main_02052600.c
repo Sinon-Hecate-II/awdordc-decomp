@@ -22,9 +22,9 @@ do { *p++=z; *p++=z; } while(--i); *p=z;
 s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     void *func_02037794(M2C_UNK);
     M2C_UNK func_020377c4(s32);
-    s32 func_02049274(s8 *);
+    s32 gpiStringDup(s8 *);
     M2C_UNK func_02050744(void **, M2C_UNK, M2C_UNK);
-    s32 func_02050838(void **, Callback526, void *, void *, s32);
+    s32 gpiAddCallback(void **, Callback526, void *, void *, s32);
     s32 func_02052360(void **, s32, s32 *, s32 *, s32 *);
     M2C_UNK func_02052408(s8 **, void *);
     M2C_UNK func_02053e40(void **, void *, s8 **);
@@ -34,7 +34,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     s32 func_0205817c(void **, char *, s32);
     s32 func_02058254(char *, M2C_UNK *, void *, s32);
     M2C_UNK func_02058620(void **, M2C_UNK, M2C_UNK *);
-    M2C_UNK func_02058644(void **, M2C_UNK *);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     s32 func_02068eac(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK func_0206a374(s8 *);
@@ -259,7 +259,7 @@ block_41:
     if (var_r8 != 0) {
         func_020377c4(M2C_FIELD(sp10, s32 *, 0x18));
         M2C_FIELD(sp10, s32 *, 0x18) = 0;
-        M2C_FIELD(sp10, s32 *, 0x18) = func_02049274(&buffers.bufEC[0]);
+        M2C_FIELD(sp10, s32 *, 0x18) = gpiStringDup(&buffers.bufEC[0]);
     }
     if (M2C_FIELD(temp_r6, s32 *, 0x100) != 0) {
         func_02053e40(arg0, sp10, &response.p0);
@@ -269,13 +269,13 @@ block_41:
     if (temp_r1 != 0) {
         temp_r0_4 = func_02037794(0x204);
         if (temp_r0_4 == NULL) {
-            func_02058644(arg0, &data_020fe824);
+            gpiSetErrorString(arg0, &data_020fe824);
             return 1;
         }
         func_02052408(&response.p0, temp_r0_4);
         M2C_FIELD(temp_r0_4, s32 *, 0) = 0;
         M2C_FIELD(temp_r0_4, s32 *, 4) = temp_r0_3;
-        temp_r0 = func_02050838(arg0, callback, temp_r0_4, arg1, 0);
+        temp_r0 = gpiAddCallback(arg0, callback, temp_r0_4, arg1, 0);
         if (temp_r0 != 0) {
             return temp_r0;
         }
@@ -350,7 +350,7 @@ s32 AppendUpdateUiField(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
  * messages: the field id picks the protocol key and whether it belongs in the
  * profile ("updatepro") or UI ("updateui") buffer. */
 s32 AppendInfoIntField(s32 *connection,s32 fieldId,s32 value) {
-s32 func_02058644(void **,M2C_UNK *);
+s32 gpiSetErrorString(void **,M2C_UNK *);
 s32 func_020675e4(s8 *,M2C_UNK *,...);
 extern M2C_UNK data_020fe868;
 extern M2C_UNK data_020fe87c;
@@ -381,7 +381,7 @@ s8 text[16];
 s32 err;
 switch(fieldId) {
 case 0x708:
-if(value<0){func_02058644((void **)connection,&data_020fe868);return 2;}
+if(value<0){gpiSetErrorString((void **)connection,&data_020fe868);return 2;}
 func_020675e4(text,&data_020fe87c,value);
 err=AppendUpdateProField(connection,(s32)&data_020fe77c,(s32)text);
 if(err!=0)return err;
@@ -400,7 +400,7 @@ case 0x502:
 err=AppendUpdateProField(connection,(s32)&data_020fe7bc,(s32)&data_020fe888);
 if(err!=0)return err;
 break;
-default:func_02058644((void **)connection,&data_020fe88c);return 2;
+default:gpiSetErrorString((void **)connection,&data_020fe88c);return 2;
 }
 break;
 case 0x706:
@@ -484,7 +484,7 @@ func_020675e4(text,&data_020fe87c,value);
 err=AppendUpdateProField(connection,(s32)&data_020fe804,(s32)text);
 if(err!=0)return err;
 break;
-default:func_02058644((void **)connection,&data_020fe918);return 2;
+default:gpiSetErrorString((void **)connection,&data_020fe918);return 2;
 }
 return 0;
 }

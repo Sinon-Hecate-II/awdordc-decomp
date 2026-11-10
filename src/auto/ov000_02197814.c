@@ -6,7 +6,7 @@ s32 func_ov000_02197814(void *unitA, void *unitB, s32 bonus) {
     extern void **gCurrentMap;
     s32 func_0206409c(s32);
     s32 func_ov000_021a89a4(void *);
-    s32 func_ov000_021a97e0(s32, u32);
+    s32 GetUnitMoveRange(s32, u32);
     s32 func_ov000_021a9820(s32, u32);
     s32 func_ov000_021a98e4(u32);
     s32 dist, n, idx, v, limit;
@@ -16,7 +16,7 @@ s32 func_ov000_02197814(void *unitA, void *unitB, s32 bonus) {
     if (func_ov000_021a98e4((u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) == 0) {
         if (unitB) { if (!unitB) n = 0; else n = ((s32)((u8 *)unitB - ((u8 *)*gCurrentMap + 0x59a4))) / 14; idx = (n >> 6) + 1; } else idx = 0;
         v = func_ov000_021a89a4(unitA);
-        limit = bonus + (v + func_ov000_021a97e0(idx, (u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) + 1);
+        limit = bonus + (v + GetUnitMoveRange(idx, (u32)(M2C_FIELD(unitB, u8 *, 0) << 26) >> 26) + 1);
     } else {
         if (unitB) { if (!unitB) n = 0; else n = ((s32)((u8 *)unitB - ((u8 *)*gCurrentMap + 0x59a4))) / 14; idx = (n >> 6) + 1; } else idx = 0;
         v = func_ov000_021a89a4(unitA);

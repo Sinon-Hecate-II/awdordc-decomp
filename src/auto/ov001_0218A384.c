@@ -164,10 +164,10 @@ s32 func_ov001_0218a74c(void *arg0) {
 void func_ov001_0218a7a4(void) {
     extern M2C_UNK data_ov001_02193e3c;
     void *func_ov001_0218b6f8(s32, M2C_UNK);
-    void func_020039a0(M2C_UNK, s32, s32);
+    void GX_SetBlendControl(M2C_UNK, s32, s32);
     data_ov001_02193e3c = (M2C_UNK)func_ov001_0218b6f8(0x18, 4);
-    func_020039a0(0x4000050, 0x3f, 0x10);
-    func_020039a0(0x4001050, 0x3f, 0x10);
+    GX_SetBlendControl(0x4000050, 0x3f, 0x10);
+    GX_SetBlendControl(0x4001050, 0x3f, 0x10);
 }
 
 void func_ov001_0218a7ec(void) {
@@ -190,7 +190,7 @@ u8 func_ov001_0218a800(s32 arg0) {
 s32 func_ov001_0218a824(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 extern u8 data_ov001_0218fd08[];
 extern M2C_UNK data_ov001_02193e3c;
-void func_020039a0(s32,s32,s32);
+void GX_SetBlendControl(s32,s32,s32);
 void func_ov001_0218a8fc(M2C_UNK, void *);
 void *func_ov001_0218c884(s32,s32,void *,s32);
 s8 buf[4];
@@ -198,7 +198,7 @@ void *p;
 buf[0]=data_ov001_0218fd08[8]; buf[1]=data_ov001_0218fd08[9]; buf[2]=data_ov001_0218fd08[10]; buf[3]=data_ov001_0218fd08[11];
 if(arg1==1) p=(void *)data_ov001_02193e3c; else p=(u8 *)data_ov001_02193e3c+12;
 if(M2C_FIELD(p,u8 *,9)) return 0;
-if(arg1==1) func_020039a0(0x4001050,arg2,buf[arg0]); else func_020039a0(0x4000050,arg2,buf[arg0]);
+if(arg1==1) GX_SetBlendControl(0x4001050,arg2,buf[arg0]); else GX_SetBlendControl(0x4000050,arg2,buf[arg0]);
 M2C_FIELD(p,s32 *,0)=(s32)func_ov001_0218c884(1,(s32)func_ov001_0218a8fc,p,200);
 M2C_FIELD(p,u16 *,4)=0;
 M2C_FIELD(p,u8 *,8)=arg0;

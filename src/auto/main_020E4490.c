@@ -84,10 +84,10 @@ void func_020e4490(void) {
 }
 
 void func_020e4570(void) {
-    M2C_UNK func_020024cc();
+    M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02007598();
     func_02007598();
-    func_020024cc();
+    GX_TurnOnDisplay();
     *(s32 *)0x04001000 |= 0x10000;
 }
 

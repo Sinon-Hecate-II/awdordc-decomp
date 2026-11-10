@@ -48,7 +48,7 @@ M2C_FIELD(slot,u16 *,4)=0;*done=1;return freeSlot+14;
 }
 #pragma scheduling on
 void func_0201ce18(u8 *arg0, s32 arg1) {
-    s32 func_0201a658(u8 *, u32);
+    s32 Checksum(u8 *, u32);
     s32 func_0201a778(void);
     M2C_UNK func_0201ae0c(void *, M2C_UNK, s32);
     M2C_UNK func_0201bb88(void *, u8 *, M2C_UNK);
@@ -78,7 +78,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
             return;
         }
         b0 = M2C_FIELD(arg0, u8 *, 0);
-        if (func_0201a658(arg0, (u32)(b0 << 0x1C) >> 0x1A) != 0xFFFF) {
+        if (Checksum(arg0, (u32)(b0 << 0x1C) >> 0x1A) != 0xFFFF) {
             return;
         }
         dataA = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0x10) >> 8) | (M2C_FIELD(arg0, u16 *, 0x10) << 8)) << 16) |
@@ -541,7 +541,7 @@ else func_0201d67c(arg0,p);
 
 s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     extern M2C_UNK data_02137290;
-    M2C_UNK func_0201b524(M2C_UNK, s32, M2C_UNK, s32, s32);
+    M2C_UNK TcpSendSegment(M2C_UNK, s32, M2C_UNK, s32, s32);
     M2C_UNK TaskYield(void);
 
     M2C_UNK v8;
@@ -596,7 +596,7 @@ s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
         }
         zero = 0;
         v5 = v5 - v4;
-        func_0201b524(v10, v4, v8, 0x18, zero);
+        TcpSendSegment(v10, v4, v8, 0x18, zero);
         TaskYield();
         v10 = (M2C_UNK)((u8 *)v10 + v4);
         v9 = v9 - v4;

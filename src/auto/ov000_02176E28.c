@@ -1,6 +1,6 @@
 /* 1 function from 0x02176E28 to 0x02177CE0 (ov000), found by ds-decomp. */
 #include "common.h"
-s32 func_ov000_021a98e4(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 func_ov000_021a9214(void *,s32,s32);s32 func_ov000_021a97d0(s32,s32);s32 func_ov000_0217c9f4(void *);
+s32 func_ov000_021a98e4(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 func_ov000_021a9214(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
 extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],data_ov000_021b5c0f[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],data_ov000_021dfba8[],data_ov000_021dfcf0[];extern u8 *data_ov000_021df644,*data_ov000_021df580;
 void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 func_ov000_021a9904(s32);s32 func_0207c8ec(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 func_ov000_021a90a8();s32 func_ov000_021a8a88(void *);
@@ -96,7 +96,7 @@ if((M2C_FIELD(map+index,u8 *,0x1420)&31)==15)value<<=1;
 if(((u32)(b[0]<<26)>>26)==21)value*=3;
 else if(func_ov000_021a9904(((u32)(b[0]<<26)>>26))==2){if(!b[12])vb>>=2;else if(M2C_FIELD((*gCurrentMap),s16 *,28390))vb>>=1;}
 else {if(func_ov000_021a98e4(((u32)(b[0]<<26)>>26))==0)value<<=1;else if(func_ov000_021a98e4(((u32)(b[0]<<26)>>26))==1)value*=3;}
-if(vb*value-va*2<0){if(func_ov000_021a97d0(((u32)(b[0]<<26)>>26),((u32)(a[0]<<26)>>26))>1)goto failed;if(M2C_FIELD((*gCurrentMap),s16 *,28358))va=0;else {failed:return 0;}}
+if(vb*value-va*2<0){if(GetUnitDamagePercent(((u32)(b[0]<<26)>>26),((u32)(a[0]<<26)>>26))>1)goto failed;if(M2C_FIELD((*gCurrentMap),s16 *,28358))va=0;else {failed:return 0;}}
 vb+=(vb*func_ov000_0217c9f4(b))>>5;
 if(cost<=50&&!M2C_FIELD((u8 *)(*gCurrentMap)+(pos[0]+M2C_FIELD((u8 *)(*gCurrentMap)+pos[1]*2,u16 *,0x3758)),u8 *,0x2d48)&&!(M2C_FIELD(a,u16 *,4)&32)){n=M2C_FIELD(data_ov000_021b5c00+((u32)(b[0]<<26)>>26)*112,u16 *,0);if((u32)n<800)vb+=n;else vb+=800;}
 n=(vb*value-va*2)>>3;if(n&~0xffff)n=0xffff;if(!n)n=1;return n;

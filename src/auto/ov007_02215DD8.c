@@ -74,7 +74,7 @@ loop:
 void func_ov007_02216118(s32 arg0, s32 arg1) {
     s32 func_ov007_02214ff8(s32, s32, s32);
     s32 func_ov007_02215128(s32, s32);
-    s32 func_ov007_02215254(s32, s32, s32);
+    s32 Map_SetCellTile(s32, s32, s32);
     s32 Map_MarkUnitsMoved(void);
     extern void **gCurrentMap;
     extern u8 data_ov007_02221a84[];
@@ -99,7 +99,7 @@ loop_outer:
                         if (func_ov007_02215128(cnt, arg0) != 1) {
                             row[r6] = 1;
                         } else {
-                            func_ov007_02215254(r6, r7, arg0);
+                            Map_SetCellTile(r6, r7, arg0);
                             row[r6] = 2;
                         }
                     }
@@ -155,7 +155,7 @@ void func_ov007_02216a74(void) {
 s32 func_ov007_02214e24(void);
 s32 func_ov007_02214d88(s32,s32);
 s32 func_ov007_02215bc4(s32*,s32*,s32);
-s32 func_ov007_02215254(s32,s32,s32);
+s32 Map_SetCellTile(s32,s32,s32);
 s32 Map_MarkUnitsMoved(void);
 extern void **gCurrentMap;
 extern u8 data_ov007_02221a84[];
@@ -164,25 +164,25 @@ func_ov007_02214e24();
 n=func_ov007_02214d88(2,8);
 for(i=0;i<n;i++){
 if(!func_ov007_02215bc4(&x,&y,1)) break;
-func_ov007_02215254(x,y,3);
+Map_SetCellTile(x,y,3);
 (data_ov007_02221a84 + y*30)[x]=2;
-if(x-1>=0){func_ov007_02215254(x-1,y,3);(data_ov007_02221a84 + y*30)[x-1]=2;}
-if(y-1>=0){func_ov007_02215254(x,y-1,3);(data_ov007_02221a84 + y*30)[x-30]=2;}
-if(x+1<M2C_FIELD(*gCurrentMap,u16*,0x5144)){func_ov007_02215254(x+1,y,3);(data_ov007_02221a84 + y*30)[x+1]=2;}
-if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){func_ov007_02215254(x,y+1,3);(data_ov007_02221a84 + y*30)[x+30]=2;}
+if(x-1>=0){Map_SetCellTile(x-1,y,3);(data_ov007_02221a84 + y*30)[x-1]=2;}
+if(y-1>=0){Map_SetCellTile(x,y-1,3);(data_ov007_02221a84 + y*30)[x-30]=2;}
+if(x+1<M2C_FIELD(*gCurrentMap,u16*,0x5144)){Map_SetCellTile(x+1,y,3);(data_ov007_02221a84 + y*30)[x+1]=2;}
+if(y+1<M2C_FIELD(*gCurrentMap,u16*,0x5146)){Map_SetCellTile(x,y+1,3);(data_ov007_02221a84 + y*30)[x+30]=2;}
 }
 Map_MarkUnitsMoved();func_ov007_02216118(3,1);
 }
 
 void func_ov007_02216bf4(void) {
-s32 func_ov007_02214e24(void);s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215bc4(s32 *,s32 *,s32);s32 func_ov007_02215254(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void func_ov007_02216118(s32,s32);
+s32 func_ov007_02214e24(void);s32 func_ov007_02214d88(s32,s32);s32 func_ov007_02215bc4(s32 *,s32 *,s32);s32 Map_SetCellTile(s32,s32,s32);s32 Map_MarkUnitsMoved(void);void func_ov007_02216118(s32,s32);
 extern u8 data_ov007_02221a84[];
 s32 x,y,i,n;
 func_ov007_02214e24();n=func_ov007_02214d88(8,12);
 i=0;
 if(n>0){do{
 if(!func_ov007_02215bc4(&x,&y,1))break;
-func_ov007_02215254(x,y,32);
+Map_SetCellTile(x,y,32);
 *(data_ov007_02221a84+y*30+x)=2;
 i++;
 }while(i<n);}

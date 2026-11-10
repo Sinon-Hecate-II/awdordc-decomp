@@ -181,13 +181,13 @@ void func_02061c8c(void *arg0) {
 s32 func_02061cb4(s32 a,s32 b) {
 s32 func_020609bc(s32);
 s32 *func_02048ff8(s32,s32 *);
-s32 func_02049274(s32);
+s32 gpiStringDup(s32);
 void func_02048eac(s32,s32 *);
 s32 pair[2]; s32 *p;
 pair[0]=b;
 p=func_02048ff8(func_020609bc(a),pair);
 if(p){p[1]++;return p[0];}
-pair[0]=func_02049274(b);pair[1]=1;
+pair[0]=gpiStringDup(b);pair[1]=1;
 func_02048eac(func_020609bc(a),pair);
 return pair[0];
 }

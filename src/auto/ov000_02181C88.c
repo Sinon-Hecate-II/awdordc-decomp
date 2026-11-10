@@ -13,8 +13,8 @@ s32 IsUnitOnCurrentTeam(s32);
 s32 func_020d280c(u16, u8, s32);
 s32 func_020d2d18(u16, s32);
 s32 func_ov000_0219c508(s32, s32);
-s32 func_ov000_021a97d0(u32, s32);
-s32 func_ov000_021a97e0(s32, u32);
+s32 GetUnitDamagePercent(u32, s32);
+s32 GetUnitMoveRange(s32, u32);
 s32 func_ov000_021a9820(s32, u32);
 s32 func_ov000_021a98e4(u32);
 extern s32 *gCurrentMap;
@@ -292,8 +292,8 @@ void func_ov000_02181c88(void) {
         temp_r8 = temp_r3 + sp2C;
         var_r1 = (u32) (M2C_FIELD((temp_r3 + sp2C), u8 *, 0) << 0x1A) >> 0x1A;
         if ((var_r1 != 0) && (!(M2C_FIELD(temp_r8, u16 *, 0x4) & 8) || (temp_ret = func_020a85dc((u32) (M2C_FIELD(((M2C_FIELD((M2C_FIELD((temp_r0_2 + (M2C_FIELD(temp_r8, u8 *, 0x2) * 2)), u16 *, 0x3758) + (temp_r0_2 + M2C_FIELD(temp_r8, u8 *, 0x1))), u8 *, 0x508) * 0xE) + temp_r0_2), u8 *, 0x59A4) << 0x1A) >> 0x1A), (temp_ret != 0)))) {
-            temp_r4 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * func_ov000_021a97d0((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 7), 0x64);
-            temp_ret_2 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * func_ov000_021a97d0((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 0xE), 0x64);
+            temp_r4 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 7), 0x64);
+            temp_ret_2 = func_0207c8ec(((u32) (M2C_FIELD(temp_r8, u16 *, 0x6) << 0x19) >> 0x19) * GetUnitDamagePercent((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, 0xE), 0x64);
             temp_r0_3 = temp_ret_2;
             
             if ((temp_r4 < 0x28) && (temp_r0_3 < 0x28)) {
@@ -313,7 +313,7 @@ void func_ov000_02181c88(void) {
                         } else {
                             var_r0 = 0;
                         }
-                        var_r3 = func_ov000_021a97e0(var_r0, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
+                        var_r3 = GetUnitMoveRange(var_r0, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A);
                     } else {
                         if (temp_r8 != 0) {
                             if (temp_r8 == 0) {
@@ -326,7 +326,7 @@ void func_ov000_02181c88(void) {
                         } else {
                             var_r0_2 = 0;
                         }
-                        var_r3 = (s32) (func_ov000_021a97e0(var_r0_2, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) * 3) >> 1;
+                        var_r3 = (s32) (GetUnitMoveRange(var_r0_2, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) * 3) >> 1;
                     }
                     func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, var_r3, 0);
                     var_r3_2 = 0;
@@ -381,7 +381,7 @@ void func_ov000_02181c88(void) {
                     } else {
                         var_r0_3 = 0;
                     }
-                    func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, func_ov000_021a97e0(var_r0_3, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 0);
+                    func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_3, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 0);
                     func_01ffb9c4(0x6F);
                     var_r2 = 0;
                     var_r6_4 = *gCurrentMap;
@@ -433,7 +433,7 @@ void func_ov000_02181c88(void) {
                 } else {
                     var_r0_4 = 0;
                 }
-                func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, func_ov000_021a97e0(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
+                func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, GetUnitMoveRange(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
                 var_r9_2 = 0;
                 if (IsUnitOnCurrentTeam(sp3C) != 0) {
                     for(var_r9_2=0;var_r9_2<func_ov000_021a9820(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
@@ -846,7 +846,7 @@ void func_ov000_02181c88(void) {
                 sp44 = sp38 + 5;
                 do {
                     if (((M2C_FIELD((M2C_FIELD((var_r7_8 + (sp38 * 2)), u16 *, 0x3758) + (var_r7_8 + var_r4)), u8 *, 0x1420) & 0x1F) == 0x11) && (func_020d280c(M2C_FIELD(var_r7_8, u16 *, 0x52A4), var_r4, sp38) != 0)) {
-                        func_01ffada0(var_r4, (u8) sp38, 7U, func_ov000_021a97e0(M2C_FIELD((*gCurrentMap), u16 *, 0x52A4), 7U), 0);
+                        func_01ffada0(var_r4, (u8) sp38, 7U, GetUnitMoveRange(M2C_FIELD((*gCurrentMap), u16 *, 0x52A4), 7U), 0);
                         var_r1_4 = 0;
                         if ((s32) M2C_FIELD((*gCurrentMap), u16 *, 0x5146) > 0) {
                             do {

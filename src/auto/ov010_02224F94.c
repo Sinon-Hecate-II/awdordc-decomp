@@ -264,7 +264,7 @@ s32 func_ov010_02225640(void *arg) {
     M2C_UNK func_ov010_02224270();
     void func_02007f8c(void *, u32, u32);
     extern M2C_UNK data_ov010_0222edb4;
-    extern M2C_UNK data_ov010_0222edc0;
+    extern M2C_UNK gLinkConfig;
     s32 kind;
     u8 b;
     s32 t;
@@ -277,7 +277,7 @@ s32 func_ov010_02225640(void *arg) {
     t = M2C_FIELD(arg, s32 *, 0x10);
     if (!t || !M2C_FIELD(arg, s32 *, 0x14)) return 0;
     if (t % 32 != 0) return 0;
-    func_02007f8c(&data_ov010_0222edc0, 0, 0x18);
+    func_02007f8c(&gLinkConfig, 0, 0x18);
     M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x10) = M2C_FIELD(arg, s32 *, 0x18);
     M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x14) = M2C_FIELD(arg, s32 *, 0x1C);
     M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x1C) = M2C_FIELD(arg, s32 *, 8);

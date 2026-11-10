@@ -286,9 +286,9 @@ void func_0201a550(s32 arg0) {
     func_02005f80(&data_02137438, arg0);
 }
 
-u32 func_0201a588(u8 *p,u32 n,u32 sum){u32 v;if((u32)p&1){while(n>1){sum+=(u16)((p[0]<<8)|p[1]);n-=2;p+=2;}}else{v=(u16)sum;sum=(u16)(((s32)v>>8)|(v<<8));while(n>1){sum+=*(u16 *)p;p+=2;n-=2;}v=((sum>>8)&0x00ff00ff)|((sum<<8)&0xff00ff00);sum=(v>>16)|(v<<16);}if(n)sum+=*p<<8;v=(u16)sum+(sum>>16);v+=v>>16;return (u16)v;}
+u32 ChecksumAccumulate(u8 *p,u32 n,u32 sum){u32 v;if((u32)p&1){while(n>1){sum+=(u16)((p[0]<<8)|p[1]);n-=2;p+=2;}}else{v=(u16)sum;sum=(u16)(((s32)v>>8)|(v<<8));while(n>1){sum+=*(u16 *)p;p+=2;n-=2;}v=((sum>>8)&0x00ff00ff)|((sum<<8)&0xff00ff00);sum=(v>>16)|(v<<16);}if(n)sum+=*p<<8;v=(u16)sum+(sum>>16);v+=v>>16;return (u16)v;}
 
-s32 func_0201a63c(s32 arg0) {
+s32 ChecksumFinalize(s32 arg0) {
     u16 var_r0;
 
     var_r0 = arg0 ^ 0xFFFF;
@@ -298,11 +298,11 @@ s32 func_0201a63c(s32 arg0) {
     return (s32) var_r0;
 }
 
-void func_0201a658(M2C_UNK arg0, M2C_UNK arg1) {
-    func_0201a63c((u16)func_0201a588((u8 *)arg0, (u32)arg1, 0));
+void Checksum(M2C_UNK arg0, M2C_UNK arg1) {
+    ChecksumFinalize((u16)ChecksumAccumulate((u8 *)arg0, (u32)arg1, 0));
 }
 
-s32 func_0201a674(u8 *a,s32 b,u8 *c,u32 d){u32 r;r=func_0201a588(c+12,8,func_0201a588(a,b,d));r+=b;if(r&0x10000)r=(u16)(r+1);return r!=65535;}
+s32 func_0201a674(u8 *a,s32 b,u8 *c,u32 d){u32 r;r=ChecksumAccumulate(c+12,8,ChecksumAccumulate(a,b,d));r+=b;if(r&0x10000)r=(u16)(r+1);return r!=65535;}
 
 s32 func_0201a6c4(s32 a){extern M2C_UNK data_02137290;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&data_02137290,s32 *,28);if((a&mask)!=(M2C_FIELD(&data_02137290,s32 *,80)&mask))r=0;}return r;}
 

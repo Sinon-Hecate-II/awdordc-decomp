@@ -219,7 +219,11 @@ s32 func_020de884(M2C_UNK arg0) {
 }
 
 #pragma opt_strength_reduction on
-void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
+/* Set up the 3D matching/unit scene: switch in the main sprite engine, load
+ * the matching archive and the background for the player count, reset the
+ * menu sprites, then start the ov010 scene either by its screen code or by
+ * the unit selected in the menu. */
+void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void func_01ff9ce8(u8);
     void func_0200bc5c(void *);
     void *func_020e3218(void *);
@@ -227,49 +231,39 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
     void func_02081590(void *, void *);
     void func_02081528(void);
     void func_02080944(void *, s32, s32, s32);
-    void func_0208e7ec(s32, s32);
     void func_02088f1c(void *);
     void func_02088da8(void *);
     void func_0208b758(void *, u32);
     s32 GetSpriteAnimValue(void *);
-    void func_ov010_02228d48(s32, s32, s32, s32, s32, s32, s32);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
-    extern void *g3DSpriteEngineSub;
-    extern M2C_UNK data_0212d498;
-    extern M2C_UNK data_0212d4a0;
-    extern M2C_UNK data_0212d4b0;
-    extern M2C_UNK data_0212d4c0;
-    s32 func_020de50c(s32, void *);
-    s32 func_020de5b0(M2C_UNK);
-    void func_020de610(void);
+    extern M2C_UNK gLinkResourcePath;
+    extern M2C_UNK gMatchingNarcPath;
+    extern M2C_UNK gMatching4PScreen;
+    extern M2C_UNK gMatching2PScreen;
 
     void func_ov010_02229190(s32,s32,s32,s32,s32,s32);
     void func_ov010_022292e4(s32,s32,s32,s32,s32,s32);
-    void func_020deb44(s32,s32,s32,s32,s32,void *);
+    void MatchingUnitSceneCallback(s32,s32,s32,s32,s32,void *);
     extern s32 gUnitSlotIds[];
-    void *old = gCur3DSpriteEngine;
-    s32 code;
-    s32 code2;
-    void *p;
-    s32 low;
-    u32 val;
-    s32 t;
-    s32 v3c;
-    s32 v34;
-    s32 v38;
-    s32 tmp;
+    void *savedEngine = gCur3DSpriteEngine;
+    s32 layout;
+    s32 layout2;
+    void *sprite;
+    s32 baseFrame;
+    u32 spriteWord;
+    s32 animValue;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
-    func_0200bc5c(&data_0212d498);
-    func_020814e4(func_020e3218(&data_0212d4a0));
+    func_0200bc5c(&gLinkResourcePath);
+    func_020814e4(func_020e3218(&gMatchingNarcPath));
 
-    code=GetSetupCode((void *)arg0);
-    switch(code) {
-    case 4: func_02081590(func_020e3218(&data_0212d4b0), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-    case 2: func_02081590(func_020e3218(&data_0212d4c0), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    layout=GetSetupCode((void *)setup);
+    switch(layout) {
+    case 4: func_02081590(func_020e3218(&gMatching4PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 2: func_02081590(func_020e3218(&gMatching2PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
     }
 
     func_02081528();
@@ -277,45 +271,45 @@ void func_020de8c4(M2C_UNK arg0, M2C_UNK arg1) {
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x1;
 
-    gCur3DSpriteEngine = old;
+    gCur3DSpriteEngine = savedEngine;
 
-    M2C_FIELD((void *)arg0, u16 *, 0x48) |= 0x20;
+    M2C_FIELD((void *)setup, u16 *, 0x48) |= 0x20;
 
-    p = M2C_FIELD((void *)arg0, void **, 0x54);
-    low = M2C_FIELD(p, u8 *, 0x59);
-    low = (s32)((u32)(low << 28) >> 28);
-    val = M2C_FIELD(p, u32 *, 0x40);
-    val &= ~0x03FC0000u;
-    val |= ((u32)(u16)(low + 2) << 24) >> 6;
-    M2C_FIELD(p, u32 *, 0x40) = val;
-    M2C_FIELD(p, u8 *, 0x5a) = 0;
+    sprite = M2C_FIELD((void *)setup, void **, 0x54);
+    baseFrame = M2C_FIELD(sprite, u8 *, 0x59);
+    baseFrame = (s32)((u32)(baseFrame << 28) >> 28);
+    spriteWord = M2C_FIELD(sprite, u32 *, 0x40);
+    spriteWord &= ~0x03FC0000u;
+    spriteWord |= ((u32)(u16)(baseFrame + 2) << 24) >> 6;
+    M2C_FIELD(sprite, u32 *, 0x40) = spriteWord;
+    M2C_FIELD(sprite, u8 *, 0x5a) = 0;
 
-    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x58));
-    func_02088da8(M2C_FIELD((void *)arg0, void **, 0x60));
-    func_0208b758(M2C_FIELD((void *)arg0, void **, 0x64), 0x44000011U);
-    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x64));
+    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
+    func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
+    func_0208b758(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
+    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 
-    if (GetSpriteAnimValue(M2C_FIELD((void *)arg0, void **, 0x68)) != 0) {
-        t = GetSpriteAnimValue(M2C_FIELD((void *)arg0, void **, 0x68));
-        p = M2C_FIELD((void *)arg0, void **, 0x68);
-        M2C_FIELD(p, u16 *, 0xe) = (u16)t;
-        M2C_FIELD(p, u16 *, 0x10) = 0;
-        M2C_FIELD(p, u16 *, 0xc) = 0xc;
-        M2C_FIELD(p, u16 *, 0x2) = M2C_FIELD(p, u16 *, 0x4);
+    if (GetSpriteAnimValue(M2C_FIELD((void *)setup, void **, 0x68)) != 0) {
+        animValue = GetSpriteAnimValue(M2C_FIELD((void *)setup, void **, 0x68));
+        sprite = M2C_FIELD((void *)setup, void **, 0x68);
+        M2C_FIELD(sprite, u16 *, 0xe) = (u16)animValue;
+        M2C_FIELD(sprite, u16 *, 0x10) = 0;
+        M2C_FIELD(sprite, u16 *, 0xc) = 0xc;
+        M2C_FIELD(sprite, u16 *, 0x2) = M2C_FIELD(sprite, u16 *, 0x4);
     }
-    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x100;
-    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x200;
+    M2C_FIELD((void *)setup, u16 *, 0x48) &= ~0x100;
+    M2C_FIELD((void *)setup, u16 *, 0x48) &= ~0x200;
 
-    M2C_FIELD((void *)arg0, u8 *, 0x41) = 0;
-    if(M2C_FIELD((void *)arg0,u16 *,0x48)&1) {
-    code2=GetSetupCode((void *)arg0);
-    func_ov010_02229190(arg1,code2,(s32)func_020deb44,arg0,0,0);
+    M2C_FIELD((void *)setup, u8 *, 0x41) = 0;
+    if(M2C_FIELD((void *)setup,u16 *,0x48)&1) {
+    layout2=GetSetupCode((void *)setup);
+    func_ov010_02229190(side,layout2,(s32)MatchingUnitSceneCallback,setup,0,0);
     } else {
-    func_ov010_022292e4(arg1,gUnitSlotIds[M2C_FIELD((void *)arg0,s8 *,0x43)],(s32)func_020deb44,arg0,0,0);
+    func_ov010_022292e4(side,gUnitSlotIds[M2C_FIELD((void *)setup,s8 *,0x43)],(s32)MatchingUnitSceneCallback,setup,0,0);
     }
 }
 #pragma opt_strength_reduction off
-void func_020deb44(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
+void MatchingUnitSceneCallback(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
 
 void func_020deb74(M2C_UNK arg0) {
     M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
@@ -348,13 +342,13 @@ void func_020debc4(M2C_UNK arg0) {
 }
 
 void func_020debd4(M2C_UNK arg0) {
-    void func_020de8c4(M2C_UNK, M2C_UNK);
-    func_020de8c4(arg0, 0);
+    void SetupMatchingUnitScene(M2C_UNK, M2C_UNK);
+    SetupMatchingUnitScene(arg0, 0);
 }
 
 void func_020debe4(M2C_UNK arg0) {
-    void func_020de8c4(M2C_UNK, M2C_UNK);
-    func_020de8c4(arg0, 1);
+    void SetupMatchingUnitScene(M2C_UNK, M2C_UNK);
+    SetupMatchingUnitScene(arg0, 1);
 }
 
 #pragma opt_strength_reduction off

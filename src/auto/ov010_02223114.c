@@ -46,17 +46,17 @@ s32 func_ov010_02223114(void) {
 #pragma intrinsic on
 s32 func_ov010_022231d4(void) {
 M2C_UNK func_020444cc(u8,s32,s32);
-s32 func_ov010_02222cac(void);
-extern M2C_UNK data_ov010_0222c960, data_ov010_0222edc0;
+s32 Link_BuildNextPacket(void);
+extern M2C_UNK data_ov010_0222c960, gLinkConfig;
 extern u8 data_ov010_0222be36[];
 s32 t,k,idx,i; u8 n;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==0)return 1;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)==0){
-t=func_ov010_02222cac();M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=t;
+t=Link_BuildNextPacket();M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=t;
 if(t && M2C_FIELD(&data_ov010_0222c960,s32*,0x18)) t=0; else t=1; return t;
 }
 n=1;
-if(M2C_FIELD(&data_ov010_0222edc0,s32*,0x10)==2){
+if(M2C_FIELD(&gLinkConfig,s32*,0x10)==2){
 idx=M2C_FIELD(&data_ov010_0222c960,s32*,0xF10)++;
 n=(data_ov010_0222be36+M2C_FIELD(&data_ov010_0222c960,s32*,0xF14)*3)[idx];
 }
@@ -393,8 +393,8 @@ s32 func_ov010_02223b18(void *arg0, void *arg1) { (void)arg0; (void)arg1; return
 
 s32 func_ov010_02223ec8(s32 a) {
 s32 func_ov010_022243b0(s32);
-extern s32 data_ov010_0222edc0;
-s32 state=M2C_FIELD(&data_ov010_0222edc0,s32 *,0x10);
+extern s32 gLinkConfig;
+s32 state=M2C_FIELD(&gLinkConfig,s32 *,0x10);
 if(state==0 || state==2) return 0;
 return func_ov010_022243b0(a);
 }
@@ -402,7 +402,7 @@ return func_ov010_022243b0(a);
 s32 func_ov010_02223ef0(void *arg0) {
     extern M2C_UNK data_ov010_0222d8b4;
     extern M2C_UNK data_ov010_0222d8f0;
-    extern M2C_UNK data_ov010_0222edc0;
+    extern M2C_UNK gLinkConfig;
     void *var_ip;
     void *var_lr;
 
@@ -411,7 +411,7 @@ s32 func_ov010_02223ef0(void *arg0) {
     if (arg0 == NULL) {
         return 0;
     }
-    if (M2C_FIELD(&data_ov010_0222edc0, s32 *, 0x10) == 2) {
+    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) {
         if (arg0 == &data_ov010_0222d8f0) {
             M2C_FIELD(&data_ov010_0222d8b4, s32 *, 0x3C) = 0;
         }
@@ -445,7 +445,7 @@ s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
     M2C_UNK func_ov010_02224700(void *, void *, u8);
     s32 func_ov010_02224820(void *);
     s32 func_ov010_0222486c(void *, void *);
-    extern M2C_UNK data_ov010_0222edc0;
+    extern M2C_UNK gLinkConfig;
 
     if (arg0 == NULL) {
         return -1;
@@ -453,7 +453,7 @@ s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
     if (arg3 < 0x10) {
         return -1;
     }
-    if (M2C_FIELD(&data_ov010_0222edc0, s32 *, 0xC) == 1) {
+    if (M2C_FIELD(&gLinkConfig, s32 *, 0xC) == 1) {
         return -3;
     }
     if ((arg1 < 0) || (arg1 >= 5)) {
@@ -464,7 +464,7 @@ s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
     if (func_ov010_0222486c(arg0, arg2) == 0) {
         return -3;
     }
-    if ((M2C_FIELD(&data_ov010_0222edc0, s32 *, 0x10) == 1) && (arg1 == 0)) {
+    if ((M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 1) && (arg1 == 0)) {
         if (func_ov010_02224820(arg0) == 0) {
             return -3;
         }
@@ -474,8 +474,8 @@ s32 func_ov010_02223fac(void *arg0, s32 arg1, void *arg2, u32 arg3) {
 
 s32 func_ov010_0222405c(s32 arg0, s32 arg1) {
     s32 func_ov010_0222441c(s32, s32);
-    extern M2C_UNK data_ov010_0222edc0;
-    if (M2C_FIELD(&data_ov010_0222edc0, s32 *, 0x10) == 2) return -3;
+    extern M2C_UNK gLinkConfig;
+    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;
     return func_ov010_0222441c(arg0, arg1);
 }
 

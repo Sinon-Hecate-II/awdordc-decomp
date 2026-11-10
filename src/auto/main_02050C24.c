@@ -128,7 +128,7 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
     M2C_UNK func_02053fe4(void **, void *);
     s32 func_02054330(void **, M2C_UNK, void *, void **, s32, s32, s32);
     M2C_UNK func_020580fc(void *, s8 *, M2C_UNK);
-    M2C_UNK func_02058644(void **, M2C_UNK *);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     M2C_UNK func_02065210(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_020fe3fc;
     extern M2C_UNK data_020fe410;
@@ -149,13 +149,13 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
         }
     }
     if (M2C_FIELD(temp_r4, s32 *, 0x1D8) != 0) {
-        func_02058644(arg0, &data_020fe3fc);
+        gpiSetErrorString(arg0, &data_020fe3fc);
         return 2;
     }
     switch(arg8) {
     case 1: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 1; break;
     case 0: M2C_FIELD(temp_r4, volatile s32 *, 0x10C) = 0; break;
-    default: func_02058644(arg0, &data_020fe410); return 2;
+    default: gpiSetErrorString(arg0, &data_020fe410); return 2;
     }
     M2C_FIELD(temp_r4, s32 *, 0x10C) = 1;
     func_020580fc(temp_r4 + 0x110, arg1, 0x1F);
@@ -165,7 +165,7 @@ s32 func_02050f98(void **arg0, s8 *arg1, s8 *arg2, s8 *arg3, s8 *arg4, s8 *arg5,
     func_020492a8(temp_r4 + 0x144);
     temp_r0_5 = func_02037794(0x308);
     if (temp_r0_5 == NULL) {
-        func_02058644(arg0, &data_020fe424);
+        gpiSetErrorString(arg0, &data_020fe424);
         return 1;
     }
     func_02065210(temp_r0_5, 0, 0x308);

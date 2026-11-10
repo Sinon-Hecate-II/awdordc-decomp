@@ -3,8 +3,8 @@
 extern u8 **gCurrentMap;
 extern u8 data_ov000_021b5c0f[], data_ov000_021b5bfc[], data_ov000_021e0550[], data_ov000_021e0a58[], data_ov000_021dfb04[], data_ov000_021dfa60[];
 s32 func_ov000_021a98e4(s32);
-s32 func_ov000_021a97d0(s32,s32);
-s32 func_ov000_021a97e0(s32,s32);
+s32 GetUnitDamagePercent(s32,s32);
+s32 GetUnitMoveRange(s32,s32);
 s32 func_ov000_021a9820(s32,s32);
 s32 func_ov000_021a947c(s32,s32,s16,s16);
 s32 func_020a85c8(s32);
@@ -46,9 +46,9 @@ if(M2C_FIELD(map+M2C_FIELD(map,u16*,0x52a4)*140,u8*,0x67ce)!=3 && func_ov000_021
 if (!func_ov000_021a98e4(((UnitKindBits*)unit)->kind)) {
 s32 directX,directY;
 if(f==1)return;
-if(g==1 && d*func_ov000_021a97d0(c,((UnitKindBits*)unit)->kind)>=4500)return;
+if(g==1 && d*GetUnitDamagePercent(c,((UnitKindBits*)unit)->kind)>=4500)return;
 if ((((UnitKindBits*)unit)->kind)==25 && !(((UnitAmmoBits*)(unit+6))->ammo)) return;
-func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,func_ov000_021a97e0(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
+func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
 func_01ffb9c4(111);
 for(directY=0;directY<MapHeight();directY++) for(directX=0;directX<MapWidth();directX++){
 map=*gCurrentMap;
@@ -76,7 +76,7 @@ if(!(u8)(M2C_FIELD(map+((u32)idx>>3),u8*,0x5160)&(1<<(idx&7))) && (flags&7))retu
 }
 if(func_020a85c8(((UnitKindBits*)unit)->kind)){
 s32 specialX,specialY;
-func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,func_ov000_021a97e0(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
+func_01ffada0(unit[1],unit[2],((UnitKindBits*)unit)->kind,GetUnitMoveRange(UnitSide(unit),((UnitKindBits*)unit)->kind),12);
 for(specialX=0;specialX<func_ov000_021a9820(UnitSide(unit),((UnitKindBits*)unit)->kind);specialX++)func_01ffb9c4((s8)(specialX+111));
 for(specialY=0;specialY<MapHeight();specialY++) for(specialX=0;specialX<MapWidth();specialX++){
 map=*gCurrentMap;

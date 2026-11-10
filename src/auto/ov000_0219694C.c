@@ -105,7 +105,7 @@ extern u8 *data_ov000_021df580;
 s32 func_ov000_02178e84(s32,s32);
 void FillMapLayer(s32);
 s32 func_ov000_021a98e4(u32);
-s32 func_ov000_021a97d0(s32,s32);
+s32 GetUnitDamagePercent(s32,s32);
 s32 func_020a76d4(void *);
 u32 func_ov000_0219694c(s32,s32);
 void SetMapCursor(s32,s32,s32,s32,s32);
@@ -118,7 +118,7 @@ i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
 if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
 u=(u8 *)*gCurrentMap+0x59a4+off;
 if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||func_ov000_021a98e4((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
-if(func_ov000_021a97d0((u32)(u[0]<<26)>>26,7)){
+if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,7)){
 l=u[1]-func_020a76d4(u)<0?0:u[1]-func_020a76d4(u);
 t=u[2]-func_020a76d4(u)<0?0:u[2]-func_020a76d4(u);
 bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+func_020a76d4(u);
@@ -130,7 +130,7 @@ m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
 if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
 
 M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
-}}if(func_ov000_021a97d0((u32)(u[0]<<26)>>26,14)){
+}}if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,14)){
 l2=u[1]-func_020a76d4(u)<0?0:u[1]-func_020a76d4(u);
 t=u[2]-func_020a76d4(u)<0?0:u[2]-func_020a76d4(u);
 bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+func_020a76d4(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+func_020a76d4(u);
@@ -184,10 +184,10 @@ u8 func_ov000_021973f8(void) {
 }
 
 s32 func_ov000_02197434(s32 arg0, s32 arg1) {
-    s32 func_ov000_021a97d0();
+    s32 GetUnitDamagePercent();
     s32 var_r0;
 
-    var_r0 = func_ov000_021a97d0();
+    var_r0 = GetUnitDamagePercent();
     if ((arg1 == 0xE) && (arg0 == 0xE)) {
         var_r0 = (s32) (var_r0 * 3) >> 1;
     }

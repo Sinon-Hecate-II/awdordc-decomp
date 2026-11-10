@@ -11,7 +11,7 @@ void func_0204c7fc(void *arg0) {
     s32 func_02049740(s32, void *, s32);
     s32 func_02049900(s32);
     s32 PollOneFd(s32, s32 *, s32, s32);
-    M2C_UNK func_0204a518(void *, s32, s32);
+    M2C_UNK InvokeRequestCallback(void *, s32, s32);
     extern s32 data_020fd010;
     extern s32 data_0213dca8;
     extern u16 data_0213dca4;
@@ -76,11 +76,11 @@ void func_0204c7fc(void *arg0) {
         return;
     }
     M2C_FIELD(arg0, s32 *, 0x10) = 2;
-    func_0204a518(arg0, 0, 0);
+    InvokeRequestCallback(arg0, 0, 0);
 }
 
 void func_0204ca4c(void *a){
-s32 func_02068eac(void *,void *,s32);M2C_UNK func_0204a518(void *,s32,s32);s32 func_0204a30c(void *);void func_0204a2c8(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
+s32 func_02068eac(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK func_0204a740(void *,void *,s32 *);
 M2C_UNK func_020640a8(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK data_020fd88c,data_020fd8a0,data_020fd864,data_020fd804;
 u8 buf[1024];s32 size;
@@ -88,34 +88,34 @@ if(!M2C_FIELD(a,s32 *,0x168)){
 if(!func_02068eac(M2C_FIELD(a,void **,0x14),&data_020fd88c,8)){
 M2C_FIELD(a,s32 *,0xfc)=1;M2C_FIELD(a,s32 *,0x38)=17;return;
 }
-M2C_FIELD(a,s32 *,0x10)=3;func_0204a518(a,0,0);return;
+M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;
 }
-if(M2C_FIELD(a,s32 *,0x170)){M2C_FIELD(a,s32 *,0x10)=3;func_0204a518(a,0,0);return;}
+if(M2C_FIELD(a,s32 *,0x170)){M2C_FIELD(a,s32 *,0x10)=3;InvokeRequestCallback(a,0,0);return;}
 if(!M2C_FIELD(a,s32 *,0x16c)&& M2C_FIELD(a,s32 (**)(void *,void *),0x174)(a,(u8 *)a+0x164)==3){
 func_020640a8(&data_020fd8a0,&data_020fd864,&data_020fd804,0x146);return;
 }
 if(M2C_FIELD(a,s32 *,0x60)>=M2C_FIELD(a,s32 *,0x5c))goto done;
-if(!func_0204a30c(a))return;
+if(!SendBufferedData(a))return;
 if(M2C_FIELD(a,s32 *,0x60)<M2C_FIELD(a,s32 *,0x5c))return;
-func_0204a2c8((u8 *)a+0x50);
+ResetBuffer((u8 *)a+0x50);
 done:size=1024;func_0204a740(a,buf,&size);
 }
 
 #pragma push
 #pragma opt_common_subs off
-void func_0204cbac(void *arg0) {
+void ghiSendRequest(void *arg0) {
   s32 ghiAppendDataToBuffer(void *, void *, s32);
-  s32 func_0204a1b0(M2C_UNK, M2C_UNK *, M2C_UNK *);
-  M2C_UNK func_0204a230(s32, s32);
-  void func_0204a290(s32, s32);
-  s32 func_0204a30c(void *);
-  void func_0204a2c8(void *);
-  M2C_UNK *func_0204b6ac(void *);
-  M2C_UNK func_0204a518(void *, s32, s32);
+  s32 AppendHttpHeader(M2C_UNK, M2C_UNK *, M2C_UNK *);
+  M2C_UNK AppendChar(s32, s32);
+  void AppendInt(s32, s32);
+  s32 SendBufferedData(void *);
+  void ResetBuffer(void *);
+  M2C_UNK *GetContentType(void *);
+  M2C_UNK InvokeRequestCallback(void *, s32, s32);
   u8 *func_02068fdc(s32, M2C_UNK *);
   M2C_UNK func_020675e4(void *, void *, s32);
-  extern M2C_UNK data_020fd8a4, data_020fd8ac, data_020fd8b4, data_020fd8bc;
-  extern M2C_UNK data_020fd8c8, data_020fd8d0, data_020fd8dc, data_020fd8d8;
+  extern M2C_UNK sHttpMethodPost, sHttpMethodHead, sHttpMethodGet, sHttpVersion;
+  extern M2C_UNK sHeaderHost, sHeaderHostColon, data_020fd8dc, data_020fd8d8;
   extern M2C_UNK data_020fd8e8, data_020fd8f8, data_020fd904, data_020fd910;
   extern M2C_UNK data_020fd918, data_020fd91c, data_020fd92c;
   extern s32 data_0213dca8;
@@ -124,33 +124,33 @@ void func_0204cbac(void *arg0) {
   if (M2C_FIELD(arg0, s32 *, 0x5c) == 0) {
     buf = (u8 *)arg0 + 0x50;
     ghiAppendDataToBuffer(buf,
-      M2C_FIELD(arg0, s32 *, 0x13c) ? (void *)&data_020fd8a4 :
-        (M2C_FIELD(arg0, s32 *, 0xc) == 3 ? (void *)&data_020fd8ac : (void *)&data_020fd8b4), 0);
+      M2C_FIELD(arg0, s32 *, 0x13c) ? (void *)&sHttpMethodPost :
+        (M2C_FIELD(arg0, s32 *, 0xc) == 3 ? (void *)&sHttpMethodHead : (void *)&sHttpMethodGet), 0);
     if (M2C_FIELD(arg0, s32 *, 0x15c) || data_0213dca8)
       ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x14), 0);
     else
       ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x24), 0);
-    ghiAppendDataToBuffer(buf, &data_020fd8bc, 0);
+    ghiAppendDataToBuffer(buf, &sHttpVersion, 0);
     if (M2C_FIELD(arg0, u16 *, 0x20) == 0x50)
-      func_0204a1b0((M2C_UNK)buf, &data_020fd8c8, (M2C_UNK *)M2C_FIELD(arg0, s32 *, 0x18));
+      AppendHttpHeader((M2C_UNK)buf, &sHeaderHost, (M2C_UNK *)M2C_FIELD(arg0, s32 *, 0x18));
     else {
-      ghiAppendDataToBuffer(buf, &data_020fd8d0, 0);
+      ghiAppendDataToBuffer(buf, &sHeaderHostColon, 0);
       ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x18), 0);
-    func_0204a230((s32)buf, 0x3a);
-    func_0204a290((s32)buf, M2C_FIELD(arg0, u16 *, 0x20));
+    AppendChar((s32)buf, 0x3a);
+    AppendInt((s32)buf, M2C_FIELD(arg0, u16 *, 0x20));
     ghiAppendDataToBuffer(buf, &data_020fd8d8, 2);
     }
     if (!M2C_FIELD(arg0, s32 *, 0x28) ||
         !func_02068fdc(M2C_FIELD(arg0, s32 *, 0x28), &data_020fd8dc))
-      func_0204a1b0((M2C_UNK)buf, &data_020fd8dc, &data_020fd8e8);
+      AppendHttpHeader((M2C_UNK)buf, &data_020fd8dc, &data_020fd8e8);
     if (M2C_FIELD(arg0, s32 *, 0x34))
-      func_0204a1b0((M2C_UNK)buf, &data_020fd8f8, &data_020fd904);
+      AppendHttpHeader((M2C_UNK)buf, &data_020fd8f8, &data_020fd904);
     else
-      func_0204a1b0((M2C_UNK)buf, &data_020fd8f8, &data_020fd910);
+      AppendHttpHeader((M2C_UNK)buf, &data_020fd8f8, &data_020fd910);
     if (M2C_FIELD(arg0, s32 *, 0x13c)) {
       func_020675e4(tmp, &data_020fd918, M2C_FIELD(arg0, s32 *, 0x14c));
-      func_0204a1b0((M2C_UNK)buf, &data_020fd91c, (M2C_UNK *)tmp);
-    func_0204a1b0((M2C_UNK)buf, &data_020fd92c, (M2C_UNK *)func_0204b6ac(arg0));
+      AppendHttpHeader((M2C_UNK)buf, &data_020fd91c, (M2C_UNK *)tmp);
+    AppendHttpHeader((M2C_UNK)buf, &data_020fd92c, (M2C_UNK *)GetContentType(arg0));
     }
     if (M2C_FIELD(arg0, s32 *, 0x28))
       ghiAppendDataToBuffer(buf, (void *)M2C_FIELD(arg0, s32 *, 0x28), 0);
@@ -158,11 +158,11 @@ void func_0204cbac(void *arg0) {
     if (buf != (u8 *)arg0 + 0x50)
       ghiAppendDataToBuffer((u8 *)arg0 + 0x50, (void *)M2C_FIELD(buf, s32 *, 4), M2C_FIELD(buf, s32 *, 0xc));
   }
-  if (func_0204a30c(arg0) == 0) return;
+  if (SendBufferedData(arg0) == 0) return;
   if (M2C_FIELD(arg0, s32 *, 0x60) < M2C_FIELD(arg0, s32 *, 0x5c)) return;
-  func_0204a2c8((u8 *)arg0 + 0x50);
+  ResetBuffer((u8 *)arg0 + 0x50);
   if(M2C_FIELD(arg0, s32 *, 0x13c)) M2C_FIELD(arg0, s32 *, 0x10)=4; else M2C_FIELD(arg0, s32 *, 0x10)=5;
-  func_0204a518(arg0, 0, 0);
+  InvokeRequestCallback(arg0, 0, 0);
 }
 #pragma pop
 void func_0204ce20(void *arg0) {
@@ -195,13 +195,13 @@ void func_0204ce20(void *arg0) {
     }
     func_0204bc64(arg0);
     M2C_FIELD(arg0, s32 *, 0x10) = 5;
-    func_0204a518(arg0, 0, 0);
+    InvokeRequestCallback(arg0, 0, 0);
 }
 
 void func_0204ceb8(void *arg0) {
     s32 PollOneFd(s32, s32 *, M2C_UNK, M2C_UNK);
     s32 func_02049900(s32);
-    M2C_UNK func_0204a518(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK InvokeRequestCallback(void *, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     if (PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), &sp0, 0, 0) == -1) {
@@ -214,7 +214,7 @@ void func_0204ceb8(void *arg0) {
         return;
     }
     M2C_FIELD(arg0, s32 *, 0x10) = 6;
-    func_0204a518(arg0, 0, 0);
+    InvokeRequestCallback(arg0, 0, 0);
 }
 
 s32 func_0204cf38(void *a){
@@ -249,7 +249,7 @@ M2C_FIELD(a,s32 *,248)=off+1;
 if(!func_0204cf38(a))return;
 M2C_FIELD(a,s32 *,132)=off+2;
 M2C_FIELD(a,s32 *,16)=7;
-func_0204a518(a,0,0);return;
+InvokeRequestCallback(a,0,0);return;
 }
 if(n!=2)return;
 M2C_FIELD(a,s32 *,252)=1;
@@ -259,7 +259,7 @@ M2C_FIELD(a,s32 *,76)=func_02049900(M2C_FIELD(a,s32 *,72));
 
 s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
  s32 ghiAppendDataToBuffer();
- M2C_UNK func_0204a518(void *,s32,s32);
+ M2C_UNK InvokeRequestCallback(void *,s32,s32);
  s32 a=0,b=0;
  s32 c=M2C_FIELD(arg0,s32 *,0x100)+arg2;
  M2C_FIELD(arg0,s32 *,0x100)=c;
@@ -271,7 +271,7 @@ s32 func_0204d1ac(void *arg0,s32 arg1,s32 arg2) {
  if(arg2) { M2C_FIELD(arg0,s32 *,0xFC)=1; M2C_FIELD(arg0,s32 *,0x38)=13; return 0; }
  a=arg1;b=arg2;
  } else if(M2C_FIELD(arg0,s32 *,0xC)==2) {a=arg1;b=arg2;}
- func_0204a518(arg0,a,b); return 1;
+ InvokeRequestCallback(arg0,a,b); return 1;
 }
 
 s32 func_0204d26c(void *arg0) {

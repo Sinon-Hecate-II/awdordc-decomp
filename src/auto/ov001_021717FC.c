@@ -1,5 +1,6 @@
 /* 30 functions from 0x021717FC to 0x021724C0 (ov001), found by ds-decomp. */
 #include "common.h"
+void func_ov001_02172184(void);
 extern s32 data_ov001_02193d14;
 extern u8 data_ov001_021900e4[];
 extern u8 *data_ov001_02190094[];
@@ -217,7 +218,7 @@ void func_ov001_02171fa0(void) {
 }
 
 void func_ov001_02171fc0(void) {
-    M2C_UNK func_ov001_02172184();
+    void func_ov001_02172184();
     extern M2C_UNK data_ov001_02193d10;
     func_ov001_02172184();
     func_ov001_0218b71c(&data_ov001_02193d10);
@@ -254,13 +255,16 @@ func_ov001_0218a384(((s32 *)data_ov001_02193d10)[2],-1,a,d);
 func_ov001_0218a384(((s32 *)data_ov001_02193d10)[3],-1,b,d);
 }
 
-M2C_UNK func_ov001_02172184(void) {
+void func_ov001_02172184(void) {
     void func_ov001_0218a1cc(s32);
     extern s32 data_ov001_02193d10;
+    s32 v;
     s32 i = 0;
+
     do {
-        if (((s32 *)data_ov001_02193d10)[i] != 0) {
-            func_ov001_0218a1cc(((s32 *)data_ov001_02193d10)[i]);
+        v = ((s32 *)data_ov001_02193d10)[i];
+        if (v != 0) {
+            func_ov001_0218a1cc(v);
             ((s32 *)data_ov001_02193d10)[i] = 0;
         }
         i++;

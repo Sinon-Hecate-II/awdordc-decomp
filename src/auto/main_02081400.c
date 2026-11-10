@@ -381,7 +381,7 @@ void func_02081d6c(void){extern M2C_UNK data_0214c18c;func_02002490();*(volatile
 
 void func_02081da0(void) {
 extern M2C_UNK data_0214c18c;
-func_02081d38(); func_020024cc();
+func_02081d38(); GX_TurnOnDisplay();
 *(s32 *)0x04001000 |= 0x10000;
 func_020863f0();
 M2C_FIELD(&data_0214c18c,u8 *,1) = 0;

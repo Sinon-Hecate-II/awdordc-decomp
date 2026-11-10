@@ -148,7 +148,7 @@ void func_01ff90e4(s32 arg0, s32 arg1, u32 arg2, u16 *arg3)
 #pragma push
 #pragma opt_strength_reduction off
 void func_01ff91d8(void) {
- void func_02002514(s32,s32,s32); void func_02002598(void *,s32); void func_02003f24(s32);
+ void GX_ConfigureDisplay(s32,s32,s32); void GX_SetMasterBrightness(void *,s32); void func_02003f24(s32);
  extern u16 *g3DSpriteBankMain;
  extern s32 g3DSpriteEngineMain;
  s32 a,b,c,d,e;
@@ -157,7 +157,7 @@ void func_01ff91d8(void) {
  volatile u32 *disp=(volatile u32 *)0x4000000;
  volatile u32 *regs=(volatile u32 *)0x4000010;
  f=g3DSpriteBankMain[0];
- func_02002514(M2C_FIELD(g3DSpriteBankMain,s32 *,0x34),(u32)(f<<29)>>29,(u32)(f<<28)>>31);
+ GX_ConfigureDisplay(M2C_FIELD(g3DSpriteBankMain,s32 *,0x34),(u32)(f<<29)>>29,(u32)(f<<28)>>31);
  a=((u32)(M2C_FIELD(g3DSpriteBankMain,volatile u16 *,0)<<26)>>31)?2:0;
  b=((u32)(M2C_FIELD(g3DSpriteBankMain,volatile u16 *,0)<<27)>>31)?1:0;
  c=((u32)(M2C_FIELD(g3DSpriteBankMain,volatile u16 *,0)<<25)>>31)?4:0;
@@ -209,11 +209,11 @@ M2C_FIELD(regs,volatile u16 *,58)=M2C_FIELD(g3DSpriteBankMain,u16 *,16);
 M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(g3DSpriteBankMain,u16 *,0x12);
  {u8 *p=(u8 *)g3DSpriteBankMain; M2C_FIELD(regs,volatile u16 *,0x42)=(p[0x51]&31)|((u32)(p[0x52]<<27)>>19);}
  M2C_FIELD(regs,volatile u16 *,0x44)=M2C_FIELD(g3DSpriteBankMain,u8 *,0x53)&31;
- {s32 brightness=M2C_FIELD(g3DSpriteBankMain,s8 *,0x50);func_02002598((void *)((u8 *)regs+0x5c),brightness);}
+ {s32 brightness=M2C_FIELD(g3DSpriteBankMain,s8 *,0x50);GX_SetMasterBrightness((void *)((u8 *)regs+0x5c),brightness);}
 }
 #pragma pop
 M2C_UNK func_01ff9690(void) {
- void func_0200257c(s32); void func_02002598(void *,s32);
+ void GX_SetSubBgMode(s32); void GX_SetMasterBrightness(void *,s32);
  extern u16 *data_027e00c0;
  extern s32 g3DSpriteEngineSub;
  s32 a,b,c,d,e;
@@ -221,7 +221,7 @@ u32 mode;
  u16 f;
  volatile u32 *disp=(volatile u32 *)0x4001000;
  volatile u32 *regs=(volatile u32 *)0x4001010;
- func_0200257c((u32)(M2C_FIELD(data_027e00c0,volatile u16 *,0)<<29)>>29);
+ GX_SetSubBgMode((u32)(M2C_FIELD(data_027e00c0,volatile u16 *,0)<<29)>>29);
  a=((u32)(M2C_FIELD(data_027e00c0,volatile u16 *,0)<<26)>>31)?2:0;
  b=((u32)(M2C_FIELD(data_027e00c0,volatile u16 *,0)<<27)>>31)?1:0;
  c=((u32)(M2C_FIELD(data_027e00c0,volatile u16 *,0)<<25)>>31)?4:0;
@@ -266,12 +266,12 @@ M2C_FIELD(regs,volatile u16 *,58)=M2C_FIELD(data_027e00c0,u16 *,16);
 M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(data_027e00c0,u16 *,0x12);
  {u8 *p=(u8 *)data_027e00c0; M2C_FIELD(regs,volatile u16 *,0x42)=(p[0x51]&31)|((u32)(p[0x52]<<27)>>19);}
  M2C_FIELD(regs,volatile u16 *,0x44)=M2C_FIELD(data_027e00c0,u8 *,0x53)&31;
- {s32 brightness=M2C_FIELD(data_027e00c0,s8 *,0x50);func_02002598((void *)((u8 *)regs+0x5c),brightness);}
+ {s32 brightness=M2C_FIELD(data_027e00c0,s8 *,0x50);GX_SetMasterBrightness((void *)((u8 *)regs+0x5c),brightness);}
 }
 
 void func_01ff9ab4(void) {
     extern u16 *g3DSpriteBankMain;
-    func_0200245c(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 31) >> 31) != 0);
+    GX_SetVBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 31) >> 31) != 0);
     func_02002428(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 30) >> 31) != 0);
     if (((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 29) >> 31) != 0) {
         *(volatile u16 *)0x04000004 |= 0x20;

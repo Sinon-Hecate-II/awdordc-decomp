@@ -192,7 +192,7 @@ void func_ov000_02179d3c(M2C_UNK arg0) {
 M2C_UNK func_01ffada0(u8,u8,u32,M2C_UNK,s32);
 M2C_UNK func_01ffb9c4(s8);
 s32 func_020a76d4(void *);
-s32 func_ov000_021a97e0(u16,s32);
+s32 GetUnitMoveRange(u16,s32);
 s32 func_ov000_021a98e4(void);
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5c08[];
@@ -201,7 +201,7 @@ p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 func_01ffada0(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),(u32)(M2C_FIELD(p,u8 *,0)<<26)>>26,arg0,0);
 base=*gCurrentMap;
 if(((u32)(M2C_FIELD(M2C_FIELD(base,void **,0x52D0),u8 *,0)<<26)>>26)==21)
-n=func_ov000_021a97e0(M2C_FIELD(base,u16 *,0x52A4),17)+1;
+n=GetUnitMoveRange(M2C_FIELD(base,u16 *,0x52A4),17)+1;
 else if(func_ov000_021a98e4()==1)n=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52D0));
 else n=data_ov000_021b5c08[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26)*0x70];
 i=0;if(n<=0)return;do{func_01ffb9c4((s8)(i+0x6F));i++;}while(i<n);

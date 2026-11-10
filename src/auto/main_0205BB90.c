@@ -93,11 +93,12 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
 
 s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 func_02049208(); s32 func_0205a360(void *,s32); s32 func_0206527c(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(func_0206527c(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return func_0205a360(arg0,func_02049208()-sp0)!=0; }
 
-#pragma opt_peephole on
+#pragma push
+#pragma scheduling off
 s32 func_0205bea4(void *arg0) {
     s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK var_r2;
-    s32 temp_r1;
+    u32 var_r2;
+    u32 temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, s32 *, 0xC);
     if (temp_r1 == 7) {
@@ -113,7 +114,7 @@ s32 func_0205bea4(void *arg0) {
     }
     return 1;
 }
-#pragma opt_peephole reset
+#pragma pop
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
 /* GT2 message dispatcher for one received socket message: accept or reject new

@@ -3,15 +3,18 @@
 extern M2C_UNK data_021577e4;
 extern u32 data_021577e8[9], data_0215780c[9];
 
+#pragma push
+#pragma optimization_level 3
 M2C_UNK func_0208ee90(void *p) {
     void AddSprite(u16,u16,u16,void *,s32);
     M2C_UNK func_01ffa6fc(void *);
     extern u16 *gKeyState;
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain, **g3DSpriteEngineSub;
     extern u8 data_027e0084[];
-    s32 index, j, screen;
+    s32 j, index, screen;
+s32 drawCount;
     s64 value, delta;
-    void **saved;
+    register void **saved;
     u16 x, attr, priority;
     u32 y;
     s32 mode;
@@ -25,19 +28,19 @@ M2C_UNK func_0208ee90(void *p) {
             if(gKeyState[0]&32) M2C_FIELD(p,s32 *,0x58)=0;
         } else M2C_FIELD(p,s32 *,0x58)++;
     }
-    if(gKeyState[1]&64) {
+    if(gKeyState[1]&64) { s64 value;
         index=M2C_FIELD(p,s32 *,0x58);
         value=M2C_FIELD(p,s64 *,0x60);
         for(j=index;j!=0;j--) value/=10;
-        delta=value%10==9 ? -9 : 1;
+        if(value%10==9) delta=-9;else delta=1;
         for(;j!=index;j++) delta*=10;
         M2C_FIELD(p,s64 *,0x60)+=delta;
     }
-    if(gKeyState[1]&128) {
+    if(gKeyState[1]&128) { s64 value;
         index=M2C_FIELD(p,s32 *,0x58);
         value=M2C_FIELD(p,s64 *,0x60);
         for(j=index;j!=0;j--) value/=10;
-        delta=value%10==0 ? 9 : -1;
+        if(value%10==0) delta=9;else delta=-1;
         for(;j!=index;j++) delta*=10;
         M2C_FIELD(p,s64 *,0x60)+=delta;
     }
@@ -52,12 +55,12 @@ M2C_UNK func_0208ee90(void *p) {
         y=(M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a))&255;
         priority=(u32)(M2C_FIELD(p,u32 *,0x40)<<6)>>24;
         attr=M2C_FIELD(p,u16 *,0x3c)|((M2C_FIELD(p,u16 *,0x3e)>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|(priority<<12);
-        index=M2C_FIELD(p,s32 *,0x5c);
+        drawCount=M2C_FIELD(p,s32 *,0x5c);
         value=M2C_FIELD(p,s64 *,0x60);
         priority=M2C_FIELD(p,u8 *,0x49);
         AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y-8),(u16)(attr+((24>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
         AddSprite((u16)(x-M2C_FIELD(p,s32 *,0x58)*8),(u16)(y+8),(u16)(attr+((56>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
-        for(;index>0;index--) {
+        for(;drawCount>0;drawCount--) {
             AddSprite(x,y,(u16)(attr+(((value%10*2)>>((u32)(M2C_FIELD(*gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),data_027e0084,priority);
             x-=8;
             value/=10;
@@ -66,7 +69,7 @@ M2C_UNK func_0208ee90(void *p) {
     gCur3DSpriteEngine=saved;
     if(gKeyState[0]&1)func_01ffa6fc(p);
 }
-
+#pragma pop
 void func_0208f3a4(void) {
     M2C_UNK func_0208ee90();
     func_0208ee90();
@@ -225,7 +228,7 @@ void func_0208f64c(void) {
 s32 func_02005080(s32);
 void func_02004ff8(s32,s32);
 void func_020051f8(s32);
-void func_0200245c(s32);
+void GX_SetVBlankIrq(s32);
 void func_0208fce8(void);
 void func_02088724(void);
 void func_02037854(s32);
@@ -237,12 +240,12 @@ void func_02088634(void);
 void func_0208fba0(void);
 void func_020051c8(s32);
 void func_02007598(void);
-void func_020024cc(void);
+void GX_TurnOnDisplay(void);
 s32 old;void *p;u16 unused;
 old=func_02005080(1);
 func_02004ff8(1,0);
 func_020051f8(1);
-func_0200245c(0);
+GX_SetVBlankIrq(0);
 func_0208fce8();
 func_02088724();
 func_02037854(2);
@@ -257,9 +260,9 @@ func_02004ff8(1,old);
 func_020051c8(1);
 unused=*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=1;
-func_0200245c(1);
+GX_SetVBlankIrq(1);
 func_02007598();
-func_020024cc();
+GX_TurnOnDisplay();
 *(volatile u32 *)0x4001000 |= 0x10000;
 }
 

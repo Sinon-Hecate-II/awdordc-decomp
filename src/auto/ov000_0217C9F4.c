@@ -21,7 +21,7 @@ unit->targetX=x;unit->targetY=y;
 s32 func_ov000_0217c9f4(Unit0217d428 *unit) {
 s32 func_ov000_021a98e4(u32);
 s32 func_ov000_0217c4c8(void *);
-s32 func_ov000_021a97e0(s32,u32);
+s32 GetUnitMoveRange(s32,u32);
 s32 func_ov000_0217c420(void *,void *);
 s32 IsUnitOnCurrentTeam(s32);
 extern u8 data_ov000_021b5bfc[],data_ov000_021b5c0f[];
@@ -30,20 +30,20 @@ u8 *map,*record,*units; s32 id; void *dimensions;
 if(func_ov000_021a98e4(unit->kind)==1)return func_ov000_0217c4c8(unit);
 if(func_ov000_021a98e4(unit->kind)!=0)return count;
 if(unit->kind==25 && ((u32)(M2C_FIELD(unit,u16*,6)<<21)>>28)==0)return count;
-minX=unit->x-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+minX=unit->x-GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
 if(minX<0)minX=0;
-else minX=unit->x-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
-minY=unit->y-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+else minX=unit->x-GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
+minY=unit->y-GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
 if(minY<0)minY=0;
-else minY=unit->y-func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+else minY=unit->y-GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
 dimensions=(u8 *)*gCurrentMap+0x5120;
-if(unit->x+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x24)-1)
+if(unit->x+GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x24)-1)
 maxX=M2C_FIELD(*gCurrentMap,u16*,0x5144)-1;
-else maxX=unit->x+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+else maxX=unit->x+GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
 dimensions=(u8 *)*gCurrentMap+0x5120;
-if(unit->y+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x26)-1)
+if(unit->y+GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind)>=M2C_FIELD(dimensions,u16*,0x26)-1)
 maxY=M2C_FIELD(*gCurrentMap,u16*,0x5146)-1;
-else maxY=unit->y+func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind);
+else maxY=unit->y+GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind);
 for(y=minY;y<=maxY;y++){
 for(x=minX;x<=maxX;x++){
 dx=unit->x-x;if(dx<=0)dx=x-unit->x;
@@ -51,7 +51,7 @@ dist=0;
 dist=dx+dist;
 dy=unit->y-y;if(dy<=0)dy=y-unit->y;
 dist+=dy;
-if(dist>=0){ if(dist>func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind))continue;
+if(dist>=0){ if(dist>GetUnitMoveRange(UnitOwnerC9f4(unit),unit->kind))continue;
 map=*gCurrentMap;
 id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 if(id && IsUnitOnCurrentTeam(id)){
@@ -146,7 +146,7 @@ unit=base+M2C_FIELD(row,u8 *,map+x)*14;
 if(!((u32)(unit[0]<<26)>>26)||unit==M2C_FIELD(map,u8 **,0x52d0))goto next;
 index=unit ? (unit-base)/14:0;
 if(!func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),index))goto next;
-if(!func_ov000_021a97d0((u32)(unit[0]<<26)>>26,(u32)(other[0]<<26)>>26))goto next;
+if(!GetUnitDamagePercent((u32)(unit[0]<<26)>>26,(u32)(other[0]<<26)>>26))goto next;
 if(func_ov000_021a9904((u32)(unit[0]<<26)>>26))goto next;
 if(IsFootUnitKind((u32)(unit[0]<<26)>>26))goto next;
 if(((u32)(unit[0]<<26)>>26)==4)goto next;

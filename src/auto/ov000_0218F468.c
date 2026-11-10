@@ -28,7 +28,7 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 void func_ov000_0218f468(void){
 s32 func_0207c8ec(s32,s32);s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(s16);
 void func_ov000_0217c3a4(void);void func_ov000_02199f38(void);void func_01ffc328(void *);
-s32 func_020d27a4(s32,s32);s32 func_ov000_021a97d0(s32,s32);
+s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
 s32 CanUnitAttackKind(void *,s32);void func_01ffada0(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
 u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
@@ -50,7 +50,7 @@ right=MinF468(x+2,M2C_FIELD(m,u16 *,0x5144)-1);bottom=MinF468(y+2,M2C_FIELD(m,u1
 for(yy=top;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
 s32 dist=DistanceF468(x,y,xx,yy);if(dist<0)continue;if(dist>2)continue;
 v=UnitAtF468(xx,yy);
-if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && func_ov000_021a97d0(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
+if(KindF468(v)!=0 && func_020d27a4(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && GetUnitDamagePercent(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();func_ov000_0217c3a4();func_ov000_02199f38();}
 }}
 if(PassF468(x,y)>=0){
 if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
