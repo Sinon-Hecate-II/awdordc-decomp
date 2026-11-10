@@ -35,9 +35,11 @@ void func_02091cd0(void);
 void func_020c8ed4(void *);
 
 
+#pragma push
+#pragma scheduling on
 void func_ov003_022066d8(void *a){
-void func_020822b8(void *);void func_02004d3c(void);void *func_02080e30(void *,s32);void func_02004d70(void *,s32,s32);void func_020e35cc(void *);void func_02004ddc(void);void func_02080cfc(void *,void *);void func_020811b8(void *,s32,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207c780(void *,void *);void func_01ff9e44(void *,s32,s32);void func_02091d4c(s32);void func_020a9a30(s32,s32,s32,void *);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_02088da8(void *);
-void func_02082eb4(void *,s32,s32,s32);void *func_020e3218(void *);void func_0208116c(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void func_0208f780(s32);s32 func_020bee64(s32);void func_ov003_02208034(void *);void func_01ffa8c4(void *,s32);s32 func_020a8ff4(void *);s32 n,m;void *saved,*p,*q;
+void func_020822b8(void *);void func_02004d3c(void);u8 *func_02080e30(void *,s32);void func_02004d70(void *,s32,s32);void func_020e35cc(void *);void func_02004ddc(void);void func_02080cfc(void *,void *);void func_020811b8(void *,s32,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207c780(void *,void *);void func_01ff9e44(void *,s32,s32);void func_02091d4c(s32);void func_020a9a30(s32,s32,s32,void *);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_02088da8(void *);
+void func_02082eb4(void *,s32,s32,s32);void *func_020e3218(void *);void func_0208116c(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void func_0208f780(s32);s32 func_020bee64(s32);void func_ov003_02208034(void *);void func_01ffa8c4(void *,s32);s32 func_020a8ff4(void *);s32 n,m;void *saved,*q;u8 *p;
 func_02086d18(a);func_02082c84();func_02082cb4();func_0200bc5c(data_ov003_0221106c);func_02091cd0();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))func_020c8ed4(a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;func_020822b8(data_ov003_022109e0);
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~16)|16;}
@@ -122,3 +124,4 @@ p=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;{u16 * volatile reg=(u16 *
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~64)|64;}
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~128)|0;}
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~256)|256;}gCur3DSpriteEngine=p;func_ov003_02208034(a);func_01ffa8c4(a,1);}
+#pragma pop

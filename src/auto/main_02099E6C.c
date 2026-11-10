@@ -1,9 +1,11 @@
 /* 3 functions from 0x02099E6C to 0x0209ACC4 (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma push
+#pragma scheduling off
 s32 func_02099e6c(void *arg0, s32 arg1) {
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0207a3b0(s32, u32, u16, u8, s32, s32, s32, s32, s32, s32, s32);
+    void func_0207a3b0(s32, u32, u16, u8, s32, u16, s32, s32, s32, s32, s32);
     s32 func_0207c8ec(s32, M2C_UNK);
     void *func_02086680(s32);
     s32 func_02091dc4(M2C_UNK);
@@ -28,7 +30,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094df0(M2C_UNK, s32, s32);
     M2C_UNK func_02095250(s32);
     M2C_UNK func_020952c8(s32);
-    M2C_UNK func_020952ec(M2C_UNK, M2C_UNK);
+    M2C_UNK func_020952ec(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020953d0();
     M2C_UNK func_0209544c(s32);
     M2C_UNK func_02095c58(M2C_UNK, s32, void *);
@@ -47,6 +49,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     extern M2C_UNK data_02102eac;
     extern M2C_UNK data_0212616c;
     extern void **gCurrentMap;
+    s32 param;
     u8 sp1C[0x40];
     s32 temp_r0_10;
     s32 temp_r0_9;
@@ -54,8 +57,8 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     s32 temp_r4_2;
     s32 temp_r4_3;
     s32 temp_r8;
-    u16 var_r0;
-    u16 var_r0_2;
+    s32 var_r0;
+    s32 var_r0_2;
     u32 temp_r0_12;
     u32 temp_r0_13;
     u32 temp_r0_6;
@@ -165,12 +168,7 @@ loop_1:
     case 12:
         if (func_020999b8(arg0) == 0) {
             temp_r0_5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 1);
-            if (temp_r0_5 == 0) {
-                func_02099e58(arg0);
-            } else {
-                M2C_FIELD(arg0, u8 *, 0x55) = temp_r0_5;
-                M2C_FIELD(arg0, s8 *, 0x54) = 0;
-            }
+            switch(temp_r0_5){case 0:func_02099e58(arg0);break;default:M2C_FIELD(arg0,u8 *,0x55)=temp_r0_5;M2C_FIELD(arg0,s8 *,0x54)=0;break;}
         }
         func_0209c418(arg0);
         func_0209c418(arg0);
@@ -178,10 +176,6 @@ loop_1:
     case 11:
         temp_r0_6 = M2C_FIELD(temp_r1, u8 *, 1) - 0x80;
         switch (temp_r0_6) {
-        default:
-            func_0209c418(arg0);
-            func_0209c418(arg0);
-            return 3;
         case 0:
             if (func_020999b8(arg0) == 0) {
                 temp_r3 = *gCurrentMap;
@@ -218,8 +212,12 @@ loop_1:
         case 3:
             M2C_FIELD(arg0, void **, 0x38) = (void *) (temp_r1 + 2);
             temp_r6 = *gCurrentMap;
-            M2C_FIELD(arg0, void **, 0x34) = func_02086680(*(&data_0212616c + ((u8) M2C_FIELD(((M2C_FIELD(temp_r6, u16 *, 0x52A4) * 0x8C) + (s32) temp_r6), s32 *, 0x6810) * 0x9C)));
+            M2C_FIELD(arg0, void **, 0x34) = func_02086680(M2C_FIELD((u8 *)&data_0212616c + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
             return func_02099e6c(arg0, arg1);
+        default:
+            func_0209c418(arg0);
+            func_0209c418(arg0);
+            return 3;
         }
         break;
     case 8:
@@ -381,7 +379,7 @@ loop_1:
     case 18:
         func_02094dac();
         func_0209c428(arg0);
-        return 2;
+        goto return_two;
     case 19:
         temp_r0_11 = M2C_FIELD(temp_r1, u8 *, 1);
         if (temp_r0_11 == 0x80) {
@@ -390,27 +388,28 @@ loop_1:
             func_0209c428(arg0);
             return 2;
         }
+        param = M2C_FIELD(temp_r1,u8 *,2)&0x7f;
         temp_r0_12 = temp_r0_11 - 0x81;
         switch (temp_r0_12) {
         default:
             break;
         case 0:
-            func_020952ec(0, 0);
+            func_020952ec(0, 0, param);
             break;
         case 1:
-            func_020952ec(1, 0);
+            func_020952ec(1, 0, param);
             break;
         case 2:
-            func_020952ec(0, 2);
+            func_020952ec(0, 2, param);
             break;
         case 3:
-            func_020952ec(1, 2);
+            func_020952ec(1, 2, param);
             break;
         case 4:
-            func_020952ec(0, 1);
+            func_020952ec(0, 1, param);
             break;
         case 5:
-            func_020952ec(1, 1);
+            func_020952ec(1, 1, param);
             break;
         }
         func_0209c418(arg0);
@@ -458,7 +457,7 @@ loop_1:
         func_02094410(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
         func_0209c418(arg0);
         func_0209c428(arg0);
-        return 2;
+        goto return_two;
     case 25:
         func_020952c8(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
         func_0209c418(arg0);
@@ -475,17 +474,11 @@ loop_1:
         if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) != 0x1E) {
             do {
                 if ((func_02099ae8() != 0) || (func_02099b00(M2C_FIELD(arg0, void **, 0x34)) != 0)) {
-                    temp_r0_14 = M2C_FIELD(arg0, void **, 0x34);
-                    M2C_FIELD(arg0, void **, 0x34) = (void *) (temp_r0_14 + 1);
-                    M2C_FIELD(var_r4, u8 *, 0) = M2C_FIELD(temp_r0_14, u8 *, 0);
-                    temp_r0_15 = M2C_FIELD(arg0, void **, 0x34);
-                    M2C_FIELD(arg0, void **, 0x34) = (void *) (temp_r0_15 + 1);
-                    M2C_FIELD(var_r4, u8 *, 1) = (u8) M2C_FIELD(temp_r0_15, u8 *, 0);
+                    M2C_FIELD(var_r4,u8 *,0)=*M2C_FIELD(arg0,u8 **,0x34)++;
+                    M2C_FIELD(var_r4,u8 *,1)=*M2C_FIELD(arg0,u8 **,0x34)++;
                     var_r4 += 2;
                 } else {
-                    temp_r0_16 = M2C_FIELD(arg0, void **, 0x34);
-                    M2C_FIELD(arg0, void **, 0x34) = (void *) (temp_r0_16 + 1);
-                    M2C_FIELD(var_r4, u8 *, 0) = M2C_FIELD(temp_r0_16, u8 *, 0);
+                    M2C_FIELD(var_r4,u8 *,0)=*M2C_FIELD(arg0,u8 **,0x34)++;
                     var_r4 += 1;
                 }
             } while (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) != 0x1E);
@@ -503,7 +496,7 @@ loop_1:
     case 28:
         temp_r3_4 = M2C_FIELD(temp_r1, u8 *, 1);
         M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) + (temp_r3_4 & 0x7F));
-        M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + (u8) (temp_r3_4 * 2));
+        M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + ((u32)(temp_r3_4<<25)>>24));
         M2C_FIELD(arg0, u8 *, 0x56) = 0U;
         func_0209c418(arg0);
         func_0209c428(arg0);
@@ -524,8 +517,10 @@ loop_1:
     case 22:
         return 1;
     }
+return_two:
+    return 2;
 }
-
+#pragma pop
 void func_0209ac6c(void *arg0, void *arg1) {
     if (arg1 == NULL) {
         return;
