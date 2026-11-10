@@ -182,9 +182,9 @@ void *func_020e2fd4(void *arg0) {
 }
 
 void func_020e3004(void) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_0212d678;
-    func_0200bc5c(&data_0212d678);
+    SetFileDirectory(&data_0212d678);
 }
 
 s32 func_020e3018(s32 arg0) {
@@ -268,7 +268,7 @@ void func_020e3058(void **arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, u8 a
     func_020ab150(*arg0, (u16) arg6);
 }
 
-u8 func_020e31e0(void) {
+u8 GetLanguage(void) {
     extern u8 data_02168f8c;
     return data_02168f8c;
 }
@@ -279,7 +279,7 @@ void func_020e31f0(s32 arg0) {
  if(arg0==1 || arg0==2 || arg0==5)data_02168f8c=arg0;
 }
 
-M2C_UNK *func_020e3218(s32 arg0) {
+M2C_UNK *GetLocalizedFileName(s32 arg0) {
     M2C_UNK StringFormat(M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_0212d69c;
     extern M2C_UNK data_0212d6a0;
@@ -293,7 +293,7 @@ M2C_UNK *func_020e3218(s32 arg0) {
     if (arg0 == 0) {
         return NULL;
     }
-    temp_r0 = func_020e31e0();
+    temp_r0 = GetLanguage();
     switch (temp_r0) {
     default:
         break;
@@ -322,9 +322,9 @@ M2C_UNK *func_020e3218(s32 arg0) {
 M2C_UNK *func_020e32e8(s32 arg0) {
  M2C_UNK *r;
  u8 old;
- old=((s32 (*)(void))func_020e31e0)();
+ old=((s32 (*)(void))GetLanguage)();
  if(old==0)func_020e31f0(1);
- r=func_020e3218(arg0);
+ r=GetLocalizedFileName(arg0);
  func_020e31f0(old);
  return r;
 }
@@ -337,20 +337,20 @@ void func_020e3320(void) {
 
 void func_020e3344(void) {
  void func_020e3400(void);
- M2C_UNK func_0200bc5c();
+ M2C_UNK SetFileDirectory();
  s32 func_02080e30();
  void func_020814e4();
  s32 func_020815a8();
  void func_02081528();
  func_020e3400();
- func_0200bc5c(&data_0212d6c8);
- data_02168fd0[0]=func_02080e30(func_020e3218((s32)&data_0212d6d4),1);
- data_02168fd0[1]=func_02080e30(func_020e3218((s32)&data_0212d6e0),1);
- func_0200bc5c(&data_0212d6f0);
- func_020814e4(func_020e3218((s32)&data_0212d704));
- data_02168fd0[2]=func_020815a8(func_020e3218((s32)&data_0212d714));
- data_02168fd0[3]=func_020815a8(func_020e3218((s32)&data_0212d724));
- data_02168fd0[4]=func_020815a8(func_020e3218((s32)&data_0212d734));
+ SetFileDirectory(&data_0212d6c8);
+ data_02168fd0[0]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6d4),1);
+ data_02168fd0[1]=func_02080e30(GetLocalizedFileName((s32)&data_0212d6e0),1);
+ SetFileDirectory(&data_0212d6f0);
+ func_020814e4(GetLocalizedFileName((s32)&data_0212d704));
+ data_02168fd0[2]=func_020815a8(GetLocalizedFileName((s32)&data_0212d714));
+ data_02168fd0[3]=func_020815a8(GetLocalizedFileName((s32)&data_0212d724));
+ data_02168fd0[4]=func_020815a8(GetLocalizedFileName((s32)&data_0212d734));
  func_02081528();
 }
 

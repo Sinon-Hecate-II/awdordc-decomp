@@ -188,10 +188,10 @@ void func_ov007_0221e85c(void *arg0) {
 void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02080cfc(s32, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadDecompressedFileTo(s32, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
@@ -276,8 +276,8 @@ void func_ov007_0221e878(void *arg0) {
     func_01ff9dd8(1);
     func_01ff9dd8(0);
     func_01ff9dd8(3);
-    func_0200bc5c(&data_ov007_02221980);
-    func_02080cfc(func_020e32e8(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
+    SetFileDirectory(&data_ov007_02221980);
+    LoadDecompressedFileTo(func_020e32e8(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
     func_020e32e8(&data_ov007_02221998);
     func_020814e4();
     var_r2 = 0;
@@ -304,7 +304,7 @@ loop_1:
         break;
     }
     func_02081528();
-    func_0208116c(&data_ov007_022219d8, 0xA0, 0x60);
+    LoadFileToSpriteBuffer(&data_ov007_022219d8, 0xA0, 0x60);
     func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
     func_02091d4c(4);
     func_02091d4c(0x17);

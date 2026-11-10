@@ -341,12 +341,12 @@ void func_ov003_021f92f4(void *obj) {
     func_01ff9ce8(0);
     kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;
     if(((u8)(kind==2)||(u8)(kind==4)||(u8)(kind==6)||(u8)(kind==7)||(u8)(kind==8)) && (u8)IsUnavailable92(id)) {
-        func_0200bc5c(data_ov003_02210398);
-        func_02080cfc(func_020e3218(data_ov003_022103a0),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
+        SetFileDirectory(data_ov003_02210398);
+        LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103a0),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
     } else if(!func_ov003_021f400c() && func_020846a4() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)) {
-        func_0200bc5c(data_ov003_022103b0);
-        func_02080cfc(func_020e3218(data_ov003_022103b8),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
+        SetFileDirectory(data_ov003_022103b0);
+        LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103b8),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
     } else {
         func_020c12f8(M2C_FIELD(gCur3DSpriteEngine,void **,12),M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*322+1,5);

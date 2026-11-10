@@ -86,7 +86,7 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[8]>d)p[8]=d;
 }
 }
 }
-void func_ov000_021a16e8(void){
+void UpdateAiCandidateCosts(void){
 extern void *gAiState;extern u8 gAiTargetCandidates[];extern void **gCurrentMap;
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
 s32 IsCurrentPlayerUnit(s16);s32 IsCaptureKind(s32);s32 CanKindAttack(s32,s32);

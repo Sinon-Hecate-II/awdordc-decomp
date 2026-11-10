@@ -201,12 +201,12 @@ void func_020865a0(void) {
 }
 
 void func_02086608(u8 arg0) {
- s32 func_020e3218(s32);
+ s32 GetLocalizedFileName(s32);
  void StringFormat(void *, void *, s32);
  s32 func_02081070(void *, s32);
  extern M2C_UNK data_0210244c, data_02102250, data_02157678[];
  u8 sp0[0x20];
- StringFormat(sp0, &data_02102250, func_020e3218(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
+ StringFormat(sp0, &data_02102250, GetLocalizedFileName(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
  ((s32 *)&data_02157678)[arg0] = func_02081070(sp0, 1);
 }
 

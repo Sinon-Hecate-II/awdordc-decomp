@@ -1,5 +1,6 @@
 /* 29 functions from 0x02180738 to 0x021816C4 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 bytes[0x8c]; } PlayerRecord02180738;
 static inline u8 PlayerMode02180738(PlayerRecord02180738 *players, s32 index) { return players[index].bytes[0x2a]; }
 
@@ -468,7 +469,10 @@ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60
 }
 
 #pragma opt_strength_reduction off
-void func_ov000_02180ff4(void) {
+/* Runs the AI's action for the acting unit: selects a move destination, then
+   attacks, captures or simply finishes, depending on the unit's AI step and the
+   owning player's AI mode. */
+void RunAIUnitAction(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218046c();
 M2C_UNK func_ov000_0218cfec();
@@ -489,24 +493,24 @@ M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_0218b02c();
 s32 func_ov000_02180410();
 extern void **gCurrentMap; extern void *data_ov000_021df580;
-void *p; PlayerRecord02180738 *players; u32 type; s32 done;
+void *map; PlayerRecord02180738 *playerRecord; u32 state; s32 handled;
 if(func_ov000_02180410()) {func_ov000_0218046c();return;}
-func_ov000_02198c60();p=*gCurrentMap;
-type=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,11)<<28)>>28;
-if(type==6){func_ov000_0218cfec();return;}
-if(type==8){func_ov000_0218f0ec();func_ov000_0219137c();func_ov000_0218ca94();func_ov000_021962f8();return;}
-if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_02190f74();
+func_ov000_02198c60();map=*gCurrentMap;
+state=(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28;
+if(state==6){func_ov000_0218cfec();return;}
+if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();func_ov000_0218ca94();func_ov000_021962f8();return;}
+if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
+if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_02190f74();
 func_ov000_0218edd8();func_ov000_0218f37c();SelectAIDestination();
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
-p=*gCurrentMap;done=0;
-players=(PlayerRecord02180738 *)((u8 *)p+0x67a4);
-players += M2C_FIELD(p,u16 *,0x52a4);
-type=players->bytes[0x2a];
-if(type==3 || (type==2 && ((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26)!=2)){func_ov000_02186a18();done=1;}
+if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)>60)func_ov000_02190f74();
+map=*gCurrentMap;handled=0;
+playerRecord=(PlayerRecord02180738 *)((u8 *)map+MAP_PLAYER_STATES);
+playerRecord += M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+state=playerRecord->bytes[PLAYER_REC_AI_MODE];
+if(state==3 || (state==2 && ((u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26)!=2)){func_ov000_02186a18();handled=1;}
 func_ov000_0218ca94();func_ov000_021911bc();
-if(!done){p=*gCurrentMap;if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=0)func_ov000_02186a18();}
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_0218d908();
+if(!handled){map=*gCurrentMap;if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=0)func_ov000_02186a18();}
+if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_0218d908();
 func_ov000_02190094();func_ov000_02194370();
 M2C_FIELD(data_ov000_021df580,u16 *,8)|=0x20;
 func_ov000_02190094();func_ov000_021954a4();func_ov000_0218b02c();

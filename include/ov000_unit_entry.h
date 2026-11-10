@@ -13,4 +13,7 @@ typedef struct {
     u8 unkB_5 : 3;    /* +0x0B */
     u8 unkC[2];       /* +0x0C carried-unit chain */
 } UnkStruct_ov000_021A860C;
+
+/* Unit kind whose unkC[] chain names the units it carries. */
+#define UNIT_KIND_CARRIER 21
 #endif

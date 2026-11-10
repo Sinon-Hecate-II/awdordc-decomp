@@ -30,6 +30,7 @@ void func_ov003_021eccd4(void *arg0) {
     s16 func_ov003_022004a8(u8);
     s32 sp0[9];
     s32 temp_r3_2;
+    s16 x, y;
     void *temp_r4_7;
     s32 var_r0;
     s32 var_r0_2;
@@ -43,8 +44,9 @@ void func_ov003_021eccd4(void *arg0) {
     u32 temp_r0;
     u32 temp_r0_4;
     u32 var_r6;
-    u8 temp_r1;
-    u8 temp_r7;
+    u32 spriteFlags;
+    u32 temp_r1;
+    u32 temp_r7;
     u8 var_r4;
     void *temp_r0_2;
     void *temp_r1_2;
@@ -116,7 +118,7 @@ void func_ov003_021eccd4(void *arg0) {
             M2C_FIELD(M2C_FIELD(arg0, void **, 0), void (**)(void *), 0x1C)(arg0);
         } else {
             temp_r1 = (M2C_FIELD(arg0, u8 *, 0x39) & ~0xC) | 4;
-            if (((u32) (temp_r1 << 0x1C) >> 0x1E) == 0) {
+            if (((u32) ((u8)temp_r1 << 0x1C) >> 0x1E) == 0) {
                 var_r0_4 = 1;
             } else {
                 var_r0_4 = 0;
@@ -127,11 +129,11 @@ void func_ov003_021eccd4(void *arg0) {
                 func_02088f1c(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
             }
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
-            temp_r7 = (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4);
+            temp_r7 = (u8)GetPanelCount(M2C_FIELD(arg0, void **, 0x6C));
             if (func_020846a4() == 0) {
                 var_r6 = 0;
                 do {
-                    if (var_r6 < (u32) temp_r7) {
+                    if (var_r6 < temp_r7) {
                         func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 8));
                         func_02088d94(M2C_FIELD((temp_r4 + (var_r6 * 4)), void **, 0x18));
                     }
@@ -190,11 +192,15 @@ void func_ov003_021eccd4(void *arg0) {
             temp_r6_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
             temp_r4_8 = func_020aae44(temp_r6_2);
             temp_r3_2 = func_020aae10(temp_r6_2) & (-0x200U >> 0x17);
+            y = M2C_FIELD(temp_r6_2, s16 *, 0x36);
+            x = M2C_FIELD(temp_r6_2, s16 *, 0x34);
             temp_r1_2 = M2C_FIELD(arg0, void **, 0x58);
-            M2C_FIELD(temp_r1_2, s16 *, 0x34) = (s16) M2C_FIELD(temp_r6_2, s16 *, 0x34);
-            M2C_FIELD(temp_r1_2, s16 *, 0x36) = (s16) M2C_FIELD(temp_r6_2, s16 *, 0x36);
-            M2C_FIELD(temp_r1_2, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r1_2, s32 *, 0x40) & ~0x1FF) | temp_r3_2) & 0xFFFC01FF) | ((u32) (temp_r4_8 << 0x17) >> 0xE));
-            M2C_FIELD(M2C_FIELD((short)arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            M2C_FIELD(temp_r1_2, s16 *, 0x34) = x;
+            M2C_FIELD(temp_r1_2, s16 *, 0x36) = y;
+            spriteFlags = (M2C_FIELD(temp_r1_2, u32 *, 0x40) & ~0x1FF) | temp_r3_2;
+            spriteFlags &= ~(0x1FFU << 9);
+            M2C_FIELD(temp_r1_2, u32 *, 0x40) = spriteFlags | ((u32)(temp_r4_8 << 0x17) >> 0xE);
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
                 if (InRange((u8) temp_r0_3, 0, 3) != 0) {

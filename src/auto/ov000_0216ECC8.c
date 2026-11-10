@@ -254,16 +254,16 @@ void ScrollListDrawRows(s32 mode) {
 void ScrollListDrawTabs(void *p){
 extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
 extern M2C_UNK data_ov000_021b8ac0,data_ov000_021b8ad0,data_ov000_021b8ae0,data_ov000_021b8af4,data_ov000_021b8b04,data_ov000_021b8b18;
-s32 func_020e3218(void *);void func_02081590(s32,s32);void func_02080944(s32,s32,s32,s32);
+s32 GetLocalizedFileName(void *);void func_02081590(s32,s32);void func_02080944(s32,s32,s32,s32);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_0200bc5c(&data_ov000_021b8ac0);
-func_020e3218(&data_ov000_021b8ad0);func_020814e4();
+SetFileDirectory(&data_ov000_021b8ac0);
+GetLocalizedFileName(&data_ov000_021b8ad0);func_020814e4();
 switch(M2C_FIELD(p,s16 *,0x34)){
-case 0:func_02081590(func_020e3218(&data_ov000_021b8ae0),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 1:func_02081590(func_020e3218(&data_ov000_021b8af4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 2:func_02081590(func_020e3218(&data_ov000_021b8b04),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
-case 3:func_02081590(func_020e3218(&data_ov000_021b8b18),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 0:func_02081590(GetLocalizedFileName(&data_ov000_021b8ae0),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 1:func_02081590(GetLocalizedFileName(&data_ov000_021b8af4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 2:func_02081590(GetLocalizedFileName(&data_ov000_021b8b04),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
+case 3:func_02081590(GetLocalizedFileName(&data_ov000_021b8b18),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));break;
 }
 func_02081528();func_02080944(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),32,24,6);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;

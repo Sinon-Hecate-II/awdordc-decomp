@@ -505,7 +505,7 @@ void func_ov010_02225cd8(void) {
     StartStreamedVoice((void *)&func_ov010_02225964, 0x44);
 }
 
-s32 func_ov010_02225cf0(void) {
+s32 IsVoiceDataReady(void) {
     extern s32 gStreamVoiceState;
     return gStreamVoiceState;
 }
@@ -527,12 +527,12 @@ void func_ov010_02225d38(void) {
     func_0202b760(&gStreamSoundPlayer);
 }
 
-void func_ov010_02225d50(void) {
+void EnableVoiceStream(void) {
 extern s32 gStreamVoiceState;
 M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
 }
 
-void func_ov010_02225d64(void) {
+void DisableVoiceStream(void) {
 extern s32 gStreamVoiceState;
 void func_0200df14(void (*)(void),s32);
 func_0200df14(func_ov010_02225948,0);

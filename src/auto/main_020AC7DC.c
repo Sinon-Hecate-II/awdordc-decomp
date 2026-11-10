@@ -451,16 +451,16 @@ u8 func_020ad3f0(void) {
 }
 
 M2C_UNK func_020ad42c(s32 arg0, M2C_UNK *arg1) {
-    u8 func_020e31e0(void);
-    M2C_UNK *func_020e3218(s32);
+    u8 GetLanguage(void);
+    M2C_UNK *GetLocalizedFileName(s32);
 
     if ((arg0 != 0x2E) && (arg0 != 0x2F)) {
         goto done;
     }
-    if (func_020e31e0() != 2) {
+    if (GetLanguage() != 2) {
         goto done;
     }
-    return (M2C_UNK) func_020e3218((s32) arg1);
+    return (M2C_UNK) GetLocalizedFileName((s32) arg1);
 done:
     return (M2C_UNK) arg1;
 }
@@ -586,9 +586,9 @@ s32 func_020ad658(s32 arg0) {
 }
 
 void func_020ad67c(void) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_02127d78;
-    func_0200bc5c(&data_02127d78);
+    SetFileDirectory(&data_02127d78);
 }
 
 s32 func_020ad690(void) {

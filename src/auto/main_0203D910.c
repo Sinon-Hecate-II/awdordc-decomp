@@ -12,9 +12,9 @@ void func_0203d910(s32 a, s32 b)
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void func_02043230(void);
     void func_0203dc38(s32, s32);
-    s32 func_020390d4(void);
-    s32 *func_02039130(s32);
-    u8 *func_020391a8(s32);
+    s32 FindFreePlayerSlot(void);
+    s32 *GetPlayerConnectionSlot(s32);
+    u8 *GetPlayerPeer(s32);
     void func_0205b058(s32, void *);
     M2C_UNK func_020411dc(M2C_UNK);
 
@@ -124,15 +124,15 @@ void func_0203d910(s32 a, s32 b)
             return;
 
     } else {
-        slot = func_020390d4();
+        slot = FindFreePlayerSlot();
 
         if (slot == -1) {
             func_0203dc38(6, 0xfffeabc4);
             return;
         }
 
-        out = func_02039130(slot);
-        p = func_020391a8(slot);
+        out = GetPlayerConnectionSlot(slot);
+        p = GetPlayerPeer(slot);
 
         *out = a;
 
@@ -180,10 +180,10 @@ void func_0203dc18(void) {
 
 void func_0203dc38(s32 arg0,s32 arg1) {
  extern s32 data_020fc904;
- s32 func_0203aeb4(); void func_02041e44(); void func_02037638(s32,s32); s32 func_0203af50(s32,s32 *,s32); void func_0203e9b0();
+ s32 func_0203aeb4(); void func_02041e44(); void SetNetError(s32,s32); s32 func_0203af50(s32,s32 *,s32); void func_0203e9b0();
  s32 a,b,c; void *p;
  if(GetConnection()==0 || arg0==0) return;
- func_02041e44(); func_02037638(arg0,arg1); func_0203af50(1,&data_020fc904,0);
+ func_02041e44(); SetNetError(arg0,arg1); func_0203af50(1,&data_020fc904,0);
  a=M2C_FIELD(GetConnection(),u8 *,0x15)==2;
  b=M2C_FIELD(GetConnection(),s32 *,0x20c)==0;
  p=GetConnection();

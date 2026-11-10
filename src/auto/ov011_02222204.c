@@ -8,7 +8,7 @@ void func_ov011_02222204(M2C_UNK arg0) {
     M2C_UNK func_01ff9e00();
     M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
     M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov011_02222010(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov011_02224e04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_02101f2c;
     extern M2C_UNK data_02101f5c;
@@ -77,9 +77,9 @@ void func_ov011_02222204(M2C_UNK arg0) {
     func_ov011_022216d8(arg0, 3, 0, 3);
     func_ov011_022216d8(arg0, 4, 1, 3);
     func_ov011_022216d8(arg0, 0x13, 2, 0);
-    func_ov011_02222010(arg0, 0, 0);
-    func_ov011_02222010(arg0, 1, 0);
-    func_ov011_02222010(arg0, 7, 1);
+    LoadOpeningScreenAssets(arg0, 0, 0);
+    LoadOpeningScreenAssets(arg0, 1, 0);
+    LoadOpeningScreenAssets(arg0, 7, 1);
     func_01ffac9c(0x40, 0x50, 0, &data_02101f2c, 0);
     func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
     func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);

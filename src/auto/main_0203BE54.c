@@ -119,7 +119,7 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_0203761c();
+    s32 HasNetError();
     void *GetConnection();
     s32 func_02060b68(s32, M2C_UNK, s32);
     s32 func_02061784(s32, M2C_UNK);
@@ -127,7 +127,7 @@ s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 var_r4;
 
     var_r4 = arg2;
-    if ((GetConnection() == NULL) || (func_0203761c() != 0)) {
+    if ((GetConnection() == NULL) || (HasNetError() != 0)) {
         return var_r4;
     }
     temp_r0 = func_02061784(M2C_FIELD(GetConnection(), s32 *, 0xE4), arg0);

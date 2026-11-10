@@ -165,7 +165,11 @@ void func_ov007_0221dcd4(void) {
     func_ov007_0221c718();
 }
 
-void func_ov007_0221dce0(void *arg0) {
+/* Confirm/cancel handler of the map editor's text-entry softkeys. Cancel (0x69)
+ * closes the editor; confirm (0x6A) packs the edited glyph line into the record
+ * buffer when it holds at least one non-blank glyph, otherwise it plays the
+ * error animation and sound. */
+void MapEditTextActionInput(void *arg0) {
     M2C_UNK SetSpriteAnimation(s32, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32 *, s8 *, M2C_UNK);
     s32 func_020194e0(s32 *, M2C_UNK *);
@@ -178,83 +182,83 @@ void func_ov007_0221dce0(void *arg0) {
     M2C_UNK func_020d47f0();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK data_ov007_02220404;
-    extern M2C_UNK data_ov007_02220824;
+    extern M2C_UNK gGlyphSpace;
+    extern M2C_UNK gGlyphWideSpace;
     extern M2C_UNK gMapEditRecords;
     extern s32 gMapEditObjectList;
-    s32 *var_r7_2;
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 var_r1;
-    s32 *var_r2;
-    s32 var_r7;
-    s32 *var_r8;
-    s8 *var_r8_2;
-    u32 var_r9;
-    u8 temp_r1;
-    void *temp_r0;
+    s32 *srcGlyphs;
+    s32 editor;
+    s32 savedEngine;
+    s32 entryCount;
+    s32 *scan;
+    s32 allBlank;
+    s32 *glyphSlot;
+    s8 *dest;
+    u32 i;
+    u8 action;
+    void *dialog;
 
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0);
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x10);
-    switch (temp_r1) {                              /* irregular */
+    action = M2C_FIELD(arg0, u8 *, 0);
+    editor = M2C_FIELD(arg0, s32 *, 0x10);
+    switch (action) {                              /* irregular */
     case 0x69:
         func_020d47f0();
-        SetSpriteAnimation(temp_r4, 3);
+        SetSpriteAnimation(editor, 3);
         PlaySoundEffect(0x1000F);
         return;
     case 0x6A:
-        var_r1 = 0;
-        var_r2 = &gMapEditObjectList;
+        entryCount = 0;
+        scan = &gMapEditObjectList;
         if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
             do {
-                var_r2 += 1;
-                var_r1 += 1;
-            } while (*var_r2 != 0);
+                scan += 1;
+                entryCount += 1;
+            } while (*scan != 0);
         }
-        if (var_r1 != 0) {
-            var_r7 = 1;
-            var_r8 = &gMapEditObjectList;
+        if (entryCount != 0) {
+            allBlank = 1;
+            glyphSlot = &gMapEditObjectList;
             if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
 loop_9:
-                if ((func_020194e0(var_r8, &data_ov007_02220404) != 0) && (func_020194e0(var_r8, &data_ov007_02220824) != 0)) {
-                    var_r7 = 0;
+                if ((func_020194e0(glyphSlot, &gGlyphSpace) != 0) && (func_020194e0(glyphSlot, &gGlyphWideSpace) != 0)) {
+                    allBlank = 0;
                 } else {
-                    var_r8 += 1;
-                    if (*var_r8 != 0) {
+                    glyphSlot += 1;
+                    if (*glyphSlot != 0) {
                         goto loop_9;
                     }
                 }
             }
-            if (var_r7 == 0) {
-                var_r7_2 = &gMapEditObjectList;
-                var_r8_2 = M2C_FIELD(&gMapEditRecords, s8 **, 0);
-                var_r9 = 0;
-                while ((*var_r7_2 != 0) && (var_r9 < 0x10U)) {
-                    if ((func_02099ae8(var_r7_2) != 0) || (func_02099b00(var_r7_2) != 0)) {
-                        MI_CpuCopy8(var_r7_2, var_r8_2, 2);
-                        var_r8_2 += 2;
+            if (allBlank == 0) {
+                srcGlyphs = &gMapEditObjectList;
+                dest = M2C_FIELD(&gMapEditRecords, s8 **, 0);
+                i = 0;
+                while ((*srcGlyphs != 0) && (i < 0x10U)) {
+                    if ((func_02099ae8(srcGlyphs) != 0) || (func_02099b00(srcGlyphs) != 0)) {
+                        MI_CpuCopy8(srcGlyphs, dest, 2);
+                        dest += 2;
                     } else {
-                        MI_CpuCopy8(var_r7_2, var_r8_2, 1);
-                        var_r8_2 += 1;
+                        MI_CpuCopy8(srcGlyphs, dest, 1);
+                        dest += 1;
                     }
-                    var_r9 += 1;
-                    var_r7_2 += 1;
+                    i += 1;
+                    srcGlyphs += 1;
                 }
-                *var_r8_2 = 0;
+                *dest = 0;
                 func_020d47d0();
-                SetSpriteAnimation(temp_r4, 3);
+                SetSpriteAnimation(editor, 3);
                 PlaySoundEffect(0x1000E);
                 return;
             }
         }
         func_020b269c();
-        temp_r5 = gCur3DSpriteEngine;
+        savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        temp_r0 = func_0208b564(temp_r4);
-        func_020899cc(temp_r0, 2, 0x2800, 0x4600000F);
-        M2C_FIELD(temp_r0, s32 *, 0x58) = (s32) (M2C_FIELD(temp_r0, s32 *, 0x58) | 0x1000);
-        gCur3DSpriteEngine = temp_r5;
-        SetSpriteAnimation(temp_r4, 5);
+        dialog = func_0208b564(editor);
+        func_020899cc(dialog, 2, 0x2800, 0x4600000F);
+        M2C_FIELD(dialog, s32 *, 0x58) = (s32) (M2C_FIELD(dialog, s32 *, 0x58) | 0x1000);
+        gCur3DSpriteEngine = savedEngine;
+        SetSpriteAnimation(editor, 5);
         PlaySoundEffect(0x1001D);
         return;
     }
@@ -269,7 +273,7 @@ old=*arg0;
 pressed=M2C_FIELD(gKeyState,u16 *,0);
 current=old;
 held=M2C_FIELD(gKeyState,u16 *,2);
-if(pressed&1){func_ov007_0221dce0(arg0);return;}
+if(pressed&1){MapEditTextActionInput(arg0);return;}
 if(held&0x40){
 switch(old){
 case 105:if(held==pressed)current=69;break;

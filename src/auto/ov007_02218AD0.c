@@ -199,7 +199,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
     M2C_UNK AddSprite(u16, s32, u16, M2C_UNK *, s32);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
-    extern M2C_UNK data_027e0074;
+    extern M2C_UNK gSpriteDesc16x32;
     extern M2C_UNK gSpriteDesc32x16;
     extern M2C_UNK gSpriteDesc16x16;
     u16 **saved;
@@ -269,7 +269,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
                     y |= 0x500;
                     bits = (u16)(((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1e));
                     third = (u16)((0x3ff & (r7 >> bits)) | ((p3 + 0x6) << 12));
-                    AddSprite(x, y, third, &data_027e0074, 0xf);
+                    AddSprite(x, y, third, &gSpriteDesc16x32, 0xf);
                 }
                 val2 = M2C_FIELD(arg0, u16 *, 0x3c);
                 if (val2 > 0x10) {

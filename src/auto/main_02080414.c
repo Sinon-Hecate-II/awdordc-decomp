@@ -225,7 +225,7 @@ int func_02080c50(int arg0, int arg1) {
     return var_8;
 }
 
-s32 func_02080cfc(void *arg0, s32 arg1) {
+s32 LoadDecompressedFileTo(void *arg0, s32 arg1) {
     int InitFileRequest(void *);
     int func_0200ba54(void *, void *);
     int func_0200bbe0(void *, void *, s32);
@@ -386,7 +386,7 @@ s32 func_02081128(M2C_UNK a,M2C_UNK b) {
  func_020e35cc(p);return 0;
 }
 
-s32 func_0208116c(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+s32 LoadFileToSpriteBuffer(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     s32 func_02081080(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     if (func_02081080(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, 0, arg2) == 0) {

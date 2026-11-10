@@ -241,28 +241,28 @@ u8 func_0209e0dc(M2C_UNK arg0) {
 }
 
 void func_0209e104(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_02080cfc(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0211f840;
     extern M2C_UNK data_0211f848;
     extern M2C_UNK data_0211f858;
-    func_0200bc5c(&data_0211f840);
+    SetFileDirectory(&data_0211f840);
     switch (arg0) {                                 /* irregular */
     case 1:
-        func_02080cfc(&data_0211f848, arg1);
+        LoadDecompressedFileTo(&data_0211f848, arg1);
         return;
     case 2:
-        func_02080cfc(&data_0211f858, arg1);
+        LoadDecompressedFileTo(&data_0211f858, arg1);
         return;
     }
 }
 
 void func_0209e158(s32 arg0) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_0211f868;
     extern M2C_UNK data_0211f870;
-    func_0200bc5c(&data_0211f868);
-    func_0208116c(&data_0211f870, arg0 << 5, 0x20);
+    SetFileDirectory(&data_0211f868);
+    LoadFileToSpriteBuffer(&data_0211f870, arg0 << 5, 0x20);
 }
 
 void func_0209e184(void *arg0, s8 arg1, u32 arg2, s32 arg3) {

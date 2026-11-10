@@ -12,13 +12,13 @@ extern s16 gSinCosTable[];
 
 #pragma peephole off
 void func_ov000_0216b898(void *arg0){
-s32 GetSpriteAnimValue(void*);s32 func_020e31e0(void);
+s32 GetSpriteAnimValue(void*);s32 GetLanguage(void);
 s32 func_ov000_0216b15c(s32,s32,s32,s32);s32 func_020a93e4(void*,u8);
 s32 func_0207c8ec(s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void*,s32);void DrawTileRow(u16,s32,s32,u16,s32);
 s32 x1,x2,y1,y2,anchor,xa,ya,i,tile;u16 *volatile control;
 if(!M2C_FIELD(arg0,u8*,0x36))return;
-switch(func_020e31e0()){
+switch(GetLanguage()){
 case 0:{ void *tmp=M2C_FIELD(M2C_FIELD(arg0,void**,0x48),void**,0); xa=(s16)(GetSpriteAnimValue(tmp)-4); }ya=12;x1=GET(0x48);y1=34;x2=GET(0x4c);y2=60;break;
 case 2:case 3:
 { void *tmp=M2C_FIELD(M2C_FIELD(arg0,void**,0x48),void**,0); xa=(s16)(GetSpriteAnimValue(tmp)-4); }ya=12;

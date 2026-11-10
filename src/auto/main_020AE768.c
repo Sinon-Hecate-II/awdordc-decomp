@@ -39,10 +39,10 @@ s32 func_020ae7ec(void) { return 0; }
 
 #pragma opt_common_subs off
 void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_020e31e0(void);
-    M2C_UNK *func_020e3218(M2C_UNK *);
+    M2C_UNK GetLanguage(void);
+    M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     void StringFormat(void *, void *, ...);
-    void func_0200bc5c(void *);
+    void SetFileDirectory(void *);
     void func_02082134(s32, s32);
     void func_020814e4(void *);
     void func_02081590(void *, s32);
@@ -59,13 +59,13 @@ void func_020aebb8(void *arg0, s32 arg1, s32 arg2) {
     char sp100[0x100];
     char sp0[0x100];
 
-    if (func_020e31e0() == 2 && *(u8 *)((char *)r6 + 0x34) == 0) {
-        StringFormat(sp100, func_020e3218(*(void **)(*(void **)((char *)r6 + 0x38))));
+    if (GetLanguage() == 2 && *(u8 *)((char *)r6 + 0x34) == 0) {
+        StringFormat(sp100, GetLocalizedFileName(*(void **)(*(void **)((char *)r6 + 0x38))));
     } else {
         StringFormat(sp100, *(void **)(*(void **)((char *)r6 + 0x38)));
     }
     func_02082134(r5, *(u8 *)((char *)*(void **)((char *)r6 + 0x38) + 4));
-    func_0200bc5c(data_02127eac);
+    SetFileDirectory(data_02127eac);
     StringFormat(sp0, data_02127eb8, sp100);
     func_020814e4(sp0);
     StringFormat(sp0, data_02127ec0, sp100);

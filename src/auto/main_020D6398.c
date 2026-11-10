@@ -67,17 +67,17 @@ s32 func_020d66fc(s8 *arg0) {
 }
 
 void func_020d672c(void) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_02080cfc(s32, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
-    s32 func_020e3218(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadDecompressedFileTo(s32, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_0212beec;
     extern M2C_UNK data_0212bef8;
     extern M2C_UNK data_0212bf08;
     extern u16 **gCur3DSpriteEngine;
-    func_0200bc5c(&data_0212beec);
-    func_02080cfc(func_020e3218(&data_0212bef8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2A00);
-    func_0208116c(&data_0212bf08, 0x320, 0x20);
+    SetFileDirectory(&data_0212beec);
+    LoadDecompressedFileTo(GetLocalizedFileName(&data_0212bef8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2A00);
+    LoadFileToSpriteBuffer(&data_0212bf08, 0x320, 0x20);
 }
 
 void func_020d6778(s32 mode) {
@@ -114,9 +114,9 @@ arg0-=8;arg2/=10;
 }
 
 void func_020d6a20(s32 a, s32 b, u32 c, u32 d) {
-    s32 func_020e31e0(void);
+    s32 GetLanguage(void);
     (void)a; (void)b; (void)c; (void)d;
-    if (func_020e31e0() != 0) {
+    if (GetLanguage() != 0) {
         return;
     }
     return;

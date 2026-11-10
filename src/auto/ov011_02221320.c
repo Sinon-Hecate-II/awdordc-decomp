@@ -145,11 +145,11 @@ void func_ov011_0222166c(void *arg0) {
 }
 
 void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) {
-M2C_UNK func_0200bc5c(M2C_UNK *); M2C_UNK func_020814e4(M2C_UNK *); M2C_UNK func_02081590(M2C_UNK *,s32); M2C_UNK func_020815fc(M2C_UNK *,s32,s32); M2C_UNK func_0208161c(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081644(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081528(void); s32 func_020e31e0(void); M2C_UNK *func_020e3218(M2C_UNK *);
+M2C_UNK SetFileDirectory(M2C_UNK *); M2C_UNK func_020814e4(M2C_UNK *); M2C_UNK func_02081590(M2C_UNK *,s32); M2C_UNK func_020815fc(M2C_UNK *,s32,s32); M2C_UNK func_0208161c(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081644(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081528(void); s32 GetLanguage(void); M2C_UNK *GetLocalizedFileName(M2C_UNK *);
 extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
 extern M2C_UNK data_ov011_022282a0, data_ov011_022282ac, data_ov011_022282bc, data_ov011_022282c8, data_ov011_022282d4, data_ov011_022282e0, data_ov011_022282f4, data_ov011_02228308, data_ov011_0222831c, data_ov011_02228330, data_ov011_02228344, data_ov011_02228358, data_ov011_0222836c, data_ov011_02228380, data_ov011_02228398, data_ov011_022283ac, data_ov011_022283c0, data_ov011_022283d4, data_ov011_022283e4, data_ov011_022283f0, data_ov011_022283fc, data_ov011_0222840c, data_ov011_02228418, data_ov011_02228424, data_ov011_02228438, data_ov011_0222844c, data_ov011_02228460, data_ov011_02228474, data_ov011_02228488, data_ov011_0222849c, data_ov011_022284b0, data_ov011_022284c4, data_ov011_022284dc, data_ov011_022284f0, data_ov011_02228504, data_ov011_02228518, data_ov011_0222852c, data_ov011_02228540, data_ov011_02228554, data_ov011_02228568, data_ov011_02228580, data_ov011_02228594, data_ov011_022285a8, data_ov011_022285bc, data_ov011_022285d0, data_ov011_022285e4, data_ov011_022285f8, data_ov011_0222860c, data_ov011_02228624, data_ov011_02228638, data_ov011_0222864c, data_ov011_02228660, data_ov011_02228674, data_ov011_02228688, data_ov011_0222869c, data_ov011_022286b0, data_ov011_022286c8, data_ov011_022286dc, data_ov011_022286f0, data_ov011_02228704, data_ov011_02228718, data_ov011_0222872c, data_ov011_02228740, data_ov011_02228754, data_ov011_0222876c, data_ov011_02228780, data_ov011_02228794, data_ov011_022287a8, data_ov011_022287bc, data_ov011_022287d0, data_ov011_022287e4, data_ov011_022287f8, data_ov011_02228804, data_ov011_0222880c, data_ov011_02228814, data_ov011_0222881c, data_ov011_02228838, data_ov011_02228850, data_ov011_02228868, data_ov011_02228880, data_ov011_02228898, data_ov011_022288b0, data_ov011_022288c8, data_ov011_022288e0, data_ov011_022288ec, data_ov011_022288f4, data_ov011_022288fc, data_ov011_02228904, data_ov011_02228910, data_ov011_0222891c, data_ov011_02228928;
 s32 saved,i,engine,lang;
-func_0200bc5c(&data_ov011_022282a0); saved=gCur3DSpriteEngine; i=0;
+SetFileDirectory(&data_ov011_022282a0); saved=gCur3DSpriteEngine; i=0;
 do { if(i==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
 if(arg2==0 && engine!=g3DSpriteEngineMain) goto inc;
@@ -281,11 +281,11 @@ func_02081590(&data_ov011_022288b0,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32)
 func_02081644(&data_ov011_022288c8,arg3,0,512);func_02081528(); break;
 
 case 22:
-lang=func_020e31e0(); if(lang==1||lang==2||lang==5) {
-func_020814e4(func_020e3218(&data_ov011_022288e0));
-func_02081590(func_020e3218(&data_ov011_022288ec), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-func_02081590(func_020e3218(&data_ov011_022288f4), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-func_020815fc(func_020e3218(&data_ov011_022288fc),0,32); func_02081528(); break; }
+lang=GetLanguage(); if(lang==1||lang==2||lang==5) {
+func_020814e4(GetLocalizedFileName(&data_ov011_022288e0));
+func_02081590(GetLocalizedFileName(&data_ov011_022288ec), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
+func_02081590(GetLocalizedFileName(&data_ov011_022288f4), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+func_020815fc(GetLocalizedFileName(&data_ov011_022288fc),0,32); func_02081528(); break; }
 func_020814e4(&data_ov011_02228904);
 func_02081590(&data_ov011_02228910,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
 func_02081590(&data_ov011_0222891c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
@@ -294,90 +294,93 @@ func_020815fc(&data_ov011_02228928,0,32);func_02081528(); break;
 inc: i++; }while(i<2); gCur3DSpriteEngine=saved;
 }
 
-void func_ov011_02222010(s32 unused, u32 arg0, s32 arg1) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_02080cfc(M2C_UNK *, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+void LoadOpeningScreenAssets(s32 unused, u32 asset, s32 screen) {
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020812a4(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK *func_020e3218(M2C_UNK *);
+    M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    extern M2C_UNK data_ov011_02228934;
-    extern M2C_UNK data_ov011_02228940;
-    extern M2C_UNK data_ov011_02228950;
-    extern M2C_UNK data_ov011_02228960;
-    extern M2C_UNK data_ov011_02228970;
-    extern M2C_UNK data_ov011_02228980;
-    extern M2C_UNK data_ov011_02228994;
-    extern M2C_UNK data_ov011_022289a4;
-    extern M2C_UNK data_ov011_022289b8;
-    extern M2C_UNK data_ov011_022289c8;
-    extern M2C_UNK data_ov011_022289dc;
-    extern M2C_UNK data_ov011_022289ec;
-    extern M2C_UNK data_ov011_02228a00;
-    extern M2C_UNK data_ov011_02228a10;
-    extern M2C_UNK data_ov011_02228a20;
+    extern M2C_UNK gOpeningDirectoryPath;
+    extern M2C_UNK gPressStartCgPath;
+    extern M2C_UNK gPressStartClPath;
+    extern M2C_UNK gCopyrightCgPath;
+    extern M2C_UNK gCopyrightClPath;
+    extern M2C_UNK gPrologueText01CgPath;
+    extern M2C_UNK gPrologueText01ClPath;
+    extern M2C_UNK gPrologueText02CgPath;
+    extern M2C_UNK gPrologueText02ClPath;
+    extern M2C_UNK gPrologueText03CgPath;
+    extern M2C_UNK gPrologueText03ClPath;
+    extern M2C_UNK gPrologueText04CgPath;
+    extern M2C_UNK gPrologueText04ClPath;
+    extern M2C_UNK gTitleNoaCgPath;
+    extern M2C_UNK gTitleNoaClPath;
 
-    s32 saved_r5;
-    s32 var_r6;
-    s32 var_r7;
+    s32 savedEngine;
+    s32 engineIndex;
+    s32 engine;
 
-    func_0200bc5c(&data_ov011_02228934);
+    /* Load one opening-sequence image and its palette on the requested
+       engine (0 main, 1 sub, 3 the one in use), or on both when screen
+       is something else. */
+    SetFileDirectory(&gOpeningDirectoryPath);
 
-    saved_r5 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
 
-    var_r6 = 0;
+    engineIndex = 0;
     do {
-        if (var_r6 == 0) {
-            var_r7 = g3DSpriteEngineMain;
+        if (engineIndex == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r7 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
 
-        gCur3DSpriteEngine = var_r7;
+        gCur3DSpriteEngine = engine;
 
-        if (arg1 == 0 && var_r7 != g3DSpriteEngineMain) goto inc;
-        if (arg1 == 1 && var_r7 != g3DSpriteEngineSub) goto inc;
-        if (arg1 == 3 && var_r7 != saved_r5) goto inc;
+        if (screen == 0 && engine != g3DSpriteEngineMain) goto inc;
+        if (screen == 1 && engine != g3DSpriteEngineSub) goto inc;
+        if (screen == 3 && engine != savedEngine) goto inc;
 
-        switch (arg0) {
+        switch (asset) {
             case 0:
-                func_02080cfc(func_020e3218(&data_ov011_02228940), M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_0208116c(&data_ov011_02228950, 0x200, 0x20);
+                LoadDecompressedFileTo(GetLocalizedFileName(&gPressStartCgPath), M2C_FIELD(engine, s32 *, 0x1C));
+                LoadFileToSpriteBuffer(&gPressStartClPath, 0x200, 0x20);
                 break;
             case 1:
-                func_02080cfc(&data_ov011_02228960, M2C_FIELD(var_r7, s32 *, 0x1C) + 0x800);
-                func_0208116c(&data_ov011_02228970, 0x2C0, 0x20);
+                LoadDecompressedFileTo(&gCopyrightCgPath, M2C_FIELD(engine, s32 *, 0x1C) + 0x800);
+                LoadFileToSpriteBuffer(&gCopyrightClPath, 0x2C0, 0x20);
                 break;
             case 3:
-                func_02080cfc(func_020e3218(&data_ov011_02228980), M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_0208116c(&data_ov011_02228994, 0x200, 0x20);
+                LoadDecompressedFileTo(GetLocalizedFileName(&gPrologueText01CgPath), M2C_FIELD(engine, s32 *, 0x1C));
+                LoadFileToSpriteBuffer(&gPrologueText01ClPath, 0x200, 0x20);
                 break;
             case 4:
-                func_02080cfc(func_020e3218(&data_ov011_022289a4), M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_0208116c(&data_ov011_022289b8, 0x200, 0x20);
+                LoadDecompressedFileTo(GetLocalizedFileName(&gPrologueText02CgPath), M2C_FIELD(engine, s32 *, 0x1C));
+                LoadFileToSpriteBuffer(&gPrologueText02ClPath, 0x200, 0x20);
                 break;
             case 5:
-                func_02080cfc(func_020e3218(&data_ov011_022289c8), M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_0208116c(&data_ov011_022289dc, 0x200, 0x20);
+                LoadDecompressedFileTo(GetLocalizedFileName(&gPrologueText03CgPath), M2C_FIELD(engine, s32 *, 0x1C));
+                LoadFileToSpriteBuffer(&gPrologueText03ClPath, 0x200, 0x20);
                 break;
             case 6:
-                func_02080cfc(func_020e3218(&data_ov011_022289ec), M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_0208116c(&data_ov011_02228a00, 0x200, 0x20);
+                LoadDecompressedFileTo(GetLocalizedFileName(&gPrologueText04CgPath), M2C_FIELD(engine, s32 *, 0x1C));
+                LoadFileToSpriteBuffer(&gPrologueText04ClPath, 0x200, 0x20);
                 break;
             case 7:
-                func_02080cfc(&data_ov011_02228a10, M2C_FIELD(var_r7, s32 *, 0x1C));
-                func_020812a4(&data_ov011_02228a20, 0, 0, 0x200);
+                LoadDecompressedFileTo(&gTitleNoaCgPath, M2C_FIELD(engine, s32 *, 0x1C));
+                func_020812a4(&gTitleNoaClPath, 0, 0, 0x200);
                 break;
             default:
                 break;
         }
 
 inc:
-        var_r6 += 1;
-    } while (var_r6 < 2);
+        engineIndex += 1;
+    } while (engineIndex < 2);
 
-    gCur3DSpriteEngine = saved_r5;
+    gCur3DSpriteEngine = savedEngine;
 }
 

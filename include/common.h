@@ -363,6 +363,73 @@ typedef struct GPIBuffer {
     s32   len;  /* +0x08 bytes used */
 } GPIBuffer;
 
+/* A queued GameSpy gpi callback (gpiCallback.c).  gpiCallCallback invokes
+ * callback.callback(connection, arg, callback.param) and then frees arg
+ * according to type. */
+typedef struct GPICallbackData {
+    struct {
+        void (*callback)(void *connection, void *arg, void *param); /* +0x00 */
+        void *param;                                                 /* +0x04 */
+    } callback;
+    void *arg;                    /* +0x08 typed data handed to the callback */
+    s32   type;                   /* +0x0C GPI_CALLBACK_* */
+    s32   operationId;            /* +0x10 id of the operation that queued it */
+    struct GPICallbackData *next; /* +0x14 next queued callback */
+} GPICallbackData;
+
+/* GPICallbackData.type: the layout of its arg and what gpiCallCallback frees
+ * after the callback has run. */
+enum {
+    GPI_CALLBACK_ERROR         = 1, /* arg is one block; run whatever the operation */
+    GPI_CALLBACK_PLAYER_INFO   = 2, /* arg->name at +0x08 is an owned string */
+    GPI_CALLBACK_INFO_LISTS    = 3, /* arg owns the two string lists at +0x3C/+0x40 */
+    GPI_CALLBACK_INFO_RECORDS  = 4, /* arg owns the record array at +0x0C */
+    GPI_CALLBACK_OWNED_POINTER = 7, /* arg owns the pointer at +0x10 */
+    GPI_CALLBACK_RECORD_LIST   = 8, /* arg owns the record array at +0x08 */
+    GPI_CALLBACK_STRING_LIST   = 9  /* arg owns the array of strings at +0x08 */
+};
+
+/* Callback data with an owned string at +0x08 (GPI_CALLBACK_PLAYER_INFO). */
+typedef struct GpiPlayerInfoData {
+    s32   id;    /* +0x00 */
+    s32   time;  /* +0x04 */
+    char *name;  /* +0x08 released after the callback */
+} GpiPlayerInfoData;
+
+/* Callback data with two owned string lists (GPI_CALLBACK_INFO_LISTS). */
+typedef struct GpiInfoListsData {
+    u8     pad00[0x38];
+    s32    count;   /* +0x38 entries in each list */
+    char **names;   /* +0x3C owned list of allocated names */
+    char **values;  /* +0x40 owned list of allocated values */
+} GpiInfoListsData;
+
+/* Callback data owning one record array at +0x0C (GPI_CALLBACK_INFO_RECORDS). */
+typedef struct GpiInfoRecordsData {
+    u8   pad00[0x0C];
+    void *records; /* +0x0C owned record array */
+} GpiInfoRecordsData;
+
+/* Callback data owning the pointer at +0x10 (GPI_CALLBACK_OWNED_POINTER). */
+typedef struct GpiOwnedPointerData {
+    u8   pad00[0x10];
+    void *pointer; /* +0x10 released after the callback when set */
+} GpiOwnedPointerData;
+
+/* Callback data owning one record array at +0x08 (GPI_CALLBACK_RECORD_LIST). */
+typedef struct GpiRecordListData {
+    s32  unknown00; /* +0x00 */
+    s32  count;     /* +0x04 number of records */
+    void *records;  /* +0x08 owned record array */
+} GpiRecordListData;
+
+/* Callback data owning an array of strings (GPI_CALLBACK_STRING_LIST). */
+typedef struct GpiStringListData {
+    s32    unknown00; /* +0x00 */
+    s32    count;     /* +0x04 number of strings */
+    char **strings;   /* +0x08 owned array of allocated strings */
+} GpiStringListData;
+
 /* Connection session states (the state at GetConnection()->0x1A0) used while
  * the peers agree on their player slots and synchronise. */
 enum {
@@ -401,6 +468,67 @@ enum {
 #define MATCH_SESSION_CURSOR       0x1C /* u8 player being processed */
 #define MATCH_SESSION_DIRTY        0x1D /* u8 player list changed */
 #define MATCH_SESSION_STATE        0x1E /* u8 match-setup step */
+
+/* States of the WFC match-making session (gNetSession + 0x24). */
+enum {
+    NET_STATE_READY    = 3, /* idle in the lobby: a match can be started */
+    NET_STATE_STARTING = 5  /* a match is being set up */
+};
+
+/* Global network error record (gNetError): the error code and its parameter.
+ * Code 9 is fatal: it is never overwritten nor cleared. */
+typedef struct NetError {
+    s32 code;   /* +0x00 0 = no error */
+    s32 detail; /* +0x04 error parameter */
+} NetError;
+
+/* A match player's info record (0x210 bytes), filled by func_0204e1b4. The
+ * key/value string holds the player's fields, e.g. "SCM=1/SCN=2/". */
+typedef struct MatchPlayerInfo {
+    s32 kind;          /* +0x00 */
+    s32 status;        /* +0x04 6 = a valid player record */
+    u8  fields[0x100]; /* +0x08 key/value string */
+    u8  name[0x100];   /* +0x108 display name */
+    s32 unk208;        /* +0x208 */
+    s32 unk20C;        /* +0x20C */
+} MatchPlayerInfo;     /* 0x210 bytes */
+
+/* Per-slot peer record (gPlayerPeers[slot], 8 bytes): the connection slot the
+ * player came in on and the peer id assigned to it in the match. */
+typedef struct PlayerPeer {
+    u8  slot;   /* +0x00 connection slot */
+    u8  peerId; /* +0x01 peer id within the match */
+    u16 unk02;  /* +0x02 */
+    s32 unk04;  /* +0x04 */
+} PlayerPeer;   /* 8 bytes */
+
+/* Sprite state of the ov001 menu screen's region selector: one object plus two
+ * rows of three item sprites. column remembers which column the selection came
+ * from so the wide bar (region 3) can return to it. */
+typedef struct Ov001MenuSprites {
+    void *obj;        /* +0x00 */
+    void *top[3];     /* +0x04 top-row item sprites */
+    void *middle[3];  /* +0x10 middle-row item sprites */
+    u8   column;      /* +0x1C last column of the two rows */
+    u8   mode;        /* +0x1D 1 = item chosen, 2 = cancel */
+} Ov001MenuSprites;
+
+/* The ov001 menu screen's selection state (gOv001MenuRegion): the selected
+ * region (0..6, the touch rectangles are at data_ov001_0218fa02) and its
+ * sprite state. */
+typedef struct Ov001MenuRegion {
+    u8 index;             /* +0x00 selected region */
+    u8 pad01[3];
+    Ov001MenuSprites *sprites; /* +0x04 */
+} Ov001MenuRegion;
+
+/* Directions passed to Ov001_MoveMenuRegion. */
+enum {
+    OV001_DIR_LEFT  = 0,
+    OV001_DIR_UP    = 1,
+    OV001_DIR_RIGHT = 2,
+    OV001_DIR_DOWN  = 3
+};
 
 /* Kinds of 4-byte connection notice sent by SendConnectionPacket(kind, slot). */
 enum {

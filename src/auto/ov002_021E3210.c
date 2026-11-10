@@ -218,14 +218,14 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
 #pragma opt_strength_reduction off
 void func_ov002_021e3b7c(M2C_UNK *p) {
 extern u32 gCur3DSpriteEngine, g3DSpriteEngineSub;
-extern u8 data_027e008c[];
+extern u8 gSpriteDesc64x64[];
 s32 x,y,tx,ty; u32 old; u16 v;
 if(*p&1)return;
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(y=0,ty=0;y<192;y+=64,ty+=8){
 v=(u16)((y&255)|0xc00);
 for(tx=0,x=0;tx<32;tx+=8,x+=64)
-AddSprite((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),data_027e008c,0);
+AddSprite((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),gSpriteDesc64x64,0);
 }
 gCur3DSpriteEngine=old;
 }

@@ -221,7 +221,7 @@ s32 func_02098588(s32 arg0) {
     return var_r0;
 }
 
-void func_020985b0(s32 unused,s32 a,s32 b){s32 func_02098034();s32 func_02098278(s32);M2C_UNK func_0200bc5c(s32);void func_02080cfc(s32,s32);s32 x,y;x=func_02098034();y=func_02098278(a);if(!x)return;func_0200bc5c(x);func_02080cfc(y,b);}
+void func_020985b0(s32 unused,s32 a,s32 b){s32 func_02098034();s32 func_02098278(s32);M2C_UNK SetFileDirectory(s32);void LoadDecompressedFileTo(s32,s32);s32 x,y;x=func_02098034();y=func_02098278(a);if(!x)return;SetFileDirectory(x);LoadDecompressedFileTo(y,b);}
 
 #pragma opt_strength_reduction off
 void func_020985f0(s32 src,s32 dst,u32 w,u32 h,u8 half){
@@ -252,13 +252,13 @@ y1++;row1+=width1;
 }
 }
 s32 func_0209871c(s32 unused,s32 type,s32 dst){
-s32 func_02098034();s32 func_02098588(s32);void func_02080cfc(s32,s32);M2C_UNK func_0200bc5c(s32);
+s32 func_02098034();s32 func_02098588(s32);void LoadDecompressedFileTo(s32,s32);M2C_UNK SetFileDirectory(s32);
 void func_020985f0(s32,s32,u32,u32,u8);
 s32 func_020e34bc(void);M2C_UNK func_020e35cc(s32);
 s32 size,x,y,buf,i0,off0,n0,off1,n1,i1;
 x=func_02098034();y=func_02098278(type);size=0;
 if(x){
-size=func_02098588(type);buf=func_020e34bc();func_0200bc5c(x);func_02080cfc(y,buf);
+size=func_02098588(type);buf=func_020e34bc();SetFileDirectory(x);LoadDecompressedFileTo(y,buf);
 switch(type){
 case 0:
 i0=0;n0=size>>8;
@@ -352,12 +352,12 @@ void func_02098970(M2C_UNK arg0, s32 arg1, s32 arg2) {
     func_020ae728(arg0, arg2);
 }
 
-void func_02098a34(s32 a,s32 b,s32 c,s32 d,u8 e){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK func_0200bc5c(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=d<<9;if(!p)return;func_0200bc5c(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
+void func_02098a34(s32 a,s32 b,s32 c,s32 d,u8 e){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,e,512);func_0207c650(q,c,off,512,1);}
 
-void func_02098ac0(s32 a,s32 b,s32 c,s32 d){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK func_0200bc5c(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=c<<9;if(!p)return;func_0200bc5c(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
+void func_02098ac0(s32 a,s32 b,s32 c,s32 d){s32 func_02098034();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 func_02081128(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=func_02098034();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=func_02081128(q,512);func_02098970(q,d,512);func_0207c728(q,0,off,512,1);}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_0200bc5c(s32);
+    M2C_UNK SetFileDirectory(s32);
     M2C_UNK func_02080c50(s32, M2C_UNK);
     s32 func_02098034();
     s32 func_0209834c(M2C_UNK, M2C_UNK);
@@ -369,7 +369,7 @@ void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     if (temp_r5 == 0) {
         return;
     }
-    func_0200bc5c(temp_r5);
+    SetFileDirectory(temp_r5);
     func_02080c50(temp_r4, arg2);
 }
 

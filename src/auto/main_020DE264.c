@@ -29,8 +29,8 @@ static inline s32 GetSetupCode(void *p) {
  * then registers the scene's per-variant update callback with overlay 10. */
 M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void func_01ff9ce8(u8);
-    void func_0200bc5c(void *);
-    void *func_020e3218(void *);
+    void SetFileDirectory(void *);
+    void *GetLocalizedFileName(void *);
     void func_020814e4(void *);
     void func_02081590(void *, void *);
     void func_02081528(void);
@@ -67,13 +67,13 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
-    func_0200bc5c(&data_0212d428);
-    func_020814e4(func_020e3218(&data_0212d430));
+    SetFileDirectory(&data_0212d428);
+    func_020814e4(GetLocalizedFileName(&data_0212d430));
 
     setupCode=GetSetupCode((void*)setup);
     switch(setupCode) {
-    case 4:func_02081590(func_020e3218(&data_0212d440),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
-    case 2:func_02081590(func_020e3218(&data_0212d450),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
+    case 4:func_02081590(GetLocalizedFileName(&data_0212d440),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
+    case 2:func_02081590(GetLocalizedFileName(&data_0212d450),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
     }
     func_02081528();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, void **, 0x20), 0x20, 0x18, 0x5);
@@ -158,7 +158,7 @@ void func_020de610(void) {
  * matching archive and the 2P/4P background chosen by GetSetupCode, resets the
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
-void func_01ff9ce8(u8); void func_0200bc5c(void *); void *func_020e3218(void *); void func_020814e4(void *); void func_02081590(void *,void *); void func_02081528(void); void func_02080944(void *,s32,s32,s32);
+void func_01ff9ce8(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void func_020814e4(void *); void func_02081590(void *,void *); void func_02081528(void); void func_02080944(void *,s32,s32,s32);
 void func_02088f1c(void *); void func_02088da8(void *); void func_0208b758(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
@@ -168,12 +168,12 @@ void *savedEngine=gCur3DSpriteEngine; void *sprite; s32 layout,animValue;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_01ff9ce8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-func_0200bc5c(&gMatchScenePath);
-func_020814e4(func_020e3218(&gMatchSceneNarc));
+SetFileDirectory(&gMatchScenePath);
+func_020814e4(GetLocalizedFileName(&gMatchSceneNarc));
 layout=GetSetupCode((void *)setup);
 switch(layout) {
-case 4: func_02081590(func_020e3218(&gMatchScene4PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-case 2: func_02081590(func_020e3218(&gMatchScene2PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 4: func_02081590(GetLocalizedFileName(&gMatchScene4PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+case 2: func_02081590(GetLocalizedFileName(&gMatchScene2PScreen),M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
 }
 func_02081528();
 func_02080944(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),32,24,5);
@@ -228,8 +228,8 @@ s32 func_020de884(M2C_UNK arg0) {
  * the unit selected in the menu. */
 void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void func_01ff9ce8(u8);
-    void func_0200bc5c(void *);
-    void *func_020e3218(void *);
+    void SetFileDirectory(void *);
+    void *GetLocalizedFileName(void *);
     void func_020814e4(void *);
     void func_02081590(void *, void *);
     void func_02081528(void);
@@ -260,13 +260,13 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x2;
-    func_0200bc5c(&gLinkResourcePath);
-    func_020814e4(func_020e3218(&gMatchingNarcPath));
+    SetFileDirectory(&gLinkResourcePath);
+    func_020814e4(GetLocalizedFileName(&gMatchingNarcPath));
 
     layout=GetSetupCode((void *)setup);
     switch(layout) {
-    case 4: func_02081590(func_020e3218(&gMatching4PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
-    case 2: func_02081590(func_020e3218(&gMatching2PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 4: func_02081590(GetLocalizedFileName(&gMatching4PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
+    case 2: func_02081590(GetLocalizedFileName(&gMatching2PScreen), M2C_FIELD(gCur3DSpriteEngine,void **,0x20)); break;
     }
 
     func_02081528();

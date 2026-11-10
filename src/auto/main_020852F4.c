@@ -13,6 +13,35 @@ static inline void DrawStatusIcon(s16 x,s16 y,u16 state) {
  func_01ff883c((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),&gSpriteDesc16x16);
 }
 
+/* A small value interpolator (see UpdateSpriteAnimation/GetSpriteAnimValue). */
+typedef struct SpriteAnim {
+    u8  mode;       /* +0x00 interpolation curve */
+    u8  done;       /* +0x01 nonzero: stop advancing */
+    u16 current;    /* +0x02 frames elapsed */
+    u16 start;      /* +0x04 value current is reset to */
+    u16 step;       /* +0x06 frames added per update */
+    s16 base;       /* +0x08 */
+    s16 amplitude;  /* +0x0A */
+    s16 duration;   /* +0x0C frames of the fade */
+    s16 from;       /* +0x0E start value */
+    s16 to;         /* +0x10 end value */
+} SpriteAnim;
+
+/* Push-to-talk voice-chat widget. */
+typedef struct VoiceChatWidget {
+    u8  filler_00[0x34];
+    s16 x;               /* +0x34 */
+    s16 y;               /* +0x36 */
+    s32 enabled;         /* +0x38 nonzero while the widget is shown */
+    s32 initialized;     /* +0x3C set on the first update */
+    s32 lastVoice;       /* +0x40 last voice-data-ready value seen */
+    u8  filler_44[4];
+    s32 talkHeld;        /* +0x48 Y button was held last update */
+    u8  filler_4c[2];
+    s16 refreshTimer;    /* +0x4E cooldown before the fade may be re-targeted */
+    SpriteAnim *anim;    /* +0x50 volume fade */
+} VoiceChatWidget;
+
 void func_020852f4(void){
  void *func_01ffa770(M2C_UNK *); M2C_UNK func_02091cd0(void *); extern M2C_UNK data_02102088;
  void *p=func_01ffa770(&data_02102088);
@@ -650,74 +679,77 @@ void func_02085ebc(void *arg0) {
  }
 }
 
-void func_02086014(void *arg0) {
+/* Push-to-talk voice chat: while Y is held the voice stream runs; incoming voice
+ * ducks the game's channel-2 volume to 0x20, and it fades back to 0x7F when the
+ * voice stops.  This updates the button state and drives the widget's fade. */
+void UpdateVoiceChatWidget(VoiceChatWidget *obj) {
     M2C_UNK func_02090640(M2C_UNK, s32);
     M2C_UNK func_0209066c(M2C_UNK, s32);
     s16 func_02090698(M2C_UNK);
     M2C_UNK UpdateSpriteAnimation(void *);
     s32 GetSpriteAnimValue(void *);
-    s32 func_ov010_02225cf0();
-    M2C_UNK func_ov010_02225d50();
-    M2C_UNK func_ov010_02225d64();
-    M2C_UNK func_ov010_02226054();
+    s32 IsVoiceDataReady();
+    M2C_UNK EnableVoiceStream();
+    M2C_UNK DisableVoiceStream();
+    M2C_UNK TickVoiceStream();
     extern void *gKeyState;
-    s16 t;
-    u8 flag;
- void *p;
- s16 value;
+    s16 timer;
+    u8 ready;
+    SpriteAnim *anim;
+    s16 volume;
 
-    if (M2C_FIELD(arg0, s32 *, 0x38) == 0) {
+    if (obj->enabled == 0) {
         return;
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) == 0) {
-        M2C_FIELD(arg0, s32 *, 0x3C) = 1;
+    if (obj->initialized == 0) {
+        obj->initialized = 1;
     }
-    t = M2C_FIELD(arg0, s16 *, 0x4E);
-    if ((s32) t > 0) {
-        M2C_FIELD(arg0, s16 *, 0x4E) = (s16) (t - 1);
+    timer = obj->refreshTimer;
+    if ((s32) timer > 0) {
+        obj->refreshTimer = (s16) (timer - 1);
     }
-    if (M2C_FIELD(arg0, s16 *, 0x4E) == 0) {
-        flag = 1;
+    if (obj->refreshTimer == 0) {
+        ready = 1;
     } else {
-        flag = 0;
+        ready = 0;
     }
-    func_ov010_02226054();
-    if (func_ov010_02225cf0() != 0) {
-        if (M2C_FIELD(arg0, s32 *, 0x48) == 0 && M2C_FIELD(arg0, s32 *, 0x40) != func_ov010_02225cf0()) {
-            value=func_02090698(2);p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,0xE)=value;
-            M2C_FIELD(p, s16 *, 0x10) = 0x20;
-            M2C_FIELD(p, s16 *, 0xC) = 8;
-            M2C_FIELD(p, u16 *, 2) = (u16) M2C_FIELD(p, u16 *, 4);
-            M2C_FIELD(arg0, s32 *, 0x40) = func_ov010_02225cf0();
+    TickVoiceStream();
+    if (IsVoiceDataReady() != 0) {
+        if (obj->talkHeld == 0 && obj->lastVoice != IsVoiceDataReady()) {
+            volume = func_02090698(2); anim = obj->anim; anim->from = volume;
+            anim->to = 0x20;
+            anim->duration = 8;
+            anim->current = (u16) anim->start;
+            obj->lastVoice = IsVoiceDataReady();
         }
-    } else if (M2C_FIELD(arg0, s32 *, 0x48) == 0 && M2C_FIELD(arg0, s32 *, 0x40) != func_ov010_02225cf0()) {
-        value=func_02090698(2);p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,0xE)=value;
-        M2C_FIELD(p, s16 *, 0x10) = 0x7F;
-        M2C_FIELD(p, s16 *, 0xC) = 8;
-        M2C_FIELD(p, u16 *, 2) = (u16) M2C_FIELD(p, u16 *, 4);
-        M2C_FIELD(arg0, s32 *, 0x40) = func_ov010_02225cf0();
+    } else if (obj->talkHeld == 0 && obj->lastVoice != IsVoiceDataReady()) {
+        volume = func_02090698(2); anim = obj->anim; anim->from = volume;
+        anim->to = 0x7F;
+        anim->duration = 8;
+        anim->current = (u16) anim->start;
+        obj->lastVoice = IsVoiceDataReady();
     }
-    if (flag && M2C_FIELD(arg0, s32 *, 0x48) == 0 && (M2C_FIELD(gKeyState, u16 *, 6) & 0x800)) {
-        if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
-            value=func_02090698(2);p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,0xE)=value;
-            M2C_FIELD(p, s16 *, 0x10) = 0x20;
-            M2C_FIELD(p, s16 *, 0xC) = 8;
-            M2C_FIELD(p, u16 *, 2) = (u16) M2C_FIELD(p, u16 *, 4);
+    if (ready && obj->talkHeld == 0 && (((KeyState *)gKeyState)->held & KEY_Y)) {
+        if (obj->lastVoice == 0) {
+            volume = func_02090698(2); anim = obj->anim; anim->from = volume;
+            anim->to = 0x20;
+            anim->duration = 8;
+            anim->current = (u16) anim->start;
         }
-        func_ov010_02225d50();
-        M2C_FIELD(arg0, s32 *, 0x48) = 1;
-    } else if (M2C_FIELD(arg0, s32 *, 0x48) != 0 && !(M2C_FIELD(gKeyState, u16 *, 6) & 0x800)) {
-        if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
-            value=func_02090698(2);p=M2C_FIELD(arg0,void **,0x50);M2C_FIELD(p,s16 *,0xE)=value;
-            M2C_FIELD(p, s16 *, 0x10) = 0x7F;
-            M2C_FIELD(p, s16 *, 0xC) = 8;
-            M2C_FIELD(p, u16 *, 2) = (u16) M2C_FIELD(p, u16 *, 4);
+        EnableVoiceStream();
+        obj->talkHeld = 1;
+    } else if (obj->talkHeld != 0 && !(((KeyState *)gKeyState)->held & KEY_Y)) {
+        if (obj->lastVoice == 0) {
+            volume = func_02090698(2); anim = obj->anim; anim->from = volume;
+            anim->to = 0x7F;
+            anim->duration = 8;
+            anim->current = (u16) anim->start;
         }
-        func_ov010_02225d64();
-        M2C_FIELD(arg0, s32 *, 0x48) = 0;
+        DisableVoiceStream();
+        obj->talkHeld = 0;
     }
-    UpdateSpriteAnimation(M2C_FIELD(arg0, void **, 0x50));
-    func_02090640(2, GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x50)));
-    func_0209066c(2, GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x50)));
+    UpdateSpriteAnimation(obj->anim);
+    func_02090640(2, GetSpriteAnimValue(obj->anim));
+    func_0209066c(2, GetSpriteAnimValue(obj->anim));
 }
 

@@ -44,7 +44,7 @@ s32 func_ov010_02225f60(void) {
     void func_ov010_02228b50();
     void func_ov010_02222c9c();
     void func_ov010_02225d00();
-    void func_ov010_02225d64();
+    void DisableVoiceStream();
     s32 func_ov010_02229bf4();
     void func_ov010_02222c28();
     s32 AllocAlignedBuffer(s32, s32);
@@ -71,7 +71,7 @@ s32 func_ov010_02225f60(void) {
     func_ov010_02222c9c(1);
     M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = 0;
     func_ov010_02225d00();
-    func_ov010_02225d64();
+    DisableVoiceStream();
     if (func_ov010_02229bf4()) {
         func_ov010_02226060(0);
     }
@@ -79,7 +79,7 @@ s32 func_ov010_02225f60(void) {
     return 1;
 }
 
-void func_ov010_02226054(void) {
+void TickVoiceStream(void) {
     M2C_UNK func_ov010_022257a0();
     func_ov010_022257a0();
 }

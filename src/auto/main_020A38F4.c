@@ -101,12 +101,12 @@ do{M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset2,u16 *,8)=0;j++;offset2+=1
 }
 
 void func_020a3d10(void){
-void func_0200bc5c(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);s32 func_0207c2f0(void);
+void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0207c2f0(void);
 extern u8 data_0212054c[],data_02120558[],data_02120568[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
 s16 i; s32 offset;
-func_0200bc5c(data_0212054c);
-func_02080cfc(data_02120558,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-func_0208116c(data_02120568,0x2c0,32);
+SetFileDirectory(data_0212054c);
+LoadDecompressedFileTo(data_02120558,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(data_02120568,0x2c0,32);
 i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(func_0207c2f0()%255)<<8;
@@ -119,12 +119,12 @@ i++;offset+=12;
 }
 
 void func_020a3e48(void){
-void func_0200bc5c(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);s32 func_0207c2f0(void);
+void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0207c2f0(void);
 extern u8 data_02120574[],data_02120580[],data_02120590[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
 s16 i; s32 offset;
-func_0200bc5c(data_02120574);
-func_02080cfc(data_02120580,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-func_0208116c(data_02120590,0x2c0,32);
+SetFileDirectory(data_02120574);
+LoadDecompressedFileTo(data_02120580,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(data_02120590,0x2c0,32);
 i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(func_0207c2f0()%255)<<8;
@@ -137,12 +137,12 @@ i++;offset+=12;
 }
 
 void func_020a3f88(void){
-void func_0200bc5c(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);s32 func_0207c2f0(void);
+void SetFileDirectory(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0207c2f0(void);
 extern u8 data_0212059c[],data_021205a8[],data_021205bc[];extern s32 gCur3DSpriteEngine;extern s32 *gCurrentMap;extern u16 data_020f3b44[];
 s32 i; s32 offset;
-func_0200bc5c(data_0212059c);
-func_02080cfc(data_021205a8,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
-func_0208116c(data_021205bc,0x2c0,32);
+SetFileDirectory(data_0212059c);
+LoadDecompressedFileTo(data_021205a8,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2800);
+LoadFileToSpriteBuffer(data_021205bc,0x2c0,32);
 i=0;offset=0;
 do{
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,12)+offset,u16 *,0)=(func_0207c2f0()%255)<<8;

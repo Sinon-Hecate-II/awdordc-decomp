@@ -81,16 +81,13 @@ void func_0200510c(s32 arg0, s32 arg1, s32 arg2) {
 }
 #pragma optimization_level 2
 void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_020051c8(s32);
-    extern M2C_UNK data_0212dc4c;
-    extern M2C_UNK data_0212dc50;
-    extern M2C_UNK data_0212dc54;
-    s32 mask;
-    mask = 1 << (arg0 + 3);
-    M2C_FIELD(&data_0212dc4c, s32 *, arg0 * 12) = arg1;
-    M2C_FIELD(&data_0212dc54, s32 *, arg0 * 12) = arg2;
-    func_020051c8(mask);
-    M2C_FIELD(&data_0212dc50, s32 *, arg0 * 12) = 1;
+ s32 func_020051c8(s32);
+ extern M2C_UNK data_0212dc4c, data_0212dc50, data_0212dc54;
+ s32 offset = arg0 * 12;
+ M2C_FIELD(&data_0212dc4c, volatile s32 *, offset) = arg1;
+ M2C_FIELD(&data_0212dc54, volatile s32 *, offset) = arg2;
+ func_020051c8(1 << (arg0 + 3));
+ M2C_FIELD(&data_0212dc50, s32 *, offset) = 1;
 }
 #pragma optimization_level reset
 s32 func_0200519c(s32 arg0) {

@@ -1,5 +1,6 @@
 /* 29 functions from 0x02019E64 to 0x0201AE0C (main), found by ds-decomp. */
 #include "common.h"
+#include "tcp_socket.h"
 static inline void seed_network_random(unsigned long long seed) { extern s32 gNetStack; M2C_FIELD(&gNetStack,unsigned long long *,0x68)=seed; M2C_FIELD(&gNetStack,unsigned long long *,0x70)=0x5d588b656c078965ULL; M2C_FIELD(&gNetStack,unsigned long long *,0x78)=0x269ec3; }
 typedef struct { u8 dest[6],src[6];u16 type;u8 pad14,hw;u8 proto,pad17;u16 sizes;u8 pad20,op;u8 sender[6];u16 shi,slo;u8 target[6];u16 thi,tlo; } Packet0201ACA0;
 
@@ -321,70 +322,76 @@ s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M
 
 s32 func_0201a7f8(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
-void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 func_02029848(void *,void *,s32,s32,s32);extern M2C_UNK data_020faf80,gNetStack;MI_CpuCopy8(&data_020faf80,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=func_02029848(a,a+6,b-6,c,d)<0;}
+void func_0201a824(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 func_02029848(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=func_02029848(a,a+6,b-6,c,d)<0;}
 
-void func_0201a880(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+/* Append a link-layer frame to the network stack's transmit ring.  The record
+ * is [u16 length][6-byte destination][6-byte source][frame+6 ..], where the
+ * first six frame bytes (the SNAP header) are dropped and rebuilt from the link
+ * addresses; an optional second buffer is appended as a trailer.  The frame must
+ * carry the SNAP prefix and an IPv4 (0x0800) or ARP (0x0806) ethertype, and the
+ * ring must have room for the whole record without wrapping it. */
+void NetStackQueuePacket(s32 srcLink, s32 dstLink, s32 frame, s32 frameLen, s32 extraData, s32 extraLen) {
     extern M2C_UNK gNetStack;
-    extern M2C_UNK data_020faf80;
+    extern M2C_UNK gLinkHeaderTemplate;
     void MI_CpuCopy8(void *, void *, s32);
-    u32 len;
-    u32 n;
-    u32 end;
-    u32 newOfs;
-    u8 *buf;
+    u32 totalLen;
+    u32 recordLen;
+    u32 writeEnd;
+    u32 nextWrite;
+    u8 *ring;
 
-    buf = M2C_FIELD(&gNetStack, u8 **, 0x58);
-    if (buf == NULL || M2C_FIELD(&gNetStack, volatile u32 *, 0x5c) == 0) {
+    ring = M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF);
+    if (ring == NULL || M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_SIZE) == 0) {
         return;
     }
-    len = (u32)a3 + (u32)a5;
-    if (len < 8 || len > 0x5e4) {
+    totalLen = (u32)frameLen + (u32)extraLen;
+    if (totalLen < 8 || totalLen > NETSTACK_MAX_PACKET) {
         return;
     }
-    if (((u8 *)a2)[0] != M2C_FIELD(&data_020faf80, u8 *, 0) || ((u8 *)a2)[1] != M2C_FIELD(&data_020faf80, u8 *, 1) ||
-        ((u8 *)a2)[2] != M2C_FIELD(&data_020faf80, u8 *, 2) || ((u8 *)a2)[6] != 8) {
+    if (((u8 *)frame)[0] != M2C_FIELD(&gLinkHeaderTemplate, u8 *, 0) || ((u8 *)frame)[1] != M2C_FIELD(&gLinkHeaderTemplate, u8 *, 1) ||
+        ((u8 *)frame)[2] != M2C_FIELD(&gLinkHeaderTemplate, u8 *, 2) || ((u8 *)frame)[6] != 8) {
         return;
     }
-    if (((u8 *)a2)[7] != 0 && ((u8 *)a2)[7] != 6) {
+    if (((u8 *)frame)[7] != 0 && ((u8 *)frame)[7] != 6) {
         return;
     }
-    n = (u16)((len + 9) & ~1);
-    end = M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + n;
-    if (M2C_FIELD(&gNetStack, volatile u32 *, 0x28) < M2C_FIELD(&gNetStack, volatile u32 *, 0x30)) {
-        if (M2C_FIELD(&gNetStack, volatile u32 *, 0x30) <= end) {
+    recordLen = (u16)((totalLen + 9) & ~1);
+    writeEnd = M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + recordLen;
+    if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) < M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ)) {
+        if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) <= writeEnd) {
             return;
         }
     }
-    if (end == M2C_FIELD(&gNetStack, volatile u32 *, 0x5c)) {
-        newOfs = 0;
-        if (M2C_FIELD(&gNetStack, volatile u32 *, 0x30) == 0) {
+    if (writeEnd == M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_SIZE)) {
+        nextWrite = 0;
+        if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) == 0) {
             return;
         }
-    } else if (end > M2C_FIELD(&gNetStack, volatile u32 *, 0x5c)) {
-        newOfs = n;
-        if (M2C_FIELD(&gNetStack, volatile u32 *, 0x30) <= n) {
+    } else if (writeEnd > M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_SIZE)) {
+        nextWrite = recordLen;
+        if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) <= recordLen) {
             return;
         }
     } else {
-        newOfs = end;
+        nextWrite = writeEnd;
     }
-    if (M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + n > M2C_FIELD(&gNetStack, volatile u32 *, 0x5c)) {
-        if (M2C_FIELD(&gNetStack, volatile u32 *, 0x5c) - M2C_FIELD(&gNetStack, volatile u32 *, 0x28) >= 2) {
-            *(u16 *)(buf + M2C_FIELD(&gNetStack, volatile u32 *, 0x28)) = 0;
+    if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + recordLen > M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_SIZE)) {
+        if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_SIZE) - M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) >= 2) {
+            *(u16 *)(ring + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE)) = 0;
         }
-        M2C_FIELD(&gNetStack, volatile u32 *, 0x28) = 0;
+        M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) = 0;
     }
-    *(u16 *)(M2C_FIELD(&gNetStack, u8 **, 0x58) + M2C_FIELD(&gNetStack, volatile u32 *, 0x28)) = (u16)n;
-    MI_CpuCopy8((void *)a1, M2C_FIELD(&gNetStack, u8 **, 0x58) + M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + 2, 6);
-    MI_CpuCopy8((void *)a0, M2C_FIELD(&gNetStack, u8 **, 0x58) + M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + 8, 6);
-    MI_CpuCopy8((u8 *)a2 + 6, M2C_FIELD(&gNetStack, u8 **, 0x58) + M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + 0xe, a3 - 6);
-    if (a4 != 0 && a5 != 0) {
-        MI_CpuCopy8((void *)a4, M2C_FIELD(&gNetStack, u8 **, 0x58) + M2C_FIELD(&gNetStack, volatile u32 *, 0x28) + 8 + a3, a5);
+    *(u16 *)(M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF) + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE)) = (u16)recordLen;
+    MI_CpuCopy8((void *)dstLink, M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF) + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + 2, 6);
+    MI_CpuCopy8((void *)srcLink, M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF) + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + 8, 6);
+    MI_CpuCopy8((u8 *)frame + 6, M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF) + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + 0xe, frameLen - 6);
+    if (extraData != 0 && extraLen != 0) {
+        MI_CpuCopy8((void *)extraData, M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF) + M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) + 8 + frameLen, extraLen);
     }
-    M2C_FIELD(&gNetStack, volatile u32 *, 0x28) = newOfs;
+    M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) = nextWrite;
 }
 
-void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void func_0201a880(s32,s32,s32,s32,s32,s32);s32 func_02005d90(s32);void TaskWake(s32);extern M2C_UNK gNetStack;func_0201a880(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(func_02005d90(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
+void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void NetStackQueuePacket(s32,s32,s32,s32,s32,s32);s32 func_02005d90(s32);void TaskWake(s32);extern M2C_UNK gNetStack;NetStackQueuePacket(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(func_02005d90(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
 
 u8 *func_0201aacc(s32 *out){s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);extern M2C_UNK gNetStack,gSocketManager;s32 key;u32 size;u8 *p;u32 len;key=OS_DisableInterrupts();while(M2C_FIELD(&gNetStack,u32 *,48)==M2C_FIELD(&gNetStack,u32 *,40)){M2C_FIELD(&gNetStack,s32 *,84)=M2C_FIELD(&gSocketManager,s32 *,4);OS_SleepThread(0);M2C_FIELD(&gNetStack,s32 *,84)=0;}OS_RestoreInterrupts(key);p=M2C_FIELD(&gNetStack,u8 **,88);do{size=M2C_FIELD(&gNetStack,u32 *,92);if(size-M2C_FIELD(&gNetStack,u32 *,48)<2)M2C_FIELD(&gNetStack,u32 *,48)=0;len=M2C_FIELD(p,u16 *,M2C_FIELD(&gNetStack,u32 *,48));if(!len)M2C_FIELD(&gNetStack,u32 *,48)=0;}while(!len);*out=len-2;return M2C_FIELD(&gNetStack,u8 **,88)+M2C_FIELD(&gNetStack,u32 *,48)+2;}
 

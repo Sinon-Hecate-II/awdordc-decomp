@@ -14,9 +14,9 @@ s32 func_02044e04(void) {
 s32 func_02044e28(void){extern M2C_UNK data_0213db18;void func_0204b3cc(void);void func_02045374(void);s32 n;if(M2C_FIELD(&data_0213db18,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&data_0213db18,s32 *,4)-1;M2C_FIELD(&data_0213db18,s32 *,4)=n;if(n==0)func_02045374();return 1;}
 
 s32 func_02044e68(void) {
-    s32 func_0203761c();
+    s32 HasNetError();
     M2C_UNK func_0204b674();
-    if (func_0203761c() != 0) {
+    if (HasNetError() != 0) {
         return 0;
     }
     func_0204b674();
@@ -32,7 +32,7 @@ if(!cb)return;cb(a,b,c,d,e,M2C_FIELD(p,s32 *,0));
 }
 
 s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
-    s32 func_0203761c(void);
+    s32 HasNetError(void);
     void *func_02037694(s32, s32);
     void func_020376d8(s32, s32, s32);
     s32 func_02045138(s32);
@@ -47,7 +47,7 @@ s32 func_02044f6c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6) {
     s32 old;
 
     buf = 0;
-    if (func_0203761c() != 0) {
+    if (HasNetError() != 0) {
         return -8;
     }
 
@@ -108,7 +108,7 @@ void func_02045110(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4,
 }
 
 s32 func_02045138(s32 arg0) {
-M2C_UNK func_02037638(M2C_UNK,s32);
+M2C_UNK SetNetError(M2C_UNK,s32);
 s32 a=7,b=0xfffe8130;
 if(!arg0)return 0;
 switch((u32)(arg0+7)){
@@ -130,7 +130,7 @@ case 22:b+=(u32)0xfffffc86;break;
 case 23:b-=0x384;break;
 case 24:b+=(u32)0xfffffc72;break;
 }
-func_02037638(a,b);return arg0;
+SetNetError(a,b);return arg0;
 }
 
 void *func_02045294(CallbackRecord *src){void *func_02037694(s32,s32);extern M2C_UNK data_0213db18;void *p=func_02037694(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&data_0213db18,void **,0)){M2C_FIELD(&data_0213db18,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&data_0213db18,void **,0);M2C_FIELD(&data_0213db18,void **,0)=p;}return p;}
@@ -156,16 +156,16 @@ void func_02045374(void) {
 }
 
 s32 func_020453e4(s32 *a) {
- s32 func_0203761c();s32 *func_02047928(s32 *);extern s32 gWebTransaction;
+ s32 HasNetError();s32 *func_02047928(s32 *);extern s32 gWebTransaction;
  s32 x; s32 *p;
- if(func_0203761c())return 1;
+ if(HasNetError())return 1;
  if(gWebTransaction!=5)return 16;
  p=func_02047928(&x);if(!x)return 17;
  a[0]=x;a[1]=*p++;a[2]=(s32)p;return 0;
 }
 
 s32 func_02045458(s32 a, s32 b) {
-    s32 func_0203761c(void);
+    s32 HasNetError(void);
     s32 func_020323b0(void *);
     s32 func_020323f4(void *);
     u32 StringLength(void *);
@@ -182,7 +182,7 @@ s32 func_02045458(s32 a, s32 b) {
     u8 buf[9] = {0};
     s32 r8, r7, r6, parsed4;
 
-    if (func_0203761c() != 0) {
+    if (HasNetError() != 0) {
         return 1;
     }
     if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 0) {
@@ -216,11 +216,11 @@ s32 func_02045458(s32 a, s32 b) {
 s32 func_02045620(void){void func_020478b8(void);extern s32 gWebTransaction;func_020478b8();return gWebTransaction=0;}
 
 s32 func_0204563c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4) {
-    s32 func_0203761c();
+    s32 HasNetError();
     s32 BuildWebPutRequest(s32, s32, s32, s32, s32, s32);
     extern s32 gWebTransaction;
     s32 r;
-    if (func_0203761c() != 0) {
+    if (HasNetError() != 0) {
         return 1;
     }
     if (gWebTransaction != 1 && gWebTransaction != 5) {
@@ -248,12 +248,12 @@ Ldata:
 /* Validate and send a get.asp web request: the payload's size, flag and count
    must be in range for the request kind, then build and enqueue the request. */
 s32 SendWebGetRequest(s32 kind, u32 playerId, s32 field2, void *payload) {
-    s32 func_0203761c(void);
+    s32 HasNetError(void);
     s32 BuildWebGetRequest(s32, u32, s32, s32, void *);
     extern M2C_UNK gWebTransaction;
     s32 result;
 
-    if (func_0203761c()) return 1;
+    if (HasNetError()) return 1;
     if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 1 && M2C_FIELD(&gWebTransaction, s32 *, 0) != 5) return 10;
     if (playerId > 1000 || !payload) return 2;
     switch (kind) {
@@ -298,10 +298,10 @@ s32 SendWebGetRequest(s32 kind, u32 playerId, s32 field2, void *payload) {
 }
 
 s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
-    s32 func_0203761c();
+    s32 HasNetError();
     s32 func_02047dd4(s32, u32, s32, s32);
     extern s32 gWebTransaction;
-    if (func_0203761c() != 0) return 1;
+    if (HasNetError() != 0) return 1;
     if (gWebTransaction != 1 && gWebTransaction != 5) return 10;
     if (c > 1000) return 2;
     if (a < 0 || a >= 9) return 2;
@@ -321,10 +321,10 @@ s32 func_02045934(s32 a, s32 b, u32 c, s32 d) {
 }
 
 s32 func_020459ec(void) {
-    s32 func_0203761c();
+    s32 HasNetError();
     s32 func_020477ac();
     extern s32 gWebTransaction;
-    if (func_0203761c()) return 1;
+    if (HasNetError()) return 1;
     if (gWebTransaction != 2 && gWebTransaction != 3 && gWebTransaction != 4) return 14;
     switch (func_020477ac()) {
         case 1:
@@ -352,7 +352,7 @@ s32 func_02045a88(void) {
     return gWebTransaction;
 }
 
-s32 func_0203761c(void);
+s32 HasNetError(void);
 s32 func_02045a98(s32 a, s32 b) {
     s32 buf[3];
     s32 *pVar1;
@@ -361,7 +361,7 @@ s32 func_02045a98(s32 a, s32 b) {
     s32 uVar4;
     s32 *pVar5;
     
-    if (func_0203761c() != 0) {
+    if (HasNetError() != 0) {
         return 1;
     }
     if (func_020453e4(buf) != 0) {
@@ -408,10 +408,10 @@ s32 func_02045a98(s32 a, s32 b) {
 }
 
 s32 func_02045ba0(s32 *a) {
-    s32 func_0203761c();
+    s32 HasNetError();
     s32 func_020453e4(s32 *);
     s32 x[3], r;
-    if (func_0203761c()) return 1;
+    if (HasNetError()) return 1;
     r = func_020453e4(x); if (r) return r;
     if (!a) return 2;
     switch (x[1]) {
@@ -430,9 +430,9 @@ s32 func_02045ba0(s32 *a) {
 }
 
 s32 func_02045c34(s32 *a) {
- s32 func_0203761c(); s32 func_020453e4(s32 *);
+ s32 HasNetError(); s32 func_020453e4(s32 *);
  s32 x[3],r;
- if(func_0203761c())return 1;
+ if(HasNetError())return 1;
  r=func_020453e4(x);if(r)return r;
  if(!a)return 2;
  *a=M2C_FIELD(x[2],s32 *,4);return 0;

@@ -36,28 +36,28 @@ AddSprite((u16)arg1,arg2,arg3,result,arg5);
 }
 
 M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
-    M2C_UNK func_0200bc5c();
+    M2C_UNK SetFileDirectory();
     M2C_UNK func_020814e4(M2C_UNK *);
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
     s32 func_02098034(M2C_UNK);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_02103274, data_02103280;
     if (func_02098034(arg0) == 0) return;
-    func_0200bc5c();
+    SetFileDirectory();
     func_020814e4(&data_02103274);
-    func_02081590(func_020e3218(&data_02103280), arg1);
+    func_02081590(GetLocalizedFileName(&data_02103280), arg1);
     func_02081528();
 }
 
 M2C_UNK func_02098d48(M2C_UNK arg0, u16 arg1) {
-    M2C_UNK func_0200bc5c();
-    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK SetFileDirectory();
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     s32 func_02098034(M2C_UNK);
     extern M2C_UNK data_02103288;
     if (func_02098034(arg0) == 0) return;
-    func_0200bc5c();
-    func_0208116c(&data_02103288, arg1 << 5, 0x20);
+    SetFileDirectory();
+    LoadFileToSpriteBuffer(&data_02103288, arg1 << 5, 0x20);
 }
 
 void func_02098d78(M2C_UNK arg0, s32 arg1, s32 arg2) {

@@ -214,9 +214,127 @@ void func_020df718(void *arg0) {
  }
  }
 }
-#pragma opt_common_subs reset
-M2C_UNK func_020dfb58(void) { return 0; }
+#pragma opt_common_subs off
+/* Per-frame update of the link-menu variant that also handles the left/right
+ * page-flip flags (0x100/0x200).  It animates the three row sprites, drives the
+ * back and ready buttons through their confirm/back animations, mirrors the menu
+ * onto the requested DS screen, keeps the player-count sound in sync and commits
+ * the ready state when every player is ready. */
+void LinkMenuPageFlipUpdate(void *menu) {
+ void MenuSpriteUpdate(void *);void func_02088f1c(void *);void func_02088ff4(void *);
+ void func_020d47f0(void);void func_01ffa6fc(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
+ u32 GetActivePlayerMask(void);u32 CountBits(void);u32 func_ov010_02229a40(void);
+ s32 func_ov010_022282b4(s32);s32 func_ov010_02229bdc(void);
+ void func_0208b758(void *,s32);u32 GetReadyPlayerMask(void);
+ void func_ov010_0222952c(void);void func_ov010_02229a94(void);void func_020d47d0(void);void ResetPlayerMask(void);
+ s32 func_020890b8(void *);s32 func_02089064(void *);void *func_ov010_02229b0c(s32);
+ extern u16 *gKeyState;
+ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+ s32 func_0208b5ec(void);void func_0208af20(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,u32);
+ void *sprite;u16 keys;u32 readyMask,playerCount;s32 prevPlayerCount;
+ sprite=M2C_FIELD(menu,void **,0x50);if(sprite)MenuSpriteUpdate(sprite);
+ sprite=M2C_FIELD(menu,void **,0x54);if(sprite)MenuSpriteUpdate(sprite);
+ sprite=M2C_FIELD(menu,void **,0x58);if(sprite)MenuSpriteUpdate(sprite);
+ keys=*gKeyState;M2C_FIELD(menu,u16 *,0x48)&=~32;
 
+ if(!(M2C_FIELD(menu,u16 *,0x48)&1)) {
+ if(M2C_FIELD(menu,u16 *,0x48)&0x100) {
+ if(func_0208b5ec())func_0208af20();
+ {s32 sideIndex; void *savedEngine=gCur3DSpriteEngine;
+ for(sideIndex=0;sideIndex<2;sideIndex++) {
+ u8 screen;gCur3DSpriteEngine=sideIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
+ screen=M2C_FIELD(menu,u8 *,0x44);
+ if(screen==0&&gCur3DSpriteEngine!=g3DSpriteEngineMain)continue;
+ if(screen==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
+ if(screen==3&&gCur3DSpriteEngine!=savedEngine)continue;
+ {void *effect=func_0208b564(menu);func_020899cc(effect,2,M2C_FIELD(menu,u16 *,0x46)<<5,0x44000001);M2C_FIELD(effect,u32 *,0x58)|=0x1000;}
+ }
+ gCur3DSpriteEngine=savedEngine;
+ }
+ func_020d47f0();func_01ffa6fc(menu);func_ov010_022294ec();return;
+ }
+ if(M2C_FIELD(menu,u16 *,0x48)&0x200) {
+ if(func_0208b5ec())func_0208af20();
+ {s32 sideIndex; void *savedEngine=gCur3DSpriteEngine;
+ for(sideIndex=0;sideIndex<2;sideIndex++) {
+ u8 screen;gCur3DSpriteEngine=sideIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
+ screen=M2C_FIELD(menu,u8 *,0x44);
+ if(screen==0&&gCur3DSpriteEngine!=g3DSpriteEngineMain)continue;
+ if(screen==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
+ if(screen==3&&gCur3DSpriteEngine!=savedEngine)continue;
+ {void *effect=func_0208b564(menu);func_020899cc(effect,2,M2C_FIELD(menu,u16 *,0x46)<<5,0x44000002);M2C_FIELD(effect,u32 *,0x58)|=0x1000;}
+ }
+ gCur3DSpriteEngine=savedEngine;
+ }
+ func_020d47f0();func_01ffa6fc(menu);func_ov010_022294ec();return;
+ }
+
+ }
+ {void *backSprite=M2C_FIELD(menu,void **,0x58);
+ u32 frameBase=(u32)(M2C_FIELD(backSprite,u8 *,0x59)<<28)>>28;
+ s32 nextFrame=frameBase+2,frameChanged;
+ if(nextFrame!=(u16)((u32)(M2C_FIELD(backSprite,u32 *,0x40)<<6)>>24))frameChanged=1;else frameChanged=0;
+ if(frameChanged&255) {
+ if(SpritePressedDF(backSprite)||(keys&2)) {
+ if(M2C_FIELD(backSprite,s8 *,0x5a)>=0)SpriteStateDF(backSprite,frameBase+1,12);
+ func_020d47f0();func_01ffa6fc(menu);func_ov010_022294ec();PlaySoundEffect(0x1000f);return;
+ }
+ }
+
+ }
+ GetActivePlayerMask();playerCount=CountBits();prevPlayerCount=M2C_FIELD(menu,s8 *,0x41);
+ if(prevPlayerCount>1||playerCount>1) {
+ if(prevPlayerCount!=playerCount) {
+ PlaySoundEffect(prevPlayerCount<(s32)playerCount?0x122:0x123);
+ M2C_FIELD(menu,s8 *,0x41)=playerCount;
+ }
+ }
+
+ if(M2C_FIELD(menu,u16 *,0x48)&1) {
+ if(func_ov010_02229a40()>=2) {
+ sprite=M2C_FIELD(menu,void **,0x54);
+ {u32 frameBase=(u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28;
+ s32 nextFrame=frameBase+2,frameChanged;
+ if(nextFrame!=(u16)((u32)(M2C_FIELD(sprite,u32 *,0x40)<<6)>>24))frameChanged=1;else frameChanged=0;
+ if(!(frameChanged&255)) {
+ SpriteStateDF(sprite,frameBase,0);
+ func_02088f1c(M2C_FIELD(menu,void **,0x54));
+ func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000012);
+ }}
+ } else {
+ sprite=M2C_FIELD(menu,void **,0x54);
+ {u32 frameBase=(u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28;
+ s32 nextFrame=frameBase+2,frameChanged;
+ if(nextFrame!=(u16)((u32)(M2C_FIELD(sprite,u32 *,0x40)<<6)>>24))frameChanged=1;else frameChanged=0;
+ if(frameChanged&255) {
+ SpriteStateDF(sprite,nextFrame,0);
+ func_02088ff4(M2C_FIELD(menu,void **,0x54));
+ func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000011);
+ }}
+ }
+ sprite=M2C_FIELD(menu,void **,0x54);
+ if(!SpriteChangedDF(sprite))return;
+ if(!SpritePressedDF(sprite)&&!(keys&1))return;
+ readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ sprite=M2C_FIELD(menu,void **,0x54);
+ if(M2C_FIELD(sprite,s8 *,0x5a)>=0)SpriteStateDF(sprite,((u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28)+1,12);
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(menu);PlaySoundEffect(0x1000e);return;
+ } else {
+ if(func_ov010_02229a40()>=2) {
+ if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&!func_02089064(M2C_FIELD(menu,void **,0x60))) {
+ func_02088f1c(M2C_FIELD(menu,void **,0x60));func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000012);
+ }
+ } else {
+ if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&func_02089064(M2C_FIELD(menu,void **,0x60))) {
+ func_02088ff4(M2C_FIELD(menu,void **,0x60));func_0208b758(M2C_FIELD(menu,void **,0x64),0x44000011);
+ }
+ }
+ {void *entry=func_ov010_02229b0c(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
+ readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ func_ov010_0222952c();func_ov010_02229a94();func_020d47d0();ResetPlayerMask();func_01ffa6fc(menu);PlaySoundEffect(0x1000e);return;
+ }
+}
+#pragma opt_common_subs reset
 void func_020e0134(void) {
     M2C_UNK func_020debf4();
     func_020debf4();
@@ -243,12 +361,11 @@ void func_020e0170(void *arg0) {
     func_020df718(arg0);
 }
 
-void func_020e017c(void) {
-    M2C_UNK func_020dfb58();
-    func_020dfb58();
+void func_020e017c(void *menu) {
+    LinkMenuPageFlipUpdate(menu);
 }
 
-void func_020e0188(void) {
-    func_020dfb58();
+void func_020e0188(void *menu) {
+    LinkMenuPageFlipUpdate(menu);
 }
 

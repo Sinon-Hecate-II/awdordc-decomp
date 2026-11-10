@@ -13,7 +13,7 @@ struct TileNeighbors_0221 { s16 values[24]; };
 
 void func_ov007_0221a59c(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
-extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],data_027e0074[],gSpriteDesc32x16[],data_027e00b4[];
+extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],data_027e00b4[];
 extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
 s32 func_ov007_02211ffc(s32);s32 func_ov007_02211f00(void);s32 func_ov007_02211f40(void);s32 func_ov007_0221204c(void);
@@ -35,7 +35,7 @@ func_020a9774(sp,x+0x18,0xa6,3,func_ov007_02211ffc(i+1));
 width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 func_020c1acc(64-((width*4)>>1),80-((height*4)>>1),0x80,1);
 AddSprite(8,157,(u16)((0x3ff&(360>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(9<<12)),gSpriteDesc16x16,15);
-AddSprite(72,141,(u16)((0x3ff&(364>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(10<<12)),data_027e0074,15);
+AddSprite(72,141,(u16)((0x3ff&(364>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(10<<12)),gSpriteDesc16x32,15);
 mode=func_ov007_02211f00();
 switch(mode){
 case 0:

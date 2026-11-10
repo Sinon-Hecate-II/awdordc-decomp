@@ -158,7 +158,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 func_02032580(void *, void *);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 func_0204e1b4(void **, s32, void *);
-    s32 func_02037df0(s8 *, s8 *, s8 *, s32);
+    s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 func_0206abd8(void *, s32, s32);
     s32 func_02039d98(void);
     s32 func_02032398(void *);
@@ -231,9 +231,9 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
         if ((resA | resB) != 0 || info[3] != 4) {
             continue;
         }
-        verLen = func_02037df0((s8 *)&gKeyVER, (s8 *)&fields[3], (s8 *)payload, 0x2f);
-        fmeLen = func_02037df0((s8 *)&gKeyFME, (s8 *)&fields[2], (s8 *)payload, 0x2f);
-        mdfLen = func_02037df0((s8 *)&gKeyMDF, (s8 *)&fields[0], (s8 *)payload, 0x2f);
+        verLen = ExtractKeyValue((s8 *)&gKeyVER, (s8 *)&fields[3], (s8 *)payload, 0x2f);
+        fmeLen = ExtractKeyValue((s8 *)&gKeyFME, (s8 *)&fields[2], (s8 *)payload, 0x2f);
+        mdfLen = ExtractKeyValue((s8 *)&gKeyMDF, (s8 *)&fields[0], (s8 *)payload, 0x2f);
         if (!(verLen > 0 && fmeLen > 0 && mdfLen > 0)) {
             continue;
         }

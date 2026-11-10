@@ -49,14 +49,14 @@ void func_0204428c(M2C_UNK arg0) {
 }
 
 s32 func_0204429c(M2C_UNK arg0, s32 arg1) {
-    s32 func_0203761c();
+    s32 HasNetError();
     s32 func_02038f34(M2C_UNK);
     s32 func_020391b8(M2C_UNK);
     s32 func_020446e8(s32);
     s32 func_02044a08(M2C_UNK);
     s32 temp_r4;
 
-    if ((func_0203761c() != 0) || ((arg1 == 1) && (func_02038f34(arg0) == 0)) || (func_020391b8(arg0) == 0)) {
+    if ((HasNetError() != 0) || ((arg1 == 1) && (func_02038f34(arg0) == 0)) || (func_020391b8(arg0) == 0)) {
         return 0;
     }
     if (func_02044a08(arg0) == 1) {
@@ -124,12 +124,12 @@ s32 func_0204445c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_020444cc(u8 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 func_0203761c(void);
+ s32 HasNetError(void);
  s32 func_02038f34(M2C_UNK);
  void func_02044a40(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
  extern s32 data_0213db14;
  void (*callback)(s32, M2C_UNK);
- if (func_0203761c() != 0) return 0;
+ if (HasNetError() != 0) return 0;
  if (func_02038f34(arg0) == 0) return 0;
  if (arg2 > M2C_FIELD(data_0213db14, u16 *, 0x610)) return 0;
  func_02044a40(arg0, arg1, arg2, 0);
@@ -236,9 +236,9 @@ s32 func_02044a08(s32 a){extern s32 data_0213db14;return M2C_FIELD(data_0213db14
 s32 func_02044a24(s32 a){extern s32 data_0213db14;return M2C_FIELD(data_0213db14+0x30*a,u8 *,0x1d);}
 
 void func_02044a40(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 func_02039050(M2C_UNK);
+ s32 FindPlayerConnection(M2C_UNK);
  void func_0205af48(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_0205af48(func_02039050(arg0), arg1, arg2, arg3);
+ func_0205af48(FindPlayerConnection(arg0), arg1, arg2, arg3);
 }
 
 /* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */
@@ -250,7 +250,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
     void func_02044da4(M2C_UNK, M2C_UNK);
     void func_02044bf8(s32, s32, s32);
     void func_02044cc0(s32, void *, s32);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
 
     s32 id = func_020390b4(a);
     u32 kind;
@@ -277,7 +277,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
         M2C_FIELD(data_0213db14 + id * 0x30, s32 *, 0x18) = 0;
         break;
     default:
-        func_02037638(6, 0xfffe82b6);
+        SetNetError(6, 0xfffe82b6);
         break;
     }
 }
@@ -309,12 +309,12 @@ M2C_FIELD(p,u16 *,0x22)=v;
 }
 
 void func_02044cc0(s32 a,void *b,s32 c){
-extern s32 data_0213db14; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void func_02037638(s32,s32);u64 GetSystemTick(void);
+extern s32 data_0213db14; s32 func_02044a24(s32); void MI_CpuCopy8(void *,void *,s32);void SetNetError(s32,s32);u64 GetSystemTick(void);
 void *p;void (*cb)(s32,void *,s32);s32 pos,len;
 p=(void *)(data_0213db14+a*0x30);
 if(func_02044a24(a)==2){
 pos=M2C_FIELD(p,s32 *,0x10);
-if(pos+c>M2C_FIELD(p,s32 *,8)){func_02037638(6,0xfffe82ac);return;}
+if(pos+c>M2C_FIELD(p,s32 *,8)){SetNetError(6,0xfffe82ac);return;}
 MI_CpuCopy8(b,M2C_FIELD(p,u8 **,4)+pos,c);
 }
 M2C_FIELD(p,s32 *,0x10)+=c;
@@ -344,11 +344,11 @@ void func_02044da4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_02044de0(void) {
-    M2C_UNK func_02039050();
+    M2C_UNK FindPlayerConnection();
     s32 func_0205b038();
     s32 var_r0;
 
-    func_02039050();
+    FindPlayerConnection();
     var_r0 = func_0205b038() + 0xFFFFFDF9;
     if (var_r0 <= 0) {
         var_r0 = 0;

@@ -116,12 +116,12 @@ s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
 }
 
 s32 func_02037508(s32 *outParam, s32 *outType) {
-    extern M2C_UNK data_0213d1cc;
+    extern M2C_UNK gNetError;
     if (outParam != (s32 *)0) {
-        *outParam = M2C_FIELD(&data_0213d1cc, s32 *, 4);
+        *outParam = M2C_FIELD(&gNetError, s32 *, 4);
     }
     if (outType != (s32 *)0) {
-        switch (M2C_FIELD(&data_0213d1cc, s32 *, 0)) {
+        switch (M2C_FIELD(&gNetError, s32 *, 0)) {
         case 2:
         case 3:
         case 4:
@@ -162,30 +162,30 @@ s32 func_02037508(s32 *outParam, s32 *outType) {
             break;
         }
     }
-    return M2C_FIELD(&data_0213d1cc, s32 *, 0);
+    return M2C_FIELD(&gNetError, s32 *, 0);
 }
 
 void func_020375fc(void) {
-    extern M2C_UNK data_0213d1cc;
-    if (M2C_FIELD(&data_0213d1cc, s32 *, 0) != 9) {
-        M2C_FIELD(&data_0213d1cc, s32 *, 0) = 0;
-        M2C_FIELD(&data_0213d1cc, s32 *, 4) = 0;
+    extern M2C_UNK gNetError;
+    if (M2C_FIELD(&gNetError, s32 *, 0) != 9) {
+        M2C_FIELD(&gNetError, s32 *, 0) = 0;
+        M2C_FIELD(&gNetError, s32 *, 4) = 0;
     }
 }
 
-s32 func_0203761c(void) {
-    extern s32 data_0213d1cc;
-    if (data_0213d1cc != 0) {
+s32 HasNetError(void) {
+    extern s32 gNetError;
+    if (gNetError != 0) {
         return 1;
     }
     return 0;
 }
 
-void func_02037638(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_0213d1cc;
-    if (M2C_FIELD(&data_0213d1cc, s32 *, 0) != 9) {
-        M2C_FIELD(&data_0213d1cc, s32 *, 0) = arg0;
-        M2C_FIELD(&data_0213d1cc, s32 *, 4) = arg1;
+void SetNetError(s32 arg0, s32 arg1) {
+    extern M2C_UNK gNetError;
+    if (M2C_FIELD(&gNetError, s32 *, 0) != 9) {
+        M2C_FIELD(&gNetError, s32 *, 0) = arg0;
+        M2C_FIELD(&gNetError, s32 *, 4) = arg1;
     }
 }
 
@@ -309,7 +309,7 @@ void func_020378a4(void) {
     extern void *data_0213d1dc;
     void MI_CpuFill8(void *, s32, s32);
     s32 func_0202ef64(void *);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     s32 args[3];
     if (data_0213d1dc) {
         if (M2C_FIELD(data_0213d1dc, u16 *, 4) != 1) return;
@@ -320,10 +320,10 @@ void func_020378a4(void) {
         args[1] = (s32)func_020376d8;
         M2C_FIELD(data_0213d1dc, u16 *, 4) = 2;
         if (!func_0202ef64(args)) {
-            func_02037638(9, -6);
+            SetNetError(9, -6);
         }
     } else {
-        func_02037638(9, -4);
+        SetNetError(9, -4);
     }
 }
 
@@ -365,7 +365,7 @@ void func_02037994(void) {
 s32 func_02037a0c(void) {
     extern void *data_0213d1dc;
     s32 func_0202f1dc(void);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     s32 n;
     s32 dummy = 0;
     (void)dummy;
@@ -380,11 +380,11 @@ s32 func_02037a0c(void) {
     }
     if (n < 0) {
         if (n >= -10) {
-            func_02037638(9, n - 700);
+            SetNetError(9, n - 700);
             M2C_FIELD(data_0213d1dc, u16 *, 4) = 8;
             return 8;
         }
-        func_02037638(5, n);
+        SetNetError(5, n);
         M2C_FIELD(data_0213d1dc, u16 *, 4) = 7;
         return 7;
     }
@@ -433,7 +433,7 @@ s32 func_02037bc4(void) {
     u32 func_0202f248(void);
     void func_02037994(void);
     void func_02037abc(void);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     s32 func_02037b8c(void);
     u32 var_r2;
     s32 dummy;
@@ -445,7 +445,7 @@ s32 func_02037bc4(void) {
         if (var_r2 > 0x63U) {
             var_r2 = 0x63;
         }
-        func_02037638(8, 0xFFFF2D10 - var_r2);
+        SetNetError(8, 0xFFFF2D10 - var_r2);
         func_02037abc();
         return 1;
     }
@@ -460,7 +460,7 @@ void func_02037c10(void) {
 s32 func_02037c1c(void) {
     u32 func_020364f4(void);
     u32 func_0202f248(void);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     u32 n;
     s32 dummy;
     (void)dummy;
@@ -474,7 +474,7 @@ s32 func_02037c1c(void) {
         if (n > 99) {
             n = 99;
         }
-        func_02037638(8, 0xffff2cac - n);
+        SetNetError(8, 0xffff2cac - n);
         return 3;
     case 4: return 0;
     default: return 3;
@@ -518,7 +518,7 @@ void func_02037db0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     StringLength(arg2);
 }
 
-s32 func_02037df0(s8 *arg0, s8 *arg1, s8 *arg2, s32 arg3) {
+s32 ExtractKeyValue(s8 *arg0, s8 *arg1, s8 *arg2, s32 arg3) {
 
 s8 *p; s8 *q; s32 len;
 if (!arg1) return -1;

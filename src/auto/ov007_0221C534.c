@@ -145,7 +145,7 @@ void func_ov007_0221cd5c(void) {
 }
 
 void func_ov007_0221cd68(void *arg0) {
-M2C_UNK func_0200bc5c(M2C_UNK *);
+M2C_UNK SetFileDirectory(M2C_UNK *);
 M2C_UNK func_020808dc(s32,s32,s32,s32);
 M2C_UNK func_020814e4();
 M2C_UNK func_02081528();
@@ -169,7 +169,7 @@ p=M2C_FIELD(arg0,void **,0x10);
 old=M2C_FIELD(p,s32 *,0x34);
 if((s32)kind>=100 && (s32)kind<103) M2C_FIELD(p,s32 *,0x34)=gSoftKeyLayouts[kind-100];
 if(old==M2C_FIELD(p,s32 *,0x34))return;
-func_0200bc5c(&gMapEditPath);
+SetFileDirectory(&gMapEditPath);
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020e32e8(&gSoftKeyNarcName);

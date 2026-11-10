@@ -29,7 +29,7 @@ void func_020a94fc(void *);
 int func_ov003_021f400c(void);
 int func_020846a4(void);
 void *func_020c7e88(int);
-u8 func_020e31e0(void);
+u8 GetLanguage(void);
 void func_ov003_021f9fe0(s32 a,s32 b,s32 c) {
 u8 *p=(u8 *)a,*q,*r;int mode,id;int flag=0;int flag2=0;int dx=0,icon,index;
 int x,y,tile,shift,n,v,kind,rowkind,palette,glyph;int width,height,drawX,drawY,drawW,drawH;u32 paletteBits;u8 i,j;void *saved;
@@ -146,7 +146,7 @@ func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
 M2C_FIELD(p,u8 **,84)[41]=2;
 for(j=0;j<3;j++){
-switch(func_020e31e0()){
+switch(GetLanguage()){
 case 0:
 if(j==0)glyph=(u32)(M2C_FIELD(r,s32 *,8)<<24)>>24;
 else if(j==1)glyph=(u32)M2C_FIELD(r,u32 *,8)<<18>>26;

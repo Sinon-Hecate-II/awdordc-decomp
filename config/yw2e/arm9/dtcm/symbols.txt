@@ -4,10 +4,10 @@ gCurrentMap kind:data(any) addr:0x027e0058
 gSpriteDesc32x16 kind:data(any) addr:0x027e005c
 gSpriteDesc16x16 kind:data(any) addr:0x027e0064
 data_027e006c kind:data(any) addr:0x027e006c
-data_027e0074 kind:data(any) addr:0x027e0074
+gSpriteDesc16x32 kind:data(any) addr:0x027e0074
 data_027e007c kind:data(any) addr:0x027e007c
 gSpriteDesc8x8 kind:data(any) addr:0x027e0084
-data_027e008c kind:data(any) addr:0x027e008c
+gSpriteDesc64x64 kind:data(any) addr:0x027e008c
 data_027e0094 kind:data(any) addr:0x027e0094
 data_027e009c kind:data(any) addr:0x027e009c
 gSpriteDesc16x8 kind:data(any) addr:0x027e00a4

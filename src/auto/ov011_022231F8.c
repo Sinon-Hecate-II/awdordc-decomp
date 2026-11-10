@@ -12,7 +12,7 @@ extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
  * tile to the sprite engine. `tileCount` bit 0x80 means "highlight all revealed
  * tiles" with the total in the low bits; `position` bit 0x8000 means a fixed y. */
 s32 G3_UpdateIntroTiles(u8 *entry,u8 tileCount,s32 duration,u16 position,u8 *tileOffsets){
-s32 EaseInterpolate(s32,s32,s32,u16,s32);void func_01ffac9c(s32,u16,u16,void *,s32);s32 func_020e31e0(void);
+s32 EaseInterpolate(s32,s32,s32,u16,s32);void func_01ffac9c(s32,u16,u16,void *,s32);s32 GetLanguage(void);
 extern u16 gIntroAnimState[];
 u16 tileAttr[5]={0,0,0,0,0};
 u16 *volatile v0;
@@ -60,7 +60,7 @@ for(tileIndex=0;tileIndex<gIntroRevealedTiles[0];tileIndex++){
 baseY=position+tileIndex*18;tileNum=tileIndex*64;
 func_01ffac9c(0,tileAttr[tileIndex]|((baseY+tileOffsets[tileIndex])&255),(tileNum)&1023,data_02101f5c,0);
 func_01ffac9c(128,tileAttr[tileIndex]|((baseY+tileOffsets[tileIndex])&255),(tileNum+32)&1023,data_02101f5c,0);
-if(func_020e31e0()==4 && entry[57]>=8)func_01ffac9c(0,tileAttr[0]|74,128,data_02101f0c,0);
+if(GetLanguage()==4 && entry[57]>=8)func_01ffac9c(0,tileAttr[0]|74,128,data_02101f0c,0);
 }
 gIntroAnimState[3]++;
 if(gIntroAnimState[3]>(duration&32767)){

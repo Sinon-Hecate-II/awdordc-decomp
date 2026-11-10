@@ -130,7 +130,7 @@ u8 func_ov000_02173e6c(void *arg0) {
     return var_r0;
 }
 
-void *func_ov000_02173ea8(void *a){s32 p;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,8)=1;M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,u8 *,16)=0;M2C_FIELD(a,u8 *,17)=1;M2C_FIELD(a,u8 *,18)=0;M2C_FIELD(a,u8 *,19)=0;M2C_FIELD(a,u8 *,20)=0;M2C_FIELD(a,s16 *,22)=-1;M2C_FIELD(a,s16 *,24)=-1;M2C_FIELD(a,u8 *,26)=255;p=MemAlloc(20);if(p)p=func_ov000_02175088(p);M2C_FIELD(a,s32 *,0)=p;p=MemAlloc(28);if(p)p=func_ov000_021724dc(p);M2C_FIELD(a,s32 *,4)=p;M2C_FIELD(a,s32 *,28)=func_020e31e0();return a;}
+void *func_ov000_02173ea8(void *a){s32 p;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,8)=1;M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,u8 *,16)=0;M2C_FIELD(a,u8 *,17)=1;M2C_FIELD(a,u8 *,18)=0;M2C_FIELD(a,u8 *,19)=0;M2C_FIELD(a,u8 *,20)=0;M2C_FIELD(a,s16 *,22)=-1;M2C_FIELD(a,s16 *,24)=-1;M2C_FIELD(a,u8 *,26)=255;p=MemAlloc(20);if(p)p=func_ov000_02175088(p);M2C_FIELD(a,s32 *,0)=p;p=MemAlloc(28);if(p)p=func_ov000_021724dc(p);M2C_FIELD(a,s32 *,4)=p;M2C_FIELD(a,s32 *,28)=GetLanguage();return a;}
 
 void *func_ov000_02173f30(void *arg0) {
     M2C_UNK MemFree(s32);
@@ -158,9 +158,9 @@ void *func_ov000_02173f30(void *arg0) {
 void func_ov000_02173f78(void *arg0) {
     M2C_UNK func_02007e98(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_02007ef4(s32, s32, s32);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02080c50(M2C_UNK *, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
@@ -175,7 +175,7 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK func_020ad150(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020ae22c(M2C_UNK);
     M2C_UNK func_020af19c(M2C_UNK, M2C_UNK);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern void **gCurrentMap;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -264,36 +264,36 @@ register s32 temp_r9;
         }
         var_r8 += 1;
     } while ((s32) var_r8 < 4);
-    func_0200bc5c(&data_ov000_021b8e8c);
-    func_020e3218(&data_ov000_021b8ea0);
+    SetFileDirectory(&data_ov000_021b8e8c);
+    GetLocalizedFileName(&data_ov000_021b8ea0);
     func_020814e4();
-    func_02081590(func_020e3218(&data_ov000_021b8eb0), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14));
-    func_02081590(func_020e3218(&data_ov000_021b8ebc), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14) + 0x3000);
+    func_02081590(GetLocalizedFileName(&data_ov000_021b8eb0), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14));
+    func_02081590(GetLocalizedFileName(&data_ov000_021b8ebc), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14) + 0x3000);
     func_0208ca2c(0x800, 1, func_020ae22c(9), 2);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
     func_020a9a30(1, 0, 0, tiles + 0x1000);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
     func_020a9a30(1, 0, 2, tiles + 0x1180);
-    func_02081590(func_020e3218(&data_ov000_021b8ec8), (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x1400);
+    func_02081590(GetLocalizedFileName(&data_ov000_021b8ec8), (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x1400);
     func_02080c50(&data_ov000_021b8ed4, (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x2800);
     temp_r5 = func_020a7290() << 5;
     temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0xE0;
     tiles = func_020a7278();
     func_02007ef4(tiles, temp_r4 + 0x3000, temp_r5);
     func_02081528();
-    func_0208116c(&data_ov000_021b8ee8, 0, 0x80);
-    func_0208116c(&data_ov000_021b8ef4, 0x160, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8ee8, 0, 0x80);
+    LoadFileToSpriteBuffer(&data_ov000_021b8ef4, 0x160, 0x20);
     func_02091d4c(0xF);
-    func_0208116c(&data_ov000_021b8f00, 0x2C0, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f00, 0x2C0, 0x20);
     palette = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->sprites;
     func_020a9a30(1, 2, 1, palette + 0x300);
     tiles = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30);
     func_020a9a30(1, 2, 2, palette + 0x340);
-    func_0208116c(&data_ov000_021b8f0c, 0x360, 0x20);
-    func_0208116c(&data_ov000_021b8f1c, 0x380, 0x20);
-    func_0208116c(&data_ov000_021b8f2c, 0x3A0, 0x20);
-    func_0208116c(&data_ov000_021b8f3c, 0x3C0, 0x20);
-    func_0208116c(&data_ov000_021b8f4c, 0x3E0, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f0c, 0x360, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f1c, 0x380, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f2c, 0x3A0, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f3c, 0x3C0, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b8f4c, 0x3E0, 0x20);
     gCur3DSpriteEngine = sp4;
     func_020ad150(0, 0x10, 1, 7);
 }

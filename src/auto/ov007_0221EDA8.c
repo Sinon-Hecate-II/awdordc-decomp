@@ -32,7 +32,7 @@ return child;
    selected entry, cycle the softkey language), moves the cursor through the list and scrolls
    the list towards the selected entry. */
 void MapEditListInput(void *arg0) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
@@ -146,7 +146,7 @@ loop_25:
         if (currentLayout == M2C_FIELD(arg0, s32 *, 0x34)) {
             return;
         }
-        func_0200bc5c(&gMapEditPath);
+        SetFileDirectory(&gMapEditPath);
         savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         func_020e32e8(&gSoftKeyNarcName);
@@ -258,7 +258,7 @@ void func_ov007_0221f270(u8 *arg0) {
     void *MemAlloc(M2C_UNK);
     s32 func_02099ae8(u8 *);
     s32 func_02099b00(u8 *);
-    s32 func_020e31e0();
+    s32 GetLanguage();
     s32 func_020e34bc(M2C_UNK);
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK data_ov007_02220df8;
@@ -282,7 +282,7 @@ void func_ov007_0221f270(u8 *arg0) {
         return;
     }
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov007_02221974;
-    if (func_020e31e0() == 0) {
+    if (GetLanguage() == 0) {
         var_r1 = &gSoftKeyLayoutJp;
     } else {
         var_r1 = &gSoftKeyLayoutUs;

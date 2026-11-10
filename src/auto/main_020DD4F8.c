@@ -288,7 +288,7 @@ void func_020ddfcc(void) {
    sprites, then queues either the confirm action or the slot's unit preview. */
 void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02012084();
     M2C_UNK func_02080944(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4();
@@ -298,7 +298,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_0208b758(s32, s32);
     s16 GetSpriteAnimValue(void *);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     s32 func_ov009_0222429c();
     s32 func_ov009_022246ac(s32);
     M2C_UNK func_ov009_02224730(M2C_UNK, M2C_UNK, s32, s32, s32);
@@ -324,8 +324,8 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    func_0200bc5c(&data_0212d3f0);
-    func_020e3218(&data_0212d3f8);
+    SetFileDirectory(&data_0212d3f0);
+    GetLocalizedFileName(&data_0212d3f8);
     func_020814e4();
     kind = menu->kind;
     layout = -1;
@@ -340,10 +340,10 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     }
     if (layout != 2) {
         if (layout == 4) {
-            func_02081590(func_020e3218(&data_0212d408), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+            func_02081590(GetLocalizedFileName(&data_0212d408), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
         }
     } else {
-        func_02081590(func_020e3218(&data_0212d418), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+        func_02081590(GetLocalizedFileName(&data_0212d418), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     }
     func_02081528();
     func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x18, 5);

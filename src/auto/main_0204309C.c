@@ -16,7 +16,7 @@ switch(func_02038f6c()){
 case 2:func_02039db4(code,off-0xfa00);break;
 case 4:func_0203accc(code,off+0xfffedef0);break;
 case 5:func_0203dc38(code,off+0xfffeb7e0);break;
-default:func_02037638(code,off+0xfffe90d0);break;
+default:SetNetError(code,off+0xfffe90d0);break;
 }
 return ret;
 }

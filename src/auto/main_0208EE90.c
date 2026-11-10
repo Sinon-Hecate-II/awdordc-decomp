@@ -202,10 +202,10 @@ void func_0208f5d8(void) {
 }
 
 s32 func_0208f5e8(void) {
-    u32 func_020e31e0();
+    u32 GetLanguage();
     u32 temp_r0;
 
-    temp_r0 = func_020e31e0();
+    temp_r0 = GetLanguage();
     switch (temp_r0) {
     case 0:
         return 0;

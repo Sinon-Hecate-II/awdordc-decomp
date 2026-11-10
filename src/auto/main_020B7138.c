@@ -99,17 +99,17 @@ void func_020b7294(s32 arg0, s32 arg1, u32 arg2, s32 arg3, void *arg4) {
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void func_0200bc5c(void *);void *func_020e3218(void *);void func_020814e4(void);void func_02081590(void *,s32);void func_020815fc(void *,s32,s32);void func_02081528(void);s32 func_01ff9c34(u8,s32);void func_01ff85b8(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
+s32 func_020a8b3c(s32);s32 func_0209b5e4(s32,s32);void func_02091d4c(s32);void *func_ov000_0216ce10(s32);void func_02007ef4(void *,s32,s32);void *func_ov000_0216ce84(s32);void func_01ff9e44(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void func_020814e4(void);void func_02081590(void *,s32);void func_020815fc(void *,s32,s32);void func_02081528(void);s32 func_01ff9c34(u8,s32);void func_01ff85b8(s32,u16,s32);void *func_020ab1c4(void *);void func_020aab24(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 func_020aae10(void *);s32 func_020aae44(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void func_02088f1c(void *);void *func_0208c528(s32);void func_0208c5fc(void *,s32,s32);void func_0208bddc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
 M2C_FIELD(a,s32 *,0x34)=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x7380,func_020a8b3c(icon));
 func_02091d4c(0x1d);base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2b80;q=func_ov000_0216ce10(icon);func_02007ef4(q,base+0x4000,128);
 func_01ff9e44(func_ov000_0216ce84(kind),0x360,32);
-func_0200bc5c(data_02128fb8);func_020e3218(data_02128fc0);func_020814e4();
-func_02081590(func_020e3218(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
-func_02081590(func_020e3218(data_02128fd4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
-func_020815fc(func_020e3218(data_02128fdc),192,32);func_02081528();
+SetFileDirectory(data_02128fb8);GetLocalizedFileName(data_02128fc0);func_020814e4();
+func_02081590(GetLocalizedFileName(data_02128fcc),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x14)+0x2480);
+func_02081590(GetLocalizedFileName(data_02128fd4),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
+func_020815fc(GetLocalizedFileName(data_02128fdc),192,32);func_02081528();
 palette=func_01ff9c34((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;func_01ff85b8(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;
@@ -119,7 +119,7 @@ flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
 if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=func_020aae10(p);n=func_020aae44(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
 func_020ab150(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));func_02088f1c(M2C_FIELD(a,void **,0x38));
 M2C_FIELD(a,void **,0x3c)=func_0208c528((s32)a);
-func_0208c5fc(func_020e3218(data_02128fe4),0x6c00,12);q=func_020e3218(data_02128ff0);func_0208bddc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);
+func_0208c5fc(GetLocalizedFileName(data_02128fe4),0x6c00,12);q=GetLocalizedFileName(data_02128ff0);func_0208bddc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);
 p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=96;M2C_FIELD(p,s32 *,0x3c)=0;
 }
 #pragma pop
@@ -266,8 +266,8 @@ void *func_0208c528(M2C_UNK); void func_020b78c4(void *); void func_020b7b54(voi
 extern M2C_UNK data_02128ffc,data_02129004;
 u32 p; u32 resource;
 p=func_0208c528(7);
-func_0208c5fc(func_020e3218(&data_02128ffc),0x6B80,11);
-resource=func_020e3218(&data_02129004);
+func_0208c5fc(GetLocalizedFileName(&data_02128ffc),0x6B80,11);
+resource=GetLocalizedFileName(&data_02129004);
 func_0208bddc(p,resource,0x6B80,11,0);
 M2C_FIELD(p,s32 *,0x44)|=0x380000;
 M2C_FIELD(p,void (**)(void *),0x6C)=func_020b78c4;
@@ -361,14 +361,14 @@ s32 func_020b7f58(void) {
     M2C_UNK func_0208bddc(s32, s32, s32, M2C_UNK, s32);
     s32 func_0208c54c();
     M2C_UNK func_0208c5fc(s32, s32, M2C_UNK);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_0212900c;
     extern M2C_UNK data_0212901c;
     s32 temp_r4;
 
     temp_r4 = func_0208c54c();
-    func_0208c5fc(func_020e3218(&data_0212900c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, func_020e3218(&data_0212901c), 0x6B80, 0xB, 0);
+    func_0208c5fc(GetLocalizedFileName(&data_0212900c), 0x6B80, 0xB);
+    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -378,8 +378,8 @@ s32 func_020b7fb8(void) {
     s32 temp_r4;
 
     temp_r4 = func_0208c54c();
-    func_0208c5fc(func_020e3218(&data_0212902c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, func_020e3218(&data_0212903c), 0x6B80, 0xB, 0);
+    func_0208c5fc(GetLocalizedFileName(&data_0212902c), 0x6B80, 0xB);
+    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 
@@ -389,8 +389,8 @@ s32 func_020b8018(void) {
     s32 temp_r4;
 
     temp_r4 = func_0208c54c();
-    func_0208c5fc(func_020e3218(&data_0212904c), 0x6B80, 0xB);
-    func_0208bddc(temp_r4, func_020e3218(&data_0212905c), 0x6B80, 0xB, 0);
+    func_0208c5fc(GetLocalizedFileName(&data_0212904c), 0x6B80, 0xB);
+    func_0208bddc(temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
     return temp_r4;
 }
 

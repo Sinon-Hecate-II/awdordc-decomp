@@ -61,8 +61,8 @@ void SendIpFragment(void *a,s32 b,s32 c,s32 d,u32 ip,s32 id){
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);
 M2C_UNK MI_CpuCopy8(M2C_UNK*,void*,M2C_UNK);
 s32 Checksum(u8*,s32);s32 func_0201a764(u32);
-M2C_UNK func_0201a880(void*,void*,void*,s32,s32,s32);
-extern M2C_UNK gNetStack,data_020faf80,data_02137778;
+M2C_UNK NetStackQueuePacket(void*,void*,void*,s32,s32,s32);
+extern M2C_UNK gNetStack,gLinkHeaderTemplate,data_02137778;
 u16 len,ident;s32 sum,t;
 len=b+20+d;ident=id;
 M2C_FIELD(a,u16*,-18)=((s32)len>>8)|(len<<8);
@@ -72,9 +72,9 @@ sum=Checksum(a-20,20);
 M2C_FIELD(a,u16*,-10)=(sum>>8)|(sum<<8);
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80))func_0201af48(a-20,b+20,c,d,ip,0x800);
 if(ip!=0x7f000001 && ip!=M2C_FIELD(&gNetStack,u32*,80)){if(!func_0201a764(ip))return;}
-MI_CpuCopy8(&data_020faf80,a-28,8);
+MI_CpuCopy8(&gLinkHeaderTemplate,a-28,8);
 t=OS_DisableInterrupts();
-func_0201a880(&data_02137778,&data_02137778,a-28,b+28,c,d);
+NetStackQueuePacket(&data_02137778,&data_02137778,a-28,b+28,c,d);
 OS_RestoreInterrupts(t);
 }
 

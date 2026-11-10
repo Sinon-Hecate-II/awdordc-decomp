@@ -225,7 +225,7 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
 
 #pragma scheduling off
 void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020814e4(M2C_UNK *);
     M2C_UNK func_02081528();
     M2C_UNK func_0208168c(M2C_UNK *, M2C_UNK);
@@ -323,7 +323,7 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     extern M2C_UNK data_02128680;
     u32 mode = arg0;
     func_020a40c0();
-    func_0200bc5c(&data_02128064);
+    SetFileDirectory(&data_02128064);
     switch (arg1) {
     case 0:
         func_020814e4(&data_02128070);

@@ -253,11 +253,11 @@ void func_020da480(void *arg0) {
     M2C_UNK func_02082340(M2C_UNK, void *);
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_0200bc5c(void *);
-    M2C_UNK func_020e3218(void *);
+    M2C_UNK SetFileDirectory(void *);
+    M2C_UNK GetLocalizedFileName(void *);
     M2C_UNK func_020814e4(void);
     M2C_UNK func_02081590(M2C_UNK, void *);
-    M2C_UNK func_0208116c(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_02081528(void);
     M2C_UNK func_020ae22c(M2C_UNK);
     M2C_UNK func_0208ca2c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -328,19 +328,19 @@ void func_020da480(void *arg0) {
 
     func_02091d4c(9);
     func_01ff9ce8(0);
-    func_0200bc5c(data_0212d1f4);
-    r0v = func_020e3218(data_0212d1fc);
+    SetFileDirectory(data_0212d1f4);
+    r0v = GetLocalizedFileName(data_0212d1fc);
     (void)r0v;
     func_020814e4();
-    func_02081590(func_020e3218(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
+    func_02081590(GetLocalizedFileName(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
 
-    func_0208116c(data_0212d218, 0xa0, 0x80);
+    LoadFileToSpriteBuffer(data_0212d218, 0xa0, 0x80);
     ((u8 *)*gCur3DSpriteEngine)[0x46] |= 1;
 
-    r0v = func_020e3218(data_0212d224);
+    r0v = GetLocalizedFileName(data_0212d224);
     func_02081590(r0v, (void *)((u8 *)*(void **)((u8 *)*gCur3DSpriteEngine + 0x1c) + 0x7100));
 
-    func_0208116c(data_0212d234, 0x2c0, 0x20);
+    LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
     func_02081528();
     r0v = func_020ae22c(9);
     func_0208ca2c(0x1000, 1, r0v, 2);

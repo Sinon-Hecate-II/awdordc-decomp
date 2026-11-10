@@ -102,6 +102,7 @@ typedef struct { u8 pad[0x3758];u16 rows[64];u8 pad2[0x196c];u16 width,height;u8
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
 #define PLAYER_REC_ARMY_INDEX 0x1D /* u8 1-based army index that picks its colour */
 #define PLAYER_REC_ARMY_STATE 0x27 /* u8 per-player army state shown by the army info window */
+#define PLAYER_REC_AI_MODE    0x2A /* u8 AI behaviour mode (0..3) */
 #define PLAYER_CONTROL_OFF (MAP_PLAYER_STATES + 0x1E) /* u8 PLAYER_CONTROL_* */
 #define PLAYER_SIDE_OFF    (MAP_PLAYER_STATES + 0x1F) /* u8 SIDE_* */
 #define PLAYER_ARMY_OFF    (MAP_PLAYER_STATES + 0x26) /* u8 army (nation) id */

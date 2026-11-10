@@ -54,11 +54,11 @@ if(arg0==3 && engine!=saved)goto end;
 bank=0;
 p28=*(u16**)engine; *p28 = *p28 & ~0x40;
 p24=*(u16**)gCur3DSpriteEngine; *p24 = *p24 & ~0x80;
-func_0200bc5c(&data_02102d0c);
+SetFileDirectory(&data_02102d0c);
 func_020ad460(arg2);func_020814e4();
 if(arg2==0x4a){
-func_020ad4a0(arg2);func_02081590(func_020e3218(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
-func_020ad4e0(arg2);func_02081590(func_020e3218(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
+func_020ad4a0(arg2);func_02081590(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
+func_020ad4e0(arg2);func_02081590(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
 }else {
 func_02081590(func_020ad4a0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
 func_02081590(func_020ad4e0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));

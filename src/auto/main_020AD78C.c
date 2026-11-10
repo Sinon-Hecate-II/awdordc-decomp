@@ -15,7 +15,7 @@ void DrawScreenTransition(void) {
     void func_01ff9ce8(u8);
     void StringCopy(void *, void *);
     void func_02068d68(void *, void *);
-    M2C_UNK func_020e3218(M2C_UNK);
+    M2C_UNK GetLocalizedFileName(M2C_UNK);
     u8 func_020814e4(M2C_UNK);
     void func_020815fc(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_02081590(void *, void *);
@@ -46,23 +46,23 @@ void DrawScreenTransition(void) {
     StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d8c);
 
-    func_020814e4(func_020e3218((M2C_UNK)sp));
+    func_020814e4(GetLocalizedFileName((M2C_UNK)sp));
 
     idx = ((s16 *)gScreenTransition)[1];
     StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d94);
 
     if (func_020ad690() == 0) {
-        func_020815fc(func_020e3218((M2C_UNK)sp), 0, 0x100);
+        func_020815fc(GetLocalizedFileName((M2C_UNK)sp), 0, 0x100);
     } else {
-        func_020815fc(func_020e3218((M2C_UNK)sp), 0x100, 0x100);
+        func_020815fc(GetLocalizedFileName((M2C_UNK)sp), 0x100, 0x100);
     }
 
     idx = ((s16 *)gScreenTransition)[1];
     StringCopy((void *)sp, data_02127c08[idx].p);
     func_02068d68((void *)sp, data_02127d98);
 
-    h = func_020e3218((M2C_UNK)sp);
+    h = GetLocalizedFileName((M2C_UNK)sp);
     func_02081590(h, (void *)((char *)0 + func_020ad6b0() + 0x20));
 
     idx = ((s16 *)gScreenTransition)[1];
@@ -70,11 +70,11 @@ void DrawScreenTransition(void) {
     func_02068d68((void *)sp, data_02127d9c);
 
     if (func_020ad690() == 0) {
-        h = func_020e3218((M2C_UNK)sp);
+        h = GetLocalizedFileName((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 0);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
     } else {
-        h = func_020e3218((M2C_UNK)sp);
+        h = GetLocalizedFileName((M2C_UNK)sp);
         func_020816cc(h, func_020ad6d0(), 1, 8);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x2;
     }
@@ -104,9 +104,9 @@ void InitScreenTransition(M2C_UNK a0) {
     s32 func_020ad690(void);
     void func_01ff9ce8(u8);
     void DrawScreenTransition(void);
-    M2C_UNK func_020e3218(M2C_UNK);
-    M2C_UNK func_02080cfc(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208116c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK GetLocalizedFileName(M2C_UNK);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020ad6f0(void);
     void SetScreenTransitionEnabled(s32);
     M2C_UNK func_020e34bc(M2C_UNK);
@@ -159,9 +159,9 @@ void InitScreenTransition(M2C_UNK a0) {
     func_01ff9ce8((u8)func_020ad690());
     DrawScreenTransition();
 
-    func_02080cfc(func_020e3218((M2C_UNK)sScreenChangeCgFile),
+    LoadDecompressedFileTo(GetLocalizedFileName((M2C_UNK)sScreenChangeCgFile),
         (M2C_UNK)(*(u32 *)((u8 *)g3DSpriteEngineSub + 0x1c) + 0x2800));
-    func_0208116c((M2C_UNK)sScreenChangeClFile, 0x2c0, 0x20);
+    LoadFileToSpriteBuffer((M2C_UNK)sScreenChangeClFile, 0x2c0, 0x20);
 
     func_020ad6f0();
     SetScreenTransitionEnabled(1);

@@ -19,15 +19,15 @@ func_0205b050(M2C_FIELD(gNetSession,s32 *,0),func_0203d5d4);
 return result;
 }
 
-s32 func_02039050(s32 arg0) {
+s32 FindPlayerConnection(s32 arg0) {
     void *func_0205b094();
     extern void *gNetSession;
-    extern M2C_UNK data_0213d200;
+    extern M2C_UNK gPlayerConnections;
     s32 i;
     if (gNetSession == NULL) return 0;
     for (i = 0; i < 32; i++) {
-        if ((&data_0213d200)[i] != 0 && arg0 == M2C_FIELD(func_0205b094((&data_0213d200)[i]), u8 *, 1))
-            return (&data_0213d200)[i];
+        if ((&gPlayerConnections)[i] != 0 && arg0 == M2C_FIELD(func_0205b094((&gPlayerConnections)[i]), u8 *, 1))
+            return (&gPlayerConnections)[i];
     }
     return 0;
 }
@@ -42,33 +42,33 @@ u8 func_020390c4(void) {
     return M2C_FIELD(func_0205b094(), u8 *, 0);
 }
 
-s32 func_020390d4(void) {
-    extern M2C_UNK data_0213d200;
+s32 FindFreePlayerSlot(void) {
+    extern M2C_UNK gPlayerConnections;
     s32 i;
     for (i = 0; i < 32; i++) {
-        if ((&data_0213d200)[i] == 0) return i;
+        if ((&gPlayerConnections)[i] == 0) return i;
     }
     return -1;
 }
 
-void func_02039100(void) {
+void ResetPlayerSlots(void) {
     M2C_UNK func_02007e54(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0213d200;
-    extern M2C_UNK data_0213d280;
-    func_02007e54(0, &data_0213d200, 0x80);
-    func_02007e54(0, &data_0213d280, 0x100);
+    extern M2C_UNK gPlayerConnections;
+    extern M2C_UNK gPlayerPeers;
+    func_02007e54(0, &gPlayerConnections, 0x80);
+    func_02007e54(0, &gPlayerPeers, 0x100);
 }
 
-void *func_02039130(s32 arg0) {
-    extern M2C_UNK data_0213d200;
-    return &data_0213d200 + arg0;
+void *GetPlayerConnectionSlot(s32 arg0) {
+    extern M2C_UNK gPlayerConnections;
+    return &gPlayerConnections + arg0;
 }
 
 void *func_02039140(s32 arg0, s32 arg1) {
     extern void *gNetSession;
-    s32 func_02039050(s32);
+    s32 FindPlayerConnection(s32);
     u8 func_020390c4(void);
-    void *func_02039130(s32);
+    void *GetPlayerConnectionSlot(s32);
     u8 i;
     for (i = 0; i < arg1; i++) {
         if (arg0 == ((u32 *)((u8 *)gNetSession + 0x468))[i]) {
@@ -78,22 +78,22 @@ void *func_02039140(s32 arg0, s32 arg1) {
     if (i >= arg1) {
         return 0;
     }
-    func_02039050(*((u8 *)gNetSession + i + 0x644));
-    return func_02039130(func_020390c4());
+    FindPlayerConnection(*((u8 *)gNetSession + i + 0x644));
+    return GetPlayerConnectionSlot(func_020390c4());
 }
 
-void *func_020391a8(s32 arg0) {
-    extern M2C_UNK data_0213d280;
-    return &data_0213d280 + arg0 * 2;
+void *GetPlayerPeer(s32 arg0) {
+    extern M2C_UNK gPlayerPeers;
+    return &gPlayerPeers + arg0 * 2;
 }
 
 s32 func_020391b8(s32 arg0) {
     void *func_0205b094(void *);
-    extern M2C_UNK data_0213d200;
+    extern M2C_UNK gPlayerConnections;
     s32 i;
     for (i = 0; i < 32; i++) {
-        if ((&data_0213d200)[i] != 0) {
-            if (M2C_FIELD(func_0205b094((void *)(&data_0213d200)[i]), u8 *, 1) == arg0) {
+        if ((&gPlayerConnections)[i] != 0) {
+            if (M2C_FIELD(func_0205b094((void *)(&gPlayerConnections)[i]), u8 *, 1) == arg0) {
                 return 1;
             }
         }
@@ -105,7 +105,7 @@ void func_02039200(void) {
 
 }
 
-void func_02039204(s32 arg0) {
+void SetNetState(s32 arg0) {
     extern void *gNetSession;
     M2C_FIELD(gNetSession, s32 *, 0x28) = (s32) M2C_FIELD(gNetSession, s32 *, 0x24);
     M2C_FIELD(gNetSession, s32 *, 0x24) = arg0;
@@ -158,15 +158,15 @@ u32 func_020393d4(u32 a, u32 unused, u32 off) {
 }
 
 void func_02039478(s32 arg0, s32 arg1) {
-    void func_02039204(s32);
+    void SetNetState(s32);
     void func_0203af18(void);
     extern void *gNetSession;
     if (arg0 == 0) {
         M2C_FIELD(gNetSession, s32 *, 0x64) = arg1;
-        func_02039204(3);
+        SetNetState(3);
         func_0203af18();
     } else {
-        func_02039204(0);
+        SetNetState(0);
     }
     {
         void *p = gNetSession;
@@ -178,26 +178,26 @@ void func_02039478(s32 arg0, s32 arg1) {
 }
 
 void func_020394d8(s32 arg0,s32 arg1) {
-extern void *gNetSession; void func_02039204(s32);
+extern void *gNetSession; void SetNetState(s32);
 s32 v=M2C_FIELD(gNetSession,s32 *,0x28);
-if(v!=4)func_02039204(v);
+if(v!=4)SetNetState(v);
 M2C_FIELD(gNetSession,void (**)(s32,s32,s32),0x78)(arg0,arg1,M2C_FIELD(gNetSession,s32 *,0x7c));
 }
 
 void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
     extern void *gNetSession;
     s32 func_0203dcf4(void);
-    void func_02039204(s32);
+    void SetNetState(s32);
     u32 func_02039284(u8 *, s32);
     void func_0203e2e4(void);
 
     if (arg0 == 0 && arg1 != 0) {
         if (M2C_FIELD(gNetSession, s32 *, 0x514) == 0) {
             func_0203dcf4();
-            func_02039204(3);
+            SetNetState(3);
         }
     } else if (arg0 == 0) {
-        func_02039204(6);
+        SetNetState(6);
         {
             void *p = gNetSession;
             if (M2C_FIELD(p, u8 *, 0x381) >= 0) {
@@ -226,7 +226,7 @@ void func_02039520(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
 
     if (arg0 != 0 && gNetSession != 0) {
         if (M2C_FIELD(gNetSession, s32 *, 0x24) == 5) {
-            func_02039204(3);
+            SetNetState(3);
         }
     }
 }
@@ -269,15 +269,15 @@ void func_02039838(void) {
 
 void func_02039844(s32 arg0, s32 arg1) {
     extern void *gNetSession;
-    extern M2C_UNK data_0213d200;
-    extern u32 data_020fc898;
+    extern M2C_UNK gPlayerConnections;
+    extern u32 gEmptyString;
 
     s32 func_0203e558(void);
     void *func_0205b094();
     void func_02044954();
     s32 func_02039224(s32);
     M2C_UNK func_0203dee8();
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     M2C_UNK func_0203e410();
     M2C_UNK func_0203e064();
     s32 func_0203e0ec();
@@ -286,7 +286,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK func_0203aeb4();
     M2C_UNK func_0203bd0c();
     M2C_UNK func_0203dcf4();
-    void func_02039204(s32);
+    void SetNetState(s32);
 
     s32 r5 = 0;
     s32 r10 = 0;
@@ -341,7 +341,7 @@ void func_02039844(s32 arg0, s32 arg1) {
         {
             s32 funcres = func_02039224(r4);
             u8 idx = ((u8 *)p)[0];
-            (&data_0213d200)[idx] = 0;
+            (&gPlayerConnections)[idx] = 0;
             {
                 void *base = gNetSession;
                 u8 t = M2C_FIELD(base, u8 *, 0x381);
@@ -372,7 +372,7 @@ void func_02039844(s32 arg0, s32 arg1) {
 
     if (func_0203dee8(r8, r6, r5) != 0) return;
     if (r8 != 0) {
-        func_02037638(r8, (s32)(r6 + 0xfffec780));
+        SetNetError(r8, (s32)(r6 + 0xfffec780));
         return;
     }
 
@@ -407,12 +407,12 @@ void func_02039844(s32 arg0, s32 arg1) {
                 func_0203e410();
             } else {
                 if (M2C_FIELD(base, u8 *, 0x381) == 0) {
-                    func_0203af50(1, (s32)&data_020fc898, 0);
+                    func_0203af50(1, (s32)&gEmptyString, 0);
                 }
             }
         } else {
             if (M2C_FIELD(base, u8 *, 0x381) == 0) {
-                func_0203af50(1, (s32)&data_020fc898, 0);
+                func_0203af50(1, (s32)&gEmptyString, 0);
             }
         }
     }
@@ -449,7 +449,7 @@ void func_02039844(s32 arg0, s32 arg1) {
         if (M2C_FIELD(base, u8 *, 0x381) != 0) return;
         func_0203bd0c();
         func_0203dcf4();
-        func_02039204(3);
+        SetNetState(3);
         return;
     }
 }
@@ -461,12 +461,12 @@ void func_02039b9c(void) {
 
 void func_02039ba8(s32 *arg0) {
     extern void *gNetSession;
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     s32 func_0205b048(s32 *);
     s32 ghiGetLastSocketError(void);
     func_0205b048(arg0);
     M2C_FIELD(&gNetSession, s32 *, 4) = ghiGetLastSocketError();
-    func_02037638(9, 0xfffe8515);
+    SetNetError(9, 0xfffe8515);
     M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, 0) = 0;
 }
 
@@ -499,7 +499,7 @@ void func_02039c68(void) {
    (60000 units) elapses, report error 6 / -61070. */
 void func_02039ca0(void) {
     extern M2C_UNK data_0213d380;
-    s32 func_0203761c(void);
+    s32 HasNetError(void);
     void func_0203a2b4(void);
     void func_0204db50(void *);
     u64 GetSystemTick(void);
@@ -507,7 +507,7 @@ void func_02039ca0(void) {
     void *p;
 
     if (!M2C_FIELD(&data_0213d380, void **, 4)) return;
-    if (func_0203761c()) return;
+    if (HasNetError()) return;
     p = M2C_FIELD(&data_0213d380, void **, 4);
     switch (M2C_FIELD(p, u32 *, 4)) {
     case 0: break;
@@ -539,12 +539,12 @@ s32 func_02039d98(void) {
 
 s32 func_02039db4(u32 arg0, s32 arg1) {
     extern M2C_UNK data_0213d380;
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     void func_02039e60(void);
     void *p;
     p = (void *)M2C_FIELD(&data_0213d380, void **, 4);
     if (p == NULL || arg0 == 0) return;
-    func_02037638(arg0, arg1);
+    SetNetError(arg0, arg1);
     p = (void *)M2C_FIELD(&data_0213d380, void **, 4);
     if (M2C_FIELD(p, void (**)(s32, u8, s32), 0x14) != NULL) {
         M2C_FIELD(p, void (**)(s32, u8, s32), 0x14)(arg0, 0, M2C_FIELD(p, s32 *, 0x18));

@@ -226,10 +226,17 @@ s32 gpiStringDup(s32 arg0) {
 #pragma push
 #pragma optimization_level 2
 s8 *StringToLower(s8 *p) {
-extern M2C_UNK data_020eac40;
-s8 *q=p; s32 c=*p;
-if(c){do{if(c>=0 && c<128){c=((u8 *)&data_020eac40)[c];} *p=c;c=*++p;}while(c);}
-return q;
+ extern M2C_UNK data_020eac40;
+ s8 *q = p;
+ s32 c = *p;
+ if (c) do {
+   if (c >= 0) {
+     c = c < 128 ? ((u8 *)&data_020eac40)[c] : c;
+   }
+   *p++ = c;
+   c = *p;
+ } while (c);
+ return q;
 }
 #pragma pop
 s32 ghiSetNonBlocking(M2C_UNK arg0, s32 arg1) {

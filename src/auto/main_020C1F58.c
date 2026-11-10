@@ -27,7 +27,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void func_0200bc5c(void *);void func_020a92bc(void *,s32);void *func_020e3218(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
+void SetFileDirectory(void *);void func_020a92bc(void *,s32);void *GetLocalizedFileName(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -48,7 +48,7 @@ u16 *volatile statReg13;
 u16 *volatile statReg14;
 u16 *volatile statReg15;
 
-func_0200bc5c(sOccupationPath);
+SetFileDirectory(sOccupationPath);
 M2C_FIELD(*(void **)(screen+60),u16*,18)=860;
 M2C_FIELD(*(void **)(screen+60),u8*,22)=16;
 M2C_FIELD(*(void **)(screen+60),u8*,20)=32;
@@ -71,14 +71,14 @@ statReg4=*(u16 **)gCur3DSpriteEngine;*statReg4=*statReg4|256;
 statReg5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg5=(*statReg5&~192)|64;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,81)=16;M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,82)=0;statReg6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg6=*statReg6&~1;statReg7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg7=*statReg7&~2;statReg8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg8=*statReg8&~4;statReg9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg9=*statReg9&~8;statReg10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg10=*statReg10&~16;statReg11=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg11=*statReg11|256;statReg12=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg12=*statReg12&~512;statReg13=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg13=*statReg13&~1024;statReg14=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg14=*statReg14&~2048;statReg15=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg15=*statReg15&~4096;
 
-objectRes=func_02080e30(func_020e3218(sOccupationObjectName),1);
+objectRes=func_02080e30(GetLocalizedFileName(sOccupationObjectName),1);
 func_0207c780(objectRes,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
 func_0207c780(objectRes+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
 if(screen[54]==0)func_0207c780(objectRes+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(objectRes+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
 func_0207c780(objectRes+0x92c,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8480);
 func_020e35cc(objectRes);
-func_02080cfc(sOccupationPlateFile,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
-func_0208116c(sOccupationCommonFile,0x360,64);
+LoadDecompressedFileTo(sOccupationPlateFile,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
+LoadFileToSpriteBuffer(sOccupationCommonFile,0x360,64);
 func_01ff9ce8(2);
 
 /* build "<CO name>.narc" and load the CO's portrait archive */

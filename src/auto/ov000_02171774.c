@@ -16,20 +16,20 @@ void func_ov000_02171774(void *p) {
 #pragma scheduling off
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
  extern u8 data_ov000_021b8d60[],data_ov000_021b8d68[],data_ov000_021b8d7c[],data_ov000_021b8d8c[],data_ov000_021b8d9c[],data_ov000_021b8dac[],data_ov000_021b8db4[],data_ov000_021b8dc4[],data_ov000_021b8dd4[],data_ov000_021b8de4[];
- void *func_020e3218(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
- void func_0200bc5c(void*);void func_020814e4(void*);void func_02081590(void*,void*);void func_020815fc(void*,s32,s32);void func_02081528(void);
+ void *GetLocalizedFileName(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
+ void SetFileDirectory(void*);void func_020814e4(void*);void func_02081590(void*,void*);void func_020815fc(void*,s32,s32);void func_02081528(void);
  s32 func_01ff9c34(u8,s32);void func_01ff85b8(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void func_02007ef4(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
- void func_020a9a30(s32,s32,s32,void*);void func_02080cfc(void*,void*);void func_0208116c(void*,s32,s32);void func_020c0fac(void*);
+ void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void func_020c0fac(void*);
  void *old=gCur3DSpriteEngine;
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
  gCur3DSpriteEngine=g3DSpriteEngineMain;
- func_0200bc5c(data_ov000_021b8d60);
- func_020814e4(func_020e3218(data_ov000_021b8d68));
- func_02081590(func_020e3218(data_ov000_021b8d7c),M2C_FIELD(gCur3DSpriteEngine,void**,0x14));
- func_02081590(func_020e3218(data_ov000_021b8d8c),M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28));
- func_020815fc(func_020e3218(data_ov000_021b8d9c),96,32);
+ SetFileDirectory(data_ov000_021b8d60);
+ func_020814e4(GetLocalizedFileName(data_ov000_021b8d68));
+ func_02081590(GetLocalizedFileName(data_ov000_021b8d7c),M2C_FIELD(gCur3DSpriteEngine,void**,0x14));
+ func_02081590(GetLocalizedFileName(data_ov000_021b8d8c),M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28));
+ func_020815fc(GetLocalizedFileName(data_ov000_021b8d9c),96,32);
  func_02081528();
  {u16 v=func_01ff9c34((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
  func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
@@ -50,11 +50,11 @@ void func_ov000_02171774(void *p) {
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=4;
  func_020a9a30(1,0,3,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x6d80);
  func_020a9a30(1,2,0,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x3e0);
- func_0200bc5c(data_ov000_021b8dac);
- func_02080cfc(func_020e3218(data_ov000_021b8db4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7400);
- func_02080cfc(func_020e3218(data_ov000_021b8dc4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7e00);
- func_02080cfc(func_020e3218(data_ov000_021b8dd4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x8600);
- func_0208116c(data_ov000_021b8de4,0x340,32);
+ SetFileDirectory(data_ov000_021b8dac);
+ LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8db4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7400);
+ LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8dc4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7e00);
+ LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8dd4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x8600);
+ LoadFileToSpriteBuffer(data_ov000_021b8de4,0x340,32);
  dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240;
  func_02007ef4((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x340,dst,32);
  func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240);

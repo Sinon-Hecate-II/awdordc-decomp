@@ -18,7 +18,7 @@ extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *dat
 #pragma push
 #pragma opt_common_subs off
 void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
-    M2C_UNK func_ov011_02222010(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, s16, u32, s32);
     M2C_UNK func_ov011_02222830(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -32,7 +32,7 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
     default:
         break;
     case 1:
-        func_ov011_02222010(arg0, 5, 0);
+        LoadOpeningScreenAssets(arg0, 5, 0);
         func_ov011_022216d8(arg0, 9, 0, 2);
         func_ov011_022216d8(arg0, 0xA, 1, 2);
         func_ov011_022216d8(arg0, 0xD, 0, 3);
@@ -91,11 +91,11 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_ov011_02224f00(M2C_UNK arg0) {
-    M2C_UNK func_ov011_02222010(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
 
     func_ov011_022216d8(arg0, 7, 0, 3);
     func_ov011_022216d8(arg0, 8, 1, 3);
-    func_ov011_02222010(arg0, 4, 0);
+    LoadOpeningScreenAssets(arg0, 4, 0);
     G3_SubmitSpriteQuad(arg0, 2, 2, 0x80, 0x20);
 }
 
@@ -222,7 +222,7 @@ void func_ov011_02225224(void) {
 }
 
 void func_ov011_02225238(void *a) {
-M2C_UNK func_0200bc5c(M2C_UNK *); M2C_UNK StringFormat(void *,M2C_UNK *,s32);
+M2C_UNK SetFileDirectory(M2C_UNK *); M2C_UNK StringFormat(void *,M2C_UNK *,s32);
 M2C_UNK func_0208be8c(void *,void *,void *,M2C_UNK *,s32,s32,s32); M2C_UNK func_0208c080(void *,M2C_UNK);void *func_0208c528(void *);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK data_ov011_02228b28,data_ov011_02228b30,data_ov011_02228b38,data_ov011_02228b3c;
@@ -233,7 +233,7 @@ M2C_FIELD(a,s16 *,0x38)=0;M2C_FIELD(a,s16 *,0x3a)=0;M2C_FIELD(a,s16 *,0x3c)=0;M2
 M2C_FIELD(a,s32 *,0x44)=0;M2C_FIELD(a,s32 *,0x48)=0;M2C_FIELD(a,u8 *,0x36)=1;
 StringFormat(first,&data_ov011_02228b28,M2C_FIELD(a,s32 *,0x54));
 StringFormat(second,&data_ov011_02228b30,M2C_FIELD(a,s32 *,0x54));
-func_0200bc5c(&data_ov011_02228b38);
+SetFileDirectory(&data_ov011_02228b38);
 M2C_FIELD(a,void **,0x4c)=func_0208c528(a);
 func_0208be8c(M2C_FIELD(a,void **,0x4c),first,second,&data_ov011_02228b3c,data_ov011_02228cec,M2C_FIELD(a,u8 *,0x35),1);
 func_0208c080(M2C_FIELD(a,void **,0x4c),5);

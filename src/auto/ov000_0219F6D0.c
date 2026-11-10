@@ -226,7 +226,7 @@ void func_ov000_0219fd54(void) {
 }
 
 void func_ov000_0219fdc8(void) {
-    void func_ov000_021a08fc(void);
+    void InitAiTurn(void);
     void func_ov000_02199588(void);
     s32 func_ov000_021a19a8(void);
     s32 func_ov000_021a1ab8(void);
@@ -234,7 +234,7 @@ void func_ov000_0219fdc8(void) {
     s32 func_ov000_021a1d08(void);
     s32 func_ov000_021a21f8(s32);
     s32 func_ov000_021a1f14(void);
-    void func_ov000_021a16e8(void);
+    void UpdateAiCandidateCosts(void);
     s32 func_ov000_021a4320(void);
     s32 func_ov000_021a1dec(void);
     s32 func_ov000_021a2db8(void);
@@ -257,7 +257,7 @@ void func_ov000_0219fdc8(void) {
     }
     switch (addr578[0][2]) {
         case 0:
-            func_ov000_021a08fc();
+            InitAiTurn();
             addr578[0][2]++;
             func_ov000_02199588();
             break;
@@ -325,7 +325,7 @@ void func_ov000_0219fdc8(void) {
             func_ov000_021a029c();
             break;
         case 10:
-            func_ov000_021a16e8();
+            UpdateAiCandidateCosts();
             addr578[0][2]++;
             break;
         case 11:

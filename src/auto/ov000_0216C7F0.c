@@ -174,9 +174,9 @@ void *func_ov000_0216ce84(u32 arg0) {
 }
 
 void func_ov000_0216cee8(void) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_ov000_021b8838;
-    func_0200bc5c(&data_ov000_021b8838);
+    SetFileDirectory(&data_ov000_021b8838);
 }
 
 void func_ov000_0216cefc(void){
@@ -220,7 +220,7 @@ void func_ov000_0216d130(void) {
     M2C_UNK func_02081590(s32, s32);
     M2C_UNK func_020e3004();
     M2C_UNK *func_020e3018(u8);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021b884c;
@@ -235,9 +235,9 @@ void func_ov000_0216d130(void) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (!temp_z) {
         func_020e3004();
-        func_020e3218(&data_ov000_021b884c);
+        GetLocalizedFileName(&data_ov000_021b884c);
         func_020814e4();
-        func_02081590(func_020e3218(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
+        func_02081590(GetLocalizedFileName(temp_r5), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
         func_02081528();
         func_ov000_0216cee8();
     } else {

@@ -75,7 +75,7 @@ func_02090100(0,func_0208fa78(x/16,y/16));
 void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_02007ef4(s32, s32, M2C_UNK);
     s32 func_02081070(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_020e35cc(s32);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021b7e5c;
@@ -85,7 +85,7 @@ void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
     temp_r0 = func_02081070(&data_ov000_021b7e5c, 0);
     func_02007ef4(temp_r0 + (arg0 << 8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1, 0x100);
     func_020e35cc(temp_r0);
-    func_0208116c(&data_ov000_021b7e6c, (arg2 + 0x10) << 5, 0x20);
+    LoadFileToSpriteBuffer(&data_ov000_021b7e6c, (arg2 + 0x10) << 5, 0x20);
 }
 
 void func_ov000_0216a374(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {

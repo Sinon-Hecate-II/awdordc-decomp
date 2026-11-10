@@ -14,7 +14,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
     M2C_UNK func_020032bc(M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_0207c8ec(s32, M2C_UNK);
     M2C_UNK func_02081384(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -41,7 +41,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_020ceb48();
     M2C_UNK func_020cf0a8(s32);
     M2C_UNK func_020cf278(s32);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_ov003_021fef58(void *);
     M2C_UNK func_ov003_021ff36c();
     extern void **g3DSpriteEngineSub;
@@ -164,7 +164,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_0200bc5c(&data_ov004_0223c5a8);
+    SetFileDirectory(&data_ov004_0223c5a8);
     func_02081384(&data_ov004_0223c5f4, 0);
     func_02081400(&data_ov004_0223c5b8, 0, 0x200);
     func_02081384(&data_ov004_0223c5d0, 0x28000);
@@ -172,8 +172,8 @@ void func_ov004_02217f5c(void *arg0) {
     func_02081384(&data_ov004_0223c660, 0x30000);
     func_02081400(&data_ov004_0223c630, 0x220, 0x20);
     func_020814e4(&data_ov004_0223c624);
-    func_0208168c(func_020e3218(&data_ov004_0223c5e8), 0x38000);
-    func_0208168c(func_020e3218(&data_ov004_0223c5dc), 0x39000);
+    func_0208168c(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
+    func_0208168c(GetLocalizedFileName(&data_ov004_0223c5dc), 0x39000);
     func_02081528();
     func_02081400(&data_ov004_0223c5c8, 0x240, 0xA0);
     func_02081400(&data_ov004_0223c5b0, 0x2E0, 0x20);

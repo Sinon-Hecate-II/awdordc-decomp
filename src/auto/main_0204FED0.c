@@ -323,20 +323,20 @@ void gpiCallErrorCallback(void **arg0, s32 arg1, s32 arg2) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe128;
     extern M2C_UNK data_020fe140;
-    extern M2C_UNK data_020fe154;
+    extern M2C_UNK gGpiCallbackFileName;
     extern M2C_UNK data_020fe164;
     extern M2C_UNK data_020fe17c;
 
     void *conn = *arg0;
 
     if (conn == NULL) {
-        AssertFailed(&data_020fe140, &data_020fe154, &data_020fe128, 0x23);
+        AssertFailed(&data_020fe140, &gGpiCallbackFileName, &data_020fe128, 0x23);
     }
     if (arg1 == 0) {
-        AssertFailed(&data_020fe164, &data_020fe154, &data_020fe128, 0x24);
+        AssertFailed(&data_020fe164, &gGpiCallbackFileName, &data_020fe128, 0x24);
     }
     if (arg2 != 1 && arg2 != 0) {
-        AssertFailed(&data_020fe17c, &data_020fe154, &data_020fe128, 0x25);
+        AssertFailed(&data_020fe17c, &gGpiCallbackFileName, &data_020fe128, 0x25);
     }
     if (arg2 == 1) {
         M2C_FIELD(conn, s32 *, 0x41C) = 1;
@@ -375,51 +375,70 @@ q=M2C_FIELD(base,void **,0x43c);if(q)M2C_FIELD(q,void **,20)=p;
 M2C_FIELD(base,void **,0x43c)=p;return 0;
 }
 
-void gpiCallCallback(void *obj,void *node){
-void gpiFree(void *);
-M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-extern M2C_UNK data_020fe1bc,data_020fe154,data_020fe118,data_020fe1dc;
-if(!M2C_FIELD(node,void **,0))AssertFailed(&data_020fe1bc,&data_020fe154,&data_020fe118,0x6e);
-if(!M2C_FIELD(node,void **,8))AssertFailed(&data_020fe1dc,&data_020fe154,&data_020fe118,0x6f);
-M2C_FIELD(node,void (**)(void *,void *,void *),0)(obj,M2C_FIELD(node,void **,8),M2C_FIELD(node,void **,4));
-{
-s32 code=M2C_FIELD(node,s32 *,12);
-if(code==2){
-gpiFree(M2C_FIELD(M2C_FIELD(node,void **,8),void **,8));
-M2C_FIELD(M2C_FIELD(node,void **,8),void **,8)=0;
-}else if(code==3){
-s32 i;void *inner;inner=M2C_FIELD(node,void **,8);
-for(i=0;i<M2C_FIELD(inner,s32 *,0x38);i++){
-gpiFree(M2C_FIELD(inner,void ***,0x3c)[i]);
-M2C_FIELD(inner,void ***,0x3c)[i]=0;
-gpiFree(M2C_FIELD(inner,void ***,0x40)[i]);
-M2C_FIELD(inner,void ***,0x40)[i]=0;
-}
-gpiFree(M2C_FIELD(inner,void **,0x3c));M2C_FIELD(inner,void **,0x3c)=0;
-gpiFree(M2C_FIELD(inner,void **,0x40));M2C_FIELD(inner,void **,0x40)=0;
-}else if(code==4){
-void *inner=M2C_FIELD(node,void **,8);
-gpiFree(M2C_FIELD(inner,void **,12));M2C_FIELD(inner,void **,12)=0;
-}else if(code==7){
-void *inner=M2C_FIELD(node,void **,8);
-if(M2C_FIELD(inner,void **,16)){
-gpiFree(M2C_FIELD(inner,void **,16));M2C_FIELD(inner,void **,16)=0;
-}
-}else if(code==8){
-void *inner=M2C_FIELD(node,void **,8);
-if(M2C_FIELD(inner,void **,8)){
-gpiFree(M2C_FIELD(inner,void **,8));M2C_FIELD(inner,void **,8)=0;
-}
-}else if(code==9){
-s32 i;void *inner;inner=M2C_FIELD(node,void **,8);
-for(i=0;i<M2C_FIELD(inner,s32 *,4);i++){
-gpiFree(M2C_FIELD(inner,void ***,8)[i]);M2C_FIELD(inner,void ***,8)[i]=0;
-}
-gpiFree(M2C_FIELD(inner,void **,8));M2C_FIELD(inner,void **,8)=0;
-}
-}
-gpiFree(M2C_FIELD(node,void **,8));M2C_FIELD(node,void **,8)=0;
-gpiFree(node);
+void gpiCallCallback(void *connection, GPICallbackData *data) {
+    void gpiFree(void *);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gGpiAssertCallback, gGpiCallbackFileName, gGpiCallCallbackName, gGpiAssertArg;
+    s32 code;
+
+    /* Run a queued gpi callback, then release the typed data it was given. */
+    if (!data->callback.callback) {
+        AssertFailed(&gGpiAssertCallback, &gGpiCallbackFileName, &gGpiCallCallbackName, 0x6e);
+    }
+    if (!data->arg) {
+        AssertFailed(&gGpiAssertArg, &gGpiCallbackFileName, &gGpiCallCallbackName, 0x6f);
+    }
+    data->callback.callback(connection, data->arg, data->callback.param);
+
+    code = data->type;
+    if (code == GPI_CALLBACK_PLAYER_INFO) {
+        gpiFree(((GpiPlayerInfoData *)data->arg)->name);
+        ((GpiPlayerInfoData *)data->arg)->name = 0;
+    } else if (code == GPI_CALLBACK_INFO_LISTS) {
+        s32 i;
+        GpiInfoListsData *lists;
+        lists = data->arg;
+        for (i = 0; i < lists->count; i++) {
+            gpiFree(lists->names[i]);
+            lists->names[i] = 0;
+            gpiFree(lists->values[i]);
+            lists->values[i] = 0;
+        }
+        gpiFree(lists->names);
+        lists->names = 0;
+        gpiFree(lists->values);
+        lists->values = 0;
+    } else if (code == GPI_CALLBACK_INFO_RECORDS) {
+        GpiInfoRecordsData *info = data->arg;
+        gpiFree(info->records);
+        info->records = 0;
+    } else if (code == GPI_CALLBACK_OWNED_POINTER) {
+        GpiOwnedPointerData *info = data->arg;
+        if (info->pointer) {
+            gpiFree(info->pointer);
+            info->pointer = 0;
+        }
+    } else if (code == GPI_CALLBACK_RECORD_LIST) {
+        GpiRecordListData *list = data->arg;
+        if (list->records) {
+            gpiFree(list->records);
+            list->records = 0;
+        }
+    } else if (code == GPI_CALLBACK_STRING_LIST) {
+        s32 i;
+        GpiStringListData *list;
+        list = data->arg;
+        for (i = 0; i < list->count; i++) {
+            gpiFree(list->strings[i]);
+            list->strings[i] = 0;
+        }
+        gpiFree(list->strings);
+        list->strings = 0;
+    }
+
+    gpiFree(data->arg);
+    data->arg = 0;
+    gpiFree(data);
 }
 
 s32 func_02050ad4(void **arg0, s32 arg1) {

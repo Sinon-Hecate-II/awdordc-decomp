@@ -226,7 +226,7 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
     void AddSprite(u16, u8, u16, void *, s32);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
-    extern u8 data_027e0074[];
+    extern u8 gSpriteDesc16x32[];
     s32 sp14, sp10, spC, sp8, sp4;
     s16 x, y, value;
     void *p;
@@ -262,7 +262,7 @@ void func_ov003_021e3960(void *arg0, s16 arg1, s16 arg2) {
                       (u8)(y + 0x4E),
                       (u16)(((sp10 & (tile >> ((u32)(**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
                              (u16)(palette << 0xC)) | 0x400),
-                      data_027e0074,
+                      gSpriteDesc16x32,
                       0x11);
         tile += 8;
         i++;

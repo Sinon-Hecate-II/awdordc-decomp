@@ -227,7 +227,7 @@ func_ov007_0221d008 kind:function(arm,size=0xba8) addr:0x0221d008
 func_ov007_0221dbb0 kind:function(arm,size=0x110) addr:0x0221dbb0
 func_ov007_0221dcc0 kind:function(arm,size=0x14) addr:0x0221dcc0
 func_ov007_0221dcd4 kind:function(arm,size=0xc) addr:0x0221dcd4
-func_ov007_0221dce0 kind:function(arm,size=0x1f4) addr:0x0221dce0
+MapEditTextActionInput kind:function(arm,size=0x1f4) addr:0x0221dce0
 func_ov007_0221ded4 kind:function(arm,size=0x11c) addr:0x0221ded4
 func_ov007_0221dff0 kind:function(arm,size=0x14) addr:0x0221dff0
 func_ov007_0221e004 kind:function(arm,size=0xc) addr:0x0221e004
@@ -411,7 +411,7 @@ data_ov007_022203f4 kind:data(any) addr:0x022203f4
 data_ov007_022203f8 kind:data(any) addr:0x022203f8
 data_ov007_022203fc kind:data(any) addr:0x022203fc
 data_ov007_02220400 kind:data(any) addr:0x02220400
-data_ov007_02220404 kind:data(any) addr:0x02220404
+gGlyphSpace kind:data(any) addr:0x02220404
 data_ov007_02220408 kind:data(any) addr:0x02220408
 data_ov007_0222040c kind:data(any) addr:0x0222040c
 data_ov007_02220410 kind:data(any) addr:0x02220410
@@ -675,7 +675,7 @@ data_ov007_02220814 kind:data(any) addr:0x02220814
 data_ov007_02220818 kind:data(any) addr:0x02220818
 data_ov007_0222081c kind:data(any) addr:0x0222081c
 data_ov007_02220820 kind:data(any) addr:0x02220820
-data_ov007_02220824 kind:data(any) addr:0x02220824
+gGlyphWideSpace kind:data(any) addr:0x02220824
 data_ov007_02220828 kind:data(any) addr:0x02220828
 data_ov007_0222082c kind:data(any) addr:0x0222082c
 data_ov007_02220830 kind:data(any) addr:0x02220830

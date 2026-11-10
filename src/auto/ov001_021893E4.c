@@ -288,7 +288,7 @@ void func_ov001_02189ad0(void) {
     s32 func_0200b3ec(void *, s32, s32);
     s32 func_ov001_0218a698(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
-    void func_0200bc5c(void *);
+    void SetFileDirectory(void *);
     extern void *data_ov001_02193e2c;
     extern char data_ov001_02191794[];
     extern char data_ov001_0218fd04[];
@@ -328,19 +328,19 @@ void func_ov001_02189ad0(void) {
     func_0200b3ec((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, size);
     M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)func_ov001_0218a698(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
     func_0200563c(name, data_ov001_021917ac, data_ov001_0218fd04);
-    func_0200bc5c(name);
+    SetFileDirectory(name);
 }
 
 void func_ov001_02189c80(void) {
 extern void *data_ov001_021917b4[2];
 extern void *data_ov001_02193e2c;
-void func_0200bc5c(void *);
+void SetFileDirectory(void *);
 void func_0200b510(void *);
 void func_0200b32c(void *);
 void func_0200b238(void *);
 void func_020055f4(u16);
 void func_ov001_0218b71c(void *);
-func_0200bc5c(data_ov001_021917b4);
+SetFileDirectory(data_ov001_021917b4);
 func_0200b510((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);

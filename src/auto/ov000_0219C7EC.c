@@ -335,7 +335,7 @@ void func_ov000_0219d220(void) {
     extern u8 data_ov000_021df824;
     u8 func_ov000_021a8984(s32);
     void func_ov000_0219c8fc(void);
-    extern M2C_UNK func_ov000_02180ff4;
+    extern M2C_UNK RunAIUnitAction;
     s32 index;
     s32 stride;
     s8 *out;
@@ -371,7 +371,7 @@ void func_ov000_0219d220(void) {
     *data_ov000_021df658 = 0;
     data_ov000_021df658 = (s8 *)&data_ov000_021df824;
     func_ov000_0219c8fc();
-    data_ov000_021df654 = &func_ov000_02180ff4;
+    data_ov000_021df654 = &RunAIUnitAction;
     *data_ov000_021df580 = 2;
 }
 #pragma scheduling on

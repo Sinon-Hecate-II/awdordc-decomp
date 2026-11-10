@@ -143,7 +143,7 @@ void func_01ff9e44(s32,s32,s32);
 s32 func_020a72e8(u8);
 s32 func_ov000_0216cdec(s32,u8);
 s32 func_020cfb94(void);
-void *func_020e3218(void *);
+void *GetLocalizedFileName(void *);
 void func_020814e4(void);
 void func_02081590(void *,void *);
 void func_02081528(void);
@@ -229,12 +229,12 @@ void func_ov005_0221d160(void *arg0){
     if (gKeyState[0] & 512) {
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) ? M2C_FIELD(arg0, s32 *, 0x54) - 1 : 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
-        func_020e3218(data_ov005_02220f1c);
+        GetLocalizedFileName(data_ov005_02220f1c);
         func_020814e4();
         if (mode == 0)
-            func_02081590(func_020e3218(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            func_02081590(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         else
-            func_02081590(func_020e3218(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            func_02081590(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         func_02081528();
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
@@ -243,12 +243,12 @@ void func_ov005_0221d160(void *arg0){
     if (gKeyState[0] & 256) {
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) == 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x54) + 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
-        func_020e3218(data_ov005_02220f1c);
+        GetLocalizedFileName(data_ov005_02220f1c);
         func_020814e4();
         if (mode == 0)
-            func_02081590(func_020e3218(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            func_02081590(GetLocalizedFileName(data_ov005_02220e5c), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         else
-            func_02081590(func_020e3218(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
+            func_02081590(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         func_02081528();
         func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;

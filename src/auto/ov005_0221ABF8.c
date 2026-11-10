@@ -15,7 +15,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02221218, data_ov005_02221224, gFrameCounter;
-    M2C_UNK func_0208116c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02007ef4(void *, void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(M2C_UNK);
@@ -26,7 +26,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
         s32 old0 = M2C_FIELD(arg0, s32 *, 0x3c);
         M2C_FIELD(arg0, s32 *, 0x3c) = old0 + 1;
         if (((*gKeyState) & 1) == 0) { u8 byte0 = M2C_FIELD(gTouchState, u8 *, 0x14); (void)byte0; }
-        if (old0 < 0x64 && M2C_FIELD(arg0, s32 *, 0x3c) >= 0x64) func_0208116c((M2C_UNK)&data_ov005_02220aa8, 0x2c0, 0x20);
+        if (old0 < 0x64 && M2C_FIELD(arg0, s32 *, 0x3c) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2c0, 0x20);
         if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0)) {
             void *o0 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o0 != NULL) {
@@ -45,7 +45,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x40) < M2C_FIELD(&data_0215c334, u8 *, 1)) {
         s32 old1 = M2C_FIELD(arg0, s32 *, 0x40);
         M2C_FIELD(arg0, s32 *, 0x40) = old1 + 1;
-        if (old1 < 0x64 && M2C_FIELD(arg0, s32 *, 0x40) >= 0x64) func_0208116c((M2C_UNK)&data_ov005_02220aa8, 0x2e0, 0x20);
+        if (old1 < 0x64 && M2C_FIELD(arg0, s32 *, 0x40) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2e0, 0x20);
         if (M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&data_0215c334, u8 *, 1)) {
             void *o1 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o1 != NULL) {
@@ -64,7 +64,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x44) < M2C_FIELD(&data_0215c334, u8 *, 2)) {
         s32 old2 = M2C_FIELD(arg0, s32 *, 0x44);
         M2C_FIELD(arg0, s32 *, 0x44) = old2 + 1;
-        if (old2 < 0x64 && M2C_FIELD(arg0, s32 *, 0x44) >= 0x64) func_0208116c((M2C_UNK)&data_ov005_02220aa8, 0x300, 0x20);
+        if (old2 < 0x64 && M2C_FIELD(arg0, s32 *, 0x44) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x300, 0x20);
         if (M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&data_0215c334, u8 *, 2)) {
             void *o2 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
             if (o2 != NULL) {

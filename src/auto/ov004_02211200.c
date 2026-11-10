@@ -239,7 +239,7 @@ void func_ov004_02211744(void *ctx) {
         if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
             (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
-            func_0200bc5c(data_ov004_02218cbc);
+            SetFileDirectory(data_ov004_02218cbc);
             func_020814e4(data_ov004_02218cc4);
             func_02081590(data_ov004_02218cd4, M2C_FIELD((void *)gCur3DSpriteEngine, u8 **, 0x1c) + 0x6b80);
             func_020815fc(data_ov004_02218ce0, 0x360, 0x20);
@@ -285,7 +285,7 @@ void func_ov004_02211924(void *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32
 void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
     M2C_UNK func_01ff85b8(s32, u16, M2C_UNK);
     u32 func_01ff9c34(u8, M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringFormat(void *, void *, void *);
     M2C_UNK func_020814e4(M2C_UNK *);
     M2C_UNK func_02081528();
@@ -367,7 +367,7 @@ config[4]=e;config[5]=f;
         gCur3DSpriteEngine = var_r0;
         if (((func_02091e14() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((func_02091e14() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((func_02091e14() != 3) || (gCur3DSpriteEngine == temp_r8))) {
             func_020822b8(config);
-            func_0200bc5c(&data_ov004_02218cf8);
+            SetFileDirectory(&data_ov004_02218cf8);
             func_020814e4(&data_ov004_02218d00);
             func_02081590(&data_ov004_02218d10, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
             func_020815fc(&data_ov004_02218d1c, 0, 0x20);

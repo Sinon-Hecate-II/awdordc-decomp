@@ -13,7 +13,7 @@ void InitTelopWindow(void *telop) {
     void func_02091d4c(M2C_UNK);
     void func_02096d0c(void);
     M2C_UNK func_0209b2b4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020814e4(M2C_UNK *);
     M2C_UNK func_02081590(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -62,7 +62,7 @@ void InitTelopWindow(void *telop) {
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2;
-    func_0200bc5c(&sTelopWindowPath);
+    SetFileDirectory(&sTelopWindowPath);
     func_020814e4(&sTelopNarcFile);
     func_02081590(&sTelopCgFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
     func_02081590(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
@@ -330,7 +330,7 @@ block_8:
 
 void func_0209643c(void){
 extern s32 *gCurrentMap;
-s32 func_020c79ec(void);s32 func_020846a4(void);s32 func_020c85c4(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK func_0200bc5c(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
+s32 func_020c79ec(void);s32 func_020846a4(void);s32 func_020c85c4(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142);
 s32 p,i;Unit964 *unit; s32 off;
 if(id>=225&&id<425){
@@ -341,7 +341,7 @@ if(!func_020c85c4(id,p))return;
 func_020c8564(p);
 }else{
 if(!func_020a8b2c(id))return;
-func_0200bc5c((M2C_UNK *)data_02102ee4);
+SetFileDirectory((M2C_UNK *)data_02102ee4);
 p=func_02080e30(func_020a8b2c(id),1);
 func_0209670c(p,0);
 func_020e35cc(p);
@@ -361,14 +361,14 @@ func_020cfd28();
 }
 
 void func_0209656c(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 func_02080e30(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209670c(s32, M2C_UNK);
     M2C_UNK func_020e35cc(s32);
     extern M2C_UNK data_02102eec;
     s32 temp_r0;
 
-    func_0200bc5c(&data_02102eec);
+    SetFileDirectory(&data_02102eec);
     temp_r0 = func_02080e30(arg0, 1);
     func_0209670c(temp_r0, arg1);
     func_020e35cc(temp_r0);

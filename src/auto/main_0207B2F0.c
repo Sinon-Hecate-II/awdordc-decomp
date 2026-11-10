@@ -376,8 +376,8 @@ return M2C_FIELD(data_0214bfa4,s32 *,0x50)+arg0;
 void func_0207bdc4(void) {
     s32 func_0207bdac(s32);
     void func_01ff9e44(void *, s32, s32);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_020e3218(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK GetLocalizedFileName(M2C_UNK *);
     void func_020814e4(M2C_UNK *);
     M2C_UNK func_02081590(M2C_UNK *, M2C_UNK);
     void func_02081528(void);
@@ -412,17 +412,17 @@ void func_0207bdc4(void) {
         }
     }
 
-    func_0200bc5c(&data_02101408);
+    SetFileDirectory(&data_02101408);
 
     switch (r4) {
     case 0x30:
-        func_020814e4(func_020e3218(&data_0210142c));
+        func_020814e4(GetLocalizedFileName(&data_0210142c));
         break;
     case 0x40:
-        func_020814e4(func_020e3218(&data_02101420));
+        func_020814e4(GetLocalizedFileName(&data_02101420));
         break;
     case 0x60:
-        func_020814e4(func_020e3218(&data_02101414));
+        func_020814e4(GetLocalizedFileName(&data_02101414));
         break;
     }
 
@@ -431,7 +431,7 @@ void func_0207bdc4(void) {
         kind = M2C_FIELD(base, u8 *, i + 0x3C);
         if (kind != 0) {
             M2C_UNK ptr = M2C_FIELD(&data_021011d0, M2C_UNK *, kind << 3);
-            M2C_UNK res = func_020e3218(ptr);
+            M2C_UNK res = GetLocalizedFileName(ptr);
             s32 idx = func_0207bd88(i);
             func_02081590(res, idx);
         }

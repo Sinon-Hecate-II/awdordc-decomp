@@ -337,7 +337,7 @@ s32 func_0200bbe0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 s32 func_0200bbf0(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}
 
-s32 func_0200bc5c(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record data_0212fbec;InitFileRequest(buf);if(!func_0200b79c(buf,a,0,(s32)&v))return 0;data_0212fbec=v;return 1;}
+s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record data_0212fbec;InitFileRequest(buf);if(!func_0200b79c(buf,a,0,(s32)&v))return 0;data_0212fbec=v;return 1;}
 
 void func_0200bcb4(M2C_UNK arg0) {
     M2C_UNK func_0200b6c8(M2C_UNK, M2C_UNK);

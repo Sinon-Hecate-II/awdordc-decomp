@@ -6,7 +6,7 @@
 M2C_UNK func_ov005_0221d818(M2C_UNK arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
-extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[],data_027e0074[];
+extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x32[];
 extern u8 data_0215c34a[],data_0215c334[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
 void func_02098cb8(s32,s16,s16,u16,s32,s32);
@@ -79,7 +79,7 @@ saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 ay=y&255;ox=x&511;
 attr=RESULT_ATTR(tile,0xe000);
 if(count>99)count=99;
-AddSprite((u16)ox,(u16)((ay&0xff00)|((ay-16)&255)),attr,data_027e0074,5);
+AddSprite((u16)ox,(u16)((ay&0xff00)|((ay-16)&255)),attr,gSpriteDesc16x32,5);
 { s32 digit,number; number=count;dx=0;
 ay=(ay&0xff00)|((ay+4)&255);ox=(ox+39)&511;
 do{DivMod(number,10,&number,&digit);
@@ -158,7 +158,7 @@ void func_ov005_0221e214(void) {
 void func_ov005_0221e22c(M2C_UNK parent) {
     s32 func_020cd1e4(void);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
     void func_ov005_0221a38c(void *);
     s32 RandomIntRange(s32, s32);
@@ -188,7 +188,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
         M2C_FIELD(medalDisplay, u16 *, 0x56) = 0;
         M2C_FIELD(medalDisplay, s32 *, 0x40) = 0;
         M2C_FIELD(medalDisplay, s32 *, 0x3c) = 432;
-        func_0200bc5c(&data_ov005_02220a4c);
+        SetFileDirectory(&data_ov005_02220a4c);
         savedEngine = gCur3DSpriteEngine;
         for (i = 0; i < 2; i++) {
             gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
@@ -216,13 +216,13 @@ void func_ov005_0221e468(M2C_UNK arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9ce8(M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
     M2C_UNK func_02082134(M2C_UNK, M2C_UNK);
     s32 func_020cd1e4();
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern u16 gMapConfig;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -252,15 +252,15 @@ void func_ov005_0221e468(M2C_UNK arg0) {
         return;
     }
     M2C_FIELD(result, M2C_UNK **, 0) = &data_ov005_02220f7c;
-    func_0200bc5c(&data_ov005_02220a2c);
+    SetFileDirectory(&data_ov005_02220a2c);
     savedPtr = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_02082134(2, 1);
     func_01ff9ce8(2);
-    func_020e3218(&data_ov005_02220ebc);
+    GetLocalizedFileName(&data_ov005_02220ebc);
     func_020814e4();
-    func_02081590(func_020e3218(&data_ov005_02220a90), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
-    func_02081590(func_020e3218(&data_ov005_02220e30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
+    func_02081590(GetLocalizedFileName(&data_ov005_02220a90), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14));
+    func_02081590(GetLocalizedFileName(&data_ov005_02220e30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
     func_02081528();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);

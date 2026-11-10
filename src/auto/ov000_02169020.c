@@ -446,11 +446,11 @@ void func_ov000_02169cd4(void *arg0) {
 }
 
 s32 func_ov000_02169d00(M2C_UNK arg0) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02081070(s32, M2C_UNK);
     s32 func_ov000_02169ec0(M2C_UNK);
     extern M2C_UNK data_ov000_021aeee0;
-    func_0200bc5c(&data_ov000_021aeee0);
+    SetFileDirectory(&data_ov000_021aeee0);
     func_02081070(func_ov000_02169ec0(arg0), 1);
 }
 
@@ -458,7 +458,7 @@ s32 func_ov000_02169d28(void *arg0) {
     M2C_UNK func_02080e30(s32, M2C_UNK);
     s32 func_ov000_02169f64(u8);
     extern M2C_UNK data_ov000_021aeee4;
-    func_0200bc5c(&data_ov000_021aeee4);
+    SetFileDirectory(&data_ov000_021aeee4);
     func_02080e30(func_ov000_02169f64(M2C_FIELD(arg0, u8 *, 0x42)), 1);
 }
 

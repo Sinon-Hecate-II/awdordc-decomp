@@ -11,9 +11,9 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_020031cc(M2C_UNK);
     M2C_UNK func_0200323c(M2C_UNK);
     M2C_UNK func_020032bc(M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_02080cfc(M2C_UNK *, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4(M2C_UNK *);
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(M2C_UNK *, s32);
@@ -32,7 +32,7 @@ void func_ov005_02218fd0(void *arg0) {
     s32 func_020aae44(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(M2C_UNK);
-    M2C_UNK *func_020e3218(M2C_UNK *);
+    M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     s32 func_ov005_02218e54();
     s32 func_ov005_02218edc();
     extern M2C_UNK data_0215c334;
@@ -291,8 +291,8 @@ void func_ov005_02218fd0(void *arg0) {
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2E0);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300);
-    func_0200bc5c(&data_ov005_02221058);
-    func_0208116c(&data_ov005_02221060, 0x320, 0x20);
+    SetFileDirectory(&data_ov005_02221058);
+    LoadFileToSpriteBuffer(&data_ov005_02221060, 0x320, 0x20);
     func_020814e4(&data_ov005_0222106c);
     func_02081590(&data_ov005_0222107c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
     func_02081590(&data_ov005_0222108c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
@@ -300,13 +300,13 @@ void func_ov005_02218fd0(void *arg0) {
     func_02081528();
     func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x800, 0x9000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
-    func_02080cfc(&data_ov005_022210ac, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3700);
-    func_0208116c(&data_ov005_022210b8, 0x3C0, 0x20);
+    LoadDecompressedFileTo(&data_ov005_022210ac, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3700);
+    LoadFileToSpriteBuffer(&data_ov005_022210b8, 0x3C0, 0x20);
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02091d4c(0);
     func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
-    func_0200bc5c(&data_ov005_022210c8);
+    SetFileDirectory(&data_ov005_022210c8);
     func_020814e4(&data_ov005_022210d0);
     func_02081590(&data_ov005_022210e0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
     func_02081590(&data_ov005_022210f0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
@@ -320,13 +320,13 @@ void func_ov005_02218fd0(void *arg0) {
         var_r0_4 = 0;
     }
     if (var_r0_4 & 0xFF) {
-        var_r0_5 = func_020e3218(&data_ov005_02221110);
+        var_r0_5 = GetLocalizedFileName(&data_ov005_02221110);
     } else {
-        var_r0_5 = func_020e3218(&data_ov005_02221124);
+        var_r0_5 = GetLocalizedFileName(&data_ov005_02221124);
     }
-    func_02080cfc(var_r0_5, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x7100);
-    func_0208116c(&data_ov005_02221130, 0x360, 0x20);
-    func_0208116c(&data_ov005_0222113c, 0x380, 0x20);
+    LoadDecompressedFileTo(var_r0_5, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x7100);
+    LoadFileToSpriteBuffer(&data_ov005_02221130, 0x360, 0x20);
+    LoadFileToSpriteBuffer(&data_ov005_0222113c, 0x380, 0x20);
     var_r9 = 0;
     gCur3DSpriteEngine = sp8;
     do {
@@ -336,37 +336,37 @@ void func_ov005_02218fd0(void *arg0) {
             var_r0_6 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r0_6;
-        func_0200bc5c(&data_ov005_02221148);
-        func_0208116c(&data_ov005_02221150, 0x40, 0x20);
-        func_02080cfc(&data_ov005_02221160, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F00);
-        func_0208116c(&data_ov005_02221168, 0x3E0, 0x20);
+        SetFileDirectory(&data_ov005_02221148);
+        LoadFileToSpriteBuffer(&data_ov005_02221150, 0x40, 0x20);
+        LoadDecompressedFileTo(&data_ov005_02221160, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F00);
+        LoadFileToSpriteBuffer(&data_ov005_02221168, 0x3E0, 0x20);
         if (((u32) (gMapConfig << 0x1D) >> 0x1D) != 1) {
             var_r0_7 = 1;
         } else {
             var_r0_7 = 0;
         }
         if (!(var_r0_7 & 0xFF)) {
-            func_02080cfc(&data_ov005_02221170, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
-            func_0208116c(&data_ov005_02221180, 0x340, 0x20);
+            LoadDecompressedFileTo(&data_ov005_02221170, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
+            LoadFileToSpriteBuffer(&data_ov005_02221180, 0x340, 0x20);
         } else {
             switch (M2C_FIELD(&data_0215c334, u8 *, 3)) {
             default:
                 break;
             case 4:
-                func_02080cfc(&data_ov005_02221190, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
-                func_0208116c(&data_ov005_0222119c, 0x340, 0x20);
+                LoadDecompressedFileTo(&data_ov005_02221190, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
+                LoadFileToSpriteBuffer(&data_ov005_0222119c, 0x340, 0x20);
                 break;
             case 3:
-                func_02080cfc(&data_ov005_022211a8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
-                func_0208116c(&data_ov005_022211b4, 0x340, 0x20);
+                LoadDecompressedFileTo(&data_ov005_022211a8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
+                LoadFileToSpriteBuffer(&data_ov005_022211b4, 0x340, 0x20);
                 break;
             case 2:
-                func_02080cfc(&data_ov005_022211c0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
-                func_0208116c(&data_ov005_022211cc, 0x340, 0x20);
+                LoadDecompressedFileTo(&data_ov005_022211c0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
+                LoadFileToSpriteBuffer(&data_ov005_022211cc, 0x340, 0x20);
                 break;
             case 1:
-                func_02080cfc(&data_ov005_022211d8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
-                func_0208116c(&data_ov005_022211e4, 0x340, 0x20);
+                LoadDecompressedFileTo(&data_ov005_022211d8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x3B00);
+                LoadFileToSpriteBuffer(&data_ov005_022211e4, 0x340, 0x20);
                 break;
             }
         }
@@ -442,8 +442,8 @@ if(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0) v=1; else v=0;
 if(v&255){c=M2C_FIELD(q,s16 *,0x52);d=M2C_FIELD(q,s16 *,0x50);w=func_020aae10(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,d,c,(u16)w,(u16)func_020aae44(q));}
 if(M2C_FIELD(p,s32 *,0x3c)==16){
 M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,u8 *,0x44)=0;
-func_0200bc5c(data_ov005_022211f0);
-func_02080cfc(data_ov005_022211f8,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
+SetFileDirectory(data_ov005_022211f0);
+LoadDecompressedFileTo(data_ov005_022211f8,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;func_01ffa6fc(p);

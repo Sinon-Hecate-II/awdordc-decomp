@@ -225,7 +225,7 @@ s32 func_02036f14(void) {
     u32 func_0202f248();
     M2C_UNK func_02034480(void *);
     s32 func_0203703c();
-    M2C_UNK func_02037638(M2C_UNK, s32);
+    M2C_UNK SetNetError(M2C_UNK, s32);
     extern void *gWfcMatchSession;
     s32 tmp;
     s32 var_r4;
@@ -251,13 +251,13 @@ s32 func_02036f14(void) {
         }
         break;
     case 2:
-        func_02037638(8, 0xFFFF347C - var_r2);
+        SetNetError(8, 0xFFFF347C - var_r2);
         var_r4 = 3;
         break;
     case 3:
     case 4:
     case 6:
-        func_02037638(0x13, 0xFFFF7F0E);
+        SetNetError(0x13, 0xFFFF7F0E);
         var_r4 = 3;
         break;
     default:
@@ -265,7 +265,7 @@ s32 func_02036f14(void) {
     case 1:
     case 5:
     case 7:
-        func_02037638(0x13, 0xFFFF7EFA);
+        SetNetError(0x13, 0xFFFF7EFA);
         var_r4 = 3;
         break;
     }
@@ -276,7 +276,7 @@ s32 func_02036f14(void) {
 }
 
 s32 func_0203703c(void) {
-s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 ParseHttpDate(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 func_02037638(s32,s32);
+s32 func_02034c58(void *,s32); s32 func_02034ef8(void *,void *); s32 ParseHttpDate(); s32 ParseInt(); s32 func_02034f50(void *,void *,void *,s32); s32 SetNetError(s32,s32);
 extern void *gWfcMatchSession; extern s32 gErrno;
 extern u8 data_020fba60[],data_020fba68[],data_020fba74[],data_020fba80[];
 s32 value; s8 buf[51]; void *p=gWfcMatchSession; s32 r,i;
@@ -291,7 +291,7 @@ if(r==1)goto error;
 if(r<100)goto readbuf;
 if(r==100)goto readbuf;
 error:
-func_02037638(18,-33000-r);return 0;
+SetNetError(18,-33000-r);return 0;
 readbuf:
 func_02034f50(p,data_020fba80,buf,51);
 process:
@@ -304,7 +304,7 @@ else {M2C_FIELD(gWfcMatchSession,u8 **,0x1d1c)[i]=1; ++*M2C_FIELD(gWfcMatchSessi
 }
 }
 }
-func_02037638(18,-33020);return 0;
+SetNetError(18,-33020);return 0;
 }
 
 void func_020371f4(void) {

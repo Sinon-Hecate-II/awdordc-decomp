@@ -9,7 +9,7 @@ extern void *gNetSession;
 extern u8 gSessionGameName[];
 extern u8 gSessionGamePassword[];
 void func_020375fc(void);
-void func_02039100(void);
+void ResetPlayerSlots(void);
 void func_0203d910(void);
 void func_02039838(void);
 void func_02039844(void);
@@ -39,7 +39,7 @@ M2C_FIELD(gNetSession,s32 *,100)=0;
 M2C_FIELD(gNetSession,s32 *,104)=(s32)gSessionGameName;
 M2C_FIELD(gNetSession,s32 *,108)=(s32)gSessionGamePassword;
 M2C_FIELD(gNetSession,s32 *,112)=0;M2C_FIELD(gNetSession,s32 *,116)=0;M2C_FIELD(gNetSession,s32 *,120)=0;M2C_FIELD(gNetSession,s32 *,124)=0;M2C_FIELD(gNetSession,s32 *,128)=0;M2C_FIELD(gNetSession,s32 *,132)=0;M2C_FIELD(gNetSession,s32 *,136)=0;M2C_FIELD(gNetSession,s32 *,140)=0;M2C_FIELD(gNetSession,s32 *,144)=0;M2C_FIELD(gNetSession,s32 *,148)=0;
-func_02039100();
+ResetPlayerSlots();
 func_02039be4((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,func_02039478,0);
 func_0203a9dc((u8 *)gNetSession+0x318,(u8 *)gNetSession+0x1c,(u8 *)gNetSession+0x2e,userData,timeout);
 func_0203c110((u8 *)gNetSession+0x374,(u8 *)gNetSession+0x1c,gNetSession,(u8 *)gNetSession+4,gSessionGameName,gSessionGamePassword,userData,timeout);
@@ -108,10 +108,10 @@ void func_02038438(void) {
     extern M2C_UNK func_0203adcc;
     s32 func_02037bc4(void);
     void func_02039200(void);
-    s32 func_0203761c(void);
+    s32 HasNetError(void);
     s32 func_0204837c(void);
     s32 func_020392b8(s32);
-    void func_02039204(s32);
+    void SetNetState(s32);
     void func_02039c68(void);
     void func_02039ca0(void);
     void func_02039db4(s32, s32);
@@ -124,7 +124,7 @@ void func_02038438(void) {
 
     if (func_02037bc4()) func_02039200();
     if (!gNetSession || M2C_FIELD(gNetSession, s32 *, 0x24) == 0) return;
-    if (func_0203761c() != 0) return;
+    if (HasNetError() != 0) return;
     switch (M2C_FIELD(gNetSession, s32 *, 0x24)) {
     case 1:
         switch (func_0204837c()) {
@@ -134,7 +134,7 @@ void func_02038438(void) {
             if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 3, (s32)&func_020396d0, 0))) return;
             if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 1, (s32)&func_0203ad24, 0))) return;
             if (func_020392b8(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&func_0203adcc, 0))) return;
-            func_02039204(2);
+            SetNetState(2);
             func_02039c68();
             break;
         case 2:
@@ -175,12 +175,12 @@ void func_02038438(void) {
 
 s32 func_02038688(u16 *text,s32 unused,s32 a,s32 b){
 extern void *gNetSession;
-s32 func_0203761c(void); u32 func_02038020(u16 *);
+s32 HasNetError(void); u32 func_02038020(u16 *);
 void func_02007df8(s32,void *,s32); void func_02007e20(void *,void *,s32);
-s32 func_02037a0c(void);void func_02039db4(s32,s32);void func_02039204(s32);void InitServiceAvailabilityQuery(s32);
+s32 func_02037a0c(void);void func_02039db4(s32,s32);void SetNetState(s32);void InitServiceAvailabilityQuery(s32);
 u32 n;
 if(!text)return 0;
-if(func_0203761c() || M2C_FIELD(gNetSession,s32 *,36)!=0)return 0;
+if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=0)return 0;
 M2C_FIELD(gNetSession,s32 *,112)=a;
 M2C_FIELD(gNetSession,s32 *,116)=b;
 if(!text || !*text)n=0;
@@ -191,24 +191,24 @@ func_02007e20(text,(u8 *)gNetSession+46,n*2);
 }
 M2C_FIELD((u8 *)gNetSession+n*2,u16 *,46)=0;
 if(func_02037a0c()!=4){func_02039db4(2,-60010);return 1;}
-func_02039204(1);InitServiceAvailabilityQuery(M2C_FIELD(gNetSession,s32 *,104));return 1;
+SetNetState(1);InitServiceAvailabilityQuery(M2C_FIELD(gNetSession,s32 *,104));return 1;
 }
 
-s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 func_0203761c(void);void func_02039204(s32);void func_0203ac20(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(func_0203761c() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;func_02039204(4);func_0203ac20(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
+s32 func_02038790(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){s32 HasNetError(void);void SetNetState(s32);void func_0203ac20(void *,void *,void *,s32,s32,s32,s32,s32);extern M2C_UNK func_020394d8;extern void *gNetSession;s32 state;if(HasNetError() || (state=M2C_FIELD(gNetSession,s32 *,36))<3 || state==4)return 0;M2C_FIELD(gNetSession,s32 *,120)=b;M2C_FIELD(gNetSession,s32 *,124)=c;SetNetState(4);func_0203ac20(gNetSession+224,gNetSession+480,&func_020394d8,0,d,e,f,g);return 1;}
 
-s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 func_0203761c(void);void func_02039100(void);void func_02039204(s32);void func_0203c428(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(func_0203761c() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;func_02039100();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;func_02039204(5);func_0203c428((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
+s32 func_02038838(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void func_0203c428(s32,s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,128)=c;M2C_FIELD(gNetSession,s32 *,132)=d;SetNetState(5);func_0203c428((u8)(a-1),b,&func_02039520,0,e,f);return 1;}
 
 s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7) {
-    s32 func_0203761c(void); void func_02039100(void); void func_02039204(s32);
+    s32 HasNetError(void); void ResetPlayerSlots(void); void SetNetState(s32);
     s32 func_0203ae50(void); u32 func_02037eec(u32);
     void StartJoinMatch(s32,s32,u8,s32,void *,s32,s32,s32);
     extern void *gNetSession; extern M2C_UNK func_02039520;
     u8 buf2[64]; u8 buf1[64];
-    if (func_0203761c() != 0 || M2C_FIELD(gNetSession,s32 *,0x24) != 3) return 0;
-    func_02039100();
+    if (HasNetError() != 0 || M2C_FIELD(gNetSession,s32 *,0x24) != 3) return 0;
+    ResetPlayerSlots();
     M2C_FIELD(gNetSession,s32 *,0x80)=a4;
     M2C_FIELD(gNetSession,s32 *,0x84)=a5;
-    func_02039204(5);
+    SetNetState(5);
     if(a0 != 0) {
         StartJoinMatch(a0,a1,(u8)(a2-1),a3,&func_02039520,0,a6,a7);
     } else {
@@ -227,82 +227,84 @@ s32 func_020388d8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6, s32 a7
     return 1;
 }
 
-s32 func_02038a84(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_0203761c(void);void func_02039100(void);void func_02039204(s32);void func_0203c878(s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(func_0203761c() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;func_02039100();M2C_FIELD(gNetSession,s32 *,136)=b;M2C_FIELD(gNetSession,s32 *,140)=c;M2C_FIELD(gNetSession,u8 *,44)=0;func_02039204(5);func_0203c878((u8)(a-1),&func_02039520,0,d,e);return 1;}
+s32 func_02038a84(s32 a,s32 b,s32 c,s32 d,s32 e){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void func_0203c878(s32,void *,s32,s32,s32);extern M2C_UNK func_02039520;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,136)=b;M2C_FIELD(gNetSession,s32 *,140)=c;M2C_FIELD(gNetSession,u8 *,44)=0;SetNetState(5);func_0203c878((u8)(a-1),&func_02039520,0,d,e);return 1;}
 
-s32 StartMatch(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 func_0203761c(void);
-    void func_02039100(void);
-    void func_02039204(s32);
+/* Looks up the local player's match record, verifies its SCM and SCN fields,
+   then either starts the online match or reports the failure through the
+   event callback and the global network error record. */
+s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 matchData) {
+    s32 HasNetError(void);
+    void ResetPlayerSlots(void);
+    void SetNetState(s32);
     s32 GetSessionPlayerId(s32);
     s32 func_0204e364(void **, s32);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 func_0204e1b4(void **, s32, void *);
-    s32 func_02037df0(s8 *, s8 *, s8 *, s32);
+    s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 func_0206abd8(s8 *, s32, s32);
     void func_0203c920(s32, M2C_UNK, M2C_UNK, s32, s32);
-    void func_02037638(s32, s32);
+    void SetNetError(s32, s32);
     void func_0203af50(s32, void *, s32);
     extern void *gNetSession;
-    extern M2C_UNK sMatchKeySCM;
-    extern M2C_UNK sMatchKeySCN;
-    extern M2C_UNK data_020fc898;
+    extern M2C_UNK gKeySCM;
+    extern M2C_UNK gKeySCN;
+    extern M2C_UNK gEmptyString;
     extern M2C_UNK func_02039520;
 
-    s32 mode = arg3;
-    s32 outbuf[2];
-    s32 v = -1;
-    u8 payload[0x208];
-    u8 firstc;
-    u8 firstval;
-    u8 secondval;
-    s32 r4;
+    s32 status = mode;
+    MatchPlayerInfo player;
+    s32 playerIndex = -1;
+    u8 valueText;
+    u8 scmValue;
+    u8 scnValue;
+    s32 playerId;
 
-    if (func_0203761c() != 0 || M2C_FIELD(gNetSession, s32 *, 0x24) != 3) return 0;
+    if (HasNetError() != 0 || M2C_FIELD(gNetSession, s32 *, 0x24) != NET_STATE_READY) return 0;
 
-    func_02039100();
-    M2C_FIELD(gNetSession, s32 *, 0x88) = arg1;
-    M2C_FIELD(gNetSession, s32 *, 0x8C) = arg2;
-    func_02039204(5);
+    ResetPlayerSlots();
+    M2C_FIELD(gNetSession, s32 *, 0x88) = eventCallback;
+    M2C_FIELD(gNetSession, s32 *, 0x8C) = eventData;
+    SetNetState(NET_STATE_STARTING);
 
-    r4 = GetSessionPlayerId(arg0);
-    if (r4 == 0 || func_0204e364((void **)((char *)gNetSession + 0x1C), r4) == 0) {
-        mode = 0x0B;
+    playerId = GetSessionPlayerId(playerSlot);
+    if (playerId == 0 || func_0204e364((void **)((char *)gNetSession + 0x1C), playerId) == 0) {
+        status = 0x0B;
         goto tail;
     }
 
-    func_0204e2f4((void **)((char *)gNetSession + 0x1C), r4, &v);
-    func_0204e1b4((void **)((char *)gNetSession + 0x1C), v, outbuf);
+    func_0204e2f4((void **)((char *)gNetSession + 0x1C), playerId, &playerIndex);
+    func_0204e1b4((void **)((char *)gNetSession + 0x1C), playerIndex, &player);
 
-    if (M2C_FIELD(outbuf, s32 *, 0x04) != 6) {
-        mode = 0x0B;
+    if (player.status != 6) {
+        status = 0x0B;
         goto tail;
     }
 
-    firstc = 0x30;
-    func_02037df0(&sMatchKeySCM, (s8 *)&firstc, (s8 *)payload, 0x2F);
-    firstval = (u8)func_0206abd8((s8 *)&firstc, 0, 10);
+    valueText = 0x30;
+    ExtractKeyValue(&gKeySCM, (s8 *)&valueText, (s8 *)player.fields, 0x2F);
+    scmValue = (u8)func_0206abd8((s8 *)&valueText, 0, 10);
 
-    func_02037df0(&sMatchKeySCN, (s8 *)&firstc, (s8 *)payload, 0x2F);
-    secondval = (u8)func_0206abd8((s8 *)&firstc, 0, 10);
-    if (secondval == firstval) {
-        mode = 0x0D;
+    ExtractKeyValue(&gKeySCN, (s8 *)&valueText, (s8 *)player.fields, 0x2F);
+    scnValue = (u8)func_0206abd8((s8 *)&valueText, 0, 10);
+    if (scnValue == scmValue) {
+        status = 0x0D;
         goto tail;
     }
 
-    func_0203c920(r4, &func_02039520, 0, mode, arg4);
+    func_0203c920(playerId, &func_02039520, 0, status, matchData);
     return 1;
 
 tail:
-    func_02037638(mode, 0);
+    SetNetError(status, 0);
     {
-        void *st = gNetSession;
-        void *fp = *(void **)((char *)st + 0x88);
-        ((void (*)(s32, s32, s32, s32, s32, s32))fp)(mode, 0, 1, 0, 0, *(s32 *)((char *)st + 0x8C));
+        void *session = gNetSession;
+        void *notify = *(void **)((char *)session + 0x88);
+        ((void (*)(s32, s32, s32, s32, s32, s32))notify)(status, 0, 1, 0, 0, *(s32 *)((char *)session + 0x8C));
     }
     if (gNetSession != 0) {
-        if (M2C_FIELD(gNetSession, s32 *, 0x24) == 5) {
-            func_02039204(3);
-            func_0203af50(1, &data_020fc898, 0);
+        if (M2C_FIELD(gNetSession, s32 *, 0x24) == NET_STATE_STARTING) {
+            SetNetState(NET_STATE_READY);
+            func_0203af50(1, &gEmptyString, 0);
         }
     }
     return 1;
@@ -310,9 +312,9 @@ tail:
 
 s32 func_02038d14(s32 a,s32 b){extern void *gNetSession;if(!gNetSession)return 0;M2C_FIELD(gNetSession,s32 *,144)=a;M2C_FIELD(gNetSession,s32 *,148)=b;return 1;}
 
-s32 func_02038d40(void){extern void *gNetSession;extern M2C_UNK data_020fc898;s32 func_0203761c(void);void func_0203af50(s32,void *,s32);void func_0203bd0c(void);void func_02039204(s32);void func_0205afec(void *);s32 state;if(!gNetSession || func_0203761c() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;if(!M2C_FIELD(gNetSession,u8 *,0x381)){func_0203af50(1,&data_020fc898,0);func_0203bd0c();func_02039204(3);return 1;}M2C_FIELD(gNetSession,u8 *,0x2d)=1;func_0205afec(M2C_FIELD(gNetSession,void **,0));M2C_FIELD(gNetSession,u8 *,0x2d)=0;return 0;}
+s32 func_02038d40(void){extern void *gNetSession;extern M2C_UNK gEmptyString;s32 HasNetError(void);void func_0203af50(s32,void *,s32);void func_0203bd0c(void);void SetNetState(s32);void func_0205afec(void *);s32 state;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;if(!M2C_FIELD(gNetSession,u8 *,0x381)){func_0203af50(1,&gEmptyString,0);func_0203bd0c();SetNetState(3);return 1;}M2C_FIELD(gNetSession,u8 *,0x2d)=1;func_0205afec(M2C_FIELD(gNetSession,void **,0));M2C_FIELD(gNetSession,u8 *,0x2d)=0;return 0;}
 
-s32 func_02038de4(s32 a){extern void *gNetSession;s32 func_0203761c(void);void *func_02039050(s32);void func_0205afcc(void *);s32 state;void *p;if(!gNetSession || func_0203761c() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=func_02039050(a);if(!p)return -2;func_0205afcc(p);return 0;}
+s32 func_02038de4(s32 a){extern void *gNetSession;s32 HasNetError(void);void *FindPlayerConnection(s32);void func_0205afcc(void *);s32 state;void *p;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=FindPlayerConnection(a);if(!p)return -2;func_0205afcc(p);return 0;}
 
 s32 func_02038e4c(void){extern void *gNetSession;s32 func_0203e2c4(void);s32 func_0203e2a4(void);if(!gNetSession)return 0;if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e2c4()+1;return func_0203e2a4()+1;}
 

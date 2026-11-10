@@ -12,6 +12,16 @@
 /* Network stack state (gNetStack) callbacks. */
 #define NETSTACK_POLL 0x48 /* s32 (*poll)(void): nonzero while the link is up */
 
+/* gNetStack single-producer/single-consumer packet ring.  The producer appends
+ * a record at NETSTACK_RING_WRITE (a u16 length followed by the packet data) and
+ * must stay ahead of the consumer position; the consumer advances through the
+ * ring the same way.  A record never wraps: it is only started if it fits. */
+#define NETSTACK_RING_WRITE 0x28 /* u32 byte offset where the next record is written */
+#define NETSTACK_RING_READ  0x30 /* u32 byte offset of the next record to read */
+#define NETSTACK_RING_BUF   0x58 /* u8 *ring buffer */
+#define NETSTACK_RING_SIZE  0x5c /* u32 ring buffer size in bytes */
+#define NETSTACK_MAX_PACKET 0x5e4 /* largest record the ring accepts */
+
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */
 #define NETSTACK_IP_ID    0x06 /* u16 IPv4 identification counter, bumped per packet */
 #define NETSTACK_LOCAL_IP 0x50 /* u32 local IPv4 address, host order */

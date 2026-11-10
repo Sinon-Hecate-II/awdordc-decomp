@@ -71,7 +71,7 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *func_020e34bc(s32);void *HistoryTabAt(s32);void *func_020e3218(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
+void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *func_020e34bc(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
@@ -98,11 +98,11 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,82)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,83)=0;
 func_02099450(1,0,0);
 
-func_0200bc5c(&data_ov005_02220348);
-func_020814e4(func_020e3218(&data_ov005_02220358));
-func_02081590(func_020e3218(&data_ov005_02220368),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
-func_020816cc(func_020e3218(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
-func_02081528();func_0208116c(&data_ov005_02220388,0,0x20);
+SetFileDirectory(&data_ov005_02220348);
+func_020814e4(GetLocalizedFileName(&data_ov005_02220358));
+func_02081590(GetLocalizedFileName(&data_ov005_02220368),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
+func_020816cc(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
+func_02081528();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_0208ca2c(0x1000,1,func_020ae22c(9),2);
 n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();func_02007ef4(p,(u8 *)dst+0x1980,n);
@@ -134,11 +134,11 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,82)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,83)=0;
 func_02099450(1,0,0);
 
-func_0200bc5c(&data_ov005_022203dc);
-func_020814e4(func_020e3218(&data_ov005_022203ec));
-func_02081590(func_020e3218(&data_ov005_022203fc),M2C_FIELD(g3DSpriteEngineSub,void **,0x14));
-func_02081590(func_020e3218(&data_ov005_02220408),M2C_FIELD(g3DSpriteEngineSub,void **,0x28));
-func_02081528();func_0208116c(&data_ov005_02220418,0,0x20);
+SetFileDirectory(&data_ov005_022203dc);
+func_020814e4(GetLocalizedFileName(&data_ov005_022203ec));
+func_02081590(GetLocalizedFileName(&data_ov005_022203fc),M2C_FIELD(g3DSpriteEngineSub,void **,0x14));
+func_02081590(GetLocalizedFileName(&data_ov005_02220408),M2C_FIELD(g3DSpriteEngineSub,void **,0x28));
+func_02081528();LoadFileToSpriteBuffer(&data_ov005_02220418,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;func_02091d4c(9);
 func_020814e4(&data_ov005_02220424);
 func_02081590(&data_ov005_02220434,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1400);
@@ -330,9 +330,9 @@ void func_ov005_022140cc(M2C_UNK arg0) {
 }
 
 void func_ov005_022140e4(void) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     extern M2C_UNK data_ov005_02220644;
-    func_0200bc5c(&data_ov005_02220644);
+    SetFileDirectory(&data_ov005_02220644);
 }
 
 s32 func_ov005_022140f8(s32 arg0) {

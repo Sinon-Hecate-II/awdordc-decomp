@@ -8,7 +8,7 @@ void func_ov002_021e59e4(M2C_UNK arg0) {
     extern M2C_UNK g3DSpriteEngineMain;
     extern M2C_UNK g3DSpriteEngineSub;
     M2C_UNK func_02080e30(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02080cfc(M2C_UNK, M2C_UNK);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK, M2C_UNK);
     void func_ov002_021e5988(M2C_UNK, M2C_UNK);
     M2C_UNK func_02007ef4(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff9e44(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -20,7 +20,7 @@ void func_ov002_021e59e4(M2C_UNK arg0) {
 
     func_02080e30((M2C_UNK)&data_ov002_021f2d84, 1);
     r5 = func_02080e30((M2C_UNK)&data_ov002_021f2d84, 1);
-    func_02080cfc((M2C_UNK)&data_ov002_021f30f8, 0x6000000);
+    LoadDecompressedFileTo((M2C_UNK)&data_ov002_021f30f8, 0x6000000);
 
     for (i = 0; i < 0x400; i++) {
         M2C_UNK base = (M2C_UNK)gPlayerSettings;

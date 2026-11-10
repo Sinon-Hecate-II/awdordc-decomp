@@ -143,9 +143,9 @@ s32 func_ov007_02217d30(void *arg0) {
 }
 #pragma pop
 void func_ov007_02217f8c(void *arg0) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_02080cfc(s32, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadDecompressedFileTo(s32, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
@@ -160,7 +160,7 @@ void func_ov007_02217f8c(void *arg0) {
     u16 func_020aae44(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     s8 func_ov007_02211f00();
     s32 func_ov007_02211f30();
     M2C_UNK func_ov007_02211f40();
@@ -294,20 +294,20 @@ void func_ov007_02217f8c(void *arg0) {
         func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (s32) temp_r9_3, (s32) func_020aae44(temp_r6_3));
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x4C), 0x304);
-    func_0200bc5c(&data_ov007_02220030);
-    func_020e3218(&data_ov007_0222003c);
+    SetFileDirectory(&data_ov007_02220030);
+    GetLocalizedFileName(&data_ov007_0222003c);
     func_020814e4();
-    func_02081590(func_020e3218(&data_ov007_0222004c), M2C_FIELD(data_027e01d8, s32 *, 0x10));
-    func_02081590(func_020e3218(&data_ov007_0222005c), M2C_FIELD(data_027e01d8, s32 *, 0x24));
+    func_02081590(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(data_027e01d8, s32 *, 0x10));
+    func_02081590(GetLocalizedFileName(&data_ov007_0222005c), M2C_FIELD(data_027e01d8, s32 *, 0x24));
     func_02081528();
-    func_0208116c(&data_ov007_0222006c, 0, 0x20);
+    LoadFileToSpriteBuffer(&data_ov007_0222006c, 0, 0x20);
     M2C_FIELD(data_027e01d8, s16 *, 0x3A) = 0;
     M2C_FIELD(data_027e01d8, s16 *, 0x42) = 0;
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
-    func_02080cfc(func_020e3218(&data_ov007_0222007c), M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x7380);
-    func_0208116c(&data_ov007_02220088, 0x200, 0x20);
-    func_0200bc5c(&data_ov007_02220094);
-    func_0208116c(&data_ov007_022200a0, 0x240, 0x20);
+    LoadDecompressedFileTo(GetLocalizedFileName(&data_ov007_0222007c), M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x7380);
+    LoadFileToSpriteBuffer(&data_ov007_02220088, 0x200, 0x20);
+    SetFileDirectory(&data_ov007_02220094);
+    LoadFileToSpriteBuffer(&data_ov007_022200a0, 0x240, 0x20);
     M2C_FIELD(arg0, void **, 0x50) = func_020896f0(arg0);
     func_02089424();
     func_02088da8(M2C_FIELD(arg0, void **, 0x50));

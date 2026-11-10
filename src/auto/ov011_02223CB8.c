@@ -6,7 +6,7 @@ extern u8 data_02101f5c[],data_02101f0c[];
 void G3_UpdateIntroTiles(void *,u8,s16,u16,void *);
 void func_ov011_02223764(void *,s16,u8,void *);
 void G3_SubmitSpriteQuad(void *,int,int,s16,s16);
-int func_020e31e0(void);
+int GetLanguage(void);
 int EaseInterpolate(int,int,int,u16,int);
 void func_0208ffe4(int,int,int);
 void func_ov011_02224b9c(void *,int);
@@ -19,7 +19,7 @@ extern u16 gIntroAnimState[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
 void func_ov011_02223cb8(void *entry){
-void func_ov011_02222010(void *,s32,s32);void func_ov011_02224f00(void *);void func_0208f7d0(s32);
+void LoadOpeningScreenAssets(void *,s32,s32);void func_ov011_02224f00(void *);void func_0208f7d0(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 u8 color[2]={0};
 s32 savedEngine,bufIndex,screenEngine;
@@ -29,7 +29,7 @@ case 0:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 G3_SubmitSpriteQuad(entry,2,2,0x80,0x60);
-func_ov011_02222010(entry,3,0);
+LoadOpeningScreenAssets(entry,3,0);
 G3_UpdateIntroTiles(entry,0,0,0,color);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
@@ -113,7 +113,7 @@ case 8:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 func_ov011_02223764(entry,0,0,0);
-func_ov011_02222010(entry,6,0);
+LoadOpeningScreenAssets(entry,6,0);
 G3_UpdateIntroTiles(entry,0,0,0,color);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
@@ -155,22 +155,22 @@ void func_ov011_022242dc(void *p) {
   if (M2C_FIELD(p, u16 *, 0x34) == 343) func_02090034(0, 96);
   break;
  case 4:
-  if (func_020e31e0() == 5 || func_020e31e0() == 4) G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 20);
+  if (GetLanguage() == 5 || GetLanguage() == 4) G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 20);
   else G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 5);
   G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + EaseInterpolate(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
   break;
  case 5:
   if ((int)M2C_FIELD(p, u16 *, 0x34) - 650 > 20) {
-   if (func_020e31e0() == 5 || func_020e31e0() == 4) func_ov011_02223764(p, -108, 5, colors.bytes + 20);
+   if (GetLanguage() == 5 || GetLanguage() == 4) func_ov011_02223764(p, -108, 5, colors.bytes + 20);
    else func_ov011_02223764(p, -108, 5, colors.bytes + 5);
   } else {
-   if (func_020e31e0() == 5 || func_020e31e0() == 4) G3_UpdateIntroTiles(p, 5, 0x7fff, 48, colors.bytes + 20);
+   if (GetLanguage() == 5 || GetLanguage() == 4) G3_UpdateIntroTiles(p, 5, 0x7fff, 48, colors.bytes + 20);
    else G3_UpdateIntroTiles(p, 5, 0x7fff, 48, colors.bytes + 5);
   }
   G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + EaseInterpolate(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
   break;
  case 6:
-  mode = func_020e31e0() == 4 ? 4 : 5;
+  mode = GetLanguage() == 4 ? 4 : 5;
   G3_UpdateIntroTiles(p, mode, 108, 128, colors.bytes + 10);
   if ((int)M2C_FIELD(p, u16 *, 0x34) <= 618) {
    G3_SubmitSpriteQuad(p, 2, 2, (s16)(256 - EaseInterpolate(0, 0, 128, M2C_FIELD(p, u16 *, 0x34), 618)), 96);
@@ -178,7 +178,7 @@ void func_ov011_022242dc(void *p) {
   }
   break;
  case 7:
-  mode = func_020e31e0() == 4 ? 4 : 5;
+  mode = GetLanguage() == 4 ? 4 : 5;
   time = (u16)(M2C_FIELD(p, u16 *, 0x34) - 650);
   if (time == 0) { func_ov011_02224b9c(p, 4); func_0208ffe4(0, -1, 301); }
   if (time > 66) func_ov011_02223764(p, -98, mode, colors.bytes + 10);
@@ -186,11 +186,11 @@ void func_ov011_022242dc(void *p) {
   G3_UpdateIntroTiles(p, (u8)(mode | 128), 0x7fff, 128, colors.bytes + 10);
   break;
  case 8:
-  if (func_020e31e0() == 2) G3_UpdateIntroTiles(p, 130, 286, 0x8052, colors.bytes + 15);
+  if (GetLanguage() == 2) G3_UpdateIntroTiles(p, 130, 286, 0x8052, colors.bytes + 15);
   else if (M2C_FIELD(p, u16 *, 0x34) > 108 && M2C_FIELD(p, u16 *, 0x34) <= 168) {
    func_01ffac9c(0, 82, 0, data_02101f5c, 0);
    func_01ffac9c(128, 82, 32, data_02101f5c, 0);
-   if (func_020e31e0() == 4) func_01ffac9c(0, 74, 128, data_02101f0c, 0);
+   if (GetLanguage() == 4) func_01ffac9c(0, 74, 128, data_02101f0c, 0);
   } else G3_UpdateIntroTiles(p, 2, 108, 0x8052, colors.bytes + 15);
   break;
  case 9:

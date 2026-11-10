@@ -35,12 +35,12 @@ s32 func_0203d5d4(s32 unused, s32 arg1, s32 arg2, u8 *arg3, s32 arg4) {
 
 void func_0203d6c8(s32 unused, s32 connectionArg, s32 remoteAddressArg, s32 remotePortArg, s32 latency, u8 *requestMessage) {
     void *GetConnection(void);
-    s32 func_020390d4(void);
+    s32 FindFreePlayerSlot(void);
     void func_0205adc0(s32, void *, s32);
     void func_0203dc38(s32, s32);
     void func_0203dc18(void);
-    void *func_02039130(s32);
-    void *func_020391a8(s32);
+    void *GetPlayerConnectionSlot(s32);
+    void *GetPlayerPeer(s32);
     s32 func_0205adb4(s32, s32);
     s32 func_0206abd8(void *, s32, s32);
     void func_0205b058(void *, s32);
@@ -71,7 +71,7 @@ reject_state:
     return;
 
 find_slot:
-    connectionSlot = func_020390d4();
+    connectionSlot = FindFreePlayerSlot();
     if (connectionSlot == -1) {
         func_0205adc0(connection, data_020fc92c, -1);
         func_0203dc38(6, (s32)0xfffeabc4);
@@ -127,9 +127,9 @@ accept_connection:
         *(u16 *)((u8 *)matchState + 0x100 + 0xb0) = (u16)halfLatency;
     }
     {
-        void *connectionEntry = func_02039130(connectionSlot);
+        void *connectionEntry = GetPlayerConnectionSlot(connectionSlot);
         void *peerMetadata;
-        peerMetadata = func_020391a8(connectionSlot);
+        peerMetadata = GetPlayerPeer(connectionSlot);
         *(u32 *)connectionEntry = (u32)connection;
         entry = peerMetadata;
         matchState = GetConnection();

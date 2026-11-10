@@ -221,20 +221,20 @@ void func_020ceea8(void) {
 
 void func_020ceec8(void) {
 extern void **gCurrentMap;
-s32 func_0207dbfc(void);void func_0200bc5c(void*);void func_02080cfc(void*,void*);void func_0207db18(u8);
+s32 func_0207dbfc(void);void SetFileDirectory(void*);void LoadDecompressedFileTo(void*,void*);void func_0207db18(u8);
 u8 *p=(u8*)*gCurrentMap+0x5120;
 s32 value=func_0207dbfc();
 if(value==p[0x37])return;
 p=(u8*)*gCurrentMap+0xa60;
-func_0200bc5c(data_0212bcd4);
+SetFileDirectory(data_0212bcd4);
 switch(M2C_FIELD(*gCurrentMap,u8*,0x5157)){
-case 4:func_02080cfc(data_0212bce0,p+0x6000);break;
-case 5:func_02080cfc(data_0212bcf0,p+0x6000);break;
-case 6:func_02080cfc(data_0212bd04,p+0x6000);break;
-case 7:func_02080cfc(data_0212bd14,p+0x6000);break;
-case 8:func_02080cfc(data_0212bd28,p+0x6000);break;
-case 9:func_02080cfc(data_0212bd38,p+0x6000);break;
-default:func_02080cfc(data_0212bd48,p+0x6000);break;
+case 4:LoadDecompressedFileTo(data_0212bce0,p+0x6000);break;
+case 5:LoadDecompressedFileTo(data_0212bcf0,p+0x6000);break;
+case 6:LoadDecompressedFileTo(data_0212bd04,p+0x6000);break;
+case 7:LoadDecompressedFileTo(data_0212bd14,p+0x6000);break;
+case 8:LoadDecompressedFileTo(data_0212bd28,p+0x6000);break;
+case 9:LoadDecompressedFileTo(data_0212bd38,p+0x6000);break;
+default:LoadDecompressedFileTo(data_0212bd48,p+0x6000);break;
 }
 func_0207db18(M2C_FIELD(*gCurrentMap,u8*,0x5157));
 }

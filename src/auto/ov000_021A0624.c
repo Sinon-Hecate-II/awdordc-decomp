@@ -1,6 +1,8 @@
 /* 8 functions from 0x021A0624 to 0x021A11B0 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "ov000_unit_entry.h"
+#include "ov000_ai.h"
+#include "battle_map.h"
 extern u8 data_ov000_021e00ae[];
 extern u8 data_ov000_021b5c0f[];
 extern void **gCurrentMap;
@@ -57,7 +59,7 @@ M2C_FIELD(gAiState,u8*,3)=1;
 *data_ov000_021df580=5;
 }
 
-void func_ov000_021a08fc(void) {
+void InitAiTurn(void) {
 s32 func_ov000_021a18d8(void);s32 BuildAiTargetGroups(void);
 extern void *gAiState;extern u16 gPlayerUnitIdBase[];
 s32 i;UnkStruct_ov000_021A860C *entry;
@@ -70,10 +72,10 @@ entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 if(entry->unk0){
 M2C_FIELD(gAiState,u8 *,7)++;
 if(entry->unk0==21){
-if(M2C_FIELD(entry,u8 *,12))M2C_FIELD(gAiState,s32 *,16)+=func_ov000_021a0b20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,(u8 *)*gCurrentMap+0x59a4+M2C_FIELD(entry,u8 *,12)*14);
-if(M2C_FIELD(entry,u8 *,13))M2C_FIELD(gAiState,s32 *,16)+=func_ov000_021a0b20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,(u8 *)*gCurrentMap+0x59a4+M2C_FIELD(entry,u8 *,13)*14);
+if(M2C_FIELD(entry,u8 *,12))M2C_FIELD(gAiState,s32 *,16)+=GetAiUnitValue(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,(u8 *)*gCurrentMap+0x59a4+M2C_FIELD(entry,u8 *,12)*14);
+if(M2C_FIELD(entry,u8 *,13))M2C_FIELD(gAiState,s32 *,16)+=GetAiUnitValue(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,(u8 *)*gCurrentMap+0x59a4+M2C_FIELD(entry,u8 *,13)*14);
 }
-M2C_FIELD(gAiState,s32 *,16)+=func_ov000_021a0b20(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,entry);
+M2C_FIELD(gAiState,s32 *,16)+=GetAiUnitValue(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),0,entry);
 }
 }
 M2C_FIELD(gAiState,s32 *,16)=M2C_FIELD(gAiState,s32 *,16)*3>>1;
@@ -91,7 +93,7 @@ s32 n=func_020a7bbc(c);
 return func_0207c8ec(n*(func_020a886c(a,0)+100),100);
 }
 
-s32 func_ov000_021a0b20(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
+s32 GetAiUnitValue(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
 s32 func_0207c8ec(s32,M2C_UNK);
 s32 func_020a2668(void *,u8,u8);
 s32 func_020a7558(void *);

@@ -117,7 +117,7 @@ u8 func_020cf9f0(s32 arg0,s32 arg1) {
    byte 5 = height, then the per-tile ids at +0x54 mapped through func_0207f460);
    any other id is expanded from a resource by the generic loader. */
 void func_020cfa58(u32 id) {
-s32 func_020e34bc(s32); void *func_020e34f4(s32); s32 func_020c85c4(u32,void *); s32 func_0207f460(s32); M2C_UNK func_020e35cc(s32); void *func_020a8b1c(u32); void func_0200bc5c(void *); void func_02080cfc(void *,s32);
+s32 func_020e34bc(s32); void *func_020e34f4(s32); s32 func_020c85c4(u32,void *); s32 func_0207f460(s32); M2C_UNK func_020e35cc(s32); void *func_020a8b1c(u32); void SetFileDirectory(void *); void LoadDecompressedFileTo(void *,s32);
 s32 i; u8 *tileSet; u8 *tileIds; void *resource;
 data_02168f08=func_020e34bc(0xA12);
 if(id>=0xE1 && id<0x1A9){
@@ -134,7 +134,7 @@ resource=(void *)data_02168f08;
 func_020e35cc((s32)tileSet);return;
 }
 resource=func_020a8b1c(id);if(!resource)return;
-func_0200bc5c(data_0212bd5c);func_02080cfc(resource,data_02168f08);
+SetFileDirectory(data_0212bd5c);LoadDecompressedFileTo(resource,data_02168f08);
 }
 
 void func_020cfb54(void) {

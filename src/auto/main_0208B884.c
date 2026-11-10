@@ -146,11 +146,11 @@ void func_0208be8c(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 v
 }
 
 void func_0208bf7c(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
-s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK func_0208116c(M2C_UNK *,s32,M2C_UNK);void *func_02091270(s32,M2C_UNK,M2C_UNK);
+s32 func_02080e30(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *func_02091270(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
 packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
 M2C_FIELD(obj,s32 *,0x54)=func_02080e30(b,1);
-if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);func_0208116c(c,(count+16)<<5,32);}
+if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
 sub=func_02091270(M2C_FIELD(obj,s32 *,0x54),13,2);
 M2C_FIELD(obj,void **,0x4c)=sub;func_02091700(sub,0);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x30)=M2C_FIELD(obj,s32 *,0x50);
@@ -331,8 +331,8 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
-    s32 func_02080cfc(M2C_UNK *, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    s32 LoadDecompressedFileTo(M2C_UNK *, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     s32 func_020816f4();
     void func_0208c69c(M2C_UNK);
     void func_0208c6fc(void);
@@ -349,14 +349,14 @@ s32 func_0208c5fc(M2C_UNK arg0, s32 arg1, s32 arg2) {
     StringCopy(sp0, temp_r0);
     func_02068d68(sp0, &data_02102874);
     func_0208c69c(arg0);
-    temp_r4 = func_02080cfc(sp20, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
-    func_0208116c(sp0, (arg2 + 0x10) << 5, 0x20);
+    temp_r4 = LoadDecompressedFileTo(sp20, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
+    LoadFileToSpriteBuffer(sp0, (arg2 + 0x10) << 5, 0x20);
     func_0208c6fc();
     return temp_r4;
 }
 
 void func_0208c69c(M2C_UNK arg0) {
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK func_02068d68(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_020814e4(M2C_UNK *);
@@ -373,7 +373,7 @@ void func_0208c69c(M2C_UNK arg0) {
     }
     StringCopy(sp0, arg0);
     func_02068d68(sp0, &data_02102878);
-    func_0200bc5c(&data_02102880);
+    SetFileDirectory(&data_02102880);
     func_020814e4(sp0);
 }
 

@@ -103,9 +103,9 @@ s32 func_ov000_0216b15c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_01ff9e44(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0200bc5c(M2C_UNK *);
+    M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02080cfc(M2C_UNK *, s32);
+    M2C_UNK LoadDecompressedFileTo(M2C_UNK *, s32);
     s32 func_02080e30(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020814e4();
     M2C_UNK func_02081528();
@@ -117,8 +117,8 @@ void func_ov000_0216b194(void *arg0) {
     s8 GetSpriteAnimValue(s32);
     M2C_UNK func_020a92bc(void *, s32);
     s32 func_020cfb78();
-    s32 func_020e31e0();
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLanguage();
+    s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020e35cc(s32);
     extern M2C_UNK gMapConfig;
     extern s32 *gCurrentMap;
@@ -154,7 +154,7 @@ void func_ov000_0216b194(void *arg0) {
     u8 temp_r0_21;
     u8 temp_r0_22;
 
-    func_0200bc5c(&data_ov000_021b869c);
+    SetFileDirectory(&data_ov000_021b869c);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0x16) = 0x10;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0x14) = 0x1A;
     if (M2C_FIELD(arg0, u8 *, 0x3D) != 0) {
@@ -190,19 +190,19 @@ void func_ov000_0216b194(void *arg0) {
     {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x1000;}
     {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=p[0]|0x2000;}
     off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x6E80;
-    func_02080cfc(&data_ov000_021b86a8, off);
+    LoadDecompressedFileTo(&data_ov000_021b86a8, off);
     off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8280;
-    func_02080cfc(&data_ov000_021b86b0, off);
-    func_020e3218(&data_ov000_021b86b8);
+    LoadDecompressedFileTo(&data_ov000_021b86b0, off);
+    GetLocalizedFileName(&data_ov000_021b86b8);
     func_020814e4();
     off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    res = func_020e3218(&data_ov000_021b86c4);
+    res = GetLocalizedFileName(&data_ov000_021b86c4);
     func_02081590(res, off + 0x6B80);
     off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    res = func_020e3218(&data_ov000_021b86cc);
+    res = GetLocalizedFileName(&data_ov000_021b86cc);
     func_02081590(res, off + 0x8640);
     off = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    res = func_020e3218(&data_ov000_021b86d4);
+    res = GetLocalizedFileName(&data_ov000_021b86d4);
     func_02081590(res, off + 0x87C0);
     func_02081528();
     temp_r0_18 = func_02080e30(&data_ov000_021b86e0, 1);
@@ -218,7 +218,7 @@ void func_ov000_0216b194(void *arg0) {
     if ((s32) temp_r0_19 > 0x40) {
         M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (M2C_FIELD(arg0, s16 *, 0x3E) - (temp_r0_19 - 0x40));
     }
-    if (func_020e31e0() == 2) {
+    if (GetLanguage() == 2) {
         temp_r0_20 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_20) {
         case 1:
@@ -244,8 +244,8 @@ void func_ov000_0216b194(void *arg0) {
             break;
         }
         if (var_r0 == 0) {
-            func_02080cfc(&data_ov000_021b86e8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
-            func_02080cfc(&data_ov000_021b86f8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
+            LoadDecompressedFileTo(&data_ov000_021b86e8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
+            LoadDecompressedFileTo(&data_ov000_021b86f8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
         } else {
             goto block_24;
         }
@@ -275,7 +275,7 @@ block_24:
             var_r3 = 0;
             break;
         }
-        func_02080cfc(data_ov000_021b83b0[var_r3], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
+        LoadDecompressedFileTo(data_ov000_021b83b0[var_r3], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
         temp_r0_22 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_22) {
         case 1:
@@ -300,7 +300,7 @@ block_24:
             var_r3_2 = 0;
             break;
         }
-        func_02080cfc(data_ov000_021b83c4[var_r3_2], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
+        LoadDecompressedFileTo(data_ov000_021b83c4[var_r3_2], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
     }
     func_020808dc(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);

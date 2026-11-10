@@ -739,8 +739,8 @@ func_ov001_0218118c kind:function(arm,size=0x134) addr:0x0218118c
 func_ov001_021812c0 kind:function(arm,size=0x3c) addr:0x021812c0
 func_ov001_021812fc kind:function(arm,size=0x84) addr:0x021812fc
 func_ov001_02181380 kind:function(arm,size=0x1a4) addr:0x02181380
-func_ov001_02181524 kind:function(arm,size=0x7c) addr:0x02181524
-func_ov001_021815a0 kind:function(arm,size=0x1f4) addr:0x021815a0
+Ov001_UpdateMenuCursor kind:function(arm,size=0x7c) addr:0x02181524
+Ov001_MoveMenuRegion kind:function(arm,size=0x1f4) addr:0x021815a0
 func_ov001_02181794 kind:function(arm,size=0x90) addr:0x02181794
 func_ov001_02181824 kind:function(arm,size=0x16c) addr:0x02181824
 func_ov001_02181990 kind:function(arm,size=0x24) addr:0x02181990
@@ -1661,7 +1661,7 @@ data_ov001_02193dbc kind:bss addr:0x02193dbc
 data_ov001_02193dc0 kind:bss addr:0x02193dc0
 data_ov001_02193dc4 kind:bss addr:0x02193dc4
 data_ov001_02193dc8 kind:bss addr:0x02193dc8
-data_ov001_02193dcc kind:bss addr:0x02193dcc
+gOv001MenuRegion kind:bss addr:0x02193dcc
 data_ov001_02193dd0 kind:bss addr:0x02193dd0
 data_ov001_02193dd4 kind:bss addr:0x02193dd4
 data_ov001_02193ddc kind:bss addr:0x02193ddc

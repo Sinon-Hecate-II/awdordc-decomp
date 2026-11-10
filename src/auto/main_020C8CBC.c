@@ -405,8 +405,8 @@ u8 func_020c98b4(void) {
 
 s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK func_01ffa770(M2C_UNK *);
-    void func_0200bc5c(M2C_UNK *);
-    M2C_UNK func_020e3218(M2C_UNK *);
+    void SetFileDirectory(M2C_UNK *);
+    M2C_UNK GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK func_01ffa3dc(M2C_UNK *, s32);
@@ -456,8 +456,8 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     if (mode != 0 && mode != 1 && mode != 2) goto second_path;
 
     if (func_01ffa770(&data_0212b3e4) == 0) {
-        func_0200bc5c(&data_0212b77c);
-        func_020813c4(func_020e3218(&data_0212b788), 0x329a0);
+        SetFileDirectory(&data_0212b77c);
+        func_020813c4(GetLocalizedFileName(&data_0212b788), 0x329a0);
         func_0208143c(&data_0212b794, 0x1560, 0x20);
     }
     obj = (void *)func_01ffa3dc(&data_0212b3e4, 7);

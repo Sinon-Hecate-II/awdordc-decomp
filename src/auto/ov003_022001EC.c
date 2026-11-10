@@ -118,20 +118,20 @@ s32 func_ov003_02200534(u32 arg0) {
 s32 func_ov003_0220058c(u32 a){switch(a){case 1:return 0x4e5b;case 2:return 0x76b2;case 3:return 0x46f9;case 4:return 0x5274;default:return 0;}}
 
 void func_ov003_022005e4(s32 arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02080cfc(s32, s32);
-    M2C_UNK func_0208116c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK LoadDecompressedFileTo(s32, s32);
+    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_020814ac(s32, s32, M2C_UNK, s32);
     s32 func_020a2360(s32);
     s32 func_020ae7a4(s32, s32, s32);
-    s32 func_020e3218(M2C_UNK *);
+    s32 GetLocalizedFileName(M2C_UNK *);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_0221042c;
     extern M2C_UNK data_ov003_02210440;
     u8 i;
 
-    func_02080cfc(func_020e3218(&data_ov003_0221042c), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
+    LoadDecompressedFileTo(GetLocalizedFileName(&data_ov003_0221042c), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
     func_020814ac(func_ov003_02200520(arg2), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0x20), 0, arg1);
-    func_0208116c(&data_ov003_02210440, arg1 << 5, 0x40);
+    LoadFileToSpriteBuffer(&data_ov003_02210440, arg1 << 5, 0x40);
     if (arg2 <= 1U) {
         return;
     }
