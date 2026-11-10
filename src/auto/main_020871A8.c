@@ -24,10 +24,10 @@ void func_020871a8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 arg5) {
 }
 
 void func_0208726c(s32 *x, s32 *y, s32 angle, s32 dist) {
-    extern s16 data_020e5b30[];
+    extern s16 gSinCosTable[];
     s32 i = (angle >> 4) * 2;
-    s32 a = data_020e5b30[i];
-    s32 b = data_020e5b30[i + 1];
+    s32 a = gSinCosTable[i];
+    s32 b = gSinCosTable[i + 1];
     s32 d = -dist;
     s32 p = -(d * a);
     s32 q = d * b;

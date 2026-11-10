@@ -38,8 +38,8 @@ void func_ov004_022120c0(void *arg0) {
     extern M2C_UNK data_ov004_02218e70;
     extern s32 gCurrentMap;
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
 
     register void *a0 asm("r10") = arg0;
     register s32 i asm("r9");
@@ -76,12 +76,12 @@ void func_ov004_022120c0(void *arg0) {
 
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            e = data_027e00c8;
+            e = g3DSpriteEngineMain;
         } else {
-            e = data_027e00c4;
+            e = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = e;
-        if (e == data_027e00c4) {
+        if (e == g3DSpriteEngineSub) {
             func_020822b8(tmp);
             func_0200bc5c(&data_ov004_02218df8);
             func_02080cfc(&data_ov004_02218e04, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
@@ -154,30 +154,30 @@ void func_ov004_022120c0(void *arg0) {
 }
 
 void func_ov004_022124e0(s32 x,s32 y,s32 z,s32 number) {
-void func_01ffaacc(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK data_027e005c,data_027e006c;
-func_01ffaacc((u16)x,(u16)y,(u16)(z+SpriteTile124(14)),&data_027e005c,11);
-func_01ffaacc((u16)(x+32),(u16)y,(u16)(z+SpriteTile124(18)),&data_027e005c,11);
-func_01ffaacc((u16)(x+64),(u16)y,(u16)(z+SpriteTile124(number/10+22)),&data_027e006c,11);
-func_01ffaacc((u16)(x+72),(u16)y,(u16)(z+SpriteTile124(number%10+22)),&data_027e006c,11);
+void AddSprite(u16,u16,u16,void *,s32);extern s32 gCur3DSpriteEngine;extern M2C_UNK data_027e005c,data_027e006c;
+AddSprite((u16)x,(u16)y,(u16)(z+SpriteTile124(14)),&data_027e005c,11);
+AddSprite((u16)(x+32),(u16)y,(u16)(z+SpriteTile124(18)),&data_027e005c,11);
+AddSprite((u16)(x+64),(u16)y,(u16)(z+SpriteTile124(number/10+22)),&data_027e006c,11);
+AddSprite((u16)(x+72),(u16)y,(u16)(z+SpriteTile124(number%10+22)),&data_027e006c,11);
 }
 
 void func_ov004_02212688(s32 x, s32 y, s32 z)
 {
-  void func_01ffaacc(u16, u16, u16, void *, s32);
+  void AddSprite(u16, u16, u16, void *, s32);
   extern M2C_UNK data_027e005c;
-  func_01ffaacc((u16) x, (u16) y, (u16) z, &data_027e005c, 11);
-  func_01ffaacc((u16) (x + 32), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
-  func_01ffaacc((u16) (x + 64), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
-  func_01ffaacc((u16)((x + 96) | 4096), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
-  func_01ffaacc((u16) ((x + 128) | 4096), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
+  AddSprite((u16) x, (u16) y, (u16) z, &data_027e005c, 11);
+  AddSprite((u16) (x + 32), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
+  AddSprite((u16) (x + 64), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
+  AddSprite((u16)((x + 96) | 4096), (u16) y, (u16) (z + SpriteTile124(8)), &data_027e005c, 11);
+  AddSprite((u16) ((x + 128) | 4096), (u16) y, (u16) (z + SpriteTile124(4)), &data_027e005c, 11);
   x = (x+160)|4096;
-  func_01ffaacc((u16)x,(u16)y,(u16)z,&data_027e005c,11);
+  AddSprite((u16)x,(u16)y,(u16)z,&data_027e005c,11);
 }
 
 void func_ov004_0221285c(void) {
     M2C_UNK func_02082770();
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r7;
     s32 var_r1;
@@ -187,12 +187,12 @@ void func_ov004_0221285c(void) {
     var_r8 = 0;
     do {
         if (var_r8 == 0) {
-            var_r1 = data_027e00c8;
+            var_r1 = g3DSpriteEngineMain;
         } else {
-            var_r1 = data_027e00c4;
+            var_r1 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r1;
-        if (var_r1 == data_027e00c4) {
+        if (var_r1 == g3DSpriteEngineSub) {
             func_02082770();
         }
         var_r8 += 1;

@@ -255,15 +255,15 @@ void *func_0208b630(void *arg0) {
 }
 
 void func_0208b698(M2C_UNK arg0, M2C_UNK arg1) {
-extern void *data_027e00c4;extern void *data_027e00c8;extern void *gCur3DSpriteEngine;
+extern void *g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern void *gCur3DSpriteEngine;
 s16 func_0209b91c(M2C_UNK,M2C_UNK);
 void *old; s32 i; void *p; u32 mode;
 old=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)p=data_027e00c8;else p=data_027e00c4;
+if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
 mode=(u32)(M2C_FIELD(arg0,u8 *,0x48)<<28)>>29;
-if(((mode!=0)||(p==data_027e00c8))&&((mode!=1)||(p==data_027e00c4))&&((mode!=3)||(p==old))){
+if(((mode!=0)||(p==g3DSpriteEngineMain))&&((mode!=1)||(p==g3DSpriteEngineSub))&&((mode!=3)||(p==old))){
 M2C_FIELD(arg0,s16 *,0x58)=func_0209b91c((u8 *)M2C_FIELD(p,void **,0x1c)+((M2C_FIELD(arg0,u16 *,0x3e)<<5)+0x400),arg1);
 M2C_FIELD(arg0,s16 *,0x5a)=0;M2C_FIELD(arg0,u8 *,0x5c)=0;
 }i++;
@@ -278,7 +278,7 @@ void func_0208b758(M2C_UNK arg0, M2C_UNK arg1) {
 
 /* Refresh the display banks selected by the entity's mode, then allocate and link a handle for it. */
 void func_0208b778(void *entity) {
-    extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     extern u8 data_0211e1ec[], data_0211e12c[];
     void *savedBank;
     void *bank;
@@ -289,14 +289,14 @@ void func_0208b778(void *entity) {
     i = 0;
     do {
         if (i == 0) {
-            bank = data_027e00c8;
+            bank = g3DSpriteEngineMain;
         } else {
-            bank = data_027e00c4;
+            bank = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = bank;
         mode = (u32)(M2C_FIELD(entity, u8 *, 0x48) << 28) >> 29;
-        if ((mode != 0 || bank == data_027e00c8) &&
-            (mode != 1 || bank == data_027e00c4) &&
+        if ((mode != 0 || bank == g3DSpriteEngineMain) &&
+            (mode != 1 || bank == g3DSpriteEngineSub) &&
             (mode != 3 || bank == savedBank)) {
             func_0207c780(data_0211e1ec, M2C_FIELD(bank, u8 **, 0x1C) + (M2C_FIELD(entity, u16 *, 0x3E) << 5));
             func_01ff9e44(data_0211e12c, ((u16)((u32)(M2C_FIELD(entity, u32 *, 0x40) << 6) >> 24) + 16) << 5, 32);

@@ -21,7 +21,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     M2C_UNK func_020a23b4(s32);
     M2C_UNK func_020cfb94();
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_02210484[];
     u8 participantSlots[4];
     s32 savedSpriteEngine;
@@ -64,7 +64,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         }
     }
     savedSpriteEngine = (s32) gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     player = 0;
     do {
         appearance = (u8) func_020a22fc(player + 1);

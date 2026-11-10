@@ -7,11 +7,11 @@ extern u8 data_02157718[4];
 
 void func_02086208(s32 a){
 void *func_01ffa770(M2C_UNK *);s16 func_0207c8ec(s32,s32);s32 func_01ffa3dc(M2C_UNK *,s32);void *func_ov010_02229b00(void);void *func_02082028(s32);
-extern M2C_UNK data_021021d0,data_021021c4;extern s32 gCur3DSpriteEngine,data_027e00c4;
+extern M2C_UNK data_021021d0,data_021021c4;extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 s32 saved;void *p;void *q;
 if(func_02084644()!=2)return;
 if(func_01ffa770(&data_021021d0))return;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 p=(void *)func_01ffa3dc(&data_021021d0,a);
 if(p){
 M2C_FIELD(p,void **,0)=&data_021021c4;

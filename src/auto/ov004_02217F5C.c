@@ -44,8 +44,8 @@ void func_ov004_02217f5c(void *arg0) {
     s32 func_020e3218(M2C_UNK *);
     M2C_UNK func_ov003_021fef58(void *);
     M2C_UNK func_ov003_021ff36c();
-    extern void **data_027e00c4;
-    extern void **data_027e00c8;
+    extern void **g3DSpriteEngineSub;
+    extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
     extern M2C_UNK data_ov004_02218bc4;
     extern M2C_UNK data_ov004_0223c5a8;
@@ -123,7 +123,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_0200323c(0x80);
     func_020032bc(0x100);
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020822b8((u16 *)&sp30);
     temp_r1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp2C = temp_r1;
@@ -143,7 +143,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_02082770();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020822b8((u16 *)&sp3C);
     temp_r1_5 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp18 = temp_r1_5;
@@ -163,7 +163,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_02082770();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_0200bc5c(&data_ov004_0223c5a8);
     func_02081384(&data_ov004_0223c5f4, 0);
     func_02081400(&data_ov004_0223c5b8, 0, 0x200);
@@ -334,8 +334,8 @@ void func_ov004_022188c4(void *a){extern void **gCurrentMap;extern u32 data_0215
 /* Advance a 16-frame transition, linearly raising the 3D sprite engine's visibility and setting its display flags. */
 void func_ov004_02218950(void *transition) {
     void func_01ffa6fc(void *);
-    s8 func_0207ca38(M2C_UNK, M2C_UNK, M2C_UNK, u8, s32);
-    extern void **data_027e00c8;
+    s8 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, u8, s32);
+    extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
     u16 *volatile flagsC0;
     u16 *volatile flags01;
@@ -363,10 +363,10 @@ void func_ov004_02218950(void *transition) {
     void *engine;
 
     M2C_FIELD(transition, u8 *, 0x36) = (u8) (M2C_FIELD(transition, u8 *, 0x36) + 1);
-    visibility = func_0207ca38(0, 0, 8, M2C_FIELD(transition, u8 *, 0x36), 0x10);
+    visibility = EaseInterpolate(0, 0, 8, M2C_FIELD(transition, u8 *, 0x36), 0x10);
     previousEngine = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
-    engine = *data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    engine = *g3DSpriteEngineMain;
     flagsC0 = engine + 0x12;
     *flagsC0 = (s16) ((*flagsC0 & ~0xC0) | 0xC0);
     M2C_FIELD(*gCur3DSpriteEngine, s8 *, 0x51) = 0;

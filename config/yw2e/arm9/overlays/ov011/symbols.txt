@@ -10,7 +10,7 @@ func_ov011_02222010 kind:function(arm,size=0x1f4) addr:0x02222010
 func_ov011_02222204 kind:function(arm,size=0x2a4) addr:0x02222204
 func_ov011_022224a8 kind:function(arm,size=0x388) addr:0x022224a8
 func_ov011_02222830 kind:function(arm,size=0x9c8) addr:0x02222830
-func_ov011_022231f8 kind:function(arm,size=0x56c) addr:0x022231f8
+G3_UpdateIntroTiles kind:function(arm,size=0x56c) addr:0x022231f8
 func_ov011_02223764 kind:function(arm,size=0x40c) addr:0x02223764
 func_ov011_02223b70 kind:function(arm,size=0x148) addr:0x02223b70
 func_ov011_02223cb8 kind:function(arm,size=0x624) addr:0x02223cb8
@@ -76,9 +76,9 @@ func_ov011_02227ef4 kind:function(arm,size=0x14) addr:0x02227ef4
 data_ov011_02227f08 kind:data(any) addr:0x02227f08
 data_ov011_02227f28 kind:data(any) addr:0x02227f28
 data_ov011_02227f3c kind:data(any) addr:0x02227f3c
-data_ov011_02227f50 kind:data(any) addr:0x02227f50
+gIntroStateDurations kind:data(any) addr:0x02227f50
 data_ov011_02227f64 kind:data(any) addr:0x02227f64
-data_ov011_02227fa0 kind:data(any) addr:0x02227fa0
+gIntroRevealedTiles kind:data(any) addr:0x02227fa0
 data_ov011_02227fa4 kind:data(any) addr:0x02227fa4
 data_ov011_02228294 kind:data(any) addr:0x02228294
 data_ov011_022282a0 kind:data(any) addr:0x022282a0
@@ -227,5 +227,5 @@ data_ov011_02228c38 kind:data(any) addr:0x02228c38
 data_ov011_02228c50 kind:data(any) addr:0x02228c50
 data_ov011_02228c88 kind:data(any) addr:0x02228c88
 data_ov011_02228ca4 kind:data(any) addr:0x02228ca4
-data_ov011_02228ce0 kind:bss addr:0x02228ce0
+gIntroAnimState kind:bss addr:0x02228ce0
 data_ov011_02228cec kind:bss addr:0x02228cec

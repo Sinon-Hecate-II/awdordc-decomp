@@ -250,7 +250,7 @@ void func_ov003_021f2bf0(s32 arg0) {
     void func_020852a8(void);
     void func_ov003_021f1884(s32);
     void func_ov003_021f2e98(s32);
-    extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     extern M2C_UNK data_ov003_0220fcb4;
     extern M2C_UNK data_ov003_0220fca8;
 
@@ -276,9 +276,9 @@ void func_ov003_021f2bf0(s32 arg0) {
     temp_r11 = (u16 **)gCur3DSpriteEngine;
     do {
         if (var_r9 == 0) {
-            var_r0 = (u16 **)data_027e00c8;
+            var_r0 = (u16 **)g3DSpriteEngineMain;
         } else {
-            var_r0 = (u16 **)data_027e00c4;
+            var_r0 = (u16 **)g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = (void *)var_r0;
         temp_r0 = *var_r0;

@@ -55,18 +55,18 @@ void func_ov003_021f6724(void *arg0) {
 
 #pragma opt_instruction_scheduling off
 void func_ov003_021f676c(UnkUnitOv003 *arg0) {
-    extern void *gCur3DSpriteEngine, *data_027e00c8, *data_027e00c4;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     extern u8 data_027e00b4[8];
     extern u8 data_ov003_0220fe00[28];
     extern u8 data_ov003_0220fdf2[14];
-    void func_020a8f8c(void *);
+    void UpdateSpriteAnimation(void *);
     void func_020ab2c4(void *);
-    s16 func_020a8ff4(void *);
+    s16 GetSpriteAnimValue(void *);
     void func_02088e84(void *, s16, s16, s16, s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
-    void func_01ffaacc(s32, s32, u16, void *, s32);
+    void AddSprite(s32, s32, u16, void *, s32);
     s32 func_ov003_021f400c(void);
     s32 func_ov003_021f4064(void);
     u16 func_ov003_021fbcd8(void *, s32);
@@ -166,9 +166,9 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     }
     if (cond & 0xff) {
 L1:
-        func_020a8f8c(arg0->f60 + 0x20);
+        UpdateSpriteAnimation(arg0->f60 + 0x20);
         func_020ab2c4(arg0->f4C);
-        func_020a8f8c(arg0->f44 + 0x1C);
+        UpdateSpriteAnimation(arg0->f44 + 0x1C);
     }
     if (arg0->state == 0) {
         cond = 1;
@@ -225,11 +225,11 @@ L1:
     }
     if (cond & 0xff) {
 L2:
-        func_020a8f8c(arg0->f58);
-        func_020a8f8c(arg0->f64);
+        UpdateSpriteAnimation(arg0->f58);
+        UpdateSpriteAnimation(arg0->f64);
         sp14 = gCur3DSpriteEngine;
-        gCur3DSpriteEngine = data_027e00c8;
-        temp_r5 = func_020a8ff4(arg0->f64);
+        gCur3DSpriteEngine = g3DSpriteEngineMain;
+        temp_r5 = GetSpriteAnimValue(arg0->f64);
         if (arg0->state == 0) {
             cond = 1;
         } else {
@@ -308,11 +308,11 @@ L3:
         }
         if (!(cond & 0xff)) {
             var_r0 = (s16) temp_r5;
-            func_01ffaacc(0, (u8) var_r0, (u16) (0xB800 | ((0x48C >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_ov003_0220fe00, 0xB);
+            AddSprite(0, (u8) var_r0, (u16) (0xB800 | ((0x48C >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_ov003_0220fe00, 0xB);
         }
         if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
             var_r0 = 0xA0 - temp_r5;
-            func_01ffaacc(0xC0, (u8) var_r0, (u16) (0xB000 | ((0x4CC >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_027e00b4, 0xB);
+            AddSprite(0xC0, (u8) var_r0, (u16) (0xB000 | ((0x4CC >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_027e00b4, 0xB);
         }
         if (arg0->state == 4) {
             cond = 1;
@@ -346,7 +346,7 @@ L600:
 L608:
                 q = M2C_FIELD(arg0->f60, s16 *, 4);
                 temp_r9 = (s16) ((((s16) M2C_FIELD(arg0->f60, s32 *, 0x10)) + 1) * q);
-                temp_r5 = func_020a8ff4(arg0->f60 + 0x20);
+                temp_r5 = GetSpriteAnimValue(arg0->f60 + 0x20);
                 r11r = func_0207c8ec(temp_r9, 2);
                 w = func_0207c8ec(temp_r9, 2);
                 pv = func_ov003_021f3fa0((s16) (temp_r5 + (s16) ((lim - i) * q)), (s16) (-r11r), (s16) w);
@@ -359,13 +359,13 @@ L698:
                     if (temp_r9 < -0xC0) {
                         temp_r5 = (temp_r9 + 0x1C0) & 0xFF;
                         if (func_ov003_021f3f24(temp_r5, 4, 0x40, 0x20)) {
-                            func_01ffaacc((u16) (temp_r5 & 0x1FF), (u16) cv, (u16) (0x7400 | (0x3FF & ((temp_v6 + 0x340) >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
+                            AddSprite((u16) (temp_r5 & 0x1FF), (u16) cv, (u16) (0x7400 | (0x3FF & ((temp_v6 + 0x340) >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                         }
                     }
                 }
                 if (func_ov003_021f3f24(temp_r9, 4, 0x40, 0x20)) {
                     temp_v6 = temp_v6 + 0x340;
-                    func_01ffaacc((u16) (temp_r9 & 0x1FF), (u16) cv, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (0x3FF & (temp_v6 >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
+                    AddSprite((u16) (temp_r9 & 0x1FF), (u16) cv, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (0x3FF & (temp_v6 >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                 }
                 goto L8BC;
 L7E0:
@@ -378,7 +378,7 @@ L7E0:
                 do {
                     temp_r4 = (s16) (temp_r9 + d);
                     if (func_ov003_021f3f24(temp_r4, 4, 0x40, 0x20)) {
-                        func_01ffaacc((u16) (temp_r4 & c1), cval, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (c3 & (r11r >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
+                        AddSprite((u16) (temp_r4 & c1), cval, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (c3 & (r11r >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                     }
                     d = d + r7v;
                     ctr = (s8) (ctr + 1);
@@ -390,15 +390,15 @@ LEND:
             ;
         }
         {
-            s32 v = func_020a8ff4(arg0->f58);
+            s32 v = GetSpriteAnimValue(arg0->f58);
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = (s16) (-v);
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
         }
-        func_ov003_021fad10(arg0, (s16) (func_020a8ff4(arg0->f58) + 6), 0x28);
+        func_ov003_021fad10(arg0, (s16) (GetSpriteAnimValue(arg0->f58) + 6), 0x28);
         gCur3DSpriteEngine = sp14;
     }
     old = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (arg0->state == 0) {
         cond = 1;
     } else {
@@ -438,7 +438,7 @@ LEND:
     }
     if (cond & 0xff) {
 L4:
-        temp_var = func_020a8ff4(arg0->f58);
+        temp_var = GetSpriteAnimValue(arg0->f58);
     } else {
         if (arg0->state == 1) {
             cond = 1;
@@ -477,7 +477,7 @@ L5:
     func_ov003_021f9fe0(arg0, temp_var, 0);
     func_ov003_021f9e50(arg0, temp_var, 0);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3E) = (s16) (-0x2C - temp_var);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x46) = (s16) data_027e00c4;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x46) = (s16) g3DSpriteEngineSub;
     gCur3DSpriteEngine = old;
 }
 #pragma opt_instruction_scheduling reset

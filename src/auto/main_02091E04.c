@@ -343,13 +343,13 @@ s32 func_02092460(void *arg0) {
 
 s32 func_02092494(void *arg0) {
     s32 func_01ffa7b4(s32);
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *temp_r5;
     u8 var_r1;
 
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     if (func_01ffa7b4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
         var_r1 = 1;
     } else {
@@ -365,13 +365,13 @@ s32 func_02092494(void *arg0) {
 
 s32 func_020924f8(void *arg0) {
     s32 func_01ffa7b4(s32);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r5;
     u8 var_r1;
 
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (func_01ffa7b4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
         var_r1 = 1;
     } else {
@@ -455,16 +455,16 @@ s32 func_020926f8(s32 arg0) {
  u8 func_02091e24(void); s32 func_02091e70(s32); s32 func_02091da8(void); s32 func_02091f18(s32);
  s32 func_0209bd60(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK func_0209707c(void);
- extern void *gCur3DSpriteEngine; extern void *data_027e00c8; extern void *data_027e00c4;
+ extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 saved; void *old; s32 r10,r9; void *r8,*r7,*r6,*r5ptr,*tmp,*result; u32 sp8;
  saved=func_02086680(arg0);
  func_02099e10(); func_020943e0(); func_02094424();
  if(func_02099dcc(saved)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
  old=gCur3DSpriteEngine;
  for(r10=0;r10<2;r10++){
- if(r10==0)gCur3DSpriteEngine=data_027e00c8;else gCur3DSpriteEngine=data_027e00c4;
- if(func_02091e24()==0 && gCur3DSpriteEngine!=data_027e00c8)goto next;
- if(func_02091e24()==1 && gCur3DSpriteEngine!=data_027e00c4)goto next;
+ if(r10==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
+ if(func_02091e24()==0 && gCur3DSpriteEngine!=g3DSpriteEngineMain)goto next;
+ if(func_02091e24()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
  if(func_02091e24()==3 && gCur3DSpriteEngine!=old)goto next;
  r9=func_02091e70(2); r8=(void *)func_02091da8();r7=(void *)func_02091da8();
  r6=(void *)func_02091f18(2);r5ptr=(void *)func_02091f18(2);tmp=(void *)func_02091f18(2);

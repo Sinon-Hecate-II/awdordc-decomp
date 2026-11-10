@@ -328,20 +328,20 @@ void func_02098844(u32 layout, s32 col, s32 row, s32 vramBase, u16 startTile, u1
 }
 
 void func_02098970(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020ae67c(M2C_UNK, s32);
     M2C_UNK func_020ae728(M2C_UNK, s32);
     if (arg1 & 1) {
-        func_020ae548(arg0, 0, 0xA, 6, arg2);
+        BlendPalette(arg0, 0, 0xA, 6, arg2);
     }
     if (arg1 & 8) {
-        func_020ae548(arg0, 0, 8, 8, arg2);
+        BlendPalette(arg0, 0, 8, 8, arg2);
     }
     if (arg1 & 0x10) {
-        func_020ae548(arg0, 0, 4, 0xC, arg2);
+        BlendPalette(arg0, 0, 4, 0xC, arg2);
     }
     if (arg1 & 0x20) {
-        func_020ae548(arg0, 0, 0, 0x10, arg2);
+        BlendPalette(arg0, 0, 0, 0x10, arg2);
     }
     if (arg1 & 2) {
         func_020ae67c(arg0, arg2);

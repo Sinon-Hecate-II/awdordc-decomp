@@ -283,10 +283,10 @@ void func_020a434c(void) {
 }
 
 void func_020a445c(void) {
-extern s32 gCur3DSpriteEngine,data_027e00c8;extern s32 *gCurrentMap;
+extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;extern s32 *gCurrentMap;
 void func_020a4250(void);void func_020a434c(void);
 s32 old=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 switch(M2C_FIELD(*gCurrentMap,u8 *,0x5158)){case 0:break;case 1:func_020a4154();break;case 2:func_020a4250();break;case 3:func_020a434c();break;}
 gCur3DSpriteEngine=old;
 }

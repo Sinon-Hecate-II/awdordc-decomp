@@ -191,7 +191,7 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
     M2C_UNK func_0207c55c(s32, M2C_UNK, s32, M2C_UNK);
     s32 func_020815bc(M2C_UNK, s32);
     M2C_UNK func_0208166c();
-    M2C_UNK func_020ae548(s32, s32, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK BlendPalette(s32, s32, M2C_UNK, M2C_UNK, s32);
     s32 handle;
 
     switch (mode) {
@@ -200,17 +200,17 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
         return;
     case 1:
         handle = func_020815bc(channel, duration);
-        func_020ae548(handle, 0x7fff, 14, 2, duration);
+        BlendPalette(handle, 0x7fff, 14, 2, duration);
         func_0207c55c(handle, sound, duration, 1);
         return;
     case 2:
         handle = func_020815bc(channel, duration);
-        func_020ae548(handle, 0x4000, 14, 2, duration);
+        BlendPalette(handle, 0x4000, 14, 2, duration);
         func_0207c55c(handle, sound, duration, 1);
         return;
     case 3:
         handle = func_020815bc(channel, duration);
-        func_020ae548(handle, 0x3ff, 14, 2, duration);
+        BlendPalette(handle, 0x3ff, 14, 2, duration);
         func_0207c55c(handle, sound, duration, 1);
         return;
     }

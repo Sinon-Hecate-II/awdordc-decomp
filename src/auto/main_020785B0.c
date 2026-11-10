@@ -12,7 +12,7 @@ typedef struct { s32 x,y,z; } Vec3;
 typedef struct { u8 kind:6; u8 side:2; u8 pad[5]; u16 hp:7; u16 rest:9; } RenderUnit;
 typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
 extern u8 data_02141f08[1920], data_02141788[1920];
-extern s16 data_020e5b30[2048];
+extern s16 gSinCosTable[2048];
 extern u32 data_020edebc[][2];
 
 extern u32 data_027e15bc;
@@ -67,7 +67,7 @@ func_02077bb4(*gCurrentMap+0x6ef8);
 }
 
 void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_0207ca38(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 func_0207cfb8(s32);
     s32 func_02090158(M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020901b0(M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -83,7 +83,7 @@ void func_0207877c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
         if (var_r6 < 8) {
             var_r6 = 8;
         }
-        var_r5 = func_0207ca38(0, 0, 0x7F, var_r6 * temp_r0, 0x1000);
+        var_r5 = EaseInterpolate(0, 0, 0x7F, var_r6 * temp_r0, 0x1000);
         if (var_r5 > 0x7F) {
             var_r5 = 0x7F;
         } else if (var_r5 < 0) {
@@ -172,7 +172,7 @@ void func_02004078(s32,s32); void func_02079db0(s32,s32,s32,s32,s32,s32);
 s32 a,b,c,d,sn,cs; a=(data_02141f08+x*40)[y];b=(data_02141788+x*40)[y];
 *(volatile u32 *)0x4000444=0;
 if(angle){d=(y<<4)*48+0x180;c=(x<<4)*48+0x180;
-cs=data_020e5b30[(angle>>4)*2+1];sn=data_020e5b30[(angle>>4)*2];
+cs=gSinCosTable[(angle>>4)*2+1];sn=gSinCosTable[(angle>>4)*2];
 *(volatile u32 *)0x4000470=c;*(volatile u32 *)0x4000470=d;*(volatile u32 *)0x4000470=0;
 func_02004078(sn,cs);
 *(volatile u32 *)0x4000470=-c;*(volatile u32 *)0x4000470=-d;*(volatile u32 *)0x4000470=0;}
@@ -184,15 +184,15 @@ func_02079db0(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;
 #pragma scheduling on
 #pragma opt_common_subs on
 void func_02078d68(void *arg0) {
-s32 func_020ae22c(s32);s32 func_0207ca38(s32,s32,s32,s32,s32);s32 func_020a4ab0(s32);void func_020cf674(s16,s16,s32);
+s32 func_020ae22c(s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_020a4ab0(s32);void func_020cf674(s16,s16,s32);
 MapRenderEntry *entry=arg0;u32 bits=M2C_FIELD(arg0,u16 *,2);s32 x=M2C_FIELD(arg0,u8 *,0),y=M2C_FIELD(arg0,u8 *,1);
 s32 dx=entry->dx,dy=entry->dy; s32 a,b,c,d,color; u32 alpha; s16 ax,by,cx,dy2;
 switch(entry->kind){
 case 3:
 a=(x<<4)*48;b=(y<<4)*48;c=a+dx*768;d=b+dy*768;
 color=func_020ae22c(M2C_FIELD(arg0,u8 *,4));
-if(((*(volatile u32 *)&data_027e15bc)&63)<32)alpha=func_0207ca38(4,2,12,(*(volatile u32 *)&data_027e15bc)&63,32);
-else alpha=func_0207ca38(1,12,2,((*(volatile u32 *)&data_027e15bc)&63)-32,32);
+if(((*(volatile u32 *)&data_027e15bc)&63)<32)alpha=EaseInterpolate(4,2,12,(*(volatile u32 *)&data_027e15bc)&63,32);
+else alpha=EaseInterpolate(1,12,2,((*(volatile u32 *)&data_027e15bc)&63)-32,32);
 if(!(alpha=(u8)alpha))return;
 *(volatile u32*)0x40004a8=0x2d00000;
 *(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);

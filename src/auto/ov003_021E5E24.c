@@ -29,7 +29,7 @@ void func_ov003_021e6234(void *obj) {
     s32 func_020cfbdc(M2C_UNK);
     s32 func_ov006_02217d0c();
     extern void **gCurrentMap;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *savedContext;
 
@@ -40,8 +40,8 @@ void func_ov003_021e6234(void *obj) {
     M2C_FIELD(obj, s16 *, 0x64) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5146) * 4);
     func_020c1878(M2C_FIELD(obj, s32 *, 0x68) + 4);
     savedContext = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-    func_020809c0(M2C_FIELD(data_027e00c4, s32 *, 0x2C), 9, 2);
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    func_020809c0(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x2C), 9, 2);
     func_0209b2b4(0, 0, 3, func_020cfbdc(0xE1), 0x9000, 0x11);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     func_01ff9ce8(0);

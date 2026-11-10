@@ -155,7 +155,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK func_ov007_02211fa0();
     s8 func_ov007_02217b90(M2C_UNK, s32);
     s8 func_ov007_02217c1c();
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *data_027e01d8;
     extern M2C_UNK data_ov007_02220030;
     extern M2C_UNK data_ov007_0222003c;
@@ -231,8 +231,8 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x58) = 0;
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
     temp_r5 = data_027e01d8;
-    data_027e01d8 = data_027e00c8;
-    func_020a9a30(0, 2, 0x47, M2C_FIELD(data_027e00c8, s32 *, 0x30) + 0x260);
+    data_027e01d8 = g3DSpriteEngineMain;
+    func_020a9a30(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
     M2C_FIELD(arg0, void **, 0x44) = func_020ab1c4(arg0);
     func_020aab24(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x44);
@@ -403,7 +403,7 @@ void func_ov007_0221863c(void *arg0) {
     void *func_ov000_0216cd78(s32, s32);
     void *func_ov000_0216cd90(s32);
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void **gCurrentMap;
 
     void *r4;
@@ -470,7 +470,7 @@ void func_ov007_0221863c(void *arg0) {
     M2C_FIELD(arg0, void **, 0x5C) = node1;
 
     savedEngine = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
 
     mode = M2C_FIELD(arg0, u8 *, 0x37);
     table = func_ov007_02217b64(mode);

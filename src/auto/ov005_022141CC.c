@@ -4,9 +4,9 @@ static inline void *SwitchEngine1425c(void *p){extern void *gCur3DSpriteEngine;v
 static inline s32 Mul1425c(s32 a,s32 b){return ((s64)a*b+2048)>>12;}
 typedef struct {s16 vals[8];} ShakeList1425c;
 typedef struct {u16 pad:13,shift:2,last:1;} Mode1425c;
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineSub;
 extern u8 data_02101f0c[],data_027e0084[],data_ov005_02220486[];
-extern s16 data_ov005_02220048[8],data_ov005_02220484,data_020e5b30[];
+extern s16 data_ov005_02220048[8],data_ov005_02220484,gSinCosTable[];
 typedef struct { u8 pad[0xe6]; s16 list[1]; } Ov005Shuffle;
 
 s32 func_ov005_022141cc(void) {
@@ -33,10 +33,10 @@ s16 func_ov005_02214210(void) {
 }
 
 void func_ov005_0221425c(void){
-s32 func_02001fb4(s32,s32);void func_0208dd7c(s16,s16,s16,s16,u16,s32,s32);void func_01ffaacc(s32,u16,u16,void *,s32);
-s32 func_0207ca38(s32,s32,s32,s16,s32);s32 func_0207c8ec(s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);
-extern void *gCur3DSpriteEngine,*data_027e00c8;extern M2C_UNK data_ov005_02221304;
-s32 h,fy,fx;void *saved=gCur3DSpriteEngine;void *engine=data_027e00c8;u8 *p; s32 a,b,c,d,x,y,t,u,v,w,n,z; ShakeList1425c list;
+s32 func_02001fb4(s32,s32);void func_0208dd7c(s16,s16,s16,s16,u16,s32,s32);void AddSprite(s32,u16,u16,void *,s32);
+s32 EaseInterpolate(s32,s32,s32,s16,s32);s32 func_0207c8ec(s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern M2C_UNK data_ov005_02221304;
+s32 h,fy,fx;void *saved=gCur3DSpriteEngine;void *engine=g3DSpriteEngineMain;u8 *p; s32 a,b,c,d,x,y,t,u,v,w,n,z; ShakeList1425c list;
 p=M2C_FIELD(&data_ov005_02221304,u8 **,8);
 gCur3DSpriteEngine=engine;
 if(M2C_FIELD(p,u16 *,0)&1){
@@ -46,13 +46,13 @@ z=Mul1425c(func_02001fb4(0x60000-h,fy-0x6000),fx);
 a=h>>12;if(a>96)a=96;else if(a<1)a=1;
 func_0208dd7c(248,(z>>12)+25,2,a,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),0,2);
 }
-gCur3DSpriteEngine=data_027e00c4;
-func_01ffaacc(120,176,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-func_01ffaacc(184,176,(u16)(((0x148>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-func_01ffaacc(248,176,(u16)(((0x150>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_027e0084,0);
-func_01ffaacc(120,184,(u16)(((0x151>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-func_01ffaacc(184,184,(u16)(((0x159>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-func_01ffaacc(248,184,(u16)(((0x161>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_027e0084,0);
+gCur3DSpriteEngine=g3DSpriteEngineSub;
+AddSprite(120,176,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(184,176,(u16)(((0x148>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(248,176,(u16)(((0x150>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_027e0084,0);
+AddSprite(120,184,(u16)(((0x151>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(184,184,(u16)(((0x159>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(248,184,(u16)(((0x161>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_027e0084,0);
 if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e)!=-1){
 list=*(ShakeList1425c *)data_ov005_02220048;
 if(M2C_FIELD(&data_ov005_02221304,s16 *,0)==0){
@@ -62,24 +62,24 @@ M2C_FIELD(&data_ov005_02221304,s16 *,6)=data_ov005_02220484;
 if(M2C_FIELD(&data_ov005_02221304,s16 *,4)>=8)M2C_FIELD(&data_ov005_02221304,s16 *,4)=0;
 }
 M2C_FIELD(&data_ov005_02221304,s16 *,0)--;
-data_ov005_02220484=func_0207ca38(0,M2C_FIELD(&data_ov005_02221304,s16 *,2),M2C_FIELD(&data_ov005_02221304,s16 *,6),M2C_FIELD(&data_ov005_02221304,s16 *,0),6);
+data_ov005_02220484=EaseInterpolate(0,M2C_FIELD(&data_ov005_02221304,s16 *,2),M2C_FIELD(&data_ov005_02221304,s16 *,6),M2C_FIELD(&data_ov005_02221304,s16 *,0),6);
 n=data_ov005_02220484;
-a=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);y=data_020e5b30[1];b=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);x=data_020e5b30[0];c=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);d=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);
-t=func_0207c8ec(y<<4,d);u=func_0207c8ec((-x)<<4,c);v=func_0207c8ec(x<<4,b);w=func_0207c8ec(y<<4,a);func_01ff8ddc(0,t,u,v,w);
-func_01ffaacc(204,0,(u16)(((0x162>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_ov005_02220486,0);
+a=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);y=gSinCosTable[1];b=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);x=gSinCosTable[0];c=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);d=((n<0?-n:n)>=2?n:n>2?2:n<-2?-2:n);
+t=func_0207c8ec(y<<4,d);u=func_0207c8ec((-x)<<4,c);v=func_0207c8ec(x<<4,b);w=func_0207c8ec(y<<4,a);SetSpriteQuad(0,t,u,v,w);
+AddSprite(204,0,(u16)(((0x162>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_ov005_02220486,0);
 }
 gCur3DSpriteEngine=saved;
 }
 
 void func_ov005_022147ac(s32 a,s32 b) {
-extern void *gCur3DSpriteEngine,*data_027e00c8; extern M2C_UNK data_ov005_02221304;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK data_ov005_02221304;
 s32 func_ov005_022140f8(s32); void *func_020ad570(s32);
 void func_0209c048(s32,s16,void *,s32,s32,s32);
 void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
 void func_02080860(void *,s32,s32,u16,s32);
 s32 mode; u32 color; s32 v; void *saved; u16 tile;
 v=(a+1)*50+0x134;saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_ov005_022140f8(b)) {
 color=M2C_FIELD(func_020ad570(b),u32 *,4);
 if(M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x8e)==b)mode=9;else mode=0;
@@ -93,10 +93,10 @@ gCur3DSpriteEngine=saved;
 
 void func_ov005_022148f0(s32 arg0) {
 void func_020809c0(void *,s32,s32);void func_0209c048(s32,s16,void *,s32,s32,s32);void func_0209c024(s32,s16,void *,s32,s32,s32);s32 func_020a8b78(void);
-extern void *gCur3DSpriteEngine,*data_027e00c8;extern M2C_UNK data_ov005_02221304;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern M2C_UNK data_ov005_02221304;
 s32 a,f,b,e,c,d;void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
-func_020809c0((u8 *)M2C_FIELD(data_027e00c8,void **,0x24)+0xc0,0x20,12);
+gCur3DSpriteEngine=g3DSpriteEngineMain;
+func_020809c0((u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x24)+0xc0,0x20,12);
 if(arg0&1){
 a=0;b=arg0>>1;c=-1;
 do{func_ov005_022147ac(c,b);a++;b++;c+=2;}while(a<7);
@@ -133,13 +133,13 @@ void func_ov005_02214a84(s32 a) {
 }
 
 void func_ov005_02214b98(void) {
-extern void *gCur3DSpriteEngine,*data_027e00c8;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK data_ov005_02221304,data_ov005_02220658,data_ov005_02220670,data_ov005_02220688,data_ov005_022206a0,data_ov005_022206b8;
 extern s16 data_ov005_02220572[];
 void func_020814e4(void *);void func_02081590(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
 void func_02081528(void);void func_0200bc5c(void *);void func_ov005_022140e4(void);
 void *func_020ad460(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
-void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&data_027e00c8; void *p=M2C_FIELD(&data_ov005_02221304,void **,8);s32 id;
+void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&g3DSpriteEngineMain; void *p=M2C_FIELD(&data_ov005_02221304,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
 if(M2C_FIELD(p,s16 *,2)==-1 || (id=data_ov005_02220572[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
 func_020814e4(&data_ov005_02220658);
@@ -161,7 +161,7 @@ gCur3DSpriteEngine=saved;
 #pragma scheduling off
 void func_ov005_02214cdc(void) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern M2C_UNK data_ov005_02221304, data_ov005_022206c0, data_ov005_022206d8, data_ov005_022206ec, data_ov005_02220700, data_ov005_02220714;
     extern s16 data_ov005_02220570[];
     void func_020814e4(void *);
@@ -174,7 +174,7 @@ void func_ov005_02214cdc(void) {
     void *func_020ad4e0(s32);
     void *func_020ad520(s32);
     void *saved = gCur3DSpriteEngine;
-    void *engine = *(void *volatile *)&data_027e00c4;
+    void *engine = *(void *volatile *)&g3DSpriteEngineSub;
     void *p;
     s16 selected;
     s32 none;

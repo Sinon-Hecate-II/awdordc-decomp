@@ -9,7 +9,7 @@ void func_020a94fc(void *arg0) {
     s16 func_020a93e4(void *, s32);
     s32 func_020a8c54(s32, s32, s32, s32);
     M2C_UNK func_020a92bc(void *, s32);
-    void func_01ffaacc(s32, s32, s32, s32, s32);
+    void AddSprite(s32, s32, s32, s32, s32);
     register s32 saved, i;
     register u8 *p = arg0;
     register s32 y, x;
@@ -23,7 +23,7 @@ void func_020a94fc(void *arg0) {
         saved = *(s32 *)(p + 0x1c);
         func_020a92bc(p, 0);
         x = func_020a93e4(p, 0);
-        func_01ffaacc((u16)(x & 0x1ff), *(s16 *)(p+8) & 0xff,
+        AddSprite((u16)(x & 0x1ff), *(s16 *)(p+8) & 0xff,
             (u16)((0x3ff & (((s32)((u32)(p[0x20]<<27)>>28)*p[0x16]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17)>>30))) |
             ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
             (s32)data_027e0064, (u32)(p[0x28]<<27)>>27);
@@ -36,12 +36,12 @@ void func_020a94fc(void *arg0) {
         y=*(s16 *)(p+8);
         if (func_020a8c54(x,y,p[0x14],p[0x15])) {
             if (*(s32 *)(p+0x24)) {
-                func_01ffaacc((u16)(x & 0x1ff), y & 0xff,
+                AddSprite((u16)(x & 0x1ff), y & 0xff,
                     (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[0xb+(u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
                     ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
                     *(s32 *)(p+0x24), (u32)(p[0x28]<<27)>>27);
             } else {
-                func_01ffaacc((u16)(x & 0x1ff), y & 0xff,
+                AddSprite((u16)(x & 0x1ff), y & 0xff,
                     (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[0xb+(u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
                     ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
                     (s32)data_027e0084, (u32)(p[0x28]<<27)>>27);

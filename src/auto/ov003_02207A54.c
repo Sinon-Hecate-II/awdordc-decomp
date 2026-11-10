@@ -179,7 +179,7 @@ u8 func_ov003_02207e38(void *arg0, s32 arg1) {
 
 void func_ov003_02207e80(void *arg0) {
 extern u16 **gCur3DSpriteEngine;
-extern u16 **data_027e00c4;
+extern u16 **g3DSpriteEngineSub;
 M2C_UNK func_01ff9ce8(s32);
 void *func_020bf25c(s32,u8);
 s32 func_02086680(s32);
@@ -193,7 +193,7 @@ s32 scale;
 void *inner,*kindptr;
 u8 flag,kind,idx,old,byte38;
 u32 bit;
-gCur3DSpriteEngine=data_027e00c4;
+gCur3DSpriteEngine=g3DSpriteEngineSub;
 func_01ff9ce8(1);
 flag=M2C_FIELD(arg0,u8 *,0x34)!=0;
 if(!flag){
@@ -236,8 +236,8 @@ u8 func_ov003_0220801c(void *arg0) {
 
 void func_ov003_02208034(void *arg0) {
     M2C_UNK func_02082a8c(s32 *, u16 *);
-    s32 func_020a8ff4(s32);
-    extern u16 **data_027e00c4;
+    s32 GetSpriteAnimValue(s32);
+    extern u16 **g3DSpriteEngineSub;
     extern u16 **gCur3DSpriteEngine;
     s32 block[5];
     u16 * sp4;
@@ -255,7 +255,7 @@ void func_ov003_02208034(void *arg0) {
     u16 var_r2;
 
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
         var_r0 = 1;
     } else {
@@ -264,7 +264,7 @@ void func_ov003_02208034(void *arg0) {
     if (!(var_r0 & 0xFF)) {
         var_r0_2 = 0x100;
     } else {
-        var_r0_2 = func_020a8ff4(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x18));
+        var_r0_2 = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x18));
     }
     temp_r5 = var_r0_2;
     if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
@@ -275,7 +275,7 @@ void func_ov003_02208034(void *arg0) {
     if (!(var_r0_3 & 0xFF)) {
         var_r0_4 = 0x100;
     } else {
-        var_r0_4 = func_020a8ff4(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x1C));
+        var_r0_4 = GetSpriteAnimValue(*M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 **, 0x1C));
     }
     temp_r0 = var_r0_4;
     if(temp_r5==0 || temp_r0==0){sp4=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp4) = *(*(u16 * volatile *)&sp4) & ~0x80;}else{sp0=*gCur3DSpriteEngine;*(*(u16 * volatile *)&sp0) = *(*(u16 * volatile *)&sp0) | 0x80;}

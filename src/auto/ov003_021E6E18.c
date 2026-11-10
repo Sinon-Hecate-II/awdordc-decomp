@@ -65,34 +65,38 @@ s32 func_ov003_021e6eb8(s32 arg0) {
     return func_020bf894();
 }
 
-void func_ov003_021e6ef4(void *arg0,int arg1){
+/* Handle one input action on the waypoint/segment cursor menu: move the cursor
+ * over the slot groups (previous/next), place the currently held unit into a
+ * slot, or scroll the map view. The selected action is then passed to the
+ * display refresh (func_01ffa810) and stored as the list's current handle. */
+void func_ov003_021e6ef4(void *arg0,int action){
 s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 func_020848c4(void);s32 func_020846a4(void);
 s32 func_01ffa810(s32);
-u8 *p=arg0;
-switch((u32)arg1){
-case 0:case 1:case 2:case 3:SelectSlot(p,arg1);break;
-case 27:arg1=p[7];break;
-case 4:case 5:case 6:case 7:SelectSlot(p,arg1-4);break;
-case 28:arg1=(u16)(p[7]+4);break;
+u8 *list=arg0;
+switch((u32)action){
+case 0:case 1:case 2:case 3:SelectSlot(list,action);break;
+case 27:action=list[7];break;
+case 4:case 5:case 6:case 7:SelectSlot(list,action-4);break;
+case 28:action=(u16)(list[7]+4);break;
 case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:
 if(func_020846a4()){
-s32 allowed;u8 index=p[7];
-if(!func_020846a4())allowed=0;
-else {u8 *owners=p+0x74;u8 owner=owners[index];if(owner==func_020848c4())allowed=1;else if(func_ov003_021e6cfc() && ((u8)(owners[index]==255)))allowed=1;else allowed=0;}
-if(!allowed){
-s32 player=func_020848c4();u8 i; s32 found;
-for(i=0;i<p[4];i++){if(player==M2C_FIELD(p+i,u8 *,0x74)){found=(s8)i;goto foundplayer;}}
-found=-1;
-foundplayer:SelectSlot(p,found);
+s32 canUseSlot;u8 slot=list[7];
+if(!func_020846a4())canUseSlot=0;
+else {u8 *owners=list+0x74;u8 owner=owners[slot];if(owner==func_020848c4())canUseSlot=1;else if(func_ov003_021e6cfc() && ((u8)(owners[slot]==255)))canUseSlot=1;else canUseSlot=0;}
+if(!canUseSlot){
+s32 playerId=func_020848c4();u8 i; s32 foundSlot;
+for(i=0;i<list[4];i++){if(playerId==M2C_FIELD(list+i,u8 *,0x74)){foundSlot=(s8)i;goto found_slot;}}
+foundSlot=-1;
+found_slot:SelectSlot(list,foundSlot);
 }}
-SetSlotValue(p,arg1-8);
+SetSlotValue(list,action-8);
 break;
-case 29:arg1=(u16)(p[8]+8);break;
-case 21:case 22:case 23:case 24:SelectSlot(p,arg1-21);break;
-case 30:arg1=(u16)(p[7]+21);break;
-case 25:M2C_FIELD(M2C_FIELD(p,void **,0xdc),u16 *,0x68)=p[0xe4]+p[7];M2C_FIELD(M2C_FIELD(p,void **,0xdc),u16 *,0x6a)=p[0xe5]+p[7];break;
+case 29:action=(u16)(list[8]+8);break;
+case 21:case 22:case 23:case 24:SelectSlot(list,action-21);break;
+case 30:action=(u16)(list[7]+21);break;
+case 25:M2C_FIELD(M2C_FIELD(list,void **,0xdc),u16 *,0x68)=list[0xe4]+list[7];M2C_FIELD(M2C_FIELD(list,void **,0xdc),u16 *,0x6a)=list[0xe5]+list[7];break;
 }
-M2C_FIELD(p,s32 *,0xe0)=func_01ffa810(arg1);
+M2C_FIELD(list,s32 *,0xe0)=func_01ffa810(action);
 }
 
 u8 func_ov003_021e73bc(s32 arg0, s32 arg1) {

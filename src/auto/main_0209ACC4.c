@@ -18,16 +18,16 @@ static inline void DrawSpritePair(s32 xArg, s32 y, s32 tile, u16 *desc) {
 #pragma push
 #pragma opt_propagation off
 static inline void EmitSpritePriority(u16 x,s32 yArg,u32 tile,void *desc,s32 priority) {
-void func_01ffaacc(s32,s32,s32,void *,s32);
+void AddSprite(s32,s32,s32,void *,s32);
 s32 y=(u16)yArg;
-((void (*)(u16,u16,u32,void *,s32))func_01ffaacc)(x,(u16)y,tile,desc,priority);
+((void (*)(u16,u16,u32,void *,s32))AddSprite)(x,(u16)y,tile,desc,priority);
 }
 static inline void DrawSpritePairPriority(s32 xArg,s32 y,s32 tile,void *desc,s32 priority) {
 s32 x=(u16)xArg;
-void func_01ffaacc(s32,s32,s32,void *,s32);
+void AddSprite(s32,s32,s32,void *,s32);
 extern s32 gCur3DSpriteEngine;
-((void (*)(u16,u16,u16,void *,s32))func_01ffaacc)(x,(u16)y,(u16)tile,desc,priority);
-((void (*)(u16,u16,u16,void *,s32))func_01ffaacc)(x,(u16)((y&0xff00)|((y+8)&255)),(u16)(tile+(0x3ff&(4>>(s32)(((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30)))),desc,priority);
+((void (*)(u16,u16,u16,void *,s32))AddSprite)(x,(u16)y,(u16)tile,desc,priority);
+((void (*)(u16,u16,u16,void *,s32))AddSprite)(x,(u16)((y&0xff00)|((y+8)&255)),(u16)(tile+(0x3ff&(4>>(s32)(((u32)**(u16 **)gCur3DSpriteEngine<<17)>>30)))),desc,priority);
 }
 #pragma pop
 typedef struct { s32 digits[10]; } DigitTable;
@@ -135,8 +135,8 @@ void func_0209aeb4(void *arg0) {
     extern M2C_UNK data_02102eac;
     extern M2C_UNK data_02102e74;
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
 
     u32 combined;
     s32 saved;
@@ -172,15 +172,15 @@ void func_0209aeb4(void *arg0) {
     {
         for (i = 0; i < 2; i++) {
             s32 cur;
-            if (i == 0) cur = data_027e00c8; else cur = data_027e00c4;
+            if (i == 0) cur = g3DSpriteEngineMain; else cur = g3DSpriteEngineSub;
             gCur3DSpriteEngine = cur;
             {
                 u8 mode = M2C_FIELD(arg0, u8 *, 0x5A);
                 if (mode == 0) {
-                    if (cur != data_027e00c8) goto skip_tail;
+                    if (cur != g3DSpriteEngineMain) goto skip_tail;
                 }
                 if (mode == 1) {
-                    if (cur != data_027e00c4) goto skip_tail;
+                    if (cur != g3DSpriteEngineSub) goto skip_tail;
                 }
                 if (mode == 3) {
                     if (cur != saved) goto skip_tail;
@@ -208,7 +208,7 @@ void func_0209b084(void *entity) {
     void func_01ff9ce8(u8);
     void func_02095fc0(void);
     void func_02097768(void);
-    extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern M2C_UNK data_02102eac, data_02102e74;
 
     s32 saved;
@@ -226,11 +226,11 @@ void func_0209b084(void *entity) {
     if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x4)) {
         saved = gCur3DSpriteEngine;
         for (i = 0; i < 2; i++) {
-            gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
+            gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
             {
                 u8 mode = M2C_FIELD(entity, u8 *, 0x5a);
-                if (mode == 0 && gCur3DSpriteEngine != data_027e00c8) continue;
-                if (mode == 1 && gCur3DSpriteEngine != data_027e00c4) continue;
+                if (mode == 0 && gCur3DSpriteEngine != g3DSpriteEngineMain) continue;
+                if (mode == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) continue;
                 if (mode == 3 && gCur3DSpriteEngine != saved) continue;
             }
             func_01ff9ce8(M2C_FIELD(entity, u8 *, 0x57));

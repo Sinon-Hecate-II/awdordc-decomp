@@ -96,11 +96,11 @@ void func_020b1810(void) {
 }
 
 void func_020b185c(void) {
-    extern void *gCurrentMap, *gCur3DSpriteEngine, *data_027e00c8;
+    extern void *gCurrentMap, *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     void *saved;
     void (*callback)(void);
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020aca8c(3);
     func_0207b84c();
     func_02077a7c();
@@ -179,10 +179,10 @@ void func_020b1abc(void) {
 }
 
 void func_020b1ae0(void) {
-extern void *gCur3DSpriteEngine, *data_027e00c8, *gCurrentMap;
+extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *gCurrentMap;
 extern u8 data_02128000[];
 void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(gCurrentMap,void **,4)=data_02128000;
 gCur3DSpriteEngine=saved;
 }
@@ -391,7 +391,7 @@ return 0;
    was created on.  Returns the slot. */
 s32 func_020b2304(s32 x, s32 y, void *slot, void *desc, s32 id) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *data_02128690;
     s16 t;
     u8 onUpperScreen;
@@ -430,7 +430,7 @@ s32 func_020b2304(s32 x, s32 y, void *slot, void *desc, s32 id) {
     *(s16 *)((s8 *)slot + 0xe) = 0;
     *(u8 *)((s8 *)slot + 1) = 1;
 
-    onUpperScreen = (u8)(gCur3DSpriteEngine == data_027e00c8);
+    onUpperScreen = (u8)(gCur3DSpriteEngine == g3DSpriteEngineMain);
     if (onUpperScreen) {
         M2C_FIELD(data_02128690, u8 *, 0x24) = 0;
     } else {
@@ -443,19 +443,19 @@ s32 func_020b2304(s32 x, s32 y, void *slot, void *desc, s32 id) {
 void func_020b2400(void) {
     s32 func_020b2714(void); s32 func_020b26b8(void); s32 func_020b27d0(u8 *);
     void func_020b2a50(u8 *); s32 func_020b288c(u8 *); void func_020b1d14(void);
-    extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4,*data_02128690;
+    extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub,*data_02128690;
     extern u8 data_0215c45c[];
     s32 flag=0; void *saved; s32 outer; s32 i; u8 *p;
     if(func_020b2714())return;
     if(func_020b26b8())return;
     saved=gCur3DSpriteEngine;
     for(outer=0;outer<2;outer++){
-        void *engine=outer==0?data_027e00c8:data_027e00c4;
+        void *engine=outer==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
         u8 screen;
         gCur3DSpriteEngine=engine;
         screen=M2C_FIELD(data_02128690,u8 *,0x24);
-        if(screen==0 && engine!=data_027e00c8)continue;
-        if(screen==1 && engine!=data_027e00c4)continue;
+        if(screen==0 && engine!=g3DSpriteEngineMain)continue;
+        if(screen==1 && engine!=g3DSpriteEngineSub)continue;
         if(screen==3 && engine!=saved)continue;
         p=data_0215c45c;
         for(i=0;i<85;i++,p+=60){

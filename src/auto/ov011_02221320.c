@@ -19,8 +19,8 @@ s32 func_ov011_02221338(s32 arg0) {
 
 void func_ov011_0222134c(void *arg0) {
     M2C_UNK func_020822b8(u16 *);
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 data_027e01d8;
     extern M2C_UNK data_ov011_02227f08;
     typedef struct { u16 a, b, c, d, e, f; } T;
@@ -29,9 +29,9 @@ void func_ov011_0222134c(void *arg0) {
     s32 temp_r4;
     second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
     temp_r4 = data_027e01d8;
-    data_027e01d8 = data_027e00c8;
+    data_027e01d8 = g3DSpriteEngineMain;
     func_020822b8((u16 *)&first);
-    data_027e01d8 = data_027e00c4;
+    data_027e01d8 = g3DSpriteEngineSub;
     func_020822b8((u16 *)&second);
     data_027e01d8 = temp_r4;
 }
@@ -54,8 +54,8 @@ void func_ov011_0222140c(void *arg0) {
     void func_ov011_0222161c(void *);
 
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
 
     s32 saved;
     s32 i;
@@ -74,9 +74,9 @@ void func_ov011_0222140c(void *arg0) {
     saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            gCur3DSpriteEngine = engine = data_027e00c8;
+            gCur3DSpriteEngine = engine = g3DSpriteEngineMain;
         } else {
-            gCur3DSpriteEngine = engine = data_027e00c4;
+            gCur3DSpriteEngine = engine = g3DSpriteEngineSub;
         }
         { u16 * volatile p0=(u16 *)*(s32 *)engine; *p0=*p0 | 0x10; }
         { u16 * volatile p1=(u16 *)*(s32 *)gCur3DSpriteEngine; *p1=*p1 | 0x20; }
@@ -142,14 +142,14 @@ void func_ov011_0222166c(void *arg0) {
 
 void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) {
 M2C_UNK func_0200bc5c(M2C_UNK *); M2C_UNK func_020814e4(M2C_UNK *); M2C_UNK func_02081590(M2C_UNK *,s32); M2C_UNK func_020815fc(M2C_UNK *,s32,s32); M2C_UNK func_0208161c(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081644(M2C_UNK *,s32,s32,s32); M2C_UNK func_02081528(void); s32 func_020e31e0(void); M2C_UNK *func_020e3218(M2C_UNK *);
-extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
 extern M2C_UNK data_ov011_022282a0, data_ov011_022282ac, data_ov011_022282bc, data_ov011_022282c8, data_ov011_022282d4, data_ov011_022282e0, data_ov011_022282f4, data_ov011_02228308, data_ov011_0222831c, data_ov011_02228330, data_ov011_02228344, data_ov011_02228358, data_ov011_0222836c, data_ov011_02228380, data_ov011_02228398, data_ov011_022283ac, data_ov011_022283c0, data_ov011_022283d4, data_ov011_022283e4, data_ov011_022283f0, data_ov011_022283fc, data_ov011_0222840c, data_ov011_02228418, data_ov011_02228424, data_ov011_02228438, data_ov011_0222844c, data_ov011_02228460, data_ov011_02228474, data_ov011_02228488, data_ov011_0222849c, data_ov011_022284b0, data_ov011_022284c4, data_ov011_022284dc, data_ov011_022284f0, data_ov011_02228504, data_ov011_02228518, data_ov011_0222852c, data_ov011_02228540, data_ov011_02228554, data_ov011_02228568, data_ov011_02228580, data_ov011_02228594, data_ov011_022285a8, data_ov011_022285bc, data_ov011_022285d0, data_ov011_022285e4, data_ov011_022285f8, data_ov011_0222860c, data_ov011_02228624, data_ov011_02228638, data_ov011_0222864c, data_ov011_02228660, data_ov011_02228674, data_ov011_02228688, data_ov011_0222869c, data_ov011_022286b0, data_ov011_022286c8, data_ov011_022286dc, data_ov011_022286f0, data_ov011_02228704, data_ov011_02228718, data_ov011_0222872c, data_ov011_02228740, data_ov011_02228754, data_ov011_0222876c, data_ov011_02228780, data_ov011_02228794, data_ov011_022287a8, data_ov011_022287bc, data_ov011_022287d0, data_ov011_022287e4, data_ov011_022287f8, data_ov011_02228804, data_ov011_0222880c, data_ov011_02228814, data_ov011_0222881c, data_ov011_02228838, data_ov011_02228850, data_ov011_02228868, data_ov011_02228880, data_ov011_02228898, data_ov011_022288b0, data_ov011_022288c8, data_ov011_022288e0, data_ov011_022288ec, data_ov011_022288f4, data_ov011_022288fc, data_ov011_02228904, data_ov011_02228910, data_ov011_0222891c, data_ov011_02228928;
 s32 saved,i,engine,lang;
 func_0200bc5c(&data_ov011_022282a0); saved=gCur3DSpriteEngine; i=0;
-do { if(i==0) engine=data_027e00c8; else engine=data_027e00c4;
+do { if(i==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
-if(arg2==0 && engine!=data_027e00c8) goto inc;
-if(arg2==1 && engine!=data_027e00c4) goto inc;
+if(arg2==0 && engine!=g3DSpriteEngineMain) goto inc;
+if(arg2==1 && engine!=g3DSpriteEngineSub) goto inc;
 if(arg2==3 && engine!=saved) goto inc;
 switch((u32)arg1) {
 case 0:
@@ -297,8 +297,8 @@ void func_ov011_02222010(s32 unused, u32 arg0, s32 arg1) {
     M2C_UNK func_020812a4(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK *func_020e3218(M2C_UNK *);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern M2C_UNK data_ov011_02228934;
     extern M2C_UNK data_ov011_02228940;
     extern M2C_UNK data_ov011_02228950;
@@ -326,15 +326,15 @@ void func_ov011_02222010(s32 unused, u32 arg0, s32 arg1) {
     var_r6 = 0;
     do {
         if (var_r6 == 0) {
-            var_r7 = data_027e00c8;
+            var_r7 = g3DSpriteEngineMain;
         } else {
-            var_r7 = data_027e00c4;
+            var_r7 = g3DSpriteEngineSub;
         }
 
         gCur3DSpriteEngine = var_r7;
 
-        if (arg1 == 0 && var_r7 != data_027e00c8) goto inc;
-        if (arg1 == 1 && var_r7 != data_027e00c4) goto inc;
+        if (arg1 == 0 && var_r7 != g3DSpriteEngineMain) goto inc;
+        if (arg1 == 1 && var_r7 != g3DSpriteEngineSub) goto inc;
         if (arg1 == 3 && var_r7 != saved_r5) goto inc;
 
         switch (arg0) {

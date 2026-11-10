@@ -417,9 +417,9 @@ void func_ov002_021e1c34(void *a,s32 b) {
 #pragma push
 #pragma scheduling off
 void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2, u8 kind, volatile s32 diff, volatile s32 temp) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     M2C_UNK func_02004078(s16, s16);
-    extern M2C_UNK data_020e5b30;
+    extern M2C_UNK gSinCosTable;
     s16 var_r4;
     s16 var_r5;
     u16 var_r6;
@@ -444,11 +444,11 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
             break;
         }
         { s32 duration=temp; s32 elapsed=diff;
-        var_r4 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 8), M2C_FIELD(ptr, s16 *, 8) + M2C_FIELD(ptr2, s16 *, 8), elapsed, duration);
-        var_r5 = (s16) func_0207ca38(var_r7, M2C_FIELD(ptr, s16 *, 0xA), M2C_FIELD(ptr, s16 *, 0xA) + M2C_FIELD(ptr2, s16 *, 0xA), elapsed, duration);
-        var_r6 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 4), (s32) (M2C_FIELD(ptr, u16 *, 4) * M2C_FIELD(ptr2, u16 *, 4)) >> 8, elapsed, duration);
-        var_r8 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 6), (s32) (M2C_FIELD(ptr, u16 *, 6) * M2C_FIELD(ptr2, u16 *, 6)) >> 8, elapsed, duration);
-        var_r1 = (u16) func_0207ca38(var_r7, (s32) M2C_FIELD(ptr, u16 *, 2), M2C_FIELD(ptr, u16 *, 2) + M2C_FIELD(ptr2, u16 *, 2), elapsed, duration);
+        var_r4 = (s16) EaseInterpolate(var_r7, M2C_FIELD(ptr, s16 *, 8), M2C_FIELD(ptr, s16 *, 8) + M2C_FIELD(ptr2, s16 *, 8), elapsed, duration);
+        var_r5 = (s16) EaseInterpolate(var_r7, M2C_FIELD(ptr, s16 *, 0xA), M2C_FIELD(ptr, s16 *, 0xA) + M2C_FIELD(ptr2, s16 *, 0xA), elapsed, duration);
+        var_r6 = (u16) EaseInterpolate(var_r7, (s32) M2C_FIELD(ptr, u16 *, 4), (s32) (M2C_FIELD(ptr, u16 *, 4) * M2C_FIELD(ptr2, u16 *, 4)) >> 8, elapsed, duration);
+        var_r8 = (u16) EaseInterpolate(var_r7, (s32) M2C_FIELD(ptr, u16 *, 6), (s32) (M2C_FIELD(ptr, u16 *, 6) * M2C_FIELD(ptr2, u16 *, 6)) >> 8, elapsed, duration);
+        var_r1 = (u16) EaseInterpolate(var_r7, (s32) M2C_FIELD(ptr, u16 *, 2), M2C_FIELD(ptr, u16 *, 2) + M2C_FIELD(ptr2, u16 *, 2), elapsed, duration);
         }
     } else {
         var_r4 = M2C_FIELD(ptr, s16 *, 8);
@@ -463,8 +463,8 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
     }
     if (orient != 0) {
         s32 idx = ((s32) (u16) (var_r1 << 8) >> 4) * 2;
-        s16 sn = ((s16 *)&data_020e5b30)[idx];
-        s16 cs = ((s16 *)&data_020e5b30)[idx + 1];
+        s16 sn = ((s16 *)&gSinCosTable)[idx];
+        s16 cs = ((s16 *)&gSinCosTable)[idx + 1];
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r6 << 0xC) >> 8);
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r8 << 0xC) >> 8);
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = 0x1000;
@@ -476,8 +476,8 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
         *(volatile s32 *) 0x04000470 = (s32) var_r4;
         {
             s32 idx = ((s32) (u16) (var_r1 << 8) >> 4) * 2;
-        s16 sn = ((s16 *)&data_020e5b30)[idx];
-        s16 cs = ((s16 *)&data_020e5b30)[idx + 1];
+        s16 sn = ((s16 *)&gSinCosTable)[idx];
+        s16 cs = ((s16 *)&gSinCosTable)[idx + 1];
             *(volatile s32 *) 0x04000470 = (s32) var_r5;
             *(volatile s32 *) 0x04000470 = 0;
             M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r6 << 0xC) >> 8);

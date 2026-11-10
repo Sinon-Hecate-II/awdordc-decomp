@@ -105,10 +105,10 @@ void func_020d6778(s32 mode) {
 }
 
 void func_020d694c(s32 arg0, s32 arg1, s32 arg2) {
-M2C_UNK func_01ffaacc(u16,u16,u16,M2C_UNK *,s32);
+M2C_UNK AddSprite(u16,u16,u16,M2C_UNK *,s32);
 extern M2C_UNK data_027e0084;extern u16 **gCur3DSpriteEngine;
 do {
-func_01ffaacc((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&data_027e0084,8);
+AddSprite((u16)(arg0&511),(u16)(arg1&255),(u16)((((0x150 >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)|0x9000)+((((arg2%10)*2) >> ((u32)(*(u16 *)*(volatile u32 *)gCur3DSpriteEngine<<17)>>30))&1023)),&data_027e0084,8);
 arg0-=8;arg2/=10;
 }while(arg2);
 }

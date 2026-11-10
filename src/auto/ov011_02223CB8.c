@@ -3,11 +3,11 @@
 typedef struct {u8 bytes[25];} IntroColors_022242dc;
 extern const IntroColors_022242dc data_ov011_02227f64;
 extern u8 data_02101f5c[],data_02101f0c[];
-void func_ov011_022231f8(void *,u8,s16,u16,void *);
+void G3_UpdateIntroTiles(void *,u8,s16,u16,void *);
 void func_ov011_02223764(void *,s16,u8,void *);
 void G3_SubmitSpriteQuad(void *,int,int,s16,s16);
 int func_020e31e0(void);
-int func_0207ca38(int,int,int,u16,int);
+int EaseInterpolate(int,int,int,u16,int);
 void func_0208ffe4(int,int,int);
 void func_ov011_02224b9c(void *,int);
 void func_ov011_02224aac(void *,int);
@@ -15,12 +15,12 @@ void func_ov011_0222491c(void *);
 int func_0208fe30(int);
 int func_02090034(int,int);
 void func_01ffac9c(int,int,int,void *,int);
-extern u16 data_ov011_02228ce0[6];
+extern u16 gIntroAnimState[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
 void func_ov011_02223cb8(void *entry){
 void func_ov011_02222010(void *,s32,s32);void func_ov011_02224f00(void *);void func_0208f7d0(s32);
-extern s32 gCur3DSpriteEngine,data_027e00c8,data_027e00c4;
+extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 u8 color[2]={0};
 s32 savedEngine,bufIndex,screenEngine;
 M2C_FIELD(entry,u16 *,0x34)=0;
@@ -30,10 +30,10 @@ case 0:
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 G3_SubmitSpriteQuad(entry,2,2,0x80,0x60);
 func_ov011_02222010(entry,3,0);
-func_ov011_022231f8(entry,0,0,0,color);
+G3_UpdateIntroTiles(entry,0,0,0,color);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
@@ -50,11 +50,11 @@ case 2:
 {
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 func_ov011_02224aac(entry,0);
-func_ov011_022231f8(entry,0,0,0,color);
+G3_UpdateIntroTiles(entry,0,0,0,color);
 func_ov011_02223764(entry,0,0,0);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
@@ -71,11 +71,11 @@ case 4:
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 func_ov011_02224aac(entry,5);
 G3_SubmitSpriteQuad(entry,2,3,0x80,0x60);
-func_ov011_022231f8(entry,0,0,0,color);
+G3_UpdateIntroTiles(entry,0,0,0,color);
 func_ov011_02224f00(entry);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
@@ -93,11 +93,11 @@ u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatil
 G3_SubmitSpriteQuad(entry,2,2,0x80,0x60);
 G3_SubmitSpriteQuad(entry,2,3,0x80,0x60);
 func_ov011_02224b9c(entry,1);
-func_ov011_022231f8(entry,0,0,0,color);
+G3_UpdateIntroTiles(entry,0,0,0,color);
 func_ov011_02223764(entry,0,0,0);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
@@ -114,10 +114,10 @@ case 8:
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;
 func_ov011_02223764(entry,0,0,0);
 func_ov011_02222010(entry,6,0);
-func_ov011_022231f8(entry,0,0,0,color);
+G3_UpdateIntroTiles(entry,0,0,0,color);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
-if(bufIndex==0)screenEngine=data_027e00c8;else screenEngine=data_027e00c4;
+if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=screenEngine;
 p0=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p0=*p0&~0x10;
 p1=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p1=*p1&~0x20;
@@ -141,10 +141,10 @@ void func_ov011_022242dc(void *p) {
  u16 time;
  switch (M2C_FIELD(p, u8 *, 0x39)) {
  case 0:
-  func_ov011_022231f8(p, 1, 0x7fff, 0x8052, colors.bytes);
+  G3_UpdateIntroTiles(p, 1, 0x7fff, 0x8052, colors.bytes);
   break;
  case 1:
-  func_ov011_022231f8(p, 1, 0x7ff, 0x8052, colors.bytes);
+  G3_UpdateIntroTiles(p, 1, 0x7ff, 0x8052, colors.bytes);
   break;
  case 2:
   if (M2C_FIELD(p, u16 *, 0x34) == 3) func_0208ffe4(0, -1, 300);
@@ -155,26 +155,26 @@ void func_ov011_022242dc(void *p) {
   if (M2C_FIELD(p, u16 *, 0x34) == 343) func_02090034(0, 96);
   break;
  case 4:
-  if (func_020e31e0() == 5 || func_020e31e0() == 4) func_ov011_022231f8(p, 5, 108, 128, colors.bytes + 20);
-  else func_ov011_022231f8(p, 5, 108, 128, colors.bytes + 5);
-  G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + func_0207ca38(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
+  if (func_020e31e0() == 5 || func_020e31e0() == 4) G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 20);
+  else G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 5);
+  G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + EaseInterpolate(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
   break;
  case 5:
   if ((int)M2C_FIELD(p, u16 *, 0x34) - 650 > 20) {
    if (func_020e31e0() == 5 || func_020e31e0() == 4) func_ov011_02223764(p, -108, 5, colors.bytes + 20);
    else func_ov011_02223764(p, -108, 5, colors.bytes + 5);
   } else {
-   if (func_020e31e0() == 5 || func_020e31e0() == 4) func_ov011_022231f8(p, 5, 0x7fff, 48, colors.bytes + 20);
-   else func_ov011_022231f8(p, 5, 0x7fff, 48, colors.bytes + 5);
+   if (func_020e31e0() == 5 || func_020e31e0() == 4) G3_UpdateIntroTiles(p, 5, 0x7fff, 48, colors.bytes + 20);
+   else G3_UpdateIntroTiles(p, 5, 0x7fff, 48, colors.bytes + 5);
   }
-  G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + func_0207ca38(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
+  G3_SubmitSpriteQuad(p, 2, 3, 128, (s16)(32 + EaseInterpolate(0, 0, 64, M2C_FIELD(p, u16 *, 0x34), 796)));
   break;
  case 6:
   mode = func_020e31e0() == 4 ? 4 : 5;
-  func_ov011_022231f8(p, mode, 108, 128, colors.bytes + 10);
+  G3_UpdateIntroTiles(p, mode, 108, 128, colors.bytes + 10);
   if ((int)M2C_FIELD(p, u16 *, 0x34) <= 618) {
-   G3_SubmitSpriteQuad(p, 2, 2, (s16)(256 - func_0207ca38(0, 0, 128, M2C_FIELD(p, u16 *, 0x34), 618)), 96);
-   G3_SubmitSpriteQuad(p, 2, 3, (s16)func_0207ca38(0, 0, -128, M2C_FIELD(p, u16 *, 0x34), 618), 96);
+   G3_SubmitSpriteQuad(p, 2, 2, (s16)(256 - EaseInterpolate(0, 0, 128, M2C_FIELD(p, u16 *, 0x34), 618)), 96);
+   G3_SubmitSpriteQuad(p, 2, 3, (s16)EaseInterpolate(0, 0, -128, M2C_FIELD(p, u16 *, 0x34), 618), 96);
   }
   break;
  case 7:
@@ -183,18 +183,18 @@ void func_ov011_022242dc(void *p) {
   if (time == 0) { func_ov011_02224b9c(p, 4); func_0208ffe4(0, -1, 301); }
   if (time > 66) func_ov011_02223764(p, -98, mode, colors.bytes + 10);
   else if (time > 20) func_ov011_02224b9c(p, 3);
-  func_ov011_022231f8(p, (u8)(mode | 128), 0x7fff, 128, colors.bytes + 10);
+  G3_UpdateIntroTiles(p, (u8)(mode | 128), 0x7fff, 128, colors.bytes + 10);
   break;
  case 8:
-  if (func_020e31e0() == 2) func_ov011_022231f8(p, 130, 286, 0x8052, colors.bytes + 15);
+  if (func_020e31e0() == 2) G3_UpdateIntroTiles(p, 130, 286, 0x8052, colors.bytes + 15);
   else if (M2C_FIELD(p, u16 *, 0x34) > 108 && M2C_FIELD(p, u16 *, 0x34) <= 168) {
    func_01ffac9c(0, 82, 0, data_02101f5c, 0);
    func_01ffac9c(128, 82, 32, data_02101f5c, 0);
    if (func_020e31e0() == 4) func_01ffac9c(0, 74, 128, data_02101f0c, 0);
-  } else func_ov011_022231f8(p, 2, 108, 0x8052, colors.bytes + 15);
+  } else G3_UpdateIntroTiles(p, 2, 108, 0x8052, colors.bytes + 15);
   break;
  case 9:
-  func_ov011_022231f8(p, 130, 0x7fff, 0x8052, colors.bytes + 15);
+  G3_UpdateIntroTiles(p, 130, 0x7fff, 0x8052, colors.bytes + 15);
   break;
  }
  func_ov011_0222491c(p);
@@ -203,7 +203,7 @@ void func_ov011_022242dc(void *p) {
 
 void func_ov011_022247f4(void *p){
 void func_ov011_0222491c(void *);
-extern const u16 data_ov011_02227f50[];
+extern const u16 gIntroStateDurations[];
 switch(M2C_FIELD(p,u8 *,0x38)){
 case 1:
 M2C_FIELD(p,u16 *,0x34)++;
@@ -224,7 +224,7 @@ M2C_FIELD(p,u8 *,0x38)=3;
 M2C_FIELD(p,u8 *,0x39)=0;func_01ffa8c4(p,3);
 }break;
 case 3:
-if(M2C_FIELD(p,u16 *,0x34)>data_ov011_02227f50[M2C_FIELD(p,u8 *,0x39)]){
+if(M2C_FIELD(p,u16 *,0x34)>gIntroStateDurations[M2C_FIELD(p,u8 *,0x39)]){
 if(M2C_FIELD(p,u8 *,0x39)>10){
 if(M2C_FIELD(p,s32 *,0x3c)==2)func_01ffa8c4(p,4);
 else func_01ffa8c4(p,2);
@@ -244,8 +244,8 @@ void func_ov011_0222491c(void *entry) {
     M2C_UNK func_020aca8c(s32);
     extern u16 *data_02101e84;
     extern void *data_02101e88;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 savedContext;
     s32 savedContext2;
@@ -275,9 +275,9 @@ void func_ov011_0222491c(void *entry) {
         savedContext = gCur3DSpriteEngine;
         do {
             if (screenIndex == 0) {
-                chosenContext = data_027e00c8;
+                chosenContext = g3DSpriteEngineMain;
             } else {
-                chosenContext = data_027e00c4;
+                chosenContext = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = chosenContext;
             func_020ac998(0);
@@ -293,9 +293,9 @@ void func_ov011_0222491c(void *entry) {
         savedContext2 = gCur3DSpriteEngine;
         do {
             if (screenIndex2 == 0) {
-                chosenContext2 = data_027e00c8;
+                chosenContext2 = g3DSpriteEngineMain;
             } else {
-                chosenContext2 = data_027e00c4;
+                chosenContext2 = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = chosenContext2;
             func_020aca8c(0);
@@ -316,7 +316,7 @@ void func_ov011_0222491c(void *entry) {
 
 /* Configure an overlay entry's display state: set up sprite slots, refresh masks, or tear down depending on the command. */
 void func_ov011_02224aac(void *entry, s32 command) {
-    s32 func_0207ca38(s32, s32, s32, u16, s32);
+    s32 EaseInterpolate(s32, s32, s32, u16, s32);
     void func_ov011_022216d8(void *, s32, s32, s32);
     void func_ov011_02222830(void *, s32, s32, s32, s32);
     void func_ov011_02223b70(void *, s32, s32);
@@ -326,9 +326,9 @@ void func_ov011_02224aac(void *entry, s32 command) {
         func_ov011_022216d8(entry, 12, 1, 2);
         func_ov011_022216d8(entry, 17, 0, 3);
         func_ov011_022216d8(entry, 18, 1, 3);
-        data_ov011_02228ce0[4] = 1;
+        gIntroAnimState[4] = 1;
     case 2:
-        func_ov011_02222830(entry, 2, 3, 2, (u16)func_0207ca38(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));
+        func_ov011_02222830(entry, 2, 3, 2, (u16)EaseInterpolate(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));
         return;
     case 5:
         func_ov011_02223b70(entry, 0, 2);

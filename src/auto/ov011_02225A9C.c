@@ -1,7 +1,7 @@
 /* 5 functions from 0x02225A9C to 0x02226658 (ov011), found by ds-decomp. */
 #include "common.h"
 extern s32 gCur3DSpriteEngine;
-extern s32 data_027e00c8,data_027e00c4;
+extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;
 extern u8 data_ov011_02228a3c[],data_ov011_02228b54[],data_ov011_02228b5c[],data_ov011_02228b68[],data_ov011_02228b74[],data_ov011_02228b80[],data_ov011_02228a30[],data_ov011_02228b8c[],data_ov011_02228b94[],data_ov011_02228ba0[],data_ov011_02228bac[],data_ov011_02228bb8[],data_ov011_02228bc4[],data_ov011_02228bcc[],data_ov011_02228bd8[],data_ov011_02228be4[],data_ov011_02228bf0[],data_ov011_02228bfc[],data_ov011_02228c04[],data_ov011_02228c0c[];
 static inline void Clear25d(s32 offset,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p= *p & ~mask;}
 static inline void Set25d(s32 offset,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p= *p | mask;}
@@ -11,7 +11,7 @@ typedef struct Mode25d {u16 mode:3;u16 rest:13;} Mode25d;
 void func_ov011_02225a9c(void *arg0,s32 arg1,s32 arg2,s32 arg3){
 void func_020675e4(void *,void *,...);
 void func_ov011_02226550(s32,s32);
-s32 func_0207ca38(s32,s32,s32,s32,s32);
+s32 EaseInterpolate(s32,s32,s32,s32,s32);
 extern u8 data_ov011_02228b48[];
 char buf[8];s32 start;u8 alpha;
 func_020675e4(buf,data_ov011_02228b48,arg3);
@@ -24,19 +24,19 @@ func_ov011_02226550((s32)buf,2);
 if(M2C_FIELD(arg0,u16 *,0x3a)<start)return;
 if(M2C_FIELD(arg0,u16 *,0x3a)>start+620)return;
 Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Clear25d(0,256);
-M2C_FIELD(arg0,u16 *,0x3e)=func_0207ca38(0,0,64,M2C_FIELD(arg0,u16 *,0x3a)-start,740);
+M2C_FIELD(arg0,u16 *,0x3e)=EaseInterpolate(0,0,64,M2C_FIELD(arg0,u16 *,0x3a)-start,740);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=M2C_FIELD(arg0,u16 *,0x3c);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=M2C_FIELD(arg0,u16 *,0x3e);
 if(M2C_FIELD(arg0,u16 *,0x3a)<=start+120){
 u16 *volatile p;
-M2C_FIELD(arg0,u8 *,0x36)=func_0207ca38(4,0,16,M2C_FIELD(arg0,u16 *,0x3a)-start,120);
+M2C_FIELD(arg0,u8 *,0x36)=EaseInterpolate(4,0,16,M2C_FIELD(arg0,u16 *,0x3a)-start,120);
 alpha=M2C_FIELD(arg0,u8 *,0x36);
 p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=alpha;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16-alpha;
 }else if(M2C_FIELD(arg0,u16 *,0x3a)>=start+500){
 u16 *volatile p;
-M2C_FIELD(arg0,u8 *,0x36)=func_0207ca38(1,0,16,M2C_FIELD(arg0,u16 *,0x3a)-(start+500),120);
+M2C_FIELD(arg0,u8 *,0x36)=EaseInterpolate(1,0,16,M2C_FIELD(arg0,u16 *,0x3a)-(start+500),120);
 alpha=M2C_FIELD(arg0,u8 *,0x36);
 p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=16-alpha;
@@ -50,7 +50,7 @@ s32 func_02082cb4(void *);s32 func_020822b8(void *);s32 func_01ff9ce8(u8);s32 fu
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;func_02082cb4(state);
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020822b8(data_ov011_02228a3c);
 Priority25d(6,0);Priority25d(8,1);Priority25d(10,2);Priority25d(12,3);
 Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Set25d(0,256);
@@ -65,7 +65,7 @@ Set25d(0,4096);Clear25d(0,0x6000);
 func_02091d4c(31);func_02088774(30);func_020aeebc(3,15,7);
 func_020ae46c(M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+480,0,8,8);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;
-gCur3DSpriteEngine=data_027e00c4;func_020822b8(data_ov011_02228a30);
+gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(data_ov011_02228a30);
 Priority25d(6,3);Priority25d(8,0);Priority25d(10,1);Priority25d(12,2);
 Set25d(0,16);Clear25d(0,32);Clear25d(0,64);Set25d(0,128);Clear25d(0,256);
 func_01ff9ce8(0);func_0200bc5c(data_ov011_02228b8c);func_020814e4(data_ov011_02228b94);

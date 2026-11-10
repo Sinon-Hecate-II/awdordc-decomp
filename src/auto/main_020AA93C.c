@@ -460,13 +460,13 @@ u8 func_020ab2a4(void) {
 }
 
 void func_020ab2c4(void *arg0) {
-    M2C_UNK func_020a8f8c(void *);
-    s32 func_020a8ff4(void *);
+    M2C_UNK UpdateSpriteAnimation(void *);
+    s32 GetSpriteAnimValue(void *);
     s16 temp_r4;
     s32 var_r0;
 
     temp_r4 = M2C_FIELD(arg0, s16 *, 0x2A);
-    if (temp_r4 != func_020a8ff4(arg0 + 0x30)) {
+    if (temp_r4 != GetSpriteAnimValue(arg0 + 0x30)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -474,9 +474,9 @@ void func_020ab2c4(void *arg0) {
     if (!(var_r0 & 0xFF)) {
         M2C_FIELD(arg0, s8 *, 0x54) = 4;
     }
-    func_020a8f8c(arg0 + 0x30);
-    func_020a8f8c(arg0 + 0x42);
-    func_020a8f8c(arg0 + 0x54);
+    UpdateSpriteAnimation(arg0 + 0x30);
+    UpdateSpriteAnimation(arg0 + 0x42);
+    UpdateSpriteAnimation(arg0 + 0x54);
 }
 
 #pragma opt_propagation off
@@ -491,13 +491,13 @@ s16 func_020ab30c(void *arg0) {
 }
 #pragma opt_propagation reset
 void func_020ab344(void *arg0,s16 arg1,s32 arg2){
- s32 func_0207c8ec(s16,s16);s32 func_020a8ff4(void *);
+ s32 func_0207c8ec(s16,s16);s32 GetSpriteAnimValue(void *);
  s32 mul;s16 r6,r7,v;
  M2C_FIELD(arg0,s16 *,12)=arg1;
  mul=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));
  M2C_FIELD(arg0,s16 *,40)=0;M2C_FIELD(arg0,s16 *,42)=-mul;
  r6=M2C_FIELD(arg0,s16 *,42);r7=M2C_FIELD(arg0,s16 *,60);
- M2C_FIELD(arg0,s16 *,62)=func_020a8ff4((u8 *)arg0+48);
+ M2C_FIELD(arg0,s16 *,62)=GetSpriteAnimValue((u8 *)arg0+48);
  M2C_FIELD(arg0,s16 *,64)=r6;M2C_FIELD(arg0,s16 *,60)=r7;
  M2C_FIELD(arg0,u16 *,50)=M2C_FIELD(arg0,u16 *,52);
  if(arg2==1){v=M2C_FIELD(arg0,s16 *,42);M2C_FIELD(arg0,s16 *,64)=v;M2C_FIELD(arg0,s16 *,62)=v;}

@@ -403,13 +403,13 @@ void func_020b4e10(M2C_UNK arg0) {
 void func_020b4e28(void) {
  void func_02082cb4(void); void func_0208232c(void); void func_020d4d78(void);
  void func_020994e0(s32); void func_020c0a88(void); void func_01ff9e44(void *,s32,s32); void func_020af1c0(s32,s32);
- extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8,*data_027e00bc;
+ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain,*data_027e00bc;
  extern u8 data_020f3c60[];
  u16 *volatile p0,*volatile p1,*volatile p2,*volatile p3,*volatile p4,*volatile p5,*volatile p6,*volatile p7,*volatile p8;
  void *saved; s32 i;
  func_02082cb4(); saved=gCur3DSpriteEngine;
  i=0; do {
- gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+ gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
  func_0208232c();
  p0=*(u16 **)gCur3DSpriteEngine; *p0 = *p0 &~0x200;
  p1=*(u16 **)gCur3DSpriteEngine; *p1 = *p1 &~0x400;

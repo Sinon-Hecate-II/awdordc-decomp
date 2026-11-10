@@ -40,7 +40,7 @@ void *func_0208c54c(void *);
 void func_0208bd2c(void *,void *,s32,s32,s32);
 s32 func_02001fb4(s32,s32);
 M2C_UNK func_0208fe30(s32);
-u8 func_0207ca38(M2C_UNK,s16,s16,u8,s32);
+u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void func_020ceb48(void);void func_020cf278(s32);void func_020cf0a8(s32);void func_ov003_021ff36c(void);
 s32 func_020a8958(s32);void func_01ffa8c4(void *,s32);M2C_UNK func_01ffa6fc(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
@@ -71,14 +71,14 @@ M2C_FIELD(state,u8 *,0x35)=3;}}return;}
 case 3:
 if(M2C_FIELD(state,u8 *,0x36)==0)func_0208fe30(239);
 M2C_FIELD(state,u8 *,0x36)++;
-value=func_0207ca38(4,0,4096,M2C_FIELD(state,u8 *,0x36),16);
+value=EaseInterpolate(4,0,4096,M2C_FIELD(state,u8 *,0x36),16);
 for(i=0;i<4;i++){q=M2C_FIELD((u8 *)entry+i*4,void **,16);if(q && M2C_FIELD(q,s32 *,8)!=4096)M2C_FIELD(q,s32 *,8)=value;}
 if(M2C_FIELD(state,u8 *,0x36)!=16)return;
 M2C_FIELD(state,u8 *,0x36)=0;q=Child175(entry);
 if(q && M2C_FIELD(entry,s32 *,12)==0)M2C_FIELD(state,u8 *,0x35)=4;else M2C_FIELD(state,u8 *,0x35)=5;return;
 case 4:
 M2C_FIELD(state,u8 *,0x36)++;
-value=func_0207ca38(0,0,4096,M2C_FIELD(state,u8 *,0x36),16);
+value=EaseInterpolate(0,0,4096,M2C_FIELD(state,u8 *,0x36),16);
 if(M2C_FIELD(entry,s32 *,12)!=4096)M2C_FIELD(entry,s32 *,12)=value;
 if(M2C_FIELD(state,u8 *,0x36)!=16)return;
 q=Child175(entry);base=M2C_FIELD(state,void **,0x5c);
@@ -192,19 +192,19 @@ void func_ov004_02217bb8(void *state) {
 /* Advances the zoom/pan interpolation one step and finalizes the transition. */
 void func_ov004_02217e50(void *state) {
     M2C_UNK func_01ffa6fc(void *);
-    u8 func_0207ca38(M2C_UNK, s16, s16, u8, s32);
+    u8 EaseInterpolate(M2C_UNK, s16, s16, u8, s32);
     u8 step;
 
     M2C_FIELD(state, u8 *, 0x36) = (u8) (M2C_FIELD(state, u8 *, 0x36) + 1);
-    step = func_0207ca38(4, 0, 0x3E8, M2C_FIELD(state, u8 *, 0x36), 0x10);
+    step = EaseInterpolate(4, 0, 0x3E8, M2C_FIELD(state, u8 *, 0x36), 0x10);
     if ((s32) M2C_FIELD(state, s8 *, 0x3A) > 0) {
-        M2C_FIELD(state, s32 *, 0x40) = (s32) func_0207ca38(0, 0x1000, 0x800, step, 0x3E8);
+        M2C_FIELD(state, s32 *, 0x40) = (s32) EaseInterpolate(0, 0x1000, 0x800, step, 0x3E8);
     }
     if ((s32) M2C_FIELD(state, s8 *, 0x3A) < 0) {
-        M2C_FIELD(state, s32 *, 0x40) = (s32) func_0207ca38(0, 0x800, 0x1000, step, 0x3E8);
+        M2C_FIELD(state, s32 *, 0x40) = (s32) EaseInterpolate(0, 0x800, 0x1000, step, 0x3E8);
     }
-    M2C_FIELD(state, s16 *, 0x50) = (s16) func_0207ca38(0, M2C_FIELD(state, s16 *, 0x54), M2C_FIELD(state, s16 *, 0x58), step, 0x3E8);
-    M2C_FIELD(state, s16 *, 0x52) = (s16) func_0207ca38(0, M2C_FIELD(state, s16 *, 0x56), M2C_FIELD(state, s16 *, 0x5A), step, 0x3E8);
+    M2C_FIELD(state, s16 *, 0x50) = (s16) EaseInterpolate(0, M2C_FIELD(state, s16 *, 0x54), M2C_FIELD(state, s16 *, 0x58), step, 0x3E8);
+    M2C_FIELD(state, s16 *, 0x52) = (s16) EaseInterpolate(0, M2C_FIELD(state, s16 *, 0x56), M2C_FIELD(state, s16 *, 0x5A), step, 0x3E8);
     if ((s32) M2C_FIELD(state, u8 *, 0x36) < 0x10) {
         return;
     }

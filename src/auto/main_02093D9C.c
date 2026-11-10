@@ -7,14 +7,14 @@ s32 func_02093d9c(void *arg0) {
     s32 func_02091e14();
     M2C_UNK func_020d4bd4();
     M2C_UNK func_020d9394();
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 var_r0;
     u8 var_r0_2;
 
     var_r0 = func_02091e14();
     if (var_r0 == 3) {
-        if (gCur3DSpriteEngine == data_027e00c8) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
             var_r0_2 = 1;
         } else {
             var_r0_2 = 0;
@@ -319,8 +319,8 @@ void func_02094410(s8 arg0) { void *func_02091da8(); M2C_FIELD(func_02091da8(),s
 
 void func_02094424(void) {
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 g3DSpriteEngineSub;
     M2C_UNK func_02091db4(void);
     M2C_UNK func_02091e24(void);
     void *func_02091da8(void);
@@ -338,10 +338,10 @@ void func_02094424(void) {
 
     saved = gCur3DSpriteEngine;
     for (i = 0; i < 2; i = i + 1) {
-        gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
+        gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
 
-        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == data_027e00c8)) &&
-            ((func_02091e24() != 1) || (gCur3DSpriteEngine == data_027e00c4)) &&
+        if (((func_02091e24() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
+            ((func_02091e24() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
             ((func_02091e24() != 3) || (gCur3DSpriteEngine == saved))) {
             func_02097128(2);
             func_0209713c(1);

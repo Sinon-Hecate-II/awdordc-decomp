@@ -728,8 +728,8 @@ void func_0209dad8(void **arg0) {
 }
 
 void func_0209daec(void) {
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 saved;
     s32 i;
@@ -737,8 +737,8 @@ void func_0209daec(void) {
     saved = gCur3DSpriteEngine;
     i = 0;
     do {
-        if (i == 0) obj = data_027e00c8;
-        else obj = data_027e00c4;
+        if (i == 0) obj = g3DSpriteEngineMain;
+        else obj = g3DSpriteEngineSub;
         gCur3DSpriteEngine = obj;
         M2C_FIELD(obj, s32 *, 8) = 0;
         M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x49) = 0;

@@ -10,7 +10,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     u32 tile;
     s32 i;
     s16 pos;
-    extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern void **gCurrentMap;
     extern u8 data_ov005_02220198[];
     extern u8 data_ov005_022201a0[];
@@ -48,7 +48,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     func_02082cb4();
     savedEngine = gCur3DSpriteEngine;
     i=0;do {
-        gCur3DSpriteEngine = (i == 0) ? data_027e00c8 : data_027e00c4;
+        gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
         func_0208232c();
         { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 16; }
 { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 32; }
@@ -57,7 +57,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 { u16 *volatile reg=*(u16 **)(void *)gCur3DSpriteEngine; *reg = *reg | 256; }
         func_02082770(); i++;
     }while(i<2);
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     M2C_FIELD((void *)arg0, void **, 0x4C) = func_020896f0((void *)arg0);
     func_02089424();
     {
@@ -142,7 +142,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         M2C_FIELD(cur, u8 *, 0x46) = val;
         func_020af04c(3, 0x0F, 0x06, val);
     }
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     {
         void *map = *gCurrentMap;
         func_020cf0a8(M2C_FIELD(map, u16 *, 0x5142));
@@ -310,7 +310,7 @@ return result;
 }
 
 void func_ov005_02211a8c(void) {
-extern s32 data_ov005_02221300, data_027e00c4;
+extern s32 data_ov005_02221300, g3DSpriteEngineSub;
 extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov005_02220270;
 s32 func_ov000_0216a38c(s32,s32); s32 func_ov000_0216a414(s32,s32);
@@ -323,7 +323,7 @@ s8 b = M2C_FIELD(p,s8 *,2);
 q = func_ov000_0216a38c(M2C_FIELD(p,s8 *,1), a+b);
 index = func_ov000_0216a414(M2C_FIELD(data_ov005_02221300,s8 *,1), a+b);
 old = gCur3DSpriteEngine;
-gCur3DSpriteEngine = data_027e00c4;
+gCur3DSpriteEngine = g3DSpriteEngineSub;
 if (func_ov005_02211a54(M2C_FIELD(data_ov005_02221300,s8 *,1),a+b)==0)
 func_0208b758(M2C_FIELD(data_ov005_02221300,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
 else func_0208b698(M2C_FIELD(data_ov005_02221300,s32 *,0x48),&data_ov005_02220270);

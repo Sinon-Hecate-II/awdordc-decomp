@@ -50,7 +50,7 @@ void func_ov003_02204ff4(void *arg0) {
 }
 
 void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_01ffaacc(u16, u8, u16, M2C_UNK *, s32);
+    M2C_UNK AddSprite(u16, u8, u16, M2C_UNK *, s32);
     s32 func_0207c8ec(u8, M2C_UNK);
     s32 func_0207c928(u8, M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s32, s32, s32, s32);
@@ -182,7 +182,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
                 func_020a94fc(M2C_FIELD(arg0, void **, 0x54));
             }
         } else {
-            func_01ffaacc((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (func_ov003_02200cec(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
+            AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (func_ov003_02200cec(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
         }
         var_r4 += 1;
     } while ((u32) var_r4 < 8U);
@@ -258,7 +258,7 @@ void func_ov003_02205570(void **arg0) {
 
 void func_ov003_02205584(void *arg0) {
     M2C_UNK func_02088ff4(s32);
-    s16 func_020a8ff4(void *);
+    s16 GetSpriteAnimValue(void *);
     s32 func_ov003_021f15d4();
     s16 func_ov003_021f1608();
     s16 value;
@@ -267,12 +267,12 @@ void func_ov003_02205584(void *arg0) {
     void *first;
     value = func_ov003_021f1608();
     first = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(first, s16 *, 0xE) = func_020a8ff4(first);
+    M2C_FIELD(first, s16 *, 0xE) = GetSpriteAnimValue(first);
     M2C_FIELD(first, s16 *, 0x10) = value;
     M2C_FIELD(first, s16 *, 0xC) = 12;
     M2C_FIELD(first, u16 *, 2) = M2C_FIELD(first, u16 *, 4);
     second = M2C_FIELD(arg0, void **, 0x48);
-    M2C_FIELD(second, s16 *, 0xE) = func_020a8ff4(second);
+    M2C_FIELD(second, s16 *, 0xE) = GetSpriteAnimValue(second);
     M2C_FIELD(second, s16 *, 0x10) = -32;
     M2C_FIELD(second, s16 *, 0xC) = 12;
     M2C_FIELD(second, u16 *, 2) = M2C_FIELD(second, u16 *, 4);

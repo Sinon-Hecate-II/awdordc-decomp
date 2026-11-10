@@ -12,8 +12,8 @@ void func_ov011_02222204(M2C_UNK arg0) {
     M2C_UNK func_ov011_02224e04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_02101f2c;
     extern M2C_UNK data_02101f5c;
-    extern u16 **data_027e00c4;
-    extern u16 **data_027e00c8;
+    extern u16 **g3DSpriteEngineSub;
+    extern u16 **g3DSpriteEngineMain;
     extern u16 **data_027e01d8;
     u16 *volatile sp18;
     u16 *volatile sp14;
@@ -35,9 +35,9 @@ void func_ov011_02222204(M2C_UNK arg0) {
     temp_r11 = data_027e01d8;
     do {
         if (var_r9 == 0) {
-            var_r0 = data_027e00c8;
+            var_r0 = g3DSpriteEngineMain;
         } else {
-            var_r0 = data_027e00c4;
+            var_r0 = g3DSpriteEngineSub;
         }
         data_027e01d8 = var_r0;
         temp_r0 = *var_r0;
@@ -86,7 +86,7 @@ void func_ov011_02222204(M2C_UNK arg0) {
 }
 #pragma pop
 void func_ov011_02222830(void *arg0,u32 mode,u32 first,u32 second,u32 amount) {
-extern u16 **gCur3DSpriteEngine,**data_027e00c4,**data_027e00c8;
+extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 u8 b,a;
 u16 **saved,**engine;
 s32 i;
@@ -156,10 +156,10 @@ if(amount>16)amount=16;
 a=16-amount;b=amount;
 saved=gCur3DSpriteEngine;
 for(;i<2;i++){
-engine=i==0?data_027e00c8:data_027e00c4;
+engine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
-if(mode==0&&engine!=data_027e00c8)continue;
-if(mode==1&&engine!=data_027e00c4)continue;
+if(mode==0&&engine!=g3DSpriteEngineMain)continue;
+if(mode==1&&engine!=g3DSpriteEngineSub)continue;
 if(mode==3&&engine!=saved)continue;
 switch(first){
 case 0:

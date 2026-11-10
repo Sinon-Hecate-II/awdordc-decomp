@@ -19,47 +19,51 @@ static inline ScriptPlayer16 *ScriptPlayerAt16(s32 n) { extern s32 *gCurrentMap;
 #pragma optimization_level reset
 
 #pragma optimization_level 0
-s32 func_ov000_0216aba8(u8 *p, u8 *u, u8 *v, s32 d, u8 e) {
+/* Evaluate a scripted condition list (8-byte commands, terminated by opcode 0x22):
+ * return 1 when any condition/OR-group holds, otherwise 0. Failing groups are
+ * skipped with func_ov000_0216b074; when applyEffects is set the action commands
+ * of a satisfied group are also executed. */
+s32 func_ov000_0216aba8(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
 u8 *func_ov000_0216b074(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 func_020a7cfc(); s32 func_020a32f4();
 extern s32 *gCurrentMap;
-s32 (*cb)(); s32 result=0; s32 ok;
-while(p[0]!=34) {
-switch(p[0]) {
+s32 (*conditionFn)(); s32 matched=0; s32 turnMatches;
+while(cmd[0]!=34) {
+switch(cmd[0]) {
 case 0:case 1:case 2:
-ok=0;
-if(*(u16*)(p+2)==65535 || (*(u16*)(p+2)==0 && M2C_FIELD(*gCurrentMap,u16*,0x52a2)==0) || *(u16*)(p+2)==ScriptTurn16()){
-if(p[1]==0 || p[1]==ScriptPhase16())ok=1;
+turnMatches=0;
+if(*(u16*)(cmd+2)==65535 || (*(u16*)(cmd+2)==0 && M2C_FIELD(*gCurrentMap,u16*,0x52a2)==0) || *(u16*)(cmd+2)==ScriptTurn16()){
+if(cmd[1]==0 || cmd[1]==ScriptPhase16())turnMatches=1;
 }
-if(!ok)p=func_ov000_0216b074(p);break;
+if(!turnMatches)cmd=func_ov000_0216b074(cmd);break;
 case 23:case 24:case 25:
-if(p[1]!=255 && func_02086b40(p[1])){p=func_ov000_0216b074(p);break;}
-if(!e){result=1;break;}
-if(*(s32*)(p+4)){func_02094808(*(s32*)(p+4));result=1;}
-if(p[1]!=255)func_02086ae4(p[1],1);
+if(cmd[1]!=255 && func_02086b40(cmd[1])){cmd=func_ov000_0216b074(cmd);break;}
+if(!applyEffects){matched=1;break;}
+if(*(s32*)(cmd+4)){func_02094808(*(s32*)(cmd+4));matched=1;}
+if(cmd[1]!=255)func_02086ae4(cmd[1],1);
 break;
-case 15:case 16:case 17:cb=*(s32(**)())(p+4);if(cb()!=1)p=func_ov000_0216b074(p);break;
-case 18:case 19:case 20:cb=*(s32(**)())(p+4);if(cb()!=0)p=func_ov000_0216b074(p);break;
+case 15:case 16:case 17:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=1)cmd=func_ov000_0216b074(cmd);break;
+case 18:case 19:case 20:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=0)cmd=func_ov000_0216b074(cmd);break;
 case 3:case 4:case 5:
-if(!u || ((ScriptUnit16*)u)->kind!=p[1])p=func_ov000_0216b074(p);break;
+if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
 case 26:
-if(!u || p[1]!=(((u?((ScriptUnit16*)u-ScriptUnitAt16(0)):0)>>6)+1))p=func_ov000_0216b074(p);break;
-case 27:if(!u || ((ScriptUnit16*)u)->kind!=p[1])p=func_ov000_0216b074(p);break;
-case 28:if(!u || !func_020a7cfc(u))p=func_ov000_0216b074(p);break;
+if(!unit || cmd[1]!=(((unit?((ScriptUnit16*)unit-ScriptUnitAt16(0)):0)>>6)+1))cmd=func_ov000_0216b074(cmd);break;
+case 27:if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
+case 28:if(!unit || !func_020a7cfc(unit))cmd=func_ov000_0216b074(cmd);break;
 case 29:
-if(!v || p[1]!=(((v?((ScriptUnit16*)v-ScriptUnitAt16(0)):0)>>6)+1))p=func_ov000_0216b074(p);break;
-case 30:if(!v || ((ScriptUnit16*)v)->kind!=p[1])p=func_ov000_0216b074(p);break;
-case 31:if(!v || !func_020a7cfc(v))p=func_ov000_0216b074(p);break;
-case 32:if(!func_020a32f4(p[1]))p=func_ov000_0216b074(p);break;
-case 33:if(ScriptPlayerAt16(p[1])->flag)p=func_ov000_0216b074(p);break;
-case 12:case 13:case 14:if(p[1]!=d)p=func_ov000_0216b074(p);break;
-case 6:case 7:case 8:if(!func_02086b40(p[1]))p=func_ov000_0216b074(p);break;
-case 9:case 10:case 11:if(func_02086b40(p[1]))p=func_ov000_0216b074(p);break;
-case 22:p=func_ov000_0216b074(p);break;
+if(!target || cmd[1]!=(((target?((ScriptUnit16*)target-ScriptUnitAt16(0)):0)>>6)+1))cmd=func_ov000_0216b074(cmd);break;
+case 30:if(!target || ((ScriptUnit16*)target)->kind!=cmd[1])cmd=func_ov000_0216b074(cmd);break;
+case 31:if(!target || !func_020a7cfc(target))cmd=func_ov000_0216b074(cmd);break;
+case 32:if(!func_020a32f4(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
+case 33:if(ScriptPlayerAt16(cmd[1])->flag)cmd=func_ov000_0216b074(cmd);break;
+case 12:case 13:case 14:if(cmd[1]!=teamId)cmd=func_ov000_0216b074(cmd);break;
+case 6:case 7:case 8:if(!func_02086b40(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
+case 9:case 10:case 11:if(func_02086b40(cmd[1]))cmd=func_ov000_0216b074(cmd);break;
+case 22:cmd=func_ov000_0216b074(cmd);break;
 default:break;
 }
-p+=8;
+cmd+=8;
 }
-return result;
+return matched;
 }
 u8 *func_ov000_0216b074(u8 *arg0) {
     while (*arg0 != 0x17 && *arg0 != 0x18 && *arg0 != 0x19) {
@@ -110,7 +114,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_0209b59c(s32, M2C_UNK);
     M2C_UNK func_0209b5e4(s32, s32);
     s32 func_0209c268();
-    s8 func_020a8ff4(s32);
+    s8 GetSpriteAnimValue(s32);
     M2C_UNK func_020a92bc(void *, s32);
     s32 func_020cfb78();
     s32 func_020e31e0();
@@ -118,7 +122,7 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK func_020e35cc(s32);
     extern M2C_UNK data_02168f14;
     extern s32 *gCurrentMap;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern void *data_ov000_021b83b0[];
     extern void *data_ov000_021b83c4[];
@@ -161,15 +165,15 @@ void func_ov000_0216b194(void *arg0) {
     func_020a92bc(M2C_FIELD(arg0, void **, 0x40), var_r1);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) = (u8) ((M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), u8 *, 0x20) & ~0xE0) | 0x20);
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x10;}
     {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x20;}
     {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]&~0x40;}
     {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x80;}
     {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|0x100;}
     *(volatile u16 *)0x04000060 = (*(volatile u16 *)0x04000060 & ~0x3000) | 8;
-    n0 = func_020a8ff4(*M2C_FIELD(arg0, s32 **, 0x44));
-    n1 = func_020a8ff4(*M2C_FIELD(arg0, s32 **, 0x44));
+    n0 = GetSpriteAnimValue(*M2C_FIELD(arg0, s32 **, 0x44));
+    n1 = GetSpriteAnimValue(*M2C_FIELD(arg0, s32 **, 0x44));
     {u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+0x12); p[0]=(p[0]&~0xC0)|0x40;}
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s8 *, 0x51) = n1;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s8 *, 0x52) = (s8) (0x10 - n0);
@@ -240,8 +244,8 @@ void func_ov000_0216b194(void *arg0) {
             break;
         }
         if (var_r0 == 0) {
-            func_02080cfc(&data_ov000_021b86e8, M2C_FIELD(data_027e00c8, s32 *, 0x18));
-            func_02080cfc(&data_ov000_021b86f8, M2C_FIELD(data_027e00c8, s32 *, 0x2C));
+            func_02080cfc(&data_ov000_021b86e8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
+            func_02080cfc(&data_ov000_021b86f8, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
         } else {
             goto block_24;
         }
@@ -271,7 +275,7 @@ block_24:
             var_r3 = 0;
             break;
         }
-        func_02080cfc(data_ov000_021b83b0[var_r3], M2C_FIELD(data_027e00c8, s32 *, 0x18));
+        func_02080cfc(data_ov000_021b83b0[var_r3], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x18));
         temp_r0_22 = M2C_FIELD(arg0, u8 *, 0x3B);
         switch (temp_r0_22) {
         case 1:
@@ -296,9 +300,9 @@ block_24:
             var_r3_2 = 0;
             break;
         }
-        func_02080cfc(data_ov000_021b83c4[var_r3_2], M2C_FIELD(data_027e00c8, s32 *, 0x2C));
+        func_02080cfc(data_ov000_021b83c4[var_r3_2], M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C));
     }
-    func_020808dc(M2C_FIELD(data_027e00c8, s32 *, 0x2C), 0x20, 0x20, 6);
+    func_020808dc(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x2C), 0x20, 0x20, 6);
     temp_r0_23 = func_02080e30(&data_ov000_021b8708, 1);
     func_01ff9e44(temp_r0_23 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0xC0, 0x20);
     func_020e35cc(temp_r0_23);

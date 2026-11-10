@@ -89,9 +89,9 @@ void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov000_0216a374(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_01ffaacc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK data_027e005c;
-    func_01ffaacc(arg0, arg1, arg2, &data_027e005c, arg3);
+    AddSprite(arg0, arg1, arg2, &data_027e005c, arg3);
 }
 
 s32 func_ov000_0216a38c(s32 arg0, s32 arg1) {

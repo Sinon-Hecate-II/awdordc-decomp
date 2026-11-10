@@ -12,18 +12,18 @@ void func_02088e84(void *,s16,s32,s16,s32);
 s32 func_020aae10(void *);
 s32 func_020aae44(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
-s32 func_020a8ff4(void *);
+s32 GetSpriteAnimValue(void *);
 s32 func_0207c8ec(s32,s32);
-void func_01ff8ddc(s32,s16,s16,s16,s16);
-void func_01ffaacc(u16,u16,u16,void *,s32);
+void SetSpriteQuad(s32,s16,s16,s16,s16);
+void AddSprite(u16,u16,u16,void *,s32);
 s32 func_ov003_02206690(s32,s32,s32);
 s32 func_02089080(void *);
 void func_02088d94(void *);
 s32 func_02089064(void *);
 void func_02088da8(void *);
 u16 *volatile blend;
-extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;
-extern s16 data_020e5b30[];
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+extern s16 gSinCosTable[];
 extern u8 data_ov003_022109cc[];
 void *saved,*sprite,*obj,*child;
 s32 boolean,state,kind,index,show,a,b,c,d,sine,cosine;
@@ -37,7 +37,7 @@ if(state==1)boolean=1;else boolean=0;
 if(!(boolean&255)||!M2C_FIELD(arg0,u8 *,0x35))func_ov003_0220bf98(arg0);
 func_ov003_0220ac58(arg0);
 func_ov003_0220856c(arg0,16,2);
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3c)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x44)=-a;
@@ -71,25 +71,25 @@ disabled0:boolean=0;
 test0:if(!(boolean&255))goto normal0;
 enabled0:scale=256;goto scaled0;
 normal0:
-scale=(u16)func_020a8ff4(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,76),void **,28),void **,0));
+scale=(u16)GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,76),void **,28),void **,0));
 scaled0:;
 if(scale>1){
 if((s32)scale>=2)scale2=scale;else if(scale>2)scale2=2;else{scale2=-2;if((s32)scale>=-2)scale2=scale;}
-sine=data_020e5b30[1];cosine=data_020e5b30[0];
+sine=gSinCosTable[1];cosine=gSinCosTable[0];
 if((s32)scale<2){if(scale>2)scale=2;else if((s32)scale<-2)scale=-2;}
 d=sine<<4;
 a=func_0207c8ec(d,256);
 b=func_0207c8ec((-cosine)<<4,scale);
 c=func_0207c8ec(cosine<<4,256);
 d=func_0207c8ec(d,scale2);
-func_01ff8ddc(0,(s16)a,(s16)b,(s16)c,(s16)d);
+SetSpriteQuad(0,(s16)a,(s16)b,(s16)c,(s16)d);
 obj=M2C_FIELD(arg0,void **,96);
 boolean=M2C_FIELD(M2C_FIELD(obj,void **,0x1c),u8 *,6)|M2C_FIELD(obj,u8 *,6);
 child=M2C_FIELD(obj,void **,0x1c);
 a=(boolean&255)?7:6;
 y=M2C_FIELD(child,s16 *,10)-(M2C_FIELD(child,u8 *,17)>>1);
 x=M2C_FIELD(child,s16 *,8)-(M2C_FIELD(child,u8 *,16)>>1);
-func_01ffaacc((u16)((x&511)),(u16)((y&255)|256),(u16)((u32)(a<<28)>>16),data_ov003_022109cc,11);
+AddSprite((u16)((x&511)),(u16)((y&255)|256),(u16)((u32)(a<<28)>>16),data_ov003_022109cc,11);
 }
 state=(u32)(M2C_FIELD(arg0,u8 *,0x36)<<24)>>28;
 if(state==1)boolean=1;else boolean=0;
@@ -101,25 +101,25 @@ disabled1:boolean=0;
 test1:if(!(boolean&255))goto normal1;
 enabled1:scale=256;goto scaled1;
 normal1:
-scale=(u16)func_020a8ff4(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,72),void **,64),void **,0));
+scale=(u16)GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void **,72),void **,64),void **,0));
 scaled1:;
 if(scale>1){
 if((s32)scale>=2)scale2=scale;else if(scale>2)scale2=2;else{scale2=-2;if((s32)scale>=-2)scale2=scale;}
-sine=data_020e5b30[1];cosine=data_020e5b30[0];
+sine=gSinCosTable[1];cosine=gSinCosTable[0];
 if((s32)scale<2){if(scale>2)scale=2;else if((s32)scale<-2)scale=-2;}
 d=sine<<4;
 a=func_0207c8ec(d,256);
 b=func_0207c8ec((-cosine)<<4,scale);
 c=func_0207c8ec(cosine<<4,256);
 d=func_0207c8ec(d,scale2);
-func_01ff8ddc(1,(s16)a,(s16)b,(s16)c,(s16)d);
+SetSpriteQuad(1,(s16)a,(s16)b,(s16)c,(s16)d);
 obj=M2C_FIELD(arg0,void **,100);
 boolean=M2C_FIELD(M2C_FIELD(obj,void **,0x1c),u8 *,6)|M2C_FIELD(obj,u8 *,6);
 child=M2C_FIELD(obj,void **,0x1c);
 a=(boolean&255)?7:6;
 y=M2C_FIELD(child,s16 *,10)-(M2C_FIELD(child,u8 *,17)>>1);
 x=M2C_FIELD(child,s16 *,8)-(M2C_FIELD(child,u8 *,16)>>1);
-func_01ffaacc((u16)((x&511)|512),(u16)((y&255)|256),(u16)((u32)(a<<28)>>16),data_ov003_022109cc,17);
+AddSprite((u16)((x&511)|512),(u16)((y&255)|256),(u16)((u32)(a<<28)>>16),data_ov003_022109cc,17);
 }
 }
 obj=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),void **,0);
@@ -166,9 +166,9 @@ func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)func_020aae
 if(func_02089064(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4)))func_02088da8(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
 if(func_02089064(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8)))func_02088da8(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
 }
-gCur3DSpriteEngine=data_027e00c4;
-a=16-func_020a8ff4(M2C_FIELD(arg0,void **,0x54));
-b=func_020a8ff4(M2C_FIELD(arg0,void **,0x54));
+gCur3DSpriteEngine=g3DSpriteEngineSub;
+a=16-GetSpriteAnimValue(M2C_FIELD(arg0,void **,0x54));
+b=GetSpriteAnimValue(M2C_FIELD(arg0,void **,0x54));
 blend=(u16 *)((u8 *)*(void **)gCur3DSpriteEngine+0x12);
 *blend=(*blend&~0xc0)|0x40;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=b;

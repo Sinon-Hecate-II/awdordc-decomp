@@ -3,7 +3,7 @@
 static inline void *RenderEntry(void *entries,s32 index){if(index<0)return 0;if(index>=64)return 0;return (u8 *)entries+index*0x20;}
 static inline void *RenderSelection(void *entries){s32 i;for(i=0;i<64;i++){void *p=RenderEntry(entries,i);if((u8)((M2C_FIELD(p,u8 *,4)&2)!=0))return p;}return 0;}
 
-extern const s16 data_020e5b30[2048];
+extern const s16 gSinCosTable[2048];
 extern const s16 data_020e7b30[2048];
 extern const s16 data_020e6b30[2048];
 extern const s16 data_020e8b30[2048];
@@ -86,7 +86,7 @@ func_0200100c(pivot);func_0200100c(tr);func_0200100c(sz);func_0200100c(rot);func
 amount_0=M2C_FIELD(node_0,s32 *,12);cx_0=M2C_FIELD(node_0,s16 *,0);cy_0=M2C_FIELD(node_0,s16 *,2);if(!amount_0)continue;
 link_0=0;for(j_0=0;j_0<4;j_0++){void *candidate=M2C_FIELD(node_0,void **,16+j_0*4);if(candidate&&(u8)(!(u8)((M2C_FIELD(candidate,u8 *,4)&4)!=0))){link_0=candidate;break;}}
 if(!link_0||!(u8)((M2C_FIELD(link_0,u8 *,4)&1)!=0))continue;
-if(M2C_FIELD(link_0,s16 *,0)>cx_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*64)/8,4096,4096);func_0200112c(rot,data_020e5b30[0],data_020e5b30[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}
+if(M2C_FIELD(link_0,s16 *,0)>cx_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*64)/8,4096,4096);func_0200112c(rot,gSinCosTable[0],gSinCosTable[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}
 if(M2C_FIELD(link_0,s16 *,0)<cx_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*64)/8,4096,4096);func_0200112c(rot,data_020e7b30[0],data_020e7b30[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}
 if(M2C_FIELD(link_0,s16 *,2)>cy_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*38)/8,4096,4096);func_0200112c(rot,data_020e6b30[0],data_020e6b30[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}
 if(M2C_FIELD(link_0,s16 *,2)<cy_0){func_0200100c(pivot);func_02001068(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*38)/8,4096,4096);func_0200112c(rot,data_020e8b30[0],data_020e8b30[1]);func_0200100c(tr);func_02001068(tr,tr,cx_0,cy_0,0);}

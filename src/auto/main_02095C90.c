@@ -19,7 +19,7 @@ void func_02095c90(void *arg0) {
     M2C_UNK func_01ff85b8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern M2C_UNK data_02102d14;
     extern M2C_UNK data_02102d1c;
     extern M2C_UNK data_02102d28;
@@ -34,7 +34,7 @@ void func_02095c90(void *arg0) {
     s32 temp_r0;
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02096d0c();
     v0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *v0 = *v0 | 0x10;
@@ -79,7 +79,7 @@ void func_02095eb4(void) {
     M2C_UNK func_020af230();
     M2C_UNK func_0208232c();
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     u16 *volatile v0;
     u16 *volatile v1;
     u16 *volatile v2;
@@ -88,7 +88,7 @@ void func_02095eb4(void) {
     void *saved;
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020af230();
     func_0208232c();
     v0 = *(u16 **)gCur3DSpriteEngine;

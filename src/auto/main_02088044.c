@@ -288,8 +288,8 @@ void func_02088774(s32 a){void func_02007e20(void *,s32,s32);extern u8 data_0215
 void func_020887a8(void *p,s32 a,s32 b,s32 c,s32 d){void func_020887ec(void *);s32 x=M2C_FIELD(p,s16 *,0x34),y=M2C_FIELD(p,s16 *,0x36),z=M2C_FIELD(p,s8 *,0x49),w=M2C_FIELD(p,s32 *,0x44);M2C_FIELD(p,s16 *,0x34)=a;M2C_FIELD(p,s16 *,0x36)=b;M2C_FIELD(p,s8 *,0x49)=c;M2C_FIELD(p,s32 *,0x44)=d;func_020887ec(p);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,s8 *,0x49)=z;M2C_FIELD(p,s32 *,0x44)=w;}
 
 void func_020887ec(void *p){
-s32 func_01ff8f90(s32,s32,s32);void func_01ffaacc(u16,u16,u16,s32,s32);
-extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
+s32 func_01ff8f90(s32,s32,s32);void AddSprite(u16,u16,u16,s32,s32);
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 void *saved,*bank; s32 i;u32 mode,flags;u16 x,y,attr,pal;u32 shift,tile,part;
 if(M2C_FIELD(p,s32 *,0x44)==0)return;
 if((M2C_FIELD(p,u32 *,0x40)>>26)==0)return;
@@ -297,9 +297,9 @@ if(((u32)(M2C_FIELD(p,u8 *,0x48)<<31)>>31)==0)return;
 if(!func_01ff8f90(M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38),M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a),M2C_FIELD(p,s32 *,0x44)))return;
 saved=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
-if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
 gCur3DSpriteEngine=bank;mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<28)>>29;
-if((mode!=0||bank==data_027e00c8)&&(mode!=1||bank==data_027e00c4)&&(mode!=3||bank==saved)){
+if((mode!=0||bank==g3DSpriteEngineMain)&&(mode!=1||bank==g3DSpriteEngineSub)&&(mode!=3||bank==saved)){
 shift=(u32)(M2C_FIELD(M2C_FIELD(bank,void **,0),u16 *,0)<<17)>>30;
 flags=M2C_FIELD(p,u32 *,0x40);
 tile=M2C_FIELD(p,u16 *,0x3e);
@@ -310,15 +310,15 @@ attr=(u16)(part|M2C_FIELD(p,u16 *,0x3c));
 
 y=(M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a))&255;
 if((flags>>26)!=16)y|=0x400;
-func_01ffaacc((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,attr,M2C_FIELD(p,s32 *,0x44),M2C_FIELD(p,s8 *,0x49));
+AddSprite((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,attr,M2C_FIELD(p,s32 *,0x44),M2C_FIELD(p,s8 *,0x49));
 }}gCur3DSpriteEngine=saved;
 }
 
 void func_02088964(void *arg0) {
     void func_02088d94(void *);
     void func_02088da8(void *);
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
-    extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
 
     u16 *volatile flags0;
     u16 *volatile flags1;
@@ -347,7 +347,7 @@ void func_02088964(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x4b) == 0 && top2 == 1) {
         func_02088d94(arg0);
         M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(M2C_FIELD(arg0, u8 *, 0x4b) + 1);
-        visibility = func_0207ca38(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x4b), M2C_FIELD(arg0, u8 *, 0x4a));
+        visibility = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x4b), M2C_FIELD(arg0, u8 *, 0x4a));
         field40 = M2C_FIELD(arg0, u32 *, 0x40);
         field40 = (field40 & ~0xFC000000U) | ((u32)visibility << 26);
         M2C_FIELD(arg0, u32 *, 0x40) = field40;
@@ -363,14 +363,14 @@ void func_02088964(void *arg0) {
 
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            chosen = data_027e00c8;
+            chosen = g3DSpriteEngineMain;
         } else {
-            chosen = data_027e00c4;
+            chosen = g3DSpriteEngineSub;
         }
-        if (category == 0 && chosen != data_027e00c8) {
+        if (category == 0 && chosen != g3DSpriteEngineMain) {
             continue;
         }
-        if (category == 1 && chosen != data_027e00c4) {
+        if (category == 1 && chosen != g3DSpriteEngineSub) {
             continue;
         }
         if (category == 3 && chosen != previousEngine) {
@@ -442,7 +442,7 @@ void func_02088964(void *arg0) {
 }
 
 void func_02088c78(void *p) {
-void func_02088d94(void *);void func_02088da8(void *);s32 func_0207ca38(s32,s32,s32,s32,s32);
+void func_02088d94(void *);void func_02088da8(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 mode,n,t;
 mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30;
 if(!mode)return;
@@ -455,8 +455,8 @@ case 1:n=M2C_FIELD(p,u8 *,0x4e);t=M2C_FIELD(p,u8 *,0x4c);break;
 case 2:n=M2C_FIELD(p,u8 *,0x4e);t=M2C_FIELD(p,u8 *,0x4c);break;
 case 3:n=M2C_FIELD(p,u8 *,0x4f);t=n-M2C_FIELD(p,u8 *,0x4c);break;
 }
-M2C_FIELD(p,s16 *,0x34)=func_0207ca38(4,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x50),t,n);
-M2C_FIELD(p,s16 *,0x36)=func_0207ca38(4,M2C_FIELD(p,s16 *,0x56),M2C_FIELD(p,s16 *,0x52),t,n);
+M2C_FIELD(p,s16 *,0x34)=EaseInterpolate(4,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x50),t,n);
+M2C_FIELD(p,s16 *,0x36)=EaseInterpolate(4,M2C_FIELD(p,s16 *,0x56),M2C_FIELD(p,s16 *,0x52),t,n);
 if(M2C_FIELD(p,u8 *,0x4c)<n)return;
 if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==3)func_02088da8(p);
 M2C_FIELD(p,u8 *,0x48)&=~0xc0;

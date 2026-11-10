@@ -170,13 +170,13 @@ void func_01ff85ec(void) {
 }
 
 void func_01ff8624(s32 start, s32 end) {
-    extern void *gCur3DSpriteEngine, *data_027e00c8;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     void *base;
     u16 *dst;
     s32 limit, i, n, a, b, c, j;
     u8 same;
     n = M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x4a);
-    same = gCur3DSpriteEngine == data_027e00c8;
+    same = gCur3DSpriteEngine == g3DSpriteEngineMain;
     if (same == 1) base = (void *)0x7000000; else base = (void *)0x7000400;
     limit = 0x80 - start;
     if (n > limit) n = limit;
@@ -208,8 +208,8 @@ void func_01ff8624(s32 start, s32 end) {
 
 void func_01ff873c(void) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
     void func_02007ef4(void *, void *, s32);
     void func_01ff8624(s32, s32);
     void func_01ff85ec(void);
@@ -219,8 +219,8 @@ void func_01ff873c(void) {
     s32 i = 0;
     u8 same;
     do {
-        p = i == 0 ? data_027e00c8 : data_027e00c4;
-        same = p == data_027e00c8;
+        p = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        same = p == g3DSpriteEngineMain;
         gCur3DSpriteEngine = p;
         if (same == 1) {
             dest = (void *)0x7000000;
@@ -235,7 +235,7 @@ void func_01ff873c(void) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?data_027e00c8:data_027e00c4;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
+void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;void func_01ff8624(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=p;func_01ff8624(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
 
 /* Draw a run of sprites from src into the current 3D sprite engine bank. */
 void func_01ff883c(s32 x, s32 y, s32 attr, u16 *src) {
@@ -466,7 +466,7 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
     } while (count);
 }
 
-void func_01ff8ddc(s32 a,s16 b,s16 c,s16 d,s16 e) {
+void SetSpriteQuad(s32 a,s16 b,s16 c,s16 d,s16 e) {
  extern void *gCur3DSpriteEngine;
  s32 n=a*16;
  ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+3]=b;

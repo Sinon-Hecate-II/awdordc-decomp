@@ -7,7 +7,7 @@ static inline u32 Unk021F9FE0Bit(u8 *p) { return (u32)(M2C_FIELD(p,s32 *,56)<<31
 static inline u8 Unk021F9FE0Eq(int a,int b) { return a==b; }
 extern u8 data_ov003_0220fdf2[];
 extern u8 data_027e0064[],data_0215d8a8[],data_ov003_0220f202[];
-extern u32 data_027e00c4;
+extern u32 g3DSpriteEngineSub;
 
 extern u16 data_ov003_0220feac[64];
 extern void *gCur3DSpriteEngine;
@@ -16,7 +16,7 @@ void *func_020c7e6c(int);
 int func_020a8b2c(int);
 int func_020c7eb8(int);
 int func_ov003_02200968(int);
-void func_01ffaacc(int,int,int,void *,int);
+void AddSprite(int,int,int,void *,int);
 int func_020a8ef8(int);
 int func_ov003_021f2654(void);
 void func_0208dd7c(int,int,int,int,int,int,int);
@@ -48,12 +48,12 @@ if(flag){
 if(flag2)dx=-64;
 tile=(u16)((func_ov003_02200968(7)<<4)+320);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ffaacc((u16)((b+192+dx)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
+AddSprite((u16)((b+192+dx)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
 }
 if(flag2) {
 tile=(u16)((func_ov003_02200968(12)<<4)+320);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ffaacc((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
+AddSprite((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_0220fdf2,11);
 }
 flag=0;
 if(id>=225 && id<425 &&func_020c7eb8(id)==0)flag=1;
@@ -81,7 +81,7 @@ icon=(u16)((func_ov003_02200a18((u16)(v==1?1:3),id)<<2)+808);
 icon=(u16)((func_ov003_02200a18(func_020830a8(id),id)<<2)+808);
 }
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ffaacc((u16)((b+3)&511),21,(u16)(((icon>>shift)&1023)|0x9800),data_027e0064,17);
+AddSprite((u16)((b+3)&511),21,(u16)(((icon>>shift)&1023)|0x9800),data_027e0064,17);
 mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){
 index=(s16)((s16)M2C_FIELD(M2C_FIELD(p,void **,76),s32 *,20)+1);
@@ -111,17 +111,17 @@ switch(kind) {case 1:case 2:palette=14;break;case 3:case 4:palette=13;break;defa
 paletteBits=(u32)(palette<<28);
 drawX=(u16)((r[1]?0x1000:0)|46);
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ffaacc(drawX,40,(u16)(((tile>>shift)&1023)|(paletteBits>>16)|0x800),data_027e0064,17);
+AddSprite(drawX,40,(u16)(((tile>>shift)&1023)|(paletteBits>>16)|0x800),data_027e0064,17);
 }break;
 case 1:
 v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<6)>>23;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 func_020a92bc(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
 func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
 v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<15)>>22;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 func_020a92bc(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=69;
 func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
@@ -139,7 +139,7 @@ switch(i){
 case 0:break;
 case 1:
 glyph=((u32)M2C_FIELD(r,u32 *,12)<<4)>>22;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 func_020a92bc(M2C_FIELD(p,void **,84),glyph);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
 func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
@@ -163,7 +163,7 @@ else if(j==1)glyph=(u32)M2C_FIELD(r,u32 *,8)<<12>>26;
 else if(j==2)glyph=(u32)(M2C_FIELD(r,s32 *,8)<<24)>>24;
 break;
 }
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 func_020a92bc(M2C_FIELD(p,void **,84),(s16)glyph);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=j*22+b+20;M2C_FIELD(q,s16 *,8)=69;
 func_020a94fc(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;

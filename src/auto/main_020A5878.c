@@ -8,7 +8,7 @@ extern s16 data_ov000_021aeef4[];typedef struct { u8 unk0[12]; s32 money; u8 unk
 
 void func_020a5878(void *arg0) {
 s32 func_0207b7c4(void);s32 func_020a4ab0(s32);
-void func_0208fb0c(s32,u8,u8);s32 func_0207ca38(s32,s32,s32,s32,s32);
+void func_0208fb0c(s32,u8,u8);s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 func_020a4c7c(void *);void func_0207b774(u8,u8);void func_0207b764(u8,u8);void func_01ffa6fc(void *);
 extern s32 *gCurrentMap;
 s32 x,y,dir,turnCount; u8 *unit; void *map; u8 *player;
@@ -25,7 +25,7 @@ M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0x3C0)|0x200;
 func_0208fb0c(0x10C,unit[0],unit[1]);
 }
 M2C_FIELD(arg0,s32 *,0x3C)++;
-unit[4]=func_0207ca38(4,x,y,M2C_FIELD(arg0,s32 *,0x3C),60);
+unit[4]=EaseInterpolate(4,x,y,M2C_FIELD(arg0,s32 *,0x3C),60);
 if(M2C_FIELD(arg0,s32 *,0x3C)<60)return;
 M2C_FIELD(unit,u16 *,2)=(M2C_FIELD(unit,u16 *,2)&~0x3C0)|0x1C0;
 unit[4]=M2C_FIELD(arg0,s32 *,0x40);

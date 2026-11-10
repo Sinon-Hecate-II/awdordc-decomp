@@ -85,12 +85,12 @@ void func_ov004_02211358(void) {
 
 M2C_UNK func_ov004_02211374(void *arg0) {
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 data_ov004_02218cb0;
     unsigned long long func_020720f0(s32, s32);
     s32 func_02091e14(void);
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *func_02082a8c(void *, void *);
     void func_0209dabc(s32, void *);
     void *func_0208931c(void);
@@ -124,22 +124,22 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     }
     M2C_FIELD(arg0, u16 *, 0x3E) = (u16)(func_020720f0(M2C_FIELD(arg0, u16 *, 0x3E) + 1, M2C_FIELD(arg0, u16 *, 0x40)) >> 32);
     max = M2C_FIELD(arg0, u16 *, 0x3A);
-    spC = func_0207ca38(4, M2C_FIELD(arg0, u16 *, 0x34), M2C_FIELD(arg0, u16 *, 0x36), M2C_FIELD(arg0, u16 *, 0x38), max);
+    spC = EaseInterpolate(4, M2C_FIELD(arg0, u16 *, 0x34), M2C_FIELD(arg0, u16 *, 0x36), M2C_FIELD(arg0, u16 *, 0x38), max);
     spC = spC & 0xFFFF;
     r11 = (s16)spC;
     half = (u16)(M2C_FIELD(arg0, u16 *, 0x40) >> 1);
     if (M2C_FIELD(arg0, u16 *, 0x3E) < half) {
-        result2 = func_0207ca38(4, -(s16)M2C_FIELD(arg0, s16 *, 0x3C), (s16)M2C_FIELD(arg0, s16 *, 0x3C), M2C_FIELD(arg0, s16 *, 0x38), half);
+        result2 = EaseInterpolate(4, -(s16)M2C_FIELD(arg0, s16 *, 0x3C), (s16)M2C_FIELD(arg0, s16 *, 0x3C), M2C_FIELD(arg0, s16 *, 0x38), half);
     } else {
-        result2 = func_0207ca38(1, (s16)M2C_FIELD(arg0, s16 *, 0x3C), -(s16)M2C_FIELD(arg0, s16 *, 0x3C), M2C_FIELD(arg0, u16 *, 0x3E) - half, half);
+        result2 = EaseInterpolate(1, (s16)M2C_FIELD(arg0, s16 *, 0x3C), -(s16)M2C_FIELD(arg0, s16 *, 0x3C), M2C_FIELD(arg0, u16 *, 0x3E) - half, half);
     }
     spC = result2 << 16;
     savedEngine = gCur3DSpriteEngine;
     loop = 0;
     while (loop < 2) {
-        if (loop == 0) gCur3DSpriteEngine = data_027e00c8; else gCur3DSpriteEngine = data_027e00c4;
-        if (func_02091e14() == 0 && gCur3DSpriteEngine != data_027e00c8) goto skip_update;
-        if (func_02091e14() == 1 && gCur3DSpriteEngine != data_027e00c4) goto skip_update;
+        if (loop == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
+        if (func_02091e14() == 0 && gCur3DSpriteEngine != g3DSpriteEngineMain) goto skip_update;
+        if (func_02091e14() == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) goto skip_update;
         if (func_02091e14() == 3 && gCur3DSpriteEngine != savedEngine) goto skip_update;
 
         M2C_FIELD(arg0, s16 *, 0x20) = 0;
@@ -189,8 +189,8 @@ M2C_UNK func_ov004_02211374(void *arg0) {
                 M2C_FIELD(spr, s32 *, 0x3C) = 0;
                 func_0208fe30(0xFA);
             }
-            M2C_FIELD(arg0, u16 *, 0x4E) = (u16)func_0207ca38(0, 0, 0x20, M2C_FIELD(arg0, u16 *, 0x46), M2C_FIELD(arg0, u16 *, 0x48));
-            M2C_FIELD(arg0, u16 *, 0x50) = (u16)func_0207ca38(0, 0, -96, M2C_FIELD(arg0, u16 *, 0x46), M2C_FIELD(arg0, u16 *, 0x48));
+            M2C_FIELD(arg0, u16 *, 0x4E) = (u16)EaseInterpolate(0, 0, 0x20, M2C_FIELD(arg0, u16 *, 0x46), M2C_FIELD(arg0, u16 *, 0x48));
+            M2C_FIELD(arg0, u16 *, 0x50) = (u16)EaseInterpolate(0, 0, -96, M2C_FIELD(arg0, u16 *, 0x46), M2C_FIELD(arg0, u16 *, 0x48));
         }
 
         M2C_FIELD(arg0, u16 *, 0x52) = M2C_FIELD(arg0, u16 *, 0x52) + 1;
@@ -224,7 +224,7 @@ void func_ov004_02211740(void) {
 
 /* Load graphics resources into both screen contexts when the current mode permits. */
 void func_ov004_02211744(void *ctx) {
-    extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cbc[], data_ov004_02218cc4[], data_ov004_02218cd4[], data_ov004_02218ce0[];
     s32 func_02091e14(void);
     s32 savedContext, i;
@@ -233,9 +233,9 @@ void func_ov004_02211744(void *ctx) {
     savedContext = gCur3DSpriteEngine;
     i = 0;
     do {
-        if (i == 0) gCur3DSpriteEngine = data_027e00c8; else gCur3DSpriteEngine = data_027e00c4;
-        if ((func_02091e14() != 0 || gCur3DSpriteEngine == data_027e00c8) &&
-            (func_02091e14() != 1 || gCur3DSpriteEngine == data_027e00c4) &&
+        if (i == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
+        if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
+            (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
             func_0200bc5c(data_ov004_02218cbc);
             func_020814e4(data_ov004_02218cc4);
@@ -250,7 +250,7 @@ void func_ov004_02211744(void *ctx) {
 
 /* Load a graphics resource set into both screen contexts when the current mode permits. */
 void func_ov004_02211844(void *ctx) {
-    extern s32 gCur3DSpriteEngine, data_027e00c4, data_027e00c8;
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cec[];
     s32 func_02091e14(void);
     s32 savedContext, i;
@@ -259,9 +259,9 @@ void func_ov004_02211844(void *ctx) {
     savedContext = gCur3DSpriteEngine;
     i = 0;
     do {
-        if (i == 0) gCur3DSpriteEngine = data_027e00c8; else gCur3DSpriteEngine = data_027e00c4;
-        if ((func_02091e14() != 0 || gCur3DSpriteEngine == data_027e00c8) &&
-            (func_02091e14() != 1 || gCur3DSpriteEngine == data_027e00c4) &&
+        if (i == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
+        if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
+            (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
             func_0208c5fc(data_ov004_02218cec, 0, 0);
             func_02080774(1, 1, 0, 100, 0);

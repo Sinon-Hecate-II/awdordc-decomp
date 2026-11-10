@@ -3,7 +3,7 @@
 extern s32 gCur3DSpriteEngine;
 extern u8 data_027e0074[];
 extern u8 data_02101fdc[];
-void func_01ffaacc(u16,u16,u16,void *,s32);
+void AddSprite(u16,u16,u16,void *,s32);
 
 typedef struct { u16 unused:13; u16 mode:2; u16 last:1; } DrawControl;
 typedef struct { u8 pad[15]; u8 low:4; u8 high:4; } Unk0208349c;
@@ -67,7 +67,7 @@ void func_020834c4(void) {
 #pragma opt_strength_reduction off
 void func_0208352c(void *arg0) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 i, n, a;
     s8 *p;
 
@@ -80,8 +80,8 @@ void func_0208352c(void *arg0) {
     n = M2C_FIELD(arg0, u16 *, 0x5a);
     if (n <= 0) return;
     do {
-        a = func_0207ca38(0, 0, 48, i, (s32)M2C_FIELD(arg0, volatile u16 *, 0x5a) - 1);
-        a = (a + func_0207ca38(4, 0, 48, i, n - 1)) >> 1;
+        a = EaseInterpolate(0, 0, 48, i, (s32)M2C_FIELD(arg0, volatile u16 *, 0x5a) - 1);
+        a = (a + EaseInterpolate(4, 0, 48, i, n - 1)) >> 1;
         p = (s8 *)arg0 + i;
         p[0x44] = (s8)a;
         n = M2C_FIELD(arg0, u16 *, 0x5a);
@@ -90,49 +90,49 @@ void func_0208352c(void *arg0) {
 }
 #pragma opt_strength_reduction off
 void func_020835d4(void *obj) {
- extern s16 data_020e5b30[];
- s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+ extern s16 gSinCosTable[];
+ s32 func_0207c8ec(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
  s32 i,e,d,a,b,s; u16 y,x; s32 c,offset,pos,glyph;
  x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
- c=data_020e5b30[1]<<4;s=*(volatile s16 *)data_020e5b30;
+ c=gSinCosTable[1]<<4;s=*(volatile s16 *)gSinCosTable;
  M2C_FIELD(obj,u16 *,0x54)++;
  a=func_0207c8ec(c,256);b=func_0207c8ec((-s)<<4,64);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,64);
- func_01ff8ddc(31,(s16)a,(s16)b,(s16)d,(s16)e);
+ SetSpriteQuad(31,(s16)a,(s16)b,(s16)d,(s16)e);
  for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
  if(M2C_FIELD(obj,u16 *,0x54)<M2C_FIELD((u8 *)obj+i,u8 *,0x44))break;
  offset=M2C_FIELD(obj,u16 *,0x54)-M2C_FIELD((u8 *)obj+i,u8 *,0x44);
- if(offset>8)offset=0;else offset=func_0207ca38(4,256,0,offset,8);
+ if(offset>8)offset=0;else offset=EaseInterpolate(4,256,0,offset,8);
  pos=x+offset;if(pos>=256)break;
- func_01ffaacc((u16)((pos&511)|0x3e00),(u16)((y&255)|256),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
+ AddSprite((u16)((pos&511)|0x3e00),(u16)((y&255)|256),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
  glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);
  if(glyph==255)x+=14;else x+=data_02101fdc[glyph]-2;
  }
  if(M2C_FIELD(obj,u16 *,0x54)==56) {M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
 }
 void func_020837b4(void *obj) {
-extern s16 data_020e5b30[]; extern u8 data_027e008c[];
-s32 func_0207c8ec(s32,s32);s32 func_0207ca38(s32,s32,s32,s32,s32);void func_01ff8ddc(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
+extern s16 gSinCosTable[]; extern u8 data_027e008c[];
+s32 func_0207c8ec(s32,s32);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);void func_01ffa6fc(void *);
 s32 s; s16 c; s32 scale2,scale1,a,b,d,e,i,offset,pos,glyph; u16 y; s32 x;
 x=M2C_FIELD(obj,u16 *,0x56);y=M2C_FIELD(obj,u16 *,0x58);
 M2C_FIELD(obj,u16 *,0x54)++;
-scale1=((func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))>=2?func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):(func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)>2?2:(func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16) < -2 ? -2:func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))));
-c=data_020e5b30[1];s=data_020e5b30[0];
-scale2=((func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))>=2?func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):(func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)>2?2:(func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16) < -2 ? -2:func_0207ca38(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))));
+scale1=((EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))>=2?EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)>2?2:(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16) < -2 ? -2:EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))));
+c=gSinCosTable[1];s=gSinCosTable[0];
+scale2=((EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)<0?-EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))>=2?EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16):(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16)>2?2:(EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16) < -2 ? -2:EaseInterpolate(0,64,256,M2C_FIELD(obj,u16 *,0x54),16))));
 
 a=func_0207c8ec(c<<4,256);b=func_0207c8ec((-s)<<4,scale2);d=func_0207c8ec(s<<4,256);e=func_0207c8ec(c,scale1);
-func_01ff8ddc(31,(s16)a,(s16)b,(s16)d,(s16)e);
-offset=func_0207ca38(4,128,0,M2C_FIELD(obj,u16 *,0x54),16);
+SetSpriteQuad(31,(s16)a,(s16)b,(s16)d,(s16)e);
+offset=EaseInterpolate(4,128,0,M2C_FIELD(obj,u16 *,0x54),16);
 pos=x-42-offset;
 if(pos > -64){
-func_01ffaacc((u16)(pos&511),(u16)((y-16)&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+224)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+AddSprite((u16)(pos&511),(u16)((y-16)&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+224)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
 }
 for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
-func_01ffaacc((u16)((x&511)|0x3e00),(u16)((y&255)|256),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
+AddSprite((u16)((x&511)|0x3e00),(u16)((y&255)|256),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
 glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);if(glyph==255)x=(u16)(x+14);else x=(u16)(x+(data_02101fdc[glyph]-2));
 }
 pos=x-19+offset;
 if(pos<256){
-func_01ffaacc((u16)(pos&511),(u16)((y-16)&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+AddSprite((u16)(pos&511),(u16)((y-16)&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
 }
 if(M2C_FIELD(obj,u16 *,0x54)==16){M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj);}
 }
@@ -141,13 +141,13 @@ if(M2C_FIELD(obj,u16 *,0x54)==16){M2C_FIELD(obj,u16 *,0x54)=0;func_01ffa6fc(obj)
 void func_02083c5c(void *obj) {
  extern u8 data_027e008c[];
  s32 i; s32 x=M2C_FIELD(obj,u16 *,0x56),y=M2C_FIELD(obj,u16 *,0x58);s32 top=(y-16)&255,glyph;
- func_01ffaacc((u16)((x-42)&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+224)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+ AddSprite((u16)((x-42)&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+224)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
  for(i=0;i<M2C_FIELD(obj,u16 *,0x5a);i++) {
- func_01ffaacc((u16)(x&511),(u16)(y&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
+ AddSprite((u16)(x&511),(u16)(y&255),(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+(M2C_FIELD((u8 *)obj+i,s8 *,0x34)<<3))>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+((M2C_FIELD(obj,u16 *,0x5e)&15)<<12))),data_027e0074,M2C_FIELD(obj,s8 *,0x63));
  glyph=M2C_FIELD((u8 *)obj+i,s8 *,0x34);if(glyph==255)x=(u16)(x+14);else x=(u16)(x+(data_02101fdc[glyph]-2));
  }
  x-=19;
- func_01ffaacc((u16)(x&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
+ AddSprite((u16)(x&511),(u16)top,(u16)(M2C_FIELD(obj,u16 *,0x60)|(((M2C_FIELD(obj,u16 *,0x5c)+288)>>((DrawControl *)M2C_FIELD(gCur3DSpriteEngine,void **,0))->mode &1023)+(((M2C_FIELD(obj,u16 *,0x5e)+1)&15)<<12))),data_027e008c,M2C_FIELD(obj,s8 *,0x63)+1);
 }
 
 s32 func_02083e50(void *arg0) {
@@ -160,7 +160,7 @@ s32 i; u16 x,y; void *p;
 x=M2C_FIELD(a,u16 *,0x56);y=M2C_FIELD(a,u16 *,0x58);
 for(i=0;i<M2C_FIELD(a,u16 *,0x5a);i++){
 p=(char*)a+(u32)i;
-func_01ffaacc((u16)(x&511),(u16)(y&255),(u16)(M2C_FIELD(a,u16 *,0x60)|(((M2C_FIELD(a,u16 *,0x5c)+(M2C_FIELD(p,s8 *,0x34)<<3))>>(((**(DrawControl ***)&gCur3DSpriteEngine)->mode)))&1023)+((M2C_FIELD(a,u16 *,0x5e)&15)<<12)),data_027e0074,M2C_FIELD(a,s8 *,0x63));
+AddSprite((u16)(x&511),(u16)(y&255),(u16)(M2C_FIELD(a,u16 *,0x60)|(((M2C_FIELD(a,u16 *,0x5c)+(M2C_FIELD(p,s8 *,0x34)<<3))>>(((**(DrawControl ***)&gCur3DSpriteEngine)->mode)))&1023)+((M2C_FIELD(a,u16 *,0x5e)&15)<<12)),data_027e0074,M2C_FIELD(a,s8 *,0x63));
 if(M2C_FIELD(p,s8 *,0x34)==255)x+=14;
 else x+=data_02101fdc[M2C_FIELD(p,s8 *,0x34)]-2;
 }}
@@ -174,12 +174,12 @@ void func_020842b4(void) {
 }
 
 void func_020842d4(void) {
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r4;
 
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020842b4();
     gCur3DSpriteEngine = temp_r4;
 }

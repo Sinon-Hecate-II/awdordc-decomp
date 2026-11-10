@@ -3,7 +3,7 @@
 
 #pragma opt_strength_reduction off
 void func_020ab884(void *arg0) {
-s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 func_020ab30c(void *);void func_020ab344(void *,s16,s32);s32 func_020a8ff4(void *);
+s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 func_020ab30c(void *);void func_020ab344(void *,s16,s32);s32 GetSpriteAnimValue(void *);
 s16 a,b,position,duration; s32 y; s32 endRow; s32 row; s16 stride; s32 height; s16 finalRow;
 if(M2C_FIELD(arg0,s32 *,0x18)>=(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8)) && M2C_FIELD(arg0,u8 *,4)){
 a=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
@@ -30,33 +30,33 @@ y=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_F
 M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)func_0207c928((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
 M2C_FIELD(arg0,s16 *,46)=y;
 position=M2C_FIELD(arg0,s16 *,44);duration=M2C_FIELD(arg0,s16 *,78);
-M2C_FIELD(arg0,s16 *,80)=func_020a8ff4((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=position;M2C_FIELD(arg0,s16 *,78)=duration;
+M2C_FIELD(arg0,s16 *,80)=GetSpriteAnimValue((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=position;M2C_FIELD(arg0,s16 *,78)=duration;
 M2C_FIELD(arg0,u16 *,68)=M2C_FIELD(arg0,u16 *,70);
 position=M2C_FIELD(arg0,s16 *,46);duration=M2C_FIELD(arg0,s16 *,96);
-M2C_FIELD(arg0,s16 *,98)=func_020a8ff4((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,100)=position;M2C_FIELD(arg0,s16 *,96)=duration;
+M2C_FIELD(arg0,s16 *,98)=GetSpriteAnimValue((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,100)=position;M2C_FIELD(arg0,s16 *,96)=duration;
 M2C_FIELD(arg0,u16 *,86)=M2C_FIELD(arg0,u16 *,88);
 }
 #pragma opt_strength_reduction reset
 s16 func_020abb24(void *arg0) {
-    s32 func_020a8ff4(void *);
+    s32 GetSpriteAnimValue(void *);
     s16 temp_r4_3;
     s32 temp_r4;
     s32 temp_r4_2;
     s32 var_r0;
 
     temp_r4_3 = M2C_FIELD(arg0, s16 *, 0x2A);
-    if (temp_r4_3 != func_020a8ff4(arg0 + 0x30)) {
+    if (temp_r4_3 != GetSpriteAnimValue(arg0 + 0x30)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
     if (var_r0 & 0xFF) {
         M2C_FIELD(arg0, s8 *, 0x54) = 1;
-        temp_r4_2 = func_020a8ff4(arg0 + 0x30);
-        return (s16) (temp_r4_2 + func_020a8ff4(arg0 + 0x54));
+        temp_r4_2 = GetSpriteAnimValue(arg0 + 0x30);
+        return (s16) (temp_r4_2 + GetSpriteAnimValue(arg0 + 0x54));
     }
-    temp_r4 = func_020a8ff4(arg0 + 0x30);
-    return (s16) (temp_r4 + func_020a8ff4(arg0 + 0x54));
+    temp_r4 = GetSpriteAnimValue(arg0 + 0x30);
+    return (s16) (temp_r4 + GetSpriteAnimValue(arg0 + 0x54));
 }
 
 void func_020abb9c(void *arg0) {
@@ -72,7 +72,7 @@ void func_020abbcc(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_
 void func_020abbe4(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_UNK data_02126b94;func_01ffa860(&data_02126b94,M2C_FIELD(arg0,u16 *,110));}
 
 void func_020abbfc(void *arg0) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 var_r0;
     s32 var_r2;
     u16 temp_r0_2;
@@ -111,12 +111,12 @@ void func_020abbfc(void *arg0) {
         M2C_FIELD(arg0, u16 *, 6) = 0U;
     }
     if (M2C_FIELD(arg0, u8 *, 0x12) == 0) {
-        M2C_FIELD(arg0, s16 *, 0xA) = (s16) (M2C_FIELD(arg0, s16 *, 8) + func_0207ca38(1, 0, 0xA0, M2C_FIELD(arg0, u16 *, 4), 8));
+        M2C_FIELD(arg0, s16 *, 0xA) = (s16) (M2C_FIELD(arg0, s16 *, 8) + EaseInterpolate(1, 0, 0xA0, M2C_FIELD(arg0, u16 *, 4), 8));
         if ((s32) M2C_FIELD(arg0, s16 *, 0xA) > 0xA0) {
             M2C_FIELD(arg0, s16 *, 0xA) = 0xA0;
         }
     } else {
-        M2C_FIELD(arg0, s16 *, 0xA) = func_0207ca38(4, M2C_FIELD(arg0, s16 *, 8), 0, M2C_FIELD(arg0, u16 *, 4), 8);
+        M2C_FIELD(arg0, s16 *, 0xA) = EaseInterpolate(4, M2C_FIELD(arg0, s16 *, 8), 0, M2C_FIELD(arg0, u16 *, 4), 8);
     }
     temp_r0_2 = M2C_FIELD(arg0, u16 *, 4);
     if (temp_r0_2 == 8) {
@@ -176,15 +176,15 @@ s32 func_020abe28(s32 arg0) {
     return arg0;
 }
 
-void func_020abe3c(u8 arg0,s8 arg1) {extern s32 data_0212735c; extern s32 data_027e00c8; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==data_027e00c8)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(data_0212735c+a,s8 *,0)=arg1;}
+void func_020abe3c(u8 arg0,s8 arg1) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(data_0212735c+a,s8 *,0)=arg1;}
 
-u8 func_020abe90(u8 arg0) {extern s32 data_0212735c; extern s32 data_027e00c8; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==data_027e00c8)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,0);}
+u8 func_020abe90(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,0);}
 
 void func_020abee4(u8 arg0, s8 arg1) {
     extern s32 data_0212735c;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     u8 var_r0;
     u8 var_r0_2;
@@ -192,7 +192,7 @@ void func_020abee4(u8 arg0, s8 arg1) {
 
     var_r0 = arg0;
     if (var_r0 == 3) {
-        if (gCur3DSpriteEngine == data_027e00c8) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
             var_r0_2 = 1;
         } else {
             var_r0_2 = 0;
@@ -207,8 +207,8 @@ void func_020abee4(u8 arg0, s8 arg1) {
     M2C_FIELD((data_0212735c + var_r0), s8 *, 2) = arg1;
 }
 
-u8 func_020abf3c(u8 arg0) {extern s32 data_0212735c; extern s32 data_027e00c8; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==data_027e00c8)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,2);}
+u8 func_020abf3c(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,2);}
 
 void func_020abf94(void) {
  void func_020abe3c(u8,s8); void func_020abee4(u8,s8);
@@ -216,14 +216,14 @@ void func_020abf94(void) {
 }
 
 void func_020abfcc(u16 arg0, u16 arg1) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void func_020aca8c(s32);
     extern s32 gCur3DSpriteEngine;
     s32 a;
     s32 c;
 
-    a = func_0207ca38(0, 0, 0x100, arg0, arg1);
-    c = func_0207ca38(0, 0, 0xc0, arg0, arg1);
+    a = EaseInterpolate(0, 0, 0x100, arg0, arg1);
+    c = EaseInterpolate(0, 0, 0xc0, arg0, arg1);
     if (a == 0 || c == 0) {
         func_020aca8c(2);
         return;
@@ -257,8 +257,8 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
     void func_020abe3c(u8, s8);
     void func_020abee4(u8, s8);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 g3DSpriteEngineSub;
     s32 savedEngine;
     s32 i;
     s32 x; s32 engine;
@@ -287,16 +287,16 @@ void func_020ac144(u8 arg0, s32 arg1, u8 arg2) {
 
     for (i = 0; i < 2; i++) {
         if (i == 0) {
-            engine = data_027e00c8;
+            engine = g3DSpriteEngineMain;
         } else {
-            engine = data_027e00c4;
+            engine = g3DSpriteEngineSub;
         }
 
         gCur3DSpriteEngine=engine;
-        if (arg0 == 0 && engine != data_027e00c8) {
+        if (arg0 == 0 && engine != g3DSpriteEngineMain) {
             continue;
         }
-        if (arg0 == 1 && engine != data_027e00c4) {
+        if (arg0 == 1 && engine != g3DSpriteEngineSub) {
             continue;
         }
         if (arg0 == 3 && engine != savedEngine) {
@@ -427,13 +427,13 @@ void func_020ac5e0(void *arg0) {
 }
 
 void func_020ac65c(void *arg0) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void func_020abfcc(u16, u16);
     void func_020ac998(s32);
     void func_01ffa6fc(void *);
     void func_020ac598(s32);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4, data_027e00c8;
+    extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain;
 
     s8 val;
     s8 neg;
@@ -444,18 +444,18 @@ void func_020ac65c(void *arg0) {
     u8 mode;
 
     M2C_FIELD(arg0, u16 *, 0x38)++;
-    temp = func_0207ca38(0, 0x10, 0, M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
+    temp = EaseInterpolate(0, 0x10, 0, M2C_FIELD(arg0, u16 *, 0x38), M2C_FIELD(arg0, u16 *, 0x3a));
     saved = gCur3DSpriteEngine;
     val = (s8)temp;
     neg = (s8)(-temp);
 
     i = 0;
     do {
-        if (i == 0) bank = (void *)data_027e00c8; else bank = (void *)data_027e00c4;
+        if (i == 0) bank = (void *)g3DSpriteEngineMain; else bank = (void *)g3DSpriteEngineSub;
         gCur3DSpriteEngine = (s32)bank;
         mode = M2C_FIELD(arg0, u8 *, 0x3c);
-        if (mode == 0 && bank != (void *)data_027e00c8) goto next;
-        if (mode == 1 && bank != (void *)data_027e00c4) goto next;
+        if (mode == 0 && bank != (void *)g3DSpriteEngineMain) goto next;
+        if (mode == 1 && bank != (void *)g3DSpriteEngineSub) goto next;
         if (mode == 3 && bank != (void *)saved) goto next;
 
         switch (M2C_FIELD(arg0, s32 *, 0x34)) {

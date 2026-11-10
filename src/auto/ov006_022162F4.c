@@ -9,7 +9,7 @@ void func_ov006_022162f4(void *arg0) {
     s32 func_0207c928(u8, M2C_UNK);
     M2C_UNK func_02088044(void *);
     M2C_UNK func_0208fe30(s32);
-    M2C_UNK func_020a8f8c(void *);
+    M2C_UNK UpdateSpriteAnimation(void *);
     M2C_UNK func_020b1c60(M2C_UNK);
     extern s8 data_ov006_02218e10[];
     extern u16 *data_02101e84;
@@ -31,7 +31,7 @@ void func_ov006_022162f4(void *arg0) {
     s8 *var_r1_2;
     s8 *var_r2;
 
-    func_020a8f8c(M2C_FIELD(p, void **, 0x48));
+    UpdateSpriteAnimation(M2C_FIELD(p, void **, 0x48));
     func_02088044(M2C_FIELD(p, void **, 0x40));
     var_r4 = M2C_FIELD(p, s8 *, 0x38);
     temp_r0 = data_02101e84[0];
@@ -135,7 +135,7 @@ block_58:
 }
 
 void func_ov006_0221661c(void *spriteList) {
-    extern void *gCur3DSpriteEngine, *data_027e00c8;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     extern u8 data_ov006_02218340[], data_ov006_0221837c[], data_ov006_02218388[];
     extern u8 data_ov006_02218778[], data_ov006_022187a0[], data_ov006_022187c8[];
     void *func_020b22a4(u8, u8, void *, s32);
@@ -146,7 +146,7 @@ void func_ov006_0221661c(void *spriteList) {
     s32 i, j, k;
     u8 x, y;
     u8 *entry;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     for (entry = data_ov006_02218340, i = 0; i < 10; i++, entry += 6)
         M2C_FIELD(func_020b22a4(entry[0], entry[1], data_ov006_02218778, i), void **, 0x10) = spriteList;
     for (entry = data_ov006_0221837c, j = 10; j <= 11; j++, entry += 6)
@@ -189,14 +189,14 @@ void func_ov006_02216bb8(void) {
 
 void func_ov006_02216bc4(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_020a8f8c(void *);
+    M2C_UNK UpdateSpriteAnimation(void *);
     void *ptr = M2C_FIELD(arg0, void **, 0x48);
     u8 equal = M2C_FIELD(ptr, u16 *, 2) == M2C_FIELD(ptr, s16 *, 0xC);
     if (equal) {
         func_01ffa6fc(arg0);
         return;
     }
-    func_020a8f8c(ptr);
+    UpdateSpriteAnimation(ptr);
 }
 
 void func_ov006_02216bfc(void **arg0) {

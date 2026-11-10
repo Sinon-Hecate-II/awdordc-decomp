@@ -3,13 +3,13 @@
 
 #pragma opt_instruction_scheduling off
 void func_ov011_022273c8(void *arg0) {
-    M2C_UNK func_01ffaacc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     u32 func_0209b5e4(s32, M2C_UNK *);
     M2C_UNK func_0209b67c(u16, s32, u16, u16, s32);
     extern M2C_UNK data_02101f78;
-    extern u16 **data_027e00c4;
-    extern u16 **data_027e00c8;
+    extern u16 **g3DSpriteEngineSub;
+    extern u16 **g3DSpriteEngineMain;
     extern u16 **data_027e01d8;
     extern M2C_UNK data_ov011_02228c38;
     extern M2C_UNK data_ov011_02228c50;
@@ -71,20 +71,20 @@ void func_ov011_022273c8(void *arg0) {
         spC = data_027e01d8;
         for (i = 0; i < 2; i++) {
             if (i == 0) {
-                engine = data_027e00c8;
+                engine = g3DSpriteEngineMain;
             } else {
-                engine = data_027e00c4;
+                engine = g3DSpriteEngineSub;
             }
             data_027e01d8 = engine;
-            M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), u8 *, 0x50) = func_0207ca38(0, -0x10, 0, M2C_FIELD(arg0, u8 *, 0x38), 0x1E);
+            M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), u8 *, 0x50) = EaseInterpolate(0, -0x10, 0, M2C_FIELD(arg0, u8 *, 0x38), 0x1E);
         }
         data_027e01d8 = spC;
         M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) + 1);
     }
     sp8 = data_027e01d8;
-    data_027e01d8 = data_027e00c8;
+    data_027e01d8 = g3DSpriteEngineMain;
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) >= 0x29CCU) {
-        sp90 = *data_027e00c8;
+        sp90 = *g3DSpriteEngineMain;
         *sp90 = (u16) (*sp90 & ~0x10);
         sp8C = *data_027e01d8;
         *sp8C = (u16) (*sp8C & ~0x20);
@@ -112,7 +112,7 @@ void func_ov011_022273c8(void *arg0) {
         func_0209b67c((u16) ((0x82 - temp_r9) & 0x1FF), 0x49E, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
         temp_r1 = M2C_FIELD(arg0, u16 *, 0x3A);
         if ((u32) temp_r1 <= 0x2A08U) {
-            temp_r0_7 = func_0207ca38(4, 0, 0x10, temp_r1 - 0x29CC, 0x3C);
+            temp_r0_7 = EaseInterpolate(4, 0, 0x10, temp_r1 - 0x29CC, 0x3C);
             M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_7;
             sp7C = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
             *sp7C = (u16) ((*sp7C & ~0xC0) | 0x40);
@@ -120,9 +120,9 @@ void func_ov011_022273c8(void *arg0) {
             M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x52) = (s8) (0x10 - temp_r0_7);
         }
     }
-    data_027e01d8 = data_027e00c4;
+    data_027e01d8 = g3DSpriteEngineSub;
     if (M2C_FIELD(arg0, u16 *, 0x3A) == 0x2918) {
-        sp78 = (u16 *) ((u8 *) *data_027e00c4 + 0x12);
+        sp78 = (u16 *) ((u8 *) *g3DSpriteEngineSub + 0x12);
         *sp78 = (u16) (*sp78 & ~1);
         sp74 = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
         *sp74 = (u16) (*sp74 & ~2);
@@ -147,7 +147,7 @@ void func_ov011_022273c8(void *arg0) {
     }
     temp_r2 = M2C_FIELD(arg0, u16 *, 0x3A);
     if (((u32) temp_r2 >= 0x2918U) && ((u32) temp_r2 <= 0x2990U)) {
-        temp_r0_18 = func_0207ca38(4, 0, 0x10, temp_r2 - 0x2918, 0x78);
+        temp_r0_18 = EaseInterpolate(4, 0, 0x10, temp_r2 - 0x2918, 0x78);
         M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_18;
         sp50 = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
         *sp50 = (u16) ((*sp50 & ~0xC0) | 0x40);
@@ -187,10 +187,10 @@ void func_ov011_022273c8(void *arg0) {
         *sp14 = (u16) (*sp14 & ~0x1000);
     }
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) > 0x29CCU) {
-        func_01ffaacc(0, 0x50, 0, &data_02101f78, 0);
+        AddSprite(0, 0x50, 0, &data_02101f78, 0);
         temp_r1_16 = M2C_FIELD(arg0, u16 *, 0x3A);
         if ((u32) temp_r1_16 < 0x2A44U) {
-            temp_r0_20 = func_0207ca38(4, 0, 0x10, temp_r1_16 - 0x29CC, 0x78);
+            temp_r0_20 = EaseInterpolate(4, 0, 0x10, temp_r1_16 - 0x29CC, 0x78);
             M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_20;
             sp10 = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
             *sp10 = (u16) ((*sp10 & ~0xC0) | 0x40);

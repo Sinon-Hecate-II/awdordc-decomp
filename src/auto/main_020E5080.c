@@ -21,11 +21,11 @@ void func_020e569c(M2C_UNK arg0) {
  s32 func_020e3580(M2C_UNK, M2C_UNK);
  extern M2C_UNK data_0212da88;
  extern M2C_UNK data_0212dba0;
- extern s32 data_02168ff4, data_027e00c8, gCur3DSpriteEngine;
+ extern s32 data_02168ff4, g3DSpriteEngineMain, gCur3DSpriteEngine;
  s32 saved;
  void *obj;
  saved = gCur3DSpriteEngine;
- gCur3DSpriteEngine = data_027e00c8;
+ gCur3DSpriteEngine = g3DSpriteEngineMain;
  obj = func_01ffa444(&data_0212da88, arg0);
  if (obj != NULL) {
  M2C_FIELD(obj, void **, 0) = &data_0212dba0;

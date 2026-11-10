@@ -31,12 +31,12 @@ void func_ov007_0221ab4c(void) {
 
 void func_ov007_0221ab68(void) {
 extern void **gCurrentMap;
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineSub;
 extern void *gCur3DSpriteEngine;
 void *saved=gCur3DSpriteEngine;
 void *p;
 u32 x,y;
-gCur3DSpriteEngine=data_027e00c4;
+gCur3DSpriteEngine=g3DSpriteEngineSub;
 func_01ff9ce8(2);
 func_020c12f8(M2C_FIELD(gCur3DSpriteEngine,s32 *,20),M2C_FIELD(gCur3DSpriteEngine,s32 *,40),1,14);
 p=*gCurrentMap;

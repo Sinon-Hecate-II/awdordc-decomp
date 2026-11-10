@@ -300,14 +300,14 @@ void func_020c33e8(void) {
 #pragma opt_instruction_scheduling off
 void func_020c33ec(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_01ffaacc(u16, u8, u16, M2C_UNK *, s32);
+    M2C_UNK AddSprite(u16, u8, u16, M2C_UNK *, s32);
     s32 func_02070f24(s32, s32);
     s16 func_020719a0(s32);
     M2C_UNK func_0208fe30(s32);
     M2C_UNK func_02098844(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02101f0c;
     extern void *data_02164094;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *data_027e01d8;
     u16 *volatile sp7C;
     u16 *volatile sp78;
@@ -392,7 +392,7 @@ void func_020c33ec(void) {
     void *temp_r4_8;
 
     sp10 = data_027e01d8;
-    data_027e01d8 = data_027e00c4;
+    data_027e01d8 = g3DSpriteEngineSub;
     temp_r0 = M2C_FIELD(data_02164094, s32 *, 0);
     if (temp_r0 < 0x37) {
         if (temp_r0 == 0) {
@@ -566,7 +566,7 @@ d=M2C_FIELD(p,s16 *,0x1A); c=M2C_FIELD(p,s16 *,0x18); b=M2C_FIELD(p,s16 *,0x16);
         var_r9 = 0x40;
         var_r10 = 0;
 loop_30:
-        func_01ffaacc((u16) ((M2C_FIELD(data_02164094, s16 *, 0x1C) + var_r8) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x1E) + var_r10), (u16) ((0x3FF & ((s32) (var_r9 + var_r7) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite((u16) ((M2C_FIELD(data_02164094, s16 *, 0x1C) + var_r8) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x1E) + var_r10), (u16) ((0x3FF & ((s32) (var_r9 + var_r7) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         var_r6 += 1;
         var_r9 += 0x20;
         var_r10 += 8;
@@ -586,7 +586,7 @@ loop_30:
         var_r8_2 = 0xC0;
         var_r9_2 = 0;
 loop_34:
-        func_01ffaacc((u16) ((M2C_FIELD(data_02164094, s16 *, 0x20) + var_r7_2) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x22) + var_r9_2), (u16) ((0x3FF & ((s32) (var_r8_2 + var_r6_2) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite((u16) ((M2C_FIELD(data_02164094, s16 *, 0x20) + var_r7_2) & 0x1FF), (u8) (M2C_FIELD(data_02164094, s16 *, 0x22) + var_r9_2), (u16) ((0x3FF & ((s32) (var_r8_2 + var_r6_2) >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         var_r10_2 += 1;
         var_r8_2 += 0x20;
         var_r9_2 += 8;

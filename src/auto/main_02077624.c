@@ -16,12 +16,12 @@ extern const Unk0207Color3 data_020eb1b4;
 extern const Unk0207Color3 data_020eb1a8;
 extern void *gCur3DSpriteEngine;
 s16 func_0207cfb8(void *);
-s32 func_0207ca38(s32, s32, s32, s32, s32);
+s32 EaseInterpolate(s32, s32, s32, s32, s32);
 void func_0207d990(s32, void *, void *);
 
 void func_02077624(void) {
     M2C_UNK func_02003de4();
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     extern u32 data_027e15bc;
     extern const u16 data_020eb210[];
     extern const u16 data_020eb250[];
@@ -49,9 +49,9 @@ void func_02077624(void) {
     do {
         a = src0[i];
         b = src1[i];
-        lo = func_0207ca38(0, a & 0x1F, b & 0x1F, blend, 0x20);
-        mid = func_0207ca38(0, (a & 0x3E0) >> 5, (b & 0x3E0) >> 5, blend, 0x20);
-        hi = func_0207ca38(0, (a & 0x7C00) >> 0xA, (b & 0x7C00) >> 0xA, blend, 0x20);
+        lo = EaseInterpolate(0, a & 0x1F, b & 0x1F, blend, 0x20);
+        mid = EaseInterpolate(0, (a & 0x3E0) >> 5, (b & 0x3E0) >> 5, blend, 0x20);
+        hi = EaseInterpolate(0, (a & 0x7C00) >> 0xA, (b & 0x7C00) >> 0xA, blend, 0x20);
         data_02140fc8[i] = lo | (mid << 5) | (hi << 10);
         i++;
     } while (i < 0x20);
@@ -151,9 +151,9 @@ M2C_UNK func_02077ab8(s32 arg0) {
     s32 dims[3];
     void *engine;
 
-    colors[0] = func_0207ca38(0, colorTop.words[0], colorBottom.words[0], t, 0x80);
-    colors[1] = func_0207ca38(0, colorTop.words[1], colorBottom.words[1], t, 0x80);
-    colors[2] = func_0207ca38(0, colorTop.words[2], colorBottom.words[2], t, 0x80);
+    colors[0] = EaseInterpolate(0, colorTop.words[0], colorBottom.words[0], t, 0x80);
+    colors[1] = EaseInterpolate(0, colorTop.words[1], colorBottom.words[1], t, 0x80);
+    colors[2] = EaseInterpolate(0, colorTop.words[2], colorBottom.words[2], t, 0x80);
     engine = gCur3DSpriteEngine;
     dims[0] = (M2C_FIELD(engine, s16 *, 0x3C) + M2C_FIELD(engine, s16 *, 0x40)) * 0x30;
     dims[1] = (M2C_FIELD(engine, s16 *, 0x3E) + M2C_FIELD(engine, s16 *, 0x42)) * 0x30;

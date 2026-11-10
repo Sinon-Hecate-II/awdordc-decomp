@@ -4,16 +4,16 @@
 #pragma opt_common_subs off
 void func_01ff9ed0(void){
 s32 func_01ff9c34(u8,s32);void func_02007ef4(void*,s32,s32);void func_01ff9eac(void*,s32,s32,s32);
-extern s32 gCur3DSpriteEngine;extern s32 data_027e00c8,data_027e00c4;extern u16 *data_027e00bc;
+extern s32 gCur3DSpriteEngine;extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;extern u16 *data_027e00bc;
 s32 saved=gCur3DSpriteEngine,j=0,i=0,base,size;void *p;u8 same,flag;
 do{
-p=(void*)(i==0?data_027e00c8:data_027e00c4);
-same=(s32)p==data_027e00c8;gCur3DSpriteEngine=(s32)p;
+p=(void*)(i==0?g3DSpriteEngineMain:g3DSpriteEngineSub);
+same=(s32)p==g3DSpriteEngineMain;gCur3DSpriteEngine=(s32)p;
 if(same==1)base=0x6000000;else base=0x6200000;
 for(j=0;j<4;j++){
 p=(void*)gCur3DSpriteEngine;
 if((M2C_FIELD(p,u8*,0x46)&(1<<j)) && !(M2C_FIELD(p,u8*,0x47)&(1<<j))){
-flag=(s32)p==data_027e00c8;
+flag=(s32)p==g3DSpriteEngineMain;
 size=func_01ff9c34((u8)((u32)(*M2C_FIELD(p,u16**,0)<<29)>>29),(u8)j);
 {
 s32 dest;
@@ -506,7 +506,7 @@ void func_01ffaa8c(void *arg0) {
     M2C_FIELD(temp_r1, u8 *, 0x31) = (u8) (M2C_FIELD(temp_r1, u8 *, 0x31) - 1);
 }
 
-void func_01ffaacc(s32 a,s32 b,s32 c,s32 d,s32 priority){extern s32 gCur3DSpriteEngine;void *p,*q,*next;u8 *base;u32 index;
+void AddSprite(s32 a,s32 b,s32 c,s32 d,s32 priority){extern s32 gCur3DSpriteEngine;void *p,*q,*next;u8 *base;u32 index;
 if(M2C_FIELD(gCur3DSpriteEngine,u8 *,0x49)>=128)return;
 base=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,4);index=M2C_FIELD(gCur3DSpriteEngine,volatile u8 *,0x49);p=base+index*20;
 M2C_FIELD(p,s16 *,8)=0;M2C_FIELD(p,s16 *,10)=0;M2C_FIELD(p,s16 *,12)=a;M2C_FIELD(p,s16 *,14)=b;M2C_FIELD(p,s16 *,16)=c;M2C_FIELD(p,s32 *,4)=d;M2C_FIELD(p,s8 *,19)=priority;
@@ -565,35 +565,35 @@ void func_01ffabac(s32 a, s32 b, s32 c, s32 d, u16 e, s32 f, s32 priority) {
 }
 
 void func_01ffac9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void func_01ffaacc(s32, s32, s32, s32, s32);
+    void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     s32 temp_r5;
 
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
-    func_01ffaacc(arg0, arg1, arg2, arg3, arg4);
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    AddSprite(arg0, arg1, arg2, arg3, arg4);
     gCur3DSpriteEngine = temp_r5;
 }
 
 void func_01ffacd4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void func_01ffaacc(s32, s32, s32, s32, s32);
+    void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineSub;
     s32 temp_r5;
 
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-    func_01ffaacc(arg0, arg1, arg2, arg3, arg4);
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    AddSprite(arg0, arg1, arg2, arg3, arg4);
     gCur3DSpriteEngine = temp_r5;
 }
 
 void func_01ffad0c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-void func_01ffaacc(s32,s32,s32,s32,s32);
+void AddSprite(s32,s32,s32,s32,s32);
 extern s32 gCur3DSpriteEngine;
 void *p=(void *)gCur3DSpriteEngine;
 u8 *q=(u8 *)M2C_FIELD(p,volatile s32 *,4)+M2C_FIELD(p,volatile u8 *,0x49)*0x14;
-func_01ffaacc(arg0,arg1,arg2,arg3,arg4);
+AddSprite(arg0,arg1,arg2,arg3,arg4);
 q[0x12]=(q[0x12]&~15)|1;
 }
 

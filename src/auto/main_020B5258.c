@@ -400,9 +400,9 @@ void func_020b5e28(void *arg0) {
 
 void func_020b5edc(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    s32 func_0207ca38(M2C_UNK, s32, s32, s16, s32);
+    s32 EaseInterpolate(M2C_UNK, s32, s32, s16, s32);
     M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = func_0207ca38(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
     if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
         return;
     }
@@ -465,7 +465,7 @@ void func_020b607c(void *arg0) {
     s32 temp_r0;
 
     M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = func_0207ca38(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
     if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
         return;
     }

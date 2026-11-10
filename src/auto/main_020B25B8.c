@@ -3,15 +3,15 @@
 
 void func_020b25b8(void){
 u8 func_020b2714(void);void func_020b2d5c(void*);
-extern u16 **gCur3DSpriteEngine;extern void *data_027e00c8,*data_027e00c4,*data_02128690;extern u8 data_0215c45c[];
+extern u16 **gCur3DSpriteEngine;extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*data_02128690;extern u8 data_0215c45c[];
 void *old,*p;u8 mode;s32 j,i;u8 *q;
 if(func_020b2714())return;
 old=gCur3DSpriteEngine;
 i=0;do{
-if(i==0)p=data_027e00c8;else p=data_027e00c4;
+if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
 gCur3DSpriteEngine=p;
 mode=M2C_FIELD(data_02128690,u8*,0x24);
-if((mode!=0||p==data_027e00c8)&&(mode!=1||p==data_027e00c4)&&(mode!=3||p==old)){
+if((mode!=0||p==g3DSpriteEngineMain)&&(mode!=1||p==g3DSpriteEngineSub)&&(mode!=3||p==old)){
 j=0;q=data_0215c45c;
 do{if(q[1])func_020b2d5c(q);j++;q+=60;}while(j<85);
 func_020b1d84();
@@ -121,7 +121,7 @@ return 0;
 
 void func_020b2a50(void *arg0) {
     s32 func_020b1b1c(void *, s32);
-    s16 func_0207ca38(s32, s16, s16, s32, s32);
+    s16 EaseInterpolate(s32, s16, s16, s32, s32);
     void (*cb)(void *);
     s16 timer;
     u16 unk1e;
@@ -199,10 +199,10 @@ void func_020b2a50(void *arg0) {
             M2C_FIELD(arg0, u8 *, 4) = 2;
         }
         unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x14) = func_0207ca38(5, M2C_FIELD(arg0, s16 *, 6),
+        M2C_FIELD(arg0, s16 *, 0x14) = EaseInterpolate(5, M2C_FIELD(arg0, s16 *, 6),
             M2C_FIELD(arg0, s16 *, 0xA), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
         unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x16) = func_0207ca38(5, M2C_FIELD(arg0, s16 *, 8),
+        M2C_FIELD(arg0, s16 *, 0x16) = EaseInterpolate(5, M2C_FIELD(arg0, s16 *, 8),
             M2C_FIELD(arg0, s16 *, 0xC), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
         return;
     case 4:
@@ -218,10 +218,10 @@ void func_020b2a50(void *arg0) {
             M2C_FIELD(arg0, u16 *, 0xE) = (u16)(timer - 1);
         }
         unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x14) = func_0207ca38(2, M2C_FIELD(arg0, s16 *, 6),
+        M2C_FIELD(arg0, s16 *, 0x14) = EaseInterpolate(2, M2C_FIELD(arg0, s16 *, 6),
             M2C_FIELD(arg0, s16 *, 0xA), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
         unk1e = M2C_FIELD(arg0, u16 *, 0x1E);
-        M2C_FIELD(arg0, s16 *, 0x16) = func_0207ca38(2, M2C_FIELD(arg0, s16 *, 8),
+        M2C_FIELD(arg0, s16 *, 0x16) = EaseInterpolate(2, M2C_FIELD(arg0, s16 *, 8),
             M2C_FIELD(arg0, s16 *, 0xC), unk1e - (s16)M2C_FIELD(arg0, u16 *, 0xE), (s32)unk1e);
         return;
     }

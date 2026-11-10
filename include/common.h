@@ -43,7 +43,7 @@ enum {
     OV000_INFO_UNIT_STATS = 4   /* detailed unit statistics panel */
 };
 
-/* State of the ov000 map info window, one instance (gOv000InfoWindow). */
+/* State of the ov000 map info window, one instance in ov000. */
 typedef struct Ov000InfoMenu {
     void *statsWindow;   /* +0x00: unit statistics panel object */
     void *panel;         /* +0x04: terrain / unit info panel controller */

@@ -11,7 +11,7 @@ static inline u8 ButtonPressed12DFC(u8 *w) { u8 *r=M2C_FIELD(w,u8 **,0x64); int 
 static inline void ButtonFlash12DFC(u8 *w) {if(M2C_FIELD(w,s8 *,0x5a)>=0)ButtonSet12DFC(w,ButtonBase12DFC(w)+1,12);}
 
 
-void func_020a8f8c(void *);
+void UpdateSpriteAnimation(void *);
 void func_020aacf0(void *);
 void func_020b3a58(void *);
 int func_020c5464(int);
@@ -24,7 +24,7 @@ int func_020b325c(void *);
 int func_020b320c(void *);
 void func_ov006_02212dfc(void *arg0) {
 u8 *p=arg0,*w;void **list;u16 keys;
-func_020a8f8c(M2C_FIELD(p,void **,0x48));list=M2C_FIELD(p,void ***,0x3c);
+UpdateSpriteAnimation(M2C_FIELD(p,void **,0x48));list=M2C_FIELD(p,void ***,0x3c);
 func_020aacf0(list[0]);
 func_020aacf0(list[1]);
 func_020aacf0(list[2]);

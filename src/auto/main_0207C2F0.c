@@ -9,7 +9,7 @@ typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
 extern Mode0207 data_02168f14;
 extern Unk0207Color data_021017f4[4];
 extern void **gCurrentMap;
-s32 func_0207ca38(s32, s32, s32, s32, s32);
+s32 EaseInterpolate(s32, s32, s32, s32, s32);
 
 s32 func_0207c2f0(void) {
     s32 func_0207c8ec(s32, M2C_UNK);
@@ -163,8 +163,8 @@ void func_0207c5d0(void *arg0) {
     M2C_UNK func_020049f4(s32, s32, s32);
     M2C_UNK func_02004a58(void);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
-    if ((u8)(gCur3DSpriteEngine == data_027e00c8)) {
+    extern s32 g3DSpriteEngineMain;
+    if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
         func_0200478c();
         func_0200482c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
         func_0200489c();
@@ -199,8 +199,8 @@ void func_0207c6a8(void *arg0) {
     M2C_UNK func_02004ab0(s32, s32, s32);
     M2C_UNK func_02004b14(void);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
-    if ((u8)(gCur3DSpriteEngine == data_027e00c8)) {
+    extern s32 g3DSpriteEngineMain;
+    if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
         func_020048e4();
         func_0200492c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
         func_02004998();
@@ -341,7 +341,7 @@ s32 func_0207ca08(s32 arg0) {
     return *(volatile s32 *)0x040002B4;
 }
 
-s32 func_0207ca38(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
+s32 EaseInterpolate(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
 s32 t;
 if(arg4==0)return arg2;
 switch(arg0){
@@ -484,13 +484,13 @@ void func_0207cec0(void *arg0, s16 arg1) {
 void func_0207cee0(s32 arg0) {
  Unk0207Color a = func_0207cbd0(0);
  Unk0207Color b = func_0207cbd0(1);
- func_0207ca38(0,((u8 *)&a)[13],((u8 *)&b)[13],arg0,0x80);
+ EaseInterpolate(0,((u8 *)&a)[13],((u8 *)&b)[13],arg0,0x80);
 }
 
 void func_0207cf48(s32 arg0) {
  Unk0207Color a = func_0207cbd0(0);
  Unk0207Color b = func_0207cbd0(1);
- func_0207ca38(0,((u8 *)&a)[12],((u8 *)&b)[12],arg0,0x80);
+ EaseInterpolate(0,((u8 *)&a)[12],((u8 *)&b)[12],arg0,0x80);
 }
 
 void func_0207cfb0(void *arg0, s16 arg1) {
@@ -508,11 +508,11 @@ M2C_UNK func_0207cfc0(M2C_UNK arg) {
     Unk0207Color colorB = func_0207cbd0(1);
     s32 t = func_0207cfb8(p);
 
-    M2C_FIELD(p, s32 *, 0) = func_0207ca38(0, colorA.words[0], colorB.words[0], t, 128);
-    M2C_FIELD(p, s32 *, 4) = func_0207ca38(0, colorA.words[1], colorB.words[1], t, 128);
-    M2C_FIELD(p, s32 *, 8) = func_0207ca38(0, colorA.words[2], colorB.words[2], t, 128);
-    M2C_FIELD(p, u8 *, 12) = func_0207ca38(0, ((u8 *)&colorA)[12], ((u8 *)&colorB)[12], t, 128);
-    M2C_FIELD(p, u8 *, 13) = func_0207ca38(0, ((u8 *)&colorA)[13], ((u8 *)&colorB)[13], t, 128);
+    M2C_FIELD(p, s32 *, 0) = EaseInterpolate(0, colorA.words[0], colorB.words[0], t, 128);
+    M2C_FIELD(p, s32 *, 4) = EaseInterpolate(0, colorA.words[1], colorB.words[1], t, 128);
+    M2C_FIELD(p, s32 *, 8) = EaseInterpolate(0, colorA.words[2], colorB.words[2], t, 128);
+    M2C_FIELD(p, u8 *, 12) = EaseInterpolate(0, ((u8 *)&colorA)[12], ((u8 *)&colorB)[12], t, 128);
+    M2C_FIELD(p, u8 *, 13) = EaseInterpolate(0, ((u8 *)&colorA)[13], ((u8 *)&colorB)[13], t, 128);
 }
 
 u8 func_0207d0b8(void) {

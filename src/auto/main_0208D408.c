@@ -9,28 +9,28 @@ void func_0208d408(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 void func_0208d8e4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) { int z=0; (void)arg0; (void)arg1; (void)arg2; (void)arg3; (void)arg4; (void)arg5; (void)arg6; (void)z; }
 
 void func_0208dd7c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    M2C_UNK func_0208cadc(s16, s16, s16, s32, s32);
-    M2C_UNK func_0208cf94(s16, s16, s16, s32, s32);
+    M2C_UNK DrawHorizontalBar(s16, s16, s16, s32, s32);
+    M2C_UNK DrawVerticalBar(s16, s16, s16, s32, s32);
     extern void *gCur3DSpriteEngine;
 
     switch (arg6) {
         case 1:
-            func_0208cadc(arg0, arg1, arg2, arg4, arg5);
-            func_0208cadc(arg0, (s16)(arg1 + arg3 - 1), arg2, arg4, arg5);
-            func_0208cf94(arg0, arg1, (s16)(arg3 - 1),
+            DrawHorizontalBar(arg0, arg1, arg2, arg4, arg5);
+            DrawHorizontalBar(arg0, (s16)(arg1 + arg3 - 1), arg2, arg4, arg5);
+            DrawVerticalBar(arg0, arg1, (s16)(arg3 - 1),
                 (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
                 arg5);
-            func_0208cf94((s16)(arg0 + arg2 - 1), arg1, (s16)(arg3 - 1),
+            DrawVerticalBar((s16)(arg0 + arg2 - 1), arg1, (s16)(arg3 - 1),
                 (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
                 arg5);
             break;
         case 2:
-            func_0208cadc((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg4, arg5);
-            func_0208cadc((s16)(arg0 - 1), (s16)(arg1 + arg3 - 1), (s16)(arg2 + 2), arg4, arg5);
-            func_0208cf94((s16)(arg0 - 1), arg1, arg3,
+            DrawHorizontalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg4, arg5);
+            DrawHorizontalBar((s16)(arg0 - 1), (s16)(arg1 + arg3 - 1), (s16)(arg2 + 2), arg4, arg5);
+            DrawVerticalBar((s16)(arg0 - 1), arg1, arg3,
                 (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
                 arg5);
-            func_0208cf94((s16)(arg0 + arg2 - 1), arg1, arg3,
+            DrawVerticalBar((s16)(arg0 + arg2 - 1), arg1, arg3,
                 (s32)(u16)(arg4 + (0x3FF & (10 >> (((u32)*(u16 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) << 17) >> 30)))),
                 arg5);
             break;
@@ -38,11 +38,11 @@ void func_0208dd7c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s
 }
 
 void func_0208df84(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5) {
- s32 func_0207ca38(s32,s32,s32,s32,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32);
  void func_0208dd7c(s16,s16,s16,s16,s32,s32,s32);
  extern volatile u32 data_027e15bc;
  s32 n;
- n=((data_027e15bc>>1)&15)<8U ? func_0207ca38(4,0,2,(data_027e15bc>>1)&15,8):func_0207ca38(1,2,0,((data_027e15bc>>1)&15)-8,8);
+ n=((data_027e15bc>>1)&15)<8U ? EaseInterpolate(4,0,2,(data_027e15bc>>1)&15,8):EaseInterpolate(1,2,0,((data_027e15bc>>1)&15)-8,8);
  n--;
  func_0208dd7c((s16)(arg0-n),(s16)(arg1-n),(s16)(arg2+n*2),(s16)(arg3+n*2),arg4,arg5,2);
 }
@@ -57,8 +57,8 @@ void func_0208e054(s32 arg0, s32 arg1, s16 arg2) {
 }
 
 void func_0208e0b8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_UNK func_0208cf94(s16, s16, s16, s32, s32);
-    func_0208cf94((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg3, arg4);
+    M2C_UNK DrawVerticalBar(s16, s16, s16, s32, s32);
+    DrawVerticalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg3, arg4);
 }
 
 void func_0208e0f0(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {

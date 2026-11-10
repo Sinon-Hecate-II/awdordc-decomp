@@ -28,7 +28,7 @@ void func_ov003_021f40a8(void *arg0) {
     extern u8 data_ov003_022100e4[16];
     extern u8 data_ov003_0220fb28[16];
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_022100f4[16];
     void *func_020e34bc(s32);
     void func_02007f8c(void *,s32,s32);
@@ -71,7 +71,7 @@ void func_ov003_021f40a8(void *arg0) {
     o = M2C_FIELD(q, void **, 0);
     func_02088da8(o);
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     o = func_0208bc24(arg0);
     M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4) = o;
     M2C_FIELD(o, u16 *, 0x3e) = 0x36c;

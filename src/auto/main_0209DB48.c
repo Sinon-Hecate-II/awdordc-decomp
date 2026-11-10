@@ -21,11 +21,11 @@ void func_0209db48(void){
 void func_01ff883c(u16,u16,u16,s32);void func_01ff8930(s16,s16,u16,u16,u16,s32);
 void func_01ff8a8c(u16,u16,u16,s32);void func_01ff8c0c(s16,s16,u16,u16,u16,s32);
 void func_0209daec(void);
-extern void *data_027e00c4,*data_027e00c8,*data_027e01d8;
+extern void *g3DSpriteEngineSub,*g3DSpriteEngineMain,*data_027e01d8;
 void *cur,*saved; s32 i;
 saved=data_027e01d8;i=0;
 do{void *head; s32 raw;
-if(i==0)head=data_027e00c8;else head=data_027e00c4;
+if(i==0)head=g3DSpriteEngineMain;else head=g3DSpriteEngineSub;
 data_027e01d8=head;cur=M2C_FIELD(head,void **,8);
 while(cur){
 raw=M2C_FIELD(cur,u8 *,0x12);
@@ -274,8 +274,8 @@ void func_0209e184(void *arg0, s8 arg1, u32 arg2, s32 arg3) {
 }
 
 void func_0209e1b0(void *arg0) {
-    extern void *data_027e00c4;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void func_0209e320(void *);
     void *old;
@@ -285,11 +285,11 @@ void func_0209e1b0(void *arg0) {
     old = gCur3DSpriteEngine;
     i = 0;
     do {
-        if (i == 0) p = data_027e00c8; else p = data_027e00c4;
+        if (i == 0) p = g3DSpriteEngineMain; else p = g3DSpriteEngineSub;
         gCur3DSpriteEngine = p;
         mode = (u32)(M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29;
-        if (((mode != 0) || (p == data_027e00c8)) &&
-            ((mode != 1) || (p == data_027e00c4)) &&
+        if (((mode != 0) || (p == g3DSpriteEngineMain)) &&
+            ((mode != 1) || (p == g3DSpriteEngineSub)) &&
             ((mode != 3) || (p == old))) {
             func_0209e104(M2C_FIELD(arg0, u8 *, 0x5A), M2C_FIELD(p, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3E) << 5));
         }
@@ -356,7 +356,7 @@ loop_1:
 }
 
 void func_0209e320(void *arg0) {
- extern void *gCur3DSpriteEngine,*data_027e00c8,*data_027e00c4;
+ extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
  extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
  s32 func_02089064(void*);s32 func_02099014(void*);s32 func_020ae354(s32,s32,s32,s32);
  void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
@@ -372,10 +372,10 @@ void func_0209e320(void *arg0) {
  a=M2C_FIELD(q0,u8**,0x60);
  old=gCur3DSpriteEngine;
  i=0;do{
-  if(i==0)engine=data_027e00c8;else engine=data_027e00c4;
+  if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
   gCur3DSpriteEngine=engine;
   mode=(u32)(p[0x48]<<28)>>29;
-  if((mode!=0 || engine==data_027e00c8) && (mode!=1 || engine==data_027e00c4) && (mode!=3 || engine==old)){
+  if((mode!=0 || engine==g3DSpriteEngineMain) && (mode!=1 || engine==g3DSpriteEngineSub) && (mode!=3 || engine==old)){
    func_0209e158((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
    pal=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+(((((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16)<<5)&~1);
    c0=M2C_FIELD(pal,u16*,0x16);c1=M2C_FIELD(pal,u16*,0x18);c2=M2C_FIELD(pal,u16*,0x1a);

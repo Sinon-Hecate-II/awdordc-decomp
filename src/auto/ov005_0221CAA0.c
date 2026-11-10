@@ -1,8 +1,8 @@
 /* 3 functions from 0x0221CAA0 to 0x0221D818 (ov005), found by ds-decomp. */
 #include "common.h"
 extern void *gCur3DSpriteEngine;
-extern void *data_027e00c8;
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineMain;
+extern void *g3DSpriteEngineSub;
 extern u8 data_ov005_02220d50[];
 static inline void boxBoundsSigned(s32 x,s32 y,s32 w,s32 h,void *p) { M2C_FIELD(p,s16*,0x34)=x; M2C_FIELD(p,s16*,0x36)=y; M2C_FIELD(p,s32*,0x40)=(((M2C_FIELD(p,s32*,0x40)&~511)|(w&(-512U>>23)))&0xfffc01ff)|((u32)(h<<23)>>14); }
 static inline s32 boxWidth(void *p) { return p ? M2C_FIELD(p,u16*,4):0; }
@@ -16,12 +16,12 @@ static inline void boxSize(void *p,u32 w,u32 h) { M2C_FIELD(p,u32*,0x40)=((M2C_F
 static inline void boxBounds(s32 x,s32 y,u32 w,u32 h,void *p) { boxPosition(p,x,y); boxSize(p,w,h); }
 void *func_01ffa770(void*);
 void func_01ffa6fc(void*);
-s32 func_0207ca38(s32,s32,s32,s32,s32);
+s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s16,s32,s32);
 s32 func_020aae10(void*);
 s32 func_020aae44(void*);
 void func_02087d84(void*,s32,s16,s16,s32,s32);
-void func_ov005_0221caa0(void *arg0) {
+void ResultsScreenAnimate(void *arg0) {
 u16 *volatile p0;
 u16 *volatile p1;
 u16 *volatile p2;
@@ -38,8 +38,8 @@ u16 *volatile p12;
 u16 *volatile p13;
 s32 n,v,i; void *saved,*sprite; s16 y,x,z; s32 a,b;
 M2C_FIELD(arg0,s32*,0x3c)++;
-n=func_0207ca38(0,0,16,M2C_FIELD(arg0,s32*,0x3c),32);
-saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c8;
+n=EaseInterpolate(0,0,16,M2C_FIELD(arg0,s32*,0x3c),32);
+saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(M2C_FIELD(arg0,s32*,0x3c)==1) {p0=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p0=(*p0 & ~0xc0)|0x40;
 p1=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p1=*p1 & ~ 1;
 p2=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p2=*p2 & ~ 2;
@@ -57,9 +57,9 @@ p12=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p12=*p12 & ~ 8192;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=n;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=16-n;
 gCur3DSpriteEngine=saved;
-v=func_0207ca38(4,192,0,M2C_FIELD(arg0,s32*,0x3c),32);
+v=EaseInterpolate(4,192,0,M2C_FIELD(arg0,s32*,0x3c),32);
 M2C_FIELD(arg0,s32*,0x40)=M2C_FIELD(arg0,s32*,0x48)=v;
-v=func_0207ca38(4,-32,0,M2C_FIELD(arg0,s32*,0x3c),32);
+v=EaseInterpolate(4,-32,0,M2C_FIELD(arg0,s32*,0x3c),32);
 M2C_FIELD(arg0,s32*,0x44)=M2C_FIELD(arg0,s32*,0x4c)=v;
 z=(s16)M2C_FIELD(arg0,s32*,0x44);
 sprite=M2C_FIELD(func_01ffa770(data_ov005_02220d50),void**,60);
@@ -90,7 +90,7 @@ func_02087d84(M2C_FIELD(sprite2,void**,0x64),1,x2,y2,(u16)a2,(u16)b2); }
 if(M2C_FIELD(arg0,s32*,0x3c)!=32)return;
 saved=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
-gCur3DSpriteEngine=i==0?data_027e00c8:data_027e00c4;
+gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
 p13=(u16*)(*(u8**)gCur3DSpriteEngine+18); *p13=*p13 & ~0xc0;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x51)=0;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u8*,0x52)=0;
@@ -122,8 +122,8 @@ func_02089438(M2C_FIELD(arg0,void**,0x38));
 extern u8 *data_02101e88;
 extern u16 *data_02101e84;
 extern void *gCur3DSpriteEngine;
-extern void *data_027e00c8;
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineMain;
+extern void *g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 data_ov005_02220f1c[],data_ov005_02220e5c[],data_ov005_02220eec[],data_ov005_02220d50[];
 void func_02088044(void *);
@@ -162,9 +162,9 @@ void func_ov005_0221d160(void *arg0){
             {
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
-                gCur3DSpriteEngine = data_027e00c8;
+                gCur3DSpriteEngine = g3DSpriteEngineMain;
                 func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
-                gCur3DSpriteEngine = data_027e00c4;
+                gCur3DSpriteEngine = g3DSpriteEngineSub;
                 func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
@@ -187,9 +187,9 @@ void func_ov005_0221d160(void *arg0){
             {
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
-                gCur3DSpriteEngine = data_027e00c8;
+                gCur3DSpriteEngine = g3DSpriteEngineMain;
                 func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
-                gCur3DSpriteEngine = data_027e00c4;
+                gCur3DSpriteEngine = g3DSpriteEngineSub;
                 func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;
@@ -206,9 +206,9 @@ void func_ov005_0221d160(void *arg0){
             {
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
-                gCur3DSpriteEngine = data_027e00c8;
+                gCur3DSpriteEngine = g3DSpriteEngineMain;
                 func_01ff9e44(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
-                gCur3DSpriteEngine = data_027e00c4;
+                gCur3DSpriteEngine = g3DSpriteEngineSub;
                 func_01ff9e44(func_ov000_0216cdec(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
                 sound = 0x10010;

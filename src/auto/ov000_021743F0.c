@@ -4,100 +4,103 @@
 typedef Ov000InfoMenu Ov000MenuState;
 typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
 
-void func_ov000_021743f0(void *arg0) {
-extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *data_027e00c4; extern Ov000MenuState *data_ov000_021df5fc; extern u8 data_021291b0[];
+/* Per-frame update of the map info window: follows the map cursor, blinks it,
+ * opens the terrain or unit-statistics panel for the cell under the cursor and
+ * runs the panel's state machine. */
+void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
+extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *data_ov000_021df5fc; extern u8 data_021291b0[];
 int func_020d4ea8(void); int func_01ffa770(void *); s32 func_ov000_0216ca8c(s32,s32);
-void func_ov000_021749b4(void *); void func_ov000_021749d8(void *); void func_ov000_02174a84(void *,s32); void func_ov000_021749fc(void *,s32,s32);
+void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
 void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void func_ov000_021751b4(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
 s32 x=M2C_FIELD(*gCurrentMap,s16 *,0x52c2), y=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 void *saved=gCur3DSpriteEngine; s32 mode;
-gCur3DSpriteEngine=data_027e00c4;
-func_ov000_021749b4(arg0);
+gCur3DSpriteEngine=g3DSpriteEngineSub;
+Ov000_InfoWindow_SetUnitFlags(menu);
 mode=func_020d4ea8();
 switch(mode) {
 case 2:
-if(M2C_FIELD(arg0,s8 *,0x14)!=func_020d4ea8())M2C_FIELD(arg0,u8 *,0x11)=1;
-if(M2C_FIELD(arg0,u8 *,0x11)){
+if(menu->prevMode!=func_020d4ea8())menu->trigger=1;
+if(menu->trigger){
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|16;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|32;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|64;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|128;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|256;}
-if(M2C_FIELD(arg0,s32 *,12)!=3)M2C_FIELD(arg0,s32 *,12)=3;
-func_ov000_02174a84(data_ov000_021df5fc,-1); M2C_FIELD(arg0,u8 *,0x13)=0;
+if(menu->pendingState!=OV000_INFO_NO_TERRAIN)menu->pendingState=OV000_INFO_NO_TERRAIN;
+Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc,-1); menu->hasUnit=0;
 }
-M2C_FIELD(arg0,s16 *,0x16)=x; M2C_FIELD(arg0,s16 *,0x18)=y;
-M2C_FIELD(arg0,u8 *,0x12)=0; M2C_FIELD(arg0,u8 *,0x11)=0; break;
+menu->cursorX=x; menu->cursorY=y;
+menu->pressed=0; menu->trigger=0; break;
 case 0: case 1:
-if(M2C_FIELD(arg0,s8 *,0x14)!=func_020d4ea8())M2C_FIELD(arg0,u8 *,0x11)=1;
+if(menu->prevMode!=func_020d4ea8())menu->trigger=1;
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|16;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|32;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|64;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|128;}
 {u16 * volatile p=*(u16 **)gCur3DSpriteEngine; p[0]=p[0]|256;}
-if(x!=M2C_FIELD(arg0,s16 *,0x16)||y!=M2C_FIELD(arg0,s16 *,0x18)){
-M2C_FIELD(arg0,s8 *,0x1a)=0; M2C_FIELD(arg0,s16 *,0x16)=x; M2C_FIELD(arg0,s16 *,0x18)=y;
+if(x!=menu->cursorX||y!=menu->cursorY){
+menu->animFrame=0; menu->cursorX=x; menu->cursorY=y;
 }
-if(M2C_FIELD(arg0,s8 *,0x1a)>=0){
-if(M2C_FIELD(arg0,s8 *,0x1a)<4)M2C_FIELD(arg0,s8 *,0x1a)++;
-else {M2C_FIELD(arg0,u8 *,0x1a)=255; M2C_FIELD(arg0,u8 *,0x11)=1;}
+if(menu->animFrame>=0){
+if(menu->animFrame<4)menu->animFrame++;
+else {M2C_FIELD(menu,u8 *,0x1a)=255; menu->trigger=1;}
 }
-{u8 pressed=func_01ffa770(data_021291b0)!=0;
-if(M2C_FIELD(arg0,u8 *,0x12)&&!pressed)M2C_FIELD(arg0,u8 *,0x11)=1;
-M2C_FIELD(arg0,u8 *,0x12)=pressed;
+{u8 confirm=func_01ffa770(data_021291b0)!=0;
+if(menu->pressed&&!confirm)menu->trigger=1;
+menu->pressed=confirm;
 }
-if(M2C_FIELD(arg0,u8 *,0x11)){
+if(menu->trigger){
 void *unit=0; s32 terrain;
-M2C_FIELD(arg0,u8 *,0x11)=0;
-if(M2C_FIELD(arg0,u8 *,0x12))M2C_FIELD(arg0,s32 *,12)=4;
+menu->trigger=0;
+if(menu->pressed)menu->pendingState=OV000_INFO_UNIT_STATS;
 else {
-void *base=*gCurrentMap; u32 index=x+((u16 *)((u8 *)base+0x3758))[y];
-void *candidate=(u8 *)base+0x59a4+((u8 *)base)[index]*14;
-if((u8)(M2C_FIELD((u8 *)base+(index>>3),u8 *,0x5201)&(1<<(index&7)))){
-if(candidate==0 || ((u32)(M2C_FIELD(candidate,u8 *,0)<<26)>>26)==0){
-void *other=M2C_FIELD(base,void **,0x52d0);
-if(other && M2C_FIELD(other,u8 *,1)==x && M2C_FIELD(other,u8 *,2)==y)candidate=other;
+void *map=*gCurrentMap; u32 cell=x+((u16 *)((u8 *)map+0x3758))[y];
+void *occupant=(u8 *)map+0x59a4+((u8 *)map)[cell]*14;
+if((u8)(M2C_FIELD((u8 *)map+(cell>>3),u8 *,0x5201)&(1<<(cell&7)))){
+if(occupant==0 || ((u32)(M2C_FIELD(occupant,u8 *,0)<<26)>>26)==0){
+void *selected=M2C_FIELD(map,void **,0x52d0);
+if(selected && M2C_FIELD(selected,u8 *,1)==x && M2C_FIELD(selected,u8 *,2)==y)occupant=selected;
 }
-if(candidate && ((u32)(M2C_FIELD(candidate,u8 *,0)<<26)>>26)==0)unit=0; else unit=candidate;
+if(occupant && ((u32)(M2C_FIELD(occupant,u8 *,0)<<26)>>26)==0)unit=0; else unit=occupant;
 }
 terrain=func_ov000_0216ca8c(x,y);
-if(unit){M2C_FIELD(arg0,u8 *,0x13)=1;func_ov000_021749fc(data_ov000_021df5fc,(s32)unit,terrain);}
-else {M2C_FIELD(arg0,u8 *,0x13)=0;func_ov000_02174a84(data_ov000_021df5fc,terrain);}
+if(unit){menu->hasUnit=1;Ov000_InfoWindow_OpenCell(data_ov000_021df5fc,(s32)unit,terrain);}
+else {menu->hasUnit=0;Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc,terrain);}
 }
 }break;
 }
-func_ov000_021749d8(arg0); M2C_FIELD(arg0,s8 *,0x14)=func_020d4ea8();
-switch(M2C_FIELD(arg0,s32 *,8)){
+Ov000_InfoWindow_ClearUnitFlags(menu); menu->prevMode=func_020d4ea8();
+switch(menu->state){
 case 1:
-if(M2C_FIELD(arg0,s32 *,12)!=0&&M2C_FIELD(arg0,s32 *,12)!=1){M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(arg0,u8 *,16)=1;}break;
+if(menu->pendingState!=0&&menu->pendingState!=1){menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;}break;
 case 2:
-M2C_FIELD(M2C_FIELD(arg0,void **,4),u8 *,0x15)=0;
-if(M2C_FIELD(arg0,u8 *,16)){M2C_FIELD(arg0,u8 *,16)=0;func_ov000_021725e0(M2C_FIELD(arg0,void **,4));}
-func_ov000_02172654(M2C_FIELD(arg0,void **,4));
-if(M2C_FIELD(arg0,s32 *,12)){
-if(M2C_FIELD(arg0,s32 *,12)==3){M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,4)=1;}
-else if(M2C_FIELD(arg0,s32 *,12)==4){M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(arg0,u8 *,16)=1;func_ov000_02172648(M2C_FIELD(arg0,void **,4));M2C_FIELD(M2C_FIELD(arg0,void **,0),s32 *,0)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,0)&255;}
+M2C_FIELD(menu->panel,u8 *,0x15)=0;
+if(menu->refresh){menu->refresh=0;func_ov000_021725e0(menu->panel);}
+func_ov000_02172654(menu->panel);
+if(menu->pendingState){
+if(menu->pendingState==OV000_INFO_NO_TERRAIN){menu->state=menu->pendingState;menu->pendingState=0;M2C_FIELD(menu->panel,s32 *,4)=1;}
+else if(menu->pendingState==OV000_INFO_UNIT_STATS){menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;func_ov000_02172648(menu->panel);M2C_FIELD(menu->statsWindow,s32 *,0)=M2C_FIELD(menu->panel,s32 *,0)&255;}
 }break;
 case 3:
-M2C_FIELD(M2C_FIELD(arg0,void **,4),u8 *,0x15)=1;
-if(M2C_FIELD(arg0,u8 *,16)){M2C_FIELD(arg0,u8 *,16)=0;func_ov000_021725e0(M2C_FIELD(arg0,void **,4));}
-func_ov000_02172654(M2C_FIELD(arg0,void **,4));
-if(M2C_FIELD(arg0,s32 *,12)){
-if(M2C_FIELD(arg0,s32 *,12)==2){M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,4)=1;}
-else if(M2C_FIELD(arg0,s32 *,12)==4){M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(arg0,u8 *,16)=1;func_ov000_02172648(M2C_FIELD(arg0,void **,4));M2C_FIELD(M2C_FIELD(arg0,void **,0),s32 *,0)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,0)&255;}
+M2C_FIELD(menu->panel,u8 *,0x15)=1;
+if(menu->refresh){menu->refresh=0;func_ov000_021725e0(menu->panel);}
+func_ov000_02172654(menu->panel);
+if(menu->pendingState){
+if(menu->pendingState==OV000_INFO_TERRAIN){menu->state=menu->pendingState;menu->pendingState=0;M2C_FIELD(menu->panel,s32 *,4)=1;}
+else if(menu->pendingState==OV000_INFO_UNIT_STATS){menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;func_ov000_02172648(menu->panel);M2C_FIELD(menu->statsWindow,s32 *,0)=M2C_FIELD(menu->panel,s32 *,0)&255;}
 }break;
 case 4:
-if(M2C_FIELD(arg0,u8 *,16)){M2C_FIELD(arg0,u8 *,16)=0;func_ov000_021751b4(M2C_FIELD(arg0,void **,0));}
-func_ov000_02175234(M2C_FIELD(arg0,void **,0));
-if(M2C_FIELD(arg0,s32 *,12)!=0&&M2C_FIELD(arg0,s32 *,12)!=4){
-M2C_FIELD(arg0,s32 *,8)=M2C_FIELD(arg0,s32 *,12);M2C_FIELD(arg0,s32 *,12)=0;M2C_FIELD(arg0,u8 *,16)=1;
-func_ov000_02175230(M2C_FIELD(arg0,void **,0));M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,0)=M2C_FIELD(M2C_FIELD(arg0,void **,0),s32 *,0)&255;
+if(menu->refresh){menu->refresh=0;func_ov000_021751b4(menu->statsWindow);}
+func_ov000_02175234(menu->statsWindow);
+if(menu->pendingState!=0&&menu->pendingState!=OV000_INFO_UNIT_STATS){
+menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;
+func_ov000_02175230(menu->statsWindow);M2C_FIELD(menu->panel,s32 *,0)=M2C_FIELD(menu->statsWindow,s32 *,0)&255;
 }break;
 }
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov000_021749b4(void *arg0) {
+void Ov000_InfoWindow_SetUnitFlags(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x13) == 0) {
         return;
     }
@@ -105,7 +108,7 @@ void func_ov000_021749b4(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0xC) = 1;
 }
 
-void func_ov000_021749d8(void *arg0) {
+void Ov000_InfoWindow_ClearUnitFlags(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x13) != 0) {
         return;
     }
@@ -113,17 +116,17 @@ void func_ov000_021749d8(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0xC) = 0;
 }
 
-void func_ov000_021749fc(void *arg0, s32 arg1, s32 arg2) {
-    void func_ov000_02174a84(void *, s32);
+void Ov000_InfoWindow_OpenCell(void *arg0, s32 arg1, s32 arg2) {
+    void Ov000_InfoWindow_ShowTerrain(void *, s32);
     M2C_UNK func_ov000_02175310(s32);
     extern Ov000Flags data_0215d9b8;
     extern Ov000MenuState *data_ov000_021df5fc;
     if (arg1 == 0) {
-        func_ov000_02174a84(data_ov000_021df5fc, arg2);
+        Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc, arg2);
         return;
     }
     if (((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 16) >> 31) == 1) {
-        func_ov000_02174a84(data_ov000_021df5fc, arg2);
+        Ov000_InfoWindow_ShowTerrain(data_ov000_021df5fc, arg2);
         return;
     }
     func_ov000_02175310(M2C_FIELD(arg0, s32 *, 0));
@@ -136,7 +139,7 @@ void func_ov000_02174a68(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 4;
 }
 
-void func_ov000_02174a84(void *arg0, s32 arg1) {
+void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
     M2C_UNK func_ov000_0217272c(s32);
     if (arg1 == -1) {
         M2C_FIELD(arg0, s32 *, 0xC) = 3;
@@ -171,13 +174,13 @@ case 2: case 3: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
 void *state=data_ov000_021df5fc;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags & ~0x8000;
-func_ov000_021749fc(state,(s32)unit,index);
+Ov000_InfoWindow_OpenCell(state,(s32)unit,index);
 break; }
 case 4: {
 u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
 void *state=data_ov000_021df5fc;
 M2C_FIELD(&data_0215d9b8,u16 *,6)=flags | 0x8000;
-func_ov000_02174a84(state,index);
+Ov000_InfoWindow_ShowTerrain(state,index);
 break; }
 }
 }
@@ -220,10 +223,10 @@ void func_ov000_02174c2c(void) {
 }
 
 void func_ov000_02174c64(void) {
-    void func_ov000_021743f0(void *);
+    void Ov000_InfoWindow_Update(Ov000MenuState *);
     extern Ov000MenuState *data_ov000_021df5fc;
     if (func_ov000_02174c0c() == 0) return;
-    func_ov000_021743f0(data_ov000_021df5fc);
+    Ov000_InfoWindow_Update(data_ov000_021df5fc);
 }
 
 void func_ov000_02174c88(void) {
@@ -281,8 +284,8 @@ s32 func_ov000_02174d78(void) {
 
 void func_ov000_02174da4(s32 arg0, s32 arg1) {
 extern u16 data_02168f14[];
-extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *data_027e00c4; extern u32 data_027e007c[]; extern u32 data_027e0084[];
-s32 func_0207c8ec(s32,s32); void func_01ffaacc(u16,u16,u16,void *,s32);
+extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern u32 data_027e007c[]; extern u32 data_027e0084[];
+s32 func_0207c8ec(s32,s32); void AddSprite(u16,u16,u16,void *,s32);
 s32 total, minutes, fraction, palette, separator; void *map; void *saved;
 total=data_02168f14[2]; if(total==0)return;
 map=*gCurrentMap;
@@ -292,15 +295,15 @@ if(!elapsed)return; total-=elapsed;}
 if(total<0)total=0;
 minutes=func_0207c8ec(total,60);fraction=func_0207c8ec((total%60)*100,60);
 palette=8;separator=180;if(total<600){palette=10;separator=181;}
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
-func_01ffaacc(arg0,arg1,((182>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e007c,1);
-func_01ffaacc(arg0+72,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+AddSprite(arg0,arg1,((182>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e007c,1);
+AddSprite(arg0+72,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
 fraction=func_0207c8ec(fraction,10);
-func_01ffaacc(arg0+64,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
-func_01ffaacc(arg0+56,arg1,((separator>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e0084,1);
+AddSprite(arg0+64,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
+AddSprite(arg0+56,arg1,((separator>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e0084,1);
 arg0+=48;
 do{
-func_01ffaacc(arg0,arg1,((minutes%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
+AddSprite(arg0,arg1,((minutes%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
 minutes=func_0207c8ec(minutes,10);arg0-=8;
 }while(minutes);
 gCur3DSpriteEngine=saved;
@@ -361,12 +364,12 @@ void *func_ov000_0217519c(void *arg0) {
 
 void func_ov000_021751b4(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
 
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_01ff9ce8(2);
     func_01ff9ce8(1);
     func_01ff9ce8(0);
@@ -384,9 +387,9 @@ void func_ov000_02175230(void) {
 
 void func_ov000_02175234(void *arg0){
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     void *saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
 
     if (M2C_FIELD(M2C_FIELD(arg0, void **, 16), s32 *, 8) <= 0) {
         return;

@@ -35,8 +35,8 @@ void func_020e4490(void) {
     extern u8 data_027e15b4;
     extern u8 data_027e15b8;
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     s32 temp_r7;
     s32 var_r0;
     s32 var_r8;
@@ -58,9 +58,9 @@ void func_020e4490(void) {
     var_r8 = 0;
     do {
         if (var_r8 == 0) {
-            var_r0 = data_027e00c8;
+            var_r0 = g3DSpriteEngineMain;
         } else {
-            var_r0 = data_027e00c4;
+            var_r0 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r0;
         func_01ff85ec();
@@ -185,8 +185,8 @@ void func_020e476c(void) {
     M2C_UNK func_020c8eec();
     M2C_UNK func_020d3cec();
     M2C_UNK func_ov000_02169368();
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r8;
     s32 var_r1;
@@ -203,9 +203,9 @@ void func_020e476c(void) {
     var_r9 = 0;
     do {
         if (var_r9 == 0) {
-            var_r1 = data_027e00c8;
+            var_r1 = g3DSpriteEngineMain;
         } else {
-            var_r1 = data_027e00c4;
+            var_r1 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r1;
         func_020aca8c(1);
@@ -543,9 +543,9 @@ void func_020e4e8c(void *arg0) {
 void func_020e4eb0(void *arg0) {
     void func_020067a8(void *, s32);
     s32 func_0207c8ec(s32, s32);
-    void func_01ffaacc(s32, s32, s32, s32, s32);
+    void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineSub;
     extern s32 data_02168ff4;
     extern u8 data_027e00ac[];
 
@@ -574,7 +574,7 @@ void func_020e4eb0(void *arg0) {
     u16 arg2;
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
 
     cond = (*(volatile s16 *)((char *)arg0 + 0x3e) == 0);
     if (!cond) goto skip_all;
@@ -646,7 +646,7 @@ void func_020e4eb0(void *arg0) {
             base = eng[0];
             sh = ((u32)base[0] << 17) >> 30;
             arg2 = (u16)((fullmask & (scale >> sh)) | 0x6000);
-            func_01ffaacc(a0, 0x28, arg2, (s32)data_027e00ac, kind);
+            AddSprite(a0, 0x28, arg2, (s32)data_027e00ac, kind);
 
             r9v = (r9v + 1) & 0xff;
             r8v = (s16)(r8v + 0x20);

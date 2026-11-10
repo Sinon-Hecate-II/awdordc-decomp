@@ -623,7 +623,7 @@ void func_02085ea4(void *arg0) {
 void func_02085ebc(void *arg0) {
  M2C_UNK func_01ff883c(u16,u8,u16,M2C_UNK *);
  s32 func_020847b8(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
- extern M2C_UNK data_027e0064; extern u16 **data_027e00c8; extern u16 **gCur3DSpriteEngine;
+ extern M2C_UNK data_027e0064; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
  if(func_020847b8() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
  if(IsSpriteReady(arg0)){
@@ -633,7 +633,7 @@ void func_02085ebc(void *arg0) {
  }}
  if(M2C_FIELD(arg0,u8 *,0x4c)){
  if(!func_ov002_021e1624())return;
- saved=gCur3DSpriteEngine; gCur3DSpriteEngine=data_027e00c8;
+ saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
  {
  s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
  s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
@@ -654,8 +654,8 @@ void func_02086014(void *arg0) {
     M2C_UNK func_02090640(M2C_UNK, s32);
     M2C_UNK func_0209066c(M2C_UNK, s32);
     s16 func_02090698(M2C_UNK);
-    M2C_UNK func_020a8f8c(void *);
-    s32 func_020a8ff4(void *);
+    M2C_UNK UpdateSpriteAnimation(void *);
+    s32 GetSpriteAnimValue(void *);
     s32 func_ov010_02225cf0();
     M2C_UNK func_ov010_02225d50();
     M2C_UNK func_ov010_02225d64();
@@ -716,8 +716,8 @@ void func_02086014(void *arg0) {
         func_ov010_02225d64();
         M2C_FIELD(arg0, s32 *, 0x48) = 0;
     }
-    func_020a8f8c(M2C_FIELD(arg0, void **, 0x50));
-    func_02090640(2, func_020a8ff4(M2C_FIELD(arg0, void **, 0x50)));
-    func_0209066c(2, func_020a8ff4(M2C_FIELD(arg0, void **, 0x50)));
+    UpdateSpriteAnimation(M2C_FIELD(arg0, void **, 0x50));
+    func_02090640(2, GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x50)));
+    func_0209066c(2, GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x50)));
 }
 

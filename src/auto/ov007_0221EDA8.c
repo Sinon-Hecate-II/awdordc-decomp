@@ -38,7 +38,7 @@ void func_ov007_0221eda8(void *arg0) {
     M2C_UNK func_020b1c60(M2C_UNK);
     s32 func_020e32e8(M2C_UNK *);
     extern void *data_02101e84;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_02220d34;
     extern M2C_UNK data_ov007_02220d40;
@@ -142,7 +142,7 @@ loop_25:
         }
         func_0200bc5c(&data_ov007_02220d34);
         temp_r4 = gCur3DSpriteEngine;
-        gCur3DSpriteEngine = data_027e00c8;
+        gCur3DSpriteEngine = g3DSpriteEngineMain;
         func_020e32e8(&data_ov007_0222192c);
         func_020814e4();
         switch (var_r5) {                           /* switch 2; irregular */

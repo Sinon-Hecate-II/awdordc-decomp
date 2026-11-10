@@ -126,12 +126,12 @@ p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=
 /* Draw a centered gauge and two flanking icon sprites for the object. */
 void func_020b7724(void *obj) {
 void func_0209b67c(u16,s32,u16,u16,s32);
-void func_01ffaacc(s32,s32,u16,void *,s32);
+void AddSprite(s32,s32,u16,void *,s32);
 extern void *gCur3DSpriteEngine; extern u8 data_027e0064[];
 s32 size=M2C_FIELD(obj,s32 *,0x34);
 func_0209b67c((u16)((256-size)/2),0x58,(u16)size,(u16)(0xd000|((0x39c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),11);
-func_01ffaacc(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
-func_01ffaacc(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
+AddSprite(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
+AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),data_027e0064,11);
 }
 
 void func_020b7824(void *arg0) {
@@ -163,7 +163,7 @@ void func_020b78ac(void) {
 }
 
 void func_020b78c4(void *arg0) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     extern void *gCur3DSpriteEngine;
 
     void *r8 = arg0;
@@ -192,15 +192,15 @@ void func_020b78c4(void *arg0) {
     u16 *volatile sp04;
 
     if (b <= c) {
-        r6 = func_0207ca38(4, -0x40, 0x80, (s32)b, c);
-        r0 = func_0207ca38(4, 0, 0x10, b, (s32)c);
+        r6 = EaseInterpolate(4, -0x40, 0x80, (s32)b, c);
+        r0 = EaseInterpolate(4, 0, 0x10, b, (s32)c);
     }
 
     q2 = (a * 3) / 4;
     if (b >= q2) {
         r4u = b - q2;
-        r6 = func_0207ca38(4, 0x80, 0x140, (s32)r4u, (s32)c);
-        r0 = func_0207ca38(4, 0x10, 0, r4u, (s32)c);
+        r6 = EaseInterpolate(4, 0x80, 0x140, (s32)r4u, (s32)c);
+        r0 = EaseInterpolate(4, 0x10, 0, r4u, (s32)c);
     }
 
     *(s32 *)((u8 *)r8 + 0x34) = r6;
@@ -281,7 +281,7 @@ void func_020b7c4c(void) {
 }
 
 void func_020b7c5c(void *arg0) {
- s32 func_0207ca38(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 func_0208fe30(s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 func_0208fe30(s32);
  extern void *gCur3DSpriteEngine;
  s32 a=(u16)((FadeTask*)arg0)->duration;
  s32 b=(u16)((FadeTask*)arg0)->frame;
@@ -303,8 +303,8 @@ void func_020b7c5c(void *arg0) {
  if(func_0208c1dc(arg0))func_0208fe30(0xe6);
  if(b==(a*9)/12)func_0208fe30(0xe7);
  q=a/12;
- if(b<q)r6=func_0207ca38(0,0,16,b,q);
- if(b>(a*11)/12)r6=func_0207ca38(0,r6,0,b-(a*11)/12,q);
+ if(b<q)r6=EaseInterpolate(0,0,16,b,q);
+ if(b>(a*11)/12)r6=EaseInterpolate(0,r6,0,b-(a*11)/12,q);
      sp2C = (u16 *)((u8 *)*(void **)gCur3DSpriteEngine + 0x12);
     *sp2C = (u16)(*sp2C & ~0x1);
 

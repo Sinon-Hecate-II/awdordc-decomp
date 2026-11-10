@@ -5,8 +5,8 @@ void func_ov002_021e59e4(M2C_UNK arg0) {
     extern M2C_UNK data_ov002_021f2d84;
     extern M2C_UNK gPlayerSettings;
     extern M2C_UNK data_ov002_021f30f8;
-    extern M2C_UNK data_027e00c8;
-    extern M2C_UNK data_027e00c4;
+    extern M2C_UNK g3DSpriteEngineMain;
+    extern M2C_UNK g3DSpriteEngineSub;
     M2C_UNK func_02080e30(M2C_UNK, M2C_UNK);
     M2C_UNK func_02080cfc(M2C_UNK, M2C_UNK);
     void func_ov002_021e5988(M2C_UNK, M2C_UNK);

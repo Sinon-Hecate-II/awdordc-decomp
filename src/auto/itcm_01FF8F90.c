@@ -201,14 +201,14 @@ void func_01ff9ce8(u8 arg0) {
 
 void func_01ff9d38(s32 arg0) {
     extern u16 *data_027e00bc;
-    extern s32 data_027e00c8;
-    func_02007e98(0, M2C_FIELD((data_027e00c8 + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00bc << 0x1D) >> 0x1D), arg0));
+    extern s32 g3DSpriteEngineMain;
+    func_02007e98(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00bc << 0x1D) >> 0x1D), arg0));
 }
 
 void func_01ff9d88(s32 arg0) {
     extern u16 *data_027e00c0;
-    extern s32 data_027e00c4;
-    func_02007e98(0, M2C_FIELD((data_027e00c4 + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00c0 << 0x1D) >> 0x1D), arg0));
+    extern s32 g3DSpriteEngineSub;
+    func_02007e98(0, M2C_FIELD((g3DSpriteEngineSub + (arg0 * 4)), s32 *, 0x20), func_01ff9c34((u8) ((u32) (*data_027e00c0 << 0x1D) >> 0x1D), arg0));
 }
 
 #pragma opt_propagation off

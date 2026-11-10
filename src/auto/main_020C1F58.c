@@ -3,7 +3,7 @@
 typedef struct { u8 flag0:1, flag1:1, flags:6; } FlagsC253c;
 typedef struct { u16 pad:13, shift:2, last:1; } ModeC253c;
 extern void *gCur3DSpriteEngine;
-extern u8 data_020e5b30[];
+extern u8 gSinCosTable[];
 extern u8 data_027e005c[];
 extern u8 data_027e00b4[];
 extern u8 data_02129780[];
@@ -12,21 +12,21 @@ extern u8 data_027e007c[];
 /* Initialise the CO "occupation" cut-in: open the /occupation archive, set up the
  * 3D sprite object, load the CO's .narc/.cg/.sc/.cl portrait and frame textures,
  * then restore the sprite engine and mark the screen as ready. */
-M2C_UNK func_020c1f58(u8 *screen){
-extern u8 data_0212989c[];   /* "/occupation" */
+M2C_UNK InitOccupationScreen(u8 *screen){
+extern u8 sOccupationPath[];   /* "/occupation" */
 extern u8 data_02129778[];   /* sprite animation descriptor */
-extern u8 data_021298a8[];   /* "res_occupation_obj" */
-extern u8 data_021298bc[];   /* "plate.cg" */
-extern u8 data_021298c8[];   /* "obj_common.cl" */
-extern u8 data_021298d8[];   /* ".narc" */
-extern u8 data_021298e0[];   /* ".cg" */
-extern u8 data_021298e4[];   /* ".sc" */
-extern u8 data_021298e8[];   /* ".cl" */
-extern u8 data_021298ec[];   /* "frame.narc" */
-extern u8 data_021298f8[];   /* "frame.cg" */
-extern u8 data_02129904[];   /* "frame.sc" */
-extern u8 data_02129910[];   /* "frame.cl" */
-extern void *data_027e00c8,*gCurrentMap;
+extern u8 sOccupationObjectName[];   /* "res_occupation_obj" */
+extern u8 sOccupationPlateFile[];   /* "plate.cg" */
+extern u8 sOccupationCommonFile[];   /* "obj_common.cl" */
+extern u8 sNarcExt[];   /* ".narc" */
+extern u8 sCgExt[];   /* ".cg" */
+extern u8 sScExt[];   /* ".sc" */
+extern u8 sClExt[];   /* ".cl" */
+extern u8 sFrameNarcFile[];   /* "frame.narc" */
+extern u8 sFrameCgFile[];   /* "frame.cg" */
+extern u8 sFrameScFile[];   /* "frame.sc" */
+extern u8 sFrameClFile[];   /* "frame.cl" */
+extern void *g3DSpriteEngineMain,*gCurrentMap;
 void func_0200bc5c(void *);void func_020a92bc(void *,s32);void *func_020e3218(void *);void *func_02080e30(void *,s32);void func_0207c780(void *,void *);void func_020e35cc(void *);void func_02080cfc(void *,void *);void func_0208116c(void *,s32,s32);M2C_UNK func_01ff9ce8(s32);void *func_020c1e6c(s32);void func_02068c50(void *,void *);void func_02068d68(void *,void *);void func_020814e4(void *);void func_02081590(void *,void *);void func_020815d4(void *,void *,s32,s32);void func_02081528(void);void func_01ff85b8(void *,s32,s32);void func_020815fc(void *,s32,s32);void func_020808dc(void *,s32,s32,s32);void func_0207b764(s32,s32);
 u8 path[64];
 u8 *objectRes;
@@ -48,7 +48,7 @@ u16 *volatile statReg13;
 u16 *volatile statReg14;
 u16 *volatile statReg15;
 
-func_0200bc5c(data_0212989c);
+func_0200bc5c(sOccupationPath);
 M2C_FIELD(*(void **)(screen+60),u16*,18)=860;
 M2C_FIELD(*(void **)(screen+60),u8*,22)=16;
 M2C_FIELD(*(void **)(screen+60),u8*,20)=32;
@@ -61,7 +61,7 @@ M2C_FIELD(*(void **)(screen+60),u8*,40)&=~224;
 
 /* switch to the CO sprite engine and configure its first display register */
 savedEngine=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 statReg0=*(u16 **)gCur3DSpriteEngine;*statReg0=*statReg0|16;
 statReg1=*(u16 **)gCur3DSpriteEngine;*statReg1=*statReg1|32;
 statReg2=*(u16 **)gCur3DSpriteEngine;*statReg2=*statReg2|64;
@@ -71,34 +71,34 @@ statReg4=*(u16 **)gCur3DSpriteEngine;*statReg4=*statReg4|256;
 statReg5=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg5=(*statReg5&~192)|64;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,81)=16;M2C_FIELD(*(void **)gCur3DSpriteEngine,u8*,82)=0;statReg6=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg6=*statReg6&~1;statReg7=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg7=*statReg7&~2;statReg8=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg8=*statReg8&~4;statReg9=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg9=*statReg9&~8;statReg10=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg10=*statReg10&~16;statReg11=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg11=*statReg11|256;statReg12=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg12=*statReg12&~512;statReg13=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg13=*statReg13&~1024;statReg14=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg14=*statReg14&~2048;statReg15=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*statReg15=*statReg15&~4096;
 
-objectRes=func_02080e30(func_020e3218(data_021298a8),1);
+objectRes=func_02080e30(func_020e3218(sOccupationObjectName),1);
 func_0207c780(objectRes,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x6b80);
 func_0207c780(objectRes+0x3c0,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x7f80);
 if(screen[54]==0)func_0207c780(objectRes+0x478,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);else func_0207c780(objectRes+0x690,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8080);
 func_0207c780(objectRes+0x92c,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x8480);
 func_020e35cc(objectRes);
-func_02080cfc(data_021298bc,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
-func_0208116c(data_021298c8,0x360,64);
+func_02080cfc(sOccupationPlateFile,M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+0x9d80);
+func_0208116c(sOccupationCommonFile,0x360,64);
 func_01ff9ce8(2);
 
 /* build "<CO name>.narc" and load the CO's portrait archive */
 func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
-func_02068d68(path,data_021298d8);
+func_02068d68(path,sNarcExt);
 func_020814e4(path);
 
 /* "<CO name>.cg" -> background frame slot */
 func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
-func_02068d68(path,data_021298e0);
+func_02068d68(path,sCgExt);
 func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
 
 /* "<CO name>.sc" -> portrait slot */
 func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
-func_02068d68(path,data_021298e4);
+func_02068d68(path,sScExt);
 func_02081590(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
 
 /* "<CO name>.cl" -> palette data */
 func_02068c50(path,func_020c1e6c((*(u8 **)(screen+64))[1]));
-func_02068d68(path,data_021298e8);
+func_02068d68(path,sClExt);
 func_020815d4(path,*(void **)(screen+76),0,128);
 func_02081528();
 func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
@@ -106,10 +106,10 @@ M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
 func_01ff9ce8(1);
 
 /* load the shared frame.narc and its .cg/.sc/.cl parts */
-func_020814e4(data_021298ec);
-func_02081590(data_021298f8,M2C_FIELD(gCur3DSpriteEngine,void **,16));
-func_02081590(data_02129904,M2C_FIELD(gCur3DSpriteEngine,void **,36));
-func_020815fc(data_02129910,32,32);
+func_020814e4(sFrameNarcFile);
+func_02081590(sFrameCgFile,M2C_FIELD(gCur3DSpriteEngine,void **,16));
+func_02081590(sFrameScFile,M2C_FIELD(gCur3DSpriteEngine,void **,36));
+func_020815fc(sFrameClFile,32,32);
 func_02081528();
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,32,1);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
@@ -118,38 +118,41 @@ screen[53]=1;
 func_0207b764(M2C_FIELD(*(void **)gCurrentMap,s16*,0x52dc),M2C_FIELD(*(void **)gCurrentMap,s16*,0x52de));
 }
 
-void func_020c253c(u8 *p){
-void func_020a8f8c(void *); s32 func_020a8ff4(void *); void func_01ff9e44(void *,s32,s32);
+/* Draws the CO occupation cut-in for one frame: tints the panel palette toward
+ * the CO's colour, stamps the portrait animation, sets the cut-in quad and
+ * queues the panel, gauge and ability sprites. */
+void DrawOccupationScreen(u8 *panel){
+void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void func_01ff9e44(void *,s32,s32);
 s32 func_020c1efc(s32); s32 func_020ae354(s32,s32,u8,u8);
-void func_020ae548(void *,s32,u8,u8,s32); s32 func_0207c8ec(s32,s32);
-void func_01ff8ddc(s32,s16,s16,s16,s16); void func_020a92bc(void *,s32); void func_020a94fc(void *);
-void func_01ffaacc(s32,u16,u16,void *,s32); s32 func_020c1e48(s32); s32 func_020c1e9c(s32);
-s32 a,b,c,d,x,y,t,u,v,w; u8 i,j; s16 yy;
-if(!p[0x35])return;
+void BlendPalette(void *,s32,u8,u8,s32); s32 func_0207c8ec(s32,s32);
+void SetSpriteQuad(s32,s16,s16,s16,s16); void func_020a92bc(void *,s32); void func_020a94fc(void *);
+void AddSprite(s32,u16,u16,void *,s32); s32 func_020c1e48(s32); s32 func_020c1e9c(s32);
+s32 scratch,scaleB,scaleC,scaleD,sine,cosine,q0,q1,q2,q3; u8 fade,row; s16 spriteY;
+if(!panel[0x35])return;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3c)=0xffb4;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x44)=0xffcb;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0xffb4;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=0xffcb;
-func_020a8f8c(*(void **)(p+68)); i=func_020a8ff4(*(void **)(p+68));
-func_01ff9e44(*(void **)(p+76),64,128);
-a=func_020c1efc((*(u8 **)(p+64))[3]);
-if((*(u8 **)(p+64))[2]==0)func_020ae548(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,a,16-i,i,128);
-else{t=func_020c1efc((*(u8 **)(p+64))[2]);t=func_020ae354(t,a,16-i*2,i*2);func_020ae548(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,t,11,5,128);}
+UpdateSpriteAnimation(*(void **)(panel+68)); fade=GetSpriteAnimValue(*(void **)(panel+68));
+func_01ff9e44(*(void **)(panel+76),64,128);
+scratch=func_020c1efc((*(u8 **)(panel+64))[3]);
+if((*(u8 **)(panel+64))[2]==0)BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,scratch,16-fade,fade,128);
+else{q0=func_020c1efc((*(u8 **)(panel+64))[2]);q0=func_020ae354(q0,scratch,16-fade*2,fade*2);BlendPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,48)+64,q0,11,5,128);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;
-func_020a8f8c(*(void **)(p+72));
-a=((func_020a8ff4(*(void **)(p+72))<0?-func_020a8ff4(*(void **)(p+72)):func_020a8ff4(*(void **)(p+72)))>=2?func_020a8ff4(*(void **)(p+72)):(func_020a8ff4(*(void **)(p+72))>2?2:(func_020a8ff4(*(void **)(p+72))<-2?-2:func_020a8ff4(*(void **)(p+72))))); y=((s16 *)data_020e5b30)[1];
-b=((func_020a8ff4(*(void **)(p+72))<0?-func_020a8ff4(*(void **)(p+72)):func_020a8ff4(*(void **)(p+72)))>=2?func_020a8ff4(*(void **)(p+72)):(func_020a8ff4(*(void **)(p+72))>2?2:(func_020a8ff4(*(void **)(p+72))<-2?-2:func_020a8ff4(*(void **)(p+72))))); x=((s16 *)data_020e5b30)[0];
-c=((func_020a8ff4(*(void **)(p+72))<0?-func_020a8ff4(*(void **)(p+72)):func_020a8ff4(*(void **)(p+72)))>=2?func_020a8ff4(*(void **)(p+72)):(func_020a8ff4(*(void **)(p+72))>2?2:(func_020a8ff4(*(void **)(p+72))<-2?-2:func_020a8ff4(*(void **)(p+72))))); d=((func_020a8ff4(*(void **)(p+72))<0?-func_020a8ff4(*(void **)(p+72)):func_020a8ff4(*(void **)(p+72)))>=2?func_020a8ff4(*(void **)(p+72)):(func_020a8ff4(*(void **)(p+72))>2?2:(func_020a8ff4(*(void **)(p+72))<-2?-2:func_020a8ff4(*(void **)(p+72)))));
-t=func_0207c8ec(y<<4,d);u=func_0207c8ec((-x)<<4,c);v=func_0207c8ec(x<<4,b);w=func_0207c8ec(y<<4,a);
-func_01ff8ddc(0,t,u,v,w);
-if(((FlagsC253c *)(p+80))->flag0){func_020a92bc(*(void **)(p+60),(*(u8 **)(p+64))[5]);{u16 *q=*(u16 **)(p+60);q[3]=102;q[4]=59;}func_020a94fc(*(void **)(p+60));}
-if(((FlagsC253c *)(p+80))->flag1)func_01ffaacc(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e005c,11);
-if(((FlagsC253c *)(p+80))->flags)func_01ffaacc(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e00b4,11);
-a=func_020c1e48((*(u8 **)(p+64))[1]);
-func_01ffaacc(76,117,((a>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);
-for(j=0;j<20;j++){yy=j*-4+130;
-if(j<p[57])a=func_020c1e9c((*(u8 **)(p+64))[3]);else a=func_020c1e9c((*(u8 **)(p+64))[2]);
-if(a!=65535)func_01ffaacc(156,(yy&255)|1024,((a>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xc000,data_027e007c,11);
+UpdateSpriteAnimation(*(void **)(panel+72));
+scratch=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); cosine=((s16 *)gSinCosTable)[1];
+scaleB=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); sine=((s16 *)gSinCosTable)[0];
+scaleC=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72))))); scaleD=((GetSpriteAnimValue(*(void **)(panel+72))<0?-GetSpriteAnimValue(*(void **)(panel+72)):GetSpriteAnimValue(*(void **)(panel+72)))>=2?GetSpriteAnimValue(*(void **)(panel+72)):(GetSpriteAnimValue(*(void **)(panel+72))>2?2:(GetSpriteAnimValue(*(void **)(panel+72))<-2?-2:GetSpriteAnimValue(*(void **)(panel+72)))));
+q0=func_0207c8ec(cosine<<4,scaleD);q1=func_0207c8ec((-sine)<<4,scaleC);q2=func_0207c8ec(sine<<4,scaleB);q3=func_0207c8ec(cosine<<4,scratch);
+SetSpriteQuad(0,q0,q1,q2,q3);
+if(((FlagsC253c *)(panel+80))->flag0){func_020a92bc(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}func_020a94fc(*(void **)(panel+60));}
+if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e005c,11);
+if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_027e00b4,11);
+scratch=func_020c1e48((*(u8 **)(panel+64))[1]);
+AddSprite(76,117,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);
+for(row=0;row<20;row++){spriteY=row*-4+130;
+if(row<panel[57])scratch=func_020c1e9c((*(u8 **)(panel+64))[3]);else scratch=func_020c1e9c((*(u8 **)(panel+64))[2]);
+if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xc000,data_027e007c,11);
 }
 }
 
@@ -218,8 +221,8 @@ v5=*(u16 **)gCur3DSpriteEngine;*v5=*v5|0x100;
 }
 
 void func_020c2e10(void) {
-    M2C_UNK func_020c1f58();
-    func_020c1f58();
+    M2C_UNK InitOccupationScreen();
+    InitOccupationScreen();
 }
 
 void func_020c2e1c(void) {
@@ -233,8 +236,8 @@ void func_020c2e28(void) {
 }
 
 void func_020c2e34(void) {
-    void func_020c253c();
-    func_020c253c();
+    void DrawOccupationScreen();
+    DrawOccupationScreen();
 }
 
 void func_020c2e40(void) {

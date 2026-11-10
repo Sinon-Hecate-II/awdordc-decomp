@@ -4,7 +4,7 @@
 typedef struct {u16 hp:7;u16 ammo:4;u16 flags:5;} DisplayHealth;
 typedef struct {u8 fuel:7;u8 flag:1;} DisplayFuel;
 extern void **gCurrentMap;
-extern void *gCur3DSpriteEngine,*data_027e00c8;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern s32 data_ov000_021df5e4;
 extern u32 data_ov000_021b5bfc[];
 extern u8 data_ov000_021b5c0a[],data_ov000_021b5c05[],data_ov000_021b5c0b[];
@@ -16,7 +16,7 @@ void func_0209b2dc(s16,s16,int,u32,int,int,u16);
 int func_0207c8ec(int,int);int func_02086680(u32);int func_0209c268(int);
 void func_0209bfdc(s16,s16,void *,u32,int,int);
 
-/* Switch gCur3DSpriteEngine to data_027e00c8 and rebuild its display lists; bit 0 of mode selects one of two layouts. */
+/* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
 void func_ov000_0216ecc8(s32 mode,s32 reverse){
 extern void **gCurrentMap;
 extern u16 data_ov000_021aeef4[];
@@ -174,7 +174,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  int id,offset,icon,health;
  data_ov000_021df5e4=0x1c4+(row+1)*24;
  id=((u8 *)((u32 *)&data_ov000_021df5e4)[1])[index];if(id==0)return;
- saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+ saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
  m=*gCurrentMap;base=*(u16 *)(m+0x52a8);
  u=(void *)(m+0x59a4+(base+id)*14);
  if(*(u16 *)((u8 *)u+4)&8)base=256;
@@ -211,7 +211,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
 void func_ov000_0216f8c4(s32 mode) {
     M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
     void func_ov000_0216f3d0(s32, s32);
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     s32 var_r5;
     s32 var_r5_2;
@@ -222,8 +222,8 @@ void func_ov000_0216f8c4(s32 mode) {
     void *savedPtr;
 
     savedPtr = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
-    func_020809c0(M2C_FIELD(data_027e00c8, s32 *, 0x24) + 0x140, 0x20, 0xC);
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    func_020809c0(M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x24) + 0x140, 0x20, 0xC);
     if (mode & 1) {
         var_r6 = 0;
         var_r5 = mode >> 1;
@@ -252,11 +252,11 @@ void func_ov000_0216f8c4(s32 mode) {
 }
 
 void func_ov000_0216f9b4(void *p){
-extern void *gCur3DSpriteEngine;extern void *data_027e00c8;
+extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
 extern M2C_UNK data_ov000_021b8ac0,data_ov000_021b8ad0,data_ov000_021b8ae0,data_ov000_021b8af4,data_ov000_021b8b04,data_ov000_021b8b18;
 s32 func_020e3218(void *);void func_02081590(s32,s32);void func_02080944(s32,s32,s32,s32);
 void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_0200bc5c(&data_ov000_021b8ac0);
 func_020e3218(&data_ov000_021b8ad0);func_020814e4();
 switch(M2C_FIELD(p,s16 *,0x34)){

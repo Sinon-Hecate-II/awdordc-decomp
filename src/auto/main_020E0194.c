@@ -9,7 +9,7 @@ static inline s32 E0B04Process(void *entity) {
 s32 func_020846a4(void);s32 func_0208477c(void);s32 func_02084a6c(void);
 s32 func_0208b5ec(void); M2C_UNK func_0208af20(void);void *func_0208b564(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
-extern s32 data_027e00c8,data_027e00c4,gCur3DSpriteEngine;
+extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
 if(!func_020846a4())return 0;
 if(func_0208477c())return 0;
@@ -18,10 +18,10 @@ M2C_FIELD(entity,u16 *,0x48)|=0x1000;
 if(func_0208b5ec())func_0208af20();
 saved=gCur3DSpriteEngine;i=0;
 do{
-if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
 gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,u8 *,0x44);
-if(mode==0&&bank!=data_027e00c8)goto next;
-if(mode==1&&bank!=data_027e00c4)goto next;
+if(mode==0&&bank!=g3DSpriteEngineMain)goto next;
+if(mode==1&&bank!=g3DSpriteEngineSub)goto next;
 if(mode==3&&bank!=saved)goto next;
 created=func_0208b564(entity);
 func_020899cc(created,2,M2C_FIELD(entity,u16 *,0x46)<<5,0x44000001);
@@ -42,7 +42,7 @@ M2C_UNK func_ov010_02228c88();
 M2C_UNK func_ov009_02225348();
 M2C_UNK func_02088ff4();
 s32 func_02089064();
-s16 func_020a8ff4();
+s16 GetSpriteAnimValue();
 M2C_UNK func_020e0194(void *arg0) { void *p;
  s16 v;
 void *q;
@@ -53,7 +53,7 @@ u16 value;
  func_02088ff4(M2C_FIELD(arg0,void**,0x58));
  if(func_02089064(M2C_FIELD(arg0,void**,0x60)))func_02088ff4(M2C_FIELD(arg0,void**,0x60));
  func_02088ff4(M2C_FIELD(arg0,void**,0x64));
- v=func_020a8ff4(M2C_FIELD(arg0,void**,0x68));
+ v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -86,7 +86,7 @@ u16 value;
  func_02088ff4(M2C_FIELD(arg0,void**,0x58));
  if(func_02089064(M2C_FIELD(arg0,void**,0x60)))func_02088ff4(M2C_FIELD(arg0,void**,0x60));
  func_02088ff4(M2C_FIELD(arg0,void**,0x64));
- v=func_020a8ff4(M2C_FIELD(arg0,void**,0x68));
+ v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -111,7 +111,7 @@ void func_020e0368(void) {
 }
 
 s32 func_020d4810();
-M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; func_020e0230(arg0);  v=func_020a8ff4(M2C_FIELD(arg0,void**,0x68));
+M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; func_020e0230(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -136,7 +136,7 @@ u16 value;
  func_02088ff4(M2C_FIELD(arg0,void**,0x58));
  if(func_02089064(M2C_FIELD(arg0,void**,0x60)))func_02088ff4(M2C_FIELD(arg0,void**,0x60));
  func_02088ff4(M2C_FIELD(arg0,void**,0x64));
- v=func_020a8ff4(M2C_FIELD(arg0,void**,0x68));
+ v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -167,7 +167,7 @@ void func_020e048c(void *entity) {
     void *func_0208b520(void *);
     s32 func_0208b5ec();
     extern M2C_UNK data_02168f74;
-    extern s32 data_027e00c8, data_027e00c4, gCur3DSpriteEngine;
+    extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
     void *created;
     s32 bank;
     register s32 i;
@@ -177,11 +177,11 @@ void func_020e048c(void *entity) {
     i = 0;
     savedEntity = gCur3DSpriteEngine;
     do {
-        if (i == 0) bank = data_027e00c8; else bank = data_027e00c4;
+        if (i == 0) bank = g3DSpriteEngineMain; else bank = g3DSpriteEngineSub;
         gCur3DSpriteEngine = bank;
         mode = M2C_FIELD(entity, u8 *, 0x44);
-        if (mode == 0 && bank != data_027e00c8) goto next;
-        if (mode == 1 && bank != data_027e00c4) goto next;
+        if (mode == 0 && bank != g3DSpriteEngineMain) goto next;
+        if (mode == 1 && bank != g3DSpriteEngineSub) goto next;
         if (mode == 3 && bank != savedEntity) goto next;
         created = func_0208b520(entity);
         func_020899cc(created, 0, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000009);
@@ -207,7 +207,7 @@ s32 func_020848c4(); void func_020d47d0(); void func_020d47f0();
 s32 func_0208b5ec(); M2C_UNK func_0208af20(); void *func_0208b564(void *);
 M2C_UNK func_020899cc(void *,s32,s32,s32);
 extern u16 *data_0212c5f8[];
-extern s32 data_027e00c8,data_027e00c4,gCur3DSpriteEngine;
+extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; u8 mode; s32 saved; u16 mask; s32 j;
 mask=*data_0212c5f8[func_020848c4()];
 func_020d47d0();
@@ -216,11 +216,11 @@ if((mask & (1<<j)) && mask != *data_0212c5f8[j]){
 if(func_0208b5ec())func_0208af20();
 saved=gCur3DSpriteEngine;i=0;
 do {
-if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
 gCur3DSpriteEngine=bank;
 mode=M2C_FIELD(entity,u8*,0x44);
-if(mode==0 && bank!=data_027e00c8)goto next;
-if(mode==1 && bank!=data_027e00c4)goto next;
+if(mode==0 && bank!=g3DSpriteEngineMain)goto next;
+if(mode==1 && bank!=g3DSpriteEngineSub)goto next;
 if(mode==3 && bank!=saved)goto next;
 created=func_0208b564(entity);
 func_020899cc(created,2,M2C_FIELD(entity,u16*,0x46)<<5,0x4400000a);
@@ -278,7 +278,7 @@ void func_020e0b04(void *entity) {
     void func_0208fe30(s32); void func_01ffa6fc(void *);
     void func_020aacf0(void *);
     extern u16 *data_02101e84;
-    extern s32 data_027e00c8, data_027e00c4, gCur3DSpriteEngine;
+    extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
     void *created; s32 bank; register s32 i; u8 mode; s32 saved;
     u32 keys; s32 changed; void *primaryChild; u8 canAdvance; u32 frame;
 

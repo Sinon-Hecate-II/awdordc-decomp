@@ -24,8 +24,8 @@ void func_020e19e8(M2C_UNK arg0) {
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
     extern M2C_UNK data_027e00b4;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     void *temp_r6;
     void *temp_r6_2;
@@ -100,7 +100,7 @@ void func_020e19e8(M2C_UNK arg0) {
     }
     M2C_FIELD(temp_r0, void **, 0x68) = temp_r0_2;
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     M2C_FIELD(temp_r0, void **, 0x50) = func_020ab1c4(temp_r0);
     func_020aab24(M2C_FIELD(temp_r0, void **, 0x50), 0, 0x340, 3, 1);
     temp_r6 = M2C_FIELD(temp_r0, void **, 0x50);
@@ -195,7 +195,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &data_027e00b4;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
@@ -226,8 +226,8 @@ void func_020e1f54(M2C_UNK arg0) {
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
     extern M2C_UNK data_027e00b4;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     void *temp_r0_3;
     void *temp_r6;
@@ -302,7 +302,7 @@ void func_020e1f54(M2C_UNK arg0) {
     }
     M2C_FIELD(temp_r0, void **, 0x68) = temp_r0_2;
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     M2C_FIELD(temp_r0, void **, 0x50) = func_020ab1c4(temp_r0);
     func_020aab24(M2C_FIELD(temp_r0, void **, 0x50), 0, 0x340, 3, 1);
     temp_r6 = M2C_FIELD(temp_r0, void **, 0x50);
@@ -397,7 +397,7 @@ void func_020e1f54(M2C_UNK arg0) {
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &data_027e00b4;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r0_4 = func_0208bc24(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;

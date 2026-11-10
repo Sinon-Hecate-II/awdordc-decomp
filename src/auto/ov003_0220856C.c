@@ -1,7 +1,7 @@
 /* 5 functions from 0x0220856C to 0x02209310 (ov003), found by ds-decomp. */
 #include "common.h"
 
-s16 func_020a8ff4(void *);
+s16 GetSpriteAnimValue(void *);
 void func_02086e9c(void);
 void func_02086dfc(s32);
 s32 func_0207c8ec(s32, s32);
@@ -34,19 +34,19 @@ y=(s16)(originY+M2C_FIELD(entry,s16 *,8)+(M2C_FIELD(data,u8 *,2)>>1));
 shade=M2C_FIELD(entry,u8 *,17)==1?0x6bef:0;
 if(Animated856(arg0)){
 if(M2C_FIELD(M2C_FIELD(entry,void **,32),u8 *,14))alpha=M2C_FIELD(entry,s8 *,19);
-else alpha=func_020a8ff4(M2C_FIELD(M2C_FIELD(entry,void **,32),void **,0));
+else alpha=GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(entry,void **,32),void **,0));
 color=26;
 if(!M2C_FIELD(M2C_FIELD(entry,void **,24),u8 *,14)){
-sx=(M2C_FIELD(entry,u16 *,12)*func_020a8ff4(M2C_FIELD(M2C_FIELD(entry,void **,24),void **,0)))>>8;
-sy=(M2C_FIELD(entry,u16 *,12)*func_020a8ff4(M2C_FIELD(M2C_FIELD(entry,void **,28),void **,0)))>>8;
-scaleX=func_020a8ff4(M2C_FIELD(M2C_FIELD(entry,void **,24),void **,0));
-scaleY=func_020a8ff4(M2C_FIELD(M2C_FIELD(entry,void **,28),void **,0));
+sx=(M2C_FIELD(entry,u16 *,12)*GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(entry,void **,24),void **,0)))>>8;
+sy=(M2C_FIELD(entry,u16 *,12)*GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(entry,void **,28),void **,0)))>>8;
+scaleX=GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(entry,void **,24),void **,0));
+scaleY=GetSpriteAnimValue(M2C_FIELD(M2C_FIELD(entry,void **,28),void **,0));
 if(sx==0||sy==0){data=M2C_FIELD(arg0,void **,68);originY=(s16)(originY+M2C_FIELD(data,u8 *,4));goto advance;}
 }
 }else{
 alpha=M2C_FIELD(entry,s8 *,19);
 if(i!=Selected856(arg0,none))color=26;
-else{alpha+=func_020a8ff4(M2C_FIELD(arg0,void **,80));color=31;}
+else{alpha+=GetSpriteAnimValue(M2C_FIELD(arg0,void **,80));color=31;}
 sx=sy=M2C_FIELD(entry,u16 *,12);scaleX=scaleY=256;
 }
 func_02087048(1,31);

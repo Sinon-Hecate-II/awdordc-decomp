@@ -114,7 +114,7 @@ void func_ov000_02175740(void *arg0) {
     M2C_UNK func_02080860(s32, s32, s32, u16, s32);
     M2C_UNK func_020808dc(s32, s32, s32, s32);
     u32 func_ov000_02175074();
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov000_021ae2d0;
     extern M2C_UNK data_ov000_021c2158;
@@ -127,9 +127,9 @@ void func_ov000_02175740(void *arg0) {
     s32 gfx;
     M2C_UNK *gfxTable;
 
-    gfx = M2C_FIELD(data_027e00c4, s32 *, 0x28);
+    gfx = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x28);
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     switch (func_ov000_02175074()) {
     case 0:
         gfxTable = &data_ov000_021c2e50;
@@ -167,7 +167,7 @@ void func_ov000_02175878(void *arg0) {
     void func_01ff9e44(void *, s32, s32);
     M2C_UNK func_0207c780(M2C_UNK *, s32);
     void func_0209b26c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern u8 data_ov000_021ae2a0[];
     extern u8 *data_ov000_021dec34[][4];
@@ -189,8 +189,8 @@ void func_ov000_02175878(void *arg0) {
     color = M2C_FIELD(arg0, s32 *, 0) ? 0xA3 : 0x103;
     flag = M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0) != 0;
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-    base = M2C_FIELD(data_027e00c4, s32 *, 0x10);
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    base = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10);
     if (M2C_FIELD(arg0, s32 *, 0)) {
         base += 0x20;
     } else {
@@ -204,13 +204,13 @@ void func_ov000_02175878(void *arg0) {
 
 void func_ov000_021759b8(s32 *arg0) {
     M2C_UNK func_02080860(s32, s32, s32, u16, s32);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *saved;
     s32 base;
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-    base = M2C_FIELD(data_027e00c4, s32 *, 0x24);
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    base = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x24);
     func_02080860(base + 0xC6, 9, 9, (u16)(*arg0 ? 0x52 : 1), 0xC);
     gCur3DSpriteEngine = saved;
 }
@@ -218,7 +218,7 @@ void func_ov000_021759b8(s32 *arg0) {
 void func_ov000_02175ed8(void *arg0) {
     M2C_UNK func_02007ef4(s32, s32);
     s32 func_020e3438(M2C_UNK);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern s16 data_ov000_021deb46[];
     void *temp_r4;
@@ -226,7 +226,7 @@ void func_ov000_02175ed8(void *arg0) {
     s32 source;
 
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     temp_r6 = data_ov000_021deb46[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x4)];
     if (temp_r6 != -1) {
         source=func_020e3438(3);
@@ -241,11 +241,11 @@ void func_ov000_02175ed8(void *arg0) {
 #pragma opt_strength_reduction off
 void func_ov000_02175a20(void *a){
 M2C_UNK func_0207c780(M2C_UNK *,s32); M2C_UNK func_02080860(s32,s32,s32,u16,s32); s32 func_020e34bc(s32); void func_020e35cc(s32); void func_01ff9ce8(s32); u32 func_ov000_02175074();
-extern void *gCur3DSpriteEngine; extern void *data_027e00c4;
+extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
 extern M2C_UNK data_ov000_021c2e50,data_ov000_021c2bb0,data_ov000_021c2680,data_ov000_021c23ec,data_ov000_021c2918,data_ov000_021c2158;
 extern u16 data_ov000_021deb10[]; extern u8 data_ov000_021ae2a0[]; extern s8 data_ov000_021dede4[];
 Tiles75a20 first; TeamTiles75a20 second; void *saved; u16 tile; s32 temp; s32 i,base; s16 index; s32 gfx,step; M2C_UNK *table;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 gfx=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28);
 tile=(u16)(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0x520;
 temp=func_020e34bc(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,0x50)-1);

@@ -14,8 +14,8 @@ extern u8 data_ov005_02220464[];
 extern u8 data_ov005_02220474[];
 extern void *data_ov005_02221300;
 extern void *gCur3DSpriteEngine;
-extern void *data_027e00c8;
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineMain;
+extern void *g3DSpriteEngineSub;
 extern const u16 data_ov005_02220018[];
 extern u8 data_ov005_02220348[];
 extern u8 data_ov005_02220358[];
@@ -82,7 +82,7 @@ for(i=0;i<3;i++){p=func_ov005_02211a38(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16
 for(j=0;j<3;j++)func_ov005_02211c24(j);
 func_ov005_02211b4c();func_ov000_0216a4e0((u8 *)data_ov005_02221300+0x2e,(u8 *)data_ov005_02221300+0x30);
 func_ov005_02211c94();func_ov005_02211cf4();
-save=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;func_020822b8(&a);
+save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 64;}
@@ -100,16 +100,16 @@ func_02099450(1,0,0);
 
 func_0200bc5c(&data_ov005_02220348);
 func_020814e4(func_020e3218(&data_ov005_02220358));
-func_02081590(func_020e3218(&data_ov005_02220368),M2C_FIELD(data_027e00c8,void **,0x14));
-func_020816cc(func_020e3218(&data_ov005_02220374),M2C_FIELD(data_027e00c8,void **,0x28),0,0);
+func_02081590(func_020e3218(&data_ov005_02220368),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
+func_020816cc(func_020e3218(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
 func_02081528();func_0208116c(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 func_0208ca2c(0x1000,1,func_020ae22c(9),2);
-n=func_020a7290()<<5;dst=M2C_FIELD(data_027e00c8,void **,0x10);p=func_020a7278();func_02007ef4(p,(u8 *)dst+0x1980,n);
+n=func_020a7290()<<5;dst=M2C_FIELD(g3DSpriteEngineMain,void **,0x10);p=func_020a7278();func_02007ef4(p,(u8 *)dst+0x1980,n);
 func_01ff9e44(func_020a72e8(1),0x60,0x80);
 func_020814e4(&data_ov005_02220394);
-func_02081590(&data_ov005_022203a4,(u8 *)M2C_FIELD(data_027e00c8,void **,0x10)+0x1880);
-func_02081590(&data_ov005_022203b8,(u8 *)M2C_FIELD(data_027e00c8,void **,0x10)+0x1900);
+func_02081590(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1880);
+func_02081590(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);
 func_020815fc(&data_ov005_022203cc,0x40,0x20);func_02081528();func_02091d4c(1);
 func_0208ca2c(0x2800,6,func_020ae22c(12),2);func_020aeebc(3,15,6);
 func_020e3058((u8 *)data_ov005_02221300+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
@@ -118,7 +118,7 @@ func_020e3058((u8 *)data_ov005_02221300+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
 func_020e3058((u8 *)data_ov005_02221300+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
 func_020e3058((u8 *)data_ov005_02221300+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
 p=M2C_FIELD(data_ov005_02221300,void **,0x58);SetMenuAnimFrame(p,((MenuAnimSprite *)p)->base+2);
-gCur3DSpriteEngine=data_027e00c4;func_020822b8(&b);
+gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&b);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 64;}
@@ -136,16 +136,16 @@ func_02099450(1,0,0);
 
 func_0200bc5c(&data_ov005_022203dc);
 func_020814e4(func_020e3218(&data_ov005_022203ec));
-func_02081590(func_020e3218(&data_ov005_022203fc),M2C_FIELD(data_027e00c4,void **,0x14));
-func_02081590(func_020e3218(&data_ov005_02220408),M2C_FIELD(data_027e00c4,void **,0x28));
+func_02081590(func_020e3218(&data_ov005_022203fc),M2C_FIELD(g3DSpriteEngineSub,void **,0x14));
+func_02081590(func_020e3218(&data_ov005_02220408),M2C_FIELD(g3DSpriteEngineSub,void **,0x28));
 func_02081528();func_0208116c(&data_ov005_02220418,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;func_02091d4c(9);
 func_020814e4(&data_ov005_02220424);
-func_02081590(&data_ov005_02220434,(u8 *)M2C_FIELD(data_027e00c4,void **,0x1c)+0x1400);
+func_02081590(&data_ov005_02220434,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1400);
 func_020815fc(&data_ov005_02220444,0x300,0x20);func_02081528();
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void **,0xc),0x20);
 func_020814e4(&data_ov005_02220454);
-func_02081590(&data_ov005_02220464,(u8 *)M2C_FIELD(data_027e00c4,void **,0xc)+0x20);
+func_02081590(&data_ov005_02220464,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0xc)+0x20);
 func_020815fc(&data_ov005_02220474,0x20,0x100);func_02081528();
 func_ov005_02212b40();
 M2C_FIELD(data_ov005_02221300,void **,0x4c)=func_0208931c(arg0);

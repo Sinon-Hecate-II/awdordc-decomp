@@ -42,7 +42,7 @@ void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_ov003_021fbd48(void *arg0, s32 arg1) {
-    s32 func_020a8ff4(void *);
+    s32 GetSpriteAnimValue(void *);
     u32 func_020d886c();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
@@ -245,7 +245,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
         }
         M2C_FIELD(temp_r4_3, s32 *, 0xC) = var_r1_2;
     }
-    temp_r0_6 = func_ov003_021f3fe4(func_020a8ff4(temp_r4_3 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r4_3, s32 *, 0x10) + 1) * M2C_FIELD(temp_r4_3, s16 *, 4)));
+    temp_r0_6 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r4_3 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r4_3, s32 *, 0x10) + 1) * M2C_FIELD(temp_r4_3, s16 *, 4)));
     temp_r2 = M2C_FIELD(temp_r4_3, s16 *, 4);
     temp_r1_3 = M2C_FIELD(temp_r4_3, s32 *, 0xC) * temp_r2;
     if (temp_r0_6 <= (s32) temp_r1_3) {
@@ -262,7 +262,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
     }
     temp_r3 = M2C_FIELD(temp_r4_3, s16 *, 4);
     var_r5 = M2C_FIELD(temp_r4_3, s32 *, 0xC) * temp_r3;
-    temp_r0_7 = func_ov003_021f3fe4(func_020a8ff4(temp_r4_3 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r4_3, s32 *, 0x10) + 1) * temp_r3));
+    temp_r0_7 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r4_3 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r4_3, s32 *, 0x10) + 1) * temp_r3));
     if (var_r6 == 0) {
         if (temp_r0_7 > (s32) var_r5) {
             var_r5 += (s16) (((s16) M2C_FIELD(temp_r4_3, s32 *, 0x10) + 1) * M2C_FIELD(temp_r4_3, s16 *, 4));

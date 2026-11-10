@@ -217,15 +217,15 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
 }
 #pragma opt_strength_reduction off
 void func_ov002_021e3b7c(M2C_UNK *p) {
-extern u32 gCur3DSpriteEngine, data_027e00c4;
+extern u32 gCur3DSpriteEngine, g3DSpriteEngineSub;
 extern u8 data_027e008c[];
 s32 x,y,tx,ty; u32 old; u16 v;
 if(*p&1)return;
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(y=0,ty=0;y<192;y+=64,ty+=8){
 v=(u16)((y&255)|0xc00);
 for(tx=0,x=0;tx<32;tx+=8,x+=64)
-func_01ffaacc((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),data_027e008c,0);
+AddSprite((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),data_027e008c,0);
 }
 gCur3DSpriteEngine=old;
 }
@@ -249,7 +249,7 @@ void func_ov002_021e3c84(void) {
 }
 
 void func_ov002_021e3c98(s32 *arg0) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void func_02082104(s32,s32);void func_02082134(s32,s32);void func_0209cce4(s32,s32);
-extern volatile u16 *data_027e00c0;extern u32 gCur3DSpriteEngine;extern u32 data_027e00c4;
+extern volatile u16 *data_027e00c0;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
 func_020033e0();func_020033f4();
 data_027e00c0[0]=(u16)((data_027e00c0[0]&~0x7)|0x3);
 data_027e00c0[0]=(u16)(data_027e00c0[0]&~0x10);
@@ -259,7 +259,7 @@ data_027e00c0[0]=(u16)(data_027e00c0[0]|0x80);
 data_027e00c0[0]=(u16)(data_027e00c0[0]|0x100);
 data_027e00c0[1]=(u16)((data_027e00c0[1]&~0xC0)|0x40);
 data_027e00c0[1]=(u16)(data_027e00c0[1]&~0x100);
-{u32 old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+{u32 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 data_027e00c0[6]=(u16)((data_027e00c0[6]&~0x3C)|0x4);
 data_027e00c0[6]=(u16)(data_027e00c0[6]|0x80);
 func_02082104(3,0);func_02082134(3,1);gCur3DSpriteEngine=old;}
@@ -305,10 +305,10 @@ void func_ov002_021e3e64(void *arg0) {
 }
 
 void func_ov002_021e3e7c(void *p) {
-s32 func_0207ca38(s32,s32,s32,s32,s32);s32 a,b;
+s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 a,b;
 if(M2C_FIELD(p,u16 *,6)>=M2C_FIELD(p,u16 *,8))return;
-a=func_0207ca38(0,M2C_FIELD(p,u8 *,16),0,M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
-b=func_0207ca38(4,M2C_FIELD(p,u16 *,12),M2C_FIELD(p,u16 *,14),M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
+a=EaseInterpolate(0,M2C_FIELD(p,u8 *,16),0,M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
+b=EaseInterpolate(4,M2C_FIELD(p,u16 *,12),M2C_FIELD(p,u16 *,14),M2C_FIELD(p,u16 *,6),M2C_FIELD(p,u16 *,8));
 func_02087048(M2C_FIELD(p,u8 *,17),(u8)a);func_0208718c();
 func_020872c8(M2C_FIELD(p,u8 *,18)?M2C_FIELD(p,s16 *,0):-M2C_FIELD(p,s16 *,0),M2C_FIELD(p,s16 *,2),M2C_FIELD(p,s16 *,4),b,32,M2C_FIELD(p,u16 *,10));
 func_02087048(0,31);

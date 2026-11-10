@@ -7,16 +7,16 @@ typedef struct { u32 low:10, middle:11, high:11; } Flags0208B;
 
 void func_0208b884(void *arg0) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c8;
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineMain;
+    extern void *g3DSpriteEngineSub;
     M2C_UNK func_0209b9a8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_01ff90e4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
 
     void *saved = gCur3DSpriteEngine;
     s32 r9;
     for (r9 = 0; r9 < 2; r9++) {
-        if (r9 == 0) gCur3DSpriteEngine = data_027e00c8;
-        else gCur3DSpriteEngine = data_027e00c4;
+        if (r9 == 0) gCur3DSpriteEngine = g3DSpriteEngineMain;
+        else gCur3DSpriteEngine = g3DSpriteEngineSub;
         func_0209b9a8(0, 0, 0, 0);
     }
     gCur3DSpriteEngine = saved;
@@ -51,12 +51,12 @@ void func_0208bc24(M2C_UNK arg0) {
 }
 
 M2C_UNK func_0208bc58(void *p){
-extern M2C_UNK data_0210264c;extern void *gCur3DSpriteEngine;extern void *data_027e00c8;
+extern M2C_UNK data_0210264c;extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
 u8 equal;Flags0208 *f=(Flags0208 *)((char *)p+0x44);Flags0208B *g=(Flags0208B *)((char *)p+0x48);
 M2C_FIELD(p,void **,0)=&data_0210264c;
 M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=0;M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,s32 *,0x40)=0x1000;
 M2C_FIELD(p,u32 *,0x44)&=~0xffff;
-equal=gCur3DSpriteEngine==data_027e00c8;
+equal=gCur3DSpriteEngine==g3DSpriteEngineMain;
 f->mode=equal!=1;f->a=0;f->b=0;f->c=0;f->d=0;f->e=0;g->low=0;g->high=0;
 M2C_FIELD(p,s32 *,0x4c)=0;
 M2C_FIELD(p,s32 *,0x50)=0;
@@ -175,15 +175,15 @@ void func_0208c0d0(void *arg0, u8 arg1) {
 
 /* Compute an interpolation factor from the object's mode/position fields and store it as a byte at +0x4C/0x21. */
 void func_0208c0dc(void *obj) {
-    s32 func_0207ca38(s32, s32, s32, s32, s32); void func_0208c0d0(void *, u8);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32); void func_0208c0d0(void *, u8);
     u16 n = ((Flags0208B *)((char *)obj + 0x48))->middle;
     u16 mode = ((Flags0208 *)((char *)obj + 0x44))->e;
     u16 pos = ((Flags0208B *)((char *)obj + 0x48))->high;
     s32 half = n >> 1; s32 v = 31;
     switch (mode) {
-        case 1: if (pos < half) v = func_0207ca38(0, 0, 31, pos, half); break;
-        case 2: if (pos > half) v = func_0207ca38(0, 31, 0, pos - half, half); break;
-        case 3: half = (s32)((s32)n + ((u32)(s32)n >> 31)) >> 1; if (pos < half) v = func_0207ca38(0, 0, 31, pos, half); else v = func_0207ca38(0, 31, 0, pos - half, half); break;
+        case 1: if (pos < half) v = EaseInterpolate(0, 0, 31, pos, half); break;
+        case 2: if (pos > half) v = EaseInterpolate(0, 31, 0, pos - half, half); break;
+        case 3: half = (s32)((s32)n + ((u32)(s32)n >> 31)) >> 1; if (pos < half) v = EaseInterpolate(0, 0, 31, pos, half); else v = EaseInterpolate(0, 31, 0, pos - half, half); break;
     }
     func_0208c0d0(obj, (u8)v);
 }
@@ -218,7 +218,7 @@ s32 func_0208c214(void *arg0) {
 
 void func_0208c248(void *obj) {
 extern u16 *data_02101e84; extern u8 *data_02101e88;
-extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 void func_01ffa574(void *); s32 func_020910d0(s32,void *,s32,s32); s32 func_020912bc(s32,u16,u16);
 Flags0208 *f=(Flags0208 *)((char *)obj+0x44);
 Flags0208B *g=(Flags0208B *)((char *)obj+0x48);
@@ -229,10 +229,10 @@ if((u16)f->e) func_0208c0dc(obj);
 callback=M2C_FIELD(obj,void (**)(void *),0x6c); if(callback) callback(obj);
 saved=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
-if(i==0) current=data_027e00c8; else current=data_027e00c4;
+if(i==0) current=g3DSpriteEngineMain; else current=g3DSpriteEngineSub;
 gCur3DSpriteEngine=current;
-if(f->mode==0 && current!=data_027e00c8) continue;
-if(f->mode==1 && current!=data_027e00c4) continue;
+if(f->mode==0 && current!=g3DSpriteEngineMain) continue;
+if(f->mode==1 && current!=g3DSpriteEngineSub) continue;
 if(f->mode==3 && current!=saved) continue;
 switch((u16)f->d) {
 case 1:

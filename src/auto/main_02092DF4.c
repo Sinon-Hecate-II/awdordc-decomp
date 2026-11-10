@@ -42,10 +42,10 @@ s32 func_02092ea8(void *arg0) {
 
 s32 func_02092edc(void *arg0) {
  extern void **gCurrentMap;
- extern s32 data_027e00c4, gCur3DSpriteEngine;
+ extern s32 g3DSpriteEngineSub, gCur3DSpriteEngine;
  s32 temp_ip;
  temp_ip=gCur3DSpriteEngine;
- gCur3DSpriteEngine=data_027e00c4;
+ gCur3DSpriteEngine=g3DSpriteEngineSub;
  M2C_FIELD(*gCurrentMap,s8 *,0x5155) = M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
  gCur3DSpriteEngine=temp_ip;
  M2C_FIELD(arg0,void **,4) = M2C_FIELD(arg0,void **,4)+0x10;
@@ -97,14 +97,14 @@ s32 func_020930e0(void *arg0) {
 s32 func_02093100(void *arg0) {
     s32 func_02091ecc(s16);
     M2C_UNK func_02096c7c(s32, M2C_UNK);
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_02096c7c(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -114,14 +114,14 @@ s32 func_02093100(void *arg0) {
 s32 func_02093154(void *arg0) {
     s32 func_02091ecc(s16);
     M2C_UNK func_02096c7c(s32, M2C_UNK);
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02096c7c(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -131,14 +131,14 @@ s32 func_02093154(void *arg0) {
 s32 func_020931a8(void *arg0) {
     s32 func_02091ecc(s16);
     M2C_UNK func_02096ba4(s32, M2C_UNK);
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_02096ba4(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -148,14 +148,14 @@ s32 func_020931a8(void *arg0) {
 s32 func_020931fc(void *arg0) {
     s32 func_02091ecc(s16);
     M2C_UNK func_02096ba4(s32, M2C_UNK);
-    extern s32 data_027e00c4;
+    extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_02096ba4(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -554,14 +554,14 @@ s32 func_02093d0c(void *arg0) {
     M2C_UNK func_02091e14();
     M2C_UNK func_020d4ba4();
     M2C_UNK func_020d8e28();
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 var_r0;
     u8 var_r0_2;
 
     var_r0 = func_02091e14();
     if (var_r0 == 3) {
-        if (gCur3DSpriteEngine == data_027e00c8) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
             var_r0_2 = 1;
         } else {
             var_r0_2 = 0;

@@ -87,7 +87,7 @@ void func_ov003_021e46c8(void **arg0) {
 
 u32 func_ov003_021e46dc(void *arg0) {
     u32 func_02088ff4(s32);
-    s16 func_020a8ff4(void *);
+    s16 GetSpriteAnimValue(void *);
     u32 temp_r0;
     void *temp_r4;
     void *temp_r5;
@@ -98,12 +98,12 @@ u32 func_ov003_021e46dc(void *arg0) {
         return temp_r0;
     }
     temp_r5 = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(temp_r5, s16 *, 0xE) = func_020a8ff4(temp_r5);
+    M2C_FIELD(temp_r5, s16 *, 0xE) = GetSpriteAnimValue(temp_r5);
     M2C_FIELD(temp_r5, s16 *, 0x10) = 0;
     M2C_FIELD(temp_r5, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r5, u16 *, 2) = (u16) M2C_FIELD(temp_r5, u16 *, 4);
     temp_r5_2 = M2C_FIELD(arg0, void **, 0x40);
-    M2C_FIELD(temp_r5_2, s16 *, 0xE) = func_020a8ff4(temp_r5_2);
+    M2C_FIELD(temp_r5_2, s16 *, 0xE) = GetSpriteAnimValue(temp_r5_2);
     M2C_FIELD(temp_r5_2, s16 *, 0x10) = -0x20;
     M2C_FIELD(temp_r5_2, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r5_2, u16 *, 2) = (u16) M2C_FIELD(temp_r5_2, u16 *, 4);

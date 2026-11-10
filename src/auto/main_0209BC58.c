@@ -10,7 +10,7 @@ typedef struct SpriteStateWord {
 } SpriteStateWord;
 
 extern s32 gCur3DSpriteEngine;
-extern s32 data_027e00c8;
+extern s32 g3DSpriteEngineMain;
 extern u8 data_021580a8[256];
 extern s32 data_0215d8a8[58];  // 232 bytes / 4
 extern s32 data_0215d8a0[2];   // 8 bytes / 4
@@ -62,7 +62,7 @@ func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
 void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
     void (*func_02091fb4(u32))(void);
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineMain;
 
     M2C_FIELD(arg0, s32 *, 0x34) = arg6;
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
@@ -82,7 +82,7 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x55) = 2;
     M2C_FIELD(arg0, s32 *, 0x50) = (s32)func_02091fb4((u32)arg3);
     {
-        s32 temp_r0 = (s32)(gCur3DSpriteEngine == data_027e00c8);
+        s32 temp_r0 = (s32)(gCur3DSpriteEngine == g3DSpriteEngineMain);
         temp_r0 = (s32)(u8)temp_r0;
         if (temp_r0 != 1) {
             temp_r0 = 1;
@@ -475,7 +475,7 @@ fail:
 }
 
 void *func_0209c6d8(s32 arg0) {
- u8 result=(gCur3DSpriteEngine==data_027e00c8);
+ u8 result=(gCur3DSpriteEngine==g3DSpriteEngineMain);
  s32 flag=result!=1;
  u8 *base=data_021580a8;
  return base+(flag<<7)+(arg0<<2);
@@ -496,7 +496,7 @@ p[3]=(y&~240u)|((value<<28)>>24);
 void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     void *func_0209c6d8(s32);
     s32 func_01ff8e44(s32, s32);
-    void func_01ffaacc(s32, s32, s32, s32);
+    void AddSprite(s32, s32, s32, s32);
     extern M2C_UNK gCur3DSpriteEngine;
     u8 *r4;
     u8 byte3;
@@ -521,7 +521,7 @@ void func_0209c764(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     mask = mask & (half_self >> (((u32)half_eng >> 13) & 3));
     mask = (u32)arg3 | mask;
     mask = mask | ((u32)byte2 << 12);
-    func_01ffaacc(arg1, arg2, (s32)(mask & 0xFFFF), arg4);
+    AddSprite(arg1, arg2, (s32)(mask & 0xFFFF), arg4);
 }
 
 #pragma opt_propagation off

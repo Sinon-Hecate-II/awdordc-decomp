@@ -183,7 +183,7 @@ void func_020b654c(s32 arg0) {
 }
 
 void func_020b6570(void *arg0) {
-    s32 func_0207ca38(s32, s32, s32, u16, s32);
+    s32 EaseInterpolate(s32, s32, s32, u16, s32);
     M2C_UNK func_0208c0d0(void *, u8);
     u16 temp_r5;
     u16 temp_r7;
@@ -191,8 +191,8 @@ void func_020b6570(void *arg0) {
     s32 temp_r6;
     temp_r5 = (u16)(M2C_FIELD(arg0, u32 *, 0x48) >> 21);
     temp_r7 = (u16)((M2C_FIELD(arg0, u32 *, 0x48) << 11) >> 21);
-    temp_r6 = func_0207ca38(4, 31, 0, temp_r5, temp_r7);
-    temp_r5_2 = func_0207ca38(4, 0, 0x40000, temp_r5, temp_r7);
+    temp_r6 = EaseInterpolate(4, 31, 0, temp_r5, temp_r7);
+    temp_r5_2 = EaseInterpolate(4, 0, 0x40000, temp_r5, temp_r7);
     func_0208c0d0(arg0, (u8)temp_r6);
     M2C_FIELD(arg0, s32 *, 0x40) = temp_r5_2;
 }
@@ -206,7 +206,7 @@ void func_020b65e4(void *arg0) {
 }
 
 void func_020b65f8(void *arg0) {
-    s32 func_0207ca38(s32, s32, s32, u16, s32);
+    s32 EaseInterpolate(s32, s32, s32, u16, s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK func_0208c080(void *, s32);
     extern M2C_UNK data_02128ecc;
@@ -215,7 +215,7 @@ void func_020b65f8(void *arg0) {
     void *p;
     bits = M2C_FIELD(arg0, u32 *, 0x48);
     count = (u16)(bits >> 21);
-    M2C_FIELD(arg0, s32 *, 0x38) = func_0207ca38(0, M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), count, (u16)((bits << 11) >> 21));
+    M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), count, (u16)((bits << 11) >> 21));
     if ((s32)count % 16 != 0) return;
     p = (void *)func_020b5134(&data_02128ecc, 0, 0, 16, 0, 0, arg0);
     func_0208c080(p, 2);

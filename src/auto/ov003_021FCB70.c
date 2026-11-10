@@ -223,7 +223,7 @@ void func_ov003_021fd0a0(void **arg0) {
 /* Refreshes an entity's display data: reinitializes its two display objects and then releases the pending handles stored in its part list (plus an extra handle when the low state nibble equals 2). */
 void func_ov003_021fd0b4(void *entity) {
     M2C_UNK func_02088ff4(s32);
-    s16 func_020a8ff4(void *);
+    s16 GetSpriteAnimValue(void *);
     s32 func_ov003_021f15d4();
     s16 func_ov003_021f1608();
     s16 displayValue;
@@ -234,12 +234,12 @@ void func_ov003_021fd0b4(void *entity) {
 
     displayValue = func_ov003_021f1608();
     first = M2C_FIELD(entity, void **, 0x58);
-    M2C_FIELD(first, s16 *, 0xE) = func_020a8ff4(first);
+    M2C_FIELD(first, s16 *, 0xE) = GetSpriteAnimValue(first);
     M2C_FIELD(first, s16 *, 0x10) = displayValue;
     M2C_FIELD(first, s16 *, 0xC) = 12;
     M2C_FIELD(first, u16 *, 2) = M2C_FIELD(first, u16 *, 4);
     second = M2C_FIELD(entity, void **, 0x64);
-    M2C_FIELD(second, s16 *, 0xE) = func_020a8ff4(second);
+    M2C_FIELD(second, s16 *, 0xE) = GetSpriteAnimValue(second);
     M2C_FIELD(second, s16 *, 0x10) = -32;
     M2C_FIELD(second, s16 *, 0xC) = 12;
     M2C_FIELD(second, u16 *, 2) = M2C_FIELD(second, u16 *, 4);

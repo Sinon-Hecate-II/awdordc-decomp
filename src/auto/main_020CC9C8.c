@@ -38,16 +38,16 @@ void func_020cc9c8(void *obj) {
 
 void func_020ccbc0(void *arg0) {
 extern s32 *gCurrentMap;
-s32 func_0207ca38(s32,s32,s32,s32,s32);
+s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void func_0207cec0(s32,s32);
 void func_01ffa6fc(void *);
 s32 base;
 M2C_FIELD(arg0,s32 *,0x64)++;
-func_0207cec0(*gCurrentMap+0x6ef8,func_0207ca38(4,M2C_FIELD(arg0,s32 *,0x5c),M2C_FIELD(arg0,s32 *,0x60),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68)));
+func_0207cec0(*gCurrentMap+0x6ef8,EaseInterpolate(4,M2C_FIELD(arg0,s32 *,0x5c),M2C_FIELD(arg0,s32 *,0x60),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68)));
 base=*gCurrentMap+0x5120;
-M2C_FIELD(base,s16 *,0x28)=func_0207ca38(4,M2C_FIELD(arg0,s16 *,0x6c),M2C_FIELD(arg0,s16 *,0x6e),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
+M2C_FIELD(base,s16 *,0x28)=EaseInterpolate(4,M2C_FIELD(arg0,s16 *,0x6c),M2C_FIELD(arg0,s16 *,0x6e),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
 base=*gCurrentMap+0x5120;
-M2C_FIELD(base,s16 *,0x2a)=func_0207ca38(4,M2C_FIELD(arg0,s16 *,0x70),M2C_FIELD(arg0,s16 *,0x72),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
+M2C_FIELD(base,s16 *,0x2a)=EaseInterpolate(4,M2C_FIELD(arg0,s16 *,0x70),M2C_FIELD(arg0,s16 *,0x72),M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s32 *,0x68));
 if(M2C_FIELD(arg0,s32 *,0x64)==M2C_FIELD(arg0,s32 *,0x68))func_01ffa6fc(arg0);
 }
 

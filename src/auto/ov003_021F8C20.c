@@ -1,7 +1,7 @@
 /* 4 functions from 0x021F8C20 to 0x021F9B30 (ov003), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern void *gCur3DSpriteEngine, *data_027e00c4;
+extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub;
 extern u8 data_ov003_02210398[], data_ov003_022103a0[], data_ov003_022103b0[], data_ov003_022103b8[];
 #define IsMapKind92(obj) ((u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==0)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==2)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==3)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==4)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==6)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==7)||(u8)(((u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28)==8))
 static inline u16 MapId92(void *obj) {
@@ -21,7 +21,7 @@ static inline u8 IsUnavailable92(s32 id) {
 void func_ov003_021f8c20(void *arg0) {
     void *func_02084e64();
     M2C_UNK func_0208fe30(s32);
-    s32 func_020a8ff4(void *);
+    s32 GetSpriteAnimValue(void *);
     u32 func_020d886c();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
@@ -115,7 +115,7 @@ void func_ov003_021f8c20(void *arg0) {
         }
         M2C_FIELD(temp_r5, s32 *, 0xC) = var_r1_2;
     }
-    temp_r0_5 = func_ov003_021f3fe4(func_020a8ff4(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
+    temp_r0_5 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
     temp_r3_2 = M2C_FIELD(temp_r5, s16 *, 4);
     temp_r7 = M2C_FIELD(temp_r5, s32 *, 0x10);
     temp_r1_3 = M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r3_2;
@@ -133,7 +133,7 @@ void func_ov003_021f8c20(void *arg0) {
     }
     temp_r1_4 = M2C_FIELD(temp_r5, s16 *, 4);
     var_r7 = M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r1_4;
-    temp_r0_6 = func_ov003_021f3fe4(func_020a8ff4(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
+    temp_r0_6 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
     if (var_r8 == 0) {
         if (temp_r0_6 > (s32) var_r7) {
             var_r7 += (s16) (((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));
@@ -331,7 +331,7 @@ void func_ov003_021f92f4(void *obj) {
     M2C_FIELD(obj,u16 *,0x40)=M2C_FIELD(*gCurrentMap,u16 *,0x5144)*4;
     M2C_FIELD(obj,u16 *,0x42)=M2C_FIELD(*gCurrentMap,u16 *,0x5146)*4;
     saved=gCur3DSpriteEngine;
-    gCur3DSpriteEngine=data_027e00c4;
+    gCur3DSpriteEngine=g3DSpriteEngineSub;
     func_020809c0(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c),17,2);
     func_0209b2b4(0,0,3,func_020cfbdc(id),0x9000,(u16)((((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*32+1));
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;

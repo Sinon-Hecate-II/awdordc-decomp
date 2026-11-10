@@ -277,8 +277,8 @@ void func_02076244(M2C_UNK arg0) {
     s32 func_0209c454(M2C_UNK, M2C_UNK);
     s32 func_0209c550(M2C_UNK);
     extern void *data_027e00bc;
-    extern void *data_027e00c4;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
     extern void *data_027e01d8;
     u16 *sp3C;
     u16 *sp38;
@@ -332,9 +332,9 @@ void func_02076244(M2C_UNK arg0) {
     temp_r5 = data_027e01d8;
     do {
         if (var_r6 == 0) {
-            var_r0 = data_027e00c8;
+            var_r0 = g3DSpriteEngineMain;
         } else {
-            var_r0 = data_027e00c4;
+            var_r0 = g3DSpriteEngineSub;
         }
         data_027e01d8 = var_r0;
         func_0208232c();
@@ -388,7 +388,7 @@ void func_02076244(M2C_UNK arg0) {
         sp8 = temp_r0_14;
         *temp_r0_14 = *sp8 & ~0x100;
     } while (var_r6 < 2);
-    data_027e01d8 = data_027e00c8;
+    data_027e01d8 = g3DSpriteEngineMain;
     temp_r4 = func_0209c454(arg0, 1);
     temp_r1 = 0xC0 - func_0209c550(arg0);
     temp_r0_15 = 0x100 - temp_r4;
@@ -399,8 +399,8 @@ void func_02076244(M2C_UNK arg0) {
     func_0209b2b4(0, 0, 1, arg0, 0, 1);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
     data_027e01d8 = temp_r5;
-    M2C_FIELD(data_027e00c8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e00c8, u8 *, 0x46) | 1);
-    M2C_FIELD(data_027e00c4, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e00c4, u8 *, 0x46) | 1);
+    M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) | 1);
+    M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 1);
     func_01ff9b38();
     func_01ff9ed0();
 loop_6:

@@ -21,7 +21,7 @@ void func_02089d30(void *arg0) {
     void func_020ab150(void *,s32);
     void func_020aad18(void *);
     void func_020a9a30(s32,s32,s32,s32);
-    extern s32 gCur3DSpriteEngine,data_027e00c4,data_027e00c8;
+    extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
     s32 previousEngine,engineIndex;
     s32 maxLength,offset,index,length,rows,width,height,state,mode;
     u32 flags,packed;
@@ -40,10 +40,10 @@ void func_02089d30(void *arg0) {
     func_02089cec(arg0);
     previousEngine=gCur3DSpriteEngine;
     for(engineIndex=0;engineIndex<2;engineIndex++){
-        gCur3DSpriteEngine=engineIndex==0?data_027e00c8:data_027e00c4;
+        gCur3DSpriteEngine=engineIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
         mode=(u32)(M2C_FIELD(arg0,u8 *,0x48)<<28)>>29;
-        if(mode==0&&gCur3DSpriteEngine!=data_027e00c8)continue;
-        if(mode==1&&gCur3DSpriteEngine!=data_027e00c4)continue;
+        if(mode==0&&gCur3DSpriteEngine!=g3DSpriteEngineMain)continue;
+        if(mode==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
         if(mode==3&&gCur3DSpriteEngine!=previousEngine)continue;
         maxLength=0;offset=M2C_FIELD(arg0,u16 *,0x3e)<<5;
         end=func_0209c658(M2C_FIELD(arg0,void **,0x70));

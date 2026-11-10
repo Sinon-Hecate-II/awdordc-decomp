@@ -24,8 +24,8 @@ void func_020c0278(void) {
     M2C_UNK func_02082cb4();
     M2C_UNK func_0208232c();
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_027e00c4;
-    extern s32 data_027e00c8;
+    extern s32 g3DSpriteEngineSub;
+    extern s32 g3DSpriteEngineMain;
     u16 *volatile ctx0;
     u16 *volatile ctx1;
     u16 *volatile ctx2;
@@ -38,7 +38,7 @@ void func_020c0278(void) {
     savedBank = gCur3DSpriteEngine;
     i = 0;
     do {
-        gCur3DSpriteEngine = i == 0 ? data_027e00c8 : data_027e00c4;
+        gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
         func_0208232c();
         ++i;
         ctx0 = *(u16 **)gCur3DSpriteEngine;

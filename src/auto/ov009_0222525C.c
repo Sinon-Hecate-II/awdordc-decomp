@@ -631,7 +631,7 @@ void func_ov009_02225dd4(void *arg0) {
 
 void func_ov009_02225e40(void *entity) {
 M2C_UNK func_020899fc(void *,u8,s32,s32);void *func_0208b564(void *);
-extern s32 data_027e00c4,data_027e00c8,gCur3DSpriteEngine;
+extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 void *created; u32 byte; s32 flags; s32 value; s32 i; s32 savedBank; u32 bank; s8 mode;
 if(M2C_FIELD(entity,s32 *,0x40)==0)return;
 if(func_0208b5ec())func_0208af20();
@@ -639,10 +639,10 @@ value=func_02086680(M2C_FIELD(entity,s32 *,0x38));
 flags=M2C_FIELD(entity,s32 *,0x3c);
 savedBank=gCur3DSpriteEngine;i=0;byte=flags;
 do {
-if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
+if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
 gCur3DSpriteEngine=bank;mode=M2C_FIELD(entity,s8 *,0x35);
-if(mode==0&&bank!=data_027e00c8)continue;
-if(mode==1&&bank!=data_027e00c4)continue;
+if(mode==0&&bank!=g3DSpriteEngineMain)continue;
+if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
 created=func_0208b564(entity);
 func_020899fc(created,byte,M2C_FIELD(entity,u16 *,0x36)<<5,value);

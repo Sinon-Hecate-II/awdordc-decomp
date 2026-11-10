@@ -82,14 +82,14 @@ void func_ov007_0221e6bc(void) {
 }
 
 void func_ov007_0221e6d0(void *arg0) {
-extern u16 **gCur3DSpriteEngine, **data_027e00c8;
+extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 extern s16 data_ov007_02220dd0[],data_ov007_02220d58[],data_ov007_02220d80[],data_ov007_02220da8[];
 void *func_020b22a4(s32,s32,void*,s32);
 void func_020b1c78(s32); void func_020b2158(s32);
 void func_02087d18(s32,s16,s16,s32,s32,u16,s32);
 void *saved=gCur3DSpriteEngine;
 s16 *table; s32 y, x, k, a, b, c; u8 i;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 y=0; k=0; table=data_ov007_02220dd0;
 do { x=0; do {
 void *p=func_020b22a4(x*table[2],y*table[3],table,k);
@@ -130,7 +130,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK func_020aeebc(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020e32e8(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c8;
+    extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK data_ov007_02220d40;
     extern M2C_UNK data_ov007_02220d4c;
     extern M2C_UNK data_ov007_02221980;
@@ -169,7 +169,7 @@ void func_ov007_0221e878(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s16 *, 0x12) = 0x250;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x21) = 0x16;
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020822b8(&data_ov007_02220d4c);
     temp_r0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp14 = temp_r0;
@@ -250,7 +250,7 @@ void func_ov007_0221ec34(void) {
     func_020af1f8();
 }
 
-extern u16 **data_027e00c8;
+extern u16 **g3DSpriteEngineMain;
 extern u16 **data_027e01d8;
 extern u16 **gCur3DSpriteEngine;
 void func_ov007_0221ec40(void *arg0) {
@@ -259,7 +259,7 @@ void func_ov007_0221ec40(void *arg0) {
     M2C_UNK func_0209b67c(u16, M2C_UNK, u16, u16, s32);
     s32 func_0209c268(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c8;
+    extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK data_ov007_02221e0c;
     extern M2C_UNK data_ov007_02221e10;
     u16 **sp8;
@@ -270,8 +270,8 @@ void func_ov007_0221ec40(void *arg0) {
     u16 temp_r5;
 
     sp8 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
-    func_0208df84(M2C_FIELD(arg0, s16 *, 0x3E), M2C_FIELD(arg0, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**data_027e00c8 << 0x11) >> 0x1E))) | 0x1000), 0);
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    func_0208df84(M2C_FIELD(arg0, s16 *, 0x3E), M2C_FIELD(arg0, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**g3DSpriteEngineMain << 0x11) >> 0x1E))) | 0x1000), 0);
     var_r6 = 0x10;
     var_r8 = 0x4D00;
     var_r9 = 0;

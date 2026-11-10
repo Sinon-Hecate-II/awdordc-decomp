@@ -303,11 +303,11 @@ u16 func_020a8f4c(s32 arg0) {
     return (u16) (arg0 - (func_020848c4() * 0x32));
 }
 
-void func_020a8f8c(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
+void UpdateSpriteAnimation(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
 
-s16 func_020a8ff4(void *arg0) {
+s16 GetSpriteAnimValue(void *arg0) {
     s32 func_0207c8ec();
-    extern M2C_UNK data_020e5b30;
+    extern M2C_UNK gSinCosTable;
     s16 temp_ip;
     s16 temp_ip_2;
     s16 var_r0;
@@ -339,7 +339,7 @@ s16 func_020a8ff4(void *arg0) {
         u16 u = M2C_FIELD(arg0, u16 *, 2);
         s16 a = M2C_FIELD(arg0, s16 *, 0xA);
         s16 base = M2C_FIELD(arg0, s16 *, 8);
-        s16 val = *(s16 *)((s8 *)&data_020e5b30 + ((s32)(u >> 4) << 2));
+        s16 val = *(s16 *)((s8 *)&gSinCosTable + ((s32)(u >> 4) << 2));
         return (s16)(base + (a * val * 0x10 >> 0x10));
     }
     case 2:
@@ -355,7 +355,7 @@ void func_020a9188(void *arg0, u16 arg1) {
 }
 
 void func_020a91a8(void *arg0) {
-void func_020a8f8c(void *);
+void UpdateSpriteAnimation(void *);
 void func_020a9218(void *);
 u8 *p;
 if(M2C_FIELD(arg0,u8 *,14)||M2C_FIELD(arg0,u8 *,15))return;
@@ -365,7 +365,7 @@ func_020a9218(arg0);
 p=M2C_FIELD(arg0,u8 **,8)+12;
 M2C_FIELD(arg0,u8 **,8)=p;
 if(M2C_FIELD(p,s32 *,4)==-1) M2C_FIELD(arg0,u8 *,15)=1;
-}else func_020a8f8c(M2C_FIELD(arg0,void **,0));
+}else UpdateSpriteAnimation(M2C_FIELD(arg0,void **,0));
 }
 
 void func_020a9218(void *arg0) {

@@ -93,18 +93,18 @@ s8 func_ov003_0220bf68(void *arg0) {
 
 void func_ov003_0220bf70(void) {
     M2C_UNK func_01ff9d88(M2C_UNK);
-    extern void *data_027e00c4;
+    extern void *g3DSpriteEngineSub;
     func_01ff9d88(1);
-    M2C_FIELD(data_027e00c4, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e00c4, u8 *, 0x46) | 2);
+    M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 2);
 }
 
 void func_ov003_0220bf98(void *a) {
-M2C_UNK func_020a8f8c(s32);M2C_UNK func_ov003_022084f0(void *);
+M2C_UNK UpdateSpriteAnimation(s32);M2C_UNK func_ov003_022084f0(void *);
 s32 offset,flag,i;
-func_020a8f8c(M2C_FIELD(a,s32 *,0x54));
+UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x54));
 flag=M2C_FIELD(a,u8 *,0x34)!=0;
 if((u8)flag){func_ov003_022084f0(a);return;}
-func_020a8f8c(M2C_FIELD(a,s32 *,0x50));
+UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x50));
 i=0;if((s32)*M2C_FIELD(a,u8 **,0x44)<=0)return;
 offset=0;do {
 void *p=(u8 *)M2C_FIELD(a,void **,0x48)+offset;
@@ -164,7 +164,7 @@ void func_ov003_0220c10c(void *arg0) {
 #pragma opt_propagation reset
 
 void func_ov003_0220c190(void *arg,s32 index){
-extern void *data_027e00c4;
+extern void *g3DSpriteEngineSub;
 s32 func_020bee64(s32);
 u8 *p=arg,*q,*entry; s32 type,value,flag;void *ptr;u32 n;
 p[0x38]|=2;
@@ -178,14 +178,14 @@ n=ptr?M2C_FIELD(ptr,u16*,8):-1;
 if((u8)(n-11)==1 && !func_020bee64(8)){type=2;value=5;}
 }
 switch(type){
-case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(data_027e00c4,u8*,0x46)|=2;func_0208fe30(0x1000d);break;
+case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;func_0208fe30(0x1000d);break;
 case 2:func_020d47d0();func_020d885c(value);func_ov003_0220828c(p,0,(u8)index);func_01ffa6fc(p);func_0208fe30(0x1000e);break;
 case 3:switch(entry[2]){case 0:case 1:case 2:func_0208fe30(0x1000d);func_ov003_0220c414(p,1);func_020b4db0(value,p);break;case 3:func_0208fe30(0x1000d);func_ov003_0220c414(p,3);func_020b4e10(p);break;}break;
 }
 }
 
 void func_ov003_0220c328(void *arg0, int arg1) {
- extern void *data_027e00c4;
+ extern void *g3DSpriteEngineSub;
  u8 *p=arg0; u8 *q; int v; u8 a,b;
  p[0x38]&=~2;
  q=*(u8 **)(p+0x3c); v=q[0x10];
@@ -193,7 +193,7 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  if((u8)((((unsigned int)p[0x36]<<24)>>28)==1) || (u8)((((unsigned int)p[0x36]<<24)>>28)==2)){p[0x35]=1;func_020d47f0();func_01ffa6fc(p);}
  p[0x38]&=~8;
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;
- if(v!=16){p[0x34]=30;func_ov003_0220a698(p,v);func_ov003_0220828c(p,5,255);func_01ff9d88(1);M2C_FIELD(data_027e00c4,u8 *,0x46)|=2;}
+ if(v!=16){p[0x34]=30;func_ov003_0220a698(p,v);func_ov003_0220828c(p,5,255);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
  else {func_020d47f0();func_01ffa6fc(p);}
 }
 

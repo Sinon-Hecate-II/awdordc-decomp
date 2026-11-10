@@ -528,9 +528,9 @@ u8 func_02082078(void) {
 u16 func_02082088(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
 
 void func_02082098(u32 arg0,u32 arg1) {
-extern void *gCur3DSpriteEngine; extern void *data_027e00c8;
+extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
 u8 b; u32 base; u32 index; void *engine; u32 bits; u16 *p; u32 old;
-if(gCur3DSpriteEngine==data_027e00c8)b=1;else b=0;
+if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;
 if(b==1)base=0x06000000;else base=0x06200000;
 M2C_FIELD((u8 *)gCur3DSpriteEngine+arg0*4,u32 *,12)=base+(arg1<<14);
 engine=gCur3DSpriteEngine; index=arg0*2;
@@ -561,7 +561,7 @@ void func_02082134(s32 arg0, u32 arg1) {
 
 void func_02082164(u8 *arg0) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern void *data_027e00bc;
     u8 *r4;
     u16 *p;
@@ -597,7 +597,7 @@ void func_02082164(u8 *arg0) {
         *p = (t2 & ~0x6000) | bits;
     }
 
-    if (gCur3DSpriteEngine == data_027e00c8) {
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
         q = (u16 *)data_027e00bc;
         {
             u8 t1 = r4[1];
@@ -621,7 +621,7 @@ void func_02082164(u8 *arg0) {
 
 M2C_UNK func_020822b8(M2C_UNK *a) {
     extern void *gCur3DSpriteEngine;
-    extern void *data_027e00c8;
+    extern void *g3DSpriteEngineMain;
     extern u8 data_02152cdc[];
     extern u8 data_0214ecdc[];
     void func_02082164(u8 *);
@@ -629,7 +629,7 @@ M2C_UNK func_020822b8(M2C_UNK *a) {
     u8 r;
     s32 i;
 
-    if (gCur3DSpriteEngine == data_027e00c8) {
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
         r = 1;
     } else {
         r = 0;

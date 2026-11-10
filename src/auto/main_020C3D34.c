@@ -14,7 +14,7 @@ void func_020c3d34(void) {
 extern void **gCurrentMap;
 extern void *data_02164094;
 extern u16 **gCur3DSpriteEngine;
-extern u16 **data_027e00c4;
+extern u16 **g3DSpriteEngineSub;
 extern const SetupColors data_020f4df4;
 extern const SetupNames data_020f4e08;
 extern u8 data_0212a464[],data_0212a46c[],data_0212a478[],data_0212a484[],data_0212a490[],data_0212a49c[];
@@ -43,7 +43,7 @@ M2C_FIELD(data_02164094,s16*,0x24)=16;
 M2C_FIELD(data_02164094,s16*,0x1e)=22;
 M2C_FIELD(data_02164094,s16*,0x22)=138;
 func_0200bc5c(data_0212a464);
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 func_020822b8(colors.half);
 {u16 * volatile p0=*gCur3DSpriteEngine+0;*p0=(*p0&~0)|16;}
 {u16 * volatile p1=*gCur3DSpriteEngine+0;*p1=(*p1&~0)|32;}
@@ -104,7 +104,7 @@ func_020675e4(buf,data_0212a4c0,color);
 func_0208116c(buf,704,32);
 func_020675e4(buf,data_0212a4cc,color);
 func_020814e4(func_020e3218(data_0212a4d8));
-func_02081590(func_020e3218(buf),(u8*)M2C_FIELD(data_027e00c4,void**,28)+2048);
+func_02081590(func_020e3218(buf),(u8*)M2C_FIELD(g3DSpriteEngineSub,void**,28)+2048);
 func_02081528();
 func_02007e98(0,M2C_FIELD(gCur3DSpriteEngine,void**,24),64);
 func_020985b0(M2C_FIELD(data_02164094,s16*,8),8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,24)+64);
@@ -129,7 +129,7 @@ void func_020c46b4(void) {
  M2C_UNK func_020e35cc(void *);
  extern void *data_02164094;
  extern u16 **gCur3DSpriteEngine;
- extern u16 **data_027e00c4;
+ extern u16 **g3DSpriteEngineSub;
  u16 **old;
  u16 * volatile sp8;
  u16 * volatile sp4;
@@ -139,7 +139,7 @@ void func_020c46b4(void) {
   data_02164094 = 0;
  }
  old = gCur3DSpriteEngine;
- gCur3DSpriteEngine = data_027e00c4;
+ gCur3DSpriteEngine = g3DSpriteEngineSub;
  sp8 = *gCur3DSpriteEngine;
  *sp8 = (*sp8 & ~0x200);
  sp4 = *gCur3DSpriteEngine;

@@ -7,7 +7,7 @@ static inline u8 Unk02212184Visible(u8 *p) { return M2C_FIELD(M2C_FIELD(p,u8 **,
 
 
 void func_020b3a80(void *);
-int func_020a8ff4(void *);
+int GetSpriteAnimValue(void *);
 int func_0207c928(int,int);
 void func_01ff9ce8(int);
 int func_020b3960(void *,s16);
@@ -23,8 +23,8 @@ void func_02008048(void *,void *,int);
 void func_02019e64(void *,int,void *,int,int);
 void func_020e4cd8(void *,void *,void *,int,int,int,int);
 extern u8 *gCur3DSpriteEngine;
-extern u8 *data_027e00c8;
-extern u32 data_027e00c4;
+extern u8 *g3DSpriteEngineMain;
+extern u32 g3DSpriteEngineSub;
 extern u8 data_ov006_022186b4[],data_ov006_022186d0[];
 extern u16 data_ov006_022183e0[];
 int func_02001fb4(int,int);
@@ -50,11 +50,11 @@ int h,g,f,e,d,c,b,a; int art=0x212; int ytop,chartop,left,right; u32 width,heigh
 u8 *widget,*record; s64 product; s16 pos;
 char name[13];u16 text[13];char digits[13];u64 id;
 func_020b3a80(M2C_FIELD(p,void **,0x4c));
-x=func_020a8ff4(M2C_FIELD(p,void **,0x48));
+x=GetSpriteAnimValue(M2C_FIELD(p,void **,0x48));
 y=(s16)func_0207c928(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,0x12),M2C_FIELD(M2C_FIELD(p,void **,0x4c),u8 *,7));
 offset=y>0?-M2C_FIELD(M2C_FIELD(p,void **,0x4c),u8 *,7):0;
 save=gCur3DSpriteEngine;
-gCur3DSpriteEngine=data_027e00c8;
+gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=-x;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=-y;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x38)=-x;
@@ -154,7 +154,7 @@ yy=M2C_FIELD(widget,s16 *,0x52);xx=M2C_FIELD(widget,s16 *,0x50);
 width=func_020aae10(widget);height=func_020aae44(widget);
 func_02087d84(M2C_FIELD(widget,void **,0x64),1,xx,yy,(u16)width,(u16)height);
 }
-gCur3DSpriteEngine=(u8 *)data_027e00c4;
+gCur3DSpriteEngine=(u8 *)g3DSpriteEngineSub;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=-x;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x38)=-x;

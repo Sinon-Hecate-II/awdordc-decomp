@@ -7,7 +7,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_01ffa574();
     u8 func_01ffa6fc(void *);
-    s32 func_0207ca38(s32, s32, M2C_UNK, s32, s32);
+    s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
     M2C_UNK func_ov011_022257b4(void *);
     M2C_UNK func_ov011_022257c4(void *);
     M2C_UNK func_ov011_0222588c(void *);
@@ -16,8 +16,8 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_ov011_02225a9c(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     extern u16 *data_02101e84;
     extern void *data_02101e88;
-    extern u16 **data_027e00c4;
-    extern u16 **data_027e00c8;
+    extern u16 **g3DSpriteEngineSub;
+    extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
     u16 *volatile sp7C;
     u16 *volatile sp78;
@@ -100,7 +100,7 @@ u32 func_ov011_02226658(void *arg0) {
     u8 temp_r2_8;
 
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c8;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) < 0x29CCU) {
         if ((u32) M2C_FIELD(arg0, u8 *, 0x37) >= 0xC8U) {
             M2C_FIELD(arg0, u8 *, 0x37) = 0U;
@@ -155,7 +155,7 @@ u32 func_ov011_02226658(void *arg0) {
             *sp5C = (s16) (*sp5C & ~8);
             sp58 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp58 = (s16) ((*sp58 & ~0x10) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1D) >> 0x1F) << 0x1F) >> 0x1B));
-            temp_r0_6 = func_0207ca38(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x37), 0x1E);
+            temp_r0_6 = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x37), 0x1E);
             M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_6;
             sp54 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp54 = (s16) ((*sp54 & ~0xC0) | 0x40);
@@ -193,7 +193,7 @@ u32 func_ov011_02226658(void *arg0) {
                 *sp2C = (s16) (*sp2C | 0x1000);
                 sp28 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp28 = (s16) (*sp28 & ~0x2000);
-                temp_r0_14 = func_0207ca38(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
+                temp_r0_14 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
                 M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_14;
                 sp24 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp24 = (s16) ((*sp24 & ~0xC0) | 0x40);
@@ -210,7 +210,7 @@ u32 func_ov011_02226658(void *arg0) {
                 *sp14 = (s16) (*sp14 & ~8);
                 sp10 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp10 = (s16) ((*sp10 & ~0x10) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1C) >> 0x1F) << 0x1F) >> 0x1B));
-                temp_r0_16 = func_0207ca38(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
+                temp_r0_16 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
                 M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_16;
                 spC = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *spC = (s16) ((*spC & ~0xC0) | 0x40);
@@ -219,7 +219,7 @@ u32 func_ov011_02226658(void *arg0) {
             }
         }
     }
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_ov011_02225a9c(arg0, -0x68, 0, 0);
     func_ov011_02225a9c(arg0, 0, 0, 1);
     func_ov011_02225a9c(arg0, -0x68, 0, 2);
@@ -235,7 +235,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     gCur3DSpriteEngine = temp_r4;
     if (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0) {
-        gCur3DSpriteEngine = data_027e00c8;
+        gCur3DSpriteEngine = g3DSpriteEngineMain;
         func_ov011_02225a24(arg0, M2C_FIELD(data_02101e88, u16 *, 0), M2C_FIELD(data_02101e88, u16 *, 2));
         gCur3DSpriteEngine = temp_r4;
     }
@@ -253,13 +253,13 @@ u32 func_ov011_02226658(void *arg0) {
         sp4 = gCur3DSpriteEngine;
         do {
             if (var_r9 == 0) {
-                var_r0 = data_027e00c8;
+                var_r0 = g3DSpriteEngineMain;
             } else {
-                var_r0 = data_027e00c4;
+                var_r0 = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = var_r0;
             var_r9 += 1;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u8 *, 0x50) = func_0207ca38(0, 0, -0x10, M2C_FIELD(arg0, u8 *, 0x38), 0x1E);
+            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u8 *, 0x50) = EaseInterpolate(0, 0, -0x10, M2C_FIELD(arg0, u8 *, 0x38), 0x1E);
         } while (var_r9 < 2);
         gCur3DSpriteEngine = sp4;
     }
@@ -281,8 +281,8 @@ u32 func_ov011_02226658(void *arg0) {
         var_r5 += 1;
     } while (var_r5 < 3);
     temp_r1_8 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
-    temp_r0_17 = *data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    temp_r0_17 = *g3DSpriteEngineSub;
     sp8 = (u16 *)((u8 *)temp_r0_17 + 0x12);
     *sp8 = (*sp8 & ~0xC0) | 0x40;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x51) = 0x10;
@@ -292,7 +292,7 @@ u32 func_ov011_02226658(void *arg0) {
 }
 #pragma opt_common_subs reset
 void func_ov011_02227048(void *a){
-s32 func_ov011_02226550(s32 *,s32);extern u16 **data_027e00c4,**data_027e00c8,**gCur3DSpriteEngine;extern s32 data_ov011_02228c30;
+s32 func_ov011_02226550(s32 *,s32);extern u16 **g3DSpriteEngineSub,**g3DSpriteEngineMain,**gCur3DSpriteEngine;extern s32 data_ov011_02228c30;
 u16 *volatile p0;
 u16 *volatile p1;
 u16 *volatile p2;
@@ -315,7 +315,7 @@ u16 *volatile p18;
 u16 *volatile p19;
 u16 **old;u16 *p;
 if(((TransitionFlags *)((u8 *)a+0x34))->active)M2C_FIELD(a,u8 *,0x38)=0;
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 p=*gCur3DSpriteEngine;M2C_FIELD(p,u16 *,6)=(M2C_FIELD(p,u16 *,6)&~3)|0;
 p=*gCur3DSpriteEngine;M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~3)|1;
 p=*gCur3DSpriteEngine;M2C_FIELD(p,u16 *,10)=(M2C_FIELD(p,u16 *,10)&~3)|2;
@@ -335,7 +335,7 @@ p11=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*p11=*p11&~512;
 p12=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*p12=*p12&~1024;
 p13=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*p13=*p13|2048;
 p14=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*p14=*p14&~4096;
-gCur3DSpriteEngine=data_027e00c4;
+gCur3DSpriteEngine=g3DSpriteEngineSub;
 p15=*gCur3DSpriteEngine;*p15=*p15|16;
 p16=*gCur3DSpriteEngine;*p16=*p16&~32;
 p17=*gCur3DSpriteEngine;*p17=*p17|64;

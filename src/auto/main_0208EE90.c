@@ -397,12 +397,12 @@ s32 func_0208fa3c(void) {
 
 s32 func_0208fa78(s32 a,s32 b){
  void func_02079c6c(s32,s32,s32*);
- s32 func_0207ca38(s32,s32,s32,s32,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32);
  s32 v[3];
  func_02079c6c(a,b,v);
  if(v[0]<0)return -32;
  if(v[0]>256)return 32;
- return func_0207ca38(0,-32,32,v[0],256);
+ return EaseInterpolate(0,-32,32,v[0],256);
 }
 
 void func_0208facc(M2C_UNK arg0) {

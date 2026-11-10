@@ -24,7 +24,7 @@ void func_020ad78c(void) {
 
     extern s32 data_0215c428;
     extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c4;
+    extern u16 **g3DSpriteEngineSub;
     typedef struct { void *p; s32 pad; } E8;
     extern E8 data_02127c08[];
     extern char data_02127d8c[];
@@ -38,7 +38,7 @@ void func_020ad78c(void) {
     M2C_UNK h;
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020ad67c();
     func_01ff9ce8((u8)func_020ad690());
 
@@ -110,7 +110,7 @@ void func_020ad9b8(M2C_UNK a0) {
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
 
     extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c4;
+    extern u16 **g3DSpriteEngineSub;
     extern s32 data_0215c428;
     extern char data_02127da0[];
     extern char data_02127dac[];
@@ -118,7 +118,7 @@ void func_020ad9b8(M2C_UNK a0) {
     u16 **saved;
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020ad968();
 
     {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x10;}
@@ -157,7 +157,7 @@ void func_020ad9b8(M2C_UNK a0) {
     func_020ad78c();
 
     func_02080cfc(func_020e3218((M2C_UNK)data_02127da0),
-        (M2C_UNK)(*(u32 *)((u8 *)data_027e00c4 + 0x1c) + 0x2800));
+        (M2C_UNK)(*(u32 *)((u8 *)g3DSpriteEngineSub + 0x1c) + 0x2800));
     func_0208116c((M2C_UNK)data_02127dac, 0x2c0, 0x20);
 
     func_020ad6f0();
@@ -194,19 +194,19 @@ u8 func_020adc4c(void) {
 /* Swaps in the primary display list, emits four corner sprites whose tile depends on the
    current list's mode bits, then restores the previous display list. */
 void func_020adc78(void) {
-    M2C_UNK func_01ffaacc(M2C_UNK, M2C_UNK, u16, M2C_UNK *, s32);
+    M2C_UNK AddSprite(M2C_UNK, M2C_UNK, u16, M2C_UNK *, s32);
     extern M2C_UNK data_02101f0c;
-    extern u16 **data_027e00c4;
+    extern u16 **g3DSpriteEngineSub;
     extern u16 **gCur3DSpriteEngine;
     u16 **saved_list;
 
     saved_list = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (func_020adc4c() != 0) {
-        func_01ffaacc(0x7C, 0xB0, (u16) ((0x3FF & (0x140 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        func_01ffaacc(0xBC, 0xB0, (u16) ((0x3FF & (0x148 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        func_01ffaacc(0x7C, 0xB8, (u16) ((0x3FF & (0x150 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        func_01ffaacc(0xBC, 0xB8, (u16) ((0x3FF & (0x158 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite(0x7C, 0xB0, (u16) ((0x3FF & (0x140 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite(0xBC, 0xB0, (u16) ((0x3FF & (0x148 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite(0x7C, 0xB8, (u16) ((0x3FF & (0x150 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite(0xBC, 0xB8, (u16) ((0x3FF & (0x158 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
     }
     gCur3DSpriteEngine = saved_list;
 }
@@ -217,12 +217,12 @@ void func_020adde0(void) {
     void func_020d8f1c(s16, s32);
     s32 func_020ad690(void);
     void func_020ad74c(void);
-    s32 func_0207ca38(s32, s32, s32, s32, s32);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void func_020ad6f0(void);
 
     extern s32 data_0215c428;
     extern u16 **gCur3DSpriteEngine;
-    extern u16 **data_027e00c4;
+    extern u16 **g3DSpriteEngineSub;
 
     s16 v;
     u16 **saved;
@@ -241,7 +241,7 @@ void func_020adde0(void) {
     }
 
     saved = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = data_027e00c4;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
 
     switch (((s16 *)data_0215c428)[3]) {
     case 0:
@@ -273,7 +273,7 @@ void func_020adde0(void) {
     *((u16 *)((char *)*gCur3DSpriteEngine + 0x40 + (idx << 1))) = 0;
 
     pp = (s16 *)data_0215c428;
-    res = func_0207ca38(4, 0x100, 0, pp[3], pp[4]);
+    res = EaseInterpolate(4, 0x100, 0, pp[3], pp[4]);
 
     ((s16 *)data_0215c428)[5] = res;
     ((s16 *)data_0215c428)[3] = ((s16 *)data_0215c428)[3] + 1;
@@ -461,8 +461,8 @@ return (r&31)|((g&31)<<5)|((bl&31)<<10);
 }
 
 void func_020ae46c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    void func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020ae548(arg0, arg1, arg2, arg3, 0x20);
+    void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    BlendPalette(arg0, arg1, arg2, arg3, 0x20);
 }
 
 void func_020ae480(u16 *p,s32 a,s32 b,s32 c) {
@@ -480,11 +480,11 @@ if(r>31)r=31;if(g>31)g=31;if(bl>31)bl=31;
 }
 
 void func_020ae528(M2C_UNK arg0) {
-    void func_020ae548(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020ae548(arg0, 0, 8, 8, 0x20);
+    void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    BlendPalette(arg0, 0, 8, 8, 0x20);
 }
 
-void func_020ae548(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=func_020ae354(*p,a,b,c);p++;}}
+void BlendPalette(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=func_020ae354(*p,a,b,c);p++;}}
 
 u16 func_020ae5a0(u16 a) {
 u16 r=a&31,g=(a&0x3e0)>>5,b=(a&0x7c00)>>10;
