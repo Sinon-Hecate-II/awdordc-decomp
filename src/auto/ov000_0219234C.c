@@ -17,8 +17,8 @@ extern s8 data_ov000_021b55a0[];
 #pragma opt_strength_reduction off
 #pragma opt_peephole off
 void func_ov000_0219234c(void *arg0) {
-void func_01ffb554(void *);void func_01ffada0(s32,s32,u32,s32,s32);
-s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a8fc0(u32);s32 func_ov000_021a8ff0(u32);
+void SelectMapLayer(void *);void func_01ffada0(s32,s32,u32,s32,s32);
+s32 func_ov000_021a9d8c(s16,s16);s32 IsCurrentPlayerUnit(u32);s32 func_ov000_021a8ff0(u32);
 s32 func_ov000_02178518(s32,s32,s16 *);s32 func_ov000_0217bd44(s32,s32,s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a97e0(u32,u32);s32 func_020d27ec(u32,u32);
@@ -26,7 +26,7 @@ void *unit; s32 ux,uy,range,n,d,score,bestX,bestY,candX,candY;void *m,*p; s8 *co
 m=MAP;d=M2C_FIELD(SEL,u8 *,12);unit=m+0x59a4+d*14;if(!d)return;
 d=M2C_FIELD(unit,u16 *,8);uy=(u32)(d<<20)>>26;n=M2C_FIELD(m+uy*2,u16 *,0x3758);ux=(u32)(d<<26)>>26;d=M2C_FIELD(m+(n+ux),u8 *,0x1420);
 if(((d&0xe0)&&(d&31)!=15)||
-(func_ov000_021a9d8c((s16)ux,(s16)uy)&&!func_ov000_021a8fc0(M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)))){
+(func_ov000_021a9d8c((s16)ux,(s16)uy)&&!IsCurrentPlayerUnit(M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)))){
 M2C_FIELD(unit,u8 *,11)&=~15;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|63;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|0xfc0;
@@ -45,7 +45,7 @@ M2C_FIELD(SEL,u8 *,11)&=~15;
 M2C_FIELD(unit,u8 *,11)=(M2C_FIELD(unit,u8 *,11)&~15)|1;
 SetMapCursor(point[0],point[1],8,(u8)d,0);
 }
-func_01ffb554(MAP+0x2338);
+SelectMapLayer(MAP+0x2338);
 range=func_ov000_021a97e0(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 func_01ffada0(ux,uy,KIND(unit),range,0);
 { s32 sx,sy,nx,ny,lx,ly,hx,hy,invalid;
@@ -71,7 +71,7 @@ if(table[M2C_FIELD(p,u8 *,18)*32+(TILE(nx,ny)&31)]!=invalid)cost[nx]=(s8)range;
 }
 }
 { s32 bestD,y,x,bestScore;
-func_01ffb554(MAP+0x1e30);
+SelectMapLayer(MAP+0x1e30);
 bestX=-1;bestY=-1;candX=-1;candY=-1;bestD=32767;bestScore=-1;
 for(y=0;y<M2C_FIELD(MAP,u16 *,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16 *,0x5144);x++){
 if(M2C_FIELD(M2C_FIELD(MAP+y*4,s8 **,0x52e8),s8 *,x)<0||func_ov000_021a9d8c((s16)x,(s16)y)|| (func_ov000_021a8ff0(TILE(x,y))&&M2C_FIELD(MAP+x+ROW(y),u8 *,0x508))||CELL(x,y,0x2338)<0||!func_ov000_02178518(x,y,point))continue;

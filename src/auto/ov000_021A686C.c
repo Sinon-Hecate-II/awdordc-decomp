@@ -3,11 +3,11 @@
 
 s32 func_ov000_021a686c(void) {
  extern s32 *gCurrentMap;
- extern u8 *data_ov000_021df578;
- extern M2C_UNK data_ov000_021e00ac;
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates;
  u8 *p; s32 i,rank,best,result;
- rank=0;i=0;best=32767;result=-1;p=(u8 *)&data_ov000_021e00ac;
- for(;i<*data_ov000_021df578;i++,p+=12) {
+ rank=0;i=0;best=32767;result=-1;p=(u8 *)&gAiTargetCandidates;
+ for(;i<*gAiState;i++,p+=12) {
  if(p[3]<252 && p[2]==2) {
  s32 base=*gCurrentMap;
  s32 off=base+p[0];
@@ -24,8 +24,8 @@ s32 func_ov000_021a686c(void) {
 s32 func_ov000_021a6940(void) {
  s32 func_ov000_021a4e08(u8,u8,s32);
  extern s32 *data_027e0058;
- extern u8 *data_ov000_021df578;
- extern M2C_UNK data_ov000_021e00ac;
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates;
  u8 *p;
  s32 i;
  s32 base;
@@ -34,25 +34,25 @@ s32 func_ov000_021a6940(void) {
  s8 v;
  u8 x;
  s32 best;
- best=0;result=-1;p=(u8 *)&data_ov000_021e00ac;
+ best=0;result=-1;p=(u8 *)&gAiTargetCandidates;
  func_ov000_021a581c();
  i=0;
- if((s32)*data_ov000_021df578>0) do {
+ if((s32)*gAiState>0) do {
  if(p[3]<252 && p[2]==3) {
  y=p[1];base=*data_027e0058;x=p[0];
  v=M2C_FIELD(M2C_FIELD(base+y*2,u16 *,0x3758)+(base+x),s8 *,0x2338);
  if(best < v && func_ov000_021a4e08(x,y,23)<60){best=v;result=i;}
  }
  ++i;p+=12;
- }while(i<*data_ov000_021df578);
+ }while(i<*gAiState);
  return result;
 }
 
 s32 func_ov000_021a6a00(void) {
  s32 func_ov000_021a4e08(u8,u8,s32);
  extern s32 *gCurrentMap;
- extern u8 *data_ov000_021df578;
- extern M2C_UNK data_ov000_021e00ac;
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates;
  u8 *p;
  s32 i;
  s32 base;
@@ -61,10 +61,10 @@ s32 func_ov000_021a6a00(void) {
  s8 v;
  u8 x;
  u8 y;
- best=126; result=-1; p=(u8 *)&data_ov000_021e00ac;
+ best=126; result=-1; p=(u8 *)&gAiTargetCandidates;
  func_ov000_021a5b28();
  i=0;
- if((s32)*data_ov000_021df578 > 0) do {
+ if((s32)*gAiState > 0) do {
  if(p[3] < 252 && p[2] == 3) {
  y=p[1]; base=*gCurrentMap; x=p[0];
  v=M2C_FIELD(M2C_FIELD(base+y*2, u16 *, 0x3758)+(base+x), s8 *, 0x2338);
@@ -73,7 +73,7 @@ s32 func_ov000_021a6a00(void) {
  }
  }
  i++; p+=12;
- } while(i < *data_ov000_021df578);
+ } while(i < *gAiState);
  return result;
 }
 
@@ -81,10 +81,10 @@ s32 func_ov000_021a6a00(void) {
 s32 func_ov000_021a6ac0(void) {
   void func_01ffada0(s32,s32,s32,s32,s32);
   void func_ov000_021a5f50(void);
-  s32 func_020d27c0(s32);
+  s32 IsUnitOnCurrentTeam(s32);
   extern s32 *gCurrentMap;
-  extern u8 *data_ov000_021df578;
-  extern M2C_UNK data_ov000_021e00ac;
+  extern u8 *gAiState;
+  extern M2C_UNK gAiTargetCandidates;
   extern u8 data_ov000_021b5bfc[];
   u8 *p;
   s32 base;
@@ -98,10 +98,10 @@ s32 func_ov000_021a6ac0(void) {
   s32 x;
   best=126;
   result=-1;
-  p=(u8 *)&data_ov000_021e00ac;
+  p=(u8 *)&gAiTargetCandidates;
   func_ov000_021a5f50();
   i=0;
-  if((s32)*data_ov000_021df578>0) do {
+  if((s32)*gAiState>0) do {
   if(p[3]<252 && p[2]==3) {
   y=p[0];base=*gCurrentMap;x=p[1];
   v=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),s8 *,0x2338);
@@ -114,7 +114,7 @@ s32 func_ov000_021a6ac0(void) {
   id=M2C_FIELD(M2C_FIELD(base+x*2,u16 *,0x3758)+(base+y),u8 *,0);
   unit=(u8 *)(base+0x59a4)+id*14;
   if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)!=23)continue;
-  if(func_020d27c0(id)!=0)continue;
+  if(IsUnitOnCurrentTeam(id)!=0)continue;
   if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>=50)goto next;
   }
   }
@@ -122,19 +122,19 @@ s32 func_ov000_021a6ac0(void) {
   }
   }
   next: i++;p+=12;
-  } while(i<*data_ov000_021df578);
+  } while(i<*gAiState);
   return result;
 }
 #pragma opt_strength_reduction on
 s32 func_ov000_021a6c8c(void) {
  extern s32 *gCurrentMap;
- extern u8 *data_ov000_021df578;
- extern M2C_UNK data_ov000_021e00ac;
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates;
  u8 *p;
  s32 best,result,i;
- best=32767; result=-1; p=(u8 *)&data_ov000_021e00ac;
+ best=32767; result=-1; p=(u8 *)&gAiTargetCandidates;
  func_ov000_021998f0();
- for(i=0;i<*data_ov000_021df578;i++,p+=12) {
+ for(i=0;i<*gAiState;i++,p+=12) {
  if(p[3]<252 && p[2]==3 && best>=p[7]) {
  s32 base=*gCurrentMap;
  s32 off=base+p[0];
@@ -145,24 +145,24 @@ s32 func_ov000_021a6c8c(void) {
  return result;
 }
 
-extern unsigned char *data_ov000_021df578;
-extern int data_ov000_021e00ac;
+extern unsigned char *gAiState;
+extern int gAiTargetCandidates;
 extern int *gCurrentMap;
 int func_ov000_021a6d4c(void) {
 unsigned char *entry; int i; int min; int result;
-min=0x7fff;result=-1;entry=(unsigned char *)&data_ov000_021e00ac;
-for(i=0;i<data_ov000_021df578[0];i++,entry+=12) {
+min=0x7fff;result=-1;entry=(unsigned char *)&gAiTargetCandidates;
+for(i=0;i<gAiState[0];i++,entry+=12) {
 if(entry[3]<0xfc && func_ov000_021a4e08(entry[0],entry[1],7)<60 && entry[2]==1) {
 int value=(*(signed char **)((unsigned char *)gCurrentMap[0]+0x5000+entry[1]*4+0x2e8))[entry[0]];
 if(min>value){min=value;result=i;}
 }}return result;}
 
 s32 func_ov000_021a6e08(s32 a) {
- extern u8 *data_ov000_021df578;
- extern M2C_UNK data_ov000_021e00ac;
- u8 *p=(u8 *)&data_ov000_021e00ac;
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates;
+ u8 *p=(u8 *)&gAiTargetCandidates;
  s32 i;
- for(i=0;i<*data_ov000_021df578;i++,p+=12) {if(a==4 || p[2]==a)return 1;}
+ for(i=0;i<*gAiState;i++,p+=12) {if(a==4 || p[2]==a)return 1;}
  return 0;
 }
 
@@ -211,9 +211,9 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  s32 v,t; s32 func_0207c8ec(s32,s32);
  if(a==3 && func_ov000_021a98a8(b))a=1;
  if(a==6 && func_ov000_021a98a8(b))a=7;
- if(func_ov000_021a98a8(b))v=func_ov000_021a96a8(a,b,1)>>1;
- else if(b==22){t=func_ov000_021a96a8(a,b,1);v=func_ov000_021a96f4(a,b,1)+(t>>1);}
- else v=func_ov000_021a96a8(a,b,1);
+ if(func_ov000_021a98a8(b))v=GetAttackDamage(a,b,1)>>1;
+ else if(b==22){t=GetAttackDamage(a,b,1);v=func_ov000_021a96f4(a,b,1)+(t>>1);}
+ else v=GetAttackDamage(a,b,1);
  if((data_ov000_021b5c0f[a*112]&7) && (data_ov000_021b5c0f[b*112]&32))v>>=1;
  if((data_ov000_021b5c0f[a*112]&32) && (data_ov000_021b5c0f[b*112]&32))v<<=1;
  if(a==23 && (data_ov000_021b5c0f[b*112]&32) && b!=22)v=0;
@@ -222,12 +222,12 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  if(a==22 && b==20)v<<=1;
  if((data_ov000_021b5c0f[b*112]&16) && a!=12){v<<=1;if(a==14 || a==16)v<<=1;}
  if(a==6 && (data_ov000_021b5c0f[b*112]&16)){
- if((data_ov000_021df578[6]==2 || data_ov000_021df578[6]==4) && func_ov000_021a881c(6,5))v>>=1;
- if(data_ov000_021df578[6]==3)v<<=1;
+ if((gAiState[6]==2 || gAiState[6]==4) && func_ov000_021a881c(6,5))v>>=1;
+ if(gAiState[6]==3)v<<=1;
  }
  if(a==23 && (data_ov000_021b5c0f[b*112]&16)){
- if((data_ov000_021df578[6]==1 || data_ov000_021df578[6]==3) && func_ov000_021a8784(23))v>>=1;
- if(data_ov000_021df578[6]==4)v<<=1;
+ if((gAiState[6]==1 || gAiState[6]==3) && func_ov000_021a8784(23))v>>=1;
+ if(gAiState[6]==4)v<<=1;
  }
  v=func_ov000_021a6f24(v,a,1); t=M2C_FIELD((s32)data_ov000_021df57c+(a-1)*12,u8 *,20); t*=v; return func_0207c8ec(t,100);
 }
@@ -244,8 +244,8 @@ return result;
 }
 #pragma opt_propagation reset
 s32 func_ov000_021a7348(void) {
-    s32 func_020d1938(s32);
-    s32 func_020d273c(s32,s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(s32,s32);
     s32 func_ov000_021a911c(s16);
     extern s32 *gCurrentMap;
     extern void *data_ov000_021df580;
@@ -289,10 +289,10 @@ s32 func_ov000_021a7348(void) {
     }
 
     for (player = 1; player < 5; player++) {
-        if (func_020d1938(player) == 0) {
+        if (IsPlayerActive(player) == 0) {
             continue;
         }
-        if (func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player) == 1) {
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player) == 1) {
             s32 limit;
             s32 firstIdx;
             u8 *firstUnit;

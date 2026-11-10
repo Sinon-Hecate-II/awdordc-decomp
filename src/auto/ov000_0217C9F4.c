@@ -23,7 +23,7 @@ s32 func_ov000_021a98e4(u32);
 s32 func_ov000_0217c4c8(void *);
 s32 func_ov000_021a97e0(s32,u32);
 s32 func_ov000_0217c420(void *,void *);
-s32 func_020d27c0(s32);
+s32 IsUnitOnCurrentTeam(s32);
 extern u8 data_ov000_021b5bfc[],data_ov000_021b5c0f[];
 s32 count=0,maxY,minY,maxX,minX,x,y,dx,dy,dist;
 u8 *map,*record,*units; s32 id; void *dimensions;
@@ -54,7 +54,7 @@ dist+=dy;
 if(dist>=0){ if(dist>func_ov000_021a97e0(UnitOwnerC9f4(unit),unit->kind))continue;
 map=*gCurrentMap;
 id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
-if(id && func_020d27c0(id)){
+if(id && IsUnitOnCurrentTeam(id)){
 map=*gCurrentMap;
 units=map+0x59a4;
 id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
@@ -125,14 +125,14 @@ s32 func_ov000_0217d150(s32 a,s32 b,u8 *other){
 extern void **gCurrentMap;
 extern void *data_ov000_021df580;
 extern u8 *data_ov000_021df644;
-void func_01ffb554(void *);
+void SelectMapLayer(void *);
 void func_01ffada0(s32,s32,u32,s32,s32);
 u8 *unit;
 s32 y,x,map,index;
 u8 *base;
 s32 row;
 u32 minimum;
-func_01ffb554((u8 *)*gCurrentMap+0x2338);
+SelectMapLayer((u8 *)*gCurrentMap+0x2338);
 func_01ffada0(a,b,((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26),M2C_FIELD(data_ov000_021df580,u8 *,5),0);
 map=(s32)*gCurrentMap;
 y=0;
@@ -157,7 +157,7 @@ minimum=data_ov000_021df644[2];
 row=M2C_FIELD(map+y*2,u16 *,0x3758);
 if(M2C_FIELD(row+(map+x),u8 *,0x2d48)<minimum)goto next;
 }
-func_01ffb554((u8 *)*gCurrentMap+0x1e30);
+SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 return 1;
 next:
 map=(s32)*gCurrentMap;
@@ -165,7 +165,7 @@ x++;
 }while(x<M2C_FIELD(map,u16 *,0x5144));
 y++;
 }while(y<M2C_FIELD(map,u16 *,0x5146));
-func_01ffb554((u8 *)map+0x1e30);
+SelectMapLayer((u8 *)map+0x1e30);
 return 0;
 }
 #pragma opt_strength_reduction on
@@ -185,39 +185,42 @@ void func_ov000_0217d3b8(s32 arg0) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_0217d428(void) {
+/* AI: for each active unit of the current player, finds the reachable tile with
+ * the lowest influence value, records how many units target it and sets the unit's
+ * move target; clears the unit's active flag when the target is within its budget. */
+void AssignUnitMoveTargets(void) {
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
 s32 func_ov000_021a98a8(u32);s32 func_ov000_02179b08(void *);void func_01ffada0(s32,s32,u32,s32,s32);
 s32 func_ov000_021a9860(s32,s32);s32 func_ov000_021a89a4(void *);
-s32 i,off,bx,by,best,x,y,v,id;Unit0217d428 *unit;u8 *rec;void *p;
-i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
-if(i>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
-off=i*14;do{
-unit=(Unit0217d428*)((u8*)*gCurrentMap+0x59a4+off);
+s32 unitId,unitOffset,bestX,bestY,bestScore,x,y,value,tileId;Unit0217d428 *unit;u8 *rec;void *p;
+unitId=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+1;
+if(unitId>=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51)return;
+unitOffset=unitId*14;do{
+unit=(Unit0217d428*)((u8*)*gCurrentMap+0x59a4+unitOffset);
 if(unit->kind==0)goto nextUnit;
 if(!func_ov000_021a98a8(unit->kind))goto nextUnit;
 if(unit->active==0)goto nextUnit;
-v=func_ov000_02179b08(unit);
-func_01ffada0(unit->x,unit->y,unit->kind,v,0);
-by=-1;bx=-1;best=32767;
+value=func_ov000_02179b08(unit);
+func_01ffada0(unit->x,unit->y,unit->kind,value,0);
+bestY=-1;bestX=-1;bestScore=32767;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
 p=*gCurrentMap;
 if(M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x]<0)continue;
 if(!func_ov000_021a9860(x,y))continue;
-p=*gCurrentMap;id=M2C_FIELD((u8*)p+x+M2C_FIELD((u8*)p+y*2,u16*,0x3758),s8*,0x1928);
-if(M2C_FIELD((u8*)p+id*6,u8*,0x6c63)!=0)continue;
-v=M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x];
-if(best>=v){bx=x;by=y;best=v;}
+p=*gCurrentMap;tileId=M2C_FIELD((u8*)p+x+M2C_FIELD((u8*)p+y*2,u16*,0x3758),s8*,0x1928);
+if(M2C_FIELD((u8*)p+tileId*6,u8*,0x6c63)!=0)continue;
+value=M2C_FIELD((u8*)p+y*4,s8 **,0x52e8)[x];
+if(bestScore>=value){bestX=x;bestY=y;bestScore=value;}
 }}
-if(best==32767)goto nextUnit;
-p=*gCurrentMap;id=M2C_FIELD((u8*)p+bx+M2C_FIELD((u8*)p+by*2,u16*,0x3758),s8*,0x1928);
-((Record0217d428*)((u8*)p+0x6c60))[id].count++;
-SetTarget0217d428(unit,bx,by);
-if(best<=func_ov000_021a89a4(unit))unit->active=0;
+if(bestScore==32767)goto nextUnit;
+p=*gCurrentMap;tileId=M2C_FIELD((u8*)p+bestX+M2C_FIELD((u8*)p+bestY*2,u16*,0x3758),s8*,0x1928);
+((Record0217d428*)((u8*)p+0x6c60))[tileId].count++;
+SetTarget0217d428(unit,bestX,bestY);
+if(bestScore<=func_ov000_021a89a4(unit))unit->active=0;
 else unit->mode=1;
-nextUnit: i++;off+=14;
-}while(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
+nextUnit: unitId++;unitOffset+=14;
+}while(unitId<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
 }
 #pragma opt_strength_reduction off
 void func_ov000_0217d6dc(void) {

@@ -107,12 +107,12 @@ s32 func_020a5b2c(Unit5B *p) {
 s32 func_020a5c40(u8 *p){
 extern s32 *gCurrentMap;
 extern u8 data_ov000_021b5c67[];
-s32 func_020d273c(u16,s32);
+s32 IsSameTeam(u16,s32);
 u8 *base=(u8 *)*gCurrentMap;
 u16 flags=M2C_FIELD(p,u16 *,4);
 u8 tile=M2C_FIELD(base+(p[1]+M2C_FIELD(base+p[2]*2,u16 *,0x3758)),u8 *,0x1420);
 if(flags&8)return 0;
-if(func_020d273c(M2C_FIELD(base,u16 *,0x52a4),(tile&0xe0)>>5)){
+if(IsSameTeam(M2C_FIELD(base,u16 *,0x52a4),(tile&0xe0)>>5)){
 switch(tile&31){
 case 18:case 20:
 if(data_ov000_021b5c67[((u32)(p[0]<<26)>>26)*0x70]==18)return 0;
@@ -196,13 +196,13 @@ void func_020a5f4c(s32 arg0) {
     func_020a5d8c((s32)entry, entry[1], entry[2]);
 }
 #pragma opt_propagation reset
-s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020d27c0(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return func_020d27c0(v);}
+s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitOnCurrentTeam(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return IsUnitOnCurrentTeam(v);}
 
 s32 func_020a600c(s32 arg0) {
     extern s32 *gCurrentMap;
     extern s16 gPlayerUnitIdBase[];
     s32 func_020a7d38(Unit5B *);
-    s32 func_020d27c0(s32);
+    s32 IsUnitOnCurrentTeam(s32);
     s32 func_020d27ec(s32, s32);
     s32 func_020a5f80(s32, s32);
 
@@ -227,7 +227,7 @@ s32 func_020a600c(s32 arg0) {
     if (unit != 0) {
         u8 *base = (u8 *)*gCurrentMap;
         s32 idx = (s32)((u8 *)unit - (base + 0x59a4)) / 14;
-        if (func_020d27c0(idx)) {
+        if (IsUnitOnCurrentTeam(idx)) {
             return 1;
         }
     }
@@ -294,7 +294,7 @@ s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 func_020a61e8(void *)
 s32 func_020a6328(u8 *entry, s32 amount) {
 extern s32 *gCurrentMap;
 s32 func_020d2d18(s32,u32);
-s32 func_020d19b4(s32);
+s32 IsPlayerHuman(s32);
 s32 func_020cd728(void);
 void func_02091c54(s32,s32);
 s32 id, income;
@@ -302,7 +302,7 @@ if(entry){if(!entry)id=0;else id=((s32)entry-(s32)((u8 *)*gCurrentMap+0x1a4+0x58
 income=amount*func_020d2d18(id,(u32)(entry[0]<<26)>>26);
 ((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money+=income;
 if(((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money>999999999)((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money=999999999;
-if(func_020d19b4(id)&&!func_020cd728())func_02091c54(12,income);
+if(IsPlayerHuman(id)&&!func_020cd728())func_02091c54(12,income);
 }
 
 s32 func_020a641c(u8 *p,s32 a){extern s32 *gCurrentMap;s32 func_020a85c0(u32);s32 func_020a86f0(s32);s32 n,v;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;if(func_020a85c0((u32)(p[0]<<26)>>26))return 0;v=func_020a86f0(n)*a;n=(u32)(p[10]<<25)>>25;if(v>n)v=n;return v;}

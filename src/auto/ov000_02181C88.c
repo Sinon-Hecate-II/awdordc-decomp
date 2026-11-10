@@ -2,14 +2,14 @@
 #include "common.h"
 
 s32 func_01ffada0(u8, u8, u32, s32, s32);
-void func_01ffb3d0(s8);
+void FillMapLayer(s8);
 s32 func_01ffb9c4(s8);
 void func_02007f8c(void *, s32, s32);
 s32 func_0207c8ec(s32, s32);
 s32 func_020a85c8(u32);
 s32 func_020a85dc(u32);
 s32 func_020d0164(s32, s32);
-s32 func_020d27c0(s32);
+s32 IsUnitOnCurrentTeam(s32);
 s32 func_020d280c(u16, u8, s32);
 s32 func_020d2d18(u16, s32);
 s32 func_ov000_0219c508(s32, s32);
@@ -299,7 +299,7 @@ void func_ov000_02181c88(void) {
             if ((temp_r4 < 0x28) && (temp_r0_3 < 0x28)) {
                 
             } else if (func_ov000_021a98e4((u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A) == 0) {
-                if (func_020d27c0(sp3C) != 0) {
+                if (IsUnitOnCurrentTeam(sp3C) != 0) {
                     temp_r3_2 = (s8 *)*gCurrentMap;
                     if (M2C_FIELD(((M2C_FIELD(temp_r3_2, u16 *, 0x52A4) * 0x8C) + temp_r3_2), u8 *, 0x67CE) == 3) {
                         if (temp_r8 != 0) {
@@ -435,7 +435,7 @@ void func_ov000_02181c88(void) {
                 }
                 func_01ffada0(M2C_FIELD(temp_r8, u8 *, 0x1), M2C_FIELD(temp_r8, u8 *, 0x2), (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A, func_ov000_021a97e0(var_r0_4, (u32) (M2C_FIELD(temp_r8, u8 *, 0x0) << 0x1A) >> 0x1A), 1);
                 var_r9_2 = 0;
-                if (func_020d27c0(sp3C) != 0) {
+                if (IsUnitOnCurrentTeam(sp3C) != 0) {
                     for(var_r9_2=0;var_r9_2<func_ov000_021a9820(Unk02181C88Owner(temp_r8),(u32)(M2C_FIELD(temp_r8,u8 *,0)<<26)>>26)-1;var_r9_2++) {func_01ffb9c4((s8)(var_r9_2+0x6f));}
 
                     var_r3_6 = 0;
@@ -500,7 +500,7 @@ void func_ov000_02181c88(void) {
                         } while (var_r2_4 < (s32) M2C_FIELD(var_r6_6, u16 *, 0x5146));
                     }
                 }
-            } else if (func_020d27c0(sp3C) != 0) {
+            } else if (IsUnitOnCurrentTeam(sp3C) != 0) {
                 if (temp_r8 != 0) {
                     if (temp_r8 == 0) {
                         var_r3_8 = 0;
@@ -835,7 +835,7 @@ void func_ov000_02181c88(void) {
         sp3C = temp_r0;
         sp2C += 0xE;
     } while (temp_r0 < 0x100);
-    func_01ffb3d0(0);
+    FillMapLayer(0);
     sp38 = 0;
     var_r7_8 = *gCurrentMap;
     if ((s32) M2C_FIELD(var_r7_8, u16 *, 0x5146) > 0) {
@@ -943,7 +943,7 @@ void func_ov000_02181c88(void) {
     }
     temp_r4_2 = M2C_FIELD(var_r7_8, u16 *, 0x52A4);
     if ((s32) (func_020d2d18(temp_r4_2, 0xE) * 0xA) <= (s32) M2C_FIELD(((temp_r4_2 * 0x8C) + var_r7_8), s32 *, 0x67A4)) {
-        func_01ffb3d0(0);
+        FillMapLayer(0);
         sp34 = 0;
         var_r5 = *gCurrentMap;
         var_r1_7 = M2C_FIELD(var_r5, u16 *, 0x5146);

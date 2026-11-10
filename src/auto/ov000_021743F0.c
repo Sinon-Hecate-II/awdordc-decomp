@@ -118,7 +118,7 @@ void Ov000_InfoWindow_ClearUnitFlags(void *arg0) {
 
 void Ov000_InfoWindow_OpenCell(void *arg0, s32 arg1, s32 arg2) {
     void Ov000_InfoWindow_ShowTerrain(void *, s32);
-    M2C_UNK func_ov000_02175310(s32);
+    M2C_UNK FillUnitInfo(s32);
     extern Ov000Flags data_0215d9b8;
     extern Ov000MenuState *gOv000InfoWindow;
     if (arg1 == 0) {
@@ -129,7 +129,7 @@ void Ov000_InfoWindow_OpenCell(void *arg0, s32 arg1, s32 arg2) {
         Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, arg2);
         return;
     }
-    func_ov000_02175310(M2C_FIELD(arg0, s32 *, 0));
+    FillUnitInfo(M2C_FIELD(arg0, s32 *, 0));
     M2C_FIELD(arg0, s32 *, 0xC) = 4;
 }
 
@@ -282,31 +282,61 @@ s32 func_ov000_02174d78(void) {
     return 1;
 }
 
-void func_ov000_02174da4(s32 arg0, s32 arg1) {
-extern u16 data_02168f14[];
-extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern u32 data_027e007c[]; extern u32 data_027e0084[];
-s32 func_0207c8ec(s32,s32); void AddSprite(u16,u16,u16,void *,s32);
-s32 total, minutes, fraction, palette, separator; void *map; void *saved;
-total=data_02168f14[2]; if(total==0)return;
-map=*gCurrentMap;
-{void *player=(u8 *)map+M2C_FIELD(map,u16 *,0x52a4)*140;
-s32 elapsed=M2C_FIELD(player,s32 *,0x682c);
-if(!elapsed)return; total-=elapsed;}
-if(total<0)total=0;
-minutes=func_0207c8ec(total,60);fraction=func_0207c8ec((total%60)*100,60);
-palette=8;separator=180;if(total<600){palette=10;separator=181;}
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite(arg0,arg1,((182>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e007c,1);
-AddSprite(arg0+72,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
-fraction=func_0207c8ec(fraction,10);
-AddSprite(arg0+64,arg1,((fraction%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
-AddSprite(arg0+56,arg1,((separator>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)|0x6000,data_027e0084,1);
-arg0+=48;
-do{
-AddSprite(arg0,arg1,((minutes%10+140)&1023)|((palette&15)<<12),data_027e0084,1);
-minutes=func_0207c8ec(minutes,10);arg0-=8;
-}while(minutes);
-gCur3DSpriteEngine=saved;
+void func_ov000_02174da4(s32 x, s32 y) {
+    extern u16 gTurnTimeConfig[];
+    extern void **gCurrentMap;
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineSub;
+    extern u32 gTimerColonTiles[];
+    extern u32 gTimerDigitTiles[];
+    s32 HardDiv(s32, s32);
+    void AddSprite(u16, u16, u16, void *, s32);
+
+    s32 total, minutes, centis, palette, separator;
+    void *map;
+    void *savedSpriteEngine;
+
+    total = gTurnTimeConfig[2];
+    if (total == 0) return;
+
+    map = *gCurrentMap;
+    {
+        void *player = (u8 *)map + M2C_FIELD(map, u16 *, 0x52a4) * 140;
+        s32 elapsed = M2C_FIELD(player, s32 *, 0x682c);
+        if (!elapsed) return;
+        total -= elapsed;
+    }
+
+    if (total < 0) total = 0;
+
+    minutes = HardDiv(total, 60);
+    centis = HardDiv((total % 60) * 100, 60);
+
+    palette = 8;
+    separator = 180;
+    if (total < 600) {
+        palette = 10;
+        separator = 181;
+    }
+
+    savedSpriteEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+
+    AddSprite(x, y, ((182 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000, gTimerColonTiles, 1);
+    AddSprite(x + 72, y, ((centis % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
+
+    centis = HardDiv(centis, 10);
+    AddSprite(x + 64, y, ((centis % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
+    AddSprite(x + 56, y, ((separator >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30)) & 1023) | 0x6000, gTimerDigitTiles, 1);
+
+    x += 48;
+    do {
+        AddSprite(x, y, ((minutes % 10 + 140) & 1023) | ((palette & 15) << 12), gTimerDigitTiles, 1);
+        minutes = HardDiv(minutes, 10);
+        x -= 8;
+    } while (minutes != 0);
+
+    gCur3DSpriteEngine = savedSpriteEngine;
 }
 
 s32 func_ov000_02175074(void) {

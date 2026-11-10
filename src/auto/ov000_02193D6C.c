@@ -18,81 +18,82 @@ extern M2C_UNK data_ov000_021b5bfc;
 
 void func_ov000_02193d6c(void *arg0) { (void)arg0; }
 
+/* Scan reachable cells for a current-player unit that can attack the highlighted unit and move the cursor to it. */
 void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
  u8 *unit;
- s32 sx=-1, sy=-1, kind=0, x,y;
- u8 *m;
+ s32 foundX=-1, foundY=-1, foundKind=0, cellX,cellY;
+ u8 *map;
  func_01ffc328(SEL);
- for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++){
-  for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
-   m=MAP;
-   if((*(s8 **)(m+0x52e8+y*4))[x]<0)continue;
-   if(!m[x+*(u16*)(m+0x3758+y*2)])continue;
-   if(!func_ov000_021a8fc0(m[x+*(u16*)(m+0x3758+y*2)+0x508]))continue;
-   m=MAP;
-   unit=m+0x59a4+14*(s16)m[x+*(u16*)(m+0x3758+y*2)];
+ for(cellY=0;cellY<M2C_FIELD(MAP,u16*,0x5146);cellY++){
+  for(cellX=0;cellX<M2C_FIELD(MAP,u16*,0x5144);cellX++){
+   map=MAP;
+   if((*(s8 **)(map+0x52e8+cellY*4))[cellX]<0)continue;
+   if(!map[cellX+*(u16*)(map+0x3758+cellY*2)])continue;
+   if(!IsCurrentPlayerUnit(map[cellX+*(u16*)(map+0x3758+cellY*2)+0x508]))continue;
+   map=MAP;
+   unit=map+0x59a4+14*(s16)map[cellX+*(u16*)(map+0x3758+cellY*2)];
    if(!(INFO[((UnkStruct_ov000_021A860C*)unit)->unk0*0x70+0x13]&0x20))continue;
    if(func_ov000_021a8984(((UnkStruct_ov000_021A860C*)unit)->unkB))continue;
-   if(!func_ov000_021a995c(unit,((UnkStruct_ov000_021A860C*)SEL)->unk0))continue;
-   if(kind!=0 && kind!=24){
-    if(kind!=25)continue;
+   if(!CanUnitAttackKind(unit,((UnkStruct_ov000_021A860C*)SEL)->unk0))continue;
+   if(foundKind!=0 && foundKind!=24){
+    if(foundKind!=25)continue;
     if(((UnkStruct_ov000_021A860C*)unit)->unk0==24)continue;
    }
-   sx=x;sy=y;kind=((UnkStruct_ov000_021A860C*)unit)->unk0;
+   foundX=cellX;foundY=cellY;foundKind=((UnkStruct_ov000_021A860C*)unit)->unk0;
   }
  }
- if(sx==-1)return;
+ if(foundX==-1)return;
  ((Position_02194090 *)(SEL+8))->state=0;
  if(((UnkStruct_ov000_021A860C*)SEL)->unkB==2 || ((UnkStruct_ov000_021A860C*)SEL)->unkB==5){
   ((UnkStruct_ov000_021A860C*)SEL)->unkB=0;
   ((Position_02194090 *)(SEL+8))->x=63;
   ((Position_02194090 *)(SEL+8))->y=63;
  }
- m=MAP;
- unit=m+0x59a4+14*m[sx+*(u16*)(m+0x3758+sy*2)];
- ((Position_02194090 *)(unit+8))->x=(u16)sx;
- ((Position_02194090 *)(unit+8))->y=(u16)sy;
+ map=MAP;
+ unit=map+0x59a4+14*map[foundX+*(u16*)(map+0x3758+foundY*2)];
+ ((Position_02194090 *)(unit+8))->x=(u16)foundX;
+ ((Position_02194090 *)(unit+8))->y=(u16)foundY;
  func_ov000_0217c3a4();
- SetMapCursor((s16)sx,(s16)sy,7,0,0);
+ SetMapCursor((s16)foundX,(s16)foundY,7,0,0);
 }
 
 #pragma push
 #pragma opt_strength_reduction off
 void func_ov000_02194370(void){
-s32 func_020d19b4(s32);s32 func_ov000_021a98e4(u32);
-s32 func_ov000_021a43c4(void);s32 func_ov000_021a88c8(s32);s32 func_ov000_021a9934(u32,u32);
+s32 IsPlayerHuman(s32);s32 func_ov000_021a98e4(u32);
+s32 func_ov000_021a43c4(void);s32 func_ov000_021a88c8(s32);s32 CanKindAttack(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
-void func_01ffb554(void*);void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb3d0(s32);
-s32 func_ov000_021a8984(u32);s32 func_ov000_021a995c(u8*,u32);
+void SelectMapLayer(void*);void func_01ffada0(s32,s32,s32,s32,s32);void FillMapLayer(s32);
+s32 func_ov000_021a8984(u32);s32 CanUnitAttackKind(u8*,u32);
 s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
 void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
 u32 mode;u8 *unit;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16*,10)<<26)>>29)&4))return;
-if(!func_020d19b4(M2C_FIELD(MAP,u16*,0x52a4))&&func_ov000_021a98e4(KIND(SEL))==1){
+if(!IsPlayerHuman(M2C_FIELD(MAP,u16*,0x52a4))&&func_ov000_021a98e4(KIND(SEL))==1){
 if(KIND(SEL)!=26)return;
 if(!func_ov000_021a43c4()&&!func_ov000_021a88c8(24)&&!func_ov000_021a88c8(25))return;
 }
 if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;
-if(!func_ov000_021a9934(24,KIND(SEL)))return;
+if(!CanKindAttack(24,KIND(SEL)))return;
 if(func_ov000_0217d86c()==1)return;
 SelectAttackingUnit();
 mode=(u8)(func_ov000_021a98e4(KIND(SEL))==2);
 M2C_FIELD(SEL,u16*,8)=(M2C_FIELD(SEL,u16*,8)&~0xc000)|0x8000;
 if(!mode){
-func_01ffb554(MAP+0x3250);
+SelectMapLayer(MAP+0x3250);
 func_01ffada0(SEL[1],SEL[2],KIND(SEL),110,0);
-func_01ffb554(MAP+0x1e30);
+SelectMapLayer(MAP+0x1e30);
 }
-func_01ffb554(MAP+0x2338);func_01ffb3d0(127);func_01ffb554(MAP+0x1e30);
+SelectMapLayer(MAP+0x2338);FillMapLayer(127);SelectMapLayer(MAP+0x1e30);
 found=0;
 index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
 if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){offset=index*14;
 for(;index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=(u8*)(MAP+0x59a4)+offset;
-if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||func_ov000_021a8984((u32)(unit[11]<<28)>>28)||!func_ov000_021a995c(unit,KIND(SEL)))continue;
+if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||func_ov000_021a8984((u32)(unit[11]<<28)>>28)||!CanUnitAttackKind(unit,KIND(SEL)))continue;
 if(unit[12]){
 if(mode==1)continue;
 if(COST(unit[1],unit[2],0x3250)<0)continue;

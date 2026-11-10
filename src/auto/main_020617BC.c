@@ -245,7 +245,7 @@ func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
 }
 
 void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
-    M2C_UNK func_020651a4(s32, M2C_UNK *, s32);
+    M2C_UNK MemCopy(s32, M2C_UNK *, s32);
     s32 func_02068c34(M2C_UNK *);
     extern M2C_UNK data_0210011c;
     M2C_UNK *var_r7;
@@ -256,7 +256,7 @@ void func_0206213c(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
         var_r7 = &data_0210011c;
     }
     temp_r5 = func_02068c34(var_r7) + 1;
-    func_020651a4(*arg0, var_r7, temp_r5);
+    MemCopy(*arg0, var_r7, temp_r5);
     *arg2 += temp_r5;
     *arg0 += temp_r5;
 }
@@ -270,8 +270,8 @@ void func_0206218c(s8 **arg0, s8 arg1, s32 *arg2) {
 void func_020621b0(u8 **a,s32 b,s32 *c,...){u8 *p=*a;u8 *q=(u8 *)&b;u8 x,y;x=q[1];y=q[0];p[0]=y;p[1]=x;x=q[3];y=q[2];p[2]=y;p[3]=x;*c+=4;*a+=4;}
 
 void func_02062204(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
-M2C_UNK func_020651a4(s32,M2C_UNK *,s32);
-func_020651a4(*a,b,c);*d+=c;*a+=c;
+M2C_UNK MemCopy(s32,M2C_UNK *,s32);
+MemCopy(*a,b,c);*d+=c;*a+=c;
 }
 
 void func_02062238(void *arg0) {

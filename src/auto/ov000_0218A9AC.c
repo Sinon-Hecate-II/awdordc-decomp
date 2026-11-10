@@ -108,7 +108,7 @@ void func_ov000_0218b02c(void) {
  * Unit kind 22 also gets a second, preferred destination; a cursor marker is
  * placed on each chosen cell. */
 void PlanMoveDestination(s32 targetX,s32 targetY) {
-void func_01ffb554(void *);
+void SelectMapLayer(void *);
 void func_01ffada0(s32,s32,u8,s32,s32);
 void func_01ffc328(void *);
 s32 IsValidMoveCell(s16,s16);
@@ -120,11 +120,11 @@ s32 DestinationScore(s32,s32,s32,s32);
 s32 bestX,bestY,specialX,specialY,bestD,specialD;
 s32 bestC,bestV,specialC,x,specialV,score,y,cost,cellCost;u8 *unit;
 bestX=-1;bestY=0;bestV=0x7fffffff;specialX=bestX;specialY=bestY;bestD=bestY;specialD=bestY;specialV=0x7fffffff;
-func_01ffb554((u8 *)*gCurrentMap+0x2338);
+SelectMapLayer((u8 *)*gCurrentMap+0x2338);
 func_01ffada0(targetX,targetY,((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind,110,0);
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
 if((*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]<0) (*(s8 **)((u8 *)*gCurrentMap+0x52e8+unit[2]*4))[unit[1]]=110;
-func_01ffb554((u8 *)*gCurrentMap+0x1e30);
+SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 func_01ffc328(*(void **)((u8 *)*gCurrentMap+0x52d0));
 unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
 if(!IsValidMoveCell(unit[1],unit[2]) ||

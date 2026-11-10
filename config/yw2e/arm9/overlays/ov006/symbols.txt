@@ -35,7 +35,7 @@ func_ov006_02215c6c kind:function(arm,size=0x158) addr:0x02215c6c
 func_ov006_02215dc4 kind:function(arm,size=0x14) addr:0x02215dc4
 func_ov006_02215dd8 kind:function(arm,size=0xc) addr:0x02215dd8
 func_ov006_02215de4 kind:function(arm,size=0x100) addr:0x02215de4
-func_ov006_02215ee4 kind:function(arm,size=0x2a4) addr:0x02215ee4
+ConfirmFriendCode kind:function(arm,size=0x2a4) addr:0x02215ee4
 func_ov006_02216188 kind:function(arm,size=0x14) addr:0x02216188
 func_ov006_0221619c kind:function(arm,size=0x158) addr:0x0221619c
 func_ov006_022162f4 kind:function(arm,size=0x328) addr:0x022162f4
@@ -176,7 +176,7 @@ data_ov006_02218cd8 kind:data(any) addr:0x02218cd8
 data_ov006_02218cdc kind:data(any) addr:0x02218cdc
 data_ov006_02218dd4 kind:data(any) addr:0x02218dd4
 data_ov006_02218e00 kind:bss addr:0x02218e00
-data_ov006_02218e10 kind:bss addr:0x02218e10
+gFriendCodeInput kind:bss addr:0x02218e10
 data_ov006_02218e20 kind:bss addr:0x02218e20
 data_ov006_02218e2c kind:bss addr:0x02218e2c
 data_ov006_02218e3c kind:bss addr:0x02218e3c ambiguous

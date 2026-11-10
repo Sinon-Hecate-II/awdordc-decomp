@@ -152,11 +152,11 @@ void func_ov002_021e6ff0(void *arg0) {
 void func_ov002_021e70a0(void *);
 extern u8 data_ov002_021f2f40;
 extern void *gKeyState;
-extern u32 data_027e15bc;
+extern u32 gFrameCounter;
 extern void *data_02101e88;
 if(data_ov002_021f2f40) return;
 if(M2C_FIELD(gKeyState,u16 *,6)&0x200) {
-if(data_027e15bc&1) func_ov002_021e70a0(arg0);
+if(gFrameCounter&1) func_ov002_021e70a0(arg0);
 } else if(M2C_FIELD(gKeyState,u16 *,6)&0x100) {
 func_ov002_021e70a0(arg0); func_ov002_021e70a0(arg0);
 } else func_ov002_021e70a0(arg0);

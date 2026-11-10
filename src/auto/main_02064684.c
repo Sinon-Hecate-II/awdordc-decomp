@@ -8,115 +8,118 @@ typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
 
 #pragma push
 #pragma opt_common_subs off
-s32 func_02064684(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+/* Appends count*size bytes from buffer to a GameSpy stream, in buffered chunks:
+ * flushes through the stream's write callback, stops early at a newline when the
+ * stream is line-buffered, and returns written/size via the divide helper. */
+s32 StreamWrite(s32 buffer, s32 elemSize, s32 count, void *stream) {
     M2C_UNK func_020640ec(void *);
     s32 func_020641a8(void *, s32);
-    s8 *func_020651a4(s8 *, s8 *, s32);
-    u8 *func_02065250(u8 *, s32, u32);
+    s8 *MemCopy(s8 *, s8 *, s32);
+    u8 *FindLastByte(u8 *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
     s32 func_020722fc(s32, s32);
-    u32 sp4;
-    s32 sp0;
-    s32 temp_r0_3;
-    s32 temp_r1;
-    s32 temp_r1_2;
-    s32 temp_r2;
-    s32 temp_r4;
-    s32 var_r10;
-    u32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r8;
-    s32 var_z;
-    u32 temp_r0;
-    u32 temp_r0_2;
-    u32 temp_r0_4;
-    u32 temp_r7;
-    var_r10 = arg0;
-    sp0 = arg1;
-    if (func_0206ad4c(arg3, 0) == 0) {
-        func_0206ad4c(arg3, -1);
+    u32 chunk;
+    s32 size;
+    s32 writeBase;
+    s32 flags;
+    s32 stateWord;
+    s32 scratch;
+    s32 savedBase;
+    s32 src;
+    u32 remaining;
+    s32 written;
+    s32 eol;
+    s32 chunked;
+    s32 unusedZ;
+    u32 unusedTemp0;
+    u32 unusedTemp1;
+    u32 avail;
+    u32 savedSize;
+    src = buffer;
+    size = elemSize;
+    if (func_0206ad4c(stream, 0) == 0) {
+        func_0206ad4c(stream, -1);
     }
-    var_r5 = sp0 * arg2;
-    if ((var_r5 == 0) || (M2C_FIELD(arg3, u8 *, 0xD) != 0) || (temp_r1 = M2C_FIELD(arg3, s32 *, 4), (((u32) (temp_r1 << 0x16) >> 0x1D) == 0))) {
+    remaining = size * count;
+    if ((remaining == 0) || (M2C_FIELD(stream, u8 *, 0xD) != 0) || (flags = M2C_FIELD(stream, s32 *, 4), (((u32) (flags << 0x16) >> 0x1D) == 0))) {
         return 0;
     }
-    var_r8 = 1;
-    if (((u32)(temp_r1 << 19) >> 31) != 0 &&
-        ((u32)(temp_r1 << 25) >> 30) != 2 &&
-        ((u32)(temp_r1 << 25) >> 30) != 1) var_r8 = 0;
-    temp_r1_2 = M2C_FIELD(arg3, s32 *, 8);
-    if ((((u32) (temp_r1_2 << 0x1D) >> 0x1D) == 0) && (((u32) (M2C_FIELD(arg3, s32 *, 4) << 0x1B) >> 0x1D) & 2)) {
-        M2C_FIELD(arg3, s32 *, 8) = (s32) ((temp_r1_2 & ~7) | 1);
-        func_020640ec(arg3);
+    chunked = 1;
+    if (((u32)(flags << 19) >> 31) != 0 &&
+        ((u32)(flags << 25) >> 30) != 2 &&
+        ((u32)(flags << 25) >> 30) != 1) chunked = 0;
+    stateWord = M2C_FIELD(stream, s32 *, 8);
+    if ((((u32) (stateWord << 0x1D) >> 0x1D) == 0) && (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x1B) >> 0x1D) & 2)) {
+        M2C_FIELD(stream, s32 *, 8) = (s32) ((stateWord & ~7) | 1);
+        func_020640ec(stream);
     }
-    if (((u32) (M2C_FIELD(arg3, s32 *, 8) << 0x1D) >> 0x1D) != 1) {
-        M2C_FIELD(arg3, u8 *, 0xD) = 1U;
-        M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+    if (((u32) (M2C_FIELD(stream, s32 *, 8) << 0x1D) >> 0x1D) != 1) {
+        M2C_FIELD(stream, u8 *, 0xD) = 1U;
+        M2C_FIELD(stream, u32 *, 0x28) = 0U;
         return 0;
     }
-    var_r6 = 0;
-    if (var_r5 != 0) {
-        temp_r0_3 = M2C_FIELD(arg3, s32 *, 0x1C);
-        temp_r2 = M2C_FIELD(arg3, s32 *, 0x24);
-        if ((temp_r2 == temp_r0_3) && (var_r8 == 0)) {
+    written = 0;
+    if (remaining != 0) {
+        writeBase = M2C_FIELD(stream, s32 *, 0x1C);
+        scratch = M2C_FIELD(stream, s32 *, 0x24);
+        if ((scratch == writeBase) && (chunked == 0)) {
 
         } else {
-            M2C_FIELD(arg3, u32 *, 0x28) = (u32) (M2C_FIELD(arg3, u32 *, 0x20) - (temp_r2 - temp_r0_3));
+            M2C_FIELD(stream, u32 *, 0x28) = (u32) (M2C_FIELD(stream, u32 *, 0x20) - (scratch - writeBase));
 loop_21:
-            temp_r0_4 = M2C_FIELD(arg3, u32 *, 0x28);
-            var_r7 = 0;
-            sp4 = temp_r0_4;
-            if (temp_r0_4 > var_r5) {
-                sp4 = var_r5;
+            avail = M2C_FIELD(stream, u32 *, 0x28);
+            eol = 0;
+            chunk = avail;
+            if (avail > remaining) {
+                chunk = remaining;
             }
-            if ((((u32) (M2C_FIELD(arg3, s32 *, 4) << 0x19) >> 0x1E) == 1) && (sp4 != 0)) {
-                var_r7 = (s32)func_02065250((u8 *)var_r10, 0xA, sp4);
-                if (var_r7 != 0) {
-                    sp4 = (var_r7 + 1) - var_r10;
+            if ((((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) == 1) && (chunk != 0)) {
+                eol = (s32)FindLastByte((u8 *)src, 0xA, chunk);
+                if (eol != 0) {
+                    chunk = (eol + 1) - src;
                 }
             }
-            if (sp4 != 0) {
-                func_020651a4(M2C_FIELD(arg3, s8 **, 0x24), (s8 *)var_r10, sp4);
-                temp_r2 = sp4;
-                var_r10 += temp_r2;
-                M2C_FIELD(arg3, s32 *, 0x24) = (s32) (M2C_FIELD(arg3, s32 *, 0x24) + temp_r2);
-                var_r5 -= temp_r2;
-                M2C_FIELD(arg3, u32 *, 0x28) = (u32) (M2C_FIELD(arg3, u32 *, 0x28) - sp4);
+            if (chunk != 0) {
+                MemCopy(M2C_FIELD(stream, s8 **, 0x24), (s8 *)src, chunk);
+                scratch = chunk;
+                src += scratch;
+                M2C_FIELD(stream, s32 *, 0x24) = (s32) (M2C_FIELD(stream, s32 *, 0x24) + scratch);
+                remaining -= scratch;
+                M2C_FIELD(stream, u32 *, 0x28) = (u32) (M2C_FIELD(stream, u32 *, 0x28) - chunk);
             }
-            if (((M2C_FIELD(arg3, u32 *, 0x28) == 0) || (var_r7 != 0) || (((u32) (M2C_FIELD(arg3, s32 *, 4) << 0x19) >> 0x1E) == 0)) && (func_020641a8(arg3, NULL) != 0)) {
-                M2C_FIELD(arg3, u8 *, 0xD) = 1U;
-                var_r5 = 0;
-                M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+            if (((M2C_FIELD(stream, u32 *, 0x28) == 0) || (eol != 0) || (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) == 0)) && (func_020641a8(stream, NULL) != 0)) {
+                M2C_FIELD(stream, u8 *, 0xD) = 1U;
+                remaining = 0;
+                M2C_FIELD(stream, u32 *, 0x28) = 0U;
             } else {
-                var_r6 += sp4;
-                if ((var_r5 != 0) && (var_r8 != 0)) {
+                written += chunk;
+                if ((remaining != 0) && (chunked != 0)) {
                     goto loop_21;
                 }
             }
         }
     }
-    if ((var_r5 != 0) && (var_r8 == 0)) {
-        temp_r4 = M2C_FIELD(arg3, s32 *, 0x1C);
-        temp_r7 = M2C_FIELD(arg3, u32 *, 0x20);
-        M2C_FIELD(arg3, s32 *, 0x1C) = var_r10;
-        M2C_FIELD(arg3, u32 *, 0x20) = var_r5;
-        M2C_FIELD(arg3, s32 *, 0x24) = (s32) (var_r10 + var_r5);
-        if (func_020641a8(arg3, (s32)&sp4) == 0) {
-            var_r6 += sp4;
+    if ((remaining != 0) && (chunked == 0)) {
+        savedBase = M2C_FIELD(stream, s32 *, 0x1C);
+        savedSize = M2C_FIELD(stream, u32 *, 0x20);
+        M2C_FIELD(stream, s32 *, 0x1C) = src;
+        M2C_FIELD(stream, u32 *, 0x20) = remaining;
+        M2C_FIELD(stream, s32 *, 0x24) = (s32) (src + remaining);
+        if (func_020641a8(stream, (s32)&chunk) == 0) {
+            written += chunk;
         } else {
-            M2C_FIELD(arg3, u8 *, 0xD) = 1U;
-            M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+            M2C_FIELD(stream, u8 *, 0xD) = 1U;
+            M2C_FIELD(stream, u32 *, 0x28) = 0U;
         }
-        M2C_FIELD(arg3, s32 *, 0x1C) = temp_r4;
-        M2C_FIELD(arg3, u32 *, 0x20) = temp_r7;
-        func_020640ec(arg3);
-        M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+        M2C_FIELD(stream, s32 *, 0x1C) = savedBase;
+        M2C_FIELD(stream, u32 *, 0x20) = savedSize;
+        func_020640ec(stream);
+        M2C_FIELD(stream, u32 *, 0x28) = 0U;
     }
-    if (((u32) (M2C_FIELD(arg3, s32 *, 4) << 0x19) >> 0x1E) != 2) {
-        M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+    if (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) != 2) {
+        M2C_FIELD(stream, u32 *, 0x28) = 0U;
     }
-    return func_020722fc(var_r6, sp0);
+    return func_020722fc(written, size);
 }
 #pragma pop
 s32 func_02064934(void *arg0) {
@@ -360,7 +363,7 @@ used+=len;
 return used;
 }
 
-s8 *func_020651a4(s8 *out,s8 *in,s32 n) {
+s8 *MemCopy(s8 *out,s8 *in,s32 n) {
 s8 *p=out;
 if(n) do {s8 c=*in++;--n;*p++=c;} while(n);
 return out;
@@ -389,7 +392,7 @@ u8 *func_02065224(u8 *p,s32 value,u32 n) {
  return NULL;
 }
 
-u8 *func_02065250(u8 *p,s32 value,u32 n) {
+u8 *FindLastByte(u8 *p,s32 value,u32 n) {
  u32 c=(u8)value;
  p+=n;
  if(n) { do { if(*--p==c) return p; } while(--n); }

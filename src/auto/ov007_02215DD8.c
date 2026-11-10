@@ -125,26 +125,29 @@ s32 func_ov007_02216234() {
     return 0;
 }
 
-void func_ov007_022167b8(s32 a, s32 b, s32 c, s32 d, s32 e) {
+/* Draws an orthogonal three-segment path between (x0,y0) and (x1,y1) on the
+ * 30-wide cell grid, bending at a random in-range coordinate. orientation 0
+ * keeps the horizontal segments at the ends; nonzero keeps the vertical ones. */
+void DrawOrthogonalPath(s32 x0, s32 y0, s32 x1, s32 y1, s32 orientation) {
 s32 RandomIntRange(s32,s32);
 extern u8 data_ov007_02221a84[];
-s32 mid,i;
-if(e==0){
-if(a<c)mid=RandomIntRange(a,c);else mid=RandomIntRange(c,a);
-if(mid<a){for(i=mid;i<=a;i++)((u8 (*)[30])data_ov007_02221a84)[b][i]=2;}
-else{for(;a<=mid;a++)((u8 (*)[30])data_ov007_02221a84)[b][a]=2;}
-if(mid<c){for(i=mid;i<=c;i++)((u8 (*)[30])data_ov007_02221a84)[d][i]=2;}
-else{for(;c<=mid;c++)((u8 (*)[30])data_ov007_02221a84)[d][c]=2;}
-if(b<d){for(;b<=d;b++)((u8 (*)[30])data_ov007_02221a84)[b][mid]=2;}
-else{for(;d<=b;d++)((u8 (*)[30])data_ov007_02221a84)[d][mid]=2;}
+s32 bend,i;
+if(orientation==0){
+if(x0<x1)bend=RandomIntRange(x0,x1);else bend=RandomIntRange(x1,x0);
+if(bend<x0){for(i=bend;i<=x0;i++)((u8 (*)[30])data_ov007_02221a84)[y0][i]=2;}
+else{for(;x0<=bend;x0++)((u8 (*)[30])data_ov007_02221a84)[y0][x0]=2;}
+if(bend<x1){for(i=bend;i<=x1;i++)((u8 (*)[30])data_ov007_02221a84)[y1][i]=2;}
+else{for(;x1<=bend;x1++)((u8 (*)[30])data_ov007_02221a84)[y1][x1]=2;}
+if(y0<y1){for(;y0<=y1;y0++)((u8 (*)[30])data_ov007_02221a84)[y0][bend]=2;}
+else{for(;y1<=y0;y1++)((u8 (*)[30])data_ov007_02221a84)[y1][bend]=2;}
 }else{
-if(b<d)mid=RandomIntRange(b,d);else mid=RandomIntRange(d,b);
-if(mid<b){for(i=mid;i<=b;i++)((u8 (*)[30])data_ov007_02221a84)[i][a]=2;}
-else{for(;b<=mid;b++)((u8 (*)[30])data_ov007_02221a84)[b][a]=2;}
-if(mid<d){for(i=mid;i<=d;i++)((u8 (*)[30])data_ov007_02221a84)[i][c]=2;}
-else{for(;d<=mid;d++)((u8 (*)[30])data_ov007_02221a84)[d][c]=2;}
-if(a<c){for(;a<=c;a++)((u8 (*)[30])data_ov007_02221a84)[mid][a]=2;}
-else{for(;c<=a;c++)((u8 (*)[30])data_ov007_02221a84)[mid][c]=2;}
+if(y0<y1)bend=RandomIntRange(y0,y1);else bend=RandomIntRange(y1,y0);
+if(bend<y0){for(i=bend;i<=y0;i++)((u8 (*)[30])data_ov007_02221a84)[i][x0]=2;}
+else{for(;y0<=bend;y0++)((u8 (*)[30])data_ov007_02221a84)[y0][x0]=2;}
+if(bend<y1){for(i=bend;i<=y1;i++)((u8 (*)[30])data_ov007_02221a84)[i][x1]=2;}
+else{for(;y1<=bend;y1++)((u8 (*)[30])data_ov007_02221a84)[y1][x1]=2;}
+if(x0<x1){for(;x0<=x1;x0++)((u8 (*)[30])data_ov007_02221a84)[bend][x0]=2;}
+else{for(;x1<=x0;x1++)((u8 (*)[30])data_ov007_02221a84)[bend][x1]=2;}
 }
 }
 

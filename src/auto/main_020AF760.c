@@ -5,7 +5,7 @@ typedef struct { u8 pad[4]; s32 unk4; } Unk020af860_Sub;
 typedef struct { u8 pad[0x34]; Unk020af860_Sub *unk34; } Unk020af860_Unit;
 typedef struct { Unk020af860_Unit *unk0; u8 pad[0x14]; } Unk020af860_Rec;
 extern u8 data_02122d08[],data_021213e0[];
-extern s32 data_027e15bc;
+extern s32 gFrameCounter;
 
 void func_020af760(void) {
 M2C_UNK func_02090448(s32); extern M2C_UNK gPlayerSettings;
@@ -193,7 +193,7 @@ void func_020afc40(void) {
 
 void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, s32 arg6) {
     void func_0209107c(void *, s32, s32, VecAff *, s32, s32, s32, s32, s32);
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     volatile s32 sp30;
     volatile s32 sp2C;
     volatile s32 sp28;
@@ -222,17 +222,17 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
     sp2C = (arg1 - (arg2 * 0x10)) * 0x30;
     sp30 = 0x8A1;
     sp28 = temp_r4;
-    func_0209107c(arg3, 0x14, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    func_0209107c(arg3, 0x14, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
     sp2C = (arg1 + (arg2 * 0x10)) * 0x30;
     sp28 = temp_r4;
-    func_0209107c(arg3, 0x15, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    func_0209107c(arg3, 0x15, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
     temp_r4_2 = arg1 * 0x30;
     sp28 = (sp14 - (arg2 * 0x10)) * 0x30;
     sp2C = temp_r4_2;
-    func_0209107c(arg3, 0x16, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    func_0209107c(arg3, 0x16, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
     sp2C = temp_r4_2;
     sp28 = (sp14 + (arg2 * 0x10)) * 0x30;
-    func_0209107c(arg3, 0x17, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+    func_0209107c(arg3, 0x17, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
     temp_r0 = arg2 - 1;
     var_r11 = 1;
     sp18 = temp_r0;
@@ -241,7 +241,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
         do {
             sp28 = (sp14 - var_r4) * 0x30;
             sp2C = (arg1 - ((arg2 - var_r11) * 0x10)) * 0x30;
-            func_0209107c(arg3, 0x18, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            func_0209107c(arg3, 0x18, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
             var_r11 += 1;
             var_r4 += 0x10;
         } while (var_r11 <= sp18);
@@ -254,7 +254,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
         do {
             sp28 = var_r11_2 * 0x30;
             sp2C = (arg1 - ((arg2 - var_r4_2) * 0x10)) * 0x30;
-            func_0209107c(arg3, 0x19, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            func_0209107c(arg3, 0x19, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
             var_r4_2 += 1;
             var_r11_2 += 0x10;
         } while (var_r4_2 <= sp1C);
@@ -267,7 +267,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
         do {
             sp28 = (sp14 - var_r11_3) * 0x30;
             sp2C = (arg1 + ((arg2 - var_r4_3) * 0x10)) * 0x30;
-            func_0209107c(arg3, 0x1A, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+            func_0209107c(arg3, 0x1A, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
             var_r4_3 += 1;
             var_r11_3 += 0x10;
         } while (var_r4_3 <= sp20);
@@ -282,7 +282,7 @@ void func_020afc44(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5,
     do {
         sp28 = var_r11_4 * 0x30;
         sp2C = (arg1 + ((arg2 - var_r4_4) * 0x10)) * 0x30;
-        func_0209107c(arg3, 0x1B, data_027e15bc, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
+        func_0209107c(arg3, 0x1B, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
         var_r4_4 += 1;
         var_r11_4 += 0x10;
     } while (var_r4_4 <= sp24);
@@ -304,7 +304,7 @@ else {a=0x21980;b=data_02122d08;c=0x20000;}
 func_02091248(31);
 if(n>19){func_020afc44(x+8,y+8,n-19,b,a,0x1440,c);return;}
 v.x=(x+8)*48;v.y=(y+8)*48;v.z=0x8a1;
-func_0209107c(b,n,data_027e15bc,&v,a,0x1440,c,0,0);
+func_0209107c(b,n,gFrameCounter,&v,a,0x1440,c,0,0);
 }
 
 void func_020b00c0(void) {

@@ -9,9 +9,9 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     void AddSprite(u16, u16, u16, void *, u8);
     s32 func_0207c8ec(s32, s32);
     void DrawVerticalBar(s32, s16, s16, u16);
-    void func_0208d8e4(s16, s16, s16, u16);
+    void DrawVerticalBarReverse(s16, s16, s16, u16);
     void DrawHorizontalBar(s16, s32, s16, u16);
-    void func_0208d408(s16, s16, s16, u16);
+    void DrawHorizontalBarReverse(s16, s16, s16, u16);
     void SetSpriteQuad(s32, s16, s16, s16, s16);
     extern s32 gCur3DSpriteEngine;
     extern u32 data_020f35c8[];
@@ -46,13 +46,13 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     DrawVerticalBar(a0, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
 
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    func_0208d8e4((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
+    DrawVerticalBarReverse((s16)v8, (s16)(a1 + 8), (s16)(a3 - 16), (u16)(a4 + ((0x4a >> sh) & 0x3ff)));
 
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
     DrawHorizontalBar((s16)(a0 + 8), a1, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> sh) & 0x3ff)));
 
     sh = (u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0) << 17) >> 30;
-    func_0208d408((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> sh) & 0x3ff)));
+    DrawHorizontalBarReverse((s16)(a0 + 8), (s16)vc, (s16)(a2 - 16), (u16)(a4 + ((0x40 >> sh) & 0x3ff)));
 
     v1c = (s16)(a3 - 16);
     v20 = (s16)(a1 + 8);
@@ -122,31 +122,32 @@ void func_0208e18c(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
 
 void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; func_0200bc5c(data_02102888); func_020814e4(data_02102898); func_02081590(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); func_020815fc(data_021028b0,(arg1+16)<<5,32); func_02081528(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }
 
-void func_0208e864(s16 arg0, s32 arg1, u16 arg2, u8 arg3, s32 arg4) {
+/* Draw a minutes:centiseconds readout with AddSprite digits at (x, y). */
+void DrawTimerDigits(s16 x, s32 y, u16 baseTile, u8 priority, s32 value) {
 s32 func_0207c8ec(s32,s32);
 void AddSprite(u16,u16,u16,void *,u8);
 extern s32 gCur3DSpriteEngine;
 extern u8 data_027e00a4[],data_027e0084[];
 s32 minutes,centis;
-u16 y;
+u16 sy;
 const s32 mask=0x3ff;
-minutes=func_0207c8ec(arg4,60);
-centis=func_0207c8ec((arg4%60)*100,60);
-if(arg4<600)arg2+=(32>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask;
-y=(u16)arg1;
-AddSprite((u16)arg0,y,(u16)(arg2+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e00a4,arg3);
-arg0+=48;
-AddSprite((u16)arg0,y,(u16)(arg2+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
-arg0-=8;
+minutes=func_0207c8ec(value,60);
+centis=func_0207c8ec((value%60)*100,60);
+if(value<600)baseTile+=(32>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask;
+sy=(u16)y;
+AddSprite((u16)x,sy,(u16)(baseTile+((22>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e00a4,priority);
+x+=48;
+AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+x-=8;
 centis=func_0207c8ec(centis,10);
-AddSprite((u16)arg0,y,(u16)(arg2+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
-arg0-=8;
-AddSprite((u16)arg0,y,(u16)(arg2+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
-arg0-=8;
+AddSprite((u16)x,sy,(u16)(baseTile+(((centis%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+x-=8;
+AddSprite((u16)x,sy,(u16)(baseTile+((20>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
+x-=8;
 do{
-AddSprite((u16)arg0,y,(u16)(arg2+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,arg3);
+AddSprite((u16)x,sy,(u16)(baseTile+(((minutes%10)*2>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&mask)),data_027e0084,priority);
 minutes=func_0207c8ec(minutes,10);
-arg0-=8;
+x-=8;
 }while(minutes!=0);
 }
 
@@ -174,7 +175,7 @@ u8 func_0208eb68(void *arg0) {
 
 void func_0208eb80(void *p) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void func_0208e864(s16,s32,u16,u8,s32);
+void DrawTimerDigits(s16,s32,u16,u8,s32);
 s32 saved,bank,i,clamped;
 u32 mode,shift;
 u16 pal,base,tile,bankVal;
@@ -194,7 +195,7 @@ pal=(u16)((u32)(M2C_FIELD(p,u32 *,0x40)<<6)>>24);
 base=M2C_FIELD(p,u16 *,0x3c);
 tile=M2C_FIELD(p,u16 *,0x3e);
 clamped=M2C_FIELD(p,s32 *,0x58);
-func_0208e864((s16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&511),
+DrawTimerDigits((s16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&511),
 (M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a))&255,
 (u16)(base|((u16)(pal<<12))|(((u32)tile>>shift)&1023)),
 M2C_FIELD(p,u8 *,0x49),clamped);

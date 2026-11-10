@@ -150,7 +150,11 @@ s32 func_02040878(s32 arg0, s32 arg1) {
     return func_0203f058(begin, arg0, M2C_FIELD(q, s32 *, 0x24), M2C_FIELD(p, u16 *, 0xa4), (s32) &loc[0], slot);
 }
 
-s32 func_02040a28(s32 arg0, s32 arg1, s32 arg2) {
+/* Scans the connection's peer records from the current cursor for the next
+ * usable one: its payload must parse as a type-4 record whose VER field is 3
+ * and whose FME field equals my own id; then starts a connection to it.
+ * Stops and resets the timeout once it has wrapped around the record list. */
+s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 func_02032580(void *, void *);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 func_0204e1b4(void **, s32, void *);
@@ -160,53 +164,53 @@ s32 func_02040a28(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_02032398(void *);
     u64 func_02007004(void);
     s32 func_02040878(s32, s32);
-    extern M2C_UNK data_020fc90c;
-    extern M2C_UNK data_020fc918;
-    extern M2C_UNK data_020fc91c;
+    extern M2C_UNK gKeyFME;
+    extern M2C_UNK gKeyMDF;
+    extern M2C_UNK gKeyVER;
 
     s32 info[4];
-    s32 tmp[4];
+    s32 fields[4];
     u8 payload[0x208];
-    s32 rec;
+    s32 peerId;
     s32 found;
-    s32 next;
-    s32 first;
-    s32 i;
-    s32 a;
-    s32 b;
-    s32 ver;
-    s32 fme;
-    s32 mdf;
+    s32 nextIndex;
+    s32 scanFirst;
+    s32 playerIndex;
+    s32 resA;
+    s32 resB;
+    s32 verLen;
+    s32 fmeLen;
+    s32 mdfLen;
 
-    if (arg1 != 0) {
-        next = M2C_FIELD(GetConnection(), u8 *, 0x1a5);
+    if (fromCurrent != 0) {
+        nextIndex = M2C_FIELD(GetConnection(), u8 *, 0x1a5);
     } else {
         if (M2C_FIELD(GetConnection(), u8 *, 0x1a5) >= M2C_FIELD(GetConnection(), s32 *, 0x344) - 1) {
-            next = 0;
+            nextIndex = 0;
         } else {
-            next = M2C_FIELD(GetConnection(), u8 *, 0x1a5) + 1;
+            nextIndex = M2C_FIELD(GetConnection(), u8 *, 0x1a5) + 1;
         }
     }
     found = 0;
-    first = arg1 == 0;
+    scanFirst = fromCurrent == 0;
     for (;;) {
-        if (first || found) {
+        if (scanFirst || found) {
             M2C_FIELD(GetConnection(), u8 *, 0x1a5)++;
             if (M2C_FIELD(GetConnection(), u8 *, 0x1a5) >= M2C_FIELD(GetConnection(), s32 *, 0x344)) {
                 M2C_FIELD(GetConnection(), u8 *, 0x1a5) = 0;
             }
         }
-        if (found && next == M2C_FIELD(GetConnection(), u8 *, 0x1a5)) {
+        if (found && nextIndex == M2C_FIELD(GetConnection(), u8 *, 0x1a5)) {
             M2C_FIELD(GetConnection(), s32 *, 0x1c8) = 3000;
             M2C_FIELD(GetConnection(), u64 *, 0x1cc) = func_02007004();
             M2C_FIELD(GetConnection(), s32 *, 0x1bc) = 0;
             return 0;
         }
         found = 1;
-        rec = func_02032580(func_02039d98(),
+        peerId = func_02032580(func_02039d98(),
             M2C_FIELD(GetConnection(), s32 *, 0x2fc) +
             12 * M2C_FIELD((u8 *)GetConnection() + M2C_FIELD(GetConnection(), u8 *, 0x1a5), u8 *, 0x304));
-        if (rec == 0 || rec == -1) {
+        if (peerId == 0 || peerId == -1) {
             continue;
         }
         if (((s32 (*)(void *))func_02032398)(
@@ -214,40 +218,40 @@ s32 func_02040a28(s32 arg0, s32 arg1, s32 arg2) {
                 12 * M2C_FIELD((u8 *)GetConnection() + M2C_FIELD(GetConnection(), u8 *, 0x1a5), u8 *, 0x304)) == 0) {
             continue;
         }
-        for (i = 1; i <= (s32)M2C_FIELD(GetConnection(), u8 *, 0xd); i++) {
-            if (rec == M2C_FIELD((u8 *)GetConnection() + (i << 2), s32 *, 0xf4)) {
+        for (playerIndex = 1; playerIndex <= (s32)M2C_FIELD(GetConnection(), u8 *, 0xd); playerIndex++) {
+            if (peerId == M2C_FIELD((u8 *)GetConnection() + (playerIndex << 2), s32 *, 0xf4)) {
                 break;
             }
         }
-        if (i <= (s32)M2C_FIELD(GetConnection(), u8 *, 0xd)) {
+        if (playerIndex <= (s32)M2C_FIELD(GetConnection(), u8 *, 0xd)) {
             continue;
         }
-        a = func_0204e2f4((void **)M2C_FIELD(GetConnection(), void **, 0), rec, &tmp[1]);
-        b = func_0204e1b4((void **)M2C_FIELD(GetConnection(), void **, 0), tmp[1], &info[2]);
-        if ((a | b) != 0 || info[3] != 4) {
+        resA = func_0204e2f4((void **)M2C_FIELD(GetConnection(), void **, 0), peerId, &fields[1]);
+        resB = func_0204e1b4((void **)M2C_FIELD(GetConnection(), void **, 0), fields[1], &info[2]);
+        if ((resA | resB) != 0 || info[3] != 4) {
             continue;
         }
-        ver = func_02037df0((s8 *)&data_020fc91c, (s8 *)&tmp[3], (s8 *)payload, 0x2f);
-        fme = func_02037df0((s8 *)&data_020fc90c, (s8 *)&tmp[2], (s8 *)payload, 0x2f);
-        mdf = func_02037df0((s8 *)&data_020fc918, (s8 *)&tmp[0], (s8 *)payload, 0x2f);
-        if (!(ver > 0 && fme > 0 && mdf > 0)) {
+        verLen = func_02037df0((s8 *)&gKeyVER, (s8 *)&fields[3], (s8 *)payload, 0x2f);
+        fmeLen = func_02037df0((s8 *)&gKeyFME, (s8 *)&fields[2], (s8 *)payload, 0x2f);
+        mdfLen = func_02037df0((s8 *)&gKeyMDF, (s8 *)&fields[0], (s8 *)payload, 0x2f);
+        if (!(verLen > 0 && fmeLen > 0 && mdfLen > 0)) {
             continue;
         }
-        if (func_0206abd8(&tmp[3], 0, 10) != 3) {
+        if (func_0206abd8(&fields[3], 0, 10) != 3) {
             continue;
         }
-        if (func_0206abd8(&tmp[2], 0, 10) != M2C_FIELD(GetConnection(), u8 *, 0x16)) {
+        if (func_0206abd8(&fields[2], 0, 10) != M2C_FIELD(GetConnection(), u8 *, 0x16)) {
             continue;
         }
-        if (rec == arg2) {
-            arg0 = 1;
+        if (peerId == preferredPeer) {
+            force = 1;
         }
-        return func_02040878(rec, arg0);
+        return func_02040878(peerId, force);
     }
 }
 
 s32 func_02040cf0(M2C_UNK arg0) {
- void *GetConnection(); unsigned long long func_02007004(); s32 func_0203ea4c(); s32 func_02040a28(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
+ void *GetConnection(); unsigned long long func_02007004(); s32 func_0203ea4c(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK func_0203dc38(M2C_UNK,s32);
  void func_02043008(s32); void *p;
  M2C_FIELD(GetConnection(),s32*,0x208)=0;
  M2C_FIELD(GetConnection(),s32*,0x204)=0;
@@ -257,7 +261,7 @@ s32 func_02040cf0(M2C_UNK arg0) {
  if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
  SetConnectionState(3); func_0203ea4c(0); if(((s32 (*)())func_02043008)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1) {
- func_02040a28(0,0,arg0); if(((s32 (*)())func_0204084c)())return 0;
+ TryConnectToPeer(0,0,arg0); if(((s32 (*)())func_0204084c)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,0x15)==3) {
  func_0203dc38(6,0xfffec5e6);return 0;
  }
@@ -279,7 +283,7 @@ s32 func_02040dc8(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 s32 func_02040e1c(M2C_UNK arg0) {
     u64 func_02007004(void);
-    M2C_UNK func_02040a28(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02041be0(M2C_UNK);
     M2C_UNK func_02041ce0(void);
     M2C_UNK func_02041dd4(M2C_UNK);
@@ -331,7 +335,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1) {
         SetConnectionState(4);
-        func_02040a28(1, 0, 0);
+        TryConnectToPeer(1, 0, 0);
         goto done;
     }
     if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 2) {

@@ -167,7 +167,7 @@ func_ov001_0216f78c kind:function(thumb,size=0x38) addr:0x0216f78c
 func_ov001_0216f7c4 kind:function(thumb,size=0x1b8) addr:0x0216f7c4
 func_ov001_0216f97c kind:function(thumb,size=0x1b8) addr:0x0216f97c
 func_ov001_0216fb34 kind:function(thumb,size=0x46) addr:0x0216fb34
-func_ov001_0216fb7c kind:function(thumb,size=0x2b8) addr:0x0216fb7c
+AES_KeyExpansion kind:function(thumb,size=0x2b8) addr:0x0216fb7c
 func_ov001_0216fe34 kind:function(thumb,size=0x190) addr:0x0216fe34
 func_ov001_0216ffc4 kind:function(thumb,size=0x3bc) addr:0x0216ffc4
 func_ov001_02170380 kind:function(thumb,size=0x3bc) addr:0x02170380
@@ -1145,7 +1145,7 @@ data_ov001_0218c9e4 kind:data(any) addr:0x0218c9e4
 data_ov001_0218ca04 kind:data(any) addr:0x0218ca04
 data_ov001_0218ca44 kind:data(any) addr:0x0218ca44
 data_ov001_0218ca48 kind:data(any) addr:0x0218ca48
-data_ov001_0218ca50 kind:data(any) addr:0x0218ca50
+gAesRcon kind:data(any) addr:0x0218ca50
 data_ov001_0218ca78 kind:data(any) addr:0x0218ca78
 data_ov001_0218ce78 kind:data(any) addr:0x0218ce78
 data_ov001_0218d278 kind:data(any) addr:0x0218d278
@@ -1153,7 +1153,7 @@ data_ov001_0218d678 kind:data(any) addr:0x0218d678
 data_ov001_0218da78 kind:data(any) addr:0x0218da78
 data_ov001_0218de78 kind:data(any) addr:0x0218de78
 data_ov001_0218e278 kind:data(any) addr:0x0218e278
-data_ov001_0218e678 kind:data(any) addr:0x0218e678
+gAesSbox kind:data(any) addr:0x0218e678
 data_ov001_0218ea78 kind:data(any) addr:0x0218ea78
 data_ov001_0218ee78 kind:data(any) addr:0x0218ee78
 data_ov001_0218f278 kind:data(any) addr:0x0218f278

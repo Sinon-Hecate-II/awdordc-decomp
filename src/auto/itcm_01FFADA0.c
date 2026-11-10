@@ -136,7 +136,7 @@ enqueue:
     }
 }
 
-void func_01ffb3d0(s8 arg0) {
+void FillMapLayer(s8 arg0) {
 extern void **gCurrentMap;
 s32 y=0,x; void *base=*gCurrentMap;
 for(;y<M2C_FIELD(base,u16 *,0x5146);y++) {
@@ -176,7 +176,7 @@ for(i=0;i<32;i++) {
 }
 }
 #pragma opt_peephole reset
-void func_01ffb554(s32 arg0) {
+void SelectMapLayer(s32 arg0) {
 extern void **gCurrentMap; extern s8 *data_027e00cc;
 s32 i=0; void *base=*gCurrentMap;
 for(;i<M2C_FIELD(base,u16 *,0x5146);i++) {

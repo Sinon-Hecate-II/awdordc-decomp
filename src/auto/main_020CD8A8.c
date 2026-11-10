@@ -3,94 +3,99 @@
 
 #pragma push
 #pragma opt_propagation off
-void func_020cd8a8(void) {
-    s32 func_020cd7ec(u16, u16);
-    s32 func_020cd848(s32);
-    void func_020cdb70(s32, s32);
-    s32 func_020cdbdc(s32);
-    s32 func_020d1938(s32);
-    s32 func_020d19b4(s32);
-    extern u16 data_020f4e78[];
+/* Recomputes the per-player team-color/relation byte (map+0x67C3) for the
+ * current turn and picks the two team indices (map+0x52B8/0x52BA) that decide
+ * which players share map data. The active player's value comes from a lookup
+ * on its kind; its allies inherit it, and when a second human team exists that
+ * team is given the opposite value. */
+void SetupPlayerTeams(void) {
+    s32 GetPlayerRelation(u16, u16);
+    s32 PlayerHasHumanAlly(s32);
+    void SetAllyTeamColor(s32, s32);
+    s32 HumansShareOneTeam(s32);
+    s32 IsPlayerActive(s32);
+    s32 IsPlayerHuman(s32);
+    extern u16 gSideByControlKind[];
     extern void **gCurrentMap;
-    s32 sp0;
-    s32 temp_r4_2;
-    s32 var_r11;
-    s32 var_r1;
-    s32 var_r3;
-    s32 var_r4;
-    u16 temp_r7;
-    s32 var_r8;
-    s32 var_r9;
-    s32 var_r10;
-    u16 temp_r5;
-    u16 temp_r0;
-    u16 temp_r0_2;
+    s32 opposingColor;
+    s32 activeRecord;
+    s32 k;
+    s32 otherIndex;
+    s32 clearSlot;
+    s32 slotOffset;
+    u16 opponent;
+    s32 m;
+    s32 teammate;
+    s32 nextIndex;
+    u16 activeIndex;
+    u16 activePlayer;
+    u16 activeIndex2;
 
-    u16 var_r4_2;
-    u16 var_r4_3;
-    void *temp_r2;
-    void *temp_r3;
-    void *temp_r4;
-    void *temp_r6;
+    u16 teamColor;
+    u16 scanSlot;
+    void *mapFinal;
+    void *mapActive;
+    void *mapLast;
+    void *mapStore;
 
-    var_r3 = 1;
-    var_r4 = 0x8C;
+    clearSlot = 1;
+    slotOffset = 0x8C;
     M2C_FIELD(*gCurrentMap, s8 *, 0x67C3) = 0;
     do {
-        var_r3 += 1;
-        M2C_FIELD((*gCurrentMap + var_r4), s8 *, 0x67C3) = 0;
-        var_r4 += 0x8C;
-    } while (var_r3 < 5);
-    temp_r3 = *gCurrentMap;
-    var_r4_2 = data_020f4e78[M2C_FIELD(((M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C) + (s32) temp_r3), u8 *, 0x67C2)];
-    if ((var_r4_2 == 1) && (func_020cd848(M2C_FIELD(temp_r3,u16 *,0x52A4)) != 0)) {
-        var_r4_2 |= 2;
+        clearSlot += 1;
+        M2C_FIELD((*gCurrentMap + slotOffset), s8 *, 0x67C3) = 0;
+        slotOffset += 0x8C;
+    } while (clearSlot < 5);
+    mapActive = *gCurrentMap;
+    teamColor = gSideByControlKind[M2C_FIELD(((M2C_FIELD(mapActive, u16 *, 0x52A4) * 0x8C) + (s32) mapActive), u8 *, 0x67C2)];
+    if ((teamColor == 1) && (PlayerHasHumanAlly(M2C_FIELD(mapActive,u16 *,0x52A4)) != 0)) {
+        teamColor |= 2;
     }
-    temp_r6 = *gCurrentMap;
-    temp_r5=M2C_FIELD(temp_r6,u16 *,0x52A4);
-    M2C_FIELD(((temp_r5 * 0x8C) + (s32) temp_r6), s8 *, 0x67C3) = (s8) var_r4_2;
-    func_020cdb70(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r4_2);
-    if (func_020cdbdc(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
-        sp0 = var_r4_2 ^ 3;
-        var_r11 = 1;
+    mapStore = *gCurrentMap;
+    activeIndex=M2C_FIELD(mapStore,u16 *,0x52A4);
+    M2C_FIELD(((activeIndex * 0x8C) + (s32) mapStore), s8 *, 0x67C3) = (s8) teamColor;
+    SetAllyTeamColor(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), teamColor);
+    if (HumansShareOneTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+        opposingColor = teamColor ^ 3;
+        k = 1;
         do {
-            temp_r0 = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
-            var_r1 = temp_r0 + var_r11;
-            if (var_r1 >= 5) {
-                var_r1 -= 4;
+            activePlayer = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
+            otherIndex = activePlayer + k;
+            if (otherIndex >= 5) {
+                otherIndex -= 4;
             }
-            temp_r7 = (u16) var_r1;
-            if ((func_020cd7ec(temp_r0, temp_r7) == 1) && (func_020d19b4(temp_r7) != 0)) {
-                var_r10 = temp_r7 + 1;
-                M2C_FIELD(((temp_r7 * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) sp0;
-                var_r8 = 1;
+            opponent = (u16) otherIndex;
+            if ((GetPlayerRelation(activePlayer, opponent) == 1) && (IsPlayerHuman(opponent) != 0)) {
+                nextIndex = opponent + 1;
+                M2C_FIELD(((opponent * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) opposingColor;
+                m = 1;
                 do {
-                    var_r9 = var_r10;
-                    if (var_r10 >= 5) {
-                        var_r9 = var_r10 - 4;
+                    teammate = nextIndex;
+                    if (nextIndex >= 5) {
+                        teammate = nextIndex - 4;
                     }
-                    if (func_020cd7ec(temp_r7, (u16) var_r9) == 2) {
-                        M2C_FIELD(((var_r9 * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) sp0;
+                    if (GetPlayerRelation(opponent, (u16) teammate) == 2) {
+                        M2C_FIELD(((teammate * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) = (u8) opposingColor;
                     }
-                    var_r8 += 1;
-                    var_r10 += 1;
-                } while (var_r8 < 4);
+                    m += 1;
+                    nextIndex += 1;
+                } while (m < 4);
             }
-            var_r11 += 1;
-        } while (var_r11 < 4);
+            k += 1;
+        } while (k < 4);
     }
-    var_r4_3 = 1;
+    scanSlot = 1;
 loop_19:
-    if (var_r4_3 == 5) {
-        temp_r4 = *gCurrentMap;
-        temp_r4_2 = (M2C_FIELD(temp_r4, u16 *, 0x52A4) * 0x8C) + (s32) (temp_r4 + 0x67A4);
-        M2C_FIELD(temp_r4_2, u8 *, 0x1F) = (u8) (M2C_FIELD(temp_r4_2, u8 *, 0x1F) | 2);
-        temp_r2 = *gCurrentMap;
-        temp_r0_2 = M2C_FIELD(temp_r2, u16 *, 0x52A4);
-        func_020cdb70(temp_r0_2, M2C_FIELD(((temp_r0_2 * 0x8C) + (s32) temp_r2), u8 *, 0x67C3));
-    } else if (((func_020d1938(var_r4_3) == 0) || (func_020d19b4(var_r4_3) == 0)) && ((func_020d1938(var_r4_3) == 0) || !(M2C_FIELD(((var_r4_3 * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) & 2))) {
-        var_r4_3 += 1;
-        if ((u32) var_r4_3 < 6U) {
+    if (scanSlot == 5) {
+        mapLast = *gCurrentMap;
+        activeRecord = (M2C_FIELD(mapLast, u16 *, 0x52A4) * 0x8C) + (s32) (mapLast + 0x67A4);
+        M2C_FIELD(activeRecord, u8 *, 0x1F) = (u8) (M2C_FIELD(activeRecord, u8 *, 0x1F) | 2);
+        mapFinal = *gCurrentMap;
+        activeIndex2 = M2C_FIELD(mapFinal, u16 *, 0x52A4);
+        SetAllyTeamColor(activeIndex2, M2C_FIELD(((activeIndex2 * 0x8C) + (s32) mapFinal), u8 *, 0x67C3));
+    } else if (((IsPlayerActive(scanSlot) == 0) || (IsPlayerHuman(scanSlot) == 0)) && ((IsPlayerActive(scanSlot) == 0) || !(M2C_FIELD(((scanSlot * 0x8C) + (s32) *gCurrentMap), u8 *, 0x67C3) & 2))) {
+        scanSlot += 1;
+        if ((u32) scanSlot < 6U) {
             goto loop_19;
         }
     }
@@ -98,8 +103,8 @@ loop_19:
     M2C_FIELD(*gCurrentMap, s16 *, 0x52BA) = 1;
 }
 #pragma pop
-void func_020cdb70(s32 a, s32 b) {
-    s32 func_020cd7ec(u16, u16);
+void SetAllyTeamColor(s32 a, s32 b) {
+    s32 GetPlayerRelation(u16, u16);
     extern void **gCurrentMap;
     s32 i;
     s32 j;
@@ -111,14 +116,14 @@ void func_020cdb70(s32 a, s32 b) {
     do {
         j = a + i;
         if (j >= 5) j -= 4;
-        if (func_020cd7ec(id, (u16)j) == 2) {
+        if (GetPlayerRelation(id, (u16)j) == 2) {
             M2C_FIELD(*gCurrentMap + j * 140, u8 *, 0x67c3) = v;
         }
         i++;
     } while (i < 4);
 }
 #pragma scheduling reset
-s32 func_020cdbdc(s32 a){s32 func_020d1938(s32);s32 func_020d19b4(s32);extern void **gCurrentMap;s32 count;u8 team;s32 i,off,own;u8 v;s32 p,q;if(func_020d19b4(a))return 0;off=140;own=a*140;team=0;count=0;i=1;do{if(func_020d1938(i)&&i!=a){if(count==0){if(func_020d19b4(i)){p=(s32)*gCurrentMap;v=M2C_FIELD(p+off,u8 *,0x67ca);if(v!=M2C_FIELD(own+p,u8 *,0x67ca)){team=v;count++;}}}else if(func_020d19b4(i)){q=(s32)*gCurrentMap;v=M2C_FIELD(q+off,u8 *,0x67ca);if(team!=v&&v!=M2C_FIELD(own+q,u8 *,0x67ca))return 0;}}i++;off+=140;}while(i<5);return 1;}
+s32 HumansShareOneTeam(s32 a){s32 IsPlayerActive(s32);s32 IsPlayerHuman(s32);extern void **gCurrentMap;s32 count;u8 team;s32 i,off,own;u8 v;s32 p,q;if(IsPlayerHuman(a))return 0;off=140;own=a*140;team=0;count=0;i=1;do{if(IsPlayerActive(i)&&i!=a){if(count==0){if(IsPlayerHuman(i)){p=(s32)*gCurrentMap;v=M2C_FIELD(p+off,u8 *,0x67ca);if(v!=M2C_FIELD(own+p,u8 *,0x67ca)){team=v;count++;}}}else if(IsPlayerHuman(i)){q=(s32)*gCurrentMap;v=M2C_FIELD(q+off,u8 *,0x67ca);if(team!=v&&v!=M2C_FIELD(own+q,u8 *,0x67ca))return 0;}}i++;off+=140;}while(i<5);return 1;}
 
 #pragma opt_strength_reduction off
 void func_020cdcc4(s32 a,s32 b,s16 r,s32 v){
@@ -178,11 +183,11 @@ void func_020cdfec(s32 unit, s32 x, s32 y) {
 }
 
 s32 func_020ce0ec(s32 a,s32 b) {
-s32 func_020d273c(s32,s32);
+s32 IsSameTeam(s32,s32);
 extern s8 data_ov000_021b5540[],data_ov000_021b56c0[];
 s32 i=b&31,v;
 if(data_ov000_021b5540[i])return 1;
-if(data_ov000_021b56c0[i]){v=(b&224)>>5;if(!v)return 1;if(!func_020d273c(v,a))return 1;}
+if(data_ov000_021b56c0[i]){v=(b&224)>>5;if(!v)return 1;if(!IsSameTeam(v,a))return 1;}
 return 0;
 }
 
@@ -255,9 +260,9 @@ y=(s16)(y+1);dy=(s16)(dy+1);
 void func_020ce434(M2C_UNK a,M2C_UNK b,M2C_UNK c,u32 d,u8 e,u8 f){void func_020ce150(M2C_UNK,M2C_UNK,M2C_UNK,u8,s32,s32);extern void **gCurrentMap;switch(d){case 1:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);return;case 3:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8),e,f);case 2:func_020ce150(a,b,c,(u8)M2C_FIELD(*gCurrentMap,u16 *,0x52ba),e,f);case 0:default:break;}}
 
 void func_020ce508(void *p,s32 x,s32 y) {
-s32 func_020a7310(void *),func_020a33c4(s32),func_020a27f8(s32,s32),func_020a7824(void *,s32,s32);
+s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),func_020a7824(void *,s32,s32);
 extern void **gCurrentMap;
-s32 player=func_020a7310(p);
+s32 player=GetUnitOwner(p);
 s32 flag;
 s32 allowed;
 s32 value;

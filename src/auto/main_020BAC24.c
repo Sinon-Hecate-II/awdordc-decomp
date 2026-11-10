@@ -103,7 +103,7 @@ void func_020bb110(void) {
     M2C_UNK func_020a7568(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020baa64();
     M2C_UNK func_020baaac();
-    M2C_UNK func_020d19b4(u16);
+    M2C_UNK IsPlayerHuman(u16);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cd5d8();
     M2C_UNK func_020c2e4c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -148,13 +148,13 @@ void func_020bb110(void) {
         t2 = (u16)((sel6 << 16) >> 27);
         if (t2 == 0) {
             pl = M2C_FIELD(map, u16 *, 0x52A4);
-            if (func_020d19b4(pl) != 0) {
+            if (IsPlayerHuman(pl) != 0) {
                 func_02091c20(9, 1);
             }
         }
         if (r4 == 20) {
             pl = M2C_FIELD(map, u16 *, 0x52A4);
-            if (func_020d19b4(pl) != 0) {
+            if (IsPlayerHuman(pl) != 0) {
                 func_02091c20(10, 1);
             }
         }
@@ -249,7 +249,7 @@ void func_020bb110(void) {
 }
 
 void func_020bb458(void) {
-    s32 func_020d19b4(u16);
+    s32 IsPlayerHuman(u16);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020baa64(void);
     M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -259,7 +259,7 @@ void func_020bb458(void) {
 
     u8 *unit;
 
-    if (func_020d19b4(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) != 0) {
         func_02091c20(0x13, 1);
     }
     unit = (u8 *)*data_027e0058 + 0x59A4 +
@@ -317,13 +317,13 @@ void func_020bb5c0(void *arg0) {
 }
 
 void func_020bb608(s32 arg0) {
-    M2C_UNK func_020d19b4(u16);
+    M2C_UNK IsPlayerHuman(u16);
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     extern s32 data_0215be0c;
     extern s16 data_0212923c[];
 
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
         func_02091c20(0x14, 1);
         {
             u8 *sel;
@@ -374,9 +374,9 @@ void func_020bb768(void) {
 void func_020bbac8(void) {
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020cb8cc(M2C_UNK);
-    s32 func_020d19b4(u16);
+    s32 IsPlayerHuman(u16);
     extern void **gCurrentMap;
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
         func_02091c20(0x10, 1);
     }
     func_020cb8cc(0);

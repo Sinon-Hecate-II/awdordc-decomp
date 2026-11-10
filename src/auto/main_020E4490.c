@@ -30,7 +30,7 @@ void func_020e4490(void) {
     M2C_UNK func_02075efc();
     void func_020e476c(void);
     M2C_UNK func_020e349c();
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     extern s32 data_027e15c0;
     extern u8 data_027e15b4;
     extern u8 data_027e15b8;
@@ -41,7 +41,7 @@ void func_020e4490(void) {
     s32 var_r0;
     s32 var_r8;
 
-    data_027e15bc = 0;
+    gFrameCounter = 0;
     data_027e15c0 = 0;
     data_027e15b4 = 0;
     data_027e15b8 = 0;
@@ -93,7 +93,7 @@ void func_020e4570(void) {
 
 void func_020e4594(void) {
 extern u8 data_027e15b4;
-extern s32 data_027e15bc;
+extern s32 gFrameCounter;
 extern void (*data_02168fe8)(void);
 void func_0208f4d8(void);
 void func_0208184c(void);
@@ -111,7 +111,7 @@ void func_02004e60(int,int);
 if (!data_027e15b4) return;
 data_02168fe8=0;
 func_0208f4d8();
-data_027e15bc++;
+gFrameCounter++;
 func_0208184c(); func_02081ae4(); func_02090390(); func_02081ee4();
 func_01ffa13c(3);func_01ffa5b8();
 func_01ffa13c(4);func_01ffa5b8();

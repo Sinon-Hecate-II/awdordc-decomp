@@ -69,104 +69,106 @@ void func_020a4d58(void) {
     func_020a4528();
 }
 
-void func_020a4d64(void) {
-    extern s32 data_0215be08;
-    data_0215be08 = 0;
+void ClearSelectionQueue(void) {
+    extern s32 gSelectionQueueCount;
+    gSelectionQueueCount = 0;
 }
 
-void func_020a4d78(s32 a,s32 b,s32 c,s32 d) {
-extern Unk020APosition *data_0215be04; extern s32 data_0215be08;
-Unk020APosition *p=data_0215be04;
-p[data_0215be08].c=a;p[data_0215be08].d=b;p[data_0215be08].a=c;p[data_0215be08].b=d;data_0215be08++;
+void AppendSelectionEntry(s32 a,s32 b,s32 c,s32 d) {
+extern Unk020APosition *gSelectionQueue; extern s32 gSelectionQueueCount;
+Unk020APosition *p=gSelectionQueue;
+p[gSelectionQueueCount].c=a;p[gSelectionQueueCount].d=b;p[gSelectionQueueCount].a=c;p[gSelectionQueueCount].b=d;gSelectionQueueCount++;
 }
 
-s32 func_020a4dd0(void) {
+s32 GetOrderCenterOffsetX(void) {
     return 1;
 }
 
-s32 func_020a4dd8(void) {
+s32 GetOrderCenterOffsetY(void) {
     return 1;
 }
 
 #pragma opt_strength_reduction off
-void func_020a4de0(Unk020AEntry *a) {
+/* Queues up to four enemy units inside the radius-5 diamond around an order's
+   centre, highest value-and-health score first, as map selections. */
+void SelectAreaOrderTargets(Unk020AEntry *order) {
 extern s32 *gCurrentMap;extern u8 data_ov000_021b5bfc[];
-void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb734(s32,s32,s32,s8);
-s32 func_020d273c(s32,s32);s32 func_ov000_021a947c(s32,s32,s32);s32 func_020a600c(s32);
-s32 dx,dy;
-u16 bx,by;
+void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb734(s32,s32,s32,s8);
+s32 IsSameTeam(s32,s32);s32 func_ov000_021a947c(s32,s32,s32);s32 func_020a600c(s32);
+s32 centerX,centerY;
+u16 bestX,bestY;
 u8 *unit;
-u32 best;
-s32 n,y,x,bestId;
+u32 bestScore;
+s32 count,y,x,bestId;
 u32 score;
-u8 ids[4],*out;
-s32 map,i,id;
-u16 row;
-u8 *scan,*cell;
-func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);
-dx=func_020a4dd0();dy=func_020a4dd8();
-func_01ffb734(M2C_FIELD(a,u8 *,0)+dx,M2C_FIELD(a,u8 *,1)+dy,5,0);
-n=0;out=ids;
+u8 chosenIds[4],*out;
+s32 map,seenIndex,unitId;
+u16 rowOffset;
+u8 *scan;
+SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);
+centerX=GetOrderCenterOffsetX();centerY=GetOrderCenterOffsetY();
+func_01ffb734(M2C_FIELD(order,u8 *,0)+centerX,M2C_FIELD(order,u8 *,1)+centerY,5,0);
+count=0;out=chosenIds;
 do{
-bestId=0;best=0;
+bestId=0;bestScore=0;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 map=*gCurrentMap;
 if(M2C_FIELD(M2C_FIELD(map+y*4,s8 **,0x52e8),s8 *,x)<0)continue;
-row=M2C_FIELD(map+y*2,u16 *,0x3758);
-id=M2C_FIELD(row+(map+x),u8 *,0);
-if(!id)continue;
-if(func_020d273c(M2C_FIELD(map,u16 *,0x52a4),(id>>6)+1)==1)continue;
+rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);
+unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
+if(!unitId)continue;
+if(IsSameTeam(M2C_FIELD(map,u16 *,0x52a4),(unitId>>6)+1)==1)continue;
 if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),x,y))continue;
-i=0;
-if(n>0){map=*gCurrentMap;row=M2C_FIELD(map+y*2,u16 *,0x3758);id=M2C_FIELD(row+(map+x),u8 *,0);scan=ids;
-do{if(*scan==id)break;scan++;i++;}while(i<n);}
-if(i!=n)continue;
+seenIndex=0;
+if(count>0){map=*gCurrentMap;rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);scan=chosenIds;
+do{if(*scan==unitId)break;scan++;seenIndex++;}while(seenIndex<count);}
+if(seenIndex!=count)continue;
 map=*gCurrentMap;
-row=M2C_FIELD(map+y*2,u16 *,0x3758);
-id=M2C_FIELD(row+(map+x),u8 *,0);
-unit=(u8 *)(map+0x59a4+id*14);
+rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);
+unitId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
+unit=(u8 *)(map+0x59a4+unitId*14);
 if(M2C_FIELD(unit,u16 *,4)&32)continue;
-if(!func_020a600c(id))continue;
+if(!func_020a600c(unitId))continue;
 score=M2C_FIELD(data_ov000_021b5bfc+((u32)(unit[0]<<26)>>26)*112,u16 *,4)*((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25);
-if(best>score)continue;
-bx=(u16)x;by=(u16)y;best=score;
+if(bestScore>score)continue;
+bestX=(u16)x;bestY=(u16)y;bestScore=score;
 map=*gCurrentMap;
-row=M2C_FIELD(map+y*2,u16 *,0x3758);
-bestId=M2C_FIELD(row+(map+x),u8 *,0);
+rowOffset=M2C_FIELD(map+y*2,u16 *,0x3758);
+bestId=M2C_FIELD(rowOffset+(map+x),u8 *,0);
 }}
 if(!bestId)break;
 *out++=bestId;
-func_020a4d78(bx,by,bestId,M2C_FIELD(a,s8 *,7));
-n++;
-}while(n<4);
-if(n)return;
-func_020a4d64();
+AppendSelectionEntry(bestX,bestY,bestId,M2C_FIELD(order,s8 *,7));
+count++;
+}while(count<4);
+if(count)return;
+ClearSelectionQueue();
 }
 #pragma opt_strength_reduction reset
 void func_020a5080(Unk020ABaseEntry *a){
-extern s32 *gCurrentMap;void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb80c(s32,s32,s32,s32);
+extern s32 *gCurrentMap;void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb80c(s32,s32,s32,s32);
 s32 found=0,x,y,p;u8 id;
-func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);func_01ffb80c(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
+SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);func_01ffb80c(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 p=*gCurrentMap;
 if(M2C_FIELD(((s8 **)(p+0x52e8))[y],s8 *,x)>=0){
 id=M2C_FIELD(((u16 *)(p+0x3758))[y]+(p+x),u8 *,0x508);
-if(id){func_020a4d78((u16)x,(u16)y,id,M2C_FIELD(a,s8 *,7));found=1;}
+if(id){AppendSelectionEntry((u16)x,(u16)y,id,M2C_FIELD(a,s8 *,7));found=1;}
 }
 }}
-if(!found)func_020a4d64();
+if(!found)ClearSelectionQueue();
 }
 
 #pragma opt_lifetimes off
 void func_020a51a4(Unk020ABaseEntry *p) {
-extern s32 *gCurrentMap; void func_01ffb554(s32);void func_01ffb3d0(s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void func_020a4d64(void);
+extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
 s16 pos[2];s32 map; s32 centerY;register s32 right;register s32 yy;register s32 xx;register s32 zero;register u32 cy;register s32 bottom;s32 left,top,dist;
-func_01ffb554(*gCurrentMap+0x1e30);func_01ffb3d0(-1);
+SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);
 func_01ffb918(p->x,p->y,(u32)(M2C_FIELD(p,u16 *,2)<<16)>>30,0,0);
-if(!func_ov000_021aab4c(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){func_020a4d64();return;}
-func_020a4d78((u16)pos[0],(u16)pos[1],0,0);
+if(!func_ov000_021aab4c(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){ClearSelectionQueue();return;}
+AppendSelectionEntry((u16)pos[0],(u16)pos[1],0,0);
 left=pos[0]-2;if(left<0)left=0;
 centerY=pos[1];top=centerY-2;if(top<0)top=0;
 right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(pos[0]+2<right)right=pos[0]+2;
@@ -174,17 +176,17 @@ bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(centerY+2<bottom)bottom=centerY
 for(yy=top;yy<=bottom;yy++){xx=left;if(xx<=right){cy=(u16)yy;zero=0;do{
 dist=zero;if(pos[0]-xx>0)dist+=pos[0]-xx;else dist+=xx-pos[0];
 if(pos[1]-yy>0)dist+=pos[1]-yy;else dist+=yy-pos[1];
-if(dist>=0 && dist<=2){u8 c;s32 mm=*gCurrentMap;c=M2C_FIELD(((u16 *)mm)[yy+0x1bac]+(mm+xx),u8 *,0x508);if(c)func_020a4d78((u16)xx,cy,c,M2C_FIELD(p,s8 *,7));}
+if(dist>=0 && dist<=2){u8 c;s32 mm=*gCurrentMap;c=M2C_FIELD(((u16 *)mm)[yy+0x1bac]+(mm+xx),u8 *,0x508);if(c)AppendSelectionEntry((u16)xx,cy,c,M2C_FIELD(p,s8 *,7));}
 xx++;}while(xx<=right);}}
 }
 #pragma opt_lifetimes reset
 s32 func_020a5364(Unk020AEntry *p,s8 color,u8 arg2) {
-void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 func_020a4dd0(void);s32 func_020a4dd8(void);extern s32 *gCurrentMap;
+void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void func_01ffb918(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
 Unk020ABaseEntry *bp=(Unk020ABaseEntry *)p;
 if(!func_020a4c7c(p))return 0;
 switch(p->type) {
 case 4: {
-s32 dx=func_020a4dd0();s32 dy=func_020a4dd8();
+s32 dx=GetOrderCenterOffsetX();s32 dy=GetOrderCenterOffsetY();
 func_01ffb734(bp->x+dx,bp->y+dy,5,color);return 1;
 }
 case 6:func_01ffb80c(bp->x,bp->y,p->top,color);return 1;
@@ -202,13 +204,13 @@ void func_020a54c4(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
 }
 
-void func_020a54d0(void *a) {void func_01ffa574();extern s32 data_0215be08;if(M2C_FIELD(a,s16 *,84)!=data_0215be08)return;func_01ffa574(a);}
+void func_020a54d0(void *a) {void func_01ffa574();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;func_01ffa574(a);}
 
 void func_020a54f4(void *a){
 M2C_UNK func_01ffa8c4(void *,s32);void *func_020a45f8(s16,s16);
 M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK func_020b7294(s16,s16,u32,s32,void *);
-extern Unk020APosition *data_0215be04;
-Unk020APosition *base=data_0215be04,*p,*q; s32 i=0;s16 n,m;void *entry;
+extern Unk020APosition *gSelectionQueue;
+Unk020APosition *base=gSelectionQueue,*p,*q; s32 i=0;s16 n,m;void *entry;
 while(base[i].a==0)i++;
 n=M2C_FIELD(a,s16 *,0x54);if(base[n].a)return;p=(Unk020APosition *)((u8 *)base+i);
 switch(p->b){
@@ -241,27 +243,27 @@ switch(p->type){case 4:case 5:case 6:case 7: M2C_FIELD(p,s8 *,6)-=1;break;}
 
 void func_020a5700(void *arg0) {
 extern s32 *gCurrentMap;
-void func_020a4d64(void);s32 func_01ffa8c4(void *,s32);
-func_020a4d64();
+void ClearSelectionQueue(void);s32 func_01ffa8c4(void *,s32);
+ClearSelectionQueue();
 while(M2C_FIELD(arg0,Unk020AEntry **,0x34)->type) {
 if(func_020a4c7c(M2C_FIELD(arg0,Unk020AEntry **,0x34))) {
 s32 type; Unk020AEntry *p=M2C_FIELD(arg0,Unk020AEntry **,0x34);
 if((s32)((Unk020ABaseEntry *)p)->player==M2C_FIELD(*gCurrentMap,u16 *,0x52a4) && M2C_FIELD(p,s8 *,6)==0) {
 type=p->type; switch(type) {
 case 4:
-func_020a4d78(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
-func_020a4de0(M2C_FIELD(arg0,Unk020AEntry **,0x34));
+AppendSelectionEntry(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
+SelectAreaOrderTargets(M2C_FIELD(arg0,Unk020AEntry **,0x34));
 M2C_FIELD(M2C_FIELD(arg0,Unk020AEntry **,0x34),u8 *,6)=M2C_FIELD(arg0,Unk020AEntry **,0x34)->kind;
 M2C_FIELD(arg0,Unk020AEntry **,0x34)++;
 return;
 case 6:case 7:
-func_020a4d78(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
+AppendSelectionEntry(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
 func_020a5080(M2C_FIELD(arg0,Unk020ABaseEntry **,0x34));
 M2C_FIELD(M2C_FIELD(arg0,Unk020AEntry **,0x34),u8 *,6)=M2C_FIELD(arg0,Unk020AEntry **,0x34)->kind;
 M2C_FIELD(arg0,Unk020AEntry **,0x34)++;
 return;
 case 5:
-func_020a4d78(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
+AppendSelectionEntry(((Unk020ABaseEntry *)p)->x,((Unk020ABaseEntry *)p)->y,0,type);
 func_020a51a4(M2C_FIELD(arg0,Unk020ABaseEntry **,0x34));
 M2C_FIELD(M2C_FIELD(arg0,Unk020AEntry **,0x34),u8 *,6)=M2C_FIELD(arg0,Unk020AEntry **,0x34)->kind;
 M2C_FIELD(arg0,Unk020AEntry **,0x34)++;

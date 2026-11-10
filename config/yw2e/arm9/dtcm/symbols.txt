@@ -49,5 +49,5 @@ data_027e0a9c kind:bss addr:0x027e0a9c
 data_027e0fce kind:bss addr:0x027e0fce
 data_027e15b4 kind:bss addr:0x027e15b4
 data_027e15b8 kind:bss addr:0x027e15b8
-data_027e15bc kind:bss addr:0x027e15bc
+gFrameCounter kind:bss addr:0x027e15bc
 data_027e15c0 kind:bss addr:0x027e15c0

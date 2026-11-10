@@ -99,10 +99,10 @@ func_ov000_0216ca8c kind:function(arm,size=0x138) addr:0x0216ca8c
 func_ov000_0216cbc4 kind:function(arm,size=0x88) addr:0x0216cbc4
 func_ov000_0216cc4c kind:function(arm,size=0x38) addr:0x0216cc4c
 func_ov000_0216cc84 kind:function(arm,size=0x6c) addr:0x0216cc84
-func_ov000_0216ccf0 kind:function(arm,size=0x10) addr:0x0216ccf0
-func_ov000_0216cd00 kind:function(arm,size=0x2c) addr:0x0216cd00
+GetUnitKind kind:function(arm,size=0x10) addr:0x0216ccf0
+GetUnitHealthBarCount kind:function(arm,size=0x2c) addr:0x0216cd00
 func_ov000_0216cd2c kind:function(arm,size=0x10) addr:0x0216cd2c
-func_ov000_0216cd3c kind:function(arm,size=0x10) addr:0x0216cd3c
+GetUnitAmmo kind:function(arm,size=0x10) addr:0x0216cd3c
 func_ov000_0216cd4c kind:function(arm,size=0x2c) addr:0x0216cd4c
 func_ov000_0216cd78 kind:function(arm,size=0x18) addr:0x0216cd78
 func_ov000_0216cd90 kind:function(arm,size=0x14) addr:0x0216cd90
@@ -230,7 +230,7 @@ func_ov000_0217519c kind:function(arm,size=0x18) addr:0x0217519c
 func_ov000_021751b4 kind:function(arm,size=0x7c) addr:0x021751b4
 func_ov000_02175230 kind:function(arm,size=0x4) addr:0x02175230
 func_ov000_02175234 kind:function(arm,size=0xdc) addr:0x02175234
-func_ov000_02175310 kind:function(arm,size=0x2a4) addr:0x02175310
+FillUnitInfo kind:function(arm,size=0x2a4) addr:0x02175310
 func_ov000_021755b4 kind:function(arm,size=0x18c) addr:0x021755b4
 func_ov000_02175740 kind:function(arm,size=0x138) addr:0x02175740
 func_ov000_02175878 kind:function(arm,size=0x140) addr:0x02175878
@@ -241,7 +241,7 @@ func_ov000_02175fb0 kind:function(arm,size=0xa2c) addr:0x02175fb0
 func_ov000_021769dc kind:function(arm,size=0x30) addr:0x021769dc
 func_ov000_02176a0c kind:function(arm,size=0x90) addr:0x02176a0c
 func_ov000_02176a9c kind:function(arm,size=0x5c) addr:0x02176a9c
-func_ov000_02176af8 kind:function(arm,size=0x2d4) addr:0x02176af8
+BuildUnitRecommendations kind:function(arm,size=0x2d4) addr:0x02176af8
 func_ov000_02176dcc kind:function(arm,size=0x3c) addr:0x02176dcc
 func_ov000_02176e08 kind:function(arm,size=0x20) addr:0x02176e08
 func_ov000_02176e28 kind:function(arm,size=0xeb8) addr:0x02176e28
@@ -258,7 +258,7 @@ func_ov000_02179be0 kind:function(arm,size=0x104) addr:0x02179be0
 func_ov000_02179ce4 kind:function(arm,size=0x58) addr:0x02179ce4
 func_ov000_02179d3c kind:function(arm,size=0x10c) addr:0x02179d3c
 func_ov000_02179e48 kind:function(arm,size=0x260) addr:0x02179e48
-func_ov000_0217a0a8 kind:function(arm,size=0x2d0) addr:0x0217a0a8
+HasBetterAttackerNearby kind:function(arm,size=0x2d0) addr:0x0217a0a8
 func_ov000_0217a378 kind:function(arm,size=0x224) addr:0x0217a378
 func_ov000_0217a59c kind:function(arm,size=0x304) addr:0x0217a59c
 func_ov000_0217a8a0 kind:function(arm,size=0x18c) addr:0x0217a8a0
@@ -288,7 +288,7 @@ func_ov000_0217c9f4 kind:function(arm,size=0x60c) addr:0x0217c9f4
 func_ov000_0217d000 kind:function(arm,size=0x150) addr:0x0217d000
 func_ov000_0217d150 kind:function(arm,size=0x268) addr:0x0217d150
 func_ov000_0217d3b8 kind:function(arm,size=0x70) addr:0x0217d3b8
-func_ov000_0217d428 kind:function(arm,size=0x2b4) addr:0x0217d428
+AssignUnitMoveTargets kind:function(arm,size=0x2b4) addr:0x0217d428
 func_ov000_0217d6dc kind:function(arm,size=0x174) addr:0x0217d6dc
 func_ov000_0217d850 kind:function(arm,size=0x1c) addr:0x0217d850
 func_ov000_0217d86c kind:function(arm,size=0x464) addr:0x0217d86c
@@ -436,7 +436,7 @@ func_ov000_0218cbc0 kind:function(arm,size=0x42c) addr:0x0218cbc0
 func_ov000_0218cfec kind:function(arm,size=0x54) addr:0x0218cfec
 func_ov000_0218d040 kind:function(arm,size=0x3cc) addr:0x0218d040
 func_ov000_0218d40c kind:function(arm,size=0xa8) addr:0x0218d40c
-func_ov000_0218d4b4 kind:function(arm,size=0x454) addr:0x0218d4b4
+FindBestMoveTarget kind:function(arm,size=0x454) addr:0x0218d4b4
 func_ov000_0218d908 kind:function(arm,size=0x49c) addr:0x0218d908
 func_ov000_0218dda4 kind:function(arm,size=0x15c) addr:0x0218dda4
 func_ov000_0218df00 kind:function(arm,size=0x440) addr:0x0218df00
@@ -449,7 +449,7 @@ func_ov000_0218ef40 kind:function(arm,size=0x1ac) addr:0x0218ef40
 func_ov000_0218f0ec kind:function(arm,size=0x290) addr:0x0218f0ec
 func_ov000_0218f37c kind:function(arm,size=0xec) addr:0x0218f37c
 func_ov000_0218f468 kind:function(arm,size=0x76c) addr:0x0218f468
-func_ov000_0218fbd4 kind:function(arm,size=0x4c0) addr:0x0218fbd4
+SelectAIDestination kind:function(arm,size=0x4c0) addr:0x0218fbd4
 func_ov000_02190094 kind:function(arm,size=0x60c) addr:0x02190094
 func_ov000_021906a0 kind:function(arm,size=0x4b4) addr:0x021906a0
 func_ov000_02190b54 kind:function(arm,size=0x420) addr:0x02190b54
@@ -510,7 +510,7 @@ func_ov000_02198fec kind:function(arm,size=0x344) addr:0x02198fec
 func_ov000_02199330 kind:function(arm,size=0x8c) addr:0x02199330
 func_ov000_021993bc kind:function(arm,size=0x1cc) addr:0x021993bc
 func_ov000_02199588 kind:function(arm,size=0x8c) addr:0x02199588
-func_ov000_02199614 kind:function(arm,size=0x2dc) addr:0x02199614
+BuildPlayerInfluence kind:function(arm,size=0x2dc) addr:0x02199614
 func_ov000_021998f0 kind:function(arm,size=0x8c) addr:0x021998f0
 func_ov000_0219997c kind:function(arm,size=0x364) addr:0x0219997c
 func_ov000_02199ce0 kind:function(arm,size=0x94) addr:0x02199ce0
@@ -624,7 +624,7 @@ func_ov000_021a07c0 kind:function(arm,size=0x13c) addr:0x021a07c0
 func_ov000_021a08fc kind:function(arm,size=0x1f0) addr:0x021a08fc
 func_ov000_021a0aec kind:function(arm,size=0x34) addr:0x021a0aec
 func_ov000_021a0b20 kind:function(arm,size=0xcc) addr:0x021a0b20
-func_ov000_021a0bec kind:function(arm,size=0x4f8) addr:0x021a0bec
+BuildAiTargetGroups kind:function(arm,size=0x4f8) addr:0x021a0bec
 func_ov000_021a10e4 kind:function(arm,size=0xcc) addr:0x021a10e4
 func_ov000_021a11b0 kind:function(arm,size=0x538) addr:0x021a11b0
 func_ov000_021a16e8 kind:function(arm,size=0x1f0) addr:0x021a16e8
@@ -671,7 +671,7 @@ func_ov000_021a49e0 kind:function(arm,size=0xb8) addr:0x021a49e0
 func_ov000_021a4a98 kind:function(arm,size=0x32c) addr:0x021a4a98
 func_ov000_021a4dc4 kind:function(arm,size=0x44) addr:0x021a4dc4
 func_ov000_021a4e08 kind:function(arm,size=0x75c) addr:0x021a4e08
-func_ov000_021a5564 kind:function(arm,size=0x2b8) addr:0x021a5564
+MarkPlayerInfluence kind:function(arm,size=0x2b8) addr:0x021a5564
 func_ov000_021a581c kind:function(arm,size=0xac) addr:0x021a581c
 func_ov000_021a58c8 kind:function(arm,size=0x260) addr:0x021a58c8
 func_ov000_021a5b28 kind:function(arm,size=0xac) addr:0x021a5b28
@@ -727,7 +727,7 @@ func_ov000_021a8b78 kind:function(arm,size=0x70) addr:0x021a8b78
 func_ov000_021a8be8 kind:function(arm,size=0x194) addr:0x021a8be8
 func_ov000_021a8d7c kind:function(arm,size=0x134) addr:0x021a8d7c
 func_ov000_021a8eb0 kind:function(arm,size=0x110) addr:0x021a8eb0
-func_ov000_021a8fc0 kind:function(arm,size=0x30) addr:0x021a8fc0
+IsCurrentPlayerUnit kind:function(arm,size=0x30) addr:0x021a8fc0
 func_ov000_021a8ff0 kind:function(arm,size=0x24) addr:0x021a8ff0
 func_ov000_021a9014 kind:function(arm,size=0x30) addr:0x021a9014
 func_ov000_021a9044 kind:function(arm,size=0x40) addr:0x021a9044
@@ -742,7 +742,7 @@ func_ov000_021a93a8 kind:function(arm,size=0x8) addr:0x021a93a8
 func_ov000_021a93b0 kind:function(arm,size=0x3c) addr:0x021a93b0
 func_ov000_021a93ec kind:function(arm,size=0x90) addr:0x021a93ec
 func_ov000_021a947c kind:function(arm,size=0x22c) addr:0x021a947c
-func_ov000_021a96a8 kind:function(arm,size=0x4c) addr:0x021a96a8
+GetAttackDamage kind:function(arm,size=0x4c) addr:0x021a96a8
 func_ov000_021a96f4 kind:function(arm,size=0x4c) addr:0x021a96f4
 func_ov000_021a9740 kind:function(arm,size=0x90) addr:0x021a9740
 func_ov000_021a97d0 kind:function(arm,size=0x10) addr:0x021a97d0
@@ -753,8 +753,8 @@ func_ov000_021a98a8 kind:function(arm,size=0x20) addr:0x021a98a8
 func_ov000_021a98c8 kind:function(arm,size=0x1c) addr:0x021a98c8
 func_ov000_021a98e4 kind:function(arm,size=0x20) addr:0x021a98e4
 func_ov000_021a9904 kind:function(arm,size=0x30) addr:0x021a9904
-func_ov000_021a9934 kind:function(arm,size=0x28) addr:0x021a9934
-func_ov000_021a995c kind:function(arm,size=0x80) addr:0x021a995c
+CanKindAttack kind:function(arm,size=0x28) addr:0x021a9934
+CanUnitAttackKind kind:function(arm,size=0x80) addr:0x021a995c
 func_ov000_021a99dc kind:function(arm,size=0x4c) addr:0x021a99dc
 func_ov000_021a9a28 kind:function(arm,size=0x15c) addr:0x021a9a28
 func_ov000_021a9b84 kind:function(arm,size=0x3c) addr:0x021a9b84
@@ -770,13 +770,13 @@ func_ov000_021aa370 kind:function(arm,size=0x28) addr:0x021aa370
 func_ov000_021aa398 kind:function(arm,size=0x24) addr:0x021aa398
 func_ov000_021aa3bc kind:function(arm,size=0x38) addr:0x021aa3bc
 func_ov000_021aa3f4 kind:function(arm,size=0x8) addr:0x021aa3f4
-func_ov000_021aa3fc kind:function(arm,size=0xa8) addr:0x021aa3fc
-func_ov000_021aa4a4 kind:function(arm,size=0x90) addr:0x021aa4a4
-func_ov000_021aa534 kind:function(arm,size=0x24) addr:0x021aa534
-func_ov000_021aa558 kind:function(arm,size=0x10) addr:0x021aa558
-func_ov000_021aa568 kind:function(arm,size=0x2b8) addr:0x021aa568
+CalcAreaEffectDamage kind:function(arm,size=0xa8) addr:0x021aa3fc
+CalcAreaEffectUnitCount kind:function(arm,size=0x90) addr:0x021aa4a4
+CombineAreaEffectDamage kind:function(arm,size=0x24) addr:0x021aa534
+CombineAreaEffectPenalty kind:function(arm,size=0x10) addr:0x021aa558
+ScoreAreaEffectCell kind:function(arm,size=0x2b8) addr:0x021aa568
 func_ov000_021aa820 kind:function(arm,size=0x50) addr:0x021aa820
-func_ov000_021aa870 kind:function(arm,size=0x2b0) addr:0x021aa870
+SelectAreaEffectTarget kind:function(arm,size=0x2b0) addr:0x021aa870
 func_ov000_021aab20 kind:function(arm,size=0x2c) addr:0x021aab20
 func_ov000_021aab4c kind:function(arm,size=0x2c) addr:0x021aab4c
 data_ov000_021aab78 kind:data(any) addr:0x021aab78
@@ -1950,7 +1950,7 @@ data_ov000_021df41c kind:data(any) addr:0x021df41c
 data_ov000_021df424 kind:data(any) addr:0x021df424
 data_ov000_021df42c kind:data(any) addr:0x021df42c
 data_ov000_021df4b8 kind:data(any) addr:0x021df4b8
-data_ov000_021df578 kind:data(any) addr:0x021df578
+gAiState kind:data(any) addr:0x021df578
 data_ov000_021df57c kind:data(any) addr:0x021df57c
 data_ov000_021df580 kind:data(any) addr:0x021df580
 data_ov000_021df584 kind:data(any) addr:0x021df584
@@ -1989,11 +1989,11 @@ data_ov000_021dfb04 kind:bss addr:0x021dfb04
 data_ov000_021dfba8 kind:bss addr:0x021dfba8
 data_ov000_021dfc4c kind:bss addr:0x021dfc4c
 data_ov000_021dfcf0 kind:bss addr:0x021dfcf0
-data_ov000_021dfd94 kind:bss addr:0x021dfd94
+gAiTargetGroups kind:bss addr:0x021dfd94
 data_ov000_021dfd98 kind:bss addr:0x021dfd98
 data_ov000_021dfd99 kind:bss addr:0x021dfd99
 data_ov000_021dfd9a kind:bss addr:0x021dfd9a
-data_ov000_021e00ac kind:bss addr:0x021e00ac
+gAiTargetCandidates kind:bss addr:0x021e00ac
 data_ov000_021e00ad kind:bss addr:0x021e00ad
 data_ov000_021e00ae kind:bss addr:0x021e00ae
 data_ov000_021e00af kind:bss addr:0x021e00af
@@ -2006,4 +2006,4 @@ data_ov000_021e1468 kind:bss addr:0x021e1468
 data_ov000_021e146c kind:bss addr:0x021e146c
 data_ov000_021e1474 kind:bss addr:0x021e1474
 data_ov000_021e14aa kind:bss addr:0x021e14aa
-data_ov000_021e14e0 kind:bss addr:0x021e14e0
+gAreaEffectCallbacks kind:bss addr:0x021e14e0

@@ -413,7 +413,7 @@ M2C_FIELD((u8*)p+2*(arg0+M2C_FIELD((u8*)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=dat
 
 /* Update each active entity (1..4) according to the state nibble packed in `value`. */
 void func_0207ad30(s32 value) {
-    s32 func_020d1980(s32);
+    s32 IsPlayerPresent(s32);
     s32 func_020d1a74(s32);
     s32 func_020a2be0(s32);
     extern void *gCurrentMap;
@@ -423,7 +423,7 @@ void func_0207ad30(s32 value) {
     void (*callback)(s32, s32);
 
     for (i = 1; i < 5; i++) {
-        if (!func_020d1980(i)) {
+        if (!IsPlayerPresent(i)) {
             continue;
         }
         if (func_020d1a74(i) && state >= 0) {

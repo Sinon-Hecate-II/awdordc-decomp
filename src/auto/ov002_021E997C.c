@@ -287,8 +287,8 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov002_021ea5b8(void) {
-    M2C_UNK func_ov002_021e24e8();
-    func_ov002_021e24e8();
+    M2C_UNK FreeModelNode();
+    FreeModelNode();
 }
 
 void func_ov002_021ea5c4(void *arg0) {

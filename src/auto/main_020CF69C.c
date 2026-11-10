@@ -357,10 +357,10 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
 void func_020d0288(void *,s32,s32,s32,s32,s32); void func_020d0428(s32,s32,s32,s32); s32 func_020d03c4(s32);
-s32 func_020d1938(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 func_020a334c(s32); s32 func_020d02b4(void *); void func_02078068(void);
+s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 func_020a334c(s32); s32 func_020d02b4(void *); void func_02078068(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
-if(!func_020d1938(player))continue;
+if(!IsPlayerActive(player))continue;
 func_020d0164(func_020d03c4(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
@@ -468,9 +468,9 @@ s32 func_020d0548(s32 arg0,s32 arg1) {
 }
 
 u8 func_020d0590(s32 arg0) {
- s32 func_020d19b4(s32);
+ s32 IsPlayerHuman(s32);
  u8 result;
- if(func_020d19b4(arg0)!=0) return 1;
+ if(IsPlayerHuman(arg0)!=0) return 1;
  if(M2C_FIELD(&data_02168f08,u8 *,4)!=0) return 0;
  if(M2C_FIELD((void *)*gCurrentMap+arg0*0x8C,u8 *,0x67C3)&2) result=1; else result=0;
  return result;

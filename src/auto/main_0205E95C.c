@@ -84,12 +84,12 @@ void func_0205eb50(u8 *p, s32 a) {
 void func_0205eb7c(void *a,M2C_UNK b){void func_0205ebb0(void *,M2C_UNK *);void func_020675e4(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];func_020675e4(buf,&data_020ffa40,b);func_0205ebb0(a,(M2C_UNK *)buf);}
 
 void func_0205ebb0(void *a,M2C_UNK *b){
-s32 func_02068c34(void *);void func_020651a4(void *,void *,s32);
+s32 func_02068c34(void *);void MemCopy(void *,void *,s32);
 s32 n=func_02068c34(b)+1;
 s32 used=M2C_FIELD(a,s32 *,0x800);
 if(n>0x800-used)n=0x800-used;
 if(!n)return;
-func_020651a4((u8 *)a+used,b,n);
+MemCopy((u8 *)a+used,b,n);
 M2C_FIELD(a,s32 *,0x800)+=n;
 ((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;
 }

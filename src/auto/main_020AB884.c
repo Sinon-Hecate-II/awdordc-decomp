@@ -2,38 +2,41 @@
 #include "common.h"
 
 #pragma opt_strength_reduction off
-void func_020ab884(void *arg0) {
-s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 func_020ab30c(void *);void func_020ab344(void *,s16,s32);s32 GetSpriteAnimValue(void *);
-s16 a,b,position,duration; s32 y; s32 endRow; s32 row; s16 stride; s32 height; s16 finalRow;
+/* Scroll update for a vertical list: once its opening animation ends, clamps the
+ * scroll position at either end, then rebuilds the pixel offsets of the two
+ * sub-lists whose animation timers are being restarted. */
+void UpdateListScroll(void *arg0) {
+s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);s16 GetScrollLimit(void *);void ScrollListTo(void *,s16,s32);s32 GetSpriteAnimValue(void *);
+s16 rowIdx,unusedB,curOffset,savedTimer; s32 pixOffset; s32 endPos; s32 rowPos; s16 rowStep; s32 visibleRows; s16 finalPos;
 if(M2C_FIELD(arg0,s32 *,0x18)>=(s16)(M2C_FIELD(arg0,s16 *,6)*M2C_FIELD(arg0,s16 *,8)) && M2C_FIELD(arg0,u8 *,4)){
-a=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
-if(a<=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8)) &&
+rowIdx=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+if(rowIdx<=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8)) &&
 (s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8))>=1){
-if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))==0)func_020ab344(arg0,0,0);
-else {row=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(row-1),0);}
+if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))==0)ScrollListTo(arg0,0,0);
+else {rowPos=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos-1),0);}
 }else{
-a=func_0207c8ec(func_020ab30c(arg0),M2C_FIELD(arg0,s16 *,8));
-if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))>=a){
-a=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));
-if((s16)func_0207c8ec(func_020ab30c(arg0),M2C_FIELD(arg0,s16 *,8))<a){
-endRow=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8))<<16;
-row=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))<<16;
-if((row>>16)==(endRow>>16))
-{finalRow=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));height=M2C_FIELD(arg0,s16 *,6);stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(finalRow-height+1),0);}
-else {row=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));stride=M2C_FIELD(arg0,s16 *,8);func_020ab344(arg0,stride*(row+1),0);}
+rowIdx=func_0207c8ec(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8));
+if((s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))>=rowIdx){
+rowIdx=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));
+if((s16)func_0207c8ec(GetScrollLimit(arg0),M2C_FIELD(arg0,s16 *,8))<rowIdx){
+endPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8))<<16;
+rowPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8))<<16;
+if((rowPos>>16)==(endPos>>16))
+{finalPos=func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,24),M2C_FIELD(arg0,s16 *,8));visibleRows=M2C_FIELD(arg0,s16 *,6);rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(finalPos-visibleRows+1),0);}
+else {rowPos=(s16)func_0207c8ec(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));rowStep=M2C_FIELD(arg0,s16 *,8);ScrollListTo(arg0,rowStep*(rowPos+1),0);}
 M2C_FIELD(arg0,u8 *,4)=0;
 }
 }
 }
 }
-y=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
+pixOffset=M2C_FIELD(arg0,u8 *,10)*(s16)func_0207c8ec((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
 M2C_FIELD(arg0,s16 *,44)=M2C_FIELD(arg0,u8 *,11)*(s16)func_0207c928((s16)M2C_FIELD(arg0,s32 *,20),M2C_FIELD(arg0,s16 *,8));
-M2C_FIELD(arg0,s16 *,46)=y;
-position=M2C_FIELD(arg0,s16 *,44);duration=M2C_FIELD(arg0,s16 *,78);
-M2C_FIELD(arg0,s16 *,80)=GetSpriteAnimValue((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=position;M2C_FIELD(arg0,s16 *,78)=duration;
+M2C_FIELD(arg0,s16 *,46)=pixOffset;
+curOffset=M2C_FIELD(arg0,s16 *,44);savedTimer=M2C_FIELD(arg0,s16 *,78);
+M2C_FIELD(arg0,s16 *,80)=GetSpriteAnimValue((u8 *)arg0+66);M2C_FIELD(arg0,s16 *,82)=curOffset;M2C_FIELD(arg0,s16 *,78)=savedTimer;
 M2C_FIELD(arg0,u16 *,68)=M2C_FIELD(arg0,u16 *,70);
-position=M2C_FIELD(arg0,s16 *,46);duration=M2C_FIELD(arg0,s16 *,96);
-M2C_FIELD(arg0,s16 *,98)=GetSpriteAnimValue((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,100)=position;M2C_FIELD(arg0,s16 *,96)=duration;
+curOffset=M2C_FIELD(arg0,s16 *,46);savedTimer=M2C_FIELD(arg0,s16 *,96);
+M2C_FIELD(arg0,s16 *,98)=GetSpriteAnimValue((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,100)=curOffset;M2C_FIELD(arg0,s16 *,96)=savedTimer;
 M2C_FIELD(arg0,u16 *,86)=M2C_FIELD(arg0,u16 *,88);
 }
 #pragma opt_strength_reduction reset

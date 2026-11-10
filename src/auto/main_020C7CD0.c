@@ -208,7 +208,7 @@ s32 func_020c8214(void *p){extern M2C_UNK data_ov000_021b5bfc;s32 i;PackedEntry 
 void func_020c82cc(s32 a) {
 void func_020a68d4(void);
 void *func_020a660c(s32,s32,s32,s32);
-void func_020a3184(s32,void *);
+void SetPlayerSelectedUnit(s32,void *);
 extern void **gCurrentMap;
 s32 i,x,y,player,kind,state,z;
 u32 *src;
@@ -233,7 +233,7 @@ RestoreY(unit,y);
 RestoreState(unit,state);
 if(state==3) {
 s32 v2=M2C_FIELD(*gCurrentMap+player*0x8c,s32 *,0x6810);
-if((u32)(v2<<24)>>24)func_020a3184(player,unit);
+if((u32)(v2<<24)>>24)SetPlayerSelectedUnit(player,unit);
 }
 }
 i++;src++;
@@ -306,12 +306,12 @@ u8 func_020c8664(s32 a,s32 b){s32 func_020c7a3c(s32);u8 func_020c8b0c(u8 *,u8 *)
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
     s32 func_020c7a24(); s32 func_0200f0ac(); void func_02007724(void *);
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     s32 date[4], time[3];
     s32 v = func_020c7a24(p);
     func_0200f0ac(date, time);
     func_02007724((u8 *)p + 64);
-    M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((data_027e15bc << 20) >> 14);
+    M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((gFrameCounter << 20) >> 14);
     M2C_FIELD(p, u16 *, 70) = v;
     M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0xff) | (u8)date[0];
     M2C_FIELD(p, u32 *, 72) = (M2C_FIELD(p, u32 *, 72) & ~0x3f00) | ((u32)(date[1] << 26) >> 18);

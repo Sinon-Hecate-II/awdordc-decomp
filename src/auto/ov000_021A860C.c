@@ -7,10 +7,10 @@ typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
 s32 func_ov000_021a860c(void){
-s32 func_020d1938(s32);s32 func_020d273c(u16,s32);extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
+s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 p=1,i,end;
 while(p<5){
-if(func_020d1938(p) && !func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
+if(IsPlayerActive(p) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
 u16 start=gPlayerUnitIdBase[p];i=start+1;end=start+0x33;while(i<end){UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];u32 kind=(u32)(entry->unk0 & 0x3f);if(kind && (data_ov000_021b5bfc[kind*112+0x13]&16))return 1;i++;}} p=p+1;}
 return 0;}
 #pragma pool_constants reset
@@ -139,7 +139,7 @@ s32 func_ov000_021a8b78(void *a){s32 func_0207c8ec(s32,s32);u32 v;s32 n,i,x;v=(u
 #pragma opt_strength_reduction off
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;
-s32 func_020d27c0(s32);
+s32 IsUnitOnCurrentTeam(s32);
 s32 func_ov000_021a947c(u16,s32,s16,s16);
 s32 func_020a600c(u16);
 s32 i; s32 right; s32 ny; s32 j; s32 dy; s32 left; s32 top; s32 bottom; s32 d;void *base;
@@ -155,7 +155,7 @@ d=0;if(x-i>0)d+=x-i;else d+=i-x;dy=y-j;ny=j-y;if(dy>0)d+=dy;else d+=ny;
 if(d>=0&&d<=radius){base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
 if(!d)continue;
-if(func_020d27c0(d)==1)continue;
+if(IsUnitOnCurrentTeam(d)==1)continue;
 if(!func_ov000_021a947c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,(s16)i,(s16)j))continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
@@ -165,7 +165,7 @@ return 0;
 }
 #pragma opt_strength_reduction reset
 s32 func_ov000_021a8d7c(s32 x,s32 y,s32 radius){
-extern void **gCurrentMap;u8 func_ov000_021a8fc0(s32);
+extern void **gCurrentMap;u8 IsCurrentPlayerUnit(s32);
 s32 i,j,right,left,top,bottom,d;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
@@ -178,7 +178,7 @@ for(j=top;j<=bottom;j++)for(i=left;i<=right;i++){
 d=0;if(x-i>0)d+=x-i;else d+=i-x;if(y-j>0)d+=y-j;else d+=j-y;
 if(d>=0&&d<=radius){base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
-if(d&&func_ov000_021a8fc0(d)!=1)return 1;
+if(d&&IsCurrentPlayerUnit(d)!=1)return 1;
 }}
 return 0;
 }
@@ -201,7 +201,7 @@ if((v&31)==17&&M2C_FIELD(p,u16 *,0x52a6)==(v&224))return 1;
 return 0;
 }
 
-u8 func_ov000_021a8fc0(s32 arg0) {
+u8 IsCurrentPlayerUnit(s32 arg0) {
     extern void **gCurrentMap;
     u8 var_r0;
 

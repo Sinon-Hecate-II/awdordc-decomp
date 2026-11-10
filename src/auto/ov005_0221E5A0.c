@@ -125,7 +125,7 @@ M2C_FIELD(p,u8 *,0x58)=1;
 void func_ov005_0221eef4(void *arg0) {
     s32 func_020ad3f0(void);
     s32 func_01ffa3dc(s32 *, void *);
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     extern void **g3DSpriteEngineSub, **g3DSpriteEngineMain, **gCur3DSpriteEngine;
     extern u16 *gKeyState;
     extern s32 data_ov005_02220ad0[];
@@ -133,7 +133,7 @@ void func_ov005_0221eef4(void *arg0) {
     void **saved;
     s32 i;
     void **chosen;
-    if (!(data_027e15bc & 3)) {
+    if (!(gFrameCounter & 3)) {
         saved = gCur3DSpriteEngine;
         i = 0;
         do {

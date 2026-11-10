@@ -1,5 +1,6 @@
 /* 30 functions from 0x02213E88 to 0x02214E24 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 flags:2; u8 pad[13]; } MapUnit145F8;
 typedef struct { u8 pad[11]; u8 kind : 4; u8 flags : 4; } MapEntry14718;
 
@@ -334,12 +335,12 @@ void func_ov007_022145bc(void) {
 
 void func_ov007_022145f8(void) {
 extern s32 *gCurrentMap;extern u16 gPlayerUnitIdBase[];
-s32 func_020a7310(void *);
+s32 GetUnitOwner(void *);
 s32 i; MapUnit145F8 *p;
 p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
 if(p->flags==3)p->flags=0;
 else {
-for(i=gPlayerUnitIdBase[func_020a7310(p)]+1;i<gPlayerUnitIdBase[func_020a7310(M2C_FIELD(*gCurrentMap,void **,0x52d0))]+51;i++){
+for(i=gPlayerUnitIdBase[GetUnitOwner(p)]+1;i<gPlayerUnitIdBase[GetUnitOwner(M2C_FIELD(*gCurrentMap,void **,0x52d0))]+51;i++){
 p=(MapUnit145F8 *)((u8 *)*gCurrentMap+0x59a4)+i;
 if(p->kind)p->flags=0;
 }
@@ -381,14 +382,14 @@ s32 func_ov007_02214718(s32 x, s32 y) {
 
 void func_ov007_02214814(s32 arg0, s32 arg1) {
     M2C_UNK func_020a68d4();
-    M2C_UNK func_020d216c();
+    M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
     M2C_UNK func_020ceffc();
     M2C_UNK func_ov007_02217a5c();
     M2C_UNK func_020cf2c8();
     extern s32 *gCurrentMap;
     func_020a68d4();
-    func_020d216c();
+    InitPlayerStates();
     func_020d1f2c();
     M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5144) = (u16) arg0;
     M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5146) = (u16) arg1;
@@ -401,7 +402,7 @@ void func_ov007_02214814(s32 arg0, s32 arg1) {
 #pragma opt_strength_reduction off
 void func_ov007_02214864(s32 arg0) {
     M2C_UNK func_020a68d4();
-    M2C_UNK func_020d216c();
+    M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
     M2C_UNK func_020ceffc();
     M2C_UNK func_020cf2c8();
@@ -413,7 +414,7 @@ void func_ov007_02214864(s32 arg0) {
         return;
     }
     func_020a68d4();
-    func_020d216c();
+    InitPlayerStates();
     func_020d1f2c();
     func_020ceffc();
     {
@@ -448,13 +449,17 @@ void func_ov007_02214864(s32 arg0) {
     func_020cf2c8();
 }
 
-void func_ov007_02214a6c(s32 arg0, s32 arg1) {
+/* Rebuilds the map at the requested size from the map editor's serialized
+ * export: fills the default terrain, copies the exported terrain grid and the
+ * packed unit entries back onto the map, then fills the bottom row and right
+ * column with the default terrain. */
+void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK func_020c79ec(void);
     M2C_UNK func_020c79f8(void);
     M2C_UNK func_020c7a08(void);
     M2C_UNK func_020c879c(M2C_UNK);
     M2C_UNK func_020a68d4(void);
-    M2C_UNK func_020d216c(void);
+    M2C_UNK InitPlayerStates(void);
     M2C_UNK func_020d1f2c(void);
     M2C_UNK func_020ceffc(void);
     s32 func_0207f460(u8);
@@ -463,83 +468,82 @@ void func_ov007_02214a6c(s32 arg0, s32 arg1) {
     M2C_UNK func_020cf2c8(void);
     extern s32 *gCurrentMap;
 
-    void *r4v;
-    void *r5;
-    void *r6;
-    s32 x,z,y,n,y2;
+    void *exportBlock;
+    void *blockData;
+    void *blockHeader;
+    s32 mapX,copyX,mapY,objIndex,copyY;
     void *map;
-    s32 val;
-    s32 rowOffset, idx;
-    s32 dword;
-    s32 maskA,maskB,maskC,kind;
-    s32 bits;
-    u8 old;
-    void *ptr;
-    s32 u,v;
+    s32 terrain;
+    s32 objEntry;
+    s32 objX,objY,objParam,objKind;
+    s32 objState;
+    u8 oldState;
+    void *obj;
+    s32 lastY,lastX;
     s32 width=arg0,height=arg1;
-    r4v = func_020c79ec();
-    r5 = (void *)func_020c79f8();
-    r6 = (void *)func_020c7a08();
-    func_020c879c(r4v);
+    exportBlock = func_020c79ec();
+    blockData = (void *)func_020c79f8();
+    blockHeader = (void *)func_020c7a08();
+    func_020c879c(exportBlock);
 
-    M2C_FIELD(*gCurrentMap,u16 *,0x5144)=width;
-    M2C_FIELD(*gCurrentMap,u16 *,0x5146)=height;
+    M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)=width;
+    M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)=height;
     func_020a68d4();
-    func_020d216c();
+    InitPlayerStates();
     func_020d1f2c();
     func_020ceffc();
-    for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++) {
-        for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++) {
-            M2C_FIELD(*gCurrentMap+2*(x+M2C_FIELD(*gCurrentMap+2*y,u16 *,0x3758)),u16 *,0xa10)=3;
-            M2C_FIELD(M2C_FIELD(*gCurrentMap+2*y,u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x1420)=8;
+    for(mapY=0;mapY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);mapY++) {
+        for(mapX=0;mapX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);mapX++) {
+            M2C_FIELD(*gCurrentMap+2*(mapX+M2C_FIELD(*gCurrentMap+2*mapY,u16 *,MAP_ROW_OFFSETS)),u16 *,MAP_CELL_TILE_ID)=3;
+            M2C_FIELD(M2C_FIELD(*gCurrentMap+2*mapY,u16 *,MAP_ROW_OFFSETS)+(*gCurrentMap+mapX),u8 *,0x1420)=8;
         }
     }
-    for(y2=0;y2<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y2++) {
-        for(z=0;z<M2C_FIELD(*gCurrentMap,u16 *,0x5144);z++) {
-            if(z<M2C_FIELD(r6,u8 *,4)&&y2<M2C_FIELD(r6,u8 *,5)) {
-                val=M2C_FIELD(r5+z,u8 *,y2*M2C_FIELD(r6,u8 *,4));
-                M2C_FIELD(M2C_FIELD(*gCurrentMap+2*y2,u16 *,0x3758)+(*gCurrentMap+z),u8 *,0x1420)=val;
+    for(copyY=0;copyY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);copyY++) {
+        for(copyX=0;copyX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);copyX++) {
+            if(copyX<M2C_FIELD(blockHeader,u8 *,4)&&copyY<M2C_FIELD(blockHeader,u8 *,5)) {
+                terrain=M2C_FIELD(blockData+copyX,u8 *,copyY*M2C_FIELD(blockHeader,u8 *,4));
+                M2C_FIELD(M2C_FIELD(*gCurrentMap+2*copyY,u16 *,MAP_ROW_OFFSETS)+(*gCurrentMap+copyX),u8 *,0x1420)=terrain;
                 map=(void *)*gCurrentMap;
-                M2C_FIELD(map+2*(z+M2C_FIELD(map+2*y2,u16 *,0x3758)),u16 *,0xa10)=func_0207f460(val);
+                M2C_FIELD(map+2*(copyX+M2C_FIELD(map+2*copyY,u16 *,MAP_ROW_OFFSETS)),u16 *,MAP_CELL_TILE_ID)=func_0207f460(terrain);
             }
         }
     }
-    n=0;
-    if((s32)M2C_FIELD(r6,u8 *,0x2f)>n) {
-    r5=(u8 *)r5+0x384;
+    objIndex=0;
+    if((s32)M2C_FIELD(blockHeader,u8 *,0x2f)>objIndex) {
+    blockData=(u8 *)blockData+0x384;
     do {
-        dword=M2C_FIELD(r5,u32 *,0);
-        maskA=(u32)(dword<<27)>>27;
-        maskB=(u32)(dword<<22)>>27;
-        maskC=(u32)(dword<<17)>>27;
-        kind=(u32)(dword<<14)>>29;
-        if(width>maskA&&maskB<height) {
-            ptr=func_020a660c(maskA,maskB,maskC,kind);
-            if(ptr) {
-                bits=(u8)((M2C_FIELD(r5,u32 *,0)<<10)>>28);
-                old=M2C_FIELD(ptr,u8 *,11);
-                M2C_FIELD(ptr,u8 *,11)=(old&~15)|(bits&15);
+        objEntry=M2C_FIELD(blockData,u32 *,0);
+        objX=(u32)(objEntry<<27)>>27;
+        objY=(u32)(objEntry<<22)>>27;
+        objParam=(u32)(objEntry<<17)>>27;
+        objKind=(u32)(objEntry<<14)>>29;
+        if(width>objX&&objY<height) {
+            obj=func_020a660c(objX,objY,objParam,objKind);
+            if(obj) {
+                objState=(u8)((M2C_FIELD(blockData,u32 *,0)<<10)>>28);
+                oldState=M2C_FIELD(obj,u8 *,11);
+                M2C_FIELD(obj,u8 *,11)=(oldState&~15)|(objState&15);
             }
         }
-        n++;
-        r5=(u8 *)r5+4;
-    } while(n<M2C_FIELD(r6,u8 *,0x2f));
+        objIndex++;
+        blockData=(u8 *)blockData+4;
+    } while(objIndex<M2C_FIELD(blockHeader,u8 *,0x2f));
     }
-    x=0;
+    mapX=0;
     if (width > 0) {
-        u = height - 1;
+        lastY = height - 1;
         do {
-            func_ov007_0221b688(x, u);
-            x++;
-        } while(x<width);
+            func_ov007_0221b688(mapX, lastY);
+            mapX++;
+        } while(mapX<width);
     }
-    y=0;
+    mapY=0;
     if (height > 0) {
-        v = width - 1;
+        lastX = width - 1;
         do {
-            func_ov007_0221b688(v, y);
-            y++;
-        } while(y<height);
+            func_ov007_0221b688(lastX, mapY);
+            mapY++;
+        } while(mapY<height);
     }
 
     func_020cf2c8();

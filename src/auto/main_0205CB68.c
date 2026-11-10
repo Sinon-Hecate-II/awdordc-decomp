@@ -6,11 +6,11 @@ struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 s32 func_0205cb68(s32 a, s32 b, s32 c) {
 s32 func_0205d228(void *,s32,s32,void *,s32);
-extern u8 data_020ff818[];
+extern u8 gGt2Magic[];
 u8 v[3];
-v[0]=data_020ff818[0];
+v[0]=gGt2Magic[0];
 v[2]=0x68;
-v[1]=data_020ff818[1];
+v[1]=gGt2Magic[1];
 return func_0205d228((void *)a,b,c,v,3)!=0;
 }
 
@@ -391,7 +391,7 @@ return p;
 s32 func_0205d588(char *a, s32 *b, u16 *c) {
     char *func_02068ee0(char *, s32);
     M2C_UNK func_020640a8(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void func_020651a4(void *, const void *, s32);
+    void MemCopy(void *, const void *, s32);
     s32 func_0206ad38(char *);
     s32 func_020498e4(void *);
     void *func_02021768(void *);
@@ -418,7 +418,7 @@ s32 func_0205d588(char *a, s32 *b, u16 *c) {
                 if (r9 >= 0x100) {
                     func_020640a8((M2C_UNK)data_020ff858, (M2C_UNK)data_020ff878, (M2C_UNK)data_020ff834, 0x81);
                 }
-                    func_020651a4(buf, r8, r9);
+                    MemCopy(buf, r8, r9);
                     r8 = buf;
                     buf[r9] = 0;
             }

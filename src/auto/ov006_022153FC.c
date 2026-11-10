@@ -2,7 +2,7 @@
 #include "common.h"
 
 extern s8 data_ov006_02218345[];
-extern s8 data_ov006_02218e10[];
+extern s8 gFriendCodeInput[];
 void func_ov006_022153fc(M2C_UNK arg0) {
     void *func_01ffa42c(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
@@ -350,12 +350,12 @@ void func_ov006_02215ae0(void *arg0) {
     s8 temp_r3;
 
     temp_r0 = M2C_FIELD(arg0, void **, 0x10);
-    data_ov006_02218e10[M2C_FIELD(temp_r0, s8 *, 0x38)] =
+    gFriendCodeInput[M2C_FIELD(temp_r0, s8 *, 0x38)] =
         data_ov006_02218345[M2C_FIELD(arg0, u8 *, 0) * 6];
     temp_r3 = (s8)(M2C_FIELD(temp_r0, s8 *, 0x38) + 1);
     if (temp_r3 >= 0 && temp_r3 < 12 &&
-        (data_ov006_02218e10[temp_r3] != 0 ||
-         (temp_r3 > 0 && data_ov006_02218e10[temp_r3 - 1] != 0))) {
+        (gFriendCodeInput[temp_r3] != 0 ||
+         (temp_r3 > 0 && gFriendCodeInput[temp_r3 - 1] != 0))) {
         M2C_FIELD(temp_r0, s8 *, 0x38) = temp_r3;
     }
     PlaySoundEffect(0x1000D);
@@ -455,22 +455,22 @@ M2C_UNK func_ov006_02215c6c(void *arg0) {
 void func_02007f8c(void *,s32,s32);s32 PlaySoundEffect(s32);
 u8 event=M2C_FIELD(arg0,u8 *,0);void *p=M2C_FIELD(arg0,void **,16);s32 i,j;s8 prev;s8 *q;
 switch(event) {
-case 10:func_02007f8c(data_ov006_02218e10,0,13);M2C_FIELD(p,s8 *,56)=0;PlaySoundEffect(0x1000d);return;
+case 10:func_02007f8c(gFriendCodeInput,0,13);M2C_FIELD(p,s8 *,56)=0;PlaySoundEffect(0x1000d);return;
 case 11:
 i=M2C_FIELD(p,s8 *,56);
 if(i>0) {
-if(i==11&&data_ov006_02218e10[i])data_ov006_02218e10[i]=0;
+if(i==11&&gFriendCodeInput[i])gFriendCodeInput[i]=0;
 else {
 prev=i-1;
-if(prev>=0&&prev<12&&(data_ov006_02218e10[prev]||(prev>0&&data_ov006_02218e10[prev-1])))M2C_FIELD(p,s8 *,56)=prev;
+if(prev>=0&&prev<12&&(gFriendCodeInput[prev]||(prev>0&&gFriendCodeInput[prev-1])))M2C_FIELD(p,s8 *,56)=prev;
 j=M2C_FIELD(p,s8 *,56);
-if(j<11){q=data_ov006_02218e10+j;do {j++;*q=q[1];q++;}while(j<11);}
-data_ov006_02218e10[11]=0;
+if(j<11){q=gFriendCodeInput+j;do {j++;*q=q[1];q++;}while(j<11);}
+gFriendCodeInput[11]=0;
 }PlaySoundEffect(0x1000d);return;
 }
-if(i==0&&data_ov006_02218e10[i]) {
-if(i<11){q=data_ov006_02218e10+i;do{i++;*q=q[1];q++;}while(i<11);}
-data_ov006_02218e10[11]=0;PlaySoundEffect(0x1000d);return;
+if(i==0&&gFriendCodeInput[i]) {
+if(i<11){q=gFriendCodeInput+i;do{i++;*q=q[1];q++;}while(i<11);}
+gFriendCodeInput[11]=0;PlaySoundEffect(0x1000d);return;
 }
 PlaySoundEffect(0x1001d);return;
 }
@@ -488,7 +488,7 @@ void func_ov006_02215dd8(void) {
 
 void func_ov006_02215de4(u8 *arg0) {
     M2C_UNK func_020b1c60(u8);
-    M2C_UNK func_ov006_02215ee4();
+    M2C_UNK ConfirmFriendCode();
     extern void *gKeyState;
     u16 temp_r1;
     u16 temp_r2;
@@ -500,7 +500,7 @@ void func_ov006_02215de4(u8 *arg0) {
     var_r3 = temp_ip;
     temp_r1 = M2C_FIELD(gKeyState, u16 *, 2);
     if (temp_r2 & 1) {
-        func_ov006_02215ee4();
+        ConfirmFriendCode();
         return;
     }
     if (temp_r1 & 0x40) {
@@ -563,25 +563,29 @@ done:
     }
 }
 
-M2C_UNK func_ov006_02215ee4(void *arg0){
+/* Confirms the friend code entered on the friend-roster screen: a valid, new code
+ * is stored into the entry, while a duplicate, the player's own code or an
+ * unreadable code picks the matching error state; then updates the panel sprite
+ * and plays the result sound. */
+M2C_UNK ConfirmFriendCode(void *entry){
 void func_01ffa8c4(void *,s32);void MI_CpuCopy8(void *,s32,s32);void func_02088ff4(s32);void func_020d47f0(void);void func_020d47d0(void);s32 PlaySoundEffect(s32);u64 func_020c53e4(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 func_020c54e8(void *);void func_020b269c(void);void *func_0208b564(void *);void func_020899cc(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
-u32 buf[3];u64 b,a;void *p=M2C_FIELD(arg0,void **,0x10);void *q;u16 **old;
-if(M2C_FIELD(arg0,u8 *,0)==12){
-q=M2C_FIELD(p,void **,0x48);M2C_FIELD(q,s16 *,14)=0;M2C_FIELD(q,s16 *,16)=256;M2C_FIELD(q,s16 *,12)=12;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
-func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47f0();func_01ffa8c4(p,3);PlaySoundEffect(0x1000f);return;}
-a=func_020c53e4(0);b=func_020c54ac(data_ov006_02218e10);
-if((a==0||b==0||a!=b)&&func_020c5474(b)){
-func_020c5424(buf,b);if(!func_020c54e8(buf)){
-MI_CpuCopy8(data_ov006_02218e10,M2C_FIELD(p,s32 *,0x34),13);
-q=M2C_FIELD(p,void **,0x48);M2C_FIELD(q,s16 *,14)=0;M2C_FIELD(q,s16 *,16)=256;M2C_FIELD(q,s16 *,12)=12;M2C_FIELD(q,u16 *,2)=M2C_FIELD(q,u16 *,4);
-func_02088ff4(M2C_FIELD(p,s32 *,0x4c));func_020d47d0();func_01ffa8c4(p,3);PlaySoundEffect(0x1000e);return;}
-func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000003);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,5);PlaySoundEffect(0x1001d);return;
+u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
+if(M2C_FIELD(entry,u8 *,0)==12){
+part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
+func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47f0();func_01ffa8c4(panel,3);PlaySoundEffect(0x1000f);return;}
+ownCode=func_020c53e4(0);enteredCode=func_020c54ac(gFriendCodeInput);
+if((ownCode==0||enteredCode==0||ownCode!=enteredCode)&&func_020c5474(enteredCode)){
+func_020c5424(codeWords,enteredCode);if(!func_020c54e8(codeWords)){
+MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
+part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
+func_02088ff4(M2C_FIELD(panel,s32 *,0x4c));func_020d47d0();func_01ffa8c4(panel,3);PlaySoundEffect(0x1000e);return;}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,5);PlaySoundEffect(0x1001d);return;
 }
-if(a!=0&&b!=0&&a==b){
-func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000002);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,4);
+if(ownCode!=0&&enteredCode!=0&&ownCode==enteredCode){
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,4);
 }else{
-func_020b269c();old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;q=func_0208b564(p);func_020899cc(q,2,0x4480,0x42000004);M2C_FIELD(q,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=old;func_01ffa8c4(p,6);}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=func_0208b564(panel);func_020899cc(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;func_01ffa8c4(panel,6);}
 PlaySoundEffect(0x1001d);
 }
 
@@ -597,7 +601,7 @@ extern u16 **g3DSpriteEngineMain;
 void func_ov006_0221619c(void *arg0) {
 M2C_UNK func_0208df84(s16,s16,s32,s32,s32,s32);
 s32 GetSpriteAnimValue(s32);M2C_UNK func_020a92bc(void *,s32);M2C_UNK func_020a94fc(void *);M2C_UNK func_020b1c44(s32,s32);
-extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;extern s8 data_ov006_02218e10[];
+extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;extern s8 gFriendCodeInput[];
 u16 **saved;u16 neg;s32 i,x,y,reset;void *p;s32 offset;
 offset=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x48));
 func_020b1c44(offset,0);
@@ -608,12 +612,12 @@ M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 func_0208df84((s16)(offset+(M2C_FIELD(arg0,s16 *,0x3a)+1)),(s16)(M2C_FIELD(arg0,s16 *,0x3c)+1),22,22,(u16)((0x3ff&(0x80>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x1000),0);
 i=0;x=60;y=12;
-if(data_ov006_02218e10[0]){reset=x;do{
+if(gFriendCodeInput[0]){reset=x;do{
 if(i==6){y+=24;x=reset;}
 p=M2C_FIELD(arg0,void **,0x44);M2C_FIELD(p,u16 *,6)=offset+x;M2C_FIELD(p,u16 *,8)=y;
-func_020a92bc(M2C_FIELD(arg0,void **,0x44),data_ov006_02218e10[i]-48);
+func_020a92bc(M2C_FIELD(arg0,void **,0x44),gFriendCodeInput[i]-48);
 func_020a94fc(M2C_FIELD(arg0,void **,0x44));i++;x+=24;
-}while(data_ov006_02218e10[i]);}
+}while(gFriendCodeInput[i]);}
 gCur3DSpriteEngine=saved;
 }
 #pragma optimization_level 4

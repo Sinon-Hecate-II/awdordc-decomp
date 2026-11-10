@@ -1,6 +1,19 @@
 /* 8 functions from 0x02217C80 to 0x02218AD0 (ov007), found by ds-decomp. */
 #include "common.h"
 typedef struct MenuPosition { s8 kind; u8 x, y, unk3, unk4; } MenuPosition;
+typedef struct MenuList007 { s32 first, second; s8 a,b,c,d,e; u8 alpha, flag, alpha2; u16 count; u8 flag2, pad; void *buffer; u8 rest[12]; } MenuList007;
+#pragma push
+#pragma opt_propagation on
+static inline MenuList007 *InitMenuList007(MenuList007 *p, s32 count) {
+ void *func_020e34bc(s32); void func_02007f8c(void *,s32,s32);
+ s32 size=count*12;
+ p->count=count;p->flag2=0;p->first=0;p->second=0;
+ p->a=-1;p->b=-1;p->c=-1;p->d=-1;p->alpha=255;p->e=-1;p->flag=0;p->alpha2=255;
+ p->buffer=func_020e34bc(size);func_02007f8c(p->buffer,0,size);
+ return p;
+}
+#pragma pop
+
 
 s32 func_ov007_02217c80(void *arg0) {
     s32 func_ov007_02217c50(void *);
@@ -384,9 +397,7 @@ void func_ov007_02218570(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x35) = 1;
 }
 
-#pragma push
-#pragma opt_strength_reduction off
-#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_ov007_0221863c(void *arg0) {
     s8 *func_ov007_02217b64(u8);
     M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
@@ -410,8 +421,8 @@ void func_ov007_0221863c(void *arg0) {
     extern void **gCurrentMap;
 
     void *r4;
-    void *node0;
-    void *node1;
+    MenuList007 *node0;
+    MenuList007 *node1;
     u8 mode;
     void *savedEngine;
 
@@ -429,48 +440,11 @@ void func_ov007_0221863c(void *arg0) {
     M2C_FIELD(arg0, void **, 0x5C) = NULL;
 
     node0 = MemAlloc(0x24);
-    if (node0 != NULL) {
-        void *buf;
-        M2C_FIELD(node0, u16 *, 0x10) = 0x40;
-        M2C_FIELD(node0, u8 *, 0x12) = 0;
-        M2C_FIELD(node0, s32 *, 0x0) = 0;
-        M2C_FIELD(node0, s32 *, 0x4) = 0;
-        M2C_FIELD(node0, s8 *, 0x8) = -1;
-        M2C_FIELD(node0, s8 *, 0x9) = -1;
-        M2C_FIELD(node0, s8 *, 0xA) = -1;
-        M2C_FIELD(node0, s8 *, 0xB) = -1;
-        M2C_FIELD(node0, u8 *, 0xD) = 0xFF;
-        M2C_FIELD(node0, s8 *, 0xC) = -1;
-        M2C_FIELD(node0, u8 *, 0xE) = 0;
-        M2C_FIELD(node0, u8 *, 0xF) = 0xFF;
-        buf = func_020e34bc(0x300);
-        M2C_FIELD(node0, void **, 0x14) = buf;
-        func_02007f8c(buf, 0, 0x300);
-    }
+    if(node0) InitMenuList007(node0,64);
     M2C_FIELD(arg0, void **, 0x58) = node0;
 
     node1 = MemAlloc(0x24);
-    if (node1 != NULL) {
-        void *buf;
-        s32 size;
-        s32 c = func_ov007_02217c50(arg0);
-        size = c*12;
-        M2C_FIELD(node1, u16 *, 0x10) = (u16)c;
-        M2C_FIELD(node1, u8 *, 0x12) = 0;
-        M2C_FIELD(node1, s32 *, 0x0) = 0;
-        M2C_FIELD(node1, s32 *, 0x4) = 0;
-        M2C_FIELD(node1, s8 *, 0x8) = -1;
-        M2C_FIELD(node1, s8 *, 0x9) = -1;
-        M2C_FIELD(node1, s8 *, 0xA) = -1;
-        M2C_FIELD(node1, s8 *, 0xB) = -1;
-        M2C_FIELD(node1, u8 *, 0xD) = 0xFF;
-        M2C_FIELD(node1, s8 *, 0xC) = -1;
-        M2C_FIELD(node1, u8 *, 0xE) = 0;
-        M2C_FIELD(node1, u8 *, 0xF) = 0xFF;
-        buf = func_020e34bc(size);
-        M2C_FIELD(node1, void **, 0x14) = buf;
-        func_02007f8c(buf, 0, size);
-    }
+    if(node1) InitMenuList007(node1,func_ov007_02217c50(arg0));
     M2C_FIELD(arg0, void **, 0x5C) = node1;
 
     savedEngine = gCur3DSpriteEngine;
@@ -481,12 +455,13 @@ void func_ov007_0221863c(void *arg0) {
     s32 tile=0x3dc;
     s8 *table;
     s32 offset, i, selected;
-    i=0;
     table = func_ov007_02217b64(M2C_FIELD(arg0,u8 *,0x37));
+    i=0;
     switch(M2C_FIELD(arg0,u8 *,0x37)) {
     case 0:
+        if(table[0]>=0) {
         offset=0x7b80;
-        for(;table[0]>=0;table+=5,i++) {
+        do {
             s32 id=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
             s32 v0=func_ov000_0216cda4(table[0]);
             void *v1=func_ov000_0216cdcc(table[0]);
@@ -496,32 +471,45 @@ void func_ov007_0221863c(void *arg0) {
             offset+=0x300; tile+=0x18;
             func_01ff9e44((s32)v2,((u8)table[3]+0x16)*32,0x20);
             func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
+        table+=5;i++;
+        } while(table[0]>=0);
         }
         break;
-    case 1:
+    case 1: {
+        s32 v0;
+        void *v1;
+        u8 variant;
+        s32 j=i;
+        if(table[0]>=0) {
         offset=0x7b80;
-        for(;table[0]>=0;table+=5,i++) {
-            s32 v0;
-            void *v1;
-            u8 variant;
-            selected=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
-            variant=M2C_FIELD((u8 *)*gCurrentMap+selected*140+0x6000,u8 *,0x7cd);
+        do {
+            i=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),j,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
+            variant=M2C_FIELD((u8 *)*gCurrentMap+i*140+0x6000,u8 *,0x7cd);
             v0=func_ov000_0216cd4c(table[0]);
             v1=func_ov000_0216cd78(table[0],variant);
             func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
             func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);
             offset+=0x180; tile+=12;
-            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
+            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)j,14);
+        table+=5;j++;
+        } while(table[0]>=0);
         }
-        func_01ff9e44((s32)func_ov000_0216cd90(selected),0x2c0,32);
+        func_01ff9e44((s32)func_ov000_0216cd90(i),0x2c0,32);
         break;
     }
-    for(i=0;i<func_ov007_02217c50(arg0);i++)
-        func_02087d18((s32)M2C_FIELD(arg0,void **,0x5c),(s16)(i*24+8),140,16,16,(u16)i,14);
+    }
+    i=0;
+    if(func_ov007_02217c50(arg0)>0) {
+        offset=8;
+        do {
+        func_02087d18((s32)M2C_FIELD(arg0,void **,0x5c),(s16)offset,140,16,16,(u16)i,14);
+        i++;offset+=24;
+        } while(i<func_ov007_02217c50(arg0));
+    }
     }
     gCur3DSpriteEngine=savedEngine;
 }
-#pragma pop
+#pragma opt_propagation reset
 void func_ov007_02218a60(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_020a40c0(u8);

@@ -482,8 +482,8 @@ s32 func_02037c1c(void) {
 }
 
 s32 func_02037c90(void) {
-    extern s32 data_0213d114;
-    return data_0213d114;
+    extern s32 gNasConnection;
+    return gNasConnection;
 }
 
 s32 func_02037ca0(s32 a,s32 b){

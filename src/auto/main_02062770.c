@@ -84,35 +84,38 @@ if(n-5<2)return;
 }else *out=M2C_FIELD(a,u16 *,0x4a8);
 }
 
-s32 func_02062a2c(M2C_UNK a,s32 h,u8 *p,s32 n,s32 mode) {
-void func_0206113c(s32,s32);void func_02061144(s32,s32,u16);void func_02061150(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void func_02060ac4(s32,s32,s32);void func_02060a84(s32,s32,void *);s32 func_02068c34(void *);u8 func_02061160(s32);void func_02061158(s32,u8);
-s32 value;u16 swap,half; s32 original=n; s32 flags=*p;s32 count,i,k; s32 *entry;u8 *key;
-p+=5;func_0206113c(h,flags);n-=5;
-if(flags&16){p+=2;n-=2;}
-if(flags&2){{PairBytes *dst=(PairBytes *)&value; *dst=*(PairBytes *)p;dst[1]=((PairBytes *)p)[1];}p+=4;n-=4;}else value=0;
-if(flags&32){{u8 *dst=(u8 *)&half;u8 x=((volatile u8 *)p)[0],y=((volatile u8 *)p)[1];*dst++=x;*dst=y;}p+=2;n-=2;}else half=M2C_FIELD(a,u16 *,0x4a8);
-func_02061144(h,value,half);
-if(flags&8){{PairBytes *dst=(PairBytes *)&value; *dst=*(PairBytes *)p;dst[1]=((PairBytes *)p)[1];}p+=4;n-=4;func_02061150(h,value);}
-if(flags&64){
-count=func_02048688(M2C_FIELD(a,s32 *,8));
-for(i=0;i<count;i++){
-entry=func_02048690(M2C_FIELD(a,s32 *,8),i);
-switch(entry[1]){
-case 1:func_02060ac4(h,entry[0],*p++);n--;break;
-case 2:{u8 *dst=(u8 *)&swap;u8 x=((volatile u8 *)p)[0],y=((volatile u8 *)p)[1];*dst++=x;*dst=y;}func_02060ac4(h,entry[0],(u16)(((swap>>8)&255)|((swap<<8)&0xff00)));p+=2;n-=2;break;
-case 0:
-if(mode){k=*p++;n--;}else k=255;
-if(k==255){func_02060a84(h,entry[0],p);k=func_02068c34(p)+1;p+=k;n-=k;}else func_02060a84(h,entry[0],M2C_FIELD((u8 *)a+k*4,void **,0x84));
+/* Decodes one gpi player record: stores the flags, the optional id/port/value fields
+ * and then the typed field list and raw key/value list into the player. Returns the
+ * number of bytes consumed. */
+s32 gpiProcessPlayerRecord(M2C_UNK ctx,s32 player,u8 *data,s32 size,s32 readLength) {
+void gpiPlayerSetFlags(s32,s32);void gpiPlayerSetAddress(s32,s32,u16);void gpiPlayerSetValue(s32,s32);s32 func_02048688(s32);void *func_02048690(s32,s32);void gpiPlayerSetInt(s32,s32,s32);void gpiPlayerSetString(s32,s32,void *);s32 func_02068c34(void *);u8 gpiPlayerGetState(s32);void gpiPlayerSetState(s32,u8);
+s32 id;u16 rawPort,port; s32 totalSize=size; s32 flags=*data;s32 count,index,length; s32 *field;u8 *key;
+data+=5;gpiPlayerSetFlags(player,flags);size-=5;
+if(flags&GPI_REC_FLAG_SKIP){data+=2;size-=2;}
+if(flags&GPI_REC_FLAG_ID){{PairBytes *dst=(PairBytes *)&id; *dst=*(PairBytes *)data;dst[1]=((PairBytes *)data)[1];}data+=4;size-=4;}else id=0;
+if(flags&GPI_REC_FLAG_PORT){{u8 *dst=(u8 *)&port;u8 x=((volatile u8 *)data)[0],y=((volatile u8 *)data)[1];*dst++=x;*dst=y;}data+=2;size-=2;}else port=M2C_FIELD(ctx,u16 *,0x4a8);
+gpiPlayerSetAddress(player,id,port);
+if(flags&GPI_REC_FLAG_VALUE){{PairBytes *dst=(PairBytes *)&id; *dst=*(PairBytes *)data;dst[1]=((PairBytes *)data)[1];}data+=4;size-=4;gpiPlayerSetValue(player,id);}
+if(flags&GPI_REC_FLAG_FIELDS){
+count=func_02048688(M2C_FIELD(ctx,s32 *,8));
+for(index=0;index<count;index++){
+field=func_02048690(M2C_FIELD(ctx,s32 *,8),index);
+switch(field[1]){
+case GPI_FIELD_BYTE:gpiPlayerSetInt(player,field[0],*data++);size--;break;
+case GPI_FIELD_PORT:{u8 *dst=(u8 *)&rawPort;u8 x=((volatile u8 *)data)[0],y=((volatile u8 *)data)[1];*dst++=x;*dst=y;}gpiPlayerSetInt(player,field[0],(u16)(((rawPort>>8)&255)|((rawPort<<8)&0xff00)));data+=2;size-=2;break;
+case GPI_FIELD_STRING:
+if(readLength){length=*data++;size--;}else length=255;
+if(length==255){gpiPlayerSetString(player,field[0],data);length=func_02068c34(data)+1;data+=length;size-=length;}else gpiPlayerSetString(player,field[0],M2C_FIELD((u8 *)ctx+length*4,void **,0x84));
 break;
 }
 }
-func_02061158(h,func_02061160(h)|1);
+gpiPlayerSetState(player,gpiPlayerGetState(player)|GPI_PLAYER_STATE_FIELDS);
 }
-if(flags&128){
-while(*(s8 *)p && n>0){key=p;k=func_02068c34(p)+1;p+=k;n-=k;func_02060a84(h,(s32)key,p);k=func_02068c34(p)+1;p+=k;n-=k;}
-n--;func_02061158(h,func_02061160(h)|2);
+if(flags&GPI_REC_FLAG_KEYS){
+while(*(s8 *)data && size>0){key=data;length=func_02068c34(data)+1;data+=length;size-=length;gpiPlayerSetString(player,(s32)key,data);length=func_02068c34(data)+1;data+=length;size-=length;}
+size--;gpiPlayerSetState(player,gpiPlayerGetState(player)|GPI_PLAYER_STATE_KEYS);
 }
-return original-n;
+return totalSize-size;
 }
 
 /* Validates an encoded data block and, if valid, decodes it. */
@@ -124,7 +127,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     s32 func_0206283c(void *, s32);
     s32 func_020628c0(M2C_UNK, void *, s32);
 
-    s32 func_02062a2c(M2C_UNK, s32, u8 *, s32, s32);
+    s32 gpiProcessPlayerRecord(M2C_UNK, s32, u8 *, s32, s32);
     s32 func_0206527c(void *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_021001a0;
     s32 sp8;
@@ -156,7 +159,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     if (func_02061168() != 0) {
         return -2;
     }
-    result = func_02062a2c(context, handle, data, size, 1);
+    result = gpiProcessPlayerRecord(context, handle, data, size, 1);
     func_02061a38(context, handle);
     return result;
 }

@@ -225,6 +225,7 @@ if(ok == 0){a[0x2052]=1;func_02007e98(0,((u8 *)((List_02074920 *)(a+0xc4c))->ent
 }func_02074b84((List_02074920 *)(a+0xc4c));return;
 }
 
+/* Write a ranked list of entries to a save buffer. */
 void func_020753f8(void *a, void *b, void *c, s32 d, u8 e, u32 f) {
 void *func_020e34bc(u32); void func_020e35cc(void *); s32 func_0200558c(void); void func_020055f4(u8); void func_0200fe5c(u16); void func_0200fe6c(u8);
 void func_02007ef4(void *,void *,u32); void func_02007e98(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);

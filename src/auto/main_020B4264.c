@@ -303,7 +303,7 @@ void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 data_02168f0c;extern M2C_UN
 
 void func_020b4c08(u8 arg0){void *func_020be120();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
 func_020be324(arg0,func_020be120());func_020b4ab4(func_020be120());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
-func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();func_020cd8a8();func_020cfd28();func_020c0a1c(3);}
+func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();SetupPlayerTeams();func_020cfd28();func_020c0a1c(3);}
 
 void func_020b4ca0(void) {
     s32 func_020bee64();

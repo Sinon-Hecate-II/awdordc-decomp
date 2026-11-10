@@ -81,7 +81,7 @@ M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHis
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)func_ov005_02211c24(j);
 func_ov005_02211b4c();func_ov000_0216a4e0((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
-func_ov005_02211c94();func_ov005_02211cf4();
+func_ov005_02211c94();UpdateMedalFlags();
 save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}

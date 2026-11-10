@@ -7,48 +7,48 @@ extern u8 data_020fb558[], data_020fb570[];
 #pragma push
 #pragma opt_common_subs on
 s32 func_02033210(void){
-extern M2C_UNK data_0213d114;extern s32 data_0213e9f4;
+extern M2C_UNK gNasConnection;extern s32 data_0213e9f4;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
 void *func_02034ef8(void*,void*);s32 func_02036860(void*);s32 func_0206ad38(s8*);s32 func_02034f50(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 func_0206ac70(void*,void**,s32);s32 func_02068c34(s32);
 void *end; s32 status; void *response;void *p;
-p=M2C_FIELD(&data_0213d114,void **,8);status=0;end=(void*)status;
+p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
 response=M2C_FIELD(p,void **,0x1314);end=func_02034ef8(response,data_020fb398);if(end)func_02036860(end);
-p=M2C_FIELD(&data_0213d114,void **,8);end=0;data_0213e9f4=0;status=func_0206ad38(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
-if(data_0213e9f4==34){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=0x4e85;return 12;}
-if(status!=200){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=status+23000;return 18;}
-if(func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&data_0213d114,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32*,0x1008)=0x4e85;return 14;}
-status=func_0206ac70(M2C_FIELD(&data_0213d114,void **,8)+0x100c,&end,10);p=M2C_FIELD(&data_0213d114,void **,8);
+p=M2C_FIELD(&gNasConnection,void **,8);end=0;data_0213e9f4=0;status=func_0206ad38(func_02034ef8(M2C_FIELD(p,void **,0x1314),data_020fb3a0));
+if(data_0213e9f4==34){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 12;}
+if(status!=200){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=status+23000;return 18;}
+if(func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3ac,M2C_FIELD(&gNasConnection,void **,8)+0x100c,4)<=0){M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32*,0x1008)=0x4e85;return 14;}
+status=func_0206ac70(M2C_FIELD(&gNasConnection,void **,8)+0x100c,&end,10);p=M2C_FIELD(&gNasConnection,void **,8);
 if(end!=p+0x100c+func_02068c34((s32)(p+0x100c))){M2C_FIELD(p,s32*,0x1008)=0x4e85;return 12;}
 M2C_FIELD(p,s32*,0x1008)=status+20000;
 if(status<100){
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x1052)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x101f)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x117f)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x1010)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x1188)=0;
-func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3b8,M2C_FIELD(&data_0213d114,void **,8)+0x1052,0x12d);
-func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3c0,M2C_FIELD(&data_0213d114,void **,8)+0x101f,0x33);
-func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3c8,M2C_FIELD(&data_0213d114,void **,8)+0x117f,9);
-func_02034f50(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3d4,M2C_FIELD(&data_0213d114,void **,8)+0x1010,15);
-func_02034fa4(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),data_020fb3e0,M2C_FIELD(&data_0213d114,void **,8)+0x1188,65);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_FIELD(&data_0213d114,s32*,0)=1;else M2C_FIELD(&data_0213d114,s32*,0)=2;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1052)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x101f)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x117f)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1010)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x1188)=0;
+func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3b8,M2C_FIELD(&gNasConnection,void **,8)+0x1052,0x12d);
+func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c0,M2C_FIELD(&gNasConnection,void **,8)+0x101f,0x33);
+func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c8,M2C_FIELD(&gNasConnection,void **,8)+0x117f,9);
+func_02034f50(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3d4,M2C_FIELD(&gNasConnection,void **,8)+0x1010,15);
+func_02034fa4(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3e0,M2C_FIELD(&gNasConnection,void **,8)+0x1188,65);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_FIELD(&gNasConnection,s32*,0)=1;else M2C_FIELD(&gNasConnection,s32*,0)=2;
 }return 0;}
 #pragma pop
 s32 func_020334d8(void *p,void *a,void *b){
-extern M2C_UNK data_0213d114,data_0213d120;extern s32 data_0213d13c;
+extern M2C_UNK gNasConnection,data_0213d120;extern s32 data_0213d13c;
 extern u8 data_020fb3ec[],data_020fb3f8[],data_020fb400[],data_020fb408[],data_020fb410[],data_020fb414[],data_020fb41c[];
-s32 func_02068c34(s32);s32 func_020346d0(void *,void *,void *,s32);s32 func_020336e8(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
+s32 func_02068c34(s32);s32 func_020346d0(void *,void *,void *,s32);s32 BuildFriendProfile(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
 u8 buffer[0x94];
-s32 v0=M2C_FIELD(&data_0213d114,s32 *,0x10),v1=M2C_FIELD(&data_0213d114,s32 *,0xc);
+s32 v0=M2C_FIELD(&gNasConnection,s32 *,0x10),v1=M2C_FIELD(&gNasConnection,s32 *,0xc);
 if(v0==0 && v1==0){
 if(func_020346d0(p,data_020fb3f8,data_020fb3ec,func_02068c34((s32)data_020fb3ec)))return 8;
 }else{
 if(func_020346d0(p,data_020fb3f8,data_020fb400,func_02068c34((s32)data_020fb400)))return 8;
 }
 if(func_020346d0(p,data_020fb408,a,func_02068c34((s32)a)))return 8;
-if(!func_020336e8((s32)buffer,&data_0213d120))return 5;
+if(!BuildFriendProfile((s32)buffer,&data_0213d120))return 5;
 if(!func_02033988(p,buffer,data_0213d13c))return 8;
-if(M2C_FIELD(&data_0213d114,s32 *,4)==1){
+if(M2C_FIELD(&gNasConnection,s32 *,4)==1){
 if(func_020346d0(p,data_020fb414,data_020fb410,func_02068c34((s32)data_020fb410)))return 8;
 }
 {
@@ -63,23 +63,25 @@ return 0;
 void func_0203367c(s32 arg0) {
     M2C_UNK func_02006564(s32);
     M2C_UNK func_020065e8(void *);
-    extern M2C_UNK data_0213d114;
-    func_02006564(M2C_FIELD(&data_0213d114, void **, 8) + 0x13D8);
-    M2C_FIELD(M2C_FIELD(&data_0213d114, void **, 8), s32 *, 0x1004) = arg0;
-    func_020065e8(M2C_FIELD(&data_0213d114, void **, 8) + 0x13D8);
+    extern M2C_UNK gNasConnection;
+    func_02006564(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
+    M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1004) = arg0;
+    func_020065e8(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
 }
 
 void func_020336c0(s32 arg0) {
-    s32 func_020336e8(s32, void *);
+    s32 BuildFriendProfile(s32, void *);
     void func_02045cbc(void *);
     u8 sp0[20];
     func_02045cbc(sp0);
-    func_020336e8(arg0, sp0);
+    BuildFriendProfile(arg0, sp0);
 }
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_020336e8(s32 arg0, void *arg1) {
+/* Builds the ~0x94-byte Wi-Fi friend/profile record: friend code, DS MAC and
+ * firmware ids, region, date and session code, then the connection-data block. */
+s32 BuildFriendProfile(s32 arg0, void *arg1) {
     M2C_UNK func_0200567c();
     void func_02007f8c(void *, s32, s32);
     void func_0200563c(void *, void *, ...);
@@ -95,30 +97,30 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     void func_020317ac(void *, void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern u8 data_020fb428[], data_020fb430[], data_020fb438[], data_020fb440[], data_020fb44c[], data_020fb468[];
-    s32 var_r6;
-    void *var_r7;
-    void *var_r5;
-    u8 sp_16[6];
-    u8 sp_38[0x54];
-    u16 sp_14;
-    u32 sp_vals[7];
+    extern u8 gFmtFriendCode[], gFmtU03[], gFmtHex02[], gFmtHex02Pair[], gFmtDate6[], gFmtSessionCode[];
+    s32 intrState;
+    void *connInfo;
+    void *connData;
+    u8 macBytes[6];
+    u8 userSettings[0x54];
+    u16 connType;
+    u32 dateVals[7];
     s32 i;u8 *src,*dst;
 
     func_02007f8c((void *)arg0, 0, 0x94);
     {
-        u32 *p = (u32 *)arg1;
-        u32 low0 = p[0], high0 = p[1];
-        if (high0 != 0 || low0 != 0) {
-            func_0200567c((void *)arg0, 0xe, data_020fb428, low0, high0);
+        u32 *raw = (u32 *)arg1;
+        u32 low = raw[0], high = raw[1];
+        if (high != 0 || low != 0) {
+            func_0200567c((void *)arg0, 0xe, gFmtFriendCode, low, high);
         } else {
-            u64 value=*((u64*)arg1+1);low0=value;high0=value>>32;
-            func_0200567c((void *)arg0, 0xe, data_020fb428, low0, high0);
+            u64 id=*((u64*)arg1+1);low=id;high=id>>32;
+            func_0200567c((void *)arg0, 0xe, gFmtFriendCode, low, high);
         }
     }
     {
-        u16 v = *((u16 *)((u8 *)arg1 + 0x10));
-        func_0200567c((void *)((u8 *)arg0 + 0xe), 7, data_020fb430, v);
+        u16 region = *((u16 *)((u8 *)arg1 + 0x10));
+        func_0200567c((void *)((u8 *)arg0 + 0xe), 7, gFmtU03, region);
     }
     if (*(u8 *)0x027FFE0C == 0) {
         func_02007958();
@@ -129,43 +131,43 @@ s32 func_020336e8(s32 arg0, void *arg1) {
     }
     MI_CpuCopy8((void *)0x027FFE10, (void *)((u8 *)arg0 + 0x1a), 2);
     *((u8 *)arg0 + 0x1d) = 0x30;
-    func_02007724(sp_16);
-    dst=(u8*)arg0+0x1f;src=sp_16;
-    for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,data_020fb438,*src);
-    func_02007740(sp_38);
-    if (sp_38[0] >= 8) {
-        sp_38[0] = 1;
+    func_02007724(macBytes);
+    dst=(u8*)arg0+0x1f;src=macBytes;
+    for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,gFmtHex02,*src);
+    func_02007740(userSettings);
+    if (userSettings[0] >= 8) {
+        userSettings[0] = 1;
     }
-    func_0200567c((void *)((u8 *)arg0 + 0x2c), 3, data_020fb438, sp_38[0]);
-    MI_CpuCopy8(sp_38 + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
-    func_0200567c((void *)((u8 *)arg0 + 0x2f), 5, data_020fb440, sp_38[2], sp_38[3]);
-    if (func_0200f0ac((s32)(sp_vals + 3), (s32)(sp_vals + 0)) != 0) {
+    func_0200567c((void *)((u8 *)arg0 + 0x2c), 3, gFmtHex02, userSettings[0]);
+    MI_CpuCopy8(userSettings + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
+    func_0200567c((void *)((u8 *)arg0 + 0x2f), 5, gFmtHex02Pair, userSettings[2], userSettings[3]);
+    if (func_0200f0ac((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
         return 0;
     }
-    func_0200567c((void *)((u8 *)arg0 + 0x34), 0xd, data_020fb44c,
-        sp_vals[3], sp_vals[4], sp_vals[5], sp_vals[0], sp_vals[1], sp_vals[2]);
-    var_r6 = OS_DisableInterrupts();
-    var_r7 = func_02029784();
-    func_020067a8(var_r7, 6);
-    if (var_r7 == NULL) {
-        OS_RestoreInterrupts(var_r6);
+    func_0200567c((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
+        dateVals[3], dateVals[4], dateVals[5], dateVals[0], dateVals[1], dateVals[2]);
+    intrState = OS_DisableInterrupts();
+    connInfo = func_02029784();
+    func_020067a8(connInfo, 6);
+    if (connInfo == NULL) {
+        OS_RestoreInterrupts(intrState);
         return 0;
     }
     dst=(u8*)arg0+0x41;
-    for(i=0;i<6;i++,dst+=2) func_0200563c(dst,data_020fb438,((u8*)var_r7)[i]);
+    for(i=0;i<6;i++,dst+=2) func_0200563c(dst,gFmtHex02,((u8*)connInfo)[i]);
     {
-        u8 b = func_0202f248();
-        func_0200567c((void *)((u8 *)arg0 + 0x6f), 0xe, data_020fb468, b);
+        u8 language = func_0202f248();
+        func_0200567c((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
     }
-    var_r5 = func_020297c8(&sp_14);
-    func_020067a8(var_r5, 0x20);
-    if (var_r5 == NULL) {
-        OS_RestoreInterrupts(var_r6);
+    connData = func_020297c8(&connType);
+    func_020067a8(connData, 0x20);
+    if (connData == NULL) {
+        OS_RestoreInterrupts(intrState);
         return 0;
     }
-    func_020317ac(var_r5, (void *)((u8 *)arg0 + 0x72));
-    MI_CpuCopy8(var_r5, (void *)((u8 *)arg0 + 0x4e), 0x20);
-    OS_RestoreInterrupts(var_r6);
+    func_020317ac(connData, (void *)((u8 *)arg0 + 0x72));
+    MI_CpuCopy8(connData, (void *)((u8 *)arg0 + 0x4e), 0x20);
+    OS_RestoreInterrupts(intrState);
     return 1;
 }
 #pragma pop

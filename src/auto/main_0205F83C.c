@@ -271,7 +271,7 @@ void func_0206045c(void *a,void *b,s32 c,s32 d){void func_020601b8(void *,void *
 /* Dispatch each chunk of a typed message to its handlers found via a table, or fall back to a direct handler. */
 void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
     s32 func_02049208(void);
-    void func_02060a84(void *, s32, void *);
+    void gpiPlayerSetString(void *, s32, void *);
     void func_02060e10(void *, void *, s32);
     s32 func_02061da0(void *, s32);
     extern s32 data_020ffc1c[];
@@ -290,7 +290,7 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
             if (chunkLen < 0) {
                 break;
             }
-            func_02060a84(entry, data_020ffc1c[M2C_FIELD(owner + index, u8 *, 0x2C)], payload);
+            gpiPlayerSetString(entry, data_020ffc1c[M2C_FIELD(owner + index, u8 *, 0x2C)], payload);
             index++;
             payload += chunkLen;
             length -= chunkLen;

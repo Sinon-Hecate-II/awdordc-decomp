@@ -17,7 +17,7 @@ void func_ov003_021f40a8(void *arg0) {
     void func_02088f1c(void *);
     void func_ov003_021f14a0(void);
     void func_ov006_02217464(void *);
-    void func_020ab344(void *, s32, s32);
+    void ScrollListTo(void *, s32, s32);
     void *MemAlloc(s32);
     extern u16 data_ov003_0220fde8;
     extern u16 data_ov003_0220fdf0;
@@ -180,7 +180,7 @@ void func_ov003_021f40a8(void *arg0) {
             M2C_FIELD(o, u16 *, 0x2a) = 0;
             M2C_FIELD(o, u16 *, 0x2c) = 0;
             M2C_FIELD(o, u16 *, 0x2e) = 0;
-            func_020ab344(M2C_FIELD(arg0, void **, 0x4c), 0, 1);
+            ScrollListTo(M2C_FIELD(arg0, void **, 0x4c), 0, 1);
         }
 o=MemAlloc(0x18); if(o){
 M2C_FIELD(o, void * *, 0) = &data_ov003_0220fb28;

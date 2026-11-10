@@ -187,7 +187,7 @@ s32 func_02047dd4(s32 x, s32 y, s32 a, s32 b) {
 #pragma pop
 s32 func_0204800c(u8 *a, u8 *b, s32 c, u32 d, u32 e, s32 f) {
     s32 func_02068c34();
-    s32 func_020651a4();
+    s32 MemCopy();
     s32 i, n;
     u32 k;
     u8 *p;
@@ -201,7 +201,7 @@ s32 func_0204800c(u8 *a, u8 *b, s32 c, u32 d, u32 e, s32 f) {
         if (((e >> i) & 1) == 1)
             n++;
     if (n != 1) return 0;
-    func_020651a4(&data_020fca68, a, 32);
+    MemCopy(&data_020fca68, a, 32);
     k = 10;
     p = data_020fca88;
     do {
@@ -245,7 +245,7 @@ void func_0204817c(void) {
 
 /* Sets up a DNS query for service availability for the given service name. */
 void InitServiceAvailabilityQuery(s8 *serviceName) {
-    s32 func_02068c50(); s32 func_0204926c(); s32 func_020675e4(); s32 func_020496a4(); s32 func_02068c34(); s32 func_020651a4();
+    s32 func_02068c50(); s32 func_0204926c(); s32 func_020675e4(); s32 func_020496a4(); s32 func_02068c34(); s32 MemCopy();
     extern M2C_UNK gServiceNameBuffer, gOverrideDnsName, gServiceAvailabilityFormat, gDnsPacketHeader, gDnsQueryNameBuffer;
     s8 hostNameBuffer[64]; s32 hasOverride, dnsNameLength;
     func_02068c50(&gServiceNameBuffer, serviceName);
@@ -258,7 +258,7 @@ void InitServiceAvailabilityQuery(s8 *serviceName) {
     if (M2C_FIELD(&gDnsQueryState, s32 *, 4) == -1) return;
     M2C_FIELD(&gDnsQueryState, s8 *, 0x10) = 9;
     dnsNameLength = func_02068c34(serviceName);
-    func_020651a4(&gDnsQueryNameBuffer, serviceName, dnsNameLength + 1);
+    MemCopy(&gDnsQueryNameBuffer, serviceName, dnsNameLength + 1);
     M2C_FIELD(&gDnsQueryState, s32 *, 0x50) = dnsNameLength + 6;
     func_0204817c();
     M2C_FIELD(&gDnsQueryState, s32 *, 0x58) = 0;
@@ -323,8 +323,8 @@ if(!M2C_FIELD(a,s32 *,20))func_020640a8(&data_020fcc98,&data_020fcca4,&data_020f
 }
 
 void func_02048534(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020651a4(s32, M2C_UNK, s32);
-    func_020651a4(func_02048690(arg0, arg2), arg1, M2C_FIELD(arg0, s32 *, 8));
+    M2C_UNK MemCopy(s32, M2C_UNK, s32);
+    MemCopy(func_02048690(arg0, arg2), arg1, M2C_FIELD(arg0, s32 *, 8));
 }
 
 s32 *func_02048558(s32 a,s32 b,s32 c) {

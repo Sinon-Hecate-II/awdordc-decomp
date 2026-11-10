@@ -355,50 +355,51 @@ loop_1:
     goto loop_1;
 }
 
+/* Blend sprite palette colors for animation transitions. */
 void func_0209e320(void *arg0) {
- extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
- extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
- s32 func_02089064(void*);s32 func_02099014(void*);s32 func_020ae354(s32,s32,s32,s32);
- void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
- s32 i;
- u8 *pal;
- s32 c0,c1,c2;
- u8 *a,*p=arg0,*b;
- void *old,*engine,*q,*q0;
- u32 mode;
- q0=(void*)func_0209e2c0(p,0);
- q=(void*)func_0209e2c0(p,1);
- b=M2C_FIELD(q,u8**,0x60);
- a=M2C_FIELD(q0,u8**,0x60);
- old=gCur3DSpriteEngine;
- i=0;do{
-  if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
-  gCur3DSpriteEngine=engine;
-  mode=(u32)(p[0x48]<<28)>>29;
-  if((mode!=0 || engine==g3DSpriteEngineMain) && (mode!=1 || engine==g3DSpriteEngineSub) && (mode!=3 || engine==old)){
-   func_0209e158((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
-   pal=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+(((((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16)<<5)&~1);
-   c0=M2C_FIELD(pal,u16*,0x16);c1=M2C_FIELD(pal,u16*,0x18);c2=M2C_FIELD(pal,u16*,0x1a);
-   if(a[0x59]){if(func_02089064(a))c0=c1;}else c1=func_020ae354(c1,0,8,8);
-   if(b[0x59]){if(func_02089064(b))c0=c2;}else c2=func_020ae354(c2,0,8,8);
-   M2C_FIELD(pal,u16*,6)=c1;M2C_FIELD(pal,u16*,8)=c2;M2C_FIELD(pal,u16*,10)=c0;
-   if(!p[0x59])func_020ae528(pal);
-   M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
-  }
-  i++;
- }while(i<2);
- gCur3DSpriteEngine=old;
- M2C_FIELD(p,void**,0x60)=data_020f3a08;M2C_FIELD(p,void**,0x64)=data_020f3a08;
- switch(p[0x5a]){
- case 2:
-  if(func_02099014(a)&&func_02089064(a)){if(a[0x59])M2C_FIELD(p,void**,0x60)=data_020f3a3a;else M2C_FIELD(p,void**,0x60)=data_020f3a9e;}
-  if(func_02099014(b)&&func_02089064(b)){if(b[0x59])M2C_FIELD(p,void**,0x64)=data_020f3ad0;else M2C_FIELD(p,void**,0x64)=data_020f3a6c;}
-  p[0x49]=4;break;
- case 1:M2C_FIELD(p,void**,0x60)=data_020f39ee;M2C_FIELD(p,void**,0x64)=data_020f39d4;p[0x49]=7;break;
- }
- q=func_0209bfc8();
- p=func_0209e2d8((s32)arg0);
- if(q && p)M2C_FIELD(q,void**,0x60)=func_02097e84(p[0x58]);
+    extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+    extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
+    s32 func_02089064(void*);s32 func_02099014(void*);s32 func_020ae354(s32,s32,s32,s32);
+    void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
+    s32 i;
+    u8 *pal;
+    s32 c0,c1,c2;
+    u8 *a,*p=arg0,*b;
+    void *old,*engine,*q,*q0;
+    u32 mode;
+    q0=(void*)func_0209e2c0(p,0);
+    q=(void*)func_0209e2c0(p,1);
+    b=M2C_FIELD(q,u8**,0x60);
+    a=M2C_FIELD(q0,u8**,0x60);
+    old=gCur3DSpriteEngine;
+    i=0;do{
+        if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
+        gCur3DSpriteEngine=engine;
+        mode=(u32)(p[0x48]<<28)>>29;
+        if((mode!=0 || engine==g3DSpriteEngineMain) && (mode!=1 || engine==g3DSpriteEngineSub) && (mode!=3 || engine==old)){
+            func_0209e158((u16)(((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16));
+            pal=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+(((((u32)(M2C_FIELD(p,u32*,0x40)<<6)>>24)+16)<<5)&~1);
+            c0=M2C_FIELD(pal,u16*,0x16);c1=M2C_FIELD(pal,u16*,0x18);c2=M2C_FIELD(pal,u16*,0x1a);
+            if(a[0x59]){if(func_02089064(a))c0=c1;}else c1=func_020ae354(c1,0,8,8);
+            if(b[0x59]){if(func_02089064(b))c0=c2;}else c2=func_020ae354(c2,0,8,8);
+            M2C_FIELD(pal,u16*,6)=c1;M2C_FIELD(pal,u16*,8)=c2;M2C_FIELD(pal,u16*,10)=c0;
+            if(!p[0x59])func_020ae528(pal);
+            M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
+        }
+        i++;
+    }while(i<2);
+    gCur3DSpriteEngine=old;
+    M2C_FIELD(p,void**,0x60)=data_020f3a08;M2C_FIELD(p,void**,0x64)=data_020f3a08;
+    switch(p[0x5a]){
+        case 2:
+            if(func_02099014(a)&&func_02089064(a)){if(a[0x59])M2C_FIELD(p,void**,0x60)=data_020f3a3a;else M2C_FIELD(p,void**,0x60)=data_020f3a9e;}
+            if(func_02099014(b)&&func_02089064(b)){if(b[0x59])M2C_FIELD(p,void**,0x64)=data_020f3ad0;else M2C_FIELD(p,void**,0x64)=data_020f3a6c;}
+            p[0x49]=4;break;
+        case 1:M2C_FIELD(p,void**,0x60)=data_020f39ee;M2C_FIELD(p,void**,0x64)=data_020f39d4;p[0x49]=7;break;
+    }
+    q=func_0209bfc8();
+    p=func_0209e2d8((s32)arg0);
+    if(q && p)M2C_FIELD(q,void**,0x60)=func_02097e84(p[0x58]);
 }
 
 M2C_UNK func_0209e5d0(void *arg0) {

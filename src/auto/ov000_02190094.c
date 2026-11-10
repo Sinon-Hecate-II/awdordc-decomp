@@ -12,9 +12,9 @@ typedef struct { u8 a[3]; u8 count; u8 b[2]; } Supply_021906a0;
 
 extern void **gCurrentMap;
 void func_01ffc328(void *);
-int func_ov000_021a8fc0(int);
+int IsCurrentPlayerUnit(int);
 int func_ov000_021a8984(int);
-int func_ov000_021a995c(void *,int);
+int CanUnitAttackKind(void *,int);
 int func_ov000_0217c2d4(void *);
 void func_ov000_0217c3a4(void);
 int func_ov000_0217de64(s16,s16,int,u8,void *);
@@ -212,11 +212,11 @@ void func_ov000_021906a0(int arg0) {
    m = *gCurrentMap;
    if ((*(s8 **)(m + 0x52e8 + y * 4))[x] < 0) continue;
    if (!m[x + *(u16 *)(m + 0x3758 + y * 2)]) continue;
-   if (!func_ov000_021a8fc0(m[x + *(u16 *)(m + 0x3758 + y * 2) + 0x508])) continue;
+   if (!IsCurrentPlayerUnit(m[x + *(u16 *)(m + 0x3758 + y * 2) + 0x508])) continue;
    m = *gCurrentMap;
    unit = m + 0x59a4 + 14 * m[x + *(u16 *)(m + 0x3758 + y * 2)];
    if (func_ov000_021a8984(((UnkStruct_ov000_021A860C *)unit)->unkB)) continue;
-   if (!func_ov000_021a995c(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->unk0)) continue;
+   if (!CanUnitAttackKind(unit, ((UnkStruct_ov000_021A860C *)*(void **)((u8 *)*gCurrentMap + 0x52d0))->unk0)) continue;
    if (((Health_021906a0 *)(unit + 6))->high != 0) continue;
    switch (kind) {
    case 25:

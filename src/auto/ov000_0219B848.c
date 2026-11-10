@@ -1,20 +1,20 @@
 /* 11 functions from 0x0219B848 to 0x0219C7EC (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_ov000_021e00ac;
+extern u8 gAiTargetCandidates;
 extern s8 data_ov000_021b5580[],data_ov000_021b55a0[],data_ov000_021b5500[],data_ov000_021e0f60[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
 s32 func_020a8a14(u16,u16); s32 func_020d27ec(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
-s32 func_020d273c(u16,s32); s32 func_020d1938(s32);
+s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
 s32 func_ov000_021a98a8(s32); s32 func_ov000_021a8984(s32);
-void func_01ffb554(void *); void func_01ffada0(s32,s32,s32,s32,s32);
+void SelectMapLayer(void *); void func_01ffada0(s32,s32,s32,s32,s32);
 u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
 s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 func_ov000_021a9a28(s32,s32,s32); s32 func_ov000_0219b648(s32,s32); s32 func_020d2d18(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void func_ov000_021a07c0(s32);
-count=0;out=&data_ov000_021e00ac;
+count=0;out=&gAiTargetCandidates;
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 
 entry=(u8 *)*gCurrentMap+0x6c60;
@@ -30,7 +30,7 @@ if(M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)&22
 }
 if(func_ov000_021a8d7c(entry[1],entry[2],5))goto nextEntry;
 for(player=1;player<5;player++){
-if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&func_020d1938(player)&&M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c2)==2){
+if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),player)&&IsPlayerActive(player)&&M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67c2)==2){
 for(index=gPlayerUnitIdBase[player]+1;index<gPlayerUnitIdBase[player]+51;index++){
 unit=(u8 *)*gCurrentMap+0x59a4+index*14;
 kind=(u32)(unit[0]<<26)>>26;
@@ -38,9 +38,9 @@ if(!kind||!func_ov000_021a98a8(kind)||func_ov000_021a8984((u32)(unit[11]<<28)>>2
 if(unit[1]==entry[1]&&unit[2]==entry[2]&&((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27))goto nextEntry;
 if(((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)>60&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)==entry[1]&&((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26)==entry[2])goto nextEntry;
 if(((u32)(unit[11]<<28)>>28)&&((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26)!=63){
-func_01ffb554(data_ov000_021e0f60);
+SelectMapLayer(data_ov000_021e0f60);
 func_01ffada0(((u32)(M2C_FIELD(unit,u16 *,8)<<26)>>26),((u32)(M2C_FIELD(unit,u16 *,8)<<20)>>26),1,3,0);
-func_01ffb554((u8 *)*gCurrentMap+0x1e30);
+SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 if(data_ov000_021e0f60[entry[1]+entry[2]*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]>=0)goto nextEntry;
 }
 }
@@ -110,7 +110,7 @@ propertyChosen=0;out[3]=(u32)(unit[0]<<26)>>26;
 nextOwn:map=*gCurrentMap;
 }
 for(enemyPlayer=1;enemyPlayer<5;enemyPlayer++){
-if(!func_020d1938(enemyPlayer)||enemyPlayer==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))continue;
+if(!IsPlayerActive(enemyPlayer)||enemyPlayer==M2C_FIELD(*gCurrentMap,u16 *,0x52a4))continue;
 for(enemyIndex=gPlayerUnitIdBase[enemyPlayer]+1;enemyIndex<gPlayerUnitIdBase[enemyPlayer]+51;enemyIndex++){
 map=*gCurrentMap;enemyUnit=map+0x59a4+enemyIndex*14;
 kind=(u32)(enemyUnit[0]<<26)>>26;
@@ -122,7 +122,7 @@ if(!enemyUnit[12]&&func_ov000_021a9a28(19,enemyUnit[1],enemyUnit[2]))continue;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+enemyUnit[1]+M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758),s8 *,0x2338);
 if(out[5]<cost)continue;out[5]=cost;
 }else {if(out[5]<cost)continue;out[5]=cost;}
-relation=func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),enemyPlayer);
+relation=IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),enemyPlayer);
 }
 }
 }
@@ -133,7 +133,7 @@ count++;out+=12;
 nextEntry:entry+=6;
 }
 if(!count)return 0;
-best=0;bestdelta=255;out=&data_ov000_021e00ac;
+best=0;bestdelta=255;out=&gAiTargetCandidates;
 for(i=0;i<count;i++,out+=12){
 if(out[5]==255)delta=255;else {delta=(s32)out[4]-out[5];if(delta<0)delta=-delta;}
 if(best){
@@ -184,10 +184,10 @@ for(y=0; y<M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
   rows[y][x] = arg1;
  }
 }
-func_01ffb554((void *)*gCurrentMap + 0x1e30);
+SelectMapLayer((void *)*gCurrentMap + 0x1e30);
 }
 
-void func_ov000_0219c5d4(void){for(;;){switch(*data_ov000_021df580){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)data_02168f14<<22)>>31){if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
+void func_ov000_0219c5d4(void){for(;;){switch(*data_ov000_021df580){case 0:func_ov000_0219a1f4();break;case 1:func_ov000_0219e848();break;case 2:func_ov000_0219997c();break;case 4:if(((u32)data_02168f14<<22)>>31){if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=13;return;}}func_ov000_0219fdc8();return;default:return;}}}
 
 s32 func_ov000_0219c680(void){switch(*data_ov000_021df580){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 

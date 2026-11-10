@@ -258,11 +258,11 @@ void func_0203c614(s32 a, s32 b, u8 c, s32 d, s32 e, s32 f, s32 g, s32 h) {
     M2C_UNK func_0203af50(M2C_UNK, M2C_UNK *, M2C_UNK);
     s32 func_02042f94(void);
     M2C_UNK func_0203c28c(s32);
-    M2C_UNK func_02040a28(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0204084c(void);
     M2C_UNK ResetConnectionSync(M2C_UNK);
     s32 func_0203e410(void);
-    extern M2C_UNK gConnectionMgr, data_020fc908, data_020fc90c, data_020fc910, data_020fc914, data_020fc918, data_020fc91c, func_020432d4;
+    extern M2C_UNK gConnectionMgr, data_020fc908, gKeyFME, data_020fc910, data_020fc914, gKeyMDF, gKeyVER, func_020432d4;
     u8 sp34[12];
     s32 sp14[8];
     void *p, *q;
@@ -311,10 +311,10 @@ error:
                 }
             }
                 func_0200567c(sp34, 12, &data_020fc908, c);
-                func_02037d78(&data_020fc90c, sp34, sp14, 0x2F);
-                func_02037db0(&data_020fc918, (d != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
+                func_02037d78(&gKeyFME, sp34, sp14, 0x2F);
+                func_02037db0(&gKeyMDF, (d != 0) ? &data_020fc910 : &data_020fc914, sp14, 0x2F);
                 func_0200567c(sp34, 12, &data_020fc908, 3);
-                func_02037db0(&data_020fc91c, sp34, sp14, 0x2F);
+                func_02037db0(&gKeyVER, sp34, sp14, 0x2F);
                 func_0203af50(4, sp14, 0);
                 if (func_02042f94() != 0) {
                     goto done;
@@ -330,7 +330,7 @@ error:
         goto done;
     }
 tail:
-    func_02040a28(0, 1, 0);
+    TryConnectToPeer(0, 1, 0);
     if (func_0204084c() != 0) {
         goto done;
     }

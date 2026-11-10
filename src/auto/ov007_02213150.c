@@ -181,12 +181,12 @@ void func_ov007_02213458(void) {
 }
 
 void func_ov007_022134b4(void *arg0) {
-    M2C_UNK func_ov007_02214a6c(s32, s32);
+    M2C_UNK LoadMapFromExport(s32, s32);
     M2C_UNK func_0207b754(u32, u32);
     M2C_UNK func_0207cfc0(void *);
     extern void **gCurrentMap;
     void *p;
-    func_ov007_02214a6c(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    LoadMapFromExport(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
     func_020cfd28();
     func_ov007_022121b0();
     func_ov007_0221ab68();

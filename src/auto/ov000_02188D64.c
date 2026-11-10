@@ -42,7 +42,7 @@ M2C_FIELD(data_ov000_021df580,u16 *,8)&=~64;
 s32 func_ov000_02189000(s32 x,s32 y,s16 *out) {
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5bfc[];
-s32 func_ov000_021a9084(s32); s32 func_ov000_021a8fc0(s16); s32 func_ov000_021a98e4(s32);
+s32 func_ov000_021a9084(s32); s32 IsCurrentPlayerUnit(s16); s32 func_ov000_021a98e4(s32);
 s32 sy; s32 ndy,minx,maxy;
 register s32 id,dy,j,i,maxx;
 s32 dist,kind,cost,zero,adx;
@@ -74,7 +74,7 @@ if(func_ov000_021a9084(M2C_FIELD(base+j+M2C_FIELD(base+i*2,u16*,0x3758),u8*,0x14
 base=*gCurrentMap;
 id=M2C_FIELD(base+j,u8*,M2C_FIELD(base+i*2,u16*,0x3758));
 if(id){
-if(!func_ov000_021a8fc0((s16)id))goto next;
+if(!IsCurrentPlayerUnit((s16)id))goto next;
 
 base=*gCurrentMap;
 kind=(u32)(M2C_FIELD(base+id*14,u8*,0x59a4)<<26)>>26;
@@ -102,9 +102,9 @@ extern void **gCurrentMap;
 extern u8 *data_ov000_021df580;
 extern u8 data_ov000_021b5bfc[];
 s32 func_020a33c4(s32); s32 func_020a7b3c(s32,s32,s32,s32);
-void func_01ffb554(void *); void func_01ffc328(void *);
+void SelectMapLayer(void *); void func_01ffc328(void *);
 s32 func_ov000_021a9084(s32); s32 func_ov000_021a9d8c(s16,s16);
-s32 func_ov000_021a8fc0(s16); s32 func_ov000_021a98e4(s32);
+s32 IsCurrentPlayerUnit(s16); s32 func_ov000_021a98e4(s32);
 register s32 sy,bestScore,score,y,x,bestCost;
 s32 bestX,bestY,kind,terrain,attr;
 volatile s32 id;
@@ -114,9 +114,9 @@ void *map;
 bestScore=0x7fff;
 bestCost=bestScore;
 score=func_020a7b3c((u32)(arg0[0]<<26)>>26,M2C_FIELD(data_ov000_021df580,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
-func_01ffb554((u8*)*gCurrentMap+0x2338);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);
 func_01ffc328(arg0);
-func_01ffb554((u8*)*gCurrentMap+0x1e30);
+SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 bestX=0x270f;
 out[0]=0x270f;
 y=0;
@@ -133,7 +133,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
    if(func_ov000_021a9d8c((s16)x,sy)){
     map=*gCurrentMap;
     id=M2C_FIELD((u8*)map+x,u8*,M2C_FIELD((u8*)map+y*2,u16*,0x3758));
-    if(func_ov000_021a8fc0(id)){
+    if(IsCurrentPlayerUnit(id)){
      map=*gCurrentMap;
      kind=(u32)(M2C_FIELD((u8*)map+id*14,u8*,0x59a4)<<26)>>26;
      if((data_ov000_021b5bfc[kind*112+19]&7)==0&&func_ov000_021a98e4(kind)!=1){
@@ -179,7 +179,7 @@ return 1;
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *data_ov000_021df580;
- void func_01ffada0();void func_01ffb9c4();s32 func_ov000_021a9934();s32 func_0207c8ec();s32 func_ov000_021a8fc0(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
+ void func_01ffada0();void func_01ffb9c4();s32 CanKindAttack();s32 func_0207c8ec();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
@@ -193,7 +193,7 @@ void func_ov000_021895bc(void){
  n=(u32)(unit[0]<<26)>>26;if(!n)goto next;
  if(M2C_FIELD(unit,u16 *,4)&8)goto next;
  if(M2C_FIELD(M2C_FIELD(map+unit[2]*4,s8 **,0x52e8),s8 *,unit[1])<0)goto next;
- if(!func_ov000_021a9934((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
+ if(!CanKindAttack((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
  if((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30!=2)goto next;
  if(data_ov000_021df7e4[index&63])goto next;
  if(!func_ov000_02189000(unit[1],unit[2],out))goto next;
@@ -209,7 +209,7 @@ void func_ov000_021895bc(void){
  if(dist>=0&&dist<=4){
  map=*gCurrentMap;n=M2C_FIELD(map+y*2,u16 *,0x3758);tile=map+x+n;n=M2C_FIELD(map+x,u8 *,n);
  other=(u8 *)map+0x59a4+(s16)n*14;
- if(((u32)(other[0]<<26)>>26)&&func_ov000_021a8fc0(M2C_FIELD(tile,u8 *,0x508))){
+ if(((u32)(other[0]<<26)>>26)&&IsCurrentPlayerUnit(M2C_FIELD(tile,u8 *,0x508))){
  if((u32)(M2C_FIELD(other,u16 *,8)<<16)>>30==2)score--;
  }
  }

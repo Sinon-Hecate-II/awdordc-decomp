@@ -4,7 +4,7 @@
 void func_ov003_021f9b30(void *arg0) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
     M2C_UNK func_02007f8c(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ab344(void *, u8, M2C_UNK);
+    M2C_UNK ScrollListTo(void *, u8, M2C_UNK);
     M2C_UNK func_020ab3b0(void *, u8, M2C_UNK);
     u32 func_020d886c();
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
@@ -88,7 +88,7 @@ void func_ov003_021f9b30(void *arg0) {
         var_r2_3 = 4; break;
     }
     ptr_3 = (var_r2_3 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4);
-    func_020ab344(M2C_FIELD(arg0, void **, 0x4C), M2C_FIELD(ptr_3, u8 *, 0xD), 1);
+    ScrollListTo(M2C_FIELD(arg0, void **, 0x4C), M2C_FIELD(ptr_3, u8 *, 0xD), 1);
     func_ov003_021f92f4(arg0, 0);
 }
 

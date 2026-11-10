@@ -125,7 +125,7 @@ void func_020c9e94(u16 arg0, u16 arg1) {
 
 void func_020c9ebc(s32 arg0, s32 arg1) {
     M2C_UNK func_02091c20(s32, s32);
-    s32 func_020d19b4(s32);
+    s32 IsPlayerHuman(s32);
     extern void **gCurrentMap;
     void *temp_r2;
     s32 temp_lr;
@@ -134,10 +134,10 @@ void func_020c9ebc(s32 arg0, s32 arg1) {
     temp_lr = arg0 * 0x8C;
     M2C_FIELD((u8 *)temp_r2 + temp_lr, u16 *, 0x67BE) = M2C_FIELD(temp_r2, u16 *, 0x52A2);
     M2C_FIELD((u8 *)*gCurrentMap + temp_lr, s8 *, 0x67C0) = arg1;
-    if (func_020d19b4(arg0) != 0) func_02091c20(0x18, 1);
+    if (IsPlayerHuman(arg0) != 0) func_02091c20(0x18, 1);
     current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
     if (current == arg0) return;
-    if (func_020d19b4(current) == 0) return;
+    if (IsPlayerHuman(current) == 0) return;
     if (arg1 & 0x11) func_02091c20(0x17, 1);
     if (!(arg1 & 2)) return;
     func_02091c20(0x16, 1);
@@ -171,7 +171,7 @@ void func_020c9fc8(s32 arg0, s32 arg1) {
 
 void func_020ca030(void) {
     void func_020c9fc8(s32, s32);
-    s32 func_020d1938(s16);
+    s32 IsPlayerActive(s16);
     s32 func_020d3248(s16);
     s32 func_020d336c(s16);
     s32 func_020d332c(s16);
@@ -179,7 +179,7 @@ void func_020ca030(void) {
     s16 var_r8;
     var_r8 = 1;
     do {
-        if (func_020d1938(var_r8) != 0) {
+        if (IsPlayerActive(var_r8) != 0) {
             if (func_020d3248(var_r8) != 0) func_020c9fc8(var_r8, 8);
             else if (func_020d336c(var_r8) == 0) func_020c9fc8(var_r8, 0x10);
             else if (func_020d332c(var_r8) == 0) func_020c9fc8(var_r8, 1);
@@ -191,7 +191,7 @@ void func_020ca030(void) {
 
 void func_020ca0e0(void) {
     void func_020c9ebc(s32, s32);
-    s32 func_020d1938(s16);
+    s32 IsPlayerActive(s16);
     s32 func_020d3248(s16);
     s32 func_020d336c(s16);
     s32 func_020d332c(s16);
@@ -199,7 +199,7 @@ void func_020ca0e0(void) {
     s16 var_r8;
     var_r8 = 1;
     do {
-        if (func_020d1938(var_r8) != 0) {
+        if (IsPlayerActive(var_r8) != 0) {
             if (func_020d3248(var_r8) != 0) func_020c9ebc(var_r8, 8);
             else if (func_020d336c(var_r8) == 0) func_020c9ebc(var_r8, 0x10);
             else if (func_020d332c(var_r8) == 0) func_020c9ebc(var_r8, 1);
@@ -225,12 +225,12 @@ s32 func_020ca190(void) {
 s32 func_020ca1ec(void) {
 extern void **gCurrentMap;
 s32 i,j,mism; u8 buf[5]; u8 *cur; s32 offset; void **maps; s32 inner;
-for(i=1;i<5;i++){buf[i]=0;if(func_020d1938(i)&&!func_020d3248(i)&&func_020d336c(i)&&func_020d332c(i)&&func_020d32d4(i))buf[i]=1;}
+for(i=1;i<5;i++){buf[i]=0;if(IsPlayerActive(i)&&!func_020d3248(i)&&func_020d336c(i)&&func_020d332c(i)&&func_020d32d4(i))buf[i]=1;}
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&4){
- for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&func_020d1938(j)&&func_020d273c(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerActive(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
 }
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5155)&16){
- for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&func_020d19b4(j)&&func_020d273c(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
+ for(i=1;i<5;i++){if(buf[i]){for(j=1;j<5;j++){if(i!=j&&IsPlayerHuman(j)&&IsSameTeam(i,j)&&!buf[j]){buf[i]=0;func_020d31f0(i,1);}}}}
 }
 maps=gCurrentMap; cur=buf+1; i=1; offset=140; do {if(*cur){mism=0;for(j=1,inner=140;j<5;j++,inner+=140){if(i==j)continue; if(!buf[j])continue; if(M2C_FIELD((u8 *)*maps+offset,u8 *,0x67ca)!=M2C_FIELD((u8 *)*maps+inner,u8 *,0x67ca))mism++;}if(mism==0)return 1;}cur++;offset+=140;}while(++i<5);
 return 0;
@@ -390,10 +390,10 @@ void func_020ca77c(M2C_UNK arg0) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void func_01ffb3d0(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void PlaySoundEffect(s32);
+void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
-func_0209f8c0();func_01ffb3d0(-1);
+func_0209f8c0();FillMapLayer(-1);
 p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
 if(M2C_FIELD(p,s16 *,0x52dc)-range<0)x0=0;
 else {p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));x0=M2C_FIELD(p,s16 *,0x52dc)-range;}

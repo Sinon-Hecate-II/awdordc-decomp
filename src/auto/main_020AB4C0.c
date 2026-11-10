@@ -5,7 +5,7 @@ typedef struct { u32 x:9; u32 y:9; u32 rest:14; } UnkAAFields;
 void func_020ab4c0(void *arg0) {
     s32 func_0207c8ec(s16, s16);
     M2C_UNK func_020ab664(void *, s16, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ab884(void *);
+    M2C_UNK UpdateListScroll(void *);
     s32 var_r4;
     s16 temp_r4;
     s16 temp_r6;
@@ -20,7 +20,7 @@ void func_020ab4c0(void *arg0) {
     }
     M2C_FIELD(arg0, s16 *, 0xC) = (s16)(M2C_FIELD(arg0, s16 *, 0xC) - M2C_FIELD(arg0, s16 *, 8));
     func_020ab664(arg0, (s16)(0 - M2C_FIELD(arg0, s16 *, 8)), 0, 0);
-    func_020ab884(arg0);
+    UpdateListScroll(arg0);
     temp_r0 = M2C_FIELD(arg0, u8 *, 0xA) * (s16)func_0207c8ec(M2C_FIELD(arg0, s16 *, 0xC), M2C_FIELD(arg0, s16 *, 8));
     M2C_FIELD(arg0, s16 *, 0x28) = 0;
     M2C_FIELD(arg0, s16 *, 0x2A) = (s16)(0 - temp_r0);
@@ -35,7 +35,7 @@ void func_020ab4c0(void *arg0) {
 void func_020ab598(void *arg0) {
     s32 func_0207c8ec(s16, s16);
     M2C_UNK func_020ab664(void *, s16, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ab884(void *);
+    M2C_UNK UpdateListScroll(void *);
     M2C_UNK GetSpriteAnimValue(void *);
     s16 temp_r5_2;
     s32 temp_r6;
@@ -54,7 +54,7 @@ void func_020ab598(void *arg0) {
     if (!(var_r0 & 0xFF)) return;
     M2C_FIELD(arg0, s16 *, 0xC) = (s16)(M2C_FIELD(arg0, s16 *, 0xC) + M2C_FIELD(arg0, s16 *, 8));
     func_020ab664(arg0, M2C_FIELD(arg0, s16 *, 8), 0, 0);
-    func_020ab884(arg0);
+    UpdateListScroll(arg0);
     temp_r0 = M2C_FIELD(arg0, u8 *, 0xA) * (s16)func_0207c8ec(M2C_FIELD(arg0, s16 *, 0xC), M2C_FIELD(arg0, s16 *, 8));
     M2C_FIELD(arg0, s16 *, 0x28) = 0;
     M2C_FIELD(arg0, s16 *, 0x2A) = (s16)(0 - temp_r0);
@@ -157,6 +157,6 @@ s32 func_020ab664(void *arg0, s16 arg1, s32 flag, s32 arg3) {
         M2C_FIELD(arg0, u8 *, 0x4) = (u8)arg3;
     }
 
-    func_020ab884(arg0);
+    UpdateListScroll(arg0);
 }
 

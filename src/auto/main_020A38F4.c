@@ -1,5 +1,11 @@
 /* 28 functions from 0x020A38F4 to 0x020A48EC (main), found by ds-decomp. */
 #include "common.h"
+typedef struct MapEffectParticle { u16 x, y, dx, dy, sprite, unkA; } MapEffectParticle;
+static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
+ void func_01ff90e4(u8,u8,s32,void *);extern u8 data_021204a4[];
+ func_01ff90e4(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,data_021204a4+p->sprite*8);
+}
+
 typedef struct { u8 x,y; u16 width:3; u16 height:3; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020ADimEntryTop;
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
@@ -17,12 +23,12 @@ void func_020a38f4(s32 a) {
 #pragma opt_instruction_scheduling off
 void func_020a3934(s32 a,s32 b) {
  extern s32 *data_027e0058;
- s32 func_020d1938(s32);
+ s32 IsPlayerActive(s32);
  s32 i;
  switch(a){case 1:case 2:case 3:
  i=1;
  do{
- if(func_020d1938(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=(u8)b;
+ if(IsPlayerActive(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=(u8)b;
  i++;
  }while(i<5);
  break;}
@@ -193,9 +199,12 @@ void func_020a4154(void) {
     do {
         p = (u8 *)M2C_FIELD(data_027e0058, void **, 0xC) + drawOffset;
         q = M2C_FIELD(data_027e0058, void **, 0);
-        func_01ff90e4((u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148)),
-                     (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A)), 0,
-                     data_021204a4 + M2C_FIELD(p, u16 *, 8) * 8);
+        {
+            u8 ax = (u8)((M2C_FIELD(p, u16 *, 0) >> 8) - M2C_FIELD(q, s16 *, 0x5148));
+            u8 ay = (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514A));
+            u8 idx = (u8)M2C_FIELD(p, u16 *, 8);
+            func_01ff90e4(ax, ay, 0, data_021204a4 + idx * 8);
+        }
         next = j + 1;
         drawOffset += 12;
         j = next;

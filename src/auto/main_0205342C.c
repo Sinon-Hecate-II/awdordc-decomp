@@ -10,9 +10,9 @@ typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 #pragma opt_propagation off
 s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
     M2C_UNK func_020492a8(s8 *);
-    s32 func_02052edc(s32 *, M2C_UNK *, s8 *);
-    s32 func_02052f1c(s32 *, M2C_UNK *, s8 *);
-    s32 func_02052f5c(s32 *, s32, s32);
+    s32 AppendUpdateProField(s32 *, M2C_UNK *, s8 *);
+    s32 AppendUpdateUiField(s32 *, M2C_UNK *, s8 *);
+    s32 AppendInfoIntField(s32 *, s32, s32);
     M2C_UNK func_020580fc(s8 *, s8 *, M2C_UNK);
     s32 func_02068c34(s8 *);
     s32 func_0206ad38(s8 *);
@@ -92,7 +92,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         }
         func_020580fc(sp0, arg2, 0x1F);
         func_020580fc(temp_r4 + 0x110, sp0, 0x1F);
-        temp_r0 = func_02052edc(arg0, &data_020fe72c, sp0);
+        temp_r0 = AppendUpdateProField(arg0, &data_020fe72c, sp0);
         if (temp_r0 != 0) {
             return temp_r0;
         }
@@ -104,7 +104,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         }
         func_020580fc(sp0, arg2, 0x15);
         func_020580fc(temp_r4 + 0x12F, sp0, 0x15);
-        temp_r0_2 = func_02052edc(arg0, &data_020fe734, sp0);
+        temp_r0_2 = AppendUpdateProField(arg0, &data_020fe734, sp0);
         if (temp_r0_2 != 0) {
             return temp_r0_2;
         }
@@ -117,7 +117,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         func_020580fc(sp0, arg2, 0x33);
         func_020492a8(sp0);
         func_020580fc(temp_r4 + 0x144, sp0, 0x33);
-        temp_r0_3 = func_02052f1c(arg0, &data_020fe744, sp0);
+        temp_r0_3 = AppendUpdateUiField(arg0, &data_020fe744, sp0);
         if (temp_r0_3 != 0) {
             return temp_r0_3;
         }
@@ -129,35 +129,35 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         }
         func_020580fc(sp0, arg2, 0x1F);
         func_020580fc(temp_r4 + 0x177, sp0, 0x1F);
-        temp_r0_4 = func_02052f1c(arg0, &data_020fe938, sp0);
+        temp_r0_4 = AppendUpdateUiField(arg0, &data_020fe938, sp0);
         if (temp_r0_4 != 0) {
             return temp_r0_4;
         }
         break;
     case 4:
         func_020580fc(sp0, arg2, 0x1F);
-        temp_r0_5 = func_02052edc(arg0, &data_020fe74c, sp0);
+        temp_r0_5 = AppendUpdateProField(arg0, &data_020fe74c, sp0);
         if (temp_r0_5 != 0) {
             return temp_r0_5;
         }
         break;
     case 5:
         func_020580fc(sp0, arg2, 0x1F);
-        temp_r0_6 = func_02052edc(arg0, &data_020fe758, sp0);
+        temp_r0_6 = AppendUpdateProField(arg0, &data_020fe758, sp0);
         if (temp_r0_6 != 0) {
             return temp_r0_6;
         }
         break;
     case 7:
         func_020580fc(sp0, arg2, 0x4C);
-        temp_r0_7 = func_02052edc(arg0, &data_020fe770, sp0);
+        temp_r0_7 = AppendUpdateProField(arg0, &data_020fe770, sp0);
         if (temp_r0_7 != 0) {
             return temp_r0_7;
         }
         break;
     case 8:
         func_020580fc(sp0, arg2, 0xB);
-        temp_r0_8 = func_02052edc(arg0, &data_020fe77c, sp0);
+        temp_r0_8 = AppendUpdateProField(arg0, &data_020fe77c, sp0);
         if (temp_r0_8 != 0) {
             return temp_r0_8;
         }
@@ -168,7 +168,7 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
             return 2;
         }
         func_020580fc(sp0, arg2, 3);
-        temp_r0_9 = func_02052edc(arg0, &data_020fe788, sp0);
+        temp_r0_9 = AppendUpdateProField(arg0, &data_020fe788, sp0);
         if (temp_r0_9 != 0) {
             return temp_r0_9;
         }
@@ -182,127 +182,127 @@ s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
         } else {
             *dest = *(TextPair534 *)&data_020fe888;
         }
-        temp_r0_10 = func_02052edc(arg0, &data_020fe7bc, sp0);
+        temp_r0_10 = AppendUpdateProField(arg0, &data_020fe7bc, sp0);
         if (temp_r0_10 != 0) {
             return temp_r0_10;
         }
         break;
     case 6:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_11 = func_02052edc(arg0, &data_020fe764, sp0);
+        temp_r0_11 = AppendUpdateProField(arg0, &data_020fe764, sp0);
         if (temp_r0_11 != 0) {
             return temp_r0_11;
         }
         break;
     case 13:
-        temp_r0_12 = func_02052f5c(arg0, 0x70D, func_0206ad38(arg2));
+        temp_r0_12 = AppendInfoIntField(arg0, 0x70D, func_0206ad38(arg2));
         if (temp_r0_12 != 0) {
             return temp_r0_12;
         }
         break;
     case 14:
-        temp_r0_13 = func_02052f5c(arg0, 0x70E, func_0206ad38(arg2));
+        temp_r0_13 = AppendInfoIntField(arg0, 0x70E, func_0206ad38(arg2));
         if (temp_r0_13 != 0) {
             return temp_r0_13;
         }
         break;
     case 15:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_14 = func_02052edc(arg0, &data_020fe95c, sp0);
+        temp_r0_14 = AppendUpdateProField(arg0, &data_020fe95c, sp0);
         if (temp_r0_14 != 0) {
             return temp_r0_14;
         }
         break;
     case 16:
-        temp_r0_15 = func_02052f5c(arg0, 0x710, func_0206ad38(arg2));
+        temp_r0_15 = AppendInfoIntField(arg0, 0x710, func_0206ad38(arg2));
         if (temp_r0_15 != 0) {
             return temp_r0_15;
         }
         break;
     case 17:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_16 = func_02052edc(arg0, &data_020fe970, sp0);
+        temp_r0_16 = AppendUpdateProField(arg0, &data_020fe970, sp0);
         if (temp_r0_16 != 0) {
             return temp_r0_16;
         }
         break;
     case 18:
-        temp_r0_17 = func_02052f5c(arg0, 0x712, func_0206ad38(arg2));
+        temp_r0_17 = AppendInfoIntField(arg0, 0x712, func_0206ad38(arg2));
         if (temp_r0_17 != 0) {
             return temp_r0_17;
         }
         break;
     case 20:
-        temp_r0_18 = func_02052f5c(arg0, 0x714, func_0206ad38(arg2));
+        temp_r0_18 = AppendInfoIntField(arg0, 0x714, func_0206ad38(arg2));
         if (temp_r0_18 != 0) {
             return temp_r0_18;
         }
         break;
     case 21:
-        temp_r0_19 = func_02052f5c(arg0, 0x715, func_0206ad38(arg2));
+        temp_r0_19 = AppendInfoIntField(arg0, 0x715, func_0206ad38(arg2));
         if (temp_r0_19 != 0) {
             return temp_r0_19;
         }
         break;
     case 22:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_20 = func_02052edc(arg0, &data_020fe984, sp0);
+        temp_r0_20 = AppendUpdateProField(arg0, &data_020fe984, sp0);
         if (temp_r0_20 != 0) {
             return temp_r0_20;
         }
         break;
     case 23:
         func_020580fc(sp0, arg2, 0x33);
-        temp_r0_21 = func_02052edc(arg0, &data_020fe7cc, sp0);
+        temp_r0_21 = AppendUpdateProField(arg0, &data_020fe7cc, sp0);
         if (temp_r0_21 != 0) {
             return temp_r0_21;
         }
         break;
     case 24:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_22 = func_02052edc(arg0, &data_020fe7d4, sp0);
+        temp_r0_22 = AppendUpdateProField(arg0, &data_020fe7d4, sp0);
         if (temp_r0_22 != 0) {
             return temp_r0_22;
         }
         break;
     case 25:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_23 = func_02052edc(arg0, &data_020fe7dc, sp0);
+        temp_r0_23 = AppendUpdateProField(arg0, &data_020fe7dc, sp0);
         if (temp_r0_23 != 0) {
             return temp_r0_23;
         }
         break;
     case 26:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_24 = func_02052edc(arg0, &data_020fe7e4, sp0);
+        temp_r0_24 = AppendUpdateProField(arg0, &data_020fe7e4, sp0);
         if (temp_r0_24 != 0) {
             return temp_r0_24;
         }
         break;
     case 27:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_25 = func_02052edc(arg0, &data_020fe7ec, sp0);
+        temp_r0_25 = AppendUpdateProField(arg0, &data_020fe7ec, sp0);
         if (temp_r0_25 != 0) {
             return temp_r0_25;
         }
         break;
     case 28:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_26 = func_02052edc(arg0, &data_020fe7f4, sp0);
+        temp_r0_26 = AppendUpdateProField(arg0, &data_020fe7f4, sp0);
         if (temp_r0_26 != 0) {
             return temp_r0_26;
         }
         break;
     case 29:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_27 = func_02052edc(arg0, &data_020fe7fc, sp0);
+        temp_r0_27 = AppendUpdateProField(arg0, &data_020fe7fc, sp0);
         if (temp_r0_27 != 0) {
             return temp_r0_27;
         }
         break;
     case 30:
         func_020580fc(sp0, arg2, 0x100);
-        temp_r0_28 = func_02052edc(arg0, &data_020fe804, sp0);
+        temp_r0_28 = AppendUpdateProField(arg0, &data_020fe804, sp0);
         if (temp_r0_28 != 0) {
             return temp_r0_28;
         }

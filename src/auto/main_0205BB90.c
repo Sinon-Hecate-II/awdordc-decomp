@@ -116,7 +116,10 @@ s32 func_0205bea4(void *arg0) {
 #pragma opt_peephole reset
 s32 func_0205bedc(void *arg0,s32 arg1,void *arg2,s32 arg3) { s32 func_0205bd28(void *,void *,s32); s32 len=arg3-3; if(arg1==100) {if(!func_0205bcdc((s32)arg0,(s32)((char *)arg2+3),len))return 0;} else if(arg1==101) {if(!func_0205bd28(arg0,(char *)arg2+3,len))return 0;} else if(arg1==102) {if(!func_0205be04((s32)arg0,arg2,arg3))return 0;} else if(arg1==103) {if(!func_0205be10(arg0,(char *)arg2+3,len))return 0;} else if(arg1==104) {if(!func_0205bea4(arg0))return 0;} return 1; }
 
-s32 func_0205bf94(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
+/* GT2 message dispatcher for one received socket message: accept or reject new
+   connections, close dead ones, and route the payload to the data handler or to
+   the control-message handlers (small type < 8, large type >= 8). */
+s32 gti2HandleMessage(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
 void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
 s32 func_0205a614(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
 s32 func_0206527c(void *,M2C_UNK *,s32);
@@ -125,42 +128,42 @@ s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
 void func_0205cb4c(void *);s32 func_0205b2e0(void *,void *,s32);
 s32 func_0205b1a4(); s32 func_0205bb90(void *,s32,s32,s32);s32 func_0205bedc(void *,s32,void *,s32);
-extern M2C_UNK data_020ff818;
-void *connection,*c; s32 handled,control,result,kind;
+extern M2C_UNK gGt2Magic;
+void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
 u8 *buf=message;
 connection=func_0205cca0(socket,address,port);
 if(M2C_FIELD(socket,s32*,0x2c)!=0){
 if(!func_0205a614(socket,connection,address,port,0,(s32)buf,len,0))return 0;
 }
-if(len>2 && !func_0206527c(buf,&data_020ff818,2))control=1;else control=0;
+if(len>2 && !func_0206527c(buf,&gGt2Magic,2))isControl=1;else isControl=0;
 if(connection==0){
 if(!gti2UnrecognizedMessageCallback(socket,address,port,buf,len,&handled))return 0;
 if(handled)return 1;
-if(control && buf[2]==1)goto incoming;
-if(control && buf[2]==104)goto accepted1;
+if(isControl && buf[2]==1)goto incoming;
+if(isControl && buf[2]==104)goto accepted1;
 if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
 accepted1:return 1;
 incoming:
 if(M2C_FIELD(socket,s32*,0x20)==0)return 1;
-result=func_0205a860(socket,&connection,address,port);
-if(result==0)goto connected;
-if(result==5)goto accepted2;
+acceptResult=func_0205a860(socket,&connection,address,port);
+if(acceptResult==0)goto connected;
+if(acceptResult==5)goto accepted2;
 if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
 accepted2:return 1;
 }
 connected:
-c=connection;
-if(M2C_FIELD(c,s32*,0xc)==7){
-if(control && buf[2]==104)goto accepted3;
-if(!((s32 (*)(void *))func_0205cb4c)(c))return 0;
+connection2=connection;
+if(M2C_FIELD(connection2,s32*,0xc)==7){
+if(isControl && buf[2]==104)goto accepted3;
+if(!((s32 (*)(void *))func_0205cb4c)(connection2))return 0;
 accepted3:return 1;
 }
-if(control && len>=4 && !func_0206527c(buf+2,&data_020ff818,2)){buf+=2;len-=2;control=0;}
-if(!control)return func_0205b2e0(c,buf,len)!=0;
-kind=buf[2];
-if(kind<0)return func_0205b1a4(c)!=0;
-if(kind<8)return func_0205bb90(c,kind,(s32)buf,len)!=0;
-return func_0205bedc(c,kind,buf,len)!=0;
+if(isControl && len>=4 && !func_0206527c(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
+if(!isControl)return func_0205b2e0(connection2,buf,len)!=0;
+msgType=buf[2];
+if(msgType<0)return func_0205b1a4(connection2)!=0;
+if(msgType<8)return func_0205bb90(connection2,msgType,(s32)buf,len)!=0;
+return func_0205bedc(connection2,msgType,buf,len)!=0;
 }
 
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
@@ -201,7 +204,7 @@ s32 func_0205c344(void *conn) {
     s32 func_02049900(void);
     s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
     void func_0205d49c(void *);
-    s32 func_0205bf94(void *, void *, s32, M2C_UNK, M2C_UNK);
+    s32 gti2HandleMessage(void *, void *, s32, M2C_UNK, M2C_UNK);
 
     s32 cnt;
     s32 val_c;
@@ -222,7 +225,7 @@ s32 func_0205c344(void *conn) {
         if (read != -1) {
             u16 hv = *(u16 *)((char *)&val_c + 2);
             u16 bsw = (u16)(((hv >> 8) & 0xff) | ((hv << 8) & 0xff00));
-            if (func_0205bf94(conn, buffer, read, val_10, bsw) == 0) {
+            if (gti2HandleMessage(conn, buffer, read, val_10, bsw) == 0) {
                 return 0;
             }
             if (func_02049534((void *)M2C_FIELD(conn, s32 *, 0)) == 0) {
@@ -247,7 +250,7 @@ s32 func_0205c344(void *conn) {
 s32 func_0205c474(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=func_02049208();n=func_02048688(M2C_FIELD(p,s32 *,0x60));func_020486f8(M2C_FIELD(p,s32 *,0x60),&s);return n+1==func_02048688(M2C_FIELD(p,s32 *,0x60));}
 
 s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
-    extern M2C_UNK data_020ff818;
+    extern M2C_UNK gGt2Magic;
     s32 func_02059d24(void *);
     s32 func_0205b1b8(M2C_UNK);
     s32 func_0205c474(void *, s16, s32);
@@ -273,7 +276,7 @@ s32 func_0205c4e8(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
         *status = 1;
         return 1;
     }
-    func_02059df0((void *)((char *)p + 0x50), &data_020ff818, 2);
+    func_02059df0((void *)((char *)p + 0x50), &gGt2Magic, 2);
     func_02059d34((void *)((char *)p + 0x50), (s32)(mode & 0xff));
     {
         u16 old64 = M2C_FIELD(p, u16 *, 0x64);
@@ -409,12 +412,12 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     s32 func_0205a9ec(s32, void *, s32);
     M2C_UNK func_02059df0(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02059e78(void *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff818;
+    extern M2C_UNK gGt2Magic;
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
 
-    if ((arg2 < 2) || (func_0206527c(arg1, &data_020ff818, 2) != 0)) {
+    if ((arg2 < 2) || (func_0206527c(arg1, &gGt2Magic, 2) != 0)) {
         if (func_0205a9ec((s32)arg0, arg1, arg2) == 0) {
             return 0;
         }
@@ -426,7 +429,7 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
     }
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x50);
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
-    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)&data_020ff818, 2);
+    func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)&gGt2Magic, 2);
     func_02059df0((M2C_UNK)((char *)arg0 + 0x50), (M2C_UNK)arg1, arg2);
     if (func_0205a9ec((s32)arg0, (void *)(temp_r5 + temp_r4), temp_r6) == 0) {
         return 0;
@@ -436,9 +439,9 @@ s32 func_0205c980(void *arg0, M2C_UNK *arg1, s32 arg2) {
 }
 
 s32 func_0205ca48(void *p){
-    extern M2C_UNK data_020ff818;
+    extern M2C_UNK gGt2Magic;
     void *q=p;
-    u8 *g=(u8*)&data_020ff818;
+    u8 *g=(u8*)&gGt2Magic;
     u8 a=g[0], b=g[1];
     u8 buf[5];
     buf[2]=0x64; buf[0]=a; buf[1]=b;
@@ -448,10 +451,10 @@ s32 func_0205ca48(void *p){
 }
 
 s32 func_0205caac(void *p, s32 arg1, s32 arg2) {
-extern M2C_UNK data_020ff818;
+extern M2C_UNK gGt2Magic;
 u8 buf[8]; s32 n=0;
-M2C_FIELD(buf,u8 *,0)=M2C_FIELD(&data_020ff818,u8 *,0);
-M2C_FIELD(buf,u8 *,1)=M2C_FIELD(&data_020ff818,u8 *,1);
+M2C_FIELD(buf,u8 *,0)=M2C_FIELD(&gGt2Magic,u8 *,0);
+M2C_FIELD(buf,u8 *,1)=M2C_FIELD(&gGt2Magic,u8 *,1);
 buf[2]=0x65;
 func_0205b0ec(buf, n+3, arg1); n+=5;
 if(arg1!=arg2){func_0205b0ec(buf,n,arg2); n+=2;}

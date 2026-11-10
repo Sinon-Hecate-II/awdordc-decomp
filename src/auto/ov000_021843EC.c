@@ -23,7 +23,7 @@ void func_01ffada0(int,int,int,int,int);
 void func_02007f8c(void *,int,int);
 int func_020d27a4(int,int);
 int func_ov000_021a97e0(int,int);
-void func_01ffb554(void *);
+void SelectMapLayer(void *);
 void func_01ffb9c4(s8);
 void func_ov000_021843ec(s32 a,s32 b,s32 c) {
 int x;
@@ -107,7 +107,7 @@ else dst[yy*((Map851B8 *)*gCurrentMap)->width]+=2;
 }
 }else{
 if(attrs[19]&16){
-func_01ffb554((u8 *)*gCurrentMap+0x2338);
+SelectMapLayer((u8 *)*gCurrentMap+0x2338);
 func_01ffada0(unit[1],unit[2],(u32)(unit[0]<<26)>>26,func_ov000_021a97e0(Unk21843Owner(unit),(u32)(unit[0]<<26)>>26),0);
 func_01ffb9c4(111);
 map=*gCurrentMap;
@@ -118,7 +118,7 @@ if(M2C_FIELD(((Map843EC *)map)->costs[sy],s8 *,sx)>=0)dst[sy*width]++;
 map=*gCurrentMap;width=((Map851B8 *)map)->width;
 }
 }
-func_01ffb554((u8 *)*gCurrentMap+0x1e30);
+SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
 }else{
 if(attrs[19]&7){
 if(!(data_ov000_021b5bfc[((u32)(unit[0]<<26)>>26)*112+19]&7))goto next_unit;

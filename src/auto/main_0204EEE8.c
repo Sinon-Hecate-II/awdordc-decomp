@@ -252,7 +252,7 @@ if(!b)func_020640a8(data_020fdf5c,data_020fdf74,data_020fdf40,0x53);
 if(!s)return 0;
 len=M2C_FIELD(b,s32 *,8);cap=M2C_FIELD(b,s32 *,4);p=M2C_FIELD(b,u8 **,0);
 if(cap-len<n){cap+=n<0x800?0x800:n;p=func_020377a8(p,cap+1);if(!p){func_02058644(a,&data_020fdf80);return 1;}}
-func_020651a4(p+len,s,n);p[len+n]=0;
+MemCopy(p+len,s,n);p[len+n]=0;
 M2C_FIELD(b,s32 *,8)+=n;M2C_FIELD(b,s32 *,4)=cap;M2C_FIELD(b,u8 **,0)=p;
 return 0;
 }

@@ -320,13 +320,13 @@ s32 func_020774cc(void) {
 }
 
 void func_0207750c(void) {
- extern s32 data_027e15bc;
+ extern s32 gFrameCounter;
  extern M2C_UNK data_02140f70;
  ColorTable a=data_020eb2e0;
  ColorTable b=data_020eb360;
  ColorTable c=data_020eb3e0;
  ColorTable d=data_020eb460;
- s32 i=data_027e15bc & 127;
+ s32 i=gFrameCounter & 127;
  s32 x=((volatile u8 *)a.values)[i>>1], y=((volatile u8 *)b.values)[i>>1], z=((volatile u8 *)c.values)[i>>1];
  M2C_FIELD(&data_02140f70,u16 *,16)=x;
  M2C_FIELD(&data_02140f70,u16 *,18)=y;

@@ -26,13 +26,13 @@ s32 func_020cac1c(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&data_0212b1b8[a][0]));ret
 s32 func_020cac3c(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&data_0212b1b8[a][0]));return a;}
 
 void func_020cac5c(void *arg0) {
- M2C_UNK func_01ffb3d0(M2C_UNK); M2C_UNK func_01ffb554(void *); M2C_UNK func_0207a748(M2C_UNK);
+ M2C_UNK FillMapLayer(M2C_UNK); M2C_UNK SelectMapLayer(void *); M2C_UNK func_0207a748(M2C_UNK);
  s32 func_020ba1fc(s16,s16,u8); M2C_UNK func_020cdf30(s16,s16,s32);
  extern void **gCurrentMap;
  s32 n;void *p;
  p=*gCurrentMap;
  n=func_020ba1fc(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD((M2C_FIELD(p,s32 *,0x52d0)+M2C_FIELD(arg0,s16 *,0x70)),u8 *,0xc));
- func_01ffb554((u8 *)*gCurrentMap+0x1e30);func_01ffb3d0(-1);
+ SelectMapLayer((u8 *)*gCurrentMap+0x1e30);FillMapLayer(-1);
  p=*gCurrentMap;func_020cdf30(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),n);func_0207a748(0);
  M2C_FIELD(arg0,s16 *,0x6c)=n;M2C_FIELD(arg0,s16 *,0x6e)=3;
  M2C_FIELD(arg0,s16 *,0x6e)=func_020cac1c(M2C_FIELD(arg0,s16 *,0x6e),n);
@@ -209,13 +209,13 @@ block_8:
 
 #pragma opt_common_subs on
 s32 func_020cb254(void *p,s32 count,s32 pay){
-s32 func_020a7310(void);
+s32 GetUnitOwner(void);
 s32 func_020d2d18(s32,u32);
 s32 func_0207c8ec(s32,s32);
 M2C_UNK func_020d2b10(s32,u16);
 extern void **gCurrentMap;
 s32 owner,total,health,level,offset;u16 cost,v;
-owner=func_020a7310();total=0;
+owner=GetUnitOwner();total=0;
 cost=func_020d2d18(owner,(u32)(M2C_FIELD(p,u8*,0)<<26)>>26);
 if(count){offset=owner*140;
 do{

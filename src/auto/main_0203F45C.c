@@ -27,7 +27,7 @@ M2C_FIELD(GetConnection(),s32 *,520)=0;M2C_FIELD(GetConnection(),u8 *,423)=0;M2C
 M2C_FIELD(GetConnection(),s32 *,36)=M2C_FIELD(payload+payload[0],s32 *,4);M2C_FIELD(GetConnection(),u16 *,164)=M2C_FIELD(payload+payload[0],s32 *,8);M2C_FIELD(GetConnection(),s32 *,440)=M2C_FIELD(payload+payload[0],s32 *,4);M2C_FIELD((u8 *)GetConnection()+256,u16 *,180)=M2C_FIELD(payload+payload[0],s32 *,8);
 if(M2C_FIELD(GetConnection(),u8 *,21)==1){
 if(func_0204183c(payload+1,payload[0])){if(M2C_FIELD(GetConnection(),u8 *,13))func_020407fc(peer,payload);}
-else{func_02040dc8(peer);if(func_0204084c())return 0;func_02040a28(0,0,peer);if(func_0204084c())return 0;break;}}
+else{func_02040dc8(peer);if(func_0204084c())return 0;TryConnectToPeer(0,0,peer);if(func_0204084c())return 0;break;}}
 if(!M2C_FIELD(GetConnection(),u8 *,21)){
 if(M2C_FIELD(GetConnection(),u8 *,13)){func_020407fc(peer,payload);func_020410f8();if(func_0204084c())return 0;}
 SetConnectionState(6);func_0203ecb0(0,0,func_02061784(M2C_FIELD(GetConnection(),s32 *,228),0));if(func_02043184())return 0;
@@ -44,7 +44,7 @@ M2C_FIELD(GetConnection(),s32 *,444)=1;p=GetConnection();M2C_FIELD(p,u64 *,448)=
 if(M2C_FIELD(GetConnection(),u8 *,21)!=3){p=GetConnection();M2C_FIELD(p,u8 *,423)++;}
 }else{M2C_FIELD(GetConnection(),s32 *,520)=0;M2C_FIELD(GetConnection(),u8 *,423)=0;
 if(!M2C_FIELD(GetConnection(),u8 *,21)){SetConnectionState(3);M2C_FIELD(GetConnection(),s32 *,232)=1;p=GetConnection();M2C_FIELD(p,u64 *,236)=func_02007004();}
-else if(M2C_FIELD(GetConnection(),u8 *,21)==1)func_02040a28(1,0,0);
+else if(M2C_FIELD(GetConnection(),u8 *,21)==1)TryConnectToPeer(1,0,0);
 }break;
 case 5:
 if(!M2C_FIELD(GetConnection(),u8 *,23)||M2C_FIELD(GetConnection(),s32 *,32)!=peer)break;

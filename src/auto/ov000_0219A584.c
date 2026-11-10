@@ -10,19 +10,19 @@ extern void *data_ov000_021df57c;
 extern void *data_ov000_021df644;
 
 void func_ov000_0219a584(void) {
-s32 func_ov000_0219a3b0(s32); s32 func_020d1938(s32); s32 func_020d273c(u16,s32);
+s32 func_ov000_0219a3b0(s32); s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32);
 s32 i;
 data_ov000_021df580[4]=0;
 data_ov000_021df580[4]+=func_ov000_0219a3b0(0);
 for(i=1;i<5;i++) {
-if(func_020d1938(i) && !func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i))
+if(IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i))
 data_ov000_021df580[4]+=func_ov000_0219a3b0(i);
 }
 }
 
 void func_ov000_0219a618(void) {
-s32 func_020d1938(s32); s32 i,j,end;
-for(i=1;i<5;i++) if(func_020d1938(i)) {
+s32 IsPlayerActive(s32); s32 i,j,end;
+for(i=1;i<5;i++) if(IsPlayerActive(i)) {
 s32 start=gPlayerUnitIdBase[i];
 for(j=start+1;j<start+0x33;j++) {
 u8 *p=(u8 *)*gCurrentMap+0x59a4+j*14;
@@ -131,11 +131,11 @@ do{s32 a=M2C_FIELD((u16*)src+i,u8*,10);s32 b=rec[1];dst[8]=func_0207c8ec(a*b,100
 }
 #pragma opt_common_subs off
 void func_ov000_0219b1ac(s32 arg0) {
-s32 func_020a8938(u16);s32 func_020d19b4(u16);extern u16 data_02168f14;extern void **gCurrentMap;extern u8 data_ov000_021dee18[],data_ov000_021dee19[],data_ov000_021dee2c[],data_ov000_021dee3b[];extern void *data_ov000_021df57c;
+s32 func_020a8938(u16);s32 IsPlayerHuman(u16);extern u16 data_02168f14;extern void **gCurrentMap;extern u8 data_ov000_021dee18[],data_ov000_021dee19[],data_ov000_021dee2c[],data_ov000_021dee3b[];extern void *data_ov000_021df57c;
 void *map; s32 a,b;
 if(func_020a8938(M2C_FIELD(*gCurrentMap,u16*,0x5142))){
 if((u32)(data_02168f14<<18)>>31){map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));b=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],(data_ov000_021dee2c+data_ov000_021dee19[b*2]*15)[(u32)(M2C_FIELD(arg0*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
-if(!(((u32)(data_02168f14<<29)>>29)&255)&&func_020d19b4(M2C_FIELD(*gCurrentMap,u16*,0x52a4))==1){map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],data_ov000_021dee3b[(u32)(M2C_FIELD(arg0*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
+if(!(((u32)(data_02168f14<<29)>>29)&255)&&IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4))==1){map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],data_ov000_021dee3b[(u32)(M2C_FIELD(arg0*140+(s32)map,s32*,0x6810)<<24)>>24]);return;}
 map=*gCurrentMap;a=func_020a8938(M2C_FIELD(map,u16*,0x5142));b=func_020a8938(M2C_FIELD(map,u16*,0x5142));func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[a*2],data_ov000_021dee2c[data_ov000_021dee19[b*2]*15]);return;
 }
 if((u32)(data_02168f14<<18)>>31){func_ov000_0219afdc(data_ov000_021df57c,data_ov000_021dee18[2],(data_ov000_021dee2c+data_ov000_021dee18[3]*15)[(u32)(M2C_FIELD(arg0*140+(s32)*gCurrentMap,s32*,0x6810)<<24)>>24]);return;}

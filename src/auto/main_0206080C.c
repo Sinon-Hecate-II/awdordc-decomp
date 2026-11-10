@@ -122,7 +122,7 @@ void func_02060a60(void **arg0) {
     func_020377c4(temp_r4);
 }
 
-M2C_UNK func_02060a84(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
+M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
     s32 func_02061cb4(s32, M2C_UNK *);
     M2C_UNK func_02048eac(s32, s32 *);
     s32 values[2];
@@ -131,12 +131,12 @@ M2C_UNK func_02060a84(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
     func_02048eac(M2C_FIELD(arg0, s32 *, 0x18), values);
 }
 
-void func_02060ac4(M2C_UNK a,M2C_UNK *b){
+void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
  s32 func_020675e4(void *,void *,...);
  extern M2C_UNK data_02100060;
  u8 buf[20];
  func_020675e4(buf,&data_02100060);
- func_02060a84(a,b,(M2C_UNK *)buf);
+ gpiPlayerSetString(a,b,(M2C_UNK *)buf);
 }
 
 s32 func_02060afc(void *arg0,s32 arg1,s32 arg2){
@@ -239,7 +239,7 @@ M2C_UNK *func_02060d2c(s32 input,s32 arg1){
 }
 
 void func_02060d90(M2C_UNK arg0, s32 arg1) {
-    M2C_UNK func_02060a84(M2C_UNK, M2C_UNK *, M2C_UNK *);
+    M2C_UNK gpiPlayerSetString(M2C_UNK, M2C_UNK *, M2C_UNK *);
     s32 func_02060ccc(M2C_UNK *);
     M2C_UNK *func_02060d2c(s32, M2C_UNK);
     extern M2C_UNK data_02100080;
@@ -256,7 +256,7 @@ void func_02060d90(M2C_UNK arg0, s32 arg1) {
             var_r9 = &data_02100080;
         }
         if (func_02060ccc(var_r8) != 0) {
-            func_02060a84(arg0, var_r8, var_r9);
+            gpiPlayerSetString(arg0, var_r8, var_r9);
         }
         var_r8 = func_02060d2c(0, 0x5C);
     } while (var_r8 != NULL);
@@ -270,7 +270,7 @@ s32 func_02068c34(const char *);
 extern M2C_UNK data_02100084;
 volatile Packet60E packet;s8 *start; s32 pass,len,fields,row,col; s8 *key,*value;
 while(*p){len=func_02061da0(p,n);if(len<0)return;key=p;n-=len;p+=len;
-len=func_02061da0(p,n);if(len<0)return;value=p;p+=len;n-=len;func_02060a84(a,key,value);}
+len=func_02061da0(p,n);if(len<0)return;value=p;p+=len;n-=len;gpiPlayerSetString(a,key,value);}
 p++;n--;
 for(pass=0;pass<2;pass++){
 if(n<2)return;
@@ -280,7 +280,7 @@ fields=0;while(*p){len=func_02061da0(p,n);if(len<0)return;if(len>100)return;p+=l
 p++;n--;
 for(row=0;row<packet.count;row++){key=start;for(col=0;col<fields;col++){
 len=func_02061da0(p,n);if(len<0)return;
-func_020675e4(packet.buf,&data_02100084,key,row);func_02060a84(a,(M2C_UNK *)packet.buf,p);
+func_020675e4(packet.buf,&data_02100084,key,row);gpiPlayerSetString(a,(M2C_UNK *)packet.buf,p);
 p+=len;n-=len;key+=func_02068c34(key)+1;
 }}
 }
@@ -321,24 +321,24 @@ void *func_02061090(s32 arg0,s32 arg1,s32 arg2){
  M2C_FIELD(temp_r0,u16 *,12)=0;return temp_r0;
 }
 
-void func_0206113c(void *arg0, s8 arg1) {
+void gpiPlayerSetFlags(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x15) = arg1;
 }
 
-void func_02061144(void *arg0, s32 arg1, s16 arg2) {
+void gpiPlayerSetAddress(void *arg0, s32 arg1, s16 arg2) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
     M2C_FIELD(arg0, s16 *, 0xC) = arg2;
 }
 
-void func_02061150(void *arg0, s32 arg1) {
+void gpiPlayerSetValue(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x10) = arg1;
 }
 
-void func_02061158(void *arg0, s8 arg1) {
+void gpiPlayerSetState(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x14) = arg1;
 }
 
-u8 func_02061160(void *arg0) {
+u8 gpiPlayerGetState(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x14);
 }
 

@@ -138,18 +138,18 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
 }
 #pragma opt_strength_reduction reset
 s32 func_020673cc(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_02064684(M2C_UNK, M2C_UNK, s32, s32);
+    s32 StreamWrite(M2C_UNK, M2C_UNK, s32, s32);
     s32 var_r5;
 
     var_r5 = arg0;
-    if (arg2 != func_02064684(arg1, 1, arg2, var_r5)) {
+    if (arg2 != StreamWrite(arg1, 1, arg2, var_r5)) {
         var_r5 = 0;
     }
     return var_r5;
 }
 
 s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_020651a4(s32, M2C_UNK, s32);
+    M2C_UNK MemCopy(s32, M2C_UNK, s32);
     s32 temp_r3;
     s32 var_r5;
     u32 temp_r2;
@@ -160,7 +160,7 @@ s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
     if ((u32) (temp_r3 + var_r5) > temp_r2) {
         var_r5 = temp_r2 - temp_r3;
     }
-    func_020651a4(M2C_FIELD(arg0, s32 *, 0) + temp_r3, arg1, var_r5);
+    MemCopy(M2C_FIELD(arg0, s32 *, 0) + temp_r3, arg1, var_r5);
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + var_r5);
     return 1;
 }

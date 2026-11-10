@@ -13,31 +13,31 @@ return p;
 
 
 /* Recursively tear down a node's right/child subtree, freeing every child pointer. */
-void func_ov002_021e25e0(void *, void *);
+void FreeModelList1(void *, void *);
 /* Recursively tear down a node's right/child subtree, freeing every child pointer. */
-void func_ov002_021e24e8(void *node) {
+void FreeModelNode(void *node) {
     void func_020e35cc(void *);
     void *right = M2C_FIELD(node, void **, 12);
     void *rightRight;
     if (right != NULL) {
         rightRight = M2C_FIELD(right, void **, 4);
         if (rightRight != NULL) {
-            if (M2C_FIELD(rightRight, void **, 4) != NULL) func_ov002_021e25e0((u8 *)node + 8, M2C_FIELD(rightRight, void **, 4));
-            if (M2C_FIELD(rightRight, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(rightRight, void **, 0));
+            if (M2C_FIELD(rightRight, void **, 4) != NULL) FreeModelList1((u8 *)node + 8, M2C_FIELD(rightRight, void **, 4));
+            if (M2C_FIELD(rightRight, void **, 0) != NULL) FreeModelNode(M2C_FIELD(rightRight, void **, 0));
             if (M2C_FIELD(rightRight, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
             if (M2C_FIELD(rightRight, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
         }
-        if (M2C_FIELD(right, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(right, void **, 0));
+        if (M2C_FIELD(right, void **, 0) != NULL) FreeModelNode(M2C_FIELD(right, void **, 0));
         if (M2C_FIELD(right, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
         if (M2C_FIELD(right, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
     }
-    if (M2C_FIELD(node, void **, 8) != NULL) func_ov002_021e24e8(M2C_FIELD(node, void **, 8));
+    if (M2C_FIELD(node, void **, 8) != NULL) FreeModelNode(M2C_FIELD(node, void **, 8));
     if (M2C_FIELD(node, void **, 8) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 8)); M2C_FIELD(node, void **, 8) = NULL; }
     if (M2C_FIELD(node, void **, 12) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 12)); M2C_FIELD(node, void **, 12) = NULL; }
 }
 
-void func_ov002_021e25e0(void *owner, void *node) {
-void func_ov002_021e24e8(void *);
+void FreeModelList1(void *owner, void *node) {
+void FreeModelNode(void *);
 void func_020e35cc(void *);
 void *right;
 void *rightRight;
@@ -45,16 +45,16 @@ right = M2C_FIELD(node, void **, 4);
 if (right != NULL) {
 rightRight = M2C_FIELD(right, void **, 4);
 if (rightRight != NULL) {
-if (M2C_FIELD(rightRight, void **, 4) != NULL) func_ov002_021e25e0(owner, M2C_FIELD(rightRight, void **, 4));
-if (M2C_FIELD(rightRight, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(rightRight, void **, 0));
+if (M2C_FIELD(rightRight, void **, 4) != NULL) FreeModelList1(owner, M2C_FIELD(rightRight, void **, 4));
+if (M2C_FIELD(rightRight, void **, 0) != NULL) FreeModelNode(M2C_FIELD(rightRight, void **, 0));
 if (M2C_FIELD(rightRight, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 0)); M2C_FIELD(rightRight, void **, 0) = NULL; }
 if (M2C_FIELD(rightRight, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(rightRight, void **, 4)); M2C_FIELD(rightRight, void **, 4) = NULL; }
 }
-if (M2C_FIELD(right, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(right, void **, 0));
+if (M2C_FIELD(right, void **, 0) != NULL) FreeModelNode(M2C_FIELD(right, void **, 0));
 if (M2C_FIELD(right, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 0)); M2C_FIELD(right, void **, 0) = NULL; }
 if (M2C_FIELD(right, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(right, void **, 4)); M2C_FIELD(right, void **, 4) = NULL; }
 }
-if (M2C_FIELD(node, void **, 0) != NULL) func_ov002_021e24e8(M2C_FIELD(node, void **, 0));
+if (M2C_FIELD(node, void **, 0) != NULL) FreeModelNode(M2C_FIELD(node, void **, 0));
 if (M2C_FIELD(node, void **, 0) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 0)); M2C_FIELD(node, void **, 0) = NULL; }
 if (M2C_FIELD(node, void **, 4) != NULL) { func_020e35cc(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
 }

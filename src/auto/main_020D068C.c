@@ -262,7 +262,7 @@ if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
  * effect, and finally plays the impact sound if a side's HP changed. */
 void ApplyBattleResult(void){
 extern u8 data_02168f08[];
-void func_020d18fc(s32,s32);s32 func_020d19b4(s32);s32 func_020a3594(s32,s32);M2C_UNK PlaySoundEffect(s32);
+void func_020d18fc(s32,s32);s32 IsPlayerHuman(s32);s32 func_020a3594(s32,s32);M2C_UNK PlaySoundEffect(s32);
 void *unit,*record;
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec6)<=0){
 if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
@@ -271,7 +271,7 @@ if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
 record=(void*)(*gCurrentMap+0x6eb8);
 func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),D068CLow(M2C_FIELD(record,void**,0)));
-if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
+if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
 }
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee6)<=0){
 if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
@@ -280,7 +280,7 @@ if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
 record=(void*)(*gCurrentMap+0x6ed8);
 func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),D068CLow(M2C_FIELD(record,void**,0)));
-if(func_020d19b4(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
+if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
 }
 ((void (*)())func_020d1034)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
 ((void (*)())func_020d1034)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);

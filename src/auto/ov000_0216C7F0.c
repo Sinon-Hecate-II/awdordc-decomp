@@ -94,11 +94,11 @@ s32 func_ov000_0216cc84(s32 arg0, s32 arg1) {
  return result;
 }
 
-u32 func_ov000_0216ccf0(u8 *arg0) {
+u32 GetUnitKind(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
 }
 
-s32 func_ov000_0216cd00(void *arg0) {
+s32 GetUnitHealthBarCount(void *arg0) {
     s32 func_0207c8ec(s32, M2C_UNK);
     u32 temp_r0;
 
@@ -113,7 +113,7 @@ u32 func_ov000_0216cd2c(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u8 *, 0xA) << 0x19) >> 0x19;
 }
 
-u32 func_ov000_0216cd3c(void *arg0) {
+u32 GetUnitAmmo(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C;
 }
 

@@ -102,7 +102,7 @@ s32 func_020c5e60(void) {
         u32 value : 8;
     };
     s32 func_020a88e8(u16);
-    s32 func_020d1980(s32);
+    s32 IsPlayerPresent(s32);
     extern u8 data_02168f0c;
     extern void **gCurrentMap;
     s32 var_r4;
@@ -118,7 +118,7 @@ s32 func_020c5e60(void) {
     var_r4 = 1;
     var_r5 = 0x8C;
     do {
-        if (func_020d1980(var_r4) != 0) {
+        if (IsPlayerPresent(var_r4) != 0) {
             temp_r0 = ((struct bits8 *) ((s8 *) *gCurrentMap + var_r5 + 0x6810))->value;
             if (temp_r0 != 0) {
                 return 0;
@@ -295,13 +295,13 @@ return 0;
 
 s32 func_020c6718(void) {
  extern void **gCurrentMap;
- s32 func_020a7e08(void *); s32 func_01ffb3d0(s32); s32 func_01ffc3e8(s32,s32); s32 func_0209fe44(s32);
+ s32 func_020a7e08(void *); s32 FillMapLayer(s32); s32 func_01ffc3e8(s32,s32); s32 func_0209fe44(s32);
  void *base;
  if(M2C_FIELD(*gCurrentMap,u16 *,0x52B4)==7)return 2;
  if(func_020c60c8()==0)return 2;
  if(func_020c6350()==0)return 2;
  if(func_020a7e08(M2C_FIELD(*gCurrentMap,void **,0x52D0))==0)return 2;
- func_01ffb3d0(-1);
+ FillMapLayer(-1);
  base=*gCurrentMap;
  if(func_0209fe44(func_01ffc3e8(M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE)))!=0)return 0;
  return 2;
@@ -318,7 +318,7 @@ s32 func_020c67bc(void) {
 s32 func_020c6134(void) {
     s32 func_020c60c8();
     s32 func_020c6350();
-    M2C_UNK func_01ffb3d0(s32);
+    M2C_UNK FillMapLayer(s32);
     s32 func_0209fd2c();
     extern void **gCurrentMap;
     void *base;
@@ -331,7 +331,7 @@ s32 func_020c6134(void) {
     if (func_020c6350() == 0) {
         return 2;
     }
-    func_01ffb3d0(-1);
+    FillMapLayer(-1);
     base = *gCurrentMap;
     a = M2C_FIELD(base, s16 *, 0x52DE);
     b = M2C_FIELD(base, s16 *, 0x52DC);
@@ -345,7 +345,7 @@ s32 func_020c6134(void) {
 s32 func_020c61a4(void) {
     s32 func_020c60c8();
     s32 func_020c6350();
-    M2C_UNK func_01ffb3d0(s32);
+    M2C_UNK FillMapLayer(s32);
     s32 func_0209ff34();
     extern void **gCurrentMap;
     void *base;
@@ -358,7 +358,7 @@ s32 func_020c61a4(void) {
     if (func_020c6350() == 0) {
         return 2;
     }
-    func_01ffb3d0(-1);
+    FillMapLayer(-1);
     base = *gCurrentMap;
     a = M2C_FIELD(base, s16 *, 0x52DE);
     b = M2C_FIELD(base, s16 *, 0x52DC);
@@ -376,7 +376,7 @@ s32 func_020c6214(void) {
     s32 func_020c9430(s32);
     s32 func_020a85c8(s32);
     s32 func_0209f990(void);
-    s32 func_01ffb3d0(s32);
+    s32 FillMapLayer(s32);
     void func_01ffc368(s32, s32, void *);
     void *base;
     s32 x, y;
@@ -399,7 +399,7 @@ s32 func_020c6214(void) {
     if (data_ov000_021b5c08[((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap, void **, 0x52D0))->unk0 * 0x70] == 0) {
         return 2;
     }
-    func_01ffb3d0(-1);
+    FillMapLayer(-1);
     base = *gCurrentMap;
     func_01ffc368(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), M2C_FIELD(base, void **, 0x52D0));
     if (func_0209f990() != 0) {

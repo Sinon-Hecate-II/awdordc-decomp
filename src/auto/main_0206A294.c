@@ -126,8 +126,8 @@ s32 func_0206ad4c(void *arg0, s32 arg1) {
 }
 #pragma opt_propagation reset
 void func_0206adc0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_020651a4(M2C_UNK, M2C_UNK, s32);
-    func_020651a4(arg0, arg1, arg2 * 2);
+    M2C_UNK MemCopy(M2C_UNK, M2C_UNK, s32);
+    MemCopy(arg0, arg1, arg2 * 2);
 }
 
 u16 *func_0206add0(u16 *p,s32 value,u32 n) {

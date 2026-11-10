@@ -102,7 +102,7 @@ int func_ov000_0218b0d8(void *arg0) {
  n=((u16 *)(map+0x3758))[y]+x;
  score=func_ov000_02176e28(flags | extra | map[n],pos);
  if(!score || score<best) continue;
- if(func_ov000_0217a0a8(p)==1) {
+ if(HasBetterAttackerNearby(p)==1) {
  int xx,yy,minX=p[1]-1,minY=p[2]-1,maxX,maxY,count=0,selected=0;
  int px=p[1],py=p[2];
  if(minX<0) minX=0; if(minY<0) minY=0;

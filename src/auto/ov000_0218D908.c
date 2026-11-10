@@ -29,9 +29,9 @@ void func_ov000_0218d908(void) {
     extern u8 data_ov000_021b5bfc[], data_ov000_021dfcf0[];
     s32 func_ov000_0218d40c(void);
     M2C_UNK func_01ffc328(s32);
-    s32 func_ov000_021a9934(s32, s32);
-    s32 func_ov000_021a8fc0(s16);
-    s32 func_ov000_021a995c(void *, s32);
+    s32 CanKindAttack(s32, s32);
+    s32 IsCurrentPlayerUnit(s16);
+    s32 CanUnitAttackKind(void *, s32);
     s32 func_ov000_021a9214(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
     s32 func_ov000_021a9d8c(s16, s16);
@@ -64,10 +64,10 @@ void func_ov000_0218d908(void) {
                         goto nextTile;
                     }
                 }
-                if (!(flags & 0x101) && func_ov000_021a9934(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                if (!(flags & 0x101) && CanKindAttack(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
                     map = *gCurrentMap;
                     unit = (u8 *)map + 0x59a4 + (s16)M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0) * 14;
-                    if (unit && func_ov000_021a8fc0((s16)(unit ? (unit - ((u8 *)map + 0x59a4)) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && func_ov000_021a995c(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                    if (unit && IsCurrentPlayerUnit((s16)(unit ? (unit - ((u8 *)map + 0x59a4)) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && CanUnitAttackKind(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
                         if (useTransport && M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x] > bestCost) goto nextTile;
                         bestX = x;
                         bestY = y;
@@ -188,7 +188,7 @@ void func_ov000_0218dda4(void) {
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
-M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 func_ov000_0217a0a8(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK func_01ffc328(s32);void func_01ffb9c4(s8);s32 func_ov000_021a98e4(s32);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02177f24(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *data_ov000_021df580;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
@@ -208,7 +208,7 @@ if(!func_ov000_02177f24(x,y,position))goto next_cell;
 map=*gCurrentMap;index=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 score=func_ov000_02176e28(index|0x10000,position);
 if(!score||score<bestScore)goto next_cell;
-if(func_ov000_0217a0a8(unit)==1){count=ScanAdjacentCount(unit);if(count<=1)goto next_cell;}
+if(HasBetterAttackerNearby(unit)==1){count=ScanAdjacentCount(unit);if(count<=1)goto next_cell;}
 bestScore=score;bestY=position[0];bestX=position[1];map=*gCurrentMap;
 temp=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 next_cell:x++;map=*gCurrentMap;

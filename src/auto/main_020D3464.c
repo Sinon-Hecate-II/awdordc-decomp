@@ -404,8 +404,8 @@ void func_020d3cec(void) {
     M2C_UNK func_020e3344();
     extern s32 data_0211fb58;
     extern s32 data_0215be00;
-    extern s32 data_0215be04;
-    data_0215be04 = data_0211fb58;
+    extern s32 gSelectionQueue;
+    gSelectionQueue = data_0211fb58;
     data_0215be00 = data_0211fb58;
     func_020ceec8();
     func_020e3320();
@@ -495,7 +495,7 @@ void func_020d3d68(void) {
 }
 
 s32 func_020d3e94(void) {
-    M2C_UNK func_020d1938(s32);
+    M2C_UNK IsPlayerActive(s32);
     M2C_UNK func_020c9ebc(s32, s32);
     M2C_UNK func_020c9b70();
     extern void **gCurrentMap;
@@ -506,7 +506,7 @@ s32 func_020d3e94(void) {
 
     max = 0;
     for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
-        if (func_020d1938(i) != 0) {
+        if (IsPlayerActive(i) != 0) {
             s32 value;
             base = *gCurrentMap;
             value = M2C_FIELD((u8 *)base + off, u8 *, 0x67BC);
@@ -516,7 +516,7 @@ s32 func_020d3e94(void) {
         }
     }
     for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
-        if (func_020d1938(i) != 0) {
+        if (IsPlayerActive(i) != 0) {
             base = *gCurrentMap;
             if (max > M2C_FIELD((u8 *)base + off, u8 *, 0x67BC)) {
                 func_020c9ebc(i, 0x20);
@@ -527,8 +527,8 @@ s32 func_020d3e94(void) {
 }
 
 s32 func_020d3f48(void) {
-    M2C_UNK func_020d1938(s32);
-    M2C_UNK func_020d19b4(s32);
+    M2C_UNK IsPlayerActive(s32);
+    M2C_UNK IsPlayerHuman(s32);
     extern void **gCurrentMap;
     extern M2C_UNK data_02168f08;
     u8 team;
@@ -557,16 +557,16 @@ s32 func_020d3f48(void) {
     team = 0;
     count = team;
     for (i = 1, off = 0x8C; i < 5; i++, off += 0x8C) {
-        if (func_020d1938(i) != 0) {
+        if (IsPlayerActive(i) != 0) {
             if (count == 0) {
-                if (func_020d19b4(i) != 0) {
+                if (IsPlayerHuman(i) != 0) {
                     base = *gCurrentMap;
                     v = M2C_FIELD((u8 *)base + off, u8 *, 0x67CA);
                     count++;
                     team = v;
                 }
             } else {
-                if (func_020d19b4(i) != 0) {
+                if (IsPlayerHuman(i) != 0) {
                     base = *gCurrentMap;
                     v = M2C_FIELD((u8 *)base + off, u8 *, 0x67CA);
                     if (team != v) {
@@ -580,15 +580,15 @@ s32 func_020d3f48(void) {
 }
 
 s32 func_020d4060(void) {
-    M2C_UNK func_020d1938(s32);
-    M2C_UNK func_020d19e8(s32);
+    M2C_UNK IsPlayerActive(s32);
+    M2C_UNK IsPlayerCpu(s32);
     extern M2C_UNK data_02168f08;
     extern void *gKeyState;
     s32 i;
 
     if (M2C_FIELD(&data_02168f08, u8 *, 4) != 0) {
         for (i = 1; i < 5; i++) {
-            if (func_020d1938(i) != 0 && func_020d19e8(i) == 0) {
+            if (IsPlayerActive(i) != 0 && IsPlayerCpu(i) == 0) {
                 return 0;
             }
         }
@@ -597,7 +597,7 @@ s32 func_020d4060(void) {
             return 0;
         }
         for (i = 1; i < 5; i++) {
-            if (func_020d1938(i) != 0 && func_020d19e8(i) == 0) {
+            if (IsPlayerActive(i) != 0 && IsPlayerCpu(i) == 0) {
                 return 0;
             }
         }

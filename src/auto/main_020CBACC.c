@@ -327,7 +327,7 @@ void func_020cc6a4(void) {
 void func_020cc6b8(void){
 extern s32 data_0215be0c;extern void **gCurrentMap;
 s32 func_020d46cc(void);void func_020d46ac(void);void func_020c75cc(void);void func_020d468c(void);
-void *func_0209f8e4(void);s32 func_020d19b4(u16);void func_02091c20(s32,s32);
+void *func_0209f8e4(void);s32 IsPlayerHuman(u16);void func_02091c20(s32,s32);
 void *p; s32 n;
 if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();return;}
 p=func_0209f8e4();
@@ -338,7 +338,7 @@ func_ov000_02199f50(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,u16 *,0)&2
 func_020d468c();
 func_ov000_02199f50(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s16 *,4)&255,M2C_FIELD(p,s16 *,6)&255);
 }
-if(!func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return;
+if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return;
 n=(M2C_FIELD(*gCurrentMap,s16 *,0x52dc)-M2C_FIELD(p,s16 *,4))+(M2C_FIELD(*gCurrentMap,s16 *,0x52de)-M2C_FIELD(p,s16 *,6));
 if(n<0)n=-n;
 if(n==0)return;
@@ -370,7 +370,7 @@ void func_020cc834(void) {
 void func_020cc840(void *a) {
 extern void **data_027e0058;
 void *p; s32 x,y;
-func_01ffb554((u8 *)*data_027e0058+0x1e30);func_01ffb3d0(-1);
+SelectMapLayer((u8 *)*data_027e0058+0x1e30);FillMapLayer(-1);
 p=*data_027e0058;
 func_020cdfec(M2C_FIELD(p,s32 *,0x52d0),M2C_FIELD(p,volatile s16 *,0x52dc),M2C_FIELD(p,volatile s16 *,0x52de));
 func_0207a748(0);

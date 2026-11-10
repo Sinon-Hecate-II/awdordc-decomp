@@ -278,17 +278,17 @@ M2C_FIELD(arg0*0x8c+*gCurrentMap,s8 *,0x6815)=0;
 
 u8 func_020a3150(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x6815]!=0;}
 
-void func_020a3184(s32 a,u8 *b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);u8 *old; s32 index;
+void SetPlayerSelectedUnit(s32 a,u8 *b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);u8 *old; s32 index;
 old=GetPlayerSelectedUnit(a);if(old&&old!=b)*old&=~0xc0;
 if(b==0)index=0;else { if(b==0)index=0;else index=((s32)b-(*gCurrentMap+0x59a4))/14; }
 M2C_FIELD(*gCurrentMap+a*0x8c,u8 *,0x6814)=index;
 if(b)*b=(*b&~0xc0)|0xc0;
 }
 
-void func_020a3224(s32 a,s32 b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);s32 func_020a7310(s32);s32 index;
-if(a!=(s32)GetPlayerSelectedUnit(func_020a7310(a)))return;
+void func_020a3224(s32 a,s32 b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);s32 GetUnitOwner(s32);s32 index;
+if(a!=(s32)GetPlayerSelectedUnit(GetUnitOwner(a)))return;
 if(b==0)index=0;else index=(b-(*gCurrentMap+0x59a4))/14;
-M2C_FIELD(*gCurrentMap+func_020a7310(a)*0x8c,u8 *,0x6814)=index;
+M2C_FIELD(*gCurrentMap+GetUnitOwner(a)*0x8c,u8 *,0x6814)=index;
 }
 
 u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;u8 r;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;if(M2C_FIELD(p,u8 *,112))r=1;else r=0;return r;}
@@ -434,14 +434,14 @@ void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:PlaySoun
 
 #pragma opt_instruction_scheduling off
 s32 func_020a3864(void) {
-extern s32 *gCurrentMap; s32 func_020d1938(s32);
+extern s32 *gCurrentMap; s32 IsPlayerActive(s32);
 u8 *arr; s32 idx,value,i;
 arr=(u8*)(*gCurrentMap+0x515c);
 idx=M2C_FIELD(*gCurrentMap,u16*,0x52a4)-1;
 value=arr[idx];
 if(value>0){value--;arr[idx]=value;}
 if(value>0)return 0;
-for(i=1;i<5;i++){if(func_020d1938(i)!=0){if(M2C_FIELD(*gCurrentMap+i,u8*,0x515b)!=0)return 0;}}
+for(i=1;i<5;i++){if(IsPlayerActive(i)!=0){if(M2C_FIELD(*gCurrentMap+i,u8*,0x515b)!=0)return 0;}}
 return 1;
 }
 #pragma opt_instruction_scheduling reset

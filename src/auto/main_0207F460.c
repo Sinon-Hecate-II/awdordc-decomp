@@ -164,14 +164,14 @@ s32 func_0207f974(u8 *arg0) {
 
 s32 func_0207f99c(u8 *arg0) {
     s64 func_020722fc(s32, s32);
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     s32 var_r1;
     s32 var_r4;
     u8 *var_r5;
     u8 var_r0;
     var_r5 = arg0;
     var_r4 = 0;
-    var_r1 = func_020722fc(data_027e15bc, func_0207f974(arg0)) >> 32;
+    var_r1 = func_020722fc(gFrameCounter, func_0207f974(arg0)) >> 32;
     var_r0 = *var_r5;
     while (var_r0 != 0) {
         if (var_r1 <= var_r0) return var_r4;

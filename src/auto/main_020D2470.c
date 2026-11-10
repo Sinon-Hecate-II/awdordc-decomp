@@ -92,7 +92,7 @@ void func_020d2470(void) {
     } while (y < (s32)M2C_FIELD(p, u16 *, 0x5146));
 }
 #pragma optimization_level reset
-u8 func_020d273c(s32 a, s32 b) {
+u8 IsSameTeam(s32 a, s32 b) {
     extern s32 *gCurrentMap;
     s32 base;
     s32 work;
@@ -106,23 +106,23 @@ u8 func_020d273c(s32 a, s32 b) {
 }
 
 u8 func_020d277c(s32 arg0, s32 arg1) {
-    u8 func_020d273c(s32, s32);
-    s32 func_020a7310(s32);
+    u8 IsSameTeam(s32, s32);
+    s32 GetUnitOwner(s32);
     s32 temp_r4;
 
-    temp_r4 = func_020a7310(arg0);
-    return func_020d273c(temp_r4, func_020a7310(arg1));
+    temp_r4 = GetUnitOwner(arg0);
+    return IsSameTeam(temp_r4, GetUnitOwner(arg1));
 }
 
 void func_020d27a4(s32 arg0, s32 arg1) {
-    u8 func_020d273c(s32, s32);
-    func_020d273c((arg0 >> 6) + 1, (arg1 >> 6) + 1);
+    u8 IsSameTeam(s32, s32);
+    IsSameTeam((arg0 >> 6) + 1, (arg1 >> 6) + 1);
 }
 
-u8 func_020d27c0(s32 arg0) {
+u8 IsUnitOnCurrentTeam(s32 arg0) {
     extern s32 *gCurrentMap;
-    u8 func_020d273c(s32, s32);
-    return func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), (arg0 >> 6) + 1);
+    u8 IsSameTeam(s32, s32);
+    return IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), (arg0 >> 6) + 1);
 }
 
 s32 func_020d27ec(s32 arg0, s32 arg1) {
@@ -130,12 +130,12 @@ s32 func_020d27ec(s32 arg0, s32 arg1) {
     if ((arg1 >> 5) == 0) {
         return 0;
     }
-    return func_020d273c(temp + 1, arg1 >> 5);
+    return IsSameTeam(temp + 1, arg1 >> 5);
 }
 
 s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
-    u8 func_020d273c(s32, s32);
+    u8 IsSameTeam(s32, s32);
     s32 p;
     u16 val;
     u8 byte;
@@ -148,7 +148,7 @@ s32 func_020d280c(s32 arg0, s32 arg1, s32 arg2) {
     if ((byte >> 5) == 0) {
         return 0;
     }
-    return func_020d273c(arg0, byte >> 5);
+    return IsSameTeam(arg0, byte >> 5);
 }
 
 s32 func_020d2850(s32 arg0,s32 arg1,s32 arg2) {
@@ -164,11 +164,11 @@ return 0;
 }
 
 void func_020d28bc(void) {
- extern s32 *gCurrentMap; s32 func_020d1938(s32);
+ extern s32 *gCurrentMap; s32 IsPlayerActive(s32);
  s32 j, joff, ioff, i; unsigned char *self, *other, *base;
  i=1;ioff=0x8c;
  do {
- if(func_020d1938(i)) {
+ if(IsPlayerActive(i)) {
  j=1;joff=0x8c;
  do {
  if(j!=i) {
@@ -187,12 +187,12 @@ void func_020d28bc(void) {
 
 void func_020d2958(void) {
     extern s32 *gCurrentMap;
-    s32 func_020d1980(s32);
+    s32 IsPlayerPresent(s32);
     s32 i = 1;
     s32 off = 0x8C;
 
     do {
-        if (func_020d1980(i) != 0) {
+        if (IsPlayerPresent(i) != 0) {
             M2C_FIELD(*gCurrentMap + off, u16 *, 0x67BE) = 0;
         }
         i++;
@@ -202,7 +202,7 @@ void func_020d2958(void) {
 
 s32 func_020d29a8(M2C_UNK arg0) {
  s32 func_020d2a00(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
- if (!func_020d1938()) return 1;
+ if (!IsPlayerActive()) return 1;
  if (func_020d2a00(arg0)) {
  if (func_020d303c(arg0)) return 1;
  if (func_020d2a6c(arg0)) return 1;
@@ -272,11 +272,11 @@ s32 func_020d2a6c(s32 arg0) {
 
 void func_020d2b10(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
-    s32 func_020d19b4(s32);
+    s32 IsPlayerHuman(s32);
     void func_02091c54(s32, s32);
 
     do {
-        if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
+        if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
             break;
         }
         func_02091c54(0xB, arg1);
@@ -558,7 +558,7 @@ u8 func_020d3214(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8
 u8 func_020d3248(M2C_UNK arg0) {
     u8 var_r0;
 
-    if (func_020d1938() == 0) {
+    if (IsPlayerActive() == 0) {
         return 0U;
     }
     if (func_020d3214(arg0) != 0) {
@@ -579,7 +579,7 @@ u8 func_020d32a0(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8
 u8 func_020d32d4(s32 a){
 extern s32 *gCurrentMap;u8 result;
 if(!(((u8 *)*gCurrentMap)[0x5155]&2))return 1;
-if(func_020d1938(a)==0)return 0;
+if(IsPlayerActive(a)==0)return 0;
 if(func_020d32a0(a)==0)result=1;else result=0;
 return result;
 }
@@ -592,8 +592,8 @@ return result;
 }
 
 u8 func_020d336c(s32 a){
-extern s32 *gCurrentMap; s32 func_020d19b4(s32); u8 result;
-if(func_020d19b4(a)==0)return 1;
+extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); u8 result;
+if(IsPlayerHuman(a)==0)return 1;
 if(!(((u8 *)*gCurrentMap)[0x5155]&16))return 1;
 if(func_020d29a8(a)==0)result=1;else result=0;
 return result;

@@ -7,7 +7,7 @@ extern const s16 gSinCosTable[2048];
 extern const s16 data_020e7b30[2048];
 extern const s16 data_020e6b30[2048];
 extern const s16 data_020e8b30[2048];
-extern u32 data_027e15bc;
+extern u32 gFrameCounter;
 
 
 #pragma push
@@ -109,7 +109,7 @@ func_02001114(qs,amount_1,amount_1,4096);func_0200100c(qt);func_02001068(qt,qt,c
 *(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(qm);
 flags_1=0;if(M2C_FIELD(node_1,u8 *,5)!=0)flags_1=2;if((u8)((M2C_FIELD(node_1,u8 *,4)&4)!=0))flags_1++;
 func_02087064(3,256,32,7168,flags_1+18);func_020878c4(-8,-8,6,16,16,tex_1,0,tex_1+16,16);
-if(amount_1==4096&&(data_027e15bc&63)<48){func_02087064(3,256,32,7168,22);
+if(amount_1==4096&&(gFrameCounter&63)<48){func_02087064(3,256,32,7168,22);
 if((u8)((M2C_FIELD(node_1,u8 *,4)&16)!=0))func_020878c4(2,6,6,32,8,224,8,256,16);
 if((u8)((M2C_FIELD(node_1,u8 *,4)&8)!=0))func_020878c4(2,6,6,32,8,224,0,256,8);
 }

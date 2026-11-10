@@ -139,7 +139,7 @@ void func_020473a8(void) {
 #pragma push
 #pragma opt_propagation on
 void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
-    void func_020651a4(void *, const void *, s32);
+    void MemCopy(void *, const void *, s32);
     void func_02076658(u8 *, u8 *, s32);
     s32 func_02068c34(const void *);
     s32 func_02068eac(void *, void *, s32);
@@ -168,7 +168,7 @@ void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
             target=M2C_FIELD(&data_020fca58,u8 **,0x58)+20;
             digits=*(HexDigits *)data_020ea95c;
             prefix=*(HashPrefix *)data_020fca88;
-            func_020651a4(input, arg0, 0x20);
+            MemCopy(input, arg0, 0x20);
             func_02076658(target, prefix.bytes, 0x34);
             for (i = 0; i < 20; i++) {
                 M2C_FIELD(&data_020fca58,u8 **,0x58)[i*2] = digits.bytes[target[i] >>4];

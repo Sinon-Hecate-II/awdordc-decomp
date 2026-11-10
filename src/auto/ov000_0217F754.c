@@ -58,16 +58,16 @@ data_ov000_021df580[5]=func_ov000_021a89a4(M2C_FIELD(*gCurrentMap,void **,0x52d0
 #pragma opt_strength_reduction off
 void func_ov000_0217f96c(void *arg0) {
 extern void **gCurrentMap;
-void func_01ffb554(void*); void func_01ffc2e8(void*); void func_01ffb9c4(s32);
+void SelectMapLayer(void*); void func_01ffc2e8(void*); void func_01ffb9c4(s32);
 s32 func_020d27a4(s32,s32); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
-s32 func_ov000_02176e28(s32,s16*); s32 func_ov000_0217a0a8(void*);
+s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
 void SetMapCursor(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
 s32 bestX=-1,bestY=-1,best=0,score,id=0;
 s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
 s32 minX,maxY,n,ux,uy,minY,maxX,xx,yy,index;
-func_01ffb554((u8*)*gCurrentMap+0x2338);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);
 func_01ffc2e8(arg0);
-func_01ffb554((u8*)*gCurrentMap+0x1e30);
+SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 func_01ffc2e8(M2C_FIELD(*gCurrentMap,void**,0x52d0));
 {
 s32 ax,ay;
@@ -92,7 +92,7 @@ if(!func_ov000_02177f24(x,y,pos))continue;
 map=*gCurrentMap;
 score=func_ov000_02176e28(map[x+M2C_FIELD(map+y*2,u16*,0x3758)]|0x30000,pos);
 if(!score || score<best)continue;
-if(func_ov000_0217a0a8(unit)==1){
+if(HasBetterAttackerNearby(unit)==1){
 u8 *nearMap;
 ux=unit[1];uy=unit[2];n=0;
 minX=ux-1;if(minX<0)minX=0;
@@ -117,9 +117,9 @@ best=score;bestX=pos[0];bestY=pos[1];
 map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
 if(best)SetMapCursor((s16)bestX,(s16)bestY,4,(u8)id,0);
-func_01ffb554((u8*)*gCurrentMap+0x2338);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);
 func_01ffc2e8(arg0);
-func_01ffb554((u8*)*gCurrentMap+0x1e30);
+SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 func_ov000_0218d040(1);
 }
 #pragma opt_strength_reduction reset
@@ -196,7 +196,7 @@ void func_ov000_021804d4(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021954a4();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -210,7 +210,7 @@ void func_ov000_021804d4(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -258,7 +258,7 @@ void func_ov000_021805a0(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219553c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -272,7 +272,7 @@ void func_ov000_021805a0(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -290,7 +290,7 @@ void func_ov000_02180608(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_02195750();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -304,7 +304,7 @@ void func_ov000_02180608(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -322,7 +322,7 @@ void func_ov000_02180670(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_02195ea4();
     M2C_UNK func_ov000_0218ae58();
     M2C_UNK func_ov000_021954a4();
@@ -336,7 +336,7 @@ void func_ov000_02180670(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -354,7 +354,7 @@ void func_ov000_021806d8(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -366,7 +366,7 @@ void func_ov000_021806d8(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();

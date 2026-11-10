@@ -72,14 +72,15 @@ M2C_FIELD(pos,s16 *,2)=by;
 return 1;
 }
 #pragma opt_strength_reduction off
-s32 func_ov000_0217a0a8(void *arg0) {
+/* True when a friendly unit within 4 tiles of the target would damage it better than the selected unit. */
+s32 HasBetterAttackerNearby(void *target) {
 extern void **gCurrentMap;
 extern u8 data_ov000_021b5c0f[],data_ov000_021b5bfc[];
-s32 func_ov000_021a98e4(s32);s32 func_ov000_021a8fc0(s32);s32 func_ov000_021a96a8(s32,s32,s32);
-u8 *p=arg0,*map=*gCurrentMap,*sel,*unit;
-s32 kind,bx,by,x0,y0,x1,y1,x;
+s32 func_ov000_021a98e4(s32);s32 IsCurrentPlayerUnit(s32);s32 GetAttackDamage(s32,s32,s32);
+u8 *p=target,*map=*gCurrentMap,*sel,*unit;
+s32 kind,tileX,tileY,minX,minY,maxX,maxY,cellX;
 u32 ck;
-s32 y,d,a,b;
+s32 cellY,distance,selectedDamage,candidateDamage;
 sel=M2C_FIELD(map,u8 **,0x52d0);
 kind=(u32)(sel[0]<<26)>>26;
 if(!(data_ov000_021b5c0f[kind*112]&0x27))return 0;
@@ -87,21 +88,21 @@ if(func_ov000_021a98e4(kind))return 0;
 map=*gCurrentMap;
 if(!M2C_FIELD(map,s16 *,0x6ee6))return 0;
 if(M2C_FIELD(map,s16 *,0x6ef2)>=30)goto done;
-bx=p[1];by=p[2];x0=bx-4;if(x0<0)x0=0;
-y0=by-4;if(y0<0)y0=0;
-x1=M2C_FIELD(map,u16 *,0x5144)-1;if(bx+4<x1)x1=bx+4;
-y1=M2C_FIELD(map,u16 *,0x5146)-1;if(by+4<y1)y1=by+4;
-for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
-d=0;
-if(p[1]-x>0)d+=p[1]-x;else d+=x-p[1];
-if(p[2]-y>0)d+=p[2]-y;else d+=y-p[2];
-if(d<0||d>4)continue;
+tileX=p[1];tileY=p[2];minX=tileX-4;if(minX<0)minX=0;
+minY=tileY-4;if(minY<0)minY=0;
+maxX=M2C_FIELD(map,u16 *,0x5144)-1;if(tileX+4<maxX)maxX=tileX+4;
+maxY=M2C_FIELD(map,u16 *,0x5146)-1;if(tileY+4<maxY)maxY=tileY+4;
+for(cellY=minY;cellY<=maxY;cellY++)for(cellX=minX;cellX<=maxX;cellX++){
+distance=0;
+if(p[1]-cellX>0)distance+=p[1]-cellX;else distance+=cellX-p[1];
+if(p[2]-cellY>0)distance+=p[2]-cellY;else distance+=cellY-p[2];
+if(distance<0||distance>4)continue;
 map=*gCurrentMap;
-kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
+kind=M2C_FIELD(map+cellX+M2C_FIELD(map+cellY*2,u16 *,0x3758),u8 *,0);
 if(!kind)continue;
-if(!func_ov000_021a8fc0(kind))continue;
+if(!IsCurrentPlayerUnit(kind))continue;
 map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
-if(x==sel[1]&&y==sel[2])continue;
+if(cellX==sel[1]&&cellY==sel[2])continue;
 unit=map+0x59a4+kind*14;
 if(func_ov000_021a98e4((u32)(unit[0]<<26)>>26)==1)continue;
 ck=(u32)(unit[0]<<26)>>26;
@@ -110,10 +111,10 @@ if(M2C_FIELD(unit,u16 *,4)&1)continue;
 if(ck==0)continue;
 if((u32)(M2C_FIELD(unit,u16 *,6)<<16)>>27)continue;
 map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
-a=func_ov000_021a96a8((u32)(sel[0]<<26)>>26,(u32)(p[0]<<26)>>26,0);
-b=func_ov000_021a96a8(ck,(u32)(p[0]<<26)>>26,0);
+selectedDamage=GetAttackDamage((u32)(sel[0]<<26)>>26,(u32)(p[0]<<26)>>26,0);
+candidateDamage=GetAttackDamage(ck,(u32)(p[0]<<26)>>26,0);
 map=*gCurrentMap;sel=M2C_FIELD(map,u8 **,0x52d0);
-if((s32)((u32)(M2C_FIELD(sel,u16 *,6)<<25)>>25)*a+2000 < (s32)((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*b)return 1;
+if((s32)((u32)(M2C_FIELD(sel,u16 *,6)<<25)>>25)*selectedDamage+2000 < (s32)((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25)*candidateDamage)return 1;
 }
 done:return 0;
 }
@@ -155,8 +156,8 @@ data_027e0a98+=4;data_027e0a94=(void *)((s32)data_027e0a94+1);
 }
 
 void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void func_01ffb3d0(s32);
-    void func_01ffb554(void *);
+    void FillMapLayer(s32);
+    void SelectMapLayer(void *);
     u16 func_ov000_021a97e0(u16, s32);
     extern void **gCurrentMap;
     void func_01ffb454(s32);
@@ -168,10 +169,10 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *base;
     u8 *q;
 
-    func_01ffb554((u8 *)(*gCurrentMap) + 0x2338);
-    func_01ffb3d0(-1);
-    func_01ffb554((u8 *)(*gCurrentMap) + 0x1E30);
-    func_01ffb3d0(-1);
+    SelectMapLayer((u8 *)(*gCurrentMap) + 0x2338);
+    FillMapLayer(-1);
+    SelectMapLayer((u8 *)(*gCurrentMap) + 0x1E30);
+    FillMapLayer(-1);
 
     data_027e0a8c = 0;
     base = data_027e00cc;
@@ -329,11 +330,11 @@ return result;
 
 u8 func_ov000_0217ab10(s32 arg0, s32 arg1, s32 arg2) {
  extern void **gCurrentMap;
- s32 func_020d27c0(s32);
+ s32 IsUnitOnCurrentTeam(s32);
  void *base = *gCurrentMap;
  u8 id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  if (id == 0) return 0;
- return func_020d27c0(id) != 1;
+ return IsUnitOnCurrentTeam(id) != 1;
 }
 
 u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
@@ -350,7 +351,7 @@ u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
 u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
  extern void **gCurrentMap;
  s32 func_ov000_021a9860(s32,s32);
- s32 func_ov000_021a8fc0(s32);
+ s32 IsCurrentPlayerUnit(s32);
  s32 func_ov000_021a98a8(s32);
  void *base;
  s32 id;
@@ -358,7 +359,7 @@ u8 func_ov000_0217abd8(s32 arg0, s32 arg1) {
  base = *gCurrentMap;
  id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
  if (id == 0) return 1;
- if (func_ov000_021a8fc0((s16)id) == 0) return 0;
+ if (IsCurrentPlayerUnit((s16)id) == 0) return 0;
  return func_ov000_021a98a8(((u32)(M2C_FIELD(*gCurrentMap + id * 14, u8 *, 0x59A4) << 26) >> 26)) == 0;
 }
 

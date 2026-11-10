@@ -254,7 +254,7 @@ if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
 SetConnectionState(3); M2C_FIELD(GetConnection(),s32*,0xe8)=2;
 conn=GetConnection(); M2C_FIELD(conn,u64*,0xec)=func_02007004(); return;
 }
-SetConnectionState(4); func_02040a28(1,0,0); return;
+SetConnectionState(4); TryConnectToPeer(1,0,0); return;
 }
 n=M2C_FIELD(mgr,u8*,2);
 elapsed=func_02072088((func_02007004()-M2C_FIELD(mgr,u64*,24))<<6,0x82ea);

@@ -271,12 +271,12 @@ void func_ov000_0219dd90(void) {
  extern M2C_UNK *data_ov000_021df654;
  extern s8 *data_ov000_021df658;
  extern s8 data_ov000_021df824;
- extern M2C_UNK func_ov000_0217d428;
+ extern M2C_UNK AssignUnitMoveTargets;
  data_ov000_021df658 = &data_ov000_021df824;
  *data_ov000_021df658++ = 0x40;
  *data_ov000_021df658 = 0;
  data_ov000_021df658 = &data_ov000_021df824;
- data_ov000_021df654 = &func_ov000_0217d428;
+ data_ov000_021df654 = &AssignUnitMoveTargets;
  *data_ov000_021df580 = 2;
 }
 

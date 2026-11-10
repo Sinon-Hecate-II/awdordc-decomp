@@ -1,5 +1,6 @@
 /* 23 functions from 0x02049AB8 to 0x0204AA34 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 
 void func_02049ab8(u8 *src,s8 *dst,s32 len,s32 mode){
 void func_02049a20(u8 *,s8 *,s32);
@@ -21,7 +22,7 @@ else if(*dst==63)*dst=table[1];
 }
 }
 
-s32 func_02049bf0(s32 *p,s32 n) {
+s32 ghiResizeBuffer(s32 *p,s32 n) {
 s32 func_020377a8(s32,s32);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce58,data_020fcedc;
 s32 v,total;
@@ -35,7 +36,7 @@ if(!v)return 0;
 p[1]=v;p[2]=total;return 1;
 }
 
-s32 func_02049c7c(void *connection,s32 *buffer,s32 size,s32 grow) {
+s32 ghiInitBuffer(void *connection,s32 *buffer,s32 size,s32 grow) {
 extern M2C_UNK data_020fcef0,data_020fcecc,data_020fce38,data_020fcec4,data_020fcefc,data_020fcedc;
 if(!connection)func_020640a8(&data_020fcef0,&data_020fcecc,&data_020fce38,0x43);
 if(!buffer)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce38,0x44);
@@ -47,7 +48,7 @@ if(size<=0)return 0;
 if(grow<=0)return 0;
 buffer[0]=(s32)connection;
 buffer[1]=0;buffer[2]=0;buffer[3]=0;buffer[4]=0;buffer[5]=grow;buffer[6]=0;buffer[7]=0;buffer[8]=0;
-if(!func_02049bf0(buffer,size))return 0;
+if(!ghiResizeBuffer(buffer,size))return 0;
 *(u8*)buffer[1]=0;return 1;
 }
 
@@ -74,7 +75,7 @@ s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size
     return 1;
 }
 
-void func_02049e94(s32 *p) {
+void ghiFreeBuffer(s32 *p) {
 void func_020377c4(s32);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce28;
 if(!p)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce28,0x9b);
@@ -83,121 +84,120 @@ if(!p[7])func_020377c4(p[1]);
 func_02065210(p,0,0x24);
 }
 
-s32 func_02049ef4(s32 arg0, s32 *arg1, s32 n, ...) {
+/* Append data to a GHIBuffer, growing it if needed; when the buffer is encrypted
+   the data is passed through the connection's encryptor first. */
+s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     s32 func_02068c34(s32);
-    s32 func_02049bf0(s32 *, s32);
-    void func_020651a4(void *, void *, s32);
+    s32 ghiResizeBuffer(s32 *, s32);
+    void MemCopy(void *, void *, s32);
     extern M2C_UNK data_020fcec4;
     extern M2C_UNK data_020fcecc;
     extern M2C_UNK data_020fce94;
     extern M2C_UNK data_020fcf24;
     extern M2C_UNK data_020fcf2c;
     extern M2C_UNK data_020fcf3c;
-    void *r9 = (void *)arg0;
-    void *r8 = (void *)arg1;
-    void *r6 = M2C_FIELD(r9, void **, 0);
+    GHIBuffer *buffer = (GHIBuffer *)arg0;
+    const u8 *data = (const u8 *)arg1;
+    void *connection = buffer->connection;
     typedef s32 (*Cb)(void *, void *, void *, s32 *, s32, s32 *);
 
-    if (r9 == 0) func_020640a8(&data_020fcec4, &data_020fcecc, &data_020fce94, 0xb7);
-    if (r8 == 0) func_020640a8(&data_020fcf24, &data_020fcecc, &data_020fce94, 0xb8);
-    if (n < 0) func_020640a8(&data_020fcf2c, &data_020fcecc, &data_020fce94, 0xb9);
-    if (r9 == 0) return 0;
-    if (r8 == 0) return 0;
-    if (n < 0) return 0;
+    if (buffer == 0) func_020640a8(&data_020fcec4, &data_020fcecc, &data_020fce94, 0xb7);
+    if (data == 0) func_020640a8(&data_020fcf24, &data_020fcecc, &data_020fce94, 0xb8);
+    if (dataLen < 0) func_020640a8(&data_020fcf2c, &data_020fcecc, &data_020fce94, 0xb9);
+    if (buffer == 0) return 0;
+    if (data == 0) return 0;
+    if (dataLen < 0) return 0;
 
-    if (n == 0) {
-        n = func_02068c34((s32)r8);
+    if (dataLen == 0) {
+        dataLen = func_02068c34((s32)data);
     }
 
-    if (M2C_FIELD(r9, s32 *, 0x20) == 1) {
-        s32 r7;
-        s32 diff;
-        if (M2C_FIELD(r6, s32 *, 0x168) == 0) {
+    if (buffer->encrypted == 1) {
+        s32 result;
+        s32 room;
+        if (M2C_FIELD(connection, s32 *, 0x168) == 0) {
             func_020640a8(&data_020fcf3c, &data_020fcecc, &data_020fce94, 0xce);
         }
         do {
-            s32 local0;
-            diff = M2C_FIELD(r9, s32 *, 0x8) - M2C_FIELD(r9, s32 *, 0xc);
-            local0 = M2C_FIELD(r9, s32 *, 0x4) + M2C_FIELD(r9, s32 *, 0xc);
+            u8 *dest;
+            room = buffer->size - buffer->len;
+            dest = buffer->data + buffer->len;
             {
-                Cb cb = *(Cb *)((char *)r6 + 0x17c);
-                r7 = cb(r6, (char *)r6 + 0x164, r8, &n, local0, &diff);
+                Cb cb = *(Cb *)((char *)connection + 0x17c);
+                result = cb(connection, (char *)connection + 0x164, (void *)data, &dataLen, (s32)dest, &room);
             }
-            if (r7 == 2) {
-            if (M2C_FIELD(r9, s32 *, 0x18) != 0) {
-                M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0xfc) = 1;
-                M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0x38) = 2;
+            if (result == 2) {
+                if (buffer->fixed != 0) {
+                    M2C_FIELD(buffer->connection, s32 *, 0xfc) = 1;
+                    M2C_FIELD(buffer->connection, s32 *, 0x38) = 2;
+                    return 0;
+                }
+                if (ghiResizeBuffer((s32 *)buffer, buffer->sizeIncrement) != 0) {
+                    M2C_FIELD(buffer->connection, s32 *, 0xfc) = 1;
+                    M2C_FIELD(buffer->connection, s32 *, 0x38) = 1;
+                    return 0;
+                }
+                continue;
+            }
+            buffer->len += room;
+        } while (result == 2);
+    } else {
+        s32 newLen = buffer->len + dataLen;
+        while (newLen >= buffer->size) {
+            if (buffer->fixed != 0) {
+                M2C_FIELD(buffer->connection, s32 *, 0xfc) = 1;
+                M2C_FIELD(buffer->connection, s32 *, 0x38) = 2;
                 return 0;
             }
-            if (func_02049bf0((s32 *)r9, M2C_FIELD(r9, s32 *, 0x14)) != 0) {
-                M2C_FIELD(M2C_FIELD(r9,void **,0), s32 *, 0xfc) = 1;
-                M2C_FIELD(M2C_FIELD(r9,void **,0), s32 *, 0x38) = 1;
+            if (ghiResizeBuffer((s32 *)buffer, buffer->sizeIncrement) == 0) {
+                M2C_FIELD(buffer->connection, s32 *, 0xfc) = 1;
+                M2C_FIELD(buffer->connection, s32 *, 0x38) = 1;
                 return 0;
             }
-            continue;
-            }
-            M2C_FIELD(r9, s32 *, 0xc) += diff;
-        } while (r7==2);
-    } else
-
-    {
-        s32 r4 = M2C_FIELD(r9, s32 *, 0xc) + n;
-        s32 limit = M2C_FIELD(r9, s32 *, 0x8);
-        while (r4 >= M2C_FIELD(r9,s32 *,8)) {
-        if (M2C_FIELD(r9, s32 *, 0x18) != 0) {
-            M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0xfc) = 1;
-            M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0x38) = 2;
-            return 0;
         }
-        if (func_02049bf0((s32 *)r9, M2C_FIELD(r9, s32 *, 0x14)) == 0) {
-            M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0xfc) = 1;
-            M2C_FIELD(M2C_FIELD(r9, void **, 0), s32 *, 0x38) = 1;
-            return 0;
-        }
-        }
-        func_020651a4((void *)((char *)M2C_FIELD(r9, void **, 0x4) + M2C_FIELD(r9, s32 *, 0xc)), r8, n);
-        M2C_FIELD(r9, s32 *, 0xc) = r4;
-        ((s8 *)M2C_FIELD(r9, void **, 0x4))[r4] = 0;
+        MemCopy((void *)(buffer->data + buffer->len), (void *)data, dataLen);
+        buffer->len = newLen;
+        buffer->data[newLen] = 0;
     }
     return 1;
 }
 
 s32 func_0204a1b0(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
-    s32 func_02049ef4(M2C_UNK, M2C_UNK *, M2C_UNK,...);
+    s32 ghiAppendDataToBuffer(M2C_UNK, M2C_UNK *, M2C_UNK,...);
     extern M2C_UNK data_020fcf78;
     extern M2C_UNK data_020fcf7c;
-    if (func_02049ef4(arg0, arg1, 0) == 0) {
+    if (ghiAppendDataToBuffer(arg0, arg1, 0) == 0) {
         return 0;
     }
-    if (func_02049ef4(arg0, &data_020fcf78, 2) == 0) {
+    if (ghiAppendDataToBuffer(arg0, &data_020fcf78, 2) == 0) {
         return 0;
     }
-    if (func_02049ef4(arg0, arg2, 0) == 0) {
+    if (ghiAppendDataToBuffer(arg0, arg2, 0) == 0) {
         return 0;
     }
-    if (func_02049ef4(arg0, &data_020fcf7c, 2) != 0) {
+    if (ghiAppendDataToBuffer(arg0, &data_020fcf7c, 2) != 0) {
         return 1;
     }
     return 0;
 }
 
 s32 func_0204a230(s32 p,s32 c) {
-s32 func_02049ef4(s32,s32 *,s32,...);
+s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcec4,data_020fcecc,data_020fce7c;
 u8 v=c;
 if(!p)func_020640a8(&data_020fcec4,&data_020fcecc,&data_020fce7c,0x131);
 if(!p)return 0;
-return func_02049ef4(p,(s32 *)&v,1);
+return ghiAppendDataToBuffer(p,(s32 *)&v,1);
 }
 
 void func_0204a290(s32 a,s32 b) {
 void func_020675e4(void *,void *,s32);
-s32 func_02049ef4(s32,s32 *,s32,...);
+s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 extern M2C_UNK data_020fcf80;
 s32 buf[4];
 func_020675e4(buf,&data_020fcf80,b);
-func_02049ef4(a,buf,0);
+ghiAppendDataToBuffer(a,buf,0);
 }
 
 void func_0204a2c8(void *arg0) {
@@ -254,7 +254,7 @@ if(!n)return 0;
 left=p[3]-p[4];
 if(left<=0)return 0;
 if(n>=left)n=left;
-func_020651a4(dst,(void *)(p[1]+p[4]),n);
+MemCopy(dst,(void *)(p[1]+p[4]),n);
 dst[n]=0;*len=n;p[4]+=n;return 1;
 }
 
@@ -317,7 +317,7 @@ r3=M2C_FIELD(arg0,s32 *,0x80);
 outPtr=M2C_FIELD(arg0,s32 *,0x78);
 sp8=M2C_FIELD(arg0,s32 *,0x7c)-r3;
 result=M2C_FIELD(arg0,s32 (**)(void *,void *,s32,s32 *,s32,s32 *),0x180)(arg0,(u8*)arg0+0x164,inPtr+ip,&spC,outPtr+r3,&sp8);
-if(result==2 && !func_02049bf0((s32*)((u8*)arg0+0x74),M2C_FIELD(arg0,s32 *,0x88)))return 0;
+if(result==2 && !ghiResizeBuffer((s32*)((u8*)arg0+0x74),M2C_FIELD(arg0,s32 *,0x88)))return 0;
 if(result==2 && sp8==0)goto loop;
 M2C_FIELD(arg0,s32 *,0xa8)+=spC;
 M2C_FIELD(arg0,s32 *,0x80)+=sp8;
@@ -343,7 +343,7 @@ return 0;
 #pragma opt_propagation off
 s32 func_0204a740(void *p,u8 *dst,s32 *len) {
 u32 func_02049208(void);
-s32 func_02049ef4(s32,s32 *,s32,...);
+s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 s32 func_020497cc(s32,u8 *,s32,s32);
 
 extern s32 data_020fd00c[];
@@ -372,7 +372,7 @@ M2C_FIELD(p,s32 *,0x4c)=err;M2C_FIELD(p,s32 *,0x130)=1;return 3;
 }
 if(got==0){M2C_FIELD(p,s32 *,0x130)=1;return 2;}
 if(M2C_FIELD(p,s32 *,0x168)){
-if(!((s32 (*)(void *,u8 *))func_02049ef4)(p+0x98,dst))return 3;
+if(!((s32 (*)(void *,u8 *))ghiAppendDataToBuffer)(p+0x98,dst))return 3;
 if(!func_0204a618(p)){M2C_FIELD(p,s32 *,0xfc)=1;M2C_FIELD(p,s32 *,0x38)=17;return 3;}
 if(M2C_FIELD(p,s32 *,0x80)-M2C_FIELD(p,s32 *,0x84)<=0){*dst=0;*len=0;return 1;}
 r=*len-1;
@@ -418,7 +418,7 @@ n=func_0204a954(p,a,b);
 if(n==-1)return 0;
 if(n==b)return 1;
 }
-if(!func_02049ef4((s32)p+0x50,(s32 *)(a+n),b-n))return 0;
+if(!ghiAppendDataToBuffer((s32)p+0x50,(s32 *)(a+n),b-n))return 0;
 return 2;
 }
 

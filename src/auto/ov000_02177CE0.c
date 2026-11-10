@@ -37,7 +37,7 @@ return result;
 s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
     s32 func_ov000_02177ce0(s32, s32);
     extern void **gCurrentMap;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     s32 magic = 0x270F;
     s32 x = arg0;
     s32 sp0 = arg1;
@@ -82,7 +82,7 @@ s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
                     else dist = dist + d1;
                     if (dist == 1) {
                         temp = func_ov000_02177ce0((s32)(s16)inner, (s32)(s16)outer);
-                        if (temp >= best && (temp != best || !(data_027e15bc & 1))) {
+                        if (temp >= best && (temp != best || !(gFrameCounter & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;
                             sp4[1] = (s16) outerS16;
@@ -126,10 +126,12 @@ if(weight<20)result+=0x400000;
 return result;
 }
 
+/* Find the best movement destination within unit's range. Returns 1 and stores
+ * position in out[0..1] if found, returns 0 if no valid destination. */
 s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5bfc[];
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     s32 func_020a76d4(u8 *);
     s32 func_ov000_02178080(s32, s32);
 
@@ -212,7 +214,7 @@ s32 func_ov000_02178268(s32 x, s32 y, s16 *out) {
                         if (dist <= cap) {
                             cost = func_ov000_02178080(inner, outerY);
                             if (cost >= best) {
-                                if (cost != best || !(data_027e15bc & 1)) {
+                                if (cost != best || !(gFrameCounter & 1)) {
                                     best = cost;
                                     out[0] = (s16)inner;
                                     out[1] = (s16)r8;
@@ -235,7 +237,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
     s32 func_ov000_02177ce0(s32, s32);
     s32 func_ov000_021a9a28(u32, s32, s32);
     extern void **gCurrentMap;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     s32 magic = 0x270F;
     s32 x = arg0;
     s32 sp0 = arg1;
@@ -274,7 +276,7 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
                     else dist = dist + d1;
                     if (dist >= 1 && dist <= 1 && func_ov000_021a9a28((u32)(*M2C_FIELD(*gCurrentMap,u8**,0x52d0)<<26)>>26,inner,outer)) {
                         temp = func_ov000_02177ce0(inner, outer);
-                        if (temp >= best && (temp != best || !(data_027e15bc & 1))) {
+                        if (temp >= best && (temp != best || !(gFrameCounter & 1))) {
                             best = temp;
                             sp4[0] = (s16) inner;
                             sp4[1] = (s16) outerS16;
@@ -291,12 +293,12 @@ s32 func_ov000_02178518(s32 arg0, s32 arg1, s16 *arg2) {
 }
 
 u8 func_ov000_021786a8(s16 *out) {
-s32 func_020d1938(s32); s32 func_020d243c(s32); s32 func_020d273c(u16,s32);
+s32 IsPlayerActive(s32); s32 func_020d243c(s32); s32 IsSameTeam(u16,s32);
 extern void **gCurrentMap;
 s32 best=0x7fff,i,offset,x,y,v;
 void *base,*entry;
 for(i=1,offset=0x8c;i<5;i++,offset+=0x8c) {
-if(func_020d1938(i) && !func_020d273c(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i) && func_020d243c(i)) {
+if(IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,0x52a4),i) && func_020d243c(i)) {
 base=*gCurrentMap;entry=(u8*)base+offset;
 x=M2C_FIELD(entry,u8*,0x67cf)&127;
 y=M2C_FIELD(entry,u8*,0x67d0)&127;

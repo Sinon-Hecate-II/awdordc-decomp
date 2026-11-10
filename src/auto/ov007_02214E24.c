@@ -85,7 +85,7 @@ return 0;
 }
 
 void func_ov007_02215254(s32 arg0, s32 arg1, s32 arg2) {
-    s8 func_0207efb4(s32);
+    s8 GetTerrainValueForTile(s32);
     extern s32 *gCurrentMap;
     s32 temp_ip;
     s32 temp_r6;
@@ -93,7 +93,7 @@ void func_ov007_02215254(s32 arg0, s32 arg1, s32 arg2) {
     temp_ip = *gCurrentMap;
     M2C_FIELD((temp_ip + ((arg0 + M2C_FIELD((temp_ip + (arg1 * 2)), u16 *, 0x3758)) * 2)), s16 *, 0xA10) = arg2;
     temp_r6 = *gCurrentMap;
-    M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = func_0207efb4(arg2);
+    M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = GetTerrainValueForTile(arg2);
 }
 
 s32 func_ov007_022152bc(s32 x,s32 y){

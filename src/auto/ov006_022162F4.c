@@ -11,7 +11,7 @@ void func_ov006_022162f4(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK UpdateSpriteAnimation(void *);
     M2C_UNK func_020b1c60(M2C_UNK);
-    extern s8 data_ov006_02218e10[];
+    extern s8 gFriendCodeInput[];
     extern u16 *gKeyState;
     register void *p asm("r6") = arg0;
     s8 var_r4;
@@ -42,37 +42,37 @@ void func_ov006_022162f4(void *arg0) {
     }
     if (temp_r0 & 0x400) {
         if ((s32) var_r4 > 0) {
-            if ((var_r4 == 0xB) && (data_ov006_02218e10[var_r4] != 0)) {
-                data_ov006_02218e10[var_r4] = 0;
+            if ((var_r4 == 0xB) && (gFriendCodeInput[var_r4] != 0)) {
+                gFriendCodeInput[var_r4] = 0;
             } else {
                 temp_r2 = var_r4 - 1;
-                if (((s32) temp_r2 >= 0) && ((s32) temp_r2 < 0xC) && ((data_ov006_02218e10[temp_r2] != 0) || (((s32) temp_r2 > 0) && (data_ov006_02218e10[temp_r2 - 1] != 0)))) {
+                if (((s32) temp_r2 >= 0) && ((s32) temp_r2 < 0xC) && ((gFriendCodeInput[temp_r2] != 0) || (((s32) temp_r2 > 0) && (gFriendCodeInput[temp_r2 - 1] != 0)))) {
                     M2C_FIELD(p, s8 *, 0x38) = temp_r2;
                 }
                 var_r1 = M2C_FIELD(p, s8 *, 0x38);
                 if ((s32) var_r1 < 0xB) {
-                    var_r2 = data_ov006_02218e10 + var_r1;
+                    var_r2 = gFriendCodeInput + var_r1;
                     do {
                         var_r1 += 1;
                         *var_r2 = (s8) var_r2[1];
                         var_r2 += 1;
                     } while ((s32) var_r1 < 0xB);
                 }
-                data_ov006_02218e10[0xB] = 0;
+                gFriendCodeInput[0xB] = 0;
             }
             PlaySoundEffect(0x1000D);
             return;
         }
-        if ((var_r4 == 0) && (data_ov006_02218e10[var_r4] != 0)) {
+        if ((var_r4 == 0) && (gFriendCodeInput[var_r4] != 0)) {
             if ((s32) var_r4 < 0xB) {
-                var_r1_2 = data_ov006_02218e10 + var_r4;
+                var_r1_2 = gFriendCodeInput + var_r4;
                 do {
                     var_r4 += 1;
                     *var_r1_2 = (s8) var_r1_2[1];
                     var_r1_2 += 1;
                 } while ((s32) var_r4 < 0xB);
             }
-            data_ov006_02218e10[0xB] = 0;
+            gFriendCodeInput[0xB] = 0;
             PlaySoundEffect(0x1000D);
             return;
         }
@@ -85,19 +85,19 @@ void func_ov006_022162f4(void *arg0) {
     }
     if (temp_r1 & 0x200) {
         temp_r2_2 = var_r4 - 1;
-        if (((s32) temp_r2_2 >= 0) && ((s32) temp_r2_2 < 0xC) && ((data_ov006_02218e10[temp_r2_2] != 0) || (((s32) temp_r2_2 > 0) && (data_ov006_02218e10[temp_r2_2 - 1] != 0)))) {
+        if (((s32) temp_r2_2 >= 0) && ((s32) temp_r2_2 < 0xC) && ((gFriendCodeInput[temp_r2_2] != 0) || (((s32) temp_r2_2 > 0) && (gFriendCodeInput[temp_r2_2 - 1] != 0)))) {
             M2C_FIELD(p, s8 *, 0x38) = temp_r2_2;
         }
     } else if (temp_r1 & 0x100) {
         temp_r2_3 = var_r4 + 1;
-        if (((s32) temp_r2_3 >= 0) && ((s32) temp_r2_3 < 0xC) && ((data_ov006_02218e10[temp_r2_3] != 0) || (((s32) temp_r2_3 > 0) && (data_ov006_02218e10[temp_r2_3 - 1] != 0)))) {
+        if (((s32) temp_r2_3 >= 0) && ((s32) temp_r2_3 < 0xC) && ((gFriendCodeInput[temp_r2_3] != 0) || (((s32) temp_r2_3 > 0) && (gFriendCodeInput[temp_r2_3 - 1] != 0)))) {
             M2C_FIELD(p, s8 *, 0x38) = temp_r2_3;
         }
     }
     temp_r0_2 = M2C_FIELD(M2C_FIELD(p, void **, 0x40), s8 *, 0xC);
     if ((s32) temp_r0_2 >= 0) {
         temp_r2_4 = temp_r0_2;
-        if (((s32) temp_r2_4 >= 0) && ((s32) temp_r2_4 < 0xC) && ((data_ov006_02218e10[temp_r2_4] != 0) || (((s32) temp_r2_4 > 0) && (data_ov006_02218e10[temp_r2_4 - 1] != 0)))) {
+        if (((s32) temp_r2_4 >= 0) && ((s32) temp_r2_4 < 0xC) && ((gFriendCodeInput[temp_r2_4] != 0) || (((s32) temp_r2_4 > 0) && (gFriendCodeInput[temp_r2_4 - 1] != 0)))) {
             M2C_FIELD(p, s8 *, 0x38) = temp_r2_4;
         }
     }

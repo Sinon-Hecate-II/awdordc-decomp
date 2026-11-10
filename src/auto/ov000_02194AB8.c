@@ -10,12 +10,12 @@ void func_ov000_02179be0(void);
 void func_ov000_02179d3c(void);
 s32 func_ov000_021a98e4(s32);
 s32 func_020a76d4(void *);
-s32 func_020d1938(s32);
-s32 func_020d273c(s32,s32);
+s32 IsPlayerActive(s32);
+s32 IsSameTeam(s32,s32);
 s32 func_ov000_021a947c(s32,s32,s32,s32);
 s32 func_020a600c(u16);
 s32 func_ov000_021a96f4(s32,s32,s32);
-s32 func_ov000_021a96a8(s32,s32,s32);
+s32 GetAttackDamage(s32,s32,s32);
 s32 func_ov000_021a98a8(s32);
 s32 func_020d27ec(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
@@ -41,8 +41,8 @@ if(!(M2C_FIELD(data_ov000_021df580,u16 *,8)&32)&&func_ov000_021a98e4((*(UnitKind
 threshold=func_020a76d4(M2C_FIELD(*gCurrentMap,void **,0x52d0))+M2C_FIELD(data_ov000_021df580,u8 *,5);
 }else threshold=0;
 for(team=1;team<5;team++){
-if(!func_020d1938(team))continue;
-if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),team)==1)continue;
+if(!IsPlayerActive(team))continue;
+if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),team)==1)continue;
 id=gPlayerUnitIdBase[team]+1;
 offset=id*14;
 for(;id<gPlayerUnitIdBase[team]+51;id++,offset+=14){
@@ -58,7 +58,7 @@ if(M2C_FIELD(unit,u16 *,4)&32){
 if(!func_ov000_021a96f4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))continue;
 }
 kind=(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind;
-if(kind==21)value=func_ov000_021a96a8(17,((UnitKind1955 *)unit)->kind,0);else value=func_ov000_021a96a8(kind,((UnitKind1955 *)unit)->kind,0);
+if(kind==21)value=GetAttackDamage(17,((UnitKind1955 *)unit)->kind,0);else value=GetAttackDamage(kind,((UnitKind1955 *)unit)->kind,0);
 map=*gCurrentMap;
 cost=M2C_FIELD(map+(unit[2])*4,s8 **,0x52e8)[unit[1]];
 kind=(*(UnitKind1955 **)(map+0x52d0))->kind;

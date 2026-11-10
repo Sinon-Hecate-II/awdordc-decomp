@@ -4,7 +4,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind959;
 
 #pragma opt_propagation off
 s32 func_ov000_021959cc(s32 x,s32 y,s32 data,s32 radius){
-s32 func_ov000_021a93b0(s32,s32,s32);s32 func_020d27c0(s32);s32 func_ov000_021a96a8(M2C_UNK,M2C_UNK,s32);
+s32 func_ov000_021a93b0(s32,s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 GetAttackDamage(M2C_UNK,M2C_UNK,s32);
 extern void **gCurrentMap;
 s32 sy;
 s32 left;
@@ -27,10 +27,10 @@ if(func_ov000_021a93b0(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)sy)!=0)continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)top<<1),u16 *,0x3758));
 if(!d)continue;
-if(func_020d27c0(d)!=0)continue;
+if(IsUnitOnCurrentTeam(d)!=0)continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)top<<1),u16 *,0x3758));
-if(func_ov000_021a96a8(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=30)return 1;
+if(GetAttackDamage(data,((UnitKind959 *)((u8 *)base+d*14+0x59a4))->kind,0)>=30)return 1;
 }
 }
 return 0;
@@ -41,7 +41,7 @@ s32 func_ov000_02195b80(s16 *out) {
     s32 func_ov000_021a98e4(u32);
     s32 func_ov000_0217bc34(s32, s32, s32, s32);
     s32 func_01ffada0(u8, u8, u32, s32, s32);
-    void func_01ffb554(void *);
+    void SelectMapLayer(void *);
     void func_01ffc328(void *);
     s32 func_ov000_021a9d8c(s16, s16);
     s32 IsValidMoveCell(s16, s16);
@@ -73,9 +73,9 @@ s32 func_ov000_02195b80(s16 *out) {
     func_01ffada0(((u8 *)up)[1], ((u8 *)up)[2], (u32)unitKind, 110, 0);
 
     map = *gCurrentMap;
-    func_01ffb554((u8 *)map + 0x2338);
+    SelectMapLayer((u8 *)map + 0x2338);
     func_01ffc328((u8 *)map + 0x52d0);
-    func_01ffb554((u8 *)map + 0x1e30);
+    SelectMapLayer((u8 *)map + 0x1e30);
 
     height = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
     for (y = 0; y < height; y++) {
@@ -378,14 +378,14 @@ void func_ov000_021962f8(void) {
 
 s32 func_ov000_02196330(void) {
     s32 GetPlayerSelectedUnit(s32);
-    s32 func_020d1938(s32);
-    s32 func_020d273c(u16, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
     extern void **gCurrentMap;
     s32 var_r5;
 
     var_r5 = 1;
 loop_1:
-    if ((func_020d1938(var_r5) != 0) && (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r5) == 0) && (GetPlayerSelectedUnit(var_r5) != 0)) {
+    if ((IsPlayerActive(var_r5) != 0) && (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r5) == 0) && (GetPlayerSelectedUnit(var_r5) != 0)) {
         return 1;
     }
     var_r5 += 1;
@@ -562,11 +562,11 @@ PlanMoveDestination(cand[0],cand[1]);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_021967fc(void) {
-s32 func_ov000_021a9934(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
+s32 CanKindAttack(u32,u32); void func_ov000_02179be0(void);void func_ov000_02179d3c(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **data_ov000_021df580;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(data_ov000_021df580,u16 *,10)<<29)>>29)&4))return;
-if(!func_ov000_021a9934(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
+if(!CanKindAttack(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
 func_ov000_02179be0();func_ov000_02179d3c();
 base=*gCurrentMap;
 y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {

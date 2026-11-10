@@ -355,8 +355,8 @@ s8 func_020c0b9c(void) {extern void *data_02163eec;return M2C_FIELD(data_02163ee
 
 void func_020c0bb0(void *arg0) {
 M2C_UNK func_0209c764(u16,u16,u16,M2C_UNK,s32);
-M2C_UNK func_020d694c(s32,s32,s32);
-s32 func_ov000_0216cd00(s32);
+M2C_UNK DrawDecimalNumber(s32,s32,s32);
+s32 GetUnitHealthBarCount(s32);
 extern void *gCurrentMap;
 s32 i=0,x,y,k;s32 j;void *p,*q;u16 t;u8 v;
 if((s32)M2C_FIELD(arg0,u8 *,0x4d)<=0)return;
@@ -368,7 +368,7 @@ x=M2C_FIELD(arg0,s16 *,0x54);y=M2C_FIELD(arg0,s16 *,0x56)+((u32)j<<3);
 func_0209c764(t,(u16)(x+2),(u16)y,0,11);
 t=M2C_FIELD(p,u16 *,0x24);
 if((t!=0)&&(t!=1)){}else{q=*(void **)gCurrentMap;v=M2C_FIELD(M2C_FIELD(q,s32 *,0x52d0)+t,u8 *,12);
-if(v){k=func_ov000_0216cd00((s32)q+0x59a4+v*14);if(k!=10)func_020d694c(x+9,y+7,k);}
+if(v){k=GetUnitHealthBarCount((s32)q+0x59a4+v*14);if(k!=10)DrawDecimalNumber(x+9,y+7,k);}
 }}
 i++;j+=2;
 }while(i<(s32)M2C_FIELD(arg0,u8 *,0x4d));

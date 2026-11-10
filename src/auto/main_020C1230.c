@@ -53,10 +53,10 @@ void func_020c1364(void) {
     M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
     extern s32 data_0211e18c;
     extern s32 data_02163f98;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     
     func_01ff9e78(
-        (char *)&data_0211e18c + 0x40 + ((u32)(data_027e15bc & 0x3C) >> 1),
+        (char *)&data_0211e18c + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
         (data_02163f98 << 5) + 0x1C,
         2
     );
@@ -137,10 +137,10 @@ for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+data_0
 void func_020c183c(void *arg0) {
     M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
     extern s32 data_0211e18c;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     
     func_01ff9e78(
-        (char *)&data_0211e18c + 0x40 + ((u32)(data_027e15bc & 0x3C) >> 1),
+        (char *)&data_0211e18c + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
         (M2C_FIELD(arg0, s16 *, 0x5A) << 5) + 0x1C,
         2
     );

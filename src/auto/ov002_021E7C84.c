@@ -11,124 +11,127 @@ void func_ov002_021e7c84(u8 *p) { extern s32 gPlayerSettings; p[0]=0;p[1]=0;((u8
 
 #pragma push
 #pragma opt_common_subs off
-void func_ov002_021e7d34(void *arg0, s32 arg1, u32 arg2, u32 arg3, u8 arg4) {
-    extern u8 data_ov002_021f2e54[];
-    extern u8 data_ov002_021f2e44[];
-    extern u8 data_ov002_021f2e48[];
-    extern u8 data_ov002_021f1171[];
-    extern u8 data_ov002_021f2e50[];
-    extern u8 data_ov002_021f2e4c[];
-    extern u8 data_ov002_021f2e70[];
+/* Prepares side `side` of the battle panel `obj`: derives the animation action from
+ * the two combatants' kinds and the battle setting, stores it, then picks the next
+ * animation state (with random variants for some settings) into the entry. */
+void SetBattleUnitAnimation(void *arg0, s32 side, u32 selfKind, u32 otherKind, u8 hasFlag) {
+    extern u8 gUnitActionTable[];
+    extern u8 gAnimRandomA[];
+    extern u8 gAnimRandomB[];
+    extern u8 gActionInfoTable[];
+    extern u8 gAnimVariantC[];
+    extern u8 gAnimVariantD[];
+    extern u8 gAnimStateTable[];
     extern void **gCurrentMap;
     s32 RandomIntRange(s32, s32);
     u8 *p;
-    s32 i19;
-    u8 *ptr19;
-    u8 *ptr10;
-    unsigned long r5;
-    u8 r1;
-    u8 r8;
-    u8 r7;
-    u8 r6;
-    u8 lr;
-    u8 flag;
-    u32 t;
-    s32 rr;
-    u8 v;
+    s32 countdown;
+    u8 *pCountdown;
+    u8 *pState;         /* &obj[side].state (stride 24) */
+    unsigned long off;
+    u8 action;
+    u8 attr18;
+    u8 attr13;
+    u8 attr14;
+    u8 state;
+    u8 battleSetting;
+    u32 stateMinusOne;
+    s32 rand;
+    u8 variant;
     p = (u8 *)arg0;
-    r5 = arg1 * 24;
-    ptr19 = p + 0x19;
-    i19 = ptr19[r5];
-    i19 = i19 - 1;
-    ptr19[r5] = (u8)i19;
-    r1 = data_ov002_021f2e54[arg2];
-    r8 = M2C_FIELD(p+r5,u8 *,0x18);
-    r7 = M2C_FIELD(p+r5,u8 *,0x13);
-    r6 = M2C_FIELD(p+r5,u8 *,0x14);
-    ptr10 = p+0x10;
-    lr = ptr10[r5];
-    switch (arg2) {
+    off = side * 24;
+    pCountdown = p + 0x19;
+    countdown = pCountdown[off];
+    countdown = countdown - 1;
+    pCountdown[off] = (u8)countdown;
+    action = gUnitActionTable[selfKind];
+    attr18 = M2C_FIELD(p+off,u8 *,0x18);
+    attr13 = M2C_FIELD(p+off,u8 *,0x13);
+    attr14 = M2C_FIELD(p+off,u8 *,0x14);
+    pState = p+0x10;
+    state = pState[off];
+    switch (selfKind) {
         case 1:
-            if (lr == 0x07) r1 = 0x01;
+            if (state == 0x07) action = 0x01;
             break;
         case 2:
-            if (r7 == 0) {
-                if(!r8) { if(lr==7) r1=3; else r1=2; }
-                else { if(lr==7)r1=5;else r1=4; }
-            } else { if(lr==7)r1=1;else r1=0; }
+            if (attr13 == 0) {
+                if(!attr18) { if(state==7) action=3; else action=2; }
+                else { if(state==7)action=5;else action=4; }
+            } else { if(state==7)action=1;else action=0; }
             break;
         case 9:
-            if (r7 == 0) {
-                if (r8 == 0) r1 = 0x09; else r1 = 0x0A;
+            if (attr13 == 0) {
+                if (attr18 == 0) action = 0x09; else action = 0x0A;
             } else {
-                r1 = 0x0B;
+                action = 0x0B;
             }
             break;
         case 15:
-            if (r6 == 0) r1 = 0x17;
+            if (attr14 == 0) action = 0x17;
             break;
         case 17:
-            if (r8 == 0) r1 = 0x18; else r1 = 0x19;
+            if (attr18 == 0) action = 0x18; else action = 0x19;
             break;
         case 20:
-            if (arg3 == 0x16) r1 = 0x1D;
+            if (otherKind == 0x16) action = 0x1D;
             break;
         case 21:
-            if (r8 == 0) {
-                if (arg3 == 0x16) r1 = 0x1F; else r1 = 0x1E;
+            if (attr18 == 0) {
+                if (otherKind == 0x16) action = 0x1F; else action = 0x1E;
             } else {
-                if (arg3 == 0x16) r1 = 0x21; else r1 = 0x20;
+                if (otherKind == 0x16) action = 0x21; else action = 0x20;
             }
             break;
         case 22:
-            if ((u8)arg4 != 0) r1 = 0x26;
+            if ((u8)hasFlag != 0) action = 0x26;
             break;
         case 23:
-            if (!r7) {
-                if (arg3 == 0x16) r1 = 0x23; else r1 = 0x22;
+            if (!attr13) {
+                if (otherKind == 0x16) action = 0x23; else action = 0x22;
             } else {
-                r1 = 0x24;
+                action = 0x24;
             }
             break;
         case 24:
-            if (arg3 == 0x16) r1 = 0x28;
+            if (otherKind == 0x16) action = 0x28;
             break;
-        case 25: if(arg3 == 0x16) r1=0x2a;break;
+        case 25: if(otherKind == 0x16) action=0x2a;break;
         default:
             break;
     }
-    M2C_FIELD(p+r5,u8 *,0x0c)=r1;
-    lr=ptr10[r5];
-    flag = ((u8 *)*gCurrentMap)[0x5157];
-    if (flag == 0x04 && lr == 0x04) {
-        rr = RandomIntRange(0, 2);
-        ptr10[r5] = data_ov002_021f2e44[rr];
+    M2C_FIELD(p+off,u8 *,0x0c)=action;
+    state=pState[off];
+    battleSetting = ((u8 *)*gCurrentMap)[0x5157];
+    if (battleSetting == 0x04 && state == 0x04) {
+        rand = RandomIntRange(0, 2);
+        pState[off] = gAnimRandomA[rand];
         return;
     }
-    if (flag == 0x08) {
-        t = (s32)lr - 1;
-        if (t <= 1) {
-            rr = RandomIntRange(0, 2);
-            ptr10[r5] = data_ov002_021f2e48[rr];
+    if (battleSetting == 0x08) {
+        stateMinusOne = (s32)state - 1;
+        if (stateMinusOne <= 1) {
+            rand = RandomIntRange(0, 2);
+            pState[off] = gAnimRandomB[rand];
             return;
         }
     }
-    if (lr == 0x13) {
-        if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
-            v = p[0x03];
-            ptr10[r5] = data_ov002_021f2e50[v];
+    if (state == 0x13) {
+        if (gActionInfoTable[action * 0x40] != 0x03) {
+            variant = p[0x03];
+            pState[off] = gAnimVariantC[variant];
             return;
         }
     }
-    if (lr == 0x15) {
-        if (data_ov002_021f1171[r1 * 0x40] != 0x03) {
-            v = p[0x03];
-            ptr10[r5] = data_ov002_021f2e4c[v];
+    if (state == 0x15) {
+        if (gActionInfoTable[action * 0x40] != 0x03) {
+            variant = p[0x03];
+            pState[off] = gAnimVariantD[variant];
             return;
         }
     }
-    v = p[0x03];
-    ptr10[r5] = data_ov002_021f2e70[v + (u32)lr * 4];
+    variant = p[0x03];
+    pState[off] = gAnimStateTable[variant + (u32)state * 4];
 }
 #pragma pop
 s32 func_ov002_021e7fec(s32 arg0,s32 arg1) { switch(M2C_FIELD(arg0+arg1*24,u8 *,12)) {case 0x25: case 0x26:return 1; default:return 0;} }
@@ -336,8 +339,8 @@ default:p[3]=0;break;
 }
 func_ov002_021e80c8(p,0,a,c);
 func_ov002_021e80c8(p,1,b,d);
-func_ov002_021e7d34(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,func_020a7d38(a));
-func_ov002_021e7d34(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,func_020a7d38(b));
+SetBattleUnitAnimation(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,func_020a7d38(a));
+SetBattleUnitAnimation(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,func_020a7d38(b));
 }
 
 void func_ov002_021e85b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {

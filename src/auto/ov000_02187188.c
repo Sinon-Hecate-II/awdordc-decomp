@@ -3,7 +3,7 @@
 extern void (*data_ov000_021df648)(void);
 void func_ov000_02188338(void);
 extern void **gCurrentMap;
-extern u32 data_027e15bc;
+extern u32 gFrameCounter;
 
 s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
     extern void **gCurrentMap;
@@ -53,7 +53,7 @@ s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
 s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     s32 func_ov000_02187188(s32, s32, u8 *);
     extern void **data_027e0058;
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     s32 sp2C;
     s32 sp28;
     void *sp24;
@@ -147,7 +147,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                     }
                     if ((var_r0 >= 1) && (var_r0 <= 1)) {
                         temp_r0_3 = func_ov000_02187188((s32) var_r5, (s32) var_r7, (u8 *)(sp18 + sp1C));
-                        if ((temp_r0_3 >= var_r4) && ((temp_r0_3 != var_r4) || !(data_027e15bc & 1))) {
+                        if ((temp_r0_3 >= var_r4) && ((temp_r0_3 != var_r4) || !(gFrameCounter & 1))) {
                             var_r4 = temp_r0_3;
                             M2C_FIELD(arg2, s16 *, 0) = (s16) var_r5;
                             M2C_FIELD(arg2, s16 *, 2) = (s16) sp20;
@@ -212,7 +212,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                         if ((var_r4_2 == M2C_FIELD(arg2, s16 *, 0)) && (var_r7_2 == M2C_FIELD(arg2, s16 *, 2))) {
                         } else {
                             temp_r0_6 = func_ov000_02187188((s32) var_r4_2, (s32) var_r7_2, (u8 *)(sp24 + sp28));
-                            if ((temp_r0_6 >= var_r6) && ((temp_r0_6 != var_r6) || !(data_027e15bc & 1))) {
+                            if ((temp_r0_6 >= var_r6) && ((temp_r0_6 != var_r6) || !(gFrameCounter & 1))) {
                                 var_r6 = temp_r0_6;
                                 M2C_FIELD(sp4, s16 *, 0) = (s16) var_r4_2;
                                 M2C_FIELD(sp4, s16 *, 2) = (s16) sp2C;
@@ -269,7 +269,7 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
 #pragma peephole reset
 void func_ov000_02187820(void) {
     extern void **gCurrentMap;
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     s32 func_ov000_021a9d8c(s16, s16);
     s32 CountAdjacentAccessibleCells(s32, s32);
     void func_01ffc328(void *);
@@ -314,7 +314,7 @@ void func_ov000_02187820(void) {
             if (bestVal == value && bestSub < extra) {
                 continue;
             }
-            if (bestVal == value && bestSub == extra && (data_027e15bc & 1) != 0) {
+            if (bestVal == value && bestSub == extra && (gFrameCounter & 1) != 0) {
                 continue;
             }
             bestX = x;

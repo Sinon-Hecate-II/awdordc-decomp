@@ -164,17 +164,17 @@ void func_020b0bdc(void *arg0) {
 M2C_UNK func_01ff9e78(void *,M2C_UNK,M2C_UNK);
 M2C_UNK func_0207c3dc(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020f3d60; extern M2C_UNK data_020f4160; extern M2C_UNK data_020f41a0;
-extern void *gCur3DSpriteEngine; extern u32 data_027e15bc;
+extern void *gCur3DSpriteEngine; extern u32 gFrameCounter;
 s16 n=M2C_FIELD(arg0,s16 *,0x6e);
 if(n<8){
 func_0207c3dc((char *)&data_020f3d60+(n<<7),M2C_FIELD(gCur3DSpriteEngine,s32 *,12)+0x2480,128,0);
 M2C_FIELD(arg0,s16 *,0x6e)++;
 }
 if(M2C_FIELD(arg0,s16 *,0x6c)==0){
-func_01ff9e78((char *)&data_020f41a0+((data_027e15bc>>2)%15)*2+2,2,30);
+func_01ff9e78((char *)&data_020f41a0+((gFrameCounter>>2)%15)*2+2,2,30);
 return;
 }
-func_01ff9e78((char *)&data_020f4160+((data_027e15bc>>2)%15)*2+2,2,30);
+func_01ff9e78((char *)&data_020f4160+((gFrameCounter>>2)%15)*2+2,2,30);
 }
 
 #pragma opt_strength_reduction reset

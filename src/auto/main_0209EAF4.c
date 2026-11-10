@@ -44,7 +44,7 @@ off=M2C_FIELD(base+M2C_FIELD(p,s32 *,0x3c)*2,u16 *,0x3758);
 tile=(u8 *)(M2C_FIELD(p,s32 *,0x38)+base);
 v=M2C_FIELD(off+tile,u8 *,0x539c)&127;
 }
-if(v==0&&q==0) {if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(31,1);}
+if(v==0&&q==0) {if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))func_02091c20(31,1);}
 }
 
 void func_0209ecf0(s32 arg0, s32 arg1) {

@@ -346,15 +346,15 @@ void func_02023ca0(void *arg0, void *arg1) {
  M2C_UNK func_02022d08(void *,void *);
  M2C_UNK func_02022f40(void *,void *);
  
- extern void (*data_021372d0[])(void *);
+ extern void (*gFree[])(void *);
  u8 *p; u32 n; s32 len; u8 state,cmd;
  state=M2C_FIELD(arg0,u8 *,0x455);
- if(state==9){data_021372d0[0](arg1);return;}
+ if(state==9){gFree[0](arg1);return;}
  n=(M2C_FIELD(arg1,u8 *,3)<<8)+M2C_FIELD(arg1,u8 *,4)+5;
  cmd=M2C_FIELD(arg1,u8 *,0);
  if(((u8)(state+249)<=1 && cmd!=21)||(cmd==21 && n>7)){
  n=func_020237d4(arg0,arg1); state=M2C_FIELD(arg0,u8 *,0x455);
- if(state==9){data_021372d0[0](arg1);return;}
+ if(state==9){gFree[0](arg1);return;}
  }
  p=(u8 *)arg1+5;n-=5;
  switch(cmd){
@@ -389,7 +389,7 @@ void func_02023ca0(void *arg0, void *arg1) {
  M2C_FIELD(arg0,u8 *,0x456)=1;return;
  default:M2C_FIELD(arg0,u8 *,0x455)=9;break;
  }
- data_021372d0[0](arg1);
+ gFree[0](arg1);
 }
 
 s32 func_02023f20(void *arg0) {
@@ -397,8 +397,8 @@ s32 func_02023f20(void *arg0) {
     M2C_UNK func_0201d67c(u32, M2C_UNK);
     void func_02022e78(u8 *, u8 *);
     void func_02023ca0(void *, void *);
-    extern void *(*data_021372a4)(s32);
-    extern void (*data_021372d0[])(void *);
+    extern void *(*gAlloc)(s32);
+    extern void (*gFree[])(void *);
     void *channel;
     u8 *temp;
     u8 *buf;
@@ -419,7 +419,7 @@ s32 func_02023f20(void *arg0) {
         if (M2C_FIELD(channel, u8 *, 0x454) != 0 && M2C_FIELD(channel, u8 *, 0x455) == 0) {
             size = temp[1];
             func_0201d67c(2, arg0);
-            buf = (u8 *)data_021372a4(size);
+            buf = (u8 *)gAlloc(size);
             if (buf == 0) {
                 M2C_FIELD(channel, u8 *, 0x455) = 9;
                 return 9;
@@ -430,7 +430,7 @@ s32 func_02023f20(void *arg0) {
                 func_02022e78(channel, buf + 1);
             }
             func_02023c74(channel, buf, size);
-            data_021372d0[0](buf);
+            gFree[0](buf);
         } else {
             M2C_FIELD(channel, u8 *, 0x455) = 9;
         }
@@ -440,13 +440,13 @@ s32 func_02023f20(void *arg0) {
             M2C_FIELD(channel, u8 *, 0x455) = 9;
             return 9;
         }
-        buf = (u8 *)data_021372a4(size);
+        buf = (u8 *)gAlloc(size);
         if (buf == 0) {
             M2C_FIELD(channel, u8 *, 0x455) = 9;
             return 9;
         }
         if (func_02023c08((s32)buf, size, arg0) != 0) {
-            data_021372d0[0](buf);
+            gFree[0](buf);
             M2C_FIELD(channel, u8 *, 0x455) = 9;
             return 9;
         }
@@ -455,7 +455,7 @@ s32 func_02023f20(void *arg0) {
     return M2C_FIELD(channel, u8 *, 0x455);
 }
 
-void func_020240c0(u8 *dst,s32 len){
+void GenerateRandomBytes(u8 *dst,s32 len){
 M2C_UNK func_02025fc0(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK func_02026014();void func_02026134(void*,void*);void func_020241f0(M2C_UNK*,s32);
 extern s8 data_02138cc0;extern u64 data_021372f8[3];extern M2C_UNK data_02138e38;extern u8 data_02138e4b;
 u8 ctx[92],hash[20];u32 seed; s32 out,index,state,j;u32 carry,total;u8 *p,*q;

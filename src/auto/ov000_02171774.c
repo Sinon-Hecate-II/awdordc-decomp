@@ -19,7 +19,7 @@ void func_ov000_02171774(void *p) {
  void *func_020e3218(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
  void func_0200bc5c(void*);void func_020814e4(void*);void func_02081590(void*,void*);void func_020815fc(void*,s32,s32);void func_02081528(void);
  s32 func_01ff9c34(u8,s32);void func_01ff85b8(void*,u16,s32);
- s32 func_020d1980(s32);s32 func_020d1938(s32);void func_02080a14(void*,s32,s32,void*);
+ s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void func_02007ef4(void*,void*,s32);void func_01ff9e44(void*,s32,s32);void func_020ae528(void*);
  void func_020a9a30(s32,s32,s32,void*);void func_02080cfc(void*,void*);void func_0208116c(void*,s32,s32);void func_020c0fac(void*);
  void *old=gCur3DSpriteEngine;
@@ -34,7 +34,7 @@ void func_ov000_02171774(void *p) {
  {u16 v=func_01ff9c34((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
  func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
  i=1;k=140;do{
-  if(func_020d1980(i)){
+  if(IsPlayerPresent(i)){
    a=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67cb);
    b=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67c1);
    idx=i-1;t=idx<<3;
@@ -43,7 +43,7 @@ void func_ov000_02171774(void *p) {
    func_02007ef4(func_ov000_0216ce10(a),dst,0x80);
    pal=(idx+0x1b)<<5;
    func_01ff9e44(func_ov000_0216ce84(b),pal,32);
-   if(func_020d1938(i))M2C_FIELD((u8*)object+i,u8*,0x34)=1;
+   if(IsPlayerActive(i))M2C_FIELD((u8*)object+i,u8*,0x34)=1;
    else{M2C_FIELD((u8*)object+i,u8*,0x34)=0;func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+(pal&~1));}
   }
  i++;k+=140;}while(i<5);
@@ -63,7 +63,7 @@ void func_ov000_02171774(void *p) {
 
 #pragma opt_strength_reduction off
 void func_ov000_02171a68(void *arg0) {
-s32 func_020d1980(s32); s32 func_020d19e8(s32); s32 func_ov000_02171768(s32);
+s32 IsPlayerPresent(s32); s32 IsPlayerCpu(s32); s32 func_ov000_02171768(s32);
 void func_020a947c(void *,u32); void func_020a92bc(void *,s32); void func_020a94fc(void *);
 void AddSprite(u16,u8,u16,void *,s32);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine; extern void **gCurrentMap;
@@ -77,11 +77,11 @@ M2C_FIELD(sp,void **,0)=data_02129870;sp[4]=0;
 M2C_FIELD(sp,u16 *,18)=0;sp[20]=8;sp[21]=8;sp[22]=1;one=1;sp[23]=8;sp[24]=8;
 sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[40]&=~224;sp[41]=0;
 func_020a947c(sp,3);M2C_FIELD(sp,u16 *,18)=0x36c;sp[33]=15;sp[32]=(sp[32]&~224)|32;
-for(i=one,k=0x8c;i<5;k+=0x8c,i++){ if(func_020d1980(i)){
+for(i=one,k=0x8c;i<5;k+=0x8c,i++){ if(IsPlayerPresent(i)){
 idx=i-1;unit=M2C_FIELD((u8*)*gCurrentMap+k+0x6000,u8 *,0x7ca)-1;
 AddSprite((u16)(idx*64+5),23,(u16)((0x3ff&((idx*4+0x35c)>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)((idx+11)<<12)),data_027e0064,11);
 pal=M2C_FIELD((u8*)arg0+i,u8 *,0x34)?10:2;
-if(!func_020d19e8(i)) tile=idx*16+0x3a0; else tile=0x3e0;
+if(!IsPlayerCpu(i)) tile=idx*16+0x3a0; else tile=0x3e0;
 AddSprite((u16)(idx*64+4),23,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
 AddSprite((u16)(idx*64),40,(u16)((0x3ff&((unit*16+0x3f0)>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
 }}

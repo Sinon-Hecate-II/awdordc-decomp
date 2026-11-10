@@ -51,13 +51,13 @@ u8 func_0208ff2c(void) {
 
 u8 func_0208ff4c(s32 arg0) {
     extern M2C_UNK data_02157830;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     u8 var_r0;
 
     if (func_0208ff2c() == 0) {
         return 0;
     }
-    if ((u32) data_027e15bc <= (u32) (M2C_FIELD(&data_02157830, s32 *, 0x1C) + arg0)) {
+    if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&data_02157830, s32 *, 0x1C) + arg0)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

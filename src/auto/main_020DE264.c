@@ -24,7 +24,10 @@ static inline s32 GetSetupCode(void *p) {
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
+/* Sets up a scene/screen object: switches in the main sprite engine, loads the
+ * palette and background chosen by GetSetupCode, sets the setup sprite's frame,
+ * then registers the scene's per-variant update callback with overlay 10. */
+M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void func_01ff9ce8(u8);
     void func_0200bc5c(void *);
     void *func_020e3218(void *);
@@ -49,17 +52,17 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_020de5b0(M2C_UNK);
     void func_020de610(void);
 
-    void *old = gCur3DSpriteEngine;
-    s32 code;
-    s32 code2;
-    void *p;
-    u8 low;
-    u32 val;
-    s32 t;
-    s32 v3c;
-    s32 v34;
-    s32 v38;
-    s32 tmp;
+    void *savedEngine = gCur3DSpriteEngine;
+    s32 setupCode;
+    s32 setupCode2;
+    void *ptr;
+    u8 unusedLow;
+    u32 unusedVal;
+    s32 animValue;
+    s32 variant;
+    s32 unusedV34;
+    s32 unusedV38;
+    s32 updateFn;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_01ff9ce8(1);
@@ -67,8 +70,8 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     func_0200bc5c(&data_0212d428);
     func_020814e4(func_020e3218(&data_0212d430));
 
-    code=GetSetupCode((void*)arg0);
-    switch(code) {
+    setupCode=GetSetupCode((void*)setup);
+    switch(setupCode) {
     case 4:func_02081590(func_020e3218(&data_0212d440),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
     case 2:func_02081590(func_020e3218(&data_0212d450),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));break;
     }
@@ -79,40 +82,40 @@ M2C_UNK func_020de264(M2C_UNK arg0, M2C_UNK arg1) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_0208e7ec(0x3c00, 0x7);
 
-    gCur3DSpriteEngine = old;
+    gCur3DSpriteEngine = savedEngine;
 
-    M2C_FIELD((void *)arg0, u16 *, 0x48) |= 0x20;
+    M2C_FIELD((void *)setup, u16 *, 0x48) |= 0x20;
 
-    p = M2C_FIELD((void *)arg0, void **, 0x54);
-    SetupSetFrame(p,(u16)(((SetupSprite*)p)->baseFrame+2),0);
+    ptr = M2C_FIELD((void *)setup, void **, 0x54);
+    SetupSetFrame(ptr,(u16)(((SetupSprite*)ptr)->baseFrame+2),0);
 
-    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x58));
-    func_02088da8(M2C_FIELD((void *)arg0, void **, 0x60));
-    func_0208b758(M2C_FIELD((void *)arg0, void **, 0x64), 0x44000011U);
-    func_02088f1c(M2C_FIELD((void *)arg0, void **, 0x64));
+    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
+    func_02088da8(M2C_FIELD((void *)setup, void **, 0x60));
+    func_0208b758(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
+    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
 
-    if (GetSpriteAnimValue(M2C_FIELD(arg0,void **,0x68)) != 0) {
-        t = GetSpriteAnimValue(M2C_FIELD(arg0,void **,0x68));p=M2C_FIELD(arg0,void **,0x68);
-        M2C_FIELD(p, u16 *, 0xe) = (u16)t;
-        M2C_FIELD(p, u16 *, 0x10) = 0;
-        M2C_FIELD(p, u16 *, 0xc) = 0xc;
-        M2C_FIELD(p, u16 *, 0x2) = M2C_FIELD(p, u16 *, 0x4);
+    if (GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68)) != 0) {
+        animValue = GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68));ptr=M2C_FIELD(setup,void **,0x68);
+        M2C_FIELD(ptr, u16 *, 0xe) = (u16)animValue;
+        M2C_FIELD(ptr, u16 *, 0x10) = 0;
+        M2C_FIELD(ptr, u16 *, 0xc) = 0xc;
+        M2C_FIELD(ptr, u16 *, 0x2) = M2C_FIELD(ptr, u16 *, 0x4);
     }
-    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x100;
-    M2C_FIELD((void *)arg0, u16 *, 0x48) &= ~0x200;
+    M2C_FIELD((void *)setup, u16 *, 0x48) &= ~0x100;
+    M2C_FIELD((void *)setup, u16 *, 0x48) &= ~0x200;
 
-    tmp=0;
-    switch(M2C_FIELD(arg0,s32 *,0x3c)) {
-    case 0: M2C_FIELD(arg0,u16 *,0x4a)=10;tmp=(s32)func_020de50c;break;
-    case 1: M2C_FIELD(arg0,u16 *,0x4a)=10;tmp=(s32)func_020de5b0;break;
+    updateFn=0;
+    switch(M2C_FIELD(setup,s32 *,0x3c)) {
+    case 0: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)func_020de50c;break;
+    case 1: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)func_020de5b0;break;
     }
 
-    M2C_FIELD((void *)arg0, u8 *, 0x41) = 0;
-    M2C_FIELD((void *)arg0, u16 *, 0x4c) = 0x708;
+    M2C_FIELD((void *)setup, u8 *, 0x41) = 0;
+    M2C_FIELD((void *)setup, u16 *, 0x4c) = 0x708;
 
-    code2=GetSetupCode((void*)arg0);
-    v3c = M2C_FIELD((void *)arg0, s32 *, 0x3c);
-    func_ov010_02228d48((s32)arg1, code2, (s32)func_020de610, (s32)arg0, tmp, (s32)arg0, v3c);
+    setupCode2=GetSetupCode((void*)setup);
+    variant = M2C_FIELD((void *)setup, s32 *, 0x3c);
+    func_ov010_02228d48((s32)mode, setupCode2, (s32)func_020de610, (s32)setup, updateFn, (s32)setup, variant);
 }
 
 s32 func_020de50c(s32 arg0, void *arg1) {
@@ -325,13 +328,13 @@ void func_020deb84(M2C_UNK arg0) {
 }
 
 void func_020deb94(M2C_UNK arg0) {
-    M2C_UNK func_020de264(M2C_UNK, M2C_UNK);
-    func_020de264(arg0, 0);
+    M2C_UNK SetupScene(M2C_UNK, M2C_UNK);
+    SetupScene(arg0, 0);
 }
 
 void func_020deba4(M2C_UNK arg0) {
-    M2C_UNK func_020de264(M2C_UNK, M2C_UNK);
-    func_020de264(arg0, 1);
+    M2C_UNK SetupScene(M2C_UNK, M2C_UNK);
+    SetupScene(arg0, 1);
 }
 
 void func_020debb4(M2C_UNK arg0) {

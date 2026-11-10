@@ -81,7 +81,7 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0204084c();
     void func_02040878();
     void func_02040dc8();
-    void func_02040a28();
+    void TryConnectToPeer();
     s32 func_0203ecb0();
     void func_0203ea4c();
     void func_02043008();
@@ -211,7 +211,7 @@ status2_done:
                         if (func_0204084c() != 0) goto cleanup;
                         SetConnectionState(4);
                         ctx = GetConnection();
-                        func_02040a28(0, 0, M2C_FIELD(ctx, s32 *, 0xf4));
+                        TryConnectToPeer(0, 0, M2C_FIELD(ctx, s32 *, 0xf4));
                         if (func_0204084c() != 0) goto cleanup;
                         goto cleanup;
                     }
@@ -244,7 +244,7 @@ void func_020436d8(void) {
 
 #pragma opt_strength_reduction off
 s32 func_020436dc(s32 sort) {
- void *GetConnection(void);s32 func_02061794(s32);s32 func_02061784(s32,s32);s32 func_02060b68(void *,void *,s32);s32 func_02060ac4(void *,void *,s32);s32 func_020617a4(s32,s32,void *,s32);s32 func_02037eec(s32);void func_020616d8(s32,void *);
+ void *GetConnection(void);s32 func_02061794(s32);s32 func_02061784(s32,s32);s32 func_02060b68(void *,void *,s32);s32 gpiPlayerSetInt(void *,void *,s32);s32 func_020617a4(s32,s32,void *,s32);s32 func_02037eec(s32);void func_020616d8(s32,void *);
  extern char data_020fc958[],data_020fc984[];
  s32 removed=0; s32 found,weight;void *ctx; s32 key; s32 i=0; s32 j;void *item;
  for(;i<func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4));i++) {
@@ -260,9 +260,9 @@ s32 func_020436dc(s32 sort) {
  if(M2C_FIELD(GetConnection(),s32 *,0x474)) {
  ctx=GetConnection();
  weight=M2C_FIELD(ctx,s32 (**)(s32,s32),0x474)(i,M2C_FIELD(GetConnection(),s32 *,0x478));
- if(weight>0) {if(weight>0x7fffff)weight=0x7fffff;func_02060ac4(item,data_020fc984,func_02037eec(256)|(weight<<8));}
+ if(weight>0) {if(weight>0x7fffff)weight=0x7fffff;gpiPlayerSetInt(item,data_020fc984,func_02037eec(256)|(weight<<8));}
  else {func_020616d8(M2C_FIELD(GetConnection(),s32 *,0xe4),item);i--;removed=1;}
- }else func_02060ac4(item,data_020fc984,func_02037eec(128));
+ }else gpiPlayerSetInt(item,data_020fc984,func_02037eec(128));
  }
  if(sort && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))!=0)func_020617a4(M2C_FIELD(GetConnection(),s32 *,0xe4),0,data_020fc984,0);
  if(removed && func_02061794(M2C_FIELD(GetConnection(),s32 *,0xe4))==0)return 0;
@@ -273,7 +273,7 @@ s32 func_020438b4(void) {
     s32 func_02061794(s32);
     s32 func_02061784(s32, s32);
     s32 func_02060b68(void *, void *, s32);
-    s32 func_02060ac4(void *, void *, s32);
+    s32 gpiPlayerSetInt(void *, void *, s32);
     s32 func_020617a4(s32, s32, void *, s32);
     s32 func_02037eec(s32);
     s32 func_020720f0(s32, s32);
@@ -309,7 +309,7 @@ s32 func_020438b4(void) {
         i++;
     }
     if (best < 0x7FFFFFFF) best++;
-    func_02060ac4((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), data_020fc984, best);
+    gpiPlayerSetInt((void *)func_02061784(*(s32 *)((u8 *)GetConnection() + 0xE4), i), data_020fc984, best);
     return func_020617a4(*(s32 *)((u8 *)GetConnection() + 0xE4), 0, data_020fc984, 0);
 }
 

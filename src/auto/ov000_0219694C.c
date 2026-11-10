@@ -103,7 +103,7 @@ extern u16 gPlayerUnitIdBase[];
 extern KindScan96 data_ov000_021b5bfc[];
 extern u8 *data_ov000_021df580;
 s32 func_ov000_02178e84(s32,s32);
-void func_01ffb3d0(s32);
+void FillMapLayer(s32);
 s32 func_ov000_021a98e4(u32);
 s32 func_ov000_021a97d0(s32,s32);
 s32 func_020a76d4(void *);
@@ -113,7 +113,7 @@ u8 *m,*u; MapScan96 *bounds; s32 bx,by,i,off,l,b,l2,b2,l3,x,y,t,r,d,z; u32 best,
 m=*gCurrentMap; u=M2C_FIELD(m,u8 **,0x52d0);
 if(!((UnitScan96 *)u)->status)return;
 if(!func_ov000_02178e84(u[1],u[2]))return;
-func_01ffb3d0(0);
+FillMapLayer(0);
 i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
 if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
 u=(u8 *)*gCurrentMap+0x59a4+off;

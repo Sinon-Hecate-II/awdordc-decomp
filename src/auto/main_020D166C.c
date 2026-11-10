@@ -88,8 +88,8 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
 }
 #pragma opt_strength_reduction reset
 s32 func_020d18e8(s32 *arg0) {
-    M2C_UNK func_020a7310(s32);
-    func_020a7310(*arg0);
+    M2C_UNK GetUnitOwner(s32);
+    GetUnitOwner(*arg0);
     return 0;
 }
 
@@ -99,20 +99,20 @@ void func_020d18fc(s32 a) {
     if ((u32)M2C_FIELD(p, u16 *, 0x20) < 0xffff) M2C_FIELD(p, u16 *, 0x20)++;
 }
 
-s32 func_020d1938(s32 a){extern void **gCurrentMap;u8 result;u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;if(!p[0x1e])return 0;if(M2C_FIELD(p,u16 *,0x1a)==0)result=1;else result=0;return result;}
+s32 IsPlayerActive(s32 a){extern void **gCurrentMap;u8 result;u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;if(!p[0x1e])return 0;if(M2C_FIELD(p,u16 *,0x1a)==0)result=1;else result=0;return result;}
 
-u8 func_020d1980(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]!=0;}
+u8 IsPlayerPresent(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]!=0;}
 
-s32 func_020d19b4(s32 a){extern void **gCurrentMap;return (u8)(((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==1);}
+s32 IsPlayerHuman(s32 a){extern void **gCurrentMap;return (u8)(((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==1);}
 
-u8 func_020d19e8(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==2;}
+u8 IsPlayerCpu(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==2;}
 
 s32 func_020d1a1c(s32 arg0) {
  s32 func_0208485c();
  extern M2C_UNK data_02168f08;
  if(M2C_FIELD(&data_02168f08,u8 *,4)==0)return 1;
- if(func_020d19b4(arg0))return 1;
- if(func_0208485c() && func_020d19e8(arg0))return 1;
+ if(IsPlayerHuman(arg0))return 1;
+ if(func_0208485c() && IsPlayerCpu(arg0))return 1;
  return 0;
 }
 
@@ -131,19 +131,19 @@ u8 func_020d1a74(void) {
 u8 func_020d1a90(void) {
  extern void **gCurrentMap;
  u16 n=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
- do { n++; if(n==5)n=1; } while(!func_020d1938(n));
+ do { n++; if(n==5)n=1; } while(!IsPlayerActive(n));
  return n<M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
 }
 
 s32 func_020d1afc(void) {
-    s32 func_020d1938(s32);
+    s32 IsPlayerActive(s32);
     s32 var_r5;
     s32 var_r6;
 
     var_r6 = 1;
     var_r5 = 0;
     do {
-        if ((func_020d1938(var_r6) != 0) && (func_020d19b4(var_r6) != 0)) {
+        if ((IsPlayerActive(var_r6) != 0) && (IsPlayerHuman(var_r6) != 0)) {
             var_r5 = 1;
         }
         var_r6 += 1;
@@ -152,13 +152,13 @@ s32 func_020d1afc(void) {
 }
 
 s32 func_020d1b40(void) {
-    s32 func_020d19b4(s32);
+    s32 IsPlayerHuman(s32);
     s32 func_020d3214(s32);
     s32 var_r4;
 
     var_r4 = 1;
 loop_1:
-    if ((func_020d19b4(var_r4) != 0) && (func_020d3214(var_r4) != 0)) {
+    if ((IsPlayerHuman(var_r4) != 0) && (func_020d3214(var_r4) != 0)) {
         return 1;
     }
     var_r4 += 1;
@@ -174,7 +174,7 @@ s32 active=func_020d1afc();s32 one=1;u8 *p;
 do {
 M2C_FIELD(*gCurrentMap,u16 *,0x52a4)++;
 if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==5){func_020bf85c();M2C_FIELD(*gCurrentMap,u16 *,0x52a4)=one;if(active)func_02091c20(one,one);}
-}while(!func_020d1938(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
+}while(!IsPlayerActive(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
 p=*gCurrentMap;M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,s32 *,0x682c)=0;
 }
 
@@ -185,11 +185,11 @@ void func_020d1c38(void) {
 
 void func_020d1c58(void){
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-void func_020cd8a8(void);void func_020cd754(s32);void func_020d0270(void);void func_020cea28(void);
+void SetupPlayerTeams(void);void func_020cd754(s32);void func_020d0270(void);void func_020cea28(void);
 M2C_FIELD(*gCurrentMap,u16 *,0x52a6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4)<<5;
 M2C_FIELD(*gCurrentMap,u16 *,0x52a8)=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)];
 M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-func_020cd8a8();func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));func_020d0270();func_020cea28();
+SetupPlayerTeams();func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));func_020d0270();func_020cea28();
 }
 
 void func_020d1ce0(void){
@@ -370,39 +370,42 @@ void func_020d2168(void) {
 #pragma opt_common_subs off
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
-void func_020d216c(void){
+/* Initializes the per-player state of players 1..4 for a battle: starting
+ * funds (from the match settings), flags, commander meter, selected unit and
+ * the per-unit-kind counters, then builds the derived per-player data. */
+void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK data_02168f08;
-void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void func_020a3184(s32,s32);void func_020d31f0(s32,u8);void func_020d327c(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
-s32 offset; s32 player;
-s32 i;player=1;offset=140;
+void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void SetPlayerSelectedUnit(s32,s32);void func_020d31f0(s32,u8);void func_020d327c(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
+s32 playerOffset; s32 player;
+s32 unitKind;player=1;playerOffset=140;
 do{
-M2C_FIELD((*gCurrentMap+offset),s32*,0x67a4)=M2C_FIELD(&data_02168f08,s32*,20);
-M2C_FIELD((*gCurrentMap+offset),s32*,0x67a8)=0;
-M2C_FIELD((*gCurrentMap+offset),s32*,0x67b0)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67bc)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67bd)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67c0)=0;
-M2C_FIELD((*gCurrentMap+offset),u16*,0x67be)=0;
-M2C_FIELD((*gCurrentMap+offset),u16*,0x67c4)=0;
-M2C_FIELD((*gCurrentMap+offset),u16*,0x67c6)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67c1)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67c2)=0;
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67c3)=0;
-M2C_FIELD((*gCurrentMap+offset),s32*,0x6818)=0;
-M2C_FIELD((*gCurrentMap+offset),s32*,0x681c)=0;
-M2C_FIELD((*gCurrentMap+offset),s32*,0x6820)=0;
-M2C_FIELD((*gCurrentMap+offset),s32*,0x6824)=0;
-M2C_FIELD((*gCurrentMap+0x67a4)+offset,u32*,0x6c)&=~255;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67a4)=M2C_FIELD(&data_02168f08,s32*,20);
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67a8)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x67b0)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67bc)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67bd)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67c0)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u16*,0x67be)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u16*,0x67c4)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u16*,0x67c6)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67c1)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67c2)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67c3)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6818)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x681c)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6820)=0;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6824)=0;
+M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~255;
 func_020a338c(player,0);func_020a3428(player,0);func_020a33f0(player,0);
-M2C_FIELD((*gCurrentMap+0x67a4)+offset,u32*,0x6c)&=~0x3c000;
-func_020a3550(player,0);func_020a3184(player,0);
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+offset),u8*,0x67cb)=0;
+M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~0x3c000;
+func_020a3550(player,0);SetPlayerSelectedUnit(player,0);
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67cb)=0;
 func_020d31f0(player,0);func_020d327c(player,0);
-M2C_FIELD((*gCurrentMap+offset),u8*,0x67d5)=0;
-i=0;do{M2C_FIELD((void *)(i+((s32)offset+(s32)*gCurrentMap)),u8*,0x67d7)=0;M2C_FIELD((void *)(i+((s32)offset+(s32)*gCurrentMap)),u8*,0x67f2)=0;i++;}while(i<27);
+M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67d5)=0;
+unitKind=0;do{M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67d7)=0;M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67f2)=0;unitKind++;}while(unitKind<27);
 func_020d2d60(player);
-M2C_FIELD((*gCurrentMap+offset),s32*,0x6828)=0;M2C_FIELD((*gCurrentMap+offset),s32*,0x682c)=0;
-player++;offset+=140;
+M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6828)=0;M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x682c)=0;
+player++;playerOffset+=140;
 }while(player<5);func_020d33c4();
 }
 #pragma pop

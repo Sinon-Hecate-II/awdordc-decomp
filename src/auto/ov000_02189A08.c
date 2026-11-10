@@ -16,7 +16,7 @@ void func_ov000_02189a08(void) {
     s32 func_020a33c4(s32);
     s32 func_020a7b3c(s32, s32, s32, s32, s32);
     void func_01ffada0(s32, s32, u8, s32, s32);
-    void func_01ffb554(void *);
+    void SelectMapLayer(void *);
     s32 func_ov000_021a8eb0(s32, s32, s32);
     s32 func_ov000_021a9084(s32);
     void PlanMoveDestination(s32, s32);
@@ -93,11 +93,11 @@ void func_ov000_02189a08(void) {
     }
 
     candScore = 0x7fff;
-    func_01ffb554((u8 *)*gCurrentMap + 0x2338);
+    SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
     bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
     bonus2 = func_020a7b3c(7, *(u8 *)((u8 *)data_ov000_021df580 + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
     func_01ffada0(bestX, bestY, 7, 0x6e, 0);
-    func_01ffb554((u8 *)*gCurrentMap + 0x1e30);
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 
     if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
         y = 0;
@@ -259,8 +259,8 @@ s32 func_ov000_0218a140(u8 arg0) {
 }
 
 s32 func_ov000_0218a230(void) {
-    s32 func_020d1938(s32);
-    s32 func_020d273c(u16, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
     s32 func_ov000_0218a080(u8);
     extern void **gCurrentMap;
     s32 count = 0;
@@ -268,7 +268,7 @@ s32 func_ov000_0218a230(void) {
 
     i = 1;
     do {
-        if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && func_020d1938(i) != 0) {
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
             count += func_ov000_0218a080(i);
         }
         i += 1;
@@ -277,8 +277,8 @@ s32 func_ov000_0218a230(void) {
 }
 
 s32 func_ov000_0218a294(void) {
-    s32 func_020d1938(s32);
-    s32 func_020d273c(u16, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
     s32 func_ov000_0218a140(u8);
     extern void **gCurrentMap;
     s32 count = 0;
@@ -286,7 +286,7 @@ s32 func_ov000_0218a294(void) {
 
     i = 1;
     do {
-        if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && func_020d1938(i) != 0) {
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
             count += func_ov000_0218a140(i);
         }
         i += 1;
@@ -295,11 +295,11 @@ s32 func_ov000_0218a294(void) {
 }
 
 s32 func_ov000_0218a2f8(void){
-s32 func_020d1938(s32);s32 func_020d273c(u16,s32);
+s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 count=0,p,end,i;
 for(p=1;p<5;p++){
-if(func_020d1938(p)!=0 && func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)!=1){
+if(IsPlayerActive(p)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)!=1){
 u16 start=gPlayerUnitIdBase[p];
 i=start+1;end=start+0x33;
 for(;i<end;i++){
@@ -309,16 +309,16 @@ if(type!=0 && !(entry->unk4&8) && (data_ov000_021b5bfc[type*0x70+0x13]&7) && ((s
 }}}return count;}
 
 s32 func_ov000_0218a3fc(void){
-s32 func_020d1938(s32);s32 func_020d273c(u16,s32);s32 func_ov000_021a98a8(u32);
+s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);s32 func_ov000_021a98a8(u32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021b5bfc[];
 s32 p,i;
 for(p=1;p<5;p++){
-if(func_020d1938(p)!=0){
+if(IsPlayerActive(p)!=0){
 for(i=gPlayerUnitIdBase[p]+1;i<gPlayerUnitIdBase[p]+0x33;i++){
 UnkStruct_ov000_02189A08 *entry=&((UnkStruct_ov000_02189A08 *)((u8 *)*gCurrentMap+0x59a4))[i];
 u32 type=entry->unk0;
 if(type!=0&&(data_ov000_021b5bfc[type*112+0x13]&7)&&((s8 **)((u8 *)*gCurrentMap+0x52e8))[entry->unk2][entry->unk1]!=-1){
-if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)==0){
+if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)==0){
 if(func_ov000_021a98a8(entry->unk0)==0)goto success;
 goto next;
 }else{

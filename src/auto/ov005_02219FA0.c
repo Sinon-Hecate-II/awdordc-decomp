@@ -31,35 +31,38 @@ M2C_FIELD(obj,s32 *,0x44)=c;
 func_ov005_02219e58(obj);
 }
 
-void func_ov005_0221a0c0(void *x) {
+/* Draws the sprites of the medals being awarded.  Four flags at +0x44..+0x47
+ * each select one medal, placed at its own tile position (+0x48..+0x57) with
+ * its own sprite resource. */
+void DrawAwardedMedals(void *award) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 extern M2C_UNK data_ov005_02221008,data_ov005_02220fec,data_02101f78;
 void AddSprite(u16,u16,u16,void *,s32);void func_01ffad0c(u16,u16,u16,void *,s32);
-s32 saved;u16 px,py;u32 px2; s32 saved2;u32 ycoord;u16 py2;
-if(M2C_FIELD(x,u8 *,0x44)){
-py=M2C_FIELD(x,u16 *,0x4a);px=M2C_FIELD(x,u16 *,0x48);
+s32 saved;u16 spriteX,spriteY;u32 spriteX2; s32 saved2;u32 ycoord;u16 spriteY2;
+if(M2C_FIELD(award,u8 *,0x44)){
+spriteY=M2C_FIELD(award,u16 *,0x4a);spriteX=M2C_FIELD(award,u16 *,0x48);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite((px&0xfe00)|((px+128)&511),(py&0xff00)|((py+96)&255),(((0x1d8>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xa000),&data_ov005_02221008,5);
+AddSprite((spriteX&0xfe00)|((spriteX+128)&511),(spriteY&0xff00)|((spriteY+96)&255),(((0x1d8>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xa000),&data_ov005_02221008,5);
 gCur3DSpriteEngine=saved;
 }
-if(M2C_FIELD(x,u8 *,0x45)){
-py2=M2C_FIELD(x,u16 *,0x4e);px2=M2C_FIELD(x,u16 *,0x4c);
+if(M2C_FIELD(award,u8 *,0x45)){
+spriteY2=M2C_FIELD(award,u16 *,0x4e);spriteX2=M2C_FIELD(award,u16 *,0x4c);
 saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-ycoord=(py2&0xff00)|((py2+96)&255);
-AddSprite((px2&0xfe00)|((px2+64)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
-func_01ffad0c((px2&0xfe00)|((192-px2)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
+ycoord=(spriteY2&0xff00)|((spriteY2+96)&255);
+AddSprite((spriteX2&0xfe00)|((spriteX2+64)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
+func_01ffad0c((spriteX2&0xfe00)|((192-spriteX2)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
 gCur3DSpriteEngine=saved2;
 }
-if(M2C_FIELD(x,u8 *,0x46)){
-py=M2C_FIELD(x,u16 *,0x52);px=M2C_FIELD(x,u16 *,0x50);
+if(M2C_FIELD(award,u8 *,0x46)){
+spriteY=M2C_FIELD(award,u16 *,0x52);spriteX=M2C_FIELD(award,u16 *,0x50);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite(px,py,(((0x388>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
+AddSprite(spriteX,spriteY,(((0x388>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
 gCur3DSpriteEngine=saved;
 }
-if(M2C_FIELD(x,u8 *,0x47)){
-py=M2C_FIELD(x,u16 *,0x56);px=M2C_FIELD(x,u16 *,0x54);
+if(M2C_FIELD(award,u8 *,0x47)){
+spriteY=M2C_FIELD(award,u16 *,0x56);spriteX=M2C_FIELD(award,u16 *,0x54);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite(px,(py&0xff00)|((py+156)&255),(((0x408>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
+AddSprite(spriteX,(spriteY&0xff00)|((spriteY+156)&255),(((0x408>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xb000),&data_02101f78,5);
 gCur3DSpriteEngine=saved;
 }
 }
@@ -293,8 +296,8 @@ M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
 
 #pragma opt_strength_reduction reset
 void func_ov005_0221ab38(void) {
-    void func_ov005_0221a0c0();
-    func_ov005_0221a0c0();
+    void DrawAwardedMedals();
+    DrawAwardedMedals();
 }
 
 void func_ov005_0221ab44(void) {

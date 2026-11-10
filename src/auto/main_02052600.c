@@ -310,7 +310,7 @@ s32 func_02052e18(void **arg0, M2C_UNK arg1) {
     return 0;
 }
 
-s32 func_02052edc(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 AppendUpdateProField(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_0204fea0(s32 *, s32, M2C_UNK);
     s32 temp_r0;
     s32 temp_r4;
@@ -328,7 +328,7 @@ s32 func_02052edc(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r0;
 }
 
-s32 func_02052f1c(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 AppendUpdateUiField(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 func_0204fea0(s32 *, s32, M2C_UNK);
     s32 temp_r0;
     s32 temp_r4;
@@ -346,8 +346,146 @@ s32 func_02052f1c(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r0;
 }
 
-s32 func_02052f5c(s32 a, s32 b, s32 c) {
-    (void)a; (void)b; (void)c;
-    return 0;
+/* Writes one numeric profile field to the connection's outgoing GameSpy
+ * messages: the field id picks the protocol key and whether it belongs in the
+ * profile ("updatepro") or UI ("updateui") buffer. */
+s32 AppendInfoIntField(s32 *connection,s32 fieldId,s32 value) {
+s32 func_02058644(void **,M2C_UNK *);
+s32 func_020675e4(s8 *,M2C_UNK *,...);
+extern M2C_UNK data_020fe868;
+extern M2C_UNK data_020fe87c;
+extern M2C_UNK data_020fe77c;
+extern M2C_UNK data_020fe7bc;
+extern M2C_UNK data_020fe880;
+extern M2C_UNK data_020fe884;
+extern M2C_UNK data_020fe888;
+extern M2C_UNK data_020fe88c;
+extern M2C_UNK data_020fe764;
+extern M2C_UNK data_020fe89c;
+extern M2C_UNK data_020fe8ac;
+extern M2C_UNK data_020fe8b8;
+extern M2C_UNK data_020fe8c4;
+extern M2C_UNK data_020fe8d4;
+extern M2C_UNK data_020fe8e4;
+extern M2C_UNK data_020fe8f4;
+extern M2C_UNK data_020fe908;
+extern M2C_UNK data_020fe7d4;
+extern M2C_UNK data_020fe7dc;
+extern M2C_UNK data_020fe7e4;
+extern M2C_UNK data_020fe7ec;
+extern M2C_UNK data_020fe7f4;
+extern M2C_UNK data_020fe7fc;
+extern M2C_UNK data_020fe804;
+extern M2C_UNK data_020fe918;
+s8 text[16];
+s32 err;
+switch(fieldId) {
+case 0x708:
+if(value<0){func_02058644((void **)connection,&data_020fe868);return 2;}
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe77c,(s32)text);
+if(err!=0)return err;
+break;
+case 0x70b:
+switch(value){
+case 0x500:
+err=AppendUpdateProField(connection,(s32)&data_020fe7bc,(s32)&data_020fe880);
+if(err!=0)return err;
+break;
+case 0x501:
+err=AppendUpdateProField(connection,(s32)&data_020fe7bc,(s32)&data_020fe884);
+if(err!=0)return err;
+break;
+case 0x502:
+err=AppendUpdateProField(connection,(s32)&data_020fe7bc,(s32)&data_020fe888);
+if(err!=0)return err;
+break;
+default:func_02058644((void **)connection,&data_020fe88c);return 2;
+}
+break;
+case 0x706:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe764,(s32)text);
+if(err!=0)return err;
+break;
+case 0x70c:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateUiField(connection,(s32)&data_020fe89c,(s32)text);
+if(err!=0)return err;
+break;
+case 0x70d:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8ac,(s32)text);
+if(err!=0)return err;
+break;
+case 0x70e:
+func_020675e4(text,&data_020fe87c,value/16);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8b8,(s32)text);
+if(err!=0)return err;
+break;
+case 0x710:
+func_020675e4(text,&data_020fe87c,value/4);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8c4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x712:
+func_020675e4(text,&data_020fe87c,value/4);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8d4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x713:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8e4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x714:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateUiField(connection,(s32)&data_020fe8f4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x715:
+if(value!=0)value=1;
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateUiField(connection,(s32)&data_020fe908,(s32)text);
+if(err!=0)return err;
+break;
+case 0x718:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7d4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x719:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7dc,(s32)text);
+if(err!=0)return err;
+break;
+case 0x71a:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7e4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x71b:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7ec,(s32)text);
+if(err!=0)return err;
+break;
+case 0x71c:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7f4,(s32)text);
+if(err!=0)return err;
+break;
+case 0x71d:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe7fc,(s32)text);
+if(err!=0)return err;
+break;
+case 0x71e:
+func_020675e4(text,&data_020fe87c,value);
+err=AppendUpdateProField(connection,(s32)&data_020fe804,(s32)text);
+if(err!=0)return err;
+break;
+default:func_02058644((void **)connection,&data_020fe918);return 2;
+}
+return 0;
 }
 

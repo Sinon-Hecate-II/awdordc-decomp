@@ -1,10 +1,19 @@
 /* 16 functions from 0x020A0964 to 0x020A1944 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct { u8 kind : 6; u8 owner : 2; } MapUnitBits;
+typedef struct { u16 unk0 : 13; u16 enabled : 1; u16 unk14 : 2; } MapRuleBits;
+typedef struct { u32 value : 8; u32 rest : 24; } MapPlayerBits;
+
+typedef struct { s8 unk0[0x36]; s8 x[12]; s8 y[12]; s8 fuel[12]; } MapPathCoords;
+
+static inline s32 GetPathX(s8 *ctx, s32 index) { return (ctx + index)[0x36]; }
+static inline s32 GetPathY(s8 *ctx, s32 index) { return (ctx + index)[0x42]; }
+
 void func_020a0964(s32 a, s32 b, u16 *out) {
     M2C_UNK func_020a76d4(M2C_UNK);
     M2C_UNK func_020a85c8(M2C_UNK);
-    M2C_UNK func_01ffb554(M2C_UNK);
+    M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_020a0560(void);
     M2C_UNK func_020a0360(void);
     M2C_UNK func_020a061c(void);
@@ -65,7 +74,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
         }
     }
 
-    func_01ffb554((M2C_UNK)(base + 0x2338));
+    SelectMapLayer((M2C_UNK)(base + 0x2338));
     func_020a0560();
 
     best = 0;
@@ -97,7 +106,7 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
         }
     }
 
-    func_01ffb554((M2C_UNK)(base + 0x1e30));
+    SelectMapLayer((M2C_UNK)(base + 0x1e30));
     if (best != 0) return;
 
     best2 = 0;
@@ -130,102 +139,130 @@ void func_020a0964(s32 a, s32 b, u16 *out) {
     return;
 }
 
-M2C_UNK func_020a0d18(void) {
+#pragma push
+#pragma opt_common_subs off
+void func_020a0d18(void) {
     M2C_UNK func_020a004c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ffb554(M2C_UNK);
+    M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_020a0560(void);
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020a0360(void);
     M2C_UNK func_020a061c(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
+    s32 func_020a0300(s8, s8);
+    void func_020a0068(s8);
+    void func_020a01c0(s8, s8);
+    s32 func_020a33c4(s32);
     extern s32 *gCurrentMap;
     extern s32 data_0211fb5c;
     extern u8 data_ov000_021b5c09[];
-
-    u8 *base;
+    extern u16 data_02168f14[];
+    extern u8 data_021261d0[];
+    extern u8 gMovementTypeTable[];
+    s32 cx, cy, dx, dy;
     s8 *ctx;
-    s16 selY;
-    u16 selXu;
-    s16 selX;
-    u8 *row;
-    s8 terrain;
-    u8 *unit;
-    u8 kind;
-    s8 idx;
-    s8 *pe;
-    s8 f42;
-    s8 f36;
-    s32 manX;
-    s32 manY;
-    s16 sp_x;
-    s16 sp_y;
-    u16 off;
-    u8 byte;
-
-    base = (u8 *)*gCurrentMap;
-    if (*(u16 *)(base + 0x52b4) != 2) return 0;
-
+    u8 *player;
+    s32 y, idx, fuel, x;
+    u8 *base;
+    u32 mode;
+    s32 startX;
+    u8 *initialBase;
+    u32 kind;
+    s32 rowOffset;
+    s8 index;
+    s32 owner, result;
+    s8 *costTable;
+    s32 terrain;
+    u32 moveType;
+    s16 sx, sy;
+    initialBase = (u8 *)*gCurrentMap;
+    if (*(u16 *)(initialBase + 0x52b4) != 2) return;
     ctx = (s8 *)data_0211fb5c;
-    selY = *(s16 *)(base + 0x52c2);
-    if (ctx[0x34] == (s8)selY && ctx[0x35] == (s8)*(s16 *)(base + 0x52c4)) return 0;
-
-    selXu = *(u16 *)(base + 0x52c4);
-    func_020a004c((M2C_UNK)selY, (M2C_UNK)selXu);
-
+    startX = *(s16 *)(initialBase + 0x52c2);
+    if (ctx[0x34] == startX && ctx[0x35] == *(s16 *)(initialBase + 0x52c4)) return;
+    func_020a004c((u16)startX, *(u16 *)(initialBase + 0x52c4));
     base = (u8 *)*gCurrentMap;
-    selX = *(s16 *)(base + 0x52c4);
-    selY = *(s16 *)(base + 0x52c2);
-    row = *(u8 **)(base + selX * 4 + 0x52e8);
-    terrain = (s8)row[selY];
-    if (terrain > 110) {
-        unit = *(u8 **)(base + 0x52d0);
-        kind = unit[0] & 0x3F;
-        if (data_ov000_021b5c09[kind * 112] > 1) return 0;
-    }
-
-    ctx = (s8 *)data_0211fb5c;
-    idx = ctx[0x5b];
-    pe = ctx + idx;
-    f42 = pe[0x42];
-    f36 = pe[0x36];
-    manX = f42 - selX;
-    if (manX < 0) manX = -manX;
-    manY = f36 - selY;
-    if (manY < 0) manY = -manY;
-
-    sp_x = selX;
-    sp_y = selY;
-
-    if (manX + manY == 1) {
-        off = *(u16 *)(base + (f42 << 1) + 0x3758);
-        byte = base[f36 + off];
-        if (byte == 0) return 0;
-
-        func_01ffb554(base + 0x2338);
+    y = *(s16 *)(base + 0x52c4);
+    x = *(s16 *)(base + 0x52c2);
+    if ((*(s8 **)(base + y * 4 + 0x52e8))[x] > 110) {
+        kind = (*(MapUnitBits **)(base + 0x52d0))->kind;
+        if (data_ov000_021b5c09[kind * 112] > 1) return;
+        ctx = (s8 *)data_0211fb5c;
+        index = ctx[0x5b];
+        cy = ctx[0x42 + index];
+        cx = ctx[0x36 + index];
+        dy = cy - y; if (dy < 0) dy = -dy;
+        dx = cx - x; if (dx < 0) dx = -dx;
+        if (dx + dy == 1 && base[cx + *(u16 *)(base + cy * 2 + 0x3758)] == 0) return;
+        SelectMapLayer(base + 0x2338);
         func_020a0560();
-        if (func_020a086c(&sp_y, &sp_x)) {
-            func_01ffc4b8(sp_y, sp_x, base + 0x5388);
+        sx = x; sy = y;
+        if (func_020a086c(&sx, &sy)) {
+            func_01ffc4b8(sx, sy, (u8 *)*gCurrentMap + 0x5388);
             func_020a0360();
-            if (!func_020a061c()) func_020a05d8(sp_y, sp_x);
+            if (!func_020a061c()) func_020a05d8(sx, sy);
         } else {
-            func_01ffb554(base + 0x1e30);
-            sp_y = selY;
-            sp_x = selX;
-            if (func_020a086c(&sp_y, &sp_x)) {
-                func_01ffb554(base + 0x2338);
-                func_020a05d8(sp_y, sp_x);
+            SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+            sx = x; sy = y;
+            if (func_020a086c(&sx, &sy)) {
+                SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
+                func_020a05d8(sx, sy);
             } else {
-                func_01ffb554(base + 0x1e30);
+                SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+                return;
             }
         }
-        func_01ffb554(base + 0x1e30);
-    } else {
-        func_01ffb554(base + 0x1e30);
+        SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
+        x = sx; y = sy;
     }
-    return 0;
+    if ((*(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8))[x] == -1) return;
+    result = func_020a0300((s8)x, (s8)y);
+    if (result != -1) {
+        func_020a0068((s8)(result + 1));
+        ctx = (s8 *)data_0211fb5c;
+        ((u8 *)*gCurrentMap)[0x52d5] = ctx[0x5a] - (ctx + ctx[0x5b])[0x4e];
+        return;
+    }
+    base = (u8 *)*gCurrentMap;
+    owner = (base[0x52d4] >> 6) + 1;
+    player = base + 0x67a4 + owner * 0x8c;
+    if (((MapRuleBits *)data_02168f14)->enabled == 0) mode = 0;
+    else mode = ((MapPlayerBits *)(player + 0x6c))->value;
+    ctx = (s8 *)data_0211fb5c;
+    idx = ctx[0x5b];
+    fuel = (ctx + idx)[0x4e];
+    result = func_020a33c4(owner);
+    kind = (*(MapUnitBits **)((u8 *)*gCurrentMap + 0x52d0))->kind;
+    rowOffset = *(u16 *)(base + y * 2 + 0x3758);
+    terrain = (base + (x + rowOffset))[0x1420];
+    moveType = gMovementTypeTable[kind * 112];
+    costTable = *(s8 **)(data_021261d0 + mode * 0x9c + result * 0x28 + player[0x25] * 4);
+    if (fuel >= (costTable + moveType * 32)[terrain & 31]) {
+        ctx = (s8 *)data_0211fb5c;
+        dy = (ctx + idx)[0x42] - y; if (dy < 0) dy = -dy;
+        dx = (ctx + idx)[0x36] - x; if (dx < 0) dx = -dx;
+        if (dx + dy == 1) {
+            func_020a01c0((s8)x, (s8)y);
+            ctx = (s8 *)data_0211fb5c;
+            ((u8 *)*gCurrentMap)[0x52d5] = ctx[0x5a] - (ctx + ctx[0x5b])[0x4e];
+            return;
+        }
+    }
+    if (fuel == 0) func_020a0068(1);
+    SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
+    func_020a0560();
+    base = (u8 *)*gCurrentMap;
+    if ((*(s8 **)(base + y * 4 + 0x52e8))[x] == -1) {
+        func_020a05d8(x, y);
+    } else {
+        func_01ffc4b8(x, y, base + 0x5388);
+        func_020a0360();
+        if (!func_020a061c()) func_020a05d8(x, y);
+    }
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 }
-
+#pragma pop
 s32 func_020a11fc(s32 arg0) {
     extern s32 data_0211fb5c;
     s8 temp_r0;
@@ -287,7 +324,6 @@ void func_020a12c0(void *arg0) {
 
 void func_020a12d8(void) {
     M2C_UNK func_020774b0();
-    M2C_UNK func_020a0d18();
     void func_020a1300(M2C_UNK, M2C_UNK);
       func_020774b0();
       func_020a0d18();
@@ -482,7 +518,7 @@ if(count)*dst++=count;
 
 #pragma opt_strength_reduction off
 void func_020a17c0(s32 arg0, s32 arg1) {
-    M2C_UNK func_01ffb554(M2C_UNK);
+    M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
     s32 y;
@@ -490,7 +526,7 @@ void func_020a17c0(s32 arg0, s32 arg1) {
     u8 *base;
 
     base = (u8 *)*gCurrentMap;
-    func_01ffb554(base + 0x1E30);
+    SelectMapLayer(base + 0x1E30);
     func_01ffada0(arg0, arg1, 0x1D, 0x6E, 0);
 
     base = (u8 *)*gCurrentMap;

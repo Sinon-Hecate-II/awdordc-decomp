@@ -20,7 +20,7 @@ return d;
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02178e84(s32 arg0,s32 arg1) {
-s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 func_020d27c0(s32);s32 func_ov000_021a98a8(u32);s32 func_ov000_021a9318(s32,s32,s32);
+s32 func_020d2d18(u16,u8);s32 func_020d27ec(s16,s32);s32 IsUnitOnCurrentTeam(s32);s32 func_ov000_021a98a8(u32);s32 func_ov000_021a9318(s32,s32,s32);
 u8 *unit;void *map;u32 terrain,kind; s32 x,y,d,xmin,ymin,xmax,ymax,radius,width,scanX,scanY;u16 player;u8 *selected;void *snapshot;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 if(((u32)(unit[11]<<28)>>28)==6)return 1;
@@ -41,7 +41,7 @@ map=*gCurrentMap;
 kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)kind*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)continue;
-if(func_020d27c0(kind)!=1)continue;
+if(IsUnitOnCurrentTeam(kind)!=1)continue;
 if(!func_ov000_021a98a8((u32)(unit[0]<<26)>>26))continue;
 if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
 }
@@ -62,7 +62,7 @@ if(d<1||d>ov000_visibility_radius())continue;
 map=*gCurrentMap;kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)kind*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)continue;
-if(func_020d27c0(kind)!=1)continue;
+if(IsUnitOnCurrentTeam(kind)!=1)continue;
 kind=(u32)(unit[0]<<26)>>26;
 if((u8)(kind+232)>1)continue;
 if(!(M2C_FIELD(unit,u16 *,4)&1))return 0;
@@ -86,7 +86,7 @@ if(d<1||d>6)continue;
 map=*gCurrentMap;kind=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)kind*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)continue;
-if(func_020d27c0(kind)!=1)continue;
+if(IsUnitOnCurrentTeam(kind)!=1)continue;
 kind=(u32)(unit[0]<<26)>>26;
 if(!(M2C_FIELD((u8 *)data_ov000_021b5bfc+kind*112,u8 *,19)&32))continue;
 if(!((u32)(M2C_FIELD(unit,u16 *,8)<<18)>>30))continue;

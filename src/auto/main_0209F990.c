@@ -14,7 +14,7 @@ s32 func_0209f990(void) {
     void *func_020a45f8(s32, s32);
     u8 func_020d27a4(s32, s32);
     void func_020d166c(s32, s32, void *);
-    u8 func_020d273c(s32, s32);
+    u8 IsSameTeam(s32, s32);
     void func_020d1690(s32, s32, void *);
     extern s32 *gCurrentMap;
     extern void *data_0215be00;
@@ -51,7 +51,7 @@ s32 func_0209f990(void) {
                                 if (dim != 0) {
                                     bits = (s32)((UnkCellBits *)dim)->bits;
                                     if (bits != 0) {
-                                        if (func_020d273c((M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
+                                        if (IsSameTeam((M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
                                             goto next_cell;
                                         }
                                     }
@@ -82,7 +82,7 @@ s32 func_0209fb70(void) {
     u8 func_020d27a4(s32, s32);
     s32 func_020d0a08(M2C_UNK, void *);
     s32 func_020d0a88(u8 *, M2C_UNK);
-    u8 func_020d273c(s32, s32);
+    u8 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
     extern void *data_0215be00;
 
@@ -117,7 +117,7 @@ s32 func_0209fb70(void) {
                     if (dim != 0) {
                         bits = (s32)((UnkCellBits *)dim)->bits;
                         if (bits != 0) {
-                            if (func_020d273c((M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
+                            if (IsSameTeam((M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4) >> 6) + 1, bits) != 0) {
                                 goto next_cell;
                             }
                         }

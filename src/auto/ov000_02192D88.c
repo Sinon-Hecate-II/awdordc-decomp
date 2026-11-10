@@ -98,8 +98,8 @@ return SetMapCursor(p[1],p[2],24,0,0);
 }
 
 s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_020d1938(s32);
-    s32 func_020d273c(s32, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(s32, s32);
     u8 func_ov000_021a8ff0(s32);
     s32 ManhattanDistance(s32, s32, s32, s32);
     u8 func_ov000_021786a8(s16 *);
@@ -178,8 +178,8 @@ s32 func_ov000_02193a40(s32 arg0, s32 arg1, s32 arg2) {
         } else {
             s32 player;
             for (player = 1; player < 5; player++) {
-                if (!func_020d1938(player)) continue;
-                if (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
+                if (!IsPlayerActive(player)) continue;
+                if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), player) != 0) continue;
                 {
                     u16 start2 = gPlayerUnitIdBase[player];
                     s32 i2;

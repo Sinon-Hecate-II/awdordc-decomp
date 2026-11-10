@@ -136,7 +136,7 @@ i=0;while((ch=str[i])!=0){
 if(func_02068ee0((s32)data_020fd340,ch))func_0204a230(ctx+0x50,ch);
 else if(ch==32)func_0204a230(ctx+0x50,43);
 else {hi=ch/16;if(hi>=16)func_020640a8(&data_020fd4e4,&data_020fd334,&data_020fd294,0x30d);
-out->bytes[1]=data_020fd4f4[hi];out->bytes[2]=data_020fd4f4[ch%16];func_02049ef4(ctx+0x50,out,3);}
+out->bytes[1]=data_020fd4f4[hi];out->bytes[2]=data_020fd4f4[ch%16];ghiAppendDataToBuffer(ctx+0x50,out,3);}
 i++;
 }return 1;
 }

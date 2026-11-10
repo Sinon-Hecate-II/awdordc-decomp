@@ -234,9 +234,9 @@ void func_020c32b0(void) {
 }
 
 void func_020c32bc(void) {
-    s32 func_020d19b4();
+    s32 IsPlayerHuman();
     M2C_UNK PlaySoundEffect(s32);
-    if (func_020d19b4() != 0) {
+    if (IsPlayerHuman() != 0) {
         PlaySoundEffect(0xE1);
         return;
     }

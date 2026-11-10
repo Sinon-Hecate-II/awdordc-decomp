@@ -69,7 +69,7 @@ s32 func_ov000_021a947c(s32 x, s32 y, s32 a, s32 b) {
     return racc != 0;
 }
 #pragma pop
-void func_ov000_021a96a8(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+void GetAttackDamage(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern void *data_ov000_021df580;
@@ -164,17 +164,17 @@ s32 func_ov000_021a9904(s32 arg0) {
     return 2;
 }
 
-s32 func_ov000_021a9934(s32 a,s32 b) {
+s32 CanKindAttack(s32 a,s32 b) {
  extern u8 data_ov000_021b5c5e[];extern u8 data_ov000_021b5c5d[];
  u8 *p=&data_ov000_021b5c5e[b*0x70];
  return p[data_ov000_021b5c5d[a*0x70]];
 }
 
-u8 func_ov000_021a995c(u8 *arg0,s32 arg1) {
+u8 CanUnitAttackKind(u8 *arg0,s32 arg1) {
 extern u8 data_ov000_021b5c5c[];
 u32 a=(u32)(*arg0<<26)>>26; u8 result;
 if(!data_ov000_021b5c5c[a*0x70]) return 0;
-if(!func_ov000_021a9934(a,arg1)) return 0;
+if(!CanKindAttack(a,arg1)) return 0;
 if(M2C_FIELD(arg0+(data_ov000_021b5c5c[((u32)(*arg0<<26)>>26)*0x70]-1),u8 *,12)==0) result=1;else result=0;
 return result;
 }
@@ -226,24 +226,24 @@ u8 func_ov000_021a9b84(void) {
 
 s32 func_ov000_021a9bc0(void *arg0) {
  extern void **gCurrentMap;
- s32 func_020d273c(u16,s32);
+ s32 IsSameTeam(u16,s32);
  u32 owner=(u32)(M2C_FIELD(arg0,u8 *,5)<<29);
  s32 i;
  if(M2C_FIELD(arg0,u8 *,4)==0)return 0;
  for(i=1;i<5;i++){
- if(func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)!=0 && i==(owner>>29))return 0;
+ if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)!=0 && i==(owner>>29))return 0;
  }
  return 1;
 }
 
 s32 func_ov000_021a9c28(void) {
  extern void **gCurrentMap;
- s32 func_020d1938(s32);
- s32 func_020d273c(u16,s32);
+ s32 IsPlayerActive(s32);
+ s32 IsSameTeam(u16,s32);
  s32 func_020d243c(s32);
  s32 i=1;
 loop:
- if(func_020d1938(i)!=0 && func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)==0 && func_020d243c(i)==1)return 1;
+ if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)==0 && func_020d243c(i)==1)return 1;
  i++;
  if(i>=5)return 0;
  goto loop;

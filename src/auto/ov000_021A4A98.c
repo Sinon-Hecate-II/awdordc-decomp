@@ -14,11 +14,11 @@ static inline s32 UnitOwnerA4e08(u8 *p){return p?(UnitIndexA4e08(p)>>6)+1:0;}
 s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
     void func_01ffada0(s32, s32, s32, s32, s32);
     void func_01ffb9c4(s8);
-    s32 func_020d27c0(s32);
+    s32 IsUnitOnCurrentTeam(s32);
     s32 func_020ba924(s32, s32);
     s32 func_ov000_021a43c4(void);
     s32 func_ov000_021a8784(s32);
-    s32 func_ov000_021a8fc0(s32);
+    s32 IsCurrentPlayerUnit(s32);
     u8 func_ov000_021a9084(s32);
     s32 func_ov000_021a90a8(s32, s32, s32);
     u8 func_ov000_021a98a8(s32);
@@ -56,7 +56,7 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
             if (terrain == 0x1c) return 0;
             if (cellVal > 0x6e) {
                 if (((u8 *)inner + idx + rowOff)[0] == 0) continue;
-                func_020d27c0(((u8 *)inner + idx + rowOff)[0]);
+                IsUnitOnCurrentTeam(((u8 *)inner + idx + rowOff)[0]);
                 continue;
             }
             if (terrain == 0x11) {
@@ -91,14 +91,14 @@ s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
             unit = ((u8 *)inner + idx)[rowOff];
             if (unit == 0) continue;
             if (func_020ba924(idx, outer) == 1) special = 1;
-            if (func_020d27c0(unit) == 0) {
+            if (IsUnitOnCurrentTeam(unit) == 0) {
                 kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
                 {
                     u8 *info = data_ov000_021b5bfc + kind * 0x70;
                     if ((info[0x13] & 7) != 0 && func_ov000_021a98a8(kind) != 0) return 0;
                 }
             } else {
-                if (func_ov000_021a8fc0(unit) == 1) {
+                if (IsCurrentPlayerUnit(unit) == 1) {
                     kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
                     if (func_ov000_021a98a8(kind) != 0) count++;
                 }
@@ -120,20 +120,20 @@ tail:
 s32 func_ov000_021a4dc4(void) {
     s32 func_ov000_021a4a98(u8, u8);
     s32 func_ov000_021a67f0(s32);
-    extern u8 data_ov000_021e00ac;
+    extern u8 gAiTargetCandidates;
     extern u8 data_ov000_021e00ad;
     s32 index = func_ov000_021a67f0(1);
     s32 offset;
     if (index == -1) return 0;
     offset = index * 12;
-    return func_ov000_021a4a98((&data_ov000_021e00ac)[offset], (&data_ov000_021e00ad)[offset]);
+    return func_ov000_021a4a98((&gAiTargetCandidates)[offset], (&data_ov000_021e00ad)[offset]);
 }
 
 #pragma push
 #pragma opt_strength_reduction off
 s32 func_ov000_021a4e08(s32 cx,s32 cy,s32 kind){
 s32 func_ov000_021a97e0(s32,u32);void func_01ffada0(s32,s32,s32,s32,s32);
-void func_01ffb9c4(s8);s32 func_020d27c0(s32);
+void func_01ffb9c4(s8);s32 IsUnitOnCurrentTeam(s32);
 s32 func_ov000_021a97d0(u32,s32);s32 func_0207c8ec(s32,s32);
 s32 func_ov000_021a9820(s32,u32);s32 func_020a85c8(u32);
 s32 sum,max;u16 saved=M2C_FIELD(MAP,u16*,0x52b6);s32 x,y,minX,minY,maxX,maxY,distance,value;u32 range;
@@ -144,7 +144,7 @@ sum=0;max=0;health=0;
 if(flags&16){
 func_01ffada0(cx,cy,14,func_ov000_021a97e0(M2C_FIELD(MAP,u16*,0x52a4),14),1);
 for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
-if(M2C_FIELD(MAP+y*4,s8**,0x52e8)[x]<0||!CELL(x,y,0x508)||!func_020d27c0(CELL(x,y,0)))continue;
+if(M2C_FIELD(MAP+y*4,s8**,0x52e8)[x]<0||!CELL(x,y,0x508)||!IsUnitOnCurrentTeam(CELL(x,y,0)))continue;
 { void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
 if(KIND(unit)==14)health+=(u32)(M2C_FIELD(unit,u16*,6)<<25)>>25;
 }}
@@ -154,7 +154,7 @@ maxX=M2C_FIELD(MAP,u16*,0x5144)-1;if(cx+9<maxX)maxX=cx+9;
 maxY=M2C_FIELD(MAP,u16*,0x5146)-1;if(cy+9<maxY)maxY=cy+9;
 for(y=minY;y<=maxY;y++)for(x=minX;x<=maxX;x++){
 distance=0;if(cx-x>0)distance+=cx-x;else distance+=x-cx;if(cy-y>0)distance+=cy-y;else distance+=y-cy;
-if(distance<1||distance>9||!CELL(x,y,0x508)||func_020d27c0(CELL(x,y,0))==1)continue;
+if(distance<1||distance>9||!CELL(x,y,0x508)||IsUnitOnCurrentTeam(CELL(x,y,0))==1)continue;
 { void *base=MAP; unit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0x508)*14; }
 if(kind==22&&KIND(unit)!=23)continue;
 if(health<100&&(KIND(unit)==14||(u8)(KIND(unit)+240)<=1)&&(data_ov000_021b5bfc[kind*112+19]&16)){
@@ -190,53 +190,57 @@ return sum+max;
 #pragma pop
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_021a5564(u8 arg0){
-void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 func_ov000_021a97e0(s32,u32);s32 func_020d27c0(s32);
+/* For one player, marks each of the player's type-22 units with a type-23 marker
+ * and outlines its neighbours in the overlay grid, then adds one to the per-cell
+ * influence layer across every valid cell unless the acting player already has a
+ * type-23 marker on the map. */
+void MarkPlayerInfluence(u8 player){
+void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb9c4(s8);s32 func_ov000_021a97e0(s32,u32);s32 IsUnitOnCurrentTeam(s32);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-s32 id,unitOffset; s32 x2,y2;u8 *unit;u8 *unit2;s32 x,y;void *base;s32 index,owner;u32 kind;
-M2C_FIELD(*gCurrentMap,u16*,0x52b6)=arg0;
-id=gPlayerUnitIdBase[arg0]+1;if(id>=gPlayerUnitIdBase[arg0]+51)return;unitOffset=id*14;
+s32 unitId,unitOffset; s32 scanX,scanY;u8 *unit;u8 *otherUnit;s32 x,y;void *base;s32 unitIndex,owner;u32 kind;
+M2C_FIELD(*gCurrentMap,u16*,0x52b6)=player;
+unitId=gPlayerUnitIdBase[player]+1;if(unitId>=gPlayerUnitIdBase[player]+51)return;unitOffset=unitId*14;
 do{
 base=*gCurrentMap;unit=(u8*)(base+0x59a4)+unitOffset;
 kind=(u32)(unit[0]<<26)>>26;if(!kind)goto next;if(kind!=22)goto next;
-if(unit){index=unit?((s32)(unit-(u8*)(base+0x59a4)))/14:0;owner=(index>>6)+1;}else owner=0;
+if(unit){unitIndex=unit?((s32)(unit-(u8*)(base+0x59a4)))/14:0;owner=(unitIndex>>6)+1;}else owner=0;
 func_01ffada0(unit[1],unit[2],23,func_ov000_021a97e0(owner,kind),33);func_01ffb9c4(111);
 base=*gCurrentMap;
 for(y=0;y<M2C_FIELD(base,u16*,0x5146);y++){
 for(x=0;x<M2C_FIELD(base,u16*,0x5144);x++,base=*gCurrentMap){
 if(M2C_FIELD(base+y*4,s8**,0x52e8)[x]<0)continue;
-unit2=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0)*14;
-index=unit2?((s32)(unit2-(u8*)(base+0x59a4)))/14:0;
-if(!func_020d27c0(index))continue;
-if(((u32)(unit2[0]<<26)>>26)==23)goto next;
+otherUnit=(u8*)(base+0x59a4)+M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16*,0x3758),u8*,0)*14;
+unitIndex=otherUnit?((s32)(otherUnit-(u8*)(base+0x59a4)))/14:0;
+if(!IsUnitOnCurrentTeam(unitIndex))continue;
+if(((u32)(otherUnit[0]<<26)>>26)==23)goto next;
 }}
-for(y2=0;y2<M2C_FIELD(base,u16*,0x5146);y2++){
-for(x2=0;x2<M2C_FIELD(base,u16*,0x5144);x2++,base=*gCurrentMap){
-if(M2C_FIELD(base+y2*4,s8**,0x52e8)[x2]<0)continue;
-M2C_FIELD(base+x2+M2C_FIELD(base+y2*2,u16*,0x3758)+0x2000,s8*,0x338)=M2C_FIELD(base+x2+M2C_FIELD(base+y2*2,u16*,0x3758),s8*,0x2338)+1;
+for(scanY=0;scanY<M2C_FIELD(base,u16*,0x5146);scanY++){
+for(scanX=0;scanX<M2C_FIELD(base,u16*,0x5144);scanX++,base=*gCurrentMap){
+if(M2C_FIELD(base+scanY*4,s8**,0x52e8)[scanX]<0)continue;
+M2C_FIELD(base+scanX+M2C_FIELD(base+scanY*2,u16*,0x3758)+0x2000,s8*,0x338)=M2C_FIELD(base+scanX+M2C_FIELD(base+scanY*2,u16*,0x3758),s8*,0x2338)+1;
 }}
-next:;id++;unitOffset+=14;
-}while(id<gPlayerUnitIdBase[arg0]+51);
+next:;unitId++;unitOffset+=14;
+}while(unitId<gPlayerUnitIdBase[player]+51);
 }
 #pragma pop
 void func_ov000_021a581c(void) {
-    void func_01ffb3d0(s32);
-    void func_01ffb554(void *);
-    s32 func_020d1938(s32);
-    s32 func_020d273c(u16, s32);
-    void func_ov000_021a5564(u8);
+    void FillMapLayer(s32);
+    void SelectMapLayer(void *);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
+    void MarkPlayerInfluence(u8);
     extern void **gCurrentMap;
     u16 saved;
     s32 i;
     void *base;
     base = *gCurrentMap;
     saved = M2C_FIELD(base, u16 *, 0x52B6);
-    func_01ffb554(base + 0x2338);
-    func_01ffb3d0(0);
-    func_01ffb554(*gCurrentMap + 0x1E30);
+    SelectMapLayer(base + 0x2338);
+    FillMapLayer(0);
+    SelectMapLayer(*gCurrentMap + 0x1E30);
     for (i = 1; i < 5; i++) {
-        if (func_020d1938(i) != 0 && func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
-            func_ov000_021a5564(i);
+        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0)
+            MarkPlayerInfluence(i);
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
 }

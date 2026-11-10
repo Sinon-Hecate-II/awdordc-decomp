@@ -125,18 +125,18 @@ void func_020cce4c(void) {
 
 s32 func_020cce64(s32 player) {
 extern s32 *gCurrentMap; extern u8 data_02168f0c;
-s32 func_020d1980(s32);s32 func_020d19b4(s32);s32 func_020d1938(s32);s32 func_02084614(void);s32 func_02084aa0(s32);
+s32 IsPlayerPresent(s32);s32 IsPlayerHuman(s32);s32 IsPlayerActive(s32);s32 func_02084614(void);s32 func_02084aa0(s32);
 s32 total=0, yes=0,no=0;u8 team=M2C_FIELD((u8*)*gCurrentMap+player*140,u8*,0x67ca);s32 active,i,off;
-if(!func_020d1980(player))return 0;
+if(!IsPlayerPresent(player))return 0;
 if((&data_02168f0c)[0]){
-active=1;for(i=1;i<5;i++)if(func_020d19b4(i))active=i;
+active=1;for(i=1;i<5;i++)if(IsPlayerHuman(i))active=i;
 if(func_02084614()==1){if((&data_02168f0c)[1])return 3;if((&data_02168f0c)[2])return 3;}
 if(func_02084614()==2){
 if(active==player){
 if((&data_02168f0c)[1])return 2;
 if((&data_02168f0c)[2]){
 if(!(&data_02168f0c)[3])return 2;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(func_020d1980(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
+{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
 }return 1;
 }
 }else{
@@ -144,23 +144,23 @@ if((&data_02168f0c)[1]){if(team!=M2C_FIELD((u8*)*gCurrentMap+active*140,u8*,0x67
 if((&data_02168f0c)[2]){
 if(!(&data_02168f0c)[3]){if(team!=M2C_FIELD((u8*)*gCurrentMap+active*140,u8*,0x67ca))return 1;return 2;}
 if(func_02084aa0(player-1))return 2;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(func_020d1980(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
+{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&func_02084aa0(j-1)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 2;}
 }return 1;
 }
 }
 }
 }
-for(i=1;i<5;i++)if(func_020d1980(i)){if(func_020d1938(i))yes++;else no++;total++;}
+for(i=1;i<5;i++)if(IsPlayerPresent(i)){if(IsPlayerActive(i))yes++;else no++;total++;}
 if(yes==total)return 3;if(no==total)return 3;
-{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(func_020d1980(j)&&func_020d1938(j)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 1;}
+{s32 j,step;for(j=1,step=140;j<5;j++,step+=140)if(IsPlayerPresent(j)&&IsPlayerActive(j)){if(team==M2C_FIELD((u8*)*gCurrentMap+step,u8*,0x67ca))return 1;}
 }return 2;
 }
 
 s32 func_020cd164(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 base;
-    if (!func_020d1980(arg0)) return 0;
-    if (!func_020d1980(arg1)) return 0;
+    if (!IsPlayerPresent(arg0)) return 0;
+    if (!IsPlayerPresent(arg1)) return 0;
     if (arg0 == arg1) return 0;
     base = *gCurrentMap + 0x67A4;
     if (M2C_FIELD(arg0 * 0x8C + base, u8 *, 0x26) == M2C_FIELD(arg1 * 0x8C + base, u8 *, 0x26)) return 0;
@@ -168,28 +168,28 @@ s32 func_020cd164(s32 arg0, s32 arg1) {
 }
 
 s32 func_020cd1e4(void) {
-    s32 func_020d19b4(s32);
+    s32 IsPlayerHuman(s32);
     s32 var_r4;
     s32 var_r4_2;
     s32 var_r4_3;
 
     var_r4 = 1;
 loop_1:
-    if ((func_020d19b4(var_r4) != 0) && (func_020cce64(var_r4) == 1)) {
+    if ((IsPlayerHuman(var_r4) != 0) && (func_020cce64(var_r4) == 1)) {
         return 1;
     }
     var_r4 += 1;
     if (var_r4 >= 5) {
         var_r4_2 = 1;
 loop_6:
-        if ((func_020d19b4(var_r4_2) != 0) && (func_020cce64(var_r4_2) == 2)) {
+        if ((IsPlayerHuman(var_r4_2) != 0) && (func_020cce64(var_r4_2) == 2)) {
             return 0;
         }
         var_r4_2 += 1;
         if (var_r4_2 >= 5) {
             var_r4_3 = 1;
 loop_11:
-            if ((func_020d1980(var_r4_3) != 0) && (func_020cce64(var_r4_3) == 1)) {
+            if ((IsPlayerPresent(var_r4_3) != 0) && (func_020cce64(var_r4_3) == 1)) {
                 return 1;
             }
             var_r4_3 += 1;
@@ -221,12 +221,12 @@ u8 func_020cd28c(void) {
 
 s32 func_020cd2b8(void) {
     s32 func_020cce64(s32);
-    s32 func_020d1980(s32);
+    s32 IsPlayerPresent(s32);
     s32 var_r4;
 
     var_r4 = 1;
 loop_1:
-    if ((func_020d1980(var_r4) != 0) && (func_020cce64(var_r4) == 3)) {
+    if ((IsPlayerPresent(var_r4) != 0) && (func_020cce64(var_r4) == 3)) {
         return 1;
     }
     var_r4 += 1;
@@ -239,16 +239,16 @@ loop_1:
 s32 func_020cd2f8(void){
 extern u8 data_02168f0c;extern s32 *gCurrentMap;s32 i;
 if(!data_02168f0c && func_020cce64(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==1)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(func_020d19b4(i) && func_020cce64(i)==1)return i;
-for(i=1;i<5;i++)if(func_020d1980(i) && func_020cce64(i)==1)return i;
+for(i=1;i<5;i++)if(IsPlayerHuman(i) && func_020cce64(i)==1)return i;
+for(i=1;i<5;i++)if(IsPlayerPresent(i) && func_020cce64(i)==1)return i;
 return 0;
 }
 
 s32 func_020cd3bc(void){
 extern u8 data_02168f0c;extern s32 *gCurrentMap;s32 i;
 if(!data_02168f0c && func_020cce64(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==2)return M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-for(i=1;i<5;i++)if(func_020d19b4(i) && func_020cce64(i)==2)return i;
-for(i=1;i<5;i++)if(func_020d1980(i) && func_020cce64(i)==2)return i;
+for(i=1;i<5;i++)if(IsPlayerHuman(i) && func_020cce64(i)==2)return i;
+for(i=1;i<5;i++)if(IsPlayerPresent(i) && func_020cce64(i)==2)return i;
 return 0;
 }
 
@@ -302,11 +302,11 @@ s32 func_020cd5d8(void) {
 s32 func_020cd614(void) {
     extern M2C_UNK data_0215d9b8;
     extern s32 *gCurrentMap;
-    s32 func_020d19b4(s32);
+    s32 IsPlayerHuman(s32);
     switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 18) >> 30) {
     case 0: return 1;
     case 1:
-        if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4))) return 1;
+        if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4))) return 1;
     }
     return 0;
 }
@@ -384,11 +384,11 @@ void func_020cd7bc(s32 arg0, s32 arg1) {
  MI_CpuCopy8(size*arg0+base,size*arg1+base);
 }
 
-s32 func_020cd7ec(s32 arg0, s32 arg1) {
+s32 GetPlayerRelation(s32 arg0, s32 arg1) {
     extern s32 *gCurrentMap;
     s32 temp_r0;
 
-    if (func_020d1980(arg1) == 0) {
+    if (IsPlayerPresent(arg1) == 0) {
         return 0;
     }
     temp_r0 = *gCurrentMap + 0x67A4;
@@ -398,14 +398,14 @@ s32 func_020cd7ec(s32 arg0, s32 arg1) {
     return 2;
 }
 
-s32 func_020cd848(s32 arg0) {
+s32 PlayerHasHumanAlly(s32 arg0) {
  s32 i, v, n;
  n = arg0 + 1;
  i = 1;
  do {
  v = n;
  if (n >= 5) v = n - 4;
- if (func_020cd7ec(arg0, (u16)v) == 2 && func_020d19b4(v) != 0) return 1;
+ if (GetPlayerRelation(arg0, (u16)v) == 2 && IsPlayerHuman(v) != 0) return 1;
  i++;
  n++;
  } while(i < 4);

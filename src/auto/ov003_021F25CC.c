@@ -230,7 +230,10 @@ s32 func_ov003_021f2b88(s32 a) {
     return 1;
 }
 
-void func_ov003_021f2bf0(s32 arg0) {
+/* Initializes the ov003 map-select screen: configures both sprite engines'
+ * background layers, sets up the cursor and preview-list objects at entry+0x3C
+ * and entry+0x38, and marks the screen state ready (3). */
+void InitMapSelectScreen(s32 arg0) {
     M2C_UNK func_01ff9e00(void);
     void func_02082c84(void);
     void func_02082cb4(void);
@@ -254,13 +257,13 @@ void func_ov003_021f2bf0(s32 arg0) {
     extern M2C_UNK data_ov003_0220fcb4;
     extern M2C_UNK data_ov003_0220fca8;
 
-    s32 var_r9;
-    u16 **temp_r11;
-    u16 **var_r0;
-    u16 *volatile sp18, *volatile sp14, *volatile sp10, *volatile spC, *volatile sp8, *volatile sp4;
-    u16 *temp_r0, *temp_r0_2, *temp_r0_3, *temp_r0_4, *temp_r0_5, *temp_r0_6;
-    void *saved;
-    void *obj;
+    s32 layer;
+    u16 **savedEngine;
+    u16 **engine;
+    u16 *volatile reg10, *volatile reg20, *volatile reg40, *volatile reg80, *volatile reg100, *volatile regC0;
+    u16 *t10, *t20, *t40, *t80, *t100, *tC0;
+    void *unusedSaved;
+    void *unusedObj;
 
     func_01ff9e00();
     func_02082c84();
@@ -272,39 +275,39 @@ void func_ov003_021f2bf0(s32 arg0) {
     func_ov003_021f1ab8((s32)&data_ov003_0220fcb4);
     func_ov003_021f1af8((s32)&data_ov003_0220fca8);
 
-    var_r9 = 0;
-    temp_r11 = (u16 **)gCur3DSpriteEngine;
+    layer = 0;
+    savedEngine = (u16 **)gCur3DSpriteEngine;
     do {
-        if (var_r9 == 0) {
-            var_r0 = (u16 **)g3DSpriteEngineMain;
+        if (layer == 0) {
+            engine = (u16 **)g3DSpriteEngineMain;
         } else {
-            var_r0 = (u16 **)g3DSpriteEngineSub;
+            engine = (u16 **)g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = (void *)var_r0;
-        temp_r0 = *var_r0;
-        sp18 = temp_r0;
-        *sp18 = *sp18 | 0x10;
-        temp_r0_2 = *(u16 **)gCur3DSpriteEngine;
-        sp14 = temp_r0_2;
-        *sp14 = *sp14 | 0x20;
-        temp_r0_3 = *(u16 **)gCur3DSpriteEngine;
-        sp10 = temp_r0_3;
-        *sp10 = *sp10 | 0x40;
-        temp_r0_4 = *(u16 **)gCur3DSpriteEngine;
-        spC = temp_r0_4;
-        *spC = *spC | 0x80;
-        temp_r0_5 = *(u16 **)gCur3DSpriteEngine;
-        sp8 = temp_r0_5;
-        *sp8 = *sp8 | 0x100;
-        temp_r0_6 = *(u16 **)gCur3DSpriteEngine;
-        sp4 = (u16 *)((u8 *)temp_r0_6 + 0x12);
-        *sp4 = (s16)(*sp4 & ~0xC0);
+        gCur3DSpriteEngine = (void *)engine;
+        t10 = *engine;
+        reg10 = t10;
+        *reg10 = *reg10 | 0x10;
+        t20 = *(u16 **)gCur3DSpriteEngine;
+        reg20 = t20;
+        *reg20 = *reg20 | 0x20;
+        t40 = *(u16 **)gCur3DSpriteEngine;
+        reg40 = t40;
+        *reg40 = *reg40 | 0x40;
+        t80 = *(u16 **)gCur3DSpriteEngine;
+        reg80 = t80;
+        *reg80 = *reg80 | 0x80;
+        t100 = *(u16 **)gCur3DSpriteEngine;
+        reg100 = t100;
+        *reg100 = *reg100 | 0x100;
+        tC0 = *(u16 **)gCur3DSpriteEngine;
+        regC0 = (u16 *)((u8 *)tC0 + 0x12);
+        *regC0 = (s16)(*regC0 & ~0xC0);
         M2C_FIELD(*(u16 **)gCur3DSpriteEngine, s8 *, 0x51) = 0;
         M2C_FIELD(*(u16 **)gCur3DSpriteEngine, s8 *, 0x52) = 0;
         M2C_FIELD(*(u16 **)gCur3DSpriteEngine, s8 *, 0x53) = 0;
-        var_r9 += 1;
-    } while (var_r9 < 2);
-    gCur3DSpriteEngine = temp_r11;
+        layer += 1;
+    } while (layer < 2);
+    gCur3DSpriteEngine = savedEngine;
 
     if (func_020d4810() != 0) {
         func_ov003_021f1bd4();
@@ -314,16 +317,16 @@ void func_ov003_021f2bf0(s32 arg0) {
 
 
     M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,0)=1;
-    { s32 kind;
+    { s32 displayKind;
       switch(M2C_FIELD(M2C_FIELD(arg0,void **,0x40),u8 *,4)) {
-      case 0: kind=1; break;
-      case 7: case 8: kind=7; break;
-      case 1: case 3: case 5: kind=2; break;
-      case 2: case 4: case 6: kind=3; break;
-      case 9: case 10: case 11: case 12: kind=14; break;
-      default:kind=0;break;
+      case 0: displayKind=1; break;
+      case 7: case 8: displayKind=7; break;
+      case 1: case 3: case 5: displayKind=2; break;
+      case 2: case 4: case 6: displayKind=3; break;
+      case 9: case 10: case 11: case 12: displayKind=14; break;
+      default:displayKind=0;break;
       }
-      M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,1)=kind;
+      M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,1)=displayKind;
     }
     M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),s32 *,4)=0x780;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,8)=0x1f;
@@ -405,7 +408,7 @@ void func_ov003_021f2e98(s32 entry) {
  }
 }
 void func_ov003_021f34d8(void) {
-    ((void (*)())func_ov003_021f2bf0)();
+    ((void (*)())InitMapSelectScreen)();
 }
 
 void func_ov003_021f34e4(void *a) {

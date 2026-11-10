@@ -14,7 +14,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     extern M2C_UNK data_02101e88;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov005_02221218, data_ov005_02221224, data_027e15bc;
+    extern M2C_UNK data_ov005_02221218, data_ov005_02221224, gFrameCounter;
     M2C_UNK func_0208116c(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02007ef4(void *, void *, M2C_UNK);
@@ -82,7 +82,7 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
 
     if (r5 != 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221218);
     if (r6 != 0) {
-        if (((M2C_UNK)data_027e15bc & 3) == 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221224);
+        if (((M2C_UNK)gFrameCounter & 3) == 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221224);
     }
     if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0) &&
         M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&data_0215c334, u8 *, 1) &&

@@ -1,9 +1,16 @@
 /* 23 functions from 0x020DC838 to 0x020DD4F8 (main), found by ds-decomp. */
 #include "common.h"
+static inline u16 SpriteFrame(void *p) {return (M2C_FIELD(p,u32 *,0x40)<<6)>>24;}
+static inline u32 SpriteBase(void *p) {return (u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28;}
+static inline u8 SpriteAvailable(void *p) {u8 r;if(SpriteBase(p)+2!=SpriteFrame(p))r=1;else r=0;return r;}
+static inline void SetSpriteFrame(void *p,u16 frame,s8 timer) {
+M2C_FIELD(p,s32 *,0x40)=(M2C_FIELD(p,s32 *,0x40)&~0x03fc0000)|((u32)(frame<<24)>>6);
+M2C_FIELD(p,s8 *,0x5a)=timer;
+}
 
 static inline void func_020dcc00(void *q) {
-    u32 base;
     s32 next;
+    u32 base;
     u32 value;
     s32 test;
     base = (u32)(M2C_FIELD(q, u8 *, 0x59) << 28) >> 28;
@@ -180,9 +187,12 @@ void func_020dcb68(void) {
     func_020dcae8();
 }
 
-M2C_UNK func_020dcb74(void *arg0) {
+/* Set up the matching/link menu: configure the 3D sprite bank, build the five
+   list rows, refresh the selection bars of the current row and initialise the
+   row's sprite animation. */
+void SetupMatchingMenu(void *entity) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-extern M2C_UNK data_0212d3a8, data_0212d3b0, data_0212d3c0, data_0212c608, data_0212c630;
+extern M2C_UNK gLinkPath, gMatchingNarcName, gMatchingScName, gMatchRowTemplate, gMatchWideRowTemplate;
 M2C_UNK func_01ff9ce8(s32), func_0200bc5c(void *);
 s32 func_020e3218(void *);
 M2C_UNK func_020814e4(void), func_02081528(void);
@@ -195,114 +205,228 @@ M2C_UNK func_020b1c44(s32,s32);
 M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
-s32 i, x, i2, y, end, color, test;
-void **saved, **sp0;
-void *sp4, *p, *item;
-u8 selected;
+s32 row, rowX, bar;
+void *selectedRow;
+s32 barX, barEnd, barColor, hasRows;
+void **savedEngine;
+void *panel;
+void **savedBarEngine;
+void *sprite;
+u8 selectedId;
 
-saved = gCur3DSpriteEngine;
+savedEngine = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineMain;
 func_01ff9ce8(1);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-func_0200bc5c(&data_0212d3a8);
-func_020e3218(&data_0212d3b0);
+func_0200bc5c(&gLinkPath);
+func_020e3218(&gMatchingNarcName);
 func_020814e4();
-func_02081590(func_020e3218(&data_0212d3c0), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+func_02081590(func_020e3218(&gMatchingScName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
 func_02081528();
 func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 32, 24, 5);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-gCur3DSpriteEngine = saved;
-M2C_FIELD(arg0, u16 *, 0x48) |= 32;
-if (func_020b20e0(0) == 0) test = 1; else test = 0;
-if (test) {
-    i = 0; x = 0;
+gCur3DSpriteEngine = savedEngine;
+M2C_FIELD(entity, u16 *, 0x48) |= 32;
+if (func_020b20e0(0) == 0) hasRows = 1; else hasRows = 0;
+if (hasRows) {
+    row = 0; rowX = 0;
     do {
-        p = func_020b22a4(0, x, &data_0212c608, i);
-        i++;
-        M2C_FIELD(p, void **, 0x10) = arg0;
-        x += 0x28;
-    } while (i < 4);
+        sprite = func_020b22a4(0, rowX, &gMatchRowTemplate, row);
+        row++;
+        M2C_FIELD(sprite, void **, 0x10) = entity;
+        rowX += 0x28;
+    } while (row < 4);
 }
-p = func_020b22a4(0, 0, &data_0212c630, 4);
-M2C_FIELD(p, void **, 0x10) = arg0;
-item = func_020b1c78(M2C_FIELD(arg0, s8 *, 0x43));
-if (item) {
-    sp4 = M2C_FIELD(item, void **, 0x10);
-    sp0 = gCur3DSpriteEngine;
-    y = 1;
+sprite = func_020b22a4(0, 0, &gMatchWideRowTemplate, 4);
+M2C_FIELD(sprite, void **, 0x10) = entity;
+selectedRow = func_020b1c78(M2C_FIELD(entity, s8 *, 0x43));
+if (selectedRow) {
+    panel = M2C_FIELD(selectedRow, void **, 0x10);
+    savedBarEngine = gCur3DSpriteEngine;
+    barX = 1;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    end = 5;
-    i2 = 0;
+    barEnd = 5;
+    bar = 0;
     do {
-        if (M2C_FIELD(item, u8 *, 0) != i2) color = 5; else color = 6;
-        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (y << 6), 30, (u16)(end - y), (u16)color);
-        i2++;
-        y = (s16)(y + 5);
-        end = (s16)(end + 5);
-    } while (i2 < 4);
+        if (M2C_FIELD(selectedRow, u8 *, 0) != bar) barColor = 5; else barColor = 6;
+        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
+        bar++;
+        barX = (s16)(barX + 5);
+        barEnd = (s16)(barEnd + 5);
+    } while (bar < 4);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-    gCur3DSpriteEngine = sp0;
-    selected = M2C_FIELD(item, u8 *, 0);
-    if (selected != M2C_FIELD(sp4, s8 *, 0x43)) {
-        M2C_FIELD(sp4, s8 *, 0x43) = selected;
+    gCur3DSpriteEngine = savedBarEngine;
+    selectedId = M2C_FIELD(selectedRow, u8 *, 0);
+    if (M2C_FIELD(panel, s8 *, 0x43) != selectedId) {
+        M2C_FIELD(panel, s8 *, 0x43) = selectedId;
         PlaySoundEffect(0x10019);
     }
 }
 func_020b1c44(0, 0);
-p = M2C_FIELD(arg0, void **, 0x50);
-func_02088f1c(p);
-p = M2C_FIELD(arg0, void **, 0x50);
-func_020dcc00(p);
-M2C_FIELD(p, u8 *, 0x5a) = 0;
-p = M2C_FIELD(arg0, void **, 0x58);
-func_02088f1c(p);
-p = M2C_FIELD(arg0, void **, 0x58);
-func_020dcc00(p);
-M2C_FIELD(p, u8 *, 0x5a) = 0;
-func_0208b758(M2C_FIELD(arg0, void **, 0x64), 0x44000010);
-func_02088f1c(M2C_FIELD(arg0, void **, 0x64));
-if (GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68))) {
-    s16 result = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-    p = M2C_FIELD(arg0, void **, 0x68);
-    M2C_FIELD(p, u16 *, 0xe) = result;
-    M2C_FIELD(p, u16 *, 0x10) = 0;
-    M2C_FIELD(p, u16 *, 0xc) = 12;
-    M2C_FIELD(p, u16 *, 2) = M2C_FIELD(p, u16 *, 4);
+sprite = M2C_FIELD(entity, void **, 0x50);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x50);
+func_020dcc00(sprite);
+M2C_FIELD(sprite,u8 *,0x5a)=0;
+sprite = M2C_FIELD(entity, void **, 0x58);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x58);
+func_020dcc00(sprite);
+M2C_FIELD(sprite,u8 *,0x5a)=0;
+func_0208b758(M2C_FIELD(entity, void **, 0x64), 0x44000010);
+func_02088f1c(M2C_FIELD(entity, void **, 0x64));
+if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
+    s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));
+    sprite = M2C_FIELD(entity, void **, 0x68);
+    M2C_FIELD(sprite, u16 *, 0xe) = result;
+    M2C_FIELD(sprite, u16 *, 0x10) = 0;
+    M2C_FIELD(sprite, u16 *, 0xc) = 12;
+    M2C_FIELD(sprite, u16 *, 2) = M2C_FIELD(sprite, u16 *, 4);
+sprite = M2C_FIELD(entity, void **, 0x5c);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x5c);
+if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
+else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);
+} else {
+sprite = M2C_FIELD(entity, void **, 0x5c);
+{s16 py=M2C_FIELD(sprite,s16 *,0x52); s16 px=M2C_FIELD(sprite,s16 *,0x50); M2C_FIELD(sprite,s16 *,0x34)=px; M2C_FIELD(sprite,s16 *,0x36)=py;}
+sprite = M2C_FIELD(entity, void **, 0x5c);
+if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
+else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);
 }
-p = M2C_FIELD(arg0, void **, 0x5c);
-func_02088f1c(p);
-p = M2C_FIELD(arg0, void **, 0x5c);
-func_020dcc00(p);
-M2C_FIELD(p, u8 *, 0x5a) = 0;
-p = M2C_FIELD(arg0, void **, 0x5c);
-M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x50);
-M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x52);
-p = M2C_FIELD(arg0, void **, 0x5c);
-func_020dcc00(p);
-M2C_FIELD(p, u8 *, 0x5a) = 0;
-M2C_FIELD(arg0, u16 *, 0x48) &= ~0x2;
-func_ov009_02224560(0, 0, 0);
+M2C_FIELD(entity, u16 *, 0x48) &= ~0x2;
+M2C_FIELD(entity,s8 *,0x41)=0;
+func_ov009_02224560(0,0,0);
 }
 
 void func_020dd004(void) {
 
 }
 
-M2C_UNK func_020dd008(void) { return (M2C_UNK)0; }
+/* Builds the alternate matching/link menu: configures the 3D sprite bank and its
+   files, creates the five list rows, redraws the selection bars of the current
+   row and resets that row's sprite animation. */
+void SetupMatchingMenuAlt(void *entity) {
+extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
+extern M2C_UNK gLinkPathAlt, gMatchingNarcNameAlt, gMatchingScNameAlt, gMatchRowTemplate, gMatchWideRowTemplate;
+M2C_UNK func_01ff9ce8(s32), func_0200bc5c(void *);
+s32 func_020e3218(void *);
+M2C_UNK func_020814e4(void), func_02081528(void);
+M2C_UNK func_02081590(s32,s32), func_02080944(s32,s32,s32,s32);
+s32 func_020b20e0(s32);
+void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
+M2C_UNK func_020808dc(s32,s32,u16,u16);
+void PlaySoundEffect(s32);
+M2C_UNK func_020b1c44(s32,s32);
+M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
+s16 GetSpriteAnimValue(void *);
+void func_ov009_02224560(s32,s32,s32);
+s32 row, rowX, bar;
+void *selectedRow;
+s32 barX, barEnd, barColor, hasRows;
+void **savedEngine;
+void *panel;
+void **savedBarEngine;
+void *sprite;
+u8 selectedId;
+
+savedEngine = gCur3DSpriteEngine;
+gCur3DSpriteEngine = g3DSpriteEngineMain;
+func_01ff9ce8(1);
+M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+func_0200bc5c(&gLinkPathAlt);
+func_020e3218(&gMatchingNarcNameAlt);
+func_020814e4();
+func_02081590(func_020e3218(&gMatchingScNameAlt), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
+func_02081528();
+func_02080944(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 32, 24, 5);
+M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
+gCur3DSpriteEngine = savedEngine;
+M2C_FIELD(entity, u16 *, 0x48) |= 32;
+if (func_020b20e0(0) == 0) hasRows = 1; else hasRows = 0;
+if (hasRows) {
+    row = 0; rowX = 0;
+    do {
+        sprite = func_020b22a4(0, rowX, &gMatchRowTemplate, row);
+        row++;
+        M2C_FIELD(sprite, void **, 0x10) = entity;
+        rowX += 0x28;
+    } while (row < 4);
+}
+sprite = func_020b22a4(0, 0, &gMatchWideRowTemplate, 4);
+M2C_FIELD(sprite, void **, 0x10) = entity;
+selectedRow = func_020b1c78(M2C_FIELD(entity, s8 *, 0x43));
+if (selectedRow) {
+    panel = M2C_FIELD(selectedRow, void **, 0x10);
+    savedBarEngine = gCur3DSpriteEngine;
+    barX = 1;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    barEnd = 5;
+    bar = 0;
+    do {
+        if (M2C_FIELD(selectedRow, u8 *, 0) != bar) barColor = 5; else barColor = 6;
+        func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 2 + (barX << 6), 30, (u16)(barEnd - barX), (u16)barColor);
+        bar++;
+        barX = (s16)(barX + 5);
+        barEnd = (s16)(barEnd + 5);
+    } while (bar < 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
+    gCur3DSpriteEngine = savedBarEngine;
+    selectedId = M2C_FIELD(selectedRow, u8 *, 0);
+    if (M2C_FIELD(panel, s8 *, 0x43) != selectedId) {
+        M2C_FIELD(panel, s8 *, 0x43) = selectedId;
+        PlaySoundEffect(0x10019);
+    }
+}
+func_020b1c44(0, 0);
+sprite = M2C_FIELD(entity, void **, 0x50);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x50);
+func_020dcc00(sprite);
+M2C_FIELD(sprite,u8 *,0x5a)=0;
+sprite = M2C_FIELD(entity, void **, 0x58);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x58);
+func_020dcc00(sprite);
+M2C_FIELD(sprite,u8 *,0x5a)=0;
+func_0208b758(M2C_FIELD(entity, void **, 0x64), 0x44000010);
+func_02088f1c(M2C_FIELD(entity, void **, 0x64));
+if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
+    s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));
+    sprite = M2C_FIELD(entity, void **, 0x68);
+    M2C_FIELD(sprite, u16 *, 0xe) = result;
+    M2C_FIELD(sprite, u16 *, 0x10) = 0;
+    M2C_FIELD(sprite, u16 *, 0xc) = 12;
+    M2C_FIELD(sprite, u16 *, 2) = M2C_FIELD(sprite, u16 *, 4);
+sprite = M2C_FIELD(entity, void **, 0x5c);
+func_02088f1c(sprite);
+sprite = M2C_FIELD(entity, void **, 0x5c);
+if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
+else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);
+} else {
+sprite = M2C_FIELD(entity, void **, 0x5c);
+{s16 py=M2C_FIELD(sprite,s16 *,0x52); s16 px=M2C_FIELD(sprite,s16 *,0x50); M2C_FIELD(sprite,s16 *,0x34)=px; M2C_FIELD(sprite,s16 *,0x36)=py;}
+sprite = M2C_FIELD(entity, void **, 0x5c);
+if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
+else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);
+}
+M2C_FIELD(entity, u16 *, 0x48) &= ~0x2;
+M2C_FIELD(entity,s8 *,0x41)=0;
+}
 
 void func_020dd48c(void) {
-    M2C_UNK func_020dd008();
-    func_020dd008();
+    void SetupMatchingMenuAlt();
+    SetupMatchingMenuAlt();
 }
 
 void func_020dd498(void) {
-    M2C_UNK func_020dcb74();
-    func_020dcb74();
+    void SetupMatchingMenu();
+    SetupMatchingMenu();
 }
 
 void func_020dd4a4(void) {
-    M2C_UNK func_020dcb74();
-    func_020dcb74();
+    void SetupMatchingMenu();
+    SetupMatchingMenu();
 }
 
 void func_020dd4b0(void) {
@@ -314,13 +438,13 @@ void func_020dd4bc(void) {
 }
 
 void func_020dd4c8(void) {
-    M2C_UNK func_020dd008();
-    func_020dd008();
+    void SetupMatchingMenuAlt();
+    SetupMatchingMenuAlt();
 }
 
 void func_020dd4d4(void) {
-    M2C_UNK func_020dd008();
-    func_020dd008();
+    void SetupMatchingMenuAlt();
+    SetupMatchingMenuAlt();
 }
 
 void func_020dd4e0(void) {

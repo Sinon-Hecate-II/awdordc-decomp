@@ -97,7 +97,7 @@ M2C_UNK func_ov007_02216e08(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *out_a, M2C_UN
 void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *arg3, M2C_UNK *arg4) {
     s32 func_ov007_02214e24(void);
     s32 func_ov007_02216234(s32, s32, s32, s32, s32, M2C_UNK *, M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov007_022167b8(s16, s16, s16, s16, M2C_UNK);
+    M2C_UNK DrawOrthogonalPath(s16, s16, s16, s16, M2C_UNK);
     M2C_UNK func_ov007_0221b8c0(s32, s32);
     M2C_UNK func_ov007_02215704(s32, s32);
     M2C_UNK func_ov007_02215254(s32, s32, s32);
@@ -111,14 +111,14 @@ void func_ov007_02217110(M2C_UNK *arg0, M2C_UNK *arg1, M2C_UNK *arg2, M2C_UNK *a
 
     func_ov007_02214e24();
     if (func_ov007_02216234(((MapPoint *)arg0)->x, ((MapPoint *)arg0)->y, ((MapPoint *)arg1)->x, ((MapPoint *)arg1)->y, 4, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-        func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+        DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
     }
     if (((MapPoint *)arg2)->x != 0xFF && ((MapPoint *)arg3)->x != 0xFF && ((MapPoint *)arg4)->x != 0xFF) {
         if (func_ov007_02216234(((MapPoint *)arg2)->x, ((MapPoint *)arg2)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-            func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+            DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
         }
         if (func_ov007_02216234(((MapPoint *)arg3)->x, ((MapPoint *)arg3)->y, ((MapPoint *)arg4)->x, ((MapPoint *)arg4)->y, 2, (M2C_UNK *)&sp18, (M2C_UNK *)&sp14, (M2C_UNK *)&sp10)) {
-            func_ov007_022167b8(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
+            DrawOrthogonalPath(sp18.x, sp18.y, sp14.x, sp14.y, (M2C_UNK)sp10);
         }
     }
 

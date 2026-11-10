@@ -19,7 +19,7 @@ void func_ov000_02180778(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219619c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -31,7 +31,7 @@ void func_ov000_02180778(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -47,7 +47,7 @@ void func_ov000_021807d8(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
     M2C_UNK func_ov000_0218ca94();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021962f8();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -59,7 +59,7 @@ void func_ov000_021807d8(void) {
     func_ov000_02198c60();
     func_ov000_0218edd8();
     func_ov000_0218ca94();
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     temp_r3 = *gCurrentMap;
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
@@ -99,7 +99,7 @@ void func_ov000_02180894(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218edd8();
 M2C_UNK func_ov000_0218ca94();
-M2C_UNK func_ov000_0218d4b4();
+M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_021963f8();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_02194370();
@@ -114,7 +114,7 @@ void *temp_r3;
 func_ov000_02198c60();
 func_ov000_0218edd8();
 func_ov000_0218ca94();
-func_ov000_0218d4b4();
+FindBestMoveTarget();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) { func_ov000_02186a18(); }
 func_ov000_021963f8();
@@ -153,7 +153,7 @@ void func_ov000_02180924(void) {
 void func_ov000_02180934(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218edd8();
-M2C_UNK func_ov000_0218d4b4();
+M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_021954a4();
 M2C_UNK func_ov000_02194370();
 M2C_UNK func_ov000_0218ae58();
@@ -169,7 +169,7 @@ func_ov000_02198c60();
 func_ov000_0218edd8();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
-func_ov000_0218d4b4();
+FindBestMoveTarget();
 func_ov000_021954a4();
 func_ov000_02194370();
 func_ov000_0218ae58();
@@ -211,7 +211,7 @@ void func_ov000_021809b0(void) {
 void func_ov000_02180a28(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218edd8();
-M2C_UNK func_ov000_0218d4b4();
+M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_0219553c();
 M2C_UNK func_ov000_02194370();
 M2C_UNK func_ov000_0218ae58();
@@ -227,7 +227,7 @@ func_ov000_02198c60();
 func_ov000_0218edd8();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
-func_ov000_0218d4b4();
+FindBestMoveTarget();
 func_ov000_0219553c();
 func_ov000_02194370();
 func_ov000_0218ae58();
@@ -240,7 +240,7 @@ func_ov000_0218b02c();
 void func_ov000_02180aa4(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218edd8();
-M2C_UNK func_ov000_0218d4b4();
+M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_02195750();
 M2C_UNK func_ov000_02194370();
 M2C_UNK func_ov000_0218ae58();
@@ -256,7 +256,7 @@ func_ov000_02198c60();
 func_ov000_0218edd8();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
-func_ov000_0218d4b4();
+FindBestMoveTarget();
 func_ov000_02195750();
 func_ov000_02194370();
 func_ov000_0218ae58();
@@ -269,7 +269,7 @@ func_ov000_0218b02c();
 void func_ov000_02180b20(void) {
 M2C_UNK func_ov000_02198c60();
 M2C_UNK func_ov000_0218edd8();
-M2C_UNK func_ov000_0218d4b4();
+M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_02195ea4();
 M2C_UNK func_ov000_0218ae58();
 M2C_UNK func_ov000_021954a4();
@@ -285,7 +285,7 @@ func_ov000_02198c60();
 func_ov000_0218edd8();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { func_ov000_0218ca94(); }
-func_ov000_0218d4b4();
+FindBestMoveTarget();
 func_ov000_02195ea4();
 func_ov000_0218ae58();
 func_ov000_021954a4();
@@ -298,7 +298,7 @@ func_ov000_0218b02c();
 void func_ov000_02180b9c(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -314,7 +314,7 @@ void func_ov000_02180b9c(void) {
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
     }
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     func_ov000_0219604c();
     func_ov000_02194370();
     func_ov000_0218ae58();
@@ -339,7 +339,7 @@ void func_ov000_02180c10(void) {
 void func_ov000_02180c74(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219619c();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -355,7 +355,7 @@ void func_ov000_02180c74(void) {
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
     }
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     func_ov000_0219619c();
     func_ov000_02194370();
     func_ov000_0218ae58();
@@ -366,7 +366,7 @@ void func_ov000_02180c74(void) {
 void func_ov000_02180ce8(void) {
     M2C_UNK func_ov000_02198c60();
     M2C_UNK func_ov000_0218edd8();
-    M2C_UNK func_ov000_0218d4b4();
+    M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_021962f8();
     M2C_UNK func_ov000_02194370();
     M2C_UNK func_ov000_0218ae58();
@@ -382,7 +382,7 @@ void func_ov000_02180ce8(void) {
     if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
         func_ov000_0218ca94();
     }
-    func_ov000_0218d4b4();
+    FindBestMoveTarget();
     func_ov000_021962f8();
     func_ov000_02194370();
     func_ov000_0218ae58();
@@ -416,11 +416,11 @@ void func_ov000_02180d5c(void) {
 }
 
 void func_ov000_02180dcc(void) {
- M2C_UNK func_ov000_02198c60(); M2C_UNK func_ov000_0218edd8(); M2C_UNK func_ov000_0218ca94(); M2C_UNK func_ov000_0218d4b4(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK func_ov000_0218ae58(); M2C_UNK func_ov000_021965dc(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK func_ov000_0218b02c();
+ M2C_UNK func_ov000_02198c60(); M2C_UNK func_ov000_0218edd8(); M2C_UNK func_ov000_0218ca94(); M2C_UNK FindBestMoveTarget(); M2C_UNK func_ov000_021963f8(); M2C_UNK func_ov000_021954a4(); M2C_UNK func_ov000_02194370(); M2C_UNK func_ov000_0218ae58(); M2C_UNK func_ov000_021965dc(); M2C_UNK func_ov000_0219553c(); M2C_UNK func_ov000_021967fc(); M2C_UNK func_ov000_0218b02c();
  s32 func_020a85c8(u32); extern void **gCurrentMap; void *p;
  func_ov000_02198c60(); func_ov000_0218edd8(); p=*gCurrentMap;
  if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2 || func_020a85c8((u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26)!=0) func_ov000_0218ca94();
- func_ov000_0218d4b4(); func_ov000_021963f8(); func_ov000_021954a4(); func_ov000_02194370(); func_ov000_0218ae58(); func_ov000_021965dc(); func_ov000_0219553c(); func_ov000_021967fc(); func_ov000_0218b02c();
+ FindBestMoveTarget(); func_ov000_021963f8(); func_ov000_021954a4(); func_ov000_02194370(); func_ov000_0218ae58(); func_ov000_021965dc(); func_ov000_0219553c(); func_ov000_021967fc(); func_ov000_0218b02c();
 }
 
 void func_ov000_02180e4c(void) {
@@ -463,7 +463,7 @@ func_ov000_0218f0ec();
 func_ov000_0219137c();
 }
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8(); func_ov000_0218f37c(); func_ov000_0218fbd4();
+func_ov000_0218edd8(); func_ov000_0218f37c(); SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
 }
 
@@ -479,7 +479,7 @@ M2C_UNK func_ov000_021962f8();
 M2C_UNK func_ov000_02190f74();
 M2C_UNK func_ov000_0218edd8();
 M2C_UNK func_ov000_0218f37c();
-M2C_UNK func_ov000_0218fbd4();
+M2C_UNK SelectAIDestination();
 M2C_UNK func_ov000_02186a18();
 M2C_UNK func_ov000_021911bc();
 M2C_UNK func_ov000_0218d908();
@@ -497,7 +497,7 @@ if(type==6){func_ov000_0218cfec();return;}
 if(type==8){func_ov000_0218f0ec();func_ov000_0219137c();func_ov000_0218ca94();func_ov000_021962f8();return;}
 if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)<=60)func_ov000_02190f74();
-func_ov000_0218edd8();func_ov000_0218f37c();func_ov000_0218fbd4();
+func_ov000_0218edd8();func_ov000_0218f37c();SelectAIDestination();
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60)func_ov000_02190f74();
 p=*gCurrentMap;done=0;
 players=(PlayerRecord02180738 *)((u8 *)p+0x67a4);

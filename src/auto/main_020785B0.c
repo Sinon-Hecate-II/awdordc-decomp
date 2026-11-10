@@ -15,14 +15,14 @@ extern u8 data_02141f08[1920], data_02141788[1920];
 extern s16 gSinCosTable[2048];
 extern u32 gTerrainClassFlags[][2];
 
-extern u32 data_027e15bc;
+extern u32 gFrameCounter;
 extern u8 data_02140f70[24];
 
 void func_020785b0(void) {
     s32 func_0207cfb8(s32);
     extern s32 *gCurrentMap;
     s32 var_r0;
-    if ((s32)(data_027e15bc % 140) < 60) {
+    if ((s32)(gFrameCounter % 140) < 60) {
         data_02140f70[1] = 0;
     } else {
         data_02140f70[1] = 1;
@@ -38,7 +38,7 @@ void func_020785b0(void) {
 }
 
 void func_0207863c(void) {
-    data_02140f70[2] = (data_027e15bc / 12) & 3;
+    data_02140f70[2] = (gFrameCounter / 12) & 3;
 }
 
 #pragma scheduling on
@@ -191,8 +191,8 @@ switch(entry->kind){
 case 3:
 a=(x<<4)*48;b=(y<<4)*48;c=a+dx*768;d=b+dy*768;
 color=func_020ae22c(M2C_FIELD(arg0,u8 *,4));
-if(((*(volatile u32 *)&data_027e15bc)&63)<32)alpha=EaseInterpolate(4,2,12,(*(volatile u32 *)&data_027e15bc)&63,32);
-else alpha=EaseInterpolate(1,12,2,((*(volatile u32 *)&data_027e15bc)&63)-32,32);
+if(((*(volatile u32 *)&gFrameCounter)&63)<32)alpha=EaseInterpolate(4,2,12,(*(volatile u32 *)&gFrameCounter)&63,32);
+else alpha=EaseInterpolate(1,12,2,((*(volatile u32 *)&gFrameCounter)&63)-32,32);
 if(!(alpha=(u8)alpha))return;
 *(volatile u32*)0x40004a8=0x2d00000;
 *(volatile u32*)0x40004a4=0x70000c0|(alpha<<16);
@@ -277,7 +277,7 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
 #pragma scheduling on
 void func_020791ac(Vec3 *arg0,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
 s32 func_020a7298(s32,u8);s32 func_0207cfb8(s32);s32 func_0207c8ec(s32,s32);
-void func_020793f0(UnitRenderContext *);void func_0207971c(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
+void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
 Vec3 pos;UnitRenderContext ctx; s32 variant;
 pos=*arg0;
@@ -292,7 +292,7 @@ ctx.side=unit->side;
 ctx.color=M2C_FIELD(*gCurrentMap+player*140,u8 *,0x67cc);
 ctx.extra=extra;ctx.mode=mode;
 ctx.hp=unit->hp==0?0:func_0207c8ec(unit->hp-1,10)+1;
-func_020793f0(&ctx);pos.x-=192;func_0207971c(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);
+func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);
 }
 void func_02079310(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
 void func_02079db0(s32,s32,s32,s32,s32,s32);s32 func_020cfc0c(s32);

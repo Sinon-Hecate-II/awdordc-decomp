@@ -9,60 +9,62 @@ extern const Tiles75a20 data_ov000_021ae2b2;
 /* Initializes a unit entry's nested battle state from a character template and stat table. */
 #pragma push
 #pragma optimization_level 4
-void func_ov000_02175310(void *arg0, void *arg1) {
+/* Fills the unit info/status struct at entry->0x10 from a live unit pointer:
+ * owner, template, selected state, attack availability and all displayed stats. */
+void FillUnitInfo(void *arg0, void *arg1) {
     extern s32 *gCurrentMap;
-    void *self = arg0;
-    void *p = arg1;
-    s32 low6;
-    s32 c, c2, tmp;
-    void *state;
+    void *entry = arg0;
+    void *unit = arg1;
+    s32 kind;
+    s32 owner, tmp2, value;
+    void *unusedState;
 
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x8) = func_020a735c(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x50) = func_020a7310(p);
-    c = func_020a7310(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x0) = (s32)M2C_FIELD((c * 0x8C) + *gCurrentMap, u8 *, 0x67CD);
-    if (IsUnitSelected(p) != 0) {
-        c2 = func_020a7310(p);
-        M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0xC) = (s32)((UnitByte75310 *)((c2 * 0x8C) + *gCurrentMap + 0x6810))->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x8) = func_020a735c(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50) = GetUnitOwner(unit);
+    owner = GetUnitOwner(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x0) = (s32)M2C_FIELD((owner * 0x8C) + *gCurrentMap, u8 *, 0x67CD);
+    if (IsUnitSelected(unit) != 0) {
+        tmp2 = GetUnitOwner(unit);
+        M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0xC) = (s32)((UnitByte75310 *)((tmp2 * 0x8C) + *gCurrentMap + 0x6810))->value;
     } else {
-        M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0xC) = -1;
+        M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0xC) = -1;
     }
-    c = func_020d0468(M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x50), M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    if (c != -1) M2C_FIELD(M2C_FIELD(self, void **, 0x10), u8 *, 0x49) = 1;
-    else M2C_FIELD(M2C_FIELD(self, void **, 0x10), u8 *, 0x49) = 0;
+    owner = func_020d0468(M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50), M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    if (owner != -1) M2C_FIELD(M2C_FIELD(entry, void **, 0x10), u8 *, 0x49) = 1;
+    else M2C_FIELD(M2C_FIELD(entry, void **, 0x10), u8 *, 0x49) = 0;
 
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x10) = func_020a789c(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x14) = func_020a78ac(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x18) = func_020a78c4(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x1C) = func_020a78d4(p);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x20) = func_020a25d8(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x24) = func_020a2608(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    low6 = ((UnitKind75310 *)p)->value;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x28) = func_020a7b24((s32)low6);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x2C) = func_020a2698(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    low6 = ((UnitKind75310 *)p)->value;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x30) = func_020a7bf8((s32)low6);
-    low6 = ((UnitKind75310 *)p)->value;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x34) = func_020a7bec((s32)low6);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x38) = func_020a26c8(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x3C) = func_020a78ec(p);
-    low6 = ((UnitKind75310 *)p)->value;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x40) = func_020a7b0c((s32)low6);
-    tmp = func_020a26f8(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    c2 = func_020a7848(p, M2C_FIELD(p, u8 *, 1), M2C_FIELD(p, u8 *, 2));
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x44) = tmp + c2;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x4C) = func_020a788c(p);
-    low6 = ((UnitKind75310 *)p)->value;
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x54) = func_020a7c98((s32)low6);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x10) = func_020a789c(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = func_020a78ac(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x18) = func_020a78c4(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = func_020a78d4(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = func_020a25d8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = func_020a2608(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    kind = ((UnitKind75310 *)unit)->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = func_020a7b24((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = func_020a2698(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    kind = ((UnitKind75310 *)unit)->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8((s32)kind);
+    kind = ((UnitKind75310 *)unit)->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = func_020a26c8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = func_020a78ec(unit);
+    kind = ((UnitKind75310 *)unit)->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = func_020a7b0c((s32)kind);
+    value = func_020a26f8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    tmp2 = func_020a7848(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = value + tmp2;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = func_020a788c(unit);
+    kind = ((UnitKind75310 *)unit)->value;
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = func_020a7c98((s32)kind);
 
-    tmp = func_020a334c(func_020a7310(p));
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s8 *, 0x48) = (s8)tmp;
-    c = M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x50);
-    M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x60) = (s32)M2C_FIELD((c * 0x8C) + *gCurrentMap, u8 *, 0x67C1);
-    low6 = ((UnitKind75310 *)p)->value;
-    func_ov000_02176af8(self, (s32)low6);
-    if (M2C_FIELD(self, s32 *, 4) == 0) {
-        M2C_FIELD(self, s32 *, 4) = 1;
+    value = func_020a334c(GetUnitOwner(unit));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x48) = (s8)value;
+    owner = M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x60) = (s32)M2C_FIELD((owner * 0x8C) + *gCurrentMap, u8 *, 0x67C1);
+    kind = ((UnitKind75310 *)unit)->value;
+    BuildUnitRecommendations(entry, (s32)kind);
+    if (M2C_FIELD(entry, s32 *, 4) == 0) {
+        M2C_FIELD(entry, s32 *, 4) = 1;
     }
 }
 #pragma pop
@@ -74,7 +76,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     s32 func_020a7c50(s32);
     s32 func_020a7c68(s32);
     s32 func_020a7c98(s32);
-    M2C_UNK func_ov000_02176af8(void *, s32);
+    M2C_UNK BuildUnitRecommendations(void *, s32);
     extern s32 *gCurrentMap;
     void *state;
 
@@ -102,7 +104,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x48) = 0;
     state = M2C_FIELD(entry, void **, 0x10);
     M2C_FIELD(state, s32 *, 0x60) = (s32) M2C_FIELD(((M2C_FIELD(state, s32 *, 0x50) * 0x8C) + *gCurrentMap), u8 *, 0x67C1);
-    func_ov000_02176af8(entry, statIndex);
+    BuildUnitRecommendations(entry, statIndex);
     if (M2C_FIELD(entry, s32 *, 4) == 0) {
         M2C_FIELD(entry, s32 *, 4) = 1;
     }

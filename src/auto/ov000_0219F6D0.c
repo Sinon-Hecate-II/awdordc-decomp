@@ -20,7 +20,7 @@ s32 func_ov000_0219f6fc(void) {
 
 s32 func_ov000_0219f728(void) {
     void func_020cc6a4(void);
-    s32 func_020d19b4(u16);
+    s32 IsPlayerHuman(u16);
     void func_020cf5ec(s32);
     s32 func_020cd674(void);
     extern u16 data_02168f14;
@@ -40,7 +40,7 @@ s32 func_ov000_0219f728(void) {
     s32 limit = 0x1e;
 
     if ((((u32)(data_02168f14 << 22)) >> 31) == 0) {
-        if (func_020d19b4(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a4)) != 0) {
+        if (IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a4)) != 0) {
             if ((u8)(data_ov000_021df7d0[0] + 0xfc) <= 1) {
                 M2C_FIELD(data_ov000_021df580, u8 *, 1) = 3;
             } else if (data_ov000_021df7d0[0] == 0x13) {
@@ -187,39 +187,39 @@ func_020bb608(n);
 
 void func_ov000_0219fc64(void) {
 void func_020cbf94(u32);
-s32 func_020d19b4(u16);
+s32 IsPlayerHuman(u16);
 M2C_UNK func_02091c20(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
 func_020cbf94(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,4)|=0x20;
-if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x26,1);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x26,1);
 }
 
 void func_ov000_0219fcdc(void) {
 void func_020cbfa4(u32);
-s32 func_020d19b4(u16);
+s32 IsPlayerHuman(u16);
 M2C_UNK func_02091c20(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
 func_020cbfa4(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
 p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
 M2C_FIELD(p,u16 *,4)&=~0x20;
-if(func_020d19b4(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x25,1);
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) func_02091c20(0x25,1);
 }
 
 void func_ov000_0219fd54(void) {
     M2C_UNK func_02091c20(M2C_UNK, M2C_UNK);
     M2C_UNK func_020b576c(s32);
-    s32 func_020d19b4(u16);
+    s32 IsPlayerHuman(u16);
     s32 func_ov000_0216aa44(M2C_UNK, s32);
     extern void **gCurrentMap;
     if (func_ov000_0216aa44(0x31, M2C_FIELD(*gCurrentMap, s32 *, 0x52D0)) != 0) {
         return;
     }
     func_020b576c(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
         return;
     }
     func_02091c20(0x11, 1);
@@ -241,13 +241,13 @@ void func_ov000_0219fdc8(void) {
     s32 func_ov000_021a20d4(void);
     void func_ov000_021a07c0(s32);
     void func_ov000_021a029c(void);
-    extern u8 *data_ov000_021df578;
+    extern u8 *gAiState;
     extern void *data_ov000_021df580;
     extern u8 data_ov000_021df7d0[];
     extern void **gCurrentMap;
 
     void ***addrMap = (void ***)&gCurrentMap;
-    u8 **addr578 = &data_ov000_021df578;
+    u8 **addr578 = &gAiState;
     register s32 zero = 0;
     register s32 one = 1;
 
@@ -353,23 +353,23 @@ void func_ov000_0219fdc8(void) {
 }
 
 void func_ov000_021a01c0(void) {
-extern u8 *data_ov000_021df578;
-extern u8 data_ov000_021dfd94[];
-u8 *q=data_ov000_021df578;
+extern u8 *gAiState;
+extern u8 gAiTargetGroups[];
+u8 *q=gAiState;
 s32 i;
-u8 *p=data_ov000_021dfd94;
+u8 *p=gAiTargetGroups;
 for(i=0;i<q[1];i++,p+=8) p[1]=0;
 }
 
 void func_ov000_021a0204(void) {
-    extern u8 *data_ov000_021df578;
-    extern u8 data_ov000_021e00ac;
+    extern u8 *gAiState;
+    extern u8 gAiTargetCandidates;
     u8 *count;
     s32 i;
     u8 *p;
     u8 value;
-    count = data_ov000_021df578;
-    p = &data_ov000_021e00ac;
+    count = gAiState;
+    p = &gAiTargetCandidates;
     i = 0;
     if ((s32)*count <= 0) return;
     do {
@@ -381,14 +381,14 @@ void func_ov000_021a0204(void) {
 }
 
 void func_ov000_021a0250(void) {
-    extern u8 *data_ov000_021df578;
-    extern u8 data_ov000_021e00ac;
+    extern u8 *gAiState;
+    extern u8 gAiTargetCandidates;
     u8 *count;
     s32 i;
     u8 *p;
     u8 value;
-    count = data_ov000_021df578;
-    p = &data_ov000_021e00ac;
+    count = gAiState;
+    p = &gAiTargetCandidates;
     i = 0;
     if ((s32)*count <= 0) return;
     do {

@@ -280,8 +280,8 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     void func_02026558(u16 *, u16 *, u16 *, s32);
     void func_0202667c(u16 *, u16 *, s32);
     void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
-    extern u16 *(*data_021372a4)(s32);
-    extern void (*data_021372d0)(void *);
+    extern u16 *(*gAlloc)(s32);
+    extern void (*gFree)(void *);
 
     s32 var_r6;
     u16 *temp_r4;
@@ -290,7 +290,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
     s32 temp_r11;
 
     sp8 = (u32)arg1;
-    temp_r4 = data_021372a4(arg3 * 8);
+    temp_r4 = gAlloc(arg3 * 8);
     if (temp_r4 == 0) {
         return;
     }
@@ -323,7 +323,7 @@ void func_020269dc(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
             var_r6 += 1;
         } while ((u32)var_r6 < (u32)(arg3 * 16));
     }
-    data_021372d0(temp_r4);
+    gFree(temp_r4);
 }
 #pragma scheduling reset
 void func_02026b70(u16 *arg0, u16 *arg1, u16 *arg2, s32 arg3, u16 *arg4) {
@@ -425,8 +425,8 @@ void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     void func_020267fc(u16 *, u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026b70(u16 *, u16 *, u16 *, s32, u16 *);
     void func_02026cbc(u16 *, u16 *, s32, s32, s32, u16 *, u16 *, u16 *, u16 *);
-    extern u16 *(*data_021372a4)(s32);
-    extern void (*data_021372d0)(void *);
+    extern u16 *(*gAlloc)(s32);
+    extern void (*gFree)(void *);
 
     s32 n = arg3;
     u16 *buf;
@@ -439,7 +439,7 @@ void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     u16 *sp24;
     u16 *r5;
  
-    buf = data_021372a4(n * 0x16);
+    buf = gAlloc(n * 0x16);
     if (buf == 0) {
         return;
     }
@@ -480,7 +480,7 @@ void func_02026de4(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     }
     func_02026cbc((u16 *)arg0, sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
 
-    data_021372d0(buf);
+    gFree(buf);
 }
 #pragma pop
 void func_02026ff0(s16 *dst, u8 *src, s32 count, s32 size) {

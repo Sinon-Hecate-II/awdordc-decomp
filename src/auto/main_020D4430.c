@@ -296,7 +296,7 @@ u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,
 void func_020d5068(void);
 void func_020d4dfc(void){extern void **gCurrentMap;switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:func_020d4f4c();break;case 1:func_020d5068();break;case 2:func_020d50bc();break;case 3:func_020d5304();break;case 4:func_020d61ac();break;case 5:func_020d6208();break;case 6:func_020d6310();break;case 7:func_020d6350();break;case 8:func_020d5430();break;case 9:func_020d54b4();break;case 10:func_020d54b8();break;}}
 
-int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!func_020d19b4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(func_020946d0())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
+int func_020d4ea8(void){extern void **gCurrentMap;u16 state;if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16*,0x52a4)))return 2;if(func_020946d0())return 3;state=M2C_FIELD(*gCurrentMap,u16*,0x52b0);if(state==12||state==13||state==20){switch(M2C_FIELD(*gCurrentMap,u16*,0x52b4)){case 0:case 2:case 3:return 0;case 4:case 5:return 1;}}return 3;}
 
 void func_020d4f4c(void) {
 s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 func_020bd560(void);
@@ -372,7 +372,7 @@ void func_020d50bc(void) {
  keys|=func_020bd684();
  if(keys&0x10){
  m=*gCurrentMap;
- func_020d5ef8(M2C_FIELD(m,s16*,0x52c2),M2C_FIELD(m,s16*,0x52c4));
+ MoveCursorTo(M2C_FIELD(m,s16*,0x52c2),M2C_FIELD(m,s16*,0x52c4));
  func_0207b040();
  } else if(keys&0x20) {
  m=M2C_FIELD(*gCurrentMap,void**,0x52d0);

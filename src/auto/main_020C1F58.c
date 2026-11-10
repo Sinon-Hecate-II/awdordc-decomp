@@ -161,7 +161,7 @@ void func_01ffa6fc(void *);
 void func_020c32bc(s32,s32);
 void PlaySoundEffect(s32);
 u32 func_0207c928(u32,u32);
-s32 func_020d19b4(s32);
+s32 IsPlayerHuman(s32);
 extern u16 *gKeyState;
 extern u8 *data_02101e88;
 u8 *q;
@@ -190,7 +190,7 @@ q=*(u8 **)(p+64);
 if(q[5]==20){
 if(p[0x34]==p[0x37]+8)func_020c32bc(q[0],0);
 }else if(p[0x34]==p[0x37]+5){
-if(func_020d19b4(q[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
+if(IsPlayerHuman(q[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
 }
 p[0x34]++;
 }

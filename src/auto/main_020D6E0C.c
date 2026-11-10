@@ -66,21 +66,21 @@ void func_020d759c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_020d7944(s32 x,s32 y,s32 index,s32 unit){
-s32 func_ov000_0216ccf0(s32);s32 func_ov000_0216cd00(s32);s32 func_ov000_0216cd78(s32,u8);
-void func_0207c3dc(s32,s32,s32,s32);void AddSprite(u16,u16,u16,void *,s32);void func_020d694c(s32,u8,s32);
+s32 GetUnitKind(s32);s32 GetUnitHealthBarCount(s32);s32 func_ov000_0216cd78(s32,u8);
+void func_0207c3dc(s32,s32,s32,s32);void AddSprite(u16,u16,u16,void *,s32);void DrawDecimalNumber(s32,u8,s32);
 extern void *gCur3DSpriteEngine;extern M2C_UNK data_027e0064;
 extern s32 *gCurrentMap;
-s32 kind=func_ov000_0216ccf0(unit);s32 slot,color,health,tile;s32 yy,xx;
+s32 kind=GetUnitKind(unit);s32 slot,color,health,tile;s32 yy,xx;
 if(unit==0)slot=0;else slot=(unit-(*gCurrentMap+0x59a4))/14;
 color=M2C_FIELD(*gCurrentMap+((slot>>6)+1)*140,u8 *,0x67cd);
-health=func_ov000_0216cd00(unit);tile=(index+1)*4+0x218;
+health=GetUnitHealthBarCount(unit);tile=(index+1)*4+0x218;
 func_0207c3dc(func_ov000_0216cd78(kind,color),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+(tile<<5),128,0);
 yy=y&255;xx=x&511;
 AddSprite((u16)xx,(u16)yy,(u16)((1023&(tile>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x8000),&data_027e0064,9);
 yy+=0x400;
 AddSprite((u16)xx,(u16)yy,(u16)((1023&(0x150>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))|0x9000)+(1023&(0x60>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),&data_027e0064,10);
 if(health==10)return;
-func_020d694c((x+8)&511,(y+8)&255,health);
+DrawDecimalNumber((x+8)&511,(y+8)&255,health);
 }
 #pragma opt_common_subs reset
 void func_020d7b04(s32 x, s32 y, s32 kind, void *p) {

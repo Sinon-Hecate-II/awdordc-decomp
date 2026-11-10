@@ -1,10 +1,13 @@
 /* 19 functions from 0x020D9A98 to 0x020DAA90 (main), found by ds-decomp. */
 #include "common.h"
 
-void func_020d9a98(void *a) {
+/* Tear down a screen entity: run the cleanup for its driver type (+0x34/+0x38),
+   reset the sprite bank of both 3D engines, release the entity's five sprite
+   objects, and reset the engine scroll offsets. */
+void TeardownEntity(void *a) {
 void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 func_ov009_02224194(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void func_020d47d0(void);M2C_UNK func_02084a40(void);M2C_UNK func_020d47f0(void);s32 func_ov010_022282b4(s32);void func_02086208(s32);void func_020b2178(void);void func_01ffa574(s32);M2C_UNK func_020b1c44(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
-s32 i;void **old;u16 *volatile p14;u16 *volatile p10;u16 *volatile pc;u16 *volatile p8;u16 *volatile p4;u16 *volatile p0;
+s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 func_02084fc0(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
@@ -17,23 +20,23 @@ if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)func_02086208(7);
 func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));func_020d47d0();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)func_02084a40();func_020d47f0();}break;
 }
-old=gCur3DSpriteEngine;
+savedEngine=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
 gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-p14=(u16 *)*gCur3DSpriteEngine;*p14=*p14&~0x10;
-p10=(u16 *)*gCur3DSpriteEngine;*p10=*p10&~0x20;
-pc=(u16 *)*gCur3DSpriteEngine;*pc=*pc|0x40;
-p8=(u16 *)*gCur3DSpriteEngine;*p8=*p8&~0x80;
-p4=(u16 *)*gCur3DSpriteEngine;*p4=*p4|0x100;
-p0=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*p0=*p0&~0xc0;
+bank10=(u16 *)*gCur3DSpriteEngine;*bank10=*bank10&~0x10;
+bank20=(u16 *)*gCur3DSpriteEngine;*bank20=*bank20&~0x20;
+bank40=(u16 *)*gCur3DSpriteEngine;*bank40=*bank40|0x40;
+bank80=(u16 *)*gCur3DSpriteEngine;*bank80=*bank80&~0x80;
+bank100=(u16 *)*gCur3DSpriteEngine;*bank100=*bank100|0x100;
+oamAttr=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*oamAttr=*oamAttr&~0xc0;
 M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0;M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=0;M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x53)=0;
 }
-gCur3DSpriteEngine=old;func_020b2178();
-if(M2C_FIELD(a,s32 *,80)){func_01ffa574(M2C_FIELD(a,s32 *,80));M2C_FIELD(a,s32 *,80)=0;}
-if(M2C_FIELD(a,s32 *,84)){func_01ffa574(M2C_FIELD(a,s32 *,84));M2C_FIELD(a,s32 *,84)=0;}
-if(M2C_FIELD(a,s32 *,88)){func_01ffa574(M2C_FIELD(a,s32 *,88));M2C_FIELD(a,s32 *,88)=0;}
-if(M2C_FIELD(a,s32 *,92)){func_01ffa574(M2C_FIELD(a,s32 *,92));M2C_FIELD(a,s32 *,92)=0;}
-if(M2C_FIELD(a,s32 *,96)){func_01ffa574(M2C_FIELD(a,s32 *,96));M2C_FIELD(a,s32 *,96)=0;}
+gCur3DSpriteEngine=savedEngine;func_020b2178();
+if(M2C_FIELD(a,s32 *,0x50)){func_01ffa574(M2C_FIELD(a,s32 *,0x50));M2C_FIELD(a,s32 *,0x50)=0;}
+if(M2C_FIELD(a,s32 *,0x54)){func_01ffa574(M2C_FIELD(a,s32 *,0x54));M2C_FIELD(a,s32 *,0x54)=0;}
+if(M2C_FIELD(a,s32 *,0x58)){func_01ffa574(M2C_FIELD(a,s32 *,0x58));M2C_FIELD(a,s32 *,0x58)=0;}
+if(M2C_FIELD(a,s32 *,0x5c)){func_01ffa574(M2C_FIELD(a,s32 *,0x5c));M2C_FIELD(a,s32 *,0x5c)=0;}
+if(M2C_FIELD(a,s32 *,0x60)){func_01ffa574(M2C_FIELD(a,s32 *,0x60));M2C_FIELD(a,s32 *,0x60)=0;}
 func_020b1c44(0,0);
 }
 

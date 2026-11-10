@@ -22,7 +22,7 @@ void func_0207d990(s32, void *, void *);
 void func_02077624(void) {
     M2C_UNK func_02003de4();
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     extern const u16 data_020eb210[];
     extern const u16 data_020eb250[];
     extern u16 data_02140fc8[];
@@ -37,7 +37,7 @@ void func_02077624(void) {
     s32 hi;
 
     i = 0;
-    blend = data_027e15bc & 0x3F;
+    blend = gFrameCounter & 0x3F;
     if (blend < 0x20) {
         src0 = data_020eb210;
         src1 = data_020eb250;
@@ -456,7 +456,7 @@ void func_02078340(s32 x0, s32 y0, s32 x1, s32 y1) {
     extern s32 *gCurrentMap;
     extern u8 data_02141008[1920];
     extern u8 data_02141788[1920];
-    extern u32 data_027e15bc;
+    extern u32 gFrameCounter;
     extern const u8 data_020eb1f0[32];
     u8 pal[32];
     u8 *base;
@@ -506,7 +506,7 @@ inner:
             i = i - 1;
         } while (i != 0);
 #pragma opt_strength_reduction off
-        c = pal[(data_027e15bc >> 2) & 0x1F];
+        c = pal[(gFrameCounter >> 2) & 0x1F];
     }
     data_02141788[x * 0x28 + y] = (u8)c;
     x = x + 1;
@@ -537,11 +537,11 @@ y++;outercheck:if(y<=y1)goto outer;
 #pragma opt_strength_reduction on
 void func_02078528(void) {
 unsigned long long func_020722fc(unsigned long, unsigned long);
-extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 data_027e15bc;extern M2C_UNK data_02140f70;
+extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 gFrameCounter;extern M2C_UNK data_02140f70;
 s32 sum,idx,accum;u8 *p;s32 i;unsigned long long res;s32 rem;
 sum=0;accum=0;idx=0;i=0;p=data_020ebd78;
 do{sum+=*p++;i++;}while(i<30);
-res=func_020722fc(data_027e15bc,sum);rem=res>>32;
+res=func_020722fc(gFrameCounter,sum);rem=res>>32;
 {u8 *q=data_020ebd78;s32 j=0;
 do{accum+=*q;if(accum>rem){idx=j;break;}j++;q++;}while(j<30);}
 *(u8*)&data_02140f70=data_020ebd58[idx];

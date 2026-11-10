@@ -8,10 +8,10 @@ extern u16 data_02168f14[];
 s32 func_020965a8(void *arg0, s16 *arg1, s32 arg2) {
     M2C_UNK func_01ffada0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 *data_027e0058;
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
 
     u8 *node = (u8 *)arg0;
-    s32 gen = data_027e15bc;
+    s32 gen = gFrameCounter;
     s32 found = 0;
     s32 threshold = 0x7fff;
     s16 *out = arg1;
@@ -118,8 +118,8 @@ void func_02096b88(void) {
 void func_02096ba4(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_020c9b70();
     M2C_UNK func_020c9ebc(s32, M2C_UNK);
-    s32 func_020d1938(s32);
-    s32 func_020d273c(s32, s32);
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
     s32 temp_r0;
     s32 var_r4;
@@ -132,7 +132,7 @@ void func_02096ba4(s32 arg0, M2C_UNK arg1) {
     var_r5 = -1;
     var_r4 = 1;
 loop_1:
-    if ((func_020d1938(var_r4) != 0) && (func_020d273c(arg0, var_r4) == 0)) {
+    if ((IsPlayerActive(var_r4) != 0) && (IsSameTeam(arg0, var_r4) == 0)) {
         var_r5 = var_r4;
     } else {
         var_r4 += 1;
@@ -144,7 +144,7 @@ loop_1:
     var_r6 = 1;
     var_r8 = var_r5 * 0x8C;
     do {
-        if ((func_020d273c(arg0, var_r6) != 0) && (func_020d1938(var_r6) != 0)) {
+        if ((IsSameTeam(arg0, var_r6) != 0) && (IsPlayerActive(var_r6) != 0)) {
             if (var_r5 != -1) {
                 temp_r0 = *gCurrentMap;
                 temp_r1 = var_r8 + temp_r0;

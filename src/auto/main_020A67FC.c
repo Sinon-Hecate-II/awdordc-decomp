@@ -10,7 +10,7 @@ s32 func_020a67fc(s32 a, s32 b, s32 c) {
     s32 func_020d2d18(u16, s32);
     s32 func_020a6658(s32, s32, s32);
     void func_020d2b10(u16, s32);
-    s32 func_020d19b4(u16);
+    s32 IsPlayerHuman(u16);
     void func_02091c20(s32, s32);
     void func_020cfd28(void);
     extern void **gCurrentMap;
@@ -26,7 +26,7 @@ s32 func_020a67fc(s32 a, s32 b, s32 c) {
     r = func_020a6658(a, b, c);
     if (!r) return 0;
     func_020d2b10(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), cost);
-    if (func_020d19b4(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
         func_02091c20(c + 0x28, 1);
     }
     func_020cfd28();
@@ -71,7 +71,7 @@ void func_020a6950(s32 arg0, s32 arg1) {
 
 #pragma opt_common_subs off
 void func_020a69bc(void){
-s32 func_020a7d50(void *);s32 func_020a7310(void *);
+s32 func_020a7d50(void *);s32 GetUnitOwner(void *);
 s32 a,i,b,x,y;UnkStruct_ov000_021A860C *p,*first,*last;
 for(a=1;a<256;a++){
 first=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[a];
@@ -81,7 +81,7 @@ for(i=1;i<256;i++){
 p=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
 if(p->unk0 && func_020a7d50(p)){
 x=M2C_FIELD(p,u8 *,1);y=M2C_FIELD(p,u8 *,2);
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==func_020a7310(p)){
+if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==GetUnitOwner(p)){
 if(p->unk6>10)p->unk6-=10;else p->unk6=1;
 }
 func_020a6950(x-1,y);func_020a6950(x+1,y);func_020a6950(x,y-1);func_020a6950(x,y+1);
@@ -259,7 +259,7 @@ s32 func_020a72fc(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 func_020a7310(p) void *p;{s32 n;if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;return (n>>6)+1;}
+s32 GetUnitOwner(p) void *p;{s32 n;if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;return (n>>6)+1;}
 
 u32 func_020a735c(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
@@ -282,8 +282,8 @@ return sum+func_020a25d8(p,x,y);
 s32 func_020a74a8(u8 *p,s32 a,s32 b){s32 func_020a8560(u32);s32 func_020a8844(s32);s32 func_020a8804(void *);s32 func_020a2608(void *,s32,s32);s32 result=0,n;if(func_020a8560((u32)(p[0]<<26)>>26))return result;if(p){if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;result+=func_020a8844(n);result+=func_020a8804(p);return result+func_020a2608(p,a,b);}
 
 s32 func_020a7558(void) {
-    M2C_UNK func_020a7310();
-    func_020a7310();
+    M2C_UNK GetUnitOwner();
+    GetUnitOwner();
     return 2;
 }
 
@@ -293,7 +293,7 @@ s32 func_020a7568(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 var_r4;
     u32 temp_r0;
 
-    func_020a7310();
+    GetUnitOwner();
     temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
     if (temp_r0 == 0) {
         var_r4 = 0;
@@ -308,7 +308,7 @@ s32 func_020a7b24(u32);
 s32 func_020a2698(void *,u8,u8);
 u8 *p=arg0;
 s32 cap,bonus,n,penalty;
-func_020a7310(p);
+GetUnitOwner(p);
 cap=func_020a7b24((u32)(p[0]<<26)>>26);
 bonus=func_020a2698(p,p[1],p[2]);
 penalty=0;
@@ -321,13 +321,13 @@ penalty=-(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==1);
 return penalty+(cap+bonus);
 }
 
-s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 func_0207c8ec(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=func_0207c8ec(n,func_020a86f0(func_020a7310(p)));if(v>=cap)v=cap;return v;}
+s32 func_020a7694(void *p){s32 func_020a75b8(void *);s32 func_020a86f0(s32);s32 func_0207c8ec(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=func_020a75b8(p);v=func_0207c8ec(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
 
-s32 func_020a76d4(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;func_020a7310(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
+s32 func_020a76d4(u8 *p){s32 func_020a7bd4(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=func_020a7bd4((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
 
 s32 func_020a7714(void *arg0) {
     s32 func_020a26c8(void *, u8, u8);
-    func_020a7310();
+    GetUnitOwner();
     return func_020a26c8(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 5;
 }
 

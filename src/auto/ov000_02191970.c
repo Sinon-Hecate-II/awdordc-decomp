@@ -16,8 +16,8 @@ extern s8 data_ov000_021b55a0[];
 #pragma opt_common_subs on
 #pragma opt_strength_reduction off
 void func_ov000_02191970(void){
-void func_01ffb554(void*);void func_01ffada0(s32,s32,u32,s32,s32);
-s32 func_ov000_021a89a4(void*);s32 func_ov000_021a9934(u32,u32);
+void SelectMapLayer(void*);void func_01ffada0(s32,s32,u32,s32,s32);
+s32 func_ov000_021a89a4(void*);s32 CanKindAttack(u32,u32);
 s32 func_ov000_021a97e0(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 func_ov000_021a9d8c(s16,s16);s32 func_ov000_021a9a28(u32,s32,s32);
@@ -28,9 +28,9 @@ s32 bestDistance=32767,chosen=0,special,index,offset,limit;
 s32 distance,otherDistance,x,y,range,d,temporary;
 void *unit;
 if(M2C_FIELD(SEL,u8*,12))return;
-func_01ffb554(MAP+0x2338);
+SelectMapLayer(MAP+0x2338);
 func_01ffada0(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,1);
-func_01ffb554(MAP+0x1e30);
+SelectMapLayer(MAP+0x1e30);
 limit=func_ov000_021a89a4(SEL)+1;
 index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
 if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){
@@ -38,7 +38,7 @@ offset=index*14;
 for(;
 index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=MAP+0x59a4+offset;
-if(!KIND(unit)||!func_ov000_021a9934(KIND(SEL),KIND(unit))||
+if(!KIND(unit)||!CanKindAttack(KIND(SEL),KIND(unit))||
 data_ov000_021df7e4[index&63]||((u32)(M2C_FIELD(unit,u8*,11)<<24)>>31))continue;
 switch(KIND(SEL)){
 case 13:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)==1)break;continue;
@@ -53,9 +53,9 @@ if(d>bestDistance+range)continue;
 func_01ffada0(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range,1);
 distance=32767;otherDistance=32767;
 if(((u32)(M2C_FIELD(unit,u16*,8)<<26)>>26)!=63){
-func_01ffb554(MAP+0x3250);
+SelectMapLayer(MAP+0x3250);
 func_01ffada0(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),KIND(SEL),110,0);
-func_01ffb554(MAP+0x1e30);
+SelectMapLayer(MAP+0x1e30);
 if(CELL(M2C_FIELD(SEL,u8*,1),M2C_FIELD(SEL,u8*,2),0x3250)<0)continue;
 }
 for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++){

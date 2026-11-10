@@ -173,9 +173,9 @@ void func_020b1a8c(s32 arg0) {
 void func_020b1abc(void) {
     M2C_UNK func_0207a77c(s32);
     M2C_UNK func_0207ad30(s32);
-    extern s32 data_027e15bc;
-    func_0207a77c(data_027e15bc);
-    func_0207ad30(data_027e15bc);
+    extern s32 gFrameCounter;
+    func_0207a77c(gFrameCounter);
+    func_0207ad30(gFrameCounter);
 }
 
 void func_020b1ae0(void) {

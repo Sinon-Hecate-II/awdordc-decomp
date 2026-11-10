@@ -17,7 +17,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     s32 func_02061ac8(void *, s32, u16);
     s32 func_02061bc8(void *, s32);
     M2C_UNK func_020629bc(void *, M2C_UNK, s32, s32 *, u16 *);
-    s32 func_02062a2c(void *, s32, M2C_UNK, s32, s32);
+    s32 gpiProcessPlayerRecord(void *, s32, M2C_UNK, s32, s32);
     s32 entry;
     u16 kind;
     s32 found;
@@ -37,7 +37,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     }
     entry = func_02061bc8(arg0, found);
 apply:
-    if (func_02062a2c(arg0, entry, arg1, arg2, 0) < 0) {
+    if (gpiProcessPlayerRecord(arg0, entry, arg1, arg2, 0) < 0) {
         return 4;
     }
     if (found == -1) {
@@ -197,13 +197,13 @@ extern s32 data_0213e4b4[];
 s32 func_02063c88(void *arg0) {
 s32 func_02049534(s32); s32 func_020497e0(s32,void *,s32,s32,void *,s32 *);
 s32 func_02061ac8(void *,s32,u16); s32 func_02061090(void *,s32,u16); s32 func_02061168(void);
-void func_0206113c(s32,s32); s32 func_02061a38(void *,s32); u32 func_02049208(void); void func_020496b8(s32);
+void gpiPlayerSetFlags(s32,s32); s32 func_02061a38(void *,s32); u32 func_02049208(void); void func_020496b8(s32);
 u8 buf[0x5dc]; u16 addr[4]; s32 len=8; s32 entry;
 while(func_02049534(M2C_FIELD(arg0,s32 *,0x4b0))) {
 if(func_020497e0(M2C_FIELD(arg0,s32 *,0x4b0),buf,0x5db,0,addr,&len)!=-1 &&
 func_02061ac8(arg0,*(s32 *)(addr+2),addr[1])==-1) {
 entry=func_02061090(arg0,*(s32 *)(addr+2),addr[1]); if(func_02061168())return 5;
-func_0206113c(entry,17);func_02061a38(arg0,entry);
+gpiPlayerSetFlags(entry,17);func_02061a38(arg0,entry);
 }}
 if(func_02049208()-M2C_FIELD(arg0,u32 *,0x4b4)>2000) {
 func_020496b8(M2C_FIELD(arg0,s32 *,0x4b0));M2C_FIELD(arg0,s32 *,0x4b0)=-1;M2C_FIELD(arg0,s32 *,0)=1;
@@ -435,7 +435,7 @@ s32 func_02064230(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
 s32 func_0206433c(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 func_02063fa8();
     s32 func_0206411c(void *, M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020651a4(void *, s32, u32);
+    M2C_UNK MemCopy(void *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
     s32 func_020722fc(s32, s32);
     u32 sp0;
@@ -531,7 +531,7 @@ loop_33:
                 if (temp_r0_4 > var_r4) {
                     sp0 = var_r4;
                 }
-                func_020651a4(var_r9, M2C_FIELD(arg3, s32 *, 0x24), sp0);
+                MemCopy(var_r9, M2C_FIELD(arg3, s32 *, 0x24), sp0);
                 var_r4 -= sp0;
                 M2C_FIELD(arg3, s32 *, 0x24) = (s32) (M2C_FIELD(arg3, s32 *, 0x24) + sp0);
                 var_r9 += sp0;

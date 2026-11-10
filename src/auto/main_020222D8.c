@@ -188,8 +188,8 @@ void func_02022fdc(s32 arg0, s32 arg1, void *arg2) {
     void func_02026de4(void *, void *, void *, s32, void *);
     void func_02026ff0(void *, void *, void *, s32);
     void func_0202704c(void *, void *, s32, s32);
-    extern u32 data_021372a4[];
-    extern u32 data_021372d0[];
+    extern u32 gAlloc[];
+    extern u32 gFree[];
 
     s32 r4;
     u16 *r5, *r6, *r7, *sp10, *spC, *r8, *r9, *r11;
@@ -208,7 +208,7 @@ void func_02022fdc(s32 arg0, s32 arg1, void *arg2) {
         sum = t + (s32)(ut >> 31);
         r4 = (sum >> 1) + 1;
     }
-    r5 = (u16 *)((void *(*)(u32))data_021372a4[0])((u32)(r4 * 0x14));
+    r5 = (u16 *)((void *(*)(u32))gAlloc[0])((u32)(r4 * 0x14));
     if (r5 == 0) return;
     r6 = r5 + r4;
     r7 = r6 + r4;
@@ -241,7 +241,7 @@ void func_02022fdc(s32 arg0, s32 arg1, void *arg2) {
         func_020267fc((u16 *)0, r7, r6, r9, r4, r11);
     }
     func_0202704c((void *)arg0, r9, 0x30, r4);
-    ((void (*)(void *))data_021372d0[0])((void *)r5);
+    ((void (*)(void *))gFree[0])((void *)r5);
 }
 
 void func_0202321c(s32 arg0,u8 *arg1,u8 *arg2) {
@@ -339,8 +339,8 @@ break;
 }
 #pragma opt_strength_reduction reset
 s32 func_020227c8(void *arg0, void *arg1) {
-    extern u32 data_021372a4[];
-    extern u32 data_021372d0[];
+    extern u32 gAlloc[];
+    extern u32 gFree[];
     void func_02026ff0(void *, void *, void *, s32);
     s32 func_020220b8(void);
     void func_020269dc(void *, void *, s32, s32, void *);
@@ -363,7 +363,7 @@ s32 func_020227c8(void *arg0, void *arg1) {
     }
     cnt = (length * 2) / 2;
     {
-        void *(*alloc)(u32) = (void *(*)(u32))data_021372a4[0];
+        void *(*alloc)(u32) = (void *(*)(u32))gAlloc[0];
         base = (u8 *)alloc((u32)(cnt * 8));
     }
     if (base == 0) {
@@ -401,7 +401,7 @@ bad:
     cnt = 2;
 done:
     {
-        void (*freefn)(void *) = (void (*)(void *))data_021372d0[0];
+        void (*freefn)(void *) = (void (*)(void *))gFree[0];
         freefn(base);
     }
     return cnt;

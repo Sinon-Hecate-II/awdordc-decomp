@@ -496,20 +496,20 @@ gCur3DSpriteEngine=saved;
 void func_ov005_02219ee0(void *arg0) {
     M2C_UNK func_01ffa574(void *);
     void func_ov005_02219e58(void *);
-    extern s32 data_027e15bc;
+    extern s32 gFrameCounter;
     s32 temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, s32 *, 0x44);
     switch (temp_r0) {                              /* irregular */
     case 1:
-        if (data_027e15bc & 1) {
+        if (gFrameCounter & 1) {
             M2C_FIELD(arg0, s32 *, 0x3C) = (s32) (M2C_FIELD(arg0, s32 *, 0x3C) + 1);
         }
         M2C_FIELD(arg0, s32 *, 0x40) = (s32) (M2C_FIELD(arg0, s32 *, 0x40) - 1);
         break;
     case 3:
         M2C_FIELD(arg0, s32 *, 0x3C) = (s32) (M2C_FIELD(arg0, s32 *, 0x3C) + 1);
-        if (data_027e15bc & 1) {
+        if (gFrameCounter & 1) {
             M2C_FIELD(arg0, s32 *, 0x40) = (s32) (M2C_FIELD(arg0, s32 *, 0x40) - 1);
         }
         break;

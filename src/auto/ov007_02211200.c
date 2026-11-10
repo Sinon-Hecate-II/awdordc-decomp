@@ -24,7 +24,7 @@ void func_ov007_02211200(void *arg0) {
  value=func_020cfbdc(M2C_FIELD(base,u16*,0x5142));
  func_02068c50((u8*)base+0x5120,value);
  }
- func_020d216c();func_020d1f2c();
+ InitPlayerStates();func_020d1f2c();
  M2C_FIELD(*gCurrentMap,u16*,0x52a4)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;

@@ -94,201 +94,61 @@ void func_020dd97c(void) {
 
 }
 
-M2C_UNK func_020dd980(void *arg0) {
-    void MenuSpriteUpdate(void *);
-    void func_020d47f0(void);
-    void func_01ffa8c4(void *, s32);
-    void PlaySoundEffect(s32);
-    void func_01ffa6fc(void *);
-    s32 func_020b212c(void);
-    extern u16 *gKeyState;
-    extern M2C_UNK gUnitSlotIds;
-
-    void *temp_r4;
-    u16 var_r5;
-    s8 var_r1;
-    s32 var_r3;
-    void *temp_r0;
-    void *temp_r2;
-    u16 temp_h;
-    s32 var_r0;
-    s8 temp_r1_4;
-    s8 temp_r0_2;
-    s32 idx;
-    s32 tableVal;
-    void *sprite2;
-    u8 low;
-    u32 currentword;
-    u32 currentfield;
-    void *spriteA;
-    s32 allow2;
-    void *unitA;
-    s8 ab;
-    s8 ac;
-    s8 a5a;
-    u16 h;
-    s32 mode;
-
-    temp_r4 = arg0;
-
-    if (M2C_FIELD(temp_r4, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x50));
-    if (M2C_FIELD(temp_r4, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x54));
-    if (M2C_FIELD(temp_r4, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x58));
-
-    var_r5 = *gKeyState;
-    temp_h = M2C_FIELD(temp_r4, u16 *, 0x48);
-    var_r3 = 1;
-    M2C_FIELD(temp_r4, u16 *, 0x48) = (u16)(temp_h & ~0x0020);
-    temp_r0 = M2C_FIELD(temp_r4, void **, 0x58);
-    temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
-    var_r1 = M2C_FIELD(temp_r2, s8 *, 0x0B);
-    if (var_r1 == 1) {
-        goto L510;
-    }
-    if (((u32)(M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1b) >> 0x1f) == 0) {
-        goto L50C;
-    }
-    var_r1 = M2C_FIELD(temp_r2, s8 *, 0x0C);
-    if (var_r1 == 1) {
-        goto L510;
-    }
-    var_r3 = 0;
-L50C:
-L510:
-    if (!(var_r3 & 0xff)) {
-        if (!(var_r5 & 0x02)) {
-            goto L5CC;
-        }
-    }
-    temp_h = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (temp_h & 0x02) {
-        goto L5CC;
-    }
-    temp_r0 = M2C_FIELD(temp_r4, void **, 0x58);
-    temp_r1_4 = M2C_FIELD(temp_r0, s8 *, 0x5A);
-    if (temp_r1_4 >= 0) {
-        M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
-        M2C_FIELD(temp_r0, u8 *, 0x5A) = 0x0C;
-    }
-    func_020d47f0();
-    mode = M2C_FIELD(temp_r4, s32 *, 0x38);
-    if (mode == 0) {
-        goto L588;
-    }
-    if (mode == 1) {
-        goto L5AC;
-    }
-    goto L5C0;
-L588:
-    M2C_FIELD(temp_r4, u8 *, 0x40) = 0x26;
-    temp_h = (u16)(M2C_FIELD(temp_r4, u16 *, 0x48) | 0x20);
-    M2C_FIELD(temp_r4, u16 *, 0x48) = temp_h;
-    func_01ffa8c4(temp_r4, 0x44);
-    goto L5C0;
-L5AC:
-    M2C_FIELD(temp_r4, u8 *, 0x40) = 0x27;
-    func_01ffa8c4(temp_r4, 1);
-L5C0:
-    PlaySoundEffect(0x1000F);
-    return;
-
-L5CC:
-    temp_r1_4 = M2C_FIELD(temp_r4, s8 *, 0x41);
-    if (temp_r1_4 <= 0) {
-        temp_r0_2 = M2C_FIELD(temp_r4, s8 *, 0x42);
-        if (temp_r0_2 <= 0) {
-            goto L600;
-        }
-    }
-    temp_r0_2 = M2C_FIELD(temp_r4, s8 *, 0x42);
-    if (temp_r1_4 == temp_r0_2) {
-        goto L600;
-    }
-    if (temp_r1_4 < temp_r0_2) {
-        PlaySoundEffect(0x122);
-    } else {
-        PlaySoundEffect(0x123);
-    }
-    M2C_FIELD(temp_r4, s8 *, 0x41) = temp_r0_2;
-L600:
-    if (func_020b212c() >= 4) {
-        goto L7C4;
-    }
-    idx = func_020b212c();
-    sprite2 = M2C_FIELD(temp_r4, void **, 0x50);
-    tableVal = *(&gUnitSlotIds + idx);
-    low = (u8)(((u32)(M2C_FIELD(sprite2, u8 *, 0x59) << 0x1c)) >> 0x1c);
-    if (tableVal < 0) {
-        goto L680;
-    }
-    currentword = M2C_FIELD(sprite2, u32 *, 0x40);
-    currentfield = ((currentword << 6) >> 0x18);
-    if (currentfield != ((u32)low + 2U)) {
-        goto L6D4;
-    }
-    M2C_FIELD(sprite2, s32 *, 0x40) = (s32) ((M2C_FIELD(sprite2, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(sprite2, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
-    M2C_FIELD(sprite2, u8 *, 0x5A) = 0;
-    goto L6D4;
-L680:
-    M2C_FIELD(sprite2, s32 *, 0x40) = (s32) ((M2C_FIELD(sprite2, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(sprite2, u8 *, 0x59) << 0x1c) >> 0x1c)) << 0x18) >> 6));
-    M2C_FIELD(sprite2, u8 *, 0x5A) = 0;
-L6D4:
-    sprite2 = M2C_FIELD(temp_r4, void **, 0x50);
-    low = (u8)(((u32)(M2C_FIELD(sprite2, u8 *, 0x59) << 0x1c)) >> 0x1c);
-    currentword = M2C_FIELD(sprite2, u32 *, 0x40);
-    currentfield = ((currentword << 6) >> 0x18);
-    if (currentfield == ((u32)low + 2U)) {
-        return;
-    }
-
-L7C4:
-    spriteA = M2C_FIELD(temp_r4, void **, 0x50);
-    allow2 = 1;
-    unitA = M2C_FIELD(spriteA, void **, 0x64);
-    ab = M2C_FIELD(unitA, s8 *, 0x0B);
-    if (ab != 1) {
-        if (((u32)(M2C_FIELD(spriteA, u8 *, 0x59) << 0x1b) >> 0x1f) == 0) {
-            goto L73C;
-        }
-        ac = M2C_FIELD(unitA, s8 *, 0x0C);
-        if (ac == 1) {
-            goto L740;
-        }
-L73C:
-        allow2 = 0;
-    }
-L740:
-    if (!(allow2 & 0xff)) {
-        if (!(var_r5 & 0x01)) {
-            return;
-        }
-        h = M2C_FIELD(temp_r4, u16 *, 0x48);
-        if (h & 0x02) {
-            return;
-        }
-    }
-    spriteA = M2C_FIELD(temp_r4, void **, 0x50);
-    a5a = M2C_FIELD(spriteA, s8 *, 0x5A);
-    if (a5a >= 0) {
-        M2C_FIELD(spriteA, s32 *, 0x40) = (s32) ((M2C_FIELD(spriteA, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(spriteA, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
-        M2C_FIELD(spriteA, u8 *, 0x5A) = 0x0C;
-    }
-    h = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (h & 0x02) {
-        return;
-    }
-    h = (u16)(h & ~0x0001);
-    M2C_FIELD(temp_r4, u16 *, 0x48) = h;
-    h = (u16)(h | 0x0002);
-    M2C_FIELD(temp_r4, u16 *, 0x48) = h;
-    PlaySoundEffect(0x1000D);
-    func_01ffa6fc(temp_r4);
-    return;
+/* Input handler of the unit deployment menu: the back button closes the 3D view,
+ * the cursor sprite shows whether the unit of the slot under the cursor exists
+ * and confirming picks that unit. */
+void UnitDeployMenuInput(void *arg0) {
+void MenuSpriteUpdate(void *);void func_020d47f0(void);void func_01ffa8c4(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
+s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
+extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
+u16 keys;void *cursorSprite;
+if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
+if(M2C_FIELD(arg0,void **,0x54))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x54));
+if(M2C_FIELD(arg0,void **,0x58))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x58));
+keys=*gKeyState;
+M2C_FIELD(arg0,u16 *,0x48)&=~32;
+/* the back button closes the 3D view */
+if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
+PressSprite(M2C_FIELD(arg0,void **,0x58));
+func_020d47f0();
+switch(M2C_FIELD(arg0,s32 *,0x38)) {
+case 0: M2C_FIELD(arg0,u8 *,0x40)=0x26; M2C_FIELD(arg0,u16 *,0x48)|=32; func_01ffa8c4(arg0,0x44); break;
+case 1: M2C_FIELD(arg0,u8 *,0x40)=0x27; func_01ffa8c4(arg0,1); break;
+}
+PlaySoundEffect(0x1000f);return;
+}
+/* the cursor moved to another option */
+if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg0,s8 *,0x41)!=M2C_FIELD(arg0,s8 *,0x42)){
+PlaySoundEffect(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
+M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
+}
+if(func_020b212c()<4){
+/* the unit of the slot under the cursor: the cursor sprite shows it as available or not */
+if((&gUnitSlotIds)[func_020b212c()]>=0){void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);}
+else {void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite)+2,0);}
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
+if(!(SpritePressed(cursorSprite) || (keys&1)))return;
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+PressSprite(cursorSprite);
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+M2C_FIELD(arg0,u16 *,0x48)&=~1;
+M2C_FIELD(arg0,u16 *,0x48)|=2;
+PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);return;
+}
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);
+cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
+if(!(SpritePressed(cursorSprite) || (keys&1)))return;
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+PressSprite(M2C_FIELD(arg0,void **,0x5c));
+if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
+M2C_FIELD(arg0,u16 *,0x48)|=1;
+M2C_FIELD(arg0,u16 *,0x48)|=2;
+PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);
 }
 
 void func_020dde30(void) {
-    M2C_UNK func_020dd980();
-    func_020dd980();
+    void UnitDeployMenuInput();
+    UnitDeployMenuInput();
 }
 
 void func_020dde3c(void) {
@@ -310,13 +170,13 @@ void func_020dde60(void) {
 }
 
 void func_020dde6c(void) {
-    M2C_UNK func_020dd980();
-    func_020dd980();
+    void UnitDeployMenuInput();
+    UnitDeployMenuInput();
 }
 
 void func_020dde78(void) {
-    M2C_UNK func_020dd980();
-    func_020dd980();
+    void UnitDeployMenuInput();
+    UnitDeployMenuInput();
 }
 
 void func_020dde84(void) {

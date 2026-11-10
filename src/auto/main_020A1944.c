@@ -54,7 +54,7 @@ void func_020a1a0c(void) {
     ctr[13] = 0;
     ctr[14] = 0;
     for (j = 1; j < 5; j++) {
-        if (!func_020d1980(j)) continue;
+        if (!IsPlayerPresent(j)) continue;
         switch (func_020cce64(j)) {
         case 1: {
             u8 idx = ctr[12];
@@ -129,12 +129,12 @@ s32 func_020a1d74(s32 arg0) {
 }
 
 s32 func_020a1da0(s32 arg0) {
- s32 func_020a8984(u16); s32 func_020d1938(s32); s32 func_0207c8ec(s32,s32);
+ s32 func_020a8984(u16); s32 IsPlayerActive(s32); s32 func_0207c8ec(s32,s32);
  extern s32 *gCurrentMap;
  s32 base, result, difference;
  u16 current;
  base = func_020a8984(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
- if (func_020d1938(arg0) == 0) return 0;
+ if (IsPlayerActive(arg0) == 0) return 0;
  if (base == 0) return 0;
  current = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
  difference = base - current;
@@ -148,9 +148,9 @@ s32 func_020a1da0(s32 arg0) {
 
 s32 func_020a1e44(s32 player) {
 extern s32 *gCurrentMap;extern u16 data_02168f14;
-s32 func_020d1938(s32);s32 func_0207c9c8(s32,s32);
+s32 IsPlayerActive(s32);s32 func_0207c9c8(s32,s32);
 s32 a,b,c,i,result;void *p,*q;
-if(!func_020d1938(player))return 0;
+if(!IsPlayerActive(player))return 0;
 if((u32)(data_02168f14<<29)>>29==0){
 a=0;b=0;c=0;
 for(i=1,p=(u8 *)*gCurrentMap+140;i<5;p=(u8 *)p+140,i++){
@@ -174,12 +174,12 @@ return result;
 s32 func_020a1f88(s32 player) {
     extern s32 *gCurrentMap;
     extern s8 data_ov000_021b5580[];
-    s32 func_020d1938(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);
+    s32 IsPlayerActive(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);
     s32 func_0207c8ec(s32,s32);
     u32 own,enemy,other,buildings,extra,delta;
     s32 i,offset,playerOffset,clear,x,y,result;
     void *q; register void *base;
-    if(!func_020d1938(player))return 0;
+    if(!IsPlayerActive(player))return 0;
     playerOffset=player*140;
     own=0;enemy=0;extra=0;other=0;buildings=0;
     for(i=1,offset=140;i<5;i++,offset+=140) {
@@ -343,7 +343,7 @@ s32 func_020a23b4(s32 arg0) {
 }
 
 void func_020a23c4(void) {
-    s32 func_020d1938(s32);
+    s32 IsPlayerActive(s32);
     M2C_UNK func_020d2470();
     extern s32 *gCurrentMap;
     s32 var_r5;
@@ -352,7 +352,7 @@ void func_020a23c4(void) {
     var_r5 = 1;
     var_r6 = 0x8C;
     do {
-        if (func_020d1938(var_r5) != 0) {
+        if (IsPlayerActive(var_r5) != 0) {
             M2C_FIELD((*gCurrentMap + var_r6), s8 *, 0x67C9) = 0;
             M2C_FIELD((*gCurrentMap + var_r6), s8 *, 0x67C8) = 0;
         }
@@ -364,7 +364,7 @@ void func_020a23c4(void) {
 
 #pragma opt_propagation off
 s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
-    s32 func_020a7310(void *);
+    s32 GetUnitOwner(void *);
     u8 *GetPlayerSelectedUnit(s32);
     s32 GetPlayerCommanderId(s32);
     s32 func_020d0468(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -386,7 +386,7 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
 
     if (arg2 < 0 || arg3 < 0) { return 0; }
 
-    idx = func_020a7310(arg1);
+    idx = GetUnitOwner(arg1);
     if (GetPlayerSelectedUnit(idx) == (u8 *)arg1) {
         ret = GetPlayerCommanderId(idx);
     } else {

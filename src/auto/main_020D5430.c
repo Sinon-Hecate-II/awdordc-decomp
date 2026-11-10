@@ -1,5 +1,6 @@
 /* 16 functions from 0x020D5430 to 0x020D6398 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 void func_020d5430(void) {
  extern void *gCurrentMap;
@@ -63,8 +64,8 @@ extern void *gCurrentMap;
 void *unit; s32 a,b; M2C_UNK (*cb)();
 unit=func_020a45f8(x,y);
 if(unit){
-func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
-func_01ffb3d0(-1);
+SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
+FillMapLayer(-1);
 if(func_020a5364(unit,64,1)){
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),52);if(cb)cb();
 goto finish;
@@ -77,7 +78,7 @@ if(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(g
 a=func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 b=func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 if(a==0 && b==0){PlaySoundEffect(0x1001d);return 0;}
-func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
+SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),52);if(cb)cb();
 func_020cfd28();
@@ -105,7 +106,7 @@ func_020cfd28();
 func_020d5554(x,y);
 func_0209fb70();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)>>6)+1;
-func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
+SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
 func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4);
 func_020d5868();
@@ -115,7 +116,7 @@ func_020a06a0(mode);
 func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 func_020d6778(2);
-if(func_020d19b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4)))func_02091c20(21,1);
+if(IsPlayerHuman(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4)))func_02091c20(21,1);
 return 1;
 }
 
@@ -136,7 +137,7 @@ unit=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0);
 func_020d5554(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2));
 func_0209fb70();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d4)>>6)+1;
-func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
+SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
 func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b6)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4);
 func_020d5868();
@@ -147,7 +148,10 @@ func_01ffa3dc(&data_0211fbc4,6);
 PlaySoundEffect(0x1001c);
 }
 
-void func_020d5ef8(s32 r6, s32 r5) {
+/* Move the battle-map cursor to tile (x,y): reject the move if the tile is out of
+   range or unreachable, otherwise set the path start, the destination and the
+   cursor state (4 = move, 5 = onto a unit), then redraw. */
+void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK PlaySoundEffect();
     M2C_UNK func_020d6398(s32, s32);
     M2C_UNK func_0207a768();
@@ -160,24 +164,24 @@ void func_020d5ef8(s32 r6, s32 r5) {
     M2C_UNK func_020cc7e0();
     extern void *gCurrentMap;
     extern u8 data_02168f24;
-    s32 r4;
+    s32 occupied;
 
-    r4 = 0;
+    occupied = 0;
     {
-        u8 r3 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x52d4);
-        u16 r12 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a8);
-        if (r12 != (r3 & 0xc0)) {
+        u8 unitId = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID);
+        u16 owner = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURSOR_OWNER);
+        if (owner != (unitId & 0xc0)) {
             PlaySoundEffect(0x1001d);
             return;
         }
     }
     {
-        u8 **rows = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x52e8);
-        s8 val = (s8)rows[r5][r6];
-        if (val > 0x6e) {
-            r4 = 1;
+        u8 **grid = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_GRID);
+        s8 cell = (s8)grid[y][x];
+        if (cell > 0x6e) {
+            occupied = 1;
         } else {
-            if (func_020d6398(r6, r5) == 0) {
+            if (func_020d6398(x, y) == 0) {
                 PlaySoundEffect(0x1001d);
                 return;
             }
@@ -185,45 +189,44 @@ void func_020d5ef8(s32 r6, s32 r5) {
     }
     func_0207a768();
     {
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52e0) = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, 0x52d0), u8 *, 1);
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52d8) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52e0);
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52e2) = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, 0x52d0), u8 *, 2);
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52da) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52e2);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_PATH_X) = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u8 *, 1);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_PATH_X);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_PATH_Y) = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u8 *, 2);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_PATH_Y);
     }
-    if (r4 != 0) {
-        func_020a0964(r6, r5, (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x52dc);
+    if (occupied != 0) {
+        func_020a0964(x, y, (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CURSOR_X);
         func_020d468c();
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52c2) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc);
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52c4) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
         func_020a0d18();
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52c2) = (s16)r6;
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52c4) = (s16)r5;
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52b4) = 5;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = (s16)x;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = (s16)y;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 5;
     } else {
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc) = (s16)r6;
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de) = (s16)r5;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) = (s16)x;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y) = (s16)y;
         func_020d46ac();
         func_020a0d18();
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52b4) = 4;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 4;
     }
-    if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52d8) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc) ||
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52da) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de)) {
+    if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_X) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) ||
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_Y) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y)) {
         func_020a046c();
     } else {
-        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x5388) = 4;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_PATH) = 4;
     }
-skip046c:
-    if (r4 != 0) {
+    if (occupied != 0) {
         func_01ffb3d0(-1);
         {
-            u8 **rows = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x52e8);
-            s16 de = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de);
-            s16 dc = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc);
-            rows[de][dc] = 1;
+            u8 **grid = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_GRID);
+            s16 cy = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
+            s16 cx = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
+            grid[cy][cx] = 1;
         }
         {
-            u8 **rows = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x52e8);
-            rows[r5][r6] = 1;
+            u8 **grid = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_GRID);
+            grid[y][x] = 1;
         }
         func_020cc7e0();
         {
@@ -235,10 +238,10 @@ skip046c:
     } else {
         func_01ffb3d0(-1);
         {
-            u8 **rows = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + 0x52e8);
-            s16 de = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52de);
-            s16 dc = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52dc);
-            rows[de][dc] = 1;
+            u8 **grid = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_GRID);
+            s16 cy = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
+            s16 cx = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
+            grid[cy][cx] = 1;
         }
     }
     data_02168f24 = 0;

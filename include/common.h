@@ -118,7 +118,8 @@ typedef struct HistoryMenu {
     u8 selected;        /* +0x02: selected row */
     u8 pad03[0xD];
     HistoryMenuTab tabs[3]; /* +0x10 */
-    u8 unk2E[0x1A];
+    u8 unk2E[0x12];
+    u8 medals[8];        /* +0x40: medals earned, one flag each (drawn on the records screen) */
     void *sprite48;     /* +0x48 */
     void *sprite4C;     /* +0x4C */
     void *sprite50;     /* +0x50 */
@@ -127,6 +128,19 @@ typedef struct HistoryMenu {
     void *sprite5C;     /* +0x5C: list-down arrow */
     void *sprite60;     /* +0x60 */
 } HistoryMenu;          /* 0x64 bytes */
+
+/* One entry of the records/achievements table (gRecordTable): 3 groups of 39
+ * entries of 0x30 bytes.  The entry names the thing a record counts and the
+ * value thresholds for its three tiers. */
+typedef struct RecordDefinition {
+    u32 present;        /* +0x00 nonzero while the entry is in use */
+    u16 id;             /* +0x04 id of the unit/event the record counts */
+    u16 pad06;
+    u32 bronze;         /* +0x08 tier 1 threshold */
+    u32 silver;         /* +0x0C tier 2 threshold */
+    u32 gold;           /* +0x10 tier 3 threshold */
+    u8 pad14[0x1C];
+} RecordDefinition;     /* 0x30 bytes */
 
 /* Panels of the ov000 map info window (the box that follows the map cursor). */
 enum {
@@ -186,6 +200,29 @@ typedef struct ScrollList {
     void *spriteUp;   /* +0x44: list-up arrow sprite */
     void *spriteDown; /* +0x48: list-down arrow sprite */
 } ScrollList;
+
+/* Flags byte of a gpi player record (player + 0x15): which optional parts follow. */
+enum {
+    GPI_REC_FLAG_ID     = 0x02, /* a 4-byte id follows */
+    GPI_REC_FLAG_VALUE  = 0x08, /* a 4-byte value follows */
+    GPI_REC_FLAG_SKIP   = 0x10, /* a 2-byte field follows and is skipped here */
+    GPI_REC_FLAG_PORT   = 0x20, /* a big-endian 2-byte port follows (else the context default) */
+    GPI_REC_FLAG_FIELDS = 0x40, /* typed key/value fields follow, per the context schema */
+    GPI_REC_FLAG_KEYS   = 0x80  /* raw zero-terminated key/value pairs follow */
+};
+
+/* Type of a field in a gpi record schema (entry[1]). */
+enum {
+    GPI_FIELD_STRING = 0, /* zero-terminated string */
+    GPI_FIELD_BYTE   = 1,
+    GPI_FIELD_PORT   = 2  /* big-endian 16-bit */
+};
+
+/* Bits of a gpi player's state byte (player + 0x14). */
+enum {
+    GPI_PLAYER_STATE_FIELDS = 1, /* a fields section has been applied */
+    GPI_PLAYER_STATE_KEYS   = 2  /* a key/value section has been applied */
+};
 
 #endif
 

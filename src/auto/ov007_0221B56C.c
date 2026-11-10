@@ -295,7 +295,7 @@ void func_ov007_0221c1d4(void) {
 void func_ov007_0221c250(void) {
     M2C_UNK func_020a231c(s32, s32);
     M2C_UNK func_020d1f2c();
-    M2C_UNK func_020d216c();
+    M2C_UNK InitPlayerStates();
     s32 var_r4;
 
     var_r4 = 0;
@@ -303,7 +303,7 @@ void func_ov007_0221c250(void) {
         func_020a231c(var_r4, var_r4);
         var_r4 += 1;
     } while (var_r4 < 5);
-    func_020d216c();
+    InitPlayerStates();
     func_020d1f2c();
 }
 

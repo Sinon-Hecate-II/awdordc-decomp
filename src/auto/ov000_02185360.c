@@ -64,7 +64,7 @@ void func_ov000_021855e4(void) {
 extern u8 *data_ov000_021df580; extern s8 data_ov000_021b56c0[];
 void func_02007f8c(void*,s32,s32); s32 func_020ce6f4(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
-s32 func_020d27c0(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
+s32 IsUnitOnCurrentTeam(s32); s32 func_020a85dc(u32); s32 func_020a7738(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 func_ov000_021a97e0(s32,u32);
 void func_01ffc294(u16,s32,s32,u32,s32,s32);
 s32 t;
@@ -92,7 +92,7 @@ func_ov000_0218500c(tx,ty,t,r);
 for(i=1,offset=14;i<256;i++,offset+=14){
 unit=(u8*)*gCurrentMap+0x59a4+offset;
 if(!((u32)(unit[0]<<26)>>26))continue;
-if(func_020d27c0(i)==1)continue;
+if(IsUnitOnCurrentTeam(i)==1)continue;
 if(M2C_FIELD(unit,u16*,4)&8){
 map=*gCurrentMap;
 if(!func_020a85dc((u32)(M2C_FIELD(map+14*M2C_FIELD(map+unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758),u8*,0x508),u8*,0x59a4)<<26)>>26))continue;

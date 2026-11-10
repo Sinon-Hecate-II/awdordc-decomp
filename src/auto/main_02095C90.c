@@ -327,7 +327,7 @@ block_8:
 
 void func_0209643c(void){
 extern s32 *gCurrentMap;
-s32 func_020c79ec(void);s32 func_020846a4(void);s32 func_020c85c4(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK func_0200bc5c(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void func_020a7310(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
+s32 func_020c79ec(void);s32 func_020846a4(void);s32 func_020c85c4(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK func_0200bc5c(M2C_UNK *);s32 func_02080e30(s32,s32);M2C_UNK func_0209670c(s32,M2C_UNK);M2C_UNK func_020e35cc(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void func_020cfd28();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142);
 s32 p,i;Unit964 *unit; s32 off;
 if(id>=225&&id<425){
@@ -348,7 +348,7 @@ i=1;off=14;
 do{
 unit=(Unit964 *)((u8 *)*gCurrentMap+0x59a4+off);
 if(unit->kind&&unit->owner){
-func_020a7310(unit);
+GetUnitOwner(unit);
 if(unit!=GetPlayerSelectedUnit())unit->owner=0;
 }
 ++i;off+=14;

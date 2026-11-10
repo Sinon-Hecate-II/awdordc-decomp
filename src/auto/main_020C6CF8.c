@@ -23,14 +23,14 @@ void func_020c6d30(void) {
 }
 
 void func_020c6d68(void) {
-    M2C_UNK func_01ffb3d0(s32);
+    M2C_UNK FillMapLayer(s32);
     M2C_UNK func_020cdeac(s16, s16, s32);
     M2C_UNK func_020cc7e0();
     M2C_UNK func_020c0784();
     extern void **gCurrentMap;
     void *temp;
     void (*callback)(void);
-    func_01ffb3d0(-1);
+    FillMapLayer(-1);
     temp = *gCurrentMap;
     M2C_FIELD((u8 *)temp + M2C_FIELD(temp, s16 *, 0x52DE) * 4, u8 **, 0x52E8)[M2C_FIELD(temp, s16 *, 0x52DC)] = 1;
     temp = *gCurrentMap;
@@ -90,14 +90,14 @@ void func_020c6ffc(void) {
 s32 func_020c7034(void) {
     s32 func_020a2be0(u16);
     s32 GetPlayerSelectedUnit();
-    M2C_UNK func_020a7310(s32);
+    M2C_UNK GetUnitOwner(s32);
     extern void **gCurrentMap;
     void *temp_r4;
     temp_r4 = *gCurrentMap;
     if (((u8 *)temp_r4)[M2C_FIELD(temp_r4, s16 *, 0x52DC) + M2C_FIELD((u8 *)temp_r4 + M2C_FIELD(temp_r4, s16 *, 0x52DE) * 2, u16 *, 0x3758)] != 0) {
         return 2;
     }
-    func_020a7310(M2C_FIELD(temp_r4, s32 *, 0x52D0));
+    GetUnitOwner(M2C_FIELD(temp_r4, s32 *, 0x52D0));
     if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == GetPlayerSelectedUnit()) && (func_020a2be0(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
         return 0;
     }
@@ -249,7 +249,7 @@ void func_020c75cc(void) {
  p=*gCurrentMap;
  func_020c7470(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4),xy);
  func_020c0748(&data_0212ab34,xy[0],xy[1],0x30);
- func_01ffb3d0(-1);
+ FillMapLayer(-1);
  p=*gCurrentMap;
  M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,0x52de)*4,u8 **,0x52e8)[M2C_FIELD(p,s16 *,0x52dc)]=1;
 }

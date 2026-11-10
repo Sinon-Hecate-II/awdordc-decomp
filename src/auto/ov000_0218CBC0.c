@@ -148,5 +148,90 @@ if(data_ov000_021b5c05[type*112]>=6U && ((u32)(M2C_FIELD(p,volatile u16 *,6)<<21
 return 0;
 }
 
-M2C_UNK func_ov000_0218d4b4(void) { return 0; }
+#pragma opt_strength_reduction off
+/* AI: scans the map for the best tile to move the currently selected unit to
+ * (using the per-cell move score) or, if a transport is available, the tile of a
+ * transport unit, then places the cursor on it. */
+void FindBestMoveTarget(void) {
+    extern void **gCurrentMap;
+    extern u8 *data_ov000_021df644;
+    s32 func_ov000_0218d40c(void);
+    M2C_UNK func_01ffc328(s32);
+    s32 CanKindAttack(s32, s32);
+    s32 IsCurrentPlayerUnit(s16);
+    s32 CanUnitAttackKind(void *, s32);
+    s32 func_ov000_021a9214(void *, s32, s32);
+    s32 func_ov000_021a93a8(void *, s32, s32);
+    s32 func_ov000_021a9d8c(s16, s16);
+    s32 func_ov000_02178778(s16, s16);
+    s32 func_ov000_02178e84(s16, s16);
+    s32 CellMoveScore(s32, s32, s32, s32);
+    void func_ov000_0217c3a4(void);
+    void SetMapCursor(s32,s32,s32,s32,s32);
+    s32 func_ov000_02196430(s16 *);void SelectMapLayer(void *);void func_01ffada0(s16,s16,s32,s32,s32);
+    s16 unitPos[2];
+    s32 bestX = -1, bestY = -1, bestScore = 0x7fffffff, bestCost = 0x7fff, useTransport = 0;
+    u8 *unit;
+    s32 y, x;
+    void *map;
+    s32 score, moveCost;
 
+    if (!func_ov000_0218d40c()) return;
+    if(!func_ov000_02196430(unitPos)){
+        unitPos[0]=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,1);
+        unitPos[1]=M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,2);
+    }
+    SelectMapLayer((u8 *)*gCurrentMap+0x2338);
+    func_01ffada0(unitPos[0],unitPos[1],(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26,110,0);
+    SelectMapLayer((u8 *)*gCurrentMap+0x1e30);
+    func_01ffc328(M2C_FIELD(*gCurrentMap, s32 *, 0x52d0));
+    y = 0;
+    map = *gCurrentMap;
+    while (y < M2C_FIELD(map, u16 *, 0x5146)) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, 0x5144)) {
+            do {
+                s8 *costRow = M2C_FIELD((u8 *)map + y * 4, s8 **, 0x52e8);
+                if (costRow[x] < 0) goto nextTile;
+                if (CanKindAttack(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                    map = *gCurrentMap;
+                    unit = (u8 *)map + 0x59a4 + (s16)M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0) * 14;
+                    if (unit && IsCurrentPlayerUnit((s16)(unit ? ((s32)(unit - ((u8 *)map + 0x59a4))) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && CanUnitAttackKind(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                        if (useTransport && M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x] > bestCost) goto nextTile;
+                        bestX = x;
+                        bestY = y;
+                        bestCost = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x];
+                        bestScore = 0;
+                        useTransport = 1;
+                        goto nextTile;
+                    }
+                }
+                if (!func_ov000_021a9214(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y) && !func_ov000_021a93a8(M2C_FIELD(*gCurrentMap, void **, 0x52d0), x, y)) goto nextTile;
+                if (func_ov000_021a9d8c((s16)x, (s16)y)) goto nextTile;
+                if (func_ov000_02178778((s16)x, (s16)y) == 1) goto nextTile;
+                if (!func_ov000_02178e84((s16)x, (s16)y)) goto nextTile;
+                map = *gCurrentMap;
+                if (M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0x2d48) >= data_ov000_021df644[2]) goto nextTile;
+                score = CellMoveScore(x, y, 1, 2);
+                moveCost=M2C_FIELD((u8 *)*gCurrentMap+x+M2C_FIELD((u8 *)*gCurrentMap+y*2,u16 *,0x3758),s8 *,0x2338);
+                if(moveCost<0)moveCost=110;
+                if (score > bestScore) goto nextTile;
+                if (score == bestScore && moveCost > bestCost) goto nextTile;
+                bestScore = score;
+                bestCost = moveCost;
+                bestX = x;
+                bestY = y;
+                useTransport = 0;
+nextTile:
+                x++;
+                map = *gCurrentMap;
+            } while (x < M2C_FIELD(map, u16 *, 0x5144));
+        }
+        y++;
+    }
+    if (bestX == -1) return;
+    func_ov000_0217c3a4();
+    if (useTransport) SetMapCursor((s16)bestX, (s16)bestY, 7, 0, 0);
+    else SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
+}
+#pragma opt_strength_reduction reset

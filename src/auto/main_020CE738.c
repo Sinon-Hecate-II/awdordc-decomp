@@ -4,7 +4,7 @@ extern u8 data_0212bcd4[],data_0212bce0[],data_0212bcf0[],data_0212bd04[],data_0
 
 #pragma opt_strength_reduction off
 void func_020ce738(void) {
-s32 func_020cd728(void);void func_020ce61c(void *);s32 func_020d1980(s32);
+s32 func_020cd728(void);void func_020ce61c(void *);s32 IsPlayerPresent(s32);
 s32 func_020ce6f4(s32,s32);void func_020ce434(s16,s16,s16,u32,u8,u8);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern s8 data_ov000_021b56c0[];
 s32 tile;s32 owner,x,y,kind; s32 id,player,playerUnitID,unitOffset,playerOffset;u8 *unit;void *base;s16 value;
@@ -15,7 +15,7 @@ if(((u32)(unit[0]<<26)>>26)!=0)func_020ce61c(unit);
 }
 }else{
 for(player=1,playerOffset=140;player<5;player++,playerOffset+=140){
-if(func_020d1980(player) && M2C_FIELD((u8 *)*gCurrentMap+playerOffset,u8 *,0x67C3)!=0){
+if(IsPlayerPresent(player) && M2C_FIELD((u8 *)*gCurrentMap+playerOffset,u8 *,0x67C3)!=0){
 playerUnitID=gPlayerUnitIdBase[player]+1;
 if(playerUnitID<gPlayerUnitIdBase[player]+51){
 unitOffset=playerUnitID*14;
@@ -57,19 +57,19 @@ if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2)func_020ce738();
 }
 
 void func_020cea28(void){
-s32 func_020d1938(s32);
-s32 func_020d273c(u16,s32);
+s32 IsPlayerActive(s32);
+s32 IsSameTeam(u16,s32);
 s32 func_020a600c(u16);
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 s32 player,i,id;u8 *unit;
 for(player=1;player<5;player++){
-if(func_020d1938(player)){
+if(IsPlayerActive(player)){
 for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+0x33;i++){
 unit=(u8*)*gCurrentMap+0x59a4+i*14;
 if(((u32)(unit[0]<<26)>>26)!=0){
 M2C_FIELD(unit,u16*,4)&=~0xc0;
-if(!func_020d273c(M2C_FIELD(*gCurrentMap,u16*,0x52a4),player)&&(M2C_FIELD(unit,u16*,4)&0x20)){
+if(!IsSameTeam(M2C_FIELD(*gCurrentMap,u16*,0x52a4),player)&&(M2C_FIELD(unit,u16*,4)&0x20)){
 if(!unit)id=0;else id=((s32)unit-(s32)((u8*)*gCurrentMap+0x59a4))/14;
 if(func_020a600c((u16)id))M2C_FIELD(unit,u16*,4)|=0x40;
 }
@@ -136,7 +136,7 @@ void func_020ced08(void) {
     extern s8 data_ov000_021b56c0[];
     extern u16 data_ov000_021aeee8[];
     void func_020cf2c8(void);
-    s32 func_020d1980(s32);
+    s32 IsPlayerPresent(s32);
     void func_0207ab84(s32, s32, u8);
     register u8 tile;
     register s32 i;
@@ -165,7 +165,7 @@ void func_020ced08(void) {
             if ((posTile & 0xE0) != 0) {
                 found = 0;
                 for (i = 1; i < 5; i++) {
-                    if (func_020d1980(i) != 0) {
+                    if (IsPlayerPresent(i) != 0) {
                         void *p2 = *gCurrentMap;
                         u16 *rt2 = (u16 *)((u8 *)p2 + 0x3758);
                         u16 row2 = rt2[yc];
@@ -208,8 +208,8 @@ void func_020ceea8(void) {
     void func_020ced08(void);
     M2C_UNK func_020d1b80();
     M2C_UNK func_020d1f2c();
-    M2C_UNK func_020d216c();
-    func_020d216c();
+    M2C_UNK InitPlayerStates();
+    InitPlayerStates();
     func_020d1f2c();
     func_020d1b80();
     func_020ced08();
@@ -334,8 +334,8 @@ M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
 void func_020cf2c8(void) {
     extern void **gCurrentMap;
     extern s8 data_ov000_021b56c0[];
-    void func_01ffb554(void *);
-    void func_01ffb3d0(s32);
+    void SelectMapLayer(void *);
+    void FillMapLayer(s32);
     s32 count;
     s32 i;
     s32 x;
@@ -345,8 +345,8 @@ void func_020cf2c8(void) {
     s32 tile; void *base; u32 row;
 
     count = 0;
-    func_01ffb554((u8 *)*gCurrentMap + 0x1928);
-    func_01ffb3d0(-1);
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1928);
+    FillMapLayer(-1);
     for (i = 0; i < 5; i++)
         M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67bc) = 0;
     for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {

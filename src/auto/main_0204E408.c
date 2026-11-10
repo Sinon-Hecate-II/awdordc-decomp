@@ -133,7 +133,7 @@ s32 gpiHandleServerData(void *ctx) {
     void func_02058170(void **, void *, ...);
     void *func_020377a8(void *, s32);
     s32 func_02058644(void **, s32 *);
-    void func_020651a4(void *, void *, s32);
+    void MemCopy(void *, void *, s32);
     void func_020651c4(void *, void *, s32);
     s32 func_0206ad38(void *);
     s32 func_020544d4(void **, void **, s32);
@@ -174,7 +174,7 @@ s32 gpiHandleServerData(void *ctx) {
                 }
                 M2C_FIELD(conn, void **, 0x1ec) = newBuf;
             }
-            func_020651a4(M2C_FIELD(conn, void **, 0x1ec), M2C_FIELD(conn, void **, 0x1dc), lineLen + 1);
+            MemCopy(M2C_FIELD(conn, void **, 0x1ec), M2C_FIELD(conn, void **, 0x1dc), lineLen + 1);
             scan = messageEnd + 7;
             M2C_FIELD(conn, s32 *, 0x1e4) -= scan - M2C_FIELD(conn, u8 **, 0x1dc);
             func_020651c4(M2C_FIELD(conn, void **, 0x1dc), scan, M2C_FIELD(conn, s32 *, 0x1e4) + 1);

@@ -369,31 +369,34 @@ M2C_FIELD(gHistoryMenu,s32 *,0x3c)=func_ov000_0216a59c(func_ov000_0216a564(func_
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov005_02211cf4(void) {
+/* Recomputes the eight "medal earned" flags of the records menu from the
+ * player's record values: single records reaching their top tier, whole-tab
+ * tier sums, and combined tiers of specific unit records. */
+void UpdateMedalFlags(void) {
  s32 GetRecordDefinition();
  s32 GetRecordTier();
  s32 HistoryTabAt();
  extern s32 gHistoryMenu;
- s32 total, i, k, j, other;
+ s32 total, i, k, j;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=0;i++);
-if(GetRecordTier(0,i)==3) M2C_FIELD(gHistoryMenu,u8 *,0x40)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x40)=0;
+if(GetRecordTier(0,i)==3) ((HistoryMenu *)gHistoryMenu)->medals[0]=1; else ((HistoryMenu *)gHistoryMenu)->medals[0]=0;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=2;i++);
-if(GetRecordTier(0,i)==3) M2C_FIELD(gHistoryMenu,u8 *,0x41)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x41)=0;
+if(GetRecordTier(0,i)==3) ((HistoryMenu *)gHistoryMenu)->medals[1]=1; else ((HistoryMenu *)gHistoryMenu)->medals[1]=0;
 total=0; for(j=0;j<M2C_FIELD(HistoryTabAt(1),s16 *,8);j++) total+=GetRecordTier(1,j);
-if(total>=50) M2C_FIELD(gHistoryMenu,u8 *,0x42)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x42)=0;
+if(total>=50) ((HistoryMenu *)gHistoryMenu)->medals[2]=1; else ((HistoryMenu *)gHistoryMenu)->medals[2]=0;
 j=0; for(total=0;total<M2C_FIELD(HistoryTabAt(2),s16 *,8);total++) j+=GetRecordTier(2,total);
-if(j>=50) M2C_FIELD(gHistoryMenu,u8 *,0x43)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x43)=0;
+if(j>=50) ((HistoryMenu *)gHistoryMenu)->medals[3]=1; else ((HistoryMenu *)gHistoryMenu)->medals[3]=0;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=32;i++);
 for(j=0;M2C_FIELD(GetRecordDefinition(0,j),u16 *,4)!=33;j++);
-if(GetRecordTier(0,i)+GetRecordTier(0,j)>=4) M2C_FIELD(gHistoryMenu,u8 *,0x44)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x44)=0;
+if(GetRecordTier(0,i)+GetRecordTier(0,j)>=4) ((HistoryMenu *)gHistoryMenu)->medals[4]=1; else ((HistoryMenu *)gHistoryMenu)->medals[4]=0;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=25;i++);
-if(GetRecordTier(0,i)==3) M2C_FIELD(gHistoryMenu,u8 *,0x45)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x45)=0;
+if(GetRecordTier(0,i)==3) ((HistoryMenu *)gHistoryMenu)->medals[5]=1; else ((HistoryMenu *)gHistoryMenu)->medals[5]=0;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=26;i++);
-if(GetRecordTier(0,i)==3) M2C_FIELD(gHistoryMenu,u8 *,0x46)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x46)=0;
+if(GetRecordTier(0,i)==3) ((HistoryMenu *)gHistoryMenu)->medals[6]=1; else ((HistoryMenu *)gHistoryMenu)->medals[6]=0;
 for(i=0;M2C_FIELD(GetRecordDefinition(0,i),u16 *,4)!=29;i++);
 for(j=0;M2C_FIELD(GetRecordDefinition(0,j),u16 *,4)!=30;j++);
 for(k=0;M2C_FIELD(GetRecordDefinition(0,k),u16 *,4)!=31;k++);
-if(GetRecordTier(0,k)+(GetRecordTier(0,i)+GetRecordTier(0,j))>=5) M2C_FIELD(gHistoryMenu,u8 *,0x47)=1; else M2C_FIELD(gHistoryMenu,u8 *,0x47)=0;
+if(GetRecordTier(0,k)+(GetRecordTier(0,i)+GetRecordTier(0,j))>=5) ((HistoryMenu *)gHistoryMenu)->medals[7]=1; else ((HistoryMenu *)gHistoryMenu)->medals[7]=0;
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset

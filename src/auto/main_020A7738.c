@@ -9,11 +9,11 @@ typedef struct { u8 values[27]; } UnkA866cTable;
 extern const UnkA866cTable data_020f3c04;
 
 s32 func_020a7738(s32 arg0,s32 a,s32 b,u8 mode) {
-M2C_UNK func_020a7310(); u8 func_020a7b0c(s32); s32 func_020a26f8(void *,u8,u8);
+M2C_UNK GetUnitOwner(); u8 func_020a7b0c(s32); s32 func_020a26f8(void *,u8,u8);
 extern void **gCurrentMap;
 u8 *p=(u8 *)arg0;
 s32 first,base,result,n;
-func_020a7310(p);
+GetUnitOwner(p);
 first=func_020a7b0c((u32)(p[0]<<26)>>26);
 base=func_020a26f8(p,p[1],p[2]);
 result=func_020a7848(p,a,b);
@@ -249,10 +249,10 @@ u8 func_020a7ce4(void *arg0) {
 
 u8 IsUnitSelected(s32 arg0) {
     s32 GetPlayerSelectedUnit();
-    M2C_UNK func_020a7310();
+    M2C_UNK GetUnitOwner();
     u8 var_r0;
 
-    func_020a7310();
+    GetUnitOwner();
     if (arg0 == GetPlayerSelectedUnit()) {
         var_r0 = 1;
     } else {
@@ -326,7 +326,7 @@ u8 func_020a7dc4(void *arg0) {
 u8 func_020a7e08(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
 
 void func_020a7e3c(s32 arg0,s32 arg1){
-s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 func_020d19b4(s32);void func_02091c20(s32,s32);
+s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void func_02091c20(s32,s32);
 extern void **gCurrentMap;
 s32 idx;u8 *base,*entry;
 if(!arg0)return;
@@ -340,7 +340,7 @@ entry[0x70]=0;
 if(arg1){
 func_020a3550(idx,0);func_020a3128(idx);
 }
-if(!func_020d19b4(idx))return;
+if(!IsPlayerHuman(idx))return;
 func_02091c20(28,1);
 }
 
@@ -383,8 +383,8 @@ u8 func_020a80fc(s32 arg0, s32 arg1) {
     if (arg0 == 0) {
         return 1U;
     }
-    temp_r4 = func_020a7310(arg0);
-    if (func_020d273c(temp_r4, func_020a7310(arg1)) == 0) {
+    temp_r4 = GetUnitOwner(arg0);
+    if (IsSameTeam(temp_r4, GetUnitOwner(arg1)) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -393,7 +393,7 @@ u8 func_020a80fc(s32 arg0, s32 arg1) {
 }
 
 u8 func_020a8164(s32 arg0, s32 arg1) {
-    s32 func_020d273c(s32, s32);
+    s32 IsSameTeam(s32, s32);
     s32 temp_r4;
     u8 var_r0;
 
@@ -403,8 +403,8 @@ u8 func_020a8164(s32 arg0, s32 arg1) {
     if (arg1 == 0) {
         return 0U;
     }
-    temp_r4 = func_020a7310(arg0);
-    if (func_020d273c(temp_r4, func_020a7310(arg1)) == 0) {
+    temp_r4 = GetUnitOwner(arg0);
+    if (IsSameTeam(temp_r4, GetUnitOwner(arg1)) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

@@ -4,40 +4,42 @@
 
 #pragma push
 #pragma opt_expr_simplify off
-s32 func_ov001_0216fb7c(void *arg0, void *arg1, s32 arg2) {
-extern s32 data_ov001_0218ca50; extern M2C_UNK data_ov001_0218e678;
-u32 *rk=arg0; u8 *key=arg1; s32 i=0; u32 t; s32 *rc;
-rk[0]=(key[0]<<24)^(key[1]<<16)^(key[2]<<8)^key[3];
-rk[1]=(key[4]<<24)^(key[5]<<16)^(key[6]<<8)^key[7];
-rk[2]=(key[8]<<24)^(key[9]<<16)^(key[10]<<8)^key[11];
-rk[3]=(key[12]<<24)^(key[13]<<16)^(key[14]<<8)^key[15];
-if(arg2==128){rc=&data_ov001_0218ca50;for(;;){t=rk[3];
-rk[4]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
-rk[5]=rk[4]^rk[1];
-rk[6]=rk[5]^rk[2];
-rk[7]=rk[6]^rk[3];
-if(++i==10)return 10;
-rk+=4;}}
-rk[4]=(key[16]<<24)^(key[17]<<16)^(key[18]<<8)^key[19];
-rk[5]=(key[20]<<24)^(key[21]<<16)^(key[22]<<8)^key[23];
-if(arg2==192){rc=&data_ov001_0218ca50;for(;;){t=rk[5];
-rk[6]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
-rk[7]=rk[6]^rk[1];
-rk[8]=rk[7]^rk[2];
-rk[9]=rk[8]^rk[3];
-if(++i==8)return 12;
-rk[10]=rk[4]^rk[9];rk[11]=rk[5]^rk[10];
-rk+=6;}}
-rk[6]=(key[24]<<24)^(key[25]<<16)^(key[26]<<8)^key[27];
-rk[7]=(key[28]<<24)^(key[29]<<16)^(key[30]<<8)^key[31];
-if(arg2==256){rc=&data_ov001_0218ca50;for(;;){t=rk[7];
-rk[8]=rk[0]^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)^rc[i];
-rk[9]=rk[8]^rk[1];
-rk[10]=rk[9]^rk[2];
-rk[11]=rk[10]^rk[3];
-if(++i==7)return 14;
-t=rk[11];rk[12]=rk[4]^(M2C_FIELD(&data_ov001_0218e678,u32 *,(t>>24)*4)&0xff000000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>16)&255)*4)&0xff0000)^(M2C_FIELD(&data_ov001_0218e678,u32 *,((t>>8)&255)*4)&0xff00)^(u8)M2C_FIELD(&data_ov001_0218e678,u32 *,(t&255)*4);rk[13]=rk[5]^rk[12];rk[14]=rk[6]^rk[13];rk[15]=rk[7]^rk[14];
-rk+=8;}}
+/* AES key schedule: expand a 128/192/256-bit key into the round-key words and
+   return the number of rounds (10/12/14), or 0 for an unsupported key size. */
+s32 AES_KeyExpansion(u32 *w, const u8 *key, s32 keyBits) {
+extern s32 gAesRcon; extern M2C_UNK gAesSbox;
+s32 round=0; u32 t; s32 *rcon;
+w[0]=(key[0]<<24)^(key[1]<<16)^(key[2]<<8)^key[3];
+w[1]=(key[4]<<24)^(key[5]<<16)^(key[6]<<8)^key[7];
+w[2]=(key[8]<<24)^(key[9]<<16)^(key[10]<<8)^key[11];
+w[3]=(key[12]<<24)^(key[13]<<16)^(key[14]<<8)^key[15];
+if(keyBits==128){rcon=&gAesRcon;for(;;){t=w[3];
+w[4]=w[0]^(M2C_FIELD(&gAesSbox,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&gAesSbox,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&gAesSbox,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&gAesSbox,u32 *,(t>>24)*4)^rcon[round];
+w[5]=w[4]^w[1];
+w[6]=w[5]^w[2];
+w[7]=w[6]^w[3];
+if(++round==10)return 10;
+w+=4;}}
+w[4]=(key[16]<<24)^(key[17]<<16)^(key[18]<<8)^key[19];
+w[5]=(key[20]<<24)^(key[21]<<16)^(key[22]<<8)^key[23];
+if(keyBits==192){rcon=&gAesRcon;for(;;){t=w[5];
+w[6]=w[0]^(M2C_FIELD(&gAesSbox,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&gAesSbox,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&gAesSbox,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&gAesSbox,u32 *,(t>>24)*4)^rcon[round];
+w[7]=w[6]^w[1];
+w[8]=w[7]^w[2];
+w[9]=w[8]^w[3];
+if(++round==8)return 12;
+w[10]=w[4]^w[9];w[11]=w[5]^w[10];
+w+=6;}}
+w[6]=(key[24]<<24)^(key[25]<<16)^(key[26]<<8)^key[27];
+w[7]=(key[28]<<24)^(key[29]<<16)^(key[30]<<8)^key[31];
+if(keyBits==256){rcon=&gAesRcon;for(;;){t=w[7];
+w[8]=w[0]^(M2C_FIELD(&gAesSbox,u32 *,((t>>16)&255)*4)&0xff000000)^(M2C_FIELD(&gAesSbox,u32 *,((t>>8)&255)*4)&0xff0000)^(M2C_FIELD(&gAesSbox,u32 *,(t&255)*4)&0xff00)^(u8)M2C_FIELD(&gAesSbox,u32 *,(t>>24)*4)^rcon[round];
+w[9]=w[8]^w[1];
+w[10]=w[9]^w[2];
+w[11]=w[10]^w[3];
+if(++round==7)return 14;
+t=w[11];w[12]=w[4]^(M2C_FIELD(&gAesSbox,u32 *,(t>>24)*4)&0xff000000)^(M2C_FIELD(&gAesSbox,u32 *,((t>>16)&255)*4)&0xff0000)^(M2C_FIELD(&gAesSbox,u32 *,((t>>8)&255)*4)&0xff00)^(u8)M2C_FIELD(&gAesSbox,u32 *,(t&255)*4);w[13]=w[5]^w[12];w[14]=w[6]^w[13];w[15]=w[7]^w[14];
+w+=8;}}
 return 0;
 }
 #pragma pop
@@ -46,7 +48,7 @@ void func_ov001_0216ffc4(void *arg0, s32 arg1, void *arg2, void *arg3) {
     extern M2C_UNK data_ov001_0218da78;
     extern M2C_UNK data_ov001_0218de78;
     extern M2C_UNK data_ov001_0218e278;
-    extern M2C_UNK data_ov001_0218e678;
+    extern M2C_UNK gAesSbox;
     s32 sp48;
     u32 sp44;
     s32 sp40;
@@ -126,34 +128,34 @@ loop_1:
         goto loop_1;
     }
     sp24 = M2C_FIELD(var_r0, s32 *, 0);
-    temp_r4 = (u8) *(&data_ov001_0218e678 + ((u32) (temp_r1_4 << 0x18) >> 0x16));
+    temp_r4 = (u8) *(&gAesSbox + ((u32) (temp_r1_4 << 0x18) >> 0x16));
     sp28 = (s32) temp_r4;
-    temp_r4_2 = 0xFF00 & *(&data_ov001_0218e678 + ((u32) ((temp_r2 >> 8) << 0x18) >> 0x16));
+    temp_r4_2 = 0xFF00 & *(&gAesSbox + ((u32) ((temp_r2 >> 8) << 0x18) >> 0x16));
     sp2C = temp_r4_2;
-    temp_r4_3 = sp24 ^ ((*(&data_ov001_0218e678 + ((sp10 >> 0x18) * 4)) & 0xFF000000) ^ (*(&data_ov001_0218e678 + ((u32) ((sp44 >> 0x10) << 0x18) >> 0x16)) & 0xFF0000) ^ temp_r4_2 ^ temp_r4);
+    temp_r4_3 = sp24 ^ ((*(&gAesSbox + ((sp10 >> 0x18) * 4)) & 0xFF000000) ^ (*(&gAesSbox + ((u32) ((sp44 >> 0x10) << 0x18) >> 0x16)) & 0xFF0000) ^ temp_r4_2 ^ temp_r4);
     M2C_FIELD(sp0, s8 *, 0) = (s8) (temp_r4_3 >> 0x18);
     M2C_FIELD(sp0, s8 *, 1) = (s8) (temp_r4_3 >> 0x10);
     M2C_FIELD(sp0, s8 *, 2) = (s8) (temp_r4_3 >> 8);
     M2C_FIELD(sp0, u8 *, 3) = temp_r4_3;
     temp_r4_4 = M2C_FIELD(var_r0, s32 *, 4);
     sp30 = temp_r4_4;
-    temp_r4_5 = (u8) *(&data_ov001_0218e678 + ((u32) (sp10 << 0x18) >> 0x16));
+    temp_r4_5 = (u8) *(&gAesSbox + ((u32) (sp10 << 0x18) >> 0x16));
     sp34 = (s32) temp_r4_5;
-    temp_r4_6 = 0xFF00 & *(&data_ov001_0218e678 + ((u32) ((temp_r1_4 >> 8) << 0x18) >> 0x16));
+    temp_r4_6 = 0xFF00 & *(&gAesSbox + ((u32) ((temp_r1_4 >> 8) << 0x18) >> 0x16));
     sp38 = temp_r4_6;
-    temp_r4_7 = temp_r4_4 ^ ((*(&data_ov001_0218e678 + ((sp44 >> 0x18) * 4)) & 0xFF000000) ^ (*(&data_ov001_0218e678 + ((u32) ((temp_r2 >> 0x10) << 0x18) >> 0x16)) & 0xFF0000) ^ temp_r4_6 ^ temp_r4_5);
+    temp_r4_7 = temp_r4_4 ^ ((*(&gAesSbox + ((sp44 >> 0x18) * 4)) & 0xFF000000) ^ (*(&gAesSbox + ((u32) ((temp_r2 >> 0x10) << 0x18) >> 0x16)) & 0xFF0000) ^ temp_r4_6 ^ temp_r4_5);
     M2C_FIELD(sp0, s8 *, 4) = (s8) (temp_r4_7 >> 0x18);
     M2C_FIELD(sp0, s8 *, 5) = (s8) (temp_r4_7 >> 0x10);
     M2C_FIELD(sp0, s8 *, 6) = (s8) (temp_r4_7 >> 8);
     M2C_FIELD(sp0, u8 *, 7) = temp_r4_7;
     temp_r4_8 = M2C_FIELD(var_r0, s32 *, 8);
     sp3C = temp_r4_8;
-    temp_r4_9 = temp_r4_8 ^ ((0xFF00 & *(&data_ov001_0218e678 + ((u32) ((sp10 >> 8) << 0x18) >> 0x16))) ^ ((0xFF0000 & *(&data_ov001_0218e678 + ((u32) ((temp_r1_4 >> 0x10) << 0x18) >> 0x16))) ^ (*(&data_ov001_0218e678 + ((temp_r2 >> 0x18) * 4)) & 0xFF000000)) ^ (u8) *(&data_ov001_0218e678 + ((u32) (sp44 << 0x18) >> 0x16)));
+    temp_r4_9 = temp_r4_8 ^ ((0xFF00 & *(&gAesSbox + ((u32) ((sp10 >> 8) << 0x18) >> 0x16))) ^ ((0xFF0000 & *(&gAesSbox + ((u32) ((temp_r1_4 >> 0x10) << 0x18) >> 0x16))) ^ (*(&gAesSbox + ((temp_r2 >> 0x18) * 4)) & 0xFF000000)) ^ (u8) *(&gAesSbox + ((u32) (sp44 << 0x18) >> 0x16)));
     M2C_FIELD(sp0, s8 *, 8) = (s8) (temp_r4_9 >> 0x18);
     M2C_FIELD(sp0, s8 *, 9) = (s8) (temp_r4_9 >> 0x10);
     M2C_FIELD(sp0, s8 *, 0xA) = (s8) (temp_r4_9 >> 8);
     M2C_FIELD(sp0, u8 *, 0xB) = temp_r4_9;
-    temp_r0 = (0xFF000000 & *(&data_ov001_0218e678 + ((temp_r1_4 >> 0x18) * 4))) ^ (0xFF0000 & *(&data_ov001_0218e678 + ((u32) ((sp10 >> 0x10) << 0x18) >> 0x16))) ^ (*(&data_ov001_0218e678 + ((u32) ((sp44 >> 8) << 0x18) >> 0x16)) & 0xFF00) ^ (u8) *(&data_ov001_0218e678 + ((u32) (temp_r2 << 0x18) >> 0x16)) ^ M2C_FIELD(var_r0, s32 *, 0xC);
+    temp_r0 = (0xFF000000 & *(&gAesSbox + ((temp_r1_4 >> 0x18) * 4))) ^ (0xFF0000 & *(&gAesSbox + ((u32) ((sp10 >> 0x10) << 0x18) >> 0x16))) ^ (*(&gAesSbox + ((u32) ((sp44 >> 8) << 0x18) >> 0x16)) & 0xFF00) ^ (u8) *(&gAesSbox + ((u32) (temp_r2 << 0x18) >> 0x16)) ^ M2C_FIELD(var_r0, s32 *, 0xC);
     M2C_FIELD(sp0, s8 *, 0xC) = (s8) (temp_r0 >> 0x18);
     M2C_FIELD(sp0, s8 *, 0xD) = (s8) (temp_r0 >> 0x10);
     M2C_FIELD(sp0, s8 *, 0xE) = (s8) (temp_r0 >> 8);

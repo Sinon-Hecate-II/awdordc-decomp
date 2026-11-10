@@ -10,6 +10,9 @@ typedef struct {
     s32 x, y, z;
 } Vec3;
 
+/* Per-unit draw context (same layout as the one in main_020785B0.c). */
+typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 color; u8 pad[3]; s32 extra; u8 mode; u8 pad2[3]; } UnitRenderContext;
+
 #pragma opt_propagation off
 void func_020793f0(void *arg0) {
 extern M2C_UNK data_02140f70;
@@ -68,92 +71,99 @@ void func_020796b0(M2C_UNK arg0, void *arg1) {
 }
 
 #pragma opt_propagation off
-void func_0207971c(void *arg0, void *arg1) {
-    void func_020722fc(u32, u32);
+/* Pick the status icon that belongs to a unit (by side/variant in mode 2, else by
+   its status flags, with a pseudo-random pick from the candidates) and draw it as
+   a 3D quad at the unit's position. */
+void DrawUnitStatusIcon(Vec3 *pos, UnitRenderContext *ctx) {
     void func_020799dc(void *, void *, void *, u32);
     extern Mode0207 data_02168f14;
-    extern M2C_UNK data_027e15bc;
+    extern M2C_UNK gFrameCounter;
     extern M2C_UNK data_020eb4ec;
     extern M2C_UNK data_020eb4e0;
-    void *r8;
-    unsigned char *r7;
-    int globalCond;
-    s32 arr1[16];
-    s32 arr2[16];
-    void *r3;
-    int type;
-    unsigned char nibble;
-    int firstCount;
-    int r0;
-    int r4;
-    int r1;
-    int r5;
-    int idx;
-    int r1idx;
-    int r2;
-    int tableVal;
-    void *ptr;
-    int r6;
-    int tmp;
-    r8 = arg0;
-    r7 = (unsigned char *)arg1;
-    if (r7[0x30] == 1) return;
-    r0=(u8)data_02168f14.mode;
-    if (r0==2) {
-        r0=0;
-        r3 = *(void **)(r7 + 0x0C);
-        type = ((UnitBits7971c*)r3)->group;
-        firstCount = r0;
-        if (type == 3) {
-            arr1[0] = 0x14; firstCount=r0+1;
+    s32 mode2Icons[16];
+    s32 flagIcons[16];
+    void *unit;
+    s32 sideType;
+    s32 count;
+    s32 icon;
+    s32 rotation;
+    s32 count2;
+    s32 flags;
+    s32 index;
+    s32 frame;
+    s32 offset;
+    s32 style;
+    void *iconPtr;
+    s32 side;
+    s32 flip;
+
+    if (ctx->mode == 1) return;
+    icon = (u8)data_02168f14.mode;
+    if (icon == 2) {
+        icon = 0;
+        unit = ctx->unit;
+        sideType = ((UnitBits7971c *)unit)->group;
+        count = icon;
+        if (sideType == 3) {
+            mode2Icons[0] = 0x14; count = icon + 1;
         }
-        switch (((UnitBits7971c*)r3)->variant) {
-            case 0: arr1[firstCount++] = 0x16; break;
-            case 1: arr1[firstCount++] = 0x17; break;
-            case 8: arr1[firstCount++] = 0x18; break;
-            case 6: arr1[firstCount++] = 0x19; break;
-            default: break;
+        switch (((UnitBits7971c *)unit)->variant) {
+        case 0: mode2Icons[count++] = 0x16; break;
+        case 1: mode2Icons[count++] = 0x17; break;
+        case 8: mode2Icons[count++] = 0x18; break;
+        case 6: mode2Icons[count++] = 0x19; break;
+        default: break;
         }
-        if (firstCount == 0) goto chosen;
-        idx = ((u32)data_027e15bc >> 6) % firstCount;
-        r0 = arr1[idx];
+        if (count == 0) goto chosen;
+        index = ((u32)gFrameCounter >> 6) % count;
+        icon = mode2Icons[index];
     } else {
-        r0=0;
-        r6 = *(s32 *)(r7 + 0x1C);
-        r1 = r0;
-        if (r6 > 0) { arr2[0]=0x11;r1=r0+1; }
-        r5 = *(s32 *)(r7 + 0x24);
-        if (r5 != 0) {
-            if (r5 & 0x02) arr2[r1++] = 0x0A;
-            if (r5 & 0x04) arr2[r1++] = 0x0B;
-            if (r5 & 0x08) arr2[r1++] = 0x0C;
-            if (r5 & 0x800) arr2[r1++] = 0x15;
-            if (r5 & 0x80) arr2[r1++] = 0x0D;
-            if (r5 & 0x40) arr2[r1++] = 0x0E;
-            if (r5 & 0x20) arr2[r1++] = 0x0F;
-            if (r5 & 0x100) arr2[r1++] = 0x10;
+        icon = 0;
+        side = ctx->side;
+        count2 = icon;
+        if (side > 0) { flagIcons[0] = 0x11; count2 = icon + 1; }
+        flags = ctx->flags;
+        if (flags != 0) {
+            if (flags & 0x02) flagIcons[count2++] = 0x0A;
+            if (flags & 0x04) flagIcons[count2++] = 0x0B;
+            if (flags & 0x08) flagIcons[count2++] = 0x0C;
+            if (flags & 0x800) flagIcons[count2++] = 0x15;
+            if (flags & 0x80) flagIcons[count2++] = 0x0D;
+            if (flags & 0x40) flagIcons[count2++] = 0x0E;
+            if (flags & 0x20) flagIcons[count2++] = 0x0F;
+            if (flags & 0x100) flagIcons[count2++] = 0x10;
         }
-        if (r1 == 0) goto chosen;
-        idx = ((u32)data_027e15bc >> 6) % r1;
-        r0 = arr2[idx];
-        if (r0 == 0x11) {
-            if (r6 > 0) {
-                r1 = r6 - 1;
-                r0 += r1;
+        if (count2 == 0) goto chosen;
+        index = ((u32)gFrameCounter >> 6) % count2;
+        icon = flagIcons[index];
+        if (icon == 0x11) {
+            if (side > 0) {
+                count2 = side - 1;
+                icon += count2;
             }
-            if (r5 & 0x400) r0 += 1;
+            if (flags & 0x400) icon += 1;
         }
     }
-    chosen:
-    if(r0==0)return;
-    r1idx = *(s32 *)(r7 + 0x14);
-    if (r1idx == 0x18) r0 += 0x1A;
-    r2 = r0 * 0x0E;
-    ptr = (u8 *)&data_020eb4e0 + r2;
-    tableVal = ((unsigned char *)&data_020eb4ec)[r2];
-    
-    switch(tableVal){case 0:tmp=*(s32*)(r7+0x18)&7;tmp=tmp>=4?1:0;tmp<<=5;r4=tmp+0x1400;break;case 1:r4=(*(s32*)(r7+0x18)<<5)+0x1200;break;}
-    func_020799dc(r8, ptr, (void *)((unsigned char *)ptr + 6), (u32)r4);
+chosen:
+    if (icon == 0) return;
+    frame = ctx->frame;
+    if (frame == 0x18) icon += 0x1A;
+    offset = icon * 0x0E;
+    iconPtr = (u8 *)&data_020eb4e0 + offset;
+    style = ((u8 *)&data_020eb4ec)[offset];
+
+    switch (style) {
+    case 0:
+        flip = ctx->variant & 7;
+        flip = flip >= 4 ? 1 : 0;
+        flip <<= 5;
+        rotation = flip + 0x1400;
+        break;
+    case 1:
+        rotation = (ctx->variant << 5) + 0x1200;
+        break;
+    }
+    func_020799dc(pos, iconPtr, (void *)((u8 *)iconPtr + 6), (u32)rotation);
 }
 void func_020799dc(void *arg0, void *arg1, void *arg2, u32 arg3) {
 #pragma opt_propagation on

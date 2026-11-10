@@ -213,92 +213,92 @@ s32 func_020328ac(Unk032Callbacks *arg,s32 value){
 M2C_UNK func_02007f8c(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02032c74(s32);
 void func_020329d0(void);
-extern M2C_UNK data_0213d114,data_020fb33c;
+extern M2C_UNK gNasConnection,data_020fb33c;
 void *p;
 void *(*alloc)(void *,s32);
 alloc=M2C_FIELD(arg,void *(**)(void *,s32),0x40);
-if(M2C_FIELD(&data_0213d114,void **,8))return 2;
-M2C_FIELD(&data_0213d114,void **,8)=alloc(&data_020fb33c,0x13f4);
-if(!M2C_FIELD(&data_0213d114,void **,8))return 2;
-func_02007f8c((s32)M2C_FIELD(&data_0213d114,void **,8),0,0x13f4);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1314)=value;
-M2C_FIELD(&data_0213d114,s32 *,0)=0;
-func_02007f8c((s32)(M2C_FIELD(&data_0213d114,void **,8)+0x1008),0,0x1c4);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1008)=0x4e84;
-p=M2C_FIELD(&data_0213d114,void **,8);
+if(M2C_FIELD(&gNasConnection,void **,8))return 2;
+M2C_FIELD(&gNasConnection,void **,8)=alloc(&data_020fb33c,0x13f4);
+if(!M2C_FIELD(&gNasConnection,void **,8))return 2;
+func_02007f8c((s32)M2C_FIELD(&gNasConnection,void **,8),0,0x13f4);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314)=value;
+M2C_FIELD(&gNasConnection,s32 *,0)=0;
+func_02007f8c((s32)(M2C_FIELD(&gNasConnection,void **,8)+0x1008),0,0x1c4);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1008)=0x4e84;
+p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(p,Unk032Callbacks *,0x11cc)=*arg;
 M2C_FIELD(p,u16 *,0x11fe)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),u8 *,0x120b)=0;
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004)=func_02032c74(1);
-if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004))return M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004);
-M2C_FIELD(&data_0213d114,s32 *,4)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8 *,0x120b)=0;
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_02032c74(1);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
+M2C_FIELD(&gNasConnection,s32 *,4)=0;
 func_020329d0();
 return 0;
 }
 
 void func_020329d0(void) {
 M2C_UNK func_0200654c(void *); M2C_UNK func_02005ac0(void *,void (*)(void),void *,void *,s32,s32);
-s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void func_02032d84(void);
-extern M2C_UNK data_0213d114; extern M2C_UNK data_0213d11c;
-func_0200654c(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x13f0)=0;
-if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1384)!=0 && func_02005d90(M2C_FIELD(&data_0213d114,void **,8)+0x1318)==0)return;
-func_02005ac0(M2C_FIELD(&data_0213d114,void **,8)+0x1318,func_02032d84,&data_0213d11c,M2C_FIELD(&data_0213d114,void **,8)+0x1000,0x1000,0x10);
-TaskWake(M2C_FIELD(&data_0213d114,void **,8)+0x1318);
+s32 func_02005d90(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
+extern M2C_UNK gNasConnection; extern M2C_UNK data_0213d11c;
+func_0200654c(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=0;
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384)!=0 && func_02005d90(M2C_FIELD(&gNasConnection,void **,8)+0x1318)==0)return;
+func_02005ac0(M2C_FIELD(&gNasConnection,void **,8)+0x1318,NasConnectTask,&data_0213d11c,M2C_FIELD(&gNasConnection,void **,8)+0x1000,0x1000,0x10);
+TaskWake(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
 void func_02032a84(void) {
 M2C_UNK func_02006564(void *); M2C_UNK func_020065e8(void *); M2C_UNK func_02033f3c(s32); M2C_UNK func_02005d60(void *);
-extern M2C_UNK data_0213d114;
-if(!M2C_FIELD(&data_0213d114,void **,8))return;
-func_02006564(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x13f0)=1;
-func_020065e8(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
-if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1314))func_02033f3c(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1314));
-if(!M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1384))return;
-func_02005d60(M2C_FIELD(&data_0213d114,void **,8)+0x1318);
+extern M2C_UNK gNasConnection;
+if(!M2C_FIELD(&gNasConnection,void **,8))return;
+func_02006564(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=1;
+func_020065e8(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02033f3c(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
+if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384))return;
+func_02005d60(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
 }
 
 void func_02032b10(void) {
-M2C_UNK func_02034480(s32); extern M2C_UNK data_0213d114; extern M2C_UNK data_020fb34c;
+M2C_UNK func_02034480(s32); extern M2C_UNK gNasConnection; extern M2C_UNK data_020fb34c;
 void (*callback)(void *,void *,s32);
-if(!M2C_FIELD(&data_0213d114,void **,8))return;
-callback=M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void (**)(void *,void *,s32),0x1210);
-if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1314))func_02034480(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1314));
-callback(&data_020fb34c,M2C_FIELD(&data_0213d114,void **,8),0);
-M2C_FIELD(&data_0213d114,void **,8)=0;
+if(!M2C_FIELD(&gNasConnection,void **,8))return;
+callback=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void (**)(void *,void *,s32),0x1210);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02034480(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
+callback(&data_020fb34c,M2C_FIELD(&gNasConnection,void **,8),0);
+M2C_FIELD(&gNasConnection,void **,8)=0;
 }
 
 void func_02032b68(void) {
     M2C_UNK func_02005d60(void *);
-    extern M2C_UNK data_0213d114;
-    if (M2C_FIELD(M2C_FIELD(&data_0213d114, void **, 8), s32 *, 0x1384) == 0) {
+    extern M2C_UNK gNasConnection;
+    if (M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1384) == 0) {
         return;
     }
-    func_02005d60(M2C_FIELD(&data_0213d114, void **, 8) + 0x1318);
+    func_02005d60(M2C_FIELD(&gNasConnection, void **, 8) + 0x1318);
 }
 
 s32 func_02032b98(void) {
 M2C_UNK func_02006564(void *); M2C_UNK func_020065e8(void *);
-extern M2C_UNK data_0213d114;
+extern M2C_UNK gNasConnection;
 s32 result;
-if (!M2C_FIELD(&data_0213d114,void **,8)) return 22;
-func_02006564(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
-result=M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004);
-func_020065e8(M2C_FIELD(&data_0213d114,void **,8)+0x13d8);
+if (!M2C_FIELD(&gNasConnection,void **,8)) return 22;
+func_02006564(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
+result=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
+func_020065e8(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 return result;
 }
 
 void func_02032be4(void *arg0) {
     M2C_UNK func_02007f8c(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213d114;
+    extern M2C_UNK gNasConnection;
 
-    void *p = M2C_FIELD(&data_0213d114, void **, 8);
+    void *p = M2C_FIELD(&gNasConnection, void **, 8);
     if (p == 0) {
         func_02007f8c(arg0, 0, 0x1C4);
     }
-        p = M2C_FIELD(&data_0213d114, void **, 8);
+        p = M2C_FIELD(&gNasConnection, void **, 8);
         MI_CpuCopy8((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
     {
         s32 v = M2C_FIELD(arg0, s32 *, 0);
@@ -313,24 +313,27 @@ void func_02032be4(void *arg0) {
 }
 
 s32 func_02032c74(s32 arg0){
-extern M2C_UNK data_020fb2f8,data_020fb35c,data_0213d114,data_0213d120,data_0212dca4;
+extern M2C_UNK data_020fb2f8,data_020fb35c,gNasConnection,data_0213d120,data_0212dca4;
 s32 func_02068d98(void *,void *);s32 func_02033ccc(void *,void *);void func_02045cbc(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void func_02033e80(void *,s32);
 if(func_02068d98(M2C_FIELD(&data_020fb2f8,void **,0),&data_020fb35c))M2C_FIELD(&data_020fb2f8,s32 *,20)=1;
-{ void *p=M2C_FIELD(&data_0213d114,void **,8);
+{ void *p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(&data_020fb2f8,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
 M2C_FIELD(&data_020fb2f8,s32 *,16)=M2C_FIELD(p,s32 *,0x1210);
 if(func_02033ccc(M2C_FIELD(p,void **,0x1314),(const void *)&data_020fb2f8))return 4;
 }
 if(arg0==1)func_02045cbc(&data_0213d120);
-M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&data_0213d114,void **,8)+0x1200,(u8 *)M2C_FIELD(&data_0213d114,void **,8)+0x11cc);
-if(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),s32 *,0x1004))return 4;
-if(func_02033de8(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314)))return 4;
-func_02033e80(M2C_FIELD(M2C_FIELD(&data_0213d114,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&data_0212dca4,s32 *,4))-1);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return 4;
+if(func_02033de8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
+func_02033e80(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&data_0212dca4,s32 *,4))-1);
 return 0;
 }
 
-void func_02032d84(void) {
-extern M2C_UNK data_0213d114;
+/* Task body for the Nintendo WFC authentication server (NAS) connection: drive the
+   HTTP connect step, wait up to 5 s for it, then close and retry until the server
+   answers or the retry budget is spent. */
+void NasConnectTask(void) {
+extern M2C_UNK gNasConnection;
 M2C_UNK func_02005d60(void *);
 M2C_UNK func_02006564(void *);
 M2C_UNK func_020065e8(void *);
@@ -342,127 +345,127 @@ M2C_UNK func_02033038(void);
 M2C_UNK func_02034480(M2C_UNK);
 M2C_UNK func_02032c74(M2C_UNK);
 
-M2C_UNK r8 = 0;
-M2C_UNK flag = 0;
-u64 t0;
-u64 diff;
-u64 conv;
-void *p;
-void *base;
-void *h;
-void *p2;
-void *bb;
-M2C_UNK val;
-M2C_UNK ret;
-M2C_UNK res;
-u64 t1;
-u64 t1b;
-u64 conv2;
+M2C_UNK retryCount = 0;
+M2C_UNK reinit = 0;
+u64 startTick;
+u64 elapsedTicks;
+u64 elapsedMs;
+void *conn;
+void *ctx;
+void *stream;
+void *conn2;
+void *streamCtx;
+M2C_UNK streamState;
+M2C_UNK step;
+M2C_UNK result;
+u64 nowTick;
+u64 nowTick2;
+u64 elapsedMs2;
 
 for (;;) {
-    p = M2C_FIELD(&data_0213d114, void **, 8);
-    base = (u8 *)p + 0x1000;
-    h = *(void **)((u8 *)base + 0x314);
-    if (*(M2C_UNK *)((u8 *)h + 0x1000 + 0xba4) != 0) {
-        func_02005d60((u8 *)h + 0x338 + 0x1800);
+    conn = M2C_FIELD(&gNasConnection, void **, 8);
+    ctx = (u8 *)conn + 0x1000;
+    stream = *(void **)((u8 *)ctx + 0x314);
+    if (*(M2C_UNK *)((u8 *)stream + 0x1000 + 0xba4) != 0) {
+        func_02005d60((u8 *)stream + 0x338 + 0x1800);
     }
 
-    p = M2C_FIELD(&data_0213d114, void **, 8);
-    base = (u8 *)p + 0x1000;
-    h = *(void **)((u8 *)base + 0x314);
-    if (*(M2C_UNK *)((u8 *)h + 0x1000 + 0x20) != 8) {
-        p2 = M2C_FIELD(&data_0213d114, void **, 8);
-        *(M2C_UNK *)((u8 *)p2 + 0x1008) = 0x4e84;
-        p2 = M2C_FIELD(&data_0213d114, void **, 8);
-        bb = *(void **)((u8 *)p2 + 0x1000 + 0x314);
-        bb = (u8 *)bb + 0x1000;
-        val = *(M2C_UNK *)((u8 *)bb + 0x20);
-        if (val == 7) {
+    conn = M2C_FIELD(&gNasConnection, void **, 8);
+    ctx = (u8 *)conn + 0x1000;
+    stream = *(void **)((u8 *)ctx + 0x314);
+    if (*(M2C_UNK *)((u8 *)stream + 0x1000 + 0x20) != 8) {
+        conn2 = M2C_FIELD(&gNasConnection, void **, 8);
+        *(M2C_UNK *)((u8 *)conn2 + 0x1008) = 0x4e84;
+        conn2 = M2C_FIELD(&gNasConnection, void **, 8);
+        streamCtx = *(void **)((u8 *)conn2 + 0x1000 + 0x314);
+        streamCtx = (u8 *)streamCtx + 0x1000;
+        streamState = *(M2C_UNK *)((u8 *)streamCtx + 0x20);
+        if (streamState == 7) {
             func_0203367c(0x14);
             return;
         }
-        if (r8 > 2) {
-            if (val == 2) { func_0203367c(9); return; }
-            if (val == 3) { func_0203367c(0xb); return; }
+        if (retryCount > 2) {
+            if (streamState == 2) { func_0203367c(9); return; }
+            if (streamState == 3) { func_0203367c(0xb); return; }
             func_0203367c(0xd);
             return;
         }
-        r8 = r8 + 1;
-        flag = 1;
+        retryCount = retryCount + 1;
+        reinit = 1;
     } else {
-        ret = func_02033038();
-        switch(ret) {
+        step = func_02033038();
+        switch(step) {
         case 0x15: func_0203367c(0x15); return;
         case 0x10:
-            if(r8>2){func_0203367c(0x10);return;}
-            r8++;flag=0;break;
-        case 0x11:func_0203367c(ret);return;
+            if(retryCount>2){func_0203367c(0x10);return;}
+            retryCount++;reinit=0;break;
+        case 0x11:func_0203367c(step);return;
         default:
-            if(r8>=2){func_0203367c(ret);return;}
-            r8++;flag=1;break;
+            if(retryCount>=2){func_0203367c(step);return;}
+            retryCount++;reinit=1;break;
         }
     }
 
-    t0 = func_02007004();
-    t1 = func_02007004();
-    diff = t1 - t0;
-    conv = func_02072088(diff << 6, (u64)0x82ea);
-    if (conv < 0x1388ULL) {
+    startTick = func_02007004();
+    nowTick = func_02007004();
+    elapsedTicks = nowTick - startTick;
+    elapsedMs = func_02072088(elapsedTicks << 6, (u64)0x82ea);
+    if (elapsedMs < 0x1388ULL) {
         for (;;) {
-            p = M2C_FIELD(&data_0213d114, void **, 8);
-            func_02006564((u8 *)p + 0x13d8);
-            p = M2C_FIELD(&data_0213d114, void **, 8);
-            if (*(M2C_UNK *)((u8 *)p + 0x13f0) == 1) {
-                *(M2C_UNK *)((u8 *)p + 0x1008) = 0x4e84;
-                p = M2C_FIELD(&data_0213d114, void **, 8);
-                func_020065e8((u8 *)p + 0x13d8);
+            conn = M2C_FIELD(&gNasConnection, void **, 8);
+            func_02006564((u8 *)conn + 0x13d8);
+            conn = M2C_FIELD(&gNasConnection, void **, 8);
+            if (*(M2C_UNK *)((u8 *)conn + 0x13f0) == 1) {
+                *(M2C_UNK *)((u8 *)conn + 0x1008) = 0x4e84;
+                conn = M2C_FIELD(&gNasConnection, void **, 8);
+                func_020065e8((u8 *)conn + 0x13d8);
                 func_0203367c(0x14);
                 return;
             }
-            func_020065e8((u8 *)p + 0x13d8);
+            func_020065e8((u8 *)conn + 0x13d8);
             func_02006030(0x1388);
-            t1b = func_02007004();
-            diff = t1b - t0;
-            conv2 = func_02072088(diff << 6, (u64)0x82ea);
-            if (conv2 >= 0x1388ULL) break;
+            nowTick2 = func_02007004();
+            elapsedTicks = nowTick2 - startTick;
+            elapsedMs2 = func_02072088(elapsedTicks << 6, (u64)0x82ea);
+            if (elapsedMs2 >= 0x1388ULL) break;
         }
     }
 
-    p = M2C_FIELD(&data_0213d114, void **, 8);
-    base = (u8 *)p + 0x1000;
-    h = *(void **)((u8 *)base + 0x314);
-    func_02034480((M2C_UNK)h);
+    conn = M2C_FIELD(&gNasConnection, void **, 8);
+    ctx = (u8 *)conn + 0x1000;
+    stream = *(void **)((u8 *)ctx + 0x314);
+    func_02034480((M2C_UNK)stream);
 
-    p = M2C_FIELD(&data_0213d114, void **, 8);
-    func_02006564((u8 *)p + 0x13d8);
-    res = func_02032c74(flag);
-    p2 = M2C_FIELD(&data_0213d114, void **, 8);
-    *(M2C_UNK *)((u8 *)p2 + 0x1000 + 4) = res;
-    p2 = M2C_FIELD(&data_0213d114, void **, 8);
-    if (*(M2C_UNK *)((u8 *)p2 + 0x1000 + 4) != 0) {
-        *(M2C_UNK *)((u8 *)p2 + 0x1008) = 0x4e84;
-        p2 = M2C_FIELD(&data_0213d114, void **, 8);
-        func_020065e8((u8 *)p2 + 0x13d8);
+    conn = M2C_FIELD(&gNasConnection, void **, 8);
+    func_02006564((u8 *)conn + 0x13d8);
+    result = func_02032c74(reinit);
+    conn2 = M2C_FIELD(&gNasConnection, void **, 8);
+    *(M2C_UNK *)((u8 *)conn2 + 0x1000 + 4) = result;
+    conn2 = M2C_FIELD(&gNasConnection, void **, 8);
+    if (*(M2C_UNK *)((u8 *)conn2 + 0x1000 + 4) != 0) {
+        *(M2C_UNK *)((u8 *)conn2 + 0x1008) = 0x4e84;
+        conn2 = M2C_FIELD(&gNasConnection, void **, 8);
+        func_020065e8((u8 *)conn2 + 0x13d8);
         return;
     }
-    func_020065e8((u8 *)p2 + 0x13d8);
+    func_020065e8((u8 *)conn2 + 0x13d8);
 }
 }
 
 s32 func_02033038(void) {
-    extern M2C_UNK data_0213d114,data_020fb37c,data_020fb38c,data_0213d120;
+    extern M2C_UNK gNasConnection,data_020fb37c,data_020fb38c,data_0213d120;
     s32 func_02034c58(u32,u32,void*);
     s32 func_02033210(void);
     s32 func_020470dc(void*,void*);
     void func_02047098(void*);
     void func_0204712c(void*);
 
-    u8 *g = *(u8**)((u8*)&data_0213d114 + 8);
+    u8 *g = *(u8**)((u8*)&gNasConnection + 8);
     void *(*alloc)(void*,s32) = *(void *(**)(void*,s32))(g + 0x1000 + 0x20c);
     void (*freefn)(void*,void*,s32) = *(void (**)(void*,void*,s32))(g + 0x1000 + 0x210);
 
     if (func_02034c58(*(u32*)(g + 0x1000 + 0x314), 0, g + 0x1000) != 1) {
-        *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+        *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
         return 14;
     }
     if (func_02033210() != 0) {
@@ -470,17 +473,17 @@ s32 func_02033038(void) {
     }
 
     {
-        s32 state = *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8);
+        s32 state = *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8);
         if (state < 0x4e84) {
         if (state == 0x4e22) {
             void *p = alloc((void*)&data_020fb37c, 0x71f);
             if (p == 0) {
-                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
                 return 2;
             }
             if (func_020470dc(&data_0213d120, (void*)(((u32)p + 0x1f) & ~0x1fu)) != 1) {
                 freefn((void*)&data_020fb38c, p, 0);
-                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e84;
+                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
                 return 15;
             }
             freefn((void*)&data_020fb38c, p, 0);
@@ -491,18 +494,18 @@ s32 func_02033038(void) {
             switch (state) {
             case 0x4e88: {
                 func_0204712c(&data_0213d120);
-                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e88;
+                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e88;
                 return 16;
             }
             case 0x4e8c: {
                 void *p = alloc((void*)&data_020fb37c, 0x700);
                 if (p == 0) {
-                    *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
+                    *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                     return 17;
                 }
                 func_02047098((void*)(((u32)p + 0x1f) & ~0x1fu));
                 freefn((void*)&data_020fb38c, p, 0);
-                *(s32*)(*(u8**)((u8*)&data_0213d114 + 8) + 0x1000 + 8) = 0x4e8c;
+                *(s32*)(*(u8**)((u8*)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                 return 17;
             }
             }

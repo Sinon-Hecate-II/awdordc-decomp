@@ -10,7 +10,7 @@ int func_ov000_021a8a88(void *);
 int func_ov000_021a93ec(s16,s16);
 int func_ov000_02177f24(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
-int func_ov000_0217a0a8(void *);
+int HasBetterAttackerNearby(void *);
 int func_ov000_021aa820(s16 *,u16,int,int);
 void SetMapCursor(s16,s16,int,int,int);
 void func_ov000_02199f38(void);
@@ -62,7 +62,7 @@ void func_ov000_02190f74(void){
 #pragma opt_common_subs off
 extern void **gCurrentMap;
 void func_01ffc328(void *);
-s32 func_ov000_021a8fc0(s16);
+s32 IsCurrentPlayerUnit(s16);
 s32 func_0207c8ec(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_021a91d0(u8);
@@ -74,7 +74,7 @@ map=*gCurrentMap;
 if(map->grid[y][x]<0)continue;
 id=((u8 *)map)[x+map->rows[y]];
 if(!id)continue;
-if(!func_ov000_021a8fc0((s16)id))continue;
+if(!IsCurrentPlayerUnit((s16)id))continue;
 map=*gCurrentMap;unit=(Unit1911 *)((u8 *)map+0x59a4)+id;
 if(!unit->value)continue;
 if(unit->kind!=map->selected->kind)continue;
@@ -96,7 +96,7 @@ void func_ov000_021911bc(void){
 #pragma opt_common_subs off
 extern void **gCurrentMap;
 void func_01ffc328(void *);
-s32 func_ov000_021a8fc0(s16);
+s32 IsCurrentPlayerUnit(s16);
 s32 func_0207c8ec(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 id,x,y,h,cur;Map1911 *map;Unit1911 *unit;
@@ -107,7 +107,7 @@ map=*gCurrentMap;
 if(map->grid[y][x]<0)continue;
 id=((u8 *)map)[x+map->rows[y]];
 if(!id)continue;
-if(!func_ov000_021a8fc0((s16)id))continue;
+if(!IsCurrentPlayerUnit((s16)id))continue;
 map=*gCurrentMap;unit=(Unit1911 *)((u8 *)map+0x59a4)+id;
 if(!unit->value)continue;
 if(unit->kind!=map->selected->kind)continue;
@@ -161,7 +161,7 @@ void func_ov000_0219137c(void){
  if(!score)continue;
  if(((Map1911 *)*gCurrentMap)->selected->kind==1 && !func_ov000_021a98a8(unit->kind) && M2C_FIELD(*gCurrentMap,s16 *,0x6ee6)!=0 && M2C_FIELD(*gCurrentMap,s16 *,0x6ef2)<15)continue;
  if(score<best)continue;
- if(func_ov000_0217a0a8(unit)==1 && CountAdjacentBounds1913(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))<=1)continue;
+ if(HasBetterAttackerNearby(unit)==1 && CountAdjacentBounds1913(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))<=1)continue;
  best=score;destX=position[0];destY=position[1];
  map=*gCurrentMap;unitId=((u8 *)map)[x+map->rows[y]];
  }}

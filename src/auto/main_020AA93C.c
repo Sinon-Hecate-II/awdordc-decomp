@@ -480,7 +480,7 @@ void func_020ab2c4(void *arg0) {
 }
 
 #pragma opt_propagation off
-s16 func_020ab30c(void *arg0) {
+s16 GetScrollLimit(void *arg0) {
     s16 c = M2C_FIELD(arg0, s16 *, 0xc);
     s16 a = M2C_FIELD(arg0, s16 *, 6);
     s16 b = M2C_FIELD(arg0, s16 *, 8);
@@ -490,7 +490,7 @@ s16 func_020ab30c(void *arg0) {
     return n;
 }
 #pragma opt_propagation reset
-void func_020ab344(void *arg0,s16 arg1,s32 arg2){
+void ScrollListTo(void *arg0,s16 arg1,s32 arg2){
  s32 func_0207c8ec(s16,s16);s32 GetSpriteAnimValue(void *);
  s32 mul;s16 r6,r7,v;
  M2C_FIELD(arg0,s16 *,12)=arg1;
@@ -505,7 +505,7 @@ void func_020ab344(void *arg0,s16 arg1,s32 arg2){
 
 #pragma opt_common_subs off
 void func_020ab3b0(void *p,s32 value,s32 flag){
-s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);void func_020ab884(void *);
+s32 func_0207c8ec(s16,s16);s32 func_0207c928(s16,s16);void UpdateListScroll(void *);
 s32 limit,v,y; s16 a,b;
 *(volatile s32 *)((s8 *)p+0x14)=value;
 if(*(u8 *)((s8 *)p+0x24)){
@@ -516,7 +516,7 @@ while(v<limit){v=*(volatile s32 *)((s8 *)p+0x18);value=*(volatile s32 *)((s8 *)p
 }else{limit=*(volatile s32 *)((s8 *)p+0x18);v=*(volatile s32 *)((s8 *)p+0x14);if(v<=limit){limit=*(volatile s32 *)((s8 *)p+0x1c);if(v>=limit)limit=v;}*(volatile s32 *)((s8 *)p+0x14)=limit;}
 y=*(volatile u8 *)((s8 *)p+0xa)*(s16)func_0207c8ec((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
 *(volatile s16 *)((s8 *)p+0x2c)=*(volatile u8 *)((s8 *)p+0xb)*(s16)func_0207c928((s16)*(volatile s32 *)((s8 *)p+0x14),*(s16 *)((s8 *)p+8));
-*(volatile s16 *)((s8 *)p+0x2e)=y;func_020ab884(p);if(flag!=1)return;
+*(volatile s16 *)((s8 *)p+0x2e)=y;UpdateListScroll(p);if(flag!=1)return;
 a=*(s16 *)((s8 *)p+0x2c);*(s16 *)((s8 *)p+0x52)=a;*(s16 *)((s8 *)p+0x50)=a;
 b=*(s16 *)((s8 *)p+0x2e);*(s16 *)((s8 *)p+0x64)=b;*(s16 *)((s8 *)p+0x62)=b;}
 #pragma opt_common_subs reset
