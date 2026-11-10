@@ -33,6 +33,8 @@ static inline s32 Unk02181C88Index(s8 *unit) { if(unit==0)return 0; return (s32)
 static inline s32 Unk02181C88Owner(s8 *unit) { if(unit!=0)return (Unk02181C88Index(unit)>>6)+1;return 0; }
 static inline s32 Unk02181C88UnitIndex(s8 *unit, s32 map) { if(unit==0)return 0; return (s32)(unit-(map+0x59A4))/14; }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_ov000_02181c88(void) {
     s8 *sp58;
     s32 sp54;
@@ -204,7 +206,7 @@ void func_ov000_02181c88(void) {
     s32 var_r0_4;
     u16 var_r1_7;
     u16 var_r2_7;
-    s32 var_r5_3;
+    u16 var_r5_3;
     u16 var_r8;
     u16 var_r8_2;
     u16 var_r9_5;
@@ -240,11 +242,11 @@ void func_ov000_02181c88(void) {
     u32 var_r10_6;
     u32 var_r11_2;
     u32 var_r1;
-    u32 var_r6_3;
+    s8 *var_r6_3;
     u32 var_r6_5;
     u32 var_r6_7;
-    u8 var_r9_8;
-    u8 temp_r0_22;
+    u32 var_r9_8;
+    s8 temp_r0_22;
     u8 temp_r0_24;
     u8 temp_r0_4;
     u8 temp_r0_6;
@@ -336,7 +338,7 @@ void func_ov000_02181c88(void) {
                             var_r8 = M2C_FIELD(var_r7, u16 *, 0x5144);
                             var_r9 = 0;
                             if ((s32) var_r8 > 0) {
-                                var_r6_3 = (u32) &data_ov000_021e0f60;
+                                var_r6_3 = (s8 *)&data_ov000_021e0f60;
                                 do {
                                     if ((s32) M2C_FIELD((M2C_FIELD((var_r7 + (var_r3_2 * 4)), s32 *, 0x52E8) + var_r9), s8 *, 0) >= 0) {
                                         if (temp_r4 >= 0x28) {
@@ -992,7 +994,7 @@ void func_ov000_02181c88(void) {
                                                 var_r0_32 = var_r0_31 + (var_r9_7 - sp34);
                                             }
                                             if ((var_r0_32 >= 0) && (var_r0_32 <= 5)) {
-                                                temp_r2_19 = M2C_FIELD((*gCurrentMap + (var_r9_7 * 4)), s32 *, 0x52E8);
+                                                temp_r2_19 = M2C_FIELD((var_r5 + (var_r9_7 * 4)), s32 *, 0x52E8);
                                                 M2C_FIELD((temp_r2_19 + var_r5_2), s8 *, 0) = M2C_FIELD((temp_r2_19 + var_r5_2), s8 *, 0) + 1;
                                                 temp_ip = (var_r9_7 * M2C_FIELD((*gCurrentMap), u16 *, 0x5144)) + var_r5_2;
                                                 M2C_FIELD((&data_ov000_021df918 + (temp_ip >> 3)), u8 *, 0) = M2C_FIELD((&data_ov000_021df918 + (temp_ip >> 3)), u8 *, 0) | (1 << (temp_ip & 7));
@@ -1104,3 +1106,4 @@ void func_ov000_02181c88(void) {
         var_lr += 1;
     } while (var_lr < (s32) M2C_FIELD(var_r0_33, u16 *, 0x5146));
 }
+#pragma pop
