@@ -75,7 +75,7 @@ void func_ov007_022132bc(void) {
         func_ov007_02211f10(0);
     }
     func_ov007_0221ab4c();
-    func_0208fe30(0x10020);
+    PlaySoundEffect(0x10020);
 }
 
 void func_ov007_0221330c(void) {
@@ -112,7 +112,7 @@ void func_ov007_0221336c(void) {
 }
 
 void func_ov007_02213378(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020cfd28();
     M2C_UNK func_ov007_022121b0();
     M2C_UNK func_ov007_022121d4(M2C_UNK);
@@ -123,7 +123,7 @@ void func_ov007_02213378(void *arg0) {
     func_ov007_022121b0();
     func_ov007_0221ab68();
     func_ov007_022121d4(1);
-    func_0208fe30(0x11D);
+    PlaySoundEffect(0x11D);
 }
 
 void func_ov007_022133a8(s32 arg0, s32 arg1) {
@@ -194,7 +194,7 @@ void func_ov007_022134b4(void *arg0) {
     p = *gCurrentMap;
     func_0207b754((u32)M2C_FIELD(p, u16 *, 0x5144) >> 1, (u32)M2C_FIELD(p, u16 *, 0x5146) >> 1);
     func_0207cfc0((u8 *)*gCurrentMap + 0x6EF8);
-    func_0208fe30(0x11D);
+    PlaySoundEffect(0x11D);
 }
 
 void func_ov007_0221352c(s32 arg0, s32 arg1) {

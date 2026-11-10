@@ -45,34 +45,34 @@ data_027e01d8=saved;func_0209daec();
 }
 
 s32 func_0209dc48(void) {
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     u16 keys;
-    keys = data_02101e84[0];
+    keys = gKeyState[0];
     if (keys & 1) return 0x10;
     if (keys & 2) return 0x20;
     if (keys & 8) return 0x400;
-    keys = data_02101e84[3];
+    keys = gKeyState[3];
     if ((keys & 1) && (keys & 0x80)) return 0x10;
     return 0;
 }
 
 s32 func_0209dc9c(void) {
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     u16 keys;
-    keys = data_02101e84[0];
+    keys = gKeyState[0];
     if (keys & 8) return 0x400;
     if (keys & 2) return 0x20;
     if (keys & 1) return 0x10;
-    keys = data_02101e84[3];
+    keys = gKeyState[3];
     if ((keys & 1) && (keys & 0x80)) return 0x10;
     return 0;
 }
 
 s32 func_0209dcf0(void) {
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     u16 temp_r0;
 
-    temp_r0 = *data_02101e84;
+    temp_r0 = *gKeyState;
     if (temp_r0 & 0x20) {
         return 4;
     }

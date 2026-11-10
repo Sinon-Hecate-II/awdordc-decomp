@@ -11,7 +11,7 @@ void func_ov003_021e3500(void *arg0) {
     M2C_UNK func_020899cc(void *, M2C_UNK, s32, s32);
     M2C_UNK func_0208ae88(void *, M2C_UNK);
     void *func_0208b564(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020c9100(void *);
     M2C_UNK func_020c9120(u16, s32);
     M2C_UNK func_ov003_021f1894();
@@ -91,7 +91,7 @@ void func_ov003_021e3500(void *arg0) {
         } while (i < x);
         return;
     }
-    func_0208fe30(0x1000E);
+    PlaySoundEffect(0x1000E);
     if (M2C_FIELD(r5, u8 *, 0x39) != 0) {
         func_02088da8(M2C_FIELD(r5, s32 *, 0x4C));
     }

@@ -1809,7 +1809,7 @@ func_0203f20c kind:function(arm,size=0x110) addr:0x0203f20c
 func_0203f31c kind:function(arm,size=0xa4) addr:0x0203f31c
 func_0203f3c0 kind:function(arm,size=0x9c) addr:0x0203f3c0
 func_0203f45c kind:function(arm,size=0xee4) addr:0x0203f45c
-func_02040340 kind:function(arm,size=0x2fc) addr:0x02040340
+ConnectionHandleJoin kind:function(arm,size=0x2fc) addr:0x02040340
 func_0204063c kind:function(arm,size=0x1c0) addr:0x0204063c
 func_020407fc kind:function(arm,size=0x50) addr:0x020407fc
 func_0204084c kind:function(arm,size=0x2c) addr:0x0204084c
@@ -1839,7 +1839,7 @@ func_020425b4 kind:function(arm,size=0x200) addr:0x020425b4
 func_020427b4 kind:function(arm,size=0x40) addr:0x020427b4
 func_020427f4 kind:function(arm,size=0x58) addr:0x020427f4
 func_0204284c kind:function(arm,size=0x70) addr:0x0204284c
-func_020428bc kind:function(arm,size=0x70) addr:0x020428bc
+IsConnectionMember kind:function(arm,size=0x70) addr:0x020428bc
 func_0204292c kind:function(arm,size=0xdc) addr:0x0204292c
 func_02042a08 kind:function(arm,size=0x64) addr:0x02042a08
 GetConnectedPlayerMask kind:function(arm,size=0x64) addr:0x02042a6c
@@ -3596,7 +3596,7 @@ func_0208fce8 kind:function(arm,size=0x58) addr:0x0208fce8
 func_0208fd40 kind:function(arm,size=0x54) addr:0x0208fd40
 func_0208fd94 kind:function(arm,size=0xc) addr:0x0208fd94
 func_0208fda0 kind:function(arm,size=0x90) addr:0x0208fda0
-func_0208fe30 kind:function(arm,size=0x4c) addr:0x0208fe30
+PlaySoundEffect kind:function(arm,size=0x4c) addr:0x0208fe30
 func_0208fe7c kind:function(arm,size=0x24) addr:0x0208fe7c
 func_0208fea0 kind:function(arm,size=0x1c) addr:0x0208fea0
 func_0208febc kind:function(arm,size=0x70) addr:0x0208febc
@@ -4305,7 +4305,7 @@ func_020a3150 kind:function(arm,size=0x34) addr:0x020a3150
 func_020a3184 kind:function(arm,size=0xa0) addr:0x020a3184
 func_020a3224 kind:function(arm,size=0x84) addr:0x020a3224
 func_020a32a8 kind:function(arm,size=0x4c) addr:0x020a32a8
-func_020a32f4 kind:function(arm,size=0x58) addr:0x020a32f4
+GetPlayerSelectedUnit kind:function(arm,size=0x58) addr:0x020a32f4
 func_020a334c kind:function(arm,size=0x40) addr:0x020a334c
 func_020a338c kind:function(arm,size=0x38) addr:0x020a338c
 func_020a33c4 kind:function(arm,size=0x2c) addr:0x020a33c4
@@ -4471,7 +4471,7 @@ func_020a7c98 kind:function(arm,size=0x18) addr:0x020a7c98
 func_020a7cb0 kind:function(arm,size=0x18) addr:0x020a7cb0
 func_020a7cc8 kind:function(arm,size=0x1c) addr:0x020a7cc8
 func_020a7ce4 kind:function(arm,size=0x18) addr:0x020a7ce4
-func_020a7cfc kind:function(arm,size=0x24) addr:0x020a7cfc
+IsUnitSelected kind:function(arm,size=0x24) addr:0x020a7cfc
 func_020a7d20 kind:function(arm,size=0x18) addr:0x020a7d20
 func_020a7d38 kind:function(arm,size=0x18) addr:0x020a7d38
 func_020a7d50 kind:function(arm,size=0x18) addr:0x020a7d50
@@ -4591,7 +4591,7 @@ func_020a9a1c kind:function(arm,size=0x14) addr:0x020a9a1c
 func_020a9a30 kind:function(arm,size=0xf0c) addr:0x020a9a30
 func_020aa93c kind:function(arm,size=0x1e8) addr:0x020aa93c
 func_020aab24 kind:function(arm,size=0x1cc) addr:0x020aab24
-func_020aacf0 kind:function(arm,size=0x28) addr:0x020aacf0
+MenuSpriteUpdate kind:function(arm,size=0x28) addr:0x020aacf0
 func_020aad18 kind:function(arm,size=0xf8) addr:0x020aad18
 func_020aae10 kind:function(arm,size=0x34) addr:0x020aae10
 func_020aae44 kind:function(arm,size=0x34) addr:0x020aae44
@@ -5740,7 +5740,7 @@ func_020d2a00 kind:function(arm,size=0x6c) addr:0x020d2a00
 func_020d2a6c kind:function(arm,size=0xa4) addr:0x020d2a6c
 func_020d2b10 kind:function(arm,size=0xb0) addr:0x020d2b10
 func_020d2bc0 kind:function(arm,size=0x58) addr:0x020d2bc0
-func_020d2c18 kind:function(arm,size=0x40) addr:0x020d2c18
+GetPlayerCommanderId kind:function(arm,size=0x40) addr:0x020d2c18
 func_020d2c58 kind:function(arm,size=0x98) addr:0x020d2c58
 func_020d2cf0 kind:function(arm,size=0x28) addr:0x020d2cf0
 func_020d2d18 kind:function(arm,size=0x20) addr:0x020d2d18
@@ -7823,7 +7823,7 @@ data_02101d30 kind:data(any) addr:0x02101d30
 data_02101d70 kind:data(any) addr:0x02101d70
 data_02101e78 kind:data(any) addr:0x02101e78
 data_02101e7c kind:data(any) addr:0x02101e7c
-data_02101e84 kind:data(any) addr:0x02101e84
+gKeyState kind:data(any) addr:0x02101e84
 data_02101e88 kind:data(any) addr:0x02101e88
 data_02101e8c kind:data(any) addr:0x02101e8c
 data_02101eac kind:data(any) addr:0x02101eac
@@ -9712,7 +9712,7 @@ data_02126150 kind:data(any) addr:0x02126150
 data_02126154 kind:data(any) addr:0x02126154
 data_0212615c kind:data(any) addr:0x0212615c
 data_02126164 kind:data(any) addr:0x02126164
-data_0212616c kind:data(any) addr:0x0212616c
+gMovementCostTable kind:data(any) addr:0x0212616c
 data_02126180 kind:data(any) addr:0x02126180
 data_02126184 kind:data(any) addr:0x02126184
 data_02126188 kind:data(any) addr:0x02126188
@@ -11070,7 +11070,7 @@ data_0215d9e0 kind:bss addr:0x0215d9e0
 data_0215d9ec kind:bss addr:0x0215d9ec
 data_0215da0c kind:bss addr:0x0215da0c
 data_0215da1c kind:bss addr:0x0215da1c
-data_0215da2c kind:bss addr:0x0215da2c
+gRecordValues kind:bss addr:0x0215da2c
 data_0215dba4 kind:bss addr:0x0215dba4
 data_0215dbac kind:bss addr:0x0215dbac
 data_0215dcac kind:bss addr:0x0215dcac

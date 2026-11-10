@@ -149,8 +149,8 @@ void func_020bc0e0(void) {
 #pragma opt_strength_reduction off
 void func_020bc454(void) {
 s32 func_0207d0b8(void); s32 func_0207d0d4(void); void func_020cfc5c(void);
-extern s32 *gCurrentMap; extern void *data_02101e84; extern s16 data_021292dc; extern s16 data_021292de;
-s32 dir=(M2C_FIELD(data_02101e84,u16 *,6)>>4)&15;
+extern s32 *gCurrentMap; extern void *gKeyState; extern s16 data_021292dc; extern s16 data_021292de;
+s32 dir=(M2C_FIELD(gKeyState,u16 *,6)>>4)&15;
 s32 w=func_0207d0b8(), h=func_0207d0d4(), n;
 if(M2C_FIELD(*gCurrentMap,u16 *,0x5144)<w)w=M2C_FIELD(*gCurrentMap,u16 *,0x5144);
 if(M2C_FIELD(*gCurrentMap,u16 *,0x5146)<h)h=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
@@ -166,8 +166,8 @@ if(n>=0 && n<M2C_FIELD(*gCurrentMap,u16 *,0x5146))M2C_FIELD(*gCurrentMap,s16 *,0
 }
 #pragma pop
 void func_020bc610(void *arg0) {
-    void func_0208fe30(void *);
-    extern void *data_02101e84;
+    void PlaySoundEffect(void *);
+    extern void *gKeyState;
     extern s32 *data_027e0058;
     extern s16 data_021292dc;
     extern s16 data_021292de;
@@ -175,19 +175,19 @@ void func_020bc610(void *arg0) {
     s32 dir;
     void *p;
     s32 n;
-    raw = (s32)M2C_FIELD(data_02101e84, u16 *, 4);
+    raw = (s32)M2C_FIELD(gKeyState, u16 *, 4);
     dir = (raw >> 4) & 15;
     p = (void *)*data_027e0058;
     n = M2C_FIELD(p, s16 *, 0x52c2) + ((volatile s16 (*)[2])&data_021292dc)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5144)) {
         M2C_FIELD(p, s16 *, 0x52c2) = n;
-        if (((volatile s16 (*)[2])&data_021292dc)[dir][0] != 0) func_0208fe30(arg0);
+        if (((volatile s16 (*)[2])&data_021292dc)[dir][0] != 0) PlaySoundEffect(arg0);
     }
     p = (void *)*data_027e0058;
     n = M2C_FIELD(p, s16 *, 0x52c4) + ((volatile s16 (*)[2])&data_021292de)[dir][0];
     if (n >= 0 && n < M2C_FIELD(p, u16 *, 0x5146)) {
         M2C_FIELD(p, s16 *, 0x52c4) = n;
-        if (((volatile s16 (*)[2])&data_021292de)[dir][0] != 0) func_0208fe30(arg0);
+        if (((volatile s16 (*)[2])&data_021292de)[dir][0] != 0) PlaySoundEffect(arg0);
     }
 }
 
@@ -215,9 +215,9 @@ u8 func_020bc734(s32 arg0, s32 arg1) {
 
 #pragma opt_strength_reduction off
 void func_020bc774(void *arg0){
-void func_0208fe30(void *);extern void *data_02101e84;extern s32 *gCurrentMap;extern s16 data_021292dc,data_021292de;
+void PlaySoundEffect(void *);extern void *gKeyState;extern s32 *gCurrentMap;extern s16 data_021292dc,data_021292de;
 s32 dir;u16 keys;s16 x,y;void *p;s32 n;
-dir=(M2C_FIELD(data_02101e84,volatile u16 *,4)>>4)&15;keys=M2C_FIELD(data_02101e84,u16 *,0);
+dir=(M2C_FIELD(gKeyState,volatile u16 *,4)>>4)&15;keys=M2C_FIELD(gKeyState,u16 *,0);
 p=(void *)*gCurrentMap;
 x=M2C_FIELD(p,s16 *,0x52c2)+((s16 (*)[2])&data_021292dc)[dir][0];y=M2C_FIELD(p,s16 *,0x52c4)+((s16 (*)[2])&data_021292de)[dir][0];
 if(!keys){
@@ -226,9 +226,9 @@ p=(void *)*gCurrentMap;
 if(func_020bc734(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4))){if(!func_020bc734(x,y))return;}
 }
 p=(void *)*gCurrentMap;n=M2C_FIELD(p,s16 *,0x52c2)+((s16 (*)[2])&data_021292dc)[dir][0];
-if(n>=0&&n<M2C_FIELD(p,u16 *,0x5144)){M2C_FIELD(p,s16 *,0x52c2)=n;if(((s16 (*)[2])&data_021292dc)[dir][0])func_0208fe30(arg0);}
+if(n>=0&&n<M2C_FIELD(p,u16 *,0x5144)){M2C_FIELD(p,s16 *,0x52c2)=n;if(((s16 (*)[2])&data_021292dc)[dir][0])PlaySoundEffect(arg0);}
 p=(void *)*gCurrentMap;n=M2C_FIELD(p,s16 *,0x52c4)+((s16 (*)[2])&data_021292de)[dir][0];
-if(n>=0&&n<M2C_FIELD(p,u16 *,0x5146)){M2C_FIELD(p,s16 *,0x52c4)=n;if(((s16 (*)[2])&data_021292de)[dir][0])func_0208fe30(arg0);}
+if(n>=0&&n<M2C_FIELD(p,u16 *,0x5146)){M2C_FIELD(p,s16 *,0x52c4)=n;if(((s16 (*)[2])&data_021292de)[dir][0])PlaySoundEffect(arg0);}
 }
 #pragma opt_strength_reduction reset
 s32 func_020bc910(void) {
@@ -237,18 +237,18 @@ s32 func_020bc910(void) {
     void func_020ccca0(void);
     void func_020d8fa0(void);
     void *func_020d2e3c(u16);
-    void func_0208fe30(void *);
+    void PlaySoundEffect(void *);
     s32 func_0207b764(u8, u8);
     s32 func_020d5aa0(s16, s16, s32, s32, u8);
     void func_020d58c4(s32, s32);
 
     extern s32 *gCurrentMap;
-    extern void *data_02101e84;
+    extern void *gKeyState;
 
     s32 *map = *gCurrentMap;
     s16 x = M2C_FIELD(map, s16 *, 0x52C2);
     s16 y = M2C_FIELD(map, s16 *, 0x52C4);
-    u16 flags = M2C_FIELD(data_02101e84, u16 *, 0);
+    u16 flags = M2C_FIELD(gKeyState, u16 *, 0);
 
     if (flags & 0x8) {
         func_020d549c((char *)map + 0x5200);
@@ -270,13 +270,13 @@ s32 func_020bc910(void) {
         u16 w = M2C_FIELD(map, u16 *, 0x52A4);
         void *r6 = func_020d2e3c(w);
         if (r6 != 0) {
-            func_0208fe30((void *)0x1001A);
+            PlaySoundEffect((void *)0x1001A);
             return func_0207b764(*(u8 *)((char *)r6 + 1), *(u8 *)((char *)r6 + 2));
         }
     }
 
     {
-        u16 infoFlags = M2C_FIELD(data_02101e84, u16 *, 0);
+        u16 infoFlags = M2C_FIELD(gKeyState, u16 *, 0);
         if (infoFlags & 0x1) {
             s32 res = func_020d5aa0(x, y, 1, 1, 0);
             if (res != 0) {
@@ -297,9 +297,9 @@ s32 func_020bc910(void) {
 }
 
 s32 func_020bca68(void) {
- extern void *data_02101e84;
+ extern void *gKeyState;
  extern u8 data_02164d5d;
- u16 v=M2C_FIELD(data_02101e84,u16 *,0);
+ u16 v=M2C_FIELD(gKeyState,u16 *,0);
  if(v&1){data_02164d5d=0;return 16;}
  if(v&2)return 32;
  if(v&256)return 256;
@@ -308,21 +308,21 @@ s32 func_020bca68(void) {
 }
 
 s32 func_020bcac0(void) {
-    extern void *data_02101e84;
-    if (M2C_FIELD(data_02101e84, u16 *, 0) & 2) {
+    extern void *gKeyState;
+    if (M2C_FIELD(gKeyState, u16 *, 0) & 2) {
         return 0x20;
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 6) & 2) {
+    if (M2C_FIELD(gKeyState, u16 *, 6) & 2) {
         return 0;
     }
     return 0x20;
 }
 
 s32 func_020bcaf0(void) {
-    extern void *data_02101e84;
+    extern void *gKeyState;
     u16 temp_r0;
 
-    temp_r0 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r0 = M2C_FIELD(gKeyState, u16 *, 0);
     if (temp_r0 & 1) {
         return 0x10;
     }
@@ -339,12 +339,12 @@ s32 func_020bcaf0(void) {
 }
 
 void func_020bcb34(s32 *arg0,s32 arg1) {
-extern void *data_02101e84;
-if(M2C_FIELD(data_02101e84,u16 *,2)&0x90) {
+extern void *gKeyState;
+if(M2C_FIELD(gKeyState,u16 *,2)&0x90) {
 (*arg0)++;
 if(*arg0==arg1) *arg0=0;
 }
-if(M2C_FIELD(data_02101e84,u16 *,2)&0x60) {
+if(M2C_FIELD(gKeyState,u16 *,2)&0x60) {
 if(*arg0<=0) *arg0=arg1;
 (*arg0)--;
 }

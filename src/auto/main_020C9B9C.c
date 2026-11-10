@@ -273,7 +273,7 @@ void func_020ca4c0(void) {
 }
 
 void func_020ca4fc(void *arg0) {
-    void func_0208fe30(s32);
+    void PlaySoundEffect(s32);
     s16 func_0209f8d4(void);
     void *func_0209f8e4(s16);
     void func_020cbdbc(void);
@@ -293,7 +293,7 @@ void func_020ca4fc(void *arg0) {
     func_020cbdbc();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = temp_r4;
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = temp_r5;
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_020ca59c(void *dialog) {
@@ -311,7 +311,7 @@ void func_020ca59c(void *dialog) {
     void func_020d8fa0(void);
     void func_020bcb34(void *, s16);
     void func_020bd7a4(void *, s16);
-    void func_0208fe30(s32);
+    void PlaySoundEffect(s32);
     void func_020cf5ec(s32);
     void func_020d6778(s32);
     M2C_UNK func_020cf828(M2C_UNK);
@@ -366,7 +366,7 @@ void func_020ca59c(void *dialog) {
         func_020bcb34(&saved, r6);
         func_020bd7a4(&saved, r6);
         if (oldval != saved) {
-            func_0208fe30(0x10019);
+            PlaySoundEffect(0x10019);
         }
             M2C_FIELD(dialog, s16 *, 0x6C) = (s16)saved;
             p = func_0209f8e4(M2C_FIELD(dialog, s16 *, 0x6C));
@@ -390,7 +390,7 @@ void func_020ca77c(M2C_UNK arg0) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void func_01ffb3d0(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void func_0208fe30(s32);
+void func_0209f8c0(void);void func_01ffb3d0(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 func_0209f8d4(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
 func_0209f8c0();func_01ffb3d0(-1);
@@ -412,7 +412,7 @@ M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }
 }}
 M2C_FIELD(arg0,s16*,0x6e)=func_0209f8d4();
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 M2C_FIELD(*gCurrentMap,s16*,0x52c2)=M2C_FIELD(*gCurrentMap,s16*,0x52dc);
 M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);
 }

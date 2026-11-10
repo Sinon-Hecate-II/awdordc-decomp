@@ -25,7 +25,7 @@ static inline s32 PanelCategory(u32 kind) {
 }
 
 void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020ab664(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
     s16 temp_r4;
@@ -38,7 +38,7 @@ void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
         return;
     }
     func_ov003_021f92f4(arg0, 0);
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov003_021fbd48(void *arg0, s32 arg1) {
@@ -274,14 +274,14 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
     M2C_FIELD(temp_r4_3, s16 *, 0x30) = var_r5;
     M2C_FIELD(temp_r4_3, s16 *, 0x2C) = (s16) M2C_FIELD(temp_r4_3, s16 *, 0x2C);
     M2C_FIELD(temp_r4_3, u16 *, 0x22) = (u16) M2C_FIELD(temp_r4_3, u16 *, 0x24);
-    func_0208fe30(0x10020);
+    PlaySoundEffect(0x10020);
 }
 
 #pragma opt_strength_reduction off
 void func_ov003_021fc26c(void *arg0) {
  s32 func_ov003_021f2780(void *,void *);
  void func_ov003_021fc98c(void *,u32);
- M2C_UNK func_0208fe30(s32);
+ M2C_UNK PlaySoundEffect(s32);
  u32 func_020d886c(void);
  M2C_UNK func_ov003_021f92f4(void *,s32);
  void func_ov003_021f1bd4(void);
@@ -302,7 +302,7 @@ void func_ov003_021fc26c(void *arg0) {
  if(PanelModeIs(arg0,4)) {
   if(!func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+8) &&
      !func_ov003_021f2780((u8 *)M2C_FIELD(arg0,void **,0x44)+4,(u8 *)M2C_FIELD(arg0,void **,0x44)+0x12)) {
-   func_0208fe30(0x1001d);
+   PlaySoundEffect(0x1001d);
    func_ov003_021fc98c(arg0,6);
    return;
   }
@@ -373,8 +373,8 @@ void func_ov003_021fc26c(void *arg0) {
  func_ov003_021fc95c(arg0);
  func_020d8ccc(selected);
  func_020d47d0();
- if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) func_0208fe30(0x1000e);
- else func_0208fe30(0x1000d);
+ if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) PlaySoundEffect(0x1000e);
+ else PlaySoundEffect(0x1000d);
  if(PanelModeIs(arg0,4)) func_ov003_021f2848((u8 *)M2C_FIELD(arg0,void **,0x44)+4);
  else if(func_ov003_021f4038()) func_ov003_021fc820(arg0);
  if(PanelModeIs(arg0,0) && selected>=0xe1 && selected<0x1a9) {
@@ -402,7 +402,7 @@ M2C_UNK func_ov003_021f1be8(M2C_UNK);
 void func_ov003_021fc95c(void *);
 s32 func_02084644(void);
 s32 func_020846a4(void);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 void func_020d47f0(void);
 
 void *p;
@@ -468,7 +468,7 @@ if (func_020846a4() != 0) {
 return;
 }
 }
-func_0208fe30(0x1000F);
+PlaySoundEffect(0x1000F);
 func_020d47f0();
 }
 

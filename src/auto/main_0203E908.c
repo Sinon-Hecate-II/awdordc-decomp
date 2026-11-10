@@ -120,8 +120,7 @@ void func_0203ec48(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_0200567c(arg0, 0x100, &data_020fc9a4, &data_020fc978, 3, &data_020fc958, arg1, arg2, arg2, &data_020fc960, arg3, &data_020fc96c, &data_020fc958);
 }
 
-s32 func_0203ecb0(s32 arg0, s32 arg1, s32 arg2) {
-    void *GetConnection(void);
+s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 func_02060c78(void *);
     s32 func_02060c44(s32 *);
     s32 func_020617b4(void *);
@@ -135,79 +134,86 @@ s32 func_0203ecb0(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0203f058(u8, s32, s32, u16, s32 *, s32);
     s32 func_0203ef9c(void *);
     void func_02043e10(s32,s32,s32,void *);
-
-
     s32 index, deferred, result;
-    u8 *work;
-    s32 data[2];
+    u8 *session;
+    s32 tempData[2];
     s32 value;
-    s32 low;
-    work=GetConnection();
-    index=work[0x14];
-    result=0;
-    if(arg0==0){
-        u8 *a=GetConnection();
-        u16 high=M2C_FIELD(GetConnection(),u16*,0x17e);
-        low=M2C_FIELD(a,u32*,0x200);
-        low=(u16)low;
-        arg1=((u32)high<<16)|low;
-        if(func_02060c78((void*)arg2)){
-            value=func_02060c44((s32*)arg2);
-            if(value!=func_020617b4(M2C_FIELD(GetConnection(),void**,0xe4)))deferred=1;
-            else{
-                a=GetConnection();
-                M2C_FIELD(a+index*4,s32*,0x210)=func_02060c90((void*)arg2);
-                a=GetConnection();
-                M2C_FIELD(a+index*2,u16*,0x290)=func_02060c98((void*)arg2);
-                deferred=result;
+    u32 low;
+
+    session = GetConnection();
+    index = session[0x14];
+    result = 0;
+
+    if (mode == 0) {
+        u8 *s = GetConnection();
+        u16 high = M2C_FIELD(GetConnection(), u16 *, 0x17e);
+        low = M2C_FIELD(s, u32 *, 0x200);
+        low = (u16)low;
+        sessionId = ((u32)high << 16) | low;
+        if (func_02060c78((void *)data)) {
+            value = func_02060c44((s32 *)data);
+            if (value != func_020617b4(M2C_FIELD(GetConnection(), void **, 0xe4))) {
+                deferred = 1;
+            } else {
+                s = GetConnection();
+                M2C_FIELD(s + index * 4, s32 *, 0x210) = func_02060c90((void *)data);
+                s = GetConnection();
+                M2C_FIELD(s + index * 2, u16 *, 0x290) = func_02060c98((void *)data);
+                deferred = result;
             }
-        }else{
-            u32 key=(u16)func_020218bc();
-            if((u16)key==0xa8c0 || ((key&255)==0xac && (key&0xff00)>=0x1000 && (key&0xff00)<=0x1f00) || (key&255)==10)deferred=1;
-            else{
-                a=GetConnection();
-                M2C_FIELD(a+index*4,s32*,0x210)=func_02060c44((s32*)arg2);
-                a=GetConnection();
-                M2C_FIELD(a+index*2,u16*,0x290)=func_02060c4c((void*)arg2);
-                deferred=0;
+        } else {
+            u32 key = (u16)func_020218bc();
+            if ((u16)key == 0xa8c0 || ((key & 255) == 0xac && (key & 0xff00) >= 0x1000 && (key & 0xff00) <= 0x1f00) || (key & 255) == 10) {
+                deferred = 1;
+            } else {
+                s = GetConnection();
+                M2C_FIELD(s + index * 4, s32 *, 0x210) = func_02060c44((s32 *)data);
+                s = GetConnection();
+                M2C_FIELD(s + index * 2, u16 *, 0x290) = func_02060c4c((void *)data);
+                deferred = 0;
             }
         }
-        if(deferred){
-            a=GetConnection();
-            M2C_FIELD(a,u16*,0x17e)=func_02037eec(0x10000);
-            M2C_FIELD(GetConnection(),s32*,0x19c)=arg1;
-        }else{
-            s32 first;u16 second;
-            data[0]=func_020218bc();
-            data[1]=func_0205b030(*(void**)M2C_FIELD(GetConnection(),void**,4));
-            a=GetConnection();
-            first=func_02060c44((s32*)arg2);
-            second=func_02060c4c((void*)arg2);
-            value=func_0203f058(6,M2C_FIELD(a+index*4,s32*,0xf4),first,second,data,2);
-            M2C_FIELD(GetConnection(),u8*,0x3cd)=0;
-            if(value)return 2;
-            M2C_FIELD(GetConnection(),s32*,0x19c)=0;
+        if (deferred) {
+            s = GetConnection();
+            M2C_FIELD(s, u16 *, 0x17e) = func_02037eec(0x10000);
+            M2C_FIELD(GetConnection(), s32 *, 0x19c) = sessionId;
+        } else {
+            s32 first;
+            u16 second;
+            tempData[0] = func_020218bc();
+            tempData[1] = func_0205b030(*(void **)M2C_FIELD(GetConnection(), void **, 4));
+            s = GetConnection();
+            first = func_02060c44((s32 *)data);
+            second = func_02060c4c((void *)data);
+            value = func_0203f058(6, M2C_FIELD(s + index * 4, s32 *, 0xf4), first, second, tempData, 2);
+            M2C_FIELD(GetConnection(), u8 *, 0x3cd) = 0;
+            if (value) {
+                return 2;
+            }
+            M2C_FIELD(GetConnection(), s32 *, 0x19c) = 0;
         }
-        M2C_FIELD(GetConnection(),u8*,0x194)=0;
-        M2C_FIELD(GetConnection(),u8*,0x195)=0;
-        a=GetConnection();
-        M2C_FIELD(a,u16*,0x196)=func_02060c4c((void*)arg2);
-        a=GetConnection();
-        M2C_FIELD(a,s32*,0x198)=func_02060c44((s32*)arg2);
-    }else{
-        M2C_FIELD(GetConnection(),u8*,0x194)=1;
-        M2C_FIELD(GetConnection(),u8*,0x195)=result;
-        M2C_FIELD(GetConnection(),u16*,0x196)=result;
-        M2C_FIELD(GetConnection(),s32*,0x198)=result;
-        M2C_FIELD(GetConnection(),s32*,0x19c)=arg1;
-        deferred=1;
+        M2C_FIELD(GetConnection(), u8 *, 0x194) = 0;
+        M2C_FIELD(GetConnection(), u8 *, 0x195) = 0;
+        s = GetConnection();
+        M2C_FIELD(s, u16 *, 0x196) = func_02060c4c((void *)data);
+        s = GetConnection();
+        M2C_FIELD(s, s32 *, 0x198) = func_02060c44((s32 *)data);
+    } else {
+        M2C_FIELD(GetConnection(), u8 *, 0x194) = 1;
+        M2C_FIELD(GetConnection(), u8 *, 0x195) = result;
+        M2C_FIELD(GetConnection(), u16 *, 0x196) = result;
+        M2C_FIELD(GetConnection(), s32 *, 0x198) = result;
+        M2C_FIELD(GetConnection(), s32 *, 0x19c) = sessionId;
+        deferred = 1;
     }
-    if(deferred)result=func_0203ef9c((u8*)GetConnection()+0x194);
-    else{
-        value=func_0205b048(*M2C_FIELD(GetConnection(),s32**,4));
-        func_02043e10(0,value,0,(u8*)GetConnection()+0x194);
-        work=GetConnection();
-        M2C_FIELD(work,s32*,0x18c)=0;M2C_FIELD(work,s32*,0x190)=0;
+    if (deferred) {
+        result = func_0203ef9c((u8 *)GetConnection() + 0x194);
+    } else {
+        value = func_0205b048(*M2C_FIELD(GetConnection(), s32 **, 4));
+        func_02043e10(0, value, 0, (u8 *)GetConnection() + 0x194);
+        session = GetConnection();
+        M2C_FIELD(session, s32 *, 0x18c) = 0;
+        M2C_FIELD(session, s32 *, 0x190) = 0;
     }
     return result;
 }

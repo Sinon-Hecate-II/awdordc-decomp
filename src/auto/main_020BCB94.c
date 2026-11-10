@@ -1,13 +1,13 @@
 /* 30 functions from 0x020BCB94 to 0x020BDA88 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_020bcb94(void){extern void *data_02101e84;u16 v=M2C_FIELD(data_02101e84,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
+s32 func_020bcb94(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
 
 s32 func_020bcbd8(void) {
-    extern void *data_02101e84;
+    extern void *gKeyState;
     u16 temp_r0;
 
-    temp_r0 = M2C_FIELD(data_02101e84, u16 *, 2);
+    temp_r0 = M2C_FIELD(gKeyState, u16 *, 2);
     if (temp_r0 & 0x90) {
         return 8;
     }
@@ -18,21 +18,21 @@ s32 func_020bcbd8(void) {
 }
 
 s32 func_020bcc04(void) {
-    extern void *data_02101e84;
-    if (M2C_FIELD(data_02101e84, u16 *, 0) & 2) {
+    extern void *gKeyState;
+    if (M2C_FIELD(gKeyState, u16 *, 0) & 2) {
         return 0x20;
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 6) & 2) {
+    if (M2C_FIELD(gKeyState, u16 *, 6) & 2) {
         return 0;
     }
     return 0x20;
 }
 
 s32 func_020bcc34(void) {
-    extern void *data_02101e84;
+    extern void *gKeyState;
     u16 temp_r0;
 
-    temp_r0 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r0 = M2C_FIELD(gKeyState, u16 *, 0);
     if (temp_r0 & 1) {
         return 0x10;
     }
@@ -188,7 +188,7 @@ if(a&&func_020bdf50(x,y)){if(M2C_FIELD(data_02101e88,u8 *,0x14))return 64;return
 void func_020bd220(void *arg0) {
     void func_0207bb3c(u16, u16, s32 *);
     s32 func_0207c8ec(s32, s32);
-    void func_0208fe30(void *);
+    void PlaySoundEffect(void *);
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
     void func_020bd0e0(void);
@@ -228,14 +228,14 @@ void func_020bd220(void *arg0) {
     }
     map = *gCurrentMap;
     if (M2C_FIELD(map, s16 *, 0x52C2) == oldX && M2C_FIELD(map, s16 *, 0x52C4) == oldY) return;
-    func_0208fe30(arg0);
+    PlaySoundEffect(arg0);
 }
 
 /* Update the map camera target, optionally moving its lookAt and requesting a refresh. */
 void func_020bd3c0(void *arg0) {
     void func_0207bb3c(u16, u16, s32 *);
     s32 func_0207c8ec(s32, s32);
-    void func_0208fe30(void *);
+    void PlaySoundEffect(void *);
     s32 func_020947c0(void);
     void func_020bd0a8(s16, s16);
     void func_020bd0e0(void);
@@ -275,7 +275,7 @@ void func_020bd3c0(void *arg0) {
     }
     map = *gCurrentMap;
     if (M2C_FIELD(map, s16 *, 0x52C2) == oldX && M2C_FIELD(map, s16 *, 0x52C4) == oldY) return;
-    func_0208fe30(arg0);
+    PlaySoundEffect(arg0);
 }
 
 s32 func_020bd560(void){s32 func_020947c0(void);void func_020d58c4(s32,s32);void func_020bd0e0(void);void func_020bd104(void);s32 func_020d5aa0(s32,s32,s32,s32,s32);extern void *data_02101e88;extern void **gCurrentMap;

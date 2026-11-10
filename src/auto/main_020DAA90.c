@@ -140,54 +140,85 @@ M2C_UNK func_020dae28(void *arg0) {
 }
 
 #pragma opt_strength_reduction off
-DAE_RET DrawUnitSlotList(void *arg0) {
-M2C_UNK UpdateSpriteAnimation(s32); s32 GetSpriteAnimValue(s32); M2C_UNK func_020b1c44(s32,M2C_UNK);
-M2C_UNK func_020809c0(u16*,s32,s32); M2C_UNK func_020e4cd8(u16*,u32,u32,u32,u16,u16,u32);
-M2C_UNK func_020675e4(void*,const char*,...); M2C_UNK func_0209b2b4(s32,s32,s32,void*,s32,s32);
-s32 func_020c52ec(s32); s32 func_020c544c(s32); s32 func_0203a68c(s32,s32);
-void func_ov010_0222697c(void*); s32 func_0203a7c0(s32,u8*,u8*,void*,s32*);
-extern void **g3DSpriteEngineMain; extern void **gCur3DSpriteEngine;
-extern s32 gUnitSlotIds[]; extern s8 data_0212d278[]; extern s8 data_0212d27c[];
-extern char gUnitListNameFormat[]; extern u16 data_0212d28c[]; extern char gUnitListEmptyName[];
-void *saved; s32 unit, temp; u16 scroll; u8 a,b; s32 c;
-s32 x,y,i,z,j; s8 buf2[16],buf[16]; u8 info[108];
-UpdateSpriteAnimation(M2C_FIELD(arg0,s32*,0x68));
-temp=GetSpriteAnimValue(M2C_FIELD(arg0,s32*,0x68));
-func_020b1c44(temp,0);
-saved=gCur3DSpriteEngine;
-scroll=-temp;
-gCur3DSpriteEngine=g3DSpriteEngineMain;
-M2C_FIELD(*g3DSpriteEngineMain,u16*,0x3a)=scroll;
-M2C_FIELD(*gCur3DSpriteEngine,s16*,0x42)=0;
-M2C_FIELD(*gCur3DSpriteEngine,u16*,0x38)=scroll;
-M2C_FIELD(*gCur3DSpriteEngine,s16*,0x40)=0;
-if(!(M2C_FIELD(arg0,u16*,0x48)&2)){
-M2C_FIELD(arg0,s8*,0x42)=0;
-x=(*(s32*)0x027ffc3c&1)*0x180+0x124; y=2;z=0x40;
-for(i=0;i<60;i++){
-unit=func_020c52ec(i); if(!unit)continue;
-if(func_020c544c(unit)!=3)continue;
-if(func_0203a68c(unit,0)!=6)continue;
-func_ov010_0222697c(info);
-if(func_0203a7c0(unit,&a,&b,info,&c)!=6)continue;
-if(!(info[0x1a]&2)||a==b)continue;
-if(M2C_FIELD(arg0,s32*,0x38)!=M2C_FIELD(info,s8*,0x28))continue;
-gUnitSlotIds[M2C_FIELD(arg0,s8*,0x42)]=i;
-func_020809c0((u16*)(M2C_FIELD(gCur3DSpriteEngine,u32*,0x24)+6+(z<<1)),20,2);
-func_020e4cd8((u16*)info,M2C_FIELD(gCur3DSpriteEngine,u32*,0x10),M2C_FIELD(gCur3DSpriteEngine,u32*,0x24),9,3,(u16)y,x);
-func_020675e4(buf2,gUnitListNameFormat,data_0212d27c[0],data_0212d278[1]+b,data_0212d27c[0],data_0212d278[1]+a);
-func_0209b2b4(26,(s16)y,1,buf2,0x9000,(u16)(x+0x28));
-M2C_FIELD(arg0,s8*,0x42)++;x+=0x34;z+=0xa0;y+=5;
-if(M2C_FIELD(arg0,s8*,0x42)==4)break;
-}
-for(j=M2C_FIELD(arg0,s8*,0x42);j<4;j++){
-gUnitSlotIds[j]=-1;
-func_020e4cd8(data_0212d28c,M2C_FIELD(gCur3DSpriteEngine,u32*,0x10),M2C_FIELD(gCur3DSpriteEngine,u32*,0x24),9,3,(u16)y,x);
-func_020675e4(buf,gUnitListEmptyName);
-func_0209b2b4(26,(s16)y,1,buf,0x9000,(u16)(x+0x28));x+=0x34;y+=5;
-}
-}
-M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2; gCur3DSpriteEngine=saved;
+/* Draws the unit menu's four unit slots: walks the 60 candidate units, keeps those
+ * matching the menu's variant (+0x38) and draws each one's portrait and two-glyph
+ * name, then fills the unused rows with the empty-slot name. */
+DAE_RET DrawUnitSlotList(void *menu) {
+    M2C_UNK UpdateSpriteAnimation(s32);
+    s32 GetSpriteAnimValue(s32);
+    M2C_UNK func_020b1c44(s32, M2C_UNK);
+    M2C_UNK func_020809c0(u16 *, s32, s32);
+    M2C_UNK func_020e4cd8(u16 *, u32, u32, u32, u16, u16, u32);
+    M2C_UNK func_020675e4(void *, const char *, ...);
+    M2C_UNK func_0209b2b4(s32, s32, s32, void *, s32, s32);
+    s32 func_020c52ec(s32);
+    s32 func_020c544c(s32);
+    s32 func_0203a68c(s32, s32);
+    void func_ov010_0222697c(void *);
+    s32 func_0203a7c0(s32, u8 *, u8 *, void *, s32 *);
+    extern void **g3DSpriteEngineMain;
+    extern void **gCur3DSpriteEngine;
+    extern s32 gUnitSlotIds[];
+    extern s8 data_0212d278[];
+    extern s8 data_0212d27c[];
+    extern char gUnitListNameFormat[];
+    extern u16 data_0212d28c[];
+    extern char gUnitListEmptyName[];
+    void *savedEngine;
+    s32 unit, animValue;
+    u16 scroll;
+    u8 glyphA, glyphB;
+    s32 code;
+    s32 x, y, i, z, j;
+    s8 nameBuf[16], emptyBuf[16];
+    u8 info[108];
+
+    UpdateSpriteAnimation(M2C_FIELD(menu, s32 *, 0x68));
+    animValue = GetSpriteAnimValue(M2C_FIELD(menu, s32 *, 0x68));
+    func_020b1c44(animValue, 0);
+    savedEngine = gCur3DSpriteEngine;
+    scroll = -animValue;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    M2C_FIELD(*g3DSpriteEngineMain, u16 *, 0x3a) = scroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = scroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
+    if (!(M2C_FIELD(menu, u16 *, 0x48) & 2)) {
+        M2C_FIELD(menu, s8 *, 0x42) = 0;
+        x = (*(s32 *)0x027ffc3c & 1) * 0x180 + 0x124;
+        y = 2;
+        z = 0x40;
+        for (i = 0; i < 60; i++) {
+            unit = func_020c52ec(i);
+            if (!unit) continue;
+            if (func_020c544c(unit) != 3) continue;
+            if (func_0203a68c(unit, 0) != 6) continue;
+            func_ov010_0222697c(info);
+            if (func_0203a7c0(unit, &glyphA, &glyphB, info, &code) != 6) continue;
+            if (!(info[0x1a] & 2) || glyphA == glyphB) continue;
+            if (M2C_FIELD(menu, s32 *, 0x38) != M2C_FIELD(info, s8 *, 0x28)) continue;
+            gUnitSlotIds[M2C_FIELD(menu, s8 *, 0x42)] = i;
+            func_020809c0((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 6 + (z << 1)), 20, 2);
+            func_020e4cd8((u16 *)info, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            func_020675e4(nameBuf, gUnitListNameFormat, data_0212d27c[0], data_0212d278[1] + glyphB, data_0212d27c[0], data_0212d278[1] + glyphA);
+            func_0209b2b4(26, (s16)y, 1, nameBuf, 0x9000, (u16)(x + 0x28));
+            M2C_FIELD(menu, s8 *, 0x42)++;
+            x += 0x34;
+            z += 0xa0;
+            y += 5;
+            if (M2C_FIELD(menu, s8 *, 0x42) == 4) break;
+        }
+        for (j = M2C_FIELD(menu, s8 *, 0x42); j < 4; j++) {
+            gUnitSlotIds[j] = -1;
+            func_020e4cd8(data_0212d28c, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, (u16)y, x);
+            func_020675e4(emptyBuf, gUnitListEmptyName);
+            func_0209b2b4(26, (s16)y, 1, emptyBuf, 0x9000, (u16)(x + 0x28));
+            x += 0x34;
+            y += 5;
+        }
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+    gCur3DSpriteEngine = savedEngine;
 }
 void func_020db134(void) {
     ((void (*)())DrawUnitSlotList)();

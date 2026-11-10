@@ -237,9 +237,9 @@ M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3e)=-44-scroll2;M2C_FIELD(*gCur3DSpriteEng
 }
 
 void func_ov003_021e5b18(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
-    M2C_UNK func_020aacf0(void *);
-    extern u16 *data_02101e84;
+    M2C_UNK PlaySoundEffect(s32);
+    M2C_UNK MenuSpriteUpdate(void *);
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     register u8 temp_r4;
     s32 var_r0;
@@ -251,8 +251,8 @@ void func_ov003_021e5b18(void *arg0) {
     void *temp_r2;
 
     temp_r4 = M2C_FIELD(data_02101e88, u8 *, 0x12);
-    temp_r5 = *data_02101e84;
-    func_020aacf0(*M2C_FIELD(arg0, void ***, 0x48));
+    temp_r5 = *gKeyState;
+    MenuSpriteUpdate(*M2C_FIELD(arg0, void ***, 0x48));
     var_r3 = 1;
     temp_r2 = *M2C_FIELD(arg0, void ***, 0x48);
     temp_r1 = M2C_FIELD(temp_r2, void **, 0x64);
@@ -261,7 +261,7 @@ void func_ov003_021e5b18(void *arg0) {
         var_r3 = 0;
     }
     if (var_r3 & 0xFF) {
-        func_0208fe30(0x1000F);
+        PlaySoundEffect(0x1000F);
         temp_r0 = *M2C_FIELD(arg0, void ***, 0x48);
         if (M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
             M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
@@ -275,7 +275,7 @@ void func_ov003_021e5b18(void *arg0) {
     if (!(temp_r5 & 2)) {
         return;
     }
-    func_0208fe30(0x1000F);
+    PlaySoundEffect(0x1000F);
     temp_r0_2 = *M2C_FIELD(arg0, void ***, 0x48);
     if ((s32) M2C_FIELD(temp_r0_2, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0_2, s32 *, (unsigned)0x40) = (s32) ((M2C_FIELD(temp_r0_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));

@@ -39,7 +39,7 @@ void func_ov004_02217514(void *state) {
 void *func_0208c54c(void *);
 void func_0208bd2c(void *,void *,s32,s32,s32);
 s32 func_02001fb4(s32,s32);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void func_020ceb48(void);void func_020cf278(s32);void func_020cf0a8(s32);void func_ov003_021ff36c(void);
 s32 func_020a8958(s32);void func_01ffa8c4(void *,s32);M2C_UNK func_01ffa6fc(void *);
@@ -52,7 +52,7 @@ y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;
 M2C_FIELD(sprite,s32 *,0x40)=func_02001fb4(4096,M2C_FIELD(state,s32 *,0x40));
-func_0208fe30(238);M2C_FIELD(state,u8 *,0x35)=1;return;
+PlaySoundEffect(238);M2C_FIELD(state,u8 *,0x35)=1;return;
 case 1:
 sprite=func_0208c54c(state);func_0208bd2c(sprite,data_ov004_0223c63c,0x3a800,25,1);
 y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
@@ -69,7 +69,7 @@ M2C_FIELD(q,u8 *,4)|=1;M2C_FIELD(q,s32 *,8)=0;
 if(Available175(q))M2C_FIELD(entry,s32 *,12)=0;
 M2C_FIELD(state,u8 *,0x35)=3;}}return;}
 case 3:
-if(M2C_FIELD(state,u8 *,0x36)==0)func_0208fe30(239);
+if(M2C_FIELD(state,u8 *,0x36)==0)PlaySoundEffect(239);
 M2C_FIELD(state,u8 *,0x36)++;
 value=EaseInterpolate(4,0,4096,M2C_FIELD(state,u8 *,0x36),16);
 for(i=0;i<4;i++){q=M2C_FIELD((u8 *)entry+i*4,void **,16);if(q && M2C_FIELD(q,s32 *,8)!=4096)M2C_FIELD(q,s32 *,8)=value;}
@@ -90,7 +90,7 @@ if(ok){
 if(q){y=M2C_FIELD(q,s16 *,2);x=M2C_FIELD(q,s16 *,0);M2C_FIELD(state,s16 *,0x48)=x;M2C_FIELD(state,s16 *,0x4a)=y;}
 q=Selected175(M2C_FIELD(state,void **,0x5c));
 if(q){func_020ceb48();func_020cf278(M2C_FIELD(q,u8 *,7)+161);func_020cf0a8(M2C_FIELD(q,u8 *,7)+161);func_ov003_021ff36c();}
-M2C_FIELD(state,s16 *,0x4c)=0;M2C_FIELD(state,s16 *,0x4e)=0;func_0208fe30(240);
+M2C_FIELD(state,s16 *,0x4c)=0;M2C_FIELD(state,s16 *,0x4e)=0;PlaySoundEffect(240);
 }
 M2C_FIELD(state,u8 *,0x36)=0;M2C_FIELD(state,u8 *,0x35)=5;return;
 case 5:
@@ -108,7 +108,7 @@ M2C_FIELD(q,u8 *,5)=(data_0215d8a8[id]<<3)>>29;
 }}
 id=M2C_FIELD(entry,u8 *,7);
 ((Flags175 *)data_0215d8a8)[id].previous=((Flags175 *)data_0215d8a8)[id].current;
-if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)func_0208fe30(286);
+if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)PlaySoundEffect(286);
 func_01ffa8c4(state,3);return;
 default:func_01ffa6fc(state);return;
 }
@@ -116,7 +116,7 @@ default:func_01ffa6fc(state);return;
 #pragma opt_strength_reduction reset
 void func_ov004_02217bb8(void *state) {
     s32 func_0207c8ec(s32, M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 scale;
     s32 scale2;
     s32 savedScale;
@@ -128,13 +128,13 @@ void func_ov004_02217bb8(void *state) {
     if (M2C_FIELD(state, s32 *, 0x40) == 0x1000) {
         M2C_FIELD(state, s8 *, 0x3A) = 1;
         M2C_FIELD(state, s32 *, 0x40) = 0x800;
-        func_0208fe30(0x1001F);
+        PlaySoundEffect(0x1001F);
     } else {
         M2C_FIELD(state, s8 *, 0x3A) = -1;
         M2C_FIELD(state, s32 *, 0x40) = 0x1000;
         M2C_FIELD(state, s16 *, 0x44) = (s16) M2C_FIELD(state, s16 *, 0x48);
         M2C_FIELD(state, s16 *, 0x46) = (s16) M2C_FIELD(state, s16 *, 0x4A);
-        func_0208fe30(0x1001E);
+        PlaySoundEffect(0x1001E);
     }
     scale = M2C_FIELD(state, s32 *, 0x40);
     if ((scale != 0x800) && (scale != 0x1000)) {

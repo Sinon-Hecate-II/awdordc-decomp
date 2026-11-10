@@ -22,7 +22,7 @@ int func_ov000_0218b0d8(void *arg0) {
  if(func_ov000_0217dcd0()==1) flags|=0x100000;
  map=*gCurrentMap;
  unit=M2C_FIELD(map,u8 **,0x52d0);
- if(func_020a7cfc(unit)) flags|=0x400000;
+ if(IsUnitSelected(unit)) flags|=0x400000;
  unit=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
  if(((UnkStruct_ov000_021A860C *)unit)->unk0==21) flags|=0x800000;
  func_01ffc328(unit);

@@ -3,10 +3,10 @@
 
 
 void func_020cc9c8(void *obj) {
- extern s32 *gCurrentMap;s32 func_0207cfb8(s32);s32 func_0207cee0(s32);s32 func_0207cf48(s32);void func_0208fe30(s32);
+ extern s32 *gCurrentMap;s32 func_0207cfb8(s32);s32 func_0207cee0(s32);s32 func_0207cf48(s32);void PlaySoundEffect(s32);
  s32 oldH,oldW,newH,newW,x,y,width,height,map,dx,dy;
- if(func_0207cfb8(*gCurrentMap+0x6ef8)==0) {M2C_FIELD(obj,s32 *,0x5c)=0;M2C_FIELD(obj,s32 *,0x60)=128;func_0208fe30(0x1001e);}
- else {M2C_FIELD(obj,s32 *,0x5c)=128;M2C_FIELD(obj,s32 *,0x60)=0;func_0208fe30(0x1001f);}
+ if(func_0207cfb8(*gCurrentMap+0x6ef8)==0) {M2C_FIELD(obj,s32 *,0x5c)=0;M2C_FIELD(obj,s32 *,0x60)=128;PlaySoundEffect(0x1001e);}
+ else {M2C_FIELD(obj,s32 *,0x5c)=128;M2C_FIELD(obj,s32 *,0x60)=0;PlaySoundEffect(0x1001f);}
  oldH=func_0207cee0(M2C_FIELD(obj,s32 *,0x5c));oldW=func_0207cf48(M2C_FIELD(obj,s32 *,0x5c));
  newH=func_0207cee0(M2C_FIELD(obj,s32 *,0x60));newW=func_0207cf48(M2C_FIELD(obj,s32 *,0x60));
  map=*gCurrentMap;x=M2C_FIELD(map,s16 *,0x5148);y=M2C_FIELD(map,s16 *,0x514a);

@@ -96,8 +96,8 @@ gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction reset
 void func_ov005_02217dc0(u8 *arg0) {
-extern void *data_02101e84,*data_ov005_02221310;
-u32 old=*arg0; u16 keys=M2C_FIELD(data_02101e84,u16 *,2);s32 value=old;
+extern void *gKeyState,*data_ov005_02221310;
+u32 old=*arg0; u16 keys=M2C_FIELD(gKeyState,u16 *,2);s32 value=old;
 if(keys&0x40)value=old-4;
 else if(keys&0x80)value=old+4;
 else if(keys&0x20)value=old-1;
@@ -110,19 +110,19 @@ M2C_FIELD(data_ov005_02221310,s16 *,0x10)=M2C_FIELD(data_ov005_02221310,s16 *,0x
 }
 
 void func_ov005_02217e4c(u8 *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void *data_ov005_02221310;
     M2C_FIELD(data_ov005_02221310, s16 *, 0xE) = (s16) *arg0;
     M2C_FIELD(data_ov005_02221310, s16 *, 0x10) = (s16) (M2C_FIELD(data_ov005_02221310, s16 *, 0xE) + 1);
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov005_02217e84(u8 *arg0) {
-extern void *data_02101e84;
+extern void *gKeyState;
 u16 keys;s32 old; s32 value;
-old=*arg0;keys=M2C_FIELD(data_02101e84,u16 *,2);value=old;
-if(keys&0x20) {if(old<=0) {if(M2C_FIELD(data_02101e84,u16 *,0)&0x20)value=old-1;}else value=old-1;}
-else if(keys&0x10) {if(old>=3) {if(M2C_FIELD(data_02101e84,u16 *,0)&0x10)value=old+1;}else value=old+1;}
+old=*arg0;keys=M2C_FIELD(gKeyState,u16 *,2);value=old;
+if(keys&0x20) {if(old<=0) {if(M2C_FIELD(gKeyState,u16 *,0)&0x20)value=old-1;}else value=old-1;}
+else if(keys&0x10) {if(old>=3) {if(M2C_FIELD(gKeyState,u16 *,0)&0x10)value=old+1;}else value=old+1;}
 if(value<0)value=3;
 if(value>3)value=0;
 if(value!=old)func_020b1c60(value);
@@ -135,7 +135,7 @@ M2C_FIELD(data_ov005_02221310,s16 *,0x12)=*arg0;
 func_ov005_02217334(*arg0);
 func_020bf8fc(M2C_FIELD(data_ov005_02221310,s16 *,0x10),M2C_FIELD(data_ov005_02221310,s16 *,0x12));
 func_ov005_022173b4(M2C_FIELD(data_ov005_02221310,s16 *,0x10));
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 }
 
 void func_ov005_02217f6c(void) {

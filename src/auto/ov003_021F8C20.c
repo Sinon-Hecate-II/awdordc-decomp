@@ -20,7 +20,7 @@ static inline u8 IsUnavailable92(s32 id) {
 
 void func_ov003_021f8c20(void *arg0) {
     void *func_02084e64();
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 GetSpriteAnimValue(void *);
     u32 func_020d886c();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
@@ -265,9 +265,9 @@ void func_ov003_021f8c20(void *arg0) {
     M2C_FIELD(((var_r3 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4)), u8 *, 0xA9) = temp_r5_3;
     func_ov003_021f9b30(arg0);
     if ((u8) temp_r3 != M2C_FIELD(temp_r0, u8 *, 9)) {
-        func_0208fe30(0x10020);
+        PlaySoundEffect(0x10020);
     } else if (temp_r10 != M2C_FIELD(temp_r0, u8 *, 0xB)) {
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
     }
     if (M2C_FIELD(temp_r0, s32 *, 0) != 0) {
         M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(), 0x1C)();

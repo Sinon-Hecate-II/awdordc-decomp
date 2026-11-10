@@ -56,14 +56,14 @@ void func_ov000_02186940(void *arg0) {
 }
 
 u8 func_ov000_0218695c(void *arg0) {
-s32 func_020a7cfc(void *); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a98e4(u32);
+s32 IsUnitSelected(void *); s32 func_ov000_021a8a88(void *); s32 func_ov000_021a98e4(u32);
 extern u8 data_ov000_021b5c0f;
 u16 flags; u8 result;
 flags=M2C_FIELD(arg0,u16 *,4);
 if(flags&8)return 0;
 if(!(flags&1) && ((u32)(M2C_FIELD(arg0,u8 *,10)<<24)>>31)==0)return 0;
 if(((u32)(M2C_FIELD(arg0,u16 *,6)<<16)>>27)!=0 && func_ov000_021a8a88(arg0)==1)return 1;
-if(func_020a7cfc(arg0)!=0)return 1;
+if(IsUnitSelected(arg0)!=0)return 1;
 if(func_ov000_021a98e4((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)!=1)return 0;
 result= !(*(&data_ov000_021b5c0f+(((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70))&32);
 return result;
@@ -132,7 +132,7 @@ void func_ov000_02186a18(void) {
 
 s32 func_ov000_02186d94(s32 a,s32 b,s32 c){
 extern void **gCurrentMap; u8 func_ov000_021a9d8c(u32,s32);
-extern u8 data_ov000_021b5c0e[];extern M2C_UNK data_0212616c;
+extern u8 gMovementTypeTable[];extern M2C_UNK gMovementCostTable;
 void *p; s32 off; s32 n; s32 idxByte,dataByte; s8 *table;
 if(a<0 || b<0)goto fail;
 p=*gCurrentMap;
@@ -143,70 +143,75 @@ if(func_ov000_021a9d8c((s16)a,(s16)b))return 0;
 off=c*0x70;
 p=*gCurrentMap;
 n=M2C_FIELD(p+b*2,u16 *,0x3758);
-table=M2C_FIELD(&data_0212616c,s8 **,0x64);
+table=M2C_FIELD(&gMovementCostTable,s8 **,0x64);
 idxByte=M2C_FIELD(p+(a+n),u8 *,0x1420);
-dataByte=data_ov000_021b5c0e[off];
+dataByte=gMovementTypeTable[off];
 return ((table+(dataByte<<5))[idxByte&31]>=0)?1:0;
 }
 
-s32 func_ov000_02186e64(s32 x, s32 y) {
-  extern void **gCurrentMap;
-  extern u8 data_ov000_021b5c0e[];
-  extern M2C_UNK data_0212616c;
-  s32 func_ov000_02186d94(s32,s32,s32);
-  void *base; u8 *units; s8 *tbl;
-  s32 off, kind;
-  base=*gCurrentMap;
-  units=(u8*)base+0x59a4;
-  off=M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0xc)*0xe;
-  kind=(u32)(M2C_FIELD((u8*)base+M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0xd)*0xe,u8 *,0x59a4)<<26)>>26;
-  if(kind==0){
+s32 CountAdjacentAccessibleCells(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    extern u8 gMovementTypeTable[];
+    extern M2C_UNK gMovementCostTable;
+    s32 func_ov000_02186d94(s32, s32, s32);
+    void *base;
+    u8 *units;
+    s8 *tbl;
+    s32 off, kind;
     s32 res;
-    res=func_ov000_02186d94(x-1,y,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
-    res+=func_ov000_02186d94(x+1,y,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
-    res+=func_ov000_02186d94(x,y-1,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
-    res+=func_ov000_02186d94(x,y+1,(u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26);
-    return res;
-  }
-  tbl=M2C_FIELD(&data_0212616c,s8 **,0x64);
-  if(M2C_FIELD(tbl+data_ov000_021b5c0e[kind*0x70]*32,s8 *,4)<0){
-    s32 res;
-    if(M2C_FIELD(tbl+data_ov000_021b5c0e[((u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26)*0x70]*32,s8 *,4)<0){
-      res=func_ov000_02186d94(x-1,y,7);
-      res+=func_ov000_02186d94(x+1,y,7);
-      res+=func_ov000_02186d94(x,y-1,7);
-      res+=func_ov000_02186d94(x,y+1,7);
-      return res;
+
+    base = *gCurrentMap;
+    units = (u8 *)base + 0x59a4;
+    off = M2C_FIELD(M2C_FIELD(base, u8 **, 0x52d0), u8 *, 0xc) * 0xe;
+    kind = (u32)(M2C_FIELD((u8 *)base + M2C_FIELD(M2C_FIELD(base, u8 **, 0x52d0), u8 *, 0xd) * 0xe, u8 *, 0x59a4) << 26) >> 26;
+
+    if (kind == 0) {
+        res = func_ov000_02186d94(x - 1, y, (u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26);
+        res += func_ov000_02186d94(x + 1, y, (u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26);
+        res += func_ov000_02186d94(x, y - 1, (u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26);
+        res += func_ov000_02186d94(x, y + 1, (u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26);
+        return res;
     }
-    res=func_ov000_02186d94(x-1,y,7);
-    res+=func_ov000_02186d94(x+1,y,7);
-    res+=func_ov000_02186d94(x,y-1,7);
-    res+=func_ov000_02186d94(x,y+1,7);
-    if(res!=0)return res;
-    res=func_ov000_02186d94(x-1,y,1);
-    res+=func_ov000_02186d94(x+1,y,1);
-    res+=func_ov000_02186d94(x,y-1,1);
-    res+=func_ov000_02186d94(x,y+1,1);
-    return res!=0;
-  }else{
-    s32 res;
-    if(M2C_FIELD(tbl+data_ov000_021b5c0e[((u32)(M2C_FIELD(units+off,u8 *,0)<<26)>>26)*0x70]*32,s8 *,4)<0){
-      res=func_ov000_02186d94(x-1,y,7);
-      res+=func_ov000_02186d94(x+1,y,7);
-      res+=func_ov000_02186d94(x,y-1,7);
-      res+=func_ov000_02186d94(x,y+1,7);
-      if(res>=2)return res;
-      res=func_ov000_02186d94(x-1,y,1);
-      res+=func_ov000_02186d94(x+1,y,1);
-      res+=func_ov000_02186d94(x,y-1,1);
-      res+=func_ov000_02186d94(x,y+1,1);
-      return res!=0;
+
+    tbl = M2C_FIELD(&gMovementCostTable, s8 **, 0x64);
+    if (M2C_FIELD(tbl + gMovementTypeTable[kind * 0x70] * 32, s8 *, 4) < 0) {
+        s32 res2;
+        if (M2C_FIELD(tbl + gMovementTypeTable[((u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26) * 0x70] * 32, s8 *, 4) < 0) {
+            res = func_ov000_02186d94(x - 1, y, 7);
+            res += func_ov000_02186d94(x + 1, y, 7);
+            res += func_ov000_02186d94(x, y - 1, 7);
+            res += func_ov000_02186d94(x, y + 1, 7);
+            return res;
+        }
+        res = func_ov000_02186d94(x - 1, y, 7);
+        res += func_ov000_02186d94(x + 1, y, 7);
+        res += func_ov000_02186d94(x, y - 1, 7);
+        res += func_ov000_02186d94(x, y + 1, 7);
+        if (res != 0) return res;
+        res = func_ov000_02186d94(x - 1, y, 1);
+        res += func_ov000_02186d94(x + 1, y, 1);
+        res += func_ov000_02186d94(x, y - 1, 1);
+        res += func_ov000_02186d94(x, y + 1, 1);
+        return res != 0;
+    } else {
+        s32 res2;
+        if (M2C_FIELD(tbl + gMovementTypeTable[((u32)(M2C_FIELD(units + off, u8 *, 0) << 26) >> 26) * 0x70] * 32, s8 *, 4) < 0) {
+            res = func_ov000_02186d94(x - 1, y, 7);
+            res += func_ov000_02186d94(x + 1, y, 7);
+            res += func_ov000_02186d94(x, y - 1, 7);
+            res += func_ov000_02186d94(x, y + 1, 7);
+            if (res >= 2) return res;
+            res = func_ov000_02186d94(x - 1, y, 1);
+            res += func_ov000_02186d94(x + 1, y, 1);
+            res += func_ov000_02186d94(x, y - 1, 1);
+            res += func_ov000_02186d94(x, y + 1, 1);
+            return res != 0;
+        }
+        res = func_ov000_02186d94(x - 1, y, 1);
+        res += func_ov000_02186d94(x + 1, y, 1);
+        res += func_ov000_02186d94(x, y - 1, 1);
+        res += func_ov000_02186d94(x, y + 1, 1);
+        return res;
     }
-    res=func_ov000_02186d94(x-1,y,1);
-    res+=func_ov000_02186d94(x+1,y,1);
-    res+=func_ov000_02186d94(x,y-1,1);
-    res+=func_ov000_02186d94(x,y+1,1);
-    return res;
-  }
 }
 

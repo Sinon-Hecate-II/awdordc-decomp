@@ -251,7 +251,7 @@ s32 func_ov000_021a7348(void) {
     extern void *data_ov000_021df580;
     extern u16 gPlayerUnitIdBase[];
     extern u8 data_ov000_021b5bfc[];
-    extern u8 data_0212616c[];
+    extern u8 gMovementCostTable[];
 
     s32 r5 = 0;
     s32 r6 = 0;
@@ -345,7 +345,7 @@ s32 func_ov000_021a7348(void) {
                     x=unit[1]; y=unit[2];
                     row=*(u16 *)(map+y*2+0x3758);
                     ownerAttr = data_ov000_021b5bfc[0xa22];
-                    costBase = *(s8 **)(data_0212616c + 0x64);
+                    costBase = *(s8 **)(gMovementCostTable + 0x64);
                     costTable = costBase + ownerAttr * 32;
                     t2 = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
                     cost = costTable[t2];

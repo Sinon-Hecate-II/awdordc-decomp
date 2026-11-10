@@ -17,7 +17,7 @@ int func_ov000_0218bbd0(void *arg0) {
     extern u8 *data_ov000_021df644;
     void func_01ffc328(void *);
     void func_01ffb9c4(int);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     s32 func_020a76d4(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
@@ -46,7 +46,7 @@ int func_ov000_0218bbd0(void *arg0) {
     u8 *other;
     s32 i, y, x, health, kind, damage, score, bonus;
 
-    if (func_020a7cfc(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
+    if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
     if (((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->state != 6) {
         if (func_020d27ec(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
             terrainFlags |= 0x40000;
@@ -145,7 +145,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     extern u8 *data_ov000_021df644;
     void func_01ffc328(void *);
     void func_01ffb9c4(int);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     s32 func_020a76d4(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
@@ -171,7 +171,7 @@ s32 func_ov000_0218c400(s32 arg0) {
     u8 *other;
     s32 i, x, y, kind, health, damage, score, bonus;
 
-    if (func_020a7cfc(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
+    if (IsUnitSelected(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)) != 0) flags |= 0x400000;
     func_01ffc328(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
     for (i = 0; i < func_020a76d4(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)); i++)
         func_01ffb9c4((s8)(i + 0x6f));

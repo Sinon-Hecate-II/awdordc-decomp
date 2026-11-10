@@ -49,7 +49,7 @@ void func_ov003_021e1530(void *state, s32 id) {
 }
 
 void func_ov003_021e161c(void *arg0) {
-    M2C_UNK func_020aacf0(s32);
+    M2C_UNK MenuSpriteUpdate(s32);
     s32 var_r0;
     s32 var_r0_2;
     u8 var_r8;
@@ -63,7 +63,7 @@ void func_ov003_021e161c(void *arg0) {
     do {
         temp_r0 = M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), void **, 0x0c);
         if (temp_r0) {
-            func_020aacf0((s32) temp_r0);
+            MenuSpriteUpdate((s32) temp_r0);
             temp_r3 = M2C_FIELD((arg0 + (var_r8 * 4)), void **, 0x0c);
             var_r0 = 1;
             temp_r2 = M2C_FIELD(temp_r3, void **, 0x64);

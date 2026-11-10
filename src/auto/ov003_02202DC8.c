@@ -42,7 +42,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 func_0207c928(u8, M2C_UNK);
     M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208b758(s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
     s32 func_ov003_02200d80(u8, u8);
@@ -74,7 +74,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
     func_ov003_02200dc8();
     if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C);
         temp_r4_2 = func_020aae44(temp_r7);
         temp_r3 = func_020aae10(temp_r7) & (-0x200U >> 0x17);
@@ -125,7 +125,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
         }
     }
     if (arg1 < 8U) {
-        func_0208fe30(0x1000D);
+        PlaySoundEffect(0x1000D);
         temp_r0_2 = M2C_FIELD(arg0, u8 *, 0x39);
         if (temp_r0_2 == 0) {
             var_r1 = 1;
@@ -200,7 +200,7 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
 void func_ov003_02203280(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_02088da8(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020d47d0();
     M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_UNK func_ov003_021f1bd4();
@@ -215,7 +215,7 @@ void func_ov003_02203280(void *arg0) {
 
     self = arg0;
     func_020d47d0();
-    func_0208fe30(0x1000E);
+    PlaySoundEffect(0x1000E);
     temp_r0 = M2C_FIELD(M2C_FIELD(self, void **, 0x40), void **, 4);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
@@ -248,7 +248,7 @@ s32 func_0207c8ec(u8, M2C_UNK);
 s32 func_0207c928(u8, M2C_UNK);
 M2C_UNK func_020808dc(s32, M2C_UNK, M2C_UNK, M2C_UNK);
 M2C_UNK func_0208b758(s32, s32);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 s32 func_020aae10(void *);
 s32 func_020aae44(void *);
 s32 func_ov003_02200d80(u8, u8);
@@ -272,7 +272,7 @@ s32 temp_r4_3;
 temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
 func_ov003_02200dc8(M2C_FIELD(r5,void **,0x44),arg1);
 if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 temp_r6 = M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C);
 temp_r4_2 = func_020aae44(temp_r6);
 temp_r3=func_020aae10(temp_r6);

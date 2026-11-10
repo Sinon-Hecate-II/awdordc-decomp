@@ -92,13 +92,13 @@ void func_ov005_022153d4(u8 *arg0) {
 void func_ov005_022153fc(u8 *a) {
     s32 func_020b20e0(s32);
     M2C_UNK func_020b1c60(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_ov005_02214148(void);
     s32 func_ov005_022141cc(void);
     s16 func_ov005_02214184(void);
     s16 func_ov005_02214210(void);
     extern M2C_UNK data_ov005_02221304;
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
 
     s32 max, pos, delta;
     void *p = M2C_FIELD(&data_ov005_02221304, void **, 8);
@@ -109,24 +109,24 @@ void func_ov005_022153fc(u8 *a) {
     if (max < 0) max = 0;
 
     if (pos == 0 && n == 0) {
-        if (data_02101e84[0] & 0x40) {
+        if (gKeyState[0] & 0x40) {
             M2C_FIELD(p, s16 *, 0x98) = (s16)max;
             n = 5;
             goto done;
         }
-    } else if (data_02101e84[1] & 0x40) {
+    } else if (gKeyState[1] & 0x40) {
         if (n >= 2) n--;
         else if (!func_ov005_02214148() && n) n--;
         goto done;
     }
 
     if (pos == max && n == 5) {
-        if (data_02101e84[0] & 0x80) {
+        if (gKeyState[0] & 0x80) {
             n = 0;
             M2C_FIELD(p, s16 *, 0x98) = 0;
             goto done;
         }
-    } else if (data_02101e84[1] & 0x80) {
+    } else if (gKeyState[1] & 0x80) {
         if (n < 4) {
             if (func_020b20e0(n + 1)) n++;
         } else if (!func_ov005_022141cc()) {
@@ -135,19 +135,19 @@ void func_ov005_022153fc(u8 *a) {
         goto done;
     }
 
-    if (data_02101e84[1] & 0x20) {
+    if (gKeyState[1] & 0x20) {
         delta = func_ov005_02214184();
         n -= delta + 6;
         if (n < 0) n = 0;
         if (delta != 0) {
-            if (n == *a) func_0208fe30(0x10019);
+            if (n == *a) PlaySoundEffect(0x10019);
         }
-    } else if (data_02101e84[1] & 0x10) {
+    } else if (gKeyState[1] & 0x10) {
         delta = func_ov005_02214210();
         n += 6 - delta;
         if (n >= 6) n = 5;
         if (delta != 0) {
-            if (n == *a) func_0208fe30(0x10019);
+            if (n == *a) PlaySoundEffect(0x10019);
         }
     }
 
@@ -163,10 +163,10 @@ void func_ov005_02215594(u8 *arg0) {
 }
 
 void func_ov005_022155c0(u8 *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov005_02221304;
     M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x94) = (s16) *arg0;
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov005_022155e8(u8 *arg0) {

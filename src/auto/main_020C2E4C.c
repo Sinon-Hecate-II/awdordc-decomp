@@ -235,12 +235,12 @@ void func_020c32b0(void) {
 
 void func_020c32bc(void) {
     s32 func_020d19b4();
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     if (func_020d19b4() != 0) {
-        func_0208fe30(0xE1);
+        PlaySoundEffect(0xE1);
         return;
     }
-    func_0208fe30(0xE3);
+    PlaySoundEffect(0xE3);
 }
 
 void *func_020c32e4(void *arg0) {
@@ -303,7 +303,7 @@ void func_020c33ec(void) {
     M2C_UNK AddSprite(u16, u8, u16, M2C_UNK *, s32);
     s32 func_02070f24(s32, s32);
     s16 func_020719a0(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_02098844(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02101f0c;
     extern void *data_02164094;
@@ -493,10 +493,10 @@ void func_020c33ec(void) {
         M2C_FIELD(data_02164094, s16 *, 0x1A) = (s16) (temp_r4_7 + 0x60);
     } else {
         if (temp_r0 == 0x4E) {
-            func_0208fe30(0x116);
+            PlaySoundEffect(0x116);
         }
         if (M2C_FIELD(data_02164094, s32 *, 0) == 0x5E) {
-            func_0208fe30(0x117);
+            PlaySoundEffect(0x117);
         }
         temp_r0_9 = M2C_FIELD(data_02164094, s32 *, 0);
         if ((temp_r0_9 >= 0x4E) && (temp_r0_9 < 0x58)) {

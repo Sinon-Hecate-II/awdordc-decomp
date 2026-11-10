@@ -7,12 +7,12 @@
 void func_ov004_02215814(void *arg0) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
     s16 func_0207c8ec(s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020ceb48();
     M2C_UNK func_020cf0a8(s32);
     M2C_UNK func_020cf278(s32);
     M2C_UNK func_ov003_021ff36c();
-    extern void *data_02101e84;
+    extern void *gKeyState;
     extern void *data_02101e88;
     s16 copy_y,copy_x;
     s32 sp4;
@@ -118,7 +118,7 @@ loop_1:
             goto loop_1;
         }
     }
-    temp_r0 = M2C_FIELD(data_02101e84, u16 *, 0);
+    temp_r0 = M2C_FIELD(gKeyState, u16 *, 0);
     if (temp_r0 & 1) {
         if (var_r4 != NULL) {
             copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
@@ -128,7 +128,7 @@ loop_1:
         return;
     }
     if (temp_r0 & 2) {
-        func_0208fe30(0x1000F);
+        PlaySoundEffect(0x1000F);
         func_01ffa8c4(arg0, 6);
         return;
     }
@@ -137,11 +137,11 @@ loop_1:
         return;
     }
     if (temp_r0 & 8) {
-        func_0208fe30(0x1000E);
+        PlaySoundEffect(0x1000E);
         func_01ffa8c4(arg0, 4);
         return;
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x20) {
+    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x20) {
         if (var_r4 != NULL) {
             temp_r3 = M2C_FIELD(var_r4, s16 *, 0);
             temp_r8 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
@@ -195,7 +195,7 @@ block_44:
             M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x10) {
+    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x10) {
         temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
             temp_r3_2 = M2C_FIELD(var_r4, s16 *, 0);
@@ -250,7 +250,7 @@ block_72:
             M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x40) {
+    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x40) {
         temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
             var_r9_3 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
@@ -307,7 +307,7 @@ block_100:
             M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
     }
-    if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x80) {
+    if (M2C_FIELD(gKeyState, u16 *, 2) & 0x80) {
         temp_r10=M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
             var_r9_4 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
@@ -455,7 +455,7 @@ loop_163:
         }
         M2C_FIELD(arg0, s16 *, 0x4C) = 0;
         M2C_FIELD(arg0, s16 *, 0x4E) = 0;
-        func_0208fe30(0x10015);
+        PlaySoundEffect(0x10015);
     }
     if ((u32) M2C_FIELD(data_02101e88, u16 *, 2) < 0x98U) {
         if (M2C_FIELD(data_02101e88, u8 *, 0x12) != 0) {
@@ -642,7 +642,7 @@ loop_259:
             }
             M2C_FIELD(arg0, s16 *, 0x4C) = 0;
             M2C_FIELD(arg0, s16 *, 0x4E) = 0;
-            func_0208fe30(0x10015);
+            PlaySoundEffect(0x10015);
         }
     }
 }

@@ -224,15 +224,15 @@ s32 func_ov000_021974bc(s32 base, void *firstUnit, void *secondUnit) {
     s32 func_020a2868(u32, s32, s32);
     s32 func_020a28f4(u32, s32, s32);
     s32 func_020a334c(u16);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     s32 func_0207c8ec(s32, s32);
     extern void **gCurrentMap;
     s32 n, idx, a, b;
-    if (secondUnit && func_020a7cfc(secondUnit)) {
+    if (secondUnit && IsUnitSelected(secondUnit)) {
         if (secondUnit) { if (!secondUnit) n = 0; else n = (s32)((u8 *)secondUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
         a = func_020a2868((u32)(M2C_FIELD(secondUnit, u8 *, 0) << 26) >> 26, idx, 0);
     } else a = 0;
-    if (firstUnit && (func_020a7cfc(firstUnit) || func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
+    if (firstUnit && (IsUnitSelected(firstUnit) || func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
         if (firstUnit) { if (!firstUnit) n = 0; else n = (s32)((u8 *)firstUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
         b = func_020a28f4((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
     } else b = 0;

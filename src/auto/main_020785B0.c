@@ -223,7 +223,7 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
     s32 func_020a7ce4(void *);
     s32 func_020d2850(s32, u16, s32);
     s32 func_020a7cb0(void *);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     s32 func_020a7d50(void *);
     void func_020791ac(Vec3 *, RenderUnit *, s32, s32, s32, u8);
     extern s32 *gCurrentMap;
@@ -261,7 +261,7 @@ void func_02078ff4(s32 arg0, s32 arg1, s32 arg2, u8 arg3) {
         if (func_020d2850(kind, *(u16 *)((u8 *)*gCurrentMap + 0x52a4), (u16)player)) flags |= 0x100;
     }
     if (func_020a7cb0((void *)unit)) flags |= 0x200;
-    if (func_020a7cfc((void *)unit)) flags |= 0x400;
+    if (IsUnitSelected((void *)unit)) flags |= 0x400;
     if (func_020a7d50((void *)unit)) flags |= 0x800;
 
     vecx = (arg0 * 16 + 8) * 48;

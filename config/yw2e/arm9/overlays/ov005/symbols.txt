@@ -7,16 +7,16 @@ func_ov005_022119c0 kind:function(arm,size=0xc) addr:0x022119c0
 func_ov005_022119cc kind:function(arm,size=0xc) addr:0x022119cc
 func_ov005_022119d8 kind:function(arm,size=0xc) addr:0x022119d8
 func_ov005_022119e4 kind:function(arm,size=0x54) addr:0x022119e4
-func_ov005_02211a38 kind:function(arm,size=0x1c) addr:0x02211a38
+HistoryTabAt kind:function(arm,size=0x1c) addr:0x02211a38
 func_ov005_02211a54 kind:function(arm,size=0x38) addr:0x02211a54
 func_ov005_02211a8c kind:function(arm,size=0xc0) addr:0x02211a8c
 func_ov005_02211b4c kind:function(arm,size=0xd8) addr:0x02211b4c
 func_ov005_02211c24 kind:function(arm,size=0x70) addr:0x02211c24
 func_ov005_02211c94 kind:function(arm,size=0x60) addr:0x02211c94
 func_ov005_02211cf4 kind:function(arm,size=0x424) addr:0x02211cf4
-func_ov005_02212118 kind:function(arm,size=0x48) addr:0x02212118
+HistoryScrollUp kind:function(arm,size=0x48) addr:0x02212118
 func_ov005_02212160 kind:function(arm,size=0x48) addr:0x02212160
-func_ov005_022121a8 kind:function(arm,size=0x50) addr:0x022121a8
+HistoryScrollDown kind:function(arm,size=0x50) addr:0x022121a8
 func_ov005_022121f8 kind:function(arm,size=0x4c) addr:0x022121f8
 func_ov005_02212244 kind:function(arm,size=0x9c) addr:0x02212244
 func_ov005_022122e0 kind:function(arm,size=0x344) addr:0x022122e0
@@ -34,7 +34,7 @@ func_ov005_022131f8 kind:function(arm,size=0x1a4) addr:0x022131f8
 func_ov005_0221339c kind:function(arm,size=0x2c) addr:0x0221339c
 func_ov005_022133c8 kind:function(arm,size=0x92c) addr:0x022133c8
 func_ov005_02213cf4 kind:function(arm,size=0xa0) addr:0x02213cf4
-func_ov005_02213d94 kind:function(arm,size=0x300) addr:0x02213d94
+HistoryMenu_Update kind:function(arm,size=0x300) addr:0x02213d94
 func_ov005_02214094 kind:function(arm,size=0x38) addr:0x02214094
 func_ov005_022140cc kind:function(arm,size=0x18) addr:0x022140cc
 func_ov005_022140e4 kind:function(arm,size=0x14) addr:0x022140e4
@@ -409,6 +409,6 @@ data_ov005_022212d4 kind:data(any) addr:0x022212d4
 data_ov005_022212e4 kind:data(any) addr:0x022212e4
 data_ov005_022212f4 kind:data(any) addr:0x022212f4
 data_ov005_022212f8 kind:data(any) addr:0x022212f8
-data_ov005_02221300 kind:bss addr:0x02221300
+gHistoryMenu kind:bss addr:0x02221300
 data_ov005_02221304 kind:bss addr:0x02221304
 data_ov005_02221310 kind:bss addr:0x02221310

@@ -14,7 +14,7 @@ u32 func_ov011_02226658(void *arg0) {
     s32 func_ov011_02225a18(void *);
     M2C_UNK func_ov011_02225a24(void *, u16, u16);
     M2C_UNK func_ov011_02225a9c(void *, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
@@ -242,7 +242,7 @@ u32 func_ov011_02226658(void *arg0) {
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) >= 0x28FAU) {
         func_01ffa6fc(arg0);
     }
-    if (*data_02101e84 & 8) {
+    if (*gKeyState & 8) {
         temp_r2_8 = M2C_FIELD(arg0, u8 *, 0x34);
         if ((((u32) (temp_r2_8 << 0x1F) >> 0x1F) == 0) && ((u32) M2C_FIELD(arg0, u16 *, 0x3A) < 0x28DCU)) {
             M2C_FIELD(arg0, u8 *, 0x34) = (u8) ((temp_r2_8 & ~1) | 1);

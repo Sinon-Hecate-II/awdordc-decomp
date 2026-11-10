@@ -7,9 +7,9 @@ extern u32 data_027e15bc;
 
 s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c0e[];
+    extern u8 gMovementTypeTable[];
     extern s8 data_ov000_021b55a0[];
-    extern M2C_UNK data_0212616c;
+    extern M2C_UNK gMovementCostTable;
     s32 func_ov000_021a9d8c(s16, s16);
     s32 func_020d27ec(s32, s32);
     s32 func_020d0654(s32, s32, s32);
@@ -30,7 +30,7 @@ s32 func_ov000_02187188(s32 x, s32 y, u8 *unit) {
     base = *gCurrentMap;
     kind = (u32)(unit[0] << 26) >> 26;
     tile = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x1420) & 0x1f;
-    if (M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c, void **, 0x64) + data_ov000_021b5c0e[kind * 0x70] * 32, s8 *, tile) < 0) {
+    if (M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable, void **, 0x64) + gMovementTypeTable[kind * 0x70] * 32, s8 *, tile) < 0) {
         return -1;
     }
     w = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758)), u8 *, 0x2d48);
@@ -271,7 +271,7 @@ void func_ov000_02187820(void) {
     extern void **gCurrentMap;
     extern u32 data_027e15bc;
     s32 func_ov000_021a9d8c(s16, s16);
-    s32 func_ov000_02186e64(s32, s32);
+    s32 CountAdjacentAccessibleCells(s32, s32);
     void func_01ffc328(void *);
     void *selected;
     s32 bestX = -1;
@@ -297,7 +297,7 @@ void func_ov000_02187820(void) {
             if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) {
                 continue;
             }
-            ret = func_ov000_02186e64(x, y);
+            ret = CountAdjacentAccessibleCells(x, y);
             if (ret == 0) {
                 continue;
             }
@@ -335,7 +335,7 @@ void func_ov000_02187820(void) {
 void func_ov000_021879f4(void){
  extern u8 *data_ov000_021df580;
  s32 func_01ffada0();
- s32 func_ov000_02186e64(s32,s32);
+ s32 CountAdjacentAccessibleCells(s32,s32);
  s32 func_0207c8ec(s32,s32);
  s32 func_0207c928(s32,s32);
  void PlanMoveDestination(s32,s32);
@@ -351,7 +351,7 @@ void func_ov000_021879f4(void){
  s32 v=M2C_FIELD(base+y*4,s8 **,0x52e8)[x];
  if(v<0 || v<=data_ov000_021df580[5])continue;
  if(M2C_FIELD(base+x+M2C_FIELD(base+y*2,u16 *,0x3758),s8 *,0x3250)==0)continue;
- if(!func_ov000_02186e64(x,y))continue;
+ if(!CountAdjacentAccessibleCells(x,y))continue;
  cost=func_0207c8ec(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])+1;
  if(func_0207c928(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x],data_ov000_021df580[5])==0)--cost;
  base=*gCurrentMap;
@@ -385,7 +385,7 @@ void func_ov000_02187c3c(void) {
     extern void **gCurrentMap;
     extern u8 *data_ov000_021df580;
     s32 func_01ffada0(s32, s32, s32, s32, s32, s32);
-    s32 func_ov000_02186e64(s32, s32);
+    s32 CountAdjacentAccessibleCells(s32, s32);
     s32 func_0207c8ec(s32, s32);
     s32 func_0207c928(s32, s32);
     void PlanMoveDestination(s32, s32);
@@ -407,7 +407,7 @@ void func_ov000_02187c3c(void) {
             if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] < 0) continue;
             if (M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x] <= data_ov000_021df580[5]) continue;
             if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) continue;
-            if (func_ov000_02186e64(x, y) == 0) continue;
+            if (CountAdjacentAccessibleCells(x, y) == 0) continue;
             val = func_0207c8ec(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) + 1;
             if (func_0207c928(M2C_FIELD(*gCurrentMap + y * 4, s8 **, 0x52e8)[x], data_ov000_021df580[5]) == 0) val--;
             if (bestSub < val) continue;

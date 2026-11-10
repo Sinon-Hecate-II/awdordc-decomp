@@ -285,7 +285,7 @@ s32 func_0209c2c4(u8 *arg0) {
     s32 func_02086680(u32);
     s32 func_0209c268(u8 *);
     s32 func_0209c1c0(u8 *, s32 *);
-    extern u8 data_0212616c[];
+    extern u8 gMovementCostTable[];
     extern void **gCurrentMap;
     s32 sp0;
     u8 *r9;
@@ -309,7 +309,7 @@ s32 func_0209c2c4(u8 *arg0) {
                 u16 sel;
                 map = (u8 *)*gCurrentMap;
                 sel = M2C_FIELD(map, u16 *, 0x52A4);
-                sp0 += func_0209c268((u8 *)func_02086680(M2C_FIELD(data_0212616c + ((u32)(M2C_FIELD(map + (u32)sel * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
+                sp0 += func_0209c268((u8 *)func_02086680(M2C_FIELD(gMovementCostTable + ((u32)(M2C_FIELD(map + (u32)sel * 0x8C, s32 *, 0x6810) << 24) >> 24) * 0x9C, u32 *, 0)));
                 r9 += 2;
                 break;
             }

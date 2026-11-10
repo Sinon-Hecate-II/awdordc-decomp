@@ -221,7 +221,7 @@ void func_ov000_0219dc40(void) {
 }
 
 void func_ov000_0219dc98(void) {
-    s8 func_ov000_021a9f30();
+    s8 FindBestSelectableUnit();
     extern s8 *data_ov000_021df580;
     extern M2C_UNK *data_ov000_021df654;
     extern s8 *data_ov000_021df658;
@@ -231,7 +231,7 @@ void func_ov000_0219dc98(void) {
     s8 temp_r0;
 
     data_ov000_021df658 = &data_ov000_021df824;
-    temp_r0 = func_ov000_021a9f30();
+    temp_r0 = FindBestSelectableUnit();
     if (temp_r0 != 0) {
         temp_r3 = data_ov000_021df658;
         data_ov000_021df658 = temp_r3 + 1;

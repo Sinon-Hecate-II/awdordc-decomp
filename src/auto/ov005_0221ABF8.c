@@ -10,7 +10,7 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
 
 M2C_UNK func_ov005_0221abf8(void *arg0) {
     extern M2C_UNK data_0215c334;
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern M2C_UNK data_02101e88;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
     extern void *gCur3DSpriteEngine;
@@ -18,14 +18,14 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     M2C_UNK func_0208116c(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_01ffa3dc(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02007ef4(void *, void *, M2C_UNK);
-    M2C_UNK func_0208fe30(M2C_UNK);
+    M2C_UNK PlaySoundEffect(M2C_UNK);
     M2C_UNK func_01ffa6fc(void *);
     s32 r5 = 0;
     s32 r6 = 0;
     if (M2C_FIELD(arg0, s32 *, 0x3c) < M2C_FIELD(&data_0215c334, u8 *, 0)) {
         s32 old0 = M2C_FIELD(arg0, s32 *, 0x3c);
         M2C_FIELD(arg0, s32 *, 0x3c) = old0 + 1;
-        if (((*data_02101e84) & 1) == 0) { u8 byte0 = M2C_FIELD(data_02101e88, u8 *, 0x14); (void)byte0; }
+        if (((*gKeyState) & 1) == 0) { u8 byte0 = M2C_FIELD(data_02101e88, u8 *, 0x14); (void)byte0; }
         if (old0 < 0x64 && M2C_FIELD(arg0, s32 *, 0x3c) >= 0x64) func_0208116c((M2C_UNK)&data_ov005_02220aa8, 0x2c0, 0x20);
         if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0)) {
             void *o0 = func_01ffa3dc((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
@@ -80,9 +80,9 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
         } else r6 = 1;
     } else r6 = 1;
 
-    if (r5 != 0) func_0208fe30((M2C_UNK)&data_ov005_02221218);
+    if (r5 != 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221218);
     if (r6 != 0) {
-        if (((M2C_UNK)data_027e15bc & 3) == 0) func_0208fe30((M2C_UNK)&data_ov005_02221224);
+        if (((M2C_UNK)data_027e15bc & 3) == 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221224);
     }
     if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&data_0215c334, u8 *, 0) &&
         M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&data_0215c334, u8 *, 1) &&
@@ -112,14 +112,14 @@ void func_ov005_0221b000(void) {
 void func_ov005_0221b01c(void *arg0) {
     void *func_01ffa770(M2C_UNK *);
     M2C_UNK func_02087db8(void *, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_01ffa6fc(void *);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern M2C_UNK data_ov005_02220d50;
     void *object;
     u8 active;
-    if (!(*data_02101e84 & 1)) return;
-    func_0208fe30(0x1000D);
+    if (!(*gKeyState & 1)) return;
+    PlaySoundEffect(0x1000D);
     object = M2C_FIELD(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
     if (active) func_02087db8(object, 1);

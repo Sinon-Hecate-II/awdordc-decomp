@@ -51,25 +51,25 @@ void func_020c6dec(void) {
 
 s32 func_020c6dfc(void) {
 extern void **gCurrentMap; extern u16 data_02168f14;
-s32 func_020a7cfc(void *);s32 func_020cf908(s32,s32,s32,s32);
-s32 func_020a8a14(s32,s32);s32 func_020a32f4(s32);s32 func_020a3150(s32);
-s32 func_020a88e8(s32);s32 func_020d2c18(s32);s32 func_020a735c(void *);
+s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
+s32 func_020a8a14(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
+s32 func_020a88e8(s32);s32 GetPlayerCommanderId(s32);s32 func_020a735c(void *);
 s32 func_020a2788(s32,s32);s32 func_020d2d50(s32,s32);
 u8 *p; s32 a; s32 b; s32 player;
 if(((u32)(data_02168f14<<18)>>31)==0)return 2;
 p=*gCurrentMap;
 if(M2C_FIELD(p,s16 *,0x52dc)!=M2C_FIELD(p,s16 *,0x52d8) || M2C_FIELD(p,s16 *,0x52de)!=M2C_FIELD(p,s16 *,0x52da))return 2;
-if(func_020a7cfc(M2C_FIELD(p,void **,0x52d0)))return 2;
+if(IsUnitSelected(M2C_FIELD(p,void **,0x52d0)))return 2;
 p=*gCurrentMap;
 if(!func_020cf908(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de),M2C_FIELD(p,u16 *,0x52a4),(u32)(M2C_FIELD(M2C_FIELD(p,void **,0x52d0),u8 *,0)<<26)>>26))return 2;
 p=*gCurrentMap;
 if(func_020a8a14(M2C_FIELD(p,u16 *,0x5142),M2C_FIELD(p,u16 *,0x52a4))&64)return 2;
 p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
 if(M2C_FIELD(p+player*140,Bits020a8c10 *,0x6810).value==0)return 2;
-if(func_020a32f4(player))return 2;
+if(GetPlayerSelectedUnit(player))return 2;
 if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 2;
 if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))return 2;
-a=func_020d2c18(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+a=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 b=func_020a735c(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 if(!func_020a2788(a,b))return 2;
 p=*gCurrentMap;player=M2C_FIELD(p,u16 *,0x52a4);
@@ -89,7 +89,7 @@ void func_020c6ffc(void) {
 
 s32 func_020c7034(void) {
     s32 func_020a2be0(u16);
-    s32 func_020a32f4();
+    s32 GetPlayerSelectedUnit();
     M2C_UNK func_020a7310(s32);
     extern void **gCurrentMap;
     void *temp_r4;
@@ -98,7 +98,7 @@ s32 func_020c7034(void) {
         return 2;
     }
     func_020a7310(M2C_FIELD(temp_r4, s32 *, 0x52D0));
-    if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == func_020a32f4()) && (func_020a2be0(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
+    if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == GetPlayerSelectedUnit()) && (func_020a2be0(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
         return 0;
     }
     return 2;

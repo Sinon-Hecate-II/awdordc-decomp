@@ -47,27 +47,27 @@ void func_ov000_0216ea10(void) {
 
 /* Handles up/down/LR input while a unit list menu is open. */
 void func_ov000_0216ea1c(void) {
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern s32 data_ov000_021df5e0;
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     void func_ov000_0216e09c(s32);
     void func_ov000_0216e054(void);
     void func_ov000_0216dd0c(void);
     void func_ov000_0216ebac(void);
-    u16 keys = data_02101e84[0];
+    u16 keys = gKeyState[0];
     if (keys & 2) { func_ov000_0216ebac(); return; }
-    if (data_02101e84[1] & 0x10) {
+    if (gKeyState[1] & 0x10) {
         if (M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) == M2C_FIELD(data_ov000_021df5e0, u8 *, 0xc) - 1) {
-            if (keys & 0x10) { func_0208fe30(0x10019); func_ov000_0216e09c(0); func_ov000_0216e054(); }
-        } else { func_0208fe30(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) + 1); func_ov000_0216e054(); }
+            if (keys & 0x10) { PlaySoundEffect(0x10019); func_ov000_0216e09c(0); func_ov000_0216e054(); }
+        } else { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) + 1); func_ov000_0216e054(); }
     }
-    if (data_02101e84[1] & 0x20) {
+    if (gKeyState[1] & 0x20) {
         if (M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) == 0) {
-            if (data_02101e84[0] & 0x20) { func_0208fe30(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xc) - 1); func_ov000_0216e054(); }
-        } else { func_0208fe30(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) - 1); func_ov000_0216e054(); }
+            if (gKeyState[0] & 0x20) { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xc) - 1); func_ov000_0216e054(); }
+        } else { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(data_ov000_021df5e0, u8 *, 0xd) - 1); func_ov000_0216e054(); }
     }
-    if ((data_02101e84[0] & 0x100) || (data_02101e84[0] & 0x200)) {
-        func_0208fe30(0x10020);
+    if ((gKeyState[0] & 0x100) || (gKeyState[0] & 0x200)) {
+        PlaySoundEffect(0x10020);
         M2C_FIELD(data_ov000_021df5e0, u8 *, 0x10)++;
         M2C_FIELD(data_ov000_021df5e0, u8 *, 0x10) &= 1;
         func_ov000_0216dd0c();
@@ -87,11 +87,11 @@ void func_ov000_0216eb7c(void) {
 
 void func_ov000_0216ebac(void) {
     M2C_UNK func_01ffa3dc(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21e0();
     M2C_UNK func_020b2268();
     extern M2C_UNK data_ov000_021b87b8;
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
     func_020b21e0();
     func_020b2268();
     func_01ffa3dc(&data_ov000_021b87b8, 7);

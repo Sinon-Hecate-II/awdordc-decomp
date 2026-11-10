@@ -16,7 +16,7 @@ void func_020be718(void *arg0) {
     extern M2C_UNK data_0215d9ec;
     extern M2C_UNK data_0215da0c;
     extern M2C_UNK data_0215da1c;
-    extern M2C_UNK data_0215da2c;
+    extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
     extern M2C_UNK data_02157724;
@@ -74,7 +74,7 @@ void func_020be718(void *arg0) {
     }
     {
         u8 *r5 = (u8 *)arg0 + 0x10c;
-        u8 *r6 = (u8 *)&data_0215da2c;
+        u8 *r6 = (u8 *)&gRecordValues;
         int i;
         for (i=0;i<376;i++) r5[i] = r6[i];
     }
@@ -155,7 +155,7 @@ void func_020beabc(M2C_UNK *arg0) {
     extern M2C_UNK data_0215d9ec;
     extern M2C_UNK data_0215da0c;
     extern M2C_UNK data_0215da1c;
-    extern M2C_UNK data_0215da2c;
+    extern M2C_UNK gRecordValues;
     extern M2C_UNK data_0215dba4;
     extern M2C_UNK data_0215771c;
     extern M2C_UNK data_02157724;
@@ -208,7 +208,7 @@ void func_020beabc(M2C_UNK *arg0) {
     }
     {
         u8 *s = p + 0xfc;
-        u8 *d = (u8 *)&data_0215da2c;
+        u8 *d = (u8 *)&gRecordValues;
         s32 i;
         for (i = 7; i; i--) {
             *d++ = *s++;

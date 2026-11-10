@@ -4,9 +4,9 @@
 void func_02090574(void);
 
 s32 func_0208fe7c(s32 arg0, s32 arg1) {
-    s32 func_0208fe30(s32);
+    s32 PlaySoundEffect(s32);
 
-    if (func_0208fe30(arg0) != 0) {
+    if (PlaySoundEffect(arg0) != 0) {
         func_0208fea0(arg1);
     }
     return 1;

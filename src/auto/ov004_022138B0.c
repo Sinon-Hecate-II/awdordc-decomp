@@ -170,13 +170,13 @@ s32 func_ov004_02213f08(void) {
 }
 
 u8 func_ov004_02213f78(void) {
- void *func_020a32f4(u16); extern void **gCurrentMap;
- u8 r; if(func_020a32f4(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)))r=1;else r=0;return r;
+ void *GetPlayerSelectedUnit(u16); extern void **gCurrentMap;
+ u8 r; if(GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)))r=1;else r=0;return r;
 }
 
 void func_ov004_02213fac(void) {
- void *func_020a32f4(u16); extern void **gCurrentMap;
- void *p=func_020a32f4(M2C_FIELD(*gCurrentMap,u16 *,0x52A4));
+ void *GetPlayerSelectedUnit(u16); extern void **gCurrentMap;
+ void *p=GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52A4));
  if(p)M2C_FIELD(p,u16 *,4)|=1;
 }
 
@@ -307,7 +307,7 @@ s32 func_ov004_022142d4(void) {
  void *p; s16 a,b;
  if((s32)M2C_FIELD(*gCurrentMap,u16 *,0x52A2)<2)return 0;
  if(func_02086b40(0))return 0;
- if(!func_020a7cfc(M2C_FIELD(*gCurrentMap,s32 *,0x52D0)))return 0;
+ if(!IsUnitSelected(M2C_FIELD(*gCurrentMap,s32 *,0x52D0)))return 0;
  p=*gCurrentMap; a=M2C_FIELD(p,s16 *,0x52DC); b=M2C_FIELD(p,s16 *,0x52DE);
  return a==4 && b==12;
 }

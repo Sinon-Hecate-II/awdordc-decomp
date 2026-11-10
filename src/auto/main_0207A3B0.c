@@ -113,7 +113,7 @@ void func_0207a77c(s32 arg0) {
 void func_0207a7a4(s32 arg0, s32 arg1) {
     extern void *gCurrentMap;
     extern void *data_02101e88;
-    extern void *data_02101e84;
+    extern void *gKeyState;
     extern u8 data_02144cdc;
     extern u8 data_02100bac;
 
@@ -144,7 +144,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         if (b != 0) {
             data_02144cdc = 1;
         } else {
-            void *g = data_02101e84;
+            void *g = gKeyState;
             u8 t = data_02100bac;
             u16 h = M2C_FIELD(g, u16 *, 0x6);
             if (h & t) {

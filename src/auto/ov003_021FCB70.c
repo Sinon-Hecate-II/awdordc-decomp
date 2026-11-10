@@ -3,7 +3,7 @@
 
 #pragma opt_common_subs off
 void func_ov003_021fcb70(void *arg0) {
-M2C_UNK func_0208fe30(s32);s32 func_020c7f30(u16);
+M2C_UNK PlaySoundEffect(s32);s32 func_020c7f30(u16);
 M2C_UNK func_ov006_022177c8(u16,void *);M2C_UNK func_ov006_02217c0c(u16,void *);M2C_UNK func_ov006_02217c30(u16,void *);
 u16 unit;s16 index;u8 page;u8 *row;u32 mode=(u32)(M2C_FIELD(arg0,u8 *,0x3b)<<28)>>28;
 if((u8)(mode==0)||(u8)(mode==2)||(u8)(mode==3)||(u8)(mode==4)||(u8)(mode==6)||(u8)(mode==7)||(u8)(mode==8)){
@@ -12,12 +12,12 @@ row=M2C_FIELD(arg0,u8 **,0x44)+(page<<9);
 unit=((u16 *)(row+0x2e))[(u16)index];
 }else unit=M2C_FIELD(arg0,u16 *,0x3c);
 if((u8)(mode==6)){
-if(func_020c7f30(unit)){func_ov003_021fc98c(arg0,1);func_ov006_022177c8(unit,arg0);func_0208fe30(0x1000d);return;}
-func_0208fe30(0x1001d);return;
+if(func_020c7f30(unit)){func_ov003_021fc98c(arg0,1);func_ov006_022177c8(unit,arg0);PlaySoundEffect(0x1000d);return;}
+PlaySoundEffect(0x1001d);return;
 }
-if((u8)(mode==7)){func_ov003_021fc98c(arg0,2);func_ov006_02217c30(unit,arg0);func_0208fe30(0x1000d);return;}
+if((u8)(mode==7)){func_ov003_021fc98c(arg0,2);func_ov006_02217c30(unit,arg0);PlaySoundEffect(0x1000d);return;}
 if(!(u8)(mode==8))return;
-func_ov003_021fc98c(arg0,2);func_ov006_02217c0c(unit,arg0);func_0208fe30(0x1000d);
+func_ov003_021fc98c(arg0,2);func_ov006_02217c0c(unit,arg0);PlaySoundEffect(0x1000d);
 }
 #pragma opt_common_subs reset
 void func_ov003_021fcd10(void **arg0) {

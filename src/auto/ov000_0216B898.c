@@ -70,7 +70,7 @@ if(M2C_FIELD(arg0,u8*,0x3d)&&func_ov000_0216b15c(xa,ya,48,16))
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
 void func_ov000_0216bfa4(void *arg0) {
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 extern u8 *data_02101e88;
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x44));
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x48));
@@ -80,10 +80,10 @@ func_020a91a8(M2C_FIELD(arg0,s32 *,0x54));
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x58));
 func_020a91a8(M2C_FIELD(arg0,s32 *,0x5c));
 switch(M2C_FIELD(arg0,u16 *,0x34)){
-case 8:func_0208fe30(0x1003e);
-case 0x68:func_0208fe30(0x1003f);
+case 8:PlaySoundEffect(0x1003e);
+case 0x68:PlaySoundEffect(0x1003f);
 }
-if((*data_02101e84 &9)||data_02101e88[0x14]||M2C_FIELD(arg0,u16 *,0x34)==0x83)func_01ffa6fc(arg0);
+if((*gKeyState &9)||data_02101e88[0x14]||M2C_FIELD(arg0,u16 *,0x34)==0x83)func_01ffa6fc(arg0);
 M2C_FIELD(arg0,u16 *,0x34)++;
 }
 

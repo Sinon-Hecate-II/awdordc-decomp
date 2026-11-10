@@ -273,7 +273,7 @@ if(changed) func_020b2e60(M2C_FIELD(data_02128690,void **,12));
 return (M2C_UNK)M2C_FIELD(data_02128690,void **,12);
 }
 
-void func_020b1d14(void){extern void *data_02128690,*data_02101e84,*data_02101e88;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(data_02128690,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(data_02101e84,u16 *,2))return;if(M2C_FIELD(data_02101e88,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
+void func_020b1d14(void){extern void *data_02128690,*gKeyState,*data_02101e88;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(data_02128690,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(gKeyState,u16 *,2))return;if(M2C_FIELD(data_02101e88,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
 
 #pragma push
 #pragma opt_common_subs on

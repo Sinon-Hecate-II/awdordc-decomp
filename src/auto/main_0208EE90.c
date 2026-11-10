@@ -360,10 +360,10 @@ void func_0208f998(s32 arg0, s16 arg1) {
 
 void func_0208f9d0(void *a){
  u64 func_020722fc(s32,s16);
- s32 func_0208fe30(s32);
+ s32 PlaySoundEffect(s32);
  extern s32 data_027e15bc;
  if((u32)(func_020722fc(data_027e15bc,M2C_FIELD(a,s16*,0x52))>>32)!=0)return;
- func_0208fe30(M2C_FIELD(a,s32*,0x5c));
+ PlaySoundEffect(M2C_FIELD(a,s32*,0x5c));
 }
 
 void func_0208fa00(s32 a,s32 b){
@@ -515,7 +515,7 @@ M2C_FIELD(&data_02157860,s32*,count<<2)=arg0;
 M2C_FIELD(&data_02157830,u32*,0x18)=next;
 } return 1;
 }
-s32 func_0208fe30(s32 a){
+s32 PlaySoundEffect(s32 a){
  s32 func_0208fda0(s32);
  void func_0208fd40(M2C_UNK*,s32,u32);
  extern M2C_UNK data_02157830,data_02157834;

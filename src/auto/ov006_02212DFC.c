@@ -1,6 +1,6 @@
 /* 1 function from 0x02212DFC to 0x02213E98 (ov006), found by ds-decomp. */
 #include "common.h"
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 static inline u32 ButtonBase12DFC(u8 *w) { return (u32)(w[0x59]<<28)>>28; }
 static inline u16 ButtonFrame12DFC(u8 *w) { return (u32)(M2C_FIELD(w,u32 *,0x40)<<6)>>24; }
 static inline u8 ButtonEnabled12DFC(u8 *w) { return ButtonBase12DFC(w)+2 != ButtonFrame12DFC(w); }
@@ -12,10 +12,10 @@ static inline void ButtonFlash12DFC(u8 *w) {if(M2C_FIELD(w,s8 *,0x5a)>=0)ButtonS
 
 
 void UpdateSpriteAnimation(void *);
-void func_020aacf0(void *);
+void MenuSpriteUpdate(void *);
 void func_020b3a58(void *);
 int func_020c5464(int);
-void func_0208fe30(int);
+void PlaySoundEffect(int);
 void func_01ffa6fc(void *);
 void func_01ffa8c4(void *,int);
 int func_020b3368(void *);
@@ -25,12 +25,12 @@ int func_020b320c(void *);
 void func_ov006_02212dfc(void *arg0) {
 u8 *p=arg0,*w;void **list;u16 keys;
 UpdateSpriteAnimation(M2C_FIELD(p,void **,0x48));list=M2C_FIELD(p,void ***,0x3c);
-func_020aacf0(list[0]);
-func_020aacf0(list[1]);
-func_020aacf0(list[2]);
-func_020aacf0(list[3]);
-func_020aacf0(list[4]);
-func_020aacf0(list[5]);
+MenuSpriteUpdate(list[0]);
+MenuSpriteUpdate(list[1]);
+MenuSpriteUpdate(list[2]);
+MenuSpriteUpdate(list[3]);
+MenuSpriteUpdate(list[4]);
+MenuSpriteUpdate(list[5]);
 func_020b3a58(M2C_FIELD(p,void **,0x4c));
 switch(func_020c5464(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))) {
 case 0:
@@ -54,12 +54,12 @@ ButtonDisable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16));
 ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20));
 break;
 }
-keys=*data_02101e84;
+keys=*gKeyState;
 ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,0));
-if(ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,0)) || (keys&2)){func_0208fe30(0x1000f);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,0));func_01ffa6fc(p);return;}
-if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12)) || (keys&1))){func_0208fe30(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12));func_01ffa8c4(p,9);return;}
-if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) || (keys&1))){func_0208fe30(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16));func_01ffa8c4(p,9);return;}
-if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) || (keys&1024))){func_0208fe30(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20));func_01ffa8c4(p,8);return;}
+if(ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,0)) || (keys&2)){PlaySoundEffect(0x1000f);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,0));func_01ffa6fc(p);return;}
+if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12)) || (keys&1))){PlaySoundEffect(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12));func_01ffa8c4(p,9);return;}
+if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) || (keys&1))){PlaySoundEffect(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16));func_01ffa8c4(p,9);return;}
+if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) || (keys&1024))){PlaySoundEffect(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20));func_01ffa8c4(p,8);return;}
 if(ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4)) && ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4))){if(func_020b3368(M2C_FIELD(p,void **,0x4c)))ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4));}else if(ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8)) && ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8))){if(func_020b3290(M2C_FIELD(p,void **,0x4c)))ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8));}
 if(func_020b325c(M2C_FIELD(p,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4))+2,0);
 if(func_020b320c(M2C_FIELD(p,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8))+2,0);

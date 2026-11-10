@@ -168,7 +168,7 @@ void func_020427f4(void){extern u8 data_0213d3bc[];void func_020376d8(s32,s32,s3
 
 u8 func_0204284c(void){void *GetConnection(void);u8 i=0;s32 j;do{for(j=0;j<=M2C_FIELD(GetConnection(),u8 *,20);j++){if(i==M2C_FIELD((u8 *)GetConnection()+j,u8 *,0x2d0))break;}if(j>M2C_FIELD(GetConnection(),u8 *,20))break;i++;}while(i<32);return i;}
 
-s32 func_020428bc(s32 a){void *GetConnection(void);s32 func_0203ae6c(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=func_0203ae6c(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
+s32 IsConnectionMember(s32 a){void *GetConnection(void);s32 func_0203ae6c(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=func_0203ae6c(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
 
 s32 func_0204292c(void *arg0) {
     s32 func_02060b68(void *, void *, s32);

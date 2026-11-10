@@ -18,7 +18,7 @@ extern M2C_UNK data_ov000_021b5bfc;
 
 void func_ov000_02193d6c(void *arg0) { (void)arg0; }
 
-void func_ov000_02194090(void) {
+void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
  u8 *unit;
  s32 sx=-1, sy=-1, kind=0, x,y;
@@ -62,7 +62,7 @@ void func_ov000_02194090(void) {
 void func_ov000_02194370(void){
 s32 func_020d19b4(s32);s32 func_ov000_021a98e4(u32);
 s32 func_ov000_021a43c4(void);s32 func_ov000_021a88c8(s32);s32 func_ov000_021a9934(u32,u32);
-s32 func_ov000_0217d86c(void);void func_ov000_02194090(void);
+s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void func_01ffb554(void*);void func_01ffada0(s32,s32,s32,s32,s32);void func_01ffb3d0(s32);
 s32 func_ov000_021a8984(u32);s32 func_ov000_021a995c(u8*,u32);
 s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
@@ -78,7 +78,7 @@ if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;
 if(!func_ov000_021a9934(24,KIND(SEL)))return;
 if(func_ov000_0217d86c()==1)return;
-func_ov000_02194090();
+SelectAttackingUnit();
 mode=(u8)(func_ov000_021a98e4(KIND(SEL))==2);
 M2C_FIELD(SEL,u16*,8)=(M2C_FIELD(SEL,u16*,8)&~0xc000)|0x8000;
 if(!mode){

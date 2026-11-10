@@ -93,19 +93,19 @@ switch((u32)(M2C_FIELD(data_02168f14,u16 *,0)<<26)>>29){case 0:tile=func_ov000_0
 #pragma opt_strength_reduction reset
 void func_ov000_021723bc(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void *gCur3DSpriteEngine;
     func_01ff9ce8(1);
     func_01ff9ce8(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
 }
 
 void func_ov000_02172408(s32 arg0) {
     M2C_UNK func_01ffa6fc(s32);
-    extern u16 *data_02101e84;
-    if (!(*data_02101e84 & 2)) return;
+    extern u16 *gKeyState;
+    if (!(*gKeyState & 2)) return;
     func_01ffa6fc(arg0);
 }
 

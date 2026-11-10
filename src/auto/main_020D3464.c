@@ -4,7 +4,7 @@
 s32 func_020d3464(void) {
     void func_0209cbe4(void *);
     void func_02081fd4(void);
-    void func_0208fe30(s32);
+    void PlaySoundEffect(s32);
     extern M2C_UNK data_02168f08;
     extern void **gCurrentMap;
 
@@ -42,7 +42,7 @@ s32 func_020d3464(void) {
                 if (delta % 60 != 0) {
                     break;
                 }
-                func_0208fe30(0x126);
+                PlaySoundEffect(0x126);
                 break;
             }
         }
@@ -435,7 +435,7 @@ void func_020d3d24(void) {
 }
 
 void func_020d3d68(void) {
-    u8 *func_020a32f4(s32);
+    u8 *GetPlayerSelectedUnit(s32);
     s32 func_020d243c(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
@@ -460,8 +460,8 @@ void func_020d3d68(void) {
     r6 = rows >> 1;
     r7 = 0x8C;
     for (r4 = 1; r4 < 5; r4++) {
-        if (func_020a32f4(r4) != 0) {
-            p = func_020a32f4(r4);
+        if (GetPlayerSelectedUnit(r4) != 0) {
+            p = GetPlayerSelectedUnit(r4);
             r5 = M2C_FIELD(p, u8 *, 1);
             r6 = M2C_FIELD(p, u8 *, 2);
         } else {
@@ -583,7 +583,7 @@ s32 func_020d4060(void) {
     M2C_UNK func_020d1938(s32);
     M2C_UNK func_020d19e8(s32);
     extern M2C_UNK data_02168f08;
-    extern void *data_02101e84;
+    extern void *gKeyState;
     s32 i;
 
     if (M2C_FIELD(&data_02168f08, u8 *, 4) != 0) {
@@ -593,7 +593,7 @@ s32 func_020d4060(void) {
             }
         }
     } else {
-        if ((M2C_FIELD(data_02101e84, u16 *, 0x6) & 0xC0B) == 0) {
+        if ((M2C_FIELD(gKeyState, u16 *, 0x6) & 0xC0B) == 0) {
             return 0;
         }
         for (i = 1; i < 5; i++) {

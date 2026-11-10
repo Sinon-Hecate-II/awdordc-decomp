@@ -357,12 +357,12 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
 void func_020d0288(void *,s32,s32,s32,s32,s32); void func_020d0428(s32,s32,s32,s32); s32 func_020d03c4(s32);
-s32 func_020d1938(s32); void *func_020a32f4(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 func_020a334c(s32); s32 func_020d02b4(void *); void func_02078068(void);
+s32 func_020d1938(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 func_020a334c(s32); s32 func_020d02b4(void *); void func_02078068(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!func_020d1938(player))continue;
 func_020d0164(func_020d03c4(player),0);
-unit=func_020a32f4(player); if(!unit)continue;
+unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
 moveRange=func_020d2cf0(player); if(func_020a334c(player))moveRange=6;
 func_020d0288(pathState,moveRange,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146));
@@ -419,11 +419,11 @@ void func_020d0428(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;s32 p=*gCurr
 
 s32 func_020d0468(M2C_UNK arg0) {
     s32 func_020d03ec();
-    s32 func_020d2c18(M2C_UNK);
+    s32 GetPlayerCommanderId(M2C_UNK);
     if (func_020d03ec() == 0) {
         return -1;
     }
-    return func_020d2c18(arg0);
+    return GetPlayerCommanderId(arg0);
 }
 
 s32 func_020d048c(u8 a,s32 b){void func_020d0538(void);extern s8 data_ov000_021b5580[];u8 n=a&31;s32 v=b;if(v!=((s32 (*)(void))func_020d0538)())return 0;if(n!=16){if(data_ov000_021b5580[n&31])return 1;}return 0;}

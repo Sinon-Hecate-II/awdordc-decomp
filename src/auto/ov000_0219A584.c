@@ -39,12 +39,12 @@ do { i++; *p++=zero; } while(i<64);
 }
 
 void func_ov000_0219a6ec(void *arg0) {
-s32 func_020a7cfc(void); s32 func_020a8604(u32,u32); s32 func_0207c8ec(s32,s32);
+s32 IsUnitSelected(void); s32 func_020a8604(u32,u32); s32 func_0207c8ec(s32,s32);
 u32 a,b;
 if ((s32)M2C_FIELD(data_ov000_021df644,u8 *,4) > (s32)((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
 }
-if(func_020a7cfc() && ((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<50) {
+if(IsUnitSelected() && ((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<50) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
 }
 a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;

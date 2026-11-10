@@ -213,7 +213,7 @@ void func_020d1d9c(void) {
 /* Updates, for each of the four playable slots (i = 1..4), the cached display state (idle/busy flags etc.) that drives sprite selection for that slot. */
 void func_020d1dc8(void) {
     extern void **gCurrentMap;
-    extern u8 data_0212616c[];
+    extern u8 gMovementCostTable[];
     s32 func_020cd6d4(void);
     s32 func_020a8ae0(u16, s32);
     s32 func_020cd728(void);
@@ -225,7 +225,7 @@ void func_020d1dc8(void) {
         flag = state;
         other = state;
         if (func_020cd6d4()) state = func_020a8ae0(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
-        if (state == 0) state = data_0212616c[((u32)(M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c + 0x23];
+        if (state == 0) state = gMovementCostTable[((u32)(M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c + 0x23];
         if (func_020cd728()) state = i;
         switch (state) {
         case 1:

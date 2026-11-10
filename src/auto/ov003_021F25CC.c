@@ -45,18 +45,18 @@ u8 func_ov003_021f269c(s32 unused,u16 *array,s32 value) {
 
 void func_ov003_021f26c8(s32 arg0,s32 arg1,M2C_UNK value) {
  u8 func_ov003_021f27b8();
- M2C_UNK func_0208fe30(s32);
+ M2C_UNK PlaySoundEffect(s32);
  s32 func_ov003_021f27d4(s32,s32);
  s32 i; s32 other;
  i=func_ov003_021f269c(arg0,(u16 *)arg1,value);
  if(i!=255) {
- func_0208fe30(0x1000f); ((u16 *)arg1)[i]=65535; return;
+ PlaySoundEffect(0x1000f); ((u16 *)arg1)[i]=65535; return;
  }
- if(func_ov003_021f27b8(arg0,arg1)) {func_0208fe30(0x1001d);return;}
+ if(func_ov003_021f27b8(arg0,arg1)) {PlaySoundEffect(0x1001d);return;}
  other=arg0+4; if(arg1==other) other=arg0+14;
- if(func_ov003_021f269c(arg0,(u16 *)other,value)!=255) {func_0208fe30(0x1001d);return;}
+ if(func_ov003_021f269c(arg0,(u16 *)other,value)!=255) {PlaySoundEffect(0x1001d);return;}
  i=func_ov003_021f27d4(arg0,arg1);
- func_0208fe30(0x1000d);
+ PlaySoundEffect(0x1000d);
  ((u16 *)arg1)[i]=value;
 }
 
@@ -85,11 +85,11 @@ s32 func_ov003_021f27d4(s32 unused,s32 array) {
 }
 
 void func_ov003_021f2808(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_020c7eb8(M2C_UNK);
     void func_ov003_021f26c8(s32, s32, M2C_UNK);
     if (func_020c7eb8(arg1) == 0) {
-        func_0208fe30(0x1001D);
+        PlaySoundEffect(0x1001D);
         return;
     }
     func_ov003_021f26c8(arg0, arg0 + 4, arg1);

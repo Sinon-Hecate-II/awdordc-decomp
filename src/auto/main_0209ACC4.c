@@ -34,7 +34,7 @@ typedef struct { s32 digits[10]; } DigitTable;
 extern const DigitTable data_020f399c;
 
 s32 func_0209acc4(void *arg0) {
-    s32 func_0208fe30(void *);
+    s32 PlaySoundEffect(void *);
     s32 func_02099818(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
     s32 func_020999b8(void *);
@@ -100,7 +100,7 @@ main_loop:
                     func_0209ac6c(arg0, func_020999e8(arg0));
                 }
                 if ((notify=M2C_FIELD(arg0, void **, 0x60)) != 0 && (s8) M2C_FIELD(arg0, s8 *, 0x55) != 0) {
-                    func_0208fe30(notify);
+                    PlaySoundEffect(notify);
                 }
             }
             if (!(temp_r7 == 0 && temp_r8 == 0)) {

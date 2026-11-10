@@ -12,7 +12,7 @@ void func_0208ffe4(int,int,int);
 void func_ov011_02224b9c(void *,int);
 void func_ov011_02224aac(void *,int);
 void func_ov011_0222491c(void *);
-int func_0208fe30(int);
+int PlaySoundEffect(int);
 int func_02090034(int,int);
 void func_01ffac9c(int,int,int,void *,int);
 extern u16 gIntroAnimState[6];
@@ -151,7 +151,7 @@ void func_ov011_022242dc(void *p) {
   func_ov011_02224aac(p, 2);
   break;
  case 3:
-  if (M2C_FIELD(p, u16 *, 0x34) == 342) func_0208fe30(302);
+  if (M2C_FIELD(p, u16 *, 0x34) == 342) PlaySoundEffect(302);
   if (M2C_FIELD(p, u16 *, 0x34) == 343) func_02090034(0, 96);
   break;
  case 4:
@@ -238,11 +238,11 @@ func_ov011_0222491c(p);
 
 void func_ov011_0222491c(void *entry) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
     M2C_UNK func_020ac998(s32);
     M2C_UNK func_020aca8c(s32);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -256,7 +256,7 @@ void func_ov011_0222491c(void *entry) {
     u16 keys;
     u8 state;
 
-    keys = *data_02101e84;
+    keys = *gKeyState;
     if (!(keys & 1) && !(keys & 8) && (M2C_FIELD(data_02101e88, u8 *, 0x14) == 0)) {
         return;
     }
@@ -284,7 +284,7 @@ void func_ov011_0222491c(void *entry) {
             screenIndex += 1;
         } while (screenIndex < 2);
         gCur3DSpriteEngine = savedContext;
-        func_0208fe30(0x1000D);
+        PlaySoundEffect(0x1000D);
         M2C_FIELD(entry, s8 *, 0x36) = 1;
         M2C_FIELD(entry, u8 *, 0x37) = 4U;
         return;

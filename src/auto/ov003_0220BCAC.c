@@ -178,9 +178,9 @@ n=ptr?M2C_FIELD(ptr,u16*,8):-1;
 if((u8)(n-11)==1 && !func_020bee64(8)){type=2;value=5;}
 }
 switch(type){
-case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;func_0208fe30(0x1000d);break;
-case 2:func_020d47d0();func_020d885c(value);func_ov003_0220828c(p,0,(u8)index);func_01ffa6fc(p);func_0208fe30(0x1000e);break;
-case 3:switch(entry[2]){case 0:case 1:case 2:func_0208fe30(0x1000d);func_ov003_0220c414(p,1);func_020b4db0(value,p);break;case 3:func_0208fe30(0x1000d);func_ov003_0220c414(p,3);func_020b4e10(p);break;}break;
+case 1:p[0x34]=49;func_ov003_0220a698(p,value);func_ov003_0220828c(p,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
+case 2:func_020d47d0();func_020d885c(value);func_ov003_0220828c(p,0,(u8)index);func_01ffa6fc(p);PlaySoundEffect(0x1000e);break;
+case 3:switch(entry[2]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);func_ov003_0220c414(p,1);func_020b4db0(value,p);break;case 3:PlaySoundEffect(0x1000d);func_ov003_0220c414(p,3);func_020b4e10(p);break;}break;
 }
 }
 
@@ -189,7 +189,7 @@ void func_ov003_0220c328(void *arg0, int arg1) {
  u8 *p=arg0; u8 *q; int v; u8 a,b;
  p[0x38]&=~2;
  q=*(u8 **)(p+0x3c); v=q[0x10];
- func_0208fe30(0x1000f);
+ PlaySoundEffect(0x1000f);
  if((u8)((((unsigned int)p[0x36]<<24)>>28)==1) || (u8)((((unsigned int)p[0x36]<<24)>>28)==2)){p[0x35]=1;func_020d47f0();func_01ffa6fc(p);}
  p[0x38]&=~8;
  q=*(u8 **)(p+0x3c);q[q[0xf]]=arg1;

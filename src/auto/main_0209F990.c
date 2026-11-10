@@ -4,7 +4,7 @@ typedef struct PathPlayerId { u32 id:8; u32 rest:24; } PathPlayerId;
 typedef struct UnkCellBits { u8 pad[5]; u8 bits:3; u8 rest:5; } UnkCellBits;
 extern u16 data_02168f14;
 extern u8 data_021261d0[];
-extern u8 data_ov000_021b5c0e[];
+extern u8 gMovementTypeTable[];
 
 #pragma opt_strength_reduction off
 s32 func_0209f990(void) {
@@ -270,7 +270,7 @@ void func_020a004c(u16 arg0, u16 arg1) {
 
 M2C_UNK func_020a0068(s32 arg0) {
 extern void *data_0211fb5c;extern s32 *gCurrentMap;
-extern u16 data_02168f14;extern u8 data_0212616c[];extern u8 data_ov000_021b5bfc[];
+extern u16 data_02168f14;extern u8 gMovementCostTable[];extern u8 data_ov000_021b5bfc[];
 void *map,*player,*path; s8 i;u32 id; s32 weather,kind,terrain; s8 *cost;
 if(M2C_FIELD(data_0211fb5c,s8 *,0x5b)<arg0)return;
 M2C_FIELD(data_0211fb5c,s8 *,0x5b)=arg0-1;
@@ -281,7 +281,7 @@ player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
 id=((u32)(data_02168f14<<18)>>31)?(u8)M2C_FIELD(player,u32 *,0x6c):0;
 path=data_0211fb5c+i;
 weather=func_020a33c4();
-cost=M2C_FIELD(data_0212616c+id*156+weather*40+M2C_FIELD(player,u8 *,0x25)*4,s8 **,0x64);
+cost=M2C_FIELD(gMovementCostTable+id*156+weather*40+M2C_FIELD(player,u8 *,0x25)*4,s8 **,0x64);
 kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
 terrain=M2C_FIELD(map+M2C_FIELD(path,s8 *,0x36)+M2C_FIELD(map+M2C_FIELD(path,s8 *,0x42)*2,u16 *,0x3758),u8 *,0x1420)&31;
 M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[M2C_FIELD(data_ov000_021b5bfc+kind*112,u8 *,0x12)*32+terrain];
@@ -302,7 +302,7 @@ weather=func_020a33c4();
 kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
 terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31;
 cost=M2C_FIELD(data_021261d0+id*156+weather*40,s8 **,M2C_FIELD(player,u8 *,0x25)*4);
-M2C_FIELD(path+i,s8 *,0x4e)=M2C_FIELD(path+i-1,s8 *,0x4e)-cost[data_ov000_021b5c0e[kind*112]*32+terrain];
+M2C_FIELD(path+i,s8 *,0x4e)=M2C_FIELD(path+i-1,s8 *,0x4e)-cost[gMovementTypeTable[kind*112]*32+terrain];
 }
 
 s32 func_020a0300(s32 x,s32 y) {

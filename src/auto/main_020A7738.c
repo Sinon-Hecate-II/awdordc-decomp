@@ -210,8 +210,8 @@ s32 arg0;
 }
 
 u8 func_020a7c98(s32 arg0) {
- extern u8 data_ov000_021b5c0e[];
- return data_ov000_021b5c0e[arg0 * 0x70];
+ extern u8 gMovementTypeTable[];
+ return gMovementTypeTable[arg0 * 0x70];
 }
 
 u8 func_020a7cb0(void *arg0) {
@@ -247,13 +247,13 @@ u8 func_020a7ce4(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7cfc(s32 arg0) {
-    s32 func_020a32f4();
+u8 IsUnitSelected(s32 arg0) {
+    s32 GetPlayerSelectedUnit();
     M2C_UNK func_020a7310();
     u8 var_r0;
 
     func_020a7310();
-    if (arg0 == func_020a32f4()) {
+    if (arg0 == GetPlayerSelectedUnit()) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

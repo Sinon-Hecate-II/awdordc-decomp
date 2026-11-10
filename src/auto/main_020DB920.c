@@ -162,7 +162,7 @@ M2C_UNK func_02081590(s32,s32), func_02080944(s32,s32,s32,s32);
 s32 func_020b20e0(s32);
 void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
 M2C_UNK func_020808dc(s32,s32,u16,u16);
-M2C_UNK func_0208fe30(s32), func_020b1c44(s32,s32);
+M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
 M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
 s32 GetSpriteAnimValue(s32);
 void *sp4;
@@ -215,7 +215,7 @@ gCur3DSpriteEngine=sp0;
 selected=M2C_FIELD(item,u8 *,0);
 if(selected!=M2C_FIELD(sp4,s32 *,0x3c)) {
 M2C_FIELD(sp4,s32 *,0x3c)=selected;
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 }
 }
 func_020b1c44(0,0);
@@ -253,7 +253,7 @@ void *arg0;
     s32 func_020b20e0(s32);
     void *func_020b22a4(s32,s32,void *,s32), *func_020b1c78(s32);
     M2C_UNK func_020808dc(s32,s32,u16,u16);
-    M2C_UNK func_0208fe30(s32), func_020b1c44(s32,s32);
+    M2C_UNK PlaySoundEffect(s32), func_020b1c44(s32,s32);
     M2C_UNK func_02088f1c(void *), func_0208b758(void *,s32);
     s32 GetSpriteAnimValue(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
@@ -308,7 +308,7 @@ void *arg0;
         selected=M2C_FIELD(item,u8 *,0);
         if(selected!=M2C_FIELD(sp4,s32 *,0x3c)) {
             M2C_FIELD(sp4,s32 *,0x3c)=selected;
-            func_0208fe30(0x10019);
+            PlaySoundEffect(0x10019);
         }
     }
     func_020b1c44(0,0);
@@ -356,12 +356,12 @@ void func_020dc608(void) {
 }
 
 void func_020dc614(void *entity) {
-    void func_020aacf0(void *);
+    void MenuSpriteUpdate(void *);
     void func_020d47f0(void);
     void func_01ffa8c4(void *, s32);
-    s32 func_0208fe30(s32);
+    s32 PlaySoundEffect(s32);
     void func_01ffa6fc(void *);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
     typedef struct { unsigned char value:4; } E0194Bits;
 
@@ -369,11 +369,11 @@ void func_020dc614(void *entity) {
     void *p;
     u8 allowed;
 
-    if (M2C_FIELD(entity, void **, 0x50)) func_020aacf0(M2C_FIELD(entity, void **, 0x50));
-    if (M2C_FIELD(entity, void **, 0x54)) func_020aacf0(M2C_FIELD(entity, void **, 0x54));
-    if (M2C_FIELD(entity, void **, 0x58)) func_020aacf0(M2C_FIELD(entity, void **, 0x58));
+    if (M2C_FIELD(entity, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x50));
+    if (M2C_FIELD(entity, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x54));
+    if (M2C_FIELD(entity, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x58));
 
-    keys = *data_02101e84;
+    keys = *gKeyState;
     M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
 
     p = M2C_FIELD(entity, void **, 0x58);
@@ -399,7 +399,7 @@ void func_020dc614(void *entity) {
     }
     M2C_FIELD(entity, u16 *, 0x48) |= 0x20;
     func_01ffa8c4(entity, 0x44);
-    func_0208fe30(0x1000f);
+    PlaySoundEffect(0x1000f);
     return;
 
 skip1:
@@ -425,7 +425,7 @@ skip1:
                 M2C_FIELD(q, u8 *, 0x5a) = 12;
             }
             if (M2C_FIELD(entity, u16 *, 0x48) & 0x4) return;
-            func_0208fe30(0x1000e);
+            PlaySoundEffect(0x1000e);
             M2C_FIELD(entity, u16 *, 0x48) |= 0x4;
             func_01ffa6fc(entity);
         }

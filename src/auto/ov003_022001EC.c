@@ -350,7 +350,7 @@ M2C_FIELD(a,s32 *,0x10c)=func_01ffa810(b);
 }
 
 void func_ov003_02200e1c(void *arg0) {
-    M2C_UNK func_020aacf0(s32);
+    M2C_UNK MenuSpriteUpdate(s32);
     s32 var_r0;
     s32 var_r0_2;
     u8 var_r8;
@@ -362,7 +362,7 @@ void func_ov003_02200e1c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 5) = -1;
     var_r8 = 0;
     do {
-        func_020aacf0(M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), s32 *, 0xE8));
+        MenuSpriteUpdate(M2C_FIELD((void *)((u8 *) arg0 + (var_r8 * 4)), s32 *, 0xE8));
         temp_r3 = M2C_FIELD((arg0 + (var_r8 * 4)), void **, 0xE8);
         var_r0 = 1;
         temp_r2 = M2C_FIELD(temp_r3, void **, 0x64);

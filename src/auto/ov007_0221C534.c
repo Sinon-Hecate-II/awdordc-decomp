@@ -88,7 +88,7 @@ void func_ov007_0221c648(M2C_UNK arg0) {
 
 #pragma opt_strength_reduction off
 void func_ov007_0221c718(void *self){
-extern void *data_02101e84;
+extern void *gKeyState;
 extern void *data_02101e88;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
@@ -103,7 +103,7 @@ int func_0209c268(void*);
 int func_020b2e78(u16,u16,void*);
 M2C_UNK func_020808dc(s32,s32,s32,s32);
 void *old,*state;u32 pressed; s16 rect[4];u32 copy[17];s32 screen,kind,index,i,width,oldIndex;u32 text,*table,*cursor;u8 ok;
-pressed=M2C_FIELD(data_02101e84,u16 *,6)&1;old=gCur3DSpriteEngine;state=M2C_FIELD(self,void * *,0x10);
+pressed=M2C_FIELD(gKeyState,u16 *,6)&1;old=gCur3DSpriteEngine;state=M2C_FIELD(self,void * *,0x10);
 for(screen=0;screen<2;screen++){
 gCur3DSpriteEngine=screen==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
 if(M2C_FIELD(self,u8 *,2)==0&&gCur3DSpriteEngine!=g3DSpriteEngineMain)continue;
@@ -151,7 +151,7 @@ M2C_UNK func_020814e4();
 M2C_UNK func_02081528();
 M2C_UNK func_02081590(s32,s32);
 s32 func_020e32e8(M2C_UNK *);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 extern void *g3DSpriteEngineMain;
 extern void *gCur3DSpriteEngine;
 extern M2C_UNK gMapEditPath;
@@ -183,18 +183,18 @@ func_02081528();
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
-func_0208fe30(0x10011);
+PlaySoundEffect(0x10011);
 }
 
 void func_ov007_0221ce9c(u8 *arg0) {
 M2C_UNK func_020b1c60(u8);
-extern void *data_02101e84;
+extern void *gKeyState;
 u16 held,pressed;
 u8 current,old;
 old=*arg0;
-pressed=M2C_FIELD(data_02101e84,u16 *,0);
+pressed=M2C_FIELD(gKeyState,u16 *,0);
 current=old;
-held=M2C_FIELD(data_02101e84,u16 *,2);
+held=M2C_FIELD(gKeyState,u16 *,2);
 if(pressed&1){func_ov007_0221cd68(arg0);return;}
 if(held&0x40){
 switch(old){
@@ -231,8 +231,8 @@ func_020b1c60(current);
 }
 
 void func_ov007_0221cfe8(void) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(0x10019);
+    M2C_UNK PlaySoundEffect(s32);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov007_0221cffc(void) {

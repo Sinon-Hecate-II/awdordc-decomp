@@ -58,12 +58,12 @@ void func_020af7dc(void) {
 }
 
 void func_020af828(s32 arg0, s32 arg1) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_0208ff94(M2C_UNK);
     if (arg1 == 0) {
         return;
     }
-    func_0208fe30(arg1);
+    PlaySoundEffect(arg1);
     if (arg0 == 0) {
         func_0208ff94(-0x80);
         return;

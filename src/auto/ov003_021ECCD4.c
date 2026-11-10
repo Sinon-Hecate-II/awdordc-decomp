@@ -19,7 +19,7 @@ void func_ov003_021eccd4(void *arg0) {
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_0208b758(s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
@@ -60,7 +60,7 @@ void func_ov003_021eccd4(void *arg0) {
     void *temp_r6;
     void *temp_r6_2;
 
-    func_0208fe30(0x1000D);
+    PlaySoundEffect(0x1000D);
     if (func_020846a4() != 0) {
         if (func_02084d3c(sp0, 0x24) == 0) {
             return;
@@ -245,7 +245,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     M2C_UNK func_02088da8(void *);
     M2C_UNK func_02089438(void *);
     M2C_UNK func_0208b758(s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
@@ -310,7 +310,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     temp_r5_2 = (u8) M2C_FIELD(M2C_FIELD(temp_r0, void **, 0xE0), u16 *, 0x2E);
     HandleWaypointInput(temp_r0, arg1);
     if (temp_r5_2 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E)) {
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
         temp_r5_3 = func_020aae44(temp_r7);
         temp_r3=func_020aae10(temp_r7);mask=-512U;temp_r3&=mask>>23;ypos=M2C_FIELD(temp_r7,s16*,0x36);xpos=M2C_FIELD(temp_r7,s16*,0x34);

@@ -94,31 +94,31 @@ void func_ov000_0216a374(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     AddSprite(arg0, arg1, arg2, &data_027e005c, arg3);
 }
 
-s32 func_ov000_0216a38c(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_ov000_021b686c;
-    return (arg1 * 0x30) + ((arg0 * 0x750) + (s32) &data_ov000_021b686c);
+s32 GetRecordDefinition(s32 arg0, s32 arg1) {
+    extern M2C_UNK gRecordTable;
+    return (arg1 * 0x30) + ((arg0 * 0x750) + (s32) &gRecordTable);
 }
 
-u32 func_ov000_0216a3a8(s32 a,s32 b) {
-extern u32 data_0215da2c[];
-s32 p=func_ov000_0216a38c(a,b);
-switch(a){case 0:return data_0215da2c[M2C_FIELD(p,u16 *,4)];case 1:return data_0215da2c[M2C_FIELD(p,u16 *,4)+0x28];case 2:return data_0215da2c[M2C_FIELD(p,u16 *,4)+0x43];default:return 0;}
+u32 GetRecordValue(s32 a,s32 b) {
+extern u32 gRecordValues[];
+s32 p=GetRecordDefinition(a,b);
+switch(a){case 0:return gRecordValues[M2C_FIELD(p,u16 *,4)];case 1:return gRecordValues[M2C_FIELD(p,u16 *,4)+0x28];case 2:return gRecordValues[M2C_FIELD(p,u16 *,4)+0x43];default:return 0;}
 }
 
-u16 func_ov000_0216a414(s32 a,s32 b) {
-s32 p=func_ov000_0216a38c(a,b);u32 n=func_ov000_0216a3a8(a,b);u16 r;
+u16 GetRecordTier(s32 a,s32 b) {
+s32 p=GetRecordDefinition(a,b);u32 n=GetRecordValue(a,b);u16 r;
 if(n>=M2C_FIELD(p,u32 *,16))return 3;if(n>=M2C_FIELD(p,u32 *,12))return 2;
 if(n>=M2C_FIELD(p,u32 *,8)) r=1;else r=0;return r;
 }
 
 u16 func_ov000_0216a470(void) {
 s32 i,j; s32 p;u16 result=0;
-i=0;do {p=func_ov000_0216a38c(i,0);j=0;if(M2C_FIELD(p,s32 *,0)) {do {result+=func_ov000_0216a414(i,j);p+=0x30;j++;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);return result;
+i=0;do {p=GetRecordDefinition(i,0);j=0;if(M2C_FIELD(p,s32 *,0)) {do {result+=GetRecordTier(i,j);p+=0x30;j++;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);return result;
 }
 
 void func_ov000_0216a4e0(u16 *a,u16 *b) {
 s32 i,j,p,r;i=0;*a=0;*b=0;
-do {p=func_ov000_0216a38c(i,0);j=0;if(M2C_FIELD(p,s32 *,0)){do {r=func_ov000_0216a414(i,j);j++;*a+=r;*b+=3;p+=0x30;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);
+do {p=GetRecordDefinition(i,0);j=0;if(M2C_FIELD(p,s32 *,0)){do {r=GetRecordTier(i,j);j++;*a+=r;*b+=3;p+=0x30;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);
 }
 
 s8 func_ov000_0216a564(u32 a) { extern M2C_UNK data_ov000_021b67cc; s32 i=0; do {if(a>=((A564Entry *)&data_ov000_021b67cc)[i].threshold)return (s8)i;i++;}while(i<20);return 19; }
@@ -129,8 +129,8 @@ return *(s32 *)((u8 *)&data_ov000_021b67cc+i*8);
 }
 
 s32 func_ov000_0216a5ac(s32 arg0) {
-    s32 func_ov000_0216a38c(s32, s32);
-    u32 func_ov000_0216a3a8(s32, s32);
+    s32 GetRecordDefinition(s32, s32);
+    u32 GetRecordValue(s32, s32);
 
     s32 *p;
     s32 i;
@@ -153,15 +153,15 @@ s32 func_ov000_0216a5ac(s32 arg0) {
     best = 0;
     bestIndex = 0;
 
-    p = (s32 *)func_ov000_0216a38c(1, 0);
+    p = (s32 *)GetRecordDefinition(1, 0);
     while (*p != 0) {
-        n = func_ov000_0216a3a8(1, i);
+        n = GetRecordValue(1, i);
         if (n != 0) {
             flag = 0;
         }
-        byte = *(u8 *)((u8 *)func_ov000_0216a38c(1, i) + 0x18);
+        byte = *(u8 *)((u8 *)GetRecordDefinition(1, i) + 0x18);
         n = n * byte;
-        mode = *(s16 *)((u8 *)func_ov000_0216a38c(1, i) + 6);
+        mode = *(s16 *)((u8 *)GetRecordDefinition(1, i) + 6);
         switch (mode) {
             case 0:
                 total0 = total0 + n;
@@ -220,7 +220,7 @@ void func_ov000_0216a7c4(void) {
 
 s32 func_ov000_0216a7d4(s32 a) {
 if(a==-1)return 0xc0000025;
-return M2C_FIELD(func_ov000_0216a38c(1,a),s32 *,0x14);
+return M2C_FIELD(GetRecordDefinition(1,a),s32 *,0x14);
 }
 
 s32 func_ov000_0216a7fc(void) {

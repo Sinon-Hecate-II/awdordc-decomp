@@ -226,7 +226,7 @@ SetMapCursor((s16)bestY,(s16)bestX,4,(u8)temp,0);
 #pragma opt_propagation off
 void func_ov000_0218e340(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 func_020a7cfc(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK func_01ffc328(s32); s32 func_020a7074(void *,void *); s32 func_ov000_021a93a8(void *,s32,s32); s32 IsUnitSelected(void *); s32 func_ov000_021a98a8(s32); void func_ov000_0218dda4(void); M2C_UNK SetMapCursor(s16,s16,s32,u8,s32);
 s32 x=-1,y=-1,best=0,i; u8 *unit; s32 offset; void *map; u8 *active; s32 hp,other,score;
 map=*gCurrentMap; active=M2C_FIELD(map,u8 **,0x52d0);
 if (((u32)(M2C_FIELD(active,u16 *,6)<<25)>>25)>50) return;
@@ -245,7 +245,7 @@ if(active==unit)goto next;
 if(M2C_FIELD(unit,u16 *,4)&8)goto next;
 if(!func_020a7074(active,unit))goto next;
 if(func_ov000_021a93a8(unit,unit[1],unit[2])==1)goto next;
-if(func_020a7cfc(M2C_FIELD(*gCurrentMap,void **,0x52d0))){
+if(IsUnitSelected(M2C_FIELD(*gCurrentMap,void **,0x52d0))){
 hp=(u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25;
 other=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25;
 score=other+hp; if(score<=130)goto evaluate;

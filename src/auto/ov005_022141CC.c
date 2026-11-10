@@ -15,7 +15,7 @@ s16 n=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x98);
 s32 next=n+6;
 if(next>=M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x9a))return 0;
 M2C_FIELD(M2C_FIELD(&data_ov005_02221304,void **,8),s16 *,0x98)++;
-func_0208fe30(0x10019);return 1;
+PlaySoundEffect(0x10019);return 1;
 }
 
 s16 func_ov005_02214210(void) {

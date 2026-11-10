@@ -8,32 +8,32 @@ void func_ov007_02212cbc(void) {
 
 void func_ov007_02212cc8(M2C_UNK arg0) {
     M2C_UNK func_01ffa8c4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_020d46e8(void);
     M2C_UNK func_ov007_02211f10(s32);
     s32 func_ov007_02211f20(void);
     M2C_UNK func_ov007_02212dcc(void);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     s32 initialTimer;
 
     initialTimer = func_ov007_02211f20();
-    if (*data_02101e84 & 1) {
+    if (*gKeyState & 1) {
         func_ov007_02211f10(0);
     }
-    if (*data_02101e84 & 2) {
+    if (*gKeyState & 2) {
         func_ov007_02211f10(1);
     }
-    if (*data_02101e84 & 0x400) {
+    if (*gKeyState & 0x400) {
         func_ov007_02211f10(2);
     }
-    if (*data_02101e84 & 0x800) {
+    if (*gKeyState & 0x800) {
         func_ov007_02211f10(3);
     }
-    if (*data_02101e84 & 0xC0B) {
+    if (*gKeyState & 0xC0B) {
         func_ov007_02212dcc();
     }
     if (initialTimer != func_ov007_02211f20()) {
-        func_0208fe30(0x10011);
+        PlaySoundEffect(0x10011);
     }
     if (func_020d46e8() == 0) {
         return;

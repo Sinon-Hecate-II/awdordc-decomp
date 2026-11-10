@@ -531,7 +531,7 @@ s32 func_02092984(void *arg0) {
 }
 
 s32 func_020929b0(void *arg0) {
-M2C_UNK func_020867dc(u8,M2C_UNK);M2C_UNK func_0208fe30(s32);M2C_UNK func_020ae124(u8);
+M2C_UNK func_020867dc(u8,M2C_UNK);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_020ae124(u8);
 s32 func_020ae1a4();s32 func_020d8db0();s32 func_020d8f4c();M2C_UNK func_020d8f1c(s16,s32);
 u8 v=(u8)M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
 void *p;
@@ -540,7 +540,7 @@ if(M2C_FIELD(p,s32 *,12)==0){M2C_FIELD(arg0,void **,4)=p+16;return 1;}
 if(func_020d8db0()!=0)return 0;
 if(func_020d8f4c()==2){if(func_020ae1a4()==0)return 0;func_020ae124(v);}
 else func_020d8f1c(2,v);
-func_0208fe30(0x121);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+PlaySoundEffect(0x121);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_02092a54(void *arg0) {
@@ -602,9 +602,9 @@ func_02092bac(arg0);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_02092c40(void *arg0) {
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 void *p=M2C_FIELD(arg0,void **,4);
-u32 keys=*data_02101e84;
+u32 keys=*gKeyState;
 u32 mask=M2C_FIELD(p,u32 *,12);
 void (*callback)(u32)=M2C_FIELD(p,void (**)(u32),4);
 if(keys&mask)callback(mask);else return 0;

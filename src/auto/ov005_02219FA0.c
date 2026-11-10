@@ -84,13 +84,13 @@ void func_ov005_0221a38c(void **arg0) {
 }
 #pragma opt_strength_reduction reset
 void func_ov005_0221a410(void *arg0) {
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 s32 RandomIntRange(s32, s32);
 M2C_UNK func_01ffa6fc(void *);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if (M2C_FIELD(arg0,s32 *,0x40)==1) {
 M2C_FIELD(arg0,u8 *,0x46)=1;
-func_0208fe30(0x132);
+PlaySoundEffect(0x132);
 }
 M2C_FIELD(arg0,u16 *,0x50)=RandomIntRange(-4,4)&0x1ff;
 M2C_FIELD(arg0,u16 *,0x52)=RandomIntRange(-4,4)&0xff;
@@ -102,13 +102,13 @@ func_01ffa6fc(arg0);
 }
 
 void func_ov005_0221a498(void *arg0) {
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 s32 RandomIntRange(s32, s32);
 M2C_UNK func_01ffa6fc(void *);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if (M2C_FIELD(arg0,s32 *,0x40)==1) {
 M2C_FIELD(arg0,u8 *,0x47)=1;
-func_0208fe30(0x132);
+PlaySoundEffect(0x132);
 }
 M2C_FIELD(arg0,u16 *,0x54)=RandomIntRange(-4,4)&0x1ff;
 M2C_FIELD(arg0,u16 *,0x56)=RandomIntRange(-4,4)&0xff;
@@ -120,12 +120,12 @@ func_01ffa6fc(arg0);
 }
 
 void func_ov005_0221a520(void *arg0) {
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 M2C_UNK func_01ffa6fc(void *);
 void func_ov005_0221a38c(void **);
 M2C_FIELD(arg0,s32 *,0x40)++;
-if(M2C_FIELD(arg0,s32 *,0x40)==1) func_0208fe30(0xe8);
+if(M2C_FIELD(arg0,s32 *,0x40)==1) PlaySoundEffect(0xe8);
 M2C_FIELD(arg0,s32 *,0x3c)=EaseInterpolate(0,0x1b0,0x58,M2C_FIELD(arg0,s32 *,0x40),0x20);
 func_ov005_0221a38c(arg0);
 if(M2C_FIELD(arg0,s32 *,0x40)!=0x20) return;
@@ -167,7 +167,7 @@ void func_ov005_0221a598(void *arg0) {
 
 /* Create two sprite objects for a hit effect and play the appropriate sound. */
 void func_ov005_0221a688(void *arg) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     void *func_01ffa42c(void *, void *);
     void func_02007ef4(void *, void *, s32);
     extern Ov005ModeBits data_02168f14;
@@ -185,7 +185,7 @@ void func_ov005_0221a688(void *arg) {
         case 1: sound = 0xed; break;
         }
     }
-    func_0208fe30(sound);
+    PlaySoundEffect(sound);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     obj = func_01ffa42c(&data_ov005_02220aa8, arg);

@@ -1,7 +1,7 @@
 /* 1 function from 0x021F7164 to 0x021F8C20 (ov003), found by ds-decomp. */
 #include "common.h"
 extern u8 *data_02101e88;
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 extern void *gCur3DSpriteEngine;
 static inline u8 ov003_menu_kind(void *p,u32 kind){
 u8 result;if(((u32)(M2C_FIELD(p,u8 *,0x3b)<<28)>>28)==kind)result=1;else result=0;return result;
@@ -21,9 +21,9 @@ M2C_FIELD(button,u8 *,0x5a)=12;
 
 
 static inline void ov003_menu_set_mode(u8 *p,s32 mode,s32 sound){
-void func_0208fe30(s32);void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
+void PlaySoundEffect(s32);void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
 void func_0208b758(void *,s32);void func_02088f1c(void *);void func_02088ff4(void *);s32 func_020ae22c(s32);void func_020893a8(void *,s32,s32,s32);
-func_0208fe30(sound);p[0x3e]=(p[0x3e]&~7)|mode;
+PlaySoundEffect(sound);p[0x3e]=(p[0x3e]&~7)|mode;
 func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36),32,3,7);
 if((u32)(p[0x3e]<<24)>>31)func_ov003_021fc98c(p,mode?5:4);
 if(mode)func_020808dc(M2C_FIELD(gCur3DSpriteEngine,void **,36)+32,16,3,6);
@@ -60,8 +60,8 @@ if(M2C_FIELD(sprite,s16 *,0x34)==M2C_FIELD(sprite,s16 *,0x5e)&&M2C_FIELD(sprite,
 extern void func_ov003_021fca84(void *);
 #pragma opt_propagation off
 void func_ov003_021f7164(void *arg0) {
-void func_020aacf0(void *);void func_02088044(void *);s32 func_0207c8ec(s32,s32);
-void func_020ab4c0(void *);void func_020ab598(void *);void func_0208fe30(s32);void func_ov003_021f92f4(void *,s32);
+void MenuSpriteUpdate(void *);void func_02088044(void *);s32 func_0207c8ec(s32,s32);
+void func_020ab4c0(void *);void func_020ab598(void *);void PlaySoundEffect(s32);void func_ov003_021f92f4(void *,s32);
 s32 func_020ab30c(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
 void func_ov003_021fcb70(void *);void func_ov003_021f2808(void *,u16);void func_ov003_021f26c8(void *,void *,u16);
 void func_020808dc(void *,s32,s32,s32);void func_ov003_021fc98c(void *,s32);
@@ -74,7 +74,7 @@ if(ov003_menu_kind(p,5))return;
 func_ov003_021fca84(p);
 if((u32)(p[0x3e]<<25)>>31)return;
 mode=(u32)(p[0x3b]<<28)>>28;
-inputFlag=data_02101e88[0x12];held=data_02101e84[0];down=data_02101e84[1];repeat=data_02101e84[3];
+inputFlag=data_02101e88[0x12];held=gKeyState[0];down=gKeyState[1];repeat=gKeyState[3];
 if(ov003_menu_kind(p,0)||ov003_menu_kind(p,2)||ov003_menu_kind(p,3)||ov003_menu_kind(p,4)||ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8)){
 context=M2C_FIELD(p,void **,0x44);list=M2C_FIELD(p,void **,0x4c);
 selection=M2C_FIELD(context+((M2C_FIELD(M2C_FIELD(p,void **,0x5c),u32 *,4)&255)*512)+(u16)(s16)M2C_FIELD(list,s32 *,0x14)*2,u16 *,0x2e);
@@ -82,7 +82,7 @@ selection=M2C_FIELD(context+((M2C_FIELD(M2C_FIELD(p,void **,0x5c),u32 *,4)&255)*
 buttons=M2C_FIELD(p,void ***,0x68);
 active=1;
 if(!((u32)(p[0x3a]<<24)>>31)){down=0;held=down;}
-func_020aacf0(buttons[0]);func_020aacf0(buttons[1]);func_020aacf0(buttons[2]);func_020aacf0(buttons[3]);func_020aacf0(buttons[4]);func_020aacf0(buttons[5]);func_020aacf0(buttons[6]);func_020aacf0(buttons[7]);func_020aacf0(buttons[8]);func_020aacf0(buttons[9]);
+MenuSpriteUpdate(buttons[0]);MenuSpriteUpdate(buttons[1]);MenuSpriteUpdate(buttons[2]);MenuSpriteUpdate(buttons[3]);MenuSpriteUpdate(buttons[4]);MenuSpriteUpdate(buttons[5]);MenuSpriteUpdate(buttons[6]);MenuSpriteUpdate(buttons[7]);MenuSpriteUpdate(buttons[8]);MenuSpriteUpdate(buttons[9]);
 func_02088044(M2C_FIELD(p,void **,0x70));
 button=M2C_FIELD(p,void **,0x70);keyy=M2C_FIELD(button,u8 *,12);keyx=M2C_FIELD(button,u8 *,11);
 list=M2C_FIELD(p,void **,0x4c);
@@ -92,7 +92,7 @@ if(M2C_FIELD(list,s16 *,6)<=(s16)func_0207c8ec((s16)M2C_FIELD(list,s32 *,24),M2C
 if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,24);
 if((u8)ov003_button_pressed(button)){
-ov003_animate_button(button);func_020ab4c0(M2C_FIELD(p,void **,0x4c));func_0208fe30(0x10019);
+ov003_animate_button(button);func_020ab4c0(M2C_FIELD(p,void **,0x4c));PlaySoundEffect(0x10019);
 func_ov003_021f92f4(p,0);active=0;
 }
 }
@@ -103,7 +103,7 @@ enable=rows+oldRows<(s16)func_0207c8ec((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(l
 if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,28);
 if((u8)ov003_button_pressed(button)){
-ov003_animate_button(button);func_020ab598(M2C_FIELD(p,void **,0x4c));func_0208fe30(0x10019);func_ov003_021f92f4(p,0);active=0;
+ov003_animate_button(button);func_020ab598(M2C_FIELD(p,void **,0x4c));PlaySoundEffect(0x10019);func_ov003_021f92f4(p,0);active=0;
 }
 }
 }
@@ -149,7 +149,7 @@ active=0;
 }else if(active){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if((u8)ov003_button_pressed(button)&&ov003_menu_kind(p,2)&&ov003_button_ready(button)&&ov003_menu_positioned(p)){
-func_ov003_021fc98c(p,0);func_020c9190(selection,p);func_0208fe30(0x1000d);active=0;
+func_ov003_021fc98c(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 }
@@ -173,7 +173,7 @@ if(func_ov003_021f3f0c((s16)keyy,10,(s16)(func_020ab30c(M2C_FIELD(p,void **,0x4c
 list=M2C_FIELD(p,void **,0x4c);
 keyx=(s16)(keyy-10+M2C_FIELD(list,s16 *,12));
 if(M2C_FIELD(list,s32 *,24)!=keyx)func_020ab3b0(list,(s16)keyx,1);
-func_ov003_021f92f4(p,0);func_0208fe30(0x10019);active=0;
+func_ov003_021f92f4(p,0);PlaySoundEffect(0x10019);active=0;
 }
 }
 p[0x39]=(p[0x39]&~127)|(keyy&127);
@@ -212,7 +212,7 @@ active=0;
 if(active&&(held&4)&&ov003_menu_kind(p,2)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if(ov003_button_ready(button)&&ov003_menu_positioned(p)&&!(held&0xf0)){
-ov003_animate_button(button);func_ov003_021fc98c(p,0);func_020c9190(selection,p);func_0208fe30(0x1000d);active=0;
+ov003_animate_button(button);func_ov003_021fc98c(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 if(active){

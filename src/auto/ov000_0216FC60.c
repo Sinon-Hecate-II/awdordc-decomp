@@ -8,12 +8,12 @@ extern u8 data_ov000_021b8a50[40];
 extern u8 data_ov000_021b89b0[40];
 
 void func_ov000_0216fc60(u8 *arg0) {
-    void *func_ov000_021700fc(void);
-    M2C_UNK func_0208fe30(s32);
-    M2C_UNK func_ov000_0216ecc8(s16, s16);
-    M2C_UNK func_ov000_0216f8c4(s16);
-    M2C_UNK func_ov000_0216f9b4(void *);
-    void *p = func_ov000_021700fc();
+    void *GetScrollList(void);
+    M2C_UNK PlaySoundEffect(s32);
+    M2C_UNK ScrollListRebuild(s16, s16);
+    M2C_UNK ScrollListDrawRows(s16);
+    M2C_UNK ScrollListDrawTabs(void *);
+    void *p = GetScrollList();
     if (p == NULL) return;
     switch (*arg0) {
     case 0xFB: M2C_FIELD(p, s16 *, 0x34) = 0; break;
@@ -22,138 +22,139 @@ void func_ov000_0216fc60(u8 *arg0) {
     case 0xF8: M2C_FIELD(p, s16 *, 0x34) = 3; break;
     default: return;
     }
-    func_0208fe30(0x10020);
-    func_ov000_0216ecc8(M2C_FIELD(p,s16 *,0x34), M2C_FIELD(p,s16 *,0x36));
-    func_ov000_0216f9b4(p);
-    func_ov000_0216f8c4(M2C_FIELD(p,s16 *,0x38));
+    PlaySoundEffect(0x10020);
+    ScrollListRebuild(M2C_FIELD(p,s16 *,0x34), M2C_FIELD(p,s16 *,0x36));
+    ScrollListDrawTabs(p);
+    ScrollListDrawRows(M2C_FIELD(p,s16 *,0x38));
 }
 
-void func_ov000_0216fcf8(u8 *arg0) {
-    void *func_ov000_021700fc(void);
-    M2C_UNK func_0208fe30(s32);
-    M2C_UNK func_ov000_0216ecc8(s16, s16);
-    M2C_UNK func_ov000_0216f8c4(s16);
-    M2C_UNK func_ov000_0216f9b4(void *);
+void ScrollListNavigate(u8 *selection) {
+    void *GetScrollList(void);
+    M2C_UNK PlaySoundEffect(s32);
+    M2C_UNK ScrollListRebuild(s16, s16);
+    M2C_UNK ScrollListDrawRows(s16);
+    M2C_UNK ScrollListDrawTabs(void *);
     s32 func_020b20e0(s32);
     void *func_020b1c60(s32);
-    s32 func_ov000_0216facc(void *);
-    s16 func_ov000_0216fafc(void *);
-    s32 func_ov000_0216fb2c(void *);
-    s16 func_ov000_0216fb64(void *);
-    void func_ov000_0216fbe4(u8 *);
-    M2C_UNK func_ov000_0216fc34(s32);
-    extern u16 *data_02101e84;
-    void *p;
-    s16 count;
-    s32 n;
-    s32 max;
-    s16 pos;
-    s16 d;
+    s32 ScrollListScrollUp(void *);
+    s16 ScrollListPageUp(void *);
+    s32 ScrollListScrollDown(void *);
+    s16 ScrollListPageDown(void *);
+    void ScrollListConfirm(u8 *);
+    M2C_UNK ScrollListCancel(s32);
+    extern KeyState *gKeyState;
+    ScrollList *list;
+    s16 itemCount;
+    s32 selected;
+    s32 maxScroll;
+    s16 scrollPos;
+    s16 delta;
 
-    p = func_ov000_021700fc();
-    count = M2C_FIELD(p, s16 *, 0x3C);
-    n = *arg0;
-    max = count - 6;
-    if (max < 0) max = 0;
-    if (count <= 1) goto done;
-    pos = M2C_FIELD(p, s16 *, 0x3A);
-    if (pos == 0 && n == 0) {
-        if (data_02101e84[0] & 0x40) {
-            func_0208fe30(0x10019);
-            M2C_FIELD(p, s16 *, 0x3A) = max;
-            if (M2C_FIELD(p, s16 *, 0x3A) == 0) n = M2C_FIELD(p, s16 *, 0x3C) - 1;
-            else n = 5;
+    /* Navigate the unit-list menu: d-pad scrolls, L/R change tab, Select/Start flips sort, A/B confirm/cancel. */
+    list = (ScrollList *) GetScrollList();
+    itemCount = list->count;
+    selected = *selection;
+    maxScroll = itemCount - 6;
+    if (maxScroll < 0) maxScroll = 0;
+    if (itemCount <= 1) goto done;
+    scrollPos = list->scrollPos;
+    if (scrollPos == 0 && selected == 0) {
+        if (gKeyState->pressed & KEY_UP) {
+            PlaySoundEffect(0x10019);
+            list->scrollPos = maxScroll;
+            if (list->scrollPos == 0) selected = list->count - 1;
+            else selected = 5;
             goto done;
         }
-    } else if (data_02101e84[1] & 0x40) {
-        if (n >= 2) n--;
-        else if (!func_ov000_0216facc(p)) {
-            if (n > 0) n--;
+    } else if (gKeyState->repeat & KEY_UP) {
+        if (selected >= 2) selected--;
+        else if (!ScrollListScrollUp(list)) {
+            if (selected > 0) selected--;
         }
         goto done;
     }
-    if (pos == max && ((max > 0 && n == 5) || (max == 0 && n == count - 1))) {
-        if (data_02101e84[0] & 0x80) {
-            func_0208fe30(0x10019);
-            n = 0;
-            M2C_FIELD(p, s16 *, 0x3A) = n;
+    if (scrollPos == maxScroll && ((maxScroll > 0 && selected == 5) || (maxScroll == 0 && selected == itemCount - 1))) {
+        if (gKeyState->pressed & KEY_DOWN) {
+            PlaySoundEffect(0x10019);
+            selected = 0;
+            list->scrollPos = selected;
             goto done;
         }
-    } else if (data_02101e84[1] & 0x80) {
-        if (n < 4) {
-            if (func_020b20e0(n + 1)) n++;
+    } else if (gKeyState->repeat & KEY_DOWN) {
+        if (selected < 4) {
+            if (func_020b20e0(selected + 1)) selected++;
         } else {
-            if (!func_ov000_0216fb2c(p) && func_020b20e0(n + 1)) n++;
+            if (!ScrollListScrollDown(list) && func_020b20e0(selected + 1)) selected++;
         }
         goto done;
     }
-    if (data_02101e84[1] & 0x20) {
-        if (max > 0) {
-            d = func_ov000_0216fafc(p);
-            n -= d + 6;
-            if (n < 0) n = 0;
-            if (d != 0 && n == *arg0) func_0208fe30(0x10019);
+    if (gKeyState->repeat & KEY_LEFT) {
+        if (maxScroll > 0) {
+            delta = ScrollListPageUp(list);
+            selected -= delta + 6;
+            if (selected < 0) selected = 0;
+            if (delta != 0 && selected == *selection) PlaySoundEffect(0x10019);
         } else {
-            n = 0;
+            selected = 0;
         }
         goto done;
     }
-    if (data_02101e84[1] & 0x10) {
-        if (max > 0) {
-            d = func_ov000_0216fb64(p);
-            n += 6 - d;
-            if (n >= 6) n = 5;
-            if (d != 0 && n == *arg0) func_0208fe30(0x10019);
+    if (gKeyState->repeat & KEY_RIGHT) {
+        if (maxScroll > 0) {
+            delta = ScrollListPageDown(list);
+            selected += 6 - delta;
+            if (selected >= 6) selected = 5;
+            if (delta != 0 && selected == *selection) PlaySoundEffect(0x10019);
         } else {
-            n = count - 1;
+            selected = itemCount - 1;
         }
     }
 done:
-    if (n != *arg0) arg0 = (u8 *) func_020b1c60(n);
-    if (data_02101e84[1] & 0x200) {
-        if (M2C_FIELD(p, s16 *, 0x34) == 0) M2C_FIELD(p, s16 *, 0x34) = 3;
-        else M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x34) - 1;
-        func_0208fe30(0x10020);
-        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
-        func_ov000_0216f9b4(p);
-        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    if (selected != *selection) selection = (u8 *) func_020b1c60(selected);
+    if (gKeyState->repeat & KEY_L) {
+        if (list->tab == 0) list->tab = 3;
+        else list->tab = list->tab - 1;
+        PlaySoundEffect(0x10020);
+        ScrollListRebuild(list->tab, list->reverse);
+        ScrollListDrawTabs(list);
+        ScrollListDrawRows(list->animPos);
     }
-    if (data_02101e84[1] & 0x100) {
-        if (M2C_FIELD(p, s16 *, 0x34) == 3) M2C_FIELD(p, s16 *, 0x34) = 0;
-        else M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x34) + 1;
-        func_0208fe30(0x10020);
-        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
-        func_ov000_0216f9b4(p);
-        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    if (gKeyState->repeat & KEY_R) {
+        if (list->tab == 3) list->tab = 0;
+        else list->tab = list->tab + 1;
+        PlaySoundEffect(0x10020);
+        ScrollListRebuild(list->tab, list->reverse);
+        ScrollListDrawTabs(list);
+        ScrollListDrawRows(list->animPos);
     }
-    if (data_02101e84[0] & 0xC) {
-        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x36) + 1;
-        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x36) & 1;
-        func_0208fe30(0x10019);
-        func_ov000_0216ecc8(M2C_FIELD(p, s16 *, 0x34), M2C_FIELD(p, s16 *, 0x36));
-        func_ov000_0216f8c4(M2C_FIELD(p, s16 *, 0x38));
+    if (gKeyState->pressed & (KEY_SELECT | KEY_START)) {
+        list->reverse = list->reverse + 1;
+        list->reverse = list->reverse & 1;
+        PlaySoundEffect(0x10019);
+        ScrollListRebuild(list->tab, list->reverse);
+        ScrollListDrawRows(list->animPos);
     }
-    if (data_02101e84[0] & 0x1) {
-        func_ov000_0216fbe4(arg0);
+    if (gKeyState->pressed & KEY_A) {
+        ScrollListConfirm(selection);
         return;
     }
-    if (data_02101e84[0] & 0x2) {
-        func_ov000_0216fc34(0);
+    if (gKeyState->pressed & KEY_B) {
+        ScrollListCancel(0);
     }
 }
 
 void func_ov000_0217000c(void) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(0x10019);
+    M2C_UNK PlaySoundEffect(s32);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov000_02170020(void) {
-void *func_ov000_021700fc(void);
+void *GetScrollList(void);
 M2C_UNK func_020b1bf4(s32,s32,s32,s32);
 M2C_UNK func_020b1c78(s32);
 M2C_UNK func_020b22a4(s32,s32,void *,s32);
 void *p; s32 i; s32 y;
-p=func_ov000_021700fc();
+p=GetScrollList();
 func_020b1bf4(0,-16,256,-16);
 func_020b22a4(0,0,&data_ov000_021b8a00,251);
 func_020b22a4(0,0,&data_ov000_021b89d8,250);
@@ -172,7 +173,7 @@ if(i<M2C_FIELD(p,s16 *,0x3c)) goto loop;
 func_020b1c78(0);
 }
 
-void *func_ov000_021700fc(void) {
+void *GetScrollList(void) {
     void *func_01ffa770(M2C_UNK *);
     extern M2C_UNK data_ov000_021b8a78;
     return func_01ffa770(&data_ov000_021b8a78);
@@ -204,9 +205,9 @@ void func_ov000_02170110(void *arg0) {
     s32 func_ov000_0216ce10(u8);
     s32 func_ov000_0216ce84(u8);
     s16 func_ov000_0216ec1c();
-    M2C_UNK func_ov000_0216ecc8(s16, s16);
-    M2C_UNK func_ov000_0216f8c4(s16);
-    M2C_UNK func_ov000_0216f9b4(void *);
+    M2C_UNK ScrollListRebuild(s16, s16);
+    M2C_UNK ScrollListDrawRows(s16);
+    M2C_UNK ScrollListDrawTabs(void *);
     void func_ov000_02170020();
     extern void *gCurrentMap;
     extern void *gCur3DSpriteEngine;
@@ -245,7 +246,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3A) = 0;
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
     M2C_FIELD(arg0, s16 *, 0x40) = 0;
-    func_ov000_0216ecc8(M2C_FIELD(arg0, s16 *, 0x34), M2C_FIELD(arg0, s16 *, 0x36));
+    ScrollListRebuild(M2C_FIELD(arg0, s16 *, 0x34), M2C_FIELD(arg0, s16 *, 0x36));
     func_01ff9ce8(1);
     func_01ff9ce8(2);
     zero=0;
@@ -257,7 +258,7 @@ void func_ov000_02170110(void *arg0) {
     func_02081590(func_020e3218(&data_ov000_021b8b4c), M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x14));
     func_02081528();
     func_0208116c(&data_ov000_021b8b58, 0xC0, 0x20);
-    func_ov000_0216f9b4(arg0);
+    ScrollListDrawTabs(arg0);
     func_020e3058(arg0 + 0x44, 0x5E, 0x8B, 0xA, 0x39C, 3, -1, arg0, 1);
     func_020e3058(arg0 + 0x48, 0x82, 0x8B, 0xB, 0x3A4, 3, -1, arg0, zero);
     func_020c0fac(arg0);
@@ -269,7 +270,7 @@ void func_ov000_02170110(void *arg0) {
     func_0208ca2c(0x6B80, 0xB, func_020ae22c(0xC), 2);
     func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), func_020a8b3c(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
     func_0209c048(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);
-    func_ov000_0216f8c4(M2C_FIELD(arg0, s16 *, 0x38));
+    ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     func_ov000_02170020();
@@ -278,12 +279,12 @@ void func_ov000_02170110(void *arg0) {
 #pragma pop
 void func_ov000_021703e8(void *arg0) {
     void AddSprite(s32, s32, u16, void *, s32);
-    M2C_UNK func_020aacf0(void *);
+    M2C_UNK MenuSpriteUpdate(void *);
     s32 func_02001fb4(s32, s32);
     void func_0208dd7c(s32, s32, s32, s32, u16, s32, s32);
-    M2C_UNK func_ov000_0216f8c4(s16);
-    M2C_UNK func_ov000_0216facc(void *);
-    M2C_UNK func_ov000_0216fb2c(void *);
+    M2C_UNK ScrollListDrawRows(s16);
+    M2C_UNK ScrollListScrollUp(void *);
+    M2C_UNK ScrollListScrollDown(void *);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern M2C_UNK data_027e0064;
@@ -316,7 +317,7 @@ void func_ov000_021703e8(void *arg0) {
                 M2C_FIELD(arg0, s16 *, 0x38) += step;
             }
             M2C_FIELD(arg0, s16 *, 0x3e) = 1;
-            func_ov000_0216f8c4(M2C_FIELD(arg0, s16 *, 0x38));
+            ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
         }
     } else {
         M2C_FIELD(arg0, s16 *, 0x3e) = 0;
@@ -342,8 +343,8 @@ void func_ov000_021703e8(void *arg0) {
     }
     M2C_FIELD(spr, u8 *, 0x5a) = 0;
 
-    func_020aacf0(M2C_FIELD(arg0, void **, 0x44));
-    func_020aacf0(M2C_FIELD(arg0, void **, 0x48));
+    MenuSpriteUpdate(M2C_FIELD(arg0, void **, 0x44));
+    MenuSpriteUpdate(M2C_FIELD(arg0, void **, 0x48));
 
     spr = M2C_FIELD(arg0, void **, 0x44);
     p = M2C_FIELD(spr, void **, 0x64);
@@ -352,7 +353,7 @@ void func_ov000_021703e8(void *arg0) {
         && (!((u32) (M2C_FIELD(spr, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(p, s8 *, 0xc) != 1)) {
         cond = 0;
     }
-    if (cond & 255) func_ov000_0216facc(arg0);
+    if (cond & 255) ScrollListScrollUp(arg0);
 
     spr = M2C_FIELD(arg0, void **, 0x48);
     p = M2C_FIELD(spr, void **, 0x64);
@@ -361,7 +362,7 @@ void func_ov000_021703e8(void *arg0) {
         && (!((u32) (M2C_FIELD(spr, u8 *, 0x59) << 27) >> 31) || M2C_FIELD(p, s8 *, 0xc) != 1)) {
         cond = 0;
     }
-    if (cond & 255) func_ov000_0216fb2c(arg0);
+    if (cond & 255) ScrollListScrollDown(arg0);
 
     old = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;

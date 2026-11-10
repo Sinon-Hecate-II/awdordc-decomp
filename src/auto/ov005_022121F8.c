@@ -5,12 +5,12 @@ static inline void MarkSpriteEngine(void *engine, u32 mask) {
 }
 
 s16 func_ov005_022121f8(void) {
- s16 *func_ov005_02211a38(s8);
- extern void *data_ov005_02221300;
+ s16 *HistoryTabAt(s8);
+ extern void *gHistoryMenu;
  s16 old;
  s32 limit;
  void *p;
- p=func_ov005_02211a38(M2C_FIELD(data_ov005_02221300,s8 *,1));
+ p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
  old=M2C_FIELD(p,s16 *,2);
  M2C_FIELD(p,s16 *,2)=old+7;
  limit=M2C_FIELD(p,s16 *,8)-7;
@@ -40,9 +40,9 @@ void func_ov005_02212244(s32 arg0,s32 arg1) {
 }
 #pragma opt_strength_reduction reset
 M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
-    void *func_ov000_0216a38c(M2C_UNK);
-    u32 func_ov000_0216a3a8(M2C_UNK, M2C_UNK);
-    s32 func_ov000_0216a414(M2C_UNK, M2C_UNK);
+    void *GetRecordDefinition(M2C_UNK);
+    u32 GetRecordValue(M2C_UNK, M2C_UNK);
+    s32 GetRecordTier(M2C_UNK, M2C_UNK);
     s32 func_ov005_02211a54(M2C_UNK, M2C_UNK);
     M2C_UNK func_0209b26c(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
     M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, M2C_UNK, s32, s32, s32);
@@ -64,9 +64,9 @@ M2C_UNK func_ov005_022122e0(s32 arg0, s32 arg1) {
     M2C_UNK buf[4];
     M2C_UNK lo[4];
 
-    p = func_ov000_0216a38c(0);
-    money = func_ov000_0216a3a8(0, arg1);
-    status = func_ov000_0216a414(0, arg1);
+    p = GetRecordDefinition(0);
+    money = GetRecordValue(0, arg1);
+    status = GetRecordTier(0, arg1);
     y = (arg0 + 1) * 0x2E + 0x144;
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
@@ -105,13 +105,13 @@ M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b2dc(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b3e8(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
 s32 func_020a7298(u16,M2C_UNK);
-void *func_ov000_0216a38c(M2C_UNK);
-u32 func_ov000_0216a3a8(M2C_UNK,M2C_UNK);
-s32 func_ov000_0216a414(M2C_UNK,M2C_UNK);
+void *GetRecordDefinition(M2C_UNK);
+u32 GetRecordValue(M2C_UNK,M2C_UNK);
+s32 GetRecordTier(M2C_UNK,M2C_UNK);
 s32 func_ov005_02211a54(M2C_UNK,M2C_UNK);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine;
 void *p;u32 money;s32 t,last;u32 saved;
-p=func_ov000_0216a38c(1);money=func_ov000_0216a3a8(1,arg1);t=func_ov000_0216a414(1,arg1);
+p=GetRecordDefinition(1);money=GetRecordValue(1,arg1);t=GetRecordTier(1,arg1);
 last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_ov005_02211a54(1,last)==0){
 func_02080860(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
@@ -129,11 +129,11 @@ M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
 M2C_UNK func_0209b2dc(s32,s16,s32,s32,s32,s32,s32);
 M2C_UNK func_0209b3e8(s32,s16,s32,u32,s32,s32);
 s32 func_020a7298(u16,s32);
-void *func_ov000_0216a38c(s32);
-u32 func_ov000_0216a3a8(s32,s32);s32 func_ov000_0216a414(s32,s32);s32 func_ov005_02211a54(s32,s32);
+void *GetRecordDefinition(s32);
+u32 GetRecordValue(s32,s32);s32 GetRecordTier(s32,s32);s32 func_ov005_02211a54(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 void *p;u32 value;register s32 status,position;void *saved;
-p=func_ov000_0216a38c(2);value=func_ov000_0216a3a8(2,arg1);status=func_ov000_0216a414(2,arg1);
+p=GetRecordDefinition(2);value=GetRecordValue(2,arg1);status=GetRecordTier(2,arg1);
 { s32 index=arg1;
 position=(arg0+1)*46+0x144;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -149,8 +149,8 @@ void func_ov005_02212944(s32 arg0,s32 arg1) {
  M2C_UNK func_ov005_022122e0(s32,s32);
  void func_ov005_02212624(s32,s32);
  void func_ov005_022127b4(s32,s32);
- extern void *data_ov005_02221300;
- switch(M2C_FIELD(data_ov005_02221300,s8 *,1)) {
+ extern void *gHistoryMenu;
+ switch(M2C_FIELD(gHistoryMenu,s8 *,1)) {
  case 0: func_ov005_022122e0(arg0,arg1); return;
  case 1: func_ov005_02212624(arg0,arg1); return;
  case 2: func_ov005_022127b4(arg0,arg1); return;
@@ -159,19 +159,19 @@ void func_ov005_02212944(s32 arg0,s32 arg1) {
 
 #pragma optimization_level 2
 void func_ov005_0221298c(s16 arg0) {
-s16 *func_ov005_02211a38(s8);
+s16 *HistoryTabAt(s8);
 void func_ov005_02212944(s32,s32);
 void func_020809c0(void *,s32,s32);
 void func_0209c048(s32,s16,void *,s32,s32,s32);
 void func_0209c024(s32,s16,void *,s32,s32,s32);
 s32 func_020a8b78(void);
-extern void *data_ov005_02221300;
+extern void *gHistoryMenu;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 *p;
 void *saved;
 s32 a,f,b,e,c,d;
 s32 value;
-p=func_ov005_02211a38(M2C_FIELD(data_ov005_02221300,s8 *,1));
+p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 func_020809c0((u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x24)+0x140,0x20,0xe);
@@ -200,7 +200,7 @@ gCur3DSpriteEngine=saved;
 #pragma opt_strength_reduction off
 #pragma opt_dead_code off
 void func_ov005_02212b40(void){
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*data_ov005_02221300;
+extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*gHistoryMenu;
 extern u8 data_ov005_0222028c[],data_ov005_0222029c[];
 void *func_020e34bc(s32);
 void *saved,*buffer;
@@ -216,7 +216,7 @@ func_020816cc(data_ov005_0222029c,buffer,0,0);
 func_02081528();
 i=0;offset=0;
 do{
-if(M2C_FIELD((u8 *)data_ov005_02221300+i,u8 *,0x40)){
+if(M2C_FIELD((u8 *)gHistoryMenu+i,u8 *,0x40)){
 tile=(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x20)+offset*2+0x340;
 func_02080a14(tile,4,8,(u8 *)buffer+offset*2);
 j=0;row=0;
@@ -231,14 +231,14 @@ i++;offset+=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 func_020e35cc(buffer);
 func_01ff9d88(1);
-func_0209c048(26,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(data_ov005_02221300,u16 *,0x2e),0x9000,0);
+func_0209c048(26,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x2e),0x9000,0);
 func_0209c024(27,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),func_020a8b78(),0x9000,0);
-func_0209c048(30,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(data_ov005_02221300,u16 *,0x30),0x9000,0);
+func_0209c048(30,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x30),0x9000,0);
 func_0209b59c((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,0x60);
-func_0209b5c4((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,M2C_FIELD(data_ov005_02221300,s32 *,0x34));
+func_0209b5c4((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,M2C_FIELD(gHistoryMenu,s32 *,0x34));
 func_0209b59c((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,0x60);
-func_0209b5c4((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,M2C_FIELD(data_ov005_02221300,s32 *,0x38));
-func_ov000_0216a30c(M2C_FIELD(data_ov005_02221300,s8 *,0x32),0x1a80,9);
+func_0209b5c4((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,M2C_FIELD(gHistoryMenu,s32 *,0x38));
+func_ov000_0216a30c(M2C_FIELD(gHistoryMenu,s8 *,0x32),0x1a80,9);
 M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
@@ -295,16 +295,16 @@ void func_ov005_02212e88(void) {
 }
 
 void func_ov005_02212ef0(void) {
-    s16 *func_ov005_02211a38(s8);
+    s16 *HistoryTabAt(s8);
     M2C_UNK func_ov005_02211a8c();
 
     void func_ov005_02212db8();
     void func_ov005_02212e20();
     void func_ov005_02212e88();
-    extern void *data_ov005_02221300;
+    extern void *gHistoryMenu;
     s8 temp_r0;
 
-    temp_r0 = M2C_FIELD(data_ov005_02221300, s8 *, 1);
+    temp_r0 = M2C_FIELD(gHistoryMenu, s8 *, 1);
     switch (temp_r0) {                              /* irregular */
     case 0:
         func_ov005_02212db8();
@@ -316,22 +316,22 @@ void func_ov005_02212ef0(void) {
         func_ov005_02212e88();
         break;
     }
-    func_ov005_0221298c(*func_ov005_02211a38(M2C_FIELD(data_ov005_02221300, s8 *, 1)));
+    func_ov005_0221298c(*HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1)));
     func_ov005_02211a8c();
 }
 
 #pragma opt_common_subs off
 void func_ov005_02212f54(void) {
-s16 *func_ov005_02211a38(s8);s32 func_02001fb4(s32,s32);
+s16 *HistoryTabAt(s8);s32 func_02001fb4(s32,s32);
 void func_0208dd7c(s16,s16,s16,s16,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 void *func_02086680(s32);s32 func_0209c268(void *);
 void func_0209b67c(u16,s16,s32,u16,s32);
 void func_ov000_0216a374(u16,u16,u16,s32);
-extern void *data_ov005_02221300,*gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
+extern void *gHistoryMenu,*gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern u8 data_027e0064[];
 s16 *p;void *saved;s32 total,amount,ratio,left,height,width;u16 attr; s32 text;
-p=func_ov005_02211a38(M2C_FIELD(data_ov005_02221300,s8 *,1));
+p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 total=p[4]<<12;amount=p[1]<<12;
 ratio=func_02001fb4(0x73000,total);
@@ -343,9 +343,9 @@ attr=(u16)(((0x140 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17
 func_0208dd7c(248,(s16)((height>>12)+40),2,(s16)width,attr,0,2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 AddSprite(174,9,(u16)(((0xa0 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x8000),data_027e0064,0);
-text=func_0209c268(func_02086680(M2C_FIELD(data_ov005_02221300,s32 *,0x34)));
+text=func_0209c268(func_02086680(M2C_FIELD(gHistoryMenu,s32 *,0x34)));
 func_0209b67c((u16)((252-text)&511),30,96,(u16)(((0xa4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
-text=func_0209c268(func_02086680(M2C_FIELD(data_ov005_02221300,s32 *,0x38)));
+text=func_0209c268(func_02086680(M2C_FIELD(gHistoryMenu,s32 *,0x38)));
 func_0209b67c((u16)((252-text)&511),54,96,(u16)(((0xbc >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x2000),0);
 func_ov000_0216a374(220,78,(u16)(((0xd4 >> ((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&0x3ff)|0x9000),0);
 gCur3DSpriteEngine=saved;

@@ -208,7 +208,7 @@ void func_020aab24(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, void **, 0x64) = temp_r0;
     func_020aad18(arg0);
 }
-void func_020aacf0(void *arg0) {
+void MenuSpriteUpdate(void *arg0) {
     M2C_UNK func_02088044(s32);
     s32 func_02089064();
     void func_020aaeb0(void *);
@@ -322,10 +322,10 @@ M2C_UNK *func_020aaf74(void) {
 void func_020aaf80(void *arg0) {
     s32 func_01ffa14c(void *);s32 func_020890d4(void *);s32 func_02089080(void *);
     s32 func_020ad3f0(void);u8 func_020ab2a4(void);
-    void func_020aacf0(void *);void func_020aaeb0(void *);
+    void MenuSpriteUpdate(void *);void func_020aaeb0(void *);
     u16 func_020ab194(void *);void func_020819e8(u16);
     void *func_020aa93c(u32);
-    extern volatile u16 *data_02101e84;
+    extern volatile u16 *gKeyState;
     void *p=M2C_FIELD(arg0,void **,0x34);
     void *q;
     u32 cond,frame,bits;
@@ -340,7 +340,7 @@ void func_020aaf80(void *arg0) {
     cond=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0?1:0;
     if(!(cond&255))goto fail;
     if(func_020ab2a4()!=0)goto fail;
-    func_020aacf0(p);
+    MenuSpriteUpdate(p);
     q=M2C_FIELD(p,void **,0x64);
     cond=1;
     if(M2C_FIELD(q,s8 *,11)!=1 &&
@@ -356,9 +356,9 @@ void func_020aaf80(void *arg0) {
         return;
     }
     if(func_020ab194(p)==0)return;
-    keys=data_02101e84[0];
+    keys=gKeyState[0];
     if(M2C_FIELD(func_020aa93c((u32)(M2C_FIELD(p,u8 *,0x58)<<25)>>25),u32 *,8)&16)
-        keys=data_02101e84[1];
+        keys=gKeyState[1];
     if(!(keys&func_020ab194(p)))return;
     if(M2C_FIELD(p,s8 *,0x5a)<0)return;
     frame=(u16)(((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+1);

@@ -148,7 +148,7 @@ base=*gCurrentMap;
 }
 
 void func_01ffb454(s32 arg0) {
-extern u8 data_ov000_021b5bfc[]; extern u8 data_0212616c[]; extern s8 *data_027e00cc; extern void **data_027e0058; extern u8 data_02168f08[];
+extern u8 data_ov000_021b5bfc[]; extern u8 gMovementCostTable[]; extern s8 *data_027e00cc; extern void **data_027e0058; extern u8 data_02168f08[];
 s32 func_020a33c4(s32);
 s32 i; u8 *unit=data_ov000_021b5bfc+arg0*0x70;
 for(i=0;i<32;i++) {
@@ -160,7 +160,7 @@ s32 type;
 s8 *table;
 variant=(u32)(M2C_FIELD(data_02168f08,u16 *,12)<<18)>>31; if(variant) variant=((UnkB454Bits *)(entry+0x6c))->value;
 type=func_020a33c4(index);
-table=M2C_FIELD(data_0212616c+variant*0x9c+type*0x28+entry[0x25]*4,s8 **,0x64);
+table=M2C_FIELD(gMovementCostTable+variant*0x9c+type*0x28+entry[0x25]*4,s8 **,0x64);
 data_027e00cc[i]=(table+unit[0x12]*32)[i];
 }
 }

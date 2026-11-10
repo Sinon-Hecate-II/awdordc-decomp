@@ -21,7 +21,7 @@ void func_ov000_02175310(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x50) = func_020a7310(p);
     c = func_020a7310(p);
     M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0x0) = (s32)M2C_FIELD((c * 0x8C) + *gCurrentMap, u8 *, 0x67CD);
-    if (func_020a7cfc(p) != 0) {
+    if (IsUnitSelected(p) != 0) {
         c2 = func_020a7310(p);
         M2C_FIELD(M2C_FIELD(self, void **, 0x10), s32 *, 0xC) = (s32)((UnitByte75310 *)((c2 * 0x8C) + *gCurrentMap + 0x6810))->value;
     } else {

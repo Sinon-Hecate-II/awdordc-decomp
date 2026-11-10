@@ -103,10 +103,10 @@ func_ov000_021a07c0(r);return 1;
 
 u8 func_ov000_021a3484(s32 a) {
 extern M2C_UNK data_ov000_021b5bfc;
-extern M2C_UNK data_0212616c;
+extern M2C_UNK gMovementCostTable;
 u8 result;
 u32 row = M2C_FIELD(&data_ov000_021b5bfc,u8 *,0xa92);
-s8 *table = M2C_FIELD(&data_0212616c, s8 **, 0x64) + row*32;
+s8 *table = M2C_FIELD(&gMovementCostTable, s8 **, 0x64) + row*32;
 if (table[a&31] > 0) result=1; else result=0;
 return result;
 }

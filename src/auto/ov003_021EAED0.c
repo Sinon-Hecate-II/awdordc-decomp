@@ -47,7 +47,7 @@ void func_ov003_021ebae0(void *arg0) {
     void *temp_r0;
 
     M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) | 0x80);
-    func_0208fe30(0x1000D);
+    PlaySoundEffect(0x1000D);
     temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), void **, 4);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
@@ -174,13 +174,13 @@ void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {
 void func_ov003_021ebdf4(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
     M2C_UNK func_02088da8(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6e40();
     M2C_UNK func_ov003_021e891c(void *);
     M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) & ~0x80);
-    func_0208fe30(0x1000F);
+    PlaySoundEffect(0x1000F);
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x58));
     func_02088da8(M2C_FIELD(arg0, s32 *, 0x5C));
     func_ov003_021f140c(2);
@@ -196,15 +196,15 @@ void func_ov003_021ebdf4(void *arg0) {
 }
 
 void func_ov003_021ebe60(void *arg0) {
- M2C_UNK func_020aacf0(s32);
+ M2C_UNK MenuSpriteUpdate(s32);
  u8 i;
- func_020aacf0(M2C_FIELD(arg0,s32 *,0));
- func_020aacf0(M2C_FIELD(arg0,s32 *,4));
+ MenuSpriteUpdate(M2C_FIELD(arg0,s32 *,0));
+ MenuSpriteUpdate(M2C_FIELD(arg0,s32 *,4));
  for(i=0;(u32)i<4U;i++) {
-  func_020aacf0(((s32 *)(arg0+8))[i]);
-  func_020aacf0(((s32 *)(arg0+0x18))[i]);
-  func_020aacf0(((s32 *)(arg0+0x28))[i]);
-  func_020aacf0(((s32 *)(arg0+0x38))[i]);
+  MenuSpriteUpdate(((s32 *)(arg0+8))[i]);
+  MenuSpriteUpdate(((s32 *)(arg0+0x18))[i]);
+  MenuSpriteUpdate(((s32 *)(arg0+0x28))[i]);
+  MenuSpriteUpdate(((s32 *)(arg0+0x38))[i]);
  }
 }
 

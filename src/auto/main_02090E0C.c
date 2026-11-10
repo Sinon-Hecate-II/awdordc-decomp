@@ -734,20 +734,20 @@ void func_02091bf4(void) {
 
 #pragma peephole off
 void func_02091c20(s32 index,s32 value) {
-extern u32 data_0215da2c[];
-if(value+data_0215da2c[index]<0xf423fU) { data_0215da2c[index]=data_0215da2c[index]+value; return; }
-data_0215da2c[index]=0xf423fU;
+extern u32 gRecordValues[];
+if(value+gRecordValues[index]<0xf423fU) { gRecordValues[index]=gRecordValues[index]+value; return; }
+gRecordValues[index]=0xf423fU;
 }
 #pragma peephole off
 void func_02091c54(s32 index,s32 value) {
-extern u32 data_0215da2c[];
-if(value+data_0215da2c[index]<0x5f5e0ffU) { data_0215da2c[index]=data_0215da2c[index]+value; return; }
-data_0215da2c[index]=0x5f5e0ffU;
+extern u32 gRecordValues[];
+if(value+gRecordValues[index]<0x5f5e0ffU) { gRecordValues[index]=gRecordValues[index]+value; return; }
+gRecordValues[index]=0x5f5e0ffU;
 }
 #pragma peephole reset
 M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
-    extern unsigned int data_0215da2c[];
-    data_0215da2c[arg0] = (unsigned int)arg1;
+    extern unsigned int gRecordValues[];
+    gRecordValues[arg0] = (unsigned int)arg1;
 }
 
 void func_02091c98(void) {

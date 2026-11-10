@@ -24,7 +24,7 @@ static inline ScriptPlayer16 *ScriptPlayerAt16(s32 n) { extern s32 *gCurrentMap;
  * skipped with SkipToNextConditionGroup; when applyEffects is set the action commands
  * of a satisfied group are also executed. */
 s32 EvalScriptConditions(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
-u8 *SkipToNextConditionGroup(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 func_020a7cfc(); s32 func_020a32f4();
+u8 *SkipToNextConditionGroup(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 IsUnitSelected(); s32 GetPlayerSelectedUnit();
 extern s32 *gCurrentMap;
 s32 (*conditionFn)(); s32 matched=0; s32 turnMatches;
 while(cmd[0]!=34) {
@@ -48,12 +48,12 @@ if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd
 case 26:
 if(!unit || cmd[1]!=(((unit?((ScriptUnit16*)unit-ScriptUnitAt16(0)):0)>>6)+1))cmd=SkipToNextConditionGroup(cmd);break;
 case 27:if(!unit || ((ScriptUnit16*)unit)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd);break;
-case 28:if(!unit || !func_020a7cfc(unit))cmd=SkipToNextConditionGroup(cmd);break;
+case 28:if(!unit || !IsUnitSelected(unit))cmd=SkipToNextConditionGroup(cmd);break;
 case 29:
 if(!target || cmd[1]!=(((target?((ScriptUnit16*)target-ScriptUnitAt16(0)):0)>>6)+1))cmd=SkipToNextConditionGroup(cmd);break;
 case 30:if(!target || ((ScriptUnit16*)target)->kind!=cmd[1])cmd=SkipToNextConditionGroup(cmd);break;
-case 31:if(!target || !func_020a7cfc(target))cmd=SkipToNextConditionGroup(cmd);break;
-case 32:if(!func_020a32f4(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 31:if(!target || !IsUnitSelected(target))cmd=SkipToNextConditionGroup(cmd);break;
+case 32:if(!GetPlayerSelectedUnit(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
 case 33:if(ScriptPlayerAt16(cmd[1])->flag)cmd=SkipToNextConditionGroup(cmd);break;
 case 12:case 13:case 14:if(cmd[1]!=teamId)cmd=SkipToNextConditionGroup(cmd);break;
 case 6:case 7:case 8:if(!func_02086b40(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;

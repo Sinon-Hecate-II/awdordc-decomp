@@ -2,9 +2,9 @@
 #include "common.h"
 
 void func_ov007_02219acc(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
-    func_0208fe30(0x10020);
+    PlaySoundEffect(0x10020);
 }
 
 void func_ov007_02219ae8(void *arg0) {

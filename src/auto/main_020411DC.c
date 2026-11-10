@@ -51,11 +51,11 @@ if(update&&M2C_FIELD(GetConnection(),u8*,21)!=3)func_02061738(M2C_FIELD(GetConne
 }
 
 s32 func_0204183c(s32 *p,u32 n) {
- s32 func_020428bc();
+ s32 IsConnectionMember();
  u32 i;
  if(M2C_FIELD(GetConnection(),u8*,0x1a6)!=0 && M2C_FIELD(GetConnection(),s32*,0x1a0)==4)return 1;
  for(i=0;i<n;i++) {
- if(!func_020428bc(p[i]))return 0;
+ if(!IsConnectionMember(p[i]))return 0;
  if(M2C_FIELD(GetConnection(),u8*,0x1a6)!=0 && M2C_FIELD(GetConnection(),s32*,0x1a0)==1)return 1;
  }return 1;
 }

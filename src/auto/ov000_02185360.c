@@ -156,7 +156,7 @@ s32 func_ov000_02185fb8(u8 *a,u8 *b,s32 c){
 void func_ov000_02186070(u8 a, s32 b) {
  extern u16 gPlayerUnitIdBase[];
  s32 func_ov000_021a98e4(s32);
- s32 func_020a7cfc(void *);
+ s32 IsUnitSelected(void *);
  s32 func_ov000_021a97d0(u32,u32);
  s32 func_ov000_021a97e0(s32,u32);
  void func_01ffada0(s32,s32,s32,s32,s32);
@@ -170,7 +170,7 @@ void func_ov000_02186070(u8 a, s32 b) {
  if(!((u32)(p[0]<<26)>>26))continue;
  if(func_ov000_021a98e4((u32)(p[0]<<26)>>26))continue;
  if(M2C_FIELD(p,u16 *,4)&8)continue;
- if(func_020a7cfc(p))continue;
+ if(IsUnitSelected(p))continue;
  if(!func_ov000_021a97d0((u32)(p[0]<<26)>>26,(u32)(q[0]<<26)>>26))continue;
  if(!func_ov000_02185fb8(q,p,0))continue;
  if(p){if(p == 0)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;n=(n>>6)+1;}else n=0;

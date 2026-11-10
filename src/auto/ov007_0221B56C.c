@@ -179,10 +179,10 @@ s32 func_ov007_0221bcc0(s32 a,s32 b) {
 
 u8 func_ov007_0221bd00(s32 a,s32 b,s32 c) {
  extern s32 *gCurrentMap;
- extern u8 data_0212616c[];
- extern u8 data_ov000_021b5c0e[];
+ extern u8 gMovementCostTable[];
+ extern u8 gMovementTypeTable[];
  s32 p=*gCurrentMap;
- return M2C_FIELD(M2C_FIELD(data_0212616c,s8 **,0x64)+data_ov000_021b5c0e[c*0x70]*32,s8 *,M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=-1;
+ return M2C_FIELD(M2C_FIELD(gMovementCostTable,s8 **,0x64)+gMovementTypeTable[c*0x70]*32,s8 *,M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=-1;
 }
 
 s32 func_ov007_0221bd74(s32 a,s32 b) {

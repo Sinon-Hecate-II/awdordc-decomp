@@ -18,7 +18,7 @@ typedef struct {
 } SaveInit;
 typedef struct { u8 enabled:1; u8 mode:3; u8 unused:4; } SaveFlags;
 typedef struct { u16 low:7; u16 mode:3; u16 high:6; } SaveMode;
-extern M2C_UNK data_0215d890, data_0215deec, data_0212616c;
+extern M2C_UNK data_0215d890, data_0215deec, gMovementCostTable;
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
@@ -88,7 +88,7 @@ func_020bfa08();func_020bfa48();
 
 void func_020bf814(s32 a){
 void func_020bf8ac(s32,s32);
-s32 i;u8 *p=(u8 *)&data_0212616c;
+s32 i;u8 *p=(u8 *)&gMovementCostTable;
 i=0;do{if(a==M2C_FIELD(p,u16 *,0x24))func_020bf8ac(i,1);i++;p+=0x9c;}while(i<15);
 }
 

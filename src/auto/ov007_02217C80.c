@@ -42,7 +42,7 @@ void func_ov007_02217cd0(void *arg0) {
 #pragma opt_common_subs off
 s32 func_ov007_02217d30(void *arg0) {
     s8 *func_ov007_02217b64(u8);
-    extern u32 *data_02101e84;
+    extern u32 *gKeyState;
     u16 *g;
     s32 idx;
     u8 *indices;
@@ -57,7 +57,7 @@ s32 func_ov007_02217d30(void *arg0) {
     table = (u8 *)func_ov007_02217b64(mode);
     mode=M2C_FIELD(arg0,u8 *,0x37);
     indices = (u8 *)arg0 + 0x3A;
-    g = (u16 *)data_02101e84;
+    g = (u16 *)gKeyState;
     idx = indices[mode];
     flags=g[1];
     candidate=idx;
@@ -338,11 +338,11 @@ void func_ov007_02217f8c(void *arg0) {
     sp8 = temp_r2_6 + 0x12;
     M2C_FIELD(temp_r2_6, s16 *, 0x12) = (s16) (*sp8 & ~0x1000);
     data_027e01d8 = temp_r5;
-    func_0208fe30(0x10017);
+    PlaySoundEffect(0x10017);
 }
 
 void func_ov007_02218570(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_ov007_02211ea4(u8);
     M2C_UNK func_ov007_02211f10(M2C_UNK);
     M2C_UNK func_ov007_02211f60();
@@ -350,7 +350,7 @@ void func_ov007_02218570(void *arg0) {
     M2C_UNK func_ov007_02211fb0();
     M2C_UNK func_ov007_02211fc0();
     M2C_UNK func_ov007_02217bd0(M2C_UNK, u8);
-    M2C_UNK func_ov007_02217be8(M2C_UNK, u8, u8);
+    M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
     M2C_UNK func_ov007_0221ab4c();
     u8 temp_r0;
     void *temp_r2;
@@ -377,16 +377,19 @@ void func_ov007_02218570(void *arg0) {
             break;
         }
         func_ov007_0221ab4c();
-        func_0208fe30(0x10016);
+        PlaySoundEffect(0x10016);
     } else {
-        func_0208fe30(0x1000F);
+        PlaySoundEffect(0x1000F);
     }
     M2C_FIELD(arg0, s8 *, 0x35) = 1;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
 void func_ov007_0221863c(void *arg0) {
     s8 *func_ov007_02217b64(u8);
-    M2C_UNK func_ov007_02217be8(M2C_UNK, u8, u8);
+    M2C_UNK func_ov007_02217be8(M2C_UNK, s32, u8);
     s32 func_ov007_02217c50(void *);
     void *MemAlloc(s32);
     M2C_UNK MemFree(void *);
@@ -409,7 +412,6 @@ void func_ov007_0221863c(void *arg0) {
     void *r4;
     void *node0;
     void *node1;
-    s8 *table;
     u8 mode;
     void *savedEngine;
 
@@ -450,7 +452,9 @@ void func_ov007_0221863c(void *arg0) {
     node1 = MemAlloc(0x24);
     if (node1 != NULL) {
         void *buf;
+        s32 size;
         s32 c = func_ov007_02217c50(arg0);
+        size = c*12;
         M2C_FIELD(node1, u16 *, 0x10) = (u16)c;
         M2C_FIELD(node1, u8 *, 0x12) = 0;
         M2C_FIELD(node1, s32 *, 0x0) = 0;
@@ -463,89 +467,61 @@ void func_ov007_0221863c(void *arg0) {
         M2C_FIELD(node1, s8 *, 0xC) = -1;
         M2C_FIELD(node1, u8 *, 0xE) = 0;
         M2C_FIELD(node1, u8 *, 0xF) = 0xFF;
-        buf = func_020e34bc(c * 12);
+        buf = func_020e34bc(size);
         M2C_FIELD(node1, void **, 0x14) = buf;
-        func_02007f8c(buf, 0, c * 12);
+        func_02007f8c(buf, 0, size);
     }
     M2C_FIELD(arg0, void **, 0x5C) = node1;
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
 
-    mode = M2C_FIELD(arg0, u8 *, 0x37);
-    table = func_ov007_02217b64(mode);
-
-    if (mode == 0) {
-        s8 *p;
-        s32 r9;
-        u8 *eng1c;
-        eng1c = (u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x1C);
-        for (p = table, r9 = 0; (s8)p[0] >= 0; p += 5, r9++) {
-            u8 row = M2C_FIELD((u8 *)arg0 + mode, u8 *, 0x38);
-            M2C_UNK vBe8 = func_ov007_02217be8(mode, (u8)r9, row);
-            s32 v0 = func_ov000_0216cda4(p[0]);
-            void *v1 = func_ov000_0216cdcc(p[0]);
-            void *v2 = func_ov000_0216cdec(p[0], (s32)vBe8);
-            func_02007ef4(v1, eng1c + 0x7b80 + r9 * 0x300, 0x100);
-            func_02007ef4((void *)v0, eng1c + (0x3dc + r9 * 0x18 + 8) * 0x20, 0x200);
-            func_01ff9e44((M2C_UNK)v2, (p[3] + 0x16) * 0x20, 0x20);
-            func_02087d18((M2C_UNK)M2C_FIELD(arg0, void **, 0x58),
-                (s16)(p[1] * 0x24 + 2),
-                (s16)(p[2] * 0x20 + 8),
-                0x24, 0x20, r9, 0xe);
-            (void)vBe8;
-        }
-    } else if (mode == 1) {
-        s8 *p;
-        s32 r5;
-        u8 *eng1c;
-        M2C_UNK lastBe8 = 0;
-        eng1c = (u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x1C);
-        for (p = table, r5 = 0; (s8)p[0] >= 0; p += 5, r5++) {
-            u8 row = M2C_FIELD((u8 *)arg0 + mode, u8 *, 0x38);
-            M2C_UNK vBe8 = func_ov007_02217be8(mode, (u8)r5, row);
-            s8 t = p[0];
-            void *inner = *gCurrentMap;
-            void *first = *(void **)inner;
-            u8 *entry = (u8 *)first + r5 * 0x8c + 0x6000;
-            u8 mapByte = entry[0x7cd];
-            s32 cd4c = func_ov000_0216cd4c(t);
-            void *cd78 = func_ov000_0216cd78(t, mapByte);
-            func_02007ef4(cd78, eng1c + 0x7b80 + r5 * 0x180, 0x80);
-            func_02007ef4((void *)cd4c, eng1c + (0x3e0 + r5 * 0xc) * 0x20, 0x100);
-            func_02087d18((M2C_UNK)M2C_FIELD(arg0, void **, 0x58),
-                (s16)(p[1] * 0x24 + 2),
-                (s16)(p[2] * 0x20 + 8),
-                0x24, 0x20, r5, 0xe);
-            lastBe8 = vBe8;
-        }
-        if (lastBe8 != 0) {
-            void *cd90res = func_ov000_0216cd90((s32)lastBe8);
-            func_01ff9e44((M2C_UNK)cd90res, 0x2c0, 0x20);
-        }
-    }
 
     {
-        s32 c = func_ov007_02217c50(arg0);
-        s32 r7;
-        s32 r8 = 0x8;
-        if (c > 0) {
-            for (r7 = 0; r7 < c; r7++) {
-                func_02087d18((M2C_UNK)M2C_FIELD(arg0, void **, 0x5C),
-                    (s16)r8,
-                    0x8c,
-                    0x10,
-                    0x10,
-                    r7,
-                    0xe);
-                r8 += 0x18;
-            }
+    s32 tile=0x3dc;
+    s8 *table;
+    s32 offset, i, selected;
+    i=0;
+    table = func_ov007_02217b64(M2C_FIELD(arg0,u8 *,0x37));
+    switch(M2C_FIELD(arg0,u8 *,0x37)) {
+    case 0:
+        offset=0x7b80;
+        for(;table[0]>=0;table+=5,i++) {
+            s32 id=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
+            s32 v0=func_ov000_0216cda4(table[0]);
+            void *v1=func_ov000_0216cdcc(table[0]);
+            void *v2=func_ov000_0216cdec(table[0],id);
+            func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x100);
+            func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+8)*32,0x200);
+            offset+=0x300; tile+=0x18;
+            func_01ff9e44((s32)v2,((u8)table[3]+0x16)*32,0x20);
+            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
         }
+        break;
+    case 1:
+        offset=0x7b80;
+        for(;table[0]>=0;table+=5,i++) {
+            s32 v0;
+            void *v1;
+            u8 variant;
+            selected=func_ov007_02217be8(M2C_FIELD(arg0,u8 *,0x37),i,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
+            variant=M2C_FIELD((u8 *)*gCurrentMap+selected*140+0x6000,u8 *,0x7cd);
+            v0=func_ov000_0216cd4c(table[0]);
+            v1=func_ov000_0216cd78(table[0],variant);
+            func_02007ef4(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
+            func_02007ef4((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);
+            offset+=0x180; tile+=12;
+            func_02087d18((s32)M2C_FIELD(arg0,void **,0x58),(s16)((u8)table[1]*36+2),(s16)((u8)table[2]*32+8),36,32,(u16)i,14);
+        }
+        func_01ff9e44((s32)func_ov000_0216cd90(selected),0x2c0,32);
+        break;
     }
-
-    gCur3DSpriteEngine = savedEngine;
+    for(i=0;i<func_ov007_02217c50(arg0);i++)
+        func_02087d18((s32)M2C_FIELD(arg0,void **,0x5c),(s16)(i*24+8),140,16,16,(u16)i,14);
+    }
+    gCur3DSpriteEngine=savedEngine;
 }
-
+#pragma pop
 void func_ov007_02218a60(void *arg0) {
     M2C_UNK MemFree(void *);
     M2C_UNK func_020a40c0(u8);

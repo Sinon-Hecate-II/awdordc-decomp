@@ -12,7 +12,7 @@ void func_ov007_0221e568(u8 *arg0) {
     M2C_UNK func_0207c8ec(u8, M2C_UNK);
     M2C_UNK func_0207c928(u8, M2C_UNK);
     M2C_UNK func_020b1c60(u8);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     M2C_UNK func_ov007_0221e010(void);
     extern u8 data_ov007_0221f5a4[];
     u16 temp_r5;
@@ -20,8 +20,8 @@ void func_ov007_0221e568(u8 *arg0) {
     u8 var_r7;
     u8 *ptr;
 
-    temp_r5 = data_02101e84[0];
-    temp_r6 = data_02101e84[1];
+    temp_r5 = gKeyState[0];
+    temp_r6 = gKeyState[1];
     var_r7 = *arg0;
     ptr = arg0;
     if (temp_r5 & 1) {
@@ -77,8 +77,8 @@ block_15:
 }
 
 void func_ov007_0221e6bc(void) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(0x10019);
+    M2C_UNK PlaySoundEffect(s32);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov007_0221e6d0(void *arg0) {

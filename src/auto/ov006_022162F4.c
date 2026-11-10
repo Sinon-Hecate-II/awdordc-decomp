@@ -8,11 +8,11 @@ void func_ov006_022162f4(void *arg0) {
     s32 func_0207c8ec(s32, M2C_UNK);
     s32 func_0207c928(u8, M2C_UNK);
     M2C_UNK func_02088044(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK UpdateSpriteAnimation(void *);
     M2C_UNK func_020b1c60(M2C_UNK);
     extern s8 data_ov006_02218e10[];
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     register void *p asm("r6") = arg0;
     s8 var_r4;
     u16 temp_r0;
@@ -34,8 +34,8 @@ void func_ov006_022162f4(void *arg0) {
     UpdateSpriteAnimation(M2C_FIELD(p, void **, 0x48));
     func_02088044(M2C_FIELD(p, void **, 0x40));
     var_r4 = M2C_FIELD(p, s8 *, 0x38);
-    temp_r0 = data_02101e84[0];
-    temp_r1 = data_02101e84[1];
+    temp_r0 = gKeyState[0];
+    temp_r1 = gKeyState[1];
     if (temp_r0 & 2) {
         func_020b1c60(0xC);
         return;
@@ -60,7 +60,7 @@ void func_ov006_022162f4(void *arg0) {
                 }
                 data_ov006_02218e10[0xB] = 0;
             }
-            func_0208fe30(0x1000D);
+            PlaySoundEffect(0x1000D);
             return;
         }
         if ((var_r4 == 0) && (data_ov006_02218e10[var_r4] != 0)) {
@@ -73,10 +73,10 @@ void func_ov006_022162f4(void *arg0) {
                 } while ((s32) var_r4 < 0xB);
             }
             data_ov006_02218e10[0xB] = 0;
-            func_0208fe30(0x1000D);
+            PlaySoundEffect(0x1000D);
             return;
         }
-        func_0208fe30(0x1001D);
+        PlaySoundEffect(0x1001D);
         return;
     }
     if (temp_r0 & 8) {
@@ -131,7 +131,7 @@ block_58:
     if (var_r4 == M2C_FIELD(p, s8 *, 0x38)) {
         return;
     }
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_ov006_0221661c(void *spriteList) {

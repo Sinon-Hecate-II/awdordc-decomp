@@ -146,7 +146,7 @@ func_ov000_0219c7ec(n);
 }
 
 void func_ov000_0219cdf4(void) {
-    s32 func_020a7cfc(s32);
+    s32 IsUnitSelected(s32);
     extern s32 *gCurrentMap;
     extern u8 data_ov000_021df824;
     unsigned var_r4;
@@ -164,7 +164,7 @@ void func_ov000_0219cdf4(void) {
 loop_1:
     temp_r1 = *var_r6;
     if (temp_r1) {
-        if (func_020a7cfc((temp_r1 * 0xE) + (*gCurrentMap + 0x59A4)) != 0) {
+        if (IsUnitSelected((temp_r1 * 0xE) + (*gCurrentMap + 0x59A4)) != 0) {
             var_r7 = var_r4;
             var_r5 = (&data_ov000_021df824)[var_r4];
         } else {

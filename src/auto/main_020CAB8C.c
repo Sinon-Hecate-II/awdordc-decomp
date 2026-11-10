@@ -51,7 +51,7 @@ s32 func_020cad1c(s32 *arg0, s32 arg1) {
     s32 func_020cac1c(s32, s32);
     s32 func_020cac3c(s32, s32);
     void func_020bda88(s32 *, s32);
-    void func_0208fe30(s32);
+    void PlaySoundEffect(s32);
     void func_020cf5ec(s32);
     s32 func_020bcb94(void);
     s32 func_020bdbf4(s32);
@@ -75,7 +75,7 @@ s32 func_020cad1c(s32 *arg0, s32 arg1) {
     func_020bda88(&sp0, arg1);
     if (sp0 != old) {
         *arg0 = sp0;
-        func_0208fe30(0x1001A);
+        PlaySoundEffect(0x1001A);
     }
     map = *gCurrentMap;
     M2C_FIELD(map, s16 *, 0x52C2) = (s16)(M2C_FIELD(map, s16 *, 0x52DC) + data_0212b1ba[sp0 * 4]);

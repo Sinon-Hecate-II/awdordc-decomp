@@ -11,7 +11,7 @@ if(func_02038f6c()==5&&M2C_FIELD(GetConnection(),s32 *,416)==1&&peer==M2C_FIELD(
 switch(type){
 case 1:case 11:
 if(M2C_FIELD(GetConnection(),u8 *,21)){a=payload[1];b=(u16)payload[2];}
-count=func_02040340(peer,a,b,payload[0],type==11);
+count=ConnectionHandleJoin(peer,a,b,payload[0],type==11);
 if(count==2){
 M2C_FIELD(GetConnection(),s32 *,476)=0;func_0204063c(peer,a,b);if(func_0204084c())return 0;
 if(M2C_FIELD(GetConnection(),u8 *,21)==2&&M2C_FIELD(GetConnection(),s32 *,1132)){p=GetConnection();i=func_0203aeb4(peer);M2C_FIELD(p,void (**)(s32,s32),1132)(i,M2C_FIELD(GetConnection(),s32 *,1136));}
@@ -63,7 +63,7 @@ break;
 case 7:
 if(M2C_FIELD(GetConnection(),s32 *,416)!=1||M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
 packet0=payload[0];j=(u8)payload[1];
-if(M2C_FIELD(GetConnection(),u8 *,21)==1&&!M2C_FIELD(GetConnection(),u8 *,422)){packet[0]=func_020428bc(packet0);func_0203f058(32,peer,a,b,packet,1);if(func_0204084c())return 0;}
+if(M2C_FIELD(GetConnection(),u8 *,21)==1&&!M2C_FIELD(GetConnection(),u8 *,422)){packet[0]=IsConnectionMember(packet0);func_0203f058(32,peer,a,b,packet,1);if(func_0204084c())return 0;}
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i*4,s32 *,244)=packet0;
 p=GetConnection();i=M2C_FIELD(GetConnection(),u8 *,20)+1;M2C_FIELD((u8 *)p+i,u8 *,720)=j;
 func_0205ea70(M2C_FIELD(GetConnection(),s32 *,16));

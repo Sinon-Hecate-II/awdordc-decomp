@@ -104,10 +104,10 @@ void func_ov000_0216e09c(u8 arg0) {
 
 void func_ov000_0216e0d0(u8 *arg0) {
     extern void *data_ov000_021df5e0;
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     void func_ov000_0216e054(void);
     if (M2C_FIELD(data_ov000_021df5e0, u8 *, 0xD) == *arg0) return;
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
     func_ov000_0216e09c(*arg0);
     func_ov000_0216e054();
 }

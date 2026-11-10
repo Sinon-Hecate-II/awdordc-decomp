@@ -9,7 +9,7 @@ void func_020b9c8c(u8 *arg0) {
  M2C_UNK func_020e3218(void *); void func_020814e4(void);
  void func_02081590(M2C_UNK,M2C_UNK); void func_020815fc(M2C_UNK,s32,s32); void func_02081528(void);
  void func_01ff85b8(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
- void func_0208fe30(s32); void func_020b9558(u8); void func_020c0fac(void *);
+ void PlaySoundEffect(s32); void func_020b9558(u8); void func_020c0fac(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK data_021291f0; extern M2C_UNK data_021291f8;
  extern M2C_UNK data_0212920c; extern M2C_UNK data_0212921c; extern M2C_UNK data_0212922c;
@@ -35,7 +35,7 @@ void func_020b9c8c(u8 *arg0) {
  func_01ff85b8(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();
- func_0208fe30(0x10017);
+ PlaySoundEffect(0x10017);
  func_020b9558(data_0215d850[8]);
  func_020c0fac(arg0);
 }
@@ -139,8 +139,8 @@ s32 func_020b9ec0(s32 unit, s32 facility) {
 #pragma opt_common_subs off
 s32 func_020ba12c(s32 x,s32 y,s32 type,s32 mode) {
 extern void **gCurrentMap;
-extern u8 data_ov000_021b5c0e[];
-extern M2C_UNK data_0212616c;
+extern u8 gMovementTypeTable[];
+extern M2C_UNK gMovementCostTable;
 u8 *p; s32 index;
 if(x<0 || y<0)goto fail;
 p=*gCurrentMap;
@@ -155,7 +155,7 @@ if(p[index])return 0;
 index=x+M2C_FIELD(p+y*2,u16 *,0x3758);
 if(M2C_FIELD(p+index,u8 *,0x508))return 0;
 }
-if(M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+data_ov000_021b5c0e[type*0x70]*32,s8 *,M2C_FIELD(p+index,u8 *,0x1420)&31)<0)return 0;
+if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[type*0x70]*32,s8 *,M2C_FIELD(p+index,u8 *,0x1420)&31)<0)return 0;
 return 1;
 }
 
@@ -249,16 +249,16 @@ return 1;
 }
 
 s32 func_020ba654(s32 arg0,s32 x,s32 y,s32 slot){
-extern void **gCurrentMap;extern u8 data_ov000_021b5c0e[];extern s8 data_ov000_021b54a0[];extern M2C_UNK data_0212616c;
+extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
 s32 func_020ba1fc(s32,s32,s32);
 u8 *p=(u8 *)arg0,*base,*unit,*cargo=p+12;s32 kind,tile;s16 n;
 if(!func_020ba1fc(x,y,cargo[slot]))return 0;
 base=*gCurrentMap;
 unit=base+0x59a4+(s16)cargo[slot]*(s16)14;
-if(data_ov000_021b5c0e[((u32)(p[0]<<26)>>26)*112]==7){
+if(gMovementTypeTable[((u32)(p[0]<<26)>>26)*112]==7){
 if(!data_ov000_021b54a0[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;
 }
-if(M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+data_ov000_021b5c0e[((u32)(unit[0]<<26)>>26)*112]*32,s8 *,M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31)==-1)return 0;
+if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(unit[0]<<26)>>26)*112]*32,s8 *,M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31)==-1)return 0;
 return 1;
 }
 
@@ -272,7 +272,7 @@ void func_020ba780(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 u8 func_020ba790(s32 x,s32 y){
-extern void **gCurrentMap;extern u8 data_ov000_021b5c0e[];extern s8 data_ov000_021b54a0[];extern M2C_UNK data_0212616c;
+extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
 s32 func_020a6fe4(void *,s32);
 u8 *base=*gCurrentMap,*units=base+0x59a4;s32 offset,kind,tile;u8 *selected;u8 id;
 id=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)];offset=(s16)id*(s16)14;
@@ -281,11 +281,11 @@ if((id&0xc0)!=(M2C_FIELD(base,u8 *,0x52d4)&0xc0))return 0;
 if(!func_020a6fe4(units+offset,(u32)(M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0)<<26)>>26))return 0;
 base=*gCurrentMap;selected=M2C_FIELD(base,u8 **,0x52d0);
 if(selected[1]==x&&selected[2]==y)return 0;
-kind=data_ov000_021b5c0e[((u32)(units[offset]<<26)>>26)*112];
+kind=gMovementTypeTable[((u32)(units[offset]<<26)>>26)*112];
 if(kind==7){if(!data_ov000_021b54a0[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;}
 tile=M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31;
-if(M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+kind*32,s8 *,tile)==-1)return 0;
-return M2C_FIELD((s8 *)M2C_FIELD(&data_0212616c,void **,0x64)+data_ov000_021b5c0e[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;
+if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+kind*32,s8 *,tile)==-1)return 0;
+return M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;
 }
 
 s32 func_020ba924(s32 a,s32 b) {

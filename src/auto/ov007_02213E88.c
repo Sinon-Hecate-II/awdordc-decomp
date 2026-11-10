@@ -5,8 +5,8 @@ typedef struct { u8 pad[11]; u8 kind : 4; u8 flags : 4; } MapEntry14718;
 
 void func_ov007_02213e88(void *cursor) {
     M2C_UNK func_01ffa8c4(void *, M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
-    extern void *data_02101e84;
+    M2C_UNK PlaySoundEffect(s32);
+    extern void *gKeyState;
     s32 new_dir;
     s32 prev_x;
     s32 prev_y;
@@ -30,16 +30,16 @@ void func_ov007_02213e88(void *cursor) {
     void *up_obj_reload;
 
     prev_x = M2C_FIELD(cursor, s32 *, 0x34);
-    state_flags = M2C_FIELD(data_02101e84, u16 *, 0);
+    state_flags = M2C_FIELD(gKeyState, u16 *, 0);
     prev_y = M2C_FIELD(cursor, s32 *, 0x38);
     prev_dir = M2C_FIELD(cursor, s32 *, 0x3C);
     if (state_flags & 1) {
-        func_0208fe30(0x1000D);
+        PlaySoundEffect(0x1000D);
         func_01ffa8c4(cursor, 1);
         return;
     }
     if (state_flags & 2) {
-        func_0208fe30(0x1000F);
+        PlaySoundEffect(0x1000F);
         func_01ffa8c4(cursor, 2);
         return;
     }
@@ -86,24 +86,24 @@ void func_ov007_02213e88(void *cursor) {
     new_dir = M2C_FIELD(cursor, s32 *, 0x3C);
     switch (new_dir) {                            /* irregular */
     case 0:
-        if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x40) {
+        if (M2C_FIELD(gKeyState, u16 *, 2) & 0x40) {
             M2C_FIELD(cursor, s32 *, 0x34) = (s32) (M2C_FIELD(cursor, s32 *, 0x34) + 1);
         }
-        if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x80) {
+        if (M2C_FIELD(gKeyState, u16 *, 2) & 0x80) {
             M2C_FIELD(cursor, s32 *, 0x34) = (s32) (M2C_FIELD(cursor, s32 *, 0x34) - 1);
         }
-        if (M2C_FIELD(data_02101e84, u16 *, 0) & 0x10) {
+        if (M2C_FIELD(gKeyState, u16 *, 0) & 0x10) {
             M2C_FIELD(cursor, s32 *, 0x3C) = 1;
         }
         break;
     case 1:
-        if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x40) {
+        if (M2C_FIELD(gKeyState, u16 *, 2) & 0x40) {
             M2C_FIELD(cursor, s32 *, 0x38) = (s32) (M2C_FIELD(cursor, s32 *, 0x38) + 1);
         }
-        if (M2C_FIELD(data_02101e84, u16 *, 2) & 0x80) {
+        if (M2C_FIELD(gKeyState, u16 *, 2) & 0x80) {
             M2C_FIELD(cursor, s32 *, 0x38) = (s32) (M2C_FIELD(cursor, s32 *, 0x38) - 1);
         }
-        if (M2C_FIELD(data_02101e84, u16 *, 0) & 0x20) {
+        if (M2C_FIELD(gKeyState, u16 *, 0) & 0x20) {
             M2C_FIELD(cursor, s32 *, 0x3C) = 0;
         }
         break;
@@ -151,12 +151,12 @@ void func_ov007_02213e88(void *cursor) {
     if ((M2C_FIELD(cursor, s32 *, 0x34) == prev_x) && (M2C_FIELD(cursor, s32 *, 0x38) == prev_y)) {
 
     } else {
-        func_0208fe30(0x10011);
+        PlaySoundEffect(0x10011);
     }
     if (M2C_FIELD(cursor, s32 *, 0x3C) == prev_dir) {
         return;
     }
-    func_0208fe30(0x10010);
+    PlaySoundEffect(0x10010);
 }
 
 void func_ov007_022142bc(void *arg0) {

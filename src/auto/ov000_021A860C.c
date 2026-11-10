@@ -233,10 +233,10 @@ return v;
 }
 
 u8 func_ov000_021a9044(s32 a,s32 b){
-extern u8 data_ov000_021b5c0e[];
-extern M2C_UNK data_0212616c;
-u32 row=data_ov000_021b5c0e[a*0x70];
-s8 *table=M2C_FIELD(&data_0212616c,s8 **,0x64)+row*32;
+extern u8 gMovementTypeTable[];
+extern M2C_UNK gMovementCostTable;
+u32 row=gMovementTypeTable[a*0x70];
+s8 *table=M2C_FIELD(&gMovementCostTable,s8 **,0x64)+row*32;
 u8 r;if(table[b&31]>0)r=1;else r=0;return r;
 }
 

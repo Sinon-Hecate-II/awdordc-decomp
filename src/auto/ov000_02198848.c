@@ -72,7 +72,7 @@ void AddPlayerThreatInfluence(u8 player) {
         value = func_ov000_021974bc(value, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT), (void *)unit);
         value = func_ov000_0219763c(value, (void *)unit, (s32)unit->health);
         {
-            register s32 b asm("r3") = func_020a7cfc(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0;
+            register s32 b asm("r3") = IsUnitSelected(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0;
             func_ov000_02197a8c((void *)unit, value, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind,
                                 (u8)((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->health, (u8)b, flag, bonus);
         }

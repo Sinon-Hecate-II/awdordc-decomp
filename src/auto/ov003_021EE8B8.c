@@ -47,7 +47,7 @@ void func_ov003_021ee8b8(void *arg0) {
     M2C_UNK func_02088f1c(s32);
     M2C_UNK func_02088ff4(s32);
     M2C_UNK func_0208b758(s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s16 GetSpriteAnimValue(void *);
     
     s32 InRange(u8, M2C_UNK, M2C_UNK);
@@ -124,8 +124,8 @@ void func_ov003_021ee8b8(void *arg0) {
         p=M2C_FIELD(arg0,void **,0x68)+i;
         n=M2C_FIELD(q,u32 *,0x18);
         if(M2C_FIELD(p,u8 *,0x7c)){
-            if(!n){if(enabled)func_0208fe30(0x1000f);M2C_FIELD(p,u8 *,0x7c)=0;}
-        } else if(n){if(enabled)func_0208fe30(0x1000d);M2C_FIELD(p,u8 *,0x7c)=1;}
+            if(!n){if(enabled)PlaySoundEffect(0x1000f);M2C_FIELD(p,u8 *,0x7c)=0;}
+        } else if(n){if(enabled)PlaySoundEffect(0x1000d);M2C_FIELD(p,u8 *,0x7c)=1;}
         p=M2C_FIELD(arg0,void **,0x6c);i=(u8)(i+1);
     }while(i<M2C_FIELD(p,s8 *,4));
     if((u8)((((u32)M2C_FIELD(arg0,u8 *,0x39)<<28)>>30)==0)){
@@ -152,7 +152,7 @@ foundPlayer:
             for(i=0;i<count;i++)M2C_FIELD((u8 *)(u8 *)sp0+i,u8 *,0xe)=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+i*0x18,s32 *,0x18);
         }
         if(!M2C_FIELD(packet,u8 *,8)){
-            func_0208fe30(0x1000f);
+            PlaySoundEffect(0x1000f);
             rawFlags=M2C_FIELD(arg0,u8 *,0x39)&~12;
             if((((u32)(u8)rawFlags<<28)>>30)==0)var_r0_4=1;else var_r0_4=0;
             M2C_FIELD(arg0,u8 *,0x39)=rawFlags;
@@ -274,7 +274,7 @@ foundPlayer:
         if(func_ov003_021e6d28()){
             offset=i*0x18;p=M2C_FIELD(arg0,void **,0x6c)+offset;n=M2C_FIELD((u8 *)packet+i,u8 *,0xe);
             if((u8)M2C_FIELD(p,s32 *,0x18)!=n){
-                func_0208fe30(0x10011);
+                PlaySoundEffect(0x10011);
                 q=M2C_FIELD(arg0,void **,0x6c);p=q+i*0x18;M2C_FIELD(p,s32 *,0x18)=n;
                 if(M2C_FIELD(p,u8 *,0x28)){
                     if(M2C_FIELD(p,s32 *,0x18)>M2C_FIELD(p,s32 *,0x1c))do {range=q+offset;ready=M2C_FIELD(range,s32 *,0x18)-(M2C_FIELD(range,s32 *,0x1c)-M2C_FIELD(range,s32 *,0x20)+1);M2C_FIELD(range,s32 *,0x18)=ready;}while(ready>M2C_FIELD(range,s32 *,0x1c));
@@ -306,7 +306,7 @@ foundPlayer:
             else newValue=func_ov003_02200808((u8)func_020a22fc(i+1));
         }
         if(oldValue!=newValue){
-            func_0208fe30(0x10011);
+            PlaySoundEffect(0x10011);
             p=M2C_FIELD(arg0,void **,0x6c)+i;
             M2C_FIELD(p,u8 *,0xa)=(u8)newValue;
             M2C_FIELD(arg0,u8 *,0x3a)|=8;

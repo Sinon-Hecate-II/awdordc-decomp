@@ -31,14 +31,14 @@ return 0;
 }
 
 s32 func_020d6544(s32 ax,s32 ay,s32 kind,s8 *path,s32 end){
-extern void **gCurrentMap;extern u8 data_0212616c[],data_ov000_021b5bfc[];
+extern void **gCurrentMap;extern u8 gMovementCostTable[],data_ov000_021b5bfc[];
 s32 func_020a85b8(s32);
 s16 oldx=ax,oldy=ay,x=oldx,y=oldy;
 s32 cost=0,dir,owner,terrain;
 void **map;
 s8 *costs;u8 *cell,*base;
 if(func_020a85b8(kind))return 0;
-map=gCurrentMap;costs=*(s8**)(data_0212616c+0x64);
+map=gCurrentMap;costs=*(s8**)(gMovementCostTable+0x64);
 while((dir=*path)!=4 && dir!=-1){
 switch(dir){case 0:x--;break;case 1:x++;break;case 2:y++;break;case 3:y--;break;}
 base=*map;cell=base+x+*(u16*)(base+y*2+0x3758);

@@ -17,7 +17,7 @@ int func_0207c8ec(int,int);int func_02086680(u32);int func_0209c268(int);
 void func_0209bfdc(s16,s16,void *,u32,int,int);
 
 /* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
-void func_ov000_0216ecc8(s32 mode,s32 reverse){
+void ScrollListRebuild(s32 mode,s32 reverse){
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern s8 data_ov000_021aab79[];
@@ -208,7 +208,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  }
  gCur3DSpriteEngine=saved;
 }
-void func_ov000_0216f8c4(s32 mode) {
+void ScrollListDrawRows(s32 mode) {
     M2C_UNK func_020809c0(s32, M2C_UNK, M2C_UNK);
     void func_ov000_0216f3d0(s32, s32);
     extern void *g3DSpriteEngineMain;
@@ -251,7 +251,7 @@ void func_ov000_0216f8c4(s32 mode) {
     gCur3DSpriteEngine = savedPtr;
 }
 
-void func_ov000_0216f9b4(void *p){
+void ScrollListDrawTabs(void *p){
 extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;
 extern M2C_UNK data_ov000_021b8ac0,data_ov000_021b8ad0,data_ov000_021b8ae0,data_ov000_021b8af4,data_ov000_021b8b04,data_ov000_021b8b18;
 s32 func_020e3218(void *);void func_02081590(s32,s32);void func_02080944(s32,s32,s32,s32);
@@ -270,7 +270,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 gCur3DSpriteEngine=saved;
 }
 
-s32 func_ov000_0216facc(void *arg0) {
+s32 ScrollListScrollUp(void *arg0) {
     s16 temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, s16 *, 0x3A);
@@ -278,27 +278,27 @@ s32 func_ov000_0216facc(void *arg0) {
         return 0;
     }
     M2C_FIELD(arg0, s16 *, 0x3A) = (s16) (temp_r1 - 1);
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
     return 1;
 }
 
-s16 func_ov000_0216fafc(void *a) {
+s16 ScrollListPageUp(void *a) {
 s16 old=M2C_FIELD(a,s16 *,0x3a);
 M2C_FIELD(a,s16 *,0x3a)=old-6;
 if(M2C_FIELD(a,s16 *,0x3a)<0) M2C_FIELD(a,s16 *,0x3a)=0;
 return M2C_FIELD(a,s16 *,0x3a)-old;
 }
 
-s32 func_ov000_0216fb2c(void *arg0) {
+s32 ScrollListScrollDown(void *arg0) {
 s16 n=M2C_FIELD(arg0,s16 *,0x3a);
 s32 next=n+6;
 if(next>=M2C_FIELD(arg0,s16 *,0x3c))return 0;
 M2C_FIELD(arg0,s16 *,0x3a)++;
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 return 1;
 }
 
-s16 func_ov000_0216fb64(void *a) {
+s16 ScrollListPageDown(void *a) {
 s16 old=M2C_FIELD(a,s16 *,0x3a);
 s32 max;
 M2C_FIELD(a,s16 *,0x3a)=old+6;
@@ -323,26 +323,26 @@ void func_ov000_0216fb98(void *arg0) {
     func_0207b764(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2));
 }
 
-void func_ov000_0216fbe4(u8 *a) {
+void ScrollListConfirm(u8 *a) {
 extern M2C_UNK data_ov000_021df5e4;
-s32 p=func_ov000_021700fc();
+s32 p=GetScrollList();
 M2C_FIELD(p,s16 *,0x40)=M2C_FIELD(&data_ov000_021df5e4,u8 **,4)[M2C_FIELD(p,s16 *,0x3a)+*a];
-func_0208fe30(0x10016);
+PlaySoundEffect(0x10016);
 func_01ffa6fc(p);
 func_020b21a0();
 func_020b2268();
 }
 
-void func_ov000_0216fc34(void) {
+void ScrollListCancel(void) {
     M2C_UNK func_01ffa6fc(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
     M2C_UNK func_020b2268();
-    s32 func_ov000_021700fc();
+    s32 GetScrollList();
     s32 temp_r4;
 
-    temp_r4 = func_ov000_021700fc();
-    func_0208fe30(0x10018);
+    temp_r4 = GetScrollList();
+    PlaySoundEffect(0x10018);
     func_01ffa6fc(temp_r4);
     func_020b21a0();
     func_020b2268();

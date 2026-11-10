@@ -91,7 +91,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_ov007_022121b0(void);
     void func_ov007_022121d4(s32);
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 temp_r0;
     s32 temp_r4;
     s32 temp_r5;
@@ -108,7 +108,7 @@ void func_ov007_022114c4(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
         return;
     case 0:
         if (arg3 == 0) return;
-        func_0208fe30(0x1001D);
+        PlaySoundEffect(0x1001D);
         return;
     }
 }
@@ -123,7 +123,7 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_ov007_022121b0(void);
     M2C_UNK func_ov007_0221ab4c();
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
@@ -140,7 +140,7 @@ void func_ov007_02211560(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
         return;
     }
     if (arg3 == 0) return;
-    func_0208fe30(0x1001D);
+    PlaySoundEffect(0x1001D);
 }
 
 void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -150,7 +150,7 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_ov007_022121d4(s32);
     M2C_UNK func_020b5134(M2C_UNK *, s32, s32, s32, s32, s32, M2C_UNK);
     M2C_UNK func_0208fb54(s32, s32, s32, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov007_0221f680;
     if (func_ov007_0221bcc0(arg1, arg2) != 0) {
         func_020cfe2c();
@@ -162,11 +162,11 @@ void func_ov007_022115fc(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
         return;
     }
     if (arg3 == 0) return;
-    func_0208fe30(0x1001D);
+    PlaySoundEffect(0x1001D);
 }
 
 void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_ov007_02214718(M2C_UNK, M2C_UNK);
     if (func_ov007_02214718(arg1, arg2) != 0) {
         return;
@@ -174,18 +174,18 @@ void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     if (arg3 == 0) {
         return;
     }
-    func_0208fe30(0x1001D);
+    PlaySoundEffect(0x1001D);
 }
 
 void func_ov007_022116d4(M2C_UNK a,s32 x,s32 y,s32 sound){
 u8 func_ov007_02211f90();u8 func_ov007_02211fa0();s32 func_ov007_0221b0a4(s32,s32,s32,s32,s32);
-M2C_UNK func_020cfe2c();void func_ov007_022121b0(void);void func_ov007_022121d4(s32);M2C_UNK func_0208fb54(s32,s32,s32,s32);M2C_UNK func_0208fe30(s32);
+M2C_UNK func_020cfe2c();void func_ov007_022121b0(void);void func_ov007_022121d4(s32);M2C_UNK func_0208fb54(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=func_ov007_02211f90();s32 other=func_ov007_02211fa0();
 switch(func_ov007_0221b0a4(x,y,kind,other,1)){
 case 1:func_020cfe2c();func_ov007_022121b0();func_ov007_022121d4(1);func_ov007_022114ac(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:func_0208fb54(0x11a,x,y,1);break;
 default:func_0208fb54(0x119,x,y,1);break;}break;
-case 0:if(sound==0)return;func_0208fe30(0x1001d);break;
+case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
 }
 }
 
@@ -216,7 +216,7 @@ void func_ov007_022121b0(void);
 void func_ov007_022121d4(s32);
 M2C_UNK func_020b5134(M2C_UNK*,s32,s32,s32,s32,s32,M2C_UNK);
 M2C_UNK func_0208fb54(s32,s32,s32,s32);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 extern M2C_UNK data_ov007_0221f690;
 s32 n=1;
 if(func_ov007_0221b754(arg1,arg2))n=8;
@@ -228,12 +228,12 @@ func_0208fb54(0x8a,arg1,arg2,1);
 return;
 }
 if(arg3==0)return;
-func_0208fe30(0x1001d);
+PlaySoundEffect(0x1001d);
 }
 
 void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK func_0208fb54(s32, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020cfd28();
     u8 func_ov007_02211f90(void);
     u8 func_ov007_02211fa0(void);
@@ -255,7 +255,7 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
         return;
     case 0:
         if (arg3 == 0) return;
-        func_0208fe30(0x1001D);
+        PlaySoundEffect(0x1001D);
         return;
     }
 }
@@ -312,7 +312,7 @@ s32 func_ov007_02211990(s32 x, s32 y) {
 }
 
 void func_ov007_02211ae8(M2C_UNK arg0) {
-    extern void *data_02101e84;
+    extern void *gKeyState;
     extern void *data_02101e88;
     extern void **gCurrentMap;
     s32 func_020d46e8(void);
@@ -344,8 +344,8 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     s32 t;
     u8 f;
     s32 mask;
-    r4 = *(u16 *)data_02101e84;
-    r5 = *(u16 *)((u8 *)data_02101e84 + 6);
+    r4 = *(u16 *)gKeyState;
+    r5 = *(u16 *)((u8 *)gKeyState + 6);
     if (func_020d46e8()) {
         ((u8 *)arg0)[0x34] = 1;
         return;
@@ -423,7 +423,7 @@ L_b4c:
     if (r5 & 1) { func_ov007_022114c4(arg0, r6, r7, r4 & 1); return; }
     mask = r4 & 2;
     if (mask) { func_ov007_02211560(arg0, r6, r7, mask); return; }
-    if (*(u16 *)((u8 *)data_02101e84 + 6) & 0x400) { func_ov007_022115fc(arg0, r6, r7, r4 & 0x400); return; }
+    if (*(u16 *)((u8 *)gKeyState + 6) & 0x400) { func_ov007_022115fc(arg0, r6, r7, r4 & 0x400); return; }
     mask = r4 & 0x800;
     if (mask) { func_ov007_022116a0(arg0, r6, r7, mask); return; }
     return;

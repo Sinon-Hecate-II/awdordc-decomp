@@ -131,7 +131,7 @@ func_02089438(M2C_FIELD(arg0,void**,0x38));
 }
 
 extern u8 *data_02101e88;
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
 extern void *g3DSpriteEngineSub;
@@ -148,7 +148,7 @@ void func_020814e4(void);
 void func_02081590(void *,void *);
 void func_02081528(void);
 void func_01ff85b8(void *,s32,s32);
-void func_0208fe30(s32);
+void PlaySoundEffect(s32);
 void *func_01ffa770(void *);
 void func_02087db8(void *,s32);
 void func_02087e34(void *);
@@ -182,7 +182,7 @@ void func_ov005_0221d160(void *arg0){
             }
         }
     } else {
-        if ((data_02101e84[1] & 32) && ((selection = M2C_FIELD(arg0, s32 *, 0x50)) != 0 || (data_02101e84[0] & 32))) {
+        if ((gKeyState[1] & 32) && ((selection = M2C_FIELD(arg0, s32 *, 0x50)) != 0 || (gKeyState[0] & 32))) {
             s32 n;
             if (selection)
                 n = M2C_FIELD(arg0, s32 *, 0x50);
@@ -206,7 +206,7 @@ void func_ov005_0221d160(void *arg0){
                 sound = 0x10010;
             }
         }
-        if ((data_02101e84[1] & 16) && (M2C_FIELD(arg0, s32 *, 0x50) < func_020cfb94() - 1 || (data_02101e84[0] & 16))) {
+        if ((gKeyState[1] & 16) && (M2C_FIELD(arg0, s32 *, 0x50) < func_020cfb94() - 1 || (gKeyState[0] & 16))) {
             M2C_FIELD(arg0, s32 *, 0x50) = M2C_FIELD(arg0, s32 *, 0x50) == func_020cfb94() - 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x50) + 1;
             func_02087ec0(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
             {
@@ -226,7 +226,7 @@ void func_ov005_0221d160(void *arg0){
             }
         }
     }
-    if (data_02101e84[0] & 512) {
+    if (gKeyState[0] & 512) {
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) ? M2C_FIELD(arg0, s32 *, 0x54) - 1 : 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
         func_020e3218(data_ov005_02220f1c);
@@ -240,7 +240,7 @@ void func_ov005_0221d160(void *arg0){
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
     }
-    if (data_02101e84[0] & 256) {
+    if (gKeyState[0] & 256) {
         M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) == 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x54) + 1;
         mode = M2C_FIELD(arg0, s32 *, 0x54);
         func_020e3218(data_ov005_02220f1c);
@@ -255,10 +255,10 @@ void func_ov005_0221d160(void *arg0){
         sound = 0x10020;
     }
     if (sound)
-        func_0208fe30(sound);
-    if (!(data_02101e84[0] & 1))
+        PlaySoundEffect(sound);
+    if (!(gKeyState[0] & 1))
         return;
-    func_0208fe30(0x1000e);
+    PlaySoundEffect(0x1000e);
     {
         void *p = M2C_FIELD(M2C_FIELD(func_01ffa770(data_ov005_02220d50), void **, 56), void **, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))

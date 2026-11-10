@@ -472,9 +472,9 @@ void func_020e4cd8(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M
 
 s8 func_020e4d80(void *arg0) {
     s8 func_01ffa6fc(void *);
-    M2C_UNK func_0208fe30(s32);
-    M2C_UNK func_020aacf0(void *);
-    extern u16 *data_02101e84;
+    M2C_UNK PlaySoundEffect(s32);
+    M2C_UNK MenuSpriteUpdate(void *);
+    extern u16 *gKeyState;
 
     void *temp_r2;
     void *temp_r1;
@@ -483,10 +483,10 @@ s8 func_020e4d80(void *arg0) {
     u8 var_r12;
     void *temp_r0;
 
-    func_020aacf0(M2C_FIELD(arg0, void **, 0x38));
+    MenuSpriteUpdate(M2C_FIELD(arg0, void **, 0x38));
     temp_r2 = M2C_FIELD(arg0, void **, 0x38);
     temp_r1 = M2C_FIELD(temp_r2, void **, 0x64);
-    var_r3 = *data_02101e84;
+    var_r3 = *gKeyState;
     var_r0 = M2C_FIELD(temp_r1, s8 *, 0xb);
     var_r12 = 1;
     if (var_r0 != 1) {
@@ -500,7 +500,7 @@ s8 func_020e4d80(void *arg0) {
     if (!(var_r12 & 0xff) && !(var_r3 & 0x2)) {
         return var_r0;
     }
-    func_0208fe30(0x1000f);
+    PlaySoundEffect(0x1000f);
     temp_r0 = M2C_FIELD(arg0, void **, 0x38);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5a) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));

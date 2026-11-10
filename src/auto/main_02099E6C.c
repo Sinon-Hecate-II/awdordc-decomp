@@ -47,7 +47,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_0209c428(void *);
     extern M2C_UNK data_02102e74;
     extern M2C_UNK data_02102eac;
-    extern M2C_UNK data_0212616c;
+    extern M2C_UNK gMovementCostTable;
     extern void **gCurrentMap;
     s32 param;
     u8 sp1C[0x40];
@@ -212,7 +212,7 @@ loop_1:
         case 3:
             M2C_FIELD(arg0, void **, 0x38) = (void *) (temp_r1 + 2);
             temp_r6 = *gCurrentMap;
-            M2C_FIELD(arg0, void **, 0x34) = func_02086680(M2C_FIELD((u8 *)&data_0212616c + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
+            M2C_FIELD(arg0, void **, 0x34) = func_02086680(M2C_FIELD((u8 *)&gMovementCostTable + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
             return func_02099e6c(arg0, arg1);
         default:
             func_0209c418(arg0);

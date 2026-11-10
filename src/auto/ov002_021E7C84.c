@@ -192,7 +192,7 @@ u8 func_ov002_021e80a4(s32 arg0, s32 arg1) {
 void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     extern void **gCurrentMap;
     s32 func_ov000_0216ca8c(u8, u8);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     void func_020d03ec(s32, u8, u8);
     s32 func_020a27f8(s32, s32);
     u8 *a;
@@ -287,7 +287,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     mapb = *gCurrentMap;
     vv = *(u32 *)((u8 *)mapb + idx2 * 0x8c + 0x6810);
     M2C_FIELD(a+r5,u8 *,0x15) = (u8)((vv << 24) >> 24);
-    r0 = func_020a7cfc(r7);
+    r0 = IsUnitSelected(r7);
     if (r0 != 0) {
         M2C_FIELD(a+r5,u8 *,0x16) = 2;
         ptr = a + r5 + 0x16;

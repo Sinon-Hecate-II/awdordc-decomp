@@ -151,17 +151,17 @@ void func_ov002_021e7474(void *);
 void func_ov002_021e6ff0(void *arg0) {
 void func_ov002_021e70a0(void *);
 extern u8 data_ov002_021f2f40;
-extern void *data_02101e84;
+extern void *gKeyState;
 extern u32 data_027e15bc;
 extern void *data_02101e88;
 if(data_ov002_021f2f40) return;
-if(M2C_FIELD(data_02101e84,u16 *,6)&0x200) {
+if(M2C_FIELD(gKeyState,u16 *,6)&0x200) {
 if(data_027e15bc&1) func_ov002_021e70a0(arg0);
-} else if(M2C_FIELD(data_02101e84,u16 *,6)&0x100) {
+} else if(M2C_FIELD(gKeyState,u16 *,6)&0x100) {
 func_ov002_021e70a0(arg0); func_ov002_021e70a0(arg0);
 } else func_ov002_021e70a0(arg0);
 if(!M2C_FIELD(arg0,u8 *,9)) return;
-if((M2C_FIELD(data_02101e84,u16 *,0)&0xB)||M2C_FIELD(data_02101e88,u8 *,0x14)) func_ov002_021e795c(arg0);
+if((M2C_FIELD(gKeyState,u16 *,0)&0xB)||M2C_FIELD(data_02101e88,u8 *,0x14)) func_ov002_021e795c(arg0);
 }
 
 void func_ov002_021e70a0(void *arg0) {

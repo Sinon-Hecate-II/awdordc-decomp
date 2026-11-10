@@ -335,7 +335,7 @@ return 0;
 #pragma opt_propagation off
 s32 IsValidMoveCell(s32 x, s32 y) {
     s32 func_ov000_021a98e4(s32);
-    s32 func_020a7cfc(void *);
+    s32 IsUnitSelected(void *);
     s32 func_ov000_02178e84(s32, s32);
     s32 func_ov000_021a9904(s32);
     s32 func_ov000_021a90a8(s32, s32, s32);
@@ -347,7 +347,7 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     extern u8 data_ov000_021dfc4c[];
     extern u8 *data_ov000_021df644;
 
-    if (!func_ov000_021a98e4(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !func_020a7cfc(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
+    if (!func_ov000_021a98e4(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !IsUnitSelected(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
 u8 attr=data_ov000_021b5c0f[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
 if(attr&7) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
 if((u8)((1<<(idx&7)) & data_ov000_021df9bc[idx>>3])) goto valid;

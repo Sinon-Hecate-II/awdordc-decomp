@@ -146,9 +146,9 @@ void func_020b7824(void *arg0) {
 
 void func_020b7860(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
-    if (*data_02101e84 & 0xC0B) {
+    if (*gKeyState & 0xC0B) {
         func_01ffa6fc(arg0);
         return;
     }
@@ -272,16 +272,16 @@ func_0208bddc(p,resource,0x6B80,11,0);
 M2C_FIELD(p,s32 *,0x44)|=0x380000;
 M2C_FIELD(p,void (**)(void *),0x6C)=func_020b78c4;
 M2C_FIELD(p,void (**)(void),0x70)=func_020b7b54;
-func_0208fe30(0x127);
+PlaySoundEffect(0x127);
 }
 
 void func_020b7c4c(void) {
-    M2C_UNK func_0208fe30(M2C_UNK);
-    func_0208fe30(0xE5);
+    M2C_UNK PlaySoundEffect(M2C_UNK);
+    PlaySoundEffect(0xE5);
 }
 
 void func_020b7c5c(void *arg0) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 func_0208fe30(s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 PlaySoundEffect(s32);
  extern void *gCur3DSpriteEngine;
  s32 a=(u16)((FadeTask*)arg0)->duration;
  s32 b=(u16)((FadeTask*)arg0)->frame;
@@ -300,8 +300,8 @@ void func_020b7c5c(void *arg0) {
     u16 *volatile sp04;
 
 
- if(func_0208c1dc(arg0))func_0208fe30(0xe6);
- if(b==(a*9)/12)func_0208fe30(0xe7);
+ if(func_0208c1dc(arg0))PlaySoundEffect(0xe6);
+ if(b==(a*9)/12)PlaySoundEffect(0xe7);
  q=a/12;
  if(b<q)r6=EaseInterpolate(0,0,16,b,q);
  if(b>(a*11)/12)r6=EaseInterpolate(0,r6,0,b-(a*11)/12,q);

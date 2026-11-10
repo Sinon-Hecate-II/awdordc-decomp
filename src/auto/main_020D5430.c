@@ -11,9 +11,9 @@ void func_020d5430(void) {
 }
 
 void func_020d549c(void) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020cc62c();
-    func_0208fe30(0x10017);
+    PlaySoundEffect(0x10017);
     func_020cc62c();
 }
 
@@ -76,7 +76,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,0x52d6)=0;
 if(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,0x3758))==0){func_020d5514();return 1;}
 a=func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 b=func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
-if(a==0 && b==0){func_0208fe30(0x1001d);return 0;}
+if(a==0 && b==0){PlaySoundEffect(0x1001d);return 0;}
 func_01ffb554((u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x1e30);
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,0x52d0));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),52);if(cb)cb();
@@ -85,7 +85,7 @@ func_020d5554(x,y);
 finish:
 func_0207a748(1);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=8;
-func_0208fe30(0x1001c);return 1;
+PlaySoundEffect(0x1001c);return 1;
 }
 
 s32 func_020d5aa0(u8 x,u8 y,s32 check,s32 allow,u8 mode){
@@ -113,7 +113,7 @@ func_0207a748(0);func_0207b028(7);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=2;
 func_020a06a0(mode);
 func_01ffa3dc(&data_0211fbc4,6);
-func_0208fe30(0x1001c);
+PlaySoundEffect(0x1001c);
 func_020d6778(2);
 if(func_020d19b4(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4)))func_02091c20(21,1);
 return 1;
@@ -144,11 +144,11 @@ func_0207a748(0);func_0207b028(7);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52b4)=2;
 func_020a06a0(arg2);
 func_01ffa3dc(&data_0211fbc4,6);
-func_0208fe30(0x1001c);
+PlaySoundEffect(0x1001c);
 }
 
 void func_020d5ef8(s32 r6, s32 r5) {
-    M2C_UNK func_0208fe30();
+    M2C_UNK PlaySoundEffect();
     M2C_UNK func_020d6398(s32, s32);
     M2C_UNK func_0207a768();
     M2C_UNK func_020a0964();
@@ -167,7 +167,7 @@ void func_020d5ef8(s32 r6, s32 r5) {
         u8 r3 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, 0x52d4);
         u16 r12 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, 0x52a8);
         if (r12 != (r3 & 0xc0)) {
-            func_0208fe30(0x1001d);
+            PlaySoundEffect(0x1001d);
             return;
         }
     }
@@ -178,7 +178,7 @@ void func_020d5ef8(s32 r6, s32 r5) {
             r4 = 1;
         } else {
             if (func_020d6398(r6, r5) == 0) {
-                func_0208fe30(0x1001d);
+                PlaySoundEffect(0x1001d);
                 return;
             }
         }

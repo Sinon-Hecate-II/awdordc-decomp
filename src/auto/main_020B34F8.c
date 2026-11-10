@@ -17,7 +17,7 @@ typedef struct {u32 a[4];} Words4B3C;
 
 u8 func_020b34f8(void *arg0) {
     s32 func_0207c8ec();
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 active, i, factor, delta;
     s16 old, n;
     u8 step, result;
@@ -44,7 +44,7 @@ u8 func_020b34f8(void *arg0) {
         }
     }
     if (old != M2C_FIELD(arg0, s16 *, 0xC)) {
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
     }
     delta = M2C_FIELD(arg0, s16 *, 0xC);
     factor = M2C_FIELD(arg0, u8 *, 0x7);
@@ -63,8 +63,8 @@ void func_020b35d4(void *p) {
 s32 func_0207c8ec(s32,s32);
 s32 func_0207c928(s32,s32);
 u8 func_020b3410(void *);
-M2C_UNK func_0208fe30(s32);
-extern u16 *data_02101e84;
+M2C_UNK PlaySoundEffect(s32);
+extern u16 *gKeyState;
 
 s32 held,pressed;
 s32 cols;
@@ -80,7 +80,7 @@ if(visible>=pages)visible=pages;
 visible=(s16)visible;
 col=func_0207c928(M2C_FIELD(p,s16 *,8),cols);
 row=func_0207c8ec(M2C_FIELD(p,s16 *,8),cols);
-held=data_02101e84[0];pressed=data_02101e84[1];
+held=gKeyState[0];pressed=gKeyState[1];
 oldscroll=M2C_FIELD(p,s16 *,12);
 oldselected=M2C_FIELD(p,s16 *,8);
 if(cols>1){
@@ -135,12 +135,12 @@ M2C_FIELD(p,s16 *,18)=delta*factor;
 }
 }
 }
-if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))func_0208fe30(0x10019);
+if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))PlaySoundEffect(0x10019);
 }
 #pragma opt_propagation off
 void func_020b38d0(s32 arg0) {
 M2C_UNK func_020b3038(s32,s16);
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 u8 var_r2,var_r0; s8 var_r1; s16 var_r4,var_r5,prod,newval;
 if ((u8)(M2C_FIELD(arg0,s16 *,0x12)!=0)) return;
 var_r2=M2C_FIELD(arg0,u8 *,5);
@@ -154,7 +154,7 @@ if(prod<=var_r1) return;
 newval=(s16)(var_r2*var_r4+var_r1);
 if(newval!=var_r5)func_020b3038(arg0,newval);
 if(var_r4==M2C_FIELD(arg0,s16 *,0xc) && var_r5==M2C_FIELD(arg0,s16 *,8))return;
-func_0208fe30(0x10019);
+PlaySoundEffect(0x10019);
 }
 #pragma opt_propagation reset
 /* Returns whether tile column x is currently visible in the camera viewport. */

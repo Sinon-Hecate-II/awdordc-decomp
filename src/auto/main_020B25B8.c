@@ -424,7 +424,7 @@ return value;
 
 u8 func_020b3290(void *arg0) {
     M2C_UNK func_0207c8ec();
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
@@ -467,7 +467,7 @@ u8 func_020b3290(void *arg0) {
     }
     M2C_FIELD(arg0, s16 *, 8) = var_r1;
     if (temp_r5 != M2C_FIELD(arg0, s16 *, 0xC)) {
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
     }
     delta=M2C_FIELD(arg0,s16 *,0xc);factor=M2C_FIELD(arg0,volatile u8 *,7);delta-=temp_r5;
 M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
@@ -481,7 +481,7 @@ M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
 
 u8 func_020b3368(void *arg0) {
 M2C_UNK func_0207c8ec();
-M2C_UNK func_0208fe30(s32);
+M2C_UNK PlaySoundEffect(s32);
 s16 current; s32 step; s32 active; s32 old; u8 result; s32 factor, delta;
 if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
@@ -491,7 +491,7 @@ current=M2C_FIELD(arg0,s16 *,0xc);old=M2C_FIELD(arg0,volatile s16 *,0xc);
 if(current==0)return 0;
 M2C_FIELD(arg0,s16 *,0xc)=current-1;
 M2C_FIELD(arg0,s16 *,8)-=step;
-if(old!=M2C_FIELD(arg0,s16 *,0xc))func_0208fe30(0x10019);
+if(old!=M2C_FIELD(arg0,s16 *,0xc))PlaySoundEffect(0x10019);
 delta=M2C_FIELD(arg0,s16 *,0xc); factor=M2C_FIELD(arg0,volatile u8 *,7); delta-=old;
 M2C_FIELD(arg0,s16 *,0x12)=delta*factor;
 if(M2C_FIELD(arg0,s16 *,0x12)!=0)result=1;else result=0;
@@ -499,7 +499,7 @@ return result;
 }
 
 u8 func_020b3410(void *arg0){
-s32 func_0207c8ec(); M2C_UNK func_0208fe30(s32);
+s32 func_0207c8ec(); M2C_UNK PlaySoundEffect(s32);
 s32 active,i,factor,delta; s16 total,count,limit; u8 step,result; s32 n,old;
 if(M2C_FIELD(arg0,s16 *,0x12)!=0)active=1;else active=0;
 if(active&255)return 0;
@@ -510,7 +510,7 @@ for(i=0;i<count;i++){
 if(limit!=M2C_FIELD(arg0,volatile s16 *,12)+count)M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(arg0,volatile s16 *,12)+1;
 if(M2C_FIELD(arg0,volatile s16 *,8)+step<total)M2C_FIELD(arg0,s16 *,8)=M2C_FIELD(arg0,volatile s16 *,8)+step;
 }
-if(old!=M2C_FIELD(arg0,s16 *,12))func_0208fe30(0x10019);
+if(old!=M2C_FIELD(arg0,s16 *,12))PlaySoundEffect(0x10019);
 delta=M2C_FIELD(arg0,s16 *,12);factor=M2C_FIELD(arg0,u8 *,7);delta-=old;
 M2C_FIELD(arg0,s16 *,18)=delta*factor;
 if(M2C_FIELD(arg0,s16 *,18)!=0)result=1;else result=0;

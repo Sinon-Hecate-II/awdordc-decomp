@@ -3,41 +3,43 @@
 void *GetConnection(void);
 
 #pragma opt_strength_reduction off
-s32 func_02040340(s32 a, s32 b, s32 c, s32 d, s32 e) {
-s32 func_0204e364(s32,s32); s32 func_020428bc(s32); void func_0205ea70(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
+/* Decide how to answer an incoming join request from peer (payload b/c,
+ * mode d, force e) for the current session, returning the reply code. */
+s32 ConnectionHandleJoin(s32 peer, s32 b, s32 c, s32 mode, s32 force) {
+s32 func_0204e364(s32,s32); s32 IsConnectionMember(s32); void func_0205ea70(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
 extern u8 gConnectionMgr[];
-s32 r; void *p;
+s32 result; void *session;
 switch(M2C_FIELD(GetConnection(),u8*,0x15)) {
 case 1:
- if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),a)){r=255;break;}
- if(!func_020428bc(a)){r=3;break;}
+ if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
+ if(!IsConnectionMember(peer)){result=3;break;}
 case 0:
- if(d!=M2C_FIELD(GetConnection(),u8*,0x15) || M2C_FIELD(GetConnection(),u8*,0x1a9)!=0 || (p=GetConnection(), M2C_FIELD(p,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16)) || (M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (p=GetConnection(), M2C_FIELD(p,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200)))) {
- r=3;
- if(M2C_FIELD(GetConnection(),u8*,0x15)==0 && M2C_FIELD(M2C_FIELD(GetConnection(),void**,0x10),s32*,0xb4)==0 && M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (p=GetConnection(),M2C_FIELD(p,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200))) func_0205ea70(M2C_FIELD(GetConnection(),s32*,0x10));
+ if(mode!=M2C_FIELD(GetConnection(),u8*,0x15) || M2C_FIELD(GetConnection(),u8*,0x1a9)!=0 || (session=GetConnection(), M2C_FIELD(session,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16)) || (M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(), M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200)))) {
+ result=3;
+ if(M2C_FIELD(GetConnection(),u8*,0x15)==0 && M2C_FIELD(M2C_FIELD(GetConnection(),void**,0x10),s32*,0xb4)==0 && M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(),M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200))) func_0205ea70(M2C_FIELD(GetConnection(),s32*,0x10));
  break;
  }
- if(!((M2C_FIELD(GetConnection(),s32*,0x1a0)==3 || M2C_FIELD(GetConnection(),s32*,0x1a0)==4) && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){r=4;break;}
+ if(!((M2C_FIELD(GetConnection(),s32*,0x1a0)==3 || M2C_FIELD(GetConnection(),s32*,0x1a0)==4) && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){result=4;break;}
  if(M2C_FIELD(GetConnection(),s32*,0x204)!=0) {
- if(a==M2C_FIELD(GetConnection(),s32*,0x204)){
- if(e!=0 || (M2C_FIELD(GetConnection(),s32*,0x200)<a && a!=M2C_FIELD(GetConnection(),s32*,0x208)))r=2;else r=255;
+ if(peer==M2C_FIELD(GetConnection(),s32*,0x204)){
+ if(force!=0 || (M2C_FIELD(GetConnection(),s32*,0x200)<peer && peer!=M2C_FIELD(GetConnection(),s32*,0x208)))result=2;else result=255;
  }else{
- if(e!=0 || (M2C_FIELD(GetConnection(),s32*,0x200)<a && M2C_FIELD(GetConnection(),s32*,0x208)==0)) {
+ if(force!=0 || (M2C_FIELD(GetConnection(),s32*,0x200)<peer && M2C_FIELD(GetConnection(),s32*,0x208)==0)) {
  func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204));
  if(((s32 (*)())func_0204084c)())return 255;
- r=2;
- }else r=3;
+ result=2;
+ }else result=3;
  }
- }else r=2;
+ }else result=2;
  break;
 case 2:
- if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),a)){r=255;break;}
- if(d!=3 || (p=GetConnection(), M2C_FIELD(p,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16))){r=3;break;}
- if(gConnectionMgr[0x1c]==1 && gConnectionMgr[0x1d]==1){r=19;break;}
- if(!(M2C_FIELD(GetConnection(),s32*,0x1a0)==10 && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){r=4;break;}
- r=2;
+ if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
+ if(mode!=3 || (session=GetConnection(), M2C_FIELD(session,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16))){result=3;break;}
+ if(gConnectionMgr[0x1c]==1 && gConnectionMgr[0x1d]==1){result=19;break;}
+ if(!(M2C_FIELD(GetConnection(),s32*,0x1a0)==10 && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){result=4;break;}
+ result=2;
 }
-return r;
+return result;
 }
 
 #pragma opt_strength_reduction off

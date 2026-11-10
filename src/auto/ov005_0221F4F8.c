@@ -97,7 +97,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     s32 func_02086680(s32);
     M2C_UNK func_020899fc(s32, M2C_UNK, s32, void *);
     s32 func_0208b564(M2C_UNK);
-    extern s32 data_0212616c;
+    extern s32 gMovementCostTable;
     extern M2C_UNK data_0215c334;
     extern M2C_UNK data_ov005_022212f4;
     extern M2C_UNK data_ov005_022212f8;
@@ -106,7 +106,7 @@ void func_ov005_0221fb14(M2C_UNK arg0) {
     s32 var_r9;
     char *var_r10;
     func_020675e4(sp20, &data_ov005_022212f4, func_02086680(0xF000000F));
-    var_r10 = (char *)&data_0212616c;
+    var_r10 = (char *)&gMovementCostTable;
     var_r9 = 0;
     do {
         if (M2C_FIELD(&data_0215c334, s32 *, 8) & (1 << var_r9)) {

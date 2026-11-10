@@ -15,10 +15,10 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     void func_0208ad48(void *);
     void func_0208af20(void *);
     u8 func_0208ae88(Unk0208ABC4 *, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     void func_020d47d0(void);
     void func_020d47f0(void);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     register u32 mode asm("r0");
 
     if (((u32)(M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) != 0) {
@@ -28,39 +28,39 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     mode = (u8)((u32)(M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29);
     switch (mode) {
     case 1:
-        if ((*(u16 *)data_02101e84) & 3) {
-            func_0208fe30(0x1000d);
+        if ((*(u16 *)gKeyState) & 3) {
+            PlaySoundEffect(0x1000d);
             func_0208af20(arg0);
         }
         return;
     case 2:
-        if ((*(u16 *)data_02101e84) & 3) {
-            func_0208fe30(0x1000d);
+        if ((*(u16 *)gKeyState) & 3) {
+            PlaySoundEffect(0x1000d);
             func_0208af20(arg0);
         }
         return;
     case 3:
-        if (((*(u16 *)data_02101e84) & 0x20) && func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
-            func_0208fe30(0x10010);
+        if (((*(u16 *)gKeyState) & 0x20) && func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
+            PlaySoundEffect(0x10010);
         }
-        if (((*(u16 *)data_02101e84) & 0x10) && func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
-            func_0208fe30(0x10010);
+        if (((*(u16 *)gKeyState) & 0x10) && func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
+            PlaySoundEffect(0x10010);
         }
-        if ((*(u16 *)data_02101e84) & 1) {
+        if ((*(u16 *)gKeyState) & 1) {
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 0) {
                 func_020d47d0();
-                func_0208fe30(0x1000d);
+                PlaySoundEffect(0x1000d);
             }
             if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 1) {
                 func_020d47f0();
-                func_0208fe30(0x1000f);
+                PlaySoundEffect(0x1000f);
             }
             func_0208af20(arg0);
             return;
         }
-        if ((*(u16 *)data_02101e84) & 2) {
+        if ((*(u16 *)gKeyState) & 2) {
             func_020d47f0();
-            func_0208fe30(0x1000f);
+            PlaySoundEffect(0x1000f);
             func_0208af20(arg0);
         }
         return;

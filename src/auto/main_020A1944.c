@@ -365,8 +365,8 @@ void func_020a23c4(void) {
 #pragma opt_propagation off
 s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 func_020a7310(void *);
-    u8 *func_020a32f4(s32);
-    s32 func_020d2c18(s32);
+    u8 *GetPlayerSelectedUnit(s32);
+    s32 GetPlayerCommanderId(s32);
     s32 func_020d0468(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020a7bd4(s32);
     extern u8 data_0211fbec[];
@@ -387,8 +387,8 @@ s32 func_020a242c(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     if (arg2 < 0 || arg3 < 0) { return 0; }
 
     idx = func_020a7310(arg1);
-    if (func_020a32f4(idx) == (u8 *)arg1) {
-        ret = func_020d2c18(idx);
+    if (GetPlayerSelectedUnit(idx) == (u8 *)arg1) {
+        ret = GetPlayerCommanderId(idx);
     } else {
         ret = func_020d0468(idx, arg2, arg3);
     }

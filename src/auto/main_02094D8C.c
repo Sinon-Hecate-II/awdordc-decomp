@@ -121,13 +121,13 @@ u8 func_020952a4(void) {
 }
 
 void func_020952c8(M2C_UNK arg0) {
-    M2C_UNK func_0208fe30();
+    M2C_UNK PlaySoundEffect();
     M2C_UNK func_020ad560(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
     func_020ad560(arg0);
-    func_0208fe30();
+    PlaySoundEffect();
 }
 
 void func_020952ec(s32 arg0,s32 arg1,s32 arg2) {

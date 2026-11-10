@@ -163,13 +163,13 @@ s32 func_020931fc(void *arg0) {
 }
 
 s32 func_02093250(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 func_0209600c();
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
     if (func_0209600c() == 0) {
-        func_0208fe30(temp_r4);
+        PlaySoundEffect(temp_r4);
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;

@@ -50,14 +50,14 @@ M2C_UNK func_ov005_0221bc28(void) {
 void func_ov005_0221bc44(M2C_UNK arg0) {
     void *func_01ffa770(M2C_UNK *);
     M2C_UNK func_02087db8(void *, s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_01ffa6fc(M2C_UNK);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern M2C_UNK data_ov005_02220d50;
     void *object;
     u8 active;
-    if (!(*data_02101e84 & 1)) return;
-    func_0208fe30(0x1000D);
+    if (!(*gKeyState & 1)) return;
+    PlaySoundEffect(0x1000D);
     object = M2C_FIELD(M2C_FIELD(func_01ffa770(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
     if (active) func_02087db8(object, 1);

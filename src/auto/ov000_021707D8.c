@@ -69,11 +69,11 @@ gCur3DSpriteEngine=old;
 void func_ov000_02170ca0(void) {
     M2C_UNK func_01ffa6fc(s32);
     s32 func_01ffa770(M2C_UNK *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK data_ov000_021b8b88;
     s32 temp_r4;
     temp_r4 = func_01ffa770(&data_ov000_021b8b88);
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
     func_01ffa6fc(temp_r4);
 }
 
@@ -100,10 +100,10 @@ func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02170ea4(void){
-extern u16 *data_02101e84;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;extern M2C_UNK data_027e0064;
+extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;extern M2C_UNK data_027e0064;
 s32 func_020cfb94(void);void AddSprite(s32,s32,u16,void *,s32);
 void *old; s32 i;u8 *p;u32 bits;
-if(*data_02101e84&2){func_ov000_02170ca0();return;}
+if(*gKeyState&2){func_ov000_02170ca0();return;}
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(i=0;i<func_020cfb94();i++){
 p=(u8 *)*gCurrentMap+i*140+0x67a4;
@@ -163,19 +163,19 @@ func_020c0fac(p);gCur3DSpriteEngine=old;
 #pragma opt_common_subs reset
 void func_ov000_021711a4(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void *gCur3DSpriteEngine;
     func_01ff9ce8(1);
     func_01ff9ce8(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
 }
 
 void func_ov000_021711f0(s32 arg0) {
     M2C_UNK func_01ffa6fc(s32);
-    extern u16 *data_02101e84;
-    if (!(*data_02101e84 & 2)) return;
+    extern u16 *gKeyState;
+    if (!(*gKeyState & 2)) return;
     func_01ffa6fc(arg0);
 }
 
@@ -259,7 +259,7 @@ gCur3DSpriteEngine=old;
 
 void func_ov000_021716c0(void) {
     M2C_UNK func_01ff9ce8(M2C_UNK);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020e4ca0();
     extern void *gCur3DSpriteEngine;
     func_01ff9ce8(1);
@@ -269,13 +269,13 @@ void func_ov000_021716c0(void) {
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x3a) = 0;
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0;
     func_020e4ca0();
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
 }
 
 void func_ov000_0217172c(s32 arg0) {
     M2C_UNK func_01ffa6fc(s32);
-    extern u16 *data_02101e84;
-    if (!(*data_02101e84 & 2)) return;
+    extern u16 *gKeyState;
+    if (!(*gKeyState & 2)) return;
     func_01ffa6fc(arg0);
 }
 

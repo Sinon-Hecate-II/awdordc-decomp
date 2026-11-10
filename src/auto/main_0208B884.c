@@ -217,14 +217,14 @@ s32 func_0208c214(void *arg0) {
 }
 
 void func_0208c248(void *obj) {
-extern u16 *data_02101e84; extern u8 *data_02101e88;
+extern u16 *gKeyState; extern u8 *data_02101e88;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 void func_01ffa574(void *); s32 func_020910d0(s32,void *,s32,s32); s32 func_020912bc(s32,u16,u16);
 Flags0208 *f=(Flags0208 *)((char *)obj+0x44);
 Flags0208B *g=(Flags0208B *)((char *)obj+0x48);
 void *saved,*current; s32 i; s32 xyz[3]; u16 x,y,flag; void (*callback)(void *);
 if(g->low) { --g->low; return; }
-if(g->high && f->b && ((*data_02101e84 & 0xc0b) || data_02101e88[0x14])) {func_01ffa574(obj);return;}
+if(g->high && f->b && ((*gKeyState & 0xc0b) || data_02101e88[0x14])) {func_01ffa574(obj);return;}
 if((u16)f->e) func_0208c0dc(obj);
 callback=M2C_FIELD(obj,void (**)(void *),0x6c); if(callback) callback(obj);
 saved=gCur3DSpriteEngine;

@@ -1,8 +1,8 @@
 /* 1 function from 0x021E2628 to 0x021E3500 (ov003), found by ds-decomp. */
 #include "common.h"
-extern u8 *data_02101e88;extern u16 *data_02101e84;
+extern u8 *data_02101e88;extern u16 *gKeyState;
 s32 func_020d4810(void);void func_02088da8(void*);void func_ov003_021f140c(s32);void func_01ffa6fc(void*);void func_ov003_021f1bd4(void);
-void func_020aacf0(void*);u32 func_ov003_021f2574(void);void func_0208fe30(s32);
+void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
 void *func_0208b564(void*);s32 func_ov003_021f1894(void);void func_020899cc(void*,s32,s32,s32);void func_0208ae88(void*,s32);
 void func_ov003_021e161c(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
@@ -46,47 +46,47 @@ case 2:if(p[0x39])func_02088da8(M2C_FIELD(p,void**,0x4c));func_ov003_021f140c(2)
 }
 }
 func_ov003_021f1bd4();if(((HandlerFlags*)(p+0x60))->pending)return;
-busy=data_02101e88[0x12];keys=data_02101e84[0];repeat=data_02101e84[1];
-menu=M2C_FIELD(p,void**,0x44);allowed=1;func_020aacf0(M2C_FIELD(menu,void**,0));func_020aacf0(M2C_FIELD(menu,void**,4));
+busy=data_02101e88[0x12];keys=gKeyState[0];repeat=gKeyState[1];
+menu=M2C_FIELD(p,void**,0x44);allowed=1;MenuSpriteUpdate(M2C_FIELD(menu,void**,0));MenuSpriteUpdate(M2C_FIELD(menu,void**,4));
 sprite=M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0);
-clicked=Clicked(sprite);if(clicked){PressButton(sprite);if(Available(p)){func_0208fe30(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
-if(allowed&&Clicked(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4))){sprite=M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4);func_0208fe30(0x1000f);PressButton(sprite);if(Available(p))ShowAction(p,1);else VCall(p,0x20);allowed=0;}
+clicked=Clicked(sprite);if(clicked){PressButton(sprite);if(Available(p)){PlaySoundEffect(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
+if(allowed&&Clicked(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4))){sprite=M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4);PlaySoundEffect(0x1000f);PressButton(sprite);if(Available(p))ShowAction(p,1);else VCall(p,0x20);allowed=0;}
 func_ov003_021e161c(M2C_FIELD(p,void**,0x48));menu=M2C_FIELD(p,void**,0x48);
 if((u8)(M2C_FIELD(menu,s8*,5)!=-1)){
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);func_ov003_021e1530(menu,(u8)M2C_FIELD(menu,s8*,5));
-if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){func_0208fe30(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
+if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 if(busy)return;
-if(allowed&&(keys&1)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));if(Available(p)){func_0208fe30(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
-if(allowed&&(keys&8)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));if(Available(p)){func_0208fe30(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
-if(allowed&&(keys&2)){func_0208fe30(0x1000f);PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4));if(Available(p))ShowAction(p,1);else VCall(p,0x20);}
+if(allowed&&(keys&1)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));if(Available(p)){PlaySoundEffect(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
+if(allowed&&(keys&8)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));if(Available(p)){PlaySoundEffect(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
+if(allowed&&(keys&2)){PlaySoundEffect(0x1000f);PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4));if(Available(p))ShowAction(p,1);else VCall(p,0x20);}
 if(repeat&64) {
 sprite=func_020abb9c(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
-func_0208fe30(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
+PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 else if(repeat&128) {
 sprite=func_020abbb4(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
-func_0208fe30(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
+PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 if(repeat&32) {
 sprite=func_020abbcc(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
-func_0208fe30(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
+PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 else if(repeat&16) {
 sprite=func_020abbe4(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
-func_0208fe30(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
+PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 }
 #pragma optimization_level reset

@@ -377,7 +377,7 @@ void func_ov000_021962f8(void) {
 }
 
 s32 func_ov000_02196330(void) {
-    s32 func_020a32f4(s32);
+    s32 GetPlayerSelectedUnit(s32);
     s32 func_020d1938(s32);
     s32 func_020d273c(u16, s32);
     extern void **gCurrentMap;
@@ -385,7 +385,7 @@ s32 func_ov000_02196330(void) {
 
     var_r5 = 1;
 loop_1:
-    if ((func_020d1938(var_r5) != 0) && (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r5) == 0) && (func_020a32f4(var_r5) != 0)) {
+    if ((func_020d1938(var_r5) != 0) && (func_020d273c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r5) == 0) && (GetPlayerSelectedUnit(var_r5) != 0)) {
         return 1;
     }
     var_r5 += 1;

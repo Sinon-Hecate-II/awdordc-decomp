@@ -275,17 +275,17 @@ void func_020e0b04(void *entity) {
     s32 func_0208b5ec(void); M2C_UNK func_0208af20(void); void *func_0208b564(void *);
     M2C_UNK func_020899cc(void *, s32, s32, s32);
     void func_020d47f0(void); void func_01ffa8c4(void *, s32);
-    void func_0208fe30(s32); void func_01ffa6fc(void *);
-    void func_020aacf0(void *);
-    extern u16 *data_02101e84;
+    void PlaySoundEffect(s32); void func_01ffa6fc(void *);
+    void MenuSpriteUpdate(void *);
+    extern u16 *gKeyState;
     extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
     void *created; s32 bank; register s32 i; u8 mode; s32 saved;
     u32 keys; s32 changed; void *primaryChild; u8 canAdvance; u32 frame;
 
-    if (M2C_FIELD(entity, void **, 0x50)) func_020aacf0(M2C_FIELD(entity, void **, 0x50));
-    if (M2C_FIELD(entity, void **, 0x54)) func_020aacf0(M2C_FIELD(entity, void **, 0x54));
-    if (M2C_FIELD(entity, void **, 0x58)) func_020aacf0(M2C_FIELD(entity, void **, 0x58));
-    keys = *data_02101e84;
+    if (M2C_FIELD(entity, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x50));
+    if (M2C_FIELD(entity, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x54));
+    if (M2C_FIELD(entity, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(entity, void **, 0x58));
+    keys = *gKeyState;
     M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
     if (E0B04Process(entity)) {
         func_020d47f0();
@@ -307,7 +307,7 @@ void func_020e0b04(void *entity) {
         M2C_FIELD(primaryChild, u8 *, 0x5a) = 12;
     }
     if (M2C_FIELD(entity, u16 *, 0x48) & 8) return;
-    func_0208fe30(0x1000e);
+    PlaySoundEffect(0x1000e);
     M2C_FIELD(entity, u16 *, 0x48) |= 8;
     func_01ffa6fc(entity);
 }

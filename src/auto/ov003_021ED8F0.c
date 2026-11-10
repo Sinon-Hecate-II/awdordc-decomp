@@ -1,7 +1,7 @@
 /* 1 function from 0x021ED8F0 to 0x021EE8B8 (ov003), found by ds-decomp. */
 #include "common.h"
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
-void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void func_0208fe30(s32);
+void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void PlaySoundEffect(s32);
 s32 func_020aae44(void*);s32 func_020aae10(void*);s16 func_ov003_022004a8(u8);void func_0208b758(void*,s32);
 typedef struct {u8 low:2,mode:2,state:4;} OptionsFlags;
 typedef struct {u8 enabled:1,other:7;} OptionsBits;
@@ -68,35 +68,35 @@ next=func_020abb9c(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
-func_0208fe30(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
+PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 128:
 next=func_020abbb4(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
-func_0208fe30(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
+PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 32:
 next=func_020abbcc(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
-func_0208fe30(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
+PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 16:
 next=func_020abbe4(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
-func_0208fe30(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
+PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 }
-func_0208fe30(0x10019);return;
+PlaySoundEffect(0x10019);return;
 }
 if((u8)(state==1)&&arg2){
-switch(arg1){case 32: (menu+14)[oldX]=(menu+14)[oldX]==1?2:1;PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,8));func_0208fe30(0x10011);break;
-case 16:(menu+14)[oldX]=(menu+14)[oldX]==1?2:1;PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,0x18));func_0208fe30(0x10011);break;
+switch(arg1){case 32: (menu+14)[oldX]=(menu+14)[oldX]==1?2:1;PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,8));PlaySoundEffect(0x10011);break;
+case 16:(menu+14)[oldX]=(menu+14)[oldX]==1?2:1;PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,0x18));PlaySoundEffect(0x10011);break;
 }return;
 }
 if(!((u8)(state==3)&&arg2))return;
@@ -112,7 +112,7 @@ StepCounter(menu+0x14+oldX*24,-1,1);
 if(!OptionsEntriesDiffer(menu))StepCounterDown(menu,oldX,1);
 }}}}
 PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,40));
-func_0208fe30(0x10011);break;case 128:ChangeOptionValue(menu,oldX,1);
+PlaySoundEffect(0x10011);break;case 128:ChangeOptionValue(menu,oldX,1);
 if(!OptionsEntriesDiffer(menu)){
 StepCounter(menu+0x14+oldX*24,1,1);
 if(!OptionsEntriesDiffer(menu)){
@@ -124,6 +124,6 @@ StepCounter(menu+0x14+oldX*24,1,1);
 if(!OptionsEntriesDiffer(menu))func_ov003_021e8354(menu,oldX,1);
 }}}}
 PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,56));
-func_0208fe30(0x10011);break;}
+PlaySoundEffect(0x10011);break;}
 }
 #pragma pop

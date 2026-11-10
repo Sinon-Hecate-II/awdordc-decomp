@@ -346,7 +346,7 @@ void func_020c97c0(void *arg0) {
     s32 func_0207c8ec(s32, s32);
     M2C_UNK func_020910d0(s32, s32 *, s32, M2C_UNK);
     s32 func_01ffa6fc(void *);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     s32 sp[3];
     s32 temp_r0;
     s32 temp_r0_2;
@@ -367,7 +367,7 @@ void func_020c97c0(void *arg0) {
     if (temp_r0_2 > 0) {
         temp_r0_3 = temp_r0_2 - 1;
         M2C_FIELD(arg0, s32 *, 0x4C) = temp_r0_3;
-        if ((temp_r0_3 != 0) && !(*data_02101e84 & 0xC0B)) {
+        if ((temp_r0_3 != 0) && !(*gKeyState & 0xC0B)) {
             return;
         }
         func_01ffa6fc(arg0);

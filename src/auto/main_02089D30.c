@@ -205,7 +205,7 @@ func_0208ad48(arg0);func_02089784(arg0);func_0208aebc(arg0);
 #pragma opt_strength_reduction reset
 u32 func_0208a6b0(void *arg0) {
     u32 func_020846a4(void);
-    u32 func_0208fe30(M2C_UNK);
+    u32 PlaySoundEffect(M2C_UNK);
     u32 func_0208ff4c(M2C_UNK);
     M2C_UNK func_0208ffe4(M2C_UNK, M2C_UNK, s32);
     u32 temp_r0;
@@ -213,7 +213,7 @@ u32 func_0208a6b0(void *arg0) {
     u32 temp_r0_3;
 
     if (func_0208ff4c(4) == 0) {
-        func_0208fe30(0x125);
+        PlaySoundEffect(0x125);
     }
     temp_r0_3 = (u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x1D) >> 0x1D;
     if (temp_r0_3 != 0) {
@@ -230,7 +230,7 @@ u32 func_0208a6b0(void *arg0) {
 }
 
 u32 func_0208a714(void *arg0) {
-    u32 func_0208fe30(M2C_UNK);
+    u32 PlaySoundEffect(M2C_UNK);
     u32 func_0208ff4c(M2C_UNK);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
     u32 temp_r0;
@@ -245,7 +245,7 @@ u32 func_0208a714(void *arg0) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    return func_0208fe30(0x124);
+    return PlaySoundEffect(0x124);
 }
 
 #pragma push

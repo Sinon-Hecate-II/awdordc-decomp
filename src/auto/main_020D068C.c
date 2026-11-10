@@ -262,7 +262,7 @@ if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
  * effect, and finally plays the impact sound if a side's HP changed. */
 void ApplyBattleResult(void){
 extern u8 data_02168f08[];
-void func_020d18fc(s32,s32);s32 func_020d19b4(s32);s32 func_020a3594(s32,s32);M2C_UNK func_0208fe30(s32);
+void func_020d18fc(s32,s32);s32 func_020d19b4(s32);s32 func_020a3594(s32,s32);M2C_UNK PlaySoundEffect(s32);
 void *unit,*record;
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec6)<=0){
 if((u32)(M2C_FIELD(data_02168f08,u16*,12)<<23)>>31){
@@ -293,7 +293,7 @@ if(M2C_FIELD(record,s16*,18)==func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,vo
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee4)==M2C_FIELD(*gCurrentMap,s16*,0x6eea))return;
 record=(void*)(*gCurrentMap+0x6ed8);
 if(M2C_FIELD(record,s16*,18)!=func_020a3594(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),2))return;
-sound:func_0208fe30(0x115);
+sound:PlaySoundEffect(0x115);
 }
 
 void func_020d1644(void) {

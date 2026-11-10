@@ -355,14 +355,14 @@ void func_020debe4(M2C_UNK arg0) {
 }
 
 #pragma opt_strength_reduction off
-void func_020debf4(void *self){void func_020aacf0(void*);
+void func_020debf4(void *self){void MenuSpriteUpdate(void*);
  int func_0208b5ec(void);
  void func_0208af20(void);
 void *func_0208b564(void*);
 void func_020899cc(void*,int,int,u32);
 void func_020d47f0(void);
 void func_01ffa6fc(void*);
-void func_0208fe30(u32);
+void PlaySoundEffect(u32);
 u32 func_02084970(void);
 u32 func_02076614(void);
 u32 func_ov009_02225470(void);
@@ -379,7 +379,7 @@ int func_020890b8(void*);
 int func_02089064(void*);
 void *func_ov009_02224070(int);
 void func_ov009_022258a8(void*);
-extern void *data_02101e84;
+extern void *gKeyState;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineSub;
 extern void *g3DSpriteEngineMain;
@@ -390,13 +390,13 @@ u16 keys;u32 v;
 u8 can;
 u32 frame;
 
-if(M2C_FIELD(self,void * *,0x50))func_020aacf0(M2C_FIELD(self,void * *,0x50));
+if(M2C_FIELD(self,void * *,0x50))MenuSpriteUpdate(M2C_FIELD(self,void * *,0x50));
 
-if(M2C_FIELD(self,void * *,0x54))func_020aacf0(M2C_FIELD(self,void * *,0x54));
+if(M2C_FIELD(self,void * *,0x54))MenuSpriteUpdate(M2C_FIELD(self,void * *,0x54));
 
-if(M2C_FIELD(self,void * *,0x58))func_020aacf0(M2C_FIELD(self,void * *,0x58));
+if(M2C_FIELD(self,void * *,0x58))MenuSpriteUpdate(M2C_FIELD(self,void * *,0x58));
 
-keys=M2C_FIELD(data_02101e84,u16 *,0);
+keys=M2C_FIELD(gKeyState,u16 *,0);
 M2C_FIELD(self,u16 *,0x48)=M2C_FIELD(self,u16 *,0x48)&~0x20U;
 
 if(!(M2C_FIELD(self,u16 *,0x48)&1)){
@@ -451,13 +451,13 @@ if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,frame+1,12);
 }
 func_020d47f0();
 func_01ffa6fc(self);
-func_0208fe30(0x1000f);
+PlaySoundEffect(0x1000f);
 return;
 }}
 func_02084970();
 v=func_02076614();
 
-if((M2C_FIELD(self,s8 *,0x41)>1||v>1)&&M2C_FIELD(self,s8 *,0x41)!=v)func_0208fe30(M2C_FIELD(self,s8 *,0x41)<(s32)v?0x122:0x123);
+if((M2C_FIELD(self,s8 *,0x41)>1||v>1)&&M2C_FIELD(self,s8 *,0x41)!=v)PlaySoundEffect(M2C_FIELD(self,s8 *,0x41)<(s32)v?0x122:0x123);
 
 M2C_FIELD(self,u8 *,0x41)=v;
 
@@ -492,7 +492,7 @@ func_ov009_02223fbc();
 func_020d47d0();
 func_02084a40();
 func_01ffa6fc(self);
-func_0208fe30(0x1000e);return;
+PlaySoundEffect(0x1000e);return;
 
 }else{
 v=func_ov009_02225470();
@@ -517,7 +517,7 @@ func_ov009_02223fbc();
 func_020d47d0();
 func_02084a40();
 func_01ffa6fc(self);
-func_0208fe30(0x1000e);
+PlaySoundEffect(0x1000e);
 
 }
 #pragma opt_strength_reduction reset

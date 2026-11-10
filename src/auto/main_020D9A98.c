@@ -50,7 +50,7 @@ void func_020d9d5c(void *arg0) {
    mark it dirty, then update the cached entry id if it changed. */
 void func_020d9d80(void *entry) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
     void *panel;
@@ -79,7 +79,7 @@ void func_020d9d80(void *entry) {
 
     if ((s8)M2C_FIELD(panel, s8 *, 0x43) != M2C_FIELD(entry, u8 *, 0)) {
         M2C_FIELD(panel, s8 *, 0x43) = M2C_FIELD(entry, u8 *, 0);
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
     }
 }
 
@@ -89,15 +89,15 @@ if(temp_r3&0x20)return; temp_r2=temp_r3&2; if(temp_r2!=0)return;
 if(gUnitSlotIds[M2C_FIELD(arg0,u8*,0)]<0)return; if(temp_r2!=0)return;
 M2C_FIELD(temp_r4,u16*,0x48)=temp_r3&~1;
 M2C_FIELD(temp_r4,u16*,0x48)=M2C_FIELD(temp_r4,u16*,0x48)|2;
-func_0208fe30(0x1000D); func_01ffa6fc(temp_r4);}
+PlaySoundEffect(0x1000D); func_01ffa6fc(temp_r4);}
 
-void func_020d9ee4(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020d9ee4(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
 
 #pragma scheduling off
 void func_020d9f40(void *arg0) {
  M2C_UNK func_020808dc(u16 *,s32,s32,u32);
- M2C_UNK func_0208fe30(s32);
+ M2C_UNK PlaySoundEffect(s32);
  extern void **gCur3DSpriteEngine;
  extern void **g3DSpriteEngineMain;
  void *panel; void **saved; s32 i,col,end;
@@ -111,7 +111,7 @@ void func_020d9f40(void *arg0) {
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
  gCur3DSpriteEngine=saved;
  if(M2C_FIELD(panel,s8 *,0x43)!=M2C_FIELD(arg0,u8 *,0)){
- M2C_FIELD(panel,s8 *,0x43)=M2C_FIELD(arg0,u8 *,0); func_0208fe30(0x10019);
+ M2C_FIELD(panel,s8 *,0x43)=M2C_FIELD(arg0,u8 *,0); PlaySoundEffect(0x10019);
  }
 }
 #pragma scheduling reset
@@ -140,17 +140,17 @@ void func_020da008(void *arg0) {
     }
     M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (temp_r0_3 | 1);
     M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 2);
-    func_0208fe30(0x1000D);
+    PlaySoundEffect(0x1000D);
     func_01ffa6fc(temp_r4);
 }
 
-void func_020da0a0(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40)var_r0=temp_r3-1;else if((temp_r1&0x80)&&(temp_r2&0x80))var_r0=0; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da0a0(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40)var_r0=temp_r3-1;else if((temp_r1&0x80)&&(temp_r2&0x80))var_r0=0; if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
 
 // Draws two 5-step progress bars (levels x/y growing by 5) onto a UI screen, then marks it dirty.
 void func_020da0ec(void *a) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     void *p = M2C_FIELD(a, void **, 0x10);
     void **saved = gCur3DSpriteEngine;
@@ -170,13 +170,13 @@ void func_020da0ec(void *a) {
     gCur3DSpriteEngine = saved;
     if (M2C_FIELD(a, u8 *, 0) != M2C_FIELD(p, s32 *, 0x3c)) {
         M2C_FIELD(p, s32 *, 0x3c) = M2C_FIELD(a, u8 *, 0);
-        func_0208fe30(0x10019);
+        PlaySoundEffect(0x10019);
     }
 }
 
 void func_020da1e8(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     s32 temp_r0_2;
     u16 temp_r0;
     void *temp_r4;
@@ -188,18 +188,18 @@ void func_020da1e8(void *arg0) {
     }
     temp_r0_2 = temp_r0 & 4;
     if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
-        func_0208fe30(0x1000E);
+        PlaySoundEffect(0x1000E);
         M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 4);
         func_01ffa6fc(temp_r4);
     }
 }
 
-void func_020da22c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da22c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
 
 void func_020da2a0(void *a) {
     M2C_UNK func_020808dc(u16 *, s32, s32, u32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     s32 func_02084644(void);void *func_ov010_02229b00(void); s32 state; void *p;
     void **saved = gCur3DSpriteEngine;
@@ -220,7 +220,7 @@ void func_020da2a0(void *a) {
     if(func_02084644()==2) state=(M2C_FIELD(func_ov010_02229b00(),u8 *,0x1a)&4)?1:0;else state=0;
     {s32 selected=M2C_FIELD(a,u8 *,0);if(selected==state)return;state=selected;}
     if(func_02084644()==2){p=func_ov010_02229b00();if(state==1)M2C_FIELD(p,u8 *,0x1a)|=4;else M2C_FIELD(p,u8 *,0x1a)&=~4;}
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 void func_020da3c8(void *arg0) {
@@ -235,14 +235,14 @@ void func_020da3c8(void *arg0) {
     }
     temp_r0_2 = temp_r0 & 8;
     if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
-        func_0208fe30(0x1000E);
+        PlaySoundEffect(0x1000E);
         M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 8);
         func_01ffa6fc(temp_r4);
     }
 }
 
-void func_020da40c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *data_02101e84; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(data_02101e84,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(data_02101e84,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
+void func_020da40c(u8 *arg0){M2C_UNK func_020b1c60(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
+temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; func_020b1c60(var_r0); }
 
 void func_020da480(void *arg0) {
     M2C_UNK func_02084a40(void);

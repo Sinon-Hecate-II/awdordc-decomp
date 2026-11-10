@@ -159,23 +159,23 @@ if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)g
 void func_020c2aa4(u8 *p){
 void func_01ffa6fc(void *);
 void func_020c32bc(s32,s32);
-void func_0208fe30(s32);
+void PlaySoundEffect(s32);
 u32 func_0207c928(u32,u32);
 s32 func_020d19b4(s32);
-extern u16 *data_02101e84;
+extern u16 *gKeyState;
 extern u8 *data_02101e88;
 u8 *q;
 u16 *a;
 if(p[0x34]==p[0x38]){func_01ffa6fc(p);return;}
-if((*data_02101e84&9)||data_02101e88[20]){
+if((*gKeyState&9)||data_02101e88[20]){
 q=*(u8 **)(p+64);
 if(q[5]==20 && p[0x34]<p[0x37]+7)func_020c32bc(q[0],0);
 func_01ffa6fc(p);return;
 }
 if(p[0x34]==6){
-func_0208fe30((p[0x39]+42)|0x10000);p[0x39]++;
+PlaySoundEffect((p[0x39]+42)|0x10000);p[0x39]++;
 }else if(p[0x34]>6 && p[0x39]<(*(u8 **)(p+64))[5] && func_0207c928(p[0x34]-6,3)==0){
-func_0208fe30((p[0x39]+42)|0x10000);p[0x39]++;
+PlaySoundEffect((p[0x39]+42)|0x10000);p[0x39]++;
 }
 if(p[0x34]==p[0x37]){
 if((*(u8 **)(p+64))[5]==20){
@@ -190,7 +190,7 @@ q=*(u8 **)(p+64);
 if(q[5]==20){
 if(p[0x34]==p[0x37]+8)func_020c32bc(q[0],0);
 }else if(p[0x34]==p[0x37]+5){
-if(func_020d19b4(q[0]))func_0208fe30(0xe0);else func_0208fe30(0xe2);
+if(func_020d19b4(q[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
 }
 p[0x34]++;
 }

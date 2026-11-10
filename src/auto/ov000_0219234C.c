@@ -1,7 +1,7 @@
 /* 1 function from 0x0219234C to 0x02192D88 (ov000), found by ds-decomp. */
 #include "common.h"
 extern void **gCurrentMap;
-extern u8 data_0212616c[];
+extern u8 gMovementCostTable[];
 extern u8 data_ov000_021b5bfc[];
 extern s8 data_ov000_021b55a0[];
 #define MAP (*gCurrentMap)
@@ -50,7 +50,7 @@ range=func_ov000_021a97e0(M2C_FIELD(MAP,u16 *,0x52a4),KIND(unit));
 func_01ffada0(ux,uy,KIND(unit),range,0);
 { s32 sx,sy,nx,ny,lx,ly,hx,hy,invalid;
 for(sy=0;sy<M2C_FIELD(MAP,u16 *,0x5146);sy++){
-table=M2C_FIELD(data_0212616c,s8 **,0x64);
+table=M2C_FIELD(gMovementCostTable,s8 **,0x64);
 invalid=-1;
 for(sx=0;sx<M2C_FIELD(MAP,u16 *,0x5144);sx++){
 d=M2C_FIELD(M2C_FIELD(MAP+sy*4,s8 **,0x52e8),s8 *,sx);

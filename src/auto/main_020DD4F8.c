@@ -44,24 +44,24 @@ static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteF
    sprite shows whether the unit of the slot under the cursor exists and confirming picks
    that unit. */
 void UnitPreviewMenuInput(void *arg0) {
-void func_020aacf0(void *);void func_020d47f0(void);void func_01ffa8c4(void *,s32);void func_0208fe30(s32);void func_01ffa6fc(void *);
+void MenuSpriteUpdate(void *);void func_020d47f0(void);void func_01ffa8c4(void *,s32);void PlaySoundEffect(s32);void func_01ffa6fc(void *);
 s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
-extern u16 *data_02101e84;extern M2C_UNK gUnitSlotIds;
+extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
-if(M2C_FIELD(arg0,void **,0x50))func_020aacf0(M2C_FIELD(arg0,void **,0x50));
-if(M2C_FIELD(arg0,void **,0x54))func_020aacf0(M2C_FIELD(arg0,void **,0x54));
-if(M2C_FIELD(arg0,void **,0x58))func_020aacf0(M2C_FIELD(arg0,void **,0x58));
-keys=*data_02101e84;
+if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
+if(M2C_FIELD(arg0,void **,0x54))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x54));
+if(M2C_FIELD(arg0,void **,0x58))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x58));
+keys=*gKeyState;
 M2C_FIELD(arg0,u16 *,0x48)&=~32;
 /* the back button closes the 3D view */
 if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
 func_ov009_02224688();
 PressSprite(M2C_FIELD(arg0,void **,0x58));
-func_020d47f0();func_01ffa8c4(arg0,1);func_0208fe30(0x1000f);return;
+func_020d47f0();func_01ffa8c4(arg0,1);PlaySoundEffect(0x1000f);return;
 }
 /* the cursor moved to another option */
 if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg0,s8 *,0x41)!=M2C_FIELD(arg0,s8 *,0x42)){
-func_0208fe30(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
+PlaySoundEffect(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
 M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
 }
 if(func_020b212c()<4){
@@ -77,7 +77,7 @@ PressSprite(cursorSprite);
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)&=~1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-func_0208fe30(0x1000d);func_01ffa6fc(arg0);return;
+PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);return;
 }
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
@@ -87,7 +87,7 @@ PressSprite(M2C_FIELD(arg0,void **,0x5c));
 if(M2C_FIELD(arg0,u16 *,0x48)&2)return;
 M2C_FIELD(arg0,u16 *,0x48)|=1;
 M2C_FIELD(arg0,u16 *,0x48)|=2;
-func_0208fe30(0x1000d);func_01ffa6fc(arg0);
+PlaySoundEffect(0x1000d);func_01ffa6fc(arg0);
 }
 
 void func_020dd97c(void) {
@@ -95,13 +95,13 @@ void func_020dd97c(void) {
 }
 
 M2C_UNK func_020dd980(void *arg0) {
-    void func_020aacf0(void *);
+    void MenuSpriteUpdate(void *);
     void func_020d47f0(void);
     void func_01ffa8c4(void *, s32);
-    void func_0208fe30(s32);
+    void PlaySoundEffect(s32);
     void func_01ffa6fc(void *);
     s32 func_020b212c(void);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern M2C_UNK gUnitSlotIds;
 
     void *temp_r4;
@@ -131,11 +131,11 @@ M2C_UNK func_020dd980(void *arg0) {
 
     temp_r4 = arg0;
 
-    if (M2C_FIELD(temp_r4, void **, 0x50)) func_020aacf0(M2C_FIELD(temp_r4, void **, 0x50));
-    if (M2C_FIELD(temp_r4, void **, 0x54)) func_020aacf0(M2C_FIELD(temp_r4, void **, 0x54));
-    if (M2C_FIELD(temp_r4, void **, 0x58)) func_020aacf0(M2C_FIELD(temp_r4, void **, 0x58));
+    if (M2C_FIELD(temp_r4, void **, 0x50)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x50));
+    if (M2C_FIELD(temp_r4, void **, 0x54)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x54));
+    if (M2C_FIELD(temp_r4, void **, 0x58)) MenuSpriteUpdate(M2C_FIELD(temp_r4, void **, 0x58));
 
-    var_r5 = *data_02101e84;
+    var_r5 = *gKeyState;
     temp_h = M2C_FIELD(temp_r4, u16 *, 0x48);
     var_r3 = 1;
     M2C_FIELD(temp_r4, u16 *, 0x48) = (u16)(temp_h & ~0x0020);
@@ -189,7 +189,7 @@ L5AC:
     M2C_FIELD(temp_r4, u8 *, 0x40) = 0x27;
     func_01ffa8c4(temp_r4, 1);
 L5C0:
-    func_0208fe30(0x1000F);
+    PlaySoundEffect(0x1000F);
     return;
 
 L5CC:
@@ -205,9 +205,9 @@ L5CC:
         goto L600;
     }
     if (temp_r1_4 < temp_r0_2) {
-        func_0208fe30(0x122);
+        PlaySoundEffect(0x122);
     } else {
-        func_0208fe30(0x123);
+        PlaySoundEffect(0x123);
     }
     M2C_FIELD(temp_r4, s8 *, 0x41) = temp_r0_2;
 L600:
@@ -281,7 +281,7 @@ L740:
     M2C_FIELD(temp_r4, u16 *, 0x48) = h;
     h = (u16)(h | 0x0002);
     M2C_FIELD(temp_r4, u16 *, 0x48) = h;
-    func_0208fe30(0x1000D);
+    PlaySoundEffect(0x1000D);
     func_01ffa6fc(temp_r4);
     return;
 }

@@ -306,7 +306,7 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_020d2c18(s32 arg0) {
+s32 GetPlayerCommanderId(s32 arg0) {
  extern s32 *data_027e0058;
  s32 func_020a27b8(s32, s32);
  s32 val;
@@ -330,11 +330,11 @@ s32 func_020d2c58(s32 arg0) {
 
 void func_020d2cf0(M2C_UNK arg0) {
     M2C_UNK func_020a25bc(s32, s32);
-    s32 func_020d2c18();
+    s32 GetPlayerCommanderId();
     s32 func_020d2c58(M2C_UNK);
     s32 temp_r4;
 
-    temp_r4 = func_020d2c18();
+    temp_r4 = GetPlayerCommanderId();
     func_020a25bc(temp_r4, func_020d2c58(arg0));
 }
 

@@ -38,10 +38,10 @@ void MapEditListInput(void *arg0) {
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(s32, s32);
     M2C_UNK func_02088044(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b1c60(M2C_UNK);
     s32 func_020e32e8(M2C_UNK *);
-    extern void *data_02101e84;
+    extern void *gKeyState;
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK gMapEditPath;
@@ -72,8 +72,8 @@ void MapEditListInput(void *arg0) {
 
     func_02088044(M2C_FIELD(arg0, void **, 0x38));
     selectedIndex = M2C_FIELD(arg0, s8 *, 0x3C);
-    keyPressed = M2C_FIELD(data_02101e84, u16 *, 0);
-    keyRepeat = M2C_FIELD(data_02101e84, u16 *, 2);
+    keyPressed = M2C_FIELD(gKeyState, u16 *, 0);
+    keyRepeat = M2C_FIELD(gKeyState, u16 *, 2);
     if (keyPressed & 2) {
         func_020b1c60(0x69);
         return;
@@ -97,7 +97,7 @@ void MapEditListInput(void *arg0) {
                 } while ((s32) shiftIndex < 0x10);
             }
             M2C_FIELD(&gMapEditRecords, s32 *, 0x44) = 0;   /* the terminator of the object list */
-            func_0208fe30(0x1000D);
+            PlaySoundEffect(0x1000D);
             return;
         }
         if ((selectedIndex == 0) && (*(s32 *)((u8 *)&gMapEditObjectList + (selectedIndex * 4)) != 0)) {
@@ -108,10 +108,10 @@ void MapEditListInput(void *arg0) {
                 } while ((s32) selectedIndex < 0x10);
             }
             M2C_FIELD(&gMapEditRecords, s32 *, 0x44) = 0;   /* the terminator of the object list */
-            func_0208fe30(0x1000D);
+            PlaySoundEffect(0x1000D);
             return;
         }
-        func_0208fe30(0x1001D);   /* nothing left to delete */
+        PlaySoundEffect(0x1001D);   /* nothing left to delete */
         return;
     }
     if (keyPressed & 0x800) {
@@ -166,7 +166,7 @@ loop_25:
         func_020808dc(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
         gCur3DSpriteEngine = savedEngine;
-        func_0208fe30(0x10011);
+        PlaySoundEffect(0x10011);
         return;
     }
     if (keyRepeat & 0x200) {
@@ -218,7 +218,7 @@ block_82:
     if (selectedIndex == M2C_FIELD(arg0, s8 *, 0x3C)) {
         return;
     }
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 #pragma pop
 void func_ov007_0221f220(void) {

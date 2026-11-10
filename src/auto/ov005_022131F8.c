@@ -12,7 +12,7 @@ extern u8 data_ov005_02220444[];
 extern u8 data_ov005_02220454[];
 extern u8 data_ov005_02220464[];
 extern u8 data_ov005_02220474[];
-extern void *data_ov005_02221300;
+extern void *gHistoryMenu;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
 extern void *g3DSpriteEngineSub;
@@ -43,44 +43,44 @@ obj->frame=(u16)frame;obj->phase=0;
 }
 
 void func_ov005_022131f8(u8 *a){
-extern void *data_ov005_02221300;extern u16 *data_02101e84;
-void *func_ov005_02211a38(s32);s32 func_ov005_02212118(void);s32 func_ov005_022121a8(void);s32 func_ov005_02212160(void);s32 func_ov005_022121f8(void);
-s32 func_020b20e0(s32);void func_020b1c60(s32);M2C_UNK func_0208fe30(s32);M2C_UNK func_ov005_02211a8c();
-s32 n=*a;void *p=func_ov005_02211a38(M2C_FIELD(data_ov005_02221300,s8 *,1));s32 max=M2C_FIELD(p,s16 *,8)-7; s32 pos=M2C_FIELD(p,s16 *,2);s32 delta;
+extern void *gHistoryMenu;extern u16 *gKeyState;
+void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 func_ov005_02212160(void);s32 func_ov005_022121f8(void);
+s32 func_020b20e0(s32);void func_020b1c60(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
+s32 n=*a;void *p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));s32 max=M2C_FIELD(p,s16 *,8)-7; s32 pos=M2C_FIELD(p,s16 *,2);s32 delta;
 if(max<0)max=0;
-if(pos==0&&n==0){if(data_02101e84[0]&64){M2C_FIELD(p,s16 *,2)=max;n=6;goto done;}}
-else if(data_02101e84[1]&64){if(n>=2)n--;else if(!func_ov005_02212118()&&n!=0)n--;goto done;}
-if(pos==max&&n==6){if(data_02101e84[0]&128){n=0;M2C_FIELD(p,s16 *,2)=n;goto done;}}
-else if(data_02101e84[1]&128){if(n<5){if(func_020b20e0(n+1))n++;}else if(!func_ov005_022121a8()){if(func_020b20e0(n+1))n++;}goto done;}
-if(data_02101e84[1]&32){delta=func_ov005_02212160();n-=delta+7;if(n<0)n=0;if(delta&&n==*a)func_0208fe30(0x10019);}
-else if(data_02101e84[1]&16){delta=func_ov005_022121f8();n+=7-delta;if(n>=7)n=6;if(delta&&n==*a)func_0208fe30(0x10019);}
+if(pos==0&&n==0){if(gKeyState[0]&64){M2C_FIELD(p,s16 *,2)=max;n=6;goto done;}}
+else if(gKeyState[1]&64){if(n>=2)n--;else if(!HistoryScrollUp()&&n!=0)n--;goto done;}
+if(pos==max&&n==6){if(gKeyState[0]&128){n=0;M2C_FIELD(p,s16 *,2)=n;goto done;}}
+else if(gKeyState[1]&128){if(n<5){if(func_020b20e0(n+1))n++;}else if(!HistoryScrollDown()){if(func_020b20e0(n+1))n++;}goto done;}
+if(gKeyState[1]&32){delta=func_ov005_02212160();n-=delta+7;if(n<0)n=0;if(delta&&n==*a)PlaySoundEffect(0x10019);}
+else if(gKeyState[1]&16){delta=func_ov005_022121f8();n+=7-delta;if(n>=7)n=6;if(delta&&n==*a)PlaySoundEffect(0x10019);}
 else return;
-done:if(n!=*a)func_020b1c60(n);M2C_FIELD(data_ov005_02221300,u8 *,2)=n;func_ov005_02211a8c();
+done:if(n!=*a)func_020b1c60(n);M2C_FIELD(gHistoryMenu,u8 *,2)=n;func_ov005_02211a8c();
 }
 
 void func_ov005_0221339c(u8 *arg0) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_ov005_02211a8c();
-    extern void *data_ov005_02221300;
-    M2C_FIELD(data_ov005_02221300, u8 *, 2) = (u8) *arg0;
+    extern void *gHistoryMenu;
+    M2C_FIELD(gHistoryMenu, u8 *, 2) = (u8) *arg0;
     func_ov005_02211a8c();
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
 }
 
 #pragma opt_strength_reduction on
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *func_020e34bc(s32);void *func_ov005_02211a38(s32);void *func_020e3218(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
+void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *func_020e34bc(s32);void *HistoryTabAt(s32);void *func_020e3218(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 func_020ae22c(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
-data_ov005_02221300=func_020e34bc(100);
+gHistoryMenu=func_020e34bc(100);
 func_02082c84();func_020026d8(1);func_02002968(2);func_02003124(4);func_020031cc(8);
-M2C_FIELD(data_ov005_02221300,u8 *,0)=0;M2C_FIELD(data_ov005_02221300,u8 *,1)=0;M2C_FIELD(data_ov005_02221300,u8 *,2)=0;
-for(i=0;i<3;i++){p=func_ov005_02211a38(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
+M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
+for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)func_ov005_02211c24(j);
-func_ov005_02211b4c();func_ov000_0216a4e0((u8 *)data_ov005_02221300+0x2e,(u8 *)data_ov005_02221300+0x30);
+func_ov005_02211b4c();func_ov000_0216a4e0((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
 func_ov005_02211c94();func_ov005_02211cf4();
 save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}
@@ -112,12 +112,12 @@ func_02081590(&data_ov005_022203a4,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0
 func_02081590(&data_ov005_022203b8,(u8 *)M2C_FIELD(g3DSpriteEngineMain,void **,0x10)+0x1900);
 func_020815fc(&data_ov005_022203cc,0x40,0x20);func_02081528();func_02091d4c(1);
 func_0208ca2c(0x2800,6,func_020ae22c(12),2);func_020aeebc(3,15,6);
-func_020e3058((u8 *)data_ov005_02221300+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
-func_020e3058((u8 *)data_ov005_02221300+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
-func_020e3058((u8 *)data_ov005_02221300+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
-func_020e3058((u8 *)data_ov005_02221300+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
-func_020e3058((u8 *)data_ov005_02221300+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
-p=M2C_FIELD(data_ov005_02221300,void **,0x58);SetMenuAnimFrame(p,((MenuAnimSprite *)p)->base+2);
+func_020e3058((u8 *)gHistoryMenu+0x50,0xe0,0,15,0x180,3,0x100,arg0,1);
+func_020e3058((u8 *)gHistoryMenu+0x54,0xa0,0,14,0x188,3,0x200,arg0,0);
+func_020e3058((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
+func_020e3058((u8 *)gHistoryMenu+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
+func_020e3058((u8 *)gHistoryMenu+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
+p=M2C_FIELD(gHistoryMenu,void **,0x58);SetMenuAnimFrame(p,((MenuAnimSprite *)p)->base+2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&b);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
@@ -148,8 +148,8 @@ func_020814e4(&data_ov005_02220454);
 func_02081590(&data_ov005_02220464,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0xc)+0x20);
 func_020815fc(&data_ov005_02220474,0x20,0x100);func_02081528();
 func_ov005_02212b40();
-M2C_FIELD(data_ov005_02221300,void **,0x4c)=func_0208931c(arg0);
-p=M2C_FIELD(data_ov005_02221300,void **,0x4c);
+M2C_FIELD(gHistoryMenu,void **,0x4c)=func_0208931c(arg0);
+p=M2C_FIELD(gHistoryMenu,void **,0x4c);
 M2C_FIELD(p,u8 *,0x58)=10;
 dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2780;func_020a9a30(2,0,10,dst);
 func_020a9a30(2,2,10,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+0x2c0);
@@ -157,10 +157,10 @@ M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
 M2C_FIELD(p,u16 *,0x3e)=0x13c;
 ((MenuAnimSprite *)p)->frame=22;
 M2C_FIELD(p,u16 *,0x3c)=0xc00;
-M2C_FIELD(data_ov005_02221300,void **,0x48)=func_0208bc24(arg0);
-M2C_FIELD(M2C_FIELD(data_ov005_02221300,void **,0x48),u16 *,0x3e)=0xdc;
-((MenuAnimSprite *)M2C_FIELD(data_ov005_02221300,void **,0x48))->frame=7;
-func_02088f1c(M2C_FIELD(data_ov005_02221300,void **,0x48));
+M2C_FIELD(gHistoryMenu,void **,0x48)=func_0208bc24(arg0);
+M2C_FIELD(M2C_FIELD(gHistoryMenu,void **,0x48),u16 *,0x3e)=0xdc;
+((MenuAnimSprite *)M2C_FIELD(gHistoryMenu,void **,0x48))->frame=7;
+func_02088f1c(M2C_FIELD(gHistoryMenu,void **,0x48));
 func_020aef7c(3,15,6);gCur3DSpriteEngine=save;func_02091cd0();func_ov005_02212ef0();
 }
 #pragma opt_instruction_scheduling reset
@@ -171,7 +171,7 @@ void func_ov005_02213cf4(void) {
     M2C_UNK func_020b1bf4(s32, s32, s32, s32);
     M2C_UNK func_020b1c78(s32);
     M2C_UNK func_020b22a4(s32, s32, M2C_UNK *, s32);
-    void *func_ov005_02211a38(s32);
+    void *HistoryTabAt(s32);
     extern M2C_UNK data_ov005_022201e0;
     s32 var_r4;
     s32 var_r6;
@@ -181,8 +181,8 @@ void func_ov005_02213cf4(void) {
     func_020b1bf4(0, -0x10, 0x100, -0x10);
     var_r4 = 0;
     do {
-        if (M2C_FIELD(func_ov005_02211a38(var_r4), s16 *, 8) > var_r6) {
-            var_r6 = M2C_FIELD(func_ov005_02211a38(var_r4), s16 *, 8);
+        if (M2C_FIELD(HistoryTabAt(var_r4), s16 *, 8) > var_r6) {
+            var_r6 = M2C_FIELD(HistoryTabAt(var_r4), s16 *, 8);
         }
         var_r4++;
     } while (var_r4 < 3);
@@ -201,107 +201,110 @@ loop:
 }
 
 #pragma opt_propagation off
-void func_ov005_02213d94(void *arg0) {
-  void *func_ov005_02211a38(s32);
+/* Per-frame update of the ov005 record/history menu: animates the active
+ * tab's list, updates its arrow sprites, runs the two list confirm actions,
+ * then handles confirm and tab-switch input. */
+void HistoryMenu_Update(void *widget) {
+  void *HistoryTabAt(s32);
   int func_ov005_0221298c(s16);
-  s32 func_ov005_02212118(void);
-  s32 func_ov005_022121a8(void);
-  M2C_UNK func_020aacf0(M2C_UNK);
-  M2C_UNK func_0208fe30(s32);
+  s32 HistoryScrollUp(void);
+  s32 HistoryScrollDown(void);
+  M2C_UNK MenuSpriteUpdate(M2C_UNK);
+  M2C_UNK PlaySoundEffect(s32);
   void func_020b21e0(void);
   void func_020b2268(void);
   M2C_UNK func_01ffa6fc(M2C_UNK);
   void func_ov005_02212ef0(void);
-  extern void *data_ov005_02221300;
-  extern u16 *data_02101e84;
+  extern void *gHistoryMenu;
+  extern u16 *gKeyState;
 
-  void *p;
-  void *main;
-  void *obj;
+  void *tab;
+  void *menu;
+  void *sprite;
   s16 r2, r1; s32 r3, r0v;
   s32 temp;
   u32 base, value;
   s16 a, b;
-  s32 flag;
-  s8 v; s32 t;
-  u16 flags;
+  s32 pressed;
+  s8 v; s32 nextTab;
+  u16 buttons;
 
-  p = func_ov005_02211a38(M2C_FIELD(data_ov005_02221300, s8 *, 1));
-  if (M2C_FIELD(p, s16 *, 4) == 0) {
-    r1 = M2C_FIELD(p, s16 *, 2);
-    r3 = M2C_FIELD(p, s16 *, 0);
+  tab = HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1));
+  if (M2C_FIELD(tab, s16 *, 4) == 0) {
+    r1 = M2C_FIELD(tab, s16 *, 2);
+    r3 = M2C_FIELD(tab, s16 *, 0);
     if (r3 == r1*2) goto animation_done;
     {
       temp = (r1 * 2) - r3;
       if (temp < 0) temp = -temp;
       r2 = (s16)(temp >> 1);
       if (r2 == 0) r2 = 1;
-      if (r3 > (r1*2)) M2C_FIELD(p,s16 *,0)-=r2;
-      else M2C_FIELD(p,s16 *,0)+=r2;
+      if (r3 > (r1*2)) M2C_FIELD(tab,s16 *,0)-=r2;
+      else M2C_FIELD(tab,s16 *,0)+=r2;
     }
-    M2C_FIELD(p, s16 *, 4) = 1;
-    func_ov005_0221298c(M2C_FIELD(p, s16 *, 0));
+    M2C_FIELD(tab, s16 *, 4) = 1;
+    func_ov005_0221298c(M2C_FIELD(tab, s16 *, 0));
   } else {
-    M2C_FIELD(p, s16 *, 4) = 0;
+    M2C_FIELD(tab, s16 *, 4) = 0;
   }
 
 animation_done:
-if(M2C_FIELD(p,s16 *,2)==0) {
-obj=M2C_FIELD(data_ov005_02221300,void **,0x58);
-SetMenuAnimFrame(obj,((MenuAnimSprite *)obj)->base+2);
+if(M2C_FIELD(tab,s16 *,2)==0) {
+sprite=M2C_FIELD(gHistoryMenu,void **,0x58);
+SetMenuAnimFrame(sprite,((MenuAnimSprite *)sprite)->base+2);
 }else{
-obj=M2C_FIELD(data_ov005_02221300,void **,0x58);
-SetMenuAnimFrame(obj,((MenuAnimSprite *)obj)->base);
+sprite=M2C_FIELD(gHistoryMenu,void **,0x58);
+SetMenuAnimFrame(sprite,((MenuAnimSprite *)sprite)->base);
 }
-if(M2C_FIELD(p,s16 *,2)==M2C_FIELD(p,s16 *,8)-7){
-obj=M2C_FIELD(data_ov005_02221300,void **,0x5c);SetMenuAnimFrame(obj,((MenuAnimSprite *)obj)->base+2);
+if(M2C_FIELD(tab,s16 *,2)==M2C_FIELD(tab,s16 *,8)-7){
+sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSprite *)sprite)->base+2);
 }else{
-obj=M2C_FIELD(data_ov005_02221300,void **,0x5c);SetMenuAnimFrame(obj,((MenuAnimSprite *)obj)->base);
+sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSprite *)sprite)->base);
 }
 
-  main = data_ov005_02221300;
-  func_020aacf0(M2C_FIELD(main, void **, 0x50));
-  func_020aacf0(M2C_FIELD(data_ov005_02221300, void **, 0x54));
-  func_020aacf0(M2C_FIELD(data_ov005_02221300, void **, 0x58));
-  func_020aacf0(M2C_FIELD(data_ov005_02221300, void **, 0x5c));
-  func_020aacf0(M2C_FIELD(data_ov005_02221300, void **, 0x60));
+  menu = gHistoryMenu;
+  MenuSpriteUpdate(M2C_FIELD(menu, void **, 0x50));
+  MenuSpriteUpdate(M2C_FIELD(gHistoryMenu, void **, 0x54));
+  MenuSpriteUpdate(M2C_FIELD(gHistoryMenu, void **, 0x58));
+  MenuSpriteUpdate(M2C_FIELD(gHistoryMenu, void **, 0x5c));
+  MenuSpriteUpdate(M2C_FIELD(gHistoryMenu, void **, 0x60));
 
-  main = data_ov005_02221300;
-  obj = M2C_FIELD(main, void **, 0x58);
-  obj = M2C_FIELD(obj, void **, 0x64);
-  flag = 1;
-  v = (s8)M2C_FIELD(obj, s8 *, 0x0b);
-  if(v!=1) {if(!((MenuAnimSprite *)M2C_FIELD(main,void **,0x58))->repeat || M2C_FIELD(obj,s8 *,12)!=1)flag=0;}
-  if ((u8)flag) { ((s32(*)(void *))func_ov005_02212118)(main); return; }
+  menu = gHistoryMenu;
+  sprite = M2C_FIELD(menu, void **, 0x58);
+  sprite = M2C_FIELD(sprite, void **, 0x64);
+  pressed = 1;
+  v = (s8)M2C_FIELD(sprite, s8 *, 0x0b);
+  if(v!=1) {if(!((MenuAnimSprite *)M2C_FIELD(menu,void **,0x58))->repeat || M2C_FIELD(sprite,s8 *,12)!=1)pressed=0;}
+  if ((u8)pressed) { ((s32(*)(void *))HistoryScrollUp)(menu); return; }
 
-  obj = M2C_FIELD(main, void **, 0x5c);
-  obj = M2C_FIELD(obj, void **, 0x64);
-  flag = 1;
-  v = (s8)M2C_FIELD(obj, s8 *, 0x0b);
-  if(v!=1) {if(!((MenuAnimSprite *)M2C_FIELD(main,void **,0x5c))->repeat || M2C_FIELD(obj,s8 *,12)!=1)flag=0;}
-  if ((u8)flag) { ((s32(*)(void *))func_ov005_022121a8)(main); return; }
+  sprite = M2C_FIELD(menu, void **, 0x5c);
+  sprite = M2C_FIELD(sprite, void **, 0x64);
+  pressed = 1;
+  v = (s8)M2C_FIELD(sprite, s8 *, 0x0b);
+  if(v!=1) {if(!((MenuAnimSprite *)M2C_FIELD(menu,void **,0x5c))->repeat || M2C_FIELD(sprite,s8 *,12)!=1)pressed=0;}
+  if ((u8)pressed) { ((s32(*)(void *))HistoryScrollDown)(menu); return; }
 
-  flags = *data_02101e84;
-  if (flags & 0x2) {
-    func_0208fe30(0x1000f);
+  buttons = *gKeyState;
+  if (buttons & 0x2) {
+    PlaySoundEffect(0x1000f);
     func_020b21e0();
     func_020b2268();
-    func_01ffa6fc(arg0);
+    func_01ffa6fc(widget);
     return;
   }
-  if (flags & 0x100) {
-    t = M2C_FIELD(main, s8 *, 1);
-    if (t == 2) t = 0; else t = t+1;
-    M2C_FIELD(main, s8 *, 1) = t;
-    func_0208fe30(0x10020);
+  if (buttons & 0x100) {
+    nextTab = M2C_FIELD(menu, s8 *, 1);
+    if (nextTab == 2) nextTab = 0; else nextTab = nextTab+1;
+    M2C_FIELD(menu, s8 *, 1) = nextTab;
+    PlaySoundEffect(0x10020);
     func_ov005_02212ef0();
     return;
   }
-  if (flags & 0x200) {
-    t = M2C_FIELD(main, s8 *, 1);
-    if (t == 0) t = 2; else t = t-1;
-    M2C_FIELD(main, s8 *, 1) = t;
-    func_0208fe30(0x10020);
+  if (buttons & 0x200) {
+    nextTab = M2C_FIELD(menu, s8 *, 1);
+    if (nextTab == 0) nextTab = 2; else nextTab = nextTab-1;
+    M2C_FIELD(menu, s8 *, 1) = nextTab;
+    PlaySoundEffect(0x10020);
     func_ov005_02212ef0();
     return;
   }
@@ -311,13 +314,13 @@ void func_ov005_02214094(void) {
     M2C_UNK func_020842d4();
     M2C_UNK func_020b2178();
     M2C_UNK func_020e35cc();
-    extern void *data_ov005_02221300;
+    extern void *gHistoryMenu;
     func_020af1e4();
     func_020842d4();
     func_020b2178();
-    if (data_ov005_02221300 == NULL) return;
+    if (gHistoryMenu == NULL) return;
     func_020e35cc();
-    data_ov005_02221300 = NULL;
+    gHistoryMenu = NULL;
 }
 
 void func_ov005_022140cc(M2C_UNK arg0) {
@@ -355,7 +358,7 @@ s32 func_ov005_02214148(void) {
         return 0;
     }
     M2C_FIELD(M2C_FIELD(&data_ov005_02221304, void **, 8), s16 *, 0x98) = (s16) (temp_r1 - 1);
-    func_0208fe30(0x10019);
+    PlaySoundEffect(0x10019);
     return 1;
 }
 

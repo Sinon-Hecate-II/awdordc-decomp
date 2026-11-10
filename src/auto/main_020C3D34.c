@@ -115,9 +115,9 @@ func_0200bc5c(data_0212a4f0);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction reset
-void func_020c4604(M2C_UNK arg0){extern u16 *data_02101e84;extern void *data_02164094;
+void func_020c4604(M2C_UNK arg0){extern u16 *gKeyState;extern void *data_02164094;
 M2C_FIELD(data_02164094,s32*,0)++;
-if((M2C_FIELD(data_02164094,s32*,0)<250)&&!(*data_02101e84&1))return;
+if((M2C_FIELD(data_02164094,s32*,0)<250)&&!(*gKeyState&1))return;
 M2C_FIELD(data_02164094,s32*,4)=0;func_01ffa6fc(arg0);}
 
 void func_020c4658(M2C_UNK arg0){extern void *data_02164094;

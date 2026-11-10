@@ -57,7 +57,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     extern void **gCurrentMap;
     extern u8 data_ov000_021b5bfc[];
     extern u8 data_ov000_021b5c0a[];
-    extern u8 data_0212616c[];
+    extern u8 gMovementCostTable[];
     s32 func_020ba510(s32, s32);
     s32 func_020ba924(s32, s32);
     s32 func_020d27a4(s32, s32);
@@ -188,7 +188,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
             for (xx = minX; xx <= maxX; xx++) {
                 if (tileDistance(x, y, xx, yy) != 1) continue;
                 map = *gCurrentMap;
-                val = M2C_FIELD(M2C_FIELD(data_0212616c, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
                 if (val == -1) continue;
                 if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;
@@ -217,7 +217,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
             for (xx = minX; xx <= maxX; xx++) {
                 if (tileDistance(x, y, xx, yy) != 1) continue;
                 map = *gCurrentMap;
-                val = M2C_FIELD(M2C_FIELD(data_0212616c, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
+                val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + data_ov000_021b5bfc[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
                 if (val == -1) continue;
                 if (func_ov000_021a9d8c((s16)xx, (s16)yy) != 0) continue;

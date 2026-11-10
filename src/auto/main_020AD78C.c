@@ -334,14 +334,14 @@ s32 func_020ae0a8(void) {
 void func_020ae0d8(s32 arg0, s32 arg1) {
     M2C_UNK func_020ad70c();
     M2C_UNK func_020d8ce8(s32);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     extern s32 data_0215c428;
     func_020ad70c();
     *(s16 *)(data_0215c428 + 6) = 0;
     *(s16 *)(data_0215c428 + 8) = arg1;
     *(s16 *)(data_0215c428 + 2) = arg0;
     func_020d8ce8(arg0);
-    func_0208fe30(0x10021);
+    PlaySoundEffect(0x10021);
 }
 
 void func_020ae124(s32 arg0) {

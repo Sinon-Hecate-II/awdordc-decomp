@@ -202,11 +202,11 @@ void func_ov004_0221285c(void) {
 
 void func_ov004_022128b8(void *arg0) {
     M2C_UNK func_01ffa6fc();
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     u16 temp_r1;
 
-    if ((*data_02101e84 & 0xC0B) || (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0)) {
+    if ((*gKeyState & 0xC0B) || (M2C_FIELD(data_02101e88, u8 *, 0x14) != 0)) {
         func_01ffa6fc();
         return;
     }

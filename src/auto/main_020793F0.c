@@ -200,10 +200,10 @@ void func_02079bb0(M2C_UNK arg0) {
 }
 
 M2C_UNK func_02079bc4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     void *func_01ffa42c();
     extern M2C_UNK data_02100ab0;
-    func_0208fe30(0x82);
+    PlaySoundEffect(0x82);
     M2C_FIELD(func_01ffa42c(&data_02100ab0, arg1), s16 *, 0x6E) = arg0;
 }
 

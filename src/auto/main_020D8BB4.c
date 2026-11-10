@@ -123,7 +123,7 @@ s32 func_020d8f4c(void){extern void *data_0212c36c;return M2C_FIELD(data_0212c36
 
 s32 func_020d8f60(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *data_0212c36c;switch(M2C_FIELD(data_0212c36c,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
 
-s32 func_020d8fa0(void){void func_ov000_02174d78(void);void func_020ae068(void);void func_0208fe30(s32);extern void *data_0212c36c;if(!func_020d8f60())return 0;switch(M2C_FIELD(data_0212c36c,s16 *,2)){case 1:func_ov000_02174d78();break;case 2:func_020ae068();break;}func_0208fe30(0x10022);return 1;}
+s32 func_020d8fa0(void){void func_ov000_02174d78(void);void func_020ae068(void);void PlaySoundEffect(s32);extern void *data_0212c36c;if(!func_020d8f60())return 0;switch(M2C_FIELD(data_0212c36c,s16 *,2)){case 1:func_ov000_02174d78();break;case 2:func_020ae068();break;}PlaySoundEffect(0x10022);return 1;}
 
 void func_020d8ff8(void) {
     M2C_UNK func_01ffaa0c(s32);

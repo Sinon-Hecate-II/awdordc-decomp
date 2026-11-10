@@ -386,14 +386,14 @@ void func_020d50bc(void) {
  func_020cfd28();func_0207a768();func_0207b040();
  M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;
  func_01ffa9e4(data_0211fbc4);
- func_0208fe30(0x1000f);
+ PlaySoundEffect(0x1000f);
  } else if(keys&0x100)func_020ccca0();
  else if(keys&0x40)func_020d8fa0();
  }
  func_020d6778(2);
 }
 
-void func_020d52d0(void){extern void **gCurrentMap;func_020b2268();func_0208fe30(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
+void func_020d52d0(void){extern void **gCurrentMap;func_020b2268();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
 
 void func_020d5304(void) {
 extern void **gCurrentMap;

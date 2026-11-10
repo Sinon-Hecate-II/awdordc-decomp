@@ -127,7 +127,7 @@ void func_ov005_0221eef4(void *arg0) {
     s32 func_01ffa3dc(s32 *, void *);
     extern u32 data_027e15bc;
     extern void **g3DSpriteEngineSub, **g3DSpriteEngineMain, **gCur3DSpriteEngine;
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern s32 data_ov005_02220ad0[];
     volatile u16 *volatile p;
     void **saved;
@@ -146,7 +146,7 @@ void func_ov005_0221eef4(void *arg0) {
         } while (i < 2);
         gCur3DSpriteEngine = saved;
     }
-    if (*data_02101e84 & 8) {
+    if (*gKeyState & 8) {
         if (!func_020ad3f0()) func_01ffa3dc(data_ov005_02220ad0, arg0);
     }
 }
@@ -337,11 +337,11 @@ void func_ov005_0221f084(void *arg0) {
 
 void func_ov005_0221f3e8(void *arg0) {
     M2C_UNK func_01ffa6fc();
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     s32 temp_r1;
 
-    if (*data_02101e84 & 0xC0B) {
+    if (*gKeyState & 0xC0B) {
         func_01ffa6fc();
         return;
     }

@@ -103,6 +103,31 @@ typedef struct MapSelectScreen {
     void **buffers68;      /* +0x68: 6 buffers */
 } MapSelectScreen;
 
+/* ov005 record/history menu: one scrolling list per tab (global gHistoryMenu). */
+typedef struct HistoryMenuTab {
+    s16 animPos;    /* +0x00: current scroll offset */
+    s16 cursor;     /* +0x02: first visible row */
+    s16 animating;  /* +0x04: scroll animation in progress */
+    s16 selectable; /* +0x06: number of selectable rows */
+    s16 count;      /* +0x08: number of rows */
+} HistoryMenuTab;   /* 0xA bytes */
+
+typedef struct HistoryMenu {
+    u8 unk00;           /* +0x00 */
+    s8 tab;             /* +0x01: active tab (0..2) */
+    u8 selected;        /* +0x02: selected row */
+    u8 pad03[0xD];
+    HistoryMenuTab tabs[3]; /* +0x10 */
+    u8 unk2E[0x1A];
+    void *sprite48;     /* +0x48 */
+    void *sprite4C;     /* +0x4C */
+    void *sprite50;     /* +0x50 */
+    void *sprite54;     /* +0x54 */
+    void *sprite58;     /* +0x58: list-up arrow */
+    void *sprite5C;     /* +0x5C: list-down arrow */
+    void *sprite60;     /* +0x60 */
+} HistoryMenu;          /* 0x64 bytes */
+
 /* Panels of the ov000 map info window (the box that follows the map cursor). */
 enum {
     OV000_INFO_IDLE = 1,        /* no panel shown */
@@ -128,6 +153,39 @@ typedef struct Ov000InfoMenu {
     s32 unk1C;           /* +0x1C */
 } Ov000InfoMenu;
 #endif
+
+/* Current key input state; the global gKeyState points at one of these. */
+typedef struct KeyState {
+    u16 pressed;     /* +0x00: keys newly pressed this frame */
+    u16 repeat;      /* +0x02: keys auto-repeating while held */
+    u16 repeat2;     /* +0x04: second auto-repeat tier */
+    u16 held;        /* +0x06: keys held now */
+    u16 prevHeld;    /* +0x08: keys held on the previous frame */
+    u16 prevHeld2;   /* +0x0A: keys held two frames ago (release detection) */
+    u8 repeatDelay;  /* +0x0C: auto-repeat delay counter */
+    u8 repeatRate;   /* +0x0D: auto-repeat rate counter */
+} KeyState;
+
+/* DS key bits, as stored in the KeyState masks. */
+enum {
+    KEY_A = 0x0001, KEY_B = 0x0002, KEY_SELECT = 0x0004, KEY_START = 0x0008,
+    KEY_RIGHT = 0x0010, KEY_LEFT = 0x0020, KEY_UP = 0x0040, KEY_DOWN = 0x0080,
+    KEY_R = 0x0100, KEY_L = 0x0200
+};
+
+/* ov000 unit-list menu object (singleton returned by GetScrollList). */
+typedef struct ScrollList {
+    u8 pad00[0x34];
+    s16 tab;          /* +0x34: selected tab (0..3) */
+    s16 reverse;      /* +0x36: reverse sort order toggle (0/1) */
+    s16 animPos;      /* +0x38: animated scroll offset (eased toward scrollPos*2) */
+    s16 scrollPos;    /* +0x3A: first visible row */
+    s16 count;        /* +0x3C: number of rows */
+    s16 animating;    /* +0x3E: scroll animation in progress */
+    s16 selectedId;   /* +0x40: unit id shown by the info panel */
+    void *spriteUp;   /* +0x44: list-up arrow sprite */
+    void *spriteDown; /* +0x48: list-down arrow sprite */
+} ScrollList;
 
 #endif
 

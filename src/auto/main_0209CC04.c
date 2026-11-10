@@ -315,14 +315,14 @@ s32 func_0209d148(void *arg0) {
 
 void func_0209d178(void *arg0) {
     void func_01ffa6fc(void *);
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     extern void *data_02101e88;
     M2C_FIELD(arg0, s16 *, 0x2C)--;
     if (M2C_FIELD(arg0, s16 *, 0x2C) <= 0) {
         func_01ffa6fc(arg0);
         return;
     }
-    if (*data_02101e84 == 0 && M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return;
+    if (*gKeyState == 0 && M2C_FIELD(data_02101e88, u8 *, 0x14) == 0) return;
     func_01ffa6fc(arg0);
 }
 
@@ -511,8 +511,8 @@ s32 func_0209d67c(void *arg0) {
 }
 
 s32 func_0209d6a4(void *arg0) {
-    M2C_UNK func_0208fe30(s32);
-    func_0208fe30(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
+    M2C_UNK PlaySoundEffect(s32);
+    PlaySoundEffect(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }

@@ -264,12 +264,12 @@ return M2C_FIELD(arg0,s16*,0x40)-old;
 M2C_UNK func_020b8740(void) {
     void *func_020b895c(void);
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
     M2C_UNK func_020b2268();
     void *temp_r4;
     temp_r4 = func_020b895c();
-    func_0208fe30(0x10018);
+    PlaySoundEffect(0x10018);
     func_01ffa6fc(temp_r4);
     func_020b21a0();
     func_020b2268();
@@ -287,13 +287,13 @@ void func_020b8778(void) {
     func_020b8740();
 }
 
-void func_020b8788(u8 *a){void *func_020b895c(void);s32 func_020b20e0(s32);void func_020b1c60(s32);extern u16 *data_02101e84;void *p=func_020b895c();s32 max=M2C_FIELD(p,s16 *,0x42)-6;s32 n=*a;s32 pos=M2C_FIELD(p,s16 *,0x40);if(max<0)max=0;
-if(pos==0&&n==0){if(data_02101e84[0]&64){M2C_FIELD(p,s16 *,0x40)=max;n=5;goto done;}}
-else if(data_02101e84[1]&64){if(n>=2)n--;else if(!func_020b8694(p)&&n>0)n--;goto done;}
-if(pos==max&&n==5){if(data_02101e84[0]&128){n=0;M2C_FIELD(p,s16 *,0x40)=n;goto done;}}
-else if(data_02101e84[1]&128){if(n<4){if(func_020b20e0(n+1))n++;}else if(!func_020b86e4(p)){if(func_020b20e0(n+1))n++;}goto done;}
-if(data_02101e84[1]&32){n-=func_020b86b4(p)+6;if(n<0)n=0;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
-else if(data_02101e84[1]&16){n+=6-func_020b870c(p);if(n>=6)n=5;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
+void func_020b8788(u8 *a){void *func_020b895c(void);s32 func_020b20e0(s32);void func_020b1c60(s32);extern u16 *gKeyState;void *p=func_020b895c();s32 max=M2C_FIELD(p,s16 *,0x42)-6;s32 n=*a;s32 pos=M2C_FIELD(p,s16 *,0x40);if(max<0)max=0;
+if(pos==0&&n==0){if(gKeyState[0]&64){M2C_FIELD(p,s16 *,0x40)=max;n=5;goto done;}}
+else if(gKeyState[1]&64){if(n>=2)n--;else if(!func_020b8694(p)&&n>0)n--;goto done;}
+if(pos==max&&n==5){if(gKeyState[0]&128){n=0;M2C_FIELD(p,s16 *,0x40)=n;goto done;}}
+else if(gKeyState[1]&128){if(n<4){if(func_020b20e0(n+1))n++;}else if(!func_020b86e4(p)){if(func_020b20e0(n+1))n++;}goto done;}
+if(gKeyState[1]&32){n-=func_020b86b4(p)+6;if(n<0)n=0;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
+else if(gKeyState[1]&16){n+=6-func_020b870c(p);if(n>=6)n=5;func_020b8594(M2C_FIELD(p,s16 *,0x3e));}
 done:if(n!=*a)func_020b1c60(n);M2C_FIELD(p,s16 *,0x3a)=n;}
 
 void func_020b88f8(u8 *arg0) {

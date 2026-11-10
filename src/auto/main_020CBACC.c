@@ -240,16 +240,16 @@ func_01ffa6fc(p);
 
 void func_020cc430(void *arg0) {
     M2C_UNK func_01ffa6fc(void *);
-    M2C_UNK func_0208fe30(s32);
+    M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020cf80c();
-    extern u16 *data_02101e84;
+    extern u16 *gKeyState;
     func_020cf80c();
     func_0207a7a4(1, 8);
     if (func_020d4dd0() != 0) {
-        if (!(*data_02101e84 & 0xB)) {
+        if (!(*gKeyState & 0xB)) {
             return;
         }
-        func_0208fe30(0x10018);
+        PlaySoundEffect(0x10018);
         func_01ffa6fc(arg0);
         return;
     }
